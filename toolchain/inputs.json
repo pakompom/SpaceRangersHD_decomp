@@ -1,0 +1,38 @@
+{
+  "compiler": {
+    "version": "11.0.2963.11001",
+    "files": {
+      "DCC32.EXE": "a3e48867d1c6cea89e2dc95c0622b6371dfc3169e6ed9e67520c379bc7d6f806",
+      "rlink32.dll": "92aea1cfd6f8a90463bf4760a31c9e2a8a2ac0caa3a5909f8da7c4e2e4aa827b"
+    },
+    "setup": {
+      "url": "https://archive.org/download/code-gear-radstudio-2007-dec-2007/CodeGearRADStudio2007_Dec2007.iso/Install%2FSetup.exe",
+      "sha256": "9032b23fbaa0bda17a124bc0ee53d27ba57b93c61e1fe714ebba9b1ac3f000a4"
+    },
+    "media": [
+      {
+        "url": "https://archive.org/download/code-gear-radstudio-2007-dec-2007/CodeGearRADStudio2007_Dec2007.iso/Install%2Ftransmogrifierd.7zip",
+        "component": "transmogrifierd",
+        "sha256": "3e1e291486c811b788d18355b7cef28b01781cea1f6c67cadc97406a8b5aa864"
+      },
+      {
+        "url": "https://archive.org/download/code-gear-radstudio-2007-dec-2007/CodeGearRADStudio2007_Dec2007.iso/Install%2Fcoredelphibcb.7zip",
+        "component": "coredelphibcb",
+        "sha256": "c163471f2cf802da73d17cf12ed9618c6ca21db317fce2a736843279f3f32704"
+      }
+    ]
+  },
+  "libraries": {
+    "url": "https://archive.org/download/codegear-delphi-2007-lite-1.4/CodeGear.Delphi.2007.RTM.Inc.Update4.v11.0.2902.10471.Lite.v1.4.exe",
+    "sha256": "2ada197c0f898f8c1d3b9a55d1f00f556f50a4ba76c6bd06d133063fba86ad11"
+  },
+  "pefile": {
+    "url": "https://files.pythonhosted.org/packages/54/16/12b82f791c7f50ddec566873d5bdd245baa1491bac11d15ffb98aecc8f8b/pefile-2024.8.26-py3-none-any.whl",
+    "sha256": "76f8b485dcd3b1bb8166f1128d395fa3d87af26360c2358fb75b80019b957c6f",
+    "filename": "pefile-2024.8.26-py3-none-any.whl"
+  },
+  "wine_macos": {
+    "url": "https://github.com/Gcenx/macOS_Wine_builds/releases/download/11.0_1/wine-stable-11.0_1-osx64.tar.xz",
+    "sha256": "b50dc50ec7f41d58b115a6b685d4d1315ba3c797bd3aa0f49213f2703cb82388"
+  }
+}

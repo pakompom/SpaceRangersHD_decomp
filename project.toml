@@ -1,0 +1,20 @@
+[project]
+binary = "game/Rangers.exe"
+source = "source"
+cache = ".local"
+database = ".local/Rangers.i64"
+
+[target]
+build = "2025-10-13"
+sha256 = "83300344af802bc51e64389c58f047e5afdf195c133048098be3881fae29ed98"
+size = 4995584
+
+[compiler]
+# Preserve DCC32 alignment when exported set constants cross a DCU boundary.
+precompiled_units = ["aGalaxyStruct"]
+library_sources = []
+library = ".local/toolchains/lib"
+executable = ".local/toolchains/bin/DCC32.EXE"
+wine = "wine"
+# Source-parsed shared sets; rebuilding prevents DCU-dependent alignment changes.
+flags = ["-$O-", "-$R-", "-$Q-", "-$B-", "--codepage:65001,1251"]

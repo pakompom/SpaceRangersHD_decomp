@@ -1,0 +1,81 @@
+name: Build and verify
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: build-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Linux prerequisites
+        run: |
+          sudo dpkg --add-architecture i386
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends build-essential clang python3 python3-venv innoextract p7zip-full wine wine32:i386 xvfb xauth
+      - name: Rust
+        run: |
+          rustup toolchain install 1.90.0 --profile minimal --component rustfmt --component clippy
+          rustup default 1.90.0
+      - name: Cache Cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target/
+          key: ubuntu-24.04-${{ runner.arch }}-rust-1.90-${{ hashFiles('Cargo.lock', 'Cargo.toml') }}-${{ hashFiles('toolchain/**/*.rs', 'toolchain/compiler/CompilerHost.dpr', 'tests/**/*.rs') }}
+          restore-keys: ubuntu-24.04-${{ runner.arch }}-rust-1.90-${{ hashFiles('Cargo.lock', 'Cargo.toml') }}-
+      - name: Tool tests
+        run: |
+          cargo fmt --all -- --check
+          cargo test --locked --all-targets
+          cargo clippy --locked --all-targets -- -D warnings
+          python3 -m unittest discover -s tests -p 'test_*.py'
+      - name: Cache prepared Delphi toolchain
+        id: delphi
+        uses: actions/cache@v4
+        with:
+          path: .local/toolchains
+          key: ubuntu-24.04-${{ runner.arch }}-delphi-${{ hashFiles('toolchain/inputs.json', 'toolchain/setup.py', 'toolchain/delphi/**') }}
+      - name: Cache Delphi downloads
+        if: steps.delphi.outputs.cache-hit != 'true'
+        uses: actions/cache@v4
+        with:
+          path: .local/downloads
+          key: delphi-downloads-${{ hashFiles('toolchain/inputs.json') }}
+      - name: Prepare compiler
+        if: steps.delphi.outputs.cache-hit != 'true'
+        run: ./decomp setup
+      - name: Build tools
+        run: cargo build --locked --release --bin decomp
+      - name: Generate verified progress report
+        id: report
+        run: |
+          xvfb-run -a ./decomp report
+          python3 -c 'import tomllib; print("build=" + tomllib.load(open("project.toml", "rb"))["target"]["build"])' >> "$GITHUB_OUTPUT"
+      - name: decomp.dev report
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.report.outputs.build }}_report
+          path: .local/report.json
+          include-hidden-files: true
+          if-no-files-found: error
+      - name: Stop compiler worker
+        if: always()
+        run: test ! -x target/release/decomp || ./decomp worker stop
+      - name: Verification record
+        uses: actions/upload-artifact@v4
+        with:
+          name: verification-linux
+          path: .local/verification.json
+          include-hidden-files: true
+          if-no-files-found: error

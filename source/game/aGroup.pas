@@ -1,0 +1,297 @@
+unit aGroup;
+// Unit bracket (inferred): .text 0x005015C0..0x0050230C; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
+
+interface
+
+uses Classes, EC_Buf, EC_Struct, Windows, aGalaxy, aShip;
+
+type
+  TGroupRouteOrder = record // @size $18
+    Kind: Byte; // @offset $00 Same numeric orders as TShipOrder.
+    Target: TObject; // @offset $04 Serialized as an object ID until ResolveLoadedReferences.
+    Destination: TPointF; // @offset $08
+    WaitMode: Byte; // @offset $10 0: arrival, 2: group assembly, 3: WaitUntilTurn.
+    WaitUntilTurn: Integer; // @offset $14
+  end;
+  TGroupRoute = array of TGroupRouteOrder;
+
+  TGroup = class(TObjectEx) // @size 0x20
+  public
+    CreatedTurn: Integer; // @offset 0x04
+    GenerationSeed: Cardinal; // @offset 0x08
+    RandomState: Cardinal; // @offset 0x0C
+    Ships: TList; // @offset 0x10  Borrowed TShip entries.
+    Route: array of TGroupRouteOrder; // @offset $14 Owned route; references in each order are borrowed.
+    TargetStar: TStar; // @offset 0x18  Destination of the liberation attack.
+    AssemblyStar: TStar; // @offset 0x1C  Nearby Coalition staging system.
+    function GetShipGreeting(Ship: Pointer): WideString; // @addr $5025A8 @ida "void __usercall $name(TGroup *Self@<eax>, TShip *Ship@<edx>, unsigned __int16 **Result@<ecx>);"
+    procedure Save(Buffer: TBufEC); // @addr $501774
+    procedure ResolveLoadedReferences(Galaxy: TGalaxy); // @addr $501B74 Rebinds ship and route target IDs after Load.
+    function AreShipsAssembled: Boolean; // @addr $50248C Requires a nonempty member list; same route index, no land/jump order, and within 300 units.
+    procedure AdvanceRouteForShips; // @addr $50253C Advances members in reverse order, detaching completed members.
+    function FindCentralMemberStar: TStar; // @addr $502818 Chooses a member's current star minimizing summed rounded distances to all galaxy planets.
+    procedure AddShip(Ship: TShip); // @addr 0x501DBC @note "Appends Ship, assigns LiberationGroup and resets its order index."
+    function SelectLiberationTarget: Boolean; // @addr 0x501ED4 @note "Chooses TargetStar and a Coalition AssemblyStar within 28 parsecs. Failure disbands and frees Self."
+    function BuildLiberationOrders: Boolean; // @addr 0x501FE8 @note "Builds staging, landing and attack orders and publishes news. May disband and free Self when no suitable staging planet exists."
+    constructor Create; // @addr 0x501644 @ida "TGroup *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
+    destructor Destroy; override; // @addr 0x501724 @ida "void __usercall $name(TGroup *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    procedure Load(Buffer: TBufEC; Galaxy: TGalaxy); // @addr 0x501960 @note "Ships initially contains serialized IDs, pending reference resolution. Does not clear existing entries."
+    procedure NextDay; // @addr 0x501DF4 @note "May remove and free Self when empty or older than 150 days."
+    procedure Disband; // @addr 0x501E60 @note "Detaches member ships, removes Self from Galaxy.LiberationGroups, and frees Self."
+  end;
+
+implementation
+
+uses SysUtils, Math, aPlanet, aMyFunction, Globals, GlobalsV;
+
+{ @routine $501644 TGroup_Create }
+constructor TGroup.Create;
+begin
+  inherited Create;
+  if Galaxy <> nil then begin
+    CreatedTurn := Galaxy.CurrentTurn;
+    GenerationSeed := SeededRandomIntRange(100000, MaxInt, Galaxy.GenerationSeed * Galaxy.CurrentTurn);
+    RandomState := GenerationSeed;
+  end;
+  Ships := TList.Create;
+  SetLength(Route, 0);
+  Route := nil;
+  TargetStar := nil;
+  AssemblyStar := nil;
+end;
+{ @end $501644 }
+
+{ @routine $501724 TGroup_Destroy }
+destructor TGroup.Destroy;
+begin
+  if Ships <> nil then begin Ships.Free; Ships := nil; end;
+  inherited Destroy;
+end;
+{ @end $501724 }
+
+{ @routine $501774 TGroup_Save }
+procedure TGroup.Save(Buffer: TBufEC);
+var I, Count: Integer; Ship: TShip; Order: TGroupRouteOrder;
+begin
+  Buffer.AddWideChar(WideChar(CreatedTurn));
+  Buffer.AddDWord(GenerationSeed);
+  Buffer.AddDWord(RandomState);
+  Buffer.AddAnsiChar(#0);
+  Count := Ships.Count;
+  Buffer.AddWideChar(WideChar(Count));
+  for I := 0 to Count - 1 do begin Ship := Ships[I]; Buffer.AddDWord(Ship.Id); end;
+  Count := Length(Route);
+  Buffer.AddWideChar(WideChar(Count));
+  for I := 0 to Count - 1 do begin
+    Order := Route[I];
+    Buffer.AddAnsiChar(AnsiChar(Order.Kind));
+    if Order.Kind = 3 then Buffer.AddDWord((Order.Target as TStar).Id)
+    else if Order.Kind = 4 then Buffer.AddDWord((Order.Target as THole).Id)
+    else if Order.Kind = 2 then begin if Order.Target is TShip then Buffer.AddDWord(Cardinal((Order.Target as TShip).Id) or $80000000)
+         else Buffer.AddDWord((Order.Target as TPlanet).Id);
+    end else if Order.Kind = 6 then Buffer.AddDWord((Order.Target as TShip).Id)
+    else Buffer.AddDWord(0);
+    Buffer.AddSingle(Order.Destination.X);
+    Buffer.AddSingle(Order.Destination.Y);
+    Buffer.AddAnsiChar(AnsiChar(Order.WaitMode));
+    Buffer.AddIntegerValue(Order.WaitUntilTurn);
+  end;
+end;
+{ @end $501774 }
+
+{ @routine $501960 TGroup_Load }
+procedure TGroup.Load(Buffer: TBufEC; Galaxy: TGalaxy);
+var I, Count, OldestTurn: Integer;
+begin
+  CreatedTurn := Buffer.GetWord;
+  OldestTurn := Galaxy.CurrentTurn - 1000;
+  while CreatedTurn < OldestTurn do Inc(CreatedTurn, $10000);
+  GenerationSeed := Buffer.GetUInt32;
+  RandomState := Buffer.GetUInt32;
+  Buffer.GetByte;
+  Count := Buffer.GetWord;
+  if (Count < 0) or (Count > 10000) then raise EAbort.Create('Err TGroup.Load FShips');
+  for I := 0 to Count - 1 do Ships.Add(Pointer(Buffer.GetUInt32));
+  Count := Buffer.GetWord;
+  if (Count < 0) or (Count > 10000) then raise EAbort.Create('Err TGroup.Load FOrders');
+  SetLength(Route, Count);
+  for I := 0 to Count - 1 do begin
+    Route[I].Kind := Buffer.GetByte;
+    Route[I].Target := TObject(Buffer.GetUInt32);
+    Route[I].Destination.X := Buffer.GetSingle;
+    Route[I].Destination.Y := Buffer.GetSingle;
+    Route[I].WaitMode := Buffer.GetByte;
+    Route[I].WaitUntilTurn := Buffer.GetInt32;
+  end;
+end;
+{ @end $501960 }
+
+{ @routine $501B74 TGroup_ResolveLoadedReferences }
+procedure TGroup.ResolveLoadedReferences(Galaxy: TGalaxy);
+var I: Integer; Ship: TShip;
+begin
+  for I := 0 to Ships.Count - 1 do begin
+    Ships[I] := TObject(Galaxy.IdToShip(Cardinal(Ships[I]), True)) as TShip;
+    Ship := Ships[I];
+    Ship.LiberationGroup := Self;
+  end;
+  for I := 0 to Length(Route) - 1 do begin
+    if Route[I].Kind = 3 then Route[I].Target := TObject(Galaxy.IdToStar(Cardinal(Route[I].Target))) as TStar
+    else if Route[I].Kind = 4 then Route[I].Target := TObject(Galaxy.IdToHole(Cardinal(Route[I].Target))) as THole
+    else if Route[I].Kind = 2 then begin if Cardinal(Route[I].Target) and $80000000 = $80000000 then
+           Route[I].Target := TObject(Galaxy.IdToShip(Cardinal(Route[I].Target) and $7FFFFFFF, True)) as TShip
+         else Route[I].Target := TObject(Galaxy.IdToPlanet(Cardinal(Route[I].Target))) as TPlanet;
+    end else if Route[I].Kind = 6 then Route[I].Target := TObject(Galaxy.IdToShip(Cardinal(Route[I].Target), True)) as TShip
+    else Route[I].Target := nil;
+    end;
+end;
+{ @end $501B74 }
+
+{ @routine $501DBC TGroup_AddShip }
+procedure TGroup.AddShip(Ship: TShip);
+begin
+  Ships.Add(Ship);
+  Ship.LiberationGroup := Self;
+  Ship.LiberationGroupRouteIndex := 0;
+end;
+{ @end $501DBC }
+
+{ @routine $501DF4 TGroup_NextDay }
+procedure TGroup.NextDay;
+begin
+  if Ships.Count = 0 then begin
+    Galaxy.LiberationGroups.Delete(Galaxy.LiberationGroups.IndexOf(Self));
+    Free;
+  end else if Galaxy.CurrentTurn > CreatedTurn + 150 then Disband;
+end;
+{ @end $501DF4 }
+
+{ @routine $501E60 TGroup_Disband }
+procedure TGroup.Disband;
+var I: Integer; Ship: TShip;
+begin
+  for I := Ships.Count - 1 downto 0 do begin Ship := Ships[I]; Ship.LeaveLiberationGroup; end;
+  Galaxy.LiberationGroups.Delete(Galaxy.LiberationGroups.IndexOf(Self));
+  Free;
+end;
+{ @end $501E60 }
+
+{ @routine $501ED4 TGroup_SelectLiberationTarget }
+function TGroup.SelectLiberationTarget: Boolean;
+var Attempts: Integer;
+begin
+  TargetStar := Galaxy.SelectStarForLiberationAttack(FindCentralMemberStar, sfCoalition);
+  Attempts := 0;
+  while (TargetStar = nil) or TargetStar.HasLiberationGroupOrder or Galaxy.HasMilitaryBaseAssignedToStar(TargetStar) do begin
+    if Attempts > 10 then begin
+      TargetStar := nil;
+      AssemblyStar := nil;
+      Disband;
+      Result := False;
+      Exit;
+    end;
+    TargetStar := Galaxy.SelectStarForLiberationAttack(FindCentralMemberStar, sfCoalition);
+    Inc(Attempts);
+  end;
+  AssemblyStar := TargetStar.FindNearestStarByFaction(sfCoalition, False);
+  if (AssemblyStar = nil) or (PointDistance(AssemblyStar.Position, TargetStar.Position) > 28) then begin
+    TargetStar := nil;
+    AssemblyStar := nil;
+    Result := False;
+    Disband;
+  end else Result := True;
+end;
+{ @end $501ED4 }
+
+{ @routine $501FE8 TGroup_BuildLiberationOrders }
+function TGroup.BuildLiberationOrders: Boolean;
+var Planet: TPlanet; Text: WideString;
+begin
+  Result := True;
+  if not (((TargetStar <> nil) and (AssemblyStar <> nil)) or SelectLiberationTarget) then Exit;
+  SetLength(Route, 4);
+  with Route[0] do begin Kind := 3; Target := AssemblyStar; WaitMode := 0; WaitUntilTurn := 0; end;
+  Planet := TObject(AssemblyStar.FindFirstInhabitedPlanet) as TPlanet;
+  if Planet = nil then begin Result := False; Disband; Exit; end;
+  with Route[1] do begin Kind := 2; Target := Planet; WaitMode := 0; WaitUntilTurn := 0; end;
+  with Route[2] do begin
+    Kind := 1;
+    Target := nil;
+    Destination := AssemblyStar.GetBoundaryPointTowardStar(TargetStar);
+    WaitMode := 3;
+    WaitUntilTurn := Galaxy.CurrentTurn + NextRandomIntRange(45, 55, RandomState);
+  end;
+  with Route[3] do begin Kind := 3; Target := TargetStar; WaitMode := 0; WaitUntilTurn := 0; end;
+  if TargetStar.Status.CustomFaction <> '' then Text := PickLocalizedTextVariant('GalaxyNews.Group.WarriorLiberator.Create' + TargetStar.Status.CustomFaction, RandomState * (Galaxy.CurrentTurn mod 71))
+  else if TargetStar.ControlFaction = sfPirates then Text := PickLocalizedTextVariant('GalaxyNews.Group.WarriorLiberator.CreatePirates', RandomState * (Galaxy.CurrentTurn mod 71))
+  else Text := PickLocalizedTextVariant('GalaxyNews.Group.WarriorLiberator.Create', RandomState * (Galaxy.CurrentTurn mod 71));
+  ReplaceTextToken(Text, '<StarNormal>', AssemblyStar.Name, '<color=255,240,100>');
+  ReplaceTextToken(Text, '<StarEnemy>', TargetStar.Name, '<color=255,240,100>');
+  ReplaceTextToken(Text, '<SectorNormal>', AssemblyStar.Constellation.GetName, '<color=255,240,100>');
+  ReplaceTextToken(Text, '<SectorEnemy>', TargetStar.Constellation.GetName, '<color=255,240,100>');
+  ReplaceTextToken(Text, '<Date>', Galaxy.FormatTurnDate(Route[2].WaitUntilTurn), '<color=255,240,100>');
+  Galaxy.AddPlanetNews(26, Text);
+end;
+{ @end $501FE8 }
+
+{ @routine $50248C TGroup_AreShipsAssembled }
+function TGroup.AreShipsAssembled: Boolean;
+var I, RouteIndex: Integer; Ship: TShip;
+begin
+  Ship := Ships[0];
+  RouteIndex := Ship.LiberationGroupRouteIndex;
+  for I := 0 to Ships.Count - 1 do begin
+    Ship := Ships[I];
+    if (Ship.LiberationGroupRouteIndex <> RouteIndex) or not (Ship.Order in [soNone, soMove]) or
+      (PointDistanceSquared(Ship.Position, Route[RouteIndex].Destination) > 90000) then begin Result := False; Exit; end;
+  end;
+  Result := True;
+end;
+{ @end $50248C }
+
+{ @routine $50253C TGroup_AdvanceRouteForShips }
+procedure TGroup.AdvanceRouteForShips;
+var I: Integer; Ship: TShip;
+begin
+  for I := Ships.Count - 1 downto 0 do begin
+    Ship := Ships[I];
+    Inc(Ship.LiberationGroupRouteIndex);
+    if Ship.LiberationGroupRouteIndex >= Length(Route) then Ship.LeaveLiberationGroup
+    else Ship.ProcessLiberationGroupRoute;
+  end;
+end;
+{ @end $50253C }
+
+{ @routine $5025A8 TGroup_GetShipGreeting }
+function TGroup.GetShipGreeting(Ship: Pointer): WideString;
+var Star: TStar;
+begin
+  Result := '';
+  if TShip(Ship).LiberationGroupRouteIndex <> 0 then begin
+    Star := Route[3].Target as TStar;
+    if Galaxy.CurrentTurn < Route[2].WaitUntilTurn then
+      Result := FormatText2(PickLocalizedTextVariant('ShipGreetings.Group.WarriorLiberatorBefore', NextRandomIntRange(100, 1000, RandomState)), '<color=255,240,100>', '<StarEnemy>', Star.Name, '<Date>', Galaxy.FormatTurnDate(Route[2].WaitUntilTurn))
+    else Result := FormatText2(PickLocalizedTextVariant('ShipGreetings.Group.WarriorLiberatorAfter', NextRandomIntRange(100, 1000, RandomState)), '<color=255,240,100>', '<StarEnemy>', Star.Name, '<Date>', Galaxy.FormatTurnDate(Route[2].WaitUntilTurn));
+  end;
+end;
+{ @end $5025A8 }
+
+{ @routine $502818 TGroup_FindCentralMemberStar }
+function TGroup.FindCentralMemberStar: TStar;
+var I, J, Distance, BestDistance: Integer; Ship: TShip; Planet: TPlanet;
+begin
+  Result := nil;
+  BestDistance := MaxInt;
+  for I := Ships.Count - 1 downto 0 do begin
+    Ship := Ships[I];
+    Distance := 0;
+    for J := 0 to Galaxy.Planets.Count - 1 do begin
+      Planet := Galaxy.Planets[J];
+      Inc(Distance, Round(PointDistance(Ship.CurrentStar.Position, Planet.CurrentStar.Position)));
+    end;
+    if BestDistance > Distance then begin Result := Ship.CurrentStar; BestDistance := Distance; end;
+  end;
+end;
+{ @end $502818 }
+
+end.

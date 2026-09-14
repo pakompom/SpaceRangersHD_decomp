@@ -1,0 +1,23 @@
+#!/bin/sh
+# Build and matching are native Rust; setup and IDA scripts use Python.
+set -eu
+decomp_script=$0
+while [ -L "$decomp_script" ]; do
+    decomp_parent=$(dirname "$decomp_script")
+    decomp_script=$(readlink "$decomp_script")
+    case "$decomp_script" in /*) ;; *) decomp_script=$decomp_parent/$decomp_script ;; esac
+done
+cd "$(dirname "$decomp_script")"
+if [ "${1:-}" = setup ]; then
+    shift
+    exec python3 toolchain/setup.py "$@"
+fi
+decomp_binary="${CARGO_TARGET_DIR:-target}/release/decomp"
+if [ ! -x "$decomp_binary" ]; then
+    echo 'Run ./decomp setup first (or cargo build --locked --release --bin decomp).' >&2
+    exit 127
+fi
+if [ -n "$(find toolchain Cargo.toml Cargo.lock -type f \( -name '*.rs' -o -name '*.toml' -o -name Cargo.lock -o -name CompilerHost.dpr \) -newer "$decomp_binary" -print -quit)" ]; then
+    echo 'Warning: decomp tool sources changed since the last build. Run: cargo build --release --bin decomp' >&2
+fi
+exec "$decomp_binary" "$@"

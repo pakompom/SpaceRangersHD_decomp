@@ -1,0 +1,538 @@
+unit GI_MultiImage;
+// Unit bracket (inferred): .text 0x004AA6D4..0x004AB909; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
+
+interface
+
+uses GI_MessageLoop, EC_CacheGI, EC_BlockPar, Classes, Types;
+
+type
+  TMultiImageUnitGI = class;
+  TMultiImageColGI = class;
+  TMultiImageRowGI = class;
+
+  TMultiImageUnitGI = class(TObject) // @size $28
+  public
+    Prev: TMultiImageUnitGI; // @offset $04
+    Next: TMultiImageUnitGI; // @offset $08
+    PrevInColumn: TMultiImageUnitGI; // @offset $0C
+    NextInColumn: TMultiImageUnitGI; // @offset $10
+    Column: TMultiImageColGI; // @offset $14
+    ImageIndex: Integer; // @offset $18
+    Position: TPoint; // @offset $1C
+    UserData: Pointer; // @offset $24 Borrowed application data; TfAB stores a path-node pointer.
+  end;
+
+  TMultiImageColGI = class(TObject) // @size $1C
+  public
+    Prev: TMultiImageColGI; // @offset $04
+    Next: TMultiImageColGI; // @offset $08
+    First: TMultiImageUnitGI; // @offset $0C
+    Last: TMultiImageUnitGI; // @offset $10
+    Row: TMultiImageRowGI; // @offset $14
+    Index: Integer; // @offset $18
+  end;
+
+  TMultiImageRowGI = class(TObject) // @size $18
+  public
+    Prev: TMultiImageRowGI; // @offset $04
+    Next: TMultiImageRowGI; // @offset $08
+    First: TMultiImageColGI; // @offset $0C
+    Last: TMultiImageColGI; // @offset $10
+    Index: Integer; // @offset $14
+  end;
+
+  TMultiImageImageGI = class(TObject) // @size $18
+  public
+    ImageCache: TCGiControlEC; // @offset $04
+    Bounds: TRect; // @offset $08
+    constructor Create; // @addr $4AA978 @ida "TMultiImageImageGI *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
+    destructor Destroy; override; // @addr $4AA9E0 @ida "void __usercall $name(TMultiImageImageGI *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    procedure SetImage(Path: WideString); // @addr $4AAA24
+  end;
+
+  TMultiImageGI = class(TObjectGI) // @size $138
+  public
+    FirstUnit: TMultiImageUnitGI; // @offset $120
+    LastUnit: TMultiImageUnitGI; // @offset $124
+    FirstRow: TMultiImageRowGI; // @offset $128
+    LastRow: TMultiImageRowGI; // @offset $12C
+    CellSize: Integer; // @offset $130
+    Images: TList; // @offset $134
+    constructor Create(Owner: TObjectGI); // @addr $4AAB18 @ida "TMultiImageGI *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, TObjectGI *Owner@<ecx>);"
+    destructor Destroy; override; // @addr $4AAB84 @ida "void __usercall $name(TMultiImageGI *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    procedure Clear; override; // @addr $4AABE0
+    function AddUnit: TMultiImageUnitGI; // @addr $4AAC04
+    procedure RemoveUnit(Item: TMultiImageUnitGI); // @addr $4AAC80
+    procedure ClearUnits; // @addr $4AAD10
+    procedure UnlinkUnitFromColumn(Item: TMultiImageUnitGI); // @addr $4AAD44 @note "Prunes empty columns and rows."
+    procedure ClearSpatialIndex; // @addr $4AAEE4 @note "Preserves units and clears their spatial links."
+    function GetOrCreateRow(Index: Integer): TMultiImageRowGI; // @addr $4AAF9C
+    function GetOrCreateColumn(Row: TMultiImageRowGI; Index: Integer): TMultiImageColGI; // @addr $4AB0B4
+    procedure SetUnitPosition(Item: TMultiImageUnitGI; Position: TPoint); // @addr $4AB1C0 @ida "void __usercall $name(TMultiImageGI *Self@<eax>, TMultiImageUnitGI *Item@<edx>, TPoint *Position@<ecx>);" @note "Native early-out compares the control's Position, not the item's old position. CellSize must be nonzero."
+    procedure ClearImages; // @addr $4AB2B0
+    function AddImage(Path: WideString): Integer; // @addr $4AB318
+    procedure LoadFromConfigPath(const Path: WideString); override; // @addr $4AB39C
+    procedure LoadFromBlock(Block: TBlockParEC); override; // @addr $4AB3D0
+    procedure LoadImageProperties(Block: TBlockParEC); // @addr $4AB3F8 @note "Empty in native code."
+    procedure Invalidate; override; // @addr $4AB408
+    procedure Draw(ClipRect: TRect); override; // @addr $4AB604 @ida "void __usercall $name(TMultiImageGI *Self@<eax>, TRect *ClipRect@<edx>);"
+    procedure QueueImageLoad(PendingLoads: TList); override; // @addr $4AB8B4
+  end;
+
+implementation
+
+uses EC_Cache, EC_Struct, GR_Main, GR_DX;
+
+// Neutral integer expressions retain DCC32 operand materialization order.
+// See docs/development.md; they emit no extra arithmetic.
+
+{ @routine $4AA978 TMultiImageImageGI_Create }
+constructor TMultiImageImageGI.Create;
+begin
+  inherited Create;
+  ImageCache := TCGiControlEC.Create;
+  GlobalCache.ResetControl(ImageCache);
+end;
+{ @end $4AA978 }
+
+{ @routine $4AA9E0 TMultiImageImageGI_Destroy }
+destructor TMultiImageImageGI.Destroy;
+begin
+  ImageCache.Free;
+  ImageCache := nil;
+  inherited Destroy;
+end;
+{ @end $4AA9E0 }
+
+{ @routine $4AAA24 TMultiImageImageGI_SetImage }
+procedure TMultiImageImageGI.SetImage(Path: WideString);
+var Data: TCGiEC; Size: TPoint;
+begin
+  if ImageCache.CacheKey <> Path then
+  begin
+    ImageCache.SetCacheKey(Path);
+    Data := AcquireCachedGi(ImageCache);
+    try
+      Size := Data.Image.GetContentSize;
+    finally
+      ImageCache.Release;
+    end;
+    Bounds.Left := -Size.X div 2;
+    Bounds.Top := -Size.Y div 2;
+    Bounds.Right := Bounds.Left + Size.X;
+    Bounds.Bottom := Bounds.Top + Size.Y;
+  end;
+end;
+{ @end $4AAA24 }
+
+{ @routine $4AAB18 TMultiImageGI_Create }
+constructor TMultiImageGI.Create(Owner: TObjectGI);
+begin
+  inherited Create(Owner);
+  Images := TList.Create;
+  CellSize := 128;
+end;
+{ @end $4AAB18 }
+
+{ @routine $4AAB84 TMultiImageGI_Destroy }
+destructor TMultiImageGI.Destroy;
+begin
+  ClearImages;
+  ClearUnits;
+  Images.Free;
+  Images := nil;
+  inherited Destroy;
+end;
+{ @end $4AAB84 }
+
+{ @routine $4AABE0 TMultiImageGI_Clear }
+procedure TMultiImageGI.Clear;
+begin
+  ClearImages;
+  ClearUnits;
+  inherited Clear;
+end;
+{ @end $4AABE0 }
+
+{ @routine $4AAC04 TMultiImageGI_AddUnit }
+function TMultiImageGI.AddUnit: TMultiImageUnitGI;
+var Item: TMultiImageUnitGI;
+begin
+  Item := TMultiImageUnitGI.Create;
+  if LastUnit <> nil then LastUnit.Next := Item;
+  Item.Prev := LastUnit;
+  Item.Next := nil;
+  LastUnit := Item;
+  if FirstUnit = nil then FirstUnit := Item;
+  Result := Item;
+end;
+{ @end $4AAC04 }
+
+{ @routine $4AAC80 TMultiImageGI_RemoveUnit }
+procedure TMultiImageGI.RemoveUnit(Item: TMultiImageUnitGI);
+begin
+  UnlinkUnitFromColumn(Item);
+  if Item.Prev <> nil then Item.Prev.Next := Item.Next;
+  if Item.Next <> nil then Item.Next.Prev := Item.Prev;
+  if LastUnit = Item then LastUnit := Item.Prev;
+  if FirstUnit = Item then FirstUnit := Item.Next;
+  Item.Free;
+end;
+{ @end $4AAC80 }
+
+{ @routine $4AAD10 TMultiImageGI_ClearUnits }
+procedure TMultiImageGI.ClearUnits;
+begin
+  ClearSpatialIndex;
+  while FirstUnit <> nil do RemoveUnit(LastUnit);
+end;
+{ @end $4AAD10 }
+
+{ @routine $4AAD44 TMultiImageGI_UnlinkUnitFromColumn }
+procedure TMultiImageGI.UnlinkUnitFromColumn(Item: TMultiImageUnitGI);
+var Column: TMultiImageColGI; Row: TMultiImageRowGI;
+begin
+  if Item.Column <> nil then
+  begin
+    Column := Item.Column;
+    if Item.PrevInColumn <> nil then Item.PrevInColumn.NextInColumn := Item.NextInColumn;
+    if Item.NextInColumn <> nil then Item.NextInColumn.PrevInColumn := Item.PrevInColumn;
+    if Column.Last = Item then Column.Last := Item.PrevInColumn;
+    if Column.First = Item then Column.First := Item.NextInColumn;
+    Item.PrevInColumn := nil;
+    Item.NextInColumn := nil;
+    if Column.Last <> nil then Item.Column := nil
+    else
+    begin
+      Row := Item.Column.Row;
+      Item.Column := nil;
+      if Column.Prev <> nil then Column.Prev.Next := Column.Next;
+      if Column.Next <> nil then Column.Next.Prev := Column.Prev;
+      if Row.Last = Column then Row.Last := Column.Prev;
+      if Row.First = Column then Row.First := Column.Next;
+      Column.Free;
+      if Row.Last = nil then
+      begin
+        if Row.Prev <> nil then Row.Prev.Next := Row.Next;
+        if Row.Next <> nil then Row.Next.Prev := Row.Prev;
+        if LastRow = Row then LastRow := Row.Prev;
+        if FirstRow = Row then FirstRow := Row.Next;
+        Row.Free;
+      end;
+    end;
+  end;
+end;
+{ @end $4AAD44 }
+
+{ @routine $4AAEE4 TMultiImageGI_ClearSpatialIndex }
+procedure TMultiImageGI.ClearSpatialIndex;
+var Row, OldRow: TMultiImageRowGI; Column, OldColumn: TMultiImageColGI; Item: TMultiImageUnitGI;
+begin
+  Row := FirstRow;
+  while Row <> nil do
+  begin
+    OldRow := Row;
+    Row := Row.Next;
+    Column := OldRow.First;
+    while Column <> nil do
+    begin
+      OldColumn := Column;
+      Column := Column.Next;
+      OldColumn.Free;
+    end;
+    OldRow.Free;
+  end;
+  FirstRow := nil;
+  LastRow := nil;
+  Item := FirstUnit;
+  while Item <> nil do
+  begin
+    Item.Column := nil;
+    Item.PrevInColumn := nil;
+    Item.NextInColumn := nil;
+    Item := Item.Next;
+  end;
+end;
+{ @end $4AAEE4 }
+
+{ @routine $4AAF9C TMultiImageGI_GetOrCreateRow }
+function TMultiImageGI.GetOrCreateRow(Index: Integer): TMultiImageRowGI;
+var Row: TMultiImageRowGI;
+begin
+  Row := FirstRow;
+  while Row <> nil do
+  begin
+    if Row.Index = Index then
+    begin
+      Result := Row;
+      Exit;
+    end;
+    if Row.Index > Index then Break;
+    Row := Row.Next;
+  end;
+  Result := TMultiImageRowGI.Create;
+  Result.Index := Index;
+  if Row = nil then
+  begin
+    if LastRow <> nil then LastRow.Next := Result;
+    Result.Prev := LastRow;
+    Result.Next := nil;
+    LastRow := Result;
+    if FirstRow = nil then FirstRow := Result;
+  end
+  else
+  begin
+    Result.Prev := Row.Prev;
+    Result.Next := Row;
+    if Row.Prev <> nil then Row.Prev.Next := Result;
+    Row.Prev := Result;
+    if FirstRow = Row then FirstRow := Result;
+  end;
+end;
+{ @end $4AAF9C }
+
+{ @routine $4AB0B4 TMultiImageGI_GetOrCreateColumn }
+function TMultiImageGI.GetOrCreateColumn(Row: TMultiImageRowGI; Index: Integer): TMultiImageColGI;
+var Column: TMultiImageColGI;
+begin
+  Column := Row.First;
+  while Column <> nil do
+  begin
+    if Column.Index = Index then
+    begin
+      Result := Column;
+      Exit;
+    end;
+    if Column.Index > Index then Break;
+    Column := Column.Next;
+  end;
+  Result := TMultiImageColGI.Create;
+  Result.Row := Row;
+  Result.Index := Index;
+  if Column = nil then
+  begin
+    if Row.Last <> nil then Row.Last.Next := Result;
+    Result.Prev := Row.Last;
+    Result.Next := nil;
+    Row.Last := Result;
+    if Row.First = nil then Row.First := Result;
+  end
+  else
+  begin
+    Result.Prev := Column.Prev;
+    Result.Next := Column;
+    if Column.Prev <> nil then Column.Prev.Next := Result;
+    Column.Prev := Result;
+    if Row.First = Column then Row.First := Result;
+  end;
+end;
+{ @end $4AB0B4 }
+
+{ @routine $4AB1C0 TMultiImageGI_SetUnitPosition }
+procedure TMultiImageGI.SetUnitPosition(Item: TMultiImageUnitGI; Position: TPoint);
+var Column: TMultiImageColGI;
+begin
+  // Preserve the native comparison against the control's position.
+  if (Item.Column = nil) or (Self.LocalPosition.X <> Position.X) or (Self.LocalPosition.Y <> Position.Y) then
+  begin
+    Item.Position := Position;
+    Column := GetOrCreateColumn(GetOrCreateRow(Position.Y div TMultiImageGI(PAnsiChar(Self) + 0).CellSize), Position.X div TMultiImageGI(PAnsiChar(Self) + 0).CellSize);
+    if Item.Column <> Column then
+    begin
+      UnlinkUnitFromColumn(Item);
+      Item.Column := Column;
+      if Column.Last <> nil then Column.Last.NextInColumn := Item;
+      Item.PrevInColumn := Column.Last;
+      Item.NextInColumn := nil;
+      Column.Last := TMultiImageUnitGI(PAnsiChar(Item) + 0);
+      if Column.First = nil then Column.First := TMultiImageUnitGI(PAnsiChar(Item) + 0);
+    end;
+  end;
+end;
+{ @end $4AB1C0 }
+
+{ @routine $4AB2B0 TMultiImageGI_ClearImages }
+procedure TMultiImageGI.ClearImages;
+var Image: TMultiImageImageGI; I: Integer;
+begin
+  if Images <> nil then
+  begin
+    for I := 0 to Images.Count - 1 do
+    begin
+      Image := TMultiImageImageGI(Images[I]);
+      Image.Free;
+    end;
+    Images.Clear;
+  end;
+end;
+{ @end $4AB2B0 }
+
+{ @routine $4AB318 TMultiImageGI_AddImage }
+function TMultiImageGI.AddImage(Path: WideString): Integer;
+var Image: TMultiImageImageGI;
+begin
+  Image := TMultiImageImageGI.Create;
+  Image.SetImage(Path);
+  Images.Add(Image);
+  Result := Images.Count - 1;
+end;
+{ @end $4AB318 }
+
+{ @routine $4AB39C TMultiImageGI_LoadFromConfigPath }
+procedure TMultiImageGI.LoadFromConfigPath(const Path: WideString);
+begin
+  inherited LoadFromConfigPath(Path);
+  LoadImageProperties(UiStyleConfig.GetBlockByPath(Path));
+end;
+{ @end $4AB39C }
+
+{ @routine $4AB3D0 TMultiImageGI_LoadFromBlock }
+procedure TMultiImageGI.LoadFromBlock(Block: TBlockParEC);
+begin
+  inherited LoadFromBlock(Block);
+  LoadImageProperties(Block);
+end;
+{ @end $4AB3D0 }
+
+{ @routine $4AB3F8 TMultiImageGI_LoadImageProperties }
+procedure TMultiImageGI.LoadImageProperties(Block: TBlockParEC);
+begin
+end;
+{ @end $4AB3F8 }
+
+{ @routine $4AB408 TMultiImageGI_Invalidate }
+procedure TMultiImageGI.Invalidate;
+var
+  MinColumn, MaxColumn, MinRow, MaxRow: Integer;
+  Row: TMultiImageRowGI;
+  Column: TMultiImageColGI;
+  Item: TMultiImageUnitGI;
+  Position: TPoint;
+  Image: TMultiImageImageGI;
+  Bounds: TRect;
+begin
+  if not MessageLoop.UpdateRectsEnabled then Exit;
+  if not Active then Exit;
+  if IntersectRects(Bounds, HitTestBounds, GameScreenRect) then
+  begin
+    Dec(Bounds.Left, AbsolutePosition.X);
+    Dec(Bounds.Top, AbsolutePosition.Y);
+    Dec(Bounds.Right, AbsolutePosition.X);
+    Dec(Bounds.Bottom, AbsolutePosition.Y);
+    MinColumn := Bounds.Left div TMultiImageGI(PAnsiChar(Self) + 0).CellSize - 1;
+    MaxColumn := (Bounds.Right - 1) div CellSize + 1;
+    MinRow := Bounds.Top div TMultiImageGI(PAnsiChar(Self) + 0).CellSize - 1;
+    MaxRow := (Bounds.Bottom - 1) div CellSize + 1;
+    Row := FirstRow;
+    while Row <> nil do
+    begin
+      if (Row.Index >= MinRow) and (Row.Index <= MaxRow) then
+      begin
+        Column := Row.First;
+        while Column <> nil do
+        begin
+          if (Column.Index >= MinColumn) and (Column.Index <= MaxColumn) then
+          begin
+            Item := Column.First;
+            while Item <> nil do
+            begin
+              Position.X := AbsolutePosition.X + Item.Position.X;
+              Position.Y := AbsolutePosition.Y + Item.Position.Y;
+              Image := TMultiImageImageGI(TList(PAnsiChar(Images) + 0)[Item.ImageIndex]);
+              Bounds.Left := Position.X + 0 + Image.Bounds.Left;
+              Bounds.Top := Position.Y + 0 + Image.Bounds.Top;
+              Bounds.Right := Position.X + 0 + Image.Bounds.Right;
+              Bounds.Bottom := Position.Y + 0 + Image.Bounds.Bottom;
+              TMessageLoopGI(PAnsiChar(MessageLoop) + 0).QueueUpdateRect(Bounds);
+              Item := Item.NextInColumn;
+            end;
+          end
+          else if Column.Index > MaxColumn then Break;
+          Column := Column.Next;
+        end;
+      end
+      else if Row.Index > MaxRow then Break;
+      Row := Row.Next;
+    end;
+  end;
+end;
+{ @end $4AB408 }
+
+{ @routine $4AB604 TMultiImageGI_Draw }
+procedure TMultiImageGI.Draw(ClipRect: TRect);
+var
+  Row: TMultiImageRowGI;
+  Column: TMultiImageColGI;
+  Item: TMultiImageUnitGI;
+  MinColumn, MaxColumn, MinRow, MaxRow: Integer;
+  Position: TPoint;
+  Image: TMultiImageImageGI;
+  Data: TCGiEC;
+  Bounds, Intersection: TRect;
+begin
+  Bounds.Left := ClipRect.Left - AbsolutePosition.X;
+  Bounds.Top := ClipRect.Top - AbsolutePosition.Y;
+  Bounds.Right := ClipRect.Right - AbsolutePosition.X;
+  Bounds.Bottom := ClipRect.Bottom - AbsolutePosition.Y;
+  MinColumn := Bounds.Left div CellSize - 1;
+  MaxColumn := (Bounds.Right - 1) div CellSize + 1;
+  MinRow := Bounds.Top div CellSize - 1;
+  MaxRow := (Bounds.Bottom - 1) div CellSize + 1;
+  Row := FirstRow;
+  while Row <> nil do
+  begin
+    if (Row.Index >= MinRow) and (Row.Index <= MaxRow) then
+    begin
+      Column := Row.First;
+      while Column <> nil do
+      begin
+        if (Column.Index >= MinColumn) and (Column.Index <= MaxColumn) then
+        begin
+          Item := Column.First;
+          while Item <> nil do
+          begin
+            Position.X := AbsolutePosition.X + Item.Position.X;
+            Position.Y := AbsolutePosition.Y + Item.Position.Y;
+            Image := TMultiImageImageGI(Images[Item.ImageIndex]);
+            Bounds.Left := Image.Bounds.Left + Position.X;
+            Bounds.Top := Image.Bounds.Top + Position.Y;
+            Bounds.Right := Image.Bounds.Right + Position.X;
+            Bounds.Bottom := Image.Bounds.Bottom + Position.Y;
+            if IntersectRects(Intersection, Bounds, ClipRect) then
+            begin
+              Data := AcquireCachedGi(Image.ImageCache);
+              try
+                if HardwareRenderingEnabled then
+                  DrawTexture(Data.GetOrCreateSurface(0), Bounds.Left, Bounds.Top, 255, $FFFFFF, @ClipRect, False, False)
+                else
+                  Data.Image.DrawToGraphBuf(ScreenRenderBuffer, Bounds.Left, Bounds.Top, ClipRect, 0, 255);
+              finally
+                Image.ImageCache.Release;
+              end;
+            end;
+            Item := Item.NextInColumn;
+          end;
+        end
+        else if Column.Index > MaxColumn then Break;
+        Column := Column.Next;
+      end;
+    end
+    else if Row.Index > MaxRow then Break;
+    Row := Row.Next;
+  end;
+end;
+{ @end $4AB604 }
+
+{ @routine $4AB8B4 TMultiImageGI_QueueImageLoad }
+procedure TMultiImageGI.QueueImageLoad(PendingLoads: TList);
+var Image: TMultiImageImageGI; I: Integer;
+begin
+  for I := 0 to Images.Count - 1 do
+  begin
+    Image := TMultiImageImageGI(Images[I]);
+    Image.ImageCache.QueueLoadIfMissing(PendingLoads);
+  end;
+end;
+{ @end $4AB8B4 }
+
+end.

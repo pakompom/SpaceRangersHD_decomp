@@ -1,0 +1,6515 @@
+{
+  "input_sha256": "83300344af802bc51e64389c58f047e5afdf195c133048098be3881fae29ed98",
+  "provenance": "Native unit ownership inferred from compiler-library comparisons, RTTI/VMT names and startup pairs.",
+  "anchors": [
+    {
+      "unit": "PopUp",
+      "functions": [
+        "0x004B530C"
+      ],
+      "basis": "Unique matching linked unit; 0x4B50D0 builds achievement notification panels; 0x4B530C drains the controller lists under its critical section and updates popup children. Interior span ends at a reviewed controller routine, not at the next unit."
+    },
+    {
+      "unit": "MessageText",
+      "functions": [
+        "0x004B8C60"
+      ],
+      "basis": "Unique plausible text-message module; constructor 0x4B8AC8 owns a TBlockParEC at +4, and 0x4B8B6C/0x4B8C60 resolve text keys through it. Name-to-unit association remains an inference; the old Globals placement was not source evidence."
+    },
+    {
+      "unit": "EC_Ether",
+      "functions": [
+        "0x004EB880"
+      ],
+      "basis": "Matching linked module; methods manage the Ether string-indexed collection, including binary-search insertion 0x4EB610 and +20 critical-section wrappers 0x4EB868/0x4EB880. Script Ether operations reference this family."
+    },
+    {
+      "unit": "fCustom",
+      "functions": [
+        "0x00621FF8"
+      ],
+      "basis": "Unique linked custom-screen module. 0x621FF8 constructs this VMT, initializes a caller-selected screen, and runs it as a child TMessageLoopGI. Its override 0x621F80 dispatches gameplay UI code."
+    },
+    {
+      "unit": "GR_Sound",
+      "functions": [
+        "0x007F84D0"
+      ],
+      "basis": "Matching sound-engine module. Native methods contain TSoundBuffer/TSoundControl diagnostics, DirectSound status handling and device enumeration; final reviewed 0x7F84D0 locks control +40 and traverses its buffers. GR_AMStream remains unlocated rather than receiving nearby audio code."
+    },
+    {
+      "unit": "GR_Music",
+      "functions": [
+        "0x007F9D94"
+      ],
+      "basis": "Two TThreadEC subclasses; 0x7F8D10 loads vorbisfile.dll, 0x7F92F0 selects music files, and 0x7F9D94 locks the controller and checks its two sound buffers. Trailing 0x7F9E34 is left outside the core because it is a free helper whose source ownership is less certain."
+    },
+    {
+      "unit": "DirectXRenderException",
+      "functions": [
+        "0x4b85f0",
+        "0x4b866c"
+      ],
+      "basis": "Dedicated linked unit matching the exact exception-class stem. Metadata only; no inherited runtime method is attributed here. Nonvirtual constructors 0x4B85F0/0x4B866C are called with EDirectXRender class reference at native GR_Main error sites; the latter stores error code at +12."
+    },
+    {
+      "unit": "BlockParException",
+      "functions": [
+        "0x6026f0",
+        "0x602778"
+      ],
+      "basis": "Dedicated linked unit matching the exact exception-class stem. Metadata only; no source routine extent is claimed. Native constructor call 0x827C11 receives the EBlockPar class reference; constructor stores a byte at +12 and getter 0x602778 returns it."
+    },
+    {
+      "unit": "ExceptionInfo",
+      "functions": [
+        "0x602794",
+        "0x602884",
+        "0x602B24"
+      ],
+      "basis": "Exception logging and hexadecimal/timestamp helpers; initializer 0x8758BC installs the local reentrant exception handler 0x602B24 and saves the previous handler. Matching dedicated linked unit."
+    },
+    {
+      "unit": "NoSteamAchievemens",
+      "functions": [
+        "0x4D41D8",
+        "0x4D4C90"
+      ],
+      "basis": "Local achievements.dat load/save and achievement status/text callbacks. Distinct from following DLL export loader; linked module spelling is NoSteamAchievemens. Earlier sound and shared string helpers are not included."
+    },
+    {
+      "unit": "SimpleSteamApi",
+      "functions": [
+        "0x4D4F10",
+        "0x4D5368"
+      ],
+      "basis": "Loads steam_ach.dll and resolves its Steam achievement/leaderboard callbacks, unloads it at 0x4D532C, and initializes backend stat mappings. Matching dedicated linked API module."
+    },
+    {
+      "unit": "aPacket",
+      "functions": [
+        "0x4B81CC",
+        "0x4B8544"
+      ],
+      "basis": "Creates a TPackCollectionEC and loose-file pack, opens configured package paths at 0x4B824C, and closes/frees the collection at 0x4B8544. Matching linked package-management unit; preceding geometry parsers are not included."
+    },
+    {
+      "unit": "ActnList",
+      "functions": [
+        "0x44e818",
+        "0x44f5e0"
+      ],
+      "basis": "DCC32 18.5 shipped Win32 DCU comparison, normalized native instruction match; MAP symbols ActnList.TContainedAction.Destroy, ActnList.TShortCutList.IndexOfShortCut."
+    },
+    {
+      "unit": "Classes",
+      "functions": [
+        "0x414fe8",
+        "0x41d46c"
+      ],
+      "basis": "DCC32 18.5 shipped Win32 DCU comparison, normalized native instruction match; MAP symbols Classes.TRegGroup.BestClass, Classes.Finalization."
+    },
+    {
+      "unit": "Contnrs",
+      "functions": [
+        "0x41e0d8",
+        "0x41e160"
+      ],
+      "basis": "DCC32 18.5 shipped Win32 DCU comparison, normalized native instruction match; MAP symbols Contnrs.TOrderedList.Create, Contnrs.TOrderedList.PopItem."
+    },
+    {
+      "unit": "Controls",
+      "functions": [
+        "0x43ac1c",
+        "0x44c060"
+      ],
+      "basis": "DCC32 18.5 shipped Win32 DCU comparison, normalized native instruction match; MAP symbols Controls.InitWndProc, Controls.Finalization."
+    },
+    {
+      "unit": "DateUtils",
+      "functions": [
+        "0x4b8730",
+        "0x4b8764"
+      ],
+      "basis": "DCC32 18.5 shipped Win32 DCU comparison, normalized native instruction match; MAP symbols DateUtils.DateTimeToUnix, DateUtils.UnixToDateTime."
+    },
+    {
+      "unit": "Dialogs",
+      "functions": [
+        "0x42e764",
+        "0x430088"
+      ],
+      "basis": "DCC32 18.5 shipped Win32 DCU comparison, normalized native instruction match; MAP symbols Dialogs.TCommonDialog.Create, Dialogs.Finalization."
+    },
+    {
+      "unit": "DwmApi",
+      "functions": [
+        "0x42a244",
+        "0x42a394"
+      ],
+      "basis": "DCC32 18.5 shipped Win32 DCU comparison, normalized native instruction match; MAP symbols DwmApi.DwmExtendFrameIntoClientArea, DwmApi.Finalization."
+    },
+    {
+      "unit": "ExtCtrls",
+      "functions": [
+        "0x42e3b8",
+        "0x42e560"
+      ],
+      "basis": "DCC32 18.5 shipped Win32 DCU comparison, normalized native instruction match; MAP symbols ExtCtrls.TTimer.Create, ExtCtrls.TTimer.SetOnTimer."
+    },
+    {
+      "unit": "FlatSB",
+      "functions": [
+        "0x4307e0",
+        "0x43083c"
+      ],
+      "basis": "DCC32 18.5 shipped Win32 DCU comparison, normalized native instruction match; MAP symbols FlatSB.FlatSB_SetScrollProp, FlatSB.InitFlatSB."
+    },
+    {
+      "unit": "Forms",
+      "functions": [
+        "0x45183c",
+        "0x45e754"
+      ],
+      "basis": "DCC32 18.5 shipped Win32 DCU comparison, normalized native instruction match; MAP symbols Forms.ShowMDIClientEdge, Forms.Finalization."
+    },
+    {
+      "unit": "GraphUtil",
+      "functions": [
+        "0x42d54c"
+      ],
+      "basis": "DCC32 18.5 shipped Win32 DCU comparison, normalized native instruction match; MAP symbols GraphUtil.Finalization."
+    },
+    {
+      "unit": "Graphics",
+      "functions": [
+        "0x42106c",
+        "0x429448"
+      ],
+      "basis": "DCC32 18.5 shipped Win32 DCU comparison, normalized native instruction match; MAP symbols Graphics.GetHashCode, Graphics.Finalization."
+    },
+    {
+      "unit": "HelpIntfs",
+      "functions": [
+        "0x41e55c",
+        "0x41f344"
+      ],
+      "basis": "DCC32 18.5 shipped Win32 DCU comparison, normalized native instruction match; MAP symbols HelpIntfs.EnsureHelpManager, HelpIntfs.THelpManager.Release."
+    },
+    {
+      "unit": "ImgList",
+      "functions": [
+        "0x44cd94",
+        "0x44e308"
+      ],
+      "basis": "DCC32 18.5 shipped Win32 DCU comparison, normalized native instruction match; MAP symbols ImgList.GetRGBColor, ImgList.TChangeLink.Change."
+    },
+    {
+      "unit": "Math",
+      "functions": [
+        "0x41dc54",
+        "0x41df28"
+      ],
+      "basis": "DCC32 18.5 shipped Win32 DCU comparison, normalized native instruction match; MAP symbols Math.RoundTo, Math.IsNan."
+    },
+    {
+      "unit": "Menus",
+      "functions": [
+        "0x431a28",
+        "0x438564"
+      ],
+      "basis": "DCC32 18.5 shipped Win32 DCU comparison, normalized native instruction match; MAP symbols Menus.FindPopupControl, Menus.Finalization."
+    },
+    {
+      "unit": "MultiMon",
+      "functions": [
+        "0x41f3f0",
+        "0x41fac8"
+      ],
+      "basis": "DCC32 18.5 shipped Win32 DCU comparison, normalized native instruction match; MAP symbols MultiMon.InitAnApi, MultiMon.InitMultiMonStubs."
+    },
+    {
+      "unit": "Registry",
+      "functions": [
+        "0x41d670",
+        "0x41da70"
+      ],
+      "basis": "DCC32 18.5 shipped Win32 DCU comparison, normalized native instruction match; MAP symbols Registry.IsRelative, Registry.TRegistry.GetData."
+    },
+    {
+      "unit": "StdActns",
+      "functions": [
+        "0x4307a4"
+      ],
+      "basis": "DCC32 18.5 shipped Win32 DCU comparison, normalized native instruction match; MAP symbols StdActns.THintAction.Create."
+    },
+    {
+      "unit": "SyncObjs",
+      "functions": [
+        "0x4295f0",
+        "0x429630"
+      ],
+      "basis": "DCC32 18.5 shipped Win32 DCU comparison, normalized native instruction match; MAP symbols SyncObjs.TCriticalSection.Create, SyncObjs.TCriticalSection.Destroy."
+    },
+    {
+      "unit": "SysInit",
+      "functions": [
+        "0x407b28",
+        "0x407bb8"
+      ],
+      "basis": "DCC32 18.5 shipped Win32 DCU comparison, normalized native instruction match; MAP symbols SysInit.InitThreadTLS, SysInit.@InitExe."
+    },
+    {
+      "unit": "SysUtils",
+      "functions": [
+        "0x409a40",
+        "0x40fbcc"
+      ],
+      "basis": "DCC32 18.5 shipped Win32 DCU comparison, normalized native instruction match; MAP symbols SysUtils.ConvertErrorFmt, SysUtils.Finalization."
+    },
+    {
+      "unit": "System",
+      "functions": [
+        "0x4013c0",
+        "0x407a94"
+      ],
+      "basis": "DCC32 18.5 shipped Win32 DCU comparison, normalized native instruction match; MAP symbols System.GetCmdShow, System.Finalization."
+    },
+    {
+      "unit": "Themes",
+      "functions": [
+        "0x44c2f0",
+        "0x44cbf0"
+      ],
+      "basis": "DCC32 18.5 shipped Win32 DCU comparison, normalized native instruction match; MAP symbols Themes.UnthemedDesigner, Themes.Finalization."
+    },
+    {
+      "unit": "TlHelp32",
+      "functions": [
+        "0x4b8790"
+      ],
+      "basis": "DCC32 18.5 shipped Win32 DCU comparison, normalized native instruction match; MAP symbols TlHelp32.InitToolHelp."
+    },
+    {
+      "unit": "TypInfo",
+      "functions": [
+        "0x41300c",
+        "0x41380c"
+      ],
+      "basis": "DCC32 18.5 shipped Win32 DCU comparison, normalized native instruction match; MAP symbols TypInfo.GetEnumNameValue, TypInfo.Finalization."
+    },
+    {
+      "unit": "Types",
+      "functions": [
+        "0x407bfc",
+        "0x407c38"
+      ],
+      "basis": "DCC32 18.5 shipped Win32 DCU comparison, normalized native instruction match; MAP symbols Types.Rect, Types.Bounds."
+    },
+    {
+      "unit": "UxTheme",
+      "functions": [
+        "0x429734",
+        "0x42a1f0"
+      ],
+      "basis": "DCC32 18.5 shipped Win32 DCU comparison, normalized native instruction match; MAP symbols UxTheme.BeginBufferedPaint, UxTheme.Finalization."
+    },
+    {
+      "unit": "VarUtils",
+      "functions": [
+        "0x40fd7c",
+        "0x410210"
+      ],
+      "basis": "DCC32 18.5 shipped Win32 DCU comparison, normalized native instruction match; MAP symbols VarUtils.BackupVariantChangeTypeEx, VarUtils.InitializeVarUtils."
+    },
+    {
+      "unit": "Variants",
+      "functions": [
+        "0x410d58",
+        "0x412e64"
+      ],
+      "basis": "DCC32 18.5 shipped Win32 DCU comparison, normalized native instruction match; MAP symbols Variants.TranslateResult, Variants.Finalization."
+    },
+    {
+      "unit": "WideStrUtils",
+      "functions": [
+        "0x42c7f0"
+      ],
+      "basis": "DCC32 18.5 shipped Win32 DCU comparison, normalized native instruction match; MAP symbols WideStrUtils.WStrLCopy."
+    },
+    {
+      "unit": "Windows",
+      "functions": [
+        "0x408998",
+        "0x408a90"
+      ],
+      "basis": "DCC32 18.5 shipped Win32 DCU comparison, normalized native instruction match; MAP symbols Windows.HwndMSWheel, Windows.Finalization."
+    },
+    {
+      "unit": "jpeg",
+      "functions": [
+        "0x45f3ec",
+        "0x4725b4"
+      ],
+      "basis": "DCC32 18.5 shipped Win32 DCU comparison, normalized native instruction match; MAP symbols jpeg._memset, jpeg.Finalization."
+    },
+    {
+      "unit": "DateUtils",
+      "functions": [
+        "0x4B8730",
+        "0x4B8764"
+      ],
+      "basis": "DateTimeToUnix/UnixToDateTime match shipped source and code, including 25569/86400 constants, EDX:EAX or ST0 result and RET 8."
+    },
+    {
+      "unit": "WideStrUtils",
+      "functions": [
+        "0x42C7F0",
+        "0x42C818"
+      ],
+      "basis": "WStrLCopy and WStrPLCopy match shipped source and complete instruction sequences; latter calls System.WideStringToPWideChar then WStrLCopy. Register parameters and pointer return verified."
+    },
+    {
+      "unit": "TlHelp32",
+      "functions": [
+        "0x4B8790",
+        "0x4B8A4C"
+      ],
+      "basis": "InitToolHelp matches compiler reference. Wrappers CreateToolhelp32Snapshot/Module32First/Module32Next bind to the corresponding GetProcAddress slots; Delphi register wrapper ABI verified."
+    },
+    {
+      "unit": "SysInit",
+      "functions": [
+        "0x407b14",
+        "0x407b20"
+      ],
+      "basis": "AllocTlsBuffer and GetTlsSize match shipped SysInit.pas: LocalAlloc(LMEM_ZEROINIT, Size), and the @TlsLast constant 0x38 used by InitThreadTLS."
+    },
+    {
+      "unit": "TypInfo",
+      "functions": [
+        "0x413000"
+      ],
+      "basis": "GetTypeData matches shipped TypInfo.pas inline assembler, including the short-string length byte and EAX+EDX+2 result."
+    },
+    {
+      "unit": "GR_gi",
+      "functions": [
+        "0x478094"
+      ],
+      "basis": "Helper constructs the unit-local TgiGR, calls LoadRawGiBytes(Data,1), BuildPalettedFormat4ColorCache and Free. Extends the established GR_gi contribution; caller sites 0x4ABC75 and 0x4AC277."
+    },
+    {
+      "unit": "GI_Door",
+      "functions": [
+        "0x4aa5c0"
+      ],
+      "basis": "Shared LoadFromBlock helper called by the two GI_Door overrides at 0x4AA564 and 0x4AA5A0; uses their TgaiGI field at 0x120 and delay field at 0x124."
+    },
+    {
+      "unit": "GI_SBPath",
+      "functions": [
+        "0x4b2c98"
+      ],
+      "basis": "Shared LoadFromBlock helper called by the two GI_SBPath overrides at 0x4B2C3C and 0x4B2C78; configuration keys and owned controls agree with the class contribution."
+    },
+    {
+      "unit": "GI_Main",
+      "functions": [
+        "0x4b81ae"
+      ],
+      "basis": "Unreachable RET after BreakUiMessage calls the no-return exception raiser. IDA splits this one byte into nullsub_152; it is the existing procedure epilogue, not a separate source routine."
+    },
+    {
+      "unit": "fChameleon",
+      "functions": [
+        "0x503fa4"
+      ],
+      "basis": "Modal helper uses the TfChameleon singleton and class contribution; caller 0x6E45ED in TfShip2."
+    },
+    {
+      "unit": "fSelectFace",
+      "functions": [
+        "0x5f32c4"
+      ],
+      "basis": "Modal helper uses singleton 0x88BF3C via 0x8829DC. Native creation at 0x8040FF loads TfSelectFace VMT 0x5F1F08; helper follows its final virtual override at 0x5F3284. Callers include fRuinsTalk and fTalk."
+    },
+    {
+      "unit": "FGInt",
+      "functions": [
+        "0x6c5bbc",
+        "0x6c5c58",
+        "0x6c5ccc",
+        "0x6c5ee8",
+        "0x6c6094",
+        "0x6c6224",
+        "0x6c62ec",
+        "0x6c6410",
+        "0x6c64ec",
+        "0x6c668c",
+        "0x6c67b0",
+        "0x6c687c",
+        "0x6c6b48",
+        "0x6c6b64",
+        "0x6c6c3c",
+        "0x6c6f48",
+        "0x6c6f6c",
+        "0x6c6fa0",
+        "0x6c70a0",
+        "0x6c719c",
+        "0x6c71ac",
+        "0x6c71fc",
+        "0x6c7284",
+        "0x6c73c4",
+        "0x6c7598",
+        "0x6c77bc",
+        "0x6c7844",
+        "0x6c7c60",
+        "0x6c7f54",
+        "0x6c7fcc",
+        "0x6c80b8",
+        "0x6c8330",
+        "0x6c8488",
+        "0x6c87bc",
+        "0x6c8900"
+      ],
+      "basis": "Legacy 31-bit FGInt source compiled with DCC32 18.5 O-. Native entry shapes, call graph and RTTI establish ownership."
+    },
+    {
+      "unit": "FGIntRSA",
+      "functions": [
+        "0x6c8b30"
+      ],
+      "basis": "Legacy 31-bit FGInt source compiled with DCC32 18.5 O-. Native entry shapes, call graph and RTTI establish ownership."
+    }
+  ],
+  "startup": {
+    "address": "0x00873C24",
+    "pairs": "0x00873C2C",
+    "count": 348,
+    "entries": [
+      {
+        "index": 1,
+        "init": "0x875000",
+        "fini": "0x407a94",
+        "unit": "System",
+        "basis": "Finalizer matched by normalized DCC32 18.5 library code and checked against its unit-specific cleanup; initialization ownership follows the native pair."
+      },
+      {
+        "index": 3,
+        "init": "0x875098",
+        "fini": "0x408a90",
+        "unit": "Windows",
+        "basis": "Finalizer matched by normalized DCC32 18.5 library code and checked against its unit-specific cleanup; initialization ownership follows the native pair."
+      },
+      {
+        "index": 7,
+        "init": "0x8750ac",
+        "fini": "0x40fbcc",
+        "unit": "SysUtils",
+        "basis": "Generated unit finalizer clears global arrays using local anonymous RTTI: 0x0040986c, 0x00409890. Named imported type references are excluded; local/foreign distinction checked with a Delphi 2007 fixture."
+      },
+      {
+        "index": 8,
+        "init": "0x875134",
+        "fini": "0x41051c",
+        "unit": "VarUtils",
+        "basis": "Initializer calls InitVarUtils; paired finalizer releases the variant support library, matching Delphi 2007 rtl/sys/VarUtils.pas."
+      },
+      {
+        "index": 9,
+        "init": "0x875144",
+        "fini": "0x412e64",
+        "unit": "Variants",
+        "basis": "Generated unit finalizer clears global arrays using local anonymous RTTI: 0x004129f4. Named imported type references are excluded; local/foreign distinction checked with a Delphi 2007 fixture."
+      },
+      {
+        "index": 11,
+        "init": "0x8751f0",
+        "fini": "0x41380c",
+        "unit": "TypInfo",
+        "basis": "Finalizer matched by normalized DCC32 18.5 library code and checked against its unit-specific cleanup; initialization ownership follows the native pair."
+      },
+      {
+        "index": 13,
+        "init": "0x8751f8",
+        "fini": "0x41d46c",
+        "unit": "Classes",
+        "basis": "Finalizer matched by normalized DCC32 18.5 library code and checked against its unit-specific cleanup; initialization ownership follows the native pair."
+      },
+      {
+        "index": 14,
+        "init": "0x87528c",
+        "fini": "0x41d534",
+        "unit": "IniFiles",
+        "basis": "Finalizer clears the two AnsiString Boolean values at 0x878B10. Matches the local Values constant in IniFiles.TCustomIniFile.WriteBool; this unit contribution precedes the independently identified Registry contribution."
+      },
+      {
+        "index": 15,
+        "init": "0x875294",
+        "fini": "0x41dc0c",
+        "unit": "Registry",
+        "basis": "Finalizer clears the two AnsiString Boolean values at 0x878B18. Matches the local Values constant in Registry.TRegIniFile.WriteBool, following the IniFiles contribution."
+      },
+      {
+        "index": 17,
+        "init": "0x8752b4",
+        "fini": "0x429448",
+        "unit": "Graphics",
+        "basis": "Finalizer matched by normalized DCC32 18.5 library code and checked against its unit-specific cleanup; initialization ownership follows the native pair."
+      },
+      {
+        "index": 22,
+        "init": "0x8753b0",
+        "fini": "0x42a1f0",
+        "unit": "UxTheme",
+        "basis": "Finalizer matched by normalized DCC32 18.5 library code and checked against its unit-specific cleanup; initialization ownership follows the native pair."
+      },
+      {
+        "index": 23,
+        "init": "0x8752a4",
+        "fini": "0x41fb34",
+        "unit": "MultiMon",
+        "basis": "Initializer invokes InitMultiMonStubs; native function/import targets agree with installed Delphi 2007 MultiMon.pas."
+      },
+      {
+        "index": 25,
+        "init": "0x875680",
+        "fini": "0x44f624",
+        "unit": "ActnList",
+        "basis": "Initializer GroupDescendentsWith calls use TCustomActionList and TContainedAction VMTs with TControl, exactly the two calls in installed vcl/ActnList.pas initialization."
+      },
+      {
+        "index": 26,
+        "init": "0x8753cc",
+        "fini": "0x42a394",
+        "unit": "DwmApi",
+        "basis": "Finalizer matched by normalized DCC32 18.5 library code and checked against its unit-specific cleanup; initialization ownership follows the native pair."
+      },
+      {
+        "index": 27,
+        "init": "0x8755e8",
+        "fini": "0x44c060",
+        "unit": "Controls",
+        "basis": "Finalizer matched by normalized DCC32 18.5 library code and checked against its unit-specific cleanup; initialization ownership follows the native pair."
+      },
+      {
+        "index": 28,
+        "init": "0x00875678",
+        "fini": "0x0044CBF0",
+        "unit": "Themes",
+        "basis": "Installed Delphi 2007 vcl/Themes.pas:374 declares TThemeServices. Native singleton accessor 0x44C348 constructs it and stores 0x888CB8; finalizer 0x44CBF0 frees that same singleton. Startup pair is native, not zipped with PACKAGEINFO."
+      },
+      {
+        "index": 30,
+        "init": "0x875560",
+        "fini": "0x438564",
+        "unit": "Menus",
+        "basis": "Finalizer matched by normalized DCC32 18.5 library code and checked against its unit-specific cleanup; initialization ownership follows the native pair."
+      },
+      {
+        "index": 31,
+        "init": "0x0087529C",
+        "fini": "0x0041F3B4",
+        "unit": "HelpIntfs",
+        "basis": "Installed Delphi 2007 rtl/common/HelpIntfs.pas declares all three classes (159,216,260). Native manager accessors 0x41E55C/0x41E588 share interface global 0x8889F8 with finalizer 0x41F3B4."
+      },
+      {
+        "index": 33,
+        "init": "0x8753d4",
+        "fini": "0x42c7b4",
+        "unit": "Printers",
+        "basis": "Finalizer calls TObject.Free on the otherwise unused singleton at 0x878E74, matching vcl/Printers.pas FPrinter.Free. StdCtrls has no finalization; the adjacent WideStrUtils contribution starts at 0x42C7F0."
+      },
+      {
+        "index": 34,
+        "init": "0x875550",
+        "fini": "0x430ac0",
+        "unit": "FlatSB",
+        "basis": "Initializer invokes InitFlatSB; paired dynamic-library cleanup agrees with installed Delphi 2007 FlatSB.pas."
+      },
+      {
+        "index": 42,
+        "init": "0x8753dc",
+        "fini": "0x42d54c",
+        "unit": "GraphUtil",
+        "basis": "Finalizer matched by normalized DCC32 18.5 library code and checked against its unit-specific cleanup; initialization ownership follows the native pair."
+      },
+      {
+        "index": 43,
+        "init": "0x875474",
+        "fini": "0x42e58c",
+        "unit": "ExtCtrls",
+        "basis": "Initializer GroupDescendentsWith uses TTimer VMT 0x42DBFC and TControl, then registers TaskbarCreated: the sequence in vcl/ExtCtrls.pas, distinct from Forms initialization."
+      },
+      {
+        "index": 47,
+        "init": "0x8754b8",
+        "fini": "0x430088",
+        "unit": "Dialogs",
+        "basis": "Finalizer matched by normalized DCC32 18.5 library code and checked against its unit-specific cleanup; initialization ownership follows the native pair."
+      },
+      {
+        "index": 48,
+        "init": "0x8754f8",
+        "fini": "0x430674",
+        "unit": "Clipbrd",
+        "basis": "Initializer registers Delphi Picture and Delphi Component clipboard formats and zeros Clipboard at 0x888BE4; matches vcl/Clipbrd.pas."
+      },
+      {
+        "index": 50,
+        "init": "0x8756ac",
+        "fini": "0x45e754",
+        "unit": "Forms",
+        "basis": "Generated unit finalizer clears global arrays using local anonymous RTTI: 0x0045b7c8. Named imported type references are excluded; local/foreign distinction checked with a Delphi 2007 fixture."
+      },
+      {
+        "index": 52,
+        "init": "0x87571c",
+        "fini": "0x45ea2c",
+        "unit": "GlobalsV",
+        "basis": "Generated unit finalizer clears global arrays using local anonymous RTTI: 0x0045e830, 0x0045e854. Named imported type references are excluded; local/foreign distinction checked with a Delphi 2007 fixture."
+      },
+      {
+        "index": 59,
+        "init": "0x876a98",
+        "fini": "0x82de48",
+        "unit": "EC_HsFile",
+        "basis": "Finalizer clears LooseFileRoot, the global consumed by the already recovered EC_HsFile file-access routines."
+      },
+      {
+        "index": 64,
+        "init": "0x876a60",
+        "fini": "0x7ebf78",
+        "unit": "GR_DX",
+        "basis": "Generated unit finalizer clears global arrays using local anonymous RTTI: 0x007e98c0. Named imported type references are excluded; local/foreign distinction checked with a Delphi 2007 fixture."
+      },
+      {
+        "index": 66,
+        "init": "0x00875730",
+        "fini": "0x004725B4",
+        "unit": "jpeg",
+        "basis": "Initializer 0x875730 registers TJPEGImage VMT 0x45F334 with Graphics; paired finalizer 0x4725B4 unregisters it. Extends the existing jpeg interior span across the linked codec object routines. This identifies the contribution, not individual C source modules."
+      },
+      {
+        "index": 73,
+        "init": "0x00876A68",
+        "fini": "0x007F27D4",
+        "unit": "EC_Data",
+        "basis": "Finalizer 0x7F27D4 destroys 1024 managed records using metadata 0x7EC4CC in the EC_Data class/record region; its initializer establishes the paired unit guard. Reviewed native cleanup agrees with the existing EC_Data ownership."
+      },
+      {
+        "index": 163,
+        "init": "0x875870",
+        "fini": "0x50155c",
+        "unit": "GI_PSWeapon01Laser",
+        "basis": "Generated unit finalizer clears global arrays using local anonymous RTTI: 0x004fff9c, 0x004fffc8, 0x004ffff4. Named imported type references are excluded; local/foreign distinction checked with a Delphi 2007 fixture."
+      },
+      {
+        "index": 164,
+        "init": "0x875868",
+        "fini": "0x4fff58",
+        "unit": "GI_PSWeapon02FragCannon",
+        "basis": "Generated unit finalizer clears global arrays using local anonymous RTTI: 0x004fe918. Named imported type references are excluded; local/foreign distinction checked with a Delphi 2007 fixture."
+      },
+      {
+        "index": 165,
+        "init": "0x875860",
+        "fini": "0x4fe8c4",
+        "unit": "GI_PSWeapon03Lezka",
+        "basis": "Generated unit finalizer clears global arrays using local anonymous RTTI: 0x004fd458, 0x004fd484. Named imported type references are excluded; local/foreign distinction checked with a Delphi 2007 fixture."
+      },
+      {
+        "index": 166,
+        "init": "0x875858",
+        "fini": "0x4fd414",
+        "unit": "GI_PSWeapon05Treton",
+        "basis": "Generated unit finalizer clears global arrays using local anonymous RTTI: 0x004fc10c. Named imported type references are excluded; local/foreign distinction checked with a Delphi 2007 fixture."
+      },
+      {
+        "index": 167,
+        "init": "0x875850",
+        "fini": "0x4fc0c8",
+        "unit": "GI_PSWeapon06Phaser",
+        "basis": "Generated unit finalizer clears global arrays using local anonymous RTTI: 0x004fb1b4. Named imported type references are excluded; local/foreign distinction checked with a Delphi 2007 fixture."
+      },
+      {
+        "index": 168,
+        "init": "0x875848",
+        "fini": "0x4fb170",
+        "unit": "GI_PSWeapon07Blaster",
+        "basis": "Generated unit finalizer clears global arrays using local anonymous RTTI: 0x004f9b40. Named imported type references are excluded; local/foreign distinction checked with a Delphi 2007 fixture."
+      },
+      {
+        "index": 169,
+        "init": "0x875840",
+        "fini": "0x4f9afc",
+        "unit": "GI_PSWeapon08ECutter",
+        "basis": "Generated unit finalizer clears global arrays using local anonymous RTTI: 0x004f8ebc. Named imported type references are excluded; local/foreign distinction checked with a Delphi 2007 fixture."
+      },
+      {
+        "index": 170,
+        "init": "0x875838",
+        "fini": "0x4f8e68",
+        "unit": "GI_PSWeapon09MResonator",
+        "basis": "Generated unit finalizer clears global arrays using local anonymous RTTI: 0x004f7434, 0x004f7464. Named imported type references are excluded; local/foreign distinction checked with a Delphi 2007 fixture."
+      },
+      {
+        "index": 171,
+        "init": "0x875830",
+        "fini": "0x4f73c4",
+        "unit": "GI_PSWeapon10AVision",
+        "basis": "Generated unit finalizer clears global arrays using local anonymous RTTI: 0x004f65c8, 0x004f65f8. Named imported type references are excluded; local/foreign distinction checked with a Delphi 2007 fixture."
+      },
+      {
+        "index": 172,
+        "init": "0x875828",
+        "fini": "0x4f6568",
+        "unit": "GI_PSWeapon11Desintegrator",
+        "basis": "Generated unit finalizer clears global arrays using local anonymous RTTI: 0x004f4e38. Named imported type references are excluded; local/foreign distinction checked with a Delphi 2007 fixture."
+      },
+      {
+        "index": 173,
+        "init": "0x875820",
+        "fini": "0x4f4de4",
+        "unit": "GI_PSWeapon12Turbogravir",
+        "basis": "Generated unit finalizer clears global arrays using local anonymous RTTI: 0x004f3394, 0x004f33c8. Named imported type references are excluded; local/foreign distinction checked with a Delphi 2007 fixture."
+      },
+      {
+        "index": 174,
+        "init": "0x875818",
+        "fini": "0x4f3350",
+        "unit": "GI_PSWeapon13IMHO",
+        "basis": "Generated unit finalizer clears global arrays using local anonymous RTTI: 0x004f2660. Named imported type references are excluded; local/foreign distinction checked with a Delphi 2007 fixture."
+      },
+      {
+        "index": 175,
+        "init": "0x875810",
+        "fini": "0x4f261c",
+        "unit": "GI_PSWeapon14Vertix",
+        "basis": "Generated unit finalizer clears global arrays using local anonymous RTTI: 0x004f2448. Named imported type references are excluded; local/foreign distinction checked with a Delphi 2007 fixture."
+      },
+      {
+        "index": 176,
+        "init": "0x875808",
+        "fini": "0x4f23e8",
+        "unit": "GI_PSWeapon16Esodafer",
+        "basis": "Generated unit finalizer clears global arrays using local anonymous RTTI: 0x004f0c2c. Named imported type references are excluded; local/foreign distinction checked with a Delphi 2007 fixture."
+      },
+      {
+        "index": 177,
+        "init": "0x875800",
+        "fini": "0x4f0bd8",
+        "unit": "GI_PSWeapon17Kafacitor",
+        "basis": "Generated unit finalizer clears global arrays using local anonymous RTTI: 0x004ef908, 0x004ef938. Named imported type references are excluded; local/foreign distinction checked with a Delphi 2007 fixture."
+      },
+      {
+        "index": 180,
+        "init": "0x008757F8",
+        "fini": "0x004ED858",
+        "unit": "GI_PSMissileHit",
+        "basis": "Finalizer 0x4ED858 clears the global array using anonymous RTTI 0x4ED678 explicitly named GI_PSMissileHit; startup pair extends the one-point RTTI bracket."
+      },
+      {
+        "index": 181,
+        "init": "0x008757F0",
+        "fini": "0x004ED5F8",
+        "unit": "GI_RadialEffect",
+        "basis": "Finalizer 0x4ED5F8 clears three unit-global arrays using anonymous RTTI 0x4EBB74/0x4EBB9C/0x4EBBC4 explicitly named GI_RadialEffect. TPSRadEffectGI and its own particle methods lie inside that span. Ownership of the globals is inferred from their anonymous local types and startup pair."
+      },
+      {
+        "index": 197,
+        "init": "0x876a7c",
+        "fini": "0x7ff5a0",
+        "unit": "Achievements",
+        "basis": "Native guard and cleanup match the maintained Achievements initialization/finalization exactly."
+      },
+      {
+        "index": 198,
+        "init": "0x8758BC",
+        "fini": "0x602BFC",
+        "unit": "ExceptionInfo",
+        "basis": "Exception logging and hexadecimal/timestamp helpers; initializer 0x8758BC installs the local reentrant exception handler 0x602B24 and saves the previous handler. Matching dedicated linked unit."
+      },
+      {
+        "index": 202,
+        "init": "0x875878",
+        "fini": "0x51b100",
+        "unit": "fGoodsShop2",
+        "basis": "Finalizer clears OutOfStockColor at 0x889A30, consumed by TfGoodsShop2; extends its established class contribution."
+      },
+      {
+        "index": 205,
+        "init": "0x8757e8",
+        "fini": "0x4d8528",
+        "unit": "aPath",
+        "basis": "Generated unit finalizer clears global arrays using local anonymous RTTI: 0x004d7644. Named imported type references are excluded; local/foreign distinction checked with a Delphi 2007 fixture."
+      },
+      {
+        "index": 234,
+        "init": "0x8758e0",
+        "fini": "0x603938",
+        "unit": "ab_Polygon",
+        "basis": "Generated unit finalizer clears global arrays using local anonymous RTTI: 0x00602ce8, 0x00602d0c. Named imported type references are excluded; local/foreign distinction checked with a Delphi 2007 fixture."
+      },
+      {
+        "index": 237,
+        "init": "0x8758e8",
+        "fini": "0x68bba4",
+        "unit": "ab_StopLine",
+        "basis": "Generated unit finalizer clears global arrays using local anonymous RTTI: 0x0068a540. Named imported type references are excluded; local/foreign distinction checked with a Delphi 2007 fixture."
+      },
+      {
+        "index": 262,
+        "init": "0x875880",
+        "fini": "0x5ab2a4",
+        "unit": "fInfo",
+        "basis": "Finalizer clears 0x87AA4C and the 20-element WideString array at 0x87AA50; TfInfo helper 0x59E2B8 reads the latter. Initialization fills its letter keys."
+      },
+      {
+        "index": 265,
+        "init": "0x8758a8",
+        "fini": "0x5f6430",
+        "unit": "fJournal",
+        "basis": "Finalizer clears the maintained TelevisionClipNames table of 20 WideStrings; initializer installs its native defaults."
+      },
+      {
+        "index": 269,
+        "init": "0x876a30",
+        "fini": "0x7a0f8c",
+        "unit": "fSaveManager",
+        "basis": "Finalizer clears the save-manager filename globals. Both generated entries match the maintained fSaveManager declarations exactly."
+      },
+      {
+        "index": 279,
+        "init": "0x876a08",
+        "fini": "0x6f7210",
+        "unit": "fShip2",
+        "basis": "Finalizer clears 13 WideStrings at 0x87BBDC; native TfShip2 routines read this equipment-slot image-key table (S_Hull_0z through S_Weapon_4z)."
+      },
+      {
+        "index": 281,
+        "init": "0x8758f0",
+        "fini": "0x6b182c",
+        "unit": "fEquipmentShop",
+        "basis": "Finalizer clears the maintained ShopDominatorImagePrefixes table of three WideStrings."
+      },
+      {
+        "index": 289,
+        "init": "0x875894",
+        "fini": "0x5cd964",
+        "unit": "aKling",
+        "basis": "Finalizer clears seven WideStrings at 0x87B5A4 and follows TKling.HasNearbyBertorAura. Native defaults are unused Terron diagnostics; maintained DominatorDebugMessages yields exact init/fini. Tranclucator FILD references use this address only as an adjusted base for later numeric tables."
+      },
+      {
+        "index": 290,
+        "init": "0x00875904",
+        "fini": "0x006B7B00",
+        "unit": "CheatCode",
+        "basis": "Initializer 0x875904 creates TCheatList at global 0x889CE8 and registers dozens of local callbacks with decoded cheat strings; 0x6B1A94 formats Cheat.Info. Paired finalizer 0x6B7B00 destroys that same list. The module name is a strong semantic inference, not an RTTI UnitName."
+      },
+      {
+        "index": 299,
+        "init": "0x876a1c",
+        "fini": "0x74fd7c",
+        "unit": "aItem",
+        "basis": "Finalizer clears EquipmentLevelLetters; maintained native-default table and both generated entries match exactly."
+      },
+      {
+        "index": 307,
+        "init": "0x876a44",
+        "fini": "0x7e7058",
+        "unit": "aConst",
+        "basis": "Generated unit finalizer clears global arrays using local anonymous RTTI: 0x007dafb0, 0x007dafd0, 0x007daff0, 0x007dc4dc, 0x007dc4fc, 0x007dc51c. Named imported type references are excluded; local/foreign distinction checked with a Delphi 2007 fixture."
+      },
+      {
+        "index": 330,
+        "init": "0x00876A84",
+        "fini": "0x00813614",
+        "unit": "Globals",
+        "basis": "Finalizer 0x813614 clears a family of Globals-local anonymous array RTTI 0x8011A8..0x80145C and game text globals. Extends the existing span; routines after this finalizer remain unassigned."
+      },
+      {
+        "index": 332,
+        "init": "0x876a58",
+        "fini": "0x7e97f0",
+        "unit": "Robot",
+        "basis": "Generated unit finalizer clears global arrays using local anonymous RTTI: 0x007e7fac. Named imported type references are excluded; local/foreign distinction checked with a Delphi 2007 fixture."
+      },
+      {
+        "index": 338,
+        "init": "0x008757E0",
+        "fini": "0x004C86E0",
+        "unit": "GR_Main",
+        "basis": "Finalizer 0x4C86E0 clears WideCaseTable, GameDisplayModes and RobotDisplayModes with GR_Main-local anonymous RTTI and other already recovered globals. This also places the formerly excluded distant style/path helpers inside the GR_Main interior span."
+      },
+      {
+        "index": 341,
+        "init": "0x876aa0",
+        "fini": "0x8731d0",
+        "unit": "aMyFunction",
+        "basis": "Finalizer clears InfoNameColorTag and InfoHullSeriesColorTag; both generated entries match their maintained native defaults exactly."
+      },
+      {
+        "index": 347,
+        "init": "0x0",
+        "fini": "0x873bc8",
+        "unit": "Rangers",
+        "basis": "Final entry has no initializer; finalizer clears the program globals including StartupTextBC. The maintained program finalizer matches all 90 native bytes exactly."
+      }
+    ],
+    "basis": "All 67 nonzero native pairs are reviewed. The other 281 pairs are (0,0); PACKAGEINFO module order is not initialization order and does not identify those individual slots."
+  },
+  "header_units": [
+    {
+      "header_unit": "MemoryDiagnostics",
+      "native_unit": null,
+      "reason": "Recovered diagnostic family at 0x8138CC and 0x813934: low-memory warnings and physical/virtual usage logging. Both native bodies match exactly; original linked unit remains unresolved."
+    },
+    {
+      "header_unit": "ab_Wall",
+      "native_unit": null,
+      "reason": "Logical home for the native TabWall class at VMT 0x564F08 and its methods. The linked-unit inventory contains no ab_Wall; this source grouping does not establish original unit ownership."
+    },
+    {
+      "header_unit": "ab_Weapon",
+      "native_unit": null,
+      "reason": "Logical grouping of the shared weapon setup, firing and loading helpers at 0x56269C..0x56423F. The linked-unit inventory contains no ab_Weapon; the original unit split remains unresolved."
+    },
+    {
+      "header_unit": "Polygon2D",
+      "native_unit": null,
+      "reason": "Logical geometry family; the original aVector/GR_RectEx split is unresolved. The recovered class and methods do not establish a linked unit named Polygon2D."
+    },
+    {
+      "header_unit": "RuntimeStrings",
+      "native_unit": null,
+      "reason": "Shared WideString buffer helper used by startup; its original linked unit remains unresolved. Do not widen the native Rangers bracket to include it."
+    }
+  ],
+  "header_ownership_exclusions": [
+    {
+      "address": "0x4C7A10",
+      "header_unit": "GR_Main",
+      "reason": "GetStyleColorGI moved from GI_Main to GR_Main during recovery; logical placement alone does not establish native ownership of this style-helper family."
+    },
+    {
+      "address": "0x4C7B64",
+      "header_unit": "GR_Main",
+      "reason": "GetStyleColorTagGI belongs to the same style-helper family at 0x4C7A10; logical header placement is not a native unit boundary anchor."
+    },
+    {
+      "address": "0x4D75A0",
+      "header_unit": "ThreadCalc",
+      "reason": "UI wrapper; source-unit ownership explicitly unresolved in the header. Calls the native ThreadCalc implementation at 0x72F6A8."
+    },
+    {
+      "address": "0x4D75A8",
+      "header_unit": "ThreadCalc",
+      "reason": "UI wrapper family at 0x4D75A0..0x4D75EA, separate from the native ThreadCalc implementation."
+    },
+    {
+      "address": "0x4D75BC",
+      "header_unit": "ThreadCalc",
+      "reason": "UI wrapper family; logical header placement is not a native unit boundary anchor."
+    },
+    {
+      "address": "0x4D75C8",
+      "header_unit": "ThreadCalc",
+      "reason": "UI wrapper family; logical header placement is not a native unit boundary anchor."
+    },
+    {
+      "address": "0x4D75D0",
+      "header_unit": "ThreadCalc",
+      "reason": "UI wrapper family; logical header placement is not a native unit boundary anchor."
+    },
+    {
+      "address": "0x4D75DC",
+      "header_unit": "ThreadCalc",
+      "reason": "UI wrapper family; logical header placement is not a native unit boundary anchor."
+    },
+    {
+      "address": "0x4D75E4",
+      "header_unit": "ThreadCalc",
+      "reason": "UI wrapper family; logical header placement is not a native unit boundary anchor."
+    }
+  ],
+  "modules": [
+    "Rangers",
+    "jpeg",
+    "JConsts",
+    "SysInit",
+    "System",
+    "Graphics",
+    "Types",
+    "Consts",
+    "Registry",
+    "RTLConsts",
+    "IniFiles",
+    "Windows",
+    "Classes",
+    "SysConst",
+    "ActiveX",
+    "Messages",
+    "TypInfo",
+    "SysUtils",
+    "ImageHlp",
+    "Variants",
+    "VarUtils",
+    "Clipbrd",
+    "Forms",
+    "UxTheme",
+    "SyncObjs",
+    "CommCtrl",
+    "DwmApi",
+    "Themes",
+    "Controls",
+    "Math",
+    "ActnList",
+    "Menus",
+    "ImgList",
+    "Contnrs",
+    "Imm",
+    "MultiMon",
+    "StdActns",
+    "ShlObj",
+    "UrlMon",
+    "WinInet",
+    "RegStr",
+    "ShellAPI",
+    "StrUtils",
+    "Dialogs",
+    "HelpIntfs",
+    "WideStrUtils",
+    "Dlgs",
+    "ExtCtrls",
+    "GraphUtil",
+    "StdCtrls",
+    "Printers",
+    "WinSpool",
+    "CommDlg",
+    "FlatSB",
+    "GI_PSWeapon17Kafacitor",
+    "GR_GraphBuf",
+    "GlobalsV",
+    "EC_Str",
+    "GR_Main",
+    "MessageText",
+    "EC_BlockPar",
+    "BlockParException",
+    "aMyFunction",
+    "aGalaxy",
+    "fFilmFile",
+    "Globals",
+    "EC_Cache",
+    "GR_DX",
+    "EC_Mem",
+    "MMSystem",
+    "Direct3D9",
+    "EC_CachePlanetTempl",
+    "EC_Struct",
+    "EC_CachePalBitmap",
+    "GR_GraphBufPal",
+    "EC_Buf",
+    "CrcUnit",
+    "EC_File",
+    "EC_HsFile",
+    "EC_OKGF",
+    "EC_Data",
+    "EC_CacheSound",
+    "GR_AMStream",
+    "GR_Sound",
+    "VorbisFile",
+    "EC_FileStream",
+    "EC_Thread",
+    "DirectSound",
+    "EC_CacheGI",
+    "GR_gi",
+    "EC_CacheGAI",
+    "EC_CacheAlphaBitmap",
+    "EC_CacheTBitmap",
+    "EC_CacheBitmap",
+    "PopUp",
+    "GI_Image",
+    "GI_Main",
+    "BreakMessageGIException",
+    "GI_XviD",
+    "GI_MessageLoop",
+    "GR_Music",
+    "GI_Window",
+    "GI_Panel",
+    "GR_Rect",
+    "GI_GraphBuf",
+    "GI_Label",
+    "EC_CacheFont",
+    "GI_Cursor",
+    "VFW",
+    "GI_PolyLine",
+    "GI_Circle",
+    "GI_SpaceImg",
+    "GI_SpaceCircle",
+    "GI_StarFieldImg",
+    "GI_StarFieldM",
+    "EC_CacheRotateBuf",
+    "EC_CacheLightPal",
+    "GI_StarField",
+    "GI_ShrLight",
+    "GI_Frame",
+    "GI_Line",
+    "GI_Grid",
+    "GI_SimpleImage",
+    "GI_TransImage",
+    "GI_ScrollBar",
+    "GI_PanelScrollBar",
+    "GI_RadioGroup",
+    "GI_CheckBox",
+    "GI_PlanetButton",
+    "GI_Planet",
+    "GI_StatusBar",
+    "GI_CountBar",
+    "GI_GraphButton",
+    "GI_Edit",
+    "GI_Zone",
+    "GI_TextButton",
+    "GI_SimpleButton",
+    "GI_Door",
+    "GI_GAI",
+    "GI_MultiImage",
+    "GI_GAIFile",
+    "GI_GI",
+    "GI_AImage",
+    "GI_InfiniteImage",
+    "GI_AlphaImage",
+    "GI_RotateImageGAI",
+    "GI_RotateImage5",
+    "EC_CacheHSAI",
+    "GI_RotateImage2",
+    "GI_RotateImage",
+    "GI_SBPath",
+    "fPanelMain",
+    "fSaveManager",
+    "fPanelLoad",
+    "aPlayer",
+    "fEquipmentShop",
+    "fRuinsTalk",
+    "fHangar",
+    "fShip2",
+    "aPlanet",
+    "Achievements",
+    "WStringUtils",
+    "NoSteamAchievemens",
+    "aConst",
+    "SE_Weapon",
+    "GI_RadialEffect",
+    "GI_PSWeapon",
+    "GI_PSMissileHit",
+    "GI_PDTurretWeapon",
+    "GI_PSEyes",
+    "GI_PSWeapon16Esodafer",
+    "GI_PSWeapon14Vertix",
+    "GI_PSWeapon13IMHO",
+    "GI_PSWeapon12Turbogravir",
+    "GI_PSWeapon11Desintegrator",
+    "GI_PSWeapon10AVision",
+    "GI_PSWeapon09MResonator",
+    "GI_PSWeapon08ECutter",
+    "GI_PSWeapon07Blaster",
+    "GI_PSWeapon06Phaser",
+    "GI_PSWeapon05Treton",
+    "GI_PSWeapon03Lezka",
+    "GI_PSWeapon02FragCannon",
+    "GI_PSWeapon01Laser",
+    "SE_Ship2",
+    "SE_Process",
+    "SE_GAIEffect",
+    "SE_Space",
+    "aEFilmEnd",
+    "SE_Hole",
+    "aEFilm",
+    "fStarMap",
+    "fLoadRobot",
+    "Robot",
+    "GI_MessageBox",
+    "aPirate",
+    "CheatCode",
+    "fScore",
+    "aShip",
+    "aMissile",
+    "aPath",
+    "aGalaxyStruct",
+    "aVector",
+    "aKling",
+    "aItem",
+    "aScript",
+    "fPlanetNO",
+    "fPlanetQuest",
+    "fLoadQuest",
+    "EC_CacheBuf",
+    "aRanger",
+    "aAsteroid",
+    "SE_Asteroid",
+    "TextQuest",
+    "CPDiapClass",
+    "TextFieldClass",
+    "ValueListClass",
+    "SequenceClass",
+    "LocationClass",
+    "CalcParseClass",
+    "CPVarClass",
+    "ParameterClass",
+    "EventClass",
+    "ParViewStringClass",
+    "ParameterDeltaClass",
+    "PathClass",
+    "TextQuestInterface",
+    "aGalaxyEvent",
+    "aRuins",
+    "aTranclucator",
+    "aWarrior",
+    "aGroup",
+    "aTransport",
+    "aNormalShip",
+    "SE_Ruins",
+    "aSaveLoad",
+    "fChameleon",
+    "fSelectFace",
+    "fJournal",
+    "aCalc",
+    "ThreadCalc",
+    "fJump",
+    "fLoad",
+    "SE_Gate",
+    "ab_Object",
+    "ab_ShipAI",
+    "ab_Space",
+    "ab_Hit",
+    "ab_MainForm",
+    "SE_Planet",
+    "SE_Star",
+    "ab_Ship",
+    "ab_Zone",
+    "ab_StopLine",
+    "ab_Polygon",
+    "GI_PolyFill",
+    "ab_Global",
+    "ab_WorldImage",
+    "ab_WorldLine",
+    "abWall",
+    "ab_ShipWall",
+    "ab_W",
+    "ab_W18",
+    "ab_W17",
+    "ab_W16",
+    "ab_W15",
+    "ab_W14",
+    "ab_W13",
+    "ab_W12",
+    "ab_W11",
+    "ab_W10",
+    "ab_W09",
+    "ab_W08",
+    "ab_W07",
+    "ab_W06",
+    "ab_W05",
+    "ab_W04",
+    "ab_W03",
+    "ab_W02",
+    "ab_W01",
+    "fTalk",
+    "EC_Expression",
+    "fGoodsShop2",
+    "fCount2",
+    "fPanelRuins",
+    "fGalaxy2",
+    "fGalaxy",
+    "fPanelPlanet",
+    "GI_CountBox",
+    "ab_Item",
+    "SE_Container",
+    "fRewards",
+    "GI_Track",
+    "fRating",
+    "fScaner",
+    "fInfo",
+    "fGov",
+    "fPlanet",
+    "fGameLoad",
+    "fGameMenu",
+    "fRating2",
+    "aScriptFun",
+    "fCustom",
+    "fListBox",
+    "fTextBox",
+    "fCount1",
+    "EC_Ether",
+    "SE_Missile",
+    "SimpleSteamApi",
+    "ExceptionInfo",
+    "aEObjInfo",
+    "fFilm",
+    "SE_Sputnik",
+    "SE_SoundRnd",
+    "SE_Meteorite",
+    "SE_Angel",
+    "SE_Comet",
+    "SE_Anim",
+    "SE_BGObj",
+    "SE_Laser",
+    "SE_StarsField",
+    "GI_Tail",
+    "DateUtils",
+    "fAchievements",
+    "fLoadAB",
+    "fGameSettings2",
+    "fGameSettings",
+    "fIntroduction",
+    "fAbout",
+    "fGameEnd",
+    "fCfgSettings",
+    "aModsInfo",
+    "aPacket",
+    "fMainForm",
+    "fMods",
+    "FGIntRSA",
+    "FGInt",
+    "SE_Garbage",
+    "TlHelp32",
+    "PsAPI",
+    "AccCtrl",
+    "AclAPI",
+    "DirectXRenderException",
+    "DirectDraw",
+    "PrintGameState",
+    "ab_Fast",
+    "sb_W01",
+    "GR_RectEx"
+  ],
+  "types": [
+    {
+      "name": "TObject",
+      "kind": "Class",
+      "unit": "System",
+      "typeinfo_va": "0x00401144",
+      "unit_string_va": "0x00401157"
+    },
+    {
+      "name": "IInterface",
+      "kind": "Interface",
+      "unit": "System",
+      "typeinfo_va": "0x00401164",
+      "unit_string_va": "0x00401185"
+    },
+    {
+      "name": ".1",
+      "kind": "Enumeration",
+      "unit": "Windows",
+      "typeinfo_va": "0x00407c6c",
+      "unit_string_va": "0x00407d0f"
+    },
+    {
+      "name": ".74",
+      "kind": "DynArray",
+      "unit": "SysUtils",
+      "typeinfo_va": "0x0040986c",
+      "unit_string_va": "0x00409881"
+    },
+    {
+      "name": ".84",
+      "kind": "DynArray",
+      "unit": "SysUtils",
+      "typeinfo_va": "0x00409890",
+      "unit_string_va": "0x004098a5"
+    },
+    {
+      "name": "TUnitHashArray",
+      "kind": "DynArray",
+      "unit": "SysUtils",
+      "typeinfo_va": "0x0040f054",
+      "unit_string_va": "0x0040f074"
+    },
+    {
+      "name": "TCustomVariantType",
+      "kind": "Class",
+      "unit": "Variants",
+      "typeinfo_va": "0x0041063c",
+      "unit_string_va": "0x0041065a"
+    },
+    {
+      "name": ".02",
+      "kind": "DynArray",
+      "unit": "Variants",
+      "typeinfo_va": "0x004129f4",
+      "unit_string_va": "0x00412a09"
+    },
+    {
+      "name": "TAlignment",
+      "kind": "Enumeration",
+      "unit": "Classes",
+      "typeinfo_va": "0x00413860",
+      "unit_string_va": "0x0041389f"
+    },
+    {
+      "name": "TBiDiMode",
+      "kind": "Enumeration",
+      "unit": "Classes",
+      "typeinfo_va": "0x004138ac",
+      "unit_string_va": "0x0041390e"
+    },
+    {
+      "name": ".1",
+      "kind": "Enumeration",
+      "unit": "Classes",
+      "typeinfo_va": "0x0041391c",
+      "unit_string_va": "0x00413963"
+    },
+    {
+      "name": "THelpType",
+      "kind": "Enumeration",
+      "unit": "Classes",
+      "typeinfo_va": "0x004139a4",
+      "unit_string_va": "0x004139d0"
+    },
+    {
+      "name": "TPersistent",
+      "kind": "Class",
+      "unit": "Classes",
+      "typeinfo_va": "0x004140fc",
+      "unit_string_va": "0x00414113"
+    },
+    {
+      "name": "TInterfacedPersistent",
+      "kind": "Class",
+      "unit": "Classes",
+      "typeinfo_va": "0x004141fc",
+      "unit_string_va": "0x0041421d"
+    },
+    {
+      "name": "IStringsAdapter",
+      "kind": "Interface",
+      "unit": "Classes",
+      "typeinfo_va": "0x0041422c",
+      "unit_string_va": "0x00414252"
+    },
+    {
+      "name": "TStrings",
+      "kind": "Class",
+      "unit": "Classes",
+      "typeinfo_va": "0x00414354",
+      "unit_string_va": "0x00414368"
+    },
+    {
+      "name": "TStringList",
+      "kind": "Class",
+      "unit": "Classes",
+      "typeinfo_va": "0x0041448c",
+      "unit_string_va": "0x004144a3"
+    },
+    {
+      "name": "IDesignerNotify",
+      "kind": "Interface",
+      "unit": "Classes",
+      "typeinfo_va": "0x00414aec",
+      "unit_string_va": "0x00414b12"
+    },
+    {
+      "name": "TComponent",
+      "kind": "Class",
+      "unit": "Classes",
+      "typeinfo_va": "0x00414cc8",
+      "unit_string_va": "0x00414cde"
+    },
+    {
+      "name": "TBasicAction",
+      "kind": "Class",
+      "unit": "Classes",
+      "typeinfo_va": "0x00414e58",
+      "unit_string_va": "0x00414e70"
+    },
+    {
+      "name": ".56",
+      "kind": "DynArray",
+      "unit": "Classes",
+      "typeinfo_va": "0x00419b0c",
+      "unit_string_va": "0x00419b21"
+    },
+    {
+      "name": "IHelpSelector",
+      "kind": "Interface",
+      "unit": "HelpIntfs",
+      "typeinfo_va": "0x0041e190",
+      "unit_string_va": "0x0041e1b4"
+    },
+    {
+      "name": "IHelpSystem",
+      "kind": "Interface",
+      "unit": "HelpIntfs",
+      "typeinfo_va": "0x0041e1c8",
+      "unit_string_va": "0x0041e1ea"
+    },
+    {
+      "name": "ICustomHelpViewer",
+      "kind": "Interface",
+      "unit": "HelpIntfs",
+      "typeinfo_va": "0x0041e1fc",
+      "unit_string_va": "0x0041e224"
+    },
+    {
+      "name": "IExtendedHelpViewer",
+      "kind": "Interface",
+      "unit": "HelpIntfs",
+      "typeinfo_va": "0x0041e238",
+      "unit_string_va": "0x0041e262"
+    },
+    {
+      "name": "TFontPitch",
+      "kind": "Enumeration",
+      "unit": "Graphics",
+      "typeinfo_va": "0x00420038",
+      "unit_string_va": "0x0042006e"
+    },
+    {
+      "name": "TFontStyle",
+      "kind": "Enumeration",
+      "unit": "Graphics",
+      "typeinfo_va": "0x004200a8",
+      "unit_string_va": "0x004200e9"
+    },
+    {
+      "name": "TPenStyle",
+      "kind": "Enumeration",
+      "unit": "Graphics",
+      "typeinfo_va": "0x00420110",
+      "unit_string_va": "0x00420182"
+    },
+    {
+      "name": "TPenMode",
+      "kind": "Enumeration",
+      "unit": "Graphics",
+      "typeinfo_va": "0x00420190",
+      "unit_string_va": "0x0042023d"
+    },
+    {
+      "name": "TBrushStyle",
+      "kind": "Enumeration",
+      "unit": "Graphics",
+      "typeinfo_va": "0x0042024c",
+      "unit_string_va": "0x004202ba"
+    },
+    {
+      "name": "TGraphicsObject",
+      "kind": "Class",
+      "unit": "Graphics",
+      "typeinfo_va": "0x00420338",
+      "unit_string_va": "0x00420353"
+    },
+    {
+      "name": "IChangeNotifier",
+      "kind": "Interface",
+      "unit": "Graphics",
+      "typeinfo_va": "0x00420364",
+      "unit_string_va": "0x0042038a"
+    },
+    {
+      "name": "TFont",
+      "kind": "Class",
+      "unit": "Graphics",
+      "typeinfo_va": "0x00420414",
+      "unit_string_va": "0x00420425"
+    },
+    {
+      "name": "TPen",
+      "kind": "Class",
+      "unit": "Graphics",
+      "typeinfo_va": "0x0042059c",
+      "unit_string_va": "0x004205ac"
+    },
+    {
+      "name": "TBrush",
+      "kind": "Class",
+      "unit": "Graphics",
+      "typeinfo_va": "0x0042069c",
+      "unit_string_va": "0x004206ae"
+    },
+    {
+      "name": "TCanvas",
+      "kind": "Class",
+      "unit": "Graphics",
+      "typeinfo_va": "0x0042076c",
+      "unit_string_va": "0x0042077f"
+    },
+    {
+      "name": "TProgressStage",
+      "kind": "Enumeration",
+      "unit": "Graphics",
+      "typeinfo_va": "0x00420810",
+      "unit_string_va": "0x0042084b"
+    },
+    {
+      "name": "TGraphic",
+      "kind": "Class",
+      "unit": "Graphics",
+      "typeinfo_va": "0x00420a24",
+      "unit_string_va": "0x00420a38"
+    },
+    {
+      "name": "TPicture",
+      "kind": "Class",
+      "unit": "Graphics",
+      "typeinfo_va": "0x00420b3c",
+      "unit_string_va": "0x00420b50"
+    },
+    {
+      "name": "TMetafile",
+      "kind": "Class",
+      "unit": "Graphics",
+      "typeinfo_va": "0x00420ce0",
+      "unit_string_va": "0x00420cf5"
+    },
+    {
+      "name": "TBitmap",
+      "kind": "Class",
+      "unit": "Graphics",
+      "typeinfo_va": "0x00420e2c",
+      "unit_string_va": "0x00420e3f"
+    },
+    {
+      "name": "TIcon",
+      "kind": "Class",
+      "unit": "Graphics",
+      "typeinfo_va": "0x00420f68",
+      "unit_string_va": "0x00420f79"
+    },
+    {
+      "name": "TBitmapCanvas",
+      "kind": "Class",
+      "unit": "Graphics",
+      "typeinfo_va": "0x004260fc",
+      "unit_string_va": "0x00426115"
+    },
+    {
+      "name": "TTextLayout",
+      "kind": "Enumeration",
+      "unit": "StdCtrls",
+      "typeinfo_va": "0x0042a3f4",
+      "unit_string_va": "0x0042a426"
+    },
+    {
+      "name": "TEllipsisPosition",
+      "kind": "Enumeration",
+      "unit": "StdCtrls",
+      "typeinfo_va": "0x0042a434",
+      "unit_string_va": "0x0042a487"
+    },
+    {
+      "name": "TCustomLabel",
+      "kind": "Class",
+      "unit": "StdCtrls",
+      "typeinfo_va": "0x0042a5a8",
+      "unit_string_va": "0x0042a5c0"
+    },
+    {
+      "name": "TLabel",
+      "kind": "Class",
+      "unit": "StdCtrls",
+      "typeinfo_va": "0x0042a6bc",
+      "unit_string_va": "0x0042a6ce"
+    },
+    {
+      "name": "TButtonControl",
+      "kind": "Class",
+      "unit": "StdCtrls",
+      "typeinfo_va": "0x0042af0c",
+      "unit_string_va": "0x0042af26"
+    },
+    {
+      "name": "TButton",
+      "kind": "Class",
+      "unit": "StdCtrls",
+      "typeinfo_va": "0x0042b0a4",
+      "unit_string_va": "0x0042b0b7"
+    },
+    {
+      "name": "TImage",
+      "kind": "Class",
+      "unit": "ExtCtrls",
+      "typeinfo_va": "0x0042d6ac",
+      "unit_string_va": "0x0042d6be"
+    },
+    {
+      "name": "TTimer",
+      "kind": "Class",
+      "unit": "ExtCtrls",
+      "typeinfo_va": "0x0042dc40",
+      "unit_string_va": "0x0042dc52"
+    },
+    {
+      "name": "TCommonDialog",
+      "kind": "Class",
+      "unit": "Dialogs",
+      "typeinfo_va": "0x0042e680",
+      "unit_string_va": "0x0042e699"
+    },
+    {
+      "name": "TMessageForm",
+      "kind": "Class",
+      "unit": "Dialogs",
+      "typeinfo_va": "0x0042ebc4",
+      "unit_string_va": "0x0042ebdc"
+    },
+    {
+      "name": "TClipboard",
+      "kind": "Class",
+      "unit": "Clipbrd",
+      "typeinfo_va": "0x0043015c",
+      "unit_string_va": "0x00430172"
+    },
+    {
+      "name": "THintAction",
+      "kind": "Class",
+      "unit": "StdActns",
+      "typeinfo_va": "0x00430760",
+      "unit_string_va": "0x00430777"
+    },
+    {
+      "name": "TMenuBreak",
+      "kind": "Enumeration",
+      "unit": "Menus",
+      "typeinfo_va": "0x00430b4c",
+      "unit_string_va": "0x00430b7f"
+    },
+    {
+      "name": "TMenuItemAutoFlag",
+      "kind": "Enumeration",
+      "unit": "Menus",
+      "typeinfo_va": "0x00430d38",
+      "unit_string_va": "0x00430d76"
+    },
+    {
+      "name": "TMenuItem",
+      "kind": "Class",
+      "unit": "Menus",
+      "typeinfo_va": "0x00430f64",
+      "unit_string_va": "0x00430f79"
+    },
+    {
+      "name": "TMenu",
+      "kind": "Class",
+      "unit": "Menus",
+      "typeinfo_va": "0x00431360",
+      "unit_string_va": "0x00431371"
+    },
+    {
+      "name": "TMainMenu",
+      "kind": "Class",
+      "unit": "Menus",
+      "typeinfo_va": "0x00431434",
+      "unit_string_va": "0x00431449"
+    },
+    {
+      "name": "TPopupAlignment",
+      "kind": "Enumeration",
+      "unit": "Menus",
+      "typeinfo_va": "0x00431580",
+      "unit_string_va": "0x004315b6"
+    },
+    {
+      "name": "TTrackButton",
+      "kind": "Enumeration",
+      "unit": "Menus",
+      "typeinfo_va": "0x004315c0",
+      "unit_string_va": "0x004315f6"
+    },
+    {
+      "name": "TMenuAnimations",
+      "kind": "Enumeration",
+      "unit": "Menus",
+      "typeinfo_va": "0x00431600",
+      "unit_string_va": "0x0043165d"
+    },
+    {
+      "name": "TPopupMenu",
+      "kind": "Class",
+      "unit": "Menus",
+      "typeinfo_va": "0x00431720",
+      "unit_string_va": "0x00431736"
+    },
+    {
+      "name": "TAlign",
+      "kind": "Enumeration",
+      "unit": "Controls",
+      "typeinfo_va": "0x0043860c",
+      "unit_string_va": "0x00438658"
+    },
+    {
+      "name": "TDragObject",
+      "kind": "Class",
+      "unit": "Controls",
+      "typeinfo_va": "0x004386e4",
+      "unit_string_va": "0x004386fb"
+    },
+    {
+      "name": "TBaseDragControlObject",
+      "kind": "Class",
+      "unit": "Controls",
+      "typeinfo_va": "0x0043879c",
+      "unit_string_va": "0x004387be"
+    },
+    {
+      "name": "TDragDockObject",
+      "kind": "Class",
+      "unit": "Controls",
+      "typeinfo_va": "0x00438988",
+      "unit_string_va": "0x004389a3"
+    },
+    {
+      "name": "TControlCanvas",
+      "kind": "Class",
+      "unit": "Controls",
+      "typeinfo_va": "0x00438ac8",
+      "unit_string_va": "0x00438ae2"
+    },
+    {
+      "name": "TCustomControlAction",
+      "kind": "Class",
+      "unit": "Controls",
+      "typeinfo_va": "0x00438bac",
+      "unit_string_va": "0x00438bcc"
+    },
+    {
+      "name": "TMouseButton",
+      "kind": "Enumeration",
+      "unit": "Controls",
+      "typeinfo_va": "0x00438cd0",
+      "unit_string_va": "0x00438d03"
+    },
+    {
+      "name": "TMouseActivate",
+      "kind": "Enumeration",
+      "unit": "Controls",
+      "typeinfo_va": "0x00438d10",
+      "unit_string_va": "0x00438d73"
+    },
+    {
+      "name": "TDragMode",
+      "kind": "Enumeration",
+      "unit": "Controls",
+      "typeinfo_va": "0x00438d80",
+      "unit_string_va": "0x00438dad"
+    },
+    {
+      "name": "TDragState",
+      "kind": "Enumeration",
+      "unit": "Controls",
+      "typeinfo_va": "0x00438dbc",
+      "unit_string_va": "0x00438df8"
+    },
+    {
+      "name": "TDragKind",
+      "kind": "Enumeration",
+      "unit": "Controls",
+      "typeinfo_va": "0x00438e08",
+      "unit_string_va": "0x00438e2e"
+    },
+    {
+      "name": "TAnchorKind",
+      "kind": "Enumeration",
+      "unit": "Controls",
+      "typeinfo_va": "0x00438e64",
+      "unit_string_va": "0x00438e9c"
+    },
+    {
+      "name": "TSizeConstraints",
+      "kind": "Class",
+      "unit": "Controls",
+      "typeinfo_va": "0x00438f54",
+      "unit_string_va": "0x00438f70"
+    },
+    {
+      "name": "TMargins",
+      "kind": "Class",
+      "unit": "Controls",
+      "typeinfo_va": "0x004390a0",
+      "unit_string_va": "0x004390b4"
+    },
+    {
+      "name": "TPadding",
+      "kind": "Class",
+      "unit": "Controls",
+      "typeinfo_va": "0x004391b8",
+      "unit_string_va": "0x004391cc"
+    },
+    {
+      "name": "TControl",
+      "kind": "Class",
+      "unit": "Controls",
+      "typeinfo_va": "0x00439d68",
+      "unit_string_va": "0x00439d7c"
+    },
+    {
+      "name": "IDockManager",
+      "kind": "Interface",
+      "unit": "Controls",
+      "typeinfo_va": "0x0043a02c",
+      "unit_string_va": "0x0043a04f"
+    },
+    {
+      "name": "TWinControl",
+      "kind": "Class",
+      "unit": "Controls",
+      "typeinfo_va": "0x0043a580",
+      "unit_string_va": "0x0043a597"
+    },
+    {
+      "name": "TGraphicControl",
+      "kind": "Class",
+      "unit": "Controls",
+      "typeinfo_va": "0x0043a6a0",
+      "unit_string_va": "0x0043a6bb"
+    },
+    {
+      "name": "TCustomControl",
+      "kind": "Class",
+      "unit": "Controls",
+      "typeinfo_va": "0x0043a80c",
+      "unit_string_va": "0x0043a826"
+    },
+    {
+      "name": "THintWindow",
+      "kind": "Class",
+      "unit": "Controls",
+      "typeinfo_va": "0x0043a9a0",
+      "unit_string_va": "0x0043a9b7"
+    },
+    {
+      "name": "TCustomImageList",
+      "kind": "Class",
+      "unit": "ImgList",
+      "typeinfo_va": "0x0044cd6c",
+      "unit_string_va": "0x0044cd88"
+    },
+    {
+      "name": "TContainedAction",
+      "kind": "Class",
+      "unit": "ActnList",
+      "typeinfo_va": "0x0044e3f8",
+      "unit_string_va": "0x0044e414"
+    },
+    {
+      "name": "TCustomActionList",
+      "kind": "Class",
+      "unit": "ActnList",
+      "typeinfo_va": "0x0044e4fc",
+      "unit_string_va": "0x0044e519"
+    },
+    {
+      "name": "TShortCutList",
+      "kind": "Class",
+      "unit": "ActnList",
+      "typeinfo_va": "0x0044e61c",
+      "unit_string_va": "0x0044e635"
+    },
+    {
+      "name": "TCustomAction",
+      "kind": "Class",
+      "unit": "ActnList",
+      "typeinfo_va": "0x0044e724",
+      "unit_string_va": "0x0044e73d"
+    },
+    {
+      "name": "TScrollBarStyle",
+      "kind": "Enumeration",
+      "unit": "Forms",
+      "typeinfo_va": "0x0044f674",
+      "unit_string_va": "0x0044f6ae"
+    },
+    {
+      "name": "TControlScrollBar",
+      "kind": "Class",
+      "unit": "Forms",
+      "typeinfo_va": "0x0044f724",
+      "unit_string_va": "0x0044f741"
+    },
+    {
+      "name": "TWindowState",
+      "kind": "Enumeration",
+      "unit": "Forms",
+      "typeinfo_va": "0x0044f90c",
+      "unit_string_va": "0x0044f948"
+    },
+    {
+      "name": "TScrollingWinControl",
+      "kind": "Class",
+      "unit": "Forms",
+      "typeinfo_va": "0x0044fac0",
+      "unit_string_va": "0x0044fae0"
+    },
+    {
+      "name": "TFormBorderStyle",
+      "kind": "Enumeration",
+      "unit": "Forms",
+      "typeinfo_va": "0x0044fb94",
+      "unit_string_va": "0x0044fbf2"
+    },
+    {
+      "name": "IDesignerHook",
+      "kind": "Interface",
+      "unit": "Forms",
+      "typeinfo_va": "0x0044fbfc",
+      "unit_string_va": "0x0044fc20"
+    },
+    {
+      "name": "IOleForm",
+      "kind": "Interface",
+      "unit": "Forms",
+      "typeinfo_va": "0x0044fc30",
+      "unit_string_va": "0x0044fc4f"
+    },
+    {
+      "name": "TPopupWndArray",
+      "kind": "DynArray",
+      "unit": "Forms",
+      "typeinfo_va": "0x0044fc60",
+      "unit_string_va": "0x0044fc80"
+    },
+    {
+      "name": "TFormStyle",
+      "kind": "Enumeration",
+      "unit": "Forms",
+      "typeinfo_va": "0x0044fc8c",
+      "unit_string_va": "0x0044fccf"
+    },
+    {
+      "name": "TBorderIcon",
+      "kind": "Enumeration",
+      "unit": "Forms",
+      "typeinfo_va": "0x0044fcdc",
+      "unit_string_va": "0x0044fd20"
+    },
+    {
+      "name": "TPosition",
+      "kind": "Enumeration",
+      "unit": "Forms",
+      "typeinfo_va": "0x0044fd44",
+      "unit_string_va": "0x0044fdd6"
+    },
+    {
+      "name": "TDefaultMonitor",
+      "kind": "Enumeration",
+      "unit": "Forms",
+      "typeinfo_va": "0x0044fde0",
+      "unit_string_va": "0x0044fe2a"
+    },
+    {
+      "name": "TPrintScale",
+      "kind": "Enumeration",
+      "unit": "Forms",
+      "typeinfo_va": "0x0044fe34",
+      "unit_string_va": "0x0044fe71"
+    },
+    {
+      "name": "TCloseAction",
+      "kind": "Enumeration",
+      "unit": "Forms",
+      "typeinfo_va": "0x0044fe7c",
+      "unit_string_va": "0x0044feb7"
+    },
+    {
+      "name": "TPopupMode",
+      "kind": "Enumeration",
+      "unit": "Forms",
+      "typeinfo_va": "0x0044ffe4",
+      "unit_string_va": "0x00450016"
+    },
+    {
+      "name": "TCustomForm",
+      "kind": "Class",
+      "unit": "Forms",
+      "typeinfo_va": "0x0045033c",
+      "unit_string_va": "0x00450353"
+    },
+    {
+      "name": "TForm",
+      "kind": "Class",
+      "unit": "Forms",
+      "typeinfo_va": "0x004504f4",
+      "unit_string_va": "0x00450505"
+    },
+    {
+      "name": "TCustomDockForm",
+      "kind": "Class",
+      "unit": "Forms",
+      "typeinfo_va": "0x00451420",
+      "unit_string_va": "0x0045143b"
+    },
+    {
+      "name": "TScreen",
+      "kind": "Class",
+      "unit": "Forms",
+      "typeinfo_va": "0x00451560",
+      "unit_string_va": "0x00451573"
+    },
+    {
+      "name": "TPopupFormArray",
+      "kind": "DynArray",
+      "unit": "Forms",
+      "typeinfo_va": "0x004515a0",
+      "unit_string_va": "0x004515c1"
+    },
+    {
+      "name": "TApplication",
+      "kind": "Class",
+      "unit": "Forms",
+      "typeinfo_va": "0x00451698",
+      "unit_string_va": "0x004516b0"
+    },
+    {
+      "name": "TGlassFrame",
+      "kind": "Class",
+      "unit": "Forms",
+      "typeinfo_va": "0x00451724",
+      "unit_string_va": "0x0045173b"
+    },
+    {
+      "name": ".71",
+      "kind": "DynArray",
+      "unit": "Forms",
+      "typeinfo_va": "0x0045b7c8",
+      "unit_string_va": "0x0045b7dd"
+    },
+    {
+      "name": ".1",
+      "kind": "DynArray",
+      "unit": "GlobalsV",
+      "typeinfo_va": "0x0045e830",
+      "unit_string_va": "0x0045e844"
+    },
+    {
+      "name": ".2",
+      "kind": "DynArray",
+      "unit": "GlobalsV",
+      "typeinfo_va": "0x0045e854",
+      "unit_string_va": "0x0045e868"
+    },
+    {
+      "name": "TObjectEx",
+      "kind": "Class",
+      "unit": "EC_Struct",
+      "typeinfo_va": "0x0045ebb8",
+      "unit_string_va": "0x0045ebcd"
+    },
+    {
+      "name": "IDirect3DResource9",
+      "kind": "Interface",
+      "unit": "Direct3D9",
+      "typeinfo_va": "0x0045ef08",
+      "unit_string_va": "0x0045ef31"
+    },
+    {
+      "name": "IDirect3DBaseTexture9",
+      "kind": "Interface",
+      "unit": "Direct3D9",
+      "typeinfo_va": "0x0045ef44",
+      "unit_string_va": "0x0045ef70"
+    },
+    {
+      "name": "IDirect3DTexture9",
+      "kind": "Interface",
+      "unit": "Direct3D9",
+      "typeinfo_va": "0x0045ef84",
+      "unit_string_va": "0x0045efac"
+    },
+    {
+      "name": "IDirect3DSurface9",
+      "kind": "Interface",
+      "unit": "Direct3D9",
+      "typeinfo_va": "0x0045efc0",
+      "unit_string_va": "0x0045efe8"
+    },
+    {
+      "name": "TJPEGImage",
+      "kind": "Class",
+      "unit": "jpeg",
+      "typeinfo_va": "0x0045f3ac",
+      "unit_string_va": "0x0045f3c2"
+    },
+    {
+      "name": "IDirectSound",
+      "kind": "Interface",
+      "unit": "DirectSound",
+      "typeinfo_va": "0x00472c18",
+      "unit_string_va": "0x00472c3b"
+    },
+    {
+      "name": "IDirectSoundBuffer",
+      "kind": "Interface",
+      "unit": "DirectSound",
+      "typeinfo_va": "0x00472c50",
+      "unit_string_va": "0x00472c79"
+    },
+    {
+      "name": "IDirectSoundNotify",
+      "kind": "Interface",
+      "unit": "DirectSound",
+      "typeinfo_va": "0x00472c90",
+      "unit_string_va": "0x00472cb9"
+    },
+    {
+      "name": "IAVIStream",
+      "kind": "Interface",
+      "unit": "VFW",
+      "typeinfo_va": "0x00472d34",
+      "unit_string_va": "0x00472d55"
+    },
+    {
+      "name": "IAVIFile",
+      "kind": "Interface",
+      "unit": "VFW",
+      "typeinfo_va": "0x00472d64",
+      "unit_string_va": "0x00472d83"
+    },
+    {
+      "name": ".3",
+      "kind": "DynArray",
+      "unit": "EC_CacheGAI",
+      "typeinfo_va": "0x00478148",
+      "unit_string_va": "0x0047815c"
+    },
+    {
+      "name": ".3",
+      "kind": "DynArray",
+      "unit": "EC_CacheGI",
+      "typeinfo_va": "0x0047fc88",
+      "unit_string_va": "0x0047fc9c"
+    },
+    {
+      "name": ".3",
+      "kind": "DynArray",
+      "unit": "EC_CacheFont",
+      "typeinfo_va": "0x0048ad98",
+      "unit_string_va": "0x0048adac"
+    },
+    {
+      "name": ".2",
+      "kind": "DynArray",
+      "unit": "GI_Grid",
+      "typeinfo_va": "0x00498a78",
+      "unit_string_va": "0x00498a8c"
+    },
+    {
+      "name": "TGraphButtonGI",
+      "kind": "Class",
+      "unit": "GI_GraphButton",
+      "typeinfo_va": "0x004a0eec",
+      "unit_string_va": "0x004a0f06"
+    },
+    {
+      "name": "TZoneGI",
+      "kind": "Class",
+      "unit": "GI_Zone",
+      "typeinfo_va": "0x004a7b08",
+      "unit_string_va": "0x004a7b1b"
+    },
+    {
+      "name": ".2",
+      "kind": "DynArray",
+      "unit": "GI_SBPath",
+      "typeinfo_va": "0x004b24b0",
+      "unit_string_va": "0x004b24c4"
+    },
+    {
+      "name": "TPanelGI",
+      "kind": "Class",
+      "unit": "GI_Panel",
+      "typeinfo_va": "0x004b4048",
+      "unit_string_va": "0x004b405c"
+    },
+    {
+      "name": ".2",
+      "kind": "DynArray",
+      "unit": "GI_Cursor",
+      "typeinfo_va": "0x004b58a0",
+      "unit_string_va": "0x004b58b4"
+    },
+    {
+      "name": ".3",
+      "kind": "DynArray",
+      "unit": "GI_Cursor",
+      "typeinfo_va": "0x004b58c4",
+      "unit_string_va": "0x004b58d8"
+    },
+    {
+      "name": ".4",
+      "kind": "DynArray",
+      "unit": "GI_Cursor",
+      "typeinfo_va": "0x004b58e8",
+      "unit_string_va": "0x004b58fc"
+    },
+    {
+      "name": ".3",
+      "kind": "DynArray",
+      "unit": "GR_Main",
+      "typeinfo_va": "0x004b8dac",
+      "unit_string_va": "0x004b8dc0"
+    },
+    {
+      "name": ".5",
+      "kind": "DynArray",
+      "unit": "GR_Main",
+      "typeinfo_va": "0x004b90a4",
+      "unit_string_va": "0x004b90b8"
+    },
+    {
+      "name": ".6",
+      "kind": "DynArray",
+      "unit": "GR_Main",
+      "typeinfo_va": "0x004b90c4",
+      "unit_string_va": "0x004b90d8"
+    },
+    {
+      "name": "TObjectGI",
+      "kind": "Class",
+      "unit": "GI_MessageLoop",
+      "typeinfo_va": "0x004c9178",
+      "unit_string_va": "0x004c918d"
+    },
+    {
+      "name": ".4",
+      "kind": "DynArray",
+      "unit": "GI_MessageLoop",
+      "typeinfo_va": "0x004c9200",
+      "unit_string_va": "0x004c9214"
+    },
+    {
+      "name": ".1",
+      "kind": "DynArray",
+      "unit": "SE_SoundRnd",
+      "typeinfo_va": "0x004d3700",
+      "unit_string_va": "0x004d3714"
+    },
+    {
+      "name": ".2",
+      "kind": "DynArray",
+      "unit": "SE_SoundRnd",
+      "typeinfo_va": "0x004d3724",
+      "unit_string_va": "0x004d3738"
+    },
+    {
+      "name": ".4",
+      "kind": "DynArray",
+      "unit": "SE_SoundRnd",
+      "typeinfo_va": "0x004d3778",
+      "unit_string_va": "0x004d378c"
+    },
+    {
+      "name": ".3",
+      "kind": "DynArray",
+      "unit": "aPath",
+      "typeinfo_va": "0x004d7644",
+      "unit_string_va": "0x004d7658"
+    },
+    {
+      "name": ".4",
+      "kind": "DynArray",
+      "unit": "aPath",
+      "typeinfo_va": "0x004d8120",
+      "unit_string_va": "0x004d8134"
+    },
+    {
+      "name": "TEvent",
+      "kind": "Class",
+      "unit": "EventClass",
+      "typeinfo_va": "0x004d9100",
+      "unit_string_va": "0x004d9112"
+    },
+    {
+      "name": ".2",
+      "kind": "DynArray",
+      "unit": "ValueListClass",
+      "typeinfo_va": "0x004d9370",
+      "unit_string_va": "0x004d9384"
+    },
+    {
+      "name": ".2",
+      "kind": "DynArray",
+      "unit": "CPDiapClass",
+      "typeinfo_va": "0x004d9ab8",
+      "unit_string_va": "0x004d9acc"
+    },
+    {
+      "name": ".3",
+      "kind": "DynArray",
+      "unit": "CPDiapClass",
+      "typeinfo_va": "0x004d9adc",
+      "unit_string_va": "0x004d9af0"
+    },
+    {
+      "name": ".5",
+      "kind": "DynArray",
+      "unit": "CPDiapClass",
+      "typeinfo_va": "0x004d9d84",
+      "unit_string_va": "0x004d9d98"
+    },
+    {
+      "name": "TParViewString",
+      "kind": "Class",
+      "unit": "ParViewStringClass",
+      "typeinfo_va": "0x004da850",
+      "unit_string_va": "0x004da86a"
+    },
+    {
+      "name": ".2",
+      "kind": "DynArray",
+      "unit": "ParameterClass",
+      "typeinfo_va": "0x004da9a0",
+      "unit_string_va": "0x004da9b4"
+    },
+    {
+      "name": ".2",
+      "kind": "DynArray",
+      "unit": "LocationClass",
+      "typeinfo_va": "0x004e1874",
+      "unit_string_va": "0x004e1888"
+    },
+    {
+      "name": ".2",
+      "kind": "DynArray",
+      "unit": "GI_Tail",
+      "typeinfo_va": "0x004ea2f4",
+      "unit_string_va": "0x004ea308"
+    },
+    {
+      "name": ".1",
+      "kind": "DynArray",
+      "unit": "GI_RadialEffect",
+      "typeinfo_va": "0x004ebb74",
+      "unit_string_va": "0x004ebb88"
+    },
+    {
+      "name": ".2",
+      "kind": "DynArray",
+      "unit": "GI_RadialEffect",
+      "typeinfo_va": "0x004ebb9c",
+      "unit_string_va": "0x004ebbb0"
+    },
+    {
+      "name": ".3",
+      "kind": "DynArray",
+      "unit": "GI_RadialEffect",
+      "typeinfo_va": "0x004ebbc4",
+      "unit_string_va": "0x004ebbd8"
+    },
+    {
+      "name": ".1",
+      "kind": "DynArray",
+      "unit": "GI_PSMissileHit",
+      "typeinfo_va": "0x004ed678",
+      "unit_string_va": "0x004ed68c"
+    },
+    {
+      "name": ".1",
+      "kind": "DynArray",
+      "unit": "GI_PSWeapon17Kafacitor",
+      "typeinfo_va": "0x004ef908",
+      "unit_string_va": "0x004ef91c"
+    },
+    {
+      "name": ".2",
+      "kind": "DynArray",
+      "unit": "GI_PSWeapon17Kafacitor",
+      "typeinfo_va": "0x004ef938",
+      "unit_string_va": "0x004ef94c"
+    },
+    {
+      "name": ".1",
+      "kind": "DynArray",
+      "unit": "GI_PSWeapon16Esodafer",
+      "typeinfo_va": "0x004f0c2c",
+      "unit_string_va": "0x004f0c40"
+    },
+    {
+      "name": ".1",
+      "kind": "DynArray",
+      "unit": "GI_PSWeapon14Vertix",
+      "typeinfo_va": "0x004f2448",
+      "unit_string_va": "0x004f245c"
+    },
+    {
+      "name": ".1",
+      "kind": "DynArray",
+      "unit": "GI_PSWeapon13IMHO",
+      "typeinfo_va": "0x004f2660",
+      "unit_string_va": "0x004f2674"
+    },
+    {
+      "name": ".1",
+      "kind": "DynArray",
+      "unit": "GI_PSWeapon12Turbogravir",
+      "typeinfo_va": "0x004f3394",
+      "unit_string_va": "0x004f33a8"
+    },
+    {
+      "name": ".2",
+      "kind": "DynArray",
+      "unit": "GI_PSWeapon12Turbogravir",
+      "typeinfo_va": "0x004f33c8",
+      "unit_string_va": "0x004f33dc"
+    },
+    {
+      "name": ".1",
+      "kind": "DynArray",
+      "unit": "GI_PSWeapon11Desintegrator",
+      "typeinfo_va": "0x004f4e38",
+      "unit_string_va": "0x004f4e4c"
+    },
+    {
+      "name": ".1",
+      "kind": "DynArray",
+      "unit": "GI_PSWeapon10AVision",
+      "typeinfo_va": "0x004f65c8",
+      "unit_string_va": "0x004f65dc"
+    },
+    {
+      "name": ".2",
+      "kind": "DynArray",
+      "unit": "GI_PSWeapon10AVision",
+      "typeinfo_va": "0x004f65f8",
+      "unit_string_va": "0x004f660c"
+    },
+    {
+      "name": ".1",
+      "kind": "DynArray",
+      "unit": "GI_PSWeapon09MResonator",
+      "typeinfo_va": "0x004f7434",
+      "unit_string_va": "0x004f7448"
+    },
+    {
+      "name": ".2",
+      "kind": "DynArray",
+      "unit": "GI_PSWeapon09MResonator",
+      "typeinfo_va": "0x004f7464",
+      "unit_string_va": "0x004f7478"
+    },
+    {
+      "name": ".1",
+      "kind": "DynArray",
+      "unit": "GI_PSWeapon08ECutter",
+      "typeinfo_va": "0x004f8ebc",
+      "unit_string_va": "0x004f8ed0"
+    },
+    {
+      "name": ".1",
+      "kind": "DynArray",
+      "unit": "GI_PSWeapon07Blaster",
+      "typeinfo_va": "0x004f9b40",
+      "unit_string_va": "0x004f9b54"
+    },
+    {
+      "name": ".1",
+      "kind": "DynArray",
+      "unit": "GI_PSWeapon06Phaser",
+      "typeinfo_va": "0x004fb1b4",
+      "unit_string_va": "0x004fb1c8"
+    },
+    {
+      "name": ".1",
+      "kind": "DynArray",
+      "unit": "GI_PSWeapon05Treton",
+      "typeinfo_va": "0x004fc10c",
+      "unit_string_va": "0x004fc120"
+    },
+    {
+      "name": ".1",
+      "kind": "DynArray",
+      "unit": "GI_PSWeapon03Lezka",
+      "typeinfo_va": "0x004fd458",
+      "unit_string_va": "0x004fd46c"
+    },
+    {
+      "name": ".2",
+      "kind": "DynArray",
+      "unit": "GI_PSWeapon03Lezka",
+      "typeinfo_va": "0x004fd484",
+      "unit_string_va": "0x004fd498"
+    },
+    {
+      "name": ".1",
+      "kind": "DynArray",
+      "unit": "GI_PSWeapon02FragCannon",
+      "typeinfo_va": "0x004fe918",
+      "unit_string_va": "0x004fe92c"
+    },
+    {
+      "name": ".1",
+      "kind": "DynArray",
+      "unit": "GI_PSWeapon01Laser",
+      "typeinfo_va": "0x004fff9c",
+      "unit_string_va": "0x004fffb0"
+    },
+    {
+      "name": ".2",
+      "kind": "DynArray",
+      "unit": "GI_PSWeapon01Laser",
+      "typeinfo_va": "0x004fffc8",
+      "unit_string_va": "0x004fffdc"
+    },
+    {
+      "name": ".3",
+      "kind": "DynArray",
+      "unit": "GI_PSWeapon01Laser",
+      "typeinfo_va": "0x004ffff4",
+      "unit_string_va": "0x00500008"
+    },
+    {
+      "name": ".2",
+      "kind": "DynArray",
+      "unit": "aGroup",
+      "typeinfo_va": "0x005015c0",
+      "unit_string_va": "0x005015d4"
+    },
+    {
+      "name": ".2",
+      "kind": "DynArray",
+      "unit": "aEObjInfo",
+      "typeinfo_va": "0x005067d8",
+      "unit_string_va": "0x005067ec"
+    },
+    {
+      "name": ".3",
+      "kind": "DynArray",
+      "unit": "aEObjInfo",
+      "typeinfo_va": "0x005067fc",
+      "unit_string_va": "0x00506810"
+    },
+    {
+      "name": ".4",
+      "kind": "DynArray",
+      "unit": "aEObjInfo",
+      "typeinfo_va": "0x00506820",
+      "unit_string_va": "0x00506834"
+    },
+    {
+      "name": ".5",
+      "kind": "DynArray",
+      "unit": "aEObjInfo",
+      "typeinfo_va": "0x00506844",
+      "unit_string_va": "0x00506858"
+    },
+    {
+      "name": ".6",
+      "kind": "DynArray",
+      "unit": "aEObjInfo",
+      "typeinfo_va": "0x00506868",
+      "unit_string_va": "0x0050687c"
+    },
+    {
+      "name": ".7",
+      "kind": "DynArray",
+      "unit": "aEObjInfo",
+      "typeinfo_va": "0x0050688c",
+      "unit_string_va": "0x005068a0"
+    },
+    {
+      "name": ".2",
+      "kind": "DynArray",
+      "unit": "fScaner",
+      "typeinfo_va": "0x0051b140",
+      "unit_string_va": "0x0051b154"
+    },
+    {
+      "name": ".2",
+      "kind": "DynArray",
+      "unit": "aModsInfo",
+      "typeinfo_va": "0x005307a0",
+      "unit_string_va": "0x005307b4"
+    },
+    {
+      "name": ".3",
+      "kind": "DynArray",
+      "unit": "aModsInfo",
+      "typeinfo_va": "0x005307c4",
+      "unit_string_va": "0x005307d8"
+    },
+    {
+      "name": "TModInfo",
+      "kind": "Class",
+      "unit": "aModsInfo",
+      "typeinfo_va": "0x005308a0",
+      "unit_string_va": "0x005308b4"
+    },
+    {
+      "name": ".2",
+      "kind": "DynArray",
+      "unit": "fMods",
+      "typeinfo_va": "0x00532c34",
+      "unit_string_va": "0x00532c48"
+    },
+    {
+      "name": ".3",
+      "kind": "DynArray",
+      "unit": "fMods",
+      "typeinfo_va": "0x00532c54",
+      "unit_string_va": "0x00532c68"
+    },
+    {
+      "name": ".4",
+      "kind": "DynArray",
+      "unit": "fMods",
+      "typeinfo_va": "0x00532c74",
+      "unit_string_va": "0x00532c88"
+    },
+    {
+      "name": ".5",
+      "kind": "DynArray",
+      "unit": "fMods",
+      "typeinfo_va": "0x00532c94",
+      "unit_string_va": "0x00532ca8"
+    },
+    {
+      "name": ".6",
+      "kind": "DynArray",
+      "unit": "fMods",
+      "typeinfo_va": "0x00532cb4",
+      "unit_string_va": "0x00532cc8"
+    },
+    {
+      "name": ".7",
+      "kind": "DynArray",
+      "unit": "fMods",
+      "typeinfo_va": "0x00532cd4",
+      "unit_string_va": "0x00532ce8"
+    },
+    {
+      "name": ".8",
+      "kind": "DynArray",
+      "unit": "fMods",
+      "typeinfo_va": "0x00532cf4",
+      "unit_string_va": "0x00532d08"
+    },
+    {
+      "name": ".2",
+      "kind": "DynArray",
+      "unit": "fRuinsTalk",
+      "typeinfo_va": "0x005657a0",
+      "unit_string_va": "0x005657b4"
+    },
+    {
+      "name": ".3",
+      "kind": "DynArray",
+      "unit": "fRuinsTalk",
+      "typeinfo_va": "0x005657c4",
+      "unit_string_va": "0x005657d8"
+    },
+    {
+      "name": ".2",
+      "kind": "DynArray",
+      "unit": "fRating2",
+      "typeinfo_va": "0x005ea65c",
+      "unit_string_va": "0x005ea670"
+    },
+    {
+      "name": ".2",
+      "kind": "DynArray",
+      "unit": "fLoadRobot",
+      "typeinfo_va": "0x005f6550",
+      "unit_string_va": "0x005f6564"
+    },
+    {
+      "name": ".3",
+      "kind": "DynArray",
+      "unit": "fLoadRobot",
+      "typeinfo_va": "0x005f6574",
+      "unit_string_va": "0x005f6588"
+    },
+    {
+      "name": ".2",
+      "kind": "DynArray",
+      "unit": "fLoadQuest",
+      "typeinfo_va": "0x005faad0",
+      "unit_string_va": "0x005faae4"
+    },
+    {
+      "name": ".3",
+      "kind": "DynArray",
+      "unit": "fLoadQuest",
+      "typeinfo_va": "0x005faaf4",
+      "unit_string_va": "0x005fab08"
+    },
+    {
+      "name": ".2",
+      "kind": "DynArray",
+      "unit": "fLoadAB",
+      "typeinfo_va": "0x005fe390",
+      "unit_string_va": "0x005fe3a4"
+    },
+    {
+      "name": ".1",
+      "kind": "DynArray",
+      "unit": "ab_Polygon",
+      "typeinfo_va": "0x00602c30",
+      "unit_string_va": "0x00602c44"
+    },
+    {
+      "name": ".2",
+      "kind": "DynArray",
+      "unit": "ab_Polygon",
+      "typeinfo_va": "0x00602c78",
+      "unit_string_va": "0x00602c8c"
+    },
+    {
+      "name": ".3",
+      "kind": "DynArray",
+      "unit": "ab_Polygon",
+      "typeinfo_va": "0x00602c9c",
+      "unit_string_va": "0x00602cb0"
+    },
+    {
+      "name": ".4",
+      "kind": "DynArray",
+      "unit": "ab_Polygon",
+      "typeinfo_va": "0x00602ce8",
+      "unit_string_va": "0x00602cfc"
+    },
+    {
+      "name": ".5",
+      "kind": "DynArray",
+      "unit": "ab_Polygon",
+      "typeinfo_va": "0x00602d0c",
+      "unit_string_va": "0x00602d20"
+    },
+    {
+      "name": ".7",
+      "kind": "DynArray",
+      "unit": "ab_Polygon",
+      "typeinfo_va": "0x00602e4c",
+      "unit_string_va": "0x00602e60"
+    },
+    {
+      "name": ".2",
+      "kind": "DynArray",
+      "unit": "aScriptFun",
+      "typeinfo_va": "0x006498e4",
+      "unit_string_va": "0x006498f8"
+    },
+    {
+      "name": ".3",
+      "kind": "DynArray",
+      "unit": "aScriptFun",
+      "typeinfo_va": "0x00649908",
+      "unit_string_va": "0x0064991c"
+    },
+    {
+      "name": ".2",
+      "kind": "DynArray",
+      "unit": "aScript",
+      "typeinfo_va": "0x0066a02c",
+      "unit_string_va": "0x0066a040"
+    },
+    {
+      "name": ".3",
+      "kind": "DynArray",
+      "unit": "aScript",
+      "typeinfo_va": "0x0066a04c",
+      "unit_string_va": "0x0066a060"
+    },
+    {
+      "name": ".4",
+      "kind": "DynArray",
+      "unit": "aScript",
+      "typeinfo_va": "0x0066a06c",
+      "unit_string_va": "0x0066a080"
+    },
+    {
+      "name": ".11",
+      "kind": "DynArray",
+      "unit": "aScript",
+      "typeinfo_va": "0x0066a38c",
+      "unit_string_va": "0x0066a3a1"
+    },
+    {
+      "name": ".21",
+      "kind": "DynArray",
+      "unit": "aScript",
+      "typeinfo_va": "0x0066a3b0",
+      "unit_string_va": "0x0066a3c5"
+    },
+    {
+      "name": ".71",
+      "kind": "DynArray",
+      "unit": "aScript",
+      "typeinfo_va": "0x0066a5c0",
+      "unit_string_va": "0x0066a5d5"
+    },
+    {
+      "name": ".62",
+      "kind": "DynArray",
+      "unit": "aScript",
+      "typeinfo_va": "0x00676968",
+      "unit_string_va": "0x0067697d"
+    },
+    {
+      "name": ".2",
+      "kind": "DynArray",
+      "unit": "SE_Ship2",
+      "typeinfo_va": "0x00682f04",
+      "unit_string_va": "0x00682f18"
+    },
+    {
+      "name": ".3",
+      "kind": "DynArray",
+      "unit": "SE_Ship2",
+      "typeinfo_va": "0x00682f28",
+      "unit_string_va": "0x00682f3c"
+    },
+    {
+      "name": ".1",
+      "kind": "DynArray",
+      "unit": "ab_StopLine",
+      "typeinfo_va": "0x0068a540",
+      "unit_string_va": "0x0068a554"
+    },
+    {
+      "name": ".1",
+      "kind": "DynArray",
+      "unit": "ab_Zone",
+      "typeinfo_va": "0x0068c938",
+      "unit_string_va": "0x0068c94c"
+    },
+    {
+      "name": ".3",
+      "kind": "DynArray",
+      "unit": "fGalaxy2",
+      "typeinfo_va": "0x006a0140",
+      "unit_string_va": "0x006a0154"
+    },
+    {
+      "name": ".2",
+      "kind": "DynArray",
+      "unit": "fScore",
+      "typeinfo_va": "0x006b7b40",
+      "unit_string_va": "0x006b7b54"
+    },
+    {
+      "name": ".3",
+      "kind": "DynArray",
+      "unit": "fScore",
+      "typeinfo_va": "0x006b7b60",
+      "unit_string_va": "0x006b7b74"
+    },
+    {
+      "name": ".4",
+      "kind": "DynArray",
+      "unit": "fScore",
+      "typeinfo_va": "0x006b7b80",
+      "unit_string_va": "0x006b7b94"
+    },
+    {
+      "name": ".1",
+      "kind": "DynArray",
+      "unit": "FGInt",
+      "typeinfo_va": "0x006c5b84",
+      "unit_string_va": "0x006c5b98"
+    },
+    {
+      "name": "TPlayerHoldUnit",
+      "kind": "Class",
+      "unit": "fShip2",
+      "typeinfo_va": "0x006d3540",
+      "unit_string_va": "0x006d355b"
+    },
+    {
+      "name": ".3",
+      "kind": "DynArray",
+      "unit": "fShip2",
+      "typeinfo_va": "0x006d3568",
+      "unit_string_va": "0x006d357c"
+    },
+    {
+      "name": ".3",
+      "kind": "DynArray",
+      "unit": "aShip",
+      "typeinfo_va": "0x00724ddc",
+      "unit_string_va": "0x00724df0"
+    },
+    {
+      "name": ".4",
+      "kind": "DynArray",
+      "unit": "aShip",
+      "typeinfo_va": "0x00725004",
+      "unit_string_va": "0x00725018"
+    },
+    {
+      "name": ".5",
+      "kind": "DynArray",
+      "unit": "aShip",
+      "typeinfo_va": "0x00725024",
+      "unit_string_va": "0x00725038"
+    },
+    {
+      "name": ".4",
+      "kind": "DynArray",
+      "unit": "aPlanet",
+      "typeinfo_va": "0x0077fd54",
+      "unit_string_va": "0x0077fd68"
+    },
+    {
+      "name": ".3",
+      "kind": "DynArray",
+      "unit": "aNormalShip",
+      "typeinfo_va": "0x007881a4",
+      "unit_string_va": "0x007881b8"
+    },
+    {
+      "name": ".4",
+      "kind": "DynArray",
+      "unit": "aPlayer",
+      "typeinfo_va": "0x0078bdf4",
+      "unit_string_va": "0x0078be08"
+    },
+    {
+      "name": ".6",
+      "kind": "DynArray",
+      "unit": "aPlayer",
+      "typeinfo_va": "0x007980c0",
+      "unit_string_va": "0x007980d4"
+    },
+    {
+      "name": ".2",
+      "kind": "DynArray",
+      "unit": "fStarMap",
+      "typeinfo_va": "0x007a5b74",
+      "unit_string_va": "0x007a5b88"
+    },
+    {
+      "name": ".3",
+      "kind": "DynArray",
+      "unit": "fStarMap",
+      "typeinfo_va": "0x007a5b98",
+      "unit_string_va": "0x007a5bac"
+    },
+    {
+      "name": ".3",
+      "kind": "DynArray",
+      "unit": "aEFilm",
+      "typeinfo_va": "0x007cec80",
+      "unit_string_va": "0x007cec94"
+    },
+    {
+      "name": "TItemType",
+      "kind": "Enumeration",
+      "unit": "aConst",
+      "typeinfo_va": "0x007da400",
+      "unit_string_va": "0x007da806"
+    },
+    {
+      "name": ".31",
+      "kind": "DynArray",
+      "unit": "aConst",
+      "typeinfo_va": "0x007dafb0",
+      "unit_string_va": "0x007dafc5"
+    },
+    {
+      "name": ".51",
+      "kind": "DynArray",
+      "unit": "aConst",
+      "typeinfo_va": "0x007dafd0",
+      "unit_string_va": "0x007dafe5"
+    },
+    {
+      "name": ".71",
+      "kind": "DynArray",
+      "unit": "aConst",
+      "typeinfo_va": "0x007daff0",
+      "unit_string_va": "0x007db005"
+    },
+    {
+      "name": ".63",
+      "kind": "DynArray",
+      "unit": "aConst",
+      "typeinfo_va": "0x007dc4dc",
+      "unit_string_va": "0x007dc4f1"
+    },
+    {
+      "name": ".73",
+      "kind": "DynArray",
+      "unit": "aConst",
+      "typeinfo_va": "0x007dc4fc",
+      "unit_string_va": "0x007dc511"
+    },
+    {
+      "name": ".93",
+      "kind": "DynArray",
+      "unit": "aConst",
+      "typeinfo_va": "0x007dc51c",
+      "unit_string_va": "0x007dc531"
+    },
+    {
+      "name": ".24",
+      "kind": "DynArray",
+      "unit": "aConst",
+      "typeinfo_va": "0x007e3730",
+      "unit_string_va": "0x007e3745"
+    },
+    {
+      "name": ".34",
+      "kind": "DynArray",
+      "unit": "aConst",
+      "typeinfo_va": "0x007e3750",
+      "unit_string_va": "0x007e3765"
+    },
+    {
+      "name": ".44",
+      "kind": "DynArray",
+      "unit": "aConst",
+      "typeinfo_va": "0x007e5f08",
+      "unit_string_va": "0x007e5f1d"
+    },
+    {
+      "name": ".54",
+      "kind": "DynArray",
+      "unit": "aConst",
+      "typeinfo_va": "0x007e5f28",
+      "unit_string_va": "0x007e5f3d"
+    },
+    {
+      "name": ".1",
+      "kind": "DynArray",
+      "unit": "Robot",
+      "typeinfo_va": "0x007e7fac",
+      "unit_string_va": "0x007e7fc0"
+    },
+    {
+      "name": ".2",
+      "kind": "DynArray",
+      "unit": "GR_DX",
+      "typeinfo_va": "0x007e9834",
+      "unit_string_va": "0x007e9848"
+    },
+    {
+      "name": ".3",
+      "kind": "DynArray",
+      "unit": "GR_DX",
+      "typeinfo_va": "0x007e98c0",
+      "unit_string_va": "0x007e98d4"
+    },
+    {
+      "name": "TDataElEC",
+      "kind": "Class",
+      "unit": "EC_Data",
+      "typeinfo_va": "0x007ec420",
+      "unit_string_va": "0x007ec435"
+    },
+    {
+      "name": ".4",
+      "kind": "DynArray",
+      "unit": "EC_Data",
+      "typeinfo_va": "0x007ec444",
+      "unit_string_va": "0x007ec458"
+    },
+    {
+      "name": ".3",
+      "kind": "DynArray",
+      "unit": "VorbisFile",
+      "typeinfo_va": "0x007f4bbc",
+      "unit_string_va": "0x007f4bd0"
+    },
+    {
+      "name": ".2",
+      "kind": "DynArray",
+      "unit": "fAchievements",
+      "typeinfo_va": "0x007ff614",
+      "unit_string_va": "0x007ff628"
+    },
+    {
+      "name": ".6",
+      "kind": "DynArray",
+      "unit": "Globals",
+      "typeinfo_va": "0x008011a8",
+      "unit_string_va": "0x008011bc"
+    },
+    {
+      "name": ".7",
+      "kind": "DynArray",
+      "unit": "Globals",
+      "typeinfo_va": "0x008011c8",
+      "unit_string_va": "0x008011dc"
+    },
+    {
+      "name": ".8",
+      "kind": "DynArray",
+      "unit": "Globals",
+      "typeinfo_va": "0x008011e8",
+      "unit_string_va": "0x008011fc"
+    },
+    {
+      "name": ".11",
+      "kind": "DynArray",
+      "unit": "Globals",
+      "typeinfo_va": "0x00801208",
+      "unit_string_va": "0x0080121d"
+    },
+    {
+      "name": ".21",
+      "kind": "DynArray",
+      "unit": "Globals",
+      "typeinfo_va": "0x0080128c",
+      "unit_string_va": "0x008012a1"
+    },
+    {
+      "name": ".41",
+      "kind": "DynArray",
+      "unit": "Globals",
+      "typeinfo_va": "0x00801340",
+      "unit_string_va": "0x00801355"
+    },
+    {
+      "name": ".51",
+      "kind": "DynArray",
+      "unit": "Globals",
+      "typeinfo_va": "0x0080138c",
+      "unit_string_va": "0x008013a1"
+    },
+    {
+      "name": ".61",
+      "kind": "DynArray",
+      "unit": "Globals",
+      "typeinfo_va": "0x008013b0",
+      "unit_string_va": "0x008013c5"
+    },
+    {
+      "name": ".71",
+      "kind": "DynArray",
+      "unit": "Globals",
+      "typeinfo_va": "0x00801414",
+      "unit_string_va": "0x00801429"
+    },
+    {
+      "name": ".81",
+      "kind": "DynArray",
+      "unit": "Globals",
+      "typeinfo_va": "0x00801438",
+      "unit_string_va": "0x0080144d"
+    },
+    {
+      "name": ".91",
+      "kind": "DynArray",
+      "unit": "Globals",
+      "typeinfo_va": "0x0080145c",
+      "unit_string_va": "0x00801471"
+    },
+    {
+      "name": ".3",
+      "kind": "DynArray",
+      "unit": "EC_Expression",
+      "typeinfo_va": "0x00814b30",
+      "unit_string_va": "0x00814b44"
+    },
+    {
+      "name": "TVarEC",
+      "kind": "Class",
+      "unit": "EC_Expression",
+      "typeinfo_va": "0x00814bd0",
+      "unit_string_va": "0x00814be2"
+    },
+    {
+      "name": ".8",
+      "kind": "DynArray",
+      "unit": "EC_Expression",
+      "typeinfo_va": "0x00814d20",
+      "unit_string_va": "0x00814d34"
+    },
+    {
+      "name": ".01",
+      "kind": "DynArray",
+      "unit": "EC_Expression",
+      "typeinfo_va": "0x00814dbc",
+      "unit_string_va": "0x00814dd1"
+    },
+    {
+      "name": ".91",
+      "kind": "DynArray",
+      "unit": "EC_Expression",
+      "typeinfo_va": "0x008180e8",
+      "unit_string_va": "0x008180fd"
+    },
+    {
+      "name": ".02",
+      "kind": "DynArray",
+      "unit": "EC_Expression",
+      "typeinfo_va": "0x0081da80",
+      "unit_string_va": "0x0081da95"
+    },
+    {
+      "name": ".12",
+      "kind": "DynArray",
+      "unit": "EC_Expression",
+      "typeinfo_va": "0x0082025c",
+      "unit_string_va": "0x00820271"
+    },
+    {
+      "name": ".22",
+      "kind": "DynArray",
+      "unit": "EC_Expression",
+      "typeinfo_va": "0x008256ec",
+      "unit_string_va": "0x00825701"
+    },
+    {
+      "name": "TBlockParElEC",
+      "kind": "Class",
+      "unit": "EC_BlockPar",
+      "typeinfo_va": "0x008273dc",
+      "unit_string_va": "0x008273f5"
+    },
+    {
+      "name": ".3",
+      "kind": "DynArray",
+      "unit": "EC_BlockPar",
+      "typeinfo_va": "0x00827408",
+      "unit_string_va": "0x0082741c"
+    },
+    {
+      "name": ".8",
+      "kind": "DynArray",
+      "unit": "aGalaxy",
+      "typeinfo_va": "0x00838d74",
+      "unit_string_va": "0x00838d88"
+    },
+    {
+      "name": ".31",
+      "kind": "DynArray",
+      "unit": "aGalaxy",
+      "typeinfo_va": "0x00838f4c",
+      "unit_string_va": "0x00838f61"
+    },
+    {
+      "name": ".51",
+      "kind": "DynArray",
+      "unit": "aGalaxy",
+      "typeinfo_va": "0x0084ff54",
+      "unit_string_va": "0x0084ff69"
+    },
+    {
+      "name": ".61",
+      "kind": "DynArray",
+      "unit": "aGalaxy",
+      "typeinfo_va": "0x00857218",
+      "unit_string_va": "0x0085722d"
+    },
+    {
+      "name": ".71",
+      "kind": "DynArray",
+      "unit": "aGalaxy",
+      "typeinfo_va": "0x008594e0",
+      "unit_string_va": "0x008594f5"
+    }
+  ],
+  "classes": [
+    {
+      "name": "TObject",
+      "unit": "System",
+      "basis": "class_RTTI",
+      "vmt_header_va": "0x004010ec"
+    },
+    {
+      "name": "TInterfacedObject",
+      "unit": "System",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x004011e0"
+    },
+    {
+      "name": "EHeapException",
+      "unit": "SysUtils",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00408ed8"
+    },
+    {
+      "name": "EOutOfMemory",
+      "unit": "SysUtils",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00408f34"
+    },
+    {
+      "name": "EInOutError",
+      "unit": "SysUtils",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00408f90"
+    },
+    {
+      "name": "EExternal",
+      "unit": "SysUtils",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00408fe8"
+    },
+    {
+      "name": "EExternalException",
+      "unit": "SysUtils",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00409040"
+    },
+    {
+      "name": "EIntError",
+      "unit": "SysUtils",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x004090a0"
+    },
+    {
+      "name": "EDivByZero",
+      "unit": "SysUtils",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x004090f8"
+    },
+    {
+      "name": "ERangeError",
+      "unit": "SysUtils",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00409150"
+    },
+    {
+      "name": "EIntOverflow",
+      "unit": "SysUtils",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x004091a8"
+    },
+    {
+      "name": "EMathError",
+      "unit": "SysUtils",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00409204"
+    },
+    {
+      "name": "EInvalidOp",
+      "unit": "SysUtils",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x0040925c"
+    },
+    {
+      "name": "EZeroDivide",
+      "unit": "SysUtils",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x004092b4"
+    },
+    {
+      "name": "EOverflow",
+      "unit": "SysUtils",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x0040930c"
+    },
+    {
+      "name": "EUnderflow",
+      "unit": "SysUtils",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00409364"
+    },
+    {
+      "name": "EInvalidPointer",
+      "unit": "SysUtils",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x004093bc"
+    },
+    {
+      "name": "EInvalidCast",
+      "unit": "SysUtils",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00409418"
+    },
+    {
+      "name": "EConvertError",
+      "unit": "SysUtils",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00409474"
+    },
+    {
+      "name": "EAccessViolation",
+      "unit": "SysUtils",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x004094d0"
+    },
+    {
+      "name": "EPrivilege",
+      "unit": "SysUtils",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00409530"
+    },
+    {
+      "name": "EStackOverflow",
+      "unit": "SysUtils",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00409588"
+    },
+    {
+      "name": "EControlC",
+      "unit": "SysUtils",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x004095e4"
+    },
+    {
+      "name": "EVariantError",
+      "unit": "SysUtils",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x0040963c"
+    },
+    {
+      "name": "EAssertionFailed",
+      "unit": "SysUtils",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00409698"
+    },
+    {
+      "name": "EAbstractError",
+      "unit": "SysUtils",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x004096f8"
+    },
+    {
+      "name": "EIntfCastError",
+      "unit": "SysUtils",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00409754"
+    },
+    {
+      "name": "EOSError",
+      "unit": "SysUtils",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x004097b0"
+    },
+    {
+      "name": "ESafecallException",
+      "unit": "SysUtils",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00409808"
+    },
+    {
+      "name": "TThreadLocalCounter",
+      "unit": "SysUtils",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x004098bc"
+    },
+    {
+      "name": "TMultiReadExclusiveWriteSynchronizer",
+      "unit": "SysUtils",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00409998"
+    },
+    {
+      "name": "TCustomVariantType",
+      "unit": "Variants",
+      "basis": "class_RTTI",
+      "vmt_header_va": "0x0041059c"
+    },
+    {
+      "name": "EVariantInvalidOpError",
+      "unit": "Variants",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00410668"
+    },
+    {
+      "name": "EVariantTypeCastError",
+      "unit": "Variants",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x004106cc"
+    },
+    {
+      "name": "EVariantOverflowError",
+      "unit": "Variants",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00410730"
+    },
+    {
+      "name": "EVariantInvalidArgError",
+      "unit": "Variants",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00410794"
+    },
+    {
+      "name": "EVariantBadVarTypeError",
+      "unit": "Variants",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x004107f8"
+    },
+    {
+      "name": "EVariantBadIndexError",
+      "unit": "Variants",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x0041085c"
+    },
+    {
+      "name": "EVariantArrayLockedError",
+      "unit": "Variants",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x004108c0"
+    },
+    {
+      "name": "EVariantArrayCreateError",
+      "unit": "Variants",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00410928"
+    },
+    {
+      "name": "EVariantNotImplError",
+      "unit": "Variants",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00410990"
+    },
+    {
+      "name": "EVariantOutOfMemoryError",
+      "unit": "Variants",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x004109f4"
+    },
+    {
+      "name": "EVariantUnexpectedError",
+      "unit": "Variants",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00410a5c"
+    },
+    {
+      "name": "EVariantDispatchError",
+      "unit": "Variants",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00410ac0"
+    },
+    {
+      "name": "EStreamError",
+      "unit": "Classes",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00413a1c"
+    },
+    {
+      "name": "EFileStreamError",
+      "unit": "Classes",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00413a78"
+    },
+    {
+      "name": "EFCreateError",
+      "unit": "Classes",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00413ad8"
+    },
+    {
+      "name": "EFOpenError",
+      "unit": "Classes",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00413b34"
+    },
+    {
+      "name": "EFilerError",
+      "unit": "Classes",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00413b8c"
+    },
+    {
+      "name": "EReadError",
+      "unit": "Classes",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00413be4"
+    },
+    {
+      "name": "EWriteError",
+      "unit": "Classes",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00413c3c"
+    },
+    {
+      "name": "EClassNotFound",
+      "unit": "Classes",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00413c94"
+    },
+    {
+      "name": "EResNotFound",
+      "unit": "Classes",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00413cf0"
+    },
+    {
+      "name": "EListError",
+      "unit": "Classes",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00413d4c"
+    },
+    {
+      "name": "EBitsError",
+      "unit": "Classes",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00413da4"
+    },
+    {
+      "name": "EStringListError",
+      "unit": "Classes",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00413dfc"
+    },
+    {
+      "name": "EComponentError",
+      "unit": "Classes",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00413e5c"
+    },
+    {
+      "name": "EOutOfResources",
+      "unit": "Classes",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00413eb8"
+    },
+    {
+      "name": "EInvalidOperation",
+      "unit": "Classes",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00413f14"
+    },
+    {
+      "name": "TList",
+      "unit": "Classes",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00413f74"
+    },
+    {
+      "name": "TThreadList",
+      "unit": "Classes",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00413fd8"
+    },
+    {
+      "name": "TBits",
+      "unit": "Classes",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00414030"
+    },
+    {
+      "name": "TPersistent",
+      "unit": "Classes",
+      "basis": "class_RTTI",
+      "vmt_header_va": "0x00414084"
+    },
+    {
+      "name": "TInterfacedPersistent",
+      "unit": "Classes",
+      "basis": "class_RTTI",
+      "vmt_header_va": "0x00414174"
+    },
+    {
+      "name": "TStrings",
+      "unit": "Classes",
+      "basis": "class_RTTI",
+      "vmt_header_va": "0x00414260"
+    },
+    {
+      "name": "TStringList",
+      "unit": "Classes",
+      "basis": "class_RTTI",
+      "vmt_header_va": "0x00414398"
+    },
+    {
+      "name": "TStream",
+      "unit": "Classes",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x004144b0"
+    },
+    {
+      "name": "THandleStream",
+      "unit": "Classes",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00414520"
+    },
+    {
+      "name": "TFileStream",
+      "unit": "Classes",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00414598"
+    },
+    {
+      "name": "TCustomMemoryStream",
+      "unit": "Classes",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00414620"
+    },
+    {
+      "name": "TMemoryStream",
+      "unit": "Classes",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x0041469c"
+    },
+    {
+      "name": "TResourceStream",
+      "unit": "Classes",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00414718"
+    },
+    {
+      "name": "TStreamAdapter",
+      "unit": "Classes",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x004148a4"
+    },
+    {
+      "name": "TClassFinder",
+      "unit": "Classes",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x0041492c"
+    },
+    {
+      "name": "TFiler",
+      "unit": "Classes",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00414988"
+    },
+    {
+      "name": "TReader",
+      "unit": "Classes",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x004149ec"
+    },
+    {
+      "name": "EThread",
+      "unit": "Classes",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00414a80"
+    },
+    {
+      "name": "TComponent",
+      "unit": "Classes",
+      "basis": "class_RTTI",
+      "vmt_header_va": "0x00414bc8"
+    },
+    {
+      "name": "TBasicActionLink",
+      "unit": "Classes",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00414d28"
+    },
+    {
+      "name": "TBasicAction",
+      "unit": "Classes",
+      "basis": "class_RTTI",
+      "vmt_header_va": "0x00414da8"
+    },
+    {
+      "name": "TRegGroup",
+      "unit": "Classes",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00414f2c"
+    },
+    {
+      "name": "TRegGroups",
+      "unit": "Classes",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00414f84"
+    },
+    {
+      "name": "TIntConst",
+      "unit": "Classes",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00415c50"
+    },
+    {
+      "name": "TPropFixup",
+      "unit": "Classes",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00418ca8"
+    },
+    {
+      "name": "TPropIntfFixup",
+      "unit": "Classes",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00418d20"
+    },
+    {
+      "name": "TRegistry",
+      "unit": "Registry",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x0041d5dc"
+    },
+    {
+      "name": "TGraphicsObject",
+      "unit": "Graphics",
+      "basis": "class_RTTI",
+      "vmt_header_va": "0x004202c4"
+    },
+    {
+      "name": "TFont",
+      "unit": "Graphics",
+      "basis": "class_RTTI",
+      "vmt_header_va": "0x00420398"
+    },
+    {
+      "name": "TPen",
+      "unit": "Graphics",
+      "basis": "class_RTTI",
+      "vmt_header_va": "0x00420538"
+    },
+    {
+      "name": "TBrush",
+      "unit": "Graphics",
+      "basis": "class_RTTI",
+      "vmt_header_va": "0x00420638"
+    },
+    {
+      "name": "TCanvas",
+      "unit": "Graphics",
+      "basis": "class_RTTI",
+      "vmt_header_va": "0x004206fc"
+    },
+    {
+      "name": "TGraphic",
+      "unit": "Graphics",
+      "basis": "class_RTTI",
+      "vmt_header_va": "0x00420958"
+    },
+    {
+      "name": "TPicture",
+      "unit": "Graphics",
+      "basis": "class_RTTI",
+      "vmt_header_va": "0x00420ab0"
+    },
+    {
+      "name": "TSharedImage",
+      "unit": "Graphics",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00420b5c"
+    },
+    {
+      "name": "TMetafileImage",
+      "unit": "Graphics",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00420bbc"
+    },
+    {
+      "name": "TMetafile",
+      "unit": "Graphics",
+      "basis": "class_RTTI",
+      "vmt_header_va": "0x00420c1c"
+    },
+    {
+      "name": "TBitmapImage",
+      "unit": "Graphics",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00420d00"
+    },
+    {
+      "name": "TBitmap",
+      "unit": "Graphics",
+      "basis": "class_RTTI",
+      "vmt_header_va": "0x00420d60"
+    },
+    {
+      "name": "TIconImage",
+      "unit": "Graphics",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00420e4c"
+    },
+    {
+      "name": "TIcon",
+      "unit": "Graphics",
+      "basis": "class_RTTI",
+      "vmt_header_va": "0x00420ea8"
+    },
+    {
+      "name": "TResourceManager",
+      "unit": "Graphics",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00420f98"
+    },
+    {
+      "name": "TBrushResourceManager",
+      "unit": "Graphics",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00421000"
+    },
+    {
+      "name": "TFileFormatsList",
+      "unit": "Graphics",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00424714"
+    },
+    {
+      "name": "TClipboardFormats",
+      "unit": "Graphics",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00424a74"
+    },
+    {
+      "name": "TBitmapCanvas",
+      "unit": "Graphics",
+      "basis": "class_RTTI",
+      "vmt_header_va": "0x00426084"
+    },
+    {
+      "name": "TCustomLabel",
+      "unit": "StdCtrls",
+      "basis": "class_RTTI",
+      "vmt_header_va": "0x0042a490"
+    },
+    {
+      "name": "TLabel",
+      "unit": "StdCtrls",
+      "basis": "class_RTTI",
+      "vmt_header_va": "0x0042a5cc"
+    },
+    {
+      "name": "TButtonActionLink",
+      "unit": "StdCtrls",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x0042acbc"
+    },
+    {
+      "name": "TButtonControl",
+      "unit": "StdCtrls",
+      "basis": "class_RTTI",
+      "vmt_header_va": "0x0042adb0"
+    },
+    {
+      "name": "TButton",
+      "unit": "StdCtrls",
+      "basis": "class_RTTI",
+      "vmt_header_va": "0x0042af34"
+    },
+    {
+      "name": "TImage",
+      "unit": "ExtCtrls",
+      "basis": "class_RTTI",
+      "vmt_header_va": "0x0042d5b0"
+    },
+    {
+      "name": "TTimer",
+      "unit": "ExtCtrls",
+      "basis": "class_RTTI",
+      "vmt_header_va": "0x0042dbb0"
+    },
+    {
+      "name": "TCommonDialog",
+      "unit": "Dialogs",
+      "basis": "class_RTTI",
+      "vmt_header_va": "0x0042e5bc"
+    },
+    {
+      "name": "TMessageForm",
+      "unit": "Dialogs",
+      "basis": "class_RTTI",
+      "vmt_header_va": "0x0042ea60"
+    },
+    {
+      "name": "TClipboard",
+      "unit": "Clipbrd",
+      "basis": "class_RTTI",
+      "vmt_header_va": "0x004300e4"
+    },
+    {
+      "name": "THintAction",
+      "unit": "StdActns",
+      "basis": "class_RTTI",
+      "vmt_header_va": "0x004306b0"
+    },
+    {
+      "name": "TMenuActionLink",
+      "unit": "Menus",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00430da4"
+    },
+    {
+      "name": "TMenuItem",
+      "unit": "Menus",
+      "basis": "class_RTTI",
+      "vmt_header_va": "0x00430e7c"
+    },
+    {
+      "name": "TMenu",
+      "unit": "Menus",
+      "basis": "class_RTTI",
+      "vmt_header_va": "0x004312a0"
+    },
+    {
+      "name": "TMainMenu",
+      "unit": "Menus",
+      "basis": "class_RTTI",
+      "vmt_header_va": "0x0043139c"
+    },
+    {
+      "name": "TPopupMenu",
+      "unit": "Menus",
+      "basis": "class_RTTI",
+      "vmt_header_va": "0x00431680"
+    },
+    {
+      "name": "TPopupList",
+      "unit": "Menus",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00431924"
+    },
+    {
+      "name": "TMenuItemStack",
+      "unit": "Menus",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00431990"
+    },
+    {
+      "name": "TDragObject",
+      "unit": "Controls",
+      "basis": "class_RTTI",
+      "vmt_header_va": "0x00438664"
+    },
+    {
+      "name": "TBaseDragControlObject",
+      "unit": "Controls",
+      "basis": "class_RTTI",
+      "vmt_header_va": "0x00438708"
+    },
+    {
+      "name": "TDragControlObject",
+      "unit": "Controls",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x004387cc"
+    },
+    {
+      "name": "TDragControlObjectEx",
+      "unit": "Controls",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00438858"
+    },
+    {
+      "name": "TDragDockObject",
+      "unit": "Controls",
+      "basis": "class_RTTI",
+      "vmt_header_va": "0x004388e8"
+    },
+    {
+      "name": "TDragDockObjectEx",
+      "unit": "Controls",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x004389b0"
+    },
+    {
+      "name": "TControlCanvas",
+      "unit": "Controls",
+      "basis": "class_RTTI",
+      "vmt_header_va": "0x00438a50"
+    },
+    {
+      "name": "TCustomControlAction",
+      "unit": "Controls",
+      "basis": "class_RTTI",
+      "vmt_header_va": "0x00438af0"
+    },
+    {
+      "name": "TControlActionLink",
+      "unit": "Controls",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00438bd8"
+    },
+    {
+      "name": "TSizeConstraints",
+      "unit": "Controls",
+      "basis": "class_RTTI",
+      "vmt_header_va": "0x00438edc"
+    },
+    {
+      "name": "TMargins",
+      "unit": "Controls",
+      "basis": "class_RTTI",
+      "vmt_header_va": "0x00439028"
+    },
+    {
+      "name": "TPadding",
+      "unit": "Controls",
+      "basis": "class_RTTI",
+      "vmt_header_va": "0x00439140"
+    },
+    {
+      "name": "TControl",
+      "unit": "Controls",
+      "basis": "class_RTTI",
+      "vmt_header_va": "0x00439a94"
+    },
+    {
+      "name": "TWinControlActionLink",
+      "unit": "Controls",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00439f04"
+    },
+    {
+      "name": "TWinControl",
+      "unit": "Controls",
+      "basis": "class_RTTI",
+      "vmt_header_va": "0x0043a194"
+    },
+    {
+      "name": "TGraphicControl",
+      "unit": "Controls",
+      "basis": "class_RTTI",
+      "vmt_header_va": "0x0043a5a4"
+    },
+    {
+      "name": "TCustomControl",
+      "unit": "Controls",
+      "basis": "class_RTTI",
+      "vmt_header_va": "0x0043a6c8"
+    },
+    {
+      "name": "THintWindow",
+      "unit": "Controls",
+      "basis": "class_RTTI",
+      "vmt_header_va": "0x0043a834"
+    },
+    {
+      "name": "TDockZone",
+      "unit": "Controls",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x0043a9c4"
+    },
+    {
+      "name": "TDockTree",
+      "unit": "Controls",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x0043ab10"
+    },
+    {
+      "name": "TMouse",
+      "unit": "Controls",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x0043abb4"
+    },
+    {
+      "name": "TSiteList",
+      "unit": "Controls",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x0043b118"
+    },
+    {
+      "name": "TChangeLink",
+      "unit": "ImgList",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x0044cc40"
+    },
+    {
+      "name": "TCustomImageList",
+      "unit": "ImgList",
+      "basis": "class_RTTI",
+      "vmt_header_va": "0x0044ccbc"
+    },
+    {
+      "name": "TContainedAction",
+      "unit": "ActnList",
+      "basis": "class_RTTI",
+      "vmt_header_va": "0x0044e320"
+    },
+    {
+      "name": "TCustomActionList",
+      "unit": "ActnList",
+      "basis": "class_RTTI",
+      "vmt_header_va": "0x0044e444"
+    },
+    {
+      "name": "TShortCutList",
+      "unit": "ActnList",
+      "basis": "class_RTTI",
+      "vmt_header_va": "0x0044e524"
+    },
+    {
+      "name": "TCustomAction",
+      "unit": "ActnList",
+      "basis": "class_RTTI",
+      "vmt_header_va": "0x0044e640"
+    },
+    {
+      "name": "TActionLink",
+      "unit": "ActnList",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x0044e748"
+    },
+    {
+      "name": "TControlScrollBar",
+      "unit": "Forms",
+      "basis": "class_RTTI",
+      "vmt_header_va": "0x0044f6b4"
+    },
+    {
+      "name": "TScrollingWinControl",
+      "unit": "Forms",
+      "basis": "class_RTTI",
+      "vmt_header_va": "0x0044f950"
+    },
+    {
+      "name": "TCustomForm",
+      "unit": "Forms",
+      "basis": "class_RTTI",
+      "vmt_header_va": "0x0045001c"
+    },
+    {
+      "name": "TForm",
+      "unit": "Forms",
+      "basis": "class_RTTI",
+      "vmt_header_va": "0x00450398"
+    },
+    {
+      "name": "TCustomDockForm",
+      "unit": "Forms",
+      "basis": "class_RTTI",
+      "vmt_header_va": "0x00451284"
+    },
+    {
+      "name": "TMonitor",
+      "unit": "Forms",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x0045146c"
+    },
+    {
+      "name": "TScreen",
+      "unit": "Forms",
+      "basis": "class_RTTI",
+      "vmt_header_va": "0x004514c4"
+    },
+    {
+      "name": "TApplication",
+      "unit": "Forms",
+      "basis": "class_RTTI",
+      "vmt_header_va": "0x004515c8"
+    },
+    {
+      "name": "TGlassFrame",
+      "unit": "Forms",
+      "basis": "class_RTTI",
+      "vmt_header_va": "0x004516b8"
+    },
+    {
+      "name": "TObjectEx",
+      "unit": "EC_Struct",
+      "basis": "class_RTTI",
+      "vmt_header_va": "0x0045eb5c"
+    },
+    {
+      "name": "TJPEGData",
+      "unit": "jpeg",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x0045f28c"
+    },
+    {
+      "name": "TJPEGImage",
+      "unit": "jpeg",
+      "basis": "class_RTTI",
+      "vmt_header_va": "0x0045f2e8"
+    },
+    {
+      "name": "EJPEG",
+      "unit": "jpeg",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x0045f46c"
+    },
+    {
+      "name": "TFileStreamEC",
+      "unit": "EC_FileStream",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x004725f4"
+    },
+    {
+      "name": "TxvidGI",
+      "unit": "GI_XviD",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x00472dcc"
+    },
+    {
+      "name": "TCircleGI",
+      "unit": "GI_Circle",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x00473c04"
+    },
+    {
+      "name": "TPolyLineGI",
+      "unit": "GI_PolyLine",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x00474c8c"
+    },
+    {
+      "name": "TgiGR",
+      "unit": "GR_gi",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x004761fc"
+    },
+    {
+      "name": "TCGaiControlEC",
+      "unit": "EC_CacheGAI",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x004780d0"
+    },
+    {
+      "name": "TCGaiEC",
+      "unit": "EC_CacheGAI",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00478168"
+    },
+    {
+      "name": "TSpaceImgGI",
+      "unit": "GI_SpaceImg",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x00478f0c"
+    },
+    {
+      "name": "TSpaceCircleGI",
+      "unit": "GI_SpaceCircle",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x00479df8"
+    },
+    {
+      "name": "TStarFieldImgGI",
+      "unit": "GI_StarFieldImg",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x0047aca0"
+    },
+    {
+      "name": "TCPalBitmapControlEC",
+      "unit": "EC_CachePalBitmap",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x0047c0f0"
+    },
+    {
+      "name": "TCPalBitmapEC",
+      "unit": "EC_CachePalBitmap",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x0047c16c"
+    },
+    {
+      "name": "TCRotateBufControlEC",
+      "unit": "EC_CacheRotateBuf",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x0047c3a8"
+    },
+    {
+      "name": "TCRotateBufEC",
+      "unit": "EC_CacheRotateBuf",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x0047c424"
+    },
+    {
+      "name": "TCPlanetTemplControlEC",
+      "unit": "EC_CachePlanetTempl",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x0047c838"
+    },
+    {
+      "name": "TCPlanetTemplEC",
+      "unit": "EC_CachePlanetTempl",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x0047c8b4"
+    },
+    {
+      "name": "TCLightPalControlEC",
+      "unit": "EC_CacheLightPal",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x0047cc00"
+    },
+    {
+      "name": "TCLightPalEC",
+      "unit": "EC_CacheLightPal",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x0047cc78"
+    },
+    {
+      "name": "TCTBitmapControlEC",
+      "unit": "EC_CacheTBitmap",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x0047d1fc"
+    },
+    {
+      "name": "TCTBitmapEC",
+      "unit": "EC_CacheTBitmap",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x0047d274"
+    },
+    {
+      "name": "TCBitmapControlEC",
+      "unit": "EC_CacheBitmap",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x0047d560"
+    },
+    {
+      "name": "TCBitmapEC",
+      "unit": "EC_CacheBitmap",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x0047d5d8"
+    },
+    {
+      "name": "TStarFieldMGI",
+      "unit": "GI_StarFieldM",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x0047d890"
+    },
+    {
+      "name": "TStarFieldList",
+      "unit": "GI_StarField",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x0047e9a8"
+    },
+    {
+      "name": "TStarFieldGI",
+      "unit": "GI_StarField",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x0047ea04"
+    },
+    {
+      "name": "TCGiControlEC",
+      "unit": "EC_CacheGI",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x0047fc10"
+    },
+    {
+      "name": "TCGiEC",
+      "unit": "EC_CacheGI",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x0047fca8"
+    },
+    {
+      "name": "TGraphBufGI",
+      "unit": "GI_GraphBuf",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x004828f8"
+    },
+    {
+      "name": "TShrLightGI",
+      "unit": "GI_ShrLight",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x00483ef8"
+    },
+    {
+      "name": "TFrameGI",
+      "unit": "GI_Frame",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x004845f0"
+    },
+    {
+      "name": "TLineGI",
+      "unit": "GI_Line",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x00484e20"
+    },
+    {
+      "name": "TSimpleImageGI",
+      "unit": "GI_SimpleImage",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x004851d0"
+    },
+    {
+      "name": "TTransImageGI",
+      "unit": "GI_TransImage",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x00485ee0"
+    },
+    {
+      "name": "TgiGI",
+      "unit": "GI_GI",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x00486a18"
+    },
+    {
+      "name": "TCAlphaBitmapControlEC",
+      "unit": "EC_CacheAlphaBitmap",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x00487bc4"
+    },
+    {
+      "name": "TCAlphaBitmapEC",
+      "unit": "EC_CacheAlphaBitmap",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x00487c40"
+    },
+    {
+      "name": "TAlphaImageGI",
+      "unit": "GI_AlphaImage",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x00488268"
+    },
+    {
+      "name": "TAImageGI",
+      "unit": "GI_AImage",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x00489144"
+    },
+    {
+      "name": "TImageGI",
+      "unit": "GI_Image",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x0048998c"
+    },
+    {
+      "name": "TCFontControlEC",
+      "unit": "EC_CacheFont",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x0048ad20"
+    },
+    {
+      "name": "TCFontEC",
+      "unit": "EC_CacheFont",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x0048adbc"
+    },
+    {
+      "name": "TLabelGI",
+      "unit": "GI_Label",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x0048fbb4"
+    },
+    {
+      "name": "TScrollBarGI",
+      "unit": "GI_ScrollBar",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x00493a6c"
+    },
+    {
+      "name": "TPanelScrollBarGI",
+      "unit": "GI_PanelScrollBar",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x004979f8"
+    },
+    {
+      "name": "TGridGI",
+      "unit": "GI_Grid",
+      "basis": "adjacent_referenced_dynamic_array_RTTI",
+      "vmt_header_va": "0x00498a94"
+    },
+    {
+      "name": "TRadioGroupGI",
+      "unit": "GI_RadioGroup",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x0049b9e8"
+    },
+    {
+      "name": "TCheckBoxGI",
+      "unit": "GI_CheckBox",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x0049c12c"
+    },
+    {
+      "name": "TPlanetGI",
+      "unit": "GI_Planet",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x0049c8b4"
+    },
+    {
+      "name": "TPlanetButtonGI",
+      "unit": "GI_PlanetButton",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x0049fe38"
+    },
+    {
+      "name": "TStatusBarGI",
+      "unit": "GI_StatusBar",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x004a03a4"
+    },
+    {
+      "name": "TGraphButtonGI",
+      "unit": "GI_GraphButton",
+      "basis": "class_RTTI",
+      "vmt_header_va": "0x004a0da0"
+    },
+    {
+      "name": "TCountBarGI",
+      "unit": "GI_CountBar",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x004a4210"
+    },
+    {
+      "name": "TEditGI",
+      "unit": "GI_Edit",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x004a54f8"
+    },
+    {
+      "name": "TZoneGI",
+      "unit": "GI_Zone",
+      "basis": "class_RTTI",
+      "vmt_header_va": "0x004a79e8"
+    },
+    {
+      "name": "TTextButtonGI",
+      "unit": "GI_TextButton",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x004a8238"
+    },
+    {
+      "name": "TSimpleButtonGI",
+      "unit": "GI_SimpleButton",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x004a9954"
+    },
+    {
+      "name": "TDoorGI",
+      "unit": "GI_Door",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x004aa00c"
+    },
+    {
+      "name": "TMultiImageImageGI",
+      "unit": "GI_MultiImage",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x004aa7f4"
+    },
+    {
+      "name": "TMultiImageGI",
+      "unit": "GI_MultiImage",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x004aa854"
+    },
+    {
+      "name": "TGAIFileThreadGI",
+      "unit": "GI_GAIFile",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x004ab90c"
+    },
+    {
+      "name": "TGAIFileGI",
+      "unit": "GI_GAIFile",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x004ab970"
+    },
+    {
+      "name": "TInfiniteImageGI",
+      "unit": "GI_InfiniteImage",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x004ad4a4"
+    },
+    {
+      "name": "TRotateImageGaiGI",
+      "unit": "GI_RotateImageGAI",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x004ad9fc"
+    },
+    {
+      "name": "TCHSAIControlEC",
+      "unit": "EC_CacheHSAI",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x004aef08"
+    },
+    {
+      "name": "TCHSAIEC",
+      "unit": "EC_CacheHSAI",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x004aef7c"
+    },
+    {
+      "name": "TRotateImage5GI",
+      "unit": "GI_RotateImage5",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x004af430"
+    },
+    {
+      "name": "TRotateImage2GI",
+      "unit": "GI_RotateImage2",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x004b0fa4"
+    },
+    {
+      "name": "TRotateImageGI",
+      "unit": "GI_RotateImage",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x004b1b34"
+    },
+    {
+      "name": "TSBPathGI",
+      "unit": "GI_SBPath",
+      "basis": "adjacent_referenced_dynamic_array_RTTI",
+      "vmt_header_va": "0x004b24d0"
+    },
+    {
+      "name": "TWindowGI",
+      "unit": "GI_Window",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x004b2f9c"
+    },
+    {
+      "name": "TPanelGI",
+      "unit": "GI_Panel",
+      "basis": "class_RTTI",
+      "vmt_header_va": "0x004b3f20"
+    },
+    {
+      "name": "TCursorGI",
+      "unit": "GI_Cursor",
+      "basis": "adjacent_referenced_dynamic_array_RTTI",
+      "vmt_header_va": "0x004b5908"
+    },
+    {
+      "name": "TCCInterface",
+      "unit": "GR_Main",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x004b8d4c"
+    },
+    {
+      "name": "TRectGR",
+      "unit": "GR_Rect",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x004c87dc"
+    },
+    {
+      "name": "TArrayRectGR",
+      "unit": "GR_Rect",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x004c8830"
+    },
+    {
+      "name": "TObjectGI",
+      "unit": "GI_MessageLoop",
+      "basis": "class_RTTI",
+      "vmt_header_va": "0x004c9034"
+    },
+    {
+      "name": "TFormSoundGroup",
+      "unit": "GI_MessageLoop",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x004c91a0"
+    },
+    {
+      "name": "TMessageLoopGI",
+      "unit": "GI_MessageLoop",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x004c9224"
+    },
+    {
+      "name": "TgaiGI",
+      "unit": "GI_GAI",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x004d036c"
+    },
+    {
+      "name": "TSoundRndSE",
+      "unit": "SE_SoundRnd",
+      "basis": "adjacent_referenced_dynamic_array_RTTI",
+      "vmt_header_va": "0x004d3798"
+    },
+    {
+      "name": "TMessageBoxGI",
+      "unit": "GI_MessageBox",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x004d5528"
+    },
+    {
+      "name": "TGateSE",
+      "unit": "SE_Gate",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x004d6644"
+    },
+    {
+      "name": "TGateEffectSE",
+      "unit": "SE_Gate",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x004d6708"
+    },
+    {
+      "name": "TSPath",
+      "unit": "aPath",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x004d75ec"
+    },
+    {
+      "name": "TGalaxyEvent",
+      "unit": "aGalaxyEvent",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x004d8568"
+    },
+    {
+      "name": "TTextQuestInterface",
+      "unit": "TextQuestInterface",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x004d8ba8"
+    },
+    {
+      "name": "TTextField",
+      "unit": "TextFieldClass",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x004d8edc"
+    },
+    {
+      "name": "TEvent",
+      "unit": "EventClass",
+      "basis": "class_RTTI",
+      "vmt_header_va": "0x004d90a8"
+    },
+    {
+      "name": "TValuesList",
+      "unit": "ValueListClass",
+      "basis": "adjacent_referenced_dynamic_array_RTTI",
+      "vmt_header_va": "0x004d9394"
+    },
+    {
+      "name": "TCPDiapazone",
+      "unit": "CPDiapClass",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x004d9afc"
+    },
+    {
+      "name": "TParViewString",
+      "unit": "ParViewStringClass",
+      "basis": "class_RTTI",
+      "vmt_header_va": "0x004da7f0"
+    },
+    {
+      "name": "TParameter",
+      "unit": "ParameterClass",
+      "basis": "adjacent_referenced_dynamic_array_RTTI",
+      "vmt_header_va": "0x004da9c4"
+    },
+    {
+      "name": "TCalcParse",
+      "unit": "CalcParseClass",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x004dbed8"
+    },
+    {
+      "name": "TParameterDelta",
+      "unit": "ParameterDeltaClass",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x004e0e10"
+    },
+    {
+      "name": "TLocation",
+      "unit": "LocationClass",
+      "basis": "adjacent_referenced_dynamic_array_RTTI",
+      "vmt_header_va": "0x004e1898"
+    },
+    {
+      "name": "TSequence",
+      "unit": "SequenceClass",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x004e32ec"
+    },
+    {
+      "name": "TPath",
+      "unit": "PathClass",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x004e36a8"
+    },
+    {
+      "name": "TTextQuest",
+      "unit": "TextQuest",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x004e4c58"
+    },
+    {
+      "name": "TCBufControlEC",
+      "unit": "EC_CacheBuf",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x004e84a0"
+    },
+    {
+      "name": "TCBufEC",
+      "unit": "EC_CacheBuf",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x004e8514"
+    },
+    {
+      "name": "TTailGI",
+      "unit": "GI_Tail",
+      "basis": "adjacent_referenced_dynamic_array_RTTI",
+      "vmt_header_va": "0x004ea310"
+    },
+    {
+      "name": "TPSWeaponGI",
+      "unit": "GI_PSWeapon",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x004eb898"
+    },
+    {
+      "name": "TPSEyesGI",
+      "unit": "GI_PSEyes",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x004ee16c"
+    },
+    {
+      "name": "TPSWeapon17Kafacitor",
+      "unit": "GI_PSWeapon17Kafacitor",
+      "basis": "name_plus_independent_unit_RTTI_and_layout",
+      "vmt_header_va": "0x004ef964"
+    },
+    {
+      "name": "TPSWeapon16Esodafer",
+      "unit": "GI_PSWeapon16Esodafer",
+      "basis": "name_plus_independent_unit_RTTI_and_layout",
+      "vmt_header_va": "0x004f0c58"
+    },
+    {
+      "name": "TPSWeapon13IMHO",
+      "unit": "GI_PSWeapon13IMHO",
+      "basis": "name_plus_independent_unit_RTTI_and_layout",
+      "vmt_header_va": "0x004f2688"
+    },
+    {
+      "name": "TPSWeapon12Turbogravir",
+      "unit": "GI_PSWeapon12Turbogravir",
+      "basis": "name_plus_independent_unit_RTTI_and_layout",
+      "vmt_header_va": "0x004f33f8"
+    },
+    {
+      "name": "TPSBlueWhirlGI",
+      "unit": "GI_PSWeapon12Turbogravir",
+      "basis": "name_plus_independent_unit_RTTI_and_layout",
+      "vmt_header_va": "0x004f3530"
+    },
+    {
+      "name": "TPSWeapon11Desintegrator",
+      "unit": "GI_PSWeapon11Desintegrator",
+      "basis": "name_plus_independent_unit_RTTI_and_layout",
+      "vmt_header_va": "0x004f4e68"
+    },
+    {
+      "name": "TPSWeapon10AVision",
+      "unit": "GI_PSWeapon10AVision",
+      "basis": "name_plus_independent_unit_RTTI_and_layout",
+      "vmt_header_va": "0x004f6624"
+    },
+    {
+      "name": "TPSWeapon09MResonator",
+      "unit": "GI_PSWeapon09MResonator",
+      "basis": "name_plus_independent_unit_RTTI_and_layout",
+      "vmt_header_va": "0x004f7490"
+    },
+    {
+      "name": "TPSWeapon09BranchGI",
+      "unit": "GI_PSWeapon09MResonator",
+      "basis": "name_plus_independent_unit_RTTI_and_layout",
+      "vmt_header_va": "0x004f75d8"
+    },
+    {
+      "name": "TPSWeapon08ECutter",
+      "unit": "GI_PSWeapon08ECutter",
+      "basis": "name_plus_independent_unit_RTTI_and_layout",
+      "vmt_header_va": "0x004f8ee8"
+    },
+    {
+      "name": "TPSWeapon07Blaster",
+      "unit": "GI_PSWeapon07Blaster",
+      "basis": "name_plus_independent_unit_RTTI_and_layout",
+      "vmt_header_va": "0x004f9b6c"
+    },
+    {
+      "name": "TPSWeapon06Phaser",
+      "unit": "GI_PSWeapon06Phaser",
+      "basis": "name_plus_independent_unit_RTTI_and_layout",
+      "vmt_header_va": "0x004fb1dc"
+    },
+    {
+      "name": "TPSWeapon05Treton",
+      "unit": "GI_PSWeapon05Treton",
+      "basis": "name_plus_independent_unit_RTTI_and_layout",
+      "vmt_header_va": "0x004fc134"
+    },
+    {
+      "name": "TPSWeapon03Lezka",
+      "unit": "GI_PSWeapon03Lezka",
+      "basis": "name_plus_independent_unit_RTTI_and_layout",
+      "vmt_header_va": "0x004fd4ac"
+    },
+    {
+      "name": "TPSWeapon02FragCannon",
+      "unit": "GI_PSWeapon02FragCannon",
+      "basis": "name_plus_independent_unit_RTTI_and_layout",
+      "vmt_header_va": "0x004fe944"
+    },
+    {
+      "name": "TPSWeapon01Laser",
+      "unit": "GI_PSWeapon01Laser",
+      "basis": "name_plus_independent_unit_RTTI_and_layout",
+      "vmt_header_va": "0x0050001c"
+    },
+    {
+      "name": "TGroup",
+      "unit": "aGroup",
+      "basis": "adjacent_referenced_dynamic_array_RTTI",
+      "vmt_header_va": "0x005015dc"
+    },
+    {
+      "name": "TfChameleon",
+      "unit": "fChameleon",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x005028e0"
+    },
+    {
+      "name": "TfTextBox",
+      "unit": "fTextBox",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x00504108"
+    },
+    {
+      "name": "TfCount2",
+      "unit": "fCount2",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x00504fd0"
+    },
+    {
+      "name": "TEObjInfo",
+      "unit": "aEObjInfo",
+      "basis": "adjacent_referenced_dynamic_array_RTTI",
+      "vmt_header_va": "0x005068ac"
+    },
+    {
+      "name": "TfListBox",
+      "unit": "fListBox",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x00509034"
+    },
+    {
+      "name": "TfPlanet",
+      "unit": "fPlanet",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x00509fdc"
+    },
+    {
+      "name": "TfPlanetNO",
+      "unit": "fPlanetNO",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x0050b8e4"
+    },
+    {
+      "name": "TfGoodsShop2",
+      "unit": "fGoodsShop2",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x00513360"
+    },
+    {
+      "name": "TfScaner",
+      "unit": "fScaner",
+      "basis": "adjacent_referenced_dynamic_array_RTTI",
+      "vmt_header_va": "0x0051b15c"
+    },
+    {
+      "name": "TfGov",
+      "unit": "fGov",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x00524750"
+    },
+    {
+      "name": "TfFilmLoader",
+      "unit": "fFilm",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x0052de44"
+    },
+    {
+      "name": "TfFilm",
+      "unit": "fFilm",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x0052dea4"
+    },
+    {
+      "name": "TModInfo",
+      "unit": "aModsInfo",
+      "basis": "class_RTTI",
+      "vmt_header_va": "0x005307e4"
+    },
+    {
+      "name": "TfModsManager",
+      "unit": "fMods",
+      "basis": "adjacent_referenced_dynamic_array_RTTI",
+      "vmt_header_va": "0x00532d10"
+    },
+    {
+      "name": "TfMainForm",
+      "unit": "fMainForm",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x00538b20"
+    },
+    {
+      "name": "TfJump",
+      "unit": "fJump",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x0053ba18"
+    },
+    {
+      "name": "TThreadGameLoad",
+      "unit": "fGameLoad",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x0053c85c"
+    },
+    {
+      "name": "TfGameLoad",
+      "unit": "fGameLoad",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x0053c8bc"
+    },
+    {
+      "name": "TfGameMenu",
+      "unit": "fGameMenu",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x0053d544"
+    },
+    {
+      "name": "TfCfgSettings",
+      "unit": "fCfgSettings",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x0053e458"
+    },
+    {
+      "name": "TfGameEnd",
+      "unit": "fGameEnd",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x0054eaa4"
+    },
+    {
+      "name": "TfQuestA",
+      "unit": "fPlanetQuest",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x00551e28"
+    },
+    {
+      "name": "TfPlanetQuest",
+      "unit": "fPlanetQuest",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x00551e80"
+    },
+    {
+      "name": "TTextQuestPlayerInterface",
+      "unit": "fPlanetQuest",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x00551f44"
+    },
+    {
+      "name": "TabW18",
+      "unit": "ab_W18",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x0055a730"
+    },
+    {
+      "name": "TabW17",
+      "unit": "ab_W17",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x0055aeb0"
+    },
+    {
+      "name": "TabW16",
+      "unit": "ab_W16",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x0055b75c"
+    },
+    {
+      "name": "TabW15",
+      "unit": "ab_W15",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x0055c040"
+    },
+    {
+      "name": "TabW14",
+      "unit": "ab_W14",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x0055c6f0"
+    },
+    {
+      "name": "TabW13",
+      "unit": "ab_W13",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x0055cc00"
+    },
+    {
+      "name": "TabW12",
+      "unit": "ab_W12",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x0055d238"
+    },
+    {
+      "name": "TabW11",
+      "unit": "ab_W11",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x0055d8b4"
+    },
+    {
+      "name": "TabW10",
+      "unit": "ab_W10",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x0055e05c"
+    },
+    {
+      "name": "TabW09",
+      "unit": "ab_W09",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x0055e920"
+    },
+    {
+      "name": "TabW08",
+      "unit": "ab_W08",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x0055f0a8"
+    },
+    {
+      "name": "TabW07",
+      "unit": "ab_W07",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x0055f740"
+    },
+    {
+      "name": "TabW06",
+      "unit": "ab_W06",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x0055fe8c"
+    },
+    {
+      "name": "TabW05",
+      "unit": "ab_W05",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x005603bc"
+    },
+    {
+      "name": "TabW04",
+      "unit": "ab_W04",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x00560b8c"
+    },
+    {
+      "name": "TabW03",
+      "unit": "ab_W03",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x00561378"
+    },
+    {
+      "name": "TabW02",
+      "unit": "ab_W02",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x00561868"
+    },
+    {
+      "name": "TabW01",
+      "unit": "ab_W01",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x00561e30"
+    },
+    {
+      "name": "TabWall",
+      "unit": "abWall",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x00564ebc"
+    },
+    {
+      "name": "TfRuinsTalk",
+      "unit": "fRuinsTalk",
+      "basis": "adjacent_referenced_dynamic_array_RTTI",
+      "vmt_header_va": "0x005657e4"
+    },
+    {
+      "name": "TfPanelPlanet",
+      "unit": "fPanelPlanet",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x0059bcd4"
+    },
+    {
+      "name": "TfInfo",
+      "unit": "fInfo",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x0059cb60"
+    },
+    {
+      "name": "TPirate",
+      "unit": "aPirate",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x005ab398"
+    },
+    {
+      "name": "TWarrior",
+      "unit": "aWarrior",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x005b5ea8"
+    },
+    {
+      "name": "TTransport",
+      "unit": "aTransport",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x005bf71c"
+    },
+    {
+      "name": "TKling",
+      "unit": "aKling",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x005c5e20"
+    },
+    {
+      "name": "TTranclucator",
+      "unit": "aTranclucator",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x005cd9e0"
+    },
+    {
+      "name": "TfAbout",
+      "unit": "fAbout",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x005d137c"
+    },
+    {
+      "name": "TfIntroduction",
+      "unit": "fIntroduction",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x005d21ec"
+    },
+    {
+      "name": "TfGameSettings2",
+      "unit": "fGameSettings2",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x005d6d94"
+    },
+    {
+      "name": "TMissileSE",
+      "unit": "SE_Missile",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x005e4a48"
+    },
+    {
+      "name": "TMissile",
+      "unit": "aMissile",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x005e5554"
+    },
+    {
+      "name": "TCustomMissile",
+      "unit": "aMissile",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x005e55bc"
+    },
+    {
+      "name": "TfRewards",
+      "unit": "fRewards",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x005e8a4c"
+    },
+    {
+      "name": "TfRating2",
+      "unit": "fRating2",
+      "basis": "adjacent_referenced_dynamic_array_RTTI",
+      "vmt_header_va": "0x005ea67c"
+    },
+    {
+      "name": "TfSelectFace",
+      "unit": "fSelectFace",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x005f1f08"
+    },
+    {
+      "name": "TfJournal",
+      "unit": "fJournal",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x005f33b4"
+    },
+    {
+      "name": "TfLoadRobot",
+      "unit": "fLoadRobot",
+      "basis": "adjacent_referenced_dynamic_array_RTTI",
+      "vmt_header_va": "0x005f6594"
+    },
+    {
+      "name": "TfLoadQuest",
+      "unit": "fLoadQuest",
+      "basis": "adjacent_referenced_dynamic_array_RTTI",
+      "vmt_header_va": "0x005fab14"
+    },
+    {
+      "name": "TfLoadAB",
+      "unit": "fLoadAB",
+      "basis": "adjacent_referenced_dynamic_array_RTTI",
+      "vmt_header_va": "0x005fe3ac"
+    },
+    {
+      "name": "TCacheLoader",
+      "unit": "fLoad",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x00603988"
+    },
+    {
+      "name": "TfLoad",
+      "unit": "fLoad",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x006039e8"
+    },
+    {
+      "name": "TfTalkA",
+      "unit": "fTalk",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x00605590"
+    },
+    {
+      "name": "TfTalk",
+      "unit": "fTalk",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x006055f8"
+    },
+    {
+      "name": "TfHangar",
+      "unit": "fHangar",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x0061b080"
+    },
+    {
+      "name": "TfCount1",
+      "unit": "fCount1",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x00622258"
+    },
+    {
+      "name": "TScriptStar",
+      "unit": "aScript",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x0066a088"
+    },
+    {
+      "name": "TScriptConstellation",
+      "unit": "aScript",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x0066a10c"
+    },
+    {
+      "name": "TScriptShip",
+      "unit": "aScript",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x0066a170"
+    },
+    {
+      "name": "TScriptPlace",
+      "unit": "aScript",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x0066a1dc"
+    },
+    {
+      "name": "TScriptItem",
+      "unit": "aScript",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x0066a260"
+    },
+    {
+      "name": "TScriptGroup",
+      "unit": "aScript",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x0066a304"
+    },
+    {
+      "name": "TScriptState",
+      "unit": "aScript",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x0066a3d0"
+    },
+    {
+      "name": "TScriptDialog",
+      "unit": "aScript",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x0066a46c"
+    },
+    {
+      "name": "TScriptDialogMsg",
+      "unit": "aScript",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x0066a4d8"
+    },
+    {
+      "name": "TScriptDialogAnswer",
+      "unit": "aScript",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x0066a548"
+    },
+    {
+      "name": "TScript",
+      "unit": "aScript",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x0066a5e0"
+    },
+    {
+      "name": "TScriptThread",
+      "unit": "aScript",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x0066a650"
+    },
+    {
+      "name": "TScriptCacheUnit",
+      "unit": "aScript",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x0066a6b0"
+    },
+    {
+      "name": "TScriptCache",
+      "unit": "aScript",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x0066a728"
+    },
+    {
+      "name": "TScriptGICacheUnit",
+      "unit": "aScript",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x0066a784"
+    },
+    {
+      "name": "TScriptGICache",
+      "unit": "aScript",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x0066a7f8"
+    },
+    {
+      "name": "TLibraryHandler",
+      "unit": "aScript",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x0066a854"
+    },
+    {
+      "name": "TLibraryCache",
+      "unit": "aScript",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x0066a8c4"
+    },
+    {
+      "name": "TabSpace",
+      "unit": "ab_Space",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x0067a488"
+    },
+    {
+      "name": "TabShipAI",
+      "unit": "ab_ShipAI",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x0067e7dc"
+    },
+    {
+      "name": "TabObject",
+      "unit": "ab_Object",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x00681b40"
+    },
+    {
+      "name": "TShip2AnimSE",
+      "unit": "SE_Ship2",
+      "basis": "adjacent_referenced_dynamic_array_RTTI",
+      "vmt_header_va": "0x00682f48"
+    },
+    {
+      "name": "TShip2SE",
+      "unit": "SE_Ship2",
+      "basis": "adjacent_referenced_dynamic_array_RTTI",
+      "vmt_header_va": "0x00682fbc"
+    },
+    {
+      "name": "TabHit",
+      "unit": "ab_Hit",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x00686344"
+    },
+    {
+      "name": "TabShip",
+      "unit": "ab_Ship",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x006879e4"
+    },
+    {
+      "name": "TabItem",
+      "unit": "ab_Item",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x0068df34"
+    },
+    {
+      "name": "TGAIEffectSE",
+      "unit": "SE_GAIEffect",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x0069f5f0"
+    },
+    {
+      "name": "TfGalaxy2",
+      "unit": "fGalaxy2",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x0069faec"
+    },
+    {
+      "name": "TfPanelRuins",
+      "unit": "fPanelRuins",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x006a98a0"
+    },
+    {
+      "name": "TShopSlot",
+      "unit": "fEquipmentShop",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x006aa500"
+    },
+    {
+      "name": "TfEquipmentShop",
+      "unit": "fEquipmentShop",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x006aa558"
+    },
+    {
+      "name": "TfScoreUnit",
+      "unit": "fScore",
+      "basis": "adjacent_referenced_dynamic_array_RTTI",
+      "vmt_header_va": "0x006b7b9c"
+    },
+    {
+      "name": "TfScore",
+      "unit": "fScore",
+      "basis": "adjacent_referenced_dynamic_array_RTTI",
+      "vmt_header_va": "0x006b7c20"
+    },
+    {
+      "name": "TPlanetSE",
+      "unit": "SE_Planet",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x006bfc28"
+    },
+    {
+      "name": "TSputnikSE",
+      "unit": "SE_Sputnik",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x006c45fc"
+    },
+    {
+      "name": "TAsteroidSE",
+      "unit": "SE_Asteroid",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x006c4fac"
+    },
+    {
+      "name": "TRuinsSE",
+      "unit": "SE_Ruins",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x006c8dec"
+    },
+    {
+      "name": "TRuins",
+      "unit": "aRuins",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x006ca3b8"
+    },
+    {
+      "name": "TPlayerHoldUnit",
+      "unit": "fShip2",
+      "basis": "class_RTTI",
+      "vmt_header_va": "0x006d34e0"
+    },
+    {
+      "name": "TfShip2",
+      "unit": "fShip2",
+      "basis": "adjacent_referenced_dynamic_array_RTTI",
+      "vmt_header_va": "0x006d3584"
+    },
+    {
+      "name": "TStarSE",
+      "unit": "SE_Star",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x006f72c4"
+    },
+    {
+      "name": "TShip",
+      "unit": "aShip",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x006f7b6c"
+    },
+    {
+      "name": "TThreadCalc",
+      "unit": "ThreadCalc",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x0072f5cc"
+    },
+    {
+      "name": "TContainerSE",
+      "unit": "SE_Container",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x0072fec4"
+    },
+    {
+      "name": "TItem",
+      "unit": "aItem",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x00730524"
+    },
+    {
+      "name": "TEquipment",
+      "unit": "aItem",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x007305b4"
+    },
+    {
+      "name": "THull",
+      "unit": "aItem",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x00730674"
+    },
+    {
+      "name": "TFuelTanks",
+      "unit": "aItem",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x00730714"
+    },
+    {
+      "name": "TEngine",
+      "unit": "aItem",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x007307b8"
+    },
+    {
+      "name": "TRadar",
+      "unit": "aItem",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x00730858"
+    },
+    {
+      "name": "TScaner",
+      "unit": "aItem",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x007308f8"
+    },
+    {
+      "name": "TRepairRobot",
+      "unit": "aItem",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x00730998"
+    },
+    {
+      "name": "TCargoHook",
+      "unit": "aItem",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x00730a40"
+    },
+    {
+      "name": "TDefGenerator",
+      "unit": "aItem",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x00730ae4"
+    },
+    {
+      "name": "TWeapon",
+      "unit": "aItem",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x00730b8c"
+    },
+    {
+      "name": "TCustomWeapon",
+      "unit": "aItem",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x00730c34"
+    },
+    {
+      "name": "TGoods",
+      "unit": "aItem",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x00730ce4"
+    },
+    {
+      "name": "TCountableItem",
+      "unit": "aItem",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x00730d64"
+    },
+    {
+      "name": "TProtoplasm",
+      "unit": "aItem",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x00730e0c"
+    },
+    {
+      "name": "TEquipmentWithActCode",
+      "unit": "aItem",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x00730eb0"
+    },
+    {
+      "name": "TUselessItem",
+      "unit": "aItem",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x00730f60"
+    },
+    {
+      "name": "TCistern",
+      "unit": "aItem",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x00731018"
+    },
+    {
+      "name": "TSatellite",
+      "unit": "aItem",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x007310bc"
+    },
+    {
+      "name": "TTreasureMap",
+      "unit": "aItem",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x00731160"
+    },
+    {
+      "name": "TMicroModule",
+      "unit": "aItem",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x00731228"
+    },
+    {
+      "name": "TArtefact",
+      "unit": "aItem",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x007312d0"
+    },
+    {
+      "name": "TArtefactTransmitter",
+      "unit": "aItem",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x00731378"
+    },
+    {
+      "name": "TArtefactTranclucator",
+      "unit": "aItem",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x0073142c"
+    },
+    {
+      "name": "TArtefactCustom",
+      "unit": "aItem",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x007314e0"
+    },
+    {
+      "name": "TRanger",
+      "unit": "aRanger",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x0074fe5c"
+    },
+    {
+      "name": "THoleSE",
+      "unit": "SE_Hole",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x00768a00"
+    },
+    {
+      "name": "TAsteroid",
+      "unit": "aAsteroid",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x00769418"
+    },
+    {
+      "name": "TSputnik",
+      "unit": "aPlanet",
+      "basis": "name_plus_independent_unit_RTTI_and_layout",
+      "vmt_header_va": "0x0076a264"
+    },
+    {
+      "name": "TPlanet",
+      "unit": "aPlanet",
+      "basis": "name_plus_independent_unit_RTTI_and_layout",
+      "vmt_header_va": "0x0076a2bc"
+    },
+    {
+      "name": "TNormalShip",
+      "unit": "aNormalShip",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x007819a0"
+    },
+    {
+      "name": "TJournalRecord",
+      "unit": "aPlayer",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x0078bd6c"
+    },
+    {
+      "name": "TPlayer",
+      "unit": "aPlayer",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x0078be10"
+    },
+    {
+      "name": "TfPanelLoad",
+      "unit": "fPanelLoad",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x0079a0dc"
+    },
+    {
+      "name": "TfSaveManager",
+      "unit": "fSaveManager",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x0079b794"
+    },
+    {
+      "name": "TfPanelMain",
+      "unit": "fPanelMain",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x007a1014"
+    },
+    {
+      "name": "TMessageLoopGIWithMainPanel",
+      "unit": "fPanelMain",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x007a106c"
+    },
+    {
+      "name": "TfStarMap",
+      "unit": "fStarMap",
+      "basis": "adjacent_referenced_dynamic_array_RTTI",
+      "vmt_header_va": "0x007a5bb8"
+    },
+    {
+      "name": "TMeteoriteSE",
+      "unit": "SE_Meteorite",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x007c8aa0"
+    },
+    {
+      "name": "TAngelSE",
+      "unit": "SE_Angel",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x007c9314"
+    },
+    {
+      "name": "TAnimSE",
+      "unit": "SE_Anim",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x007ca604"
+    },
+    {
+      "name": "TCometSE",
+      "unit": "SE_Comet",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x007cab54"
+    },
+    {
+      "name": "TBGObjSE",
+      "unit": "SE_BGObj",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x007cc330"
+    },
+    {
+      "name": "TLaserSE",
+      "unit": "SE_Laser",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x007cc62c"
+    },
+    {
+      "name": "TStarsFieldSE",
+      "unit": "SE_StarsField",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x007ccff8"
+    },
+    {
+      "name": "TProcessSE",
+      "unit": "SE_Process",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x007cd378"
+    },
+    {
+      "name": "TEFilm",
+      "unit": "aEFilm",
+      "basis": "adjacent_referenced_dynamic_array_RTTI",
+      "vmt_header_va": "0x007cec9c"
+    },
+    {
+      "name": "TEFilmEnd",
+      "unit": "aEFilmEnd",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x007d2614"
+    },
+    {
+      "name": "TObjectSE",
+      "unit": "SE_Space",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x007d2f40"
+    },
+    {
+      "name": "TSpaceSE",
+      "unit": "SE_Space",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x007d3014"
+    },
+    {
+      "name": "TWeaponEffect",
+      "unit": "SE_Weapon",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x007d4e24"
+    },
+    {
+      "name": "TWeaponSE",
+      "unit": "SE_Weapon",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x007d4e90"
+    },
+    {
+      "name": "TTextureGR",
+      "unit": "GR_DX",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x007e9850"
+    },
+    {
+      "name": "TCSoundControlEC",
+      "unit": "EC_CacheSound",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x007ebfb8"
+    },
+    {
+      "name": "TCSoundEC",
+      "unit": "EC_CacheSound",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x007ec030"
+    },
+    {
+      "name": "TDataFileEC",
+      "unit": "EC_Data",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x007ec35c"
+    },
+    {
+      "name": "TDataElEC",
+      "unit": "EC_Data",
+      "basis": "class_RTTI",
+      "vmt_header_va": "0x007ec3b4"
+    },
+    {
+      "name": "TDataEC",
+      "unit": "EC_Data",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x007ec460"
+    },
+    {
+      "name": "TCacheControlEC",
+      "unit": "EC_Cache",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x007f3258"
+    },
+    {
+      "name": "TCacheDataEC",
+      "unit": "EC_Cache",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x007f32e0"
+    },
+    {
+      "name": "TCacheEC",
+      "unit": "EC_Cache",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x007f3354"
+    },
+    {
+      "name": "TThreadEC",
+      "unit": "EC_Thread",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x007f851c"
+    },
+    {
+      "name": "TfAchievements",
+      "unit": "fAchievements",
+      "basis": "adjacent_referenced_dynamic_array_RTTI",
+      "vmt_header_va": "0x007ff638"
+    },
+    {
+      "name": "TScriptTemplUnit",
+      "unit": "Globals",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00800c3c"
+    },
+    {
+      "name": "TPlanetTempl",
+      "unit": "Globals",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00800cb4"
+    },
+    {
+      "name": "TSputnikTempl",
+      "unit": "Globals",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00800d38"
+    },
+    {
+      "name": "TMessagePlayer",
+      "unit": "Globals",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x008010e4"
+    },
+    {
+      "name": "TGraphBufPalGR",
+      "unit": "GR_GraphBufPal",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x0081463c"
+    },
+    {
+      "name": "TVarEC",
+      "unit": "EC_Expression",
+      "basis": "class_RTTI",
+      "vmt_header_va": "0x00814b54"
+    },
+    {
+      "name": "TVarArrayEC",
+      "unit": "EC_Expression",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00814bf4"
+    },
+    {
+      "name": "TCodeAnalyzerUnitEC",
+      "unit": "EC_Expression",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00814c4c"
+    },
+    {
+      "name": "TCodeAnalyzerEC",
+      "unit": "EC_Expression",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00814cc0"
+    },
+    {
+      "name": "TExpressionInstrEC",
+      "unit": "EC_Expression",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00814d44"
+    },
+    {
+      "name": "TExpressionVarEC",
+      "unit": "EC_Expression",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00814de0"
+    },
+    {
+      "name": "TExpressionEC",
+      "unit": "EC_Expression",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00814e58"
+    },
+    {
+      "name": "TCodeUnitEC",
+      "unit": "EC_Expression",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00814eb4"
+    },
+    {
+      "name": "TCodeProcessEC",
+      "unit": "EC_Expression",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00814f0c"
+    },
+    {
+      "name": "TCodeEC",
+      "unit": "EC_Expression",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00814f68"
+    },
+    {
+      "name": "TCompilerUnitEC",
+      "unit": "EC_Expression",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00814fd0"
+    },
+    {
+      "name": "TCompilerEC",
+      "unit": "EC_Expression",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00815040"
+    },
+    {
+      "name": "TBlockParElEC",
+      "unit": "EC_BlockPar",
+      "basis": "class_RTTI",
+      "vmt_header_va": "0x0082735c"
+    },
+    {
+      "name": "TBlockParEC",
+      "unit": "EC_BlockPar",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00827428"
+    },
+    {
+      "name": "TFileEC",
+      "unit": "EC_File",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x0082de84"
+    },
+    {
+      "name": "TBufEC",
+      "unit": "EC_Buf",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x0082ea5c"
+    },
+    {
+      "name": "TGraphBufGR",
+      "unit": "GR_GraphBuf",
+      "basis": "name_and_layout_consistency",
+      "vmt_header_va": "0x00830558"
+    },
+    {
+      "name": "TInterfaceStateOverride",
+      "unit": "aGalaxy",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00838a68"
+    },
+    {
+      "name": "TInterfaceTextOverride",
+      "unit": "aGalaxy",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00838ae8"
+    },
+    {
+      "name": "TInterfaceImageOverride",
+      "unit": "aGalaxy",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00838b78"
+    },
+    {
+      "name": "TInterfacePosOverride",
+      "unit": "aGalaxy",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00838c08"
+    },
+    {
+      "name": "TInterfaceSizeOverride",
+      "unit": "aGalaxy",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00838c84"
+    },
+    {
+      "name": "TStoredItem",
+      "unit": "aGalaxy",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00838d04"
+    },
+    {
+      "name": "TGalaxy",
+      "unit": "aGalaxy",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00838d90"
+    },
+    {
+      "name": "TConstellation",
+      "unit": "aGalaxy",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00838e00"
+    },
+    {
+      "name": "THole",
+      "unit": "aGalaxy",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00838e5c"
+    },
+    {
+      "name": "TCustomSystemInfo",
+      "unit": "aGalaxy",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00838ec0"
+    },
+    {
+      "name": "TStar",
+      "unit": "aGalaxy",
+      "basis": "compiler_layout_and_method_spans",
+      "vmt_header_va": "0x00838f6c"
+    },
+    {
+      "name": "TOrderedList",
+      "unit": "Contnrs",
+      "basis": "Installed Delphi 2007 rtl/common/Contnrs.pas declares these exact classes (lines 85,106). VMT parent and own list/stack method targets agree. Shared abstract target 0x40358C must be excluded.",
+      "vmt_header_va": "0x0041DFF8"
+    },
+    {
+      "name": "TStack",
+      "unit": "Contnrs",
+      "basis": "Installed Delphi 2007 rtl/common/Contnrs.pas declares these exact classes (lines 85,106). VMT parent and own list/stack method targets agree. Shared abstract target 0x40358C must be excluded.",
+      "vmt_header_va": "0x0041E060"
+    },
+    {
+      "name": "TThemeServices",
+      "unit": "Themes",
+      "basis": "Installed Delphi 2007 vcl/Themes.pas:374 declares TThemeServices. Native singleton accessor 0x44C348 constructs it and stores 0x888CB8; finalizer 0x44CBF0 frees that same singleton. Startup pair is native, not zipped with PACKAGEINFO.",
+      "vmt_header_va": "0x0044C0C8"
+    },
+    {
+      "name": "EHelpSystemException",
+      "unit": "HelpIntfs",
+      "basis": "Installed Delphi 2007 rtl/common/HelpIntfs.pas declares all three classes (159,216,260). Native manager accessors 0x41E55C/0x41E588 share interface global 0x8889F8 with finalizer 0x41F3B4.",
+      "vmt_header_va": "0x0041E270"
+    },
+    {
+      "name": "THelpManager",
+      "unit": "HelpIntfs",
+      "basis": "Installed Delphi 2007 rtl/common/HelpIntfs.pas declares all three classes (159,216,260). Native manager accessors 0x41E55C/0x41E588 share interface global 0x8889F8 with finalizer 0x41F3B4.",
+      "vmt_header_va": "0x0041E450"
+    },
+    {
+      "name": "THelpViewerNode",
+      "unit": "HelpIntfs",
+      "basis": "Installed Delphi 2007 rtl/common/HelpIntfs.pas declares all three classes (159,216,260). Native manager accessors 0x41E55C/0x41E588 share interface global 0x8889F8 with finalizer 0x41F3B4.",
+      "vmt_header_va": "0x0041E4C4"
+    },
+    {
+      "name": "TfPopUpController",
+      "unit": "PopUp",
+      "basis": "Unique matching linked unit; 0x4B50D0 builds achievement notification panels; 0x4B530C drains the controller lists under its critical section and updates popup children. Interior span ends at a reviewed controller routine, not at the next unit.",
+      "vmt_header_va": "0x004B4E40"
+    },
+    {
+      "name": "TQuestMessages",
+      "unit": "MessageText",
+      "basis": "Unique plausible text-message module; constructor 0x4B8AC8 owns a TBlockParEC at +4, and 0x4B8B6C/0x4B8C60 resolve text keys through it. Name-to-unit association remains an inference; the old Globals placement was not source evidence.",
+      "vmt_header_va": "0x004B8A6C"
+    },
+    {
+      "name": "TEtherUnit",
+      "unit": "EC_Ether",
+      "basis": "Matching linked module; methods manage the Ether string-indexed collection, including binary-search insertion 0x4EB610 and +20 critical-section wrappers 0x4EB868/0x4EB880. Script Ether operations reference this family.",
+      "vmt_header_va": "0x004EB36C"
+    },
+    {
+      "name": "TEther",
+      "unit": "EC_Ether",
+      "basis": "Matching linked module; methods manage the Ether string-indexed collection, including binary-search insertion 0x4EB610 and +20 critical-section wrappers 0x4EB868/0x4EB880. Script Ether operations reference this family.",
+      "vmt_header_va": "0x004EB3D8"
+    },
+    {
+      "name": "TPSPDWeaponGI",
+      "unit": "GI_PDTurretWeapon",
+      "basis": "Only linked weapon unit matching PD; class derives from TPSWeaponGI. Own update routine 0x4EDC54 constructs and advances particle trails, and own draw target 0x4EDEEC completes the class span. Exact source identifier is inferred from class/module family.",
+      "vmt_header_va": "0x004ED898"
+    },
+    {
+      "name": "TfCustomLoop",
+      "unit": "fCustom",
+      "basis": "Unique linked custom-screen module. 0x621FF8 constructs this VMT, initializes a caller-selected screen, and runs it as a child TMessageLoopGI. Its override 0x621F80 dispatches gameplay UI code.",
+      "vmt_header_va": "0x00621E84"
+    },
+    {
+      "name": "TfAB",
+      "unit": "ab_MainForm",
+      "basis": "Only linked arcade main-form module; TMessageLoopGI subclass with extensive native screen construction at 0x68EE7C and arcade input/update callbacks. VMT own-method span ends at 0x69F59C. Does not absorb earlier ab_Global/world helper candidates.",
+      "vmt_header_va": "0x0068ECE0"
+    },
+    {
+      "name": "TCheatList",
+      "unit": "CheatCode",
+      "basis": "Initializer 0x875904 creates TCheatList at global 0x889CE8 and registers dozens of local callbacks with decoded cheat strings; 0x6B1A94 formats Cheat.Info. Paired finalizer 0x6B7B00 destroys that same list. The module name is a strong semantic inference, not an RTTI UnitName.",
+      "vmt_header_va": "0x006B18B4"
+    },
+    {
+      "name": "TSoundBufferControl",
+      "unit": "GR_Sound",
+      "basis": "Matching sound-engine module. Native methods contain TSoundBuffer/TSoundControl diagnostics, DirectSound status handling and device enumeration; final reviewed 0x7F84D0 locks control +40 and traverses its buffers. GR_AMStream remains unlocated rather than receiving nearby audio code.",
+      "vmt_header_va": "0x007F5204"
+    },
+    {
+      "name": "TSoundBuffer",
+      "unit": "GR_Sound",
+      "basis": "Matching sound-engine module. Native methods contain TSoundBuffer/TSoundControl diagnostics, DirectSound status handling and device enumeration; final reviewed 0x7F84D0 locks control +40 and traverses its buffers. GR_AMStream remains unlocated rather than receiving nearby audio code.",
+      "vmt_header_va": "0x007F5278"
+    },
+    {
+      "name": "TSoundControl",
+      "unit": "GR_Sound",
+      "basis": "Matching sound-engine module. Native methods contain TSoundBuffer/TSoundControl diagnostics, DirectSound status handling and device enumeration; final reviewed 0x7F84D0 locks control +40 and traverses its buffers. GR_AMStream remains unlocated rather than receiving nearby audio code.",
+      "vmt_header_va": "0x007F52EC"
+    },
+    {
+      "name": "TMusicUnit",
+      "unit": "GR_Music",
+      "basis": "Two TThreadEC subclasses; 0x7F8D10 loads vorbisfile.dll, 0x7F92F0 selects music files, and 0x7F9D94 locks the controller and checks its two sound buffers. Trailing 0x7F9E34 is left outside the core because it is a free helper whose source ownership is less certain.",
+      "vmt_header_va": "0x007F8C28"
+    },
+    {
+      "name": "TMusicControl",
+      "unit": "GR_Music",
+      "basis": "Two TThreadEC subclasses; 0x7F8D10 loads vorbisfile.dll, 0x7F92F0 selects music files, and 0x7F9D94 locks the controller and checks its two sound buffers. Trailing 0x7F9E34 is left outside the core because it is a free helper whose source ownership is less certain.",
+      "vmt_header_va": "0x007F8C98"
+    },
+    {
+      "name": "EBreakMessageGI",
+      "unit": "BreakMessageGIException",
+      "basis": "Dedicated linked unit matching the exact exception-class stem. Metadata only: inherited exception methods do not create owned code.",
+      "vmt_header_va": "0x00472CD4"
+    },
+    {
+      "name": "EDirectXRender",
+      "unit": "DirectXRenderException",
+      "basis": "Dedicated linked unit matching the exact exception-class stem. Metadata only; no inherited runtime method is attributed here. Nonvirtual constructors 0x4B85F0/0x4B866C are called with EDirectXRender class reference at native GR_Main error sites; the latter stores error code at +12.",
+      "vmt_header_va": "0x004B8594"
+    },
+    {
+      "name": "EBlockPar",
+      "unit": "BlockParException",
+      "basis": "Dedicated linked unit matching the exact exception-class stem. Metadata only; no source routine extent is claimed. Native constructor call 0x827C11 receives the EBlockPar class reference; constructor stores a byte at +12 and getter 0x602778 returns it.",
+      "vmt_header_va": "0x00602698"
+    },
+    {
+      "name": "TPSRadEffectGI",
+      "unit": "GI_RadialEffect",
+      "basis": "Finalizer 0x4ED5F8 clears three unit-global arrays using anonymous RTTI 0x4EBB74/0x4EBB9C/0x4EBBC4 explicitly named GI_RadialEffect. TPSRadEffectGI and its own particle methods lie inside that span. Ownership of the globals is inferred from their anonymous local types and startup pair.",
+      "vmt_header_va": "0x004EBBE8"
+    }
+  ]
+}

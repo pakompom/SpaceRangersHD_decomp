@@ -1,0 +1,9 @@
+unit ab_Fast;
+// Native PACKAGEINFO retains this unit. No surviving code or data has been
+// attributed to it; its discarded declarations remain unrecovered.
+
+interface
+
+implementation
+
+end.

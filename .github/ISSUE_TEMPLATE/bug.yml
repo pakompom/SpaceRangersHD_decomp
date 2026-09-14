@@ -1,0 +1,17 @@
+name: Build or tooling problem
+description: Report a reproducibility or tooling failure.
+body:
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Branch, commit, operating system, CPU architecture, and Wine version.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Reproduction
+      description: Exact command, expected result, and actual result. Remove personal paths from logs.
+    validations:
+      required: true

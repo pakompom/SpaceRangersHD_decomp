@@ -1,0 +1,25 @@
+[package]
+name = "rangers-tools"
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+[lib]
+path = "toolchain/lib.rs"
+
+[[bin]]
+name = "decomp"
+path = "toolchain/main.rs"
+
+[dependencies]
+anyhow = "1"
+capstone = { version = "0.14", default-features = false, features = ["std", "full", "arch_x86"] }
+serde = { version = "1", features = ["derive", "rc"] }
+serde_json = "1"
+uuid = "1"
+regex = "1"
+toml = "0.9"
+indexmap = "2"
+sha2 = "0.10"
+clap = { version = "4", features = ["derive"] }
+goblin = { version = "0.9.3", default-features = false, features = ["std", "pe32", "pe64", "endian_fd"] }
