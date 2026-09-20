@@ -76,6 +76,11 @@ IDA structure ends at its last known field. `record` and `packed record` retain
 Delphi alignment in generated source; identical field offsets can still produce
 different alignment for local variables.
 
+Field-only old-style `object` types are also supported, without inheritance,
+methods or properties. They use record storage and ABI in the annotation model;
+generated Pascal preserves `object`, since DCC32 advances its anonymous-symbol
+counter for an object declaration but not for a named record.
+
 An opaque `TFoo = class;` can be completed later in the same unit, allowing mutual
 references. Opaque records (`TMessage = record;`) and their aliases support pointers
 and `var`/`out` parameters, but require a complete size for inline storage or array

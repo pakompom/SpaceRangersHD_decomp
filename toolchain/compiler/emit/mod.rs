@@ -586,6 +586,8 @@ impl<'a> Emitter<'a> {
         }
         let kind = if d.kind == "class" {
             format!("class({parent_text})")
+        } else if yes(&d.data, "value_object") {
+            "object".into()
         } else if yes(&d.data, "packed") {
             "packed record".into()
         } else {

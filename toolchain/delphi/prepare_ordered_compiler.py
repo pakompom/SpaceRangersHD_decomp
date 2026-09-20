@@ -1,4 +1,4 @@
-"""Prepare DCC32 with recovered layout, private metadata names and build date.
+"""Prepare DCC32 with recovered layout and build date.
 
 Usage: python3 prepare_ordered_compiler.py input.exe output.exe
 This modifies linker behavior; it is not the stock compiler. See docs/development.md#inputs-and-reproduction.
@@ -60,15 +60,8 @@ def prepare(source, output):
         " .long 0\n" if i is None else f" .long {rva}+meta_u{i}-start\n" for i in initializers)
     assembly += "".join(f"meta_u{i}: .asciz " + json.dumps(name) + "\n"
                         for i, (index, name) in enumerate(metadata))
-    type_names = [line.split() for line in (here / "native-type-names.tsv").read_text().splitlines()
-                  if line and not line.startswith("#")]
     assembly += (here / "build_metadata.s").read_text().replace("HOOK_RVA", str(rva)).replace(
         "DOS_TIMESTAMP", str(DOS_TIMESTAMP))
-    assembly += "type_keys:\n" + "".join(
-        " .long " + ",".join(f"{rva}+tn_{i}_{j}-start" for j in range(3)) + "\n"
-        for i in range(len(type_names))) + " .long 0\n"
-    assembly += "".join(f"tn_{i}_{j}: .asciz " + json.dumps(name) + "\n"
-                        for i, row in enumerate(type_names) for j, name in enumerate(row))
     output.parent.mkdir(parents=True, exist_ok=True)
     asm = output.parent / "unit_order.s"
     obj = output.parent / "unit_order.obj"
@@ -90,7 +83,7 @@ def prepare(source, output):
     for i in range(symbol_count):
         entry = symbol_table + 18 * i
         name = coff[entry:entry + 8].rstrip(b"\0")
-        if name in (b"ref_sort", b"ref_put", b"meta_ini", b"meta_pkg", b"type_nm", b"rs_time"):
+        if name in (b"ref_sort", b"ref_put", b"meta_ini", b"meta_pkg", b"rs_time"):
             hooks[name] = struct.unpack_from("<I", coff, entry + 8)[0]
     size = align(len(code), pe.OPTIONAL_HEADER.FileAlignment)
     section = pe.sections[-1].get_file_offset() + 40
@@ -107,8 +100,7 @@ def prepare(source, output):
     for site_rva, expected, hook in [(0x316bc, "e8 d7 f7 ff ff", b"ref_sort"),
                                      (0x30f01, "89 16 8b d7 83 c6 04", b"ref_put"),
                                      (0x148bd, "e8 82 fb ff ff", b"meta_ini"),
-                                     (0x149c1, "e8 46 f9 ff ff", b"meta_pkg"),
-                                     (0x8c585, "e8 da ef ff ff", b"type_nm")]:
+                                     (0x149c1, "e8 46 f9 ff ff", b"meta_pkg")]:
         expected = bytes.fromhex(expected)
         offset = pe.get_offset_from_rva(site_rva)
         assert data[offset:offset + len(expected)] == expected, "Unsupported compiler"
@@ -130,7 +122,7 @@ def prepare(source, output):
     output.write_bytes(data)
     shutil.copy2(source.parent / "rlink32.dll", output.parent / "rlink32.dll")
     print(f"Prepared {output}: {len(names)} unit contributions, {len(references)} reference cells, "
-          f"{len(metadata)} metadata entries, {len(type_names)} private type names, fixed build date")
+          f"{len(metadata)} metadata entries, fixed build date")
 
 
 if __name__ == "__main__":

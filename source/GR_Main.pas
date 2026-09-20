@@ -28,16 +28,6 @@ type
     AvailExtendedVirtual: UInt64; // @offset 56
   end;
 
-  PDisplayModeGR = ^TDisplayModeGR;
-  TDisplayModeGR = packed record // @size 0x10
-    Width: Cardinal; // @offset 0x00
-    Height: Cardinal; // @offset 0x04
-    RefreshRate: Cardinal; // @offset 0x08
-    Format: Cardinal; // @offset 0x0C
-  end;
-
-  TDisplayModeArrayGR = array of TDisplayModeGR;
-
   TCursorUnit = class(TObject) // @size 0x1C
   public
     Prev: TCursorUnit; // @offset 0x04
@@ -702,6 +692,20 @@ var
   CCInterface: TCCInterface; // @addr $889114 @note "Owned here: direct startup/helper accesses; other units use reference cell $882218."
   RuntimeStartupTick: Cardinal; // @addr $889118
   MainRuntimeThreadId: Cardinal; // @addr $88911C
+type
+  // This value-object declaration advances DCC32's anonymous RTTI counter.
+  // Its position reproduces the display arrays' native names; original spelling is unknown.
+  PDisplayModeGR = ^TDisplayModeGR;
+  TDisplayModeGR = object // @size 0x10
+    Width: Cardinal; // @offset 0x00
+    Height: Cardinal; // @offset 0x04
+    RefreshRate: Cardinal; // @offset 0x08
+    Format: Cardinal; // @offset 0x0C
+  end;
+
+  TDisplayModeArrayGR = array of TDisplayModeGR;
+
+var
   DesktopDisplayMode: TDisplayModeGR; // @addr $889120
   Direct3DPresentParameters: TD3DPresentParameters; // @addr $889130
   PreviousPresentParameters: TD3DPresentParameters; // @addr $889168

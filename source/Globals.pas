@@ -483,8 +483,9 @@ type
     Owner: TOwnerMask; // @offset $11
   end;
 
-  // Native record RTTI at $801360.
-  TPlanetAdvtList = record // @size $08
+  // Native record-layout RTTI at $801360; object preserves anonymous numbering.
+  // Original spelling is uncertain.
+  TPlanetAdvtList = object // @size $08
     Key: Integer; // @offset $00 Numeric List parameter name; interpretation by callers remains unresolved.
     Indices: array of Integer; // @offset $04
   end;
