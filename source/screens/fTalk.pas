@@ -1206,9 +1206,7 @@ begin
       begin
         Text := PScriptDialogInjection(ScriptDialogInjections[I]).Text;
         if Text <> '' then
-          {$B+}
-          if ReplacedGreeting or not KeepGreeting then DialogText := DialogText + #13#10 + Text;
-          {$B-}
+          if not KeepGreeting or ReplacedGreeting then DialogText := DialogText + #13#10 + Text;
       end;
       Text := PScriptDialogInjection(ScriptDialogInjections[I]).Answer;
       if Text <> '' then
@@ -1321,7 +1319,7 @@ begin
     PartnerOfferAmount := Min(GetPlayer.Money, TalkShip.Wealth div 8);
     PartnerGiftAmount := Min(GetPlayer.Money, TalkShip.Wealth div 32);
     if ((GetPlayer <> TalkShip.PartnerShip) or not (TalkShip.TypeId in [stPirate])) and
-      {$B+} (RecognizesPlayer and (TalkShip.TypeId in [stRanger..stWarrior])) {$B-} then
+      ((TalkShip.TypeId in [stRanger..stWarrior]) and RecognizesPlayer) then
     begin
       if (TalkShip.GetRelationLevelToShip(GetPlayer) = rlHostile) and (GetPlayer <> TalkShip.PartnerShip) then
       begin

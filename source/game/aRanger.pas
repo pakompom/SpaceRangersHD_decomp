@@ -1783,9 +1783,7 @@ var
   BestPlanet: TPlanet;
 begin
   KeepBuying := True;
-  {$B+}
-  while KeepBuying and (Money > 0) do
-  {$B-}
+  while (Money > 0) and KeepBuying do
   begin
     BestRatio := 0;
     BestGood := 0;

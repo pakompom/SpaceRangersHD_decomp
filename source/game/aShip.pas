@@ -4209,7 +4209,7 @@ begin
   Star := CurrentStar;
   StepIndex := Star.CurrentStepIndex;
   if (GetPlayer = Target) or (GetPlayer = Self) then Star.PlayerCombatOccurred := True;
-  if {$B+}(RecordFilm and (GetPlayer = Target)){$B-} then
+  if (GetPlayer = Target) and RecordFilm then
     PrimaryFilm.AddCameraEvent(StepIndex, GetPlayer.Position, Position, 1);
   PrimaryDamage := 0;
   DrainedDamage := 0;
@@ -4221,7 +4221,7 @@ begin
     PrimaryDamage := Damage;
     if RecordFilm then
     begin
-      if {$B+}(RecordFilm and (GetPlayer = Self)){$B-} then
+      if (GetPlayer = Self) and RecordFilm then
         PrimaryFilm.AddCameraEvent(StepIndex, GetPlayer.Position, Target.Position, 1);
       Effect := TWeaponSE.Create(Info.PrimarySE, Classes.Point(0, 0), Weapon.GetShotPalette, -1);
       Film := PrimaryFilm.AddObject(0, Effect);
@@ -4232,7 +4232,7 @@ begin
   end
   else if Info.ShotType = wstChain then
   begin
-    if {$B+}(RecordFilm and (GetPlayer = Self)){$B-} and (Star.PlayerFilmPath <> nil) then
+    if ((GetPlayer = Self) and RecordFilm) and (Star.PlayerFilmPath <> nil) then
       Star.PlayerFilmPath.AppendWaypoint(MakePointF((Target.Position.X + Position.X) / 2,
         (Target.Position.Y + Position.Y) / 2), StepIndex + 25);
     RadiusSquared := Sqr(GetWeaponRange(Weapon)) * 1.3;
@@ -4323,7 +4323,7 @@ begin
   end
   else if Info.ShotType = wstSplash then
   begin
-    if {$B+}(RecordFilm and (GetPlayer = Self)){$B-} and (Star.PlayerFilmPath <> nil) then
+    if ((GetPlayer = Self) and RecordFilm) and (Star.PlayerFilmPath <> nil) then
       Star.PlayerFilmPath.AppendWaypoint(MakePointF((Target.Position.X + Position.X) / 2,
         (Target.Position.Y + Position.Y) / 2), StepIndex + 25);
     Damage := Target.ApplyWeaponHit(Self, Weapon, -1, Color, Dword(Flags), 1, 0);
@@ -4362,7 +4362,7 @@ begin
   end
   else if Info.ShotType = wstExploder then
   begin
-    if {$B+}(RecordFilm and (GetPlayer = Self)){$B-} then
+    if (GetPlayer = Self) and RecordFilm then
       PrimaryFilm.AddCameraEvent(StepIndex, GetPlayer.Position, Target.Position, 1);
     Damage := Target.ApplyWeaponHit(Self, Weapon, -1, Color, Dword(Flags), 1, 0);
     if (dkDrain in Flags) and (Damage > 0) then Inc(DrainedDamage, Damage);
@@ -6943,9 +6943,7 @@ begin
     if GetDefGenerator <> nil then EquipType(t_ArtefactDef);
     if GetRepairRobot <> nil then EquipType(t_ArtefactDroid);
     if HasSplinter then EquipType(t_ArtDecelerate);
-    {$B+}
-    if HasEnergy and (GetDefGenerator <> nil) then EquipType(t_ArtDefToEnergy);
-    {$B-}
+    if (GetDefGenerator <> nil) and HasEnergy then EquipType(t_ArtDefToEnergy);
     if (GetCargoHook <> nil) and not (TypeId in [stKling, stTransport, stWarrior]) then EquipType(t_ArtefactHook);
     if not (TypeId in [stKling, stTransport, stWarrior]) then EquipType(t_ArtefactMiniExpl);
     EquipType(t_ArtefactNano);
