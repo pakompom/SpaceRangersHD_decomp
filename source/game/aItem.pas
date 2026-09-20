@@ -2413,7 +2413,7 @@ begin
     Result := Result / 3;
     Exit;
   end;
-  DamageClass := ClassifyWeaponDamageFlags(Dword(DamageFlags));
+  DamageClass := ClassifyWeaponDamageFlags(DamageFlags);
   Result := HullFragilityByType[HullType] * HullLevelStats[TechLevel].Fragility[Ord(DamageClass)] * HullFragilityByOwner[Ord(DamageClass), OwnerId];
   if PirateBuilt then Result := Result * HullFragilityByOwner[Ord(DamageClass), 7];
   if MicroModuleIndex <> 0 then Result := Result * MicroModuleTemplates[MicroModuleIndex - 1].FragilityFactorByDamageClass[Ord(DamageClass)];
@@ -4233,7 +4233,7 @@ end;
 function TWeapon.GetDamageFlags: TDamageFlagSet;
 var I: Integer; Entry: PExtraSpecial;
 begin
-  Result := TDamageFlagSet(GetWeaponInfo.DamageFlags);
+  Result := GetWeaponInfo.DamageFlags;
   if SpecialModuleIndex <> 0 then
     Result := Result + TDamageFlagSet(MicroModuleTemplates[SpecialModuleIndex - 1].WeaponDamageFlags);
   if MicroModuleIndex <> 0 then
@@ -5623,9 +5623,9 @@ begin
       Info := Weapon.GetWeaponInfo;
       AllowedTypes := MicroModuleTemplates[ModuleIndex].AllowedCustomWeaponTypes;
       if AllowedTypes = 'Any' then Result := True
-      else if (dkMissile in TDamageFlagSet(Info.DamageFlags)) and (Pos('<WMissile>', AllowedTypes) > 0) then Result := True
-      else if (dkSplinter in TDamageFlagSet(Info.DamageFlags)) and (Pos('<WSplinter>', AllowedTypes) > 0) then Result := True
-      else if (dkEnergy in TDamageFlagSet(Info.DamageFlags)) and (Pos('<WEnergy>', AllowedTypes) > 0) then Result := True
+      else if (dkMissile in Info.DamageFlags) and (Pos('<WMissile>', AllowedTypes) > 0) then Result := True
+      else if (dkSplinter in Info.DamageFlags) and (Pos('<WSplinter>', AllowedTypes) > 0) then Result := True
+      else if (dkEnergy in Info.DamageFlags) and (Pos('<WEnergy>', AllowedTypes) > 0) then Result := True
       else if Pos('<' + Info.ConfigName + '>', AllowedTypes) > 0 then Result := True;
     end
     else Result := True;

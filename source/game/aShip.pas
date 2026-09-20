@@ -3577,7 +3577,7 @@ begin
     Exit;
   end;
   if Attacker <> nil then AdjustedDamage := Attacker.ScriptItemsAct(satOnDealingDamage, Self, nil, AdjustedDamage);
-  AdjustedDamage := ScriptItemsAct(DamageScriptActionTypes[Ord(ClassifyWeaponDamageFlags(Dword(DamageFlags)))], Source, nil, AdjustedDamage);
+  AdjustedDamage := ScriptItemsAct(DamageScriptActionTypes[Ord(ClassifyWeaponDamageFlags(DamageFlags))], Source, nil, AdjustedDamage);
   if AdjustedDamage <= 0 then
   begin
     Result := 0;
@@ -3889,22 +3889,22 @@ begin
     end;
   end;
   if (Source.GetDefGenerator <> nil) and (Source.CountActiveArtefacts(Ord(t_ArtDefToEnergy)) > 0) and
-    (Weapon.GetWeaponInfo.DamageFlags and 1 <> 0) then
+    (dkEnergy in Weapon.GetWeaponInfo.DamageFlags) then
     AdjustedDamage := (1 + (RemapClamped(Source.CountWeaponsByDamageFlags(EnergyDamageFlags), 1, 5,
       DefenseToEnergyUpperFactor + ShortInt(Source.CanBoostArtefact(Ord(t_ArtDefToEnergy), Weapon, False)) * DefenseToEnergyUpperBoost,
       DefenseToEnergyMinimumFactor + ShortInt(Source.CanBoostArtefact(Ord(t_ArtDefToEnergy), Weapon, False)) * DefenseToEnergyMinimumBoost) - 1) *
       Source.CountActiveArtefacts(Ord(t_ArtDefToEnergy))) * AdjustedDamage;
-  if Weapon.GetWeaponInfo.DamageFlags and 1 <> 0 then
+  if dkEnergy in Weapon.GetWeaponInfo.DamageFlags then
     for I := 1 to Source.CountActiveArtefacts(Ord(t_ArtEnergyPulse)) do
       if NextRandomUnitFloat(RandomState) < EnergyPulseArtefactChance then
         AdjustedDamage := (EnergyPulseArtefactFactor + ShortInt(Source.CanBoostArtefact(Ord(t_ArtEnergyPulse), Weapon, False)) *
           EnergyPulseArtefactBoostFactor) * AdjustedDamage;
-  if (Source.CountActiveArtefacts(Ord(t_ArtDecelerate)) > 0) and (Weapon.GetWeaponInfo.DamageFlags and 2 <> 0) then
+  if (Source.CountActiveArtefacts(Ord(t_ArtDecelerate)) > 0) and (dkSplinter in Weapon.GetWeaponInfo.DamageFlags) then
   begin
     Include(Flags, dkDecelerateA);
     if Source.CanBoostArtefact(Ord(t_ArtDecelerate), Weapon, False) or (Source.CountActiveArtefacts(Ord(t_ArtDecelerate)) > 1) then Include(Flags, dkDecelerateAEx);
   end;
-  if Weapon.GetWeaponInfo.DamageFlags and 2 <> 0 then
+  if dkSplinter in Weapon.GetWeaponInfo.DamageFlags then
     for I := 1 to Source.CountActiveArtefacts(Ord(t_ArtSplinter)) do
       AdjustedDamage := (SplinterArtefactFactor + ShortInt(Source.CanBoostArtefact(Ord(t_ArtSplinter), Weapon, False)) *
         SplinterArtefactBoostFactor) * AdjustedDamage;
@@ -3917,8 +3917,8 @@ begin
   Result := ApplyDamage(Source, Damage, HitRange, DamageColor, Flags);
   if (GetHull.HullPoints < 1) and (GetPlayer = Source) then
   begin
-    if Weapon.GetWeaponInfo.DamageFlags and 2 <> 0 then TryAddAchievementProgress('SPLINTER', 1);
-    if Weapon.GetWeaponInfo.DamageFlags and 1 <> 0 then TryAddAchievementProgress('ENERGY', 1);
+    if dkSplinter in Weapon.GetWeaponInfo.DamageFlags then TryAddAchievementProgress('SPLINTER', 1);
+    if dkEnergy in Weapon.GetWeaponInfo.DamageFlags then TryAddAchievementProgress('ENERGY', 1);
   end;
   if (GetPlayer = Self) and (GetHull.HullPoints < 1) then
   begin
@@ -3941,7 +3941,7 @@ var
   HitRange: Single;
 begin
   Shot := Missile as TMissile;
-  Flags := TDamageFlagSet(Shot.GetWeaponInfo.DamageFlags);
+  Flags := Shot.GetWeaponInfo.DamageFlags;
   if Shot.MicroModuleIndex <> 0 then
     Flags := Flags + TDamageFlagSet(MicroModuleTemplates[Shot.MicroModuleIndex - 1].WeaponDamageFlags);
   if Shot.SpecialModuleIndex <> 0 then
@@ -4020,7 +4020,7 @@ begin
         PrimaryFilm.AttachObject(StepIndex, Film);
       end;
     end;
-    if (Info.DamageFlags and 1 <> 0) and (Info.ShotType = wstSplash) then
+    if (dkEnergy in Info.DamageFlags) and (Info.ShotType = wstSplash) then
     begin
       I := 0;
       while I < Star.Missiles.Count do
@@ -4049,7 +4049,7 @@ begin
         end;
       end;
     end
-    else if (Info.DamageFlags and 1 <> 0) and (Info.ShotType = wstAreaDamage) then
+    else if (dkEnergy in Info.DamageFlags) and (Info.ShotType = wstAreaDamage) then
     begin
       I := 0;
       while I < Star.Missiles.Count do
@@ -7343,9 +7343,9 @@ begin
           for I := 1 to CountEquippedWeapons do
           begin
             DamageBonus := 0;
-            if dkEnergy in TDamageFlagSet(Weapons[I].GetWeaponInfo.DamageFlags) then DamageBonus := DamageBonus + EvaluateStatBonus(bonWEnergy, Module.StatBonuses[Ord(bonWEnergy)]);
-            if dkSplinter in TDamageFlagSet(Weapons[I].GetWeaponInfo.DamageFlags) then DamageBonus := DamageBonus + EvaluateStatBonus(bonWSplinter, Module.StatBonuses[Ord(bonWSplinter)]);
-            if dkMissile in TDamageFlagSet(Weapons[I].GetWeaponInfo.DamageFlags) then DamageBonus := DamageBonus + EvaluateStatBonus(bonWMissile, Module.StatBonuses[Ord(bonWMissile)]);
+            if dkEnergy in Weapons[I].GetWeaponInfo.DamageFlags then DamageBonus := DamageBonus + EvaluateStatBonus(bonWEnergy, Module.StatBonuses[Ord(bonWEnergy)]);
+            if dkSplinter in Weapons[I].GetWeaponInfo.DamageFlags then DamageBonus := DamageBonus + EvaluateStatBonus(bonWSplinter, Module.StatBonuses[Ord(bonWSplinter)]);
+            if dkMissile in Weapons[I].GetWeaponInfo.DamageFlags then DamageBonus := DamageBonus + EvaluateStatBonus(bonWMissile, Module.StatBonuses[Ord(bonWMissile)]);
             if (DamageBonus > 0.001) or (DamageBonus < -0.001) then
               DamageBonus := EvaluateWeaponDamage(Weapons[I], False, DamageBonus);
             AccumulateEquipmentBonus(DamageBonus);
@@ -7382,9 +7382,9 @@ begin
           for I := 1 to CountEquippedWeapons do
           begin
             DamageBonus := 0;
-            if dkEnergy in TDamageFlagSet(Weapons[I].GetWeaponInfo.DamageFlags) then DamageBonus := DamageBonus + EvaluateStatBonus(bonWEnergy, Item.GetStatBonus(bonWEnergy));
-            if dkSplinter in TDamageFlagSet(Weapons[I].GetWeaponInfo.DamageFlags) then DamageBonus := DamageBonus + EvaluateStatBonus(bonWSplinter, Item.GetStatBonus(bonWSplinter));
-            if dkMissile in TDamageFlagSet(Weapons[I].GetWeaponInfo.DamageFlags) then DamageBonus := DamageBonus + EvaluateStatBonus(bonWMissile, Item.GetStatBonus(bonWMissile));
+            if dkEnergy in Weapons[I].GetWeaponInfo.DamageFlags then DamageBonus := DamageBonus + EvaluateStatBonus(bonWEnergy, Item.GetStatBonus(bonWEnergy));
+            if dkSplinter in Weapons[I].GetWeaponInfo.DamageFlags then DamageBonus := DamageBonus + EvaluateStatBonus(bonWSplinter, Item.GetStatBonus(bonWSplinter));
+            if dkMissile in Weapons[I].GetWeaponInfo.DamageFlags then DamageBonus := DamageBonus + EvaluateStatBonus(bonWMissile, Item.GetStatBonus(bonWMissile));
             if (DamageBonus > 0.001) or (DamageBonus < -0.001) then
               DamageBonus := EvaluateWeaponDamage(Weapons[I], False, DamageBonus);
             AccumulateEquipmentBonus(DamageBonus);
@@ -7415,15 +7415,15 @@ function TShip.GetWeaponArtefactDamageFactor(Weapon: TWeapon): Single;
 const
   EnergyDamageFlags = [dkEnergy];
 var
-  Flags: Cardinal;
+  Flags: TDamageFlagSet;
   I: Integer;
 begin
   Result := 1;
   Flags := Weapon.GetWeaponInfo.DamageFlags;
-  if (Flags and 1) <> 0 then
+  if dkEnergy in Flags then
     for I := 1 to CountActiveArtefacts(Ord(t_ArtEnergyPulse)) do
       Result := Result * (1 + (EnergyPulseArtefactFactor + ShortInt(CanBoostArtefact(Ord(t_ArtEnergyPulse), Weapon, False)) * EnergyPulseArtefactBoostFactor) * EnergyPulseArtefactChance);
-  if (CountActiveArtefacts(Ord(t_ArtDefToEnergy)) > 0) and ((Flags and 1) <> 0) and (GetDefGenerator <> nil) then
+  if (CountActiveArtefacts(Ord(t_ArtDefToEnergy)) > 0) and (dkEnergy in Flags) and (GetDefGenerator <> nil) then
     Result := Result * (1 + (
       (CountWeaponsByDamageFlags(EnergyDamageFlags) + 1) * RemapClamped(
         CountWeaponsByDamageFlags(EnergyDamageFlags) + 1, 1, 5,
@@ -7433,7 +7433,7 @@ begin
         CountWeaponsByDamageFlags(EnergyDamageFlags), 1, 5,
         DefenseToEnergyUpperFactor + ShortInt(CanBoostArtefact(Ord(t_ArtDefToEnergy), Weapon, False)) * DefenseToEnergyUpperBoost,
         DefenseToEnergyMinimumFactor + ShortInt(CanBoostArtefact(Ord(t_ArtDefToEnergy), Weapon, False)) * DefenseToEnergyMinimumBoost) - 1) * CountActiveArtefacts(Ord(t_ArtDefToEnergy)));
-  if (Flags and 2) <> 0 then
+  if dkSplinter in Flags then
     for I := 1 to CountActiveArtefacts(Ord(t_ArtSplinter)) do
       Result := Result * (SplinterArtefactFactor + ShortInt(CanBoostArtefact(Ord(t_ArtSplinter), Weapon, False)) * SplinterArtefactBoostFactor);
 end;
@@ -12236,17 +12236,17 @@ begin
         IsArtefactBoostEquipment(Weapons[4]) or
         IsArtefactBoostEquipment(Weapons[5]) then Result := True;
     if (ArtefactType = Byte(t_ArtDefToEnergy)) or (ArtefactType = Byte(t_ArtEnergyPulse)) then
-      if (IsArtefactBoostEquipment(Weapons[1]) and (dkEnergy in TDamageFlagSet(Weapons[1].GetWeaponInfo.DamageFlags))) or
-        (IsArtefactBoostEquipment(Weapons[2]) and (dkEnergy in TDamageFlagSet(Weapons[2].GetWeaponInfo.DamageFlags))) or
-        (IsArtefactBoostEquipment(Weapons[3]) and (dkEnergy in TDamageFlagSet(Weapons[3].GetWeaponInfo.DamageFlags))) or
-        (IsArtefactBoostEquipment(Weapons[4]) and (dkEnergy in TDamageFlagSet(Weapons[4].GetWeaponInfo.DamageFlags))) or
-        (IsArtefactBoostEquipment(Weapons[5]) and (dkEnergy in TDamageFlagSet(Weapons[5].GetWeaponInfo.DamageFlags))) then Result := True;
+      if (IsArtefactBoostEquipment(Weapons[1]) and (dkEnergy in Weapons[1].GetWeaponInfo.DamageFlags)) or
+        (IsArtefactBoostEquipment(Weapons[2]) and (dkEnergy in Weapons[2].GetWeaponInfo.DamageFlags)) or
+        (IsArtefactBoostEquipment(Weapons[3]) and (dkEnergy in Weapons[3].GetWeaponInfo.DamageFlags)) or
+        (IsArtefactBoostEquipment(Weapons[4]) and (dkEnergy in Weapons[4].GetWeaponInfo.DamageFlags)) or
+        (IsArtefactBoostEquipment(Weapons[5]) and (dkEnergy in Weapons[5].GetWeaponInfo.DamageFlags)) then Result := True;
     if (ArtefactType = Byte(t_ArtSplinter)) or (ArtefactType = Byte(t_ArtDecelerate)) then
-      if (IsArtefactBoostEquipment(Weapons[1]) and (dkSplinter in TDamageFlagSet(Weapons[1].GetWeaponInfo.DamageFlags))) or
-        (IsArtefactBoostEquipment(Weapons[2]) and (dkSplinter in TDamageFlagSet(Weapons[2].GetWeaponInfo.DamageFlags))) or
-        (IsArtefactBoostEquipment(Weapons[3]) and (dkSplinter in TDamageFlagSet(Weapons[3].GetWeaponInfo.DamageFlags))) or
-        (IsArtefactBoostEquipment(Weapons[4]) and (dkSplinter in TDamageFlagSet(Weapons[4].GetWeaponInfo.DamageFlags))) or
-        (IsArtefactBoostEquipment(Weapons[5]) and (dkSplinter in TDamageFlagSet(Weapons[5].GetWeaponInfo.DamageFlags))) then Result := True;
+      if (IsArtefactBoostEquipment(Weapons[1]) and (dkSplinter in Weapons[1].GetWeaponInfo.DamageFlags)) or
+        (IsArtefactBoostEquipment(Weapons[2]) and (dkSplinter in Weapons[2].GetWeaponInfo.DamageFlags)) or
+        (IsArtefactBoostEquipment(Weapons[3]) and (dkSplinter in Weapons[3].GetWeaponInfo.DamageFlags)) or
+        (IsArtefactBoostEquipment(Weapons[4]) and (dkSplinter in Weapons[4].GetWeaponInfo.DamageFlags)) or
+        (IsArtefactBoostEquipment(Weapons[5]) and (dkSplinter in Weapons[5].GetWeaponInfo.DamageFlags)) then Result := True;
     if ArtefactType = Byte(t_ArtFastRacks) then
       if (IsArtefactBoostEquipment(Weapons[1]) and (Weapons[1].GetWeaponInfo.ShotType in [wstTorpedo, wstMissile, wstRocket])) or
         (IsArtefactBoostEquipment(Weapons[2]) and (Weapons[2].GetWeaponInfo.ShotType in [wstTorpedo, wstMissile, wstRocket])) or
@@ -12280,11 +12280,11 @@ begin
     if (ArtefactType = Byte(t_ArtefactNano)) and (Equipment is THull) then Exit;
     if (ArtefactType = Byte(t_ArtWeaponToSpeed)) and not ((Equipment is THull) or (Equipment is TEngine)) then Exit;
     if (ArtefactType = Byte(t_ArtDefToEnergy)) and not ((Equipment is TDefGenerator) or
-      ((Equipment is TWeapon) and (dkEnergy in TDamageFlagSet(TWeapon(Equipment).GetWeaponInfo.DamageFlags)))) then Exit;
+      ((Equipment is TWeapon) and (dkEnergy in TWeapon(Equipment).GetWeaponInfo.DamageFlags))) then Exit;
     if (ArtefactType = Byte(t_ArtEnergyPulse)) and not ((Equipment is TWeapon) and
-      (dkEnergy in TDamageFlagSet(TWeapon(Equipment).GetWeaponInfo.DamageFlags))) then Exit;
+      (dkEnergy in TWeapon(Equipment).GetWeaponInfo.DamageFlags)) then Exit;
     if ((ArtefactType = Byte(t_ArtSplinter)) or (ArtefactType = Byte(t_ArtDecelerate))) and not ((Equipment is TWeapon) and
-      (dkSplinter in TDamageFlagSet(TWeapon(Equipment).GetWeaponInfo.DamageFlags))) then Exit;
+      (dkSplinter in TWeapon(Equipment).GetWeaponInfo.DamageFlags)) then Exit;
     if (ArtefactType = Byte(t_ArtFastRacks)) and not ((Equipment is TWeapon) and
       (TWeapon(Equipment).GetWeaponInfo.ShotType in [wstTorpedo, wstMissile, wstRocket])) then Exit;
     if not (Equipment.ItemType in [t_Hull..t_CustomWeapon]) then Exit;

@@ -15363,7 +15363,7 @@ begin
   else if Key = 'SecondaryDamageRadius' then av[0].SetFloat(Info.SecondaryDamageRadius)
   else if Key = 'MaxDamage' then av[0].SetInt(Info.MaxDamage)
   else if Key = 'MinDamage' then av[0].SetInt(Info.MinDamage)
-  else if Key = 'DamageType' then av[0].SetDword(Info.DamageFlags)
+  else if Key = 'DamageType' then av[0].SetDword(Dword(Info.DamageFlags))
   else if Key = 'kCost' then av[0].SetFloat(Info.CostFactor)
   else if Key = 'AttackCount' then av[0].SetInt(Info.AttackCount)
   else if Key = 'ShotCount' then av[0].SetInt(Info.ShotCount)
@@ -15478,7 +15478,7 @@ begin
       if Pos(',' + WeaponDamageFlagNames[Flag] + ',', Text) > 0 then Include(Flags, Flag);
   end
   else Dword(Flags) := av[4].GetDword;
-  Info.DamageFlags := Dword(Flags);
+  Info.DamageFlags := TDamageFlagSet(Flags);
   if (High(av) > 4) and (av[5].RealVType = vkString) then
   begin
     Text := av[5].GetString;
