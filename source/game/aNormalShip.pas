@@ -206,10 +206,10 @@ end;
 procedure TNormalShip.SaveToBlock(Block: TBlockParEC);
 begin
   inherited SaveToBlock(Block);
-  Block.AddParam(DecodeTextW('Roarnuke'), WideString(IntToStr(Rank))); // Decoded: 'Rank'
-  Block.AddParam(DecodeTextW('RearnaksProcitnotas'), WideString(IntToStr(RankPoints))); // Decoded: 'RankPoints'
-  Block.AddParam(DecodeTextW('PlivroaktrenRiasnuk'), WideString(IntToStr(PirateRank))); // Decoded: 'PirateRank'
-  Block.AddParam(DecodeTextW('PhilroaAtrelRoasnAkoPiopionatos'), WideString(IntToStr(PirateRankPoints))); // Decoded: 'PirateRankPoints'
+  Block.AddParam(DecodeTextW('Roarnuke'), WideString(IntToStr(Rank))); // 'Rank'
+  Block.AddParam(DecodeTextW('RearnaksProcitnotas'), WideString(IntToStr(RankPoints))); // 'RankPoints'
+  Block.AddParam(DecodeTextW('PlivroaktrenRiasnuk'), WideString(IntToStr(PirateRank))); // 'PirateRank'
+  Block.AddParam(DecodeTextW('PhilroaAtrelRoasnAkoPiopionatos'), WideString(IntToStr(PirateRankPoints))); // 'PirateRankPoints'
 end;
 { @end $73DEB8 }
 
@@ -217,10 +217,10 @@ end;
 procedure TNormalShip.LoadFromBlock(Block: TBlockParEC);
 begin
   inherited LoadFromBlock(Block);
-  Rank := StrToInt(AnsiString(Block.GetParam(DecodeTextW('Roarnuke')))); // Decoded: 'Rank'
-  RankPoints := StrToInt(AnsiString(Block.GetParam(DecodeTextW('RearnaksProcitnotas')))); // Decoded: 'RankPoints'
-  PirateRank := StrToInt(AnsiString(Block.GetParam(DecodeTextW('PlivroaktrenRiasnuk')))); // Decoded: 'PirateRank'
-  PirateRankPoints := Word(StrToInt(AnsiString(Block.GetParam(DecodeTextW('PhilroaAtrelRoasnAkoPiopionatos'))))); // Decoded: 'PirateRankPoints'
+  Rank := StrToInt(AnsiString(Block.GetParam(DecodeTextW('Roarnuke')))); // 'Rank'
+  RankPoints := StrToInt(AnsiString(Block.GetParam(DecodeTextW('RearnaksProcitnotas')))); // 'RankPoints'
+  PirateRank := StrToInt(AnsiString(Block.GetParam(DecodeTextW('PlivroaktrenRiasnuk')))); // 'PirateRank'
+  PirateRankPoints := Word(StrToInt(AnsiString(Block.GetParam(DecodeTextW('PhilroaAtrelRoasnAkoPiopionatos'))))); // 'PirateRankPoints'
 end;
 { @end $73E0F8 }
 

@@ -823,21 +823,21 @@ end;
 procedure TPlayer.SaveToBlock(Block: TBlockParEC);
 var I: Byte;
 begin
-  Block.AddParam(DecodeTextW('InChukriSotoanriIndo'), WideString(IntToStr(CurrentStar.Id))); // Decoded: 'ICurStarId'
+  Block.AddParam(DecodeTextW('InChukriSotoanriIndo'), WideString(IntToStr(CurrentStar.Id))); // 'ICurStarId'
   inherited SaveToBlock(Block);
-  Block.AddParam(DecodeTextW('D5eyb7tn'), WideString(IntToStr(DebtAmount))); // Decoded: 'Debt'
-  Block.AddParam(DecodeTextW('DDe3bgt5Dha6t7ej'), WideString(IntToStr(DebtDueTurn))); // Decoded: 'DebtDate'
-  Block.AddParam(DecodeTextW('Dbe5bht6C7njt8'), WideString(IntToStr(DebtDefaultCount))); // Decoded: 'DebtCnt'
-  Block.AddParam(DecodeTextW('D0ehp7ojsgi4td'), WideString(IntToStr(DepositAmount))); // Decoded: 'Deposit'
-  Block.AddParam(DecodeTextW('Dbe5p7ojsriet4Dga6t7ek'), WideString(IntToStr(DepositStartTurn))); // Decoded: 'DepositDate'
-  Block.AddParam(DecodeTextW('D0ebp5o3sfi3t5Dha7y8'), WideString(IntToStr(DepositDayCount))); // Decoded: 'DepositDay'
-  Block.AddParam(DecodeTextW('Dpeupto5seiwtfPye6rucieon9t'), WideString(FloatToStr(DepositInterestRate))); // Decoded: 'DepositPercent'
-  Block.AddParam(DecodeTextW('Mmejd6Ptoel4i6c7yi'), WideString(IntToStr(MedicalPolicyTicks))); // Decoded: 'MedPolicy'
+  Block.AddParam(DecodeTextW('D5eyb7tn'), WideString(IntToStr(DebtAmount))); // 'Debt'
+  Block.AddParam(DecodeTextW('DDe3bgt5Dha6t7ej'), WideString(IntToStr(DebtDueTurn))); // 'DebtDate'
+  Block.AddParam(DecodeTextW('Dbe5bht6C7njt8'), WideString(IntToStr(DebtDefaultCount))); // 'DebtCnt'
+  Block.AddParam(DecodeTextW('D0ehp7ojsgi4td'), WideString(IntToStr(DepositAmount))); // 'Deposit'
+  Block.AddParam(DecodeTextW('Dbe5p7ojsriet4Dga6t7ek'), WideString(IntToStr(DepositStartTurn))); // 'DepositDate'
+  Block.AddParam(DecodeTextW('D0ebp5o3sfi3t5Dha7y8'), WideString(IntToStr(DepositDayCount))); // 'DepositDay'
+  Block.AddParam(DecodeTextW('Dpeupto5seiwtfPye6rucieon9t'), WideString(FloatToStr(DepositInterestRate))); // 'DepositPercent'
+  Block.AddParam(DecodeTextW('Mmejd6Ptoel4i6c7yi'), WideString(IntToStr(MedicalPolicyTicks))); // 'MedPolicy'
   for I := Low(ProgramCounts) to High(ProgramCounts) do Block.AddParam(ProgramNames[I], WideString(IntToStr(ProgramCounts[I])));
-  Block.AddParam(DecodeTextW('Emxjp7D8o5m'), WideString(IntToStr(ExperienceByDominators))); // Decoded: 'ExpDom'
-  Block.AddParam(DecodeTextW('E3xrp5P6i7r'), WideString(IntToStr(ExperienceByPirates))); // Decoded: 'ExpPir'
-  Block.AddParam(DecodeTextW('Emx8p7C4oga6'), WideString(IntToStr(ExperienceByNormals))); // Decoded: 'ExpCoa'
-  Block.AddParam(DecodeTextW('Ekx7peTwr3af'), WideString(IntToStr(ExperienceByTraderCareer))); // Decoded: 'ExpTra'
+  Block.AddParam(DecodeTextW('Emxjp7D8o5m'), WideString(IntToStr(ExperienceByDominators))); // 'ExpDom'
+  Block.AddParam(DecodeTextW('E3xrp5P6i7r'), WideString(IntToStr(ExperienceByPirates))); // 'ExpPir'
+  Block.AddParam(DecodeTextW('Emx8p7C4oga6'), WideString(IntToStr(ExperienceByNormals))); // 'ExpCoa'
+  Block.AddParam(DecodeTextW('Ekx7peTwr3af'), WideString(IntToStr(ExperienceByTraderCareer))); // 'ExpTra'
 end;
 { @end $5859E8 }
 
@@ -846,19 +846,19 @@ procedure TPlayer.LoadFromBlock(Block: TBlockParEC);
 var I: Byte;
 begin
   inherited LoadFromBlock(Block);
-  DebtAmount := StrToInt(AnsiString(Block.GetParam(DecodeTextW('D5eyb7tn')))); // Decoded: 'Debt'
-  DebtDueTurn := StrToInt(AnsiString(Block.GetParam(DecodeTextW('DDe3bgt5Dha6t7ej')))); // Decoded: 'DebtDate'
-  DebtDefaultCount := StrToInt(AnsiString(Block.GetParam(DecodeTextW('Dbe5bht6C7njt8')))); // Decoded: 'DebtCnt'
-  DepositAmount := StrToInt(AnsiString(Block.GetParam(DecodeTextW('D0ehp7ojsgi4td')))); // Decoded: 'Deposit'
-  DepositStartTurn := StrToInt(AnsiString(Block.GetParam(DecodeTextW('Dbe5p7ojsriet4Dga6t7ek')))); // Decoded: 'DepositDate'
-  DepositDayCount := StrToInt(AnsiString(Block.GetParam(DecodeTextW('D0ebp5o3sfi3t5Dha7y8')))); // Decoded: 'DepositDay'
-  DepositInterestRate := ExtractDecimalToSingleW(Block.GetParam(DecodeTextW('Dpeupto5seiwtfPye6rucieon9t'))); // Decoded: 'DepositPercent'
-  MedicalPolicyTicks := StrToInt(AnsiString(Block.GetParam(DecodeTextW('Mmejd6Ptoel4i6c7yi')))); // Decoded: 'MedPolicy'
+  DebtAmount := StrToInt(AnsiString(Block.GetParam(DecodeTextW('D5eyb7tn')))); // 'Debt'
+  DebtDueTurn := StrToInt(AnsiString(Block.GetParam(DecodeTextW('DDe3bgt5Dha6t7ej')))); // 'DebtDate'
+  DebtDefaultCount := StrToInt(AnsiString(Block.GetParam(DecodeTextW('Dbe5bht6C7njt8')))); // 'DebtCnt'
+  DepositAmount := StrToInt(AnsiString(Block.GetParam(DecodeTextW('D0ehp7ojsgi4td')))); // 'Deposit'
+  DepositStartTurn := StrToInt(AnsiString(Block.GetParam(DecodeTextW('Dbe5p7ojsriet4Dga6t7ek')))); // 'DepositDate'
+  DepositDayCount := StrToInt(AnsiString(Block.GetParam(DecodeTextW('D0ebp5o3sfi3t5Dha7y8')))); // 'DepositDay'
+  DepositInterestRate := ExtractDecimalToSingleW(Block.GetParam(DecodeTextW('Dpeupto5seiwtfPye6rucieon9t'))); // 'DepositPercent'
+  MedicalPolicyTicks := StrToInt(AnsiString(Block.GetParam(DecodeTextW('Mmejd6Ptoel4i6c7yi')))); // 'MedPolicy'
   for I := Low(ProgramCounts) to High(ProgramCounts) do ProgramCounts[I] := StrToInt(AnsiString(Block.GetParam(ProgramNames[I])));
-  ExperienceByDominators := StrToInt(AnsiString(Block.GetParam(DecodeTextW('Emxjp7D8o5m')))); // Decoded: 'ExpDom'
-  ExperienceByPirates := StrToInt(AnsiString(Block.GetParam(DecodeTextW('E3xrp5P6i7r')))); // Decoded: 'ExpPir'
-  ExperienceByNormals := StrToInt(AnsiString(Block.GetParam(DecodeTextW('Emx8p7C4oga6')))); // Decoded: 'ExpCoa'
-  ExperienceByTraderCareer := StrToInt(AnsiString(Block.GetParam(DecodeTextW('Ekx7peTwr3af')))); // Decoded: 'ExpTra'
+  ExperienceByDominators := StrToInt(AnsiString(Block.GetParam(DecodeTextW('Emxjp7D8o5m')))); // 'ExpDom'
+  ExperienceByPirates := StrToInt(AnsiString(Block.GetParam(DecodeTextW('E3xrp5P6i7r')))); // 'ExpPir'
+  ExperienceByNormals := StrToInt(AnsiString(Block.GetParam(DecodeTextW('Emx8p7C4oga6')))); // 'ExpCoa'
+  ExperienceByTraderCareer := StrToInt(AnsiString(Block.GetParam(DecodeTextW('Ekx7peTwr3af')))); // 'ExpTra'
 end;
 { @end $5860F0 }
 

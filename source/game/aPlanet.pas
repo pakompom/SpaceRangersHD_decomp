@@ -1618,29 +1618,29 @@ var
   Item: TItem;
   Slot: TShopSlot;
 begin
-  Block.AddParam(DecodeTextW('Pul4awnre2taNgarmEes'), Name); // Decoded: 'PlanetName'
-  Block.AddParam(DecodeTextW('OpwRn3ewr'), aConst.OwnerInfo[OwnerId].InternalName); // Decoded: 'Owner'
-  Block.AddParam(DecodeTextW('Rja6cEe'), aConst.OwnerInfo[RaceToOwner(RaceId)].InternalName); // Decoded: 'Race'
-  Block.AddParam(DecodeTextW('Elc0o5neowmWyq'), aConst.PlanetEconomyInfo[Ord(Economy)].InternalName); // Decoded: 'Economy'
-  Block.AddParam(DecodeTextW('GLotvUecrBmnemn7t'), aConst.PlanetGovernmentMarket[Ord(Government)].InternalName); // Decoded: 'Goverment'
-  Block.AddParam(DecodeTextW('ItSaiNzze'), SysUtils.IntToStr(Radius)); // Decoded: 'ISize'
-  Block.AddParam(DecodeTextW('OcrublietyRnakdlipuns'), SysUtils.FloatToStr(Orbit.Radius)); // Decoded: 'OrbitRadius'
-  Block.AddParam(DecodeTextW('OsrabniktuAinegilne'), SysUtils.FloatToStr(Orbit.AngleDegrees)); // Decoded: 'OrbitAngle'
-  Block.AddParam(DecodeTextW('Rpe7lyamtgi4oendThokP4lWasyfeKry'), SysUtils.IntToStr(Byte(RangerRelations[0]))); // Decoded: 'RelationToPlayer'
-  Block.AddParam(DecodeTextW('IsMraliunaTrepcohaLienvuelle'), SysUtils.IntToStr(InventionLevels[7])); // Decoded: 'IMainTechLevel'
+  Block.AddParam(DecodeTextW('Pul4awnre2taNgarmEes'), Name); // 'PlanetName'
+  Block.AddParam(DecodeTextW('OpwRn3ewr'), aConst.OwnerInfo[OwnerId].InternalName); // 'Owner'
+  Block.AddParam(DecodeTextW('Rja6cEe'), aConst.OwnerInfo[RaceToOwner(RaceId)].InternalName); // 'Race'
+  Block.AddParam(DecodeTextW('Elc0o5neowmWyq'), aConst.PlanetEconomyInfo[Ord(Economy)].InternalName); // 'Economy'
+  Block.AddParam(DecodeTextW('GLotvUecrBmnemn7t'), aConst.PlanetGovernmentMarket[Ord(Government)].InternalName); // 'Goverment'
+  Block.AddParam(DecodeTextW('ItSaiNzze'), SysUtils.IntToStr(Radius)); // 'ISize'
+  Block.AddParam(DecodeTextW('OcrublietyRnakdlipuns'), SysUtils.FloatToStr(Orbit.Radius)); // 'OrbitRadius'
+  Block.AddParam(DecodeTextW('OsrabniktuAinegilne'), SysUtils.FloatToStr(Orbit.AngleDegrees)); // 'OrbitAngle'
+  Block.AddParam(DecodeTextW('Rpe7lyamtgi4oendThokP4lWasyfeKry'), SysUtils.IntToStr(Byte(RangerRelations[0]))); // 'RelationToPlayer'
+  Block.AddParam(DecodeTextW('IsMraliunaTrepcohaLienvuelle'), SysUtils.IntToStr(InventionLevels[7])); // 'IMainTechLevel'
   Text := SysUtils.IntToStr(InventionLevels[0]);
   for i := 1 to 19 do Text := Text + ',' + SysUtils.IntToStr(InventionLevels[Byte(i)]);
-  Block.AddParam(DecodeTextW('Toe5cfh2LSexvNejlusw'), Text); // Decoded: 'TechLevels'
-  Block.AddParam(DecodeTextW('C2u4rrrTeengtyIwnsvgeEn6tjieodn'), SysUtils.IntToStr(CurrentInvention)); // Decoded: 'CurrentInvention'
-  Block.AddParam(DecodeTextW('CluurtreewnstQIvnhv6eenwtfijo6ntPwoSirn5tts7'), SysUtils.FloatToStr(CurrentInventionPoints)); // Decoded: 'CurrentInventionPoints'
-  with Block.AddBlockByPath(DecodeTextW('EdqeSahloEp')) do // Decoded: 'EqShop'
+  Block.AddParam(DecodeTextW('Toe5cfh2LSexvNejlusw'), Text); // 'TechLevels'
+  Block.AddParam(DecodeTextW('C2u4rrrTeengtyIwnsvgeEn6tjieodn'), SysUtils.IntToStr(CurrentInvention)); // 'CurrentInvention'
+  Block.AddParam(DecodeTextW('CluurtreewnstQIvnhv6eenwtfijo6ntPwoSirn5tts7'), SysUtils.FloatToStr(CurrentInventionPoints)); // 'CurrentInventionPoints'
+  with Block.AddBlockByPath(DecodeTextW('EdqeSahloEp')) do // 'EqShop'
   begin
     if (EquipmentShop <> nil) and (EquipmentShop.Count > 0) then
     begin
       for i := 0 to EquipmentShop.Count - 1 do
       begin
         Item := EquipmentShop[i];
-        Text := DecodeTextW('ImtreamrIodo') + SysUtils.IntToStr(Int64(Cardinal(Item.Id))); // Decoded: 'ItemId'
+        Text := DecodeTextW('ImtreamrIodo') + SysUtils.IntToStr(Int64(Cardinal(Item.Id))); // 'ItemId'
         Item.SaveToBlock(AddBlockByPath(Text));
       end;
     end
@@ -1652,68 +1652,68 @@ begin
           Item := Slot.Item;
           if Item <> nil then
           begin
-            Text := DecodeTextW('ImtreamrIodo') + SysUtils.IntToStr(Int64(Cardinal(Item.Id))); // Decoded: 'ItemId'
+            Text := DecodeTextW('ImtreamrIodo') + SysUtils.IntToStr(Int64(Cardinal(Item.Id))); // 'ItemId'
             Item.SaveToBlock(AddBlockByPath(Text));
           end;
         end;
-    AddParam(DecodeTextW('AodEdrIstaelma'), ''); // Decoded: 'AddItem'
+    AddParam(DecodeTextW('AodEdrIstaelma'), ''); // 'AddItem'
   end;
   Text := SysUtils.IntToStr(Goods[aConst.GoodsTextOrder[0]].Count);
   for i := 1 to 7 do Text := Text + ',' + SysUtils.IntToStr(Goods[aConst.GoodsTextOrder[Byte(i)]].Count);
-  Block.AddParam(DecodeTextW('SihrolpaGloiordesa'), Text); // Decoded: 'ShopGoods'
+  Block.AddParam(DecodeTextW('SihrolpaGloiordesa'), Text); // 'ShopGoods'
   Text := SysUtils.IntToStr(Goods[aConst.GoodsTextOrder[0]].PurchasePrice);
   for i := 1 to 7 do Text := Text + ',' + SysUtils.IntToStr(Goods[aConst.GoodsTextOrder[Byte(i)]].PurchasePrice);
-  Block.AddParam(DecodeTextW('SihrolpaGloiordesaSrakloe'), Text); // Decoded: 'ShopGoodsSale'
+  Block.AddParam(DecodeTextW('SihrolpaGloiordesaSrakloe'), Text); // 'ShopGoodsSale'
   Text := SysUtils.IntToStr(Goods[aConst.GoodsTextOrder[0]].BaseSalePrice);
   for i := 1 to 7 do Text := Text + ',' + SysUtils.IntToStr(Goods[aConst.GoodsTextOrder[Byte(i)]].BaseSalePrice);
-  Block.AddParam(DecodeTextW('SihrolpaGloiordesaBruhy'), Text); // Decoded: 'ShopGoodsBuy'
-  with Block.AddBlockByPath(DecodeTextW('GlamrirLihsaoln')) do // Decoded: 'Garrison'
+  Block.AddParam(DecodeTextW('SihrolpaGloiordesaBruhy'), Text); // 'ShopGoodsBuy'
+  with Block.AddBlockByPath(DecodeTextW('GlamrirLihsaoln')) do // 'Garrison'
   begin
     for i := 0 to Warriors.Count - 1 do
     begin
       Ship := Warriors[i];
       if Ship.CurrentStar.Ships.IndexOf(Ship) < 0 then
       begin
-        Text := DecodeTextW('WfajrRrkiSo4rgImd5') + SysUtils.IntToStr(Int64(Cardinal(Ship.Id))); // Decoded: 'WarriorId'
+        Text := DecodeTextW('WfajrRrkiSo4rgImd5') + SysUtils.IntToStr(Int64(Cardinal(Ship.Id))); // 'WarriorId'
         Ship.SaveToBlock(AddBlockByPath(Text));
       end;
     end;
   end;
-  Block.AddParam(DecodeTextW('WuartTewrfSgpwaQcde'), SysUtils.IntToStr(WaterTiles)); // Decoded: 'WaterSpace'
-  Block.AddParam(DecodeTextW('WbantderrwCSofmgpUlkaltwef'), SysUtils.IntToStr(WaterExplored)); // Decoded: 'WaterComplate'
-  Block.AddParam(DecodeTextW('LLagnsd3SwpFascge4'), SysUtils.IntToStr(LandTiles)); // Decoded: 'LandSpace'
-  Block.AddParam(DecodeTextW('LgaEnwdsCfogmHpjlya5tre'), SysUtils.IntToStr(LandExplored)); // Decoded: 'LandComplate'
-  Block.AddParam(DecodeTextW('HbiFldleSrptaycue'), SysUtils.IntToStr(HillTiles)); // Decoded: 'HillSpace'
-  Block.AddParam(DecodeTextW('HninlglnCfodmFpflFastee'), SysUtils.IntToStr(HillExplored)); // Decoded: 'HillComplate'
-  Block.AddParam(DecodeTextW('OyrebwiftlCknstx'), SysUtils.IntToStr(ProbeOrbitCount)); // Decoded: 'OrbitCnt'
-  with Block.AddBlockByPath(DecodeTextW('Sataokrgalgae')) do // Decoded: 'Storage'
+  Block.AddParam(DecodeTextW('WuartTewrfSgpwaQcde'), SysUtils.IntToStr(WaterTiles)); // 'WaterSpace'
+  Block.AddParam(DecodeTextW('WbantderrwCSofmgpUlkaltwef'), SysUtils.IntToStr(WaterExplored)); // 'WaterComplate'
+  Block.AddParam(DecodeTextW('LLagnsd3SwpFascge4'), SysUtils.IntToStr(LandTiles)); // 'LandSpace'
+  Block.AddParam(DecodeTextW('LgaEnwdsCfogmHpjlya5tre'), SysUtils.IntToStr(LandExplored)); // 'LandComplate'
+  Block.AddParam(DecodeTextW('HbiFldleSrptaycue'), SysUtils.IntToStr(HillTiles)); // 'HillSpace'
+  Block.AddParam(DecodeTextW('HninlglnCfodmFpflFastee'), SysUtils.IntToStr(HillExplored)); // 'HillComplate'
+  Block.AddParam(DecodeTextW('OyrebwiftlCknstx'), SysUtils.IntToStr(ProbeOrbitCount)); // 'OrbitCnt'
+  with Block.AddBlockByPath(DecodeTextW('Sataokrgalgae')) do // 'Storage'
   begin
     for i := 0 to GetPlayer.StorageEntries.Count - 1 do
       if PStorageEntry(GetPlayer.StorageEntries[i]).LocationOwner = Self then
       begin
         Item := PStorageEntry(GetPlayer.StorageEntries[i]).Item;
-        Text := DecodeTextW('ImtreamrIodo') + SysUtils.IntToStr(Int64(Cardinal(Item.Id))); // Decoded: 'ItemId'
+        Text := DecodeTextW('ImtreamrIodo') + SysUtils.IntToStr(Int64(Cardinal(Item.Id))); // 'ItemId'
         Item.SaveToBlock(AddBlockByPath(Text));
       end;
-    AddParam(DecodeTextW('AodEdrIstaelma'), ''); // Decoded: 'AddItem'
+    AddParam(DecodeTextW('AodEdrIstaelma'), ''); // 'AddItem'
   end;
-  with Block.AddBlockByPath(DecodeTextW('TurieKalsauOrden')) do // Decoded: 'Treasure'
+  with Block.AddBlockByPath(DecodeTextW('TurieKalsauOrden')) do // 'Treasure'
   begin
     if SurfaceLootEntries <> nil then
       for i := 0 to SurfaceLootEntries.Count - 1 do
       begin
         Entry := SurfaceLootEntries[i];
-        Text := DecodeTextW('HyiIdedfehnjIytrewm') + SysUtils.IntToStr(i + 1); // Decoded: 'HiddenItem'
+        Text := DecodeTextW('HyiIdedfehnjIytrewm') + SysUtils.IntToStr(i + 1); // 'HiddenItem'
         with AddBlockByPath(Text) do
         begin
-          AddParam(DecodeTextW('LaawnedrTtyhpuei'), SysUtils.IntToStr(Ord(Entry.TerrainKind))); // Decoded: 'LandType'
-          AddParam(DecodeTextW('DjetpEtwh'), SysUtils.IntToStr(Entry.SurfaceTileIndex)); // Decoded: 'Depth'
-          Entry.Item.SaveToBlock(AddBlockByPath(DecodeTextW('IrtteEmtIIdy') + SysUtils.IntToStr(Int64(Cardinal(Entry.Item.Id))))); // Decoded: 'ItemId'
+          AddParam(DecodeTextW('LaawnedrTtyhpuei'), SysUtils.IntToStr(Ord(Entry.TerrainKind))); // 'LandType'
+          AddParam(DecodeTextW('DjetpEtwh'), SysUtils.IntToStr(Entry.SurfaceTileIndex)); // 'Depth'
+          Entry.Item.SaveToBlock(AddBlockByPath(DecodeTextW('IrtteEmtIIdy') + SysUtils.IntToStr(Int64(Cardinal(Entry.Item.Id))))); // 'ItemId'
         end;
       end;
-    AddParam(DecodeTextW('Cur5erawtre3NregwgHjikdHdgern4IFthejm6'), ''); // Decoded: 'CreateNewHiddenItem'
+    AddParam(DecodeTextW('Cur5erawtre3NregwgHjikdHdgern4IFthejm6'), ''); // 'CreateNewHiddenItem'
   end;
-  Block.AddParam(DecodeTextW('CorFedaWtaesNfeTwgShhji6pw'), ''); // Decoded: 'CreateNewShip'
+  Block.AddParam(DecodeTextW('CorFedaWtaesNfeTwgShhji6pw'), ''); // 'CreateNewShip'
 end;
 { @end $7861A4 }
 
@@ -1732,32 +1732,32 @@ var
   OldOwner, Owner, OldRace: Byte;
   OldSeries, Series: TDominatorSeries;
 begin
-  Name := Block.GetParam(DecodeTextW('Pul4awnre2taNgarmEes')); // Decoded: 'PlanetName'
-  Text := Block.GetParam(DecodeTextW('OpwRn3ewr')); // Decoded: 'Owner'
+  Name := Block.GetParam(DecodeTextW('Pul4awnre2taNgarmEes')); // 'PlanetName'
+  Text := Block.GetParam(DecodeTextW('OpwRn3ewr')); // 'Owner'
   for i := 0 to 7 do if Text = aConst.OwnerInfo[Byte(i)].InternalName then OwnerId := i;
-  Text := Block.GetParam(DecodeTextW('Rja6cEe')); // Decoded: 'Race'
+  Text := Block.GetParam(DecodeTextW('Rja6cEe')); // 'Race'
   for i := 0 to 4 do if Text = aConst.OwnerInfo[Byte(i)].InternalName then RaceId := i;
-  Text := Block.GetParam(DecodeTextW('Elc0o5neowmWyq')); // Decoded: 'Economy'
+  Text := Block.GetParam(DecodeTextW('Elc0o5neowmWyq')); // 'Economy'
   for i := 0 to 2 do if Text = aConst.PlanetEconomyInfo[Byte(i)].InternalName then Economy := TPlanetEconomy(i);
-  Text := Block.GetParam(DecodeTextW('GLotvUecrBmnemn7t')); // Decoded: 'Goverment'
+  Text := Block.GetParam(DecodeTextW('GLotvUecrBmnemn7t')); // 'Goverment'
   for i := 0 to 4 do if Text = aConst.PlanetGovernmentMarket[Byte(i)].InternalName then Government := TPlanetGovernment(i);
-  Orbit.Radius := ExtractDecimalToSingleW(Block.GetParam(DecodeTextW('OcrublietyRnakdlipuns'))); // Decoded: 'OrbitRadius'
-  Orbit.AngleDegrees := ExtractDecimalToSingleW(Block.GetParam(DecodeTextW('OsrabniktuAinegilne'))); // Decoded: 'OrbitAngle'
-  RangerRelations[0] := Pointer(SysUtils.StrToInt(Block.GetParam(DecodeTextW('Rpe7lyamtgi4oendThokP4lWasyfeKry')))); // Decoded: 'RelationToPlayer'
-  Text := Block.GetParam(DecodeTextW('SihrolpaGloiordesa')); // Decoded: 'ShopGoods'
+  Orbit.Radius := ExtractDecimalToSingleW(Block.GetParam(DecodeTextW('OcrublietyRnakdlipuns'))); // 'OrbitRadius'
+  Orbit.AngleDegrees := ExtractDecimalToSingleW(Block.GetParam(DecodeTextW('OsrabniktuAinegilne'))); // 'OrbitAngle'
+  RangerRelations[0] := Pointer(SysUtils.StrToInt(Block.GetParam(DecodeTextW('Rpe7lyamtgi4oendThokP4lWasyfeKry')))); // 'RelationToPlayer'
+  Text := Block.GetParam(DecodeTextW('SihrolpaGloiordesa')); // 'ShopGoods'
   for i := 0 to 7 do Goods[aConst.GoodsTextOrder[Byte(i)]].Count := SysUtils.StrToInt(ExtractDelimitedPartW(Text, i, ','));
-  Text := Block.GetParam(DecodeTextW('SihrolpaGloiordesaSrakloe')); // Decoded: 'ShopGoodsSale'
+  Text := Block.GetParam(DecodeTextW('SihrolpaGloiordesaSrakloe')); // 'ShopGoodsSale'
   for i := 0 to 7 do Goods[aConst.GoodsTextOrder[Byte(i)]].PurchasePrice := SysUtils.StrToInt(ExtractDelimitedPartW(Text, i, ','));
-  Text := Block.GetParam(DecodeTextW('SihrolpaGloiordesaBruhy')); // Decoded: 'ShopGoodsBuy'
+  Text := Block.GetParam(DecodeTextW('SihrolpaGloiordesaBruhy')); // 'ShopGoodsBuy'
   for i := 0 to 7 do Goods[aConst.GoodsTextOrder[Byte(i)]].BaseSalePrice := SysUtils.StrToInt(ExtractDelimitedPartW(Text, i, ','));
-  with Block.GetBlockByPath(DecodeTextW('EdqeSahloEp')) do // Decoded: 'EqShop'
+  with Block.GetBlockByPath(DecodeTextW('EdqeSahloEp')) do // 'EqShop'
   begin
     if (EquipmentShop <> nil) and (EquipmentShop.Count > 0) then
     begin
       for i := 0 to EquipmentShop.Count - 1 do
       begin
         Item := EquipmentShop[i];
-        Text := DecodeTextW('ImtreamrIodo') + SysUtils.IntToStr(Int64(Cardinal(Item.Id))); // Decoded: 'ItemId'
+        Text := DecodeTextW('ImtreamrIodo') + SysUtils.IntToStr(Int64(Cardinal(Item.Id))); // 'ItemId'
         Item.LoadFromBlock(GetBlockByPath(Text));
       end;
     end
@@ -1769,11 +1769,11 @@ begin
           Item := Slot.Item;
           if Item <> nil then
           begin
-            Text := DecodeTextW('ImtreamrIodo') + SysUtils.IntToStr(Int64(Cardinal(Item.Id))); // Decoded: 'ItemId'
+            Text := DecodeTextW('ImtreamrIodo') + SysUtils.IntToStr(Int64(Cardinal(Item.Id))); // 'ItemId'
             Item.LoadFromBlock(GetBlockByPath(Text));
           end;
         end;
-    Text := GetParam(DecodeTextW('AodEdrIstaelma')); // Decoded: 'AddItem'
+    Text := GetParam(DecodeTextW('AodEdrIstaelma')); // 'AddItem'
     for i := 0 to CountDelimitedPartsW(Text, ',') - 1 do
     begin
       Part := ExtractDelimitedPartW(Text, i, ',');
@@ -1798,16 +1798,16 @@ begin
         end;
     end;
   end;
-  with Block.GetBlockByPath(DecodeTextW('Sataokrgalgae')) do // Decoded: 'Storage'
+  with Block.GetBlockByPath(DecodeTextW('Sataokrgalgae')) do // 'Storage'
   begin
     for i := 0 to GetPlayer.StorageEntries.Count - 1 do
       if PStorageEntry(GetPlayer.StorageEntries[i]).LocationOwner = Self then
       begin
         Item := PStorageEntry(GetPlayer.StorageEntries[i]).Item;
-        Text := DecodeTextW('ImtreamrIodo') + SysUtils.IntToStr(Int64(Cardinal(Item.Id))); // Decoded: 'ItemId'
+        Text := DecodeTextW('ImtreamrIodo') + SysUtils.IntToStr(Int64(Cardinal(Item.Id))); // 'ItemId'
         Item.LoadFromBlock(GetBlockByPath(Text));
       end;
-    Text := GetParam(DecodeTextW('AodEdrIstaelma')); // Decoded: 'AddItem'
+    Text := GetParam(DecodeTextW('AodEdrIstaelma')); // 'AddItem'
     for i := 0 to CountDelimitedPartsW(Text, ',') - 1 do
     begin
       Part := ExtractDelimitedPartW(Text, i, ',');
@@ -1832,44 +1832,44 @@ begin
         end;
     end;
   end;
-  Text := Block.GetParam(DecodeTextW('Toe5cfh2LSexvNejlusw')); // Decoded: 'TechLevels'
+  Text := Block.GetParam(DecodeTextW('Toe5cfh2LSexvNejlusw')); // 'TechLevels'
   for i := 0 to 19 do InventionLevels[Byte(i)] := SysUtils.StrToInt(ExtractDelimitedPartW(Text, i, ','));
-  CurrentInvention := SysUtils.StrToInt(Block.GetParam(DecodeTextW('C2u4rrrTeengtyIwnsvgeEn6tjieodn'))); // Decoded: 'CurrentInvention'
-  CurrentInventionPoints := ExtractDecimalToSingleW(Block.GetParam(DecodeTextW('CluurtreewnstQIvnhv6eenwtfijo6ntPwoSirn5tts7'))); // Decoded: 'CurrentInventionPoints'
-  with Block.GetBlockByPath(DecodeTextW('GlamrirLihsaoln')) do // Decoded: 'Garrison'
+  CurrentInvention := SysUtils.StrToInt(Block.GetParam(DecodeTextW('C2u4rrrTeengtyIwnsvgeEn6tjieodn'))); // 'CurrentInvention'
+  CurrentInventionPoints := ExtractDecimalToSingleW(Block.GetParam(DecodeTextW('CluurtreewnstQIvnhv6eenwtfijo6ntPwoSirn5tts7'))); // 'CurrentInventionPoints'
+  with Block.GetBlockByPath(DecodeTextW('GlamrirLihsaoln')) do // 'Garrison'
   begin
     for i := 0 to Warriors.Count - 1 do
     begin
       Ship := Warriors[i];
       if Ship.CurrentStar.Ships.IndexOf(Ship) < 0 then
       begin
-        Text := DecodeTextW('WfajrRrkiSo4rgImd5') + SysUtils.IntToStr(Int64(Cardinal(Ship.Id))); // Decoded: 'WarriorId'
+        Text := DecodeTextW('WfajrRrkiSo4rgImd5') + SysUtils.IntToStr(Int64(Cardinal(Ship.Id))); // 'WarriorId'
         Ship.LoadFromBlock(GetBlockByPath(Text));
       end;
     end;
   end;
-  WaterTiles := SysUtils.StrToInt(Block.GetParam(DecodeTextW('WuartTewrfSgpwaQcde'))); // Decoded: 'WaterSpace'
-  WaterExplored := SysUtils.StrToInt(Block.GetParam(DecodeTextW('WbantderrwCSofmgpUlkaltwef'))); // Decoded: 'WaterComplate'
-  LandTiles := SysUtils.StrToInt(Block.GetParam(DecodeTextW('LLagnsd3SwpFascge4'))); // Decoded: 'LandSpace'
-  LandExplored := SysUtils.StrToInt(Block.GetParam(DecodeTextW('LgaEnwdsCfogmHpjlya5tre'))); // Decoded: 'LandComplate'
-  HillTiles := SysUtils.StrToInt(Block.GetParam(DecodeTextW('HbiFldleSrptaycue'))); // Decoded: 'HillSpace'
-  HillExplored := SysUtils.StrToInt(Block.GetParam(DecodeTextW('HninlglnCfodmFpflFastee'))); // Decoded: 'HillComplate'
-  ProbeOrbitCount := SysUtils.StrToInt(Block.GetParam(DecodeTextW('OyrebwiftlCknstx'))); // Decoded: 'OrbitCnt'
-  with Block.GetBlockByPath(DecodeTextW('TurieKalsauOrden')) do // Decoded: 'Treasure'
+  WaterTiles := SysUtils.StrToInt(Block.GetParam(DecodeTextW('WuartTewrfSgpwaQcde'))); // 'WaterSpace'
+  WaterExplored := SysUtils.StrToInt(Block.GetParam(DecodeTextW('WbantderrwCSofmgpUlkaltwef'))); // 'WaterComplate'
+  LandTiles := SysUtils.StrToInt(Block.GetParam(DecodeTextW('LLagnsd3SwpFascge4'))); // 'LandSpace'
+  LandExplored := SysUtils.StrToInt(Block.GetParam(DecodeTextW('LgaEnwdsCfogmHpjlya5tre'))); // 'LandComplate'
+  HillTiles := SysUtils.StrToInt(Block.GetParam(DecodeTextW('HbiFldleSrptaycue'))); // 'HillSpace'
+  HillExplored := SysUtils.StrToInt(Block.GetParam(DecodeTextW('HninlglnCfodmFpflFastee'))); // 'HillComplate'
+  ProbeOrbitCount := SysUtils.StrToInt(Block.GetParam(DecodeTextW('OyrebwiftlCknstx'))); // 'OrbitCnt'
+  with Block.GetBlockByPath(DecodeTextW('TurieKalsauOrden')) do // 'Treasure'
   begin
     if SurfaceLootEntries <> nil then
       for i := 0 to SurfaceLootEntries.Count - 1 do
       begin
         Entry := SurfaceLootEntries[i];
-        Text := DecodeTextW('HyiIdedfehnjIytrewm') + SysUtils.IntToStr(i + 1); // Decoded: 'HiddenItem'
+        Text := DecodeTextW('HyiIdedfehnjIytrewm') + SysUtils.IntToStr(i + 1); // 'HiddenItem'
         with GetBlockByPath(Text) do
         begin
-          Entry.TerrainKind := TPlanetTerrainKind(SysUtils.StrToInt(GetParam(DecodeTextW('LaawnedrTtyhpuei')))); // Decoded: 'LandType'
-          Entry.SurfaceTileIndex := SysUtils.StrToInt(GetParam(DecodeTextW('DjetpEtwh'))); // Decoded: 'Depth'
-          Entry.Item.LoadFromBlock(GetBlockByPath(DecodeTextW('IrtteEmtIIdy') + SysUtils.IntToStr(Int64(Cardinal(Entry.Item.Id))))); // Decoded: 'ItemId'
+          Entry.TerrainKind := TPlanetTerrainKind(SysUtils.StrToInt(GetParam(DecodeTextW('LaawnedrTtyhpuei')))); // 'LandType'
+          Entry.SurfaceTileIndex := SysUtils.StrToInt(GetParam(DecodeTextW('DjetpEtwh'))); // 'Depth'
+          Entry.Item.LoadFromBlock(GetBlockByPath(DecodeTextW('IrtteEmtIIdy') + SysUtils.IntToStr(Int64(Cardinal(Entry.Item.Id))))); // 'ItemId'
         end;
       end;
-    Text := GetParam(DecodeTextW('Cur5erawtre3NregwgHjikdHdgern4IFthejm6')); // Decoded: 'CreateNewHiddenItem'
+    Text := GetParam(DecodeTextW('Cur5erawtre3NregwgHjikdHdgern4IFthejm6')); // 'CreateNewHiddenItem'
     for i := 0 to CountDelimitedPartsW(Text, ',') - 1 do
     begin
       Part := ExtractDelimitedPartW(Text, i, ',');
@@ -1889,7 +1889,7 @@ begin
         end;
     end;
   end;
-  Text := Block.GetParam(DecodeTextW('CorFedaWtaesNfeTwgShhji6pw')); // Decoded: 'CreateNewShip'
+  Text := Block.GetParam(DecodeTextW('CorFedaWtaesNfeTwgShhji6pw')); // 'CreateNewShip'
   for i := 0 to CountDelimitedPartsW(Text, ',') - 1 do
   begin
     Part := ExtractDelimitedPartW(Text, i, ',');

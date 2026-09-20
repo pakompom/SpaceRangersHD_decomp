@@ -458,20 +458,20 @@ begin
   inherited SaveToBlock(Block);
   Text := IntToStr(ShopGoods[GoodsTextOrder[0]].Count);
   for I := 1 to 7 do Text := Text + ',' + IntToStr(ShopGoods[GoodsTextOrder[Byte(I)]].Count);
-  Block.AddParam(DecodeTextW('SihrolpaGloiordesa'), Text); // Decoded: 'ShopGoods'
+  Block.AddParam(DecodeTextW('SihrolpaGloiordesa'), Text); // 'ShopGoods'
   Text := IntToStr(ShopGoods[GoodsTextOrder[0]].PurchasePrice);
   for I := 1 to 7 do Text := Text + ',' + IntToStr(ShopGoods[GoodsTextOrder[Byte(I)]].PurchasePrice);
-  Block.AddParam(DecodeTextW('SihrolpaGloiordesaSrakloe'), Text); // Decoded: 'ShopGoodsSale'
+  Block.AddParam(DecodeTextW('SihrolpaGloiordesaSrakloe'), Text); // 'ShopGoodsSale'
   Text := IntToStr(ShopGoods[GoodsTextOrder[0]].BaseSalePrice);
   for I := 1 to 7 do Text := Text + ',' + IntToStr(ShopGoods[GoodsTextOrder[Byte(I)]].BaseSalePrice);
-  Block.AddParam(DecodeTextW('SihrolpaGloiordesaBruhy'), Text); // Decoded: 'ShopGoodsBuy'
-  ShopBlock := Block.AddBlockByPath(DecodeTextW('EdqeSahloEp')); // Decoded: 'EqShop'
+  Block.AddParam(DecodeTextW('SihrolpaGloiordesaBruhy'), Text); // 'ShopGoodsBuy'
+  ShopBlock := Block.AddBlockByPath(DecodeTextW('EdqeSahloEp')); // 'EqShop'
   if (EquipmentShop <> nil) and (EquipmentShop.Count > 0) then
   begin
     for I := 0 to EquipmentShop.Count - 1 do
     begin
       Item := TItem(EquipmentShop[I]);
-      Text := DecodeTextW('ImtreamrIodo') + IntToStr(Int64(Cardinal(Item.Id))); // Decoded: 'ItemId'
+      Text := DecodeTextW('ImtreamrIodo') + IntToStr(Int64(Cardinal(Item.Id))); // 'ItemId'
       Item.SaveToBlock(ShopBlock.AddBlockByPath(Text));
     end;
   end
@@ -482,21 +482,21 @@ begin
       Item := Slot.Item;
       if Item <> nil then
       begin
-        Text := DecodeTextW('ImtreamrIodo') + IntToStr(Int64(Cardinal(Item.Id))); // Decoded: 'ItemId'
+        Text := DecodeTextW('ImtreamrIodo') + IntToStr(Int64(Cardinal(Item.Id))); // 'ItemId'
         Item.SaveToBlock(ShopBlock.AddBlockByPath(Text));
       end;
     end;
-  ShopBlock.AddParam(DecodeTextW('AodEdrIstaelma'), ''); // Decoded: 'AddItem'
-  with Block.AddBlockByPath(DecodeTextW('Sataokrgalgae')) do // Decoded: 'Storage'
+  ShopBlock.AddParam(DecodeTextW('AodEdrIstaelma'), ''); // 'AddItem'
+  with Block.AddBlockByPath(DecodeTextW('Sataokrgalgae')) do // 'Storage'
   begin
   for I := 0 to GetPlayer.StorageEntries.Count - 1 do
     if PStorageEntry(GetPlayer.StorageEntries[I]).LocationOwner = Self then
     begin
       Item := PStorageEntry(GetPlayer.StorageEntries[I]).Item;
-      Text := DecodeTextW('ImtreamrIodo') + IntToStr(Int64(Cardinal(Item.Id))); // Decoded: 'ItemId'
+      Text := DecodeTextW('ImtreamrIodo') + IntToStr(Int64(Cardinal(Item.Id))); // 'ItemId'
       Item.SaveToBlock(AddBlockByPath(Text));
     end;
-  AddParam(DecodeTextW('AodEdrIstaelma'), ''); // Decoded: 'AddItem'
+  AddParam(DecodeTextW('AodEdrIstaelma'), ''); // 'AddItem'
   end;
 end;
 { @end $7150E4 }
@@ -513,19 +513,19 @@ var
   ShopBlock: TBlockParEC;
 begin
   inherited LoadFromBlock(Block);
-  Text := Block.GetParam(DecodeTextW('SihrolpaGloiordes')); // Decoded: 'ShopGoods'
+  Text := Block.GetParam(DecodeTextW('SihrolpaGloiordes')); // 'ShopGoods'
   for I := 0 to 7 do ShopGoods[GoodsTextOrder[Byte(I)]].Count := StrToInt(ExtractDelimitedPartW(Text, I, ','));
-  Text := Block.GetParam(DecodeTextW('SihrolpaGloiordesaSrakloe')); // Decoded: 'ShopGoodsSale'
+  Text := Block.GetParam(DecodeTextW('SihrolpaGloiordesaSrakloe')); // 'ShopGoodsSale'
   for I := 0 to 7 do ShopGoods[GoodsTextOrder[Byte(I)]].PurchasePrice := StrToInt(ExtractDelimitedPartW(Text, I, ','));
-  Text := Block.GetParam(DecodeTextW('SihrolpaGloiordesaBruhy')); // Decoded: 'ShopGoodsBuy'
+  Text := Block.GetParam(DecodeTextW('SihrolpaGloiordesaBruhy')); // 'ShopGoodsBuy'
   for I := 0 to 7 do ShopGoods[GoodsTextOrder[Byte(I)]].BaseSalePrice := StrToInt(ExtractDelimitedPartW(Text, I, ','));
-  ShopBlock := Block.GetBlockByPath(DecodeTextW('EdqeSahloEp')); // Decoded: 'EqShop'
+  ShopBlock := Block.GetBlockByPath(DecodeTextW('EdqeSahloEp')); // 'EqShop'
   if (EquipmentShop <> nil) and (EquipmentShop.Count > 0) then
   begin
     for I := 0 to EquipmentShop.Count - 1 do
     begin
       Item := TItem(EquipmentShop[I]);
-      Text := DecodeTextW('ImtreamrIodo') + IntToStr(Int64(Cardinal(Item.Id))); // Decoded: 'ItemId'
+      Text := DecodeTextW('ImtreamrIodo') + IntToStr(Int64(Cardinal(Item.Id))); // 'ItemId'
       Item.LoadFromBlock(ShopBlock.GetBlockByPath(Text));
     end;
   end
@@ -536,11 +536,11 @@ begin
       Item := Slot.Item;
       if Item <> nil then
       begin
-        Text := DecodeTextW('ImtreamrIodo') + IntToStr(Int64(Cardinal(Item.Id))); // Decoded: 'ItemId'
+        Text := DecodeTextW('ImtreamrIodo') + IntToStr(Int64(Cardinal(Item.Id))); // 'ItemId'
         Item.LoadFromBlock(ShopBlock.GetBlockByPath(Text));
       end;
     end;
-  Text := ShopBlock.GetParam(DecodeTextW('AodEdrIstaelma')); // Decoded: 'AddItem'
+  Text := ShopBlock.GetParam(DecodeTextW('AodEdrIstaelma')); // 'AddItem'
   for I := 0 to CountDelimitedPartsW(Text, ',') - 1 do
   begin
     Name := ExtractDelimitedPartW(Text, I, ',');
@@ -564,16 +564,16 @@ begin
         Break;
       end;
   end;
-  with Block.GetBlockByPath(DecodeTextW('Sataokrgalgae')) do // Decoded: 'Storage'
+  with Block.GetBlockByPath(DecodeTextW('Sataokrgalgae')) do // 'Storage'
   begin
   for I := 0 to GetPlayer.StorageEntries.Count - 1 do
     if PStorageEntry(GetPlayer.StorageEntries[I]).LocationOwner = Self then
     begin
       Item := PStorageEntry(GetPlayer.StorageEntries[I]).Item;
-      Text := DecodeTextW('ImtreamrIodo') + IntToStr(Int64(Cardinal(Item.Id))); // Decoded: 'ItemId'
+      Text := DecodeTextW('ImtreamrIodo') + IntToStr(Int64(Cardinal(Item.Id))); // 'ItemId'
       Item.LoadFromBlock(GetBlockByPath(Text));
     end;
-  Text := GetParam(DecodeTextW('AodEdrIstaelma')); // Decoded: 'AddItem'
+  Text := GetParam(DecodeTextW('AodEdrIstaelma')); // 'AddItem'
   for I := 0 to CountDelimitedPartsW(Text, ',') - 1 do
   begin
     Name := ExtractDelimitedPartW(Text, I, ',');

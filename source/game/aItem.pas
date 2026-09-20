@@ -826,14 +826,14 @@ end;
 { @routine $7EE984 TItem_SaveToBlock }
 procedure TItem.SaveToBlock(Block: TBlockParEC);
 begin
-  Block.AddParam(DecodeTextW('IQNaaWmee'), GetDisplayName); // Decoded: 'IName'
-  Block.AddParam(DecodeTextW('InToyAple'), ItemTypeNames[Ord(ItemType)]); // Decoded: 'IType'
-  Block.AddParam(DecodeTextW('OpwRn3ewr'), OwnerInfo[OwnerId].InternalName); // Decoded: 'Owner'
-  Block.AddParam(DecodeTextW('SaiRzoe'), IntToStr(Weight)); // Decoded: 'Size'
-  Block.AddParam(DecodeTextW('CfoTsat'), IntToStr(Cost)); // Decoded: 'Cost'
-  Block.AddParam(DecodeTextW('NeonDarlokpl'), IntToStr(NoDropFlag)); // Decoded: 'NoDrop'
+  Block.AddParam(DecodeTextW('IQNaaWmee'), GetDisplayName); // 'IName'
+  Block.AddParam(DecodeTextW('InToyAple'), ItemTypeNames[Ord(ItemType)]); // 'IType'
+  Block.AddParam(DecodeTextW('OpwRn3ewr'), OwnerInfo[OwnerId].InternalName); // 'Owner'
+  Block.AddParam(DecodeTextW('SaiRzoe'), IntToStr(Weight)); // 'Size'
+  Block.AddParam(DecodeTextW('CfoTsat'), IntToStr(Cost)); // 'Cost'
+  Block.AddParam(DecodeTextW('NeonDarlokpl'), IntToStr(NoDropFlag)); // 'NoDrop'
   if ScriptItem <> nil then
-    Block.AddParam(DecodeTextW('IsSacaraiOpit'), TScriptItem(ScriptItem).Script.ScriptFileName); // Decoded: 'IScript'
+    Block.AddParam(DecodeTextW('IsSacaraiOpit'), TScriptItem(ScriptItem).Script.ScriptFileName); // 'IScript'
 end;
 { @end $7EE984 }
 
@@ -843,12 +843,12 @@ var
   I: Integer;
   Text: WideString;
 begin
-  Text := Block.GetParam(DecodeTextW('OpwRn3ewr')); // Decoded: 'Owner'
+  Text := Block.GetParam(DecodeTextW('OpwRn3ewr')); // 'Owner'
   for I := 0 to 7 do
     if Text = OwnerInfo[Byte(I)].InternalName then OwnerId := I;
-  Weight := StrToInt(Block.GetParam(DecodeTextW('SaiRzoe'))); // Decoded: 'Size'
-  Cost := StrToInt(Block.GetParam(DecodeTextW('CfoTsat'))); // Decoded: 'Cost'
-  Text := LowerCase(Block.GetParam(DecodeTextW('NeonDarlokpl'))); // Decoded: 'NoDrop'
+  Weight := StrToInt(Block.GetParam(DecodeTextW('SaiRzoe'))); // 'Size'
+  Cost := StrToInt(Block.GetParam(DecodeTextW('CfoTsat'))); // 'Cost'
+  Text := LowerCase(Block.GetParam(DecodeTextW('NeonDarlokpl'))); // 'NoDrop'
   if Text = 'false' then NoDropFlag := 0
   else if Text = 'true' then NoDropFlag := 1
   else NoDropFlag := StrToInt(Text);
@@ -1281,14 +1281,14 @@ var
   Text, ModuleName: WideString;
 begin
   inherited SaveToBlock(Block);
-  Block.AddParam(DecodeTextW('DyuRrdawbRiblNijtSyp'), FloatToStr(ConditionPercent)); // Decoded: 'Durability'
-  Block.AddParam(DecodeTextW('BorYorkNeln'), BoolToWideString(Boolean(BrokenFlag))); // Decoded: 'Broken'
-  Block.AddParam(DecodeTextW('BrognWulso'), IntToStr(MicroModuleIndex)); // Decoded: 'Bonus'
+  Block.AddParam(DecodeTextW('DyuRrdawbRiblNijtSyp'), FloatToStr(ConditionPercent)); // 'Durability'
+  Block.AddParam(DecodeTextW('BorYorkNeln'), BoolToWideString(Boolean(BrokenFlag))); // 'Broken'
+  Block.AddParam(DecodeTextW('BrognWulso'), IntToStr(MicroModuleIndex)); // 'Bonus'
   if MicroModuleIndex <> 0 then
-    Block.AddParam(DecodeTextW('IQBaodn4ursTNgatm2e'), MicroModuleTemplates[MicroModuleIndex - 1].Name); // Decoded: 'IBonusName'
-  Block.AddParam(DecodeTextW('SrpeeIcjigaEl4'), IntToStr(SpecialModuleIndex)); // Decoded: 'Special'
+    Block.AddParam(DecodeTextW('IQBaodn4ursTNgatm2e'), MicroModuleTemplates[MicroModuleIndex - 1].Name); // 'IBonusName'
+  Block.AddParam(DecodeTextW('SrpeeIcjigaEl4'), IntToStr(SpecialModuleIndex)); // 'Special'
   if SpecialModuleIndex <> 0 then
-    Block.AddParam(DecodeTextW('IaSopRefcGihajl6NtaEm3ew'), MicroModuleTemplates[SpecialModuleIndex - 1].Name); // Decoded: 'ISpecialName'
+    Block.AddParam(DecodeTextW('IaSopRefcGihajl6NtaEm3ew'), MicroModuleTemplates[SpecialModuleIndex - 1].Name); // 'ISpecialName'
   if ExtraSpecials <> nil then
   begin
     Text := '';
@@ -1307,9 +1307,9 @@ begin
       else Text := Text + ModuleName;
     end;
     if Text <> '' then
-      Block.AddParam(DecodeTextW('IaEoxRtfrGahSjp6etcEi3awlhs4'), Text); // Decoded: 'IExtraSpecials'
+      Block.AddParam(DecodeTextW('IaEoxRtfrGahSjp6etcEi3awlhs4'), Text); // 'IExtraSpecials'
   end;
-  Block.AddParam(DecodeTextW('D9o5meScewr3iwegs4'), DominatorSeriesNames[Ord(DominatorSeries)]); // Decoded: 'DomSeries'
+  Block.AddParam(DecodeTextW('D9o5meScewr3iwegs4'), DominatorSeriesNames[Ord(DominatorSeries)]); // 'DomSeries'
 end;
 { @end $7F0B6C }
 
@@ -1320,11 +1320,11 @@ var
   Text: WideString;
 begin
   inherited LoadFromBlock(Block);
-  ConditionPercent := ExtractDecimalToSingleW(Block.GetParam(DecodeTextW('DyuRrdawbRiblNijtSyp'))); // Decoded: 'Durability'
-  BrokenFlag := Byte(LowerCase(Block.GetParam(DecodeTextW('BorYorkNeln'))) = 'true'); // Decoded: 'Broken'
-  MicroModuleIndex := StrToInt(Block.GetParam(DecodeTextW('BrognWulso'))); // Decoded: 'Bonus'
-  SpecialModuleIndex := StrToInt(Block.GetParam(DecodeTextW('SrpeeIcjigaEl4'))); // Decoded: 'Special'
-  Text := Block.GetParam(DecodeTextW('D9o5meScewr3iwegs4')); // Decoded: 'DomSeries'
+  ConditionPercent := ExtractDecimalToSingleW(Block.GetParam(DecodeTextW('DyuRrdawbRiblNijtSyp'))); // 'Durability'
+  BrokenFlag := Byte(LowerCase(Block.GetParam(DecodeTextW('BorYorkNeln'))) = 'true'); // 'Broken'
+  MicroModuleIndex := StrToInt(Block.GetParam(DecodeTextW('BrognWulso'))); // 'Bonus'
+  SpecialModuleIndex := StrToInt(Block.GetParam(DecodeTextW('SrpeeIcjigaEl4'))); // 'Special'
+  Text := Block.GetParam(DecodeTextW('D9o5meScewr3iwegs4')); // 'DomSeries'
   for I := 0 to 2 do
     if Text = DominatorSeriesNames[Byte(I)] then DominatorSeries := TDominatorSeries(I);
 end;
@@ -2075,14 +2075,14 @@ end;
 procedure THull.SaveToBlock(Block: TBlockParEC);
 begin
   inherited SaveToBlock(Block);
-  Block.AddParam(DecodeTextW('Hristophorisnotuse'), IntToStr(HullPoints)); // Decoded: 'Hitpoints'
-  Block.AddParam(DecodeTextW('Tre4cwh0L6eHv3ealf'), IntToStr(TechLevel)); // Decoded: 'TechLevel'
-  Block.AddParam(DecodeTextW('Alrumuotr'), IntToStr(Armor)); // Decoded: 'Armor'
-  Block.AddParam(DecodeTextW('SohtiEprTtyopwec'), IntToStr(HullType)); // Decoded: 'ShipType'
-  Block.AddParam(DecodeTextW('Stearoidess'), IntToStr(HullSeries)); // Decoded: 'Series'
+  Block.AddParam(DecodeTextW('Hristophorisnotuse'), IntToStr(HullPoints)); // 'Hitpoints'
+  Block.AddParam(DecodeTextW('Tre4cwh0L6eHv3ealf'), IntToStr(TechLevel)); // 'TechLevel'
+  Block.AddParam(DecodeTextW('Alrumuotr'), IntToStr(Armor)); // 'Armor'
+  Block.AddParam(DecodeTextW('SohtiEprTtyopwec'), IntToStr(HullType)); // 'ShipType'
+  Block.AddParam(DecodeTextW('Stearoidess'), IntToStr(HullSeries)); // 'Series'
   if HullSeries <> -1 then
-    Block.AddParam(DecodeTextW('IfSoenrOilets2Noarmye'), GetSeriesName); // Decoded: 'ISeriesName'
-  Block.AddParam(DecodeTextW('BlueivlitoBuyAPIinroaLtte'), BoolToWideString(PirateBuilt)); // Decoded: 'BuiltByPirate'
+    Block.AddParam(DecodeTextW('IfSoenrOilets2Noarmye'), GetSeriesName); // 'ISeriesName'
+  Block.AddParam(DecodeTextW('BlueivlitoBuyAPIinroaLtte'), BoolToWideString(PirateBuilt)); // 'BuiltByPirate'
 end;
 { @end $7F48B4 }
 
@@ -2090,12 +2090,12 @@ end;
 procedure THull.LoadFromBlock(Block: TBlockParEC);
 begin
   inherited LoadFromBlock(Block);
-  HullPoints := StrToInt(Block.GetParam(DecodeTextW('Hristophorisnotuse'))); // Decoded: 'Hitpoints'
-  TechLevel := StrToInt(Block.GetParam(DecodeTextW('Tre4cwh0L6eHv3ealf'))); // Decoded: 'TechLevel'
-  Armor := StrToInt(Block.GetParam(DecodeTextW('Alrumuotr'))); // Decoded: 'Armor'
-  HullType := StrToInt(Block.GetParam(DecodeTextW('SohtiEprTtyopwec'))); // Decoded: 'ShipType'
-  HullSeries := StrToInt(Block.GetParam(DecodeTextW('Stearoidess'))); // Decoded: 'Series'
-  PirateBuilt := LowerCase(Block.GetParam(DecodeTextW('BlueivlitoBuyAPIinroaLtte'))) = 'true'; // Decoded: 'BuiltByPirate'
+  HullPoints := StrToInt(Block.GetParam(DecodeTextW('Hristophorisnotuse'))); // 'Hitpoints'
+  TechLevel := StrToInt(Block.GetParam(DecodeTextW('Tre4cwh0L6eHv3ealf'))); // 'TechLevel'
+  Armor := StrToInt(Block.GetParam(DecodeTextW('Alrumuotr'))); // 'Armor'
+  HullType := StrToInt(Block.GetParam(DecodeTextW('SohtiEprTtyopwec'))); // 'ShipType'
+  HullSeries := StrToInt(Block.GetParam(DecodeTextW('Stearoidess'))); // 'Series'
+  PirateBuilt := LowerCase(Block.GetParam(DecodeTextW('BlueivlitoBuyAPIinroaLtte'))) = 'true'; // 'BuiltByPirate'
 end;
 { @end $7F4BF8 }
 
@@ -2483,9 +2483,9 @@ end;
 procedure TFuelTanks.SaveToBlock(Block: TBlockParEC);
 begin
   inherited SaveToBlock(Block);
-  Block.AddParam(DecodeTextW('Tre4cwh0L6eHv3ealf'), IntToStr(TechLevel)); // Decoded: 'TechLevel'
-  Block.AddParam(DecodeTextW('FiuNeol'), IntToStr(Fuel)); // Decoded: 'Fuel'
-  Block.AddParam(DecodeTextW('CraspiaNcliotay'), IntToStr(Capacity)); // Decoded: 'Capacity'
+  Block.AddParam(DecodeTextW('Tre4cwh0L6eHv3ealf'), IntToStr(TechLevel)); // 'TechLevel'
+  Block.AddParam(DecodeTextW('FiuNeol'), IntToStr(Fuel)); // 'Fuel'
+  Block.AddParam(DecodeTextW('CraspiaNcliotay'), IntToStr(Capacity)); // 'Capacity'
 end;
 { @end $7F7498 }
 
@@ -2493,9 +2493,9 @@ end;
 procedure TFuelTanks.LoadFromBlock(Block: TBlockParEC);
 begin
   inherited LoadFromBlock(Block);
-  TechLevel := StrToInt(Block.GetParam(DecodeTextW('Tre4cwh0L6eHv3ealf'))); // Decoded: 'TechLevel'
-  Fuel := Word(StrToInt(Block.GetParam(DecodeTextW('FiuNeol')))); // Decoded: 'Fuel'
-  Capacity := StrToInt(Block.GetParam(DecodeTextW('CraspiaNcliotay'))); // Decoded: 'Capacity'
+  TechLevel := StrToInt(Block.GetParam(DecodeTextW('Tre4cwh0L6eHv3ealf'))); // 'TechLevel'
+  Fuel := Word(StrToInt(Block.GetParam(DecodeTextW('FiuNeol')))); // 'Fuel'
+  Capacity := StrToInt(Block.GetParam(DecodeTextW('CraspiaNcliotay'))); // 'Capacity'
 end;
 { @end $7F762C }
 
@@ -2640,9 +2640,9 @@ end;
 procedure TEngine.SaveToBlock(Block: TBlockParEC);
 begin
   inherited SaveToBlock(Block);
-  Block.AddParam(DecodeTextW('Tre4cwh0L6eHv3ealf'), IntToStr(TechLevel)); // Decoded: 'TechLevel'
-  Block.AddParam(DecodeTextW('Sapreneld'), IntToStr(Speed)); // Decoded: 'Speed'
-  Block.AddParam(DecodeTextW('JiuOmipa'), IntToStr(JumpRange)); // Decoded: 'Jump'
+  Block.AddParam(DecodeTextW('Tre4cwh0L6eHv3ealf'), IntToStr(TechLevel)); // 'TechLevel'
+  Block.AddParam(DecodeTextW('Sapreneld'), IntToStr(Speed)); // 'Speed'
+  Block.AddParam(DecodeTextW('JiuOmipa'), IntToStr(JumpRange)); // 'Jump'
 end;
 { @end $7F82D4 }
 
@@ -2650,9 +2650,9 @@ end;
 procedure TEngine.LoadFromBlock(Block: TBlockParEC);
 begin
   inherited LoadFromBlock(Block);
-  TechLevel := StrToInt(Block.GetParam(DecodeTextW('Tre4cwh0L6eHv3ealf'))); // Decoded: 'TechLevel'
-  Speed := Word(StrToInt(Block.GetParam(DecodeTextW('Sapreneld')))); // Decoded: 'Speed'
-  JumpRange := StrToInt(Block.GetParam(DecodeTextW('JiuOmipa'))); // Decoded: 'Jump'
+  TechLevel := StrToInt(Block.GetParam(DecodeTextW('Tre4cwh0L6eHv3ealf'))); // 'TechLevel'
+  Speed := Word(StrToInt(Block.GetParam(DecodeTextW('Sapreneld')))); // 'Speed'
+  JumpRange := StrToInt(Block.GetParam(DecodeTextW('JiuOmipa'))); // 'Jump'
 end;
 { @end $7F8460 }
 
@@ -2849,8 +2849,8 @@ end;
 procedure TRadar.SaveToBlock(Block: TBlockParEC);
 begin
   inherited SaveToBlock(Block);
-  Block.AddParam(DecodeTextW('Tre4cwh0L6eHv3ealf'), IntToStr(TechLevel)); // Decoded: 'TechLevel'
-  Block.AddParam(DecodeTextW('Rialdoinurs'), IntToStr(Range)); // Decoded: 'Radius'
+  Block.AddParam(DecodeTextW('Tre4cwh0L6eHv3ealf'), IntToStr(TechLevel)); // 'TechLevel'
+  Block.AddParam(DecodeTextW('Rialdoinurs'), IntToStr(Range)); // 'Radius'
 end;
 { @end $7F9A08 }
 
@@ -2858,8 +2858,8 @@ end;
 procedure TRadar.LoadFromBlock(Block: TBlockParEC);
 begin
   inherited LoadFromBlock(Block);
-  TechLevel := StrToInt(Block.GetParam(DecodeTextW('Tre4cwh0L6eHv3ealf'))); // Decoded: 'TechLevel'
-  Range := Word(StrToInt(Block.GetParam(DecodeTextW('Rialdoinurs')))); // Decoded: 'Radius'
+  TechLevel := StrToInt(Block.GetParam(DecodeTextW('Tre4cwh0L6eHv3ealf'))); // 'TechLevel'
+  Range := Word(StrToInt(Block.GetParam(DecodeTextW('Rialdoinurs')))); // 'Radius'
 end;
 { @end $7F9B30 }
 
@@ -2989,8 +2989,8 @@ end;
 procedure TScaner.SaveToBlock(Block: TBlockParEC);
 begin
   inherited SaveToBlock(Block);
-  Block.AddParam(DecodeTextW('Tre4cwh0L6eHv3ealf'), IntToStr(TechLevel)); // Decoded: 'TechLevel'
-  Block.AddParam(DecodeTextW('Prouwseor'), IntToStr(ScanPower)); // Decoded: 'Power'
+  Block.AddParam(DecodeTextW('Tre4cwh0L6eHv3ealf'), IntToStr(TechLevel)); // 'TechLevel'
+  Block.AddParam(DecodeTextW('Prouwseor'), IntToStr(ScanPower)); // 'Power'
 end;
 { @end $7FA810 }
 
@@ -2998,8 +2998,8 @@ end;
 procedure TScaner.LoadFromBlock(Block: TBlockParEC);
 begin
   inherited LoadFromBlock(Block);
-  TechLevel := StrToInt(Block.GetParam(DecodeTextW('Tre4cwh0L6eHv3ealf'))); // Decoded: 'TechLevel'
-  ScanPower := StrToInt(Block.GetParam(DecodeTextW('Prouwseor'))); // Decoded: 'Power'
+  TechLevel := StrToInt(Block.GetParam(DecodeTextW('Tre4cwh0L6eHv3ealf'))); // 'TechLevel'
+  ScanPower := StrToInt(Block.GetParam(DecodeTextW('Prouwseor'))); // 'Power'
 end;
 { @end $7FA934 }
 
@@ -3144,8 +3144,8 @@ end;
 procedure TRepairRobot.SaveToBlock(Block: TBlockParEC);
 begin
   inherited SaveToBlock(Block);
-  Block.AddParam(DecodeTextW('Tre4cwh0L6eHv3ealf'), IntToStr(TechLevel)); // Decoded: 'TechLevel'
-  Block.AddParam(DecodeTextW('Raenplavikr'), IntToStr(RepairPoints)); // Decoded: 'Repair'
+  Block.AddParam(DecodeTextW('Tre4cwh0L6eHv3ealf'), IntToStr(TechLevel)); // 'TechLevel'
+  Block.AddParam(DecodeTextW('Raenplavikr'), IntToStr(RepairPoints)); // 'Repair'
 end;
 { @end $7FB6A0 }
 
@@ -3153,8 +3153,8 @@ end;
 procedure TRepairRobot.LoadFromBlock(Block: TBlockParEC);
 begin
   inherited LoadFromBlock(Block);
-  TechLevel := StrToInt(Block.GetParam(DecodeTextW('Tre4cwh0L6eHv3ealf'))); // Decoded: 'TechLevel'
-  RepairPoints := StrToInt(Block.GetParam(DecodeTextW('Raenplavikr'))); // Decoded: 'Repair'
+  TechLevel := StrToInt(Block.GetParam(DecodeTextW('Tre4cwh0L6eHv3ealf'))); // 'TechLevel'
+  RepairPoints := StrToInt(Block.GetParam(DecodeTextW('Raenplavikr'))); // 'Repair'
 end;
 { @end $7FB7C8 }
 
@@ -3299,11 +3299,11 @@ end;
 procedure TCargoHook.SaveToBlock(Block: TBlockParEC);
 begin
   inherited SaveToBlock(Block);
-  Block.AddParam(DecodeTextW('Tre4cwh0L6eHv3ealf'), IntToStr(TechLevel)); // Decoded: 'TechLevel'
-  Block.AddParam(DecodeTextW('Prouwseor'), IntToStr(PickupPower)); // Decoded: 'Power'
-  Block.AddParam(DecodeTextW('Rialdoinurs'), IntToStr(Range)); // Decoded: 'Radius'
-  Block.AddParam(DecodeTextW('SapperenduMaidno'), FloatToStr(MinPullSpeed)); // Decoded: 'SpeedMin'
-  Block.AddParam(DecodeTextW('Suplexe2d3Moarxi'), FloatToStr(MaxPullSpeed)); // Decoded: 'SpeedMax'
+  Block.AddParam(DecodeTextW('Tre4cwh0L6eHv3ealf'), IntToStr(TechLevel)); // 'TechLevel'
+  Block.AddParam(DecodeTextW('Prouwseor'), IntToStr(PickupPower)); // 'Power'
+  Block.AddParam(DecodeTextW('Rialdoinurs'), IntToStr(Range)); // 'Radius'
+  Block.AddParam(DecodeTextW('SapperenduMaidno'), FloatToStr(MinPullSpeed)); // 'SpeedMin'
+  Block.AddParam(DecodeTextW('Suplexe2d3Moarxi'), FloatToStr(MaxPullSpeed)); // 'SpeedMax'
 end;
 { @end $7FC57C }
 
@@ -3311,11 +3311,11 @@ end;
 procedure TCargoHook.LoadFromBlock(Block: TBlockParEC);
 begin
   inherited LoadFromBlock(Block);
-  TechLevel := StrToInt(Block.GetParam(DecodeTextW('Tre4cwh0L6eHv3ealf'))); // Decoded: 'TechLevel'
-  PickupPower := Word(StrToInt(Block.GetParam(DecodeTextW('Prouwseor')))); // Decoded: 'Power'
-  Range := Word(StrToInt(Block.GetParam(DecodeTextW('Rialdoinurs')))); // Decoded: 'Radius'
-  MinPullSpeed := ExtractDecimalToSingleW(Block.GetParam(DecodeTextW('SapperenduMaidno'))); // Decoded: 'SpeedMin'
-  MaxPullSpeed := ExtractDecimalToSingleW(Block.GetParam(DecodeTextW('Suplexe2d3Moarxi'))); // Decoded: 'SpeedMax'
+  TechLevel := StrToInt(Block.GetParam(DecodeTextW('Tre4cwh0L6eHv3ealf'))); // 'TechLevel'
+  PickupPower := Word(StrToInt(Block.GetParam(DecodeTextW('Prouwseor')))); // 'Power'
+  Range := Word(StrToInt(Block.GetParam(DecodeTextW('Rialdoinurs')))); // 'Radius'
+  MinPullSpeed := ExtractDecimalToSingleW(Block.GetParam(DecodeTextW('SapperenduMaidno'))); // 'SpeedMin'
+  MaxPullSpeed := ExtractDecimalToSingleW(Block.GetParam(DecodeTextW('Suplexe2d3Moarxi'))); // 'SpeedMax'
 end;
 { @end $7FC800 }
 
@@ -3527,8 +3527,8 @@ end;
 procedure TDefGenerator.SaveToBlock(Block: TBlockParEC);
 begin
   inherited SaveToBlock(Block);
-  Block.AddParam(DecodeTextW('Tre4cwh0L6eHv3ealf'), IntToStr(TechLevel)); // Decoded: 'TechLevel'
-  Block.AddParam(DecodeTextW('Prouwseor'), FloatToStr(1 - DamageFactor)); // Decoded: 'Power'
+  Block.AddParam(DecodeTextW('Tre4cwh0L6eHv3ealf'), IntToStr(TechLevel)); // 'TechLevel'
+  Block.AddParam(DecodeTextW('Prouwseor'), FloatToStr(1 - DamageFactor)); // 'Power'
 end;
 { @end $7FDFBC }
 
@@ -3536,8 +3536,8 @@ end;
 procedure TDefGenerator.LoadFromBlock(Block: TBlockParEC);
 begin
   inherited LoadFromBlock(Block);
-  TechLevel := StrToInt(Block.GetParam(DecodeTextW('Tre4cwh0L6eHv3ealf'))); // Decoded: 'TechLevel'
-  DamageFactor := 1 - ExtractDecimalToSingleW(Block.GetParam(DecodeTextW('Prouwseor'))); // Decoded: 'Power'
+  TechLevel := StrToInt(Block.GetParam(DecodeTextW('Tre4cwh0L6eHv3ealf'))); // 'TechLevel'
+  DamageFactor := 1 - ExtractDecimalToSingleW(Block.GetParam(DecodeTextW('Prouwseor'))); // 'Power'
 end;
 { @end $7FE0F0 }
 
@@ -3808,19 +3808,19 @@ end;
 procedure TWeapon.SaveToBlock(Block: TBlockParEC);
 begin
   inherited SaveToBlock(Block);
-  Block.AddParam(DecodeTextW('Tre4cwh0L6eHv3ealf'), IntToStr(TechLevel)); // Decoded: 'TechLevel'
-  Block.AddParam(DecodeTextW('Rialdoinurs'), IntToStr(Range)); // Decoded: 'Radius'
-  Block.AddParam(DecodeTextW('MailnoDrakmoarglen'), IntToStr(MinDamage)); // Decoded: 'MinDamage'
-  Block.AddParam(DecodeTextW('MianxaDoarmuavgre'), IntToStr(MaxDamage)); // Decoded: 'MaxDamage'
-  Block.AddParam(DecodeTextW('Almamuo'), IntToStr(Ammo)); // Decoded: 'Ammo'
-  Block.AddParam(DecodeTextW('MraixoAsmImGod'), IntToStr(AmmoCapacity)); // Decoded: 'MaxAmmo'
+  Block.AddParam(DecodeTextW('Tre4cwh0L6eHv3ealf'), IntToStr(TechLevel)); // 'TechLevel'
+  Block.AddParam(DecodeTextW('Rialdoinurs'), IntToStr(Range)); // 'Radius'
+  Block.AddParam(DecodeTextW('MailnoDrakmoarglen'), IntToStr(MinDamage)); // 'MinDamage'
+  Block.AddParam(DecodeTextW('MianxaDoarmuavgre'), IntToStr(MaxDamage)); // 'MaxDamage'
+  Block.AddParam(DecodeTextW('Almamuo'), IntToStr(Ammo)); // 'Ammo'
+  Block.AddParam(DecodeTextW('MraixoAsmImGod'), IntToStr(AmmoCapacity)); // 'MaxAmmo'
 end;
 { @end $7FF2C0 }
 
 { @routine $7FF5A4 TCustomWeapon_SaveToBlock }
 procedure TCustomWeapon.SaveToBlock(Block: TBlockParEC);
 begin
-  Block.AddParam(DecodeTextW('CrulsitroimaTryspie'), CustomInfo.ConfigName); // Decoded: 'CustomType'
+  Block.AddParam(DecodeTextW('CrulsitroimaTryspie'), CustomInfo.ConfigName); // 'CustomType'
   inherited SaveToBlock(Block);
 end;
 { @end $7FF5A4 }
@@ -3829,19 +3829,19 @@ end;
 procedure TWeapon.LoadFromBlock(Block: TBlockParEC);
 begin
   inherited LoadFromBlock(Block);
-  TechLevel := StrToInt(Block.GetParam(DecodeTextW('Tre4cwh0L6eHv3ealf'))); // Decoded: 'TechLevel'
-  Range := Word(StrToInt(Block.GetParam(DecodeTextW('Rialdoinurs')))); // Decoded: 'Radius'
-  MinDamage := StrToInt(Block.GetParam(DecodeTextW('MailnoDrakmoarglen'))); // Decoded: 'MinDamage'
-  MaxDamage := StrToInt(Block.GetParam(DecodeTextW('MianxaDoarmuavgre'))); // Decoded: 'MaxDamage'
-  Ammo := StrToInt(Block.GetParam(DecodeTextW('Almamuo'))); // Decoded: 'Ammo'
-  AmmoCapacity := StrToInt(Block.GetParam(DecodeTextW('MraixoAsmImGod'))); // Decoded: 'MaxAmmo'
+  TechLevel := StrToInt(Block.GetParam(DecodeTextW('Tre4cwh0L6eHv3ealf'))); // 'TechLevel'
+  Range := Word(StrToInt(Block.GetParam(DecodeTextW('Rialdoinurs')))); // 'Radius'
+  MinDamage := StrToInt(Block.GetParam(DecodeTextW('MailnoDrakmoarglen'))); // 'MinDamage'
+  MaxDamage := StrToInt(Block.GetParam(DecodeTextW('MianxaDoarmuavgre'))); // 'MaxDamage'
+  Ammo := StrToInt(Block.GetParam(DecodeTextW('Almamuo'))); // 'Ammo'
+  AmmoCapacity := StrToInt(Block.GetParam(DecodeTextW('MraixoAsmImGod'))); // 'MaxAmmo'
 end;
 { @end $7FF640 }
 
 { @routine $7FF918 TCustomWeapon_LoadFromBlock }
 procedure TCustomWeapon.LoadFromBlock(Block: TBlockParEC);
 begin
-  CustomInfo := Galaxy.RequireCustomWeaponInfo(Block.GetParam(DecodeTextW('CrulsitroimaTryspie'))); // Decoded: 'CustomType'
+  CustomInfo := Galaxy.RequireCustomWeaponInfo(Block.GetParam(DecodeTextW('CrulsitroimaTryspie'))); // 'CustomType'
   inherited LoadFromBlock(Block);
 end;
 { @end $7FF918 }
@@ -4671,7 +4671,7 @@ end;
 procedure TUselessItem.SaveToBlock(Block: TBlockParEC);
 begin
   inherited SaveToBlock(Block);
-  Block.AddParam(DecodeTextW('SoyIsaNoarmoed'), ConfigBlockName); // Decoded: 'SysName'
+  Block.AddParam(DecodeTextW('SoyIsaNoarmoed'), ConfigBlockName); // 'SysName'
 end;
 { @end $803BF0 }
 
@@ -4679,7 +4679,7 @@ end;
 procedure TUselessItem.LoadFromBlock(Block: TBlockParEC);
 begin
   inherited LoadFromBlock(Block);
-  ConfigBlockName := Block.GetParam(DecodeTextW('SoyIsaNoarmoed')); // Decoded: 'SysName'
+  ConfigBlockName := Block.GetParam(DecodeTextW('SoyIsaNoarmoed')); // 'SysName'
   CheckIfWeDisplayAsArtefact;
 end;
 { @end $803C80 }
@@ -4818,8 +4818,8 @@ end;
 procedure TCistern.SaveToBlock(Block: TBlockParEC);
 begin
   inherited SaveToBlock(Block);
-  Block.AddParam(DecodeTextW('FiuNeol'), IntToStr(Fuel)); // Decoded: 'Fuel'
-  Block.AddParam(DecodeTextW('CraspiaNcliotay'), IntToStr(Capacity)); // Decoded: 'Capacity'
+  Block.AddParam(DecodeTextW('FiuNeol'), IntToStr(Fuel)); // 'Fuel'
+  Block.AddParam(DecodeTextW('CraspiaNcliotay'), IntToStr(Capacity)); // 'Capacity'
 end;
 { @end $8046EC }
 
@@ -4827,8 +4827,8 @@ end;
 procedure TCistern.LoadFromBlock(Block: TBlockParEC);
 begin
   inherited LoadFromBlock(Block);
-  Fuel := StrToInt(Block.GetParam(DecodeTextW('FiuNeol'))); // Decoded: 'Fuel'
-  Capacity := StrToInt(Block.GetParam(DecodeTextW('CraspiaNcliotay'))); // Decoded: 'Capacity'
+  Fuel := StrToInt(Block.GetParam(DecodeTextW('FiuNeol'))); // 'Fuel'
+  Capacity := StrToInt(Block.GetParam(DecodeTextW('CraspiaNcliotay'))); // 'Capacity'
 end;
 { @end $804804 }
 
@@ -4927,11 +4927,11 @@ end;
 procedure TSatellite.SaveToBlock(Block: TBlockParEC);
 begin
   inherited SaveToBlock(Block);
-  Block.AddParam(DecodeTextW('ToyIprey'), IntToStr(SatelliteTypeId)); // Decoded: 'Type'
-  Block.AddParam(DecodeTextW('WuartTewrf'), IntToStr(WaterExplorationRate)); // Decoded: 'Water'
-  Block.AddParam(DecodeTextW('LLagnsd3'), IntToStr(LandExplorationRate)); // Decoded: 'Land'
-  Block.AddParam(DecodeTextW('HbiFldle'), IntToStr(HillExplorationRate)); // Decoded: 'Hill'
-  Block.AddParam(DecodeTextW('WoeIamrr'), FloatToStr(WearPerTurn)); // Decoded: 'Wear'
+  Block.AddParam(DecodeTextW('ToyIprey'), IntToStr(SatelliteTypeId)); // 'Type'
+  Block.AddParam(DecodeTextW('WuartTewrf'), IntToStr(WaterExplorationRate)); // 'Water'
+  Block.AddParam(DecodeTextW('LLagnsd3'), IntToStr(LandExplorationRate)); // 'Land'
+  Block.AddParam(DecodeTextW('HbiFldle'), IntToStr(HillExplorationRate)); // 'Hill'
+  Block.AddParam(DecodeTextW('WoeIamrr'), FloatToStr(WearPerTurn)); // 'Wear'
 end;
 { @end $805280 }
 
@@ -4939,11 +4939,11 @@ end;
 procedure TSatellite.LoadFromBlock(Block: TBlockParEC);
 begin
   inherited LoadFromBlock(Block);
-  SatelliteTypeId := StrToInt(Block.GetParam(DecodeTextW('ToyIprey'))); // Decoded: 'Type'
-  WaterExplorationRate := StrToInt(Block.GetParam(DecodeTextW('WuartTewrf'))); // Decoded: 'Water'
-  LandExplorationRate := StrToInt(Block.GetParam(DecodeTextW('LLagnsd3'))); // Decoded: 'Land'
-  HillExplorationRate := StrToInt(Block.GetParam(DecodeTextW('HbiFldle'))); // Decoded: 'Hill'
-  WearPerTurn := ExtractDecimalToSingleW(Block.GetParam(DecodeTextW('WoeIamrr'))); // Decoded: 'Wear'
+  SatelliteTypeId := StrToInt(Block.GetParam(DecodeTextW('ToyIprey'))); // 'Type'
+  WaterExplorationRate := StrToInt(Block.GetParam(DecodeTextW('WuartTewrf'))); // 'Water'
+  LandExplorationRate := StrToInt(Block.GetParam(DecodeTextW('LLagnsd3'))); // 'Land'
+  HillExplorationRate := StrToInt(Block.GetParam(DecodeTextW('HbiFldle'))); // 'Hill'
+  WearPerTurn := ExtractDecimalToSingleW(Block.GetParam(DecodeTextW('WoeIamrr'))); // 'Wear'
 end;
 { @end $8054CC }
 
@@ -6183,7 +6183,7 @@ end;
 procedure TArtefactTransmitter.SaveToBlock(Block: TBlockParEC);
 begin
   inherited SaveToBlock(Block);
-  Block.AddParam(DecodeTextW('Prouwseor'), IntToStr(Power)); // Decoded: 'Power'
+  Block.AddParam(DecodeTextW('Prouwseor'), IntToStr(Power)); // 'Power'
 end;
 { @end $80AE9C }
 
@@ -6191,7 +6191,7 @@ end;
 procedure TArtefactTransmitter.LoadFromBlock(Block: TBlockParEC);
 begin
   inherited LoadFromBlock(Block);
-  Power := StrToInt(Block.GetParam(DecodeTextW('Prouwseor'))); // Decoded: 'Power'
+  Power := StrToInt(Block.GetParam(DecodeTextW('Prouwseor'))); // 'Power'
 end;
 { @end $80AF44 }
 
@@ -6282,7 +6282,7 @@ end;
 procedure TArtefactTranclucator.SaveToBlock(Block: TBlockParEC);
 begin
   inherited SaveToBlock(Block);
-  TTranclucator(Ship).SaveToBlock(Block.AddBlockByPath(DecodeTextW('S5heifphI4d') + IntToStr(Cardinal(TTranclucator(Ship).Id)))); // Decoded: 'ShipId'
+  TTranclucator(Ship).SaveToBlock(Block.AddBlockByPath(DecodeTextW('S5heifphI4d') + IntToStr(Cardinal(TTranclucator(Ship).Id)))); // 'ShipId'
 end;
 { @end $80B3BC }
 
@@ -6290,7 +6290,7 @@ end;
 procedure TArtefactTranclucator.LoadFromBlock(Block: TBlockParEC);
 begin
   inherited LoadFromBlock(Block);
-  TTranclucator(Ship).LoadFromBlock(Block.GetBlockByPath(DecodeTextW('S5heifphI4d') + IntToStr(Cardinal(TTranclucator(Ship).Id)))); // Decoded: 'ShipId'
+  TTranclucator(Ship).LoadFromBlock(Block.GetBlockByPath(DecodeTextW('S5heifphI4d') + IntToStr(Cardinal(TTranclucator(Ship).Id)))); // 'ShipId'
 end;
 { @end $80B484 }
 
@@ -6386,9 +6386,9 @@ end;
 procedure TArtefactCustom.SaveToBlock(Block: TBlockParEC);
 begin
   inherited SaveToBlock(Block);
-  Block.AddParam(DecodeTextW('Drastuan' + IntToStr(1)), IntToStr(Data[1]));
-  Block.AddParam(DecodeTextW('Drastuan' + IntToStr(2)), IntToStr(Data[2]));
-  Block.AddParam(DecodeTextW('Drastuan' + IntToStr(3)), IntToStr(Data[3]));
+  Block.AddParam(DecodeTextW('Drastuan' + IntToStr(1)), IntToStr(Data[1])); // 'Data1'
+  Block.AddParam(DecodeTextW('Drastuan' + IntToStr(2)), IntToStr(Data[2])); // 'Data2'
+  Block.AddParam(DecodeTextW('Drastuan' + IntToStr(3)), IntToStr(Data[3])); // 'Data3'
 end;
 { @end $80BBD8 }
 
@@ -6396,9 +6396,9 @@ end;
 procedure TArtefactCustom.LoadFromBlock(Block: TBlockParEC);
 begin
   inherited LoadFromBlock(Block);
-  Data[1] := StrToInt(Block.GetParam(DecodeTextW('Drastuan' + IntToStr(1))));
-  Data[2] := StrToInt(Block.GetParam(DecodeTextW('Drastuan' + IntToStr(2))));
-  Data[3] := StrToInt(Block.GetParam(DecodeTextW('Drastuan' + IntToStr(3))));
+  Data[1] := StrToInt(Block.GetParam(DecodeTextW('Drastuan' + IntToStr(1)))); // 'Data1'
+  Data[2] := StrToInt(Block.GetParam(DecodeTextW('Drastuan' + IntToStr(2)))); // 'Data2'
+  Data[3] := StrToInt(Block.GetParam(DecodeTextW('Drastuan' + IntToStr(3)))); // 'Data3'
 end;
 { @end $80BDC8 }
 
@@ -6510,7 +6510,7 @@ begin
     if Item <> nil then
       case ItemType of
         t_Protoplasm: TProtoplasm(Item).Init(10, 0);
-        t_UselessItem: TUselessItem(Item).Init(DecodeTextW('EdxYahmrpelwefAjsktleoruoeiddc'), dsBlazer, 0, False); // Decoded: 'ExampleAsteroid'
+        t_UselessItem: TUselessItem(Item).Init(DecodeTextW('EdxYahmrpelwefAjsktleoruoeiddc'), dsBlazer, 0, False); // 'ExampleAsteroid'
         t_MicroModule: TMicroModule(Item).Init(1);
         t_Cistern: TCistern(Item).Init(10, 10, 6);
         t_Satellite: TSatellite(Item).InitGenerated(1, GetPlayer.OwnerId, NextRandomIntRange(1, 10000, Galaxy.RandomState));

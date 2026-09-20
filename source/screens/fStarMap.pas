@@ -1247,7 +1247,7 @@ begin
   begin
     if Galaxy.HasVisibleScoreModFlags then
     begin
-      Text := DecodeTextW(Galaxy.FinalizationNameEncoded);
+      Text := DecodeTextW(Galaxy.FinalizationNameEncoded); // User-supplied FinalizationName, encoded when editable state is applied.
       if (Length(Text) = 0) and GR_Main.CCInterface.GetEditableStateApplied then Text := LookupLocalizedTextByKey('Cheat.Warning')
       else if (Length(Text) > 0) and (Galaxy.GetCheatPoints <> 0) then Text := Text + ' + ' + LookupLocalizedTextByKey('Cheat.Warning');
       if (Galaxy.DominatorModLevel > 0) and (Length(Text) > 0) then Text := Text + ' + ';

@@ -1523,75 +1523,75 @@ var
   Item: TItem;
   HealthBlock: TBlockParEC;
 begin
-  Block.AddParam(DecodeTextW('ImFluelalaNrahmaet'), GetFullName(' ')); // Decoded: 'IFullName'
-  Block.AddParam(DecodeTextW('InToyAple'), ShipTypeNames[TypeId].Name); // Decoded: 'IType'
-  Block.AddParam(DecodeTextW('Noasmler'), Name); // Decoded: 'Name'
-  Block.AddParam(DecodeTextW('Fiascoee'), IntToStr(PortraitFaceId)); // Decoded: 'Face'
+  Block.AddParam(DecodeTextW('ImFluelalaNrahmaet'), GetFullName(' ')); // 'IFullName'
+  Block.AddParam(DecodeTextW('InToyAple'), ShipTypeNames[TypeId].Name); // 'IType'
+  Block.AddParam(DecodeTextW('Noasmler'), Name); // 'Name'
+  Block.AddParam(DecodeTextW('Fiascoee'), IntToStr(PortraitFaceId)); // 'Face'
   if ScriptShip <> nil then
-    Block.AddParam(DecodeTextW('IsSacaraiOpit'), // Decoded: 'IScript'
+    Block.AddParam(DecodeTextW('IsSacaraiOpit'), // 'IScript'
       TScriptShip(ScriptShip).Script.ScriptFileName + ',' + TScriptShip(ScriptShip).GetGroup.Name + ',' +
       TScriptShip(ScriptShip).State.Name + '(' + IntToStr(TScriptShip(ScriptShip).Script.States.IndexOf(TScriptShip(ScriptShip).State)) + ')');
-  if CurrentPlanet <> nil then Block.AddParam(DecodeTextW('ImPolearnBelt'), CurrentPlanet.Name) // Decoded: 'IPlanet'
-  else Block.AddParam(DecodeTextW('ImPolearnBelt'), ''); // Decoded: 'IPlanet'
-  if DockedTo <> nil then Block.AddParam(DecodeTextW('ImRyuWirnas'), DockedTo.Name) // Decoded: 'IRuins'
-  else Block.AddParam(DecodeTextW('ImRyuWirnas'), ''); // Decoded: 'IRuins'
+  if CurrentPlanet <> nil then Block.AddParam(DecodeTextW('ImPolearnBelt'), CurrentPlanet.Name) // 'IPlanet'
+  else Block.AddParam(DecodeTextW('ImPolearnBelt'), ''); // 'IPlanet'
+  if DockedTo <> nil then Block.AddParam(DecodeTextW('ImRyuWirnas'), DockedTo.Name) // 'IRuins'
+  else Block.AddParam(DecodeTextW('ImRyuWirnas'), ''); // 'IRuins'
   Text := IntToStr(CargoGoods[0].Count);
   for I := 1 to 7 do Text := Text + ',' + IntToStr(CargoGoods[Byte(I)].Count);
-  Block.AddParam(DecodeTextW('Gronordos'), Text); // Decoded: 'Goods'
+  Block.AddParam(DecodeTextW('Gronordos'), Text); // 'Goods'
   Text := IntToStr(BaseSkills[0]);
   for I := 1 to 5 do Text := Text + ',' + IntToStr(BaseSkills[Byte(I)]);
-  Block.AddParam(DecodeTextW('SekaiAlalas'), Text); // Decoded: 'Skills'
-  Block.AddParam(DecodeTextW('Mnognoenyj'), IntToStr(Money)); // Decoded: 'Money'
-  Block.AddParam(DecodeTextW('Eoxepl'), IntToStr(TotalExperience)); // Decoded: 'Exp'
-  Block.AddParam(DecodeTextW('FarweyeAETxopa'), IntToStr(FreeExperience)); // Decoded: 'FreeExp'
-  HealthBlock := Block.AddBlockByPath(DecodeTextW('Hrenasletaha')); // Decoded: 'Health'
+  Block.AddParam(DecodeTextW('SekaiAlalas'), Text); // 'Skills'
+  Block.AddParam(DecodeTextW('Mnognoenyj'), IntToStr(Money)); // 'Money'
+  Block.AddParam(DecodeTextW('Eoxepl'), IntToStr(TotalExperience)); // 'Exp'
+  Block.AddParam(DecodeTextW('FarweyeAETxopa'), IntToStr(FreeExperience)); // 'FreeExp'
+  HealthBlock := Block.AddBlockByPath(DecodeTextW('Hrenasletaha')); // 'Health'
   for I := 1 to 24 do
   begin
     if IsHealthEffectActive(I) then RemainingTurns := CaptainHealth[I].ExpireTurn - Galaxy.CurrentTurn
     else RemainingTurns := 0;
     Text := CaptainHealthDefinitions[I].Name + ',' + IntToStr(RemainingTurns);
-    HealthBlock.AddParam(DecodeTextW('FralcatMoar') + IntToStr(I), Text); // Decoded: 'Factor'
+    HealthBlock.AddParam(DecodeTextW('FralcatMoar') + IntToStr(I), Text); // 'Factor'
   end;
   if HasRadiationSickness then RemainingTurns := RadiationHealth[1].ExpireTurn - Galaxy.CurrentTurn
   else RemainingTurns := 0;
   Text := RadiationHealthDefinitions[1].Name + ',' + IntToStr(RemainingTurns);
-  HealthBlock.AddParam(DecodeTextW('FralcatMoar') + IntToStr(25), Text); // Decoded: 'Factor'
-  with Block.AddBlockByPath(DecodeTextW('ElqiLoinsato')) do // Decoded: 'EqList'
+  HealthBlock.AddParam(DecodeTextW('FralcatMoar') + IntToStr(25), Text); // 'Factor'
+  with Block.AddBlockByPath(DecodeTextW('ElqiLoinsato')) do // 'EqList'
   begin
     for I := 0 to Inventory.Count - 1 do
     begin
       Item := Inventory[I];
-      Text := DecodeTextW('ImtreamrIodo') + IntToStr(Cardinal(Item.Id)); // Decoded: 'ItemId'
+      Text := DecodeTextW('ImtreamrIodo') + IntToStr(Cardinal(Item.Id)); // 'ItemId'
       Item.SaveToBlock(AddBlockByPath(Text));
     end;
-    AddParam(DecodeTextW('AodEdrIstaelma'), ''); // Decoded: 'AddItem'
+    AddParam(DecodeTextW('AodEdrIstaelma'), ''); // 'AddItem'
   end;
-  with Block.AddBlockByPath(DecodeTextW('AsrotyseLeidsot')) do // Decoded: 'ArtsList'
+  with Block.AddBlockByPath(DecodeTextW('AsrotyseLeidsot')) do // 'ArtsList'
   begin
     for I := 0 to Artefacts.Count - 1 do
     begin
       Item := Artefacts[I];
-      Text := DecodeTextW('ImtreamrIodo') + IntToStr(Cardinal(Item.Id)); // Decoded: 'ItemId'
+      Text := DecodeTextW('ImtreamrIodo') + IntToStr(Cardinal(Item.Id)); // 'ItemId'
       Item.SaveToBlock(AddBlockByPath(Text));
     end;
-    AddParam(DecodeTextW('AsdediAmrot'), ''); // Decoded: 'AddArt'
+    AddParam(DecodeTextW('AsdediAmrot'), ''); // 'AddArt'
   end;
-  with Block.AddBlockByPath(DecodeTextW('DarlokpuLainsata')) do // Decoded: 'DropList'
+  with Block.AddBlockByPath(DecodeTextW('DarlokpuLainsata')) do // 'DropList'
   begin
     for I := 0 to GuaranteedDeathDropItems.Count - 1 do
     begin
       Item := GuaranteedDeathDropItems[I];
-      Text := DecodeTextW('ImtreamrIodo') + IntToStr(Cardinal(Item.Id)); // Decoded: 'ItemId'
+      Text := DecodeTextW('ImtreamrIodo') + IntToStr(Cardinal(Item.Id)); // 'ItemId'
       Item.SaveToBlock(AddBlockByPath(Text));
     end;
-    AddParam(DecodeTextW('AodEdrIstaelma'), ''); // Decoded: 'AddItem'
+    AddParam(DecodeTextW('AodEdrIstaelma'), ''); // 'AddItem'
   end;
   if RangerRelations.Count > 0 then
-    Block.AddParam(DecodeTextW('Rpe7lyamtgi4oendThokP4lWasyfeKry'), IntToStr(Byte(RangerRelations[0]))); // Decoded: 'RelationToPlayer'
-  Text := DecodeTextW('CrolnatariaOcitaeAddTrogSaheiOppIld'); // Decoded: 'ContractedToShipId'
+    Block.AddParam(DecodeTextW('Rpe7lyamtgi4oendThokP4lWasyfeKry'), IntToStr(Byte(RangerRelations[0]))); // 'RelationToPlayer'
+  Text := DecodeTextW('CrolnatariaOcitaeAddTrogSaheiOppIld'); // 'ContractedToShipId'
   if PartnerShip <> nil then Block.AddParam(Text, IntToStr(Cardinal(PartnerShip.Id)))
   else Block.AddParam(Text, '0');
-  Block.AddParam(DecodeTextW('CrolnatariaOcitaDiaOyeseLaeAfoto'), IntToStr(PartnershipDaysRemaining)); // Decoded: 'ContractDaysLeft'
+  Block.AddParam(DecodeTextW('CrolnatariaOcitaDiaOyeseLaeAfoto'), IntToStr(PartnershipDaysRemaining)); // 'ContractDaysLeft'
   Text := '';
   if AwardIds <> nil then
     if AwardIds.Count > 0 then
@@ -1599,13 +1599,13 @@ begin
       Text := IntToStr(Integer(AwardIds[0]));
       for I := 1 to AwardIds.Count - 1 do Text := Text + ',' + IntToStr(Integer(AwardIds[I]));
     end;
-  Block.AddParam(DecodeTextW('Mreodlaslis'), Text); // Decoded: 'Medals'
-  Block.AddParam(DecodeTextW('Dreisatarlony'), BoolToWideString(DestroyQueued)); // Decoded: 'Destroy'
-  Block.AddParam(DecodeTextW('GhilvienOrradlehr'), ''); // Decoded: 'GiveOrder'
-  Block.AddParam(DecodeTextW('NaosDireosp'), BoolToWideString(NoDrop)); // Decoded: 'NoDrop'
-  Block.AddParam(DecodeTextW('NoooTraslak'), BoolToWideString(NoTalk)); // Decoded: 'NoTalk'
-  Block.AddParam(DecodeTextW('NtorSickamn'), BoolToWideString(NoScan)); // Decoded: 'NoScan'
-  Block.AddParam(DecodeTextW('Sokoilna'), GraphName); // Decoded: 'Skin'
+  Block.AddParam(DecodeTextW('Mreodlaslis'), Text); // 'Medals'
+  Block.AddParam(DecodeTextW('Dreisatarlony'), BoolToWideString(DestroyQueued)); // 'Destroy'
+  Block.AddParam(DecodeTextW('GhilvienOrradlehr'), ''); // 'GiveOrder'
+  Block.AddParam(DecodeTextW('NaosDireosp'), BoolToWideString(NoDrop)); // 'NoDrop'
+  Block.AddParam(DecodeTextW('NoooTraslak'), BoolToWideString(NoTalk)); // 'NoTalk'
+  Block.AddParam(DecodeTextW('NtorSickamn'), BoolToWideString(NoScan)); // 'NoScan'
+  Block.AddParam(DecodeTextW('Sokoilna'), GraphName); // 'Skin'
 end;
 { @end $74AB50 }
 
@@ -1619,22 +1619,22 @@ var
   ItemType: Byte;
   Destination: TPointF;
 begin
-  Name := Block.GetParam(DecodeTextW('Noasmler')); // Decoded: 'Name'
-  PortraitFaceId := StrToInt(Block.GetParam(DecodeTextW('Fiascoee'))); // Decoded: 'Face'
-  Text := Block.GetParam(DecodeTextW('Gronordos')); // Decoded: 'Goods'
+  Name := Block.GetParam(DecodeTextW('Noasmler')); // 'Name'
+  PortraitFaceId := StrToInt(Block.GetParam(DecodeTextW('Fiascoee'))); // 'Face'
+  Text := Block.GetParam(DecodeTextW('Gronordos')); // 'Goods'
   for I := 0 to 7 do CargoGoods[Byte(I)].Count := StrToInt(ExtractDelimitedPartW(Text, I, ','));
-  Text := Block.GetParam(DecodeTextW('SekaiAlalas')); // Decoded: 'Skills'
+  Text := Block.GetParam(DecodeTextW('SekaiAlalas')); // 'Skills'
   for I := 0 to 5 do BaseSkills[Byte(I)] := StrToInt(ExtractDelimitedPartW(Text, I, ','));
-  SetMoney(StrToInt(Block.GetParam(DecodeTextW('Mnognoenyj')))); // Decoded: 'Money'
-  TotalExperience := StrToInt(Block.GetParam(DecodeTextW('Eoxepl'))); // Decoded: 'Exp'
-  FreeExperience := StrToInt(Block.GetParam(DecodeTextW('FarweyeAETxopa'))); // Decoded: 'FreeExp'
-  with Block.GetBlockByPath(DecodeTextW('Hrenasletaha')) do // Decoded: 'Health'
+  SetMoney(StrToInt(Block.GetParam(DecodeTextW('Mnognoenyj')))); // 'Money'
+  TotalExperience := StrToInt(Block.GetParam(DecodeTextW('Eoxepl'))); // 'Exp'
+  FreeExperience := StrToInt(Block.GetParam(DecodeTextW('FarweyeAETxopa'))); // 'FreeExp'
+  with Block.GetBlockByPath(DecodeTextW('Hrenasletaha')) do // 'Health'
   begin
     for I := 1 to 24 do
     begin
       if IsHealthEffectActive(I) then OldTurns := CaptainHealth[I].ExpireTurn - Galaxy.CurrentTurn
       else OldTurns := 0;
-      Text := GetParam(DecodeTextW('FralcatMoar') + IntToStr(I)); // Decoded: 'Factor'
+      Text := GetParam(DecodeTextW('FralcatMoar') + IntToStr(I)); // 'Factor'
       NewTurns := StrToInt(ExtractDelimitedPartW(Text, 1, ','));
       if (OldTurns > 0) and (NewTurns = 0) then
       begin
@@ -1650,7 +1650,7 @@ begin
     end;
     if HasRadiationSickness then OldTurns := RadiationHealth[1].ExpireTurn - Galaxy.CurrentTurn
     else OldTurns := 0;
-    Text := GetParam(DecodeTextW('FralcatMoar') + IntToStr(25)); // Decoded: 'Factor'
+    Text := GetParam(DecodeTextW('FralcatMoar') + IntToStr(25)); // 'Factor'
     NewTurns := StrToInt(ExtractDelimitedPartW(Text, 1, ','));
     if (OldTurns > 0) and (NewTurns = 0) then
     begin
@@ -1664,15 +1664,15 @@ begin
     end;
     if (OldTurns > 0) and (NewTurns > 0) then RadiationHealth[1].ExpireTurn := NewTurns + Galaxy.CurrentTurn;
   end;
-  with Block.GetBlockByPath(DecodeTextW('ElqiLoinsato')) do // Decoded: 'EqList'
+  with Block.GetBlockByPath(DecodeTextW('ElqiLoinsato')) do // 'EqList'
   begin
     for I := 0 to Inventory.Count - 1 do
     begin
       Item := Inventory[I];
-      Text := DecodeTextW('ImtreamrIodo') + IntToStr(Cardinal(Item.Id)); // Decoded: 'ItemId'
+      Text := DecodeTextW('ImtreamrIodo') + IntToStr(Cardinal(Item.Id)); // 'ItemId'
       Item.LoadFromBlock(GetBlockByPath(Text));
     end;
-    Text := GetParam(DecodeTextW('AodEdrIstaelma')); // Decoded: 'AddItem'
+    Text := GetParam(DecodeTextW('AodEdrIstaelma')); // 'AddItem'
     for I := 0 to CountDelimitedPartsW(Text, ',') - 1 do
     begin
       Part := ExtractDelimitedPartW(Text, I, ',');
@@ -1688,15 +1688,15 @@ begin
         end;
     end;
   end;
-  with Block.GetBlockByPath(DecodeTextW('AsrotyseLeidsot')) do // Decoded: 'ArtsList'
+  with Block.GetBlockByPath(DecodeTextW('AsrotyseLeidsot')) do // 'ArtsList'
   begin
     for I := 0 to Artefacts.Count - 1 do
     begin
       Item := Artefacts[I];
-      Text := DecodeTextW('ImtreamrIodo') + IntToStr(Cardinal(Item.Id)); // Decoded: 'ItemId'
+      Text := DecodeTextW('ImtreamrIodo') + IntToStr(Cardinal(Item.Id)); // 'ItemId'
       Item.LoadFromBlock(GetBlockByPath(Text));
     end;
-    Text := GetParam(DecodeTextW('AsdediAmrot')); // Decoded: 'AddArt'
+    Text := GetParam(DecodeTextW('AsdediAmrot')); // 'AddArt'
     for I := 0 to CountDelimitedPartsW(Text, ',') - 1 do
     begin
       Part := ExtractDelimitedPartW(Text, I, ',');
@@ -1709,15 +1709,15 @@ begin
         end;
     end;
   end;
-  with Block.GetBlockByPath(DecodeTextW('DarlokpuLainsata')) do // Decoded: 'DropList'
+  with Block.GetBlockByPath(DecodeTextW('DarlokpuLainsata')) do // 'DropList'
   begin
     for I := 0 to GuaranteedDeathDropItems.Count - 1 do
     begin
       Item := GuaranteedDeathDropItems[I];
-      Text := DecodeTextW('ImtreamrIodo') + IntToStr(Cardinal(Item.Id)); // Decoded: 'ItemId'
+      Text := DecodeTextW('ImtreamrIodo') + IntToStr(Cardinal(Item.Id)); // 'ItemId'
       Item.LoadFromBlock(GetBlockByPath(Text));
     end;
-    Text := GetParam(DecodeTextW('AodEdrIstaelma')); // Decoded: 'AddItem'
+    Text := GetParam(DecodeTextW('AodEdrIstaelma')); // 'AddItem'
     for I := 0 to CountDelimitedPartsW(Text, ',') - 1 do
     begin
       Part := ExtractDelimitedPartW(Text, I, ',');
@@ -1734,12 +1734,12 @@ begin
     end;
   end;
   if RangerRelations.Count > 0 then
-    RangerRelations[0] := Pointer(StrToInt(Block.GetParam(DecodeTextW('Rpe7lyamtgi4oendThokP4lWasyfeKry')))); // Decoded: 'RelationToPlayer'
-  Text := Block.GetParam(DecodeTextW('CrolnatariaOcitaeAddTrogSaheiOppIld')); // Decoded: 'ContractedToShipId'
+    RangerRelations[0] := Pointer(StrToInt(Block.GetParam(DecodeTextW('Rpe7lyamtgi4oendThokP4lWasyfeKry')))); // 'RelationToPlayer'
+  Text := Block.GetParam(DecodeTextW('CrolnatariaOcitaeAddTrogSaheiOppIld')); // 'ContractedToShipId'
   if StrToInt(Text) = 0 then PartnerShip := nil
   else PartnerShip := Galaxy.IdToShip(StrToInt(Text), True);
-  PartnershipDaysRemaining := StrToInt(Block.GetParam(DecodeTextW('CrolnatariaOcitaDiaOyeseLaeAfoto'))); // Decoded: 'ContractDaysLeft'
-  Text := Block.GetParam(DecodeTextW('Mreodlaslis')); // Decoded: 'Medals'
+  PartnershipDaysRemaining := StrToInt(Block.GetParam(DecodeTextW('CrolnatariaOcitaDiaOyeseLaeAfoto'))); // 'ContractDaysLeft'
+  Text := Block.GetParam(DecodeTextW('Mreodlaslis')); // 'Medals'
   if AwardIds <> nil then AwardIds.Free;
   AwardVisibleCount := 0;
   AwardIds := nil;
@@ -1753,11 +1753,11 @@ begin
     end;
     AwardVisibleCount := CountDelimitedPartsW(Text, ',');
   end;
-  DestroyQueued := LowerCase(AnsiString(Block.GetParam(DecodeTextW('Dreisatarlony')))) = 'true'; // Decoded: 'Destroy'
-  Text := Block.GetParam(DecodeTextW('GhilvienOrradlehr')); // Decoded: 'GiveOrder'
+  DestroyQueued := LowerCase(AnsiString(Block.GetParam(DecodeTextW('Dreisatarlony')))) = 'true'; // 'Destroy'
+  Text := Block.GetParam(DecodeTextW('GhilvienOrradlehr')); // 'GiveOrder'
   if CountDelimitedPartsW(Text, ',') > 1 then
   begin
-    if ExtractDelimitedPartW(Text, 0, ',') = DecodeTextW('JiunmApeThorSitraer') then // Decoded: 'JumpToStar'
+    if ExtractDelimitedPartW(Text, 0, ',') = DecodeTextW('JiunmApeThorSitraer') then // 'JumpToStar'
     begin
       if (CurrentPlanet = nil) and (DockedTo = nil) then
       begin
@@ -1765,7 +1765,7 @@ begin
         if CountDelimitedPartsW(Text, ',') > 2 then OrderStateData := StrToInt(ExtractDelimitedPartW(Text, 2, ','));
       end;
     end
-    else if ExtractDelimitedPartW(Text, 0, ',') = DecodeTextW('JiunmApeIonsHroelMel') then // Decoded: 'JumpInHole'
+    else if ExtractDelimitedPartW(Text, 0, ',') = DecodeTextW('JiunmApeIonsHroelMel') then // 'JumpInHole'
     begin
       Hole := Galaxy.IdToHole(StrToInt(ExtractDelimitedPartW(Text, 1, ',')));
       if (CurrentPlanet = nil) and (DockedTo = nil) and ((Hole.Star1 = CurrentStar) or (Hole.Star2 = CurrentStar)) then
@@ -1774,18 +1774,18 @@ begin
         if CountDelimitedPartsW(Text, ',') > 2 then OrderStateData := StrToInt(ExtractDelimitedPartW(Text, 2, ','));
       end;
     end
-    else if (ExtractDelimitedPartW(Text, 0, ',') = DecodeTextW('MiokvaenThor')) and InNormalSpace then // Decoded: 'MoveTo'
+    else if (ExtractDelimitedPartW(Text, 0, ',') = DecodeTextW('MiokvaenThor')) and InNormalSpace then // 'MoveTo'
     begin
       Destination.X := ExtractDecimalToSingleW(ExtractDelimitedPartW(Text, 1, ','));
       Destination.Y := ExtractDecimalToSingleW(ExtractDelimitedPartW(Text, 2, ','));
       OrderMove(Destination, True);
     end;
   end;
-  NoDrop := LowerCase(AnsiString(Block.GetParam(DecodeTextW('NaosDireosp')))) = 'true'; // Decoded: 'NoDrop'
-  NoTalk := LowerCase(AnsiString(Block.GetParam(DecodeTextW('NoooTraslak')))) = 'true'; // Decoded: 'NoTalk'
-  NoScan := LowerCase(AnsiString(Block.GetParam(DecodeTextW('NtorSickamn')))) = 'true'; // Decoded: 'NoScan'
+  NoDrop := LowerCase(AnsiString(Block.GetParam(DecodeTextW('NaosDireosp')))) = 'true'; // 'NoDrop'
+  NoTalk := LowerCase(AnsiString(Block.GetParam(DecodeTextW('NoooTraslak')))) = 'true'; // 'NoTalk'
+  NoScan := LowerCase(AnsiString(Block.GetParam(DecodeTextW('NtorSickamn')))) = 'true'; // 'NoScan'
   ReleaseSpaceObject(Graphic);
-  GraphName := Block.GetParam(DecodeTextW('Sokoilna')); // Decoded: 'Skin'
+  GraphName := Block.GetParam(DecodeTextW('Sokoilna')); // 'Skin'
   if GraphName[1] = 'R' then RetainSpaceObject(Graphic, CreateSpaceObjectByName('Ruins', GraphName, Classes.Point(0, 0)))
   else RetainSpaceObject(Graphic, CreateSpaceObjectByName('Ship2', GraphName, Classes.Point(0, 0)));
   RefreshDerivedStats(True);

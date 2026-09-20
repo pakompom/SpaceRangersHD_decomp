@@ -787,25 +787,25 @@ begin
   // Preserve the native string construction and encoded module-size checks.
   DllSuffix := 'll';
   DllSuffix := '.d' + DllSuffix;
-  ModuleName := DecodeTextW('sotoenalm^_^aucah') + DllSuffix; // Decoded: 'steam_ach'
+  ModuleName := DecodeTextW('sotoenalm^_^aucah') + DllSuffix; // 'steam_ach'
   if GetModuleHandleW(PWideChar(ModuleName)) <> 0 then CheckModuleSize($BB554E);
-  ModuleName := DecodeTextW('sotoenalm^_^aupki') + DllSuffix; // Decoded: 'steam_api'
+  ModuleName := DecodeTextW('sotoenalm^_^aupki') + DllSuffix; // 'steam_api'
   if GetModuleHandleW(PWideChar(ModuleName)) <> 0 then CheckModuleSize($BABDA6);
-  ModuleName := DecodeTextW('zoloimba') + DllSuffix; // Decoded: 'zlib'
+  ModuleName := DecodeTextW('zoloimba') + DllSuffix; // 'zlib'
   CheckModuleSize($BB734E);
-  ModuleName := DecodeTextW('MhastorhinxaGrakmae') + DllSuffix; // Decoded: 'MatrixGame'
+  ModuleName := DecodeTextW('MhastorhinxaGrakmae') + DllSuffix; // 'MatrixGame'
   CheckModuleSize($A4CD4E);
-  ModuleName := DecodeTextW('ookogifa') + DllSuffix; // Decoded: 'okgf'
+  ModuleName := DecodeTextW('ookogifa') + DllSuffix; // 'okgf'
   CheckModuleSize($B3F14E);
-  ModuleName := DecodeTextW('xavriadeccomrie') + DllSuffix; // Decoded: 'xvidcore'
+  ModuleName := DecodeTextW('xavriadeccomrie') + DllSuffix; // 'xvidcore'
   CheckModuleSize($B09064);
   LibraryPrefix := 'ib';
   LibraryPrefix := 'l' + LibraryPrefix;
-  ModuleName := LibraryPrefix + DecodeTextW('osgaga-10a') + DllSuffix; // Decoded: 'ogg-0'
+  ModuleName := LibraryPrefix + DecodeTextW('osgaga-10a') + DllSuffix; // 'ogg-0'
   CheckModuleSize($BB50FF);
-  ModuleName := LibraryPrefix + DecodeTextW('vrokrablius-->0') + DllSuffix; // Decoded: 'vorbis-0'
+  ModuleName := LibraryPrefix + DecodeTextW('vrokrablius-->0') + DllSuffix; // 'vorbis-0'
   CheckModuleSize($B99523);
-  ModuleName := LibraryPrefix + DecodeTextW('veohrablissufainlae') + DllSuffix; // Decoded: 'vorbisfile'
+  ModuleName := LibraryPrefix + DecodeTextW('veohrablissufainlae') + DllSuffix; // 'vorbisfile'
   CheckModuleSize($BB8916);
   GameEndReason := 0;
   PlayerRangerIndex := -1;
@@ -2095,7 +2095,7 @@ begin
   except
     on E: Exception do begin
       AppendLogLineThreadSafe(E.ClassName + ' ' + E.Message);
-      raise Exception.Create(AnsiString('Error in procedure ' + DecodeTextW('TAGSallbanxuy..MLFovasdi') + ', label = ' + IntToStr(Stage))); // Decoded: 'TGalaxy.Load'
+      raise Exception.Create(AnsiString('Error in procedure ' + DecodeTextW('TAGSallbanxuy..MLFovasdi') + ', label = ' + IntToStr(Stage))); // 'TGalaxy.Load'
     end;
   end;
 end;
@@ -2111,34 +2111,34 @@ var
   HoleBlock: TBlockParEC;
 begin
   GR_Main.EditableSaveBlock.Clear;
-  GR_Main.EditableSaveBlock.AddParam(DecodeTextW('FsignsarltiyzaazthikoEnoNiaemaex'), DecodeTextW(Self.FinalizationNameEncoded)); // Decoded: 'FinalizationName'
-  GR_Main.EditableSaveBlock.AddParam(DecodeTextW('ImDeary'), WideString(SysUtils.IntToStr(Self.CurrentTurn))); // Decoded: 'IDay'
-  GR_Main.EditableSaveBlock.AddParam(DecodeTextW('DeieffPhizroantle'), WideString(SysUtils.IntToStr(Self.DifficultyLevels[0]))); // Decoded: 'DifPirate'
-  GR_Main.EditableSaveBlock.AddParam(DecodeTextW('DuiefsTvrnaSdlej'), WideString(SysUtils.IntToStr(Self.DifficultyLevels[1]))); // Decoded: 'DifTrade'
-  GR_Main.EditableSaveBlock.AddParam(DecodeTextW('DpiffeSscvn'), WideString(SysUtils.IntToStr(Self.DifficultyLevels[2]))); // Decoded: 'DifScn'
-  GR_Main.EditableSaveBlock.AddParam(DecodeTextW('DqirfsRfejpyariSra'), WideString(SysUtils.IntToStr(Self.DifficultyLevels[3]))); // Decoded: 'DifRepair'
-  GR_Main.EditableSaveBlock.AddParam(DecodeTextW('DoitfdTgeecthv'), WideString(SysUtils.IntToStr(Self.DifficultyLevels[4]))); // Decoded: 'DifTech'
-  GR_Main.EditableSaveBlock.AddParam(DecodeTextW('DpiFfsQvueeYsst'), WideString(SysUtils.IntToStr(Self.DifficultyLevels[5]))); // Decoded: 'DifQuest'
-  GR_Main.EditableSaveBlock.AddParam(DecodeTextW('DpiwfsHrojlee'), WideString(SysUtils.IntToStr(Self.DifficultyLevels[6]))); // Decoded: 'DifHole'
-  GR_Main.EditableSaveBlock.AddParam(DecodeTextW('DpiefdBkarlsaGndcVee'), WideString(SysUtils.IntToStr(Self.DifficultyLevels[7]))); // Decoded: 'DifBalance'
-  GR_Main.EditableSaveBlock.AddParam(DecodeTextW('KvlsiRnsgTshDdeHljtoaRWdifnG'), WideString(SysUtils.IntToStr(Self.WarDeltaWin[1]))); // Decoded: 'KlingsDeltaWin'
-  GR_Main.EditableSaveBlock.AddParam(DecodeTextW('PuirreastTerswDVesltt4a6WHidns'), WideString(SysUtils.IntToStr(Self.WarDeltaWin[2]))); // Decoded: 'PiratesDeltaWin'
-  GR_Main.EditableSaveBlock.AddParam(DecodeTextW('Npo6rdm2aSlfsHDeeyljt4asWCignI'), WideString(SysUtils.IntToStr(Self.WarDeltaWin[0]))); // Decoded: 'NormalsDeltaWin'
-  GR_Main.EditableSaveBlock.AddParam(DecodeTextW('RlehjieScataPSB'), BoolToWideString(GetPlayer.DeclinePlanetBattleOffers)); // Decoded: 'RejectPB'
-  GetPlayer.SaveToBlock(GR_Main.EditableSaveBlock.AddBlockByPath(DecodeTextW('Polearymeir'))); // Decoded: 'Player'
-  HoleBlock := GR_Main.EditableSaveBlock.AddBlockByPath(DecodeTextW('HroslaenLfirs4t')); // Decoded: 'HoleList'
+  GR_Main.EditableSaveBlock.AddParam(DecodeTextW('FsignsarltiyzaazthikoEnoNiaemaex'), DecodeTextW(Self.FinalizationNameEncoded)); // 'FinalizationName'
+  GR_Main.EditableSaveBlock.AddParam(DecodeTextW('ImDeary'), WideString(SysUtils.IntToStr(Self.CurrentTurn))); // 'IDay'
+  GR_Main.EditableSaveBlock.AddParam(DecodeTextW('DeieffPhizroantle'), WideString(SysUtils.IntToStr(Self.DifficultyLevels[0]))); // 'DifPirate'
+  GR_Main.EditableSaveBlock.AddParam(DecodeTextW('DuiefsTvrnaSdlej'), WideString(SysUtils.IntToStr(Self.DifficultyLevels[1]))); // 'DifTrade'
+  GR_Main.EditableSaveBlock.AddParam(DecodeTextW('DpiffeSscvn'), WideString(SysUtils.IntToStr(Self.DifficultyLevels[2]))); // 'DifScn'
+  GR_Main.EditableSaveBlock.AddParam(DecodeTextW('DqirfsRfejpyariSra'), WideString(SysUtils.IntToStr(Self.DifficultyLevels[3]))); // 'DifRepair'
+  GR_Main.EditableSaveBlock.AddParam(DecodeTextW('DoitfdTgeecthv'), WideString(SysUtils.IntToStr(Self.DifficultyLevels[4]))); // 'DifTech'
+  GR_Main.EditableSaveBlock.AddParam(DecodeTextW('DpiFfsQvueeYsst'), WideString(SysUtils.IntToStr(Self.DifficultyLevels[5]))); // 'DifQuest'
+  GR_Main.EditableSaveBlock.AddParam(DecodeTextW('DpiwfsHrojlee'), WideString(SysUtils.IntToStr(Self.DifficultyLevels[6]))); // 'DifHole'
+  GR_Main.EditableSaveBlock.AddParam(DecodeTextW('DpiefdBkarlsaGndcVee'), WideString(SysUtils.IntToStr(Self.DifficultyLevels[7]))); // 'DifBalance'
+  GR_Main.EditableSaveBlock.AddParam(DecodeTextW('KvlsiRnsgTshDdeHljtoaRWdifnG'), WideString(SysUtils.IntToStr(Self.WarDeltaWin[1]))); // 'KlingsDeltaWin'
+  GR_Main.EditableSaveBlock.AddParam(DecodeTextW('PuirreastTerswDVesltt4a6WHidns'), WideString(SysUtils.IntToStr(Self.WarDeltaWin[2]))); // 'PiratesDeltaWin'
+  GR_Main.EditableSaveBlock.AddParam(DecodeTextW('Npo6rdm2aSlfsHDeeyljt4asWCignI'), WideString(SysUtils.IntToStr(Self.WarDeltaWin[0]))); // 'NormalsDeltaWin'
+  GR_Main.EditableSaveBlock.AddParam(DecodeTextW('RlehjieScataPSB'), BoolToWideString(GetPlayer.DeclinePlanetBattleOffers)); // 'RejectPB'
+  GetPlayer.SaveToBlock(GR_Main.EditableSaveBlock.AddBlockByPath(DecodeTextW('Polearymeir'))); // 'Player'
+  HoleBlock := GR_Main.EditableSaveBlock.AddBlockByPath(DecodeTextW('HroslaenLfirs4t')); // 'HoleList'
   for i := 0 to Self.Holes.Count - 1 do
   begin
     Hole := THole(Self.Holes[i]);
-    Name := DecodeTextW('Heo4lge5I6dY') + WideString(SysUtils.IntToStr(Int64(Hole.Id))); // Decoded: 'HoleId'
+    Name := DecodeTextW('Heo4lge5I6dY') + WideString(SysUtils.IntToStr(Int64(Hole.Id))); // 'HoleId'
     Hole.SaveToBlock(HoleBlock.AddBlockByPath(Name));
   end;
-  HoleBlock.AddParam(DecodeTextW('CEr2e4aftge4NgehwYHeohlsegs1'), WideString(SysUtils.IntToStr(0))); // Decoded: 'CreateNewHoles'
-  with GR_Main.EditableSaveBlock.AddBlockByPath(DecodeTextW('SatraproLaiAsot')) do // Decoded: 'StarList'
+  HoleBlock.AddParam(DecodeTextW('CEr2e4aftge4NgehwYHeohlsegs1'), WideString(SysUtils.IntToStr(0))); // 'CreateNewHoles'
+  with GR_Main.EditableSaveBlock.AddBlockByPath(DecodeTextW('SatraproLaiAsot')) do // 'StarList'
     for i := 0 to Self.Stars.Count - 1 do
     begin
       Star := TStar(Self.Stars[i]);
-      Name := DecodeTextW('S5tTaersIed2') + WideString(SysUtils.IntToStr(Int64(Star.Id))); // Decoded: 'StarId'
+      Name := DecodeTextW('S5tTaersIed2') + WideString(SysUtils.IntToStr(Int64(Star.Id))); // 'StarId'
       Star.SaveToBlock(AddBlockByPath(Name));
     end;
 end;
@@ -2155,28 +2155,28 @@ var I: Integer;
 begin
   if FinalizationNameEncoded = '' then begin
     GR_Main.CCInterface.SetEditableStateApplied(True);
-    FinalizationNameEncoded := EncodeTextW(EditableSaveBlock.GetParam(DecodeTextW('FsignsarltiyzaazthikoEnoNiaemaex'))); // Decoded: 'FinalizationName'
+    FinalizationNameEncoded := EncodeTextW(EditableSaveBlock.GetParam(DecodeTextW('FsignsarltiyzaazthikoEnoNiaemaex'))); // 'FinalizationName'
     if FinalizationNameEncoded <> '' then SetCheatPoints(0);
-    DifficultyLevels[0] := Max(0, Min(9, StrToInt(AnsiString(EditableSaveBlock.GetParam(DecodeTextW('DeieffPhizroantle')))))); // Decoded: 'DifPirate'
-    DifficultyLevels[1] := Max(0, Min(9, StrToInt(AnsiString(EditableSaveBlock.GetParam(DecodeTextW('DuiefsTvrnaSdlej')))))); // Decoded: 'DifTrade'
-    DifficultyLevels[2] := Max(0, Min(9, StrToInt(AnsiString(EditableSaveBlock.GetParam(DecodeTextW('DpiffeSscvn')))))); // Decoded: 'DifScn'
-    DifficultyLevels[3] := Max(0, Min(9, StrToInt(AnsiString(EditableSaveBlock.GetParam(DecodeTextW('DqirfsRfejpyariSra')))))); // Decoded: 'DifRepair'
-    DifficultyLevels[4] := Max(0, Min(9, StrToInt(AnsiString(EditableSaveBlock.GetParam(DecodeTextW('DoitfdTgeecthv')))))); // Decoded: 'DifTech'
-    DifficultyLevels[5] := Max(0, Min(9, StrToInt(AnsiString(EditableSaveBlock.GetParam(DecodeTextW('DpiFfsQvueeYsst')))))); // Decoded: 'DifQuest'
-    DifficultyLevels[6] := Max(0, Min(9, StrToInt(AnsiString(EditableSaveBlock.GetParam(DecodeTextW('DpiwfsHrojlee')))))); // Decoded: 'DifHole'
-    DifficultyLevels[7] := Max(0, Min(9, StrToInt(AnsiString(EditableSaveBlock.GetParam(DecodeTextW('DpiefdBkarlsaGndcVee')))))); // Decoded: 'DifBalance'
-    WarDeltaWin[1] := StrToInt(AnsiString(EditableSaveBlock.GetParam(DecodeTextW('KvlsiRnsgTshDdeHljtoaRWdifnG')))); // Decoded: 'KlingsDeltaWin'
-    WarDeltaWin[2] := StrToInt(AnsiString(EditableSaveBlock.GetParam(DecodeTextW('PuirreastTerswDVesltt4a6WHidns')))); // Decoded: 'PiratesDeltaWin'
-    WarDeltaWin[0] := StrToInt(AnsiString(EditableSaveBlock.GetParam(DecodeTextW('Npo6rdm2aSlfsHDeeyljt4asWCignI')))); // Decoded: 'NormalsDeltaWin'
-    GetPlayer.DeclinePlanetBattleOffers := LowerCase(AnsiString(EditableSaveBlock.GetParam(DecodeTextW('RlehjieScataPSB')))) = 'true'; // Decoded: 'RejectPB'
-    GetPlayer.LoadFromBlock(EditableSaveBlock.GetBlockByPath(DecodeTextW('Polearymeir'))); // Decoded: 'Player'
-    HoleBlock := EditableSaveBlock.GetBlockByPath(DecodeTextW('HroslaenLfirs4t')); // Decoded: 'HoleList'
+    DifficultyLevels[0] := Max(0, Min(9, StrToInt(AnsiString(EditableSaveBlock.GetParam(DecodeTextW('DeieffPhizroantle')))))); // 'DifPirate'
+    DifficultyLevels[1] := Max(0, Min(9, StrToInt(AnsiString(EditableSaveBlock.GetParam(DecodeTextW('DuiefsTvrnaSdlej')))))); // 'DifTrade'
+    DifficultyLevels[2] := Max(0, Min(9, StrToInt(AnsiString(EditableSaveBlock.GetParam(DecodeTextW('DpiffeSscvn')))))); // 'DifScn'
+    DifficultyLevels[3] := Max(0, Min(9, StrToInt(AnsiString(EditableSaveBlock.GetParam(DecodeTextW('DqirfsRfejpyariSra')))))); // 'DifRepair'
+    DifficultyLevels[4] := Max(0, Min(9, StrToInt(AnsiString(EditableSaveBlock.GetParam(DecodeTextW('DoitfdTgeecthv')))))); // 'DifTech'
+    DifficultyLevels[5] := Max(0, Min(9, StrToInt(AnsiString(EditableSaveBlock.GetParam(DecodeTextW('DpiFfsQvueeYsst')))))); // 'DifQuest'
+    DifficultyLevels[6] := Max(0, Min(9, StrToInt(AnsiString(EditableSaveBlock.GetParam(DecodeTextW('DpiwfsHrojlee')))))); // 'DifHole'
+    DifficultyLevels[7] := Max(0, Min(9, StrToInt(AnsiString(EditableSaveBlock.GetParam(DecodeTextW('DpiefdBkarlsaGndcVee')))))); // 'DifBalance'
+    WarDeltaWin[1] := StrToInt(AnsiString(EditableSaveBlock.GetParam(DecodeTextW('KvlsiRnsgTshDdeHljtoaRWdifnG')))); // 'KlingsDeltaWin'
+    WarDeltaWin[2] := StrToInt(AnsiString(EditableSaveBlock.GetParam(DecodeTextW('PuirreastTerswDVesltt4a6WHidns')))); // 'PiratesDeltaWin'
+    WarDeltaWin[0] := StrToInt(AnsiString(EditableSaveBlock.GetParam(DecodeTextW('Npo6rdm2aSlfsHDeeyljt4asWCignI')))); // 'NormalsDeltaWin'
+    GetPlayer.DeclinePlanetBattleOffers := LowerCase(AnsiString(EditableSaveBlock.GetParam(DecodeTextW('RlehjieScataPSB')))) = 'true'; // 'RejectPB'
+    GetPlayer.LoadFromBlock(EditableSaveBlock.GetBlockByPath(DecodeTextW('Polearymeir'))); // 'Player'
+    HoleBlock := EditableSaveBlock.GetBlockByPath(DecodeTextW('HroslaenLfirs4t')); // 'HoleList'
     for I := 0 to Holes.Count - 1 do begin
       Hole := THole(Holes[I]);
-      Key := DecodeTextW('Heo4lge5I6dY') + IntToStr(Int64(Hole.Id)); // Decoded: 'HoleId'
+      Key := DecodeTextW('Heo4lge5I6dY') + IntToStr(Int64(Hole.Id)); // 'HoleId'
       Hole.LoadFromBlock(HoleBlock.GetBlockByPath(Key));
     end;
-    for I := 0 to StrToInt(AnsiString(HoleBlock.GetParam(DecodeTextW('CEr2e4aftge4NgehwYHeohlsegs1')))) - 1 do begin // Decoded: 'CreateNewHoles'
+    for I := 0 to StrToInt(AnsiString(HoleBlock.GetParam(DecodeTextW('CEr2e4aftge4NgehwYHeohlsegs1')))) - 1 do begin // 'CreateNewHoles'
       Hole := THole.Create;
       Hole.InitializeGraphic('');
       THoleSE(Hole.Graphic).SetState(1);
@@ -2191,10 +2191,10 @@ begin
       Hole.HoleType := 1;
       Holes.Add(Hole);
     end;
-    with EditableSaveBlock.GetBlockByPath(DecodeTextW('SatraproLaiAsot')) do // Decoded: 'StarList'
+    with EditableSaveBlock.GetBlockByPath(DecodeTextW('SatraproLaiAsot')) do // 'StarList'
       for I := 0 to Stars.Count - 1 do begin
         Star := TStar(Stars[I]);
-        Key := DecodeTextW('S5tTaersIed2') + IntToStr(Int64(Star.Id)); // Decoded: 'StarId'
+        Key := DecodeTextW('S5tTaersIed2') + IntToStr(Int64(Star.Id)); // 'StarId'
         Star.LoadFromBlock(GetBlockByPath(Key));
       end;
     EditableSaveBlock.Clear;
@@ -4387,28 +4387,28 @@ end;
 { @routine $7AB104 THole_SaveToBlock }
 procedure THole.SaveToBlock(Block: TBlockParEC);
 begin
-  Block.AddParam(DecodeTextW('Skt5adrs1tI2dx'), IntToStr(Star1.Id)); // Decoded: 'Star1Id'
-  Block.AddParam(DecodeTextW('S0tua4rw1gCjotoerwd4Xw'), FloatToStr(Position1.X)); // Decoded: 'Star1CoordX'
-  Block.AddParam(DecodeTextW('S3t4agrj1kCworour4ddYx'), FloatToStr(Position1.Y)); // Decoded: 'Star1CoordY'
-  Block.AddParam(DecodeTextW('Sltkalru2tIrdd'), IntToStr(Star2.Id)); // Decoded: 'Star2Id'
-  Block.AddParam(DecodeTextW('Sstfawrr2tC4oyojr7dkX'), FloatToStr(Position2.X)); // Decoded: 'Star2CoordX'
-  Block.AddParam(DecodeTextW('S2tga5rg2wCxobokrFdsYA'), FloatToStr(Position2.Y)); // Decoded: 'Star2CoordY'
-  Block.AddParam(DecodeTextW('TtuwrdngshT4oaC2l5ojsden'), IntToStr(CreatedTurn + 200 - Galaxy.CurrentTurn)); // Decoded: 'TurnsToClose'
-  Block.AddParam(DecodeTextW('MpaypeNqazmveR'), ArcadeMapName); // Decoded: 'MapName'
+  Block.AddParam(DecodeTextW('Skt5adrs1tI2dx'), IntToStr(Star1.Id)); // 'Star1Id'
+  Block.AddParam(DecodeTextW('S0tua4rw1gCjotoerwd4Xw'), FloatToStr(Position1.X)); // 'Star1CoordX'
+  Block.AddParam(DecodeTextW('S3t4agrj1kCworour4ddYx'), FloatToStr(Position1.Y)); // 'Star1CoordY'
+  Block.AddParam(DecodeTextW('Sltkalru2tIrdd'), IntToStr(Star2.Id)); // 'Star2Id'
+  Block.AddParam(DecodeTextW('Sstfawrr2tC4oyojr7dkX'), FloatToStr(Position2.X)); // 'Star2CoordX'
+  Block.AddParam(DecodeTextW('S2tga5rg2wCxobokrFdsYA'), FloatToStr(Position2.Y)); // 'Star2CoordY'
+  Block.AddParam(DecodeTextW('TtuwrdngshT4oaC2l5ojsden'), IntToStr(CreatedTurn + 200 - Galaxy.CurrentTurn)); // 'TurnsToClose'
+  Block.AddParam(DecodeTextW('MpaypeNqazmveR'), ArcadeMapName); // 'MapName'
 end;
 { @end $7AB104 }
 
 { @routine $7AB520 THole_LoadFromBlock }
 procedure THole.LoadFromBlock(Block: TBlockParEC);
 begin
-  Star1 := Galaxy.IdToStar(StrToInt(AnsiString(Block.GetParam(DecodeTextW('Skt5adrs1tI2dx'))))); // Decoded: 'Star1Id'
-  Position1.X := ExtractDecimalToSingleW(Block.GetParam(DecodeTextW('S0tua4rw1gCjotoerwd4Xw'))); // Decoded: 'Star1CoordX'
-  Position1.Y := ExtractDecimalToSingleW(Block.GetParam(DecodeTextW('S3t4agrj1kCworour4ddYx'))); // Decoded: 'Star1CoordY'
-  Star2 := Galaxy.IdToStar(StrToInt(AnsiString(Block.GetParam(DecodeTextW('Sltkalru2tIrdd'))))); // Decoded: 'Star2Id'
-  Position2.X := ExtractDecimalToSingleW(Block.GetParam(DecodeTextW('Sstfawrr2tC4oyojr7dkX'))); // Decoded: 'Star2CoordX'
-  Position2.Y := ExtractDecimalToSingleW(Block.GetParam(DecodeTextW('S2tga5rg2wCxobokrFdsYA'))); // Decoded: 'Star2CoordY'
-  CreatedTurn := Galaxy.CurrentTurn - 200 + StrToInt(AnsiString(Block.GetParam(DecodeTextW('TtuwrdngshT4oaC2l5ojsden')))); // Decoded: 'TurnsToClose'
-  ArcadeMapName := Block.GetParam(DecodeTextW('MpaypeNqazmveR')); // Decoded: 'MapName'
+  Star1 := Galaxy.IdToStar(StrToInt(AnsiString(Block.GetParam(DecodeTextW('Skt5adrs1tI2dx'))))); // 'Star1Id'
+  Position1.X := ExtractDecimalToSingleW(Block.GetParam(DecodeTextW('S0tua4rw1gCjotoerwd4Xw'))); // 'Star1CoordX'
+  Position1.Y := ExtractDecimalToSingleW(Block.GetParam(DecodeTextW('S3t4agrj1kCworour4ddYx'))); // 'Star1CoordY'
+  Star2 := Galaxy.IdToStar(StrToInt(AnsiString(Block.GetParam(DecodeTextW('Sltkalru2tIrdd'))))); // 'Star2Id'
+  Position2.X := ExtractDecimalToSingleW(Block.GetParam(DecodeTextW('Sstfawrr2tC4oyojr7dkX'))); // 'Star2CoordX'
+  Position2.Y := ExtractDecimalToSingleW(Block.GetParam(DecodeTextW('S2tga5rg2wCxobokrFdsYA'))); // 'Star2CoordY'
+  CreatedTurn := Galaxy.CurrentTurn - 200 + StrToInt(AnsiString(Block.GetParam(DecodeTextW('TtuwrdngshT4oaC2l5ojsden')))); // 'TurnsToClose'
+  ArcadeMapName := Block.GetParam(DecodeTextW('MpaypeNqazmveR')); // 'MapName'
 end;
 { @end $7AB520 }
 
@@ -4649,25 +4649,25 @@ begin
   if ModuleCrcIntegrityStatus = 0 then begin
     Extension := 'll';
     Extension := '.d' + Extension;
-    FileName := DecodeTextW('sotoenalm^_^aucah') + Extension; // Decoded: 'steam_ach'
+    FileName := DecodeTextW('sotoenalm^_^aucah') + Extension; // 'steam_ach'
     if GetModuleHandleW(PWideChar(FileName)) <> 0 then CheckModuleCRC($A5EA67A9);
-    FileName := DecodeTextW('sotoenalm^_^aupki') + Extension; // Decoded: 'steam_api'
+    FileName := DecodeTextW('sotoenalm^_^aupki') + Extension; // 'steam_api'
     if GetModuleHandleW(PWideChar(FileName)) <> 0 then CheckModuleCRC($FD0A392F);
-    FileName := DecodeTextW('zoloimba') + Extension; // Decoded: 'zlib'
+    FileName := DecodeTextW('zoloimba') + Extension; // 'zlib'
     CheckModuleCRC($429862E3);
-    FileName := DecodeTextW('MhastorhinxaGrakmae') + Extension; // Decoded: 'MatrixGame'
+    FileName := DecodeTextW('MhastorhinxaGrakmae') + Extension; // 'MatrixGame'
     CheckModuleCRC($FAFF5F87);
-    FileName := DecodeTextW('ookogifa') + Extension; // Decoded: 'okgf'
+    FileName := DecodeTextW('ookogifa') + Extension; // 'okgf'
     CheckModuleCRC($D027CDF5);
-    FileName := DecodeTextW('xavriadeccomrie') + Extension; // Decoded: 'xvidcore'
+    FileName := DecodeTextW('xavriadeccomrie') + Extension; // 'xvidcore'
     CheckModuleCRC($B7C65763);
     Prefix := 'ib';
     Prefix := 'l' + Prefix;
-    FileName := Prefix + DecodeTextW('osgaga-10a') + Extension; // Decoded: 'ogg-0'
+    FileName := Prefix + DecodeTextW('osgaga-10a') + Extension; // 'ogg-0'
     CheckModuleCRC($3C9CD24C);
-    FileName := Prefix + DecodeTextW('vrokrablius-->0') + Extension; // Decoded: 'vorbis-0'
+    FileName := Prefix + DecodeTextW('vrokrablius-->0') + Extension; // 'vorbis-0'
     CheckModuleCRC($E1CA75C7);
-    FileName := Prefix + DecodeTextW('veohrablissufainlae') + Extension; // Decoded: 'vorbisfile'
+    FileName := Prefix + DecodeTextW('veohrablissufainlae') + Extension; // 'vorbisfile'
     CheckModuleCRC($D1ED59C5);
     if ModuleCrcIntegrityStatus = 0 then ModuleCrcIntegrityStatus := 1;
   end;
@@ -4926,46 +4926,46 @@ end;
 procedure TStar.SaveToBlock(Block: TBlockParEC);
 var I: Integer; Key: WideString; Planet: TPlanet; Ship: TShip; Item: TItem; ShipBlock: TBlockParEC;
 begin
-  Block.AddParam(DecodeTextW('Sgt3adr3Nsaym7ee'), Name); // Decoded: 'StarName'
-  Block.AddParam(DecodeTextW('ImSkyasUDOiranma'), IntToStr(ComputeMapDiameter)); // Decoded: 'ISysDiam'
+  Block.AddParam(DecodeTextW('Sgt3adr3Nsaym7ee'), Name); // 'StarName'
+  Block.AddParam(DecodeTextW('ImSkyasUDOiranma'), IntToStr(ComputeMapDiameter)); // 'ISysDiam'
   Block.AddParam('X', SysUtils.FloatToStr(Position.X));
   Block.AddParam('Y', SysUtils.FloatToStr(Position.Y));
-  Key := DecodeTextW('O3wHnfeWrss2'); // Decoded: 'Owners'
+  Key := DecodeTextW('O3wHnfeWrss2'); // 'Owners'
   case ControlFaction of
-    sfCoalition: Block.AddParam(Key, DecodeTextW('Ndo3rFm3awlfs')); // Decoded: 'Normals'
-    sfPirates: Block.AddParam(Key, DecodeTextW('Pui4rfawtqeEs')); // Decoded: 'Pirates'
-    sfDominators: Block.AddParam(Key, DecodeTextW('Kzlwiqndgus')); // Decoded: 'Klings'
+    sfCoalition: Block.AddParam(Key, DecodeTextW('Ndo3rFm3awlfs')); // 'Normals'
+    sfPirates: Block.AddParam(Key, DecodeTextW('Pui4rfawtqeEs')); // 'Pirates'
+    sfDominators: Block.AddParam(Key, DecodeTextW('Kzlwiqndgus')); // 'Klings'
   end;
-  Block.AddParam(DecodeTextW('D9o5meScewr3iwegs4'), DominatorSeriesNames[Ord(DominatorSeries)]); // Decoded: 'DomSeries'
-  ShipBlock := Block.AddBlockByPath(DecodeTextW('SahainpaLeikswt')); // Decoded: 'ShipList'
+  Block.AddParam(DecodeTextW('D9o5meScewr3iwegs4'), DominatorSeriesNames[Ord(DominatorSeries)]); // 'DomSeries'
+  ShipBlock := Block.AddBlockByPath(DecodeTextW('SahainpaLeikswt')); // 'ShipList'
   for I := 0 to Ships.Count - 1 do begin
     Ship := TShip(Ships[I]);
-    Key := DecodeTextW('S5heifphI4d') + IntToStr(Cardinal(Ship.Id)); // Decoded: 'ShipId'
+    Key := DecodeTextW('S5heifphI4d') + IntToStr(Cardinal(Ship.Id)); // 'ShipId'
     if GetPlayer <> Ship then Ship.SaveToBlock(ShipBlock.AddBlockByPath(Key));
   end;
-  ShipBlock.AddParam(DecodeTextW('CorzeSafteetNgehwjRuuti5nrse'), ''); // Decoded: 'CreateNewRuins'
-  with Block.AddBlockByPath(DecodeTextW('PalkainrestaLuiksete')) do begin // Decoded: 'PlanetList'
+  ShipBlock.AddParam(DecodeTextW('CorzeSafteetNgehwjRuuti5nrse'), ''); // 'CreateNewRuins'
+  with Block.AddBlockByPath(DecodeTextW('PalkainrestaLuiksete')) do begin // 'PlanetList'
   for I := 0 to Planets.Count - 1 do begin
     Planet := TPlanet(Planets[I]);
-    Key := DecodeTextW('PwlgaRneeZtfI6d3') + IntToStr(Int64(Planet.Id)); // Decoded: 'PlanetId'
+    Key := DecodeTextW('PwlgaRneeZtfI6d3') + IntToStr(Int64(Planet.Id)); // 'PlanetId'
     Planet.SaveToBlock(AddBlockByPath(Key));
   end;
-  AddParam(DecodeTextW('CorzeSafteetNgehwjPoloaInuent'), '0'); // Decoded: 'CreateNewPlanet'
+  AddParam(DecodeTextW('CorzeSafteetNgehwjPoloaInuent'), '0'); // 'CreateNewPlanet'
   end;
-  with Block.AddBlockByPath(DecodeTextW('JoulnAk')) do begin // Decoded: 'Junk'
+  with Block.AddBlockByPath(DecodeTextW('JoulnAk')) do begin // 'Junk'
   if Items <> nil then
     for I := 0 to Items.Count - 1 do begin
       Item := TItem(Items[I]);
-      Key := DecodeTextW('ImtreamrIodo') + IntToStr(Cardinal(Item.Id)); // Decoded: 'ItemId'
+      Key := DecodeTextW('ImtreamrIodo') + IntToStr(Cardinal(Item.Id)); // 'ItemId'
       with AddBlockByPath(Key) do begin
       AddParam('X', SysUtils.FloatToStr(Item.Position.X));
       AddParam('Y', SysUtils.FloatToStr(Item.Position.Y));
       end;
       Item.SaveToBlock(GetBlockByPath(Key));
     end;
-  AddParam(DecodeTextW('Cur5erawtre3NregwgJou1nfk'), ''); // Decoded: 'CreateNewJunk'
+  AddParam(DecodeTextW('Cur5erawtre3NregwgJou1nfk'), ''); // 'CreateNewJunk'
   end;
-  Block.AddParam(DecodeTextW('CtrGefaEtdefNgeywuAksltkeuryoTirdesd'), '0'); // Decoded: 'CreateNewAsteroids'
+  Block.AddParam(DecodeTextW('CtrGefaEtdefNgeywuAksltkeuryoTirdesd'), '0'); // 'CreateNewAsteroids'
 end;
 { @end $7ADCF8 }
 
@@ -4973,7 +4973,7 @@ end;
 procedure TStar.LoadFromBlock(Block: TBlockParEC);
 var I: Integer; Key, Value: WideString; Planet: TPlanet; Ship: TShip; StationType: Byte; X, Y: Single; Link: PConstellationStarLink; Asteroid: TAsteroid; Style: WideString; Part, Variants, Variant: Integer; Item: TItem; ItemType: Byte; Angle: Double;
 begin
-  Name := Block.GetParam(DecodeTextW('Sgt3adr3Nsaym7ee')); // Decoded: 'StarName'
+  Name := Block.GetParam(DecodeTextW('Sgt3adr3Nsaym7ee')); // 'StarName'
   X := ExtractDecimalToSingleW(Block.GetParam('X'));
   Y := ExtractDecimalToSingleW(Block.GetParam('Y'));
   for I := 0 to Constellation.StarLinks.Count - 1 do begin
@@ -4983,50 +4983,50 @@ begin
   end;
   Position.X := X;
   Position.Y := Y;
-  Key := Block.GetParam(DecodeTextW('O3wHnfeWrss2')); // Decoded: 'Owners'
-  if Key = DecodeTextW('Ndo3rFm3awlfs') then ControlFaction := sfCoalition // Decoded: 'Normals'
-  else if Key = DecodeTextW('Pui4rfawtqeEs') then ControlFaction := sfPirates // Decoded: 'Pirates'
-  else if Key = DecodeTextW('Kzlwiqndgus') then ControlFaction := sfDominators; // Decoded: 'Klings'
-  Key := Block.GetParam(DecodeTextW('D9o5meScewr3iwegs4')); // Decoded: 'DomSeries'
+  Key := Block.GetParam(DecodeTextW('O3wHnfeWrss2')); // 'Owners'
+  if Key = DecodeTextW('Ndo3rFm3awlfs') then ControlFaction := sfCoalition // 'Normals'
+  else if Key = DecodeTextW('Pui4rfawtqeEs') then ControlFaction := sfPirates // 'Pirates'
+  else if Key = DecodeTextW('Kzlwiqndgus') then ControlFaction := sfDominators; // 'Klings'
+  Key := Block.GetParam(DecodeTextW('D9o5meScewr3iwegs4')); // 'DomSeries'
   for I := 0 to 2 do if Key = DominatorSeriesNames[Byte(I)] then DominatorSeries := TDominatorSeries(I);
-  with Block.GetBlockByPath(DecodeTextW('SahainpaLeikswt')) do begin // Decoded: 'ShipList'
+  with Block.GetBlockByPath(DecodeTextW('SahainpaLeikswt')) do begin // 'ShipList'
   for I := 0 to Ships.Count - 1 do begin
     Ship := TShip(Ships[I]);
-    Key := DecodeTextW('S5heifphI4d') + IntToStr(Cardinal(Ship.Id)); // Decoded: 'ShipId'
+    Key := DecodeTextW('S5heifphI4d') + IntToStr(Cardinal(Ship.Id)); // 'ShipId'
     if GetPlayer <> Ship then Ship.LoadFromBlock(GetBlockByPath(Key));
   end;
-  Key := GetParam(DecodeTextW('CorzeSafteetNgehwjRuuti5nrse')); // Decoded: 'CreateNewRuins'
+  Key := GetParam(DecodeTextW('CorzeSafteetNgehwjRuuti5nrse')); // 'CreateNewRuins'
   for I := 0 to CountDelimitedPartsW(Key, ',') - 1 do begin
     Value := ExtractDelimitedPartW(Key, I, ',');
     for StationType := 0 to 13 do
       if ShipTypeNames[StationType].Name = Value then begin TRuins.Create.Init(TStationType(StationType), Self, ''); Break; end;
   end;
   end;
-  with Block.GetBlockByPath(DecodeTextW('PalkainrestaLuiksete')) do begin // Decoded: 'PlanetList'
+  with Block.GetBlockByPath(DecodeTextW('PalkainrestaLuiksete')) do begin // 'PlanetList'
   for I := 0 to Planets.Count - 1 do begin
     Planet := TPlanet(Planets[I]);
-    Key := DecodeTextW('PwlgaRneeZtfI6d3') + IntToStr(Cardinal(Planet.Id)); // Decoded: 'PlanetId'
+    Key := DecodeTextW('PwlgaRneeZtfI6d3') + IntToStr(Cardinal(Planet.Id)); // 'PlanetId'
     Planet.LoadFromBlock(GetBlockByPath(Key));
   end;
-  for I := 0 to StrToInt(AnsiString(GetParam(DecodeTextW('CorzeSafteetNgehwjPoloaInuent')))) - 1 do begin // Decoded: 'CreateNewPlanet'
+  for I := 0 to StrToInt(AnsiString(GetParam(DecodeTextW('CorzeSafteetNgehwjPoloaInuent')))) - 1 do begin // 'CreateNewPlanet'
     Planet := TPlanet.Create;
     Planet.InitGeneratedUninhabited(Self);
     Planets.Add(Planet);
     Galaxy.Planets.Add(Planet);
   end;
   end;
-  with Block.GetBlockByPath(DecodeTextW('JoulnAk')) do begin // Decoded: 'Junk'
+  with Block.GetBlockByPath(DecodeTextW('JoulnAk')) do begin // 'Junk'
   if Items <> nil then
     for I := 0 to Items.Count - 1 do begin
       Item := TItem(Items[I]);
-      Key := DecodeTextW('ImtreamrIodo') + IntToStr(Cardinal(Item.Id)); // Decoded: 'ItemId'
+      Key := DecodeTextW('ImtreamrIodo') + IntToStr(Cardinal(Item.Id)); // 'ItemId'
       with GetBlockByPath(Key) do begin
       Item.Position.X := ExtractDecimalToSingleW(GetParam('X'));
       Item.Position.Y := ExtractDecimalToSingleW(GetParam('Y'));
       end;
       Item.LoadFromBlock(GetBlockByPath(Key));
     end;
-  Key := GetParam(DecodeTextW('Cur5erawtre3NregwgJou1nfk')); // Decoded: 'CreateNewJunk'
+  Key := GetParam(DecodeTextW('Cur5erawtre3NregwgJou1nfk')); // 'CreateNewJunk'
   for I := 0 to CountDelimitedPartsW(Key, ',') - 1 do begin
     Value := ExtractDelimitedPartW(Key, I, ',');
     for ItemType := Byte(Low(TItemType)) to Byte(High(TItemType)) do
@@ -5044,8 +5044,8 @@ begin
       end;
   end;
   end;
-  Key := DecodeTextW('AfsBtfegrFodiDdf'); // Decoded: 'Asteroid'
-  for I := 0 to StrToInt(AnsiString(Block.GetParam(DecodeTextW('CtrGefaEtdefNgeywuAksltkeuryoTirdesd')))) - 1 do begin // Decoded: 'CreateNewAsteroids'
+  Key := DecodeTextW('AfsBtfegrFodiDdf'); // 'Asteroid'
+  for I := 0 to StrToInt(AnsiString(Block.GetParam(DecodeTextW('CtrGefaEtdefNgeywuAksltkeuryoTirdesd')))) - 1 do begin // 'CreateNewAsteroids'
     if BackgroundImage < 10 then Style := GameDataConfig.GetBlockByPath('Style' + Key).GetParam('0' + IntToStr(BackgroundImage))
     else Style := GameDataConfig.GetBlockByPath('Style' + Key).GetParam(IntToStr(BackgroundImage));
     Part := NextRandomIntRange(0, CountDelimitedPartsW(Style, ',') div 2 - 1, RandomState) * 2;

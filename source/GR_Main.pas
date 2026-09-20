@@ -252,7 +252,7 @@ procedure Ex_OKGR_F5_DrawRGBA(Dest: Pointer; Pitch: Integer; Source: Pointer); /
 procedure Ex_OKGR_F6_DrawRGBA(Dest: Pointer; Pitch: Integer; Source: Pointer); // @addr $4CB0B8
 
 var
-  // Decoded: 'libogg-0', 'libvorbis-0', 'libvorbisfile', 'matrixgame',
+  // 'libogg-0', 'libvorbis-0', 'libvorbisfile', 'matrixgame',
   // 'okgf', 'steam_ach', 'steam_api', 'xvidcore', 'zlib'.
   // Differences from the 1024x768 UI baseline; may be negative.
 
@@ -721,9 +721,9 @@ var
   ExtraScreenWidth: Integer; // @addr 0x88A20C
   ExtraScreenHeight: Integer; // @addr 0x88A210
   EncodedPlatformModuleNames: array[0..8] of AnsiString = (
-    'loinbaosgaga-10a', 'loinbavrokrablius-->0', 'loinbaveohrablissufainlae',
-    'mhastorhinxagrakmae', 'ookogifa', 'sotoenalm^_^aucah', 'sotoenalm^_^aupki',
-    'xavriadeccomrie', 'zoloimba'); // @addr $87AB08 @note "Alternating-character DLL basenames consumed by dormant CheckPlatformModules."
+    'loinbaosgaga-10a', 'loinbavrokrablius-->0', 'loinbaveohrablissufainlae', // 'libogg-0', 'libvorbis-0', 'libvorbisfile'
+    'mhastorhinxagrakmae', 'ookogifa', 'sotoenalm^_^aucah', 'sotoenalm^_^aupki', // 'matrixgame', 'okgf', 'steam_ach', 'steam_api'
+    'xavriadeccomrie', 'zoloimba'); // @addr $87AB08 @note "Alternating-character DLL basenames consumed by dormant CheckPlatformModules." 'xvidcore', 'zlib'
   CachedGameUserDirectory: WideString = ''; // @addr $87AB2C
 
 implementation
@@ -790,7 +790,7 @@ begin
           ModulePath := AnsiLowerCase(AnsiString(Entry.szModule));
           for Index := 0 to 8 do
           begin
-            // Decoded: 'libogg-0.dll', 'libvorbis-0.dll', 'libvorbisfile.dll',
+            // 'libogg-0.dll', 'libvorbis-0.dll', 'libvorbisfile.dll',
             // 'matrixgame.dll', 'okgf.dll', 'steam_ach.dll', 'steam_api.dll',
             // 'xvidcore.dll', 'zlib.dll'.
             if WideString(ModulePath) = DecodeTextW(
@@ -814,10 +814,10 @@ begin
     CloseHandle(Snapshot);
   end;
   SteamClientPath := AnsiLowerCase(AnsiString(ReadRegistryText(HKEY_CURRENT_USER,
-    DecodeTextW('Sdonf6t4wdabrden\7Vga4l-v7ef\3Sdt6e8a,mu\gAcczt1i2v3e2Pvrnohcyetsrs'), // Decoded: 'Software\Valve\Steam\ActiveProcess'
-    DecodeTextW('S4tgefadm.ClliitevnvteDtlfls'), ''))); // Decoded: 'SteamClientDll'
+    DecodeTextW('Sdonf6t4wdabrden\7Vga4l-v7ef\3Sdt6e8a,mu\gAcczt1i2v3e2Pvrnohcyetsrs'), // 'Software\Valve\Steam\ActiveProcess'
+    DecodeTextW('S4tgefadm.ClliitevnvteDtlfls'), ''))); // 'SteamClientDll'
   SteamProcessId := ReadRegistryInteger(HKEY_CURRENT_USER,
-    DecodeTextW('Sdonf6t4wdabrden\7Vga4l-v7ef\3Sdt6e8a,mu\gAcczt1i2v3e2Pvrnohcyetsrs'), 'pid', 0); // Decoded: 'Software\Valve\Steam\ActiveProcess'
+    DecodeTextW('Sdonf6t4wdabrden\7Vga4l-v7ef\3Sdt6e8a,mu\gAcczt1i2v3e2Pvrnohcyetsrs'), 'pid', 0); // 'Software\Valve\Steam\ActiveProcess'
   Snapshot := CreateToolhelp32Snapshot(8, GetCurrentProcessId);
   if Snapshot <> INVALID_HANDLE_VALUE then
   begin
@@ -854,7 +854,7 @@ begin
     if Module32First(Snapshot, Entry) then
       if AnsiLowerCase(AnsiString(Entry.szExePath)) =
         AnsiLowerCase(AnsiString(WideString(ExtractFilePath(SteamClientPath)) +
-          DecodeTextW('s1t2eda5mg.he7xie'))) then // Decoded: 'steam.exe'
+          DecodeTextW('s1t2eda5mg.he7xie'))) then // 'steam.exe'
       begin
         while Module32Next(Snapshot, Entry) do
         begin
@@ -2295,11 +2295,11 @@ var SystemDirectory: WideString; Module: HModule; WindowClass: TWndClassW;
 begin
   SetLength(SystemDirectory, 256);
   SetLength(SystemDirectory, GetSystemDirectoryW(PWideChar(SystemDirectory), 256));
-  Module := LoadLibraryW(PWideChar(SystemDirectory + DecodeTextW('\/di34da9..idalal'))); // Decoded: '\d3d9.dll'
-  Direct3DCreate9 := GetProcAddress(Module, PAnsiChar(AnsiString(DecodeTextW('Drinroekcata33DICAroevaltaen9')))); // Decoded: 'Direct3DCreate9'
-  Module := LoadLibraryW(PWideChar(SystemDirectory + DecodeTextW('\/dosdosusnuds.idalal'))); // Decoded: '\dsound.dll'
-  DirectSoundCreate := GetProcAddress(Module, PAnsiChar(AnsiString(DecodeTextW('DrinroekcataSnowusnud.Carvenaltie')))); // Decoded: 'DirectSoundCreate'
-  DirectSoundEnumerate := GetProcAddress(Module, PAnsiChar(AnsiString(DecodeTextW('DrinroekcataSnowusnud.ElnourmieArtastaenAi')))); // Decoded: 'DirectSoundEnumerateA'
+  Module := LoadLibraryW(PWideChar(SystemDirectory + DecodeTextW('\/di34da9..idalal'))); // '\d3d9.dll'
+  Direct3DCreate9 := GetProcAddress(Module, PAnsiChar(AnsiString(DecodeTextW('Drinroekcata33DICAroevaltaen9')))); // 'Direct3DCreate9'
+  Module := LoadLibraryW(PWideChar(SystemDirectory + DecodeTextW('\/dosdosusnuds.idalal'))); // '\dsound.dll'
+  DirectSoundCreate := GetProcAddress(Module, PAnsiChar(AnsiString(DecodeTextW('DrinroekcataSnowusnud.Carvenaltie')))); // 'DirectSoundCreate'
+  DirectSoundEnumerate := GetProcAddress(Module, PAnsiChar(AnsiString(DecodeTextW('DrinroekcataSnowusnud.ElnourmieArtastaenAi')))); // 'DirectSoundEnumerateA'
   CheckPlatformModules;
   CoInitialize(nil);
   DirectXVersion := Ex_OKGF_DXVersion;
@@ -2994,25 +2994,25 @@ begin
   SavedChecksumFailed := CCInterface.GetResourceChecksumFailed;
   Text := 'll';
   Text := '.d' + Text;
-  ModuleName := DecodeTextW('sotoenalm^_^aucah') + Text; // Decoded: 'steam_ach'
+  ModuleName := DecodeTextW('sotoenalm^_^aucah') + Text; // 'steam_ach'
   if GetModuleHandleW(PWideChar(ModuleName)) <> 0 then VerifyStartupModuleChecksum;
-  ModuleName := DecodeTextW('sotoenalm^_^aupki') + Text; // Decoded: 'steam_api'
+  ModuleName := DecodeTextW('sotoenalm^_^aupki') + Text; // 'steam_api'
   if GetModuleHandleW(PWideChar(ModuleName)) <> 0 then VerifyStartupModuleChecksum;
-  ModuleName := DecodeTextW('zoloimba') + Text; // Decoded: 'zlib'
+  ModuleName := DecodeTextW('zoloimba') + Text; // 'zlib'
   VerifyStartupModuleChecksum;
-  ModuleName := DecodeTextW('MhastorhinxaGrakmae') + Text; // Decoded: 'MatrixGame'
+  ModuleName := DecodeTextW('MhastorhinxaGrakmae') + Text; // 'MatrixGame'
   VerifyStartupModuleChecksum;
-  ModuleName := DecodeTextW('ookogifa') + Text; // Decoded: 'okgf'
+  ModuleName := DecodeTextW('ookogifa') + Text; // 'okgf'
   VerifyStartupModuleChecksum;
-  ModuleName := DecodeTextW('xavriadeccomrie') + Text; // Decoded: 'xvidcore'
+  ModuleName := DecodeTextW('xavriadeccomrie') + Text; // 'xvidcore'
   VerifyStartupModuleChecksum;
   ExtraText := 'ib';
   ExtraText := 'l' + ExtraText;
-  ModuleName := ExtraText + DecodeTextW('osgaga-10a') + Text; // Decoded: 'ogg-0'
+  ModuleName := ExtraText + DecodeTextW('osgaga-10a') + Text; // 'ogg-0'
   VerifyStartupModuleChecksum;
-  ModuleName := ExtraText + DecodeTextW('vrokrablius-->0') + Text; // Decoded: 'vorbis-0'
+  ModuleName := ExtraText + DecodeTextW('vrokrablius-->0') + Text; // 'vorbis-0'
   VerifyStartupModuleChecksum;
-  ModuleName := ExtraText + DecodeTextW('veohrablissufainlae') + Text; // Decoded: 'vorbisfile'
+  ModuleName := ExtraText + DecodeTextW('veohrablissufainlae') + Text; // 'vorbisfile'
   VerifyStartupModuleChecksum;
   CCInterface.SetResourceChecksumFailed(SavedChecksumFailed);
 end;

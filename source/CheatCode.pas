@@ -214,7 +214,7 @@ begin
       Item := TEquipment(GetPlayer.Artefacts[I]);
       if (Item.EquippedFlag <> 0) and (Item.ConditionPercent < 90) then Item.Repair;
     end;
-    ReportCheat(40, DecodeTextW('ROEMPOAYIURU'));
+    ReportCheat(40, DecodeTextW('ROEMPOAYIURU')); // 'REPAIR'
   end;
 end;
 { @end $506D6C }
@@ -248,7 +248,7 @@ begin
         end;
       end;
     end;
-    ReportCheat(20, DecodeTextW('KULTIZSOSOASNOMEANXI'));
+    ReportCheat(20, DecodeTextW('KULTIZSOSOASNOMEANXI')); // 'KLISSANMAX'
   end;
 end;
 { @end $506EFC }
@@ -289,7 +289,7 @@ begin
         end;
       end;
     end;
-    ReportCheat(20, DecodeTextW('PVISREAXTMETMOARX9'));
+    ReportCheat(20, DecodeTextW('PVISREAXTMETMOARX9')); // 'PIRATEMAX'
   end;
 end;
 { @end $507048 }
@@ -320,7 +320,7 @@ begin
             end;
         end;
     end;
-    ReportCheat(20, DecodeTextW('WIAGRARUILOIRAMOARX9'));
+    ReportCheat(20, DecodeTextW('WIAGRARUILOIRAMOARX9')); // 'WARRIORMAX'
   end;
 end;
 { @end $5071D0 }
@@ -362,7 +362,7 @@ begin
         if Sent > 20 then Break;
       end;
     end;
-    ReportCheat(20, DecodeTextW('KOLEINSOSUAINOCRABLELS'));
+    ReportCheat(20, DecodeTextW('KOLEINSOSUAINOCRABLELS')); // 'KLISSANCALL'
   end;
 end;
 { @end $507374 }
@@ -404,7 +404,7 @@ begin
         if Sent > 20 then Break;
       end;
     end;
-    ReportCheat(20, DecodeTextW('PAIORNAMTZEXCOASLOL'));
+    ReportCheat(20, DecodeTextW('PAIORNAMTZEXCOASLOL')); // 'PIRATECALL'
   end;
 end;
 { @end $5075A8 }
@@ -416,7 +416,7 @@ begin
     GetPlayer.IsDockedToShip and (GetPlayer.DockedTo.TypeId = Byte(rstRangerCenter)) and (GetPlayer.FreeExperience < 1000) then
   begin
     GetPlayer.GainExperience(1000, 0);
-    ReportCheat(150, DecodeTextW('RIALNOGDEPROPRONIHNITIS'));
+    ReportCheat(150, DecodeTextW('RIALNOGDEPROPRONIHNITIS')); // 'RANGERPOINTS'
   end;
 end;
 { @end $5077B4 }
@@ -424,7 +424,7 @@ end;
 { @routine $507890 CheatNextrank }
 procedure CheatNextrank;
 begin
-  ReportCheat(90, DecodeTextW('NIETXATARNARNAK'));
+  ReportCheat(90, DecodeTextW('NIETXATARNARNAK')); // 'NEXTRANK'
   if (Galaxy <> nil) and (GetPlayer <> nil) and (CurrentScreenId <> screenShip) then
   begin
     if GetPlayer.Rank <> 7 then GetPlayer.AddRankPoints(GetPlayer.GetRankPointsToNextRank);
@@ -458,7 +458,7 @@ begin
       EquipmentShopScreen.BuildGoodsControls;
       EquipmentShopScreen.UpdateScrollButtons;
     end;
-    ReportCheat(100, DecodeTextW('CRONOBLAWSENAIPROSN'));
+    ReportCheat(100, DecodeTextW('CRONOBLAWSENAIPROSN')); // 'COOLWEAPON'
   end;
 end;
 { @end $50799C }
@@ -483,7 +483,7 @@ begin
       EquipmentShopScreen.BuildGoodsControls;
       EquipmentShopScreen.UpdateScrollButtons;
     end;
-    ReportCheat(20, DecodeTextW('LLOYWACSONSETIWIEFAIPROLNO'));
+    ReportCheat(20, DecodeTextW('LLOYWACSONSETIWIEFAIPROLNO')); // 'LOWCOSTWEAPON'
   end;
 end;
 { @end $507B14 }
@@ -504,7 +504,7 @@ begin
     GetPlayer.Artefacts.Add(Item);
     GetPlayer.RefreshDerivedStats(True);
     StarMapScreen.MainPanel.RefreshMoneyAndCargo;
-    ReportCheat(60, DecodeTextW('BRODMEB'));
+    ReportCheat(60, DecodeTextW('BRODMEB')); // 'BOMB'
   end;
 end;
 { @end $507CB8 }
@@ -522,7 +522,7 @@ begin
     GetPlayer.Artefacts.Add(CreateConfiguredArtefactByItemType(t_ArtefactTranclucator, 6));
     GetPlayer.Artefacts.Add(CreateConfiguredArtefactByItemType(t_ArtefactTranclucator, 7));
     GetPlayer.RefreshDerivedStats(True);
-    ReportCheat(60, DecodeTextW('RFOCBIOLTQFNOCROCRE'));
+    ReportCheat(60, DecodeTextW('RFOCBIOLTQFNOCROCRE')); // 'ROBOTFORCE'
   end;
 end;
 { @end $507E00 }
@@ -538,7 +538,7 @@ begin
     if Item is TArtefact then GetPlayer.Artefacts.Add(Item)
     else GetPlayer.Inventory.Add(Item);
     GetPlayer.RefreshDerivedStats(True);
-    ReportCheat(40, DecodeTextW('ASRATIENFOARCAT'));
+    ReportCheat(40, DecodeTextW('ASRATIENFOARCAT')); // 'ARTEFACT'
   end;
 end;
 { @end $507F70 }
@@ -561,7 +561,7 @@ begin
         GoodsShopScreen.RefreshGoodsDisplay;
       end
       else if CurrentScreenId = screenEquipmentShop then EquipmentShopScreen.MainPanel.RefreshMoneyAndCargo;
-      ReportCheat(40, DecodeTextW('MEOLNIERYE'));
+      ReportCheat(40, DecodeTextW('MEOLNIERYE')); // 'MONEY'
     end;
 end;
 { @end $508084 }
@@ -603,7 +603,7 @@ begin
           ((Item.ItemType <> t_FuelTanks) or (Item.EquippedFlag = 0)) then Ship.DropCarriedItemAsMovingLoot(Item);
       end;
       Ship.RefreshDerivedStats(True);
-      ReportCheat(60, DecodeTextW('DIRIOSPA'));
+      ReportCheat(60, DecodeTextW('DIRIOSPA')); // 'DROP'
     end;
   end;
 end;
@@ -632,7 +632,7 @@ begin
     end;
     GetPlayer.RefreshDerivedStats(True);
     StarMapScreen.MainPanel.RefreshMoneyAndCargo;
-    ReportCheat(300, DecodeTextW('PRANCIKCIINEG'));
+    ReportCheat(300, DecodeTextW('PRANCIKCIINEG')); // 'PACKING'
   end;
 end;
 { @end $508420 }
@@ -663,7 +663,7 @@ begin
     end
     else if CurrentScreenId = screenEquipmentShop then EquipmentShopScreen.MainPanel.RefreshMoneyAndCargo
     else if CurrentScreenId = screenInfo then InfoScreen.MainPanel.RefreshMoneyAndCargo;
-    ReportCheat(160, DecodeTextW('KALKINSOSUANNIINTHEMM'));
+    ReportCheat(160, DecodeTextW('KALKINSOSUANNIINTHEMM')); // 'KLISSANITEM'
   end;
 end;
 { @end $508638 }
@@ -711,7 +711,7 @@ begin
     end
     else if CurrentScreenId = screenEquipmentShop then EquipmentShopScreen.MainPanel.RefreshMoneyAndCargo
     else if CurrentScreenId = screenInfo then InfoScreen.MainPanel.RefreshMoneyAndCargo;
-    ReportCheat(200, DecodeTextW('WRENARPBOSNASOTERLEINAGATOHE'));
+    ReportCheat(200, DecodeTextW('WRENARPBOSNASOTERLEINAGATOHE')); // 'WEAPONSTRENGTH'
   end;
 end;
 { @end $50883C }
@@ -738,7 +738,7 @@ begin
       Item.GetGraphObject.AttachToSpace(SpaceProcess.Space);
       Item.DestroyFlag := 2;
     end;
-    ReportCheat(140, DecodeTextW('TIECN0BEOAMOB'));
+    ReportCheat(140, DecodeTextW('TIECN0BEOAMOB')); // 'TENBOMB'
   end;
 end;
 { @end $508B50 }
@@ -771,7 +771,7 @@ begin
       GetPlayer.CurrentStar.Items.Add(Item);
       Item.GetGraphObject.AttachToSpace(SpaceProcess.Space);
     end;
-    ReportCheat(140, DecodeTextW('RIALNEGREFRESIDUREEKALMA'));
+    ReportCheat(140, DecodeTextW('RIALNEGREFRESIDUREEKALMA')); // 'RANGERSDREAM'
   end;
 end;
 { @end $508D10 }
@@ -814,7 +814,7 @@ begin
             Break;
           end;
         end;
-      ReportCheat(30, DecodeTextW('RONNDOBNASSAEY'));
+      ReportCheat(30, DecodeTextW('RONNDOBNASSAEY')); // 'RNDBASE'
     end;
   end;
 end;
@@ -842,7 +842,7 @@ begin
         Constellation := TConstellation(Galaxy.Constellations[RandomIntRange(0, Galaxy.Constellations.Count - 1)]);
       until not Constellation.Visible;
       Constellation.Visible := True;
-      ReportCheat(20, DecodeTextW('MOARPESHESCOTROLR2'));
+      ReportCheat(20, DecodeTextW('MOARPESHESCOTROLR2')); // 'MAPSECTOR'
     end;
   end;
 end;
@@ -866,7 +866,7 @@ begin
         GoodsShopScreen.RefreshGoodsDisplay;
       end
       else if CurrentScreenId = screenEquipmentShop then EquipmentShopScreen.MainPanel.RefreshMoneyAndCargo;
-      ReportCheat(300, DecodeTextW('HAUNGLESMIOMNEELYS'));
+      ReportCheat(300, DecodeTextW('HAUNGLESMIOMNEELYS')); // 'HUGEMONEY'
     end;
 end;
 { @end $509210 }
@@ -887,7 +887,7 @@ begin
         (Item as TWeapon).Range := (Item as TWeapon).Range * 2;
     end;
     GetPlayer.ChangePlanetRelations(nil, rcmDecrease, 50, [0, 2, 3, 4]);
-    ReportCheat(100, DecodeTextW('PLEVLIESNOGASRUEROPTROINSAEN'));
+    ReportCheat(100, DecodeTextW('PLEVLIESNOGASRUEROPTROINSAEN')); // 'PELENGSURPRISE'
   end;
 end;
 { @end $5093C4 }
@@ -903,7 +903,7 @@ begin
     GetPlayer.RefreshDerivedStats(True);
     GetPlayer.RefreshGraphicSize;
     StarMapScreen.MainPanel.RefreshMoneyAndCargo;
-    ReportCheat(250, DecodeTextW('SRUNPRESROHLUALELS'));
+    ReportCheat(250, DecodeTextW('SRUNPRESROHLUALELS')); // 'SUPERHULL'
   end;
 end;
 { @end $509524 }
@@ -927,7 +927,7 @@ begin
         if (GetPlayer <> Ship) and not Ship.InHyperspace and
           ((Ship.CurrentPlanet = nil) or (Ship.CurrentPlanet.OwnerId <> Byte(oiUninhabited))) then Ship.DestroyQueued := True;
       end;
-    ReportCheat(30, DecodeTextW('BLOSOMM'));
+    ReportCheat(30, DecodeTextW('BLOSOMM')); // 'BOOM'
   end;
 end;
 { @end $5096A4 }
@@ -944,7 +944,7 @@ begin
   if (Galaxy <> nil) and (GetPlayer <> nil) and GetPlayer.InNormalSpace and
     (CurrentScreenId = screenStarMap) and (StarMapScreen.Mode = smmOrders) then
   begin
-    ReportCheat(10, DecodeTextW('HEAVTIERROASNAGZEOROST'));
+    ReportCheat(10, DecodeTextW('HEAVTIERROASNAGZEOROST')); // 'HATERANGERS'
     for I := 0 to Galaxy.Rangers.Count - 1 do
     begin
       Ship := TShip(Galaxy.Rangers[I]);
@@ -981,7 +981,7 @@ begin
         until Attempts = 6;
       end;
     end;
-    ReportCheat(100, DecodeTextW('PRIVRVATTIERS'));
+    ReportCheat(100, DecodeTextW('PRIVRVATTIERS')); // 'PIRATES'
   end;
 end;
 { @end $509964 }
@@ -1007,7 +1007,7 @@ begin
       if Info.Availability <> waSystemOnly then
         GetPlayer.Inventory.Add(CreateGeneratedWeapon(Info, Round(Info.AverageSize * EquipmentSizeFactors[5]), Galaxy.TechLevel, GetPlayer.OwnerId));
     end;
-    ReportCheat(10, DecodeTextW('GOUMNO'));
+    ReportCheat(10, DecodeTextW('GOUMNO')); // 'GUN'
   end;
 end;
 { @end $509AD0 }
@@ -1025,7 +1025,7 @@ begin
       Item := CreateGeneratedEquipment(t_Weapon14, 20, Galaxy.TechLevel, Owner);
       GetPlayer.Inventory.Add(Item);
     end;
-    ReportCheat(10, DecodeTextW('VREVRETOIYX'));
+    ReportCheat(10, DecodeTextW('VREVRETOIYX')); // 'VERTIX'
   end;
 end;
 { @end $509C7C }
@@ -1040,7 +1040,7 @@ begin
     for Kind := 43 to 49 do
       GetPlayer.Inventory.Add(CreateGeneratedEquipment(TItemType(Kind),
         Round(GetAverageItemSize(Kind) * EquipmentSizeFactors[5]), 8, GetPlayer.OwnerId));
-    ReportCheat(10, DecodeTextW('DREAVNIYCHER'));
+    ReportCheat(10, DecodeTextW('DREAVNIYCHER')); // 'DEVICE'
   end;
 end;
 { @end $509D44 }
@@ -1073,7 +1073,7 @@ begin
       Item.OwnerId := GetPlayer.OwnerId;
       GetPlayer.Inventory.Add(Item);
     end;
-    ReportCheat(10, DecodeTextW('ANROTOS'));
+    ReportCheat(10, DecodeTextW('ANROTOS')); // 'ARTS'
   end;
 end;
 { @end $509E20 }
@@ -1093,7 +1093,7 @@ begin
         Item.Init(I);
         GetPlayer.Inventory.Add(Item);
       end;
-    ReportCheat(10, DecodeTextW('MAOZDEUNLHE'));
+    ReportCheat(10, DecodeTextW('MAOZDEUNLHE')); // 'MODULE'
   end;
 end;
 { @end $509FF8 }
@@ -1111,7 +1111,7 @@ begin
     else if GetInnermostScreenLoop = ScannerScreen then Ship := ScannerScreen.ShipToInspect
     else if GetInnermostScreenLoop = ShipScreen then Ship := PlayerHoldShip;
     if Ship = nil then Ship := GetPlayer;
-    ReportCheat(10, DecodeTextW('SXKOINLAL0'));
+    ReportCheat(10, DecodeTextW('SXKOINLAL0')); // 'SKILL'
     for I := 0 to 5 do Ship.BaseSkills[I] := 6;
     if GetInnermostScreenLoop = ScannerScreen then ScannerScreen.CloseClicked(nil)
     else if GetInnermostScreenLoop = ShipScreen then ShipScreen.CloseClicked(nil);
@@ -1127,7 +1127,7 @@ begin
   if (Galaxy <> nil) and (GetPlayer <> nil) then
   begin
     for I := Low(ProgramNames) to High(ProgramNames) do GetPlayer.ProgramCounts[I] := 100;
-    ReportCheat(10, DecodeTextW('PARZONG3ROALMS'));
+    ReportCheat(10, DecodeTextW('PARZONG3ROALMS')); // 'PROGRAM'
   end;
 end;
 { @end $50A234 }
@@ -1147,7 +1147,7 @@ begin
       Player.CaptainHealth[I].AppliedTurn := Galaxy.CurrentTurn;
       Player.CaptainHealth[I].ExpireTurn := Galaxy.CurrentTurn + 365;
     end;
-    ReportCheat(10, DecodeTextW('IALALENOERSASH'));
+    ReportCheat(10, DecodeTextW('IALALENOERSASH')); // 'ILLNESS'
   end;
 end;
 { @end $50A2E4 }
@@ -1167,7 +1167,7 @@ begin
       Player.CaptainHealth[I].AppliedTurn := Galaxy.CurrentTurn;
       Player.CaptainHealth[I].ExpireTurn := Galaxy.CurrentTurn + 365;
     end;
-    ReportCheat(10, DecodeTextW('SATAISMAUILOAONOTS'));
+    ReportCheat(10, DecodeTextW('SATAISMAUILOAONOTS')); // 'STIMULANT'
   end;
 end;
 { @end $50A3E8 }
@@ -1182,7 +1182,7 @@ begin
       if HullSeriesDefinitions[I].SystemName = '99' then
       begin
         GetPlayer.GetHull.HullSeries := I;
-        ReportCheat(10, DecodeTextW('INDFENAELE'));
+        ReportCheat(10, DecodeTextW('INDFENAELE')); // 'IDEAL'
         Break;
       end;
 end;
@@ -1202,7 +1202,7 @@ begin
       if (MainPiratePlanet = nil) or (MainPiratePlanet.CurrentStar.Constellation <> Constellation) then
         Constellation.Visible := True;
     end;
-    ReportCheat(10, DecodeTextW('SIHSONWEMEANPA'));
+    ReportCheat(10, DecodeTextW('SIHSONWEMEANPA')); // 'SHOWMAP'
   end;
 end;
 { @end $50A5E8 }
@@ -1216,7 +1216,7 @@ var
 begin
   if (Galaxy <> nil) and (GetPlayer <> nil) then
   begin
-    ReportCheat(10, DecodeTextW('MIELDOAELI'));
+    ReportCheat(10, DecodeTextW('MIELDOAELI')); // 'MEDAL'
     LastAward := StrToInt(AnsiString(LookupLocalizedTextByKey('Reward.Count'))) - 1;
     if GetPlayer.AwardIds = nil then GetPlayer.AwardIds := TList.Create;
     for I := 0 to LastAward do
@@ -1245,9 +1245,9 @@ begin
   if (Galaxy <> nil) and (GetPlayer <> nil) then
   begin
     case Level of
-      1: Name := DecodeTextW('HRONRERGOLR');
-      2: Name := DecodeTextW('NGISGIHATRMOAERE');
-      3: Name := DecodeTextW('HAESLOL');
+      1: Name := DecodeTextW('HRONRERGOLR'); // 'HORROR'
+      2: Name := DecodeTextW('NGISGIHATRMOAERE'); // 'NIGHTMAR'
+      3: Name := DecodeTextW('HAESLOL'); // 'HELL'
     end;
     if Galaxy.DominatorModLevel <> Level then Galaxy.DominatorModLevel := Level
     else Galaxy.DominatorModLevel := 0;
@@ -1285,7 +1285,7 @@ begin
   begin
     if Galaxy.TechnicModEnabled <> 1 then Galaxy.TechnicModEnabled := 1
     else Galaxy.TechnicModEnabled := 0;
-    ReportCheat(10, DecodeTextW('TOESCAHENOINC'));
+    ReportCheat(10, DecodeTextW('TOESCAHENOINC')); // 'TECHNIC'
     StarMapScreen.RefreshScoreModsLabel;
   end;
 end;
@@ -1298,7 +1298,7 @@ begin
   begin
     if Galaxy.AmmoModEnabled <> 1 then Galaxy.AmmoModEnabled := 1
     else Galaxy.AmmoModEnabled := 0;
-    ReportCheat(10, DecodeTextW('ACMEMEO'));
+    ReportCheat(10, DecodeTextW('ACMEMEO')); // 'AMMO'
     StarMapScreen.RefreshScoreModsLabel;
   end;
 end;
@@ -1310,7 +1310,7 @@ begin
   if (Galaxy <> nil) and (GetPlayer <> nil) and (Galaxy.GodModEnabled in [0, 1]) then
   begin
     Galaxy.GodModEnabled := 1 - Galaxy.GodModEnabled;
-    ReportCheat(10, DecodeTextW('GHOID'));
+    ReportCheat(10, DecodeTextW('GHOID')); // 'GOD'
     StarMapScreen.RefreshScoreModsLabel;
   end;
 end;
@@ -1429,7 +1429,7 @@ begin
         end;
       end;
     end;
-    ReportCheat(10, DecodeTextW('HOWIETANPEOLN'));
+    ReportCheat(10, DecodeTextW('HOWIETANPEOLN')); // 'HWEAPON'
   end;
 end;
 { @end $50B18C }
@@ -1441,7 +1441,7 @@ begin
   begin
     if Galaxy.UltraScanModEnabled <> 1 then Galaxy.UltraScanModEnabled := 1
     else Galaxy.UltraScanModEnabled := 0;
-    ReportCheat(10, DecodeTextW('USLATOREAMSACRAWN'));
+    ReportCheat(10, DecodeTextW('USLATOREAMSACRAWN')); // 'ULTRASCAN'
     StarMapScreen.RefreshScoreModsLabel;
   end;
 end;
@@ -1461,7 +1461,7 @@ begin
       Item.Power := 100;
       GetPlayer.Artefacts.Add(Item);
     end;
-    ReportCheat(10, DecodeTextW('TREANTTIME'));
+    ReportCheat(10, DecodeTextW('TREANTTIME')); // 'TENTM'
   end;
 end;
 { @end $50B40C }
@@ -1480,7 +1480,7 @@ begin
       if (Item is TArtefactTransmitter) and (TArtefactTransmitter(Item).Power <= 1000) then
         Inc(TArtefactTransmitter(Item).Power, 100);
     end;
-    ReportCheat(10, DecodeTextW('ECNDCAHAALRIGEE'));
+    ReportCheat(10, DecodeTextW('ECNDCAHAALRIGEE')); // 'ENCHARGE'
   end;
 end;
 { @end $50B4C4 }
@@ -1491,7 +1491,7 @@ begin
   if GetPlayer <> nil then
   begin
     Inc(GetPlayer.FreeExperience, 1000000);
-    ReportCheat(10, DecodeTextW('ELXIPOAN'));
+    ReportCheat(10, DecodeTextW('ELXIPOAN')); // 'EXPA'
   end;
 end;
 { @end $50B5A8 }
@@ -1510,7 +1510,7 @@ begin
       Item := TEquipment(GetPlayer.Inventory[I]);
       if Item.EquippedFlag <> 0 then Item.OwnerId := Byte(oiUninhabited);
     end;
-    ReportCheat(10, DecodeTextW('MRALDIETISNOCIHSIMNIA'));
+    ReportCheat(10, DecodeTextW('MRALDIETISNOCIHSIMNIA')); // 'MADEINCHINA'
   end;
 end;
 { @end $50B628 }
@@ -1522,7 +1522,7 @@ begin
   begin
     if Galaxy.StasisModEnabled <> 1 then Galaxy.StasisModEnabled := 1
     else Galaxy.StasisModEnabled := 0;
-    ReportCheat(10, DecodeTextW('ZIANWRASRIUNDAOL'));
+    ReportCheat(10, DecodeTextW('ZIANWRASRIUNDAOL')); // 'ZAWARUDO'
     StarMapScreen.RefreshScoreModsLabel;
   end;
 end;
@@ -1632,10 +1632,10 @@ var
 begin
   if (Galaxy <> nil) and (GetPlayer <> nil) then
   begin
-    FileName := GetGameUserDirectory + DecodeTextW('PaliatyseoraFainta.Atoxita');
+    FileName := GetGameUserDirectory + DecodeTextW('PaliatyseoraFainta.Atoxita'); // 'PlayerFit.txt'
     Block := TBlockParEC.Create;
     Number := 1;
-    Block.AddParam(DecodeTextW('GraemlenVoenrusSimoun'), '2.1.2500');
+    Block.AddParam(DecodeTextW('GraemlenVoenrusSimoun'), '2.1.2500'); // 'GameVersion'
     Block.AddParam(GetPlayer.GetLocalizedTypeName, GetPlayer.GetName);
     for Index := 0 to GetPlayer.Inventory.Count - 1 do
     begin
@@ -1664,7 +1664,7 @@ begin
     end;
     Block.SaveTextFile(PWideChar(FileName), True, False);
     Block.Free;
-    ReportCheat(0, DecodeTextW('FLITTONLEISES'));
+    ReportCheat(0, DecodeTextW('FLITTONLEISES')); // 'FITNESS'
   end;
 end;
 { @end $50BB38 }
@@ -1708,7 +1708,7 @@ begin
     end;
     for Good := 0 to 7 do GetPlayer.CargoGoods[Good].Count := GetPlayer.CargoGoods[Good].Count * 2;
     GetPlayer.RefreshDerivedStats(True);
-    ReportCheat(10, DecodeTextW('EIXATIRIANORNAEL'));
+    ReportCheat(10, DecodeTextW('EIXATIRIANORNAEL')); // 'EXTRAONE'
   end;
 end;
 { @end $50BE90 }
@@ -1862,68 +1862,68 @@ end;
 // Compiler unit entry $876748 registers the native command order.
 initialization
   CheatEntries := TCheatList.Create;
-  CheatEntries.AddCheat(DecodeTextW('ROEMPOAYIURU'), CheatRepair);
-  CheatEntries.AddCheat(DecodeTextW('KULTIZSOSOASNOMEANXI'), CheatKlissanmax);
-  CheatEntries.AddCheat(DecodeTextW('PVISREAXTMETMOARX9'), CheatPiratemax);
-  CheatEntries.AddCheat(DecodeTextW('WIAGRARUILOIRAMOARX9'), CheatWarriormax);
-  CheatEntries.AddCheat(DecodeTextW('KOLEINSOSUAINOCRABLELS'), CheatKlissancall);
-  CheatEntries.AddCheat(DecodeTextW('PAIORNAMTZEXCOASLOL'), CheatPiratecall);
-  CheatEntries.AddCheat(DecodeTextW('RIALNOGDEPROPRONIHNITIS'), CheatRangerpoints);
-  CheatEntries.AddCheat(DecodeTextW('NIETXATARNARNAK'), CheatNextrank);
-  CheatEntries.AddCheat(DecodeTextW('CRONOBLAWSENAIPROSN'), CheatCoolweapon);
-  CheatEntries.AddCheat(DecodeTextW('LLOYWACSONSETIWIEFAIPROLNO'), CheatLowcostweapon);
-  CheatEntries.AddCheat(DecodeTextW('BRODMEB'), CheatBomb);
-  CheatEntries.AddCheat(DecodeTextW('ASRATIENFOARCAT'), CheatArtefact);
-  CheatEntries.AddCheat(DecodeTextW('MEOLNIERYE'), CheatMoney);
-  CheatEntries.AddCheat(DecodeTextW('DIRIOSPA'), CheatDrop);
-  CheatEntries.AddCheat(DecodeTextW('PRANCIKCIINEG'), CheatPacking);
-  CheatEntries.AddCheat(DecodeTextW('KALKINSOSUANNIINTHEMM'), CheatKlissanitem);
-  CheatEntries.AddCheat(DecodeTextW('WRENARPBOSNASOTERLEINAGATOHE'), CheatWeaponstrength);
-  CheatEntries.AddCheat(DecodeTextW('TIECN0BEOAMOB'), CheatTenbomb);
-  CheatEntries.AddCheat(DecodeTextW('RONNDOBNASSAEY'), CheatRndbase);
-  CheatEntries.AddCheat(DecodeTextW('MOARPESHESCOTROLR2'), CheatMapsector);
-  CheatEntries.AddCheat(DecodeTextW('HAUNGLESMIOMNEELYS'), CheatHugemoney);
-  CheatEntries.AddCheat(DecodeTextW('PLEVLIESNOGASRUEROPTROINSAEN'), CheatPelengsurprise);
-  CheatEntries.AddCheat(DecodeTextW('SRUNPRESROHLUALELS'), CheatSuperhull);
-  CheatEntries.AddCheat(DecodeTextW('BLOSOMM'), CheatBoom);
-  CheatEntries.AddCheat(DecodeTextW('HEAVTIERROASNAGZEOROST'), CheatHaterangers);
-  CheatEntries.AddCheat(DecodeTextW('PRIVRVATTIERS'), CheatPirates);
-  CheatEntries.AddCheat(DecodeTextW('GOUMNO'), CheatGun);
-  CheatEntries.AddCheat(DecodeTextW('VREVRETOIYX'), CheatVertix);
-  CheatEntries.AddCheat(DecodeTextW('DREAVNIYCHER'), CheatDevice);
-  CheatEntries.AddCheat(DecodeTextW('ANROTOS'), CheatArts);
-  CheatEntries.AddCheat(DecodeTextW('MAOZDEUNLHE'), CheatModule);
-  CheatEntries.AddCheat(DecodeTextW('SXKOINLAL0'), CheatSkill);
-  CheatEntries.AddCheat(DecodeTextW('PARZONG3ROALMS'), CheatProgram);
-  CheatEntries.AddCheat(DecodeTextW('IALALENOERSASH'), CheatIllness);
-  CheatEntries.AddCheat(DecodeTextW('SATAISMAUILOAONOTS'), CheatStimulant);
-  CheatEntries.AddCheat(DecodeTextW('INDFENAELE'), CheatIdeal);
-  CheatEntries.AddCheat(DecodeTextW('SIHSONWEMEANPA'), CheatShowmap);
-  CheatEntries.AddCheat(DecodeTextW('MIELDOAELI'), CheatMedal);
-  CheatEntries.AddCheat(DecodeTextW('HRONRERGOLR'), CheatHorror);
-  CheatEntries.AddCheat(DecodeTextW('NGISGIHATRMOAEREE'), CheatNightmare);
-  CheatEntries.AddCheat(DecodeTextW('HAESLOL'), CheatHell);
-  CheatEntries.AddCheat(DecodeTextW('TOESCAHENOINC'), CheatTechnic);
-  CheatEntries.AddCheat(DecodeTextW('ACMEMEO'), CheatAmmo);
-  CheatEntries.AddCheat(DecodeTextW('GHOID'), CheatGod);
-  CheatEntries.AddCheat(DecodeTextW('HLOILAEN'), CheatHole);
-  CheatEntries.AddCheat(DecodeTextW('WHINNE'), CheatWin);
-  CheatEntries.AddCheat(DecodeTextW('HOWIETANPEOLN'), CheatHweapon);
-  CheatEntries.AddCheat(DecodeTextW('USLATOREAMSACRAWN'), CheatUltrascan);
-  CheatEntries.AddCheat(DecodeTextW('TREANTTIME'), CheatTentm);
-  CheatEntries.AddCheat(DecodeTextW('ECNDCAHAALRIGEE'), CheatEncharge);
-  CheatEntries.AddCheat(DecodeTextW('ELXIPOAN'), CheatExpa);
-  CheatEntries.AddCheat(DecodeTextW('MRALDIETISNOCIHSIMNIA'), CheatMadeinchina);
-  CheatEntries.AddCheat(DecodeTextW('ZIANWRASRIUNDAOL'), CheatZawarudo);
-  CheatEntries.AddCheat(DecodeTextW('FLITTONLEISES'), CheatFitness);
-  CheatEntries.AddCheat(DecodeTextW('EIXATIRIANORNAEL'), CheatExtraone);
-  CheatEntries.AddCheat(DecodeTextW('RFOCBIOLTQFNOCROCRE'), CheatRobotforce);
-  CheatEntries.AddCheat(DecodeTextW('RIALNEGREFRESIDUREEKALMA'), CheatRangersdream);
-  CheatEntries.AddCheat(DecodeTextW('MOABKREIDLUCMEPT'), CheatMakedump);
-  CheatEntries.AddCheat(DecodeTextW('SAENEEDO'), CheatSeed);
+  CheatEntries.AddCheat(DecodeTextW('ROEMPOAYIURU'), CheatRepair); // 'REPAIR'
+  CheatEntries.AddCheat(DecodeTextW('KULTIZSOSOASNOMEANXI'), CheatKlissanmax); // 'KLISSANMAX'
+  CheatEntries.AddCheat(DecodeTextW('PVISREAXTMETMOARX9'), CheatPiratemax); // 'PIRATEMAX'
+  CheatEntries.AddCheat(DecodeTextW('WIAGRARUILOIRAMOARX9'), CheatWarriormax); // 'WARRIORMAX'
+  CheatEntries.AddCheat(DecodeTextW('KOLEINSOSUAINOCRABLELS'), CheatKlissancall); // 'KLISSANCALL'
+  CheatEntries.AddCheat(DecodeTextW('PAIORNAMTZEXCOASLOL'), CheatPiratecall); // 'PIRATECALL'
+  CheatEntries.AddCheat(DecodeTextW('RIALNOGDEPROPRONIHNITIS'), CheatRangerpoints); // 'RANGERPOINTS'
+  CheatEntries.AddCheat(DecodeTextW('NIETXATARNARNAK'), CheatNextrank); // 'NEXTRANK'
+  CheatEntries.AddCheat(DecodeTextW('CRONOBLAWSENAIPROSN'), CheatCoolweapon); // 'COOLWEAPON'
+  CheatEntries.AddCheat(DecodeTextW('LLOYWACSONSETIWIEFAIPROLNO'), CheatLowcostweapon); // 'LOWCOSTWEAPON'
+  CheatEntries.AddCheat(DecodeTextW('BRODMEB'), CheatBomb); // 'BOMB'
+  CheatEntries.AddCheat(DecodeTextW('ASRATIENFOARCAT'), CheatArtefact); // 'ARTEFACT'
+  CheatEntries.AddCheat(DecodeTextW('MEOLNIERYE'), CheatMoney); // 'MONEY'
+  CheatEntries.AddCheat(DecodeTextW('DIRIOSPA'), CheatDrop); // 'DROP'
+  CheatEntries.AddCheat(DecodeTextW('PRANCIKCIINEG'), CheatPacking); // 'PACKING'
+  CheatEntries.AddCheat(DecodeTextW('KALKINSOSUANNIINTHEMM'), CheatKlissanitem); // 'KLISSANITEM'
+  CheatEntries.AddCheat(DecodeTextW('WRENARPBOSNASOTERLEINAGATOHE'), CheatWeaponstrength); // 'WEAPONSTRENGTH'
+  CheatEntries.AddCheat(DecodeTextW('TIECN0BEOAMOB'), CheatTenbomb); // 'TENBOMB'
+  CheatEntries.AddCheat(DecodeTextW('RONNDOBNASSAEY'), CheatRndbase); // 'RNDBASE'
+  CheatEntries.AddCheat(DecodeTextW('MOARPESHESCOTROLR2'), CheatMapsector); // 'MAPSECTOR'
+  CheatEntries.AddCheat(DecodeTextW('HAUNGLESMIOMNEELYS'), CheatHugemoney); // 'HUGEMONEY'
+  CheatEntries.AddCheat(DecodeTextW('PLEVLIESNOGASRUEROPTROINSAEN'), CheatPelengsurprise); // 'PELENGSURPRISE'
+  CheatEntries.AddCheat(DecodeTextW('SRUNPRESROHLUALELS'), CheatSuperhull); // 'SUPERHULL'
+  CheatEntries.AddCheat(DecodeTextW('BLOSOMM'), CheatBoom); // 'BOOM'
+  CheatEntries.AddCheat(DecodeTextW('HEAVTIERROASNAGZEOROST'), CheatHaterangers); // 'HATERANGERS'
+  CheatEntries.AddCheat(DecodeTextW('PRIVRVATTIERS'), CheatPirates); // 'PIRATES'
+  CheatEntries.AddCheat(DecodeTextW('GOUMNO'), CheatGun); // 'GUN'
+  CheatEntries.AddCheat(DecodeTextW('VREVRETOIYX'), CheatVertix); // 'VERTIX'
+  CheatEntries.AddCheat(DecodeTextW('DREAVNIYCHER'), CheatDevice); // 'DEVICE'
+  CheatEntries.AddCheat(DecodeTextW('ANROTOS'), CheatArts); // 'ARTS'
+  CheatEntries.AddCheat(DecodeTextW('MAOZDEUNLHE'), CheatModule); // 'MODULE'
+  CheatEntries.AddCheat(DecodeTextW('SXKOINLAL0'), CheatSkill); // 'SKILL'
+  CheatEntries.AddCheat(DecodeTextW('PARZONG3ROALMS'), CheatProgram); // 'PROGRAM'
+  CheatEntries.AddCheat(DecodeTextW('IALALENOERSASH'), CheatIllness); // 'ILLNESS'
+  CheatEntries.AddCheat(DecodeTextW('SATAISMAUILOAONOTS'), CheatStimulant); // 'STIMULANT'
+  CheatEntries.AddCheat(DecodeTextW('INDFENAELE'), CheatIdeal); // 'IDEAL'
+  CheatEntries.AddCheat(DecodeTextW('SIHSONWEMEANPA'), CheatShowmap); // 'SHOWMAP'
+  CheatEntries.AddCheat(DecodeTextW('MIELDOAELI'), CheatMedal); // 'MEDAL'
+  CheatEntries.AddCheat(DecodeTextW('HRONRERGOLR'), CheatHorror); // 'HORROR'
+  CheatEntries.AddCheat(DecodeTextW('NGISGIHATRMOAEREE'), CheatNightmare); // 'NIGHTMARE'
+  CheatEntries.AddCheat(DecodeTextW('HAESLOL'), CheatHell); // 'HELL'
+  CheatEntries.AddCheat(DecodeTextW('TOESCAHENOINC'), CheatTechnic); // 'TECHNIC'
+  CheatEntries.AddCheat(DecodeTextW('ACMEMEO'), CheatAmmo); // 'AMMO'
+  CheatEntries.AddCheat(DecodeTextW('GHOID'), CheatGod); // 'GOD'
+  CheatEntries.AddCheat(DecodeTextW('HLOILAEN'), CheatHole); // 'HOLE'
+  CheatEntries.AddCheat(DecodeTextW('WHINNE'), CheatWin); // 'WIN'
+  CheatEntries.AddCheat(DecodeTextW('HOWIETANPEOLN'), CheatHweapon); // 'HWEAPON'
+  CheatEntries.AddCheat(DecodeTextW('USLATOREAMSACRAWN'), CheatUltrascan); // 'ULTRASCAN'
+  CheatEntries.AddCheat(DecodeTextW('TREANTTIME'), CheatTentm); // 'TENTM'
+  CheatEntries.AddCheat(DecodeTextW('ECNDCAHAALRIGEE'), CheatEncharge); // 'ENCHARGE'
+  CheatEntries.AddCheat(DecodeTextW('ELXIPOAN'), CheatExpa); // 'EXPA'
+  CheatEntries.AddCheat(DecodeTextW('MRALDIETISNOCIHSIMNIA'), CheatMadeinchina); // 'MADEINCHINA'
+  CheatEntries.AddCheat(DecodeTextW('ZIANWRASRIUNDAOL'), CheatZawarudo); // 'ZAWARUDO'
+  CheatEntries.AddCheat(DecodeTextW('FLITTONLEISES'), CheatFitness); // 'FITNESS'
+  CheatEntries.AddCheat(DecodeTextW('EIXATIRIANORNAEL'), CheatExtraone); // 'EXTRAONE'
+  CheatEntries.AddCheat(DecodeTextW('RFOCBIOLTQFNOCROCRE'), CheatRobotforce); // 'ROBOTFORCE'
+  CheatEntries.AddCheat(DecodeTextW('RIALNEGREFRESIDUREEKALMA'), CheatRangersdream); // 'RANGERSDREAM'
+  CheatEntries.AddCheat(DecodeTextW('MOABKREIDLUCMEPT'), CheatMakedump); // 'MAKEDUMP'
+  CheatEntries.AddCheat(DecodeTextW('SAENEEDO'), CheatSeed); // 'SEED'
   CheatEntries.AddCheat('SUDO', CheatSudo);
   CheatEntries.AddCheat('EVENTS', CheatEvents);
-  CheatEntries.AddCheat(DecodeTextW('IONOFROSS'), CheatInfos);
+  CheatEntries.AddCheat(DecodeTextW('IONOFROSS'), CheatInfos); // 'INFOS'
 // Compiler unit entry $50CAC8 calls the virtual destructor directly.
 finalization
   CheatEntries.Destroy;
