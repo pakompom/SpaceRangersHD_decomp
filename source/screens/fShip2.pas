@@ -2081,7 +2081,7 @@ begin
     end;
     with GetByName('Art' + IntToStr(Slot) + 'z') as TZoneGI do
     begin
-      SetActive({$B+}(Highlight or (Artefact <> nil)){$B-});
+      SetActive((Artefact <> nil) or Highlight);
       if Highlight or (SelectedHoldKind = phkEmpty) then ZoneMouseDownCallback := ArtefactSlotMouseDown
       else if (Artefact <> nil) and (SelectedHoldKind = phkEquipment) then ZoneMouseDownCallback := UseOnArtefactSlot
       else if (Artefact <> nil) and (SelectedHoldKind = phkArtefact) and not (Byte(SelectedHoldItem.ItemType) in [Ord(t_Artefact)..Ord(t_ArtefactAntigrav),Ord(t_ArtDefToEnergy)..Ord(t_ArtGiperJump),Ord(t_ArtDefToArms1)..Ord(t_ArtFastRacks)]) then ZoneMouseDownCallback := UseOnArtefactSlot
@@ -3909,7 +3909,7 @@ begin
     else if Key = Ord('F') then
     begin
       CanAfterburn := (PlayerHoldShip.GetSlotCount(sskAfterburner) > 0) and PlayerHoldShip.IsEquipmentUsable(PlayerHoldShip.GetEngine) and PlayerHoldShip.InNormalSpace;
-      if {$B+}(CanAfterburn and not PlayerHoldShip.AfterburnerActive){$B-} then
+      if not PlayerHoldShip.AfterburnerActive and CanAfterburn then
       begin
         SoundManager.PlaySound('Sound.ForsageOn');
         PlayerHoldShip.AfterburnerActive := True;
