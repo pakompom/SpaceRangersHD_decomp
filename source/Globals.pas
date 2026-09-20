@@ -879,16 +879,16 @@ begin
         if Variable.RealVType <> Other.RealVType then
         begin
           WarningText := 'Warning! Mismatching global variables with same name <' + Variable.Name + '> found! Types are ' +
-            ScriptVariableTypeNames[Integer(Variable.RealVType) and $7F] + ' and ' +
-            ScriptVariableTypeNames[Integer(Other.RealVType) and $7F];
+            ScriptVariableTypeNames[Ord(Variable.RealVType)] + ' and ' +
+            ScriptVariableTypeNames[Ord(Other.RealVType)];
           if Variable.RealVType = vkEmpty then
           begin
-            WarningText := WarningText + ', ' + ScriptVariableTypeNames[Integer(Variable.RealVType) and $7F] + ' will be discarded';
+            WarningText := WarningText + ', ' + ScriptVariableTypeNames[Ord(Variable.RealVType)] + ' will be discarded';
             GlobalScriptVariables.Remove(Variable);
           end
           else
           begin
-            WarningText := WarningText + ', ' + ScriptVariableTypeNames[Integer(Other.RealVType) and $7F] + ' will be discarded';
+            WarningText := WarningText + ', ' + ScriptVariableTypeNames[Ord(Other.RealVType)] + ' will be discarded';
             GlobalScriptVariables.Remove(Other);
           end;
           AppendLogLineThreadSafe(AnsiString(WarningText));

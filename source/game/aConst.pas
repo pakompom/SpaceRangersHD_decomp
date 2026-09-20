@@ -141,7 +141,7 @@ procedure InitializeGameplayConfig; // @addr 0x7DC5B0
 function ItemTypeToSlotKind(ItemType: Byte): TShipSlotKind; // @addr 0x7DE6A4
 function ClassifyWeaponDamageFlags(Flags: Dword): TWeaponDamageClass; // @addr $7E702C Missile bit takes precedence over splinter; otherwise energy.
 function ShipToHullType(Ship: TObject): Byte; // @addr $7DE530 Class/subtype mapping used by hull generation and legacy saves; only TObject RTTI operations precede explicit subclass casts.
-function RaceToOwner(RaceId: Byte): Byte; // @addr 0x7DD184 @note "Identity conversion for Coalition races 0..4; raises for all other values."
+function RaceToOwner(RaceId: Byte): TOwnerIndex; // @addr 0x7DD184 @note "Identity conversion for Coalition races 0..4; raises for all other values."
 function OwnerFromInternalName(const Name: WideString): Byte; // @addr $7DD974
 
 function OwnerToRace(OwnerId: Byte): Byte; // @addr 0x7DD0F8 @note "Identity conversion for Coalition owners 0..4; raises for all other values."
@@ -1634,7 +1634,7 @@ end;
 { @end $7DD0F8 }
 
 { @routine $7DD184 RaceToOwner }
-function RaceToOwner(RaceId: Byte): Byte;
+function RaceToOwner(RaceId: Byte): TOwnerIndex;
 begin
   case RaceId of
     Ord(oiMaloc): Result := Byte(oiMaloc);

@@ -235,7 +235,7 @@ begin
       Stage := 24;
       Ships[Index].RepairPoints := -1;
       Ships[Index].DamageText := WrapTextInColor('???', '');
-      Ships[Index].DefenseText := IntToStr(Integer(Ship.GetDefensePercent) and $7F) + '%';
+      Ships[Index].DefenseText := IntToStr(Ship.GetDefensePercent) + '%';
       if GetPlayer.CanResolveObjectWithScanner(Ship) or (GetPlayer = Ship) or
         (GetPlayer = Ship.PartnerShip) or (Ship.TypeId = stTranclucator) then
       begin
@@ -264,7 +264,7 @@ begin
       Stage := 27;
       if (GetPlayer <> Ship) and not (Ship is TRuins) and (GetPlayer.CountActiveArtefacts(Ord(t_ArtefactAnalyzer)) > 0) and
         GetPlayer.CanResolveObjectWithScanner(Ship) then
-        Ships[Index].WinChance := Integer(GetPlayer.GetWinChancePercent(Ship)) and $7F
+        Ships[Index].WinChance := GetPlayer.GetWinChancePercent(Ship)
       else Ships[Index].WinChance := -1;
       Stage := 28;
       Ships[Index].PortraitImage := Ship.GetShipPortraitImagePath;

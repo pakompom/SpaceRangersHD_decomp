@@ -37,7 +37,7 @@ type
     procedure ClearObjectReferences; override; // @addr $5CE674 @slot 0x0C
     function GetGreetingShipCategory: Byte; override; // @addr $5CED30 @slot 0x30
     function GetHomeStar: TStar; override; // @addr $5CED58 @slot 0x34
-    function GetStrengthScaledPirateStatus: Byte; override; // @addr $5CED70 @slot 0x3C
+    function GetStrengthScaledPirateStatus: TPercent; override; // @addr $5CED70 @slot 0x3C
     procedure RepairBrokenEquipmentAtLocation; override; // @addr $5CEE24 @slot 0x60
     procedure BuildReachablePlanetQueue; override; // @addr $5CF84C @slot 0x64
     procedure SelectEnemyShipInStar; override; // @addr $5D024C @slot 0x6C
@@ -462,7 +462,7 @@ end;
 { @end $5CED58 }
 
 { @routine $5CED70 TTranclucator_GetStrengthScaledPirateStatus }
-function TTranclucator.GetStrengthScaledPirateStatus: Byte;
+function TTranclucator.GetStrengthScaledPirateStatus: TPercent;
 begin
   Result := 100;
 end;
@@ -1121,7 +1121,7 @@ begin
     bonSpeed: Result := Value;
     bonJump: Result := 0;
     bonRadar: Result := 0;
-    bonScan: Result := Value * 20 * (Integer(CountWeaponsByDamageFlags(ScannableDamageFlags)) and $7F);
+    bonScan: Result := Value * 20 * CountWeaponsByDamageFlags(ScannableDamageFlags);
     bonDroid: Result := Value * 10 / Math.Max(0.1, GetHull.GetFragilityFactor([]));
     bonHook: Result := (Value * 0.1 + Math.Min(Value, HullBaseSize * EquipmentSizeFactors[5])) * 1.0;
     bonDef: Result := Value * 5 * 100 / Math.Max(5, 100 - Value) * 45 / Math.Max(5, 45 - Value);
@@ -1135,14 +1135,14 @@ begin
       if (GetSlotCount(sskRadar) = 0) and (Value > 0) then
         Result := TranclucatorSlotBonusWeights[Ord(BonusKind)] * 0.3
       else if (GetRadar <> nil) and (Value < 0) then
-        Result := -TranclucatorSlotBonusWeights[Ord(BonusKind)] - TranclucatorSlotBonusWeights[18] * (Integer(CountMissileWeapons) and $7F)
+        Result := -TranclucatorSlotBonusWeights[Ord(BonusKind)] - TranclucatorSlotBonusWeights[18] * CountMissileWeapons
       else if (GetSlotCount(sskRadar) = 1) and (Value < 0) then
         Result := TranclucatorSlotBonusWeights[Ord(BonusKind)] * -0.3;
     bonSlotScaner:
       if (GetSlotCount(sskScanner) = 0) and (Value > 0) then
         Result := TranclucatorSlotBonusWeights[Ord(BonusKind)] * 0.3
       else if (GetScanner <> nil) and (Value < 0) then
-        Result := -TranclucatorSlotBonusWeights[Ord(BonusKind)] - (Integer(CountWeaponsByDamageFlags(ScannableDamageFlags)) and $7F) * 0.1 * TranclucatorSlotBonusWeights[18]
+        Result := -TranclucatorSlotBonusWeights[Ord(BonusKind)] - CountWeaponsByDamageFlags(ScannableDamageFlags) * 0.1 * TranclucatorSlotBonusWeights[18]
       else if (GetSlotCount(sskScanner) = 1) and (Value < 0) then
         Result := TranclucatorSlotBonusWeights[Ord(BonusKind)] * -0.3;
     bonSlotDroid:
@@ -1172,8 +1172,8 @@ begin
           Result := Math.Min(Value, 5 - GetSlotCount(sskWeapon)) * TranclucatorSlotBonusWeights[Ord(BonusKind)];
         if Value < 0 then
           Result := Math.Max(Value, -GetSlotCount(sskWeapon)) * TranclucatorSlotBonusWeights[Ord(BonusKind)];
-        if (Integer(CountEquippedWeapons) and $7F) > Math.Max(Value + GetSlotCount(sskWeapon), 1) then
-          Result := Result - ((Integer(CountEquippedWeapons) and $7F) - Math.Max(1, Value + GetSlotCount(sskWeapon))) * (TranclucatorSlotBonusWeights[Ord(BonusKind)] * 0.6);
+        if CountEquippedWeapons > Math.Max(Value + GetSlotCount(sskWeapon), 1) then
+          Result := Result - (CountEquippedWeapons - Math.Max(1, Value + GetSlotCount(sskWeapon))) * (TranclucatorSlotBonusWeights[Ord(BonusKind)] * 0.6);
       end;
     bonSlotArt:
       begin
@@ -1189,13 +1189,13 @@ begin
     bonSkill1..bonSkill6:
       begin
         if Value > 0 then
-          Result := Math.Min(6 - (Integer(GetEffectiveSkillLevel(TPilotSkill(EquipmentBonusSkills[Ord(BonusKind) - 22]))) and $7F), Value) * TranclucatorSkillBonusWeights[Ord(BonusKind)];
-        if (Value > 0) and (Value + (Integer(GetEffectiveSkillLevel(TPilotSkill(EquipmentBonusSkills[Ord(BonusKind) - 22]))) and $7F) > 6) then
-          Result := (Value + (Integer(GetEffectiveSkillLevel(TPilotSkill(EquipmentBonusSkills[Ord(BonusKind) - 22]))) and $7F) - 6) * (TranclucatorSkillBonusWeights[Ord(BonusKind)] * 0.05) + Result;
+          Result := Math.Min(6 - GetEffectiveSkillLevel(TPilotSkill(EquipmentBonusSkills[Ord(BonusKind) - 22])), Value) * TranclucatorSkillBonusWeights[Ord(BonusKind)];
+        if (Value > 0) and (Value + GetEffectiveSkillLevel(TPilotSkill(EquipmentBonusSkills[Ord(BonusKind) - 22])) > 6) then
+          Result := (Value + GetEffectiveSkillLevel(TPilotSkill(EquipmentBonusSkills[Ord(BonusKind) - 22])) - 6) * (TranclucatorSkillBonusWeights[Ord(BonusKind)] * 0.05) + Result;
         if Value < 0 then
-          Result := Math.Min(Integer(GetEffectiveSkillLevel(TPilotSkill(EquipmentBonusSkills[Ord(BonusKind) - 22]))) and $7F, -Value) * -TranclucatorSkillBonusWeights[Ord(BonusKind)];
-        if (Value < 0) and (Value + (Integer(GetEffectiveSkillLevel(TPilotSkill(EquipmentBonusSkills[Ord(BonusKind) - 22]))) and $7F) < 0) then
-          Result := (Value + (Integer(GetEffectiveSkillLevel(TPilotSkill(EquipmentBonusSkills[Ord(BonusKind) - 22]))) and $7F)) * (TranclucatorSkillBonusWeights[Ord(BonusKind)] * 0.03) + Result;
+          Result := Math.Min(GetEffectiveSkillLevel(TPilotSkill(EquipmentBonusSkills[Ord(BonusKind) - 22])), -Value) * -TranclucatorSkillBonusWeights[Ord(BonusKind)];
+        if (Value < 0) and (Value + GetEffectiveSkillLevel(TPilotSkill(EquipmentBonusSkills[Ord(BonusKind) - 22])) < 0) then
+          Result := (Value + GetEffectiveSkillLevel(TPilotSkill(EquipmentBonusSkills[Ord(BonusKind) - 22]))) * (TranclucatorSkillBonusWeights[Ord(BonusKind)] * 0.03) + Result;
       end;
   else
     Result := 0;

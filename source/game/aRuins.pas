@@ -44,7 +44,7 @@ type
     function EvaluateWeaponDamage(Weapon: TWeapon; IncludeAdditiveBonuses: Boolean; BaseDamage: Single): Single; override; // @addr $6D0E94 @slot $58 @ida "float __userpurge $name@<st0>(TRuins *Self@<eax>, TWeapon *Weapon@<edx>, bool IncludeAdditiveBonuses@<cl>, float BaseDamage@<^0>);"
     function GetGreetingShipCategory: Byte; override; // @addr $6CD314 @slot 0x30
     function GetHomeStar: TStar; override; // @addr $6CD33C @slot 0x34
-    function GetStrengthScaledPirateStatus: Byte; override; // @addr $6CD354 @slot 0x3C
+    function GetStrengthScaledPirateStatus: TPercent; override; // @addr $6CD354 @slot 0x3C
     function AcceptsRansomDemandFrom(Ship: TShip): Boolean; override; // @addr $6D02D4 @slot 0x88
     function TrustsAttackRequester(Ship: TShip): Boolean; override; // @addr $6D02EC @slot 0x8C
     function EvaluateAllyRelationAndStrength(Ship: TShip): Boolean; override; // @addr $6D0304 @slot 0x90
@@ -317,7 +317,7 @@ begin
   for I := 0 to Galaxy.Rangers.Count - 1 do
   begin
     Ranger := TRanger(Galaxy.Rangers[I]);
-    RangerRelations.Add(Pointer(OwnerRelations[Integer(RaceToOwner(PilotRace)) and $7F, Integer(RaceToOwner(Ranger.PilotRace)) and $7F]));
+    RangerRelations.Add(Pointer(OwnerRelations[RaceToOwner(PilotRace), RaceToOwner(Ranger.PilotRace)]));
   end;
   GenerateCombatSkills;
   RefreshCurrentStanding;
@@ -835,7 +835,7 @@ end;
 { @end $6CD33C }
 
 { @routine $6CD354 TRuins_GetStrengthScaledPirateStatus }
-function TRuins.GetStrengthScaledPirateStatus: Byte;
+function TRuins.GetStrengthScaledPirateStatus: TPercent;
 begin
   Result := 0;
 end;
@@ -1592,7 +1592,7 @@ begin
   Index := Galaxy.Rangers.IndexOf(TObject(Ranger) as TRanger);
   Relation := Byte(RangerRelations[Index]);
   if (Amount > 0) and (TShip(Ranger).GetEffectiveSkillLevel(psCharisma) > 0) then
-    Inc(Amount, Round((Integer(TShip(Ranger).GetEffectiveSkillLevel(psCharisma)) and $7F) * Amount * 0.2));
+    Inc(Amount, Round((TShip(Ranger).GetEffectiveSkillLevel(psCharisma)) * Amount * 0.2));
   NewRelation := Relation + Amount;
   if NewRelation < 0 then Relation := 0
   else if NewRelation > 100 then Relation := 100
@@ -1838,7 +1838,7 @@ begin
   case BonusKind of
     bonHull: Result := Value * 300;
     bonRadar: Result := ShortInt(GetRadar = nil);
-    bonScan: Result := Value * 20 * (Integer(CountWeaponsByDamageFlags(ScannerFlags)) and $7F);
+    bonScan: Result := Value * 20 * CountWeaponsByDamageFlags(ScannerFlags);
     bonDroid: Result := Value * 20 / Max(0.1, GetHull.GetFragilityFactor(NoFlags));
     bonDef: Result := Value * 8 * 100 / Max(5, 100 - Value) * 45 / Max(5, 45 - Value);
     bonWEnergy: Result := Value * 10;
@@ -1848,13 +1848,13 @@ begin
     bonSkill1..bonSkill6:
       begin
         if Value > 0 then
-          Result := Min(6 - (Integer(GetEffectiveSkillLevel(TPilotSkill(EquipmentBonusSkills[Ord(BonusKind) - 22]))) and $7F), Value) * StationSkillBonusWeights[Ord(BonusKind)];
-        if (Value > 0) and (Value + (Integer(GetEffectiveSkillLevel(TPilotSkill(EquipmentBonusSkills[Ord(BonusKind) - 22]))) and $7F) > 6) then
-          Result := Result + (StationSkillBonusWeights[Ord(BonusKind)] * 0.05) * (Value + (Integer(GetEffectiveSkillLevel(TPilotSkill(EquipmentBonusSkills[Ord(BonusKind) - 22]))) and $7F) - 6);
+          Result := Min(6 - GetEffectiveSkillLevel(TPilotSkill(EquipmentBonusSkills[Ord(BonusKind) - 22])), Value) * StationSkillBonusWeights[Ord(BonusKind)];
+        if (Value > 0) and (Value + GetEffectiveSkillLevel(TPilotSkill(EquipmentBonusSkills[Ord(BonusKind) - 22])) > 6) then
+          Result := Result + (StationSkillBonusWeights[Ord(BonusKind)] * 0.05) * (Value + GetEffectiveSkillLevel(TPilotSkill(EquipmentBonusSkills[Ord(BonusKind) - 22])) - 6);
         if Value < 0 then
-          Result := Min(Integer(GetEffectiveSkillLevel(TPilotSkill(EquipmentBonusSkills[Ord(BonusKind) - 22]))) and $7F, -Value) * -StationSkillBonusWeights[Ord(BonusKind)];
-        if (Value < 0) and (Value + (Integer(GetEffectiveSkillLevel(TPilotSkill(EquipmentBonusSkills[Ord(BonusKind) - 22]))) and $7F) < 0) then
-          Result := Result + (StationSkillBonusWeights[Ord(BonusKind)] * 0.03) * (Value + (Integer(GetEffectiveSkillLevel(TPilotSkill(EquipmentBonusSkills[Ord(BonusKind) - 22]))) and $7F));
+          Result := Min(GetEffectiveSkillLevel(TPilotSkill(EquipmentBonusSkills[Ord(BonusKind) - 22])), -Value) * -StationSkillBonusWeights[Ord(BonusKind)];
+        if (Value < 0) and (Value + GetEffectiveSkillLevel(TPilotSkill(EquipmentBonusSkills[Ord(BonusKind) - 22])) < 0) then
+          Result := Result + (StationSkillBonusWeights[Ord(BonusKind)] * 0.03) * (Value + GetEffectiveSkillLevel(TPilotSkill(EquipmentBonusSkills[Ord(BonusKind) - 22])));
       end;
   end;
   if TypeId = Byte(rstDominion) then
@@ -1879,11 +1879,11 @@ var
 begin
   Flags := Weapon.GetDamageFlags;
   if (Flags * ScannerFlags <> []) and (GetScanner <> nil) and (GetRadar <> nil) then
-    ScannerFactor := RemapClamped(GetScannerPower - (Integer(DefenseDamageFactorToPercent(GetGeneratedDefenseDamageFactor(Galaxy.TechLevel))) and $7F) + 1, -5, 10, 0.1, 2)
+    ScannerFactor := RemapClamped(GetScannerPower - DefenseDamageFactorToPercent(GetGeneratedDefenseDamageFactor(Galaxy.TechLevel)) + 1, -5, 10, 0.1, 2)
   else ScannerFactor := 0;
   Result := BaseDamage * GetWeaponArtefactDamageFactor(Weapon);
   if dkDrain in Flags then Result := Result * 1.5;
-  if dkShock in Flags then Result := Result * (1.05 + (Integer(CountWeaponsByDamageFlags(ShockFlags)) and $7F) * 0.05);
+  if dkShock in Flags then Result := Result * (1.05 + CountWeaponsByDamageFlags(ShockFlags) * 0.05);
   if dkAcid in Flags then Result := Result * 1.05;
   StatusFactor := 1;
   if dkScanBonus in Flags then StatusFactor := StatusFactor * (1 + ScannerFactor * 0.1);
@@ -1897,7 +1897,7 @@ begin
     if dkAcid in Flags then
     begin
       ShotTotal := 1;
-      for I := 1 to Integer(CountEquippedWeapons) and $7F do Inc(ShotTotal, Weapons[I].GetShotCount);
+      for I := 1 to CountEquippedWeapons do Inc(ShotTotal, Weapons[I].GetShotCount);
       Result := Result + ShotTotal * 2;
     end;
   end;
@@ -1912,7 +1912,7 @@ begin
   end;
   Result := Result * Weapon.GetAttackCount;
   HasOtherWeapon := False;
-  for I := 1 to Integer(CountEquippedWeapons) and $7F do
+  for I := 1 to CountEquippedWeapons do
     if not (Weapons[I].GetWeaponInfo.ShotType in [wstAreaDamage..wstRocket]) then HasOtherWeapon := True;
   if not HasOtherWeapon and (Weapon.GetWeaponInfo.ShotType in [wstAreaDamage..wstRocket]) then Result := Result * 0.5;
 end;

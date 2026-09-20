@@ -742,11 +742,11 @@ begin
       end;
       Skill := TPilotSkill(ExtractDigitsToIntW(Sender.ControlName));
       Title := WrapTextInColor(LocalizedText('Skills.' + SkillConfigNames[Ord(Skill)] + '.Name'), InfoNameColorTag);
-      Text := FormatText1(LocalizedText('Skills.' + SkillConfigNames[Ord(Skill)] + '.Text'), '<color=255,240,100>', '<SkillValue>', IntToStr(PilotSkillEffects[Integer(ShipToInspect.GetEffectiveSkillLevel(Skill)) and $7F, Ord(Skill)]));
-      ReplaceTextToken(Text, '<SkillLevel>', IntToStr(Integer(ShipToInspect.GetEffectiveSkillLevel(Skill)) and $7F), '<color=255,240,100>');
+      Text := FormatText1(LocalizedText('Skills.' + SkillConfigNames[Ord(Skill)] + '.Text'), '<color=255,240,100>', '<SkillValue>', IntToStr(PilotSkillEffects[ShipToInspect.GetEffectiveSkillLevel(Skill), Ord(Skill)]));
+      ReplaceTextToken(Text, '<SkillLevel>', IntToStr(ShipToInspect.GetEffectiveSkillLevel(Skill)), '<color=255,240,100>');
       if Skill = psTechnical then ReplaceTextToken(Text, '<N>', IntToStr(ShipToInspect.GetSatelliteLimit), '<color=255,240,100>');
-      if Skill = psTrading then ReplaceTextToken(Text, '<SkillValue2>', IntToStr(TradingSkillSalePercent[Integer(ShipToInspect.GetEffectiveSkillLevel(Skill)) and $7F]), '<color=255,240,100>');
-      if Skill = psLeadership then ReplaceTextToken(Text, '<SkillValue2>', IntToStr(LeadershipExperiencePercent[Integer(ShipToInspect.GetEffectiveSkillLevel(Skill)) and $7F]), '<color=255,240,100>');
+      if Skill = psTrading then ReplaceTextToken(Text, '<SkillValue2>', IntToStr(TradingSkillSalePercent[ShipToInspect.GetEffectiveSkillLevel(Skill)]), '<color=255,240,100>');
+      if Skill = psLeadership then ReplaceTextToken(Text, '<SkillValue2>', IntToStr(LeadershipExperiencePercent[ShipToInspect.GetEffectiveSkillLevel(Skill)]), '<color=255,240,100>');
       if ShipToInspect.GetBaseSkillLevel(Skill) < 6 then Text := Text + #13#10 + #13#10 + FormatText1(LocalizedText('Skills.PointForNextLevel'), '<color=255,240,100>', '<PointForNextLevel>', IntToStr(SkillTrainingCosts[ShipToInspect.BaseSkills[Ord(Skill)] + 1, Ord(Skill)]));
     end;
     (GetByName('RankName') as TLabelGI).SetText(Title);
@@ -871,7 +871,7 @@ begin
   try
     ShipToInspect.RefreshAssignedItemSlots;
     Stage := 1;
-    Text := IntToStr(Integer(ShipToInspect.GetDefensePercent) and $7F) + '%';
+    Text := IntToStr(ShipToInspect.GetDefensePercent) + '%';
     Text := Text + ' + ' + WrapTextInColor(IntToStr(ShipToInspect.GetArmor), '');
     (GetByName('IDef') as TLabelGI).SetText(Text);
     Stage := 2;
@@ -1494,12 +1494,12 @@ var
   end;
 begin
   with FreeSkillPointsLabel do SetText(IntToStr(ShipToInspect.FreeExperience));
-  UpdateOne(0, ShipToInspect.GetBaseSkillLevel(psAccuracy), Integer(ShipToInspect.GetEffectiveSkillLevel(psAccuracy)) and $7F);
-  UpdateOne(1, ShipToInspect.GetBaseSkillLevel(psManeuverability), Integer(ShipToInspect.GetEffectiveSkillLevel(psManeuverability)) and $7F);
-  UpdateOne(2, ShipToInspect.GetBaseSkillLevel(psTechnical), Integer(ShipToInspect.GetEffectiveSkillLevel(psTechnical)) and $7F);
-  UpdateOne(3, ShipToInspect.GetBaseSkillLevel(psTrading), Integer(ShipToInspect.GetEffectiveSkillLevel(psTrading)) and $7F);
-  UpdateOne(4, ShipToInspect.GetBaseSkillLevel(psCharisma), Integer(ShipToInspect.GetEffectiveSkillLevel(psCharisma)) and $7F);
-  UpdateOne(5, ShipToInspect.GetBaseSkillLevel(psLeadership), Integer(ShipToInspect.GetEffectiveSkillLevel(psLeadership)) and $7F);
+  UpdateOne(0, ShipToInspect.GetBaseSkillLevel(psAccuracy), ShipToInspect.GetEffectiveSkillLevel(psAccuracy));
+  UpdateOne(1, ShipToInspect.GetBaseSkillLevel(psManeuverability), ShipToInspect.GetEffectiveSkillLevel(psManeuverability));
+  UpdateOne(2, ShipToInspect.GetBaseSkillLevel(psTechnical), ShipToInspect.GetEffectiveSkillLevel(psTechnical));
+  UpdateOne(3, ShipToInspect.GetBaseSkillLevel(psTrading), ShipToInspect.GetEffectiveSkillLevel(psTrading));
+  UpdateOne(4, ShipToInspect.GetBaseSkillLevel(psCharisma), ShipToInspect.GetEffectiveSkillLevel(psCharisma));
+  UpdateOne(5, ShipToInspect.GetBaseSkillLevel(psLeadership), ShipToInspect.GetEffectiveSkillLevel(psLeadership));
   for I := 0 to 5 do SkillButtons[I].SetActive(False);
 end;
 { @end $523924 }

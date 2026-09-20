@@ -719,7 +719,7 @@ function CalculateGeneratedRepairRobotCost(Weight: Cardinal; Level, Owner: Byte)
 function CalculateGeneratedCargoHookCost(Weight: Cardinal; Level, Owner: Byte): Integer; // @addr 0x73F900
 function CalculateGeneratedDefGeneratorCost(Weight: Cardinal; Level, Owner: Byte): Integer; // @addr 0x7410D4
 function GetGeneratedDefenseDamageFactor(Level: Byte): Double; // @addr 0x74104C
-function DefenseDamageFactorToPercent(Factor: Double): Byte; // @addr 0x741070 @ida "unsigned __int8 __userpurge $name@<al>(double Factor@<^0>);"
+function DefenseDamageFactorToPercent(Factor: Double): TPercent; // @addr 0x741070 @ida "unsigned __int8 __userpurge $name@<al>(double Factor@<^0>);"
 function DefensePercentToDamageFactor(Percent: Integer): Double; // @addr 0x74109C
 
 function GetMicroModuleInfoText(ModuleIndex: Integer; ColorTag: WideString): WideString; // @addr 0x74A5E4 @ida "void __usercall $name(int ModuleIndex@<eax>, unsigned __int16 *ColorTag@<edx>, unsigned __int16 **Result@<ecx>);" @note "ModuleIndex is zero-based. Expands all bonus tokens in the configured description."
@@ -3017,7 +3017,7 @@ end;
 { @routine $73D880 TScaner_CalculateGeneratedScanPower }
 function TScaner.CalculateGeneratedScanPower: Integer;
 begin
-  Result := (Integer(DefenseDamageFactorToPercent(GetGeneratedDefenseDamageFactor(TechLevel))) and $7F) + 1;
+  Result := DefenseDamageFactorToPercent(GetGeneratedDefenseDamageFactor(TechLevel)) + 1;
 end;
 { @end $73D880 }
 
@@ -3567,7 +3567,7 @@ end;
 { @end $74104C }
 
 { @routine $741070 DefenseDamageFactorToPercent }
-function DefenseDamageFactorToPercent(Factor: Double): Byte;
+function DefenseDamageFactorToPercent(Factor: Double): TPercent;
 begin
   Result := Round((1 - Factor) * 100);
 end;

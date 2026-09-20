@@ -1433,7 +1433,7 @@ begin
     end;
     if GetPlayer.CurrentPlanet.OwnerId = Byte(oiPirate) then
     begin
-      if not GetPlayer.CurrentPlanet.IsMainPiratePlanet then MusicManager.PlayCategory('Nation.' + OwnerInfo[Integer(RaceToOwner(GetPlayer.CurrentPlanet.RaceId)) and $7F].InternalName + 'Pirate')
+      if not GetPlayer.CurrentPlanet.IsMainPiratePlanet then MusicManager.PlayCategory('Nation.' + OwnerInfo[RaceToOwner(GetPlayer.CurrentPlanet.RaceId)].InternalName + 'Pirate')
       else MusicManager.PlayCategory('Nation.PiratePlanetMain');
     end
     else MusicManager.PlayCategory('Nation.' + OwnerInfo[GetPlayer.CurrentPlanet.OwnerId].InternalName);
@@ -3163,7 +3163,7 @@ var
 begin
   Text := '';
   for I := Low(PirateProgramQuoteCosts) to High(PirateProgramQuoteCosts) do PirateProgramQuoteCosts[I] := 0;
-  Discount := Integer(GetPlayer.GetPirateServiceDiscount) and $7F;
+  Discount := GetPlayer.GetPirateServiceDiscount;
   Text := LocalizedColorText('FormRuins.PB.Program.PBStart');
   Text := FormatText1(Text, '<color=255,240,100>', '<Percent>', WrapTextInColor(IntToStr(Discount), '<color=255,240,100>'));
   Text := FormatText1(Text, '<color=255,240,100>', '<NodTrum>', WrapTextInColor(IntToStr(GetPlayer.GetAvailableNodeCount(nil)), '<color=255,240,100>'));
@@ -4206,7 +4206,7 @@ begin
         AddChoice('- ' + LocalizedColorText('FormRuins.SB.Scn.Section' + DominatorSeriesNames[Ord(Series)]), Ord(Series) + 1, SelectScienceBaseResearchSection)
       else AddChoice('- ' + LocalizedColorText('FormRuins.SB.Scn.Section' + DominatorSeriesNames[Ord(Series)]), 0, ScriptDialogBlockCallback);
   ReplaceTextToken(Info, '<Count>', IntToStr(Galaxy.DominatorResearch[Ord(Series)].Material), '<color=255,240,100>');
-  ReplaceTextToken(Info, '<Speed>', IntToStr(Integer(Galaxy.GetDominatorResearchEfficiency(Series)) and $7F), '<color=255,240,100>');
+  ReplaceTextToken(Info, '<Speed>', IntToStr(Galaxy.GetDominatorResearchEfficiency(Series)), '<color=255,240,100>');
   ReplaceTextToken(Info, '<Day>', IntToStr(Round(Max(1.0, (100 - Galaxy.DominatorResearch[Ord(Series)].Progress) / Galaxy.GetDominatorResearchRate(Series)))), '<color=255,240,100>');
     end
     else Info := LocalizedColorText('FormRuins.SB.Scn.SBSectionInfoEnd');
@@ -4593,7 +4593,7 @@ begin
   BusinessQuoteLargeAmount := Min(10000000, Max(1000, GetPlayer.Money));
   BusinessQuoteMediumAmount := Min(10000000, Max(1000, GetPlayer.Money div 2));
   BusinessQuoteSmallAmount := Min(10000000, Max(1000, GetPlayer.Money div 4));
-  BusinessDepositQuoteInterestRate := RoundTo(RemapClamped(Integer(Galaxy.GetFactionControlPercent(Ord(sfDominators))) and $7F, 5, 95, 7, 1), -1);
+  BusinessDepositQuoteInterestRate := RoundTo(RemapClamped(Galaxy.GetFactionControlPercent(Ord(sfDominators)), 5, 95, 7, 1), -1);
   DialogText := LocalizedColorText('FormRuins.BK.Deposit.BK');
   ReplaceTextToken(DialogText, '<BK>', GetPlayer.DockedTo.Name, '<color=255,240,100>');
   ReplaceTextToken(DialogText, '<Percent>', FloatToStrF(BusinessDepositQuoteInterestRate, ffFixed, 1, 1), '<color=255,240,100>');

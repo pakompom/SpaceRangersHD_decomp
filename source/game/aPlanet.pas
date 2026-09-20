@@ -165,7 +165,7 @@ type
     procedure SaveToBlock(Block: TBlockParEC); // @addr 0x770CA8
     procedure LoadFromBuffer(Buffer: TBufEC; Galaxy: TGalaxy); // @addr 0x7702C4
     function RelationToRanger(RangerIndex: Integer): Integer; // @addr 0x77C9C4
-    function RelationToShip(Ship: Pointer): Byte; // @addr 0x77CFF4
+    function RelationToShip(Ship: Pointer): TPercent; // @addr 0x77CFF4
     function GetRelationLevelToShip(Ship: Pointer): TRelationLevel; // @addr 0x77D484
     function GetRelationLevelTextToShip(Ship: Pointer): WideString; // @addr 0x77D51C @ida "void __usercall $name(TPlanet *Self@<eax>, TShip *Ship@<edx>, unsigned __int16 **Result@<ecx>);"
     procedure SetRelationLevelToRanger(Ranger: Pointer; Level: TRelationLevel); // @addr 0x77CD00
@@ -1332,8 +1332,8 @@ begin
   for I := 0 to aGalaxy.Galaxy.Rangers.Count - 1 do
   begin
     Ranger := TRanger(aGalaxy.Galaxy.Rangers[I]);
-    RangerRelations.Add(Pointer(OwnerRelations[Integer(RaceToOwner(RaceId)) and $7F,
-      Integer(RaceToOwner(Ranger.PilotRace)) and $7F]));
+    RangerRelations.Add(Pointer(OwnerRelations[RaceToOwner(RaceId),
+      RaceToOwner(Ranger.PilotRace)]));
   end;
   HasPlayerLanded := False;
   UpdateOwnerFlags;
@@ -1620,7 +1620,7 @@ var
 begin
   Block.AddParam(DecodeTextW('Pul4awnre2taNgarmEes'), Name); // Decoded: 'PlanetName'
   Block.AddParam(DecodeTextW('OpwRn3ewr'), aConst.OwnerInfo[OwnerId].InternalName); // Decoded: 'Owner'
-  Block.AddParam(DecodeTextW('Rja6cEe'), aConst.OwnerInfo[Integer(RaceToOwner(RaceId)) and 127].InternalName); // Decoded: 'Race'
+  Block.AddParam(DecodeTextW('Rja6cEe'), aConst.OwnerInfo[RaceToOwner(RaceId)].InternalName); // Decoded: 'Race'
   Block.AddParam(DecodeTextW('Elc0o5neowmWyq'), aConst.PlanetEconomyInfo[Ord(Economy)].InternalName); // Decoded: 'Economy'
   Block.AddParam(DecodeTextW('GLotvUecrBmnemn7t'), aConst.PlanetGovernmentMarket[Ord(Government)].InternalName); // Decoded: 'Goverment'
   Block.AddParam(DecodeTextW('ItSaiNzze'), SysUtils.IntToStr(Radius)); // Decoded: 'ISize'
@@ -2184,7 +2184,7 @@ begin
       begin
         if IsMainPiratePlanet and (aGalaxy.Galaxy.PirateWinType <> 3) then
         begin
-          if (aGalaxy.Galaxy.GetFactionControlPercent(Ord(sfPirates)) > Cardinal((Integer(aGalaxy.Galaxy.GetFactionControlPercent(Ord(sfCoalition))) and $7F) * 2)) and
+          if (aGalaxy.Galaxy.GetFactionControlPercent(Ord(sfPirates)) > Cardinal(aGalaxy.Galaxy.GetFactionControlPercent(Ord(sfCoalition)) * 2)) and
              (aGalaxy.Galaxy.GetFactionControlPercent(Ord(sfPirates)) > 10) and (aGalaxy.Galaxy.CoalitionDefeatedTurn = 0) then
             for I := 0 to aGalaxy.Galaxy.Rangers.Count - 1 do
             begin
@@ -2192,7 +2192,7 @@ begin
               if not TRanger(Ship).ExcludedFromRating and (Ship.OwnerId <> Byte(oiPirate)) and not Ship.IsInPrison then
                 ChangeRelationToRanger(Ship, -1);
             end;
-          if (aGalaxy.Galaxy.GetFactionControlPercent(Ord(sfPirates)) > Cardinal((Integer(aGalaxy.Galaxy.GetFactionControlPercent(Ord(sfCoalition))) and $7F) * 4)) and
+          if (aGalaxy.Galaxy.GetFactionControlPercent(Ord(sfPirates)) > Cardinal(aGalaxy.Galaxy.GetFactionControlPercent(Ord(sfCoalition)) * 4)) and
              (aGalaxy.Galaxy.GetFactionControlPercent(Ord(sfPirates)) > 20) and (aGalaxy.Galaxy.CoalitionDefeatedTurn = 0) then
             for I := 0 to aGalaxy.Galaxy.Rangers.Count - 1 do
             begin
@@ -2955,7 +2955,7 @@ begin
     Ranger := TRanger(aGalaxy.Galaxy.Rangers[i]);
     if not Ranger.ExcludedFromRating then
       ChangeRelationToRanger(Ranger, aConst.PlanetGovernmentMarket[Ord(Government)].RevolutionRelationDelta[
-        Integer(Ranger.GetDominantCareer) and 127]);
+        Ord(Ranger.GetDominantCareer)]);
   end;
   if CurrentStar.IsConstellationVisible and (aGalaxy.Galaxy.CoalitionDefeatedTurn = 0) then
     aGalaxy.Galaxy.AddPlanetNews(1, FormatText2(
@@ -3374,7 +3374,7 @@ end;
 { @routine $77A5D0 TPlanet_GetNativeRaceName }
 function TPlanet.GetNativeRaceName: WideString;
 begin
-  Result := aConst.OwnerInfo[Integer(RaceToOwner(RaceId)) and 127].DisplayName;
+  Result := aConst.OwnerInfo[RaceToOwner(RaceId)].DisplayName;
 end;
 { @end $77A5D0 }
 
@@ -3824,7 +3824,7 @@ begin
     Budget := System.Round(RemapClamped(NextRandomUnitFloat(RandomState), 0, 1, 0.3, 0.5) * aGalaxy.Galaxy.MaxRangerWealth);
     if Budget > 800000 then Budget := 800000;
     Budget := System.Round(RemapClamped(aGalaxy.Galaxy.GetFactionControlPercent(Ord(sfDominators)) +
-      (Integer(aGalaxy.Galaxy.GetFactionControlPercent(Ord(sfCoalition))) and 127), 0, 100, Budget * 0.7, Budget * 1.2));
+      aGalaxy.Galaxy.GetFactionControlPercent(Ord(sfCoalition)), 0, 100, Budget * 0.7, Budget * 1.2));
     if NextRandomUnitFloat(RandomState) > 0.2 then
       Budget := System.Round(RemapClamped(aGalaxy.Galaxy.WarDeltaWin[2], -5, 5, Budget * 2, Budget * 0.5));
     Budget := System.Round(Budget * 0.01 * MoneyPercent);
@@ -3839,7 +3839,7 @@ begin
     Warrior := TWarrior.Create;
     Budget := System.Round(RemapClamped(NextRandomUnitFloat(RandomState), 0, 1, 0.3, 0.5) * aGalaxy.Galaxy.MaxRangerWealth);
     if Budget > 900000 then Budget := 900000;
-    Budget := System.Round(RemapClamped((Integer(aGalaxy.Galaxy.GetFactionControlPercent(Ord(sfCoalition))) and 127), 0, 100, Budget * 1.2, Budget * 0.7));
+    Budget := System.Round(RemapClamped(aGalaxy.Galaxy.GetFactionControlPercent(Ord(sfCoalition)), 0, 100, Budget * 1.2, Budget * 0.7));
     if NextRandomUnitFloat(RandomState) > 0.2 then
       Budget := System.Round(RemapClamped(aGalaxy.Galaxy.WarDeltaWin[0], -5, 5, Budget * 2, Budget * 0.5));
     Budget := System.Round(Budget * 0.01 * MoneyPercent);
@@ -3859,7 +3859,7 @@ begin
     Warrior := TWarrior.Create;
     Budget := System.Round(RemapClamped(NextRandomUnitFloat(RandomState), 0, 1, 0.3, 0.5) * aGalaxy.Galaxy.MaxRangerWealth);
     if Budget > 900000 then Budget := 900000;
-    Budget := System.Round(RemapClamped((Integer(aGalaxy.Galaxy.GetFactionControlPercent(Ord(sfCoalition))) and 127), 0, 100, Budget * 1.2, Budget * 0.7));
+    Budget := System.Round(RemapClamped(aGalaxy.Galaxy.GetFactionControlPercent(Ord(sfCoalition)), 0, 100, Budget * 1.2, Budget * 0.7));
     if NextRandomUnitFloat(RandomState) > 0.2 then
       Budget := System.Round(RemapClamped(aGalaxy.Galaxy.WarDeltaWin[0], -5, 5, Budget * 2, Budget * 0.5));
     Budget := System.Round(Budget * 0.01 * MoneyPercent);
@@ -4129,7 +4129,7 @@ begin
     else if IsMainPiratePlanet and (OwnerId <> Byte(oiPirate)) then
       Result := 50
     else
-      Result := Integer(RangerRelations[RangerIndex]) and 127;
+      Result := TPercent(Integer(RangerRelations[RangerIndex]));
   except
     on E: SysUtils.Exception do
     begin
@@ -4166,7 +4166,7 @@ begin
   Index := aGalaxy.Galaxy.Rangers.IndexOf(TObject(Ranger) as TRanger);
   Relation := Byte(RangerRelations[Index]);
   if ((TObject(Ranger) as TRanger).GetEffectiveSkillLevel(psCharisma) > 0) and (Amount > 0) then
-    Inc(Amount, System.Round((Integer((TObject(Ranger) as TRanger).GetEffectiveSkillLevel(psCharisma)) and 127) * Amount * 0.2));
+    Inc(Amount, System.Round(((TObject(Ranger) as TRanger).GetEffectiveSkillLevel(psCharisma)) * Amount * 0.2));
   if Relation + Amount in [0..100] then Inc(Relation, Amount)
   else if Relation + Amount > 100 then Relation := 100
   else Relation := 0;
@@ -4183,7 +4183,7 @@ end;
 { @end $77CE88 }
 
 { @routine $77CFF4 TPlanet_RelationToShip }
-function TPlanet.RelationToShip(Ship: Pointer): Byte;
+function TPlanet.RelationToShip(Ship: Pointer): TPercent;
 begin
   if (GetPlayer <> nil) and (GetPlayer = Ship) and
     (GetPlayer.PirateRank = 7) and (CurrentStar.Constellation.Id = 20) and
@@ -4254,7 +4254,7 @@ end;
 { @routine $77D484 TPlanet_GetRelationLevelToShip }
 function TPlanet.GetRelationLevelToShip(Ship: Pointer): TRelationLevel;
 begin
-  case Integer(RelationToShip(Ship)) and 127 of
+  case RelationToShip(Ship) of
     0..9: Result := rlHostile;
     10..29: Result := rlBad;
     30..59: Result := rlNormal;
@@ -4271,7 +4271,7 @@ end;
 { @routine $77D51C TPlanet_GetRelationLevelTextToShip }
 function TPlanet.GetRelationLevelTextToShip(Ship: Pointer): WideString;
 begin
-  Result := aConst.RelationInfo[Integer(GetRelationLevelToShip(Ship)) and 127].DisplayName;
+  Result := aConst.RelationInfo[Ord(GetRelationLevelToShip(Ship))].DisplayName;
 end;
 { @end $77D51C }
 
@@ -4886,7 +4886,7 @@ begin
   if IsMainPiratePlanet then Result := Result + 'Gov.PirateBG'
   else
   begin
-    Result := Result + 'City.' + aConst.OwnerInfo[Integer(RaceToOwner(GetPlayer.CurrentPlanet.RaceId)) and 127].InternalName;
+    Result := Result + 'City.' + aConst.OwnerInfo[RaceToOwner(GetPlayer.CurrentPlanet.RaceId)].InternalName;
     if OwnerId = Byte(oiPirate) then Result := Result + 'Pirate';
   end;
 end;

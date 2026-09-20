@@ -1795,11 +1795,11 @@ begin
       end;
       Skill := TPilotSkill(ExtractDigitsToIntW(Sender.ControlName));
       Title := WrapTextInColor(LocalizedText('Skills.' + SkillConfigNames[Ord(Skill)] + '.Name'),InfoNameColorTag);
-      Description := FormatText1(LocalizedText('Skills.' + SkillConfigNames[Ord(Skill)] + '.Text'),'<color=255,240,100>','<SkillValue>',IntToStr(PilotSkillEffects[Integer(PlayerHoldShip.GetEffectiveSkillLevel(Skill)) and $7F,Ord(Skill)]));
-      ReplaceTextToken(Description,'<SkillLevel>',IntToStr(Integer(PlayerHoldShip.GetEffectiveSkillLevel(Skill)) and $7F),'<color=255,240,100>');
+      Description := FormatText1(LocalizedText('Skills.' + SkillConfigNames[Ord(Skill)] + '.Text'),'<color=255,240,100>','<SkillValue>',IntToStr(PilotSkillEffects[PlayerHoldShip.GetEffectiveSkillLevel(Skill),Ord(Skill)]));
+      ReplaceTextToken(Description,'<SkillLevel>',IntToStr(PlayerHoldShip.GetEffectiveSkillLevel(Skill)),'<color=255,240,100>');
       if Skill = psTechnical then ReplaceTextToken(Description,'<N>',IntToStr(PlayerHoldShip.GetSatelliteLimit),'<color=255,240,100>');
-      if Skill = psTrading then ReplaceTextToken(Description,'<SkillValue2>',IntToStr(TradingSkillSalePercent[Integer(PlayerHoldShip.GetEffectiveSkillLevel(Skill)) and $7F]),'<color=255,240,100>');
-      if Skill = psLeadership then ReplaceTextToken(Description,'<SkillValue2>',IntToStr(LeadershipExperiencePercent[Integer(PlayerHoldShip.GetEffectiveSkillLevel(Skill)) and $7F]),'<color=255,240,100>');
+      if Skill = psTrading then ReplaceTextToken(Description,'<SkillValue2>',IntToStr(TradingSkillSalePercent[PlayerHoldShip.GetEffectiveSkillLevel(Skill)]),'<color=255,240,100>');
+      if Skill = psLeadership then ReplaceTextToken(Description,'<SkillValue2>',IntToStr(LeadershipExperiencePercent[PlayerHoldShip.GetEffectiveSkillLevel(Skill)]),'<color=255,240,100>');
       if PlayerHoldShip.GetBaseSkillLevel(Skill) < 6 then
         Description := Description + #13#10 + #13#10 + FormatText1(LocalizedText('Skills.PointForNextLevel'),'<color=255,240,100>','<PointForNextLevel>',IntToStr(SkillTrainingCosts[PlayerHoldShip.BaseSkills[Ord(Skill)] + 1,Ord(Skill)]));
     end;
@@ -1939,7 +1939,7 @@ begin
     end
     else SetActive(False);
   end;
-  Text := IntToStr(Integer(PlayerHoldShip.GetDefensePercent) and $7F) + '%';
+  Text := IntToStr(PlayerHoldShip.GetDefensePercent) + '%';
   Text := Text + ' + ' + WrapTextInColor(IntToStr(PlayerHoldShip.GetArmor),'');
   (GetByName('IDef') as TLabelGI).SetText(Text);
   (GetByName('IMass') as TLabelGI).SetText(IntToStr(PlayerHoldShip.CalculateMass));
@@ -2257,12 +2257,12 @@ begin
   OrdinaryShip := not (PlayerHoldShip is TRuins) and not (PlayerHoldShip is TTranclucator);
   with FreeSkillPointsLabel do SetText(IntToStr(PlayerHoldShip.FreeExperience));
   with ExperienceLabel do SetText(IntToStr(PlayerHoldShip.FreeExperience));
-  Skill(0,PlayerHoldShip.GetBaseSkillLevel(psAccuracy),Integer(PlayerHoldShip.GetEffectiveSkillLevel(psAccuracy)) and $7F,PlayerHoldShip.CanTrainSkill(psAccuracy));
-  Skill(1,PlayerHoldShip.GetBaseSkillLevel(psManeuverability),Integer(PlayerHoldShip.GetEffectiveSkillLevel(psManeuverability)) and $7F,PlayerHoldShip.CanTrainSkill(psManeuverability));
-  Skill(2,PlayerHoldShip.GetBaseSkillLevel(psTechnical),Integer(PlayerHoldShip.GetEffectiveSkillLevel(psTechnical)) and $7F,PlayerHoldShip.CanTrainSkill(psTechnical));
-  Skill(3,PlayerHoldShip.GetBaseSkillLevel(psTrading),Integer(PlayerHoldShip.GetEffectiveSkillLevel(psTrading)) and $7F,PlayerHoldShip.CanTrainSkill(psTrading) and OrdinaryShip);
-  Skill(4,PlayerHoldShip.GetBaseSkillLevel(psCharisma),Integer(PlayerHoldShip.GetEffectiveSkillLevel(psCharisma)) and $7F,PlayerHoldShip.CanTrainSkill(psCharisma) and OrdinaryShip);
-  Skill(5,PlayerHoldShip.GetBaseSkillLevel(psLeadership),Integer(PlayerHoldShip.GetEffectiveSkillLevel(psLeadership)) and $7F,PlayerHoldShip.CanTrainSkill(psLeadership) and OrdinaryShip);
+  Skill(0,PlayerHoldShip.GetBaseSkillLevel(psAccuracy),PlayerHoldShip.GetEffectiveSkillLevel(psAccuracy),PlayerHoldShip.CanTrainSkill(psAccuracy));
+  Skill(1,PlayerHoldShip.GetBaseSkillLevel(psManeuverability),PlayerHoldShip.GetEffectiveSkillLevel(psManeuverability),PlayerHoldShip.CanTrainSkill(psManeuverability));
+  Skill(2,PlayerHoldShip.GetBaseSkillLevel(psTechnical),PlayerHoldShip.GetEffectiveSkillLevel(psTechnical),PlayerHoldShip.CanTrainSkill(psTechnical));
+  Skill(3,PlayerHoldShip.GetBaseSkillLevel(psTrading),PlayerHoldShip.GetEffectiveSkillLevel(psTrading),PlayerHoldShip.CanTrainSkill(psTrading) and OrdinaryShip);
+  Skill(4,PlayerHoldShip.GetBaseSkillLevel(psCharisma),PlayerHoldShip.GetEffectiveSkillLevel(psCharisma),PlayerHoldShip.CanTrainSkill(psCharisma) and OrdinaryShip);
+  Skill(5,PlayerHoldShip.GetBaseSkillLevel(psLeadership),PlayerHoldShip.GetEffectiveSkillLevel(psLeadership),PlayerHoldShip.CanTrainSkill(psLeadership) and OrdinaryShip);
   with SkillButtons[0] do
   begin
     UserValue := 0;
@@ -7328,7 +7328,7 @@ begin
     else if GetPlayer.CurrentPlanet.OwnerId = Byte(oiPirate) then
     begin
       if not GetPlayer.CurrentPlanet.IsMainPiratePlanet then
-        MusicManager.PlayCategory('Nation.' + OwnerInfo[Integer(RaceToOwner(GetPlayer.CurrentPlanet.RaceId)) and $7F].InternalName + 'Pirate')
+        MusicManager.PlayCategory('Nation.' + OwnerInfo[RaceToOwner(GetPlayer.CurrentPlanet.RaceId)].InternalName + 'Pirate')
       else MusicManager.PlayCategory('Nation.PiratePlanetMain');
     end
     else MusicManager.PlayCategory('Nation.' + OwnerInfo[GetPlayer.CurrentPlanet.OwnerId].InternalName);
@@ -7337,8 +7337,8 @@ begin
   begin
     if not MusicInPlanetEnabled then MusicManager.RequestFadeOut
     else if GetPlayer.DockedTo.TypeId in [Ord(rstPirateBase),Ord(rstDominion)] then
-      MusicManager.PlayCategory('Nation.' + OwnerInfo[Integer(RaceToOwner(GetPlayer.DockedTo.PilotRace)) and $7F].InternalName + 'Pirate')
-    else MusicManager.PlayCategory('Nation.' + OwnerInfo[Integer(RaceToOwner(GetPlayer.DockedTo.PilotRace)) and $7F].InternalName);
+      MusicManager.PlayCategory('Nation.' + OwnerInfo[RaceToOwner(GetPlayer.DockedTo.PilotRace)].InternalName + 'Pirate')
+    else MusicManager.PlayCategory('Nation.' + OwnerInfo[RaceToOwner(GetPlayer.DockedTo.PilotRace)].InternalName);
   end
   else if not PreserveSpaceMusic and PlayerHoldShip.InNormalSpace then
   begin

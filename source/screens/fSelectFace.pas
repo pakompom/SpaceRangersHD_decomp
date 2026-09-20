@@ -57,7 +57,7 @@ begin
       Inc(I);
       Face := IntToStr(I);
       if I < 10 then Face := '0' + Face;
-    until GameDataConfig.GetBlockByPath('StyleFace' + OwnerInfo[Integer(RaceToOwner(Race)) and $7F].InternalName).CountParams(Face) <= 0;
+    until GameDataConfig.GetBlockByPath('StyleFace' + OwnerInfo[RaceToOwner(Race)].InternalName).CountParams(Face) <= 0;
     LastPortraitByRace[Race] := I - 1;
   end;
   AppendLogTextThreadSafe('fSelectFace... ');
@@ -133,7 +133,7 @@ begin
   with GetByName('CaptainI') as TImageGI do
     if LastPortraitByRace[PlayerRace] >= 0 then
     begin
-      SetImagePath('GI,Bm.Captain.' + GiResourceSuffix + OwnerInfo[Integer(RaceToOwner(PlayerRace)) and $7F].InternalName + IntToStr(CaptainPortraitIndex) + 'i');
+      SetImagePath('GI,Bm.Captain.' + GiResourceSuffix + OwnerInfo[RaceToOwner(PlayerRace)].InternalName + IntToStr(CaptainPortraitIndex) + 'i');
       SetImageKindX(ikxCenter);
       SetImageKindY(ikyCenter);
       SetActive(True);
@@ -144,7 +144,7 @@ begin
     FirstFrameOnly := not AnimCaptain;
     if LastPortraitByRace[PlayerRace] >= 0 then
     begin
-      SetImagePath('Bm.Captain.' + GiResourceSuffix + OwnerInfo[Integer(RaceToOwner(PlayerRace)) and $7F].InternalName + IntToStr(CaptainPortraitIndex) + 'a');
+      SetImagePath('Bm.Captain.' + GiResourceSuffix + OwnerInfo[RaceToOwner(PlayerRace)].InternalName + IntToStr(CaptainPortraitIndex) + 'a');
       SequenceIndex := 0;
       UpdateAutoGeometry;
       SetImageKindX(ikxCenter);

@@ -1501,7 +1501,7 @@ begin
   (GetByName('InfoPrice') as TLabelGI).SetText(IntToStr(Item.Cost));
   with GetByName('EmRace') as TImageGI do
   begin
-    SetImagePath(GetFactionEmblemPath(OwnerInfo[Integer(RaceToOwner(GetPlayer.PilotRace)) and $7F].InternalName));
+    SetImagePath(GetFactionEmblemPath(OwnerInfo[RaceToOwner(GetPlayer.PilotRace)].InternalName));
     SetImageKindX(ikxCenter);
     SetImageKindY(ikyCenter);
   end;
@@ -1591,7 +1591,7 @@ begin
     if GetPlayer.CurrentPlanet.OwnerId = Byte(oiPirate) then
     begin
       if not GetPlayer.CurrentPlanet.IsMainPiratePlanet then
-        MusicManager.PlayCategory('Nation.' + OwnerInfo[Integer(RaceToOwner(GetPlayer.CurrentPlanet.RaceId)) and $7F].InternalName + 'Pirate')
+        MusicManager.PlayCategory('Nation.' + OwnerInfo[RaceToOwner(GetPlayer.CurrentPlanet.RaceId)].InternalName + 'Pirate')
       else MusicManager.PlayCategory('Nation.PiratePlanetMain');
     end
     else MusicManager.PlayCategory('Nation.' + OwnerInfo[GetPlayer.CurrentPlanet.OwnerId].InternalName);

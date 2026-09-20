@@ -1005,7 +1005,7 @@ begin
   begin
     New(NewSlot);
     if GetPlayer.OwnerId = Byte(oiPirate) then
-      NewSlot.RaceName := OwnerInfo[Ord(oiPirate)].InternalName + OwnerInfo[Integer(RaceToOwner(GetPlayer.PilotRace)) and $7F].InternalName
+      NewSlot.RaceName := OwnerInfo[Ord(oiPirate)].InternalName + OwnerInfo[RaceToOwner(GetPlayer.PilotRace)].InternalName
     else NewSlot.RaceName := OwnerInfo[GetPlayer.OwnerId].InternalName;
   end;
   try

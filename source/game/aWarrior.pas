@@ -62,7 +62,7 @@ type
     function GetTypeNameKey: WideString; override; // @addr $5B88BC @slot $2C @ida "void __usercall $name(TWarrior *Self@<eax>, unsigned __int16 **Result@<edx>);"
     function GetGreetingShipCategory: Byte; override; // @addr $5B88F0 @slot $30
     function GetHomeStar: TStar; override; // @addr $5B8638 @slot $34
-    function GetStrengthScaledPirateStatus: Byte; override; // @addr $5B8918 @slot $3C
+    function GetStrengthScaledPirateStatus: TPercent; override; // @addr $5B8918 @slot $3C
     function GetDominantCareer: TRangerCareer; override; // @addr 0x5B8904 @slot 0x38 @note "Always rcWarrior."
     function GetName: WideString; override; // @addr 0x5B8654 @slot 0x24 @ida "void __usercall $name(TWarrior *Self@<eax>, unsigned __int16 **Result@<edx>);"
     function GetFullName(const Separator: WideString): WideString; override; // @addr 0x5B8674 @slot 0x28 @ida "void __usercall $name(TWarrior *Self@<eax>, unsigned __int16 *Separator@<edx>, unsigned __int16 **Result@<ecx>);"
@@ -689,7 +689,7 @@ end;
 { @end $5B8904 }
 
 { @routine $5B8918 TWarrior_GetStrengthScaledPirateStatus }
-function TWarrior.GetStrengthScaledPirateStatus: Byte;
+function TWarrior.GetStrengthScaledPirateStatus: TPercent;
 begin
   Result := 0;
 end;
@@ -730,7 +730,7 @@ end;
 { @routine $5B8B0C TWarrior_RelationToNonRanger }
 function TWarrior.RelationToNonRanger(Ship: TShip): Byte;
 begin
-  if Ship.TypeId = stPirate then Result := Round(Max(10, Min(20, OwnerRelations[Integer(RaceToOwner(PilotRace)) and $7F, Ship.OwnerId] *
+  if Ship.TypeId = stPirate then Result := Round(Max(10, Min(20, OwnerRelations[RaceToOwner(PilotRace), Ship.OwnerId] *
     (0.5 * PlanetRaceMarket[PilotRace].PirateRelationFactor))))
   else if Ship.TypeId in [stKling, stTranclucator] then Result := 50 else Result := 100;
 end;
@@ -748,7 +748,7 @@ begin
   Index := Galaxy.Rangers.IndexOf(TObject(Ranger) as TRanger);
   Relation := Byte(HomePlanet.RangerRelations[Index]);
   if (TShip(Ranger).GetEffectiveSkillLevel(psCharisma) > 0) and (Amount > 0) then
-    Inc(Amount, Round(Amount * (Integer(TShip(Ranger).GetEffectiveSkillLevel(psCharisma)) and $7F) * 0.2));
+    Inc(Amount, Round(Amount * (TShip(Ranger).GetEffectiveSkillLevel(psCharisma)) * 0.2));
   Value := Amount + Relation;
   if Value < 0 then Relation := 0 else if Value > 100 then Relation := 100 else Relation := Value;
   HomePlanet.RangerRelations[Index] := Pointer(Relation);
@@ -802,7 +802,7 @@ begin Result := RelationToShip(Ship) >= 30; end;
 { @routine $5B90CC TWarrior_EvaluateAllyRelationAndStrength }
 function TWarrior.EvaluateAllyRelationAndStrength(Ship: TShip): Boolean;
 begin
-  Result := (Integer(RelationToShip(Ship)) and $7F) +
+  Result := RelationToShip(Ship) +
     RemapClamped(Ship.Strength, 0.9 * Strength, Strength * 3, 0, 100) > 160;
 end;
 { @end $5B90CC }
@@ -1754,23 +1754,23 @@ begin
     bonSpeed: Result := Value * 0.2;
     bonJump: Result := Value * 5;
     bonRadar: Result := (0.025 * Value) * (1 + ShortInt(WarriorType = wtFlagship) * 0.5);
-    bonScan: Result := Value * 3 + Value * 30 * (Integer(CountWeaponsByDamageFlags(ScannerFlags)) and $7F);
+    bonScan: Result := Value * 3 + Value * 30 * CountWeaponsByDamageFlags(ScannerFlags);
     bonDroid: Result := Value * 10 / Max(0.1, GetHull.GetFragilityFactor(NoFlags)) * (1 + ShortInt(WarriorType = wtFlagship) * 0.5);
     bonHook: Result := (Min(Value, HullBaseSize * EquipmentSizeFactors[5]) + Value * 0.1) * 1.3 * ShortInt(WarriorType = wtFlagship);
     bonDef: Result := Value * 5 * 100 / Max(5, 100 - Value) * 45 / Max(5, 45 - Value);
     bonWEnergy: Result := Value * 12;
     bonWSplinter: Result := Value * 12;
-    bonWMissile: Result := Value * 12 * (0.1 + ShortInt(GetRadarRange > 0) * 0.9) * (1 - (Integer(WarriorType = wtFlagship) and $7F));
+    bonWMissile: Result := Value * 12 * (0.1 + ShortInt(GetRadarRange > 0) * 0.9) * (1 - Ord(WarriorType = wtFlagship));
     bonWRadius: if WarriorType = wtFlagship then Result := Value * 3 else Result := Value * 1.5 * Sqr(Max(100, SmoothedEnemySpeed) / Max(100, SmoothedSpeed));
     bonHookRadius: Result := Value * 1.0 * ShortInt(WarriorType = wtFlagship);
     bonMass: Result := RemapClamped(Value, HullMassEvaluationStart, HullMassEvaluationEnd, 1, 0.333) * 1000;
     bonSlotRadar:
       if (GetSlotCount(sskRadar) = 0) and (Value > 0) then Result := WarriorSlotBonusWeights[Ord(BonusKind)] * 0.3
-      else if (GetRadar <> nil) and (Value < 0) then Result := -WarriorSlotBonusWeights[Ord(BonusKind)] - WarriorSlotBonusWeights[18] * (Integer(CountMissileWeapons) and $7F)
+      else if (GetRadar <> nil) and (Value < 0) then Result := -WarriorSlotBonusWeights[Ord(BonusKind)] - WarriorSlotBonusWeights[18] * CountMissileWeapons
       else if (GetSlotCount(sskRadar) = 1) and (Value < 0) then Result := WarriorSlotBonusWeights[Ord(BonusKind)] * -0.3;
     bonSlotScaner:
       if (GetSlotCount(sskScanner) = 0) and (Value > 0) then Result := WarriorSlotBonusWeights[Ord(BonusKind)] * 0.3
-      else if (GetScanner <> nil) and (Value < 0) then Result := -WarriorSlotBonusWeights[Ord(BonusKind)] - (Integer(CountWeaponsByDamageFlags(ScannerFlags)) and $7F) * 0.1 * WarriorSlotBonusWeights[18]
+      else if (GetScanner <> nil) and (Value < 0) then Result := -WarriorSlotBonusWeights[Ord(BonusKind)] - CountWeaponsByDamageFlags(ScannerFlags) * 0.1 * WarriorSlotBonusWeights[18]
       else if (GetSlotCount(sskScanner) = 1) and (Value < 0) then Result := WarriorSlotBonusWeights[Ord(BonusKind)] * -0.3;
     bonSlotDroid:
       if (GetSlotCount(sskRepairRobot) = 0) and (Value > 0) then Result := WarriorSlotBonusWeights[Ord(BonusKind)] * 0.3
@@ -1785,8 +1785,8 @@ begin
         if (GetSlotCount(sskWeapon) < 5) and (Value > 0) then
           Result := Min(Value, 5 - GetSlotCount(sskWeapon)) * WarriorSlotBonusWeights[Ord(BonusKind)];
         if Value < 0 then Result := Max(Value, -GetSlotCount(sskWeapon)) * WarriorSlotBonusWeights[Ord(BonusKind)];
-        if (Integer(CountEquippedWeapons) and $7F) > Max(Value + GetSlotCount(sskWeapon), 1) then
-          Result := Result - (WarriorSlotBonusWeights[Ord(BonusKind)] * 0.6) * ((Integer(CountEquippedWeapons) and $7F) - Max(1, Value + GetSlotCount(sskWeapon)));
+        if CountEquippedWeapons > Max(Value + GetSlotCount(sskWeapon), 1) then
+          Result := Result - (WarriorSlotBonusWeights[Ord(BonusKind)] * 0.6) * (CountEquippedWeapons - Max(1, Value + GetSlotCount(sskWeapon)));
       end;
     bonSlotForsage:
       if (GetSlotCount(sskAfterburner) = 0) and (Value > 0) then Result := WarriorSlotBonusWeights[Ord(BonusKind)]
@@ -1794,13 +1794,13 @@ begin
     bonSkill1..bonSkill6:
       begin
         if Value > 0 then
-          Result := Min(6 - (Integer(GetEffectiveSkillLevel(TPilotSkill(EquipmentBonusSkills[Ord(BonusKind) - 22]))) and $7F), Value) * WarriorSkillBonusWeights[Ord(BonusKind)];
-        if (Value > 0) and (Value + (Integer(GetEffectiveSkillLevel(TPilotSkill(EquipmentBonusSkills[Ord(BonusKind) - 22]))) and $7F) > 6) then
-          Result := Result + (WarriorSkillBonusWeights[Ord(BonusKind)] * 0.05) * (Value + (Integer(GetEffectiveSkillLevel(TPilotSkill(EquipmentBonusSkills[Ord(BonusKind) - 22]))) and $7F) - 6);
+          Result := Min(6 - GetEffectiveSkillLevel(TPilotSkill(EquipmentBonusSkills[Ord(BonusKind) - 22])), Value) * WarriorSkillBonusWeights[Ord(BonusKind)];
+        if (Value > 0) and (Value + GetEffectiveSkillLevel(TPilotSkill(EquipmentBonusSkills[Ord(BonusKind) - 22])) > 6) then
+          Result := Result + (WarriorSkillBonusWeights[Ord(BonusKind)] * 0.05) * (Value + GetEffectiveSkillLevel(TPilotSkill(EquipmentBonusSkills[Ord(BonusKind) - 22])) - 6);
         if Value < 0 then
-          Result := Min(Integer(GetEffectiveSkillLevel(TPilotSkill(EquipmentBonusSkills[Ord(BonusKind) - 22]))) and $7F, -Value) * -WarriorSkillBonusWeights[Ord(BonusKind)];
-        if (Value < 0) and (Value + (Integer(GetEffectiveSkillLevel(TPilotSkill(EquipmentBonusSkills[Ord(BonusKind) - 22]))) and $7F) < 0) then
-          Result := Result + (WarriorSkillBonusWeights[Ord(BonusKind)] * 0.03) * (Value + (Integer(GetEffectiveSkillLevel(TPilotSkill(EquipmentBonusSkills[Ord(BonusKind) - 22]))) and $7F));
+          Result := Min(GetEffectiveSkillLevel(TPilotSkill(EquipmentBonusSkills[Ord(BonusKind) - 22])), -Value) * -WarriorSkillBonusWeights[Ord(BonusKind)];
+        if (Value < 0) and (Value + GetEffectiveSkillLevel(TPilotSkill(EquipmentBonusSkills[Ord(BonusKind) - 22])) < 0) then
+          Result := Result + (WarriorSkillBonusWeights[Ord(BonusKind)] * 0.03) * (Value + GetEffectiveSkillLevel(TPilotSkill(EquipmentBonusSkills[Ord(BonusKind) - 22])));
       end;
   else Result := 0;
   end;
@@ -1823,11 +1823,11 @@ var
 begin
   Flags := Weapon.GetDamageFlags;
   if (Flags * ScannerFlags <> []) and (GetScanner <> nil) and (GetRadar <> nil) then
-    ScannerFactor := RemapClamped(GetScannerPower - (Integer(DefenseDamageFactorToPercent(GetGeneratedDefenseDamageFactor(Galaxy.TechLevel))) and $7F) + 1, -5, 10, 0.1, 2)
+    ScannerFactor := RemapClamped(GetScannerPower - DefenseDamageFactorToPercent(GetGeneratedDefenseDamageFactor(Galaxy.TechLevel)) + 1, -5, 10, 0.1, 2)
   else ScannerFactor := 0;
   Result := BaseDamage * GetWeaponArtefactDamageFactor(Weapon);
   if dkDrain in Flags then Result := Result * (1.5 - ShortInt(WarriorType = wtFlagship) * 0.4);
-  if dkShock in Flags then Result := Result * (1.05 + (Integer(CountWeaponsByDamageFlags(ShockFlags)) and $7F) * 0.05);
+  if dkShock in Flags then Result := Result * (1.05 + CountWeaponsByDamageFlags(ShockFlags) * 0.05);
   if dkAcid in Flags then Result := Result * 1.05;
   StatusFactor := 1;
   if dkScanBonus in Flags then StatusFactor := StatusFactor * (1 + ScannerFactor * 0.1);
@@ -1841,7 +1841,7 @@ begin
     if dkAcid in Flags then
     begin
       ShotTotal := 1;
-      for I := 1 to Integer(CountEquippedWeapons) and $7F do Inc(ShotTotal, Weapons[I].GetShotCount);
+      for I := 1 to CountEquippedWeapons do Inc(ShotTotal, Weapons[I].GetShotCount);
       Result := Result + ShotTotal * 2;
     end;
   end;

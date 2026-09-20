@@ -1365,7 +1365,7 @@ begin
   if Ship <> nil then
   begin
     Binding := GetScriptShipBindingForContext(Ship, CurrentScript);
-    if High(av) < 2 then av[0].SetInt(Integer(Ord(Binding.Hit or Binding.HitPlayer)) and $7F)
+    if High(av) < 2 then av[0].SetInt(Ord(Binding.Hit or Binding.HitPlayer))
     else if av[2].GetInt <> 0 then
     begin
       av[0].SetInt(Ord(Binding.HitPlayer));
@@ -1999,8 +1999,8 @@ end;
 procedure SF_PlayerDominatorStatistic(av: array of TVarEC; code: TCodeEC);
 begin
   if High(av) < 1 then raise Exception.Create('Error.Script PlayerDominatorStatistic');
-  av[0].SetInt(GetPlayer.DominatorKillsByType[av[1].GetInt and $7F]);
-  if High(av) > 1 then GetPlayer.DominatorKillsByType[av[1].GetInt and $7F] := av[2].GetInt;
+  av[0].SetInt(GetPlayer.DominatorKillsByType[Ord(TKlingType(av[1].GetInt))]);
+  if High(av) > 1 then GetPlayer.DominatorKillsByType[Ord(TKlingType(av[1].GetInt))] := av[2].GetInt;
 end;
 { @end $6286A0 }
 
@@ -4533,7 +4533,7 @@ end;
 procedure SF_GetProgramm(av: array of TVarEC; code: TCodeEC);
 begin
   if High(av) < 1 then raise Exception.Create('Error.Script GetProgramm');
-  av[0].SetInt(GetPlayer.ProgramCounts[av[1].GetDword and $7F]);
+  av[0].SetInt(GetPlayer.ProgramCounts[TProgramIndex(av[1].GetDword)]);
 end;
 { @end $633160 }
 
@@ -4542,7 +4542,7 @@ procedure SF_SetProgramm(av: array of TVarEC; code: TCodeEC);
 begin
   if High(av) < 2 then raise Exception.Create('Error.Script SetProgramm');
   av[0].SetInt(Ord(GetPlayer.HasProgram(av[1].GetDword)));
-  GetPlayer.ProgramCounts[av[1].GetDword and $7F] := av[2].GetInt;
+  GetPlayer.ProgramCounts[TProgramIndex(av[1].GetDword)] := av[2].GetInt;
 end;
 { @end $6331F0 }
 
@@ -4981,7 +4981,7 @@ end;
 { @routine $635158 SF_RobotSupport }
 procedure SF_RobotSupport(av: array of TVarEC; code: TCodeEC);
 begin
-  av[0].SetInt(Integer((RobotInterface <> nil) and (RobotInterface.Support() = 0)) and $7F);
+  av[0].SetInt(Ord((RobotInterface <> nil) and (RobotInterface.Support() = 0)));
 end;
 { @end $635158 }
 
@@ -6439,7 +6439,7 @@ begin
     begin
       if Byte(Item.ItemType) in [Ord(t_FuelTanks)..Ord(t_DefGenerator)] then Ship.UnequipSlot(Byte(Item.ItemType), 0);
       if Item is TWeapon then
-        for WeaponIndex := 1 to Integer(Ship.CountEquippedWeapons) and $7F do
+        for WeaponIndex := 1 to Ship.CountEquippedWeapons do
           if Ship.Weapons[WeaponIndex] = Item then
           begin
             Ship.UnequipSlot(Ord(t_Weapon1), WeaponIndex);
@@ -8820,8 +8820,8 @@ begin
     av[0].SetFloat((Galaxy.DominatorResearch[0].Progress + Galaxy.DominatorResearch[1].Progress + Galaxy.DominatorResearch[2].Progress) / 3)
   else
   begin
-    av[0].SetFloat(Galaxy.DominatorResearch[av[1].GetInt and $7F].Progress);
-    if High(av) > 1 then Galaxy.DominatorResearch[av[1].GetInt and $7F].Progress := av[2].GetFloat;
+    av[0].SetFloat(Galaxy.DominatorResearch[Ord(TDominatorSeries(av[1].GetInt))].Progress);
+    if High(av) > 1 then Galaxy.DominatorResearch[Ord(TDominatorSeries(av[1].GetInt))].Progress := av[2].GetFloat;
   end;
 end;
 { @end $642AEC }
@@ -8830,8 +8830,8 @@ end;
 procedure SF_GalaxyDominatorResearchMaterial(av: array of TVarEC; code: TCodeEC);
 begin
   if High(av) < 1 then raise Exception.Create('Error.Script GalaxyDominatorResearchMaterial');
-  av[0].SetInt(Galaxy.DominatorResearch[av[1].GetInt and $7F].Material);
-  if High(av) > 1 then Galaxy.DominatorResearch[av[1].GetInt and $7F].Material := av[2].GetInt;
+  av[0].SetInt(Galaxy.DominatorResearch[Ord(TDominatorSeries(av[1].GetInt))].Material);
+  if High(av) > 1 then Galaxy.DominatorResearch[Ord(TDominatorSeries(av[1].GetInt))].Material := av[2].GetInt;
 end;
 { @end $642BC4 }
 
@@ -8840,7 +8840,7 @@ procedure SF_GalaxyDiffLevels(av: array of TVarEC; code: TCodeEC);
 var
   I, Total: Integer;
 begin
-  if High(av) > 0 then av[0].SetInt((Galaxy.DifficultyLevels[av[1].GetInt and $7F] + 1) * 50)
+  if High(av) > 0 then av[0].SetInt((Galaxy.DifficultyLevels[TGalaxyDifficultyIndex(av[1].GetInt)] + 1) * 50)
   else
   begin
     Total := 0;
@@ -10237,7 +10237,7 @@ procedure SF_BonusValue(av: array of TVarEC; code: TCodeEC);
 begin
   if High(av) < 2 then raise Exception.Create('Error.Script BonusValue');
   if (av[1].GetInt < 0) or (av[1].GetInt >= MicroModuleTemplateCount) then raise Exception.Create('Error.Script BonusValue - number out of range');
-  av[0].SetInt(MicroModuleTemplates[av[1].GetInt].StatBonuses[av[2].GetInt and $7F]);
+  av[0].SetInt(MicroModuleTemplates[av[1].GetInt].StatBonuses[Ord(TEquipmentBonusKind(av[2].GetInt))]);
 end;
 { @end $6482BC }
 
@@ -12763,7 +12763,9 @@ end;
 
 { @routine $651C88 SF_ShipKillFactionInCurSystem }
 procedure SF_ShipKillFactionInCurSystem(av: array of TVarEC; code: TCodeEC);
-type TKillCounts = array[0..3] of Word;
+type
+  TKillFactionIndex = 0..3;
+  TKillCounts = array[0..3] of Word;
 var Obj: TObject;
 begin
   if High(av) < 2 then raise Exception.Create('Error.Script SF_ShipKillFactionInCurSystem');
@@ -12781,10 +12783,10 @@ begin
   end
   else
   begin
-    av[0].SetInt(TKillCounts((Obj as TNormalShip).CurrentSystemKills)[av[2].GetInt and $7F]);
+    av[0].SetInt(TKillCounts((Obj as TNormalShip).CurrentSystemKills)[TKillFactionIndex(av[2].GetInt)]);
     if High(av) > 2 then
     begin
-      TKillCounts((Obj as TNormalShip).CurrentSystemKills)[av[2].GetInt and $7F] := av[3].GetInt;
+      TKillCounts((Obj as TNormalShip).CurrentSystemKills)[TKillFactionIndex(av[2].GetInt)] := av[3].GetInt;
       TShip(Obj).RefreshCurrentStanding;
     end;
   end;
@@ -15303,7 +15305,7 @@ var Info: PWeaponInfo; Key: WideString;
 begin
   if High(av) < 2 then raise Exception.Create('Error.Script GetCustomWeaponStats');
   if av[1].RealVType = vkString then Info := Galaxy.RequireCustomWeaponInfo(av[1].GetString)
-  else Info := @WeaponInfos[av[1].GetInt and $7F];
+  else Info := @WeaponInfos[Ord(TItemType(av[1].GetInt))];
   Key := av[2].GetString;
   if Key = 'TechLevel' then av[0].SetInt(Info.TechLevel)
   else if Key = 'AverageSize' then av[0].SetInt(Info.AverageSize)
@@ -15352,7 +15354,7 @@ var Info: PWeaponInfo;
 begin
   if High(av) < 1 then raise Exception.Create('Error.Script GetCustomWeaponPrimaryDamageType');
   if av[1].RealVType = vkString then Info := Galaxy.RequireCustomWeaponInfo(av[1].GetString)
-  else Info := @WeaponInfos[av[1].GetInt and $7F];
+  else Info := @WeaponInfos[Ord(TItemType(av[1].GetInt))];
   av[0].SetInt(Ord(ClassifyWeaponDamageFlags(Info.DamageFlags)));
 end;
 { @end $65DAB8 }
@@ -15388,7 +15390,7 @@ begin
   Info := PWeaponInfo(av[1].GetDword);
   av[0].SetDword(Cardinal(Info));
   Info.TechLevel := av[2].GetInt;
-  Info.InventionIndex := WeaponInfos[av[3].GetInt and $7F].InventionIndex;
+  Info.InventionIndex := WeaponInfos[Ord(TItemType(av[3].GetInt))].InventionIndex;
   Info.ArcadeWeaponType := av[4].GetInt;
 end;
 { @end $65DEF4 }
