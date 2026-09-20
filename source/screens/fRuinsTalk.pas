@@ -343,73 +343,6 @@ implementation
 
 uses aPirate, aWarrior, aGroup, aPlanet, fSelectFace, aGalaxyEvent, fShip2, fGalaxy2, aMyFunction, aRanger, EC_Expression, SysUtils, EC_Str, Globals, GlobalsV, GR_Main, fEquipmentShop, aGalaxy, aPlayer, aShip, Math, Windows, MMSystem, GI_XviD, GI_PanelScrollBar, ThreadCalc, aCalc, Messages, Classes, fTalk, GI_Main, GI_Panel, GI_Image, GI_ScrollBar, aSaveLoad, fSaveManager, fHangar, GI_GraphButton, GI_GAI, aConst, aGalaxyStruct, aRuins;
 
-procedure PayDepositMoney; inline;
-var Remaining, Payment: Integer; Player: TPlayer;
-begin
-  Player := GetPlayer;
-  Remaining := GetPlayer.Money - GetPlayer.DepositAmount;
-  if Remaining < 0 then Payment := 0 else Payment := Remaining;
-  Player.SetMoney(Payment);
-end;
-
-// Native M_Main reserves four unreferenced bytes after its inline scalar cells.
-// Keep that gap without moving the named locals or emitting an instruction.
-procedure ReserveGreetingFrame; inline;
-var UnresolvedFrameBytes: array[0..3] of Byte;
-begin
-end;
-
-// Preserve the native clamp cells before the captured money receiver.
-procedure PayStationModernization(QuotedCost: Cardinal); inline;
-var Remaining, Payment: Int64; Player: TPlayer;
-begin
-  Player := GetPlayer;
-  Remaining := GetPlayer.Money - Trunc(QuotedCost);
-  if Remaining < 0 then Payment := 0 else Payment := Remaining;
-  Player.SetMoney(Integer(Payment));
-end;
-
-procedure PayNationalityMoney; inline;
-var QuotedCost, Cost, Remaining, Payment: Integer; Player: TPlayer;
-begin
-  Player := GetPlayer;
-  QuotedCost := SelectFaceScreen.AcceptedCost;
-  if QuotedCost < 0 then Cost := 0 else Cost := QuotedCost;
-  Remaining := GetPlayer.Money - Cost;
-  if Remaining < 0 then Payment := 0 else Payment := Remaining;
-  Player.SetMoney(Payment);
-end;
-
-procedure PayChameleonMoney(Cost: Integer); inline;
-var Remaining, Payment: Integer; Player: TPlayer;
-begin
-  Player := GetPlayer;
-  Remaining := GetPlayer.Money - Cost;
-  if Remaining < 0 then Payment := 0 else Payment := Remaining;
-  Player.SetMoney(Payment);
-end;
-
-// Native reads the active count before evaluating the rank clamps.
-procedure ComputeStimulantOfferLimit(const Rank: Byte; const Bonus: Integer; out Limit: Integer); inline;
-var RankFloor, BoostedRank, Active, Drawn, Maximum: Integer;
-begin
-  Active := GetPlayer.CountActiveStimulants;
-  if Integer(Rank) < 2 then RankFloor := 2 else RankFloor := Rank;
-  if RankFloor + Bonus < 2 then BoostedRank := 2 else BoostedRank := RankFloor + Bonus;
-  Drawn := Floor(SeededRandomFloatRange(Galaxy.CurrentTurn div 70 * GetPlayer.DockedTo.Id, 0, 1) * (BoostedRank - 1)) + 2;
-  if Active > Drawn then Maximum := Active else Maximum := Drawn;
-  Limit := Maximum;
-end;
-
-procedure PayConstructionMoney(Price: Integer); inline;
-var Remaining, Payment: Integer; Player: TPlayer;
-begin
-  Player := GetPlayer;
-  Remaining := GetPlayer.Money - Price;
-  if Remaining < 0 then Payment := 0 else Payment := Remaining;
-  Player.SetMoney(Payment);
-end;
-
 { @routine $5658A0 ResetStationImprovement }
 procedure ResetStationImprovement;
 begin
@@ -1568,6 +1501,7 @@ var
   Info: PWeaponInfo;
   MinimumSizeFactor, MaximumSizeFactor: Single;
   Stage: Integer;
+  UnusedLocal: Integer; // Native frame retains four unreferenced bytes; original type unknown.
 begin
   Stage := 0;
   try
@@ -1890,7 +1824,6 @@ begin
         SelectScriptDialog(Integer(Script));
       end;
     end;
-    ReserveGreetingFrame;
   except
     on E: Exception do
     begin
@@ -2519,7 +2452,7 @@ begin
   Station := GetPlayer.DockedTo as TRuins;
   if Cardinal(QuotedCost) > 0 then
   begin
-    PayStationModernization(Cardinal(QuotedCost));
+    GetPlayer.SetMoney(Max(0, GetPlayer.Money - Trunc(Cardinal(QuotedCost))));
     SoundManager.PlaySound('Sound.Sell');
     Station.ModernizationSponsor := True;
   end
@@ -2927,7 +2860,7 @@ begin
     if GetPlayer.OwnerId <> Byte(oiPirate) then GetPlayer.OwnerId := RaceToOwner(SelectFaceScreen.PlayerRace);
     GetPlayer.Name := SelectFaceScreen.PlayerName;
     LastLoadedPlayerName := GetPlayer.Name;
-    PayNationalityMoney;
+    GetPlayer.SetMoney(Max(0, GetPlayer.Money - Max(0, SelectFaceScreen.AcceptedCost)));
     GetPlayer.AddPirateCareerActivity(8);
     Inc(GetPlayer.NationalityChangeCount);
     TryAddAchievementProgress('MANYFACES', 1);
@@ -3445,7 +3378,7 @@ begin
   Series := Action;
   Cost := PirateChameleonQuoteCosts[Series];
   Inc(GetPlayer.ChameleonCharges[Series]);
-  PayChameleonMoney(Cost);
+  GetPlayer.SetMoney(Max(0, GetPlayer.Money - Cost));
   SoundManager.PlaySound('Sound.Sell');
   DialogText := LocalizedColorText('FormRuins.PB.Chameleon.PBAfterOk');
   ClearChoices;
@@ -4628,7 +4561,7 @@ begin
   GetPlayer.DepositInterestRate := BusinessDepositQuoteInterestRate;
   GetPlayer.DepositDayCount := 0;
   GetPlayer.DepositStartTurn := Galaxy.CurrentTurn;
-  PayDepositMoney;
+  GetPlayer.SetMoney(Max(0, GetPlayer.Money - GetPlayer.DepositAmount));
   DialogText := LocalizedColorText('FormRuins.BK.Deposit.BKAfterOk');
   ReplaceTextToken(DialogText, '<SendMoney>', IntToStr(GetPlayer.DepositAmount), '<color=255,240,100>');
   ReplaceTextToken(DialogText, '<Percent>', FloatToStrF(BusinessDepositQuoteInterestRate, ffFixed, 1, 1), '<color=255,240,100>');
@@ -5715,7 +5648,9 @@ begin
     end;
   end;
   Bonus := GetPlayer.GetTotalStatBonus(Ord(bonStimCapacity)) + GetPlayer.CountActiveArtefacts(Ord(t_ArtBio));
-  ComputeStimulantOfferLimit(Rank, Bonus, MaxStimulants);
+  MaxStimulants := Max(GetPlayer.CountActiveStimulants,
+    Floor(SeededRandomFloatRange(Galaxy.CurrentTurn div 70 * GetPlayer.DockedTo.Id, 0, 1) *
+      (Max(2, Max(2, Integer(Rank)) + Bonus) - 1)) + 2);
   LawStimulants := Max(2, Rank);
   DialogText := LocalizedColorText('FormRuins.MC.Stimulants.MC1');
   if MaxStimulants < LawStimulants then
@@ -6518,7 +6453,7 @@ begin
   Price := GetConstructionShopCost;
   if Price > 0 then
   begin
-    PayConstructionMoney(Price);
+    GetPlayer.SetMoney(Max(0, GetPlayer.Money - Price));
     SoundManager.PlaySound('Sound.Sell');
   end;
   Ship := TPirate.Create;

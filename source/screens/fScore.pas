@@ -98,19 +98,6 @@ uses aKling, SysUtils, Windows, Math, EC_File, EC_Str, GR_Main, GlobalsV, Global
   aGalaxy, SimpleSteamApi, aConst, aMyFunction, aRanger, aShip, Achievements,
   GI_GraphButton, GI_Image, GI_Label, GI_Panel, GI_MessageBox, aSaveLoad, GI_GAI, ExceptionInfo;
 
-// Preserve evaluation of the localized template before the turn clamp, and
-// the separate managed temporary retained by the native compiler.
-procedure SetElapsedScoreTurns(const Screen: TfScore; const Entry: TfScoreUnit); inline;
-var
-  Turns: Integer;
-  Template: WideString;
-begin
-  Template := LocalizedColorText('FormScore.TurnWin');
-  if Entry.FinishedTurn - 300 < 0 then Turns := 0 else Turns := Entry.FinishedTurn - 300;
-  (Screen.GetByName('ITurn') as TLabelGI).SetText(FormatText1(Template,
-    '<color=255,222,0>', '<Date>', WideString(IntToStr(Turns))));
-end;
-
 { @routine $6B7CB4 TfScoreUnit_Create }
 constructor TfScoreUnit.Create;
 begin
@@ -1555,7 +1542,8 @@ begin
   end;
   (GetByName('IDate') as TLabelGI).SetText(FormatText1(LocalizedColorText('FormScore.DateWin'),
     '<color=255,222,0>', '<Date>', FormatGameTurnDate(Entry.FinishedTurn)));
-  SetElapsedScoreTurns(Self, Entry);
+  (GetByName('ITurn') as TLabelGI).SetText(FormatText1(LocalizedColorText('FormScore.TurnWin'),
+    '<color=255,222,0>', '<Date>', WideString(IntToStr(Max(0, Entry.FinishedTurn - 300)))));
   (GetByName('IRank') as TLabelGI).SetText(FormatText1(LocalizedColorText('FormScore.Rank'),
     '<color=255,240,100>', '<Rank>', LocalizedText('Rank.' + CoalitionRankNames[Entry.Rank] + '.Name')));
   (GetByName('IKillDominator') as TLabelGI).SetText(WideString(IntToStr(Entry.DominatorKillCount)));

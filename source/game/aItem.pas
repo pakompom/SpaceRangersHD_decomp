@@ -762,17 +762,6 @@ implementation
 
 uses aPlanet, aTranclucator, aPirate, SysUtils, SE_Process, GR_Main, aConst, aPlayer, aScript, aMyFunction, Math, aShip, aKling, EC_Str, aAsteroid, aMissile, Globals, fShip2;
 
-// Preserve the native evaluation order: select the percentage before clamping
-// capacity. The inline helper also retains the compiler's separate temporaries.
-procedure CalculateHullCapacityIncrease(const Hull: THull; const LowPercent, HighPercent: Integer;
-  out Increase: Integer); inline;
-var Capacity, Percent: Integer;
-begin
-  Percent := SeededRandomIntRange(LowPercent, HighPercent, Hull.Id * 214571);
-  if Hull.Weight > 500 then Capacity := Hull.Weight else Capacity := 500;
-  Increase := Round(Percent * Capacity * 0.01);
-end;
-
 { @routine $7315B0 TItem_Create }
 constructor TItem.Create;
 begin
@@ -2183,9 +2172,9 @@ begin
   begin
     ExtraCapacity := 0;
     case Kind of
-      ikMinor: CalculateHullCapacityIncrease(Self, 3, 7, ExtraCapacity);
-      ikMedium: CalculateHullCapacityIncrease(Self, 8, 12, ExtraCapacity);
-      ikMajor: CalculateHullCapacityIncrease(Self, 13, 17, ExtraCapacity);
+      ikMinor: ExtraCapacity := Round(SeededRandomIntRange(3, 7, Id * 214571) * Max(Weight, 500) * 0.01);
+      ikMedium: ExtraCapacity := Round(SeededRandomIntRange(8, 12, Id * 214571) * Max(Weight, 500) * 0.01);
+      ikMajor: ExtraCapacity := Round(SeededRandomIntRange(13, 17, Id * 214571) * Max(Weight, 500) * 0.01);
     end;
     Inc(Weight, ExtraCapacity);
     Inc(HullPoints, ExtraCapacity);
