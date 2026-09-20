@@ -5604,7 +5604,7 @@ var
   Illegal: Boolean;
 begin
   if (GetLocationGoodsEntry(Good).Count < Count) or (ShopGoodsPurchasePrice(Good, nil) * Count > Money) then
-    ShowMessage(#$CD#$E5' '#$E2#$E5#$F0#$ED#$FB#$E5' '#$EF#$E0#$F0#$E0#$EC#$E5#$F2#$F0#$FB' '#$EF#$EE#$EA#$F3#$EF#$EA#$E8)
+    ShowMessage('Не верные параметры покупки')
   else
   begin
     if TradeGoodsSold = nil then TradeGoodsSold := TGoods.Create;

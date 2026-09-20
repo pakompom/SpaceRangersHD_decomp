@@ -1642,7 +1642,7 @@ begin
     ikMedium: Result := RoundAndTruncateToTens(Cost * 0.6);
     ikMajor: Result := RoundAndTruncateToTens(Cost * 1.2);
   else
-    RaiseWideMessage(#$041A#$043E#$0441#$044F#$043A' '#$0432' '#$0443#$043B#$0443#$0447#$0448#$0435#$043D#$0438#$0438);
+    RaiseWideMessage('Косяк в улучшении');
     Result := 0;
   end;
 end;

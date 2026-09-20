@@ -154,6 +154,12 @@ implementation
 
 uses SE_Hole, SysUtils, aAsteroid, aMissile, aScript, Classes, aRanger, aMyFunction, Globals, GlobalsV, EC_Str, Math, EC_Struct, aPlayer, aConst;
 
+const
+  // Native ANSI exception text contains UTF-8 bytes; ordinary Russian literals
+  // compile to Windows-1251. Text: Клинг выпустился со скоростью 0
+  DominatorZeroSpeedError =
+    #$D0#$9A#$D0#$BB#$D0#$B8#$D0#$BD#$D0#$B3#$20#$D0#$B2#$D1#$8B#$D0#$BF#$D1#$83#$D1#$81#$D1#$82#$D0#$B8#$D0#$BB#$D1#$81#$D1#$8F#$20#$D1#$81#$D0#$BE#$20#$D1#$81#$D0#$BA#$D0#$BE#$D1#$80#$D0#$BE#$D1#$81#$D1#$82#$D1#$8C#$D1#$8E#$20#$30;
+
 { @routine $5E828C TKling_Destroy }
 destructor TKling.Destroy;
 var I: Integer; Ranger: TRanger;
@@ -208,7 +214,7 @@ begin
   ImproveStandardEquipment;
   RefreshDerivedStats(True);
   RefreshCurrentStanding;
-  if Speed = 0 then raise Exception.Create(#$D0#$9A#$D0#$BB#$D0#$B8#$D0#$BD#$D0#$B3#$20#$D0#$B2#$D1#$8B#$D0#$BF#$D1#$83#$D1#$81#$D1#$82#$D0#$B8#$D0#$BB#$D1#$81#$D1#$8F#$20#$D1#$81#$D0#$BE#$20#$D1#$81#$D0#$BA#$D0#$BE#$D1#$80#$D0#$BE#$D1#$81#$D1#$82#$D1#$8C#$D1#$8E#$20#$30);
+  if Speed = 0 then raise Exception.Create(DominatorZeroSpeedError);
 end;
 { @end $5E831C }
 
@@ -256,7 +262,7 @@ begin
   ImproveStandardEquipment;
   RefreshDerivedStats(True);
   RefreshCurrentStanding;
-  if Speed = 0 then raise Exception.Create(#$D0#$9A#$D0#$BB#$D0#$B8#$D0#$BD#$D0#$B3#$20#$D0#$B2#$D1#$8B#$D0#$BF#$D1#$83#$D1#$81#$D1#$82#$D0#$B8#$D0#$BB#$D1#$81#$D1#$8F#$20#$D1#$81#$D0#$BE#$20#$D1#$81#$D0#$BA#$D0#$BE#$D1#$80#$D0#$BE#$D1#$81#$D1#$82#$D1#$8C#$D1#$8E#$20#$30);
+  if Speed = 0 then raise Exception.Create(DominatorZeroSpeedError);
 end;
 { @end $5E87D8 }
 
@@ -318,7 +324,7 @@ begin
   ImproveStandardEquipment;
   RefreshDerivedStats(True);
   RefreshCurrentStanding;
-  if Speed = 0 then raise Exception.Create(#$D0#$9A#$D0#$BB#$D0#$B8#$D0#$BD#$D0#$B3#$20#$D0#$B2#$D1#$8B#$D0#$BF#$D1#$83#$D1#$81#$D1#$82#$D0#$B8#$D0#$BB#$D1#$81#$D1#$8F#$20#$D1#$81#$D0#$BE#$20#$D1#$81#$D0#$BA#$D0#$BE#$D1#$80#$D0#$BE#$D1#$81#$D1#$82#$D1#$8C#$D1#$8E#$20#$30);
+  if Speed = 0 then raise Exception.Create(DominatorZeroSpeedError);
 end;
 { @end $5E8C20 }
 
@@ -1155,17 +1161,25 @@ begin
 end;
 { @end $5ED2E4 }
 
-// Native diagnostic literal pool precedes the invasion helpers.
+// Native diagnostic literal pool precedes the invasion helpers. These stored
+// strings contain UTF-8 decoded as Windows-1251, then widened to UTF-16.
+// Numeric escapes preserve the native code points; comments show the decoded Russian.
 var
   DominatorDebugMessages: array[0..6] of WideString = (
+    // Decoded text: Ахтунг! Босс Террон атакован!
     #1056#1106#1057#8230#1057#8218#1057#1107#1056#1029#1056#1110#33#32#1056#8216#1056#1109#1057#1027#1057#1027#32#1056#1118#1056#181#1057#1026#1057#1026#1056#1109#1056#1029#32#1056#176#1057#8218#1056#176#1056#1108#1056#1109#1056#1030#1056#176#1056#1029#33,
+    // Decoded text: Меняем боевую позицию
     #1056#1114#1056#181#1056#1029#1057#1039#1056#181#1056#1112#32#1056#177#1056#1109#1056#181#1056#1030#1057#1107#1057#1035#32#1056#1111#1056#1109#1056#183#1056#1105#1057#8224#1056#1105#1057#1035,
+    // Decoded text: Срочно подкрепление!
     #1056#1038#1057#1026#1056#1109#1057#8225#1056#1029#1056#1109#32#1056#1111#1056#1109#1056#1169#1056#1108#1057#1026#1056#181#1056#1111#1056#187#1056#181#1056#1029#1056#1105#1056#181#33,
+    // Decoded text: Пора потеснить соседей
     #1056#1119#1056#1109#1057#1026#1056#176#32#1056#1111#1056#1109#1057#8218#1056#181#1057#1027#1056#1029#1056#1105#1057#8218#1057#1034#32#1057#1027#1056#1109#1057#1027#1056#181#1056#1169#1056#181#1056#8470,
+    // Decoded text: Солдаты на фронт
     #1056#1038#1056#1109#1056#187#1056#1169#1056#176#1057#8218#1057#8249#32#1056#1029#1056#176#32#1057#8222#1057#1026#1056#1109#1056#1029#1057#8218,
+    // Decoded text: Надо расширять границы
     #1056#1116#1056#176#1056#1169#1056#1109#32#1057#1026#1056#176#1057#1027#1057#8364#1056#1105#1057#1026#1057#1039#1057#8218#1057#1034#32#1056#1110#1057#1026#1056#176#1056#1029#1056#1105#1057#8224#1057#8249,
     ''
-  ); // @addr $87BE10 Unused Terron AI diagnostics; native UTF-16 mojibake is intentional.
+  ); // @addr $87BE10 Unused Terron AI diagnostics; preserves the native UTF-16 mojibake.
 
 { @routine $5EDEC0 TKling_CoordinateSeriesInvasions }
 procedure TKling.CoordinateSeriesInvasions(Series: TDominatorSeries);

@@ -620,8 +620,11 @@ var
   ApplyEditableSaveOnLoad: Boolean = False; // @addr $87AA5C
   EditableSaveFileName: WideString = ''; // @addr $87AA60
 var
-  // Both need initialized storage, including the nil pointer, so native dormant
-  // checks adding 4 to PlatformCheckAnchor's address still target ModShipNameConfig.
+  // Native CheckPlatformModules adds a local byte offset of 4 to this address
+  // ($4C67FA, $4C6964, $4C6AD3), then overwrites ModShipNameConfig with a random
+  // integer. Its early Exit leaves these checks dormant in this build.
+  // Keep both globals initialized and adjacent: a direct assignment would
+  // remove address arithmetic that is present in the native instructions.
   PlatformCheckAnchor: Integer = -35753766; // @addr $87AA64 @note "Dormant checks write a random integer at byte offset 4 from this address, overlapping ModShipNameConfig. Original anchor meaning unresolved."
   ModShipNameConfig: TBlockParEC = nil; // @addr $87AA68
   ModRuinNameConfig: TBlockParEC = nil; // @addr $87AA6C
@@ -643,9 +646,12 @@ var
   RecordingFrameCount: Integer = 0; // @addr $87AAA8
   RecordingFrameInterval: Integer = 50; // @addr $87AAAC @note "1000 div FilmFPS; native does not check for zero."
   LastRecordingFrameTick: Cardinal = 0; // @addr $87AAB0
-  // Keep these zero-filled globals consecutive and in this order. Native
-  // VerifyStartupModuleChecksum subtracts 8 from StartupChecksumAnchor's address;
-  // other routines access each variable directly. DCC32 preserves this storage order.
+  // Native VerifyStartupModuleChecksum subtracts a local byte offset of 8 from
+  // StartupChecksumAnchor's address for each marker access ($4CCE67..$4CCE97).
+  // The subtraction is emitted at runtime, not inferred from adjacent addresses.
+  // Keep these initialized globals consecutive and in this order; direct access
+  // to UnknownPresentState would remove those native subtraction instructions.
+  // Other routines access UnknownPresentState and LastMouseMessageTick directly.
   UnknownPresentState: Integer = 0; // @addr $87AAB4 Signed integrity marker: positive after a failed startup module checksum, negative after a clean check; reset by TMessageLoopGI.Present.
   LastMouseMessageTick: Cardinal = 0; // @addr $87AAB8
   StartupChecksumAnchor: Integer = 0; // @addr $87AABC @note "Checksum helper accesses UnknownPresentState at byte offset -8; original anchor meaning unresolved."
