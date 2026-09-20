@@ -20,21 +20,21 @@ type
     ThumbImage: TImageGI; // @offset $138
     HitRadius: Integer; // @offset $13C
     ChangeCallback: TObjectNotifyEventGI; // @offset $140
-    constructor Create(Owner: TObjectGI); // @addr $4928B8 @ida "TSBPathGI *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, TObjectGI *Owner@<ecx>);"
-    destructor Destroy; override; // @addr $492950 @ida "void __usercall $name(TSBPathGI *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create(Owner: TObjectGI); // @addr $4928B8
+    destructor Destroy; override; // @addr $492950
     procedure Clear; override; // @addr $492984
     procedure SetImagePath(Path: WideString); // @addr $4929C4
     procedure SetPositionValue(Value: Integer); // @addr $492A7C
     procedure UpdateThumbPosition; // @addr $492B14
     function PositionFromPointIndex(Index: Integer): Integer; // @addr $492BC4
-    function FindClosestPoint(Point: TPoint; var DistanceSquared: Integer): Integer; // @addr $492C34 @ida "int __usercall $name@<eax>(TSBPathGI *Self@<eax>, TPoint *Point@<edx>, int *DistanceSquared@<ecx>);"
+    function FindClosestPoint(Point: TPoint; var DistanceSquared: Integer): Integer; // @addr $492C34
     procedure OnActivate; override; // @addr $492CDC
     procedure OnDeactivate; override; // @addr $492CF8
     procedure OnMouseEnter; override; // @addr $492D14
     procedure OnMouseLeave; override; // @addr $492D28
-    procedure ProcessLeftButtonDown(KeyState: Cardinal; Point: TPoint); override; // @addr $492D3C @ida "void __usercall $name(TSBPathGI *Self@<eax>, unsigned int KeyState@<edx>, TPoint *Point@<ecx>);"
-    procedure ProcessMouseMove(KeyState: Cardinal; Point: TPoint); override; // @addr $492E30 @ida "void __usercall $name(TSBPathGI *Self@<eax>, unsigned int KeyState@<edx>, TPoint *Point@<ecx>);"
-    procedure ProcessLeftButtonUp(KeyState: Cardinal; Point: TPoint); override; // @addr $492DFC @ida "void __usercall $name(TSBPathGI *Self@<eax>, unsigned int KeyState@<edx>, TPoint *Point@<ecx>);"
+    procedure ProcessLeftButtonDown(KeyState: Cardinal; Point: TPoint); override; // @addr $492D3C
+    procedure ProcessMouseMove(KeyState: Cardinal; Point: TPoint); override; // @addr $492E30
+    procedure ProcessLeftButtonUp(KeyState: Cardinal; Point: TPoint); override; // @addr $492DFC
     procedure LoadFromConfigPath(const Path: WideString); override; // @addr $492EF4
     procedure LoadFromBlock(Block: TBlockParEC); override; // @addr $492F28
     procedure LoadPathProperties(Block: TBlockParEC); // @addr $492F50

@@ -18,7 +18,7 @@ type
     Width: Integer; // @offset 0x10
     Grayscale: Boolean; // @offset 0x14
 
-    destructor Destroy; override; // @ida "void __usercall $name(TJPEGData *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    destructor Destroy; override;
     procedure FreeHandle; virtual; // @addr 0x852074 @slot 0x00 @note "Empty; the stream is released by Destroy."
   end;
 
@@ -40,12 +40,12 @@ type
     Scale: TJPEGScale; // @offset 0x43
     NeedsSizeRecalc: Boolean; // @offset 0x44
 
-    constructor Create; override; // @slot 0x48 @ida "TJPEGImage *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @ida "void __usercall $name(TJPEGImage *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; override; // @slot 0x48
+    destructor Destroy; override;
     procedure AssignTo(Dest: TPersistent); virtual; // @slot 0x00
     procedure Assign(Source: TPersistent); virtual; // @slot 0x08 @note "JPEG sources share compressed data; bitmap sources copy pixels into a fresh image."
     procedure Changed(Sender: TObject); override; // @addr 0x8525B8 @slot 0x10
-    procedure Draw(Canvas: TCanvas; Rect: TRect); virtual; // @slot 0x14 @ida "void __usercall $name(TJPEGImage *Self@<eax>, TCanvas *Canvas@<edx>, TRect *Rect@<ecx>);"
+    procedure Draw(Canvas: TCanvas; Rect: TRect); virtual; // @slot 0x14
     function Equals(Graphic: TGraphic): Boolean; override; // @slot 0x18
     function GetEmpty: Boolean; virtual; // @slot 0x1C
     function GetHeight: Integer; virtual; // @slot 0x20

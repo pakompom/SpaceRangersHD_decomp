@@ -12,12 +12,12 @@ type
     RemainingTicks: Integer; // @offset 0x128
     LifetimeTicks: Integer; // @offset 0x12C
 
-    constructor Create(Owner: TObjectGI); // @addr 0x4DC588 @ida "TPSWeaponGI *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, TObjectGI *Owner@<ecx>);"
-    procedure SetTargetPoint(Point: TPoint); virtual; abstract; // @slot $C8 @ida "void __usercall $name(TPSWeaponGI *Self@<eax>, TPoint *Point@<edx>);"
+    constructor Create(Owner: TObjectGI); // @addr 0x4DC588
+    procedure SetTargetPoint(Point: TPoint); virtual; abstract; // @slot $C8
     procedure Advance(Timer: PCallbackTimerGI; UserData: Integer); virtual; abstract; // @slot $CC
     function IsFinished: Boolean; // @addr $4DC5F0
     function GetElapsedTicks: Integer; virtual; // @addr 0x4DC610 @slot 0xD0 @note "Returns LifetimeTicks minus RemainingTicks without clamping."
-    function SampleGradientColor(const ColorValues: array of Single; Phase: Single): Cardinal; // @addr 0x4DC638 @ida "unsigned int __userpurge $name@<eax>(TPSWeaponGI *Self@<eax>, float *ColorValues@<edx>, int ColorValuesHigh@<ecx>, float Phase@<^0>);" @note "Cyclic interpolation of normalized RGB triples in the current pixel format. Requires at least one triple and nonnegative Phase; trailing incomplete triples are ignored."
+    function SampleGradientColor(const ColorValues: array of Single; Phase: Single): Cardinal; // @addr 0x4DC638 @note "Cyclic interpolation of normalized RGB triples in the current pixel format. Requires at least one triple and nonnegative Phase; trailing incomplete triples are ignored."
   end;
 
 implementation

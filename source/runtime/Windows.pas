@@ -85,7 +85,7 @@ type
 
   TWinMsg = TMsg;
 
-function HwndMSWheel(var puiMsh_MsgMouseWheel, puiMsh_Msg3DSupport, puiMsh_MsgScrollLines: Cardinal; var pf3DSupport: LongBool; var piScrollLines: Integer): Cardinal; // @ida "unsigned __int32 __userpurge $name@<eax>(unsigned __int32 *puiMsh_MsgMouseWheel@<eax>, unsigned __int32 *puiMsh_Msg3DSupport@<edx>, unsigned __int32 *puiMsh_MsgScrollLines@<ecx>, __int32 *pf3DSupport@<^4>, __int32 *piScrollLines@<^0>);" @note "DCC32 MAP Windows.HwndMSWheel. Source rtl/win/Windows.pas:31956."
+function HwndMSWheel(var puiMsh_MsgMouseWheel, puiMsh_Msg3DSupport, puiMsh_MsgScrollLines: Cardinal; var pf3DSupport: LongBool; var piScrollLines: Integer): Cardinal; // @note "DCC32 MAP Windows.HwndMSWheel. Source rtl/win/Windows.pas:31956."
 
 procedure FinalizeWindows; // @nameonly @note "DCC32 MAP Windows.Finalization. Prototype pending: no unique source declaration."
 

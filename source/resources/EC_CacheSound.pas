@@ -43,8 +43,8 @@ type
     SampleData: Pointer; // @offset 0x34
     SampleDataSize: Cardinal; // @offset 0x38
 
-    constructor Create; // @addr 0x83DEA4 @ida "TCSoundEC *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x83DEE8 @ida "void __usercall $name(TCSoundEC *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x83DEA4
+    destructor Destroy; override; // @addr 0x83DEE8
     procedure LoadFromConfigBuffer(SourceBuffer: TBufEC; const LoadOption: WideString); override; // @addr 0x83DF38 @slot 0x00 @note "Reads 44 bytes from the current position. Forces PCM without validating RIFF, WAVE or fmt identifiers. If data is absent at header offset 36, scans the whole buffer byte by byte for it. Ignores LoadOption."
   end;
 

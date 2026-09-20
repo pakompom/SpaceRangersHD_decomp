@@ -18,22 +18,22 @@ type
     ImagePath: WideString; // @offset 0x13C
     AutoUpdateFlags: Cardinal; // @offset 0x140
 
-    constructor Create(Owner: TObjectGI); // @addr 0x47EBEC @ida "TImageGI *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, TObjectGI *Owner@<ecx>);"
-    destructor Destroy; override; // @addr 0x47EC34 @ida "void __usercall $name(TImageGI *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create(Owner: TObjectGI); // @addr 0x47EBEC
+    destructor Destroy; override; // @addr 0x47EC34
     procedure Clear; override; // @addr 0x47EC68
     procedure SetImagePath(Path: WideString); // @addr 0x47EC7C @note "Empty paths remove the child; unknown modes raise."
-    function GetImagePath: WideString; // @addr 0x47F334 @ida "void __usercall $name(TImageGI *Self@<eax>, unsigned __int16 **Result@<edx>);"
-    function GetContentSize: TPoint; // @addr 0x47F358 @ida "void __usercall $name(TImageGI *Self@<eax>, TPoint *Result@<edx>);"
-    function GetContentOrigin: TPoint; // @addr 0x47F474 @ida "void __usercall $name(TImageGI *Self@<eax>, TPoint *Result@<edx>);" @note "Only GI children supply an origin; other kinds return (0,0)."
+    function GetImagePath: WideString; // @addr 0x47F334
+    function GetContentSize: TPoint; // @addr 0x47F358
+    function GetContentOrigin: TPoint; // @addr 0x47F474 @note "Only GI children supply an origin; other kinds return (0,0)."
     procedure SetImageKindX(Value: TImageKindXGI); // @addr 0x47F4B0
     procedure SetImageKindY(Value: TImageKindYGI); // @addr 0x47F5A0
     procedure SetHalfAlpha(Value: Boolean); // @addr 0x47F690 @note "Only affects Simple, Trans and Anim children."
     function GetAlpha: Byte; // @addr 0x47F6FC @note "Returns GI/GAI alpha, or 255 for other kinds."
     procedure SetAlpha(Value: Byte); // @addr 0x47F750 @note "Only affects GI/GAI children."
-    procedure SetSize(Size: TPoint); override; // @addr 0x47F79C @ida "void __usercall $name(TImageGI *Self@<eax>, TPoint *Size@<edx>);"
-    procedure SetOrigin(Origin: TPoint); override; // @addr 0x47F89C @ida "void __usercall $name(TImageGI *Self@<eax>, TPoint *Origin@<edx>);"
-    function HitTestPixel(Point: TPoint): Boolean; // @addr 0x47F9AC @ida "bool __usercall $name@<al>(TImageGI *Self@<eax>, TPoint *Point@<edx>);" @note "Returns false for kinds other than Alpha, Anim, GI and GAI."
-    function GetVisualCenter: TPoint; // @addr 0x47FA54 @ida "void __usercall $name(TImageGI *Self@<eax>, TPoint *Result@<edx>);" @note "Only GI and GraphBuf write the result; other kinds leave it untouched."
+    procedure SetSize(Size: TPoint); override; // @addr 0x47F79C
+    procedure SetOrigin(Origin: TPoint); override; // @addr 0x47F89C
+    function HitTestPixel(Point: TPoint): Boolean; // @addr 0x47F9AC @note "Returns false for kinds other than Alpha, Anim, GI and GAI."
+    function GetVisualCenter: TPoint; // @addr 0x47FA54 @note "Only GI and GraphBuf write the result; other kinds leave it untouched."
     procedure RestartPlayback; // @addr 0x47FAA0
     procedure StopPlayback; // @addr 0x47FAC4
     procedure LoadFromConfigPath(const Path: WideString); override; // @addr 0x47FAE8

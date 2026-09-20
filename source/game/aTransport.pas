@@ -12,9 +12,9 @@ type
   public
     TransportType: TTransportType; // @offset 0x510  Script.ShipSubType.
 
-    function AdjustItemEvaluation(Item: TItem; PriceMode: Byte; Effectiveness: Single): Single; override; // @addr $72351C @slot $50 @ida "float __userpurge $name@<st0>(TTransport *Self@<eax>, TItem *Item@<edx>, unsigned __int8 PriceMode@<cl>, float Effectiveness@<^0>);"
-    function EvaluateStatBonus(BonusKind: TEquipmentBonusKind; Value: Integer): Single; override; // @addr $723C88 @slot $54 @ida "float __usercall $name@<st0>(TTransport *Self@<eax>, TEquipmentBonusKind BonusKind@<dl>, int Value@<ecx>);"
-    function EvaluateWeaponDamage(Weapon: TWeapon; IncludeAdditiveBonuses: Boolean; BaseDamage: Single): Single; override; // @addr $724650 @slot $58 @ida "float __userpurge $name@<st0>(TTransport *Self@<eax>, TWeapon *Weapon@<edx>, bool IncludeAdditiveBonuses@<cl>, float BaseDamage@<^0>);"
+    function AdjustItemEvaluation(Item: TItem; PriceMode: Byte; Effectiveness: Single): Single; override; // @addr $72351C @slot $50
+    function EvaluateStatBonus(BonusKind: TEquipmentBonusKind; Value: Integer): Single; override; // @addr $723C88 @slot $54
+    function EvaluateWeaponDamage(Weapon: TWeapon; IncludeAdditiveBonuses: Boolean; BaseDamage: Single): Single; override; // @addr $724650 @slot $58
 
     function RelationToRanger(Ranger: Pointer): Byte; override; // @addr $7208E8 @slot $74
     procedure ChangeRelationToRanger(Ranger: Pointer; Amount: Integer); override; // @addr $720930 @slot $78
@@ -33,19 +33,19 @@ type
     function BuildTrucePaymentResponse(OtherShip: TShip; var Response: WideString; OfferedAmount: Integer): Boolean; override; // @addr $722B7C @slot $B0
     function BuildAttackRequestResponse(Requester: TShip; var Response: WideString; Target: TShip): Boolean; override; // @addr $722F64 @slot $B4
 
-    destructor Destroy; override; // @addr 0x71E5E4 @ida "void __usercall $name(TTransport *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    destructor Destroy; override; // @addr 0x71E5E4
     procedure InitGenerated(Planet: TPlanet; InitialMoney: Integer; SubType: TTransportType; RandomizeSubType: Boolean); // @addr 0x71EA2C @note "Registers Self with the planet's star; requires a fresh instance."
     procedure SaveToBuffer(Buffer: TBufEC); override; // @addr 0x71F000 @slot 0x00
     procedure LoadFromBuffer(Buffer: TBufEC; Galaxy: TGalaxy); override; // @addr 0x71F02C @slot 0x04
     procedure ResolveLoadedReferences(Galaxy: TGalaxy); override; // @addr 0x71F060 @slot 0x08
 
-    function GetTypeNameKey: WideString; override; // @addr $7203FC @slot $2C @ida "void __usercall $name(TTransport *Self@<eax>, unsigned __int16 **Result@<edx>);"
+    function GetTypeNameKey: WideString; override; // @addr $7203FC @slot $2C
     function GetGreetingShipCategory: Byte; override; // @addr $720428 @slot $30
     function GetHomeStar: TStar; override; // @addr $720200 @slot $34
     function GetStrengthScaledPirateStatus: TPercent; override; // @addr $720470 @slot $3C
     function GetDominantCareer: TRangerCareer; override; // @addr 0x72045C @slot 0x38 @note "Always rcTrader."
-    function GetName: WideString; override; // @addr 0x72021C @slot 0x24 @ida "void __usercall $name(TTransport *Self@<eax>, unsigned __int16 **Result@<edx>);"
-    function GetFullName(const Separator: WideString): WideString; override; // @addr 0x72023C @slot 0x28 @ida "void __usercall $name(TTransport *Self@<eax>, unsigned __int16 *Separator@<edx>, unsigned __int16 **Result@<ecx>);"
+    function GetName: WideString; override; // @addr 0x72021C @slot 0x24
+    function GetFullName(const Separator: WideString): WideString; override; // @addr 0x72023C @slot 0x28
 
     procedure NextDay; override; // @addr 0x71F07C @slot 0x18
     procedure NextDayLogic; override; // @addr 0x71F2F0 @slot 0x1C @calls "0x71F164"
@@ -87,7 +87,7 @@ end;
 procedure TTransport.InitGenerated(Planet: TPlanet; InitialMoney: Integer; SubType: TTransportType; RandomizeSubType: Boolean);
 var I: Integer; Ranger: TRanger; Good: Byte;
   // @nested $71E62C SelectUniqueName
-  procedure SelectUniqueName(Config: TBlockParEC); // @addr $71E62C @ida "void __usercall $name(TBlockParEC *Config@<eax>, void *ParentFrame@<^0>);" @note "Nested name-selection helper; caller-popped static link and parent Self at -4."
+  procedure SelectUniqueName(Config: TBlockParEC); // @addr $71E62C @note "Nested name-selection helper; caller-popped static link and parent Self at -4."
   var Index, Attempt, I, J, LastIndex, FirstIndex: Integer; Ship: TShip; Star: TStar; Duplicate: Boolean; Block: TBlockParEC;
   begin
     if Config = nil then Exit;
@@ -800,7 +800,7 @@ end;
 function TTransport.BuildMoneyExtortionResponse(OtherShip: TShip; var Response: WideString; DemandedAmount: Integer): Boolean;
 var NextDemandTurn: Integer; LicenseFactor: Single;
   // @nested $721DBC PayDemand
-  procedure PayDemand; // @addr $721DBC @ida "void __usercall $name(void *ParentFrame@<^0>);" @note "Nested response helper with caller-popped static link."
+  procedure PayDemand; // @addr $721DBC @note "Nested response helper with caller-popped static link."
   var Event: TGalaxyEvent;
   begin
     AbductedByPirateClan := False;
@@ -851,7 +851,7 @@ end;
 function TTransport.BuildCargoExtortionResponse(OtherShip: TShip; var Response: WideString): Boolean;
 var Forced: Boolean; NextDemandTurn: Integer;
   // @nested $722498 DropDemand
-  procedure DropDemand; // @addr $722498 @ida "void __usercall $name(void *ParentFrame@<^0>);" @note "Nested response helper with caller-popped static link."
+  procedure DropDemand; // @addr $722498 @note "Nested response helper with caller-popped static link."
   var Good: Byte; Pass, Count, TotalValue, LowValue, HighValue: Integer; Enough: Boolean; Divisor: Single; Event: TGalaxyEvent;
   begin
     AbductedByPirateClan := False;
@@ -911,7 +911,7 @@ end;
 function TTransport.BuildTrucePaymentResponse(OtherShip: TShip; var Response: WideString; OfferedAmount: Integer): Boolean;
 var NextDemandTurn: Integer;
   // @nested $722B2C AcceptPayment
-  procedure AcceptPayment; // @addr $722B2C @ida "void __usercall $name(void *ParentFrame@<^0>);" @note "Nested response helper with caller-popped static link."
+  procedure AcceptPayment; // @addr $722B2C @note "Nested response helper with caller-popped static link."
   begin
     OtherShip.SetMoney(OtherShip.Money - OfferedAmount);
     SetMoney(Money + OfferedAmount);
@@ -936,7 +936,7 @@ end;
 { @routine $722F64 TTransport_BuildAttackRequestResponse }
 function TTransport.BuildAttackRequestResponse(Requester: TShip; var Response: WideString; Target: TShip): Boolean;
   // @nested $722E8C AcceptRequest
-  procedure AcceptRequest; // @addr $722E8C @ida "void __usercall $name(void *ParentFrame@<^0>);" @note "Nested response helper with caller-popped static link."
+  procedure AcceptRequest; // @addr $722E8C @note "Nested response helper with caller-popped static link."
   begin
     Response := LookupVisibleTalkText('Talk.Attack.' + GetTypeNameKey + 'Ok', Requester);
     SetJointAttackTarget(Requester, Target);

@@ -22,18 +22,18 @@ type
     Down: Boolean; // @offset $141
     DownCallback: TObjectNotifyEventGI; // @offset $148
     UpCallback: TObjectNotifyEventGI; // @offset $150
-    constructor Create(Owner: TObjectGI); // @addr $49C628 @ida "TTextButtonGI *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, TObjectGI *Owner@<ecx>);"
-    destructor Destroy; override; // @addr $49C740 @ida "void __usercall $name(TTextButtonGI *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create(Owner: TObjectGI); // @addr $49C628
+    destructor Destroy; override; // @addr $49C740
     procedure Clear; override; // @addr $49C7A4
     procedure OnActivate; override; // @addr $49C840
     procedure OnDeactivate; override; // @addr $49C898
     procedure OnMouseEnter; override; // @addr $49C8CC
     procedure OnMouseLeave; override; // @addr $49C908
-    procedure ProcessLeftButtonDown(KeyState: Cardinal; Point: TPoint); override; // @addr $49C984 @ida "void __usercall $name(TTextButtonGI *Self@<eax>, unsigned int KeyState@<edx>, TPoint *Point@<ecx>);"
-    procedure ProcessLeftButtonUp(KeyState: Cardinal; Point: TPoint); override; // @addr $49CAA8 @ida "void __usercall $name(TTextButtonGI *Self@<eax>, unsigned int KeyState@<edx>, TPoint *Point@<ecx>);"
+    procedure ProcessLeftButtonDown(KeyState: Cardinal; Point: TPoint); override; // @addr $49C984
+    procedure ProcessLeftButtonUp(KeyState: Cardinal; Point: TPoint); override; // @addr $49CAA8
     procedure LoadFromConfigPath(const Path: WideString); override; // @addr $49CB48
     procedure LoadFromBlock(Block: TBlockParEC); override; // @addr $49D1BC
-    procedure Draw(ClipRect: TRect); override; // @addr $49D818 @ida "void __usercall $name(TTextButtonGI *Self@<eax>, TRect *ClipRect@<edx>);"
+    procedure Draw(ClipRect: TRect); override; // @addr $49D818
     procedure QueueImageLoad(PendingLoads: TList); override; // @addr $49DBD0
   end;
 

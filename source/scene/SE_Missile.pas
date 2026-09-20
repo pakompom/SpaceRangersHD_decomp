@@ -13,10 +13,10 @@ type
     Image: TRotateImage5GI; // @offset $54
     AnimationTimer: PSpaceTimerSE; // @offset $58
 
-    destructor Destroy; override; // @addr $4EF530 @ida "void __usercall $name(TMissileSE *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    destructor Destroy; override; // @addr $4EF530
     procedure AttachToSpace(ASpace: TSpaceSE); override; // @addr $4EF564 @slot $04 @note "Native diagnostic name: TMissileSE.Connect."
     procedure DetachFromSpace; override; // @addr $4EFB68
-    procedure SetPosition(APosition: TPointF); override; // @addr $4EFBC8 @ida "void __usercall $name(TMissileSE *Self@<eax>, TPointF *APosition@<edx>);"
+    procedure SetPosition(APosition: TPointF); override; // @addr $4EFBC8
     function GetAngle: Byte; override; // @addr $4EFC20
     procedure SetAngle(Value: Byte); override; // @addr $4EFC3C
     function HitTestCursor: Boolean; override; // @addr $4EFC74

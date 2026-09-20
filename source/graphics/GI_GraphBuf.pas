@@ -15,25 +15,25 @@ type
     SourceHasPerPixelAlpha: Boolean; // @offset 0x127
     UsesExternalGraphBuf: Boolean; // @offset 0x128
 
-    constructor Create(Owner: TObjectGI; UseTexture: Boolean); // @addr 0x47D5DC @ida "TGraphBufGI *__userpurge $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, TObjectGI *Owner@<ecx>, bool UseTexture@<^0>);"
-    destructor Destroy; override; // @addr 0x47D668 @ida "void __usercall $name(TGraphBufGI *Self@<eax>, __int8 DestroyFlags@<dl>);" @note "Frees GraphBuf only when it is owned."
+    constructor Create(Owner: TObjectGI; UseTexture: Boolean); // @addr 0x47D5DC
+    destructor Destroy; override; // @addr 0x47D668 @note "Frees GraphBuf only when it is owned."
     procedure SetImageKindX(Value: TImageKindXGI); // @addr 0x47D6C0
     procedure SetImageKindY(Value: TImageKindYGI); // @addr 0x47D6F8
     procedure Clear; override; // @addr 0x47D730 @note "Detaches borrowed buffers without freeing them."
     procedure SetHalfAlpha(Value: Boolean); // @addr 0x47D79C
     procedure AllocateBuffer(Width, Height: Integer; UseTexture: Boolean); // @addr 0x47D7D4 @note "Does not modify a previously borrowed buffer; the resulting buffer is owned."
     procedure ClearOwnedBuffer; // @addr 0x47D838
-    procedure CopyScreenRectToBuffer(ScreenRect, BufferRect: TRect); // @addr 0x47D85C @ida "void __usercall $name(TGraphBufGI *Self@<eax>, TRect *ScreenRect@<edx>, TRect *BufferRect@<ecx>);" @note "Requires equal nonempty extents, in-bounds rectangles and a buffer without per-pixel alpha."
+    procedure CopyScreenRectToBuffer(ScreenRect, BufferRect: TRect); // @addr 0x47D85C @note "Requires equal nonempty extents, in-bounds rectangles and a buffer without per-pixel alpha."
     procedure LoadBitmapPathAsRgba(const BitmapPath: WideString); // @addr 0x47D9C4
     procedure LoadBitmapPathAsRgb(const BitmapPath: WideString); // @addr 0x47DAA8
-    function HitTestPixel(Point: TPoint): Boolean; // @addr 0x47DB8C @ida "bool __usercall $name@<al>(TGraphBufGI *Self@<eax>, TPoint *Point@<edx>);" @note "Black pixels do not count as hits."
-    function GetVisualCenter: TPoint; // @addr 0x47DEFC @ida "void __usercall $name(TGraphBufGI *Self@<eax>, TPoint *Result@<edx>);" @note "Uses nonzero pixels. CenterFill is unsupported and can leave bounds changed and temporary storage leaked."
+    function HitTestPixel(Point: TPoint): Boolean; // @addr 0x47DB8C @note "Black pixels do not count as hits."
+    function GetVisualCenter: TPoint; // @addr 0x47DEFC @note "Uses nonzero pixels. CenterFill is unsupported and can leave bounds changed and temporary storage leaked."
     procedure LoadFromConfigPath(const Path: WideString); override; // @addr 0x47E2F0
     procedure LoadFromBlock(Block: TBlockParEC); override; // @addr 0x47E324
     procedure LoadImageProperties(Block: TBlockParEC); // @addr 0x47E34C
     procedure LoadScaledBitmapPathAsRgba(const BitmapPath: WideString); // @addr 0x47E464 @note "Fits the image inside the control size while preserving its aspect ratio."
     procedure LoadScaledGiPath(const GiPath: WideString); // @addr 0x47E550
-    procedure Draw(ClipRect: TRect); override; // @addr 0x47E6BC @ida "void __usercall $name(TGraphBufGI *Self@<eax>, TRect *ClipRect@<edx>);"
+    procedure Draw(ClipRect: TRect); override; // @addr 0x47E6BC
     procedure BindExternalGraphBuf(Buffer: TGraphBufGR); // @addr 0x47EA64 @note "Buffer is borrowed; alpha flags are unchanged."
   end;
 

@@ -24,8 +24,8 @@ type
     GroupIndex: Integer; // @offset 0x24
     GroupCount: Integer; // @offset 0x28
 
-    constructor Create; // @addr 0x846794 @ida "TBlockParElEC *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x8467D8 @ida "void __usercall $name(TBlockParElEC *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x846794
+    destructor Destroy; override; // @addr 0x8467D8
     procedure Clear; // @addr 0x846814 @note "Frees ChildBlock; links and index metadata remain unchanged."
     procedure MakeChildBlock; // @addr 0x846864 @note "Replaces the owned child; caller must update owner counts and index."
     procedure CopyFrom(Source: TBlockParElEC); // @addr 0x8468B4 @note "Deep-copies ChildBlock; links and index metadata remain unchanged."
@@ -44,8 +44,8 @@ type
     SortedEntries: array of TBlockParElEC; // @offset 0x1C
     SortedEntryCount: Integer; // @offset 0x20
 
-    constructor Create; // @addr 0x846940 @ida "TBlockParEC *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x846988 @ida "void __usercall $name(TBlockParEC *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x846940
+    destructor Destroy; override; // @addr 0x846988
     procedure Clear; // @addr 0x8469C4 @note "Preserves UseSortedIndex."
     procedure CopyFrom(Source: TBlockParEC); // @addr 0x846A40
     function AddEntry: TBlockParElEC; // @addr 0x846ACC @note "Caller must maintain kind counts and the sorted index."
@@ -59,22 +59,22 @@ type
     // Params are string entries; blocks have separate accessors. ByPath traverses
     // subtrees, while ParamName addresses a direct child. OrMarker returns
     // '[name]' or '[path]' when missing; ordinary getters raise instead.
-    function GetParamByPath(const Path: WideString): WideString; // @addr 0x8473FC @ida "void __usercall $name(TBlockParEC *Self@<eax>, unsigned __int16 *Path@<edx>, unsigned __int16 **Result@<ecx>);"
-    function GetParamByPathOrMarker(const Path: WideString): WideString; // @addr 0x8474C8 @ida "void __usercall $name(TBlockParEC *Self@<eax>, unsigned __int16 *Path@<edx>, unsigned __int16 **Result@<ecx>);" @note "Returns a marker containing Path when lookup fails, including caught exceptions."
+    function GetParamByPath(const Path: WideString): WideString; // @addr 0x8473FC
+    function GetParamByPathOrMarker(const Path: WideString): WideString; // @addr 0x8474C8 @note "Returns a marker containing Path when lookup fails, including caught exceptions."
     function CountParamsByPath(const Path: WideString): Integer; // @addr 0x847580 @note "Creates missing intermediate subtrees."
     function AddParam(const ParamName, ParamValue: WideString): TBlockParElEC; // @addr 0x847650
     procedure SetParam(const ParamName, ParamValue: WideString); // @addr 0x8476B8 @note "Only the first match is affected; raises when absent."
     procedure SetOrAddParam(const ParamName, ParamValue: WideString); // @addr 0x8477BC
     procedure DeleteParam(const ParamName: WideString); // @addr 0x847824 @note "Only the first match is affected; raises when absent."
     procedure DeleteChildBlock(const BlockName: WideString); // @addr 0x847938 @note "Only the first match is affected; raises when absent."
-    function GetParam(const ParamName: WideString): WideString; // @addr 0x847A50 @ida "void __usercall $name(TBlockParEC *Self@<eax>, unsigned __int16 *ParamName@<edx>, unsigned __int16 **Result@<ecx>);"
-    function GetParamOrMarker(const ParamName: WideString): WideString; // @addr 0x847B54 @ida "void __usercall $name(TBlockParEC *Self@<eax>, unsigned __int16 *ParamName@<edx>, unsigned __int16 **Result@<ecx>);"
+    function GetParam(const ParamName: WideString): WideString; // @addr 0x847A50
+    function GetParamOrMarker(const ParamName: WideString): WideString; // @addr 0x847B54
     function GetParamCount: Integer; // @addr 0x847BD8
     function CountParams(const ParamName: WideString): Integer; // @addr 0x847BF4
     // GetParamValue/GetParamName take zero-based string-entry indexes.
     // Kind-specific indexes use sorted order only when all entries have that kind.
-    function GetParamValue(Index: Integer): WideString; // @addr 0x847CB8 @ida "void __usercall $name(TBlockParEC *Self@<eax>, int Index@<edx>, unsigned __int16 **Result@<ecx>);"
-    function GetParamName(Index: Integer): WideString; // @addr 0x847DC8 @ida "void __usercall $name(TBlockParEC *Self@<eax>, int Index@<edx>, unsigned __int16 **Result@<ecx>);"
+    function GetParamValue(Index: Integer): WideString; // @addr 0x847CB8
+    function GetParamName(Index: Integer): WideString; // @addr 0x847DC8
     function AddBlockByPath(const Path: WideString): TBlockParEC; // @addr 0x847EDC @note "Nested insertion updates the receiver's index and block count."
     function GetBlockByPath(const Path: WideString): TBlockParEC; // @addr 0x847FE0 @note "Raises when Path is absent or is not a block."
     function FindBlockByPath(const Path: WideString): TBlockParEC; // @addr 0x8480C8
@@ -85,14 +85,14 @@ type
     function GetBlockCount: Integer; // @addr 0x8482F8
     function CountBlocks(const BlockName: WideString): Integer; // @addr 0x848314
     function GetBlockByIndex(Index: Integer): TBlockParEC; // @addr 0x8483D8
-    function GetBlockNameByIndex(Index: Integer): WideString; // @addr 0x8484DC @ida "void __usercall $name(TBlockParEC *Self@<eax>, int Index@<edx>, unsigned __int16 **Result@<ecx>);"
+    function GetBlockNameByIndex(Index: Integer): WideString; // @addr 0x8484DC
 
     function GetEntryCount: Integer; // @addr 0x8485F0
     // Mixed-kind indexes use the sorted array only when it covers every entry.
     function GetEntryKindByIndex(Index: Integer): TBlockParKind; // @addr 0x84860C
     function GetEntryBlockByIndex(Index: Integer): TBlockParEC; // @addr 0x848708
-    function GetEntryStringByIndex(Index: Integer): WideString; // @addr 0x848880 @ida "void __usercall $name(TBlockParEC *Self@<eax>, int Index@<edx>, unsigned __int16 **Result@<ecx>);"
-    function GetEntryNameByIndex(Index: Integer): WideString; // @addr 0x8489FC @ida "void __usercall $name(TBlockParEC *Self@<eax>, int Index@<edx>, unsigned __int16 **Result@<ecx>);"
+    function GetEntryStringByIndex(Index: Integer): WideString; // @addr 0x848880
+    function GetEntryNameByIndex(Index: Integer): WideString; // @addr 0x8489FC
 
     // Text writers append at Dest.Position. Sorted applies only with UseSortedIndex.
     procedure WriteWideText(Dest: TBufEC; Indent: Integer; Sorted: Boolean); // @addr 0x848DF8 @note "Uses four spaces per indentation level and CRLF line endings."
@@ -104,7 +104,7 @@ type
     procedure LoadFromTextBufferWithEncodingProbe(Buf: TBufEC; PreserveComments: Boolean); // @addr 0x849714 @note "Does nothing with at most two bytes remaining; otherwise consumes a UTF-16LE BOM or parses ANSI text."
     procedure LoadFromTextFileWithEncodingProbe(FileName: PWideChar; PreserveComments: Boolean); // @addr 0x849780
     procedure MergeFrom(Source: TBlockParEC); // @addr 0x8497E8 @note "Replaces all same-name string parameters; matches duplicate child blocks by occurrence and merges them recursively."
-    function ConcatenateValues: WideString; // @addr 0x8499BC @ida "void __usercall $name(TBlockParEC *Self@<eax>, unsigned __int16 **Result@<edx>);" @note "Omits names and wraps child values in braces; text-only entries are not accepted."
+    function ConcatenateValues: WideString; // @addr 0x8499BC @note "Omits names and wraps child values in braces; text-only entries are not accepted."
     procedure LoadFromDecodedBuffer(Buf: TBufEC); // @addr 0x849A9C @note "Replaces existing contents; trusts sorted-group metadata from the stream."
     procedure LoadFromEncryptedDatFile(const FileName: WideString); // @addr 0x849C34 @note "An inner checksum mismatch leaves the tree unchanged."
   end;

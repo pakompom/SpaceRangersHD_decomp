@@ -43,8 +43,8 @@ type
     NormalizeBounds: Boolean; // @offset $139
     SegmentHeap: Cardinal; // @offset $13C
 
-    constructor Create(Owner: TObjectGI); // @addr $4B5784 @ida "TPolyLineGI *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, TObjectGI *Owner@<ecx>);"
-    destructor Destroy; override; // @addr $4B588C @ida "void __usercall $name(TPolyLineGI *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create(Owner: TObjectGI); // @addr $4B5784
+    destructor Destroy; override; // @addr $4B588C
     procedure Clear; override; // @addr $4B5900
     function AllocateSegment: PPolyLineSegmentGI; // @addr $4B594C
     procedure ClearSegments; // @addr $4B59F4
@@ -54,9 +54,9 @@ type
     procedure LoadFromBlock(Block: TBlockParEC); override; // @addr $4B5B94
     procedure LoadPolyLineProperties(Block: TBlockParEC); // @addr $4B5BBC @note "Empty in native code."
     procedure RebuildBounds; // @addr $4B5BCC
-    function AddParentLine(First, Last: TPoint; Color: Cardinal; UserData: Integer): PPolyLineSegmentGI; // @addr $4B5DA0 @ida "PPolyLineSegmentGI __userpurge $name@<eax>(TPolyLineGI *Self@<eax>, TPoint *First@<edx>, TPoint *Last@<ecx>, unsigned int Color@<^4>, int UserData@<^0>);"
-    function AddLine(First, Last: TPoint; Color: Cardinal): PPolyLineSegmentGI; // @addr $4B5E74 @ida "PPolyLineSegmentGI __userpurge $name@<eax>(TPolyLineGI *Self@<eax>, TPoint *First@<edx>, TPoint *Last@<ecx>, unsigned int Color@<^0>);"
-    function AddLocalLine(First, Last: TPoint; Color: Cardinal; UserData: Integer): PPolyLineSegmentGI; // @addr $4B5EB0 @ida "PPolyLineSegmentGI __userpurge $name@<eax>(TPolyLineGI *Self@<eax>, TPoint *First@<edx>, TPoint *Last@<ecx>, unsigned int Color@<^4>, int UserData@<^0>);"
+    function AddParentLine(First, Last: TPoint; Color: Cardinal; UserData: Integer): PPolyLineSegmentGI; // @addr $4B5DA0
+    function AddLine(First, Last: TPoint; Color: Cardinal): PPolyLineSegmentGI; // @addr $4B5E74
+    function AddLocalLine(First, Last: TPoint; Color: Cardinal; UserData: Integer): PPolyLineSegmentGI; // @addr $4B5EB0
     procedure UpdateSegmentLength(Segment: PPolyLineSegmentGI); // @addr $4B5F50
     procedure RetireSegment(Segment: PPolyLineSegmentGI); // @addr $4B5FEC
     procedure StartAnimation; // @addr $4B6060
@@ -65,10 +65,10 @@ type
     procedure Invalidate; override; // @addr $4B613C
     procedure ErasePreviousFrame; override; // @addr $4B6198
     procedure PrepareFrameDraw; override; // @addr $4B622C
-    procedure DrawUpdateRects(ClipRect: TRect); override; // @addr $4B6420 @ida "void __usercall $name(TPolyLineGI *Self@<eax>, TRect *ClipRect@<edx>);"
-    procedure Draw(ClipRect: TRect); override; // @addr $4B64A0 @ida "void __usercall $name(TPolyLineGI *Self@<eax>, TRect *ClipRect@<edx>);"
-    procedure DrawSegment(Segment: PPolyLineSegmentGI; ClipRect: TRect); virtual; // @addr $4B6558 @slot $C8 @ida "void __usercall $name(TPolyLineGI *Self@<eax>, PPolyLineSegmentGI Segment@<edx>, TRect *ClipRect@<ecx>);"
-    procedure DrawFrameSegment(Segment: PPolyLineSegmentGI; ClipRect: TRect); virtual; // @addr $4B66A0 @slot $CC @ida "void __usercall $name(TPolyLineGI *Self@<eax>, PPolyLineSegmentGI Segment@<edx>, TRect *ClipRect@<ecx>);"
+    procedure DrawUpdateRects(ClipRect: TRect); override; // @addr $4B6420
+    procedure Draw(ClipRect: TRect); override; // @addr $4B64A0
+    procedure DrawSegment(Segment: PPolyLineSegmentGI; ClipRect: TRect); virtual; // @addr $4B6558 @slot $C8
+    procedure DrawFrameSegment(Segment: PPolyLineSegmentGI; ClipRect: TRect); virtual; // @addr $4B66A0 @slot $CC
     procedure CommitFrameDraw; override; // @addr $4B6BC0 @note "Empty in native code."
   end;
 

@@ -14,16 +14,16 @@ type
     HalfAlpha: Boolean; // @offset 0x126
     CurrentFrame: TObjectGI; // @offset 0x128
 
-    constructor Create(Owner: TObjectGI); // @addr 0x483364 @ida "TAImageGI *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, TObjectGI *Owner@<ecx>);"
-    destructor Destroy; override; // @addr 0x4833B8 @ida "void __usercall $name(TAImageGI *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create(Owner: TObjectGI); // @addr 0x483364
+    destructor Destroy; override; // @addr 0x4833B8
     procedure Clear; override; // @addr 0x4833EC @note "Does not call inherited Clear."
-    function GetContentSize: TPoint; // @addr 0x483438 @ida "void __usercall $name(TAImageGI *Self@<eax>, TPoint *Result@<edx>);" @note "Returns the componentwise maximum size over child frames."
+    function GetContentSize: TPoint; // @addr 0x483438 @note "Returns the componentwise maximum size over child frames."
     procedure SetImageKindX(Value: TImageKindXGI); // @addr 0x4834E0
     procedure SetImageKindY(Value: TImageKindYGI); // @addr 0x483534
     procedure SetHalfAlpha(Value: Boolean); // @addr 0x483588
-    procedure SetSize(Size: TPoint); override; // @addr 0x4835DC @ida "void __usercall $name(TAImageGI *Self@<eax>, TPoint *Size@<edx>);"
+    procedure SetSize(Size: TPoint); override; // @addr 0x4835DC
     procedure AdvanceFrame(Timer: PCallbackTimerGI; UserData: Integer); // @addr 0x483628
-    function HitTest(Point: TPoint): Boolean; // @addr 0x483724 @ida "bool __usercall $name@<al>(TAImageGI *Self@<eax>, TPoint *Point@<edx>);" @note "Uses rectangular child bounds, regardless of transparent pixels."
+    function HitTest(Point: TPoint): Boolean; // @addr 0x483724 @note "Uses rectangular child bounds, regardless of transparent pixels."
     procedure OnActivate; override; // @addr 0x483768
     procedure LoadFromConfigPath(const Path: WideString); override; // @addr 0x48378C
     procedure LoadFromBlock(Block: TBlockParEC); override; // @addr 0x4837C0

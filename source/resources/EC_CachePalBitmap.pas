@@ -20,8 +20,8 @@ type
   public
     Bitmap: TGraphBufPalGR; // @offset 0x20
 
-    constructor Create; // @addr 0x493420 @ida "TCPalBitmapEC *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x493474 @ida "void __usercall $name(TCPalBitmapEC *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x493420
+    destructor Destroy; override; // @addr 0x493474
     procedure LoadFromConfigBuffer(SourceBuffer: TBufEC; const LoadOption: WideString); override; // @addr 0x4934C4
   end;
 

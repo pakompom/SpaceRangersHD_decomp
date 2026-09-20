@@ -24,7 +24,7 @@ type
     procedure AddCreditSeparator; // @addr 0x595890
     procedure AddCreditSpacing(Height: Integer); // @addr 0x5959D0
     procedure ScrollCredits(Timer: PCallbackTimerGI; UserData: Integer); // @addr 0x5959EC
-    procedure CloseMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x595A6C @ida "void __userpurge $name(TfAbout *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
+    procedure CloseMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x595A6C
     procedure CloseKeyDown(Sender: TObjectGI; Key: Cardinal); // @addr 0x595AB8
   end;
 

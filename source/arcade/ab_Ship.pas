@@ -44,8 +44,8 @@ type
     HealthScalePercent: Integer; // @offset $2D4 Scripted encounter health multiplier.
     DamageScalePercent: Integer; // @offset $2D8 Scripted encounter weapon damage multiplier.
     HasFiredWeapon: Boolean; // @offset $2DC Set by firing; retained for the no-shots victory check.
-    constructor Create; // @addr $501F14 @ida "TabShip *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr $50203C @ida "void __usercall $name(TabShip *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr $501F14
+    destructor Destroy; override; // @addr $50203C
     procedure CreateShipVisual(const GraphKey: WideString; Diameter: Integer); // @addr $5023E4
     procedure CreateRuinsVisual(const GraphKey: WideString; Diameter: Integer); // @addr $50255C
     procedure AttachVisual; // @addr $50264C
@@ -54,7 +54,7 @@ type
     function FindNearestEnemyWithBearing(Origin: TabObject; var Bearing: TSphericalBearingDistance): TabShip; // @addr $5027C4
     procedure AddEnemy(Ship: TabShip); // @addr $50288C
     procedure AddTrackedShip(Ship: TabShip); // @addr $5028C0
-    procedure SetTurnInput(Value: Double); // @addr $502960 @ida "void __userpurge $name(TabShip *Self@<eax>, double Value@<^0>);"
+    procedure SetTurnInput(Value: Double); // @addr $502960
     procedure StartThrust; // @addr $502984
     procedure StopThrust; // @addr $5029A0
     procedure StartReverseThrust; // @addr $5029B8

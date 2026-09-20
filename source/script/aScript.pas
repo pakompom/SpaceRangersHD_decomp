@@ -147,16 +147,16 @@ type
     ShipRequirements: array of TScriptShipOtb; // @offset 0x18
     Star: TStar; // @offset 0x1C
 
-    constructor Create; // @addr 0x64F91C @ida "TScriptStar *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x64F990 @ida "void __usercall $name(TScriptStar *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x64F91C
+    destructor Destroy; override; // @addr 0x64F990
   end;
 
   TScriptConstellation = class(TObjectEx) // @size 0x8
   public
     Constellation: TConstellation; // @offset 0x04
 
-    constructor Create; // @addr 0x64F9F4 @ida "TScriptConstellation *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x64FA38 @ida "void __usercall $name(TScriptConstellation *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x64F9F4
+    destructor Destroy; override; // @addr 0x64FA38
   end;
 
   TScriptShip = class(TObjectEx) // @size 0x2C
@@ -173,8 +173,8 @@ type
     function GetGroup: TScriptGroup; // @addr 0x64FB00
     function RunActionCode(ActionType: Byte; Ship: TShip; Object1, Object2: TObject; Param: Integer): Integer; // @addr 0x65B30C @note "Returns the event parameter after script changes. Object slots can carry event-specific integers."
 
-    constructor Create; // @addr 0x64FA6C @ida "TScriptShip *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x64FAB0 @ida "void __usercall $name(TScriptShip *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x64FA6C
+    destructor Destroy; override; // @addr 0x64FAB0
   end;
 
   TScriptPlace = class(TObjectEx) // @size 0x34
@@ -191,12 +191,12 @@ type
     TargetValue: Dword; // @offset 0x28  Kinds 1/2: TPlanet; 3: TStar; 4: TScriptItem; 5: group index; 6: TVarEC for X.
     TargetVarName2: WideString; // @offset 0x2C
     TargetValue2: TVarEC; // @offset 0x30  Second coordinate variable for spkCoordinates.
-    function GetPoint: TPointF; // @addr 0x64FBA0 @ida "void __usercall $name(TScriptPlace *Self@<eax>, TPointF *Result@<edx>);"
-    function GetRandomPoint(Seed: Cardinal): TPointF; // @addr 0x65004C @ida "void __usercall $name(TScriptPlace *Self@<eax>, unsigned int Seed@<edx>, TPointF *Result@<ecx>);"
+    function GetPoint: TPointF; // @addr 0x64FBA0
+    function GetRandomPoint(Seed: Cardinal): TPointF; // @addr 0x65004C
     function ShipInPlace(Ship: TShip): Boolean; // @addr 0x6501B4 @note "Kind 2 requires docking at the bound planet; other kinds require normal space."
 
-    constructor Create; // @addr 0x64FB28 @ida "TScriptPlace *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x64FB6C @ida "void __usercall $name(TScriptPlace *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x64FB28
+    destructor Destroy; override; // @addr 0x64FB6C
   end;
 
   TScriptItem = class(TObjectEx) // @size 0x64
@@ -225,10 +225,10 @@ type
     Script: TScript; // @offset 0x60
     procedure CompileActionCode; // @addr 0x65ABC4 @note "Requires nonempty OnActionText and an empty ActionCode slot."
     function RunActionCode(ActionType: Byte; Ship: TShip; Object1, Object2: TObject; Param: Integer): Integer; // @addr 0x65AF44 @note "Returns the event parameter after script changes. Object slots can carry event-specific integers."
-    function FormatDataText(Text, ColorTag: WideString): WideString; // @addr 0x65C114 @ida "void __userpurge $name(TScriptItem *Self@<eax>, unsigned __int16 *Text@<edx>, unsigned __int16 *ColorTag@<ecx>, unsigned __int16 **Result@<^0>);"
+    function FormatDataText(Text, ColorTag: WideString): WideString; // @addr 0x65C114
 
-    constructor Create; // @addr 0x650228 @ida "TScriptItem *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x650280 @ida "void __usercall $name(TScriptItem *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x650228
+    destructor Destroy; override; // @addr 0x650280
   end;
 
   TScriptGroup = class(TObjectEx) // @size 0x70
@@ -261,8 +261,8 @@ type
     DefinitionText: WideString; // @offset 0x68  Loaded but its purpose remains unresolved.
     Ships: TList; // @offset 0x6C  Owned container for group creation.
 
-    constructor Create; // @addr 0x6502EC @ida "TScriptGroup *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x650330 @ida "void __usercall $name(TScriptGroup *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x6502EC
+    destructor Destroy; override; // @addr 0x650330
   end;
 
   TScriptState = class(TObjectEx) // @size 0x4C
@@ -286,8 +286,8 @@ type
     StateCode: TCodeEC; // @offset 0x48
     // EntryCode runs before CurShip/EndState refresh; StateCode sees the new context.
 
-    constructor Create; // @addr 0x650380 @ida "TScriptState *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x6503DC @ida "void __usercall $name(TScriptState *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x650380
+    destructor Destroy; override; // @addr 0x6503DC
   end;
 
   TScriptDialog = class(TObjectEx) // @size 0xC
@@ -295,8 +295,8 @@ type
     Name: WideString; // @offset 0x04
     Code: TCodeEC; // @offset 0x08
 
-    constructor Create; // @addr 0x6504A0 @ida "TScriptDialog *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x6504F4 @ida "void __usercall $name(TScriptDialog *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x6504A0
+    destructor Destroy; override; // @addr 0x6504F4
   end;
 
   TScriptDialogMsg = class(TObjectEx) // @size 0xC
@@ -304,8 +304,8 @@ type
     Name: WideString; // @offset 0x04
     Code: TCodeEC; // @offset 0x08
 
-    constructor Create; // @addr 0x650544 @ida "TScriptDialogMsg *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x650598 @ida "void __usercall $name(TScriptDialogMsg *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x650544
+    destructor Destroy; override; // @addr 0x650598
   end;
 
   TScriptDialogAnswer = class(TObjectEx) // @size 0x10
@@ -314,8 +314,8 @@ type
     AnswerCode: TCodeEC; // @offset 0x08
     ActionCode: TCodeEC; // @offset 0x0C
 
-    constructor Create; // @addr 0x6505E8 @ida "TScriptDialogAnswer *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x650650 @ida "void __usercall $name(TScriptDialogAnswer *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x6505E8
+    destructor Destroy; override; // @addr 0x650650
   end;
 
   TScript = class(TObjectEx) // @size 0x60
@@ -371,13 +371,13 @@ type
     procedure BindImportedFunctions; // @addr 0x6583F4
     procedure ResolveLoadedReferences(Galaxy: TGalaxy); // @addr 0x658658 @note "Resolves saved ship IDs and restores ship, place, and state bindings after LoadState."
 
-    constructor Create; // @addr 0x6506BC @ida "TScript *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x650818 @ida "void __usercall $name(TScript *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x6506BC
+    destructor Destroy; override; // @addr 0x650818
   end;
 
   TScriptThread = class(TThreadEC) // @size 0x2C
   public
-    constructor Create; // @addr 0x64D8B4 @ida "TScriptThread *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
+    constructor Create; // @addr 0x64D8B4
     procedure Execute; override; // @addr 0x64D8F8 @slot 0x00
   end;
 
@@ -390,8 +390,8 @@ type
     StepTypeMask: TScriptStepTypeSet; // @offset 0x18  Native 12-bit step-type set.
     procedure Initialize(Name, SourceText, ActionTypes, StepTypes: WideString); // @addr 0x65A350
 
-    constructor Create; // @addr 0x65A2B4 @ida "TScriptCacheUnit *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x65A300 @ida "void __usercall $name(TScriptCacheUnit *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x65A2B4
+    destructor Destroy; override; // @addr 0x65A300
   end;
 
   TScriptCache = class(TObject) // @size 0x8
@@ -399,8 +399,8 @@ type
     Entries: TObjectList; // @offset 0x04  Owns TScriptCacheUnit entries sorted by Name.
     function GetOrCompile(Name: WideString; Config: TBlockParEC): TScriptCacheUnit; // @addr 0x65A058 @note "Returns nil for absent or empty OnActCode."
 
-    constructor Create; // @addr 0x659BB8 @ida "TScriptCache *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x659C60 @ida "void __usercall $name(TScriptCache *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x659BB8
+    destructor Destroy; override; // @addr 0x659C60
   end;
 
   TScriptGICacheUnit = class(TObject) // @size 0x10
@@ -410,8 +410,8 @@ type
     Code: TCodeEC; // @offset 0x0C  Owned.
     procedure Initialize(Block: TBlockParEC; SourceText: WideString); // @addr 0x65A678
 
-    constructor Create; // @addr 0x65A5DC @ida "TScriptGICacheUnit *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x65A628 @ida "void __usercall $name(TScriptGICacheUnit *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x65A5DC
+    destructor Destroy; override; // @addr 0x65A628
   end;
 
   TScriptQuestStatus = (sqsNone = 0, sqsQueued = 1, sqsSuccess = 2, sqsFailure = 3); // @size 0x04
@@ -421,8 +421,8 @@ type
     Entries: TObjectList; // @offset 0x04  Owns entries sorted by Block pointer.
     function GetOrCompile(Block: TBlockParEC): TScriptGICacheUnit; // @addr 0x659D70 @note "Returns nil for empty source."
 
-    constructor Create; // @addr 0x659C0C @ida "TScriptGICache *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x659CA4 @ida "void __usercall $name(TScriptGICache *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x659C0C
+    destructor Destroy; override; // @addr 0x659CA4
   end;
   PScriptABRequest = ^TScriptABRequest;
 
@@ -431,11 +431,11 @@ type
     LibraryName: WideString; // @offset 0x04
     ModuleHandle: Cardinal; // @offset 0x08  Owned Win32 module handle.
     DefinitionBlock: TBlockParEC; // @offset 0x0C  Borrowed ScriptLibs.<name> block.
-    constructor Create(LibraryName: WideString; ModuleHandle: Cardinal; DefinitionBlock: TBlockParEC); // @addr 0x6589F4 @ida "TLibraryHandler *__userpurge $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, unsigned __int16 *LibraryName@<ecx>, unsigned int ModuleHandle@<^4>, TBlockParEC *DefinitionBlock@<^0>);"
+    constructor Create(LibraryName: WideString; ModuleHandle: Cardinal; DefinitionBlock: TBlockParEC); // @addr 0x6589F4
     procedure InitFunction(Cell: TVarEC); // @addr 0x658AFC
     procedure InitAllFunctions(Scope: TVarArrayEC); // @addr 0x658FE4
 
-    destructor Destroy; override; // @addr 0x658A90 @ida "void __usercall $name(TLibraryHandler *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    destructor Destroy; override; // @addr 0x658A90
   end;
   PScriptPBRequest = ^TScriptPBRequest;
 
@@ -445,8 +445,8 @@ type
     function GetLib(Name: WideString): TLibraryHandler; // @addr 0x659300
     procedure InitFunction(Cell: TVarEC); // @addr 0x6594E0
 
-    constructor Create; // @addr 0x659114 @ida "TLibraryCache *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x659168 @ida "void __usercall $name(TLibraryCache *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x659114
+    destructor Destroy; override; // @addr 0x659168
   end;
   PScriptVDRequest = ^TScriptVDRequest;
 
@@ -563,11 +563,11 @@ procedure RunScriptCode(ContextName: WideString; Code, ParentCode: TCodeEC); // 
 function GetCachedActionCode(var Cache: TScriptCache; Name: WideString; Config: TBlockParEC): TScriptCacheUnit; // @addr 0x65A6E4
 procedure ExecuteGameplayUiCode(Block: TBlockParEC; VirtualKey: Cardinal); // @addr 0x65A764 @note "Runs with CurrentScript nil. VirtualKey=0 leaves KEY and KEYMOD unchanged."
 procedure ScriptSnap(out Snapshot: TScriptContextSnapshot); // @addr 0x65AABC @note "When CurrentScript is nil, only Snapshot.Script is written."
-procedure ScriptUnSnap(Snapshot: TScriptContextSnapshot); // @addr 0x65AB28 @ida "void __usercall $name(TScriptContextSnapshot *Snapshot@<eax>);"
+procedure ScriptUnSnap(Snapshot: TScriptContextSnapshot); // @addr 0x65AB28
 function RunItemUseCode(Item: TItem; Ship: TShip): Integer; // @addr 0x65B66C @note "Returns ScriptItemActParam, initially zero."
 function RunItemConfigActionCode(Item: TItem; ActionType: Byte; Ship: TShip; Object1, Object2: TObject; Param: Integer): Integer; // @addr 0x65B880 @note "Uses artifact or useless-item configuration code. Object slots can carry event-specific integers."
 function RunCustomShipInfoActionCode(Info: PCustomShipInfo; ActionType: Byte; Ship: TShip; Object1, Object2: TObject; Param: Integer): Integer; // @addr 0x65BC78 @note "Returns the event parameter after script changes. Object slots can carry event-specific integers."
-function GetScriptContextDescription: WideString; // @addr 0x65C308 @ida "void __usercall $name(unsigned __int16 **Result@<eax>);"
+function GetScriptContextDescription: WideString; // @addr 0x65C308
 
 implementation
 
@@ -2770,7 +2770,7 @@ var
   KlingType: Byte;
 
   // @nested $6532F0 CompileStateActionCode
-  procedure CompileStateActionCode(State: TScriptState); // @addr 0x6532F0 @ida "void __usercall $name(TScriptState *State@<eax>, void *ParentFrame@<^0>);" @note "Nested helper; captures Self at ParentFrame-4. Caller removes ParentFrame."
+  procedure CompileStateActionCode(State: TScriptState); // @addr 0x6532F0 @note "Nested helper; captures Self at ParentFrame-4. Caller removes ParentFrame."
   var
     SourceText, ActionTypes, StepTypes: WideString;
     I, Count: Integer;

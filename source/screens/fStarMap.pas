@@ -121,13 +121,13 @@ type
     EndTurnAfterOpen: Boolean; // @offset 0x295
     PendingSceneObjects: TList; // @offset 0x298
 
-    constructor Create; // @addr 0x6A49E0 @ida "TfStarMap *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x6A4AB8 @ida "void __usercall $name(TfStarMap *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x6A49E0
+    destructor Destroy; override; // @addr 0x6A4AB8
     procedure DrawFrame; override; // @addr 0x6AC8EC
     procedure OnOpen; override; // @addr 0x6A64B8
     procedure OnClose; override; // @addr 0x6A7408
     procedure SelectMusic; override; // @addr 0x6C7710
-    procedure ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer); override; // @addr 0x6BD160 @ida "void __userpurge $name(TfStarMap *Self@<eax>, unsigned int KeyState@<edx>, TPoint *Point@<ecx>, int Delta@<^0>);"
+    procedure ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer); override; // @addr 0x6BD160
     procedure InitializeLayout; override; // @addr 0x6A4D9C
     procedure UpdateActionCursor(CanTake: Boolean); override; // @addr 0x6BC1F0
     procedure ExecuteUiCode(Block: TBlockParEC; Key: Cardinal); override; // @addr 0x6C7674
@@ -143,10 +143,10 @@ type
     procedure RestartTurnFilm; // @addr 0x6BD9BC
     procedure OpenFilmHistoryClicked(Sender: TObjectGI); // @addr 0x6A914C
 
-    function GetMapCenter: TPoint; // @addr 0x6A4B5C @ida "void __usercall $name(TfStarMap *Self@<eax>, TPoint *Result@<edx>);"
-    procedure SetMapCenterManually(Point: TPoint); // @addr 0x6A4BC8 @ida "void __usercall $name(TfStarMap *Self@<eax>, TPoint *Point@<edx>);" @note "Disables automatic film-camera following."
-    procedure SetMapCenter(Center: TPoint); // @addr 0x6A4C64 @ida "void __usercall $name(TfStarMap *Self@<eax>, TPoint *Center@<edx>);"
-    procedure CenterMapForTalk(Position: TPointF); // @addr 0x6A4CF8 @ida "void __usercall $name(TfStarMap *Self@<eax>, TPointF *Position@<edx>);"
+    function GetMapCenter: TPoint; // @addr 0x6A4B5C
+    procedure SetMapCenterManually(Point: TPoint); // @addr 0x6A4BC8 @note "Disables automatic film-camera following."
+    procedure SetMapCenter(Center: TPoint); // @addr 0x6A4C64
+    procedure CenterMapForTalk(Position: TPointF); // @addr 0x6A4CF8
     procedure RestorePendingSceneObjects; // @addr 0x6A7828
     procedure BuildSpaceBackground(StarField: TStarFieldGI; SpaceImage: TSpaceImgGI; Seed: Cardinal; BackgroundIndex: Integer); // @addr 0x6A79E4
     procedure SaveSpaceImageState(SpaceImage: TSpaceImgGI); // @addr 0x6A85D8
@@ -161,10 +161,10 @@ type
     procedure ClearPartnerButtons; // @addr 0x6AACBC
     procedure RebuildPartnerButtons; // @addr 0x6AACE8
     procedure PartnerClicked(Sender: TObjectGI); // @addr 0x6AB5DC
-    procedure PartnerRightButtonDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x6AB888 @ida "void __userpurge $name(TfStarMap *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
+    procedure PartnerRightButtonDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x6AB888
     procedure PartnerMouseEnter(Sender: TObjectGI); // @addr 0x6AB98C
     procedure PartnerMouseLeave(Sender: TObjectGI); // @addr 0x6AB9E4
-    procedure AddMapAnimation(Position: TPointF; ImagePath: WideString; DelayMs: Integer); // @addr 0x6ABA00 @ida "void __userpurge $name(TfStarMap *Self@<eax>, TPointF *Position@<edx>, unsigned __int16 *ImagePath@<ecx>, int DelayMs@<^0>);"
+    procedure AddMapAnimation(Position: TPointF; ImagePath: WideString; DelayMs: Integer); // @addr 0x6ABA00
     procedure ClearMapAnimations; // @addr 0x6ABB34
     procedure MapAnimationFinished(Sender: TObjectGI); // @addr 0x6ABB8C
     function FindObjectAtCursor: TObject; // @addr 0x6ABBB0 @note "Returns a borrowed game object or nil; updates HitObjectPosition and HitObjectSize."
@@ -182,18 +182,18 @@ type
     procedure ConfigureMiddleButtonAction; // @addr 0x6AD978
     procedure ScrollMap(Timer: PCallbackTimerGI; UserData: Integer); // @addr 0x6AD9C8
     procedure AdvanceSpaceEffects(Timer: PCallbackTimerGI; UserData: Integer); // @addr 0x6ADB48
-    function IsMapPointBlocked(Sender: TObjectGI; Point: TPoint): Boolean; // @addr 0x6ADBB4 @ida "bool __usercall $name@<al>(TfStarMap *Self@<eax>, TObjectGI *Sender@<edx>, TPoint *Point@<ecx>);"
-    procedure MapLeftButtonDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x6ADE34 @ida "void __userpurge $name(TfStarMap *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
-    procedure MapMiddleButtonDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x6B0418 @ida "void __userpurge $name(TfStarMap *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
-    procedure MapRightButtonDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x6B0CF0 @ida "void __userpurge $name(TfStarMap *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
-    procedure MapMouseMove(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x6B18D0 @ida "void __userpurge $name(TfStarMap *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
+    function IsMapPointBlocked(Sender: TObjectGI; Point: TPoint): Boolean; // @addr 0x6ADBB4
+    procedure MapLeftButtonDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x6ADE34
+    procedure MapMiddleButtonDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x6B0418
+    procedure MapRightButtonDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x6B0CF0
+    procedure MapMouseMove(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x6B18D0
     procedure OrderKeyDown(Sender: TObjectGI; Key: Cardinal); // @addr 0x6B1A3C
     procedure OrderKeyUp(Sender: TObjectGI; Key: Cardinal); // @addr 0x6B222C
     procedure SelectAllUsableWeapons; // @addr 0x6B225C
     procedure SelectUntargetedWeapons; // @addr 0x6B2308
     procedure ShowObjectInfo(Obj: TObject); // @addr 0x6B2394 @note "Nil hides the object panels. Accepts game objects, not scene objects."
     procedure MapScrollChanged; // @addr 0x6B9D40
-    function GetPriceSnapshotKey(Obj: TObject): WideString; // @addr 0x6B9D64 @ida "void __usercall $name(TfStarMap *Self@<eax>, TObject *Obj@<edx>, unsigned __int16 **Result@<ecx>);"
+    function GetPriceSnapshotKey(Obj: TObject): WideString; // @addr 0x6B9D64
     procedure SaveVisiblePriceSnapshots; // @addr 0x6B9E74
     procedure CenterOnShip(Ship: TShip); // @addr 0x6BA0D0
     procedure CenterOnDominator(Selection: Integer); // @addr 0x6BA1FC @note "Selection 1 chooses the nearest TKling; 2 chooses the farthest."
@@ -224,7 +224,7 @@ type
     procedure CenterFilmShipClicked(Sender: TObjectGI); // @addr 0x6BF518
     procedure CenterFilmShipMouseEnter(Sender: TObjectGI); // @addr 0x6BF53C
     procedure CenterFilmShipMouseLeave(Sender: TObjectGI); // @addr 0x6BF598
-    procedure FilmMouseMove(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x6BF5B4 @ida "void __userpurge $name(TfStarMap *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
+    procedure FilmMouseMove(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x6BF5B4
     function FindFilmObjectAtCursor(out ObjectId: Cardinal): TObjectSE; // @addr 0x6BF660 @note "Returns a borrowed scene object; sets ObjectId to zero on failure."
     procedure ShowFilmObjectInfo(Obj: TObjectSE; ObjectId: Cardinal); // @addr 0x6BFAF4 @note "Nil hides the object panels. ObjectId resolves recorded information in the current film."
     procedure PrepareTalkDisplay; // @addr 0x6C6DA8

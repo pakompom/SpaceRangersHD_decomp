@@ -15,14 +15,14 @@ type
     Animation: TgaiGI; // @offset $60
     StepsPerFrame: Integer; // @offset $64
     StepIndex: Integer; // @offset $68
-    destructor Destroy; override; // @addr $603850 @ida "void __usercall $name(TGAIEffectSE *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    destructor Destroy; override; // @addr $603850
     procedure AttachToSpace(ASpace: TSpaceSE); override; // @addr $603884
     procedure DetachFromSpace; override; // @addr $603A60
-    procedure SetImagePosition(Value: TPoint); // @addr $603A90 @ida "void __usercall $name(TGAIEffectSE *Self@<eax>, TPoint *Value@<edx>);"
-    procedure SetDurationScale(Value: Single); // @addr $603AB8 @ida "void __userpurge $name(TGAIEffectSE *Self@<eax>, float Value@<^0>);"
+    procedure SetImagePosition(Value: TPoint); // @addr $603A90
+    procedure SetDurationScale(Value: Single); // @addr $603AB8
     procedure Advance; override; // @addr $603AD0
     procedure LoadTemplate(Block: TBlockParEC); override; // @addr $603B5C
-    constructor Create(const GraphKey: WideString; UnusedPosition: TPoint); // @addr $6037EC @ida "TGAIEffectSE *__userpurge $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, unsigned __int16 *GraphKey@<ecx>, TPoint *UnusedPosition@<^0>);"
+    constructor Create(const GraphKey: WideString; UnusedPosition: TPoint); // @addr $6037EC
   end;
 
 implementation

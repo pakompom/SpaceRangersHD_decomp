@@ -11,8 +11,8 @@ type
     PlanetPanel: TfPanelPlanet; // @offset 0xD4
     LoadPanel: TfPanelLoad; // @offset 0xD8
 
-    constructor Create; // @addr 0x8110DC @ida "TfPlanet *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x811148 @ida "void __usercall $name(TfPlanet *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x8110DC
+    destructor Destroy; override; // @addr 0x811148
     procedure RefreshTextQuestPrompt; // @addr 0x811DF4
     procedure RefreshPlanetInfo; // @addr 0x8117A8
     procedure EndTurnClicked(Sender: TObjectGI); // @addr 0x8125E8

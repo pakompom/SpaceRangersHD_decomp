@@ -15,8 +15,18 @@ static VMT_HEAD: std::sync::LazyLock<regex::Regex> = std::sync::LazyLock::new(||
 });
 use super::*;
 
+#[derive(Clone)]
+pub(super) struct Prototype {
+    pub declaration: String,
+    // Nested register routines leave the parent frame for the caller to pop.
+    pub stack_pop: Option<i64>,
+}
+
 impl Compiler {
     pub fn prototype(&mut self, d: &Decl) -> Result<Option<String>> {
+        Ok(self.native_prototype(d)?.map(|p| p.declaration))
+    }
+    pub(super) fn native_prototype(&mut self, d: &Decl) -> Result<Option<Prototype>> {
         if let Some(value) = self.prototypes.get(&d.name) {
             return Ok(value.clone());
         }
@@ -24,7 +34,7 @@ impl Compiler {
         self.prototypes.insert(d.name.clone(), value.clone());
         Ok(value)
     }
-    pub(super) fn prototype_raw(&mut self, d: &Decl) -> Result<Option<String>> {
+    pub(super) fn prototype_raw(&mut self, d: &Decl) -> Result<Option<Prototype>> {
         let mut source_params = array(&d.data, "params").to_vec();
         let owner = string(&d.data, "owner");
         if !owner.is_empty() {
@@ -77,16 +87,11 @@ impl Compiler {
                     d.name
                 );
             }
-            return Ok(Some(format!("{};", text.trim_end_matches(';'))));
+            return Ok(Some(Prototype {
+                declaration: format!("{};", text.trim_end_matches(';')),
+                stack_pop: None,
+            }));
         }
-        ensure!(
-            !matches!(
-                string(&d.data, "routine_kind"),
-                "constructor" | "destructor"
-            ),
-            "{}: constructor/destructor hidden ABI needs @ida",
-            d.name
-        );
         let abi = match string(&d.data, "abi") {
             "" => "register",
             s => s,
@@ -96,6 +101,32 @@ impl Compiler {
             "{}: non-register method ABI needs @ida",
             d.name
         );
+        let nested = yes(&d.data, "nested");
+        ensure!(
+            !nested || abi == "register",
+            "{}: non-register nested ABI needs @ida",
+            d.name
+        );
+        let constructor = string(&d.data, "routine_kind") == "constructor";
+        let destructor = string(&d.data, "routine_kind") == "destructor";
+        if constructor || destructor {
+            ensure!(
+                !owner.is_empty() && abi == "register",
+                "{}: constructor/destructor ABI needs a register method",
+                d.name
+            );
+            if constructor {
+                source_params[0] = json!({"name":"SelfOrClass","type":"Pointer","mode":"value"});
+            }
+            source_params.insert(
+                1,
+                if constructor {
+                    json!({"name":"Allocate","type":"Byte","mode":"value"})
+                } else {
+                    json!({"name":"DestroyFlags","type":"ShortInt","mode":"value"})
+                },
+            );
+        }
         let mut params = Vec::<(String, Value)>::new();
         for p in source_params {
             let mut typ = p["type"].clone();
@@ -117,44 +148,69 @@ impl Compiler {
             } else {
                 if matches!(mode, "var" | "out")
                     || mode == "const" && (typ.is_null() || self.const_aggregate_reference(&typ)?)
+                    || abi == "register"
+                        && mode == "value"
+                        && self.record_value(&typ)?
+                        && self.size(&typ)? > 4
                 {
                     typ = json!({"pointer":typ});
                 }
                 let stack_value = matches!(abi, "cdecl" | "stdcall" | "pascal")
-                    && mode == "value"
+                    && matches!(mode, "value" | "const")
                     && (self.floating(&typ)? || self.wide_integer(&typ)?)
                     || matches!(abi, "cdecl" | "stdcall")
                         && mode == "value"
                         && self.record_value(&typ)?
                     || abi == "register"
                         && matches!(mode, "value" | "const")
-                        && self.method_pointer(&typ)?;
+                        && (self.method_pointer(&typ)?
+                            || self.floating(&typ)?
+                            || self.wide_integer(&typ)?
+                            || self.record_value(&typ)?);
                 ensure!(
-                    self.scalar(&typ)?
-                        || stack_value
-                        || abi == "register" && mode == "value" && self.wide_integer(&typ)?,
+                    self.scalar(&typ)? || stack_value,
                     "{}: complex native parameter; use @ida",
                     d.name
                 );
                 params.push((name.into(), typ));
             }
         }
-        let names: BTreeSet<_> = params.iter().map(|(n, _)| n.to_lowercase()).collect();
-        ensure!(
-            names.len() == params.len(),
-            "duplicate parameter after open-array expansion"
-        );
-        let ret = &d.data["result"];
-        let float_return = self.floating(ret)?;
-        let wide_return = self.wide_integer(ret)?;
+        let mut ret = if constructor {
+            json!(owner)
+        } else {
+            d.data["result"].clone()
+        };
+        let record_return = self.record_value(&ret)?;
+        if abi == "register"
+            && (self.managed_return(&ret)?
+                || record_return && ![1, 2, 4].contains(&self.size(&ret)?))
+        {
+            params.push(("Result".into(), json!({"pointer":ret})));
+            ret = Value::Null;
+        }
+        let float_return = self.floating(&ret)?;
+        let wide_return = self.wide_integer(&ret)?;
         ensure!(
             ret.is_null()
-                || ((self.scalar(ret)? || float_return || wide_return)
-                    && !self.managed_return(ret)?),
+                || ((self.scalar(&ret)?
+                    || float_return
+                    || wide_return
+                    || abi == "register" && record_return)
+                    && !self.managed_return(&ret)?),
             "{}: hidden/complex return ABI; use @ida",
             d.name
         );
-        let result = self.ctype(ret, "")?;
+        // Hex-Rays represents x87 registers as doubles, including Extended results.
+        let result = if float_return && self.size(&ret)? == 10 {
+            "double".into()
+        } else {
+            self.ctype(&ret, "")?
+        };
+        let mut names: BTreeSet<_> = params.iter().map(|(n, _)| n.to_lowercase()).collect();
+        ensure!(
+            names.len() == params.len() && (!nested || names.insert("parentframe".into())),
+            "duplicate parameter after implicit-argument expansion"
+        );
         if abi == "register" {
             let registers = [
                 ["al", "ax", "eax"],
@@ -169,11 +225,13 @@ impl Compiler {
                 ensure!(
                     [1, 2, 4].contains(&size)
                         || self.wide_integer(typ)?
-                        || self.method_pointer(typ)?,
+                        || self.method_pointer(typ)?
+                        || self.floating(typ)?
+                        || self.record_value(typ)?,
                     "{}: complex native parameter; use @ida",
                     d.name
                 );
-                if size <= 4 && next < 3 {
+                if [1, 2, 4].contains(&size) && !self.floating(typ)? && next < 3 {
                     locations.insert(
                         index,
                         registers[next][match size {
@@ -185,7 +243,7 @@ impl Compiler {
                     );
                     next += 1;
                 } else {
-                    stack.push((index, size.max(4)));
+                    stack.push((index, (size + 3) & !3));
                 }
             }
             let mut offset = 0;
@@ -197,6 +255,9 @@ impl Compiler {
             for (index, (name, typ)) in params.iter().enumerate() {
                 args.push(self.ctype(typ, &format!("{name}@<{}>", locations[&index]))?);
             }
+            if nested {
+                args.push(format!("void *ParentFrame@<^{offset}>"));
+            }
             let mut location = String::new();
             if !ret.is_null() {
                 let loc = if float_return {
@@ -204,7 +265,7 @@ impl Compiler {
                 } else if wide_return {
                     "edx:eax"
                 } else {
-                    match self.size(ret)? {
+                    match self.size(&ret)? {
                         1 => "al",
                         2 => "ax",
                         4 => "eax",
@@ -218,29 +279,35 @@ impl Compiler {
             } else {
                 "__userpurge"
             };
-            return Ok(Some(format!(
-                "{result} {convention} {}{location}({});",
+            return Ok(Some(Prototype {
+                declaration: format!(
+                    "{result} {convention} {}{location}({});",
+                    d.name,
+                    if args.is_empty() {
+                        "void".into()
+                    } else {
+                        args.join(", ")
+                    }
+                ),
+                stack_pop: nested.then_some(offset),
+            }));
+        }
+        let args = params
+            .iter()
+            .map(|(name, typ)| self.ctype(typ, name))
+            .collect::<Result<Vec<_>>>()?;
+        Ok(Some(Prototype {
+            declaration: format!(
+                "{result} __{abi} {}({});",
                 d.name,
                 if args.is_empty() {
                     "void".into()
                 } else {
                     args.join(", ")
                 }
-            )));
-        }
-        let args = params
-            .iter()
-            .map(|(name, typ)| self.ctype(typ, name))
-            .collect::<Result<Vec<_>>>()?;
-        Ok(Some(format!(
-            "{result} __{abi} {}({});",
-            d.name,
-            if args.is_empty() {
-                "void".into()
-            } else {
-                args.join(", ")
-            }
-        )))
+            ),
+            stack_pop: None,
+        }))
     }
     pub fn counted_stack(&mut self, d: &Decl, prototype: Option<&str>) -> Result<Value> {
         let spec = &*COUNTED_STACK;

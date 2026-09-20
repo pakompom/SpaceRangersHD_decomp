@@ -16,8 +16,8 @@ type
     Effects: TList; // @offset $C8
     StateCC: Boolean; // @offset $CC  Default True; boss transition behavior still under recovery.
 
-    constructor Create; // @addr $54CC74 @ida "TabHit *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr $54CCFC @ida "void __usercall $name(TabHit *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr $54CC74
+    destructor Destroy; override; // @addr $54CCFC
     procedure ApplyDamage(Amount: Integer; Source: TabObject; Disrupt: Boolean); override; // @addr $54CD94
     procedure UpdateState; override; // @addr $54D6B8
     procedure Advance; override; // @addr $54D760

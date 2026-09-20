@@ -28,8 +28,8 @@ type
     AcceptCharCallback: TEditAcceptCharEventGI; // @offset $160
     ClearFocusOnEnter: Boolean; // @offset 0x168
 
-    constructor Create(Owner: TObjectGI); // @addr 0x4A1A00 @ida "TEditGI *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, TObjectGI *Owner@<ecx>);"
-    destructor Destroy; override; // @addr 0x4A1B1C @ida "void __usercall $name(TEditGI *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create(Owner: TObjectGI); // @addr 0x4A1A00
+    destructor Destroy; override; // @addr 0x4A1B1C
     procedure Clear; override; // @addr 0x4A1B80
     procedure SetFontName(FontName: WideString); // @addr 0x4A1C34
     procedure SetBorderEnabled(Value: Boolean); // @addr 0x4A1C94
@@ -40,7 +40,7 @@ type
     procedure SetBorderDarkColor(Value: Cardinal); // @addr 0x4A1E28
     procedure SetTextAlignX(Value: TTextAlignXGI); // @addr 0x4A1E60 @note "Only Left and Center are accepted; other values raise."
     procedure SetCaretPosition(Value: Integer); // @addr 0x4A1EE8 @note "Clamps to 0..Length(Text)."
-    procedure ProcessLeftButtonDown(KeyState: Cardinal; Point: TPoint); override; // @addr $4A1F50 @ida "void __usercall $name(TEditGI *Self@<eax>, unsigned int KeyState@<edx>, TPoint *Point@<ecx>);"
+    procedure ProcessLeftButtonDown(KeyState: Cardinal; Point: TPoint); override; // @addr $4A1F50
     procedure OnCaretBlink; override; // @addr $4A24F4
     procedure OnFocusGained; override; // @addr 0x4A1F90
     procedure OnFocusLost; override; // @addr 0x4A1FD0
@@ -48,7 +48,7 @@ type
     procedure ProcessCharacter(Character: WideChar); override; // @addr 0x4A23C8 @note "Requires a font glyph, acceptance by the optional callback, and length below MaxLength."
     procedure LoadFromConfigPath(const Path: WideString); override; // @addr 0x4A250C
     procedure LoadFromBlock(Block: TBlockParEC); override; // @addr 0x4A2C74
-    procedure Draw(ClipRect: TRect); override; // @addr 0x4A3428 @ida "void __usercall $name(TEditGI *Self@<eax>, TRect *ClipRect@<edx>);"
+    procedure Draw(ClipRect: TRect); override; // @addr 0x4A3428
     procedure QueueImageLoad(PendingLoads: TList); override; // @addr 0x4A3D80
   end;
 

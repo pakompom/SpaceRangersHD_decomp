@@ -35,19 +35,19 @@ type
     LengthScale: Double; // @offset $158
     PaletteIndex: Integer; // @offset $160
 
-    constructor Create(Owner: TObjectGI; APaletteIndex: Integer); // @addr $686ED8 @ida "TPSWeapon01Laser *__userpurge $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, TObjectGI *Owner@<ecx>, int APaletteIndex@<^0>);"
-    destructor Destroy; override; // @addr $686F88 @ida "void __usercall $name(TPSWeapon01Laser *Self@<eax>, __int8 DestroyFlags@<dl>);"
-    procedure SetPosition(Position: TPoint); override; // @addr $686FC4 @ida "void __usercall $name(TPSWeapon01Laser *Self@<eax>, TPoint *Position@<edx>);"
-    procedure SetTargetPoint(Point: TPoint); override; // @addr $687008 @ida "void __usercall $name(TPSWeapon01Laser *Self@<eax>, TPoint *Point@<edx>);"
+    constructor Create(Owner: TObjectGI; APaletteIndex: Integer); // @addr $686ED8
+    destructor Destroy; override; // @addr $686F88
+    procedure SetPosition(Position: TPoint); override; // @addr $686FC4
+    procedure SetTargetPoint(Point: TPoint); override; // @addr $687008
     procedure UpdateProjectionBounds; // @addr $68705C
     procedure UpdateHitTestBounds; override; // @addr $687394
-    function GetLocalBounds: TRect; override; // @addr $6873F4 @ida "void __usercall $name(TPSWeapon01Laser *Self@<eax>, TRect *Result@<edx>);"
+    function GetLocalBounds: TRect; override; // @addr $6873F4
     function AddParticle: PBeamLaserParticle; // @addr $687458
     procedure RemoveParticle(Particle: PBeamLaserParticle); // @addr $6874D0
     procedure ClearParticles; // @addr $687550
-    procedure InvalidateRect(Rect: TRect); override; // @addr $6875A4 @ida "void __usercall $name(TPSWeapon01Laser *Self@<eax>, TRect *Rect@<edx>);"
+    procedure InvalidateRect(Rect: TRect); override; // @addr $6875A4
     procedure Advance(Timer: PCallbackTimerGI; UserData: Integer); override; // @addr $687670
-    procedure Draw(ClipRect: TRect); override; // @addr $687D6C @ida "void __usercall $name(TPSWeapon01Laser *Self@<eax>, TRect *ClipRect@<edx>);"
+    procedure Draw(ClipRect: TRect); override; // @addr $687D6C
   end;
 
 procedure LoadBeamLaserPalettes; // @addr $687F84

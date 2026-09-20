@@ -45,15 +45,15 @@ type
     Unknown158: Byte; // @offset $158
     AnimationPath: WideString; // @offset $15C
 
-    constructor Create(Owner: TObjectGI; APaletteIndex: Integer); // @addr $690108 @ida "TPSWeapon09MResonator *__userpurge $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, TObjectGI *Owner@<ecx>, int APaletteIndex@<^0>);"
-    destructor Destroy; override; // @addr $6901F0 @ida "void __usercall $name(TPSWeapon09MResonator *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create(Owner: TObjectGI; APaletteIndex: Integer); // @addr $690108
+    destructor Destroy; override; // @addr $6901F0
     procedure Invalidate; override; // @addr $690250 @note "Native empty override."
-    procedure SetPosition(Position: TPoint); override; // @addr $69025C @ida "void __usercall $name(TPSWeapon09MResonator *Self@<eax>, TPoint *Position@<edx>);"
-    procedure SetTargetPoint(Point: TPoint); override; // @addr $690298 @ida "void __usercall $name(TPSWeapon09MResonator *Self@<eax>, TPoint *Point@<edx>);"
+    procedure SetPosition(Position: TPoint); override; // @addr $69025C
+    procedure SetTargetPoint(Point: TPoint); override; // @addr $690298
     procedure UpdateHitTestBounds; override; // @addr $6902E4
     procedure ClearParticles; // @addr $690318
     procedure Advance(Timer: PCallbackTimerGI; UserData: Integer); override; // @addr $690360
-    procedure Draw(ClipRect: TRect); override; // @addr $6908B8 @ida "void __usercall $name(TPSWeapon09MResonator *Self@<eax>, TRect *ClipRect@<edx>);"
+    procedure Draw(ClipRect: TRect); override; // @addr $6908B8
   end;
 
   TPSWeapon09BranchGI = class(TPSWeaponGI) // @size $148
@@ -66,17 +66,17 @@ type
     Unknown144: Byte; // @offset $144
     ParticleColor: Word; // @offset $146
 
-    constructor Create(Owner: TObjectGI; APaletteIndex: Integer); // @addr $68F71C @ida "TPSWeapon09BranchGI *__userpurge $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, TObjectGI *Owner@<ecx>, int APaletteIndex@<^0>);"
-    destructor Destroy; override; // @addr $68F7A0 @ida "void __usercall $name(TPSWeapon09BranchGI *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create(Owner: TObjectGI; APaletteIndex: Integer); // @addr $68F71C
+    destructor Destroy; override; // @addr $68F7A0
     procedure Invalidate; override; // @addr $68F7DC @note "Native empty override."
-    procedure SetPosition(Position: TPoint); override; // @addr $68F7E8 @ida "void __usercall $name(TPSWeapon09BranchGI *Self@<eax>, TPoint *Position@<edx>);"
-    procedure SetTargetPoint(Point: TPoint); override; // @addr $68F824 @ida "void __usercall $name(TPSWeapon09BranchGI *Self@<eax>, TPoint *Point@<edx>);"
+    procedure SetPosition(Position: TPoint); override; // @addr $68F7E8
+    procedure SetTargetPoint(Point: TPoint); override; // @addr $68F824
     procedure UpdateHitTestBounds; override; // @addr $68F870
     procedure ClearParticles; // @addr $68F8A4
     procedure GrowParticles; // @addr $68F8EC
     function AddParticle: PMResonatorParticle; // @addr $68F924
     procedure Advance(Timer: PCallbackTimerGI; UserData: Integer); override; // @addr $68F97C
-    procedure Draw(ClipRect: TRect); override; // @addr $68FE68 @ida "void __usercall $name(TPSWeapon09BranchGI *Self@<eax>, TRect *ClipRect@<edx>);"
+    procedure Draw(ClipRect: TRect); override; // @addr $68FE68
   end;
 
 procedure LoadMResonatorPalettes; // @addr $690B58

@@ -28,8 +28,8 @@ type
     Points: PStarFieldPoint; // @offset $04
     Count: Integer; // @offset $08
     Capacity: Integer; // @offset $0C
-    constructor Create; // @addr $4B027C @ida "TStarFieldList *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr $4B02C0 @ida "void __usercall $name(TStarFieldList *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr $4B027C
+    destructor Destroy; override; // @addr $4B02C0
     procedure Clear; // @addr $4B02FC
     function AllocatePoint: PStarFieldPoint; // @addr $4B0334 @note "Grows by 100 when incremented Count reaches Capacity."
     procedure AddPoint(X, Y, Depth: Single; Color: Integer); // @addr $4B039C @ida "void __userpurge $name(TStarFieldList *Self@<eax>, int Color@<edx>, float X@<^8>, float Y@<^4>, float Depth@<^0>);" @note "Depth must be nonzero; retains the low 16 bits of Color."
@@ -51,14 +51,14 @@ type
     PreviousBackgroundBounds: TRect; // @offset $170
     BackgroundBounds: TRect; // @offset $180
 
-    constructor Create(Owner: TObjectGI); // @addr $4B03F4 @ida "TStarFieldGI *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, TObjectGI *Owner@<ecx>);"
-    destructor Destroy; override; // @addr $4B04A8 @ida "void __usercall $name(TStarFieldGI *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create(Owner: TObjectGI); // @addr $4B03F4
+    destructor Destroy; override; // @addr $4B04A8
     procedure SetBackgroundImage(const Path: WideString); // @addr $4B0578
     procedure ClearProjectedPixels; // @addr $4B05A4
     procedure GrowPixelBuffers; // @addr $4B05BC
     procedure RebuildProjectedPixels; // @addr $4B0618
-    procedure SetViewPosition(Position: TPointF); // @addr $4B0794 @ida "void __usercall $name(TStarFieldGI *Self@<eax>, TPointF *Position@<edx>);"
-    procedure SetSize(Size: TPoint); override; // @addr $4B0808 @ida "void __usercall $name(TStarFieldGI *Self@<eax>, TPoint *Size@<edx>);"
+    procedure SetViewPosition(Position: TPointF); // @addr $4B0794
+    procedure SetSize(Size: TPoint); override; // @addr $4B0808
     procedure MarkViewDirty; // @addr $4B084C
     procedure LoadFromConfigPath(const Path: WideString); override; // @addr $4B0860
     procedure LoadFromBlock(Block: TBlockParEC); override; // @addr $4B0894
@@ -66,10 +66,10 @@ type
     procedure Invalidate; override; // @addr $4B0938 @note "Empty in native code."
     procedure UpdateBackgroundBounds; // @addr $4B0944 @note "Updates GlobalsV.SkipSavedPixelRestore from the background rectangle change."
     procedure ErasePreviousFrame; override; // @addr $4B0AA8
-    procedure DrawBackground(ClipRect: TRect); // @addr $4B0BE0 @ida "void __usercall $name(TStarFieldGI *Self@<eax>, TRect *ClipRect@<edx>);"
+    procedure DrawBackground(ClipRect: TRect); // @addr $4B0BE0
     procedure PrepareFrameDraw; override; // @addr $4B112C
-    procedure DrawUpdateRects(ClipRect: TRect); override; // @addr $4B11D8 @ida "void __usercall $name(TStarFieldGI *Self@<eax>, TRect *ClipRect@<edx>);"
-    procedure Draw(ClipRect: TRect); override; // @addr $4B1220 @ida "void __usercall $name(TStarFieldGI *Self@<eax>, TRect *ClipRect@<edx>);" @note "Draws all projected pixels, ignoring ClipRect."
+    procedure DrawUpdateRects(ClipRect: TRect); override; // @addr $4B11D8
+    procedure Draw(ClipRect: TRect); override; // @addr $4B1220 @note "Draws all projected pixels, ignoring ClipRect."
     procedure CommitFrameDraw; override; // @addr $4B12FC
   end;
 

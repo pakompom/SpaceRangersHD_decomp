@@ -123,7 +123,7 @@ var
   // Native WideString defaults: initialization pairs $83887C..$838A68.
 
 procedure IncrementWordSaturating(var Value: Word); // @addr $837B34
-function OwnerToSys(OwnerId: Byte): WideString; // @addr $82E4EC @ida "void __usercall $name(unsigned __int8 OwnerId@<al>, unsigned __int16 **Result@<edx>);"
+function OwnerToSys(OwnerId: Byte): WideString; // @addr $82E4EC
 function IsKnownOwnerName(const Name: WideString): Boolean; // @addr $82E764
 function MatchesOwnerName(OwnerId: Byte; const Name: WideString): Boolean; // @addr $82E94C Unrecognized names act as a wildcard.
 function MatchesCareerName(Career: Byte; const Names: WideString): Boolean; // @addr $82E9E0 Case-sensitive substring, Any, or empty string.
@@ -145,7 +145,7 @@ function RaceToOwner(RaceId: Byte): TOwnerIndex; // @addr $82DDD4 @note "Identit
 function OwnerFromInternalName(const Name: WideString): Byte; // @addr $82E638
 
 function OwnerToRace(OwnerId: Byte): Byte; // @addr 0x82DD48 @note "Identity conversion for Coalition owners 0..4; raises for all other values."
-function RaceToSys(RaceId: Byte): WideString; // @addr 0x82DED4 @ida "void __usercall $name(unsigned __int8 RaceId@<al>, unsigned __int16 **Result@<edx>);" @note "Raises outside Coalition races 0..4."
+function RaceToSys(RaceId: Byte): WideString; // @addr 0x82DED4 @note "Raises outside Coalition races 0..4."
 function NumberToRace(Value: Integer): Byte; // @addr 0x82E8C0 @note "Accepts 0..4; raises otherwise."
 function SysToReward(const Name: WideString): Byte; // @addr 0x82EA40 @note "Case-sensitive lookup; raises for an unknown name."
 function SysToShipType(const Name: WideString): Byte; // @addr 0x82EBE8 @note "Case-sensitive lookup among 14 ship types; raises for an unknown name."
@@ -161,27 +161,27 @@ function CountItemTypesInMask(Mask: TItemTypeSelection): Integer; // @addr 0x837
 function GetItemTypeFromMask(Mask: TItemTypeSelection; Index: Integer): Byte; // @addr 0x837C98 @ida "unsigned __int8 __usercall $name@<al>(TItemTypeSelection *Mask@<eax>, int Index@<edx>);" @note "One-based selected-bit index among types 0..75; returns zero if no index matches."
 function PickRandomEquipmentOwner(RandomValue: Dword): Byte; // @addr 0x82E9BC @note "Only Coalition manufacturers are eligible."
 
-function LookupNamedColorTag(Name: WideString): WideString; // @addr $82E244 @ida "void __usercall $name(unsigned __int16 *Name@<eax>, unsigned __int16 **Result@<edx>);"
+function LookupNamedColorTag(Name: WideString): WideString; // @addr $82E244
 
 // Repeated Path values are joined with CRLF; no separator precedes an empty accumulator.
 // Missing paths return empty and may create intermediate blocks.
 // Both lookups expand <br>, <ll> and <Player>; the player's name is highlighted.
 // LocalizedText leaves <clr>/<clrEnd> intact; LocalizedColorText expands them.
-function LocalizedText(const Path: WideString): WideString; // @addr 0x82F3F4 @ida "void __usercall $name(unsigned __int16 *Path@<eax>, unsigned __int16 **Result@<edx>);"
-function LocalizedColorText(const Path: WideString): WideString; // @addr 0x82F644 @ida "void __usercall $name(unsigned __int16 *Path@<eax>, unsigned __int16 **Result@<edx>);" @note "Also expands <clr> and <clrEnd> to yellow opening and closing color tags."
+function LocalizedText(const Path: WideString): WideString; // @addr 0x82F3F4
+function LocalizedColorText(const Path: WideString): WideString; // @addr 0x82F644 @note "Also expands <clr> and <clrEnd> to yellow opening and closing color tags."
 procedure ExpandLocalizedTextMarkup(var Text: WideString); // @addr 0x82F900 @note "Expands <br>, <ll>, <Player>, <clr> and <clrEnd>; leaves <Player> intact when no player exists."
 procedure ExpandLocalizedTextMarkupAndPrefixLines(var Text: WideString); // @addr 0x82FAF8 @note "Expands markup, trims outer whitespace, then applies LocalizedTextLinePrefix to the first line and after each CRLF."
 
 // Collects at most ten nonempty variants: Path, then contiguous numeric suffixes
 // starting at 1 (0 when the base lookup is empty). A missing suffix prevents reaching later ones.
-function PickLocalizedTextVariant(const Path: WideString; SeedOffset: Integer): WideString; // @addr 0x82FD44 @ida "void __usercall $name(unsigned __int16 *Path@<eax>, int SeedOffset@<edx>, unsigned __int16 **Result@<ecx>);" @note "Selection uses (CurrentTurn + SeedOffset) div 10, except in chaotic mode. No variants produces an unavailable-text diagnostic."
+function PickLocalizedTextVariant(const Path: WideString; SeedOffset: Integer): WideString; // @addr 0x82FD44 @note "Selection uses (CurrentTurn + SeedOffset) div 10, except in chaotic mode. No variants produces an unavailable-text diagnostic."
 
 var
   // Native managed-string initialization pairs at $838B94, $838B8C, $838B84.
 
 function RelationValueToLevel(Value: Byte): TRelationLevel; // @addr $82F30C Buckets 0..100; out-of-range values map to normal.
 
-function GetFactionEmblemPath(Faction: WideString): WideString; // @addr $82E458 @ida "void __usercall $name(unsigned __int16 *Faction@<eax>, unsigned __int16 **Result@<edx>);"
+function GetFactionEmblemPath(Faction: WideString): WideString; // @addr $82E458
 
 function FindMicroModuleTemplateByCustomTag(CustomTag: WideString): Integer; // @addr $82FF48 First matching template; -1 when absent.
 
@@ -2591,7 +2591,7 @@ var
   SortKeys: array of Integer;
 
   // @nested $834430 ReadMicroModuleParam
-  function ReadMicroModuleParam(ParamName: WideString): WideString; // @addr $834430 @ida "void __usercall $name(unsigned __int16 *ParamName@<eax>, unsigned __int16 **Result@<edx>, void *ParentFrame@<^0>);" @note "Nested in LoadMicroModuleConfiguration; reads its current Block through the caller-popped static link."
+  function ReadMicroModuleParam(ParamName: WideString): WideString; // @addr $834430 @note "Nested in LoadMicroModuleConfiguration; reads its current Block through the caller-popped static link."
   var I, Count: Integer;
   begin
     Result := '';
@@ -2609,7 +2609,7 @@ var
   end;
 
   // @nested $8345E4 ConsumeMicroModuleToken
-  function ConsumeMicroModuleToken(Token: WideString): Boolean; // @addr $8345E4 @ida "bool __usercall $name@<al>(unsigned __int16 *Token@<eax>, void *ParentFrame@<^0>);" @note "Nested in LoadMicroModuleConfiguration; removes every occurrence of Token from its remaining-token string."
+  function ConsumeMicroModuleToken(Token: WideString): Boolean; // @addr $8345E4 @note "Nested in LoadMicroModuleConfiguration; removes every occurrence of Token from its remaining-token string."
   begin
     if Pos(Token, Tokens) > 0 then
     begin
@@ -3095,7 +3095,7 @@ var
   SortKeys: array of Integer;
 
   // @nested $836C08 ReadHullSeriesParam
-  function ReadHullSeriesParam(ParamName: WideString): WideString; // @addr $836C08 @ida "void __usercall $name(unsigned __int16 *ParamName@<eax>, unsigned __int16 **Result@<edx>, void *ParentFrame@<^0>);" @note "Nested in LoadHullSeriesConfiguration; reads its current Block through the caller-popped static link."
+  function ReadHullSeriesParam(ParamName: WideString): WideString; // @addr $836C08 @note "Nested in LoadHullSeriesConfiguration; reads its current Block through the caller-popped static link."
   var I, Count: Integer;
   begin
     Result := '';

@@ -35,8 +35,8 @@ type
     State: Byte; // @offset 0x0C  0 inactive, 1 active; graph buttons also accept 2 disabled, 3 enabled.
     OriginalState: Byte; // @offset 0x0D
 
-    constructor Create; // @addr 0x7D0C5C @ida "TInterfaceStateOverride *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x7D0CA0 @ida "void __usercall $name(TInterfaceStateOverride *Self@<eax>, __int8 DestroyFlags@<dl>);" @note "Restores the original control value when the control still exists."
+    constructor Create; // @addr 0x7D0C5C
+    destructor Destroy; override; // @addr 0x7D0CA0 @note "Restores the original control value when the control still exists."
     procedure Initialize(FormName, ControlPath: WideString; State: Byte); // @addr 0x7D0D3C @note "Captures the original value before applying the override."
     procedure SetState(State: Byte); // @addr 0x7D0F90
     function GetState: Byte; // @addr 0x7D116C
@@ -52,11 +52,11 @@ type
     Text: WideString; // @offset 0x0C
     OriginalText: WideString; // @offset 0x10
 
-    constructor Create; // @addr 0x7D1464 @ida "TInterfaceTextOverride *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x7D14A8 @ida "void __usercall $name(TInterfaceTextOverride *Self@<eax>, __int8 DestroyFlags@<dl>);" @note "Restores the original control value when the control still exists."
+    constructor Create; // @addr 0x7D1464
+    destructor Destroy; override; // @addr 0x7D14A8 @note "Restores the original control value when the control still exists."
     procedure Initialize(FormName, ControlPath: WideString; Text: WideString); // @addr 0x7D15CC @note "Captures the original value before applying the override."
     procedure SetText(Text: WideString); // @addr 0x7D188C
-    function GetText: WideString; // @addr 0x7D1AD8 @ida "void __usercall $name(TInterfaceTextOverride *Self@<eax>, unsigned __int16 **Result@<edx>);"
+    function GetText: WideString; // @addr 0x7D1AD8
     procedure SaveToBuffer(Buffer: TBufEC); // @addr 0x7D1AF8
     procedure LoadFromBuffer(Buffer: TBufEC); // @addr 0x7D1B40 @note "Loads both values and immediately reapplies the override."
     procedure Reapply; // @addr 0x7D1BF4
@@ -69,11 +69,11 @@ type
     ImagePath: WideString; // @offset 0x0C
     OriginalImagePath: WideString; // @offset 0x10
 
-    constructor Create; // @addr 0x7D1E20 @ida "TInterfaceImageOverride *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x7D1E64 @ida "void __usercall $name(TInterfaceImageOverride *Self@<eax>, __int8 DestroyFlags@<dl>);" @note "Restores the original value when the control still exists; an empty original style is not restored."
+    constructor Create; // @addr 0x7D1E20
+    destructor Destroy; override; // @addr 0x7D1E64 @note "Restores the original value when the control still exists; an empty original style is not restored."
     procedure Initialize(FormName, ControlPath: WideString; ImagePath: WideString); // @addr 0x7D20F4 @note "Captures the original value before applying the override."
     procedure SetImagePath(ImagePath: WideString); // @addr 0x7D25C8 @note "Also accepts Style:name for any control. Do not change between image and style modes: they share one original-value slot."
-    function GetImagePath: WideString; // @addr 0x7D29A0 @ida "void __usercall $name(TInterfaceImageOverride *Self@<eax>, unsigned __int16 **Result@<edx>);"
+    function GetImagePath: WideString; // @addr 0x7D29A0
     procedure SaveToBuffer(Buffer: TBufEC); // @addr 0x7D29C0
     procedure LoadFromBuffer(Buffer: TBufEC); // @addr 0x7D2A08 @note "Loads both values and immediately reapplies the override."
     procedure Reapply; // @addr 0x7D2ABC
@@ -88,8 +88,8 @@ type
     OriginalPosition: TPoint; // @offset 0x20
     OriginalDepth: Double; // @offset 0x28
 
-    constructor Create; // @addr 0x7D2E74 @ida "TInterfacePosOverride *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x7D2EB8 @ida "void __usercall $name(TInterfacePosOverride *Self@<eax>, __int8 DestroyFlags@<dl>);" @note "Restores the original control value when the control still exists."
+    constructor Create; // @addr 0x7D2E74
+    destructor Destroy; override; // @addr 0x7D2EB8 @note "Restores the original control value when the control still exists."
     procedure Initialize(FormName, ControlPath: WideString; DeltaX, DeltaY, DeltaDepth: Integer); // @addr 0x7D2F44 @note "Captures the original value before applying the override."
     procedure SetPosition(DeltaX, DeltaY, DeltaDepth: Integer); // @addr 0x7D31A0 @note "Offsets are relative to the captured original position and depth, not the current control values."
     procedure SaveToBuffer(Buffer: TBufEC); // @addr 0x7D3394
@@ -104,8 +104,8 @@ type
     Size: TPoint; // @offset 0x0C
     OriginalSize: TPoint; // @offset 0x14
 
-    constructor Create; // @addr 0x7D36B0 @ida "TInterfaceSizeOverride *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x7D36F4 @ida "void __usercall $name(TInterfaceSizeOverride *Self@<eax>, __int8 DestroyFlags@<dl>);" @note "Restores the original control value when the control still exists."
+    constructor Create; // @addr 0x7D36B0
+    destructor Destroy; override; // @addr 0x7D36F4 @note "Restores the original control value when the control still exists."
     procedure Initialize(FormName, ControlPath: WideString; Width, Height: Integer); // @addr 0x7D3770 @note "Captures the original value before applying the override."
     procedure SetSize(Width, Height: Integer); // @addr 0x7D39B0 @note "Nonpositive dimensions restore the corresponding original dimension."
     procedure SaveToBuffer(Buffer: TBufEC); // @addr 0x7D3B9C
@@ -183,9 +183,9 @@ type
     Name: WideString; // @offset 0x04
     Item: TObject; // @offset 0x08  Owned; clear before transferring the item elsewhere.
 
-    constructor CreateEmpty; // @addr 0x7D3E68 @ida "TStoredItem *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    constructor Create(Name: WideString; Item: TObject); // @addr 0x7D3EBC @ida "TStoredItem *__userpurge $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, unsigned __int16 *Name@<ecx>, TObject *Item@<^0>);"
-    destructor Destroy; override; // @addr 0x7D3F4C @ida "void __usercall $name(TStoredItem *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor CreateEmpty; // @addr 0x7D3E68
+    constructor Create(Name: WideString; Item: TObject); // @addr 0x7D3EBC
+    destructor Destroy; override; // @addr 0x7D3F4C
     procedure SaveToBuffer(Buffer: TBufEC); // @addr 0x7D3F9C @note "Requires a non-nil Item."
     procedure LoadFromBuffer(Buffer: TBufEC; Galaxy: TGalaxy); // @addr 0x7D3FD8 @note "Creates the owned item; overwrites a previous Item without freeing it."
   end;
@@ -284,8 +284,8 @@ type
     SpecialSimulationMode: Byte; // @offset 0x1D8  Nonzero skips CompleteDay and makes RefreshTechLevel return eight; full mode semantics unresolved.
     CheatsDisabled: Boolean; // @offset 0x1D9
 
-    constructor Create; // @addr 0x79C8CC @ida "TGalaxy *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x79D14C @ida "void __usercall $name(TGalaxy *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x79C8CC
+    destructor Destroy; override; // @addr 0x79D14C
     procedure AssignTextQuestsToPlanets; // @addr 0x7BADE8 @note "Uses quest target-owner filters; leaves planets with an existing quest unchanged."
     procedure RunConfigOnStartHandlers; // @addr 0x7A3960
     procedure RunConfigOnLoadHandlers; // @addr 0x7A3A2C
@@ -300,11 +300,11 @@ type
     procedure InitializeConstellationDistanceTiers; // @addr 0x7B29C0 @note "Requires a player/home planet and generated outlines. Boss sectors are forced to tier three."
     procedure HideSpecialConstellation; // @addr 0x7B4E44 @note "Requires constellation ID 20 and generated compatible outlines. Merges its visible outline into a neighbor and retains backups for RestoreHiddenForm."
     procedure BuildConstellationOutlineJunctions; // @addr 0x7B2B4C
-    function ShouldKeepConstellationOutlineVertex(Point: TPointF): Boolean; // @addr 0x7B2F34 @ida "bool __usercall $name@<al>(TGalaxy *Self@<eax>, TPointF *Point@<edx>);"
+    function ShouldKeepConstellationOutlineVertex(Point: TPointF): Boolean; // @addr 0x7B2F34
     procedure SimplifyConstellationOutline(ConstellationIndex: Integer); // @addr 0x7B306C
     function BuildConstellationStarGraphs: Boolean; // @addr 0x7B32B0 @note "Attempts every constellation; false means at least one graph is disconnected."
     procedure BuildConstellationPolygonsAndAdjacency(WorkingPolygon: TPolygon2D); // @addr 0x7B330C @note "Requires at least eight constellations."
-    function CountVisibleConstellationsWithBoundaryPoints(FirstPoint, SecondPoint: TPointF): Integer; // @addr 0x7B8200 @ida "int __usercall $name@<eax>(TGalaxy *Self@<eax>, TPointF *FirstPoint@<edx>, TPointF *SecondPoint@<ecx>);"
+    function CountVisibleConstellationsWithBoundaryPoints(FirstPoint, SecondPoint: TPointF): Integer; // @addr 0x7B8200
     procedure ShowLocalizedWarning(TextKey: WideString); // @addr 0x7D0BF4 @note "Adds a kind-five player notification using localized text."
     procedure ReapplyInterfaceOverrides; // @addr 0x7A3BC4
     procedure BindScriptImports; // @addr 0x7A3CF4
@@ -375,7 +375,7 @@ type
     function GetDominatorSeriesControlShare(Series: TDominatorSeries): Single; // @addr 0x7BACBC @note "Active Galaxy only. Fraction of Dominator systems in Series, multiplied by the number of unresolved series; not a percentage."
     function CountStarsInBattle: Integer; // @addr 0x7BAD94
     function TurnToDateTime(Turn: Integer): Double; // @addr 0x7BB330 @note "Delphi TDateTime; -1 selects CurrentTurn."
-    function FormatTurnDate(Turn: Integer): WideString; // @addr 0x7BB370 @ida "void __usercall $name(TGalaxy *Self@<eax>, int Turn@<edx>, unsigned __int16 **Result@<ecx>);" @note "-1 selects CurrentTurn."
+    function FormatTurnDate(Turn: Integer): WideString; // @addr 0x7BB370 @note "-1 selects CurrentTurn."
     procedure AddPlanetNews(NewsType: Byte; Text: WideString); // @addr 0x7BB598 @note "Rejects empty text; identical existing text suppresses insertion regardless of NewsType."
     procedure AddPlanetNewsWithPlayerBubble(NewsType: Byte; Text: WideString); // @addr 0x7BB524 @note "Adds a player bubble only after turn 300; news insertion still uses duplicate-text suppression."
     function CountPlanetNewsByType(NewsType: Byte): Integer; // @addr 0x7BB6E8
@@ -389,7 +389,7 @@ type
     function ScaleGoodsStockByGalaxyAge(BaseValue: Integer): Integer; // @addr 0x7BC054
     function GetGoodsPricePercent(GoodsType: Byte; Price: Integer): TPercent; // @addr 0x7BBF78 @note "Maps the global minimum/maximum price band to 0..100 with clamping."
     function ScaleIntByTechLevel(AtLevelTwo, AtLevelSeven: Integer): Integer; // @addr 0x7BC0C0 @note "Clamps TechLevel to 2..7, linearly interpolates the endpoints, then rounds."
-    function InterpolateSingleByTechLevel(AtLevelTwo, AtLevelSeven: Single): Single; // @addr 0x7BC11C @ida "float __userpurge $name@<st0>(TGalaxy *Self@<eax>, float AtLevelTwo@<^4>, float AtLevelSeven@<^0>);"
+    function InterpolateSingleByTechLevel(AtLevelTwo, AtLevelSeven: Single): Single; // @addr 0x7BC11C
     function GetOrCreateCustomWeaponInfo(Name: WideString): PWeaponInfo; // @addr $7D4544 Inserts a new custom template in the case-insensitive sorted pool.
     function RequireCustomWeaponInfo(Name: WideString): PWeaponInfo; // @addr $7D4734 Binary search of CustomWeaponTypes; raises if absent.
     function SelectWeaponInfo(Seed: Cardinal; AvailabilityMask: TWeaponAvailabilityMask; MaximumTechLevel, MinimumTechLevel: Byte): PWeaponInfo; // @addr 0x7BC1D8 @ida "PWeaponInfo __userpurge $name@<eax>(TGalaxy *Self@<eax>, unsigned int Seed@<edx>, unsigned __int16 AvailabilityMask@<cx>, unsigned __int8 MaximumTechLevel@<^4>, unsigned __int8 MinimumTechLevel@<^0>);" @note "Borrowed template. Uses the closest eligible technology when the interval has no match; falls back to the first built-in template when no availability matches."
@@ -412,17 +412,17 @@ type
     function GetMaximumGoodsPrice(GoodsType: Byte): Integer; // @addr 0x7BDC64
     function GetGoodsPriceByLevel(Level: Byte; GoodsType: Byte): Integer; // @addr 0x7BDC90 @note "Levels 1..5 select minimum through maximum; invalid levels raise."
     function ClassifyGoodsPrice(Price: Integer; GoodsType: Byte): Byte; // @addr 0x7BDD9C @note "Zero maps to zero; otherwise chooses levels 1..5, with ties favoring the larger level."
-    function HasUnresolvedDominatorSeries(Series: TDominatorSeriesSet): Boolean; // @addr 0x7BCF04 @ida "bool __usercall $name@<al>(TGalaxy *Self@<eax>, TDominatorSeriesSet Series@<dl>);" @note "True if any selected series is unresolved; false for an empty set."
+    function HasUnresolvedDominatorSeries(Series: TDominatorSeriesSet): Boolean; // @addr 0x7BCF04 @note "True if any selected series is unresolved; false for an empty set."
     function IsDominatorSeriesUnresolved(Series: TDominatorSeries): Boolean; // @addr 0x7BCEAC @note "Invalid series values return false."
-    function IsDominatorResearchComplete(Series: TDominatorSeriesSet): Boolean; // @addr 0x7BE6B4 @ida "bool __usercall $name@<al>(TGalaxy *Self@<eax>, TDominatorSeriesSet Series@<dl>);" @note "Every selected series must have at least 100 progress; the empty set returns true."
+    function IsDominatorResearchComplete(Series: TDominatorSeriesSet): Boolean; // @addr 0x7BE6B4 @note "Every selected series must have at least 100 progress; the empty set returns true."
     procedure ComputeRangerSpawnQuotas; // @addr 0x7C13E0
     procedure PruneExpiredGalaxyEvents; // @addr 0x7C16E0 @note "Retains the most recent 1825 days."
     function GetCoalitionToPirateSystemRatio: Single; // @addr 0x7C1744 @note "Uses the active Galaxy, not Self; denominator is max(pirate systems - 1, 1)."
 
     function GetEffectiveDifficultyLevel: Integer; // @addr 0x7C1794 @note "With custom rules disabled, reads the active Galaxy difficulty array rather than Self."
     function GetDifficultyTierIndex: TDifficultyTier; // @addr 0x7C17E4 @note "Returns 0..9; tier boundaries are 6, 14, 22, and subsequent increments of eight."
-    function InterpolateDifficulty(Level: Integer; AtZero, AtEight, AtSixteen, AtTwentyFour: Single): Single; // @addr 0x7C1848 @ida "float __userpurge $name@<st0>(TGalaxy *Self@<eax>, int Level@<edx>, float AtZero@<^12>, float AtEight@<^8>, float AtSixteen@<^4>, float AtTwentyFour@<^0>);" @note "A negative Level selects the effective difficulty; values above 24 extrapolate."
-    function ScaleDifficultyExponentially(Level: Integer; BaseValue, FactorPerEightLevels: Single): Single; // @addr 0x7C1964 @ida "float __userpurge $name@<st0>(TGalaxy *Self@<eax>, int Level@<edx>, float BaseValue@<^4>, float FactorPerEightLevels@<^0>);" @note "A negative Level selects the effective difficulty."
+    function InterpolateDifficulty(Level: Integer; AtZero, AtEight, AtSixteen, AtTwentyFour: Single): Single; // @addr 0x7C1848 @note "A negative Level selects the effective difficulty; values above 24 extrapolate."
+    function ScaleDifficultyExponentially(Level: Integer; BaseValue, FactorPerEightLevels: Single): Single; // @addr 0x7C1964 @note "A negative Level selects the effective difficulty."
     function GetTurnsBetweenLiberationGroups: Integer; // @addr 0x7C1A4C
     function GetDominatorBossHullScale: Single; // @addr 0x7C19C4
     function GetDominatorKillExperienceScale: Single; // @addr 0x7C19F8
@@ -507,12 +507,12 @@ end;
     HiddenOutlinePolygonsBackup: TPolygon2D; // @offset 0x84  Owned polygon chain.
     SerializedValue88: Word; // @offset 0x88  Saved value; meaning unresolved.
 
-    constructor Create; // @addr 0x7B8284 @ida "TConstellation *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x7B83C0 @ida "void __usercall $name(TConstellation *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x7B8284
+    destructor Destroy; override; // @addr 0x7B83C0
     procedure SaveToBuffer(Buffer: TBufEC); // @addr 0x7B84AC
     procedure LoadFromBuffer(Buffer: TBufEC; Galaxy: TGalaxy); // @addr 0x7B8958 @note "Requires a fresh instance; saved object IDs remain unresolved."
     procedure ResolveLoadedReferences(Galaxy: TGalaxy); // @addr 0x7B8E78
-    function GetName: WideString; // @addr 0x7BA27C @ida "void __usercall $name(TConstellation *Self@<eax>, unsigned __int16 **Result@<edx>);" @note "Localization key uses the current position in Galaxy.Constellations, not Id."
+    function GetName: WideString; // @addr 0x7BA27C @note "Localization key uses the current position in Galaxy.Constellations, not Id."
 
     procedure AddStar(Star: TStar); // @addr 0x7B91F4 @note "Also sets Star.Constellation; does not remove earlier membership."
     procedure ClearStars; // @addr 0x7B931C @note "Clears only the borrowed list; leaves Star.Constellation unchanged."
@@ -535,14 +535,14 @@ end;
     procedure ResetGeneratedMapShape; // @addr 0x7B92C4
     procedure RestoreHiddenForm; // @addr 0x7B8188
     function GetOutlineArea: Single; // @addr 0x7B935C
-    procedure ExpandOutlineBounds(Point: TPointF); // @addr 0x7B9B18 @ida "void __usercall $name(TConstellation *Self@<eax>, TPointF *Point@<edx>);"
+    procedure ExpandOutlineBounds(Point: TPointF); // @addr 0x7B9B18
     procedure RefreshOutlineBounds; // @addr 0x7B9BA4
-    function ContainsPoint(Point: TPointF): Boolean; // @addr 0x7B9CC8 @ida "bool __usercall $name@<al>(TConstellation *Self@<eax>, TPointF *Point@<edx>);"
-    function HasOutlineSegment(FirstPoint, SecondPoint: TPointF): Boolean; // @addr 0x7B9D64 @ida "bool __usercall $name@<al>(TConstellation *Self@<eax>, TPointF *FirstPoint@<edx>, TPointF *SecondPoint@<ecx>);" @note "Endpoint matching uses a tolerance and accepts either direction."
-    function AreBothPointsOnOutline(FirstPoint, SecondPoint: TPointF): Boolean; // @addr 0x7B9DE0 @ida "bool __usercall $name@<al>(TConstellation *Self@<eax>, TPointF *FirstPoint@<edx>, TPointF *SecondPoint@<ecx>);" @note "The points may lie on different outline segments."
-    function CalculateLabelPosition: TPointF; // @addr 0x7B9E84 @ida "void __usercall $name(TConstellation *Self@<eax>, TPointF *Result@<edx>);" @note "Requires an outline yielding interior samples; the sample mean need not lie inside a concave outline."
-    function HasOutlineVertex(Point: TPointF): Boolean; // @addr 0x7BA04C @ida "bool __usercall $name@<al>(TConstellation *Self@<eax>, TPointF *Point@<edx>);"
-    function IsPointNearOutline(Point: TPointF): Boolean; // @addr 0x7BA0C4 @ida "bool __usercall $name@<al>(TConstellation *Self@<eax>, TPointF *Point@<edx>);" @note "Tests a distance of at most two map units."
+    function ContainsPoint(Point: TPointF): Boolean; // @addr 0x7B9CC8
+    function HasOutlineSegment(FirstPoint, SecondPoint: TPointF): Boolean; // @addr 0x7B9D64 @note "Endpoint matching uses a tolerance and accepts either direction."
+    function AreBothPointsOnOutline(FirstPoint, SecondPoint: TPointF): Boolean; // @addr 0x7B9DE0 @note "The points may lie on different outline segments."
+    function CalculateLabelPosition: TPointF; // @addr 0x7B9E84 @note "Requires an outline yielding interior samples; the sample mean need not lie inside a concave outline."
+    function HasOutlineVertex(Point: TPointF): Boolean; // @addr 0x7BA04C
+    function IsPointNearOutline(Point: TPointF): Boolean; // @addr 0x7BA0C4 @note "Tests a distance of at most two map units."
     procedure NormalizeOutlineSegmentOrder; // @addr 0x7BA160
 
     function HasDominatorPresence: Boolean; // @addr 0x7BA338 @note "Uses member stars' cached population counts."
@@ -564,8 +564,8 @@ end;
     FilmObjectId: Integer; // @offset 0x2C
     ArcadeMapName: WideString; // @offset 0x30  Also accepts SkipAB and NoEntry.
 
-    constructor Create; // @addr 0x7AACB0 @ida "THole *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x7AAD10 @ida "void __usercall $name(THole *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x7AACB0
+    destructor Destroy; override; // @addr 0x7AAD10
     procedure InitializeGraphic(GraphKey: WideString); // @addr 0x7AAD58 @note "Empty GraphKey chooses a seeded Hole template. Clears ArcadeMapName; replacing an existing Graphic does not release the old reference."
     procedure SaveToBuffer(Buffer: TBufEC); // @addr 0x7AAE9C @note "Requires both endpoint stars and Graphic."
     procedure LoadFromBuffer(Buffer: TBufEC; Galaxy: TGalaxy); // @addr 0x7AAF50 @note "Leaves endpoint IDs unresolved until ResolveLoadedReferences."
@@ -583,8 +583,8 @@ end;
     TypeTag: WideString; // @offset 0x10  Script lookup key.
     Distance: Integer; // @offset 0x14  Ordering position in the system-object list.
 
-    constructor Create; // @addr 0x7AB8A4 @ida "TCustomSystemInfo *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x7AB8E8 @ida "void __usercall $name(TCustomSystemInfo *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x7AB8A4
+    destructor Destroy; override; // @addr 0x7AB8E8
     procedure LoadFromBuffer(Buffer: TBufEC); // @addr 0x7AB91C
     procedure SaveToBuffer(Buffer: TBufEC); // @addr 0x7AB9D4
   end;
@@ -648,8 +648,8 @@ end;
     MovementStepCount: Integer; // @offset 0x104
     MovementStepScale: Extended; // @offset 0x108
 
-    constructor Create; // @addr 0x7ABA2C @ida "TStar *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x7ABBC4 @ida "void __usercall $name(TStar *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x7ABA2C
+    destructor Destroy; override; // @addr 0x7ABBC4
     procedure SaveToBuffer(Buffer: TBufEC); // @addr 0x7AC8CC @note "Removes empty moving-drop descriptors; includes module-integrity checks."
     procedure LoadFromBuffer(Buffer: TBufEC; Galaxy: TGalaxy); // @addr 0x7AD19C @note "Appends owned objects; requires a fresh instance. References are resolved separately."
     procedure ResolveLoadedReferences(Galaxy: TGalaxy); // @addr 0x7ADB3C
@@ -670,8 +670,8 @@ end;
     procedure RebuildStarDistances(Galaxy: TGalaxy); // @addr 0x7C5508
     function IsConstellationVisible: Boolean; // @addr 0x7C5068
     procedure ProcessItemScripts(TurnPhase: Integer); // @addr 0x7B1FB8
-    function DropMinerals(Quantity: Integer; Position: TPointF; Seed: Cardinal): Integer; // @addr 0x7AF5EC @ida "int __userpurge $name@<eax>(TStar *Self@<eax>, int Quantity@<edx>, TPointF *Position@<ecx>, unsigned int Seed@<^0>);" @note "Returns the sum of the new goods' Cost, not their quantity. Nonpositive Quantity creates no drops and returns zero."
-    procedure ProcessPlayerAsteroidKill(MineralValue: Integer; Position: TPointF; AsteroidId: Cardinal); // @addr 0x7AFA44 @ida "void __userpurge $name(TStar *Self@<eax>, int MineralValue@<edx>, TPointF *Position@<ecx>, unsigned int AsteroidId@<^0>);" @note "Requires a player. Achievement progress is independent of eligibility for a planet's reward or complaint."
+    function DropMinerals(Quantity: Integer; Position: TPointF; Seed: Cardinal): Integer; // @addr 0x7AF5EC @note "Returns the sum of the new goods' Cost, not their quantity. Nonpositive Quantity creates no drops and returns zero."
+    procedure ProcessPlayerAsteroidKill(MineralValue: Integer; Position: TPointF; AsteroidId: Cardinal); // @addr 0x7AFA44 @note "Requires a player. Achievement progress is independent of eligibility for a planet's reward or complaint."
     procedure ClearTargetReferences(Target: TObject); // @addr 0x7AFE80 @note "Clears weapon, missile and queued attack references; accepts any target class. Nil is a no-op."
     procedure ClearShipReferences(Ship: Pointer); // @addr 0x7B0138 @note "Clears attack, landing and combat-event references without removing or freeing Ship. Nil is a no-op."
     procedure ClearItemReferences(Item: Pointer); // @addr 0x7B0418 @note "Clears targets, pickups, ReferencedItems and moving-drop payload references; does not remove Item from Items or free it."
@@ -685,7 +685,7 @@ end;
     procedure RefreshSpaceObjectPositions; // @addr 0x7B1970
     procedure QueueSpaceImageLoads(PendingLoads: TList; Owner: TObjectGI); // @addr 0x7B1B8C
     procedure QueueHyperspaceShipImageLoads(PendingLoads: TList; Owner: TObjectGI); // @addr 0x7B1E70
-    function GetBackgroundImagePath(out Size: Integer): WideString; // @addr 0x7B1ED8 @ida "void __usercall $name(TStar *Self@<eax>, int *Size@<edx>, unsigned __int16 **Result@<ecx>);" @note "Sets Size to 2000."
+    function GetBackgroundImagePath(out Size: Integer): WideString; // @addr 0x7B1ED8 @note "Sets Size to 2000."
     procedure TryGenerateSystemNews; // @addr 0x7C591C @note "Requires a visible peaceful system, no custom faction and an undefeated Coalition."
 
     function CountPlanetsByOwner(OwnerId: Byte): Integer; // @addr 0x7C4290
@@ -707,14 +707,14 @@ end;
     function GetCachedFactionStrength(FactionGroup: Byte): Single; // @addr 0x7C5088 @note "Group 0 Coalition, 1 Dominators/custom, 2 pirates. Lazily refreshes all three once per active Galaxy.CurrentTurn."
     function SumBestRangerRelativeStrength(ShipTypeMask: TShipTypeMask): Single; // @addr 0x7C5474 @note "Sums StrengthInBestRanger over Ships, excluding the three bosses; no docking/hyperspace filter."
     function FindNearestStarByFaction(Faction: TStarFaction; InBattle: Boolean): TStar; // @addr 0x7C5734 @note "Starts at distance-cache index one and excludes custom factions. Requires a current distance cache."
-    function GetBoundaryPointTowardStar(Star: TStar): TPointF; // @addr 0x7C57BC @ida "void __usercall $name(TStar *Self@<eax>, TStar *Star@<edx>, TPointF *Result@<ecx>);"
+    function GetBoundaryPointTowardStar(Star: TStar): TPointF; // @addr 0x7C57BC
     function HasLiberationGroupOrder: Boolean; // @addr 0x7C5868 @note "Searches every order target in active Galaxy.LiberationGroups."
     function HasHostilePresenceForScriptBinding: Boolean; // @addr 0x7C56BC @note "Includes any TKling, standing eight, or scripted ship with nonempty faction not beginning with SubFaction. No docking/hyperspace filter; the substring test also accepts absence."
   end;
 
 function ShouldContinuePlayerTravel: Boolean; // @addr 0x7B247C @note "May prepare movement or start black-hole entry; false without a player."
 function EstimatePlayerTravelTurns: Single; // @addr 0x7B2624 @note "Uses distance divided by Speed + 1; zero for interrupted travel or unsupported orders."
-function GetLocalObjectLink(Obj: TObject; Suppress: Boolean): WideString; // @addr 0x7B27E0 @ida "void __usercall $name(TObject *Obj@<eax>, bool Suppress@<dl>, unsigned __int16 **Result@<ecx>);" @note "Object markup embeds the native pointer, not an ID. Ships/planets/loose items must be in the player's star. Suppress returns empty; otherwise supported objects require a player."
+function GetLocalObjectLink(Obj: TObject; Suppress: Boolean): WideString; // @addr 0x7B27E0 @note "Object markup embeds the native pointer, not an ID. Ships/planets/loose items must be in the player's star. Suppress returns empty; otherwise supported objects require a player."
 
 // Nested in ComputeIntegrityChecksum; caller-popped static link and accumulator at -4.
 
@@ -736,7 +736,7 @@ var
   WingmenPendingLeadershipPenalty: TList; // @addr 0x88B0F8  Borrowed TShip entries.
 
 function GameTurnToDateTime(Turn: Integer): Double; // @addr 0x7B22A0
-function FormatGameTurnDate(Turn: Integer): WideString; // @addr 0x7B22C4 @ida "void __usercall $name(int Turn@<eax>, unsigned __int16 **Result@<edx>);"
+function FormatGameTurnDate(Turn: Integer): WideString; // @addr 0x7B22C4
 
 var
   CameraSpeed: Integer = 10; // @addr 0x87CCF4 Native initial camera-step limit.
@@ -756,7 +756,7 @@ var
   Block: TBlockParEC;
 
   // @nested $79C724 CheckModuleSize
-  procedure CheckModuleSize(EncodedSize: Cardinal); // @addr 0x79C724 @ida "void __usercall $name(unsigned int EncodedSize@<eax>, void *ParentFrame@<^0>);" @note "Caller-popped static link; filename at ParentFrame-4. Updates the startup integrity marker."
+  procedure CheckModuleSize(EncodedSize: Cardinal); // @addr 0x79C724 @note "Caller-popped static link; filename at ParentFrame-4. Updates the startup integrity marker."
   var Handle: THandle; Size: Cardinal;
   begin
     Handle := FileOpen(AnsiString(ModuleName), 0);
@@ -769,7 +769,7 @@ var
   end;
 
   // @nested $79C7D4 ParseCheatsDisabledFlag
-  function ParseCheatsDisabledFlag(Value: WideString): Boolean; // @addr 0x79C7D4 @ida "bool __usercall $name@<al>(unsigned __int16 *Value@<eax>, void *ParentFrame@<^0>);" @note "Nested in TGalaxy.Create; unused caller-popped static link. Accepts exactly Yes, yes, True, true, TRUE or 1; no trimming."
+  function ParseCheatsDisabledFlag(Value: WideString): Boolean; // @addr 0x79C7D4 @note "Nested in TGalaxy.Create; unused caller-popped static link. Accepts exactly Yes, yes, True, true, TRUE or 1; no trimming."
   begin
     if (Value = 'Yes') or (Value = 'yes') or (Value = 'True') or
       (Value = 'true') or (Value = 'TRUE') or (Value = '1') then
@@ -3362,7 +3362,7 @@ var ExclusionCount: Integer; Exclusions: array[0..10] of Cardinal;
   UnusedLocalBytes: array[0..7] of Byte; // Native frame retains eight unreferenced bytes.
 
   // @nested $7A7BB8 NextStateXorMask
-  function NextStateXorMask: Cardinal; // @addr 0x7A7BB8 @ida "unsigned int __usercall $name@<eax>(void *ParentFrame@<^0>);" @note "Park-Miller state at ParentFrame-4; returns the updated state minus one."
+  function NextStateXorMask: Cardinal; // @addr 0x7A7BB8 @note "Park-Miller state at ParentFrame-4; returns the updated state minus one."
   begin
     Seed := 16807 * (Seed mod 127773) - 2836 * (Seed div 127773);
     if Seed <= 0 then Inc(Seed, $7FFFFFFF);
@@ -3370,22 +3370,22 @@ var ExclusionCount: Integer; Exclusions: array[0..10] of Cardinal;
   end;
 
   // @nested $7A7C14 XorStateUInt64
-  procedure XorStateUInt64(var Value: UInt64); // @addr 0x7A7C14 @ida "void __usercall $name(unsigned __int64 *Value@<eax>, void *ParentFrame@<^0>);"
+  procedure XorStateUInt64(var Value: UInt64); // @addr 0x7A7C14
   begin
     PCardinal(@TUInt64Words(Value).Low)^ := PCardinal(@TUInt64Words(Value).Low)^ xor NextStateXorMask;
     PCardinal(@TUInt64Words(Value).High)^ := PCardinal(@TUInt64Words(Value).High)^ xor NextStateXorMask;
   end;
 
   // @nested $7A7C40 XorStateUInt32
-  procedure XorStateUInt32(var Value: Cardinal); // @addr 0x7A7C40 @ida "void __usercall $name(unsigned int *Value@<eax>, void *ParentFrame@<^0>);"
+  procedure XorStateUInt32(var Value: Cardinal); // @addr 0x7A7C40
   begin Value := Value xor NextStateXorMask; end;
 
   // @nested $7A7C5C XorStateByte
-  procedure XorStateByte(var Value: Byte); // @addr 0x7A7C5C @ida "void __usercall $name(unsigned __int8 *Value@<eax>, void *ParentFrame@<^0>);"
+  procedure XorStateByte(var Value: Byte); // @addr 0x7A7C5C
   begin Value := Value xor Byte(NextStateXorMask); end;
 
   // @nested $7A7C78 XorStateWords
-  procedure XorStateWords(Data: PWord; Count: Cardinal); // @addr 0x7A7C78 @ida "void __usercall $name(unsigned __int16 *Data@<eax>, unsigned int Count@<edx>, void *ParentFrame@<^0>);"
+  procedure XorStateWords(Data: PWord; Count: Cardinal); // @addr 0x7A7C78
   var I: Integer;
   begin
     I := 0;
@@ -3397,7 +3397,7 @@ var ExclusionCount: Integer; Exclusions: array[0..10] of Cardinal;
   end;
 
   // @nested $7A7CB4 XorStateBytes
-  procedure XorStateBytes(Data: PByte; Count: Cardinal); // @addr 0x7A7CB4 @ida "void __usercall $name(unsigned __int8 *Data@<eax>, unsigned int Count@<edx>, void *ParentFrame@<^0>);"
+  procedure XorStateBytes(Data: PByte; Count: Cardinal); // @addr 0x7A7CB4
   var I: Integer;
   begin
     I := 0;
@@ -3409,13 +3409,13 @@ var ExclusionCount: Integer; Exclusions: array[0..10] of Cardinal;
   end;
 
   // @nested $7A7CEC XorStateObject
-  procedure XorStateObject(Instance: TObject); // @addr 0x7A7CEC @ida "void __usercall $name(TObject *Instance@<eax>, void *ParentFrame@<^0>);" @note "Preserves the VMT pointer."
+  procedure XorStateObject(Instance: TObject); // @addr 0x7A7CEC @note "Preserves the VMT pointer."
   begin
     XorStateBytes(PByte(PAnsiChar(Instance) + 4), Instance.InstanceSize - 4);
   end;
 
   // @nested $7A7D18 XorStateObjectExceptField
-  procedure XorStateObjectExceptField(Instance: TObject; ExcludedField: Pointer); // @addr 0x7A7D18 @ida "void __usercall $name(TObject *Instance@<eax>, void *ExcludedField@<edx>, void *ParentFrame@<^0>);" @note "Preserves the VMT and one four-byte field."
+  procedure XorStateObjectExceptField(Instance: TObject; ExcludedField: Pointer); // @addr 0x7A7D18 @note "Preserves the VMT and one four-byte field."
   var Data, Excluded, Limit: Cardinal;
   begin
     Data := Cardinal(Instance) + 4;
@@ -3427,7 +3427,7 @@ var ExclusionCount: Integer; Exclusions: array[0..10] of Cardinal;
   end;
 
   // @nested $7A7DA0 XorStateObjectExceptFields
-  procedure XorStateObjectExceptFields(Instance: TObject); // @addr 0x7A7DA0 @ida "void __usercall $name(TObject *Instance@<eax>, void *ParentFrame@<^0>);" @note "Preserves the VMT and sorted four-byte exclusions supplied by the parent frame."
+  procedure XorStateObjectExceptFields(Instance: TObject); // @addr 0x7A7DA0 @note "Preserves the VMT and sorted four-byte exclusions supplied by the parent frame."
   var I: Integer; Data, Limit: Cardinal;
   begin
     Data := Cardinal(Instance) + 4;
@@ -3702,7 +3702,7 @@ var
   UnusedNativeFrame: array[0..3] of Byte; // The native frame has four unreferenced bytes; original type unknown.
 
   // @nested $7A8E1C AccumulateIntegrityUInt32
-  procedure AccumulateIntegrityUInt32(Value: Cardinal); // @addr 0x7A8E1C @ida "void __usercall $name(unsigned int Value@<eax>, void *ParentFrame@<^0>);"
+  procedure AccumulateIntegrityUInt32(Value: Cardinal); // @addr 0x7A8E1C
   begin
     State := UpdateCrc32(State, @Value, 4);
   end;
@@ -3720,38 +3720,38 @@ var
   end;
 
   // @nested $7A8E80 AccumulateIntegrityByte
-  procedure AccumulateIntegrityByte(Value: Byte); // @addr 0x7A8E80 @ida "void __usercall $name(unsigned __int8 Value@<al>, void *ParentFrame@<^0>);"
+  procedure AccumulateIntegrityByte(Value: Byte); // @addr 0x7A8E80
   begin
     State := UpdateCrc32(State, @Value, 1);
   end;
 
   // @nested $7A8EA4 AccumulateIntegrityBoolean
-  procedure AccumulateIntegrityBoolean(Value: Boolean); // @addr 0x7A8EA4 @ida "void __usercall $name(bool Value@<al>, void *ParentFrame@<^0>);"
+  procedure AccumulateIntegrityBoolean(Value: Boolean); // @addr 0x7A8EA4
   begin
     State := UpdateCrc32(State, @Value, 1);
   end;
 
   // @nested $7A8EC8 AccumulateIntegrityWords
-  procedure AccumulateIntegrityWords(Data: PWord; Count: Integer); // @addr 0x7A8EC8 @ida "void __usercall $name(unsigned __int16 *Data@<eax>, int Count@<edx>, void *ParentFrame@<^0>);"
+  procedure AccumulateIntegrityWords(Data: PWord; Count: Integer); // @addr 0x7A8EC8
   begin
     State := UpdateCrc32(State, Data, Count * 2);
   end;
 
   // @nested $7A8EF4 AccumulateIntegrityBytes
-  procedure AccumulateIntegrityBytes(Data: PByte; Count: Integer); // @addr 0x7A8EF4 @ida "void __usercall $name(unsigned __int8 *Data@<eax>, int Count@<edx>, void *ParentFrame@<^0>);"
+  procedure AccumulateIntegrityBytes(Data: PByte; Count: Integer); // @addr 0x7A8EF4
   begin
     State := UpdateCrc32(State, Data, Count);
   end;
 
   // @nested $7A8F1C AccumulateIntegrityObject
-  procedure AccumulateIntegrityObject(Instance: TObject); // @addr 0x7A8F1C @ida "void __usercall $name(TObject *Instance@<eax>, void *ParentFrame@<^0>);" @note "Excludes the VMT pointer; nil contributes nothing."
+  procedure AccumulateIntegrityObject(Instance: TObject); // @addr 0x7A8F1C @note "Excludes the VMT pointer; nil contributes nothing."
   begin
     if Instance <> nil then
       AccumulateIntegrityBytes(PByte(PAnsiChar(Instance) + SizeOf(Pointer)), Instance.InstanceSize - SizeOf(Pointer));
   end;
 
   // @nested $7A8F4C AccumulateIntegrityItem
-  procedure AccumulateIntegrityItem(Item: TItem); // @addr 0x7A8F4C @ida "void __usercall $name(TItem *Item@<eax>, void *ParentFrame@<^0>);" @note "Opaque interface avoids the aItem dependency cycle; the nested body uses TItem. Excludes the VMT and temporarily zeros Graphic plus cached action-code state; nil contributes nothing."
+  procedure AccumulateIntegrityItem(Item: TItem); // @addr 0x7A8F4C @note "Opaque interface avoids the aItem dependency cycle; the nested body uses TItem. Excludes the VMT and temporarily zeros Graphic plus cached action-code state; nil contributes nothing."
   var SavedGraphic: TObjectSE; SavedCode: Pointer; SavedInitialized: Boolean; Equipment: TEquipmentWithActCode;
   begin
     if Item <> nil then
@@ -4629,7 +4629,7 @@ var FileName: WideString;
   Reserved1, Reserved2, Reserved3: Integer;
 
   // @nested $7AC830 CheckModuleCRC
-  procedure CheckModuleCRC(ExpectedCRC: Cardinal); // @addr 0x7AC830 @ida "void __usercall $name(unsigned int ExpectedCRC@<eax>, void *ParentFrame@<^0>);" @note "Caller-popped static link; filename at -4, star at -8. Updates global integrity status on mismatch."
+  procedure CheckModuleCRC(ExpectedCRC: Cardinal); // @addr 0x7AC830 @note "Caller-popped static link; filename at -4, star at -8. Updates global integrity status on mismatch."
   var Data: TBufEC; Unused: Integer;
   begin
     Data := TBufEC.Create;
@@ -8385,7 +8385,7 @@ var
   Distance, NearestDistance: Integer;
 
   // @nested $7BC170 TechDistance
-  function TechDistance(TechLevel: Integer): Integer; // @addr 0x7BC170 @ida "int __usercall $name@<eax>(int TechLevel@<eax>, void *ParentFrame@<^0>);" @note "Nested helper with caller-popped static link. Minimum/maximum bytes are at ParentFrame+8/+12."
+  function TechDistance(TechLevel: Integer): Integer; // @addr 0x7BC170 @note "Nested helper with caller-popped static link. Minimum/maximum bytes are at ParentFrame+8/+12."
   begin
     Result := 0;
     if TechLevel > MaximumTechLevel then Result := TechLevel - MaximumTechLevel;

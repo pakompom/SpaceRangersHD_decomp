@@ -25,8 +25,8 @@ type
     // Loaded and cleared, but not read by the execution routines.
     LegacyFlag: Boolean; // @offset 0x2C
 
-    constructor Create; // @addr 0x4E4C3C @ida "TParameterDelta *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x4E4CD0 @ida "void __usercall $name(TParameterDelta *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x4E4C3C
+    destructor Destroy; override; // @addr 0x4E4CD0
     procedure Reset; // @addr 0x4E4D58
     procedure ClearValueConstraints; // @addr 0x4E4D7C
     procedure ClearChange; // @addr 0x4E4DB0

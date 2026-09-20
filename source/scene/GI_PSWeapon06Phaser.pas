@@ -36,18 +36,18 @@ type
     OriginalLength: Single; // @offset $13C
     PaletteIndex: Integer; // @offset $140
 
-    constructor Create(Owner: TObjectGI; APaletteIndex: Integer); // @addr $68C334 @ida "TPSWeapon06Phaser *__userpurge $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, TObjectGI *Owner@<ecx>, int APaletteIndex@<^0>);"
-    destructor Destroy; override; // @addr $68C3A4 @ida "void __usercall $name(TPSWeapon06Phaser *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create(Owner: TObjectGI; APaletteIndex: Integer); // @addr $68C334
+    destructor Destroy; override; // @addr $68C3A4
     procedure Invalidate; override; // @addr $68C3E0 @note "Native empty override."
-    procedure SetPosition(Position: TPoint); override; // @addr $68C3EC @ida "void __usercall $name(TPSWeapon06Phaser *Self@<eax>, TPoint *Position@<edx>);"
-    procedure SetTargetPoint(Point: TPoint); override; // @addr $68C428 @ida "void __usercall $name(TPSWeapon06Phaser *Self@<eax>, TPoint *Point@<edx>);"
+    procedure SetPosition(Position: TPoint); override; // @addr $68C3EC
+    procedure SetTargetPoint(Point: TPoint); override; // @addr $68C428
     procedure UpdateHitTestBounds; override; // @addr $68C474
     procedure ClearParticles; // @addr $68C4A8
     procedure GrowParticles; // @addr $68C4F0
     function AddParticle: PPhaserParticle; // @addr $68C5A4
     procedure AdvanceWave; // @addr $68C65C
     procedure Advance(Timer: PCallbackTimerGI; UserData: Integer); override; // @addr $68C86C
-    procedure Draw(ClipRect: TRect); override; // @addr $68CB9C @ida "void __usercall $name(TPSWeapon06Phaser *Self@<eax>, TRect *ClipRect@<edx>);"
+    procedure Draw(ClipRect: TRect); override; // @addr $68CB9C
   end;
 
 procedure LoadPhaserPalettes; // @addr $68CE74 @note "Loads SE.Weapon.5.Palettes; native visual numbering differs from the class name."

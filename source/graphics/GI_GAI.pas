@@ -36,31 +36,31 @@ type
 
     procedure SetHardwareMirrorHorizontal(Value: Boolean); // @addr $4821E0
 
-    constructor Create(Owner: TObjectGI); // @addr 0x47FF80 @ida "TgaiGI *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, TObjectGI *Owner@<ecx>);"
-    destructor Destroy; override; // @addr 0x48009C @ida "void __usercall $name(TgaiGI *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create(Owner: TObjectGI); // @addr 0x47FF80
+    destructor Destroy; override; // @addr 0x48009C
     procedure Clear; override; // @addr 0x480164 @note "Preserves animation state."
     procedure SetImagePath(const ImagePath: WideString); // @addr 0x480178 @note "Resets sequence position even when the key is unchanged."
-    function GetImagePath: WideString; // @addr 0x4801EC @ida "void __usercall $name(TgaiGI *Self@<eax>, unsigned __int16 **Result@<edx>);"
-    function GetFirstFrameImagePath: WideString; // @addr $4802B8 @ida "void __usercall $name(TgaiGI *Self@<eax>, unsigned __int16 **Result@<edx>);"
+    function GetImagePath: WideString; // @addr 0x4801EC
+    function GetFirstFrameImagePath: WideString; // @addr $4802B8
     procedure SetFirstFrameImagePath(const ImagePath: WideString); // @addr 0x480210
     procedure SetSequenceFrame(FrameInSequence: Integer); // @addr 0x4802F4 @note "Does not validate the index."
     procedure SetFramePosition(FrameInSequence: Integer; ForwardOnly: Boolean); // @addr 0x480340 @note "Accepted out-of-range positions become zero."
     function GetMainImageFrameCount: Integer; // @addr 0x4803B8 @note "Returns zero in FirstFrameOnly mode."
     procedure StopAutoPlayback; // @addr 0x480428
     procedure RestartPlayback; // @addr 0x480468 @note "Does not reset frame position; single-frame sequences remain timer-free."
-    function GetContentSize: TPoint; // @addr 0x480524 @ida "void __usercall $name(TgaiGI *Self@<eax>, TPoint *Result@<edx>);"
-    function GetContentOrigin: TPoint; // @addr 0x48061C @ida "void __usercall $name(TgaiGI *Self@<eax>, TPoint *Result@<edx>);"
+    function GetContentSize: TPoint; // @addr 0x480524
+    function GetContentOrigin: TPoint; // @addr 0x48061C
     procedure SetImageKindX(Value: TImageKindXGI); // @addr 0x480730
     procedure SetImageKindY(Value: TImageKindYGI); // @addr 0x480768
     procedure SetAlpha(Value: Byte); // @addr 0x4807A0
-    procedure SetSize(Size: TPoint); override; // @addr 0x4807D8 @ida "void __usercall $name(TgaiGI *Self@<eax>, TPoint *Size@<edx>);"
+    procedure SetSize(Size: TPoint); override; // @addr 0x4807D8
     procedure ClearFrameSequence; // @addr 0x4807FC
     procedure LoadFrameSequenceFromText(const FrameSpec: WideString); // @addr 0x480870 @note "Accepts ascending and descending ranges; changes the playback timer unless stopped."
     function GetSequenceCount: Integer; // @addr 0x480B08
     function GetSequenceFrameSourceIndex(FrameInSequence: Integer): Integer; // @addr 0x480B78 @note "Does not validate the index."
     procedure SetFrameDelay(FrameInSequence, DelayMs: Integer); // @addr 0x480BB0 @note "Does not validate the index."
     function GetFrameDelay(FrameInSequence: Integer): Integer; // @addr 0x480BEC @note "Does not validate the index."
-    function HitTestPixel(Point: TPoint): Boolean; // @addr 0x480C24 @ida "bool __usercall $name@<al>(TgaiGI *Self@<eax>, TPoint *Point@<edx>);" @note "Black pixels do not count as hits; composed playback may require an existing composition buffer."
+    function HitTestPixel(Point: TPoint): Boolean; // @addr 0x480C24 @note "Black pixels do not count as hits; composed playback may require an existing composition buffer."
     procedure SetActive(Value: Boolean); override; // @addr 0x4811F8
     procedure OnDeactivate; override; // @addr 0x4812AC
     procedure LoadFromConfigPath(const Path: WideString); override; // @addr 0x481310
@@ -70,7 +70,7 @@ type
     procedure SetOneCycleDuration(DurationMs: Integer); // @addr 0x481A68 @note "Enables StopAfterOneCycle; frame delays are rounded to milliseconds with a minimum of one."
     procedure AdvanceAutoFrame(Timer: PCallbackTimerGI; UserData: Integer); // @addr 0x481AF8
     procedure Invalidate; override; // @addr 0x481C84
-    procedure Draw(ClipRect: TRect); override; // @addr 0x4821FC @ida "void __usercall $name(TgaiGI *Self@<eax>, TRect *ClipRect@<edx>);"
+    procedure Draw(ClipRect: TRect); override; // @addr 0x4821FC
     procedure PrimeImageCaches; // @addr 0x4830DC @note "Skips the main GAI in FirstFrameOnly mode."
     procedure QueueImageLoad(PendingLoads: TList); override; // @addr 0x48316C
   end;

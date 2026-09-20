@@ -10,8 +10,8 @@ type
   public
     Screen: TMessageLoopGI; // @offset 0x4
 
-    constructor Create; // @addr 0x8129A8 @ida "TfPanelPlanet *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x8129EC @ida "void __usercall $name(TfPanelPlanet *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x8129A8
+    destructor Destroy; override; // @addr 0x8129EC
     procedure InitializeLayout(Screen: TMessageLoopGI); // @addr 0x812A20
     procedure OnOpen; // @addr $812C28 Native no-op lifecycle hook.
     procedure OnClose; // @addr $812C34 Native no-op lifecycle hook.

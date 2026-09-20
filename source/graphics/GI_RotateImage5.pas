@@ -30,18 +30,18 @@ type
     BottomLeftX: array[0..256] of Single; // @offset 0x19CC
     BottomLeftY: array[0..256] of Single; // @offset 0x1DD0
 
-    constructor Create(Owner: TObjectGI); // @addr 0x495504 @ida "TRotateImage5GI *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, TObjectGI *Owner@<ecx>);"
-    destructor Destroy; override; // @addr 0x4958D0 @ida "void __usercall $name(TRotateImage5GI *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create(Owner: TObjectGI); // @addr 0x495504
+    destructor Destroy; override; // @addr 0x4958D0
     procedure Clear; override; // @addr 0x495980 @note "Preserves cache keys, image storage and FrameTexture."
     procedure SetAngle(Value: Byte); // @addr 0x4959D0 @note "A full turn has 256 steps."
     procedure SetFrameIndex(Value: Cardinal); // @addr 0x495A10 @note "Does not validate against the frame count."
     procedure SetAlpha(Value: Byte); // @addr 0x495A50
-    procedure SetImage(Path: WideString; ImageSize, Pivot: TPoint); // @addr 0x495A90 @ida "void __userpurge $name(TRotateImage5GI *Self@<eax>, unsigned __int16 *Path@<edx>, TPoint *ImageSize@<ecx>, TPoint *Pivot@<^0>);" @note "Replaces size and origin with a centered square enclosing all rotations."
-    function HitTestPixel(Point: TPoint): Boolean; // @addr 0x496188 @ida "bool __usercall $name@<al>(TRotateImage5GI *Self@<eax>, TPoint *Point@<edx>);" @note "Uses the last rendered image. Alpha must exceed 8 in software, or 0 in hardware."
+    procedure SetImage(Path: WideString; ImageSize, Pivot: TPoint); // @addr 0x495A90 @note "Replaces size and origin with a centered square enclosing all rotations."
+    function HitTestPixel(Point: TPoint): Boolean; // @addr 0x496188 @note "Uses the last rendered image. Alpha must exceed 8 in software, or 0 in hardware."
     procedure LoadFromConfigPath(const Path: WideString); override; // @addr 0x4965C4
     procedure LoadFromBlock(Block: TBlockParEC); override; // @addr 0x4965F8
     procedure LoadImageProperties(Block: TBlockParEC); // @addr 0x496648
-    procedure Draw(ClipRect: TRect); override; // @addr 0x496810 @ida "void __usercall $name(TRotateImage5GI *Self@<eax>, TRect *ClipRect@<edx>);"
+    procedure Draw(ClipRect: TRect); override; // @addr 0x496810
     function GetFrameCount: Cardinal; // @addr 0x496E54
     procedure QueueImagePath(PendingLoads: TList; Path: WideString); // @addr 0x496EBC @note "Queues an arbitrary HSAI path; does not change this object's image."
   end;

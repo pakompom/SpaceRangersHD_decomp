@@ -29,14 +29,14 @@ type
     procedure OnClose; override; // @addr 0x5F8E1C
     procedure SelectMusic; override; // @addr 0x602480
     procedure ExecuteUiCode(Block: TBlockParEC; Key: Cardinal); override; // @addr 0x6027B4
-    procedure ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer); override; // @addr 0x5FF368 @ida "void __userpurge $name(TfCfgSettings *Self@<eax>, unsigned int KeyState@<edx>, TPoint *Point@<ecx>, int Delta@<^0>);"
-    procedure MainPanelMouseMove(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x5F8E6C @ida "void __userpurge $name(TfCfgSettings *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
+    procedure ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer); override; // @addr 0x5FF368
+    procedure MainPanelMouseMove(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x5F8E6C
     procedure ShowControlHelp(Sender: TObjectGI; Show: Boolean); // @addr 0x5F9048
     procedure GroupClicked(Sender: TObjectGI); // @addr 0x5F90BC
     procedure RefreshVisibleGroup; // @addr 0x5F9220
     function AddOptionLabel(OptionName, Caption: WideString; UnusedFlag: Boolean): TLabelGI; // @addr 0x5F9420
     procedure AddOptionChoice(Value: Integer; Caption: WideString; Selected, Disabled: Boolean); // @addr 0x5F9724
-    procedure OptionChoiceMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x5F9BEC @ida "void __userpurge $name(TfCfgSettings *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
+    procedure OptionChoiceMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x5F9BEC
     procedure OptionChoiceMouseEnter(Sender: TObjectGI); // @addr 0x5F9DD4
     procedure OptionChoiceMouseLeave(Sender: TObjectGI); // @addr 0x5F9F10
     procedure AddOptionSlider(ValueLabel: TLabelGI; Minimum, Maximum, Position, UnusedStep: Integer; Callback: TOptionSliderEvent); // @addr 0x5FA04C @note "Invokes Callback immediately with the new slider."
@@ -60,8 +60,8 @@ type
     procedure ModeMouseLeave(Sender: TObjectGI); // @addr 0x5FF0F0
     procedure RefreshModeUi; // @addr 0x5FE2C0
     procedure ModeLeaveTimerTick(Timer: PCallbackTimerGI; UserData: Integer); // @addr 0x5FF158
-    procedure ModeMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x5FF1FC @ida "void __userpurge $name(TfCfgSettings *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
-    procedure ModeMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x5FF28C @ida "void __userpurge $name(TfCfgSettings *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
+    procedure ModeMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x5FF1FC
+    procedure ModeMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x5FF28C
     procedure MainPanelKeyDown(Sender: TObjectGI; Key: Cardinal); // @addr 0x5FF330
     procedure ApplyClicked(Sender: TObjectGI); // @addr 0x5FF420 @note "Persists CFG.TXT; changes requiring rebuilt resources request another runtime session."
     function CreateWarningImage(Owner: TLabelGI; Item: PFontObjectEC): TObjectGI; // @addr 0x60238C @note "Embedded-item data is ignored."

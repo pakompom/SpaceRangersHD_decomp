@@ -14,7 +14,7 @@ type
     Image: TImageGI; // @offset $54
     procedure AttachToSpace(ASpace: TSpaceSE); override; // @addr $824BE0
     procedure DetachFromSpace; override; // @addr $824C90
-    procedure SetPosition(APosition: TPointF); override; // @addr $824CCC @ida "void __usercall $name(TBGObjSE *Self@<eax>, TPointF *APosition@<edx>);"
+    procedure SetPosition(APosition: TPointF); override; // @addr $824CCC
     procedure LoadTemplate(Block: TBlockParEC); override; // @addr $824D14
     procedure QueueImageLoad(PendingLoads: TList; Owner: TObjectGI); override; // @addr $824DD0
   end;

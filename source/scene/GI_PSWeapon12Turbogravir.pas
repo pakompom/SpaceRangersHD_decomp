@@ -44,26 +44,26 @@ type
     OriginalLength: Double; // @offset $2A8
     PaletteIndex: Integer; // @offset $2B0
 
-    constructor Create(Owner: TObjectGI; APaletteIndex: Integer); // @addr $693778 @ida "TPSWeapon12Turbogravir *__userpurge $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, TObjectGI *Owner@<ecx>, int APaletteIndex@<^0>);"
-    destructor Destroy; override; // @addr $693858 @ida "void __usercall $name(TPSWeapon12Turbogravir *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create(Owner: TObjectGI; APaletteIndex: Integer); // @addr $693778
+    destructor Destroy; override; // @addr $693858
     procedure BuildWaveTables; // @addr $693894
-    procedure SetPosition(Position: TPoint); override; // @addr $69395C @ida "void __usercall $name(TPSWeapon12Turbogravir *Self@<eax>, TPoint *Position@<edx>);"
-    procedure SetTargetPoint(Point: TPoint); override; // @addr $6939A0 @ida "void __usercall $name(TPSWeapon12Turbogravir *Self@<eax>, TPoint *Point@<edx>);"
+    procedure SetPosition(Position: TPoint); override; // @addr $69395C
+    procedure SetTargetPoint(Point: TPoint); override; // @addr $6939A0
     procedure UpdateProjectionBounds; // @addr $6939F4
     procedure UpdateHitTestBounds; override; // @addr $693D38
-    function GetLocalBounds: TRect; override; // @addr $693D98 @ida "void __usercall $name(TPSWeapon12Turbogravir *Self@<eax>, TRect *Result@<edx>);"
+    function GetLocalBounds: TRect; override; // @addr $693D98
     function AddParticle: PTurbogravirParticle; // @addr $693DFC
     procedure ClearParticles; // @addr $693E74
     procedure Invalidate; override; // @addr $693EC8 @note "Native empty override."
-    procedure InvalidateRect(Rect: TRect); override; // @addr $693ED4 @ida "void __usercall $name(TPSWeapon12Turbogravir *Self@<eax>, TRect *Rect@<edx>);"
+    procedure InvalidateRect(Rect: TRect); override; // @addr $693ED4
     procedure Advance(Timer: PCallbackTimerGI; UserData: Integer); override; // @addr $693FA0
-    procedure Draw(ClipRect: TRect); override; // @addr $694874 @ida "void __usercall $name(TPSWeapon12Turbogravir *Self@<eax>, TRect *ClipRect@<edx>);"
+    procedure Draw(ClipRect: TRect); override; // @addr $694874
   end;
 
   TPSBlueWhirlGI = class(TPSWeapon12Turbogravir) // @size $2B8
   public
     // $2B4..$2B7 is inherited alignment padding, not an additional field.
-    constructor Create(Owner: TObjectGI); // @addr $694B18 @ida "TPSBlueWhirlGI *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, TObjectGI *Owner@<ecx>);"
+    constructor Create(Owner: TObjectGI); // @addr $694B18
   end;
 
 procedure LoadTurbogravirPalettes; // @addr $694B70

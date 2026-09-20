@@ -16,9 +16,9 @@ type
     OrbitAngle: Single; // @offset $C0
     AngleCorrection: Single; // @offset $C4
     OrbitRadius: Single; // @offset $C8
-    constructor Create; // @addr $4FB314 @ida "TabW18 *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr $4FB3A0 @ida "void __usercall $name(TabW18 *Self@<eax>, __int8 DestroyFlags@<dl>);"
-    procedure Launch(Owner: TabObject; Amount: Integer; Angle: Single); // @addr $4FB3F8 @ida "void __userpurge $name(TabW18 *Self@<eax>, TabObject *Owner@<edx>, int Amount@<ecx>, float Angle@<^0>);"
+    constructor Create; // @addr $4FB314
+    destructor Destroy; override; // @addr $4FB3A0
+    procedure Launch(Owner: TabObject; Amount: Integer; Angle: Single); // @addr $4FB3F8
     procedure Advance; override; // @addr $4FB524
     procedure UpdateVisuals; override; // @addr $4FBA18
   end;

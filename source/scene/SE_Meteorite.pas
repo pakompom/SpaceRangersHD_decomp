@@ -15,12 +15,12 @@ type
     Animation: TgaiGI; // @offset $5C
     MoveTimer: PSpaceTimerSE; // @offset $60
 
-    constructor Create(GraphKey: WideString; UnusedPosition: TPoint); // @addr $8279C0 @ida "TMeteoriteSE *__userpurge $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, unsigned __int16 *GraphKey@<ecx>, TPoint *UnusedPosition@<^0>);"
-    destructor Destroy; override; // @addr $827A4C @ida "void __usercall $name(TMeteoriteSE *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create(GraphKey: WideString; UnusedPosition: TPoint); // @addr $8279C0
+    destructor Destroy; override; // @addr $827A4C
     procedure AttachToSpace(ASpace: TSpaceSE); override; // @addr $827A80
     procedure DetachFromSpace; override; // @addr $827BD0
-    procedure SetPosition(APosition: TPointF); override; // @addr $827C2C @ida "void __usercall $name(TMeteoriteSE *Self@<eax>, TPointF *APosition@<edx>);"
-    function IsNearView(Point: TPointF): Boolean; // @addr $827C74 @ida "bool __usercall $name@<al>(TMeteoriteSE *Self@<eax>, TPointF *Point@<edx>);"
+    procedure SetPosition(APosition: TPointF); override; // @addr $827C2C
+    function IsNearView(Point: TPointF): Boolean; // @addr $827C74
     procedure PlaceRandomly; // @addr $827D14
     procedure RestartOutsideView; // @addr $827D8C
     procedure AdvanceMotion(Timer: PSpaceTimerSE; UserData: Integer); // @addr $827F10

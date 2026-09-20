@@ -20,8 +20,8 @@ type
   public
     Buffer: TBufEC; // @offset 0x20
 
-    constructor Create; // @addr 0x53A724 @ida "TCBufEC *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x53A768 @ida "void __usercall $name(TCBufEC *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x53A724
+    destructor Destroy; override; // @addr 0x53A768
     procedure LoadFromConfigBuffer(SourceBuffer: TBufEC; const LoadOption: WideString); override; // @addr 0x53A7B8 @note "Ignores LoadOption; ResidentBytes is not updated."
   end;
 

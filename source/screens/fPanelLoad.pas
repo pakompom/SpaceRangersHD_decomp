@@ -32,8 +32,8 @@ type
     HasShutters: Boolean; // @offset 0x98
     ShutterDirection: Integer; // @offset 0x9C  +1 opening, -1 closing.
 
-    constructor Create; // @addr 0x83ABA8 @ida "TfPanelLoad *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x83ABF0 @ida "void __usercall $name(TfPanelLoad *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x83ABA8
+    destructor Destroy; override; // @addr 0x83ABF0
     procedure InitializeLayout(Screen: TMessageLoopGI); // @addr 0x83AC24
     procedure OnOpen; // @addr 0x83B3FC
     procedure OnClose; // @addr 0x83B538
@@ -42,8 +42,8 @@ type
     procedure Hide; // @addr 0x83B5D4
     procedure SelectBackgroundStyle(StyleGroup: Integer); // @addr 0x83B610 @note "Accepts groups 0..3; selects a style for shutter or legacy artwork. Other values preserve the current style."
     procedure RefreshBackgroundImages; // @addr 0x83B734
-    procedure SetProgress(Fraction: Single); // @addr 0x83BAC4 @ida "void __userpurge $name(TfPanelLoad *Self@<eax>, float Fraction@<^0>);" @note "Requires a fraction in 0..1; does not clamp the progress-segment index."
-    procedure SetShutterOpenFraction(Fraction: Single); // @addr 0x83BC5C @ida "void __userpurge $name(TfPanelLoad *Self@<eax>, float Fraction@<^0>);"
+    procedure SetProgress(Fraction: Single); // @addr 0x83BAC4 @note "Requires a fraction in 0..1; does not clamp the progress-segment index."
+    procedure SetShutterOpenFraction(Fraction: Single); // @addr 0x83BC5C
     procedure StartOpeningShutters; // @addr 0x83BDC4
     procedure StartClosingShutters; // @addr 0x83BE58 @note "Closes Screen after the animation, or immediately when shutters are disabled."
     procedure UpdateOpeningShutters(Timer: PCallbackTimerGI; UserData: Integer); // @addr 0x83BF24

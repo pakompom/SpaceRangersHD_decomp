@@ -20,9 +20,9 @@ type
     WorkSubRect: TRect; // @offset 0x164
     MinimumSize: TPoint; // @offset 0x174
 
-    constructor Create(Owner: TObjectGI); // @addr 0x491904 @ida "TWindowGI *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, TObjectGI *Owner@<ecx>);"
-    destructor Destroy; override; // @addr 0x491AE0 @ida "void __usercall $name(TWindowGI *Self@<eax>, __int8 DestroyFlags@<dl>);"
-    function AlignSizeToBorderTiles(Size: TPoint): TPoint; // @addr 0x491C60 @ida "void __usercall $name(TWindowGI *Self@<eax>, TPoint *Size@<edx>, TPoint *Result@<ecx>);"
+    constructor Create(Owner: TObjectGI); // @addr 0x491904
+    destructor Destroy; override; // @addr 0x491AE0
+    function AlignSizeToBorderTiles(Size: TPoint): TPoint; // @addr 0x491C60
     procedure UpdateBorderLayout; // @addr 0x491DA8
     procedure LoadFromConfigPath(const Path: WideString); override; // @addr 0x4922E8
     procedure LoadFromBlock(Block: TBlockParEC); override; // @addr 0x49231C

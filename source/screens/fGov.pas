@@ -29,8 +29,8 @@ type
     PortraitPanel: TObjectGI; // @offset $134
     SavedChoiceScroll: Integer; // @offset $138
 
-    constructor Create; // @addr 0x6C7898 @ida "TfGov *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x6C7918 @ida "void __usercall $name(TfGov *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x6C7898
+    destructor Destroy; override; // @addr 0x6C7918
     procedure InitializeLayout; override; // @addr $6C7DEC
     procedure OnOpen; override; // @addr 0x6C84B0 @note "Native diagnostic name: TfGov.BeforeRun."
     procedure AddChoice(Text: WideString; Value: Integer; Callback: TDialogChoiceEventGI); // @addr $6CA804
@@ -62,11 +62,11 @@ type
     procedure RememberChoiceScroll; // @addr $6CA73C
     procedure ChoiceMouseEnter(Sender: TObjectGI); // @addr $6CADD0
     procedure ChoiceMouseLeave(Sender: TObjectGI); // @addr $6CADF0
-    procedure ChoiceMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $6CAE10 @ida "void __userpurge $name(TfGov *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
-    procedure ChoiceMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $6CAE90 @ida "void __userpurge $name(TfGov *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
+    procedure ChoiceMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $6CAE10
+    procedure ChoiceMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $6CAE90
     procedure RestartTextPresentation(RestartAnimation: Boolean); // @addr $6CAFB0
     procedure AdvanceTextPresentation(Timer: PCallbackTimerGI; UserData: Integer); // @addr $6CB05C
-    procedure ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer); override; // @addr $6CB4D0 @ida "void __userpurge $name(TfGov *Self@<eax>, unsigned int KeyState@<edx>, TPoint *Point@<ecx>, int Delta@<^0>);"
+    procedure ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer); override; // @addr $6CB4D0
     function CreateDialogObject(LabelControl: TLabelGI; Item: PFontObjectEC): TObjectGI; // @addr $6CB5C8
     procedure AddMessageClicked(Sender: TObjectGI); // @addr $6CB8DC
     procedure StartScriptMessage(Action: Integer); // @addr $6CD120
@@ -140,7 +140,7 @@ end;
 procedure TfGov.InitializeLayout;
 var HalfWidth, ChoiceGrowth: Integer; Owner: Byte;
   // @nested $6C79B8 LayoutPortrait
-  procedure LayoutPortrait(Name: WideString; Screen: TMessageLoopGI); // @addr $6C79B8 @ida "void __usercall $name(unsigned __int16 *Name@<eax>, TMessageLoopGI *Screen@<edx>, void *ParentFrame@<^0>);" @stackpop 0 @calls "0x6C7F28" @note "Nested in TfGov.InitializeLayout; captures half-width and Self."
+  procedure LayoutPortrait(Name: WideString; Screen: TMessageLoopGI); // @addr $6C79B8 @calls "0x6C7F28" @note "Nested in TfGov.InitializeLayout; captures half-width and Self."
   var I, PortraitX, PortraitY, TableY, Bottom, DeltaX, DeltaY: Integer; Panel: TObjectGI;
   begin
     Panel := Screen.FindControlByPath(Name);

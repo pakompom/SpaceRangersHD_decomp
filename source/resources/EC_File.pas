@@ -13,11 +13,11 @@ type
     OpenDepth: Integer; // @offset 0x08
     FileName: WideString; // @offset 0x0C
 
-    constructor Create; // @addr 0x86D580 @ida "TFileEC *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x86D5CC @ida "void __usercall $name(TFileEC *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x86D580
+    destructor Destroy; override; // @addr 0x86D5CC
     procedure Reset; // @addr 0x86D608 @note "Closes even when OpenDepth is nonzero."
     procedure SetFileName(NewFileName: WideString); // @addr 0x86D664 @note "Closes the current entry regardless of OpenDepth."
-    function GetFileName: WideString; // @addr $86DBFC @ida "void __usercall $name(TFileEC *Self@<eax>, unsigned __int16 **Result@<edx>);"
+    function GetFileName: WideString; // @addr $86DBFC
     // Nested acquisitions reuse the existing handle and access mode.
     // Opening converts FileName to ANSI for the package collection.
     procedure AcquireReadWriteHandle; // @addr 0x86D6C0
@@ -30,7 +30,7 @@ type
     function SetPointer(Offset: Cardinal; Origin: Integer): Cardinal; // @addr 0x86DC1C @note "Requires an open entry. Origin 0 is absolute, 1 adds Offset to the current position, 2 subtracts Offset from the size; returns the new position."
     function GetPointer: Cardinal; // @addr 0x86DD48 @note "Returns 0xFFFFFFFF when no entry is open."
     procedure ReadBuffer(Dest: Pointer; ByteCount: Cardinal); // @addr 0x86DD88 @note "Requires an open entry; raises on backend read failure, including short uncompressed reads."
-    function ReadWideString: WideString; // @addr 0x86E074 @ida "void __usercall $name(TFileEC *Self@<eax>, unsigned __int16 **Result@<edx>);" @note "Consumes UTF-16 code units through the terminating NUL; requires an open entry."
+    function ReadWideString: WideString; // @addr 0x86E074 @note "Consumes UTF-16 code units through the terminating NUL; requires an open entry."
     procedure WriteBuffer(Source: Pointer; ByteCount: Cardinal); // @addr 0x86DF24 @note "Requires an open writable uncompressed entry; raises on backend failure or a short write. Zero count does nothing."
   end;
 

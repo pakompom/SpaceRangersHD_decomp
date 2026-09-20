@@ -16,8 +16,8 @@ type
     Next: TDataFileEC; // @offset 0x08
     FileRef: TFileEC; // @offset 0x0C
 
-    constructor Create; // @addr 0x84483C @ida "TDataFileEC *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x844890 @ida "void __usercall $name(TDataFileEC *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x84483C
+    destructor Destroy; override; // @addr 0x844890
     procedure Clear; // @addr 0x8448D4 @note "Empty in this binary."
   end;
   PDataFileEC = ^TDataFileEC;
@@ -33,8 +33,8 @@ type
     FileOffset: Cardinal; // @offset 0x1C
     ByteCount: Integer; // @offset 0x20
 
-    constructor Create; // @addr 0x8448E0 @ida "TDataElEC *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x844924 @ida "void __usercall $name(TDataElEC *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x8448E0
+    destructor Destroy; override; // @addr 0x844924
     procedure ClearChildData; // @addr 0x844960
   end;
   PDataElEC = ^TDataElEC;
@@ -53,8 +53,8 @@ type
     IndexedEntries: array of TDataElEC; // @offset 0x24
     IndexedEntryCount: Integer; // @offset 0x28
 
-    constructor Create; // @addr 0x844988 @ida "TDataEC *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x8449F4 @ida "void __usercall $name(TDataEC *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x844988
+    destructor Destroy; override; // @addr 0x8449F4
     function IsEmpty: Boolean; // @addr 0x844A38
     procedure Clear; // @addr 0x844A54 @note "Frees owned files; linked-list head/tail fields remain unchanged."
     function AddEntry(EntryKind: TDataEntryKind): TDataElEC; // @addr 0x844AFC @note "Caller must update the index. Child subtrees share the interned-file list."

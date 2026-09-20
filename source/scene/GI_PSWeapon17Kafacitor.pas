@@ -37,18 +37,18 @@ type
     OriginalLength: Double; // @offset $150
     LengthScale: Double; // @offset $158
 
-    constructor Create(Owner: TObjectGI; APaletteIndex: Integer); // @addr $697868 @ida "TPSWeapon17Kafacitor *__userpurge $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, TObjectGI *Owner@<ecx>, int APaletteIndex@<^0>);"
-    destructor Destroy; override; // @addr $697920 @ida "void __usercall $name(TPSWeapon17Kafacitor *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create(Owner: TObjectGI; APaletteIndex: Integer); // @addr $697868
+    destructor Destroy; override; // @addr $697920
     procedure SetColors(Primary, Secondary: Word); // @addr $697954
-    procedure SetPosition(Position: TPoint); override; // @addr $697988 @ida "void __usercall $name(TPSWeapon17Kafacitor *Self@<eax>, TPoint *Position@<edx>);"
-    procedure SetTargetPoint(Point: TPoint); override; // @addr $6979CC @ida "void __usercall $name(TPSWeapon17Kafacitor *Self@<eax>, TPoint *Point@<edx>);"
+    procedure SetPosition(Position: TPoint); override; // @addr $697988
+    procedure SetTargetPoint(Point: TPoint); override; // @addr $6979CC
     procedure UpdateProjectionBounds; // @addr $697A20
     procedure UpdateHitTestBounds; override; // @addr $697D50
-    function GetLocalBounds: TRect; override; // @addr $697DB0 @ida "void __usercall $name(TPSWeapon17Kafacitor *Self@<eax>, TRect *Result@<edx>);"
+    function GetLocalBounds: TRect; override; // @addr $697DB0
     function AddParticle: PKafacitorParticle; // @addr $697E14
-    procedure InvalidateRect(Rect: TRect); override; // @addr $697E8C @ida "void __usercall $name(TPSWeapon17Kafacitor *Self@<eax>, TRect *Rect@<edx>);"
+    procedure InvalidateRect(Rect: TRect); override; // @addr $697E8C
     procedure Advance(Timer: PCallbackTimerGI; UserData: Integer); override; // @addr $697F58
-    procedure Draw(ClipRect: TRect); override; // @addr $69846C @ida "void __usercall $name(TPSWeapon17Kafacitor *Self@<eax>, TRect *ClipRect@<edx>);"
+    procedure Draw(ClipRect: TRect); override; // @addr $69846C
   end;
 
 procedure LoadKafacitorPalettes; // @addr $698684

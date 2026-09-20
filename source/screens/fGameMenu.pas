@@ -17,7 +17,7 @@ type
     procedure HelpClicked(Sender: TObjectGI); // @addr $602E58
     procedure ExitClicked(Sender: TObjectGI); // @addr $602F28
     procedure AchievementsClicked(Sender: TObjectGI); // @addr $603054
-    procedure BackgroundMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $603088 @ida "void __userpurge $name(TfGameMenu *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
+    procedure BackgroundMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $603088
     procedure MainPanelKeyDown(Sender: TObjectGI; Key: Cardinal); // @addr $6032BC
 
     procedure OnOpen; override; // @addr 0x602C3C

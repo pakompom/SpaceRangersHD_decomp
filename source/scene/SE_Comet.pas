@@ -40,16 +40,16 @@ type
     StarAttraction: Single; // @offset $118
     ObjectAttraction: Single; // @offset $11C
 
-    constructor Create(GraphKey: WideString; UnusedPosition: TPoint); // @addr $824F04 @ida "TCometSE *__userpurge $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, unsigned __int16 *GraphKey@<ecx>, TPoint *UnusedPosition@<^0>);"
-    destructor Destroy; override; // @addr $824FC4 @ida "void __usercall $name(TCometSE *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create(GraphKey: WideString; UnusedPosition: TPoint); // @addr $824F04
+    destructor Destroy; override; // @addr $824FC4
     procedure AttachToSpace(ASpace: TSpaceSE); override; // @addr $824FF8
     procedure DetachFromSpace; override; // @addr $8251B8
-    procedure SetPosition(APosition: TPointF); override; // @addr $825280 @ida "void __usercall $name(TCometSE *Self@<eax>, TPointF *APosition@<edx>);"
-    procedure ResetTrajectory(Angle: Single); // @addr $8252D8 @ida "void __userpurge $name(TCometSE *Self@<eax>, float Angle@<^0>);"
+    procedure SetPosition(APosition: TPointF); override; // @addr $825280
+    procedure ResetTrajectory(Angle: Single); // @addr $8252D8
     procedure StartMotionTimer; // @addr $8254BC
     procedure StopMotionTimer; // @addr $8254F8
     procedure AdvanceMotionTimer(Timer: PSpaceTimerSE; UserData: Integer); // @addr $825524
-    procedure ApplyAttraction(Center: TPointF; Strength: Single); // @addr $825544 @ida "void __userpurge $name(TCometSE *Self@<eax>, TPointF *Center@<edx>, float Strength@<^0>);"
+    procedure ApplyAttraction(Center: TPointF; Strength: Single); // @addr $825544
     procedure ExplosionFinished(Sender: TObjectGI); // @addr $8257A8
     procedure RemoveTrailEntry(Entry: PCometTrailEntry); // @addr $825844
     procedure ExplodeAndRespawn; // @addr $8258C8

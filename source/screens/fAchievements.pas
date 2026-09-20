@@ -23,12 +23,12 @@ type
     procedure RefreshRowBackground(Index: Integer); // @addr $539FCC
     procedure BuildProgressBars(Owner: TObjectGI; MinValue, MaxValue, StoredValue, CurrentValue: Integer); // @addr $53A0E8
 
-    constructor Create; // @addr 0x539004 @ida "TfAchievements *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x539048 @ida "void __usercall $name(TfAchievements *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x539004
+    destructor Destroy; override; // @addr 0x539048
     procedure OnOpen; override; // @addr 0x539230
     procedure OnClose; override; // @addr 0x5392A4
     procedure SelectMusic; override; // @addr 0x53A0DC
-    procedure ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer); override; // @addr 0x539464 @ida "void __userpurge $name(TfAchievements *Self@<eax>, unsigned int KeyState@<edx>, TPoint *Point@<ecx>, int Delta@<^0>);"
+    procedure ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer); override; // @addr 0x539464
     procedure InitializeLayout; override; // @addr 0x53907C
     procedure RebuildAchievementList; // @addr 0x5395F4
     procedure CloseClicked(Sender: TObjectGI); // @addr 0x53932C

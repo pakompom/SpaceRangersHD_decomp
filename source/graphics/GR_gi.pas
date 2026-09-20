@@ -77,27 +77,27 @@ type
     UsesExternalData: Boolean; // @offset 0x0C
     Header: PgiHeaderGR; // @offset 0x10
 
-    constructor Create; // @addr 0x47696C @ida "TgiGR *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x4769B0 @ida "void __usercall $name(TgiGR *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x47696C
+    destructor Destroy; override; // @addr 0x4769B0
     procedure ClearData; // @addr 0x4769EC @note "Borrowed data is detached without freeing it."
     function IsEmpty: Boolean; // @addr 0x476A34
     procedure LoadRawGiBytes(BufferPtr: Pointer; ByteCount: Integer); // @addr 0x476A50 @note "BufferPtr is borrowed; its header and length are not validated."
     procedure LoadRawGiFromBuffer(SourceBuffer: TBufEC); // @addr 0x476A90 @note "Owns its copy; ignores SourceBuffer.Position."
     procedure LoadCompressedGiBytes(BufferPtr: Pointer; ByteCount: Integer); // @addr 0x476AF0 @note "Owns decompressed storage; empty on decompression failure."
-    function GetBoundsRect: TRect; // @addr 0x476B98 @ida "void __usercall $name(TgiGR *Self@<eax>, TRect *Result@<edx>);"
-    function GetContentSize: TPoint; // @addr 0x476BC0 @ida "void __usercall $name(TgiGR *Self@<eax>, TPoint *Result@<edx>);"
-    function GetTopLeft: TPoint; // @addr 0x476C00 @ida "void __usercall $name(TgiGR *Self@<eax>, TPoint *Result@<edx>);"
+    function GetBoundsRect: TRect; // @addr 0x476B98
+    function GetContentSize: TPoint; // @addr 0x476BC0
+    function GetTopLeft: TPoint; // @addr 0x476C00
     function GetFormat: Integer; // @addr 0x476C30
     function GetPlane(PlaneIndex: Integer): PgiPlaneGR; // @addr 0x476C4C @note "Does not validate PlaneIndex."
     function GetClipRectCount: Integer; // @addr 0x476C74
-    function GetClipRect(RectIndex: Integer): TRect; // @addr 0x476C90 @ida "void __usercall $name(TgiGR *Self@<eax>, int RectIndex@<edx>, TRect *Result@<ecx>);" @note "Does not validate RectIndex."
+    function GetClipRect(RectIndex: Integer): TRect; // @addr 0x476C90 @note "Does not validate RectIndex."
     procedure BuildPalettedFormat4ColorCache; // @addr 0x476CF0 @note "Modifies Data even when borrowed."
-    procedure DrawToGraphBuf(GraphBuf: TGraphBufGR; X, Y: Integer; DrawRect: TRect; BlendMode, Alpha: Byte); // @addr 0x476DEC @ida "void __userpurge $name(TgiGR *Self@<eax>, TGraphBufGR *GraphBuf@<edx>, int X@<ecx>, int Y@<^12>, TRect *DrawRect@<^8>, unsigned __int8 BlendMode@<^4>, unsigned __int8 Alpha@<^0>);"
+    procedure DrawToGraphBuf(GraphBuf: TGraphBufGR; X, Y: Integer; DrawRect: TRect; BlendMode, Alpha: Byte); // @addr 0x476DEC
     procedure DecodeToGraphBuf(GraphBuf: TGraphBufGR; Keep16BitPixels: Boolean); // @addr 0x47743C @note "Formats 0..4 create a 32-bit destination; formats 5/6 decode into an existing sufficiently large buffer. Keep16BitPixels affects format 0 without an alpha mask."
     procedure DecodeRawRegion(Destination: Pointer; PitchBytes, SourceX, SourceY, Width, Height: Integer; Keep16BitPixels: Boolean); // @addr 0x477B9C @note "Only format 0 is supported; other formats report an error."
     procedure DecodeToPixels(Destination: Pointer; PitchBytes, Width, Height: Integer; Keep16BitPixels: Boolean); // @addr 0x477DFC
     procedure CreateFromGraphBuf(GraphBuf: TGraphBufGR; StorageMode: Integer); // @addr 0x478314 @note "Mode 1 uses RGB565; mode 0 uses ARGB masks. Native allocation reserves two bytes per pixel except for mode 2, whose payload is left uninitialized."
-    procedure CreateFormat2FromGraphBuf(GraphBuf: TGraphBufGR; TopLeft: TPoint); // @addr 0x478508 @ida "void __usercall $name(TgiGR *Self@<eax>, TGraphBufGR *GraphBuf@<edx>, TPoint *TopLeft@<ecx>);" @note "Uses RGB565 masks."
+    procedure CreateFormat2FromGraphBuf(GraphBuf: TGraphBufGR; TopLeft: TPoint); // @addr 0x478508 @note "Uses RGB565 masks."
   end;
 
 procedure PrepareRawGiColorCache(Data: Pointer); // @addr $4787B0
@@ -534,7 +534,7 @@ procedure TgiGR.CreateFromGraphBuf(GraphBuf: TGraphBufGR; StorageMode: Integer);
 var Plane: PgiPlaneGR; ByteCount: Cardinal;
 
   // @nested $4782CC SwapGiSourceRedBlue
-  procedure SwapGiSourceRedBlue; // @addr $4782CC @ida "void __usercall $name(void *ParentFrame@<^0>);" @stackpop 0 @calls "0x00478486 0x004784FC"
+  procedure SwapGiSourceRedBlue; // @addr $4782CC @calls "0x00478486 0x004784FC"
   var Pixels: Pointer; Count: Integer;
   begin
     Pixels := GraphBuf.GetPixels;

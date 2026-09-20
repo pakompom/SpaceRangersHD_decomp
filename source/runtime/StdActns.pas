@@ -6,7 +6,7 @@ interface
 type
   THintAction = class(TCustomAction) // @size 0xA0
   public
-    constructor Create(AOwner: TComponent); override; // @ida "THintAction * __usercall $name@<eax>(void * SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, TComponent *AOwner@<ecx>);" @note "DCC32 MAP StdActns.THintAction.Create. Source vcl/StdActns.pas:560." @slot 0x2C
+    constructor Create(AOwner: TComponent); override; // @note "DCC32 MAP StdActns.THintAction.Create. Source vcl/StdActns.pas:560." @slot 0x2C
   end;
 
 implementation

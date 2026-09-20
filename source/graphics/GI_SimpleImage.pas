@@ -14,17 +14,17 @@ type
     HalfAlpha: Boolean; // @offset 0x126
     SourceRGBA: Boolean; // @offset 0x127
 
-    constructor Create(Owner: TObjectGI); // @addr 0x473910 @ida "TSimpleImageGI *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, TObjectGI *Owner@<ecx>);"
-    destructor Destroy; override; // @addr 0x4739A0 @ida "void __usercall $name(TSimpleImageGI *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create(Owner: TObjectGI); // @addr 0x473910
+    destructor Destroy; override; // @addr 0x4739A0
     procedure Clear; override; // @addr 0x4739EC @note "Preserves the cache control and its key."
     procedure SetImagePath(const ImagePath: WideString); // @addr 0x473A28 @note "The RGBA key suffix enables SourceRGBA; keys shorter than four characters preserve the previous flag."
-    function GetContentSize: TPoint; // @addr 0x473ADC @ida "void __usercall $name(TSimpleImageGI *Self@<eax>, TPoint *Result@<edx>);"
+    function GetContentSize: TPoint; // @addr 0x473ADC
     procedure SetImageKindX(Value: TImageKindXGI); // @addr 0x473B48
     procedure SetImageKindY(Value: TImageKindYGI); // @addr 0x473B80
     procedure SetHalfAlpha(Value: Boolean); // @addr 0x473BB8
     procedure LoadFromConfigPath(const Path: WideString); override; // @addr 0x473BF0 @note "Image is optional."
     procedure LoadFromBlock(Block: TBlockParEC); override; // @addr 0x473E98 @note "Requires Image; does not update SourceRGBA from the key suffix."
-    procedure Draw(ClipRect: TRect); override; // @addr 0x474118 @ida "void __usercall $name(TSimpleImageGI *Self@<eax>, TRect *ClipRect@<edx>);" @note "CenterFill is unimplemented on both axes."
+    procedure Draw(ClipRect: TRect); override; // @addr 0x474118 @note "CenterFill is unimplemented on both axes."
     procedure QueueImageLoad(PendingLoads: TList); override; // @addr 0x4744D8
   end;
 

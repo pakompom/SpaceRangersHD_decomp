@@ -24,7 +24,7 @@ type
 
 procedure ab_Weapon_InitializeFromInfo(Weapon: PabWeapon; Info: PWeaponInfo); // @addr $4FBA2C
 procedure ab_Weapon_Initialize(Weapon: PabWeapon; ItemType: Byte); // @addr $4FBA4C
-procedure ab_Weapon_Fire(Weapon: PabWeapon; Owner: TabObject; DamageScale: Single); // @addr $4FC1C4 @ida "void __userpurge $name(TabWeapon *Weapon@<eax>, TabObject *Owner@<edx>, float DamageScale@<^0>);"
+procedure ab_Weapon_Fire(Weapon: PabWeapon; Owner: TabObject; DamageScale: Single); // @addr $4FC1C4
 procedure ab_Weapon_QueueImageLoad(Weapon: PabWeapon; PendingLoads: TList; Owner: TObjectGI); // @addr $4FCAE4
 
 implementation
@@ -288,7 +288,7 @@ var
   Index: Integer;
 
   // @nested $4FC168 ConfigureObjectSound
-  procedure ConfigureObjectSound(Obj: TabObject; Kind: Integer); // @addr $4FC168 @ida "void __usercall $name(TabObject *Obj@<eax>, int Kind@<edx>, void *ParentFrame@<^0>);" @stackpop 0 @calls "0x4fc25f,0x4fc2af,0x4fc2ff,0x4fc34f,0x4fc3ac,0x4FC3F8,0x4fc444,0x4fc48d,0x4FC4D9,0x4FC525,0x4fc571,0x4FC5C1,0x4FC611,0x4fc665,0x4FC6B3,0x4FC703,0x4fc753,0x4fc7ad,0x4FC7F9,0x4fc851,0x4fc89b,0x4FC8E5,0x4fc948,0x4fc9bf,0x4FCA29,0x4fca77,0x4FCAC4"
+  procedure ConfigureObjectSound(Obj: TabObject; Kind: Integer); // @addr $4FC168 @calls "0x4fc25f,0x4fc2af,0x4fc2ff,0x4fc34f,0x4fc3ac,0x4FC3F8,0x4fc444,0x4fc48d,0x4FC4D9,0x4FC525,0x4fc571,0x4FC5C1,0x4FC611,0x4fc665,0x4FC6B3,0x4FC703,0x4fc753,0x4fc7ad,0x4FC7F9,0x4fc851,0x4fc89b,0x4FC8E5,0x4fc948,0x4fc9bf,0x4FCA29,0x4fca77,0x4FCAC4"
   begin
     if ArcadeWeaponLoopTicks[Kind] >= 0 then
     begin

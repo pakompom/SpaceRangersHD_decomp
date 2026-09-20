@@ -16,12 +16,12 @@ type
 
     procedure CloseClicked(Sender: TObjectGI); // @addr $596088
     function CanEditAwards: Boolean; // @addr $5960C8
-    function GetAwardImagePath(AwardId: Integer): WideString; // @addr $596100 @ida "void __usercall $name(TfRewards *Self@<eax>, int AwardId@<edx>, unsigned __int16 **Result@<ecx>);"
+    function GetAwardImagePath(AwardId: Integer): WideString; // @addr $596100
     procedure PlatformMouseEnter(Sender: TObjectGI); // @addr $596230
     procedure AwardMouseEnter(Sender: TObjectGI); // @addr $5964B8
     procedure AwardMouseLeave(Sender: TObjectGI); // @addr $5964E8
     procedure ClearHighlight(Sender: TObjectGI); // @addr $596510
-    procedure AwardMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $5966EC @ida "void __userpurge $name(TfRewards *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
+    procedure AwardMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $5966EC
     procedure IncreaseVisibleCount(Sender: TObjectGI); // @addr $596948
     procedure DecreaseVisibleCount(Sender: TObjectGI); // @addr $596994
     procedure RefreshVisibleCount; // @addr $5969D0
@@ -31,7 +31,7 @@ type
     procedure OnClose; override; // @addr 0x596068
     procedure ProcessCallbackTimers; override; // @addr 0x5970B8
     procedure SelectMusic; override; // @addr 0x597260
-    procedure ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer); override; // @addr 0x597694 @ida "void __userpurge $name(TfRewards *Self@<eax>, unsigned int KeyState@<edx>, TPoint *Point@<ecx>, int Delta@<^0>);"
+    procedure ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer); override; // @addr 0x597694
     procedure InitializeLayout; override; // @addr 0x595BF8
     procedure UpdateActionCursor(CanTake: Boolean); override; // @addr 0x596FD8
   end;

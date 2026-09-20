@@ -13,21 +13,21 @@ type
     RangeEnds: array of Int64; // @offset 0x08
     RangeCount: Integer; // @offset 0x0C
 
-    constructor Create; // @addr 0x4DD828 @ida "TCPDiapazone *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x4DD874 @ida "void __usercall $name(TCPDiapazone *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x4DD828
+    destructor Destroy; override; // @addr 0x4DD874
     procedure Clear; // @addr 0x4DD8B0
     procedure LoadFromReader(Reader: TBufEC); // @addr 0x4DD904
     procedure LoadFromText(Text: WideString); // @addr 0x4DE214 @note "Accepts [a..b;c] or [ahb;c]. Endpoints beyond +/-200000000 can expand intervals unexpectedly; '..' normalization can overread."
     procedure LoadFromValues(var Source: TValuesList); // @addr 0x4DDDF0 @note "Ignores Source.AcceptListed."
     procedure Assign(var Source: TCPDiapazone); // @addr 0x4DDEB0
     procedure Append(var Source: TCPDiapazone); // @addr 0x4DDF74 @note "Preserves overlapping and duplicate ranges."
-    procedure AddRange(MinValue, MaxValue: Int64); // @addr 0x4DE068 @ida "void __userpurge $name(TCPDiapazone *Self@<eax>, __int64 MinValue@<^8>, __int64 MaxValue@<^0>);" @note "Swaps reversed bounds; does not merge ranges."
-    procedure AddValue(Value: Extended); // @addr 0x4DE12C @ida "void __userpurge $name(TCPDiapazone *Self@<eax>, _TBYTE Value@<^0>);" @note "Truncates to Int64; caught conversion errors preserve existing ranges."
-    function GetMinimum: Int64; // @addr 0x4DD948 @ida "__int64 __usercall $name@<edx:eax>(TCPDiapazone *Self@<eax>);" @note "Requires at least one range."
-    function GetMaximum: Int64; // @addr 0x4DD9C0 @ida "__int64 __usercall $name@<edx:eax>(TCPDiapazone *Self@<eax>);" @note "Requires at least one range."
-    function Contains(Value: Extended): Boolean; // @addr 0x4DDC10 @ida "bool __userpurge $name@<al>(TCPDiapazone *Self@<eax>, _TBYTE Value@<^0>);" @note "Rounds with System.Round first."
+    procedure AddRange(MinValue, MaxValue: Int64); // @addr 0x4DE068 @note "Swaps reversed bounds; does not merge ranges."
+    procedure AddValue(Value: Extended); // @addr 0x4DE12C @note "Truncates to Int64; caught conversion errors preserve existing ranges."
+    function GetMinimum: Int64; // @addr 0x4DD948 @note "Requires at least one range."
+    function GetMaximum: Int64; // @addr 0x4DD9C0 @note "Requires at least one range."
+    function Contains(Value: Extended): Boolean; // @addr 0x4DDC10 @note "Rounds with System.Round first."
     function GetRandomValue: Integer; // @addr 0x4DDA5C @note "Zero when empty. Sampling weights overlaps repeatedly; lengths and results are 32-bit."
-    function ToText: WideString; // @addr 0x4DDC94 @ida "void __usercall $name(TCPDiapazone *Self@<eax>, unsigned __int16 **Result@<edx>);" @note "Uses [ahb;c] and signed low 32-bit endpoints; empty output is '['."
+    function ToText: WideString; // @addr 0x4DDC94 @note "Uses [ahb;c] and signed low 32-bit endpoints; empty output is '['."
   end;
 
 implementation

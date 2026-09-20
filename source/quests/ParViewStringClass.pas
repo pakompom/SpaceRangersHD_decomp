@@ -12,8 +12,8 @@ type
     MaxValue: Integer; // @offset 0x08
     Text: TTextField; // @offset 0x0C
 
-    constructor Create(Value: WideString); // @addr 0x4DCF08 @ida "TParViewString *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, unsigned __int16 *Value@<ecx>);"
-    destructor Destroy; override; // @addr 0x4DCFA4 @ida "void __usercall $name(TParViewString *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create(Value: WideString); // @addr 0x4DCF08
+    destructor Destroy; override; // @addr 0x4DCFA4
     procedure LoadFromReader(Reader: TBufEC); // @addr 0x4DCFE8
   end;
 

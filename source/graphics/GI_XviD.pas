@@ -55,8 +55,8 @@ type
     FrameCount: Integer; // @offset $160
     FramesPerSecond: Double; // @offset $168
 
-    constructor Create(Owner: TObjectGI); // @addr $4B6DA0 @ida "TxvidGI *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, TObjectGI *Owner@<ecx>);"
-    destructor Destroy; override; // @addr $4B6DE8 @ida "void __usercall $name(TxvidGI *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create(Owner: TObjectGI); // @addr $4B6DA0
+    destructor Destroy; override; // @addr $4B6DE8
     procedure Clear; override; // @addr $4B6E24
     function ImageOpen(const FileName: WideString; FillViewport: Boolean): Boolean; // @addr $4B6E40
     procedure XvidClose; // @addr $4B75BC
@@ -65,7 +65,7 @@ type
     procedure LoadFromBlock(Block: TBlockParEC); override; // @addr $4B7778
     procedure ReadVideoConfig(Block: TBlockParEC); // @addr $4B77A0
     function DecodeNextFrame: Boolean; // @addr $4B77B0
-    function SetPlaybackTime(TimeMs: Double): Boolean; // @addr $4B79C0 @ida "bool __userpurge $name@<al>(TxvidGI *Self@<eax>, double TimeMs@<^0>);"
+    function SetPlaybackTime(TimeMs: Double): Boolean; // @addr $4B79C0
     procedure SetFramePosition(Frame: Integer); // @addr $4B7A28
   end;
 

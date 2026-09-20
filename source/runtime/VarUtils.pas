@@ -9,7 +9,7 @@ procedure BackupVarBoolFromStr; // @nameonly @note "DCC32 MAP VarUtils.BackupVar
 
 procedure BackupVarBStrFromCy; // @nameonly @note "DCC32 MAP VarUtils.BackupVarBStrFromCy. Source rtl/sys/VarUtils.pas:1161. Prototype pending: source type not found: Currency."
 
-function BackupVarBStrFromDate(dateIn: TDateTime; LCID: Integer; dwFlags: Longint; out bstrOut: WideString): HResult; stdcall; // @ida "HResult __stdcall $name(TDateTime dateIn, __int32 LCID, __int32 dwFlags, unsigned __int16 * *bstrOut);" @note "DCC32 MAP VarUtils.BackupVarBStrFromDate. Source rtl/sys/VarUtils.pas:1173."
+function BackupVarBStrFromDate(dateIn: TDateTime; LCID: Integer; dwFlags: Longint; out bstrOut: WideString): HResult; stdcall; // @note "DCC32 MAP VarUtils.BackupVarBStrFromDate. Source rtl/sys/VarUtils.pas:1173."
 
 procedure BackupVarBStrFromBool; // @nameonly @note "DCC32 MAP VarUtils.BackupVarBStrFromBool. Source rtl/sys/VarUtils.pas:1185. Prototype pending: source type not found: WordBool."
 

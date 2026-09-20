@@ -75,22 +75,22 @@ type
     FixedWidthDepth: Integer; // @offset 0x58
     // ColorStack is a separately allocated buffer.
 
-    constructor Create; // @addr 0x483C9C @ida "TCFontEC *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x483CE4 @ida "void __usercall $name(TCFontEC *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x483C9C
+    destructor Destroy; override; // @addr 0x483CE4
     procedure ClearLoadedFontData; // @addr 0x483D20
     function GetCenteringHeight: Integer; // @addr 0x483D9C
     function GetLineHeight: Integer; // @addr 0x483DB8 @note "Includes two extra pixels beyond the stored line height."
     procedure ResetTextMeasureState; // @addr 0x483DD8 @note "Preserves allocated storage."
     function GetEmbeddedObject(Index: Integer): PFontObjectEC; // @addr 0x483DF4
-    function MeasureTaggedTextBounds(const Text: WideString; X, Y: Integer; TopAdjustment: PInteger): TRect; // @addr 0x483E1C @ida "void __userpurge $name(TCFontEC *Self@<eax>, unsigned __int16 *Text@<edx>, int X@<ecx>, int Y@<^8>, int *TopAdjustment@<^4>, TRect *Result@<^0>);" @note "Restores ObjectCount; FixedWidthDepth remains affected by the processed tags."
+    function MeasureTaggedTextBounds(const Text: WideString; X, Y: Integer; TopAdjustment: PInteger): TRect; // @addr 0x483E1C @note "Restores ObjectCount; FixedWidthDepth remains affected by the processed tags."
     // The native implementation is handwritten assembly.
     function GetGlyphAdvance(CharCode: WideChar): Integer; cdecl; // @addr 0x4846C8 @ida "int __cdecl $name(TCFontEC *Self, unsigned __int16 CharCode);" @note "Returns zero for an absent character."
     function HasGlyph(CharCode: WideChar): Boolean; // @addr 0x4846FC
     procedure WrapTaggedTextIntoLines(Lines: TStringsEC; const Text: WideString; MaxWidth: Integer); // @addr 0x484734 @note "Replaces Lines, preserves tags in its output, and restores ObjectCount."
-    procedure DrawTaggedText16(Destination: Pointer; PitchBytes, X, Y: Integer; const Text: WideString; ClipRect: TRect); // @addr 0x484CEC @ida "void __userpurge $name(TCFontEC *Self@<eax>, void *Destination@<edx>, int PitchBytes@<ecx>, int X@<^12>, int Y@<^8>, unsigned __int16 *Text@<^4>, TRect *ClipRect@<^0>);"
-    procedure DrawTaggedText32(Destination: Pointer; PitchBytes, X, Y: Integer; const Text: WideString; ClipRect: TRect); // @addr 0x485290 @ida "void __userpurge $name(TCFontEC *Self@<eax>, void *Destination@<edx>, int PitchBytes@<ecx>, int X@<^12>, int Y@<^8>, unsigned __int16 *Text@<^4>, TRect *ClipRect@<^0>);"
-    procedure DrawJustifiedTaggedText16(Destination: Pointer; PitchBytes, X, Y: Integer; const Text: WideString; Width: Integer; ClipRect: TRect); // @addr 0x485834 @ida "void __userpurge $name(TCFontEC *Self@<eax>, void *Destination@<edx>, int PitchBytes@<ecx>, int X@<^16>, int Y@<^12>, unsigned __int16 *Text@<^8>, int Width@<^4>, TRect *ClipRect@<^0>);"
-    procedure DrawJustifiedTaggedText32(Destination: Pointer; PitchBytes, X, Y: Integer; const Text: WideString; Width: Integer; ClipRect: TRect); // @addr 0x4860D4 @ida "void __userpurge $name(TCFontEC *Self@<eax>, void *Destination@<edx>, int PitchBytes@<ecx>, int X@<^16>, int Y@<^12>, unsigned __int16 *Text@<^8>, int Width@<^4>, TRect *ClipRect@<^0>);"
+    procedure DrawTaggedText16(Destination: Pointer; PitchBytes, X, Y: Integer; const Text: WideString; ClipRect: TRect); // @addr 0x484CEC
+    procedure DrawTaggedText32(Destination: Pointer; PitchBytes, X, Y: Integer; const Text: WideString; ClipRect: TRect); // @addr 0x485290
+    procedure DrawJustifiedTaggedText16(Destination: Pointer; PitchBytes, X, Y: Integer; const Text: WideString; Width: Integer; ClipRect: TRect); // @addr 0x485834
+    procedure DrawJustifiedTaggedText32(Destination: Pointer; PitchBytes, X, Y: Integer; const Text: WideString; Width: Integer; ClipRect: TRect); // @addr 0x4860D4
     function GetTaggedTextTokenLength(Text: PWideChar; CharCount: Integer): Integer; // @addr 0x48699C @note "Returns zero for incomplete tokens or a doubled opening bracket."
     function ParseTabTagAndAdjustX(Text: PWideChar; CharCount: Integer; var X: Integer): Integer; // @addr 0x486A10 @note "For td=n, raises X to at least n and returns the token length."
     function ParseAlignTagAndAdjustX(Text: PWideChar; CharCount: Integer; var X: Integer): Integer; // @addr 0x486B10 @note "Handles align=right/center and restores ObjectCount. Uppercase value checks use incorrect source positions in the native code."
@@ -1535,7 +1535,7 @@ var
   Clip: TRect;
 
   // @nested $488024 MeasureFontTextureTextSize
-  function MeasureFontTextureTextSize: TPoint; // @addr 0x488024 @ida "void __usercall $name(TPoint *Result@<eax>, void *ParentFrame@<^0>);" @stackpop 0 @calls "0x004883E0"
+  function MeasureFontTextureTextSize: TPoint; // @addr 0x488024 @calls "0x004883E0"
   var
     First: Boolean;
     ExtraHeight: Integer;

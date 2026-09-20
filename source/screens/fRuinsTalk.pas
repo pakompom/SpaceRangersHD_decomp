@@ -60,16 +60,16 @@ type
     procedure ShowDominionRelocationDialog(Action: Integer); // @addr $5D7E18
     procedure ShowDominionAmbushDialog(Action: Integer); // @addr $5DACC8
     procedure ShowDominionAssaultDialog(Action: Integer); // @addr $5DBA5C
-    procedure ChoiceMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $5A9504 @ida "void __userpurge $name(TfRuinsTalk *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
-    procedure ChoiceMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $5A9584 @ida "void __userpurge $name(TfRuinsTalk *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
+    procedure ChoiceMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $5A9504
+    procedure ChoiceMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $5A9584
     function CreateChoiceBullet(LabelControl: TLabelGI; Item: PFontObjectEC): TObjectGI; // @addr $5A9E90
     StationTransientControl: TObjectGI; // @offset $104
     SavedChoiceScroll: Integer; // @offset $108
     NextPortraitCycleAlternate: Boolean; // @offset $EC
     StationPanel: TfPanelRuins; // @offset $D4 Owned.
     LoadPanel: TfPanelLoad; // @offset $D8 Owned.
-    constructor Create; // @addr $5A60C0 @ida "TfRuinsTalk *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr $5A612C @ida "void __usercall $name(TfRuinsTalk *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr $5A60C0
+    destructor Destroy; override; // @addr $5A612C
     ChoiceHeight: Integer; // @offset $E8 Accumulated dialogue-choice row height.
     DialogText: WideString; // @offset 0xDC
     ShowArrivalVideo: Boolean; // @offset $ED Set after docked hyperspace travel; OnOpen tests this together with SkipVideo.
@@ -80,7 +80,7 @@ type
     procedure OnClose; override; // @addr $5A7D4C
     procedure EndTurnClicked(Sender: TObjectGI); // @addr $5A899C
     procedure ShipClicked(Sender: TObjectGI); // @addr $5A8C24
-    procedure ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer); override; // @addr $5A9F74 @ida "void __userpurge $name(TfRuinsTalk *Self@<eax>, unsigned int KeyState@<edx>, TPoint *Point@<ecx>, int Delta@<^0>);"
+    procedure ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer); override; // @addr $5A9F74
     procedure MainPanelKeyDown(Sender: TObjectGI; Key: Cardinal); // @addr $5AA06C
     procedure AddMessageClicked(Sender: TObjectGI); // @addr $5AA2B4
     procedure SelectMusic; override; // @addr $5AA618
@@ -167,8 +167,8 @@ type
     procedure AcceptDominionImprovement(Action: Integer); // @addr $5D57D8
     procedure BuyDominionPirateLicense(Action: Integer); // @addr $5D616C
     procedure DeclineDominionPirateLicense(Action: Integer); // @addr $5D6314
-    function CheckDominionServiceStanding(RequiredRank: Byte; Prefix: WideString; CreditCost: Single): Boolean; // @addr $5D64E4 @ida "bool __userpurge $name@<al>(TfRuinsTalk *Self@<eax>, unsigned __int8 RequiredRank@<dl>, unsigned __int16 *Prefix@<ecx>, float CreditCost@<^0>);"
-    procedure SpendDominionServiceCredit(CreditCost: Single); // @addr $5D67E8 @ida "void __userpurge $name(TfRuinsTalk *Self@<eax>, float CreditCost@<^0>);"
+    function CheckDominionServiceStanding(RequiredRank: Byte; Prefix: WideString; CreditCost: Single): Boolean; // @addr $5D64E4
+    procedure SpendDominionServiceCredit(CreditCost: Single); // @addr $5D67E8
     function CheckDominionAvailable: Boolean; // @addr $5D6878
     procedure ConfirmDominionTravel(Action: Integer); // @addr $5D7318
     procedure AcceptDominionTravel(Action: Integer); // @addr $5D768C
@@ -297,7 +297,7 @@ function GetConstructionShopCost: Integer; // @addr $5D1C14
 function GetConstructionFreeSpace: Integer; // @addr $5D1CA0
 procedure SelectConstructionItem(Item: TEquipment; Source: Byte); // @addr $5D2CE8
 
-function GetStationBackgroundPath: WideString; // @addr $5A61A8 @ida "void __usercall $name(unsigned __int16 **Result@<eax>);"
+function GetStationBackgroundPath: WideString; // @addr $5A61A8
 
 procedure ResetStationImprovement; // @addr $5A60A8
 
@@ -724,7 +724,7 @@ var
   BestKey, Key: TResearchItemSortKey;
 
   // @nested $5A7E14 ClearResearchItemSortKey
-  procedure ClearResearchItemSortKey(var Key: TResearchItemSortKey); // @addr $5A7E14 @ida "void __usercall $name(TResearchItemSortKey *Key@<eax>, void *ParentFrame@<^0>);" @stackpop 0 @calls "0x5A8049"
+  procedure ClearResearchItemSortKey(var Key: TResearchItemSortKey); // @addr $5A7E14 @calls "0x5A8049"
   begin
     Key.Cost := 0;
     Key.Priority := 0;
@@ -732,7 +732,7 @@ var
   end;
 
   // @nested $5A7E34 MakeResearchItemSortKey
-  function MakeResearchItemSortKey(Item: TEquipment): TResearchItemSortKey; // @addr $5A7E34 @ida "void __usercall $name(TEquipment *Item@<eax>, TResearchItemSortKey *Result@<edx>, void *ParentFrame@<^0>);" @stackpop 0 @calls "0x5A8095"
+  function MakeResearchItemSortKey(Item: TEquipment): TResearchItemSortKey; // @addr $5A7E34 @calls "0x5A8095"
   begin
     Result.Cost := Item.Cost;
     Result.Weight := Item.Weight;
@@ -750,7 +750,7 @@ var
   end;
 
   // @nested $5A7F14 CompareResearchItemSortKeys
-  function CompareResearchItemSortKeys(Left, Right: TResearchItemSortKey): Integer; // @addr $5A7F14 @ida "int __usercall $name@<eax>(TResearchItemSortKey *Left@<eax>, TResearchItemSortKey *Right@<edx>, void *ParentFrame@<^0>);" @stackpop 0 @calls "0x5A80CC"
+  function CompareResearchItemSortKeys(Left, Right: TResearchItemSortKey): Integer; // @addr $5A7F14 @calls "0x5A80CC"
   begin
     Result := 0;
     if Right.Priority > Left.Priority then Result := 1
@@ -6039,7 +6039,7 @@ var
   Entry: PStorageEntry;
 
   // @nested $5D1D28 IsConstructionItemEligible
-  function IsConstructionItemEligible(Item: TEquipment): Boolean; // @addr $5D1D28 @ida "bool __usercall $name@<al>(TEquipment *Item@<eax>, void *ParentFrame@<^0>);" @stackpop 0 @calls "0x5D2389 0x5D2492 0x5D258B"
+  function IsConstructionItemEligible(Item: TEquipment): Boolean; // @addr $5D1D28 @calls "0x5D2389 0x5D2492 0x5D258B"
   var
     I: Integer;
   begin
@@ -6063,7 +6063,7 @@ var
     Result := True;
   end;
   // @nested $5D1E58 FormatConstructionItem
-  procedure FormatConstructionItem(var Text: WideString; Item: TEquipment); // @addr $5D1E58 @ida "void __usercall $name(unsigned __int16 **Text@<eax>, TEquipment *Item@<edx>, void *ParentFrame@<^0>);" @stackpop 0 @calls "0x5D23AB 0x5D24B4 0x5D25AD"
+  procedure FormatConstructionItem(var Text: WideString; Item: TEquipment); // @addr $5D1E58 @calls "0x5D23AB 0x5D24B4 0x5D25AD"
   var
     Stats: WideString;
   begin
@@ -6414,7 +6414,7 @@ var
   J, Months: Integer;
   Item: TEquipment;
   // @nested $5D432C RemoveConstructionStoredItem
-  procedure RemoveConstructionStoredItem(Item: TEquipment); // @addr $5D432C @ida "void __usercall $name(TEquipment *Item@<eax>, void *ParentFrame@<^0>);" @stackpop 0 @calls "0x5D4540 0x5D45F7"
+  procedure RemoveConstructionStoredItem(Item: TEquipment); // @addr $5D432C @calls "0x5D4540 0x5D45F7"
   var
     I: Integer;
     Entry: PStorageEntry;
@@ -6433,7 +6433,7 @@ var
   end;
 
   // @nested $5D43B4 RemoveConstructionShopItem
-  procedure RemoveConstructionShopItem(Item: TEquipment); // @addr $5D43B4 @ida "void __usercall $name(TEquipment *Item@<eax>, void *ParentFrame@<^0>);" @stackpop 0 @calls "0x5D454C 0x5D4603"
+  procedure RemoveConstructionShopItem(Item: TEquipment); // @addr $5D43B4 @calls "0x5D454C 0x5D4603"
   var
     Station: TRuins;
   begin
@@ -6757,7 +6757,7 @@ var
   Duplicate: Boolean;
   Discount: Byte;
   // @nested $5D696C GetDominionTravelQuoteCost
-  function GetDominionTravelQuoteCost(Index: Integer): Integer; // @addr $5D696C @ida "int __usercall $name@<eax>(int Index@<eax>, void *ParentFrame@<^0>);" @stackpop 0 @calls "0x5D6C4E 0x5D6C97"
+  function GetDominionTravelQuoteCost(Index: Integer): Integer; // @addr $5D696C @calls "0x5D6C4E 0x5D6C97"
   begin
     Result := Min(100000000, Round(Galaxy.ComputeScaledHugeMoney(2) / DominionTravelQuotes[Index].DrawCount * PointDistanceSquared(GetPlayer.CurrentStar.Position, DominionTravelQuotes[Index].Star.Position) / 1600 * (100 - Discount) / 100));
   end;

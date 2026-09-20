@@ -13,13 +13,13 @@ type
     Checked: Boolean; // @offset 0x128
     ChangedCallback: TObjectNotifyEventGI; // @offset $130
 
-    constructor Create(Owner: TObjectGI); // @addr 0x4AA078 @ida "TCheckBoxGI *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, TObjectGI *Owner@<ecx>);"
-    destructor Destroy; override; // @addr 0x4AA15C @ida "void __usercall $name(TCheckBoxGI *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create(Owner: TObjectGI); // @addr 0x4AA078
+    destructor Destroy; override; // @addr 0x4AA15C
     procedure Clear; override; // @addr 0x4AA1AC @note "Does not refresh child activation or call inherited Clear."
     procedure SetConfigPath(const Path: WideString); override; // @addr 0x4AA1C0
-    procedure SetSize(Size: TPoint); override; // @addr 0x4AA1F0 @ida "void __usercall $name(TCheckBoxGI *Self@<eax>, TPoint *Size@<edx>);"
+    procedure SetSize(Size: TPoint); override; // @addr 0x4AA1F0
     procedure RefreshStateImages; // @addr 0x4AA2C4
-    procedure ProcessLeftButtonDown(KeyState: Cardinal; Point: TPoint); override; // @addr $4AA488 @ida "void __usercall $name(TCheckBoxGI *Self@<eax>, unsigned int KeyState@<edx>, TPoint *Point@<ecx>);"
+    procedure ProcessLeftButtonDown(KeyState: Cardinal; Point: TPoint); override; // @addr $4AA488
     procedure LoadFromConfigPath(const Path: WideString); override; // @addr 0x4AA534
     procedure LoadFromBlock(Block: TBlockParEC); override; // @addr 0x4AA610
   end;

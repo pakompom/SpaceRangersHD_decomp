@@ -527,7 +527,7 @@ end;
 { @end $8747FC }
 
 { @routine $874A0C CollectInstallLanguageCodes }
-function CollectInstallLanguageCodes: WideString; // @addr 0x874A0C @ida "void __usercall $name(unsigned __int16 **Result@<eax>);" @note "Comma-separated lowercase names from INSTALL_*.txt in the current directory."
+function CollectInstallLanguageCodes: WideString; // @addr 0x874A0C @note "Comma-separated lowercase names from INSTALL_*.txt in the current directory."
 var
   FileName, LanguageCode: WideString;
   LowerCode: AnsiString;

@@ -22,7 +22,7 @@ type
     procedure RefreshNewsAnimation(Sender: TObjectGI); // @addr $598EC4
     procedure FocusSearchField(Force: Boolean); // @addr $59B36C
     procedure ToggleSearchMode(Sender: TObjectGI); // @addr $59B770
-    procedure MainPanelMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $59B878 @ida "void __userpurge $name(TfInfo *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
+    procedure MainPanelMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $59B878
     procedure SearchClicked(Sender: TObjectGI); // @addr $59C648
     procedure RunSearch(Sender: TObjectGI); // @addr $5A09B4
     procedure CategoryStateChanged(Sender: TObjectGI); // @addr $5A47A8
@@ -38,7 +38,7 @@ type
     procedure ClearInfoContents; // @addr $599454
     procedure FinishInfoLayout; // @addr $5994AC
     procedure AddInfoSeparator; // @addr $599604
-    procedure AddInfoHeading(Title, BookmarkText: WideString; LayoutKind, BookmarkIndex, GoodsReference: Integer); // @addr $599758 @ida "void __userpurge $name(TfInfo *Self@<eax>, unsigned __int16 *Title@<edx>, unsigned __int16 *BookmarkText@<ecx>, int LayoutKind@<^8>, int BookmarkIndex@<^4>, int GoodsReference@<^0>);" LayoutKind zero centers the heading; nonzero aligns it to the right.
+    procedure AddInfoHeading(Title, BookmarkText: WideString; LayoutKind, BookmarkIndex, GoodsReference: Integer); // @addr $599758 LayoutKind zero centers the heading; nonzero aligns it to the right.
     procedure AddSearchPriceLabel(Text: WideString); // @addr $599E2C
     procedure AddInfoText(Text: WideString; Alignment: TTextAlignXGI; Font: WideString); // @addr $59A080
     procedure AddPlanetInfoText(Planet: TPlanet; Text: WideString); // @addr $59A5B8
@@ -55,8 +55,8 @@ type
 
     procedure FilterLabelMouseEnter(Sender: TObjectGI); // @addr $5A526C
     procedure FilterLabelMouseLeave(Sender: TObjectGI); // @addr $5A5294
-    procedure FilterLabelMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $5A52BC @ida "void __userpurge $name(TfInfo *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
-    procedure FilterLabelMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $5A52E0 @ida "void __userpurge $name(TfInfo *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
+    procedure FilterLabelMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $5A52BC
+    procedure FilterLabelMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $5A52E0
     procedure ClearSearchText(Sender: TObjectGI); // @addr $5A5324
     procedure CopySearchText(Sender: TObjectGI); // @addr $5A5378
     procedure PasteSearchText(Sender: TObjectGI); // @addr $5A53D0
@@ -81,12 +81,12 @@ type
     procedure ClearSearch13Filters(Sender: TObjectGI); // @addr $5A5CD0
     procedure ClearSearch15Filters(Sender: TObjectGI); // @addr $5A5D7C
 
-    constructor Create; // @addr 0x597AB0 @ida "TfInfo *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x597B30 @ida "void __usercall $name(TfInfo *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x597AB0
+    destructor Destroy; override; // @addr 0x597B30
     procedure OnOpen; override; // @addr 0x5980CC
     procedure OnClose; override; // @addr 0x598D8C
     procedure SelectMusic; override; // @addr 0x59BE68
-    procedure ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer); override; // @addr 0x59BC94 @ida "void __userpurge $name(TfInfo *Self@<eax>, unsigned int KeyState@<edx>, TPoint *Point@<ecx>, int Delta@<^0>);"
+    procedure ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer); override; // @addr 0x59BC94
     procedure InitializeLayout; override; // @addr 0x597BD0
     procedure ExecuteUiCode(Block: TBlockParEC; Key: Cardinal); override; // @addr 0x5A5E3C
   end;
@@ -127,7 +127,7 @@ function ItemMatchesInfoSearch(Item: TItem; Search: WideString): Boolean;
 var I, Count: Integer;
 
   // @nested $597890 ItemMatchesInfoSearchTerm
-  function ItemMatchesInfoSearchTerm(Term: WideString): Boolean; // @addr $597890 @ida "bool __usercall $name@<al>(unsigned __int16 *Term@<eax>, void *ParentFrame@<^0>);" @stackpop 0 @calls "0x597A66" Nested helper captures Item.
+  function ItemMatchesInfoSearchTerm(Term: WideString): Boolean; // @addr $597890 @calls "0x597A66" Nested helper captures Item.
   begin
     Result := True;
     if FindTextOffsetW(WideLowerCase(RemoveTextTagsW(Item.GetDisplayName)),Term) >= 0 then Exit;
@@ -724,7 +724,7 @@ end;
 procedure TfInfo.AddStarInfoText(Star: TStar; Text: WideString);
 var Size: Integer; Image: TGraphBufGI; Emblem: TImageGI; Caption: TLabelGI;
   // @nested $59AEA4 GetInfoStarFactionName
-  function GetInfoStarFactionName(Star: TStar): WideString; // @addr $59AEA4 @ida "void __usercall $name(TStar *Star@<eax>, unsigned __int16 **Result@<edx>, void *ParentFrame@<^0>);" @stackpop 0 @calls "0x59B12B" Nested in AddStarInfoText; static link unused.
+  function GetInfoStarFactionName(Star: TStar): WideString; // @addr $59AEA4 @calls "0x59B12B" Nested in AddStarInfoText; static link unused.
   begin
     if Star.Status.CustomFaction <> WideString('') then Result := Star.Status.CustomFaction
     else if Star.ControlFaction = sfDominators then Result := DominatorSeriesNames[Ord(Star.DominatorSeries)]
@@ -1066,7 +1066,7 @@ var
   end;
 
   // @nested $59C760 GetInfoEquipmentSummary
-  function GetInfoEquipmentSummary(Item: TItem): WideString; // @addr $59C760 @ida "void __usercall $name(TItem *Item@<eax>, unsigned __int16 **Result@<edx>, void *ParentFrame@<^0>);" @stackpop 0 @calls "0x59eada" Nested in RunSearch.
+  function GetInfoEquipmentSummary(Item: TItem): WideString; // @addr $59C760 @calls "0x59eada" Nested in RunSearch.
   var Detail, Text: WideString;
   begin
     Text := '';
@@ -1144,7 +1144,7 @@ var
   end;
 
   // @nested $59D3F4 AddInfoSearchResult
-  procedure AddInfoSearchResult(Value: TObject); // @addr $59D3F4 @ida "void __usercall $name(TObject *Value@<eax>, void *ParentFrame@<^0>);" @stackpop 0 @calls "0x59f5c5,0x59f67f,0x59f738,0x59f7f2,0x59f8ac,0x59f965,0x59fa2d,0x59fb38,0x59fd60,0x59fecc,0x5a010e,0x5a038b,0x5a065f,0x5a2a95,0x5a2b79,0x5a2c1a,0x5a2cf4,0x5a2da9,0x5a2e6f,0x5a2efb,0x5a2ff1" Nested in RunSearch; captures location, count, and displayed objects.
+  procedure AddInfoSearchResult(Value: TObject); // @addr $59D3F4 @calls "0x59f5c5,0x59f67f,0x59f738,0x59f7f2,0x59f8ac,0x59f965,0x59fa2d,0x59fb38,0x59fd60,0x59fecc,0x5a010e,0x5a038b,0x5a065f,0x5a2a95,0x5a2b79,0x5a2c1a,0x5a2cf4,0x5a2da9,0x5a2e6f,0x5a2efb,0x5a2ff1" Nested in RunSearch; captures location, count, and displayed objects.
   var GoodsText, Color: WideString; Good, GoodIndex: Byte;
   begin
     if (Value is TShip) and (Ship <> nil) and not (Ship.OwnerId in [Ord(oiMaloc)..Ord(oiGaal),Ord(oiPirate)]) then Exit;
@@ -1279,7 +1279,7 @@ var
   end;
 
   // @nested $59F4D8 CheckInfoSearchResult
-  procedure CheckInfoSearchResult(Value: TObject); // @addr $59F4D8 @ida "void __usercall $name(TObject *Value@<eax>, void *ParentFrame@<^0>);" @stackpop 0 @calls "0x5a2aa1,0x5a2b85,0x5a2c29,0x5a2d03,0x5a2db5,0x5a2e7e,0x5a2f0a,0x5a2ffd" Nested in RunSearch; applies the active category filters.
+  procedure CheckInfoSearchResult(Value: TObject); // @addr $59F4D8 @calls "0x5a2aa1,0x5a2b85,0x5a2c29,0x5a2d03,0x5a2db5,0x5a2e7e,0x5a2f0a,0x5a2ffd" Nested in RunSearch; applies the active category filters.
   var
     Engine: TEngine; Fuel: TFuelTanks; Radar: TRadar; Scanner: TScaner;
     Droid: TRepairRobot; Hook: TCargoHook; Defense: TDefGenerator;
@@ -1506,7 +1506,7 @@ var
   end;
 
   // @nested $5A06A0 ReadInfoSearchOwners
-  procedure ReadInfoSearchOwners(Category: Integer); // @addr $5A06A0 @ida "void __usercall $name(int Category@<eax>, void *ParentFrame@<^0>);" @stackpop 0 @calls "0x5a0ccd,0x5a0d60,0x5a0df3,0x5a0e86,0x5a0f19,0x5a0fac,0x5a103f,0x5a11f5,0x5a1770,0x5a18fb,0x5a29f9" Nested in RunSearch; captures the owner filter set.
+  procedure ReadInfoSearchOwners(Category: Integer); // @addr $5A06A0 @calls "0x5a0ccd,0x5a0d60,0x5a0df3,0x5a0e86,0x5a0f19,0x5a0fac,0x5a103f,0x5a11f5,0x5a1770,0x5a18fb,0x5a29f9" Nested in RunSearch; captures the owner filter set.
   begin
     Owners := [];
     if not (GetByName('M' + IntToFixedWidthWideString(Category,2) + 'Maloc') as TGraphButtonGI).Down then Include(Owners, Ord(oiMaloc));

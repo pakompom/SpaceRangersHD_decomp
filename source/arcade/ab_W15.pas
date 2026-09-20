@@ -15,9 +15,9 @@ type
     TurnSpeed: Single; // @offset $BC
     TurnBias: Single; // @offset $C0
     ExpireTick: Integer; // @offset $C4
-    constructor Create; // @addr $4F9AD4 @ida "TabW15 *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr $4F9BC8 @ida "void __usercall $name(TabW15 *Self@<eax>, __int8 DestroyFlags@<dl>);"
-    procedure Launch(Owner: TabObject; Amount: Integer; Angle: Single); // @addr $4F9C24 @ida "void __userpurge $name(TabW15 *Self@<eax>, TabObject *Owner@<edx>, int Amount@<ecx>, float Angle@<^0>);"
+    constructor Create; // @addr $4F9AD4
+    destructor Destroy; override; // @addr $4F9BC8
+    procedure Launch(Owner: TabObject; Amount: Integer; Angle: Single); // @addr $4F9C24
     procedure Explode; // @addr $4F9D40
     procedure Advance; override; // @addr $4F9DFC
     procedure UpdateVisuals; override; // @addr $4FA108

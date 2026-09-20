@@ -63,15 +63,15 @@ type
     function EvaluateStatBonus(BonusKind: TEquipmentBonusKind; Value: Integer): Single; override; // @addr $65F378 @slot 0x54
 
     function GetDominantCareer: TRangerCareer; override; // @addr 0x65D960 @slot 0x38 @note "Always rcWarrior."
-    function GetName: WideString; override; // @addr 0x65D70C @slot 0x24 @ida "void __usercall $name(TTranclucator *Self@<eax>, unsigned __int16 **Result@<edx>);"
-    function GetFullName(const Separator: WideString): WideString; override; // @addr 0x65D738 @slot 0x28 @calls "0x65D726" @ida "void __usercall $name(TTranclucator *Self@<eax>, unsigned __int16 *Separator@<edx>, unsigned __int16 **Result@<ecx>);"
+    function GetName: WideString; override; // @addr 0x65D70C @slot 0x24
+    function GetFullName(const Separator: WideString): WideString; override; // @addr 0x65D738 @slot 0x28 @calls "0x65D726"
 
     procedure NextDayLogic; override; // @addr 0x65D318 @slot 0x1C @calls "0x65D2F0"
     function TryCollectPreferredFloatingLoot(MaxTravelDays: Integer): Boolean; // @addr 0x65E48C @note "Returns whether a move order is active; nearby pickups can be queued even when the result is false."
 
     procedure NextDay; override; // @addr 0x65D2B0 @slot 0x18
-    constructor Create; // @addr 0x65C738 @ida "TTranclucator *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x65C7A8 @ida "void __usercall $name(TTranclucator *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x65C738
+    destructor Destroy; override; // @addr 0x65C7A8
     procedure ClearCollectionPermissions; // @addr 0x65C7DC
     procedure SetCollectionPermission(Kind: TTranclucatorCollectionKind; Enabled: Boolean); // @addr 0x65C808
     function GetCollectionPermission(Kind: TTranclucatorCollectionKind): Boolean; // @addr 0x65C830
@@ -174,19 +174,19 @@ var
   MaximumHullSize: Integer;
 
   // @nested $65C908 RandomHullLevel
-  function RandomHullLevel: Integer; // @addr $65C908 @calls "0x65CC45" @ida "int __usercall $name@<eax>(void *ParentFrame@<^0>);" @stackpop 0
+  function RandomHullLevel: Integer; // @addr $65C908 @calls "0x65CC45"
   begin
     Result := NextRandomIntRange(1, Round(RemapClamped(Galaxy.TechLevel, 3, 8, 1, 8)), RandomState);
   end;
 
   // @nested $65C974 RandomEquipmentLevel
-  function RandomEquipmentLevel: Integer; // @addr $65C974 @calls "0x65CC5E 0x65CC9C 0x65CCC4 0x65CCEC" @ida "int __usercall $name@<eax>(void *ParentFrame@<^0>);" @stackpop 0
+  function RandomEquipmentLevel: Integer; // @addr $65C974 @calls "0x65CC5E 0x65CC9C 0x65CCC4 0x65CCEC"
   begin
     Result := NextRandomIntRange(1, Round(RemapClamped(Galaxy.TechLevel, 3, 8, 1, 4)), RandomState);
   end;
 
   // @nested $65C9E0 RandomEquipmentSize
-  function RandomEquipmentSize(BaseSize: Integer): Integer; // @addr $65C9E0 @calls "0x65CB63 0x65CBB2 0x65CC6D 0x65CCAB 0x65CCD3 0x65CCFB 0x65CD49" @ida "int __usercall $name@<eax>(int BaseSize@<eax>, void *ParentFrame@<^0>);" @stackpop 0
+  function RandomEquipmentSize(BaseSize: Integer): Integer; // @addr $65C9E0 @calls "0x65CB63 0x65CBB2 0x65CC6D 0x65CCAB 0x65CCD3 0x65CCFB 0x65CD49"
   begin
     Result := NextRandomIntRange(Round(BaseSize * EquipmentSizeFactors[3]),
       Round(BaseSize * EquipmentSizeFactors[4]), RandomState);
@@ -276,7 +276,7 @@ var
   StorageKind: Integer;
 
   // @nested $65CFE0 ReadOldPermission
-  procedure ReadOldPermission(ItemType: Byte); // @addr $65CFE0 @calls "0x65D1E3" @ida "void __usercall $name(unsigned __int8 ItemType@<al>, void *ParentFrame@<^0>);" @stackpop 0
+  procedure ReadOldPermission(ItemType: Byte); // @addr $65CFE0 @calls "0x65D1E3"
   var Enabled: Boolean;
   begin
     Enabled := Buffer.GetBoolean;
@@ -514,7 +514,7 @@ var
   Good: Byte;
 
   // @nested $65DAF0 AddGoods
-  procedure AddGoods(Good: Byte; Quantity, Cost: Integer); // @addr $65DAF0 @ida "void __usercall $name(unsigned __int8 Good@<al>, int Quantity@<edx>, int Cost@<ecx>, void *ParentFrame@<^0>);" @note "Nested helper; caller-popped static link, destination at ParentFrame-4."
+  procedure AddGoods(Good: Byte; Quantity, Cost: Integer); // @addr $65DAF0 @note "Nested helper; caller-popped static link, destination at ParentFrame-4."
   begin
     if Quantity > 0 then
     begin

@@ -20,8 +20,8 @@ type
   public
     Bitmap: TGraphBufGR; // @offset 0x20
 
-    constructor Create; // @addr 0x83DB74 @ida "TCBitmapEC *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x83DBCC @ida "void __usercall $name(TCBitmapEC *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x83DB74
+    destructor Destroy; override; // @addr 0x83DBCC
     procedure LoadFromConfigBuffer(SourceBuffer: TBufEC; const LoadOption: WideString); override; // @addr 0x83DC1C @note "LoadOption accepts RGBA, Gray and RGB; other values select default decoding."
   end;
 

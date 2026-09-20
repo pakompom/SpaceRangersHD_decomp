@@ -20,8 +20,8 @@ type
     LastTurn: Integer; // @offset $14 Returned by SF_GLastTurnRun.
     ActiveScriptIndex: Integer; // @offset $18 -1 when no active galaxy script is bound.
     ConditionCode: TCodeEC; // @offset $1C
-    constructor Create; // @addr $52D7B0 @ida "TScriptTemplUnit *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr $52D810 @ida "void __usercall $name(TScriptTemplUnit *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr $52D7B0
+    destructor Destroy; override; // @addr $52D810
   end;
 
   TPlanetTempl = class(TObject) // @size $18
@@ -95,12 +95,12 @@ type
     // Targets are serialized as all three ship IDs, then all three planet IDs.
     // Prev, Next and Button are not serialized; both flags are persistent.
 
-    constructor Create; // @addr 0x52C9F4 @ida "TMessagePlayer *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);" @note "Does not link the object into the global message queue."
+    constructor Create; // @addr 0x52C9F4 @note "Does not link the object into the global message queue."
     procedure SaveToBuffer(Buffer: TBufEC); // @addr 0x52CA48
     procedure LoadFromBuffer(Buffer: TBufEC); // @addr 0x52CB28 @note "Leaves linkage and Button untouched. ImageNameOverride is present only from save version 109 onward."
-    function GetNormalImageName: WideString; // @addr 0x52CC64 @ida "void __usercall $name(TMessagePlayer *Self@<eax>, unsigned __int16 **Result@<edx>);"
-    function GetActiveImageName: WideString; // @addr 0x52CCB8 @ida "void __usercall $name(TMessagePlayer *Self@<eax>, unsigned __int16 **Result@<edx>);"
-    function GetPressedImageName: WideString; // @addr 0x52CD0C @ida "void __usercall $name(TMessagePlayer *Self@<eax>, unsigned __int16 **Result@<edx>);"
+    function GetNormalImageName: WideString; // @addr 0x52CC64
+    function GetActiveImageName: WideString; // @addr 0x52CCB8
+    function GetPressedImageName: WideString; // @addr 0x52CD0C
   end;
 
 function FindScriptTemplateIndex(const Name: WideString): Integer; // @addr $52D854 @note "Case-sensitive; returns -1 when absent. Requires the template list. Native callers include UI loading and script builtins."
@@ -2216,7 +2216,7 @@ var
   Text: WideString;
 
   // @nested $52DDC8 ReadMapText
-  function ReadMapText(const Path: WideString): WideString; // @addr $52DDC8 @ida "void __usercall $name(unsigned __int16 *Path@<eax>, unsigned __int16 **Result@<edx>, void *ParentFrame@<^0>);" @stackpop 0 @calls "0x52DFCB,0x52dff4,0x52e01d,0x52e043,0x52e084,0x52e0ad,0x52e168,0x52e191,0x52e1c5,0x52e1f9,0x52e2db,0x52e304,0x52e32d,0x52e356,0x52e37f,0x52e3a8,0x52e3d1,0x52e3fd,0x52e42c,0x52e45b,0x52e48a,0x52e4b9,0x52e4e8,0x52e517" @note "Nested in InitializeRobotMapDefinitions; joins repeated fields with CRLF."
+  function ReadMapText(const Path: WideString): WideString; // @addr $52DDC8 @calls "0x52DFCB,0x52dff4,0x52e01d,0x52e043,0x52e084,0x52e0ad,0x52e168,0x52e191,0x52e1c5,0x52e1f9,0x52e2db,0x52e304,0x52e32d,0x52e356,0x52e37f,0x52e3a8,0x52e3d1,0x52e3fd,0x52e42c,0x52e45b,0x52e48a,0x52e4b9,0x52e4e8,0x52e517" @note "Nested in InitializeRobotMapDefinitions; joins repeated fields with CRLF."
   var Part, PartCount: Integer;
   begin
     Result := '';
@@ -2324,8 +2324,6 @@ var
   // @nested $52E974 ReadShipGreetingField
   function ReadShipGreetingField(const FieldName: WideString): WideString {
     @addr $52E974
-    @ida "void __usercall $name(unsigned __int16 *FieldName@<eax>, unsigned __int16 **Result@<edx>, void *ParentFrame@<^0>);"
-    @stackpop 0
     @calls "0x52eb43,0x52eb8e,0x52EBEB,0x52ec91,0x52edf2,0x52ef0b,0x52ef39,0x52EF67,0x52efbe,0x52f015,0x52f06c,0x52f0c3,0x52f25a,0x52f288,0x52f2df,0x52f336,0x52f38d,0x52f455,0x52f51d,0x52f5e5,0x52f6ab,0x52f771,0x52f88d,0x52f9a9,0x52fac5,0x52fbe1,0x52fcfd,0x52fe19,0x52ffb0,0x530147,0x530263,0x53037f,0x53049b,0x5305a0,0x5306e5,0x53082a,0x530881,0x5308d8,0x530971,0x530a0a,0x530a61,0x530b29,0x530bf1,0x530cb9,0x530d81,0x530e49,0x530e94,0x530fb0,0x5310f5,0x531211,0x53132d,0x531384,0x5313db,0x531432,0x5314f8,0x531614,0x53166b,0x531735,0x5317fd,0x5318c5,0x53198d,0x531a55,0x531b1d,0x531b4b,0x531c67,0x531dac,0x531ec8,0x531fe4,0x53203b,0x532092,0x5320e9,0x5321af,0x5322cb,0x532322,0x532379,0x5323d0,0x532427,0x53247e,0x5324d5,0x53259d,0x532665,0x53272d,0x5327f5,0x5328bd,0x5328e0,0x5329fc,0x532a53,0x532bc1,0x532bef,0x532c46,0x532c9d,0x532db9,0x532f50,0x53306c,0x5330ab,0x533180,0x5331d7,0x53329f,0x533367,0x5333c7"
   };
   begin
@@ -3074,7 +3072,7 @@ var
   Text: WideString;
 
   // @nested $534EC4 ReadGovernmentGreetingField
-  function ReadGovernmentGreetingField(FieldName: WideString): WideString; // @addr $534EC4 @ida "void __usercall $name(unsigned __int16 *FieldName@<eax>, unsigned __int16 **Result@<edx>, void *ParentFrame@<^0>);" @stackpop 0 @calls "0x5350c2,0x53510d,0x535135,0x5351df,0x5352d7,0x53546b,0x535570,0x53559e,0x5355f5,0x535711,0x535768,0x5358AD,0x5359C9,0x535ae5,0x535BAB,0x535cc7,0x535D8F,0x535e57,0x535f1f,0x535fe7,0x5360af,0x536106,0x536151,0x5361a8,0x5361ff,0x53631b,0x536372,0x5364b7,0x5365d3,0x5366ef,0x5367b5,0x5368D1,0x536928,0x5369f0,0x536AB8,0x536B80,0x536C48,0x536d10,0x536d67,0x536DBE,0x536e15,0x536E6C,0x536f34,0x536ffc,0x537053,0x5370aa,0x537101"
+  function ReadGovernmentGreetingField(FieldName: WideString): WideString; // @addr $534EC4 @calls "0x5350c2,0x53510d,0x535135,0x5351df,0x5352d7,0x53546b,0x535570,0x53559e,0x5355f5,0x535711,0x535768,0x5358AD,0x5359C9,0x535ae5,0x535BAB,0x535cc7,0x535D8F,0x535e57,0x535f1f,0x535fe7,0x5360af,0x536106,0x536151,0x5361a8,0x5361ff,0x53631b,0x536372,0x5364b7,0x5365d3,0x5366ef,0x5367b5,0x5368D1,0x536928,0x5369f0,0x536AB8,0x536B80,0x536C48,0x536d10,0x536d67,0x536DBE,0x536e15,0x536E6C,0x536f34,0x536ffc,0x537053,0x5370aa,0x537101"
   begin
     if Block.CountParams(FieldName) > 0 then Result := Block.GetParam(FieldName)
     else Result := '';

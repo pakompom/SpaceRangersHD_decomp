@@ -24,11 +24,11 @@ type
     PixelSize: TPoint; // @offset $2C  Native controls copy these dimensions as one point.
     SurfaceCache: TTextureGR; // @offset 0x34
 
-    procedure Draw16(Dest: Pointer; Pitch, X, Y: Integer; Clip: TRect); // @addr $475858 @ida "void __userpurge $name(TCAlphaBitmapEC *Self@<eax>, void *Dest@<edx>, int Pitch@<ecx>, int X@<^8>, int Y@<^4>, TRect *Clip@<^0>);"
+    procedure Draw16(Dest: Pointer; Pitch, X, Y: Integer; Clip: TRect); // @addr $475858
     procedure DecodeToGraphBuf(Buffer: TGraphBufGR); // @addr $4758EC
-    function GetTexture: IDirect3DTexture9; // @addr $475964 @ida "void __usercall $name(TCAlphaBitmapEC *Self@<eax>, IDirect3DTexture9 **Result@<edx>);"
-    constructor Create; // @addr 0x475564 @ida "TCAlphaBitmapEC *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x4755B0 @ida "void __usercall $name(TCAlphaBitmapEC *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    function GetTexture: IDirect3DTexture9; // @addr $475964
+    constructor Create; // @addr 0x475564
+    destructor Destroy; override; // @addr 0x4755B0
     procedure LoadFromConfigBuffer(SourceBuffer: TBufEC; const LoadOption: WideString); override; // @addr 0x475654
   end;
 

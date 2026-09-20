@@ -38,22 +38,22 @@ type
     LastTargetDistance: Single; // @offset $6C Squared distance used to detect overshooting, not a random seed.
     OvershootTicks: Integer; // @offset $70
 
-    destructor Destroy; override; // @addr $4F00DC @ida "void __usercall $name(TMissile *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    destructor Destroy; override; // @addr $4F00DC
     procedure SaveToBuffer(Buffer: TBufEC); virtual; // @addr $4F063C @slot $00
     procedure LoadFromBuffer(Buffer: TBufEC; World: TGalaxy); virtual; // @addr $4F0AB8 @slot $04
     procedure ResolveLoadedReferences(World: TGalaxy); // @addr $4F0F68
-    procedure InitializeUnownedShot(Star: TStar; Target: TObject; X, Y: Integer; Direction: Single; MinDamage, MaxDamage: Integer; MaximumSpeed: Single; ItemType: Byte; ModuleIndex, SpecialIndex: Integer); // @addr $4F04E8 @ida "void __userpurge $name(TMissile *Self@<eax>, TStar *Star@<edx>, TObject *Target@<ecx>, int X@<^32>, int Y@<^28>, float Direction@<^24>, int MinDamage@<^20>, int MaxDamage@<^16>, float MaximumSpeed@<^12>, unsigned __int8 ItemType@<^8>, int ModuleIndex@<^4>, int SpecialIndex@<^0>);"
+    procedure InitializeUnownedShot(Star: TStar; Target: TObject; X, Y: Integer; Direction: Single; MinDamage, MaxDamage: Integer; MaximumSpeed: Single; ItemType: Byte; ModuleIndex, SpecialIndex: Integer); // @addr $4F04E8
     function CanBeHit(Attacker: TShip; UnusedWeapon: TWeapon): Boolean; // @addr $4F3204
     procedure RetargetTorpedo; // @addr $4F285C
-    function TryReturnToOwner(StepIndex: Integer; RecordFilm: Boolean; PreviousPosition: TPointF; Ship: TShip): Boolean; // @addr $4F2620 @ida "bool __userpurge $name@<al>(TMissile *Self@<eax>, int StepIndex@<edx>, bool RecordFilm@<cl>, TPointF *PreviousPosition@<^4>, TShip *Ship@<^0>);"
+    function TryReturnToOwner(StepIndex: Integer; RecordFilm: Boolean; PreviousPosition: TPointF; Ship: TShip): Boolean; // @addr $4F2620
     procedure ClearReferencesTo(Obj: TObject); // @addr 0x4F329C
-    constructor Create; // @addr 0x4F005C @ida "TMissile *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
+    constructor Create; // @addr 0x4F005C
     procedure InitializeShot(Star: TStar; OwnerShip: TShip; Weapon: TWeapon; Target: TObject; ShotIndex: Integer); // @addr 0x4F0164 @note "Registers the missile in Star, copies weapon data and initializes position, heading and speed."
     procedure PrepareTurnMovement(StepIndex: Integer; RecordFilm, PlayShotSound: Boolean); // @addr 0x4F121C
-    function GetDisplayName: WideString; // @addr $4F2A0C @ida "void __usercall $name(TMissile *Self@<eax>, unsigned __int16 **Result@<edx>);"
-    function GetInfoText: WideString; // @addr $4F2B04 @ida "void __usercall $name(TMissile *Self@<eax>, unsigned __int16 **Result@<edx>);"
+    function GetDisplayName: WideString; // @addr $4F2A0C
+    function GetInfoText: WideString; // @addr $4F2B04
     function GetGraphObject: TObjectSE; // @addr $4F110C Lazily creates and initializes the retained missile scene object.
-    function GetGraphSuffix: WideString; virtual; // @addr $4F3340 @slot $08 @ida "void __usercall $name(TMissile *Self@<eax>, unsigned __int16 **Result@<edx>);"
+    function GetGraphSuffix: WideString; virtual; // @addr $4F3340 @slot $08
     function GetWeaponInfo: PWeaponInfo; virtual; // @addr 0x4F3434 @slot 0x0C
     function GetShotVisual: Integer; // @addr 0x4F32E8 @note "Special micromodule override unless -1, otherwise the weapon-info default."
     function StepDay(StepIndex: Integer; RecordFilm: Boolean): TObject; // @addr 0x4F1780 @note "Returns a hit ship, item or asteroid, or nil when no object was hit."
@@ -65,8 +65,8 @@ type
 
     procedure SaveToBuffer(Buffer: TBufEC); override; // @addr $4F0A30
     procedure LoadFromBuffer(Buffer: TBufEC; World: TGalaxy); override; // @addr $4F0EF8
-    function GetGraphSuffix: WideString; override; // @addr $4F33D8 @ida "void __usercall $name(TCustomMissile *Self@<eax>, unsigned __int16 **Result@<edx>);"
-    procedure InitializeUnownedShot(Star: TStar; Target: TObject; X, Y: Integer; Direction: Single; MinDamage, MaxDamage: Integer; MaximumSpeed: Single; WeaponName: WideString; ModuleIndex, SpecialIndex: Integer); // @addr $4F05A8 @ida "void __userpurge $name(TCustomMissile *Self@<eax>, TStar *Star@<edx>, TObject *Target@<ecx>, int X@<^32>, int Y@<^28>, float Direction@<^24>, int MinDamage@<^20>, int MaxDamage@<^16>, float MaximumSpeed@<^12>, unsigned __int16 *WeaponName@<^8>, int ModuleIndex@<^4>, int SpecialIndex@<^0>);"
+    function GetGraphSuffix: WideString; override; // @addr $4F33D8
+    procedure InitializeUnownedShot(Star: TStar; Target: TObject; X, Y: Integer; Direction: Single; MinDamage, MaxDamage: Integer; MaximumSpeed: Single; WeaponName: WideString; ModuleIndex, SpecialIndex: Integer); // @addr $4F05A8
     function GetWeaponInfo: PWeaponInfo; override; // @addr 0x4F3464 @slot 0x0C
     procedure InitializeShot(Star: TStar; OwnerShip: TShip; Weapon: TWeapon; Target: TObject; ShotIndex: Integer); // @addr 0x4F04A8 @note "Caches Weapon.GetWeaponInfo before the base initializer."
   end;
@@ -272,7 +272,7 @@ procedure TMissile.LoadFromBuffer(Buffer: TBufEC; World: TGalaxy);
 var
   ModuleNumber: Integer;
 // @nested $4F0A5C FindLegacyMissileMicroModuleIndex
-function FindLegacyMissileMicroModuleIndex(ConfigNumber: Integer): Integer; // @addr $4F0A5C @ida "int __usercall $name@<eax>(int ConfigNumber@<eax>, void *ParentFrame@<^0>);" @note "Nested legacy lookup; caller pops the unused static link."
+function FindLegacyMissileMicroModuleIndex(ConfigNumber: Integer): Integer; // @addr $4F0A5C @note "Nested legacy lookup; caller pops the unused static link."
 var
   I: Integer;
 begin

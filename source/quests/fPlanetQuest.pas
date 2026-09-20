@@ -13,8 +13,8 @@ type
     // No recovered method uses +0x04.
     Callback: TQuestChoiceEvent; // @offset 0x08
     Value: Integer; // @offset 0x10
-    constructor Create; // @addr 0x5DC698 @ida "TfQuestA *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x5DC6DC @ida "void __usercall $name(TfQuestA *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x5DC698
+    destructor Destroy; override; // @addr 0x5DC6DC
   end;
 
   TfPlanetQuest = class(TMessageLoopGI) // @size 0x114
@@ -39,9 +39,9 @@ type
     procedure ChoiceMouseLeave(Sender: TObjectGI); // @addr 0x5DDE0C
     procedure DisabledChoiceMouseEnter(Sender: TObjectGI); // @addr 0x5DDF60
     procedure DisabledChoiceMouseLeave(Sender: TObjectGI); // @addr 0x5DDF80
-    procedure ChoiceMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x5DDE2C @ida "void __userpurge $name(TfPlanetQuest *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
-    procedure ChoiceMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x5DDEAC @ida "void __userpurge $name(TfPlanetQuest *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
-    procedure DisabledChoiceMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x5DDFFC @ida "void __userpurge $name(TfPlanetQuest *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
+    procedure ChoiceMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x5DDE2C
+    procedure ChoiceMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x5DDEAC
+    procedure DisabledChoiceMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x5DDFFC
     function CreateChoiceInlineObject(Sender: TLabelGI; Item: PFontObjectEC): TObjectGI; // @addr 0x5DDB7C
     procedure IgnoreChoice(Value: Integer); // @addr 0x5E2CA8 @note "Empty callback."
     procedure ContinueToLocation(LocationId: Integer); // @addr 0x5E2CB8
@@ -70,13 +70,13 @@ type
     procedure ClearParameterPanel; // @addr 0x5DE734
     procedure AppendParameterText(Text: WideString); // @addr 0x5DE7A4
     procedure LayoutParameterPanel; // @addr 0x5DEB34
-    procedure ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer); override; // @addr 0x5DE080 @ida "void __userpurge $name(TfPlanetQuest *Self@<eax>, unsigned int KeyState@<edx>, TPoint *Point@<ecx>, int Delta@<^0>);" @note "Only exact deltas of +120 and -120 are handled."
+    procedure ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer); override; // @addr 0x5DE080 @note "Only exact deltas of +120 and -120 are handled."
     procedure InitializeLayout; override; // @addr 0x5DF46C
     procedure OnOpen; override; // @addr 0x5DFE48
     procedure OnClose; override; // @addr 0x5E0BB4
-    function GetTextBeforeDelimiter(const Text: WideString; Delimiter: WideChar): WideString; // @addr 0x5DC710 @ida "void __userpurge $name(TfPlanetQuest *Self@<eax>, unsigned __int16 *Text@<edx>, unsigned __int16 Delimiter@<cx>, unsigned __int16 **Result@<^0>);"
-    function GetTextAfterComma(const Text: WideString; IgnoredDelimiter: WideChar): WideString; // @addr 0x5DC7CC @ida "void __userpurge $name(TfPlanetQuest *Self@<eax>, unsigned __int16 *Text@<edx>, unsigned __int16 IgnoredDelimiter@<cx>, unsigned __int16 **Result@<^0>);" @note "A nonempty string without a comma is read past its end."
-    function GetQuestContentHash(QuestId: Integer): WideString; // @addr 0x5DC894 @ida "void __usercall $name(TfPlanetQuest *Self@<eax>, int QuestId@<edx>, unsigned __int16 **Result@<ecx>);" @note "Hexadecimal complement of the quest buffer's CRC32."
+    function GetTextBeforeDelimiter(const Text: WideString; Delimiter: WideChar): WideString; // @addr 0x5DC710
+    function GetTextAfterComma(const Text: WideString; IgnoredDelimiter: WideChar): WideString; // @addr 0x5DC7CC @note "A nonempty string without a comma is read past its end."
+    function GetQuestContentHash(QuestId: Integer): WideString; // @addr 0x5DC894 @note "Hexadecimal complement of the quest buffer's CRC32."
     procedure LoadQuestById(QuestId: Integer); // @addr 0x5DC9B4
     procedure LoadQuestByName(const Name: WideString); // @addr 0x5DCC04
     procedure ApplyLegacyPictureOverrides; // @addr 0x5E3798 @note "PQI keys are quest,L|P|PAR,indices; picture names lose the Bm.PQI. prefix."
@@ -85,9 +85,9 @@ type
     // ext_name maps to GQuestVarExt_name; queued-script scope takes precedence over global scope.
     procedure ExportExternalParameters; // @addr 0x5E3CE4
     procedure ImportExternalParameters; // @addr 0x5E3E4C @note "Writes clamped parameter values back to the script variables."
-    function ExpandExternalText(Text: WideString): WideString; // @addr 0x5E3FD8 @ida "void __usercall $name(TfPlanetQuest *Self@<eax>, unsigned __int16 *Text@<edx>, unsigned __int16 **Result@<ecx>);" @note "<txt_name> uses global GQuestVarExt_name; queued-script scope is ignored."
-    function ExpandTemplateText(Text: WideString): WideString; // @addr 0x5E25C8 @ida "void __usercall $name(TfPlanetQuest *Self@<eax>, unsigned __int16 *Text@<edx>, unsigned __int16 **Result@<ecx>);"
-    function GetTextColorTag(StyleIndex: Integer): WideString; // @addr 0x5E0CFC @ida "void __usercall $name(TfPlanetQuest *Self@<eax>, int StyleIndex@<edx>, unsigned __int16 **Result@<ecx>);" @note "StyleIndex is zero-based."
+    function ExpandExternalText(Text: WideString): WideString; // @addr 0x5E3FD8 @note "<txt_name> uses global GQuestVarExt_name; queued-script scope is ignored."
+    function ExpandTemplateText(Text: WideString): WideString; // @addr 0x5E25C8
+    function GetTextColorTag(StyleIndex: Integer): WideString; // @addr 0x5E0CFC @note "StyleIndex is zero-based."
     procedure StartLoadedQuest; // @addr 0x5DCD1C @note "Applies PQI overrides only through quest version 1111111124."
   end;
 
@@ -755,7 +755,7 @@ var
   StartIndex, TagIndex, TextLength: Integer;
 
   // @nested $5DED88 AddQuestTextParagraph
-  procedure AddQuestTextParagraph(const Text: WideString; FontMode: Integer); // @addr 0x5DED88 @ida "void __usercall $name(unsigned __int16 *Text@<eax>, int FontMode@<edx>, void *ParentFrame@<^0>);"
+  procedure AddQuestTextParagraph(const Text: WideString; FontMode: Integer); // @addr 0x5DED88
   var
     Indent: Boolean;
     I: Integer;
@@ -809,7 +809,7 @@ var
   end;
 
   // @nested $5DF03C AddQuestTextLines
-  procedure AddQuestTextLines(const Text: WideString; FontMode: Integer); // @addr 0x5DF03C @ida "void __usercall $name(unsigned __int16 *Text@<eax>, int FontMode@<edx>, void *ParentFrame@<^0>);"
+  procedure AddQuestTextLines(const Text: WideString; FontMode: Integer); // @addr 0x5DF03C
   var
     N, StartIndex, EndIndex: Integer;
   begin

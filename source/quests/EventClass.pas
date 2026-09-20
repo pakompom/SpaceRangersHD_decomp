@@ -13,8 +13,8 @@ type
     Music: TTextField; // @offset 0x0C
     Sound: TTextField; // @offset 0x10
 
-    constructor Create; // @addr 0x4DE520 @ida "TEvent *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x4DE5D8 @ida "void __usercall $name(TEvent *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x4DE520
+    destructor Destroy; override; // @addr 0x4DE5D8
     procedure ClearTextFields; // @addr 0x4DE658
     procedure Assign(Source: TEvent); // @addr 0x4DE69C @note "Trims the copied text."
   end;

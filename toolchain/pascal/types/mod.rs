@@ -40,7 +40,7 @@ pub struct Compiler {
     active: BTreeSet<String>,
     slots: BTreeMap<String, BTreeMap<i64, Decl>>,
     slots_active: BTreeSet<String>,
-    prototypes: BTreeMap<String, Option<String>>,
+    prototypes: BTreeMap<String, Option<abi::Prototype>>,
 }
 use crate::util::{array, integer, string, yes};
 fn subrange_storage(bounds: &Value) -> Result<(&'static str, i64)> {
@@ -327,18 +327,6 @@ impl Compiler {
                     .trim()
                     .into());
             }
-            if abi.is_empty() || abi == "register" {
-                let mut params = array(&data, "params").to_vec();
-                for p in &mut params {
-                    if string(p, "mode") == "value"
-                        && self.record_value(&p["type"])?
-                        && self.size(&p["type"])? > 4
-                    {
-                        p["type"] = json!({"pointer":p["type"]});
-                    }
-                }
-                data["params"] = json!(params);
-            }
             let d = Decl {
                 name: "Callback".into(),
                 kind: "routine".into(),
@@ -350,7 +338,10 @@ impl Compiler {
                 closing: None,
                 type_span: None,
             };
-            let prototype = self.prototype_raw(&d)?.context("untyped callback")?;
+            let prototype = self
+                .prototype_raw(&d)?
+                .context("untyped callback")?
+                .declaration;
             static CALLBACK_HEAD: std::sync::LazyLock<regex::Regex> =
                 std::sync::LazyLock::new(|| {
                     regex::Regex::new(
@@ -486,7 +477,7 @@ impl Compiler {
         if builtin(name).is_some() {
             return Ok(match category {
                 "managed" => matches!(lower.as_str(), "widestring" | "ansistring"),
-                "floating" => matches!(lower.as_str(), "single" | "double"),
+                "floating" => matches!(lower.as_str(), "single" | "double" | "extended"),
                 "wide" => matches!(lower.as_str(), "int64" | "uint64"),
                 _ => false,
             });
@@ -593,6 +584,103 @@ mod tests {
             Some(
                 "__int32 __userpurge Work@<eax>(unsigned __int8 A@<al>, unsigned __int16 B@<dx>, __int32 C@<ecx>, __int32 D@<^0>);"
             )
+        );
+        Ok(())
+    }
+    #[test]
+    fn implicit_arguments_and_aggregate_abi() -> Result<()> {
+        // Locations checked against compile-only DCC32 18.5 probes, including
+        // small records, which do not all use the large-record pointer ABI.
+        let mut c = compiler(
+            r#"unit X; interface
+type
+  TPair = record // @size 8
+    A: Integer; // @offset 0
+    B: Integer; // @offset 4
+  end;
+  TSmall = packed record // @size 3
+    A: array[0..2] of Byte; // @offset 0
+  end;
+  TWordRecord = record // @size 2
+    A: Word; // @offset 0
+  end;
+  TBytes = array of Byte;
+  TBytesAlias = TBytes;
+  IFoo = interface;
+  TProbe = class // @size 4
+    constructor Create(A: Integer; B: Double; C: Integer); // @addr $1000
+    destructor Destroy; // @addr $1010
+    function Pair(A: Integer): TPair; // @addr $1020
+  end;
+function Text(A, B, C, D: Integer): WideString; // @addr $1030
+function Bytes(A: Integer): TBytesAlias; // @addr $1040
+function Intf(A: IFoo): IFoo; // @addr $1050
+function Small(A: TSmall; B: Integer): TSmall; // @addr $1060
+function WordRecord(A: TWordRecord): TWordRecord; // @addr $1070
+procedure Records(A: TPair; B: Integer; C: TPair; D: Integer); // @addr $1080
+procedure Reals(A: Integer; B: Single; C: Integer; D: Double; E: Integer; F: Extended; G: Integer); // @addr $1090
+procedure ConstReals(const A: Double; const B: Int64; C: Integer); // @addr $10A0
+function RealResult: Extended; // @addr $10B0
+implementation end."#,
+        )?;
+        for (name, expected) in [
+            (
+                "TProbe_Create",
+                "TProbe * __userpurge TProbe_Create@<eax>(void * SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, __int32 A@<ecx>, double B@<^4>, __int32 C@<^0>);",
+            ),
+            (
+                "TProbe_Destroy",
+                "void __usercall TProbe_Destroy(TProbe *Self@<eax>, __int8 DestroyFlags@<dl>);",
+            ),
+            (
+                "TProbe_Pair",
+                "void __usercall TProbe_Pair(TProbe *Self@<eax>, __int32 A@<edx>, TPair *Result@<ecx>);",
+            ),
+            (
+                "Text",
+                "void __userpurge Text(__int32 A@<eax>, __int32 B@<edx>, __int32 C@<ecx>, __int32 D@<^4>, unsigned __int16 * *Result@<^0>);",
+            ),
+            (
+                "Bytes",
+                "void __usercall Bytes(__int32 A@<eax>, TBytesAlias *Result@<edx>);",
+            ),
+            (
+                "Intf",
+                "void __usercall Intf(IFoo *A@<eax>, IFoo **Result@<edx>);",
+            ),
+            (
+                "Small",
+                "void __userpurge Small(TSmall A@<^0>, __int32 B@<eax>, TSmall *Result@<edx>);",
+            ),
+            (
+                "WordRecord",
+                "TWordRecord __usercall WordRecord@<ax>(TWordRecord A@<ax>);",
+            ),
+            (
+                "Records",
+                "void __userpurge Records(TPair *A@<eax>, __int32 B@<edx>, TPair *C@<ecx>, __int32 D@<^0>);",
+            ),
+            (
+                "Reals",
+                "void __userpurge Reals(__int32 A@<eax>, float B@<^24>, __int32 C@<edx>, double D@<^16>, __int32 E@<ecx>, _TBYTE F@<^4>, __int32 G@<^0>);",
+            ),
+            (
+                "ConstReals",
+                "void __userpurge ConstReals(double A@<^8>, __int64 B@<^0>, __int32 C@<eax>);",
+            ),
+            ("RealResult", "double __usercall RealResult@<st0>(void);"),
+        ] {
+            let d = c.decls.iter().find(|d| d.name == name).unwrap().clone();
+            assert_eq!(c.prototype(&d)?.as_deref(), Some(expected), "{name}");
+        }
+        let mut nested = c.decls.iter().find(|d| d.name == "Text").unwrap().clone();
+        nested.name = "NestedText".into();
+        nested.data["nested"] = json!(true);
+        let p = c.native_prototype(&nested)?.unwrap();
+        assert_eq!(p.stack_pop, Some(8));
+        assert_eq!(
+            p.declaration,
+            "void __userpurge NestedText(__int32 A@<eax>, __int32 B@<edx>, __int32 C@<ecx>, __int32 D@<^4>, unsigned __int16 * *Result@<^0>, void *ParentFrame@<^8>);"
         );
         Ok(())
     }

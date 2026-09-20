@@ -17,8 +17,8 @@ type
     ScrollbarsOutside: Boolean; // @offset 0x16A
     UnlimitedWorld: Boolean; // @offset 0x16B
 
-    constructor Create(Owner: TObjectGI); // @addr 0x490890 @ida "TPanelScrollBarGI *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, TObjectGI *Owner@<ecx>);"
-    destructor Destroy; override; // @addr 0x490A78 @ida "void __usercall $name(TPanelScrollBarGI *Self@<eax>, __int8 DestroyFlags@<dl>);" @note "Frees both scrollbars, including when parented outside this panel."
+    constructor Create(Owner: TObjectGI); // @addr 0x490890
+    destructor Destroy; override; // @addr 0x490A78 @note "Frees both scrollbars, including when parented outside this panel."
     procedure Clear; override; // @addr 0x490AF4
     procedure SetVerticalScrollBarConfigPath(Path: WideString); // @addr 0x490B34
     procedure SetHorizontalScrollbarEnabled(Value: Boolean); // @addr 0x490B88
@@ -26,10 +26,10 @@ type
     procedure SetVerticalScrollbarEnabled(Value: Boolean); // @addr 0x490BE0
     procedure SetScrollbarsOutside(Value: Boolean); // @addr 0x490C18 @note "The panel retains ownership of scrollbars parented outside it."
     procedure SetUnlimitedWorldEnabled(Value: Boolean); // @addr 0x490D10
-    procedure SetSize(Size: TPoint); override; // @addr 0x490D48 @ida "void __usercall $name(TPanelScrollBarGI *Self@<eax>, TPoint *Size@<edx>);"
-    procedure SetOrigin(Origin: TPoint); override; // @addr 0x490D74 @ida "void __usercall $name(TPanelScrollBarGI *Self@<eax>, TPoint *Origin@<edx>);"
-    procedure SetScrollOffset(Offset: TPoint); override; // @addr 0x490DA0 @ida "void __usercall $name(TPanelScrollBarGI *Self@<eax>, TPoint *Offset@<edx>);"
-    procedure SetDepth(NewDepth: Double); override; // @addr 0x490E04 @ida "void __userpurge $name(TPanelScrollBarGI *Self@<eax>, double NewDepth@<^0>);"
+    procedure SetSize(Size: TPoint); override; // @addr 0x490D48
+    procedure SetOrigin(Origin: TPoint); override; // @addr 0x490D74
+    procedure SetScrollOffset(Offset: TPoint); override; // @addr 0x490DA0
+    procedure SetDepth(NewDepth: Double); override; // @addr 0x490E04
     procedure UpdateScrollbarPlacement; // @addr 0x490E54
     procedure UpdateScrollRanges; // @addr 0x491130 @note "Only active PositionModeW children contribute; scrollbars are excluded."
     procedure ScrollbarPositionChanged(Sender: TObjectGI); // @addr 0x49128C

@@ -16,9 +16,9 @@ type
     procedure CopyTo(Destination: TObjectSE); override; // @addr $810AB4
     procedure AttachToSpace(ASpace: TSpaceSE); override; // @addr $810B08
     procedure DetachFromSpace; override; // @addr $810D24
-    procedure SetPosition(APosition: TPointF); override; // @addr $810D7C @ida "void __usercall $name(TContainerSE *Self@<eax>, TPointF *APosition@<edx>);"
-    procedure SetDepth(Value: Single); override; // @addr $810E0C @ida "void __userpurge $name(TContainerSE *Self@<eax>, float Value@<^0>);"
-    function GetDepth: Single; override; // @addr $810E30 @ida "float __usercall $name@<st0>(TContainerSE *Self@<eax>);"
+    procedure SetPosition(APosition: TPointF); override; // @addr $810D7C
+    procedure SetDepth(Value: Single); override; // @addr $810E0C
+    function GetDepth: Single; override; // @addr $810E30
     function HitTestCursor: Boolean; override; // @addr $810E50
     procedure DrawMap; override; // @addr $810E80
     procedure LoadTemplate(Block: TBlockParEC); override; // @addr $810F00

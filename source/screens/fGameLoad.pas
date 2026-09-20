@@ -21,8 +21,8 @@ type
     DisplayedProgress: Single; // @offset 0xE0
     LoadingComplete: Boolean; // @offset 0xE4
     LoadPanel: TfPanelLoad; // @offset 0xE8
-    constructor Create; // @addr 0x661AF0 @ida "TfGameLoad *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x661B48 @ida "void __usercall $name(TfGameLoad *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x661AF0
+    destructor Destroy; override; // @addr 0x661B48
     procedure InitializeLayout; override; // @addr 0x661BA0
     procedure OnOpen; override; // @addr 0x661CA8
     procedure OnClose; override; // @addr 0x661DD8

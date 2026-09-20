@@ -16,15 +16,15 @@ type
     IntValue: Integer; // @offset 0x14
     ValueKind: TCPValueKind; // @offset 0x18
 
-    constructor Create; // @addr 0x4DF7CC @ida "TCPVariant *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x4DF828 @ida "void __usercall $name(TCPVariant *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x4DF7CC
+    destructor Destroy; override; // @addr 0x4DF828
     procedure Reset; // @addr 0x4DF874 @note "Resets to integer zero; retains the range object."
     procedure Assign(Source: TCPVariant; FreeSource: Boolean); // @addr 0x4DF8A8 @note "Deep-copies the range."
     function TryLoadFromText(Text: WideString): Boolean; // @addr 0x4DF90C @note "Comma decimals use Single precision; uppercase E is ignored. Ranges require h, not '..'. Failure preserves the value; empty text becomes zero."
     function HasNumericChars(var Text: WideString; TextLength: Integer): Boolean; // @addr 0x4DFAA8 @note "Permits digits, comma and uppercase E; not a syntax check."
     function HasIntegerChars(var Text: WideString; TextLength: Integer): Boolean; // @addr 0x4DFB20 @note "Permits digits and uppercase E; not a syntax check."
     // Numeric conversions resample ranges; unknown tags return zero.
-    function AsExtended: Extended; // @addr 0x4DFB88 @ida "double __usercall $name@<st0>(TCPVariant *Self@<eax>);"
+    function AsExtended: Extended; // @addr 0x4DFB88
     function AsInteger: Integer; // @addr 0x4DFBFC @note "Float conversion clamps at +/-2000000000; within bounds, uses System.Round(value + 1E-11)."
   end;
 

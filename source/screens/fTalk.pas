@@ -16,8 +16,8 @@ type
     Value: Integer; // @offset $18
     ExtraValue: Integer; // @offset $1C
     FallbackText: WideString; // @offset $20 Native cleanup table $6D0F2C owns this string.
-    constructor Create; // @addr $6D0FF0 @ida "TfTalkA *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr $6D1034 @ida "void __usercall $name(TfTalkA *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr $6D0FF0
+    destructor Destroy; override; // @addr $6D1034
   end;
 
   TfTalk = class(TMessageLoopGI) // @size 0x134
@@ -63,7 +63,7 @@ type
     procedure BuildMilitarySupportChoices; // @addr $6E3200
     procedure AcceptScriptedConversation(Action: Integer); // @addr $6D8C88
     procedure RunScriptExitAnswer(Action: Integer); // @addr $6D8BC0
-    function GetShipGreeting: WideString; // @addr $6E2F3C @ida "void __usercall $name(TfTalk *Self@<eax>, unsigned __int16 **Result@<edx>);"
+    function GetShipGreeting: WideString; // @addr $6E2F3C
     procedure ShowGreeting(Action: Integer); // @addr $6D8C20
     procedure OpenTrade(Action: Integer); // @addr $6D93F0
     procedure CancelTrade(Action: Integer); // @addr $6D9448
@@ -133,10 +133,10 @@ type
     procedure OnOpen; override; // @addr $6D14AC
     procedure OnClose; override; // @addr $6D222C
     procedure InitializeLayout; override; // @addr $6D1068
-    procedure MainPanelMouseMove(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $6D3074 @ida "void __userpurge $name(TfTalk *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
-    procedure MainPanelMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $6D3354 @ida "void __userpurge $name(TfTalk *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
-    procedure MainPanelMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $6D34AC @ida "void __userpurge $name(TfTalk *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
-    procedure AddDialogEffect(Position: TPointF; ImagePath: WideString; DelayMs: Integer); // @addr $6D3C08 @ida "void __userpurge $name(TfTalk *Self@<eax>, TPointF *Position@<edx>, unsigned __int16 *ImagePath@<ecx>, int DelayMs@<^0>);"
+    procedure MainPanelMouseMove(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $6D3074
+    procedure MainPanelMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $6D3354
+    procedure MainPanelMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $6D34AC
+    procedure AddDialogEffect(Position: TPointF; ImagePath: WideString; DelayMs: Integer); // @addr $6D3C08
     procedure MinimapScrolled; // @addr $6D42DC
     procedure FlushMinimapRefresh(Timer: PCallbackTimerGI; UserData: Integer); // @addr $6D437C
     procedure AdvanceSlide(Timer: PCallbackTimerGI; UserData: Integer); // @addr $6D4410
@@ -153,11 +153,11 @@ type
     function CreateDialogObject(LabelControl: TLabelGI; Item: PFontObjectEC): TObjectGI; // @addr $6D2BCC
     procedure CenterEmbeddedObject(Sender: TObjectGI); // @addr $6D2F60
     procedure CenterShipClicked(Sender: TObjectGI); // @addr $6D2FBC
-    procedure ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer); override; // @addr $6D3518 @ida "void __userpurge $name(TfTalk *Self@<eax>, unsigned int KeyState@<edx>, TPoint *Point@<ecx>, int Delta@<^0>);"
+    procedure ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer); override; // @addr $6D3518
     procedure ChoiceMouseEnter(Sender: TObjectGI); // @addr $6D3610
     procedure ChoiceMouseLeave(Sender: TObjectGI); // @addr $6D3630
-    procedure ChoiceMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $6D3650 @ida "void __userpurge $name(TfTalk *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
-    procedure ChoiceMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $6D36D8 @ida "void __userpurge $name(TfTalk *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
+    procedure ChoiceMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $6D3650
+    procedure ChoiceMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $6D36D8
     procedure RestartTextPresentation; // @addr $6D37C8
     procedure AdvanceTextPresentation(Timer: PCallbackTimerGI; UserData: Integer); // @addr $6D3860
     procedure ClearDialogEffects; // @addr $6D3D30
@@ -1876,7 +1876,7 @@ end;
 procedure TfTalk.ShowAttackTargets(Action: Integer);
 var RadarRangeSquared: Integer; Ship: TShip; AllowTargets: Boolean; SavedText: WideString;
   // @nested $6DA384 AddAvailableAttackTargets
-  procedure AddAvailableAttackTargets; // @addr $6DA384 @ida "void __usercall $name(void *ParentFrame@<^0>);" @stackpop 0 @calls "0x6DA8CA"
+  procedure AddAvailableAttackTargets; // @addr $6DA384 @calls "0x6DA8CA"
   var I: Integer;
   begin
     RadarRangeSquared := GetPlayer.GetRadarRange * GetPlayer.GetRadarRange;
@@ -2442,7 +2442,7 @@ var
   Text: WideString;
 
   // @nested $6DE3BC AddTranclucatorCollectionOption
-  procedure AddTranclucatorCollectionOption(Kind: Integer); // @addr $6DE3BC @ida "void __usercall $name(int Kind@<eax>, void *ParentFrame@<^0>);" @stackpop 0 @calls "0x6DF075"
+  procedure AddTranclucatorCollectionOption(Kind: Integer); // @addr $6DE3BC @calls "0x6DF075"
   var
     Value: Integer;
     Caption: WideString;
@@ -2462,7 +2462,7 @@ var
   end;
 
   // @nested $6DE650 GetTranclucatorCollectionText
-  function GetTranclucatorCollectionText: WideString; // @addr $6DE650 @ida "void __usercall $name(unsigned __int16 **Result@<eax>, void *ParentFrame@<^0>);" @stackpop 0 @calls "0x6DEEF3"
+  function GetTranclucatorCollectionText: WideString; // @addr $6DE650 @calls "0x6DEEF3"
   var
     Kind: Integer;
   begin
@@ -2476,7 +2476,7 @@ var
   end;
 
   // @nested $6DE768 AddTranclucatorStorageOption
-  procedure AddTranclucatorStorageOption(Kind: Integer); // @addr $6DE768 @ida "void __usercall $name(int Kind@<eax>, void *ParentFrame@<^0>);" @stackpop 0 @calls "0x6DF09B"
+  procedure AddTranclucatorStorageOption(Kind: Integer); // @addr $6DE768 @calls "0x6DF09B"
   var
     Value: Integer;
     Caption: WideString;
@@ -2496,7 +2496,7 @@ var
   end;
 
   // @nested $6DE9EC GetTranclucatorStorageText
-  function GetTranclucatorStorageText: WideString; // @addr $6DE9EC @ida "void __usercall $name(unsigned __int16 **Result@<eax>, void *ParentFrame@<^0>);" @stackpop 0 @calls "0x6DEF88"
+  function GetTranclucatorStorageText: WideString; // @addr $6DE9EC @calls "0x6DEF88"
   var
     Kind: Integer;
   begin
@@ -2510,7 +2510,7 @@ var
   end;
 
   // @nested $6DEB00 AddTranclucatorArrangeOption
-  procedure AddTranclucatorArrangeOption; // @addr $6DEB00 @ida "void __usercall $name(void *ParentFrame@<^0>);" @stackpop 0 @calls "0x6DF0AB"
+  procedure AddTranclucatorArrangeOption; // @addr $6DEB00 @calls "0x6DF0AB"
   var
     Value: Integer;
     Caption: WideString;
@@ -2529,7 +2529,7 @@ var
   end;
 
   // @nested $6DECBC GetTranclucatorArrangeText
-  function GetTranclucatorArrangeText: WideString; // @addr $6DECBC @ida "void __usercall $name(unsigned __int16 **Result@<eax>, void *ParentFrame@<^0>);" @stackpop 0 @calls "0x6DF023"
+  function GetTranclucatorArrangeText: WideString; // @addr $6DECBC @calls "0x6DF023"
   begin
     Result := '';
     if Ship.AutoArrange then Result := Result + TalkShip.LookupTalkText('Talk.Tranclucator.Options.ArrangeText')
@@ -2537,7 +2537,7 @@ var
   end;
 
   // @nested $6DEDFC PopTranclucatorOptionDigit
-  procedure PopTranclucatorOptionDigit; // @addr $6DEDFC @ida "void __usercall $name(void *ParentFrame@<^0>);" @stackpop 0 @calls "0x6DEE73 0x6DEE82 0x6DEE97 0x6DEEA6 0x6DEEBB"
+  procedure PopTranclucatorOptionDigit; // @addr $6DEDFC @calls "0x6DEE73 0x6DEE82 0x6DEE97 0x6DEEA6 0x6DEEBB"
   begin
     Digit := Cardinal(Action) mod 10;
     Cardinal(Action) := Cardinal(Action) div 10;

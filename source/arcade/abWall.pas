@@ -12,8 +12,8 @@ type
     WorldImage: PabWorldImage; // @offset $D4
     DirectionFrameCount: Integer; // @offset $D8
     StopPoint: PabStopPoint; // @offset $DC
-    constructor Create; // @addr $501618 @ida "TabWall *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr $50169C @ida "void __usercall $name(TabWall *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr $501618
+    destructor Destroy; override; // @addr $50169C
     procedure BindZone(Value: PabZone); // @addr $5016F4
     procedure AttachVisual; // @addr $5018B4 @note "Empty in this native version; called after arena wall setup."
     procedure QueueImageLoad(PendingLoads: TList; Owner: TObjectGI); override; // @addr $5018C0
@@ -208,7 +208,7 @@ var
   Index: Integer;
 
   // @nested $501C4C FindStopPoint
-  function FindStopPoint(Point: PabStopPoint): TabWall; // @addr $501C4C @ida "TabWall *__usercall $name@<eax>(TabStopPoint *Point@<eax>, void *ParentFrame@<^0>);" @stackpop 0 @calls "0x501ce2,0x501CF7"
+  function FindStopPoint(Point: PabStopPoint): TabWall; // @addr $501C4C @calls "0x501ce2,0x501CF7"
   var
     Obj: TabObject;
   begin

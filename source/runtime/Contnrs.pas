@@ -16,8 +16,8 @@ type
     function PeekItem: Pointer; virtual; // @addr 0x41E14C @slot 0x08 @calls "0x41E168"
   public
     function Pop: Pointer; // @addr $41E0C0
-    constructor Create; // @ida "TOrderedList *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr $41E11C @ida "void __usercall $name(TOrderedList *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create;
+    destructor Destroy; override; // @addr $41E11C
   end;
 
   TStack = class(TOrderedList) // @size 0x08

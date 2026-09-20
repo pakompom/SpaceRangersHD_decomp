@@ -210,8 +210,8 @@ type
     SmoothedFreeCapacityFraction: Single; // @offset 0x4C8  Hull capacity less equipped item mass; excludes loose cargo.
     EquipmentPriceSensitivity: Single; // @offset 0x4CC  Smoothed affordability state; ranger item evaluation uses it to scale resale/cost penalties.
 
-    constructor Create; // @addr 0x747D08 @ida "TShip *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x748168 @ida "void __usercall $name(TShip *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x747D08
+    destructor Destroy; override; // @addr 0x748168
     procedure SaveToBuffer(Buffer: TBufEC); virtual; // @addr 0x748800 @slot 0x00
     procedure LoadFromBuffer(Buffer: TBufEC; Galaxy: TGalaxy); virtual; // @addr 0x7496BC @slot 0x04
     procedure ResolveLoadedReferences(Galaxy: TGalaxy); virtual; // @addr 0x74D484 @slot 0x08 @note "Converts saved IDs to object references; requires all referenced objects to have been loaded."
@@ -227,8 +227,8 @@ type
 
     // Abstract entries in native TShip VMT 0x747C10 share the RTL stub at 0x40358C.
     // Signatures come from verified concrete overrides and their callers.
-    function GetName: WideString; virtual; abstract; // @slot 0x24 @ida "void __usercall $name(TShip *Self@<eax>, unsigned __int16 **Result@<edx>);"
-    function GetFullName(const Separator: WideString): WideString; virtual; abstract; // @slot 0x28 @calls "0x777ECB 0x777EFB 0x777F29" @ida "void __usercall $name(TShip *Self@<eax>, unsigned __int16 *Separator@<edx>, unsigned __int16 **Result@<ecx>);"
+    function GetName: WideString; virtual; abstract; // @slot 0x24
+    function GetFullName(const Separator: WideString): WideString; virtual; abstract; // @slot 0x28 @calls "0x777ECB 0x777EFB 0x777F29"
     function GetGreetingShipCategory: Byte; virtual; abstract; // @slot 0x30 Category bit in ship-greeting ShipType, ToShipType and ShipBadType filters.
     function GetHomeStar: TStar; virtual; abstract; // @slot 0x34
     function GetDominantCareer: TRangerCareer; virtual; abstract; // @slot 0x38
@@ -294,7 +294,7 @@ type
     procedure NotifyPiratePartnerRebellion(Leader: TShip); // @addr 0x7799BC
     function UnknownVirtualC0(Argument: Pointer): Boolean; virtual; // @addr 0x779CDC @slot 0xC0 @note "Native base implementation returns false; argument role and intended operation remain unresolved."
     function CalculatePartnershipMonths(Amount: Integer; OtherShip: TShip): Integer; // @addr 0x779CF4 @note "Payment/wealth and relation determine contract months; a player stimulant can double the result."
-    function GetGreetingText: WideString; // @addr 0x779DF0 @ida "void __usercall $name(TShip *Self@<eax>, unsigned __int16 **Result@<edx>);"
+    function GetGreetingText: WideString; // @addr 0x779DF0
     procedure InitializeScriptStateOrders; // @addr 0x77A8F8 @note "Requires ScriptShip; clears EndState, applies state orders and refreshes completion/pickup state."
     procedure ApplyScriptStateOrders; // @addr 0x77A934 @note "Requires ScriptShip; may issue travel orders and assign script-selected weapon targets."
     procedure UpdateScriptStateCompletionAndPickups; // @addr 0x77AE70 @note "Requires ScriptShip; updates EndState and queues state-requested pickups."
@@ -323,27 +323,27 @@ type
     function ScanForCollectableItems: Boolean; // @addr 0x76B2F4
     function TryCollectBestFloatingItem(MaximumTravelTurns: Integer): Boolean; // @addr 0x76B490 @note "May queue nearby pickups and issue/cancel a move order; true means a move order remains."
     function AcceptPickupItem(Item: TItem): Boolean; virtual; // @addr 0x76B944 @slot 0x94 @note "Base implementation returns false."
-    function AcceptPickupDistance(Item: TItem; Distance: Double): Boolean; virtual; // @addr 0x76BD24 @slot 0x98 @ida "bool __userpurge $name@<al>(TShip *Self@<eax>, TItem *Item@<edx>, double Distance@<^0>);" @note "Base implementation returns true."
+    function AcceptPickupDistance(Item: TItem; Distance: Double): Boolean; virtual; // @addr 0x76BD24 @slot 0x98 @note "Base implementation returns true."
     procedure RemoveInvalidPickupTargets; // @addr 0x76BE58 @note "Frees the target list when it becomes empty."
-    function GetPickupApproachPosition(ItemPosition: TPointF): TPointF; // @addr 0x76C1F0 @ida "void __usercall $name(TShip *Self@<eax>, TPointF *ItemPosition@<edx>, TPointF *Result@<ecx>);"
+    function GetPickupApproachPosition(ItemPosition: TPointF): TPointF; // @addr 0x76C1F0
     function GetCurrentPickupItem: TItem; // @addr 0x76C28C
-    function GetArrivalPosition(DestinationStar: TStar): TPointF; // @addr 0x76C5D4 @ida "void __usercall $name(TShip *Self@<eax>, TStar *DestinationStar@<edx>, TPointF *Result@<ecx>);" @note "Point on the destination map boundary facing the current system."
+    function GetArrivalPosition(DestinationStar: TStar): TPointF; // @addr 0x76C5D4 @note "Point on the destination map boundary facing the current system."
     function GetMovementPathTurnCount: Integer; // @addr 0x76CEF0 @note "Ceiling of active path-node count times the star's MovementStepScale."
     function IsTravelCompletionPathReady: Boolean; // @addr 0x770FFC @note "Tests landing, jump, hole and teleport completion conditions against the prepared path."
     procedure RepelFollowingShips; // @addr 0x771208 @note "Adjusts RepulsionPosition on Self and nearby following ships using their collision radii."
     procedure RebuildMovePath; // @addr 0x77181C @note "Uses the current turn's step limit; rewrites OrderDestination to the resulting endpoint."
-    procedure BuildFullPathTo(Destination: TPointF); // @addr 0x771898 @ida "void __usercall $name(TShip *Self@<eax>, TPointF *Destination@<edx>);" @note "Clears the old path and uses aGroup, a 999999-node limit."
+    procedure BuildFullPathTo(Destination: TPointF); // @addr 0x771898 @note "Clears the old path and uses aGroup, a 999999-node limit."
     procedure BuildPlanetLandingPath; // @addr 0x7718EC
     procedure BuildOrderMovementPath(MaximumNodes: Integer); // @addr 0x7719F4 @note "Clears the path, normalizes heading and handles the current order; may commit jump departure or adjust the destination."
-    procedure AppendPathToWithTurnPadding(Destination: TPointF; MaximumNodes: Integer); // @addr 0x77288C @ida "void __usercall $name(TShip *Self@<eax>, TPointF *Destination@<edx>, int MaximumNodes@<ecx>);" @note "Turning then straight movement; may pad the player's visible turn to 200 nodes."
-    procedure AppendPathTo(Destination: TPointF; MaximumNodes: Integer); // @addr 0x7729A8 @ida "void __usercall $name(TShip *Self@<eax>, TPointF *Destination@<edx>, int MaximumNodes@<ecx>);"
-    procedure AppendStarAvoidingPathWithTurnPadding(Destination: TPointF; MaximumNodes: Integer); // @addr 0x772A54 @ida "void __usercall $name(TShip *Self@<eax>, TPointF *Destination@<edx>, int MaximumNodes@<ecx>);"
+    procedure AppendPathToWithTurnPadding(Destination: TPointF; MaximumNodes: Integer); // @addr 0x77288C @note "Turning then straight movement; may pad the player's visible turn to 200 nodes."
+    procedure AppendPathTo(Destination: TPointF; MaximumNodes: Integer); // @addr 0x7729A8
+    procedure AppendStarAvoidingPathWithTurnPadding(Destination: TPointF; MaximumNodes: Integer); // @addr 0x772A54
     procedure AppendOrbitalPath(MaximumNodes: Integer); // @addr 0x772B60 @note "Appends up to 200 nodes around the system origin, with visible-turn padding."
-    procedure AppendTurningPath(Destination: TPointF; AvoidStar: Boolean; MaximumNodes: Integer); // @addr 0x772D04 @ida "void __userpurge $name(TShip *Self@<eax>, TPointF *Destination@<edx>, bool AvoidStar@<cl>, int MaximumNodes@<^0>);"
-    procedure AppendStraightPath(Destination: TPointF; MaximumNodes: Integer); // @addr 0x773568 @ida "void __usercall $name(TShip *Self@<eax>, TPointF *Destination@<edx>, int MaximumNodes@<ecx>);"
-    procedure AppendHyperspaceTransitionPath(Direction: Single); // @addr 0x7738AC @ida "void __userpurge $name(TShip *Self@<eax>, float Direction@<^0>);" @note "Positive/negative Direction selects the outgoing/incoming transition path."
-    procedure AppendStarAvoidingPath(Destination: TPointF; MaximumNodes: Integer); // @addr 0x773AB0 @ida "void __usercall $name(TShip *Self@<eax>, TPointF *Destination@<edx>, int MaximumNodes@<ecx>);"
-    procedure AppendCircularDetour(Destination: TPointF; MaximumNodes: Integer; Radius: Double); // @addr 0x773E38 @ida "void __userpurge $name(TShip *Self@<eax>, TPointF *Destination@<edx>, int MaximumNodes@<ecx>, double Radius@<^0>);"
+    procedure AppendTurningPath(Destination: TPointF; AvoidStar: Boolean; MaximumNodes: Integer); // @addr 0x772D04
+    procedure AppendStraightPath(Destination: TPointF; MaximumNodes: Integer); // @addr 0x773568
+    procedure AppendHyperspaceTransitionPath(Direction: Single); // @addr 0x7738AC @note "Positive/negative Direction selects the outgoing/incoming transition path."
+    procedure AppendStarAvoidingPath(Destination: TPointF; MaximumNodes: Integer); // @addr 0x773AB0
+    procedure AppendCircularDetour(Destination: TPointF; MaximumNodes: Integer; Radius: Double); // @addr 0x773E38
 
     procedure PrepareTurnMovement(StartStepIndex: Integer; RecordFilm: Boolean); // @addr 0x76D098
     function ProcessMovementStep(StepIndex: Integer; RecordFilm: Boolean): Boolean; // @addr 0x7700D4 @note "The native result remains false."
@@ -352,7 +352,7 @@ type
     procedure UpdateBestRangerRelativeRatings; // @addr 0x750258
     procedure UpdateAverageRangerRelativeStrength; // @addr 0x7502E0 @note "Does not guard against zero AverageRangerStrength."
     function GetRangerRatingBand: Byte; // @addr 0x77C100 @note "Zero for non-rangers; otherwise 1..5 from the rounded experience-rank percentile. Uses all galaxy rangers, including excluded entries."
-    function GetCaptainPortraitResourceBase: WideString; // @addr 0x750A40 @ida "void __usercall $name(TShip *Self@<eax>, unsigned __int16 **Result@<edx>);" @note "May assign PortraitFaceId lazily. Returns a resource base without the GI prefix or animation suffix."
+    function GetCaptainPortraitResourceBase: WideString; // @addr 0x750A40 @note "May assign PortraitFaceId lazily. Returns a resource base without the GI prefix or animation suffix."
     function IsInPrison: Boolean; // @addr 0x75CA70
     function GetPrisonTermRemaining: Integer; // @addr 0x75CAE8 @note "Rangers and pirates only; other classes return zero."
     procedure ClearPrisonTerm; // @addr 0x75CB40
@@ -368,11 +368,11 @@ type
     function NextRandomInteger(Minimum, Maximum: Integer): Integer; // @addr 0x74F384
     function GetTurnSeedFraction(TurnOffset: Integer): Single; // @addr 0x74FE0C @note "Fractional part of signed Seed divided by CurrentTurn + TurnOffset; denominator must be nonzero. Does not advance RandomState."
     function GetWealthScaledAmount(ScaleIndex: Byte): Integer; // @addr 0x750888 @note "Uses cached Wealth and the configured scale table; no index validation."
-    function GetTypeNameKey: WideString; virtual; // @addr 0x74F0B0 @slot 0x2C @calls "0x777F3D 0x730B93" @ida "void __usercall $name(TShip *Self@<eax>, unsigned __int16 **Result@<edx>);"
-    function GetLocalizedTypeName: WideString; // @addr 0x74F0D8 @ida "void __usercall $name(TShip *Self@<eax>, unsigned __int16 **Result@<edx>);"
-    function GetFactionNameKey: WideString; // @addr 0x74F20C @ida "void __usercall $name(TShip *Self@<eax>, unsigned __int16 **Result@<edx>);"
-    function GetSpaceInfoText: WideString; // @addr 0x74F3B4 @ida "void __usercall $name(TShip *Self@<eax>, unsigned __int16 **Result@<edx>);" @note "Requires a player; includes current order, hull, speed and relation information."
-    function GetShipPortraitImagePath: WideString; // @addr 0x750954 @ida "void __usercall $name(TShip *Self@<eax>, unsigned __int16 **Result@<edx>);" @note "Leaves the result storage unchanged when Graphic is not a supported graphic class."
+    function GetTypeNameKey: WideString; virtual; // @addr 0x74F0B0 @slot 0x2C @calls "0x777F3D 0x730B93"
+    function GetLocalizedTypeName: WideString; // @addr 0x74F0D8
+    function GetFactionNameKey: WideString; // @addr 0x74F20C
+    function GetSpaceInfoText: WideString; // @addr 0x74F3B4 @note "Requires a player; includes current order, hull, speed and relation information."
+    function GetShipPortraitImagePath: WideString; // @addr 0x750954 @note "Leaves the result storage unchanged when Graphic is not a supported graphic class."
     procedure RefreshGraphicSize; // @addr 0x7600C4 @note "Requires Graphic; chooses dimensions from ship class, hull and special equipment."
     function GetCargoGoodsWeight: Integer; // @addr 0x76086C
     function CalculateFollowRadius: Integer; // @addr 0x7608A0 @note "Requires a follow order; uses weapon ranges or the ships' collision radii."
@@ -395,9 +395,9 @@ type
     function GetWeaponArtefactDamageFactor(Weapon: TWeapon): Single; // @addr 0x763F98
     procedure RefreshEquipmentEvaluationMetrics; // @addr 0x7642BC
     function EvaluateItem(Item: TItem; PriceMode: Byte): Single; // @addr 0x7645E0
-    function AdjustItemEvaluation(Item: TItem; PriceMode: Byte; Effectiveness: Single): Single; virtual; // @addr 0x76461C @slot 0x50 @ida "float __userpurge $name@<st0>(TShip *Self@<eax>, TItem *Item@<edx>, unsigned __int8 PriceMode@<cl>, float Effectiveness@<^0>);" @note "Price modes: 1 negated item cost, 3 resale value, 4 item cost; other modes omit the price term. Mode 0 also omits weight/fragility penalties; the supplied effectiveness is recomputed."
+    function AdjustItemEvaluation(Item: TItem; PriceMode: Byte; Effectiveness: Single): Single; virtual; // @addr 0x76461C @slot 0x50 @note "Price modes: 1 negated item cost, 3 resale value, 4 item cost; other modes omit the price term. Mode 0 also omits weight/fragility penalties; the supplied effectiveness is recomputed."
     function EvaluateStatBonus(BonusKind: TEquipmentBonusKind; Value: Integer): Single; virtual; // @addr 0x764AA8 @slot 0x54
-    function EvaluateWeaponDamage(Weapon: TWeapon; IncludeAdditiveBonuses: Boolean; BaseDamage: Single): Single; virtual; // @addr 0x7656F8 @slot 0x58 @ida "float __userpurge $name@<st0>(TShip *Self@<eax>, TWeapon *Weapon@<edx>, bool IncludeAdditiveBonuses@<cl>, float BaseDamage@<^0>);"
+    function EvaluateWeaponDamage(Weapon: TWeapon; IncludeAdditiveBonuses: Boolean; BaseDamage: Single): Single; virtual; // @addr 0x7656F8 @slot 0x58
     function EvaluateMicroModuleGain(Item: TEquipment; ModuleIndex: Integer): Single; virtual; // @addr 0x765D28 @slot 0x5C @note "Evaluates a temporary clone; restores NextItemId but leaves LoadedSaveVersion set to CurrentSaveVersion. ModuleIndex is zero-based."
     procedure AutoApplyMicroModules; // @addr 0x765ECC @note "Consumes beneficial carried modules, preferring installed equipment; refreshes derived stats after each application."
     procedure DropCargoUntilNotOverloaded; // @addr 0x766550 @note "Sells at a location or jettisons in space. May flag a long-stranded NPC for destruction when overload cannot be resolved."
@@ -414,13 +414,13 @@ type
 
     // Except OrderJumpHole, new orders respect AbsoluteScriptOrder.
     procedure OrderNone(OverrideScriptOrder: Boolean); // @addr 0x76C434
-    procedure OrderMove(Destination: TPointF; Absolute: Boolean); // @addr 0x76C480 @ida "void __usercall $name(TShip *Self@<eax>, TPointF *Destination@<edx>, bool Absolute@<cl>);"
+    procedure OrderMove(Destination: TPointF; Absolute: Boolean); // @addr 0x76C480
     procedure OrderJump(Star: TStar; Absolute: Boolean); // @addr 0x76C6F8
     procedure OrderJumpHole(Hole: THole; Absolute: Boolean); // @addr 0x76C7A0 @note "Does not check AbsoluteScriptOrder."
     procedure OrderLanding(Location: TObject; Absolute: Boolean); // @addr 0x76C8B4 @note "Location is a planet or dockable ship."
     procedure OrderTakeoff; // @addr 0x76C940
     procedure OrderFollowShip(Ship: TShip; FollowMode: Byte; Absolute: Boolean); // @addr 0x76CE94
-    procedure OrderTeleport(Star: TStar; Destination: TPointF; TransitionData: Integer; Absolute: Boolean); // @addr 0x76C848 @ida "void __userpurge $name(TShip *Self@<eax>, TStar *Star@<edx>, TPointF *Destination@<ecx>, int TransitionData@<^4>, bool Absolute@<^0>);"
+    procedure OrderTeleport(Star: TStar; Destination: TPointF; TransitionData: Integer; Absolute: Boolean); // @addr 0x76C848
     procedure ClearMovementPath; // @addr 0x774104
     function HasLockedOrFollowOrder: Boolean; // @addr 0x750070 @note "True for OrderAbsolute, AbsoluteScriptOrder, or a follow-ship order."
     procedure CancelInvalidTravelOrder; // @addr 0x752B8C @note "Checks only ships in star space; clears the player auto-follow target when cancelling."
@@ -440,13 +440,13 @@ type
     function EstimateTravelTurnsToPlanet(Planet: TPlanet): Integer; // @addr 0x75415C @note "Returns -1 for zero speed, nil planet/star, or a different star."
     function CanDock(Ship: TShip): Boolean; virtual; // @addr 0x77F4B8 @slot 0xC8 @note "Base implementation always returns false."
     function CalculateJumpTravelDays(Origin, Destination: TStar): Integer; // @addr 0x76C678 @note "Minimum two days; independent of equipment and fuel."
-    function GetJumpDeparturePoint(Destination: TStar): TPointF; // @addr 0x76C4F8 @ida "void __usercall $name(TShip *Self@<eax>, TStar *Destination@<edx>, TPointF *Result@<ecx>);"
+    function GetJumpDeparturePoint(Destination: TStar): TPointF; // @addr 0x76C4F8
 
-    function LookupTalkText(const Path: WideString): WideString; // @addr 0x776C98 @ida "void __usercall $name(TShip *Self@<eax>, unsigned __int16 *Path@<edx>, unsigned __int16 **Result@<ecx>);" @note "Selects among at most ten contiguous variants using ship seed and turn; substitutes ship names and HomePlanet. Missing text returns an unavailable marker."
-    function LookupVisibleTalkText(const Path: WideString; OtherShip: TShip): WideString; // @addr 0x750178 @ida "void __userpurge $name(TShip *Self@<eax>, unsigned __int16 *Path@<edx>, TShip *OtherShip@<ecx>, unsigned __int16 **Result@<^0>);" @note "Returns empty unless the player shares CurrentStar. Substitutes OtherShip for <TalkShip>."
+    function LookupTalkText(const Path: WideString): WideString; // @addr 0x776C98 @note "Selects among at most ten contiguous variants using ship seed and turn; substitutes ship names and HomePlanet. Missing text returns an unavailable marker."
+    function LookupVisibleTalkText(const Path: WideString; OtherShip: TShip): WideString; // @addr 0x750178 @note "Returns empty unless the player shares CurrentStar. Substitutes OtherShip for <TalkShip>."
     function RelationToShip(Ship: TShip): TPercent; // @addr 0x77F4F4
     function GetRelationLevelToShip(Ship: TShip): TRelationLevel; // @addr 0x75BE58
-    function GetRelationLevelTextToShip(Ship: TShip): WideString; // @addr 0x75BEC0 @ida "void __usercall $name(TShip *Self@<eax>, TShip *Ship@<edx>, unsigned __int16 **Result@<ecx>);" @note "Stations can display their stored ranger relation instead of the effective relation."
+    function GetRelationLevelTextToShip(Ship: TShip): WideString; // @addr 0x75BEC0 @note "Stations can display their stored ranger relation instead of the effective relation."
 
     function InNormalSpace: Boolean; // @addr 0x7529F0
     function IsOutsideStarSpace: Boolean; // @addr 0x752A78 @note "True without a current star, while docked/in hyperspace, or with a saved player ruins docking target."
@@ -462,7 +462,7 @@ type
     procedure FireWeaponAtShip(Weapon: TWeapon; Target: TShip; RecordFilm: Boolean); // @addr 0x757D20 @note "Can affect additional ships through chained, area or penetrating fire."
     procedure FireWeaponAtItem(Weapon: TWeapon; Target: TItem; RecordFilm: Boolean); // @addr 0x7590FC @note "Weapon may be nil. Script handlers can change the target; a destroyed item may explode and be freed."
     function ApplyDamage(Source: TObject; Damage: Integer; HitRange: Single; out DamageColor: Cardinal; DamageFlags: TDamageFlagSet): Integer; // @addr 0x7544DC @ida "int __userpurge $name@<eax>(TShip *Self@<eax>, TObject *Source@<edx>, int Damage@<ecx>, float HitRange@<^8>, unsigned int *DamageColor@<^4>, unsigned int DamageFlags@<^0>);" @note "Source may be nil, ship or missile. HitRange=-1 selects direct-hit rules; other values select area-hit rules. Returns adjusted damage, zero for rejection, or negative damage for an impulse-shield block; not actual hull loss. May run death handling without freeing Self."
-    function ApplyWeaponHit(Source: TShip; Weapon: TWeapon; HitRange: Single; out DamageColor: Cardinal; out DamageFlags: Dword; DamageScale: Single; FixedDamage: Integer): Integer; // @addr 0x756768 @ida "int __userpurge $name@<eax>(TShip *Self@<eax>, TShip *Source@<edx>, TWeapon *Weapon@<ecx>, float HitRange@<^16>, unsigned int *DamageColor@<^12>, unsigned int *DamageFlags@<^8>, float DamageScale@<^4>, int FixedDamage@<^0>);" @note "Returns ApplyDamage's signed result. Positive FixedDamage bypasses the initial roll/armor stage unless weapon flag 0x800 is already set; later effects still apply."
+    function ApplyWeaponHit(Source: TShip; Weapon: TWeapon; HitRange: Single; out DamageColor: Cardinal; out DamageFlags: Dword; DamageScale: Single; FixedDamage: Integer): Integer; // @addr 0x756768 @note "Returns ApplyDamage's signed result. Positive FixedDamage bypasses the initial roll/armor stage unless weapon flag 0x800 is already set; later effects still apply."
     function ApplyMissileHit(Missile: TObject; out DamageColor: Cardinal; out DamageFlags: Dword): Integer; // @addr 0x756E4C @note "Requires a TMissile; returns ApplyDamage's signed result."
     function ApplyInterceptorDamage(out DamageColor: Cardinal): Integer; // @addr 0x759A40 @note "Uses InterceptorSourceShip; absent source gives base damage 25. Returns ApplyDamage's signed result."
     function GetInterceptorDamage: Integer; // @addr 0x77D7F8
@@ -510,9 +510,9 @@ type
     procedure ClearWeaponTargets(Target: TObject); // @addr 0x75B2A0 @note "Nil clears every cached weapon target; otherwise clears only matches."
     function IsAttackingShip(Target: TShip): Boolean; // @addr 0x75B334 @note "Includes weapon targets, interceptor attribution and shock/acid source IDs; requires non-nil Target."
     function CanSafelyDetonateItem(Item: TItem): Boolean; // @addr 0x75BBFC @note "Rejects bomb/explosive cargo near non-hostile normal-space ships, including Self. Does not test shot range."
-    function GetWeaponDamageSummary: WideString; // @addr 0x75ABBC @ida "void __usercall $name(TShip *Self@<eax>, unsigned __int16 **Result@<edx>);"
-    function GetManeuverabilitySummary: WideString; // @addr 0x75AED0 @ida "void __usercall $name(TShip *Self@<eax>, unsigned __int16 **Result@<edx>);"
-    function GetRepairPointsSummary: WideString; // @addr 0x75AF6C @ida "void __usercall $name(TShip *Self@<eax>, unsigned __int16 **Result@<edx>);"
+    function GetWeaponDamageSummary: WideString; // @addr 0x75ABBC
+    function GetManeuverabilitySummary: WideString; // @addr 0x75AED0
+    function GetRepairPointsSummary: WideString; // @addr 0x75AF6C
     function HasScannerArtefact(UnusedTarget: TShip): Boolean; // @addr 0x75AFF4 @note "Callers pass the target ship in EDX. This routine ignores it and only checks Self's active scanner artefact count."
     function GetWeaponActionRange(Weapon: TWeapon): Integer; // @addr 0x75B018 @note "Same result as GetWeaponRange in this binary."
     function HasNoUsableWeapons: Boolean; // @addr 0x77D904
@@ -565,10 +565,10 @@ type
     function SelectCheapestCargoGood: Byte; // @addr 0x7683FC @note "Returns 255 if no cargo qualifies."
     procedure LiquidateInventoryItem(Item: TItem); // @addr 0x768978 @note "Normally credits resale value and frees Item; eligible NPC node stacks instead feed DepositCarriedNodes and automatic training."
     procedure LiquidateArtefact(Item: TArtefact); // @addr 0x768AA0 @note "Removes and frees Item after crediting resale value."
-    procedure ApplyCombatItemDegradation(BaseDurabilityDamage: Double); // @addr 0x768D00 @ida "void __userpurge $name(TShip *Self@<eax>, double BaseDurabilityDamage@<^0>);"
-    procedure ApplyArtefactUseDegradation(BaseDurabilityDamage: Double); // @addr 0x768F9C @ida "void __userpurge $name(TShip *Self@<eax>, double BaseDurabilityDamage@<^0>);"
+    procedure ApplyCombatItemDegradation(BaseDurabilityDamage: Double); // @addr 0x768D00
+    procedure ApplyArtefactUseDegradation(BaseDurabilityDamage: Double); // @addr 0x768F9C
     procedure ApplyAfterburnerItemDegradation; // @addr 0x769068
-    function ApplyItemDegradation(Item: TEquipment; Kind: TItemDegradationKind; DurabilityDamage: Double): Boolean; // @addr 0x769100 @ida "bool __userpurge $name@<al>(TShip *Self@<eax>, TEquipment *Item@<edx>, TItemDegradationKind Kind@<cl>, double DurabilityDamage@<^0>);" @note "True only when the item becomes newly broken. Nil is accepted; script actions 36..39 can modify the damage."
+    function ApplyItemDegradation(Item: TEquipment; Kind: TItemDegradationKind; DurabilityDamage: Double): Boolean; // @addr 0x769100 @note "True only when the item becomes newly broken. Nil is accepted; script actions 36..39 can modify the damage."
     function CanGenerateMicroModuleForLoadout: Boolean; // @addr 0x7695FC
     function CanGenerateSpecialHullModule: Boolean; // @addr 0x769738 @note "True for the player or when the current hull already has a special module."
     procedure ImproveRandomEquipment(ResolveOverload: Boolean); // @addr 0x76976C
@@ -669,20 +669,20 @@ type
     procedure SimulateNpcHealthEffects; // @addr 0x77C5D8
     procedure ClearCombatStatusEffects; // @addr 0x77DDC0 @note "Frees entries but keeps the list."
     function FindCombatStatusEffect(EffectType: TCombatStatusEffectType): Integer; // @addr 0x77DB28 @note "Returns the list index, or -1."
-    procedure AddCombatStatusStrength(EffectType: TCombatStatusEffectType; Strength: Single; Source: TShip); // @addr 0x77DBA4 @ida "void __userpurge $name(TShip *Self@<eax>, TCombatStatusEffectType EffectType@<dl>, float Strength@<^0>, TShip *Source@<ecx>);" @note "Scales by hull and existing strength. Always replaces the source ID, including clearing it for nil Source; no sign validation."
-    procedure ReduceCombatStatusStrength(EffectType: TCombatStatusEffectType; Amount: Single); // @addr 0x77DD24 @ida "void __userpurge $name(TShip *Self@<eax>, TCombatStatusEffectType EffectType@<dl>, float Amount@<^0>);" @note "Removes only entries reduced below zero; exactly zero remains. Negative Amount increases strength."
+    procedure AddCombatStatusStrength(EffectType: TCombatStatusEffectType; Strength: Single; Source: TShip); // @addr 0x77DBA4 @note "Scales by hull and existing strength. Always replaces the source ID, including clearing it for nil Source; no sign validation."
+    procedure ReduceCombatStatusStrength(EffectType: TCombatStatusEffectType; Amount: Single); // @addr 0x77DD24 @note "Removes only entries reduced below zero; exactly zero remains. Negative Amount increases strength."
     procedure DecayCombatStatusEffects; // @addr 0x77DE1C @note "Daily decay; exactly zero remains until a subsequent reduction."
-    function GetShockStatusDecay(Strength: Single): Single; // @addr 0x77DF7C @ida "float __userpurge $name@<st0>(TShip *Self@<eax>, float Strength@<^0>);"
-    function GetAcidStatusDecay(UnusedStrength: Single): Single; // @addr 0x77E030 @ida "float __userpurge $name@<st0>(TShip *Self@<eax>, float UnusedStrength@<^0>);"
-    function GetMagneticStatusDecay(Strength: Single): Single; // @addr 0x77E0F8 @ida "float __userpurge $name@<st0>(TShip *Self@<eax>, float Strength@<^0>);"
-    function GetWeaponBlockStatusDecay(Strength: Single): Single; // @addr 0x77E160 @ida "float __userpurge $name@<st0>(TShip *Self@<eax>, float Strength@<^0>);"
-    function GetDroidBlockStatusDecay(Strength: Single): Single; // @addr 0x77E184 @ida "float __userpurge $name@<st0>(TShip *Self@<eax>, float Strength@<^0>);"
-    function GetBWBuffStatusDecay(Strength: Single): Single; // @addr 0x77E1A8 @ida "float __userpurge $name@<st0>(TShip *Self@<eax>, float Strength@<^0>);"
-    function GetBWRepairDebuffStatusDecay(Strength: Single): Single; // @addr 0x77E1E0 @ida "float __userpurge $name@<st0>(TShip *Self@<eax>, float Strength@<^0>);"
+    function GetShockStatusDecay(Strength: Single): Single; // @addr 0x77DF7C
+    function GetAcidStatusDecay(UnusedStrength: Single): Single; // @addr 0x77E030
+    function GetMagneticStatusDecay(Strength: Single): Single; // @addr 0x77E0F8
+    function GetWeaponBlockStatusDecay(Strength: Single): Single; // @addr 0x77E160
+    function GetDroidBlockStatusDecay(Strength: Single): Single; // @addr 0x77E184
+    function GetBWBuffStatusDecay(Strength: Single): Single; // @addr 0x77E1A8
+    function GetBWRepairDebuffStatusDecay(Strength: Single): Single; // @addr 0x77E1E0
     procedure ClearCombatStatusSourceReferences(Source: TShip); // @addr 0x77E218 @note "Requires non-nil Source; clears matching IDs without changing effect strengths."
     function GetCombatStatusStrength(EffectType: TCombatStatusEffectType): Single; // @addr 0x77E29C @note "Zero when absent."
     function GetCombatStatusSourceId(EffectType: TCombatStatusEffectType): Integer; // @addr 0x77E2E0 @note "Zero when absent or unattributed."
-    function GetCombatStatusDescription(out Count: Integer; ShowStrength: Boolean): WideString; // @addr 0x77E43C @ida "void __userpurge $name(TShip *Self@<eax>, int *Count@<edx>, bool ShowStrength@<cl>, unsigned __int16 **Result@<^0>);" @note "Includes rounded-positive shock, acid, magnetic, BW buff and custom status entries; omits transient blocking effects."
+    function GetCombatStatusDescription(out Count: Integer; ShowStrength: Boolean): WideString; // @addr 0x77E43C @note "Includes rounded-positive shock, acid, magnetic, BW buff and custom status entries; omits transient blocking effects."
 
     function GetBaseSkillLevel(Skill: TPilotSkill): Byte; // @addr 0x77BA78
     function GetEffectiveSkillLevel(Skill: TPilotSkill; IgnoreStatusEffects: Boolean = False): TPilotSkillLevel; // @addr 0x77BAA0 @note "Clamps to 0..6; equipment bonuses still apply when status effects are ignored."
@@ -4108,7 +4108,7 @@ var
   Reflect: Boolean;
 
   // @nested $757790 ApplyChainExplosion
-  function ApplyChainExplosion(ExplodingShip: TShip): Integer; // @addr 0x757790 @ida "int __usercall $name@<eax>(TShip *ExplodingShip@<eax>, void *ParentFrame@<^0>);" @note "Caller-popped static link; recursively damages nearby hostiles. Returns the accumulated signed damage results."
+  function ApplyChainExplosion(ExplodingShip: TShip): Integer; // @addr 0x757790 @note "Caller-popped static link; recursively damages nearby hostiles. Returns the accumulated signed damage results."
   var
     I: Integer;
     Ship: TShip;
@@ -9145,7 +9145,7 @@ var
   end;
 
   // @nested $76A350 TemporarilyUnequipWeapon
-  procedure TemporarilyUnequipWeapon(Weapon: TWeapon); // @addr 0x76A350 @ida "void __usercall $name(TWeapon *Weapon@<eax>, void *ParentFrame@<^0>);" @note "Caller-popped static link; ship -4, fallback weapon -8; saves five weapon pointers and target at -32."
+  procedure TemporarilyUnequipWeapon(Weapon: TWeapon); // @addr 0x76A350 @note "Caller-popped static link; ship -4, fallback weapon -8; saves five weapon pointers and target at -32."
   var WeaponIndex, J: Integer; Selected: TWeapon;
   begin
     Selected := Weapon;
@@ -9714,7 +9714,7 @@ var
   Item: TItem;
   Added: Boolean;
 // @nested $76BEE4 AcceptPickupTarget
-function AcceptPickupTarget(Item: TItem): Boolean; // @addr 0x76BEE4 @ida "bool __usercall $name@<al>(TItem *Item@<eax>, void *ParentFrame@<^0>);" @note "Caller-popped static link; mode -1, ship -8."
+function AcceptPickupTarget(Item: TItem): Boolean; // @addr 0x76BEE4 @note "Caller-popped static link; mode -1, ship -8."
 begin
   Result := False;
   if IgnoreRange then
@@ -10086,7 +10086,7 @@ var
   CanLand: Boolean;
   Effect: TObjectSE;
 // @nested $76CF2C InitializeFilm
-procedure InitializeFilm(Alpha: Byte); // @addr 0x76CF2C @ida "void __usercall $name(unsigned __int8 Alpha@<al>, void *ParentFrame@<^0>);" @note "Caller-popped static link; step index -4, ship -8."
+procedure InitializeFilm(Alpha: Byte); // @addr 0x76CF2C @note "Caller-popped static link; step index -4, ship -8."
 begin
   TEFilm(PrimaryFilm).SetObjectPosition(StartStepIndex, FilmObject, Position);
   TEFilm(PrimaryFilm).SetObjectAngle(StartStepIndex, FilmObject, HeadingDegreesToByte(MovementDirection));
@@ -12179,7 +12179,7 @@ function TShip.CanBoostArtefact(ArtefactType: Byte; Item: TEquipment; IgnoreArte
 var Equipment: TEquipment;
 
   // @nested $775CD4 IsArtefactBoostEquipment
-  function IsArtefactBoostEquipment(Item: TEquipment): Boolean; // @addr $775CD4 @ida "bool __usercall $name@<al>(TEquipment *Item@<eax>, void *ParentFrame@<^0>);" @note "Nested in CanBoostArtefact with unused caller-popped static link. OwnerId=6 and empty CustomFaction; nil returns false."
+  function IsArtefactBoostEquipment(Item: TEquipment): Boolean; // @addr $775CD4 @note "Nested in CanBoostArtefact with unused caller-popped static link. OwnerId=6 and empty CustomFaction; nil returns false."
   begin
     Result := (Item <> nil) and (Item.OwnerId = Byte(oiUninhabited)) and (Item.CustomFaction = '');
   end;
@@ -12286,7 +12286,7 @@ procedure TShip.ApplyNanoArtefactRepair;
 var Item: TEquipment; I, EquippedCount, UnequippedCount: Integer;
 
   // @nested $776730 SelectOrdinal
-  procedure SelectOrdinal(Ordinal: Integer; Equipped: Boolean); // @addr 0x776730 @ida "void __usercall $name(int Ordinal@<eax>, bool Equipped@<dl>, void *ParentFrame@<^0>);" @note "Caller-popped static link; ship -4, selected-item output -8."
+  procedure SelectOrdinal(Ordinal: Integer; Equipped: Boolean); // @addr 0x776730 @note "Caller-popped static link; ship -4, selected-item output -8."
   var Index, Count: Integer;
   begin
     Count := 0;
@@ -12300,7 +12300,7 @@ var Item: TEquipment; I, EquippedCount, UnequippedCount: Integer;
   end;
 
   // @nested $7767A8 SelectRepairable
-  procedure SelectRepairable(Count: Integer; Equipped: Boolean); // @addr 0x7767A8 @ida "void __usercall $name(int Count@<eax>, bool Equipped@<dl>, void *ParentFrame@<^0>);" @note "Caller-popped static link; ship -4, selected-item output -8. At most 30 deterministic selections."
+  procedure SelectRepairable(Count: Integer; Equipped: Boolean); // @addr 0x7767A8 @note "Caller-popped static link; ship -4, selected-item output -8. At most 30 deterministic selections."
   const RepairableTypes = [0..79] - [0..7, 9, 23..25, 35..38, 42, 69..72, 74..79];
   var Attempt: Integer;
   begin
@@ -12358,7 +12358,7 @@ function TShip.LookupTalkText(const Path: WideString): WideString;
 var Count, I: Integer; Key: WideString; Variants: array[0..9] of WideString;
 
   // @nested $776BF0 GetTalkContextPrefix
-  function GetTalkContextPrefix(Ship: TShip): WideString; // @addr $776BF0 @ida "void __usercall $name(TShip *Ship@<eax>, unsigned __int16 **Result@<edx>, void *ParentFrame@<^0>);"
+  function GetTalkContextPrefix(Ship: TShip): WideString; // @addr $776BF0
   begin
     Result := 'Talk.';
     if (Ship.OwnerId = Byte(oiPirate)) and (Ship is TNormalShip) then Result := Result + 'PirateClan.'
@@ -13638,7 +13638,7 @@ var
   Ship, Current: TShip;
   Strategy: TInterceptorTargetingStrategy;
 // @nested $77D188 IsBetterInterceptorTarget
-function IsBetterInterceptorTarget(Current, Candidate: TShip; Strategy: TInterceptorTargetingStrategy): Boolean; // @addr 0x77D188 @ida "bool __usercall $name@<al>(TShip *Current@<eax>, TShip *Candidate@<edx>, TInterceptorTargetingStrategy Strategy@<cl>, void *ParentFrame@<^0>);" @note "Caller-popped static link; source ship at -4 for distance strategies."
+function IsBetterInterceptorTarget(Current, Candidate: TShip; Strategy: TInterceptorTargetingStrategy): Boolean; // @addr 0x77D188 @note "Caller-popped static link; source ship at -4 for distance strategies."
 begin
   case Strategy of
     itsMostHullPoints: Result := Candidate.GetHull.HullPoints > Current.GetHull.HullPoints;
@@ -14057,7 +14057,7 @@ var
   Strength, I: Integer;
   Info: PCustomShipInfo;
 // @nested $77E324 AppendStatusLine
-procedure AppendStatusLine(TextKey: WideString); // @addr 0x77E324 @ida "void __usercall $name(unsigned __int16 *TextKey@<eax>, void *ParentFrame@<^0>);" @note "Caller-popped static link; show-strength flag -1, strength -8, count output -12, string-result output +8."
+procedure AppendStatusLine(TextKey: WideString); // @addr 0x77E324 @note "Caller-popped static link; show-strength flag -1, strength -8, count output -12, string-result output +8."
 begin
   if Result <> '' then Result := Result + #13#10 + LocalizedText(TextKey)
   else Result := LocalizedText(TextKey);

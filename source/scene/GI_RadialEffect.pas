@@ -37,19 +37,19 @@ type
     LatticeOffset: TPointF; // @offset $158
     PositionInitialized: Boolean; // @offset $160
 
-    constructor Create(Owner: TObjectGI; APaletteIndex: Integer); // @addr $69B424 @ida "TPSRadEffectGI *__userpurge $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, TObjectGI *Owner@<ecx>, int APaletteIndex@<^0>);"
-    destructor Destroy; override; // @addr $69B4F4 @ida "void __usercall $name(TPSRadEffectGI *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create(Owner: TObjectGI; APaletteIndex: Integer); // @addr $69B424
+    destructor Destroy; override; // @addr $69B4F4
     procedure SetColor(Value: Word); // @addr $69B530
-    procedure SetPosition(Position: TPoint); override; // @addr $69B550 @ida "void __usercall $name(TPSRadEffectGI *Self@<eax>, TPoint *Position@<edx>);"
-    procedure SetTargetPoint(Point: TPoint); override; // @addr $69B740 @ida "void __usercall $name(TPSRadEffectGI *Self@<eax>, TPoint *Point@<edx>);"
+    procedure SetPosition(Position: TPoint); override; // @addr $69B550
+    procedure SetTargetPoint(Point: TPoint); override; // @addr $69B740
     procedure UpdateProjectionBounds; // @addr $69B794
     procedure UpdateHitTestBounds; override; // @addr $69B80C
-    function GetLocalBounds: TRect; override; // @addr $69B86C @ida "void __usercall $name(TPSRadEffectGI *Self@<eax>, TRect *Result@<edx>);"
+    function GetLocalBounds: TRect; override; // @addr $69B86C
     function AddParticle: PRadiationParticle; // @addr $69B8D0
     procedure ClearParticles; // @addr $69B948
-    procedure InvalidateRect(Rect: TRect); override; // @addr $69B99C @ida "void __usercall $name(TPSRadEffectGI *Self@<eax>, TRect *Rect@<edx>);"
+    procedure InvalidateRect(Rect: TRect); override; // @addr $69B99C
     procedure Advance(Timer: PCallbackTimerGI; UserData: Integer); override; // @addr $69BA68
-    procedure Draw(ClipRect: TRect); override; // @addr $69C4B0 @ida "void __usercall $name(TPSRadEffectGI *Self@<eax>, TRect *ClipRect@<edx>);"
+    procedure Draw(ClipRect: TRect); override; // @addr $69C4B0
   end;
 
 procedure LoadRadiationPalettes; // @addr $69C7BC
@@ -280,13 +280,13 @@ var
   DistanceSquared, FadeRadius, CenterX, CenterY: Integer;
 
   // @nested $69BF88 RadiationRingColor
-  function RadiationRingColor(Value: Integer): Cardinal; // @addr $69BF88 @ida "unsigned int __usercall $name@<eax>(int Value@<eax>, void *ParentFrame@<^0>);" @stackpop 0 @calls "0x0069C3A2, 0x0069C198"
+  function RadiationRingColor(Value: Integer): Cardinal; // @addr $69BF88 @calls "0x0069C3A2, 0x0069C198"
   begin
     Result := SampleGradientColor(RadiationPalettes[PaletteIndex], Sqr(Value / 255.0));
   end;
 
   // @nested $69BFDC RadiationRingAlpha
-  function RadiationRingAlpha(Distance: Single): Integer; // @addr $69BFDC @ida "int __userpurge $name@<eax>(float Distance@<^0>, void *ParentFrame@<^4>);" @stackpop 4 @calls "0x0069C388, 0x0069C17E"
+  function RadiationRingAlpha(Distance: Single): Integer; // @addr $69BFDC @calls "0x0069C388, 0x0069C17E"
   begin
     if Distance > 0 then Result := Round(Math.Max(0, Alpha - Sqr(Distance) * 10.0))
     else if Distance > -10.0 then Result := Round(Math.Max(0, 10.0 * Distance + Alpha))
@@ -294,7 +294,7 @@ var
   end;
 
   // @nested $69C148 QueueRadiationOctants
-  procedure QueueRadiationOctants(X, Y: Integer); // @addr $69C148 @ida "void __usercall $name(int X@<eax>, int Y@<edx>, void *ParentFrame@<^0>);" @stackpop 0 @calls "0x0069C65F"
+  procedure QueueRadiationOctants(X, Y: Integer); // @addr $69C148 @calls "0x0069C65F"
   var
     PixelColor: Cardinal;
     PixelAlpha: Integer;
@@ -329,13 +329,13 @@ var
   Edge: Integer;
 
   // @nested $69C338 BlendRadiationOctants
-  procedure BlendRadiationOctants(X, Y: Integer); // @addr $69C338 @ida "void __usercall $name(int X@<eax>, int Y@<edx>, void *ParentFrame@<^0>);" @stackpop 0 @calls "0x0069C7A9"
+  procedure BlendRadiationOctants(X, Y: Integer); // @addr $69C338 @calls "0x0069C7A9"
   var
     PixelColor: Cardinal;
     PixelAlpha: Integer;
 
     // @nested $69C2D0 BlendRadiationPoint
-    procedure BlendRadiationPoint(X, Y: Integer); // @addr $69C2D0 @ida "void __usercall $name(int X@<eax>, int Y@<edx>, void *ParentFrame@<^0>);" @stackpop 0 @calls "0x0069C3C6, 0x0069C3E3, 0x0069C40A, 0x0069C425, 0x0069C446, 0x0069C463, 0x0069C48A, 0x0069C4A5"
+    procedure BlendRadiationPoint(X, Y: Integer); // @addr $69C2D0 @calls "0x0069C3C6, 0x0069C3E3, 0x0069C40A, 0x0069C425, 0x0069C446, 0x0069C463, 0x0069C48A, 0x0069C4A5"
     begin
       if (ClipRect.Left <= X) and (ClipRect.Right > X) and (ClipRect.Top <= Y) and (ClipRect.Bottom > Y) then
         ScreenRenderBuffer.BlendPixel16(X, Y, PixelColor, PixelAlpha);

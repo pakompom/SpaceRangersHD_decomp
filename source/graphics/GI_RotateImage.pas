@@ -12,16 +12,16 @@ type
     RotationCache: TCRotateBufControlEC; // @offset 0x124
     Angle: Byte; // @offset 0x128
 
-    constructor Create(Owner: TObjectGI); // @addr 0x493AC0 @ida "TRotateImageGI *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, TObjectGI *Owner@<ecx>);"
-    destructor Destroy; override; // @addr 0x493B5C @ida "void __usercall $name(TRotateImageGI *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create(Owner: TObjectGI); // @addr 0x493AC0
+    destructor Destroy; override; // @addr 0x493B5C
     procedure Clear; override; // @addr 0x493BC0 @note "Preserves both cache keys."
     procedure SetAngle(Value: Byte); // @addr 0x493BDC @note "A full turn has 256 steps."
     procedure UpdateHitTestBounds; override; // @addr 0x493C44 @note "Leaves bounds unchanged when the rotation cache key is empty."
-    function GetLocalBounds: TRect; override; // @addr 0x493CDC @ida "void __usercall $name(TRotateImageGI *Self@<eax>, TRect *Result@<edx>);" @note "Leaves Result unwritten when the rotation cache key is empty."
-    procedure SetImage(Path: WideString; ImageSize: TPoint); // @addr 0x493D74 @ida "void __usercall $name(TRotateImageGI *Self@<eax>, unsigned __int16 *Path@<edx>, TPoint *ImageSize@<ecx>);" @note "Uses the current Origin as the rotation pivot."
+    function GetLocalBounds: TRect; override; // @addr 0x493CDC @note "Leaves Result unwritten when the rotation cache key is empty."
+    procedure SetImage(Path: WideString; ImageSize: TPoint); // @addr 0x493D74 @note "Uses the current Origin as the rotation pivot."
     procedure LoadFromConfigPath(const Path: WideString); override; // @addr 0x493F00
     procedure LoadFromBlock(Block: TBlockParEC); override; // @addr 0x494048
-    procedure Draw(ClipRect: TRect); override; // @addr 0x494170 @ida "void __usercall $name(TRotateImageGI *Self@<eax>, TRect *ClipRect@<edx>);"
+    procedure Draw(ClipRect: TRect); override; // @addr 0x494170
     procedure QueueImageLoad(PendingLoads: TList); override; // @addr 0x4942E0
   end;
 

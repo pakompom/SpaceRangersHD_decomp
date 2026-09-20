@@ -13,7 +13,7 @@ type
     procedure Open; // @addr $4D8B9C Changes idle state 0 to opening state 1.
     procedure Close; // @addr $4D8BD8 Changes open state 2 to closing state 3.
     procedure SetState(Value: Integer); // @addr $4D8C14 Resets StateStep and rebuilds attached graphics.
-    constructor Create(GraphKey: WideString; UnusedPosition: TPoint); // @addr $4D86B0 @ida "TGateSE *__userpurge $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, unsigned __int16 *GraphKey@<ecx>, TPoint *UnusedPosition@<^0>);"
+    constructor Create(GraphKey: WideString; UnusedPosition: TPoint); // @addr $4D86B0
     Angle: Byte; // @offset $4C
     LabelText: WideString; // @offset $58
     Image: TRotateImageGaiGI; // @offset $5C
@@ -22,13 +22,13 @@ type
     TextGreen: Single; // @offset $68
     TextBlue: Single; // @offset $6C
     TickCount: Integer; // @offset $70
-    destructor Destroy; override; // @addr $4D8764 @ida "void __usercall $name(TGateSE *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    destructor Destroy; override; // @addr $4D8764
     procedure AttachToSpace(ASpace: TSpaceSE); override; // @addr $4D8798
     procedure DetachFromSpace; override; // @addr $4D8A3C
-    procedure SetSize(Value: TPoint); override; // @addr $4D8AA4 @ida "void __usercall $name(TGateSE *Self@<eax>, TPoint *Value@<edx>);"
+    procedure SetSize(Value: TPoint); override; // @addr $4D8AA4
     function GetAngle: Byte; override; // @addr $4D8AE0
     procedure SetAngle(Value: Byte); override; // @addr $4D8AFC
-    function GetText: WideString; override; // @addr $4D8B38 @ida "void __usercall $name(TGateSE *Self@<eax>, unsigned __int16 **Result@<edx>);"
+    function GetText: WideString; override; // @addr $4D8B38
     procedure SetText(const Value: WideString); override; // @addr $4D8B58
     procedure RebuildStateGraphics; // @addr $4D8C4C
     procedure AdvanceAnimation(UnusedTimer: Pointer; UnusedData: Integer); // @addr $4D8ED0 Both native callers pass nil, 0; timer payload is unused.
@@ -39,15 +39,15 @@ type
   end;
   TGateEffectSE = class(TObjectSE) // @size $5C
   public
-    constructor Create(GraphKey: WideString; UnusedPosition: TPoint); // @addr $4D9058 @ida "TGateEffectSE *__userpurge $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, unsigned __int16 *GraphKey@<ecx>, TPoint *UnusedPosition@<^0>);"
+    constructor Create(GraphKey: WideString; UnusedPosition: TPoint); // @addr $4D9058
     Angle: Byte; // @offset $4C
     StateStep: Integer; // @offset $50
     Image: TRotateImageGaiGI; // @offset $54
     TickCount: Integer; // @offset $58
-    destructor Destroy; override; // @addr $4D90E4 @ida "void __usercall $name(TGateEffectSE *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    destructor Destroy; override; // @addr $4D90E4
     procedure AttachToSpace(ASpace: TSpaceSE); override; // @addr $4D9118
     procedure DetachFromSpace; override; // @addr $4D9298
-    procedure SetSize(Value: TPoint); override; // @addr $4D92E0 @ida "void __usercall $name(TGateEffectSE *Self@<eax>, TPoint *Value@<edx>);"
+    procedure SetSize(Value: TPoint); override; // @addr $4D92E0
     function GetAngle: Byte; override; // @addr $4D931C
     procedure SetAngle(Value: Byte); override; // @addr $4D9338
     procedure RebuildStateGraphics; // @addr $4D9374

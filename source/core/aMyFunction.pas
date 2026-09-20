@@ -24,7 +24,7 @@ var
 type
   TObjectList = class(TList) // @size 0x10
   public
-    destructor Destroy; override; // @addr 0x8721BC @ida "void __usercall $name(TObjectList *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    destructor Destroy; override; // @addr 0x8721BC
     procedure FreeItems; // @addr 0x8721F8 @note "Inherited Clear/Delete do not free objects."
   end;
 
@@ -34,66 +34,66 @@ function RandomIntRange(BoundA, BoundB: Integer): Integer; // @addr 0x872258 @no
 function SeededRandomIntRange(BoundA, BoundB: Integer; Seed: Cardinal): Integer; // @addr 0x87229C @note "Chaotic mode ignores Seed."
 function RandomUnitFloat: Single; // @addr 0x872338 @note "One of 1000 discrete values from 0.001 through 1.0 inclusive."
 function SeededRandomUnitFloat(Seed: Cardinal): Single; // @addr 0x872368 @note "Chaotic mode ignores Seed."
-function RandomFloatRange(BoundA, BoundB: Double): Double; // @addr 0x8723A0 @ida "double __userpurge $name@<st0>(double BoundA@<^8>, double BoundB@<^0>);" @note "Endpoints are quantized as Trunc(bound*1000+1)/1000; results have 0.001 resolution."
-function SeededRandomFloatRange(Seed: Cardinal; BoundA, BoundB: Double): Double; // @addr 0x8723F8 @ida "double __userpurge $name@<st0>(unsigned int Seed@<eax>, double BoundA@<^8>, double BoundB@<^0>);" @note "Uses RandomFloatRange's endpoint quantization; chaotic mode ignores Seed."
+function RandomFloatRange(BoundA, BoundB: Double): Double; // @addr 0x8723A0 @note "Endpoints are quantized as Trunc(bound*1000+1)/1000; results have 0.001 resolution."
+function SeededRandomFloatRange(Seed: Cardinal; BoundA, BoundB: Double): Double; // @addr 0x8723F8 @note "Uses RandomFloatRange's endpoint quantization; chaotic mode ignores Seed."
 function StepRandomSeed(Seed: Cardinal): Cardinal; // @addr 0x872454
 function AdvanceRandomSeed(var Seed: Cardinal): Cardinal; // @addr 0x872474
 function NextRandomIntRange(BoundA, BoundB: Integer; var Seed: Cardinal): Integer; // @addr 0x8724E8 @note "Chaotic mode leaves Seed unchanged."
 // Original source calls RndDoubleOut(BoundA, BoundB, FRndOut); see the market_match fixture evidence.
 function NextRandomFloatRange(BoundA, BoundB: Double; var Seed: Cardinal): Double; // @addr 0x8725C0 @ida "double __userpurge $name@<st0>(unsigned int *Seed@<eax>, double BoundA@<^8>, double BoundB@<^0>);" @note "Uses RandomFloatRange's endpoint quantization; chaotic mode leaves Seed unchanged."
 function NextRandomUnitFloat(var Seed: Cardinal): Double; // @addr 0x8726AC @note "Normally in [0,1). Chaotic mode leaves Seed unchanged and instead yields 0.001..1.001."
-function RemapClamped(Value, InMin, InMax, OutMin, OutMax: Double): Double; // @addr 0x87397C @ida "double __userpurge $name@<st0>(double Value@<^32>, double InMin@<^24>, double InMax@<^16>, double OutMin@<^8>, double OutMax@<^0>);"
+function RemapClamped(Value, InMin, InMax, OutMin, OutMax: Double): Double; // @addr 0x87397C
 
-function RoundAndTruncateToTens(Value: Double): Integer; // @addr 0x8727A0 @ida "int __userpurge $name@<eax>(double Value@<^0>);" @note "Round(Value), then signed integer division by ten and multiplication by ten."
+function RoundAndTruncateToTens(Value: Double): Integer; // @addr 0x8727A0 @note "Round(Value), then signed integer division by ten and multiplication by ten."
 
-function PointDistanceSquared(PointA, PointB: TPointF): Single; // @addr 0x87387C @ida "float __usercall $name@<st0>(TPointF *PointA@<eax>, TPointF *PointB@<edx>);"
-function PolarToPoint(Polar: TPolarPoint): TPointF; // @addr 0x872898 @ida "void __usercall $name(TPolarPoint *Polar@<eax>, TPointF *Result@<edx>);" @note "Copies the 16-byte input; X = sin(angle)*radius, Y = -cos(angle)*radius."
-function PointDistance(PointA, PointB: TPointF): Double; // @addr 0x8738C4 @ida "double __usercall $name@<st0>(TPointF *PointA@<eax>, TPointF *PointB@<edx>);"
-function RadiansToHeadingDegrees(Angle: Double): Double; // @addr 0x872988 @ida "double __userpurge $name@<st0>(double Angle@<^0>);" @note "Adds 360 only once for negative angles; does not fully normalize arbitrary inputs."
-function HeadingDegreesToRadians(Angle: Double): Double; // @addr 0x8729D4 @ida "double __userpurge $name@<st0>(double Angle@<^0>);" @note "Subtracts 360 only once for angles above 180; does not fully normalize arbitrary inputs."
-function PointBearingDegrees(PointA, PointB: TPointF): Double; // @addr 0x872A20 @ida "double __usercall $name@<st0>(TPointF *PointA@<eax>, TPointF *PointB@<edx>);" @note "Bearing from A to B: zero points upward and angles increase clockwise in screen coordinates."
-function HeadingDifferenceDegrees(FromHeading, ToHeading: Double): Double; // @addr 0x872A70 @ida "double __userpurge $name@<st0>(double FromHeading@<^8>, double ToHeading@<^0>);" @note "Signed shortest turn from FromHeading to ToHeading; requires headings normalized to [0,360)."
-function WrapHeadingDegrees(Angle: Single): Single; // @addr 0x872AE0 @ida "float __userpurge $name@<st0>(float Angle@<^0>);" @note "Repeatedly adds or subtracts 360 to reach [0,360); requires a finite value small enough for Single-precision steps to change it."
+function PointDistanceSquared(PointA, PointB: TPointF): Single; // @addr 0x87387C
+function PolarToPoint(Polar: TPolarPoint): TPointF; // @addr 0x872898 @note "Copies the 16-byte input; X = sin(angle)*radius, Y = -cos(angle)*radius."
+function PointDistance(PointA, PointB: TPointF): Double; // @addr 0x8738C4
+function RadiansToHeadingDegrees(Angle: Double): Double; // @addr 0x872988 @note "Adds 360 only once for negative angles; does not fully normalize arbitrary inputs."
+function HeadingDegreesToRadians(Angle: Double): Double; // @addr 0x8729D4 @note "Subtracts 360 only once for angles above 180; does not fully normalize arbitrary inputs."
+function PointBearingDegrees(PointA, PointB: TPointF): Double; // @addr 0x872A20 @note "Bearing from A to B: zero points upward and angles increase clockwise in screen coordinates."
+function HeadingDifferenceDegrees(FromHeading, ToHeading: Double): Double; // @addr 0x872A70 @note "Signed shortest turn from FromHeading to ToHeading; requires headings normalized to [0,360)."
+function WrapHeadingDegrees(Angle: Single): Single; // @addr 0x872AE0 @note "Repeatedly adds or subtracts 360 to reach [0,360); requires a finite value small enough for Single-precision steps to change it."
 
 // Original unit ownership of this formatting family (aMyFunction/MessageText) is unresolved.
 // ColorTag is a complete opening tag; empty disables coloring. Replacements are
 // case-sensitive and append </color> even when the replacement text is empty.
 procedure ReplaceTextToken(var Text: WideString; Token, Replacement, ColorTag: WideString); // @addr 0x873A04
-function ReplaceColoredToken(Text, Token, Replacement, ColorTag: WideString): WideString; // @addr 0x873ACC @ida "void __userpurge $name(unsigned __int16 *Text@<eax>, unsigned __int16 *Token@<edx>, unsigned __int16 *Replacement@<ecx>, unsigned __int16 *ColorTag@<^4>, unsigned __int16 **Result@<^0>);"
-function FormatText1(Text, ColorTag, Token, Replacement: WideString): WideString; // @addr 0x873B88 @ida "void __userpurge $name(unsigned __int16 *Text@<eax>, unsigned __int16 *ColorTag@<edx>, unsigned __int16 *Token@<ecx>, unsigned __int16 *Replacement@<^4>, unsigned __int16 **Result@<^0>);"
+function ReplaceColoredToken(Text, Token, Replacement, ColorTag: WideString): WideString; // @addr 0x873ACC
+function FormatText1(Text, ColorTag, Token, Replacement: WideString): WideString; // @addr 0x873B88
 // Multiple replacements run in order, including matches in text inserted earlier.
-function FormatText2(Text, ColorTag, Token1, Replacement1, Token2, Replacement2: WideString): WideString; // @addr 0x873C44 @ida "void __userpurge $name(unsigned __int16 *Text@<eax>, unsigned __int16 *ColorTag@<edx>, unsigned __int16 *Token1@<ecx>, unsigned __int16 *Replacement1@<^12>, unsigned __int16 *Token2@<^8>, unsigned __int16 *Replacement2@<^4>, unsigned __int16 **Result@<^0>);"
-function FormatText3(Text, ColorTag, Token1, Replacement1, Token2, Replacement2, Token3, Replacement3: WideString): WideString; // @addr 0x873D48 @ida "void __userpurge $name(unsigned __int16 *Text@<eax>, unsigned __int16 *ColorTag@<edx>, unsigned __int16 *Token1@<ecx>, unsigned __int16 *Replacement1@<^20>, unsigned __int16 *Token2@<^16>, unsigned __int16 *Replacement2@<^12>, unsigned __int16 *Token3@<^8>, unsigned __int16 *Replacement3@<^4>, unsigned __int16 **Result@<^0>);"
-function WrapTextInColor(Text, ColorTag: WideString): WideString; // @addr 0x873E88 @ida "void __usercall $name(unsigned __int16 *Text@<eax>, unsigned __int16 *ColorTag@<edx>, unsigned __int16 **Result@<ecx>);" @note "Returns Text unchanged when either argument is empty."
+function FormatText2(Text, ColorTag, Token1, Replacement1, Token2, Replacement2: WideString): WideString; // @addr 0x873C44
+function FormatText3(Text, ColorTag, Token1, Replacement1, Token2, Replacement2, Token3, Replacement3: WideString): WideString; // @addr 0x873D48
+function WrapTextInColor(Text, ColorTag: WideString): WideString; // @addr 0x873E88 @note "Returns Text unchanged when either argument is empty."
 
-function RayIntersectsOriginCircle(StartPoint, ThroughPoint: TPointF; out Intersection: TPointF; Radius: Single): Boolean; // @addr 0x873458 @ida "bool __userpurge $name@<al>(TPointF *StartPoint@<eax>, TPointF *ThroughPoint@<edx>, TPointF *Intersection@<ecx>, float Radius@<^0>);" @note "Normalizes the ray direction, rejects tangencies, and returns whether the selected intersection is ahead of StartPoint. No segment-length bound."
+function RayIntersectsOriginCircle(StartPoint, ThroughPoint: TPointF; out Intersection: TPointF; Radius: Single): Boolean; // @addr 0x873458 @note "Normalizes the ray direction, rejects tangencies, and returns whether the selected intersection is ahead of StartPoint. No segment-length bound."
 
 function DecrementWrappedValue(Value, Minimum, Maximum: Integer): Integer; // @addr $874170 Returns a decremented value, wrapping below Minimum to Maximum. Value is passed by value.
 function IncrementWrapped(var Value: Integer; Minimum, Maximum: Integer): Integer; // @addr 0x874138 @note "Increments Value, or resets it to Minimum when Value + 1 exceeds Maximum; returns the updated value."
 
 function FractionalQuotient(Numerator, Denominator: Integer): Double; // @addr $872750
-function RoundAndTruncateToFives(Value: Double): Integer; // @addr $87277C @ida "int __userpurge $name@<eax>(double Value@<^0>);"
-function RoundAndTruncateToHundreds(Value: Double): Integer; // @addr $8727C8 @ida "int __userpurge $name@<eax>(double Value@<^0>);"
+function RoundAndTruncateToFives(Value: Double): Integer; // @addr $87277C
+function RoundAndTruncateToHundreds(Value: Double): Integer; // @addr $8727C8
 function PointFromRadiusAngle(Radius, Angle: Single): TPointF; // @addr $8727EC @ida "void __userpurge $name(TPointF *Result@<eax>, float Radius@<^4>, float Angle@<^0>);" @note "Angle is in radians, measured from the positive X axis."
 function OffsetPointByRadiusAngle(Origin: TPointF; Radius, Angle: Single): TPointF; // @addr $87280C @ida "void __userpurge $name(TPointF *Origin@<eax>, TPointF *Result@<edx>, float Radius@<^4>, float Angle@<^0>);"
 function RotateAndTranslatePoint(Point, Translation: TPointF; Angle: Single): TPointF; // @addr $872844 @ida "void __userpurge $name(TPointF *Point@<eax>, TPointF *Translation@<edx>, TPointF *Result@<ecx>, float Angle@<^0>);"
-function IntegerPointToPolar(Point: TPoint): TPolarRadiansPoint; // @addr $8728D0 @ida "void __usercall $name(TPoint *Point@<eax>, TPolarRadiansPoint *Result@<edx>);" @note "Angle is ArcTan2(X,Y), measured from positive Y; squared radius uses signed 32-bit integer arithmetic."
-function HeadingDegreesToByte(Angle: Double): Byte; // @addr $872930 @ida "unsigned __int8 __userpurge $name@<al>(double Angle@<^0>);"
+function IntegerPointToPolar(Point: TPoint): TPolarRadiansPoint; // @addr $8728D0 @note "Angle is ArcTan2(X,Y), measured from positive Y; squared radius uses signed 32-bit integer arithmetic."
+function HeadingDegreesToByte(Angle: Double): Byte; // @addr $872930
 function ByteToHeadingDegrees(Angle: Byte): Double; // @addr $87295C
-function WrapSignedHeadingDegrees(Angle: Single): Single; // @addr $872B38 @ida "float __userpurge $name@<st0>(float Angle@<^0>);" @note "Normalizes finite angles to [-180,180)."
-function HeadingWithinArc(ArcStart, Heading, ArcEnd: Single): Boolean; // @addr $872B94 @ida "bool __userpurge $name@<al>(float ArcStart@<^8>, float Heading@<^4>, float ArcEnd@<^0>);"
+function WrapSignedHeadingDegrees(Angle: Single): Single; // @addr $872B38 @note "Normalizes finite angles to [-180,180)."
+function HeadingWithinArc(ArcStart, Heading, ArcEnd: Single): Boolean; // @addr $872B94
 function PushPointOutsideCircleBand(Point: TPointF; Radius, Margin: Single): TPointF; // @addr $872CA8 @ida "void __userpurge $name(TPointF *Point@<eax>, TPointF *Result@<edx>, float Radius@<^4>, float Margin@<^0>);" @note "Within Margin of Radius, scales Point to Radius+Margin; otherwise returns Point."
-function RotatePointQuarterTurn(Center, Point: TPointF): TPointF; // @addr $872D2C @ida "void __usercall $name(TPointF *Center@<eax>, TPointF *Point@<edx>, TPointF *Result@<ecx>);"
-function IntersectLines(A1, A2, B1, B2: TPointF; out Intersection: TPointF): Boolean; // @addr $872D6C @ida "bool __userpurge $name@<al>(TPointF *A1@<eax>, TPointF *A2@<edx>, TPointF *B1@<ecx>, TPointF *B2@<^4>, TPointF *Intersection@<^0>);"
-function SegmentIntersectsRectEdges(StartPoint, EndPoint, TopLeft, BottomRight: TPointF; out Intersection: TPointF): Boolean; // @addr $872E60 @ida "bool __userpurge $name@<al>(TPointF *StartPoint@<eax>, TPointF *EndPoint@<edx>, TPointF *TopLeft@<ecx>, TPointF *BottomRight@<^4>, TPointF *Intersection@<^0>);" @note "Tests top, bottom, left, then right; returns the first edge hit, not the nearest. Corners must be ordered."
-function SegmentIntersectsCircle(StartPoint, EndPoint, Center: TPointF; Radius: Single): Boolean; // @addr $873180 @ida "bool __userpurge $name@<al>(TPointF *StartPoint@<eax>, TPointF *EndPoint@<edx>, TPointF *Center@<ecx>, float Radius@<^0>);" @note "Accepts a start inside the circle; rejects tangencies."
-function SegmentCrossesOriginCircle(StartPoint, EndPoint: TPointF; Radius: Single): Boolean; // @addr $873360 @ida "bool __userpurge $name@<al>(TPointF *StartPoint@<eax>, TPointF *EndPoint@<edx>, float Radius@<^0>);" @note "Requires both endpoints outside and segment length at least the start's distance from the origin."
-function CalculateTangentArcOffset(StartPoint, EndPoint: TPointF; Heading, Angle: Double): Double; // @addr $8735D0 @ida "double __userpurge $name@<st0>(TPointF *StartPoint@<eax>, TPointF *EndPoint@<edx>, double Heading@<^8>, double Angle@<^0>);" @note "Returns sin(Angle) times the radius of the circle through the endpoints tangent to Heading at StartPoint; angles are degrees."
+function RotatePointQuarterTurn(Center, Point: TPointF): TPointF; // @addr $872D2C
+function IntersectLines(A1, A2, B1, B2: TPointF; out Intersection: TPointF): Boolean; // @addr $872D6C
+function SegmentIntersectsRectEdges(StartPoint, EndPoint, TopLeft, BottomRight: TPointF; out Intersection: TPointF): Boolean; // @addr $872E60 @note "Tests top, bottom, left, then right; returns the first edge hit, not the nearest. Corners must be ordered."
+function SegmentIntersectsCircle(StartPoint, EndPoint, Center: TPointF; Radius: Single): Boolean; // @addr $873180 @note "Accepts a start inside the circle; rejects tangencies."
+function SegmentCrossesOriginCircle(StartPoint, EndPoint: TPointF; Radius: Single): Boolean; // @addr $873360 @note "Requires both endpoints outside and segment length at least the start's distance from the origin."
+function CalculateTangentArcOffset(StartPoint, EndPoint: TPointF; Heading, Angle: Double): Double; // @addr $8735D0 @note "Returns sin(Angle) times the radius of the circle through the endpoints tangent to Heading at StartPoint; angles are degrees."
 procedure CircleTangentPoints(Point: TPointF; Radius: Single; out LeftPoint, RightPoint: TPointF); // @addr $873704 @ida "void __userpurge $name(TPointF *Point@<eax>, TPointF *LeftPoint@<edx>, TPointF *RightPoint@<ecx>, float Radius@<^0>);"
 function PointBehindHeading(Origin: TPointF; Heading, Distance: Double; Seed: Cardinal): TPointF; // @addr $8737E8 @ida "void __userpurge $name(TPointF *Origin@<eax>, unsigned int Seed@<edx>, TPointF *Result@<ecx>, double Heading@<^8>, double Distance@<^0>);" @note "Seed selects a heading offset in [90,269] degrees without advancing."
-function IntegerPointDistancePlusOne(PointA, PointB: TPoint): Integer; // @addr $873918 @ida "int __usercall $name@<eax>(TPoint *PointA@<eax>, TPoint *PointB@<edx>);"
-function MakeFloatPoint(X, Y: Integer): TPointF; // @addr $8739DC @ida "void __usercall $name(int X@<eax>, int Y@<edx>, TPointF *Result@<ecx>);"
-function NormalizeTextHighlightColors(Text: WideString): WideString; // @addr $873F30 @ida "void __usercall $name(unsigned __int16 *Text@<eax>, unsigned __int16 **Result@<edx>);"
+function IntegerPointDistancePlusOne(PointA, PointB: TPoint): Integer; // @addr $873918
+function MakeFloatPoint(X, Y: Integer): TPointF; // @addr $8739DC
+function NormalizeTextHighlightColors(Text: WideString): WideString; // @addr $873F30
 
 const
   PolarDegreesToRadians: Single = 0.01745329238474369049; // @addr $8830B4

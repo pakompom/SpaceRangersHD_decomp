@@ -18,14 +18,14 @@ type
     ImageSize: TPoint; // @offset $148
     Vertices: array[0..3] of TScreenVertexGR; // @offset $150
     FrameTexture: IDirect3DTexture9; // @offset $1C0
-    destructor Destroy; override; // @addr $49716C @ida "void __usercall $name(TRotateImageGaiGI *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    destructor Destroy; override; // @addr $49716C
     procedure Clear; override; // @addr $497200
     procedure ClearFrameSequence; // @addr $497750
     function GetFrameSourceIndex(Index: Integer): Integer; // @addr $4977C8
     procedure LoadFromConfigPath(const Path: WideString); override; // @addr $497800
     procedure LoadFromBlock(Block: TBlockParEC); override; // @addr $497834
     procedure LoadImageProperties(Block: TBlockParEC); // @addr $497884
-    procedure Draw(ClipRect: TRect); override; // @addr $497BE4 @ida "void __usercall $name(TRotateImageGaiGI *Self@<eax>, TRect *ClipRect@<edx>);"
+    procedure Draw(ClipRect: TRect); override; // @addr $497BE4
     procedure QueueImageLoad(PendingLoads: TList); override; // @addr $498428
     Angle: Byte; // @offset $12D
     Alpha: Byte; // @offset $12E
@@ -36,8 +36,8 @@ type
     procedure SetAngle(Value: Byte); // @addr $497250
     procedure SetAlpha(Value: Byte); // @addr $497290
     procedure SetFrame(Value: Integer); // @addr $497710
-    constructor Create(Owner: TObjectGI); // @addr $497078 @ida "TRotateImageGaiGI *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, TObjectGI *Owner@<ecx>);"
-    procedure SetImage(Path: WideString; ImageSize, Pivot: TPoint); // @addr 0x4972D0 @ida "void __userpurge $name(TRotateImageGaiGI *Self@<eax>, unsigned __int16 *Path@<edx>, TPoint *ImageSize@<ecx>, TPoint *Pivot@<^0>);"
+    constructor Create(Owner: TObjectGI); // @addr $497078
+    procedure SetImage(Path: WideString; ImageSize, Pivot: TPoint); // @addr 0x4972D0
     procedure UpdateAutoGeometry; override; // @addr 0x497A4C @note "Diagnostic retains TgaiGI.AfterLoad, but this is TRotateImageGaiGI's geometry-update override."
   end;
 

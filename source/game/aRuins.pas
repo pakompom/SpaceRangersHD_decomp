@@ -41,7 +41,7 @@ type
     ShopUpdateMode: TShopUpdateMode; // @offset 0x567
 
     function EvaluateStatBonus(BonusKind: TEquipmentBonusKind; Value: Integer): Single; override; // @addr $71A418 @slot $54
-    function EvaluateWeaponDamage(Weapon: TWeapon; IncludeAdditiveBonuses: Boolean; BaseDamage: Single): Single; override; // @addr $71A8A4 @slot $58 @ida "float __userpurge $name@<st0>(TRuins *Self@<eax>, TWeapon *Weapon@<edx>, bool IncludeAdditiveBonuses@<cl>, float BaseDamage@<^0>);"
+    function EvaluateWeaponDamage(Weapon: TWeapon; IncludeAdditiveBonuses: Boolean; BaseDamage: Single): Single; override; // @addr $71A8A4 @slot $58
     function GetGreetingShipCategory: Byte; override; // @addr $716D24 @slot 0x30
     function GetHomeStar: TStar; override; // @addr $716D4C @slot 0x34
     function GetStrengthScaledPirateStatus: TPercent; override; // @addr $716D64 @slot 0x3C
@@ -56,13 +56,13 @@ type
     function BuildAttackRequestResponse(Requester: TShip; var Response: WideString; Target: TShip): Boolean; override; // @addr $719E4C @slot 0xB4
     function AcceptPartnershipOffer(OtherShip: TShip; var Response: WideString; PaymentAmount: Integer): Boolean; override; // @addr $719EA4 @slot 0xB8
     function BuildPartnershipOfferResponse(OtherShip: TShip; var Response: WideString; PaymentAmount: Integer): Boolean; override; // @addr $719EF4 @slot 0xBC
-    function AdjustItemEvaluation(Item: TItem; PriceMode: Byte; Effectiveness: Single): Single; override; // @addr $71A3F8 @slot 0x50 @ida "float __userpurge $name@<st0>(TRuins *Self@<eax>, TItem *Item@<edx>, unsigned __int8 PriceMode@<cl>, float Effectiveness@<^0>);"
+    function AdjustItemEvaluation(Item: TItem; PriceMode: Byte; Effectiveness: Single): Single; override; // @addr $71A3F8 @slot 0x50
     procedure ReactToAttack(Attacker: TShip); override; // @addr $71998C @slot $7C
     function RelationToNonRanger(Ship: TShip): Byte; override; // @addr $719788 @slot 0x80
     function AcceptPickupItem(Item: TItem): Boolean; override; // @addr $719604 @slot 0x94
 
-    constructor Create; // @addr 0x713EEC @ida "TRuins *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x713F8C @ida "void __usercall $name(TRuins *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x713EEC
+    destructor Destroy; override; // @addr 0x713F8C
     procedure Init(StationType: TStationType; Star: TStar; TypeNameOverride: WideString); // @addr 0x7143F0 @note "Also registers the station in Star. Type 13 inherits ranger-center defaults."
     procedure SaveToBuffer(Buffer: TBufEC); override; // @addr 0x714D2C @slot 0x00
     procedure LoadFromBuffer(Buffer: TBufEC; Galaxy: TGalaxy); override; // @addr 0x714EBC @slot 0x04 @note "Requires a fresh instance. FlyToStar temporarily contains a saved star ID."
@@ -74,9 +74,9 @@ type
     procedure NextDayLogic; override; // @addr 0x7160D0 @slot 0x1C @calls "0x716010"
     procedure AssignWeaponTargetsInStar; override; // @addr 0x717FBC @slot 0x20 @note "Targets hostile ships, incoming missiles and nearby asteroids."
     function GetDominantCareer: TRangerCareer; override; // @addr 0x716D38 @slot 0x38 @note "Always rcTrader."
-    function GetName: WideString; override; // @addr 0x716A8C @slot 0x24 @ida "void __usercall $name(TRuins *Self@<eax>, unsigned __int16 **Result@<edx>);"
-    function GetFullName(const Separator: WideString): WideString; override; // @addr 0x716AAC @slot 0x28 @ida "void __usercall $name(TRuins *Self@<eax>, unsigned __int16 *Separator@<edx>, unsigned __int16 **Result@<ecx>);"
-    function GetColoredFullName(const ColorTag: WideString): WideString; // @addr 0x716BD0 @ida "void __usercall $name(TRuins *Self@<eax>, unsigned __int16 *ColorTag@<edx>, unsigned __int16 **Result@<ecx>);" @note "Uses the station type's alternate localized caption and colors the individual name."
+    function GetName: WideString; override; // @addr 0x716A8C @slot 0x24
+    function GetFullName(const Separator: WideString): WideString; override; // @addr 0x716AAC @slot 0x28
+    function GetColoredFullName(const ColorTag: WideString): WideString; // @addr 0x716BD0 @note "Uses the station type's alternate localized caption and colors the individual name."
     function GetDesiredCargoFreeSpace: Integer; override; // @addr 0x716D78 @slot 0x40 @note "Always zero."
     procedure RefuelAtLocation; override; // @addr 0x716E30 @slot 0x48
     procedure RepairBrokenEquipmentAtLocation; override; // @addr 0x716E60 @slot 0x60 @note "Sponsored stations restore equipment condition without a repair transaction."
@@ -90,8 +90,8 @@ type
     procedure RefreshCurrentStanding; override; // @addr 0x71AD30 @slot 0xC4 @note "Script state can force standing 9 or preserve the current value; type 13 has no default assignment."
 
     function TryStartAbductionCycle: Boolean; // @addr $71842C
-    function EvaluateLocalForceBalance(Point: TPointF): Single; // @addr $718D1C @ida "float __usercall $name@<st0>(TRuins *Self@<eax>, TPointF *Point@<edx>);"
-    function EvaluateRelocationPosition(Point: TPointF): Single; // @addr $719010 @ida "float __usercall $name@<st0>(TRuins *Self@<eax>, TPointF *Point@<edx>);"
+    function EvaluateLocalForceBalance(Point: TPointF): Single; // @addr $718D1C
+    function EvaluateRelocationPosition(Point: TPointF): Single; // @addr $719010
     procedure TryAbductDepartingShip(Ship: TShip); // @addr $718740 @note "May redirect a departing ship to this station during its abduction cycle."
     procedure ReportAbductionOutcome; // @addr $718A0C @note "Posts the native Pirate Clan success/failure message after the station reappears."
     procedure ReloadWeapons; // @addr 0x716FA8 @note "Sponsored stations gain only one round per weapon; other stations refill to capacity."
@@ -124,7 +124,7 @@ type
     procedure RandomizePosition; // @addr 0x71A244 @note "Immediately replaces Position with a sampled arrival point in CurrentStar."
     function TryRepositionInStar: Boolean; // @addr 0x719160 @note "Successful repositioning initiates a teleport."
     function TryRelocateToPirateStar: Boolean; // @addr 0x71945C @note "Travel starts next turn; transfers the star's Dominion ownership reference."
-    function SelectTeleportArrivalPoint(Star: TStar): TPointF; // @addr 0x71A310 @ida "void __usercall $name(TRuins *Self@<eax>, TStar *Star@<edx>, TPointF *Result@<ecx>);" @note "Search is limited to 1001 attempts."
+    function SelectTeleportArrivalPoint(Star: TStar): TPointF; // @addr 0x71A310 @note "Search is limited to 1001 attempts."
     function CanDock(Ship: TShip): Boolean; override; // @addr 0x71CCDC @slot 0xC8
     function CheckDockingPermission(Ship: TShip; var Response: WideString): Boolean; override; // @addr 0x71CD4C @slot 0xCC @note "Clears Response on success; otherwise supplies a refusal message."
   end;
@@ -262,7 +262,7 @@ procedure TRuins.Init(StationType: TStationType; Star: TStar; TypeNameOverride: 
 var I: Integer; Ranger: TRanger; Event: TGalaxyEvent; Good: Byte; Weapon: TWeapon; Hook: TCargoHook; EquipmentOwner: Byte;
 
   // @nested $714148 SelectStationName
-  procedure SelectStationName(Config: TBlockParEC); // @addr $714148 @ida "void __usercall $name(TBlockParEC *Config@<eax>, void *ParentFrame@<^0>);" @stackpop 0 @calls "0x714525,0x714554"
+  procedure SelectStationName(Config: TBlockParEC); // @addr $714148 @calls "0x714525,0x714554"
   var Index, I, J, K, LastName: Integer; Used: Boolean; Ship: TShip; OtherStar: TStar;
   begin
     if Config = nil then Exit;
@@ -294,7 +294,7 @@ var I: Integer; Ranger: TRanger; Event: TGalaxyEvent; Good: Byte; Weapon: TWeapo
   end;
 
   // @nested $714398 RandomStationEquipmentSize
-  function RandomStationEquipmentSize(BaseSize: Integer): Integer; // @addr $714398 @ida "int __usercall $name@<eax>(int BaseSize@<eax>, void *ParentFrame@<^0>);" @stackpop 0 @calls "0x71484D,0x71486B,0x7148C7,0x714922,0x7149F8,0x714AE5,0x714B7A,0x714C29"
+  function RandomStationEquipmentSize(BaseSize: Integer): Integer; // @addr $714398 @calls "0x71484D,0x71486B,0x7148C7,0x714922,0x7149F8,0x714AE5,0x714B7A,0x714C29"
   begin
     Result := NextRandomIntRange(Round(BaseSize * EquipmentSizeFactors[2] * 2), Round(BaseSize * EquipmentSizeFactors[1] * 2), RandomState);
   end;
@@ -657,7 +657,7 @@ var Stage: Integer; Imbalance, LocalBalance: Single;
   UnresolvedFrameBytes: array[0..3] of Byte;
 
   // @nested $716038 FindDominionHomeStar
-  function FindDominionHomeStar: TStar; // @addr $716038 @ida "TStar *__usercall $name@<eax>(void *ParentFrame@<^0>);" @stackpop 0 @calls "0x716508,0x716783"
+  function FindDominionHomeStar: TStar; // @addr $716038 @calls "0x716508,0x716783"
   var I: Integer; Star: TStar;
   begin
     Result := nil;
@@ -1792,7 +1792,7 @@ function TRuins.SelectTeleportArrivalPoint(Star: TStar): TPointF;
 var Attempts: Integer; Planet: TPlanet; LastPlanet: Integer; Polar: TPolarPoint;
 
   // @nested $71A274 IsStationArrivalPointClear
-  function IsStationArrivalPointClear(Point: TPointF): Boolean; // @addr $71A274 @ida "bool __usercall $name@<al>(TPointF *Point@<eax>, void *ParentFrame@<^0>);" @stackpop 0 @calls "0x71A3D6"
+  function IsStationArrivalPointClear(Point: TPointF): Boolean; // @addr $71A274 @calls "0x71A3D6"
   var I: Integer; Ship: TShip; DistanceSquared: Single;
   begin
     Result := False;

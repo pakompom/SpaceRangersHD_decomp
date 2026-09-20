@@ -13,16 +13,16 @@ type
     Kind: TShrLightKindGI; // @offset $120
     LightShift: Integer; // @offset $124
     LightBuffer: TGraphBufGR; // @offset $128 Owned grayscale mask when Kind=slkBuffer.
-    constructor Create(Owner: TObjectGI); // @addr $4AFB20 @ida "TShrLightGI *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, TObjectGI *Owner@<ecx>);"
-    destructor Destroy; override; // @addr $4AFB80 @ida "void __usercall $name(TShrLightGI *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create(Owner: TObjectGI); // @addr $4AFB20
+    destructor Destroy; override; // @addr $4AFB80
     procedure Clear; override; // @addr $4AFBD8
     procedure SetKind(Value: TShrLightKindGI); // @addr $4AFC28
     procedure SetLightShift(Value: Integer); // @addr $4AFCD8
-    procedure SetSize(Size: TPoint); override; // @addr $4AFD10 @ida "void __usercall $name(TShrLightGI *Self@<eax>, TPoint *Size@<edx>);"
+    procedure SetSize(Size: TPoint); override; // @addr $4AFD10
     procedure LoadFromConfigPath(const Path: WideString); override; // @addr $4AFD64
     procedure LoadFromBlock(Block: TBlockParEC); override; // @addr $4AFD98
     procedure LoadLightProperties(Block: TBlockParEC); // @addr $4AFDC0
-    procedure Draw(ClipRect: TRect); override; // @addr $4AFEE4 @ida "void __usercall $name(TShrLightGI *Self@<eax>, TRect *ClipRect@<edx>);"
+    procedure Draw(ClipRect: TRect); override; // @addr $4AFEE4
   end;
 
 implementation

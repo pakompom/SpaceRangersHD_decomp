@@ -12,13 +12,13 @@ type
     ContentHeight: Integer; // @offset $D8 Accumulated height while building entries.
     JournalSelected: Boolean; // @offset 0xDC
 
-    constructor Create; // @addr 0x561074 @ida "TfJournal *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x5610C0 @ida "void __usercall $name(TfJournal *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x561074
+    destructor Destroy; override; // @addr 0x5610C0
     procedure OnOpen; override; // @addr 0x5612B4
     procedure OnClose; override; // @addr 0x561810
     procedure ProcessCallbackTimers; override; // @addr 0x563428
     procedure SelectMusic; override; // @addr 0x56345C
-    procedure ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer); override; // @addr 0x562D68 @ida "void __userpurge $name(TfJournal *Self@<eax>, unsigned int KeyState@<edx>, TPoint *Point@<ecx>, int Delta@<^0>);"
+    procedure ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer); override; // @addr 0x562D68
     procedure InitializeLayout; override; // @addr 0x5610F4
     procedure ExecuteUiCode(Block: TBlockParEC; Key: Cardinal); override; // @addr 0x563FF4
     procedure ToggleJournalNews(Sender: TObjectGI); // @addr 0x56296C
@@ -32,7 +32,7 @@ type
     procedure AddEntrySpacing(Height: Integer); // @addr $561D84
     procedure AddEntryHeading(Text, MessageText: WideString; Compact: Integer; RecordIndex: Integer); // @addr $561DA8
     procedure AddEntryText(Text: WideString; Align: TTextAlignXGI; FontName: WideString); // @addr $562734
-    procedure MainPanelMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $562AC0 @ida "void __userpurge $name(TfJournal *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
+    procedure MainPanelMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $562AC0
     procedure MainPanelKeyDown(Sender: TObjectGI; Key: Cardinal); // @addr $562B14
     procedure MainPanelKeyUp(Sender: TObjectGI; Key: Cardinal); // @addr $562D54
     function HasTelevisionReception: Boolean; // @addr $562E10

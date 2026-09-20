@@ -34,17 +34,17 @@ type
     ViewPosition: TPointF; // @offset $12C
     AnimationTimer: PCallbackTimerGI; // @offset $134
 
-    constructor Create(Owner: TObjectGI); // @addr $4B4890 @ida "TSpaceImgGI *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, TObjectGI *Owner@<ecx>);"
-    destructor Destroy; override; // @addr $4B48E4 @ida "void __usercall $name(TSpaceImgGI *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create(Owner: TObjectGI); // @addr $4B4890
+    destructor Destroy; override; // @addr $4B48E4
     procedure ClearImages; // @addr $4B4948
-    function AllocateImage(Depth: Single): PSpaceImageGI; // @addr $4B4984 @ida "PSpaceImageGI __userpurge $name@<eax>(TSpaceImgGI *Self@<eax>, float Depth@<^0>);" @note "Inserts in descending depth order; reallocates and invalidates earlier pointers."
-    function AddImage(TemplateIndex: Integer; X, Y, Depth: Single): PSpaceImageGI; // @addr $4B4A8C @codeend $4B4C4F @ida "PSpaceImageGI __userpurge $name@<eax>(TSpaceImgGI *Self@<eax>, int TemplateIndex@<edx>, float X@<^8>, float Y@<^4>, float Depth@<^0>);"
-    function NearestImageDistance(X, Y: Single): Single; // @addr $4B4C58 @ida "float __userpurge $name@<st0>(TSpaceImgGI *Self@<eax>, float X@<^4>, float Y@<^0>);"
+    function AllocateImage(Depth: Single): PSpaceImageGI; // @addr $4B4984 @note "Inserts in descending depth order; reallocates and invalidates earlier pointers."
+    function AddImage(TemplateIndex: Integer; X, Y, Depth: Single): PSpaceImageGI; // @addr $4B4A8C @codeend $4B4C4F
+    function NearestImageDistance(X, Y: Single): Single; // @addr $4B4C58
     procedure UpdateImageOrbitAndFrame(Image: PSpaceImageGI); // @addr $4B4CFC
     procedure ProjectImages; // @addr $4B4E74
     function GetImage(Index: Integer): PSpaceImageGI; // @addr $4B4F28
     procedure AnimateImages(Timer: PCallbackTimerGI; UserData: Integer); // @addr $4B4F58
-    procedure SetViewPosition(Position: TPointF); // @addr $4B5110 @ida "void __usercall $name(TSpaceImgGI *Self@<eax>, TPointF *Position@<edx>);"
+    procedure SetViewPosition(Position: TPointF); // @addr $4B5110
     procedure Invalidate; override; // @addr $4B518C
     procedure OnActivate; override; // @addr $4B5220
     procedure OnDeactivate; override; // @addr $4B5288
@@ -52,7 +52,7 @@ type
     procedure LoadFromBlock(Block: TBlockParEC); override; // @addr $4B52FC
     procedure LoadSpaceImageProperties(Block: TBlockParEC); // @addr $4B5324 @note "Empty in native code."
     procedure UpdateAutoGeometry; override; // @addr $4B5334 @note "Empty in native code."
-    procedure Draw(ClipRect: TRect); override; // @addr $4B5340 @ida "void __usercall $name(TSpaceImgGI *Self@<eax>, TRect *ClipRect@<edx>);"
+    procedure Draw(ClipRect: TRect); override; // @addr $4B5340
   end;
 
 implementation

@@ -32,22 +32,22 @@ type
     AccessLevel: Integer; // @offset 0xE8
     KeyHistory: WideString; // @offset 0xEC
 
-    constructor Create; // @addr 0x5592F4 @ida "TfLoadQuest *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x559364 @ida "void __usercall $name(TfLoadQuest *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x5592F4
+    destructor Destroy; override; // @addr 0x559364
     procedure InitializeLayout; override; // @addr 0x5593BC
     procedure OnOpen; override; // @addr 0x5597C0
     procedure OnClose; override; // @addr 0x559934
     procedure ReturnToMenu(Sender: TObjectGI); // @addr 0x559980
     procedure QuestListKeyDown(Sender: TObjectGI; VirtualKey: Cardinal); // @addr 0x5599A8
-    procedure ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer); override; // @addr 0x559F20 @ida "void __userpurge $name(TfLoadQuest *Self@<eax>, unsigned int KeyState@<edx>, TPoint *Point@<ecx>, int Delta@<^0>);"
+    procedure ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer); override; // @addr 0x559F20
     procedure RebuildQuestList; // @addr 0x55A154
     procedure InitializeQuestRow(Row: TObjectGI); // @addr 0x55A90C
     procedure SelectQuest(Index: Integer); // @addr 0x55B13C @note "Index is zero-based; locked entries clear the selection."
     procedure UpdateQuestRow(Index: Integer); // @addr 0x55B280
     procedure QuestRowMouseEnter(Sender: TObjectGI); // @addr 0x55B4AC
     procedure QuestRowMouseLeave(Sender: TObjectGI); // @addr 0x55B50C
-    procedure QuestRowMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x55B560 @ida "void __userpurge $name(TfLoadQuest *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
-    procedure QuestRowDoubleClick(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x55B5D0 @ida "void __userpurge $name(TfLoadQuest *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
+    procedure QuestRowMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x55B560
+    procedure QuestRowDoubleClick(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x55B5D0
     procedure SelectCategory(Sender: TObjectGI); // @addr 0x55B5FC
     procedure StartSelectedQuest(Sender: TObjectGI); // @addr 0x55B75C
     procedure ShowSelectedQuestDetails; // @addr 0x55B7E4 @note "Loads the quest with HeaderOnly enabled."
@@ -55,8 +55,8 @@ type
     procedure SaveCompletionData; // @addr 0x55C380
     procedure RecordCompletion(QuestId, Value, Status: Integer); // @addr 0x55C4CC @note "QuestId must be 0..9999. Higher status wins; equal status minimizes an existing nonzero Value."
     function CalculateAccessLevel: Integer; // @addr 0x55C62C @note "Advances past a group when all but one quest is completed."
-    function GetCompletionCounts: TPoint; // @addr 0x55C770 @ida "void __usercall $name(TfLoadQuest *Self@<eax>, TPoint *Result@<edx>);" @note "X is completed, Y is total; includes only numeric quests with positive Access."
-    function GetCompletionSummary: WideString; // @addr 0x55C90C @ida "void __usercall $name(TfLoadQuest *Self@<eax>, unsigned __int16 **Result@<edx>);" @note "The displayed total includes groups below 3."
+    function GetCompletionCounts: TPoint; // @addr 0x55C770 @note "X is completed, Y is total; includes only numeric quests with positive Access."
+    function GetCompletionSummary: WideString; // @addr 0x55C90C @note "The displayed total includes groups below 3."
     procedure SelectMusic; override; // @addr 0x55CA68 @note "Empty implementation."
     function InsertEntryByAccess(RequiredAccess: Integer): Integer; // @addr 0x55A074 @note "Returns a zero-based index; inserts after entries with equal access."
   end;

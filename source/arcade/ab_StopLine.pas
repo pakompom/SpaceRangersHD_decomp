@@ -53,15 +53,15 @@ function ab_StopPoint_Count: Integer; // @addr $5553D8
 procedure ab_StopLine_Clear; // @addr $55540C
 function ab_StopLine_Add: PabStopLine; // @addr $555440 @note "Allocates and links a node owned by the world list."
 procedure ab_StopLine_Delete(Line: PabStopLine); // @addr $55551C
-procedure ab_StopLine_AddLatitude(PolarAngle, Step: Double); // @addr $5555C8 @ida "void __userpurge $name(double PolarAngle@<^8>, double Step@<^0>);"
+procedure ab_StopLine_AddLatitude(PolarAngle, Step: Double); // @addr $5555C8
 procedure ab_StopLine_UpdateWorldLines; // @addr $5556AC
 procedure ab_StopLine_UpdateColors; // @addr $555790
 procedure ab_StopLine_ClearSegments(Line: PabStopLine); // @addr $5557E0
 procedure ab_StopLine_PrepareCollision(Line: PabStopLine); // @addr $555830 @note "Empty in this native version."
 procedure ab_StopLine_BuildCollisionList; // @addr $55583C
-function ab_StopLine_ReflectMovement(Source, Target: TSphericalBearingState; var HeadingDelta, Speed, UnusedResult: Double): Boolean; // @addr $555A04 @ida "bool __userpurge $name@<al>(TSphericalBearingState *Source@<eax>, TSphericalBearingState *Target@<edx>, double *HeadingDelta@<ecx>, double *Speed@<^4>, double *UnusedResult@<^0>);"
-procedure ab_StopLine_GetDistances(Source: TSphericalBearingState; var ForwardDistance, BackwardDistance: Double); // @addr $556064 @ida "void __usercall $name(TSphericalBearingState *Source@<eax>, double *ForwardDistance@<edx>, double *BackwardDistance@<ecx>);"
-function ab_StopLine_IsBlocked(SourceLongitude, SourcePolarAngle, TargetLongitude, TargetPolarAngle: Double): Boolean; // @addr $556480 @ida "bool __userpurge $name@<al>(double SourceLongitude@<^24>, double SourcePolarAngle@<^16>, double TargetLongitude@<^8>, double TargetPolarAngle@<^0>);"
+function ab_StopLine_ReflectMovement(Source, Target: TSphericalBearingState; var HeadingDelta, Speed, UnusedResult: Double): Boolean; // @addr $555A04
+procedure ab_StopLine_GetDistances(Source: TSphericalBearingState; var ForwardDistance, BackwardDistance: Double); // @addr $556064
+function ab_StopLine_IsBlocked(SourceLongitude, SourcePolarAngle, TargetLongitude, TargetPolarAngle: Double): Boolean; // @addr $556480
 procedure ab_StopLine_Load(Buffer: TBufEC); // @addr $5564F8
 
 var
@@ -420,7 +420,7 @@ var
   Normal, A, B, Direction, Movement: TVector3D;
 
   // @nested $5558A8 IntersectCollisionParameters
-  function IntersectCollisionParameters(A, B, C, D: TVector3D; var FirstT, SecondT: Double): Boolean; // @addr $5558A8 @ida "bool __userpurge $name@<al>(TVector3D *A@<eax>, TVector3D *B@<edx>, TVector3D *C@<ecx>, TVector3D *D@<^8>, double *FirstT@<^4>, double *SecondT@<^0>, void *ParentFrame@<^12>);" @stackpop 12 @calls "0x555d81"
+  function IntersectCollisionParameters(A, B, C, D: TVector3D; var FirstT, SecondT: Double): Boolean; // @addr $5558A8 @calls "0x555d81"
   begin
     FirstT := (B.X - A.X) * (D.Y - C.Y) - (B.Y - A.Y) * (D.X - C.X);
     if FirstT = 0 then
@@ -435,7 +435,7 @@ var
   end;
 
   // @nested $555998 CollisionLineDistance
-  function CollisionLineDistance(A, B, Point: TVector3D): Double; // @addr $555998 @ida "double __usercall $name@<st0>(TVector3D *A@<eax>, TVector3D *B@<edx>, TVector3D *Point@<ecx>, void *ParentFrame@<^0>);" @stackpop 0 @calls "0x555cf2"
+  function CollisionLineDistance(A, B, Point: TVector3D): Double; // @addr $555998 @calls "0x555cf2"
   var
     Cross: Double;
   begin
@@ -525,7 +525,7 @@ var
   A, B, Hit: TVector3D;
 
   // @nested $555F4C IntersectCollisionLines
-  function IntersectCollisionLines(A, B, C, D: TVector3D; var Hit: TVector3D): Boolean; // @addr $555F4C @ida "bool __userpurge $name@<al>(TVector3D *A@<eax>, TVector3D *B@<edx>, TVector3D *C@<ecx>, TVector3D *D@<^4>, TVector3D *Hit@<^0>, void *ParentFrame@<^8>);" @stackpop 8 @calls "0x556302"
+  function IntersectCollisionLines(A, B, C, D: TVector3D; var Hit: TVector3D): Boolean; // @addr $555F4C @calls "0x556302"
   var
     DX1, DY1, DX2, DY2, Denominator: Double;
   begin

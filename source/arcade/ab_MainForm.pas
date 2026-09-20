@@ -105,11 +105,11 @@ type
     LoadPanel: TfPanelLoad; // @offset $350 Owned.
     SelectedMapName: WideString; // @offset $354 Arena Map value supplied by the standalone selector.
 
-    constructor Create; // @addr $53B604 @ida "TfAB *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr $53B670 @ida "void __usercall $name(TfAB *Self@<eax>, __int8 DestroyFlags@<dl>);"
-    function ScreenPointToSphere(Point: TPoint; var Longitude, PolarAngle: Double): Boolean; // @addr $53EF60 @ida "bool __userpurge $name@<al>(TfAB *Self@<eax>, TPoint *Point@<edx>, double *Longitude@<ecx>, double *PolarAngle@<^0>);"
+    constructor Create; // @addr $53B604
+    destructor Destroy; override; // @addr $53B670
+    function ScreenPointToSphere(Point: TPoint; var Longitude, PolarAngle: Double): Boolean; // @addr $53EF60
     function RandomRange(BoundA, BoundB: Integer): Integer; // @addr $54B6E8
-    function RandomFloat(BoundA, BoundB: Double): Double; // @addr $54B774 @ida "double __userpurge $name@<st0>(TfAB *Self@<eax>, double BoundA@<^8>, double BoundB@<^0>);"
+    function RandomFloat(BoundA, BoundB: Double): Double; // @addr $54B774
     procedure UpdateHelp(Sender: TObjectGI; Show: Boolean); // @addr $54B808
     procedure ControlMouseEnter(Sender: TObjectGI); // @addr $54B848
     procedure ControlMouseLeave(Sender: TObjectGI); // @addr $54B868
@@ -139,15 +139,15 @@ type
     procedure EnterCurrentSpace; // @addr $5433D8
     procedure BattleKeyDown(Sender: TObjectGI; VirtualKey: Cardinal); // @addr $53DAA4
     procedure BattleKeyUp(Sender: TObjectGI; VirtualKey: Cardinal); // @addr $53E478
-    procedure BattleMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $53E654 @ida "void __userpurge $name(TfAB *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
-    procedure BattleMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $53E9B8 @ida "void __userpurge $name(TfAB *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
-    procedure BattleRightMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $53E9DC @ida "void __userpurge $name(TfAB *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
-    procedure BattleRightMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $53EA84 @ida "void __userpurge $name(TfAB *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
-    procedure BattleMouseMove(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $53EB08 @ida "void __userpurge $name(TfAB *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
-    procedure BuildSpaceRoute(Route: TList; Origin, Destination: TabSpace); // @addr $548808 @ida "void __userpurge $name(TfAB *Self@<eax>, TList *Route@<edx>, TabSpace *Origin@<ecx>, TabSpace *Destination@<^0>);"
-    procedure AppendShipPathArc(Destination: TPointF); // @addr $5481D8 @ida "void __usercall $name(TfAB *Self@<eax>, TPointF *Destination@<edx>);"
-    procedure AppendShipPathLine(Destination: TPointF); // @addr $5484D8 @ida "void __usercall $name(TfAB *Self@<eax>, TPointF *Destination@<edx>);"
-    procedure AppendShipPath(Destination: TPointF); // @addr $548784 @ida "void __usercall $name(TfAB *Self@<eax>, TPointF *Destination@<edx>);"
+    procedure BattleMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $53E654
+    procedure BattleMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $53E9B8
+    procedure BattleRightMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $53E9DC
+    procedure BattleRightMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $53EA84
+    procedure BattleMouseMove(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $53EB08
+    procedure BuildSpaceRoute(Route: TList; Origin, Destination: TabSpace); // @addr $548808
+    procedure AppendShipPathArc(Destination: TPointF); // @addr $5481D8
+    procedure AppendShipPathLine(Destination: TPointF); // @addr $5484D8
+    procedure AppendShipPath(Destination: TPointF); // @addr $548784
     procedure UpdateShipPathImages; // @addr $548DDC
     procedure RebuildShipPath; // @addr $548A6C
     procedure BuildShipPathImages; // @addr $548AD8
@@ -169,7 +169,7 @@ type
     procedure OnClose; override; // @addr $53D730
     procedure SelectMusic; override; // @addr $54BE0C
     procedure InitializeLayout; override; // @addr $53B6EC
-    procedure ABSpaceBuild(GridSize: Integer; Angle: Single); // @addr 0x541B60 @ida "void __userpurge $name(TfAB *Self@<eax>, int GridSize@<edx>, float Angle@<^0>);"
+    procedure ABSpaceBuild(GridSize: Integer; Angle: Single); // @addr 0x541B60
     procedure WorldImageCycleComplete(Sender: TObjectGI); // @addr $54819C
     procedure ClearOverlaySegments; // @addr $53EF08
     procedure ClearBattle; // @addr $5413C8
@@ -4242,7 +4242,7 @@ var
   Item: TWeapon;
 
   // @nested $54B1E0 SaveWeaponInventory
-  procedure SaveWeaponInventory; // @addr $54B1E0 @ida "void __usercall $name(void *ParentFrame@<^0>);" @stackpop 0 @calls "0x54B2A8"
+  procedure SaveWeaponInventory; // @addr $54B1E0 @calls "0x54B2A8"
   var
     Index: Integer;
   begin
@@ -4255,7 +4255,7 @@ var
   end;
 
   // @nested $54B24C FindSavedWeaponAmmo
-  function FindSavedWeaponAmmo(Weapon: TWeapon): Integer; // @addr $54B24C @ida "int __usercall $name@<eax>(TWeapon *Weapon@<eax>, void *ParentFrame@<^0>);" @stackpop 0 @calls "0x54B3D0"
+  function FindSavedWeaponAmmo(Weapon: TWeapon): Integer; // @addr $54B24C @calls "0x54B3D0"
   var
     Index: Integer;
   begin

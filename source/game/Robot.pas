@@ -309,7 +309,7 @@ var
   DrawClip, Bounds, SourceClip: TRect;
 
   // @nested $83C644 MeasureRobotTextSize
-  function MeasureRobotTextSize: TPoint; // @addr $83C644 @ida "void __usercall $name(TPoint *Result@<eax>, void *ParentFrame@<^0>);" @stackpop 0 @calls "0x83C9AB"
+  function MeasureRobotTextSize: TPoint; // @addr $83C644 @calls "0x83C9AB"
   var
     Y: Integer;
     First: Boolean;

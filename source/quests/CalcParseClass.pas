@@ -21,33 +21,33 @@ type
     EvaluationError: Boolean; // @offset 0x1A
     HasError: Boolean; // @offset 0x1B  Also set for empty parentheses.
 
-    constructor Create; // @addr 0x4E4634 @ida "TCalcParse *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
+    constructor Create; // @addr 0x4E4634
     procedure Reset; // @addr 0x4E4674
 
     // External spellings -> internal tokens: pct %, div f, mod g, in #,
     // to $, or |, and &, <> e, >= c, <= b, .. h, and decimal dot -> comma.
-    function NormalizeTokens(var Text: WideString): WideString; // @addr 0x4E1194 @ida "void __usercall $name(TCalcParse *Self@<eax>, unsigned __int16 **Text@<edx>, unsigned __int16 **Result@<ecx>);" @note "Text is read-only despite var. Uses ANSI lowercase and boundary-free substitutions; always wraps the result in parentheses."
-    function FormatTokens(var Text: WideString): WideString; // @addr 0x4E1768 @ida "void __usercall $name(TCalcParse *Self@<eax>, unsigned __int16 **Text@<edx>, unsigned __int16 **Result@<ecx>);" @note "Text is read-only despite var. Removes at most one enclosing parenthesis pair; leaves outer whitespace."
+    function NormalizeTokens(var Text: WideString): WideString; // @addr 0x4E1194 @note "Text is read-only despite var. Uses ANSI lowercase and boundary-free substitutions; always wraps the result in parentheses."
+    function FormatTokens(var Text: WideString): WideString; // @addr 0x4E1768 @note "Text is read-only despite var. Removes at most one enclosing parenthesis pair; leaves outer whitespace."
     // Lower ranks bind tighter; -1 means not an operator.
     // 1: ^ / f g; 2: * %; 3: -; 4: +; 5: $; 6: #;
     // 7: < > = b c e; 8: &; 9: |.
     function GetOperatorRank(Token: WideChar): Integer; // @addr 0x4E1B7C
-    function CollapseOperatorRun(const Text: WideString): WideString; // @addr 0x4E1D0C @ida "void __usercall $name(TCalcParse *Self@<eax>, unsigned __int16 *Text@<edx>, unsigned __int16 **Result@<ecx>);" @note "Requires a nonempty operator run. Minus parity controls the sign; ties choose the leftmost weakest operator."
-    function NormalizeParameterReference(Text: WideString): WideString; // @addr 0x4E310C @ida "void __usercall $name(TCalcParse *Self@<eax>, unsigned __int16 *Text@<edx>, unsigned __int16 **Result@<ecx>);" @note "Uses only the first three digits; zero/missing digits produce [err]. Does not check parameter-list bounds."
+    function CollapseOperatorRun(const Text: WideString): WideString; // @addr 0x4E1D0C @note "Requires a nonempty operator run. Minus parity controls the sign; ties choose the leftmost weakest operator."
+    function NormalizeParameterReference(Text: WideString): WideString; // @addr 0x4E310C @note "Uses only the first three digits; zero/missing digits produce [err]. Does not check parameter-list bounds."
     function FindTopLevelOperator(const Text: WideString; TextLength: Integer): Integer; // @addr 0x4E3C40 @note "One-based; zero when absent. Rightmost ties give left associativity. Delimiter balance is unchecked."
     function HasBalancedParenthesesInSlice(const Text: WideString; FirstIndex, LastIndex: Integer): Boolean; // @addr 0x4E46DC @note "One-based inclusive bounds, unchecked. Empty slices pass; square brackets are ignored."
     function HasBalancedParentheses(const Text: WideString): Boolean; // @addr 0x4E48EC @note "Empty text passes."
 
     procedure Prepare(Text: WideString; DefaultParameterIndex: Integer); // @addr 0x4E43E0 @note "Resets state; stores Expression even on error. Empty input becomes (), not the default parameter."
-    function NormalizeFragments(const Text: WideString): WideString; // @addr 0x4E1E98 @ida "void __usercall $name(TCalcParse *Self@<eax>, unsigned __int16 *Text@<edx>, unsigned __int16 **Result@<ecx>);" @note "Square brackets do not nest. An unmatched opening bracket silently discards the remaining suffix."
-    function NormalizeScalarFragment(Text: WideString): WideString; // @addr 0x4E2068 @ida "void __usercall $name(TCalcParse *Self@<eax>, unsigned __int16 *Text@<edx>, unsigned __int16 **Result@<ecx>);" @note "Silently discards unsupported characters, including decimal dots; call NormalizeTokens first."
-    function NormalizeBracketFragment(Text: WideString): WideString; // @addr 0x4E3070 @ida "void __usercall $name(TCalcParse *Self@<eax>, unsigned __int16 *Text@<edx>, unsigned __int16 **Result@<ecx>);" @note "Any lowercase p selects parameter parsing, even outside the [pN] form."
-    function NormalizeRangeLiteral(Text: WideString): WideString; // @addr 0x4E327C @ida "void __usercall $name(TCalcParse *Self@<eax>, unsigned __int16 *Text@<edx>, unsigned __int16 **Result@<ecx>);" @note "Requires internal h notation, not '..'. Empty or rejected input yields [err]; existing errors remain set."
-    function InsertImplicitMultiplication(Text: WideString): WideString; // @addr 0x4E35A4 @ida "void __usercall $name(TCalcParse *Self@<eax>, unsigned __int16 *Text@<edx>, unsigned __int16 **Result@<ecx>);"
-    function ClampNumericLiterals(Text: WideString): WideString; // @addr 0x4E4924 @ida "void __usercall $name(TCalcParse *Self@<eax>, unsigned __int16 *Text@<edx>, unsigned __int16 **Result@<ecx>);" @note "Nonzero limits: 0.0001..999999999. The lower clamp emits a dot-decimal literal that evaluation rejects. Drops trailing numbers; conversion errors set flags and leave the caller's result storage unchanged."
+    function NormalizeFragments(const Text: WideString): WideString; // @addr 0x4E1E98 @note "Square brackets do not nest. An unmatched opening bracket silently discards the remaining suffix."
+    function NormalizeScalarFragment(Text: WideString): WideString; // @addr 0x4E2068 @note "Silently discards unsupported characters, including decimal dots; call NormalizeTokens first."
+    function NormalizeBracketFragment(Text: WideString): WideString; // @addr 0x4E3070 @note "Any lowercase p selects parameter parsing, even outside the [pN] form."
+    function NormalizeRangeLiteral(Text: WideString): WideString; // @addr 0x4E327C @note "Requires internal h notation, not '..'. Empty or rejected input yields [err]; existing errors remain set."
+    function InsertImplicitMultiplication(Text: WideString): WideString; // @addr 0x4E35A4
+    function ClampNumericLiterals(Text: WideString): WideString; // @addr 0x4E4924 @note "Nonzero limits: 0.0001..999999999. The lower clamp emits a dot-decimal literal that evaluation rejects. Drops trailing numbers; conversion errors set flags and leave the caller's result storage unchanged."
 
     // Parameters: borrowed, non-nil TList of TParameter; [pN] is one-based.
-    function SubstituteParameters(Parameters: TList): WideString; // @addr 0x4E4754 @ida "void __usercall $name(TCalcParse *Self@<eax>, TList *Parameters@<edx>, unsigned __int16 **Result@<ecx>);" @note "Unmatched references remain unchanged; negative values are parenthesized."
+    function SubstituteParameters(Parameters: TList): WideString; // @addr 0x4E4754 @note "Unmatched references remain unchanged; negative values are parenthesized."
     function EvaluateExpression(Text: WideString): TCPVariant; // @addr 0x4E3D0C @note "Caller owns the result. Evaluates right before left without short-circuiting. EvaluationError blocks evaluation; HasError alone does not. Native recursive intermediates leak."
     procedure Evaluate(Parameters: TList); // @addr 0x4E42C4 @note "Existing HasError preserves ResultValue; flags are not reset. Native scratch and returned variants leak."
 

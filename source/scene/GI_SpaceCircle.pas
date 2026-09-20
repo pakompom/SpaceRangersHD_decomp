@@ -35,10 +35,10 @@ type
     AnimationTimer: PCallbackTimerGI; // @offset $14C
     SavedPixels: Pointer; // @offset $150
 
-    constructor Create(Owner: TObjectGI); // @addr $4B39EC @ida "TSpaceCircleGI *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, TObjectGI *Owner@<ecx>);"
-    destructor Destroy; override; // @addr $4B3A60 @ida "void __usercall $name(TSpaceCircleGI *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create(Owner: TObjectGI); // @addr $4B39EC
+    destructor Destroy; override; // @addr $4B3A60
     procedure SetRadius(Value: Integer); // @addr $4B3AC8
-    procedure SetCenter(Value: TPoint); // @addr $4B3B10 @ida "void __usercall $name(TSpaceCircleGI *Self@<eax>, TPoint *Value@<edx>);"
+    procedure SetCenter(Value: TPoint); // @addr $4B3B10
     procedure ClearSegments; // @addr $4B3B74
     procedure ClearPreviousLines; // @addr $4B3BB0
     procedure RebuildSegments; // @addr $4B3BEC
@@ -53,8 +53,8 @@ type
     procedure Invalidate; override; // @addr $4B42B8 @note "Empty in native code."
     procedure ErasePreviousFrame; override; // @addr $4B42C4
     procedure PrepareFrameDraw; override; // @addr $4B445C
-    procedure DrawUpdateRects(ClipRect: TRect); override; // @addr $4B45C4 @ida "void __usercall $name(TSpaceCircleGI *Self@<eax>, TRect *ClipRect@<edx>);"
-    procedure Draw(ClipRect: TRect); override; // @addr $4B460C @ida "void __usercall $name(TSpaceCircleGI *Self@<eax>, TRect *ClipRect@<edx>);"
+    procedure DrawUpdateRects(ClipRect: TRect); override; // @addr $4B45C4
+    procedure Draw(ClipRect: TRect); override; // @addr $4B460C
     procedure CommitFrameDraw; override; // @addr $4B473C
   end;
 

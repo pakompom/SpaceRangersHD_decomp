@@ -33,10 +33,10 @@ type
 procedure ab_WorldImage_Clear; // @addr $55667C
 function ab_WorldImage_Add: PabWorldImage; // @addr $5566B0 @note "Allocates and links a node owned by the world list."
 procedure ab_WorldImage_Delete(Entry: PabWorldImage); // @addr $556778
-function ab_WorldImage_Create(Position: TVector3D; const FrontPath, BackPath: WideString; StopAnimation: Boolean): PabWorldImage; // @addr $556820 @ida "TabWorldImage *__userpurge $name@<eax>(TVector3D *Position@<eax>, unsigned __int16 *FrontPath@<edx>, unsigned __int16 *BackPath@<ecx>, bool StopAnimation@<^0>);"
-procedure ab_WorldImage_Set(Entry: PabWorldImage; Position: TVector3D; const FrontPath, BackPath: WideString); // @addr $5568C4 @ida "void __userpurge $name(TabWorldImage *Entry@<eax>, TVector3D *Position@<edx>, unsigned __int16 *FrontPath@<ecx>, unsigned __int16 *BackPath@<^0>);"
-procedure ab_WorldImage_SetPosition(Entry: PabWorldImage; Position: TVector3D); // @addr $55694C @ida "void __usercall $name(TabWorldImage *Entry@<eax>, TVector3D *Position@<edx>);"
-procedure ab_WorldImage_SetDepth(Entry: PabWorldImage; FrontDepth, BackDepth: Single); // @addr $55697C @ida "void __userpurge $name(TabWorldImage *Entry@<eax>, float FrontDepth@<^4>, float BackDepth@<^0>);"
+function ab_WorldImage_Create(Position: TVector3D; const FrontPath, BackPath: WideString; StopAnimation: Boolean): PabWorldImage; // @addr $556820
+procedure ab_WorldImage_Set(Entry: PabWorldImage; Position: TVector3D; const FrontPath, BackPath: WideString); // @addr $5568C4
+procedure ab_WorldImage_SetPosition(Entry: PabWorldImage; Position: TVector3D); // @addr $55694C
+procedure ab_WorldImage_SetDepth(Entry: PabWorldImage; FrontDepth, BackDepth: Single); // @addr $55697C
 procedure ab_WorldImage_SetFrameMode(Entry: PabWorldImage; Value: Integer); // @addr $5569A4
 procedure ab_WorldImage_SetLooping(Entry: PabWorldImage; Value: Boolean); // @addr $5569C0
 procedure ab_WorldImage_Update; // @addr $5569E8

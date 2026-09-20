@@ -12,17 +12,17 @@ type
     ImageKindX: TImageKindXGI; // @offset 0x124
     ImageKindY: TImageKindYGI; // @offset 0x125
 
-    constructor Create(Owner: TObjectGI); // @addr 0x475B60 @ida "TAlphaImageGI *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, TObjectGI *Owner@<ecx>);"
-    destructor Destroy; override; // @addr 0x475BE8 @ida "void __usercall $name(TAlphaImageGI *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create(Owner: TObjectGI); // @addr 0x475B60
+    destructor Destroy; override; // @addr 0x475BE8
     procedure Clear; override; // @addr 0x475C34
     procedure SetImagePath(const ImagePath: WideString); // @addr 0x475C5C
-    function GetContentSize: TPoint; // @addr 0x475CA0 @ida "void __usercall $name(TAlphaImageGI *Self@<eax>, TPoint *Result@<edx>);"
+    function GetContentSize: TPoint; // @addr 0x475CA0
     procedure SetImageKindX(Value: TImageKindXGI); // @addr 0x475D04
     procedure SetImageKindY(Value: TImageKindYGI); // @addr 0x475D3C
-    function HitTestPixel(Point: TPoint): Boolean; // @addr 0x475D74 @ida "bool __usercall $name@<al>(TAlphaImageGI *Self@<eax>, TPoint *Point@<edx>);" @note "Black pixels do not count as hits."
+    function HitTestPixel(Point: TPoint): Boolean; // @addr 0x475D74 @note "Black pixels do not count as hits."
     procedure LoadFromConfigPath(const Path: WideString); override; // @addr 0x476048
     procedure LoadFromBlock(Block: TBlockParEC); override; // @addr 0x476318
-    procedure Draw(ClipRect: TRect); override; // @addr 0x4765C4 @ida "void __usercall $name(TAlphaImageGI *Self@<eax>, TRect *ClipRect@<edx>);"
+    procedure Draw(ClipRect: TRect); override; // @addr 0x4765C4
     procedure QueueImageLoad(PendingLoads: TList); override; // @addr 0x4768F4
   end;
 

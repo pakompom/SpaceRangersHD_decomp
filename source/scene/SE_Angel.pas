@@ -42,8 +42,8 @@ type
 
     procedure AttachToSpace(ASpace: TSpaceSE); override; // @addr $8266D4
     procedure DetachFromSpace; override; // @addr $826774
-    procedure SetPosition(APosition: TPointF); override; // @addr $8267B4 @ida "void __usercall $name(TAngelSE *Self@<eax>, TPointF *APosition@<edx>);"
-    procedure SetVelocityFromAngle(Angle: Single); // @addr $82683C @ida "void __userpurge $name(TAngelSE *Self@<eax>, float Angle@<^0>);"
+    procedure SetPosition(APosition: TPointF); override; // @addr $8267B4
+    procedure SetVelocityFromAngle(Angle: Single); // @addr $82683C
     procedure StartMotionTimer; // @addr $826898
     procedure StopMotionTimer; // @addr $8268D4
     function GetFrameCount(Entry: PAngelEntry): Integer; // @addr $826900

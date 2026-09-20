@@ -34,16 +34,16 @@ type
     // Segments is a Delphi dynamic array, with inactive slots included in SegmentCapacity.
     // SegmentVelocity is displacement per 20 ms movement callback.
 
-    constructor Create(Owner: TObjectGI); // @addr 0x4D64EC @ida "TTailGI *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, TObjectGI *Owner@<ecx>);"
-    destructor Destroy; override; // @addr 0x4D6584 @ida "void __usercall $name(TTailGI *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create(Owner: TObjectGI); // @addr 0x4D64EC
+    destructor Destroy; override; // @addr 0x4D6584
     procedure ClearSegments; // @addr 0x4D6658 @note "Preserves timers and emission state."
     procedure SetImagePath(const ImagePath: WideString); // @addr 0x4D6690 @note "Requires at least one GAI sequence. Existing segments are kept."
-    function GetImagePath: WideString; // @addr 0x4D67F4 @ida "void __usercall $name(TTailGI *Self@<eax>, unsigned __int16 **Result@<edx>);"
+    function GetImagePath: WideString; // @addr 0x4D67F4
     function AllocateSegment: PTailSegmentGI; // @addr 0x4D6818 @note "Reuses the last inactive slot or grows by 16. Growth can invalidate earlier pointers; only Active is initialized."
     procedure AdvanceSegmentFrames(Timer: PCallbackTimerGI; UserData: Integer); // @addr 0x4D68F0
     procedure MoveSegments(Timer: PCallbackTimerGI; UserData: Integer); // @addr 0x4D697C
     procedure EmitSegment(Timer: PCallbackTimerGI; UserData: Integer); // @addr 0x4D6A18 @note "Suppresses emission within squared distance 0.001 of the last live segment."
-    procedure OffsetSegments(Delta: TPointF); // @addr 0x4D6B0C @ida "void __usercall $name(TTailGI *Self@<eax>, TPointF *Delta@<edx>);"
+    procedure OffsetSegments(Delta: TPointF); // @addr 0x4D6B0C
     procedure SetActive(Enabled: Boolean); override; // @addr 0x4D6BA4 @note "Deactivation cancels timers. Drawing restarts them when Emitting is true."
     procedure SetEmitting(Enabled: Boolean); // @addr 0x4D6C5C @note "Disabling emission leaves existing segments animating."
     procedure Invalidate; override; // @addr 0x4D6DD0
@@ -51,8 +51,8 @@ type
     procedure LoadFromBlock(Block: TBlockParEC); override; // @addr 0x4D6EBC
     procedure LoadTailProperties(Block: TBlockParEC); // @addr 0x4D6EE4 @note "Empty in the native binary."
     procedure UpdateAutoGeometry; override; // @addr 0x4D6EF4 @note "Empty; does not call inherited UpdateAutoGeometry."
-    procedure Draw(ClipRect: TRect); override; // @addr 0x4D6F00 @ida "void __usercall $name(TTailGI *Self@<eax>, TRect *ClipRect@<edx>);"
-    procedure DrawUpdateRects(ClipRect: TRect); override; // @addr 0x4D7174 @ida "void __usercall $name(TTailGI *Self@<eax>, TRect *ClipRect@<edx>);" @note "Ignores ClipRect; uses the message loop's update rectangles."
+    procedure Draw(ClipRect: TRect); override; // @addr 0x4D6F00
+    procedure DrawUpdateRects(ClipRect: TRect); override; // @addr 0x4D7174 @note "Ignores ClipRect; uses the message loop's update rectangles."
   end;
 
 implementation

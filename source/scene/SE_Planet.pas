@@ -79,8 +79,8 @@ type
     RuinsAnimationFrame: Integer; // @offset 0x130
     IsRuins: Boolean; // @offset 0x134  GraphKey starts with Ruins.
 
-    constructor Create; // @addr 0x81BB6C @ida "TPlanetSE *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    constructor CreateFromGraph(const AGraphKey: WideString; UnusedPosition: TPoint); // @addr 0x81BBB0 @ida "TPlanetSE *__userpurge $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, unsigned __int16 *AGraphKey@<ecx>, TPoint *UnusedPosition@<^0>);"
+    constructor Create; // @addr 0x81BB6C
+    constructor CreateFromGraph(const AGraphKey: WideString; UnusedPosition: TPoint); // @addr 0x81BBB0
     procedure CopyTo(Destination: TObjectSE); override; // @addr 0x81BC38 @slot 0x00 @note "Destination must be a TPlanetSE. Copies configuration, not attached controls/timers."
     procedure AttachToSpace(ASpace: TSpaceSE); override; // @addr 0x81BEA8
     procedure DetachFromSpace; override; // @addr 0x81CE20
@@ -88,7 +88,7 @@ type
     procedure RebuildSurfaceAnimation; // @addr 0x81D698
     procedure StartRandomSurfaceAnimation; // @addr 0x81D858 @note "Requires an allocated image control and a mask with positive total animation weight."
     procedure SetMinimapOwner(Owner: Byte); // @addr 0x81DADC
-    procedure SetPosition(APosition: TPointF); override; // @addr 0x81DC80 @ida "void __usercall $name(TPlanetSE *Self@<eax>, TPointF *APosition@<edx>);"
+    procedure SetPosition(APosition: TPointF); override; // @addr 0x81DC80
     procedure SetSurfaceMapOffset(Value: Integer); // @addr 0x81DF1C
     procedure SetCloud1MapOffset(Value: Integer); // @addr 0x81DF64
     procedure SetCloud2MapOffset(Value: Integer); // @addr 0x81DFB0

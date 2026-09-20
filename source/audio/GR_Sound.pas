@@ -23,12 +23,12 @@ type
     Volume: Single; // @offset 0x14
     Pan: Single; // @offset 0x18
 
-    constructor Create; // @addr 0x84BAA8 @ida "TSoundBufferControl *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x84BAEC @ida "void __usercall $name(TSoundBufferControl *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x84BAA8
+    destructor Destroy; override; // @addr 0x84BAEC
     procedure Clear; // @addr 0x84BB28 @note "Releases the active buffer and resets Volume/Pan only when Buffer is non-nil. Keeps path, group and looping mode."
     procedure Configure(const Path: WideString; Group: Integer; ALooping: Boolean); // @addr 0x84BB6C @note "Identical paths leave every setting unchanged, including group and looping mode."
-    procedure SetVolume(Value: Single); // @addr 0x84BBBC @ida "void __userpurge $name(TSoundBufferControl *Self@<eax>, float Value@<^0>);" @note "Unchanged values do nothing. Looping sounds start lazily at nonzero volume; changing to zero clears an active loop. The controller retains the unclamped value."
-    procedure SetPan(Value: Single); // @addr 0x84BCA0 @ida "void __userpurge $name(TSoundBufferControl *Self@<eax>, float Value@<^0>);" @note "A changed pan can start an inactive looping sound, even at zero volume."
+    procedure SetVolume(Value: Single); // @addr 0x84BBBC @note "Unchanged values do nothing. Looping sounds start lazily at nonzero volume; changing to zero clears an active loop. The controller retains the unclamped value."
+    procedure SetPan(Value: Single); // @addr 0x84BCA0 @note "A changed pan can start an inactive looping sound, even at zero volume."
     procedure Play; // @addr 0x84BD48 @note "Restarts non-looping sounds; does nothing in looping mode."
     function IsPlaying: Boolean; // @addr 0x84BDAC
   end;
@@ -58,13 +58,13 @@ type
     WriteOffset: Integer; // @offset 0x60
     LastPlayCursor: Cardinal; // @offset 0x64
 
-    destructor Destroy; override; // @addr $84BF18 @ida "void __usercall $name(TSoundBuffer *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    destructor Destroy; override; // @addr $84BF18
     procedure Clear; // @addr $84BFC4
     function WaitForChunk: Integer; // @addr $84CF80
     procedure SignalStop; // @addr $84D194
-    procedure SetVolumeScale(Value: Single); // @addr $84D418 @ida "void __userpurge $name(TSoundBuffer *Self@<eax>, float Value@<^0>);"
-    procedure StartVolumeRamp(Interval: Cardinal; Step: Single); // @addr $84D47C @ida "void __userpurge $name(TSoundBuffer *Self@<eax>, unsigned int Interval@<edx>, float Step@<^0>);"
-    constructor Create; // @addr 0x84BDD8 @ida "TSoundBuffer *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
+    procedure SetVolumeScale(Value: Single); // @addr $84D418
+    procedure StartVolumeRamp(Interval: Cardinal; Step: Single); // @addr $84D47C
+    constructor Create; // @addr 0x84BDD8
     procedure Init(ByteCount: Integer; Format: Pointer); // @addr 0x84C0A8 @note "Copies 20 bytes from Format into internal wave-format storage."
     procedure InitStream(ChunkBytes: Integer; Format: Pointer); // @addr 0x84C240 @note "Copies 20 bytes from Format; allocates three chunks of streaming audio."
     procedure ClearBuf; // @addr 0x84C638 @note "Fills the audio buffer with silence; does not release it."
@@ -72,8 +72,8 @@ type
     function WriteStream(Chunk: Integer; var Decoder: TOggWorker): Boolean; // @addr $84C9FC @note "Chunk=-1 primes the buffer; other values refill from the current playback cursor. False indicates exhaustion or an unavailable buffer."
     procedure Play(Looping: Boolean); // @addr 0x84CD9C @note "Streaming buffers always loop."
     function IsPlaying: Boolean; // @addr 0x84D07C
-    procedure SetVolume(Value: Single); // @addr 0x84D1AC @ida "void __userpurge $name(TSoundBuffer *Self@<eax>, float Value@<^0>);" @note "Stores the unclamped value and combines it with the buffer's secondary volume multiplier."
-    procedure SetPan(Value: Single); // @addr 0x84D4DC @ida "void __userpurge $name(TSoundBuffer *Self@<eax>, float Value@<^0>);" @note "Clamps the DirectSound pan to -10000..10000."
+    procedure SetVolume(Value: Single); // @addr 0x84D1AC @note "Stores the unclamped value and combines it with the buffer's secondary volume multiplier."
+    procedure SetPan(Value: Single); // @addr 0x84D4DC @note "Clamps the DirectSound pan to -10000..10000."
   end;
 
   TSoundControl = class(TObjectEx) // @size 0x30
@@ -86,24 +86,24 @@ type
     Lock: TCriticalSection; // @offset 0x28
     LastFadeTick: Cardinal; // @offset 0x2C
 
-    destructor Destroy; override; // @addr $84DD70 @ida "void __usercall $name(TSoundControl *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    destructor Destroy; override; // @addr $84DD70
     procedure Clear; // @addr $84DDCC
     procedure StopUncontrolledSounds; // @addr $84DDF0
     function AddBuffer: TSoundBuffer; // @addr $84DE60
     procedure RemoveBuffer(Buffer: TSoundBuffer); // @addr $84DF04
-    function SuppressGroup(Group: Integer; Volume: Single): Boolean; // @addr $84DFB4 @ida "bool __userpurge $name@<al>(TSoundControl *Self@<eax>, int Group@<edx>, float Volume@<^0>);"
+    function SuppressGroup(Group: Integer; Volume: Single): Boolean; // @addr $84DFB4
     procedure RemoveFinishedBuffers; // @addr $84E078
     procedure UpdateFades; // @addr $84E104
     procedure PlaySound(const Path: WideString); // @addr $84E218
-    function PlayEffect(const Path: WideString; Group: Integer; Volume, Pan: Single): TSoundBuffer; // @addr $84E314 @ida "TSoundBuffer *__userpurge $name@<eax>(TSoundControl *Self@<eax>, unsigned __int16 *Path@<edx>, int Group@<ecx>, float Volume@<^4>, float Pan@<^0>);"
-    function PlayLoop(const Path: WideString; Group: Integer; Volume, Pan: Single): TSoundBuffer; // @addr $84E450 @ida "TSoundBuffer *__userpurge $name@<eax>(TSoundControl *Self@<eax>, unsigned __int16 *Path@<edx>, int Group@<ecx>, float Volume@<^4>, float Pan@<^0>);"
+    function PlayEffect(const Path: WideString; Group: Integer; Volume, Pan: Single): TSoundBuffer; // @addr $84E314
+    function PlayLoop(const Path: WideString; Group: Integer; Volume, Pan: Single): TSoundBuffer; // @addr $84E450
     procedure SignalStop; // @addr $84E58C
-    constructor Create; // @addr 0x84D6F0 @ida "TSoundControl *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
+    constructor Create; // @addr 0x84D6F0
   end;
 
 function EnumerateSoundDevice(Guid: Pointer; Description, Module: PAnsiChar; Context: Pointer): LongBool; stdcall; // @addr $84D61C
 
-function SoundErrorText(Code: Integer): AnsiString; // @addr $84B41C @ida "void __usercall $name(int Code@<eax>, char **Result@<edx>);"
+function SoundErrorText(Code: Integer): AnsiString; // @addr $84B41C
 
 implementation
 

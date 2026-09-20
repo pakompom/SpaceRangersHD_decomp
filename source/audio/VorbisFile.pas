@@ -23,8 +23,8 @@ type
     Lock: PCriticalSection; // @offset $2D8
     Bitstream: Integer; // @offset $2DC
     ExternalLibrary: Boolean; // @offset $2E0
-    constructor Create(SharedLock: PCriticalSection; UseExternalLibrary: Boolean); // @addr $84E658 @ida "TOggWorker *__userpurge $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, TCriticalSection **SharedLock@<ecx>, bool UseExternalLibrary@<^0>);"
-    destructor Destroy; override; // @addr $84E6FC @ida "void __usercall $name(TOggWorker *Self@<eax>, __int8 DestroyFlags@<dl>);" @note "Decrements the shared use count without unloading or clearing the decoder."
+    constructor Create(SharedLock: PCriticalSection; UseExternalLibrary: Boolean); // @addr $84E658
+    destructor Destroy; override; // @addr $84E6FC @note "Decrements the shared use count without unloading or clearing the decoder."
 
   end;
   // libvorbisfile C ABI: https://github.com/xiph/vorbis/blob/master/include/vorbis/vorbisfile.h

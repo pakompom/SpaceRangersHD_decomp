@@ -19,12 +19,12 @@ type
   end;
   PRect = ^TRect;
 
-function MakePoint(X, Y: Integer): TPoint; // @ida "void __usercall $name(int X@<eax>, int Y@<edx>, TPoint *Result@<ecx>);"
-function MakeRect(Left, Top, Right, Bottom: Integer): TRect; // @ida "void __userpurge $name(int Left@<eax>, int Top@<edx>, int Right@<ecx>, int Bottom@<^4>, TRect *Result@<^0>);"
+function MakePoint(X, Y: Integer): TPoint;
+function MakeRect(Left, Top, Right, Bottom: Integer): TRect;
 
 procedure SmallPoint; // @nameonly @note "DCC32 MAP Types.SmallPoint. Prototype pending: no unique source declaration."
 
-function Bounds(ALeft, ATop, AWidth, AHeight: Integer): TRect; // @ida "void __userpurge $name(__int32 ALeft@<eax>, __int32 ATop@<edx>, __int32 AWidth@<ecx>, __int32 AHeight@<^4>, TRect *Result@<^0>);" @note "DCC32 MAP Types.Bounds. Source rtl/sys/Types.pas:545."
+function Bounds(ALeft, ATop, AWidth, AHeight: Integer): TRect; // @note "DCC32 MAP Types.Bounds. Source rtl/sys/Types.pas:545."
 
 implementation
 end.

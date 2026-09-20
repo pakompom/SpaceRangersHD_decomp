@@ -20,8 +20,8 @@ type
   public
     Buffer: Pointer; // @offset 0x20
 
-    constructor Create; // @addr 0x4936D8 @ida "TCRotateBufEC *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x493724 @ida "void __usercall $name(TCRotateBufEC *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x4936D8
+    destructor Destroy; override; // @addr 0x493724
     procedure LoadFromKey(const Key: WideString); override; // @addr 0x493774 @note "Key contains width,height,source width,source height,center X,center Y as comma-delimited integers."
   end;
 

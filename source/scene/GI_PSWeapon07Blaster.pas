@@ -34,19 +34,19 @@ type
     SecondaryColor: Word; // @offset $13E
     ProjectionBounds: TRect; // @offset $140
 
-    constructor Create(Owner: TObjectGI; APaletteIndex: Integer); // @addr $68D2B8 @ida "TPSWeapon07Blaster *__userpurge $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, TObjectGI *Owner@<ecx>, int APaletteIndex@<^0>);"
-    destructor Destroy; override; // @addr $68D364 @ida "void __usercall $name(TPSWeapon07Blaster *Self@<eax>, __int8 DestroyFlags@<dl>);"
-    procedure SetPosition(Position: TPoint); override; // @addr $68D3A0 @ida "void __usercall $name(TPSWeapon07Blaster *Self@<eax>, TPoint *Position@<edx>);"
-    procedure SetTargetPoint(Point: TPoint); override; // @addr $68D3E4 @ida "void __usercall $name(TPSWeapon07Blaster *Self@<eax>, TPoint *Point@<edx>);"
+    constructor Create(Owner: TObjectGI; APaletteIndex: Integer); // @addr $68D2B8
+    destructor Destroy; override; // @addr $68D364
+    procedure SetPosition(Position: TPoint); override; // @addr $68D3A0
+    procedure SetTargetPoint(Point: TPoint); override; // @addr $68D3E4
     procedure UpdateProjectionBounds; // @addr $68D438
     procedure UpdateHitTestBounds; override; // @addr $68D77C
-    function GetLocalBounds: TRect; override; // @addr $68D7E8 @ida "void __usercall $name(TPSWeapon07Blaster *Self@<eax>, TRect *Result@<edx>);"
+    function GetLocalBounds: TRect; override; // @addr $68D7E8
     function AddParticle: PBlasterParticle; // @addr $68D84C
     procedure ClearParticles; // @addr $68D8C4
     procedure Invalidate; override; // @addr $68D9E4 @note "Native empty override."
-    procedure InvalidateRect(Rect: TRect); override; // @addr $68D918 @ida "void __usercall $name(TPSWeapon07Blaster *Self@<eax>, TRect *Rect@<edx>);"
+    procedure InvalidateRect(Rect: TRect); override; // @addr $68D918
     procedure Advance(Timer: PCallbackTimerGI; UserData: Integer); override; // @addr $68D9F0
-    procedure Draw(ClipRect: TRect); override; // @addr $68E204 @ida "void __usercall $name(TPSWeapon07Blaster *Self@<eax>, TRect *ClipRect@<edx>);"
+    procedure Draw(ClipRect: TRect); override; // @addr $68E204
   end;
 
 function NextBlasterRandom: Integer; // @addr $68D290

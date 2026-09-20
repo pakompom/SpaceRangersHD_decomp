@@ -11,14 +11,14 @@ type
     procedure CastTo(var Dest: TVarData; const Source: TVarData; const AVarType: TVarType); virtual; // @ida "void __userpurge $name(TCustomVariantType *Self@<eax>, TVarData *Dest@<edx>, TVarData *Source@<ecx>, TVarType AVarType@<^0>);" @note "DCC32 MAP Variants.TCustomVariantType.CastTo. Source rtl/sys/Variants.pas:5072." @slot 0x1C
     function CompareOp(const Left, Right: TVarData; const Operator: TVarOp): Boolean; virtual; // @ida "bool __userpurge $name@<al>(TCustomVariantType *Self@<eax>, TVarData *Left@<edx>, TVarData *Right@<ecx>, TVarOp Operator@<^0>);" @note "DCC32 MAP Variants.TCustomVariantType.CompareOp. Source rtl/sys/Variants.pas:5090." @slot 0x34
     procedure CastToOle(var Dest: TVarData; const Source: TVarData); virtual; // @ida "void __usercall $name(TCustomVariantType *Self@<eax>, TVarData *Dest@<edx>, TVarData *Source@<ecx>);" @note "DCC32 MAP Variants.TCustomVariantType.CastToOle. Source rtl/sys/Variants.pas:5108." @slot 0x20
-    destructor Destroy; // @ida "void __usercall $name(TCustomVariantType *Self@<eax>, unsigned __int8 DestroyFlags@<dl>);" @note "DCC32 MAP Variants.TCustomVariantType.Destroy. Source rtl/sys/Variants.pas:5157."
+    destructor Destroy; // @note "DCC32 MAP Variants.TCustomVariantType.Destroy. Source rtl/sys/Variants.pas:5157."
   end;
 
-procedure TranslateResult(AResult: HResult); // @ida "void __usercall $name(HResult AResult@<eax>);" @note "DCC32 MAP Variants.TranslateResult. Source rtl/sys/Variants.pas:565."
+procedure TranslateResult(AResult: HResult); // @note "DCC32 MAP Variants.TranslateResult. Source rtl/sys/Variants.pas:565."
 
 procedure VarResultCheck; // @nameonly @note "DCC32 MAP Variants.VarResultCheck. Prototype pending: no unique source declaration."
 
-procedure VarArrayClear(var V: TVarData); // @ida "void __usercall $name(TVarData *V@<eax>);" @note "DCC32 MAP Variants.VarArrayClear. Source rtl/sys/Variants.pas:631."
+procedure VarArrayClear(var V: TVarData); // @note "DCC32 MAP Variants.VarArrayClear. Source rtl/sys/Variants.pas:631."
 
 procedure VarClearDeep; // @nameonly @note "DCC32 MAP Variants.VarClearDeep. Prototype pending: no unique source declaration."
 
@@ -30,7 +30,7 @@ procedure _VarCopy(var Dest: TVarData; const Source: TVarData); // @nameonly @no
 
 procedure CurrToWStrViaOS; // @nameonly @note "DCC32 MAP Variants.CurrToWStrViaOS. Source rtl/sys/Variants.pas:2214. Prototype pending: source type not found: Currency."
 
-function DateToWStrViaOS(const AValue: TDateTime): WideString; // @ida "void __userpurge $name(TDateTime AValue@<^0>, unsigned __int16 * *Result@<eax>);" @note "DCC32 MAP Variants.DateToWStrViaOS. Source rtl/sys/Variants.pas:2220."
+function DateToWStrViaOS(const AValue: TDateTime): WideString; // @note "DCC32 MAP Variants.DateToWStrViaOS. Source rtl/sys/Variants.pas:2220."
 
 procedure BoolToWStrViaOS; // @nameonly @note "DCC32 MAP Variants.BoolToWStrViaOS. Source rtl/sys/Variants.pas:2226. Prototype pending: source type not found: WordBool."
 
@@ -58,11 +58,11 @@ procedure _VarFromWStr(var V: TVarData; const Value: WideString); // @nameonly @
 
 procedure _VarAddRef(var V: TVarData); // @nameonly @note "DCC32 MAP Variants.@VarAddRef. Source rtl/sys/Variants.pas:3971. Prototype pending: compiler-helper ABI needs explicit analysis."
 
-function VarTypeAsText(const AType: TVarType): AnsiString; // @ida "void __usercall $name(TVarType AType@<ax>, char * *Result@<edx>);" @note "DCC32 MAP Variants.VarTypeAsText. Source rtl/sys/Variants.pas:3986."
+function VarTypeAsText(const AType: TVarType): AnsiString; // @note "DCC32 MAP Variants.VarTypeAsText. Source rtl/sys/Variants.pas:3986."
 
-procedure SetVarAsError(var V: TVarData; AResult: HResult); // @ida "void __usercall $name(TVarData *V@<eax>, HResult AResult@<edx>);" @note "DCC32 MAP Variants.SetVarAsError. Source rtl/sys/Variants.pas:4224."
+procedure SetVarAsError(var V: TVarData; AResult: HResult); // @note "DCC32 MAP Variants.SetVarAsError. Source rtl/sys/Variants.pas:4224."
 
-procedure ClearVariantTypeList; // @ida "void __usercall $name(void);" @note "DCC32 MAP Variants.ClearVariantTypeList. Source rtl/sys/Variants.pas:5040."
+procedure ClearVariantTypeList; // @note "DCC32 MAP Variants.ClearVariantTypeList. Source rtl/sys/Variants.pas:5040."
 
 procedure FindCustomVariantType; // @nameonly @note "DCC32 MAP Variants.FindCustomVariantType. Prototype pending: no unique source declaration."
 

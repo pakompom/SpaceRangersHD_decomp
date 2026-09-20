@@ -31,15 +31,15 @@ type
     CreateMarkerActiveImagePath: WideString; // @offset 0x140
     CreateMarkerMode: Boolean; // @offset $144
 
-    destructor Destroy; override; // @addr 0x67193C @ida "void __usercall $name(TfGalaxy2 *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    destructor Destroy; override; // @addr 0x67193C
     procedure OnOpen; override; // @addr 0x671EA0
     procedure OnClose; override; // @addr 0x674B00
     procedure ProcessCallbackTimers; override; // @addr 0x67B288
     procedure SelectMusic; override; // @addr 0x67AF54
     procedure InitializeLayout; override; // @addr 0x671994
     procedure ExecuteUiCode(Block: TBlockParEC; Key: Cardinal); override; // @addr 0x67B57C
-    function GalaxyPointToMapPoint(Point: TPointF): TPoint; // @addr 0x674FF4 @ida "void __usercall $name(TfGalaxy2 *Self@<eax>, TPointF *Point@<edx>, TPoint *Result@<ecx>);"
-    function GalaxyDistanceToMapDistance(Distance: Double): Integer; // @addr 0x675098 @ida "int __userpurge $name@<eax>(TfGalaxy2 *Self@<eax>, double Distance@<^0>);" @note "Uses the horizontal projection scale."
+    function GalaxyPointToMapPoint(Point: TPointF): TPoint; // @addr 0x674FF4
+    function GalaxyDistanceToMapDistance(Distance: Double): Integer; // @addr 0x675098 @note "Uses the horizontal projection scale."
     procedure ConfigureReadOnlyMap; // @addr 0x675C30
     procedure ConfigureJumpSelection; // @addr 0x675D64
     procedure ShowStarInfo(Star: TStar); // @addr 0x676DB8 @note "Nil hides the panel; cancels StarInfoHideTimer."
@@ -57,20 +57,20 @@ type
     procedure UndoMarkerClicked(Sender: TObjectGI); // @addr $67B500
     procedure ClearMarkersClicked(Sender: TObjectGI); // @addr $67B544
     procedure MainPanelKeyDown(Sender: TObjectGI; Key: Cardinal); // @addr $674C7C
-    procedure MainPanelMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $674D4C @ida "void __userpurge $name(TfGalaxy2 *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
-    procedure MapMouseMove(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $675F90 @ida "void __userpurge $name(TfGalaxy2 *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
-    procedure MapLeftButtonDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $675FC0 @ida "void __userpurge $name(TfGalaxy2 *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
-    procedure MapRightButtonDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $6762E4 @ida "void __userpurge $name(TfGalaxy2 *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
-    procedure MapButtonUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $67643C @ida "void __userpurge $name(TfGalaxy2 *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
-    procedure MapDoubleClick(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $6764AC @ida "void __userpurge $name(TfGalaxy2 *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
+    procedure MainPanelMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $674D4C
+    procedure MapMouseMove(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $675F90
+    procedure MapLeftButtonDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $675FC0
+    procedure MapRightButtonDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $6762E4
+    procedure MapButtonUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $67643C
+    procedure MapDoubleClick(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $6764AC
     procedure RebuildJumpPath; // @addr $6750DC
     procedure ClearJumpPath; // @addr $675BA0
     procedure ClearReadOnlyMapCallbacks; // @addr $675D2C
     procedure ClearJumpSelectionCallbacks; // @addr $675F20
-    function MapPointToGalaxyPoint(Point: TPoint): TPointF; // @addr $674F4C @ida "void __usercall $name(TfGalaxy2 *Self@<eax>, TPoint *Point@<edx>, TPointF *Result@<ecx>);"
-    function BuildStarShipSummary(Star: TStar; var LineCount: Integer): WideString; // @addr $6798E0 @ida "void __userpurge $name(TfGalaxy2 *Self@<eax>, TStar *Star@<edx>, int *LineCount@<ecx>, unsigned __int16 **Result@<^0>);"
+    function MapPointToGalaxyPoint(Point: TPoint): TPointF; // @addr $674F4C
+    function BuildStarShipSummary(Star: TStar; var LineCount: Integer): WideString; // @addr $6798E0
 
-    constructor Create; // @addr 0x6718DC @ida "TfGalaxy2 *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
+    constructor Create; // @addr 0x6718DC
   end;
 
 procedure CaptureGalaxyPreview(ParentLoop: TMessageLoopGI); // @addr $67B3B0
@@ -1647,7 +1647,7 @@ var
   end;
 
   // @nested $6797C8 SeriesColor
-  function SeriesColor: WideString; // @addr $6797C8 @ida "void __usercall $name(unsigned __int16 **Result@<eax>, void *ParentFrame@<^0>);"
+  function SeriesColor: WideString; // @addr $6797C8
   begin
     Result := '';
     case Series of

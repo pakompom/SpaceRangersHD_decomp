@@ -14,8 +14,8 @@ type
     HiddenBonus: Boolean; // @offset $B8  Uses the unknown-bonus image.
     Visual: TObjectSE; // @offset $BC
     SpawnZone: PabZone; // @offset $C0
-    constructor Create; // @addr $54BEC8 @ida "TabItem *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr $54BF74 @ida "void __usercall $name(TabItem *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr $54BEC8
+    destructor Destroy; override; // @addr $54BF74
     procedure SetItem(Value: TItem); // @addr $54C040
     procedure SetBonus(Kind: Integer; Hidden: Boolean; Zone: PabZone); // @addr $54C06C
     procedure AttachVisual; // @addr $54C1C4

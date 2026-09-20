@@ -44,14 +44,14 @@ type
     DamageTakenScale: Single; // @offset $A8
     LuckScale: Single; // @offset $AC  Default 1; SF_ABShipModifiers exposes luck at $61F7FE. Multiplies the random reward roll.
 
-    constructor Create; // @addr $54E33C @ida "TabObject *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr $54E458 @ida "void __usercall $name(TabObject *Self@<eax>, __int8 DestroyFlags@<dl>);"
-    function GetWorldPosition: TVector3D; // @addr $54E4E0 @ida "void __usercall $name(TabObject *Self@<eax>, TVector3D *Result@<edx>);"
-    function GetProjectedPosition: TVector3D; // @addr $54E52C @ida "void __usercall $name(TabObject *Self@<eax>, TVector3D *Result@<edx>);"
+    constructor Create; // @addr $54E33C
+    destructor Destroy; override; // @addr $54E458
+    function GetWorldPosition: TVector3D; // @addr $54E4E0
+    function GetProjectedPosition: TVector3D; // @addr $54E52C
     function DistanceTo(Other: TabObject): Double; // @addr $54E56C
-    function BearingAndDistanceTo(Other: TabObject): TSphericalBearingDistance; // @addr $54E6CC @ida "void __usercall $name(TabObject *Self@<eax>, TabObject *Other@<edx>, TSphericalBearingDistance *Result@<ecx>);"
-    function GetProjectedHeading(Position: TVector3D): Double; // @addr $54E6F4 @ida "double __usercall $name@<st0>(TabObject *Self@<eax>, TVector3D *Position@<edx>);"
-    procedure ChangeSpeed(Delta: Double); // @addr $54E804 @ida "void __userpurge $name(TabObject *Self@<eax>, double Delta@<^0>);"
+    function BearingAndDistanceTo(Other: TabObject): TSphericalBearingDistance; // @addr $54E6CC
+    function GetProjectedHeading(Position: TVector3D): Double; // @addr $54E6F4
+    procedure ChangeSpeed(Delta: Double); // @addr $54E804
     function CollidesWith(Other: TabObject): Boolean; // @addr $54E8E0
     function FindCollision: TabObject; // @addr $54E98C
     procedure ApplyDamage(Amount: Integer; Source: TabObject; Disrupt: Boolean); virtual; // @addr $54E9F0 @slot $00

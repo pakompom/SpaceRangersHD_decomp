@@ -22,7 +22,7 @@ type
     procedure OnClose; override; // @addr $564804
     procedure ProcessCallbackTimers; override; // @addr $5654C0
     procedure SelectMusic; override; // @addr $565494
-    procedure PlayerNameMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $564810 @ida "void __userpurge $name(TfSelectFace *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
+    procedure PlayerNameMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $564810
     procedure RefreshPortrait; // @addr $564864
     procedure PreviousPortraitClicked(Sender: TObjectGI); // @addr $564B60
     procedure NextPortraitClicked(Sender: TObjectGI); // @addr $564B84

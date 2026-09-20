@@ -14,9 +14,9 @@ type
     Phase: Integer; // @offset $B8  0 launch, 1 armed, 2 explosion.
     ExpireTick: Integer; // @offset $BC
     ArmTick: Integer; // @offset $C0
-    constructor Create; // @addr $4F4394 @ida "TabW02 *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr $4F4418 @ida "void __usercall $name(TabW02 *Self@<eax>, __int8 DestroyFlags@<dl>);"
-    procedure Launch(Owner: TabObject; Amount: Integer; Offset: Single); // @addr $4F4470 @ida "void __userpurge $name(TabW02 *Self@<eax>, TabObject *Owner@<edx>, int Amount@<ecx>, float Offset@<^0>);"
+    constructor Create; // @addr $4F4394
+    destructor Destroy; override; // @addr $4F4418
+    procedure Launch(Owner: TabObject; Amount: Integer; Offset: Single); // @addr $4F4470
     procedure Advance; override; // @addr $4F45CC
     procedure UpdateVisuals; override; // @addr $4F48E0
   end;

@@ -19,7 +19,7 @@ type
     SavedSequenceFrameIndex: Integer; // @offset $74
     procedure AttachToSpace(ASpace: TSpaceSE); override; // @addr $829AC0
     procedure DetachFromSpace; override; // @addr $829DDC
-    procedure SetPosition(APosition: TPointF); override; // @addr $829E60 @ida "void __usercall $name(TStarSE *Self@<eax>, TPointF *APosition@<edx>);"
+    procedure SetPosition(APosition: TPointF); override; // @addr $829E60
     function GetSequenceFrameIndex: Integer; // @addr $829F20
     procedure SetSequenceFrameIndex(FrameIndex: Integer); // @addr $829F54
     function HitTestCursor: Boolean; override; // @addr $829F84

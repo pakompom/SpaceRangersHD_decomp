@@ -32,9 +32,9 @@ type
     ReferencedAsConflict: Boolean; // @offset $45
     ReferencedAsDependency: Boolean; // @offset $46
     Selected: Boolean; // @offset $47
-    constructor Create; // @addr $5EFE4C @ida "TModInfo *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr $5EFF74 @ida "void __usercall $name(TModInfo *Self@<eax>, __int8 DestroyFlags@<dl>);"
-    function GetDisplayName: WideString; // @addr $5EFFDC @ida "void __usercall $name(TModInfo *Self@<eax>, unsigned __int16 **Result@<edx>);"
+    constructor Create; // @addr $5EFE4C
+    destructor Destroy; override; // @addr $5EFF74
+    function GetDisplayName: WideString; // @addr $5EFFDC
     function GetConflict(Index, VariantIndex: Integer): TModInfo; // @addr $5F0038
     function GetDependency(Index, VariantIndex: Integer): TModInfo; // @addr $5F013C
   end;
@@ -222,7 +222,7 @@ var
   I, Count: Integer;
 
   // @nested $5F03FC HasOtherLanguageResources
-  function HasOtherLanguageResources: Boolean; // @addr $5F03FC @ida "bool __usercall $name@<al>(void *ParentFrame@<^0>);" @stackpop 0 @calls "0x5F090A,0x5F0955,0x5F0FFD,0x5F1126"
+  function HasOtherLanguageResources: Boolean; // @addr $5F03FC @calls "0x5F090A,0x5F0955,0x5F0FFD,0x5F1126"
   var
     FileName: WideString;
     Handle: THandle;

@@ -16,16 +16,16 @@ type
     Alpha: Byte; // @offset 0x12E
     ImageDirty: Boolean; // @offset 0x12F
 
-    constructor Create(Owner: TObjectGI); // @addr 0x494438 @ida "TRotateImage2GI *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, TObjectGI *Owner@<ecx>);"
-    destructor Destroy; override; // @addr 0x49451C @ida "void __usercall $name(TRotateImage2GI *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create(Owner: TObjectGI); // @addr 0x494438
+    destructor Destroy; override; // @addr 0x49451C
     procedure Clear; override; // @addr 0x494598 @note "Preserves cache keys and the allocated image buffer."
     procedure SetAngle(Value: Byte); // @addr 0x4945D4 @note "A full turn has 256 steps."
     procedure SetAlpha(Value: Byte); // @addr 0x494614
-    procedure SetImage(Path: WideString; ImageSize, Pivot: TPoint); // @addr 0x494654 @ida "void __userpurge $name(TRotateImage2GI *Self@<eax>, unsigned __int16 *Path@<edx>, TPoint *ImageSize@<ecx>, TPoint *Pivot@<^0>);" @note "Appends ?RGBA to Path; replaces size and origin with a centered square enclosing all rotations."
+    procedure SetImage(Path: WideString; ImageSize, Pivot: TPoint); // @addr 0x494654 @note "Appends ?RGBA to Path; replaces size and origin with a centered square enclosing all rotations."
     procedure LoadFromConfigPath(const Path: WideString); override; // @addr 0x494A0C
     procedure LoadFromBlock(Block: TBlockParEC); override; // @addr 0x494A40
     procedure LoadImageProperties(Block: TBlockParEC); // @addr 0x494A90
-    procedure Draw(ClipRect: TRect); override; // @addr 0x494C58 @ida "void __usercall $name(TRotateImage2GI *Self@<eax>, TRect *ClipRect@<edx>);"
+    procedure Draw(ClipRect: TRect); override; // @addr 0x494C58
   end;
 
 implementation

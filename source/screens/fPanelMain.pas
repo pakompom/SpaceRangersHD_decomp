@@ -42,8 +42,8 @@ type
     CargoWarningTicks: Integer; // @offset 0x80
     CargoWarningTimer: PCallbackTimerGI; // @offset 0x84
 
-    constructor Create; // @addr 0x8138D8 @ida "TfPanelMain *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x813934 @ida "void __usercall $name(TfPanelMain *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x8138D8
+    destructor Destroy; override; // @addr 0x813934
     procedure InitializeLayout(Screen: TMessageLoopGI); // @addr 0x813970
     procedure OnOpen; // @addr 0x814340
     procedure OnClose; // @addr 0x8144B8
@@ -73,8 +73,8 @@ type
     function RemoveDismissibleMessages(Key: WideString): Boolean; // @addr $8169C4
     procedure MessageMouseEnter(Sender: TObjectGI); // @addr $816A68
     procedure MessageMouseLeave(Sender: TObjectGI); // @addr $816CDC
-    procedure DeleteMessage(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint; SkipLock: Boolean); // @addr $816D1C @ida "void __userpurge $name(TfPanelMain *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^4>, bool SkipLock@<^0>);"
-    procedure MessageRightButtonDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $816FD4 @ida "void __userpurge $name(TfPanelMain *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
+    procedure DeleteMessage(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint; SkipLock: Boolean); // @addr $816D1C
+    procedure MessageRightButtonDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $816FD4
     procedure AdvanceMessageDeletion(Sender: TObjectGI); // @addr $817010
     procedure FinishMessageDeletion(Sender: TObjectGI); // @addr $8171DC
     procedure MessageClicked(Sender: TObjectGI); // @addr $817500
@@ -96,8 +96,8 @@ type
   TMessageLoopGIWithMainPanel = class(TMessageLoopGI) // @size 0xD4
   public
     MainPanel: TfPanelMain; // @offset 0xD0
-    constructor Create; // @addr 0x818284 @ida "TMessageLoopGIWithMainPanel *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x8182DC @ida "void __usercall $name(TMessageLoopGIWithMainPanel *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x818284
+    destructor Destroy; override; // @addr 0x8182DC
   end;
 
 var

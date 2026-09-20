@@ -26,11 +26,11 @@ type
 
   PBPPaintParams = ^TBPPaintParams;
 
-function BeginBufferedPaint(hdcTarget: Cardinal; var prcTarget: TRect; dwFormat: DWord; pPaintParams: PBPPaintParams; var phdc: Cardinal): Cardinal; // @ida "unsigned __int32 __userpurge $name@<eax>(unsigned __int32 hdcTarget@<eax>, TRect *prcTarget@<edx>, unsigned __int32 dwFormat@<ecx>, PBPPaintParams pPaintParams@<^4>, unsigned __int32 *phdc@<^0>);" @note "DCC32 MAP UxTheme.BeginBufferedPaint. Source rtl/win/UxTheme.pas:5322."
+function BeginBufferedPaint(hdcTarget: Cardinal; var prcTarget: TRect; dwFormat: DWord; pPaintParams: PBPPaintParams; var phdc: Cardinal): Cardinal; // @note "DCC32 MAP UxTheme.BeginBufferedPaint. Source rtl/win/UxTheme.pas:5322."
 
-function EndBufferedPaint(hBufferedPaint: Cardinal; fUpdateTarget: LongBool): HResult; // @ida "HResult __usercall $name@<eax>(unsigned __int32 hBufferedPaint@<eax>, __int32 fUpdateTarget@<edx>);" @note "DCC32 MAP UxTheme.EndBufferedPaint. Source rtl/win/UxTheme.pas:5341."
+function EndBufferedPaint(hBufferedPaint: Cardinal; fUpdateTarget: LongBool): HResult; // @note "DCC32 MAP UxTheme.EndBufferedPaint. Source rtl/win/UxTheme.pas:5341."
 
-function BufferedPaintSetAlpha(hBufferedPaint: Cardinal; prc: PRect; alpha: Byte): HResult; // @ida "HResult __usercall $name@<eax>(unsigned __int32 hBufferedPaint@<eax>, PRect prc@<edx>, unsigned __int8 alpha@<cl>);" @note "DCC32 MAP UxTheme.BufferedPaintSetAlpha. Source rtl/win/UxTheme.pas:5439."
+function BufferedPaintSetAlpha(hBufferedPaint: Cardinal; prc: PRect; alpha: Byte): HResult; // @note "DCC32 MAP UxTheme.BufferedPaintSetAlpha. Source rtl/win/UxTheme.pas:5439."
 
 procedure FinalizeUxTheme; // @nameonly @note "DCC32 MAP UxTheme.Finalization. Prototype pending: no unique source declaration."
 

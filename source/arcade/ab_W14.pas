@@ -13,9 +13,9 @@ type
     Image: PabWorldImage; // @offset $B4
     Phase: Integer; // @offset $B8
     ExpireTick: Integer; // @offset $BC
-    constructor Create; // @addr $4F95C4 @ida "TabW14 *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr $4F9648 @ida "void __usercall $name(TabW14 *Self@<eax>, __int8 DestroyFlags@<dl>);"
-    procedure Launch(Owner: TabObject; Amount: Integer; Angle: Single); // @addr $4F96A0 @ida "void __userpurge $name(TabW14 *Self@<eax>, TabObject *Owner@<edx>, int Amount@<ecx>, float Angle@<^0>);"
+    constructor Create; // @addr $4F95C4
+    destructor Destroy; override; // @addr $4F9648
+    procedure Launch(Owner: TabObject; Amount: Integer; Angle: Single); // @addr $4F96A0
     procedure Advance; override; // @addr $4F97BC
     procedure UpdateVisuals; override; // @addr $4F99A8
   end;

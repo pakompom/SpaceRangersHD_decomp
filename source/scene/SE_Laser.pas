@@ -17,10 +17,10 @@ type
     AnimationTimer: PCallbackTimerGI; // @offset $68
     ManualAnimation: Boolean; // @offset $6C
     EndPosition: TPointF; // @offset $70 Rebuilt endpoint after the final segment.
-    destructor Destroy; override; // @addr $823CB4 @ida "void __usercall $name(TLaserSE *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    destructor Destroy; override; // @addr $823CB4
     procedure AttachToSpace(ASpace: TSpaceSE); override; // @addr $823D04
     procedure DetachFromSpace; override; // @addr $823D34
-    procedure SetPosition(APosition: TPointF); override; // @addr $823D5C @ida "void __usercall $name(TLaserSE *Self@<eax>, TPointF *APosition@<edx>);"
+    procedure SetPosition(APosition: TPointF); override; // @addr $823D5C
     procedure RebuildSegments; // @addr $823D94
     procedure ClearSegments; // @addr $824058
     procedure UpdateSegmentImages; // @addr $8240D0

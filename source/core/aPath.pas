@@ -23,18 +23,18 @@ type
     FreeTail: PSPathNode; // @offset 0x10
     NodeCount: Integer; // @offset 0x14  Active nodes only.
 
-    constructor Create; // @addr 0x4DB8AC @ida "TSPath *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x4DB8F8 @ida "void __usercall $name(TSPath *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x4DB8AC
+    destructor Destroy; override; // @addr 0x4DB8F8
     procedure AllocateNodeUnit; // @addr 0x4DB9C8 @note "Acquires 24 nodes from the shared pool; raises on allocation failure."
     function PopFreeNode: PSPathNode; // @addr 0x4DBB34 @note "Increments NodeCount without linking into the active list. May allocate; payload is uninitialized."
     procedure AppendNode; // @addr 0x4DBD30 @note "New node is ActiveTail; payload is uninitialized."
-    procedure AppendWaypoint(Position: TPointF; Heading: Single); // @addr 0x4DBD8C @ida "void __userpurge $name(TSPath *Self@<eax>, TPointF *Position@<edx>, float Heading@<^0>);"
+    procedure AppendWaypoint(Position: TPointF; Heading: Single); // @addr 0x4DBD8C
     function InsertNodeBefore(Node: PSPathNode): PSPathNode; // @addr 0x4DBE0C @note "Nil appends. Payload is uninitialized."
     procedure RemoveNode(Node: PSPathNode); // @addr 0x4DBB90 @note "Node must belong to this path; it is recycled."
     procedure RemoveNodeRange(FirstNode, LastNode: PSPathNode); // @addr 0x4DBC44 @note "Inclusive range must be ordered and belong to this path; nodes are recycled."
     procedure Clear; // @addr 0x4DBD08 @note "Recycles active nodes into this path's free list."
     function GetFollowingNode(Node: PSPathNode; SkipCount: Integer): PSPathNode; // @addr 0x4DBE8C @note "Starts at Node.Next; nonpositive SkipCount selects that immediate successor. Node must be non-nil."
-    function FindNearestFollowingNode(Node: PSPathNode; Position: TPointF): PSPathNode; // @addr 0x4DBED8 @ida "TSPathNode *__usercall $name@<eax>(TSPath *Self@<eax>, TSPathNode *Node@<edx>, TPointF *Position@<ecx>);" @note "Excludes Node itself, which must be non-nil. Ties keep the earlier node."
+    function FindNearestFollowingNode(Node: PSPathNode; Position: TPointF): PSPathNode; // @addr 0x4DBED8 @note "Excludes Node itself, which must be non-nil. Ties keep the earlier node."
     procedure ResampleBezierRange(FirstNode, LastNode: PSPathNode; SampleCount: Integer); // @addr $4DC030 @note "Uses the inclusive nodes as Bezier controls, unwraps headings, inserts samples and recycles the controls."
     function GetLength: Single; // @addr 0x4DBF4C
     function CountNodeRangeInclusive(FirstNode, LastNode: PSPathNode): Integer; // @addr 0x4DBFA8 @note "Returns zero for nil endpoints or when LastNode is not reachable from FirstNode."

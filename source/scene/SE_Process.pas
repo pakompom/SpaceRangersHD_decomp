@@ -21,8 +21,8 @@ type
     ActionColor: Cardinal; // @offset 0x48
     SystemRadius: Integer; // @offset $4C
 
-    constructor Create(const ConfigName: WideString); // @addr 0x8281C0 @ida "TProcessSE *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, unsigned __int16 *ConfigName@<ecx>);"
-    destructor Destroy; override; // @addr 0x828280 @ida "void __usercall $name(TProcessSE *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create(const ConfigName: WideString); // @addr 0x8281C0
+    destructor Destroy; override; // @addr 0x828280
     procedure AddObject(Obj: TObjectSE); // @addr 0x828330 @note "Retains Obj and links it into the process list; does not attach it to Space."
     procedure RemoveObject(Obj: TObjectSE); // @addr 0x82838C @note "Unlinks and releases Obj."
     procedure OpenSpace(MapPanel: TPanelGI; Screen: TMessageLoopGI); virtual; // @addr 0x828404 @slot 0x00
@@ -33,13 +33,13 @@ type
     procedure StartBackgroundEffects; // @addr $828CF0
     procedure StopBackgroundEffects; // @addr $828D74
     procedure AdvanceBackgroundEffects(Timer: PSpaceTimerSE; UserData: Integer); // @addr $828DF4
-    function SelectBackgroundAnimation: WideString; // @addr $828F90 @ida "void __usercall $name(TProcessSE *Self@<eax>, unsigned __int16 **Result@<edx>);"
+    function SelectBackgroundAnimation: WideString; // @addr $828F90
     procedure UpdateViewRect; // @addr $828F50
     procedure LoadFromBlock(Block: TBlockParEC); virtual; // @addr 0x8290AC @slot 0x0C
   end;
 
-function CreateSpaceObjectByName(const ClassName, GraphKey: WideString; UnusedPosition: TPoint): TObjectSE; // @addr 0x8291F0 @ida "TObjectSE *__usercall $name@<eax>(unsigned __int16 *ClassName@<eax>, unsigned __int16 *GraphKey@<edx>, TPoint *UnusedPosition@<ecx>);" @note "Film-tag factory; copies the eight-byte point and forwards it to the selected constructor. Returns nil for an unknown case-sensitive tag."
-function ClassSEtoName(Obj: TObjectSE): WideString; // @addr 0x829640 @ida "void __usercall $name(TObjectSE *Obj@<eax>, unsigned __int16 **Result@<edx>);" @note "Returns the film type tag; raises for an unsupported scene class."
+function CreateSpaceObjectByName(const ClassName, GraphKey: WideString; UnusedPosition: TPoint): TObjectSE; // @addr 0x8291F0 @note "Film-tag factory; copies the eight-byte point and forwards it to the selected constructor. Returns nil for an unknown case-sensitive tag."
+function ClassSEtoName(Obj: TObjectSE): WideString; // @addr 0x829640 @note "Returns the film type tag; raises for an unsupported scene class."
 
 implementation
 

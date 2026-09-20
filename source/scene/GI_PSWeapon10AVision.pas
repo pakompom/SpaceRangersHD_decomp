@@ -37,17 +37,17 @@ type
     OriginalLength: Single; // @offset $140
     Colors: TAVisionPalette; // @offset $144
 
-    constructor Create(Owner: TObjectGI; APaletteIndex: Integer); // @addr $691078 @ida "TPSWeapon10AVision *__userpurge $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, TObjectGI *Owner@<ecx>, int APaletteIndex@<^0>);"
-    destructor Destroy; override; // @addr $691144 @ida "void __usercall $name(TPSWeapon10AVision *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create(Owner: TObjectGI; APaletteIndex: Integer); // @addr $691078
+    destructor Destroy; override; // @addr $691144
     procedure Invalidate; override; // @addr $691180 @note "Native empty override."
-    procedure SetPosition(Position: TPoint); override; // @addr $69118C @ida "void __usercall $name(TPSWeapon10AVision *Self@<eax>, TPoint *Position@<edx>);"
-    procedure SetTargetPoint(Point: TPoint); override; // @addr $6911C8 @ida "void __usercall $name(TPSWeapon10AVision *Self@<eax>, TPoint *Point@<edx>);"
+    procedure SetPosition(Position: TPoint); override; // @addr $69118C
+    procedure SetTargetPoint(Point: TPoint); override; // @addr $6911C8
     procedure UpdateHitTestBounds; override; // @addr $691214
     procedure ClearParticles; // @addr $691248
     procedure GrowParticles; // @addr $691290
     function AddParticle: PAVisionParticle; // @addr $6912C8
     procedure Advance(Timer: PCallbackTimerGI; UserData: Integer); override; // @addr $691320
-    procedure Draw(ClipRect: TRect); override; // @addr $691724 @ida "void __usercall $name(TPSWeapon10AVision *Self@<eax>, TRect *ClipRect@<edx>);"
+    procedure Draw(ClipRect: TRect); override; // @addr $691724
   end;
 
 procedure LoadAVisionPalettes; // @addr $6919C4

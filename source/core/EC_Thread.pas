@@ -21,8 +21,8 @@ type
     RunningEvent: Cardinal; // @offset 0x24
     IdleEvent: Cardinal; // @offset 0x28
 
-    constructor Create; // @addr 0x84EF80 @ida "TThreadEC *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x84F130 @ida "void __usercall $name(TThreadEC *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x84EF80
+    destructor Destroy; override; // @addr 0x84F130
     procedure ProcessRequests; // @addr 0x84F220
     procedure Execute; virtual; // @addr 0x84F390 @slot 0x00
     procedure SetPriority(Value: Byte); // @addr 0x84F3B0

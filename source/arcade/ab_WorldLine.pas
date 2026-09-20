@@ -25,8 +25,8 @@ type
 procedure ab_WorldLine_Clear; // @addr $556EA8
 function ab_WorldLine_Add: PabWorldLine; // @addr $556EDC @note "Allocates and links a node owned by the world list."
 procedure ab_WorldLine_Delete(Line: PabWorldLine); // @addr $556FA0
-function ab_WorldLine_Create(First, Last: TVector3D; Kind: Integer; FrontColor, BackColor: Cardinal; ShowBehindSphere: Boolean): PabWorldLine; // @addr $557040 @ida "TabWorldLine *__userpurge $name@<eax>(TVector3D *First@<eax>, TVector3D *Last@<edx>, int Kind@<ecx>, unsigned int FrontColor@<^8>, unsigned int BackColor@<^4>, bool ShowBehindSphere@<^0>);"
-procedure ab_WorldLine_Set(Line: PabWorldLine; First, Last: TVector3D; Kind: Integer; FrontColor, BackColor: Cardinal; ShowBehindSphere: Boolean); // @addr $5570C4 @ida "void __userpurge $name(TabWorldLine *Line@<eax>, TVector3D *First@<edx>, TVector3D *Last@<ecx>, int Kind@<^12>, unsigned int FrontColor@<^8>, unsigned int BackColor@<^4>, bool ShowBehindSphere@<^0>);"
+function ab_WorldLine_Create(First, Last: TVector3D; Kind: Integer; FrontColor, BackColor: Cardinal; ShowBehindSphere: Boolean): PabWorldLine; // @addr $557040
+procedure ab_WorldLine_Set(Line: PabWorldLine; First, Last: TVector3D; Kind: Integer; FrontColor, BackColor: Cardinal; ShowBehindSphere: Boolean); // @addr $5570C4
 procedure ab_WorldLine_Update; // @addr $557168
 
 var

@@ -19,8 +19,8 @@ type
     FileSize: Integer; // @offset $4C
     EndOfFile: Boolean; // @offset $50
     BufferLock: TCriticalSection; // @offset $54
-    constructor Create(BufferBytes: Integer; const FileName: WideString); // @addr $45F088 @ida "TFileStreamEC *__userpurge $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, int BufferBytes@<ecx>, unsigned __int16 *FileName@<^0>);"
-    destructor Destroy; override; // @addr $45F184 @ida "void __usercall $name(TFileStreamEC *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create(BufferBytes: Integer; const FileName: WideString); // @addr $45F088
+    destructor Destroy; override; // @addr $45F184
     procedure SwapBuffers; // @addr $45F254
     function Read(Destination: Pointer; ByteCount: Integer): Integer; // @addr $45F3B0
     procedure Execute; override; // @addr $45F2A8

@@ -36,20 +36,20 @@ type
     LengthScale: Double; // @offset $150
     OriginalLength: Double; // @offset $158
 
-    constructor Create(Owner: TObjectGI; APaletteIndex: Integer); // @addr $68AFE8 @ida "TPSWeapon05Treton *__userpurge $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, TObjectGI *Owner@<ecx>, int APaletteIndex@<^0>);"
-    destructor Destroy; override; // @addr $68B0AC @ida "void __usercall $name(TPSWeapon05Treton *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create(Owner: TObjectGI; APaletteIndex: Integer); // @addr $68AFE8
+    destructor Destroy; override; // @addr $68B0AC
     procedure SetColors(FirstColor, SecondColor: Word); // @addr $68B0E8
-    procedure SetPosition(Position: TPoint); override; // @addr $68B11C @ida "void __usercall $name(TPSWeapon05Treton *Self@<eax>, TPoint *Position@<edx>);"
-    procedure SetTargetPoint(Point: TPoint); override; // @addr $68B160 @ida "void __usercall $name(TPSWeapon05Treton *Self@<eax>, TPoint *Point@<edx>);"
+    procedure SetPosition(Position: TPoint); override; // @addr $68B11C
+    procedure SetTargetPoint(Point: TPoint); override; // @addr $68B160
     procedure UpdateProjectionBounds; // @addr $68B1B4
     procedure UpdateHitTestBounds; override; // @addr $68B500
-    function GetLocalBounds: TRect; override; // @addr $68B560 @ida "void __usercall $name(TPSWeapon05Treton *Self@<eax>, TRect *Result@<edx>);"
+    function GetLocalBounds: TRect; override; // @addr $68B560
     function AddParticle: PTretonParticle; // @addr $68B5C4
     procedure ClearParticles; // @addr $68B63C
     procedure Invalidate; override; // @addr $68B690 @note "Native empty override."
-    procedure InvalidateRect(Rect: TRect); override; // @addr $68B69C @ida "void __usercall $name(TPSWeapon05Treton *Self@<eax>, TRect *Rect@<edx>);"
+    procedure InvalidateRect(Rect: TRect); override; // @addr $68B69C
     procedure Advance(Timer: PCallbackTimerGI; UserData: Integer); override; // @addr $68B768
-    procedure Draw(ClipRect: TRect); override; // @addr $68BCB0 @ida "void __usercall $name(TPSWeapon05Treton *Self@<eax>, TRect *ClipRect@<edx>);"
+    procedure Draw(ClipRect: TRect); override; // @addr $68BCB0
   end;
 
 procedure LoadTretonPalettes; // @addr $68BED0

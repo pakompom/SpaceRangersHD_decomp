@@ -33,19 +33,19 @@ type
     SecondaryColor: Word; // @offset $13E
     ProjectionBounds: TRect; // @offset $140
 
-    constructor Create(Owner: TObjectGI; APaletteIndex: Integer); // @addr $6884D4 @ida "TPSWeapon02FragCannon *__userpurge $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, TObjectGI *Owner@<ecx>, int APaletteIndex@<^0>);"
-    destructor Destroy; override; // @addr $688580 @ida "void __usercall $name(TPSWeapon02FragCannon *Self@<eax>, __int8 DestroyFlags@<dl>);"
-    procedure SetPosition(Position: TPoint); override; // @addr $6885BC @ida "void __usercall $name(TPSWeapon02FragCannon *Self@<eax>, TPoint *Position@<edx>);"
-    procedure SetTargetPoint(Point: TPoint); override; // @addr $688600 @ida "void __usercall $name(TPSWeapon02FragCannon *Self@<eax>, TPoint *Point@<edx>);"
+    constructor Create(Owner: TObjectGI; APaletteIndex: Integer); // @addr $6884D4
+    destructor Destroy; override; // @addr $688580
+    procedure SetPosition(Position: TPoint); override; // @addr $6885BC
+    procedure SetTargetPoint(Point: TPoint); override; // @addr $688600
     procedure UpdateProjectionBounds; // @addr $688654
     procedure UpdateHitTestBounds; override; // @addr $688998
-    function GetLocalBounds: TRect; override; // @addr $688A04 @ida "void __usercall $name(TPSWeapon02FragCannon *Self@<eax>, TRect *Result@<edx>);"
+    function GetLocalBounds: TRect; override; // @addr $688A04
     function AddParticle: PFragCannonParticle; // @addr $688A68
     procedure ClearParticles; // @addr $688AE0
     procedure Invalidate; override; // @addr $688C00 @note "Native empty override."
-    procedure InvalidateRect(Rect: TRect); override; // @addr $688B34 @ida "void __usercall $name(TPSWeapon02FragCannon *Self@<eax>, TRect *Rect@<edx>);"
+    procedure InvalidateRect(Rect: TRect); override; // @addr $688B34
     procedure Advance(Timer: PCallbackTimerGI; UserData: Integer); override; // @addr $688C0C
-    procedure Draw(ClipRect: TRect); override; // @addr $68942C @ida "void __usercall $name(TPSWeapon02FragCannon *Self@<eax>, TRect *ClipRect@<edx>);"
+    procedure Draw(ClipRect: TRect); override; // @addr $68942C
   end;
 
 function NextFragCannonRandom: Integer; // @addr $6884AC

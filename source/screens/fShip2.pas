@@ -110,8 +110,8 @@ type
     RightPanelSlideTimer: PCallbackTimerGI; // @offset $36C
     GateSlideOffset: Integer; // @offset $3D8
     UseSlideOffset: Integer; // @offset $3E8
-    constructor Create; // @addr 0x6F1284 @ida "TfShip2 *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x6F132C @ida "void __usercall $name(TfShip2 *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x6F1284
+    destructor Destroy; override; // @addr 0x6F132C
     procedure ProcessWindowMessage(Message, WParam: Cardinal; LParam: Integer); override; // @addr 0x71179C
     procedure OnOpen; override; // @addr 0x6F3078
     procedure OnClose; override; // @addr 0x6F552C
@@ -119,7 +119,7 @@ type
     procedure SelectMusic; override; // @addr 0x7117F4
     procedure AdvanceScriptVideo(Timer: PCallbackTimerGI; UserData: Integer); // @addr $707490
     function StopScriptVideo: Boolean; // @addr $707548 Returns whether a video timer was active.
-    procedure ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer); override; // @addr 0x70248C @ida "void __userpurge $name(TfShip2 *Self@<eax>, unsigned int KeyState@<edx>, TPoint *Point@<ecx>, int Delta@<^0>);"
+    procedure ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer); override; // @addr 0x70248C
     procedure InitializeLayout; override; // @addr 0x6F136C
     procedure UpdateActionCursor(CanTake: Boolean); override; // @addr 0x6FCABC
     function GetActionParentLoop: TMessageLoopGI; override; // @addr 0x713C70
@@ -135,19 +135,19 @@ type
     function ConfigureChameleon: Boolean; // @addr $701030
     procedure MainKeyDown(Sender: TObjectGI; Key: Cardinal); // @addr $701D58
     procedure MainKeyUp(Sender: TObjectGI; Key: Cardinal); // @addr $702404 Verified callback assignment in InitializeLayout.
-    procedure MainLeftButtonUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $702784 @ida "void __userpurge $name(TfShip2 *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);" Verified callback assignment in InitializeLayout.
-    procedure MainRightButtonDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $7030CC @ida "void __userpurge $name(TfShip2 *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);" Verified callback assignment in InitializeLayout.
+    procedure MainLeftButtonUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $702784 Verified callback assignment in InitializeLayout.
+    procedure MainRightButtonDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $7030CC Verified callback assignment in InitializeLayout.
     procedure GateMouseEnter(Sender: TObjectGI); // @addr $70D944 Verified callback assignment in InitializeLayout.
     procedure GateMouseLeave(Sender: TObjectGI); // @addr $70D9A0 Verified callback assignment in InitializeLayout.
-    procedure GateMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $70DC0C @ida "void __userpurge $name(TfShip2 *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);" Verified callback assignment in InitializeLayout.
+    procedure GateMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $70DC0C Verified callback assignment in InitializeLayout.
     procedure UseMouseEnter(Sender: TObjectGI); // @addr $70DC40 Verified callback assignment in InitializeLayout.
     procedure UseMouseLeave(Sender: TObjectGI); // @addr $70DC70 Verified callback assignment in InitializeLayout.
     procedure DropSelectedInArcade; // @addr $705490 Transfers the selected cargo to arcade space, or destroys it in arcade view mode.
-    procedure UseMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $707618 @ida "void __userpurge $name(TfShip2 *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);" Verified callback assignment in InitializeLayout.
+    procedure UseMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $707618 Verified callback assignment in InitializeLayout.
     procedure StorageUpClicked(Sender: TObjectGI); // @addr $70E9A4 Verified callback assignment in InitializeLayout.
     procedure StorageDownClicked(Sender: TObjectGI); // @addr $70E900 Verified callback assignment in InitializeLayout.
     procedure ToggleRemoteHoldClicked(Sender: TObjectGI); // @addr $711BEC Verified callback assignment in InitializeLayout.
-    procedure RemoteHoldItemMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $6FE338 @ida "void __userpurge $name(TfShip2 *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);" Verified callback assignment in InitializeLayout.
+    procedure RemoteHoldItemMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $6FE338 Verified callback assignment in InitializeLayout.
     procedure SortRemoteHoldClicked(Sender: TObjectGI); // @addr $7120C8 Verified callback assignment in InitializeLayout.
     procedure RemoteHoldUpPressed(Sender: TObjectGI); // @addr $711DAC Verified callback assignment in InitializeLayout.
     procedure RemoteHoldUpReleased(Sender: TObjectGI); // @addr $711E44 Verified callback assignment in InitializeLayout.
@@ -183,19 +183,19 @@ type
     procedure ScrollStorageDown(Sender: TObjectGI); // @addr $70EEB4
     function IsHoldNormalShip: Boolean; // @addr $711B4C
     function CanUsePlayerExperience: Boolean; // @addr $711B70 Ruins with modernization sponsorship or a player-owned tranclucator.
-    procedure StorageItemMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $70EF44 @ida "void __userpurge $name(TfShip2 *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
+    procedure StorageItemMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $70EF44
     procedure RefreshRewards(Ship: TNormalShip); // @addr $6F5ABC
-    procedure RewardsMouseMove(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $6F6054 @ida "void __userpurge $name(TfShip2 *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
+    procedure RewardsMouseMove(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $6F6054
     procedure RewardsMouseLeave(Sender: TObjectGI); // @addr $6F61F8
     procedure ShowRewardTooltip(Ship: TNormalShip; Award: Integer); // @addr $6F6210
     procedure HideRewardTooltip; // @addr $6F6674
     procedure SlideRightPanelTimer(Timer: PCallbackTimerGI; UserData: Integer); // @addr $6F669C
-    procedure RewardsMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $6F6854 @ida "void __userpurge $name(TfShip2 *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
+    procedure RewardsMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $6F6854
     procedure UpdateInfoHint(First, Second: Integer); // @addr $6F7FA8 Native empty three-register method; argument purposes unresolved.
     RightPanelSlideStep: Integer; // @offset $370
     UsePanelSlideOffset: Integer; // @offset $3F8
     SelectedReward: Integer; // @offset $3C0
-    procedure ShipNameMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $6F6974 @ida "void __userpurge $name(TfShip2 *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
+    procedure ShipNameMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $6F6974
     procedure RefreshEquipmentConfigurationButtons; // @addr $701A5C
     procedure SlideUsePanelTimer(Timer: PCallbackTimerGI; UserData: Integer); // @addr $70DF90
     procedure SpecialSlot1Clicked(Sender: TObjectGI); // @addr $705B10
@@ -214,7 +214,7 @@ type
     SelectedHoldSlot: Integer; // @offset $364 Original hold/storage index; negative values encode equipment slots as -slot-1.
     SelectedHoldUsesDisplayOrder: Boolean; // @offset $368 Interpret SelectedHoldSlot as a persistent display order.
     function IsCompatibleSlot(ItemType, SlotType: TItemType): Boolean; // @addr $6F808C
-    procedure RefreshActionPanels(Kind: TPlayerHoldKind; Good: Byte; Quantity, Cost: Integer; Item: TItem; Origin: Integer); // @addr $6FBB30 @ida "void __userpurge $name(TfShip2 *Self@<eax>, TPlayerHoldKind Kind@<edx>, unsigned __int8 Good@<cl>, int Quantity@<^12>, int Cost@<^8>, TItem *Item@<^4>, int Origin@<^0>);"
+    procedure RefreshActionPanels(Kind: TPlayerHoldKind; Good: Byte; Quantity, Cost: Integer; Item: TItem; Origin: Integer); // @addr $6FBB30
     EquipmentSlotZones: array[0..7,0..4] of TZoneGI; // @offset $1F4 Five slots per equipment category.
     EquipmentSlotAnimations: array[0..7,0..4] of TgaiGI; // @offset $294 Five slots per equipment category.
     procedure RefreshEquipmentSlotControls; // @addr $6F80C8
@@ -236,7 +236,7 @@ type
     procedure StartMoneyWarning; // @addr $70D748
     procedure AdvanceMoneyWarning(Timer: PCallbackTimerGI; UserData: Integer); // @addr $70D7C0
     procedure ShowNoDropMessage(Code: Integer); // @addr $70D824
-    procedure DropSelectedOutside(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $7042EC @ida "void __userpurge $name(TfShip2 *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
+    procedure DropSelectedOutside(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $7042EC
     procedure OpenUseSidePanel; // @addr $70DED4
     procedure CloseUseSidePanel; // @addr $70DF38
     procedure HideSender(Sender: TObjectGI); // @addr $711740
@@ -245,10 +245,10 @@ type
     function CreateShipInfoImage(Sender: TLabelGI; Item: PFontObjectEC): TObjectGI; // @addr $70FBC8
     procedure SellAllItems(Origin: Integer); // @addr $71331C Zero sells hold contents; one sells local storage.
     procedure TakeHoldEntry(Entry: TPlayerHoldUnit; Slot: Integer; UsesDisplayOrder: Boolean); // @addr $700548
-    procedure HullMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $700750 @ida "void __userpurge $name(TfShip2 *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0.4>);"
-    procedure EquipmentSlotMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $6FCE0C @ida "void __userpurge $name(TfShip2 *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0.4>);"
-    procedure ArtefactSlotMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $6FDC50 @ida "void __userpurge $name(TfShip2 *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
-    procedure UseOnArtefactSlot(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $6FDF68 @ida "void __userpurge $name(TfShip2 *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
+    procedure HullMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $700750
+    procedure EquipmentSlotMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $6FCE0C
+    procedure ArtefactSlotMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $6FDC50
+    procedure UseOnArtefactSlot(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $6FDF68
     ArtefactSlotZones: array of TZoneGI; // @offset $334 Dynamically sized to the ship's artefact slot count.
     HoveredEquipmentAnimation: TgaiGI; // @offset $3D0
     procedure ShowEquipmentInfo(Item: TItem; FromStorage: Boolean); // @addr $70B1A0
@@ -261,13 +261,13 @@ function RunShipEquipment(ParentLoop: TMessageLoopGI): Boolean; // @addr $7120F0
 
 function CompareStoredItems(Left, Right: PStorageEntry; Sort: TPlayerHoldSort): Integer; // @addr $712A10
 
-function RankToImage(Rank: Byte): WideString; // @addr $6F0130 @ida "void __usercall $name(unsigned __int8 Rank@<al>, unsigned __int16 **Result@<edx>);"
+function RankToImage(Rank: Byte): WideString; // @addr $6F0130
 
-function RankToImageSmall(Rank: Byte): WideString; // @addr $6F0258 @ida "void __usercall $name(unsigned __int8 Rank@<al>, unsigned __int16 **Result@<edx>);"
+function RankToImageSmall(Rank: Byte): WideString; // @addr $6F0258
 
-function PirateRankToImage(Rank: Byte): WideString; // @addr $6F038C @ida "void __usercall $name(unsigned __int8 Rank@<al>, unsigned __int16 **Result@<edx>);"
+function PirateRankToImage(Rank: Byte): WideString; // @addr $6F038C
 
-function PirateRankToImageSmall(Rank: Byte): WideString; // @addr $6F04D0 @ida "void __usercall $name(unsigned __int8 Rank@<al>, unsigned __int16 **Result@<edx>);"
+function PirateRankToImageSmall(Rank: Byte): WideString; // @addr $6F04D0
 
 procedure InitializePlayerHoldView; // @addr 0x6F0638
 procedure FinalizePlayerHoldView; // @addr 0x6F0650
@@ -2205,7 +2205,7 @@ procedure TfShip2.RefreshActionPanels(Kind: TPlayerHoldKind; Good: Byte; Quantit
 var I, TotalRepair: Integer; Equipment: TEquipment; OrdinaryShip: Boolean;
   Unused60, Unused64: Integer; { Two native unused stack slots before managed temporaries. }
   // @nested $6FB6F0 Skill
-  procedure Skill(Index, BaseLevel, EffectiveLevel: Integer; CanTrain: Boolean); // @addr $6FB6F0 @ida "void __userpurge $name(int Index@<eax>, int BaseLevel@<edx>, int EffectiveLevel@<ecx>, bool CanTrain@<^0>, void *ParentFrame@<^4>);" @stackpop 4 @calls "0x6FBC2A,0x6FBC66,0x6FBCA2,0x6FBCE1,0x6FBD20,0x6FBD5F" Nested in RefreshActionPanels; captures Self.
+  procedure Skill(Index, BaseLevel, EffectiveLevel: Integer; CanTrain: Boolean); // @addr $6FB6F0 @calls "0x6FBC2A,0x6FBC66,0x6FBCA2,0x6FBCE1,0x6FBD20,0x6FBD5F" Nested in RefreshActionPanels; captures Self.
   var Step, Gap, Height: Integer;
   begin
     Gap := 2;
@@ -2724,7 +2724,7 @@ var
   Expanded, NeedsRefresh: Boolean;
   ActionResult: Integer;
   // @nested $6FE29C RefreshAfterTransfer
-  procedure RefreshAfterTransfer; // @addr $6FE29C @ida "void __usercall $name(void *ParentFrame@<^0>);" @stackpop 0 @calls "0x6FE4D2,0x6FEAFA,0x6FF231,0x6FFE42,0x70028B,0x700294" Captures Self and NeedsRefresh.
+  procedure RefreshAfterTransfer; // @addr $6FE29C @calls "0x6FE4D2,0x6FEAFA,0x6FF231,0x6FFE42,0x70028B,0x700294" Captures Self and NeedsRefresh.
   begin
     Galaxy.PrimeIntegrityChecksum1(445);
     if PlayerHoldShip.InHyperspace or (QueuedArcadeBattles.Count > 0) or
@@ -4077,7 +4077,7 @@ var
   Changed: Boolean;
 
   // @nested $702DA4 EquipSelected
-  procedure EquipSelected; // @addr $702DA4 @ida "void __usercall $name(void *ParentFrame@<^0>);" @stackpop 0 @calls "0x703898,0x7039A1,0x703AAF,0x703E60,0x703F34" Nested helper captures selected item types, KeyState, Zone and Self.
+  procedure EquipSelected; // @addr $702DA4 @calls "0x703898,0x7039A1,0x703AAF,0x703E60,0x703F34" Nested helper captures selected item types, KeyState, Zone and Self.
   var
     Slot, Index: Integer;
     Equipment: TEquipment;
@@ -5937,7 +5937,7 @@ var
   LeftWidth, RightWidth, TotalHeight, EmblemMargin, CenterX, CenterY, RowY: Integer;
 
   // @nested $70AC50 MeasurePair
-  procedure MeasurePair(Left, Right: TLabelGI); // @addr $70AC50 @ida "void __usercall $name(TLabelGI *Left@<eax>, TLabelGI *Right@<edx>, void *ParentFrame@<^0>);" @stackpop 0 @calls "0x70aee7,0x70aef4,0x70af01,0x70af0e,0x70af1b,0x70af28,0x70af35,0x70af42" @note "Nested in LayoutObjectInfo; captures column widths, total height and row count."
+  procedure MeasurePair(Left, Right: TLabelGI); // @addr $70AC50 @calls "0x70aee7,0x70aef4,0x70af01,0x70af0e,0x70af1b,0x70af28,0x70af35,0x70af42" @note "Nested in LayoutObjectInfo; captures column widths, total height and row count."
   begin
     if (Left <> nil) and (Right <> nil) and Left.Active and Right.Active then
     begin
@@ -5951,7 +5951,7 @@ var
   end;
 
   // @nested $70AD30 PlacePair
-  procedure PlacePair(Left, Right: TLabelGI); // @addr $70AD30 @ida "void __usercall $name(TLabelGI *Left@<eax>, TLabelGI *Right@<edx>, void *ParentFrame@<^0>);" @stackpop 0 @calls "0x70b0a9,0x70b0b6,0x70b0c3,0x70b0d0,0x70b0dd,0x70b0ea,0x70b0f7,0x70b104" @note "Nested in LayoutObjectInfo; captures window, border dimensions and accumulated row position."
+  procedure PlacePair(Left, Right: TLabelGI); // @addr $70AD30 @calls "0x70b0a9,0x70b0b6,0x70b0c3,0x70b0d0,0x70b0dd,0x70b0ea,0x70b0f7,0x70b104" @note "Nested in LayoutObjectInfo; captures window, border dimensions and accumulated row position."
   begin
     if (Left <> nil) and (Right <> nil) and Left.Active and Right.Active then
     begin
@@ -7123,7 +7123,7 @@ var
   Block: TBlockParEC;
 
   // @nested $70FCD4 AddLine
-  procedure AddLine(Icon: Integer; Text, Hint: WideString; Data: Integer); // @addr $70FCD4 @ida "void __userpurge $name(int Icon@<eax>, unsigned __int16 *Text@<edx>, unsigned __int16 *Hint@<ecx>, int Data@<^0>, void *ParentFrame@<^4>);" @stackpop 4 @calls "0x7102B1,0x71040A,0x7104EE,0x7105C2,0x710722,0x7107BC,0x710ABD,0x710B4B,0x710E85" Nested helper captures the panel, accumulated height and Self.
+  procedure AddLine(Icon: Integer; Text, Hint: WideString; Data: Integer); // @addr $70FCD4 @calls "0x7102B1,0x71040A,0x7104EE,0x7105C2,0x710722,0x7107BC,0x710ABD,0x710B4B,0x710E85" Nested helper captures the panel, accumulated height and Self.
   var
     LabelControl: TLabelGI;
   begin
@@ -7153,7 +7153,7 @@ var
   end;
 
   // @nested $710030 GetShipInfoColor
-  function GetShipInfoColor(ColorIndex: Byte): WideString; // @addr $710030 @ida "void __usercall $name(unsigned __int8 ColorIndex@<al>, unsigned __int16 **Result@<edx>, void *ParentFrame@<^0>);" @stackpop 0 @calls "0x710A3A" Nested in BuildAdditionalInfoPanel; does not access its parent frame.
+  function GetShipInfoColor(ColorIndex: Byte): WideString; // @addr $710030 @calls "0x710A3A" Nested in BuildAdditionalInfoPanel; does not access its parent frame.
   begin
     Result := '';
     case ColorIndex of
@@ -7679,7 +7679,7 @@ var LeftValue, RightValue: Integer; LeftType, RightType: Byte; LeftClass, RightC
   LeftName, RightName: WideString; NameComparison: Integer;
 
   // @nested $7129B4 Classify
-  function Classify(ItemType: Byte): Integer; // @addr $7129B4 @ida "int __usercall $name@<eax>(unsigned __int8 ItemType@<al>, void *ParentFrame@<^0>);" @stackpop 0 @calls "0x712A81,0x712A8E" Nested helper; does not read the parent frame.
+  function Classify(ItemType: Byte): Integer; // @addr $7129B4 @calls "0x712A81,0x712A8E" Nested helper; does not read the parent frame.
   begin
     Result := 0;
     if ItemType in [Ord(t_Food)..Ord(t_Narcotics)] then Result := 1
@@ -7804,7 +7804,7 @@ var
   Entry: PStorageEntry;
 
   // @nested $712F80 SellItem
-  function SellItem(Item: TItem; IgnoreRequiredEquipment: Boolean): Boolean; // @addr $712F80 @ida "bool __usercall $name@<al>(TItem *Item@<eax>, bool IgnoreRequiredEquipment@<dl>, void *ParentFrame@<^0>);" @stackpop 0 @calls "0x713540,0x713661,0x7139EB" Nested helper captures sale/change flags.
+  function SellItem(Item: TItem; IgnoreRequiredEquipment: Boolean): Boolean; // @addr $712F80 @calls "0x713540,0x713661,0x7139EB" Nested helper captures sale/change flags.
   var
     Count, Cost, Price: Integer;
     Event: TGalaxyEvent;

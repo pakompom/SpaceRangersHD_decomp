@@ -11,8 +11,8 @@ type
 
   TTextQuestInterface = class(TObjectEx) // @size 0x04
   public
-    constructor Create; // @addr 0x4E8AC0 @ida "TTextQuestInterface *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x4E8AF8 @ida "void __usercall $name(TTextQuestInterface *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x4E8AC0
+    destructor Destroy; override; // @addr 0x4E8AF8
 
     procedure ShowText(Text: WideString); virtual; // @addr 0x4E8B1C @slot 0x00 @calls "0x4EC29B"
     procedure ShowPicture(Name: WideString); virtual; // @addr 0x4E8B60 @slot 0x04 @calls "0x4EC2DD"

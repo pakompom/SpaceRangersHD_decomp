@@ -32,13 +32,13 @@ type
     PreviewSound: TSoundBufferControl; // @offset 0xDC
     Closing: Boolean; // @offset 0xE0
 
-    constructor Create; // @addr 0x6627F8 @ida "TfSaveManager *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x6628B4 @ida "void __usercall $name(TfSaveManager *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x6627F8
+    destructor Destroy; override; // @addr 0x6628B4
     procedure InitializeLayout; override; // @addr 0x662904
     procedure OnOpen; override; // @addr 0x662BA8 @note "Waits for the save writer before scanning slots."
     procedure OnClose; override; // @addr 0x662FE0
     procedure SelectMusic; override; // @addr 0x667F48
-    procedure ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer); override; // @addr 0x665B58 @ida "void __userpurge $name(TfSaveManager *Self@<eax>, unsigned int KeyState@<edx>, TPoint *Point@<ecx>, int Delta@<^0>);"
+    procedure ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer); override; // @addr 0x665B58
 
     procedure RebuildSlotControls; // @addr 0x663178
     procedure InitializeSlotPanel(Panel: TPanelGI); // @addr 0x663588
@@ -47,21 +47,21 @@ type
     procedure LoadClicked(Sender: TObjectGI); // @addr 0x664F5C
     procedure SaveClicked(Sender: TObjectGI); // @addr 0x6651E0
     procedure DeleteClicked(Sender: TObjectGI); // @addr 0x6655CC
-    procedure SlotMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x6657E0 @ida "void __userpurge $name(TfSaveManager *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
-    procedure SlotDoubleClick(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x665874 @ida "void __userpurge $name(TfSaveManager *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
+    procedure SlotMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x6657E0
+    procedure SlotDoubleClick(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x665874
     procedure SlotKeyDown(Sender: TObjectGI; Key: Cardinal); // @addr 0x6658B8
     function AcceptSaveNameCharacter(Sender: TObjectGI; Character: WideChar): Boolean; // @addr 0x665BA4
     procedure SelectSlot(SlotIndex: Integer); // @addr 0x665C04
     procedure ClearSlotSelection; // @addr 0x6662C0
     function AutoSaveExists: Boolean; // @addr 0x666430
-    function GetAutoSavePath: WideString; // @addr 0x66649C @ida "void __usercall $name(TfSaveManager *Self@<eax>, unsigned __int16 **Result@<edx>);"
+    function GetAutoSavePath: WideString; // @addr 0x66649C
     function FindAutoSaveSlot: Integer; // @addr 0x666510 @note "Checks only the last list entry; returns -1 when absent."
-    function BuildCurrentSaveDescription: WideString; // @addr 0x6665AC @ida "void __usercall $name(TfSaveManager *Self@<eax>, unsigned __int16 **Result@<edx>);" @note "Requires the current player and star; station-control mode uses the player's saved docking location."
-    function BuildUniqueSavePath(const FileName: WideString; out SuffixIndex: Integer): WideString; // @addr 0x6669D0 @ida "void __userpurge $name(TfSaveManager *Self@<eax>, unsigned __int16 *FileName@<edx>, int *SuffixIndex@<ecx>, unsigned __int16 **Result@<^0>);" @note "Uses the current Slots list, without rescanning disk. SuffixIndex is zero when no numbered suffix is needed."
-    function GetSaveConfigPath(const FileName: WideString): WideString; // @addr 0x666DEC @ida "void __usercall $name(TfSaveManager *Self@<eax>, unsigned __int16 *FileName@<edx>, unsigned __int16 **Result@<ecx>);"
+    function BuildCurrentSaveDescription: WideString; // @addr 0x6665AC @note "Requires the current player and star; station-control mode uses the player's saved docking location."
+    function BuildUniqueSavePath(const FileName: WideString; out SuffixIndex: Integer): WideString; // @addr 0x6669D0 @note "Uses the current Slots list, without rescanning disk. SuffixIndex is zero when no numbered suffix is needed."
+    function GetSaveConfigPath(const FileName: WideString): WideString; // @addr 0x666DEC
     function QuickSaveExists(SlotIndex: Integer): Boolean; // @addr 0x666EB4
-    function GetQuickSavePath(SlotIndex: Integer): WideString; // @addr 0x666F28 @ida "void __usercall $name(TfSaveManager *Self@<eax>, int SlotIndex@<edx>, unsigned __int16 **Result@<ecx>);" @note "One-based quick-save index (1..3); unchecked."
-    function GetTurnSavePath: WideString; // @addr 0x666FA4 @ida "void __usercall $name(TfSaveManager *Self@<eax>, unsigned __int16 **Result@<edx>);"
+    function GetQuickSavePath(SlotIndex: Integer): WideString; // @addr 0x666F28 @note "One-based quick-save index (1..3); unchecked."
+    function GetTurnSavePath: WideString; // @addr 0x666FA4
     procedure SlotMouseEnter(Sender: TObjectGI); // @addr 0x667018
     procedure SlotMouseLeave(Sender: TObjectGI); // @addr 0x66712C
     procedure ScanSaveFiles; // @addr 0x6673BC @note "Owns TSMSlot records, newest first; optional new-save entry comes first and autosave last. Rejects malformed headers and versions outside 13..CurrentSaveVersion."
@@ -940,7 +940,7 @@ var
   FindData: TWin32FindData;
 
   // @nested $667220 InsertScannedSaveSlotByTime
-  procedure InsertScannedSaveSlotByTime; // @addr 0x667220 @ida "void __usercall $name(void *ParentFrame@<^0>);" @stackpop 0 @calls "0x66783A" @note "Nested helper of TfSaveManager.ScanSaveFiles; requires its parent stack frame."
+  procedure InsertScannedSaveSlotByTime; // @addr 0x667220 @calls "0x66783A" @note "Nested helper of TfSaveManager.ScanSaveFiles; requires its parent stack frame."
   var
     Low, High, Middle, Comparison: Integer;
     OtherSlot: PSMSlot;

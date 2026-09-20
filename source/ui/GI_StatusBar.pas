@@ -15,12 +15,12 @@ type
     CenterImage: TImageGI; // @offset 0x15C
     RightImage: TImageGI; // @offset 0x160
 
-    constructor Create(Owner: TObjectGI); // @addr 0x4A51D0 @ida "TStatusBarGI *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, TObjectGI *Owner@<ecx>);"
-    destructor Destroy; override; // @addr 0x4A5324 @ida "void __usercall $name(TStatusBarGI *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create(Owner: TObjectGI); // @addr 0x4A51D0
+    destructor Destroy; override; // @addr 0x4A5324
     procedure Clear; override; // @addr 0x4A5380 @note "Preserves Value; resets the range to 0..100."
-    procedure SetRange(MinValue, MaxValue: Double); // @addr 0x4A53B8 @ida "void __userpurge $name(TStatusBarGI *Self@<eax>, double MinValue@<^8>, double MaxValue@<^0>);" @note "If MinValue exceeds MaxValue, lowers MinValue to MaxValue. Does not clamp the stored Value."
-    procedure SetValue(NewValue: Double); // @addr 0x4A5440 @ida "void __userpurge $name(TStatusBarGI *Self@<eax>, double NewValue@<^0>);"
-    procedure SetSize(Size: TPoint); override; // @addr 0x4A54D4 @ida "void __usercall $name(TStatusBarGI *Self@<eax>, TPoint *Size@<edx>);"
+    procedure SetRange(MinValue, MaxValue: Double); // @addr 0x4A53B8 @note "If MinValue exceeds MaxValue, lowers MinValue to MaxValue. Does not clamp the stored Value."
+    procedure SetValue(NewValue: Double); // @addr 0x4A5440
+    procedure SetSize(Size: TPoint); override; // @addr 0x4A54D4
     procedure UpdateImageLayout; // @addr 0x4A550C
     procedure LoadFromConfigPath(const Path: WideString); override; // @addr 0x4A584C
     procedure LoadFromBlock(Block: TBlockParEC); override; // @addr 0x4A5880

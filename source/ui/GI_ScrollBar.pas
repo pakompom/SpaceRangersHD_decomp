@@ -33,10 +33,10 @@ type
     PositionLabel: TLabelGI; // @offset 0x1CC
     PositionChangedCallback: TObjectNotifyEventGI; // @offset $1D0
 
-    constructor Create(Owner: TObjectGI); // @addr 0x48C900 @ida "TScrollBarGI *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, TObjectGI *Owner@<ecx>);"
-    destructor Destroy; override; // @addr 0x48CD4C @ida "void __usercall $name(TScrollBarGI *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create(Owner: TObjectGI); // @addr 0x48C900
+    destructor Destroy; override; // @addr 0x48CD4C
     procedure Clear; override; // @addr 0x48CEA4 @note "Resets the range to 0..99 and clears callbacks; does not call inherited Clear."
-    function GetHitRegion(Point: TPoint): Integer; // @addr 0x48D238 @ida "int __usercall $name@<eax>(TScrollBarGI *Self@<eax>, TPoint *Point@<edx>);" @note "Returns 0 outside, 1/2 arrows, 3/4 page regions, or 5 thumb; only tests the scrolling axis."
+    function GetHitRegion(Point: TPoint): Integer; // @addr 0x48D238 @note "Returns 0 outside, 1/2 arrows, 3/4 page regions, or 5 thumb; only tests the scrolling axis."
     procedure SetRange(MinValue, MaxValue: Integer); // @addr 0x48D3EC
     procedure SetPositionInternal(NewPosition: Integer); // @addr 0x48D590 @note "Does not invoke PositionChangedCallback."
     procedure SetPosition(NewPosition: Integer); reintroduce; // @addr 0x48D764 @note "Notifies only while Active and only when the clamped position changes."
@@ -46,27 +46,27 @@ type
     procedure SetOrientation(Value: Integer); // @addr 0x48DA68 @note "Value 1 is horizontal; other values use vertical layout."
     procedure SetKindCalcMode(Value: Integer); // @addr 0x48DAB0
     procedure SetConfigPath(const Path: WideString); override; // @addr 0x48DAF8
-    procedure SetSize(Size: TPoint); override; // @addr 0x48DB30 @ida "void __usercall $name(TScrollBarGI *Self@<eax>, TPoint *Size@<edx>);"
+    procedure SetSize(Size: TPoint); override; // @addr 0x48DB30
     procedure UpdateLayout; // @addr 0x48DB90
     procedure UpdateSizeForOrientation; // @addr 0x48EDD4 @note "Uses the up-arrow image for scrollbar thickness."
     procedure StartAutoRepeat(DelayMs, RepeatMs: Integer); // @addr 0x48F65C
     procedure StopAutoRepeat; // @addr 0x48F69C
     procedure AutoRepeat(Timer: PCallbackTimerGI; UserData: Integer); // @addr 0x48F6D4
-    procedure SetUpPosition(Point: TPoint); // @addr $48CF40 @ida "void __usercall $name(TScrollBarGI *Self@<eax>, TPoint *Point@<edx>);"
-    procedure SetBeforeThumbBarPosition(Point: TPoint); // @addr $48CF8C @ida "void __usercall $name(TScrollBarGI *Self@<eax>, TPoint *Point@<edx>);"
-    procedure SetThumbTopPosition(Point: TPoint); // @addr $48CFD8 @ida "void __usercall $name(TScrollBarGI *Self@<eax>, TPoint *Point@<edx>);"
-    procedure SetThumbCenterPosition(Point: TPoint); // @addr $48D024 @ida "void __usercall $name(TScrollBarGI *Self@<eax>, TPoint *Point@<edx>);"
-    procedure SetThumbBottomPosition(Point: TPoint); // @addr $48D070 @ida "void __usercall $name(TScrollBarGI *Self@<eax>, TPoint *Point@<edx>);"
-    procedure SetAfterThumbBarPosition(Point: TPoint); // @addr $48D0BC @ida "void __usercall $name(TScrollBarGI *Self@<eax>, TPoint *Point@<edx>);"
-    procedure SetDownPosition(Point: TPoint); // @addr $48D108 @ida "void __usercall $name(TScrollBarGI *Self@<eax>, TPoint *Point@<edx>);"
-    procedure SetBeforeThumbBarSize(Size: TPoint); // @addr $48D154 @ida "void __usercall $name(TScrollBarGI *Self@<eax>, TPoint *Size@<edx>);"
-    procedure SetThumbCenterSize(Size: TPoint); // @addr $48D1A0 @ida "void __usercall $name(TScrollBarGI *Self@<eax>, TPoint *Size@<edx>);"
-    procedure SetAfterThumbBarSize(Size: TPoint); // @addr $48D1EC @ida "void __usercall $name(TScrollBarGI *Self@<eax>, TPoint *Size@<edx>);"
+    procedure SetUpPosition(Point: TPoint); // @addr $48CF40
+    procedure SetBeforeThumbBarPosition(Point: TPoint); // @addr $48CF8C
+    procedure SetThumbTopPosition(Point: TPoint); // @addr $48CFD8
+    procedure SetThumbCenterPosition(Point: TPoint); // @addr $48D024
+    procedure SetThumbBottomPosition(Point: TPoint); // @addr $48D070
+    procedure SetAfterThumbBarPosition(Point: TPoint); // @addr $48D0BC
+    procedure SetDownPosition(Point: TPoint); // @addr $48D108
+    procedure SetBeforeThumbBarSize(Size: TPoint); // @addr $48D154
+    procedure SetThumbCenterSize(Size: TPoint); // @addr $48D1A0
+    procedure SetAfterThumbBarSize(Size: TPoint); // @addr $48D1EC
     procedure SetActive(Enabled: Boolean); override; // @addr $48DB64
-    procedure ProcessMouseMove(KeyState: Cardinal; Point: TPoint); override; // @addr $48EE3C @ida "void __usercall $name(TScrollBarGI *Self@<eax>, unsigned int KeyState@<edx>, TPoint *Point@<ecx>);"
-    procedure ProcessLeftButtonDown(KeyState: Cardinal; Point: TPoint); override; // @addr $48F1B0 @ida "void __usercall $name(TScrollBarGI *Self@<eax>, unsigned int KeyState@<edx>, TPoint *Point@<ecx>);"
-    procedure ProcessLeftButtonUp(KeyState: Cardinal; Point: TPoint); override; // @addr $48F5C8 @ida "void __usercall $name(TScrollBarGI *Self@<eax>, unsigned int KeyState@<edx>, TPoint *Point@<ecx>);"
-    procedure ProcessLeftButtonDoubleClick(KeyState: Cardinal; Point: TPoint); override; // @addr $48F640 @ida "void __usercall $name(TScrollBarGI *Self@<eax>, unsigned int KeyState@<edx>, TPoint *Point@<ecx>);"
+    procedure ProcessMouseMove(KeyState: Cardinal; Point: TPoint); override; // @addr $48EE3C
+    procedure ProcessLeftButtonDown(KeyState: Cardinal; Point: TPoint); override; // @addr $48F1B0
+    procedure ProcessLeftButtonUp(KeyState: Cardinal; Point: TPoint); override; // @addr $48F5C8
+    procedure ProcessLeftButtonDoubleClick(KeyState: Cardinal; Point: TPoint); override; // @addr $48F640
     procedure OnMouseEnter; override; // @addr $48F154
     procedure OnMouseLeave; override; // @addr $48F168
     procedure LoadFromConfigPath(const Path: WideString); override; // @addr 0x48F788

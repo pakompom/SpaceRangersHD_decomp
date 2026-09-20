@@ -9,8 +9,8 @@ type
   EDirectXRender = class(Exception) // @size $10
   public
     ErrorCode: Integer; // @offset $0C
-    constructor Create(Message: AnsiString); // @addr $4C595C @ida "EDirectXRender * __usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, char *Message@<ecx>);"
-    constructor CreateCode(Message: AnsiString; Code: Integer); // @addr $4C59D8 @ida "EDirectXRender * __userpurge $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, char *Message@<ecx>, int Code@<^0>);"
+    constructor Create(Message: AnsiString); // @addr $4C595C
+    constructor CreateCode(Message: AnsiString; Code: Integer); // @addr $4C59D8
   end;
 
 implementation

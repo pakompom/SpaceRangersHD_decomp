@@ -43,8 +43,8 @@ type
     Parameters: TList; // @offset 0x78
     LastEventSource: WideString; // @offset 0x7C // Diagnostic location/path label; Reset preserves it.
 
-    constructor Create; // @addr 0x4E8DC8 @ida "TTextQuest *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x4E8F54 @ida "void __usercall $name(TTextQuest *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x4E8DC8
+    destructor Destroy; override; // @addr 0x4E8F54
     procedure Reset; // @addr 0x4E90FC @note "Retains PlayerInterface and the owned text/event containers."
     function GetLocationCount: Integer; // @addr 0x4E95B8
     function GetPathCount: Integer; // @addr 0x4E95D4
@@ -62,7 +62,7 @@ type
     procedure Start(Money: Integer; PreserveExternalParameters: Boolean); // @addr 0x4EB5D0 @note "External names begin with ext_; negative Money uses the initial range. Requires PlayerInterface."
     procedure EnterLocation(LocationId: Integer); // @addr 0x4EB800
     procedure FollowPath(PathId: Integer); // @addr 0x4EC0B0
-    function ExpandText(Text: WideString; Colorize: Boolean): WideString; // @addr 0x4EAB58 @ida "void __userpurge $name(TTextQuest *Self@<eax>, unsigned __int16 *Text@<edx>, bool Colorize@<cl>, unsigned __int16 **Result@<^0>);" @note "Supports {formula}, [pN], [dN], and [dN:formula], including parameter-name aliases. Recursive display expansion has no cycle guard."
+    function ExpandText(Text: WideString; Colorize: Boolean): WideString; // @addr 0x4EAB58 @note "Supports {formula}, [pN], [dN], and [dN:formula], including parameter-name aliases. Recursive display expansion has no cycle guard."
     procedure ShowEvent(Event: TEvent); // @addr 0x4EC214
     procedure ShowParameters; // @addr 0x4EC418
     function CheckCriticalParameters: Boolean; // @addr 0x4EB388 @note "Outcome precedence: death, failure, success."
@@ -528,7 +528,7 @@ var
   end;
 
   // @nested $4EA854 PrependLegacySequencePaths
-  procedure PrependLegacySequencePaths(Path: TPath); // @addr 0x4EA854 @ida "void __usercall $name(TPath *Path@<eax>, void *ParentFrame@<^0>);"
+  procedure PrependLegacySequencePaths(Path: TPath); // @addr 0x4EA854
   var
     IncomingCount, OutgoingCount: Integer;
     Location: TLocation;
@@ -545,7 +545,7 @@ var
   end;
 
   // @nested $4EA8D4 AppendLegacySequencePaths
-  procedure AppendLegacySequencePaths(Path: TPath); // @addr 0x4EA8D4 @ida "void __usercall $name(TPath *Path@<eax>, void *ParentFrame@<^0>);"
+  procedure AppendLegacySequencePaths(Path: TPath); // @addr 0x4EA8D4
   var
     IncomingCount, OutgoingCount: Integer;
     Location: TLocation;

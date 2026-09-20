@@ -20,8 +20,8 @@ type
     GraphObject: TObjectSE; // @offset 0x34  Retained reference; scripts can replace its concrete class.
     FilmObject: TEFilmObj; // @offset 0x38  Borrowed from the film.
 
-    constructor Create; // @addr 0x796EF4 @ida "TAsteroid *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x796F5C @ida "void __usercall $name(TAsteroid *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x796EF4
+    destructor Destroy; override; // @addr 0x796F5C
     procedure Init(Star: TStar; const GraphKey: WideString); // @addr 0x796FA4 @note "Requires an unassigned GraphObject."
     procedure SaveToBuffer(Buffer: TBufEC); // @addr 0x79700C
     procedure LoadFromBuffer(Buffer: TBufEC; Galaxy: TGalaxy); // @addr 0x797090 @note "Caller sets CurrentStar. Requires an unassigned GraphObject."
@@ -30,10 +30,10 @@ type
     procedure AdvanceOrbitStep(StepIndex: Integer; RecordFilm: Boolean); // @addr 0x7972B4
     procedure Respawn; // @addr 0x797310 @note "Keeps the ID and visual. May spawn another asteroid under the galaxy's special mode."
     procedure SpawnSiblingAsteroidInCurrentStar; // @addr 0x7975EC @note "The new asteroid belongs to CurrentStar.Asteroids; it does not copy this asteroid's visual or motion."
-    procedure IntegrateMotion(TimeScale: Single); // @addr 0x797818 @ida "void __userpurge $name(TAsteroid *Self@<eax>, float TimeScale@<^0>);"
+    procedure IntegrateMotion(TimeScale: Single); // @addr 0x797818
     procedure WritePredictedPositions(Positions: PPointF; Count: Integer); // @addr 0x797988 @note "Writes Count future positions at TimeScale=1, excluding the current position, then restores the live motion state. Caller supplies Count * 8 bytes."
-    function GetDisplayName: WideString; // @addr 0x797A64 @ida "void __usercall $name(TAsteroid *Self@<eax>, unsigned __int16 **Result@<edx>);"
-    function GetInfoText: WideString; // @addr 0x797B38 @ida "void __usercall $name(TAsteroid *Self@<eax>, unsigned __int16 **Result@<edx>);"
+    function GetDisplayName: WideString; // @addr 0x797A64
+    function GetInfoText: WideString; // @addr 0x797B38
   end;
 
 const

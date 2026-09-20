@@ -9,12 +9,12 @@ type
   TRaiseExceptionCallback = procedure(Code, Flags, ArgumentCount: Cardinal; Arguments: Pointer); stdcall;
 
 
-function ExceptionLogTimestamp: AnsiString; // @addr $57ABC0 @ida "void __usercall $name(char **Result@<eax>);"
+function ExceptionLogTimestamp: AnsiString; // @addr $57ABC0
 procedure ReportUnhandledException(E: Exception; var Handled: Boolean); // @addr $57AC44
 procedure RaiseExceptionWithLogging(Code, Flags, ArgumentCount: Cardinal; Arguments: Pointer); stdcall; // @addr $57AEE4
 
 function HexDigit(Value: Byte): WideChar; // @addr $57AB54
-function ByteToHexText(Value: Byte): WideString; // @addr $57AB78 @ida "void __usercall $name(unsigned __int8 Value@<al>, unsigned __int16 **Result@<edx>);"
+function ByteToHexText(Value: Byte): WideString; // @addr $57AB78
 
 const
   ExportHexDigits: array[0..15] of WideChar = ('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'); // @addr $87B024

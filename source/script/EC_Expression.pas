@@ -126,13 +126,13 @@ type
     procedure OLessEqual(Left, Right: TVarEC); // @addr 0x464A58
     procedure OMoreEqual(Left, Right: TVarEC); // @addr 0x464C58
 
-    constructor Create(InitialKind: TVarKind); // @addr 0x460A00 @ida "TVarEC *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, TVarKind InitialKind@<cl>);"
-    destructor Destroy; override; // @addr 0x460A68 @ida "void __usercall $name(TVarEC *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create(InitialKind: TVarKind); // @addr 0x460A00
+    destructor Destroy; override; // @addr 0x460A68
 
     function IsEmpty: Boolean; // @addr 0x461474 @note "Tests this cell's tag without dereferencing."
-    function GetString: WideString; // @addr 0x46183C @ida "void __usercall $name(TVarEC *Self@<eax>, unsigned __int16 **Result@<edx>);" @note "Library cells return their import specification string."
+    function GetString: WideString; // @addr 0x46183C @note "Library cells return their import specification string."
     procedure ConvertToKind(NewKind: TVarKind); // @addr 0x460AC8 @note "Preserves the value where conversion is supported; ResetKind discards it."
-    procedure SetFloat(Value: Double); // @addr 0x46215C @ida "void __userpurge $name(TVarEC *Self@<eax>, double Value@<^0>);"
+    procedure SetFloat(Value: Double); // @addr 0x46215C
     procedure SetString(const Value: WideString); // @addr 0x4622F4 @note "Assigns through references and converts to an existing destination kind; an empty cell becomes a string."
     procedure SetClass(Value: TCodeEC); // @addr 0x4626B0 @note "Value is borrowed; vkRef assignment uses the function-value setter."
     procedure SetArray(Value: TVarArrayEC); // @addr 0x4627F0 @note "Value is borrowed; follows references."
@@ -163,8 +163,8 @@ type
     function GetVarNE(const Name: WideString): TVarEC; // @addr 0x4662D0 @note "Returns nil when absent."
     function Add(const Name: WideString; Kind: TVarKind): TVarEC; // @addr 0x466758
 
-    constructor Create; // @addr 0x465D60 @ida "TVarArrayEC *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x465DA4 @ida "void __usercall $name(TVarArrayEC *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x465D60
+    destructor Destroy; override; // @addr 0x465DA4
 
     procedure ClearStorage; // @addr 0x465DE0 @note "Does not free cells; use Clear for owned entries."
     function FindNameOrderIndex(const Name: WideString): Integer; // @addr 0x465FB0 @note "Returns -1 when absent."
@@ -200,8 +200,8 @@ type
     LastFree: TCodeAnalyzerUnitEC; // @offset 0x08
     First: TCodeAnalyzerUnitEC; // @offset 0x0C
     Last: TCodeAnalyzerUnitEC; // @offset 0x10
-    constructor Create; // @addr 0x4668EC @ida "TCodeAnalyzerEC *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x466930 @ida "void __usercall $name(TCodeAnalyzerEC *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x4668EC
+    destructor Destroy; override; // @addr 0x466930
     procedure Clear; // @addr 0x46696C @note "Also frees pooled nodes."
     procedure ReserveTokens(Count: Integer); // @addr 0x4669F4
     function AcquireToken: TCodeAnalyzerUnitEC; // @addr 0x466A74
@@ -211,7 +211,7 @@ type
     procedure DeleteToken(Token: TCodeAnalyzerUnitEC); // @addr 0x466BE8
     procedure AppendText(Text: WideString; SourceOffset, NewlineOffset: Integer); // @addr 0x466C64 @note "NewlineOffset is added to the source-position base at each newline."
     procedure Tokenize(Text: WideString; NewlineOffset: Integer = 0); // @addr 0x46865C @note "Replaces existing tokens; source offsets start at zero."
-    function ValidateDelimiters: WideString; // @addr 0x4686E4 @ida "void __usercall $name(TCodeAnalyzerEC *Self@<eax>, unsigned __int16 **Result@<edx>);" @note "Returns an empty string on success."
+    function ValidateDelimiters: WideString; // @addr 0x4686E4 @note "Returns an empty string on success."
     procedure RemoveWhitespace; // @addr 0x468A44
     procedure RemoveNewlines; // @addr 0x468A8C
     procedure RemoveComments; // @addr 0x468AD4 @note "Supports nested block comments."
@@ -232,7 +232,7 @@ type
 
     procedure CopyFrom(Source: TExpressionInstrEC); // @addr 0x468D70
 
-    destructor Destroy; override; // @addr 0x468BA0 @ida "void __usercall $name(TExpressionInstrEC *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    destructor Destroy; override; // @addr 0x468BA0
   end;
 
   TExpressionVarEC = class(TObject) // @size 0x14
@@ -245,10 +245,10 @@ type
     procedure CopyFrom(Source: TExpressionVarEC); // @addr 0x468E68
     function Resolve(InitialKind: TVarKind): TVarEC; // @addr 0x469130 @note "Only evOwned slots allocate values."
 
-    destructor Destroy; override; // @addr 0x468E08 @ida "void __usercall $name(TExpressionVarEC *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    destructor Destroy; override; // @addr 0x468E08
 
     function SplitMemberPath: Boolean; // @addr 0x468F5C @note "Replaces Name with its root component. Always returns true."
-    function GetFullName: WideString; // @addr 0x4690BC @ida "void __usercall $name(TExpressionVarEC *Self@<eax>, unsigned __int16 **Result@<edx>);"
+    function GetFullName: WideString; // @addr 0x4690BC
   end;
 
   TExpressionEC = class(TObject) // @size 0x1C
@@ -269,8 +269,8 @@ type
     procedure Evaluate(Process: TCodeProcessEC; Code: TCodeEC; DebugContext: TScriptDebugState); // @addr 0x46AEC0
     function GetResult: TVarEC; // @addr 0x46C1D0
 
-    constructor Create; // @addr 0x469354 @ida "TExpressionEC *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x469398 @ida "void __usercall $name(TExpressionEC *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x469354
+    destructor Destroy; override; // @addr 0x469398
 
     function AddVariable: Integer; // @addr 0x469574 @note "Returns a zero-based index; the new slot starts with zero-initialized evNamed kind."
     procedure DeleteVariable(Index: Integer); // @addr 0x469604
@@ -294,7 +294,7 @@ type
     SourceContext: Pointer; // @offset 0x24  Compiler-supplied source/debug identity.
     Breakpoint: Boolean; // @offset 0x28
 
-    destructor Destroy; override; // @addr 0x46C7A4 @ida "void __usercall $name(TCodeUnitEC *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    destructor Destroy; override; // @addr 0x46C7A4
   end;
 
   TCodeProcessEC = class(TObject) // @size 0x0C
@@ -311,8 +311,8 @@ type
     procedure PopException; // @addr 0x46CAB0 @note "Does not free the exception value; the caller assumes ownership."
     function GetException: PVarEC; // @addr 0x46CB04
 
-    constructor Create; // @addr 0x46C7F4 @ida "TCodeProcessEC *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x46C85C @ida "void __usercall $name(TCodeProcessEC *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x46C7F4
+    destructor Destroy; override; // @addr 0x46C85C
   end;
 
   TCodeEC = class(TObject) // @size 0x28
@@ -337,8 +337,8 @@ type
     procedure Run(Process: TCodeProcessEC); // @addr 0x46FAC4
     procedure RunDebug(Process: TCodeProcessEC; DebugContext: TScriptDebugState); // @addr 0x46FD7C
 
-    constructor Create; // @addr 0x46CC58 @ida "TCodeEC *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x46CCB4 @ida "void __usercall $name(TCodeEC *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x46CC58
+    destructor Destroy; override; // @addr 0x46CCB4
 
     function InsertCodeUnitBefore(BeforeUnit: TCodeUnitEC): TCodeUnitEC; // @addr 0x46D210 @note "Inserts before BeforeUnit; nil appends."
     procedure Compile(Analyzer: TCodeAnalyzerEC; SourceContext: Pointer; IncludeResolver: TScriptIncludeResolver; FirstToken: TCodeAnalyzerUnitEC; NextToken: PCodeAnalyzerUnitEC; var ErrorText: WideString); // @addr 0x46D294 @note "NextToken may be nil."
@@ -371,8 +371,8 @@ type
   public
     First: TCompilerUnitEC; // @offset 0x04
     Last: TCompilerUnitEC; // @offset 0x08
-    constructor Create; // @addr 0x46C250 @ida "TCompilerEC *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x46C294 @ida "void __usercall $name(TCompilerEC *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x46C250
+    destructor Destroy; override; // @addr 0x46C294
     procedure Clear; // @addr 0x46C2D0
     function AddUnit: TCompilerUnitEC; // @addr 0x46C2F4
     procedure DeleteUnit(UnitNode: TCompilerUnitEC); // @addr 0x46C360
@@ -401,10 +401,10 @@ procedure ResizeScriptArray(Values: TVarArrayEC; Count: Integer); // @addr 0x462
 procedure RegisterExpressionBuiltins(Scope: TVarArrayEC); // @addr 0x4719A0
 
 function CompareScriptNames(Left, Right: PWideChar): Integer; cdecl; // @addr 0x45FCD8 @note "Case-sensitive ordinal comparison; accepts nil and returns -1, 0 or 1."
-function TrimScriptString(Text: WideString): WideString; // @addr 0x45FD30 @ida "void __usercall $name(unsigned __int16 *Text@<eax>, unsigned __int16 **Result@<edx>);"
+function TrimScriptString(Text: WideString): WideString; // @addr 0x45FD30
 function ScriptStringToInt(Text: WideString): Integer; // @addr 0x45FE4C @note "Collects decimal digits while ignoring other characters; negative only for a leading minus."
 function ScriptFloatToString(Value: Double): WideString; // @addr 0x45FF40 @ida "void __userpurge $name(unsigned __int16 **Result@<eax>, double Value@<^0>);" @note "Uses a dot decimal separator."
-function ScriptDwordToHex(Value: Dword): WideString; // @addr 0x45FFB8 @ida "void __usercall $name(unsigned int Value@<eax>, unsigned __int16 **Result@<edx>);"
+function ScriptDwordToHex(Value: Dword): WideString; // @addr 0x45FFB8
 function ScriptStringToFloat(Text: WideString): Double; // @addr 0x46006C @note "Ignores nonnumeric characters; not a strict literal validator."
 function IsScriptIntegerText(Text: WideString): Boolean; // @addr 0x4601D0 @note "Also accepts empty text and a lone minus."
 function IsNonIntegerScriptText(Text: WideString): Boolean; // @addr 0x460270
@@ -1751,7 +1751,7 @@ var
   Dimensions: array of Integer;
 
   // @nested $462D4C CollectScriptArrayDimensions
-  procedure CollectScriptArrayDimensions(Values: TVarArrayEC); // @addr $462D4C @ida "void __usercall $name(TVarArrayEC *Values@<eax>, void *ParentFrame@<^0>);" @note "Nested in ResizeScriptArray; collects dimensions by following each first child."
+  procedure CollectScriptArrayDimensions(Values: TVarArrayEC); // @addr $462D4C @note "Nested in ResizeScriptArray; collects dimensions by following each first child."
   begin
     SetLength(Dimensions, High(Dimensions) + 1 + 1);
     Dimensions[High(Dimensions)] := Values.Count;
@@ -5164,7 +5164,7 @@ var
   InsertSource: Boolean;
 
   // @nested $46D2E8 AddScriptLocal
-  procedure AddScriptLocal(TypeName, Name: WideString); // @addr $46D2E8 @ida "void __usercall $name(unsigned __int16 *TypeName@<eax>, unsigned __int16 *Name@<edx>, void *ParentFrame@<^0>);"
+  procedure AddScriptLocal(TypeName, Name: WideString); // @addr $46D2E8
   begin
     if TypeName = 'unknown' then LocalVar.Add(Name, vkEmpty)
     else if TypeName = 'int' then LocalVar.Add(Name, vkInt)
@@ -5176,7 +5176,7 @@ var
   end;
 
   // @nested $46D4A4 IsScriptLocalDeclaration
-  function IsScriptLocalDeclaration(Token: TCodeAnalyzerUnitEC): Boolean; // @addr $46D4A4 @ida "bool __usercall $name@<al>(TCodeAnalyzerUnitEC *Token@<eax>, void *ParentFrame@<^0>);"
+  function IsScriptLocalDeclaration(Token: TCodeAnalyzerUnitEC): Boolean; // @addr $46D4A4
   begin
     Result := (Token <> nil) and (Token.Next <> nil) and
       (Token.Next.TokenKind = ctText) and (Token.TokenKind = ctText) and
@@ -5186,7 +5186,7 @@ var
   end;
 
   // @nested $46D5EC CompileScriptLocals
-  function CompileScriptLocals(var Token: TCodeAnalyzerUnitEC): WideString; // @addr $46D5EC @ida "void __usercall $name(TCodeAnalyzerUnitEC **Token@<eax>, unsigned __int16 **Result@<edx>, void *ParentFrame@<^0>);"
+  function CompileScriptLocals(var Token: TCodeAnalyzerUnitEC): WideString; // @addr $46D5EC
   var
     Item: TCodeUnitEC;
     Next: TCodeAnalyzerUnitEC;

@@ -36,9 +36,9 @@ type
     ChangedFlag: Boolean; // @offset 0x20
     InitializedEmptyFlag: Boolean; // @offset 0x21
 
-    constructor Create(FolderName: AnsiString); // @addr 0x4C3E0C @ida "THsFolderEC *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, char *FolderName@<ecx>);"
+    constructor Create(FolderName: AnsiString); // @addr 0x4C3E0C
     constructor CreateChild(FolderName: AnsiString; Parent: THsFolderEC); // @addr 0x4C3EE8 @ida "THsFolderEC *__userpurge $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, char *FolderName@<ecx>, THsFolderEC *Parent);"
-    destructor Destroy; override; // @addr 0x4C3FC8 @ida "void __usercall $name(THsFolderEC *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    destructor Destroy; override; // @addr 0x4C3FC8
     function GetEntry(Index: Cardinal): PPackEntryEC; // @addr 0x4C3FF4 @note "Returns nil for an out-of-range index."
     function FindEntry(EntryName: AnsiString): PPackEntryEC; // @addr 0x4C4034 @note "Uppercases EntryName and skips entries with nonzero Flags."
     procedure InitializeEmpty; // @addr 0x4C40FC @note "Requires an unloaded folder."
@@ -83,8 +83,8 @@ type
     RootSubtreeOffset: Cardinal; // @offset 0x1FC
     CollectionIndex: Integer; // @offset 0x20C
 
-    constructor Create; // @addr 0x4C25AC @ida "TPackFileEC *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x4C2650 @ida "void __usercall $name(TPackFileEC *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x4C25AC
+    destructor Destroy; override; // @addr 0x4C2650
     procedure SetPackagePath(NewPackagePath: AnsiString); // @addr 0x4C2684 @note "Does not close an open package."
     procedure CloseAllOpenEntrySlots; // @addr 0x4C26D8
     function Open: Boolean; // @addr 0x4C2724 @note "Opens the package read/write; loose-file mode creates an empty root folder."
@@ -114,8 +114,8 @@ type
     ReservedText: AnsiString; // @offset $18 Native THashEC cleanup owns this otherwise unused field.
     Slots: THashSlotArray; // @offset 0x1C
 
-    constructor Create; // @addr 0x4C50D4 @ida "THashEC *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x4C5118 @ida "void __usercall $name(THashEC *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x4C50D4
+    destructor Destroy; override; // @addr 0x4C5118
     function InitializeEmptyTable(BucketCount: Integer): Boolean; // @addr 0x4C5404 @note "Ignores BucketCount; the table has 1024 buckets. Always returns true."
     function ReleaseTable: Boolean; // @addr 0x4C5464 @note "Returns true without changing the table."
     function ComputeLookupBucketAndFullHash(var Key: AnsiString; out FullHash: Cardinal): Integer; // @addr 0x4C5144 @note "Key is not modified; only its trailing 32 bytes contribute to the hash."
@@ -134,8 +134,8 @@ type
     UseFastNameIndex: Boolean; // @offset 0x10
     PackByIndex: TPackFileArray; // @offset 0x14
 
-    constructor Create; // @addr 0x4C4674 @ida "TPackCollectionEC *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x4C46E8 @ida "void __usercall $name(TPackCollectionEC *Self@<eax>, __int8 DestroyFlags@<dl>);" @note "Unlinks packs without freeing them."
+    constructor Create; // @addr 0x4C4674
+    destructor Destroy; override; // @addr 0x4C46E8 @note "Unlinks packs without freeing them."
     procedure Clear(FreePacks: Boolean); // @addr 0x4C4718 @note "Frees the name hash even when FreePacks is false."
     // List mutations rebuild PackByIndex and CollectionIndex without clearing the name hash.
     // The fixed array's 128-package capacity is not checked.
@@ -162,8 +162,8 @@ var
 
 function MatchLookupKeySuffix(var Key: AnsiString; SuffixBytes: Pointer; SuffixLength: Integer): Boolean; // @addr 0x4C4FB4 @note "Ignores SuffixLength; compares up to 32 trailing key bytes without checking stored length. Key is not modified."
 procedure CopyLookupKeySuffix(DestSuffixBytes: Pointer; SuffixLength: Integer; var Key: AnsiString); // @addr 0x4C504C @note "Ignores SuffixLength; copies up to 32 trailing key bytes without terminator or padding. Key is not modified."
-function AnsiBeforeFirstDelimiter(Text, Delimiters: AnsiString): AnsiString; // @addr 0x4C23E8 @ida "void __usercall $name(char *Text@<eax>, char *Delimiters@<edx>, char **Result@<ecx>);" @note "Returns Text when no delimiter occurs."
-function AnsiAfterFirstDelimiter(Text, Delimiters: AnsiString): AnsiString; // @addr 0x4C24BC @ida "void __usercall $name(char *Text@<eax>, char *Delimiters@<edx>, char **Result@<ecx>);" @note "Returns an empty string when no delimiter occurs."
+function AnsiBeforeFirstDelimiter(Text, Delimiters: AnsiString): AnsiString; // @addr 0x4C23E8 @note "Returns Text when no delimiter occurs."
+function AnsiAfterFirstDelimiter(Text, Delimiters: AnsiString): AnsiString; // @addr 0x4C24BC @note "Returns an empty string when no delimiter occurs."
 function OffsetPackPointer(Data: Pointer; ByteOffset: Cardinal): Pointer; // @addr $4C23CC
 
 implementation

@@ -26,19 +26,19 @@ type
     KeepSize: Boolean; // @offset $CC
     PanelPartnerImage: WideString; // @offset $D0
     HideOnStarInfo: Boolean; // @offset $D4
-    constructor Create(GraphKey: WideString; UnusedPosition: TPoint); // @addr $71CFCC @ida "TRuinsSE *__userpurge $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, unsigned __int16 *GraphKey@<ecx>, TPoint *UnusedPosition@<^0>);"
+    constructor Create(GraphKey: WideString; UnusedPosition: TPoint); // @addr $71CFCC
     procedure AttachToSpace(ASpace: TSpaceSE); override; // @addr $71D168
     procedure DetachFromSpace; override; // @addr $71D724
     procedure SetState(Value: Integer); // @addr $71D7E8
     procedure AnimationCycleComplete(Sender: TObjectGI); // @addr $71D8E0
     procedure AdvanceFade(Timer: PCallbackTimerGI; UserData: Integer); // @addr $71DA3C
-    procedure SetPosition(APosition: TPointF); override; // @addr $71DB30 @ida "void __usercall $name(TRuinsSE *Self@<eax>, TPointF *APosition@<edx>);"
-    procedure SetDepth(Value: Single); override; // @addr $71DBF0 @ida "void __userpurge $name(TRuinsSE *Self@<eax>, float Value@<^0>);"
-    function GetDepth: Single; override; // @addr $71DC38 @ida "float __usercall $name@<st0>(TRuinsSE *Self@<eax>);"
+    procedure SetPosition(APosition: TPointF); override; // @addr $71DB30
+    procedure SetDepth(Value: Single); override; // @addr $71DBF0
+    function GetDepth: Single; override; // @addr $71DC38
     function GetAlpha: Byte; override; // @addr $71DC7C
     procedure SetAlpha(Value: Byte); override; // @addr $71DC98
     procedure DrawMap; override; // @addr $71DD58
-    function GetWeaponPortPoint(Seed: Cardinal): TPointF; // @addr $71DDB8 @ida "void __usercall $name(TRuinsSE *Self@<eax>, unsigned int Seed@<edx>, TPointF *Result@<ecx>);"
+    function GetWeaponPortPoint(Seed: Cardinal): TPointF; // @addr $71DDB8
     function HitTestCursor: Boolean; override; // @addr $71DE30
     procedure LoadTemplate(Block: TBlockParEC); override; // @addr $71E0E4
     procedure ApplyConfig(Block: TBlockParEC); override; // @addr $71E3DC
@@ -352,14 +352,14 @@ procedure TRuinsSE.LoadTemplate(Block: TBlockParEC);
 var
   Index: Integer;
   // @nested $71DEA8 ParseRuinsPoint
-  function ParseRuinsPoint(PointText: WideString): TPoint; // @addr $71DEA8 @ida "void __usercall $name(unsigned __int16 *PointText@<eax>, TPoint *Result@<edx>, void *ParentFrame@<^0>);" @stackpop 0 @calls "0x71E2B1"
+  function ParseRuinsPoint(PointText: WideString): TPoint; // @addr $71DEA8 @calls "0x71E2B1"
   begin
     if CountDelimitedPartsW(PointText, ',') < 2 then raise Exception.Create('GetPointGI. tstr=' + PointText);
     Result := Classes.Point(StrToInt(ExtractDelimitedPartW(PointText, 0, ',')), StrToInt(ExtractDelimitedPartW(PointText, 1, ',')));
   end;
 
   // @nested $71DFEC ParseRuinsEnabled
-  function ParseRuinsEnabled(Name: WideString): Boolean; // @addr $71DFEC @ida "bool __usercall $name@<al>(unsigned __int16 *Name@<eax>, void *ParentFrame@<^0>);" @stackpop 0 @calls "0x71E22D"
+  function ParseRuinsEnabled(Name: WideString): Boolean; // @addr $71DFEC @calls "0x71E22D"
   begin
     if (Name = 'Yes') or (Name = 'yes') or (Name = 'True') or (Name = 'true') or (Name = 'TRUE') or (Name = '1') then Result := True
     else Result := False;

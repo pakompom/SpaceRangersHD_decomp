@@ -20,8 +20,8 @@ type
     LastEntry: PFilmHistoryEntry; // @offset 0x08
     Lock: TCriticalSection; // @offset 0x0C
 
-    constructor Create; // @addr 0x65FFF0 @ida "TFilmFile *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x660044 @ida "void __usercall $name(TFilmFile *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x65FFF0
+    destructor Destroy; override; // @addr 0x660044
     procedure Clear; // @addr 0x66009C
     function AppendEntry: PFilmHistoryEntry; // @addr 0x6600D8 @note "Caller holds Lock. Appends a zeroed entry owned by this history."
     procedure RemoveEntry(Entry: PFilmHistoryEntry); // @addr 0x660140 @note "Caller holds Lock. Unlinks Entry and frees its buffer and storage."

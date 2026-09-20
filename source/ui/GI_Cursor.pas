@@ -17,13 +17,13 @@ type
     FrameIndex: Integer; // @offset $134
     AnimationTimer: PCallbackTimerGI; // @offset $138
 
-    constructor Create(Owner: TObjectGI); // @addr $4B9634 @ida "TCursorGI *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, TObjectGI *Owner@<ecx>);"
-    destructor Destroy; override; // @addr $4B969C @ida "void __usercall $name(TCursorGI *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create(Owner: TObjectGI); // @addr $4B9634
+    destructor Destroy; override; // @addr $4B969C
     procedure Clear; override; // @addr $4B979C @note "Clears cursor resources and the image child, retaining the child object."
     procedure SetImagePath(const Path: WideString); // @addr $4B9884
     procedure SetActive(Enabled: Boolean); override; // @addr $4B992C
-    procedure SetOrigin(Origin: TPoint); override; // @addr $4B9A94 @ida "void __usercall $name(TCursorGI *Self@<eax>, TPoint *Origin@<edx>);"
-    procedure Draw(ClipRect: TRect); override; // @addr $4B9AEC @ida "void __usercall $name(TCursorGI *Self@<eax>, TRect *ClipRect@<edx>);"
+    procedure SetOrigin(Origin: TPoint); override; // @addr $4B9A94
+    procedure Draw(ClipRect: TRect); override; // @addr $4B9AEC
     procedure RebuildSystemCursor; // @addr $4B9B14 @note "Builds Windows cursor handles from GI/GAI resources and schedules animation when active."
     function CreateCursorBitmap(Buffer: TGraphBufGR): Cardinal; // @addr $4BA1AC @note "Copies a 32-bit image to a top-down Windows DIB; caller owns the bitmap."
     procedure AdvanceAnimation(Timer: PCallbackTimerGI; UserData: Integer); // @addr $4BA348 @note "Timer and UserData are unused; replaces AnimationTimer after advancing the sequence."

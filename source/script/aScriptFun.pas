@@ -4835,7 +4835,7 @@ end;
 procedure SF_CT(av: array of TVarEC; code: TCodeEC);
 var Text: WideString; Block: TBlockParEC;
   // @nested $616034 AddConfigBlock
-  procedure AddConfigBlock(Block: TBlockParEC; Dest: TVarEC); // @addr 0x616034 @ida "void __usercall $name(TBlockParEC *Block@<eax>, TVarEC *Dest@<edx>, void *ParentFrame@<^0>);" @note "Nested in SF_CT. Appends to Dest's existing array; empty child blocks contain one vkEmpty placeholder."
+  procedure AddConfigBlock(Block: TBlockParEC; Dest: TVarEC); // @addr 0x616034 @note "Nested in SF_CT. Appends to Dest's existing array; empty child blocks contain one vkEmpty placeholder."
   var I: Integer; Value: TVarEC;
   begin
     for I := 0 to Block.GetParamCount - 1 do
@@ -4911,7 +4911,7 @@ end;
 procedure SF_GetMainData(av: array of TVarEC; code: TCodeEC);
 var Block: TBlockParEC;
   // @nested $6167B0 AddMainDataBlock
-  procedure AddMainDataBlock(Block: TBlockParEC; Dest: TVarEC); // @addr 0x6167B0 @ida "void __usercall $name(TBlockParEC *Block@<eax>, TVarEC *Dest@<edx>, void *ParentFrame@<^0>);" @note "Nested in SF_GetMainData. Appends to Dest's existing array; empty child blocks contain one vkEmpty placeholder."
+  procedure AddMainDataBlock(Block: TBlockParEC; Dest: TVarEC); // @addr 0x6167B0 @note "Nested in SF_GetMainData. Appends to Dest's existing array; empty child blocks contain one vkEmpty placeholder."
   var I: Integer; Value: TVarEC;
   begin
     for I := 0 to Block.GetParamCount - 1 do
@@ -7265,7 +7265,7 @@ end;
 procedure SF_SFT(av: array of TVarEC; code: TCodeEC);
 var I: Integer;
   // @nested $61EC8C LogArray
-  procedure LogArray(Prefix: WideString; Value: TVarEC); // @addr 0x61EC8C @ida "void __usercall $name(unsigned __int16 *Prefix@<eax>, TVarEC *Value@<edx>, void *ParentFrame@<^0>);" @note "Nested in SF_SFT; Value must resolve to an array."
+  procedure LogArray(Prefix: WideString; Value: TVarEC); // @addr 0x61EC8C @note "Nested in SF_SFT; Value must resolve to an array."
   var I: Integer; Item: TVarEC; Path: WideString;
   begin
     for I := 0 to Value.GetArray.Count - 1 do
@@ -10580,7 +10580,7 @@ var MinimumId: Cardinal; Mask: TShipTypeMask; IncludeScripted: Boolean;
   I, J, K, L, Count: Integer; Star: TStar; Planet: TPlanet; Ship: TShip; OwnerMask: TOwnerMask;
 
   // @nested $62B728 CheckShip
-  procedure CheckShip(Ship: TShip); // @addr 0x62B728 @ida "void __usercall $name(TShip *Ship@<eax>, void *ParentFrame@<^0>);" @note "Requires SF_BuildListOfNewShips' live frame. The custom-type filter is applied only when the faction filter is enabled."
+  procedure CheckShip(Ship: TShip); // @addr 0x62B728 @note "Requires SF_BuildListOfNewShips' live frame. The custom-type filter is applied only when the faction filter is enabled."
   var Found: Boolean; I: Integer;
   begin
     if Cardinal(Ship.Id) < MinimumId then Exit;
@@ -10611,7 +10611,7 @@ var MinimumId: Cardinal; Mask: TShipTypeMask; IncludeScripted: Boolean;
   end;
 
   // @nested $62B8F0 CheckItem
-  procedure CheckItem(Item: TItem); // @addr 0x62B8F0 @ida "void __usercall $name(TItem *Item@<eax>, void *ParentFrame@<^0>);" @note "Requires SF_BuildListOfNewShips' live frame. Ignores nil and non-Tranclucator artefacts."
+  procedure CheckItem(Item: TItem); // @addr 0x62B8F0 @note "Requires SF_BuildListOfNewShips' live frame. Ignores nil and non-Tranclucator artefacts."
   begin
     if Item <> nil then
       if Item is TArtefactTranclucator then

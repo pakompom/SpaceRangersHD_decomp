@@ -5,7 +5,7 @@ interface
 
 procedure InitThreadTLS; // @note "Allocates this thread's Delphi TLS block when the module has TLS data; raises the RTL error on failure."
 
-function _GetTls: Pointer; // @ida "void * __usercall $name@<eax>(void);" @note "DCC32 MAP SysInit.@GetTls. Source rtl/sys/SysInit.pas:341."
+function _GetTls: Pointer; // @note "DCC32 MAP SysInit.@GetTls. Source rtl/sys/SysInit.pas:341."
 
 procedure InitExe(InitTable: Pointer); // @note "Compiler executable startup; EAX is the unit initialization table. Native $407BB8 forwards it to System.StartExe after module/TLS setup."
 

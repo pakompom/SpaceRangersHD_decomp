@@ -10,13 +10,13 @@ type
   public
     ImageCache: TCBitmapControlEC; // @offset 0x120
 
-    constructor Create(Owner: TObjectGI); // @addr 0x498574 @ida "TInfiniteImageGI *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, TObjectGI *Owner@<ecx>);"
-    destructor Destroy; override; // @addr 0x4985E8 @ida "void __usercall $name(TInfiniteImageGI *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create(Owner: TObjectGI); // @addr 0x498574
+    destructor Destroy; override; // @addr 0x4985E8
     procedure SetImagePath(Path: WideString); // @addr 0x498634 @note "Resets size to two billion pixels on each axis and centers the origin."
     procedure LoadFromConfigPath(const Path: WideString); override; // @addr 0x4986D4
     procedure LoadFromBlock(Block: TBlockParEC); override; // @addr 0x498708
     procedure LoadImageProperties(Block: TBlockParEC); // @addr 0x498730
-    procedure Draw(ClipRect: TRect); override; // @addr 0x4987F8 @ida "void __usercall $name(TInfiniteImageGI *Self@<eax>, TRect *ClipRect@<edx>);" @note "The hardware drawing path is unimplemented."
+    procedure Draw(ClipRect: TRect); override; // @addr 0x4987F8 @note "The hardware drawing path is unimplemented."
     procedure QueueImageLoad(PendingLoads: TList); override; // @addr 0x498980
   end;
 

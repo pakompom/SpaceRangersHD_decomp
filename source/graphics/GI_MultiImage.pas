@@ -45,8 +45,8 @@ type
   public
     ImageCache: TCGiControlEC; // @offset $04
     Bounds: TRect; // @offset $08
-    constructor Create; // @addr $49A7E0 @ida "TMultiImageImageGI *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr $49A848 @ida "void __usercall $name(TMultiImageImageGI *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr $49A7E0
+    destructor Destroy; override; // @addr $49A848
     procedure SetImage(Path: WideString); // @addr $49A88C
   end;
 
@@ -58,8 +58,8 @@ type
     LastRow: TMultiImageRowGI; // @offset $12C
     CellSize: Integer; // @offset $130
     Images: TList; // @offset $134
-    constructor Create(Owner: TObjectGI); // @addr $49A980 @ida "TMultiImageGI *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, TObjectGI *Owner@<ecx>);"
-    destructor Destroy; override; // @addr $49A9EC @ida "void __usercall $name(TMultiImageGI *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create(Owner: TObjectGI); // @addr $49A980
+    destructor Destroy; override; // @addr $49A9EC
     procedure Clear; override; // @addr $49AA48
     function AddUnit: TMultiImageUnitGI; // @addr $49AA6C
     procedure RemoveUnit(Item: TMultiImageUnitGI); // @addr $49AAE8
@@ -68,14 +68,14 @@ type
     procedure ClearSpatialIndex; // @addr $49AD4C @note "Preserves units and clears their spatial links."
     function GetOrCreateRow(Index: Integer): TMultiImageRowGI; // @addr $49AE04
     function GetOrCreateColumn(Row: TMultiImageRowGI; Index: Integer): TMultiImageColGI; // @addr $49AF1C
-    procedure SetUnitPosition(Item: TMultiImageUnitGI; Position: TPoint); // @addr $49B028 @ida "void __usercall $name(TMultiImageGI *Self@<eax>, TMultiImageUnitGI *Item@<edx>, TPoint *Position@<ecx>);" @note "Native early-out compares the control's Position, not the item's old position. CellSize must be nonzero."
+    procedure SetUnitPosition(Item: TMultiImageUnitGI; Position: TPoint); // @addr $49B028 @note "Native early-out compares the control's Position, not the item's old position. CellSize must be nonzero."
     procedure ClearImages; // @addr $49B118
     function AddImage(Path: WideString): Integer; // @addr $49B180
     procedure LoadFromConfigPath(const Path: WideString); override; // @addr $49B204
     procedure LoadFromBlock(Block: TBlockParEC); override; // @addr $49B238
     procedure LoadImageProperties(Block: TBlockParEC); // @addr $49B260 @note "Empty in native code."
     procedure Invalidate; override; // @addr $49B270
-    procedure Draw(ClipRect: TRect); override; // @addr $49B46C @ida "void __usercall $name(TMultiImageGI *Self@<eax>, TRect *ClipRect@<edx>);"
+    procedure Draw(ClipRect: TRect); override; // @addr $49B46C
     procedure QueueImageLoad(PendingLoads: TList); override; // @addr $49B71C
   end;
 

@@ -46,8 +46,8 @@ type
     UpOnlyDown: Boolean; // @offset 0x1EC
     OnPressCode: TBlockParEC; // @offset 0x1F0
 
-    constructor Create(Owner: TObjectGI); // @addr 0x49DD88 @ida "TGraphButtonGI *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, TObjectGI *Owner@<ecx>);"
-    destructor Destroy; override; // @addr 0x49DE84 @ida "void __usercall $name(TGraphButtonGI *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create(Owner: TObjectGI); // @addr 0x49DD88
+    destructor Destroy; override; // @addr 0x49DE84
     procedure Clear; override; // @addr 0x49DEB8
     procedure SetCaptionFontName(const FontName: WideString); // @addr 0x49DFFC
     procedure SetCaption(const Text: WideString); // @addr 0x49E0BC
@@ -61,26 +61,26 @@ type
     procedure SetImageDisabledActivePath(const Path: WideString); // @addr 0x49E6A0
     procedure SetImageHitPath(const Path: WideString); // @addr 0x49E74C
     procedure SetKind(Value: TGraphButtonKindGI); // @addr 0x49E7CC
-    function HitTest(Point: TPoint): Boolean; // @addr 0x49E800 @ida "bool __usercall $name@<al>(TGraphButtonGI *Self@<eax>, TPoint *Point@<edx>);" @note "Graph mode accepts a hit on any state image, including inactive states."
+    function HitTest(Point: TPoint): Boolean; // @addr 0x49E800 @note "Graph mode accepts a hit on any state image, including inactive states."
     procedure SetDown(Value: Boolean); // @addr 0x49E96C
     procedure SetDisabled(Value: Boolean); // @addr 0x49E9A0
     function IsHovered: Boolean; // @addr 0x49E9D4
     procedure SetHovered(Value: Boolean); // @addr 0x49E9F4 @note "Does not change keyboard focus."
-    function GetMaxStateImageSize: TPoint; // @addr 0x49EA38 @ida "void __usercall $name(TGraphButtonGI *Self@<eax>, TPoint *Result@<edx>);" @note "Native code compares an uninitialized temporary size when the first state image is absent."
+    function GetMaxStateImageSize: TPoint; // @addr 0x49EA38 @note "Native code compares an uninitialized temporary size when the first state image is absent."
     procedure UpdateStateVisuals; // @addr 0x49ED44
     procedure UpdateStateImagePlacement; // @addr 0x49F28C
-    procedure SetSize(Size: TPoint); override; // @addr 0x49F3CC @ida "void __usercall $name(TGraphButtonGI *Self@<eax>, TPoint *Size@<edx>);"
-    procedure SetOrigin(Origin: TPoint); override; // @addr 0x49F3F8 @ida "void __usercall $name(TGraphButtonGI *Self@<eax>, TPoint *Origin@<edx>);"
+    procedure SetSize(Size: TPoint); override; // @addr 0x49F3CC
+    procedure SetOrigin(Origin: TPoint); override; // @addr 0x49F3F8
     procedure OnActivate; override; // @addr 0x49F424
     procedure OnDeactivate; override; // @addr 0x49F478
     procedure OnMouseEnter; override; // @addr $49F4D0
     procedure OnMouseLeave; override; // @addr $49F4E4
-    procedure ProcessMouseMove(KeyState: Cardinal; Point: TPoint); override; // @addr $49F514 @ida "void __usercall $name(TGraphButtonGI *Self@<eax>, unsigned int KeyState@<edx>, TPoint *Point@<ecx>);"
+    procedure ProcessMouseMove(KeyState: Cardinal; Point: TPoint); override; // @addr $49F514
     procedure OnHoverGained; override; // @addr $49F594
     procedure OnHoverLost; override; // @addr $49F5FC
-    procedure ProcessLeftButtonDown(KeyState: Cardinal; Point: TPoint); override; // @addr $49F710 @ida "void __usercall $name(TGraphButtonGI *Self@<eax>, unsigned int KeyState@<edx>, TPoint *Point@<ecx>);"
-    procedure ProcessLeftButtonUp(KeyState: Cardinal; Point: TPoint); override; // @addr $49F8E4 @ida "void __usercall $name(TGraphButtonGI *Self@<eax>, unsigned int KeyState@<edx>, TPoint *Point@<ecx>);"
-    procedure ProcessLeftButtonDoubleClick(KeyState: Cardinal; Point: TPoint); override; // @addr $49FA14 @ida "void __usercall $name(TGraphButtonGI *Self@<eax>, unsigned int KeyState@<edx>, TPoint *Point@<ecx>);"
+    procedure ProcessLeftButtonDown(KeyState: Cardinal; Point: TPoint); override; // @addr $49F710
+    procedure ProcessLeftButtonUp(KeyState: Cardinal; Point: TPoint); override; // @addr $49F8E4
+    procedure ProcessLeftButtonDoubleClick(KeyState: Cardinal; Point: TPoint); override; // @addr $49FA14
     procedure UpdateAutoGeometry; override; // @addr $4A0CD4
     procedure ExecuteOnPressCode; // @addr 0x49F6B4
     procedure LoadFromConfigPath(const Path: WideString); override; // @addr 0x49FA40

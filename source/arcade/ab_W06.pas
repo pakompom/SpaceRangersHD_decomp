@@ -14,9 +14,9 @@ type
     Exploding: Boolean; // @offset $B8
     ExpireTick: Integer; // @offset $BC
     TurnSpeed: Single; // @offset $C0
-    constructor Create; // @addr $4F5E08 @ida "TabW06 *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr $4F5E9C @ida "void __usercall $name(TabW06 *Self@<eax>, __int8 DestroyFlags@<dl>);"
-    procedure Launch(Owner: TabObject; Amount: Integer; Offset: Single); // @addr $4F5EF4 @ida "void __userpurge $name(TabW06 *Self@<eax>, TabObject *Owner@<edx>, int Amount@<ecx>, float Offset@<^0>);"
+    constructor Create; // @addr $4F5E08
+    destructor Destroy; override; // @addr $4F5E9C
+    procedure Launch(Owner: TabObject; Amount: Integer; Offset: Single); // @addr $4F5EF4
     procedure Advance; override; // @addr $4F607C
     procedure UpdateVisuals; override; // @addr $4F62BC
   end;

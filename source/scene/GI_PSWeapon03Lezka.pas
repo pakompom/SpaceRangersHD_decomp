@@ -36,20 +36,20 @@ type
     OriginalLength: Double; // @offset $158
     PaletteIndex: Integer; // @offset $160
 
-    constructor Create(Owner: TObjectGI; APaletteIndex: Integer); // @addr $689B54 @ida "TPSWeapon03Lezka *__userpurge $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, TObjectGI *Owner@<ecx>, int APaletteIndex@<^0>);"
-    destructor Destroy; override; // @addr $689C08 @ida "void __usercall $name(TPSWeapon03Lezka *Self@<eax>, __int8 DestroyFlags@<dl>);"
-    procedure SetPosition(Position: TPoint); override; // @addr $689C44 @ida "void __usercall $name(TPSWeapon03Lezka *Self@<eax>, TPoint *Position@<edx>);"
-    procedure SetTargetPoint(Point: TPoint); override; // @addr $689C88 @ida "void __usercall $name(TPSWeapon03Lezka *Self@<eax>, TPoint *Point@<edx>);"
+    constructor Create(Owner: TObjectGI; APaletteIndex: Integer); // @addr $689B54
+    destructor Destroy; override; // @addr $689C08
+    procedure SetPosition(Position: TPoint); override; // @addr $689C44
+    procedure SetTargetPoint(Point: TPoint); override; // @addr $689C88
     procedure SetActive(Enabled: Boolean); override; // @addr $689CDC
     procedure UpdateProjectionBounds; // @addr $689D04
     procedure UpdateHitTestBounds; override; // @addr $68A050
-    function GetLocalBounds: TRect; override; // @addr $68A0B0 @ida "void __usercall $name(TPSWeapon03Lezka *Self@<eax>, TRect *Result@<edx>);"
+    function GetLocalBounds: TRect; override; // @addr $68A0B0
     function AddParticle: PLezkaParticle; // @addr $68A114
     procedure ClearParticles; // @addr $68A18C
     procedure Invalidate; override; // @addr $68A2AC @note "Native empty override."
-    procedure InvalidateRect(Rect: TRect); override; // @addr $68A1E0 @ida "void __usercall $name(TPSWeapon03Lezka *Self@<eax>, TRect *Rect@<edx>);"
+    procedure InvalidateRect(Rect: TRect); override; // @addr $68A1E0
     procedure Advance(Timer: PCallbackTimerGI; UserData: Integer); override; // @addr $68A2B8
-    procedure Draw(ClipRect: TRect); override; // @addr $68A840 @ida "void __usercall $name(TPSWeapon03Lezka *Self@<eax>, TRect *ClipRect@<edx>);"
+    procedure Draw(ClipRect: TRect); override; // @addr $68A840
   end;
 
 procedure LoadLezkaPalettes; // @addr $68AAAC

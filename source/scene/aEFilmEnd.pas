@@ -23,8 +23,8 @@ type
     FirstEntry: PEFilmEndEntry; // @offset 0x04
     LastEntry: PEFilmEndEntry; // @offset 0x08
 
-    constructor Create; // @addr 0x6A162C @ida "TEFilmEnd *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x6A1670 @ida "void __usercall $name(TEFilmEnd *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x6A162C
+    destructor Destroy; override; // @addr 0x6A1670
     procedure RemoveLinkedWeaponEffects; // @addr $6A1E94 Removes weapon entries whose Projectile is nonzero.
     procedure Clear; // @addr 0x6A16AC
     function AppendEntry: PEFilmEndEntry; // @addr 0x6A16D0

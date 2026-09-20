@@ -20,8 +20,8 @@ type
   public
     PaletteData: PWord; // @offset 0x20
 
-    constructor Create; // @addr 0x4A5E9C @ida "TCLightPalEC *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x4A5EE8 @ida "void __usercall $name(TCLightPalEC *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x4A5E9C
+    destructor Destroy; override; // @addr 0x4A5EE8
     procedure LoadFromConfigBuffer(SourceBuffer: TBufEC; const LoadOption: WideString); override; // @addr 0x4A5F38
   end;
 

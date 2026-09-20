@@ -14,10 +14,10 @@ type
     Phase: Integer; // @offset $B8  0 parent, 1 parent explosion, 2 child coasting, 3 child tracking, 4 child explosion.
     ExpireTick: Integer; // @offset $BC
     AimTick: Integer; // @offset $C0
-    constructor Create; // @addr $4F4E4C @ida "TabW04 *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr $4F4ED0 @ida "void __usercall $name(TabW04 *Self@<eax>, __int8 DestroyFlags@<dl>);"
-    procedure Launch(Owner: TabObject; Amount: Integer; Offset: Single); // @addr $4F4F28 @ida "void __userpurge $name(TabW04 *Self@<eax>, TabObject *Owner@<edx>, int Amount@<ecx>, float Offset@<^0>);"
-    procedure LaunchChild(Parent: TabW04; Angle: Single); // @addr $4F5074 @ida "void __userpurge $name(TabW04 *Self@<eax>, TabW04 *Parent@<edx>, float Angle@<^0>);"
+    constructor Create; // @addr $4F4E4C
+    destructor Destroy; override; // @addr $4F4ED0
+    procedure Launch(Owner: TabObject; Amount: Integer; Offset: Single); // @addr $4F4F28
+    procedure LaunchChild(Parent: TabW04; Angle: Single); // @addr $4F5074
     procedure Advance; override; // @addr $4F51EC
     procedure UpdateVisuals; override; // @addr $4F55BC
   end;

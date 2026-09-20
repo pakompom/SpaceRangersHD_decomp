@@ -18,8 +18,8 @@ type
     Dragging: Boolean; // @offset $F0
     RepeatTimer: PCallbackTimerGI; // @offset $F4
     RepeatCount: Cardinal; // @offset $F8
-    constructor Create; override; // @addr $603CD0 @ida "TfCount1 *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr $603D14 @ida "void __usercall $name(TfCount1 *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; override; // @addr $603CD0
+    destructor Destroy; override; // @addr $603D14
     procedure InitializeLayout; override; // @addr $603D48
     procedure OnOpen; override; // @addr $603E68
     procedure OnClose; override; // @addr $604264
@@ -32,10 +32,10 @@ type
     procedure MaxClicked(Sender: TObjectGI); // @addr $604A84
     procedure AcceptClicked(Sender: TObjectGI); // @addr $604AD8
     procedure CancelClicked(Sender: TObjectGI); // @addr $604B10
-    procedure BarMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $604B48 @ida "void __userpurge $name(TfCount1 *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
-    procedure MainMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $604B88 @ida "void __userpurge $name(TfCount1 *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
-    procedure MainMouseMove(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $604BB4 @ida "void __userpurge $name(TfCount1 *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
-    procedure ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer); override; // @addr $604D58 @ida "void __userpurge $name(TfCount1 *Self@<eax>, unsigned int KeyState@<edx>, TPoint *Point@<ecx>, int Delta@<^0>);"
+    procedure BarMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $604B48
+    procedure MainMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $604B88
+    procedure MainMouseMove(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $604BB4
+    procedure ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer); override; // @addr $604D58
     procedure ProcessCallbackTimers; override; // @addr $604DD0
     procedure MainKeyDown(Sender: TObjectGI; Key: Cardinal); // @addr $604E04
   end;

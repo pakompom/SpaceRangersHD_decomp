@@ -40,7 +40,7 @@ type
     function AcceptPartnershipOffer(OtherShip: TShip; var Response: WideString; PaymentAmount: Integer): Boolean; override; // @addr $005EF7E4 @slot $B8
     function BuildPartnershipOfferResponse(OtherShip: TShip; var Response: WideString; PaymentAmount: Integer): Boolean; override; // @addr $005EF834 @slot $BC
     procedure RefreshCurrentStanding; override; // @addr $005EFC48 @slot $C4
-    destructor Destroy; override; // @addr $5E828C @ida "void __usercall $name(TKling *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    destructor Destroy; override; // @addr $5E828C
     function LandOnRandomFriendlyPlanet(OverrideScriptOrder: Boolean): Boolean; // @addr $5EC024
     function RetreatToReinforcedStar: Boolean; // @addr $5EC180
     function RetreatIfHullCritical: Boolean; // @addr $5EC358
@@ -74,8 +74,8 @@ type
     function GetHomeStar: TStar; override; // @addr $5EE5A8 @slot $34
     function GetStrengthScaledPirateStatus: TPercent; override; // @addr $5EE7F0 @slot $3C
     function GetDominantCareer: TRangerCareer; override; // @addr 0x5EE7DC @slot 0x38 @note "Always rcWarrior."
-    function GetName: WideString; override; // @addr 0x5EE5C0 @slot 0x24 @ida "void __usercall $name(TKling *Self@<eax>, unsigned __int16 **Result@<edx>);"
-    function GetFullName(const Separator: WideString): WideString; override; // @addr 0x5EE5E0 @slot 0x28 @ida "void __usercall $name(TKling *Self@<eax>, unsigned __int16 *Separator@<edx>, unsigned __int16 **Result@<ecx>);"
+    function GetName: WideString; override; // @addr 0x5EE5C0 @slot 0x24
+    function GetFullName(const Separator: WideString): WideString; override; // @addr 0x5EE5E0 @slot 0x28
 
     function IsProgramActive(ProgramId: Byte): Boolean; // @addr 0x5EE81C @note "Checks the stored active flag and ID; expiration is handled by the daily ship update."
     function ShouldKamikaze: Boolean; // @addr 0x5EBF40 @note "Requires a live enemy in the same star and KlingType=ktKlig. Existing kamikaze mode bypasses the proximity/strength test."
@@ -368,24 +368,24 @@ var
   WeaponType: Byte;
   Chosen, Accepted: Boolean;
   // @nested $5E9514 RandomInteger
-  function RandomInteger(BoundA, BoundB: Integer): Integer; // @addr $5E9514 @ida "int __usercall $name@<eax>(int BoundA@<eax>, int BoundB@<edx>, void *ParentFrame@<^0>);"
+  function RandomInteger(BoundA, BoundB: Integer): Integer; // @addr $5E9514
   begin
     Result := NextRandomIntRange(BoundA, BoundB, RandomState);
   end;
   // @nested $5E9544 RandomEquipmentSize
-  function RandomEquipmentSize(BaseSize, MinimumSizeIndex, MaximumSizeIndex: Integer): Integer; // @addr $5E9544 @ida "int __usercall $name@<eax>(int BaseSize@<eax>, int MinimumSizeIndex@<edx>, int MaximumSizeIndex@<ecx>, void *ParentFrame@<^0>);"
+  function RandomEquipmentSize(BaseSize, MinimumSizeIndex, MaximumSizeIndex: Integer): Integer; // @addr $5E9544
   begin
     Result := RandomInteger(Round(BaseSize * EquipmentSizeFactors[MinimumSizeIndex] * 0.9),
       Round(BaseSize * EquipmentSizeFactors[MaximumSizeIndex]));
   end;
   // @nested $5E95A8 SizeForKind
-  function SizeForKind(BaseSize: Integer): Integer; // @addr $5E95A8 @ida "int __usercall $name@<eax>(int BaseSize@<eax>, void *ParentFrame@<^0>);"
+  function SizeForKind(BaseSize: Integer): Integer; // @addr $5E95A8
   begin
     Result := RandomEquipmentSize(BaseSize, DominatorEquipmentSizeIndices[Ord(KlingType), 1],
       DominatorEquipmentSizeIndices[Ord(KlingType), 0]);
   end;
   // @nested $5E95F0 RandomTuning
-  function RandomTuning(MinimumColumn, MaximumColumn: Integer): Integer; // @addr $5E95F0 @ida "int __usercall $name@<eax>(int MinimumColumn@<eax>, int MaximumColumn@<edx>, void *ParentFrame@<^0>);"
+  function RandomTuning(MinimumColumn, MaximumColumn: Integer): Integer; // @addr $5E95F0
   var A, B: Integer;
   begin
     A := Round(RemapClamped(ControlPercent, MinimumControl, MiddleControl,
@@ -396,7 +396,7 @@ var
     Result := RandomInteger(A, B);
   end;
   // @nested $5E970C InterpolatedTuning
-  function InterpolatedTuning(MinimumColumn, MaximumColumn: Integer): Integer; // @addr $5E970C @ida "int __usercall $name@<eax>(int MinimumColumn@<eax>, int MaximumColumn@<edx>, void *ParentFrame@<^0>);"
+  function InterpolatedTuning(MinimumColumn, MaximumColumn: Integer): Integer; // @addr $5E970C
   begin
     Result := Round(RemapClamped(ControlPercent, MinimumControl, MaximumControl,
       DominatorGenerationTuning[Tier, MaximumColumn], DominatorGenerationTuning[Tier, MinimumColumn]));
@@ -1031,7 +1031,7 @@ end;
 procedure TKling.OpenKellerMissionHole;
 var Ship: TKling; Hole: THole; Angle, Radius: Single; I, Count, Threshold, RandomMaximum: Integer; Series: TDominatorSeries;
   // @nested $5ECC94 SpawnReinforcement
-  procedure SpawnReinforcement(OrderData: Integer); // @addr $5ECC94 @ida "void __usercall $name(int OrderData@<eax>, void *ParentFrame@<^0>);"
+  procedure SpawnReinforcement(OrderData: Integer); // @addr $5ECC94
   begin
     Ship := TObject(DominatorSpawnPlanet.SpawnWeightedDominatorShip) as TKling;
     Ship.Order := soJumpHole;
@@ -1188,7 +1188,7 @@ var TargetStar: TStar; TargetCount, NonDominatorCount, OtherSeriesCount, Action:
   SendCount, SendIndex, Sent: Integer; Ship: TShip; ControlPercent: Byte; Chance, MinimumPopulation, I, Attempts, NearbyIndex: Integer;
   Strength: Extended; BaseChance, ControlThreshold: Integer;
   // @nested $5ED6CC NonDominatorDistanceIndex
-  function NonDominatorDistanceIndex(Star: TStar): Integer; // @addr $5ED6CC @ida "int __usercall $name@<eax>(TStar *Star@<eax>, void *ParentFrame@<^0>);"
+  function NonDominatorDistanceIndex(Star: TStar): Integer; // @addr $5ED6CC
   var I: Integer;
   begin
     Result := 1000;
@@ -1199,7 +1199,7 @@ var TargetStar: TStar; TargetCount, NonDominatorCount, OtherSeriesCount, Action:
       end;
   end;
   // @nested $5ED744 OtherSeriesDistanceIndex
-  function OtherSeriesDistanceIndex(Star: TStar): Integer; // @addr $5ED744 @ida "int __usercall $name@<eax>(TStar *Star@<eax>, void *ParentFrame@<^0>);"
+  function OtherSeriesDistanceIndex(Star: TStar): Integer; // @addr $5ED744
   var I: Integer; OtherStar: TStar;
   begin
     Result := 1000;
@@ -1212,9 +1212,9 @@ var TargetStar: TStar; TargetCount, NonDominatorCount, OtherSeriesCount, Action:
     end;
   end;
   // @nested $5ED7F4 ChooseAction
-  procedure ChooseAction; // @addr $5ED7F4 @ida "void __usercall $name(void *ParentFrame@<^0>);"
+  procedure ChooseAction; // @addr $5ED7F4
     // @nested $5ED7C4 TargetIsNotTerron
-    function TargetIsNotTerron: Boolean; // @addr $5ED7C4 @ida "bool __usercall $name@<al>(void *ParentFrame@<^0>);"
+    function TargetIsNotTerron: Boolean; // @addr $5ED7C4
     begin
       Result := True;
       if (TerronShip <> nil) and (TerronShip.CurrentStar = TargetStar) then Result := False;
@@ -1247,7 +1247,7 @@ var TargetStar: TStar; TargetCount, NonDominatorCount, OtherSeriesCount, Action:
     end;
   end;
   // @nested $5EDBC4 SendShips
-  procedure SendShips; // @addr $5EDBC4 @ida "void __usercall $name(void *ParentFrame@<^0>);"
+  procedure SendShips; // @addr $5EDBC4
   var Text: WideString;
   begin
     if Action = 2 then SendCount := OriginCount div 4

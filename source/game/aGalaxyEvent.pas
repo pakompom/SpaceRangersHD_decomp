@@ -14,12 +14,12 @@ type
     Data: TList; // @offset 0x0C  Owned list of Integer payloads stored in pointer slots; may be nil.
     TextData: TList; // @offset 0x10  Owned list of separately allocated PWideString cells; may be nil.
 
-    constructor Create(EventType: WideString); // @addr 0x4F34EC @ida "TGalaxyEvent *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, unsigned __int16 *EventType@<ecx>);"
-    destructor Destroy; override; // @addr 0x4F3580 @ida "void __usercall $name(TGalaxyEvent *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create(EventType: WideString); // @addr 0x4F34EC
+    destructor Destroy; override; // @addr 0x4F3580
     procedure AddData(Value: Integer); // @addr 0x4F35B4
     procedure AddTextData(Value: WideString); // @addr 0x4F35F0 @note "Copies Value into a separately allocated string cell."
     function GetData(Index: Integer): Integer; // @addr 0x4F367C @note "Zero-based; returns zero for a missing list or an out-of-range index."
-    function GetTextData(Index: Integer): WideString; // @addr 0x4F36C4 @ida "void __usercall $name(TGalaxyEvent *Self@<eax>, int Index@<edx>, unsigned __int16 **Result@<ecx>);" @note "Zero-based; returns a copy, or empty for a missing list or an out-of-range index."
+    function GetTextData(Index: Integer): WideString; // @addr 0x4F36C4 @note "Zero-based; returns a copy, or empty for a missing list or an out-of-range index."
     procedure ClearData; // @addr 0x4F3714
     procedure ClearTextData; // @addr 0x4F3748 @note "Frees the string cells and list without finalizing the cells' WideStrings, leaking their BSTR storage."
     procedure LoadFromBuffer(Buffer: TBufEC); // @addr 0x4F37B8 @note "Overwrites existing payload lists without freeing them; nonpositive stored counts produce nil lists."

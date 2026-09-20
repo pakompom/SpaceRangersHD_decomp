@@ -155,8 +155,8 @@ type
     ForceCameraMovement: Boolean; // @offset 0x58
     ObjectInfo: TObject; // @offset 0x5C Native callers cast this snapshot to TEObjInfo.
 
-    constructor Create; // @addr 0x80D0DC @ida "TEFilm *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x80D154 @ida "void __usercall $name(TEFilm *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x80D0DC
+    destructor Destroy; override; // @addr 0x80D154
     procedure Clear; // @addr 0x80D230
     procedure ReserveCameraEventSlot; // @addr $80D2D4 Grows capacity and advances the used count without writing the new slot.
     procedure RemoveObject(Obj: TEFilmObj); // @addr $80D574
@@ -176,8 +176,8 @@ type
     function AllocateCommand: PEFilmCommand; // @addr 0x80DAE8 @note "Returns a zeroed pooled command without linking it into the command list."
     function AddObject(ObjectId: Cardinal; SceneObject: TObjectSE; Unused1: Integer = 0; Unused2: Integer = 0): TEFilmObj; // @addr 0x80DC28 @note "Retains SceneObject and copies its class name and graph key. Both stack arguments are unused."
     function ContainsObject(Obj: TEFilmObj): Boolean; // @addr 0x80D7C4
-    procedure AddCameraEvent(AStepIndex: Integer; AStartPosition, AEndPosition: TPointF; APriority: Integer); // @addr 0x80D31C @ida "void __userpurge $name(TEFilm *Self@<eax>, int AStepIndex@<edx>, TPointF *AStartPosition@<ecx>, TPointF *AEndPosition@<^4>, int APriority@<^0>);"
-    procedure SetObjectPosition(StepIndex: Integer; Obj: TEFilmObj; Position: TPointF); // @addr 0x80DCC4 @ida "void __userpurge $name(TEFilm *Self@<eax>, int StepIndex@<edx>, TEFilmObj *Obj@<ecx>, TPointF *Position@<^0>);"
+    procedure AddCameraEvent(AStepIndex: Integer; AStartPosition, AEndPosition: TPointF; APriority: Integer); // @addr 0x80D31C
+    procedure SetObjectPosition(StepIndex: Integer; Obj: TEFilmObj; Position: TPointF); // @addr 0x80DCC4
     procedure SetObjectAlpha(StepIndex: Integer; Obj: TEFilmObj; Alpha: Byte); // @addr 0x80DD90
     procedure SetObjectAngle(StepIndex: Integer; Obj: TEFilmObj; Angle: Byte); // @addr 0x80DDF8 @note "A full turn is 256 angle units."
     procedure AdvanceObjects(StepIndex: Integer); // @addr 0x80DE60 @note "Queues slot 0x40 on each retained scene object."
@@ -195,18 +195,18 @@ type
     procedure SetObjectText(StepIndex: Integer; Obj: TEFilmObj; const Text: WideString); // @addr 0x80E508
     procedure BeginTrailingEffects(StepIndex: Integer); // @addr 0x80E604 @note "Appends the kind-24 boundary consumed by film playback."
 
-    procedure SetObjectOrbitCenter(StepIndex: Integer; Obj: TEFilmObj; Position: TPointF); // @addr $80DD40 @ida "void __userpurge $name(TEFilm *Self@<eax>, int StepIndex@<edx>, TEFilmObj *Obj@<ecx>, TPointF *Position@<^0>);"
+    procedure SetObjectOrbitCenter(StepIndex: Integer; Obj: TEFilmObj; Position: TPointF); // @addr $80DD40
     procedure SetPlanetState(StepIndex: Integer; Obj: TEFilmObj; RotationInterval, SurfaceMapStep: Integer; ScaleThousandths: Word; RingKind, Owner: Byte); // @addr $80DE88 Scale is decoded as a signed 16-bit value divided by 1000 during playback.
-    procedure SetShipSizeAndTailMode(StepIndex: Integer; Obj: TEFilmObj; Size: TPoint; TailMode: Integer); // @addr $80DF18 @ida "void __userpurge $name(TEFilm *Self@<eax>, int StepIndex@<edx>, TEFilmObj *Obj@<ecx>, TPoint *Size@<^4>, int TailMode@<^0>);"
+    procedure SetShipSizeAndTailMode(StepIndex: Integer; Obj: TEFilmObj; Size: TPoint; TailMode: Integer); // @addr $80DF18
     procedure SetRuinsState(StepIndex: Integer; Obj: TEFilmObj; State: Integer); // @addr $80DF9C
-    procedure SetEffectImagePosition(StepIndex: Integer; Obj: TEFilmObj; Position: TPoint); // @addr $80E13C @ida "void __userpurge $name(TEFilm *Self@<eax>, int StepIndex@<edx>, TEFilmObj *Obj@<ecx>, TPoint *Position@<^0>);"
-    procedure SetEffectDurationScale(StepIndex: Integer; Obj: TEFilmObj; Scale: Single); // @addr $80E18C @ida "void __userpurge $name(TEFilm *Self@<eax>, int StepIndex@<edx>, TEFilmObj *Obj@<ecx>, float Scale@<^0>);" @note "Records the Single duration multiplier consumed by TGAIEffectSE.SetDurationScale."
+    procedure SetEffectImagePosition(StepIndex: Integer; Obj: TEFilmObj; Position: TPoint); // @addr $80E13C
+    procedure SetEffectDurationScale(StepIndex: Integer; Obj: TEFilmObj; Scale: Single); // @addr $80E18C @note "Records the Single duration multiplier consumed by TGAIEffectSE.SetDurationScale."
     procedure SetGateEffectSize(StepIndex: Integer; Obj: TEFilmObj; Size: Integer); // @addr $80E490
     procedure OpenGate(StepIndex: Integer; Obj: TEFilmObj); // @addr $80E3B0
     procedure PlayPickupSound(StepIndex: Integer; Obj: TEFilmObj); // @addr $80E62C
-    procedure SetViewCenter(StepIndex: Integer; Position: TPointF); // @addr $80E2E4 @ida "void __usercall $name(TEFilm *Self@<eax>, int StepIndex@<edx>, TPointF *Position@<ecx>);"
-    procedure SetRadarCenter(StepIndex: Integer; Position: TPointF); // @addr $80E324 @ida "void __usercall $name(TEFilm *Self@<eax>, int StepIndex@<edx>, TPointF *Position@<ecx>);"
-    procedure SetCameraAnchor(StepIndex: Integer; Position: TPointF; ForceMovement: Boolean); // @addr $80E364 @ida "void __userpurge $name(TEFilm *Self@<eax>, int StepIndex@<edx>, TPointF *Position@<ecx>, bool ForceMovement@<^0>);"
+    procedure SetViewCenter(StepIndex: Integer; Position: TPointF); // @addr $80E2E4
+    procedure SetRadarCenter(StepIndex: Integer; Position: TPointF); // @addr $80E324
+    procedure SetCameraAnchor(StepIndex: Integer; Position: TPointF; ForceMovement: Boolean); // @addr $80E364
     procedure PlayObjectSound(StepIndex: Integer; Obj: TEFilmObj; const Text: WideString); // @addr $80E55C
     procedure SetObjectStateBuffer(StepIndex: Integer; Obj: TEFilmObj; Buffer: TBufEC); // @addr $80E5B0 Transfers ownership of Buffer to the film.
 

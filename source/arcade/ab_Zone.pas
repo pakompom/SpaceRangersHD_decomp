@@ -63,17 +63,17 @@ procedure ab_ZoneLink_ClearImages; // @addr $5544BC
 procedure ab_ZoneLink_ClearSegments(Link: PabZoneLink); // @addr $5544FC
 procedure ab_Zone_Load(Buffer: TBufEC); // @addr $55454C
 function ab_Zone_RandomKind(Kind: Integer): PabZone; // @addr $5546D8
-function ab_Zone_RandomPosition(Zone: PabZone): TSphericalBearingState; // @addr $554708 @ida "void __usercall $name(TabZone *Zone@<eax>, TSphericalBearingState *Result@<edx>);"
-function ab_Zone_FindContainingOrNearest(Longitude, PolarAngle: Double; var Nearest: PabZone): Boolean; // @addr $554784 @ida "bool __userpurge $name@<al>(double Longitude@<^8>, double PolarAngle@<^0>, TabZone **Nearest@<eax>);"
-function ab_Zone_FindNearestOutside(Longitude, PolarAngle: Double): PabZone; // @addr $554864 @ida "TabZone *__userpurge $name@<eax>(double Longitude@<^8>, double PolarAngle@<^0>);"
-function ab_Zone_FindNearestEnabled(Longitude, PolarAngle: Double): PabZone; // @addr $554910 @ida "TabZone *__userpurge $name@<eax>(double Longitude@<^8>, double PolarAngle@<^0>);"
-function ab_Zone_IsInsideKind10(Longitude, PolarAngle: Double): Boolean; // @addr $5549E0 @ida "bool __userpurge $name@<al>(double Longitude@<^8>, double PolarAngle@<^0>);"
+function ab_Zone_RandomPosition(Zone: PabZone): TSphericalBearingState; // @addr $554708
+function ab_Zone_FindContainingOrNearest(Longitude, PolarAngle: Double; var Nearest: PabZone): Boolean; // @addr $554784
+function ab_Zone_FindNearestOutside(Longitude, PolarAngle: Double): PabZone; // @addr $554864
+function ab_Zone_FindNearestEnabled(Longitude, PolarAngle: Double): PabZone; // @addr $554910
+function ab_Zone_IsInsideKind10(Longitude, PolarAngle: Double): Boolean; // @addr $5549E0
 
 function ab_Zone_FindRoute(Source, Target: PabZone): PabZone; // @addr $554B30
 procedure ab_Zone_BuildRoutes(Zone: PabZone); // @addr $554C58
 procedure ab_Zone_BuildAllRoutes; // @addr $554CCC
 function ab_Zone_GetRoute(Source, Target: PabZone): PabZone; // @addr $554D18
-function ab_Zone_IsHeadingInside(Source: TSphericalBearingState; Zone: PabZone; var BearingDelta, AngularRadius: Double): Boolean; // @addr $554D50 @ida "bool __userpurge $name@<al>(TSphericalBearingState *Source@<eax>, TabZone *Zone@<edx>, double *BearingDelta@<ecx>, double *AngularRadius@<^0>);"
+function ab_Zone_IsHeadingInside(Source: TSphericalBearingState; Zone: PabZone; var BearingDelta, AngularRadius: Double): Boolean; // @addr $554D50
 function ab_Zone_FindReachableRouteZone(Source: PabZone): PabZone; // @addr $554E18
 function ab_Zone_RandomRoute(Source: PabZone; Steps: Integer): PabZone; // @addr $554F14
 
@@ -591,7 +591,7 @@ var
   BestDistance: Double;
 
   // @nested $554A64 PropagateZoneDistances
-  procedure PropagateZoneDistances(Zone: PabZone); // @addr $554A64 @ida "void __usercall $name(TabZone *Zone@<eax>, void *ParentFrame@<^0>);" @stackpop 0 @calls "0x554ac5,0x554b13,0x554ba1"
+  procedure PropagateZoneDistances(Zone: PabZone); // @addr $554A64 @calls "0x554ac5,0x554b13,0x554ba1"
   var
     Link: PabZoneLink;
   begin

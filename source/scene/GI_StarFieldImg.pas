@@ -46,9 +46,9 @@ type
     procedure AdvanceStars; // @addr $4B2D7C
     procedure RedirectStars; // @addr $4B2EE0
     procedure AnimateStars(Timer: PCallbackTimerGI; UserData: Integer); // @addr $4B3028
-    procedure SetViewPosition(Position: TPointF); // @addr $4B32FC @ida "void __usercall $name(TStarFieldImgGI *Self@<eax>, TPointF *Position@<edx>);"
-    constructor Create(Owner: TObjectGI); // @addr $4B259C @ida "TStarFieldImgGI *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, TObjectGI *Owner@<ecx>);"
-    destructor Destroy; override; // @addr $4B264C @ida "void __usercall $name(TStarFieldImgGI *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    procedure SetViewPosition(Position: TPointF); // @addr $4B32FC
+    constructor Create(Owner: TObjectGI); // @addr $4B259C
+    destructor Destroy; override; // @addr $4B264C
     procedure SeedStars; // @addr $4B2CF4 Clears/reseeds the animated image stars and advances 201 warm-up steps.
     procedure Invalidate; override; // @addr $4B3428
     procedure OnActivate; override; // @addr $4B34B8
@@ -57,7 +57,7 @@ type
     procedure LoadFromBlock(Block: TBlockParEC); override; // @addr $4B3594
     procedure ApplyStarConfig(Block: TBlockParEC); // @addr $4B35BC Native empty extension hook.
     procedure UpdateAutoGeometry; override; // @addr $4B35CC
-    procedure Draw(ClipRect: TRect); override; // @addr $4B35D8 @ida "void __usercall $name(TStarFieldImgGI *Self@<eax>, TRect *ClipRect@<edx>);"
+    procedure Draw(ClipRect: TRect); override; // @addr $4B35D8
   end;
 
 implementation

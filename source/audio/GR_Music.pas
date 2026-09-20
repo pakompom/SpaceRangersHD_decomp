@@ -18,11 +18,11 @@ type
     Stream: TFileStreamEC; // @offset $48
     StartPlaybackEvent: Cardinal; // @offset $4C
     CompletionEvent: Cardinal; // @offset $50
-    constructor Create(LibraryName: PWideChar); // @addr $849F58 @ida "TMusicUnit *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, unsigned __int16 *LibraryName@<ecx>);"
-    destructor Destroy; override; // @addr $84A290 @ida "void __usercall $name(TMusicUnit *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create(LibraryName: PWideChar); // @addr $849F58
+    destructor Destroy; override; // @addr $84A290
     procedure Clear; // @addr $84A33C
     procedure LoadFile(const FileName: WideString; Deferred: Boolean); // @addr $84A3A8
-    function GetFileName: WideString; // @addr $84A4D8 @ida "void __usercall $name(TMusicUnit *Self@<eax>, unsigned __int16 **Result@<edx>);"
+    function GetFileName: WideString; // @addr $84A4D8
     function IsIntroTrack: Boolean; // @addr $84A538
     procedure Execute; override; // @addr $84A63C
   end;
@@ -34,8 +34,8 @@ type
     Queued: TMusicUnit; // @offset $38
     CurrentFileName: WideString; // @offset $40
     CategoryOverride: WideString; // @offset $44
-    constructor Create; // @addr $84A880 @ida "TMusicControl *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr $84A9F4 @ida "void __usercall $name(TMusicControl *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr $84A880
+    destructor Destroy; override; // @addr $84A9F4
     procedure Clear; // @addr $84AA9C
     procedure Execute; override; // @addr $84AB70
     procedure PlayFile(const FileName: WideString); // @addr $84AC7C
@@ -46,7 +46,7 @@ type
     function IsPlaying: Boolean; // @addr $84AFDC
   end;
 
-function ChooseMusicFile(const Category, CurrentFile: WideString): WideString; // @addr $84B07C @ida "void __usercall $name(unsigned __int16 *Category@<eax>, unsigned __int16 *CurrentFile@<edx>, unsigned __int16 **Result@<ecx>);"
+function ChooseMusicFile(const Category, CurrentFile: WideString): WideString; // @addr $84B07C
 
 implementation
 

@@ -54,21 +54,21 @@ type
     SecondaryColor: Word; // @offset $162
     BeamTicks: Integer; // @offset $164
 
-    constructor Create(Owner: TObjectGI; PaletteIndex: Integer); // @addr $698BD4 @ida "TPSEyesGI *__userpurge $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, TObjectGI *Owner@<ecx>, int PaletteIndex@<^0>);"
-    destructor Destroy; override; // @addr $698CE4 @ida "void __usercall $name(TPSEyesGI *Self@<eax>, __int8 DestroyFlags@<dl>);"
-    procedure SetPosition(Position: TPoint); override; // @addr $698D38 @ida "void __usercall $name(TPSEyesGI *Self@<eax>, TPoint *Position@<edx>);"
-    procedure SetTargetPoint(Point: TPoint); override; // @addr $698D7C @ida "void __usercall $name(TPSEyesGI *Self@<eax>, TPoint *Point@<edx>);"
+    constructor Create(Owner: TObjectGI; PaletteIndex: Integer); // @addr $698BD4
+    destructor Destroy; override; // @addr $698CE4
+    procedure SetPosition(Position: TPoint); override; // @addr $698D38
+    procedure SetTargetPoint(Point: TPoint); override; // @addr $698D7C
     procedure UpdateProjectionBounds; // @addr $698DD0
     procedure UpdateHitTestBounds; override; // @addr $6990EC
-    function GetLocalBounds: TRect; override; // @addr $69914C @ida "void __usercall $name(TPSEyesGI *Self@<eax>, TRect *Result@<edx>);"
+    function GetLocalBounds: TRect; override; // @addr $69914C
     function AddParticle: PEyesParticle; // @addr $6991B0
     procedure ClearParticles; // @addr $699228
     procedure ClearLines; // @addr $69927C
-    procedure EmitBurst(Point: TPoint; Radius: Integer); // @addr $6993C0 @ida "void __usercall $name(TPSEyesGI *Self@<eax>, TPoint *Point@<edx>, int Radius@<ecx>);"
+    procedure EmitBurst(Point: TPoint; Radius: Integer); // @addr $6993C0
     procedure Invalidate; override; // @addr $6992D0 @note "Native empty override."
-    procedure InvalidateRect(Rect: TRect); override; // @addr $6992DC @ida "void __usercall $name(TPSEyesGI *Self@<eax>, TRect *Rect@<edx>);"
+    procedure InvalidateRect(Rect: TRect); override; // @addr $6992DC
     procedure Advance(Timer: PCallbackTimerGI; UserData: Integer); override; // @addr $6995B8
-    procedure Draw(ClipRect: TRect); override; // @addr $6997E8 @ida "void __usercall $name(TPSEyesGI *Self@<eax>, TRect *ClipRect@<edx>);"
+    procedure Draw(ClipRect: TRect); override; // @addr $6997E8
   end;
 
 procedure LoadEyesPalettes; // @addr $69A068

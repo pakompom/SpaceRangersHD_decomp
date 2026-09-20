@@ -101,10 +101,10 @@ type
     NoDropFlag: Byte; // @offset 0x34  Script.NoDropItem; not restricted to Boolean values.
 
     // Native TItem VMT slots $18, $24 and $28 point to the RTL abstract-method handler.
-    function GetDisplayName: WideString; virtual; abstract; // @slot $18 @ida "void __usercall $name(TItem *Self@<eax>, unsigned __int16 **Result@<edx>);"
-    function GetDescriptionText: WideString; virtual; abstract; // @slot $24 @ida "void __usercall $name(TItem *Self@<eax>, unsigned __int16 **Result@<edx>);"
-    function GetBitmapResourceName: WideString; virtual; abstract; // @slot $28 @ida "void __usercall $name(TItem *Self@<eax>, unsigned __int16 **Result@<edx>);"
-    function GetShortName: WideString; virtual; // @addr 0x7EF144 @slot 0x1C @ida "void __usercall $name(TItem *Self@<eax>, unsigned __int16 **Result@<edx>);"
+    function GetDisplayName: WideString; virtual; abstract; // @slot $18
+    function GetDescriptionText: WideString; virtual; abstract; // @slot $24
+    function GetBitmapResourceName: WideString; virtual; abstract; // @slot $28
+    function GetShortName: WideString; virtual; // @addr 0x7EF144 @slot 0x1C
     function GetInfoText(ColorTag: WideString; Ship: Pointer): WideString; virtual; // @addr 0x7EF15C @slot 0x20 @ida "void __userpurge $name(TItem *Self@<eax>, unsigned __int16 *ColorTag@<edx>, TShip *Ship@<ecx>, unsigned __int16 **Result@<^0>);"
 
     procedure SaveToBuffer(Buffer: TBufEC); virtual; // @addr 0x7EE7B4 @slot 0x00 @calls "0x7F0B04"
@@ -114,16 +114,16 @@ type
     procedure SaveToBlock(Block: TBlockParEC); virtual; // @addr 0x7EE984 @slot 0x10
     procedure LoadFromBlock(Block: TBlockParEC); virtual; // @addr 0x7EEC08 @slot 0x14
 
-    constructor Create; // @addr 0x7EE68C @ida "TItem *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x7EE6FC @ida "void __usercall $name(TItem *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x7EE68C
+    destructor Destroy; override; // @addr 0x7EE6FC
     function GetGraphObject: TObjectSE; // @addr 0x7EF260 @note "Lazily creates and initializes the retained scene container; returns a borrowed reference. Appearance depends on item kind, size, faction, and drop flags."
     procedure ReleaseGraphObject; // @addr 0x7F0060
-    function GetSmallInfoText: WideString; // @addr 0x7EEF20 @ida "void __usercall $name(TItem *Self@<eax>, unsigned __int16 **Result@<edx>);" @note "Generic Items.SmallInfo label used outside radar range."
+    function GetSmallInfoText: WideString; // @addr 0x7EEF20 @note "Generic Items.SmallInfo label used outside radar range."
     function CalculateResaleValue(TradingSkill: Byte): Integer; // @addr 0x7EEF64 @note "Applies the trading-skill percentage to Cost minus repair cost; equipment has a minimum value of 1. Goods use Cost directly."
     function GetConditionAdjustedCost: Integer; // @addr 0x7EF050 @note "Equipment deducts repair cost, with a minimum result of 1; goods return Cost unchanged."
 
-    function GetCategoryConfigName: WideString; // @addr 0x7EF0B8 @ida "void __usercall $name(TItem *Self@<eax>, unsigned __int16 **Result@<edx>);" @note "Groups weapon types under Weapon and built-in artefacts under Artefact; otherwise returns the item-type configuration name."
-    function GetOwnerConfigName: WideString; // @addr 0x7F0160 @ida "void __usercall $name(TItem *Self@<eax>, unsigned __int16 **Result@<edx>);" @note "Manufacturer/faction resource key, including custom factions and Dominator series."
+    function GetCategoryConfigName: WideString; // @addr 0x7EF0B8 @note "Groups weapon types under Weapon and built-in artefacts under Artefact; otherwise returns the item-type configuration name."
+    function GetOwnerConfigName: WideString; // @addr 0x7F0160 @note "Manufacturer/faction resource key, including custom factions and Dominator series."
   end;
 
   TEquipment = class(TItem) // @size 0x60
@@ -142,16 +142,16 @@ type
     DominatorSeries: TDominatorSeries; // @offset 0x5C  Script.ItemSubrace.
     DetailImprovement: Byte; // @offset 0x5D  Transient selector: 0 chooses automatically; 1/2 emphasize different stats; weapons also accept 3 for range. Consumed by engine, gripper and weapon upgrades.
 
-    function GetDisplayName: WideString; override; // @addr 0x7F28A4 @slot 0x18 @ida "void __usercall $name(TEquipment *Self@<eax>, unsigned __int16 **Result@<edx>);"
-    function GetShortName: WideString; override; // @addr 0x7F2B74 @ida "void __usercall $name(TEquipment *Self@<eax>, unsigned __int16 **Result@<edx>);"
+    function GetDisplayName: WideString; override; // @addr 0x7F28A4 @slot 0x18
+    function GetShortName: WideString; override; // @addr 0x7F2B74
 
     procedure SaveToBuffer(Buffer: TBufEC); override; // @addr 0x7F0368
     procedure LoadFromBuffer(Buffer: TBufEC; Galaxy: TGalaxy); override; // @addr 0x7F062C
     procedure SaveToBlock(Block: TBlockParEC); override; // @addr 0x7F0B6C
     procedure LoadFromBlock(Block: TBlockParEC); override; // @addr 0x7F1064
 
-    constructor Create; // @addr 0x7F028C @ida "TEquipment *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x7F02DC @ida "void __usercall $name(TEquipment *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x7F028C
+    destructor Destroy; override; // @addr 0x7F02DC
     procedure Equip; // @addr 0x7F12E8
     procedure Unequip; virtual; // @addr 0x7F1360 @slot 0x2C
     procedure Repair; virtual; // @addr 0x7F13D8 @slot 0x30
@@ -164,23 +164,23 @@ type
     function GetStatBonus(BonusKind: TEquipmentBonusKind): Integer; // @addr 0x7F3354
     function GetFragilityFactor(DamageFlags: TDamageFlagSet): Single; virtual; // @addr 0x7F3194 @slot 0x40 @ida "float __usercall $name@<st0>(TEquipment *Self@<eax>, unsigned int DamageFlags@<edx>);"
     procedure ReplaceInfoTokens(var Text: WideString; ColorTag: WideString; Ship: Pointer); virtual; // @addr 0x7F330C @slot 0x44
-    function GetMicroModuleQuotedName: WideString; // @addr 0x7F2D18 @ida "void __usercall $name(TEquipment *Self@<eax>, unsigned __int16 **Result@<edx>);"
-    function GetSpecialModuleName: WideString; // @addr 0x7F2DBC @ida "void __usercall $name(TEquipment *Self@<eax>, unsigned __int16 **Result@<edx>);"
+    function GetMicroModuleQuotedName: WideString; // @addr 0x7F2D18
+    function GetSpecialModuleName: WideString; // @addr 0x7F2DBC
 
-    function GetDescriptionText: WideString; override; // @addr 0x7F2728 @slot 0x24 @ida "void __usercall $name(TEquipment *Self@<eax>, unsigned __int16 **Result@<edx>);"
-    function GetBitmapResourceName: WideString; override; // @addr 0x7F2F00 @slot 0x28 @ida "void __usercall $name(TEquipment *Self@<eax>, unsigned __int16 **Result@<edx>);"
+    function GetDescriptionText: WideString; override; // @addr 0x7F2728 @slot 0x24
+    function GetBitmapResourceName: WideString; override; // @addr 0x7F2F00 @slot 0x28
     procedure Improve(Kind: TImprovementKind); virtual; // @addr 0x7F2E00 @slot 0x34 @calls "0x633922 0x633938" @note "Base is a no-op. Overrides change statistics and Cost without checking CanImprove or charging money; ikAny selects one of the three strengths."
     function CalculateImprovementCost(Kind: TImprovementKind): Integer; virtual; // @addr 0x7F2E10 @slot 0x38 @calls "0x7F55A5 0x7F79F1 0x7F8AEB 0x7F9EC2 0x7FACB8 0x7FBB44 0x7FCF41 0x7FE418 0x8004AA" @note "Only ikMinor, ikMedium and ikMajor are valid: Cost times 0.3, 0.6 or 1.2, rounded then truncated to a multiple of 10, before service discounts."
     function HasStandardStats: Boolean; virtual; // @addr 0x7F2EEC @slot 0x3C @calls "0x633899" @note "Tests expected generated statistics after accounting for installed bonuses; this is not a stored upgraded flag. The base implementation returns True."
     procedure ImproveAtScientificBase; // @addr 0x7F2C98 @note "Selects strength and stat emphasis from Id, then calls Improve. Charging and eligibility checks belong to the caller."
     function CanImprove: Boolean; // @addr 0x7F41B8 @note "Requires HasStandardStats and no special module that blocks the special slot; does not check technology access."
     function GetDescriptionStatBonus(BonusKind: TEquipmentBonusKind): Integer; // @addr 0x7F34FC @note "Aggregate used by the bonus description, with SeparatedNumbers effects handled separately."
-    function GetBonusDescription(ColorTag: WideString): WideString; // @addr 0x7F3AAC @ida "void __usercall $name(TEquipment *Self@<eax>, unsigned __int16 *ColorTag@<edx>, unsigned __int16 **Result@<ecx>);"
-    function GetConditionText(PrefixNewLine: Boolean): WideString; // @addr 0x7F170C @ida "void __usercall $name(TEquipment *Self@<eax>, bool PrefixNewLine@<dl>, unsigned __int16 **Result@<ecx>);" @note "Includes player technology restrictions as well as wear and breakage."
-    function GetBrokenInBattleText: WideString; // @addr 0x7F1E24 @ida "void __usercall $name(TEquipment *Self@<eax>, unsigned __int16 **Result@<edx>);"
-    function GetBrokenInUseText: WideString; // @addr 0x7F208C @ida "void __usercall $name(TEquipment *Self@<eax>, unsigned __int16 **Result@<edx>);"
-    function GetBrokenByForceText: WideString; // @addr 0x7F22EC @ida "void __usercall $name(TEquipment *Self@<eax>, unsigned __int16 **Result@<edx>);"
-    function GetLevelLetter: WideString; // @addr 0x7F26E4 @ida "void __usercall $name(TEquipment *Self@<eax>, unsigned __int16 **Result@<edx>);" @note "A through H for levels 1 through 8; empty for unsupported levels."
+    function GetBonusDescription(ColorTag: WideString): WideString; // @addr 0x7F3AAC
+    function GetConditionText(PrefixNewLine: Boolean): WideString; // @addr 0x7F170C @note "Includes player technology restrictions as well as wear and breakage."
+    function GetBrokenInBattleText: WideString; // @addr 0x7F1E24
+    function GetBrokenInUseText: WideString; // @addr 0x7F208C
+    function GetBrokenByForceText: WideString; // @addr 0x7F22EC
+    function GetLevelLetter: WideString; // @addr 0x7F26E4 @note "A through H for levels 1 through 8; empty for unsupported levels."
   end;
 
   THull = class(TEquipment) // @size 0x84
@@ -201,8 +201,8 @@ type
     InterceptorTargetingStrategy: TInterceptorTargetingStrategy; // @offset 0x80  Automatic target selection for the player.
     InterceptorPassCountOverride: Byte; // @offset 0x81  Zero selects five passes.
 
-    function GetDisplayName: WideString; override; // @addr 0x7F5640 @ida "void __usercall $name(THull *Self@<eax>, unsigned __int16 **Result@<edx>);"
-    function GetShortName: WideString; override; // @addr 0x7F5C20 @ida "void __usercall $name(THull *Self@<eax>, unsigned __int16 **Result@<edx>);"
+    function GetDisplayName: WideString; override; // @addr 0x7F5640
+    function GetShortName: WideString; override; // @addr 0x7F5C20
     function GetInfoText(ColorTag: WideString; Ship: Pointer): WideString; override; // @addr 0x7F5C8C @ida "void __userpurge $name(THull *Self@<eax>, unsigned __int16 *ColorTag@<edx>, TShip *Ship@<ecx>, unsigned __int16 **Result@<^0>);"
 
     procedure SaveToBuffer(Buffer: TBufEC); override; // @addr 0x7F43C8
@@ -219,14 +219,14 @@ type
     function CalculateMass: Integer; // @addr 0x7F6FB4 @note "Round(capacity * (0.6 + 0.2 * (clamped level - 1) / 7)); excludes carried cargo and ship mass modifiers."
     function CalculateGeneratedArmor: ShortInt; // @addr 0x7F4F10
 
-    function GetBitmapResourceName: WideString; override; // @addr 0x7F6654 @ida "void __usercall $name(THull *Self@<eax>, unsigned __int16 **Result@<edx>);"
+    function GetBitmapResourceName: WideString; override; // @addr 0x7F6654
     procedure Improve(Kind: TImprovementKind); override; // @addr 0x7F53B8
     function HasStandardStats: Boolean; override; // @addr 0x7F55C8
     procedure ReplaceInfoTokens(var Text: WideString; ColorTag: WideString; Ship: Pointer); override; // @addr 0x7F5F7C
     procedure ApplySeriesSizeAndCost; // @addr 0x7F42C8 @note "Applies the current hull series, resets HullPoints to capacity, and bounds Cost."
     function CalculateGeneratedCost: Integer; // @addr 0x7F52FC @note "If cost generation overflows negative, repeatedly halves capacity and resets HullPoints before retrying."
-    function GetSeriesName: WideString; // @addr 0x7F5ACC @ida "void __usercall $name(THull *Self@<eax>, unsigned __int16 **Result@<edx>);"
-    function GetSpecialKindGraph: WideString; // @addr 0x7F6AE4 @ida "void __usercall $name(THull *Self@<eax>, unsigned __int16 **Result@<edx>);" @note "Returns the special module KindGraph, or the literal 1 as fallback."
+    function GetSeriesName: WideString; // @addr 0x7F5ACC
+    function GetSpecialKindGraph: WideString; // @addr 0x7F6AE4 @note "Returns the special module KindGraph, or the literal 1 as fallback."
     function EstimateCapacityWithoutBonuses: Integer; // @addr 0x7F72B8 @note "Reverses module and series size percentages with rounding; extra-special multiplicities are not used."
   end;
 
@@ -364,7 +364,7 @@ type
     procedure Improve(Kind: TImprovementKind); override; // @addr 0x7FCB90
     function HasStandardStats: Boolean; override; // @addr 0x7FCF64
     procedure ReplaceInfoTokens(var Text: WideString; ColorTag: WideString; Ship: Pointer); override; // @addr 0x7FD258
-    constructor Create; // @addr 0x7FC3D4 @ida "TCargoHook *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
+    constructor Create; // @addr 0x7FC3D4
   end;
 
   TDefGenerator = class(TEquipment) // @size 0x68
@@ -398,8 +398,8 @@ type
     Ammo: Integer; // @offset 0x78
     AmmoCapacity: Integer; // @offset 0x7C
 
-    function GetDisplayName: WideString; override; // @addr 0x80050C @ida "void __usercall $name(TWeapon *Self@<eax>, unsigned __int16 **Result@<edx>);"
-    function GetShortName: WideString; override; // @addr 0x80061C @ida "void __usercall $name(TWeapon *Self@<eax>, unsigned __int16 **Result@<edx>);"
+    function GetDisplayName: WideString; override; // @addr 0x80050C
+    function GetShortName: WideString; override; // @addr 0x80061C
     function GetInfoText(ColorTag: WideString; Ship: Pointer): WideString; override; // @addr 0x8006D8 @ida "void __userpurge $name(TWeapon *Self@<eax>, unsigned __int16 *ColorTag@<edx>, TShip *Ship@<ecx>, unsigned __int16 **Result@<^0>);"
 
     procedure SaveToBuffer(Buffer: TBufEC); override; // @addr 0x7FEEC0
@@ -411,7 +411,7 @@ type
 
     procedure Init(ItemType: TItemType; Weight: Integer; Level, Owner: Byte); // @addr 0x7FED1C
     procedure Unequip; override; // @addr 0x7FFAB8
-    function GetConfigName: WideString; virtual; // @addr 0x8022F0 @slot 0x4C @ida "void __usercall $name(TWeapon *Self@<eax>, unsigned __int16 **Result@<edx>);"
+    function GetConfigName: WideString; virtual; // @addr 0x8022F0 @slot 0x4C
     function GetWeaponInfo: PWeaponInfo; virtual; // @addr 0x8022A4 @slot 0x50 @calls "0x7599A7 0x801F73 0x7FFBC1 0x7FFD93"
     function CalculateGeneratedAmmoCapacity: Integer; // @addr 0x7FFAD4
     function CalculateGeneratedMinDamage: Integer; // @addr 0x7FFAF4
@@ -425,12 +425,12 @@ type
     function GetShotPalette: Integer; // @addr 0x801FD4
     function GetDamageFlags: TDamageFlagSet; // @addr 0x80202C @ida "unsigned int __usercall $name@<eax>(TWeapon *Self@<eax>);" @note "Combines the weapon template and installed ordinary, special and extra-special module flags."
 
-    function GetDescriptionText: WideString; override; // @addr 0x801B0C @ida "void __usercall $name(TWeapon *Self@<eax>, unsigned __int16 **Result@<edx>);"
-    function GetBitmapResourceName: WideString; override; // @addr 0x801CC8 @ida "void __usercall $name(TWeapon *Self@<eax>, unsigned __int16 **Result@<edx>);"
+    function GetDescriptionText: WideString; override; // @addr 0x801B0C
+    function GetBitmapResourceName: WideString; override; // @addr 0x801CC8
     procedure Improve(Kind: TImprovementKind); override; // @addr 0x7FFD5C
     function HasStandardStats: Boolean; override; // @addr 0x8004D0
     procedure ReplaceInfoTokens(var Text: WideString; ColorTag: WideString; Ship: Pointer); override; // @addr 0x800988
-    destructor Destroy; override; // @addr 0x7FECE8 @ida "void __usercall $name(TWeapon *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    destructor Destroy; override; // @addr 0x7FECE8
     function CalculateStandardMaxDamage: Integer; // @addr 0x7FFBA8 @note "Generated maximum plus ordinary and special module damage bonuses; used by HasStandardStats."
     function CalculateStandardRange: Integer; // @addr 0x7FFC38 @note "Generated range plus ordinary and special module range bonuses; used by HasStandardStats."
   end;
@@ -447,9 +447,9 @@ type
 
     procedure InitCustom(Info: PWeaponInfo; Equipped: Boolean; Weight: Integer; Level, Owner: Byte); // @addr 0x7FEDE0
     function GetWeaponInfo: PWeaponInfo; override; // @addr 0x8022D4
-    function GetConfigName: WideString; override; // @addr 0x802350 @ida "void __usercall $name(TCustomWeapon *Self@<eax>, unsigned __int16 **Result@<edx>);"
+    function GetConfigName: WideString; override; // @addr 0x802350
 
-    function GetBitmapResourceName: WideString; override; // @addr 0x801DF0 @ida "void __usercall $name(TCustomWeapon *Self@<eax>, unsigned __int16 **Result@<edx>);"
+    function GetBitmapResourceName: WideString; override; // @addr 0x801DF0
   end;
 
   TGoods = class(TItem) // @size 0x40
@@ -457,7 +457,7 @@ type
     Quantity: Integer; // @offset 0x38
     NaturalFlag: Boolean; // @offset 0x3C
 
-    function GetDisplayName: WideString; override; // @addr 0x802444 @slot 0x18 @ida "void __usercall $name(TGoods *Self@<eax>, unsigned __int16 **Result@<edx>);"
+    function GetDisplayName: WideString; override; // @addr 0x802444 @slot 0x18
     function GetInfoText(ColorTag: WideString; Ship: Pointer): WideString; override; // @addr 0x802494 @ida "void __userpurge $name(TGoods *Self@<eax>, unsigned __int16 *ColorTag@<edx>, TShip *Ship@<ecx>, unsigned __int16 **Result@<^0>);"
 
     procedure SaveToBuffer(Buffer: TBufEC); override; // @addr 0x8023CC
@@ -465,8 +465,8 @@ type
 
     procedure Init(ItemType: TItemType; Quantity: Integer); // @addr 0x802374
 
-    function GetDescriptionText: WideString; override; // @addr 0x80258C @slot 0x24 @ida "void __usercall $name(TGoods *Self@<eax>, unsigned __int16 **Result@<edx>);"
-    function GetBitmapResourceName: WideString; override; // @addr 0x802634 @slot 0x28 @ida "void __usercall $name(TGoods *Self@<eax>, unsigned __int16 **Result@<edx>);"
+    function GetDescriptionText: WideString; override; // @addr 0x80258C @slot 0x24
+    function GetBitmapResourceName: WideString; override; // @addr 0x802634 @slot 0x28
   end;
 
   TCountableItem = class(TEquipment) // @size 0x68
@@ -474,7 +474,7 @@ type
     StackCount: Integer; // @offset 0x60
     DropFlag: Byte; // @offset 0x64
 
-    function GetDisplayName: WideString; override; // @addr 0x8027E0 @ida "void __usercall $name(TCountableItem *Self@<eax>, unsigned __int16 **Result@<edx>);"
+    function GetDisplayName: WideString; override; // @addr 0x8027E0
     function GetInfoText(ColorTag: WideString; Ship: Pointer): WideString; override; // @addr 0x8028AC @ida "void __userpurge $name(TCountableItem *Self@<eax>, unsigned __int16 *ColorTag@<edx>, TShip *Ship@<ecx>, unsigned __int16 **Result@<^0>);"
 
     procedure SaveToBuffer(Buffer: TBufEC); override; // @addr 0x8026BC
@@ -485,21 +485,21 @@ type
     function CanMerge(Other: TObject): Boolean; // @addr 0x802FFC
     function Merge(Other: TObject): Boolean; // @addr 0x803078 @note "Leaves Other unchanged."
 
-    function GetDescriptionText: WideString; override; // @addr 0x8029F0 @ida "void __usercall $name(TCountableItem *Self@<eax>, unsigned __int16 **Result@<edx>);"
-    function GetBitmapResourceName: WideString; override; // @addr 0x802AAC @ida "void __usercall $name(TCountableItem *Self@<eax>, unsigned __int16 **Result@<edx>);"
+    function GetDescriptionText: WideString; override; // @addr 0x8029F0
+    function GetBitmapResourceName: WideString; override; // @addr 0x802AAC
     function Split(Count: Integer): TCountableItem; // @addr 0x802D38 @note "Allocates a new stack and removes up to Count units from Self; preserves the nodes subtype and may create a script wrapper. Self must be nonempty and Count positive."
   end;
 
   TProtoplasm = class(TCountableItem) // @size 0x68
   public
 
-    function GetDisplayName: WideString; override; // @addr 0x803138 @ida "void __usercall $name(TProtoplasm *Self@<eax>, unsigned __int16 **Result@<edx>);"
+    function GetDisplayName: WideString; override; // @addr 0x803138
     function GetInfoText(ColorTag: WideString; Ship: Pointer): WideString; override; // @addr 0x803244 @ida "void __userpurge $name(TProtoplasm *Self@<eax>, unsigned __int16 *ColorTag@<edx>, TShip *Ship@<ecx>, unsigned __int16 **Result@<^0>);"
 
     procedure Init(Count: Integer; DropFlag: Byte); // @addr 0x8030D4
 
-    function GetDescriptionText: WideString; override; // @addr 0x803310 @ida "void __usercall $name(TProtoplasm *Self@<eax>, unsigned __int16 **Result@<edx>);"
-    function GetBitmapResourceName: WideString; override; // @addr 0x803360 @ida "void __usercall $name(TProtoplasm *Self@<eax>, unsigned __int16 **Result@<edx>);"
+    function GetDescriptionText: WideString; override; // @addr 0x803310
+    function GetBitmapResourceName: WideString; override; // @addr 0x803360
   end;
 
   TEquipmentWithActCode = class(TEquipment) // @size 0x68
@@ -508,8 +508,8 @@ type
     ActCodeInitialized: Boolean; // @offset 0x64
     DisplayAsArtefact: Boolean; // @offset 0x65
 
-    constructor Create; // @addr 0x8034E8 @ida "TEquipmentWithActCode *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x803538 @ida "void __usercall $name(TEquipmentWithActCode *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x8034E8
+    destructor Destroy; override; // @addr 0x803538
   end;
 
   TUselessItem = class(TEquipmentWithActCode) // @size 0x78
@@ -517,7 +517,7 @@ type
     CustomText: WideString; // @offset 0x68  Script.UselessItemText.
     Data: array[0..2] of Integer; // @offset 0x6C  Script.UselessItemData uses indexes 1..3.
 
-    function GetDisplayName: WideString; override; // @addr 0x803D28 @ida "void __usercall $name(TUselessItem *Self@<eax>, unsigned __int16 **Result@<edx>);"
+    function GetDisplayName: WideString; override; // @addr 0x803D28
     function GetInfoText(ColorTag: WideString; Ship: Pointer): WideString; override; // @addr 0x803E2C @ida "void __userpurge $name(TUselessItem *Self@<eax>, unsigned __int16 *ColorTag@<edx>, TShip *Ship@<ecx>, unsigned __int16 **Result@<^0>);"
 
     procedure SaveToBuffer(Buffer: TBufEC); override; // @addr 0x803AA4
@@ -525,16 +525,16 @@ type
     procedure SaveToBlock(Block: TBlockParEC); override; // @addr 0x803BF0
     procedure LoadFromBlock(Block: TBlockParEC); override; // @addr 0x803C80
 
-    constructor Create; // @addr 0x803574 @ida "TUselessItem *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x8035BC @ida "void __usercall $name(TUselessItem *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x803574
+    destructor Destroy; override; // @addr 0x8035BC
     procedure Init(ConfigName: WideString; Series: TDominatorSeries; Seed: Cardinal; ForceArtefactDisplay: Boolean); // @addr 0x803624
     procedure CheckIfWeDisplayAsArtefact; // @addr 0x804464
     function GetActionCode: Pointer; // @addr 0x80455C
 
-    function GetDescriptionText: WideString; override; // @addr 0x804030 @ida "void __usercall $name(TUselessItem *Self@<eax>, unsigned __int16 **Result@<edx>);"
-    function GetBitmapResourceName: WideString; override; // @addr 0x804124 @ida "void __usercall $name(TUselessItem *Self@<eax>, unsigned __int16 **Result@<edx>);"
+    function GetDescriptionText: WideString; override; // @addr 0x804030
+    function GetBitmapResourceName: WideString; override; // @addr 0x804124
     function IsDominatorRemains: Boolean; // @addr 0x804414 @note "Owner is Dominator and ConfigBlockName starts with Remains_."
-    function GetOnUseCodeText: WideString; // @addr 0x8044C4 @ida "void __usercall $name(TUselessItem *Self@<eax>, unsigned __int16 **Result@<edx>);"
+    function GetOnUseCodeText: WideString; // @addr 0x8044C4
   end;
 
   TCistern = class(TEquipment) // @size 0x68
@@ -542,7 +542,7 @@ type
     Fuel: Integer; // @offset 0x60
     Capacity: Byte; // @offset 0x64
 
-    function GetDisplayName: WideString; override; // @addr 0x804914 @ida "void __usercall $name(TCistern *Self@<eax>, unsigned __int16 **Result@<edx>);"
+    function GetDisplayName: WideString; override; // @addr 0x804914
     function GetInfoText(ColorTag: WideString; Ship: Pointer): WideString; override; // @addr 0x80497C @ida "void __userpurge $name(TCistern *Self@<eax>, unsigned __int16 *ColorTag@<edx>, TShip *Ship@<ecx>, unsigned __int16 **Result@<^0>);"
 
     procedure SaveToBuffer(Buffer: TBufEC); override; // @addr 0x804674
@@ -552,8 +552,8 @@ type
 
     procedure Init(Fuel: Integer; Capacity, Owner: Byte); // @addr 0x8045F4
 
-    function GetDescriptionText: WideString; override; // @addr 0x804AB8 @ida "void __usercall $name(TCistern *Self@<eax>, unsigned __int16 **Result@<edx>);"
-    function GetBitmapResourceName: WideString; override; // @addr 0x804B10 @ida "void __usercall $name(TCistern *Self@<eax>, unsigned __int16 **Result@<edx>);"
+    function GetDescriptionText: WideString; override; // @addr 0x804AB8
+    function GetBitmapResourceName: WideString; override; // @addr 0x804B10
   end;
 
   TSatellite = class(TEquipment) // @size 0x74
@@ -566,7 +566,7 @@ type
     LandExplorationRate: Byte; // @offset 0x71
     HillExplorationRate: Byte; // @offset 0x72
 
-    function GetDisplayName: WideString; override; // @addr 0x805738 @calls "0x805BA8 0x805D12" @ida "void __usercall $name(TSatellite *Self@<eax>, unsigned __int16 **Result@<edx>);"
+    function GetDisplayName: WideString; override; // @addr 0x805738 @calls "0x805BA8 0x805D12"
     function GetInfoText(ColorTag: WideString; Ship: Pointer): WideString; override; // @addr 0x8058C4 @ida "void __userpurge $name(TSatellite *Self@<eax>, unsigned __int16 *ColorTag@<edx>, TShip *Ship@<ecx>, unsigned __int16 **Result@<^0>);"
 
     procedure SaveToBuffer(Buffer: TBufEC); override; // @addr 0x80515C
@@ -578,10 +578,10 @@ type
 
     procedure InitGenerated(TypeId, Owner: Byte; Seed: Cardinal); // @addr 0x804BE0 @note "Clears deployment state."
 
-    function GetDescriptionText: WideString; override; // @addr 0x805E30 @ida "void __usercall $name(TSatellite *Self@<eax>, unsigned __int16 **Result@<edx>);"
-    function GetBitmapResourceName: WideString; override; // @addr 0x805EF0 @ida "void __usercall $name(TSatellite *Self@<eax>, unsigned __int16 **Result@<edx>);"
-    function GetBrokenInUseText: WideString; // @addr 0x805B1C @ida "void __usercall $name(TSatellite *Self@<eax>, unsigned __int16 **Result@<edx>);"
-    function GetIdleInfoText: WideString; // @addr 0x805C84 @ida "void __usercall $name(TSatellite *Self@<eax>, unsigned __int16 **Result@<edx>);"
+    function GetDescriptionText: WideString; override; // @addr 0x805E30
+    function GetBitmapResourceName: WideString; override; // @addr 0x805EF0
+    function GetBrokenInUseText: WideString; // @addr 0x805B1C
+    function GetIdleInfoText: WideString; // @addr 0x805C84
   end;
 
   TTreasureMap = class(TEquipment) // @size 0x70
@@ -591,7 +591,7 @@ type
     PreviewTablePage1: WideString; // @offset 0x68
     PreviewTablePage2: WideString; // @offset 0x6C
 
-    function GetDisplayName: WideString; override; // @addr 0x8062C4 @ida "void __usercall $name(TTreasureMap *Self@<eax>, unsigned __int16 **Result@<edx>);"
+    function GetDisplayName: WideString; override; // @addr 0x8062C4
     function GetInfoText(ColorTag: WideString; Ship: Pointer): WideString; override; // @addr 0x806334 @ida "void __userpurge $name(TTreasureMap *Self@<eax>, unsigned __int16 *ColorTag@<edx>, TShip *Ship@<ecx>, unsigned __int16 **Result@<^0>);"
 
     procedure SaveToBuffer(Buffer: TBufEC); override; // @addr 0x80613C
@@ -600,28 +600,28 @@ type
     procedure ClearReferences; override; // @addr 0x8062A8
 
     procedure Init(Planet: Pointer; Victim: Pointer); // @addr 0x805FF0
-    function GetTargetPlanetName: WideString; // @addr 0x806624 @ida "void __usercall $name(TTreasureMap *Self@<eax>, unsigned __int16 **Result@<edx>);"
+    function GetTargetPlanetName: WideString; // @addr 0x806624
     function BuildPreviewTable(PageIndex: Integer; Planet: Pointer): WideString; // @addr 0x8067B0 @ida "void __userpurge $name(TTreasureMap *Self@<eax>, int PageIndex@<edx>, TPlanet *Planet@<ecx>, unsigned __int16 **Result@<^0>);" @note "PageIndex is 1 or 2; Planet must be assigned."
 
-    function GetDescriptionText: WideString; override; // @addr 0x8064C8 @ida "void __usercall $name(TTreasureMap *Self@<eax>, unsigned __int16 **Result@<edx>);"
-    function GetBitmapResourceName: WideString; override; // @addr 0x806528 @ida "void __usercall $name(TTreasureMap *Self@<eax>, unsigned __int16 **Result@<edx>);"
+    function GetDescriptionText: WideString; override; // @addr 0x8064C8
+    function GetBitmapResourceName: WideString; override; // @addr 0x806528
   end;
 
   TMicroModule = class(TEquipment) // @size 0x60
   public
 
-    function GetDisplayName: WideString; override; // @addr 0x8074A0 @ida "void __usercall $name(TMicroModule *Self@<eax>, unsigned __int16 **Result@<edx>);"
+    function GetDisplayName: WideString; override; // @addr 0x8074A0
     function GetInfoText(ColorTag: WideString; Ship: Pointer): WideString; override; // @addr 0x807758 @ida "void __userpurge $name(TMicroModule *Self@<eax>, unsigned __int16 *ColorTag@<edx>, TShip *Ship@<ecx>, unsigned __int16 **Result@<^0>);"
 
     procedure SaveToBuffer(Buffer: TBufEC); override; // @addr 0x80743C
     procedure LoadFromBuffer(Buffer: TBufEC; Galaxy: TGalaxy); override; // @addr 0x807458
 
     procedure Init(ModuleIndex: Integer); // @addr 0x8072F8 @note "ModuleIndex is zero-based and must identify an existing template."
-    function GetPlainName: WideString; // @addr 0x807608 @ida "void __usercall $name(TMicroModule *Self@<eax>, unsigned __int16 **Result@<edx>);"
+    function GetPlainName: WideString; // @addr 0x807608
 
-    function GetDescriptionText: WideString; override; // @addr 0x807BC0 @ida "void __usercall $name(TMicroModule *Self@<eax>, unsigned __int16 **Result@<edx>);"
-    function GetBitmapResourceName: WideString; override; // @addr 0x807BD8 @ida "void __usercall $name(TMicroModule *Self@<eax>, unsigned __int16 **Result@<edx>);"
-    function GetHighlightedName: WideString; // @addr 0x809260 @ida "void __usercall $name(TMicroModule *Self@<eax>, unsigned __int16 **Result@<edx>);" @note "Template name wrapped in the standard yellow highlight color."
+    function GetDescriptionText: WideString; override; // @addr 0x807BC0
+    function GetBitmapResourceName: WideString; override; // @addr 0x807BD8
+    function GetHighlightedName: WideString; // @addr 0x809260 @note "Template name wrapped in the standard yellow highlight color."
     function CalculateNodeExchangeValue(LowPriorityOfferCost, MediumPriorityOfferCost: Integer): Integer; // @addr 0x808EF0 @note "Node refund at the current ranger center, using priority and docked station ID. Priorities 31..69 are capped by half LowPriorityOfferCost; 70..100 by half MediumPriorityOfferCost. Minimum 5 nodes."
     function CanInstallOn(Item: TEquipment): Boolean; // @addr 0x8092C0 @note "Uses this micromodule item's template and checks slot blockers and equipment compatibility."
   end;
@@ -629,21 +629,21 @@ type
   TArtefact = class(TEquipmentWithActCode) // @size 0x68
   public
 
-    function GetDisplayName: WideString; override; // @addr 0x80A868 @ida "void __usercall $name(TArtefact *Self@<eax>, unsigned __int16 **Result@<edx>);"
+    function GetDisplayName: WideString; override; // @addr 0x80A868
     function GetInfoText(ColorTag: WideString; Ship: Pointer): WideString; override; // @addr 0x80A928 @ida "void __userpurge $name(TArtefact *Self@<eax>, unsigned __int16 *ColorTag@<edx>, TShip *Ship@<ecx>, unsigned __int16 **Result@<^0>);"
 
     procedure LoadFromBuffer(Buffer: TBufEC; Galaxy: TGalaxy); override; // @addr 0x809CF0
 
-    constructor Create; // @addr 0x809C38 @ida "TArtefact *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x809C88 @ida "void __usercall $name(TArtefact *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x809C38
+    destructor Destroy; override; // @addr 0x809C88
     procedure Init(Owner: Byte; ItemType: TItemType); virtual; // @addr 0x809D38 @slot 0x4C
     function GetEffectiveType: TItemType; // @addr 0x80ADAC @note "Custom artefacts with SharedEffect use CountsAsItemType; otherwise returns ItemType."
-    function GetOnUseCodeText: WideString; // @addr 0x80AB90 @ida "void __usercall $name(TArtefact *Self@<eax>, unsigned __int16 **Result@<edx>);" @note "Returns empty when the OnUseCode block is absent."
+    function GetOnUseCodeText: WideString; // @addr 0x80AB90 @note "Returns empty when the OnUseCode block is absent."
     function GetActionCode: Pointer; // @addr 0x80AC84 @note "Borrowed cached result, possibly nil. Marks initialization before resolving the configuration."
-    function GetBoostStatusText: WideString; // @addr 0x80C3C0 @ida "void __usercall $name(TArtefact *Self@<eax>, unsigned __int16 **Result@<edx>);" @note "Uses the active equipment screen's ship; empty for broken artefacts or without a supported screen context."
+    function GetBoostStatusText: WideString; // @addr 0x80C3C0 @note "Uses the active equipment screen's ship; empty for broken artefacts or without a supported screen context."
 
-    function GetDescriptionText: WideString; override; // @addr 0x80AAE0 @ida "void __usercall $name(TArtefact *Self@<eax>, unsigned __int16 **Result@<edx>);"
-    function GetBitmapResourceName: WideString; override; // @addr 0x80A760 @ida "void __usercall $name(TArtefact *Self@<eax>, unsigned __int16 **Result@<edx>);"
+    function GetDescriptionText: WideString; override; // @addr 0x80AAE0
+    function GetBitmapResourceName: WideString; override; // @addr 0x80A760
   end;
 
   TArtefactTransmitter = class(TArtefact) // @size 0x6C
@@ -664,7 +664,7 @@ type
   public
     Ship: Pointer; // @offset 0x68  Owned while stored in the artefact; deployment transfers ownership.
 
-    function GetDisplayName: WideString; override; // @addr 0x80B5A8 @ida "void __usercall $name(TArtefactTranclucator *Self@<eax>, unsigned __int16 **Result@<edx>);"
+    function GetDisplayName: WideString; override; // @addr 0x80B5A8
 
     procedure SaveToBuffer(Buffer: TBufEC); override; // @addr 0x80B31C
     procedure LoadFromBuffer(Buffer: TBufEC; Galaxy: TGalaxy); override; // @addr 0x80B350
@@ -673,7 +673,7 @@ type
     procedure SaveToBlock(Block: TBlockParEC); override; // @addr 0x80B3BC
     procedure LoadFromBlock(Block: TBlockParEC); override; // @addr 0x80B484
 
-    destructor Destroy; override; // @addr 0x80B138 @ida "void __usercall $name(TArtefactTranclucator *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    destructor Destroy; override; // @addr 0x80B138
     procedure InitTranclucator(Owner: Byte; OwnerShip: Pointer; ExistingShip: Pointer); // @addr 0x80B188 @note "Takes ownership of ExistingShip, or creates a ship when nil."
     function Clone: TItem; override; // @addr 0x80B3A4 @note "Always returns nil."
   end;
@@ -688,7 +688,7 @@ type
     TextData2: WideString; // @offset $7C
     TextData3: WideString; // @offset $80
 
-    function GetDisplayName: WideString; override; // @addr 0x80C228 @ida "void __usercall $name(TArtefactCustom *Self@<eax>, unsigned __int16 **Result@<edx>);"
+    function GetDisplayName: WideString; override; // @addr 0x80C228
     function GetInfoText(ColorTag: WideString; Ship: Pointer): WideString; override; // @addr 0x80BF88 @ida "void __userpurge $name(TArtefactCustom *Self@<eax>, unsigned __int16 *ColorTag@<edx>, TShip *Ship@<ecx>, unsigned __int16 **Result@<^0>);"
 
     procedure SaveToBuffer(Buffer: TBufEC); override; // @addr 0x80B9E4
@@ -698,10 +698,8 @@ type
 
     procedure LoadConfig(ApplyConfiguredWeight: Boolean); // @addr 0x80B748 @note "Uses ConfigBlockName. Reloads NoWear, CountsAs, SharedUse and SharedEffect; preserves Data and TextData."
 
-    function GetDescriptionText: WideString; override; // @addr 0x80C2FC @ida "void __usercall $name(TArtefactCustom *Self@<eax>, unsigned __int16 **Result@<edx>);"
+    function GetDescriptionText: WideString; override; // @addr 0x80C2FC
   end;
-
-// Nested native helpers include the caller's saved EBP explicitly in the IDA ABI.
 
 function CreateRandomLootItem(Pool: TItemLootPool; Owner: Byte; Seed: Cardinal): TEquipmentWithActCode; // @addr 0x809AB0 @note "Selects across built-in artefacts, custom artefacts and configured useless items. Pool must be nonempty; AnyAvailable is the union of the three eligibility flags."
 
@@ -719,15 +717,15 @@ function CalculateGeneratedRepairRobotCost(Weight: Cardinal; Level, Owner: Byte)
 function CalculateGeneratedCargoHookCost(Weight: Cardinal; Level, Owner: Byte): Integer; // @addr 0x7FCAD0
 function CalculateGeneratedDefGeneratorCost(Weight: Cardinal; Level, Owner: Byte): Integer; // @addr 0x7FE2A4
 function GetGeneratedDefenseDamageFactor(Level: Byte): Double; // @addr 0x7FE21C
-function DefenseDamageFactorToPercent(Factor: Double): TPercent; // @addr 0x7FE240 @ida "unsigned __int8 __userpurge $name@<al>(double Factor@<^0>);"
+function DefenseDamageFactorToPercent(Factor: Double): TPercent; // @addr 0x7FE240
 function DefensePercentToDamageFactor(Percent: Integer): Double; // @addr 0x7FE26C
 
-function GetMicroModuleInfoText(ModuleIndex: Integer; ColorTag: WideString): WideString; // @addr 0x8077B4 @ida "void __usercall $name(int ModuleIndex@<eax>, unsigned __int16 *ColorTag@<edx>, unsigned __int16 **Result@<ecx>);" @note "ModuleIndex is zero-based. Expands all bonus tokens in the configured description."
+function GetMicroModuleInfoText(ModuleIndex: Integer; ColorTag: WideString): WideString; // @addr 0x8077B4 @note "ModuleIndex is zero-based. Expands all bonus tokens in the configured description."
 
 function GetMicroModulePriorityColorTier(ModuleIndex: Integer): Byte; // @addr 0x807C74
-function GetMicroModuleNameColorTag(ModuleIndex: Integer): WideString; // @addr 0x807CBC @ida "void __usercall $name(int ModuleIndex@<eax>, unsigned __int16 **Result@<edx>);"
-function GetMicroModuleTextColorTag(ModuleIndex: Integer): WideString; // @addr 0x807DE4 @ida "void __usercall $name(int ModuleIndex@<eax>, unsigned __int16 **Result@<edx>);"
-function GetMicroModuleBitmapResourceName(ModuleIndex: Integer): WideString; // @addr 0x807E8C @ida "void __usercall $name(int ModuleIndex@<eax>, unsigned __int16 **Result@<edx>);"
+function GetMicroModuleNameColorTag(ModuleIndex: Integer): WideString; // @addr 0x807CBC
+function GetMicroModuleTextColorTag(ModuleIndex: Integer): WideString; // @addr 0x807DE4
+function GetMicroModuleBitmapResourceName(ModuleIndex: Integer): WideString; // @addr 0x807E8C
 
 function CreateConfiguredArtefactByItemType(ItemType: TItemType; Owner: Byte): TArtefact; // @addr 0x809A44 @note "Returns nil outside item types 10..41."
 
@@ -753,7 +751,7 @@ function CanCargoHookHandleItem(Item: TItem; Ship: Pointer): Boolean; // @addr 0
 function GetItemTypeBitmapPath(ItemType: TItemType): WideString; // @addr $80CD0C @ida "void __usercall $name(unsigned __int8 ItemType@<al>, unsigned __int16 **Result@<edx>);"
 
 function GetStackableItemTypeName(ItemType: TItemType): WideString; // @addr $80CD90 @ida "void __usercall $name(unsigned __int8 ItemType@<al>, unsigned __int16 **Result@<edx>);" @note "Goods use their market display name; nodes use the generic node name; other types return empty."
-function GetStackableItemName(Item: TItem): WideString; // @addr $80CE04 @ida "void __usercall $name(TItem *Item@<eax>, unsigned __int16 **Result@<edx>);" @note "Custom countables use their configured name; all other types use GetStackableItemTypeName. Ignores per-instance name overrides."
+function GetStackableItemName(Item: TItem): WideString; // @addr $80CE04 @note "Custom countables use their configured name; all other types use GetStackableItemTypeName. Ignores per-instance name overrides."
 
 implementation
 
@@ -926,7 +924,7 @@ end;
 function TItem.GetGraphObject: TObjectSE;
 
   // @nested $7EF1AC CreateContainer
-  procedure CreateContainer(GraphKey: WideString); // @addr 0x7EF1AC @ida "void __usercall $name(unsigned __int16 *GraphKey@<eax>, void *ParentFrame@<^0>);" @note "Captures the item at ParentFrame-4; caller removes ParentFrame."
+  procedure CreateContainer(GraphKey: WideString); // @addr 0x7EF1AC @note "Captures the item at ParentFrame-4; caller removes ParentFrame."
   begin
     RetainSpaceObject(GraphObject, CreateSpaceObjectByName('Container', 'Item.' + GraphKey, Classes.Point(0, 0)));
   end;
@@ -1137,7 +1135,7 @@ procedure TEquipment.LoadFromBuffer(Buffer: TBufEC; Galaxy: TGalaxy);
 var ConfigNumber, Count, Index, ExistingIndex, ModuleIndex: Integer; Entry: PExtraSpecial;
 
   // @nested $7F05D0 FindLegacyMicroModuleIndex
-  function FindLegacyMicroModuleIndex(ConfigNumber: Integer): Integer; // @addr 0x7F05D0 @ida "int __usercall $name@<eax>(int ConfigNumber@<eax>, void *ParentFrame@<^0>);" @note "Returns a one-based template index, or 0 if absent."
+  function FindLegacyMicroModuleIndex(ConfigNumber: Integer): Integer; // @addr 0x7F05D0 @note "Returns a one-based template index, or 0 if absent."
   var
     I: Integer;
   begin
@@ -1798,7 +1796,7 @@ var
   Index, ModuleIndexPlusOne: Integer;
 
   // @nested $7F3830 ExpandModuleTokens
-  function ExpandModuleTokens(Text: WideString; ModuleIndexPlusOne, Count: Integer): WideString; // @addr 0x7F3830 @ida "void __userpurge $name(unsigned __int16 *Text@<eax>, int ModuleIndexPlusOne@<edx>, int Count@<ecx>, unsigned __int16 **Result@<^0>, void *ParentFrame@<^4>);" @calls "0x7F3B99 0x7F3D35 0x7F3E85" @stackpop 0x4 @note "Uses the parent description, bonus multipliers and color. RET 4 removes Result; the caller removes ParentFrame. Count 0 suppresses numeric bonuses."
+  function ExpandModuleTokens(Text: WideString; ModuleIndexPlusOne, Count: Integer): WideString; // @addr 0x7F3830 @calls "0x7F3B99 0x7F3D35 0x7F3E85" @note "Uses the parent description, bonus multipliers and color. RET 4 removes Result; the caller removes ParentFrame. Count 0 suppresses numeric bonuses."
   var BonusIndex: Byte; Value: Integer;
   begin
     // The native helper reads the captured description; Text remains an unused managed parameter.
@@ -1964,7 +1962,7 @@ procedure THull.LoadFromBuffer(Buffer: TBufEC; Galaxy: TGalaxy);
 var SavedHullType: Integer;
 
   // @nested $7F4504 ReadSavedHullSeriesIndex
-  function ReadSavedHullSeriesIndex(Buffer: TBufEC): Integer; // @addr 0x7F4504 @ida "int __usercall $name@<eax>(TBufEC *Buffer@<eax>, void *ParentFrame@<^0>);" @note "Returns a zero-based series index, or -1 if absent or unresolved."
+  function ReadSavedHullSeriesIndex(Buffer: TBufEC): Integer; // @addr 0x7F4504 @note "Returns a zero-based series index, or -1 if absent or unresolved."
   var
     I: Integer;
     CRC: Cardinal;
@@ -2427,7 +2425,7 @@ function THull.EstimateCapacityWithoutBonuses: Integer;
 var I: Integer;
 
   // @nested $7F7274 UndoSizePercent
-  procedure UndoSizePercent(Percent: Integer); // @addr 0x7F7274 @ida "void __usercall $name(int Percent@<eax>, void *ParentFrame@<^0>);" @note "Updates the parent's capacity accumulator; caller removes ParentFrame. Nonpositive Percent leaves it unchanged."
+  procedure UndoSizePercent(Percent: Integer); // @addr 0x7F7274 @note "Updates the parent's capacity accumulator; caller removes ParentFrame. Nonpositive Percent leaves it unchanged."
   var Factor: Single;
   begin
     if Percent <= 0 then Factor := 1 else Factor := 100 / Percent;
@@ -5130,7 +5128,7 @@ var I, Number: Integer; Entry: PPlanetSurfaceLootEntry;
   Rows, Header, Caption, Rule: WideString; World: TPlanet;
 
   // @nested $806650 ItemColorTag
-  function ItemColorTag(Item: TItem): WideString; // @addr $806650 @ida "void __usercall $name(TItem *Item@<eax>, unsigned __int16 **Result@<edx>, void *ParentFrame@<^0>);" @stackpop 0 @calls "0x806D4B" @note "Nested helper of BuildPreviewTable; caller removes the unused static link."
+  function ItemColorTag(Item: TItem): WideString; // @addr $806650 @calls "0x806D4B" @note "Nested helper of BuildPreviewTable; caller removes the unused static link."
   begin
     if Item is TGoods then Result := '<color=127,127,127>'
     else if Item is TArtefact then Result := '<color=255,0,0>'

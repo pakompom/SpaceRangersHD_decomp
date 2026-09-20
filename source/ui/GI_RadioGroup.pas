@@ -10,16 +10,16 @@ type
   public
     SelectionChangedCallback: TObjectNotifyEventGI; // @offset $120
 
-    constructor Create(Owner: TObjectGI); // @addr 0x4AA804 @ida "TRadioGroupGI *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, TObjectGI *Owner@<ecx>);"
-    destructor Destroy; override; // @addr 0x4AA84C @ida "void __usercall $name(TRadioGroupGI *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create(Owner: TObjectGI); // @addr 0x4AA804
+    destructor Destroy; override; // @addr 0x4AA84C
     procedure Clear; override; // @addr 0x4AA880 @note "Empty implementation."
     procedure SetConfigPath(const Path: WideString); override; // @addr 0x4AA88C
-    procedure SetSize(Size: TPoint); override; // @addr 0x4AA8BC @ida "void __usercall $name(TRadioGroupGI *Self@<eax>, TPoint *Size@<edx>);"
-    procedure AddItem(Name: WideString; Position: TPoint); // @addr 0x4AA8E0 @ida "void __usercall $name(TRadioGroupGI *Self@<eax>, unsigned __int16 *Name@<edx>, TPoint *Position@<ecx>);"
+    procedure SetSize(Size: TPoint); override; // @addr 0x4AA8BC
+    procedure AddItem(Name: WideString; Position: TPoint); // @addr 0x4AA8E0
     procedure RefreshItemImages; // @addr 0x4AA9E0
     procedure ClearSelection; // @addr 0x4AAADC
     procedure SelectItem(Name: WideString); // @addr 0x4AAB2C
-    procedure ItemClick(Sender: TObjectGI; MouseState: Cardinal; Point: TPoint); // @addr 0x4AABEC @ida "void __userpurge $name(TRadioGroupGI *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int MouseState@<ecx>, TPoint *Point@<^0>);"
+    procedure ItemClick(Sender: TObjectGI; MouseState: Cardinal; Point: TPoint); // @addr 0x4AABEC
     procedure LoadFromConfigPath(const Path: WideString); override; // @addr 0x4AAC3C
     procedure LoadFromBlock(Block: TBlockParEC); override; // @addr 0x4AAC58
   end;

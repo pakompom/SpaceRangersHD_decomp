@@ -28,8 +28,8 @@ type
     Graphic: TSputnikSE; // @offset 0x08
     FilmObject: TEFilmObj; // @offset 0x0C  Borrowed from PrimaryFilm.
 
-    constructor Create; // @addr 0x77F830 @ida "TSputnik *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x77F898 @ida "void __usercall $name(TSputnik *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x77F830
+    destructor Destroy; override; // @addr 0x77F898
     procedure SaveToBuffer(Buffer: TBufEC); // @addr 0x77F8E0
     procedure LoadFromBuffer(Buffer: TBufEC; Galaxy: TGalaxy); // @addr 0x77F944
   end;
@@ -93,8 +93,8 @@ type
     IsMainPiratePlanet: Boolean; // @offset 0x160  Identifies the clan home planet independently of OwnerId.
     CustomFaction: WideString; // @offset 0x164  Overrides the star faction in GetFactionResourceName.
 
-    constructor Create; // @addr 0x77FA30 @ida "TPlanet *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x77FB28 @ida "void __usercall $name(TPlanet *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x77FA30
+    destructor Destroy; override; // @addr 0x77FB28
     procedure InitGenerated(Star: TStar; TotalPlanetCount, InhabitedCountOrSpecialMode: Integer); // @addr 0x77FCA8 @note "Fourth argument: 0 selects the Solar System, 1..3 limit inhabited planets, 10/11 select special systems. Caller inserts Self into the star's planet list."
     procedure InitDominatorSpawnProxy(Star: TStar); // @addr 0x783378 @note "Only sets CurrentStar, OwnerId=5 and all invention levels to 8; used by the separate Dominator spawn planet."
     procedure InitGeneratedUninhabited(Star: TStar); // @addr 0x7833B4 @note "Creates graphics, surface terrain, loot and initial market/research state; caller owns planet registration."
@@ -116,7 +116,7 @@ type
     function GenerateShipForScriptGroup(Group: Pointer): Pointer; // @addr 0x79150C @note "Uses group owner/type/equipment constraints; returns nil for a boss request. Temporarily changes planet ownership, star series and global technology."
     procedure InitializeFilmState(StepIndex: Integer; RecordFilm: Boolean); // @addr 0x78C518 @note "Always initializes LastFilmPosition; optionally creates film entries for the planet and satellites."
     procedure AdvanceOrbitStep(StepIndex: Integer; RecordFilm: Boolean); // @addr 0x78C8E0
-    function PredictPosition(StepsAhead: Integer): TPointF; // @addr 0x78C9F0 @ida "void __usercall $name(TPlanet *Self@<eax>, int StepsAhead@<edx>, TPointF *Result@<ecx>);"
+    function PredictPosition(StepsAhead: Integer): TPointF; // @addr 0x78C9F0
     function RequestDialog: Boolean; // @addr 0x78CA40 @note "Queues planet dialogue to the UI thread and waits for its event; requires normal-space player state."
     procedure UpdateOwnerFlags; // @addr 0x78CAD4
     procedure UpdateMarketState; // @addr 0x78CB00
@@ -125,17 +125,17 @@ type
     procedure HandleAsteroidImpact(Asteroid: Pointer); // @addr 0x78EB64 @note "Native no-op. TStar.NextDay calls this after detecting a collision; the caller handles impact effects, debris and asteroid respawn."
     procedure CollectScriptDialogChoices(Choices: TStringsEC); // @addr 0x78EB74 @note "Clears Choices, appends matching nonempty planet-binding titles and stores the owning TScript as each entry's data."
     function GetSurfaceAnimationMask: Integer; // @addr 0x78EC8C @note "Returns -1 when unavailable; otherwise combines a surface family in bits 24..31 with eligible animation bits."
-    function GetGovernmentPortraitGraph: WideString; // @addr 0x78EF64 @ida "void __usercall $name(TPlanet *Self@<eax>, unsigned __int16 **Result@<edx>);" @note "Seed-based StyleFace selection, excluding the player's portrait."
-    function GetFullName(Separator: WideString): WideString; // @addr 0x78F164 @ida "void __usercall $name(TPlanet *Self@<eax>, unsigned __int16 *Separator@<edx>, unsigned __int16 **Result@<ecx>);" @note "Main Pirate Planet returns its name without the localized planet prefix."
-    function GetPosition: TPointF; // @addr 0x78F218 @ida "void __usercall $name(TPlanet *Self@<eax>, TPointF *Result@<edx>);"
-    function GetInfoText(ForMap: Boolean): WideString; // @addr 0x78F238 @ida "void __usercall $name(TPlanet *Self@<eax>, bool ForMap@<dl>, unsigned __int16 **Result@<ecx>);" @note "ForMap suppresses the artifact treasure hint and can append a Pirate Clan warning."
-    function GetGovernmentName: WideString; // @addr 0x78FA9C @ida "void __usercall $name(TPlanet *Self@<eax>, unsigned __int16 **Result@<edx>);"
-    function GetNativeRaceName: WideString; // @addr 0x78FACC @ida "void __usercall $name(TPlanet *Self@<eax>, unsigned __int16 **Result@<edx>);" @note "Localized DisplayName for RaceToOwner(RaceId)."
-    function GetFactionResourceName: WideString; // @addr 0x78FB00 @ida "void __usercall $name(TPlanet *Self@<eax>, unsigned __int16 **Result@<edx>);" @note "Faction/series/internal owner identifier used for resource selection."
+    function GetGovernmentPortraitGraph: WideString; // @addr 0x78EF64 @note "Seed-based StyleFace selection, excluding the player's portrait."
+    function GetFullName(Separator: WideString): WideString; // @addr 0x78F164 @note "Main Pirate Planet returns its name without the localized planet prefix."
+    function GetPosition: TPointF; // @addr 0x78F218
+    function GetInfoText(ForMap: Boolean): WideString; // @addr 0x78F238 @note "ForMap suppresses the artifact treasure hint and can append a Pirate Clan warning."
+    function GetGovernmentName: WideString; // @addr 0x78FA9C
+    function GetNativeRaceName: WideString; // @addr 0x78FACC @note "Localized DisplayName for RaceToOwner(RaceId)."
+    function GetFactionResourceName: WideString; // @addr 0x78FB00 @note "Faction/series/internal owner identifier used for resource selection."
     function CalculateBasePopulation: Integer; // @addr 0x78FC30 @note "Maps Radius 60..100 to population 100000..1000000 with clamping and rounding."
     function CountPlanetsOfSameRace: Integer; // @addr 0x78FC78 @note "For OwnerId=6 counts all uninhabited planets; otherwise counts non-uninhabited planets with the same RaceId. Includes Self."
     function FindUnchartedNeighborConstellation: TConstellation; // @addr 0x78FD04 @note "First adjacent invisible constellation, excluding ID 20; borrowed result or nil."
-    function FindNearestPlanetByOwnerMask(OwnerMask: TOwnerMask): TPlanet; // @addr 0x78FD8C @ida "TPlanet *__usercall $name@<eax>(TPlanet *Self@<eax>, TOwnerMask OwnerMask@<dl>);" @note "Searches stars in CurrentStar's distance order, then each star's planet list; no planet-distance tie break."
+    function FindNearestPlanetByOwnerMask(OwnerMask: TOwnerMask): TPlanet; // @addr 0x78FD8C @note "Searches stars in CurrentStar's distance order, then each star's planet list; no planet-distance tie break."
     procedure NormalizeSurfaceLootEntries; // @addr 0x78FE3C @note "Sorts by SurfaceTileIndex and moves overlapping markers to free cells of the 14-by-7 display grid."
     function GetTotalSurfaceTileCount: Integer; // @addr 0x79021C
     function GetUnexploredSurfaceTileCount: Integer; // @addr 0x79024C @note "Returns zero unless OwnerId=6."
@@ -145,7 +145,7 @@ type
     procedure SelectCurrentInvention; // @addr 0x79061C @note "Chooses among tracks permitted by ResearchLevelPercent and main technology slot 7; raises if no choice is found."
     procedure AdvanceInventionProgress; // @addr 0x790788 @note "Uses the difficulty multiplier; completion requires progress strictly above 100. Levels cap at 8 and excess progress is discarded."
     function CalculateInventionProgressRate: Single; // @addr 0x7909E8 @note "Radius factor times economy and race multipliers; excludes the difficulty multiplier."
-    function BuildGovernmentGreeting: WideString; // @addr 0x7953E8 @ida "void __usercall $name(TPlanet *Self@<eax>, unsigned __int16 **Result@<edx>);"
+    function BuildGovernmentGreeting: WideString; // @addr 0x7953E8
     procedure ForceGoodsScarcity(StartEvent: Boolean; GoodsMask: TItemTypeMask); // @addr 0x794840 @ida "void __usercall $name(TPlanet *Self@<eax>, bool StartEvent@<dl>, TItemTypeMask *GoodsMask@<ecx>);"
     procedure ForceGoodsSurplus(StartEvent: Boolean; GoodsMask: TItemTypeMask); // @addr 0x794A0C @ida "void __usercall $name(TPlanet *Self@<eax>, bool StartEvent@<dl>, TItemTypeMask *GoodsMask@<ecx>);"
     function GenerateHullOffer(Ship: Pointer): THull; // @addr 0x793758
@@ -160,8 +160,8 @@ type
     function CountEquipmentShopItemsInBucket(ItemType: Byte): Integer; // @addr 0x7946D4 @note "Bucket 50 includes all weapon types 50..68; other buckets require an exact type."
     function RemoveSimilarEquipmentShopItem(Item: TEquipment): Boolean; // @addr 0x79474C @note "Frees at most one other stock item of the same type and level, protecting named script items. Does not insert Item."
     function CountBailablePrisoners: Integer; // @addr 0x794C18 @note "Counts local imprisoned rangers/pirates with a positive remaining prison term and no incompatible script state."
-    function GetGovernmentBackgroundGraph: WideString; // @addr 0x794CB4 @ida "void __usercall $name(TPlanet *Self@<eax>, unsigned __int16 **Result@<edx>);"
-    function BuildNonCivilTreasureHintText: WideString; // @addr 0x794D98 @ida "void __usercall $name(TPlanet *Self@<eax>, unsigned __int16 **Result@<edx>);"
+    function GetGovernmentBackgroundGraph: WideString; // @addr 0x794CB4
+    function BuildNonCivilTreasureHintText: WideString; // @addr 0x794D98
     procedure SaveToBlock(Block: TBlockParEC); // @addr 0x7861A4
     procedure LoadFromBuffer(Buffer: TBufEC; Galaxy: TGalaxy); // @addr 0x7857C0
     function RelationToRanger(RangerIndex: Integer): Integer; // @addr 0x791EC0
@@ -170,7 +170,7 @@ type
     function GetRelationLevelTextToShip(Ship: Pointer): WideString; // @addr 0x792A18 @ida "void __usercall $name(TPlanet *Self@<eax>, TShip *Ship@<edx>, unsigned __int16 **Result@<ecx>);"
     procedure SetRelationLevelToRanger(Ranger: Pointer; Level: TRelationLevel); // @addr 0x7921FC
     procedure ChangeRelationToRanger(Ranger: Pointer; Amount: Integer); // @addr 0x792384
-    function GetCivilInfoText: WideString; // @addr 0x792A50 @ida "void __usercall $name(TPlanet *Self@<eax>, unsigned __int16 **Result@<edx>);"
+    function GetCivilInfoText: WideString; // @addr 0x792A50
     function HasHostileShipsInSystem: Boolean; // @addr 0x792DB0 @note "Tests normal-space ships in CurrentStar for RelationToShip < 10."
   end;
 
@@ -2420,7 +2420,7 @@ var
   OtherPirates: Integer;
 
   // @nested $78B2F8 CalculatePirateAttackNeighborhoodFactor
-  function CalculatePirateAttackNeighborhoodFactor(Star: TStar): Single; // @addr 0x78B2F8 @ida "float __usercall $name@<st0>(TStar *Star@<eax>, void *ParentFrame@<^0>);" @note "Nested in TryDispatchPirateAttacks; unused static link is caller-popped. Scores up to ten nearby stars and maps the score to 0.8..1.2."
+  function CalculatePirateAttackNeighborhoodFactor(Star: TStar): Single; // @addr 0x78B2F8 @note "Nested in TryDispatchPirateAttacks; unused static link is caller-popped. Scores up to ten nearby stars and maps the score to 0.8..1.2."
   var
     Score, I: Integer;
     Neighbor: TStar;
@@ -2628,7 +2628,7 @@ var
   MessageText: WideString;
 
   // @nested $78BEBC CalculatePirateBaseRaidNeighborhoodThreshold
-  function CalculatePirateBaseRaidNeighborhoodThreshold(Star: TStar): Single; // @addr 0x78BEBC @ida "float __usercall $name@<st0>(TStar *Star@<eax>, void *ParentFrame@<^0>);" @note "Nested in TrySpawnPirateBaseRaid; unused static link is caller-popped. Scores up to ten nearby stars and maps the score to 5..20."
+  function CalculatePirateBaseRaidNeighborhoodThreshold(Star: TStar): Single; // @addr 0x78BEBC @note "Nested in TrySpawnPirateBaseRaid; unused static link is caller-popped. Scores up to ten nearby stars and maps the score to 5..20."
   var
     Score, i: Integer;
   begin

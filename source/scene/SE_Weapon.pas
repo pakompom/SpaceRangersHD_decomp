@@ -38,8 +38,8 @@ type
     AnimationCountdown: Integer; // @offset $38
     BeforeEnd: Boolean; // @offset $3C
 
-    constructor Create(AEffectIndex: Integer; AOwner: TObjectGI); // @addr $6A03D8 @ida "TWeaponEffect *__userpurge $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, int AEffectIndex@<ecx>, TObjectGI *AOwner@<^0>);"
-    destructor Destroy; override; // @addr $6A058C @ida "void __usercall $name(TWeaponEffect *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create(AEffectIndex: Integer; AOwner: TObjectGI); // @addr $6A03D8
+    destructor Destroy; override; // @addr $6A058C
     procedure Clear; // @addr $6A05B8
     function AddItem: PWeaponEffectItem; // @addr $6A05DC
     procedure RemoveItem(Item: PWeaponEffectItem); // @addr $6A0680
@@ -49,8 +49,8 @@ type
     procedure Advance; // @addr $6A11E0
     procedure AnimationComplete(Sender: TObjectGI); // @addr $6A13B4
     function IsFinished: Boolean; // @addr $6A13DC
-    procedure SetSourcePoint(Point: TPointF); // @addr $6A1400 @ida "void __usercall $name(TWeaponEffect *Self@<eax>, TPointF *Point@<edx>);"
-    procedure SetTargetPoint(Point: TPointF); // @addr $6A14BC @ida "void __usercall $name(TWeaponEffect *Self@<eax>, TPointF *Point@<edx>);"
+    procedure SetSourcePoint(Point: TPointF); // @addr $6A1400
+    procedure SetTargetPoint(Point: TPointF); // @addr $6A14BC
   end;
 
   TWeaponSE = class(TObjectSE) // @size 0xD4
@@ -83,16 +83,16 @@ type
     ProjectileFinished: Boolean; // @offset $C9
     StepIndex: Integer; // @offset $CC
     ShotVisual: Integer; // @offset $D0
-    destructor Destroy; override; // @addr $69D00C @ida "void __usercall $name(TWeaponSE *Self@<eax>, __int8 DestroyFlags@<dl>);"
-    function GetTargetPoint: TPointF; // @addr $69F614 @ida "void __usercall $name(TWeaponSE *Self@<eax>, TPointF *Result@<edx>);"
-    function GetSourcePoint: TPointF; // @addr $69F6B0 @ida "void __usercall $name(TWeaponSE *Self@<eax>, TPointF *Result@<edx>);"
+    destructor Destroy; override; // @addr $69D00C
+    function GetTargetPoint: TPointF; // @addr $69F614
+    function GetSourcePoint: TPointF; // @addr $69F6B0
     procedure LoadTemplate(Block: TBlockParEC); override; // @addr $6A01F0
     procedure AttachToSpace(ASpace: TSpaceSE); override; // @addr $69D068
     procedure DetachFromSpace; override; // @addr $69F45C
     procedure Advance; override; // @addr $69F770
     procedure SetHit(Color, Damage: Integer; Destroyed, PlaySound: Boolean); // @addr $69F5A8
     procedure SetEndpoints(Source, Target: TObjectSE); // @addr $69F5E4 Retains both scene references.
-    constructor Create(const GraphKey: WideString; UnusedPosition: TPoint; ShotVisual, Variant: Integer); // @addr 0x69CE9C @ida "TWeaponSE *__userpurge $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, unsigned __int16 *GraphKey@<ecx>, TPoint *UnusedPosition@<^8>, int ShotVisual@<^4>, int Variant@<^0>);" @note "Stores visual/variant and appends them to GraphKey. Position is passed through the base constructor."
+    constructor Create(const GraphKey: WideString; UnusedPosition: TPoint; ShotVisual, Variant: Integer); // @addr 0x69CE9C @note "Stores visual/variant and appends them to GraphKey. Position is passed through the base constructor."
   end;
 
 // The owner-color helper's original unit ownership is unresolved.
@@ -815,7 +815,7 @@ var
   PaletteBlock, Palettes: TBlockParEC;
 
   // @nested $6A0150 GetWeaponTemplateParam
-  function GetWeaponTemplateParam(Name: WideString): WideString; // @addr $6A0150 @ida "void __usercall $name(unsigned __int16 *Name@<eax>, unsigned __int16 **Result@<edx>, void *ParentFrame@<^0>);" @stackpop 0 @calls "0x6A02A2, 0x6A02BF"
+  function GetWeaponTemplateParam(Name: WideString): WideString; // @addr $6A0150 @calls "0x6A02A2, 0x6A02BF"
   begin
     if (PaletteBlock <> nil) and (PaletteBlock.CountParams(Name) > 0) then
       Result := PaletteBlock.GetParam(Name)

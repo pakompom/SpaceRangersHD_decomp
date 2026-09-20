@@ -18,8 +18,8 @@ type
     TextQueue: TList; // @offset $134  Entries point to WideString cells.
     ImageQueue: TList; // @offset $138  Parallel WideString cells for image paths.
 
-    constructor Create; // @addr $4BA54C @ida "TfPopUpController *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr $4BA5D0 @note "Frees queued cells without finalizing their strings; does not call inherited Destroy." @ida "void __usercall $name(TfPopUpController *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr $4BA54C
+    destructor Destroy; override; // @addr $4BA5D0 @note "Frees queued cells without finalizing their strings; does not call inherited Destroy."
     function CreatePopup(Text, ImagePath: WideString): TObjectGI; // @addr $4BA6B4
     procedure QueueNotification(Text, ImagePath: WideString); // @addr $4BADB0 Enqueues parallel managed-string cells under QueueLock.
     procedure AdvancePopups(Tick: Cardinal); // @addr $4BA8F0 @note "Drains queued notifications, advances their vertical animation, and retires off-screen controls."

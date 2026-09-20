@@ -46,7 +46,7 @@ implementation
 { @routine $1000 Compute }
 function Compute(Value: Integer): Integer;
   // @nested $1010 AddOffset
-  function AddOffset(Number: Integer): Integer; // @addr $1010 @ida "int __usercall $name@<eax>(int Number@<eax>, void *ParentFrame@<^0>);"
+  function AddOffset(Number: Integer): Integer; // @addr $1010
     // @nested $1020 DoubleNumber
     function DoubleNumber: Integer; // @addr $1020 @ida "int __cdecl $name(void *ParentFrame);"
     begin Result := Number * 2; end;
@@ -76,12 +76,23 @@ end.
     let nested = project.routine("$1010")?;
     assert_eq!(nested.name, "Compute_AddOffset");
     assert_eq!(nested.data["local_name"], "AddOffset");
+    assert!(!nested.meta.contains_key("ida"));
+    let nested = nested.clone();
     assert!(
-        nested.meta["ida"]
-            .as_str()
+        project
+            .compiler
+            .prototype(&nested)?
             .unwrap()
             .contains("ParentFrame@<^0>")
     );
+    let manifest = project.compiler.build()?;
+    let function = manifest["functions"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|f| f["addr"] == 0x1010)
+        .unwrap();
+    assert_eq!(function["stackpop"], 0);
     assert_eq!(
         project.routine("$1020")?.name,
         "Compute_AddOffset_DoubleNumber"

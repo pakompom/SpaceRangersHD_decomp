@@ -94,9 +94,9 @@ Interface references occupy four bytes. Dispatch slots follow inherited methods;
 `IInterface` supplies the three COM base slots and is the default ancestor.
 Interface methods have no native implementation address.
 
-Interface results require `@ida` for the hidden result pointer, including results
-using aliases. The compiler emits reference counting for defined interfaces and
-RTL bindings. Matching checks all 16 GUID bytes and the interface RTTI flags,
+Register-convention interface results have an inferred hidden result pointer,
+including results using aliases. The compiler emits reference counting for defined
+interfaces and RTL bindings. Matching checks all 16 GUID bytes and the interface RTTI flags,
 method counts and relocated parent chain. Extended method RTTI is unresolved.
 
 ### Arrays, enums and sets
@@ -133,7 +133,8 @@ Use explicit string types in native declarations; plain `String` is ambiguous.
 
 A named dynamic-array parameter is one pointer. An inline `array of T` parameter
 is an open array with a separate high index; `array of const` uses `TVarRec`
-elements. Dynamic-array results require `@ida` for the hidden result pointer.
+elements. Register-convention string and dynamic-array results have an inferred
+hidden result pointer, appended after the explicit parameters.
 
 ### Procedural and class references
 
@@ -146,8 +147,9 @@ offset zero and `Data` at offset four. The signature receives its context in EAX
 Value and const parameters use eight inline stack bytes without consuming an
 argument register; var/out parameters pass a pointer. Register callbacks pass
 value records larger than four bytes by reference while retaining the Pascal
-value declaration. Non-register method pointers, complex callback results and
-variant-record layouts need further native layout support.
+value declaration. Callbacks share the routine ABI rules, including hidden
+results. Non-register method pointers and variant-record layouts need further
+native layout support.
 
 Class references such as `TItemClass = class of TItem;` require a declared class,
 which may be opaque. They use the four-byte pointer ABI and appear as `void *`
@@ -165,19 +167,31 @@ then four-byte stack slots pushed left to right and removed by the callee. See t
 `var`/`out` parameters add indirection; untyped `var Buffer` and `const Buffer`
 parameters carry an address.
 
-`Single` and `Double` results return in x87 `ST(0)`. `Extended` occupies ten bytes
-and requires `@ida`: use `_TBYTE` in twelve-byte slots for stack-passed values,
-and `double` for values passed or returned in `ST(0)`. Hex-Rays models x87 registers
-as eight bytes, so this representation loses precision that the Pascal declaration
+`Single`, `Double` and `Extended` value/const parameters occupy stack slots rounded
+to four bytes without consuming argument registers. Their results return in x87
+`ST(0)`. The generator represents ten-byte `Extended` parameters as `_TBYTE` in
+twelve-byte slots and their results as `double`. Hex-Rays models x87 registers as
+eight bytes, so this representation loses precision that the Pascal declaration
 retains. IDA's `long double` is not equivalent under the database compiler settings.
 
-By-value `Int64`/`UInt64` parameters occupy eight-byte stack slots; later eligible
+Value/const `Int64`/`UInt64` parameters occupy eight-byte stack slots; later eligible
 arguments can still use available registers. Results use EDX:EAX. Aliases follow
-the same rules. Real and structured value parameters and `const` wide-integer
-parameters require explicit `@ida` locations.
+the same rules.
+
+Under `register`, value records larger than four bytes are passed by address.
+Records of one, two or four bytes use the corresponding scalar registers; other
+small value records occupy a rounded stack slot. Record results of one, two or
+four bytes return in AL, AX or EAX; other sizes use a hidden result pointer after
+the explicit parameters. These rules need a complete record size.
+
+Nested register routines add a parent-frame pointer above their other stack
+arguments. Their generated cleanup count excludes that pointer, which the caller
+removes. This follows the lexical Pascal declaration and requires no `@ida` or
+`@stackpop` annotation. Explicit `@ida` overrides retain their supplied ABI and
+need `@stackpop` when their call-site cleanup differs from the signature's default.
 
 Scalar/pointer `cdecl` and `stdcall` are supported, including stack-passed
-floating-point and 64-bit values. Complex returns, hidden parameters, unsupported
+floating-point and 64-bit values. Non-register hidden results, unsupported
 parameter types and other ABIs require `@ida` with `$name` as the generated name:
 
 ```pascal
@@ -221,7 +235,7 @@ Known slots produce a reserved `Class_VMT` structure and type the instance's `Vm
 pointer. Descendants inherit slots, with overrides replacing native signatures.
 An explicit override offset must agree with the inherited slot. Unknown gaps
 remain padding, and the table ends after the last known slot. Slot methods need
-a usable prototype, including `@ida` for hidden parameters; `@nameonly` is insufficient.
+a usable inferred or explicit prototype; `@nameonly` is insufficient.
 
 Abstract slots use `virtual; abstract;` or `override; abstract;`, with `@slot` and
 no `@addr`. They contribute an inherited VMT signature without annotating the
@@ -230,7 +244,7 @@ as additional annotations. Recover the ABI from concrete implementations and
 call sites:
 
 ```pascal
-function GetName: WideString; virtual; abstract; // @slot 0x24 @ida "void __usercall $name(TShip *Self@<eax>, unsigned __int16 **Result@<edx>);"
+function GetName: WideString; virtual; abstract; // @slot 0x24
 ```
 
 Non-register method ABIs require `@ida` for the complete signature, including
@@ -242,12 +256,13 @@ IDA symbols use `Class_Method` for methods and declared names for top-level
 routines and globals. Names must be unique across headers; units and filenames
 are not added as prefixes. Source paths appear in managed comments.
 
-Constructors and parameterless destructors require an explicit `@ida` signature,
-or `@nameonly` when unresolved. Include allocation/destruction flags and returns:
+Register constructors infer `SelfOrClass` in EAX, the allocation flag in DL and
+the returned instance in EAX. Destructors infer `Self` in EAX and signed destruction
+flags in DL. Explicit parameters follow these hidden arguments:
 
 ```pascal
-constructor Create; // @addr 0x400300 @ida "TFoo *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-destructor Destroy; override; // @addr 0x400400 @ida "void __usercall $name(TFoo *Self@<eax>, __int8 DestroyFlags@<dl>);"
+constructor Create; // @addr 0x400300
+destructor Destroy; override; // @addr 0x400400
 ```
 
 ## Call-site ABI overrides
@@ -259,11 +274,11 @@ stack cleanup. The importer applies the signature to the call operand and sets
 the stack delta to zero for caller cleanup or the stack argument area for callee
 cleanup. Manual edits follow the [sync conflict rules](#synchronizing-with-ida).
 
-For split cleanup, add `@stackpop 0x4` alongside `@ida` and `@calls`. It overrides
+For exceptional split cleanup, add `@stackpop 0x4` alongside `@calls`. It overrides
 the callee's cleanup count at those calls while keeping every argument in the
-prototype. For example, a nested function may use `RET 4` for its result pointer
-while leaving its parent-frame pointer for the caller to pop. The count must be
-four-byte aligned, fit the declared stack argument area, and agree with the native
+prototype. Ordinary nested register routines infer this count automatically.
+The explicit count must be four-byte aligned, fit the declared stack argument
+area, and agree with the native
 return and caller cleanup. It cannot accompany `@countedstack`.
 
 For a helper with a register count and that many trailing four-byte stack

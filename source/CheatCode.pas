@@ -17,7 +17,7 @@ type
   end;
   TCheatList = class(TList) // @size $10
   public
-    destructor Destroy; override; // @addr $506908 @ida "void __usercall $name(TCheatList *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    destructor Destroy; override; // @addr $506908
     function AddEntry(Entry: PCheatEntry): Integer; // @addr $5068E4
     function AddCheat(Text: WideString; Callback: TCheatCallback): Integer; // @addr $506994
     function GetEntry(Index: Integer): PCheatEntry; // @addr $506970
@@ -1328,7 +1328,7 @@ var
   Block: TBlockParEC;
   Event: TGalaxyEvent;
   // @nested $50ABE4 CheatHoleAddName
-  procedure CheatHoleAddName(Text: WideString); // @addr $50ABE4 @ida "void __usercall $name(unsigned __int16 *Text@<eax>, void *ParentFrame@<^0>);" @stackpop 0 @calls "0x50AD41 0x50AD4F" @note "Nested in CheatHole; appends an owned PWideString to the list at ParentFrame-4. Caller removes the static link."
+  procedure CheatHoleAddName(Text: WideString); // @addr $50ABE4 @calls "0x50AD41 0x50AD4F" @note "Nested in CheatHole; appends an owned PWideString to the list at ParentFrame-4. Caller removes the static link."
   var Cell: PWideString;
   begin
     New(Cell);
@@ -1559,7 +1559,7 @@ end;
 procedure HandleDebugKey(Key: Word);
 
   // @nested $50B884 SumCheatPrefix
-  function SumCheatPrefix(Index, Count: Integer): Integer; // @addr $50B884 @ida "int __usercall $name@<eax>(int Index@<eax>, int Count@<edx>, void *ParentFrame@<^0>);" @stackpop 0 @calls "0x50B99D"
+  function SumCheatPrefix(Index, Count: Integer): Integer; // @addr $50B884 @calls "0x50B99D"
   var Position: Integer;
   begin
     Result := 0;

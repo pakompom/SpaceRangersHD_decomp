@@ -14,23 +14,23 @@ type
     Alpha: Byte; // @offset 0x126
     HardwareMirrorHorizontal: Boolean; // @offset $127  Passed to the hardware texture draw only.
 
-    constructor Create(Owner: TObjectGI); // @addr 0x47B5F0 @ida "TgiGI *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, TObjectGI *Owner@<ecx>);"
-    destructor Destroy; override; // @addr 0x47B680 @ida "void __usercall $name(TgiGI *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create(Owner: TObjectGI); // @addr 0x47B5F0
+    destructor Destroy; override; // @addr 0x47B680
     procedure Clear; override; // @addr 0x47B6CC @note "Preserves alpha and the cache key."
     procedure SetImagePath(const ImagePath: WideString); // @addr 0x47B6F4
-    function GetImagePath: WideString; // @addr 0x47B738 @ida "void __usercall $name(TgiGI *Self@<eax>, unsigned __int16 **Result@<edx>);"
-    function GetContentSize: TPoint; // @addr 0x47B75C @ida "void __usercall $name(TgiGI *Self@<eax>, TPoint *Result@<edx>);"
-    function GetContentOrigin: TPoint; // @addr 0x47B7BC @ida "void __usercall $name(TgiGI *Self@<eax>, TPoint *Result@<edx>);"
+    function GetImagePath: WideString; // @addr 0x47B738
+    function GetContentSize: TPoint; // @addr 0x47B75C
+    function GetContentOrigin: TPoint; // @addr 0x47B7BC
     procedure SetImageKindX(Value: TImageKindXGI); // @addr 0x47B82C
     procedure SetImageKindY(Value: TImageKindYGI); // @addr 0x47B864
     procedure SetHardwareMirrorHorizontal(Value: Boolean); // @addr $47C1A4
     procedure SetAlpha(Value: Byte); // @addr 0x47B89C
-    function HitTestPixel(Point: TPoint): Boolean; // @addr 0x47B8D4 @ida "bool __usercall $name@<al>(TgiGI *Self@<eax>, TPoint *Point@<edx>);" @note "Black pixels do not count as hits."
-    function GetVisualCenter: TPoint; // @addr 0x47BBF4 @ida "void __usercall $name(TgiGI *Self@<eax>, TPoint *Result@<edx>);" @note "Returns the mean coordinates of nonzero rendered pixels, or (0,0) when none exist."
+    function HitTestPixel(Point: TPoint): Boolean; // @addr 0x47B8D4 @note "Black pixels do not count as hits."
+    function GetVisualCenter: TPoint; // @addr 0x47BBF4 @note "Returns the mean coordinates of nonzero rendered pixels, or (0,0) when none exist."
     procedure LoadFromConfigPath(const Path: WideString); override; // @addr 0x47BFBC
     procedure LoadFromBlock(Block: TBlockParEC); override; // @addr 0x47BFF0
     procedure LoadImageProperties(Block: TBlockParEC); // @addr 0x47C018
-    procedure Draw(ClipRect: TRect); override; // @addr 0x47C1C0 @ida "void __usercall $name(TgiGI *Self@<eax>, TRect *ClipRect@<edx>);"
+    procedure Draw(ClipRect: TRect); override; // @addr 0x47C1C0
     procedure QueueImageLoad(PendingLoads: TList); override; // @addr 0x47C5D4
   end;
 

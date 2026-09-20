@@ -16,7 +16,7 @@ type
     procedure OnOpen; override; // @addr $52278C
     procedure ProcessCallbackTimers; override; // @addr $523B80
     procedure AddChoice(Index, X: Integer; Y: Integer; Text: WideString; Selected, Disabled: Boolean); // @addr $5231B0
-    procedure ChoiceMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $523544 @ida "void __userpurge $name(TfChameleon *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0.4>);"
+    procedure ChoiceMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $523544
     procedure ChoiceMouseEnter(Sender: TObjectGI); // @addr $52376C
     procedure ChoiceMouseLeave(Sender: TObjectGI); // @addr $5238A8
     procedure MoveChoice(Delta: Integer); // @addr $523A20
@@ -45,19 +45,19 @@ var
   WorkRect: TRect;
 
   // @nested $522588 ChameleonChargeUnavailable
-  function ChameleonChargeUnavailable(Count: Integer): Boolean; // @addr $522588 @ida "bool __usercall $name@<al>(int Count@<eax>, void *ParentFrame@<^0>);" @stackpop 0 @calls "0x522D48" Nested OnOpen helper; does not access its parent frame.
+  function ChameleonChargeUnavailable(Count: Integer): Boolean; // @addr $522588 @calls "0x522D48" Nested OnOpen helper; does not access its parent frame.
   begin
     if Count > 0 then Result := False else Result := True;
   end;
 
   // @nested $5225A8 FormatChameleonChargeCount
-  function FormatChameleonChargeCount(Count: Integer): WideString; // @addr $5225A8 @ida "void __usercall $name(int Count@<eax>, unsigned __int16 **Result@<edx>, void *ParentFrame@<^0>);" @stackpop 0 @calls "0x522D9D"
+  function FormatChameleonChargeCount(Count: Integer): WideString; // @addr $5225A8 @calls "0x522D9D"
   begin
     Result := ' (' + FormatText1(LocalizedText('ShipInfo.AddInfo.Chameleon.Count'),'','<Count>',IntToStr(Count)) + ')';
   end;
 
   // @nested $5226C4 ChameleonSeriesColor
-  function ChameleonSeriesColor(Series: Byte): WideString; // @addr $5226C4 @ida "void __usercall $name(unsigned __int8 Series@<al>, unsigned __int16 **Result@<edx>, void *ParentFrame@<^0>);" @stackpop 0 @calls "0x522D67"
+  function ChameleonSeriesColor(Series: Byte): WideString; // @addr $5226C4 @calls "0x522D67"
   begin
     Result := '';
     case Series of
@@ -245,7 +245,7 @@ procedure TfChameleon.MoveChoice(Delta: Integer);
 var
   Index: Integer;
   // @nested $5239E4 Advance
-  procedure Advance; // @addr $5239E4 @ida "void __usercall $name(void *ParentFrame@<^0>);" @stackpop 0 @calls "0x523A39,0x523A42"
+  procedure Advance; // @addr $5239E4 @calls "0x523A39,0x523A42"
   begin
     Index := Index + Delta;
     if Index < 1 then Index := 4

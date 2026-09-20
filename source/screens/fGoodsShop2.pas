@@ -35,9 +35,9 @@ type
     CargoWarningTimer: PCallbackTimerGI; // @offset $18C
     AmbientSound: TSoundBufferControl; // @offset $190
 
-    procedure GoodsMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $7D8840 @ida "void __userpurge $name(TfGoodsShop2 *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
-    procedure GoodsRightMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $7D965C @ida "void __userpurge $name(TfGoodsShop2 *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
-    procedure GoodsMouseMove(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $7D96A8 @ida "void __userpurge $name(TfGoodsShop2 *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
+    procedure GoodsMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $7D8840
+    procedure GoodsRightMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $7D965C
+    procedure GoodsMouseMove(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $7D96A8
     procedure GoodsMouseEnter(Sender: TObjectGI); // @addr $7DA088
     procedure GoodsMouseLeave(Sender: TObjectGI); // @addr $7DA0A4
     function GetMaximumTradeCount(Index: Integer; IgnoreCargoSpace: Boolean): Integer; // @addr $7DA0C0
@@ -62,8 +62,8 @@ type
     procedure ShowControlHelp(Sender: TObjectGI; Visible: Boolean); // @addr $7DC358
     procedure ShowHelpText(Value: WideString; Visible: Boolean); // @addr $7DC400
 
-    constructor Create; // @addr 0x7D4B44 @ida "TfGoodsShop2 *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x7D4C14 @ida "void __usercall $name(TfGoodsShop2 *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x7D4B44
+    destructor Destroy; override; // @addr 0x7D4C14
     procedure OnOpen; override; // @addr 0x7D5474
     procedure RefreshGoodsDisplay; // @addr $7D725C Rebuilds cargo/market controls and prices for the current trading context.
     procedure OnClose; override; // @addr 0x7D70D0
@@ -72,7 +72,7 @@ type
     procedure InitializeLayout; override; // @addr 0x7D4CC4
     procedure UpdateActionCursor(CanTake: Boolean); override; // @addr 0x7D9E14
     procedure ExecuteUiCode(Block: TBlockParEC; Key: Cardinal); override; // @addr 0x7DC500
-    function BuildPriceText(Location: TObject): WideString; // @addr $7DA2A0 @ida "void __usercall $name(TfGoodsShop2 *Self@<eax>, TObject *Location@<edx>, unsigned __int16 **Result@<ecx>);"
+    function BuildPriceText(Location: TObject): WideString; // @addr $7DA2A0
   end;
 
 function RunGoodsShop(ParentLoop: TMessageLoopGI): Boolean; // @addr $7DC7DC Native modal wrapper used while talking to another ship.

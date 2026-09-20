@@ -27,14 +27,14 @@ type
     BytesPerPixel: Integer; // @offset 0x44
     TotalChannelBits: Cardinal; // @offset 0x48
 
-    function InterpolateRgb(First, Second: Cardinal; Amount: Single): Cardinal; // @addr $86548C @ida "unsigned int __userpurge $name@<eax>(TPixelFormatGR *Self@<eax>, unsigned int First@<edx>, unsigned int Second@<ecx>, float Amount@<^0>);"
+    function InterpolateRgb(First, Second: Cardinal; Amount: Single): Cardinal; // @addr $86548C
     function UnpackRed(Color: Cardinal): Byte; // @addr $8655A4
     function UnpackGreen(Color: Cardinal): Byte; // @addr $8655D4
     function UnpackBlue(Color: Cardinal): Byte; // @addr $865604
     procedure RebuildChannelMetrics; // @addr 0x865198 @note "Ignores disjoint bits after each mask's first contiguous run; BytesPerPixel is unchanged."
     function PackRgbBytes(Red, Green, Blue: Byte): Cardinal; // @addr 0x865340
     function PackRgb(Red, Green, Blue: Integer): Cardinal; // @addr 0x8653B0
-    function PackNormalizedRgb(Red, Green, Blue: Double): Cardinal; // @addr 0x865408 @ida "unsigned int __userpurge $name@<eax>(TPixelFormatGR *Self@<eax>, double Red@<^16>, double Green@<^8>, double Blue@<^0>);" @note "Does not clamp inputs or include alpha."
+    function PackNormalizedRgb(Red, Green, Blue: Double): Cardinal; // @addr 0x865408 @note "Does not clamp inputs or include alpha."
   end;
 
   TColorRGBA = packed record // @size 0x04
@@ -64,18 +64,18 @@ type
     function GetPixel32(X, Y: Integer): Cardinal; // @addr $86658C
     procedure DrawHorizontalLine16(X, Y, Count: Integer; Color: Cardinal); // @addr $8665D8
     procedure DrawVerticalLine16(X, Y, Count: Integer; Color: Cardinal); // @addr $86663C
-    procedure DrawHorizontalLine16Clipped(X, Y, Count: Integer; Color: Cardinal; Clip: TRect); // @addr $8666B0 @ida "void __userpurge $name(TGraphBufGR *Self@<eax>, int X@<edx>, int Y@<ecx>, int Count@<^8>, unsigned int Color@<^4>, TRect *Clip@<^0>);"
-    procedure DrawVerticalLine16Clipped(X, Y, Count: Integer; Color: Cardinal; Clip: TRect); // @addr $866754 @ida "void __userpurge $name(TGraphBufGR *Self@<eax>, int X@<edx>, int Y@<ecx>, int Count@<^8>, unsigned int Color@<^4>, TRect *Clip@<^0>);"
+    procedure DrawHorizontalLine16Clipped(X, Y, Count: Integer; Color: Cardinal; Clip: TRect); // @addr $8666B0
+    procedure DrawVerticalLine16Clipped(X, Y, Count: Integer; Color: Cardinal; Clip: TRect); // @addr $866754
     procedure ClearPixels; // @addr $8673C4
     procedure FillPixels(Value: Byte); // @addr $8673F4
-    procedure FillRect32(Rect: TRect; Color: Cardinal); // @addr $86746C @ida "void __usercall $name(TGraphBufGR *Self@<eax>, TRect *Rect@<edx>, unsigned int Color@<ecx>);"
+    procedure FillRect32(Rect: TRect; Color: Cardinal); // @addr $86746C
     procedure BlendPixel16(X, Y: Integer; Color: Cardinal; Alpha: Byte); // @addr $8664D8
-    procedure DrawAlphaLine16(X1, Y1, X2, Y2: Integer; Color: Word; Alpha: Byte; Clip: TRect); // @addr $866530 @ida "void __userpurge $name(TGraphBufGR *Self@<eax>, int X1@<edx>, int Y1@<ecx>, int X2@<^16>, int Y2@<^12>, unsigned __int16 Color@<^8>, unsigned __int8 Alpha@<^4>, TRect *Clip@<^0>);"
-    procedure DrawLine16(First, Last: TPoint; Color: Cardinal); // @addr $8667F8 @ida "void __userpurge $name(TGraphBufGR *Self@<eax>, TPoint *First@<edx>, TPoint *Last@<ecx>, unsigned int Color@<^0>);"
-    procedure DrawAnimatedLine16(First, Last: TPoint; Color: Cardinal; Phase: Integer; Clip: TRect); // @addr $866890 @ida "void __userpurge $name(TGraphBufGR *Self@<eax>, TPoint *First@<edx>, TPoint *Last@<ecx>, unsigned int Color@<^8>, int Phase@<^4>, TRect *Clip@<^0>);"
-    procedure DrawShadowLine16(First, Last: TPoint; Color: Cardinal; Phase: Integer; Clip: TRect; ShadowPixels: Pointer; ShadowPitch: Integer); // @addr $8668F4 @ida "void __userpurge $name(TGraphBufGR *Self@<eax>, TPoint *First@<edx>, TPoint *Last@<ecx>, unsigned int Color@<^16>, int Phase@<^12>, TRect *Clip@<^8>, void *ShadowPixels@<^4>, int ShadowPitch@<^0>);"
-    procedure DrawAlphaTrapezium16(X1, Y1, X2, Y2, X3, X4: Integer; Color: Word; Alpha: Byte; Clip: TRect); // @addr $866960 @ida "void __userpurge $name(TGraphBufGR *Self@<eax>, int X1@<edx>, int Y1@<ecx>, int X2@<^24>, int Y2@<^20>, int X3@<^16>, int X4@<^12>, unsigned __int16 Color@<^8>, unsigned __int8 Alpha@<^4>, TRect *Clip@<^0>);"
-    procedure DrawLine16Clipped(First, Last: TPoint; Color: Cardinal; Clip: TRect); // @addr $866A00 @ida "void __userpurge $name(TGraphBufGR *Self@<eax>, TPoint *First@<edx>, TPoint *Last@<ecx>, unsigned int Color@<^4>, TRect *Clip@<^0>);"
+    procedure DrawAlphaLine16(X1, Y1, X2, Y2: Integer; Color: Word; Alpha: Byte; Clip: TRect); // @addr $866530
+    procedure DrawLine16(First, Last: TPoint; Color: Cardinal); // @addr $8667F8
+    procedure DrawAnimatedLine16(First, Last: TPoint; Color: Cardinal; Phase: Integer; Clip: TRect); // @addr $866890
+    procedure DrawShadowLine16(First, Last: TPoint; Color: Cardinal; Phase: Integer; Clip: TRect; ShadowPixels: Pointer; ShadowPitch: Integer); // @addr $8668F4
+    procedure DrawAlphaTrapezium16(X1, Y1, X2, Y2, X3, X4: Integer; Color: Word; Alpha: Byte; Clip: TRect); // @addr $866960
+    procedure DrawLine16Clipped(First, Last: TPoint; Color: Cardinal; Clip: TRect); // @addr $866A00
     procedure FillPixels16(Color: Word); // @addr $86742C
     procedure ScaleAlpha(Rect: TRect; Alpha: Byte); // @addr $8674FC @ida "void __userpurge $name(TGraphBufGR *Self@<eax>, TRect *Rect@<edx>, unsigned __int8 Alpha@<cl>);"
     procedure FlipHorizontal16; // @addr $8675A8
@@ -84,28 +84,28 @@ type
     procedure ConvertRgbTo565; // @addr $867880
     procedure Convert565ToRgb; // @addr $8679C0
     procedure ShiftLight16(Shift: Integer; Rect: TRect); // @addr $867A9C @ida "void __userpurge $name(TGraphBufGR *Self@<eax>, int Shift@<edx>, TRect *Rect@<ecx>);"
-    procedure DrawCircle16(Center: TPoint; Radius: Integer; OutlineColor, FillColor: Cardinal; Clip: TRect); // @addr $867B0C @ida "void __userpurge $name(TGraphBufGR *Self@<eax>, TPoint *Center@<edx>, int Radius@<ecx>, unsigned int OutlineColor@<^8>, unsigned int FillColor@<^4>, TRect *Clip@<^0>);"
-    procedure DrawCircle8(Center: TPoint; Radius: Integer; OutlineColor, FillColor: Cardinal; Clip: TRect); // @addr $867BAC @ida "void __userpurge $name(TGraphBufGR *Self@<eax>, TPoint *Center@<edx>, int Radius@<ecx>, unsigned int OutlineColor@<^8>, unsigned int FillColor@<^4>, TRect *Clip@<^0>);"
+    procedure DrawCircle16(Center: TPoint; Radius: Integer; OutlineColor, FillColor: Cardinal; Clip: TRect); // @addr $867B0C
+    procedure DrawCircle8(Center: TPoint; Radius: Integer; OutlineColor, FillColor: Cardinal; Clip: TRect); // @addr $867BAC
     procedure ApplyOperations(const Operations: WideString); // @addr $867C48
     procedure RescaleRgb(Width, Height: Integer); // @addr $867E08
     procedure RescaleRgba(Width, Height, Filter: Integer); // @addr $867EEC
     procedure RescaleBilinearRgba(Width, Height: Integer); // @addr $867FD4
     procedure FillPolygon32(Points: array of TPoint; Color: Cardinal); // @addr $8682D8
-    function GetPixelCentroid: TPoint; // @addr $868600 @ida "void __usercall $name(TGraphBufGR *Self@<eax>, TPoint *Result@<edx>);"
-    procedure CopyRect32(Dest: TPoint; Source: TGraphBufGR; Rect: TRect); // @addr $8686C8 @ida "void __userpurge $name(TGraphBufGR *Self@<eax>, TPoint *Dest@<edx>, TGraphBufGR *Source@<ecx>, TRect *Rect@<^0>);"
-    procedure BlendRect32(Dest: TPoint; Source: TGraphBufGR; Rect: TRect); // @addr $8687A0 @ida "void __userpurge $name(TGraphBufGR *Self@<eax>, TPoint *Dest@<edx>, TGraphBufGR *Source@<ecx>, TRect *Rect@<^0>);"
+    function GetPixelCentroid: TPoint; // @addr $868600
+    procedure CopyRect32(Dest: TPoint; Source: TGraphBufGR; Rect: TRect); // @addr $8686C8
+    procedure BlendRect32(Dest: TPoint; Source: TGraphBufGR; Rect: TRect); // @addr $8687A0
     procedure MakeShadow; // @addr $868928
     procedure AdjustBrightness(Percent: Integer); // @addr $869CF0
     procedure ConvertToGrayscale; // @addr $869F20
-    function GetTexture: IDirect3DTexture9; // @addr $86A214 @ida "void __usercall $name(TGraphBufGR *Self@<eax>, IDirect3DTexture9 **Result@<edx>);"
-    procedure Crop(Rect: TRect); // @addr $869AA8 @ida "void __usercall $name(TGraphBufGR *Self@<eax>, TRect *Rect@<edx>);"
-    procedure DrawNinePatch(X, Y, Width, Height: Integer; Source: TGraphBufGR; SourceRect, Borders: TRect); // @addr $868EB8 @ida "void __userpurge $name(TGraphBufGR *Self@<eax>, int X@<edx>, int Y@<ecx>, int Width@<^16>, int Height@<^12>, TGraphBufGR *Source@<^8>, TRect *SourceRect@<^4>, TRect *Borders@<^0>);"
+    function GetTexture: IDirect3DTexture9; // @addr $86A214
+    procedure Crop(Rect: TRect); // @addr $869AA8
+    procedure DrawNinePatch(X, Y, Width, Height: Integer; Source: TGraphBufGR; SourceRect, Borders: TRect); // @addr $868EB8
     procedure RescaleWithAspect(Width, Height: Cardinal; CropToAspect: Boolean; HorizontalAlign, VerticalAlign, Filter: Integer); // @addr $86918C
     procedure RescaleRGBA_HW(Width, Height: Cardinal; CropToAspect: Boolean; HorizontalAlign, VerticalAlign: Integer); // @addr 0x8694F0 @note "Alignment values: 0=start, 1=center, 2=end."
     procedure LoadFromScreen(UnusedOption: Byte); // @addr $86A450 @note "The byte-sized option is ignored in this build."
     procedure ConvertBgraToRgb24; // @addr $86AAD8
-    procedure DrawAntialiasedCircle16(Center: TPoint; Radius: Integer; Color: Cardinal; Clip: TRect); // @addr $86ACE4 @ida "void __userpurge $name(TGraphBufGR *Self@<eax>, TPoint *Center@<edx>, int Radius@<ecx>, unsigned int Color@<^4>, TRect *Clip@<^0>);"
-    procedure DrawAntialiasedLine16(X1, Y1, X2, Y2: Integer; Color: Cardinal; Alpha: Integer; Clip: TRect); // @addr $86AFE4 @ida "void __userpurge $name(TGraphBufGR *Self@<eax>, int X1@<edx>, int Y1@<ecx>, int X2@<^16>, int Y2@<^12>, unsigned int Color@<^8>, int Alpha@<^4>, TRect *Clip@<^0>);"
+    procedure DrawAntialiasedCircle16(Center: TPoint; Radius: Integer; Color: Cardinal; Clip: TRect); // @addr $86ACE4
+    procedure DrawAntialiasedLine16(X1, Y1, X2, Y2: Integer; Color: Cardinal; Alpha: Integer; Clip: TRect); // @addr $86AFE4
     Width: Integer; // @offset 0x04
     Height: Integer; // @offset 0x08
     PitchBytes: Integer; // @offset 0x0C
@@ -122,8 +122,8 @@ type
     TextureLocked: Boolean; // @offset 0x28
     TextureLockedReadOnly: Boolean; // @offset 0x29
 
-    constructor Create(AUseTexture: Boolean); // @addr 0x865620 @ida "TGraphBufGR *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, bool AUseTexture@<cl>);"
-    destructor Destroy; override; // @addr 0x8656C4 @ida "void __usercall $name(TGraphBufGR *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create(AUseTexture: Boolean); // @addr 0x865620
+    destructor Destroy; override; // @addr 0x8656C4
     procedure Clear; // @addr 0x865700
     function GetPixels: Pointer; // @addr 0x86578C @note "Locks texture storage for writing if necessary."
     procedure AllocateNativePitch(Width, Height, PitchBytes: Integer); // @addr $865924
@@ -144,7 +144,7 @@ type
     procedure SavePng(FileName: WideString); // @addr 0x868B0C @note "Assumes four-byte BGRA pixels. Converts FileName to ANSI and ignores the writer's status."
     procedure SaveBmp(FileName: WideString); // @addr 0x868BA0 @note "Assumes 32-bit BGRA pixels; alpha is excluded. Converts FileName to ANSI and ignores the writer's status."
     procedure SaveJpeg(FileName: WideString; Quality: Integer); // @addr 0x868C44 @note "Writes an intermediate BMP to FileName, then replaces it with JPEG. Quality is truncated to one byte; exceptions after the BMP write are swallowed."
-    procedure DrawAntialiasedLine(FirstPoint, SecondPoint: TPoint; Color: Cardinal); // @addr 0x866DB0 @ida "void __userpurge $name(TGraphBufGR *Self@<eax>, TPoint *FirstPoint@<edx>, TPoint *SecondPoint@<ecx>, unsigned int Color@<^0>);" @note "RGBA pixels; coverage replaces the color alpha. Blending preserves an existing pixel's alpha unless coverage is fully opaque."
+    procedure DrawAntialiasedLine(FirstPoint, SecondPoint: TPoint; Color: Cardinal); // @addr 0x866DB0 @note "RGBA pixels; coverage replaces the color alpha. Blending preserves an existing pixel's alpha unless coverage is fully opaque."
     procedure LockTexture(ReadOnly: Boolean); // @addr 0x86A9E8
     procedure UnlockTexture; // @addr 0x86AA8C
   end;
@@ -720,17 +720,17 @@ var
   Temp, X1, Y1, X2, Y2: Double;
 
   // @nested $866B20 LineFraction
-  function LineFraction(Value: Double): Double; // @addr $866B20 @ida "double __userpurge $name@<st0>(double Value@<^0>, void *ParentFrame@<^8>);" @stackpop 8 @calls "0x00867012 0x00867056 0x00867070 0x00867182 0x008671CB 0x008671E2 0x008672E3 0x008672FD"
+  function LineFraction(Value: Double): Double; // @addr $866B20 @calls "0x00867012 0x00867056 0x00867070 0x00867182 0x008671CB 0x008671E2 0x008672E3 0x008672FD"
   begin
     Result := Value - Floor(Value);
   end;
 
   // @nested $866B8C PlotLinePixel
-  procedure PlotLinePixel(X, Y: Integer; Color: Cardinal; Alpha: Integer); // @addr $866B8C @ida "void __userpurge $name(int X@<eax>, int Y@<edx>, unsigned int Color@<ecx>, int Alpha@<^0>, void *ParentFrame@<^4>);" @stackpop 4 @calls "0x008670A3 0x008670CA 0x008670F2 0x00867119 0x0086721E 0x00867251 0x00867287 0x008672BC 0x00867330 0x00867357 0x0086737F 0x008673A6"
+  procedure PlotLinePixel(X, Y: Integer; Color: Cardinal; Alpha: Integer); // @addr $866B8C @calls "0x008670A3 0x008670CA 0x008670F2 0x00867119 0x0086721E 0x00867251 0x00867287 0x008672BC 0x00867330 0x00867357 0x0086737F 0x008673A6"
   var Source, Dest: PColorRGBA; Denominator: Cardinal;
 
     // @nested $866B4C BlendLineChannel
-    function BlendLineChannel(DestColor, DestAlpha, SourceColor, SourceAlpha, Denominator: Cardinal): Cardinal; // @addr $866B4C @ida "unsigned int __userpurge $name@<eax>(unsigned int DestColor@<eax>, unsigned int DestAlpha@<edx>, unsigned int SourceColor@<ecx>, unsigned int SourceAlpha@<^4>, unsigned int Denominator@<^0>, void *ParentFrame@<^8>);" @stackpop 8 @calls "0x00866D3F 0x00866D6E 0x00866D9E"
+    function BlendLineChannel(DestColor, DestAlpha, SourceColor, SourceAlpha, Denominator: Cardinal): Cardinal; // @addr $866B4C @calls "0x00866D3F 0x00866D6E 0x00866D9E"
     begin
       Result := ((255 - SourceAlpha) * DestColor * DestAlpha + SourceAlpha * SourceColor * 255) div Denominator;
     end;
@@ -1533,7 +1533,7 @@ procedure TGraphBufGR.DrawNinePatch(X, Y, Width, Height: Integer; Source: TGraph
 var TileRect: TRect;
 
   // @nested $868D90 TilePatch
-  procedure TilePatch(X, Y, Width, Height: Integer; Rect: TRect); // @addr $868D90 @ida "void __userpurge $name(int X@<eax>, int Y@<edx>, int Width@<ecx>, int Height@<^4>, TRect *Rect@<^0>, void *ParentFrame@<^8>);" @stackpop 8 @calls "0x869065 0x8690AB 0x8690EB 0x869131 0x86917D"
+  procedure TilePatch(X, Y, Width, Height: Integer; Rect: TRect); // @addr $868D90 @calls "0x869065 0x8690AB 0x8690EB 0x869131 0x86917D"
   var TileX, TileY, TileWidth, TileHeight: Integer;
   begin
     TileWidth := Rect.Right - Rect.Left;
@@ -1872,7 +1872,7 @@ function TGraphBufGR.GetTexture: IDirect3DTexture9;
 var Locked: TD3DLockedRect; Y: Cardinal; RowBytes: Integer;
 
   // @nested $86A154 CopyRgbToOpaqueRgba
-  procedure CopyRgbToOpaqueRgba(Dest: Pointer; DestPitch: Integer; Source: Pointer; SourcePitch, Width, Height: Integer); // @addr $86A154 @ida "void __userpurge $name(void *Dest@<eax>, int DestPitch@<edx>, void *Source@<ecx>, int SourcePitch@<^8>, int Width@<^4>, int Height@<^0>, void *ParentFrame@<^12>);" @stackpop 12 @calls "0x86A2BE"
+  procedure CopyRgbToOpaqueRgba(Dest: Pointer; DestPitch: Integer; Source: Pointer; SourcePitch, Width, Height: Integer); // @addr $86A154 @calls "0x86A2BE"
   var X, Y: Integer;
   begin
     Y := 0;
@@ -1931,7 +1931,7 @@ var
   Desc: TD3DSurfaceDesc;
 
   // @nested $86A400 SetRowAlpha
-  procedure SetRowAlpha(Pixels: Pointer; Count, Alpha: Integer); // @addr $86A400 @ida "void __usercall $name(void *Pixels@<eax>, int Count@<edx>, int Alpha@<ecx>, void *ParentFrame@<^0>);"
+  procedure SetRowAlpha(Pixels: Pointer; Count, Alpha: Integer); // @addr $86A400
   var X: Integer;
   begin
     Alpha := Alpha and $FF;
@@ -2089,7 +2089,7 @@ procedure TGraphBufGR.DrawAntialiasedCircle16(Center: TPoint; Radius: Integer; C
 var X, Y, SignX, SignY, Quadrant: Integer; PreviousCoverage, Coverage: Single; PreviousX: Integer;
 
   // @nested $86AC88 PlotCirclePixel16
-  procedure PlotCirclePixel16(X, Y, Alpha: Integer); // @addr $86AC88 @ida "void __usercall $name(int X@<eax>, int Y@<edx>, int Alpha@<ecx>, void *ParentFrame@<^0>);" @calls "0x86ad6f 0x86ad8f 0x86ae87 0x86aeb8 0x86AEED 0x86AF19"
+  procedure PlotCirclePixel16(X, Y, Alpha: Integer); // @addr $86AC88 @calls "0x86ad6f 0x86ad8f 0x86ae87 0x86aeb8 0x86AEED 0x86AF19"
   begin
     if (X >= Clip.Left) and (X < Clip.Right) and (Y >= Clip.Top) and (Y < Clip.Bottom) then
       BlendPixel16(X, Y, Color, Alpha);
@@ -2146,13 +2146,13 @@ var
   Temp, StartX, StartY, FinishX, FinishY: Double;
 
   // @nested $86AF54 LineFraction16
-  function LineFraction16(Value: Double): Double; // @addr $86AF54 @ida "double __userpurge $name@<st0>(double Value@<^0>, void *ParentFrame@<^8>);" @stackpop 8 @calls "0x86b27a 0x86b2be 0x86B2D8 0x86B3D6 0x86b41f 0x86B436 0x86b523 0x86B53D"
+  function LineFraction16(Value: Double): Double; // @addr $86AF54 @calls "0x86b27a 0x86b2be 0x86B2D8 0x86B3D6 0x86b41f 0x86B436 0x86b523 0x86B53D"
   begin
     Result := Value - Floor(Value);
   end;
 
   // @nested $86AF80 PlotLinePixel16
-  procedure PlotLinePixel16(X, Y, Alpha: Integer); // @addr $86AF80 @ida "void __usercall $name(int X@<eax>, int Y@<edx>, int Alpha@<ecx>, void *ParentFrame@<^0>);" @calls "0x86B306 0x86B328 0x86B34B 0x86B36D 0x86B46D 0x86b49b 0x86b4cc 0x86B4FC 0x86B56B 0x86b58d 0x86b5b0 0x86b5d2"
+  procedure PlotLinePixel16(X, Y, Alpha: Integer); // @addr $86AF80 @calls "0x86B306 0x86B328 0x86B34B 0x86B36D 0x86B46D 0x86b49b 0x86b4cc 0x86B4FC 0x86B56B 0x86b58d 0x86b5b0 0x86b5d2"
   begin
     if (X >= Clip.Left) and (X < Clip.Right) and (Y >= Clip.Top) and (Y < Clip.Bottom) and (Alpha > 0) then
       BlendPixel16(X, Y, Color, Alpha);

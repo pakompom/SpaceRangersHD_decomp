@@ -43,8 +43,8 @@ type
     AnimationTimer: PCallbackTimerGI; // @offset $170
     ColorTable: PMovingStarColorTable; // @offset $174 Owns sixteen rows of 32 RGB words; initialization currently selects row zero.
 
-    constructor Create(Owner: TObjectGI); // @addr $4B1488 @ida "TStarFieldMGI *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, TObjectGI *Owner@<ecx>);"
-    destructor Destroy; override; // @addr $4B15F4 @ida "void __usercall $name(TStarFieldMGI *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create(Owner: TObjectGI); // @addr $4B1488
+    destructor Destroy; override; // @addr $4B15F4
     procedure OnActivate; override; // @addr $4B1680
     procedure OnDeactivate; override; // @addr $4B16E0
     procedure ClearStars; // @addr $4B1718
@@ -55,12 +55,12 @@ type
     procedure AdvanceStars; // @addr $4B1A60
     procedure RedirectStars; // @addr $4B1BEC
     procedure AnimateStars(Timer: PCallbackTimerGI; UserData: Integer); // @addr $4B1D34
-    procedure SetViewPosition(Position: TPointF); // @addr $4B2008 @ida "void __usercall $name(TStarFieldMGI *Self@<eax>, TPointF *Position@<edx>);"
+    procedure SetViewPosition(Position: TPointF); // @addr $4B2008
     procedure Invalidate; override; // @addr $4B2134
     procedure ErasePreviousFrame; override; // @addr $4B2140
     procedure PrepareFrameDraw; override; // @addr $4B2248
-    procedure DrawUpdateRects(ClipRect: TRect); override; // @addr $4B22F8 @ida "void __usercall $name(TStarFieldMGI *Self@<eax>, TRect *ClipRect@<edx>);"
-    procedure Draw(ClipRect: TRect); override; // @addr $4B2340 @ida "void __usercall $name(TStarFieldMGI *Self@<eax>, TRect *ClipRect@<edx>);"
+    procedure DrawUpdateRects(ClipRect: TRect); override; // @addr $4B22F8
+    procedure Draw(ClipRect: TRect); override; // @addr $4B2340
     procedure CommitFrameDraw; override; // @addr $4B241C
   end;
 

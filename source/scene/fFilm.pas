@@ -43,9 +43,9 @@ type
     procedure InitializeLayout; override; // @addr 0x684528
     procedure OnOpen; override; // @addr 0x684C3C
     procedure OnClose; override; // @addr 0x684FD4
-    function GetViewOffset: TPoint; // @addr 0x685160 @ida "void __usercall $name(TfFilm *Self@<eax>, TPoint *Result@<edx>);"
-    procedure SetViewOffset(Offset: TPoint); // @addr 0x6851CC @ida "void __usercall $name(TfFilm *Self@<eax>, TPoint *Offset@<edx>);" @note "Disables automatic camera following."
-    procedure FollowViewOffset(Offset: TPoint); // @addr 0x685264 @ida "void __usercall $name(TfFilm *Self@<eax>, TPoint *Offset@<edx>);" @note "Ignored while automatic camera following is disabled."
+    function GetViewOffset: TPoint; // @addr 0x685160
+    procedure SetViewOffset(Offset: TPoint); // @addr 0x6851CC @note "Disables automatic camera following."
+    procedure FollowViewOffset(Offset: TPoint); // @addr 0x685264 @note "Ignored while automatic camera following is disabled."
     procedure PanView(Timer: PCallbackTimerGI; UserData: Integer); // @addr 0x685300
     procedure KeyDown(Sender: TObjectGI; Key: Cardinal); // @addr 0x685438
     procedure KeyUp(Sender: TObjectGI; Key: Cardinal); // @addr 0x6854FC

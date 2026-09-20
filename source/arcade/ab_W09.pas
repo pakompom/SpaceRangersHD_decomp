@@ -13,10 +13,10 @@ type
     Image: PabWorldImage; // @offset $B4
     Phase: Integer; // @offset $B8  0 parent, 1 parent explosion, 2 child, 3 child explosion.
     ExpireTick: Integer; // @offset $BC
-    constructor Create; // @addr $4F711C @ida "TabW09 *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr $4F71A0 @ida "void __usercall $name(TabW09 *Self@<eax>, __int8 DestroyFlags@<dl>);"
-    procedure Launch(Owner: TabObject; Amount: Integer); // @addr $4F71F8 @ida "void __usercall $name(TabW09 *Self@<eax>, TabObject *Owner@<edx>, int Amount@<ecx>);"
-    procedure LaunchChild(Parent: TabW09; Angle: Single); // @addr $4F72F4 @ida "void __userpurge $name(TabW09 *Self@<eax>, TabW09 *Parent@<edx>, float Angle@<^0>);"
+    constructor Create; // @addr $4F711C
+    destructor Destroy; override; // @addr $4F71A0
+    procedure Launch(Owner: TabObject; Amount: Integer); // @addr $4F71F8
+    procedure LaunchChild(Parent: TabW09; Angle: Single); // @addr $4F72F4
     procedure Advance; override; // @addr $4F7458
     procedure UpdateVisuals; override; // @addr $4F7828
   end;

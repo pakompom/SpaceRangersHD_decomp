@@ -27,8 +27,8 @@ type
     ViewStringCapacity: Integer; // @offset 0x34
     InitialRange: TCPDiapazone; // @offset 0x38
 
-    constructor Create(Index: Integer); // @addr 0x4DE800 @ida "TParameter *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, int Index@<ecx>);"
-    destructor Destroy; override; // @addr 0x4DE8CC @ida "void __usercall $name(TParameter *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create(Index: Integer); // @addr 0x4DE800
+    destructor Destroy; override; // @addr 0x4DE8CC
     procedure Reset(Index: Integer); // @addr 0x4DE9A0
     procedure EnsureViewStringCapacity(RequiredCapacity, ParameterIndex: Integer); // @addr 0x4DEBF0 @note "ParameterIndex labels new entries; ViewStringCount is unchanged."
     function GetNonCriticalMinimum: Integer; // @addr 0x4DEDE0
@@ -40,7 +40,7 @@ type
     procedure LoadLegacyV2FromReader(Reader: TBufEC); // @addr 0x4DF310 @note "Quest version 1111111118."
     procedure LoadLegacyV3FromReader(Reader: TBufEC); // @addr 0x4DF18C @note "Quest versions 1111111119..1111111120."
     procedure LoadLegacyV4FromReader(Reader: TBufEC); // @addr 0x4DF030 @note "Quest versions 1111111121..1111111124."
-    function GetValueText(Value: Integer): WideString; // @addr 0x4DED20 @ida "void __usercall $name(TParameter *Self@<eax>, int Value@<edx>, unsigned __int16 **Result@<ecx>);"
+    function GetValueText(Value: Integer): WideString; // @addr 0x4DED20
   end;
 
 implementation

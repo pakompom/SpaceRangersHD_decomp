@@ -40,8 +40,8 @@ type
     HoveringSurfaceLoot: Boolean; // @offset 0x7954
     NewSurfaceLootDiscovered: Boolean; // @offset 0x7955
 
-    constructor Create; // @addr 0x7E5204 @ida "TfPlanetNO *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x7E525C @ida "void __usercall $name(TfPlanetNO *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x7E5204
+    destructor Destroy; override; // @addr 0x7E525C
     procedure InitializeLayout; override; // @addr 0x7E52B4
     procedure OnOpen; override; // @addr 0x7E5BDC
     procedure OnClose; override; // @addr 0x7E5D60
@@ -57,21 +57,21 @@ type
     procedure OpenResearchPanel; // @addr 0x7E730C
     procedure CloseResearchPanel; // @addr 0x7E7674 @note "Returns a held probe to its origin list before destroying research controls."
     procedure BuildTrajectory(TrajectoryIndex: Integer); // @addr 0x7E77C8 @note "Requires index 0..5 and an empty point count. Builds at most 256 points from connected image markers."
-    function GetRandomTrajectoryPoint(TrajectoryIndex: Integer): TPoint; // @addr 0x7E8014 @ida "void __usercall $name(TfPlanetNO *Self@<eax>, int TrajectoryIndex@<edx>, TPoint *Result@<ecx>);" @note "Requires a nonempty trajectory."
-    function ProjectPointOntoTrajectory(TrajectoryIndex: Integer; Point: TPoint): TPoint; // @addr 0x7E808C @ida "void __userpurge $name(TfPlanetNO *Self@<eax>, int TrajectoryIndex@<edx>, TPoint *Point@<ecx>, TPoint *Result@<^0>);" @note "Requires a trajectory spanning a positive X range. Result is untouched if no segment matches."
-    function AdvanceTrajectoryPoint(TrajectoryIndex: Integer; Point: TPoint): TPoint; // @addr 0x7E8304 @ida "void __userpurge $name(TfPlanetNO *Self@<eax>, int TrajectoryIndex@<edx>, TPoint *Point@<ecx>, TPoint *Result@<^0>);" @note "Advances four pixels along the projected segment; Result is untouched if no segment matches."
+    function GetRandomTrajectoryPoint(TrajectoryIndex: Integer): TPoint; // @addr 0x7E8014 @note "Requires a nonempty trajectory."
+    function ProjectPointOntoTrajectory(TrajectoryIndex: Integer; Point: TPoint): TPoint; // @addr 0x7E808C @note "Requires a trajectory spanning a positive X range. Result is untouched if no segment matches."
+    function AdvanceTrajectoryPoint(TrajectoryIndex: Integer; Point: TPoint): TPoint; // @addr 0x7E8304 @note "Advances four pixels along the projected segment; Result is untouched if no segment matches."
     function FindTrajectoryAtCursor: Integer; // @addr 0x7E85AC @note "Returns -1 on a miss; searches only the current planet's available probe orbits."
     function IsCursorOverTrajectory(TrajectoryIndex: Integer): Boolean; // @addr 0x7E8604
-    procedure ResearchMapMouseMove(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x7E86F0 @ida "void __userpurge $name(TfPlanetNO *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
+    procedure ResearchMapMouseMove(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x7E86F0
     procedure ResearchMapMouseLeave(Sender: TObjectGI); // @addr 0x7E8C48
     procedure RefreshResearchPanel; // @addr 0x7E8E74
     procedure ScrollSatellitePageLeft(Sender: TObjectGI); // @addr 0x7EA8D4
     procedure ScrollSatellitePageRight(Sender: TObjectGI); // @addr 0x7EA908
-    procedure ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer); override; // @addr 0x7EA948 @ida "void __userpurge $name(TfPlanetNO *Self@<eax>, unsigned int KeyState@<edx>, TPoint *Point@<ecx>, int Delta@<^0>);"
-    procedure MainPanelMouseMove(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x7EA988 @ida "void __userpurge $name(TfPlanetNO *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
-    procedure SatelliteInventoryMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x7EAA54 @ida "void __userpurge $name(TfPlanetNO *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
-    procedure ResearchMapMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x7EAC98 @ida "void __userpurge $name(TfPlanetNO *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);" @note "Collects accessible surface loot or exchanges the held probe with the selected orbit."
-    procedure MainPanelRightButtonDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x7EB1FC @ida "void __userpurge $name(TfPlanetNO *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
+    procedure ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer); override; // @addr 0x7EA948
+    procedure MainPanelMouseMove(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x7EA988
+    procedure SatelliteInventoryMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x7EAA54
+    procedure ResearchMapMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x7EAC98 @note "Collects accessible surface loot or exchanges the held probe with the selected orbit."
+    procedure MainPanelRightButtonDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x7EB1FC
     procedure UpdateActionCursor(ForceHand: Boolean); override; // @addr 0x7EB234
     procedure ReturnHeldSatellite; // @addr 0x7EB408
     function FindDeployedSatellite(TrajectoryIndex: Integer): TSatellite; // @addr 0x7EB4EC @note "Borrowed probe on the current planet, or nil; -1 always returns nil."

@@ -12,12 +12,12 @@ type
     HoverPlanet: TPlanetGI; // @offset 0x144
     TextLabel: TLabelGI; // @offset 0x148
 
-    constructor Create(Owner: TObjectGI); // @addr 0x4A9B14 @ida "TPlanetButtonGI *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, TObjectGI *Owner@<ecx>);"
-    destructor Destroy; override; // @addr 0x4A9BF4 @ida "void __usercall $name(TPlanetButtonGI *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create(Owner: TObjectGI); // @addr 0x4A9B14
+    destructor Destroy; override; // @addr 0x4A9BF4
     procedure Clear; override; // @addr 0x4A9C50 @note "The native implementation is empty; it does not reset panel or child state."
     procedure OnMouseEnter; override; // @addr 0x4A9C5C
     procedure OnMouseLeave; override; // @addr 0x4A9C90
-    procedure ProcessLeftButtonDown(KeyState: Cardinal; Point: TPoint); override; // @addr 0x4A9CC4 @ida "void __usercall $name(TPlanetButtonGI *Self@<eax>, unsigned int KeyState@<edx>, TPoint *Point@<ecx>);"
+    procedure ProcessLeftButtonDown(KeyState: Cardinal; Point: TPoint); override; // @addr 0x4A9CC4
     procedure LoadFromConfigPath(const Path: WideString); override; // @addr 0x4A9D04
     procedure LoadFromBlock(Block: TBlockParEC); override; // @addr 0x4A9D20
   end;

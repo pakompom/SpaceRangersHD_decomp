@@ -14,8 +14,8 @@ type
     MaximumLength: Integer; // @offset $E0
     OffsetX: Integer; // @offset $E4
     OffsetY: Integer; // @offset $E8
-    constructor Create; override; // @addr $505A40 @ida "TfTextBox *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr $505A84 @ida "void __usercall $name(TfTextBox *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; override; // @addr $505A40
+    destructor Destroy; override; // @addr $505A84
     procedure OnOpen; override; // @addr $505AB8
     procedure OnClose; override; // @addr $50640C
     procedure AcceptClicked(Sender: TObjectGI); // @addr $506418

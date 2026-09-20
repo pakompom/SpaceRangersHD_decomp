@@ -14,10 +14,10 @@ type
     LoopAnimation: Boolean; // @offset $58
     Animation: TgaiGI; // @offset $5C
     FinishedCallback: TNotifyEvent; // @offset $60
-    destructor Destroy; override; // @addr $824690 @ida "void __usercall $name(TAnimSE *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    destructor Destroy; override; // @addr $824690
     procedure AttachToSpace(ASpace: TSpaceSE); override; // @addr $8246C4
     procedure DetachFromSpace; override; // @addr $8247C4
-    procedure SetPosition(APosition: TPointF); override; // @addr $824804 @ida "void __usercall $name(TAnimSE *Self@<eax>, TPointF *APosition@<edx>);"
+    procedure SetPosition(APosition: TPointF); override; // @addr $824804
     procedure AnimationCycleComplete(Sender: TObjectGI); // @addr $824850
     function HitTestCursor: Boolean; override; // @addr $82488C
     procedure LoadTemplate(Block: TBlockParEC); override; // @addr $8248BC

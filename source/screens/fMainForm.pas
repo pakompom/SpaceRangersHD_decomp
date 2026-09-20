@@ -16,8 +16,8 @@ type
     PopupState: Integer; // @offset $EC Cleared when closing PanelAB.
     LoadPanel: TfPanelLoad; // @offset 0xF0
 
-    constructor Create; // @addr 0x68157C @ida "TfMainForm *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x6815D4 @ida "void __usercall $name(TfMainForm *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x68157C
+    destructor Destroy; override; // @addr 0x6815D4
     procedure InitializeLayout; override; // @addr 0x68162C
     procedure OnOpen; override; // @addr 0x682B18
     procedure OnClose; override; // @addr 0x68384C
@@ -37,7 +37,7 @@ type
     procedure MenuShipAnimationFinished(Sender: TObjectGI); // @addr 0x683D80
     procedure GaalShipAnimationFinished(Sender: TObjectGI); // @addr 0x683F68
     procedure MainPanelKeyDown(Sender: TObjectGI; Key: Cardinal); // @addr 0x683ACC
-    procedure MainPanelMouseMove(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x683D54 @ida "void __userpurge $name(TfMainForm *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
+    procedure MainPanelMouseMove(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x683D54
     procedure ScrollBackground(Timer: PCallbackTimerGI; UserData: Integer); // @addr 0x684120
     procedure ClosePopup; // @addr 0x6841DC
   end;

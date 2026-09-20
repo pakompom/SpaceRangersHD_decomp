@@ -22,8 +22,8 @@ type
     FontName: WideString; // @offset $100
 
 
-    constructor Create; // @addr $520EFC @ida "TfCount2 *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr $520F40 @ida "void __usercall $name(TfCount2 *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr $520EFC
+    destructor Destroy; override; // @addr $520F40
     procedure InitializeLayout; override; // @addr $520F74
     procedure OnOpen; override; // @addr $521094
     procedure OnClose; override; // @addr $521664
@@ -36,18 +36,18 @@ type
     procedure MaximumClicked(Sender: TObjectGI); // @addr $521DE8
     procedure AcceptClicked(Sender: TObjectGI); // @addr $521E5C
     procedure CancelClicked(Sender: TObjectGI); // @addr $521E94
-    procedure SliderMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $521ECC @ida "void __userpurge $name(TfCount2 *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
-    procedure SliderMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $521F0C @ida "void __userpurge $name(TfCount2 *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
-    procedure SliderMouseMove(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $521F38 @ida "void __userpurge $name(TfCount2 *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
-    procedure ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer); override; // @addr $5220C4 @ida "void __userpurge $name(TfCount2 *Self@<eax>, unsigned int KeyState@<edx>, TPoint *Point@<ecx>, int Delta@<^0>);"
+    procedure SliderMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $521ECC
+    procedure SliderMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $521F0C
+    procedure SliderMouseMove(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $521F38
+    procedure ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer); override; // @addr $5220C4
     procedure ProcessCallbackTimers; override; // @addr $522160
     procedure MainPanelKeyDown(Sender: TObjectGI; Key: Cardinal); // @addr $522194
   end;
 
 // Native TfCount2 VMT $520E88 confirms the inferred unit ownership.
-function ShowCountDialogWithFont(Parent: TMessageLoopGI; const ImagePath, Description: WideString; Minimum, Maximum, Limit: Integer; UnitValue: Single; Available, TotalLimit: Integer; var Value: Integer; PreviewImagePath, FontName: WideString): Cardinal; // @addr $5222A4 @ida "unsigned int __userpurge $name@<eax>(TMessageLoopGI *Parent@<eax>, unsigned __int16 *ImagePath@<edx>, unsigned __int16 *Description@<ecx>, int Minimum@<^32>, int Maximum@<^28>, int Limit@<^24>, float UnitValue@<^20>, int Available@<^16>, int TotalLimit@<^12>, int *Value@<^8>, unsigned __int16 *PreviewImagePath@<^4>, unsigned __int16 *FontName@<^0>);"
+function ShowCountDialogWithFont(Parent: TMessageLoopGI; const ImagePath, Description: WideString; Minimum, Maximum, Limit: Integer; UnitValue: Single; Available, TotalLimit: Integer; var Value: Integer; PreviewImagePath, FontName: WideString): Cardinal; // @addr $5222A4
 
-function ShowCountDialog(Parent: TMessageLoopGI; const ImagePath, Description: WideString; Minimum, Maximum, Limit: Integer; UnitValue: Single; Available, TotalLimit: Integer; var Value: Integer): Cardinal; // @addr $5224A0 @ida "unsigned int __userpurge $name@<eax>(TMessageLoopGI *Parent@<eax>, unsigned __int16 *ImagePath@<edx>, unsigned __int16 *Description@<ecx>, int Minimum@<^24>, int Maximum@<^20>, int Limit@<^16>, float UnitValue@<^12>, int Available@<^8>, int TotalLimit@<^4>, int *Value@<^0>);"
+function ShowCountDialog(Parent: TMessageLoopGI; const ImagePath, Description: WideString; Minimum, Maximum, Limit: Integer; UnitValue: Single; Available, TotalLimit: Integer; var Value: Integer): Cardinal; // @addr $5224A0
 
 implementation
 

@@ -17,8 +17,8 @@ type
     CacheKey: WideString; // @offset 0x10
     RetainCount: Integer; // @offset 0x14
 
-    constructor Create; // @addr 0x83E1D8 @ida "TCacheControlEC *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x83E21C @ida "void __usercall $name(TCacheControlEC *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x83E1D8
+    destructor Destroy; override; // @addr 0x83E21C
     procedure Reset; virtual; // @addr 0x83E254 @slot 0x00 @note "Drops all retains and the data binding."
     procedure SetCacheKey(const NewKey: WideString); virtual; // @addr 0x83E2B0 @slot 0x04 @calls "0x47C62A 0x47D9F6" @note "Drops existing retains and the data binding; may apply configured key substitutions."
     function HasEmptyCacheKey: Boolean; // @addr 0x83E380
@@ -45,8 +45,8 @@ type
     // Win32 event handle; zero after loading has completed.
     LoadCompleteEvent: Cardinal; // @offset 0x1C
 
-    constructor Create; // @addr 0x83EA44 @ida "TCacheDataEC *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x83EA88 @ida "void __usercall $name(TCacheDataEC *Self@<eax>, __int8 DestroyFlags@<dl>);" @note "Detaches all controls without freeing them."
+    constructor Create; // @addr 0x83EA44
+    destructor Destroy; override; // @addr 0x83EA88 @note "Detaches all controls without freeing them."
     procedure AppendControl(Control: TCacheControlEC); // @addr 0x83EAD4 @note "Caller must set Control.BoundData."
     procedure UnlinkControl(Control: TCacheControlEC); // @addr 0x83EB28 @note "Clears BoundData but preserves RetainCount."
     // Base load hooks are empty in the native implementation.
@@ -63,8 +63,8 @@ type
     ResidentBytes: Integer; // @offset 0x14
     ResidentByteLimit: Integer; // @offset 0x18
 
-    constructor Create; // @addr 0x83EBD4 @ida "TCacheEC *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x83EC28 @ida "void __usercall $name(TCacheEC *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x83EBD4
+    destructor Destroy; override; // @addr 0x83EC28
     procedure Clear; // @addr 0x83EC6C @note "Invalidates all entries, including retained ones."
     procedure SetDataRoot(Root: TDataEC); // @addr 0x83EC98 @note "Root is borrowed; invalidates existing cached entries."
     procedure ResetControl(Control: TCacheControlEC); // @addr 0x83ECBC

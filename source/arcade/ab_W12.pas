@@ -16,9 +16,9 @@ type
     OrbitAngle: Single; // @offset $C0
     OrbitRadius: Single; // @offset $C4
     TrailImages: TList; // @offset $C8
-    constructor Create; // @addr $4F8910 @ida "TabW12 *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr $4F89A8 @ida "void __usercall $name(TabW12 *Self@<eax>, __int8 DestroyFlags@<dl>);"
-    procedure Launch(Owner: TabObject; Amount: Integer; Angle: Single); // @addr $4F8A60 @ida "void __userpurge $name(TabW12 *Self@<eax>, TabObject *Owner@<edx>, int Amount@<ecx>, float Angle@<^0>);"
+    constructor Create; // @addr $4F8910
+    destructor Destroy; override; // @addr $4F89A8
+    procedure Launch(Owner: TabObject; Amount: Integer; Angle: Single); // @addr $4F8A60
     procedure Advance; override; // @addr $4F8B74
     procedure UpdateVisuals; override; // @addr $4F8DC8
   end;

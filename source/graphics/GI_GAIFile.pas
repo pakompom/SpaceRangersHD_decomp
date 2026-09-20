@@ -38,19 +38,19 @@ type
     CycleCompleteCallback: TObjectNotifyEventGI; // @offset $198
     Stopped: Boolean; // @offset $1A0
     AutoUpdateFlags: Cardinal; // @offset $1A4
-    constructor Create(Owner: TObjectGI); // @addr $498D88 @ida "TGAIFileGI *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, TObjectGI *Owner@<ecx>);"
-    destructor Destroy; override; // @addr $498E78 @ida "void __usercall $name(TGAIFileGI *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create(Owner: TObjectGI); // @addr $498D88
+    destructor Destroy; override; // @addr $498E78
     procedure Clear; override; // @addr $498FE0
     procedure OpenImage; // @addr $498FFC
     procedure CloseImage; // @addr $4990A8
     function GetFrameData(FrameIndex: Integer): Pointer; // @addr $4991B8
     procedure TrimFrameCache; // @addr $499358
     function GetFrameCount: Integer; // @addr $499498
-    function GetContentSize: TPoint; // @addr $499520 @ida "void __usercall $name(TGAIFileGI *Self@<eax>, TPoint *Result@<edx>);"
-    function GetContentOrigin: TPoint; // @addr $4995BC @ida "void __usercall $name(TGAIFileGI *Self@<eax>, TPoint *Result@<edx>);"
+    function GetContentSize: TPoint; // @addr $499520
+    function GetContentOrigin: TPoint; // @addr $4995BC
     procedure SetImageKindX(Value: TImageKindXGI); // @addr $499658
     procedure SetImageKindY(Value: TImageKindYGI); // @addr $499690
-    procedure SetSize(Size: TPoint); override; // @addr $4996C8 @ida "void __usercall $name(TGAIFileGI *Self@<eax>, TPoint *Size@<edx>);"
+    procedure SetSize(Size: TPoint); override; // @addr $4996C8
     procedure SetFrameSequence(Sequence: WideString); // @addr $4996EC
     function GetSequenceFrame(Index: Integer): Integer; // @addr $4999E4
     function GetFrameDelay(Index: Integer): Integer; // @addr $499A1C
@@ -60,7 +60,7 @@ type
     procedure LoadImageProperties(Block: TBlockParEC); // @addr $499AF0
     procedure UpdateAutoGeometry; override; // @addr $499DE0
     procedure AdvanceFrame(Timer: PCallbackTimerGI; UserData: Integer); // @addr $499E54
-    procedure Draw(ClipRect: TRect); override; // @addr $499F58 @ida "void __usercall $name(TGAIFileGI *Self@<eax>, TRect *ClipRect@<edx>);"
+    procedure Draw(ClipRect: TRect); override; // @addr $499F58
   end;
 
 implementation

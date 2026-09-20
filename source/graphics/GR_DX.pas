@@ -28,11 +28,11 @@ type
     Surfaces: array of IDirect3DTexture9; // @offset 0x0C
     ResidentBytes: Cardinal; // @offset 0x10
 
-    constructor Create; // @addr 0x84FDF8 @ida "TTextureGR *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x84FE48 @ida "void __usercall $name(TTextureGR *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x84FDF8
+    destructor Destroy; override; // @addr 0x84FE48
     procedure Clear; // @addr 0x84FE84
     procedure ReleaseSurfaces; // @addr 0x84FF10 @note "Retains the array and SurfaceCount."
-    function GetSurface(Index: Integer): IDirect3DTexture9; // @addr 0x84FF68 @ida "void __usercall $name(TTextureGR *Self@<eax>, int Index@<edx>, IDirect3DTexture9 **Result@<ecx>);" @note "Returns nil when out of range; successful access refreshes LastUseTick."
+    function GetSurface(Index: Integer): IDirect3DTexture9; // @addr 0x84FF68 @note "Returns nil when out of range; successful access refreshes LastUseTick."
     procedure SetSurface(Value: IDirect3DTexture9; Index: Integer); // @addr 0x84FFB4 @note "A negative index appends; indexes beyond the end create nil holes."
   end;
 
@@ -57,7 +57,7 @@ procedure EvictTextureCaches(Force: Boolean); // @addr 0x84F74C
 procedure SubtractResidentTextureBytes(ByteCount: Cardinal); // @addr 0x851CE8
 
 function CreateTextureCache: TTextureGR; // @addr 0x84F674
-function GR_CreateTexture(Width, Height: Integer; Format, Pool: Cardinal): IDirect3DTexture9; // @addr 0x84F8CC @ida "void __userpurge $name(int Width@<eax>, int Height@<edx>, unsigned int Format@<ecx>, unsigned int Pool@<^4>, IDirect3DTexture9 **Result@<^0>);" @note "Clamps each dimension to at least 16. Returns nil without a device; retries allocation after evicting textures."
+function GR_CreateTexture(Width, Height: Integer; Format, Pool: Cardinal): IDirect3DTexture9; // @addr 0x84F8CC @note "Clamps each dimension to at least 16. Returns nil without a device; retries allocation after evicting textures."
 procedure FreeTextureCache(Cache: TTextureGR); // @addr 0x84F6C0 @note "Accepts nil."
 
 procedure ClearTexturePixels(Texture: IDirect3DTexture9); // @addr $84FD50
@@ -67,7 +67,7 @@ function GetTextureByteSize(Texture: IDirect3DTexture9): Cardinal; // @addr $851
 procedure AddResidentTextureBytes(ByteCount: Cardinal); // @addr $851CD4
 function Color565ToArgb(Color: Cardinal): Cardinal; // @addr $851BB0
 function ColorWithAlpha(Color, Alpha: Cardinal): Cardinal; // @addr $851BF8
-function CreateTextureFromPixels(Width, Height: Integer; Format: Cardinal; Pixels: Pointer; PitchBytes: Integer; Pool: Cardinal): IDirect3DTexture9; // @addr $84FB3C @ida "void __userpurge $name(int Width@<eax>, int Height@<edx>, unsigned int Format@<ecx>, void *Pixels@<^12>, int PitchBytes@<^8>, unsigned int Pool@<^4>, IDirect3DTexture9 **Result@<^0>);"
+function CreateTextureFromPixels(Width, Height: Integer; Format: Cardinal; Pixels: Pointer; PitchBytes: Integer; Pool: Cardinal): IDirect3DTexture9; // @addr $84FB3C
 
 procedure QueueDrawPoint(X, Y: Integer; Color: Cardinal; Alpha: Integer); // @addr $850118
 procedure FlushDrawPoints(ClipRect: PRect); // @addr $850224
@@ -422,7 +422,7 @@ var
   Temp, X1, Y1, X2, Y2: Double;
 
   // @nested $850398 LineFractionDX
-  function LineFractionDX(Value: Double): Double; // @addr $850398 @ida "double __userpurge $name@<st0>(double Value@<^0>, void *ParentFrame@<^8>);" @stackpop 8 @calls "0x008505E5 0x00850626 0x00850640 0x0085073E 0x00850787 0x0085079E 0x0085088B 0x008508A5"
+  function LineFractionDX(Value: Double): Double; // @addr $850398 @calls "0x008505E5 0x00850626 0x00850640 0x0085073E 0x00850787 0x0085079E 0x0085088B 0x008508A5"
   begin
     Result := Value - Floor(Value);
   end;
@@ -509,13 +509,13 @@ var
   Temp, X1, Y1, X2, Y2: Double;
 
   // @nested $85095C AnimatedLineFractionDX
-  function AnimatedLineFractionDX(Value: Double): Double; // @addr $85095C @ida "double __userpurge $name@<st0>(double Value@<^0>, void *ParentFrame@<^8>);" @stackpop 8 @calls "0x00850BCD 0x00850C0E 0x00850C28 0x00850D79 0x00850DC2 0x00850DD9 0x00850F20 0x00850F3A"
+  function AnimatedLineFractionDX(Value: Double): Double; // @addr $85095C @calls "0x00850BCD 0x00850C0E 0x00850C28 0x00850D79 0x00850DC2 0x00850DD9 0x00850F20 0x00850F3A"
   begin
     Result := Value - Floor(Value);
   end;
 
   // @nested $850988 AdvanceLinePhase
-  procedure AdvanceLinePhase; // @addr $850988 @ida "void __usercall $name(void *ParentFrame@<^0>);" @stackpop 0 @calls "0x00850D10 0x00850EF9"
+  procedure AdvanceLinePhase; // @addr $850988 @calls "0x00850D10 0x00850EF9"
   begin
     Inc(Phase, 20);
     if Phase >= 360 then Dec(Phase, 360);

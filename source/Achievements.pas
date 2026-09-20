@@ -117,8 +117,8 @@ type
     StarFuelCollected: Cardinal; // @offset $24 SUNFUEL counter for the current fuel tank.
     StarFuelTankId: Integer; // @offset $28 Resets the counter when the installed tank changes.
     UninhabitedPlanetsVisited: Integer; // @offset 0x2C  First player landings while OwnerId=6; EXPLORER progress.
-    constructor Create; // @addr $593348 @ida "TAchievementStats *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr $5933E0 @ida "void __usercall $name(TAchievementStats *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr $593348
+    destructor Destroy; override; // @addr $5933E0
     procedure LoadFromBuffer(Buffer: TBufEC); // @addr $593414 Includes the pre-version-99 counter layout.
     procedure SaveToBuffer(Buffer: TBufEC); // @addr $593588
     // These checks use global player/galaxy state. Victory and score eligibility

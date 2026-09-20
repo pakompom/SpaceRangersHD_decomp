@@ -24,11 +24,11 @@ type
     Name: WideString; // @offset $0C
     Groups: array of TSoundRndUnitSE; // @offset $10
     TotalGroupWeight: Integer; // @offset $14
-    constructor Create; // @addr $4D5E84 @ida "TSoundRndSE *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr $4D5EC8 @ida "void __usercall $name(TSoundRndSE *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr $4D5E84
+    destructor Destroy; override; // @addr $4D5EC8
     procedure Clear; // @addr $4D5F04
     procedure LoadFromBlock(Block: TBlockParEC); // @addr $4D5F84
-    function SelectSound(GroupIndex: Integer): WideString; // @addr $4D62D0 @ida "void __usercall $name(TSoundRndSE *Self@<eax>, int GroupIndex@<edx>, unsigned __int16 **Result@<ecx>);"
+    function SelectSound(GroupIndex: Integer): WideString; // @addr $4D62D0
   end;
 
 var

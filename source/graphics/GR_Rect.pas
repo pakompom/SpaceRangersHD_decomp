@@ -12,8 +12,8 @@ type
     Next: TRectGR; // @offset 0x08
     Bounds: TRect; // @offset 0x0C
 
-    constructor Create; // @addr 0x472148 @ida "TRectGR *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x47218C @ida "void __usercall $name(TRectGR *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x472148
+    destructor Destroy; override; // @addr 0x47218C
   end;
 
   TArrayRectGR = class(TObjectEx) // @size 0x0C
@@ -21,14 +21,14 @@ type
     FirstRect: TRectGR; // @offset 0x04
     LastRect: TRectGR; // @offset 0x08
 
-    constructor Create; // @addr 0x4721C0 @ida "TArrayRectGR *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x472204 @ida "void __usercall $name(TArrayRectGR *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x4721C0
+    destructor Destroy; override; // @addr 0x472204
     procedure Clear; // @addr 0x472240
     function AllocateRectNode: TRectGR; // @addr 0x47228C
     procedure RemoveRectNode(RectNode: TRectGR); // @addr 0x4722F8
-    procedure AddRect(Rect: TRect); // @addr 0x472370 @ida "void __usercall $name(TArrayRectGR *Self@<eax>, TRect *Rect@<edx>);" @note "Maintains nonoverlapping coverage."
+    procedure AddRect(Rect: TRect); // @addr 0x472370 @note "Maintains nonoverlapping coverage."
     procedure InsertRectFragment(Left, Top, Right, Bottom: Integer); // @addr 0x472464
-    procedure AddScreenClippedRect(Rect: TRect; UnusedPoint1, UnusedPoint2: TPoint); // @addr 0x472880 @ida "void __userpurge $name(TArrayRectGR *Self@<eax>, TRect *Rect@<edx>, TPoint *UnusedPoint1@<ecx>, TPoint *UnusedPoint2@<^0>);"
+    procedure AddScreenClippedRect(Rect: TRect; UnusedPoint1, UnusedPoint2: TPoint); // @addr 0x472880
   end;
 
 implementation

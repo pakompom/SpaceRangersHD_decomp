@@ -46,21 +46,21 @@ type
     IncomingThreat: Boolean; // @offset $384
     RetreatRequested: Boolean; // @offset $385
     AIEnabled: Boolean; // @offset $386
-    constructor Create; // @addr $4FE2B8 @ida "TabShipAI *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr $4FE310 @ida "void __usercall $name(TabShipAI *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr $4FE2B8
+    destructor Destroy; override; // @addr $4FE310
     function GetRewardItem(Preview: Boolean): TItem; // @addr $4FE368
     procedure ApplyDamage(Amount: Integer; Source: TabObject; Disrupt: Boolean); override; // @addr $4FE8AC
     procedure UpdateState; override; // @addr $4FF4D8
     procedure Advance; override; // @addr $4FF574
     procedure ResetIntent; // @addr $4FF940
     procedure DecideActions; // @addr $4FF9A4
-    procedure SetDirectDestination(Longitude, PolarAngle: Single); // @addr $500568 @ida "void __userpurge $name(TabShipAI *Self@<eax>, float Longitude@<^4>, float PolarAngle@<^0>);"
+    procedure SetDirectDestination(Longitude, PolarAngle: Single); // @addr $500568
     procedure FollowDirectDestination; // @addr $50065C
     procedure AvoidImmediateObstacle; // @addr $5006E4
     procedure ClearRoute; // @addr $500770
     procedure SetRoute(Target: PabZone); // @addr $500790
     procedure FollowRoute; // @addr $500800
-    function TryMoveToDestination(Zone: PabZone; Longitude, PolarAngle: Double): Boolean; // @addr $5010E4 @ida "bool __userpurge $name@<al>(TabShipAI *Self@<eax>, TabZone *Zone@<edx>, double Longitude@<^8>, double PolarAngle@<^0>);"
+    function TryMoveToDestination(Zone: PabZone; Longitude, PolarAngle: Double): Boolean; // @addr $5010E4
     procedure SetAndFollowRoute(Target: PabZone); // @addr $501200
     procedure FollowDestinationRoute; // @addr $50128C
     procedure ApproachTarget; // @addr $500B24
@@ -226,7 +226,7 @@ var
   MinLevel, MaxLevel, WeaponTech: Integer;
 
   // @nested $4FE88C AddArcadeRewardToList
-  procedure AddArcadeRewardToList(Item: TObject); // @addr $4FE88C @ida "void __usercall $name(TObject *Item@<eax>, void *ParentFrame@<^0>);" @stackpop 0 @calls "0x4febc2,0x4fec53,0x4ff186,0x4ff35c"
+  procedure AddArcadeRewardToList(Item: TObject); // @addr $4FE88C @calls "0x4febc2,0x4fec53,0x4ff186,0x4ff35c"
   begin
     ArcadeBattleScreen.ListedObjects.Add(Item);
   end;

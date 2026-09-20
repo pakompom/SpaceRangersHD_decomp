@@ -29,18 +29,18 @@ type
     NextSoundTime: Cardinal; // @offset $44
     RefCount: Integer; // @offset 0x48
 
-    constructor CreateEmpty; // @addr 0x838D98 @ida "TObjectSE *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
+    constructor CreateEmpty; // @addr 0x838D98
     procedure CopyTo(Destination: TObjectSE); virtual; // @addr 0x839034 @slot 0x00 @note "Copies graph key, size, position and depth expression only."
-    constructor Create(const AGraphKey: WideString; UnusedPosition: TPoint); // @addr 0x838DDC @ida "TObjectSE *__userpurge $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, unsigned __int16 *AGraphKey@<ecx>, TPoint *UnusedPosition@<^0>);" @note "UnusedPosition is copied but does not initialize Position."
-    destructor Destroy; override; // @addr 0x838EC8 @ida "void __usercall $name(TObjectSE *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create(const AGraphKey: WideString; UnusedPosition: TPoint); // @addr 0x838DDC @note "UnusedPosition is copied but does not initialize Position."
+    destructor Destroy; override; // @addr 0x838EC8
     procedure AttachToSpace(ASpace: TSpaceSE); virtual; // @addr 0x83908C @slot 0x04
     procedure DetachFromSpace; virtual; // @addr 0x8390EC @slot 0x08
     function IsAttachedToSpace: Boolean; // @addr 0x839134
-    procedure SetPosition(APosition: TPointF); virtual; // @addr 0x839158 @slot 0x0C @ida "void __usercall $name(TObjectSE *Self@<eax>, TPointF *APosition@<edx>);"
-    procedure SetDepth(Value: Single); virtual; // @addr $839180 @slot $10 @ida "void __userpurge $name(TObjectSE *Self@<eax>, float Value@<^0>);"
-    function GetDepth: Single; virtual; // @addr $83918C @slot $14 @ida "float __usercall $name@<st0>(TObjectSE *Self@<eax>);"
-    procedure SetOrbitCenter(Center: TPointF); virtual; // @addr $8391A4 @slot $18 @ida "void __usercall $name(TObjectSE *Self@<eax>, TPointF *Center@<edx>);"
-    function GetOrbitCenter: TPointF; virtual; // @addr $8391BC @slot $1C @ida "void __usercall $name(TObjectSE *Self@<eax>, TPointF *Result@<edx>);" @note "Subclasses interpret this point differently: Sputnik returns the orbit center, Ship2 returns scaled dimensions."
+    procedure SetPosition(APosition: TPointF); virtual; // @addr 0x839158 @slot 0x0C
+    procedure SetDepth(Value: Single); virtual; // @addr $839180 @slot $10
+    function GetDepth: Single; virtual; // @addr $83918C @slot $14
+    procedure SetOrbitCenter(Center: TPointF); virtual; // @addr $8391A4 @slot $18
+    function GetOrbitCenter: TPointF; virtual; // @addr $8391BC @slot $1C @note "Subclasses interpret this point differently: Sputnik returns the orbit center, Ship2 returns scaled dimensions."
     function GetAlpha: Byte; virtual; // @addr $8391D8 @slot $20
     procedure SetAlpha(Value: Byte); virtual; // @addr $8391EC @slot $24
     procedure SetAngle(Value: Byte); virtual; // @addr $839210 @slot $2C
@@ -48,11 +48,11 @@ type
     function BuildStateBuffer: TBufEC; virtual; // @addr $839248 @slot $38
     procedure LoadStateBuffer(Buffer: TBufEC); virtual; // @addr $839260 @slot $3C
     procedure Advance; virtual; // @addr $839270 @slot $40
-    procedure SetSize(Value: TPoint); virtual; // @addr $8394B4 @slot $44 @ida "void __usercall $name(TObjectSE *Self@<eax>, TPoint *Value@<edx>);"
+    procedure SetSize(Value: TPoint); virtual; // @addr $8394B4 @slot $44
     procedure ConfigureLoopSound(const Name: WideString); // @addr $8394FC
     procedure ConfigureRandomSound(const Name: WideString); // @addr $8396B8
     function GetAngle: Byte; virtual; // @addr 0x8391FC @slot 0x28 @note "Base returns zero; TGateSE returns its stored angle."
-    function GetText: WideString; virtual; // @addr 0x839220 @slot 0x30 @ida "void __usercall $name(TObjectSE *Self@<eax>, unsigned __int16 **Result@<edx>);" @note "Base returns empty; TGateSE overrides it with the label text."
+    function GetText: WideString; virtual; // @addr 0x839220 @slot 0x30 @note "Base returns empty; TGateSE overrides it with the label text."
     function HitTestCursor: Boolean; virtual; // @addr 0x8394DC @slot 0x48
     procedure DrawMap; virtual; // @addr 0x8394F0 @slot 0x4C
     procedure LoadTemplate(Block: TBlockParEC); virtual; // @addr 0x839730 @slot 0x50
@@ -97,23 +97,23 @@ type
     PathPointCount: Integer; // @offset 0x64
     AlphaShift: Integer; // @offset $68 Ship2 alpha is shifted by this amount.
 
-    constructor Create(AMapPanel: TPanelGI; AScreen: TMessageLoopGI); // @addr 0x839940 @ida "TSpaceSE *__userpurge $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, TPanelGI *AMapPanel@<ecx>, TMessageLoopGI *AScreen@<^0>);"
-    destructor Destroy; override; // @addr 0x839CD4 @ida "void __usercall $name(TSpaceSE *Self@<eax>, __int8 DestroyFlags@<dl>);" @note "Requires all timers to have been removed."
+    constructor Create(AMapPanel: TPanelGI; AScreen: TMessageLoopGI); // @addr 0x839940
+    destructor Destroy; override; // @addr 0x839CD4 @note "Requires all timers to have been removed."
     procedure LinkObject(Obj: TObjectSE); // @addr 0x839DCC @note "Only changes list links; does not retain Obj or set Obj.Space."
     procedure UnlinkObject(Obj: TObjectSE); // @addr 0x839E20 @note "Does not release Obj or clear its links."
     procedure DeleteTimer(Timer: PSpaceTimerSE); // @addr 0x839F44 @note "Raises if Timer is NextTimerToProcess."
-    function CreateTimer(DelayMs, RepeatMs: Integer; Callback: TSpaceTimerEventSE; UserData: Integer): PSpaceTimerSE; // @addr 0x839E90 @ida "TSpaceTimerSE *__userpurge $name@<eax>(TSpaceSE *Self@<eax>, int DelayMs@<edx>, int RepeatMs@<ecx>, TSpaceTimerEventSE Callback@<^4.8>, int UserData@<^0>);" @note "Converts milliseconds to ticks by rounding division by 18. Callback receives Context, Timer, UserData in Delphi registers. Zero delay still waits for AdvanceTimers."
+    function CreateTimer(DelayMs, RepeatMs: Integer; Callback: TSpaceTimerEventSE; UserData: Integer): PSpaceTimerSE; // @addr 0x839E90 @note "Converts milliseconds to ticks by rounding division by 18. Callback receives Context, Timer, UserData in Delphi registers. Zero delay still waits for AdvanceTimers."
     procedure AdvanceTimers; // @addr 0x83A00C
     procedure AdvanceObjects; // @addr 0x83A080
     procedure ClearPath; // @addr 0x83A0B4
     procedure SetPath(Points: PPointF; Count: Integer); // @addr 0x83A0E4 @note "Copies Count points. A nonpositive count clears the path."
     procedure CreateMinimapViewport; // @addr $83A5EC
     procedure FreeMinimapViewport; // @addr $83A6F8
-    procedure MinimapMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $83A88C @ida "void __userpurge $name(TSpaceSE *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
+    procedure MinimapMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $83A88C
     procedure MinimapMouseEnter(Sender: TObjectGI); // @addr $83A9D0
-    procedure MinimapMouseMove(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $83A9E8 @ida "void __userpurge $name(TSpaceSE *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
+    procedure MinimapMouseMove(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $83A9E8
     procedure DrawMinimap; // @addr 0x83A134
-    function ContainsMapPoint(Point: TPointF): Boolean; // @addr $83AAF4 @ida "bool __usercall $name@<al>(TSpaceSE *Self@<eax>, TPointF *Point@<edx>);"
+    function ContainsMapPoint(Point: TPointF): Boolean; // @addr $83AAF4
     procedure MapScrollChanged(Sender: TObjectGI); // @addr 0x83A720
   end;
 

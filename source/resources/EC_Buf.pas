@@ -13,8 +13,8 @@ type
     Position: Integer; // @offset 0x0C
     Data: Pointer; // @offset 0x10
 
-    constructor Create; // @addr 0x86BACC @ida "TBufEC *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x86BB10 @ida "void __usercall $name(TBufEC *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x86BACC
+    destructor Destroy; override; // @addr 0x86BB10
     procedure Clear; // @addr 0x86BB4C
     function IsAtEnd: Boolean; // @addr 0x86BBF4
     procedure SetSize(NewSize: Integer); // @addr 0x86BB8C @note "Nonpositive sizes clear the buffer; shrinking clamps Position."
@@ -38,7 +38,7 @@ type
     procedure AddInteger(Value: Integer); // @addr 0x86C43C
     procedure AddDWord(Value: Cardinal); // @addr 0x86C518
     procedure AddIntegerValue(Value: Integer); // @addr 0x86C560
-    procedure AddSingle(Value: Single); // @addr 0x86C5A8 @ida "void __userpurge $name(TBufEC *Self@<eax>, float Value@<^0>);"
+    procedure AddSingle(Value: Single); // @addr 0x86C5A8
     procedure AddDouble(Value: Double); // @addr 0x86C5EC @ida "void __userpurge $name(TBufEC *Self@<eax>, double Value);"
     procedure AddBoolean(Value: Boolean); // @addr 0x86C634
     procedure AddBuffer(Value: TBufEC); // @addr 0x86C67C @note "Writes a four-byte size followed by the entire source payload, ignoring its Position."
@@ -75,9 +75,9 @@ type
     function ReadAnsiTextLineToBuffer(Dest: PAnsiChar): PAnsiChar; // @addr 0x86CCA0
     function ReadWideTextLineToBuffer(Dest: PWideChar): PWideChar; // @addr 0x86CDE0
     function ReadWideStringToBuffer(Dest: PWideChar): PWideChar; // @addr 0x86C7B4 @note "Consumes the terminating zero; an empty scan advances Position by two even at the buffer end."
-    function ReadAnsiTextLine: AnsiString; // @addr 0x86CD74 @ida "void __usercall $name(TBufEC *Self@<eax>, char **Result@<edx>);"
-    function ReadWideTextLine: WideString; // @addr 0x86CEC8 @ida "void __usercall $name(TBufEC *Self@<eax>, unsigned __int16 **Result@<edx>);"
-    function ReadWideString: WideString; // @addr 0x86CF34 @ida "void __usercall $name(TBufEC *Self@<eax>, unsigned __int16 **Result@<edx>);"
+    function ReadAnsiTextLine: AnsiString; // @addr 0x86CD74
+    function ReadWideTextLine: WideString; // @addr 0x86CEC8
+    function ReadWideString: WideString; // @addr 0x86CF34
 
     // Successful transforms replace the entire payload and reset Position to zero.
     // False leaves the buffer intact, including when DataSize is less than eight.

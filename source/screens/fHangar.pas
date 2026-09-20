@@ -28,8 +28,8 @@ type
     DockedShipsTimer: PCallbackTimerGI; // @offset $F4
     SelectedShip: TShip; // @offset 0x1AC Borrowed inspected ship; forwarded to ShipScreen.ShipToInspect and used by CheatSkill.
 
-    constructor Create; // @addr 0x669C7C @ida "TfHangar *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x669D34 @ida "void __usercall $name(TfHangar *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x669C7C
+    destructor Destroy; override; // @addr 0x669D34
     procedure OnOpen; override; // @addr 0x66A89C
     procedure OnClose; override; // @addr 0x66B440
     procedure SelectMusic; override; // @addr 0x66C27C
@@ -43,8 +43,8 @@ type
     procedure ShipClicked(Sender: TObjectGI); // @addr 0x66BEAC
     function RefreshTakeOffStatus: Boolean; // @addr $66D1F0 Refreshes hull, fuel and engine warnings and reports whether takeoff is allowed.
     procedure RefreshServiceButtons; // @addr 0x66C5BC
-    procedure MainMouseMove(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $66EBF8 @ida "void __userpurge $name(TfHangar *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0.4>);"
-    procedure MainRightButtonDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $66EDA8 @ida "void __userpurge $name(TfHangar *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0.4>);"
+    procedure MainMouseMove(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $66EBF8
+    procedure MainRightButtonDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $66EDA8
     procedure EndTurnClicked(Sender: TObjectGI); // @addr $66BC2C
     procedure BeginTakeOff; // @addr $66BFF4
     procedure MainKeyDown(Sender: TObjectGI; Key: Cardinal); // @addr $66C054
@@ -57,7 +57,7 @@ type
     procedure CaptureDispatcherMirror(Sender: TObjectGI); // @addr $66B63C
     procedure DispatcherAnimationComplete(Sender: TObjectGI); // @addr $66B7AC
     function GetShipPortraitScale(Ship: TShip): Single; // @addr $66DF3C
-    procedure LoadDockedShipImage(Index: Integer; ImagePath: WideString; LargeHull: Boolean; Scale: Single); // @addr $66DFDC @ida "void __userpurge $name(TfHangar *Self@<eax>, int Index@<edx>, unsigned __int16 *ImagePath@<ecx>, bool LargeHull@<^4.4>, float Scale@<^0.4>);"
+    procedure LoadDockedShipImage(Index: Integer; ImagePath: WideString; LargeHull: Boolean; Scale: Single); // @addr $66DFDC
     procedure SetDockedShipOpacity(Index: Integer; Alpha: Byte); // @addr $66E234
     procedure AnimateDockedShips(Timer: PCallbackTimerGI; UserData: Integer); // @addr $66E3C8
     procedure RefreshDockedShips; // @addr 0x66E58C

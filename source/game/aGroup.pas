@@ -33,8 +33,8 @@ type
     procedure AddShip(Ship: TShip); // @addr 0x4EE958 @note "Appends Ship, assigns LiberationGroup and resets its order index."
     function SelectLiberationTarget: Boolean; // @addr 0x4EEA70 @note "Chooses TargetStar and a Coalition AssemblyStar within 28 parsecs. Failure disbands and frees Self."
     function BuildLiberationOrders: Boolean; // @addr 0x4EEB84 @note "Builds staging, landing and attack orders and publishes news. May disband and free Self when no suitable staging planet exists."
-    constructor Create; // @addr 0x4EE1E0 @ida "TGroup *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x4EE2C0 @ida "void __usercall $name(TGroup *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x4EE1E0
+    destructor Destroy; override; // @addr 0x4EE2C0
     procedure Load(Buffer: TBufEC; Galaxy: TGalaxy); // @addr 0x4EE4FC @note "Ships initially contains serialized IDs, pending reference resolution. Does not clear existing entries."
     procedure NextDay; // @addr 0x4EE990 @note "May remove and free Self when empty or older than 150 days."
     procedure Disband; // @addr 0x4EE9FC @note "Detaches member ships, removes Self from Galaxy.LiberationGroups, and frees Self."

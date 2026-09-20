@@ -29,8 +29,8 @@ type
     Objects: TList; // @offset $60 Owned objects associated with this space.
     ImageActive: Boolean; // @offset $64
     Image: TgaiGI; // @offset $68
-    constructor Create; // @addr $54F6E8 @ida "TabSpace *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr $54F774 @ida "void __usercall $name(TabSpace *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr $54F6E8
+    destructor Destroy; override; // @addr $54F774
     procedure UpdateVisuals; // @addr $54F7DC Empty native update hook.
     procedure Update; // @addr $54FAF0
     procedure ClearVisuals; // @addr $54F7C8
@@ -38,7 +38,7 @@ type
     procedure ClearObjects; // @addr $54FB04
     procedure UpdateApproachDanger; // @addr $5527B0
     procedure PruneApproachDanger; // @addr $5527F4 Native instance receiver is unused; visits the complete graph.
-    function GetDangerText: WideString; // @addr $5528EC @ida "void __usercall $name(TabSpace *Self@<eax>, unsigned __int16 **Result@<edx>);"
+    function GetDangerText: WideString; // @addr $5528EC
     procedure CreateImage; // @addr $54F7E8
     procedure PopulateObjects; // @addr $54FB50
     procedure PopulateHoleEncounter; // @addr $5508B0
@@ -67,7 +67,7 @@ procedure ab_SpaceLink_ClearImages; // @addr $553524
 procedure ab_Space_Clear; // @addr $552A7C
 function ab_Space_Add: TabSpace; // @addr $552AB4
 procedure ab_Space_Delete(Space: TabSpace); // @addr $552B18
-function ab_Space_Find(GridPosition: TPoint): TabSpace; // @addr $552C54 @ida "TabSpace *__usercall $name@<eax>(TPoint *GridPosition@<eax>);"
+function ab_Space_Find(GridPosition: TPoint): TabSpace; // @addr $552C54
 procedure ab_Space_RecountLinks; // @addr $552CAC
 procedure ab_SpaceLink_Clear; // @addr $552D8C
 function ab_SpaceLink_Add: PabSpaceLink; // @addr $552DA4
@@ -544,7 +544,7 @@ end;
 procedure TabSpace.UpdateApproachDanger;
 
   // @nested $5526EC FindApproachDanger
-  function FindApproachDanger(Space: TabSpace; Accumulated: Single): Single; // @addr $5526EC @ida "float __userpurge $name@<st0>(TabSpace *Space@<eax>, float Accumulated@<^0>, void *ParentFrame@<^4>);" @stackpop 4 @calls "0x552777,0x5527dd"
+  function FindApproachDanger(Space: TabSpace; Accumulated: Single): Single; // @addr $5526EC @calls "0x552777,0x5527dd"
   var
     Link: PabSpaceLink;
     Candidate: Single;

@@ -16,8 +16,8 @@ type
     PaletteCount: Integer; // @offset 0x18
     Palette: PColorRGBA; // @offset 0x1C
 
-    constructor Create; // @addr 0x86B648 @ida "TGraphBufPalGR *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x86B68C @ida "void __usercall $name(TGraphBufPalGR *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x86B648
+    destructor Destroy; override; // @addr 0x86B68C
     procedure Clear; // @addr 0x86B6C8
     procedure AllocateTight(AWidth, AHeight, APaletteCount: Integer); // @addr 0x86B72C @note "Discards existing pixels and palette; uses one byte per pixel with no row padding."
     procedure AllocateBuffer(AWidth, AHeight, APaletteCount, APitchBytes: Integer); // @addr 0x86B798 @note "Discards existing pixels and palette; rounds pitch up to a multiple of four."

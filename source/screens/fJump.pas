@@ -17,8 +17,8 @@ type
     MovieStartTick: Cardinal; // @offset 0xE0
     MovieTimer: PCallbackTimerGI; // @offset 0xE4
 
-    constructor Create; // @addr 0x670A7C @ida "TfJump *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x670AD4 @ida "void __usercall $name(TfJump *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x670A7C
+    destructor Destroy; override; // @addr 0x670AD4
     procedure OnOpen; override; // @addr 0x670CB8
     procedure OnClose; override; // @addr 0x671098
     procedure SelectMusic; override; // @addr 0x671820

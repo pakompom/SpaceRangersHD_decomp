@@ -19,24 +19,24 @@ type
     LightBufferDirty: Boolean; // @offset 0x13A
     LightBuffer: TGraphBufGR; // @offset 0x13C
 
-    constructor Create(Owner: TObjectGI); // @addr 0x4AEA98 @ida "TCircleGI *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, TObjectGI *Owner@<ecx>);"
-    destructor Destroy; override; // @addr 0x4AEB74 @ida "void __usercall $name(TCircleGI *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create(Owner: TObjectGI); // @addr 0x4AEA98
+    destructor Destroy; override; // @addr 0x4AEB74
     procedure Clear; override; // @addr 0x4AEBA8
     procedure SetKind(Value: TCircleKindGI); // @addr 0x4AEC74
     procedure SetColor(Value: Cardinal); // @addr 0x4AED1C
     procedure SetFillColor(Value: Cardinal); // @addr 0x4AED54
-    procedure SetCenter(Value: TPoint); // @addr 0x4AED8C @ida "void __usercall $name(TCircleGI *Self@<eax>, TPoint *Value@<edx>);"
+    procedure SetCenter(Value: TPoint); // @addr 0x4AED8C
     procedure SetRadius(Value: Integer); // @addr 0x4AEDEC
     procedure SetShrLightInner(Value: Byte); // @addr 0x4AEE2C
     procedure SetShrLightOuter(Value: Byte); // @addr 0x4AEE6C
-    procedure SetSize(Size: TPoint); override; // @addr 0x4AEEAC @ida "void __usercall $name(TCircleGI *Self@<eax>, TPoint *Size@<edx>);"
+    procedure SetSize(Size: TPoint); override; // @addr 0x4AEEAC
     procedure SetActive(Enabled: Boolean); override; // @addr 0x4AEEDC
     procedure OnActivate; override; // @addr 0x4AEF34
     procedure OnDeactivate; override; // @addr 0x4AEF50
     procedure LoadFromConfigPath(const Path: WideString); override; // @addr 0x4AEF7C
     procedure LoadFromBlock(Block: TBlockParEC); override; // @addr 0x4AEFB4
     procedure LoadShapeProperties(Block: TBlockParEC); // @addr 0x4AEFDC
-    procedure Draw(ClipRect: TRect); override; // @addr 0x4AF368 @ida "void __usercall $name(TCircleGI *Self@<eax>, TRect *ClipRect@<edx>);" @note "MulLight is unimplemented."
+    procedure Draw(ClipRect: TRect); override; // @addr 0x4AF368 @note "MulLight is unimplemented."
   end;
 
 implementation

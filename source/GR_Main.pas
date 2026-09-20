@@ -62,8 +62,8 @@ type
     Buffer: TBufEC; // @offset $04
     SnapshotHead: PCCSnapshot; // @offset $08
     Lock: TCriticalSection; // @offset 0x0C
-    constructor Create; // @addr $4C6FB0 @ida "TCCInterface *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr $4C702C @ida "void __usercall $name(TCCInterface *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr $4C6FB0
+    destructor Destroy; override; // @addr $4C702C
     procedure Reset; // @addr $4C707C
     function CreateEmptySnapshot: PCCSnapshot; // @addr $4C7218
     function GetSnapshot: PCCSnapshot; // @addr $4C70C4
@@ -106,10 +106,10 @@ procedure CheckRuntimeWatchdog; // @addr $4CB190 @note "Native uses an explicit 
 function MainWindowProc(Window, Message, WParam: Cardinal; LParam: Integer): Integer; stdcall; // @addr $4D22B8
 procedure CaptureSavePreview; // @addr $4D29EC Creates a 300x225 RGB preview and equally sized scratch buffer.
 procedure FreeSavePreviewBuffers; // @addr $4D2A98
-function GetGameUserDirectory: WideString; // @addr 0x4D5028 @ida "void __usercall $name(unsigned __int16 **Result@<eax>);" @note "Returns a trailing directory separator."
+function GetGameUserDirectory: WideString; // @addr 0x4D5028 @note "Returns a trailing directory separator."
 procedure CreateStartupLogFile; // @addr 0x4CB1C8
 function MeasureCpuClockMHz: Double; // @addr $4D41B4 @note "Samples the low 32 bits of RDTSC over 200ms; returns 1500 on an exception."
-function ReadRegistryText(Root: Cardinal; KeyPath, ValueName, DefaultValue: WideString): WideString; // @addr $4D4290 @ida "void __userpurge $name(unsigned int Root@<eax>, unsigned __int16 *KeyPath@<edx>, unsigned __int16 *ValueName@<ecx>, unsigned __int16 *DefaultValue@<^4>, unsigned __int16 **Result@<^0>);" @note "ANSI registry API, fixed 2048-byte buffer, REG_SZ only."
+function ReadRegistryText(Root: Cardinal; KeyPath, ValueName, DefaultValue: WideString): WideString; // @addr $4D4290 @note "ANSI registry API, fixed 2048-byte buffer, REG_SZ only."
 function ReadRegistryInteger(Root: Cardinal; KeyPath, ValueName: WideString; DefaultValue: Integer): Integer; // @addr $4D43D8
 procedure ApplyProcessAffinity; // @addr $4CB144
 procedure CheckPlatformModules; // @addr $4C664C @note "Native entry exits before the retained module/process checks; the entire dormant body is preserved."
@@ -133,9 +133,9 @@ procedure ConfigureDefaultRenderState; // @addr $4D058C
 procedure PreparePresentationParameters; // @addr $4D063C
 procedure FreeScreenRenderBuffers; // @addr $4D1C10
 procedure LogPresentationParameters; // @addr $4D55F8
-function Direct3DErrorText(Code: Integer): AnsiString; // @addr $4D453C @ida "void __usercall $name(int Code@<eax>, char **Result@<edx>);"
+function Direct3DErrorText(Code: Integer): AnsiString; // @addr $4D453C
 procedure GR_DXInit; // @addr 0x4D07C4
-procedure ApplyGammaRamp(Brightness, Contrast: Single); // @addr $4D1C68 @ida "void __userpurge $name(float Brightness@<^4>, float Contrast@<^0>);" @note "Linear RGB ramp with brightness/contrast endpoints; returns when no device is present."
+procedure ApplyGammaRamp(Brightness, Contrast: Single); // @addr $4D1C68 @note "Linear RGB ramp with brightness/contrast endpoints; returns when no device is present."
 procedure GR_DXReset; // @addr 0x4D1A88
 function BeginFramePresentation: Boolean; // @addr $4D25E0 @note "Increments the nesting count and always returns true."
 procedure EndFramePresentation; // @addr $4D25F4 @note "Presents at the outermost level, subject to the frame-rate limit."
@@ -148,11 +148,11 @@ procedure CaptureRecordingFrame; // @addr $4D2BD4 @note "Copies a due software f
 procedure FlushRecordingFrames; // @addr $4D2C54 @note "Writes pending RGB565 frames as sequential Film\\NNNNNN.bmp files."
 function IsVirtualKeyDown(Key: Integer): Boolean; // @addr $4D3C04 @note "Tests bit 15 of GetAsyncKeyState."
 
-function LookupLocalizedTextByKey(const Path: WideString): WideString; // @addr 0x4D3C30 @ida "void __usercall $name(unsigned __int16 *Path@<eax>, unsigned __int16 **Result@<edx>);" @note "Returns one raw value, or a marker containing Path on lookup failure."
-function LookupLocalizedTextOrEmpty(const Path: WideString): WideString; // @addr 0x4D3C50 @ida "void __usercall $name(unsigned __int16 *Path@<eax>, unsigned __int16 **Result@<edx>);" @note "Returns one raw value; missing paths return empty and may create intermediate blocks."
-function FormatUnixDateTime(Value: Cardinal): WideString; // @addr $4D4B30 @ida "void __usercall $name(unsigned int Value@<eax>, unsigned __int16 **Result@<edx>);"
+function LookupLocalizedTextByKey(const Path: WideString): WideString; // @addr 0x4D3C30 @note "Returns one raw value, or a marker containing Path on lookup failure."
+function LookupLocalizedTextOrEmpty(const Path: WideString): WideString; // @addr 0x4D3C50 @note "Returns one raw value; missing paths return empty and may create intermediate blocks."
+function FormatUnixDateTime(Value: Cardinal): WideString; // @addr $4D4B30
 
-function GiResourceSuffix: WideString; // @addr 0x4D3CA0 @ida "void __usercall $name(unsigned __int16 **Result@<eax>);" @note "Always returns 2 in this binary."
+function GiResourceSuffix: WideString; // @addr 0x4D3CA0 @note "Always returns 2 in this binary."
 function GiResourceVariant: Integer; // @addr $4D3C8C @note "Always returns 2; variant 1 retains the legacy quest-picture downscaling branch."
 procedure AppendLogLineThreadSafe(const Text: AnsiString); // @addr 0x4D3CF4 @note "Appends a line to the session log and closes the file. The lock is not released if a write raises."
 procedure AppendDebugLogLine(const Text: AnsiString); // @addr $4D3DB4 Creates #####add.log when absent; native unchecked TextFile I/O.
@@ -235,7 +235,7 @@ procedure Ex_OKGR_Circle_DrawClip_BYTE(Pixels: Pointer; Pitch, X, Y, Radius: Int
 procedure Ex_OKGR_Circle_DrawFillClip_WORD(Pixels: Pointer; Pitch, X, Y, Radius: Integer; Color: Word; const Clip: TRect); // @addr 0x4CA638
 procedure Ex_OKGR_Circle_DrawFillClip_BYTE(Pixels: Pointer; Pitch, X, Y, Radius: Integer; Color: Byte; const Clip: TRect); // @addr 0x4CA6E0
 function Ex_OKGR_Line_Clip(var X1, Y1, X2, Y2: Integer; const Clip: TRect): Integer; // @addr $4CA788 @ida "int __userpurge $name@<eax>(int *X1@<eax>, int *Y1@<edx>, int *X2@<ecx>, int *Y2@<^4>, const TRect *Clip@<^0>);"
-procedure DrawGradientLine16Clipped(Pixels: Pointer; Pitch, X1, Y1: Integer; Color1: Cardinal; X2, Y2: Integer; Color2: Cardinal; Clip: TRect); // @addr $4D3B88 @ida "void __userpurge $name(void *Pixels@<eax>, int Pitch@<edx>, int X1@<ecx>, int Y1@<^20>, unsigned int Color1@<^16>, int X2@<^12>, int Y2@<^8>, unsigned int Color2@<^4>, TRect *Clip@<^0>);" @note "Native implementation ignores Pixels/Pitch and draws into ScreenRenderBuffer."
+procedure DrawGradientLine16Clipped(Pixels: Pointer; Pitch, X1, Y1: Integer; Color1: Cardinal; X2, Y2: Integer; Color2: Cardinal; Clip: TRect); // @addr $4D3B88 @note "Native implementation ignores Pixels/Pitch and draws into ScreenRenderBuffer."
 function Ex_OKGR_LineColor_Clip(var X1, Y1: Integer; var Color1: Cardinal; var X2, Y2: Integer; var Color2: Cardinal; const Clip: TRect): Integer; // @addr $4CA820 @ida "int __userpurge $name@<eax>(int *X1@<eax>, int *Y1@<edx>, unsigned int *Color1@<ecx>, int *X2@<^12>, int *Y2@<^8>, unsigned int *Color2@<^4>, const TRect *Clip@<^0>);"
 procedure Ex_OKGR_Line_Draw_WORD(Pixels: Pointer; Pitch, X1, Y1, X2, Y2: Integer; Color: Word); // @addr 0x4CA8C8
 procedure Ex_OKGR_Line_DrawClip_WORD(Pixels: Pointer; Pitch, X1, Y1, X2, Y2: Integer; Color: Word; const Clip: TRect); // @addr 0x4CA968
@@ -262,25 +262,25 @@ function GiScalePixelsEx(Value, AlternateValue: Integer): Integer; // @addr 0x4D
 procedure RaiseWideMessage(const Message: WideString); // @addr 0x4D44E0 @note "Converts the borrowed UTF-16 message to AnsiString and raises Exception."
 
 procedure DrawTransparentBuffer16(Dest: Pointer; Pitch, X, Y: Integer; Source: Pointer; Clip: TRect; HalfAlpha: Boolean); // @addr $4D2EFC @ida "void __userpurge $name(void *Dest@<eax>, int Pitch@<edx>, int X@<ecx>, int Y@<^12>, void *Source@<^8>, TRect *Clip@<^4>, unsigned __int8 HalfAlpha@<^0>);"
-procedure CopyPalettedBuffer16Clipped(Dest: Pointer; DestPitch, X, Y: Integer; Source, Palette: Pointer; SourcePitch, Width, Height: Integer; Clip: TRect); // @addr $4D2F78 @ida "void __userpurge $name(void *Dest@<eax>, int DestPitch@<edx>, int X@<ecx>, int Y@<^24>, void *Source@<^20>, void *Palette@<^16>, int SourcePitch@<^12>, int Width@<^8>, int Height@<^4>, TRect *Clip@<^0>);"
+procedure CopyPalettedBuffer16Clipped(Dest: Pointer; DestPitch, X, Y: Integer; Source, Palette: Pointer; SourcePitch, Width, Height: Integer; Clip: TRect); // @addr $4D2F78
 procedure CopyBuffer16Clipped(Dest: Pointer; DestPitch, X, Y: Integer; Source: Pointer; SourcePitch, Width, Height: Integer; Clip: TRect; UnusedOption: Boolean); // @addr $4D31DC @ida "void __userpurge $name(void *Dest@<eax>, int DestPitch@<edx>, int X@<ecx>, int Y@<^24>, void *Source@<^20>, int SourcePitch@<^16>, int Width@<^12>, int Height@<^8>, TRect *Clip@<^4>, unsigned __int8 UnusedOption@<^0>);"
-procedure DrawAlphaBuffer16Clipped(Dest: Pointer; DestPitch, X, Y: Integer; Source: Pointer; SourcePitch, Width, Height: Integer; Clip: TRect); // @addr $4D352C @ida "void __userpurge $name(void *Dest@<eax>, int DestPitch@<edx>, int X@<ecx>, int Y@<^20>, void *Source@<^16>, int SourcePitch@<^12>, int Width@<^8>, int Height@<^4>, TRect *Clip@<^0>);"
+procedure DrawAlphaBuffer16Clipped(Dest: Pointer; DestPitch, X, Y: Integer; Source: Pointer; SourcePitch, Width, Height: Integer; Clip: TRect); // @addr $4D352C
 procedure ExpandPaletteToBgra(Dest: Pointer; DestPitch: Integer; Width, Height: Cardinal; Source: Pointer; SourcePitch: Integer; Palette: Pointer); // @addr $4D3758
 
 function GetStyleColorGI(StyleName: WideString; DefaultRed, DefaultGreen, DefaultBlue: Integer): Cardinal; // @addr 0x4D4D78 @note "Uses Data.StyleColor from Main.dat and the current pixel format. Missing entries use the defaults; malformed configured RGB text may raise."
-function GetStyleColorTagGI(StyleName: WideString; DefaultRed, DefaultGreen, DefaultBlue: Integer): WideString; // @addr 0x4D4ECC @ida "void __userpurge $name(unsigned __int16 *StyleName@<eax>, int DefaultRed@<edx>, int DefaultGreen@<ecx>, int DefaultBlue@<^4>, unsigned __int16 **Result@<^0>);" @note "Returns a complete opening <color=...> tag. Configured Data.StyleColor text is inserted verbatim; missing entries use the default RGB values."
+function GetStyleColorTagGI(StyleName: WideString; DefaultRed, DefaultGreen, DefaultBlue: Integer): WideString; // @addr 0x4D4ECC @note "Returns a complete opening <color=...> tag. Configured Data.StyleColor text is inserted verbatim; missing entries use the default RGB values."
 
-procedure CopyGraphBuffer16Clipped(Dest: Pointer; DestPitch, X, Y: Integer; Source: TGraphBufGR; Clip: TRect; HalfAlpha, UnusedOption: Boolean); // @addr $4D3080 @ida "void __userpurge $name(void *Dest@<eax>, int DestPitch@<edx>, int X@<ecx>, int Y@<^16>, TGraphBufGR *Source@<^12>, TRect *Clip@<^8>, bool HalfAlpha@<^4>, bool UnusedOption@<^0>);"
+procedure CopyGraphBuffer16Clipped(Dest: Pointer; DestPitch, X, Y: Integer; Source: TGraphBufGR; Clip: TRect; HalfAlpha, UnusedOption: Boolean); // @addr $4D3080
 
-procedure DrawAlphaGraphBuffer16Clipped(Dest: Pointer; DestPitch, X, Y: Integer; Source: TGraphBufGR; Clip: TRect); // @addr $4D3408 @ida "void __userpurge $name(void *Dest@<eax>, int DestPitch@<edx>, int X@<ecx>, int Y@<^8>, TGraphBufGR *Source@<^4>, TRect *Clip@<^0>);"
+procedure DrawAlphaGraphBuffer16Clipped(Dest: Pointer; DestPitch, X, Y: Integer; Source: TGraphBufGR; Clip: TRect); // @addr $4D3408
 
-procedure CopyTransparentGraphBuffer16Clipped(Dest: Pointer; DestPitch, X, Y: Integer; Source: TGraphBufGR; Clip: TRect; TransparentColor: Word); // @addr $4D32E0 @ida "void __userpurge $name(void *Dest@<eax>, int DestPitch@<edx>, int X@<ecx>, int Y@<^12>, TGraphBufGR *Source@<^8>, TRect *Clip@<^4>, unsigned __int16 TransparentColor@<^0>);"
+procedure CopyTransparentGraphBuffer16Clipped(Dest: Pointer; DestPitch, X, Y: Integer; Source: TGraphBufGR; Clip: TRect; TransparentColor: Word); // @addr $4D32E0
 
-procedure DrawPaletteAlphaBuffer16Clipped(Dest: Pointer; DestPitch, X, Y: Integer; Source: TGraphBufPalGR; Clip: TRect); // @addr $4D3630 @ida "void __userpurge $name(void *Dest@<eax>, int DestPitch@<edx>, int X@<ecx>, int Y@<^8>, TGraphBufPalGR *Source@<^4>, TRect *Clip@<^0>);"
+procedure DrawPaletteAlphaBuffer16Clipped(Dest: Pointer; DestPitch, X, Y: Integer; Source: TGraphBufPalGR; Clip: TRect); // @addr $4D3630
 
-procedure BlendPaletteBuffer16Clipped(Dest: Pointer; DestPitch, X, Y: Integer; Source: TGraphBufPalGR; Clip: TRect); // @addr $4D383C @ida "void __userpurge $name(void *Dest@<eax>, int DestPitch@<edx>, int X@<ecx>, int Y@<^8>, TGraphBufPalGR *Source@<^4>, TRect *Clip@<^0>);"
+procedure BlendPaletteBuffer16Clipped(Dest: Pointer; DestPitch, X, Y: Integer; Source: TGraphBufPalGR; Clip: TRect); // @addr $4D383C
 
-function GetClipboardWideText: WideString; // @addr $4D536C @ida "void __usercall $name(unsigned __int16 **Result@<eax>);"
+function GetClipboardWideText: WideString; // @addr $4D536C
 procedure SetClipboardWideText(Text: WideString); // @addr $4D53EC
 procedure WriteTextFileThreadSafe(FileName, Text: AnsiString); // @addr $4D3F00
 
@@ -754,7 +754,7 @@ var
   Entry: TModuleEntry32;
 
   // @nested $4C6540 MatchesModuleDirectoryPrefix
-  function MatchesModuleDirectoryPrefix(Prefix, Path: AnsiString): Boolean; // @addr $4C6540 @ida "bool __usercall $name@<al>(char *Prefix@<eax>, char *Path@<edx>, void *ParentFrame@<^0>);" @stackpop 0 @calls "0x4C673D" @note "Nested helper. Requires Prefix no longer than Path, but compares only characters 1 through Length(Prefix)-1."
+  function MatchesModuleDirectoryPrefix(Prefix, Path: AnsiString): Boolean; // @addr $4C6540 @calls "0x4C673D" @note "Nested helper. Requires Prefix no longer than Path, but compares only characters 1 through Length(Prefix)-1."
   var
     CharacterIndex, CharacterCount: Integer;
   begin
@@ -2546,7 +2546,7 @@ procedure LoadDatConfigAndModOverrides;
 var ModNames, ModPath: WideString; HasOverrides: Boolean; Block: TBlockParEC;
   Data: TDataEC; Index: Integer;
   // @nested $4CC57C LoadBlockDatConfig
-  procedure LoadBlockDatConfig(Root: TBlockParEC; FileName: WideString); // @ida "void __usercall $name(TBlockParEC *Root@<eax>, unsigned __int16 *FileName@<edx>, void *ParentFrame@<^0>);" @stackpop 0 @calls "0x4CC7E7,0x4CC89C,0x4CC93B,0x4CCA24" @addr 0x4CC57C @note "An empty tree produces a log warning, not an exception from this wrapper."
+  procedure LoadBlockDatConfig(Root: TBlockParEC; FileName: WideString); // @calls "0x4CC7E7,0x4CC89C,0x4CC93B,0x4CCA24" @addr 0x4CC57C @note "An empty tree produces a log warning, not an exception from this wrapper."
   begin
     Root.LoadFromEncryptedDatFile(FileName);
     if (Root.GetBlockCount <= 0) and (Root.GetParamCount <= 0) then
@@ -2554,7 +2554,7 @@ var ModNames, ModPath: WideString; HasOverrides: Boolean; Block: TBlockParEC;
   end;
 
   // @nested $4CC660 LoadCacheDatConfig
-  procedure LoadCacheDatConfig(Root: TDataEC; FileName: WideString); // @ida "void __usercall $name(TDataEC *Root@<eax>, unsigned __int16 *FileName@<edx>, void *ParentFrame@<^0>);" @stackpop 0 @calls "0x4CCA99,0x4CCB4E" @addr 0x4CC660
+  procedure LoadCacheDatConfig(Root: TDataEC; FileName: WideString); // @calls "0x4CCA99,0x4CCB4E" @addr 0x4CC660
   begin
     Root.LoadFromEncryptedDatFile(FileName);
     if Root.IsEmpty then AppendLogLineThreadSafe('Warning! <' + FileName + '> is empty!');
@@ -2683,7 +2683,7 @@ var
   MemoryStatus: TMemoryStatusEx;
 
   // @nested $4CCE28 VerifyStartupModuleChecksum
-  procedure VerifyStartupModuleChecksum; // @addr $4CCE28 @ida "void __usercall $name(void *ParentFrame@<^0>);" @stackpop 0 @calls "0x4ce8e4,0x4ce91e,0x4ce946,0x4ce96e,0x4ce996,0x4ce9be,0x4cea0b,0x4cea3b,0x4cea6b" @note "Nested startup helper; checks the module path at parent-frame -4 and writes the signed integrity marker."
+  procedure VerifyStartupModuleChecksum; // @addr $4CCE28 @calls "0x4ce8e4,0x4ce91e,0x4ce946,0x4ce96e,0x4ce996,0x4ce9be,0x4cea0b,0x4cea3b,0x4cea6b" @note "Nested startup helper; checks the module path at parent-frame -4 and writes the signed integrity marker."
   var
     MarkerOffset: Integer;
   begin
@@ -4904,7 +4904,7 @@ end;
 procedure LogPresentationParameters;
 var CurrentValue, PreviousValue: Cardinal; Text: WideString;
   // @nested $4D548C LogPresentationField
-  procedure LogPresentationField(Name: WideString); // @addr $4D548C @ida "void __usercall $name(unsigned __int16 *Name@<eax>, void *ParentFrame@<^0>);" @stackpop 0 @calls "0x4D5638,0x4D5654,0x4D5670,0x4D568C,0x4D56A8,0x4D56C4,0x4D56E0,0x4D56FC,0x4D5732,0x4D5768,0x4D5784,0x4D57A0,0x4D57BC,0x4D57D8"
+  procedure LogPresentationField(Name: WideString); // @addr $4D548C @calls "0x4D5638,0x4D5654,0x4D5670,0x4D568C,0x4D56A8,0x4D56C4,0x4D56E0,0x4D56FC,0x4D5732,0x4D5768,0x4D5784,0x4D57A0,0x4D57BC,0x4D57D8"
   begin
     if CurrentValue = PreviousValue then
       Text := Name + ' = ' + SysUtils.IntToStr(Int64(CurrentValue))

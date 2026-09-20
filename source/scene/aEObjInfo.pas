@@ -111,8 +111,8 @@ type
     Missiles: array of TEOTMissile; // @offset $1C
     CustomSystemInfos: array of TEOTCustomStarInfo; // @offset $20
 
-    constructor Create; // @addr $6A21C0 @ida "TEObjInfo *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr $6A2204 @ida "void __usercall $name(TEObjInfo *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr $6A21C0
+    destructor Destroy; override; // @addr $6A2204
     procedure Clear; // @addr $6A2240
     procedure LoadFromStar(Star: TStar); // @addr $6A22C4
     function FindPlanet(ObjectId: Cardinal): PEPlanetInfo; // @addr $6A3624 Borrowed pointer into the snapshot array.

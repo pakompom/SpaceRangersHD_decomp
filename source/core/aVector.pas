@@ -30,22 +30,22 @@ type
     AreaValid: Boolean; // @offset $24
     Bounds: TRectF; // @offset $28
     Flag39: Boolean; // @offset $39  Cleared on geometry changes; other meaning unresolved.
-    constructor Create; // @addr 0x4D9E9C @ida "TPolygon2D * __usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    constructor CreateTriangle(A, B, C: TPointF); // @addr $4D9F5C @ida "TPolygon2D *__userpurge $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, TPointF *A@<ecx>, TPointF *B@<^4>, TPointF *C@<^0>);"
-    destructor Destroy; override; // @addr $4DA048 @ida "void __usercall $name(TPolygon2D *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x4D9E9C
+    constructor CreateTriangle(A, B, C: TPointF); // @addr $4D9F5C
+    destructor Destroy; override; // @addr $4DA048
     procedure Clear; // @addr $4DA094
-    procedure SetRectangle(Rect: TRect); // @addr $4DA14C @ida "void __usercall $name(TPolygon2D *Self@<eax>, TRect *Rect@<edx>);"
+    procedure SetRectangle(Rect: TRect); // @addr $4DA14C
     procedure TakePoints(NewPoints: TList); // @addr $4DA2B0 @note "Takes ownership of the list and its PPointF entries."
-    procedure SetTriangle(A, B, C: TPointF); // @addr $4DA2F4 @ida "void __userpurge $name(TPolygon2D *Self@<eax>, TPointF *A@<edx>, TPointF *B@<ecx>, TPointF *C@<^0>);"
+    procedure SetTriangle(A, B, C: TPointF); // @addr $4DA2F4
     procedure RecalculateBounds; // @addr $4DA3C0
     procedure InsertAfter(Polygon: TPolygon2D); // @addr $4DA558
-    procedure SplitChainByLine(A, B, C: Single); // @addr $4DA59C @ida "void __userpurge $name(TPolygon2D *Self@<eax>, float A@<^8>, float B@<^4>, float C@<^0>);"
-    procedure SplitChainByPoints(First, Last: TPointF); // @addr $4DA92C @ida "void __usercall $name(TPolygon2D *Self@<eax>, TPointF *First@<edx>, TPointF *Last@<ecx>);"
+    procedure SplitChainByLine(A, B, C: Single); // @addr $4DA59C
+    procedure SplitChainByPoints(First, Last: TPointF); // @addr $4DA92C
     function ExtractFollowingGroup(Id: Integer): TPolygon2D; // @addr $4DA974
-    function ContainsPoint(Point: TPointF): Boolean; // @addr $4DAA3C @ida "bool __usercall $name@<al>(TPolygon2D *Self@<eax>, TPointF *Point@<edx>);"
-    function ChainContainsPoint(Point: TPointF): Boolean; // @addr $4DAB34 @ida "bool __usercall $name@<al>(TPolygon2D *Self@<eax>, TPointF *Point@<edx>);"
-    function FindContainingPolygon(Point: TPointF): TPolygon2D; // @addr $4DAB84 @ida "TPolygon2D *__usercall $name@<eax>(TPolygon2D *Self@<eax>, TPointF *Point@<edx>);"
-    function AssignGroupAtPoint(Point: TPointF; Id: Integer): Boolean; // @addr $4DABD0 @ida "bool __usercall $name@<al>(TPolygon2D *Self@<eax>, TPointF *Point@<edx>, int Id@<ecx>);"
+    function ContainsPoint(Point: TPointF): Boolean; // @addr $4DAA3C
+    function ChainContainsPoint(Point: TPointF): Boolean; // @addr $4DAB34
+    function FindContainingPolygon(Point: TPointF): TPolygon2D; // @addr $4DAB84
+    function AssignGroupAtPoint(Point: TPointF; Id: Integer): Boolean; // @addr $4DABD0
     function ExtractBoundaryEdges: TList; // @addr $4DAC2C
     function MergeUnsharedEdges(First, Second: TList): TList; // @addr $4DAC88 @note "Consumes both lists and frees their edge records."
     function ExtractEdges: TList; // @addr $4DAEC8 @note "Caller owns the list and its PPolygonEdge entries."
@@ -54,34 +54,34 @@ type
     function GetArea: Single; // @addr $4DB044 @note "The first uncached call fills CachedArea but returns zero; later calls return the cache."
     function GetChainArea: Single; // @addr $4DB1D4
     function IntersectsPolygon(Polygon: TPolygon2D): Boolean; // @addr $4DB214
-    function IntersectsEdge(Edge: PPolygonEdge): Boolean; // @addr $4DB2AC @ida "bool __usercall $name@<al>(TPolygon2D *Self@<eax>, TPolygonEdge *Edge@<edx>);"
-    function IntersectsSegment(First, Last: TPointF): Boolean; // @addr $4DB378 @ida "bool __usercall $name@<al>(TPolygon2D *Self@<eax>, TPointF *First@<edx>, TPointF *Last@<ecx>);"
+    function IntersectsEdge(Edge: PPolygonEdge): Boolean; // @addr $4DB2AC
+    function IntersectsSegment(First, Last: TPointF): Boolean; // @addr $4DB378
     function ChainSelfIntersects: Boolean; // @addr $4DB3C0
     function IntersectsChain(Polygon: TPolygon2D): Boolean; // @addr $4DB42C
     procedure Append(Polygon: TPolygon2D); // @addr 0x4DA504 @note "Appends at the tail and sets Polygon.Previous; requires nonnil Polygon."
     function CountChain: Integer; // @addr 0x4DAFD0 @note "Includes Self; nil returns zero."
   end;
 
-function PerpendicularVector(Point: TPointF): TPointF; // @addr $4D94E8 @ida "void __usercall $name(TPointF *Point@<eax>, TPointF *Result@<edx>);"
-function DotProductF(Left, Right: TPointF): Single; // @addr $4D9514 @ida "float __usercall $name@<st0>(TPointF *Left@<eax>, TPointF *Right@<edx>);"
-function VectorLengthF(Point: TPointF): Single; // @addr $4D9548 @ida "float __usercall $name@<st0>(TPointF *Point@<eax>);"
-function IsRightOfDirectedLine(Point, Origin, Direction: TPointF): Boolean; // @addr $4D957C @ida "bool __usercall $name@<al>(TPointF *Point@<eax>, TPointF *Origin@<edx>, TPointF *Direction@<ecx>);"
-function IsLeftOfDirectedLine(Point, Origin, Direction: TPointF): Boolean; // @addr $4D95F4 @ida "bool __usercall $name@<al>(TPointF *Point@<eax>, TPointF *Origin@<edx>, TPointF *Direction@<ecx>);"
+function PerpendicularVector(Point: TPointF): TPointF; // @addr $4D94E8
+function DotProductF(Left, Right: TPointF): Single; // @addr $4D9514
+function VectorLengthF(Point: TPointF): Single; // @addr $4D9548
+function IsRightOfDirectedLine(Point, Origin, Direction: TPointF): Boolean; // @addr $4D957C
+function IsLeftOfDirectedLine(Point, Origin, Direction: TPointF): Boolean; // @addr $4D95F4
 function MakeVectorF(X, Y: Single): TPointF; // @addr $4D966C @ida "void __userpurge $name(TPointF *Result@<eax>, float X@<^4>, float Y@<^0>);"
-function VectorBetweenPoints(First, Last: TPointF): TPointF; // @addr $4D968C @ida "void __usercall $name(TPointF *First@<eax>, TPointF *Last@<edx>, TPointF *Result@<ecx>);"
-procedure GetLineEquation(First, Last: TPointF; var A, B, C: Single); // @addr $4D96C4 @ida "void __userpurge $name(TPointF *First@<eax>, TPointF *Last@<edx>, float *A@<ecx>, float *B@<^4>, float *C@<^0>);"
-function IntersectLinesF(First1, Last1, First2, Last2: TPointF): TPointF; // @addr $4D9780 @ida "void __userpurge $name(TPointF *First1@<eax>, TPointF *Last1@<edx>, TPointF *First2@<ecx>, TPointF *Last2@<^4>, TPointF *Result@<^0>);"
+function VectorBetweenPoints(First, Last: TPointF): TPointF; // @addr $4D968C
+procedure GetLineEquation(First, Last: TPointF; var A, B, C: Single); // @addr $4D96C4
+function IntersectLinesF(First1, Last1, First2, Last2: TPointF): TPointF; // @addr $4D9780
 function IntersectSegmentWithLine(First, Last: TPointF; A, B, C: Single; var Intersection: TPointF): Boolean; // @addr $4D9874 @ida "bool __userpurge $name@<al>(TPointF *First@<eax>, TPointF *Last@<edx>, TPointF *Intersection@<ecx>, float A@<^8>, float B@<^4>, float C@<^0>);"
-function IntersectSegmentWithDirectedLine(First, Last, LineFirst, LineLast: TPointF; var Intersection: TPointF): Boolean; // @addr $4D999C @ida "bool __userpurge $name@<al>(TPointF *First@<eax>, TPointF *Last@<edx>, TPointF *LineFirst@<ecx>, TPointF *LineLast@<^4>, TPointF *Intersection@<^0>);"
-function IntersectSegmentsF(First1, Last1, First2, Last2: TPointF; var Intersection: TPointF): Boolean; // @addr $4D9A2C @ida "bool __userpurge $name@<al>(TPointF *First1@<eax>, TPointF *Last1@<edx>, TPointF *First2@<ecx>, TPointF *Last2@<^4>, TPointF *Intersection@<^0>);"
+function IntersectSegmentWithDirectedLine(First, Last, LineFirst, LineLast: TPointF; var Intersection: TPointF): Boolean; // @addr $4D999C
+function IntersectSegmentsF(First1, Last1, First2, Last2: TPointF; var Intersection: TPointF): Boolean; // @addr $4D9A2C
 function MakeRectF(Left, Top, Right, Bottom: Single): TRectF; // @addr $4D9A98 @ida "void __userpurge $name(TRectF *Result@<eax>, float Left@<^12>, float Top@<^8>, float Right@<^4>, float Bottom@<^0>);"
-function RectFromPointsF(First, Last: TPointF): TRectF; // @addr $4D9AC8 @ida "void __usercall $name(TPointF *First@<eax>, TPointF *Last@<edx>, TRectF *Result@<ecx>);"
-function PointsNearlyEqualF(First, Last: TPointF): Boolean; // @addr $4D9B0C @ida "bool __usercall $name@<al>(TPointF *First@<eax>, TPointF *Last@<edx>);"
-function SegmentsNearlyEqualF(First1, Last1, First2, Last2: TPointF): Boolean; // @addr $4D9B70 @ida "bool __userpurge $name@<al>(TPointF *First1@<eax>, TPointF *Last1@<edx>, TPointF *First2@<ecx>, TPointF *Last2@<^0>);"
-function ScalarsNearlyEqualF(First, Last: Single): Boolean; // @addr $4D9BE8 @ida "bool __userpurge $name@<al>(float First@<^4>, float Last@<^0>);"
-function PointDistanceF(First, Last: TPointF): Single; // @addr $4D9C20 @ida "float __usercall $name@<st0>(TPointF *First@<eax>, TPointF *Last@<edx>);"
-function PointSegmentDistanceF(First, Last, Point: TPointF): Single; // @addr $4D9C5C @ida "float __usercall $name@<st0>(TPointF *First@<eax>, TPointF *Last@<edx>, TPointF *Point@<ecx>);"
-function ClassifyPointToSegment(First, Last, Point: TPointF): Integer; // @addr $4D9D20 @ida "int __usercall $name@<eax>(TPointF *First@<eax>, TPointF *Last@<edx>, TPointF *Point@<ecx>);"
+function RectFromPointsF(First, Last: TPointF): TRectF; // @addr $4D9AC8
+function PointsNearlyEqualF(First, Last: TPointF): Boolean; // @addr $4D9B0C
+function SegmentsNearlyEqualF(First1, Last1, First2, Last2: TPointF): Boolean; // @addr $4D9B70
+function ScalarsNearlyEqualF(First, Last: Single): Boolean; // @addr $4D9BE8
+function PointDistanceF(First, Last: TPointF): Single; // @addr $4D9C20
+function PointSegmentDistanceF(First, Last, Point: TPointF): Single; // @addr $4D9C5C
+function ClassifyPointToSegment(First, Last, Point: TPointF): Integer; // @addr $4D9D20
 
 implementation
 

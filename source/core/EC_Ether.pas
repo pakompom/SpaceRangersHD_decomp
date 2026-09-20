@@ -23,8 +23,8 @@ type
     Count: Integer; // @offset $0C
     SortedItems: PEtherIndex; // @offset $10
     Lock: TCriticalSection; // @offset $14
-    constructor Create; // @addr $4DC840 @ida "TEther *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr $4DC894 @ida "void __usercall $name(TEther *Self@<eax>, __int8 DestroyFlags@<dl>);" @note "Native destructor leaves the critical section; it does not free the lock or clear entries."
+    constructor Create; // @addr $4DC840
+    destructor Destroy; override; // @addr $4DC894 @note "Native destructor leaves the critical section; it does not free the lock or clear entries."
     procedure Clear; // @addr $4DC8D0
     function AppendEntry: TEtherUnit; // @addr $4DC918
     procedure RemoveEntry(Item: TEtherUnit); // @addr $4DC984 @note "Unlinks and frees the entry without updating SortedItems or Count."

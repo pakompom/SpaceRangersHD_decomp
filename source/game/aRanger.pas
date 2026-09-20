@@ -57,7 +57,7 @@ type
     BaseNodes: Integer; // @offset 0x52C
     ProgramCounts: array[0..11] of Integer; // @offset 0x530
 
-    destructor Destroy; override; // @addr 0x724D3C @ida "void __usercall $name(TRanger *Self@<eax>, __int8 DestroyFlags@<dl>);" @note "Requires registered ranger/home-planet state. Removes quests and relation-column entries, adjusts the player index and refreshes galaxy ratings."
+    destructor Destroy; override; // @addr 0x724D3C @note "Requires registered ranger/home-planet state. Removes quests and relation-column entries, adjusts the player index and refreshes galaxy ratings."
     procedure InitializeAtPlanet(Planet: TPlanet; InitialMoney: Integer); virtual; // @addr 0x72528C @slot 0xD0 @note "For a fresh inherited TNormalShip instance; creates loadout, career, quests and relation entries and registers it in the galaxy."
     procedure RegisterInGalaxyRelations; // @addr 0x725C04 @note "Appends Self and relation entries; requires an unregistered ranger with initialized lists."
     procedure SaveToBuffer(Buffer: TBufEC); override; // @addr 0x725DA8 @slot 0x00
@@ -69,7 +69,7 @@ type
     function GetGreetingShipCategory: Byte; override; // @addr 0x727B68 @slot 0x30 @note "Returns the ranger category used by ship-greeting filters."
     function GetStrengthScaledPirateStatus: TPercent; override; // @addr 0x727F64 @slot 0x3C @note "Rounded pirate career status times StrengthInBestRanger, clamped to 0..100."
     function GetDesiredCargoFreeSpace: Integer; override; // @addr 0x727FB8 @slot 0x40
-    function GetObjectInfoText(Instance: TObject): WideString; // @addr 0x72805C @ida "void __usercall $name(TRanger *Self@<eax>, TObject *Instance@<edx>, unsigned __int16 **Result@<ecx>);" @note "Dispatches by object class and radar distance; unsupported objects yield unknown object."
+    function GetObjectInfoText(Instance: TObject): WideString; // @addr 0x72805C @note "Dispatches by object class and radar distance; unsupported objects yield unknown object."
     function GetEstimatedMemoryUsage: Integer; override; // @addr 0x728278 @slot 0x44 @note "Native estimate omits quest/program allocations."
     procedure RefuelAtLocation; override; // @addr 0x728444 @slot 0x48 @note "Only buys a full refill when its positive cost is affordable."
     procedure SimulateUnseenProgression; // @addr 0x7284B0 @note "Can grant money, experience, equipment, awards and simulated kills; requires the unseen-day threshold, a player and unresolved Dominators."
@@ -90,7 +90,7 @@ type
     procedure TryOfferRansomToPursuer; // @addr 0x72C3B0
     function AcceptsRansomDemandFrom(Ship: TShip): Boolean; override; // @addr 0x72C6E8 @slot 0x88
 
-    procedure ApplyAttackReputationChanges(Victim: TShip; Severity: Double); // @addr 0x72C7C0 @ida "void __userpurge $name(TRanger *Self@<eax>, TShip *Victim@<edx>, double Severity@<^0>);" @note "Propagates reactions among nearby ships/planets; can update player achievements. Script-bound victims suppress the relation pass."
+    procedure ApplyAttackReputationChanges(Victim: TShip; Severity: Double); // @addr 0x72C7C0 @note "Propagates reactions among nearby ships/planets; can update player achievements. Script-bound victims suppress the relation pass."
     procedure ApplyExtortionReputationPenalty(Victim: TShip); // @addr 0x72CDA0 @note "Also adds pirate career activity and improves the main pirate planet's relation."
     procedure TryRecruitWingman; // @addr 0x72CFC8
     procedure CheckForPartnershipBreakup; // @addr 0x72D468
@@ -111,24 +111,24 @@ type
     function BuildAttackRequestResponse(Requester: TShip; var Response: WideString; Target: TShip): Boolean; override; // @addr 0x730C40 @slot 0xB4 @note "May change relations/career activity even on refusal; acceptance issues a joint attack."
     function BuildPartnershipOfferResponse(OtherShip: TShip; var Response: WideString; PaymentAmount: Integer): Boolean; override; // @addr 0x7312A0 @slot 0xBC @note "Checks eligibility and formats refusal text; OtherShip must be a ranger. Success does not clear preexisting Response."
     function AcceptPartnershipOffer(OtherShip: TShip; var Response: WideString; PaymentAmount: Integer): Boolean; override; // @addr 0x73168C @slot 0xB8 @note "Calls the eligibility method, then sets PartnerShip/duration and transfers payment. Requires a ranger requester."
-    function GetProgramName(ProgramIndex: Byte): WideString; // @addr 0x73187C @ida "void __usercall $name(TRanger *Self@<eax>, unsigned __int8 ProgramIndex@<dl>, unsigned __int16 **Result@<ecx>);"
-    function GetProgramInfoText(ProgramIndex: Byte): WideString; // @addr 0x731920 @ida "void __usercall $name(TRanger *Self@<eax>, unsigned __int8 ProgramIndex@<dl>, unsigned __int16 **Result@<ecx>);"
+    function GetProgramName(ProgramIndex: Byte): WideString; // @addr 0x73187C
+    function GetProgramInfoText(ProgramIndex: Byte): WideString; // @addr 0x731920
     function CountProgramsInFilter(Filter: TRangerProgramMask): Integer; // @addr 0x731A80 @note "Sums owned quantities for bits 0..11; higher bits are ignored. Native signed 32-bit additions wrap on overflow."
     function SelectRandomProgramIdFromFilter(Filter: TRangerProgramMask): Byte; // @addr 0x731AC8 @note "Selects an allowed ID regardless of inventory counts; deterministic system/turn seed. Empty filter returns zero after 10000 attempts."
     function SelectProgramReward: Byte; // @addr 0x731B38 @note "Favors program 5 until enough copies exist; otherwise selects among IDs 6..11."
     function GetProgramRewardCount(ProgramIndex: Byte): Integer; // @addr 0x731BA4 @note "At least one; uses galaxy seed, turn and difficulty."
-    function AdjustItemEvaluation(Item: TItem; PriceMode: Byte; Effectiveness: Single): Single; override; // @addr 0x731C88 @slot 0x50 @ida "float __userpurge $name@<st0>(TRanger *Self@<eax>, TItem *Item@<edx>, unsigned __int8 PriceMode@<cl>, float Effectiveness@<^0>);"
+    function AdjustItemEvaluation(Item: TItem; PriceMode: Byte; Effectiveness: Single): Single; override; // @addr 0x731C88 @slot 0x50
     function EvaluateStatBonus(BonusKind: TEquipmentBonusKind; Value: Integer): Single; override; // @addr 0x7322A8 @slot 0x54
-    function EvaluateWeaponDamage(Weapon: TWeapon; IncludeAdditiveBonuses: Boolean; BaseDamage: Single): Single; override; // @addr 0x733250 @slot 0x58 @ida "float __userpurge $name@<st0>(TRanger *Self@<eax>, TWeapon *Weapon@<edx>, bool IncludeAdditiveBonuses@<cl>, float BaseDamage@<^0>);"
+    function EvaluateWeaponDamage(Weapon: TWeapon; IncludeAdditiveBonuses: Boolean; BaseDamage: Single): Single; override; // @addr 0x733250 @slot 0x58
     function AcceptPickupItem(Item: TItem): Boolean; override; // @addr 0x733CFC @slot 0x94 @note "Always true."
-    function AcceptPickupDistance(Item: TItem; Distance: Double): Boolean; override; // @addr 0x733D14 @slot 0x98 @ida "bool __userpurge $name@<al>(TRanger *Self@<eax>, TItem *Item@<edx>, double Distance@<^0>);"
+    function AcceptPickupDistance(Item: TItem; Distance: Double): Boolean; override; // @addr 0x733D14 @slot 0x98
     procedure RefreshCurrentStanding; override; // @addr 0x733DFC @slot 0xC4
-    function GrantPlanetQuestReward(Difficulty: Integer; var ExperienceAwarded: Integer): WideString; // @addr 0x737004 @ida "void __userpurge $name(TRanger *Self@<eax>, int Difficulty@<edx>, int *ExperienceAwarded@<ecx>, unsigned __int16 **Result@<^0>);" @note "Requires CurrentPlanet. Grants an award, program, item or module plus experience and relation effects. The hidden WideString result is cleared on entry; NPC result is empty."
+    function GrantPlanetQuestReward(Difficulty: Integer; var ExperienceAwarded: Integer): WideString; // @addr 0x737004 @note "Requires CurrentPlanet. Grants an award, program, item or module plus experience and relation effects. The hidden WideString result is cleared on entry; NPC result is empty."
 
     procedure NextDay; override; // @addr 0x726648 @slot 0x18
     procedure NextDayLogic; override; // @addr 0x7268B8 @slot 0x1C @calls "0x726737"
-    function GetName: WideString; override; // @addr 0x727988 @slot 0x24 @ida "void __usercall $name(TRanger *Self@<eax>, unsigned __int16 **Result@<edx>);"
-    function GetFullName(const Separator: WideString): WideString; override; // @addr 0x7279A8 @slot 0x28 @ida "void __usercall $name(TRanger *Self@<eax>, unsigned __int16 *Separator@<edx>, unsigned __int16 **Result@<ecx>);"
+    function GetName: WideString; override; // @addr 0x727988 @slot 0x24
+    function GetFullName(const Separator: WideString): WideString; override; // @addr 0x7279A8 @slot 0x28
 
     procedure ChangePlanetRelations(Scope: TObject; Mode: TRelationChangeMode; Amount: Byte; OwnerMask: TOwnerMask); // @addr 0x72DF6C @ida "void __userpurge $name(TRanger *Self@<eax>, TObject *Scope@<edx>, TRelationChangeMode Mode@<cl>, unsigned __int8 Amount@<^4>, unsigned __int8 OwnerMask@<^0>);" @note "Scope filters by planet, star or sector; nil selects all. Only coalition planets are affected. OwnerMask uses owner IDs as bits."
     procedure ChangeShipRelations(Scope: TObject; Mode: TRelationChangeMode; Amount: Byte; HullTypeMask: THullShipTypeMask; OwnerMask: TOwnerMask); // @addr 0x72DD90 @note "Scope filters by ship, star or sector; nil selects all. Bulk changes skip scripted ships for which HasScriptControl is true. Masks use ShipToHullType categories and owner IDs, not TShip.TypeId."
@@ -136,7 +136,7 @@ type
 
     function GetDominantCareer: TRangerCareer; override; // @addr 0x727B7C @slot 0x38 @note "Ties favor trader, then pirate."
     function GetCareerSimilarity(Values: TRangerCareerValues): TPercent; // @addr 0x727C18 @ida "unsigned __int8 __userpurge $name@<al>(TRanger *Self@<eax>, unsigned int Values@<^0>);" @note "Values occupies the low three bytes of one stack slot; result is the average of 100 minus each career-distance."
-    function GetCharacterName: WideString; // @addr 0x727CA0 @ida "void __usercall $name(TRanger *Self@<eax>, unsigned __int16 **Result@<edx>);" @note "Selects the closest configured ShipCharacter profile; equal similarities retain the earlier profile."
+    function GetCharacterName: WideString; // @addr 0x727CA0 @note "Selects the closest configured ShipCharacter profile; equal similarities retain the earlier profile."
     function HasProgram(ProgramIndex: Byte): Boolean; // @addr 0x731A58 @note "Does not mask or validate ProgramIndex."
     function NeedsStrengthCatchup: Boolean; // @addr 0x728360
     procedure RefreshPlayerQuestTargets; // @addr 0x73D6D8 @note "Does nothing for NPC rangers."
@@ -147,12 +147,12 @@ type
     function TryTurnInAnyQuest(var ResponseText: WideString): Boolean; // @addr 0x7349E8
     function TryTurnInQuest(Index: Integer; var ResponseText: WideString): Boolean; // @addr 0x735398
     procedure ArchiveQuest(Index: Integer); // @addr 0x734928
-    function BuildQuestText(Quest: TQuest; Kind: TQuestTextKind): WideString; // @addr 0x73B73C @ida "void __userpurge $name(TRanger *Self@<eax>, TQuest *Quest@<edx>, TQuestTextKind Kind@<ecx>, unsigned __int16 **Result@<^0>);"
+    function BuildQuestText(Quest: TQuest; Kind: TQuestTextKind): WideString; // @addr 0x73B73C
     procedure PublishQuestStatus(Quest: PQuest; Outcome: Integer); // @addr 0x73C6F8 @note "Outcome: 0=active, positive=completed, negative=failed."
     procedure ProcessShipDestructionQuests(Ship: TShip); // @addr 0x73CDBC
     function ShouldKeepShipForQuests(Ship: TShip): Boolean; // @addr 0x73D5F0 @note "Player-only; pending history can also preserve unrelated ships."
-    function CountFailedQuests(OwnerId: Byte; QuestTypes: TQuestTypes): Integer; // @addr 0x7345F0 @ida "int __usercall $name@<eax>(TRanger *Self@<eax>, unsigned __int8 OwnerId@<dl>, TQuestTypes QuestTypes@<cl>);" @note "Uses player history."
-    procedure CheckQuestFailureAward(Quest: PQuest; QuestTypes: TQuestTypes); // @addr 0x734870 @ida "void __usercall $name(TRanger *Self@<eax>, TQuest *Quest@<edx>, TQuestTypes QuestTypes@<cl>);"
+    function CountFailedQuests(OwnerId: Byte; QuestTypes: TQuestTypes): Integer; // @addr 0x7345F0 @note "Uses player history."
+    procedure CheckQuestFailureAward(Quest: PQuest; QuestTypes: TQuestTypes); // @addr 0x734870
     function NeedsWealthCatchup: Boolean; // @addr 0x7283D0 @note "Either the absolute or relative career threshold can trigger catch-up."
     procedure AddTraderCareerActivity(Amount: Byte); // @addr 0x7291D0 @note "Saturates at 100."
     procedure AddPirateCareerActivity(Amount: Byte); // @addr 0x729210 @note "Saturates at 100."
@@ -164,7 +164,7 @@ type
     procedure BuyProfitableGoods; // @addr 0x72B2E8
     procedure ApplyIllegalGoodsTradeRelationsPenalty(TotalTradeValue: Integer); // @addr 0x72B6EC
     function SelectBestTradePlanetFromQueue: TPlanet; // @addr 0x729F3C
-    function FindBestQueuedSellPlanetProfitScore(Good: Byte; var BestPlanet: TPlanet; UnitCost: Double): Byte; // @addr 0x72B5D4 @ida "unsigned __int8 __userpurge $name@<al>(TRanger *Self@<eax>, unsigned __int8 Good@<dl>, TPlanet **BestPlanet@<ecx>, double UnitCost@<^0>);" @note "Skips queue index 0. Leaves BestPlanet unchanged unless a candidate improves the score; UnitCost must be nonzero."
+    function FindBestQueuedSellPlanetProfitScore(Good: Byte; var BestPlanet: TPlanet; UnitCost: Double): Byte; // @addr 0x72B5D4 @note "Skips queue index 0. Leaves BestPlanet unchanged unless a candidate improves the score; UnitCost must be nonzero."
   end;
 
 var
@@ -253,7 +253,7 @@ var
   Ranger: TRanger;
 
   // @nested $724FC4 SelectName
-  procedure SelectName(Config: TBlockParEC); // @addr 0x724FC4 @ida "void __usercall $name(TBlockParEC *Config@<eax>, void *ParentFrame@<^0>);" @note "Caller-popped static link; ranger at -4. Tries unused race/faction names and appends an ID suffix when exhausted."
+  procedure SelectName(Config: TBlockParEC); // @addr 0x724FC4 @note "Caller-popped static link; ranger at -4. Tries unused race/faction names and appends an ID suffix when exhausted."
   var
     Index, I, J, LastIndex, FirstIndex: Integer;
     Used: Boolean;

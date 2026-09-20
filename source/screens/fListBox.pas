@@ -15,16 +15,16 @@ type
     Items: TList; // @offset $E4 Borrowed PWideString entries.
     OffsetX: Integer; // @offset $E8
     OffsetY: Integer; // @offset $EC
-    constructor Create; override; // @addr $504A90 @ida "TfListBox *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr $504AD4 @ida "void __usercall $name(TfListBox *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; override; // @addr $504A90
+    destructor Destroy; override; // @addr $504AD4
     procedure OnOpen; override; // @addr $504B08
     procedure OnClose; override; // @addr $5053DC
     procedure PopulateChoices; // @addr $5053E8
     procedure AcceptClicked(Sender: TObjectGI); // @addr $505618
     procedure CancelClicked(Sender: TObjectGI); // @addr $50566C
-    procedure ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer); override; // @addr $50568C @ida "void __userpurge $name(TfListBox *Self@<eax>, unsigned int KeyState@<edx>, TPoint *Point@<ecx>, int Delta@<^0>);"
-    procedure ChoiceMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $505700 @ida "void __userpurge $name(TfListBox *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
-    procedure ChoiceDoubleClick(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $5057A4 @ida "void __userpurge $name(TfListBox *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
+    procedure ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer); override; // @addr $50568C
+    procedure ChoiceMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $505700
+    procedure ChoiceDoubleClick(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $5057A4
     procedure ProcessCallbackTimers; override; // @addr $5057D0
   end;
 

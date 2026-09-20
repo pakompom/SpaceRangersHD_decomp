@@ -31,17 +31,17 @@ type
     OriginalLength: Single; // @offset $13C
     Colors: TIMHOPalette; // @offset $140
 
-    constructor Create(Owner: TObjectGI; APaletteIndex: Integer); // @addr $6950A8 @ida "TPSWeapon13IMHO *__userpurge $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, TObjectGI *Owner@<ecx>, int APaletteIndex@<^0>);"
-    destructor Destroy; override; // @addr $6951DC @ida "void __usercall $name(TPSWeapon13IMHO *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create(Owner: TObjectGI; APaletteIndex: Integer); // @addr $6950A8
+    destructor Destroy; override; // @addr $6951DC
     procedure Invalidate; override; // @addr $695218 @note "Native empty override."
-    procedure SetPosition(Position: TPoint); override; // @addr $695224 @ida "void __usercall $name(TPSWeapon13IMHO *Self@<eax>, TPoint *Position@<edx>);"
-    procedure SetTargetPoint(Point: TPoint); override; // @addr $695260 @ida "void __usercall $name(TPSWeapon13IMHO *Self@<eax>, TPoint *Point@<edx>);"
+    procedure SetPosition(Position: TPoint); override; // @addr $695224
+    procedure SetTargetPoint(Point: TPoint); override; // @addr $695260
     procedure UpdateHitTestBounds; override; // @addr $6952AC
     procedure ClearParticles; // @addr $6952E0
     procedure GrowParticles; // @addr $695328
     function AddParticle: PIMHOParticle; // @addr $695360
     procedure Advance(Timer: PCallbackTimerGI; UserData: Integer); override; // @addr $6953B8
-    procedure Draw(ClipRect: TRect); override; // @addr $6956D8 @ida "void __usercall $name(TPSWeapon13IMHO *Self@<eax>, TRect *ClipRect@<edx>);"
+    procedure Draw(ClipRect: TRect); override; // @addr $6956D8
   end;
 
 procedure LoadIMHOPalettes; // @addr $69597C

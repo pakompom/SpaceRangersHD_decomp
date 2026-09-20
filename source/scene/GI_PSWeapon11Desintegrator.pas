@@ -38,21 +38,21 @@ type
     LengthScale: Double; // @offset $160
     OriginalLength: Double; // @offset $168
 
-    constructor Create(Owner: TObjectGI; APaletteIndex: Integer); // @addr $691EA4 @ida "TPSWeapon11Desintegrator *__userpurge $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, TObjectGI *Owner@<ecx>, int APaletteIndex@<^0>);"
-    destructor Destroy; override; // @addr $691F8C @ida "void __usercall $name(TPSWeapon11Desintegrator *Self@<eax>, __int8 DestroyFlags@<dl>);"
-    procedure SetPosition(Position: TPoint); override; // @addr $691FC8 @ida "void __usercall $name(TPSWeapon11Desintegrator *Self@<eax>, TPoint *Position@<edx>);"
-    procedure SetTargetPoint(Point: TPoint); override; // @addr $69200C @ida "void __usercall $name(TPSWeapon11Desintegrator *Self@<eax>, TPoint *Point@<edx>);"
+    constructor Create(Owner: TObjectGI; APaletteIndex: Integer); // @addr $691EA4
+    destructor Destroy; override; // @addr $691F8C
+    procedure SetPosition(Position: TPoint); override; // @addr $691FC8
+    procedure SetTargetPoint(Point: TPoint); override; // @addr $69200C
     procedure UpdateProjectionBounds; // @addr $692060
     procedure UpdateHitTestBounds; override; // @addr $6923A4
-    function GetLocalBounds: TRect; override; // @addr $692410 @ida "void __usercall $name(TPSWeapon11Desintegrator *Self@<eax>, TRect *Result@<edx>);"
+    function GetLocalBounds: TRect; override; // @addr $692410
     function AddParticle: PDesintegratorParticle; // @addr $692474
     procedure RemoveParticle(Particle: PDesintegratorParticle); // @addr $6924EC
-    procedure AdvanceImpactSparks(ClipRect: TRect); // @addr $692B24 @ida "void __usercall $name(TPSWeapon11Desintegrator *Self@<eax>, TRect *ClipRect@<edx>);"
+    procedure AdvanceImpactSparks(ClipRect: TRect); // @addr $692B24
     procedure ClearParticles; // @addr $692570
     procedure Invalidate; override; // @addr $6925C4 @note "Native empty override."
-    procedure InvalidateRect(Rect: TRect); override; // @addr $6925D0 @ida "void __usercall $name(TPSWeapon11Desintegrator *Self@<eax>, TRect *Rect@<edx>);"
+    procedure InvalidateRect(Rect: TRect); override; // @addr $6925D0
     procedure Advance(Timer: PCallbackTimerGI; UserData: Integer); override; // @addr $69269C
-    procedure Draw(ClipRect: TRect); override; // @addr $692EB8 @ida "void __usercall $name(TPSWeapon11Desintegrator *Self@<eax>, TRect *ClipRect@<edx>);"
+    procedure Draw(ClipRect: TRect); override; // @addr $692EB8
   end;
 
 procedure LoadDesintegratorPalettes; // @addr $6931A4

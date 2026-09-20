@@ -27,14 +27,14 @@ type
     CachedFrameOrigins: array of TPoint; // @offset 0x38
     // CachedFrameOrigins has Header.FrameCount entries.
 
-    constructor Create; // @addr 0x47C874 @ida "TCGaiEC *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x47C8D0 @ida "void __usercall $name(TCGaiEC *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x47C874
+    destructor Destroy; override; // @addr 0x47C8D0
     function GetFrameCount: Integer; // @addr 0x47C960
     function HasPlaybackFlags: Boolean; // @addr 0x47C97C
-    function GetBoundsRect: TRect; // @addr 0x47C99C @ida "void __usercall $name(TCGaiEC *Self@<eax>, TRect *Result@<edx>);"
-    function GetCanvasSize: TPoint; // @addr 0x47C9C4 @ida "void __usercall $name(TCGaiEC *Self@<eax>, TPoint *Result@<edx>);"
-    function GetOrCreateFrameSurface(FrameIndex: Integer): IDirect3DTexture9; // @addr 0x47C9F0 @ida "void __usercall $name(TCGaiEC *Self@<eax>, int FrameIndex@<edx>, IDirect3DTexture9 **Result@<ecx>);"
-    function GetFrameOrigin(FrameIndex: Integer): TPoint; // @addr 0x47CB80 @ida "void __usercall $name(TCGaiEC *Self@<eax>, int FrameIndex@<edx>, TPoint *Result@<ecx>);" @note "Requires a valid index and a prior GetOrCreateFrameSurface call."
+    function GetBoundsRect: TRect; // @addr 0x47C99C
+    function GetCanvasSize: TPoint; // @addr 0x47C9C4
+    function GetOrCreateFrameSurface(FrameIndex: Integer): IDirect3DTexture9; // @addr 0x47C9F0
+    function GetFrameOrigin(FrameIndex: Integer): TPoint; // @addr 0x47CB80 @note "Requires a valid index and a prior GetOrCreateFrameSurface call."
     function LoadFrameGi(FrameIndex: Integer): TgiGR; // @addr 0x47CBB0 @note "Returns borrowed, reused DecodedFrameGi storage, or nil."
     function IsFrameCompressed(FrameIndex: Integer): Boolean; // @addr 0x47CCF0 @note "Does not validate FrameIndex."
     function GetSequenceCount: Integer; // @addr 0x47CD54 @note "Returns zero when no sequence table exists. Other sequence accessors require a valid table and indexes."
@@ -323,13 +323,13 @@ procedure TCGaiEC.ApplyAB2BackgroundFixup(SourceBuffer: TBufEC; const ResourceKe
 var Image: TgiGR; GraphBuf: TGraphBufGR; ByteCount, Offset: Integer; OldHeader: TGaiHeader;
 
   // @nested $47D1D0 LogGaiRescaleStart
-  procedure LogGaiRescaleStart; // @addr $47D1D0 @ida "void __usercall $name(void *ParentFrame@<^0>);" @stackpop 0 @calls "0x0047D2AF"
+  procedure LogGaiRescaleStart; // @addr $47D1D0 @calls "0x0047D2AF"
   begin
     AppendLogTextThreadSafe('Rescaling ' + ResourceKey + '... ');
   end;
 
   // @nested $47D26C LogGaiRescaleDone
-  procedure LogGaiRescaleDone; // @addr $47D26C @ida "void __usercall $name(void *ParentFrame@<^0>);" @stackpop 0 @calls "0x0047D48B"
+  procedure LogGaiRescaleDone; // @addr $47D26C @calls "0x0047D48B"
   begin
     AppendLogLineThreadSafe('ok');
   end;

@@ -39,26 +39,26 @@ type
     procedure UpdateEntryImage(Index: Integer); // @addr $55F958
     procedure EntryMouseEnter(Sender: TObjectGI); // @addr $55FB8C
     procedure EntryMouseLeave(Sender: TObjectGI); // @addr $55FBF8
-    procedure EntryMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $55FC58 @ida "void __userpurge $name(TfLoadRobot *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
-    procedure EntryDoubleClick(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $55FCD0 @ida "void __userpurge $name(TfLoadRobot *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
+    procedure EntryMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $55FC58
+    procedure EntryDoubleClick(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $55FCD0
     procedure CategoryClick(Sender: TObjectGI); // @addr $55FCFC
     procedure DifficultyClick(Sender: TObjectGI); // @addr $55FE5C
     procedure StartClick(Sender: TObjectGI); // @addr $55FF30
     procedure UpdateSelectionDetails; // @addr $55FFB8
     function GetUnlockedAccess: Integer; // @addr $560CBC
 
-    constructor Create; // @addr $55CBA8 @ida "TfLoadRobot *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr $55CC24 @ida "void __usercall $name(TfLoadRobot *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr $55CBA8
+    destructor Destroy; override; // @addr $55CC24
     procedure OnOpen; override; // @addr $55D180
     procedure OnClose; override; // @addr $55DA2C
     procedure SelectMusic; override; // @addr $560FD0
-    procedure ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer); override; // @addr $55E044 @ida "void __userpurge $name(TfLoadRobot *Self@<eax>, unsigned int KeyState@<edx>, TPoint *Point@<ecx>, int Delta@<^0>);"
+    procedure ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer); override; // @addr $55E044
     procedure InitializeLayout; override; // @addr $55CC7C
     procedure SaveCompletionData; // @addr $560A00
     procedure RecordCompletion(MapId, Score, Level: Integer); // @addr $560B74
     procedure LoadCompletionData; // @addr $560858
-    function GetCompletionCounts: TPoint; // @addr $560E18 @ida "void __usercall $name(TfLoadRobot *Self@<eax>, TPoint *Result@<edx>);" @note "X completed, Y eligible; groups greater than -1 are eligible."
-    function GetCompletionSummary: WideString; // @addr $560EF0 @ida "void __usercall $name(TfLoadRobot *Self@<eax>, unsigned __int16 **Result@<edx>);" @note "Menu summary; displayed total includes groups 0..2."
+    function GetCompletionCounts: TPoint; // @addr $560E18 @note "X completed, Y eligible; groups greater than -1 are eligible."
+    function GetCompletionSummary: WideString; // @addr $560EF0 @note "Menu summary; displayed total includes groups 0..2."
   end;
 
 var

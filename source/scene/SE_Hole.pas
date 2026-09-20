@@ -21,7 +21,7 @@ type
     HitRadius: Integer; // @offset $64 Used by star-map film-object hit testing.
     procedure AttachToSpace(ASpace: TSpaceSE); override; // @addr $7ECCCC
     procedure DetachFromSpace; override; // @addr $7ECF38
-    procedure SetPosition(APosition: TPointF); override; // @addr $7ECFD4 @ida "void __usercall $name(THoleSE *Self@<eax>, TPointF *APosition@<edx>);"
+    procedure SetPosition(APosition: TPointF); override; // @addr $7ECFD4
     procedure DrawMap; override; // @addr $7ED064
     function HitTestCursor: Boolean; override; // @addr $7ED0E4
     procedure LoadTemplate(Block: TBlockParEC); override; // @addr $7ED114

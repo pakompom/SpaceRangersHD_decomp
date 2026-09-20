@@ -22,8 +22,8 @@ type
     PositionChangedCallback: TObjectNotifyEventGI; // @offset $150
     RepeatTimer: PCallbackTimerGI; // @offset 0x158
 
-    constructor Create(Owner: TObjectGI); // @addr 0x4A3EE0 @ida "TCountBarGI *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, TObjectGI *Owner@<ecx>);"
-    destructor Destroy; override; // @addr 0x4A407C @ida "void __usercall $name(TCountBarGI *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create(Owner: TObjectGI); // @addr 0x4A3EE0
+    destructor Destroy; override; // @addr 0x4A407C
     procedure SetRange(MinValue, MaxValue: Integer); // @addr 0x4A41B8
     procedure SetPositionInternal(Value: Integer); // @addr 0x4A4278 @note "Clamps without invoking PositionChangedCallback."
     procedure SetPosition(Value: Integer); reintroduce; // @addr 0x4A430C @note "Notifies only while Active and when the requested value differs from the previous position."
@@ -31,9 +31,9 @@ type
     procedure AutoRepeat(Timer: PCallbackTimerGI; UserData: Integer); // @addr 0x4A46B4
     procedure DecreasePressed(Sender: TObjectGI); // @addr 0x4A4750
     procedure IncreasePressed(Sender: TObjectGI); // @addr 0x4A47D0
-    procedure ProcessMouseMove(KeyState: Cardinal; Point: TPoint); override; // @addr 0x4A4850 @ida "void __usercall $name(TCountBarGI *Self@<eax>, unsigned int KeyState@<edx>, TPoint *Point@<ecx>);"
-    procedure ProcessLeftButtonDown(KeyState: Cardinal; Point: TPoint); override; // @addr 0x4A49E0 @ida "void __usercall $name(TCountBarGI *Self@<eax>, unsigned int KeyState@<edx>, TPoint *Point@<ecx>);"
-    procedure ProcessLeftButtonUp(KeyState: Cardinal; Point: TPoint); override; // @addr 0x4A4B98 @ida "void __usercall $name(TCountBarGI *Self@<eax>, unsigned int KeyState@<edx>, TPoint *Point@<ecx>);"
+    procedure ProcessMouseMove(KeyState: Cardinal; Point: TPoint); override; // @addr 0x4A4850
+    procedure ProcessLeftButtonDown(KeyState: Cardinal; Point: TPoint); override; // @addr 0x4A49E0
+    procedure ProcessLeftButtonUp(KeyState: Cardinal; Point: TPoint); override; // @addr 0x4A4B98
     procedure OnMouseEnter; override; // @addr 0x4A49B8
     procedure OnMouseLeave; override; // @addr 0x4A49CC
     procedure LoadFromConfigPath(const Path: WideString); override; // @addr 0x4A4BEC

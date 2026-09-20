@@ -13,11 +13,11 @@ type
     Values: array of Integer; // @offset 0x08
     Count: Integer; // @offset 0x0C
 
-    constructor Create; // @addr 0x4DD3D8 @ida "TValuesList *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x4DD424 @ida "void __usercall $name(TValuesList *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x4DD3D8
+    destructor Destroy; override; // @addr 0x4DD424
     procedure Clear; // @addr 0x4DD4E8
     procedure LoadFromReader(Reader: TBufEC); // @addr 0x4DD468
-    function NormalizeSemicolonText(Text: WideString): WideString; // @addr 0x4DD0B8 @ida "void __usercall $name(TValuesList *Self@<eax>, unsigned __int16 *Text@<edx>, unsigned __int16 **Result@<ecx>);" @note "The initial character filter is overwritten; unrelated characters survive. Does not modify Self."
+    function NormalizeSemicolonText(Text: WideString): WideString; // @addr 0x4DD0B8 @note "The initial character filter is overwritten; unrelated characters survive. Does not modify Self."
     procedure LoadFromSemicolonText(Text: WideString); // @addr 0x4DD51C
     function AcceptsValue(Value: Integer): Boolean; // @addr 0x4DD6A4 @note "An empty list accepts every value, regardless of AcceptListed."
     function AcceptsMultiple(Value: Integer): Boolean; // @addr 0x4DD704 @note "Zero divisors are unchecked."

@@ -24,12 +24,12 @@ type
     Category: Integer; // @offset $DC
     KeyHistory: WideString; // @offset $E0
 
-    constructor Create; // @addr $5574D8 @ida "TfLoadAB *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr $557534 @ida "void __usercall $name(TfLoadAB *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr $5574D8
+    destructor Destroy; override; // @addr $557534
     procedure OnOpen; override; // @addr $5578A8
     procedure OnClose; override; // @addr $5579C4
     procedure SelectMusic; override; // @addr $55919C
-    procedure ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer); override; // @addr $557C90 @ida "void __userpurge $name(TfLoadAB *Self@<eax>, unsigned int KeyState@<edx>, TPoint *Point@<ecx>, int Delta@<^0>);"
+    procedure ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer); override; // @addr $557C90
     procedure InitializeLayout; override; // @addr $557568
     procedure ReturnToMenu(Sender: TObjectGI); // @addr $557A00
     procedure ArenaListKeyDown(Sender: TObjectGI; VirtualKey: Cardinal); // @addr $557A34
@@ -40,13 +40,13 @@ type
     procedure UpdateArenaRow(Index: Integer); // @addr $55889C
     procedure ArenaRowMouseEnter(Sender: TObjectGI); // @addr $5589E0
     procedure ArenaRowMouseLeave(Sender: TObjectGI); // @addr $558A40
-    procedure ArenaRowMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $558A94 @ida "void __userpurge $name(TfLoadAB *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
-    procedure ArenaRowDoubleClick(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $558B04 @ida "void __userpurge $name(TfLoadAB *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
+    procedure ArenaRowMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $558A94
+    procedure ArenaRowDoubleClick(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $558B04
     procedure SelectCategory(Sender: TObjectGI); // @addr $558B30
     procedure StartSelectedArena(Sender: TObjectGI); // @addr $558C54
     procedure ShowSelectedArenaDetails; // @addr $558CD4
     procedure PrepareCatalog; // @addr $559114 @note "Native empty hook, retained during catalog rebuild."
-    function GetCatalogSummary: WideString; // @addr $559120 @ida "void __usercall $name(TfLoadAB *Self@<eax>, unsigned __int16 **Result@<edx>);" @note "Returns the configured ABMap entry count for the main menu."
+    function GetCatalogSummary: WideString; // @addr $559120 @note "Returns the configured ABMap entry count for the main menu."
   end;
 
 var
@@ -228,7 +228,7 @@ var
   Name: WideString;
 
   // @nested $557E9C ReadArcadeDescription
-  function ReadArcadeDescription(const Path: WideString): WideString; // @addr $557E9C @ida "void __usercall $name(unsigned __int16 *Path@<eax>, unsigned __int16 **Result@<edx>, void *ParentFrame@<^0>);" @stackpop 0 @calls "0x558168"
+  function ReadArcadeDescription(const Path: WideString): WideString; // @addr $557E9C @calls "0x558168"
   var
     J, LineCount: Integer;
   begin

@@ -18,7 +18,7 @@ type
     FrameCount: Integer; // @offset $10
     Frames: array of Word; // @offset $14
     Delays: array of Word; // @offset $18
-    destructor Destroy; override; // @addr $8205E4 @ida "void __usercall $name(TShip2AnimSE *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    destructor Destroy; override; // @addr $8205E4
     procedure Clear; // @addr $820620
     procedure Load(Specification: WideString); // @addr $820670
   end;
@@ -66,32 +66,32 @@ type
     LargeSize: Integer; // @offset $1AC
     TargetSizeScale: Single; // @offset $1B0
     AngleOverride: Integer; // @offset $1B4
-    constructor CreateEmpty; // @addr $820904 @ida "TShip2SE *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    constructor Create(const GraphKey: WideString; UnusedPosition: TPoint); // @addr $82095C @ida "TShip2SE *__userpurge $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, unsigned __int16 *GraphKey@<ecx>, TPoint *UnusedPosition@<^0>);"
-    destructor Destroy; override; // @addr $820A68 @ida "void __usercall $name(TShip2SE *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor CreateEmpty; // @addr $820904
+    constructor Create(const GraphKey: WideString; UnusedPosition: TPoint); // @addr $82095C
+    destructor Destroy; override; // @addr $820A68
     procedure CopyTo(Destination: TObjectSE); override; // @addr $820B14
     procedure CopyDataFromMirrorImage(Destination: TObjectSE); // @addr $820D7C @note "Despite the diagnostic name, copies Self into Destination, which must be TShip2SE."
     procedure AttachToSpace(ASpace: TSpaceSE); override; // @addr $82108C @note "Native diagnostic name: TShip2SE.Connect."
     procedure DetachFromSpace; override; // @addr $821A4C
     procedure SetTailMode(Value: Integer); // @addr $821B1C
-    function GetImagePath: WideString; // @addr $821D60 @ida "void __usercall $name(TShip2SE *Self@<eax>, unsigned __int16 **Result@<edx>);"
-    procedure SetSize(Value: TPoint); override; // @addr $821DA0 @ida "void __usercall $name(TShip2SE *Self@<eax>, TPoint *Value@<edx>);"
-    procedure SetPosition(APosition: TPointF); override; // @addr $821E04 @ida "void __usercall $name(TShip2SE *Self@<eax>, TPointF *APosition@<edx>);"
-    procedure SetTailDepth(Value: Single); // @addr $821F04 @ida "void __userpurge $name(TShip2SE *Self@<eax>, float Value@<^0>);"
-    procedure SetDepth(Value: Single); override; // @addr $821F5C @ida "void __userpurge $name(TShip2SE *Self@<eax>, float Value@<^0>);"
-    function GetDepth: Single; override; // @addr $821F80 @ida "float __usercall $name@<st0>(TShip2SE *Self@<eax>);"
+    function GetImagePath: WideString; // @addr $821D60
+    procedure SetSize(Value: TPoint); override; // @addr $821DA0
+    procedure SetPosition(APosition: TPointF); override; // @addr $821E04
+    procedure SetTailDepth(Value: Single); // @addr $821F04
+    procedure SetDepth(Value: Single); override; // @addr $821F5C
+    function GetDepth: Single; override; // @addr $821F80
     function GetAngle: Byte; override; // @addr $821FA0
     procedure SetAngle(Value: Byte); override; // @addr $821FBC
-    procedure OffsetTailsAlongHeading(Distance: Single); // @addr $8220A0 @ida "void __userpurge $name(TShip2SE *Self@<eax>, float Distance@<^0>);"
-    procedure OffsetTails(Delta: TPointF); // @addr $822170 @ida "void __usercall $name(TShip2SE *Self@<eax>, TPointF *Delta@<edx>);"
+    procedure OffsetTailsAlongHeading(Distance: Single); // @addr $8220A0
+    procedure OffsetTails(Delta: TPointF); // @addr $822170
     procedure SetTailsEmitting(Value: Boolean); // @addr $8221C0
     function GetAlpha: Byte; override; // @addr $822208
     procedure SetAlpha(Value: Byte); override; // @addr $822224
-    function GetOrbitCenter: TPointF; override; // @addr $8222E0 @ida "void __usercall $name(TShip2SE *Self@<eax>, TPointF *Result@<edx>);"
-    function ScaleImagePoint(Point: TPointF): TPointF; // @addr $822318 @ida "void __usercall $name(TShip2SE *Self@<eax>, TPointF *Point@<edx>, TPointF *Result@<ecx>);"
-    function ImagePointToWorld(Point: TPointF): TPointF; // @addr $822360 @ida "void __usercall $name(TShip2SE *Self@<eax>, TPointF *Point@<edx>, TPointF *Result@<ecx>);"
-    function GetTargetPoint(Heading: Byte; Seed: Integer): TPointF; // @addr $822420 @ida "void __userpurge $name(TShip2SE *Self@<eax>, unsigned __int8 Heading@<dl>, int Seed@<ecx>, TPointF *Result@<^0>);"
-    function GetWeaponPortPoint(Heading: Byte; Seed: Cardinal): TPointF; // @addr $822530 @ida "void __userpurge $name(TShip2SE *Self@<eax>, unsigned __int8 Heading@<dl>, unsigned int Seed@<ecx>, TPointF *Result@<^0>);"
+    function GetOrbitCenter: TPointF; override; // @addr $8222E0
+    function ScaleImagePoint(Point: TPointF): TPointF; // @addr $822318
+    function ImagePointToWorld(Point: TPointF): TPointF; // @addr $822360
+    function GetTargetPoint(Heading: Byte; Seed: Integer): TPointF; // @addr $822420
+    function GetWeaponPortPoint(Heading: Byte; Seed: Cardinal): TPointF; // @addr $822530
     function HitTestCursor: Boolean; override; // @addr $822620
     function AddAnimation: TShip2AnimSE; // @addr $82266C
     procedure DeleteAnimation(Animation: TShip2AnimSE); // @addr $8226E8

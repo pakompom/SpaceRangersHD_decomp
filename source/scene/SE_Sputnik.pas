@@ -36,8 +36,8 @@ type
 
     procedure AttachToSpace(ASpace: TSpaceSE); override; // @addr 0x7983FC @note "Does nothing when satellite graphics are disabled."
     procedure DetachFromSpace; override; // @addr 0x798518
-    procedure SetOrbitCenter(Center: TPointF); override; // @addr 0x7985AC @slot 0x18 @ida "void __usercall $name(TSputnikSE *Self@<eax>, TPointF *Center@<edx>);"
-    function GetOrbitCenter: TPointF; override; // @addr 0x7985DC @slot 0x1C @ida "void __usercall $name(TSputnikSE *Self@<eax>, TPointF *Result@<edx>);"
+    procedure SetOrbitCenter(Center: TPointF); override; // @addr 0x7985AC @slot 0x18
+    function GetOrbitCenter: TPointF; override; // @addr 0x7985DC @slot 0x1C
     function BuildStateBuffer: TBufEC; override; // @addr 0x798600 @slot 0x38 @calls "0x77F913" @note "Returns a new buffer owned by the caller; excludes OrbitAngle."
     procedure LoadStateBuffer(Buffer: TBufEC); override; // @addr 0x7986B4 @slot 0x3C @calls "0x77F9EC" @note "Rewinds Buffer to zero and rebuilds the orbit transform and display position."
     procedure RebuildOrbitTransform; // @addr 0x798774

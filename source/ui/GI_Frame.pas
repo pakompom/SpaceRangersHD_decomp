@@ -15,8 +15,8 @@ type
     Fill: Boolean; // @offset 0x12C
     FillAlpha: Byte; // @offset 0x12D
 
-    constructor Create(Owner: TObjectGI); // @addr 0x4AB2F4 @ida "TFrameGI *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, TObjectGI *Owner@<ecx>);"
-    destructor Destroy; override; // @addr 0x4AB35C @ida "void __usercall $name(TFrameGI *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create(Owner: TObjectGI); // @addr 0x4AB2F4
+    destructor Destroy; override; // @addr 0x4AB35C
     procedure Clear; override; // @addr 0x4AB390 @note "Preserves fill and color fields."
     procedure SetKind(Value: TFrameKindGI); // @addr 0x4AB3AC
     procedure SetColor(Value: Cardinal); // @addr 0x4AB3E4
@@ -25,7 +25,7 @@ type
     procedure LoadFromConfigPath(const Path: WideString); override; // @addr 0x4AB48C
     procedure LoadFromBlock(Block: TBlockParEC); override; // @addr 0x4AB4C0
     procedure LoadFrameProperties(Block: TBlockParEC); // @addr 0x4AB4E8
-    procedure Draw(ClipRect: TRect); override; // @addr 0x4AB694 @ida "void __usercall $name(TFrameGI *Self@<eax>, TRect *ClipRect@<edx>);" @note "Fill is independent of Kind. FillAlpha values other than 255 all produce alpha 64."
+    procedure Draw(ClipRect: TRect); override; // @addr 0x4AB694 @note "Fill is independent of Kind. FillAlpha values other than 255 all produce alpha 64."
   end;
 
 implementation

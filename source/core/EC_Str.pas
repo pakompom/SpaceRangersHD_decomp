@@ -26,8 +26,8 @@ type
     LastElement: TStringsElEC; // @offset 0x08
     CurrentElement: TStringsElEC; // @offset 0x0C
 
-    constructor Create; // @addr 0x86EF24 @ida "TStringsEC *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x86EF68 @ida "void __usercall $name(TStringsEC *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x86EF24
+    destructor Destroy; override; // @addr 0x86EF68
     procedure Clear; // @addr 0x86EFA4
     function AddEmptyElement: TStringsElEC; // @addr 0x86EFD0
     procedure AppendElement(Item: TStringsElEC); // @addr 0x86F000
@@ -35,14 +35,14 @@ type
     function GetElement(Index: Integer): TStringsElEC; // @addr 0x86F0CC @note "Raises when the index is outside the list."
     function EnsureElement(Index: Integer): TStringsElEC; // @addr 0x86F198 @note "Creates missing entries; negative indexes raise."
     function GetCount: Integer; // @addr 0x86F288
-    function GetTextAt(Index: Integer): WideString; // @addr 0x86F2C0 @ida "void __usercall $name(TStringsEC *Self@<eax>, int Index@<edx>, unsigned __int16 **Result@<ecx>);" @note "Reading beyond the end extends the list."
+    function GetTextAt(Index: Integer): WideString; // @addr 0x86F2C0 @note "Reading beyond the end extends the list."
     function GetDataAt(Index: Integer): Pointer; // @addr 0x86F2EC @note "Reading beyond the end extends the list."
     procedure SetDataAt(Index: Integer; Data: Pointer); // @addr 0x86F310 @note "Creates missing entries; Data is borrowed."
     function IndexOf(const Text: WideString): Integer; // @addr 0x86F334 @note "Case-sensitive comparison; returns -1 when absent."
     procedure Add(const Text: WideString); // @addr 0x86F38C
     procedure AddSlice(Text: PWideChar; CharCount: Integer); // @addr 0x86F3B0 @note "Nonpositive CharCount still appends an empty element."
     procedure Delete(Index: Integer); // @addr 0x86F3FC @note "If deleting CurrentElement, moves it to the next element or otherwise the previous one."
-    function GetCurrentText: WideString; // @addr 0x86F454 @ida "void __usercall $name(TStringsEC *Self@<eax>, unsigned __int16 **Result@<edx>);" @note "Raises when CurrentElement is nil."
+    function GetCurrentText: WideString; // @addr 0x86F454 @note "Raises when CurrentElement is nil."
     function GetCurrentData: Pointer; // @addr 0x86F4AC @note "Raises when CurrentElement is nil."
     function IsAtEnd: Boolean; // @addr 0x86F504
     function IsAtLast: Boolean; // @addr 0x86F528 @note "Requires nonnil CurrentElement."
@@ -50,19 +50,19 @@ type
     procedure Next; // @addr 0x86F568 @note "Requires nonnil CurrentElement."
     function IsEmpty: Boolean; // @addr 0x86F584
     procedure SetText(const Text: WideString); // @addr 0x86F5A0 @note "Splits CR, LF and CRLF lines; does not append an empty line after a trailing separator."
-    function GetText: WideString; // @addr 0x86F630 @ida "void __usercall $name(TStringsEC *Self@<eax>, unsigned __int16 **Result@<edx>);" @note "Joins elements with CRLF, without a trailing separator."
+    function GetText: WideString; // @addr 0x86F630 @note "Joins elements with CRLF, without a trailing separator."
   end;
 
 function CountDelimitedPartsW(const Text: WideString; const Delimiters: WideString): Integer; // @addr 0x86F6B4 @note "Delimiters is a set of separator characters, not a substring. Counts empty parts; empty Text returns zero."
 function GetDelimitedPartStartIndexW(const Text: WideString; PartIndex: Integer; const Delimiters: WideString): Integer; // @addr 0x86F748 @note "Zero-based part index, one-based character result. Nonpositive PartIndex returns 1; missing positive indexes raise."
 function GetCharDelimitedPartStartIndexW(const Text: WideString; PartIndex: Integer; Delimiter: WideChar): Integer; // @addr 0x86F8D4 @note "One-based character result. Nonpositive PartIndex returns 1; 1 returns the position after the first delimiter or -1. Native early exit makes every PartIndex above 1 return -1."
 function GetDelimitedPartLengthW(const Text: WideString; StartIndex: Integer; const Delimiters: WideString): Integer; // @addr 0x86F948 @note "StartIndex is a one-based character position, not a part index."
-function ExtractDelimitedPartW(const Text: WideString; PartIndex: Integer; const Delimiters: WideString): WideString; // @addr 0x86F9D4 @ida "void __userpurge $name(unsigned __int16 *Text@<eax>, int PartIndex@<edx>, unsigned __int16 *Delimiters@<ecx>, unsigned __int16 **Result@<^0>);"
-function ExtractDelimitedRangeW(const Text: WideString; FirstPart: Integer; LastPart: Integer; const Delimiters: WideString): WideString; // @addr 0x86FA1C @ida "void __userpurge $name(unsigned __int16 *Text@<eax>, int FirstPart@<edx>, int LastPart@<ecx>, unsigned __int16 *Delimiters@<^4>, unsigned __int16 **Result@<^0>);" @note "Includes both zero-based part indexes and the separators between them."
-function ExtractNextDelimitedPartW(var Text: WideString; Delimiter: WideChar): WideString; // @addr 0x86FA7C @ida "void __usercall $name(unsigned __int16 **Text@<eax>, unsigned __int16 Delimiter@<dx>, unsigned __int16 **Result@<ecx>);" @note "Removes the returned prefix and first delimiter from Text; without a delimiter returns all of Text and clears it."
-function ExtractLineCommentW(const Text: WideString): WideString; // @addr 0x86FB48 @ida "void __usercall $name(unsigned __int16 *Text@<eax>, unsigned __int16 **Result@<edx>);" @note "Returns the first // and following text, including immediately preceding spaces, tabs, CR and LF. Empty when absent; does not recognize quoting."
-function RemoveLineCommentW(const Text: WideString): WideString; // @addr 0x86FBF0 @ida "void __usercall $name(unsigned __int16 *Text@<eax>, unsigned __int16 **Result@<edx>);" @note "Removes the first // and following text, then trims trailing characters <= #32. Without // returns Text unchanged; does not recognize quoting."
-function ReplaceAllWideString(const Text: WideString; const Search: WideString; const Replacement: WideString): WideString; // @addr 0x87015C @ida "void __userpurge $name(unsigned __int16 *Text@<eax>, unsigned __int16 *Search@<edx>, unsigned __int16 *Replacement@<ecx>, unsigned __int16 **Result@<^0>);" @note "Case-sensitive, non-overlapping replacement; empty Search returns Text unchanged."
+function ExtractDelimitedPartW(const Text: WideString; PartIndex: Integer; const Delimiters: WideString): WideString; // @addr 0x86F9D4
+function ExtractDelimitedRangeW(const Text: WideString; FirstPart: Integer; LastPart: Integer; const Delimiters: WideString): WideString; // @addr 0x86FA1C @note "Includes both zero-based part indexes and the separators between them."
+function ExtractNextDelimitedPartW(var Text: WideString; Delimiter: WideChar): WideString; // @addr 0x86FA7C @note "Removes the returned prefix and first delimiter from Text; without a delimiter returns all of Text and clears it."
+function ExtractLineCommentW(const Text: WideString): WideString; // @addr 0x86FB48 @note "Returns the first // and following text, including immediately preceding spaces, tabs, CR and LF. Empty when absent; does not recognize quoting."
+function RemoveLineCommentW(const Text: WideString): WideString; // @addr 0x86FBF0 @note "Removes the first // and following text, then trims trailing characters <= #32. Without // returns Text unchanged; does not recognize quoting."
+function ReplaceAllWideString(const Text: WideString; const Search: WideString; const Replacement: WideString): WideString; // @addr 0x87015C @note "Case-sensitive, non-overlapping replacement; empty Search returns Text unchanged."
 function FindTextOffsetW(const Text: WideString; const Search: WideString; StartIndex: Integer = 0): Integer; // @addr 0x870C58 @note "Zero-based start and result; starts at a nonnegative character offset and returns -1 when absent."
 function FindTextPosW(const Search: WideString; const Text: WideString): Integer; // @addr 0x870D30 @note "One-based result, with Search before Text as in Pos; returns zero when absent."
 function ExtractDigitsToIntW(const Text: WideString): Integer; // @addr 0x86FD04 @note "Ignores signs and other nondigits; unchecked 32-bit arithmetic."
@@ -71,32 +71,32 @@ function ExtractSignedDigitsToIntW(const Text: WideString): Integer; // @addr 0x
 function ExtractDecimalToSingleW(const Text: WideString): Single; // @addr 0x86FE94 @note "Accepts '.' or ','; ignores other nondigits and treats any '-' as negative. No exponent syntax."
 function ParseDecimalToSingleW(const Text: WideString): Single; // @addr 0x86FFBC @note "Same permissive conversion as ExtractDecimalToSingleW; all accumulation and the result use Single precision."
 function FloatToWideString(Value: Double): WideString; // @addr 0x8700E4 @ida "void __userpurge $name(unsigned __int16 **Result@<eax>, double Value@<^0>);" @note "Uses a decimal point by temporarily changing the RTL's global separator; not thread-safe, and an exception can leave the separator changed."
-function CardinalToHexWideString(Value: Cardinal): WideString; // @addr 0x8702A0 @ida "void __usercall $name(unsigned int Value@<eax>, unsigned __int16 **Result@<edx>);" @note "Lowercase hexadecimal without a prefix or padding; zero becomes '0'."
-function IntToFixedWidthWideString(Value: Integer; Width: Integer): WideString; // @addr 0x870354 @ida "void __usercall $name(int Value@<eax>, int Width@<edx>, unsigned __int16 **Result@<ecx>);" @note "Left-pads with zeros or keeps only the leftmost Width digits. Nonpositive Value produces zeros; nonpositive Width produces an empty string."
-function IntToWideString(Value: Integer): WideString; // @addr 0x87044C @ida "void __usercall $name(int Value@<eax>, unsigned __int16 **Result@<edx>);" @note "Low(Integer) incorrectly produces '-0'."
+function CardinalToHexWideString(Value: Cardinal): WideString; // @addr 0x8702A0 @note "Lowercase hexadecimal without a prefix or padding; zero becomes '0'."
+function IntToFixedWidthWideString(Value: Integer; Width: Integer): WideString; // @addr 0x870354 @note "Left-pads with zeros or keeps only the leftmost Width digits. Nonpositive Value produces zeros; nonpositive Width produces an empty string."
+function IntToWideString(Value: Integer): WideString; // @addr 0x87044C @note "Low(Integer) incorrectly produces '-0'."
 function BoolToWideString(Value: Boolean): WideString; // @addr 0x870524 @ida "void __usercall $name(unsigned __int8 Value@<al>, unsigned __int16 **Result@<edx>);" @note "Returns 'True' or 'False'."
-function TrimWideString(const Text: WideString): WideString; // @addr 0x870578 @ida "void __usercall $name(unsigned __int16 *Text@<eax>, unsigned __int16 **Result@<edx>);" @note "Trims only spaces, tabs, CR, LF and NUL characters at both ends."
-function UpperCaseWideString(const Text: WideString): WideString; // @addr 0x870680 @ida "void __usercall $name(unsigned __int16 *Text@<eax>, unsigned __int16 **Result@<edx>);" @note "Uses the language CaseConv table; characters absent from it remain unchanged."
-function LowerCaseWideString(const Text: WideString): WideString; // @addr 0x87072C @ida "void __usercall $name(unsigned __int16 *Text@<eax>, unsigned __int16 **Result@<edx>);" @note "Uses the language CaseConv table in reverse; characters absent from it remain unchanged."
-function RemoveWideStringChars(const Text: WideString; Chars: WideString): WideString; // @addr 0x8707D8 @ida "void __usercall $name(unsigned __int16 *Text@<eax>, unsigned __int16 *Chars@<edx>, unsigned __int16 **Result@<ecx>);" @note "Chars is a set of individual characters, not a substring."
+function TrimWideString(const Text: WideString): WideString; // @addr 0x870578 @note "Trims only spaces, tabs, CR, LF and NUL characters at both ends."
+function UpperCaseWideString(const Text: WideString): WideString; // @addr 0x870680 @note "Uses the language CaseConv table; characters absent from it remain unchanged."
+function LowerCaseWideString(const Text: WideString): WideString; // @addr 0x87072C @note "Uses the language CaseConv table in reverse; characters absent from it remain unchanged."
+function RemoveWideStringChars(const Text: WideString; Chars: WideString): WideString; // @addr 0x8707D8 @note "Chars is a set of individual characters, not a substring."
 function GetTextTagLengthW(Text: PWideChar; CharCount: Integer): Integer; // @addr 0x870914 @note "Returns the leading <...> token length, 1 for leading <<, or zero when no complete tag is present."
 function MatchTextTagPrefixW(Text: PWideChar; CharCount: Integer; const Pattern: WideString; const AlternatePattern: WideString): Boolean; // @addr 0x870984 @note "Requires leading < and equal-length patterns. Each character may match either pattern; no closing > or name boundary is required."
-function RemoveTextTagsW(const Text: WideString): WideString; // @addr 0x870A1C @ida "void __usercall $name(unsigned __int16 *Text@<eax>, unsigned __int16 **Result@<edx>);" @note "Removes complete <...> tokens; leading << consumes one character and scanning resumes at the second <. Incomplete tags remain."
-function RemoveMatchingTextTagsW(Text: WideString; const Pattern: WideString; const AlternatePattern: WideString): WideString; // @addr 0x870AD0 @ida "void __userpurge $name(unsigned __int16 *Text@<eax>, unsigned __int16 *Pattern@<edx>, unsigned __int16 *AlternatePattern@<ecx>, unsigned __int16 **Result@<^0>);" @note "Uses MatchTextTagPrefixW; opening and closing tags require separate patterns."
+function RemoveTextTagsW(const Text: WideString): WideString; // @addr 0x870A1C @note "Removes complete <...> tokens; leading << consumes one character and scanning resumes at the second <. Incomplete tags remain."
+function RemoveMatchingTextTagsW(Text: WideString; const Pattern: WideString; const AlternatePattern: WideString): WideString; // @addr 0x870AD0 @note "Uses MatchTextTagPrefixW; opening and closing tags require separate patterns."
 function CompareWideChars(Left: PWideChar; Right: PWideChar): Integer; cdecl; // @addr 0x870C00 @note "Case-sensitive NUL-terminated comparison returning -1, 0 or 1. Nil sorts before every nonnil pointer, including an empty string."
 
 // Original unit ownership of these standalone helpers is unresolved.
-function ExtractFileNameNoExtW(const Path: WideString): WideString; // @addr 0x870D54 @ida "void __usercall $name(unsigned __int16 *Path@<eax>, unsigned __int16 **Result@<edx>);" @note "Accepts slash and backslash; strips only the final dot and suffix from the last path component."
-function ExtractFileExtNoDotW(const Path: WideString): WideString; // @addr 0x870E0C @ida "void __usercall $name(unsigned __int16 *Path@<eax>, unsigned __int16 **Result@<edx>);" @note "Accepts slash and backslash; returns text after the last dot in the final component, or empty when absent."
-function ExtractFileDirW(const Path: WideString): WideString; // @addr 0x870ECC @ida "void __usercall $name(unsigned __int16 *Path@<eax>, unsigned __int16 **Result@<edx>);" @note "Accepts slash and backslash; excludes the final separator and component."
+function ExtractFileNameNoExtW(const Path: WideString): WideString; // @addr 0x870D54 @note "Accepts slash and backslash; strips only the final dot and suffix from the last path component."
+function ExtractFileExtNoDotW(const Path: WideString): WideString; // @addr 0x870E0C @note "Accepts slash and backslash; returns text after the last dot in the final component, or empty when absent."
+function ExtractFileDirW(const Path: WideString): WideString; // @addr 0x870ECC @note "Accepts slash and backslash; excludes the final separator and component."
 // Game text obfuscation: EncodeTextW inserts a random character after each input
 // character; DecodeTextW discards those interleaved characters.
-function DecodeTextW(Text: WideString): WideString; // @addr 0x871024 @ida "void __usercall $name(unsigned __int16 *Text@<eax>, unsigned __int16 **Result@<edx>);" @note "Keeps characters 1, 3, 5, ... using Delphi's one-based string indexing."
-function CopyWideStringUnchecked(Text: WideString; Index: Integer; Count: Integer): WideString; // @addr 0x872078 @ida "void __userpurge $name(unsigned __int16 *Text@<eax>, int Index@<edx>, int Count@<ecx>, unsigned __int16 **Result@<^0>);" @note "One-based Index; unlike the RTL Copy helper, does not clamp Index or Count to the source. Requires a valid source span and nonnegative Count."
+function DecodeTextW(Text: WideString): WideString; // @addr 0x871024 @note "Keeps characters 1, 3, 5, ... using Delphi's one-based string indexing."
+function CopyWideStringUnchecked(Text: WideString; Index: Integer; Count: Integer): WideString; // @addr 0x872078 @note "One-based Index; unlike the RTL Copy helper, does not clamp Index or Count to the source. Requires a valid source span and nonnegative Count."
 
 procedure WriteRegistryStringLegacy(RootKey: Cardinal; KeyPath, ValueName, Value: WideString); // @addr $870F24 @note "Creates with KEY_WRITE. Passes an ANSI-converted buffer and ANSI byte count to RegSetValueExW; preserves this native encoding mismatch."
-function EncodeTextW(Text: WideString): WideString; // @addr $8710C0 @ida "void __usercall $name(unsigned __int16 *Text@<eax>, unsigned __int16 **Result@<edx>);" @note "Inserts a random language-table character after each input character; requires a nonempty WideCaseTable."
-function TransliterateCyrillicToLatin(Text: WideString): WideString; // @addr $8711E8 @ida "void __usercall $name(unsigned __int16 *Text@<eax>, unsigned __int16 **Result@<edx>);" @note "Applies the native ordered replacement table, including its unusual letter mappings."
+function EncodeTextW(Text: WideString): WideString; // @addr $8710C0 @note "Inserts a random language-table character after each input character; requires a nonempty WideCaseTable."
+function TransliterateCyrillicToLatin(Text: WideString): WideString; // @addr $8711E8 @note "Applies the native ordered replacement table, including its unusual letter mappings."
 
 const
   HexDigits: THexDigits = ('0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f'); // @addr $88308C

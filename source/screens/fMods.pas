@@ -18,11 +18,11 @@ type
     ErrorCounts: array of Integer; // @offset $EC
     InvalidSelections: array of Boolean; // @offset $F0
     NeedsValidation: Boolean; // @offset $F4
-    destructor Destroy; override; // @addr $67B79C @ida "void __usercall $name(TfModsManager *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    destructor Destroy; override; // @addr $67B79C
     procedure InitializeLayout; override; // @addr $67C518
     procedure OnOpen; override; // @addr $67D8D8
     procedure SelectMusic; override; // @addr $6812AC
-    procedure ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer); override; // @addr $67EAA0 @ida "void __userpurge $name(TfModsManager *Self@<eax>, unsigned int KeyState@<edx>, TPoint *Point@<ecx>, int Delta@<^0>);"
+    procedure ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer); override; // @addr $67EAA0
     procedure TabClick(Sender: TObjectGI); // @addr $67DC70
     procedure UpdateTabDisplay; // @addr $67DD38
     procedure ValidateSelection; // @addr $67DF70
@@ -34,7 +34,7 @@ type
     procedure KeyDown(Sender: TObjectGI; Key: Cardinal); // @addr $67EA2C
     procedure SwitchMouseEnter(Sender: TObjectGI); // @addr $67EB58
     procedure SwitchMouseLeave(Sender: TObjectGI); // @addr $67EC28
-    procedure SwitchMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $67F190 @ida "void __userpurge $name(TfModsManager *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
+    procedure SwitchMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $67F190
     procedure SetModSelected(Sender: TObjectGI; Value: Boolean); // @addr $68016C
     procedure UpdateModSwitch(Sender: TObjectGI); // @addr $6802DC
     procedure ShowInfoClick(Sender: TObjectGI); // @addr $680490
@@ -83,13 +83,13 @@ var
   GroupIndices, Dependents, Block: TBlockParEC;
 
   // @nested $67B898 AlignModRowHeight
-  function AlignModRowHeight(Height, Step: Integer): Integer; // @addr $67B898 @ida "int __usercall $name@<eax>(int Height@<eax>, int Step@<edx>, void *ParentFrame@<^0>);" @stackpop 0 @calls "0x67BAD4,0x67C03D,0x67C1CB"
+  function AlignModRowHeight(Height, Step: Integer): Integer; // @addr $67B898 @calls "0x67BAD4,0x67C03D,0x67C1CB"
   begin
     Result := Round(Height / Step + 0.501) * Step;
   end;
 
   // @nested $67B8D4 AddModSectionTitle
-  procedure AddModSectionTitle(Text: WideString; Tab: Integer); // @addr $67B8D4 @ida "void __usercall $name(unsigned __int16 *Text@<eax>, int Tab@<edx>, void *ParentFrame@<^0>);" @stackpop 0 @calls "0x67D3D1,0x67D502"
+  procedure AddModSectionTitle(Text: WideString; Tab: Integer); // @addr $67B8D4 @calls "0x67D3D1,0x67D502"
   var Image: TImageGI; LabelControl: TLabelGI;
   begin
     if TabHeights[Tab] <> 0 then
@@ -118,7 +118,7 @@ var
   end;
 
   // @nested $67BB5C AddModRow
-  procedure AddModRow(Info: TModInfo; Tab: Integer); // @addr $67BB5C @ida "void __usercall $name(TModInfo *Info@<eax>, int Tab@<edx>, void *ParentFrame@<^0>);" @stackpop 0 @calls "0x67C462"
+  procedure AddModRow(Info: TModInfo; Tab: Integer); // @addr $67BB5C @calls "0x67C462"
   var
     Switch, Line: TImageGI;
     InfoButton: TGraphButtonGI;
@@ -202,7 +202,7 @@ var
   end;
 
   // @nested $67C428 AddModRows
-  procedure AddModRows(List: TList; Tab: Integer); // @addr $67C428 @ida "void __usercall $name(TList *List@<eax>, int Tab@<edx>, void *ParentFrame@<^0>);" @stackpop 0 @calls "0x67D293,0x67D3DE,0x67D510"
+  procedure AddModRows(List: TList; Tab: Integer); // @addr $67C428 @calls "0x67D293,0x67D3DE,0x67D510"
   var I: Integer; Info: TModInfo;
   begin
     for I := 0 to List.Count - 1 do
@@ -213,7 +213,7 @@ var
   end;
 
   // @nested $67C474 ConfigureModTab
-  procedure ConfigureModTab(Text: WideString; Tab: Integer); // @addr $67C474 @ida "void __usercall $name(unsigned __int16 *Text@<eax>, int Tab@<edx>, void *ParentFrame@<^0>);" @stackpop 0 @calls "0x67D2B3,0x67D3EB,0x67D540"
+  procedure ConfigureModTab(Text: WideString; Tab: Integer); // @addr $67C474 @calls "0x67D2B3,0x67D3EB,0x67D540"
   begin
     with TabButtons[Tab] do
     begin
@@ -935,7 +935,7 @@ var
   Changed, PassChanged, Alternative: Boolean;
 
   // @nested $67ECF8 CollectModDependencies
-  function CollectModDependencies(Info: TModInfo): Boolean; // @addr $67ECF8 @ida "bool __usercall $name@<al>(TModInfo *Info@<eax>, void *ParentFrame@<^0>);" @stackpop 0 @calls "0x67EE39,0x67F010,0x67F63C"
+  function CollectModDependencies(Info: TModInfo): Boolean; // @addr $67ECF8 @calls "0x67EE39,0x67F010,0x67F63C"
   var
     Name, Caption: WideString;
     Related: TModInfo;

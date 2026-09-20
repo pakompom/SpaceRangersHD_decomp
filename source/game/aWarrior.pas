@@ -17,9 +17,9 @@ type
 
     procedure SaveToBuffer(Buffer: TBufEC); override; // @addr $00518304 @slot $00
     procedure LoadFromBuffer(Buffer: TBufEC; Galaxy: TGalaxy); override; // @addr $00518330 @slot $04
-    function AdjustItemEvaluation(Item: TItem; PriceMode: Byte; Effectiveness: Single): Single; override; // @addr $0051F580 @slot $50 @ida "float __userpurge $name@<st0>(TWarrior *Self@<eax>, TItem *Item@<edx>, unsigned __int8 PriceMode@<cl>, float Effectiveness@<^0>);"
+    function AdjustItemEvaluation(Item: TItem; PriceMode: Byte; Effectiveness: Single): Single; override; // @addr $0051F580 @slot $50
     function EvaluateStatBonus(BonusKind: TEquipmentBonusKind; Value: Integer): Single; override; // @addr $0051FB14 @slot $54
-    function EvaluateWeaponDamage(Weapon: TWeapon; IncludeAdditiveBonuses: Boolean; BaseDamage: Single): Single; override; // @addr $00520788 @slot $58 @ida "float __userpurge $name@<st0>(TWarrior *Self@<eax>, TWeapon *Weapon@<edx>, bool IncludeAdditiveBonuses@<cl>, float BaseDamage@<^0>);"
+    function EvaluateWeaponDamage(Weapon: TWeapon; IncludeAdditiveBonuses: Boolean; BaseDamage: Single): Single; override; // @addr $00520788 @slot $58
     procedure RepairBrokenEquipmentAtLocation; override; // @addr $00519C7C @slot $60
     procedure BuildReachablePlanetQueue; override; // @addr $00519B50 @slot $64
     procedure SelectEnemyShipInStar; override; // @addr $0051C208 @slot $6C
@@ -33,7 +33,7 @@ type
     function TrustsAttackRequester(Ship: TShip): Boolean; override; // @addr $0051A7C8 @slot $8C
     function EvaluateAllyRelationAndStrength(Ship: TShip): Boolean; override; // @addr $0051A7EC @slot $90
     function AcceptPickupItem(Item: TItem): Boolean; override; // @addr $00520CE8 @slot $94
-    function AcceptPickupDistance(Item: TItem; Distance: Double): Boolean; override; // @addr $00520D64 @slot $98 @ida "bool __userpurge $name@<al>(TWarrior *Self@<eax>, TItem *Item@<edx>, double Distance@<^0>);"
+    function AcceptPickupDistance(Item: TItem; Distance: Double): Boolean; override; // @addr $00520D64 @slot $98
     procedure ProcessCombatDialogue; override; // @addr $0051E2F8 @slot $A0
     procedure ReactToExtortionDemand(Ranger: Pointer); override; // @addr $0051E304 @slot $A4
     function BuildMoneyExtortionResponse(OtherShip: TShip; var Response: WideString; DemandedAmount: Integer): Boolean; override; // @addr $0051E370 @slot $A8
@@ -44,7 +44,7 @@ type
     function BuildPartnershipOfferResponse(OtherShip: TShip; var Response: WideString; PaymentAmount: Integer): Boolean; override; // @addr $0051F350 @slot $BC
     function UnknownVirtualC0(Argument: Pointer): Boolean; override; // @addr $0051F524 @slot $C0
     procedure RefreshCurrentStanding; override; // @addr $00520E00 @slot $C4
-    destructor Destroy; override; // @addr $5176F0 @ida "void __usercall $name(TWarrior *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    destructor Destroy; override; // @addr $5176F0
     function FindNearestFriendlyFlagship: TShip; // @addr $51C124
     function NavigateToHomePlanet: Boolean; // @addr $519A4C
     procedure ProcessUnseenProgression; // @addr $51A094
@@ -59,13 +59,13 @@ type
     procedure NextDayFlagshipLogic; // @addr 0x519250 @note "Flagship branch; its diagnostic retains TWarrior.NextDayLogic."
     procedure AssignWeaponTargetsInStar; override; // @addr 0x51A888 @slot 0x20 @note "Native diagnostic name: TWarrior.ArmsToTarget."
     procedure AssignFlagshipWeaponTargets; // @addr 0x51B778 @note "Flagship branch; shares the TWarrior.ArmsToTarget diagnostic."
-    function GetTypeNameKey: WideString; override; // @addr $519FDC @slot $2C @ida "void __usercall $name(TWarrior *Self@<eax>, unsigned __int16 **Result@<edx>);"
+    function GetTypeNameKey: WideString; override; // @addr $519FDC @slot $2C
     function GetGreetingShipCategory: Byte; override; // @addr $51A010 @slot $30
     function GetHomeStar: TStar; override; // @addr $519D58 @slot $34
     function GetStrengthScaledPirateStatus: TPercent; override; // @addr $51A038 @slot $3C
     function GetDominantCareer: TRangerCareer; override; // @addr 0x51A024 @slot 0x38 @note "Always rcWarrior."
-    function GetName: WideString; override; // @addr 0x519D74 @slot 0x24 @ida "void __usercall $name(TWarrior *Self@<eax>, unsigned __int16 **Result@<edx>);"
-    function GetFullName(const Separator: WideString): WideString; override; // @addr 0x519D94 @slot 0x28 @ida "void __usercall $name(TWarrior *Self@<eax>, unsigned __int16 *Separator@<edx>, unsigned __int16 **Result@<ecx>);"
+    function GetName: WideString; override; // @addr 0x519D74 @slot 0x24
+    function GetFullName(const Separator: WideString): WideString; override; // @addr 0x519D94 @slot 0x28
 
     procedure ReassignFlagshipHomePlanet; // @addr $51DD8C Scores Coalition systems and same-race garrisons; moves the flagship between home rosters without changing its current position.
     procedure MoveToRandomPatrolPoint; // @addr 0x519C1C
@@ -98,7 +98,7 @@ end;
 procedure TWarrior.InitGenerated(Planet: TPlanet; InitialMoney: Integer; Kind: Byte);
 var FirstNameIndex, LastNameIndex: Integer; Ranger: TRanger; TechLevel: Byte; Config: TBlockParEC; Weapon: TWeapon;
   // @nested $517754 SelectTechLevel
-  function SelectTechLevel(Minimum, Maximum: Integer): Integer; // @addr $517754 @ida "int __usercall $name@<eax>(int Minimum@<eax>, int Maximum@<edx>, void *ParentFrame@<^0>);" @note "Nested helper with caller-popped static link."
+  function SelectTechLevel(Minimum, Maximum: Integer): Integer; // @addr $517754 @note "Nested helper with caller-popped static link."
   begin
     Result := Round(RemapClamped(Galaxy.TechLevel, 1, 8, Minimum, Maximum));
     Result := Max(Min(Result + NextRandomIntRange(-2, 2, RandomState), Maximum), Minimum);
@@ -365,7 +365,7 @@ procedure TWarrior.NextDayFlagshipLogic;
 const FriendlyStationMask = [2,3]; AnyStationMask = [0..15] - [0..15];
 var Planet: TPlanet; Station, Ship: TShip; Stations: TList; I, Stage: Integer;
   // @nested $518C80 RepairHullWithNodes
-  procedure RepairHullWithNodes; // @addr $518C80 @ida "void __usercall $name(void *ParentFrame@<^0>);"
+  procedure RepairHullWithNodes; // @addr $518C80
   var Needed, Available, Restored: Integer; Fraction: Single; Entry: PEFilmEndEntry; Effect: TWeaponSE;
   begin
     if (PilotRace in [Ord(oiMaloc), Ord(oiPeleng)]) and InFear then begin
@@ -396,7 +396,7 @@ var Planet: TPlanet; Station, Ship: TShip; Stations: TList; I, Stage: Integer;
     end;
   end;
   // @nested $518F6C RepairEquipmentWithNodes
-  procedure RepairEquipmentWithNodes; // @addr $518F6C @ida "void __usercall $name(void *ParentFrame@<^0>);"
+  procedure RepairEquipmentWithNodes; // @addr $518F6C
   var I: Integer; Equipment: TEquipment; NeedsRepair: Boolean; TotalCost, Available, Threshold: Integer; Fraction: Single;
   begin
     if PilotRace in [Ord(oiFeyan), Ord(oiGaal)] then begin
@@ -973,7 +973,7 @@ procedure TWarrior.AssignFlagshipWeaponTargets;
 var Scores: array[1..5] of Single; Assigned, I, J: Integer; Ship: TShip; Weapon: TWeapon; Distance: Single;
   Item: TItem; Asteroid: TAsteroid; Missile: TMissile; SameRacePlanet: Boolean; Stage: Integer; IgnoreRanger: Boolean;
   // @nested $51B618 ScoreTarget
-  procedure ScoreTarget(Ship: TShip); // @addr $51B618 @ida "void __usercall $name(TShip *Ship@<eax>, void *ParentFrame@<^0>);"
+  procedure ScoreTarget(Ship: TShip); // @addr $51B618
   var J, Range: Integer; Score, Distance: Single; Weapon: TWeapon;
   begin
     Score := 0;
@@ -1208,7 +1208,7 @@ var Enemies: TList; SupportWeight: Single; OwnMinRange, OwnMaxRange: Integer; Ow
   Candidate, Destination: TPointF; BestShip: TShip; BestShipScore, BestPositionScore, Score: Single;
   RandomDistance, Angle, AllyAreaScore, EnemyAreaScore: Integer; AllyRepair, EnemyRepair: Single;
   // @nested $51C9D4 GetWeaponRangeBounds
-  procedure GetWeaponRangeBounds(Ship: TShip; var Minimum, Maximum: Integer); // @addr $51C9D4 @ida "void __usercall $name(TShip *Ship@<eax>, int *Minimum@<edx>, int *Maximum@<ecx>, void *ParentFrame@<^0>);"
+  procedure GetWeaponRangeBounds(Ship: TShip; var Minimum, Maximum: Integer); // @addr $51C9D4
   var I, Range: Integer; Weapon: TWeapon;
   begin
     Minimum := -1;
@@ -1224,7 +1224,7 @@ var Enemies: TList; SupportWeight: Single; OwnMinRange, OwnMaxRange: Integer; Ow
     end;
   end;
   // @nested $51CAA0 AreaWeaponScore
-  function AreaWeaponScore(Ship: TShip): Integer; // @addr $51CAA0 @ida "int __usercall $name@<eax>(TShip *Ship@<eax>, void *ParentFrame@<^0>);"
+  function AreaWeaponScore(Ship: TShip): Integer; // @addr $51CAA0
   var I: Integer; Weapon: TWeapon;
   begin
     Result := 0;
@@ -1244,7 +1244,7 @@ var Enemies: TList; SupportWeight: Single; OwnMinRange, OwnMaxRange: Integer; Ow
       end;
   end;
   // @nested $51CB78 ProjectOutsideStar
-  function ProjectOutsideStar(Point: TPointF): TPointF; // @addr $51CB78 @ida "void __usercall $name(TPointF *Point@<eax>, TPointF *Result@<edx>, void *ParentFrame@<^0>);"
+  function ProjectOutsideStar(Point: TPointF): TPointF; // @addr $51CB78
   var SquaredDistance: Single; Attempts: Integer; Radius: Single;
   begin
     SquaredDistance := Sqr(Point.X) + Sqr(Point.Y);
@@ -1265,7 +1265,7 @@ var Enemies: TList; SupportWeight: Single; OwnMinRange, OwnMaxRange: Integer; Ow
     end else Result := Point;
   end;
   // @nested $51CCFC EvaluatePosition
-  function EvaluatePosition(Point: TPointF): Single; // @addr $51CCFC @ida "float __usercall $name@<st0>(TPointF *Point@<eax>, void *ParentFrame@<^0>);"
+  function EvaluatePosition(Point: TPointF): Single; // @addr $51CCFC
   var Ship: TShip; AttackPotential, SupportPotential, IncomingStrength, NodeValue, Benefit, Risk, Threat, BestEnemyPotential: Single;
     Distance, HookRange: Single; Minimum, Maximum: Integer; ShipDistance, Attack: Single; I: Integer; Item: TItem;
   begin
@@ -1327,7 +1327,7 @@ var Enemies: TList; SupportWeight: Single; OwnMinRange, OwnMaxRange: Integer; Ow
     Result := Benefit - Risk;
   end;
   // @nested $51D5A0 BoostWithNodes
-  procedure BoostWithNodes; // @addr $51D5A0 @ida "void __usercall $name(void *ParentFrame@<^0>);"
+  procedure BoostWithNodes; // @addr $51D5A0
   var Factor: Single;
   begin
     if (PilotRace in [Ord(oiMaloc), Ord(oiHuman), Ord(oiGaal)]) and (EnemiesInRange > 0) then begin
@@ -1537,7 +1537,7 @@ end;
 function TWarrior.BuildTrucePaymentResponse(OtherShip: TShip; var Response: WideString; OfferedAmount: Integer): Boolean;
 var NextDemandTurn: Integer;
   // @nested $51E5A4 AcceptPayment
-  procedure AcceptPayment; // @addr $51E5A4 @ida "void __usercall $name(void *ParentFrame@<^0>);" @note "Nested helper with caller-popped static link."
+  procedure AcceptPayment; // @addr $51E5A4 @note "Nested helper with caller-popped static link."
   var I, J: Integer; Ship: TShip; Planet: TPlanet; Weapon: TWeapon;
   begin
     OtherShip.SetMoney(OtherShip.Money - OfferedAmount);
@@ -1593,7 +1593,7 @@ end;
 function TWarrior.BuildAttackRequestResponse(Requester: TShip; var Response: WideString; Target: TShip): Boolean;
 var I, HostileCount: Integer; Ship: TShip;
   // @nested $51EB84 AcceptRequest
-  procedure AcceptRequest; // @addr $51EB84 @ida "void __usercall $name(void *ParentFrame@<^0>);" @note "Nested helper with caller-popped static link."
+  procedure AcceptRequest; // @addr $51EB84 @note "Nested helper with caller-popped static link."
   begin
     Response := LookupVisibleTalkText('Talk.Attack.' + GetTypeNameKey + 'Ok', Requester);
     SetJointAttackTarget(Requester, Target);

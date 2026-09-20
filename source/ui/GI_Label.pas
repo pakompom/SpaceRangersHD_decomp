@@ -31,8 +31,8 @@ type
     CreateEmbeddedControl: TCreateLabelControlEventGI; // @offset $160
     TextTexture: TTextureGR; // @offset 0x168
 
-    constructor Create(Owner: TObjectGI); // @addr 0x488A40 @ida "TLabelGI *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, TObjectGI *Owner@<ecx>);"
-    destructor Destroy; override; // @addr 0x488B74 @ida "void __usercall $name(TLabelGI *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create(Owner: TObjectGI); // @addr 0x488A40
+    destructor Destroy; override; // @addr 0x488B74
     procedure Clear; override; // @addr 0x488BFC
     procedure SetFontName(const FontName: WideString); // @addr 0x488CEC
     procedure SetTextBorderWidth(Value: Integer); // @addr 0x488D40
@@ -41,7 +41,7 @@ type
     procedure SetShadowColor(Value: Cardinal); // @addr 0x488E38
     procedure SetText(const Text: WideString); // @addr 0x488E70
     procedure LoadTextLinesFromBlockParam(Block: TBlockParEC; const ParamName: WideString); // @addr 0x488F20
-    function GetText: WideString; // @addr 0x489114 @ida "void __usercall $name(TLabelGI *Self@<eax>, unsigned __int16 **Result@<edx>);"
+    function GetText: WideString; // @addr 0x489114
     procedure SetTextAlignX(Value: TTextAlignXGI); // @addr 0x489138
     procedure SetTextAlignY(Value: TTextAlignYGI); // @addr 0x489198
     procedure SetWordWrapEnabled(Value: Boolean); // @addr 0x4891F8
@@ -53,25 +53,25 @@ type
     procedure SetTextColor(Value: Cardinal); // @addr 0x489408
     procedure SetBorderLightColor(Value: Cardinal); // @addr 0x48945C
     procedure SetBorderDarkColor(Value: Cardinal); // @addr 0x489494
-    function MeasureContentSize(TopAdjustment: PInteger): TPoint; // @addr 0x4894CC @ida "void __usercall $name(TLabelGI *Self@<eax>, PInteger TopAdjustment@<edx>, TPoint *Result@<ecx>);" @note "TopAdjustment is optional; includes text outline/shadow padding."
+    function MeasureContentSize(TopAdjustment: PInteger): TPoint; // @addr 0x4894CC @note "TopAdjustment is optional; includes text outline/shadow padding."
     function GetLineHeight: Integer; // @addr 0x489848
     function GetRenderedLineCount: Integer; // @addr 0x4898B0 @note "Includes word wrapping when enabled."
     procedure UpdateHitTestBounds; override; // @addr 0x4899EC @note "May resize the control to fit its text."
-    procedure SetSize(Size: TPoint); override; // @addr 0x489BC4 @ida "void __usercall $name(TLabelGI *Self@<eax>, TPoint *Size@<edx>);"
+    procedure SetSize(Size: TPoint); override; // @addr 0x489BC4
     procedure UpdateEmbeddedControls(Font: TCFontEC); // @addr 0x489C04 @note "Missing embedded controls are requested through the creation callback."
     procedure RemoveUnusedEmbeddedControls(Font: TCFontEC); // @addr 0x489D6C
     procedure LoadFromConfigPath(const Path: WideString); override; // @addr 0x489EF8
     procedure LoadFromBlock(Block: TBlockParEC); override; // @addr 0x48A30C
-    procedure Draw(ClipRect: TRect); override; // @addr 0x48A8D0 @ida "void __usercall $name(TLabelGI *Self@<eax>, TRect *ClipRect@<edx>);"
+    procedure Draw(ClipRect: TRect); override; // @addr 0x48A8D0
     procedure OnMouseEnter; override; // @addr $489DF0
     procedure OnMouseLeave; override; // @addr $489E50
-    procedure ProcessLeftButtonDown(KeyState: Cardinal; Point: TPoint); override; // @addr $489EA0 @ida "void __usercall $name(TLabelGI *Self@<eax>, unsigned int KeyState@<edx>, TPoint *Point@<ecx>);"
-    procedure ProcessLeftButtonUp(KeyState: Cardinal; Point: TPoint); override; // @addr $489ECC @ida "void __usercall $name(TLabelGI *Self@<eax>, unsigned int KeyState@<edx>, TPoint *Point@<ecx>);"
+    procedure ProcessLeftButtonDown(KeyState: Cardinal; Point: TPoint); override; // @addr $489EA0
+    procedure ProcessLeftButtonUp(KeyState: Cardinal; Point: TPoint); override; // @addr $489ECC
     procedure QueueImageLoad(PendingLoads: TList); override; // @addr 0x48C140
   end;
 
-function MeasureLabelTextBounds(const Text, FontName: WideString): TRect; // @addr $48C164 @ida "void __usercall $name(unsigned __int16 *Text@<eax>, unsigned __int16 *FontName@<edx>, TRect *Result@<ecx>);" Includes the native right/bottom padding.
-function MeasureWrappedLabelBounds(Width: Integer; TextLines: TStringsEC; Font: TCFontEC): TRect; // @addr $48C230 @ida "void __userpurge $name(int Width@<eax>, TStringsEC *TextLines@<edx>, TCFontEC *Font@<ecx>, TRect *Result@<^0>);"
+function MeasureLabelTextBounds(const Text, FontName: WideString): TRect; // @addr $48C164 Includes the native right/bottom padding.
+function MeasureWrappedLabelBounds(Width: Integer; TextLines: TStringsEC; Font: TCFontEC): TRect; // @addr $48C230
 procedure DrawWrappedLabelLines(Buffer: TGraphBufGR; Width, X, Y: Integer; TextLines: TStringsEC; Font: TCFontEC); // @addr $48C3DC
 procedure RenderLabelTextToBuffer(Buffer: TGraphBufGR; Width, BorderWidth, ShadowOffset: Integer; const Text, FontName: WideString; TextColor, BorderColor, ShadowColor: Cardinal); // @addr $48C574
 
@@ -705,7 +705,7 @@ procedure TLabelGI.Draw(ClipRect: TRect);
 var Font: TCFontEC; Y: Integer; Lines: TStringsEC; Color: Cardinal; Texture: IDirect3DTexture9; Bounds: TRect;
 
   // @nested $48A85C SwitchLabelDrawFont
-  procedure SwitchLabelDrawFont(FontName: WideString); // @addr 0x48A85C @ida "void __usercall $name(unsigned __int16 *FontName@<eax>, void *ParentFrame@<^0>);" @stackpop 0 @calls "0x48A943,0x48A971,0x48A99F,0x48A9D1,0x48A9FF,0x48AA2A,0x48AA55,0x48AA80" @note "Nested Draw helper; caller removes the parent-frame argument."
+  procedure SwitchLabelDrawFont(FontName: WideString); // @addr 0x48A85C @calls "0x48A943,0x48A971,0x48A99F,0x48A9D1,0x48A9FF,0x48AA2A,0x48AA55,0x48AA80" @note "Nested Draw helper; caller removes the parent-frame argument."
   begin
     FontCache.SetCacheKey(FontName);
     if TextTexture <> nil then TextTexture.ReleaseSurfaces;

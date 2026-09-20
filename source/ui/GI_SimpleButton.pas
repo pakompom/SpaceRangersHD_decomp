@@ -13,16 +13,16 @@ type
     CurrentImage: TCBitmapControlEC; // @offset $120
     NormalImage: TCBitmapControlEC; // @offset $124
     ActiveImage: TCBitmapControlEC; // @offset $128
-    constructor Create(Owner: TObjectGI); // @addr $49BF60 @ida "TSimpleButtonGI *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, TObjectGI *Owner@<ecx>);"
-    destructor Destroy; override; // @addr $49BFFC @ida "void __usercall $name(TSimpleButtonGI *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create(Owner: TObjectGI); // @addr $49BF60
+    destructor Destroy; override; // @addr $49BFFC
     procedure Clear; override; // @addr $49C060
     procedure OnMouseEnter; override; // @addr $49C074
     procedure OnMouseLeave; override; // @addr $49C0A4
-    procedure ProcessLeftButtonDown(KeyState: Cardinal; Point: TPoint); override; // @addr $49C0D4 @ida "void __usercall $name(TSimpleButtonGI *Self@<eax>, unsigned int KeyState@<edx>, TPoint *Point@<ecx>);"
-    procedure ProcessLeftButtonUp(KeyState: Cardinal; Point: TPoint); override; // @addr $49C114 @ida "void __usercall $name(TSimpleButtonGI *Self@<eax>, unsigned int KeyState@<edx>, TPoint *Point@<ecx>);"
+    procedure ProcessLeftButtonDown(KeyState: Cardinal; Point: TPoint); override; // @addr $49C0D4
+    procedure ProcessLeftButtonUp(KeyState: Cardinal; Point: TPoint); override; // @addr $49C114
     procedure LoadFromConfigPath(const Path: WideString); override; // @addr $49C154
     procedure LoadFromBlock(Block: TBlockParEC); override; // @addr $49C2B8
-    procedure Draw(ClipRect: TRect); override; // @addr $49C3F8 @ida "void __usercall $name(TSimpleButtonGI *Self@<eax>, TRect *ClipRect@<edx>);"
+    procedure Draw(ClipRect: TRect); override; // @addr $49C3F8
     procedure QueueImageLoad(PendingLoads: TList); override; // @addr $49C4C0
   end;
 

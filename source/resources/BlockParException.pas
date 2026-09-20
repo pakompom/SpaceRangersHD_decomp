@@ -10,7 +10,7 @@ type
   private
     Reportable: Boolean; // @offset $0C
   public
-    constructor Create(Message: AnsiString; AReportable: Boolean); // @addr $471FF4 @ida "EBlockPar *__userpurge $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, char *Message@<ecx>, bool AReportable@<^0>);"
+    constructor Create(Message: AnsiString; AReportable: Boolean); // @addr $471FF4
     function IsReportable: Boolean; // @addr $47207C @note "False suppresses the reporting flag in ExceptionInfo."
   end;
 

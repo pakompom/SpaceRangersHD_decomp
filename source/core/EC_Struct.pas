@@ -20,21 +20,21 @@ type
 
   TObjectEx = class // @size 0x04
   public
-    constructor Create; // @addr 0x45EFB0 @ida "TObjectEx *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x45EFF4 @ida "void __usercall $name(TObjectEx *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x45EFB0
+    destructor Destroy; override; // @addr 0x45EFF4
   end;
 
 function MakeVector3D(X, Y, Z: Double): TVector3D; // @addr 0x45ED20 @ida "void __userpurge $name(TVector3D *Result@<eax>, double X@<^16>, double Y@<^8>, double Z@<^0>);"
 function MakePointF(X, Y: Single): TPointF; // @addr 0x45ED00 @ida "void __userpurge $name(TPointF *Result@<eax>, float X@<^4>, float Y@<^0>);"
-function TruncatePointF(Point: TPointF): TPoint; // @addr 0x45ED58 @ida "void __usercall $name(TPointF *Point@<eax>, TPoint *Result@<edx>);" @note "Truncates each coordinate toward zero."
-function RoundPointF(Point: TPointF): TPoint; // @addr $45ED8C @ida "void __usercall $name(TPointF *Point@<eax>, TPoint *Result@<edx>);"
-function PointToPointF(Point: TPoint): TPointF; // @addr 0x45EDC0 @ida "void __usercall $name(TPoint *Point@<eax>, TPointF *Result@<edx>);"
-function HalfPoint(Point: TPoint): TPoint; // @addr 0x45EDEC @ida "void __usercall $name(TPoint *Point@<eax>, TPoint *Result@<edx>);" @note "Integer division rounds toward zero."
-function AddPoints(Left, Right: TPoint): TPoint; // @addr 0x45EE24 @ida "void __usercall $name(TPoint *Left@<eax>, TPoint *Right@<edx>, TPoint *Result@<ecx>);"
-function SubtractPoints(Left, Right: TPoint): TPoint; // @addr 0x45EE5C @ida "void __usercall $name(TPoint *Left@<eax>, TPoint *Right@<edx>, TPoint *Result@<ecx>);"
-function HalfPointF(Point: TPointF): TPointF; // @addr $45EE94 @ida "void __usercall $name(TPointF *Point@<eax>, TPointF *Result@<edx>);"
-function AddPointsF(Left, Right: TPointF): TPointF; // @addr $45EED0 @ida "void __usercall $name(TPointF *Left@<eax>, TPointF *Right@<edx>, TPointF *Result@<ecx>);"
-function SubtractPointsF(Left, Right: TPointF): TPointF; // @addr $45EF08 @ida "void __usercall $name(TPointF *Left@<eax>, TPointF *Right@<edx>, TPointF *Result@<ecx>);"
+function TruncatePointF(Point: TPointF): TPoint; // @addr 0x45ED58 @note "Truncates each coordinate toward zero."
+function RoundPointF(Point: TPointF): TPoint; // @addr $45ED8C
+function PointToPointF(Point: TPoint): TPointF; // @addr 0x45EDC0
+function HalfPoint(Point: TPoint): TPoint; // @addr 0x45EDEC @note "Integer division rounds toward zero."
+function AddPoints(Left, Right: TPoint): TPoint; // @addr 0x45EE24
+function SubtractPoints(Left, Right: TPoint): TPoint; // @addr 0x45EE5C
+function HalfPointF(Point: TPointF): TPointF; // @addr $45EE94
+function AddPointsF(Left, Right: TPointF): TPointF; // @addr $45EED0
+function SubtractPointsF(Left, Right: TPointF): TPointF; // @addr $45EF08
 function IntersectRects(out Intersection: TRect; const First, Second: TRect): Boolean; // @addr 0x45EF40 @ida "bool __usercall $name@<al>(TRect *Intersection@<eax>, const TRect *First@<edx>, const TRect *Second@<ecx>);" @note "Returns false without writing Intersection when the rectangles do not overlap."
 
 var

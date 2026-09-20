@@ -141,7 +141,15 @@ impl Compiler {
                     }
                     continue;
                 }
-                let prototype = self.prototype(&d)?;
+                let native = self.native_prototype(&d)?;
+                if let Some(pop) = native.as_ref().and_then(|p| p.stack_pop) {
+                    common
+                        .as_object_mut()
+                        .unwrap()
+                        .entry("stackpop")
+                        .or_insert(json!(pop));
+                }
+                let prototype = native.map(|p| p.declaration);
                 if d.meta.contains_key("countedstack") {
                     common["countedstack"] = self.counted_stack(&d, prototype.as_deref())?;
                 }

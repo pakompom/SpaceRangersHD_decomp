@@ -39,8 +39,8 @@ type
     // Rows points into a Delphi dynamic array. ColumnWidths uses the EC heap.
     // Each cell is a TLabelGI child with column/row packed into the dword at +0x8C.
 
-    constructor Create(Owner: TObjectGI); // @addr 0x4ABB60 @ida "TGridGI *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, TObjectGI *Owner@<ecx>);"
-    destructor Destroy; override; // @addr 0x4ABC90 @ida "void __usercall $name(TGridGI *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create(Owner: TObjectGI); // @addr 0x4ABB60
+    destructor Destroy; override; // @addr 0x4ABC90
     procedure Clear; override; // @addr 0x4ABCC8
     procedure LayoutCell(Child: TObjectGI); // @addr 0x4ABDB8
     procedure LayoutCells; // @addr 0x4ABF28
@@ -62,16 +62,16 @@ type
     procedure SetBackgroundImagePath(Path: WideString); // @addr 0x4AD0B8
     procedure SetActiveCellImagePath(Path: WideString); // @addr 0x4AD190
     procedure SetActiveCellImageHalfAlpha(Value: Boolean); // @addr 0x4AD2B0
-    procedure SetActiveCell(Cell: TPoint); // @addr 0x4AD2E0 @ida "void __usercall $name(TGridGI *Self@<eax>, TPoint *Cell@<edx>);" @note "Invalid coordinates become (-1,-1); valid cells are scrolled into view."
-    procedure SelectCell(Cell: TPoint); // @addr 0x4AD690 @ida "void __usercall $name(TGridGI *Self@<eax>, TPoint *Cell@<edx>);" @note "Selection can be vetoed by the callback."
-    procedure CellClick(Sender: TObjectGI; MouseState: Cardinal; Point: TPoint); // @addr 0x4AD724 @ida "void __userpurge $name(TGridGI *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int MouseState@<ecx>, TPoint *Point@<^0>);"
+    procedure SetActiveCell(Cell: TPoint); // @addr 0x4AD2E0 @note "Invalid coordinates become (-1,-1); valid cells are scrolled into view."
+    procedure SelectCell(Cell: TPoint); // @addr 0x4AD690 @note "Selection can be vetoed by the callback."
+    procedure CellClick(Sender: TObjectGI; MouseState: Cardinal; Point: TPoint); // @addr 0x4AD724
     procedure LoadFromConfigPath(const Path: WideString); override; // @addr 0x4AD984
     procedure LoadFromBlock(Block: TBlockParEC); override; // @addr 0x4AD9BC
-    procedure ProcessLeftButtonDown(KeyState: Cardinal; Point: TPoint); override; // @addr $4AD840 @ida "void __usercall $name(TGridGI *Self@<eax>, unsigned int KeyState@<edx>, TPoint *Point@<ecx>);"
+    procedure ProcessLeftButtonDown(KeyState: Cardinal; Point: TPoint); override; // @addr $4AD840
     procedure OnFocusGained; override; // @addr $4AD890
     procedure OnFocusLost; override; // @addr $4AD8A4
     procedure ProcessKeyDown(Key: Integer); override; // @addr $4AD8B8
-    procedure Draw(ClipRect: TRect); override; // @addr $4AE950 @ida "void __usercall $name(TGridGI *Self@<eax>, TRect *ClipRect@<edx>);"
+    procedure Draw(ClipRect: TRect); override; // @addr $4AE950
     procedure LoadGridProperties(Block: TBlockParEC); // @addr 0x4AD9E4
   end;
 

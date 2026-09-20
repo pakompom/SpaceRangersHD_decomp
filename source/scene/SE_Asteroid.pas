@@ -16,7 +16,7 @@ type
 
     procedure AttachToSpace(ASpace: TSpaceSE); override; // @addr 0x797DB8
     procedure DetachFromSpace; override; // @addr 0x797FD8
-    procedure SetPosition(APosition: TPointF); override; // @addr 0x798040 @ida "void __usercall $name(TAsteroidSE *Self@<eax>, TPointF *APosition@<edx>);"
+    procedure SetPosition(APosition: TPointF); override; // @addr 0x798040
     function GetSequenceFrameIndex: Integer; // @addr 0x7980D0
     procedure SetSequenceFrameIndex(FrameIndex: Integer); // @addr 0x798104
     function HitTestCursor: Boolean; override; // @addr 0x7981B4

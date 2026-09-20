@@ -10,14 +10,14 @@ type
   public
     Color: Cardinal; // @offset 0x120
 
-    constructor Create(Owner: TObjectGI); // @addr 0x4AAF40 @ida "TLineGI *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, TObjectGI *Owner@<ecx>);"
-    destructor Destroy; override; // @addr 0x4AAFA8 @ida "void __usercall $name(TLineGI *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create(Owner: TObjectGI); // @addr 0x4AAF40
+    destructor Destroy; override; // @addr 0x4AAFA8
     procedure Clear; override; // @addr 0x4AAFDC
     procedure SetColor(Value: Cardinal); // @addr 0x4AB00C
     procedure LoadFromConfigPath(const Path: WideString); override; // @addr 0x4AB044
     procedure LoadFromBlock(Block: TBlockParEC); override; // @addr 0x4AB07C
     procedure LoadLineProperties(Block: TBlockParEC); // @addr 0x4AB0A4
-    procedure Draw(ClipRect: TRect); override; // @addr 0x4AB128 @ida "void __usercall $name(TLineGI *Self@<eax>, TRect *ClipRect@<edx>);"
+    procedure Draw(ClipRect: TRect); override; // @addr 0x4AB128
   end;
 
 implementation

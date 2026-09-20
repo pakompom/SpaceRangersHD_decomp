@@ -48,8 +48,8 @@ type
     TotalScore: Integer; // @offset 0x74
     Exported: Boolean; // @offset 0x78  Session-only; not serialized.
 
-    constructor Create; // @addr 0x57B77C @ida "TfScoreUnit *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x57B7D0 @ida "void __usercall $name(TfScoreUnit *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x57B77C
+    destructor Destroy; override; // @addr 0x57B7D0
     procedure CapturePlayer(Victory: Boolean); // @addr 0x57B80C @note "Also checks end-game achievements and submits eligible victories through the Steam score callback."
     procedure RecalculateDifficultyPercent; // @addr 0x57BE28
     procedure RecalculateTotalScore; // @addr 0x57BE80 @note "Defeats score zero. Victories use experience, difficulty, elapsed years and ending-resolution penalties; Disqualified does not suppress the local score."
@@ -63,8 +63,8 @@ type
     Entries: TList; // @offset 0xD0  Owned TfScoreUnit objects; table capacity is 11.
     SelectedIndex: Integer; // @offset 0xD4
 
-    constructor Create; // @addr 0x57ECD4 @ida "TfScore *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x57ED2C @ida "void __usercall $name(TfScore *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x57ECD4
+    destructor Destroy; override; // @addr 0x57ED2C
     procedure InitializeLayout; override; // @addr 0x57ED74 @slot 0x30
     procedure OnOpen; override; // @addr 0x57EFF0 @slot 0x1C @note "Releases the active galaxy and memory save snapshot."
     procedure OnClose; override; // @addr 0x57FE0C @slot 0x20
@@ -85,7 +85,7 @@ type
     procedure CloseClicked(Sender: TObjectGI); // @addr 0x5804A4
     procedure KeyDown(Sender: TObjectGI; Key: Cardinal); // @addr 0x5804DC
     procedure RefreshDetails; // @addr 0x580610
-    procedure EntryMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x583278 @ida "void __userpurge $name(TfScore *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
+    procedure EntryMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x583278
     procedure ExportEntryClicked(Sender: TObjectGI); // @addr 0x583300 @note "Exports ToServerNN.txt and also submits an eligible score through the Steam callback when available."
     procedure QuestHelpMouseEnter(Sender: TObjectGI); // @addr 0x583610
     procedure QuestHelpMouseLeave(Sender: TObjectGI); // @addr 0x583630

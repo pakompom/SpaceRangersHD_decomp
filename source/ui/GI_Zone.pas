@@ -16,18 +16,18 @@ type
     ZoneMouseDownCallback: TObjectMouseEventGI; // @offset $138 Verified at $4A1671: Context/EAX, Sender/EDX, KeyState/ECX and Point on stack.
     ZoneMouseUpCallback: TObjectMouseEventGI; // @offset $140
 
-    constructor Create(Owner: TObjectGI); // @addr 0x4A11C0 @ida "TZoneGI *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, TObjectGI *Owner@<ecx>);"
-    destructor Destroy; override; // @addr 0x4A1208 @ida "void __usercall $name(TZoneGI *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create(Owner: TObjectGI); // @addr 0x4A11C0
+    destructor Destroy; override; // @addr 0x4A1208
     procedure SetKind(Value: TZoneKindGI); // @addr 0x4A123C
     procedure Invalidate; override; // @addr $4A1268 Native no-op: hit zones do not draw.
-    function HitTest(Point: TPoint): Boolean; // @addr 0x4A1274 @ida "bool __usercall $name@<al>(TZoneGI *Self@<eax>, TPoint *Point@<edx>);" @note "Circle mode ignores Active and HitTestDisabled."
+    function HitTest(Point: TPoint): Boolean; // @addr 0x4A1274 @note "Circle mode ignores Active and HitTestDisabled."
     procedure OnActivate; override; // @addr 0x4A137C @note "May invoke cursor enter/leave callbacks."
     procedure OnDeactivate; override; // @addr 0x4A141C
     procedure OnMouseEnter; override; // @addr $4A1468
     procedure OnMouseLeave; override; // @addr $4A1508
-    procedure ProcessMouseMove(KeyState: Cardinal; Point: TPoint); override; // @addr $4A1554 @ida "void __usercall $name(TZoneGI *Self@<eax>, unsigned int KeyState@<edx>, TPoint *Point@<ecx>);"
-    procedure ProcessLeftButtonDown(KeyState: Cardinal; Point: TPoint); override; // @addr $4A15FC @ida "void __usercall $name(TZoneGI *Self@<eax>, unsigned int KeyState@<edx>, TPoint *Point@<ecx>);"
-    procedure ProcessLeftButtonUp(KeyState: Cardinal; Point: TPoint); override; // @addr $4A16C8 @ida "void __usercall $name(TZoneGI *Self@<eax>, unsigned int KeyState@<edx>, TPoint *Point@<ecx>);" Native calls inherited ProcessLeftButtonDown before the zone's up callback.
+    procedure ProcessMouseMove(KeyState: Cardinal; Point: TPoint); override; // @addr $4A1554
+    procedure ProcessLeftButtonDown(KeyState: Cardinal; Point: TPoint); override; // @addr $4A15FC
+    procedure ProcessLeftButtonUp(KeyState: Cardinal; Point: TPoint); override; // @addr $4A16C8 Native calls inherited ProcessLeftButtonDown before the zone's up callback.
     procedure LoadFromConfigPath(const Path: WideString); override; // @addr 0x4A1794
     procedure LoadFromBlock(Block: TBlockParEC); override; // @addr 0x4A17C8
     procedure LoadZoneProperties(Block: TBlockParEC); // @addr 0x4A17F0

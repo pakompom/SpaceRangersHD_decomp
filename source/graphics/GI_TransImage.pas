@@ -13,17 +13,17 @@ type
     ImageKindY: TImageKindYGI; // @offset 0x125
     HalfAlpha: Boolean; // @offset 0x126
 
-    constructor Create(Owner: TObjectGI); // @addr 0x474984 @ida "TTransImageGI *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, TObjectGI *Owner@<ecx>);"
-    destructor Destroy; override; // @addr 0x474A0C @ida "void __usercall $name(TTransImageGI *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create(Owner: TObjectGI); // @addr 0x474984
+    destructor Destroy; override; // @addr 0x474A0C
     procedure Clear; override; // @addr 0x474A58 @note "Preserves HalfAlpha and the cache key."
     procedure SetImagePath(const ImagePath: WideString); // @addr 0x474A80
-    function GetContentSize: TPoint; // @addr 0x474AC4 @ida "void __usercall $name(TTransImageGI *Self@<eax>, TPoint *Result@<edx>);"
+    function GetContentSize: TPoint; // @addr 0x474AC4
     procedure SetImageKindX(Value: TImageKindXGI); // @addr 0x474B28
     procedure SetImageKindY(Value: TImageKindYGI); // @addr 0x474B60
     procedure SetHalfAlpha(Value: Boolean); // @addr 0x474B98
     procedure LoadFromConfigPath(const Path: WideString); override; // @addr 0x474BD0
     procedure LoadFromBlock(Block: TBlockParEC); override; // @addr 0x474E5C
-    procedure Draw(ClipRect: TRect); override; // @addr 0x4750C4 @ida "void __usercall $name(TTransImageGI *Self@<eax>, TRect *ClipRect@<edx>);"
+    procedure Draw(ClipRect: TRect); override; // @addr 0x4750C4
     procedure QueueImageLoad(PendingLoads: TList); override; // @addr 0x475374
   end;
 

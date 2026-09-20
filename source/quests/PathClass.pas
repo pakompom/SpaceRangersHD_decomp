@@ -27,8 +27,8 @@ type
     // No recovered routine accesses +0x3C..+0xE3.
     Sequence: TSequence; // @offset 0xE4
 
-    constructor Create; // @addr 0x4E5694 @ida "TPath *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x4E5748 @ida "void __usercall $name(TPath *Self@<eax>, __int8 DestroyFlags@<dl>);" @note "Frees the sequence and containers without calling Reset."
+    constructor Create; // @addr 0x4E5694
+    destructor Destroy; override; // @addr 0x4E5748 @note "Frees the sequence and containers without calling Reset."
     procedure Reset; // @addr 0x4E57E0
     function GetParameterChangeCount: Integer; // @addr 0x4E58E4
     function GetParameterChange(Index: Integer): TParameterDelta; // @addr 0x4E5900 @note "Index is one-based."

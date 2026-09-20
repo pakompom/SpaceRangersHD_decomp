@@ -19,8 +19,8 @@ type
     procedure SaveToBuffer(Buffer: TBufEC); // @addr $7DD134
     procedure LoadFromBuffer(Buffer: TBufEC; Galaxy: TGalaxy); // @addr $7DD1C8
     // Owns Item while the location's shop list is detached, and frees remaining controls.
-    constructor Create; // @addr 0x7DCFF8 @ida "TShopSlot *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x7DD03C @ida "void __usercall $name(TShopSlot *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x7DCFF8
+    destructor Destroy; override; // @addr 0x7DD03C
   end;
 
   TfEquipmentShop = class(TMessageLoopGIWithMainPanel) // @size 0x120
@@ -41,12 +41,12 @@ type
     HullPriceOffset: TPoint; // @offset 0x110
     HullRaceOffset: TPoint; // @offset 0x118
 
-    constructor Create; // @addr 0x7DD244 @ida "TfEquipmentShop *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x7DD2C4 @ida "void __usercall $name(TfEquipmentShop *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x7DD244
+    destructor Destroy; override; // @addr 0x7DD2C4
     procedure OnOpen; override; // @addr 0x7DD948
     procedure OnClose; override; // @addr 0x7DE0F0
     procedure SelectMusic; override; // @addr 0x7E3948
-    procedure ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer); override; // @addr 0x7E3694 @ida "void __userpurge $name(TfEquipmentShop *Self@<eax>, unsigned int KeyState@<edx>, TPoint *Point@<ecx>, int Delta@<^0>);"
+    procedure ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer); override; // @addr 0x7E3694
     procedure InitializeLayout; override; // @addr 0x7DD364
     procedure ExecuteUiCode(Block: TBlockParEC; Key: Cardinal); override; // @addr 0x7E38D4
     procedure BuildGoodsControls; // @addr 0x7DE2EC
@@ -61,7 +61,7 @@ type
     procedure EndTurnClicked(Sender: TObjectGI); // @addr $7DF3B0
     procedure ShipClicked(Sender: TObjectGI); // @addr $7DF688
     procedure ScrollTick(Timer: PCallbackTimerGI; UserData: Integer); // @addr $7DFE54
-    procedure ItemMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $7DFFE4 @ida "void __userpurge $name(TfEquipmentShop *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
+    procedure ItemMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $7DFFE4
     procedure ChooseAnimatedPreview(Timer: PCallbackTimerGI; UserData: Integer); // @addr $7E0F54
     procedure PreviewCycleComplete(Sender: TObjectGI); // @addr $7E105C
     procedure HideItemInfo(Timer: PCallbackTimerGI; UserData: Integer); // @addr $7E1080
@@ -78,9 +78,9 @@ procedure TemporaryShopStockHook(Argument: Pointer); // @addr $7DC978 Native no-
 procedure BuildTemporaryShopSlotGrid; // @addr 0x7DC984 @note "Transfers ownership of market inventory into the temporary slots."
 procedure RestoreTemporaryShopStock; // @addr 0x7DCD40 @note "Returns ownership of remaining items to the original market."
 procedure ClearTemporaryShopSlotGrid; // @addr 0x7DCE30 @note "Frees remaining items without returning them to the market."
-function FindShopSlotByGridPoint(Point: TPoint): TShopSlot; // @addr 0x7DCEAC @ida "TShopSlot *__usercall $name@<eax>(TPoint *Point@<eax>);"
+function FindShopSlotByGridPoint(Point: TPoint): TShopSlot; // @addr 0x7DCEAC
 function FindShopSlotByItem(Item: TItem): TShopSlot; // @addr 0x7DCF20
-function GetShopItemIconName(Item: TItem): WideString; // @addr 0x7DCF7C @ida "void __usercall $name(TItem *Item@<eax>, unsigned __int16 **Result@<edx>);"
+function GetShopItemIconName(Item: TItem): WideString; // @addr 0x7DCF7C
 
 var
   ShopGridRowCount: Integer = 4; // @addr 0x87CD04
@@ -1318,7 +1318,7 @@ var
   I: Integer;
 
   // @nested $7E1EF0 AddOverlay
-  procedure AddOverlay(Name: WideString); // @addr $7E1EF0 @ida "void __usercall $name(unsigned __int16 *Name@<eax>, void *ParentFrame@<^0>);" @stackpop 0 @calls "0x7e2075,0x7e208e,0x7e20a9,0x7e20c4,0x7e20df,0x7e20fa,0x7e2144,0x7e2165,0x7e217e,0x7e2197,0x7e21b0,0x7e21c9,0x7e21e2,0x7e21fb" @note "Nested in BuildHullSlotOverlays; captures root, parent and offsets."
+  procedure AddOverlay(Name: WideString); // @addr $7E1EF0 @calls "0x7e2075,0x7e208e,0x7e20a9,0x7e20c4,0x7e20df,0x7e20fa,0x7e2144,0x7e2165,0x7e217e,0x7e2197,0x7e21b0,0x7e21c9,0x7e21e2,0x7e21fb" @note "Nested in BuildHullSlotOverlays; captures root, parent and offsets."
   var
     Control: TObjectGI;
     Path: WideString;

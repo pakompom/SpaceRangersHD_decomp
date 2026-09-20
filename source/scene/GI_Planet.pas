@@ -41,8 +41,8 @@ type
     TextureSize: TPoint; // @offset 0x19C
     AtmosphereTextureSize: TPoint; // @offset 0x1A4
 
-    constructor Create(Owner: TObjectGI); // @addr 0x4A6588 @ida "TPlanetGI *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, TObjectGI *Owner@<ecx>);"
-    destructor Destroy; override; // @addr 0x4A6854 @ida "void __usercall $name(TPlanetGI *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create(Owner: TObjectGI); // @addr 0x4A6588
+    destructor Destroy; override; // @addr 0x4A6854
     procedure Clear; override; // @addr 0x4A6A08 @note "Preserves image caches, atmosphere storage and texture cache."
     procedure SetImage(const MaskPath, ImagePath, LightMapPath: WideString); // @addr 0x4A6A70 @note "Image width must be a power of two from 16 through 2048; height must not exceed half the width. The light map must cover that height on both axes."
     procedure SetCloud1Image(const Path: WideString); // @addr 0x4A7194 @note "Requires the same dimensions as the surface map."
@@ -60,7 +60,7 @@ type
     procedure SetLightAngle(Value: Byte); // @addr 0x4A855C @note "A full turn has 256 steps; requires initialized light buffers when the angle changes."
     procedure LoadFromConfigPath(const Path: WideString); override; // @addr 0x4A8618
     procedure LoadFromBlock(Block: TBlockParEC); override; // @addr 0x4A87FC
-    procedure Draw(ClipRect: TRect); override; // @addr 0x4A899C @ida "void __usercall $name(TPlanetGI *Self@<eax>, TRect *ClipRect@<edx>);" @note "The native routine does not release its third cloud layer's cache acquisitions."
+    procedure Draw(ClipRect: TRect); override; // @addr 0x4A899C @note "The native routine does not release its third cloud layer's cache acquisitions."
     procedure RenderSurfaceToBuffer(Buffer: TGraphBufGR); // @addr 0x4A97EC @note "Resizes and clears Buffer; excludes clouds and atmosphere."
     procedure QueueImageLoad(PendingLoads: TList); override; // @addr 0x4A9998 @note "Queues the template, surface, surface palette and light rotation only."
   end;

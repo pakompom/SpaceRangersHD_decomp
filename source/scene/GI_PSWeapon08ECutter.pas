@@ -31,17 +31,17 @@ type
     OriginalLength: Single; // @offset $13C
     Colors: TECutterPalette; // @offset $140
 
-    constructor Create(Owner: TObjectGI; APaletteIndex: Integer); // @addr $68E904 @ida "TPSWeapon08ECutter *__userpurge $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, TObjectGI *Owner@<ecx>, int APaletteIndex@<^0>);"
-    destructor Destroy; override; // @addr $68EA38 @ida "void __usercall $name(TPSWeapon08ECutter *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create(Owner: TObjectGI; APaletteIndex: Integer); // @addr $68E904
+    destructor Destroy; override; // @addr $68EA38
     procedure Invalidate; override; // @addr $68EA74 @note "Native empty override."
-    procedure SetPosition(Position: TPoint); override; // @addr $68EA80 @ida "void __usercall $name(TPSWeapon08ECutter *Self@<eax>, TPoint *Position@<edx>);"
-    procedure SetTargetPoint(Point: TPoint); override; // @addr $68EABC @ida "void __usercall $name(TPSWeapon08ECutter *Self@<eax>, TPoint *Point@<edx>);"
+    procedure SetPosition(Position: TPoint); override; // @addr $68EA80
+    procedure SetTargetPoint(Point: TPoint); override; // @addr $68EABC
     procedure UpdateHitTestBounds; override; // @addr $68EB08
     procedure ClearParticles; // @addr $68EB3C
     procedure GrowParticles; // @addr $68EB84
     function AddParticle: PECutterParticle; // @addr $68EBBC
     procedure Advance(Timer: PCallbackTimerGI; UserData: Integer); override; // @addr $68EC14
-    procedure Draw(ClipRect: TRect); override; // @addr $68EEA0 @ida "void __usercall $name(TPSWeapon08ECutter *Self@<eax>, TRect *ClipRect@<edx>);"
+    procedure Draw(ClipRect: TRect); override; // @addr $68EEA0
   end;
 
 procedure LoadECutterPalettes; // @addr $68F120

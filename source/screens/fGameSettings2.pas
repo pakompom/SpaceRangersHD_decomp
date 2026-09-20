@@ -41,13 +41,13 @@ type
     procedure OnClose; override; // @addr 0x573734
     procedure SelectMusic; override; // @addr 0x577FC8
     procedure ExecuteUiCode(Block: TBlockParEC; Key: Cardinal); override; // @addr 0x57AB34
-    procedure ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer); override; // @addr 0x57A2A0 @ida "void __userpurge $name(TfGameSettings2 *Self@<eax>, unsigned int KeyState@<edx>, TPoint *Point@<ecx>, int Delta@<^0>);"
+    procedure ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer); override; // @addr 0x57A2A0
     procedure AddIronWillChoice(Value, X, Y: Integer; Caption, Help: WideString; Selected, Disabled: Boolean); // @addr 0x5737D8
-    procedure IronWillMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x573BFC @ida "void __userpurge $name(TfGameSettings2 *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
+    procedure IronWillMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x573BFC
     procedure IronWillMouseEnter(Sender: TObjectGI); // @addr 0x573DF4
     procedure IronWillMouseLeave(Sender: TObjectGI); // @addr 0x573F30
     procedure GeneratePlayerName; // @addr 0x57406C
-    procedure PlayerNameMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x5741F8 @ida "void __userpurge $name(TfGameSettings2 *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
+    procedure PlayerNameMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x5741F8
     procedure ToggleLevelPanel(Sender: TObjectGI); // @addr 0x57424C
     procedure AnimateLevelPanel(Timer: PCallbackTimerGI; UserData: Integer); // @addr 0x574324
     procedure RaceClicked(Sender: TObjectGI); // @addr 0x5745C8
@@ -77,14 +77,14 @@ type
     procedure IncreaseAllDifficulties; // @addr 0x57A390
     procedure DecreaseAllDifficulties; // @addr 0x57A430
     procedure RefreshDifficultyHelp; // @addr 0x57A4C8
-    procedure CustomDifficultyMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x575F74 @ida "void __userpurge $name(TfGameSettings2 *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
+    procedure CustomDifficultyMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x575F74
     procedure MainPanelKeyDown(Sender: TObjectGI; Key: Cardinal); // @addr 0x57781C
     function ValidatePlayerName(Name: WideString): Boolean; // @addr 0x577B34 @note "Also removes <>{} from the edit control and adjusts its caret; rejects empty names and unsupported glyphs."
     procedure ShowControlHelp(Sender: TObjectGI; Show: Boolean); // @addr 0x577D94
     function AddExtendedOptionLabel(OptionName, Caption: WideString; UnusedFlag: Boolean): TLabelGI; // @addr 0x578AE0
     procedure AddExtendedOptionChoice(Value: Integer; Caption: WideString; Selected, Disabled: Boolean); // @addr 0x578D6C
     procedure AddExtendedOptionSlider(ValueLabel: TLabelGI; Minimum, Maximum, Position, UnusedStep: Integer; Callback: TNewGameSliderEvent); // @addr 0x579358 @note "Invokes Callback immediately with the new slider."
-    procedure ExtendedChoiceMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x5791D8 @ida "void __userpurge $name(TfGameSettings2 *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
+    procedure ExtendedChoiceMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x5791D8
     function GetExtendedOptionValue(OptionName: WideString): Integer; // @addr 0x579A50 @note "Searches only the active extended group; raises when no value is found."
     procedure SetExtendedOptionValue(OptionName: WideString; Value: Integer); // @addr 0x579BDC @note "Searches only the active extended group; missing options are ignored."
     procedure FormatExtendedInteger(Sender: TCountBarGI); // @addr 0x579CE4
@@ -347,7 +347,7 @@ var
   Enabled: Boolean;
 
   // @nested $56E714 GetNewGameCustomRule
-  function GetNewGameCustomRule(Path: WideString): WideString; // @addr 0x56E714 @ida "void __usercall $name(unsigned __int16 *Path@<eax>, unsigned __int16 **Result@<edx>, void *ParentFrame@<^0>);" @stackpop 0 @calls "0x56f1f6,0x56f28c,0x56f322,0x56f3b8,0x56f44e,0x56f4e5,0x56f57d,0x56f612,0x56f6c5,0x56f778,0x56f82b,0x56f935,0x56f9cc,0x56fa63,0x56fafa,0x56fb91,0x56fc28,0x56fce8,0x56fd9b,0x56fe4e,0x56ff01,0x56ffb4,0x570067,0x5700fe,0x570195,0x570248,0x5702df,0x570376,0x57040d,0x5704a4,0x570557,0x57060a,0x5706a1,0x570754,0x570807,0x5708ba,0x57096d,0x570a20" @note "Nested in OnOpen; static link unused. Returns an empty string for an absent CustomRules block or key."
+  function GetNewGameCustomRule(Path: WideString): WideString; // @addr 0x56E714 @calls "0x56f1f6,0x56f28c,0x56f322,0x56f3b8,0x56f44e,0x56f4e5,0x56f57d,0x56f612,0x56f6c5,0x56f778,0x56f82b,0x56f935,0x56f9cc,0x56fa63,0x56fafa,0x56fb91,0x56fc28,0x56fce8,0x56fd9b,0x56fe4e,0x56ff01,0x56ffb4,0x570067,0x5700fe,0x570195,0x570248,0x5702df,0x570376,0x57040d,0x5704a4,0x570557,0x57060a,0x5706a1,0x570754,0x570807,0x5708ba,0x57096d,0x570a20" @note "Nested in OnOpen; static link unused. Returns an empty string for an absent CustomRules block or key."
   begin
     Result := '';
     if NewGameSettingsConfig.CountBlocks('CustomRules') <> 0 then

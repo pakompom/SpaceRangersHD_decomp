@@ -27,8 +27,8 @@ type
     VisitCount: Integer; // @offset 0x38
     Sequence: TSequence; // @offset 0x3C
 
-    constructor Create; // @addr 0x4E6C80 @ida "TLocation *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x4E6D30 @ida "void __usercall $name(TLocation *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x4E6C80
+    destructor Destroy; override; // @addr 0x4E6D30
     procedure Reset; // @addr 0x4E6DD8 @note "Retains the first event; frees parameter changes and Sequence."
     function GetParameterChangeCount: Integer; // @addr 0x4E6F10
     function GetParameterChange(Index: Integer): TParameterDelta; // @addr 0x4E6F2C @note "Index is one-based."

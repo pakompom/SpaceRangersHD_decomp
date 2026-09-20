@@ -15,9 +15,9 @@ type
     procedure SaveToBuffer(Buffer: TBufEC); override; // @addr $0050D638 @slot $00
     procedure LoadFromBuffer(Buffer: TBufEC; Galaxy: TGalaxy); override; // @addr $0050D688 @slot $04
     procedure AssignWeaponTargetsInStar; override; // @addr $00511490 @slot $20
-    function AdjustItemEvaluation(Item: TItem; PriceMode: Byte; Effectiveness: Single): Single; override; // @addr $00515688 @slot $50 @ida "float __userpurge $name@<st0>(TPirate *Self@<eax>, TItem *Item@<edx>, unsigned __int8 PriceMode@<cl>, float Effectiveness@<^0>);"
+    function AdjustItemEvaluation(Item: TItem; PriceMode: Byte; Effectiveness: Single): Single; override; // @addr $00515688 @slot $50
     function EvaluateStatBonus(BonusKind: TEquipmentBonusKind; Value: Integer): Single; override; // @addr $00515C30 @slot $54
-    function EvaluateWeaponDamage(Weapon: TWeapon; IncludeAdditiveBonuses: Boolean; BaseDamage: Single): Single; override; // @addr $00516AD0 @slot $58 @ida "float __userpurge $name@<st0>(TPirate *Self@<eax>, TWeapon *Weapon@<edx>, bool IncludeAdditiveBonuses@<cl>, float BaseDamage@<^0>);"
+    function EvaluateWeaponDamage(Weapon: TWeapon; IncludeAdditiveBonuses: Boolean; BaseDamage: Single): Single; override; // @addr $00516AD0 @slot $58
     procedure RepairBrokenEquipmentAtLocation; override; // @addr $0050F14C @slot $60
     procedure BuildReachablePlanetQueue; override; // @addr $0050E844 @slot $64
     procedure SelectEnemyShipInStar; override; // @addr $00511CBC @slot $6C
@@ -31,7 +31,7 @@ type
     function TrustsAttackRequester(Ship: TShip): Boolean; override; // @addr $00510E88 @slot $8C
     function EvaluateAllyRelationAndStrength(Ship: TShip): Boolean; override; // @addr $00510EAC @slot $90
     function AcceptPickupItem(Item: TItem): Boolean; override; // @addr $00517418 @slot $94
-    function AcceptPickupDistance(Item: TItem; Distance: Double): Boolean; override; // @addr $00517430 @slot $98 @ida "bool __userpurge $name@<al>(TPirate *Self@<eax>, TItem *Item@<edx>, double Distance@<^0>);"
+    function AcceptPickupDistance(Item: TItem; Distance: Double): Boolean; override; // @addr $00517430 @slot $98
     procedure ProcessCombatDialogue; override; // @addr $00512A94 @slot $A0
     procedure ReactToExtortionDemand(Ranger: Pointer); override; // @addr $00512BE8 @slot $A4
     function BuildMoneyExtortionResponse(OtherShip: TShip; var Response: WideString; DemandedAmount: Integer): Boolean; override; // @addr $00512DD0 @slot $A8
@@ -42,7 +42,7 @@ type
     function BuildPartnershipOfferResponse(OtherShip: TShip; var Response: WideString; PaymentAmount: Integer): Boolean; override; // @addr $005147D4 @slot $BC
     function UnknownVirtualC0(Argument: Pointer): Boolean; override; // @addr $00514FA4 @slot $C0
     procedure RefreshCurrentStanding; override; // @addr $005174E4 @slot $C4
-    destructor Destroy; override; // @addr $50CC28 @ida "void __usercall $name(TPirate *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    destructor Destroy; override; // @addr $50CC28
     function NavigateToServicePlanet(Absolute: Boolean): Boolean; // @addr $50E6C0
     function SelectServicePlanet: TPlanet; // @addr $50E784
     procedure TryJumpToNearbyBattle(UnusedMode: Byte); // @addr $50EA34 The native entry stores but never reads dl; the sole caller passes zero.
@@ -65,8 +65,8 @@ type
     function GetHomeStar: TStar; override; // @addr $50F3EC @slot $34
     function GetStrengthScaledPirateStatus: TPercent; override; // @addr $50F60C @slot $3C
     function GetDominantCareer: TRangerCareer; override; // @addr 0x50F5F8 @slot 0x38 @note "Always rcPirate."
-    function GetName: WideString; override; // @addr 0x50F408 @slot 0x24 @ida "void __usercall $name(TPirate *Self@<eax>, unsigned __int16 **Result@<edx>);"
-    function GetFullName(const Separator: WideString): WideString; override; // @addr 0x50F428 @slot 0x28 @ida "void __usercall $name(TPirate *Self@<eax>, unsigned __int16 *Separator@<edx>, unsigned __int16 **Result@<ecx>);"
+    function GetName: WideString; override; // @addr 0x50F408 @slot 0x24
+    function GetFullName(const Separator: WideString): WideString; override; // @addr 0x50F428 @slot 0x28
 
     procedure SelectNearestReachableDestination; // @addr $50EBD4 Prefers the leader's route, then nearby service locations or reachable non-Dominator stars.
     procedure SellAllCargoGoods; // @addr 0x50F108
@@ -98,7 +98,7 @@ end;
 procedure TPirate.InitGenerated(Planet: TPlanet; InitialMoney: Integer; Kind: Byte);
 var I: Integer; Ranger: TRanger; HasHull: Boolean;
   // @nested $50CC78 SelectUniqueName
-  procedure SelectUniqueName(Config: TBlockParEC); // @addr $50CC78 @ida "void __usercall $name(TBlockParEC *Config@<eax>, void *ParentFrame@<^0>);" @note "Nested helper with caller-popped static link."
+  procedure SelectUniqueName(Config: TBlockParEC); // @addr $50CC78 @note "Nested helper with caller-popped static link."
   var Index, Attempt, I, J, LastIndex, FirstIndex: Integer; Duplicate: Boolean; Star: TStar; Ship: TShip; Block: TBlockParEC;
   begin
     if (Config <> nil) and (Config.CountBlocks('Pirate') <> 0) then begin
@@ -931,7 +931,7 @@ end;
 function TPirate.ProcessImprisonment: Boolean;
 var I: Integer; Ship: TShip;
   // @nested $510F48 Imprison
-  procedure Imprison; // @addr $510F48 @ida "void __usercall $name(void *ParentFrame@<^0>);" @note "Nested helper; caller-popped static link."
+  procedure Imprison; // @addr $510F48 @note "Nested helper; caller-popped static link."
   var I: Integer; Ship: TShip; Text: WideString;
   begin
     PrisonTermRemaining := NextRandomIntRange(61, 140, RandomState);
@@ -1249,7 +1249,7 @@ end;
 function TPirate.BuildMoneyExtortionResponse(OtherShip: TShip; var Response: WideString; DemandedAmount: Integer): Boolean;
 var NextDemandTurn: Integer;
   // @nested $512C64 PayDemand
-  procedure PayDemand; // @addr $512C64 @ida "void __usercall $name(void *ParentFrame@<^0>);" @note "Nested helper with caller-popped static link."
+  procedure PayDemand; // @addr $512C64 @note "Nested helper with caller-popped static link."
   var Event: TGalaxyEvent;
   begin
     OtherShip.SetMoney(OtherShip.Money + DemandedAmount);
@@ -1292,7 +1292,7 @@ end;
 function TPirate.BuildCargoExtortionResponse(OtherShip: TShip; var Response: WideString): Boolean;
 var Forced: Boolean; NextDemandTurn: Integer;
   // @nested $513218 DropDemand
-  procedure DropDemand; // @addr $513218 @ida "void __usercall $name(void *ParentFrame@<^0>);" @note "Nested helper with caller-popped static link."
+  procedure DropDemand; // @addr $513218 @note "Nested helper with caller-popped static link."
   var Good: Byte; Pass, Count, TotalValue, LowValue, HighValue: Integer; Enough: Boolean; Divisor: Single; Event: TGalaxyEvent;
   begin
     TotalValue := 0;
@@ -1349,7 +1349,7 @@ end;
 function TPirate.BuildTrucePaymentResponse(OtherShip: TShip; var Response: WideString; OfferedAmount: Integer): Boolean;
 var NextDemandTurn: Integer;
   // @nested $513860 AcceptPayment
-  procedure AcceptPayment; // @addr $513860 @ida "void __usercall $name(void *ParentFrame@<^0>);" @note "Nested helper with caller-popped static link."
+  procedure AcceptPayment; // @addr $513860 @note "Nested helper with caller-popped static link."
   var I: Integer; Ship: TShip;
   begin
     OtherShip.AbductedByPirateClan := False;
@@ -1407,14 +1407,14 @@ end;
 { @routine $5140BC TPirate_BuildAttackRequestResponse }
 function TPirate.BuildAttackRequestResponse(Requester: TShip; var Response: WideString; Target: TShip): Boolean;
   // @nested $513F48 AcceptRequest
-  procedure AcceptRequest; // @addr $513F48 @ida "void __usercall $name(void *ParentFrame@<^0>);" @note "Nested helper with caller-popped static link."
+  procedure AcceptRequest; // @addr $513F48 @note "Nested helper with caller-popped static link."
   begin
     Response := LookupVisibleTalkText('Talk.Attack.' + GetTypeNameKey + 'Ok', Requester);
     SetJointAttackTarget(Requester, Target);
     Result := True;
   end;
   // @nested $514020 FriendsPreferred
-  function FriendsPreferred: Boolean; // @addr $514020 @ida "bool __usercall $name@<al>(void *ParentFrame@<^0>);" @note "Nested helper with caller-popped static link."
+  function FriendsPreferred: Boolean; // @addr $514020 @note "Nested helper with caller-popped static link."
   var UnusedLocal: Integer; // Native gap before the floating-point temporaries.
   begin
     Result := Cardinal(RelationToShip(Target)) >= Round(RelationToShip(Requester) *

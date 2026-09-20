@@ -12,9 +12,9 @@ type
     Damage: Integer; // @offset $B0
     Image: PabWorldImage; // @offset $B4
     Exploding: Boolean; // @offset $B8
-    constructor Create; // @addr $4F495C @ida "TabW03 *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr $4F4A44 @ida "void __usercall $name(TabW03 *Self@<eax>, __int8 DestroyFlags@<dl>);"
-    procedure Launch(Owner: TabObject; Amount: Integer; Offset: Single); // @addr $4F4AA0 @ida "void __userpurge $name(TabW03 *Self@<eax>, TabObject *Owner@<edx>, int Amount@<ecx>, float Offset@<^0>);"
+    constructor Create; // @addr $4F495C
+    destructor Destroy; override; // @addr $4F4A44
+    procedure Launch(Owner: TabObject; Amount: Integer; Offset: Single); // @addr $4F4AA0
     procedure Explode; // @addr $4F4BD8
     procedure Advance; override; // @addr $4F4C94
     procedure UpdateVisuals; override; // @addr $4F4DD0

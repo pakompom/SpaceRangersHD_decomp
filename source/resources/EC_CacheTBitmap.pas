@@ -20,8 +20,8 @@ type
     TransBuffer: Pointer; // @offset 0x20
     PixelSize: TPoint; // @offset $24  Native controls copy these dimensions as one point.
 
-    constructor Create; // @addr 0x4746C0 @ida "TCTBitmapEC *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x474704 @ida "void __usercall $name(TCTBitmapEC *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x4746C0
+    destructor Destroy; override; // @addr 0x474704
     procedure LoadFromConfigBuffer(SourceBuffer: TBufEC; const LoadOption: WideString); override; // @addr 0x474754 @note "Applies LoadOption image operations before building the transparent buffer."
   end;
 

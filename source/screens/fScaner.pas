@@ -53,12 +53,12 @@ type
     procedure ShowGoodsInfo(ItemType: TItemType); // @addr $6EE9C4
     function CreateAdditionalInfoIcon(Sender: TLabelGI; Item: PFontObjectEC): TObjectGI; // @addr $6EF3A4
     procedure BuildRewardStrip(Ship: TShip); // @addr $6E8CF8
-    procedure RewardsMouseMove(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $6E92BC @ida "void __userpurge $name(TfScaner *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
+    procedure RewardsMouseMove(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $6E92BC
     procedure ShowRewardInfo(Ship: TNormalShip; AwardId: Integer); // @addr $6E94B0
     procedure HideRewardInfo; // @addr $6E990C
     procedure RewardMouseLeave(Sender: TObjectGI); // @addr $6E9498
     procedure AdvancePanelSlide(Timer: PCallbackTimerGI; UserData: Integer); // @addr $6E9934
-    procedure RewardsMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $6E9A34 @ida "void __userpurge $name(TfScaner *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
+    procedure RewardsMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $6E9A34
     procedure HidePropertyInfo(Sender: TObjectGI); // @addr $6EB1F0
     procedure RefreshRewardHint(Timer: PCallbackTimerGI; UserData: Integer); // @addr $6EB228
     procedure CountCargoEntries; // @addr $6EB23C
@@ -66,7 +66,7 @@ type
     procedure ScrollCargoLeft(Sender: TObjectGI); // @addr $6ECDD4
     procedure ScrollCargoRight(Sender: TObjectGI); // @addr $6ECDF8
     procedure MainPanelKeyDown(Sender: TObjectGI; Key: Cardinal); // @addr $6ECE1C
-    procedure MainPanelMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $6ECF54 @ida "void __userpurge $name(TfScaner *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
+    procedure MainPanelMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $6ECF54
     procedure UpdateItemHover; // @addr $6ED144
     procedure AdvanceItemHover(Timer: PCallbackTimerGI; UserData: Integer); // @addr $6ED850
     procedure HideItemInfo(Timer: PCallbackTimerGI; UserData: Integer); // @addr $6ED86C
@@ -75,13 +75,13 @@ type
     procedure Update; // @addr 0x6EB46C
     procedure OnClose; override; // @addr 0x6E8C38
     procedure SelectMusic; override; // @addr 0x6EFF08
-    procedure ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer); override; // @addr 0x6ECEDC @ida "void __userpurge $name(TfScaner *Self@<eax>, unsigned int KeyState@<edx>, TPoint *Point@<ecx>, int Delta@<^0>);"
+    procedure ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer); override; // @addr 0x6ECEDC
     procedure InitializeLayout; override; // @addr 0x6E6B64
     procedure ExecuteUiCode(Block: TBlockParEC; Key: Cardinal); override; // @addr 0x6EFEA4
     procedure CloseClicked(Sender: TObjectGI); // @addr 0x6E99FC
   end;
 
-function GetPirateRankSmallImagePath(Rank: Byte): WideString; // @addr $6E6A98 @ida "void __usercall $name(unsigned __int8 Rank@<al>, unsigned __int16 **Result@<edx>);"
+function GetPirateRankSmallImagePath(Rank: Byte): WideString; // @addr $6E6A98
 
 implementation
 
@@ -1449,7 +1449,7 @@ procedure TfScaner.UpdateSkills;
 var
   I: Integer;
   // @nested $6EEF34 UpdateOne
-  procedure UpdateOne(Index, BaseLevel, EffectiveLevel: Integer); // @addr $6EEF34 @ida "void __usercall $name(int Index@<eax>, int BaseLevel@<edx>, int EffectiveLevel@<ecx>, void *ParentFrame@<^0>);"
+  procedure UpdateOne(Index, BaseLevel, EffectiveLevel: Integer); // @addr $6EEF34
   var
     Step, Gap, Bottom: Integer;
   begin
@@ -1525,7 +1525,7 @@ var
   Block: TBlockParEC;
   Description, Caption: WideString;
   // @nested $6EF4B0 AddRow
-  procedure AddRow(IconId: Integer; Caption, Help: WideString; Data: Integer); // @addr $6EF4B0 @stackpop $4 @calls "0x6EF8F6 0x6EFBD8" @ida "void __userpurge $name(int IconId@<eax>, unsigned __int16 *Caption@<edx>, unsigned __int16 *Help@<ecx>, int Data@<^0>, void *ParentFrame@<^4>);"
+  procedure AddRow(IconId: Integer; Caption, Help: WideString; Data: Integer); // @addr $6EF4B0 @calls "0x6EF8F6 0x6EFBD8"
   begin
     with TLabelGI.Create(Panel) do
     begin

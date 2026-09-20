@@ -186,7 +186,7 @@ var
   Cursor: PAnsiChar;
 
   // @nested $798DFC ReverseCrc32Byte
-  function ReverseCrc32Byte(var State: Cardinal): Cardinal; // @addr $798DFC @ida "unsigned int __usercall $name@<eax>(unsigned int *State@<eax>, void *ParentFrame@<^0>);" @note "Nested in WriteCrc32Correction; unused static link is caller-popped."
+  function ReverseCrc32Byte(var State: Cardinal): Cardinal; // @addr $798DFC @note "Nested in WriteCrc32Correction; unused static link is caller-popped."
   var
     i: Integer;
     Difference, Original: Cardinal;

@@ -42,29 +42,29 @@ type
     procedure CheckKillCountAwards(Victim: TShip); // @addr $742F74
     function SelectAward(Owner: Byte; Kinds: TAwardTypeMask; VictimTypes: TShipTypeMask): Byte; // @addr $7431AC @ida "unsigned __int8 __userpurge $name@<al>(TNormalShip *Self@<eax>, unsigned __int8 Owner@<dl>, unsigned __int8 Kinds@<cl>, unsigned __int16 VictimTypes@<^0>);" @note "Returns 255 when no award qualifies; retries duplicates twice."
     procedure ProcessShipKill(Victim: TShip); // @addr $740018 Distributes kill rewards, career/rank changes and event counters.
-    function CollectLiberationRewards: WideString; // @addr $73E710 @ida "void __usercall $name(TNormalShip *Self@<eax>, unsigned __int16 **Result@<edx>);" @note "Consumes the pending ceremony, grants rewards and returns the player's presentation text."
-    function SelectSituationalMessage(Automatic: Boolean): WideString; // @addr $74414C @ida "void __usercall $name(TNormalShip *Self@<eax>, bool Automatic@<dl>, unsigned __int16 **Result@<ecx>);" @note "Automatic messages suppress object links and select the automatic-message category."
+    function CollectLiberationRewards: WideString; // @addr $73E710 @note "Consumes the pending ceremony, grants rewards and returns the player's presentation text."
+    function SelectSituationalMessage(Automatic: Boolean): WideString; // @addr $74414C @note "Automatic messages suppress object links and select the automatic-message category."
     procedure UpdateRelationsForNearbyCombat; // @addr $742FFC Nearby rangers attacking a friend incur a penalty; attacks on an enemy can improve relations.
     procedure NextDay; override; // @addr 0x73E328 @slot 0x18
-    constructor Create; // @addr 0x73D8E4 @ida "TNormalShip *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x73D9D8 @ida "void __usercall $name(TNormalShip *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x73D8E4
+    destructor Destroy; override; // @addr 0x73D9D8
     procedure SaveToBuffer(Buffer: TBufEC); override; // @addr 0x73DA40 @slot 0x00
     procedure LoadFromBuffer(Buffer: TBufEC; Galaxy: TGalaxy); override; // @addr 0x73DBDC @slot 0x04
     procedure ResolveLoadedReferences(Galaxy: TGalaxy); override; // @addr 0x73DE24 @slot 0x08
-    function AwardRandomMedal: WideString; // @addr $73FE40 @ida "void __usercall $name(TNormalShip *Self@<eax>, unsigned __int16 **Result@<edx>);" Selects a merit award using the current planet, station or default human owner and returns its name.
-    function GetPirateRankName: WideString; // @addr $743BC4 @ida "void __usercall $name(TNormalShip *Self@<eax>, unsigned __int16 **Result@<edx>);"
-    function GetNextPirateRankName: WideString; // @addr $743DB8 @ida "void __usercall $name(TNormalShip *Self@<eax>, unsigned __int16 **Result@<edx>);" Does not check maximum rank.
+    function AwardRandomMedal: WideString; // @addr $73FE40 Selects a merit award using the current planet, station or default human owner and returns its name.
+    function GetPirateRankName: WideString; // @addr $743BC4
+    function GetNextPirateRankName: WideString; // @addr $743DB8 Does not check maximum rank.
     function CanPromotePirateRank: Boolean; // @addr $743F88
     procedure UpdateAfterburnerState; override; // @addr $747A14 @slot $9C Enables afterburner for multi-turn orders with a serviceable engine.
     procedure TrainSkillsAutomatically; // @addr 0x747A78
 
-    function GetAwardInfo(AwardId: Byte): TRewardInfo; // @addr 0x7435A0 @ida "void __usercall $name(TNormalShip *Self@<eax>, unsigned __int8 AwardId@<dl>, TRewardInfo *Result@<ecx>);"
-    function GetRankLongName: WideString; // @addr $743780 @ida "void __usercall $name(TNormalShip *Self@<eax>, unsigned __int16 **Result@<edx>);"
-    function GetRankDescription: WideString; // @addr $743820 @ida "void __usercall $name(TNormalShip *Self@<eax>, unsigned __int16 **Result@<edx>);"
-    function GetPirateRankLongName: WideString; // @addr $743C68 @ida "void __usercall $name(TNormalShip *Self@<eax>, unsigned __int16 **Result@<edx>);"
-    function GetPirateRankDescription: WideString; // @addr $743D14 @ida "void __usercall $name(TNormalShip *Self@<eax>, unsigned __int16 **Result@<edx>);"
-    function GetRankName: WideString; // @addr 0x7436E8 @ida "void __usercall $name(TNormalShip *Self@<eax>, unsigned __int16 **Result@<edx>);"
-    function GetNextRankName: WideString; // @addr 0x7438B8 @ida "void __usercall $name(TNormalShip *Self@<eax>, unsigned __int16 **Result@<edx>);" @note "Does not check for maximum rank."
+    function GetAwardInfo(AwardId: Byte): TRewardInfo; // @addr 0x7435A0
+    function GetRankLongName: WideString; // @addr $743780
+    function GetRankDescription: WideString; // @addr $743820
+    function GetPirateRankLongName: WideString; // @addr $743C68
+    function GetPirateRankDescription: WideString; // @addr $743D14
+    function GetRankName: WideString; // @addr 0x7436E8
+    function GetNextRankName: WideString; // @addr 0x7438B8 @note "Does not check for maximum rank."
 
     function GetRankPointsToNextRank: Word; // @addr 0x743950
     procedure AddRankPoints(Amount: Word); // @addr 0x7439B8 @note "Caps the addition at the points needed for the next rank."
@@ -460,7 +460,7 @@ var
   QuestTargetKill: Boolean;
 
   // @nested $73FF3C RecordShipKillCategory
-  procedure RecordShipKillCategory(Ship: TNormalShip; Victim: TShip); // @addr $73FF3C @ida "void __usercall $name(TNormalShip *Ship@<eax>, TShip *Victim@<edx>, void *ParentFrame@<^0>);" @note "Nested helper; unused caller-popped static link."
+  procedure RecordShipKillCategory(Ship: TNormalShip; Victim: TShip); // @addr $73FF3C @note "Nested helper; unused caller-popped static link."
   begin
     case Victim.TypeId of
       stTransport: if Victim.OwnerId <> Byte(oiPirate) then
@@ -918,7 +918,7 @@ var
   Text: WideString;
 
   // @nested $742114 LogPlayerEvent
-  procedure LogPlayerEvent(Ship: TShip); // @addr $742114 @ida "void __usercall $name(TShip *Ship@<eax>, void *ParentFrame@<^0>);" @note "Nested helper; caller-popped link, Star at ParentFrame-4."
+  procedure LogPlayerEvent(Ship: TShip); // @addr $742114 @note "Nested helper; caller-popped link, Star at ParentFrame-4."
   var
     Event: TGalaxyEvent;
   begin
@@ -1062,7 +1062,7 @@ end;
 { @routine $742F74 TNormalShip_CheckKillCountAwards }
 procedure TNormalShip.CheckKillCountAwards(Victim: TShip);
   // @nested $742D18 Check
-  procedure Check(InitialThreshold, Multiplier: Integer; Count: Word; VictimType: Byte); // @addr $742D18 @ida "void __userpurge $name(int InitialThreshold@<eax>, int Multiplier@<edx>, unsigned __int16 Count@<cx>, unsigned __int8 VictimType@<^0>, void *ParentFrame@<^4>);" @stackpop $4 @calls "0x742FAB 0x742FCA 0x742FF2" @note "Caller-popped static link; ship at ParentFrame-4."
+  procedure Check(InitialThreshold, Multiplier: Integer; Count: Word; VictimType: Byte); // @addr $742D18 @calls "0x742FAB 0x742FCA 0x742FF2" @note "Caller-popped static link; ship at ParentFrame-4."
   const
     BadAwards = [atPerfidy];
   var
@@ -1329,7 +1329,7 @@ var
   CountMask: TGreetingCountMask;
   Other: TShip;
   // @nested $743FE0 ShuffleDefinitions
-  procedure ShuffleDefinitions; // @addr $743FE0 @ida "void __usercall $name(void *ParentFrame@<^0>);" @note "Nested helper; caller-popped static link. Copies definitions and swaps the first half against deterministic random positions."
+  procedure ShuffleDefinitions; // @addr $743FE0 @note "Nested helper; caller-popped static link. Copies definitions and swaps the first half against deterministic random positions."
   var I, OtherIndex: Integer;
   begin
     SetLength(Definitions, ShipGreetingCount);

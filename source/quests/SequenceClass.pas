@@ -14,8 +14,8 @@ type
     Locations: TList; // @offset 0x0C // Owns the list, not its TLocation entries.
     Paths: TList; // @offset 0x10 // Owns the list, not its TPath entries.
 
-    constructor Create; // @addr 0x4E86C4 @ida "TSequence *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x4E8738 @ida "void __usercall $name(TSequence *Self@<eax>, __int8 DestroyFlags@<dl>);" @note "Clears member Sequence links without freeing the members."
+    constructor Create; // @addr 0x4E86C4
+    destructor Destroy; override; // @addr 0x4E8738 @note "Clears member Sequence links without freeing the members."
     procedure SetTraversalLimit(Value: Integer); // @addr 0x4E881C @note "Also updates every member's visit or traversal limit."
     procedure RecomputeTraversalLimit; // @addr 0x4E88B4 @note "Propagates the minimum positive member limit, or zero if none."
     procedure AddLocation(Location: Pointer); // @addr 0x4E8994

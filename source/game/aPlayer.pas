@@ -31,8 +31,8 @@ type
   public
     DateTurn: Integer; // @offset 0x04
     Text: WideString; // @offset 0x08
-    constructor Create; // @addr $5838E0 @ida "TJournalRecord *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr $583934 @ida "void __usercall $name(TJournalRecord *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr $5838E0
+    destructor Destroy; override; // @addr $583934
     procedure SaveToBuffer(Buffer: TBufEC); // @addr $583968
     procedure LoadFromBuffer(Buffer: TBufEC); // @addr $583994
   end;
@@ -142,15 +142,15 @@ type
     procedure RefreshNewsAtLocation; // @addr $591460 Updates eligible docked players after turn 300 and retains the newest 100 entries.
     procedure CloseRuinsModeScreen; // @addr $59165C Returns to the saved location or star screen and requests screen closure.
     procedure RefreshCurrentStanding; override; // @addr $5917D0 @slot $C4 Includes the player's current-system kill counts and main pirate planet exception.
-    constructor Create; // @addr $583A74 @ida "TPlayer *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);" Native constructor initializes lists/defaults; does not register or generate the player loadout.
-    destructor Destroy; override; // @addr $583E00 @ida "void __usercall $name(TPlayer *Self@<eax>, __int8 DestroyFlags@<dl>);" Requires the inherited ranger registration state for final cleanup.
+    constructor Create; // @addr $583A74 Native constructor initializes lists/defaults; does not register or generate the player loadout.
+    destructor Destroy; override; // @addr $583E00 Requires the inherited ranger registration state for final cleanup.
     procedure SaveToBuffer(Buffer: TBufEC); override; // @addr $584054 @slot $00
     procedure LoadFromBuffer(Buffer: TBufEC; Galaxy: TGalaxy); override; // @addr $5849C8 @slot $04
     procedure ResolveLoadedReferences(Galaxy: TGalaxy); override; // @addr $585694 @slot $08
     procedure SaveToBlock(Block: TBlockParEC); override; // @addr $5859E8 @slot $10
     procedure LoadFromBlock(Block: TBlockParEC); override; // @addr $5860F0 @slot $14
-    function ExportJournal: WideString; // @addr $590DAC @ida "void __usercall $name(TPlayer *Self@<eax>, unsigned __int16 **Result@<edx>);"
-    function ExportNews: WideString; // @addr $591138 @ida "void __usercall $name(TPlayer *Self@<eax>, unsigned __int16 **Result@<edx>);"
+    function ExportJournal: WideString; // @addr $590DAC
+    function ExportNews: WideString; // @addr $591138
     procedure TrimNewsEntries(KeepCount: Integer); // @addr $5910D4 Removes and finalizes the oldest Count-KeepCount entries; unchecked argument.
     function TryAwardDominatorPrograms(Victim: TShip): Boolean; // @addr $58B944 Requires a TKling victim; records its hull capacity even when no reward is due.
     function GetSatelliteExplorationTurns(Satellite: TSatellite): Integer; // @addr $58D2E4 @note "Remaining duration at the current planet using combined operational probe rates; capped at 999 per terrain."
@@ -192,10 +192,10 @@ type
     procedure ConsumeAvailableNodes(Count: Integer; Carrier: TShip); // @addr $5908BC Uses the carrier's hold, then current-location storage; refreshes Self even when Carrier differs.
     procedure RefreshStorageBubbles; // @addr 0x58EA64
     function HasDeployedSatellites: Boolean; // @addr $58C2D4 @note "Uses Self.Satellites.Count but reads the global player's list."
-    function GetStorageColumnHeaderText: WideString; // @addr $58C398 @ida "void __usercall $name(TPlayer *Self@<eax>, unsigned __int16 **Result@<edx>);"
-    function GetStorageDividerText: WideString; // @addr $58C5D0 @ida "void __usercall $name(TPlayer *Self@<eax>, unsigned __int16 **Result@<edx>);"
-    function BuildDeployedSatelliteSummary(var LineCount: Integer): WideString; // @addr $58C678 @ida "void __usercall $name(TPlayer *Self@<eax>, int *LineCount@<edx>, unsigned __int16 **Result@<ecx>);"
-    function BuildTranclucatorStorageSummary(var LineCount: Integer): WideString; // @addr $58E298 @ida "void __usercall $name(TPlayer *Self@<eax>, int *LineCount@<edx>, unsigned __int16 **Result@<ecx>);"
+    function GetStorageColumnHeaderText: WideString; // @addr $58C398
+    function GetStorageDividerText: WideString; // @addr $58C5D0
+    function BuildDeployedSatelliteSummary(var LineCount: Integer): WideString; // @addr $58C678
+    function BuildTranclucatorStorageSummary(var LineCount: Integer): WideString; // @addr $58E298
     function CompareStorageEntries(Left, Right: PStorageEntry): Integer; // @addr $58E5A8 @note "Compares star/location IDs, type, module priority/index, weight and cost; ignores slot indices."
     procedure SortStorageEntries; // @addr $58E97C
     procedure BuildStorageBubbles; // @addr 0x58EA78 @note "Publishes paginated storage summaries, including deployed probes; uses the global player's bubble list."
@@ -2609,7 +2609,7 @@ procedure TPlayer.ApplyEquipmentConfiguration(Index: Integer);
     end;
   end;
   // @nested $5901BC SupportsItem
-  function SupportsItem(Item: TItem): Boolean; // @addr $5901BC @ida "bool __usercall $name@<al>(TItem *Item@<eax>, void *ParentFrame@<^0>);" @note "Nested in ApplyEquipmentConfiguration; caller-popped static link, player -4 and preset index -8."
+  function SupportsItem(Item: TItem): Boolean; // @addr $5901BC @note "Nested in ApplyEquipmentConfiguration; caller-popped static link, player -4 and preset index -8."
   begin
     Result := True;
     if Item is TArtefact then Exit;
@@ -2624,7 +2624,7 @@ procedure TPlayer.ApplyEquipmentConfiguration(Index: Integer);
     Result := False;
   end;
   // @nested $590280 FindSlot
-  function FindSlot(Item: TItem): Integer; // @addr $590280 @ida "int __usercall $name@<eax>(TItem *Item@<eax>, void *ParentFrame@<^0>);" @note "Nested in ApplyEquipmentConfiguration; caller-popped static link, player -4 and preset index -8."
+  function FindSlot(Item: TItem): Integer; // @addr $590280 @note "Nested in ApplyEquipmentConfiguration; caller-popped static link, player -4 and preset index -8."
   var
     I: Integer;
   begin
@@ -2671,14 +2671,14 @@ procedure TPlayer.ApplyEquipmentConfiguration(Index: Integer);
     for I := 1 to 5 do Weapons[I] := nil;
   end;
   // @nested $590424 ReleaseStorageEntry
-  procedure ReleaseStorageEntry(Entry: PStorageEntry); // @addr $590424 @ida "void __usercall $name(PStorageEntry Entry@<eax>, void *ParentFrame@<^0>);" @note "Nested in ApplyEquipmentConfiguration; caller-popped static link, player -4 and preset index -8."
+  procedure ReleaseStorageEntry(Entry: PStorageEntry); // @addr $590424 @note "Nested in ApplyEquipmentConfiguration; caller-popped static link, player -4 and preset index -8."
   begin
     Entry.Item := nil;
     GetPlayer.StorageEntries.Delete(GetPlayer.StorageEntries.IndexOf(Entry));
     Dispose(Entry);
   end;
   // @nested $590468 TakeStoredItem
-  procedure TakeStoredItem(Entry: PStorageEntry; Slot: Integer); // @addr $590468 @ida "void __usercall $name(PStorageEntry Entry@<eax>, int Slot@<edx>, void *ParentFrame@<^0>);" @note "Nested in ApplyEquipmentConfiguration; caller-popped static link, player -4 and preset index -8."
+  procedure TakeStoredItem(Entry: PStorageEntry; Slot: Integer); // @addr $590468 @note "Nested in ApplyEquipmentConfiguration; caller-popped static link, player -4 and preset index -8."
   var
     Item: TItem;
     Artefact: TArtefact;

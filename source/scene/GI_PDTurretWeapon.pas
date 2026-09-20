@@ -24,18 +24,18 @@ type
     OriginalLength: Single; // @offset $13C
     ParticleColor: Word; // @offset $140
 
-    constructor Create(Owner: TObjectGI); // @addr $69A898 @ida "TPSPDWeaponGI *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, TObjectGI *Owner@<ecx>);"
-    destructor Destroy; override; // @addr $69A92C @ida "void __usercall $name(TPSPDWeaponGI *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create(Owner: TObjectGI); // @addr $69A898
+    destructor Destroy; override; // @addr $69A92C
     procedure Invalidate; override; // @addr $69A968 @note "Native empty override."
-    procedure SetPosition(Position: TPoint); override; // @addr $69A974 @ida "void __usercall $name(TPSPDWeaponGI *Self@<eax>, TPoint *Position@<edx>);"
-    procedure SetTargetPoint(Point: TPoint); override; // @addr $69A9B0 @ida "void __usercall $name(TPSPDWeaponGI *Self@<eax>, TPoint *Point@<edx>);"
+    procedure SetPosition(Position: TPoint); override; // @addr $69A974
+    procedure SetTargetPoint(Point: TPoint); override; // @addr $69A9B0
     procedure UpdateHitTestBounds; override; // @addr $69A9FC
     procedure SetActive(Enabled: Boolean); override; // @addr $69AA30
     procedure ClearParticles; // @addr $69AA4C
     procedure GrowParticles; // @addr $69AA94
     function AddParticle: PPDWeaponParticle; // @addr $69AACC
     procedure Advance(Timer: PCallbackTimerGI; UserData: Integer); override; // @addr $69AB24
-    procedure Draw(ClipRect: TRect); override; // @addr $69ADBC @ida "void __usercall $name(TPSPDWeaponGI *Self@<eax>, TRect *ClipRect@<edx>);"
+    procedure Draw(ClipRect: TRect); override; // @addr $69ADBC
   end;
 
 implementation

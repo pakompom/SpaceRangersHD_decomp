@@ -82,40 +82,40 @@ type
     // PositionModeW is the fourth Pos component ('w'); selects the parent's coordinate mode.
     // Notify callbacks receive Context in EAX and this object in EDX.
 
-    constructor Create(Owner: TObjectGI); // @addr 0x4BB218 @ida "TObjectGI *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, TObjectGI *Owner@<ecx>);"
-    destructor Destroy; override; // @addr 0x4BB2DC @ida "void __usercall $name(TObjectGI *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create(Owner: TObjectGI); // @addr 0x4BB218
+    destructor Destroy; override; // @addr 0x4BB2DC
     procedure Clear; virtual; // @addr 0x4BB3C4 @slot 0x00 @note "Does not free children."
     procedure FreeOwnedChildren; // @addr 0x4BB3A0
     procedure AttachOwnedChild(Child: TObjectGI); // @addr 0x4BB448 @note "Takes ownership; caller must detach an existing parent. Descendants' MessageLoop values are unchanged."
     procedure InsertOwnedChildBefore(BeforeChild, Child: TObjectGI); // @addr 0x4BB4B4
-    procedure InsertOwnedChildByDepth(Child: TObjectGI; NewDepth: Double); // @addr 0x4BB538 @ida "void __userpurge $name(TObjectGI *Self@<eax>, TObjectGI *Child@<edx>, double NewDepth@<^0>);" @note "Inserts in descending Depth order."
+    procedure InsertOwnedChildByDepth(Child: TObjectGI; NewDepth: Double); // @addr 0x4BB538 @note "Inserts in descending Depth order."
     procedure FreeOwnedChild(Child: TObjectGI); // @addr 0x4BB5A8
     procedure UnlinkOwnedChild(Child: TObjectGI); // @addr 0x4BB5CC @note "Leaves sibling pointers and MessageLoop unchanged."
     procedure Reparent(NewParent: TObjectGI); // @addr 0x4BB644 @note "Preserves Depth."
     procedure SetMouseViewUpdates(Enabled: Boolean); // @addr 0x4BB678
     procedure UpdateAbsolutePosition; // @addr 0x4BB6AC @note "Updates this control and recurses through active children."
-    function GetChildAbsolutePosition(LocalPosition: TPoint; ModeW: Boolean): TPoint; virtual; // @addr 0x4BB738 @slot 0x04 @calls "0x4BB6D7" @ida "void __userpurge $name(TObjectGI *Self@<eax>, TPoint *LocalPosition@<edx>, bool ModeW@<cl>, TPoint *Result@<^0>);" @note "Base implementation ignores ModeW."
+    function GetChildAbsolutePosition(LocalPosition: TPoint; ModeW: Boolean): TPoint; virtual; // @addr 0x4BB738 @slot 0x04 @calls "0x4BB6D7" @note "Base implementation ignores ModeW."
     procedure UpdateHitTestBounds; virtual; // @addr 0x4BB774 @slot 0x08 @calls "0x4BB7EA"
     procedure UpdateSubtreeHitBounds; // @addr 0x4BB7DC @note "Updates this control's hit-test rectangle and recurses through active children."
-    procedure SetPosition(Position: TPoint); virtual; // @addr 0x4BB944 @slot 0x0C @ida "void __usercall $name(TObjectGI *Self@<eax>, TPoint *Position@<edx>);"
-    procedure SetDepth(NewDepth: Double); virtual; // @addr 0x4BB9C4 @slot 0x10 @ida "void __userpurge $name(TObjectGI *Self@<eax>, double NewDepth@<^0>);" @note "Does nothing without Parent." @calls "0x56934C 0x5698B8 0x56A597 0x56A607 0x56A7AD 0x56A81D 0x56A8E0 0x56A9E7 0x56ABD4 0x56AD77 0x56AE5A 0x57F808 0x57F8F8 0x57F96C"
+    procedure SetPosition(Position: TPoint); virtual; // @addr 0x4BB944 @slot 0x0C
+    procedure SetDepth(NewDepth: Double); virtual; // @addr 0x4BB9C4 @slot 0x10 @note "Does nothing without Parent." @calls "0x56934C 0x5698B8 0x56A597 0x56A607 0x56A7AD 0x56A81D 0x56A8E0 0x56A9E7 0x56ABD4 0x56AD77 0x56AE5A 0x57F808 0x57F8F8 0x57F96C"
     procedure SetDepthByName(const Name: WideString); virtual; // @addr $4BBA7C @slot $14
-    procedure SetSize(Size: TPoint); virtual; // @addr 0x4BBB0C @slot 0x18 @ida "void __usercall $name(TObjectGI *Self@<eax>, TPoint *Size@<edx>);"
-    procedure SetOrigin(Origin: TPoint); virtual; // @addr 0x4BBB8C @slot 0x1C @ida "void __usercall $name(TObjectGI *Self@<eax>, TPoint *Origin@<edx>);"
+    procedure SetSize(Size: TPoint); virtual; // @addr 0x4BBB0C @slot 0x18
+    procedure SetOrigin(Origin: TPoint); virtual; // @addr 0x4BBB8C @slot 0x1C
     procedure SetPositionModeW(Enabled: Boolean); // @addr 0x4BBC0C
     procedure SetConfigPath(const Path: WideString); virtual; // @addr 0x4BBC6C @slot 0x20 @note "Virtual loading sees the previous ConfigPath."
-    function GetLocalBounds: TRect; virtual; // @addr 0x4BBC98 @slot 0x24 @ida "void __usercall $name(TObjectGI *Self@<eax>, TRect *Result@<edx>);"
+    function GetLocalBounds: TRect; virtual; // @addr 0x4BBC98 @slot 0x24
     procedure SetName(const Name: WideString); // @addr 0x4BBCFC
     procedure SetActive(Enabled: Boolean); virtual; // @addr 0x4BBD1C @slot 0x28
     procedure SetHitTestDisabled(Disabled: Boolean); virtual; // @addr 0x4BBD88 @slot 0x2C
     procedure QueueImageLoad(PendingLoads: TList); virtual; // @addr 0x4BBE90 @slot 0x30
-    procedure ProcessMouseMove(KeyState: Cardinal; Point: TPoint); virtual; // @addr 0x4BBEA0 @slot 0x38 @ida "void __usercall $name(TObjectGI *Self@<eax>, unsigned int KeyState@<edx>, TPoint *Point@<ecx>);"
-    procedure ProcessLeftButtonDown(KeyState: Cardinal; Point: TPoint); virtual; // @addr 0x4BC228 @slot 0x54 @ida "void __usercall $name(TObjectGI *Self@<eax>, unsigned int KeyState@<edx>, TPoint *Point@<ecx>);"
-    procedure ProcessLeftButtonUp(KeyState: Cardinal; Point: TPoint); virtual; // @addr 0x4BC2B0 @slot 0x58 @ida "void __usercall $name(TObjectGI *Self@<eax>, unsigned int KeyState@<edx>, TPoint *Point@<ecx>);"
-    procedure ProcessRightButtonDown(KeyState: Cardinal; Point: TPoint); virtual; // @addr 0x4BC338 @slot 0x5C @ida "void __usercall $name(TObjectGI *Self@<eax>, unsigned int KeyState@<edx>, TPoint *Point@<ecx>);"
-    procedure ProcessRightButtonUp(KeyState: Cardinal; Point: TPoint); virtual; // @addr 0x4BC3E4 @slot 0x60 @ida "void __usercall $name(TObjectGI *Self@<eax>, unsigned int KeyState@<edx>, TPoint *Point@<ecx>);"
-    procedure ProcessLeftButtonDoubleClick(KeyState: Cardinal; Point: TPoint); virtual; // @addr 0x4BC46C @slot 0x64 @ida "void __usercall $name(TObjectGI *Self@<eax>, unsigned int KeyState@<edx>, TPoint *Point@<ecx>);"
-    procedure ProcessRightButtonDoubleClick(KeyState: Cardinal; Point: TPoint); virtual; // @addr 0x4BC4F4 @slot 0x68 @ida "void __usercall $name(TObjectGI *Self@<eax>, unsigned int KeyState@<edx>, TPoint *Point@<ecx>);"
+    procedure ProcessMouseMove(KeyState: Cardinal; Point: TPoint); virtual; // @addr 0x4BBEA0 @slot 0x38
+    procedure ProcessLeftButtonDown(KeyState: Cardinal; Point: TPoint); virtual; // @addr 0x4BC228 @slot 0x54
+    procedure ProcessLeftButtonUp(KeyState: Cardinal; Point: TPoint); virtual; // @addr 0x4BC2B0 @slot 0x58
+    procedure ProcessRightButtonDown(KeyState: Cardinal; Point: TPoint); virtual; // @addr 0x4BC338 @slot 0x5C
+    procedure ProcessRightButtonUp(KeyState: Cardinal; Point: TPoint); virtual; // @addr 0x4BC3E4 @slot 0x60
+    procedure ProcessLeftButtonDoubleClick(KeyState: Cardinal; Point: TPoint); virtual; // @addr 0x4BC46C @slot 0x64
+    procedure ProcessRightButtonDoubleClick(KeyState: Cardinal; Point: TPoint); virtual; // @addr 0x4BC4F4 @slot 0x68
     procedure OnMouseEnter; virtual; // @addr 0x4BBF9C @slot 0x3C
     procedure OnMouseLeave; virtual; // @addr 0x4BC030 @slot 0x40
     procedure BroadcastKeyDown(Key: Cardinal); virtual; // @addr 0x4BC57C @slot 0x6C
@@ -132,29 +132,29 @@ type
     procedure NativeHook48; virtual; // @addr $4BC15C @slot $48 @note "Purpose unresolved; the base hook visits children whose Active flag equals True."
     procedure NativeHook50; virtual; // @addr $4BC1EC @slot $50 @note "Purpose unresolved; the base hook visits children whose Active flag equals True."
     procedure NativeHookB0; virtual; // @addr $4BCF00 @slot $B0 @note "Purpose unresolved; the base hook visits active children."
-    procedure NativeHookBC(Rect: TRect); virtual; // @addr $4BCF9C @slot $BC @ida "void __usercall $name(TObjectGI *Self@<eax>, TRect *Rect@<edx>);" @note "Empty base hook; purpose unresolved."
+    procedure NativeHookBC(Rect: TRect); virtual; // @addr $4BCF9C @slot $BC @note "Empty base hook; purpose unresolved."
     procedure OnActivate; virtual; // @addr 0x4BC0FC @slot 0x44
     procedure OnDeactivate; virtual; // @addr 0x4BC198 @slot 0x4C
-    procedure PrepareRegionDraw(ClipRect: TRect); virtual; // @addr $4BCF80 @slot $B8 @ida "void __usercall $name(TObjectGI *Self@<eax>, TRect *ClipRect@<edx>);" @note "Empty base hook called before queued drawing for RegionDrawControl."
+    procedure PrepareRegionDraw(ClipRect: TRect); virtual; // @addr $4BCF80 @slot $B8 @note "Empty base hook called before queued drawing for RegionDrawControl."
     procedure CommitFrameDraw; virtual; // @addr $4BCE80 @slot $A8 @note "After a successful frame; derived controls retain state needed to erase their previous drawing."
     procedure ErasePreviousFrame; virtual; // @addr $4BCEC0 @slot $AC @note "Before queued drawing; derived controls restore their saved background pixels."
     procedure PrepareFrameDraw; virtual; // @addr $4BCF40 @slot $B4 @note "Before DrawUpdateRects; derived controls capture backgrounds or prepare geometry."
     procedure InvalidateChildren(IncludePanels: Boolean); // @addr $4BC954
-    function InvalidateScrollOverlap(Rect: TRect; Delta: TPoint; StartControl: TObjectGI): TObjectGI; // @addr $4BC9BC @note "Walks active panel subtrees until StartControl, then invalidates affected controls by moving them out and back. Rect is passed through but unused." @ida "TObjectGI *__userpurge $name@<eax>(TObjectGI *Self@<eax>, TRect *Rect@<edx>, TPoint *Delta@<ecx>, TObjectGI *StartControl@<^0>);"
-    procedure Draw(ClipRect: TRect); virtual; // @addr 0x4BCABC @slot 0xA0 @ida "void __usercall $name(TObjectGI *Self@<eax>, TRect *ClipRect@<edx>);" @note "Suppressed while PendingRedraw is set."
-    procedure DrawUpdateRects(ClipRect: TRect); virtual; // @addr 0x4BCB30 @slot 0xA4 @ida "void __usercall $name(TObjectGI *Self@<eax>, TRect *ClipRect@<edx>);"
+    function InvalidateScrollOverlap(Rect: TRect; Delta: TPoint; StartControl: TObjectGI): TObjectGI; // @addr $4BC9BC @note "Walks active panel subtrees until StartControl, then invalidates affected controls by moving them out and back. Rect is passed through but unused."
+    procedure Draw(ClipRect: TRect); virtual; // @addr 0x4BCABC @slot 0xA0 @note "Suppressed while PendingRedraw is set."
+    procedure DrawUpdateRects(ClipRect: TRect); virtual; // @addr 0x4BCB30 @slot 0xA4
     procedure LoadFromConfigPath(const Path: WideString); virtual; // @addr 0x4BCFB8 @slot 0x34
     procedure LoadFromBlock(Block: TBlockParEC); virtual; // @addr 0x4BD69C @slot 0xC0
-    function OffsetChildRect(Rect: TRect; ModeW: Boolean): TRect; // @addr $4BB88C @ida "void __userpurge $name(TObjectGI *Self@<eax>, TRect *Rect@<edx>, bool ModeW@<cl>, TRect *Result@<^0>);" @note "Adds LocalPosition and subtracts ScrollOffset when ModeW is set."
-    procedure InvalidateRect(Rect: TRect); virtual; // @addr $4BC874 @slot $98 @ida "void __usercall $name(TObjectGI *Self@<eax>, TRect *Rect@<edx>);"
+    function OffsetChildRect(Rect: TRect; ModeW: Boolean): TRect; // @addr $4BB88C @note "Adds LocalPosition and subtracts ScrollOffset when ModeW is set."
+    procedure InvalidateRect(Rect: TRect); virtual; // @addr $4BC874 @slot $98
     procedure Invalidate; virtual; // @addr 0x4BC910 @slot 0x9C
     procedure ReloadFromBlock; // @addr $4BDE7C
     procedure UpdateAutoGeometry; virtual; // @addr 0x4BDEA0 @slot 0xC4
-    function FindDeepestChildAtPoint(Point: TPoint): TObjectGI; // @addr 0x4BBDF4 @ida "TObjectGI *__usercall $name@<eax>(TObjectGI *Self@<eax>, TPoint *Point@<edx>);" @note "Returns Self when no child contains Point."
-    function IsOccludedAtPoint(Point: TPoint): Boolean; // @addr 0x4BBE54 @ida "bool __usercall $name@<al>(TObjectGI *Self@<eax>, TPoint *Point@<edx>);"
-    function ContainsPoint(Point: TPoint): Boolean; // @addr 0x4BC6BC @ida "bool __usercall $name@<al>(TObjectGI *Self@<eax>, TPoint *Point@<edx>);" @note "Requires Active and enabled hit testing; right and bottom edges are exclusive."
-    function ToLocalPoint(Point: TPoint): TPoint; virtual; // @addr 0x4BC7C0 @slot 0x90 @ida "void __usercall $name(TObjectGI *Self@<eax>, TPoint *Point@<edx>, TPoint *Result@<ecx>);"
-    function ToAbsolutePoint(Point: TPoint): TPoint; virtual; // @addr 0x4BC7F8 @slot 0x94 @ida "void __usercall $name(TObjectGI *Self@<eax>, TPoint *Point@<edx>, TPoint *Result@<ecx>);"
+    function FindDeepestChildAtPoint(Point: TPoint): TObjectGI; // @addr 0x4BBDF4 @note "Returns Self when no child contains Point."
+    function IsOccludedAtPoint(Point: TPoint): Boolean; // @addr 0x4BBE54
+    function ContainsPoint(Point: TPoint): Boolean; // @addr 0x4BC6BC @note "Requires Active and enabled hit testing; right and bottom edges are exclusive."
+    function ToLocalPoint(Point: TPoint): TPoint; virtual; // @addr 0x4BC7C0 @slot 0x90
+    function ToAbsolutePoint(Point: TPoint): TPoint; virtual; // @addr 0x4BC7F8 @slot 0x94
     function HitTestCursor: Boolean; // @addr 0x4BC728
     function FindByNameRecursive(const Name: WideString): TObjectGI; // @addr 0x4BC754 @note "Case-sensitive; includes Self. Duplicate names resolve in child-list order."
   end;
@@ -170,8 +170,8 @@ type
     Sounds: TStringsEC; // @offset 0x18
     // Each string is a sound name; its Data slot stores an integer weight.
 
-    constructor Create; // @addr 0x4BDF20 @ida "TFormSoundGroup *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x4BDF74 @ida "void __usercall $name(TFormSoundGroup *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x4BDF20
+    destructor Destroy; override; // @addr 0x4BDF74
     procedure Clear; // @addr 0x4BDFC0 @note "Preserves timing fields and TotalWeight."
     procedure LoadFromBlock(Block: TBlockParEC); // @addr 0x4BDFE0 @note "Numeric parameter names are weights; their values are sound names."
     procedure ScheduleNextPlayback; // @addr 0x4BE1D4
@@ -251,8 +251,8 @@ type
     DeferredCodeBlocks: TList; // @offset 0xC8
     RefreshMouseAfterCode: Boolean; // @offset 0xCC
 
-    constructor Create; // @addr 0x4BE2BC @ida "TMessageLoopGI *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x4BE37C @ida "void __usercall $name(TMessageLoopGI *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x4BE2BC
+    destructor Destroy; override; // @addr 0x4BE37C
     function Run: Integer; virtual; // @addr 0x4BE77C @slot 0x00 @calls "0x52C9AE"
     procedure ProcessWindowMessage(Message, WParam: Cardinal; LParam: Integer); virtual; // @addr 0x4BFB78 @slot 0x04 @note "Dispatches mouse/keyboard messages, deferred UI code and layout-inspector keys. Button coordinates are unsigned words; move and wheel coordinates are signed."
     function RunContinuous: Integer; virtual; // @addr 0x4BEFD4 @slot 0x08 @calls "0x52C95E"
@@ -263,7 +263,7 @@ type
     procedure OnOpen; virtual; // @addr 0x4C10C4 @slot 0x1C
     procedure OnClose; virtual; // @addr 0x4C10D8 @slot 0x20
     procedure SelectMusic; virtual; // @addr 0x4C11C0 @slot 0x28
-    procedure ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer); virtual; // @addr 0x4C1B7C @slot 0x2C @ida "void __userpurge $name(TMessageLoopGI *Self@<eax>, unsigned int KeyState@<edx>, TPoint *Point@<ecx>, int Delta@<^0>);"
+    procedure ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer); virtual; // @addr 0x4C1B7C @slot 0x2C
     procedure InitializeLayout; virtual; // @addr 0x4C2164 @slot 0x30
     procedure UpdateActionCursor(CanTake: Boolean); virtual; // @addr 0x4C217C @slot 0x34
     function GetActionParentLoop: TMessageLoopGI; virtual; // @addr 0x4C218C @slot 0x38 @note "Base returns nil."
@@ -277,14 +277,14 @@ type
     procedure FreeSecondaryPixelBuffer; // @addr $4C18CC
     procedure ResetSecondaryPixelCount; // @addr $4C1914
     procedure FreeSavedLines; // @addr $4C1938 @note "Frees every allocated array slot, including slots beyond SavedLineCount."
-    procedure AddSavedLine(First, Last: TPoint; Pixels: Pointer); // @addr $4C19B4 @ida "void __userpurge $name(TMessageLoopGI *Self@<eax>, TPoint *First@<edx>, TPoint *Last@<ecx>, void *Pixels@<^0>);" @note "Takes the pixel allocation; records the process heap."
+    procedure AddSavedLine(First, Last: TPoint; Pixels: Pointer); // @addr $4C19B4 @note "Takes the pixel allocation; records the process heap."
     procedure RestoreSavedLines; // @addr $4C1AA0 @note "Restores SavedLineCount lines unless SkipSavedPixelRestore is set; retains the count."
     procedure ResetSavedLineCount; // @addr $4C1B64
     procedure InvalidateMouseViewControls; // @addr $4BE604
     procedure ClearTransientControl; // @addr $4C1B9C
     procedure InvalidateTransientControl; // @addr $4C1C08 @note "Temporarily enables queued invalidation; an exception leaves it enabled."
     procedure ResetRuntime; // @addr 0x4BE400 @note "Frees the root tree and cancels callback timers."
-    procedure QueueUpdateRect(Rect: TRect); // @addr 0x4BE4C4 @ida "void __usercall $name(TMessageLoopGI *Self@<eax>, TRect *Rect@<edx>);" @note "Clips to GameScreenRect; does nothing when update rectangles are disabled."
+    procedure QueueUpdateRect(Rect: TRect); // @addr 0x4BE4C4 @note "Clips to GameScreenRect; does nothing when update rectangles are disabled."
     procedure InvalidateViewport; // @addr 0x4BE50C
     function FindMouseViewUpdateControl(Control: TObjectGI): Integer; // @addr 0x4BE544
     procedure AddMouseViewUpdateControl(Control: TObjectGI); // @addr 0x4BE5A0 @note "Duplicates are ignored."
@@ -294,7 +294,7 @@ type
     procedure ErasePreviousFrame; // @addr $4BE74C
     procedure PrepareFrameDraw; // @addr $4BE764
     procedure FinishQueuedDraw; // @addr $4BE720 @note "Clears RegionDrawPending."
-    procedure SetSystemCursorPosition(Point: TPoint); // @addr $4C1710 @ida "void __usercall $name(TMessageLoopGI *Self@<eax>, TPoint *Point@<edx>);" @note "Uses screen coordinates."
+    procedure SetSystemCursorPosition(Point: TPoint); // @addr $4C1710 @note "Uses screen coordinates."
     function ConsumeTimerTickChange: Boolean; // @addr $4C1738 @note "Returns true once for each changed TimerTick."
     procedure DrawQueuedUpdateRects; // @addr 0x4BE654 @note "Leaves queued rectangles in place."
     procedure CaptureScreenshot; // @addr $4C0B88 @note "Uses the first free Shot000..Shot999 name; silently skips when all names are occupied."
@@ -309,7 +309,7 @@ type
     procedure UpdateCallbackTimer(Timer: PCallbackTimerGI; DelayMs, RepeatMs: Integer); // @addr 0x4C1310
     procedure ReinsertCallbackTimer(Timer: PCallbackTimerGI); // @addr 0x4C136C @note "Equal deadlines run in reverse insertion order; clock wraparound is not handled."
     procedure RefreshTimerTick; // @addr 0x4C14DC
-    procedure SetCursorImage(const ImagePath: WideString; HotSpot: TPoint); // @addr 0x4C14F4 @ida "void __usercall $name(TMessageLoopGI *Self@<eax>, unsigned __int16 *ImagePath@<edx>, TPoint *HotSpot@<ecx>);" @note "Does nothing when custom cursors are disabled."
+    procedure SetCursorImage(const ImagePath: WideString; HotSpot: TPoint); // @addr 0x4C14F4 @note "Does nothing when custom cursors are disabled."
     procedure SetCursorByName(const Name: WideString); // @addr 0x4C1550
     function IsCursorImageSelected(const RegisteredName: WideString): Boolean; // @addr 0x4C158C @note "Ignores cursor activity; registered names with the same image path compare equal."
     function IsCursorActive: Boolean; // @addr 0x4C15C0
@@ -317,8 +317,8 @@ type
     procedure CaptureCursorState(State: PCursorStateGI); // @addr 0x4C1608 @note "Writes caller-owned state; its WideString must be initialized. Pointer form is required by native record-copy evaluation order."
     procedure RestoreCursorState(State: PCursorStateGI); // @addr 0x4C1660 @note "Reads caller-owned state through a pointer; ignored when custom cursors are disabled."
     procedure UpdateCursorPosition; // @addr 0x4C16AC @note "Moves the image cursor to the system mouse position, converted to client coordinates in windowed mode."
-    function GetCursorPoint: TPoint; // @addr 0x4C16EC @ida "void __usercall $name(TMessageLoopGI *Self@<eax>, TPoint *Result@<edx>);" @note "Returns CursorControl's local position."
-    function QueryPointOcclusionState(Point: TPoint; IgnoreControl, StartControl: TObjectGI): Integer; // @addr 0x4C176C @ida "int __userpurge $name@<eax>(TMessageLoopGI *Self@<eax>, TPoint *Point@<edx>, TObjectGI *IgnoreControl@<ecx>, TObjectGI *StartControl@<^0>);" @note "Starts at RootUiObject when StartControl is nil; returns 1 for a blocker, -1 for IgnoreControl, or 0 for no hit."
+    function GetCursorPoint: TPoint; // @addr 0x4C16EC @note "Returns CursorControl's local position."
+    function QueryPointOcclusionState(Point: TPoint; IgnoreControl, StartControl: TObjectGI): Integer; // @addr 0x4C176C @note "Starts at RootUiObject when StartControl is nil; returns 1 for a blocker, -1 for IgnoreControl, or 0 for no hit."
     procedure InitializeDefaults; // @addr 0x4C1C4C
   end;
 
@@ -1340,7 +1340,7 @@ procedure TObjectGI.LoadFromBlock(Block: TBlockParEC);
 var Count: Integer; Text: WideString;
 
   // @nested $4BD50C LoadConfiguredChildren
-  procedure LoadConfiguredChildren(Block: TBlockParEC); // @addr $4BD50C @ida "void __usercall $name(TBlockParEC *Block@<eax>, void *ParentFrame@<^0>);" @stackpop 0 @calls "0x4BD6CA 0x4BD5F8" @note "Nested helper of TObjectGI.LoadFromBlock; creates recognized controls and descends through other blocks."
+  procedure LoadConfiguredChildren(Block: TBlockParEC); // @addr $4BD50C @calls "0x4BD6CA 0x4BD5F8" @note "Nested helper of TObjectGI.LoadFromBlock; creates recognized controls and descends through other blocks."
   var Index, Count: Integer; Child: TObjectGI;
   begin
     Count := Block.GetBlockCount;
@@ -2069,7 +2069,7 @@ var
   UnusedLocals: array[0..11] of Byte;
 
   // @nested $4BFB04 ConvertMousePointToViewport
-  procedure ConvertMousePointToViewport; // @addr $4BFB04 @ida "void __usercall $name(void *ParentFrame@<^0>);" @stackpop 0 @calls "0x4BFD6E 0x4BFED2 0x4BFF1C 0x4BFF7B 0x4BFFFF 0x4C0183 0x4C01E6 0x4C02A9" @note "Nested ProcessWindowMessage helper; scales or offsets its captured mouse point."
+  procedure ConvertMousePointToViewport; // @addr $4BFB04 @calls "0x4BFD6E 0x4BFED2 0x4BFF1C 0x4BFF7B 0x4BFFFF 0x4C0183 0x4C01E6 0x4C02A9" @note "Nested ProcessWindowMessage helper; scales or offsets its captured mouse point."
   begin
     if AlternateViewportEnabled then
       if ScaleViewportToWindow then
@@ -2346,7 +2346,7 @@ var
   Buffer: TGraphBufGR;
 
   // @nested $4C0A14 FindFreeScreenshotName
-  function FindFreeScreenshotName: Boolean; // @addr $4C0A14 @ida "bool __usercall $name@<al>(void *ParentFrame@<^0>);" @stackpop 0 @calls "0x4C0C40" @note "Nested CaptureScreenshot helper; updates the captured filename strings."
+  function FindFreeScreenshotName: Boolean; // @addr $4C0A14 @calls "0x4C0C40" @note "Nested CaptureScreenshot helper; updates the captured filename strings."
   var Index: Integer;
   begin
     Result := False;

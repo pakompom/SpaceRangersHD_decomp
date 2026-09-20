@@ -18,19 +18,19 @@ type
     ScrollChangedCallback: TObjectNotifyEventGI; // @offset $130
     ScrollAxis: TPanelScrollAxisGI; // @offset 0x138
 
-    constructor Create(Owner: TObjectGI); // @addr 0x472A14 @ida "TPanelGI *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, TObjectGI *Owner@<ecx>);"
-    destructor Destroy; override; // @addr 0x472A7C @ida "void __usercall $name(TPanelGI *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create(Owner: TObjectGI); // @addr 0x472A14
+    destructor Destroy; override; // @addr 0x472A7C
     procedure Clear; override; // @addr 0x472AB0
-    function GetChildAbsolutePosition(LocalPosition: TPoint; ModeW: Boolean): TPoint; override; // @addr 0x472AFC @ida "void __userpurge $name(TPanelGI *Self@<eax>, TPoint *LocalPosition@<edx>, bool ModeW@<cl>, TPoint *Result@<^0>);" @note "Only ModeW children are affected by scrolling."
-    function ToLocalPoint(Point: TPoint): TPoint; override; // @addr 0x472B68 @ida "void __usercall $name(TPanelGI *Self@<eax>, TPoint *Point@<edx>, TPoint *Result@<ecx>);"
-    function ToAbsolutePoint(Point: TPoint): TPoint; override; // @addr 0x472BAC @ida "void __usercall $name(TPanelGI *Self@<eax>, TPoint *Point@<edx>, TPoint *Result@<ecx>);"
+    function GetChildAbsolutePosition(LocalPosition: TPoint; ModeW: Boolean): TPoint; override; // @addr 0x472AFC @note "Only ModeW children are affected by scrolling."
+    function ToLocalPoint(Point: TPoint): TPoint; override; // @addr 0x472B68
+    function ToAbsolutePoint(Point: TPoint): TPoint; override; // @addr 0x472BAC
     procedure SetDragScrollingEnabled(Value: Boolean); // @addr 0x472BF0
-    procedure SetScrollOffset(Offset: TPoint); virtual; // @addr 0x472C38 @slot 0xC8 @ida "void __usercall $name(TPanelGI *Self@<eax>, TPoint *Offset@<edx>);" @calls "0x6A4C15 0x6A4CB1"
-    function GetVisibleContentRect: TRect; // @addr 0x472F8C @ida "void __usercall $name(TPanelGI *Self@<eax>, TRect *Result@<edx>);"
-    procedure ScrollRectIntoView(Rect: TRect); // @addr 0x472FE4 @ida "void __usercall $name(TPanelGI *Self@<eax>, TRect *Rect@<edx>);"
-    procedure ProcessMouseMove(KeyState: Cardinal; Point: TPoint); override; // @addr $473104 @ida "void __usercall $name(TPanelGI *Self@<eax>, unsigned int KeyState@<edx>, TPoint *Point@<ecx>);"
-    procedure ProcessRightButtonDown(KeyState: Cardinal; Point: TPoint); override; // @addr $4732E8 @ida "void __usercall $name(TPanelGI *Self@<eax>, unsigned int KeyState@<edx>, TPoint *Point@<ecx>);"
-    procedure ProcessRightButtonUp(KeyState: Cardinal; Point: TPoint); override; // @addr $473394 @ida "void __usercall $name(TPanelGI *Self@<eax>, unsigned int KeyState@<edx>, TPoint *Point@<ecx>);"
+    procedure SetScrollOffset(Offset: TPoint); virtual; // @addr 0x472C38 @slot 0xC8 @calls "0x6A4C15 0x6A4CB1"
+    function GetVisibleContentRect: TRect; // @addr 0x472F8C
+    procedure ScrollRectIntoView(Rect: TRect); // @addr 0x472FE4
+    procedure ProcessMouseMove(KeyState: Cardinal; Point: TPoint); override; // @addr $473104
+    procedure ProcessRightButtonDown(KeyState: Cardinal; Point: TPoint); override; // @addr $4732E8
+    procedure ProcessRightButtonUp(KeyState: Cardinal; Point: TPoint); override; // @addr $473394
     procedure OnActivate; override; // @addr 0x4730E8
     procedure OnMouseEnter; override; // @addr 0x473268
     procedure OnMouseLeave; override; // @addr 0x473284

@@ -8,11 +8,11 @@ uses EC_BlockPar;
 type
   TQuestMessages = class(TObject) // @size 0x08
   public
-    constructor Create; // @addr $4C5E34 @ida "TQuestMessages * __usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr $4C5E88 @ida "void __usercall $name(TQuestMessages *Self@<eax>, unsigned __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr $4C5E34
+    destructor Destroy; override; // @addr $4C5E88
     Entries: TBlockParEC; // @offset 0x04
-    function GetTextOrKey(Key: WideString): WideString; // @addr $4C5FCC @ida "void __usercall $name(TQuestMessages *Self@<eax>, unsigned __int16 *Key@<edx>, unsigned __int16 **Result@<ecx>);" @note "Looks up a direct parameter; returns Key when absent."
-    function GetText(Path: WideString): WideString; // @addr 0x4C5ED8 @ida "void __usercall $name(TQuestMessages *Self@<eax>, unsigned __int16 *Path@<edx>, unsigned __int16 **Result@<ecx>);" @note "Returns Path when an intermediate block is missing; a missing final string parameter raises."
+    function GetTextOrKey(Key: WideString): WideString; // @addr $4C5FCC @note "Looks up a direct parameter; returns Key when absent."
+    function GetText(Path: WideString): WideString; // @addr 0x4C5ED8 @note "Returns Path when an intermediate block is missing; a missing final string parameter raises."
   end;
 
 var

@@ -25,7 +25,7 @@ var Usage: Int64;
   Status: TMemoryStatusEx;
 
   // @nested $86E0F0 ShowLowMemoryWarning
-  procedure ShowLowMemoryWarning(TextKey: WideString); // @addr $86E0F0 @ida "void __usercall $name(unsigned __int16 *TextKey@<eax>, void *ParentFrame@<^0>);" @note "Nested in CheckMemoryUsage; unused caller-popped static link."
+  procedure ShowLowMemoryWarning(TextKey: WideString); // @addr $86E0F0 @note "Nested in CheckMemoryUsage; unused caller-popped static link."
   begin
     if (not LowMemoryWarningShown) and (Galaxy <> nil) then begin
       LowMemoryWarningShown := True;

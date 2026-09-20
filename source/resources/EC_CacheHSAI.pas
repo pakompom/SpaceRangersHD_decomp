@@ -35,12 +35,12 @@ type
     Height: Integer; // @offset 0x2C
     FrameSurfaceCache: TTextureGR; // @offset 0x30
 
-    constructor Create; // @addr 0x495064 @ida "TCHSAIEC *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x4950B0 @ida "void __usercall $name(TCHSAIEC *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x495064
+    destructor Destroy; override; // @addr 0x4950B0
     function GetFrameCount: Cardinal; // @addr 0x49511C
     function GetFrameIndexPlane(FrameIndex: Cardinal): Pointer; // @addr 0x495138 @note "Returns nil when FrameIndex is outside the header count."
     function GetFramePalette(FrameIndex: Cardinal): PColorRGBA; // @addr 0x495184 @note "Returns nil for an invalid frame or absent palette."
-    function GetOrCreateFrameSurface(FrameIndex: Cardinal): IDirect3DTexture9; // @addr 0x4951F8 @ida "void __usercall $name(TCHSAIEC *Self@<eax>, unsigned int FrameIndex@<edx>, IDirect3DTexture9 **Result@<ecx>);" @note "Requires a valid frame and palette; uses Width rather than PitchBytes as the source pitch."
+    function GetOrCreateFrameSurface(FrameIndex: Cardinal): IDirect3DTexture9; // @addr 0x4951F8 @note "Requires a valid frame and palette; uses Width rather than PitchBytes as the source pitch."
     function GetSourcePitchBytes: Integer; // @addr 0x495308
     procedure LoadFromConfigBuffer(SourceBuffer: TBufEC; const LoadOption: WideString); override; // @addr 0x495324 @note "Only the minimum 0x34-byte header size is validated. Ignores LoadOption."
   end;

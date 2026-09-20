@@ -13,9 +13,9 @@ type
 
   PPropInfo = ^TPropInfo;
 
-function GetEnumNameValue(TypeInfo: PTypeInfo; const Name: AnsiString): Integer; // @ida "__int32 __usercall $name@<eax>(PTypeInfo TypeInfo@<eax>, char * Name@<edx>);" @note "DCC32 MAP TypInfo.GetEnumNameValue. Source rtl/common/TypInfo.pas:797."
+function GetEnumNameValue(TypeInfo: PTypeInfo; const Name: AnsiString): Integer; // @note "DCC32 MAP TypInfo.GetEnumNameValue. Source rtl/common/TypInfo.pas:797."
 
-function GetEnumValue(TypeInfo: PTypeInfo; const Name: AnsiString): Integer; // @ida "__int32 __usercall $name@<eax>(PTypeInfo TypeInfo@<eax>, char * Name@<edx>);" @note "DCC32 MAP TypInfo.GetEnumValue. Source rtl/common/TypInfo.pas:862."
+function GetEnumValue(TypeInfo: PTypeInfo; const Name: AnsiString): Integer; // @note "DCC32 MAP TypInfo.GetEnumValue. Source rtl/common/TypInfo.pas:862."
 
 procedure GetPropInfo; // @nameonly @note "DCC32 MAP TypInfo.GetPropInfo. Prototype pending: no unique source declaration."
 
@@ -23,11 +23,11 @@ procedure GetOrdProp; // @nameonly @note "DCC32 MAP TypInfo.GetOrdProp. Prototyp
 
 procedure SetOrdProp; // @nameonly @note "DCC32 MAP TypInfo.SetOrdProp. Prototype pending: no unique source declaration."
 
-function GetSetElementValue(TypeInfo: PTypeInfo; const Name: AnsiString): Integer; // @ida "__int32 __usercall $name@<eax>(PTypeInfo TypeInfo@<eax>, char * Name@<edx>);" @note "DCC32 MAP TypInfo.GetSetElementValue. Source rtl/common/TypInfo.pas:1349."
+function GetSetElementValue(TypeInfo: PTypeInfo; const Name: AnsiString): Integer; // @note "DCC32 MAP TypInfo.GetSetElementValue. Source rtl/common/TypInfo.pas:1349."
 
-procedure SetShortStrPropAsLongStr(Instance: TObject; PropInfo: PPropInfo; const Value: AnsiString); // @ida "void __usercall $name(TObject *Instance@<eax>, PPropInfo PropInfo@<edx>, char * Value@<ecx>);" @note "DCC32 MAP TypInfo.SetShortStrPropAsLongStr. Source rtl/common/TypInfo.pas:1607."
+procedure SetShortStrPropAsLongStr(Instance: TObject; PropInfo: PPropInfo; const Value: AnsiString); // @note "DCC32 MAP TypInfo.SetShortStrPropAsLongStr. Source rtl/common/TypInfo.pas:1607."
 
-procedure SetWideStrPropAsLongStr(Instance: TObject; PropInfo: PPropInfo; const Value: AnsiString); // @ida "void __usercall $name(TObject *Instance@<eax>, PPropInfo PropInfo@<edx>, char * Value@<ecx>);" @note "DCC32 MAP TypInfo.SetWideStrPropAsLongStr. Source rtl/common/TypInfo.pas:1711."
+procedure SetWideStrPropAsLongStr(Instance: TObject; PropInfo: PPropInfo; const Value: AnsiString); // @note "DCC32 MAP TypInfo.SetWideStrPropAsLongStr. Source rtl/common/TypInfo.pas:1711."
 
 procedure SetStrProp; // @nameonly @note "DCC32 MAP TypInfo.SetStrProp. Prototype pending: no unique source declaration."
 

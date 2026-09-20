@@ -394,10 +394,9 @@ impl Parser<'_> {
         if let Some(pop) = meta.get("stackpop").and_then(Value::as_i64) {
             ensure!(
                 meta.contains_key("calls")
-                    && meta.contains_key("ida")
                     && !meta.contains_key("countedstack")
                     && !meta.contains_key("nameonly"),
-                "@stackpop requires @ida and @calls, without @nameonly or @countedstack"
+                "@stackpop requires @calls, without @nameonly or @countedstack"
             );
             ensure!(
                 (0..=65535).contains(&pop) && pop % 4 == 0,

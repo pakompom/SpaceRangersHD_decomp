@@ -32,13 +32,13 @@ type
     LoadPanel: TfPanelLoad; // @offset 0x100
     BackgroundStyle: Integer; // @offset $104
 
-    constructor Create; // @addr 0x668BBC @ida "TfLoad *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x668C14 @ida "void __usercall $name(TfLoad *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x668BBC
+    destructor Destroy; override; // @addr 0x668C14
     procedure InitializeLayout; override; // @addr 0x668C6C
     procedure OnOpen; override; // @addr 0x668DF4
     procedure OnClose; override; // @addr 0x66902C
     procedure UpdateLoadingProgress(Timer: PCallbackTimerGI; UserData: Integer); // @addr 0x6692DC
-    procedure IntroMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $66942C @ida "void __userpurge $name(TfLoad *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
+    procedure IntroMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $66942C
     procedure IntroKeyDown(Sender: TObjectGI; Key: Cardinal); // @addr $66945C
     procedure StartIntroItem(Index: Integer); // @addr $669494
     procedure UpdateIntro(Timer: PCallbackTimerGI; UserData: Integer); // @addr $669A08

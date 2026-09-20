@@ -29,29 +29,29 @@ type
     BackgroundClickStarted: Boolean; // @offset 0x100
     HoveredAwardId: Integer; // @offset 0x104  -1 means no award hint.
 
-    constructor Create; // @addr 0x5656BC @ida "TfRating2 *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x565700 @ida "void __usercall $name(TfRating2 *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x5656BC
+    destructor Destroy; override; // @addr 0x565700
     procedure OnOpen; override; // @addr 0x5659B4 @slot 0x1C
     procedure OnClose; override; // @addr 0x565D24 @slot 0x20
     procedure ProcessCallbackTimers; override; // @addr 0x56C5D8 @slot 0x24
     procedure SelectMusic; override; // @addr 0x56C2A4 @slot 0x28
-    procedure ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer); override; // @addr 0x5660F0 @slot 0x2C @ida "void __userpurge $name(TfRating2 *Self@<eax>, unsigned int KeyState@<edx>, TPoint *Point@<ecx>, int Delta@<^0>);"
+    procedure ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer); override; // @addr 0x5660F0 @slot 0x2C
     procedure InitializeLayout; override; // @addr 0x565734 @slot 0x30
     procedure CloseClicked(Sender: TObjectGI); // @addr 0x565D78
     procedure KeyDown(Sender: TObjectGI; Key: Cardinal); // @addr 0x565D98
-    procedure BackgroundMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x565F84 @ida "void __userpurge $name(TfRating2 *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
-    procedure BackgroundMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x566038 @ida "void __userpurge $name(TfRating2 *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
-    procedure AwardsMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x566198 @ida "void __userpurge $name(TfRating2 *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
-    procedure AwardsMouseMove(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x566250 @ida "void __userpurge $name(TfRating2 *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
+    procedure BackgroundMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x565F84
+    procedure BackgroundMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x566038
+    procedure AwardsMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x566198
+    procedure AwardsMouseMove(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x566250
     procedure HintMouseLeave(Sender: TObjectGI); // @addr 0x566360
     procedure ShowPartnershipHint(Sender: TObjectGI); // @addr 0x566740
     procedure ShowCareerHint(Sender: TObjectGI); // @addr 0x5676B4
     procedure ShowAwardHint(Ranger: TRanger; AwardId: Integer); // @addr 0x567DA0
     procedure HideHint; // @addr 0x5681DC
     function FindRowByRangerId(RangerId: Integer): Integer; // @addr 0x568204 @note "Returns -1 if the ranger is absent."
-    procedure SortHeaderMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x568268 @ida "void __userpurge $name(TfRating2 *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
+    procedure SortHeaderMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x568268
     procedure FeaturedRangerClicked(Sender: TObjectGI); // @addr 0x568334
-    procedure RowMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x568370 @ida "void __userpurge $name(TfRating2 *Self@<eax>, TObjectGI *Sender@<edx>, unsigned int KeyState@<ecx>, TPoint *Point@<^0>);"
+    procedure RowMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x568370
     procedure SelectRow(Index: Integer); // @addr 0x568414 @note "Accepts -1; other indices must be valid. Rebuilds the old and new rows because selection changes row height."
     procedure ClearRows; // @addr 0x568524
     procedure RebuildTable; // @addr 0x5685D0 @note "Excludes ExcludedFromRating rangers; preserves selection by ID when SelectedIndex is -1."
@@ -284,7 +284,7 @@ var Cursor: TPoint; I: Integer; Text, PartnerInfo, Names: WideString;
   Ally: TRanger; Pirate: TPirate;
 
   // @nested $566378 FormatRangerWingmenHint
-  function FormatRangerWingmenHint(Ranger: TRanger): WideString; // @addr 0x566378 @ida "void __usercall $name(TRanger *Ranger@<eax>, unsigned __int16 **Result@<edx>, void *ParentFrame@<^0>);" @stackpop 0 @calls "0x566f07,0x567068" @note "Nested in TfRating2.ShowPartnershipHint; caller supplies its parent frame."
+  function FormatRangerWingmenHint(Ranger: TRanger): WideString; // @addr 0x566378 @calls "0x566f07,0x567068" @note "Nested in TfRating2.ShowPartnershipHint; caller supplies its parent frame."
   var I: Integer; Names: WideString; Ally: TRanger;
   begin
     if Ranger.CountWingmen = 1 then
@@ -397,7 +397,7 @@ end;
 procedure TfRating2.ShowCareerHint(Sender: TObjectGI);
 var I: Byte; Cursor: TPoint; Text: WideString; Ranger: TRanger;
   // @nested $567654 FormatCareerHintColumn
-  function FormatCareerHintColumn(Column: Integer): WideString; // @addr 0x567654 @ida "void __usercall $name(int Column@<eax>, unsigned __int16 **Result@<edx>, void *ParentFrame@<^0>);" @stackpop 0 @calls "0x56786f,0x5678b9,0x567901,0x56791b" @note "Nested in TfRating2.ShowCareerHint; caller supplies its parent frame."
+  function FormatCareerHintColumn(Column: Integer): WideString; // @addr 0x567654 @calls "0x56786f,0x5678b9,0x567901,0x56791b" @note "Nested in TfRating2.ShowCareerHint; caller supplies its parent frame."
   begin
     Result := IntToStr(CareerHintColumns[Column] + 40);
   end;
@@ -701,7 +701,7 @@ var Ranger: TRanger; Panel, BarPanel: TPanelGI; Image: TImageGI;
   Caption: TLabelGI; Ratio: Single; ExtraKills: Integer; Animation: TgaiGI;
 
   // @nested $569044 GetRatingRankImagePath
-  function GetRatingRankImagePath(Rank: Byte): WideString; // @addr 0x569044 @ida "void __usercall $name(unsigned __int8 Rank@<al>, unsigned __int16 **Result@<edx>, void *ParentFrame@<^0>);" @stackpop 0 @calls "0x56add4" @note "Nested in TfRating2.CreateRow; caller supplies its parent frame."
+  function GetRatingRankImagePath(Rank: Byte): WideString; // @addr 0x569044 @calls "0x56add4" @note "Nested in TfRating2.CreateRow; caller supplies its parent frame."
   begin
     if Rank = 0 then Result := 'GI,Bm.FormRating2.' + GiResourceSuffix + 'Rank1'
     else if Rank = 1 then Result := 'GI,Bm.FormRating2.' + GiResourceSuffix + 'Rank2'
@@ -1283,7 +1283,7 @@ end;
 procedure TfRating2.ShowDominatorKillsHint(Sender: TObjectGI);
 var I: Byte; Cursor: TPoint; Text: WideString; Ranger: TRanger;
   // @nested $56C708 FormatDominatorKillsHintColumn
-  function FormatDominatorKillsHintColumn(Column: Integer): WideString; // @addr 0x56C708 @ida "void __usercall $name(int Column@<eax>, unsigned __int16 **Result@<edx>, void *ParentFrame@<^0>);" @stackpop 0 @calls "0x56c93f,0x56c99e,0x56ca03,0x56ca20" @note "Nested in TfRating2.ShowDominatorKillsHint; caller supplies its parent frame."
+  function FormatDominatorKillsHintColumn(Column: Integer): WideString; // @addr 0x56C708 @calls "0x56c93f,0x56c99e,0x56ca03,0x56ca20" @note "Nested in TfRating2.ShowDominatorKillsHint; caller supplies its parent frame."
   begin
     Result := IntToStr(DominatorHintColumns[Column] + 40);
   end;

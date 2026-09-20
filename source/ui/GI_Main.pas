@@ -28,12 +28,12 @@ function ParseTextAlignXName(Name: WideString): TTextAlignXGI; // @addr 0x4B899C
 function ParseTextAlignYName(Name: WideString): TTextAlignYGI; // @addr 0x4B8AF4
 function ParseEnabledNameGI(Name: WideString): Boolean; // @addr 0x4B8C7C @note "True only for Yes, yes, True, true, TRUE or 1."
 function GetColorGI(ColorText: WideString): Cardinal; // @addr 0x4B8D74 @note "At least three comma-separated components are required; only their low bytes are used."
-function GetPointGI(PointText: WideString): TPoint; // @addr 0x4B8F04 @ida "void __usercall $name(unsigned __int16 *PointText@<eax>, TPoint *Result@<edx>);"
+function GetPointGI(PointText: WideString): TPoint; // @addr 0x4B8F04
 
 function ParseAutoGeometryFlagsGI(Values: WideString): Integer; // @addr $4B933C @note "Comma-separated pos and size names, trimmed and case-insensitive; unknown names are ignored. Placement in GI_Main is inferred."
 
-function GetFloatPointGI(PointText: WideString): TPointF; // @addr $4B9048 @ida "void __usercall $name(unsigned __int16 *PointText@<eax>, TPointF *Result@<edx>);"
-function GetRectGI(RectText: WideString): TRect; // @addr $4B9174 @ida "void __usercall $name(unsigned __int16 *RectText@<eax>, TRect *Result@<edx>);"
+function GetFloatPointGI(PointText: WideString): TPointF; // @addr $4B9048
+function GetRectGI(RectText: WideString): TRect; // @addr $4B9174
 
 implementation
 

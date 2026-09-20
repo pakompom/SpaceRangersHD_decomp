@@ -17,9 +17,9 @@ type
     ExpireTick: Integer; // @offset $D8
     TurnDelta: Single; // @offset $DC
     TrailImages: TList; // @offset $E0
-    constructor Create; // @addr $4F5638 @ida "TabW05 *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr $4F56D4 @ida "void __usercall $name(TabW05 *Self@<eax>, __int8 DestroyFlags@<dl>);"
-    procedure Launch(Owner: TabObject; Amount: Integer; Offset: Single); // @addr $4F578C @ida "void __userpurge $name(TabW05 *Self@<eax>, TabObject *Owner@<edx>, int Amount@<ecx>, float Offset@<^0>);"
+    constructor Create; // @addr $4F5638
+    destructor Destroy; override; // @addr $4F56D4
+    procedure Launch(Owner: TabObject; Amount: Integer; Offset: Single); // @addr $4F578C
     procedure Advance; override; // @addr $4F5954
     procedure UpdateVisuals; override; // @addr $4F5AF4
   end;

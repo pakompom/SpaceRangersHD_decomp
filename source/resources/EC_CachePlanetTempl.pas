@@ -21,8 +21,8 @@ type
     TemplateData: Pointer; // @offset 0x20
     ImageHeight: Integer; // @offset 0x24
 
-    constructor Create; // @addr 0x4A626C @ida "TCPlanetTemplEC *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x4A62C0 @ida "void __usercall $name(TCPlanetTemplEC *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create; // @addr 0x4A626C
+    destructor Destroy; override; // @addr 0x4A62C0
     procedure LoadFromConfigBuffer(SourceBuffer: TBufEC; const LoadOption: WideString); override; // @addr 0x4A6318
   end;
 

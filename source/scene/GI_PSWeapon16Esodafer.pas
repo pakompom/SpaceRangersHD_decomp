@@ -33,19 +33,19 @@ type
     OriginalLength: Double; // @offset $158
     LengthScale: Double; // @offset $160
 
-    constructor Create(Owner: TObjectGI; APaletteIndex: Integer); // @addr $696018 @ida "TPSWeapon16Esodafer *__userpurge $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, TObjectGI *Owner@<ecx>, int APaletteIndex@<^0>);"
-    destructor Destroy; override; // @addr $6960E8 @ida "void __usercall $name(TPSWeapon16Esodafer *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create(Owner: TObjectGI; APaletteIndex: Integer); // @addr $696018
+    destructor Destroy; override; // @addr $6960E8
     procedure SetColors(Primary, Secondary, Tertiary: Word); // @addr $696124
-    procedure SetPosition(Position: TPoint); override; // @addr $696168 @ida "void __usercall $name(TPSWeapon16Esodafer *Self@<eax>, TPoint *Position@<edx>);"
-    procedure SetTargetPoint(Point: TPoint); override; // @addr $6961AC @ida "void __usercall $name(TPSWeapon16Esodafer *Self@<eax>, TPoint *Point@<edx>);"
+    procedure SetPosition(Position: TPoint); override; // @addr $696168
+    procedure SetTargetPoint(Point: TPoint); override; // @addr $6961AC
     procedure UpdateProjectionBounds; // @addr $696200
     procedure UpdateHitTestBounds; override; // @addr $69654C
-    function GetLocalBounds: TRect; override; // @addr $6965AC @ida "void __usercall $name(TPSWeapon16Esodafer *Self@<eax>, TRect *Result@<edx>);"
+    function GetLocalBounds: TRect; override; // @addr $6965AC
     function AddParticle: PEsodaferParticle; // @addr $696610
     procedure ClearParticles; // @addr $696688
-    procedure InvalidateRect(Rect: TRect); override; // @addr $6966DC @ida "void __usercall $name(TPSWeapon16Esodafer *Self@<eax>, TRect *Rect@<edx>);"
+    procedure InvalidateRect(Rect: TRect); override; // @addr $6966DC
     procedure Advance(Timer: PCallbackTimerGI; UserData: Integer); override; // @addr $6967F8
-    procedure Draw(ClipRect: TRect); override; // @addr $697178 @ida "void __usercall $name(TPSWeapon16Esodafer *Self@<eax>, TRect *ClipRect@<edx>);"
+    procedure Draw(ClipRect: TRect); override; // @addr $697178
   end;
 
 procedure LoadEsodaferPalettes; // @addr $6973AC
@@ -211,7 +211,7 @@ var
   Particle, Current, Spark: PEsodaferParticle;
 
   // @nested $6967A8 AcquireEsodaferParticle
-  function AcquireEsodaferParticle: PEsodaferParticle; // @addr $6967A8 @ida "TEsodaferParticle *__usercall $name@<eax>(void *ParentFrame@<^0>);" @stackpop 0 @calls "0x696C50, 0x696DB8"
+  function AcquireEsodaferParticle: PEsodaferParticle; // @addr $6967A8 @calls "0x696C50, 0x696DB8"
   var
     Candidate: PEsodaferParticle;
   begin

@@ -25,10 +25,10 @@ type
     TileCount: Integer; // @offset 0x30
     // TileCount is zero for a single surface.
 
-    constructor Create; // @addr 0x4789E0 @ida "TCGiEC *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>);"
-    destructor Destroy; override; // @addr 0x478A4C @ida "void __usercall $name(TCGiEC *Self@<eax>, __int8 DestroyFlags@<dl>);"
-    function GetTileOrigin(TileIndex: Integer): TPoint; // @addr 0x478AD0 @ida "void __usercall $name(TCGiEC *Self@<eax>, int TileIndex@<edx>, TPoint *Result@<ecx>);"
-    function GetOrCreateSurface(SurfaceIndex: Integer): IDirect3DTexture9; // @addr 0x478B24 @ida "void __usercall $name(TCGiEC *Self@<eax>, int SurfaceIndex@<edx>, IDirect3DTexture9 **Result@<ecx>);" @note "Caches the last requested surface at index zero; non-square tile grids use an incorrect stride."
+    constructor Create; // @addr 0x4789E0
+    destructor Destroy; override; // @addr 0x478A4C
+    function GetTileOrigin(TileIndex: Integer): TPoint; // @addr 0x478AD0
+    function GetOrCreateSurface(SurfaceIndex: Integer): IDirect3DTexture9; // @addr 0x478B24 @note "Caches the last requested surface at index zero; non-square tile grids use an incorrect stride."
     procedure LoadFromConfigBuffer(SourceBuffer: TBufEC; const LoadOption: WideString); override; // @addr 0x478ECC @note "May modify SourceBuffer for resource-specific layout fixups. Ignores LoadOption."
     procedure ApplyWideScreenLayoutFixups(SourceBuffer: TBufEC; const ResourceKey: WideString); // @addr 0x479144 @note "Modifies SourceBuffer in place."
   end;
@@ -115,7 +115,7 @@ var Texture: IDirect3DTexture9; ImageSize: TPoint; Locked: TD3DLockedRect;
   TileIndex, Columns, Rows, TileWidth, TileHeight, Column, Row: Integer; Origin: TPoint;
 
   // @nested $478B00 GiTileDivideRoundUp
-  function GiTileDivideRoundUp(Value, Divisor: Integer): Integer; // @addr 0x478B00 @ida "int __usercall $name@<eax>(int Value@<eax>, int Divisor@<edx>, void *ParentFrame@<^0>);" @stackpop 0 @calls "0x00478BE7 0x00478BFD"
+  function GiTileDivideRoundUp(Value, Divisor: Integer): Integer; // @addr 0x478B00 @calls "0x00478BE7 0x00478BFD"
   begin
     Result := (Divisor - 1 + Value) div Divisor;
   end;
@@ -214,7 +214,7 @@ var
   PreserveAlpha: Boolean;
 
   // @nested $478F10 RenderGiBufferToGraphBuf
-  procedure RenderGiBufferToGraphBuf(SourceBuffer: TBufEC; DestGraphBuf: TGraphBufGR); // @addr 0x478F10 @ida "void __usercall $name(TBufEC *SourceBuffer@<eax>, TGraphBufGR *DestGraphBuf@<edx>, void *ParentFrame@<^0>);" @stackpop 0 @calls "0x004791E8 0x00479309 0x0047952D 0x00479727 0x004798A2 0x00479A24 0x00479D07 0x00479E70 0x0047A074 0x0047A24C 0x0047A33B 0x0047A494 0x0047A58C 0x0047A794 0x0047A9BB 0x0047AD3F"
+  procedure RenderGiBufferToGraphBuf(SourceBuffer: TBufEC; DestGraphBuf: TGraphBufGR); // @addr 0x478F10 @calls "0x004791E8 0x00479309 0x0047952D 0x00479727 0x004798A2 0x00479A24 0x00479D07 0x00479E70 0x0047A074 0x0047A24C 0x0047A33B 0x0047A494 0x0047A58C 0x0047A794 0x0047A9BB 0x0047AD3F"
   begin
     WorkingImage := TgiGR.Create;
     WorkingImage.LoadRawGiFromBuffer(SourceBuffer);
@@ -225,7 +225,7 @@ var
   end;
 
   // @nested $478F94 StoreGraphBufAsRawGiBuffer
-  procedure StoreGraphBufAsRawGiBuffer(DestBuffer: TBufEC; SourceGraphBuf: TGraphBufGR; StorageMode: Integer); // @addr 0x478F94 @ida "void __usercall $name(TBufEC *DestBuffer@<eax>, TGraphBufGR *SourceGraphBuf@<edx>, int StorageMode@<ecx>, void *ParentFrame@<^0>);" @stackpop 0 @calls "0x0047A2D9 0x0047A440 0x0047A524 0x0047ADC3"
+  procedure StoreGraphBufAsRawGiBuffer(DestBuffer: TBufEC; SourceGraphBuf: TGraphBufGR; StorageMode: Integer); // @addr 0x478F94 @calls "0x0047A2D9 0x0047A440 0x0047A524 0x0047ADC3"
   begin
     WorkingImage := TgiGR.Create;
     WorkingImage.CreateFromGraphBuf(SourceGraphBuf, StorageMode);
@@ -236,7 +236,7 @@ var
   end;
 
   // @nested $479004 StoreGraphBufAsGiBuffer
-  procedure StoreGraphBufAsGiBuffer(DestBuffer: TBufEC; SourceGraphBuf: TGraphBufGR; TopLeft: TPoint); // @addr 0x479004 @ida "void __usercall $name(TBufEC *DestBuffer@<eax>, TGraphBufGR *SourceGraphBuf@<edx>, TPoint *TopLeft@<ecx>, void *ParentFrame@<^0>);" @stackpop 0 @calls "0x004792A1 0x004794A3 0x0047969D 0x00479818 0x00479990 0x00479C46 0x00479DAB 0x00479FE6 0x0047A1E9 0x0047A6CE 0x0047A8C5 0x0047A9FB 0x0047ADAF"
+  procedure StoreGraphBufAsGiBuffer(DestBuffer: TBufEC; SourceGraphBuf: TGraphBufGR; TopLeft: TPoint); // @addr 0x479004 @calls "0x004792A1 0x004794A3 0x0047969D 0x00479818 0x00479990 0x00479C46 0x00479DAB 0x00479FE6 0x0047A1E9 0x0047A6CE 0x0047A8C5 0x0047A9FB 0x0047ADAF"
   begin
     WorkingImage := TgiGR.Create;
     WorkingImage.CreateFormat2FromGraphBuf(SourceGraphBuf, TopLeft);
@@ -247,13 +247,13 @@ var
   end;
 
   // @nested $47907C LogWideScreenGiRescaleStart
-  procedure LogWideScreenGiRescaleStart; // @addr 0x47907C @ida "void __usercall $name(void *ParentFrame@<^0>);" @stackpop 0 @calls "0x004791CA 0x004792EB 0x0047950F 0x00479709 0x00479884 0x00479A06 0x00479CE9 0x00479E52 0x0047A056 0x0047A22E 0x0047A31D 0x0047A476 0x0047A56E 0x0047A776 0x0047A99D 0x0047AD21"
+  procedure LogWideScreenGiRescaleStart; // @addr 0x47907C @calls "0x004791CA 0x004792EB 0x0047950F 0x00479709 0x00479884 0x00479A06 0x00479CE9 0x00479E52 0x0047A056 0x0047A22E 0x0047A31D 0x0047A476 0x0047A56E 0x0047A776 0x0047A99D 0x0047AD21"
   begin
     if not Quiet then AppendLogTextThreadSafe('Rescaling ' + ResourceKey + '... ');
   end;
 
   // @nested $479120 LogWideScreenGiRescaleDone
-  procedure LogWideScreenGiRescaleDone; // @addr 0x479120 @ida "void __usercall $name(void *ParentFrame@<^0>);" @stackpop 0 @calls "0x004792B8 0x004794BA 0x004796B4 0x0047982F 0x004799A7 0x00479C5D 0x00479DC2 0x00479FFD 0x0047A200 0x0047A2F0 0x0047A457 0x0047A53B 0x0047A6E5 0x0047A8DC 0x0047AA12 0x0047ADDA"
+  procedure LogWideScreenGiRescaleDone; // @addr 0x479120 @calls "0x004792B8 0x004794BA 0x004796B4 0x0047982F 0x004799A7 0x00479C5D 0x00479DC2 0x00479FFD 0x0047A200 0x0047A2F0 0x0047A457 0x0047A53B 0x0047A6E5 0x0047A8DC 0x0047AA12 0x0047ADDA"
   begin
     if not Quiet then AppendLogLineThreadSafe('ok');
   end;

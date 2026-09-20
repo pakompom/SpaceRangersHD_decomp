@@ -15,11 +15,11 @@ type
     StepTimer: PCallbackTimerGI; // @offset $128
     StepTime: Integer; // @offset $12C
     ClickCallback: TObjectNotifyEventGI; // @offset $130
-    constructor Create(Owner: TObjectGI); // @addr $49B890 @ida "TDoorGI *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, TObjectGI *Owner@<ecx>);"
-    destructor Destroy; override; // @addr $49B8F0 @ida "void __usercall $name(TDoorGI *Self@<eax>, __int8 DestroyFlags@<dl>);"
+    constructor Create(Owner: TObjectGI); // @addr $49B890
+    destructor Destroy; override; // @addr $49B8F0
     procedure Clear; override; // @addr $49B944
     procedure SetStepTime(Value: Integer); // @addr $49B950
-    procedure SetSize(Size: TPoint); override; // @addr $49B990 @ida "void __usercall $name(TDoorGI *Self@<eax>, TPoint *Size@<edx>);"
+    procedure SetSize(Size: TPoint); override; // @addr $49B990
     procedure StartStepTimer; // @addr $49B9C4
     procedure StopStepTimer; // @addr $49BA14
     procedure StepFrame(Timer: PCallbackTimerGI; UserData: Integer); // @addr $49BA4C
@@ -27,8 +27,8 @@ type
     procedure OnDeactivate; override; // @addr $49BB2C
     procedure OnMouseEnter; override; // @addr $49BB58
     procedure OnMouseLeave; override; // @addr $49BBA0
-    procedure ProcessMouseMove(KeyState: Cardinal; Point: TPoint); override; // @addr $49BBE8 @ida "void __usercall $name(TDoorGI *Self@<eax>, unsigned int KeyState@<edx>, TPoint *Point@<ecx>);"
-    procedure ProcessLeftButtonUp(KeyState: Cardinal; Point: TPoint); override; // @addr $49BC64 @ida "void __usercall $name(TDoorGI *Self@<eax>, unsigned int KeyState@<edx>, TPoint *Point@<ecx>);"
+    procedure ProcessMouseMove(KeyState: Cardinal; Point: TPoint); override; // @addr $49BBE8
+    procedure ProcessLeftButtonUp(KeyState: Cardinal; Point: TPoint); override; // @addr $49BC64
     procedure LoadFromConfigPath(const Path: WideString); override; // @addr $49BCCC
     procedure LoadFromBlock(Block: TBlockParEC); override; // @addr $49BD00
     procedure LoadDoorProperties(Block: TBlockParEC); // @addr $49BD28
