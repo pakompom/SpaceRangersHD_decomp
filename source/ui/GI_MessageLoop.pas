@@ -16,7 +16,7 @@ type
   TFormSoundGroup = class;
   TMessageLoopGI = class;
 
-  TCursorStateGI = packed record // @size 0x18 // Native RTTI at $4BAE84 includes three trailing padding bytes.
+  TCursorStateGI = record // @size 0x18 // Native RTTI at $4BAE84 includes three trailing padding bytes.
     ImagePath: WideString; // @offset 0x00
     Active: Boolean; // @offset 0x04
     HotSpot: TPoint; // @offset 0x05
@@ -180,7 +180,7 @@ type
 
   PCallbackTimerGI = ^TCallbackTimerGI;
   TCallbackTimerEventGI = procedure(Timer: PCallbackTimerGI; UserData: Integer) of object;
-  TCallbackTimerGI = packed record // @size 0x20
+  TCallbackTimerGI = record // @size 0x20
     // Callback ABI: Context in EAX, this timer in EDX, UserData in ECX.
     Callback: TCallbackTimerEventGI; // @offset 0x00
     UserData: Integer; // @offset 0x08

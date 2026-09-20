@@ -270,6 +270,8 @@ end.
         generated.find("procedure OrderedExternal;").unwrap() < generated.find("Second:").unwrap()
     );
     assert!(generated.find("Second:").unwrap() < generated.find("TEffect = class(").unwrap());
+    assert!(!generated.contains("Gap4:")); // Double field alignment.
+    assert!(!generated.contains("Gap11:")); // Class instance size rounds to four bytes.
     fs::write(
         &second_palette,
         "unit SecondPalette; interface\ntype TPalette = array[0..9] of Single;\nimplementation end.\n",

@@ -12,12 +12,12 @@ type
     Cost: Integer; // @offset $08
   end;
 
-  TConstructionEquipment = packed record // @size $08 Borrowed item selection and source: 0=hold, 1=storage, 2=shop.
+  TConstructionEquipment = record // @size $08 Borrowed item selection and source: 0=hold, 1=storage, 2=shop.
     Item: TEquipment; // @offset $00
     Source: Byte; // @offset $04
   end;
 
-  TResearchItemSortKey = packed record // @size $0C Native sort helpers at $5A7E14..$5A7F9D.
+  TResearchItemSortKey = record // @size $0C Native sort helpers at $5A7E14..$5A7F9D.
     Priority: Byte; // @offset $00
     Cost: Integer; // @offset $04
     Weight: Integer; // @offset $08

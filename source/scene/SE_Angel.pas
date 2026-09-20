@@ -7,7 +7,7 @@ uses Classes, Types, EC_BlockPar, EC_Struct, GI_GAI, GI_MessageLoop, SE_Space;
 
 type
   PAngelEntry = ^TAngelEntry;
-  TAngelEntry = packed record // @size $30
+  TAngelEntry = record // @size $30
     Next: PAngelEntry; // @offset $00
     Prev: PAngelEntry; // @offset $04
     Position: TPointF; // @offset $08

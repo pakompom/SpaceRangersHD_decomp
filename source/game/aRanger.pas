@@ -17,7 +17,7 @@ type
 
   TQuestTextKind = (qtkOffer = 0, qtkCompletion = 1, qtkProtectedShipLost = 2); // @size 0x4
 
-  TQuest = packed record // @size 0x24
+  TQuest = record // @size 0x24
     QuestType: TQuestType; // @offset 0x00
     QuestNumber: Word; // @offset 0x02
     Planet: TPlanet; // @offset 0x04
@@ -31,7 +31,7 @@ type
   end;
   PQuest = ^TQuest;
 
-  TPlayerOldQuest = packed record // @size 0x10
+  TPlayerOldQuest = record // @size 0x10
     Planet: TPlanet; // @offset 0x00
     Description: WideString; // @offset 0x04
     Successful: Boolean; // @offset 0x08

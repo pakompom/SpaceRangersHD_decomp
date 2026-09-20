@@ -7,7 +7,7 @@ uses GI_Image, GI_MessageLoop, Types, fPanelLoad;
 
 type
   // Native record RTTI at $5591A8.
-  TfLoadQuestSlot = packed record // @size 0x2C
+  TfLoadQuestSlot = record // @size 0x2C
     Name: WideString; // @offset 0x00
     Title: WideString; // @offset 0x04
     Description: WideString; // @offset 0x08

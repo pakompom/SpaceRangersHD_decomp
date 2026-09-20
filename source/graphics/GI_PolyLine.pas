@@ -7,7 +7,7 @@ uses GI_MessageLoop, GI_Circle, EC_BlockPar, Types, Windows;
 
 type
   PPolyLineSegmentGI = ^TPolyLineSegmentGI;
-  TPolyLineSegmentGI = packed record // @size $6C
+  TPolyLineSegmentGI = record // @size $6C
     Next: PPolyLineSegmentGI; // @offset $00
     Prev: PPolyLineSegmentGI; // @offset $04
     First: TPoint; // @offset $08

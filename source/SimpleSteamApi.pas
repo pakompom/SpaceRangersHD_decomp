@@ -6,7 +6,7 @@ interface
 uses WStringUtils;
 
 type
-  TAchievementData = packed record // @size $28 Caller-owned buffers used by both Steam and local achievement queries.
+  TAchievementData = record // @size $28 Caller-owned buffers used by both Steam and local achievement queries.
     Name: PStartupWideString; // @offset $00
     Description: PStartupWideString; // @offset $04
     Achieved: Boolean; // @offset $08

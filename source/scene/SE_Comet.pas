@@ -7,7 +7,7 @@ uses Classes, Types, EC_BlockPar, EC_Struct, GI_GAI, GI_MessageLoop, SE_Space;
 
 type
   PCometTrailEntry = ^TCometTrailEntry;
-  TCometTrailEntry = packed record // @size $20
+  TCometTrailEntry = record // @size $20
     Next: PCometTrailEntry; // @offset $00
     Prev: PCometTrailEntry; // @offset $04
     Position: TPointF; // @offset $08

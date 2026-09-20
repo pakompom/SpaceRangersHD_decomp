@@ -113,7 +113,7 @@ type
     procedure Reapply; // @addr 0x7D3CBC
   end;
 
-  TMovingDropItemEntry = packed record // @size 0x14
+  TMovingDropItemEntry = record // @size 0x14
     Payload: TObject; // @offset 0x00  TItem, or a spawned TShip during special handling; may be nil.
     Destination: TPointF; // @offset 0x04
     SourceShipId: Integer; // @offset 0x0C  Zero for asteroid mineral drops.
@@ -137,7 +137,7 @@ type
   end;
   PStarDistanceEntry = ^TStarDistanceEntry;
 
-  TJumpGateEntry = packed record // @size 0x14
+  TJumpGateEntry = record // @size 0x14
     Gate: TObjectSE; // @offset 0x00  Retained TGateSE reference.
     UsedThisTurn: Boolean; // @offset 0x04
     GateFilmId: Cardinal; // @offset 0x08  Encoded TEFilmObj pointer, not a serialized object ordinal.
@@ -155,7 +155,7 @@ type
     FrameIndex: Integer; // @offset $58
   end;
 
-  TConstellationBoundaryRaySample = packed record // @size 0x18
+  TConstellationBoundaryRaySample = record // @size 0x18
     Position: TPointF; // @offset 0x00
     Direction: TPointF; // @offset 0x08
     Angle: Single; // @offset 0x10  Radians.
@@ -169,7 +169,7 @@ type
   end;
   PMapLineSegment = ^TMapLineSegment;
 
-  TConstellationStarLink = packed record // @size 0x1C
+  TConstellationStarLink = record // @size 0x1C
     StartPoint: TPointF; // @offset 0x00
     EndPoint: TPointF; // @offset 0x08
     StartStarIndex: Integer; // @offset 0x10  One-based ConstellationGraphIndex.

@@ -48,7 +48,7 @@ type
     SetMusicVolume: TRobotSetVolume; // @offset $3C
   end;
   PRobotCallbacks = ^TRobotCallbacks;
-  TRobotDisplaySettingsPrefix = packed record // @size $38 Native settings block.
+  TRobotDisplaySettingsPrefix = record // @size $38 Native settings block.
     Direct3D: Pointer; // @offset $00 Borrowed, no interface reference counting.
     Device: Pointer; // @offset $04 Borrowed.
     ShowStencilShadows: Boolean; // @offset $08

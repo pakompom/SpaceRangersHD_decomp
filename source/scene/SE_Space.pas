@@ -62,7 +62,7 @@ type
 
   PSpaceTimerSE = ^TSpaceTimerSE;
   TSpaceTimerEventSE = procedure(Timer: PSpaceTimerSE; UserData: Integer) of object;
-  TSpaceTimerSE = packed record // @size 0x20
+  TSpaceTimerSE = record // @size 0x20
     Prev: PSpaceTimerSE; // @offset 0x00
     Next: PSpaceTimerSE; // @offset 0x04
     TicksRemaining: Integer; // @offset 0x08
