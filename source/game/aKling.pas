@@ -395,13 +395,6 @@ var
     Result := Round(RemapClamped(ControlPercent, MinimumControl, MaximumControl,
       DominatorGenerationTuning[Tier, MaximumColumn], DominatorGenerationTuning[Tier, MinimumColumn]));
   end;
-  procedure EquipGeneratedHook(Ship: TKling; Tech: Integer); inline;
-  var MaximumTech, Size: Integer;
-  begin
-    Size := SizeForKind(CargoHookBaseSize);
-    if Tech < 7 then MaximumTech := Tech else MaximumTech := 7;
-    Ship.CreateAndEquipCargoHook(Size, RandomInteger(1, MaximumTech), Ord(oiDominator));
-  end;
 
 begin
   InitializeDominator(Kind, Planet, Series);
@@ -444,7 +437,7 @@ begin
   CreateAndEquipFuelTanks(SizeForKind(FuelTanksBaseSize), RandomInteger(1, TechLevel), Ord(oiDominator));
   CreateAndEquipRadar(SizeForKind(RadarBaseSize), RandomInteger(1, TechLevel), Ord(oiDominator));
   CreateAndEquipScanner(SizeForKind(ScannerBaseSize), RandomInteger(1, TechLevel), Ord(oiDominator));
-  EquipGeneratedHook(Self, TechLevel);
+  CreateAndEquipCargoHook(SizeForKind(CargoHookBaseSize), RandomInteger(1, Min(TechLevel, 7)), Ord(oiDominator));
   Distribution := DominatorWeaponDistributionByTier[Tier];
   WeaponCount := RandomTuning(12, 13);
   for I := 1 to WeaponCount do begin
@@ -566,17 +559,6 @@ end;
 { @routine $5EA50C TKling_NextDayLogic }
 procedure TKling.NextDayLogic;
 var Stage: Integer; Ship: TShip;
-  procedure FollowDistantLeader(Leader: TShip; Follower: TKling; var ProgressStage: Integer); inline;
-  var Minimum: Integer; Distance: Extended;
-  begin
-    Distance := Sqrt(Sqr(Leader.Position.X) + Sqr(Leader.Position.Y));
-    if 8 * Leader.Speed < 2 * Follower.Speed then Minimum := 8 * Leader.Speed
-    else Minimum := 2 * Follower.Speed;
-    if Distance > Minimum then begin
-      ProgressStage := 12;
-      Follower.OrderFollowShip(Leader, 1, False);
-    end;
-  end;
 
 begin
   Stage := 0;
@@ -624,7 +606,10 @@ begin
             Stage := 11;
             Ship := SelectBertorLeader;
             if Ship <> nil then
-              FollowDistantLeader(Ship, Self, Stage);
+              if Sqrt(Sqr(Ship.Position.X) + Sqr(Ship.Position.Y)) > Min(8 * Ship.Speed, 2 * Speed) then begin
+                Stage := 12;
+                OrderFollowShip(Ship, 1, False);
+              end;
           end;
           Stage := 13;
           if Order = soNone then MoveToRandomPatrolPoint;

@@ -116,17 +116,6 @@ implementation
 
 uses Classes, SysUtils, Math, Windows, Globals, GlobalsV, GR_Main, GI_Main, GI_Panel, GI_Image, GI_GAI, GI_PanelScrollBar, GI_ScrollBar, GI_GraphButton, aGalaxy, aGalaxyStruct, aConst, aShip, aPlayer, aPlanet, aScript, aMyFunction, aSaveLoad, fSaveManager, fHangar, fShip2, fTalk, ThreadCalc, aCalc, aItem, Achievements, aPirate, aNormalShip, Robot, fPlanetQuest;
 
-// Preserve the native receiver evaluation before the bounded payment,
-// with the clamp cells allocated before the receiver cell.
-procedure PayBailMoney(Ship: TShip); inline;
-var Remaining, Payment: Integer; Player: TPlayer;
-begin
-  Player := GetPlayer;
-  Remaining := GetPlayer.Money - Ship.GetPrisonReleaseCost;
-  if Remaining < 0 then Payment := 0 else Payment := Remaining;
-  Player.SetMoney(Payment);
-end;
-
 { @routine $6C7898 TfGov_Create }
 constructor TfGov.Create;
 begin
@@ -1810,7 +1799,7 @@ begin
   Ship := TShip(Action);
   if Ship.IsInPrison then
   begin
-    PayBailMoney(Ship);
+    GetPlayer.SetMoney(Max(0, GetPlayer.Money - Ship.GetPrisonReleaseCost));
     Ship.ClearPrisonTerm;
     Ship.ChangeRelationToRanger(GetPlayer, 100);
     Ship.OrderTakeoff;

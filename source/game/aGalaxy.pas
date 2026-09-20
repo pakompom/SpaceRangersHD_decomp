@@ -11214,18 +11214,12 @@ end;
 { @end $7C591C }
 
 { @routine $7C70CC TStar_NextDay }
-{ Source helpers; both inline away without changing the native instructions. }
-function CurrentFilm: TEFilm; inline;
-begin
-  Result := TEFilm(PrimaryFilm);
-end;
-
 { Constant arguments preserve evaluation order; computed arguments stay at their call sites. }
 procedure CreateFilmEffect(const GraphKey: WideString; ShotVisual: Integer;
   out Effect: TObjectSE; out EffectFilm: TEFilmObj); inline;
 begin
   Effect := TWeaponSE.Create(GraphKey, Classes.Point(0, 0), ShotVisual, -1);
-  EffectFilm := CurrentFilm.AddObject(0, Effect);
+  EffectFilm := PrimaryFilm.AddObject(0, Effect);
 end;
 
 procedure TStar.NextDay(RecordFilm: Boolean);
@@ -11536,21 +11530,21 @@ begin
     Stage := 6;
     if RecordFilm then
     begin
-      CurrentFilm.SystemProcessName := WideString(Self.SystemProcessName);
-      CurrentFilm.MapDiameter := Self.ComputeMapDiameter;
-      CurrentFilm.StarGenerationSeed := Self.GenerationSeed;
-      CurrentFilm.BackgroundImage := Cardinal(Self.BackgroundImage);
-      CurrentFilm.Turn := Galaxy.CurrentTurn;
-      CurrentFilm.RadarRange := 0;
+      PrimaryFilm.SystemProcessName := WideString(Self.SystemProcessName);
+      PrimaryFilm.MapDiameter := Self.ComputeMapDiameter;
+      PrimaryFilm.StarGenerationSeed := Self.GenerationSeed;
+      PrimaryFilm.BackgroundImage := Cardinal(Self.BackgroundImage);
+      PrimaryFilm.Turn := Galaxy.CurrentTurn;
+      PrimaryFilm.RadarRange := 0;
       Stage := 60;
       if GetPlayer.IsEquipmentUsable(GetPlayer.GetRadar) then
-        CurrentFilm.RadarRange := GetPlayer.GetRadarRange;
+        PrimaryFilm.RadarRange := GetPlayer.GetRadarRange;
       Stage := 61;
-      ObjectFilm := CurrentFilm.AddObject(Integer(Self.Id), Self.Graphic);
-      CurrentFilm.SetObjectPosition(StepIndex, ObjectFilm, MakePointF(0.0, 0.0));
-      CurrentFilm.AttachObject(StepIndex, ObjectFilm);
+      ObjectFilm := PrimaryFilm.AddObject(Integer(Self.Id), Self.Graphic);
+      PrimaryFilm.SetObjectPosition(StepIndex, ObjectFilm, MakePointF(0.0, 0.0));
+      PrimaryFilm.AttachObject(StepIndex, ObjectFilm);
       Stage := 62;
-      (TObject(CurrentFilm.ObjectInfo) as TEObjInfo).LoadFromStar(Self);
+      (TObject(PrimaryFilm.ObjectInfo) as TEObjInfo).LoadFromStar(Self);
     end;
 
     Stage := 7;
@@ -11983,23 +11977,23 @@ begin
       begin
         GateEntry := Galaxy.JumpGates[Index];
         GateEntry^.UsedThisTurn := True;
-        ObjectFilm := CurrentFilm.AddObject(0, GateEntry^.Gate);
+        ObjectFilm := PrimaryFilm.AddObject(0, GateEntry^.Gate);
         GateEntry^.GateFilmId := Cardinal(ObjectFilm);
-        CurrentFilm.SetObjectPosition(StepIndex, ObjectFilm, GateEntry^.Gate.Position);
-        CurrentFilm.SetObjectAngle(StepIndex, ObjectFilm, GateEntry^.Gate.GetAngle);
-        CurrentFilm.SetGateSize(StepIndex, ObjectFilm, GateEntry^.Gate.Size.X);
-        CurrentFilm.SetGateState(StepIndex, ObjectFilm, 2);
-        CurrentFilm.CloseGate(StepIndex, ObjectFilm);
-        CurrentFilm.SetObjectText(StepIndex, ObjectFilm, GateEntry^.Gate.GetText);
-        CurrentFilm.AttachObject(StepIndex, ObjectFilm);
+        PrimaryFilm.SetObjectPosition(StepIndex, ObjectFilm, GateEntry^.Gate.Position);
+        PrimaryFilm.SetObjectAngle(StepIndex, ObjectFilm, GateEntry^.Gate.GetAngle);
+        PrimaryFilm.SetGateSize(StepIndex, ObjectFilm, GateEntry^.Gate.Size.X);
+        PrimaryFilm.SetGateState(StepIndex, ObjectFilm, 2);
+        PrimaryFilm.CloseGate(StepIndex, ObjectFilm);
+        PrimaryFilm.SetObjectText(StepIndex, ObjectFilm, GateEntry^.Gate.GetText);
+        PrimaryFilm.AttachObject(StepIndex, ObjectFilm);
         if (GateEntry^.Effect <> nil) and TObjectSE(GateEntry^.Effect).IsAttachedToSpace then
         begin
-          ObjectFilm := CurrentFilm.AddObject(0, GateEntry^.Effect);
+          ObjectFilm := PrimaryFilm.AddObject(0, GateEntry^.Effect);
           GateEntry^.EffectFilmId := Cardinal(ObjectFilm);
-          CurrentFilm.SetObjectPosition(StepIndex, ObjectFilm, GateEntry^.Effect.Position);
-          CurrentFilm.SetObjectAngle(StepIndex, ObjectFilm, GateEntry^.Effect.GetAngle);
-          CurrentFilm.SetGateSize(StepIndex, ObjectFilm, GateEntry^.Effect.Size.X);
-          CurrentFilm.AttachObject(StepIndex, ObjectFilm);
+          PrimaryFilm.SetObjectPosition(StepIndex, ObjectFilm, GateEntry^.Effect.Position);
+          PrimaryFilm.SetObjectAngle(StepIndex, ObjectFilm, GateEntry^.Effect.GetAngle);
+          PrimaryFilm.SetGateSize(StepIndex, ObjectFilm, GateEntry^.Effect.Size.X);
+          PrimaryFilm.AttachObject(StepIndex, ObjectFilm);
         end;
       end;
     end;
@@ -12012,23 +12006,23 @@ begin
         Hole := Galaxy.Holes[Index];
         if Hole.Star1 = Self then
         begin
-          EffectFilm := CurrentFilm.AddObject(Hole.Id, Hole.Graphic);
+          EffectFilm := PrimaryFilm.AddObject(Hole.Id, Hole.Graphic);
           Hole.FilmObjectId := Integer(EffectFilm);
-          CurrentFilm.SetObjectPosition(StepIndex, EffectFilm, Hole.Position1);
+          PrimaryFilm.SetObjectPosition(StepIndex, EffectFilm, Hole.Position1);
           if Galaxy.CurrentTurn = Hole.CreatedTurn then
-            CurrentFilm.SetHoleState(StepIndex, EffectFilm, 1)
-          else CurrentFilm.SetHoleState(StepIndex, EffectFilm, 0);
-          CurrentFilm.AttachObject(StepIndex, EffectFilm);
+            PrimaryFilm.SetHoleState(StepIndex, EffectFilm, 1)
+          else PrimaryFilm.SetHoleState(StepIndex, EffectFilm, 0);
+          PrimaryFilm.AttachObject(StepIndex, EffectFilm);
         end
         else if Hole.Star2 = Self then
         begin
-          EffectFilm := CurrentFilm.AddObject(Hole.Id, Hole.Graphic);
+          EffectFilm := PrimaryFilm.AddObject(Hole.Id, Hole.Graphic);
           Hole.FilmObjectId := Integer(EffectFilm);
-          CurrentFilm.SetObjectPosition(StepIndex, EffectFilm, Hole.Position2);
+          PrimaryFilm.SetObjectPosition(StepIndex, EffectFilm, Hole.Position2);
           if Galaxy.CurrentTurn = Hole.CreatedTurn then
-            CurrentFilm.SetHoleState(StepIndex, EffectFilm, 1)
-          else CurrentFilm.SetHoleState(StepIndex, EffectFilm, 0);
-          CurrentFilm.AttachObject(StepIndex, EffectFilm);
+            PrimaryFilm.SetHoleState(StepIndex, EffectFilm, 1)
+          else PrimaryFilm.SetHoleState(StepIndex, EffectFilm, 0);
+          PrimaryFilm.AttachObject(StepIndex, EffectFilm);
         end;
       end;
     end;
@@ -12082,15 +12076,15 @@ begin
       for Index := 0 to (Count - 1) do
       begin
         Item := Self.Items[Index];
-        Item.FilmObject := CurrentFilm.AddObject(Item.Id, Item.GetGraphObject);
-        CurrentFilm.SetObjectPosition(StepIndex, Item.FilmObject, Item.Position);
-        CurrentFilm.AttachObject(StepIndex, Item.FilmObject);
+        Item.FilmObject := PrimaryFilm.AddObject(Item.Id, Item.GetGraphObject);
+        PrimaryFilm.SetObjectPosition(StepIndex, Item.FilmObject, Item.Position);
+        PrimaryFilm.AttachObject(StepIndex, Item.FilmObject);
       end;
     end;
 
     Stage := 25;
     Count := Self.MovementStepCount;
-    CurrentFilm.AdvanceObjects(StepIndex);
+    PrimaryFilm.AdvanceObjects(StepIndex);
     Inc(StepIndex);
     Self.CurrentStepIndex := StepIndex;
 
@@ -12119,9 +12113,9 @@ begin
         if RecordFilm then
         begin
           CreateFilmEffect('Weapon.NoGraph', 0, Effect, EffectFilm);
-          CurrentFilm.SetWeaponEndpoints(StepIndex, EffectFilm, nil, Item.FilmObject);
-          CurrentFilm.SetWeaponHit(StepIndex, EffectFilm, 0, 0, True, True);
-          CurrentFilm.AttachObject(StepIndex, EffectFilm);
+          PrimaryFilm.SetWeaponEndpoints(StepIndex, EffectFilm, nil, Item.FilmObject);
+          PrimaryFilm.SetWeaponHit(StepIndex, EffectFilm, 0, 0, True, True);
+          PrimaryFilm.AttachObject(StepIndex, EffectFilm);
           ReleaseSpaceObject(Item.GraphObject);
           Self.PendingFilmObjectRemovals.Add(Item.FilmObject);
         end;
@@ -12194,14 +12188,14 @@ begin
             if RecordFilm then
             begin
               Effect := TWeaponSE.Create(Missile.GetWeaponInfo^.AreaSE, Classes.Point(0, 0), Missile.GetShotVisual, -1);
-              EffectFilm := CurrentFilm.AddObject(0, Effect);
-              CurrentFilm.SetObjectPosition(StepIndex, EffectFilm, Item.Position);
-              CurrentFilm.SetWeaponHit(StepIndex, EffectFilm, 0, 0, False, True);
-              CurrentFilm.AttachObject(StepIndex, EffectFilm);
-              CurrentFilm.DetachObject(StepIndex, Missile.FilmObject);
+              EffectFilm := PrimaryFilm.AddObject(0, Effect);
+              PrimaryFilm.SetObjectPosition(StepIndex, EffectFilm, Item.Position);
+              PrimaryFilm.SetWeaponHit(StepIndex, EffectFilm, 0, 0, False, True);
+              PrimaryFilm.AttachObject(StepIndex, EffectFilm);
+              PrimaryFilm.DetachObject(StepIndex, Missile.FilmObject);
               Self.PendingFilmObjectRemovals.Add(Missile.FilmObject);
               ReleaseSpaceObject(Missile.Graphic);
-              CurrentFilm.DetachObject(StepIndex, Item.FilmObject);
+              PrimaryFilm.DetachObject(StepIndex, Item.FilmObject);
             end;
             Self.ClearItemReferences(Item);
             Quantity := (Item as TGoods).Quantity;
@@ -12253,15 +12247,15 @@ begin
                   if RecordFilm then
                   begin
                     Effect := TWeaponSE.Create(Missile.GetWeaponInfo^.AreaSE, Classes.Point(0, 0), Missile.GetShotVisual, -1);
-                    EffectFilm := CurrentFilm.AddObject(0, Effect);
-                    CurrentFilm.SetObjectPosition(StepIndex, EffectFilm, Item.Position);
-                    CurrentFilm.SetWeaponHit(StepIndex, EffectFilm, 0, 0,
+                    EffectFilm := PrimaryFilm.AddObject(0, Effect);
+                    PrimaryFilm.SetObjectPosition(StepIndex, EffectFilm, Item.Position);
+                    PrimaryFilm.SetWeaponHit(StepIndex, EffectFilm, 0, 0,
                       (Item.ItemType = t_ArtefactBomb) and (Item.DestroyFlag >= 0), True);
                     if ((Item.ItemType = t_ArtefactBomb) or (Item is TCistern)
                       and ((Item as TCistern).Fuel > 0)) and (Item.DestroyFlag > 0) then
-                      CurrentFilm.SetDestructionEffect(StepIndex, EffectFilm, 1);
-                    CurrentFilm.AttachObject(StepIndex, EffectFilm);
-                    CurrentFilm.DetachObject(StepIndex, Missile.FilmObject);
+                      PrimaryFilm.SetDestructionEffect(StepIndex, EffectFilm, 1);
+                    PrimaryFilm.AttachObject(StepIndex, EffectFilm);
+                    PrimaryFilm.DetachObject(StepIndex, Missile.FilmObject);
                     Self.PendingFilmObjectRemovals.Add(Missile.FilmObject);
                     ReleaseSpaceObject(Missile.Graphic);
                   end;
@@ -12269,7 +12263,7 @@ begin
                   if Item.DestroyFlag >= 0 then
                   begin
                     if RecordFilm then
-                      CurrentFilm.DetachObject(StepIndex, Item.FilmObject);
+                      PrimaryFilm.DetachObject(StepIndex, Item.FilmObject);
                     for i := 0 to (Self.MovingDropItems.Count - 1) do
                     begin
                       MovingDrop := Self.MovingDropItems[i];
@@ -12302,10 +12296,10 @@ begin
                           if RecordFilm then
                           begin
                             CreateFilmEffect('Weapon.NoGraph', 0, Effect, EffectFilm);
-                            CurrentFilm.SetWeaponEndpoints(StepIndex, EffectFilm, Ship.FilmObject, Ship.FilmObject);
-                            CurrentFilm.SetWeaponHit(StepIndex, EffectFilm,
+                            PrimaryFilm.SetWeaponEndpoints(StepIndex, EffectFilm, Ship.FilmObject, Ship.FilmObject);
+                            PrimaryFilm.SetWeaponHit(StepIndex, EffectFilm,
                               Word(DamageColor), Integer(Damage), Ship.IsHullDestroyed, True);
-                            CurrentFilm.AttachObject(StepIndex, EffectFilm);
+                            PrimaryFilm.AttachObject(StepIndex, EffectFilm);
                           end;
                         end;
                       end;
@@ -12371,11 +12365,11 @@ begin
                   if RecordFilm then
                   begin
                     Effect := TWeaponSE.Create(Missile.GetWeaponInfo^.AreaSE, Classes.Point(0, 0), Missile.GetShotVisual, -1);
-                    EffectFilm := CurrentFilm.AddObject(0, Effect);
-                    CurrentFilm.SetObjectPosition(StepIndex, EffectFilm, Asteroid.Position);
-                    CurrentFilm.SetWeaponHit(StepIndex, EffectFilm, 0, 0, False, True);
-                    CurrentFilm.AttachObject(StepIndex, EffectFilm);
-                    CurrentFilm.DetachObject(StepIndex, Missile.FilmObject);
+                    EffectFilm := PrimaryFilm.AddObject(0, Effect);
+                    PrimaryFilm.SetObjectPosition(StepIndex, EffectFilm, Asteroid.Position);
+                    PrimaryFilm.SetWeaponHit(StepIndex, EffectFilm, 0, 0, False, True);
+                    PrimaryFilm.AttachObject(StepIndex, EffectFilm);
+                    PrimaryFilm.DetachObject(StepIndex, Missile.FilmObject);
                     Self.PendingFilmObjectRemovals.Add(Missile.FilmObject);
                     ReleaseSpaceObject(Missile.Graphic);
                   end;
@@ -12407,13 +12401,13 @@ begin
                     if RecordFilm then
                     begin
                       Effect := TWeaponSE.Create(Missile.GetWeaponInfo^.AreaSE, Classes.Point(0, 0), Missile.GetShotVisual, -1);
-                      EffectFilm := CurrentFilm.AddObject(0, Effect);
-                      CurrentFilm.SetObjectPosition(StepIndex, EffectFilm, HitShip.Position);
-                      CurrentFilm.SetWeaponEndpoints(StepIndex, EffectFilm, nil, HitShip.FilmObject);
-                      CurrentFilm.SetWeaponHit(StepIndex, EffectFilm, Word(DamageColor),
+                      EffectFilm := PrimaryFilm.AddObject(0, Effect);
+                      PrimaryFilm.SetObjectPosition(StepIndex, EffectFilm, HitShip.Position);
+                      PrimaryFilm.SetWeaponEndpoints(StepIndex, EffectFilm, nil, HitShip.FilmObject);
+                      PrimaryFilm.SetWeaponHit(StepIndex, EffectFilm, Word(DamageColor),
                         Integer(Damage), HitShip.IsHullDestroyed, True);
-                      CurrentFilm.AttachObject(StepIndex, EffectFilm);
-                      CurrentFilm.DetachObject(StepIndex, Missile.FilmObject);
+                      PrimaryFilm.AttachObject(StepIndex, EffectFilm);
+                      PrimaryFilm.DetachObject(StepIndex, Missile.FilmObject);
                       Self.PendingFilmObjectRemovals.Add(Missile.FilmObject);
                       ReleaseSpaceObject(Missile.Graphic);
                     end;
@@ -12439,10 +12433,10 @@ begin
                             if RecordFilm then
                             begin
                               CreateFilmEffect('Weapon.NoGraph', 0, Effect, EffectFilm);
-                              CurrentFilm.SetWeaponEndpoints(StepIndex, EffectFilm, Ship.FilmObject, Ship.FilmObject);
-                              CurrentFilm.SetWeaponHit(StepIndex, EffectFilm,
+                              PrimaryFilm.SetWeaponEndpoints(StepIndex, EffectFilm, Ship.FilmObject, Ship.FilmObject);
+                              PrimaryFilm.SetWeaponHit(StepIndex, EffectFilm,
                                 Word(DamageColor), Integer(Damage), Ship.IsHullDestroyed, True);
-                              CurrentFilm.AttachObject(StepIndex, EffectFilm);
+                              PrimaryFilm.AttachObject(StepIndex, EffectFilm);
                             end;
                           end;
                         end;
@@ -12453,16 +12447,16 @@ begin
                       and (Missile.OwnerShip.InNormalSpace and (Missile.OwnerShip.CurrentStar = Self))) then
                     begin
                       CreateFilmEffect('Weapon.NoGraph', 0, Effect, EffectFilm);
-                      CurrentFilm.SetWeaponEndpoints(StepIndex, EffectFilm,
+                      PrimaryFilm.SetWeaponEndpoints(StepIndex, EffectFilm,
                         Missile.OwnerShip.FilmObject, Missile.OwnerShip.FilmObject);
                       if GetPlayer <> Missile.OwnerShip then
-                        CurrentFilm.SetWeaponHit(StepIndex, EffectFilm,
+                        PrimaryFilm.SetWeaponHit(StepIndex, EffectFilm,
                           Word(OwnerToFilmColor(ShortInt(Missile.OwnerShip.OwnerId))), -DrainedDamage, False, True)
                       else
-                        CurrentFilm.SetWeaponHit(StepIndex, EffectFilm,
+                        PrimaryFilm.SetWeaponHit(StepIndex, EffectFilm,
                           Word(OwnerToFilmColor(ShortInt(RaceToOwner(Missile.OwnerShip.PilotRace)))),
                           -DrainedDamage, False, True);
-                      CurrentFilm.AttachObject(StepIndex, EffectFilm);
+                      PrimaryFilm.AttachObject(StepIndex, EffectFilm);
                     end;
                   end;
                 end;
@@ -12499,9 +12493,9 @@ begin
             if RecordFilm then
             begin
               CreateFilmEffect('Weapon.Asteroid', 0, Effect, EffectFilm);
-              CurrentFilm.SetObjectPosition(StepIndex, EffectFilm, Asteroid.Position);
-              CurrentFilm.SetWeaponHit(StepIndex, EffectFilm, 0, 0, False, True);
-              CurrentFilm.AttachObject(StepIndex, EffectFilm);
+              PrimaryFilm.SetObjectPosition(StepIndex, EffectFilm, Asteroid.Position);
+              PrimaryFilm.SetWeaponHit(StepIndex, EffectFilm, 0, 0, False, True);
+              PrimaryFilm.AttachObject(StepIndex, EffectFilm);
             end;
             Self.ClearTargetReferences(Asteroid);
             Asteroid.Respawn;
@@ -12527,9 +12521,9 @@ begin
               if RecordFilm then
               begin
                 CreateFilmEffect('Weapon.Asteroid', 0, Effect, EffectFilm);
-                CurrentFilm.SetObjectPosition(StepIndex, EffectFilm, Asteroid.Position);
-                CurrentFilm.SetWeaponHit(StepIndex, EffectFilm, 0, 0, False, True);
-                CurrentFilm.AttachObject(StepIndex, EffectFilm);
+                PrimaryFilm.SetObjectPosition(StepIndex, EffectFilm, Asteroid.Position);
+                PrimaryFilm.SetWeaponHit(StepIndex, EffectFilm, 0, 0, False, True);
+                PrimaryFilm.AttachObject(StepIndex, EffectFilm);
               end;
               if Self.Items.Count < 8 then
               begin
@@ -12572,11 +12566,11 @@ begin
               if RecordFilm then
               begin
                 CreateFilmEffect('Weapon.Asteroid', 0, Effect, EffectFilm);
-                CurrentFilm.SetObjectPosition(StepIndex, EffectFilm, Asteroid.Position);
-                CurrentFilm.SetWeaponEndpoints(StepIndex, EffectFilm, nil, Ship.FilmObject);
-                CurrentFilm.SetWeaponHit(StepIndex, EffectFilm, Word(DamageColor),
+                PrimaryFilm.SetObjectPosition(StepIndex, EffectFilm, Asteroid.Position);
+                PrimaryFilm.SetWeaponEndpoints(StepIndex, EffectFilm, nil, Ship.FilmObject);
+                PrimaryFilm.SetWeaponHit(StepIndex, EffectFilm, Word(DamageColor),
                   Integer(Damage), Ship.IsHullDestroyed, True);
-                CurrentFilm.AttachObject(StepIndex, EffectFilm);
+                PrimaryFilm.AttachObject(StepIndex, EffectFilm);
               end;
               Quantity := Integer(Trunc(Asteroid.MineralCount / 4.0));
               Angle := HeadingDegreesToRadians(SeededRandomIntRange(0, 360, Asteroid.Id * Self.GenerationSeed * Cardinal(Galaxy.CurrentTurn)));
@@ -12716,10 +12710,10 @@ begin
                       and (Ord((CombatEvent^.Attacker as TKling).AuraEffectShownThisTurn) = 0) then
                     begin
                       CreateFilmEffect('Weapon.AuraEffect', 0, Effect, EffectFilm);
-                      CurrentFilm.SetWeaponEndpoints(Self.CurrentStepIndex, EffectFilm,
+                      PrimaryFilm.SetWeaponEndpoints(Self.CurrentStepIndex, EffectFilm,
                         TShip(CombatEvent^.Attacker).FilmObject, TShip(CombatEvent^.Attacker).FilmObject);
-                      CurrentFilm.SetWeaponHit(Self.CurrentStepIndex, EffectFilm, 0, 0, False, True);
-                      CurrentFilm.AttachObject(Self.CurrentStepIndex, EffectFilm);
+                      PrimaryFilm.SetWeaponHit(Self.CurrentStepIndex, EffectFilm, 0, 0, False, True);
+                      PrimaryFilm.AttachObject(Self.CurrentStepIndex, EffectFilm);
                       (CombatEvent^.Attacker as TKling).AuraEffectShownThisTurn := True;
                     end;
                     Missile.MinDamage := Cardinal(System.Round(Missile.MinDamage * 1.25));
@@ -12728,7 +12722,7 @@ begin
                   TShip(CombatEvent^.Attacker).ScriptItemsAct(satOnMissileShot, Missile, TWeapon(CombatEvent^.Weapon), 0);
                   Missile.PrepareTurnMovement(StepIndex, RecordFilm, True);
                   if RecordFilm then
-                    CurrentFilm.DetachObject(0, Missile.FilmObject);
+                    PrimaryFilm.DetachObject(0, Missile.FilmObject);
                 end;
               end;
             end;
@@ -12798,12 +12792,12 @@ begin
                 MovingDrop^.InsertedIntoStar := True;
                 if RecordFilm then
                 begin
-                  Tranclucator.FilmObject := CurrentFilm.AddObject(Tranclucator.Id, Tranclucator.Graphic);
-                  CurrentFilm.DetachObject(0, Tranclucator.FilmObject);
-                  CurrentFilm.SetObjectPosition(StepIndex, Tranclucator.FilmObject, Self.Position);
-                  CurrentFilm.SetObjectAngle(StepIndex, Tranclucator.FilmObject, 0);
-                  CurrentFilm.SetObjectAlpha(StepIndex, Tranclucator.FilmObject, 255);
-                  CurrentFilm.AttachObject(StepIndex, Tranclucator.FilmObject);
+                  Tranclucator.FilmObject := PrimaryFilm.AddObject(Tranclucator.Id, Tranclucator.Graphic);
+                  PrimaryFilm.DetachObject(0, Tranclucator.FilmObject);
+                  PrimaryFilm.SetObjectPosition(StepIndex, Tranclucator.FilmObject, Self.Position);
+                  PrimaryFilm.SetObjectAngle(StepIndex, Tranclucator.FilmObject, 0);
+                  PrimaryFilm.SetObjectAlpha(StepIndex, Tranclucator.FilmObject, 255);
+                  PrimaryFilm.AttachObject(StepIndex, Tranclucator.FilmObject);
                 end;
               end
               else
@@ -12812,10 +12806,10 @@ begin
                 MovingDrop^.InsertedIntoStar := True;
                 if RecordFilm then
                 begin
-                  Item.FilmObject := CurrentFilm.AddObject(Item.Id, Item.GetGraphObject);
-                  CurrentFilm.DetachObject(0, Item.FilmObject);
-                  CurrentFilm.SetObjectPosition(StepIndex, Item.FilmObject, Item.Position);
-                  CurrentFilm.AttachObject(StepIndex, Item.FilmObject);
+                  Item.FilmObject := PrimaryFilm.AddObject(Item.Id, Item.GetGraphObject);
+                  PrimaryFilm.DetachObject(0, Item.FilmObject);
+                  PrimaryFilm.SetObjectPosition(StepIndex, Item.FilmObject, Item.Position);
+                  PrimaryFilm.AttachObject(StepIndex, Item.FilmObject);
                 end;
               end;
             end
@@ -12824,15 +12818,15 @@ begin
               Item.Position.X := (MovingDrop^.Destination.X - Item.Position.X) / (Count - PathStep) + Item.Position.X;
               Item.Position.Y := (MovingDrop^.Destination.Y - Item.Position.Y) / (Count - PathStep) + Item.Position.Y;
               if RecordFilm then
-                CurrentFilm.SetObjectPosition(StepIndex, Item.FilmObject, Item.Position);
+                PrimaryFilm.SetObjectPosition(StepIndex, Item.FilmObject, Item.Position);
               if Self.DamageRadius * Self.DamageRadius > Sqr(Item.Position.X) + Sqr(Item.Position.Y) then
               begin
                 if RecordFilm then
                 begin
                   CreateFilmEffect('Weapon.NoGraph', 0, Effect, EffectFilm);
-                  CurrentFilm.SetWeaponEndpoints(StepIndex, EffectFilm, nil, Item.FilmObject);
-                  CurrentFilm.SetWeaponHit(StepIndex, EffectFilm, 0, 0, True, True);
-                  CurrentFilm.AttachObject(StepIndex, EffectFilm);
+                  PrimaryFilm.SetWeaponEndpoints(StepIndex, EffectFilm, nil, Item.FilmObject);
+                  PrimaryFilm.SetWeaponHit(StepIndex, EffectFilm, 0, 0, True, True);
+                  PrimaryFilm.AttachObject(StepIndex, EffectFilm);
                   ReleaseSpaceObject(Item.GraphObject);
                   Self.PendingFilmObjectRemovals.Add(Item.FilmObject);
                 end;
@@ -12848,7 +12842,7 @@ begin
             HitShip.Position.X := (MovingDrop^.Destination.X - HitShip.Position.X) / (Count - PathStep) + HitShip.Position.X;
             HitShip.Position.Y := (MovingDrop^.Destination.Y - HitShip.Position.Y) / (Count - PathStep) + HitShip.Position.Y;
             if RecordFilm then
-              CurrentFilm.SetObjectPosition(StepIndex, HitShip.FilmObject, HitShip.Position);
+              PrimaryFilm.SetObjectPosition(StepIndex, HitShip.FilmObject, HitShip.Position);
           end;
         end;
       end;
@@ -12906,13 +12900,13 @@ begin
           if RecordFilm then
           begin
             CreateFilmEffect('Weapon.NoGraph', 0, Effect, EffectFilm);
-            CurrentFilm.SetWeaponEndpoints(StepIndex, EffectFilm, Item.FilmObject, Item.FilmObject);
-            CurrentFilm.SetWeaponHit(StepIndex, EffectFilm, 0, 0, True, True);
+            PrimaryFilm.SetWeaponEndpoints(StepIndex, EffectFilm, Item.FilmObject, Item.FilmObject);
+            PrimaryFilm.SetWeaponHit(StepIndex, EffectFilm, 0, 0, True, True);
             if Item.DestroyFlag = 1 then
-              CurrentFilm.SetDestructionEffect(StepIndex, EffectFilm, 3)
+              PrimaryFilm.SetDestructionEffect(StepIndex, EffectFilm, 3)
             else
-              CurrentFilm.SetDestructionEffect(StepIndex, EffectFilm, 1);
-            CurrentFilm.AttachObject(StepIndex, EffectFilm);
+              PrimaryFilm.SetDestructionEffect(StepIndex, EffectFilm, 1);
+            PrimaryFilm.AttachObject(StepIndex, EffectFilm);
           end;
           Self.ClearItemReferences(Item);
           if (Item.DestroyFlag > 1)
@@ -12934,13 +12928,13 @@ begin
                   if RecordFilm then
                   begin
                     CreateFilmEffect('Weapon.NoGraph', 0, Effect, EffectFilm);
-                    CurrentFilm.SetWeaponEndpoints(StepIndex, EffectFilm, Ship.FilmObject, Ship.FilmObject);
+                    PrimaryFilm.SetWeaponEndpoints(StepIndex, EffectFilm, Ship.FilmObject, Ship.FilmObject);
                     if Item.DestroyFlag > 0 then
-                      CurrentFilm.SetWeaponHit(StepIndex, EffectFilm, Word(DamageColor),
+                      PrimaryFilm.SetWeaponHit(StepIndex, EffectFilm, Word(DamageColor),
                         Integer(Damage), Ship.IsHullDestroyed, True)
                     else
-                      CurrentFilm.SetWeaponHit(StepIndex, EffectFilm, 0, 0, Ship.IsHullDestroyed, True);
-                    CurrentFilm.AttachObject(StepIndex, EffectFilm);
+                      PrimaryFilm.SetWeaponHit(StepIndex, EffectFilm, 0, 0, Ship.IsHullDestroyed, True);
+                    PrimaryFilm.AttachObject(StepIndex, EffectFilm);
                   end;
                 end;
               end;
@@ -12995,12 +12989,12 @@ begin
             if Ship.InNormalSpace then
             begin
               CreateFilmEffect('Weapon.NoGraph', 0, Effect, EffectFilm);
-              CurrentFilm.SetWeaponEndpoints(StepIndex, EffectFilm, Ship.FilmObject, Ship.FilmObject);
-              CurrentFilm.SetWeaponHit(StepIndex, EffectFilm, 0, 0, Ship.IsHullDestroyed, True);
-              CurrentFilm.AttachObject(StepIndex, EffectFilm);
+              PrimaryFilm.SetWeaponEndpoints(StepIndex, EffectFilm, Ship.FilmObject, Ship.FilmObject);
+              PrimaryFilm.SetWeaponHit(StepIndex, EffectFilm, 0, 0, Ship.IsHullDestroyed, True);
+              PrimaryFilm.AttachObject(StepIndex, EffectFilm);
             end
             else
-              CurrentFilm.DetachObject(StepIndex, Ship.FilmObject);
+              PrimaryFilm.DetachObject(StepIndex, Ship.FilmObject);
           end;
           Self.ClearShipReferences(Ship);
           Inc(Index);
@@ -13023,11 +13017,11 @@ begin
               if RecordFilm and (Integer(Damage) > 0) then
               begin
                 CreateFilmEffect('Weapon.Star', 0, Effect, EffectFilm);
-                CurrentFilm.SetWeaponEndpoints(StepIndex, EffectFilm, Ship.FilmObject, Ship.FilmObject);
-                CurrentFilm.SetWeaponHit(StepIndex, EffectFilm,
+                PrimaryFilm.SetWeaponEndpoints(StepIndex, EffectFilm, Ship.FilmObject, Ship.FilmObject);
+                PrimaryFilm.SetWeaponHit(StepIndex, EffectFilm,
                   Word(GR_Main.CurrentPixelFormat.PackRgbBytes(255, 255, 255)),
                   Integer(Damage), Ship.IsHullDestroyed, True);
-                CurrentFilm.AttachObject(StepIndex, EffectFilm);
+                PrimaryFilm.AttachObject(StepIndex, EffectFilm);
               end;
               Ship.InterceptorPassesRemaining := 0;
               if Ship.IsHullDestroyed then
@@ -13052,18 +13046,18 @@ begin
             begin
               Self.PlayerCombatOccurred := True;
               if GetPlayer = Ship.InterceptorSourceShip then
-                CurrentFilm.AddCameraEvent(StepIndex, GetPlayer.Position, Ship.Position, 1);
+                PrimaryFilm.AddCameraEvent(StepIndex, GetPlayer.Position, Ship.Position, 1);
               if (GetPlayer = Ship) and (Ship.InterceptorSourceShip <> nil) then
-                CurrentFilm.AddCameraEvent(StepIndex, GetPlayer.Position, Ship.InterceptorSourceShip.Position, 1);
+                PrimaryFilm.AddCameraEvent(StepIndex, GetPlayer.Position, Ship.InterceptorSourceShip.Position, 1);
             end;
             Damage := Cardinal(Ship.ApplyInterceptorDamage(DamageColor));
             if RecordFilm then
             begin
               CreateFilmEffect('Weapon.Star', 0, Effect, EffectFilm);
-              CurrentFilm.SetWeaponEndpoints(StepIndex, EffectFilm, Ship.FilmObject, Ship.FilmObject);
-              CurrentFilm.SetWeaponHit(StepIndex, EffectFilm, Word(DamageColor),
+              PrimaryFilm.SetWeaponEndpoints(StepIndex, EffectFilm, Ship.FilmObject, Ship.FilmObject);
+              PrimaryFilm.SetWeaponHit(StepIndex, EffectFilm, Word(DamageColor),
                 Integer(Damage), Ship.IsHullDestroyed, True);
-              CurrentFilm.AttachObject(StepIndex, EffectFilm);
+              PrimaryFilm.AttachObject(StepIndex, EffectFilm);
             end;
             if Ship.IsHullDestroyed then
             begin
@@ -13102,10 +13096,10 @@ begin
             if RecordFilm then
             begin
               CreateFilmEffect('Weapon.Shock', 0, Effect, EffectFilm);
-              CurrentFilm.SetWeaponEndpoints(StepIndex, EffectFilm, Ship.FilmObject, Ship.FilmObject);
-              CurrentFilm.SetWeaponHit(StepIndex, EffectFilm, Word(DamageColor),
+              PrimaryFilm.SetWeaponEndpoints(StepIndex, EffectFilm, Ship.FilmObject, Ship.FilmObject);
+              PrimaryFilm.SetWeaponHit(StepIndex, EffectFilm, Word(DamageColor),
                 Integer(Damage), Ship.IsHullDestroyed, True);
-              CurrentFilm.AttachObject(StepIndex, EffectFilm);
+              PrimaryFilm.AttachObject(StepIndex, EffectFilm);
             end;
           end;
         end;
@@ -13145,23 +13139,23 @@ begin
                             if RecordFilm then
                             begin
                               CreateFilmEffect('Weapon.NoGraph', 0, Effect, EffectFilm);
-                              CurrentFilm.SetWeaponEndpoints(StepIndex, EffectFilm,
+                              PrimaryFilm.SetWeaponEndpoints(StepIndex, EffectFilm,
                                 OwnerShip.FilmObject, OwnerShip.FilmObject);
-                              CurrentFilm.SetWeaponHit(StepIndex, EffectFilm,
+                              PrimaryFilm.SetWeaponHit(StepIndex, EffectFilm,
                                 Word(DamageColor), Integer(Damage), OwnerShip.IsHullDestroyed, True);
-                              CurrentFilm.AttachObject(StepIndex, EffectFilm);
+                              PrimaryFilm.AttachObject(StepIndex, EffectFilm);
                             end;
                           end;
                         end;
                       end;
                       if RecordFilm then
                       begin
-                        CurrentFilm.SetObjectAlpha(StepIndex, Ship.FilmObject, 0);
+                        PrimaryFilm.SetObjectAlpha(StepIndex, Ship.FilmObject, 0);
                         CreateFilmEffect('Weapon.Kamikaze', 0, Effect, EffectFilm);
-                        CurrentFilm.SetWeaponEndpoints(StepIndex, EffectFilm, Ship.FilmObject, Ship.FilmObject);
-                        CurrentFilm.SetWeaponHit(StepIndex, EffectFilm, 0, 0, True, True);
-                        CurrentFilm.SetDestructionEffect(StepIndex, EffectFilm, 5);
-                        CurrentFilm.AttachObject(StepIndex, EffectFilm);
+                        PrimaryFilm.SetWeaponEndpoints(StepIndex, EffectFilm, Ship.FilmObject, Ship.FilmObject);
+                        PrimaryFilm.SetWeaponHit(StepIndex, EffectFilm, 0, 0, True, True);
+                        PrimaryFilm.SetDestructionEffect(StepIndex, EffectFilm, 5);
+                        PrimaryFilm.AttachObject(StepIndex, EffectFilm);
                       end;
                     end;
                   end;
@@ -13179,10 +13173,10 @@ begin
             and (StepIndex div (Count div 9) in [1, 3])) then
           begin
             Effect := TWeaponSE.Create('Weapon.RadialEffect', Classes.Point(0, 0), Integer((Ship as TKling).DominatorSeries), -1);
-            EffectFilm := CurrentFilm.AddObject(0, Effect);
-            CurrentFilm.SetWeaponEndpoints(StepIndex, EffectFilm, Ship.FilmObject, Ship.FilmObject);
-            CurrentFilm.SetWeaponHit(StepIndex, EffectFilm, 0, 0, False, True);
-            CurrentFilm.AttachObject(StepIndex, EffectFilm);
+            EffectFilm := PrimaryFilm.AddObject(0, Effect);
+            PrimaryFilm.SetWeaponEndpoints(StepIndex, EffectFilm, Ship.FilmObject, Ship.FilmObject);
+            PrimaryFilm.SetWeaponHit(StepIndex, EffectFilm, 0, 0, False, True);
+            PrimaryFilm.AttachObject(StepIndex, EffectFilm);
           end;
           if (StepIndex div (Count div 9) = 3) and ((Ship as TKling).DominatorSeries = dsTerron) then
           begin
@@ -13194,10 +13188,10 @@ begin
               if RecordFilm then
               begin
                 CreateFilmEffect('Weapon.AuraEffect', 2, Effect, EffectFilm);
-                CurrentFilm.SetWeaponEndpoints(StepIndex, EffectFilm, Ship.FilmObject, Ship.FilmObject);
-                CurrentFilm.SetWeaponHit(StepIndex, EffectFilm,
+                PrimaryFilm.SetWeaponEndpoints(StepIndex, EffectFilm, Ship.FilmObject, Ship.FilmObject);
+                PrimaryFilm.SetWeaponHit(StepIndex, EffectFilm,
                   Word(OwnerToFilmColor(ShortInt(Ship.OwnerId))), -Damage, False, True);
-                CurrentFilm.AttachObject(StepIndex, EffectFilm);
+                PrimaryFilm.AttachObject(StepIndex, EffectFilm);
               end;
             end;
           end;
@@ -13292,15 +13286,15 @@ begin
                   if RecordFilm then
                   begin
                     CreateFilmEffect('Weapon.PDTurret', 0, Effect, EffectFilm);
-                    CurrentFilm.SetWeaponEndpoints(StepIndex, EffectFilm,
+                    PrimaryFilm.SetWeaponEndpoints(StepIndex, EffectFilm,
                       Ship.FilmObject, InterceptedMissile.FilmObject);
-                    CurrentFilm.SetWeaponHit(StepIndex, EffectFilm, 0, 0, False, True);
-                    CurrentFilm.AttachObject(StepIndex, EffectFilm);
+                    PrimaryFilm.SetWeaponHit(StepIndex, EffectFilm, 0, 0, False, True);
+                    PrimaryFilm.AttachObject(StepIndex, EffectFilm);
                     CreateFilmEffect('Weapon.Asteroid', 0, Effect, EffectFilm);
-                    CurrentFilm.SetObjectPosition(StepIndex, EffectFilm, InterceptedMissile.Position);
-                    CurrentFilm.SetWeaponHit(StepIndex, EffectFilm, 0, 0, False, True);
-                    CurrentFilm.AttachObject(StepIndex, EffectFilm);
-                    CurrentFilm.DetachObject(StepIndex, InterceptedMissile.FilmObject);
+                    PrimaryFilm.SetObjectPosition(StepIndex, EffectFilm, InterceptedMissile.Position);
+                    PrimaryFilm.SetWeaponHit(StepIndex, EffectFilm, 0, 0, False, True);
+                    PrimaryFilm.AttachObject(StepIndex, EffectFilm);
+                    PrimaryFilm.DetachObject(StepIndex, InterceptedMissile.FilmObject);
                     Self.PendingFilmObjectRemovals.Add(InterceptedMissile.FilmObject);
                     ReleaseSpaceObject(InterceptedMissile.Graphic);
                   end;
@@ -13388,8 +13382,8 @@ begin
                   Ship.Position := MakePointF(System.Sin(Angle) * 0.01 + Ship.Position.X, Ship.Position.Y - System.Cos(Angle) * 0.01);
                 if RecordFilm then
                 begin
-                  CurrentFilm.SetObjectPosition(StepIndex, Item.FilmObject, Item.Position);
-                  CurrentFilm.SetObjectPosition(StepIndex, Ship.FilmObject, Ship.Position);
+                  PrimaryFilm.SetObjectPosition(StepIndex, Item.FilmObject, Item.Position);
+                  PrimaryFilm.SetObjectPosition(StepIndex, Ship.FilmObject, Ship.Position);
                 end;
                 Inc(PulledItemCount);
                 if Distance < 5.0 then
@@ -13470,7 +13464,7 @@ begin
                   begin
                     ReleaseSpaceObject(Hole.Graphic);
                     Self.PendingFilmObjectRemovals.Add(Pointer(Hole.FilmObjectId));
-                    CurrentFilm.SetHoleState(StepIndex, Pointer(Hole.FilmObjectId), 2);
+                    PrimaryFilm.SetHoleState(StepIndex, Pointer(Hole.FilmObjectId), 2);
                   end;
                   if Hole.HoleType = 4 then
                     Galaxy.KellerMissionState := 0;
@@ -13486,7 +13480,7 @@ begin
       end;
       Stage := 2990;
       if RecordFilm then
-        CurrentFilm.AdvanceObjects(StepIndex);
+        PrimaryFilm.AdvanceObjects(StepIndex);
       Inc(StepIndex);
       Self.CurrentStepIndex := StepIndex;
       Stage := 2999;
@@ -13533,9 +13527,9 @@ begin
         if RecordFilm and ((Ship.FilmObject <> nil) and ((Ship.CurrentPlanet = nil) and (Ship.DockedTo = nil))) then
         begin
           CreateFilmEffect('Weapon.NoGraph', 0, Effect, EffectFilm);
-          CurrentFilm.SetWeaponEndpoints(StepIndex, EffectFilm, Ship.FilmObject, Ship.FilmObject);
-          CurrentFilm.SetWeaponHit(StepIndex, EffectFilm, 0, 0, Ship.IsHullDestroyed, True);
-          CurrentFilm.AttachObject(StepIndex, EffectFilm);
+          PrimaryFilm.SetWeaponEndpoints(StepIndex, EffectFilm, Ship.FilmObject, Ship.FilmObject);
+          PrimaryFilm.SetWeaponHit(StepIndex, EffectFilm, 0, 0, Ship.IsHullDestroyed, True);
+          PrimaryFilm.AttachObject(StepIndex, EffectFilm);
         end;
         Self.ClearShipReferences(Ship);
       end;
@@ -13599,7 +13593,7 @@ begin
         and (Ship.InterceptorPassesRemaining > 0) then
       begin
         if Ship.AuxiliaryFilmObject <> nil then
-          CurrentFilm.DetachObject(StepIndex, Ship.AuxiliaryFilmObject);
+          PrimaryFilm.DetachObject(StepIndex, Ship.AuxiliaryFilmObject);
         Ship.InterceptorSourceShip := nil;
         Ship.InterceptorPassesRemaining := 0;
       end;
@@ -13626,12 +13620,12 @@ begin
           Item.Free;
           if RecordFilm then
           begin
-            Tranclucator.FilmObject := CurrentFilm.AddObject(Tranclucator.Id, Tranclucator.Graphic);
-            CurrentFilm.DetachObject(0, Tranclucator.FilmObject);
-            CurrentFilm.SetObjectPosition(StepIndex, Tranclucator.FilmObject, Self.Position);
-            CurrentFilm.SetObjectAngle(StepIndex, Tranclucator.FilmObject, 0);
-            CurrentFilm.SetObjectAlpha(StepIndex, Tranclucator.FilmObject, 255);
-            CurrentFilm.AttachObject(StepIndex, Tranclucator.FilmObject);
+            Tranclucator.FilmObject := PrimaryFilm.AddObject(Tranclucator.Id, Tranclucator.Graphic);
+            PrimaryFilm.DetachObject(0, Tranclucator.FilmObject);
+            PrimaryFilm.SetObjectPosition(StepIndex, Tranclucator.FilmObject, Self.Position);
+            PrimaryFilm.SetObjectAngle(StepIndex, Tranclucator.FilmObject, 0);
+            PrimaryFilm.SetObjectAlpha(StepIndex, Tranclucator.FilmObject, 255);
+            PrimaryFilm.AttachObject(StepIndex, Tranclucator.FilmObject);
           end;
         end
         else
@@ -13641,10 +13635,10 @@ begin
           MovingDrop^.InsertedIntoStar := True;
           if RecordFilm then
           begin
-            Item.FilmObject := CurrentFilm.AddObject(Item.Id, Item.GetGraphObject);
-            CurrentFilm.DetachObject(0, Item.FilmObject);
-            CurrentFilm.SetObjectPosition(StepIndex, Item.FilmObject, Self.Position);
-            CurrentFilm.AttachObject(StepIndex, Item.FilmObject);
+            Item.FilmObject := PrimaryFilm.AddObject(Item.Id, Item.GetGraphObject);
+            PrimaryFilm.DetachObject(0, Item.FilmObject);
+            PrimaryFilm.SetObjectPosition(StepIndex, Item.FilmObject, Self.Position);
+            PrimaryFilm.AttachObject(StepIndex, Item.FilmObject);
           end;
         end;
       end;
@@ -13657,12 +13651,12 @@ begin
     begin
       Inc(StepIndex);
       Self.CurrentStepIndex := StepIndex;
-      CurrentFilm.BeginTrailingEffects(StepIndex);
+      PrimaryFilm.BeginTrailingEffects(StepIndex);
       Inc(StepIndex);
       Self.CurrentStepIndex := StepIndex;
     end;
     if RecordFilm then
-      CurrentFilm.ReleaseWeaponEffects(StepIndex);
+      PrimaryFilm.ReleaseWeaponEffects(StepIndex);
 
     Stage := 34;
     Count := Self.CombatEvents.Count;
@@ -13713,8 +13707,8 @@ begin
         Index := 0;
         if RecordFilm and (Ship.FilmObject = nil) then
         begin
-          Ship.FilmObject := CurrentFilm.AddObject(Ship.Id, Ship.Graphic);
-          CurrentFilm.DetachObject(0, Ship.FilmObject);
+          Ship.FilmObject := PrimaryFilm.AddObject(Ship.Id, Ship.Graphic);
+          PrimaryFilm.DetachObject(0, Ship.FilmObject);
         end;
       end
       else
@@ -13735,9 +13729,9 @@ begin
           for EntryIndex := 0 to (EntryCount - 1) do
           begin
             Item := Ship.Inventory[EntryIndex];
-            if CurrentFilm.ContainsObject(Item.FilmObject) then
+            if PrimaryFilm.ContainsObject(Item.FilmObject) then
             begin
-              CurrentFilm.ReleaseObject(StepIndex, Item.FilmObject);
+              PrimaryFilm.ReleaseObject(StepIndex, Item.FilmObject);
               ReleaseSpaceObject(Item.GraphObject);
             end;
           end;
@@ -13745,25 +13739,25 @@ begin
           for EntryIndex := 0 to (EntryCount - 1) do
           begin
             Item := Ship.Artefacts[EntryIndex];
-            if CurrentFilm.ContainsObject(Item.FilmObject) then
+            if PrimaryFilm.ContainsObject(Item.FilmObject) then
             begin
-              CurrentFilm.ReleaseObject(StepIndex, Item.FilmObject);
+              PrimaryFilm.ReleaseObject(StepIndex, Item.FilmObject);
               ReleaseSpaceObject(Item.GraphObject);
             end;
           end;
           if Ship.FilmObject = nil then
           begin
-            Ship.FilmObject := CurrentFilm.AddObject(Ship.Id, Ship.Graphic);
-            CurrentFilm.DetachObject(0, Ship.FilmObject);
+            Ship.FilmObject := PrimaryFilm.AddObject(Ship.Id, Ship.Graphic);
+            PrimaryFilm.DetachObject(0, Ship.FilmObject);
           end;
           if Ship.FilmObject <> nil then
           begin
-            CurrentFilm.ReleaseObject(StepIndex, Ship.FilmObject);
+            PrimaryFilm.ReleaseObject(StepIndex, Ship.FilmObject);
             ReleaseSpaceObject(Ship.Graphic);
           end;
           if Ship.AuxiliaryFilmObject <> nil then
           begin
-            CurrentFilm.ReleaseObject(StepIndex, Ship.AuxiliaryFilmObject);
+            PrimaryFilm.ReleaseObject(StepIndex, Ship.AuxiliaryFilmObject);
             ReleaseSpaceObject(Ship.InterceptorGraphic);
           end;
         end;
@@ -13788,7 +13782,7 @@ begin
         begin
           if RecordFilm and (Ship.AuxiliaryFilmObject <> nil) then
           begin
-            CurrentFilm.ReleaseObject(StepIndex, Ship.AuxiliaryFilmObject);
+            PrimaryFilm.ReleaseObject(StepIndex, Ship.AuxiliaryFilmObject);
             ReleaseSpaceObject(Ship.InterceptorGraphic);
           end;
           Ship.ClearIncomingInterceptors;
@@ -13823,7 +13817,7 @@ begin
           for EntryIndex := 1 to Ship.WeaponCount do
             Ship.Weapons[EntryIndex].Target := nil;
           if RecordFilm then
-            CurrentFilm.DetachObject(StepIndex, Ship.FilmObject);
+            PrimaryFilm.DetachObject(StepIndex, Ship.FilmObject);
           Self.Ships.Delete(Index);
           Ship.CurrentStar := nil;
           if Ship.ScriptShip <> nil then
@@ -13855,9 +13849,9 @@ begin
         GateEntry := Galaxy.JumpGates[Index];
         if GateEntry^.UsedThisTurn then
         begin
-          CurrentFilm.ReleaseObject(StepIndex, Pointer(GateEntry^.GateFilmId));
+          PrimaryFilm.ReleaseObject(StepIndex, Pointer(GateEntry^.GateFilmId));
           if GateEntry^.EffectFilmId <> 0 then
-            CurrentFilm.ReleaseObject(StepIndex, Pointer(GateEntry^.EffectFilmId));
+            PrimaryFilm.ReleaseObject(StepIndex, Pointer(GateEntry^.EffectFilmId));
           Galaxy.JumpGates.Delete(Index);
           if GateEntry^.Gate <> nil then
             ReleaseSpaceObject(GateEntry^.Gate);
@@ -13878,12 +13872,12 @@ begin
       for EntryIndex := 0 to (EntryCount - 1) do
       begin
         EffectFilm := Self.PendingFilmObjectRemovals[EntryIndex];
-        CurrentFilm.ReleaseObject(StepIndex, EffectFilm);
+        PrimaryFilm.ReleaseObject(StepIndex, EffectFilm);
       end;
       Self.PendingFilmObjectRemovals.Clear;
     end;
     Self.ReferencedItems.Clear;
-    CurrentFilm.PlayerCombatRecorded := RecordFilm and Self.PlayerCombatOccurred;
+    PrimaryFilm.PlayerCombatRecorded := RecordFilm and Self.PlayerCombatOccurred;
     for Index := (Self.Ships.Count - 1) downto 0 do
     begin
       Ship := Self.Ships[Index];
@@ -13915,33 +13909,33 @@ begin
     begin
       if Self.PlayerCombatOccurred then
       begin
-        CurrentFilm.InitialActivity := 0;
-        CurrentFilm.FinalActivity := 0;
+        PrimaryFilm.InitialActivity := 0;
+        PrimaryFilm.FinalActivity := 0;
       end
       else
       begin
-        CurrentFilm.InitialActivity := Integer(Globals.PreviousFilmActivity);
-        CurrentFilm.FinalActivity := CurrentFilm.InitialActivity;
+        PrimaryFilm.InitialActivity := Integer(Globals.PreviousFilmActivity);
+        PrimaryFilm.FinalActivity := PrimaryFilm.InitialActivity;
         WorkValue := EstimatePlayerTravelTurns;
         if Globals.PreviousFilmActivity = 0 then
         begin
           if WorkValue >= 1.0 then
-            CurrentFilm.FinalActivity := 1;
+            PrimaryFilm.FinalActivity := 1;
         end
         else
         begin
           if Globals.PreviousFilmActivity = 1 then
           begin
             if WorkValue >= 2.0 then
-              CurrentFilm.FinalActivity := 2;
+              PrimaryFilm.FinalActivity := 2;
           end
           else
           begin
             if (Globals.PreviousFilmActivity = 2) and (WorkValue <= 2.0) then
-              CurrentFilm.FinalActivity := 1;
+              PrimaryFilm.FinalActivity := 1;
           end;
         end;
-        Globals.PreviousFilmActivity := Cardinal(CurrentFilm.FinalActivity);
+        Globals.PreviousFilmActivity := Cardinal(PrimaryFilm.FinalActivity);
       end;
       TFilmFile(FilmHistory).AddFilm(TEFilm(PrimaryFilm));
     end;

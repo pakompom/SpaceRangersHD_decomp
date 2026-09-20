@@ -197,24 +197,6 @@ implementation
 
 uses Globals, GlobalsV, aPlayer, aShip, aGalaxy, aConst, aMyFunction, fStarMap, GI_PanelScrollBar, GI_ScrollBar, GI_Image, GI_GraphButton, GI_Main, GI_GAI, EC_Str, SysUtils, Classes, Math, GR_Main, Windows, aPlanet, aItem, SE_Space, SE_Process, GI_GraphBuf, aRanger, aRuins, aKling, aNormalShip, aGalaxyStruct, aPirate, aTranclucator, SE_Weapon, Achievements, aWarrior;
 
-procedure PayPartnerGiftMoney; inline;
-var Remaining, Payment: Integer; Player: TPlayer;
-begin
-  Player := GetPlayer;
-  Remaining := GetPlayer.Money - PartnerGiftAmount;
-  if Remaining < 0 then Payment := 0 else Payment := Remaining;
-  Player.SetMoney(Payment);
-end;
-
-procedure PayPiratePartnerGiftMoney; inline;
-var Remaining, Payment: Integer; Player: TPlayer;
-begin
-  Player := GetPlayer;
-  Remaining := GetPlayer.Money - PartnerGiftAmount;
-  if Remaining < 0 then Payment := 0 else Payment := Remaining;
-  Player.SetMoney(Payment);
-end;
-
 { @routine $6D0FF0 TfTalkA_Create }
 constructor TfTalkA.Create;
 begin
@@ -2333,7 +2315,7 @@ begin
   Change := Round((150 * PartnerGiftAmount) / Max(1, TalkShip.Wealth + GetPlayer.Wealth) * PlanetRaceMarket[TalkShip.PilotRace].FriendlyRelationScale);
   Change := Max(0, Min(100, Change));
   TalkShip.ChangeRelationToRanger(GetPlayer, Change);
-  PayPartnerGiftMoney;
+  GetPlayer.SetMoney(Max(0, GetPlayer.Money - PartnerGiftAmount));
   TalkShip.SetMoney(TalkShip.Money + PartnerGiftAmount);
   DialogText := TalkShip.LookupTalkText('Talk.Partner.FinancesGotGift');
   ReplaceTextToken(DialogText, '<Money>', WideString(IntToStr(TalkShip.Money)), '<color=255,240,100>');
@@ -2954,7 +2936,7 @@ begin
   else Change := Round((150 * PartnerGiftAmount) / Max(1, TalkShip.Wealth + GetPlayer.Wealth));
   Change := Max(0, Min(100, Change));
   TalkShip.ChangeRelationToRanger(GetPlayer, Change);
-  PayPiratePartnerGiftMoney;
+  GetPlayer.SetMoney(Max(0, GetPlayer.Money - PartnerGiftAmount));
   TalkShip.SetMoney(TalkShip.Money + PartnerGiftAmount);
   DialogText := TalkShip.LookupTalkText('Talk.Pirate.FinancesGotGift');
   ReplaceTextToken(DialogText, '<Money>', WideString(IntToStr(TalkShip.Money)), '<color=255,240,100>');

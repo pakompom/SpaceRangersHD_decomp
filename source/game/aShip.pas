@@ -743,18 +743,6 @@ implementation
 
 uses fShip2, aGalaxyEvent, fEquipmentShop, fGoodsShop2, ThreadCalc, EC_Mem, aEFilmEnd, SE_Weapon, fScore, SE_Ruins, Achievements, SE_GAIEffect, Dialogs, SE_Ship2, EC_Str, GR_Main, Globals, GlobalsV, Math, SysUtils, aConst, aKling, aMissile, aNormalShip, aPirate, aPlayer, aRanger, aRuins, aScript, aTranclucator, aTransport, aWarrior;
 
-// Source helper: preserve the native radar-before-clamp evaluation and local order.
-procedure ClampMissileWeaponRange(const Ship: TShip; const TemplateRange: Integer;
-  var Range: Integer); inline;
-var
-  MaximumRange, RadarRange, MinimumRange: Integer;
-begin
-  RadarRange := Ship.GetRadarRange;
-  if Range > TemplateRange then MaximumRange := Range else MaximumRange := TemplateRange;
-  if RadarRange < MaximumRange then MinimumRange := RadarRange else MinimumRange := MaximumRange;
-  Range := MinimumRange;
-end;
-
 { @routine $747D08 TShip_Create }
 constructor TShip.Create;
 var
@@ -7142,7 +7130,7 @@ begin
     TemplateRange := Weapon.GetWeaponInfo.MissileRange;
     if (Self is TKling) and (Ord((Self as TKling).KlingType) = 0) then Range := Max(Range, TemplateRange)
     else if Self is TRuins then Range := Max(Range, TemplateRange)
-    else if Galaxy.AreMaxRangeMissilesEnabled or (GetPlayer = Self) then ClampMissileWeaponRange(Self, TemplateRange, Range)
+    else if Galaxy.AreMaxRangeMissilesEnabled or (GetPlayer = Self) then Range := Min(GetRadarRange, Max(Range, TemplateRange))
     else Range := Min(GetRadarRange, Range);
   end;
   Result := Max(100, Range);

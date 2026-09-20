@@ -29,18 +29,6 @@ uses Classes, Windows, SysUtils, Math, EC_Str, EC_Struct, GI_GraphButton,
   aMyFunction, fFilmFile, GI_gai, GR_DX, aGalaxy, aPlayer, aPlanet, aRanger,
   aShip, aItem, aKling, aRuins, fIntroduction, ThreadCalc, aCalc, aScript;
 
-// Source control for the native Extended temporaries and axis evaluation order.
-procedure CalculateSquaredEdgeDistance(Star: TStar; var Distance: Single); inline;
-var XDelta, XNear, YDelta, YNear, XSquared: Extended;
-begin
-  XDelta := GalaxySizeX - Star.Position.X;
-  if XDelta < Star.Position.X then XNear := XDelta else XNear := Star.Position.X;
-  XSquared := Sqr(XNear);
-  YDelta := GalaxySizeY - Star.Position.Y;
-  if YDelta < Star.Position.Y then YNear := YDelta else YNear := Star.Position.Y;
-  Distance := XSquared + Sqr(YNear);
-end;
-
 { @routine $8183AC TThreadCreateNewGame_Execute }
 procedure TThreadCreateNewGame.Execute;
 const
@@ -268,8 +256,10 @@ begin
               end
               else if Distance = MaximumDistance then
               begin
-                CalculateSquaredEdgeDistance(SpecialStar, EdgeDistance);
-                CalculateSquaredEdgeDistance(OtherStar, OtherEdgeDistance);
+                EdgeDistance := Sqr(Min(GalaxySizeX - SpecialStar.Position.X, SpecialStar.Position.X)) +
+                  Sqr(Min(GalaxySizeY - SpecialStar.Position.Y, SpecialStar.Position.Y));
+                OtherEdgeDistance := Sqr(Min(GalaxySizeX - OtherStar.Position.X, OtherStar.Position.X)) +
+                  Sqr(Min(GalaxySizeY - OtherStar.Position.Y, OtherStar.Position.Y));
                 if OtherEdgeDistance < EdgeDistance then SpecialStar := OtherStar;
               end;
             end;
