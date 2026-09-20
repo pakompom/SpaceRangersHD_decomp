@@ -365,11 +365,22 @@ impl Emitter<'_> {
                     unit.imports.insert(name.clone());
                 }
             }
-            if !source.tested_classes.is_empty() {
+            // An is/as operand may be a class-reference variable. Only type
+            // names can be referenced by the unit-level retention procedure.
+            let tested_classes = source
+                .tested_classes
+                .iter()
+                .filter(|name| {
+                    self.project
+                        .compiler
+                        .types
+                        .contains_key(&name.to_lowercase())
+                })
+                .collect::<Vec<_>>();
+            if !tested_classes.is_empty() {
                 let anchor = "LinkRecoveredTypes";
                 unit.interface.push(format!("procedure {anchor};"));
-                let lines = source
-                    .tested_classes
+                let lines = tested_classes
                     .iter()
                     .map(|n| format!("  {n}.ClassName;"))
                     .collect::<Vec<_>>()

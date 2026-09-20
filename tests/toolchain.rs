@@ -123,6 +123,16 @@ fn generated_units_preserve_initializers_and_source_ownership() -> Result<()> {
             .replace(
                 "Result := Encoded;",
                 "Rangers.Value := Encoded;\n  Result := Rangers.Value;",
+            )
+            .replace(
+                "implementation",
+                "implementation\n\
+                 function Matches(Value: TObject; const Expected: TClass): Boolean; inline;\n\
+                 var LocalClass: TClass;\n\
+                 begin\n\
+                   LocalClass := Expected;\n\
+                   Result := (Value is Expected) and (Value is LocalClass) and (Value is TObject);\n\
+                 end;\n",
             ),
     )?;
     fs::write(
@@ -152,7 +162,7 @@ begin ProgramHelper; end.
     )?;
     fs::write(
         fixture.0.join("source/System.pas"),
-        "unit System; interface\ntype TObject = class // @size $04\nend;\nimplementation end.\n",
+        "unit System; interface\ntype TObject = class // @size $04\nend;\nTClass = class of TObject;\nimplementation end.\n",
     )?;
     fs::write(
         fixture.0.join("source/Dormant.pas"),
@@ -182,6 +192,11 @@ begin ProgramHelper; end.
     assert!(!generated.contains("SysUtils"));
     assert!(!generated.contains("Math"));
     assert!(!generated.contains("uses Rangers;"));
+    assert!(generated.contains("Value is Expected") && generated.contains("Value is LocalClass"));
+    assert!(generated.contains("TObject.ClassName;"));
+    assert!(
+        !generated.contains("Expected.ClassName;") && !generated.contains("LocalClass.ClassName;")
+    );
     assert!(fs::read_to_string(output.join("Rangers.dpr"))?.contains("Dormant"));
     assert!(!output.join("Rangers.pas").exists());
     assert_eq!(project.bodies()?.iter().filter(|b| b.program).count(), 1);

@@ -5950,7 +5950,7 @@ begin
           if NextFilmCommand.Kind = efcBeginTrailingEffects then Break;
           if not ((NextFilmCommand.Kind = efcAttachObject) and
             ((Galaxy.TerronToStarTurn and $40000000) <> 0) and
-            (PEFilmObjectCommand(NextFilmCommand).Obj.GraphKey = 'Ruins.Terron')) then
+            (NextFilmCommand.Obj.GraphKey = 'Ruins.Terron')) then
           begin
             if NextFilmCommand.StepIndex > FilmStepIndex then Break;
             Stage := 6;
