@@ -1,6 +1,12 @@
-# Preserve the compiler's hash buckets and assign an explicit cell permutation.
+# DCC32 11.0.2963.11001 groups cells by the target's identifier hash byte
+# ([target+4]), prepending each new cell: 0x430E08. Recovered names generally
+# have different hashes, even when the compiled bodies and storage match.
+# Fixup emission (0x431AB8) still looks cells up after layout (0x431394), so
+# preserve the hash buckets and target links; assign only a cell permutation.
 # If the retained targets differ, restore ordinary DCC32 placement for all cells.
-# The writer honors assigned offsets; every cell still gets its compiler target.
+# The stock writer (0x430EC4) walks the original buckets. ref_put changes its
+# destination to the assigned slot, preserving the compiler-resolved EDX value
+# and the ordinary relocation entry for every slot in the contiguous table.
 .intel_syntax noprefix
 .code32
 .text
