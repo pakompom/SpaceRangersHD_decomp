@@ -20,15 +20,15 @@ type
     Unknown13C: TObject; // @offset $13C  Optional owned object; purpose unresolved.
     Vertices: array[0..3] of TScreenVertexGR; // @offset 0x140
     FrameTexture: IDirect3DTexture9; // @offset 0x1B0
-    // Corner coordinates are indexed by Angle; each table has an unused trailing dword.
-    TopLeftX: array[0..255] of Single; // @offset 0x1B4
-    TopLeftY: array[0..255] of Single; // @offset 0x5B8
-    TopRightX: array[0..255] of Single; // @offset 0x9BC
-    TopRightY: array[0..255] of Single; // @offset 0xDC0
-    BottomRightX: array[0..255] of Single; // @offset 0x11C4
-    BottomRightY: array[0..255] of Single; // @offset 0x15C8
-    BottomLeftX: array[0..255] of Single; // @offset 0x19CC
-    BottomLeftY: array[0..255] of Single; // @offset 0x1DD0
+    // Native table spacing is 257 Singles; only the 256 byte-angle entries are initialized.
+    TopLeftX: array[0..256] of Single; // @offset 0x1B4
+    TopLeftY: array[0..256] of Single; // @offset 0x5B8
+    TopRightX: array[0..256] of Single; // @offset 0x9BC
+    TopRightY: array[0..256] of Single; // @offset 0xDC0
+    BottomRightX: array[0..256] of Single; // @offset 0x11C4
+    BottomRightY: array[0..256] of Single; // @offset 0x15C8
+    BottomLeftX: array[0..256] of Single; // @offset 0x19CC
+    BottomLeftY: array[0..256] of Single; // @offset 0x1DD0
 
     constructor Create(Owner: TObjectGI); // @addr 0x4AF568 @ida "TRotateImage5GI *__usercall $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, TObjectGI *Owner@<ecx>);"
     destructor Destroy; override; // @addr 0x4AF934 @ida "void __usercall $name(TRotateImage5GI *Self@<eax>, __int8 DestroyFlags@<dl>);"
@@ -194,7 +194,7 @@ begin
     BottomY := ImageSize.Y - Pivot.Y - 1;
     CenterX := ClientSize.X / 2.0;
     CenterY := ClientSize.Y / 2.0;
-    for I := Low(TopLeftX) to High(TopLeftX) do
+    for I := 0 to 255 do
     begin
       Radians := I / 256.0 * 360.0 * 3.1415926 / 180.0;
       C := Cos(Radians);

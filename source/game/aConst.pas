@@ -139,7 +139,7 @@ procedure LoadHullSeriesConfiguration; // @addr $7E60F8
 procedure InitializeGameplayConfig; // @addr 0x7DC5B0
 
 function ItemTypeToSlotKind(ItemType: Byte): TShipSlotKind; // @addr 0x7DE6A4
-function ClassifyWeaponDamageFlags(Flags: Dword): TWeaponDamageClass; // @addr $7E702C Missile bit takes precedence over splinter; otherwise energy.
+function ClassifyWeaponDamageFlags(Flags: TDamageFlagSet): TWeaponDamageClass; // @addr $7E702C Missile bit takes precedence over splinter; otherwise energy.
 function ShipToHullType(Ship: TObject): Byte; // @addr $7DE530 Class/subtype mapping used by hull generation and legacy saves; only TObject RTTI operations precede explicit subclass casts.
 function RaceToOwner(RaceId: Byte): TOwnerIndex; // @addr 0x7DD184 @note "Identity conversion for Coalition races 0..4; raises for all other values."
 function OwnerFromInternalName(const Name: WideString): Byte; // @addr $7DD974
@@ -1335,7 +1335,7 @@ type
     MissileMaxSpeed: Integer; // @offset 0x28
     MissileMinSpeed: Integer; // @offset 0x2C
     MissileChanceToBeHit: Byte; // @offset 0x30
-    DamageFlags: Dword; // @offset 0x31
+    DamageFlags: TDamageFlagSet; // @offset 0x31
     ShotType: TWeaponShotType; // @offset 0x35
     ShotCount: Byte; // @offset 0x36
     AttackCount: Byte; // @offset 0x37
@@ -2504,11 +2504,11 @@ begin
       MiningFactor := StrToFloat(AnsiString(Block.GetParam('MiningFactor')));
       ArcadeWeaponType := Kind;
       Availability := waFree;
-      TDamageFlagSet(DamageFlags) := [];
+      DamageFlags := [];
       Values := Block.GetParam('DamageSet');
       for DamageKind := Low(WeaponDamageFlagNames) to High(WeaponDamageFlagNames) do
         if not (DamageKind in [Ord(dkDecelerateA), Ord(dkDecelerateAEx), Ord(dkNonLethal)]) and (Pos(WeaponDamageFlagNames[DamageKind], Values) > 0) then
-          Include(TDamageFlagSet(DamageFlags), TDamageKind(DamageKind));
+          Include(DamageFlags, TDamageKind(DamageKind));
       ShotType := wstNormal;
       ShotCount := 1;
       Values := Block.GetParam('ShotType');
@@ -2765,11 +2765,11 @@ begin
           Kind := GetItemTypeFromMask([Ord(t_Food)..79] - [Ord(t_Food)..Ord(t_DefGenerator)] - [Ord(t_CustomWeapon)..79], Part);
           if ConsumeMicroModuleToken('<' + ItemTypeNames[Kind] + '>') then
             Include(TItemTypeSelection(AllowedItemTypes), Kind)
-          else if (Pos('<WMissile>', Tokens) > 0) and (dkMissile in TDamageFlagSet(WeaponInfos[Kind].DamageFlags)) then
+          else if (Pos('<WMissile>', Tokens) > 0) and (dkMissile in WeaponInfos[Kind].DamageFlags) then
             Include(TItemTypeSelection(AllowedItemTypes), Kind)
-          else if (Pos('<WSplinter>', Tokens) > 0) and (dkSplinter in TDamageFlagSet(WeaponInfos[Kind].DamageFlags)) then
+          else if (Pos('<WSplinter>', Tokens) > 0) and (dkSplinter in WeaponInfos[Kind].DamageFlags) then
             Include(TItemTypeSelection(AllowedItemTypes), Kind)
-          else if (Pos('<WEnergy>', Tokens) > 0) and (dkEnergy in TDamageFlagSet(WeaponInfos[Kind].DamageFlags)) then
+          else if (Pos('<WEnergy>', Tokens) > 0) and (dkEnergy in WeaponInfos[Kind].DamageFlags) then
             Include(TItemTypeSelection(AllowedItemTypes), Kind);
         end;
         for Part := 0 to CountDelimitedPartsW(Tokens, ',') - 1 do
@@ -3311,10 +3311,10 @@ end;
 { @end $7E6FD4 }
 
 { @routine $7E702C ClassifyWeaponDamageFlags }
-function ClassifyWeaponDamageFlags(Flags: Dword): TWeaponDamageClass;
+function ClassifyWeaponDamageFlags(Flags: TDamageFlagSet): TWeaponDamageClass;
 begin
-  if (Flags and 4) <> 0 then Result := wdcMissile
-  else if (Flags and 2) <> 0 then Result := wdcSplinter
+  if dkMissile in Flags then Result := wdcMissile
+  else if dkSplinter in Flags then Result := wdcSplinter
   else Result := wdcEnergy;
 end;
 { @end $7E702C }

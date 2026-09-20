@@ -63,7 +63,7 @@ type
   end;
 
   PEFilmObjectCommand = ^TEFilmObjectCommand;
-  TEFilmObjectCommand = packed record // @size 0x20 Scalar object-command payload view.
+  TEFilmObjectCommand = record // @size 0x20 Scalar object-command payload view.
     Kind: Byte; // @offset 0x08
     StepIndex: Integer; // @offset 0x0C
     Obj: TEFilmObj; // @offset 0x10
@@ -73,7 +73,7 @@ type
   end;
 
   PEFilmVectorCommand = ^TEFilmVectorCommand;
-  TEFilmVectorCommand = packed record // @size 0x20
+  TEFilmVectorCommand = record // @size 0x20
     Kind: Byte; // @offset 0x08
     StepIndex: Integer; // @offset 0x0C
     Obj: TEFilmObj; // @offset 0x10
@@ -82,7 +82,7 @@ type
   end;
 
   PEFilmSizeCommand = ^TEFilmSizeCommand;
-  TEFilmSizeCommand = packed record // @size 0x20
+  TEFilmSizeCommand = record // @size 0x20
     Kind: Byte; // @offset 0x08
     StepIndex: Integer; // @offset 0x0C
     Obj: TEFilmObj; // @offset 0x10
@@ -91,7 +91,7 @@ type
   end;
 
   PEFilmByteCommand = ^TEFilmByteCommand;
-  TEFilmByteCommand = packed record // @size 0x20
+  TEFilmByteCommand = record // @size 0x20
     Kind: Byte; // @offset 0x08
     StepIndex: Integer; // @offset 0x0C
     Obj: TEFilmObj; // @offset 0x10
@@ -99,7 +99,7 @@ type
   end;
 
   PEFilmHitCommand = ^TEFilmHitCommand;
-  TEFilmHitCommand = packed record // @size 0x20
+  TEFilmHitCommand = record // @size 0x20
     Kind: Byte; // @offset 0x08
     StepIndex: Integer; // @offset 0x0C
     Obj: TEFilmObj; // @offset 0x10
@@ -110,7 +110,7 @@ type
   end;
 
   PEFilmEndpointsCommand = ^TEFilmEndpointsCommand;
-  TEFilmEndpointsCommand = packed record // @size 0x20
+  TEFilmEndpointsCommand = record // @size 0x20
     Kind: Byte; // @offset 0x08
     StepIndex: Integer; // @offset 0x0C
     Obj: TEFilmObj; // @offset 0x10

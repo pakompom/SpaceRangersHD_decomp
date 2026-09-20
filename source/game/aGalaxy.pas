@@ -1124,7 +1124,7 @@ begin
     Buffer.AddIntegerValue(WeaponInfo.MissileMaxSpeed);
     Buffer.AddIntegerValue(WeaponInfo.MissileMinSpeed);
     Buffer.AddAnsiChar(AnsiChar(WeaponInfo.MissileChanceToBeHit));
-    Buffer.AddDWord(WeaponInfo.DamageFlags);
+    Buffer.AddDWord(Dword(WeaponInfo.DamageFlags));
     Buffer.AddAnsiChar(AnsiChar(WeaponInfo.ShotType));
     Buffer.AddAnsiChar(AnsiChar(WeaponInfo.ShotCount));
     Buffer.AddAnsiChar(AnsiChar(WeaponInfo.AttackCount));
@@ -1471,7 +1471,7 @@ begin
       WeaponInfo.MissileMaxSpeed := Buffer.GetInt32;
       WeaponInfo.MissileMinSpeed := Buffer.GetInt32;
       WeaponInfo.MissileChanceToBeHit := Buffer.GetByte;
-      WeaponInfo.DamageFlags := Buffer.GetUInt32;
+      Dword(WeaponInfo.DamageFlags) := Buffer.GetUInt32;
       WeaponInfo.ShotType := TWeaponShotType(Buffer.GetByte);
       WeaponInfo.ShotCount := Buffer.GetByte;
       if LoadedSaveVersion >= 132 then WeaponInfo.AttackCount := Buffer.GetByte else WeaponInfo.AttackCount := 1;
