@@ -530,7 +530,7 @@ begin
     Panel.Invalidate;
     Panel.FreeOwnedChildren;
     if GetPlayer.GetLocationGoodsEntry(Good).Count <= 0 then IconCount := 0
-    else IconCount := Round(RemapClamped(Integer(Galaxy.GetGoodsPricePercent(Good, GetPlayer.ShopGoodsPurchasePrice(Good, nil))) and $7F, 0, 30, 3, 0));
+    else IconCount := Round(RemapClamped(Galaxy.GetGoodsPricePercent(Good, GetPlayer.ShopGoodsPurchasePrice(Good, nil)), 0, 30, 3, 0));
     ImageName := 'Good';
     for J := 0 to IconCount - 1 do
     begin
@@ -1443,7 +1443,7 @@ begin
     if GetPlayer.CurrentPlanet.OwnerId = Byte(oiPirate) then
     begin
       if not GetPlayer.CurrentPlanet.IsMainPiratePlanet then
-        MusicManager.PlayCategory('Nation.' + OwnerInfo[Integer(RaceToOwner(GetPlayer.CurrentPlanet.RaceId)) and $7F].InternalName + 'Pirate')
+        MusicManager.PlayCategory('Nation.' + OwnerInfo[RaceToOwner(GetPlayer.CurrentPlanet.RaceId)].InternalName + 'Pirate')
       else MusicManager.PlayCategory('Nation.PiratePlanetMain');
     end
     else MusicManager.PlayCategory('Nation.' + OwnerInfo[GetPlayer.CurrentPlanet.OwnerId].InternalName);
@@ -1452,8 +1452,8 @@ begin
   begin
     if not MusicInPlanetEnabled then MusicManager.RequestFadeOut
     else if GetPlayer.DockedTo.TypeId in [Ord(rstPirateBase), Ord(rstDominion)] then
-      MusicManager.PlayCategory('Nation.' + OwnerInfo[Integer(RaceToOwner(GetPlayer.DockedTo.PilotRace)) and $7F].InternalName + 'Pirate')
-    else MusicManager.PlayCategory('Nation.' + OwnerInfo[Integer(RaceToOwner(GetPlayer.DockedTo.PilotRace)) and $7F].InternalName);
+      MusicManager.PlayCategory('Nation.' + OwnerInfo[RaceToOwner(GetPlayer.DockedTo.PilotRace)].InternalName + 'Pirate')
+    else MusicManager.PlayCategory('Nation.' + OwnerInfo[RaceToOwner(GetPlayer.DockedTo.PilotRace)].InternalName);
   end;
 end;
 { @end $7DC574 }

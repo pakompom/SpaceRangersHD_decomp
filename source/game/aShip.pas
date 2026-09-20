@@ -56,6 +56,9 @@ type
   end;
   PCombatStatusEffect = ^TCombatStatusEffect;
 
+  TWeaponCount = 0..5;
+  TPilotSkillLevel = 0..6;
+
   TPilotSkill = (
     psAccuracy = 0,
     psManeuverability = 1,
@@ -229,7 +232,7 @@ type
     function GetGreetingShipCategory: Byte; virtual; abstract; // @slot 0x30 Category bit in ship-greeting ShipType, ToShipType and ShipBadType filters.
     function GetHomeStar: TStar; virtual; abstract; // @slot 0x34
     function GetDominantCareer: TRangerCareer; virtual; abstract; // @slot 0x38
-    function GetStrengthScaledPirateStatus: Byte; virtual; abstract; // @slot 0x3C
+    function GetStrengthScaledPirateStatus: TPercent; virtual; abstract; // @slot 0x3C
     procedure RefuelAtLocation; virtual; abstract; // @slot 0x48
     procedure RepairBrokenEquipmentAtLocation; virtual; abstract; // @slot 0x60
     procedure BuildReachablePlanetQueue; virtual; abstract; // @slot 0x64
@@ -441,7 +444,7 @@ type
 
     function LookupTalkText(const Path: WideString): WideString; // @addr 0x776C98 @ida "void __usercall $name(TShip *Self@<eax>, unsigned __int16 *Path@<edx>, unsigned __int16 **Result@<ecx>);" @note "Selects among at most ten contiguous variants using ship seed and turn; substitutes ship names and HomePlanet. Missing text returns an unavailable marker."
     function LookupVisibleTalkText(const Path: WideString; OtherShip: TShip): WideString; // @addr 0x750178 @ida "void __userpurge $name(TShip *Self@<eax>, unsigned __int16 *Path@<edx>, TShip *OtherShip@<ecx>, unsigned __int16 **Result@<^0>);" @note "Returns empty unless the player shares CurrentStar. Substitutes OtherShip for <TalkShip>."
-    function RelationToShip(Ship: TShip): Byte; // @addr 0x77F4F4
+    function RelationToShip(Ship: TShip): TPercent; // @addr 0x77F4F4
     function GetRelationLevelToShip(Ship: TShip): TRelationLevel; // @addr 0x75BE58
     function GetRelationLevelTextToShip(Ship: TShip): WideString; // @addr 0x75BEC0 @ida "void __usercall $name(TShip *Self@<eax>, TShip *Ship@<edx>, unsigned __int16 **Result@<ecx>);" @note "Stations can display their stored ranger relation instead of the effective relation."
 
@@ -499,10 +502,10 @@ type
     procedure UnequipSlot(ItemType: Byte; WeaponIndex: Integer); // @addr 0x75EA9C @note "Direct types 42..49 require a populated slot; weapon types 50..68 require a valid one-based WeaponIndex. Compacts the weapon cache; does not remove/free inventory."
     procedure UnequipItem(Item: TEquipment); // @addr 0x75EB74 @note "Only affects cached installed equipment. Requires non-nil Item."
     function CanRepairArtefactsAtLocation: Boolean; // @addr 0x75E70C @note "Pirate/science bases, licensed station names and the main pirate planet; follows DockedTo recursively."
-    function CountEquippedWeapons: Byte; // @addr 0x75A9C0
-    function CountMissileWeapons: Byte; // @addr 0x75AA2C @note "Counts torpedo/missile/rocket shot types; does not check usability or ammunition."
+    function CountEquippedWeapons: TWeaponCount; // @addr 0x75A9C0
+    function CountMissileWeapons: TWeaponCount; // @addr 0x75AA2C @note "Counts torpedo/missile/rocket shot types; does not check usability or ammunition."
     function CountDirectFireWeapons: Byte; // @addr 0x75AA80 @note "Complement of CountMissileWeapons over cached equipped weapons."
-    function CountWeaponsByDamageFlags(Flags: TDamageFlagSet): Byte; // @addr 0x75AB5C @note "Counts any intersection; does not check usability or ammunition."
+    function CountWeaponsByDamageFlags(Flags: TDamageFlagSet): TWeaponCount; // @addr 0x75AB5C @note "Counts any intersection; does not check usability or ammunition."
     procedure ClearUnequippedWeaponTargets; // @addr 0x75AAD4
     procedure ClearWeaponTargets(Target: TObject); // @addr 0x75B2A0 @note "Nil clears every cached weapon target; otherwise clears only matches."
     function IsAttackingShip(Target: TShip): Boolean; // @addr 0x75B334 @note "Includes weapon targets, interceptor attribution and shock/acid source IDs; requires non-nil Target."
@@ -517,7 +520,7 @@ type
     function GetWeaponSlotRange(SlotIndex: Integer): Integer; // @addr 0x75B03C @note "Weapon slots are numbered 1..5."
     function GetMaxWeaponRange: Integer; // @addr 0x75B234
     function ChanceToWin(Target: TShip): Double; // @addr 0x75B3CC @note "Returns a combat strength ratio, not a probability."
-    function GetWinChancePercent(Target: TShip): Byte; // @addr 0x75B92C
+    function GetWinChancePercent(Target: TShip): TPercent; // @addr 0x75B92C
     function GetWeaponMinDamage(Weapon: TWeapon): Integer; // @addr 0x75B068
     function GetWeaponMaxDamage(Weapon: TWeapon): Integer; // @addr 0x75B0A4
     function GetAttackMultiplier: Integer; // @addr 0x75FE40
@@ -590,7 +593,7 @@ type
     function GetCargoHookMaxPullSpeed: Single; // @addr 0x75FC30
     function GetDefenseDamageFactor: Double; // @addr 0x75FDCC @note "1 means no damage reduction."
     procedure ApplyRepairDroidHealing; // @addr 0x75F8FC
-    function GetHullIntegrityPercent: Byte; // @addr 0x75EEC0 @note "Not clamped to 0..100."
+    function GetHullIntegrityPercent: TPercent; // @addr 0x75EEC0 @note "Not clamped to 0..100."
     function GetArmor: Integer; // @addr 0x75EF04
     function GetJumpRange: Integer; // @addr 0x75F27C @note "Ignores fuel; broken engines retain 60% range."
     function GetFuelLimitedJumpRange: Integer; // @addr 0x75F1DC
@@ -643,7 +646,7 @@ type
     function IsItemInPickupRange(Item: TItem): Boolean; // @addr 0x76B8EC @note "Also checks hook eligibility."
     function GetCargoHookRangeSquared: Integer; // @addr 0x75FD78
     function GetBaseCargoHookPower: Integer; // @addr 0x75FD98 @note "Raw PickupPower; zero without a hook. Does not check usability."
-    function GetDefensePercent: Byte; // @addr 0x75FE18
+    function GetDefensePercent: TPercent; // @addr 0x75FE18
     function IsMicroModuleRaciallyRestricted(ModuleIndex: Integer): Boolean; // @addr 0x75F2F8 @note "Zero-based template index; true means disallowed. Includes custom faction, Dominator series and pilot-race restrictions."
     procedure AddAward(AwardId: Byte); // @addr 0x75FE78 @note "Rejects ID 255 and appends without deduplication; stops when list count equals 255. Extends the visible prefix only when all previous awards were visible."
     function ShouldPickUpItem(Item: TItem): Boolean; // @addr 0x76B95C
@@ -682,7 +685,7 @@ type
     function GetCombatStatusDescription(out Count: Integer; ShowStrength: Boolean): WideString; // @addr 0x77E43C @ida "void __userpurge $name(TShip *Self@<eax>, int *Count@<edx>, bool ShowStrength@<cl>, unsigned __int16 **Result@<^0>);" @note "Includes rounded-positive shock, acid, magnetic, BW buff and custom status entries; omits transient blocking effects."
 
     function GetBaseSkillLevel(Skill: TPilotSkill): Byte; // @addr 0x77BA78
-    function GetEffectiveSkillLevel(Skill: TPilotSkill; IgnoreStatusEffects: Boolean = False): Byte; // @addr 0x77BAA0 @note "Clamps to 0..6; equipment bonuses still apply when status effects are ignored."
+    function GetEffectiveSkillLevel(Skill: TPilotSkill; IgnoreStatusEffects: Boolean = False): TPilotSkillLevel; // @addr 0x77BAA0 @note "Clamps to 0..6; equipment bonuses still apply when status effects are ignored."
     function CalculateSpeed: Integer; virtual; // @addr 0x77CA70 @slot 0x4C @calls "0x75FF76"
     function CountUnequippedDominatorEquipment: Integer; // @addr 0x769FE0 @note "Skips inventory index 0."
     function TrainSkill(Skill: TPilotSkill): Boolean; // @addr 0x77B8C4
@@ -2299,12 +2302,12 @@ begin
   if GetHull.Weight > GetHull.HullPoints then
     Result := Result + ' ' + FormatText1(LookupLocalizedTextByKey('ShipInfo.SpaceDamageProc'), '<color=255,240,100>', '<Proc>', IntToStr(Trunc(100 - GetHull.HullPoints / (GetHull.Weight * 0.01))));
   Result := Result + #13#10 + FormatText1(LookupLocalizedTextByKey('ShipInfo.SpaceSpeed'), '<color=255,240,100>', '<Speed>', IntToStr(CalculateSpeed));
-  Result := Result + #13#10 + FormatText1(LookupLocalizedTextByKey('ShipInfo.SpaceDefField'), '<color=255,240,100>', '<Proc>', IntToStr(Integer(GetDefensePercent) and $7F));
+  Result := Result + #13#10 + FormatText1(LookupLocalizedTextByKey('ShipInfo.SpaceDefField'), '<color=255,240,100>', '<Proc>', IntToStr(GetDefensePercent));
   if GetPlayer <> Self then
   begin
     Result := Result + #13#10 + FormatText1(LookupLocalizedTextByKey('ShipInfo.SpaceRelation'), '<color=255,240,100>', '<Type>', LowerCaseWideString(GetRelationLevelTextToShip(GetPlayer)));
     if GetPlayer.CountActiveArtefacts(Ord(t_ArtefactAnalyzer)) > 0 then
-      Result := Result + #13#10 + FormatText1(LookupLocalizedTextByKey('Artefacts.Analyzer.TextToRadar'), '<color=255,240,100>', '<ChanceToWin>', IntToStr(Integer(GetPlayer.GetWinChancePercent(Self)) and $7F));
+      Result := Result + #13#10 + FormatText1(LookupLocalizedTextByKey('Artefacts.Analyzer.TextToRadar'), '<color=255,240,100>', '<ChanceToWin>', IntToStr(GetPlayer.GetWinChancePercent(Self)));
   end;
 end;
 { @end $74F3B4 }
@@ -2489,7 +2492,7 @@ begin
   Result := 0.0000001;
   for I := 1 to WeaponCount do
     if IsEquipmentUsable(Weapons[I]) then
-      Result := Result + RemapClamped(Integer(GetEffectiveSkillLevel(psAccuracy)) and $7F, 0, 6,
+      Result := Result + RemapClamped(GetEffectiveSkillLevel(psAccuracy), 0, 6,
         (GetWeaponMaxDamage(Weapons[I]) + GetWeaponMinDamage(Weapons[I])) div 2,
         GetWeaponMaxDamage(Weapons[I])) * Weapons[I].GetAttackCount;
   if Self is TKling then
@@ -2582,7 +2585,7 @@ begin
   if GetPlayer = Self then
   begin
     if (Galaxy <> nil) and (Galaxy.SpecialSimulationMode <> 0) then Result := 'Bm.Captain.2Tranclucator'
-    else Result := 'Bm.Captain.2' + OwnerInfo[Integer(RaceToOwner(PilotRace)) and $7F].InternalName + IntToStr(PortraitFaceId);
+    else Result := 'Bm.Captain.2' + OwnerInfo[RaceToOwner(PilotRace)].InternalName + IntToStr(PortraitFaceId);
     Exit;
   end;
   if HasScriptStateText and
@@ -3498,12 +3501,12 @@ begin
   end;
   DamageValue := Damage;
   if (HitRange = -1) and (Attacker <> nil) and (Attacker is TKling) and
-    (Attacker.GetScannerPower > (Integer(GetDefensePercent) and $7F)) and
+    (Attacker.GetScannerPower > GetDefensePercent) and
     (Attacker.GetRadarRange * Attacker.GetRadarRange >= PointDistanceSquared(Position, Attacker.Position)) then
-    DamageValue := (1 + (Attacker.GetScannerPower - (Integer(GetDefensePercent) and $7F)) * 0.01) * DamageValue;
+    DamageValue := (1 + (Attacker.GetScannerPower - GetDefensePercent) * 0.01) * DamageValue;
   ScannerEffects := (TDamageFlagSet(Dword(DamageFlags) + 0) * ScannerDamageFlags <> NoDamageFlags) and (HitRange = -1) and (Attacker <> nil) and
     Attacker.IsEquipmentUsable(Attacker.GetScanner) and
-    (Attacker.GetScannerPower >= (Integer(GetDefensePercent) and $7F)) and
+    (Attacker.GetScannerPower >= GetDefensePercent) and
     (Attacker.GetRadarRange * Attacker.GetRadarRange >= PointDistanceSquared(Position, Attacker.Position));
   if ScannerEffects then
   begin
@@ -3512,7 +3515,7 @@ begin
   end;
   if Dword(DamageFlags) and (1 shl Ord(dkEnergy)) <> 0 then
     for J := 1 to CountActiveArtefacts(Ord(t_ArtEnergyDef)) do
-      if NextRandomUnitFloat(RandomState) < 0.3 * ((Integer(CanBoostArtefact(Ord(t_ArtEnergyDef), nil, False)) and $7F) + 1) then
+      if NextRandomUnitFloat(RandomState) < 0.3 * (Ord(CanBoostArtefact(Ord(t_ArtEnergyDef), nil, False)) + 1) then
       begin
         DamageValue := 0;
         Break;
@@ -3520,7 +3523,7 @@ begin
   if Dword(DamageFlags) and (1 shl Ord(dkMissile)) <> 0 then
     for J := 1 to CountActiveArtefacts(Ord(t_ArtMissileDef)) do
       DamageValue := DamageValue / (1 + NextRandomFloatRange(0.1, 0.4, RandomState) *
-        ((Integer(CanBoostArtefact(Ord(t_ArtMissileDef), nil, False)) and $7F) + 1));
+        (Ord(CanBoostArtefact(Ord(t_ArtMissileDef), nil, False)) + 1));
   if (Attacker <> nil) and (GetPlayer = Attacker) then
   begin
     if Attacker.IsHealthEffectActive(10) or Attacker.IsHealthEffectActive(7) or
@@ -3574,7 +3577,7 @@ begin
     Exit;
   end;
   if Attacker <> nil then AdjustedDamage := Attacker.ScriptItemsAct(satOnDealingDamage, Self, nil, AdjustedDamage);
-  AdjustedDamage := ScriptItemsAct(DamageScriptActionTypes[Integer(ClassifyWeaponDamageFlags(Dword(DamageFlags))) and $7F], Source, nil, AdjustedDamage);
+  AdjustedDamage := ScriptItemsAct(DamageScriptActionTypes[Ord(ClassifyWeaponDamageFlags(Dword(DamageFlags)))], Source, nil, AdjustedDamage);
   if AdjustedDamage <= 0 then
   begin
     Result := 0;
@@ -3650,7 +3653,7 @@ begin
         begin
           if NextRandomUnitFloat(RandomState) > 0.6 then Inc(DropCount)
           else if (NextRandomUnitFloat(RandomState) > 0.8 - Attacker.CountActiveArtefacts(Ord(t_ArtefactMiniExpl)) * 0.2 *
-            ((Integer(Attacker.CanBoostArtefact(Ord(t_ArtefactMiniExpl), nil, False)) and $7F) + 1)) or
+            (Ord(Attacker.CanBoostArtefact(Ord(t_ArtefactMiniExpl), nil, False)) + 1)) or
             (ScannerEffects and (Dword(DamageFlags) and (1 shl Ord(dkMoreDrop)) <> 0) and (NextRandomUnitFloat(RandomState) > 0.9)) then
             DropRandomValuableItemsOnDestruction(1);
         end;
@@ -3854,7 +3857,7 @@ begin
   else
   begin
     SkillDifference := Source.GetEffectiveSkillLevel(psAccuracy) -
-      (Integer(GetEffectiveSkillLevel(psManeuverability)) and $7F);
+      GetEffectiveSkillLevel(psManeuverability);
     MaxDamage := Source.GetWeaponMaxDamage(Weapon);
     MinDamage := Source.GetWeaponMinDamage(Weapon);
     DamageStep := (MaxDamage - MinDamage) / 12;
@@ -3887,7 +3890,7 @@ begin
   end;
   if (Source.GetDefGenerator <> nil) and (Source.CountActiveArtefacts(Ord(t_ArtDefToEnergy)) > 0) and
     (Weapon.GetWeaponInfo.DamageFlags and 1 <> 0) then
-    AdjustedDamage := (1 + (RemapClamped(Integer(Source.CountWeaponsByDamageFlags(EnergyDamageFlags)) and $7F, 1, 5,
+    AdjustedDamage := (1 + (RemapClamped(Source.CountWeaponsByDamageFlags(EnergyDamageFlags), 1, 5,
       DefenseToEnergyUpperFactor + ShortInt(Source.CanBoostArtefact(Ord(t_ArtDefToEnergy), Weapon, False)) * DefenseToEnergyUpperBoost,
       DefenseToEnergyMinimumFactor + ShortInt(Source.CanBoostArtefact(Ord(t_ArtDefToEnergy), Weapon, False)) * DefenseToEnergyMinimumBoost) - 1) *
       Source.CountActiveArtefacts(Ord(t_ArtDefToEnergy))) * AdjustedDamage;
@@ -3949,9 +3952,9 @@ begin
   Flags := TDamageFlagSet(ScriptFlags);
   DamageFlags := Dword(Flags);
   if Shot.OwnerShip = nil then
-    SkillDifference := 0 - (Integer(GetEffectiveSkillLevel(psManeuverability)) and $7F)
+    SkillDifference := 0 - GetEffectiveSkillLevel(psManeuverability)
   else SkillDifference := Shot.OwnerShip.GetEffectiveSkillLevel(psAccuracy) -
-    (Integer(GetEffectiveSkillLevel(psManeuverability)) and $7F);
+    GetEffectiveSkillLevel(psManeuverability);
   MinDamage := Shot.MinDamage;
   MaxDamage := Shot.MaxDamage;
   DamageStep := (MaxDamage - MinDamage) / 12;
@@ -4862,7 +4865,7 @@ end;
 { @end $75A474 }
 
 { @routine $75A9C0 TShip_CountEquippedWeapons }
-function TShip.CountEquippedWeapons: Byte;
+function TShip.CountEquippedWeapons: TWeaponCount;
 var
   I, Count: Integer;
   Item: TEquipment;
@@ -4878,7 +4881,7 @@ end;
 { @end $75A9C0 }
 
 { @routine $75AA2C TShip_CountMissileWeapons }
-function TShip.CountMissileWeapons: Byte;
+function TShip.CountMissileWeapons: TWeaponCount;
 var
   I: Integer;
 begin
@@ -4915,7 +4918,7 @@ end;
 { @end $75AAD4 }
 
 { @routine $75AB5C TShip_CountWeaponsByDamageFlags }
-function TShip.CountWeaponsByDamageFlags(Flags: TDamageFlagSet): Byte;
+function TShip.CountWeaponsByDamageFlags(Flags: TDamageFlagSet): TWeaponCount;
 var
   I: Integer;
 begin
@@ -4962,7 +4965,7 @@ begin
       MaximumDamage := Round(MaximumDamage * DifficultyFactor);
     end;
     Result := WideString(IntToStr(MinimumDamage)) + WrapTextInColor('-', '<color=127,127,127>') + WideString(IntToStr(MaximumDamage));
-    Result := WideString('(' + IntToStr(Integer(GetEffectiveSkillLevel(psAccuracy)) and $7F) + ') ') + Result;
+    Result := WideString('(' + IntToStr(GetEffectiveSkillLevel(psAccuracy)) + ') ') + Result;
   end;
 end;
 { @end $75ABBC }
@@ -4970,7 +4973,7 @@ end;
 { @routine $75AED0 TShip_GetManeuverabilitySummary }
 function TShip.GetManeuverabilitySummary: WideString;
 begin
-  Result := '(' + IntToStr(Integer(GetEffectiveSkillLevel(psManeuverability)) and $7F) + ') ';
+  Result := '(' + IntToStr(GetEffectiveSkillLevel(psManeuverability)) + ') ';
 end;
 { @end $75AED0 }
 
@@ -5139,7 +5142,7 @@ end;
 { @end $75B3CC }
 
 { @routine $75B92C TShip_GetWinChancePercent }
-function TShip.GetWinChancePercent(Target: TShip): Byte;
+function TShip.GetWinChancePercent(Target: TShip): TPercent;
 var Value: Double;
 begin
   Value := ChanceToWin(Target);
@@ -5217,7 +5220,7 @@ end;
 { @routine $75BE58 TShip_GetRelationLevelToShip }
 function TShip.GetRelationLevelToShip(Ship: TShip): TRelationLevel;
 begin
-  case Integer(RelationToShip(Ship)) and $7F of
+  case RelationToShip(Ship) of
     0..9: Result := rlHostile;
     10..29: Result := rlBad;
     30..59: Result := rlNormal;
@@ -5466,7 +5469,7 @@ begin
     else AppendLogLineThreadSafe('obj is ' + Location.ClassName);
     raise Exception.Create('Error in TShip.ShopGoodsSellPrice');
   end;
-  Result := Max(1, Round(TradingSkillSalePercent[Integer(GetEffectiveSkillLevel(psTrading)) and $7F] *
+  Result := Max(1, Round(TradingSkillSalePercent[GetEffectiveSkillLevel(psTrading)] *
     (Entry.PurchasePrice - Entry.BaseSalePrice) * 0.01 + Entry.BaseSalePrice));
 end;
 { @end $75D0E8 }
@@ -5949,7 +5952,7 @@ var
 begin
   if Item is TWeapon then
   begin
-    for I := 1 to Integer(CountEquippedWeapons) and $7F do
+    for I := 1 to CountEquippedWeapons do
       if Weapons[I] = Item then
       begin
         UnequipSlot(Ord(t_Weapon1), I);
@@ -6010,7 +6013,7 @@ end;
 { @end $75ED40 }
 
 { @routine $75EEC0 TShip_GetHullIntegrityPercent }
-function TShip.GetHullIntegrityPercent: Byte;
+function TShip.GetHullIntegrityPercent: TPercent;
 begin
   Result := Round(GetHull.HullPoints / GetHull.Weight * 100);
 end;
@@ -6209,7 +6212,7 @@ end;
 function TShip.GetScannerPower: Integer;
 begin
   Result := 0;
-  if IsEquipmentUsable(GetScanner) then Result := CalculateScannerPower(GetScanner) + 12 * (Integer(IsHealthEffectActive(21)) and $7F);
+  if IsEquipmentUsable(GetScanner) then Result := CalculateScannerPower(GetScanner) + 12 * Ord(IsHealthEffectActive(21));
 end;
 { @end $75F7D8 }
 
@@ -6311,7 +6314,7 @@ end;
 { @end $75FDCC }
 
 { @routine $75FE18 TShip_GetDefensePercent }
-function TShip.GetDefensePercent: Byte;
+function TShip.GetDefensePercent: TPercent;
 begin
   Result := DefenseDamageFactorToPercent(GetDefenseDamageFactor);
 end;
@@ -6914,8 +6917,8 @@ begin
       if RemainingSlots <= 0 then Exit;
     end;
   end;
-  EnergyCount := Integer(CountWeaponsByDamageFlags(EnergyFlags)) and $7F;
-  SplinterCount := Integer(CountWeaponsByDamageFlags(SplinterFlags)) and $7F;
+  EnergyCount := CountWeaponsByDamageFlags(EnergyFlags);
+  SplinterCount := CountWeaponsByDamageFlags(SplinterFlags);
   HasEnergy := EnergyCount > 0;
   HasSplinter := SplinterCount > 0;
   HasMissiles := False;
@@ -7052,7 +7055,7 @@ begin
       OtherRange := GetWeaponRange(Weapons[WeaponIndex]);
       if OtherRange < MinRange then MinRange := OtherRange;
     end;
-    DamageBonusKind := WeaponDamageClasses[Integer(ClassifyWeaponDamageFlags(Weapon.GetWeaponInfo.DamageFlags)) and $7F].BonusKind;
+    DamageBonusKind := WeaponDamageClasses[Ord(ClassifyWeaponDamageFlags(Weapon.GetWeaponInfo.DamageFlags))].BonusKind;
     DamageValue := EvaluateStatBonus(TEquipmentBonusKind(DamageBonusKind), Round(Damage));
     Result := Result + DamageValue * (1 + EvaluateStatBonus(bonWRadius, Round(WeaponRange)) * 0.002);
     Result := Result + EvaluateStatBonus(bonWRadius, Round((WeaponRange + MinRange) * 0.5)) * 0.5;
@@ -7112,7 +7115,7 @@ begin
     end;
     MinimumDamage := Max(1, MinimumDamage);
     MaximumDamage := Max(1, MaximumDamage);
-    Result := RemapClamped(Integer(GetEffectiveSkillLevel(psAccuracy)) and $7F, 0, 6,
+    Result := RemapClamped(GetEffectiveSkillLevel(psAccuracy), 0, 6,
       (3 * MinimumDamage + MaximumDamage) div 4, (MinimumDamage + 3 * MaximumDamage) div 4);
   end;
 end;
@@ -7206,7 +7209,7 @@ begin
   if not CanUseEquipmentTech(Engine) then Value := Value div 2;
   if CountActiveArtefacts(Ord(t_ArtGiperJump)) > 0 then
     Value := Max(Value, Round(Sqrt(CountActiveArtefacts(Ord(t_ArtGiperJump))) *
-      (HyperJumpArtefactRange + HyperJumpArtefactBoostRange * (Integer(CanBoostArtefact(Ord(t_ArtGiperJump), Engine, False)) and $7F))));
+      (HyperJumpArtefactRange + HyperJumpArtefactBoostRange * Ord(CanBoostArtefact(Ord(t_ArtGiperJump), Engine, False)))));
   Result := Max(0, Value + Bonus);
 end;
 { @end $762EA0 }
@@ -7337,9 +7340,9 @@ begin
         if (GetDefGenerator <> nil) and (ItemType <> t_DefGenerator) then
           AccumulateEquipmentBonus(EvaluateStatBonus(bonDef, Module.StatBonuses[Ord(bonDef)] + Integer(Round(100 - CalculateDefGeneratorFactor(GetDefGenerator) * 100))) -
             EvaluateStatBonus(bonDef, Round(100 - CalculateDefGeneratorFactor(GetDefGenerator) * 100)));
-        AccumulateEquipmentBonus(EvaluateStatBonus(bonWRadius, Module.StatBonuses[Ord(bonWRadius)]) * (Integer(CountEquippedWeapons) and $7F));
+        AccumulateEquipmentBonus(EvaluateStatBonus(bonWRadius, Module.StatBonuses[Ord(bonWRadius)]) * CountEquippedWeapons);
         if not (Byte(ItemType) in [Ord(t_Weapon1)..Ord(t_CustomWeapon)]) then
-          for I := 1 to Integer(CountEquippedWeapons) and $7F do
+          for I := 1 to CountEquippedWeapons do
           begin
             DamageBonus := 0;
             if dkEnergy in TDamageFlagSet(Weapons[I].GetWeaponInfo.DamageFlags) then DamageBonus := DamageBonus + EvaluateStatBonus(bonWEnergy, Module.StatBonuses[Ord(bonWEnergy)]);
@@ -7376,9 +7379,9 @@ begin
         if (GetDefGenerator <> nil) and (ItemType <> t_DefGenerator) then
           AccumulateEquipmentBonus(EvaluateStatBonus(bonDef, Item.GetStatBonus(bonDef) + Integer(Round(100 - CalculateDefGeneratorFactor(GetDefGenerator) * 100))) -
             EvaluateStatBonus(bonDef, Round(100 - CalculateDefGeneratorFactor(GetDefGenerator) * 100)));
-        AccumulateEquipmentBonus(EvaluateStatBonus(bonWRadius, Item.GetStatBonus(bonWRadius)) * (Integer(CountEquippedWeapons) and $7F));
+        AccumulateEquipmentBonus(EvaluateStatBonus(bonWRadius, Item.GetStatBonus(bonWRadius)) * CountEquippedWeapons);
         if not (Byte(ItemType) in [Ord(t_Weapon1)..Ord(t_CustomWeapon)]) then
-          for I := 1 to Integer(CountEquippedWeapons) and $7F do
+          for I := 1 to CountEquippedWeapons do
           begin
             DamageBonus := 0;
             if dkEnergy in TDamageFlagSet(Weapons[I].GetWeaponInfo.DamageFlags) then DamageBonus := DamageBonus + EvaluateStatBonus(bonWEnergy, Item.GetStatBonus(bonWEnergy));
@@ -7424,12 +7427,12 @@ begin
       Result := Result * (1 + (EnergyPulseArtefactFactor + ShortInt(CanBoostArtefact(Ord(t_ArtEnergyPulse), Weapon, False)) * EnergyPulseArtefactBoostFactor) * EnergyPulseArtefactChance);
   if (CountActiveArtefacts(Ord(t_ArtDefToEnergy)) > 0) and ((Flags and 1) <> 0) and (GetDefGenerator <> nil) then
     Result := Result * (1 + (
-      ((Integer(CountWeaponsByDamageFlags(EnergyDamageFlags)) and $7F) + 1) * RemapClamped(
-        (Integer(CountWeaponsByDamageFlags(EnergyDamageFlags)) and $7F) + 1, 1, 5,
+      (CountWeaponsByDamageFlags(EnergyDamageFlags) + 1) * RemapClamped(
+        CountWeaponsByDamageFlags(EnergyDamageFlags) + 1, 1, 5,
         DefenseToEnergyUpperFactor + ShortInt(CanBoostArtefact(Ord(t_ArtDefToEnergy), Weapon, False)) * DefenseToEnergyUpperBoost,
         DefenseToEnergyMinimumFactor + ShortInt(CanBoostArtefact(Ord(t_ArtDefToEnergy), Weapon, False)) * DefenseToEnergyMinimumBoost) -
-      (Integer(CountWeaponsByDamageFlags(EnergyDamageFlags)) and $7F) * RemapClamped(
-        Integer(CountWeaponsByDamageFlags(EnergyDamageFlags)) and $7F, 1, 5,
+      CountWeaponsByDamageFlags(EnergyDamageFlags) * RemapClamped(
+        CountWeaponsByDamageFlags(EnergyDamageFlags), 1, 5,
         DefenseToEnergyUpperFactor + ShortInt(CanBoostArtefact(Ord(t_ArtDefToEnergy), Weapon, False)) * DefenseToEnergyUpperBoost,
         DefenseToEnergyMinimumFactor + ShortInt(CanBoostArtefact(Ord(t_ArtDefToEnergy), Weapon, False)) * DefenseToEnergyMinimumBoost) - 1) * CountActiveArtefacts(Ord(t_ArtDefToEnergy)));
   if (Flags and 2) <> 0 then
@@ -7557,7 +7560,7 @@ begin
     bonSpeed: Result := Value;
     bonJump: Result := Value * 25;
     bonRadar: Result := Value * 0.05;
-    bonScan: Result := Value * 5 + Value * 20 * (Integer(CountWeaponsByDamageFlags(ScannerFlags)) and $7F);
+    bonScan: Result := Value * 5 + Value * 20 * CountWeaponsByDamageFlags(ScannerFlags);
     bonDroid: Result := Value * 10 / Max(0.1, GetHull.GetFragilityFactor(NoFlags));
     bonHook: Result := (Min(Value, HullBaseSize * EquipmentSizeFactors[5]) + Value * 0.1) * 1.0;
     bonDef: Result := Value * 5 * 100 / Max(5, 100 - Value) * 45 / Max(5, 45 - Value);
@@ -7569,11 +7572,11 @@ begin
     bonMass: Result := RemapClamped(Value, HullMassEvaluationStart, HullMassEvaluationEnd, 1, 0.333) * 5000;
     bonSlotRadar:
       if (GetSlotCount(sskRadar) = 0) and (Value > 0) then Result := SlotBonusEvaluationWeights[Ord(BonusKind)] * 0.3
-      else if (GetRadar <> nil) and (Value < 0) then Result := -SlotBonusEvaluationWeights[Ord(BonusKind)] - SlotBonusEvaluationWeights[18] * (Integer(CountMissileWeapons) and $7F)
+      else if (GetRadar <> nil) and (Value < 0) then Result := -SlotBonusEvaluationWeights[Ord(BonusKind)] - SlotBonusEvaluationWeights[18] * CountMissileWeapons
       else if (GetSlotCount(sskRadar) = 1) and (Value < 0) then Result := SlotBonusEvaluationWeights[Ord(BonusKind)] * -0.3;
     bonSlotScaner:
       if (GetSlotCount(sskScanner) = 0) and (Value > 0) then Result := SlotBonusEvaluationWeights[Ord(BonusKind)] * 0.3
-      else if (GetScanner <> nil) and (Value < 0) then Result := -SlotBonusEvaluationWeights[Ord(BonusKind)] - (Integer(CountWeaponsByDamageFlags(ScannerFlags)) and $7F) * 0.1 * SlotBonusEvaluationWeights[18]
+      else if (GetScanner <> nil) and (Value < 0) then Result := -SlotBonusEvaluationWeights[Ord(BonusKind)] - CountWeaponsByDamageFlags(ScannerFlags) * 0.1 * SlotBonusEvaluationWeights[18]
       else if (GetSlotCount(sskScanner) = 1) and (Value < 0) then Result := SlotBonusEvaluationWeights[Ord(BonusKind)] * -0.3;
     bonSlotDroid:
       if (GetSlotCount(sskRepairRobot) = 0) and (Value > 0) then Result := SlotBonusEvaluationWeights[Ord(BonusKind)] * 0.3
@@ -7592,8 +7595,8 @@ begin
         if (GetSlotCount(sskWeapon) < 5) and (Value > 0) then
           Result := Min(Value, 5 - GetSlotCount(sskWeapon)) * SlotBonusEvaluationWeights[Ord(BonusKind)];
         if Value < 0 then Result := Max(Value, -GetSlotCount(sskWeapon)) * SlotBonusEvaluationWeights[Ord(BonusKind)];
-        if (Integer(CountEquippedWeapons) and $7F) > Max(Value + GetSlotCount(sskWeapon), 1) then
-          Result := Result - (SlotBonusEvaluationWeights[Ord(BonusKind)] * 0.6) * ((Integer(CountEquippedWeapons) and $7F) - Max(1, Value + GetSlotCount(sskWeapon)));
+        if CountEquippedWeapons > Max(Value + GetSlotCount(sskWeapon), 1) then
+          Result := Result - (SlotBonusEvaluationWeights[Ord(BonusKind)] * 0.6) * (CountEquippedWeapons - Max(1, Value + GetSlotCount(sskWeapon)));
       end;
     bonSlotArt:
       begin
@@ -7609,13 +7612,13 @@ begin
     bonSkill1..bonSkill6:
       begin
         if Value > 0 then
-          Result := Min(6 - (Integer(GetEffectiveSkillLevel(TPilotSkill(EquipmentBonusSkills[Ord(BonusKind) - 22]))) and $7F), Value) * SkillBonusEvaluationWeights[Ord(BonusKind)];
-        if (Value > 0) and (Value + (Integer(GetEffectiveSkillLevel(TPilotSkill(EquipmentBonusSkills[Ord(BonusKind) - 22]))) and $7F) > 6) then
-          Result := Result + (SkillBonusEvaluationWeights[Ord(BonusKind)] * 0.05) * (Value + (Integer(GetEffectiveSkillLevel(TPilotSkill(EquipmentBonusSkills[Ord(BonusKind) - 22]))) and $7F) - 6);
+          Result := Min(6 - GetEffectiveSkillLevel(TPilotSkill(EquipmentBonusSkills[Ord(BonusKind) - 22])), Value) * SkillBonusEvaluationWeights[Ord(BonusKind)];
+        if (Value > 0) and (Value + GetEffectiveSkillLevel(TPilotSkill(EquipmentBonusSkills[Ord(BonusKind) - 22])) > 6) then
+          Result := Result + (SkillBonusEvaluationWeights[Ord(BonusKind)] * 0.05) * (Value + GetEffectiveSkillLevel(TPilotSkill(EquipmentBonusSkills[Ord(BonusKind) - 22])) - 6);
         if Value < 0 then
-          Result := Min(Integer(GetEffectiveSkillLevel(TPilotSkill(EquipmentBonusSkills[Ord(BonusKind) - 22]))) and $7F, -Value) * -SkillBonusEvaluationWeights[Ord(BonusKind)];
-        if (Value < 0) and (Value + (Integer(GetEffectiveSkillLevel(TPilotSkill(EquipmentBonusSkills[Ord(BonusKind) - 22]))) and $7F) < 0) then
-          Result := Result + (SkillBonusEvaluationWeights[Ord(BonusKind)] * 0.03) * (Value + (Integer(GetEffectiveSkillLevel(TPilotSkill(EquipmentBonusSkills[Ord(BonusKind) - 22]))) and $7F));
+          Result := Min(GetEffectiveSkillLevel(TPilotSkill(EquipmentBonusSkills[Ord(BonusKind) - 22])), -Value) * -SkillBonusEvaluationWeights[Ord(BonusKind)];
+        if (Value < 0) and (Value + GetEffectiveSkillLevel(TPilotSkill(EquipmentBonusSkills[Ord(BonusKind) - 22])) < 0) then
+          Result := Result + (SkillBonusEvaluationWeights[Ord(BonusKind)] * 0.03) * (Value + GetEffectiveSkillLevel(TPilotSkill(EquipmentBonusSkills[Ord(BonusKind) - 22])));
       end;
   else Result := 0;
   end;
@@ -7636,12 +7639,12 @@ var
 begin
   Flags := Weapon.GetDamageFlags;
   if (Flags * ScannerFlags <> []) and (GetScanner <> nil) and (GetRadar <> nil) then
-    ScannerFactor := RemapClamped(GetScannerPower - (Integer(DefenseDamageFactorToPercent(GetGeneratedDefenseDamageFactor(Galaxy.TechLevel))) and $7F) + 1, -5, 10, 0.1, 2)
+    ScannerFactor := RemapClamped(GetScannerPower - DefenseDamageFactorToPercent(GetGeneratedDefenseDamageFactor(Galaxy.TechLevel)) + 1, -5, 10, 0.1, 2)
   else ScannerFactor := 0;
   Result := BaseDamage * GetWeaponArtefactDamageFactor(Weapon);
   if dkDestruct in Flags then Result := Result * 1.05;
   if dkDrain in Flags then Result := Result * 1.5;
-  if dkShock in Flags then Result := Result * (1.1 + (Integer(CountWeaponsByDamageFlags(ShockFlags)) and $7F) * 0.05);
+  if dkShock in Flags then Result := Result * (1.1 + CountWeaponsByDamageFlags(ShockFlags) * 0.05);
   if dkAcid in Flags then Result := Result * 1.1;
   if dkMagnetic in Flags then Result := Result * 1.1;
   StatusFactor := 1;
@@ -7654,12 +7657,12 @@ begin
     if dkDestruct in Flags then Result := Result + 1;
     if dkDecelerate in Flags then Result := Result + 2;
     if (CountActiveArtefacts(Ord(t_ArtDecelerate)) > 0) and (dkSplinter in Flags) then
-      Result := Result + 5 + 5 * (Integer(CanBoostArtefact(Ord(t_ArtDecelerate), Weapon, False) or (CountActiveArtefacts(Ord(t_ArtDecelerate)) > 1)) and $7F);
+      Result := Result + 5 + 5 * Ord(CanBoostArtefact(Ord(t_ArtDecelerate), Weapon, False) or (CountActiveArtefacts(Ord(t_ArtDecelerate)) > 1));
     Result := Result + Integer(CountWeaponsByDamageFlags(AcidFlags)) * Weapon.GetShotCount;
     if dkAcid in Flags then
     begin
       ShotTotal := 1;
-      for I := 1 to Integer(CountEquippedWeapons) and $7F do Inc(ShotTotal, Weapons[I].GetShotCount);
+      for I := 1 to CountEquippedWeapons do Inc(ShotTotal, Weapons[I].GetShotCount);
       Result := Result + ShotTotal * 2;
     end;
     if dkMoreDrop in Flags then Result := Result + ScannerFactor * 5;
@@ -8808,7 +8811,7 @@ begin
     if IsHealthEffectActive(16) then DurabilityDamage := DurabilityDamage * 0.4;
   end;
   if CanUseEquipmentTech(Item) and (GetEffectiveSkillLevel(psTechnical) > 0) then
-    DurabilityDamage := DurabilityDamage / (1 + (Integer(GetEffectiveSkillLevel(psTechnical)) and $7F) * 0.2);
+    DurabilityDamage := DurabilityDamage / (1 + GetEffectiveSkillLevel(psTechnical) * 0.2);
   DurabilityDamage := DurabilityDamage * Item.GetFragilityFactor(EmptyDamageFlags);
   BeforeScript := Round(DurabilityDamage * 1000);
   case Kind of
@@ -9062,7 +9065,7 @@ end;
 { @routine $76A044 TShip_GetSatelliteLimit }
 function TShip.GetSatelliteLimit: Integer;
 begin
-  Result := TechnicalSkillSatelliteLimits[Integer(GetEffectiveSkillLevel(psTechnical)) and $7F] + GetTotalStatBonus(Ord(bonZonds));
+  Result := TechnicalSkillSatelliteLimits[GetEffectiveSkillLevel(psTechnical)] + GetTotalStatBonus(Ord(bonZonds));
 end;
 { @end $76A044 }
 
@@ -12803,7 +12806,7 @@ function TShip.CalculatePartnershipMonths(Amount: Integer; OtherShip: TShip): In
 begin
   if Amount < Wealth / 45 then begin Result := 0; Exit; end;
   Result := Round(RemapClamped(Amount, Wealth / 45, Wealth / 8, 8, 36) *
-    RemapClamped(Integer(RelationToShip(OtherShip)) and $7F, 50, 100, 0.7, 1.5));
+    RemapClamped(RelationToShip(OtherShip), 50, 100, 0.7, 1.5));
   if (GetPlayer = OtherShip) and OtherShip.IsHealthEffectActive(20) then Result := Result * 2;
 end;
 { @end $779CF4 }
@@ -12824,7 +12827,7 @@ begin
     end else begin
       Result := (Self as TNormalShip).SelectSituationalMessage(False);
       if Result <> '' then Exit;
-      case Integer(GetRelationLevelToShip(GetPlayer)) and $7F of
+      case Ord(GetRelationLevelToShip(GetPlayer)) of
         0: Key := 'ShipGreetings.Standart.FemaleWar';
         1: Key := 'ShipGreetings.Standart.FemaleBad';
         2: Key := 'ShipGreetings.Standart.FemaleNormal';
@@ -12847,7 +12850,7 @@ begin
       end;
       Result := (Self as TNormalShip).SelectSituationalMessage(False);
       if Result <> '' then Exit;
-      case Integer(GetRelationLevelToShip(GetPlayer)) and $7F of
+      case Ord(GetRelationLevelToShip(GetPlayer)) of
         0: Key := 'ShipGreetings.Standart.' + GetTypeNameKey + 'War';
         1: Key := 'ShipGreetings.Standart.' + GetTypeNameKey + 'Bad';
         2: Key := 'ShipGreetings.Standart.' + GetTypeNameKey + 'Normal';
@@ -13200,7 +13203,7 @@ end;
 { @end $77BA78 }
 
 { @routine $77BAA0 TShip_GetEffectiveSkillLevel }
-function TShip.GetEffectiveSkillLevel(Skill: TPilotSkill; IgnoreStatusEffects: Boolean): Byte;
+function TShip.GetEffectiveSkillLevel(Skill: TPilotSkill; IgnoreStatusEffects: Boolean): TPilotSkillLevel;
 var
   Level: Integer;
   BonusKind: Byte;
@@ -13655,8 +13658,8 @@ begin
     itsMostHullPoints: Result := Candidate.GetHull.HullPoints > Current.GetHull.HullPoints;
     itsFewestHullPoints: Result := Candidate.GetHull.HullPoints < Current.GetHull.HullPoints;
     itsStrongestDefense: Result :=
-      RemapClamped(Integer(Candidate.GetEffectiveSkillLevel(psManeuverability)) and $7F, 0, 6, 1.5, 0.5) * 50 * Candidate.DefenseDamageFactor - Candidate.GetHull.Armor <
-      RemapClamped(Integer(Current.GetEffectiveSkillLevel(psManeuverability)) and $7F, 0, 6, 1.5, 0.5) * 50 * Current.DefenseDamageFactor - Current.GetHull.Armor;
+      RemapClamped(Candidate.GetEffectiveSkillLevel(psManeuverability), 0, 6, 1.5, 0.5) * 50 * Candidate.DefenseDamageFactor - Candidate.GetHull.Armor <
+      RemapClamped(Current.GetEffectiveSkillLevel(psManeuverability), 0, 6, 1.5, 0.5) * 50 * Current.DefenseDamageFactor - Current.GetHull.Armor;
     itsGreatestStrength: Result := Candidate.Strength > Current.Strength;
     itsNearest: Result := PointDistanceSquared(Candidate.Position, Position) < PointDistanceSquared(Current.Position, Position);
     itsFarthest: Result := PointDistanceSquared(Candidate.Position, Position) > PointDistanceSquared(Current.Position, Position);
@@ -13747,7 +13750,7 @@ end;
 { @routine $77D75C TShip_GetHullEnergyRegeneration }
 function TShip.GetHullEnergyRegeneration: Integer;
 begin
-  Result := Round(RemapClamped(Integer(GetEffectiveSkillLevel(psTechnical)) and $7F, 0, 6, 1, 2) *
+  Result := Round(RemapClamped(GetEffectiveSkillLevel(psTechnical), 0, 6, 1, 2) *
     (RemapClamped(GetHull.HullPoints, 0, GetHull.Weight, 0, 1) * 10));
 end;
 { @end $77D75C }
@@ -13755,7 +13758,7 @@ end;
 { @routine $77D7F8 TShip_GetInterceptorDamage }
 function TShip.GetInterceptorDamage: Integer;
 begin
-  Result := Round(RemapClamped(Integer(GetEffectiveSkillLevel(psTechnical)) and $7F, 0, 6, 1, 2) * 25);
+  Result := Round(RemapClamped(GetEffectiveSkillLevel(psTechnical), 0, 6, 1, 2) * 25);
 end;
 { @end $77D7F8 }
 
@@ -14400,7 +14403,7 @@ end;
 { @end $77F4D0 }
 
 { @routine $77F4F4 TShip_RelationToShip }
-function TShip.RelationToShip(Ship: TShip): Byte;
+function TShip.RelationToShip(Ship: TShip): TPercent;
 begin
   if Ship = Self then
   begin

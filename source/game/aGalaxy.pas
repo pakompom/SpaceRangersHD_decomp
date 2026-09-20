@@ -6,7 +6,7 @@ interface
 uses aGalaxyStruct, aPath, SE_Space, aConst, GI_Panel, GI_MessageLoop, EC_Buf, EC_Struct, aMyFunction, EC_BlockPar, Classes, Types, aVector;
 
 type
-  TControlPercent = 0..100;
+  TDifficultyTier = 0..9;
   TShipPopulationCounts = array[0..13] of Integer; // @size $38
   PShipPopulationCounts = ^TShipPopulationCounts;
 
@@ -371,7 +371,7 @@ type
     function FindStrongestRanger: Pointer; // @addr 0x7BAB14 @note "Ignores ExcludedFromRating rangers; returns nil if none has positive strength."
     function FindWealthiestRanger: Pointer; // @addr 0x7BAB90 @note "Ignores ExcludedFromRating rangers; returns nil if none has positive wealth."
     function CountFactionStars(Faction: Byte): Integer; // @addr 0x7BAC10 @note "Excludes stars with a custom faction."
-    function GetFactionControlPercent(Faction: Byte): TControlPercent; // @addr 0x7BAC78
+    function GetFactionControlPercent(Faction: Byte): TPercent; // @addr 0x7BAC78
     function GetDominatorSeriesControlShare(Series: TDominatorSeries): Single; // @addr 0x7BACBC @note "Active Galaxy only. Fraction of Dominator systems in Series, multiplied by the number of unresolved series; not a percentage."
     function CountStarsInBattle: Integer; // @addr 0x7BAD94
     function TurnToDateTime(Turn: Integer): Double; // @addr 0x7BB330 @note "Delphi TDateTime; -1 selects CurrentTurn."
@@ -387,7 +387,7 @@ type
     procedure ComputeGlobalGoodsPriceBands; // @addr 0x7BBD50
     function ScaleGoodsPriceByGalaxyAge(BaseValue: Integer): Integer; // @addr 0x7BBFE8
     function ScaleGoodsStockByGalaxyAge(BaseValue: Integer): Integer; // @addr 0x7BC054
-    function GetGoodsPricePercent(GoodsType: Byte; Price: Integer): Byte; // @addr 0x7BBF78 @note "Maps the global minimum/maximum price band to 0..100 with clamping."
+    function GetGoodsPricePercent(GoodsType: Byte; Price: Integer): TPercent; // @addr 0x7BBF78 @note "Maps the global minimum/maximum price band to 0..100 with clamping."
     function ScaleIntByTechLevel(AtLevelTwo, AtLevelSeven: Integer): Integer; // @addr 0x7BC0C0 @note "Clamps TechLevel to 2..7, linearly interpolates the endpoints, then rounds."
     function InterpolateSingleByTechLevel(AtLevelTwo, AtLevelSeven: Single): Single; // @addr 0x7BC11C @ida "float __userpurge $name@<st0>(TGalaxy *Self@<eax>, float AtLevelTwo@<^4>, float AtLevelSeven@<^0>);"
     function GetOrCreateCustomWeaponInfo(Name: WideString): PWeaponInfo; // @addr $7D4544 Inserts a new custom template in the case-insensitive sorted pool.
@@ -420,7 +420,7 @@ type
     function GetCoalitionToPirateSystemRatio: Single; // @addr 0x7C1744 @note "Uses the active Galaxy, not Self; denominator is max(pirate systems - 1, 1)."
 
     function GetEffectiveDifficultyLevel: Integer; // @addr 0x7C1794 @note "With custom rules disabled, reads the active Galaxy difficulty array rather than Self."
-    function GetDifficultyTierIndex: Byte; // @addr 0x7C17E4 @note "Returns 0..9; tier boundaries are 6, 14, 22, and subsequent increments of eight."
+    function GetDifficultyTierIndex: TDifficultyTier; // @addr 0x7C17E4 @note "Returns 0..9; tier boundaries are 6, 14, 22, and subsequent increments of eight."
     function InterpolateDifficulty(Level: Integer; AtZero, AtEight, AtSixteen, AtTwentyFour: Single): Single; // @addr 0x7C1848 @ida "float __userpurge $name@<st0>(TGalaxy *Self@<eax>, int Level@<edx>, float AtZero@<^12>, float AtEight@<^8>, float AtSixteen@<^4>, float AtTwentyFour@<^0>);" @note "A negative Level selects the effective difficulty; values above 24 extrapolate."
     function ScaleDifficultyExponentially(Level: Integer; BaseValue, FactorPerEightLevels: Single): Single; // @addr 0x7C1964 @ida "float __userpurge $name@<st0>(TGalaxy *Self@<eax>, int Level@<edx>, float BaseValue@<^4>, float FactorPerEightLevels@<^0>);" @note "A negative Level selects the effective difficulty."
     function GetTurnsBetweenLiberationGroups: Integer; // @addr 0x7C1A4C
@@ -430,7 +430,7 @@ type
 
     procedure ProcessDominatorResearchProgress; // @addr 0x7BE398
     function GetDominatorResearchRate(Series: TDominatorSeries): Single; // @addr 0x7BE710 @note "Percentage points per day."
-    function GetDominatorResearchEfficiency(Series: TDominatorSeries): Byte; // @addr 0x7BE78C @note "Returns 20..100 percent."
+    function GetDominatorResearchEfficiency(Series: TDominatorSeries): TPercent; // @addr 0x7BE78C @note "Returns 20..100 percent."
     procedure ProcessBankDebtAndDeposits; // @addr 0x7BEC1C @note "Debt pauses deposit accrual. Both states are cleared when no business centers remain."
     procedure TryAwardDepositPrize; // @addr 0x7BE89C @note "Eligible only at positive multiples of 365 accrued deposit days."
     function FindStationByTypeAndIndex(Index: Integer; StationType: TStationType): Pointer; // @addr 0x7BE7DC @note "One-based index over active Galaxy star/ship order. Uses Self's cached type count as an early gate; missing entries return nil."
@@ -8043,7 +8043,7 @@ end;
 { @end $7BAC10 }
 
 { @routine $7BAC78 TGalaxy_GetFactionControlPercent }
-function TGalaxy.GetFactionControlPercent(Faction: Byte): TControlPercent;
+function TGalaxy.GetFactionControlPercent(Faction: Byte): TPercent;
 begin
   Result := Round(CountFactionStars(Faction) / Stars.Count * 100);
 end;
@@ -8342,7 +8342,7 @@ end;
 { @end $7BBD50 }
 
 { @routine $7BBF78 TGalaxy_GetGoodsPricePercent }
-function TGalaxy.GetGoodsPricePercent(GoodsType: Byte; Price: Integer): Byte;
+function TGalaxy.GetGoodsPricePercent(GoodsType: Byte; Price: Integer): TPercent;
 begin
   Result := Round(RemapClamped(Price, GoodsMarket[GoodsType].MinPrice, GoodsMarket[GoodsType].MaxPrice, 0, 100));
 end;
@@ -9035,13 +9035,13 @@ end;
 function TGalaxy.GetDominatorResearchRate(Series: TDominatorSeries): Single;
 var Efficiency: Integer;
 begin
-  Efficiency := Integer(GetDominatorResearchEfficiency(Series)) and $7F;
+  Efficiency := GetDominatorResearchEfficiency(Series);
   Result := RemapClamped(Efficiency, 0, 100, 0.00001, GalaxyDifficultyTuning[DifficultyLevels[2]].MaximumDominatorResearchRate) * DominatorResearchRateMultipliers[Ord(Series)];
 end;
 { @end $7BE710 }
 
 { @routine $7BE78C TGalaxy_GetDominatorResearchEfficiency }
-function TGalaxy.GetDominatorResearchEfficiency(Series: TDominatorSeries): Byte;
+function TGalaxy.GetDominatorResearchEfficiency(Series: TDominatorSeries): TPercent;
 begin
   Result := Trunc(RemapClamped(DominatorResearch[Ord(Series)].Material, 0, 300, 20, 100));
 end;
@@ -9587,7 +9587,7 @@ begin
         Excess := 0;
         for I := WingmenPendingLeadershipPenalty.Count - 1 downto 0 do
           if TShip(WingmenPendingLeadershipPenalty[I]).PartnerShip = Leader then Inc(Excess);
-        Excess := Excess - (Integer(Leader.GetEffectiveSkillLevel(psLeadership)) and 127);
+        Excess := Excess - Leader.GetEffectiveSkillLevel(psLeadership);
         for I := WingmenPendingLeadershipPenalty.Count - 1 downto 0 do
           if TShip(WingmenPendingLeadershipPenalty[I]).PartnerShip = Leader then begin
             if Excess > 0 then begin
@@ -9738,7 +9738,7 @@ end;
 { @end $7C1794 }
 
 { @routine $7C17E4 TGalaxy_GetDifficultyTierIndex }
-function TGalaxy.GetDifficultyTierIndex: Byte;
+function TGalaxy.GetDifficultyTierIndex: TDifficultyTier;
 var Level, Bound, Tier, Step: Integer;
 begin
   Level := GetEffectiveDifficultyLevel;
@@ -10091,7 +10091,7 @@ begin
     for I := 0 to Ships.Count - 1 do
     begin
       Ship := TShip(Ships[I]);
-      Inc(Strength, Integer(Ship.GetStrengthScaledPirateStatus) and $7F);
+      Inc(Strength, Ship.GetStrengthScaledPirateStatus);
     end;
     ThreatLevel := Round(RemapClamped(Strength, 0, 500, 0, 100));
   end
@@ -13248,7 +13248,7 @@ begin
                 NearestMissileDistance := 0;
                 BestMissilePriority := -1;
                 MissilePriority := 0;
-                PointDefenseRangeSquared := (aConst.PointDefenseBaseRange + aConst.PointDefenseBonusRange) * (aConst.PointDefenseBaseRange + aConst.PointDefenseBonusRange * (Integer(Ship.CanBoostArtefact(Ord(t_ArtPDTurret), nil, False)) and 127));
+                PointDefenseRangeSquared := (aConst.PointDefenseBaseRange + aConst.PointDefenseBonusRange) * (aConst.PointDefenseBaseRange + aConst.PointDefenseBonusRange * Ord(Ship.CanBoostArtefact(Ord(t_ArtPDTurret), nil, False)));
                 while Self.Missiles.Count > CandidateIndex do
                 begin
                   Missile := Self.Missiles[CandidateIndex];

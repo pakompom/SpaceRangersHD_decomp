@@ -111,6 +111,9 @@ const
   AwardNotFound = $FF;
 
 type
+  TPercent = 0..100;
+  TProgramIndex = 0..11;
+
   TGreetingCountMask = set of 0..15; // @size $02 Shared greeting count buckets; bit 10 is Many/Far where supported.
 
   // Shared scalar configuration identifiers. Managed configuration records live in aConst.
@@ -165,6 +168,7 @@ type
   TRangerCareer = (rcTrader = 0, rcPirate = 1, rcWarrior = 2); // @size 0x1
   TRangerCareerSet = set of TRangerCareer; // @size 0x1
 
+  TGalaxyDifficultyIndex = 0..7;
   TGalaxyDifficultyLevels = array[0..7] of Byte;
 
   TPlanetEconomy = (peAgricultural = 0, peMixed = 1, peIndustrial = 2); // @size 0x1
@@ -289,6 +293,8 @@ type
 
   // OwnerToSys ($82E4EC) and RaceToSys ($82DED4) establish these IDs.
   // RaceId and PilotRace use the same Coalition values 0..4.
+  TOwnerIndex = 0..7;
+
   TOwnerId = (oiMaloc = 0, oiPeleng = 1, oiHuman = 2, oiFeyan = 3,
     oiGaal = 4, oiDominator = 5, oiUninhabited = 6, oiPirate = 7); // @size $01 OwnerInfo and native planet/ship owner numbering.
 

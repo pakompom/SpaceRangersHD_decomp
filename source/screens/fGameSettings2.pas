@@ -115,7 +115,7 @@ begin
       Inc(I);
       Text := IntToStr(I);
       if I < 10 then Text := '0' + Text;
-    until GameDataConfig.GetBlockByPath('StyleFace' + OwnerInfo[Integer(RaceToOwner(Race)) and $7F].InternalName).CountParams(Text) <= 0;
+    until GameDataConfig.GetBlockByPath('StyleFace' + OwnerInfo[RaceToOwner(Race)].InternalName).CountParams(Text) <= 0;
     LastPortraitByRace[Race] := I - 1;
   end;
   ViewportRect := Classes.Rect(0,0,GameScreenWidth,GameScreenHeight);
@@ -900,7 +900,7 @@ begin
   begin
     if LastPortraitByRace[PlayerRace] >= 0 then
     begin
-      SetImagePath('GI,Bm.Captain.' + GiResourceSuffix + OwnerInfo[Integer(RaceToOwner(PlayerRace)) and $7F].InternalName + IntToStr(CaptainPortraitIndex) + 'i');
+      SetImagePath('GI,Bm.Captain.' + GiResourceSuffix + OwnerInfo[RaceToOwner(PlayerRace)].InternalName + IntToStr(CaptainPortraitIndex) + 'i');
       SetImageKindX(ikxCenter);
       SetImageKindY(ikyCenter);
       SetActive(True);
@@ -912,7 +912,7 @@ begin
     FirstFrameOnly := not AnimCaptain;
     if LastPortraitByRace[PlayerRace] >= 0 then
     begin
-      SetImagePath('Bm.Captain.' + GiResourceSuffix + OwnerInfo[Integer(RaceToOwner(PlayerRace)) and $7F].InternalName + IntToStr(CaptainPortraitIndex) + 'a');
+      SetImagePath('Bm.Captain.' + GiResourceSuffix + OwnerInfo[RaceToOwner(PlayerRace)].InternalName + IntToStr(CaptainPortraitIndex) + 'a');
       SequenceIndex := 0;
       UpdateAutoGeometry;
       SetImageKindX(ikxCenter);
@@ -1206,7 +1206,7 @@ begin
         NewGameSettingsConfig.SetOrAddParam('Name', '');
       if IronWill then NewGameSettingsConfig.SetOrAddParam('IronWill', 'True')
       else NewGameSettingsConfig.SetOrAddParam('IronWill', 'False');
-      NewGameSettingsConfig.SetOrAddParam('Race', OwnerInfo[Integer(RaceToOwner(PlayerRace)) and $7F].InternalName);
+      NewGameSettingsConfig.SetOrAddParam('Race', OwnerInfo[RaceToOwner(PlayerRace)].InternalName);
       NewGameSettingsConfig.SetOrAddParam('Char', IntToStr(CharacterPreset));
       NewGameSettingsConfig.SetOrAddParam('Face', IntToStr(CaptainPortraitIndex));
       NewGameSettingsConfig.SetOrAddParam('Skill1', IntToStr(StartingSkills[0]));
@@ -1319,7 +1319,7 @@ var Text: WideString;
 begin
   if Sender <> nil then PlayerNameEdited := True;
   (GetByName('Ok') as TGraphButtonGI).SetDisabled(not ValidatePlayerName((GetByName('PlayerName') as TEditGI).Text));
-  Text := LocalizedColorText('FormGameSet2.' + OwnerInfo[Integer(RaceToOwner(PlayerRace)) and $7F].InternalName + '.Char' + IntToStr(CharacterPreset));
+  Text := LocalizedColorText('FormGameSet2.' + OwnerInfo[RaceToOwner(PlayerRace)].InternalName + '.Char' + IntToStr(CharacterPreset));
   ReplaceTextToken(Text, '<Name>', TrimWideString((GetByName('PlayerName') as TEditGI).Text), '<color=255,240,100>');
   (GetByName('Info') as TLabelGI).SetText(Text);
 end;

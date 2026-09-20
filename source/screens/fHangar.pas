@@ -586,7 +586,7 @@ begin
     if GetPlayer.CurrentPlanet.OwnerId = Byte(oiPirate) then
     begin
       if not GetPlayer.CurrentPlanet.IsMainPiratePlanet then
-        MusicManager.PlayCategory('Nation.' + OwnerInfo[Integer(RaceToOwner(GetPlayer.CurrentPlanet.RaceId)) and $7F].InternalName + 'Pirate')
+        MusicManager.PlayCategory('Nation.' + OwnerInfo[RaceToOwner(GetPlayer.CurrentPlanet.RaceId)].InternalName + 'Pirate')
       else MusicManager.PlayCategory('Nation.PiratePlanetMain');
     end
     else MusicManager.PlayCategory('Nation.' + OwnerInfo[GetPlayer.CurrentPlanet.OwnerId].InternalName);
@@ -599,8 +599,8 @@ begin
       Exit;
     end;
     if GetPlayer.DockedTo.TypeId in [Ord(rstPirateBase),Ord(rstDominion)] then
-      MusicManager.PlayCategory('Nation.' + OwnerInfo[Integer(RaceToOwner(GetPlayer.DockedTo.PilotRace)) and $7F].InternalName + 'Pirate')
-    else MusicManager.PlayCategory('Nation.' + OwnerInfo[Integer(RaceToOwner(GetPlayer.DockedTo.PilotRace)) and $7F].InternalName);
+      MusicManager.PlayCategory('Nation.' + OwnerInfo[RaceToOwner(GetPlayer.DockedTo.PilotRace)].InternalName + 'Pirate')
+    else MusicManager.PlayCategory('Nation.' + OwnerInfo[RaceToOwner(GetPlayer.DockedTo.PilotRace)].InternalName);
   end;
 end;
 { @end $66C27C }
@@ -1344,7 +1344,7 @@ begin
     (GetByName('InfoShipSize') as TLabelGI).SetText(Text);
   end
   else (GetByName('InfoShipSize') as TLabelGI).SetText(WrapTextInColor('???',ColorTag));
-  Text := IntToStr(Integer(Ship.GetDefensePercent) and $7F) + '%';
+  Text := IntToStr(Ship.GetDefensePercent) + '%';
   if GetPlayer.CanResolveObjectWithScanner(Ship) or (GetPlayer = Ship) or (GetPlayer = Ship.PartnerShip) or (Ship.TypeId = stTranclucator) then
   begin
     Text := Text + ' + ' + WrapTextInColor(IntToStr(Ship.GetArmor),'');
@@ -1356,7 +1356,7 @@ begin
   begin
     (GetByName('ISWin') as TLabelGI).SetActive(True);
     (GetByName('InfoShipWin') as TLabelGI).SetActive(True);
-    (GetByName('InfoShipWin') as TLabelGI).SetText(IntToStr(Integer(GetPlayer.GetWinChancePercent(Ship)) and $7F) + '%');
+    (GetByName('InfoShipWin') as TLabelGI).SetText(IntToStr(GetPlayer.GetWinChancePercent(Ship)) + '%');
   end
   else
   begin

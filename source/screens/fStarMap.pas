@@ -505,7 +505,7 @@ begin
     ReplaceTextToken(StartText, '<Player>', GetPlayer.Name, '<color=255,240,100>');
     ExpandLocalizedTextMarkupAndPrefixLines(StartText);
     StartText := WideString(IntToStr(1)) + StartText;
-    StartText := WideString(IntToStr(Min(Integer(Galaxy.GetDifficultyTierIndex) and $7F, 3) + 1)) + StartText;
+    StartText := WideString(IntToStr(Min(Galaxy.GetDifficultyTierIndex, 3) + 1)) + StartText;
     StartText := WideString(IntToStr(6)) + StartText;
     WinText := RobotMapDefinitions[MapIndex].RobotsWin;
     ReplaceTextToken(WinText, '<Star>', GetPlayer.CurrentStar.Name, '<color=255,240,100>');
@@ -1732,10 +1732,10 @@ begin
             begin
               Portrait := Portrait + 'P';
               if (Ship.OwnerId = Byte(oiPirate)) and (TPirate(Ship).PirateType <> 0) then
-                Portrait := OwnerInfo[Integer(RaceToOwner(Ship.PilotRace)) and $7F].InternalName + Portrait + 'C'
-              else Portrait := OwnerInfo[Integer(RaceToOwner(Ship.PilotRace)) and $7F].InternalName + Portrait;
+                Portrait := OwnerInfo[RaceToOwner(Ship.PilotRace)].InternalName + Portrait + 'C'
+              else Portrait := OwnerInfo[RaceToOwner(Ship.PilotRace)].InternalName + Portrait;
             end
-            else Portrait := OwnerInfo[Integer(RaceToOwner(Ship.PilotRace)) and $7F].InternalName;
+            else Portrait := OwnerInfo[RaceToOwner(Ship.PilotRace)].InternalName;
             SetImageNormalPath('GI,Bm.PanelSpace2.' + GiResourceSuffix + Portrait + 'N');
             SetImageNormalActivePath('GI,Bm.PanelSpace2.' + GiResourceSuffix + Portrait + 'A');
             SetImageDownPath('GI,Bm.PanelSpace2.' + GiResourceSuffix + Portrait + 'D');
@@ -4230,7 +4230,7 @@ begin
         (GetByName('InfoShipSize') as TLabelGI).SetText(Text);
       end
       else (GetByName('InfoShipSize') as TLabelGI).SetText(WrapTextInColor('???', ColorTag));
-      Text := IntToStr(Integer((Obj as TShip).GetDefensePercent) and $7F) + '%';
+      Text := IntToStr((Obj as TShip).GetDefensePercent) + '%';
       if GetPlayer.CanResolveObjectWithScanner(Obj) or (GetPlayer = Obj) or ((Obj as TShip).PartnerShip = GetPlayer) or ((Obj as TShip).TypeId = stTranclucator) then
       begin
         Text := Text + ' + ' + WrapTextInColor(IntToStr((Obj as TShip).GetArmor), '');
@@ -4242,7 +4242,7 @@ begin
       begin
         (GetByName('ISWin') as TLabelGI).SetActive(True);
         (GetByName('InfoShipWin') as TLabelGI).SetActive(True);
-        (GetByName('InfoShipWin') as TLabelGI).SetText(IntToStr(Integer(GetPlayer.GetWinChancePercent(Obj as TShip)) and $7F) + '%');
+        (GetByName('InfoShipWin') as TLabelGI).SetText(IntToStr(GetPlayer.GetWinChancePercent(Obj as TShip)) + '%');
       end
       else
       begin

@@ -772,7 +772,7 @@ begin
   begin
     Image := TImageGI.Create(Panel);
     Image.UserState := Index;
-    Image.SetImagePath('GI,Bm.FormRating2.' + GiResourceSuffix + 'Open' + OwnerInfo[Integer(RaceToOwner(Ranger.PilotRace)) and $7F].InternalName);
+    Image.SetImagePath('GI,Bm.FormRating2.' + GiResourceSuffix + 'Open' + OwnerInfo[RaceToOwner(Ranger.PilotRace)].InternalName);
     Image.SetSize(Image.GetContentSize);
     Image.SetPosition(Classes.Point(0,0));
     Image.SetDepth(11);
@@ -970,7 +970,7 @@ begin
   begin
     Image := TImageGI.Create(Panel);
     Image.UserState := Index;
-    Image.SetImagePath('GI,Bm.FormRating2.' + GiResourceSuffix + 'Normal' + OwnerInfo[Integer(RaceToOwner(Ranger.PilotRace)) and $7F].InternalName);
+    Image.SetImagePath('GI,Bm.FormRating2.' + GiResourceSuffix + 'Normal' + OwnerInfo[RaceToOwner(Ranger.PilotRace)].InternalName);
     Image.SetSize(Image.GetContentSize);
     Image.SetPosition(Classes.Point(0,0));
     Image.SetDepth(11);
@@ -1052,7 +1052,7 @@ end;
 { @routine $56B6E0 TfRating2_RowMouseEnter }
 procedure TfRating2.RowMouseEnter(Sender: TObjectGI);
 begin
-  (Sender as TImageGI).SetImagePath('GI,Bm.FormRating2.' + GiResourceSuffix + 'Select' + OwnerInfo[Integer(RaceToOwner(Rows[Sender.UserState].Ranger.PilotRace)) and $7F].InternalName);
+  (Sender as TImageGI).SetImagePath('GI,Bm.FormRating2.' + GiResourceSuffix + 'Select' + OwnerInfo[RaceToOwner(Rows[Sender.UserState].Ranger.PilotRace)].InternalName);
   SoundManager.PlaySound('Sound.ButtonEnter');
 end;
 { @end $56B6E0 }
@@ -1060,7 +1060,7 @@ end;
 { @routine $56B810 TfRating2_RowMouseLeave }
 procedure TfRating2.RowMouseLeave(Sender: TObjectGI);
 begin
-  (Sender as TImageGI).SetImagePath('GI,Bm.FormRating2.' + GiResourceSuffix + 'Normal' + OwnerInfo[Integer(RaceToOwner(Rows[Sender.UserState].Ranger.PilotRace)) and $7F].InternalName);
+  (Sender as TImageGI).SetImagePath('GI,Bm.FormRating2.' + GiResourceSuffix + 'Normal' + OwnerInfo[RaceToOwner(Rows[Sender.UserState].Ranger.PilotRace)].InternalName);
   SoundManager.PlaySound('Sound.ButtonLeave');
 end;
 { @end $56B810 }
@@ -1217,7 +1217,7 @@ begin
     else if GetPlayer.CurrentPlanet.OwnerId = Byte(oiPirate) then
     begin
       if not GetPlayer.CurrentPlanet.IsMainPiratePlanet then
-        MusicManager.PlayCategory('Nation.' + OwnerInfo[Integer(RaceToOwner(GetPlayer.CurrentPlanet.RaceId)) and $7F].InternalName + 'Pirate')
+        MusicManager.PlayCategory('Nation.' + OwnerInfo[RaceToOwner(GetPlayer.CurrentPlanet.RaceId)].InternalName + 'Pirate')
       else MusicManager.PlayCategory('Nation.PiratePlanetMain');
     end
     else MusicManager.PlayCategory('Nation.' + OwnerInfo[GetPlayer.CurrentPlanet.OwnerId].InternalName);
@@ -1226,8 +1226,8 @@ begin
   begin
     if not MusicInPlanetEnabled then MusicManager.RequestFadeOut
     else if GetPlayer.DockedTo.TypeId in [Ord(rstPirateBase), Ord(rstDominion)] then
-      MusicManager.PlayCategory('Nation.' + OwnerInfo[Integer(RaceToOwner(GetPlayer.DockedTo.PilotRace)) and $7F].InternalName + 'Pirate')
-    else MusicManager.PlayCategory('Nation.' + OwnerInfo[Integer(RaceToOwner(GetPlayer.DockedTo.PilotRace)) and $7F].InternalName);
+      MusicManager.PlayCategory('Nation.' + OwnerInfo[RaceToOwner(GetPlayer.DockedTo.PilotRace)].InternalName + 'Pirate')
+    else MusicManager.PlayCategory('Nation.' + OwnerInfo[RaceToOwner(GetPlayer.DockedTo.PilotRace)].InternalName);
   end
   else if GetPlayer.InNormalSpace then
   begin

@@ -317,7 +317,7 @@ begin
     end;
     if GetPlayer.CurrentPlanet.IsMainPiratePlanet and (GetPlayer.CurrentPlanet.OwnerId = Byte(oiPirate)) then
       PortraitPanel := GetByName('GovPirateClan')
-    else PortraitPanel := GetByName('Gov' + OwnerInfo[Integer(RaceToOwner(GetPlayer.CurrentPlanet.RaceId)) and $7F].InternalName);
+    else PortraitPanel := GetByName('Gov' + OwnerInfo[RaceToOwner(GetPlayer.CurrentPlanet.RaceId)].InternalName);
     PortraitPanel.SetActive(True);
     with PortraitPanel do
     begin
@@ -330,8 +330,8 @@ begin
       with FindByNameRecursive('BG') as TImageGI do
         if GetPlayer.CurrentPlanet.IsMainPiratePlanet then SetImagePath('GI,Bm.Gov.PirateBG')
         else if GetPlayer.CurrentPlanet.OwnerId = Byte(oiPirate) then
-          SetImagePath('GI,Bm.Gov.' + OwnerInfo[Integer(RaceToOwner(GetPlayer.CurrentPlanet.RaceId)) and $7F].InternalName + 'PirateBG')
-        else SetImagePath('GI,Bm.Gov.2' + OwnerInfo[Integer(RaceToOwner(GetPlayer.CurrentPlanet.RaceId)) and $7F].InternalName + 'BGi');
+          SetImagePath('GI,Bm.Gov.' + OwnerInfo[RaceToOwner(GetPlayer.CurrentPlanet.RaceId)].InternalName + 'PirateBG')
+        else SetImagePath('GI,Bm.Gov.2' + OwnerInfo[RaceToOwner(GetPlayer.CurrentPlanet.RaceId)].InternalName + 'BGi');
       if UseHdPortrait and not UseClassicPortrait then
       begin
         with FindByNameRecursive('GovHD_Anim0') as TgaiGI do
@@ -383,7 +383,7 @@ begin
       ReplaceTextToken(Text, '<Player>', GetPlayer.Name, '<color=255,240,100>');
       ExpandLocalizedTextMarkupAndPrefixLines(Text);
       Text := WideString(IntToStr(GovernmentBattleDifficulty)) + Text;
-      Text := WideString(IntToStr(Min(Integer(Galaxy.GetDifficultyTierIndex) and $7F, 3) + 1)) + Text;
+      Text := WideString(IntToStr(Min(Galaxy.GetDifficultyTierIndex, 3) + 1)) + Text;
       Text := WideString(IntToStr(GetPlayer.CurrentPlanet.RaceId + 1)) + Text;
       WinText := RobotMapDefinitions[MapIndex].RobotsWin;
       ReplaceTextToken(WinText, '<Star>', GetPlayer.CurrentStar.Name, '<color=255,240,100>');
@@ -488,7 +488,7 @@ begin
       Money := Round(Money * GalaxyDifficultyTuning[Galaxy.DifficultyLevels[5]].QuestMoneyFactor);
       if GetPlayer.IsHealthEffectActive(23) then
         Money := Round(SeededRandomFloatRange((Integer(GetPlayer.CurrentPlanet.GenerationSeed) + Galaxy.CurrentTurn) div 33, 1.3, 2.3) * Money);
-      Inc(Money, Round(Money * (Integer(GetPlayer.GetEffectiveSkillLevel(psCharisma)) and $7F) * 0.1));
+      Inc(Money, Round(Money * GetPlayer.GetEffectiveSkillLevel(psCharisma) * 0.1));
       case GovernmentBattleDifficulty of
         1: Money := RoundAndTruncateToTens(Money * 4.0);
         2: Money := RoundAndTruncateToTens(Money * 1.6);
@@ -970,7 +970,7 @@ begin
   else if GetPlayer.CurrentPlanet.OwnerId = Byte(oiPirate) then
   begin
     if not GetPlayer.CurrentPlanet.IsMainPiratePlanet then
-      MusicManager.PlayCategory('Nation.' + OwnerInfo[Integer(RaceToOwner(GetPlayer.CurrentPlanet.RaceId)) and $7F].InternalName + 'Pirate')
+      MusicManager.PlayCategory('Nation.' + OwnerInfo[RaceToOwner(GetPlayer.CurrentPlanet.RaceId)].InternalName + 'Pirate')
     else MusicManager.PlayCategory('Nation.PiratePlanetMain');
   end
   else MusicManager.PlayCategory('Nation.' + OwnerInfo[GetPlayer.CurrentPlanet.OwnerId].InternalName);
@@ -1375,7 +1375,7 @@ var Cost, RelationDeficit: Integer; Text: WideString;
 begin
   if GetPlayer.CurrentPlanet.OwnerId <> Byte(oiPirate) then
   begin
-    RelationDeficit := 100 - (Integer(GetPlayer.CurrentPlanet.RelationToShip(GetPlayer)) and $7F);
+    RelationDeficit := 100 - GetPlayer.CurrentPlanet.RelationToShip(GetPlayer);
     Cost := Round(RemapClamped(RelationDeficit, 0, 100, 1, 5) * (Galaxy.AverageRangerCapital div 100) *
       OwnerInfo[GetPlayer.CurrentPlanet.OwnerId].FuelPriceFactor);
     Text := PickLocalizedTextVariant('FormGov.Bribe.Question', (Galaxy.CurrentTurn div 10) * GetPlayer.CurrentPlanet.GenerationSeed + 223429);
@@ -1399,7 +1399,7 @@ end;
 procedure TfGov.PayBribe(Action: Integer);
 var Cost, RelationDeficit: Integer;
 begin
-    RelationDeficit := 100 - (Integer(GetPlayer.CurrentPlanet.RelationToShip(GetPlayer)) and $7F);
+    RelationDeficit := 100 - GetPlayer.CurrentPlanet.RelationToShip(GetPlayer);
     Cost := Round(RemapClamped(RelationDeficit, 0, 100, 1, 5) * (Galaxy.AverageRangerCapital div 100) *
       OwnerInfo[GetPlayer.CurrentPlanet.OwnerId].FuelPriceFactor);
   GetPlayer.SetMoney(GetPlayer.Money - Cost);

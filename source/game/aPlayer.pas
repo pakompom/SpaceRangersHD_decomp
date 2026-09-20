@@ -130,7 +130,7 @@ type
     procedure ApplyBioArtefactHealthEffects; // @addr $58B69C Each active Bio artefact may shorten a disease and extend a stimulant by one turn.
     function MayTakeSubCrack: Boolean; // @addr $58B80C Terron unresolved, late-game offer cadence and no program 4 already carried.
     function GetSubCrackCost: Integer; // @addr $58B890 Difficulty-scaled price.
-    function GetPirateServiceDiscount: Byte; // @addr $58B8D0 Rounded pirate career status / 1.3, plus one percentage point.
+    function GetPirateServiceDiscount: TPercent; // @addr $58B8D0 Rounded pirate career status / 1.3, plus one percentage point.
     function CountProgramRewardStocks: Integer; // @addr $58B910
     function GetMaxPiratePartners: Integer; // @addr $590BF0 Pirate career thresholds, eminent title and active license.
     function GetMaxDominionShips: Integer; // @addr $590C44 As pirate partners, with an additional threshold above career status 50.
@@ -1666,7 +1666,7 @@ end;
 { @end $58B890 }
 
 { @routine $58B8D0 TPlayer_GetPirateServiceDiscount }
-function TPlayer.GetPirateServiceDiscount: Byte;
+function TPlayer.GetPirateServiceDiscount: TPercent;
 begin
   Result := Round(CareerStatus[Ord(rcPirate)] / 1.3) + 1;
 end;

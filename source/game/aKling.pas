@@ -72,7 +72,7 @@ type
     procedure NextDayLogic; override; // @addr 0x5EA50C @slot 0x1C @calls "0x5EA36A 0x5EA38A"
     function GetGreetingShipCategory: Byte; override; // @addr $5EE7C8 @slot $30
     function GetHomeStar: TStar; override; // @addr $5EE5A8 @slot $34
-    function GetStrengthScaledPirateStatus: Byte; override; // @addr $5EE7F0 @slot $3C
+    function GetStrengthScaledPirateStatus: TPercent; override; // @addr $5EE7F0 @slot $3C
     function GetDominantCareer: TRangerCareer; override; // @addr 0x5EE7DC @slot 0x38 @note "Always rcWarrior."
     function GetName: WideString; override; // @addr 0x5EE5C0 @slot 0x24 @ida "void __usercall $name(TKling *Self@<eax>, unsigned __int16 **Result@<edx>);"
     function GetFullName(const Separator: WideString): WideString; override; // @addr 0x5EE5E0 @slot 0x28 @ida "void __usercall $name(TKling *Self@<eax>, unsigned __int16 *Separator@<edx>, unsigned __int16 **Result@<ecx>);"
@@ -405,7 +405,7 @@ var
 
 begin
   InitializeDominator(Kind, Planet, Series);
-  ControlPercent := Integer(Galaxy.GetFactionControlPercent(Ord(sfDominators))) and $7F;
+  ControlPercent := Galaxy.GetFactionControlPercent(Ord(sfDominators));
   Rating := Round(125 * Galaxy.GetEffectiveDifficultyLevel + RemapClamped(Galaxy.CurrentTurn, 300, 22200, 0, 3000));
   WarRating := -150 * Galaxy.WarDeltaWin[1];
   DistanceRating := 0;
@@ -1081,7 +1081,7 @@ begin
     Hole.Star1.DominatorSeries := dsKeller;
     Threshold := Round(Galaxy.GetDominatorAggressionLevel * 1.25) + 60;
     RandomMaximum := Round(Galaxy.GetDominatorAggressionLevel * 0.125) + 1;
-    Count := NextRandomIntRange(1, RandomMaximum, RandomState) + Round(RemapClamped(Integer(Galaxy.GetFactionControlPercent(Ord(sfDominators))) and $7F, 0, Threshold, 12, 2));
+    Count := NextRandomIntRange(1, RandomMaximum, RandomState) + Round(RemapClamped(Galaxy.GetFactionControlPercent(Ord(sfDominators)), 0, Threshold, 12, 2));
     if Galaxy.CurrentTurn >= 666 then
       if Galaxy.DominatorModLevel = 1 then Count := 15
       else if Galaxy.DominatorModLevel = 2 then Count := 17
@@ -1417,7 +1417,7 @@ end;
 { @end $5EE7DC }
 
 { @routine $5EE7F0 TKling_GetStrengthScaledPirateStatus }
-function TKling.GetStrengthScaledPirateStatus: Byte;
+function TKling.GetStrengthScaledPirateStatus: TPercent;
 begin
   Result := 100;
 end;

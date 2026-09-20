@@ -412,7 +412,7 @@ begin
   Text := '// Score for Space Rangers 2' + #13#10;
   Text := Text + 'Name=' + PlayerName + #13#10;
   Text := Text + 'EMail=' + #13#10;
-  Text := Text + 'Race=' + OwnerInfo[Integer(RaceToOwner(PilotRace)) and $7F].DisplayName + #13#10;
+  Text := Text + 'Race=' + OwnerInfo[RaceToOwner(PilotRace)].DisplayName + #13#10;
   Text := Text + 'Score=' + WideString(IntToStr(TotalScore)) + #13#10;
   Text := Text + 'Level=' + WideString(IntToStr(DifficultyPercent)) + #13#10;
   Text := Text + 'Date=' + FormatGameTurnDate(FinishedTurn) + #13#10;
@@ -1357,7 +1357,7 @@ begin
     SoundManager.PlaySound('Sound.ButtonEnter');
     with GetByName(WideString('Slot' + IntToStr(Sender.UserValue) + 'Active')) as TImageGI do
       SetImagePath('GI,Bm.FormScore2.' + GiResourceSuffix +
-        OwnerInfo[Integer(RaceToOwner(TfScoreUnit(Entries[Sender.UserValue]).PilotRace)) and $7F].InternalName + 'A');
+        OwnerInfo[RaceToOwner(TfScoreUnit(Entries[Sender.UserValue]).PilotRace)].InternalName + 'A');
   end;
 end;
 { @end $57FE98 }
@@ -1370,7 +1370,7 @@ begin
     SoundManager.PlaySound('Sound.ButtonLeave');
     with GetByName(WideString('Slot' + IntToStr(Sender.UserValue) + 'Active')) as TImageGI do
       SetImagePath('GI,Bm.FormScore2.' + GiResourceSuffix +
-        OwnerInfo[Integer(RaceToOwner(TfScoreUnit(Entries[Sender.UserValue]).PilotRace)) and $7F].InternalName + 'N');
+        OwnerInfo[RaceToOwner(TfScoreUnit(Entries[Sender.UserValue]).PilotRace)].InternalName + 'N');
   end;
 end;
 { @end $580040 }
@@ -1463,9 +1463,9 @@ begin
     Selected := I = SelectedIndex;
     with GetByName(WideString('Slot' + IntToStr(I) + 'Active')) as TImageGI do
       if Selected then SetImagePath('GI,Bm.FormScore2.' + GiResourceSuffix +
-        OwnerInfo[Integer(RaceToOwner(Entry.PilotRace)) and $7F].InternalName + 'D')
+        OwnerInfo[RaceToOwner(Entry.PilotRace)].InternalName + 'D')
       else SetImagePath('GI,Bm.FormScore2.' + GiResourceSuffix +
-        OwnerInfo[Integer(RaceToOwner(Entry.PilotRace)) and $7F].InternalName + 'N');
+        OwnerInfo[RaceToOwner(Entry.PilotRace)].InternalName + 'N');
     with GetByName(WideString('Slot' + IntToStr(I) + 'Nom')) as TLabelGI do
     begin
       if Selected then SetTextColor(CurrentPixelFormat.PackRgbBytes(255, 222, 0))
@@ -1497,7 +1497,7 @@ begin
   with GetByName('CaptainI') as TImageGI do
   begin
     SetImagePath('GI,Bm.Captain.' + GiResourceSuffix +
-      OwnerInfo[Integer(RaceToOwner(Entry.PilotRace)) and $7F].InternalName + WideString(IntToStr(Entry.PortraitFaceId)) + 'i');
+      OwnerInfo[RaceToOwner(Entry.PilotRace)].InternalName + WideString(IntToStr(Entry.PortraitFaceId)) + 'i');
     SetImageKindX(ikxCenter);
     SetImageKindY(ikyCenter);
     SetActive(True);
@@ -1506,7 +1506,7 @@ begin
   begin
     FirstFrameOnly := not AnimCaptain;
     SetImagePath('Bm.Captain.' + GiResourceSuffix +
-      OwnerInfo[Integer(RaceToOwner(Entry.PilotRace)) and $7F].InternalName + WideString(IntToStr(Entry.PortraitFaceId)) + 'a');
+      OwnerInfo[RaceToOwner(Entry.PilotRace)].InternalName + WideString(IntToStr(Entry.PortraitFaceId)) + 'a');
     SequenceIndex := 0;
     UpdateAutoGeometry;
     SetImageKindX(ikxCenter);

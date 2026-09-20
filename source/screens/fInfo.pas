@@ -923,7 +923,7 @@ begin
     if GetPlayer.CurrentPlanet.OwnerId = Byte(oiPirate) then
     begin
       if not GetPlayer.CurrentPlanet.IsMainPiratePlanet then
-        MusicManager.PlayCategory('Nation.' + OwnerInfo[Integer(RaceToOwner(GetPlayer.CurrentPlanet.RaceId)) and $7F].InternalName + 'Pirate')
+        MusicManager.PlayCategory('Nation.' + OwnerInfo[RaceToOwner(GetPlayer.CurrentPlanet.RaceId)].InternalName + 'Pirate')
       else MusicManager.PlayCategory('Nation.PiratePlanetMain');
     end
     else MusicManager.PlayCategory('Nation.' + OwnerInfo[GetPlayer.CurrentPlanet.OwnerId].InternalName);
@@ -936,8 +936,8 @@ begin
       Exit;
     end;
     if GetPlayer.DockedTo.TypeId in [Ord(rstPirateBase),Ord(rstDominion)] then
-      MusicManager.PlayCategory('Nation.' + OwnerInfo[Integer(RaceToOwner(GetPlayer.DockedTo.PilotRace)) and $7F].InternalName + 'Pirate')
-    else MusicManager.PlayCategory('Nation.' + OwnerInfo[Integer(RaceToOwner(GetPlayer.DockedTo.PilotRace)) and $7F].InternalName);
+      MusicManager.PlayCategory('Nation.' + OwnerInfo[RaceToOwner(GetPlayer.DockedTo.PilotRace)].InternalName + 'Pirate')
+    else MusicManager.PlayCategory('Nation.' + OwnerInfo[RaceToOwner(GetPlayer.DockedTo.PilotRace)].InternalName);
   end;
 end;
 { @end $59BE68 }
@@ -1359,7 +1359,7 @@ var
       if Value is TDefGenerator then
       begin
         Defense := Value as TDefGenerator;
-        if ((MinDefense = 0) or ((Integer(DefenseDamageFactorToPercent(Defense.DamageFactor)) and $7F) >= MinDefense)) and
+        if ((MinDefense = 0) or (DefenseDamageFactorToPercent(Defense.DamageFactor) >= MinDefense)) and
           ((SizeFilter = 0) or (Defense.Weight <= SizeFilter)) and
           ((MaxCost = 0) or (Defense.GetConditionAdjustedCost <= MaxCost)) and
           (Defense.OwnerId in Owners) then AddInfoSearchResult(Value);

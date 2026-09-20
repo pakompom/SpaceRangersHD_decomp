@@ -787,7 +787,7 @@ begin
       GainExperience(Experience, SourceKind);
       if (PartnerShip <> nil) and (PartnerShip.CurrentStar = CurrentStar) and PartnerShip.InNormalSpace then
       begin
-        SharedExperience := Round(Experience * LeadershipExperiencePercent[Integer(PartnerShip.GetEffectiveSkillLevel(psLeadership)) and $7F] * 0.01);
+        SharedExperience := Round(Experience * LeadershipExperiencePercent[PartnerShip.GetEffectiveSkillLevel(psLeadership)] * 0.01);
         if GetPlayer = PartnerShip then
         begin
           Event := AddGalaxyEvent('PlayerGotExpFromPartner');

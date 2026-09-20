@@ -171,7 +171,7 @@ begin
       Header.AddWideStringZ(IntToStr(GetPlayer.Money));
       Header.AddWideStringZ(GetPlayer.Name);
       if GetPlayer.OwnerId = Byte(oiPirate) then
-        Header.AddWideStringZ(OwnerInfo[Ord(oiPirate)].InternalName + OwnerInfo[Integer(RaceToOwner(GetPlayer.PilotRace)) and $7F].InternalName)
+        Header.AddWideStringZ(OwnerInfo[Ord(oiPirate)].InternalName + OwnerInfo[RaceToOwner(GetPlayer.PilotRace)].InternalName)
       else Header.AddWideStringZ(OwnerInfo[GetPlayer.OwnerId].InternalName);
       Header.AddWideStringZ('EZ');
       Preview := TBufEC.Create;
