@@ -8,7 +8,7 @@ uses EC_BlockPar, GI_Frame, GI_Image, GI_Label, GI_MessageLoop, GI_PanelScrollBa
 type
   TGridTypeGI = (gtHide = 0, gtCell = 1, gtRow = 2, gtCol = 3); // @size 1
 
-  TGridRowGI = packed record // @size 0x0C
+  TGridRowGI = record // @size 0x0C
     Height: Integer; // @offset 0x00
     AutoHeightMinimum: Integer; // @offset 0x04
     AutoHeight: Boolean; // @offset 0x08

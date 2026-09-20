@@ -54,7 +54,7 @@ type
   end;
 
   PEFilmCommand = ^TEFilmCommand;
-  TEFilmCommand = packed record // @size 0x20
+  TEFilmCommand = record // @size 0x20
     Prev: PEFilmCommand; // @offset 0x00
     Next: PEFilmCommand; // @offset 0x04
     Kind: Byte; // @offset 0x08  efc* tag; payload is interpreted through the command views below.

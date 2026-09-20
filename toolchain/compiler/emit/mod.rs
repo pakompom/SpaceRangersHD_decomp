@@ -186,7 +186,10 @@ impl<'a> Emitter<'a> {
             if typ.get("callable").is_some() {
                 return self.project.compiler.size(typ);
             }
-            if typ.get("set").is_some() || typ.get("subrange").is_some() {
+            if typ.get("set").is_some() {
+                return Ok(1);
+            }
+            if typ.get("subrange").is_some() {
                 return Ok(self.project.compiler.size(typ)?.min(8));
             }
             return Ok(4);
@@ -461,12 +464,24 @@ impl<'a> Emitter<'a> {
             }
             offset = (offset + alignment - 1) & -alignment;
         }
+        let packed = yes(&d.data, "packed");
         for field in array(&layout, "fields") {
             let off = integer(field, "offset")?;
             if off < base_size {
                 continue;
             }
-            if off > offset {
+            let alignment = if packed {
+                1
+            } else {
+                self.alignment(&field["type"])?
+            };
+            let aligned = (offset + alignment - 1) & -alignment;
+            ensure!(
+                aligned <= off,
+                "{name}.{}: field precedes its Delphi alignment",
+                string(field, "name")
+            );
+            if off > aligned {
                 lines.push(format!(
                     "Gap{offset:X}: array[0..{}] of Byte;",
                     off - offset - 1
@@ -479,7 +494,21 @@ impl<'a> Emitter<'a> {
             ));
             offset = off + self.project.compiler.size(&field["type"])?;
         }
-        if size > offset {
+        // Classes round their VMT instance size to four bytes; records round to
+        // their largest field alignment. Packed records and value objects do not.
+        let alignment = if d.kind == "class" {
+            4
+        } else if packed || yes(&d.data, "value_object") {
+            1
+        } else {
+            self.alignment(&json!(name))?
+        };
+        let aligned = (offset + alignment - 1) & -alignment;
+        ensure!(
+            aligned <= size,
+            "{name}: size precedes its Delphi alignment"
+        );
+        if size > aligned {
             lines.push(format!(
                 "Gap{offset:X}: array[0..{}] of Byte;",
                 size - offset - 1

@@ -298,11 +298,11 @@ type
   TOwnerId = (oiMaloc = 0, oiPeleng = 1, oiHuman = 2, oiFeyan = 3,
     oiGaal = 4, oiDominator = 5, oiUninhabited = 6, oiPirate = 7); // @size $01 OwnerInfo and native planet/ship owner numbering.
 
-  TPlanetGoodsFactors = packed record // @size 0x10
+  TPlanetGoodsFactors = record // @size 0x10
     PriceFactor: Double; // @offset 0x00
     StockFactor: Double; // @offset 0x08
   end;
-  TPlanetRaceMarketInfo = packed record // @size 0xA8
+  TPlanetRaceMarketInfo = record // @size 0xA8
     InventionProgressScale: Single; // @offset 0x00  Used by TPlanet.CalculateInventionProgressRate.
     InitialInventionBoostCount: Integer; // @offset 0x04
     GoodsFactors: array[0..7] of TPlanetGoodsFactors; // @offset 0x08
@@ -341,7 +341,7 @@ type
     qtDefendSystem = 3, qtDefendShip = 4); // @size 0x1
   TQuestTypes = set of TQuestType; // @size 0x1
 
-  TQuestTuning = packed record // @size 0x0C
+  TQuestTuning = record // @size 0x0C
     RewardCapitalPercent: Byte; // @offset 0x00
     BaseDuration: Integer; // @offset 0x04
     BaseRewardMoney: Integer; // @offset 0x08
@@ -356,7 +356,7 @@ type
 
   // Native record RTTI at $7DB190.
 
-  TGalaxyDifficultyTuning = packed record // @size 0x38
+  TGalaxyDifficultyTuning = record // @size 0x38
     GoodsEventDurationFactor: Single; // @offset 0x00  Also scales fuel prices.
     QuestTimeAndExperienceFactor: Single; // @offset 0x04
     EquipmentWearFactor: Single; // @offset 0x08  Player equipment degradation, indexed by DifficultyLevels[3].

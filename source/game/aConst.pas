@@ -108,7 +108,7 @@ type
 
   TProgramNameTable = array[0..11] of WideString;
   TProgramDurationTable = array[0..11] of Integer;
-  THullLevelStats = packed record // @size $10
+  THullLevelStats = record // @size $10
     Armor: Byte; // @offset $00
     Fragility: array[0..2] of Single; // @offset $04 Energy, splinter, missile; loaded by $7E1FD0.
   end;
@@ -396,7 +396,7 @@ var
   ShipTypeNames: array[0..13] of TShipTypeInfo = ((Name: 'Kling'), (Name: 'Ranger'), (Name: 'Transport'), (Name: 'Pirate'), (Name: 'Warrior'), (Name: 'Tranclucator'), (Name: 'RC'), (Name: 'PB'), (Name: 'WB'), (Name: 'SB'), (Name: 'BK'), (Name: 'MC'), (Name: 'CB'), (Name: 'UB')); // @addr $87C518
 type
   // Native record RTTI at $7D980C.
-  TStatusInfo = packed record // @size $28
+  TStatusInfo = record // @size $28
     Name: WideString; // @offset $00 Native career identifier.
     MinimumWealthToAverageRatio: Double; // @offset $08 NeedsWealthCatchup ($753618): Wealth / AverageRangerCapital threshold.
     MinimumWealthToBestRatio: Double; // @offset $10 Wealth / MaxRangerWealth threshold in the same catch-up test.
@@ -419,7 +419,7 @@ var
 
 type
   // Native record RTTI at $7D98C0.
-  TKlingTypeInfo = packed record // @size $38
+  TKlingTypeInfo = record // @size $38
     DisplayNames: array[0..2] of WideString; // @offset $00 Indexed by TDominatorSeries; replaced by localized names during configuration loading.
     MinimumHullSize: Integer; // @offset $0C InitGenerated ($5C7444): random hull-size bounds before HullCapacityScale.
     MaximumHullSize: Integer; // @offset $10 Also averaged by SelectChameleonVisualType ($7015A4).
@@ -623,7 +623,7 @@ type
   ); // @size 0x1
 
   // Native record RTTI at $7DA810.
-  SEquipment = packed record // @size $8
+  SEquipment = record // @size $8
     ItemType: TItemType; // @offset $0
     Name: WideString; // @offset $4
   end;
@@ -785,7 +785,7 @@ type
 
   POwnerInfoTable = ^TOwnerInfoTable;
 
-  TGovermentInfo = packed record // @size 0xA0
+  TGovermentInfo = record // @size 0xA0
     InternalName: WideString; // @offset 0x00
     DisplayName: WideString; // @offset 0x04
     RevolutionRelationDelta: array[0..2] of ShortInt; // @offset 0x08  TRangerCareer order.
@@ -1054,7 +1054,7 @@ var
         (PriceFactor: 1.1; StockFactor: 0.6)))); // @addr $87D698
 type
   // Native record RTTI at $7DB428.
-  TRewardInfo = packed record // @size 0x0C
+  TRewardInfo = record // @size 0x0C
     AwardId: Byte; // @offset 0x00
     Name: WideString; // @offset 0x04
     Text: WideString; // @offset 0x08
@@ -1198,7 +1198,7 @@ var
   ); // @addr $87E884 Native scalar values and WideString initializer descriptors.
 type
   // Native record RTTI at $7DB9B0.
-  THullTypeInfo = packed record // @size $64
+  THullTypeInfo = record // @size $64
     Name: WideString; // @offset $00
     Text: WideString; // @offset $04
     AllowedOwners: TOwnerMask; // @offset $08
@@ -1218,7 +1218,7 @@ type
   THullSeriesDefinitions = array of THullTypeInfo;
 
   // Native record RTTI at $7DB9E4.
-  TMicroModuleInfo = packed record // @size 0x124
+  TMicroModuleInfo = record // @size 0x124
     SpecialOnly: Boolean; // @offset 0x00
     BlocksMicroModuleSlot: Boolean; // @offset 0x01
     BlocksSpecialSlot: Boolean; // @offset 0x02
@@ -1284,7 +1284,7 @@ var
     'bonAttacks', 'bonResistAsteroid', 'bonAIValue',
     'bonNull'); // @addr $87E8D4
 type
-  tInventionInfo = packed record // @size 0x08
+  tInventionInfo = record // @size 0x08
     Name: WideString; // @offset $00 Native initialization names the research levels.
     InitialLevel: Byte; // @offset 0x04
     RequiredMainTechLevel: Byte; // @offset 0x05  Compared with InventionLevels[7], not ResearchLevelPercent.
@@ -1468,7 +1468,7 @@ var
   CoalitionProjectNames: array[0..11] of WideString = ('CreateRC', 'CreatePB', 'CreateWB', 'CreateSB', 'CreateBK', 'CreateMC', 'RangersSubsidy', 'PiratesSubsidy', 'TransportSubsidy', 'LostSubsidy', 'WarSubsidy', 'WarOperation'); // @addr $87EA64
 type
   // Native record RTTI at $7DC35C.
-  TIllnessInfo = packed record // @size $28 Native TIllnessInfo RTTI at $7DC360.
+  TIllnessInfo = record // @size $28 Native TIllnessInfo RTTI at $7DC360.
     Name: WideString; // @offset $00
     Text: WideString; // @offset $04
     AllowedLocationOwners: TOwnerMask; // @offset $08

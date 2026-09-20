@@ -17,7 +17,7 @@ type
 
   TStationStandingMask = set of 0..15; // @size $02 Station standing filter; empty accepts every standing.
 
-  TCustomShipInfo = packed record // @size 0x28
+  TCustomShipInfo = record // @size 0x28
     TypeName: WideString; // @offset 0x00
     Description: WideString; // @offset 0x04
     Data: array[1..3] of Integer; // @offset 0x08
@@ -36,7 +36,7 @@ type
     soJumpHole = 4, soTakeoff = 5, soFollowShip = 6, soTeleport = 7
   ); // @size 0x1
 
-  TShipStatBonusEntry = packed record // @size 0x08
+  TShipStatBonusEntry = record // @size 0x08
     BonusKind: Byte; // @offset 0x00
     BonusValue: Integer; // @offset 0x04
   end;
@@ -49,7 +49,7 @@ type
     cseDroidBlock = 4, cseBWBuff = 5, cseBWRepairDebuff = 6
   ); // @size 0x1
 
-  TCombatStatusEffect = packed record // @size 0x0C
+  TCombatStatusEffect = record // @size 0x0C
     EffectType: TCombatStatusEffectType; // @offset 0x00
     Strength: Single; // @offset 0x04
     SourceShipId: Integer; // @offset 0x08  Zero for no source; an ID, not a pointer.
@@ -76,7 +76,7 @@ type
     PurchasedTotalCost: Integer; // @offset 0x0C
   end;
 
-  TCaptainHealthState = packed record // @size 0x18
+  TCaptainHealthState = record // @size 0x18
     Progress: Double; // @offset 0x00  0: absent; 100: active.
     AppliedTurn: Integer; // @offset 0x08
     ExpireTurn: Integer; // @offset 0x0C

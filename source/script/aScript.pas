@@ -54,7 +54,7 @@ type
   TLibraryHandler = class;
   TLibraryCache = class;
 
-  TScriptStarConstraint = packed record // @size 0x10
+  TScriptStarConstraint = record // @size 0x10
     OtherStar: TScriptStar; // @offset 0x00
     MinDistance: Integer; // @offset 0x04
     MaxDistance: Integer; // @offset 0x08
@@ -72,7 +72,7 @@ type
 
   PScriptShipRequirement = ^TScriptShipOtb;
   // Native record RTTI at $669F78.
-  TDialogInject = packed record // @size $24
+  TDialogInject = record // @size $24
     Script: TScript; // @offset $00 Borrowed dialogue owner.
     DialogName: WideString; // @offset $04
     Text: WideString; // @offset $08
@@ -94,7 +94,7 @@ type
   end;
 
   // Native record RTTI at $669FB4.
-  TDialogBlock = packed record // @size $0C
+  TDialogBlock = record // @size $0C
     Text: WideString; // @offset $00
     Script: TScript; // @offset $04 Borrowed owner.
     Mode: Byte; // @offset $08 Zero enables, one disables, two or more suppress matching choices.
@@ -485,7 +485,7 @@ type
   end;
   PScriptDialogBlock = ^TDialogBlock;
 
-  TScriptContextSnapshot = packed record // @size 0x0C
+  TScriptContextSnapshot = record // @size 0x0C
     Script: TScript; // @offset 0x00
     CurrentShip: TShip; // @offset 0x04
     EndState: Boolean; // @offset 0x08
