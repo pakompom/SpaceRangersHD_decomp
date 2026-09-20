@@ -675,9 +675,23 @@ impl Parser<'_> {
         );
         let mut d = if self.peek("interface")?
             || self.peek("record")?
+            || self.peek("object")?
             || self.peek("class")? && !self.ahead(1)?.value.eq_ignore_ascii_case("of")
         {
             let mut d = self.aggregate(start, name, true)?;
+            if d.kind == "object" {
+                ensure!(
+                    d.data["parent"].is_null()
+                        && d.data["methods"].as_array().unwrap().is_empty()
+                        && d.data["properties"].as_array().unwrap().is_empty()
+                        && d.data["opaque"] == false,
+                    "only field-only objects without inheritance are supported"
+                );
+                // These Delphi value objects have record storage and ABI, but
+                // their spelling advances DCC32's anonymous-symbol counter.
+                d.kind = "record".into();
+                d.data["value_object"] = json!(true);
+            }
             if d.kind == "record" {
                 d.data["packed"] = json!(packed);
             }

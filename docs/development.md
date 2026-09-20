@@ -98,12 +98,13 @@ and applies the hooks in `toolchain/delphi/`:
 - `unit_order.s`: physical unit contribution order.
 - `reference_order.s`: native reference-cell order.
 - `metadata_order.s`: startup and PACKAGEINFO order.
-- `build_metadata.s`: original build timestamps and eight RTTI names.
+- `build_metadata.s`: original build timestamps.
 
-The adjacent TSV files hold settings for each build. The RTTI-name overrides
-compensate for unrecovered declaration history. This compiler reproduces the
-binary layout; the original build environment and some source spellings remain
-unknown. Arithmetic identities in some bodies preserve argument-load order.
+The adjacent TSV files hold settings for each build. RTTI names are not patched.
+Two field-only `object` declarations reproduce the anonymous-type numbering;
+their original spelling and placement remain uncertain. This compiler reproduces
+the binary layout; the original build environment and some source spellings
+remain unknown. Arithmetic identities in some bodies preserve argument-load order.
 
 Matching changes belong in the recovered Pascal or compiler metadata layer;
 avoid replacing Pascal with assembly or patching executable bytes to force a match.
