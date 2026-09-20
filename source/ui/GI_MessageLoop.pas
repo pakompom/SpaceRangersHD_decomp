@@ -1580,7 +1580,7 @@ var Index, Count: Integer;
 begin
   Count := MouseViewUpdateControls.Count;
   for Index := 0 to Count - 1 do
-    if TList(PAnsiChar(MouseViewUpdateControls) + 0)[Index] = Control then
+    if MouseViewUpdateControls[Index] = Control then
     begin
       Result := Index;
       Exit;
@@ -1612,7 +1612,7 @@ begin
   Count := MouseViewUpdateControls.Count;
   for Index := 0 to Count - 1 do
   begin
-    Control := TList(PAnsiChar(MouseViewUpdateControls) + 0)[Index];
+    Control := MouseViewUpdateControls[Index];
     Control.Invalidate;
   end;
 end;
