@@ -1940,7 +1940,7 @@ var
   NewRelation, Index: Integer;
 begin
   Index := Galaxy.Rangers.IndexOf(TObject(Ranger) as TRanger);
-  Relation := Byte(RangerRelations[Index + 0]);
+  Relation := Byte(RangerRelations[Index]);
   if (TShip(Ranger).GetEffectiveSkillLevel(psCharisma) > 0) and (Amount > 0) then
     Inc(Amount, Round(Amount * (TShip(Ranger).GetEffectiveSkillLevel(psCharisma)) * 0.2));
   NewRelation := Relation + Amount;
@@ -1951,13 +1951,13 @@ begin
   if (PartnerShip = Ranger) and (Relation <= 30) then
   begin
     CheckForPartnershipBreakup;
-    Relation := Byte(RangerRelations[Index + 0]);
+    Relation := Byte(RangerRelations[Index]);
   end;
   if (Relation < 10) and ((EnemyShip = nil) or (EnemyShip.CurrentStar <> CurrentStar)) then EnemyShip := TShip(Ranger);
   if GetPlayer = Ranger then
   begin
     if RandomIntRange(0, 100) = 0 then SysUtils.Sleep(1);
-    if (Byte(RangerRelations[Index + 0]) <> Relation) and not GR_Main.CCInterface.GetTamperDetected then
+    if (Byte(RangerRelations[Index]) <> Relation) and not GR_Main.CCInterface.GetTamperDetected then
       GR_Main.CCInterface.SetTamperDetected(True);
   end;
 end;

@@ -12027,7 +12027,7 @@ begin
         Entry.Kind := Entries[Next].Kind;
         Entry.GoodsIndex := Entries[Next].GoodsIndex;
         Entry.ItemId := Item.Id;
-        Entry.Item := TItem(Integer(Item) + 0);
+        Entry.Item := Item;
         Entry.Retained := Entries[Next].Retained;
         Inc(Next);
       end;

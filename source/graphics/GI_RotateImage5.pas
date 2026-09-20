@@ -129,8 +129,7 @@ end;
 { @routine $4959D0 TRotateImage5GI_SetAngle }
 procedure TRotateImage5GI.SetAngle(Value: Byte);
 begin
-  // Preserve the native byte comparison operand order.
-  if Byte(Value + 0) <> Angle then
+  if Value <> Angle then
   begin
     Angle := Value;
     ImageDirty := True;
@@ -142,7 +141,7 @@ end;
 { @routine $495A10 TRotateImage5GI_SetFrameIndex }
 procedure TRotateImage5GI.SetFrameIndex(Value: Cardinal);
 begin
-  if Value + 0 <> FrameIndex then
+  if Value <> FrameIndex then
   begin
     FrameIndex := Value;
     ImageDirty := True;
@@ -154,7 +153,7 @@ end;
 { @routine $495A50 TRotateImage5GI_SetAlpha }
 procedure TRotateImage5GI.SetAlpha(Value: Byte);
 begin
-  if Byte(Value + 0) <> Alpha then
+  if Value <> Alpha then
   begin
     Alpha := Value;
     ImageDirty := True;

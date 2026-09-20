@@ -9415,7 +9415,7 @@ begin
   if Target = nil then Exit;
   Planet := TObject(Station.CurrentStar.FindFastestResearchPlanet) as TPlanet;
   if not Planet.IsCoalitionOwned then Exit;
-  for I := 1 to SeededRandomIntRange(4, 6, (CurrentTurn + 0) * Planet.GenerationSeed) do begin
+  for I := 1 to SeededRandomIntRange(4, 6, CurrentTurn * Planet.GenerationSeed) do begin
     if (I = 1) and (Galaxy.RangerSpawnQuotas[Planet.RaceId] > 0) then Warrior := TObject(Planet.BuyFlagship(200)) as TWarrior
     else Warrior := TObject(Planet.BuyWarrior(200)) as TWarrior;
     Warrior.Position := Station.Position;
@@ -9423,9 +9423,9 @@ begin
     Warrior.DockedTo := Station;
     Planet.CurrentStar.Ships.Add(Warrior);
   end;
-  Turn := CurrentTurn + SeededRandomIntRange(30, 40, (CurrentTurn + 0) + Planet.GenerationSeed);
-  Station.FlyToStar := TStar(Integer(Target) + 0);
-  Station.FlyDate := Turn + 0;
+  Turn := CurrentTurn + SeededRandomIntRange(30, 40, CurrentTurn + Planet.GenerationSeed);
+  Station.FlyToStar := Target;
+  Station.FlyDate := Turn;
   Text := PickLocalizedTextVariant('GalaxyNews.WBGoToEnemyStar.Create', GenerationSeed * (Galaxy.CurrentTurn div 10));
   ReplaceTextToken(Text, '<WB>', Station.Name, '<color=255,240,100>');
   ReplaceTextToken(Text, '<WBStar>', Station.CurrentStar.Name, '<color=255,240,100>');

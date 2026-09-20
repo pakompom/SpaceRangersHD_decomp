@@ -4160,7 +4160,7 @@ procedure DrawPaletteAlphaBuffer16Clipped(Dest: Pointer; DestPitch, X, Y: Intege
 var SourceX, SourceY, Width, Height: Integer;
 begin
   if (X >= Clip.Right) or (Y >= Clip.Bottom) or
-    (X + 0 + Source.Width - 1 < Clip.Left) or (Y + 0 + Source.Height - 1 < Clip.Top) then Exit;
+    (X + Source.Width - 1 < Clip.Left) or (Y + Source.Height - 1 < Clip.Top) then Exit;
   SourceX := 0;
   SourceY := 0;
   Width := Source.Width;
