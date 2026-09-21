@@ -37,6 +37,12 @@ type
     function PackNormalizedRgb(Red, Green, Blue: Double): Cardinal; // @addr 0x865408 @note "Does not clamp inputs or include alpha."
   end;
 
+  TColorRGB = packed record // @size $03
+    R: Byte; // @offset $00
+    G: Byte; // @offset $01
+    B: Byte; // @offset $02
+  end;
+  PColorRGB = ^TColorRGB;
   TColorRGBA = packed record // @size 0x04
     R: Byte; // @offset 0x00
     G: Byte; // @offset 0x01
@@ -904,7 +910,9 @@ begin
   LockTexture(False);
   Columns := Rect.Right - Rect.Left; Rows := Rect.Bottom - Rect.Top;
   RowSkip := PitchBytes - Columns * SizeOf(TColorRGBA);
-  Data := Pointer(Rect.Top * PitchBytes + Rect.Left * SizeOf(TColorRGBA) + 3 + PAnsiChar(Pixels));
+  // Form the relative field address before adding Pixels to retain native load order.
+  Data := Pointer(Integer(@PColorRGBA(
+    Rect.Top * PitchBytes + Rect.Left * SizeOf(TColorRGBA)).A) + PAnsiChar(Pixels));
   Table := Pointer(PAnsiChar(Ex_OKGF_MulTable256x256) + Integer(Alpha) shl 8);
   // Native precondition: Columns and Rows must be positive. Neither is checked
   // before writing; zero wraps on DEC and the loop writes beyond the rectangle.
@@ -1354,7 +1362,7 @@ begin
     ADD ECX, Table
     MOV CL, [ECX]
     ADD EAX, ECX
-    MOV [EDI], AL
+    MOV [EDI].TColorBGRA.B, AL
     MOV EAX, [ESI]
     MOV EBX, EAX
     SHR EBX, 24
@@ -1373,7 +1381,7 @@ begin
     ADD ECX, Table
     MOV CL, [ECX]
     ADD EAX, ECX
-    MOV [EDI + 1], AL
+    MOV [EDI].TColorBGRA.G, AL
     MOV EAX, [ESI]
     MOV EBX, EAX
     SHR EBX, 24
@@ -1392,13 +1400,13 @@ begin
     ADD ECX, Table
     MOV CL, [ECX]
     ADD EAX, ECX
-    MOV [EDI + 2], AL
-    MOV AL, [ESI + 3]
-    ADD AL, [EDI + 3]
+    MOV [EDI].TColorBGRA.R, AL
+    MOV AL, [ESI].TColorBGRA.A
+    ADD AL, [EDI].TColorBGRA.A
     JNC @@Alpha
     MOV AL, $FF
   @@Alpha:
-    MOV [EDI + 3], AL
+    MOV [EDI].TColorBGRA.A, AL
     ADD ESI, 4
     ADD EDI, 4
     DEC EDX
@@ -1881,8 +1889,8 @@ var Locked: TD3DLockedRect; Y: Cardinal; RowBytes: Integer;
       X := 0;
       while X < Width do
       begin
-        CopyMemory(AddPointerOffset(Dest, X * SizeOf(TColorRGBA)), AddPointerOffset(Source, X * 3), 3);
-        PByte(AddPointerOffset(Dest, X * SizeOf(TColorRGBA) + 3))^ := 255;
+        CopyMemory(AddPointerOffset(Dest, X * SizeOf(TColorRGBA)), AddPointerOffset(Source, X * SizeOf(TColorRGB)), SizeOf(TColorRGB));
+        PByte(AddPointerOffset(Dest, Integer(@PColorRGBA(X * SizeOf(TColorRGBA)).A)))^ := 255;
         Inc(X);
       end;
       Dest := AddPointerOffset(Dest, DestPitch);
@@ -1935,7 +1943,8 @@ var
   var X: Integer;
   begin
     Alpha := Alpha and $FF;
-    for X := 0 to Count - 1 do PByte(AddPointerOffset(Pixels, X * SizeOf(TColorRGBA) + 3))^ := Alpha;
+    for X := 0 to Count - 1 do
+      PByte(AddPointerOffset(Pixels, Integer(@PColorRGBA(X * SizeOf(TColorRGBA)).A)))^ := Alpha;
   end;
 
 begin
@@ -2048,7 +2057,7 @@ begin
   if Cardinal(Width) < 1 then Exit;
   if Cardinal(Height) < 1 then Exit;
   LockTexture(True);
-  NewPitch := Width * 3;
+  NewPitch := Width * SizeOf(TColorRGB);
   NewPixels := AllocEC(NewPitch * Height);
   Dest := NewPixels;
   Source := Pixels;
@@ -2058,9 +2067,12 @@ begin
     X := 0;
     while X < Cardinal(Width) do
     begin
-      PByte(AddPointerOffset(Dest, X * 3))^ := PByte(AddPointerOffset(Source, X * SizeOf(TColorRGBA) + 2))^;
-      PByte(AddPointerOffset(Dest, X * 3 + 1))^ := PByte(AddPointerOffset(Source, X * SizeOf(TColorRGBA) + 1))^;
-      PByte(AddPointerOffset(Dest, X * 3 + 2))^ := PByte(AddPointerOffset(Source, X * SizeOf(TColorRGBA)))^;
+      PColorRGB(AddPointerOffset(Dest, X * SizeOf(TColorRGB))).R :=
+        PByte(AddPointerOffset(Source, Integer(@PColorBGRA(X * SizeOf(TColorBGRA)).R)))^;
+      PByte(AddPointerOffset(Dest, Integer(@PColorRGB(X * SizeOf(TColorRGB)).G)))^ :=
+        PByte(AddPointerOffset(Source, Integer(@PColorBGRA(X * SizeOf(TColorBGRA)).G)))^;
+      PByte(AddPointerOffset(Dest, Integer(@PColorRGB(X * SizeOf(TColorRGB)).B)))^ :=
+        PColorBGRA(AddPointerOffset(Source, X * SizeOf(TColorBGRA))).B;
       Inc(X);
     end;
     Dest := AddPointerOffset(Dest, NewPitch);

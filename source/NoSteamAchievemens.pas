@@ -61,7 +61,7 @@ begin
         raise EAbort.Create('Error unpacking achievements.dat');
       Seed := Buffer.GetByteAt(6) or (Buffer.GetByteAt(7) shl 8) or
         (Buffer.GetByteAt(4) shl 16) or (Buffer.GetByteAt(5) shl 24);
-      Cursor := PByte(PAnsiChar(Buffer.Data) + 8);
+      Cursor := @PEncodedTableHeaderEC(Buffer.Data).Checksum;
       Size := Buffer.DataSize;
       for Index := 8 to Size - 1 do
       begin
@@ -71,15 +71,15 @@ begin
         Cursor := PByte(PAnsiChar(Cursor) + 1);
       end;
       Checksum := 0;
-      Cursor := PByte(PAnsiChar(Buffer.Data) + 12);
-      for Index := 12 to Size - 1 do
+      Cursor := PByte(PAnsiChar(Buffer.Data) + SizeOf(TEncodedTableHeaderEC));
+      for Index := SizeOf(TEncodedTableHeaderEC) to Size - 1 do
       begin
         Inc(Checksum, Byte(Cursor^ xor $FF));
         Cursor := PByte(PAnsiChar(Cursor) + 1);
       end;
       if Buffer.GetUInt32At(8) <> Cardinal(Checksum) then
         raise EAbort.Create('Error unpacking achievements.dat');
-      Buffer.SetPosition(12);
+      Buffer.SetPosition(SizeOf(TEncodedTableHeaderEC));
       Count := Buffer.GetInt32;
       for Index := 0 to Count - 1 do
       begin
@@ -130,14 +130,14 @@ begin
   end;
   Size := Buffer.DataSize;
   Checksum := 0;
-  Cursor := PByte(PAnsiChar(Buffer.Data) + 12);
-  for Index := 12 to Size - 1 do
+  Cursor := PByte(PAnsiChar(Buffer.Data) + SizeOf(TEncodedTableHeaderEC));
+  for Index := SizeOf(TEncodedTableHeaderEC) to Size - 1 do
   begin
     Inc(Checksum, Byte(Cursor^ xor $FF));
     Cursor := PByte(PAnsiChar(Cursor) + 1);
   end;
   Buffer.SetInt32At(8, Checksum);
-  Cursor := PByte(PAnsiChar(Buffer.Data) + 8);
+  Cursor := @PEncodedTableHeaderEC(Buffer.Data).Checksum;
   for Index := 8 to Size - 1 do
   begin
     Cursor^ := Cursor^ xor Byte(Seed - 1);

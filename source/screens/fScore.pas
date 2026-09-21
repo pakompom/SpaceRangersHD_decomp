@@ -1031,7 +1031,7 @@ begin
       if Version <> 2 then raise EAbort.Create('Error unpacking score.dat');
       Seed := Integer(Buffer.GetByteAt(6)) or (Integer(Buffer.GetByteAt(7)) shl 8) or
         (Integer(Buffer.GetByteAt(4)) shl 16) or (Integer(Buffer.GetByteAt(5)) shl 24);
-      Data := PByte(Cardinal(Buffer.Data) + 8);
+      Data := @PEncodedTableHeaderEC(Buffer.Data).Checksum;
       Size := Buffer.DataSize;
       for I := 8 to Size - 1 do
       begin
@@ -1041,14 +1041,14 @@ begin
         Data := PByte(PAnsiChar(Data) + 1);
       end;
       Checksum := 0;
-      Data := PByte(Cardinal(Buffer.Data) + 12);
-      for I := 12 to Size - 1 do
+      Data := PByte(Cardinal(Buffer.Data) + SizeOf(TEncodedTableHeaderEC));
+      for I := SizeOf(TEncodedTableHeaderEC) to Size - 1 do
       begin
         Inc(Checksum, Byte(Data^ xor $FF));
         Data := PByte(PAnsiChar(Data) + 1);
       end;
       if Buffer.GetUInt32At(8) <> Checksum then raise EAbort.Create('Error unpacking score.dat');
-      Buffer.SetPosition(12);
+      Buffer.SetPosition(SizeOf(TEncodedTableHeaderEC));
       for I := 0 to 10 do
       begin
         Entry := TfScoreUnit.Create;
@@ -1104,14 +1104,14 @@ begin
   end;
   Size := Buffer.DataSize;
   Checksum := 0;
-  Data := PByte(Cardinal(Buffer.Data) + 12);
-  for I := 12 to Size - 1 do
+  Data := PByte(Cardinal(Buffer.Data) + SizeOf(TEncodedTableHeaderEC));
+  for I := SizeOf(TEncodedTableHeaderEC) to Size - 1 do
   begin
     Inc(Checksum, Byte(Data^ xor $FF));
     Data := PByte(PAnsiChar(Data) + 1);
   end;
   Buffer.SetInt32At(8, Checksum);
-  Data := PByte(Cardinal(Buffer.Data) + 8);
+  Data := @PEncodedTableHeaderEC(Buffer.Data).Checksum;
   for I := 8 to Size - 1 do
   begin
     Data^ := Data^ xor Byte(Seed - 1);

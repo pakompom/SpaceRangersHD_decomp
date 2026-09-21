@@ -3938,9 +3938,12 @@ begin
     X := 0;
     while X < Width do
     begin
-      PByte(AddPointerOffset(Dest, X * 3))^ := PByte(AddPointerOffset(Source, X * 4 + 2))^;
-      PByte(AddPointerOffset(Dest, X * 3 + 1))^ := PByte(AddPointerOffset(Source, X * 4 + 1))^;
-      PByte(AddPointerOffset(Dest, X * 3 + 2))^ := PByte(AddPointerOffset(Source, X * 4))^;
+      PColorRGB(AddPointerOffset(Dest, X * SizeOf(TColorRGB))).R :=
+        PByte(AddPointerOffset(Source, Integer(@PColorBGRA(X * SizeOf(TColorBGRA)).R)))^;
+      PByte(AddPointerOffset(Dest, Integer(@PColorRGB(X * SizeOf(TColorRGB)).G)))^ :=
+        PByte(AddPointerOffset(Source, Integer(@PColorBGRA(X * SizeOf(TColorBGRA)).G)))^;
+      PByte(AddPointerOffset(Dest, Integer(@PColorRGB(X * SizeOf(TColorRGB)).B)))^ :=
+        PColorBGRA(AddPointerOffset(Source, X * SizeOf(TColorBGRA))).B;
       Inc(X);
     end;
     Dest := AddPointerOffset(Dest, DestPitch);

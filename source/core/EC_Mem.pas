@@ -13,6 +13,8 @@ function AllocFromHeapEC(Heap: Cardinal; ByteCount: Integer): Pointer; // @addr 
 function AllocClearFromHeapEC(Heap: Cardinal; ByteCount: Integer): Pointer; // @addr 0x86EB74 @note "Raises on allocation failure; does not evict caches."
 function ReAllocFromHeapREC(Heap: Cardinal; Data: Pointer; ByteCount: Integer): Pointer; // @addr 0x86EC28 @note "Nonpositive sizes free Data and return nil. Raises on allocation failure; does not evict caches."
 // These stack-ABI accessors are handwritten assembly in the native unit.
+// Integer(@PRecord(ByteOffset).Field) in callers derives a relative field offset
+// without reading memory, preserving these native calls and their argument order.
 function AddPointerOffset(Data: Pointer; ByteOffset: Integer): Pointer; cdecl; // @addr 0x86ED98
 procedure WriteByteEC(Dest: Pointer; Value: Byte); cdecl; // @addr 0x86EDA4
 procedure WriteWordEC(Dest: Pointer; Value: Word); cdecl; // @addr 0x86EDB4

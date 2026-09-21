@@ -6,6 +6,16 @@ interface
 uses EC_File, EC_Struct;
 
 type
+  // Shared disk header in score.dat and achievements.dat, after zlib expansion.
+  // The XOR stream starts at Checksum; the checksum covers the following payload.
+  TEncodedTableHeaderEC = packed record // @size $0C
+    Version: Integer; // @offset $00
+    SeedHighWord: Word; // @offset $04
+    SeedLowWord: Word; // @offset $06
+    Checksum: Cardinal; // @offset $08
+  end;
+  PEncodedTableHeaderEC = ^TEncodedTableHeaderEC;
+
   TBufEC = class(TObjectEx) // @size 0x14
   public
     DataSize: Integer; // @offset 0x04

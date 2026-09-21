@@ -546,9 +546,9 @@ var Plane: PgiPlaneGR; ByteCount: Cardinal;
       MOV EDI, Pixels
       MOV ECX, Count
     @@Pixel:
-      MOV AL, [EDI]
-      XCHG AL, [EDI + 2]
-      MOV [EDI], AL
+      MOV AL, [EDI].TColorBGRA.B
+      XCHG AL, [EDI].TColorBGRA.R
+      MOV [EDI].TColorBGRA.B, AL
       ADD EDI, 4
       DEC ECX
       JNZ @@Pixel

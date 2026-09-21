@@ -577,9 +577,9 @@ asm
   mov ebx, edx
   mov edx, eax
   mov ecx, ecx
-  fld qword ptr [ebx+$10]
-  fld qword ptr [ebx+$08]
-  fld qword ptr [ebx]
+  fld qword ptr [ebx].TVector3D.Z
+  fld qword ptr [ebx].TVector3D.Y
+  fld qword ptr [ebx].TVector3D.X
   fld qword ptr [edx+$18]
   fmul st, st(1)
   fld qword ptr [edx+$38]
@@ -601,7 +601,7 @@ asm
   faddp st(1), st
   fadd qword ptr [edx+$60]
   fmul st, st(1)
-  fstp qword ptr [ecx]
+  fstp qword ptr [ecx].TVector3D.X
   fld qword ptr [edx+$08]
   fmul st, st(2)
   fld qword ptr [edx+$28]
@@ -612,7 +612,7 @@ asm
   faddp st(1), st
   fadd qword ptr [edx+$68]
   fmul st, st(1)
-  fstp qword ptr [ecx+$08]
+  fstp qword ptr [ecx].TVector3D.Y
   fld qword ptr [edx+$10]
   fmulp st(2), st
   fld qword ptr [edx+$30]
@@ -624,7 +624,7 @@ asm
   faddp st(1), st
   faddp st(1), st
   fmulp st(1), st
-  fstp qword ptr [ecx+$10]
+  fstp qword ptr [ecx].TVector3D.Z
   pop ecx
   pop edx
   pop ebx

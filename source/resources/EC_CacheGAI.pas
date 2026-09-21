@@ -53,6 +53,13 @@ implementation
 
 uses EC_Mem, EC_Str, EC_Struct, GR_Main, GR_GraphBuf, Windows;
 
+// Native directory indexing adds the two header dwords separately.
+function ReadGaiSequenceOffset(const Table: PGaiSequenceTableHeader; const Index: Integer): Cardinal; inline;
+begin
+  Result := ReadDWordEC(AddPointerOffset(Table,
+    Index * SizeOf(TGaiSequenceDirectoryEntry) + 4 + 4));
+end;
+
 { @routine $47C788 TCGaiControlEC_QueueLoadIfMissing }
 procedure TCGaiControlEC.QueueLoadIfMissing(PendingLoads: TList);
 var Control: TCGaiControlEC;
@@ -205,10 +212,14 @@ begin
   end;
   if ReadWordEC(AddPointerOffset(RawGaiData, Offset)) = $4C5A then
   begin
-    DecodedFrameGi.LoadCompressedGiBytes(AddPointerOffset(RawGaiData, Offset), ReadDWordEC(AddPointerOffset(RawGaiData, FrameIndex * SizeOf(TGaiFrameEntry) + SizeOf(TGaiHeader) + 4)));
+    DecodedFrameGi.LoadCompressedGiBytes(AddPointerOffset(RawGaiData, Offset),
+      ReadDWordEC(AddPointerOffset(RawGaiData,
+        Integer(@PGaiFrameEntry(FrameIndex * SizeOf(TGaiFrameEntry) + SizeOf(TGaiHeader)).DataSize))));
     if not SkipPalettedColorCacheBuild then DecodedFrameGi.BuildPalettedFormat4ColorCache;
   end
-  else DecodedFrameGi.LoadRawGiBytes(AddPointerOffset(RawGaiData, Offset), ReadDWordEC(AddPointerOffset(RawGaiData, FrameIndex * SizeOf(TGaiFrameEntry) + SizeOf(TGaiHeader) + 4)));
+  else DecodedFrameGi.LoadRawGiBytes(AddPointerOffset(RawGaiData, Offset),
+    ReadDWordEC(AddPointerOffset(RawGaiData,
+      Integer(@PGaiFrameEntry(FrameIndex * SizeOf(TGaiFrameEntry) + SizeOf(TGaiHeader)).DataSize))));
   if not DecodedFrameGi.IsEmpty then Result := DecodedFrameGi;
 end;
 { @end $47CBB0 }
@@ -227,16 +238,14 @@ end;
 function TCGaiEC.GetSequenceCount: Integer;
 begin
   if SequenceTableData = nil then Result := 0
-  else Result := ReadDWordEC(SequenceTableData);
+  else Result := ReadDWordEC(@SequenceTableData.SequenceCount);
 end;
 { @end $47CD54 }
 
 { @routine $47CD84 TCGaiEC_GetSequenceFrameCount }
 function TCGaiEC.GetSequenceFrameCount(SequenceIndex: Integer): Integer;
-// The directory begins after the eight-byte header. Native $47CD96/$47CD99
-// add its two dwords separately; the pointer/read helpers below are real calls.
 begin
-  Result := ReadDWordEC(AddPointerOffset(SequenceTableData, ReadDWordEC(AddPointerOffset(SequenceTableData, SequenceIndex * SizeOf(TGaiSequenceDirectoryEntry) + 4 + 4))));
+  Result := ReadDWordEC(AddPointerOffset(SequenceTableData, ReadGaiSequenceOffset(SequenceTableData, SequenceIndex)));
 end;
 { @end $47CD84 }
 
@@ -244,7 +253,7 @@ end;
 procedure TCGaiEC.FillSequenceFrameIndexTable(SequenceIndex: Integer; DestTable: Pointer; EntryStride: Integer);
 var Source: Pointer; Index, Count: Integer;
 begin
-  Source := AddPointerOffset(SequenceTableData, ReadDWordEC(AddPointerOffset(SequenceTableData, SequenceIndex * SizeOf(TGaiSequenceDirectoryEntry) + 4 + 4)));
+  Source := AddPointerOffset(SequenceTableData, ReadGaiSequenceOffset(SequenceTableData, SequenceIndex));
   Count := ReadDWordEC(Source);
   Source := AddPointerOffset(Source, SizeOf(TGaiSequenceDataBlock));
   for Index := 0 to Count - 1 do
@@ -260,7 +269,7 @@ end;
 procedure TCGaiEC.FillSequenceFrameDelayTable(SequenceIndex: Integer; DestTable: Pointer; EntryStride: Integer);
 var Source: Pointer; Index, Count: Integer;
 begin
-  Source := AddPointerOffset(SequenceTableData, ReadDWordEC(AddPointerOffset(SequenceTableData, SequenceIndex * SizeOf(TGaiSequenceDirectoryEntry) + 4 + 4)));
+  Source := AddPointerOffset(SequenceTableData, ReadGaiSequenceOffset(SequenceTableData, SequenceIndex));
   Count := ReadDWordEC(Source);
   Source := AddPointerOffset(Source, SizeOf(TGaiSequenceDataBlock) + SizeOf(Integer));
   for Index := 0 to Count - 1 do
@@ -276,7 +285,9 @@ end;
 function TCGaiEC.GetSequenceFrameIndex(SequenceIndex, FrameInSequence: Integer): Integer;
 begin
   Result := ReadDWordEC(AddPointerOffset(SequenceTableData,
-    ReadDWordEC(AddPointerOffset(SequenceTableData, SequenceIndex * SizeOf(TGaiSequenceDirectoryEntry) + 4 + 4)) + (FrameInSequence * SizeOf(TGaiSequenceFrameEntry) + 4)));
+    ReadGaiSequenceOffset(SequenceTableData, SequenceIndex) +
+    Integer(@PGaiSequenceFrameEntry(
+      FrameInSequence * SizeOf(TGaiSequenceFrameEntry) + SizeOf(TGaiSequenceDataBlock)).SourceFrameIndex)));
 end;
 { @end $47CF54 }
 
@@ -284,7 +295,9 @@ end;
 function TCGaiEC.GetSequenceFrameDelay(SequenceIndex, FrameInSequence: Integer): Integer;
 begin
   Result := ReadDWordEC(AddPointerOffset(SequenceTableData,
-    ReadDWordEC(AddPointerOffset(SequenceTableData, SequenceIndex * SizeOf(TGaiSequenceDirectoryEntry) + 4 + 4)) + (FrameInSequence * SizeOf(TGaiSequenceFrameEntry) + 4 + 4)));
+    ReadGaiSequenceOffset(SequenceTableData, SequenceIndex) +
+    Integer(@PGaiSequenceFrameEntry(
+      FrameInSequence * SizeOf(TGaiSequenceFrameEntry) + SizeOf(TGaiSequenceDataBlock)).FrameDelay)));
 end;
 { @end $47CFB4 }
 

@@ -67,6 +67,12 @@ implementation
 
 uses Windows, Classes, EC_Mem, EC_Str, GR_Main, EC_Struct;
 
+function ReadGaiFrameSize(const Directory: Pointer; const Index: Integer): Cardinal; inline;
+begin
+  Result := ReadDWordEC(AddPointerOffset(Directory,
+    Integer(@PGaiFrameEntry(Index * SizeOf(TGaiFrameEntry)).DataSize)));
+end;
+
 { @routine $498B28 TGAIFileThreadGI_Execute }
 procedure TGAIFileThreadGI.Execute;
 var Index, Count, SourceFrame: Integer; Data: Pointer;
@@ -91,9 +97,9 @@ begin
     if Count >= Owner.GetFrameCount then Break;
     SourceFrame := Owner.GetSequenceFrame(Index);
     if IsStopRequested then Break;
-    Data := AllocEC(ReadDWordEC(AddPointerOffset(Owner.FrameDirectory, SourceFrame * SizeOf(TGaiFrameEntry) + 4)));
+    Data := AllocEC(ReadGaiFrameSize(Owner.FrameDirectory, SourceFrame));
     Owner.ImageFile.SetPointer(ReadDWordEC(AddPointerOffset(Owner.FrameDirectory, SourceFrame * SizeOf(TGaiFrameEntry))), FILE_BEGIN);
-    Owner.ImageFile.ReadBuffer(Data, ReadDWordEC(AddPointerOffset(Owner.FrameDirectory, SourceFrame * SizeOf(TGaiFrameEntry) + 4)));
+    Owner.ImageFile.ReadBuffer(Data, ReadGaiFrameSize(Owner.FrameDirectory, SourceFrame));
     PrepareRawGiColorCache(Data);
     if IsStopRequested then
     begin
@@ -246,9 +252,9 @@ begin
     Exit;
   end;
   begin
-    Data := AllocEC(ReadDWordEC(AddPointerOffset(FrameDirectory, FrameIndex * SizeOf(TGaiFrameEntry) + 4)));
+    Data := AllocEC(ReadGaiFrameSize(FrameDirectory, FrameIndex));
     ImageFile.SetPointer(ReadDWordEC(AddPointerOffset(FrameDirectory, FrameIndex * SizeOf(TGaiFrameEntry))), FILE_BEGIN);
-    ImageFile.ReadBuffer(Data, ReadDWordEC(AddPointerOffset(FrameDirectory, FrameIndex * SizeOf(TGaiFrameEntry) + 4)));
+    ImageFile.ReadBuffer(Data, ReadGaiFrameSize(FrameDirectory, FrameIndex));
     PrepareRawGiColorCache(Data);
     WriteIntegerEC(AddPointerOffset(FrameBuffers, FrameIndex * SizeOf(Pointer)), Integer(Data));
     LoaderThread.Start;
@@ -558,7 +564,7 @@ begin
   begin
     SourceFrame := GetSequenceFrame(CurrentFrame);
     Data := GetFrameData(SourceFrame);
-    FrameImage.LoadRawGiBytes(Data, ReadDWordEC(AddPointerOffset(FrameDirectory, SourceFrame * SizeOf(TGaiFrameEntry) + 4)));
+    FrameImage.LoadRawGiBytes(Data, ReadGaiFrameSize(FrameDirectory, SourceFrame));
     TrimFrameCache;
     Y := StartY;
     while Y < EndY do
@@ -589,7 +595,7 @@ begin
       begin
         SourceFrame := GetSequenceFrame(Frame);
         Data := GetFrameData(SourceFrame);
-        FrameImage.LoadRawGiBytes(Data, ReadDWordEC(AddPointerOffset(FrameDirectory, SourceFrame * SizeOf(TGaiFrameEntry) + 4)));
+        FrameImage.LoadRawGiBytes(Data, ReadGaiFrameSize(FrameDirectory, SourceFrame));
         FrameImage.DrawToGraphBuf(PlaybackBuffer, FrameImage.GetBoundsRect.Left - Bounds.Left, FrameImage.GetBoundsRect.Top - Bounds.Top,
           Classes.Rect(0, 0, PlaybackBuffer.Width, PlaybackBuffer.Height), 0, 255);
         Inc(Frame);
