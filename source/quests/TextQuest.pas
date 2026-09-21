@@ -6,6 +6,13 @@ interface
 uses Classes, EC_Buf, EC_Struct, EventClass, LocationClass, ParameterClass, PathClass, TextFieldClass, TextQuestInterface;
 
 type
+  // Quest-header race bits; the destination also supports uninhabited planets.
+  TQuestRace = (qrMaloc = 0, qrPeleng = 1, qrHuman = 2, qrFeyan = 3,
+    qrGaal = 4, qrUninhabited = 6); // @size $01
+  TQuestRaceSet = set of TQuestRace; // @size $01
+  TQuestPlayerCareer = (qpcTrader = 0, qpcPirate = 1, qpcWarrior = 2); // @size $01
+  TQuestPlayerCareerSet = set of TQuestPlayerCareer; // @size $01
+
   TTextQuest = class(TObjectEx) // @size 0x80
   public
     Locations: TList; // @offset 0x04
@@ -20,10 +27,10 @@ type
     EditorGridHeight: Integer; // @offset 0x28
     Difficulty: Integer; // @offset 0x2C
     CompleteOnFinish: Boolean; // @offset 0x30
-    IssuerRaceMask: Byte; // @offset 0x31
-    TargetOwnerMask: Byte; // @offset 0x32 // Empty requires matching issuer and target owners; bit 6 selects owner 6.
-    PlayerCareerMask: Byte; // @offset 0x33 // Bits 0..2 follow TRangerCareer.
-    PlayerRaceMask: Byte; // @offset 0x34
+    IssuerRaces: TQuestRaceSet; // @offset 0x31
+    TargetRaces: TQuestRaceSet; // @offset 0x32 Empty inherits IssuerRaces for placement; offers require matching owners.
+    PlayerCareers: TQuestPlayerCareerSet; // @offset 0x33
+    PlayerRaces: TQuestRaceSet; // @offset 0x34
     SuccessRelationDelta: Integer; // @offset 0x38
     DefaultTraversalLimit: Integer; // @offset 0x3C // Serialized editor default; not applied by this runtime.
     QuestDescriptionText: TTextField; // @offset 0x40
@@ -174,8 +181,6 @@ end;
 
 { @routine $4E90FC TTextQuest_Reset }
 procedure TTextQuest.Reset;
-type
-  TFlagBits = set of 0..7;
 var
   i: Integer;
 begin
@@ -184,10 +189,10 @@ begin
   MinorVersion := 0;
   ChangeLogText.ClearText;
   CompleteOnFinish := True;
-  TFlagBits(IssuerRaceMask) := [0..4];
-  TFlagBits(TargetOwnerMask) := [6];
-  TFlagBits(PlayerRaceMask) := [0..4];
-  TFlagBits(PlayerCareerMask) := [0..2];
+  IssuerRaces := [qrMaloc..qrGaal];
+  TargetRaces := [qrUninhabited];
+  PlayerRaces := [qrMaloc..qrGaal];
+  PlayerCareers := [qpcTrader..qpcWarrior];
   EditorScreenWidth := 0;
   EditorScreenHeight := 0;
   DefaultTraversalLimit := 0;
@@ -260,8 +265,6 @@ end;
 
 { @routine $4E9684 TTextQuest_LoadFromReader }
 procedure TTextQuest.LoadFromReader(Reader: TBufEC; HeaderOnly: Boolean);
-type
-  TFlagBits = set of 0..7;
 var
   i, ParameterCount, LocationCount, PathCount: Integer;
   TemporaryText: TTextField;
@@ -287,51 +290,51 @@ begin
     FormatVersion := 1111111111;
   end
   else if FormatVersion < 1111111125 then i := Reader.GetInt32;
-  if FormatVersion >= 1111111119 then Reader.ReadBytes(@IssuerRaceMask, 1)
+  if FormatVersion >= 1111111119 then Reader.ReadBytes(@IssuerRaces, 1)
   else
     case i of
-      -1: TFlagBits(IssuerRaceMask) := [6];
-      0: TFlagBits(IssuerRaceMask) := [0];
-      1: TFlagBits(IssuerRaceMask) := [1];
-      2: TFlagBits(IssuerRaceMask) := [2];
-      3: TFlagBits(IssuerRaceMask) := [3];
-      4: TFlagBits(IssuerRaceMask) := [4];
-    else TFlagBits(IssuerRaceMask) := [];
+      -1: IssuerRaces := [qrUninhabited];
+      0: IssuerRaces := [qrMaloc];
+      1: IssuerRaces := [qrPeleng];
+      2: IssuerRaces := [qrHuman];
+      3: IssuerRaces := [qrFeyan];
+      4: IssuerRaces := [qrGaal];
+    else IssuerRaces := [];
     end;
   if FormatVersion >= 1111111112 then CompleteOnFinish := Reader.GetBoolean;
   if FormatVersion < 1111111125 then i := Reader.GetInt32;
-  if FormatVersion >= 1111111119 then Reader.ReadBytes(@TargetOwnerMask, 1)
+  if FormatVersion >= 1111111119 then Reader.ReadBytes(@TargetRaces, 1)
   else
     case i of
-      -1: TFlagBits(TargetOwnerMask) := [6];
-      0: TFlagBits(TargetOwnerMask) := [0];
-      1: TFlagBits(TargetOwnerMask) := [1];
-      2: TFlagBits(TargetOwnerMask) := [2];
-      3: TFlagBits(TargetOwnerMask) := [3];
-      4: TFlagBits(TargetOwnerMask) := [4];
-    else TFlagBits(TargetOwnerMask) := [];
+      -1: TargetRaces := [qrUninhabited];
+      0: TargetRaces := [qrMaloc];
+      1: TargetRaces := [qrPeleng];
+      2: TargetRaces := [qrHuman];
+      3: TargetRaces := [qrFeyan];
+      4: TargetRaces := [qrGaal];
+    else TargetRaces := [];
     end;
   if FormatVersion < 1111111125 then i := Reader.GetInt32;
-  if FormatVersion >= 1111111120 then Reader.ReadBytes(@PlayerCareerMask, 1)
+  if FormatVersion >= 1111111120 then Reader.ReadBytes(@PlayerCareers, 1)
   else
     case i of
-      -1: TFlagBits(PlayerCareerMask) := [0..2];
-      0: TFlagBits(PlayerCareerMask) := [0];
-      1: TFlagBits(PlayerCareerMask) := [1];
-      2: TFlagBits(PlayerCareerMask) := [2];
-    else TFlagBits(PlayerCareerMask) := [];
+      -1: PlayerCareers := [qpcTrader..qpcWarrior];
+      0: PlayerCareers := [qpcTrader];
+      1: PlayerCareers := [qpcPirate];
+      2: PlayerCareers := [qpcWarrior];
+    else PlayerCareers := [];
     end;
   if FormatVersion < 1111111125 then i := Reader.GetInt32;
-  if FormatVersion >= 1111111120 then Reader.ReadBytes(@PlayerRaceMask, 1)
+  if FormatVersion >= 1111111120 then Reader.ReadBytes(@PlayerRaces, 1)
   else
     case i of
-      -1: TFlagBits(PlayerRaceMask) := [0..4];
-      0: TFlagBits(PlayerRaceMask) := [0];
-      1: TFlagBits(PlayerRaceMask) := [1];
-      2: TFlagBits(PlayerRaceMask) := [2];
-      3: TFlagBits(PlayerRaceMask) := [3];
-      4: TFlagBits(PlayerRaceMask) := [4];
-    else TFlagBits(PlayerRaceMask) := [];
+      -1: PlayerRaces := [qrMaloc..qrGaal];
+      0: PlayerRaces := [qrMaloc];
+      1: PlayerRaces := [qrPeleng];
+      2: PlayerRaces := [qrHuman];
+      3: PlayerRaces := [qrFeyan];
+      4: PlayerRaces := [qrGaal];
+    else PlayerRaces := [];
     end;
   SuccessRelationDelta := Reader.GetInt32;
   EditorScreenWidth := Reader.GetInt32;

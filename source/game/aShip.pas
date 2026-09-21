@@ -15,8 +15,6 @@ type
   end;
   PShipEquipmentCacheView = ^TShipEquipmentCacheView;
 
-  TStationStandingMask = set of 0..15; // @size $02 Station standing filter; empty accepts every standing.
-
   TCustomShipInfo = record // @size 0x28
     TypeName: WideString; // @offset 0x00
     Description: WideString; // @offset 0x04
@@ -462,8 +460,8 @@ type
     procedure FireWeaponAtShip(Weapon: TWeapon; Target: TShip; RecordFilm: Boolean); // @addr 0x757D20 @note "Can affect additional ships through chained, area or penetrating fire."
     procedure FireWeaponAtItem(Weapon: TWeapon; Target: TItem; RecordFilm: Boolean); // @addr 0x7590FC @note "Weapon may be nil. Script handlers can change the target; a destroyed item may explode and be freed."
     function ApplyDamage(Source: TObject; Damage: Integer; HitRange: Single; out DamageColor: Cardinal; DamageFlags: TDamageFlagSet): Integer; // @addr 0x7544DC @ida "int __userpurge $name@<eax>(TShip *Self@<eax>, TObject *Source@<edx>, int Damage@<ecx>, float HitRange@<^8>, unsigned int *DamageColor@<^4>, unsigned int DamageFlags@<^0>);" @note "Source may be nil, ship or missile. HitRange=-1 selects direct-hit rules; other values select area-hit rules. Returns adjusted damage, zero for rejection, or negative damage for an impulse-shield block; not actual hull loss. May run death handling without freeing Self."
-    function ApplyWeaponHit(Source: TShip; Weapon: TWeapon; HitRange: Single; out DamageColor: Cardinal; out DamageFlags: Dword; DamageScale: Single; FixedDamage: Integer): Integer; // @addr 0x756768 @note "Returns ApplyDamage's signed result. Positive FixedDamage bypasses the initial roll/armor stage unless weapon flag 0x800 is already set; later effects still apply."
-    function ApplyMissileHit(Missile: TObject; out DamageColor: Cardinal; out DamageFlags: Dword): Integer; // @addr 0x756E4C @note "Requires a TMissile; returns ApplyDamage's signed result."
+    function ApplyWeaponHit(Source: TShip; Weapon: TWeapon; HitRange: Single; out DamageColor: Cardinal; out DamageFlags: TDamageFlagSet; DamageScale: Single; FixedDamage: Integer): Integer; // @addr 0x756768 @note "Returns ApplyDamage's signed result. Positive FixedDamage bypasses the initial roll/armor stage unless weapon flag 0x800 is already set; later effects still apply."
+    function ApplyMissileHit(Missile: TObject; out DamageColor: Cardinal; out DamageFlags: TDamageFlagSet): Integer; // @addr 0x756E4C @note "Requires a TMissile; returns ApplyDamage's signed result."
     function ApplyInterceptorDamage(out DamageColor: Cardinal): Integer; // @addr 0x759A40 @note "Uses InterceptorSourceShip; absent source gives base damage 25. Returns ApplyDamage's signed result."
     function GetInterceptorDamage: Integer; // @addr 0x77D7F8
     function ApplyShockStatusDamage(out DamageColor: Cardinal): Integer; // @addr 0x759B7C @note "Uses rounded shock strength and nonlethal flag 0x1000; returns ApplyDamage's signed result."
@@ -3824,7 +3822,7 @@ end;
 { @end $7544DC }
 
 { @routine $756768 TShip_ApplyWeaponHit }
-function TShip.ApplyWeaponHit(Source: TShip; Weapon: TWeapon; HitRange: Single; out DamageColor: Cardinal; out DamageFlags: Dword; DamageScale: Single; FixedDamage: Integer): Integer;
+function TShip.ApplyWeaponHit(Source: TShip; Weapon: TWeapon; HitRange: Single; out DamageColor: Cardinal; out DamageFlags: TDamageFlagSet; DamageScale: Single; FixedDamage: Integer): Integer;
 const
   EnergyDamageFlags = [dkEnergy];
 var
@@ -3901,7 +3899,7 @@ begin
   ScriptFlags := Source.ScriptItemsAct(satOnWeaponShot2, Self, Weapon, ScriptFlags);
   ScriptFlags := ScriptItemsAct(satOnGettingWeaponHit, Source, Weapon, ScriptFlags);
   Flags := TDamageFlagSet(ScriptFlags);
-  DamageFlags := Dword(Flags);
+  DamageFlags := Flags;
   Result := ApplyDamage(Source, Damage, HitRange, DamageColor, Flags);
   if (GetHull.HullPoints < 1) and (GetPlayer = Source) then
   begin
@@ -3918,7 +3916,7 @@ end;
 { @end $756768 }
 
 { @routine $756E4C TShip_ApplyMissileHit }
-function TShip.ApplyMissileHit(Missile: TObject; out DamageColor: Cardinal; out DamageFlags: Dword): Integer;
+function TShip.ApplyMissileHit(Missile: TObject; out DamageColor: Cardinal; out DamageFlags: TDamageFlagSet): Integer;
 var
   Shot: TMissile;
   RolledDamage, Damage, MaxDamage, MinDamage, Spread, SkillDifference: Integer;
@@ -3931,14 +3929,14 @@ begin
   Shot := Missile as TMissile;
   Flags := Shot.GetWeaponInfo.DamageFlags;
   if Shot.MicroModuleIndex <> 0 then
-    Flags := Flags + TDamageFlagSet(MicroModuleTemplates[Shot.MicroModuleIndex - 1].WeaponDamageFlags);
+    Flags := Flags + MicroModuleTemplates[Shot.MicroModuleIndex - 1].WeaponDamageFlags;
   if Shot.SpecialModuleIndex <> 0 then
-    Flags := Flags + TDamageFlagSet(MicroModuleTemplates[Shot.SpecialModuleIndex - 1].WeaponDamageFlags);
+    Flags := Flags + MicroModuleTemplates[Shot.SpecialModuleIndex - 1].WeaponDamageFlags;
   ScriptFlags := Integer(Flags);
   if Shot.OwnerShip <> nil then ScriptFlags := Shot.OwnerShip.ScriptItemsAct(satOnMissileShot2, Self, Missile, ScriptFlags);
   ScriptFlags := ScriptItemsAct(satOnGettingMissileHit, Shot.OwnerShip, Missile, ScriptFlags);
   Flags := TDamageFlagSet(ScriptFlags);
-  DamageFlags := Dword(Flags);
+  DamageFlags := Flags;
   if Shot.OwnerShip = nil then
     SkillDifference := 0 - GetEffectiveSkillLevel(psManeuverability)
   else SkillDifference := Shot.OwnerShip.GetEffectiveSkillLevel(psAccuracy) -
@@ -3958,7 +3956,7 @@ begin
   end;
   if Shot.Target = Self then HitRange := -1 else HitRange := 0;
   Damage := Round(AdjustedDamage);
-  Result := ApplyDamage(Shot, Damage, HitRange, DamageColor, TDamageFlagSet(DamageFlags));
+  Result := ApplyDamage(Shot, Damage, HitRange, DamageColor, DamageFlags);
   if (GetHull.HullPoints < 1) and (Shot.OwnerShip <> nil) and (GetPlayer = Shot.OwnerShip) then
     TryAddAchievementProgress('ROCKET', 1);
   if (GetPlayer = Self) and (GetHull.HullPoints < 1) then
@@ -4124,7 +4122,7 @@ var
           if not (Self is TKling) or not (Self as TKling).IsPlayerCamouflageEffective(Ship) then
             if not (Ship is TKling) or not (Ship as TKling).IsPlayerCamouflageEffective(Self) then
             begin
-              Damage := Ship.ApplyWeaponHit(Self, Weapon, Sqrt(DistanceSquared), Color, Dword(Flags), 1,
+              Damage := Ship.ApplyWeaponHit(Self, Weapon, Sqrt(DistanceSquared), Color, Flags, 1,
                 Round(ExplodingShip.CalculateMass * 0.1));
               if (dkDrain in Flags) and (Damage > 0) then Inc(DrainedDamage, Damage);
               Inc(Result, Damage);
@@ -4204,7 +4202,7 @@ begin
   Info := Weapon.GetWeaponInfo;
   if Info.ShotType = wstNormal then
   begin
-    Damage := Target.ApplyWeaponHit(Self, Weapon, -1, Color, Dword(Flags), 1, 0);
+    Damage := Target.ApplyWeaponHit(Self, Weapon, -1, Color, Flags, 1, 0);
     if (dkDrain in Flags) and (Damage > 0) then Inc(DrainedDamage, Damage);
     PrimaryDamage := Damage;
     if RecordFilm then
@@ -4224,7 +4222,7 @@ begin
       Star.PlayerFilmPath.AppendWaypoint(MakePointF((Target.Position.X + Position.X) / 2,
         (Target.Position.Y + Position.Y) / 2), StepIndex + 25);
     RadiusSquared := Sqr(GetWeaponRange(Weapon)) * 1.3;
-    Damage := Target.ApplyWeaponHit(Self, Weapon, -1, Color, Dword(Flags), 1, 0);
+    Damage := Target.ApplyWeaponHit(Self, Weapon, -1, Color, Flags, 1, 0);
     if (dkDrain in Flags) and (Damage > 0) then Inc(DrainedDamage, Damage);
     PrimaryDamage := Damage;
     Ships := TList.Create;
@@ -4268,11 +4266,11 @@ begin
         begin
           DamageScale := DamageScale - 1 / (Weapon.GetShotCount + 1);
           Nearest := Ships[Ships.Count - 1];
-          Damage := Nearest.ApplyWeaponHit(Self, Weapon, -1, Color, Dword(Flags), DamageScale, 0);
+          Damage := Nearest.ApplyWeaponHit(Self, Weapon, -1, Color, Flags, DamageScale, 0);
           Damages[Damages.Count - 1] := Pointer(Integer(Damages[Damages.Count - 1]) + Damage);
           Break;
         end;
-        Damage := Nearest.ApplyWeaponHit(Self, Weapon, 0, Color, Dword(Flags), DamageScale, 0);
+        Damage := Nearest.ApplyWeaponHit(Self, Weapon, 0, Color, Flags, DamageScale, 0);
         if (dkDrain in Flags) and (Damage > 0) then Inc(DrainedDamage, Damage);
         Ships.Add(Nearest);
         Damages.Add(Pointer(Damage));
@@ -4314,7 +4312,7 @@ begin
     if ((GetPlayer = Self) and RecordFilm) and (Star.PlayerFilmPath <> nil) then
       Star.PlayerFilmPath.AppendWaypoint(MakePointF((Target.Position.X + Position.X) / 2,
         (Target.Position.Y + Position.Y) / 2), StepIndex + 25);
-    Damage := Target.ApplyWeaponHit(Self, Weapon, -1, Color, Dword(Flags), 1, 0);
+    Damage := Target.ApplyWeaponHit(Self, Weapon, -1, Color, Flags, 1, 0);
     if (dkDrain in Flags) and (Damage > 0) then Inc(DrainedDamage, Damage);
     PrimaryDamage := Damage;
     if RecordFilm then
@@ -4334,7 +4332,7 @@ begin
         DistanceSquared := PointDistanceSquared(Ship.Position, Target.Position);
         if Sqr(Info.SecondaryDamageRadius) >= DistanceSquared then
         begin
-          Damage := Ship.ApplyWeaponHit(Self, Weapon, Sqrt(DistanceSquared), Color, Dword(Flags), 1, 0);
+          Damage := Ship.ApplyWeaponHit(Self, Weapon, Sqrt(DistanceSquared), Color, Flags, 1, 0);
           if (dkDrain in Flags) and (Damage > 0) then Inc(DrainedDamage, Damage);
           if RecordFilm then
           begin
@@ -4352,7 +4350,7 @@ begin
   begin
     if (GetPlayer = Self) and RecordFilm then
       PrimaryFilm.AddCameraEvent(StepIndex, GetPlayer.Position, Target.Position, 1);
-    Damage := Target.ApplyWeaponHit(Self, Weapon, -1, Color, Dword(Flags), 1, 0);
+    Damage := Target.ApplyWeaponHit(Self, Weapon, -1, Color, Flags, 1, 0);
     if (dkDrain in Flags) and (Damage > 0) then Inc(DrainedDamage, Damage);
     PrimaryDamage := Damage;
     if RecordFilm then
@@ -4422,8 +4420,8 @@ begin
       if (Ship <> Self) and Ship.InNormalSpace and not Ship.IsHullDestroyed then
         if PointDistanceSquared(Ship.Position, Position) <= RadiusSquared then
         begin
-          if Target = Ship then Damage := Ship.ApplyWeaponHit(Self, Weapon, -1, Color, Dword(Flags), 1, 0)
-          else Damage := Ship.ApplyWeaponHit(Self, Weapon, PointDistance(Position, Ship.Position), Color, Dword(Flags), 1, 0);
+          if Target = Ship then Damage := Ship.ApplyWeaponHit(Self, Weapon, -1, Color, Flags, 1, 0)
+          else Damage := Ship.ApplyWeaponHit(Self, Weapon, PointDistance(Position, Ship.Position), Color, Flags, 1, 0);
           if (dkDrain in Flags) and (Damage > 0) then Inc(DrainedDamage, Damage);
           if RecordFilm then
           begin
@@ -4460,7 +4458,7 @@ begin
         end;
     if Reflect then
     begin
-      Damage := ApplyWeaponHit(Target, Weapon, -1, Color, Dword(Flags), 1, Abs(PrimaryDamage));
+      Damage := ApplyWeaponHit(Target, Weapon, -1, Color, Flags, 1, Abs(PrimaryDamage));
       if RecordFilm then
       begin
         Effect := TWeaponSE.Create('Weapon.NoGraph', Classes.Point(0, 0), 0, -1);
@@ -6120,7 +6118,7 @@ begin
         Result := True;
         Exit;
       end;
-      if (Self is TKling) and (TDominatorSeriesMask(MicroModuleTemplates[ModuleIndex].AllowedDominatorSeriesMask) <> AllSeries) then
+      if (Self is TKling) and (MicroModuleTemplates[ModuleIndex].AllowedDominatorSeriesMask <> AllSeries) then
       begin
         Result := True;
         Exit;
@@ -6131,15 +6129,15 @@ begin
         Exit;
       end;
     end;
-    if (Self is TKling) and (Ord(oiDominator) in TOwnerMask(MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask)) and
-      (Byte((Self as TKling).DominatorSeries) in TDominatorSeriesMask(MicroModuleTemplates[ModuleIndex].AllowedDominatorSeriesMask)) then Exit;
+    if (Self is TKling) and (Ord(oiDominator) in MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask) and
+      (Byte((Self as TKling).DominatorSeries) in MicroModuleTemplates[ModuleIndex].AllowedDominatorSeriesMask) then Exit;
     if ((Self is TNormalShip) or (Self is TRuins)) and
-      ((RaceToOwner(PilotRace) in TOwnerMask(MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask)) or
-       ((OwnerId = Byte(oiPirate)) and (Ord(oiPirate) in TOwnerMask(MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask)))) then Exit;
+      ((RaceToOwner(PilotRace) in MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask) or
+       ((OwnerId = Byte(oiPirate)) and (Ord(oiPirate) in MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask))) then Exit;
     if not (Self is TKling) and
-      (TOwnerMask(MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask) * PlanetOwners = NoOwners) and
-      (OwnerId in TOwnerMask(MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask)) then Exit;
-    if (Self is TTranclucator) and (Ord(oiUninhabited) in TOwnerMask(MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask)) then Exit;
+      (MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask * PlanetOwners = NoOwners) and
+      (OwnerId in MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask) then Exit;
+    if (Self is TTranclucator) and (Ord(oiUninhabited) in MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask) then Exit;
     Result := True;
   end;
 end;
@@ -8678,9 +8676,9 @@ begin
       begin
         Ship := CurrentStar.Ships[I];
         if Ship.InNormalSpace and (Ship is TNormalShip) and
-          not ((Ship.TypeId = stPirate) and (Ship.OwnerId in TOwnerMask(PlanetOwnerMasks.Coalition))) and
+          not ((Ship.TypeId = stPirate) and (Ship.OwnerId in PlanetOwnerMasks.Coalition)) and
           (Ship.TypeId <> stKling) and
-          ((Ship.OwnerId in TOwnerMask(PlanetOwnerMasks.Coalition)) = (OwnerId in TOwnerMask(PlanetOwnerMasks.Coalition))) then
+          ((Ship.OwnerId in PlanetOwnerMasks.Coalition) = (OwnerId in PlanetOwnerMasks.Coalition)) then
           Inc(FriendlyCount);
       end;
       Result := GetHull.HullPoints * 5 div GetHull.Weight < FriendlyCount;

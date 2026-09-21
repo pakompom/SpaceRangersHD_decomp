@@ -183,10 +183,12 @@ type
   TGalaxyDifficultyLevels = array[0..7] of Byte;
 
   TPlanetEconomy = (peAgricultural = 0, peMixed = 1, peIndustrial = 2); // @size 0x1
+  TPlanetEconomies = set of TPlanetEconomy; // @size $01
   TPlanetGovernment = (
     pgAnarchy = 0, pgDictatorship = 1, pgMonarchy = 2,
     pgRepublic = 3, pgDemocracy = 4
   ); // @size 0x1
+  TPlanetGovernments = set of TPlanetGovernment; // @size $01
   TShopUpdateMode = (
     sumNormal = 0, sumDisabled = 1, sumEquipmentOnly = 2, sumGoodsOnly = 3
   ); // @size 0x1
@@ -337,17 +339,21 @@ type
   TPlanetEquipmentOfferQuotaTable = array[0..4] of TPlanetEquipmentOfferQuotaRow;
   PPlanetEquipmentOfferQuotaTable = ^TPlanetEquipmentOfferQuotaTable;
 
+  TOwnerMask = set of 0..7; // @size 0x01
+  TStationStandingMask = set of 0..15; // @size $02 Station standing filter; empty accepts every standing.
+  // Preserve the full byte for native membership checks; selected series are 0..2.
+  TDominatorSeriesMask = set of 0..7; // @size $01
+
   TPlanetOwnerMasks = packed record // @size 0x03
-    Coalition: Byte; // @offset 0x00  OwnerId bits 0..4 (0x1F).
-    Dominators: Byte; // @offset 0x01  OwnerId bit 5 (0x20).
-    PirateClan: Byte; // @offset 0x02  OwnerId bit 7 (0x80).
+    Coalition: TOwnerMask; // @offset 0x00 Coalition owner IDs 0..4.
+    Dominators: TOwnerMask; // @offset 0x01 Dominator owner ID 5.
+    PirateClan: TOwnerMask; // @offset 0x02 Pirate Clan owner ID 7.
   end;
   PPlanetOwnerMasks = ^TPlanetOwnerMasks;
-  TOwnerMask = set of 0..7; // @size 0x01
   TOwnerRelationRow = array[0..7] of Byte;
   TOwnerRelationTable = array[0..7] of TOwnerRelationRow;
   POwnerRelationTable = ^TOwnerRelationTable;
-  TFactionStandingMasks = array[0..2] of Word;
+  TFactionStandingMasks = array[0..2] of TStationStandingMask;
   PFactionStandingMasks = ^TFactionStandingMasks;
   TQuestType = (qtSendLetter = 0, qtKillShip = 1, qtPlanetQuest = 2,
     qtDefendSystem = 3, qtDefendShip = 4); // @size 0x1
@@ -365,6 +371,7 @@ type
 
   TRelationLevel = (rlHostile = 0, rlBad = 1, rlNormal = 2,
     rlGood = 3, rlExcellent = 4); // @size 0x1
+  TRelationLevels = set of TRelationLevel; // @size $01
 
   // Native record RTTI at $82BDE0.
 

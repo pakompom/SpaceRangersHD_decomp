@@ -2871,15 +2871,15 @@ begin
           GetPlayer.CaptainHealth[J].Progress := 0;
           GetPlayer.StatusEffectSourceNames[J] := '';
         end;
-    GetPlayer.ChangePlanetRelations(nil, rcmRaiseTo, 70, TOwnerMask(PlanetOwnerMasks.Coalition));
-    GetPlayer.ChangeShipRelations(nil, rcmRaiseTo, 70, RelationShipTypes, TOwnerMask(PlanetOwnerMasks.Coalition));
+    GetPlayer.ChangePlanetRelations(nil, rcmRaiseTo, 70, PlanetOwnerMasks.Coalition);
+    GetPlayer.ChangeShipRelations(nil, rcmRaiseTo, 70, RelationShipTypes, PlanetOwnerMasks.Coalition);
     if MainPiratePlanet <> nil then
     begin
       RangerIndex := Galaxy.Rangers.IndexOf(GetPlayer);
       Relation := Byte(MainPiratePlanet.RangerRelations[RangerIndex]);
       if Relation < 45 then MainPiratePlanet.RangerRelations[RangerIndex] := Pointer(45);
     end;
-    GetPlayer.ChangeShipRelations(nil, rcmRaiseTo, 45, RelationShipTypes, TOwnerMask(PlanetOwnerMasks.PirateClan));
+    GetPlayer.ChangeShipRelations(nil, rcmRaiseTo, 45, RelationShipTypes, PlanetOwnerMasks.PirateClan);
     SoundManager.PlaySound('Sound.Sell');
     Event := AddGalaxyEvent('PlayerChangesNationality');
     Event.AddData(GetPlayer.PilotRace);
@@ -2964,17 +2964,17 @@ begin
   if GetPlayer.OwnerId = Byte(oiPirate) then
   begin
     if (Relation < 45) and (MainPiratePlanet <> nil) then MainPiratePlanet.RangerRelations[RangerIndex] := Pointer(45);
-    GetPlayer.ChangeShipRelations(nil, rcmRaiseTo, 45, RelationShipTypes, TOwnerMask(PlanetOwnerMasks.PirateClan));
-    GetPlayer.ChangePlanetRelations(nil, rcmCapAt, 20, TOwnerMask(PlanetOwnerMasks.Coalition));
-    GetPlayer.ChangeShipRelations(nil, rcmCapAt, 20, RelationShipTypes, TOwnerMask(PlanetOwnerMasks.Coalition));
+    GetPlayer.ChangeShipRelations(nil, rcmRaiseTo, 45, RelationShipTypes, PlanetOwnerMasks.PirateClan);
+    GetPlayer.ChangePlanetRelations(nil, rcmCapAt, 20, PlanetOwnerMasks.Coalition);
+    GetPlayer.ChangeShipRelations(nil, rcmCapAt, 20, RelationShipTypes, PlanetOwnerMasks.Coalition);
     DialogText := LocalizedColorText('FormRuins.PB.ChangeSide.AnswerPlayerOkPirate');
   end
   else
   begin
-    GetPlayer.ChangePlanetRelations(nil, rcmRaiseTo, 45, TOwnerMask(PlanetOwnerMasks.Coalition));
-    GetPlayer.ChangeShipRelations(nil, rcmRaiseTo, 45, RelationShipTypes, TOwnerMask(PlanetOwnerMasks.Coalition));
+    GetPlayer.ChangePlanetRelations(nil, rcmRaiseTo, 45, PlanetOwnerMasks.Coalition);
+    GetPlayer.ChangeShipRelations(nil, rcmRaiseTo, 45, RelationShipTypes, PlanetOwnerMasks.Coalition);
     if (Relation > 20) and (MainPiratePlanet <> nil) then MainPiratePlanet.RangerRelations[RangerIndex] := Pointer(20);
-    GetPlayer.ChangeShipRelations(nil, rcmCapAt, 20, RelationShipTypes, TOwnerMask(PlanetOwnerMasks.PirateClan));
+    GetPlayer.ChangeShipRelations(nil, rcmCapAt, 20, RelationShipTypes, PlanetOwnerMasks.PirateClan);
     DialogText := LocalizedColorText('FormRuins.PB.ChangeSide.AnswerPlayerOkNormal');
   end;
   Event := AddGalaxyEvent('PlayerChangesSide');
@@ -5094,8 +5094,8 @@ begin
       GetPlayer.GainExperience(Experience, 0);
       ReplaceTextToken(DialogText, '<Point>', IntToStr(Experience), '<color=255,240,100>');
       Galaxy.UpdateConstellationMilitaryStats;
-      GetPlayer.ChangePlanetRelations(nil, rcmIncrease, 10, TOwnerMask(PlanetOwnerMasks.Coalition));
-      GetPlayer.ChangeShipRelations(nil, rcmIncrease, 40, RangerTypes, TOwnerMask(PlanetOwnerMasks.Coalition));
+      GetPlayer.ChangePlanetRelations(nil, rcmIncrease, 10, PlanetOwnerMasks.Coalition);
+      GetPlayer.ChangeShipRelations(nil, rcmIncrease, 40, RangerTypes, PlanetOwnerMasks.Coalition);
       TryAddAchievementProgress('RUINS', 1);
     end;
     cpCreatePirateBase:
@@ -5136,9 +5136,9 @@ begin
         ReplaceTextToken(DialogText, '<Point>', IntToStr(RankPoints), '<color=255,240,100>');
       end;
       Galaxy.UpdateConstellationMilitaryStats;
-      GetPlayer.ChangePlanetRelations(nil, rcmIncrease, 30, TOwnerMask(PlanetOwnerMasks.Coalition));
-      GetPlayer.ChangeShipRelations(nil, rcmIncrease, 10, FriendlyTypes, TOwnerMask(PlanetOwnerMasks.Coalition));
-      GetPlayer.ChangeShipRelations(nil, rcmDecreaseWithFloor20, 30, PirateTypes, TOwnerMask(PlanetOwnerMasks.Coalition));
+      GetPlayer.ChangePlanetRelations(nil, rcmIncrease, 30, PlanetOwnerMasks.Coalition);
+      GetPlayer.ChangeShipRelations(nil, rcmIncrease, 10, FriendlyTypes, PlanetOwnerMasks.Coalition);
+      GetPlayer.ChangeShipRelations(nil, rcmDecreaseWithFloor20, 30, PirateTypes, PlanetOwnerMasks.Coalition);
       TryAddAchievementProgress('RUINS', 1);
     end;
     cpCreateScienceBase:
@@ -5154,7 +5154,7 @@ begin
       ReplaceTextToken(DialogText, '<Name>', ScienceBase.Name, '<color=255,240,100>');
       ReplaceTextToken(DialogText, '<Star>', ScienceBase.CurrentStar.Name, '<color=255,240,100>');
       Galaxy.UpdateConstellationMilitaryStats;
-      GetPlayer.ChangeShipRelations(nil, rcmIncrease, 25, RangerTypes, TOwnerMask(PlanetOwnerMasks.Coalition));
+      GetPlayer.ChangeShipRelations(nil, rcmIncrease, 25, RangerTypes, PlanetOwnerMasks.Coalition);
       TryAddAchievementProgress('RUINS', 1);
     end;
     cpCreateBusinessCenter:
@@ -5170,7 +5170,7 @@ begin
       ReplaceTextToken(DialogText, '<Name>', BusinessCenter.Name, '<color=255,240,100>');
       ReplaceTextToken(DialogText, '<Star>', BusinessCenter.CurrentStar.Name, '<color=255,240,100>');
       Galaxy.UpdateConstellationMilitaryStats;
-      GetPlayer.ChangeShipRelations(nil, rcmIncrease, 30, TransportTypes, TOwnerMask(PlanetOwnerMasks.Coalition));
+      GetPlayer.ChangeShipRelations(nil, rcmIncrease, 30, TransportTypes, PlanetOwnerMasks.Coalition);
       TryAddAchievementProgress('RUINS', 1);
     end;
     cpCreateMedicalBase:
@@ -5186,7 +5186,7 @@ begin
       ReplaceTextToken(DialogText, '<Name>', MedicalBase.Name, '<color=255,240,100>');
       ReplaceTextToken(DialogText, '<Star>', MedicalBase.CurrentStar.Name, '<color=255,240,100>');
       Galaxy.UpdateConstellationMilitaryStats;
-      GetPlayer.ChangeShipRelations(nil, rcmIncrease, 30, FriendlyTypes, TOwnerMask(PlanetOwnerMasks.Coalition));
+      GetPlayer.ChangeShipRelations(nil, rcmIncrease, 30, FriendlyTypes, PlanetOwnerMasks.Coalition);
       TryAddAchievementProgress('RUINS', 1);
     end;
     cpRangersSubsidy:
@@ -5261,9 +5261,9 @@ begin
       ReplaceTextToken(DialogText, '<InvestmentText>', LocalizedColorText('Investment.' + CoalitionProjectNames[Kind] + '.Text'), '');
       ReplaceTextToken(DialogText, '<BK>', GetPlayer.DockedTo.Name, '<color=255,240,100>');
       ReplaceTextToken(DialogText, '<Money>', IntToStr(StationServiceQuoteCost), '<color=255,240,100>');
-      GetPlayer.ChangePlanetRelations(nil, rcmIncrease, 30, TOwnerMask(PlanetOwnerMasks.Coalition));
-      GetPlayer.ChangeShipRelations(nil, rcmIncrease, 20, FriendlyTypes, TOwnerMask(PlanetOwnerMasks.Coalition));
-      GetPlayer.ChangeShipRelations(nil, rcmDecreaseWithFloor20, 20, PirateTypes, TOwnerMask(PlanetOwnerMasks.Coalition));
+      GetPlayer.ChangePlanetRelations(nil, rcmIncrease, 30, PlanetOwnerMasks.Coalition);
+      GetPlayer.ChangeShipRelations(nil, rcmIncrease, 20, FriendlyTypes, PlanetOwnerMasks.Coalition);
+      GetPlayer.ChangeShipRelations(nil, rcmDecreaseWithFloor20, 20, PirateTypes, PlanetOwnerMasks.Coalition);
     end;
     cpWarSubsidy:
     begin
@@ -5292,8 +5292,8 @@ begin
       ReplaceTextToken(DialogText, '<Star>', InvestmentDefensePlanet.CurrentStar.Name, '<color=255,240,100>');
       ReplaceTextToken(DialogText, '<Money>', IntToStr(StationServiceQuoteCost), '<color=255,240,100>');
       InvestmentDefensePlanet.ChangeRelationToRanger(GetPlayer, 100);
-      GetPlayer.ChangePlanetRelations(nil, rcmIncrease, 20, TOwnerMask(PlanetOwnerMasks.Coalition));
-      GetPlayer.ChangeShipRelations(nil, rcmDecreaseWithFloor20, 30, PirateTypes, TOwnerMask(PlanetOwnerMasks.Coalition));
+      GetPlayer.ChangePlanetRelations(nil, rcmIncrease, 20, PlanetOwnerMasks.Coalition);
+      GetPlayer.ChangeShipRelations(nil, rcmDecreaseWithFloor20, 30, PirateTypes, PlanetOwnerMasks.Coalition);
     end;
   end;
   M_Main(True);
@@ -6053,9 +6053,9 @@ var
       if THull(Item).HullType = htSpecial then
       begin
         if Item.SpecialModuleIndex = 0 then Exit;
-        if not (GetPlayer.DockedTo.TypeId in TShipTypeMask(MicroModuleTemplates[Item.SpecialModuleIndex - 1].OfferStationTypes)) then Exit;
+        if not (GetPlayer.DockedTo.TypeId in MicroModuleTemplates[Item.SpecialModuleIndex - 1].OfferStationTypes) then Exit;
       end
-      else if not (Item.OwnerId in TOwnerMask(PlanetOwnerMasks.Coalition)) then Exit;
+      else if not (Item.OwnerId in PlanetOwnerMasks.Coalition) then Exit;
     end;
     if Kind in [Ord(t_Weapon1)..Ord(t_CustomWeapon)] then
       for I := 1 to 5 do

@@ -98,8 +98,8 @@ type
     function AcceptsAppealFrom(Ship: TShip): Boolean; override; // @addr 0x72D620 @slot 0x90 @note "Tests relation plus a relative-strength score against 120; used by TfTalk.RequestProtection and RequestPreserveItems."
     function ProcessPrisonAndHostileCheck: Boolean; // @addr 0x72DAEC @note "Returns whether imprisonment blocks this turn; may imprison, release or update standing."
     procedure ChangeGlobalRelations(Scope: TObject; Mode: TRelationChangeMode; Amount: Byte; HullTypeMask: THullShipTypeMask; OwnerMask: TOwnerMask); // @addr 0x72DC18
-    function GlobalRelationsShips(Scope: TObject; HullTypeMask: Word; OwnerMask: Byte): Byte; // @addr 0x72E23C @note "Averages stored relations for matching ships; empty selection returns 50. A single ship uses its virtual RelationToRanger."
-    function GlobalRelationsPlanets(Scope: TObject; OwnerMask: Byte): Byte; // @addr 0x72E3CC @note "Averages Coalition planets in matching stars/sectors; empty selection returns 50. A planet Scope does not narrow this native scan."
+    function GlobalRelationsShips(Scope: TObject; HullTypeMask: THullShipTypeMask; OwnerMask: TOwnerMask): Byte; // @addr 0x72E23C @note "Averages stored relations for matching ships; empty selection returns 50. A single ship uses its virtual RelationToRanger."
+    function GlobalRelationsPlanets(Scope: TObject; OwnerMask: TOwnerMask): Byte; // @addr 0x72E3CC @note "Averages Coalition planets in matching stars/sectors; empty selection returns 50. A planet Scope does not narrow this native scan."
     procedure AssignWeaponTargetsInStar; override; // @addr 0x72E51C @slot 0x20
     procedure SelectEnemyShipInStar; override; // @addr 0x72EC68 @slot 0x6C @note "May attempt extortion and assign weapon targets; preserves a prior enemy when no replacement qualifies."
     procedure EngageEnemyShip; override; // @addr 0x72F19C @slot 0x70
@@ -2314,7 +2314,7 @@ var
     else
     begin
       CurrentPlanet.ChangeRelationToRanger(Self, 80);
-      ChangePlanetRelations(nil, rcmRaiseTo, 45, TOwnerMask(PlanetOwnerMasks.Coalition));
+      ChangePlanetRelations(nil, rcmRaiseTo, 45, PlanetOwnerMasks.Coalition);
     end;
     Result := True;
     for I := 0 to CurrentStar.Ships.Count - 1 do
@@ -2490,7 +2490,7 @@ end;
 { @end $72DF6C }
 
 { @routine $72E23C TRanger_GlobalRelationsShips }
-function TRanger.GlobalRelationsShips(Scope: TObject; HullTypeMask: Word; OwnerMask: Byte): Byte;
+function TRanger.GlobalRelationsShips(Scope: TObject; HullTypeMask: THullShipTypeMask; OwnerMask: TOwnerMask): Byte;
 var I, J, RangerIndex, Total, Count: Integer; Star: TStar; Ship: TShip; Previous: Byte;
 begin
   if Scope is TShip then begin
@@ -2508,7 +2508,7 @@ begin
       if (Scope as TStar) <> Star then Continue;
     for J := 0 to Star.Ships.Count - 1 do begin
       Ship := Star.Ships[J];
-      if (ShipToHullType(Ship) in THullShipTypeMask(HullTypeMask)) and (Ship.OwnerId in TOwnerMask(OwnerMask)) then begin
+      if (ShipToHullType(Ship) in HullTypeMask) and (Ship.OwnerId in OwnerMask) then begin
         Inc(Count);
         Previous := Byte(Ship.RangerRelations[RangerIndex]);
         Inc(Total, Previous);
@@ -2520,7 +2520,7 @@ end;
 { @end $72E23C }
 
 { @routine $72E3CC TRanger_GlobalRelationsPlanets }
-function TRanger.GlobalRelationsPlanets(Scope: TObject; OwnerMask: Byte): Byte;
+function TRanger.GlobalRelationsPlanets(Scope: TObject; OwnerMask: TOwnerMask): Byte;
 var I, J, RangerIndex, Total, Count: Integer; Star: TStar; Planet: TPlanet; Previous: Byte;
 begin
   RangerIndex := Galaxy.Rangers.IndexOf(Self);
@@ -2534,7 +2534,7 @@ begin
       if (Scope as TStar) <> Star then Continue;
     for J := 0 to Star.Planets.Count - 1 do begin
       Planet := Star.Planets[J];
-      if (Planet.OwnerId in TOwnerMask(OwnerMask)) and Planet.IsCoalitionOwned then begin
+      if (Planet.OwnerId in OwnerMask) and Planet.IsCoalitionOwned then begin
         Inc(Count);
         Previous := Byte(Planet.RangerRelations[RangerIndex]);
         Inc(Total, Previous);
@@ -4193,26 +4193,26 @@ begin
                     repeat
                       if ForcedPlanetQuestId < 0 then begin
                         if not (
-                          (((CurrentPlanet.RaceId = Byte(oiMaloc)) and ((TextQuest.IssuerRaceMask and 1) <> 0)) or
-                          ((CurrentPlanet.RaceId = Byte(oiPeleng)) and ((TextQuest.IssuerRaceMask and 2) <> 0)) or
-                          ((CurrentPlanet.RaceId = Byte(oiHuman)) and ((TextQuest.IssuerRaceMask and 4) <> 0)) or
-                          ((CurrentPlanet.RaceId = Byte(oiFeyan)) and ((TextQuest.IssuerRaceMask and 8) <> 0)) or
-                          ((CurrentPlanet.RaceId = Byte(oiGaal)) and ((TextQuest.IssuerRaceMask and 16) <> 0))) and
-                          (((Planet.OwnerId = Byte(oiUninhabited)) and ((TextQuest.TargetOwnerMask and $40) <> 0)) or
-                          (((TextQuest.TargetOwnerMask and 1) <> 0) and (Planet.OwnerId = Byte(oiMaloc))) or
-                          (((TextQuest.TargetOwnerMask and 2) <> 0) and (Planet.OwnerId = Byte(oiPeleng))) or
-                          (((TextQuest.TargetOwnerMask and 4) <> 0) and (Planet.OwnerId = Byte(oiHuman))) or
-                          (((TextQuest.TargetOwnerMask and 8) <> 0) and (Planet.OwnerId = Byte(oiFeyan))) or
-                          (((TextQuest.TargetOwnerMask and 16) <> 0) and (Planet.OwnerId = Byte(oiGaal))) or ((TOwnerMask(TextQuest.TargetOwnerMask) = []) and (CurrentPlanet.OwnerId = Planet.OwnerId))) and
+                          (((CurrentPlanet.RaceId = Byte(oiMaloc)) and (qrMaloc in TextQuest.IssuerRaces)) or
+                          ((CurrentPlanet.RaceId = Byte(oiPeleng)) and (qrPeleng in TextQuest.IssuerRaces)) or
+                          ((CurrentPlanet.RaceId = Byte(oiHuman)) and (qrHuman in TextQuest.IssuerRaces)) or
+                          ((CurrentPlanet.RaceId = Byte(oiFeyan)) and (qrFeyan in TextQuest.IssuerRaces)) or
+                          ((CurrentPlanet.RaceId = Byte(oiGaal)) and (qrGaal in TextQuest.IssuerRaces))) and
+                          (((Planet.OwnerId = Byte(oiUninhabited)) and (qrUninhabited in TextQuest.TargetRaces)) or
+                          ((qrMaloc in TextQuest.TargetRaces) and (Planet.OwnerId = Byte(oiMaloc))) or
+                          ((qrPeleng in TextQuest.TargetRaces) and (Planet.OwnerId = Byte(oiPeleng))) or
+                          ((qrHuman in TextQuest.TargetRaces) and (Planet.OwnerId = Byte(oiHuman))) or
+                          ((qrFeyan in TextQuest.TargetRaces) and (Planet.OwnerId = Byte(oiFeyan))) or
+                          ((qrGaal in TextQuest.TargetRaces) and (Planet.OwnerId = Byte(oiGaal))) or ((TextQuest.TargetRaces = []) and (CurrentPlanet.OwnerId = Planet.OwnerId))) and
                           not Galaxy.HasPlayerQuestHistory(qtPlanetQuest, Planet.TextQuestId) and
-                          ((((TextQuest.PlayerCareerMask and 1) <> 0) and (GetDominantCareer = rcTrader)) or
-                          (((TextQuest.PlayerCareerMask and 2) <> 0) and (GetDominantCareer = rcPirate)) or
-                          (((TextQuest.PlayerCareerMask and 4) <> 0) and (GetDominantCareer = rcWarrior))) and
-                          ((((TextQuest.PlayerRaceMask and 1) <> 0) and (PilotRace = Byte(oiMaloc))) or
-                          (((TextQuest.PlayerRaceMask and 2) <> 0) and (PilotRace = Byte(oiPeleng))) or
-                          (((TextQuest.PlayerRaceMask and 4) <> 0) and (PilotRace = Byte(oiHuman))) or
-                          (((TextQuest.PlayerRaceMask and 8) <> 0) and (PilotRace = Byte(oiFeyan))) or
-                          (((TextQuest.PlayerRaceMask and 16) <> 0) and (PilotRace = Byte(oiGaal))))
+                          (((qpcTrader in TextQuest.PlayerCareers) and (GetDominantCareer = rcTrader)) or
+                          ((qpcPirate in TextQuest.PlayerCareers) and (GetDominantCareer = rcPirate)) or
+                          ((qpcWarrior in TextQuest.PlayerCareers) and (GetDominantCareer = rcWarrior))) and
+                          (((qrMaloc in TextQuest.PlayerRaces) and (PilotRace = Byte(oiMaloc))) or
+                          ((qrPeleng in TextQuest.PlayerRaces) and (PilotRace = Byte(oiPeleng))) or
+                          ((qrHuman in TextQuest.PlayerRaces) and (PilotRace = Byte(oiHuman))) or
+                          ((qrFeyan in TextQuest.PlayerRaces) and (PilotRace = Byte(oiFeyan))) or
+                          ((qrGaal in TextQuest.PlayerRaces) and (PilotRace = Byte(oiGaal))))
                         ) then Break;
                         if not (TextQuest.Difficulty < Galaxy.InterpolateSingleByTechLevel(0, 71) + 30 * Max(1, GalaxyDifficultyTuning[Galaxy.DifficultyLevels[5]].GoodsEventDurationFactor)) then Break;
                       end;

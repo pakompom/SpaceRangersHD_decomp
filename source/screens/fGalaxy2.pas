@@ -1620,15 +1620,15 @@ var
             if (Ship as TTranclucator).OwnerShip = nil then Inc(ScriptedCoalition)
             else
             begin
-              if (Ship as TTranclucator).OwnerShip.OwnerId in TOwnerMask(PlanetOwnerMasks.Coalition) then Inc(ScriptedCoalition)
-              else if (Ship as TTranclucator).OwnerShip.OwnerId in TOwnerMask(PlanetOwnerMasks.PirateClan) then Inc(ScriptedPirates);
+              if (Ship as TTranclucator).OwnerShip.OwnerId in PlanetOwnerMasks.Coalition then Inc(ScriptedCoalition)
+              else if (Ship as TTranclucator).OwnerShip.OwnerId in PlanetOwnerMasks.PirateClan then Inc(ScriptedPirates);
             end;
           end
           else if (Ship as TTranclucator).OwnerShip = nil then Inc(CoalitionTranclucators)
           else
           begin
-            if (Ship as TTranclucator).OwnerShip.OwnerId in TOwnerMask(PlanetOwnerMasks.Coalition) then Inc(CoalitionTranclucators)
-            else if (Ship as TTranclucator).OwnerShip.OwnerId in TOwnerMask(PlanetOwnerMasks.PirateClan) then Inc(PirateTranclucators);
+            if (Ship as TTranclucator).OwnerShip.OwnerId in PlanetOwnerMasks.Coalition then Inc(CoalitionTranclucators)
+            else if (Ship as TTranclucator).OwnerShip.OwnerId in PlanetOwnerMasks.PirateClan then Inc(PirateTranclucators);
           end;
       else
         if Ship.TypeId in [Ord(rstRangerCenter)..Ord(rstCustomStation)] then

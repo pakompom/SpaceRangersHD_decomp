@@ -1387,7 +1387,7 @@ var
   Scope: TObject;
   Mode: TRelationChangeMode;
   ShipTypes: THullShipTypeMask;
-  Owners: Byte;
+  Owners: TOwnerMask;
 begin
   if High(av) <> 6 then raise Exception.Create('Error.Script ChangeGlobalRelationsShips');
   if av[1].GetDword = 0 then Exit;
@@ -1405,9 +1405,9 @@ begin
       3: Mode := rcmDecrease;
     else Mode := rcmCapAt;
     end;
-    Word(ShipTypes) := av[5].GetDword;
-    Owners := av[6].GetDword;
-    TRanger(Ranger).ChangeShipRelations(Scope, Mode, av[4].GetInt, ShipTypes, TOwnerMask(Owners));
+    ShipTypes := THullShipTypeMask(Word(av[5].GetDword));
+    Owners := TOwnerMask(Byte(av[6].GetDword));
+    TRanger(Ranger).ChangeShipRelations(Scope, Mode, av[4].GetInt, ShipTypes, Owners);
   end;
 end;
 { @end $608098 }
@@ -1418,7 +1418,7 @@ var
   Ranger: TObject;
   Scope: TObject;
   Mode: TRelationChangeMode;
-  Owners: Byte;
+  Owners: TOwnerMask;
 begin
   if High(av) <> 5 then raise Exception.Create('Error.Script ChangeGlobalRelationsPlanets');
   Ranger := TObject(av[1].GetDword);
@@ -1435,8 +1435,8 @@ begin
       3: Mode := rcmDecrease;
     else Mode := rcmCapAt;
     end;
-    Owners := av[5].GetDword;
-    TRanger(Ranger).ChangePlanetRelations(Scope, Mode, av[4].GetInt, TOwnerMask(Owners));
+    Owners := TOwnerMask(Byte(av[5].GetDword));
+    TRanger(Ranger).ChangePlanetRelations(Scope, Mode, av[4].GetInt, Owners);
   end;
 end;
 { @end $608230 }
@@ -1446,8 +1446,8 @@ procedure SF_GlobalRelationsShips(av: array of TVarEC; code: TCodeEC);
 var
   Ranger: TObject;
   Scope: TObject;
-  ShipTypes: Word;
-  Owners: Byte;
+  ShipTypes: THullShipTypeMask;
+  Owners: TOwnerMask;
 begin
   if High(av) <> 4 then raise Exception.Create('Error.Script GlobalRelationsShips');
   Ranger := TObject(av[1].GetDword);
@@ -1457,8 +1457,8 @@ begin
       Scope := TScriptConstellation(CurrentScript.Constellations[av[2].GetDword]).Constellation
     else if av[2].GetDword <> 0 then Scope := TObject(av[2].GetDword)
     else Scope := nil;
-    ShipTypes := av[3].GetDword;
-    Owners := av[4].GetDword;
+    ShipTypes := THullShipTypeMask(Word(av[3].GetDword));
+    Owners := TOwnerMask(Byte(av[4].GetDword));
     av[0].SetInt(TRanger(Ranger).GlobalRelationsShips(Scope, ShipTypes, Owners));
   end;
 end;
@@ -1469,7 +1469,7 @@ procedure SF_GlobalRelationsPlanets(av: array of TVarEC; code: TCodeEC);
 var
   Ranger: TObject;
   Scope: TObject;
-  Owners: Byte;
+  Owners: TOwnerMask;
 begin
   if High(av) <> 3 then raise Exception.Create('Error.Script GlobalRelationsPlanets');
   Ranger := TObject(av[1].GetDword);
@@ -1479,7 +1479,7 @@ begin
       Scope := TScriptConstellation(CurrentScript.Constellations[av[2].GetDword]).Constellation
     else if av[2].GetDword <> 0 then Scope := TObject(av[2].GetDword)
     else Scope := nil;
-    Owners := av[3].GetDword;
+    Owners := TOwnerMask(Byte(av[3].GetDword));
     av[0].SetInt(TRanger(Ranger).GlobalRelationsPlanets(Scope, Owners));
   end;
 end;
@@ -10342,7 +10342,7 @@ var
 begin
   if High(av) < 1 then raise Exception.Create('Error.Script CreateEquipmentWithSpecial');
   if not MicroModuleTemplates[av[1].GetInt].SpecialOnly then raise Exception.Create('Error.Script CreateEquipmentWithSpecial - not special');
-  Mask := TItemTypeMask(MicroModuleTemplates[av[1].GetInt].AllowedItemTypes);
+  Mask := MicroModuleTemplates[av[1].GetInt].AllowedItemTypes;
   Kind := PickRandomItemTypeFromSeed(Mask, Galaxy.RandomState);
   if High(av) > 3 then Item := CreateGeneratedEquipment(TItemType(Kind), av[2].GetInt, av[3].GetInt, av[4].GetInt)
   else Item := TEquipment(CreateDefaultItemByType(TItemType(Kind)));
@@ -10381,7 +10381,7 @@ begin
     Template := Pointer(MicroModuleTemplates);
     for Index := 0 to MicroModuleTemplateCount - 1 do
     begin
-      if Template.SpecialOnly and ((TShipTypeMask(Template.OfferStationTypes) <> []) or (Template.OfferStationNames <> '<>') or Template.OnPlanets) and
+      if Template.SpecialOnly and ((Template.OfferStationTypes <> []) or (Template.OfferStationNames <> '<>') or Template.OnPlanets) and
         (not IsWeapon or IsBonusCompatibleWithWeapon(Index, TWeapon(Item))) and
         (not IsHull or IsBonusCompatibleWithHull(Index, THull(Item))) and
         (not IsOther or IsBonusCompatibleWithEquipment(Index, Item)) and (Template.Priority <= PriorityLimit) then
@@ -12371,7 +12371,7 @@ end;
 
 { @routine $6324A4 SF_WeaponHit }
 procedure SF_WeaponHit(av: array of TVarEC; code: TCodeEC);
-var Target: TObject; Ship: TShip; Weapon: TWeapon; Range: Integer; Color: Cardinal; Hit: Boolean; Missile: TMissile; Star: TStar; Flags: Cardinal;
+var Target: TObject; Ship: TShip; Weapon: TWeapon; Range: Integer; Color: Cardinal; Hit: Boolean; Missile: TMissile; Star: TStar; Flags: TDamageFlagSet;
 begin
   if High(av) < 3 then raise Exception.Create('Error.Script WeaponHit');
   Ship := TShip(av[1].GetDword);
@@ -15461,9 +15461,8 @@ end;
 
 { @routine $6401C8 SF_SetCustomWeaponDamageData }
 procedure SF_SetCustomWeaponDamageData(av: array of TVarEC; code: TCodeEC);
-type TWeaponDamageFlags = set of 0..31;
 const EmptyFlags = [];
-var Info: PWeaponInfo; Flag: Byte; Flags: TWeaponDamageFlags; I, Count: Integer; Text: WideString;
+var Info: PWeaponInfo; Flag: Byte; Flags: TDamageFlagSet; I, Count: Integer; Text: WideString;
 begin
   if High(av) < 4 then raise Exception.Create('Error.Script SetCustomWeaponDamageData');
   Info := PWeaponInfo(av[1].GetDword);
@@ -15475,10 +15474,10 @@ begin
   begin
     Text := ',' + av[4].GetString + ',';
     for Flag := Low(WeaponDamageFlagNames) to High(WeaponDamageFlagNames) do
-      if Pos(',' + WeaponDamageFlagNames[Flag] + ',', Text) > 0 then Include(Flags, Flag);
+      if Pos(',' + WeaponDamageFlagNames[Flag] + ',', Text) > 0 then Include(Flags, TDamageKind(Flag));
   end
   else Dword(Flags) := av[4].GetDword;
-  Info.DamageFlags := TDamageFlagSet(Flags);
+  Info.DamageFlags := Flags;
   if (High(av) > 4) and (av[5].RealVType = vkString) then
   begin
     Text := av[5].GetString;

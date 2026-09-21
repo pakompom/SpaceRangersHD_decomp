@@ -252,7 +252,7 @@ begin
   else try
     if CurrentPlanet <> nil then begin
       Stage := 1;
-      if CurrentPlanet.OwnerId in TOwnerMask(PlanetOwnerMasks.Coalition) then begin
+      if CurrentPlanet.OwnerId in PlanetOwnerMasks.Coalition then begin
         Stage := 2;
         RepairBrokenEquipmentAtLocation;
         AutoEquipInventory;
@@ -437,7 +437,7 @@ begin
   try
     if CurrentPlanet <> nil then begin
       Stage := 1;
-      if CurrentPlanet.OwnerId in TOwnerMask(PlanetOwnerMasks.Coalition) then begin
+      if CurrentPlanet.OwnerId in PlanetOwnerMasks.Coalition then begin
         Stage := 2;
         DepositCarriedNodes;
         RepairBrokenEquipmentAtLocation;
@@ -764,7 +764,7 @@ end;
 procedure TWarrior.ReactToAttack(Attacker: TShip);
 begin
   EnemyShip := Attacker;
-  if (HomePlanet.OwnerId in TOwnerMask(PlanetOwnerMasks.Coalition)) and (Attacker.TypeId = stRanger) then begin
+  if (HomePlanet.OwnerId in PlanetOwnerMasks.Coalition) and (Attacker.TypeId = stRanger) then begin
     HomePlanet.ChangeRelationToRanger(Attacker, -3);
     if (Attacker.PartnerShip <> nil) and (Attacker.PartnerShip.TypeId = stRanger) then HomePlanet.ChangeRelationToRanger(Attacker.PartnerShip, -3);
     if (Attacker is TTranclucator) and (TTranclucator(Attacker).OwnerShip <> nil) and (TTranclucator(Attacker).OwnerShip.TypeId = stRanger) then
@@ -1432,11 +1432,11 @@ begin
       StationCount := 0;
       for J := 0 to Star.Ships.Count - 1 do begin
         Ship := Star.Ships[J];
-        if (Ship.TypeId in [Ord(rstRangerCenter)..Ord(rstCustomStation)]) and (Ship.CurrentStanding in TStationStandingMask(NonTargetableStationStandingMasks[Ord(sfCoalition)])) then Inc(StationCount);
+        if (Ship.TypeId in [Ord(rstRangerCenter)..Ord(rstCustomStation)]) and (Ship.CurrentStanding in NonTargetableStationStandingMasks[Ord(sfCoalition)]) then Inc(StationCount);
       end;
       for J := 0 to Star.Planets.Count - 1 do begin
         Planet := Star.Planets[J];
-        if Planet.OwnerId in TOwnerMask(PlanetOwnerMasks.Coalition) then begin
+        if Planet.OwnerId in PlanetOwnerMasks.Coalition then begin
           if Planet.RaceId = PilotRace then Inc(RacePlanetCount);
           for K := 0 to Planet.Warriors.Count - 1 do begin
             Warrior := Planet.Warriors[K];
@@ -1472,7 +1472,7 @@ begin
     BestPlanet := nil;
     for I := 0 to BestStar.Planets.Count - 1 do begin
       Planet := BestStar.Planets[I];
-      if (Planet.OwnerId in TOwnerMask(PlanetOwnerMasks.Coalition)) and (Planet.RaceId = PilotRace) then begin
+      if (Planet.OwnerId in PlanetOwnerMasks.Coalition) and (Planet.RaceId = PilotRace) then begin
         WarriorCount := 0;
         FlagshipFactor := 1;
         for K := 0 to Planet.Warriors.Count - 1 do begin

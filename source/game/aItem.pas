@@ -4222,14 +4222,14 @@ var I: Integer; Entry: PExtraSpecial;
 begin
   Result := GetWeaponInfo.DamageFlags;
   if SpecialModuleIndex <> 0 then
-    Result := Result + TDamageFlagSet(MicroModuleTemplates[SpecialModuleIndex - 1].WeaponDamageFlags);
+    Result := Result + MicroModuleTemplates[SpecialModuleIndex - 1].WeaponDamageFlags;
   if MicroModuleIndex <> 0 then
-    Result := Result + TDamageFlagSet(MicroModuleTemplates[MicroModuleIndex - 1].WeaponDamageFlags);
+    Result := Result + MicroModuleTemplates[MicroModuleIndex - 1].WeaponDamageFlags;
   if ExtraSpecials <> nil then
     for I := 0 to ExtraSpecials.Count - 1 do
     begin
       Entry := ExtraSpecials[I];
-      Result := Result + TDamageFlagSet(MicroModuleTemplates[Entry.ModuleIndexPlusOne - 1].WeaponDamageFlags);
+      Result := Result + MicroModuleTemplates[Entry.ModuleIndexPlusOne - 1].WeaponDamageFlags;
     end;
 end;
 { @end $80202C }
@@ -5550,7 +5550,7 @@ end;
 function IsBonusCompatibleWithEquipment(ModuleIndex: Integer; Item: TEquipment): Boolean;
 begin
   Result := False;
-  if not (Byte(Item.ItemType) in TItemTypeMask(MicroModuleTemplates[ModuleIndex].AllowedItemTypes)) then Exit;
+  if not (Byte(Item.ItemType) in MicroModuleTemplates[ModuleIndex].AllowedItemTypes) then Exit;
   if Item.CustomFaction <> '' then
   begin
     if Pos('<' + Item.CustomFaction + '>', MicroModuleTemplates[ModuleIndex].AllowedCustomHullFactions) > 0 then
@@ -5559,11 +5559,11 @@ begin
       Exit;
     end;
     if (Item.OwnerId = Byte(oiUninhabited)) or ((Item.OwnerId = Byte(oiDominator)) and
-      (TDominatorSeriesMask(MicroModuleTemplates[ModuleIndex].AllowedDominatorSeriesMask) <> [Ord(dsBlazer)..Ord(dsTerron)])) then Exit;
+      (MicroModuleTemplates[ModuleIndex].AllowedDominatorSeriesMask <> [Ord(dsBlazer)..Ord(dsTerron)])) then Exit;
   end;
-  Result := Item.OwnerId in TOwnerMask(MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask);
+  Result := Item.OwnerId in MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask;
   if (Item.OwnerId = Byte(oiDominator)) and not (Byte(Item.DominatorSeries) in
-    TDominatorSeriesMask(MicroModuleTemplates[ModuleIndex].AllowedDominatorSeriesMask)) then Result := False;
+    MicroModuleTemplates[ModuleIndex].AllowedDominatorSeriesMask) then Result := False;
 end;
 { @end $8094A0 }
 
@@ -5571,7 +5571,7 @@ end;
 function IsBonusCompatibleWithHull(ModuleIndex: Integer; Hull: THull): Boolean;
 begin
   Result := False;
-  if not (Ord(t_Hull) in TItemTypeMask(MicroModuleTemplates[ModuleIndex].AllowedItemTypes)) then Exit;
+  if not (Ord(t_Hull) in MicroModuleTemplates[ModuleIndex].AllowedItemTypes) then Exit;
   if Hull.CustomFaction <> '' then
   begin
     if Pos('<' + Hull.CustomFaction + '>', MicroModuleTemplates[ModuleIndex].AllowedCustomHullFactions) > 0 then
@@ -5580,12 +5580,12 @@ begin
       Exit;
     end;
     if (Hull.OwnerId = Byte(oiUninhabited)) or ((Hull.OwnerId = Byte(oiDominator)) and
-      (TDominatorSeriesMask(MicroModuleTemplates[ModuleIndex].AllowedDominatorSeriesMask) <> [Ord(dsBlazer)..Ord(dsTerron)])) then Exit;
+      (MicroModuleTemplates[ModuleIndex].AllowedDominatorSeriesMask <> [Ord(dsBlazer)..Ord(dsTerron)])) then Exit;
   end;
-  if ((Hull.OwnerId in TOwnerMask(MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask)) or
-    (Hull.PirateBuilt and (Ord(oiPirate) in TOwnerMask(MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask)))) and
+  if ((Hull.OwnerId in MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask) or
+    (Hull.PirateBuilt and (Ord(oiPirate) in MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask))) and
     ((Hull.OwnerId <> Byte(oiDominator)) or (Byte(Hull.DominatorSeries) in
-      TDominatorSeriesMask(MicroModuleTemplates[ModuleIndex].AllowedDominatorSeriesMask))) then Result := True;
+      MicroModuleTemplates[ModuleIndex].AllowedDominatorSeriesMask)) then Result := True;
 end;
 { @end $809600 }
 
@@ -5596,14 +5596,14 @@ begin
   Result := False;
   if ((Weapon.CustomFaction <> '') and
     (Pos('<' + Weapon.CustomFaction + '>', MicroModuleTemplates[ModuleIndex].AllowedCustomHullFactions) > 0)) or
-    ((Weapon.OwnerId in TOwnerMask(MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask)) and
-     ((Weapon.OwnerId <> Byte(oiDominator)) or (Byte(Weapon.DominatorSeries) in TDominatorSeriesMask(MicroModuleTemplates[ModuleIndex].AllowedDominatorSeriesMask))) and
+    ((Weapon.OwnerId in MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask) and
+     ((Weapon.OwnerId <> Byte(oiDominator)) or (Byte(Weapon.DominatorSeries) in MicroModuleTemplates[ModuleIndex].AllowedDominatorSeriesMask)) and
      ((Weapon.CustomFaction = '') or ((Weapon.OwnerId <> Byte(oiUninhabited)) and ((Weapon.OwnerId <> Byte(oiDominator)) or
-       (TDominatorSeriesMask(MicroModuleTemplates[ModuleIndex].AllowedDominatorSeriesMask) = [0..2]))))) then
+       (MicroModuleTemplates[ModuleIndex].AllowedDominatorSeriesMask = [0..2]))))) then
   begin
     if Weapon.ItemType in [t_Weapon1..t_Weapon18] then
     begin
-      if Byte(Weapon.ItemType) in TItemTypeMask(MicroModuleTemplates[ModuleIndex].AllowedItemTypes) then Result := True;
+      if Byte(Weapon.ItemType) in MicroModuleTemplates[ModuleIndex].AllowedItemTypes then Result := True;
     end
     else if Weapon.ItemType = t_CustomWeapon then
     begin

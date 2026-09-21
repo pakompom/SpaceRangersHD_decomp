@@ -1906,7 +1906,7 @@ begin
         if aConst.OwnerInfo[Owner].InternalName = Part then
         begin
           OwnerId := Owner;
-          if Owner in TOwnerMask(aConst.PlanetOwnerMasks.Coalition) then RaceId := OwnerToRace(Owner);
+          if Owner in aConst.PlanetOwnerMasks.Coalition then RaceId := OwnerToRace(Owner);
         end;
     end;
     for ShipType := 0 to 13 do
@@ -1949,7 +1949,7 @@ begin
       Item := EquipmentShop[i];
       if (Item is TEquipment) and
         ((Item as TEquipment).SpecialModuleIndex > 0) and
-        ((aConst.MicroModuleTemplates[(Item as TEquipment).SpecialModuleIndex - 1].OfferStationTypes and $80) = 0) then
+        (not (Ord(rstPirateBase) in aConst.MicroModuleTemplates[(Item as TEquipment).SpecialModuleIndex - 1].OfferStationTypes)) then
       begin
         EquipmentShop.Delete(i);
         Item.Free;
@@ -2832,7 +2832,7 @@ end;
 { @routine $78CAD4 TPlanet_UpdateOwnerFlags }
 procedure TPlanet.UpdateOwnerFlags;
 begin
-  IsCoalitionOwned := OwnerId in TOwnerMask(aConst.PlanetOwnerMasks.Coalition);
+  IsCoalitionOwned := OwnerId in aConst.PlanetOwnerMasks.Coalition;
 end;
 { @end $78CAD4 }
 
@@ -2858,7 +2858,7 @@ begin
     if (GetPlayer.CurrentPlanet = Self) and (GetPlayer.ConsecutiveDockedDays > 1) then
       Inc(StoredUnits, GetPlayer.CargoGoods[ItemType].Count);
     EconomyFactor := aConst.GoodsMarket[ItemType].EconomyFactors[Ord(Economy)];
-    if OwnerId in TOwnerMask(aConst.PlanetOwnerMasks.PirateClan) then
+    if OwnerId in aConst.PlanetOwnerMasks.PirateClan then
       EconomyFactor := EconomyFactor * aConst.GoodsMarket[ItemType].PirateEconomyFactor;
     TargetStock := System.Round(aConst.GoodsMarket[ItemType].BaseStock *
       aConst.PlanetRaceMarket[RaceId].GoodsFactors[ItemType].StockFactor *
@@ -3227,7 +3227,7 @@ var
   Definition: PPlanetAdvertDefinition;
 begin
   Result := -1;
-  if not (OwnerId in TOwnerMask(aConst.PlanetOwnerMasks.Coalition)) then Exit;
+  if not (OwnerId in aConst.PlanetOwnerMasks.Coalition) then Exit;
   if Graphic.RingKind = 1 then Family := 0
   else if Graphic.RingKind = 4 then Family := 1
   else if Graphic.RingKind = 5 then Family := 2
@@ -4209,20 +4209,20 @@ begin
     if ((TObject(Ship) as TShip).CurrentStar = CurrentStar) and
       (not IsMainPiratePlanet or (GetPlayer <> Ship)) then
     begin
-      if (OwnerId in TOwnerMask(aConst.PlanetOwnerMasks.PirateClan)) and
+      if (OwnerId in aConst.PlanetOwnerMasks.PirateClan) and
         ((TObject(Ship) as TShip).CurrentStanding in [ssCoalitionMilitary, ssCoalitionActive]) then Exit;
-      if (OwnerId in TOwnerMask(aConst.PlanetOwnerMasks.Coalition)) and
+      if (OwnerId in aConst.PlanetOwnerMasks.Coalition) and
         ((TObject(Ship) as TShip).CurrentStanding in [ssPirateActive, ssPirateMilitary]) then Exit;
     end;
     case (TObject(Ship) as TShip).TypeId of
       stRanger: Result := RelationToRanger(aGalaxy.Galaxy.Rangers.IndexOf(TObject(Ship) as TRanger));
       stTransport:
-        if OwnerId in TOwnerMask(aConst.PlanetOwnerMasks.PirateClan) then
+        if OwnerId in aConst.PlanetOwnerMasks.PirateClan then
           Result := Min(50, Integer(aConst.OwnerRelations[OwnerId, (TObject(Ship) as TTransport).OwnerId]))
         else
           Result := aConst.OwnerRelations[OwnerId, (TObject(Ship) as TTransport).OwnerId];
       stPirate:
-        if OwnerId in TOwnerMask(aConst.PlanetOwnerMasks.PirateClan) then
+        if OwnerId in aConst.PlanetOwnerMasks.PirateClan then
         begin
           if TShip(Ship).OwnerId = Byte(oiPirate) then Result := 100
           else Result := aConst.OwnerRelations[OwnerId, TShip(Ship).OwnerId];
@@ -4232,7 +4232,7 @@ begin
             System.Round(aConst.OwnerRelations[OwnerId, (TObject(Ship) as TPirate).OwnerId] *
               aConst.PlanetRaceMarket[RaceId].PirateRelationFactor)));
       stWarrior:
-        if OwnerId in TOwnerMask(aConst.PlanetOwnerMasks.PirateClan) then Result := 0
+        if OwnerId in aConst.PlanetOwnerMasks.PirateClan then Result := 0
         else Result := 100;
       stKling: Result := 0;
       stTranclucator:
@@ -4240,7 +4240,7 @@ begin
           Result := RelationToShip((TObject(Ship) as TTranclucator).OwnerShip)
         else Result := 50;
       Ord(rstRangerCenter)..Ord(rstCustomStation):
-        if (TObject(Ship) as TShip).CurrentStanding in TStationStandingMask(aConst.FactionStandingMasks[Ord(CurrentStar.ControlFaction)]) then Result := 100
+        if (TObject(Ship) as TShip).CurrentStanding in aConst.FactionStandingMasks[Ord(CurrentStar.ControlFaction)] then Result := 100
         else Result := 0;
     else Result := 50;
     end;
@@ -4331,7 +4331,7 @@ begin
   for i := 0 to aConst.MicroModuleTemplateCount - 1 do
   begin
     if Template.SpecialOnly and
-      ((not IsMainPiratePlanet) or ([Ord(rstPirateBase), Ord(rstDominion)] * TShipTypeMask(Template.OfferStationTypes) <> [])) and
+      ((not IsMainPiratePlanet) or ([Ord(rstPirateBase), Ord(rstDominion)] * Template.OfferStationTypes <> [])) and
       (IsMainPiratePlanet or Template.OnPlanets) and
       IsBonusCompatibleWithEquipment(i, Item) and (Template.Priority <= Ceiling) then
     begin
@@ -4385,7 +4385,7 @@ begin
   for i := 0 to aConst.MicroModuleTemplateCount - 1 do
   begin
     if Template.SpecialOnly and
-      ((not IsMainPiratePlanet) or ([Ord(rstPirateBase), Ord(rstDominion)] * TShipTypeMask(Template.OfferStationTypes) <> [])) and
+      ((not IsMainPiratePlanet) or ([Ord(rstPirateBase), Ord(rstDominion)] * Template.OfferStationTypes <> [])) and
       (IsMainPiratePlanet or Template.OnPlanets) and
       IsBonusCompatibleWithHull(i, Hull) and (Template.Priority <= Ceiling) then
     begin
@@ -4439,7 +4439,7 @@ begin
   for i := 0 to aConst.MicroModuleTemplateCount - 1 do
   begin
     if Template.SpecialOnly and
-      ((not IsMainPiratePlanet) or ([Ord(rstPirateBase), Ord(rstDominion)] * TShipTypeMask(Template.OfferStationTypes) <> [])) and
+      ((not IsMainPiratePlanet) or ([Ord(rstPirateBase), Ord(rstDominion)] * Template.OfferStationTypes <> [])) and
       (IsMainPiratePlanet or Template.OnPlanets) and
       IsBonusCompatibleWithWeapon(i, Weapon) and (Template.Priority <= Ceiling) then
     begin
@@ -4623,11 +4623,11 @@ begin
   if (Ship = nil) or not (TObject(Ship) is TShip) then Exit;
   Target := Ship;
   Available := [Ord(waFree)];
-  if (Target.TypeId = stKling) and (OwnerId in TOwnerMask(aConst.PlanetOwnerMasks.Dominators)) then
+  if (Target.TypeId = stKling) and (OwnerId in aConst.PlanetOwnerMasks.Dominators) then
     Available := Available + [Ord(waNotSoldAndNodeRepair)];
-  if (Target.TypeId in [stRanger..stWarrior]) and (OwnerId in TOwnerMask(aConst.PlanetOwnerMasks.Coalition)) then
+  if (Target.TypeId in [stRanger..stWarrior]) and (OwnerId in aConst.PlanetOwnerMasks.Coalition) then
     Available := Available + [Ord(waCoalitionOnly)] + [Ord(aConst.OwnerWeaponAvailability[OwnerId])];
-  if (Target.TypeId in [stRanger, stPirate]) and (OwnerId in TOwnerMask(aConst.PlanetOwnerMasks.PirateClan)) then
+  if (Target.TypeId in [stRanger, stPirate]) and (OwnerId in aConst.PlanetOwnerMasks.PirateClan) then
     Available := Available + [Ord(aConst.OwnerWeaponAvailability[OwnerId])];
   Attempts := 0;
   if Attempts <= 100 then
@@ -4991,7 +4991,7 @@ begin
          BestPriority * SeededRandomIntRange(1, 100, Id + RuleIndex * (aGalaxy.Galaxy.CurrentTurn div 20) * 3) then Continue;
     end;
     if (Rules[RuleIndex].PlayerRace <> []) and not (GetPlayer.PilotRace in Rules[RuleIndex].PlayerRace) then Continue;
-    if (Rules[RuleIndex].PlayerStatus <> []) and not (Byte(GetPlayer.GetDominantCareer) in Rules[RuleIndex].PlayerStatus) then Continue;
+    if (Rules[RuleIndex].PlayerStatus <> []) and not (GetPlayer.GetDominantCareer in Rules[RuleIndex].PlayerStatus) then Continue;
     if (Rules[RuleIndex].PlayerRating <> []) and not (GetPlayer.GetRangerRatingBand in Rules[RuleIndex].PlayerRating) then Continue;
     if (Rules[RuleIndex].PlayerRank <> []) and not (GetPlayer.Rank in Rules[RuleIndex].PlayerRank) then Continue;
     if (Rules[RuleIndex].PlayerPirateRank <> []) and not (GetPlayer.PirateRank in Rules[RuleIndex].PlayerPirateRank) then Continue;
@@ -5009,7 +5009,7 @@ begin
       if (Rules[RuleIndex].CurPlanetRaceIsPlayerRace = 0) and (GetPlayer.PilotRace <> RaceId) then Continue;
       if (Rules[RuleIndex].CurPlanetRaceIsPlayerRace = 1) and (GetPlayer.PilotRace = RaceId) then Continue;
     end;
-    if (Rules[RuleIndex].CurPlanetRelations <> []) and not (Byte(GetRelationLevelToShip(GetPlayer)) in Rules[RuleIndex].CurPlanetRelations) then Continue;
+    if (Rules[RuleIndex].CurPlanetRelations <> []) and not (GetRelationLevelToShip(GetPlayer) in Rules[RuleIndex].CurPlanetRelations) then Continue;
     if Good <> 50 then
     begin
       if Rules[RuleIndex].CurPlanetGoodsPermit <> 2 then
@@ -5021,8 +5021,8 @@ begin
       if (Rules[RuleIndex].CurPlanetGoodsSale <> []) and not (aGalaxy.Galaxy.ClassifyGoodsPrice(GetPlayer.ShopGoodsPurchasePrice(Good, nil), Good) in Rules[RuleIndex].CurPlanetGoodsSale) then Continue;
       if (Rules[RuleIndex].CurPlanetGoodsBuy <> []) and not (aGalaxy.Galaxy.ClassifyGoodsPrice(GetPlayer.ShopGoodsSellPrice(Good, nil), Good) in Rules[RuleIndex].CurPlanetGoodsBuy) then Continue;
     end;
-    if (Rules[RuleIndex].CurPlanetEconomy <> []) and not (Byte(Economy) in Rules[RuleIndex].CurPlanetEconomy) then Continue;
-    if (Rules[RuleIndex].CurPlanetGovernment <> []) and not (Byte(Government) in Rules[RuleIndex].CurPlanetGovernment) then Continue;
+    if (Rules[RuleIndex].CurPlanetEconomy <> []) and not (Economy in Rules[RuleIndex].CurPlanetEconomy) then Continue;
+    if (Rules[RuleIndex].CurPlanetGovernment <> []) and not (Government in Rules[RuleIndex].CurPlanetGovernment) then Continue;
     Rejected := False;
     for ShipType := 0 to 4 do
     begin
@@ -5141,7 +5141,7 @@ begin
           end;
           if Rules[RuleIndex].ToPlanetRelations <> [] then
           begin
-            if not (Byte(Planet.GetRelationLevelToShip(GetPlayer)) in Rules[RuleIndex].ToPlanetRelations) or
+            if not (Planet.GetRelationLevelToShip(GetPlayer) in Rules[RuleIndex].ToPlanetRelations) or
                (Planet.OwnerId = Byte(oiPirate)) then Continue;
           end;
           if Good <> 50 then
@@ -5155,8 +5155,8 @@ begin
             if (Rules[RuleIndex].ToPlanetGoodsSale <> []) and not (aGalaxy.Galaxy.ClassifyGoodsPrice(GetPlayer.ShopGoodsPurchasePrice(Good, Planet), Good) in Rules[RuleIndex].ToPlanetGoodsSale) then Continue;
             if (Rules[RuleIndex].ToPlanetGoodsBuy <> []) and not (aGalaxy.Galaxy.ClassifyGoodsPrice(GetPlayer.ShopGoodsSellPrice(Good, Planet), Good) in Rules[RuleIndex].ToPlanetGoodsBuy) then Continue;
           end;
-          if (Rules[RuleIndex].ToPlanetEconomy <> []) and not (Byte(Planet.Economy) in Rules[RuleIndex].ToPlanetEconomy) then Continue;
-          if (Rules[RuleIndex].ToPlanetGovernment <> []) and not (Byte(Planet.Government) in Rules[RuleIndex].ToPlanetGovernment) then Continue;
+          if (Rules[RuleIndex].ToPlanetEconomy <> []) and not (Planet.Economy in Rules[RuleIndex].ToPlanetEconomy) then Continue;
+          if (Rules[RuleIndex].ToPlanetGovernment <> []) and not (Planet.Government in Rules[RuleIndex].ToPlanetGovernment) then Continue;
           Greeting := ReplaceColoredToken(Greeting, '<ToPlanet>', Planet.Name, '<color=255,240,100>');
           Greeting := ReplaceColoredToken(Greeting, '<ToStar>', Planet.CurrentStar.Name, '<color=255,240,100>');
           if Good <> 50 then

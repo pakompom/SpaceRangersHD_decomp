@@ -136,7 +136,7 @@ begin
   CurrentStar.Ships.Add(Self);
   if HasHull then begin
     OwnerId := Byte(oiPirate);
-    if GetHull.OwnerId in TOwnerMask(PlanetOwnerMasks.Coalition) then PilotRace := OwnerToRace(GetHull.OwnerId)
+    if GetHull.OwnerId in PlanetOwnerMasks.Coalition then PilotRace := OwnerToRace(GetHull.OwnerId)
     else if HomePlanet.IsMainPiratePlanet then PilotRace := OwnerToRace(PickRandomEquipmentOwner(HomePlanet.RandomState))
     else PilotRace := HomePlanet.RaceId;
   end else begin
@@ -244,7 +244,7 @@ begin
     ClanShip := (PirateType <> 0) and (OwnerId = Byte(oiPirate));
     if CurrentPlanet <> nil then begin
       Stage := 1;
-      if not (CurrentPlanet.OwnerId in [Ord(oiMaloc)..Ord(oiGaal), Ord(oiPirate)]) or (ClanShip and not (CurrentPlanet.OwnerId in TOwnerMask(PlanetOwnerMasks.PirateClan))) then begin OrderTakeoff; Exit; end;
+      if not (CurrentPlanet.OwnerId in [Ord(oiMaloc)..Ord(oiGaal), Ord(oiPirate)]) or (ClanShip and not (CurrentPlanet.OwnerId in PlanetOwnerMasks.PirateClan)) then begin OrderTakeoff; Exit; end;
       begin
         Stage := 2;
         if not ClanShip then if ProcessImprisonment then Exit;
@@ -323,7 +323,7 @@ begin
             Planet := SelectNearestQueuedPlanet;
             if (Planet <> nil) and (Planet.CurrentStar = CurrentStar) then OrderLanding(Planet, True)
             else begin
-              Station := FindNearestDockableStation(TStationStandingMask(NonTargetableStationStandingMasks[Ord(sfPirates)]));
+              Station := FindNearestDockableStation(NonTargetableStationStandingMasks[Ord(sfPirates)]);
               if Station <> nil then OrderLanding(Station, True) else EngageEnemyShip;
             end;
           end else begin
@@ -375,7 +375,7 @@ begin
         if (Order = soMove) and (PickupTargets = nil) and (NextRandomIntRange(1, 10, RandomState) <= 3) then TryCollectBestFloatingItem(50);
         Stage := 23;
         if (Order = soNone) and (NextRandomIntRange(1, 10, RandomState) <= 2) then begin
-          Station := FindNearestDockableStation(TStationStandingMask(NonTargetableStationStandingMasks[Ord(sfPirates)]));
+          Station := FindNearestDockableStation(NonTargetableStationStandingMasks[Ord(sfPirates)]);
           if Station <> nil then OrderLanding(Station, True);
         end;
         Stage := 24;

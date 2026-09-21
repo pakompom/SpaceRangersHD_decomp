@@ -29,9 +29,6 @@ type
 
   TScriptActionTypeSet = set of 0..61; // @size $08
   TScriptStepTypeSet = set of 0..11; // @size $02
-
-  TScriptEconomyMask = set of 0..7; // @size $01 Native byte set; economy bits 0..2.
-  TScriptGovernmentMask = set of 0..7; // @size $01 Native byte set; government bits 0..4.
   TScriptShipTypeMask = set of 0..15; // @size 0x02
   TScriptDominatorMasks = array[0..7] of TDominatorSeriesMask; // TKlingType index; TDominatorSeries bits.
 
@@ -105,8 +102,8 @@ type
     Name: WideString; // @offset 0x00
     RaceMask: TOwnerMask; // @offset 0x04
     OwnerMask: TOwnerMask; // @offset 0x05
-    EconomyMask: TScriptEconomyMask; // @offset 0x06
-    GovernmentMask: TScriptGovernmentMask; // @offset 0x07
+    EconomyMask: TPlanetEconomies; // @offset 0x06
+    GovernmentMask: TPlanetGovernments; // @offset 0x07
     MinOrbitPercent: Integer; // @offset 0x08
     MaxOrbitPercent: Integer; // @offset 0x0C
     DialogChoiceText: WideString; // @offset 0x10  Planet dialog choice text; CollectScriptDialogChoices attaches the owning TScript as its data.
@@ -546,8 +543,8 @@ function IsStarProtectedByScript(Star: TStar): Boolean; // @addr 0x64E6A4
 function ScriptDefinitionBit(Value: Cardinal; BitIndex: Integer): Boolean; // @addr 0x64E75C
 function DecodeScriptRaceMask(Value: Cardinal): TOwnerMask; // @addr 0x64E780
 function DecodeScriptOwnerMask(Value: Cardinal): TOwnerMask; // @addr 0x64E85C @note "Bit 9 also selects the player's current owner ID."
-function DecodeScriptEconomyMask(Value: Cardinal): TScriptEconomyMask; // @addr 0x64E9CC
-function DecodeScriptGovernmentMask(Value: Cardinal): TScriptGovernmentMask; // @addr 0x64EA64
+function DecodeScriptEconomyMask(Value: Cardinal): TPlanetEconomies; // @addr 0x64E9CC
+function DecodeScriptGovernmentMask(Value: Cardinal): TPlanetGovernments; // @addr 0x64EA64
 function DecodeScriptShipTypeMask(Value: Cardinal): TScriptShipTypeMask; // @addr 0x64EB40
 function DecodeScriptDominatorMask(Value: Cardinal; KlingType: Byte): TDominatorSeriesMask; // @addr 0x64ECA8
 function DecodeScriptItemOwner(Value: Integer): Byte; // @addr 0x64F000 @note "Values outside 0..7 become owner 6."
@@ -1308,34 +1305,34 @@ end;
 { @end $64E85C }
 
 { @routine $64E9CC DecodeScriptEconomyMask }
-function DecodeScriptEconomyMask(Value: Cardinal): TScriptEconomyMask;
+function DecodeScriptEconomyMask(Value: Cardinal): TPlanetEconomies;
 begin
   if not ScriptDefinitionBit(Value, 0) then
   begin
-    Result := [0..2];
+    Result := [peAgricultural..peIndustrial];
     Exit;
   end;
   Result := [];
-  if ScriptDefinitionBit(Value, 1) then Result := Result + [0];
-  if ScriptDefinitionBit(Value, 2) then Result := Result + [2];
-  if ScriptDefinitionBit(Value, 3) then Result := Result + [1];
+  if ScriptDefinitionBit(Value, 1) then Result := Result + [peAgricultural];
+  if ScriptDefinitionBit(Value, 2) then Result := Result + [peIndustrial];
+  if ScriptDefinitionBit(Value, 3) then Result := Result + [peMixed];
 end;
 { @end $64E9CC }
 
 { @routine $64EA64 DecodeScriptGovernmentMask }
-function DecodeScriptGovernmentMask(Value: Cardinal): TScriptGovernmentMask;
+function DecodeScriptGovernmentMask(Value: Cardinal): TPlanetGovernments;
 begin
   if not ScriptDefinitionBit(Value, 0) then
   begin
-    Result := [0..4];
+    Result := [pgAnarchy..pgDemocracy];
     Exit;
   end;
   Result := [];
-  if ScriptDefinitionBit(Value, 1) then Result := Result + [0];
-  if ScriptDefinitionBit(Value, 2) then Result := Result + [1];
-  if ScriptDefinitionBit(Value, 3) then Result := Result + [2];
-  if ScriptDefinitionBit(Value, 4) then Result := Result + [3];
-  if ScriptDefinitionBit(Value, 5) then Result := Result + [4];
+  if ScriptDefinitionBit(Value, 1) then Result := Result + [pgAnarchy];
+  if ScriptDefinitionBit(Value, 2) then Result := Result + [pgDictatorship];
+  if ScriptDefinitionBit(Value, 3) then Result := Result + [pgMonarchy];
+  if ScriptDefinitionBit(Value, 4) then Result := Result + [pgRepublic];
+  if ScriptDefinitionBit(Value, 5) then Result := Result + [pgDemocracy];
 end;
 { @end $64EA64 }
 
@@ -2580,8 +2577,8 @@ begin
           if Planet.NoLanding then Continue;
           if not (Planet.RaceId in Binding.Planets[K].RaceMask) then Continue;
           if not (Planet.OwnerId in Binding.Planets[K].OwnerMask) then Continue;
-          if not (Byte(Planet.Economy) in Binding.Planets[K].EconomyMask) then Continue;
-          if not (Byte(Planet.Government) in Binding.Planets[K].GovernmentMask) then Continue;
+          if not (Planet.Economy in Binding.Planets[K].EconomyMask) then Continue;
+          if not (Planet.Government in Binding.Planets[K].GovernmentMask) then Continue;
           I := 0;
           while I < K do
           begin

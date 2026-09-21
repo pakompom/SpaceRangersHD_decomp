@@ -408,8 +408,8 @@ type
 
 var
   StationDefaultStandings: array[6..13] of Byte = (ssCoalitionMilitary, ssPiratePassive, ssCoalitionMilitary, ssCoalitionActive, ssCoalitionActive, ssNeutral, ssPirateMilitary, ssUnaligned); // @addr $87D070 Standing used to gate station spawning by faction, including the custom station.
-  NonTargetableStationStandingMasks: TFactionStandingMasks = ($003C, $0001, $01C0); // @addr $87D078 Standing masks used by TPlayer.CanSelectShipTarget.
-  FactionStandingMasks: TFactionStandingMasks = ($007C, $0001, $01F0); // @addr $87D080
+  NonTargetableStationStandingMasks: TFactionStandingMasks = ([ssCoalitionMilitary..ssNeutral], [ssDominator], [ssPiratePassive..ssPirateMilitary]); // @addr $87D078 Standing masks used by TPlayer.CanSelectShipTarget.
+  FactionStandingMasks: TFactionStandingMasks = ([ssCoalitionMilitary..ssPiratePassive], [ssDominator], [ssCoalitionPassive..ssPirateMilitary]); // @addr $87D080
   CareerTuning: array[0..2] of TStatusInfo = (
     (Name: 'Trader'; MinimumWealthToAverageRatio: 1.5; MinimumWealthToBestRatio: 0.4; MinimumStrengthToAverageRatio: 0.9; MinimumStrengthToBestRatio: 0.3),
     (Name: 'Pirate'; MinimumWealthToAverageRatio: 0.9; MinimumWealthToBestRatio: 0.35; MinimumStrengthToAverageRatio: 1.1; MinimumStrengthToBestRatio: 0.5),
@@ -864,7 +864,7 @@ var
       FearThresholdScale: 0.5;
       ColorTag: '<color=255,255,255>')); // @addr $87D758
 var
-  PlanetOwnerMasks: TPlanetOwnerMasks = (Coalition: $1F; Dominators: $20; PirateClan: $80); // @addr $87D858
+  PlanetOwnerMasks: TPlanetOwnerMasks = (Coalition: [Ord(oiMaloc)..Ord(oiGaal)]; Dominators: [Ord(oiDominator)]; PirateClan: [Ord(oiPirate)]); // @addr $87D858
   OwnerRelations: TOwnerRelationTable = (
     (100, 80, 70, 40, 60, 0, 0, 30),
     (70, 100, 70, 30, 40, 0, 0, 30),
@@ -1232,13 +1232,13 @@ type
     FragilityFactor: Single; // @offset 0xC8
     FragilityFactorByDamageClass: array[0..2] of Single; // @offset 0xCC Energy, splinter and missile wear factors.
     Priority: Byte; // @offset 0xD8
-    AllowedHullOwnerMask: Byte; // @offset 0xD9  OwnerId bits; bit 7 also accepts PirateBuilt hulls (IsBonusCompatibleWithHull, $809600).
+    AllowedHullOwnerMask: TOwnerMask; // @offset 0xD9  OwnerId bits; bit 7 also accepts PirateBuilt hulls (IsBonusCompatibleWithHull, $809600).
     AllowedCustomHullFactions: WideString; // @offset 0xDC
     CustomFaction: WideString; // @offset 0xE0
-    AllowedDominatorSeriesMask: Byte; // @offset 0xE4
-    AllowedItemTypes: array[0..9] of Byte; // @offset 0xE5  Bitset indexed by item type, covering 0..79.
+    AllowedDominatorSeriesMask: TDominatorSeriesMask; // @offset 0xE4
+    AllowedItemTypes: TItemTypeSelection; // @offset 0xE5  Bitset indexed by item type, covering 0..79.
     AllowedCustomWeaponTypes: WideString; // @offset 0xF0
-    OfferStationTypes: Word; // @offset 0xF4  Bitset indexed by station ship type.
+    OfferStationTypes: TShipTypeMask; // @offset 0xF4  Bitset indexed by station ship type.
     OfferStationNames: WideString; // @offset 0xF8  Bracketed Ruins configuration tokens.
     OnPlanets: Boolean; // @offset 0xFC
     RacialRestriction: Boolean; // @offset 0xFD
@@ -1251,7 +1251,7 @@ type
     ShotVisual: Integer; // @offset 0x114  -1 uses the weapon template's DefaultPalette.
     HullGraphSizePercent: Integer; // @offset 0x118
     CustomTag: WideString; // @offset 0x11C
-    WeaponDamageFlags: Dword; // @offset 0x120
+    WeaponDamageFlags: TDamageFlagSet; // @offset 0x120
   end;
 
   PMicroModuleTemplate = ^TMicroModuleInfo;
@@ -1475,7 +1475,7 @@ type
     AllowedOwners: TOwnerMask; // @offset $09
     AllowedRatingBands: TOwnerMask; // @offset $0A
     AllowedRanks: TOwnerMask; // @offset $0B
-    AllowedCareers: TOwnerMask; // @offset $0C
+    AllowedCareers: TRangerCareerSet; // @offset $0C
     MedicalPriceSizeLevel: Byte; // @offset $0D Mini..Huge (1..5); GenerateValueForSizeLevel bucket for treatment and stimulation prices.
     DevelopmentRate: Double; // @offset $10 Progress increment factor.
     InfectionChance: Double; // @offset $18
@@ -2684,50 +2684,50 @@ begin
       Value := ReadMicroModuleParam('Owner');
       if (Value = '') or (Value = 'Any') then
       begin
-        if SpecialOnly then TOwnerMask(AllowedHullOwnerMask) := [Ord(oiMaloc)..Ord(oiGaal), Ord(oiPirate)]
-        else TOwnerMask(AllowedHullOwnerMask) := [Ord(oiMaloc)..Ord(oiDominator), Ord(oiPirate)];
-        TDominatorSeriesMask(AllowedDominatorSeriesMask) := [Ord(dsBlazer)..Ord(dsTerron)];
+        if SpecialOnly then AllowedHullOwnerMask := [Ord(oiMaloc)..Ord(oiGaal), Ord(oiPirate)]
+        else AllowedHullOwnerMask := [Ord(oiMaloc)..Ord(oiDominator), Ord(oiPirate)];
+        AllowedDominatorSeriesMask := [Ord(dsBlazer)..Ord(dsTerron)];
         AllowedCustomHullFactions := '';
       end
       else
       begin
-        TOwnerMask(AllowedHullOwnerMask) := [];
-        TDominatorSeriesMask(AllowedDominatorSeriesMask) := [];
+        AllowedHullOwnerMask := [];
+        AllowedDominatorSeriesMask := [];
         Tokens := ReplaceAllWideString(Value, ' ', '');
         Tokens := '<' + ReplaceAllWideString(Tokens, ',', '>,<') + '>';
-        if ConsumeMicroModuleToken('<Maloc>') then Include(TOwnerMask(AllowedHullOwnerMask), Ord(oiMaloc));
-        if ConsumeMicroModuleToken('<Peleng>') then Include(TOwnerMask(AllowedHullOwnerMask), Ord(oiPeleng));
-        if ConsumeMicroModuleToken('<People>') then Include(TOwnerMask(AllowedHullOwnerMask), Ord(oiHuman));
-        if ConsumeMicroModuleToken('<Fei>') then Include(TOwnerMask(AllowedHullOwnerMask), Ord(oiFeyan));
-        if ConsumeMicroModuleToken('<Gaal>') then Include(TOwnerMask(AllowedHullOwnerMask), Ord(oiGaal));
-        if ConsumeMicroModuleToken('<PirateClan>') then Include(TOwnerMask(AllowedHullOwnerMask), Ord(oiPirate));
-        if ConsumeMicroModuleToken('<None>') then Include(TOwnerMask(AllowedHullOwnerMask), Ord(oiUninhabited));
+        if ConsumeMicroModuleToken('<Maloc>') then Include(AllowedHullOwnerMask, Ord(oiMaloc));
+        if ConsumeMicroModuleToken('<Peleng>') then Include(AllowedHullOwnerMask, Ord(oiPeleng));
+        if ConsumeMicroModuleToken('<People>') then Include(AllowedHullOwnerMask, Ord(oiHuman));
+        if ConsumeMicroModuleToken('<Fei>') then Include(AllowedHullOwnerMask, Ord(oiFeyan));
+        if ConsumeMicroModuleToken('<Gaal>') then Include(AllowedHullOwnerMask, Ord(oiGaal));
+        if ConsumeMicroModuleToken('<PirateClan>') then Include(AllowedHullOwnerMask, Ord(oiPirate));
+        if ConsumeMicroModuleToken('<None>') then Include(AllowedHullOwnerMask, Ord(oiUninhabited));
         if SpecialOnly then
         begin
-          if ConsumeMicroModuleToken('<Kling>') then Include(TOwnerMask(AllowedHullOwnerMask), Ord(oiDominator));
+          if ConsumeMicroModuleToken('<Kling>') then Include(AllowedHullOwnerMask, Ord(oiDominator));
           ConsumeMicroModuleToken('<NonKling>');
         end
         else
         begin
-          if not ConsumeMicroModuleToken('<NonKling>') then Include(TOwnerMask(AllowedHullOwnerMask), Ord(oiDominator));
+          if not ConsumeMicroModuleToken('<NonKling>') then Include(AllowedHullOwnerMask, Ord(oiDominator));
           ConsumeMicroModuleToken('<Kling>');
         end;
         if ConsumeMicroModuleToken('<Blazer>') then
         begin
-          Include(TDominatorSeriesMask(AllowedDominatorSeriesMask), Ord(dsBlazer));
-          if SpecialOnly then Include(TOwnerMask(AllowedHullOwnerMask), Ord(oiDominator));
+          Include(AllowedDominatorSeriesMask, Ord(dsBlazer));
+          if SpecialOnly then Include(AllowedHullOwnerMask, Ord(oiDominator));
         end;
         if ConsumeMicroModuleToken('<Terron>') then
         begin
-          Include(TDominatorSeriesMask(AllowedDominatorSeriesMask), Ord(dsTerron));
-          if SpecialOnly then Include(TOwnerMask(AllowedHullOwnerMask), Ord(oiDominator));
+          Include(AllowedDominatorSeriesMask, Ord(dsTerron));
+          if SpecialOnly then Include(AllowedHullOwnerMask, Ord(oiDominator));
         end;
         if ConsumeMicroModuleToken('<Keller>') then
         begin
-          Include(TDominatorSeriesMask(AllowedDominatorSeriesMask), Ord(dsKeller));
-          if SpecialOnly then Include(TOwnerMask(AllowedHullOwnerMask), Ord(oiDominator));
+          Include(AllowedDominatorSeriesMask, Ord(dsKeller));
+          if SpecialOnly then Include(AllowedHullOwnerMask, Ord(oiDominator));
         end;
-        if TDominatorSeriesMask(AllowedDominatorSeriesMask) = [] then TDominatorSeriesMask(AllowedDominatorSeriesMask) := [Ord(dsBlazer)..Ord(dsTerron)];
+        if AllowedDominatorSeriesMask = [] then AllowedDominatorSeriesMask := [Ord(dsBlazer)..Ord(dsTerron)];
         AllowedCustomHullFactions := '';
         for Part := 0 to CountDelimitedPartsW(Tokens, ',') - 1 do
         begin
@@ -2743,34 +2743,34 @@ begin
       Value := ReadMicroModuleParam('Equipments');
       if (Value = '') or (Value = 'Any') then
       begin
-        TItemTypeSelection(AllowedItemTypes) := [Ord(t_Hull)..Ord(t_CustomWeapon)];
+        AllowedItemTypes := [Ord(t_Hull)..Ord(t_CustomWeapon)];
         AllowedCustomWeaponTypes := 'Any';
       end
       else
       begin
-        TItemTypeSelection(AllowedItemTypes) := [];
+        AllowedItemTypes := [];
         AllowedCustomWeaponTypes := '';
         Tokens := ReplaceAllWideString(Value, ' ', '');
         Tokens := '<' + ReplaceAllWideString(Tokens, ',', '>,<') + '>';
-        if ConsumeMicroModuleToken('<Hull>') then Include(TItemTypeSelection(AllowedItemTypes), Ord(t_Hull));
-        if ConsumeMicroModuleToken('<FuelTank>') then Include(TItemTypeSelection(AllowedItemTypes), Ord(t_FuelTanks));
-        if ConsumeMicroModuleToken('<Engine>') then Include(TItemTypeSelection(AllowedItemTypes), Ord(t_Engine));
-        if ConsumeMicroModuleToken('<Radar>') then Include(TItemTypeSelection(AllowedItemTypes), Ord(t_Radar));
-        if ConsumeMicroModuleToken('<Scaner>') then Include(TItemTypeSelection(AllowedItemTypes), Ord(t_Scaner));
-        if ConsumeMicroModuleToken('<Droid>') then Include(TItemTypeSelection(AllowedItemTypes), Ord(t_RepairRobot));
-        if ConsumeMicroModuleToken('<Hook>') then Include(TItemTypeSelection(AllowedItemTypes), Ord(t_CargoHook));
-        if ConsumeMicroModuleToken('<DefGenerator>') then Include(TItemTypeSelection(AllowedItemTypes), Ord(t_DefGenerator));
+        if ConsumeMicroModuleToken('<Hull>') then Include(AllowedItemTypes, Ord(t_Hull));
+        if ConsumeMicroModuleToken('<FuelTank>') then Include(AllowedItemTypes, Ord(t_FuelTanks));
+        if ConsumeMicroModuleToken('<Engine>') then Include(AllowedItemTypes, Ord(t_Engine));
+        if ConsumeMicroModuleToken('<Radar>') then Include(AllowedItemTypes, Ord(t_Radar));
+        if ConsumeMicroModuleToken('<Scaner>') then Include(AllowedItemTypes, Ord(t_Scaner));
+        if ConsumeMicroModuleToken('<Droid>') then Include(AllowedItemTypes, Ord(t_RepairRobot));
+        if ConsumeMicroModuleToken('<Hook>') then Include(AllowedItemTypes, Ord(t_CargoHook));
+        if ConsumeMicroModuleToken('<DefGenerator>') then Include(AllowedItemTypes, Ord(t_DefGenerator));
         for Part := 1 to CountItemTypesInMask(WeaponTypes) do
         begin
           Kind := GetItemTypeFromMask([Ord(t_Food)..79] - [Ord(t_Food)..Ord(t_DefGenerator)] - [Ord(t_CustomWeapon)..79], Part);
           if ConsumeMicroModuleToken('<' + ItemTypeNames[Kind] + '>') then
-            Include(TItemTypeSelection(AllowedItemTypes), Kind)
+            Include(AllowedItemTypes, Kind)
           else if (Pos('<WMissile>', Tokens) > 0) and (dkMissile in WeaponInfos[Kind].DamageFlags) then
-            Include(TItemTypeSelection(AllowedItemTypes), Kind)
+            Include(AllowedItemTypes, Kind)
           else if (Pos('<WSplinter>', Tokens) > 0) and (dkSplinter in WeaponInfos[Kind].DamageFlags) then
-            Include(TItemTypeSelection(AllowedItemTypes), Kind)
+            Include(AllowedItemTypes, Kind)
           else if (Pos('<WEnergy>', Tokens) > 0) and (dkEnergy in WeaponInfos[Kind].DamageFlags) then
-            Include(TItemTypeSelection(AllowedItemTypes), Kind);
+            Include(AllowedItemTypes, Kind);
         end;
         for Part := 0 to CountDelimitedPartsW(Tokens, ',') - 1 do
         begin
@@ -2781,20 +2781,20 @@ begin
         end;
       end;
       Value := ReadMicroModuleParam('Ruins');
-      TShipTypeMask(OfferStationTypes) := [];
+      OfferStationTypes := [];
       OfferStationNames := ReplaceAllWideString(Value, ' ', '');
       OfferStationNames := '<' + ReplaceAllWideString(OfferStationNames, ',', '>,<') + '>';
-      if Value = 'Any' then TShipTypeMask(OfferStationTypes) := [Ord(rstRangerCenter)..Ord(rstDominion)]
+      if Value = 'Any' then OfferStationTypes := [Ord(rstRangerCenter)..Ord(rstDominion)]
       else if Value <> '' then
         for StationKind := Ord(rstRangerCenter) to Ord(rstDominion) do
-          if Pos(ShipTypeNames[StationKind].Name, Value) > 0 then Include(TShipTypeMask(OfferStationTypes), StationKind);
+          if Pos(ShipTypeNames[StationKind].Name, Value) > 0 then Include(OfferStationTypes, StationKind);
       OnPlanets := ExtractDigitsToIntW(ReadMicroModuleParam('OnPlanets')) <> 0;
       Value := ReadMicroModuleParam('WeaponMods');
-      TDamageFlagSet(WeaponDamageFlags) := [];
+      WeaponDamageFlags := [];
       if Value <> '' then
         for DamageKind := Low(WeaponDamageFlagNames) to High(WeaponDamageFlagNames) do
           if not (DamageKind in [Ord(dkEnergy)..Ord(dkMissile)]) and not (DamageKind in [Ord(dkDecelerateA), Ord(dkDecelerateAEx), Ord(dkNonLethal)]) and (Pos(WeaponDamageFlagNames[DamageKind], Value) > 0) then
-            Include(TDamageFlagSet(WeaponDamageFlags), TDamageKind(DamageKind));
+            Include(WeaponDamageFlags, TDamageKind(DamageKind));
       KindGraph := ReadMicroModuleParam('KindGraph');
       MissileGraph := ReadMicroModuleParam('MissileGraph');
       Value := ReadMicroModuleParam('ShotVisual');
@@ -2817,7 +2817,7 @@ begin
   CaptainHealthDefinitions[1].AllowedOwners := [0, 1, 2, 3, 4];
   CaptainHealthDefinitions[1].AllowedRatingBands := [2, 3, 4, 5];
   CaptainHealthDefinitions[1].AllowedRanks := [2, 3, 4, 5, 6, 7];
-  CaptainHealthDefinitions[1].AllowedCareers := [Ord(rcTrader), Ord(rcPirate), Ord(rcWarrior)];
+  CaptainHealthDefinitions[1].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
   CaptainHealthDefinitions[1].MedicalPriceSizeLevel := 2;
   CaptainHealthDefinitions[1].DevelopmentRate := 100.0;
   CaptainHealthDefinitions[1].InfectionChance := 1.0;
@@ -2827,7 +2827,7 @@ begin
   CaptainHealthDefinitions[2].AllowedOwners := [1, 2, 3, 4];
   CaptainHealthDefinitions[2].AllowedRatingBands := [1, 2, 3, 4, 5];
   CaptainHealthDefinitions[2].AllowedRanks := [3, 4, 5];
-  CaptainHealthDefinitions[2].AllowedCareers := [Ord(rcTrader), Ord(rcPirate), Ord(rcWarrior)];
+  CaptainHealthDefinitions[2].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
   CaptainHealthDefinitions[2].MedicalPriceSizeLevel := 4;
   CaptainHealthDefinitions[2].DevelopmentRate := 1.0;
   CaptainHealthDefinitions[2].InfectionChance := 1.0;
@@ -2837,7 +2837,7 @@ begin
   CaptainHealthDefinitions[3].AllowedOwners := [0, 1, 2];
   CaptainHealthDefinitions[3].AllowedRatingBands := [3, 4, 5];
   CaptainHealthDefinitions[3].AllowedRanks := [3, 4, 5, 6, 7];
-  CaptainHealthDefinitions[3].AllowedCareers := [Ord(rcTrader), Ord(rcPirate), Ord(rcWarrior)];
+  CaptainHealthDefinitions[3].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
   CaptainHealthDefinitions[3].MedicalPriceSizeLevel := 3;
   CaptainHealthDefinitions[3].DevelopmentRate := 100.0;
   CaptainHealthDefinitions[3].InfectionChance := 1.0;
@@ -2847,7 +2847,7 @@ begin
   CaptainHealthDefinitions[4].AllowedOwners := [1, 2, 3, 4];
   CaptainHealthDefinitions[4].AllowedRatingBands := [1, 2, 3, 4, 5];
   CaptainHealthDefinitions[4].AllowedRanks := [1, 2, 3, 4, 5, 6, 7];
-  CaptainHealthDefinitions[4].AllowedCareers := [Ord(rcTrader), Ord(rcPirate), Ord(rcWarrior)];
+  CaptainHealthDefinitions[4].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
   CaptainHealthDefinitions[4].MedicalPriceSizeLevel := 5;
   CaptainHealthDefinitions[4].DevelopmentRate := 1.0;
   CaptainHealthDefinitions[4].InfectionChance := 1.0;
@@ -2857,7 +2857,7 @@ begin
   CaptainHealthDefinitions[5].AllowedOwners := [0, 1, 2, 3, 4];
   CaptainHealthDefinitions[5].AllowedRatingBands := [1, 2, 3, 4, 5];
   CaptainHealthDefinitions[5].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
-  CaptainHealthDefinitions[5].AllowedCareers := [Ord(rcTrader), Ord(rcPirate), Ord(rcWarrior)];
+  CaptainHealthDefinitions[5].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
   CaptainHealthDefinitions[5].MedicalPriceSizeLevel := 1;
   CaptainHealthDefinitions[5].DevelopmentRate := 10.0;
   CaptainHealthDefinitions[5].InfectionChance := 1.0;
@@ -2867,7 +2867,7 @@ begin
   CaptainHealthDefinitions[6].AllowedOwners := [0, 1, 2, 3, 4];
   CaptainHealthDefinitions[6].AllowedRatingBands := [1, 2, 3, 4, 5];
   CaptainHealthDefinitions[6].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
-  CaptainHealthDefinitions[6].AllowedCareers := [Ord(rcTrader), Ord(rcPirate), Ord(rcWarrior)];
+  CaptainHealthDefinitions[6].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
   CaptainHealthDefinitions[6].MedicalPriceSizeLevel := 4;
   CaptainHealthDefinitions[6].DevelopmentRate := 100.0;
   CaptainHealthDefinitions[6].InfectionChance := 1.0;
@@ -2877,7 +2877,7 @@ begin
   CaptainHealthDefinitions[7].AllowedOwners := [0, 1, 2, 3, 4];
   CaptainHealthDefinitions[7].AllowedRatingBands := [1, 2, 3, 4, 5];
   CaptainHealthDefinitions[7].AllowedRanks := [1, 2, 3, 4, 5, 6, 7];
-  CaptainHealthDefinitions[7].AllowedCareers := [Ord(rcTrader), Ord(rcPirate), Ord(rcWarrior)];
+  CaptainHealthDefinitions[7].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
   CaptainHealthDefinitions[7].MedicalPriceSizeLevel := 2;
   CaptainHealthDefinitions[7].DevelopmentRate := 100.0;
   CaptainHealthDefinitions[7].InfectionChance := 1.0;
@@ -2887,7 +2887,7 @@ begin
   CaptainHealthDefinitions[8].AllowedOwners := [1, 2, 3, 4];
   CaptainHealthDefinitions[8].AllowedRatingBands := [1, 2, 3, 4, 5];
   CaptainHealthDefinitions[8].AllowedRanks := [1, 2, 3, 4, 5, 6, 7];
-  CaptainHealthDefinitions[8].AllowedCareers := [Ord(rcTrader), Ord(rcPirate), Ord(rcWarrior)];
+  CaptainHealthDefinitions[8].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
   CaptainHealthDefinitions[8].MedicalPriceSizeLevel := 1;
   CaptainHealthDefinitions[8].DevelopmentRate := 100.0;
   CaptainHealthDefinitions[8].InfectionChance := 1.0;
@@ -2897,7 +2897,7 @@ begin
   CaptainHealthDefinitions[9].AllowedOwners := [0];
   CaptainHealthDefinitions[9].AllowedRatingBands := [2, 3, 4, 5];
   CaptainHealthDefinitions[9].AllowedRanks := [2, 3, 4, 5, 6, 7];
-  CaptainHealthDefinitions[9].AllowedCareers := [Ord(rcTrader), Ord(rcPirate), Ord(rcWarrior)];
+  CaptainHealthDefinitions[9].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
   CaptainHealthDefinitions[9].MedicalPriceSizeLevel := 2;
   CaptainHealthDefinitions[9].DevelopmentRate := 1.0;
   CaptainHealthDefinitions[9].InfectionChance := 1.0;
@@ -2907,7 +2907,7 @@ begin
   CaptainHealthDefinitions[10].AllowedOwners := [1];
   CaptainHealthDefinitions[10].AllowedRatingBands := [1, 2, 3, 4, 5];
   CaptainHealthDefinitions[10].AllowedRanks := [1, 2, 3, 4, 5, 6, 7];
-  CaptainHealthDefinitions[10].AllowedCareers := [Ord(rcTrader), Ord(rcPirate), Ord(rcWarrior)];
+  CaptainHealthDefinitions[10].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
   CaptainHealthDefinitions[10].MedicalPriceSizeLevel := 2;
   CaptainHealthDefinitions[10].DevelopmentRate := 1.0;
   CaptainHealthDefinitions[10].InfectionChance := 1.0;
@@ -2917,7 +2917,7 @@ begin
   CaptainHealthDefinitions[11].AllowedOwners := [3];
   CaptainHealthDefinitions[11].AllowedRatingBands := [1, 2, 3, 4, 5];
   CaptainHealthDefinitions[11].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
-  CaptainHealthDefinitions[11].AllowedCareers := [Ord(rcTrader), Ord(rcPirate), Ord(rcWarrior)];
+  CaptainHealthDefinitions[11].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
   CaptainHealthDefinitions[11].MedicalPriceSizeLevel := 4;
   CaptainHealthDefinitions[11].DevelopmentRate := 1.0;
   CaptainHealthDefinitions[11].InfectionChance := 1.0;
@@ -2927,7 +2927,7 @@ begin
   CaptainHealthDefinitions[12].AllowedOwners := [4];
   CaptainHealthDefinitions[12].AllowedRatingBands := [2, 3, 4, 5];
   CaptainHealthDefinitions[12].AllowedRanks := [2, 3, 4, 5, 6, 7];
-  CaptainHealthDefinitions[12].AllowedCareers := [Ord(rcTrader), Ord(rcPirate), Ord(rcWarrior)];
+  CaptainHealthDefinitions[12].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
   CaptainHealthDefinitions[12].MedicalPriceSizeLevel := 2;
   CaptainHealthDefinitions[12].DevelopmentRate := 1.0;
   CaptainHealthDefinitions[12].InfectionChance := 0.5;
@@ -2937,7 +2937,7 @@ begin
   RadiationHealthDefinitions[1].AllowedOwners := [0, 1, 2, 3, 4];
   RadiationHealthDefinitions[1].AllowedRatingBands := [1, 2, 3, 4, 5];
   RadiationHealthDefinitions[1].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
-  RadiationHealthDefinitions[1].AllowedCareers := [Ord(rcTrader), Ord(rcPirate), Ord(rcWarrior)];
+  RadiationHealthDefinitions[1].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
   RadiationHealthDefinitions[1].MedicalPriceSizeLevel := 4;
   RadiationHealthDefinitions[1].DevelopmentRate := 100.0;
   RadiationHealthDefinitions[1].InfectionChance := 0.0;
@@ -2947,7 +2947,7 @@ begin
   CaptainHealthDefinitions[13].AllowedOwners := [0, 1, 2, 3, 4];
   CaptainHealthDefinitions[13].AllowedRatingBands := [1, 2, 3, 4, 5];
   CaptainHealthDefinitions[13].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
-  CaptainHealthDefinitions[13].AllowedCareers := [Ord(rcTrader), Ord(rcPirate), Ord(rcWarrior)];
+  CaptainHealthDefinitions[13].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
   CaptainHealthDefinitions[13].MedicalPriceSizeLevel := 2;
   CaptainHealthDefinitions[13].DevelopmentRate := 1.0;
   CaptainHealthDefinitions[13].InfectionChance := 0.9;
@@ -2956,7 +2956,7 @@ begin
   CaptainHealthDefinitions[14].AllowedOwners := [0, 1, 2, 3, 4];
   CaptainHealthDefinitions[14].AllowedRatingBands := [1, 2, 3, 4, 5];
   CaptainHealthDefinitions[14].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
-  CaptainHealthDefinitions[14].AllowedCareers := [Ord(rcTrader), Ord(rcPirate), Ord(rcWarrior)];
+  CaptainHealthDefinitions[14].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
   CaptainHealthDefinitions[14].MedicalPriceSizeLevel := 2;
   CaptainHealthDefinitions[14].DevelopmentRate := 1.0;
   CaptainHealthDefinitions[14].InfectionChance := 0.9;
@@ -2965,7 +2965,7 @@ begin
   CaptainHealthDefinitions[15].AllowedOwners := [0, 1, 2, 3, 4];
   CaptainHealthDefinitions[15].AllowedRatingBands := [1, 2, 3, 4, 5];
   CaptainHealthDefinitions[15].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
-  CaptainHealthDefinitions[15].AllowedCareers := [Ord(rcTrader), Ord(rcPirate), Ord(rcWarrior)];
+  CaptainHealthDefinitions[15].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
   CaptainHealthDefinitions[15].MedicalPriceSizeLevel := 2;
   CaptainHealthDefinitions[15].DevelopmentRate := 1.0;
   CaptainHealthDefinitions[15].InfectionChance := 0.8;
@@ -2974,7 +2974,7 @@ begin
   CaptainHealthDefinitions[16].AllowedOwners := [0, 1, 2, 3, 4];
   CaptainHealthDefinitions[16].AllowedRatingBands := [1, 2, 3, 4, 5];
   CaptainHealthDefinitions[16].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
-  CaptainHealthDefinitions[16].AllowedCareers := [Ord(rcTrader), Ord(rcPirate), Ord(rcWarrior)];
+  CaptainHealthDefinitions[16].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
   CaptainHealthDefinitions[16].MedicalPriceSizeLevel := 2;
   CaptainHealthDefinitions[16].DevelopmentRate := 1.0;
   CaptainHealthDefinitions[16].InfectionChance := 0.4;
@@ -2983,7 +2983,7 @@ begin
   CaptainHealthDefinitions[17].AllowedOwners := [0, 1, 2, 3, 4];
   CaptainHealthDefinitions[17].AllowedRatingBands := [1, 2, 3, 4, 5];
   CaptainHealthDefinitions[17].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
-  CaptainHealthDefinitions[17].AllowedCareers := [Ord(rcTrader), Ord(rcPirate), Ord(rcWarrior)];
+  CaptainHealthDefinitions[17].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
   CaptainHealthDefinitions[17].MedicalPriceSizeLevel := 2;
   CaptainHealthDefinitions[17].DevelopmentRate := 1.0;
   CaptainHealthDefinitions[17].InfectionChance := 0.9;
@@ -2992,7 +2992,7 @@ begin
   CaptainHealthDefinitions[18].AllowedOwners := [0, 1, 2, 3, 4];
   CaptainHealthDefinitions[18].AllowedRatingBands := [1, 2, 3, 4, 5];
   CaptainHealthDefinitions[18].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
-  CaptainHealthDefinitions[18].AllowedCareers := [Ord(rcTrader), Ord(rcPirate), Ord(rcWarrior)];
+  CaptainHealthDefinitions[18].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
   CaptainHealthDefinitions[18].MedicalPriceSizeLevel := 2;
   CaptainHealthDefinitions[18].DevelopmentRate := 1.0;
   CaptainHealthDefinitions[18].InfectionChance := 0.8;
@@ -3001,7 +3001,7 @@ begin
   CaptainHealthDefinitions[19].AllowedOwners := [0, 1, 2, 3, 4];
   CaptainHealthDefinitions[19].AllowedRatingBands := [1, 2, 3, 4, 5];
   CaptainHealthDefinitions[19].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
-  CaptainHealthDefinitions[19].AllowedCareers := [Ord(rcTrader), Ord(rcPirate), Ord(rcWarrior)];
+  CaptainHealthDefinitions[19].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
   CaptainHealthDefinitions[19].MedicalPriceSizeLevel := 2;
   CaptainHealthDefinitions[19].DevelopmentRate := 1.0;
   CaptainHealthDefinitions[19].InfectionChance := 0.9;
@@ -3010,7 +3010,7 @@ begin
   CaptainHealthDefinitions[20].AllowedOwners := [0, 1, 2, 3, 4];
   CaptainHealthDefinitions[20].AllowedRatingBands := [1, 2, 3, 4, 5];
   CaptainHealthDefinitions[20].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
-  CaptainHealthDefinitions[20].AllowedCareers := [Ord(rcTrader), Ord(rcPirate), Ord(rcWarrior)];
+  CaptainHealthDefinitions[20].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
   CaptainHealthDefinitions[20].MedicalPriceSizeLevel := 2;
   CaptainHealthDefinitions[20].DevelopmentRate := 1.0;
   CaptainHealthDefinitions[20].InfectionChance := 0.9;
@@ -3019,7 +3019,7 @@ begin
   CaptainHealthDefinitions[21].AllowedOwners := [0, 1, 2, 3, 4];
   CaptainHealthDefinitions[21].AllowedRatingBands := [1, 2, 3, 4, 5];
   CaptainHealthDefinitions[21].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
-  CaptainHealthDefinitions[21].AllowedCareers := [Ord(rcTrader), Ord(rcPirate), Ord(rcWarrior)];
+  CaptainHealthDefinitions[21].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
   CaptainHealthDefinitions[21].MedicalPriceSizeLevel := 2;
   CaptainHealthDefinitions[21].DevelopmentRate := 1.0;
   CaptainHealthDefinitions[21].InfectionChance := 0.9;
@@ -3028,7 +3028,7 @@ begin
   CaptainHealthDefinitions[22].AllowedOwners := [0, 1, 2, 3, 4];
   CaptainHealthDefinitions[22].AllowedRatingBands := [1, 2, 3, 4, 5];
   CaptainHealthDefinitions[22].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
-  CaptainHealthDefinitions[22].AllowedCareers := [Ord(rcTrader), Ord(rcPirate), Ord(rcWarrior)];
+  CaptainHealthDefinitions[22].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
   CaptainHealthDefinitions[22].MedicalPriceSizeLevel := 2;
   CaptainHealthDefinitions[22].DevelopmentRate := 1.0;
   CaptainHealthDefinitions[22].InfectionChance := 0.25;
@@ -3037,7 +3037,7 @@ begin
   CaptainHealthDefinitions[23].AllowedOwners := [0, 1, 2, 3, 4];
   CaptainHealthDefinitions[23].AllowedRatingBands := [1, 2, 3, 4, 5];
   CaptainHealthDefinitions[23].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
-  CaptainHealthDefinitions[23].AllowedCareers := [Ord(rcTrader), Ord(rcPirate), Ord(rcWarrior)];
+  CaptainHealthDefinitions[23].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
   CaptainHealthDefinitions[23].MedicalPriceSizeLevel := 2;
   CaptainHealthDefinitions[23].DevelopmentRate := 1.0;
   CaptainHealthDefinitions[23].InfectionChance := 0.15;
@@ -3046,7 +3046,7 @@ begin
   CaptainHealthDefinitions[24].AllowedOwners := [0, 1, 2, 3, 4];
   CaptainHealthDefinitions[24].AllowedRatingBands := [1, 2, 3, 4, 5];
   CaptainHealthDefinitions[24].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
-  CaptainHealthDefinitions[24].AllowedCareers := [Ord(rcTrader), Ord(rcPirate), Ord(rcWarrior)];
+  CaptainHealthDefinitions[24].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
   CaptainHealthDefinitions[24].MedicalPriceSizeLevel := 2;
   CaptainHealthDefinitions[24].DevelopmentRate := 1.0;
   CaptainHealthDefinitions[24].InfectionChance := 0.2;

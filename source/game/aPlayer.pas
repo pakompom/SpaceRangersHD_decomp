@@ -1440,7 +1440,7 @@ begin
             if (DockedTo <> nil) and not (RaceToOwner(DockedTo.PilotRace) in CaptainHealthDefinitions[I].AllowedLocationOwners) and
               not (DockedTo.OwnerId in CaptainHealthDefinitions[I].AllowedLocationOwners) then Continue;
             if (RaceToOwner(PilotRace) in AllowedOwners) and (GetRangerRatingBand in AllowedRatingBands) and
-              (Rank in AllowedRanks) and (Byte(GetDominantCareer) in AllowedCareers) and
+              (Rank in AllowedRanks) and (GetDominantCareer in AllowedCareers) and
               (CaptainHealth[I].Progress <= 0.0) and (CaptainHealth[I].ExpireTurn + 365 <= Galaxy.CurrentTurn) then
             begin
               if IsHealthEffectActive(4) then ResistanceFactor := 0.1
@@ -1525,7 +1525,7 @@ begin
             if (RaceToOwner(PilotRace) in CaptainHealthDefinitions[I].AllowedOwners) and
               (GetRangerRatingBand in CaptainHealthDefinitions[I].AllowedRatingBands) and
               (Rank in CaptainHealthDefinitions[I].AllowedRanks) and
-              (Byte(GetDominantCareer) in CaptainHealthDefinitions[I].AllowedCareers) then
+              (GetDominantCareer in CaptainHealthDefinitions[I].AllowedCareers) then
             begin
               CaptainHealth[I].Progress := 100.0;
               CaptainHealth[I].ExpireTurn := Galaxy.CurrentTurn + Round(RemapClamped(SeededRandomUnitFloat(Integer(Galaxy.GenerationSeed) + I + Galaxy.CurrentTurn), 0.0, 1.0, 0.5, 3.0) * CaptainHealthDefinitions[I].Duration);
@@ -1726,11 +1726,11 @@ begin
   for I := 0 to Galaxy.Planets.Count - 1 do begin
     BuyPlanet := Galaxy.Planets[I];
     if not BuyPlanet.CurrentStar.IsConstellationVisible then Continue;
-    if not (BuyPlanet.OwnerId in TOwnerMask(PlanetOwnerMasks.Coalition)) then Continue;
+    if not (BuyPlanet.OwnerId in PlanetOwnerMasks.Coalition) then Continue;
     for J := 0 to Galaxy.Planets.Count - 1 do begin
       SellPlanet := Galaxy.Planets[J];
       if not SellPlanet.CurrentStar.IsConstellationVisible then Continue;
-      if not (SellPlanet.OwnerId in TOwnerMask(PlanetOwnerMasks.Coalition)) then Continue;
+      if not (SellPlanet.OwnerId in PlanetOwnerMasks.Coalition) then Continue;
       if (PurchasePlanet = BuyPlanet) or (SalePlanet = SellPlanet) or (SellPlanet = BuyPlanet) then Continue;
       if Nearby then begin
         if PointDistance(CurrentStar.Position, BuyPlanet.CurrentStar.Position) > Min(JumpRange, 20) then Continue;
@@ -2516,7 +2516,7 @@ begin
         for I := 0 to High(RobotMapDefinitions) do begin
           if (RobotMapDefinitions[I].PlanetRace <> []) and not (CurrentPlanet.RaceId in RobotMapDefinitions[I].PlanetRace) then Continue;
           if (RobotMapDefinitions[I].PlayerRace <> []) and not (PilotRace in RobotMapDefinitions[I].PlayerRace) then Continue;
-          if (RobotMapDefinitions[I].PlayerStatus <> []) and not (Byte(GetDominantCareer) in RobotMapDefinitions[I].PlayerStatus) then Continue;
+          if (RobotMapDefinitions[I].PlayerStatus <> []) and not (GetDominantCareer in RobotMapDefinitions[I].PlayerStatus) then Continue;
           if High(PlanetBattleHistory) = -1 then begin
             if (RobotMapDefinitions[I].MinWins <> 0) or (RobotMapDefinitions[I].MaxWins <> 0) then Continue;
           end else begin
@@ -3170,7 +3170,7 @@ begin
   begin
     for Faction := 0 to 2 do
       if (OwnerId in TOwnerMasks(PlanetOwnerMasks)[Faction]) and
-        (Ship.CurrentStanding in TStationStandingMask(NonTargetableStationStandingMasks[Faction])) and
+        (Ship.CurrentStanding in NonTargetableStationStandingMasks[Faction]) and
         ((Ship.ScriptShip = nil) or (Ship.OwnerId in TOwnerMasks(PlanetOwnerMasks)[Faction])) then Exit;
   end;
   Result := True;

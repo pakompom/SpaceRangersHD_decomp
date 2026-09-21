@@ -1133,7 +1133,7 @@ procedure TfGov.AddBuiltinGovernmentChoices;
 begin
   if (GetPlayer.CurrentPlanet.CurrentStar.Constellation.Id <> 20) or
     (not GetPlayer.CurrentPlanet.IsMainPiratePlanet and
-    (GetPlayer.CurrentPlanet.OwnerId in TOwnerMask(PlanetOwnerMasks.Coalition))) then
+    (GetPlayer.CurrentPlanet.OwnerId in PlanetOwnerMasks.Coalition)) then
     AddChoice(LocalizedColorText('FormGov.I_QueryQuest'), 0, RequestQuest);
   if (GetPlayer.CurrentPlanet.GetRelationLevelToShip(GetPlayer) <= rlNormal) and
     not GetPlayer.CurrentPlanet.IsMainPiratePlanet then
@@ -1326,8 +1326,8 @@ begin
   else
   begin
     GetPlayer.CurrentPlanet.ChangeRelationToRanger(GetPlayer, 80);
-    GetPlayer.ChangePlanetRelations(nil, rcmRaiseTo, 20, TOwnerMask(PlanetOwnerMasks.Coalition));
-    GetPlayer.ChangePlanetRelations(GetPlayer.CurrentStar.Constellation, rcmIncrease, 30, TOwnerMask(PlanetOwnerMasks.Coalition));
+    GetPlayer.ChangePlanetRelations(nil, rcmRaiseTo, 20, PlanetOwnerMasks.Coalition);
+    GetPlayer.ChangePlanetRelations(GetPlayer.CurrentStar.Constellation, rcmIncrease, 30, PlanetOwnerMasks.Coalition);
   end;
   for I := 0 to GetPlayer.CurrentStar.Ships.Count - 1 do
   begin
@@ -1399,7 +1399,7 @@ begin
   else
   begin
     GetPlayer.CurrentPlanet.ChangeRelationToRanger(GetPlayer, 100);
-    GetPlayer.ChangePlanetRelations(GetPlayer.CurrentStar, rcmIncrease, 20, TOwnerMask(PlanetOwnerMasks.Coalition));
+    GetPlayer.ChangePlanetRelations(GetPlayer.CurrentStar, rcmIncrease, 20, PlanetOwnerMasks.Coalition);
   end;
   DialogText := PickLocalizedTextVariant('FormGov.Bribe.QuestionOk', (Galaxy.CurrentTurn div 5) * GetPlayer.CurrentPlanet.GenerationSeed + 7156317);
   ReplaceTextToken(DialogText, '<Money>', WideString(IntToStr(Cost)), '<color=255,240,100>');

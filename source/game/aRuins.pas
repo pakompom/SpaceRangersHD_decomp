@@ -1055,7 +1055,7 @@ begin
       begin
         if (Template.OfferStationNames <> '<Any>') and (Pos('<' + TypeNameOverrideKey + '>', Template.OfferStationNames) <= 0) then Break;
       end
-      else if not (TypeId in TShipTypeMask(Template.OfferStationTypes)) then Break;
+      else if not (TypeId in Template.OfferStationTypes) then Break;
       if not IsBonusCompatibleWithEquipment(I, Item) then Break;
       if Template.Priority > Ceiling then Break;
       if Count = 0 then
@@ -1108,7 +1108,7 @@ begin
       begin
         if (Template.OfferStationNames <> '<Any>') and (Pos('<' + TypeNameOverrideKey + '>', Template.OfferStationNames) <= 0) then Break;
       end
-      else if not (TypeId in TShipTypeMask(Template.OfferStationTypes)) then Break;
+      else if not (TypeId in Template.OfferStationTypes) then Break;
       if not IsBonusCompatibleWithHull(I, Hull) then Break;
       if Template.Priority > Ceiling then Break;
       if Count = 0 then
@@ -1161,7 +1161,7 @@ begin
       begin
         if (Template.OfferStationNames <> '<Any>') and (Pos('<' + TypeNameOverrideKey + '>', Template.OfferStationNames) <= 0) then Break;
       end
-      else if not (TypeId in TShipTypeMask(Template.OfferStationTypes)) then Break;
+      else if not (TypeId in Template.OfferStationTypes) then Break;
       if not IsBonusCompatibleWithWeapon(I, Weapon) then Break;
       if Template.Priority > Ceiling then Break;
       if Count = 0 then
@@ -1614,7 +1614,7 @@ var I: Integer; Planet: TPlanet; Independent: Boolean;
 begin
   EnemyShip := Attacker;
   if CurrentStanding = ssCustom then Exit;
-  Independent := not (CurrentStanding in TStationStandingMask(FactionStandingMasks[Ord(CurrentStar.ControlFaction)])) or (CurrentStar.Status.CustomFaction <> '');
+  Independent := not (CurrentStanding in FactionStandingMasks[Ord(CurrentStar.ControlFaction)]) or (CurrentStar.Status.CustomFaction <> '');
   if Attacker.TypeId = stRanger then
   begin
     ChangeRelationToRanger(Attacker, -10);
@@ -2054,12 +2054,12 @@ begin
   begin
     Buyer := TShip(Ship);
     Availability := [Ord(waFree)];
-    if (Buyer.TypeId = stKling) and (OwnerId in TOwnerMask(PlanetOwnerMasks.Dominators)) then Availability := Availability + [Ord(waNotSoldAndNodeRepair)];
-    if (Buyer.TypeId in [stRanger, stPirate]) and (CurrentStanding in TStationStandingMask(FactionStandingMasks[Ord(sfPirates)])) and
-       ((CurrentStar.ControlFaction = sfPirates) or not (CurrentStanding in TStationStandingMask(FactionStandingMasks[Ord(sfCoalition)]))) then
+    if (Buyer.TypeId = stKling) and (OwnerId in PlanetOwnerMasks.Dominators) then Availability := Availability + [Ord(waNotSoldAndNodeRepair)];
+    if (Buyer.TypeId in [stRanger, stPirate]) and (CurrentStanding in FactionStandingMasks[Ord(sfPirates)]) and
+       ((CurrentStar.ControlFaction = sfPirates) or not (CurrentStanding in FactionStandingMasks[Ord(sfCoalition)])) then
       Availability := Availability + [Ord(waPirateOnly)];
-    if (Buyer.TypeId in [stRanger..stWarrior]) and (CurrentStanding in TStationStandingMask(FactionStandingMasks[Ord(sfCoalition)])) and
-       ((CurrentStar.ControlFaction = sfCoalition) or not (CurrentStanding in TStationStandingMask(FactionStandingMasks[Ord(sfPirates)]))) then
+    if (Buyer.TypeId in [stRanger..stWarrior]) and (CurrentStanding in FactionStandingMasks[Ord(sfCoalition)]) and
+       ((CurrentStar.ControlFaction = sfCoalition) or not (CurrentStanding in FactionStandingMasks[Ord(sfPirates)])) then
       Availability := Availability + [Ord(waCoalitionOnly), Ord(waMalocOnly)..Ord(waGaalOnly)];
     // The native counter guard has no back edge: only one offer is generated.
     Attempts := 0;
@@ -2084,7 +2084,7 @@ begin
       MinLevel := Max(MinLevel, MaxLevel div 2 - 1);
       MaxLevel := Min(8, MaxLevel + StationOfferWeaponLevelBonus[TypeId]);
       Owner := PickRandomEquipmentOwner(RandomState);
-      if (CurrentStar.ControlFaction = sfPirates) and (CurrentStanding in TStationStandingMask(FactionStandingMasks[Ord(sfPirates)])) and
+      if (CurrentStar.ControlFaction = sfPirates) and (CurrentStanding in FactionStandingMasks[Ord(sfPirates)]) and
          ((NextRandomIntRange(1, 100, RandomState) < 70) or (Galaxy.CoalitionDefeatedTurn <> 0)) then Owner := 7;
       for I := 0 to 7 do if OwnerWeaponAvailability[I] = Info.Availability then
       begin
@@ -2129,7 +2129,7 @@ begin
       MaxSize := MaxSize * 2;
     end;
     Owner := PickRandomEquipmentOwner(RandomState);
-    if (CurrentStar.ControlFaction = sfPirates) and (CurrentStanding in TStationStandingMask(FactionStandingMasks[Ord(sfPirates)])) and
+    if (CurrentStar.ControlFaction = sfPirates) and (CurrentStanding in FactionStandingMasks[Ord(sfPirates)]) and
        ((NextRandomIntRange(1, 100, RandomState) < 70) or (Galaxy.CoalitionDefeatedTurn <> 0)) then Owner := 7;
     Result := CreateGeneratedEquipment(TItemType(ItemType), NextRandomIntRange(MinSize, MaxSize, RandomState), NextRandomIntRange(MinLevel, MaxLevel, RandomState), Owner);
     if Buyer.CanGenerateMicroModuleForLoadout then

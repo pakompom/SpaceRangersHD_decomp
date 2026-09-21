@@ -9,7 +9,6 @@ uses fMainForm, fCfgSettings, fGameEnd, fAbout, fIntroduction, fGameSettings, fG
 type
   TGreetingMask = set of 0..7; // @size $01 Field-specific names and bits are decoded by the loaders.
 
-  TRobotMapPlayerStatuses = set of 0..2; // @size $01 Trader, Pirate, Warrior.
 
   TScriptTemplUnit = class(TObjectEx) // @size $20
   public
@@ -294,7 +293,7 @@ type
     Map: WideString; // @offset $18
     PlanetRace: TOwnerMask; // @offset $1C Empty mask means Any.
     PlayerRace: TOwnerMask; // @offset $1D Empty mask means Any.
-    PlayerStatus: TRobotMapPlayerStatuses; // @offset $1E Empty mask means Any.
+    PlayerStatus: TRangerCareerSet; // @offset $1E Empty mask means Any.
     MinWins: Integer; // @offset $20
     MaxWins: Integer; // @offset $24
     Reiteration: Integer; // @offset $28
@@ -324,7 +323,7 @@ type
     AutoTalk: Byte; // @offset $08
     FlyType: Byte; // @offset $09
     ShipType: TGreetingMask; // @offset $0A
-    Relations: TGreetingMask; // @offset $0B
+    Relations: TRelationLevels; // @offset $0B
     ShipRace: TOwnerMask; // @offset $0C
     PlayerRace: TOwnerMask; // @offset $0D
     ShipRaceIsPlayerRace: Byte; // @offset $0E
@@ -340,7 +339,7 @@ type
     PlayerTurnBeforeEndOrder: TGreetingCountMask; // @offset $19
     ShipBadTurnBeforeEndOrder: TGreetingCountMask; // @offset $1B
     ShipStatus: TGreetingMask; // @offset $1D
-    PlayerStatus: TGreetingMask; // @offset $1E
+    PlayerStatus: TRangerCareerSet; // @offset $1E
     ShipStrength: TGreetingMask; // @offset $1F
     PlayerStrength: TGreetingMask; // @offset $20
     ShipStructure: TGreetingMask; // @offset $21
@@ -366,15 +365,15 @@ type
     WarriorInCurStar: TGreetingCountMask; // @offset $3A
     TransportInCurStar: TGreetingCountMask; // @offset $3C
     LastPlanetRace: TOwnerMask; // @offset $3E
-    LastPlanetRelations: TGreetingMask; // @offset $3F
+    LastPlanetRelations: TRelationLevels; // @offset $3F
     LastPlanetGoodsCnt: TGreetingMask; // @offset $40
     LastPlanetGoodsSale: TGreetingMask; // @offset $41
     LastPlanetGoodsBuy: TGreetingMask; // @offset $42
     LastPlanetIsHomePlanet: Byte; // @offset $43
     LastPlanetRaceIsShipRace: Byte; // @offset $44
     LastPlanetRaceIsPlayerRace: Byte; // @offset $45
-    LastPlanetEconomy: TGreetingMask; // @offset $46
-    LastPlanetGovernment: TGreetingMask; // @offset $47
+    LastPlanetEconomy: TPlanetEconomies; // @offset $46
+    LastPlanetGovernment: TPlanetGovernments; // @offset $47
     LastPlanetInCurStar: Byte; // @offset $48
     LastPlanetDistToShipInTurn: TGreetingCountMask; // @offset $49
     RangerInLastPlanetStar: TGreetingCountMask; // @offset $4B
@@ -383,15 +382,15 @@ type
     WarriorInLastPlanetStar: TGreetingCountMask; // @offset $51
     TransportInLastPlanetStar: TGreetingCountMask; // @offset $53
     ToPlanetRace: TOwnerMask; // @offset $55
-    ToPlanetRelations: TGreetingMask; // @offset $56
+    ToPlanetRelations: TRelationLevels; // @offset $56
     ToPlanetGoodsCnt: TGreetingMask; // @offset $57
     ToPlanetGoodsSale: TGreetingMask; // @offset $58
     ToPlanetGoodsBuy: TGreetingMask; // @offset $59
     ToPlanetIsHomePlanet: Byte; // @offset $5A
     ToPlanetRaceIsShipRace: Byte; // @offset $5B
     ToPlanetRaceIsPlayerRace: Byte; // @offset $5C
-    ToPlanetEconomy: TGreetingMask; // @offset $5D
-    ToPlanetGovernment: TGreetingMask; // @offset $5E
+    ToPlanetEconomy: TPlanetEconomies; // @offset $5D
+    ToPlanetGovernment: TPlanetGovernments; // @offset $5E
     ToPlanetIsLastPlanet: Byte; // @offset $5F
     ToPlanetRaceIsLastPlanetRace: Byte; // @offset $60
     HomePlanetInToStar: Byte; // @offset $61
@@ -409,7 +408,7 @@ type
     ToShipRace: TOwnerMask; // @offset $76
     ToShipInPlanet: Byte; // @offset $77
     ToShipBad: Byte; // @offset $78
-    ToShipRelations: TGreetingMask; // @offset $79
+    ToShipRelations: TRelationLevels; // @offset $79
     RankShipWithPlayerExtra: TGreetingMask; // @offset $7A Second field loaded from RankShipWithPlayer; the normal-ship consumer compares PirateRank.
     PlayerPirateRank: TGreetingMask; // @offset $7B
     Female: Byte; // @offset $7C
@@ -426,19 +425,19 @@ type
     Name: WideString; // @offset $00
     Priority: Integer; // @offset $04
     PlayerRace: TOwnerMask; // @offset $08
-    PlayerStatus: TGreetingMask; // @offset $09
+    PlayerStatus: TRangerCareerSet; // @offset $09
     PlayerRating: TGreetingMask; // @offset $0A
     PlayerRank: TGreetingMask; // @offset $0B
     Goods: Byte; // @offset $0C
     CurPlanetRace: TOwnerMask; // @offset $0D
     CurPlanetRaceIsPlayerRace: Byte; // @offset $0E
-    CurPlanetRelations: TGreetingMask; // @offset $0F
+    CurPlanetRelations: TRelationLevels; // @offset $0F
     CurPlanetGoodsPermit: Byte; // @offset $10
     CurPlanetGoodsCnt: TGreetingMask; // @offset $11
     CurPlanetGoodsSale: TGreetingMask; // @offset $12
     CurPlanetGoodsBuy: TGreetingMask; // @offset $13
-    CurPlanetEconomy: TGreetingMask; // @offset $14
-    CurPlanetGovernment: TGreetingMask; // @offset $15
+    CurPlanetEconomy: TPlanetEconomies; // @offset $14
+    CurPlanetGovernment: TPlanetGovernments; // @offset $15
     RangerInCurStar: TGreetingCountMask; // @offset $16
     PirateInCurStar: TGreetingCountMask; // @offset $18
     KlingInCurStar: TGreetingCountMask; // @offset $1A
@@ -448,13 +447,13 @@ type
     ToPlanetRace: TOwnerMask; // @offset $21
     ToPlanetRaceIsPlayerRace: Byte; // @offset $22
     ToPlanetRaceIsCurPlanetRace: Byte; // @offset $23
-    ToPlanetRelations: TGreetingMask; // @offset $24
+    ToPlanetRelations: TRelationLevels; // @offset $24
     ToPlanetGoodsPermit: Byte; // @offset $25
     ToPlanetGoodsCnt: TGreetingMask; // @offset $26
     ToPlanetGoodsSale: TGreetingMask; // @offset $27
     ToPlanetGoodsBuy: TGreetingMask; // @offset $28
-    ToPlanetEconomy: TGreetingMask; // @offset $29
-    ToPlanetGovernment: TGreetingMask; // @offset $2A
+    ToPlanetEconomy: TPlanetEconomies; // @offset $29
+    ToPlanetGovernment: TPlanetGovernments; // @offset $2A
     ToPlanetInCurStar: Byte; // @offset $2B
     RangerInToStar: TGreetingCountMask; // @offset $2C
     PirateInToStar: TGreetingCountMask; // @offset $2E
@@ -2260,9 +2259,9 @@ begin
     RobotMapDefinitions[Index].PlayerStatus := [];
     if (Text <> '') and (Text <> 'Any') then
     begin
-      if Pos('Trader', AnsiString(Text)) > 0 then Include(RobotMapDefinitions[Index].PlayerStatus, 0);
-      if Pos('Pirate', AnsiString(Text)) > 0 then Include(RobotMapDefinitions[Index].PlayerStatus, 1);
-      if Pos('Warrior', AnsiString(Text)) > 0 then Include(RobotMapDefinitions[Index].PlayerStatus, 2);
+      if Pos('Trader', AnsiString(Text)) > 0 then Include(RobotMapDefinitions[Index].PlayerStatus, rcTrader);
+      if Pos('Pirate', AnsiString(Text)) > 0 then Include(RobotMapDefinitions[Index].PlayerStatus, rcPirate);
+      if Pos('Warrior', AnsiString(Text)) > 0 then Include(RobotMapDefinitions[Index].PlayerStatus, rcWarrior);
     end;
     RobotMapDefinitions[Index].MinWins := ExtractSignedDigitsToIntW(ReadMapText('MinWins'));
     RobotMapDefinitions[Index].MaxWins := ExtractSignedDigitsToIntW(ReadMapText('MaxWins'));
@@ -2378,11 +2377,11 @@ begin
         Relations := [];
         if (Text <> '') and (Text <> 'Any') then
         begin
-          if Pos('War', AnsiString(Text)) > 0 then Include(Relations, 0);
-          if Pos('Bad', AnsiString(Text)) > 0 then Include(Relations, 1);
-          if Pos('Normal', AnsiString(Text)) > 0 then Include(Relations, 2);
-          if Pos('Good', AnsiString(Text)) > 0 then Include(Relations, 3);
-          if Pos('Best', AnsiString(Text)) > 0 then Include(Relations, 4);
+          if Pos('War', AnsiString(Text)) > 0 then Include(Relations, rlHostile);
+          if Pos('Bad', AnsiString(Text)) > 0 then Include(Relations, rlBad);
+          if Pos('Normal', AnsiString(Text)) > 0 then Include(Relations, rlNormal);
+          if Pos('Good', AnsiString(Text)) > 0 then Include(Relations, rlGood);
+          if Pos('Best', AnsiString(Text)) > 0 then Include(Relations, rlExcellent);
         end;
         Text := ReadShipGreetingField('ShipRace');
         ShipRace := ParseRobotMapRaceMask(Text);
@@ -2467,9 +2466,9 @@ begin
         PlayerStatus := [];
         if (Text <> '') and (Text <> 'Any') then
         begin
-          if Pos('Trader', AnsiString(Text)) > 0 then Include(PlayerStatus, 0);
-          if Pos('Pirate', AnsiString(Text)) > 0 then Include(PlayerStatus, 1);
-          if Pos('Warrior', AnsiString(Text)) > 0 then Include(PlayerStatus, 2);
+          if Pos('Trader', AnsiString(Text)) > 0 then Include(PlayerStatus, rcTrader);
+          if Pos('Pirate', AnsiString(Text)) > 0 then Include(PlayerStatus, rcPirate);
+          if Pos('Warrior', AnsiString(Text)) > 0 then Include(PlayerStatus, rcWarrior);
         end;
         Text := ReadShipGreetingField('ShipStrength');
         ShipStrength := [];
@@ -2693,11 +2692,11 @@ begin
         LastPlanetRelations := [];
         if (Text <> '') and (Text <> 'Any') then
         begin
-          if Pos('War', AnsiString(Text)) > 0 then Include(LastPlanetRelations, 0);
-          if Pos('Bad', AnsiString(Text)) > 0 then Include(LastPlanetRelations, 1);
-          if Pos('Normal', AnsiString(Text)) > 0 then Include(LastPlanetRelations, 2);
-          if Pos('Good', AnsiString(Text)) > 0 then Include(LastPlanetRelations, 3);
-          if Pos('Best', AnsiString(Text)) > 0 then Include(LastPlanetRelations, 4);
+          if Pos('War', AnsiString(Text)) > 0 then Include(LastPlanetRelations, rlHostile);
+          if Pos('Bad', AnsiString(Text)) > 0 then Include(LastPlanetRelations, rlBad);
+          if Pos('Normal', AnsiString(Text)) > 0 then Include(LastPlanetRelations, rlNormal);
+          if Pos('Good', AnsiString(Text)) > 0 then Include(LastPlanetRelations, rlGood);
+          if Pos('Best', AnsiString(Text)) > 0 then Include(LastPlanetRelations, rlExcellent);
         end;
         Text := ReadShipGreetingField('LastPlanetGoodsCnt');
         LastPlanetGoodsCnt := [];
@@ -2746,19 +2745,19 @@ begin
         LastPlanetEconomy := [];
         if (Text <> '') and (Text <> 'Any') then
         begin
-          if Pos('Agriculture', AnsiString(Text)) > 0 then Include(LastPlanetEconomy, 0);
-          if Pos('Mixed', AnsiString(Text)) > 0 then Include(LastPlanetEconomy, 1);
-          if Pos('Industrial', AnsiString(Text)) > 0 then Include(LastPlanetEconomy, 2);
+          if Pos('Agriculture', AnsiString(Text)) > 0 then Include(LastPlanetEconomy, peAgricultural);
+          if Pos('Mixed', AnsiString(Text)) > 0 then Include(LastPlanetEconomy, peMixed);
+          if Pos('Industrial', AnsiString(Text)) > 0 then Include(LastPlanetEconomy, peIndustrial);
         end;
         Text := ReadShipGreetingField('LastPlanetGoverment');
         LastPlanetGovernment := [];
         if (Text <> '') and (Text <> 'Any') then
         begin
-          if Pos('Anarchy', AnsiString(Text)) > 0 then Include(LastPlanetGovernment, 0);
-          if Pos('Dictatorship', AnsiString(Text)) > 0 then Include(LastPlanetGovernment, 1);
-          if Pos('Monarchy', AnsiString(Text)) > 0 then Include(LastPlanetGovernment, 2);
-          if Pos('Republic', AnsiString(Text)) > 0 then Include(LastPlanetGovernment, 3);
-          if Pos('Democracy', AnsiString(Text)) > 0 then Include(LastPlanetGovernment, 4);
+          if Pos('Anarchy', AnsiString(Text)) > 0 then Include(LastPlanetGovernment, pgAnarchy);
+          if Pos('Dictatorship', AnsiString(Text)) > 0 then Include(LastPlanetGovernment, pgDictatorship);
+          if Pos('Monarchy', AnsiString(Text)) > 0 then Include(LastPlanetGovernment, pgMonarchy);
+          if Pos('Republic', AnsiString(Text)) > 0 then Include(LastPlanetGovernment, pgRepublic);
+          if Pos('Democracy', AnsiString(Text)) > 0 then Include(LastPlanetGovernment, pgDemocracy);
         end;
         Text := ReadShipGreetingField('LastPlanetInCurStar');
         if Text = 'Yes' then LastPlanetInCurStar := 0
@@ -2818,11 +2817,11 @@ begin
         ToPlanetRelations := [];
         if (Text <> '') and (Text <> 'Any') then
         begin
-          if Pos('War', AnsiString(Text)) > 0 then Include(ToPlanetRelations, 0);
-          if Pos('Bad', AnsiString(Text)) > 0 then Include(ToPlanetRelations, 1);
-          if Pos('Normal', AnsiString(Text)) > 0 then Include(ToPlanetRelations, 2);
-          if Pos('Good', AnsiString(Text)) > 0 then Include(ToPlanetRelations, 3);
-          if Pos('Best', AnsiString(Text)) > 0 then Include(ToPlanetRelations, 4);
+          if Pos('War', AnsiString(Text)) > 0 then Include(ToPlanetRelations, rlHostile);
+          if Pos('Bad', AnsiString(Text)) > 0 then Include(ToPlanetRelations, rlBad);
+          if Pos('Normal', AnsiString(Text)) > 0 then Include(ToPlanetRelations, rlNormal);
+          if Pos('Good', AnsiString(Text)) > 0 then Include(ToPlanetRelations, rlGood);
+          if Pos('Best', AnsiString(Text)) > 0 then Include(ToPlanetRelations, rlExcellent);
         end;
         Text := ReadShipGreetingField('ToPlanetGoodsCnt');
         ToPlanetGoodsCnt := [];
@@ -2871,19 +2870,19 @@ begin
         ToPlanetEconomy := [];
         if (Text <> '') and (Text <> 'Any') then
         begin
-          if Pos('Agriculture', AnsiString(Text)) > 0 then Include(ToPlanetEconomy, 0);
-          if Pos('Mixed', AnsiString(Text)) > 0 then Include(ToPlanetEconomy, 1);
-          if Pos('Industrial', AnsiString(Text)) > 0 then Include(ToPlanetEconomy, 2);
+          if Pos('Agriculture', AnsiString(Text)) > 0 then Include(ToPlanetEconomy, peAgricultural);
+          if Pos('Mixed', AnsiString(Text)) > 0 then Include(ToPlanetEconomy, peMixed);
+          if Pos('Industrial', AnsiString(Text)) > 0 then Include(ToPlanetEconomy, peIndustrial);
         end;
         Text := ReadShipGreetingField('ToPlanetGoverment');
         ToPlanetGovernment := [];
         if (Text <> '') and (Text <> 'Any') then
         begin
-          if Pos('Anarchy', AnsiString(Text)) > 0 then Include(ToPlanetGovernment, 0);
-          if Pos('Dictatorship', AnsiString(Text)) > 0 then Include(ToPlanetGovernment, 1);
-          if Pos('Monarchy', AnsiString(Text)) > 0 then Include(ToPlanetGovernment, 2);
-          if Pos('Republic', AnsiString(Text)) > 0 then Include(ToPlanetGovernment, 3);
-          if Pos('Democracy', AnsiString(Text)) > 0 then Include(ToPlanetGovernment, 4);
+          if Pos('Anarchy', AnsiString(Text)) > 0 then Include(ToPlanetGovernment, pgAnarchy);
+          if Pos('Dictatorship', AnsiString(Text)) > 0 then Include(ToPlanetGovernment, pgDictatorship);
+          if Pos('Monarchy', AnsiString(Text)) > 0 then Include(ToPlanetGovernment, pgMonarchy);
+          if Pos('Republic', AnsiString(Text)) > 0 then Include(ToPlanetGovernment, pgRepublic);
+          if Pos('Democracy', AnsiString(Text)) > 0 then Include(ToPlanetGovernment, pgDemocracy);
         end;
         Text := ReadShipGreetingField('ToPlanetIsLastPlanet');
         if Text = 'Yes' then ToPlanetIsLastPlanet := 0
@@ -2955,11 +2954,11 @@ begin
         ToPlanetGovernment := [];
         if (Text <> '') and (Text <> 'Any') then
         begin
-          if Pos('Anarchy', AnsiString(Text)) > 0 then Include(ToPlanetGovernment, 0);
-          if Pos('Dictatorship', AnsiString(Text)) > 0 then Include(ToPlanetGovernment, 1);
-          if Pos('Monarchy', AnsiString(Text)) > 0 then Include(ToPlanetGovernment, 2);
-          if Pos('Republic', AnsiString(Text)) > 0 then Include(ToPlanetGovernment, 3);
-          if Pos('Democracy', AnsiString(Text)) > 0 then Include(ToPlanetGovernment, 4);
+          if Pos('Anarchy', AnsiString(Text)) > 0 then Include(ToPlanetGovernment, pgAnarchy);
+          if Pos('Dictatorship', AnsiString(Text)) > 0 then Include(ToPlanetGovernment, pgDictatorship);
+          if Pos('Monarchy', AnsiString(Text)) > 0 then Include(ToPlanetGovernment, pgMonarchy);
+          if Pos('Republic', AnsiString(Text)) > 0 then Include(ToPlanetGovernment, pgRepublic);
+          if Pos('Democracy', AnsiString(Text)) > 0 then Include(ToPlanetGovernment, pgDemocracy);
         end;
         Text := ReadShipGreetingField('ShipNeedInItem');
         if Text = 'Yes' then ShipNeedInItem := 0
@@ -2991,11 +2990,11 @@ begin
         ToShipRelations := [];
         if (Text <> '') and (Text <> 'Any') then
         begin
-          if Pos('War', AnsiString(Text)) > 0 then Include(ToShipRelations, 0);
-          if Pos('Bad', AnsiString(Text)) > 0 then Include(ToShipRelations, 1);
-          if Pos('Normal', AnsiString(Text)) > 0 then Include(ToShipRelations, 2);
-          if Pos('Good', AnsiString(Text)) > 0 then Include(ToShipRelations, 3);
-          if Pos('Best', AnsiString(Text)) > 0 then Include(ToShipRelations, 4);
+          if Pos('War', AnsiString(Text)) > 0 then Include(ToShipRelations, rlHostile);
+          if Pos('Bad', AnsiString(Text)) > 0 then Include(ToShipRelations, rlBad);
+          if Pos('Normal', AnsiString(Text)) > 0 then Include(ToShipRelations, rlNormal);
+          if Pos('Good', AnsiString(Text)) > 0 then Include(ToShipRelations, rlGood);
+          if Pos('Best', AnsiString(Text)) > 0 then Include(ToShipRelations, rlExcellent);
         end;
         Text := ReadShipGreetingField('PlayerPirateRank');
         PlayerPirateRank := [];
@@ -3103,9 +3102,9 @@ begin
         PlayerStatus := [];
         if (Text <> '') and (Text <> 'Any') then
         begin
-          if Pos('Trader', AnsiString(Text)) > 0 then Include(PlayerStatus, 0);
-          if Pos('Pirate', AnsiString(Text)) > 0 then Include(PlayerStatus, 1);
-          if Pos('Warrior', AnsiString(Text)) > 0 then Include(PlayerStatus, 2);
+          if Pos('Trader', AnsiString(Text)) > 0 then Include(PlayerStatus, rcTrader);
+          if Pos('Pirate', AnsiString(Text)) > 0 then Include(PlayerStatus, rcPirate);
+          if Pos('Warrior', AnsiString(Text)) > 0 then Include(PlayerStatus, rcWarrior);
         end;
         Text := ReadGovernmentGreetingField('PlayerRating');
         PlayerRating := [];
@@ -3151,11 +3150,11 @@ begin
         CurPlanetRelations := [];
         if (Text <> '') and (Text <> 'Any') then
         begin
-          if Pos('War', AnsiString(Text)) > 0 then Include(CurPlanetRelations, 0);
-          if Pos('Bad', AnsiString(Text)) > 0 then Include(CurPlanetRelations, 1);
-          if Pos('Normal', AnsiString(Text)) > 0 then Include(CurPlanetRelations, 2);
-          if Pos('Good', AnsiString(Text)) > 0 then Include(CurPlanetRelations, 3);
-          if Pos('Best', AnsiString(Text)) > 0 then Include(CurPlanetRelations, 4);
+          if Pos('War', AnsiString(Text)) > 0 then Include(CurPlanetRelations, rlHostile);
+          if Pos('Bad', AnsiString(Text)) > 0 then Include(CurPlanetRelations, rlBad);
+          if Pos('Normal', AnsiString(Text)) > 0 then Include(CurPlanetRelations, rlNormal);
+          if Pos('Good', AnsiString(Text)) > 0 then Include(CurPlanetRelations, rlGood);
+          if Pos('Best', AnsiString(Text)) > 0 then Include(CurPlanetRelations, rlExcellent);
         end;
         Text := ReadGovernmentGreetingField('CurPlanetGoodsPermit');
         if Text = 'Yes' then CurPlanetGoodsPermit := 0
@@ -3196,19 +3195,19 @@ begin
         CurPlanetEconomy := [];
         if (Text <> '') and (Text <> 'Any') then
         begin
-          if Pos('Agriculture', AnsiString(Text)) > 0 then Include(CurPlanetEconomy, 0);
-          if Pos('Mixed', AnsiString(Text)) > 0 then Include(CurPlanetEconomy, 1);
-          if Pos('Industrial', AnsiString(Text)) > 0 then Include(CurPlanetEconomy, 2);
+          if Pos('Agriculture', AnsiString(Text)) > 0 then Include(CurPlanetEconomy, peAgricultural);
+          if Pos('Mixed', AnsiString(Text)) > 0 then Include(CurPlanetEconomy, peMixed);
+          if Pos('Industrial', AnsiString(Text)) > 0 then Include(CurPlanetEconomy, peIndustrial);
         end;
         Text := ReadGovernmentGreetingField('CurPlanetGoverment');
         CurPlanetGovernment := [];
         if (Text <> '') and (Text <> 'Any') then
         begin
-          if Pos('Anarchy', AnsiString(Text)) > 0 then Include(CurPlanetGovernment, 0);
-          if Pos('Dictatorship', AnsiString(Text)) > 0 then Include(CurPlanetGovernment, 1);
-          if Pos('Monarchy', AnsiString(Text)) > 0 then Include(CurPlanetGovernment, 2);
-          if Pos('Republic', AnsiString(Text)) > 0 then Include(CurPlanetGovernment, 3);
-          if Pos('Democracy', AnsiString(Text)) > 0 then Include(CurPlanetGovernment, 4);
+          if Pos('Anarchy', AnsiString(Text)) > 0 then Include(CurPlanetGovernment, pgAnarchy);
+          if Pos('Dictatorship', AnsiString(Text)) > 0 then Include(CurPlanetGovernment, pgDictatorship);
+          if Pos('Monarchy', AnsiString(Text)) > 0 then Include(CurPlanetGovernment, pgMonarchy);
+          if Pos('Republic', AnsiString(Text)) > 0 then Include(CurPlanetGovernment, pgRepublic);
+          if Pos('Democracy', AnsiString(Text)) > 0 then Include(CurPlanetGovernment, pgDemocracy);
         end;
         Text := ReadGovernmentGreetingField('RangerInCurStar');
         RangerInCurStar := [];
@@ -3268,11 +3267,11 @@ begin
         ToPlanetRelations := [];
         if (Text <> '') and (Text <> 'Any') then
         begin
-          if Pos('War', AnsiString(Text)) > 0 then Include(ToPlanetRelations, 0);
-          if Pos('Bad', AnsiString(Text)) > 0 then Include(ToPlanetRelations, 1);
-          if Pos('Normal', AnsiString(Text)) > 0 then Include(ToPlanetRelations, 2);
-          if Pos('Good', AnsiString(Text)) > 0 then Include(ToPlanetRelations, 3);
-          if Pos('Best', AnsiString(Text)) > 0 then Include(ToPlanetRelations, 4);
+          if Pos('War', AnsiString(Text)) > 0 then Include(ToPlanetRelations, rlHostile);
+          if Pos('Bad', AnsiString(Text)) > 0 then Include(ToPlanetRelations, rlBad);
+          if Pos('Normal', AnsiString(Text)) > 0 then Include(ToPlanetRelations, rlNormal);
+          if Pos('Good', AnsiString(Text)) > 0 then Include(ToPlanetRelations, rlGood);
+          if Pos('Best', AnsiString(Text)) > 0 then Include(ToPlanetRelations, rlExcellent);
         end;
         Text := ReadGovernmentGreetingField('ToPlanetGoodsPermit');
         if Text = 'Yes' then ToPlanetGoodsPermit := 0
@@ -3313,19 +3312,19 @@ begin
         ToPlanetEconomy := [];
         if (Text <> '') and (Text <> 'Any') then
         begin
-          if Pos('Agriculture', AnsiString(Text)) > 0 then Include(ToPlanetEconomy, 0);
-          if Pos('Mixed', AnsiString(Text)) > 0 then Include(ToPlanetEconomy, 1);
-          if Pos('Industrial', AnsiString(Text)) > 0 then Include(ToPlanetEconomy, 2);
+          if Pos('Agriculture', AnsiString(Text)) > 0 then Include(ToPlanetEconomy, peAgricultural);
+          if Pos('Mixed', AnsiString(Text)) > 0 then Include(ToPlanetEconomy, peMixed);
+          if Pos('Industrial', AnsiString(Text)) > 0 then Include(ToPlanetEconomy, peIndustrial);
         end;
         Text := ReadGovernmentGreetingField('ToPlanetGoverment');
         ToPlanetGovernment := [];
         if (Text <> '') and (Text <> 'Any') then
         begin
-          if Pos('Anarchy', AnsiString(Text)) > 0 then Include(ToPlanetGovernment, 0);
-          if Pos('Dictatorship', AnsiString(Text)) > 0 then Include(ToPlanetGovernment, 1);
-          if Pos('Monarchy', AnsiString(Text)) > 0 then Include(ToPlanetGovernment, 2);
-          if Pos('Republic', AnsiString(Text)) > 0 then Include(ToPlanetGovernment, 3);
-          if Pos('Democracy', AnsiString(Text)) > 0 then Include(ToPlanetGovernment, 4);
+          if Pos('Anarchy', AnsiString(Text)) > 0 then Include(ToPlanetGovernment, pgAnarchy);
+          if Pos('Dictatorship', AnsiString(Text)) > 0 then Include(ToPlanetGovernment, pgDictatorship);
+          if Pos('Monarchy', AnsiString(Text)) > 0 then Include(ToPlanetGovernment, pgMonarchy);
+          if Pos('Republic', AnsiString(Text)) > 0 then Include(ToPlanetGovernment, pgRepublic);
+          if Pos('Democracy', AnsiString(Text)) > 0 then Include(ToPlanetGovernment, pgDemocracy);
         end;
         Text := ReadGovernmentGreetingField('ToPlanetInCurStar');
         if Text = 'Any' then ToPlanetInCurStar := 2

@@ -10,9 +10,6 @@ type
   TShipPopulationCounts = array[0..13] of Integer; // @size $38
   PShipPopulationCounts = ^TShipPopulationCounts;
 
-  // Preserve the full byte for native membership checks; selected series are 0..2.
-  TDominatorSeriesMask = set of 0..7; // @size $01
-
   // Applying overrides raises for a missing form; a missing control is logged.
   // Text/image overrides also require a compatible control class.
 
@@ -4204,7 +4201,7 @@ begin
   Count := 0;
   for I := 0 to Rangers.Count - 1 do begin
     Partner := Rangers[I];
-    if (Partner.PartnerShip = GetPlayer) and (Partner.OwnerId in TOwnerMask(PlanetOwnerMasks.Coalition)) then Inc(Count);
+    if (Partner.PartnerShip = GetPlayer) and (Partner.OwnerId in PlanetOwnerMasks.Coalition) then Inc(Count);
   end;
   Buffer.AddAnsiChar(AnsiChar(Count));
   Buffer.AddIntegerValue(GetCheatPoints);
@@ -5194,7 +5191,7 @@ begin
     end;
   end;
   if NearestPlanet = nil then Exit;
-  if not (NearestPlanet.OwnerId in TOwnerMask(PlanetOwnerMasks.Coalition)) then Exit;
+  if not (NearestPlanet.OwnerId in PlanetOwnerMasks.Coalition) then Exit;
   if NearestPlanet.IsMainPiratePlanet then Exit;
   Roll := SeededRandomIntRange(1, 100, (Galaxy.GenerationSeed + NearestPlanet.GenerationSeed) * AsteroidId);
   if Roll <= 70 then
@@ -5403,7 +5400,7 @@ begin
         if (Obj is TShip) and (TShip(Obj).Order = soJump) then
         begin
           Target := Obj as TShip;
-          if (Ship.TypeId = stKling) and (Target.OwnerId in TOwnerMask(PlanetOwnerMasks.Coalition)) and
+          if (Ship.TypeId = stKling) and (Target.OwnerId in PlanetOwnerMasks.Coalition) and
              (Ship.GetHullIntegrityPercent > 30) and (Target.GetHullIntegrityPercent > 10) and
              (I > Max(4, Count div 2)) and (ShipTypeCounts[stKling] > 7) and
              (((Ship as TKling).KlingType in [ktSmersh..ktShtip]) or
@@ -5414,7 +5411,7 @@ begin
              (Galaxy.CurrentTurn mod 15 = 0) then
             Ship.OrderJump(Target.OrderTarget as TStar, True)
           else if (Ship.TypeId = stPirate) and ((Ship as TPirate).PirateType = 0) and
-                  (Target.OwnerId in TOwnerMask(PlanetOwnerMasks.Coalition)) and
+                  (Target.OwnerId in PlanetOwnerMasks.Coalition) and
                   (Ship.GetHullIntegrityPercent > 90) and (Target.GetHullIntegrityPercent > 10) and
                   (Ship.ChanceToWin(Target) > 1) and (GetPlayer <> nil) and Target.InHyperspace and
                   (Target.OrderTarget is TStar) and ((Target.OrderTarget as TStar).ControlFaction = sfCoalition) and
@@ -8110,18 +8107,18 @@ begin
           ((Planet.OwnerId <> Byte(oiDominator)) or (PointDistance(Planet.CurrentStar.Position, GetPlayer.CurrentStar.Position) <= 80)) and
           ((Planet.LandTiles >= Planet.GetTotalSurfaceTileCount * 0.2) or
             ((Planet.LandTiles >= Planet.GetTotalSurfaceTileCount * 0.1) and (J >= Planets.Count * 0.7))) and
-          (((Planet.OwnerId = Byte(oiUninhabited)) and (6 in TOwnerMask(Quest.TargetOwnerMask))) or
-           ((0 in TOwnerMask(Quest.TargetOwnerMask)) and (Planet.RaceId = Byte(oiMaloc)) and (Planet.OwnerId <> Byte(oiUninhabited))) or
-           ((1 in TOwnerMask(Quest.TargetOwnerMask)) and (Planet.RaceId = Byte(oiPeleng)) and (Planet.OwnerId <> Byte(oiUninhabited))) or
-           ((2 in TOwnerMask(Quest.TargetOwnerMask)) and (Planet.RaceId = Byte(oiHuman)) and (Planet.OwnerId <> Byte(oiUninhabited))) or
-           ((3 in TOwnerMask(Quest.TargetOwnerMask)) and (Planet.RaceId = Byte(oiFeyan)) and (Planet.OwnerId <> Byte(oiUninhabited))) or
-           ((4 in TOwnerMask(Quest.TargetOwnerMask)) and (Planet.RaceId = Byte(oiGaal)) and (Planet.OwnerId <> Byte(oiUninhabited))) or
-           ((TOwnerMask(Quest.TargetOwnerMask) = []) and
-            (((0 in TOwnerMask(Quest.IssuerRaceMask)) and (Planet.RaceId = Byte(oiMaloc)) and (Planet.OwnerId <> Byte(oiUninhabited))) or
-             ((1 in TOwnerMask(Quest.IssuerRaceMask)) and (Planet.RaceId = Byte(oiPeleng)) and (Planet.OwnerId <> Byte(oiUninhabited))) or
-             ((2 in TOwnerMask(Quest.IssuerRaceMask)) and (Planet.RaceId = Byte(oiHuman)) and (Planet.OwnerId <> Byte(oiUninhabited))) or
-             ((3 in TOwnerMask(Quest.IssuerRaceMask)) and (Planet.RaceId = Byte(oiFeyan)) and (Planet.OwnerId <> Byte(oiUninhabited))) or
-             ((4 in TOwnerMask(Quest.IssuerRaceMask)) and (Planet.RaceId = Byte(oiGaal)) and (Planet.OwnerId <> Byte(oiUninhabited)))))) then begin
+          (((Planet.OwnerId = Byte(oiUninhabited)) and (qrUninhabited in Quest.TargetRaces)) or
+           ((qrMaloc in Quest.TargetRaces) and (Planet.RaceId = Byte(oiMaloc)) and (Planet.OwnerId <> Byte(oiUninhabited))) or
+           ((qrPeleng in Quest.TargetRaces) and (Planet.RaceId = Byte(oiPeleng)) and (Planet.OwnerId <> Byte(oiUninhabited))) or
+           ((qrHuman in Quest.TargetRaces) and (Planet.RaceId = Byte(oiHuman)) and (Planet.OwnerId <> Byte(oiUninhabited))) or
+           ((qrFeyan in Quest.TargetRaces) and (Planet.RaceId = Byte(oiFeyan)) and (Planet.OwnerId <> Byte(oiUninhabited))) or
+           ((qrGaal in Quest.TargetRaces) and (Planet.RaceId = Byte(oiGaal)) and (Planet.OwnerId <> Byte(oiUninhabited))) or
+           ((Quest.TargetRaces = []) and
+            (((qrMaloc in Quest.IssuerRaces) and (Planet.RaceId = Byte(oiMaloc)) and (Planet.OwnerId <> Byte(oiUninhabited))) or
+             ((qrPeleng in Quest.IssuerRaces) and (Planet.RaceId = Byte(oiPeleng)) and (Planet.OwnerId <> Byte(oiUninhabited))) or
+             ((qrHuman in Quest.IssuerRaces) and (Planet.RaceId = Byte(oiHuman)) and (Planet.OwnerId <> Byte(oiUninhabited))) or
+             ((qrFeyan in Quest.IssuerRaces) and (Planet.RaceId = Byte(oiFeyan)) and (Planet.OwnerId <> Byte(oiUninhabited))) or
+             ((qrGaal in Quest.IssuerRaces) and (Planet.RaceId = Byte(oiGaal)) and (Planet.OwnerId <> Byte(oiUninhabited)))))) then begin
           Planet.TextQuestId := QuestId;
           Break;
         end;
@@ -8455,37 +8452,37 @@ begin
     begin
       if (Context is TKling) and not TShip(Context).HasScriptStateText then
       begin
-        if not (Byte((Context as TKling).DominatorSeries) in TDominatorSeriesMask(aConst.MicroModuleTemplates[ModuleIndex].AllowedDominatorSeriesMask)) then Continue;
-        if not (Ord(oiDominator) in TOwnerMask(aConst.MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask)) then Continue;
+        if not (Byte((Context as TKling).DominatorSeries) in aConst.MicroModuleTemplates[ModuleIndex].AllowedDominatorSeriesMask) then Continue;
+        if not (Ord(oiDominator) in aConst.MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask) then Continue;
         if not aConst.MicroModuleTemplates[ModuleIndex].RacialRestriction and
-          (TOwnerMask(aConst.MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask) <> [Ord(oiDominator)]) and
-          (TOwnerMask(aConst.MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask) * [Ord(oiMaloc)..Ord(oiDominator), Ord(oiPirate)] <>
+          (aConst.MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask <> [Ord(oiDominator)]) and
+          (aConst.MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask * [Ord(oiMaloc)..Ord(oiDominator), Ord(oiPirate)] <>
             [Ord(oiMaloc)..Ord(oiDominator), Ord(oiPirate)]) then Continue;
       end;
       if aConst.MicroModuleTemplates[ModuleIndex].RacialRestriction then
       begin
         if Context is TPlanet then
         begin
-          if not (Ord(TPlanet(Context).OwnerId) in TOwnerMask(aConst.MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask)) then Continue;
+          if not (Ord(TPlanet(Context).OwnerId) in aConst.MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask) then Continue;
         end
         else if Context is TRuins then
         begin
-          if TRuins(Context).CurrentStanding in TStationStandingMask(aConst.FactionStandingMasks[Ord(TRuins(Context).CurrentStar.ControlFaction)]) then
+          if TRuins(Context).CurrentStanding in aConst.FactionStandingMasks[Ord(TRuins(Context).CurrentStar.ControlFaction)] then
           begin
-            if TOwnerMask(aConst.MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask) *
+            if aConst.MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask *
               TModuleOwnerMasks(aConst.PlanetOwnerMasks)[Ord(TRuins(Context).CurrentStar.ControlFaction)] = [] then Continue;
           end
           else
           begin
             if TRuins(Context).CurrentStanding in [ssCoalitionMilitary..ssNeutral] then
-              if TOwnerMask(aConst.MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask) * TOwnerMask(aConst.PlanetOwnerMasks.Coalition) = [] then Continue;
+              if aConst.MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask * aConst.PlanetOwnerMasks.Coalition = [] then Continue;
             if TRuins(Context).CurrentStanding in [ssPiratePassive..ssPirateMilitary] then
-              if TOwnerMask(aConst.MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask) * TOwnerMask(aConst.PlanetOwnerMasks.PirateClan) = [] then Continue;
+              if aConst.MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask * aConst.PlanetOwnerMasks.PirateClan = [] then Continue;
           end;
         end
         else if Context is TNormalShip then
         begin
-          if not (RaceToOwner(TNormalShip(Context).PilotRace) in TOwnerMask(aConst.MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask)) then Continue;
+          if not (RaceToOwner(TNormalShip(Context).PilotRace) in aConst.MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask) then Continue;
         end;
       end;
     end;
@@ -8541,37 +8538,37 @@ begin
     begin
       if (Context is TKling) and not TShip(Context).HasScriptStateText then
       begin
-        if not (Byte((Context as TKling).DominatorSeries) in TDominatorSeriesMask(aConst.MicroModuleTemplates[ModuleIndex].AllowedDominatorSeriesMask)) then Continue;
-        if not (Ord(oiDominator) in TOwnerMask(aConst.MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask)) then Continue;
+        if not (Byte((Context as TKling).DominatorSeries) in aConst.MicroModuleTemplates[ModuleIndex].AllowedDominatorSeriesMask) then Continue;
+        if not (Ord(oiDominator) in aConst.MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask) then Continue;
         if not aConst.MicroModuleTemplates[ModuleIndex].RacialRestriction and
-          (TOwnerMask(aConst.MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask) <> [Ord(oiDominator)]) and
-          (TOwnerMask(aConst.MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask) * [Ord(oiMaloc)..Ord(oiDominator), Ord(oiPirate)] <>
+          (aConst.MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask <> [Ord(oiDominator)]) and
+          (aConst.MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask * [Ord(oiMaloc)..Ord(oiDominator), Ord(oiPirate)] <>
             [Ord(oiMaloc)..Ord(oiDominator), Ord(oiPirate)]) then Continue;
       end;
       if aConst.MicroModuleTemplates[ModuleIndex].RacialRestriction then
       begin
         if Context is TPlanet then
         begin
-          if not (Ord(TPlanet(Context).OwnerId) in TOwnerMask(aConst.MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask)) then Continue;
+          if not (Ord(TPlanet(Context).OwnerId) in aConst.MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask) then Continue;
         end
         else if Context is TRuins then
         begin
-          if TRuins(Context).CurrentStanding in TStationStandingMask(aConst.FactionStandingMasks[Ord(TRuins(Context).CurrentStar.ControlFaction)]) then
+          if TRuins(Context).CurrentStanding in aConst.FactionStandingMasks[Ord(TRuins(Context).CurrentStar.ControlFaction)] then
           begin
-            if TOwnerMask(aConst.MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask) *
+            if aConst.MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask *
               TModuleOwnerMasks(aConst.PlanetOwnerMasks)[Ord(TRuins(Context).CurrentStar.ControlFaction)] = [] then Continue;
           end
           else
           begin
             if TRuins(Context).CurrentStanding in [ssCoalitionMilitary..ssNeutral] then
-              if TOwnerMask(aConst.MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask) * TOwnerMask(aConst.PlanetOwnerMasks.Coalition) = [] then Continue;
+              if aConst.MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask * aConst.PlanetOwnerMasks.Coalition = [] then Continue;
             if TRuins(Context).CurrentStanding in [ssPiratePassive..ssPirateMilitary] then
-              if TOwnerMask(aConst.MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask) * TOwnerMask(aConst.PlanetOwnerMasks.PirateClan) = [] then Continue;
+              if aConst.MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask * aConst.PlanetOwnerMasks.PirateClan = [] then Continue;
           end;
         end
         else if Context is TNormalShip then
         begin
-          if not (RaceToOwner(TNormalShip(Context).PilotRace) in TOwnerMask(aConst.MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask)) then Continue;
+          if not (RaceToOwner(TNormalShip(Context).PilotRace) in aConst.MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask) then Continue;
         end;
       end;
     end;
@@ -8958,7 +8955,7 @@ begin
       end;
       if not Hostile then begin
         Star := Constellation.Stars[NextRandomIntRange(0, Constellation.Stars.Count - 1, RandomState)];
-        if (Star.Battle = 0) and (StationDefaultStandings[Ord(StationType)] in TShipTypeMask(FactionStandingMasks[Ord(Star.ControlFaction)])) and
+        if (Star.Battle = 0) and (StationDefaultStandings[Ord(StationType)] in FactionStandingMasks[Ord(Star.ControlFaction)]) and
           (GetPlayer.CurrentStar <> Star) and (Star.DaysSincePlayerVisit >= 70) and (Star.CountShipsByTypeMask(StationMask) <= 1) and
           ((StationType <> rstPirateBase) or (Star.CountShipsByTypeMask(MilitaryBaseMask) <= 0)) and
           ((StationType <> rstMilitaryBase) or (Star.CountShipsByTypeMask(PirateBaseMask) <= 0)) then begin
@@ -9615,7 +9612,7 @@ begin
       for J := 0 to Star.Ships.Count - 1 do begin
         Ship := TShip(Star.Ships[J + 0]);
         if Ship.CurrentStanding = ssCoalitionMilitary then Exit;
-        if (Ship.OwnerId in TOwnerMask(PlanetOwnerMasks.Coalition)) and (Ship is TNormalShip) and (Ship.OwnerId <> Byte(oiPirate)) then begin
+        if (Ship.OwnerId in PlanetOwnerMasks.Coalition) and (Ship is TNormalShip) and (Ship.OwnerId <> Byte(oiPirate)) then begin
           if (Star.ControlFaction = sfDominators) or (Star.Status.CustomFaction <> '') then Exit;
           if Ship.CurrentStanding in [ssCoalitionMilitary, ssCoalitionActive] then begin Contested := True; Break; end;
         end;
@@ -10902,9 +10899,9 @@ var
       Exit;
     end;
     begin
-      if not IncludeCoalition and (Ship.OwnerId in TOwnerMask(PlanetOwnerMasks.Coalition)) then Exit;
-      if not IncludeDominators and (Ship.OwnerId in TOwnerMask(PlanetOwnerMasks.Dominators)) then Exit;
-      if not IncludePirates and (Ship.OwnerId in TOwnerMask(PlanetOwnerMasks.PirateClan)) then Exit;
+      if not IncludeCoalition and (Ship.OwnerId in PlanetOwnerMasks.Coalition) then Exit;
+      if not IncludeDominators and (Ship.OwnerId in PlanetOwnerMasks.Dominators) then Exit;
+      if not IncludePirates and (Ship.OwnerId in PlanetOwnerMasks.PirateClan) then Exit;
       if (GetPlayer = Ship) and GetPlayer.IsOutsideStarSpace then Exit;
       Strength := Strength + Ship.Strength;
       Inc(Count);
@@ -11308,7 +11305,7 @@ var
   MissilePriority: Integer;
   Reserved341, Reserved342, Reserved343, Reserved344, Reserved345: Byte;
   ActionResult: Integer;
-  HitFlags: array[0..3] of ShortInt;
+  HitFlags: TDamageFlagSet;
   Reserved357: Byte;
   Stage: Integer;
 // @nested $7C67E4 CompleteItemPickup
@@ -12394,9 +12391,9 @@ begin
                       Self.PlayerCombatOccurred := True;
                     Stage := 29091;
                     DrainedDamage := 0;
-                    Damage := Cardinal(HitShip.ApplyMissileHit(Missile, DamageColor, PCardinal(@HitFlags[0])^));
+                    Damage := Cardinal(HitShip.ApplyMissileHit(Missile, DamageColor, HitFlags));
                     Stage := 29092;
-                    if (HitFlags[0] and 32 <> 0) and (Integer(Damage) > 0) then
+                    if (dkDrain in HitFlags) and (Integer(Damage) > 0) then
                       DrainedDamage := DrainedDamage + Integer(Damage);
                     if RecordFilm then
                     begin
@@ -12425,8 +12422,8 @@ begin
                           if PointDistanceSquared(Point, Ship.Position) < Math.Power(Missile.GetWeaponInfo^.SecondaryDamageRadius, 2) then
                           begin
                             Stage := 29095;
-                            Damage := Cardinal(Ship.ApplyMissileHit(Missile, DamageColor, PCardinal(@HitFlags[0])^));
-                            if (HitFlags[0] and 32 <> 0) and (Integer(Damage) > 0) then
+                            Damage := Cardinal(Ship.ApplyMissileHit(Missile, DamageColor, HitFlags));
+                            if (dkDrain in HitFlags) and (Integer(Damage) > 0) then
                               DrainedDamage := DrainedDamage + Integer(Damage);
                             Stage := 29096;
                             Ship.RefreshDerivedStats(True);
