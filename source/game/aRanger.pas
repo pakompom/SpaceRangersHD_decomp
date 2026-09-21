@@ -3995,7 +3995,6 @@ end;
 
 { @routine $7380E8 TRanger_GenerateQuestOffer }
 function TRanger.GenerateQuestOffer(var Quest: TQuest; var ResponseText: WideString): Boolean;
-label OfferPlanetQuest;
 var
   I, J, K, Attempts, Interval, QuestNumber, MaximumQuest, FirstStar: Integer;
   Star: TStar;
@@ -4190,32 +4189,33 @@ begin
                     finally
                       if Control <> nil then begin Control.Release; Control.Free; end;
                     end;
-                    // Native $73996E jumps directly to $739BD2; a combined Boolean
-                    // expression introduces temporaries in this DCC32 build.
-                    if ForcedPlanetQuestId >= 0 then goto OfferPlanetQuest;
-                    if (
-                      (((CurrentPlanet.RaceId = Byte(oiMaloc)) and ((TextQuest.IssuerRaceMask and 1) <> 0)) or
-                      ((CurrentPlanet.RaceId = Byte(oiPeleng)) and ((TextQuest.IssuerRaceMask and 2) <> 0)) or
-                      ((CurrentPlanet.RaceId = Byte(oiHuman)) and ((TextQuest.IssuerRaceMask and 4) <> 0)) or
-                      ((CurrentPlanet.RaceId = Byte(oiFeyan)) and ((TextQuest.IssuerRaceMask and 8) <> 0)) or
-                      ((CurrentPlanet.RaceId = Byte(oiGaal)) and ((TextQuest.IssuerRaceMask and 16) <> 0))) and
-                      (((Planet.OwnerId = Byte(oiUninhabited)) and ((TextQuest.TargetOwnerMask and $40) <> 0)) or
-                      (((TextQuest.TargetOwnerMask and 1) <> 0) and (Planet.OwnerId = Byte(oiMaloc))) or
-                      (((TextQuest.TargetOwnerMask and 2) <> 0) and (Planet.OwnerId = Byte(oiPeleng))) or
-                      (((TextQuest.TargetOwnerMask and 4) <> 0) and (Planet.OwnerId = Byte(oiHuman))) or
-                      (((TextQuest.TargetOwnerMask and 8) <> 0) and (Planet.OwnerId = Byte(oiFeyan))) or
-                      (((TextQuest.TargetOwnerMask and 16) <> 0) and (Planet.OwnerId = Byte(oiGaal))) or ((TOwnerMask(TextQuest.TargetOwnerMask) = []) and (CurrentPlanet.OwnerId = Planet.OwnerId))) and
-                      not Galaxy.HasPlayerQuestHistory(qtPlanetQuest, Planet.TextQuestId) and
-                      ((((TextQuest.PlayerCareerMask and 1) <> 0) and (GetDominantCareer = rcTrader)) or
-                      (((TextQuest.PlayerCareerMask and 2) <> 0) and (GetDominantCareer = rcPirate)) or
-                      (((TextQuest.PlayerCareerMask and 4) <> 0) and (GetDominantCareer = rcWarrior))) and
-                      ((((TextQuest.PlayerRaceMask and 1) <> 0) and (PilotRace = Byte(oiMaloc))) or
-                      (((TextQuest.PlayerRaceMask and 2) <> 0) and (PilotRace = Byte(oiPeleng))) or
-                      (((TextQuest.PlayerRaceMask and 4) <> 0) and (PilotRace = Byte(oiHuman))) or
-                      (((TextQuest.PlayerRaceMask and 8) <> 0) and (PilotRace = Byte(oiFeyan))) or
-                      (((TextQuest.PlayerRaceMask and 16) <> 0) and (PilotRace = Byte(oiGaal)))) and
-                      (TextQuest.Difficulty < Galaxy.InterpolateSingleByTechLevel(0, 71) + 30 * Max(1, GalaxyDifficultyTuning[Galaxy.DifficultyLevels[5]].GoodsEventDurationFactor))) then begin
-                    OfferPlanetQuest:
+                    // Rejected quests share the TextQuest cleanup below.
+                    repeat
+                      if ForcedPlanetQuestId < 0 then begin
+                        if not (
+                          (((CurrentPlanet.RaceId = Byte(oiMaloc)) and ((TextQuest.IssuerRaceMask and 1) <> 0)) or
+                          ((CurrentPlanet.RaceId = Byte(oiPeleng)) and ((TextQuest.IssuerRaceMask and 2) <> 0)) or
+                          ((CurrentPlanet.RaceId = Byte(oiHuman)) and ((TextQuest.IssuerRaceMask and 4) <> 0)) or
+                          ((CurrentPlanet.RaceId = Byte(oiFeyan)) and ((TextQuest.IssuerRaceMask and 8) <> 0)) or
+                          ((CurrentPlanet.RaceId = Byte(oiGaal)) and ((TextQuest.IssuerRaceMask and 16) <> 0))) and
+                          (((Planet.OwnerId = Byte(oiUninhabited)) and ((TextQuest.TargetOwnerMask and $40) <> 0)) or
+                          (((TextQuest.TargetOwnerMask and 1) <> 0) and (Planet.OwnerId = Byte(oiMaloc))) or
+                          (((TextQuest.TargetOwnerMask and 2) <> 0) and (Planet.OwnerId = Byte(oiPeleng))) or
+                          (((TextQuest.TargetOwnerMask and 4) <> 0) and (Planet.OwnerId = Byte(oiHuman))) or
+                          (((TextQuest.TargetOwnerMask and 8) <> 0) and (Planet.OwnerId = Byte(oiFeyan))) or
+                          (((TextQuest.TargetOwnerMask and 16) <> 0) and (Planet.OwnerId = Byte(oiGaal))) or ((TOwnerMask(TextQuest.TargetOwnerMask) = []) and (CurrentPlanet.OwnerId = Planet.OwnerId))) and
+                          not Galaxy.HasPlayerQuestHistory(qtPlanetQuest, Planet.TextQuestId) and
+                          ((((TextQuest.PlayerCareerMask and 1) <> 0) and (GetDominantCareer = rcTrader)) or
+                          (((TextQuest.PlayerCareerMask and 2) <> 0) and (GetDominantCareer = rcPirate)) or
+                          (((TextQuest.PlayerCareerMask and 4) <> 0) and (GetDominantCareer = rcWarrior))) and
+                          ((((TextQuest.PlayerRaceMask and 1) <> 0) and (PilotRace = Byte(oiMaloc))) or
+                          (((TextQuest.PlayerRaceMask and 2) <> 0) and (PilotRace = Byte(oiPeleng))) or
+                          (((TextQuest.PlayerRaceMask and 4) <> 0) and (PilotRace = Byte(oiHuman))) or
+                          (((TextQuest.PlayerRaceMask and 8) <> 0) and (PilotRace = Byte(oiFeyan))) or
+                          (((TextQuest.PlayerRaceMask and 16) <> 0) and (PilotRace = Byte(oiGaal))))
+                        ) then Break;
+                        if not (TextQuest.Difficulty < Galaxy.InterpolateSingleByTechLevel(0, 71) + 30 * Max(1, GalaxyDifficultyTuning[Galaxy.DifficultyLevels[5]].GoodsEventDurationFactor)) then Break;
+                      end;
                       Quest.QuestType := qtPlanetQuest;
                       Quest.Planet := CurrentPlanet;
                       Quest.Successful := False;
@@ -4235,7 +4235,7 @@ begin
                       RefreshPlayerQuestTargets;
                       TextQuest.Free;
                       Exit;
-                    end;
+                    until True;
                     TextQuest.Free;
                   end;
             end;
