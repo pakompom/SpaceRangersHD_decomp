@@ -369,7 +369,7 @@ begin
           Player.CareerStatus[Ord(rcWarrior)] := 100 - Player.CareerStatus[Ord(rcPirate)] - Player.CareerStatus[Ord(rcTrader)];
         end;
     end;
-    Player.InitializePlayerAtPlanet(Planet,GalaxyDifficultyTuning[Galaxy.DifficultyLevels[1]].DifficultyValue18,CharacterPreset);
+    Player.InitializePlayerAtPlanet(Planet,GalaxyDifficultyTuning[Galaxy.DifficultyLevels[1]].StartingPlayerMoney,CharacterPreset);
     case CharacterPreset of
       1:
         begin
@@ -474,7 +474,7 @@ begin
       end;
     end;
     Stage := 11;
-    N := Round((Galaxy.Stars.Count / 100) * GalaxyDifficultyTuning[Galaxy.DifficultyLevels[0]].DifficultyValue1C);
+    N := Round((Galaxy.Stars.Count / 100) * GalaxyDifficultyTuning[Galaxy.DifficultyLevels[0]].InitialPirateControlPercent);
     for I := 0 to N do
     begin
       Star := Galaxy.Stars[70];
@@ -688,7 +688,7 @@ begin
     end;
     Stage := 19;
     // Native code passes the last planet visited by the population loop above.
-    GetPlayer.ApplyCharacterPreset(Planet,GalaxyDifficultyTuning[Galaxy.DifficultyLevels[1]].DifficultyValue18,CharacterPreset);
+    GetPlayer.ApplyCharacterPreset(Planet,GalaxyDifficultyTuning[Galaxy.DifficultyLevels[1]].StartingPlayerMoney,CharacterPreset);
     GetPlayer.RefreshStorageBubbles;
     RunGlobalScriptsForContext(GetPlayer.CurrentStar,0);
     NewGameGenerationStage := 8;

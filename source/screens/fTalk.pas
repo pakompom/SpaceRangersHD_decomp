@@ -6,6 +6,9 @@ interface
 uses EC_Struct, EC_CacheFont, GI_Label, GI_Panel, GI_MessageLoop, Types, aScript, aItem, aGalaxyStruct;
 
 type
+  // TfStarMap.RunTalkDialogs dispatches the next modal screen from this value.
+  TTalkModalTransition = (tmtNone = 0, tmtReopen = 1, tmtTrade = 2); // @size $04
+
   TDialogTextChoiceEvent = procedure(Text: WideString) of object;
 
   TfTalkA = class(TObjectEx) // @size $24
@@ -144,8 +147,8 @@ type
     procedure MainPanelKeyDown(Sender: TObjectGI; Key: Cardinal); // @addr $6D45BC
     procedure ApplyMapSelection(Timer: PCallbackTimerGI; UserData: Integer); // @addr $6D3DF0
     DialogText: WideString; // @offset $D8
-    Flag128: Integer; // @offset $128 Nonzero suppresses parent star-map presentation during modal transitions; other uses unresolved.
-    Flag12C: Boolean; // @offset $12C Set after the star-map goods-trading modal returns; remaining readers need recovery.
+    ModalTransition: TTalkModalTransition; // @offset $128 Reopen dialogue or switch to goods trading after refreshing the star-map background.
+    ReturnedFromTrade: Boolean; // @offset $12C Set after the goods-trading modal returns; reset on opening dialogue, with no retained reader.
     procedure RememberChoiceScroll; // @addr $6D247C
     procedure EnableCloseButton; // @addr $6D24C8
     procedure CloseClicked(Sender: TObjectGI); // @addr $6D250C
@@ -279,7 +282,7 @@ begin
   SavedChoiceScroll := -1;
   MinimapEnabled := False;
   ChoiceMousePressed := False;
-  if (Flag128 <> 0) and MapDragging then
+  if (ModalTransition <> tmtNone) and MapDragging then
   begin
     if not IsCursorImageSelected('Scroll') then SetCursorByName('Scroll');
   end
@@ -291,7 +294,7 @@ begin
   ClearDialogEffects;
   if GetPlayer.InNormalSpace then
   begin
-    if Flag128 = 0 then
+    if ModalTransition = tmtNone then
     begin
       if TalkShip <> nil then Position := TruncatePointF(TalkShip.Position)
       else Position := TruncatePointF(TalkPlanet.GetPosition);
@@ -312,19 +315,19 @@ begin
     end;
   end;
   RequestedMapCenter := nil;
-  if Flag128 <> 0 then
+  if ModalTransition <> tmtNone then
   begin
     ExistingAnimation := GetByName('CaptainA') as TgaiGI;
     ExistingAnimation.RestartPlayback;
-    Flag128 := 0;
+    ModalTransition := tmtNone;
     MinimapEnabled := True;
-    if Flag12C then
+    if ReturnedFromTrade then
     begin
       DialogText := TalkShip.LookupTalkText('Talk.Trade.AfterTrade');
       BuildStandardChoices(True);
       RestartTextPresentation;
     end;
-    Flag12C := False;
+    ReturnedFromTrade := False;
   end
   else
   begin
@@ -392,8 +395,8 @@ begin
     SlideTimer := ScheduleCallbackTimer(30, 30, AdvanceSlide);
     UpdateSlidePosition;
     MinimapEnabled := True;
-    Flag128 := 0;
-    Flag12C := False;
+    ModalTransition := tmtNone;
+    ReturnedFromTrade := False;
   end;
 end;
 { @end $6D14AC }
@@ -428,7 +431,7 @@ begin
     CancelCallbackTimer(SlideTimer);
     SlideTimer := nil;
   end;
-  if Flag128 = 0 then
+  if ModalTransition = tmtNone then
   begin
     RequestedMapCenter := nil;
     ClearChoices(False);
@@ -906,7 +909,7 @@ begin
     end;
     if Previous <> CurrentMapCenter then
     begin
-      Flag128 := 1;
+      ModalTransition := tmtReopen;
       RequestedScreenId := TalkReturnScreenId;
       if TalkScripted then StarMapScreen.ResumeMode := smrWaitForTurn;
       RequestClose(1);
@@ -933,7 +936,7 @@ begin
     end;
     if Previous <> CurrentMapHover then
     begin
-      Flag128 := 1;
+      ModalTransition := tmtReopen;
       RequestedScreenId := TalkReturnScreenId;
       if TalkScripted then StarMapScreen.ResumeMode := smrWaitForTurn;
       RequestClose(1);
@@ -960,7 +963,7 @@ end;
 { @routine $6D42DC TfTalk_MinimapScrolled }
 procedure TfTalk.MinimapScrolled;
 begin
-  if MinimapEnabled and (Flag128 = 0) and GetPlayer.InNormalSpace then
+  if MinimapEnabled and (ModalTransition = tmtNone) and GetPlayer.InNormalSpace then
   begin
     SpaceProcess.Space.DrawMinimap;
     GetByName('MapPanel').Invalidate;
@@ -979,7 +982,7 @@ begin
       CancelCallbackTimer(MinimapRefreshTimer);
       MinimapRefreshTimer := nil;
     end;
-    Flag128 := 1;
+    ModalTransition := tmtReopen;
     RequestedScreenId := TalkReturnScreenId;
     if TalkScripted then StarMapScreen.ResumeMode := smrWaitForTurn;
     RequestClose(1);
@@ -1070,7 +1073,7 @@ var
   OtherShip: TShip;
   State: TCursorStateGI;
 begin
-  ParentLoop.RootUiObject.NativeHook50;
+  ParentLoop.RootUiObject.OnModalSuspend;
   ParentLoop.CaptureCursorState(@State);
   ParentLoop.SetCursorActive(False);
   ParentLoop.DrawQueuedUpdateRects;
@@ -1091,7 +1094,7 @@ begin
   ParentLoop.InvalidateViewport;
   ParentLoop.RestoreCursorState(@State);
   ParentLoop.UpdateCursorPosition;
-  ParentLoop.RootUiObject.NativeHook48;
+  ParentLoop.RootUiObject.OnModalResume;
 end;
 { @end $6D4838 }
 
@@ -1128,7 +1131,7 @@ begin
   for I := 0 to Galaxy.Scripts.Count - 1 do
   begin
     Script := Galaxy.Scripts[I];
-    Script.RunAuxiliaryCode;
+    Script.RunDialogCode;
   end;
   if ScriptDialogOverrides.Count > 0 then
   begin
@@ -1527,10 +1530,10 @@ begin
     if ScriptDialogIndex < 0 then
     begin
       Binding := TScriptShip(TalkShip.ScriptShip);
-      if Binding.State.AuxiliaryCode <> nil then
+      if Binding.State.DialogCode <> nil then
       begin
         try
-          Binding.State.AuxiliaryCode.Run(ScriptProcess);
+          Binding.State.DialogCode.Run(ScriptProcess);
         except
           on E: EBreakMessageGI do ;
           on E: Exception do
@@ -1543,9 +1546,9 @@ begin
         end;
         BuildStandardChoices(False);
       end
-      else if (Binding.State.AuxiliaryText <> '') and (Binding.Script.InitCode.LocalVar.GetVarNE(Binding.State.AuxiliaryText) <> nil) then
+      else if (Binding.State.DialogTextOrVariable <> '') and (Binding.Script.InitCode.LocalVar.GetVarNE(Binding.State.DialogTextOrVariable) <> nil) then
       begin
-        CurrentScript.CallDialogByVariable(Binding.State.AuxiliaryText);
+        CurrentScript.CallDialogByVariable(Binding.State.DialogTextOrVariable);
         if ScriptDialogIndex < 0 then
         begin
           if not KeepGreeting then
@@ -1654,7 +1657,7 @@ end;
 { @routine $6D8CE0 TfTalk_ReturnToMap }
 procedure TfTalk.ReturnToMap(Action: Integer);
 begin
-  Flag128 := 1;
+  ModalTransition := tmtReopen;
   RequestedScreenId := TalkReturnScreenId;
   if TalkScripted then StarMapScreen.ResumeMode := smrWaitForTurn;
   RequestClose(1);
@@ -1698,7 +1701,7 @@ end;
 { @routine $6D93F0 TfTalk_OpenTrade }
 procedure TfTalk.OpenTrade(Action: Integer);
 begin
-  Flag128 := 2;
+  ModalTransition := tmtTrade;
   RequestedScreenId := TalkReturnScreenId;
   if TalkScripted then StarMapScreen.ResumeMode := smrWaitForTurn;
   RequestClose(1);
@@ -1814,7 +1817,7 @@ begin
     ClearChoices(False);
     AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Exit'), 0, FastExit, 0);
   end
-  else if TalkShip.UnknownVirtualC0(GetPlayer) then
+  else if TalkShip.RefusesFactionNegotiation(GetPlayer) then
   begin
     ClearChoices(False);
     BuildStandardChoices(True);
@@ -2028,7 +2031,7 @@ begin
   end;
 
   Target := TShip(TalkShip.OrderTarget);
-  if TalkShip.UnknownVirtualC0(Target) then
+  if TalkShip.RefusesFactionNegotiation(Target) then
   begin
     if TalkShip.GetRelationLevelToShip(GetPlayer) = rlHostile then
       DialogText := TalkShip.LookupTalkText('Talk.Protect.ComputerNotFearAndWar')
@@ -2039,7 +2042,7 @@ begin
     Exit;
   end;
 
-  if TalkShip.EvaluateAllyRelationAndStrength(GetPlayer) then
+  if TalkShip.AcceptsAppealFrom(GetPlayer) then
   begin
     CanEscape := Target.CanEscapePursuer(TalkShip);
     FearsAttacker := Target.AcceptsRansomDemandFrom(TalkShip);
@@ -2107,7 +2110,7 @@ var I: Integer;
 begin
   if (TalkShip.GetRelationLevelToShip(GetPlayer) = rlHostile) and not TalkShip.RecomputeFearState then
     DialogText := TalkShip.LookupTalkText('Talk.PreserveItems.ComputerNotFearAndWar')
-  else if (TalkShip.GetRelationLevelToShip(GetPlayer) >= rlGood) or TalkShip.EvaluateAllyRelationAndStrength(GetPlayer) then
+  else if (TalkShip.GetRelationLevelToShip(GetPlayer) >= rlGood) or TalkShip.AcceptsAppealFrom(GetPlayer) then
   begin
     DialogText := TalkShip.LookupTalkText('Talk.PreserveItems.' + TalkShip.GetTypeNameKey + 'Ok');
     if GetPlayer.PickupTargets <> nil then

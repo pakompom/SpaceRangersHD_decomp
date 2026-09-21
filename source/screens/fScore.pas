@@ -292,12 +292,12 @@ begin
   for I := 0 to High(PlanetBattleHistory) do
   begin
     Buffer.AddIntegerValue(PlanetBattleHistory[I].MapId);
-    Buffer.AddIntegerValue(PlanetBattleHistory[I].Statistics[0]);
-    Buffer.AddIntegerValue(PlanetBattleHistory[I].Statistics[1]);
-    Buffer.AddIntegerValue(PlanetBattleHistory[I].Statistics[2]);
-    Buffer.AddIntegerValue(PlanetBattleHistory[I].Statistics[3]);
-    Buffer.AddIntegerValue(PlanetBattleHistory[I].Statistics[4]);
-    Buffer.AddIntegerValue(PlanetBattleHistory[I].Statistics[5]);
+    Buffer.AddIntegerValue(PlanetBattleHistory[I].Statistics.SignedTimeMs);
+    Buffer.AddIntegerValue(PlanetBattleHistory[I].Statistics.RobotsBuilt);
+    Buffer.AddIntegerValue(PlanetBattleHistory[I].Statistics.RobotsDestroyed);
+    Buffer.AddIntegerValue(PlanetBattleHistory[I].Statistics.TurretsBuilt);
+    Buffer.AddIntegerValue(PlanetBattleHistory[I].Statistics.TurretsDestroyed);
+    Buffer.AddIntegerValue(PlanetBattleHistory[I].Statistics.BuildingsDestroyed);
     Buffer.AddAnsiChar(AnsiChar(PlanetBattleHistory[I].ResultCode));
     Buffer.AddAnsiChar(AnsiChar(PlanetBattleHistory[I].CompletionMode));
     Buffer.AddIntegerValue(PlanetBattleHistory[I].DateTurn);
@@ -369,12 +369,12 @@ begin
       for I := 0 to High(PlanetBattleHistory) do
       begin
         PlanetBattleHistory[I].MapId := Buffer.GetInt32;
-        PlanetBattleHistory[I].Statistics[0] := Buffer.GetInt32;
-        PlanetBattleHistory[I].Statistics[1] := Buffer.GetInt32;
-        PlanetBattleHistory[I].Statistics[2] := Buffer.GetInt32;
-        PlanetBattleHistory[I].Statistics[3] := Buffer.GetInt32;
-        PlanetBattleHistory[I].Statistics[4] := Buffer.GetInt32;
-        PlanetBattleHistory[I].Statistics[5] := Buffer.GetInt32;
+        PlanetBattleHistory[I].Statistics.SignedTimeMs := Buffer.GetInt32;
+        PlanetBattleHistory[I].Statistics.RobotsBuilt := Buffer.GetInt32;
+        PlanetBattleHistory[I].Statistics.RobotsDestroyed := Buffer.GetInt32;
+        PlanetBattleHistory[I].Statistics.TurretsBuilt := Buffer.GetInt32;
+        PlanetBattleHistory[I].Statistics.TurretsDestroyed := Buffer.GetInt32;
+        PlanetBattleHistory[I].Statistics.BuildingsDestroyed := Buffer.GetInt32;
         PlanetBattleHistory[I].ResultCode := Buffer.GetByte;
         PlanetBattleHistory[I].CompletionMode := Buffer.GetByte;
         PlanetBattleHistory[I].DateTurn := Buffer.GetInt32;

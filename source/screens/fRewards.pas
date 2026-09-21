@@ -408,7 +408,7 @@ var
   CursorAlignment: array[0..1] of Byte; // Native cursor record starts at EBP-$20; the shared packed layout otherwise lands two bytes higher.
   State: TCursorStateGI;
 begin
-  ParentLoop.RootUiObject.NativeHook50;
+  ParentLoop.RootUiObject.OnModalSuspend;
   ParentLoop.CaptureCursorState(@State);
   ParentLoop.SetCursorActive(False);
   ParentLoop.DrawQueuedUpdateRects;
@@ -421,7 +421,7 @@ begin
   ParentLoop.InvalidateViewport;
   ParentLoop.RestoreCursorState(@State);
   ParentLoop.UpdateCursorPosition;
-  ParentLoop.RootUiObject.NativeHook48;
+  ParentLoop.RootUiObject.OnModalResume;
   ParentLoop.Present;
 end;
 { @end $597594 }

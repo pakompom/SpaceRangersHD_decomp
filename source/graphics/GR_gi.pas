@@ -9,11 +9,14 @@ type
 
   // Shared GI/GAI disk structures; ownership inferred from both readers and unit order.
   TGaiHeader = packed record // @size 0x30
-    // +0x00..+0x07 and +0x24..+0x2F metadata remain unresolved.
+    Magic: array[0..3] of AnsiChar; // @offset 0x00 'gai' followed by zero.
+    Version: Integer; // @offset 0x04 One in the game resources.
     Bounds: TRect; // @offset 0x08
     FrameCount: Integer; // @offset 0x18
     Flags: Cardinal; // @offset 0x1C
     SequenceTableOffset: Integer; // @offset 0x20
+    SequenceTableSize: Integer; // @offset 0x24 Bytes in the sequence table; zero when absent.
+    // +0x28..+0x2F remain unresolved.
   end;
   PGaiHeader = ^TGaiHeader;
   TGaiFrameEntry = packed record // @size 0x08

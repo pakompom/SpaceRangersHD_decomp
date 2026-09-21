@@ -20,7 +20,7 @@ type
     ImageOffset: TPoint; // @offset $58 Native positive half-size.
     PixelPosition: TPoint; // @offset $60
     OrbitStepDegrees: Double; // @offset $68 Per 10 ms callback.
-    Unknown70: Integer; // @offset $70 Zeroed on creation; use unresolved.
+    SavedTemplateIndex: Integer; // @offset $70 Original SpaceBackgroundEntries.ImageIndex, retained across the renderer's template-index modulo for saving.
     OrbitAngleRadians: Double; // @offset $78
     OrbitRadius: Double; // @offset $80
   end;
@@ -138,7 +138,7 @@ begin
     TCGaiControlEC(SpaceImageTemplates[Image.TemplateIndex].CacheControl).Release;
   end;
   Image.Unknown38 := MakeVector3D(0, 0, 0);
-  Image.Unknown70 := 0;
+  Image.SavedTemplateIndex := 0;
   Image.OrbitAngleRadians := 0;
   Image.OrbitRadius := 0;
   Image.OrbitCenter := MakeVector3D(0, 0, 0);

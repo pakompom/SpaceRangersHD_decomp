@@ -1,6 +1,6 @@
 unit ab_Item;
 // Unit bracket (inferred): .text 0x0054BE60..0x0054CC09; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
-// TabItem VMT and helpers: $54BE60..$53B550; original unit boundary unresolved.
+// TabItem VMT at $54BE60; original source-unit boundary unresolved.
 
 interface
 

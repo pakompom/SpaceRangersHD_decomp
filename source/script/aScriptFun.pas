@@ -3174,7 +3174,7 @@ begin
     end
     else if ExtractDelimitedPartW(LowerCase(AnsiString(av[1].GetString)), 0, '~') = 'exit_end' then
     begin
-      GameEndReason := 4;
+      GameEndReason := gerTerronConversion;
       Count := CountDelimitedPartsW(av[1].GetString, '~');
       if Count > 1 then
         TalkScreen.AddScriptExitChoice(ExtractDelimitedRangeW(av[1].GetString, 1, Count - 1, '~'))
@@ -6797,7 +6797,7 @@ begin
       Entry.Destination := Destination;
       Entry.SourceShipId := 0;
       Entry.InsertedIntoStar := False;
-      Entry.UseFlag := 0;
+      Entry.DeployTranclucator := 0;
       av[0].SetInt(Star.MovingDropItems.Add(Entry));
     end;
   end;
@@ -7481,12 +7481,12 @@ begin
       with GetPlayer.PlanetBattleHistory[High(GetPlayer.PlanetBattleHistory)] do
       begin
         MapId := RobotMapDefinitions[I].Id;
-        Statistics[0] := 0;
-        Statistics[1] := 0;
-        Statistics[2] := 0;
-        Statistics[3] := 0;
-        Statistics[4] := 0;
-        Statistics[5] := 0;
+        Statistics.SignedTimeMs := 0;
+        Statistics.RobotsBuilt := 0;
+        Statistics.RobotsDestroyed := 0;
+        Statistics.TurretsBuilt := 0;
+        Statistics.TurretsDestroyed := 0;
+        Statistics.BuildingsDestroyed := 0;
         ResultCode := 1;
         CompletionMode := 0;
         DateTurn := Galaxy.CurrentTurn;
@@ -11029,7 +11029,7 @@ begin
   Event.AddTextData(av[1].GetString);
   if High(av) > 1 then Event.AddTextData(av[2].GetString)
   else Event.AddTextData('');
-  GameEndReason := 0;
+  GameEndReason := gerDefault;
   RequestedScreenId := screenGameEnd;
   TMessageLoopGI(RegisteredScreens[Ord(CurrentScreenId)]).RequestClose(1);
 end;
@@ -11044,7 +11044,7 @@ begin
   Event.AddTextData(av[1].GetString);
   if High(av) > 1 then Event.AddTextData(av[2].GetString)
   else Event.AddTextData('');
-  GameEndReason := 0;
+  GameEndReason := gerDefault;
   RequestedScreenId := screenGameEnd;
   TMessageLoopGI(RegisteredScreens[Ord(CurrentScreenId)]).RequestClose(1);
 end;
@@ -14933,8 +14933,8 @@ procedure SF_UpdateFormShip(av: array of TVarEC; code: TCodeEC);
 begin
   if GetInnermostScreenLoop = ShipScreen then
   begin
-    ShipScreen.Flag3BC := True;
-    ShipScreen.FlagD4 := True;
+    ShipScreen.ShipStateChanged := True;
+    ShipScreen.ReopenRequested := True;
     ShipScreen.PlayTransitionSounds := False;
     ShipScreen.CloseClicked(nil);
   end;
@@ -15025,7 +15025,7 @@ begin
           ChildBackground.SetActive(True);
         end;
       end;
-      Parent.RootUiObject.NativeHook50;
+      Parent.RootUiObject.OnModalSuspend;
       Parent.CaptureCursorState(@State);
       Parent.SetCursorActive(False);
       Parent.DrawQueuedUpdateRects;
@@ -15048,7 +15048,7 @@ begin
       Parent.InvalidateViewport;
       Parent.RestoreCursorState(@State);
       Parent.UpdateCursorPosition;
-      Parent.RootUiObject.NativeHook48;
+      Parent.RootUiObject.OnModalResume;
       Parent.Present;
       PostMouseMoveMessage;
       Exit;

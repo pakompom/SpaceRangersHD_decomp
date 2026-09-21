@@ -109,7 +109,7 @@ type
     GovernmentMask: TScriptGovernmentMask; // @offset 0x07
     MinOrbitPercent: Integer; // @offset 0x08
     MaxOrbitPercent: Integer; // @offset 0x0C
-    DefinitionText: WideString; // @offset 0x10  Planet dialog choice text; CollectScriptDialogChoices attaches the owning TScript as its data.
+    DialogChoiceText: WideString; // @offset 0x10  Planet dialog choice text; CollectScriptDialogChoices attaches the owning TScript as its data.
     Planet: TPlanet; // @offset 0x14
   end;
 
@@ -258,7 +258,7 @@ type
     MinPirateStatus: Integer; // @offset 0x5C
     MaxPirateStatus: Integer; // @offset 0x60
     MaxDistanceFromPlanet: Integer; // @offset 0x64  10000 disables the distance filter.
-    DefinitionText: WideString; // @offset 0x68  Loaded but its purpose remains unresolved.
+    StationDialogVariable: WideString; // @offset 0x68 Dialog-index variable used by TfRuinsTalk when docking at a scripted station.
     Ships: TList; // @offset 0x6C  Owned container for group creation.
 
     constructor Create; // @addr 0x6502EC
@@ -276,8 +276,8 @@ type
     PickupItemVarName: WideString; // @offset 0x1C
     PickupItem: TScriptItem; // @offset 0x20
     PickUpNearbyItems: Boolean; // @offset 0x24
-    AuxiliaryText: WideString; // @offset 0x28  Variable name or compiled source; precise role unresolved.
-    AuxiliaryCode: TCodeEC; // @offset 0x2C  Owned when AuxiliaryText is compiled.
+    DialogTextOrVariable: WideString; // @offset 0x28 Dialog-index variable name or inline dialogue source, selected by TfTalk.CodeMsgOut.
+    DialogCode: TCodeEC; // @offset 0x2C  Owned when DialogTextOrVariable is compiled.
     OnActionText: WideString; // @offset 0x30
     ActionCode: TCodeEC; // @offset 0x34  Owned.
     ActionTypeMask: TScriptActionTypeSet; // @offset 0x38
@@ -334,7 +334,7 @@ type
     DialogAnswers: TList; // @offset 0x30  Owns TScriptDialogAnswer entries.
     InitCode: TCodeEC; // @offset 0x34
     TurnCode: TCodeEC; // @offset 0x38
-    AuxiliaryCode: TCodeEC; // @offset 0x3C  Original role remains unresolved.
+    DialogCode: TCodeEC; // @offset 0x3C Owned dialogue-hook code; run while building ship, government and station dialogue choices.
     Ether: TEther; // @offset $40  Owned script-local named integer store; created, cleared and freed with the script.
     CurrentShip: TShip; // @offset 0x44
     CurrentDialog: Integer; // @offset 0x48
@@ -351,7 +351,7 @@ type
     function GetItem(Name: WideString): TScriptItem; // @addr 0x6510F4 @note "Raises when absent."
     procedure RunShipState(Binding: TScriptShip); // @addr 0x651210
     procedure RunTurnCode; // @addr 0x651490
-    procedure RunAuxiliaryCode; // @addr 0x651630
+    procedure RunDialogCode; // @addr 0x651630
     procedure CallDialog(Index: Integer); // @addr 0x6517D4
     procedure CallDialogByVariable(Name: WideString); // @addr 0x651A9C
     procedure CallDialogMessage(Index: Integer); // @addr 0x651BA8
@@ -1124,7 +1124,7 @@ begin
   Script := TScript.Create;
   Galaxy.Scripts.Add(Script);
   Template.ActiveScriptIndex := Galaxy.Scripts.Count - 1;
-  Script.ClassId := Template.ConfigValue;
+  Script.ClassId := Template.ClassId;
   if Script.LoadFromFile(Template.FileName, AnchorStar, AnchorPlanet, True) then
   begin
     Template.LastTurn := Galaxy.CurrentTurn;
@@ -1161,7 +1161,7 @@ begin
   I := Galaxy.Scripts.IndexOf(Script);
   NewScript := TScript.Create;
   Galaxy.Scripts[I] := NewScript;
-  NewScript.ClassId := Template.ConfigValue;
+  NewScript.ClassId := Template.ClassId;
   if NewScript.LoadFromFile(Template.FileName, AnchorStar, AnchorPlanet, True) then
   begin
     Template.LastTurn := Galaxy.CurrentTurn;
@@ -1857,10 +1857,10 @@ begin
     StateCode.Free;
     StateCode := nil;
   end;
-  if AuxiliaryCode <> nil then
+  if DialogCode <> nil then
   begin
-    AuxiliaryCode.Free;
-    AuxiliaryCode := nil;
+    DialogCode.Free;
+    DialogCode := nil;
   end;
   if ActionCode <> nil then
   begin
@@ -1948,7 +1948,7 @@ begin
   inherited Create;
   InitCode := TCodeEC.Create;
   TurnCode := TCodeEC.Create;
-  AuxiliaryCode := TCodeEC.Create;
+  DialogCode := TCodeEC.Create;
   Constellations := TList.Create;
   Stars := TList.Create;
   Places := TList.Create;
@@ -2025,10 +2025,10 @@ begin
     TurnCode.Free;
     TurnCode := nil;
   end;
-  if AuxiliaryCode <> nil then
+  if DialogCode <> nil then
   begin
-    AuxiliaryCode.Free;
-    AuxiliaryCode := nil;
+    DialogCode.Free;
+    DialogCode := nil;
   end;
   if InitCode <> nil then
   begin
@@ -2125,7 +2125,7 @@ begin
   if Ether <> nil then Ether.Clear;
   if InitCode <> nil then InitCode.Clear;
   if TurnCode <> nil then TurnCode.Clear;
-  if AuxiliaryCode <> nil then AuxiliaryCode.Clear;
+  if DialogCode <> nil then DialogCode.Clear;
   if EtherIds <> nil then EtherIds.Clear;
   GroupRelations := nil;
 end;
@@ -2261,12 +2261,12 @@ begin
 end;
 { @end $651490 }
 
-{ @routine $651630 TScript_RunAuxiliaryCode }
-procedure TScript.RunAuxiliaryCode;
+{ @routine $651630 TScript_RunDialogCode }
+procedure TScript.RunDialogCode;
 begin
   try
     CurrentScript := Self;
-    AuxiliaryCode.Run(ScriptProcess);
+    DialogCode.Run(ScriptProcess);
   except
     on E: EBreakMessageGI do ;
     on E: Exception do
@@ -2896,7 +2896,7 @@ begin
         Star.Planets[J].GovernmentMask := DecodeScriptGovernmentMask(Buffer.GetUInt32);
         Star.Planets[J].MinOrbitPercent := Buffer.GetInt32;
         Star.Planets[J].MaxOrbitPercent := Buffer.GetInt32;
-        Star.Planets[J].DefinitionText := Buffer.ReadWideString;
+        Star.Planets[J].DialogChoiceText := Buffer.ReadWideString;
       end;
     end;
     SubCount := Buffer.GetInt32;
@@ -3071,7 +3071,7 @@ begin
     Group.MinPirateStatus := Buffer.GetInt32;
     Group.MaxPirateStatus := Buffer.GetInt32;
     Group.MaxDistanceFromPlanet := Buffer.GetInt32;
-    Group.DefinitionText := Buffer.ReadWideString;
+    Group.StationDialogVariable := Buffer.ReadWideString;
     Group.MinStrength := Buffer.GetSingle;
     Group.MaxStrength := Buffer.GetSingle;
     Group.StationNames := TrimWideString(Buffer.ReadWideString);
@@ -3229,13 +3229,13 @@ begin
     Analyzer.RemoveNewlines;
     Analyzer.RemoveWhitespace;
     Analyzer.ValidateDelimiters;
-    AuxiliaryCode.Compile(Analyzer, nil, nil, nil, nil, ErrorText);
+    DialogCode.Compile(Analyzer, nil, nil, nil, nil, ErrorText);
     Analyzer.Free;
     if ErrorText <> '' then RaiseWideMessage('CodeTurn.Compiler. Error=' + ErrorText);
-    AuxiliaryCode.LinkAll(ScriptFunctionScope, False);
-    AuxiliaryCode.LinkAll(SharedScriptVariables, False);
-    AuxiliaryCode.LinkAll(InitCode.LocalVar, False);
-    AuxiliaryCode.ScriptFunLinked := True;
+    DialogCode.LinkAll(ScriptFunctionScope, False);
+    DialogCode.LinkAll(SharedScriptVariables, False);
+    DialogCode.LinkAll(InitCode.LocalVar, False);
+    DialogCode.ScriptFunLinked := True;
   end;
   Count := Buffer.GetInt32;
   for I := 0 to Count - 1 do
@@ -3255,27 +3255,27 @@ begin
     State.PickupItemVarName := Buffer.ReadWideString;
     if State.PickupItemVarName <> '' then State.PickupItem := TScriptItem(InitCode.LocalVar.GetVar(State.PickupItemVarName).GetDword);
     State.PickUpNearbyItems := Buffer.GetBoolean;
-    State.AuxiliaryText := Buffer.ReadWideString;
-    if (State.AuxiliaryText <> '') and (InitCode.LocalVar.GetVarNE(State.AuxiliaryText) = nil) then
+    State.DialogTextOrVariable := Buffer.ReadWideString;
+    if (State.DialogTextOrVariable <> '') and (InitCode.LocalVar.GetVarNE(State.DialogTextOrVariable) = nil) then
     begin
-      State.AuxiliaryCode := TCodeEC.Create;
+      State.DialogCode := TCodeEC.Create;
       Analyzer := TCodeAnalyzerEC.Create;
-      Analyzer.Tokenize(State.AuxiliaryText);
+      Analyzer.Tokenize(State.DialogTextOrVariable);
       Analyzer.RemoveComments;
       Analyzer.RemoveNewlines;
       Analyzer.RemoveWhitespace;
       Analyzer.ValidateDelimiters;
-      State.AuxiliaryCode.Compile(Analyzer, nil, nil, nil, nil, ErrorText);
+      State.DialogCode.Compile(Analyzer, nil, nil, nil, nil, ErrorText);
       Analyzer.Free;
       if ErrorText <> '' then RaiseWideMessage('StateCodeText.Compiler. Error=' + ErrorText + ' State=' + State.Name);
-      State.AuxiliaryCode.LinkAll(ScriptFunctionScope, False);
-      State.AuxiliaryCode.LinkAll(SharedScriptVariables, False);
-      State.AuxiliaryCode.LinkAll(InitCode.LocalVar, False);
-      State.AuxiliaryCode.ScriptFunLinked := True;
+      State.DialogCode.LinkAll(ScriptFunctionScope, False);
+      State.DialogCode.LinkAll(SharedScriptVariables, False);
+      State.DialogCode.LinkAll(InitCode.LocalVar, False);
+      State.DialogCode.ScriptFunLinked := True;
     end;
     State.OnActionText := Buffer.ReadWideString;
     if (State.OnActionText <> '') and (Length(State.OnActionText) < 32) and
-      (InitCode.LocalVar.GetVarNE(State.AuxiliaryText) <> nil) then State.OnActionText := '';
+      (InitCode.LocalVar.GetVarNE(State.DialogTextOrVariable) <> nil) then State.OnActionText := '';
     if State.OnActionText <> '' then CompileStateActionCode(State);
     Text := Buffer.ReadWideString;
     if Text <> '' then

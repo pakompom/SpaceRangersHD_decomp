@@ -4,7 +4,7 @@ unit Robot;
 
 interface
 
-uses Windows, Types, GR_Sound, GR_GraphBuf;
+uses Windows, Types, GR_Sound, GR_GraphBuf, aGalaxyStruct;
 
 type
   TRobotTextImage = record // @size $14 Owned raster returned to the DLL.
@@ -75,7 +75,7 @@ type
   TRobotSupportQuery = function: Integer; stdcall;
   TRobotRun = function(Instance, Window: Cardinal; MapName: PWideChar;
     Settings: PRobotDisplaySettings; Language, StartText, WinText, LossText,
-    TerronName: PWideChar; Statistics: PInteger): Integer; stdcall;
+    TerronName: PWideChar; Statistics: PPlanetBattleStatistics): Integer; stdcall;
   TRobotInterfacePrefix = record // @size $10 Dispatch table returned by GetRobotInterface.
     Initialize: TRobotInitialize; // @offset $00
     Finalize: TRobotAction; // @offset $04
@@ -92,7 +92,7 @@ var
   // The managed global below supplies that DCC32 lifetime code automatically.
 var
   RobotCallbacks: TRobotCallbacks; // @addr $88C34C
-  RobotBattleStatistics: array[0..5] of Integer; // @addr $88C38C Returned planetary-battle statistics; entry 0 is negative elapsed milliseconds.
+  RobotBattleStatistics: TPlanetBattleStatistics; // @addr $88C38C Player-side SRobotGameState returned by MatrixGame.Run.
   SupportedMultiSamples: array of Integer; // @addr $88C3A4
   RobotSettings: TRobotDisplaySettingsPrefix = (Direct3D: nil; Device: nil;
     ShowStencilShadows: True; ShowProjShadows: True; SelectEx: False;
@@ -610,9 +610,9 @@ begin
     RobotSettings.FSAASamples := RobotFSAASamples;
     RobotSettings.Anisotropy := RobotAnisotropy;
     RobotSettings.MaxDistance := RobotMaxDistance / 100;
-    RobotBattleStatistics[0] := 0; RobotBattleStatistics[1] := 0;
-    RobotBattleStatistics[2] := 0; RobotBattleStatistics[3] := 0;
-    RobotBattleStatistics[4] := 0; RobotBattleStatistics[5] := 0;
+    RobotBattleStatistics.SignedTimeMs := 0; RobotBattleStatistics.RobotsBuilt := 0;
+    RobotBattleStatistics.RobotsDestroyed := 0; RobotBattleStatistics.TurretsBuilt := 0;
+    RobotBattleStatistics.TurretsDestroyed := 0; RobotBattleStatistics.BuildingsDestroyed := 0;
     RobotSettings.Direct3D := Pointer(Direct3D);
     RobotSettings.Device := Pointer(Direct3DDevice);
     AppendLogLineThreadSafe('Starting planetary battle');
@@ -624,11 +624,11 @@ begin
         if LanguageDataConfig.GetBlock('RobotsMap').CountParams('CfgOverride') > 0 then
           Result := RobotInterface.Run(HInstance, MainWindowHandle, PWideChar(MapName), @RobotSettings,
             PWideChar(LanguageDataConfig.GetBlock('RobotsMap').GetParam('CfgOverride')),
-            PWideChar(StartText), PWideChar(WinText), PWideChar(LossText), PWideChar(TerronName), @RobotBattleStatistics[0])
+            PWideChar(StartText), PWideChar(WinText), PWideChar(LossText), PWideChar(TerronName), @RobotBattleStatistics)
         else
           Result := RobotInterface.Run(HInstance, MainWindowHandle, PWideChar(MapName), @RobotSettings,
             PWideChar(LanguageInstallConfig.GetParam('Lang')), PWideChar(StartText), PWideChar(WinText),
-            PWideChar(LossText), PWideChar(TerronName), @RobotBattleStatistics[0]);
+            PWideChar(LossText), PWideChar(TerronName), @RobotBattleStatistics);
       end;
     except
       on E: Exception do

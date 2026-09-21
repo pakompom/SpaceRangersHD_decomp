@@ -6,6 +6,13 @@ interface
 
 uses Classes;
 
+const
+  // SF_EndGame also accepts arbitrary script-defined integers. Values above four
+  // select FormGameEnd.WinPirateN; keep GameEndReason as Integer.
+  gerDefault = 0; // Ordinary end-of-film death or CustomWin/CustomLose event.
+  gerPlayerDeath = 2; // Explicit death detected on a planet or during takeoff.
+  gerTerronConversion = 4; // Script exit_end; FormGameEnd.LossConvertToTerron variants.
+
 type
   // Keep the registry independent of UI/cache implementation units. Consumers
   // cast these object references to the concrete cache and message-loop types.
@@ -130,7 +137,7 @@ var
   PendingLoadFileName: AnsiString; // @addr 0x889DF4
 var
   LoadedFilmCount: Integer; // @addr 0x889DF8
-  GameEndReason: Integer; // @addr $889DFC @note "One selects death; other native ending codes remain unresolved."
+  GameEndReason: Integer; // @addr $889DFC @note "ger* ending codes; values 5..18 select the localized WinPirate epilogues. SF_EndGame can supply arbitrary integers."
 var
   ShipTail: Integer = 0; // @addr $87A824
   ThreeDimensionalModeEnabled: Boolean = False; // @addr $87A828 @note "3D setting, cleared on EDirectXRender during device startup."
@@ -184,7 +191,7 @@ var
   MaxPlayerNews: Integer = 30; // @addr $87A8E8
   MaxSearchResult: Integer = 100; // @addr $87A8EC
   ClickAutoCloseForm: Boolean = True; // @addr $87A8F0
-  UiRuntimeFlag: Boolean = False; // @addr $87A8F4 Native purpose remains unresolved.
+  AwardDialogsEnabled: Boolean = False; // @addr $87A8F4 Enables award-window clicks in the ship, scanner and ranger-rating screens; set by settings initialization.
   MultiThreadEnabled: Boolean = False; // @addr $87A8F8
   ShowWineWarning: Boolean = False; // @addr $87A8FC
   XonarSoundDevice: Boolean = False; // @addr $87A900

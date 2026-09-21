@@ -118,7 +118,7 @@ type
     Destination: TPointF; // @offset 0x04
     SourceShipId: Integer; // @offset 0x0C  Zero for asteroid mineral drops.
     InsertedIntoStar: Boolean; // @offset 0x10  Payload is registered in Items or, after transformation, Ships.
-    UseFlag: Byte; // @offset 0x11  Special payload handling; exact modes remain unresolved.
+    DeployTranclucator: Byte; // @offset 0x11 Nonzero releases a stored tranclucator ship instead of dropping its artefact; serialized as Boolean.
   end;
   PMovingDropItemEntry = ^TMovingDropItemEntry;
 
@@ -807,7 +807,7 @@ begin
   CheckModuleSize($B99523);
   ModuleName := LibraryPrefix + DecodeTextW('veohrablissufainlae') + DllSuffix; // 'vorbisfile'
   CheckModuleSize($BB8916);
-  GameEndReason := 0;
+  GameEndReason := gerDefault;
   PlayerRangerIndex := -1;
   for I := 0 to 8 do HangarScreen.ShipSlots[I].ShipId := 0;
   SaveCount := 0;
@@ -2286,7 +2286,7 @@ begin
   Stage := 0;
   if GetPlayer <> nil then
     try
-      Ratio := GetCoalitionToPirateSystemRatio / GalaxyDifficultyTuning[DifficultyLevels[0]].DifficultyFactor34;
+      Ratio := GetCoalitionToPirateSystemRatio / GalaxyDifficultyTuning[DifficultyLevels[0]].CoalitionToPirateBalanceRatio;
       // Native applies bitwise NOT before comparison, rather than inequality.
       if ((not PirateWinType) = 3) and
          (((Ratio > 1.25) and (NextRandomIntRange(1, 1000, RandomState) <= 3)) or
@@ -4708,7 +4708,7 @@ begin
     Buffer.AddSingle(Drop.Destination.X);
     Buffer.AddSingle(Drop.Destination.Y);
     Buffer.AddDWord(Drop.SourceShipId);
-    Buffer.AddBoolean(Boolean(Drop.UseFlag));
+    Buffer.AddBoolean(Boolean(Drop.DeployTranclucator));
     Item := Drop.Payload as TItem;
     Buffer.AddAnsiChar(AnsiChar(Item.ItemType));
     Item.SaveToBuffer(Buffer);
@@ -4824,7 +4824,7 @@ begin
       Drop.Destination.Y := Buffer.GetSingle;
       Drop.SourceShipId := Buffer.GetUInt32;
       Drop.InsertedIntoStar := False;
-      Drop.UseFlag := Byte(Buffer.GetBoolean);
+      Drop.DeployTranclucator := Byte(Buffer.GetBoolean);
       Item := CreateItemByType(MigrateSavedItemType(Buffer.GetByte));
       Drop.Payload := Item;
       Item.LoadFromBuffer(Buffer, Galaxy);
@@ -5141,7 +5141,7 @@ begin
       Entry.Payload := Goods;
       Entry.SourceShipId := 0;
       Entry.InsertedIntoStar := False;
-      Entry.UseFlag := 0;
+      Entry.DeployTranclucator := 0;
       MovingDropItems.Add(Entry);
       Inc(DropCount);
       Inc(Result, Goods.Cost);
@@ -12536,7 +12536,7 @@ begin
                 MovingDrop^.Payload := Item;
                 MovingDrop^.SourceShipId := 0;
                 MovingDrop^.InsertedIntoStar := False;
-                MovingDrop^.UseFlag := 0;
+                MovingDrop^.DeployTranclucator := 0;
                 Distance := SeededRandomIntRange(50, 150, Self.GenerationSeed * Cardinal(Galaxy.CurrentTurn) * Cardinal(Item.Id));
                 if (PlayerStar = Self) and (Count - 20 < PathStep) then
                   Distance := 5.0;
@@ -12590,7 +12590,7 @@ begin
                 MovingDrop^.Payload := Item;
                 MovingDrop^.SourceShipId := 0;
                 MovingDrop^.InsertedIntoStar := False;
-                MovingDrop^.UseFlag := 0;
+                MovingDrop^.DeployTranclucator := 0;
                 Self.MovingDropItems.Add(MovingDrop);
                 Inc(CandidateCount);
               end;
@@ -12779,7 +12779,7 @@ begin
             Item := TObject(MovingDrop^.Payload) as TItem;
             if not MovingDrop^.InsertedIntoStar then
             begin
-              if (Item is TArtefactTranclucator) and (MovingDrop^.UseFlag <> 0) then
+              if (Item is TArtefactTranclucator) and (MovingDrop^.DeployTranclucator <> 0) then
               begin
                 Tranclucator := TObject((Item as TArtefactTranclucator).Ship) as TTranclucator;
                 (Item as TArtefactTranclucator).Ship := nil;
@@ -13609,7 +13609,7 @@ begin
       if not MovingDrop^.InsertedIntoStar and (MovingDrop^.Payload <> nil) then
       begin
         Item := TObject(MovingDrop^.Payload) as TItem;
-        if (Item is TArtefactTranclucator) and (MovingDrop^.UseFlag <> 0) then
+        if (Item is TArtefactTranclucator) and (MovingDrop^.DeployTranclucator <> 0) then
         begin
           Tranclucator := TObject((Item as TArtefactTranclucator).Ship) as TTranclucator;
           (Item as TArtefactTranclucator).Ship := nil;

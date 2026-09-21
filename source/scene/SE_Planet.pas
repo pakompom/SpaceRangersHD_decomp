@@ -516,7 +516,7 @@ begin
   with PlanetAdvertDefinitions[SurfaceAnimationMask shr 24] do
   begin
     for Index := 0 to 23 do
-      if (SurfaceAnimationMask and (1 shl Index)) <> 0 then Inc(TotalWeight, Lists[Index].Key);
+      if (SurfaceAnimationMask and (1 shl Index)) <> 0 then Inc(TotalWeight, Lists[Index].Weight);
     Attempts := 10;
     while Attempts > 0 do
     begin
@@ -524,7 +524,7 @@ begin
       for Index := 0 to 23 do
         if (SurfaceAnimationMask and (1 shl Index)) <> 0 then
         begin
-          Dec(Choice, Lists[Index].Key);
+          Dec(Choice, Lists[Index].Weight);
           if Choice < 0 then
           begin
             SurfaceAnimationIndex := Index;

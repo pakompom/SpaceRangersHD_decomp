@@ -806,7 +806,7 @@ begin
     ClearGoodsControls;
     BuildGoodsControls;
     UpdateScrollButtons;
-    if not ShipScreen.FlagD4 then Break;
+    if not ShipScreen.ReopenRequested then Break;
     SetCursorActive(False);
     DrawQueuedUpdateRects;
     CaptureScreenBackground(True, 0);

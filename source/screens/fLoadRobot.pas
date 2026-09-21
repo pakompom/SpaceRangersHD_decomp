@@ -177,8 +177,8 @@ begin
         begin
           LoadCompletionData;
           if Difficulty = 1 then
-            RecordCompletion(RobotMapDefinitions[Entries[SelectedIndex].MapIndex].Id, -RobotBattleStatistics[0] div 1000, 2)
-          else RecordCompletion(RobotMapDefinitions[Entries[SelectedIndex].MapIndex].Id, -RobotBattleStatistics[0] div 1000, 1);
+            RecordCompletion(RobotMapDefinitions[Entries[SelectedIndex].MapIndex].Id, -RobotBattleStatistics.SignedTimeMs div 1000, 2)
+          else RecordCompletion(RobotMapDefinitions[Entries[SelectedIndex].MapIndex].Id, -RobotBattleStatistics.SignedTimeMs div 1000, 1);
           SaveCompletionData;
         end;
       end;

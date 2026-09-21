@@ -93,7 +93,7 @@ type
     CampaignLoadProgress: Single; // @offset $324
     DepartureTurn: Integer; // @offset $328
     ArrivalTurn: Integer; // @offset $32C
-    InfoObject: TObject; // @offset $330 Object currently described by InfoPanel/InfoStar; precise type pending.
+    InfoSpace: TabSpace; // @offset $330 Space currently described by InfoPanel/InfoStar; nil when hidden.
     CargoPickupItem: TabItem; // @offset $334
     CargoPickupZone: PabZone; // @offset $338
     InitialRandomSeed: Cardinal; // @offset $33C
@@ -2855,7 +2855,7 @@ begin
         Stage := 29;
         ScriptDialogIndex := -1;
         TScriptShip(KellerShip.ScriptShip).Script.PublishShipContext(KellerShip.ScriptShip as TScriptShip);
-        CurrentScript.CallDialogByVariable(TScriptShip(KellerShip.ScriptShip).State.AuxiliaryText);
+        CurrentScript.CallDialogByVariable(TScriptShip(KellerShip.ScriptShip).State.DialogTextOrVariable);
         if ScriptDialogIndex < 0 then RaiseWideMessage('Not found dialog');
         TalkShip := KellerShip;
         TalkPlanet := nil;
@@ -3075,7 +3075,7 @@ begin
       Ship := TabShip(Obj);
       Obj := Obj.Next;
       if (Ship.Visual <> nil) and Ship.Visual.IsAttachedToSpace and
-         (Ship.Visual.GetDepth = ShipFrontDepth) and Ship.StateCC and
+         (Ship.Visual.GetDepth = ShipFrontDepth) and Ship.HealthBarVisible and
          ((Ship.BonusTicks[abkInvisibility] <= 0) or (Ship.RevealTicks > 0) or (PlayerArcadeShip = Ship)) then
       begin
         CenterX := Round(Ship.Visual.Position.X) + WorldCenterX;
@@ -3903,9 +3903,9 @@ var
   OwnerId: Byte;
 begin
   if Space = nil then HideObjectInfo
-  else if InfoObject <> Space then
+  else if InfoSpace <> Space then
   begin
-    InfoObject := Space;
+    InfoSpace := Space;
     if (GetPlayer <> nil) and ((StartArcadeSpace = Space) or (EndArcadeSpace = Space)) then
     begin
       GetByName('InfoStar').SetActive(True);
@@ -4052,13 +4052,13 @@ end;
 { @routine $54A114 TfAB_HideObjectInfo }
 procedure TfAB.HideObjectInfo;
 begin
-  if InfoObject <> nil then
+  if InfoSpace <> nil then
   begin
     GetByName('InfoPanel').SetActive(False);
     GetByName('InfoStar').SetActive(False);
     HideHelp;
   end;
-  InfoObject := nil;
+  InfoSpace := nil;
 end;
 { @end $54A114 }
 

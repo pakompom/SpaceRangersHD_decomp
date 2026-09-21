@@ -439,7 +439,7 @@ end;
 procedure TfInfo.ShipClicked(Sender: TObjectGI);
 begin
   MainPanel.ShipClicked(Sender);
-  if ShipScreen.Flag3BC then
+  if ShipScreen.ShipStateChanged then
   begin
     MainPanel.RebuildMessageButtons(False);
     MainPanel.RefreshMoneyAndCargo;

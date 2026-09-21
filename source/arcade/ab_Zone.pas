@@ -1,6 +1,6 @@
 unit ab_Zone;
 // Unit bracket (inferred): .text 0x005539D8..0x00554FD3; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
-// Native zone and link region: $5539F4..$54BE60; original unit boundary unresolved.
+// Original source-unit boundary is unresolved; recovered zone/link addresses are bracketed above.
 
 interface
 

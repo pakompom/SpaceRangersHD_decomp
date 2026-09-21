@@ -492,7 +492,7 @@ begin
   if (GetPlayer <> nil) and (Byte(GetPlayer.RuinsMode) > 0) then GetPlayer.ExitRuinsMode;
   if DispatchPendingScriptRequests then Exit;
   EvictMainMenuShipCachesWhenAddressSpaceHigh;
-  if not ShipScreen.FlagD4 then Galaxy.CheckIntegrityChecksum(1116)
+  if not ShipScreen.ReopenRequested then Galaxy.CheckIntegrityChecksum(1116)
   else Galaxy.ClearIntegrityStatus;
   LoadPanel.OnOpen;
   BreakOnNextFilm := False;
@@ -567,12 +567,12 @@ begin
     with GetPlayer.PlanetBattleHistory[High(GetPlayer.PlanetBattleHistory)] do
     begin
       MapId := PlanetBattleMapId;
-      Statistics[0] := RobotBattleStatistics[0];
-      Statistics[1] := RobotBattleStatistics[1];
-      Statistics[2] := RobotBattleStatistics[2];
-      Statistics[3] := RobotBattleStatistics[3];
-      Statistics[4] := RobotBattleStatistics[4];
-      Statistics[5] := RobotBattleStatistics[5];
+      Statistics.SignedTimeMs := RobotBattleStatistics.SignedTimeMs;
+      Statistics.RobotsBuilt := RobotBattleStatistics.RobotsBuilt;
+      Statistics.RobotsDestroyed := RobotBattleStatistics.RobotsDestroyed;
+      Statistics.TurretsBuilt := RobotBattleStatistics.TurretsBuilt;
+      Statistics.TurretsDestroyed := RobotBattleStatistics.TurretsDestroyed;
+      Statistics.BuildingsDestroyed := RobotBattleStatistics.BuildingsDestroyed;
       ResultCode := 1;
       CompletionMode := PlanetBattleState;
       DateTurn := Galaxy.CurrentTurn;
@@ -609,12 +609,12 @@ begin
     with GetPlayer.PlanetBattleHistory[High(GetPlayer.PlanetBattleHistory)] do
     begin
       MapId := PlanetBattleMapId;
-      Statistics[0] := RobotBattleStatistics[0];
-      Statistics[1] := RobotBattleStatistics[1];
-      Statistics[2] := RobotBattleStatistics[2];
-      Statistics[3] := RobotBattleStatistics[3];
-      Statistics[4] := RobotBattleStatistics[4];
-      Statistics[5] := RobotBattleStatistics[5];
+      Statistics.SignedTimeMs := RobotBattleStatistics.SignedTimeMs;
+      Statistics.RobotsBuilt := RobotBattleStatistics.RobotsBuilt;
+      Statistics.RobotsDestroyed := RobotBattleStatistics.RobotsDestroyed;
+      Statistics.TurretsBuilt := RobotBattleStatistics.TurretsBuilt;
+      Statistics.TurretsDestroyed := RobotBattleStatistics.TurretsDestroyed;
+      Statistics.BuildingsDestroyed := RobotBattleStatistics.BuildingsDestroyed;
       ResultCode := 1;
       CompletionMode := PlanetBattleState;
       DateTurn := Galaxy.CurrentTurn;
@@ -622,7 +622,7 @@ begin
     Inc(GetPlayer.PlanetBattles);
     PlanetBattleState := 0;
     LoadRobotScreen.LoadCompletionData;
-    LoadRobotScreen.RecordCompletion(PlanetBattleMapId, -RobotBattleStatistics[0] div 1000, 2);
+    LoadRobotScreen.RecordCompletion(PlanetBattleMapId, -RobotBattleStatistics.SignedTimeMs div 1000, 2);
     LoadRobotScreen.SaveCompletionData;
     TryAddAchievementProgress('IRONMAN', 1);
     if TerronShip <> nil then TerronShip.DestroyQueued := True;
@@ -653,7 +653,7 @@ begin
   else
   begin
     PlanetBattleState := 0;
-    if not ShipScreen.FlagD4 then GetPlayer.CancelInvalidTravelOrder;
+    if not ShipScreen.ReopenRequested then GetPlayer.CancelInvalidTravelOrder;
     ClearMapAnimations;
     GetByName('FPS').SetActive(ShowFrameRate);
     RefreshScoreModsLabel;
@@ -693,7 +693,7 @@ begin
     end;
     ResumeMode := smrNormal;
     GetByName('MapPanelA').SetActive((GetPlayer <> nil) and GetPlayer.IsHealthEffectActive(1));
-    if ShipScreen.FlagD4 then
+    if ShipScreen.ReopenRequested then
     begin
       SetCursorActive(False);
       MainPanel.RefreshMoneyAndCargo;
@@ -728,7 +728,7 @@ begin
       if EndTurnAfterOpen then
       begin
         EndTurnAfterOpen := False;
-        ShipScreen.FlagD4 := False;
+        ShipScreen.ReopenRequested := False;
         EndTurnClicked(nil);
       end;
     end;
@@ -965,7 +965,7 @@ begin
         Galaxy.SpaceBackgroundEntries[Index].Position.X, Galaxy.SpaceBackgroundEntries[Index].Position.Y, Galaxy.SpaceBackgroundEntries[Index].Position.Z);
       Image.OrbitCenter := Galaxy.SpaceBackgroundEntries[Index].OrbitCenter;
       Image.OrbitStepDegrees := Galaxy.SpaceBackgroundEntries[Index].OrbitStepDegrees;
-      Image.Unknown70 := Galaxy.SpaceBackgroundEntries[Index].ImageIndex;
+      Image.SavedTemplateIndex := Galaxy.SpaceBackgroundEntries[Index].ImageIndex;
       Image.FrameIndex := Galaxy.SpaceBackgroundEntries[Index].FrameIndex;
       SpaceImage.UpdateImageOrbitAndFrame(Image);
     end;
@@ -992,7 +992,7 @@ begin
     Image := SpaceImage.GetImage(Index);
     if Image.TemplateIndex >= 100 then
     begin
-      Galaxy.SpaceBackgroundEntries[SavedCount].ImageIndex := Image.Unknown70;
+      Galaxy.SpaceBackgroundEntries[SavedCount].ImageIndex := Image.SavedTemplateIndex;
       Galaxy.SpaceBackgroundEntries[SavedCount].OrbitCenter := Image.OrbitCenter;
       Galaxy.SpaceBackgroundEntries[SavedCount].Position := MakeVector3D(Image.X, Image.Y, Image.Depth);
       Galaxy.SpaceBackgroundEntries[SavedCount].Unknown38 := Image.Unknown38;
@@ -1031,7 +1031,7 @@ var
   Events: array[0..1] of THandle;
   EventList: Pointer;
 begin
-  if not MainPanel.NavigationLocked and not ShipScreen.FlagD4 then
+  if not MainPanel.NavigationLocked and not ShipScreen.ReopenRequested then
   begin
     if TrailingFilmEffects <> nil then TrailingFilmEffects.RemoveLinkedWeaponEffects;
     Galaxy.CheckIntegrityChecksum(3);
@@ -1083,7 +1083,7 @@ end;
 { @routine $6A8B18 TfStarMap_MapKeyDown }
 procedure TfStarMap.MapKeyDown(Sender: TObjectGI; Key: Cardinal);
 begin
-  if MainPanel.NavigationLocked or ShipScreen.FlagD4 then Exit;
+  if MainPanel.NavigationLocked or ShipScreen.ReopenRequested then Exit;
   if IsVirtualKeyDown(VK_CONTROL) and (Key = VK_ADD) then
   begin
     MusicManager.RequestFadeOut;
@@ -2172,7 +2172,7 @@ begin
     Stage := 10;
     DrawQueuedControlRects;
     Stage := 11;
-    if not ShipScreen.FlagD4 and (TalkScreen.Flag128 = 0) and not GoodsShopScreen.FlagEC then
+    if not ShipScreen.ReopenRequested and (TalkScreen.ModalTransition = tmtNone) and not GoodsShopScreen.ReopenRequested then
     begin
       if not BeginFramePresentation then
       begin
@@ -2233,16 +2233,16 @@ begin
     if Trading = 0 then
     begin
       RunTalk(Self);
-      if TalkScreen.Flag128 = 2 then Trading := 1;
+      if TalkScreen.ModalTransition = tmtTrade then Trading := 1;
     end
     else
     begin
       RunGoodsShop(Self);
-      TalkScreen.Flag12C := True;
-      if not GoodsShopScreen.FlagEC then Trading := 0;
+      TalkScreen.ReturnedFromTrade := True;
+      if not GoodsShopScreen.ReopenRequested then Trading := 0;
     end;
     MainPanel.RefreshMoneyAndCargo;
-    if (TalkScreen.Flag128 = 0) and not GoodsShopScreen.FlagEC then MainPanel.RebuildMessageButtons(False)
+    if (TalkScreen.ModalTransition = tmtNone) and not GoodsShopScreen.ReopenRequested then MainPanel.RebuildMessageButtons(False)
     else if Trading = 0 then MainPanel.RebuildMessageButtons(False)
     else
     begin
@@ -2255,7 +2255,7 @@ begin
     SetCursorActive(False);
     Present;
     SetCursorActive(True);
-    if (TalkScreen.Flag128 = 0) and not GoodsShopScreen.FlagEC then Break;
+    if (TalkScreen.ModalTransition = tmtNone) and not GoodsShopScreen.ReopenRequested then Break;
     SetCursorActive(False);
     CaptureScreenBackground(Trading <> 0, 1);
     SetCursorActive(True);
@@ -2273,7 +2273,7 @@ begin
   end;
   RestorePendingSceneObjects;
   ResumeMode := smrNormal;
-  if GameEndReason = 4 then
+  if GameEndReason = gerTerronConversion then
   begin
     RequestedScreenId := screenGameEnd;
     ReleaseAllTextureSurfaces;
@@ -2288,7 +2288,7 @@ begin
   if Galaxy.SpecialSimulationMode = 0 then
   begin
     MainPanel.NavigationLocked := True;
-    if not ShipScreen.FlagD4 then
+    if not ShipScreen.ReopenRequested then
     begin
       HideLargeHelp;
       GetByName('PM_WinMsg').SetActive(False);
@@ -2311,7 +2311,7 @@ begin
   if Galaxy.SpecialSimulationMode = 0 then
   begin
     MainPanel.NavigationLocked := True;
-    if not ShipScreen.FlagD4 then
+    if not ShipScreen.ReopenRequested then
     begin
       Galaxy.CheckIntegrityChecksum(13131);
       HideLargeHelp;
@@ -2434,7 +2434,7 @@ begin
   end;
   (GetByName('PM_EndTurn') as TGraphButtonGI).SetHovered(False);
   PostMouseMoveMessage;
-  if GameEndReason = 4 then
+  if GameEndReason = gerTerronConversion then
   begin
     RequestedScreenId := screenGameEnd;
     ReleaseAllTextureSurfaces;
@@ -2619,7 +2619,7 @@ var
   Response, InitialImage: WideString;
 begin
   if MainPanel.NavigationLocked then Exit;
-  if ShipScreen.FlagD4 then Exit;
+  if ShipScreen.ReopenRequested then Exit;
   HideLargeHelp;
   if IsMapPointBlocked(Sender, Point) then Exit;
   CursorObject := FindObjectAtCursor;
@@ -3213,7 +3213,7 @@ var
   Destination: TPointF;
   FollowMode: Integer;
 begin
-  if not MainPanel.NavigationLocked and not ShipScreen.FlagD4 and not IsMapPointBlocked(Sender, Point) then
+  if not MainPanel.NavigationLocked and not ShipScreen.ReopenRequested and not IsMapPointBlocked(Sender, Point) then
   begin
     Destination := PointToPointF(MapControls.ToLocalPoint(Point));
     if (CursorObject is THole) and not GetPlayer.NoJump and ((CursorObject as THole).ArcadeMapName <> 'NoEntry') then
@@ -3348,7 +3348,7 @@ var
   Index, FollowMode: Integer;
   Ship: TShip;
 begin
-  if not MainPanel.NavigationLocked and not ShipScreen.FlagD4 then
+  if not MainPanel.NavigationLocked and not ShipScreen.ReopenRequested then
   begin
     HideLargeHelp;
     ScannerSelectionActive := False;
@@ -3511,7 +3511,7 @@ end;
 { @routine $6B18D0 TfStarMap_MapMouseMove }
 procedure TfStarMap.MapMouseMove(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint);
 begin
-  if not MainPanel.NavigationLocked and not ShipScreen.FlagD4 then
+  if not MainPanel.NavigationLocked and not ShipScreen.ReopenRequested then
   begin
     RefreshActionRanges;
     if PtInRect(ScrollInteriorRect, Point) then UpdateActionCursor(False);
@@ -3542,7 +3542,7 @@ var
   CanAfterburn: Boolean;
   Binding: TScriptShip;
 begin
-  if not MainPanel.NavigationLocked and not ShipScreen.FlagD4 and
+  if not MainPanel.NavigationLocked and not ShipScreen.ReopenRequested and
     not IsVirtualKeyDown(VK_CONTROL) and not IsVirtualKeyDown(VK_SHIFT) and not IsVirtualKeyDown(VK_MENU) then
   begin
     DisplayedObject := nil;
@@ -3703,7 +3703,7 @@ end;
 procedure TfStarMap.OrderKeyUp(Sender: TObjectGI; Key: Cardinal);
 begin
   // The native body retains these guard reads despite having no guarded action.
-  if not MainPanel.NavigationLocked and not ShipScreen.FlagD4 then
+  if not MainPanel.NavigationLocked and not ShipScreen.ReopenRequested then
   begin
   end;
 end;
@@ -5974,7 +5974,7 @@ begin
       begin
         Stage := 10;
         StopTurnFilm(True);
-        GameEndReason := 0;
+        GameEndReason := gerDefault;
         RequestedScreenId := screenGameEnd;
         ReleaseAllTextureSurfaces;
         RequestClose(1);
@@ -7858,7 +7858,7 @@ end;
 procedure TfStarMap.ExecuteUiCode(Block: TBlockParEC; Key: Cardinal);
 begin
   if MainPanel.NavigationLocked then Exit;
-  if ShipScreen.FlagD4 then Exit;
+  if ShipScreen.ReopenRequested then Exit;
   if ExitScreenLoop then Exit;
   if WaitForSingleObject(ScriptUiRequestEvent, 0) = WAIT_OBJECT_0 then Exit;
   if not (TurnCalculationPhase in [tcpIdle, tcpGalaxyFinished, tcpPlayerStarFinished, tcpPlayerStarPrepared]) then

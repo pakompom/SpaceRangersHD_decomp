@@ -22,7 +22,7 @@ type
     function RelationToNonRanger(Ship: TShip): Byte; override; // @addr $720764 @slot $80
     function AcceptsRansomDemandFrom(Ship: TShip): Boolean; override; // @addr $721164 @slot $88
     function TrustsAttackRequester(Ship: TShip): Boolean; override; // @addr $721250 @slot $8C
-    function EvaluateAllyRelationAndStrength(Ship: TShip): Boolean; override; // @addr $721274 @slot $90
+    function AcceptsAppealFrom(Ship: TShip): Boolean; override; // @addr $721274 @slot $90
     procedure ProcessCombatDialogue; override; // @addr $721CAC @slot $A0
     procedure ReactToExtortionDemand(Ranger: Pointer); override; // @addr $721D40 @slot $A4
     function AcceptPartnershipOffer(OtherShip: TShip; var Response: WideString; PaymentAmount: Integer): Boolean; override; // @addr $72347C @slot $B8
@@ -642,8 +642,8 @@ function TTransport.TrustsAttackRequester(Ship: TShip): Boolean;
 begin Result := RelationToShip(Ship) >= 30; end;
 { @end $721250 }
 
-{ @routine $721274 TTransport_EvaluateAllyRelationAndStrength }
-function TTransport.EvaluateAllyRelationAndStrength(Ship: TShip): Boolean;
+{ @routine $721274 TTransport_AcceptsAppealFrom }
+function TTransport.AcceptsAppealFrom(Ship: TShip): Boolean;
 begin
   Result := RelationToShip(Ship) +
     RemapClamped(Ship.Strength, 0.9 * Strength, Strength * 3, 0, 100) > 110;

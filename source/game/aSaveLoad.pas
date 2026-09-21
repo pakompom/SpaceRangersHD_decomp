@@ -551,8 +551,8 @@ begin
       StarMapScreen.ResumeMode := smrOrders;
       if Loop is TfGoodsShop2 then begin
         Loop.RequestClose(2);
-        TalkScreen.Flag128 := 0;
-        GoodsShopScreen.FlagEC := False;
+        TalkScreen.ModalTransition := tmtNone;
+        GoodsShopScreen.ReopenRequested := False;
         StarMapScreen.RequestClose(1);
       end
       else Loop.RequestClose(1);

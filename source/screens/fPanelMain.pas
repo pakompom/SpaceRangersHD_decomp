@@ -471,7 +471,7 @@ begin
   begin
     Event := AddGalaxyEvent('PlayerDeath');
     Event.AddTextData('PlanetCaptured');
-    GameEndReason := 2;
+    GameEndReason := gerPlayerDeath;
     RequestedScreenId := screenGameEnd;
     Screen.RequestClose(1);
   end
@@ -516,10 +516,10 @@ begin
     RunShipEquipment(Screen);
     RebuildMessageButtons(False);
     PostMouseMove;
-    if ShipScreen.Flag3BC then Changed := True;
+    if ShipScreen.ShipStateChanged then Changed := True;
     RefreshMoneyAndCargo;
     RebuildMessageButtons(False);
-    if not ShipScreen.FlagD4 then Break;
+    if not ShipScreen.ReopenRequested then Break;
     Screen.SetCursorActive(False);
     FullFrameRedrawRequested := True;
     Screen.InvalidateViewport;
@@ -528,7 +528,7 @@ begin
     Screen.SetCursorActive(True);
   end;
   Galaxy.PrimeIntegrityChecksum(110);
-  ShipScreen.Flag3BC := Changed;
+  ShipScreen.ShipStateChanged := Changed;
   if GetPlayer.IsOnPlanet and (Screen <> GovernmentScreen) then
     if GetPlayer.CurrentPlanet.GetRelationLevelToShip(GetPlayer) = rlHostile then
     begin

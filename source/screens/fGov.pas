@@ -249,10 +249,8 @@ begin
 end;
 { @end $6C7DEC }
 
-// Reviewed compiler-layout difference: native reserves one extra, unreferenced
-// dword at EBP-$F4, before its managed-string temporaries, and emits an extra
-// push ECX in the prologue. Rebuilt temporaries from $F8 onward are four bytes
-// nearer EBP. Calls, branches, constants and field accesses agree throughout.
+// Native reserves an unreferenced dword before its managed-string temporaries.
+// UnresolvedFrameBytes below preserves the matching frame and prologue push ECX.
 { @routine $6C84B0 TfGov_OnOpen }
 procedure TfGov.OnOpen;
 var
@@ -292,7 +290,7 @@ begin
     begin
       Event := AddGalaxyEvent('PlayerDeath');
       Event.AddTextData('PlanetCaptured');
-      GameEndReason := 2;
+      GameEndReason := gerPlayerDeath;
       RequestedScreenId := screenGameEnd;
       RequestClose(1);
       Exit;
@@ -457,12 +455,12 @@ begin
       with GetPlayer.PlanetBattleHistory[High(GetPlayer.PlanetBattleHistory)] do
       begin
         MapId := PlanetBattleMapId;
-        Statistics[0] := RobotBattleStatistics[0];
-        Statistics[1] := RobotBattleStatistics[1];
-        Statistics[2] := RobotBattleStatistics[2];
-        Statistics[3] := RobotBattleStatistics[3];
-        Statistics[4] := RobotBattleStatistics[4];
-        Statistics[5] := RobotBattleStatistics[5];
+        Statistics.SignedTimeMs := RobotBattleStatistics.SignedTimeMs;
+        Statistics.RobotsBuilt := RobotBattleStatistics.RobotsBuilt;
+        Statistics.RobotsDestroyed := RobotBattleStatistics.RobotsDestroyed;
+        Statistics.TurretsBuilt := RobotBattleStatistics.TurretsBuilt;
+        Statistics.TurretsDestroyed := RobotBattleStatistics.TurretsDestroyed;
+        Statistics.BuildingsDestroyed := RobotBattleStatistics.BuildingsDestroyed;
         ResultCode := GovernmentBattleDifficulty;
         CompletionMode := PendingTransition;
         DateTurn := Galaxy.CurrentTurn;
@@ -504,12 +502,12 @@ begin
       with GetPlayer.PlanetBattleHistory[High(GetPlayer.PlanetBattleHistory)] do
       begin
         MapId := PlanetBattleMapId;
-        Statistics[0] := RobotBattleStatistics[0];
-        Statistics[1] := RobotBattleStatistics[1];
-        Statistics[2] := RobotBattleStatistics[2];
-        Statistics[3] := RobotBattleStatistics[3];
-        Statistics[4] := RobotBattleStatistics[4];
-        Statistics[5] := RobotBattleStatistics[5];
+        Statistics.SignedTimeMs := RobotBattleStatistics.SignedTimeMs;
+        Statistics.RobotsBuilt := RobotBattleStatistics.RobotsBuilt;
+        Statistics.RobotsDestroyed := RobotBattleStatistics.RobotsDestroyed;
+        Statistics.TurretsBuilt := RobotBattleStatistics.TurretsBuilt;
+        Statistics.TurretsDestroyed := RobotBattleStatistics.TurretsDestroyed;
+        Statistics.BuildingsDestroyed := RobotBattleStatistics.BuildingsDestroyed;
         ResultCode := GovernmentBattleDifficulty;
         CompletionMode := PendingTransition;
         DateTurn := Galaxy.CurrentTurn;
@@ -520,8 +518,8 @@ begin
       TryAddAchievementProgress('IRONMAN', 1);
       Stage := 23;
       LoadRobotScreen.LoadCompletionData;
-      if GovernmentBattleDifficulty = 1 then LoadRobotScreen.RecordCompletion(PlanetBattleMapId, -RobotBattleStatistics[0] div 1000, 2)
-      else LoadRobotScreen.RecordCompletion(PlanetBattleMapId, -RobotBattleStatistics[0] div 1000, 1);
+      if GovernmentBattleDifficulty = 1 then LoadRobotScreen.RecordCompletion(PlanetBattleMapId, -RobotBattleStatistics.SignedTimeMs div 1000, 2)
+      else LoadRobotScreen.RecordCompletion(PlanetBattleMapId, -RobotBattleStatistics.SignedTimeMs div 1000, 1);
       LoadRobotScreen.SaveCompletionData;
     end
     else if PendingTransition = 4 then
@@ -537,12 +535,12 @@ begin
       with GetPlayer.PlanetBattleHistory[High(GetPlayer.PlanetBattleHistory)] do
       begin
         MapId := PlanetBattleMapId;
-        Statistics[0] := RobotBattleStatistics[0];
-        Statistics[1] := RobotBattleStatistics[1];
-        Statistics[2] := RobotBattleStatistics[2];
-        Statistics[3] := RobotBattleStatistics[3];
-        Statistics[4] := RobotBattleStatistics[4];
-        Statistics[5] := RobotBattleStatistics[5];
+        Statistics.SignedTimeMs := RobotBattleStatistics.SignedTimeMs;
+        Statistics.RobotsBuilt := RobotBattleStatistics.RobotsBuilt;
+        Statistics.RobotsDestroyed := RobotBattleStatistics.RobotsDestroyed;
+        Statistics.TurretsBuilt := RobotBattleStatistics.TurretsBuilt;
+        Statistics.TurretsDestroyed := RobotBattleStatistics.TurretsDestroyed;
+        Statistics.BuildingsDestroyed := RobotBattleStatistics.BuildingsDestroyed;
         ResultCode := GovernmentBattleDifficulty;
         CompletionMode := PendingTransition;
         DateTurn := Galaxy.CurrentTurn;
@@ -611,7 +609,7 @@ end;
 procedure TfGov.ShipClicked(Sender: TObjectGI);
 begin
   MainPanel.ShipClicked(Sender);
-  if ShipScreen.Flag3BC then
+  if ShipScreen.ShipStateChanged then
   begin
     Galaxy.CheckIntegrityChecksum(302);
     RefreshGovernmentDialog;
@@ -1046,7 +1044,7 @@ begin
     for I := 0 to Galaxy.Scripts.Count - 1 do
     begin
       Script := Galaxy.Scripts[I];
-      Script.RunAuxiliaryCode;
+      Script.RunDialogCode;
     end;
     if ScriptDialogOverrides.Count > 0 then
     begin
@@ -1578,12 +1576,12 @@ begin
   with GetPlayer.PlanetBattleHistory[High(GetPlayer.PlanetBattleHistory)] do
   begin
     MapId := PlanetBattleMapId;
-    Statistics[0] := 0;
-    Statistics[1] := 0;
-    Statistics[2] := 0;
-    Statistics[3] := 0;
-    Statistics[4] := 0;
-    Statistics[5] := 0;
+    Statistics.SignedTimeMs := 0;
+    Statistics.RobotsBuilt := 0;
+    Statistics.RobotsDestroyed := 0;
+    Statistics.TurretsBuilt := 0;
+    Statistics.TurretsDestroyed := 0;
+    Statistics.BuildingsDestroyed := 0;
     ResultCode := 1;
     CompletionMode := 0;
     DateTurn := Galaxy.CurrentTurn;

@@ -51,8 +51,8 @@ type
     procedure RunInjectedDialogKeepingScroll(Action: Integer); // @addr $5D1B14
     PresentedTextLength: Integer; // @offset $E0
     TextPresentationTimer: PCallbackTimerGI; // @offset $E4
-    PortraitFlag100: Boolean; // @offset $100
-    PortraitFlag101: Boolean; // @offset $101
+    LargePortraitLayout: Boolean; // @offset $100 Viewport is at least 1280x960; permits HD portraits or the table layout.
+    PortraitTableVisible: Boolean; // @offset $101 Large layout with UseTablesForGov; shows the table and standard portrait animations.
     procedure AdvanceTextPresentation(Timer: PCallbackTimerGI; UserData: Integer); // @addr $5A9758
     procedure PortraitCycleComplete(Sender: TObjectGI); // @addr $5A9BE0
     procedure SelectPortraitAnimation(Alternate: Boolean); // @addr $5A9C1C
@@ -424,12 +424,12 @@ begin
   Panel.SetSize(Classes.Point(GameScreenWidth, GameScreenHeight));
   Panel.FindByNameRecursive('ImageBG2').SetSize(Classes.Point(GameScreenWidth, GameScreenHeight));
   Panel.FindByNameRecursive('ImageBG').SetSize(Classes.Point(GameScreenWidth, GameScreenHeight));
-  PortraitFlag100 := False;
-  PortraitFlag101 := False;
+  LargePortraitLayout := False;
+  PortraitTableVisible := False;
   if (Cardinal(GameScreenWidth) >= 1280) and (Cardinal(GameScreenHeight) >= 960) then
   begin
-    PortraitFlag100 := True;
-    PortraitFlag101 := UseTablesForGov;
+    LargePortraitLayout := True;
+    PortraitTableVisible := UseTablesForGov;
   end;
   TalkPanel := Panel.FindByNameRecursive('PanelTalk');
   TextExtra := Min(Max(ExtraScreenHeight, 0), 250) div 3;
@@ -500,7 +500,7 @@ begin
   end;
   Table := Panel.FindByNameRecursive('Table');
   Table.SetPosition(Classes.Point((HalfWidth - Table.ClientSize.X) div 2 + HalfWidth + Table.LocalPosition.X, Table.LocalPosition.Y + TableY));
-  Table.SetActive(PortraitFlag101);
+  Table.SetActive(PortraitTableVisible);
   if Panel.FindByNameRecursive('Table2') <> nil then
   begin
     Table2 := Panel.FindByNameRecursive('Table2');
@@ -511,7 +511,7 @@ begin
   for I := 0 to 1 do
   begin
     Animation := Panel.FindByNameRecursive(AnsiString('Panel_Anim' + IntToStr(I)));
-    if not PortraitFlag101 then Animation.SetPosition(Classes.Point(Animation.LocalPosition.X + ExtraScreenWidth, Animation.LocalPosition.Y + ExtraScreenHeight))
+    if not PortraitTableVisible then Animation.SetPosition(Classes.Point(Animation.LocalPosition.X + ExtraScreenWidth, Animation.LocalPosition.Y + ExtraScreenHeight))
     else Animation.SetPosition(Classes.Point(PortraitX - I * DeltaX, PortraitY + I * DeltaY));
     HdAnimation := Panel.FindByNameRecursive(AnsiString('PanelHD_Anim' + IntToStr(I)));
     HdAnimation.SetPosition(Classes.Point((HalfWidth - HdAnimation.ClientSize.X) div 2 + HdAnimation.LocalPosition.X + HalfWidth, HdAnimation.LocalPosition.Y + ExtraScreenHeight));
@@ -638,9 +638,9 @@ begin
     if StationTransientControl.FindByNameRecursive('Table2') <> nil then
       StationTransientControl.FindByNameRecursive('Table2').SetActive(False);
     Stage := 18;
-    StationTransientControl.FindByNameRecursive('Table').SetActive(PortraitFlag100 and PortraitFlag101);
+    StationTransientControl.FindByNameRecursive('Table').SetActive(LargePortraitLayout and PortraitTableVisible);
     Stage := 19;
-    if PortraitFlag100 and not PortraitFlag101 then
+    if LargePortraitLayout and not PortraitTableVisible then
     begin
       Stage := 20;
       HdNormal := StationTransientControl.FindByNameRecursive('PanelHD_Anim0') as TgaiGI;
@@ -931,7 +931,7 @@ procedure TfRuinsTalk.ShipClicked(Sender: TObjectGI);
 begin
   if LoadPanel.IsAnimatingShutters then Exit;
   MainPanel.ShipClicked(Sender);
-  if ShipScreen.Flag3BC then
+  if ShipScreen.ShipStateChanged then
   begin
     Galaxy.CheckIntegrityChecksum(300);
     I_Start;
@@ -1181,7 +1181,7 @@ procedure TfRuinsTalk.SelectPortraitAnimation(Alternate: Boolean);
 var HdNormal, HdAlternate, Normal, AlternateAnimation: TgaiGI;
 begin
   if AnimGov <> 2 then Alternate := False;
-  if PortraitFlag100 and not PortraitFlag101 then
+  if LargePortraitLayout and not PortraitTableVisible then
   begin
     HdNormal := StationTransientControl.FindByNameRecursive('PanelHD_Anim0') as TgaiGI;
     HdNormal.CycleCompleteCallback := PortraitCycleComplete;
@@ -1516,7 +1516,7 @@ begin
     if GetPlayer.DockedTo.ScriptShip <> nil then
     begin
       Script := TScriptShip(GetPlayer.DockedTo.ScriptShip).Script;
-      Text := TScriptShip(GetPlayer.DockedTo.ScriptShip).GetGroup.DefinitionText;
+      Text := TScriptShip(GetPlayer.DockedTo.ScriptShip).GetGroup.StationDialogVariable;
       if Text <> '' then
       begin
         Script.PublishShipContext(TScriptShip(GetPlayer.DockedTo.ScriptShip));
@@ -1732,7 +1732,7 @@ begin
       for I := 0 to Galaxy.Scripts.Count - 1 do
       begin
         Script := TScript(Galaxy.Scripts[I]);
-        Script.RunAuxiliaryCode;
+        Script.RunDialogCode;
       end;
       Stage := 19;
       if ScriptDialogOverrides.Count > 0 then
@@ -2428,7 +2428,7 @@ end;
 procedure TfRuinsTalk.RunScriptGameEnd(Answer: Integer);
 begin
   CurrentScript.ExecuteDialogAnswer(Answer);
-  GameEndReason := 0;
+  GameEndReason := gerDefault;
   RequestedScreenId := screenGameEnd;
   RequestClose(1);
 end;
@@ -3657,7 +3657,7 @@ end;
 { @routine $5BE104 TfRuinsTalk_ConfirmMilitaryBaseTravel }
 procedure TfRuinsTalk.ConfirmMilitaryBaseTravel(Action: Integer);
 begin
-  if PortraitFlag100 and PortraitFlag101 and (StationTransientControl.FindByNameRecursive('Table2') <> nil) then
+  if LargePortraitLayout and PortraitTableVisible and (StationTransientControl.FindByNameRecursive('Table2') <> nil) then
   begin
     StationTransientControl.FindByNameRecursive('Table2').SetActive(True);
     StationTransientControl.FindByNameRecursive('Table').SetActive(False);
@@ -3691,7 +3691,7 @@ end;
 { @routine $5BE484 TfRuinsTalk_ShowMilitaryBaseArrivalDialog }
 procedure TfRuinsTalk.ShowMilitaryBaseArrivalDialog(Action: Integer);
 begin
-  if PortraitFlag100 and PortraitFlag101 and (StationTransientControl.FindByNameRecursive('Table2') <> nil) then
+  if LargePortraitLayout and PortraitTableVisible and (StationTransientControl.FindByNameRecursive('Table2') <> nil) then
   begin
     StationTransientControl.FindByNameRecursive('Table2').SetActive(True);
     StationTransientControl.FindByNameRecursive('Table').SetActive(False);
@@ -3706,7 +3706,7 @@ end;
 { @routine $5BE6E0 TfRuinsTalk_DeclineMilitaryBaseTravel }
 procedure TfRuinsTalk.DeclineMilitaryBaseTravel(Action: Integer);
 begin
-  if PortraitFlag100 and PortraitFlag101 and (StationTransientControl.FindByNameRecursive('Table2') <> nil) then
+  if LargePortraitLayout and PortraitTableVisible and (StationTransientControl.FindByNameRecursive('Table2') <> nil) then
   begin
     StationTransientControl.FindByNameRecursive('Table').SetActive(True);
     StationTransientControl.FindByNameRecursive('Table2').SetActive(False);
@@ -3724,7 +3724,7 @@ var
   Ship: TShip;
   Names: WideString;
 begin
-  if PortraitFlag100 and PortraitFlag101 and (StationTransientControl.FindByNameRecursive('Table2') <> nil) then
+  if LargePortraitLayout and PortraitTableVisible and (StationTransientControl.FindByNameRecursive('Table2') <> nil) then
   begin
     StationTransientControl.FindByNameRecursive('Table2').SetActive(True);
     StationTransientControl.FindByNameRecursive('Table').SetActive(False);
@@ -5483,7 +5483,7 @@ begin
           end;
           ReplaceTextToken(Text, '<Date>', Galaxy.FormatTurnDate(GetPlayer.CaptainHealth[I].AppliedTurn), '<color=255,240,100>');
           ReplaceTextToken(Text, '<InfectionObjectName>', GetPlayer.StatusEffectSourceNames[I], '<color=255,240,100>');
-          Cost := GenerateValueForSizeLevel(CaptainHealthDefinitions[I].EffectClass0D, Galaxy.ComputeScaledMiniMoney(GetPlayer.DockedTo.OwnerId), Galaxy.ComputeScaledAverageMoney(GetPlayer.DockedTo.OwnerId), 50, (Galaxy.CurrentTurn div 10) * Galaxy.GenerationSeed * I);
+          Cost := GenerateValueForSizeLevel(CaptainHealthDefinitions[I].MedicalPriceSizeLevel, Galaxy.ComputeScaledMiniMoney(GetPlayer.DockedTo.OwnerId), Galaxy.ComputeScaledAverageMoney(GetPlayer.DockedTo.OwnerId), 50, (Galaxy.CurrentTurn div 10) * Galaxy.GenerationSeed * I);
           Inc(TotalCost, Cost);
           ReplaceTextToken(Text, '<Money>', IntToStr(Cost), '<color=255,240,100>');
           if IllnessText = '' then IllnessText := IllnessText + Text
@@ -5503,7 +5503,7 @@ begin
       for I := 1 to 12 do
         if GetPlayer.CaptainHealth[I].Progress <> 0 then
         begin
-          Cost := GenerateValueForSizeLevel(CaptainHealthDefinitions[I].EffectClass0D, Galaxy.ComputeScaledMiniMoney(GetPlayer.DockedTo.OwnerId), Galaxy.ComputeScaledAverageMoney(GetPlayer.DockedTo.OwnerId), 50, (Galaxy.CurrentTurn div 10) * Galaxy.GenerationSeed * I);
+          Cost := GenerateValueForSizeLevel(CaptainHealthDefinitions[I].MedicalPriceSizeLevel, Galaxy.ComputeScaledMiniMoney(GetPlayer.DockedTo.OwnerId), Galaxy.ComputeScaledAverageMoney(GetPlayer.DockedTo.OwnerId), 50, (Galaxy.CurrentTurn div 10) * Galaxy.GenerationSeed * I);
           if (GetPlayer.MedicalPolicyTicks > 0) and (GetPlayer.DockedTo.CurrentStar.ControlFaction <> sfPirates) then Cost := Cost div 2;
           if GetPlayer.Money >= Cost then
             AddChoice('- ' + FormatText2(LocalizedColorText('FormRuins.MC.Illnes.PlayerIll'), '<color=255,240,100>', '<IllName>', CaptainHealthDefinitions[I].Name, '<Money>', IntToStr(Cost)), I, TreatSelectedDiseaseAtMedicalCenter)
@@ -5553,7 +5553,7 @@ begin
       GetPlayer.CaptainHealth[I].Progress := 0;
       GetPlayer.StatusEffectSourceNames[I] := '';
       Name := CaptainHealthDefinitions[I].Name;
-      Cost := GenerateValueForSizeLevel(CaptainHealthDefinitions[I].EffectClass0D, Galaxy.ComputeScaledMiniMoney(GetPlayer.DockedTo.OwnerId), Galaxy.ComputeScaledAverageMoney(GetPlayer.DockedTo.OwnerId), 50, (Galaxy.CurrentTurn div 10) * Galaxy.GenerationSeed * I);
+      Cost := GenerateValueForSizeLevel(CaptainHealthDefinitions[I].MedicalPriceSizeLevel, Galaxy.ComputeScaledMiniMoney(GetPlayer.DockedTo.OwnerId), Galaxy.ComputeScaledAverageMoney(GetPlayer.DockedTo.OwnerId), 50, (Galaxy.CurrentTurn div 10) * Galaxy.GenerationSeed * I);
       if (GetPlayer.MedicalPolicyTicks > 0) and (GetPlayer.DockedTo.CurrentStar.ControlFaction <> sfPirates) then Cost := Cost div 2;
       GetPlayer.SetMoney(GetPlayer.Money - Cost);
       GetPlayer.DiseaseImmunity := Min(100, GetPlayer.DiseaseImmunity + 40);
@@ -5691,7 +5691,7 @@ begin
     CaptainHealthDefinitions[I].Duration div 3, GetPlayer.DockedTo.Id + I + Galaxy.CurrentTurn div 13);
   Duration := Round(Duration / GalaxyDifficultyTuning[Galaxy.DifficultyLevels[7]].GoodsEventDurationFactor);
         ReplaceTextToken(Text, '<Month>', IntToStr(Duration div 30), '<color=255,240,100>');
-        Cost := GenerateValueForSizeLevel(CaptainHealthDefinitions[I].EffectClass0D, Galaxy.ComputeScaledSmallMoney(GetPlayer.DockedTo.OwnerId), 2 * Galaxy.ComputeScaledAverageMoney(GetPlayer.DockedTo.OwnerId), 50, (Galaxy.CurrentTurn div 13) * Galaxy.GenerationSeed * I);
+        Cost := GenerateValueForSizeLevel(CaptainHealthDefinitions[I].MedicalPriceSizeLevel, Galaxy.ComputeScaledSmallMoney(GetPlayer.DockedTo.OwnerId), 2 * Galaxy.ComputeScaledAverageMoney(GetPlayer.DockedTo.OwnerId), 50, (Galaxy.CurrentTurn div 13) * Galaxy.GenerationSeed * I);
         if (GetPlayer.MedicalPolicyTicks > 0) and (GetPlayer.DockedTo.CurrentStar.ControlFaction <> sfPirates) then Cost := Cost div 2;
         ReplaceTextToken(Text, '<Money>', IntToStr(Cost), '<color=255,240,100>');
         if StimulantText = '' then StimulantText := StimulantText + Text
@@ -5705,7 +5705,7 @@ begin
     for I := 13 to 24 do
       if I in Offers then
       begin
-        Cost := GenerateValueForSizeLevel(CaptainHealthDefinitions[I].EffectClass0D, Galaxy.ComputeScaledSmallMoney(GetPlayer.DockedTo.OwnerId), 2 * Galaxy.ComputeScaledAverageMoney(GetPlayer.DockedTo.OwnerId), 50, (Galaxy.CurrentTurn div 13) * Galaxy.GenerationSeed * I);
+        Cost := GenerateValueForSizeLevel(CaptainHealthDefinitions[I].MedicalPriceSizeLevel, Galaxy.ComputeScaledSmallMoney(GetPlayer.DockedTo.OwnerId), 2 * Galaxy.ComputeScaledAverageMoney(GetPlayer.DockedTo.OwnerId), 50, (Galaxy.CurrentTurn div 13) * Galaxy.GenerationSeed * I);
         if (GetPlayer.MedicalPolicyTicks > 0) and (GetPlayer.DockedTo.CurrentStar.ControlFaction <> sfPirates) then Cost := Cost div 2;
         if (GetPlayer.Money < Cost) or (GetPlayer.CaptainHealth[I].Progress = 100) then
           AddChoice('- ' + FormatText2(LocalizedColorText('FormRuins.MC.Stimulants.PlayerStim'), '<color=255,240,100>', '<StimName>', CaptainHealthDefinitions[I].Name, '<Money>', IntToStr(Cost)), 0, ScriptDialogBlockCallback)
@@ -5738,7 +5738,7 @@ begin
   Duration := Round(Duration / GalaxyDifficultyTuning[Galaxy.DifficultyLevels[7]].GoodsEventDurationFactor);
       GetPlayer.CaptainHealth[I].AppliedTurn := Galaxy.CurrentTurn;
       GetPlayer.CaptainHealth[I].ExpireTurn := Duration + Galaxy.CurrentTurn;
-      Cost := GenerateValueForSizeLevel(CaptainHealthDefinitions[I].EffectClass0D, Galaxy.ComputeScaledSmallMoney(GetPlayer.DockedTo.OwnerId), 2 * Galaxy.ComputeScaledAverageMoney(GetPlayer.DockedTo.OwnerId), 50, (Galaxy.CurrentTurn div 13) * Galaxy.GenerationSeed * I);
+      Cost := GenerateValueForSizeLevel(CaptainHealthDefinitions[I].MedicalPriceSizeLevel, Galaxy.ComputeScaledSmallMoney(GetPlayer.DockedTo.OwnerId), 2 * Galaxy.ComputeScaledAverageMoney(GetPlayer.DockedTo.OwnerId), 50, (Galaxy.CurrentTurn div 13) * Galaxy.GenerationSeed * I);
       if (GetPlayer.MedicalPolicyTicks > 0) and (GetPlayer.DockedTo.CurrentStar.ControlFaction <> sfPirates) then Cost := Cost div 2;
       GetPlayer.SetMoney(GetPlayer.Money - Cost);
       GetPlayer.DiseaseImmunity := Max(0, GetPlayer.DiseaseImmunity - 20);

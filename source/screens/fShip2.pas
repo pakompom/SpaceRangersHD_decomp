@@ -28,7 +28,7 @@ type
     function GetLocalStorageOwner: TObject; // @addr $6F5A70 Borrows the current planet or docked ship.
     function SlotToTip(SlotName: WideString): Byte; // @addr 0x6F7FBC @note "Matches the second underscore-delimited component against eight equipment slot names; raises on no match."
     PlayServiceAnimations: Boolean; // @offset $D5 Restarts active hull/equipment repair animations on the next OnOpen.
-    FlagD4: Boolean; // @offset $D4 Gates star-map input and selects OnOpen item-script events; full meaning unresolved.
+    ReopenRequested: Boolean; // @offset $D4 Requests a background refresh and another ship-screen pass; OnOpen selects the script re-entry events.
     ItemInfoWindow: TWindowGI; // @offset 0xD8
     ItemImage: TImageGI; // @offset 0xDC
     ItemNameLabel: TLabelGI; // @offset 0xE0
@@ -60,13 +60,13 @@ type
     SelectedHoldItem: TItem; // @offset $35C Selected equipment or artefact; nil for goods.
 
     PreserveSpaceMusic: Boolean; // @offset $3BD Suppresses space-music changes in SelectMusic.
-    Flag3BC: Boolean; // @offset $3BC Accumulated across modal ship-screen reopenings; full meaning unresolved.
+    ShipStateChanged: Boolean; // @offset $3BC Accumulates changes across modal reopenings so callers refresh ship information and cargo controls.
     PropertyHintRightEdge: Integer; // @offset $47C Captured RankWnd left edge; the scanner positions its property window immediately to its left.
     ShipToInspect: TShip; // @offset $49C Native OnOpen selects this ship when non-nil.
     ShipLoopSound: TSoundBufferControl; // @offset $48C
     ScriptVideoStartedAt: Cardinal; // @offset $480
     ScriptVideoTimer: PCallbackTimerGI; // @offset $484
-    RemoteHoldMode: Boolean; // @offset $4A4 Native constructor initializes False; meaning unresolved.
+    RemoteHoldMode: Boolean; // @offset $4A4 ToggleRemoteHoldClicked switches between equipment/local cargo and the remote-hold panels.
 
     SkillImagesP: array[0..5] of TImageGI; // @offset $11C
     SkillImagesN: array[0..5] of TImageGI; // @offset $134
@@ -896,10 +896,10 @@ begin
   (GetByName('PM_Logo') as TGraphButtonGI).SetHitTestDisabled(True);
   HighlightRepairableEquipment := False;
   CustomCursorEnabled := True;
-  UpdateActionCursor(FlagD4);
+  UpdateActionCursor(ReopenRequested);
   SetCursorActive(True);
-  SavedFlag := FlagD4;
-  FlagD4 := False;
+  SavedFlag := ReopenRequested;
+  ReopenRequested := False;
   if SavedFlag then
   begin
     PlayerHoldShip.ScriptItemsAct(satOnReEnteringForm,nil,nil,0);
@@ -910,8 +910,8 @@ begin
     PlayerHoldShip.ScriptItemsAct(satOnEnteringForm,nil,nil,0);
     if GetPlayer <> PlayerHoldShip then GetPlayer.ScriptItemsAct(satOnEnteringOtherShip,nil,nil,0);
   end;
-  ScriptChangedFlag := FlagD4;
-  FlagD4 := SavedFlag;
+  ScriptChangedFlag := ReopenRequested;
+  ReopenRequested := SavedFlag;
   MainPanel.OnOpen;
   if CurrentScreenId = screenArcadeBattle then MainPanel.Hide else MainPanel.Show;
   for I := 0 to PlayerHoldShip.Inventory.Count - 1 do
@@ -925,16 +925,16 @@ begin
         (not ((Item as TWeapon).Target is TMissile) or (Galaxy.IdToMissile(((Item as TWeapon).Target as TMissile).Id) = nil)) then
         (Item as TWeapon).Target := nil;
   end;
-  if not FlagD4 then RemoveEmptyPlayerHoldSlots;
-  if not FlagD4 then StorageFirstSlot := 0;
+  if not ReopenRequested then RemoveEmptyPlayerHoldSlots;
+  if not ReopenRequested then StorageFirstSlot := 0;
   GetPlayer.RepairDuplicateStorageSlots(GetLocalStorageOwner);
   RefreshEquipmentSlotControls;
   Galaxy.PrimeIntegrityChecksum1(420);
   if AuxRenderBuffer.GetPixels = nil then CaptureScreenBackground(True,0);
   BackgroundBuffer.BindExternalGraphBuf(AuxRenderBuffer);
   PreserveSpaceMusic := ArcadeBattleScreen = ParentLoop;
-  Flag3BC := False;
-  if not FlagD4 then
+  ShipStateChanged := False;
+  if not ReopenRequested then
   begin
     SelectedHoldKind := phkEmpty;
     SelectedHoldItem := nil;
@@ -1113,7 +1113,7 @@ begin
     CancelCallbackTimer(RightPanelSlideTimer);
     RightPanelSlideTimer := nil;
   end;
-  if not FlagD4 or RemoteHoldMode then
+  if not ReopenRequested or RemoteHoldMode then
   begin
     with GetByName('PanelRight') do
     begin
@@ -1131,7 +1131,7 @@ begin
     end;
     with GetByName('PanelLH') do SetActive(True);
   end;
-  if not FlagD4 or not RemoteHoldMode then
+  if not ReopenRequested or not RemoteHoldMode then
   begin
     with GetByName('PanelRH') do
     begin
@@ -1151,7 +1151,7 @@ begin
   end;
   with GetByName('PanelDestr') do
   begin
-    if not FlagD4 then SetPosition(Classes.Point(DestrPanelSlideWidth,LocalPosition.Y))
+    if not ReopenRequested then SetPosition(Classes.Point(DestrPanelSlideWidth,LocalPosition.Y))
     else SetPosition(Classes.Point(DestrPanelRestLeft,LocalPosition.Y));
     SetActive(not RemoteHoldMode and (GetPlayer = PlayerHoldShip) and (GetPlayer.GetHull.CapitalShip = 1));
   end;
@@ -1159,7 +1159,7 @@ begin
     SetActive((GetPlayer = PlayerHoldShip) and not GetPlayer.InHyperspace and (GetPlayer.RuinsMode = 0) and (QueuedArcadeBattles.Count <= 0));
   with GetByName('CustomBridgeInto') as TGraphButtonGI do
     SetActive((GetPlayer = PlayerHoldShip) and (GetPlayer.GetHull.CapitalShip > 1) and not GetPlayer.InHyperspace and (GetPlayer.RuinsMode = 0) and (QueuedArcadeBattles.Count <= 0));
-  if not FlagD4 then
+  if not ReopenRequested then
   begin
     RightPanelSlideStep := 20;
     RightPanelSlideTimer := ScheduleCallbackTimer(20,20,SlideRightPanelTimer);
@@ -1195,7 +1195,7 @@ begin
       RestartPlayback;
     end;
   end;
-  if FlagD4 then
+  if ReopenRequested then
   begin
     if StorageUpButton.Active then StorageDownClicked(nil) else StorageUpClicked(nil);
   end
@@ -1292,14 +1292,14 @@ begin
   RefreshLoadEquippedRocketsButton;
   GetByName('SC_Panel').SetActive(CanUseLocalStorage);
   CustomCursorEnabled := True;
-  UpdateActionCursor(FlagD4);
+  UpdateActionCursor(ReopenRequested);
   SetCursorActive(True);
   ShipLoopSound.SetVolume(1.0);
   PlayServiceAnimations := False;
-  FlagD4 := ScriptChangedFlag;
+  ReopenRequested := ScriptChangedFlag;
   MainPanel.RebuildMessageButtons(False);
   Galaxy.PrimeIntegrityChecksum1(501);
-  if not FlagD4 then Galaxy.PrimeIntegrityChecksum2(502);
+  if not ReopenRequested then Galaxy.PrimeIntegrityChecksum2(502);
 end;
 { @end $6F3078 }
 
@@ -1308,10 +1308,10 @@ procedure TfShip2.OnClose;
 var I: Integer; Binding: TScriptShip;
 begin
   Galaxy.CheckIntegrityChecksum1(503);
-  if not FlagD4 then Galaxy.CheckIntegrityChecksum2(504);
+  if not ReopenRequested then Galaxy.CheckIntegrityChecksum2(504);
   inherited OnClose;
   if ShipToInspect <> nil then PlayerHoldShip := ShipToInspect else PlayerHoldShip := GetPlayer;
-  if not FlagD4 then
+  if not ReopenRequested then
   begin
     PlayerHoldShip.ScriptItemsAct($19,nil,nil,0);
     if GetPlayer <> PlayerHoldShip then GetPlayer.ScriptItemsAct($1C,nil,nil,0);
@@ -1378,7 +1378,7 @@ begin
       CancelCallbackTimer(PropertyInfoHideTimer);
       PropertyInfoHideTimer := nil;
     end;
-  if not FlagD4 then ReturnSelectedHoldEntry;
+  if not ReopenRequested then ReturnSelectedHoldEntry;
     if RightPanelSlideTimer <> nil then
     begin
       CancelCallbackTimer(RightPanelSlideTimer);
@@ -1410,15 +1410,15 @@ begin
     end;
   end;
   GetPlayer.RefreshStorageBubbles;
-  if not FlagD4 then
+  if not ReopenRequested then
   begin
     ShipLoopSound.SetVolume(0.0);
     PlayerHoldShip := nil;
     ShipToInspect := nil;
   end;
-  CustomCursorEnabled := not FlagD4;
+  CustomCursorEnabled := not ReopenRequested;
   SavedCaptainFrame := (GetByName('CaptainA') as TgaiGI).SequenceFrame;
-  Flag3BC := True;
+  ShipStateChanged := True;
   RemoteHoldVisible := False;
   MainPanel.OnClose;
 end;
@@ -1621,7 +1621,7 @@ end;
 { @routine $6F67F0 TfShip2_CloseClicked }
 procedure TfShip2.CloseClicked(Sender: TObjectGI);
 begin
-  if not FlagD4 then
+  if not ReopenRequested then
   begin
     Galaxy.CheckIntegrityChecksum1(427);
     ReturnSelectedHoldEntry;
@@ -1636,7 +1636,7 @@ end;
 { @routine $6F6854 TfShip2_RewardsMouseDown }
 procedure TfShip2.RewardsMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint);
 begin
-  if UiRuntimeFlag and not PlayerHoldShip.InHyperspace and (QueuedArcadeBattles.Count <= 0) and RewardsBuffer.Active then
+  if AwardDialogsEnabled and not PlayerHoldShip.InHyperspace and (QueuedArcadeBattles.Count <= 0) and RewardsBuffer.Active then
   begin
     if SelectedHoldKind <> phkEmpty then
     begin
@@ -1654,8 +1654,8 @@ begin
     else
     begin
       Galaxy.CheckIntegrityChecksum1(334);
-      Flag3BC := True;
-      FlagD4 := True;
+      ShipStateChanged := True;
+      ReopenRequested := True;
       PlayTransitionSounds := False;
       CloseClicked(nil);
     end;
@@ -2564,8 +2564,8 @@ begin
   if PlayerHoldShip.InHyperspace or (QueuedArcadeBattles.Count > 0) then RefreshShipView
   else if not RemoteHoldVisible then
   begin
-    Flag3BC := True;
-    FlagD4 := True;
+    ShipStateChanged := True;
+    ReopenRequested := True;
     PlayTransitionSounds := False;
     CloseClicked(nil);
   end;
@@ -2630,8 +2630,8 @@ begin
   end
   else if not RemoteHoldVisible then
   begin
-    Flag3BC := True;
-    FlagD4 := True;
+    ShipStateChanged := True;
+    ReopenRequested := True;
     PlayTransitionSounds := False;
     CloseClicked(nil);
   end;
@@ -2703,8 +2703,8 @@ begin
   end
   else if not RemoteHoldVisible then
   begin
-    Flag3BC := True;
-    FlagD4 := True;
+    ShipStateChanged := True;
+    ReopenRequested := True;
     PlayTransitionSounds := False;
     CloseClicked(nil);
   end;
@@ -2731,8 +2731,8 @@ var
       (RemoteHoldVisible and NeedsRefresh) then RefreshShipView
     else if not RemoteHoldVisible then
     begin
-      Flag3BC := True;
-      FlagD4 := True;
+      ShipStateChanged := True;
+      ReopenRequested := True;
       PlayTransitionSounds := False;
       CloseClicked(nil);
     end;
@@ -3523,8 +3523,8 @@ begin
     Galaxy.PrimeIntegrityChecksum1(467);
     UpdateActionCursor(True);
     RefreshShipView;
-    Flag3BC := True;
-    FlagD4 := True;
+    ShipStateChanged := True;
+    ReopenRequested := True;
     PlayTransitionSounds := False;
     CloseClicked(nil);
   end;
@@ -3887,8 +3887,8 @@ begin
     end;
     if (GetPlayer = PlayerHoldShip) and (Key = Ord('K')) and ConfigureChameleon then
     begin
-      Flag3BC := True;
-      FlagD4 := True;
+      ShipStateChanged := True;
+      ReopenRequested := True;
       PlayTransitionSounds := False;
       Galaxy.PrimeIntegrityChecksum1(475);
       CloseClicked(nil);
@@ -4277,8 +4277,8 @@ begin
         end;
       if Changed then
       begin
-        Flag3BC := True;
-        FlagD4 := True;
+        ShipStateChanged := True;
+        ReopenRequested := True;
         PlayTransitionSounds := False;
         CloseClicked(nil);
       end;
@@ -4498,8 +4498,8 @@ begin
   Galaxy.PrimeIntegrityChecksum1(473);
   if Changed then
   begin
-    Flag3BC := True;
-    FlagD4 := True;
+    ShipStateChanged := True;
+    ReopenRequested := True;
     PlayTransitionSounds := False;
     CloseClicked(nil);
   end;
@@ -4766,7 +4766,7 @@ begin
   RemoveEmptyPlayerHoldSlots;
   if not RemoteHoldVisible then
   begin
-    FlagD4 := True;
+    ReopenRequested := True;
     PlayTransitionSounds := False;
     CloseClicked(nil);
   end;
@@ -4880,7 +4880,7 @@ begin
   begin
     if not GetPlayer.CanRepairEquipmentTech(SelectedHoldItem as TEquipment) then
     begin
-      Flag3BC := True;
+      ShipStateChanged := True;
       ShowMessageBoxGI(Self,LocalizedText('FormShip.TooAdvancedForRepair'),mbgCancel or mbgUnused04);
       RefreshShipView;
     end
@@ -4909,7 +4909,7 @@ begin
       end;
       GetPlayer.SetMoney(GetPlayer.Money - (SelectedHoldItem as TEquipment).CalculateRepairCost);
       (SelectedHoldItem as TEquipment).Repair;
-      Flag3BC := True;
+      ShipStateChanged := True;
       SoundManager.PlaySound('Sound.Repair');
       if SelectedHoldKind = phkEquipment then
       begin
@@ -4956,7 +4956,7 @@ begin
     end
     else
     begin
-      Flag3BC := True;
+      ShipStateChanged := True;
       Text := '';
       if PlayerHoldShip.DockedTo <> nil then
       begin
@@ -4973,7 +4973,7 @@ begin
     end;
   end;
   RemoveEmptyPlayerHoldSlots;
-  FlagD4 := True;
+  ReopenRequested := True;
   PlayTransitionSounds := False;
   CloseClicked(nil);
 end;
@@ -5066,7 +5066,7 @@ begin
       Event.AddTextData(SelectedHoldItem.GetDisplayName);
       Event.AddTextData(SelectedHoldItem.GetCategoryConfigName);
     end;
-    Flag3BC := True;
+    ShipStateChanged := True;
     if SelectedHoldItem is TWeapon then (SelectedHoldItem as TWeapon).Target := nil;
     if (SelectedHoldKind = phkEquipment) and (SelectedHoldItem.ItemType = t_Hull) and ((SelectedHoldItem as THull).HullType = htSpecial) then
     begin
@@ -5106,7 +5106,7 @@ begin
         FormatText1(LocalizedText('FormShip.SellItem'),'<color=0,50,200>','<Name>',LowerCaseWideString(GoodsMarket[SelectedGoodsIndex].DisplayName)),
         0,SelectedGoodsQuantity,SelectedGoodsQuantity,GetPlayer.ShopGoodsSellPrice(SelectedGoodsIndex,nil),Count,1000000000,Count) <> 1) or
         (Count < 1) or (Count > SelectedGoodsQuantity) then Exit;
-    Flag3BC := True;
+    ShipStateChanged := True;
     SoundManager.PlaySound('Sound.Sell');
     Inc(GetPlayer.CargoGoods[SelectedGoodsIndex].Count,SelectedGoodsQuantity);
     Inc(GetPlayer.CargoGoods[SelectedGoodsIndex].TotalCost,SelectedGoodsCost);
@@ -5117,7 +5117,7 @@ begin
     RefreshShipView;
   end;
   RemoveEmptyPlayerHoldSlots;
-  FlagD4 := True;
+  ReopenRequested := True;
   PlayTransitionSounds := False;
   CloseClicked(nil);
 end;
@@ -5187,8 +5187,8 @@ begin
         RefreshShipView;
         if ActionResult <> 1 then
         begin
-          Flag3BC := True;
-          FlagD4 := True;
+          ShipStateChanged := True;
+          ReopenRequested := True;
           PlayTransitionSounds := False;
         end;
         CloseClicked(nil);
@@ -5213,8 +5213,8 @@ begin
       begin
         if ActionResult <> 1 then
         begin
-          Flag3BC := True;
-          FlagD4 := True;
+          ShipStateChanged := True;
+          ReopenRequested := True;
           PlayTransitionSounds := False;
         end;
         CloseClicked(nil);
@@ -5232,7 +5232,7 @@ begin
       AddOrUpdatePlayerBubble(7,Galaxy.CurrentTurn,Text,(SelectedHoldItem as TTreasureMap).GetTargetPlanetName);
       MainPanel.RebuildMessageButtons(False);
       ReturnSelectedHoldEntry;
-      FlagD4 := True;
+      ReopenRequested := True;
       PlayTransitionSounds := False;
       CloseClicked(nil);
     end;
@@ -5254,8 +5254,8 @@ begin
           RefreshShipView;
           if ActionResult <> 1 then
           begin
-            Flag3BC := True;
-            FlagD4 := True;
+            ShipStateChanged := True;
+            ReopenRequested := True;
             PlayTransitionSounds := False;
           end;
           CloseClicked(nil);
@@ -5265,7 +5265,7 @@ begin
     else if SelectedHoldKind = phkArtefact then
     begin
       RemoveEmptyPlayerHoldSlots;
-      FlagD4 := True;
+      ReopenRequested := True;
       PlayTransitionSounds := False;
       CloseClicked(nil);
     end;
@@ -5318,7 +5318,7 @@ begin
     SoundManager.PlaySound('Sound.Buy');
     RefreshShipView;
     RemoveEmptyPlayerHoldSlots;
-    FlagD4 := True;
+    ReopenRequested := True;
     PlayTransitionSounds := False;
     CloseClicked(nil);
   end
@@ -5356,7 +5356,7 @@ begin
     SoundManager.PlaySound('Sound.Buy');
     RefreshShipView;
     RemoveEmptyPlayerHoldSlots;
-    FlagD4 := True;
+    ReopenRequested := True;
     PlayTransitionSounds := False;
     CloseClicked(nil);
   end
@@ -5419,7 +5419,7 @@ begin
       Galaxy.PrimeIntegrityChecksum1(501);
       RefreshShipView;
       RemoveEmptyPlayerHoldSlots;
-      FlagD4 := True;
+      ReopenRequested := True;
       PlayTransitionSounds := False;
       CloseClicked(nil);
     end;
@@ -5496,7 +5496,7 @@ begin
           with Control as TgaiGI do SetActive(True);
       end;
     end;
-    Flag3BC := True;
+    ShipStateChanged := True;
     SoundManager.PlaySound('Sound.Repair');
     if SelectedHoldKind = phkEquipment then
     begin
@@ -5531,7 +5531,7 @@ begin
     RefreshShipView;
     RemoveEmptyPlayerHoldSlots;
     PlayServiceAnimations := True;
-    FlagD4 := True;
+    ReopenRequested := True;
     PlayTransitionSounds := False;
     CloseClicked(nil);
   end;
@@ -5617,7 +5617,7 @@ begin
   Event := AddGalaxyEvent('PlayerBuysMissiles');
   Event.AddData(Cost);
   Event.AddData(Quantity);
-  Flag3BC := True;
+  ShipStateChanged := True;
   SoundManager.PlaySound('Sound.Buy');
   if SelectedHoldKind = phkEquipment then
   begin
@@ -5652,7 +5652,7 @@ begin
   RefreshShipView;
   RemoveEmptyPlayerHoldSlots;
   PlayServiceAnimations := True;
-  FlagD4 := True;
+  ReopenRequested := True;
   PlayTransitionSounds := False;
   CloseClicked(nil);
 end;
@@ -7090,8 +7090,8 @@ begin
   Galaxy.CheckIntegrityChecksum1(515);
   if not RemoteHoldVisible then
   begin
-    Flag3BC := True;
-    FlagD4 := True;
+    ShipStateChanged := True;
+    ReopenRequested := True;
     PlayTransitionSounds := False;
     CloseClicked(nil);
   end;
@@ -7501,7 +7501,7 @@ var
   CursorAlignment: array[0..2] of Byte; // Native three unused bytes between the Boolean result and packed cursor record.
   State: TCursorStateGI;
 begin
-  ParentLoop.RootUiObject.NativeHook50;
+  ParentLoop.RootUiObject.OnModalSuspend;
   ParentLoop.CaptureCursorState(@State);
   ParentLoop.SetCursorActive(False);
   ParentLoop.DrawQueuedUpdateRects;
@@ -7513,7 +7513,7 @@ begin
   ParentLoop.InvalidateViewport;
   ParentLoop.RestoreCursorState(@State);
   ParentLoop.UpdateCursorPosition;
-  ParentLoop.RootUiObject.NativeHook48;
+  ParentLoop.RootUiObject.OnModalResume;
   PostMouseMoveMessage;
 end;
 { @end $7120F0 }
@@ -7527,8 +7527,8 @@ begin
     if PlayerHoldShip.RetrieveStoredItems(GetLocalStorageOwner) then
     begin
       Galaxy.PrimeIntegrityChecksum1(516);
-      Flag3BC := True;
-      FlagD4 := True;
+      ShipStateChanged := True;
+      ReopenRequested := True;
       PlayTransitionSounds := False;
       CloseClicked(nil);
     end;
@@ -7585,8 +7585,8 @@ begin
     if PlayerHoldShip.StoreLooseInventoryAt(GetLocalStorageOwner) then
     begin
       Galaxy.PrimeIntegrityChecksum1(520);
-      Flag3BC := True;
-      FlagD4 := True;
+      ShipStateChanged := True;
+      ReopenRequested := True;
       PlayTransitionSounds := False;
       CloseClicked(nil);
     end;
@@ -7975,11 +7975,11 @@ begin
   end;
   if Changed then
   begin
-    Flag3BC := True;
+    ShipStateChanged := True;
     if PlaySaleSound then SoundManager.PlaySound('Sound.Sell');
     Galaxy.PrimeIntegrityChecksum1(518);
     RefreshShipView;
-    FlagD4 := True;
+    ReopenRequested := True;
     PlayTransitionSounds := False;
     CloseClicked(nil);
   end;

@@ -21,7 +21,7 @@ type
     DraggedGoodsIndex: Integer; // @offset $E0 -1 when no market/cargo row is being dragged.
     NameFaceHeight: Integer; // @offset $E4
     FaceCaptionHeight: Integer; // @offset $E8 Total original extent from name top to character-description bottom.
-    FlagEC: Boolean; // @offset $EC Suppresses parent star-map presentation during modal transitions; other uses unresolved.
+    ReopenRequested: Boolean; // @offset $EC Keeps the modal goods shop active for another pass after refreshing the parent background.
 
     TradeRows: array[0..7] of TGoodsShopTradeRow; // @offset $F0
     PartnerCargoLimit: Integer; // @offset $170 Trading partner cargo limit.
@@ -160,7 +160,7 @@ var
   BackgroundPath: WideString;
   UnusedNativeLocal: array[0..3] of Byte; { Unreferenced native storage; original type is unknown. }
 begin
-  if not FlagEC then LoadPanel.OnOpen;
+  if not ReopenRequested then LoadPanel.OnOpen;
   if not MusicInPlanetEnabled then MusicManager.RequestFadeOut;
   if GetPlayer.IsOnPlanet or GetPlayer.IsDockedToShip then
   begin
@@ -256,7 +256,7 @@ begin
       else GraphBuf.RescaleRgba(Round(ClientSize.Y / Cardinal(GraphBuf.Height) * Cardinal(GraphBuf.Width)), ClientSize.Y, 5);
     end;
   end;
-  if FlagEC then
+  if ReopenRequested then
   begin
     with GetByName('FaceA') as TgaiGI do
     begin
@@ -441,7 +441,7 @@ begin
   CargoWarningActive := False;
   RefreshMoneyWarning;
   RefreshCargoWarning;
-  FlagEC := False;
+  ReopenRequested := False;
   AmbientSound.SetVolume(1);
   if GetPlayer <> nil then GetPlayer.ScriptItemsAct(satOnEnteringForm, nil, nil, 0);
   if not GetPlayer.InNormalSpace then Galaxy.PrimeIntegrityChecksum(134);
@@ -471,7 +471,7 @@ begin
   if (GetPlayer <> nil) and GetPlayer.IsOnPlanet then PlanetPanel.OnClose
   else if GetPlayer <> nil then
     if GetPlayer.IsDockedToShip then StationPanel.OnClose;
-  if not FlagEC then AmbientSound.SetVolume(0);
+  if not ReopenRequested then AmbientSound.SetVolume(0);
 end;
 { @end $7D70D0 }
 
@@ -1143,7 +1143,7 @@ begin
     MainPanel.RefreshMoneyAndCargo;
     MainPanel.RebuildMessageButtons(False);
     RefreshGoodsDisplay;
-    if not ShipScreen.FlagD4 then Break;
+    if not ShipScreen.ReopenRequested then Break;
     SetCursorActive(False);
     DrawQueuedUpdateRects;
     CaptureScreenBackground(True, 0);
@@ -1165,7 +1165,7 @@ procedure TfGoodsShop2.FinishModalTrade;
 begin
   if ParentLoop <> nil then
   begin
-    FlagEC := True;
+    ReopenRequested := True;
     RequestClose(1);
     BreakUiMessage;
   end;
@@ -1461,13 +1461,13 @@ end;
 { @routine $7DC7DC RunGoodsShop }
 function RunGoodsShop(ParentLoop: TMessageLoopGI): Boolean;
 begin
-  ParentLoop.RootUiObject.NativeHook50;
+  ParentLoop.RootUiObject.OnModalSuspend;
   GoodsShopScreen.ParentLoop := ParentLoop;
   ParentLoop.ChildLoop := GoodsShopScreen;
   if GoodsShopScreen.Run = 1 then Result := True else Result := False;
   GoodsShopScreen.ParentLoop := nil;
   ParentLoop.ChildLoop := nil;
-  ParentLoop.RootUiObject.NativeHook48;
+  ParentLoop.RootUiObject.OnModalResume;
 end;
 { @end $7DC7DC }
 end.

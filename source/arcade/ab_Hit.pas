@@ -14,7 +14,7 @@ type
     EffectOriginSpread: Integer; // @offset $BC
     TurnSpeedScale: Double; // @offset $C0
     Effects: TList; // @offset $C8
-    StateCC: Boolean; // @offset $CC  Default True; boss transition behavior still under recovery.
+    HealthBarVisible: Boolean; // @offset $CC Tested by TfAB.DrawShipHealthBars; hidden during Keller breakup/death and on fragments.
 
     constructor Create; // @addr $54CC74
     destructor Destroy; override; // @addr $54CCFC
@@ -50,7 +50,7 @@ begin
   Health := 200;
   MaxHealth := 200;
   Effects := TList.Create;
-  StateCC := True;
+  HealthBarVisible := True;
 end;
 { @end $54CC74 }
 
@@ -119,7 +119,7 @@ begin
         '][20,0-' + IntToStr(Animation.GetMainImageFrameCount - 1) + ']');
       Animation.SetSequenceFrame(Frame);
       Animation.CycleCompleteCallback := KellerBreakupComplete;
-      StateCC := False;
+      HealthBarVisible := False;
     end;
     if (Health > 0) or (KellerArcadeShip <> Self) then
     begin
@@ -283,7 +283,7 @@ begin
       if KellerFragments[0] = nil then
       begin
         KellerSplitActive := False;
-        StateCC := True;
+        HealthBarVisible := True;
         Health := MaxHealth;
         (Self as TabShip).AttachVisual;
         if KellerDeathPending then
@@ -301,7 +301,7 @@ begin
           Ship.ZoneDamageEnabled := False;
           Ship.Collidable := False;
           Ship.Active := False;
-          Ship.StateCC := False;
+          Ship.HealthBarVisible := False;
           Ship.Velocity.X := 0;
           Ship.Velocity.Y := 0;
           Ship.MaxSpeed := 0;
@@ -388,7 +388,7 @@ begin
     Ship.ZoneDamageEnabled := False;
     Ship.Collidable := False;
     Ship.Active := False;
-    Ship.StateCC := False;
+    Ship.HealthBarVisible := False;
     Ship.MaxSpeed := 10; // Native overwrites the earlier value.
     KellerFragments[Index] := Ship;
     if Index = 0 then Angle := HeadingDegreesToRadians(0)

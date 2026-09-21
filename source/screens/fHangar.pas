@@ -442,7 +442,7 @@ begin
   if ExitScreenLoop then Exit;
   if GetPlayer = nil then
   begin
-    GameEndReason := 2;
+    GameEndReason := gerPlayerDeath;
     RequestedScreenId := screenGameEnd;
     TMessageLoopGI(RegisteredScreens[Ord(CurrentScreenId)]).RequestClose(1);
     Exit;
@@ -511,7 +511,7 @@ begin
   SelectedShip := nil;
   MainPanel.RebuildMessageButtons(False);
   MainPanel.RefreshMoneyAndCargo;
-  if ShipScreen.Flag3BC then
+  if ShipScreen.ShipStateChanged then
   begin
     ShipSlots[0].AnimationState := 0;
     ShipSlots[0].Opacity := 0;

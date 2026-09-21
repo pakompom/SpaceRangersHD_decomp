@@ -137,7 +137,7 @@ begin
   CustomPicture := '';
   CustomWin := False;
   CustomLoss := False;
-  if GameEndReason = 0 then
+  if GameEndReason = gerDefault then
     for I := Galaxy.GalaxyEvents.Count - 1 downto 0 do
     begin
       Event := Galaxy.GalaxyEvents[I];
@@ -176,7 +176,7 @@ begin
   ScrollBackground(nil,0);
   SelectMusic;
   if GetPlayer <> nil then
-    ScoreScreen.RecordPlayerResult((GetPlayer <> nil) and (GameEndReason <> 2) and not CustomLoss);
+    ScoreScreen.RecordPlayerResult((GetPlayer <> nil) and (GameEndReason <> gerPlayerDeath) and not CustomLoss);
   Score := ScoreScreen.Entries[ScoreScreen.SelectedIndex];
   DefaultLoss := (GameEndReason <= 4) and not CustomWin and (CustomPicture = '');
   GetByName('Maloc').SetActive((Score.PilotRace = Byte(oiMaloc)) and DefaultLoss);
@@ -242,7 +242,7 @@ begin
     TextPanelHeight := ClientSize.Y;
   end;
   if GameEndReason > 4 then Text := LookupLocalizedTextByKey(AnsiString('FormGameEnd.WinPirate') + IntToStr(GameEndReason))
-  else if GameEndReason = 4 then
+  else if GameEndReason = gerTerronConversion then
   begin
     if Galaxy.CoalitionDefeatedTurn <> 0 then Text := LocalizedColorText('FormGameEnd.LossConvertToTerron3')
     else if Galaxy.PirateWinType <> 3 then Text := LocalizedColorText('FormGameEnd.LossConvertToTerron2')
@@ -432,12 +432,12 @@ begin
     MusicManager.PlayCategory('Win');
     Exit;
   end;
-  if (GameEndReason <> 0) or (Galaxy = nil) then
+  if (GameEndReason <> gerDefault) or (Galaxy = nil) then
   begin
     MusicManager.PlayCategory('Loss');
     Exit;
   end;
-  if GameEndReason = 0 then
+  if GameEndReason = gerDefault then
       for I := Galaxy.GalaxyEvents.Count - 1 downto 0 do
       begin
         Event := Galaxy.GalaxyEvents[I];

@@ -29,7 +29,7 @@ type
     function RecomputeFearState: Boolean; override; // @addr $005105FC @slot $84
     function AcceptsRansomDemandFrom(Ship: TShip): Boolean; override; // @addr $00510DB8 @slot $88
     function TrustsAttackRequester(Ship: TShip): Boolean; override; // @addr $00510E88 @slot $8C
-    function EvaluateAllyRelationAndStrength(Ship: TShip): Boolean; override; // @addr $00510EAC @slot $90
+    function AcceptsAppealFrom(Ship: TShip): Boolean; override; // @addr $00510EAC @slot $90
     function AcceptPickupItem(Item: TItem): Boolean; override; // @addr $00517418 @slot $94
     function AcceptPickupDistance(Item: TItem; Distance: Double): Boolean; override; // @addr $00517430 @slot $98
     procedure ProcessCombatDialogue; override; // @addr $00512A94 @slot $A0
@@ -40,7 +40,7 @@ type
     function BuildAttackRequestResponse(Requester: TShip; var Response: WideString; Target: TShip): Boolean; override; // @addr $005140BC @slot $B4
     function AcceptPartnershipOffer(OtherShip: TShip; var Response: WideString; PaymentAmount: Integer): Boolean; override; // @addr $005145E4 @slot $B8
     function BuildPartnershipOfferResponse(OtherShip: TShip; var Response: WideString; PaymentAmount: Integer): Boolean; override; // @addr $005147D4 @slot $BC
-    function UnknownVirtualC0(Argument: Pointer): Boolean; override; // @addr $00514FA4 @slot $C0
+    function RefusesFactionNegotiation(OtherShip: TShip): Boolean; override; // @addr $00514FA4 @slot $C0
     procedure RefreshCurrentStanding; override; // @addr $005174E4 @slot $C4
     destructor Destroy; override; // @addr $50CC28
     function NavigateToServicePlanet(Absolute: Boolean): Boolean; // @addr $50E6C0
@@ -919,8 +919,8 @@ function TPirate.TrustsAttackRequester(Ship: TShip): Boolean;
 begin Result := RelationToShip(Ship) >= 30; end;
 { @end $510E88 }
 
-{ @routine $510EAC TPirate_EvaluateAllyRelationAndStrength }
-function TPirate.EvaluateAllyRelationAndStrength(Ship: TShip): Boolean;
+{ @routine $510EAC TPirate_AcceptsAppealFrom }
+function TPirate.AcceptsAppealFrom(Ship: TShip): Boolean;
 begin
   Result := RelationToShip(Ship) +
     RemapClamped(Ship.Strength, 0.9 * Strength, Strength * 3, 0, 100) > 130;
@@ -1275,7 +1275,7 @@ begin
   if OtherShip.TruceShip = Self then Response := LookupVisibleTalkText('Talk.Money.WeAlreadyHavePact', OtherShip)
   else if (GetPlayer = OtherShip) and PlayerExtortionPactActive then Response := LookupVisibleTalkText('Talk.Money.WeAlreadyHavePact', OtherShip)
   else if (GetPlayer = OtherShip) and (Galaxy.CurrentTurn < NextDemandTurn) then Response := LookupVisibleTalkText('Talk.Money.WeAlreadyHavePact', OtherShip)
-  else if UnknownVirtualC0(OtherShip) or not AcceptsRansomDemandFrom(OtherShip) then Response := LookupVisibleTalkText('Talk.Money.' + GetTypeNameKey + 'No', OtherShip)
+  else if RefusesFactionNegotiation(OtherShip) or not AcceptsRansomDemandFrom(OtherShip) then Response := LookupVisibleTalkText('Talk.Money.' + GetTypeNameKey + 'No', OtherShip)
   else if CanEscapePursuer(OtherShip) then Response := LookupVisibleTalkText('Talk.Money.' + GetTypeNameKey + 'LongDistance', OtherShip)
   else if DemandedAmount > RemapClamped(GetWinChancePercent(OtherShip), 0, 100, GetWealthScaledAmount(4), GetWealthScaledAmount(2)) then
     Response := LookupVisibleTalkText('Talk.Money.' + GetTypeNameKey + 'SumIsVeryBig', OtherShip)
@@ -1333,7 +1333,7 @@ begin
   if OtherShip.TruceShip = Self then Response := LookupVisibleTalkText('Talk.Goods.WeAlreadyHavePact', OtherShip)
   else if (GetPlayer = OtherShip) and PlayerExtortionPactActive then Response := LookupVisibleTalkText('Talk.Goods.WeAlreadyHavePact', OtherShip)
   else if (GetPlayer = OtherShip) and (Galaxy.CurrentTurn < NextDemandTurn) then Response := LookupVisibleTalkText('Talk.Goods.WeAlreadyHavePact', OtherShip)
-  else if UnknownVirtualC0(OtherShip) or not (AcceptsRansomDemandFrom(OtherShip) or Forced) then Response := LookupVisibleTalkText('Talk.Goods.' + GetTypeNameKey + 'No', OtherShip)
+  else if RefusesFactionNegotiation(OtherShip) or not (AcceptsRansomDemandFrom(OtherShip) or Forced) then Response := LookupVisibleTalkText('Talk.Goods.' + GetTypeNameKey + 'No', OtherShip)
   else if CanEscapePursuer(OtherShip) and not Forced then Response := LookupVisibleTalkText('Talk.Goods.' + GetTypeNameKey + 'LongDistance', OtherShip)
   else if not HasCargoGoods then Response := LookupVisibleTalkText('Talk.Goods.AnswerNotGoods', OtherShip)
   else begin
@@ -1370,7 +1370,7 @@ var NextDemandTurn: Integer;
     TruceWithShip(OtherShip);
   end;
 begin
-  if UnknownVirtualC0(OtherShip) then begin
+  if RefusesFactionNegotiation(OtherShip) then begin
     Response := LookupVisibleTalkText('Talk.Refuse.Pirate', OtherShip);
     Result := False;
     Exit;
@@ -1547,13 +1547,14 @@ begin
 end;
 { @end $514F3C }
 
-{ @routine $514FA4 TPirate_UnknownVirtualC0 }
-function TPirate.UnknownVirtualC0(Argument: Pointer): Boolean;
+{ @routine $514FA4 TPirate_RefusesFactionNegotiation }
+function TPirate.RefusesFactionNegotiation(OtherShip: TShip): Boolean;
 begin
   Result := False;
-  if (PirateType <> 0) and (TShip(Argument).CurrentStanding in [ssCoalitionMilitary, ssCoalitionActive]) and
+  // The final Pointer cast preserves native operand loading after typing OtherShip.
+  if (PirateType <> 0) and (OtherShip.CurrentStanding in [ssCoalitionMilitary, ssCoalitionActive]) and
     ((CurrentStar.ControlFaction <> sfPirates) or (CurrentStar.Status.CustomFaction <> '') or
-    (MainPiratePlanet = nil) or (MainPiratePlanet.OwnerId <> Byte(oiPirate)) or (TShip(Argument).CurrentStar = MainPiratePlanet.CurrentStar)) then Result := True;
+    (MainPiratePlanet = nil) or (MainPiratePlanet.OwnerId <> Byte(oiPirate)) or (TShip(Pointer(OtherShip)).CurrentStar = MainPiratePlanet.CurrentStar)) then Result := True;
 end;
 { @end $514FA4 }
 

@@ -235,7 +235,7 @@ end;
 { @routine $566198 TfRating2_AwardsMouseDown }
 procedure TfRating2.AwardsMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint);
 begin
-  if UiRuntimeFlag then
+  if AwardDialogsEnabled then
   begin
     RewardWindow.SetActive(False);
     AwardSubject := Galaxy.IdToShip(Sender.UserValue,True);
@@ -1261,7 +1261,7 @@ end;
 function ShowRangerRating(Parent: TMessageLoopGI): Boolean;
 var CursorAlignment: array[0..2] of Byte; State: TCursorStateGI;
 begin
-  Parent.RootUiObject.NativeHook50;
+  Parent.RootUiObject.OnModalSuspend;
   Parent.CaptureCursorState(@State);
   Parent.SetCursorActive(False);
   Parent.DrawQueuedUpdateRects;
@@ -1273,7 +1273,7 @@ begin
   Parent.InvalidateViewport;
   Parent.RestoreCursorState(@State);
   Parent.UpdateCursorPosition;
-  Parent.RootUiObject.NativeHook48;
+  Parent.RootUiObject.OnModalResume;
   Parent.Present;
   PostMouseMoveMessage;
 end;

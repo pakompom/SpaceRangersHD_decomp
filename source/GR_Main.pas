@@ -650,11 +650,11 @@ var
   // StartupChecksumAnchor's address for each marker access ($4CCE67..$4CCE97).
   // The subtraction is emitted at runtime, not inferred from adjacent addresses.
   // Keep these initialized globals consecutive and in this order; direct access
-  // to UnknownPresentState would remove those native subtraction instructions.
-  // Other routines access UnknownPresentState and LastMouseMessageTick directly.
-  UnknownPresentState: Integer = 0; // @addr $87AAB4 Signed integrity marker: positive after a failed startup module checksum, negative after a clean check; reset by TMessageLoopGI.Present.
+  // to StartupIntegrityMarker would remove those native subtraction instructions.
+  // Other routines access StartupIntegrityMarker and LastMouseMessageTick directly.
+  StartupIntegrityMarker: Integer = 0; // @addr $87AAB4 Signed integrity marker: positive after a failed startup module checksum, negative after a clean check; reset by TMessageLoopGI.Present.
   LastMouseMessageTick: Cardinal = 0; // @addr $87AAB8
-  StartupChecksumAnchor: Integer = 0; // @addr $87AABC @note "Checksum helper accesses UnknownPresentState at byte offset -8; original anchor meaning unresolved."
+  StartupChecksumAnchor: Integer = 0; // @addr $87AABC @note "Checksum helper accesses StartupIntegrityMarker at byte offset -8; original anchor meaning unresolved."
   RobotBattleActive: Boolean = False; // @addr $87AAC0 Set across MatrixGame Run, including its exception handler.
   ProcessorCoreCount: Integer = 1; // @addr $87AAC4 @note "Counts CentralProcessor registry subkeys, with a minimum of one."
   Direct3D: IDirect3D9 = nil; // @addr $87AAC8

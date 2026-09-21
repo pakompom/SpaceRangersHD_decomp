@@ -29,7 +29,7 @@ type
     function RecomputeFearState: Boolean; override; // @addr $005EEB6C @slot $84
     function AcceptsRansomDemandFrom(Ship: TShip): Boolean; override; // @addr $005EEB80 @slot $88
     function TrustsAttackRequester(Ship: TShip): Boolean; override; // @addr $005EEB98 @slot $8C
-    function EvaluateAllyRelationAndStrength(Ship: TShip): Boolean; override; // @addr $005EEBB0 @slot $90
+    function AcceptsAppealFrom(Ship: TShip): Boolean; override; // @addr $005EEBB0 @slot $90
     procedure UpdateAfterburnerState; override; // @addr $005EF6F4 @slot $9C
     procedure ProcessCombatDialogue; override; // @addr $005EF758 @slot $A0
     procedure ReactToExtortionDemand(Ranger: Pointer); override; // @addr $005EF764 @slot $A4
@@ -1519,8 +1519,8 @@ function TKling.TrustsAttackRequester(Ship: TShip): Boolean;
 begin Result := False; end;
 { @end $5EEB98 }
 
-{ @routine $5EEBB0 TKling_EvaluateAllyRelationAndStrength }
-function TKling.EvaluateAllyRelationAndStrength(Ship: TShip): Boolean;
+{ @routine $5EEBB0 TKling_AcceptsAppealFrom }
+function TKling.AcceptsAppealFrom(Ship: TShip): Boolean;
 begin Result := Ship.OwnerId = OwnerId; end;
 { @end $5EEBB0 }
 

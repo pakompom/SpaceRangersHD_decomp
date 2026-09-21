@@ -95,7 +95,7 @@ type
     procedure TryRecruitWingman; // @addr 0x72CFC8
     procedure CheckForPartnershipBreakup; // @addr 0x72D468
     function TrustsAttackRequester(Ship: TShip): Boolean; override; // @addr 0x72D5FC @slot 0x8C @note "Relation of at least 30."
-    function EvaluateAllyRelationAndStrength(Ship: TShip): Boolean; override; // @addr 0x72D620 @slot 0x90 @note "Tests relation plus a relative-strength score against 120; precise dialogue role remains unresolved."
+    function AcceptsAppealFrom(Ship: TShip): Boolean; override; // @addr 0x72D620 @slot 0x90 @note "Tests relation plus a relative-strength score against 120; used by TfTalk.RequestProtection and RequestPreserveItems."
     function ProcessPrisonAndHostileCheck: Boolean; // @addr 0x72DAEC @note "Returns whether imprisonment blocks this turn; may imprison, release or update standing."
     procedure ChangeGlobalRelations(Scope: TObject; Mode: TRelationChangeMode; Amount: Byte; HullTypeMask: THullShipTypeMask; OwnerMask: TOwnerMask); // @addr 0x72DC18
     function GlobalRelationsShips(Scope: TObject; HullTypeMask: Word; OwnerMask: Byte): Byte; // @addr 0x72E23C @note "Averages stored relations for matching ships; empty selection returns 50. A single ship uses its virtual RelationToRanger."
@@ -2282,8 +2282,8 @@ begin
 end;
 { @end $72D5FC }
 
-{ @routine $72D620 TRanger_EvaluateAllyRelationAndStrength }
-function TRanger.EvaluateAllyRelationAndStrength(Ship: TShip): Boolean;
+{ @routine $72D620 TRanger_AcceptsAppealFrom }
+function TRanger.AcceptsAppealFrom(Ship: TShip): Boolean;
 begin
   Result := RelationToShip(Ship) +
     RemapClamped(Ship.Strength, 0.9 * Strength, Strength * 3.0, 0.0, 100.0) > 120.0;

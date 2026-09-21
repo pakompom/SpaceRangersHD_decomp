@@ -18,9 +18,16 @@ type
   PWaveFormatEx = ^TWaveFormatEx;
 
   TWaveFileHeader = packed record // @size 0x2C
-    // Uninterpreted RIFF/fmt identifiers and lengths precede these fields.
+    // Fixed PCM header view. LoadFromConfigBuffer scans for data if it is not at $24.
+    RiffId: Cardinal; // @offset 0x00 'RIFF'.
+    RiffSize: Cardinal; // @offset 0x04 File size minus eight.
+    WaveId: Cardinal; // @offset 0x08 'WAVE'.
+    FormatId: Cardinal; // @offset 0x0C 'fmt '.
+    FormatSize: Cardinal; // @offset 0x10
+    FormatTag: Word; // @offset 0x14 Reader forces PCM without consulting this field.
     Channels: Word; // @offset 0x16
     SamplesPerSecond: Cardinal; // @offset 0x18
+    AverageBytesPerSecond: Cardinal; // @offset 0x1C Reader recomputes this from block alignment and sample rate.
     BlockAlign: Word; // @offset 0x20
     BitsPerSample: Word; // @offset 0x22
     DataId: Cardinal; // @offset 0x24

@@ -599,7 +599,7 @@ end;
 { @routine $6E9A34 TfScaner_RewardsMouseDown }
 procedure TfScaner.RewardsMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint);
 begin
-  if UiRuntimeFlag and not ShipToInspect.InHyperspace and RewardsBuffer.Active then
+  if AwardDialogsEnabled and not ShipToInspect.InHyperspace and RewardsBuffer.Active then
   begin
     RewardWindow.SetActive(False);
     AwardSubject := ShipToInspect;

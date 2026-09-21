@@ -122,8 +122,8 @@ type
     BytesPerPixel: Integer; // @offset 0x1C
     UseTexture: Boolean; // @offset 0x20
     UsesTextureStorage: Boolean; // @offset 0x21
-    // Cleared on allocation and reset; purpose unresolved.
-    TextureFlag22: Boolean; // @offset $22
+    // Skips the explicit nil assignment before resize/crop replaces Texture.
+    KeepTextureUntilReplacement: Boolean; // @offset $22 All retained writes clear this flag.
     Texture: IDirect3DTexture9; // @offset 0x24
     TextureLocked: Boolean; // @offset 0x28
     TextureLockedReadOnly: Boolean; // @offset 0x29
@@ -265,7 +265,7 @@ begin
   inherited Create;
   Width := 0; Height := 0; PitchBytes := 0; StorageKind := 0;
   BitsPerPixel := 0; BytesPerPixel := 0;
-  UseTexture := AUseTexture; UsesTextureStorage := False; TextureFlag22 := False;
+  UseTexture := AUseTexture; UsesTextureStorage := False; KeepTextureUntilReplacement := False;
   Texture := nil; TextureLocked := False; TextureLockedReadOnly := False;
 end;
 { @end $865620 }
@@ -287,7 +287,7 @@ begin
     if not UsesTextureStorage and (Pixels <> nil) then FreeEC(Pixels);
     Pixels := nil;
   end;
-  Texture := nil; UsesTextureStorage := False; TextureFlag22 := False;
+  Texture := nil; UsesTextureStorage := False; KeepTextureUntilReplacement := False;
   Width := 0; Height := 0; PitchBytes := 0; StorageKind := 0;
   BitsPerPixel := 0; BytesPerPixel := 0;
 end;
@@ -1652,7 +1652,7 @@ begin
     AddPointerOffset(Source, Top * SourcePitch + Left * BytesPerPixel), CropWidth, CropHeight, SourcePitch, BytesPerPixel, Filter);
   if UseTexture and (BitsPerPixel = 32) then
   begin
-    if not TextureFlag22 then Texture := nil;
+    if not KeepTextureUntilReplacement then Texture := nil;
     NewTexture.UnlockRect(0); Texture := NewTexture;
     TextureLocked := False; UsesTextureStorage := True; Pixels := nil;
   end
@@ -1720,7 +1720,7 @@ begin
   SourceSurface := nil; TargetSurface := nil;
   if UseTexture then
   begin
-    if not TextureFlag22 then Texture := nil;
+    if not KeepTextureUntilReplacement then Texture := nil;
     Texture := GR_CreateTexture(Width, Height, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED);
     Texture.LockRect(0, Locked, nil, 0);
     Dest := Locked.Bits; DestPitch := Locked.Pitch; UsesTextureStorage := True;
@@ -1778,7 +1778,7 @@ begin
   if UseTexture then
   begin
     NewTexture.UnlockRect(0);
-    if not TextureFlag22 then Texture := nil;
+    if not KeepTextureUntilReplacement then Texture := nil;
     Texture := NewTexture;
   end
   else

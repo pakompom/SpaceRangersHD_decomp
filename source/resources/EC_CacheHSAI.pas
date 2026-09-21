@@ -7,13 +7,20 @@ uses Classes, EC_Buf, EC_Cache, GR_DX, GR_GraphBuf, Direct3D9;
 
 type
   THSAIHeaderEC = packed record // @size 0x34
-    // The leading dword and format metadata at +0x18..+0x2C remain unresolved.
+    // HSAI/HAI disk header shared with OKGF; indexed ship frames use 1024 palette bytes.
+    Magic: Cardinal; // @offset 0x00 $04210420.
     Width: Integer; // @offset 0x04
     Height: Integer; // @offset 0x08
     PitchBytes: Integer; // @offset 0x0C
     FrameCount: Cardinal; // @offset 0x10
     FrameStride: Cardinal; // @offset 0x14
-    PalettePresent: Cardinal; // @offset 0x30
+    HasPalette: Cardinal; // @offset 0x18
+    BitsPerPixel: Cardinal; // @offset 0x1C
+    RedMask: Cardinal; // @offset 0x20
+    GreenMask: Cardinal; // @offset 0x24
+    BlueMask: Cardinal; // @offset 0x28
+    AlphaMask: Cardinal; // @offset 0x2C
+    PaletteBytes: Cardinal; // @offset 0x30 Byte count, tested for zero by GetFramePalette.
   end;
   PHSAIHeaderEC = ^THSAIHeaderEC;
 
@@ -133,7 +140,7 @@ end;
 function TCHSAIEC.GetFramePalette(FrameIndex: Cardinal): PColorRGBA;
 begin
   if FrameIndex >= Header.FrameCount then Result := nil
-  else if Header.PalettePresent = 0 then Result := nil
+  else if Header.PaletteBytes = 0 then Result := nil
   else Result := AddPointerOffset(BlobData, SizeOf(THSAIHeaderEC) + FrameIndex * Header.FrameStride + Header.PitchBytes * Header.Height);
 end;
 { @end $495184 }

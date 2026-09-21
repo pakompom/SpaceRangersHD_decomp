@@ -49,7 +49,7 @@ type
     function RecomputeFearState: Boolean; override; // @addr $65EF40 @slot 0x84
     function AcceptsRansomDemandFrom(Ship: TShip): Boolean; override; // @addr $65EF54 @slot 0x88
     function TrustsAttackRequester(Ship: TShip): Boolean; override; // @addr $65EF6C @slot 0x8C
-    function EvaluateAllyRelationAndStrength(Ship: TShip): Boolean; override; // @addr $65EF90 @slot 0x90
+    function AcceptsAppealFrom(Ship: TShip): Boolean; override; // @addr $65EF90 @slot 0x90
     procedure ProcessCombatDialogue; override; // @addr $65EFB4 @slot 0xA0
     procedure ReactToExtortionDemand(Ranger: Pointer); override; // @addr $65EFC0 @slot 0xA4
     function BuildMoneyExtortionResponse(OtherShip: TShip; var Response: WideString; DemandedAmount: Integer): Boolean; override; // @addr $65EFD0 @slot 0xA8
@@ -1009,8 +1009,8 @@ begin
 end;
 { @end $65EF6C }
 
-{ @routine $65EF90 TTranclucator_EvaluateAllyRelationAndStrength }
-function TTranclucator.EvaluateAllyRelationAndStrength(Ship: TShip): Boolean;
+{ @routine $65EF90 TTranclucator_AcceptsAppealFrom }
+function TTranclucator.AcceptsAppealFrom(Ship: TShip): Boolean;
 begin
   Result := Ship = OwnerShip;
 end;

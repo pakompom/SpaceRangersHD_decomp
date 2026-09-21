@@ -129,8 +129,8 @@ type
     procedure ProcessKeyDown(Key: Integer); virtual; // @addr 0x4BC68C @slot 0x84
     procedure ProcessCharacter(Character: WideChar); virtual; // @addr 0x4BC69C @slot 0x88
     procedure OnCaretBlink; virtual; // @addr $4BC6B0 @slot $8C @note "Called on the focused control when CaretBlinkOn changes."
-    procedure NativeHook48; virtual; // @addr $4BC15C @slot $48 @note "Purpose unresolved; the base hook visits children whose Active flag equals True."
-    procedure NativeHook50; virtual; // @addr $4BC1EC @slot $50 @note "Purpose unresolved; the base hook visits children whose Active flag equals True."
+    procedure OnModalResume; virtual; // @addr $4BC15C @slot $48 @note "Called on the parent UI after closing a modal child and restoring the cursor; propagates to active children."
+    procedure OnModalSuspend; virtual; // @addr $4BC1EC @slot $50 @note "Called on the parent UI before opening a modal child and capturing the cursor; propagates to active children."
     procedure NativeHookB0; virtual; // @addr $4BCF00 @slot $B0 @note "Purpose unresolved; the base hook visits active children."
     procedure NativeHookBC(Rect: TRect); virtual; // @addr $4BCF9C @slot $BC @note "Empty base hook; purpose unresolved."
     procedure OnActivate; virtual; // @addr 0x4BC0FC @slot 0x44
@@ -839,14 +839,14 @@ begin
 end;
 { @end $4BC0FC }
 
-{ @routine $4BC15C TObjectGI_NativeHook48 }
-procedure TObjectGI.NativeHook48;
+{ @routine $4BC15C TObjectGI_OnModalResume }
+procedure TObjectGI.OnModalResume;
 var Child: TObjectGI;
 begin
   Child := FirstChild;
   while Child <> nil do
   begin
-    if Child.Active = True then Child.NativeHook48;
+    if Child.Active = True then Child.OnModalResume;
     Child := Child.NextSibling;
   end;
 end;
@@ -866,14 +866,14 @@ begin
 end;
 { @end $4BC198 }
 
-{ @routine $4BC1EC TObjectGI_NativeHook50 }
-procedure TObjectGI.NativeHook50;
+{ @routine $4BC1EC TObjectGI_OnModalSuspend }
+procedure TObjectGI.OnModalSuspend;
 var Child: TObjectGI;
 begin
   Child := FirstChild;
   while Child <> nil do
   begin
-    if Child.Active = True then Child.NativeHook50;
+    if Child.Active = True then Child.OnModalSuspend;
     Child := Child.NextSibling;
   end;
 end;
@@ -2035,7 +2035,7 @@ end;
 { @routine $4BFA98 TMessageLoopGI_Present }
 procedure TMessageLoopGI.Present;
 begin
-  UnknownPresentState := 0;
+  StartupIntegrityMarker := 0;
   if ContinuousLoop then
   begin
     FullFrameRedrawRequested := True;

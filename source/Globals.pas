@@ -13,7 +13,7 @@ type
 
   TScriptTemplUnit = class(TObjectEx) // @size $20
   public
-    ConfigValue: Integer; // @offset $04 First comma-delimited Script template configuration value; original meaning unresolved.
+    ClassId: Integer; // @offset $04 First comma-delimited Script template value; copied to TScript.ClassId on creation/restart.
     Name: WideString; // @offset $08
     FileName: WideString; // @offset $0C
     UseCount: Integer; // @offset $10 Returned by SF_GCntRun.
@@ -483,10 +483,10 @@ type
     Owner: TOwnerMask; // @offset $11
   end;
 
-  // Native record-layout RTTI at $5269A8; object preserves anonymous numbering.
-  // Original spelling is uncertain.
+  // Native RTTI at $5269A8 names TPlanetAdvtList: a weighted advert sequence.
+  // Field-only object preserves anonymous numbering; original record/object syntax is uncertain.
   TPlanetAdvtList = object // @size $08
-    Key: Integer; // @offset $00 Numeric List parameter name; interpretation by callers remains unresolved.
+    Weight: Integer; // @offset $00 Numeric PlanetAdvt.List parameter name; weighted selection in TPlanetSE.StartRandomSurfaceAnimation.
     Indices: array of Integer; // @offset $04
   end;
 
@@ -688,7 +688,7 @@ begin
     AltResolutionSwitch := ParseEnabledNameGI(UserSettingsConfig.GetParamByPathOrMarker('AltResolutionSwitch'));
   if UserSettingsConfig.CountParamsByPath('DisableAutoPilot') > 0 then
     DisableAutoPilot := ParseEnabledNameGI(UserSettingsConfig.GetParamByPathOrMarker('DisableAutoPilot'));
-  UiRuntimeFlag := True;
+  AwardDialogsEnabled := True;
   if UserSettingsConfig.CountParamsByPath('PQuestStyle') > 0 then
     QuestStyleIndex := ExtractDigitsToIntW(UserSettingsConfig.GetParamByPathOrMarker('PQuestStyle'));
   if UserSettingsConfig.CountParamsByPath('PQuestAnim') > 0 then
@@ -865,7 +865,7 @@ begin
       ScriptTemplate := TScriptTemplUnit.Create;
       ScriptTemplate.Name := Section.GetParamName(Index);
       Text := Section.GetParamValue(Index);
-      ScriptTemplate.ConfigValue := ExtractDigitsToIntW(ExtractDelimitedPartW(Text, 0, ','));
+      ScriptTemplate.ClassId := ExtractDigitsToIntW(ExtractDelimitedPartW(Text, 0, ','));
       ScriptTemplate.FileName := ExtractDelimitedPartW(Text, 1, ',');
       ScriptTemplates.Add(ScriptTemplate);
       CompileScriptTemplateCondition(ScriptTemplates.Count - 1);
@@ -3505,7 +3505,7 @@ begin
     SetLength(PlanetAdvertDefinitions[GroupIndex].Lists, Block.GetParamCount);
     for BlockIndex := 0 to High(PlanetAdvertDefinitions[GroupIndex].Lists) do
     begin
-      PlanetAdvertDefinitions[GroupIndex].Lists[BlockIndex].Key := ExtractDigitsToIntW(Block.GetParamName(BlockIndex));
+      PlanetAdvertDefinitions[GroupIndex].Lists[BlockIndex].Weight := ExtractDigitsToIntW(Block.GetParamName(BlockIndex));
       Text := Block.GetParamValue(BlockIndex);
       Count := CountDelimitedPartsW(Text, ',');
       SetLength(PlanetAdvertDefinitions[GroupIndex].Lists[BlockIndex].Indices, Count);

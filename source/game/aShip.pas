@@ -246,7 +246,7 @@ type
     function RecomputeFearState: Boolean; virtual; abstract; // @slot 0x84
     function AcceptsRansomDemandFrom(Ship: TShip): Boolean; virtual; abstract; // @slot 0x88
     function TrustsAttackRequester(Ship: TShip): Boolean; virtual; abstract; // @slot 0x8C
-    function EvaluateAllyRelationAndStrength(Ship: TShip): Boolean; virtual; abstract; // @slot 0x90
+    function AcceptsAppealFrom(Ship: TShip): Boolean; virtual; abstract; // @slot 0x90 Relation/strength gate for protecting a ship or sparing pickup targets; other dialogue conditions are checked by the caller.
     procedure ProcessCombatDialogue; virtual; abstract; // @slot 0xA0
     procedure ReactToExtortionDemand(Ranger: Pointer); virtual; abstract; // @slot 0xA4
     function BuildMoneyExtortionResponse(OtherShip: TShip; var Response: WideString; DemandedAmount: Integer): Boolean; virtual; abstract; // @slot 0xA8
@@ -292,7 +292,7 @@ type
     procedure NotifyPiratePartnerRatingBreak(Leader: TShip); // @addr 0x779284
     procedure NotifyPiratePartnershipExpired(Leader: TShip); // @addr 0x7795B4
     procedure NotifyPiratePartnerRebellion(Leader: TShip); // @addr 0x7799BC
-    function UnknownVirtualC0(Argument: Pointer): Boolean; virtual; // @addr 0x779CDC @slot 0xC0 @note "Native base implementation returns false; argument role and intended operation remain unresolved."
+    function RefusesFactionNegotiation(OtherShip: TShip): Boolean; virtual; // @addr 0x779CDC @slot 0xC0 @note "Rejects truce, extortion and protection negotiations for faction enemies. Base returns false; warrior/pirate overrides inspect OtherShip.CurrentStanding and system control."
     function CalculatePartnershipMonths(Amount: Integer; OtherShip: TShip): Integer; // @addr 0x779CF4 @note "Payment/wealth and relation determine contract months; a player stimulant can double the result."
     function GetGreetingText: WideString; // @addr 0x779DF0
     procedure InitializeScriptStateOrders; // @addr 0x77A8F8 @note "Requires ScriptShip; clears EndState, applies state orders and refreshes completion/pickup state."
@@ -559,7 +559,7 @@ type
     procedure DropGoodsIntoSpace(Good: Byte; Count: Integer); // @addr 0x767CBC @note "Caller supplies a valid good and quantity; does not itself honor ship NoDrop."
     function JettisonCargoGoodsTowardTargetValue(TargetValue: Integer): Boolean; // @addr 0x767D40
     procedure DropAllCargoGoods; // @addr 0x767EBC
-    procedure QueueMovingItemDrop(Item: TItem; UseFlag: Byte); // @addr 0x767F08 @note "Caller detaches Item first. Script action 33 can suppress transfer or free Item; otherwise the moving-drop descriptor takes ownership."
+    procedure QueueMovingItemDrop(Item: TItem; DeployTranclucator: Byte); // @addr 0x767F08 @note "Caller detaches Item first. Script action 33 can suppress transfer or free Item; otherwise the moving-drop descriptor takes ownership."
     function SelectLeastValuableInventoryItem: TItem; // @addr 0x768194 @note "Considers protection, essential equipment and value per mass; can return the hull when no alternative qualifies."
     function SelectLeastValuableArtefact: TArtefact; // @addr 0x768320 @note "Native scan starts at index one; an artefact list with one element yields nil."
     function SelectCheapestCargoGood: Byte; // @addr 0x7683FC @note "Returns 255 if no cargo qualifies."
@@ -8360,7 +8360,7 @@ end;
 { @end $767EBC }
 
 { @routine $767F08 TShip_QueueMovingItemDrop }
-procedure TShip.QueueMovingItemDrop(Item: TItem; UseFlag: Byte);
+procedure TShip.QueueMovingItemDrop(Item: TItem; DeployTranclucator: Byte);
 var
   OtherItem: TItem;
   Drop: PMovingDropItemEntry;
@@ -8377,7 +8377,7 @@ begin
   Drop.Payload := Item;
   Drop.SourceShipId := Id;
   Drop.InsertedIntoStar := False;
-  Drop.UseFlag := UseFlag;
+  Drop.DeployTranclucator := DeployTranclucator;
   Attempts := 0;
   Retry := True;
   while Retry do
@@ -12780,8 +12780,8 @@ begin
 end;
 { @end $7799BC }
 
-{ @routine $779CDC TShip_UnknownVirtualC0 }
-function TShip.UnknownVirtualC0(Argument: Pointer): Boolean;
+{ @routine $779CDC TShip_RefusesFactionNegotiation }
+function TShip.RefusesFactionNegotiation(OtherShip: TShip): Boolean;
 begin
   Result := False;
 end;

@@ -32,7 +32,7 @@
 0088A520	Globals.StarMapWeaponPanelOpen
 00889DC4	GlobalsV.NormalBoldFontName
 0041FEF8	-
-0087A8F4	GlobalsV.UiRuntimeFlag
+0087A8F4	GlobalsV.AwardDialogsEnabled
 0088B51C	aConst.HullFragilityByType
 0088B284	aConst.SpeedArtefactBoostFactor
 0087A9F4	GI_RotateImage5.RotateImageConstructionStage
@@ -403,7 +403,7 @@
 0088A4C4	Globals.FilmCameraFollow
 00408C34	-
 0041FD88	-
-0087AAB4	GR_Main.UnknownPresentState
+0087AAB4	GR_Main.StartupIntegrityMarker
 00408D1C	-
 0088A4B4	Globals.LoadArcadeScreen
 0087A864	GlobalsV.ScrollSense

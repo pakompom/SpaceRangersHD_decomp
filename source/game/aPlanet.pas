@@ -3207,9 +3207,9 @@ begin
     begin
       Star := Script.Stars[j];
       for k := 0 to High(Star.Planets) do
-        if (Star.Planets[k].Planet = Self) and (Star.Planets[k].DefinitionText <> '') then
+        if (Star.Planets[k].Planet = Self) and (Star.Planets[k].DialogChoiceText <> '') then
         begin
-          Choices.Add(Star.Planets[k].DefinitionText);
+          Choices.Add(Star.Planets[k].DialogChoiceText);
           Choices.SetDataAt(Choices.GetCount - 1, Script);
         end;
     end;

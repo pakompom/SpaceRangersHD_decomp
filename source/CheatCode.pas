@@ -187,8 +187,8 @@ begin
   Parent.DrawQueuedUpdateRects;
   if ShipScreen.IsOpen then
   begin
-    ShipScreen.Flag3BC := True;
-    ShipScreen.FlagD4 := True;
+    ShipScreen.ShipStateChanged := True;
+    ShipScreen.ReopenRequested := True;
     ShipScreen.PlayTransitionSounds := False;
     ShipScreen.CloseClicked(nil);
   end;

@@ -229,150 +229,150 @@ var
       InventionProgressScale: 1.1;
       ArcadeRewardScale: 1.3;
       QuestMoneyFactor: 1.2;
-      DifficultyValue18: 4000;
-      DifficultyValue1C: 8;
+      StartingPlayerMoney: 4000;
+      InitialPirateControlPercent: 8;
       MarketPriceBandSqueeze: -0.2;
       RandomHoleSpawnRollMaximum: 80;
       MaximumDominatorResearchRate: 0.05;
       MaximumResearchMaterialConsumption: 2;
       MaximumQuestProgramRewardCount: 4;
       ArcadeDamageTakenScale: 0.9;
-      DifficultyFactor34: 10.0),
+      CoalitionToPirateBalanceRatio: 10.0),
     (GoodsEventDurationFactor: 1.0;
       QuestTimeAndExperienceFactor: 1.0;
       EquipmentWearFactor: 1.0;
       InventionProgressScale: 1.0;
       ArcadeRewardScale: 1.0;
       QuestMoneyFactor: 1.0;
-      DifficultyValue18: 1300;
-      DifficultyValue1C: 12;
+      StartingPlayerMoney: 1300;
+      InitialPirateControlPercent: 12;
       MarketPriceBandSqueeze: 0.0;
       RandomHoleSpawnRollMaximum: 100;
       MaximumDominatorResearchRate: 0.04;
       MaximumResearchMaterialConsumption: 4;
       MaximumQuestProgramRewardCount: 3;
       ArcadeDamageTakenScale: 1.0;
-      DifficultyFactor34: 5.0),
+      CoalitionToPirateBalanceRatio: 5.0),
     (GoodsEventDurationFactor: 1.2;
       QuestTimeAndExperienceFactor: 1.15;
       EquipmentWearFactor: 1.3;
       InventionProgressScale: 0.9;
       ArcadeRewardScale: 0.6;
       QuestMoneyFactor: 0.7;
-      DifficultyValue18: 800;
-      DifficultyValue1C: 16;
+      StartingPlayerMoney: 800;
+      InitialPirateControlPercent: 16;
       MarketPriceBandSqueeze: 0.1;
       RandomHoleSpawnRollMaximum: 130;
       MaximumDominatorResearchRate: 0.03;
       MaximumResearchMaterialConsumption: 5;
       MaximumQuestProgramRewardCount: 2;
       ArcadeDamageTakenScale: 1.7;
-      DifficultyFactor34: 2.5),
+      CoalitionToPirateBalanceRatio: 2.5),
     (GoodsEventDurationFactor: 1.5;
       QuestTimeAndExperienceFactor: 1.3;
       EquipmentWearFactor: 1.6;
       InventionProgressScale: 0.8;
       ArcadeRewardScale: 0.3;
       QuestMoneyFactor: 0.5;
-      DifficultyValue18: 400;
-      DifficultyValue1C: 20;
+      StartingPlayerMoney: 400;
+      InitialPirateControlPercent: 20;
       MarketPriceBandSqueeze: 0.15;
       RandomHoleSpawnRollMaximum: 170;
       MaximumDominatorResearchRate: 0.02;
       MaximumResearchMaterialConsumption: 6;
       MaximumQuestProgramRewardCount: 2;
       ArcadeDamageTakenScale: 2.3;
-      DifficultyFactor34: 1.8),
+      CoalitionToPirateBalanceRatio: 1.8),
     (GoodsEventDurationFactor: 0.0;
       QuestTimeAndExperienceFactor: 0.0;
       EquipmentWearFactor: 0.0;
       InventionProgressScale: 0.0;
       ArcadeRewardScale: 0.0;
       QuestMoneyFactor: 0.0;
-      DifficultyValue18: 0;
-      DifficultyValue1C: 0;
+      StartingPlayerMoney: 0;
+      InitialPirateControlPercent: 0;
       MarketPriceBandSqueeze: 0.0;
       RandomHoleSpawnRollMaximum: 0;
       MaximumDominatorResearchRate: 0.0;
       MaximumResearchMaterialConsumption: 0;
       MaximumQuestProgramRewardCount: 0;
       ArcadeDamageTakenScale: 0.0;
-      DifficultyFactor34: 0.0),
+      CoalitionToPirateBalanceRatio: 0.0),
     (GoodsEventDurationFactor: 0.0;
       QuestTimeAndExperienceFactor: 0.0;
       EquipmentWearFactor: 0.0;
       InventionProgressScale: 0.0;
       ArcadeRewardScale: 0.0;
       QuestMoneyFactor: 0.0;
-      DifficultyValue18: 0;
-      DifficultyValue1C: 0;
+      StartingPlayerMoney: 0;
+      InitialPirateControlPercent: 0;
       MarketPriceBandSqueeze: 0.0;
       RandomHoleSpawnRollMaximum: 0;
       MaximumDominatorResearchRate: 0.0;
       MaximumResearchMaterialConsumption: 0;
       MaximumQuestProgramRewardCount: 0;
       ArcadeDamageTakenScale: 0.0;
-      DifficultyFactor34: 0.0),
+      CoalitionToPirateBalanceRatio: 0.0),
     (GoodsEventDurationFactor: 0.0;
       QuestTimeAndExperienceFactor: 0.0;
       EquipmentWearFactor: 0.0;
       InventionProgressScale: 0.0;
       ArcadeRewardScale: 0.0;
       QuestMoneyFactor: 0.0;
-      DifficultyValue18: 0;
-      DifficultyValue1C: 0;
+      StartingPlayerMoney: 0;
+      InitialPirateControlPercent: 0;
       MarketPriceBandSqueeze: 0.0;
       RandomHoleSpawnRollMaximum: 0;
       MaximumDominatorResearchRate: 0.0;
       MaximumResearchMaterialConsumption: 0;
       MaximumQuestProgramRewardCount: 0;
       ArcadeDamageTakenScale: 0.0;
-      DifficultyFactor34: 0.0),
+      CoalitionToPirateBalanceRatio: 0.0),
     (GoodsEventDurationFactor: 0.0;
       QuestTimeAndExperienceFactor: 0.0;
       EquipmentWearFactor: 0.0;
       InventionProgressScale: 0.0;
       ArcadeRewardScale: 0.0;
       QuestMoneyFactor: 0.0;
-      DifficultyValue18: 0;
-      DifficultyValue1C: 0;
+      StartingPlayerMoney: 0;
+      InitialPirateControlPercent: 0;
       MarketPriceBandSqueeze: 0.0;
       RandomHoleSpawnRollMaximum: 0;
       MaximumDominatorResearchRate: 0.0;
       MaximumResearchMaterialConsumption: 0;
       MaximumQuestProgramRewardCount: 0;
       ArcadeDamageTakenScale: 0.0;
-      DifficultyFactor34: 0.0),
+      CoalitionToPirateBalanceRatio: 0.0),
     (GoodsEventDurationFactor: 0.0;
       QuestTimeAndExperienceFactor: 0.0;
       EquipmentWearFactor: 0.0;
       InventionProgressScale: 0.0;
       ArcadeRewardScale: 0.0;
       QuestMoneyFactor: 0.0;
-      DifficultyValue18: 0;
-      DifficultyValue1C: 0;
+      StartingPlayerMoney: 0;
+      InitialPirateControlPercent: 0;
       MarketPriceBandSqueeze: 0.0;
       RandomHoleSpawnRollMaximum: 0;
       MaximumDominatorResearchRate: 0.0;
       MaximumResearchMaterialConsumption: 0;
       MaximumQuestProgramRewardCount: 0;
       ArcadeDamageTakenScale: 0.0;
-      DifficultyFactor34: 0.0),
+      CoalitionToPirateBalanceRatio: 0.0),
     (GoodsEventDurationFactor: 0.0;
       QuestTimeAndExperienceFactor: 0.0;
       EquipmentWearFactor: 0.0;
       InventionProgressScale: 0.0;
       ArcadeRewardScale: 0.0;
       QuestMoneyFactor: 0.0;
-      DifficultyValue18: 0;
-      DifficultyValue1C: 0;
+      StartingPlayerMoney: 0;
+      InitialPirateControlPercent: 0;
       MarketPriceBandSqueeze: 0.0;
       RandomHoleSpawnRollMaximum: 0;
       MaximumDominatorResearchRate: 0.0;
       MaximumResearchMaterialConsumption: 0;
       MaximumQuestProgramRewardCount: 0;
       ArcadeDamageTakenScale: 0.0;
-      DifficultyFactor34: 0.0)); // @addr $87CD9C
+      CoalitionToPirateBalanceRatio: 0.0)); // @addr $87CD9C
   RelationInfo: array[0..4] of TRelationTypeInfo = (
     (InternalName: 'War'; DisplayName: ''; MinimumValue: 0),
     (InternalName: 'Bad'; DisplayName: ''; MinimumValue: 10),
@@ -1455,7 +1455,7 @@ var
   AfterburnerSpeedFactor: Single; // @addr $88B358 Config native equipment configuration.
   FuelCapacityByLevel: array[1..8] of Byte; // @addr $88B35C Loaded from equipment configuration.
   EngineLevelStats: TEngineLevelStatsTable; // @addr $88B364 Loaded by the native equipment configuration initializer.
-  HullLevelStats: THullLevelStatsTable; // @addr $88B384 Native per-technology armor table; remaining fields unresolved.
+  HullLevelStats: THullLevelStatsTable; // @addr $88B384 Per-technology armor and energy/splinter/missile fragility, used by THull getters.
   RepairRobotLevelPoints: array[1..8] of Byte; // @addr $88B404 Loaded from mRepair.
   DefGeneratorLevelFactors: array[1..8] of Single; // @addr $88B40C
   RadarLevelRanges: array[1..8] of Word; // @addr $88B42C Loaded from equipment configuration.
@@ -1476,7 +1476,7 @@ type
     AllowedRatingBands: TOwnerMask; // @offset $0A
     AllowedRanks: TOwnerMask; // @offset $0B
     AllowedCareers: TOwnerMask; // @offset $0C
-    EffectClass0D: Byte; // @offset $0D Native values 1..5; gameplay meaning unresolved.
+    MedicalPriceSizeLevel: Byte; // @offset $0D Mini..Huge (1..5); GenerateValueForSizeLevel bucket for treatment and stimulation prices.
     DevelopmentRate: Double; // @offset $10 Progress increment factor.
     InfectionChance: Double; // @offset $18
     Locations: TOwnerMask; // @offset $20 Bits 0=planet, 1=ship interior, 2=normal space, 3=combat infection.
@@ -1565,7 +1565,7 @@ begin
     Difficulty.GoodsEventDurationFactor := ExtrapolateLinearDifficulty(Level, GalaxyDifficultyTuning[2].GoodsEventDurationFactor, GalaxyDifficultyTuning[3].GoodsEventDurationFactor);
     Difficulty.QuestTimeAndExperienceFactor := ExtrapolateLinearDifficulty(Level, GalaxyDifficultyTuning[2].QuestTimeAndExperienceFactor, GalaxyDifficultyTuning[3].QuestTimeAndExperienceFactor);
     Difficulty.EquipmentWearFactor := ExtrapolateLinearDifficulty(Level, GalaxyDifficultyTuning[2].EquipmentWearFactor, GalaxyDifficultyTuning[3].EquipmentWearFactor);
-    Difficulty.DifficultyValue1C := Round(ExtrapolateLinearDifficulty(Level, GalaxyDifficultyTuning[2].DifficultyValue1C, GalaxyDifficultyTuning[3].DifficultyValue1C));
+    Difficulty.InitialPirateControlPercent := Round(ExtrapolateLinearDifficulty(Level, GalaxyDifficultyTuning[2].InitialPirateControlPercent, GalaxyDifficultyTuning[3].InitialPirateControlPercent));
     Difficulty.MarketPriceBandSqueeze := ExtrapolateLinearDifficulty(Level, GalaxyDifficultyTuning[2].MarketPriceBandSqueeze, GalaxyDifficultyTuning[3].MarketPriceBandSqueeze);
     Difficulty.RandomHoleSpawnRollMaximum := Round(ExtrapolateLinearDifficulty(Level, GalaxyDifficultyTuning[2].RandomHoleSpawnRollMaximum, GalaxyDifficultyTuning[3].RandomHoleSpawnRollMaximum));
     Difficulty.MaximumResearchMaterialConsumption := Round(ExtrapolateLinearDifficulty(Level, GalaxyDifficultyTuning[2].MaximumResearchMaterialConsumption, GalaxyDifficultyTuning[3].MaximumResearchMaterialConsumption));
@@ -1573,9 +1573,9 @@ begin
     Difficulty.InventionProgressScale := ExtrapolateGeometricDifficulty(Level, GalaxyDifficultyTuning[2].InventionProgressScale, GalaxyDifficultyTuning[3].InventionProgressScale);
     Difficulty.ArcadeRewardScale := ExtrapolateGeometricDifficulty(Level, GalaxyDifficultyTuning[2].ArcadeRewardScale, GalaxyDifficultyTuning[3].ArcadeRewardScale);
     Difficulty.QuestMoneyFactor := ExtrapolateGeometricDifficulty(Level, GalaxyDifficultyTuning[2].QuestMoneyFactor, GalaxyDifficultyTuning[3].QuestMoneyFactor);
-    Difficulty.DifficultyValue18 := Round(ExtrapolateGeometricDifficulty(Level, GalaxyDifficultyTuning[2].DifficultyValue18, GalaxyDifficultyTuning[3].DifficultyValue18));
+    Difficulty.StartingPlayerMoney := Round(ExtrapolateGeometricDifficulty(Level, GalaxyDifficultyTuning[2].StartingPlayerMoney, GalaxyDifficultyTuning[3].StartingPlayerMoney));
     Difficulty.MaximumDominatorResearchRate := ExtrapolateGeometricDifficulty(Level, GalaxyDifficultyTuning[2].MaximumDominatorResearchRate, GalaxyDifficultyTuning[3].MaximumDominatorResearchRate);
-    Difficulty.DifficultyFactor34 := ExtrapolateGeometricDifficulty(Level, GalaxyDifficultyTuning[2].DifficultyFactor34, GalaxyDifficultyTuning[3].DifficultyFactor34);
+    Difficulty.CoalitionToPirateBalanceRatio := ExtrapolateGeometricDifficulty(Level, GalaxyDifficultyTuning[2].CoalitionToPirateBalanceRatio, GalaxyDifficultyTuning[3].CoalitionToPirateBalanceRatio);
   end;
   for GoodsIndex := 0 to 7 do GoodsMarket[GoodsIndex].DisplayName := LocalizedText('Items.Goods.Name.' + IntToStr(GoodsIndex + 1));
   for GoodsIndex := 0 to 7 do GoodsMarket[GoodsIndex].TradeName := LocalizedText('Items.Goods.NameBuy.' + IntToStr(GoodsIndex + 1));
@@ -2818,7 +2818,7 @@ begin
   CaptainHealthDefinitions[1].AllowedRatingBands := [2, 3, 4, 5];
   CaptainHealthDefinitions[1].AllowedRanks := [2, 3, 4, 5, 6, 7];
   CaptainHealthDefinitions[1].AllowedCareers := [Ord(rcTrader), Ord(rcPirate), Ord(rcWarrior)];
-  CaptainHealthDefinitions[1].EffectClass0D := 2;
+  CaptainHealthDefinitions[1].MedicalPriceSizeLevel := 2;
   CaptainHealthDefinitions[1].DevelopmentRate := 100.0;
   CaptainHealthDefinitions[1].InfectionChance := 1.0;
   CaptainHealthDefinitions[1].Locations := [3];
@@ -2828,7 +2828,7 @@ begin
   CaptainHealthDefinitions[2].AllowedRatingBands := [1, 2, 3, 4, 5];
   CaptainHealthDefinitions[2].AllowedRanks := [3, 4, 5];
   CaptainHealthDefinitions[2].AllowedCareers := [Ord(rcTrader), Ord(rcPirate), Ord(rcWarrior)];
-  CaptainHealthDefinitions[2].EffectClass0D := 4;
+  CaptainHealthDefinitions[2].MedicalPriceSizeLevel := 4;
   CaptainHealthDefinitions[2].DevelopmentRate := 1.0;
   CaptainHealthDefinitions[2].InfectionChance := 1.0;
   CaptainHealthDefinitions[2].Locations := [0];
@@ -2838,7 +2838,7 @@ begin
   CaptainHealthDefinitions[3].AllowedRatingBands := [3, 4, 5];
   CaptainHealthDefinitions[3].AllowedRanks := [3, 4, 5, 6, 7];
   CaptainHealthDefinitions[3].AllowedCareers := [Ord(rcTrader), Ord(rcPirate), Ord(rcWarrior)];
-  CaptainHealthDefinitions[3].EffectClass0D := 3;
+  CaptainHealthDefinitions[3].MedicalPriceSizeLevel := 3;
   CaptainHealthDefinitions[3].DevelopmentRate := 100.0;
   CaptainHealthDefinitions[3].InfectionChance := 1.0;
   CaptainHealthDefinitions[3].Locations := [3];
@@ -2848,7 +2848,7 @@ begin
   CaptainHealthDefinitions[4].AllowedRatingBands := [1, 2, 3, 4, 5];
   CaptainHealthDefinitions[4].AllowedRanks := [1, 2, 3, 4, 5, 6, 7];
   CaptainHealthDefinitions[4].AllowedCareers := [Ord(rcTrader), Ord(rcPirate), Ord(rcWarrior)];
-  CaptainHealthDefinitions[4].EffectClass0D := 5;
+  CaptainHealthDefinitions[4].MedicalPriceSizeLevel := 5;
   CaptainHealthDefinitions[4].DevelopmentRate := 1.0;
   CaptainHealthDefinitions[4].InfectionChance := 1.0;
   CaptainHealthDefinitions[4].Locations := [2];
@@ -2858,7 +2858,7 @@ begin
   CaptainHealthDefinitions[5].AllowedRatingBands := [1, 2, 3, 4, 5];
   CaptainHealthDefinitions[5].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
   CaptainHealthDefinitions[5].AllowedCareers := [Ord(rcTrader), Ord(rcPirate), Ord(rcWarrior)];
-  CaptainHealthDefinitions[5].EffectClass0D := 1;
+  CaptainHealthDefinitions[5].MedicalPriceSizeLevel := 1;
   CaptainHealthDefinitions[5].DevelopmentRate := 10.0;
   CaptainHealthDefinitions[5].InfectionChance := 1.0;
   CaptainHealthDefinitions[5].Locations := [0, 1];
@@ -2868,7 +2868,7 @@ begin
   CaptainHealthDefinitions[6].AllowedRatingBands := [1, 2, 3, 4, 5];
   CaptainHealthDefinitions[6].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
   CaptainHealthDefinitions[6].AllowedCareers := [Ord(rcTrader), Ord(rcPirate), Ord(rcWarrior)];
-  CaptainHealthDefinitions[6].EffectClass0D := 4;
+  CaptainHealthDefinitions[6].MedicalPriceSizeLevel := 4;
   CaptainHealthDefinitions[6].DevelopmentRate := 100.0;
   CaptainHealthDefinitions[6].InfectionChance := 1.0;
   CaptainHealthDefinitions[6].Locations := [];
@@ -2878,7 +2878,7 @@ begin
   CaptainHealthDefinitions[7].AllowedRatingBands := [1, 2, 3, 4, 5];
   CaptainHealthDefinitions[7].AllowedRanks := [1, 2, 3, 4, 5, 6, 7];
   CaptainHealthDefinitions[7].AllowedCareers := [Ord(rcTrader), Ord(rcPirate), Ord(rcWarrior)];
-  CaptainHealthDefinitions[7].EffectClass0D := 2;
+  CaptainHealthDefinitions[7].MedicalPriceSizeLevel := 2;
   CaptainHealthDefinitions[7].DevelopmentRate := 100.0;
   CaptainHealthDefinitions[7].InfectionChance := 1.0;
   CaptainHealthDefinitions[7].Locations := [3];
@@ -2888,7 +2888,7 @@ begin
   CaptainHealthDefinitions[8].AllowedRatingBands := [1, 2, 3, 4, 5];
   CaptainHealthDefinitions[8].AllowedRanks := [1, 2, 3, 4, 5, 6, 7];
   CaptainHealthDefinitions[8].AllowedCareers := [Ord(rcTrader), Ord(rcPirate), Ord(rcWarrior)];
-  CaptainHealthDefinitions[8].EffectClass0D := 1;
+  CaptainHealthDefinitions[8].MedicalPriceSizeLevel := 1;
   CaptainHealthDefinitions[8].DevelopmentRate := 100.0;
   CaptainHealthDefinitions[8].InfectionChance := 1.0;
   CaptainHealthDefinitions[8].Locations := [3];
@@ -2898,7 +2898,7 @@ begin
   CaptainHealthDefinitions[9].AllowedRatingBands := [2, 3, 4, 5];
   CaptainHealthDefinitions[9].AllowedRanks := [2, 3, 4, 5, 6, 7];
   CaptainHealthDefinitions[9].AllowedCareers := [Ord(rcTrader), Ord(rcPirate), Ord(rcWarrior)];
-  CaptainHealthDefinitions[9].EffectClass0D := 2;
+  CaptainHealthDefinitions[9].MedicalPriceSizeLevel := 2;
   CaptainHealthDefinitions[9].DevelopmentRate := 1.0;
   CaptainHealthDefinitions[9].InfectionChance := 1.0;
   CaptainHealthDefinitions[9].Locations := [0, 1, 2];
@@ -2908,7 +2908,7 @@ begin
   CaptainHealthDefinitions[10].AllowedRatingBands := [1, 2, 3, 4, 5];
   CaptainHealthDefinitions[10].AllowedRanks := [1, 2, 3, 4, 5, 6, 7];
   CaptainHealthDefinitions[10].AllowedCareers := [Ord(rcTrader), Ord(rcPirate), Ord(rcWarrior)];
-  CaptainHealthDefinitions[10].EffectClass0D := 2;
+  CaptainHealthDefinitions[10].MedicalPriceSizeLevel := 2;
   CaptainHealthDefinitions[10].DevelopmentRate := 1.0;
   CaptainHealthDefinitions[10].InfectionChance := 1.0;
   CaptainHealthDefinitions[10].Locations := [0, 1, 2];
@@ -2918,7 +2918,7 @@ begin
   CaptainHealthDefinitions[11].AllowedRatingBands := [1, 2, 3, 4, 5];
   CaptainHealthDefinitions[11].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
   CaptainHealthDefinitions[11].AllowedCareers := [Ord(rcTrader), Ord(rcPirate), Ord(rcWarrior)];
-  CaptainHealthDefinitions[11].EffectClass0D := 4;
+  CaptainHealthDefinitions[11].MedicalPriceSizeLevel := 4;
   CaptainHealthDefinitions[11].DevelopmentRate := 1.0;
   CaptainHealthDefinitions[11].InfectionChance := 1.0;
   CaptainHealthDefinitions[11].Locations := [0, 1];
@@ -2928,7 +2928,7 @@ begin
   CaptainHealthDefinitions[12].AllowedRatingBands := [2, 3, 4, 5];
   CaptainHealthDefinitions[12].AllowedRanks := [2, 3, 4, 5, 6, 7];
   CaptainHealthDefinitions[12].AllowedCareers := [Ord(rcTrader), Ord(rcPirate), Ord(rcWarrior)];
-  CaptainHealthDefinitions[12].EffectClass0D := 2;
+  CaptainHealthDefinitions[12].MedicalPriceSizeLevel := 2;
   CaptainHealthDefinitions[12].DevelopmentRate := 1.0;
   CaptainHealthDefinitions[12].InfectionChance := 0.5;
   CaptainHealthDefinitions[12].Locations := [0, 1, 2];
@@ -2938,7 +2938,7 @@ begin
   RadiationHealthDefinitions[1].AllowedRatingBands := [1, 2, 3, 4, 5];
   RadiationHealthDefinitions[1].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
   RadiationHealthDefinitions[1].AllowedCareers := [Ord(rcTrader), Ord(rcPirate), Ord(rcWarrior)];
-  RadiationHealthDefinitions[1].EffectClass0D := 4;
+  RadiationHealthDefinitions[1].MedicalPriceSizeLevel := 4;
   RadiationHealthDefinitions[1].DevelopmentRate := 100.0;
   RadiationHealthDefinitions[1].InfectionChance := 0.0;
   RadiationHealthDefinitions[1].Locations := [];
@@ -2948,7 +2948,7 @@ begin
   CaptainHealthDefinitions[13].AllowedRatingBands := [1, 2, 3, 4, 5];
   CaptainHealthDefinitions[13].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
   CaptainHealthDefinitions[13].AllowedCareers := [Ord(rcTrader), Ord(rcPirate), Ord(rcWarrior)];
-  CaptainHealthDefinitions[13].EffectClass0D := 2;
+  CaptainHealthDefinitions[13].MedicalPriceSizeLevel := 2;
   CaptainHealthDefinitions[13].DevelopmentRate := 1.0;
   CaptainHealthDefinitions[13].InfectionChance := 0.9;
   CaptainHealthDefinitions[13].Duration := 140;
@@ -2957,7 +2957,7 @@ begin
   CaptainHealthDefinitions[14].AllowedRatingBands := [1, 2, 3, 4, 5];
   CaptainHealthDefinitions[14].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
   CaptainHealthDefinitions[14].AllowedCareers := [Ord(rcTrader), Ord(rcPirate), Ord(rcWarrior)];
-  CaptainHealthDefinitions[14].EffectClass0D := 2;
+  CaptainHealthDefinitions[14].MedicalPriceSizeLevel := 2;
   CaptainHealthDefinitions[14].DevelopmentRate := 1.0;
   CaptainHealthDefinitions[14].InfectionChance := 0.9;
   CaptainHealthDefinitions[14].Duration := 130;
@@ -2966,7 +2966,7 @@ begin
   CaptainHealthDefinitions[15].AllowedRatingBands := [1, 2, 3, 4, 5];
   CaptainHealthDefinitions[15].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
   CaptainHealthDefinitions[15].AllowedCareers := [Ord(rcTrader), Ord(rcPirate), Ord(rcWarrior)];
-  CaptainHealthDefinitions[15].EffectClass0D := 2;
+  CaptainHealthDefinitions[15].MedicalPriceSizeLevel := 2;
   CaptainHealthDefinitions[15].DevelopmentRate := 1.0;
   CaptainHealthDefinitions[15].InfectionChance := 0.8;
   CaptainHealthDefinitions[15].Duration := 140;
@@ -2975,7 +2975,7 @@ begin
   CaptainHealthDefinitions[16].AllowedRatingBands := [1, 2, 3, 4, 5];
   CaptainHealthDefinitions[16].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
   CaptainHealthDefinitions[16].AllowedCareers := [Ord(rcTrader), Ord(rcPirate), Ord(rcWarrior)];
-  CaptainHealthDefinitions[16].EffectClass0D := 2;
+  CaptainHealthDefinitions[16].MedicalPriceSizeLevel := 2;
   CaptainHealthDefinitions[16].DevelopmentRate := 1.0;
   CaptainHealthDefinitions[16].InfectionChance := 0.4;
   CaptainHealthDefinitions[16].Duration := 120;
@@ -2984,7 +2984,7 @@ begin
   CaptainHealthDefinitions[17].AllowedRatingBands := [1, 2, 3, 4, 5];
   CaptainHealthDefinitions[17].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
   CaptainHealthDefinitions[17].AllowedCareers := [Ord(rcTrader), Ord(rcPirate), Ord(rcWarrior)];
-  CaptainHealthDefinitions[17].EffectClass0D := 2;
+  CaptainHealthDefinitions[17].MedicalPriceSizeLevel := 2;
   CaptainHealthDefinitions[17].DevelopmentRate := 1.0;
   CaptainHealthDefinitions[17].InfectionChance := 0.9;
   CaptainHealthDefinitions[17].Duration := 90;
@@ -2993,7 +2993,7 @@ begin
   CaptainHealthDefinitions[18].AllowedRatingBands := [1, 2, 3, 4, 5];
   CaptainHealthDefinitions[18].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
   CaptainHealthDefinitions[18].AllowedCareers := [Ord(rcTrader), Ord(rcPirate), Ord(rcWarrior)];
-  CaptainHealthDefinitions[18].EffectClass0D := 2;
+  CaptainHealthDefinitions[18].MedicalPriceSizeLevel := 2;
   CaptainHealthDefinitions[18].DevelopmentRate := 1.0;
   CaptainHealthDefinitions[18].InfectionChance := 0.8;
   CaptainHealthDefinitions[18].Duration := 300;
@@ -3002,7 +3002,7 @@ begin
   CaptainHealthDefinitions[19].AllowedRatingBands := [1, 2, 3, 4, 5];
   CaptainHealthDefinitions[19].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
   CaptainHealthDefinitions[19].AllowedCareers := [Ord(rcTrader), Ord(rcPirate), Ord(rcWarrior)];
-  CaptainHealthDefinitions[19].EffectClass0D := 2;
+  CaptainHealthDefinitions[19].MedicalPriceSizeLevel := 2;
   CaptainHealthDefinitions[19].DevelopmentRate := 1.0;
   CaptainHealthDefinitions[19].InfectionChance := 0.9;
   CaptainHealthDefinitions[19].Duration := 140;
@@ -3011,7 +3011,7 @@ begin
   CaptainHealthDefinitions[20].AllowedRatingBands := [1, 2, 3, 4, 5];
   CaptainHealthDefinitions[20].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
   CaptainHealthDefinitions[20].AllowedCareers := [Ord(rcTrader), Ord(rcPirate), Ord(rcWarrior)];
-  CaptainHealthDefinitions[20].EffectClass0D := 2;
+  CaptainHealthDefinitions[20].MedicalPriceSizeLevel := 2;
   CaptainHealthDefinitions[20].DevelopmentRate := 1.0;
   CaptainHealthDefinitions[20].InfectionChance := 0.9;
   CaptainHealthDefinitions[20].Duration := 200;
@@ -3020,7 +3020,7 @@ begin
   CaptainHealthDefinitions[21].AllowedRatingBands := [1, 2, 3, 4, 5];
   CaptainHealthDefinitions[21].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
   CaptainHealthDefinitions[21].AllowedCareers := [Ord(rcTrader), Ord(rcPirate), Ord(rcWarrior)];
-  CaptainHealthDefinitions[21].EffectClass0D := 2;
+  CaptainHealthDefinitions[21].MedicalPriceSizeLevel := 2;
   CaptainHealthDefinitions[21].DevelopmentRate := 1.0;
   CaptainHealthDefinitions[21].InfectionChance := 0.9;
   CaptainHealthDefinitions[21].Duration := 200;
@@ -3029,7 +3029,7 @@ begin
   CaptainHealthDefinitions[22].AllowedRatingBands := [1, 2, 3, 4, 5];
   CaptainHealthDefinitions[22].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
   CaptainHealthDefinitions[22].AllowedCareers := [Ord(rcTrader), Ord(rcPirate), Ord(rcWarrior)];
-  CaptainHealthDefinitions[22].EffectClass0D := 2;
+  CaptainHealthDefinitions[22].MedicalPriceSizeLevel := 2;
   CaptainHealthDefinitions[22].DevelopmentRate := 1.0;
   CaptainHealthDefinitions[22].InfectionChance := 0.25;
   CaptainHealthDefinitions[22].Duration := 150;
@@ -3038,7 +3038,7 @@ begin
   CaptainHealthDefinitions[23].AllowedRatingBands := [1, 2, 3, 4, 5];
   CaptainHealthDefinitions[23].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
   CaptainHealthDefinitions[23].AllowedCareers := [Ord(rcTrader), Ord(rcPirate), Ord(rcWarrior)];
-  CaptainHealthDefinitions[23].EffectClass0D := 2;
+  CaptainHealthDefinitions[23].MedicalPriceSizeLevel := 2;
   CaptainHealthDefinitions[23].DevelopmentRate := 1.0;
   CaptainHealthDefinitions[23].InfectionChance := 0.15;
   CaptainHealthDefinitions[23].Duration := 90;
@@ -3047,7 +3047,7 @@ begin
   CaptainHealthDefinitions[24].AllowedRatingBands := [1, 2, 3, 4, 5];
   CaptainHealthDefinitions[24].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
   CaptainHealthDefinitions[24].AllowedCareers := [Ord(rcTrader), Ord(rcPirate), Ord(rcWarrior)];
-  CaptainHealthDefinitions[24].EffectClass0D := 2;
+  CaptainHealthDefinitions[24].MedicalPriceSizeLevel := 2;
   CaptainHealthDefinitions[24].DevelopmentRate := 1.0;
   CaptainHealthDefinitions[24].InfectionChance := 0.2;
   CaptainHealthDefinitions[24].Duration := 120;

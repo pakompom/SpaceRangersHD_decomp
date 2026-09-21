@@ -114,6 +114,17 @@ type
   TPercent = 0..100;
   TProgramIndex = 0..11;
 
+  // MatrixGame's SRobotGameState / CGame.SaveResult ABI, also stored in battle history.
+  TPlanetBattleStatistics = record // @size $18
+    SignedTimeMs: Integer; // @offset $00 Elapsed milliseconds; MatrixGame negates the winning side's time.
+    RobotsBuilt: Integer; // @offset $04
+    RobotsDestroyed: Integer; // @offset $08
+    TurretsBuilt: Integer; // @offset $0C
+    TurretsDestroyed: Integer; // @offset $10
+    BuildingsDestroyed: Integer; // @offset $14
+  end;
+  PPlanetBattleStatistics = ^TPlanetBattleStatistics;
+
   TGreetingCountMask = set of 0..15; // @size $02 Shared greeting count buckets; bit 10 is Many/Far where supported.
 
   // Shared scalar configuration identifiers. Managed configuration records live in aConst.
@@ -256,7 +267,8 @@ type
 
   // The script singleton constructor proves an enum spanning three bytes.
   // Four-byte masks use bits 0..20; the exact enum upper bound within 19..23 is unresolved.
-  // Other enumerator names remain unknown. Bit 19 blocks the repair droid in TShip.ApplyDamage.
+  // Bits 3..18 have semantic aliases below; their original enum spellings are not recovered.
+  // Bit 19 blocks the repair droid in TShip.ApplyDamage.
   TDamageKind = (dkEnergy = 0, dkSplinter = 1, dkMissile = 2, dkDroidBlock = 19); // @size 1
   TDamageFlagSet = set of TDamageKind; // @size 4 Named sets are rounded to four bytes by DCC32.
 
@@ -363,15 +375,15 @@ type
     InventionProgressScale: Single; // @offset 0x0C
     ArcadeRewardScale: Single; // @offset $10 Indexed by DifficultyLevels[7].
     QuestMoneyFactor: Single; // @offset 0x14
-    DifficultyValue18: Integer; // @offset $18 Extrapolated geometrically; gameplay meaning unresolved.
-    DifficultyValue1C: Byte; // @offset $1C Extrapolated linearly and rounded; gameplay meaning unresolved.
+    StartingPlayerMoney: Integer; // @offset $18 DifficultyLevels[1]; passed to InitializePlayerAtPlanet and ApplyCharacterPreset.
+    InitialPirateControlPercent: Byte; // @offset $1C DifficultyLevels[0]; sets the initial pirate-system selection count before placement exclusions.
     MarketPriceBandSqueeze: Single; // @offset 0x20
     RandomHoleSpawnRollMaximum: Integer; // @offset 0x24  Roll 0..maximum; zero creates a hole when other conditions allow.
     MaximumDominatorResearchRate: Single; // @offset 0x28  Before the per-series multiplier.
     MaximumResearchMaterialConsumption: Byte; // @offset 0x2C  Inclusive random upper bound per consumption event.
     MaximumQuestProgramRewardCount: Byte; // @offset 0x2D  Upper end before owned-program scaling.
     ArcadeDamageTakenScale: Single; // @offset $30 Indexed by DifficultyLevels[6].
-    DifficultyFactor34: Single; // @offset $34 Extrapolated geometrically; gameplay meaning unresolved.
+    CoalitionToPirateBalanceRatio: Single; // @offset $34 DifficultyLevels[0]; normalizes the system-count ratio for daily WarDeltaWin adjustments.
   end;
   TGalaxyDifficultyTuningTable = array[0..9] of TGalaxyDifficultyTuning;
   PGalaxyDifficultyTuningTable = ^TGalaxyDifficultyTuningTable;

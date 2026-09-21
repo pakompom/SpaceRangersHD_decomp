@@ -47,7 +47,7 @@ type
     function GetStrengthScaledPirateStatus: TPercent; override; // @addr $716D64 @slot 0x3C
     function AcceptsRansomDemandFrom(Ship: TShip): Boolean; override; // @addr $719CE4 @slot 0x88
     function TrustsAttackRequester(Ship: TShip): Boolean; override; // @addr $719CFC @slot 0x8C
-    function EvaluateAllyRelationAndStrength(Ship: TShip): Boolean; override; // @addr $719D14 @slot 0x90
+    function AcceptsAppealFrom(Ship: TShip): Boolean; override; // @addr $719D14 @slot 0x90
     procedure ProcessCombatDialogue; override; // @addr $719D2C @slot 0xA0
     procedure ReactToExtortionDemand(Ranger: Pointer); override; // @addr $719D38 @slot 0xA4
     function BuildMoneyExtortionResponse(OtherShip: TShip; var Response: WideString; DemandedAmount: Integer): Boolean; override; // @addr $719D48 @slot 0xA8
@@ -1678,8 +1678,8 @@ begin
 end;
 { @end $719CFC }
 
-{ @routine $719D14 TRuins_EvaluateAllyRelationAndStrength }
-function TRuins.EvaluateAllyRelationAndStrength(Ship: TShip): Boolean;
+{ @routine $719D14 TRuins_AcceptsAppealFrom }
+function TRuins.AcceptsAppealFrom(Ship: TShip): Boolean;
 begin
   Result := False;
 end;

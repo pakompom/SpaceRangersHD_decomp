@@ -308,7 +308,7 @@ var
   State: TCursorStateGI;
 begin
   Result := False;
-  Parent.RootUiObject.NativeHook50;
+  Parent.RootUiObject.OnModalSuspend;
   Parent.CaptureCursorState(@State);
   Parent.SetCursorActive(False);
   Parent.DrawQueuedUpdateRects;
@@ -320,7 +320,7 @@ begin
   Parent.InvalidateViewport;
   Parent.RestoreCursorState(@State);
   Parent.UpdateCursorPosition;
-  Parent.RootUiObject.NativeHook48;
+  Parent.RootUiObject.OnModalResume;
   Parent.Present;
   PostMouseMoveMessage;
 end;
