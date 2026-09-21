@@ -170,7 +170,7 @@ end;
 { @routine $65CA28 TTranclucator_Init }
 procedure TTranclucator.Init(AOwnerShip: TShip; Faction: TOwnerId; BasicEquipment: Boolean);
 var
-  WeaponType: Byte;
+  WeaponType: TItemType;
   MaximumHullSize: Integer;
 
   // @nested $65C908 RandomHullLevel
@@ -218,8 +218,8 @@ begin
     CreateAndEquipHull(Round(NextRandomIntRange(200, 300, RandomState) * HullCapacityScale), 1, OwnerId, -1, False);
     CreateAndEquipFuelTanks(10, 1, OwnerId);
     CreateAndEquipEngine(RandomEquipmentSize(EngineBaseSize), 2, OwnerId);
-    WeaponType := NextRandomIntRange(0, 2, RandomState) + 50;
-    CreateAndEquipWeapon(WeaponType, RandomEquipmentSize(WeaponInfos[TItemType(WeaponType)].AverageSize), 1, OwnerId);
+    WeaponType := TItemType(NextRandomIntRange(0, 2, RandomState) + Ord(t_Weapon1));
+    CreateAndEquipWeapon(WeaponType, RandomEquipmentSize(WeaponInfos[WeaponType].AverageSize), 1, OwnerId);
   end
   else
   begin
@@ -230,8 +230,8 @@ begin
     CreateAndEquipDefGenerator(RandomEquipmentSize(DefGeneratorBaseSize), RandomEquipmentLevel, OwnerId);
     CreateAndEquipRepairRobot(RandomEquipmentSize(RepairRobotBaseSize), RandomEquipmentLevel, OwnerId);
     CreateAndEquipCargoHook(RandomEquipmentSize(CargoHookBaseSize), RandomEquipmentLevel, OwnerId);
-    WeaponType := NextRandomIntRange(0, 2, RandomState) + 50;
-    CreateAndEquipWeapon(WeaponType, RandomEquipmentSize(WeaponInfos[TItemType(WeaponType)].AverageSize), 1, OwnerId);
+    WeaponType := TItemType(NextRandomIntRange(0, 2, RandomState) + Ord(t_Weapon1));
+    CreateAndEquipWeapon(WeaponType, RandomEquipmentSize(WeaponInfos[WeaponType].AverageSize), 1, OwnerId);
     BaseSkills[psAccuracy] := NextRandomIntRange(0, Round(RemapClamped(Galaxy.TechLevel, 3, 8, 0, 6)), RandomState);
     BaseSkills[psManeuverability] := NextRandomIntRange(0, Round(RemapClamped(Galaxy.TechLevel, 3, 8, 0, 6)), RandomState);
     BaseSkills[psTechnical] := NextRandomIntRange(0, Round(RemapClamped(Galaxy.TechLevel, 3, 8, 0, 6)), RandomState);
@@ -828,14 +828,14 @@ begin
         if GetFuelTanks = nil then EquipItem(Item as TFuelTanks)
         else if GetFuelTanks.Weight > Item.Weight then
         begin
-          UnequipSlot(Byte(GetFuelTanks.ItemType), 0);
+          UnequipSlot(GetFuelTanks.ItemType, 0);
           EquipItem(Item as TFuelTanks);
         end;
       Ord(t_Engine):
         if GetEngine = nil then EquipItem(Item as TEngine)
         else if CalculateItemEffectiveness(Item) > CalculateItemEffectiveness(GetEngine) then
         begin
-          UnequipSlot(Byte(GetEngine.ItemType), 0);
+          UnequipSlot(GetEngine.ItemType, 0);
           EquipItem(Item as TEngine);
         end;
     end;

@@ -213,7 +213,7 @@ type
     procedure TreatAllDiseasesAtMedicalCenter(QuotedCost: Integer); // @addr 0x5CEE5C @note "Trusts QuotedCost from the menu."
     procedure ShowMedicalCenterStimulantDialog(Action: Integer); // @addr 0x5CF3B0
     procedure BuySelectedStimulantAtMedicalCenter(StimulantIndex: Integer); // @addr 0x5D0280 @note "Stimulants use effect indices 13..24; valid insurance halves the fee outside pirate-owned systems."
-    function BuildConstructionItemChoices(Kind: Byte): Integer; // @addr $5D230C
+    function BuildConstructionItemChoices(Kind: TItemType): Integer; // @addr $5D230C
     procedure ConfirmDominionConstructionLimit(Action: Integer); // @addr $5D2B6C
     procedure SelectConstructionHeldItem(Action: Integer); // @addr $5D2D7C
     procedure SelectConstructionStoredItem(Action: Integer); // @addr $5D2DF0
@@ -335,7 +335,7 @@ var
   StationImprovementKind: TImprovementKind; // @addr $88A94C
   StationImprovementDetail: Integer; // @addr $88A950
   StationBridgeMode: Byte; // @addr $88A954 0: station services; 1: hull bridge; higher values: custom bridge.
-  ConstructionEquipment: array[42..49] of TConstructionEquipment; // @addr $88A958
+  ConstructionEquipment: array[t_Hull..t_DefGenerator] of TConstructionEquipment; // @addr $88A958
   ConstructionWeapons: array[1..5] of TConstructionEquipment; // @addr $88A998
   DominionTravelQuotes: array[1..4] of TDominionTravelQuote; // @addr $88A9C0
 
@@ -1496,7 +1496,7 @@ var
   Ranger: TRanger;
   SwapEntry: TObject;
   Seed: Cardinal;
-  ItemType: Byte;
+  ItemType: TItemType;
   Weight, Level: Integer;
   Info: PWeaponInfo;
   MinimumSizeFactor, MaximumSizeFactor: Single;
@@ -1658,11 +1658,11 @@ begin
                   end
                   else
                   begin
-                    ItemType := PickRandomItemType([Ord(t_FuelTanks)..Ord(t_DefGenerator)]);
+                    ItemType := TItemType(PickRandomItemType([Ord(t_FuelTanks)..Ord(t_DefGenerator)]));
                     Seed := Galaxy.CurrentTurn div 33 * (GetPlayer.DockedTo.Id * (GetPlayer.Rank + 17));
                     Weight := NextRandomIntRange(Round(GetAverageItemSize(ItemType) * MinimumSizeFactor), Round(GetAverageItemSize(ItemType) * MaximumSizeFactor), Seed);
                     Level := Round(RemapClamped(ShortInt(GetPlayer.Rank * 1), 0, 7, 3, 8));
-                    Item := CreateGeneratedEquipment(TItemType(ItemType), Weight, Level, StationOwner);
+                    Item := CreateGeneratedEquipment(ItemType, Weight, Level, StationOwner);
                   end;
                   if Item <> nil then
                     ReplaceTextToken(DialogText, '<ItemName>', Item.GetDisplayName, '<color=255,240,100>')
@@ -5647,7 +5647,7 @@ begin
       if OfferCount > Max(2, (Rank shr 1) + 1) then Break;
     end;
   end;
-  Bonus := GetPlayer.GetTotalStatBonus(bonStimCapacity) + GetPlayer.CountActiveArtefacts(Ord(t_ArtBio));
+  Bonus := GetPlayer.GetTotalStatBonus(bonStimCapacity) + GetPlayer.CountActiveArtefacts(t_ArtBio);
   MaxStimulants := Max(GetPlayer.CountActiveStimulants,
     Floor(SeededRandomFloatRange(Galaxy.CurrentTurn div 70 * GetPlayer.DockedTo.Id, 0, 1) *
       (Max(2, Max(2, Integer(Rank)) + Bonus) - 1)) + 2);
@@ -6001,10 +6001,10 @@ end;
 function GetConstructionShopCost: Integer;
 var
   J: Integer;
-  Kind: Byte;
+  Kind: TItemType;
 begin
   Result := 0;
-  for Kind := 42 to 49 do
+  for Kind := t_Hull to t_DefGenerator do
     if (ConstructionEquipment[Kind].Item <> nil) and (ConstructionEquipment[Kind].Source = 2) then
       Inc(Result, ConstructionEquipment[Kind].Item.Cost);
   for J := 1 to 5 do
@@ -6017,12 +6017,12 @@ end;
 function GetConstructionFreeSpace: Integer;
 var
   J: Integer;
-  Kind: Byte;
+  Kind: TItemType;
 begin
   Result := 0;
-  for Kind := 42 to 49 do
+  for Kind := t_Hull to t_DefGenerator do
     if ConstructionEquipment[Kind].Item <> nil then
-      if Kind = 42 then Inc(Result, ConstructionEquipment[Kind].Item.Weight)
+      if Kind = t_Hull then Inc(Result, ConstructionEquipment[Kind].Item.Weight)
       else Dec(Result, ConstructionEquipment[Kind].Item.Weight);
   for J := 1 to 5 do
     if ConstructionWeapons[J].Item <> nil then Dec(Result, ConstructionWeapons[J].Item.Weight);
@@ -6030,7 +6030,7 @@ end;
 { @end $5D1CA0 }
 
 { @routine $5D230C TfRuinsTalk_BuildConstructionItemChoices }
-function TfRuinsTalk.BuildConstructionItemChoices(Kind: Byte): Integer;
+function TfRuinsTalk.BuildConstructionItemChoices(Kind: TItemType): Integer;
 var
   I, Count: Integer;
   Slot: TShopSlot;
@@ -6045,9 +6045,9 @@ var
   begin
     Result := False;
     if (Item.ScriptItem <> nil) and (TScriptItem(Item.ScriptItem).Name <> '') then Exit;
-    if (Kind in [Ord(t_Weapon1)..Ord(t_CustomWeapon)]) and not (Item.ItemType in [t_Weapon1..t_CustomWeapon]) then Exit;
-    if not (Kind in [Ord(t_Weapon1)..Ord(t_CustomWeapon)]) and (Kind <> Byte(Item.ItemType)) then Exit;
-    if Kind = 42 then
+    if (Kind in [t_Weapon1..t_CustomWeapon]) and not (Item.ItemType in [t_Weapon1..t_CustomWeapon]) then Exit;
+    if not (Kind in [t_Weapon1..t_CustomWeapon]) and (Kind <> Item.ItemType) then Exit;
+    if Kind = t_Hull then
     begin
       if not (THull(Item).HullType in [htPirate, htSpecial]) or (THull(Item).GetSlotCount(sskCargoHook) < 1) or (THull(Item).CapitalShip <> 0) then Exit;
       if THull(Item).HullType = htSpecial then
@@ -6057,7 +6057,7 @@ var
       end
       else if not (Item.OwnerId in PlanetOwnerMasks.Coalition) then Exit;
     end;
-    if Kind in [Ord(t_Weapon1)..Ord(t_CustomWeapon)] then
+    if Kind in [t_Weapon1..t_CustomWeapon] then
       for I := 1 to 5 do
         if ConstructionWeapons[I].Item = Item then Exit;
     Result := True;
@@ -6090,7 +6090,7 @@ var
 
 begin
   Count := 0;
-  if Kind <> 42 then
+  if Kind <> t_Hull then
     for I := 0 to GetPlayer.Inventory.Count - 1 do
     begin
       Item := GetPlayer.Inventory[I];
@@ -6098,7 +6098,7 @@ begin
       begin
         Text := LocalizedColorText('FormRuins.CB.ConstructPirate.InHold');
         FormatConstructionItem(Text, Item);
-        if (Kind <> 42) and (GetConstructionFreeSpace - Item.Weight < 0) then
+        if (Kind <> t_Hull) and (GetConstructionFreeSpace - Item.Weight < 0) then
           AddChoice('- ' + Text, 0, ScriptDialogBlockCallback)
         else AddChoice('- ' + Text, Integer(Item), SelectConstructionHeldItem);
         Inc(Count);
@@ -6115,7 +6115,7 @@ begin
         begin
           Text := LocalizedColorText('FormRuins.CB.ConstructPirate.InStorage');
           FormatConstructionItem(Text, Item);
-          if (Kind <> 42) and (GetConstructionFreeSpace - Item.Weight < 0) then
+          if (Kind <> t_Hull) and (GetConstructionFreeSpace - Item.Weight < 0) then
             AddChoice('- ' + Text, 0, ScriptDialogBlockCallback)
           else AddChoice('- ' + Text, Integer(Item), SelectConstructionStoredItem);
           Inc(Count);
@@ -6135,14 +6135,14 @@ begin
           FormatConstructionItem(Text, Item);
           if Item.Cost + GetConstructionShopCost > GetPlayer.Money then
             AddChoice('- ' + Text, 0, ScriptDialogBlockCallback)
-          else if (Kind <> 42) and (GetConstructionFreeSpace - Item.Weight < 0) then
+          else if (Kind <> t_Hull) and (GetConstructionFreeSpace - Item.Weight < 0) then
             AddChoice('- ' + Text, 0, ScriptDialogBlockCallback)
           else AddChoice('- ' + Text, Integer(Item), SelectConstructionShopItem);
           Inc(Count);
         end;
       end;
     end;
-  if not (Kind in [42..44, 48]) and ((Kind <> 50) or (ConstructionWeapons[1].Item <> nil)) then
+  if not (Kind in [t_Hull..t_Engine, t_CargoHook]) and ((Kind <> t_Weapon1) or (ConstructionWeapons[1].Item <> nil)) then
     AddChoice('- ' + LocalizedColorText('FormRuins.CB.ConstructPirate.skip'), 0, SkipConstructionItem);
   AddChoice('- ' + LocalizedColorText('FormRuins.CB.ConstructPirate.cancel'), 0, DeclineDominionShipConstruction);
   Result := Count;
@@ -6153,10 +6153,10 @@ end;
 procedure TfRuinsTalk.ShowDominionShipConstructionDialog(Action: Integer);
 var
   J: Integer;
-  Kind: Byte;
+  Kind: TItemType;
 begin
   ClearChoices;
-  for Kind := 42 to 49 do ConstructionEquipment[Kind].Item := nil;
+  for Kind := t_Hull to t_DefGenerator do ConstructionEquipment[Kind].Item := nil;
   for J := 1 to 5 do ConstructionWeapons[J].Item := nil;
   if GetPlayer.GetMaxDominionShips <= GetPlayer.PiratePartners.Count then
   begin
@@ -6166,7 +6166,7 @@ begin
   end
   else
   begin
-    BuildConstructionItemChoices(42);
+    BuildConstructionItemChoices(t_Hull);
     DialogText := LocalizedColorText('FormRuins.CB.ConstructPirate.PickHull');
   end;
 end;
@@ -6176,7 +6176,7 @@ end;
 procedure TfRuinsTalk.ConfirmDominionConstructionLimit(Action: Integer);
 begin
   ClearChoices;
-  BuildConstructionItemChoices(42);
+  BuildConstructionItemChoices(t_Hull);
   DialogText := LocalizedColorText('FormRuins.CB.ConstructPirate.PickHull');
 end;
 { @end $5D2B6C }
@@ -6196,8 +6196,8 @@ var
 begin
   if Item.ItemType in [t_Hull..t_DefGenerator] then
   begin
-    ConstructionEquipment[Byte(Item.ItemType)].Item := Item;
-    ConstructionEquipment[Byte(Item.ItemType)].Source := Source;
+    ConstructionEquipment[Item.ItemType].Item := Item;
+    ConstructionEquipment[Item.ItemType].Source := Source;
   end
   else if Item is TWeapon then
   begin
@@ -6247,21 +6247,21 @@ end;
 procedure TfRuinsTalk.AppendConstructionItemList;
 var
   I: Integer;
-  Kind: Byte;
+  Kind: TItemType;
   Item: TEquipment;
   Text: WideString;
 begin
   DialogText := DialogText + #13#10 + #13#10 + LocalizedColorText('FormRuins.CB.ConstructPirate.ItemList');
   Text := '';
-  for Kind := 42 to 49 do
+  for Kind := t_Hull to t_DefGenerator do
   begin
     Item := ConstructionEquipment[Kind].Item;
     if Item <> nil then
       Text := Text + Item.GetShortName + ' - ' + RemoveTextTagsW(Item.GetDisplayName) + #13#10
     else
     begin
-      Text := Text + LocalizedText('Items.' + ItemTypeNames[TItemType(Kind)] + '.ShortName') + ' - ';
-      if THull(ConstructionEquipment[42].Item).GetSlotCount(ItemTypeToSlotKind(Kind)) > 0 then
+      Text := Text + LocalizedText('Items.' + ItemTypeNames[Kind] + '.ShortName') + ' - ';
+      if THull(ConstructionEquipment[t_Hull].Item).GetSlotCount(ItemTypeToSlotKind(Kind)) > 0 then
         Text := Text + LocalizedColorText('FormRuins.CB.ConstructPirate.NotInstalled') + #13#10
       else Text := Text + LocalizedColorText('FormRuins.CB.ConstructPirate.NotAvailable') + #13#10;
     end;
@@ -6271,7 +6271,7 @@ begin
     Text := Text + LocalizedColorText('FormRuins.CB.ConstructPirate.weaponN') + IntToStr(I) + ' - ';
     Item := ConstructionWeapons[I].Item;
     if Item <> nil then Text := Text + RemoveTextTagsW(Item.GetDisplayName) + #13#10
-    else if THull(ConstructionEquipment[42].Item).GetSlotCount(sskWeapon) >= I then
+    else if THull(ConstructionEquipment[t_Hull].Item).GetSlotCount(sskWeapon) >= I then
       Text := Text + LocalizedColorText('FormRuins.CB.ConstructPirate.NotInstalled') + #13#10
     else Text := Text + LocalizedColorText('FormRuins.CB.ConstructPirate.NotAvailable') + #13#10;
   end;
@@ -6292,51 +6292,51 @@ begin
   ReplaceTextToken(DialogText, '<PrevItem>', PreviousItem, '<color=255,240,100>');
   AppendConstructionItemList;
   ClearChoices;
-  if ConstructionEquipment[44].Item = nil then
+  if ConstructionEquipment[t_Engine].Item = nil then
   begin
-    BuildConstructionItemChoices(44);
+    BuildConstructionItemChoices(t_Engine);
     DialogText := DialogText + #13#10 + #13#10 + LocalizedColorText('FormRuins.CB.ConstructPirate.PickEngine');
   end
-  else if ConstructionEquipment[43].Item = nil then
+  else if ConstructionEquipment[t_FuelTanks].Item = nil then
   begin
-    BuildConstructionItemChoices(43);
+    BuildConstructionItemChoices(t_FuelTanks);
     DialogText := DialogText + #13#10 + #13#10 + LocalizedColorText('FormRuins.CB.ConstructPirate.PickFuelTanks');
   end
-  else if ConstructionEquipment[48].Item = nil then
+  else if ConstructionEquipment[t_CargoHook].Item = nil then
   begin
-    BuildConstructionItemChoices(48);
+    BuildConstructionItemChoices(t_CargoHook);
     DialogText := DialogText + #13#10 + #13#10 + LocalizedColorText('FormRuins.CB.ConstructPirate.PickCargoHook');
   end
   else if ConstructionWeapons[1].Item = nil then
   begin
-    BuildConstructionItemChoices(50);
+    BuildConstructionItemChoices(t_Weapon1);
     DialogText := DialogText + #13#10 + #13#10 + LocalizedColorText('FormRuins.CB.ConstructPirate.PickWeapon');
   end
   else
   begin
     CanAdd := False;
-    Hull := THull(ConstructionEquipment[42].Item);
+    Hull := THull(ConstructionEquipment[t_Hull].Item);
     if ConstructionWeapons[Hull.GetSlotCount(sskWeapon)].Item = nil then
     begin
       CanAdd := True;
       AddChoice('- ' + LocalizedColorText('FormRuins.CB.ConstructPirate.AddWeapon'), 0, PickConstructionWeapon);
     end;
-    if (Hull.GetSlotCount(sskRadar) > 0) and (ConstructionEquipment[45].Item = nil) then
+    if (Hull.GetSlotCount(sskRadar) > 0) and (ConstructionEquipment[t_Radar].Item = nil) then
     begin
       CanAdd := True;
       AddChoice('- ' + LocalizedColorText('FormRuins.CB.ConstructPirate.AddRadar'), 0, PickConstructionRadar);
     end;
-    if (Hull.GetSlotCount(sskScanner) > 0) and (ConstructionEquipment[46].Item = nil) then
+    if (Hull.GetSlotCount(sskScanner) > 0) and (ConstructionEquipment[t_Scaner].Item = nil) then
     begin
       CanAdd := True;
       AddChoice('- ' + LocalizedColorText('FormRuins.CB.ConstructPirate.AddScaner'), 0, PickConstructionScanner);
     end;
-    if (Hull.GetSlotCount(sskRepairRobot) > 0) and (ConstructionEquipment[47].Item = nil) then
+    if (Hull.GetSlotCount(sskRepairRobot) > 0) and (ConstructionEquipment[t_RepairRobot].Item = nil) then
     begin
       CanAdd := True;
       AddChoice('- ' + LocalizedColorText('FormRuins.CB.ConstructPirate.AddRepairRobot'), 0, PickConstructionRepairRobot);
     end;
-    if (Hull.GetSlotCount(sskDefGenerator) > 0) and (ConstructionEquipment[49].Item = nil) then
+    if (Hull.GetSlotCount(sskDefGenerator) > 0) and (ConstructionEquipment[t_DefGenerator].Item = nil) then
     begin
       CanAdd := True;
       AddChoice('- ' + LocalizedColorText('FormRuins.CB.ConstructPirate.AddDefGenerator'), 0, PickConstructionDefGenerator);
@@ -6355,7 +6355,7 @@ begin
   DialogText := '';
   AppendConstructionItemList;
   ClearChoices;
-  BuildConstructionItemChoices(50);
+  BuildConstructionItemChoices(t_Weapon1);
   DialogText := DialogText + #13#10 + #13#10 + LocalizedColorText('FormRuins.CB.ConstructPirate.PickWeapon');
 end;
 { @end $5D3E28 }
@@ -6366,7 +6366,7 @@ begin
   DialogText := '';
   AppendConstructionItemList;
   ClearChoices;
-  BuildConstructionItemChoices(45);
+  BuildConstructionItemChoices(t_Radar);
   DialogText := DialogText + #13#10 + #13#10 + LocalizedColorText('FormRuins.CB.ConstructPirate.PickRadar');
 end;
 { @end $5D3F24 }
@@ -6377,7 +6377,7 @@ begin
   DialogText := '';
   AppendConstructionItemList;
   ClearChoices;
-  BuildConstructionItemChoices(46);
+  BuildConstructionItemChoices(t_Scaner);
   DialogText := DialogText + #13#10 + #13#10 + LocalizedColorText('FormRuins.CB.ConstructPirate.PickScaner');
 end;
 { @end $5D4020 }
@@ -6388,7 +6388,7 @@ begin
   DialogText := '';
   AppendConstructionItemList;
   ClearChoices;
-  BuildConstructionItemChoices(47);
+  BuildConstructionItemChoices(t_RepairRobot);
   DialogText := DialogText + #13#10 + #13#10 + LocalizedColorText('FormRuins.CB.ConstructPirate.PickRepairRobot');
 end;
 { @end $5D411C }
@@ -6399,7 +6399,7 @@ begin
   DialogText := '';
   AppendConstructionItemList;
   ClearChoices;
-  BuildConstructionItemChoices(49);
+  BuildConstructionItemChoices(t_DefGenerator);
   DialogText := DialogText + #13#10 + #13#10 + LocalizedColorText('FormRuins.CB.ConstructPirate.PickDefGenerator');
 end;
 { @end $5D4224 }
@@ -6410,7 +6410,7 @@ var
   Ship: TPirate;
   Planet: TPlanet;
   TotalCost, Price: Integer;
-  Kind: Byte;
+  Kind: TItemType;
   J, Months: Integer;
   Item: TEquipment;
   // @nested $5D432C RemoveConstructionStoredItem
@@ -6459,7 +6459,7 @@ begin
   Ship := TPirate.Create;
   Planet := GetPlayer.DockedTo.CurrentStar.SelectRandomInhabitedPlanet;
   TotalCost := 0;
-  for Kind := 42 to 49 do
+  for Kind := t_Hull to t_DefGenerator do
     if ConstructionEquipment[Kind].Item <> nil then
     begin
       Item := ConstructionEquipment[Kind].Item;

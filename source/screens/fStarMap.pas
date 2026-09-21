@@ -2825,7 +2825,7 @@ begin
       for Index := 0 to 4 do
         if SelectedWeapons[Index] then
         begin
-          Weapon := GetPlayer.FindEquippedItemInSlot(Ord(t_Weapon1), Index) as TWeapon;
+          Weapon := GetPlayer.FindEquippedItemInSlot(t_Weapon1, Index) as TWeapon;
           if PointDistance(GetPlayer.Position, (CursorObject as TShip).Position) <= GetPlayer.GetWeaponActionRange(Weapon) then
           begin
             SelectedWeapons[Index] := False;
@@ -2966,7 +2966,7 @@ begin
       for Index := 0 to 4 do
         if SelectedWeapons[Index] then
         begin
-          Weapon := GetPlayer.FindEquippedItemInSlot(Ord(t_Weapon1), Index) as TWeapon;
+          Weapon := GetPlayer.FindEquippedItemInSlot(t_Weapon1, Index) as TWeapon;
           if PointDistance(GetPlayer.Position, (CursorObject as TShip).Position) <= GetPlayer.GetWeaponActionRange(Weapon) then
           begin
             SelectedWeapons[Index] := False;
@@ -3100,7 +3100,7 @@ begin
       for Index := 0 to 4 do
         if SelectedWeapons[Index] then
         begin
-          Weapon := GetPlayer.FindEquippedItemInSlot(Ord(t_Weapon1), Index) as TWeapon;
+          Weapon := GetPlayer.FindEquippedItemInSlot(t_Weapon1, Index) as TWeapon;
           if PointDistance(GetPlayer.Position, (CursorObject as TItem).Position) <= GetPlayer.GetWeaponActionRange(Weapon) then
           begin
             SelectedWeapons[Index] := False;
@@ -3137,7 +3137,7 @@ begin
       for Index := 0 to 4 do
         if SelectedWeapons[Index] then
         begin
-          Weapon := GetPlayer.FindEquippedItemInSlot(Ord(t_Weapon1), Index) as TWeapon;
+          Weapon := GetPlayer.FindEquippedItemInSlot(t_Weapon1, Index) as TWeapon;
           if PointDistance(GetPlayer.Position, (CursorObject as TAsteroid).Position) <= GetPlayer.GetWeaponActionRange(Weapon) then
           begin
             SelectedWeapons[Index] := False;
@@ -3165,7 +3165,7 @@ begin
       for Index := 0 to 4 do
         if SelectedWeapons[Index] then
         begin
-          Weapon := GetPlayer.FindEquippedItemInSlot(Ord(t_Weapon1), Index) as TWeapon;
+          Weapon := GetPlayer.FindEquippedItemInSlot(t_Weapon1, Index) as TWeapon;
           if PointDistance(GetPlayer.Position, (CursorObject as TMissile).Position) <= GetPlayer.GetWeaponActionRange(Weapon) then
           begin
             SelectedWeapons[Index] := False;
@@ -3556,7 +3556,7 @@ begin
       ScannerSelectionActive := False;
       InterceptorSelectionActive := False;
       CustomSelectionActive := False;
-      Weapon := GetPlayer.FindEquippedItemInSlot(Ord(t_Weapon1), Index) as TWeapon;
+      Weapon := GetPlayer.FindEquippedItemInSlot(t_Weapon1, Index) as TWeapon;
       if not GetPlayer.IsEquipmentUsable(Weapon) or
         ((Weapon.GetWeaponInfo.ShotType in [wstTorpedo..wstRocket]) and (Weapon.Ammo <= 0)) then SelectedWeapons[Index] := False
       else
@@ -3609,7 +3609,7 @@ begin
       for Index := 0 to 4 do
       begin
         SelectedWeapons[Index] := False;
-        Weapon := GetPlayer.FindEquippedItemInSlot(Ord(t_Weapon1), Index) as TWeapon;
+        Weapon := GetPlayer.FindEquippedItemInSlot(t_Weapon1, Index) as TWeapon;
         if Weapon <> nil then
         begin
           Weapon.Target := nil;
@@ -3718,7 +3718,7 @@ begin
   Galaxy.CheckIntegrityChecksum(85);
   for Index := 0 to 4 do
   begin
-    Weapon := GetPlayer.FindEquippedItemInSlot(Ord(t_Weapon1), Index) as TWeapon;
+    Weapon := GetPlayer.FindEquippedItemInSlot(t_Weapon1, Index) as TWeapon;
     if not GetPlayer.IsEquipmentUsable(Weapon) or
       ((Weapon.GetWeaponInfo.ShotType in [wstTorpedo..wstRocket]) and (Weapon.Ammo <= 0)) then
       SelectedWeapons[Index] := False
@@ -3740,7 +3740,7 @@ var
 begin
   for Index := 0 to 4 do
   begin
-    Weapon := GetPlayer.FindEquippedItemInSlot(Ord(t_Weapon1), Index) as TWeapon;
+    Weapon := GetPlayer.FindEquippedItemInSlot(t_Weapon1, Index) as TWeapon;
     if not GetPlayer.IsEquipmentUsable(Weapon) or
       ((Weapon.GetWeaponInfo.ShotType in [wstTorpedo..wstRocket]) and (Weapon.Ammo <= 0)) then
       SelectedWeapons[Index] := False
@@ -4238,7 +4238,7 @@ begin
       end;
       (GetByName('InfoShipDef') as TLabelGI).SetText(Text);
       (GetByName('InfoShipRel') as TLabelGI).SetText((Obj as TShip).GetRelationLevelTextToShip(GetPlayer));
-      if (GetPlayer <> Obj) and not (Obj is TRuins) and (GetPlayer.CountActiveArtefacts(Ord(t_ArtefactAnalyzer)) > 0) and GetPlayer.CanResolveObjectWithScanner(Obj) then
+      if (GetPlayer <> Obj) and not (Obj is TRuins) and (GetPlayer.CountActiveArtefacts(t_ArtefactAnalyzer) > 0) and GetPlayer.CanResolveObjectWithScanner(Obj) then
       begin
         (GetByName('ISWin') as TLabelGI).SetActive(True);
         (GetByName('InfoShipWin') as TLabelGI).SetActive(True);
@@ -5031,7 +5031,7 @@ begin
     DisplayedObject := nil;
     Index := ExtractDigitsToIntW(Sender.ControlName);
     Galaxy.CheckIntegrityChecksum(87);
-    Weapon := GetPlayer.FindEquippedItemInSlot(Ord(t_Weapon1), Index) as TWeapon;
+    Weapon := GetPlayer.FindEquippedItemInSlot(t_Weapon1, Index) as TWeapon;
     TalkSelectionActive := False;
     ScannerSelectionActive := False;
     InterceptorSelectionActive := False;
@@ -5067,7 +5067,7 @@ var
 begin
   for Slot := 0 to 4 do
   begin
-    Weapon := GetPlayer.FindEquippedItemInSlot($32, Slot) as TWeapon;
+    Weapon := GetPlayer.FindEquippedItemInSlot(t_Weapon1, Slot) as TWeapon;
     Button := WeaponButtons[Slot];
     Button.SetDisabled((GetPlayer.GetSlotCount(sskWeapon) <= Slot) or not GetPlayer.IsEquipmentUsable(Weapon));
     if GetPlayer.GetSlotCount(sskWeapon) <= Slot then
@@ -5195,7 +5195,7 @@ begin
     for Slot := 0 to 4 do
       if SelectedWeapons[Slot] then
       begin
-        Weapon := GetPlayer.FindEquippedItemInSlot($32, Slot) as TWeapon;
+        Weapon := GetPlayer.FindEquippedItemInSlot(t_Weapon1, Slot) as TWeapon;
         if GetPlayer.GetWeaponActionRange(Weapon) < MinRange then MinRange := GetPlayer.GetWeaponActionRange(Weapon);
         if GetPlayer.GetWeaponActionRange(Weapon) > MaxRange then MaxRange := GetPlayer.GetWeaponActionRange(Weapon);
       end;
@@ -5257,7 +5257,7 @@ begin
     for Slot := 0 to 4 do
       if SelectedWeapons[Slot] then
       begin
-        Weapon := GetPlayer.FindEquippedItemInSlot($32, Slot) as TWeapon;
+        Weapon := GetPlayer.FindEquippedItemInSlot(t_Weapon1, Slot) as TWeapon;
         if not (Weapon.GetWeaponInfo.ShotType in [wstTorpedo..wstRocket]) then
         begin
           RangeValue := GetPlayer.GetWeaponActionRange(Weapon);
@@ -5551,7 +5551,7 @@ begin
       for Index := 0 to 4 do
         if SelectedWeapons[Index] then
         begin
-          Weapon := GetPlayer.FindEquippedItemInSlot($32, Index) as TWeapon;
+          Weapon := GetPlayer.FindEquippedItemInSlot(t_Weapon1, Index) as TWeapon;
           if GetPlayer.GetWeaponActionRange(Weapon) > Range then Range := GetPlayer.GetWeaponActionRange(Weapon);
         end;
       if Obj is TShip then Point := (Obj as TShip).Position
@@ -6791,7 +6791,7 @@ begin
                    ReplaceTextToken(Text, '<Hill>', IntToStr(Planet^.UnexploredHills), '<color=255,240,100>')
                  else ReplaceTextToken(Text, '<Hill>', '-', '');
                  if GetPlayer <> nil then
-                   if GetPlayer.CountActiveArtefacts(Ord(t_ArtefactAnalyzer)) > 0 then Text := Text + #13#10 + Planet^.TreasureHint;
+                   if GetPlayer.CountActiveArtefacts(t_ArtefactAnalyzer) > 0 then Text := Text + #13#10 + Planet^.TreasureHint;
                end
                else if (MainPiratePlanet <> nil) and (Planet^.Id = MainPiratePlanet.Id) then
                     begin

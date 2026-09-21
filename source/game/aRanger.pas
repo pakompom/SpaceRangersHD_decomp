@@ -372,9 +372,9 @@ begin
   CreateAndEquipHull(Round(HullBaseSize * EquipmentSizeFactors[5]), 1, RaceToOwner(PilotRace), SelectRandomHullSeries, HomePlanet.OwnerId = oiPirate);
   CreateAndEquipFuelTanks(Round(FuelTanksBaseSize * EquipmentSizeFactors[5]), 1, OwnerId);
   CreateAndEquipEngine(Round(EquipmentSizeFactors[NextRandomIntRange(1, 2, RandomState)] * EngineBaseSize), NextRandomIntRange(1, 2, RandomState), OwnerId);
-  if GetSlotCountForItemType(Ord(t_CargoHook)) > 0 then CreateAndEquipCargoHook(CargoHookBaseSize, NextRandomIntRange(1, 2, RandomState), OwnerId);
-  if GetSlotCount(sskWeapon) > WeaponCount then CreateAndEquipWeapon(Ord(t_Weapon1), WeaponInfos[t_Weapon1].AverageSize, 1, OwnerId);
-  if GetSlotCountForItemType(Ord(t_Radar)) > 0 then CreateAndEquipRadar(Round(EquipmentSizeFactors[NextRandomIntRange(2, 4, RandomState)] * RadarBaseSize), 1, OwnerId);
+  if GetSlotCountForItemType(t_CargoHook) > 0 then CreateAndEquipCargoHook(CargoHookBaseSize, NextRandomIntRange(1, 2, RandomState), OwnerId);
+  if GetSlotCount(sskWeapon) > WeaponCount then CreateAndEquipWeapon(t_Weapon1, WeaponInfos[t_Weapon1].AverageSize, 1, OwnerId);
+  if GetSlotCountForItemType(t_Radar) > 0 then CreateAndEquipRadar(Round(EquipmentSizeFactors[NextRandomIntRange(2, 4, RandomState)] * RadarBaseSize), 1, OwnerId);
   RefreshDerivedStats(True);
   RefreshCurrentStanding;
   SmoothedSpeed := Speed;
@@ -3325,8 +3325,8 @@ begin
   StatusFactor := StatusFactor - 1;
   if IncludeAdditiveBonuses then
   begin
-    if (PreferredCareer = rcPirate) and (CountActiveArtefacts(Ord(t_ArtDecelerate)) > 0) and (dkSplinter in Flags) then
-      Result := Result + (2 + 2 * Ord(CanBoostArtefact(Ord(t_ArtDecelerate), Weapon, False))) * CountActiveArtefacts(Ord(t_ArtDecelerate));
+    if (PreferredCareer = rcPirate) and (CountActiveArtefacts(t_ArtDecelerate) > 0) and (dkSplinter in Flags) then
+      Result := Result + (2 + 2 * Ord(CanBoostArtefact(t_ArtDecelerate, Weapon, False))) * CountActiveArtefacts(t_ArtDecelerate);
     if (PreferredCareer = rcPirate) and (dkDecelerate in Flags) then Result := Result + 2;
     if (PreferredCareer = rcTrader) and (dkDestruct in Flags) then Result := Result + 1;
     Result := Result + Integer(CountWeaponsByDamageFlags(AcidFlags)) * Weapon.GetShotCount;

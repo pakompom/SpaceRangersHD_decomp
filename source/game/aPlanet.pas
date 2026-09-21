@@ -150,14 +150,14 @@ type
     procedure ForceGoodsSurplus(StartEvent: Boolean; GoodsMask: TItemTypeMask); // @addr 0x794A0C @ida "void __usercall $name(TPlanet *Self@<eax>, bool StartEvent@<dl>, TItemTypeMask *GoodsMask@<ecx>);"
     function GenerateHullOffer(Ship: Pointer): THull; // @addr 0x793758
     function GenerateWeaponOffer(Ship: Pointer): TWeapon; // @addr 0x793DC4 @note "New item or nil; does not add it to EquipmentShop."
-    function GenerateEquipmentOffer(Ship: Pointer; ItemType: Byte): TEquipment; // @addr 0x794124
+    function GenerateEquipmentOffer(Ship: Pointer; ItemType: TItemType): TEquipment; // @addr 0x794124
     function SelectEquipmentOfferSpecialMicroModule(Item: TEquipment): Integer; // @addr 0x792E20 @note "Returns a zero-based module index or -1; advances planet RNG."
     function SelectHullOfferSpecialMicroModule(Hull: THull): Integer; // @addr 0x793084 @note "Returns a zero-based module index or -1; advances planet RNG."
     function SelectWeaponOfferSpecialMicroModule(Weapon: TWeapon): Integer; // @addr 0x7932E8 @note "Returns a zero-based module index or -1; advances planet RNG."
     procedure RefreshEquipmentShopInventory; // @addr 0x79354C @note "Weekly replacement/generation gate; disabled by sumDisabled and sumGoodsOnly."
     function BuildEquipmentOfferBatch(Ship: Pointer; UnusedForceGeneratedOffers: Boolean): TObjectList; // @addr 0x794488 @note "Returns a new owning list of generated equipment, using the race quota table. Caller forwards ForceGeneratedOffers in CL; this routine saves but never reads it."
     function CalculateEquipmentShopTargetCount: Integer; // @addr 0x7945DC @note "Population, economy and deterministic turn jitter adjust race quotas; clamps to 10..20."
-    function CountEquipmentShopItemsInBucket(ItemType: Byte): Integer; // @addr 0x7946D4 @note "Bucket 50 includes all weapon types 50..68; other buckets require an exact type."
+    function CountEquipmentShopItemsInBucket(ItemType: TItemType): Integer; // @addr 0x7946D4 @note "Bucket 50 includes all weapon types 50..68; other buckets require an exact type."
     function RemoveSimilarEquipmentShopItem(Item: TEquipment): Boolean; // @addr 0x79474C @note "Frees at most one other stock item of the same type and level, protecting named script items. Does not insert Item."
     function CountBailablePrisoners: Integer; // @addr 0x794C18 @note "Counts local imprisoned rangers/pirates with a positive remaining prison term and no incompatible script state."
     function GetGovernmentBackgroundGraph: WideString; // @addr 0x794CB4
@@ -325,7 +325,7 @@ var
   SatelliteCount: Integer;
   SatelliteConfig: TBlockParEC;
   Item: TEquipment;
-  ItemType: Byte;
+  ItemType: TItemType;
   Series: Integer;
   GovernmentRoll, RingKind: Byte;
   TemplateAvailable, AllowRing, IsSolar: Boolean;
@@ -787,9 +787,9 @@ begin
   HomeRangerCount := 0;
   HomeTransportCount := 0;
   if OwnerId <> oiUninhabited then
-    for ItemType := Byte(t_Hull) to Byte(t_Weapon1) do
+    for ItemType := t_Hull to t_Weapon1 do
       case ItemType of
-        Ord(t_Hull):
+        t_Hull:
           for I := 1 to NextRandomIntRange(1, 5, RandomState) do
           begin
             Item := THull.Create;
@@ -801,7 +801,7 @@ begin
               Round(HullBaseSize * EquipmentSizeFactors[4]), RandomState),
               NextRandomIntRange(1, InventionLevels[0], RandomState), ItemOwner, HullType, Series, False);
           end;
-        Ord(t_FuelTanks):
+        t_FuelTanks:
           for I := 1 to NextRandomIntRange(1, 2, RandomState) do
           begin
             Item := TFuelTanks.Create;
@@ -810,7 +810,7 @@ begin
               Round(FuelTanksBaseSize * EquipmentSizeFactors[1]), RandomState),
               NextRandomIntRange(1, InventionLevels[1], RandomState), OwnerId);
           end;
-        Ord(t_Engine):
+        t_Engine:
           for I := 1 to NextRandomIntRange(1, 3, RandomState) do
           begin
             Item := TEngine.Create;
@@ -819,7 +819,7 @@ begin
               Round(EngineBaseSize * EquipmentSizeFactors[1]), RandomState),
               NextRandomIntRange(1, InventionLevels[2], RandomState), OwnerId);
           end;
-        Ord(t_Radar):
+        t_Radar:
           for I := 1 to NextRandomIntRange(1, 2, RandomState) do
           begin
             Item := TRadar.Create;
@@ -828,7 +828,7 @@ begin
               Round(RadarBaseSize * EquipmentSizeFactors[1]), RandomState),
               NextRandomIntRange(1, InventionLevels[3], RandomState), OwnerId);
           end;
-        Ord(t_Scaner):
+        t_Scaner:
           for I := 1 to NextRandomIntRange(1, 2, RandomState) do
           begin
             Item := TScaner.Create;
@@ -837,7 +837,7 @@ begin
               Round(ScannerBaseSize * EquipmentSizeFactors[1]), RandomState),
               NextRandomIntRange(1, InventionLevels[4], RandomState), OwnerId);
           end;
-        Ord(t_RepairRobot):
+        t_RepairRobot:
           for I := 1 to NextRandomIntRange(1, 2, RandomState) do
           begin
             Item := TRepairRobot.Create;
@@ -846,7 +846,7 @@ begin
               Round(RepairRobotBaseSize * EquipmentSizeFactors[1]), RandomState),
               NextRandomIntRange(1, InventionLevels[5], RandomState), OwnerId);
           end;
-        Ord(t_CargoHook):
+        t_CargoHook:
           for I := 1 to NextRandomIntRange(1, 2, RandomState) do
           begin
             Item := TCargoHook.Create;
@@ -855,7 +855,7 @@ begin
               Round(CargoHookBaseSize * EquipmentSizeFactors[1]), RandomState),
               NextRandomIntRange(1, InventionLevels[6], RandomState), OwnerId);
           end;
-        Ord(t_DefGenerator):
+        t_DefGenerator:
           for I := 1 to NextRandomIntRange(1, 2, RandomState) do
           begin
             Item := TDefGenerator.Create;
@@ -864,7 +864,7 @@ begin
               Round(DefGeneratorBaseSize * EquipmentSizeFactors[1]), RandomState),
               NextRandomIntRange(1, InventionLevels[7], RandomState), OwnerId);
           end;
-        Ord(t_Weapon1):
+        t_Weapon1:
           for I := 1 to NextRandomIntRange(2, InventionLevels[7] + 2, RandomState) do
           begin
             WeaponInfo := aGalaxy.Galaxy.SelectWeaponInfo(RandomIntRange(1, 100000), [Ord(waFree)], InventionLevels[7], 1);
@@ -941,11 +941,11 @@ begin
         end
         else
         begin
-          ItemType := PickRandomItemType([Ord(t_FuelTanks)..Ord(t_DefGenerator)]);
+          ItemType := TItemType(PickRandomItemType([Ord(t_FuelTanks)..Ord(t_DefGenerator)]));
           Weight := NextRandomIntRange(Round(GetAverageItemSize(ItemType) * MinSizeFactor),
             Round(GetAverageItemSize(ItemType) * MaxSizeFactor), RandomState);
           Level := NextRandomIntRange(MinLevel, MaxLevel, RandomState);
-          Item := CreateGeneratedEquipment(TItemType(ItemType), Weight, Level, oiUninhabited);
+          Item := CreateGeneratedEquipment(ItemType, Weight, Level, oiUninhabited);
         end;
         if (Item.Cost < 5000) or ((Item.Cost < 5000 * 1.5) and (Count > 2)) or
            ((Item.Cost < 10000) and (Count > 3)) or (Count > 4) then Break;
@@ -957,20 +957,20 @@ begin
     for I := 1 to Round(RemapClamped(Radius, 60, 100, 2, 5)) do
     begin
       if (I > 2) and (SeededRandomUnitFloat(RandomState) < 0.4) then Continue;
-      ItemType := NextRandomIntRange(0, 7, RandomState);
-      Count := NextRandomIntRange(Max(1, GoodsMarket[ItemType].BaseStock div 20),
-        Round(RemapClamped(Radius, 60, 100, GoodsMarket[ItemType].BaseStock div 15,
-          GoodsMarket[ItemType].BaseStock div 7)), RandomState);
+      ItemType := TItemType(NextRandomIntRange(0, 7, RandomState));
+      Count := NextRandomIntRange(Max(1, GoodsMarket[Ord(ItemType)].BaseStock div 20),
+        Round(RemapClamped(Radius, 60, 100, GoodsMarket[Ord(ItemType)].BaseStock div 15,
+          GoodsMarket[Ord(ItemType)].BaseStock div 7)), RandomState);
       SavedRandomState := RandomState;
       if Count < 10 then Part := NextRandomIntRange(1, 2, RandomState)
       else Part := NextRandomIntRange(1, 4, RandomState);
       for Part := 1 to Part do
       begin
         GoodsItem := TGoods.Create;
-        Quantity := Count div SeededRandomIntRange(1, 5, RandomState * Part * ItemType) + 1;
+        Quantity := Count div SeededRandomIntRange(1, 5, RandomState * Part * Byte(ItemType)) + 1;
         RandomState := SavedRandomState;
-        GoodsItem.Init(TItemType(ItemType), Quantity);
-        GoodsItem.Cost := GoodsItem.Cost div SeededRandomIntRange(2, 5, RandomState * Part * ItemType * 3);
+        GoodsItem.Init(ItemType, Quantity);
+        GoodsItem.Cost := GoodsItem.Cost div SeededRandomIntRange(2, 5, RandomState * Part * Byte(ItemType) * 3);
         AddSurfaceLootEntry(GoodsItem);
       end;
     end;
@@ -1015,7 +1015,7 @@ var
   SatelliteCount: Integer;
   SatelliteConfig: TBlockParEC;
   Item: TEquipment;
-  ItemType: Byte;
+  ItemType: TItemType;
   Series: Integer;
   UnusedRingFlags: array[0..2] of Byte;
   AllowRing: Boolean;
@@ -1140,9 +1140,9 @@ begin
   HomeTransportCount := 0;
   // Kept even though OwnerId was assigned 6 above: the original emits this stock-generation branch.
   if OwnerId <> oiUninhabited then
-    for ItemType := Byte(t_Hull) to Byte(t_Weapon1) do
+    for ItemType := t_Hull to t_Weapon1 do
       case ItemType of
-        Ord(t_Hull):
+        t_Hull:
           for I := 1 to NextRandomIntRange(1, 5, RandomState) do
           begin
             Item := THull.Create;
@@ -1154,7 +1154,7 @@ begin
               Round(HullBaseSize * EquipmentSizeFactors[4]), RandomState),
               NextRandomIntRange(1, InventionLevels[0], RandomState), ItemOwner, HullType, Series, False);
           end;
-        Ord(t_FuelTanks):
+        t_FuelTanks:
           for I := 1 to NextRandomIntRange(1, 2, RandomState) do
           begin
             Item := TFuelTanks.Create;
@@ -1163,7 +1163,7 @@ begin
               Round(FuelTanksBaseSize * EquipmentSizeFactors[1]), RandomState),
               NextRandomIntRange(1, InventionLevels[1], RandomState), OwnerId);
           end;
-        Ord(t_Engine):
+        t_Engine:
           for I := 1 to NextRandomIntRange(1, 3, RandomState) do
           begin
             Item := TEngine.Create;
@@ -1172,7 +1172,7 @@ begin
               Round(EngineBaseSize * EquipmentSizeFactors[1]), RandomState),
               NextRandomIntRange(1, InventionLevels[2], RandomState), OwnerId);
           end;
-        Ord(t_Radar):
+        t_Radar:
           for I := 1 to NextRandomIntRange(1, 2, RandomState) do
           begin
             Item := TRadar.Create;
@@ -1181,7 +1181,7 @@ begin
               Round(RadarBaseSize * EquipmentSizeFactors[1]), RandomState),
               NextRandomIntRange(1, InventionLevels[3], RandomState), OwnerId);
           end;
-        Ord(t_Scaner):
+        t_Scaner:
           for I := 1 to NextRandomIntRange(1, 2, RandomState) do
           begin
             Item := TScaner.Create;
@@ -1190,7 +1190,7 @@ begin
               Round(ScannerBaseSize * EquipmentSizeFactors[1]), RandomState),
               NextRandomIntRange(1, InventionLevels[4], RandomState), OwnerId);
           end;
-        Ord(t_RepairRobot):
+        t_RepairRobot:
           for I := 1 to NextRandomIntRange(1, 2, RandomState) do
           begin
             Item := TRepairRobot.Create;
@@ -1199,7 +1199,7 @@ begin
               Round(RepairRobotBaseSize * EquipmentSizeFactors[1]), RandomState),
               NextRandomIntRange(1, InventionLevels[5], RandomState), OwnerId);
           end;
-        Ord(t_CargoHook):
+        t_CargoHook:
           for I := 1 to NextRandomIntRange(1, 2, RandomState) do
           begin
             Item := TCargoHook.Create;
@@ -1208,7 +1208,7 @@ begin
               Round(CargoHookBaseSize * EquipmentSizeFactors[1]), RandomState),
               NextRandomIntRange(1, InventionLevels[6], RandomState), OwnerId);
           end;
-        Ord(t_DefGenerator):
+        t_DefGenerator:
           for I := 1 to NextRandomIntRange(1, 2, RandomState) do
           begin
             Item := TDefGenerator.Create;
@@ -1217,7 +1217,7 @@ begin
               Round(DefGeneratorBaseSize * EquipmentSizeFactors[1]), RandomState),
               NextRandomIntRange(1, InventionLevels[7], RandomState), OwnerId);
           end;
-        Ord(t_Weapon1):
+        t_Weapon1:
           for I := 1 to NextRandomIntRange(2, InventionLevels[7] + 2, RandomState) do
           begin
             WeaponInfo := aGalaxy.Galaxy.SelectWeaponInfo(RandomIntRange(1, 100000), [Ord(waFree)], InventionLevels[7], 1);
@@ -1294,11 +1294,11 @@ begin
         end
         else
         begin
-          ItemType := PickRandomItemType([Ord(t_FuelTanks)..Ord(t_DefGenerator)]);
+          ItemType := TItemType(PickRandomItemType([Ord(t_FuelTanks)..Ord(t_DefGenerator)]));
           Weight := NextRandomIntRange(Round(GetAverageItemSize(ItemType) * MinSizeFactor),
             Round(GetAverageItemSize(ItemType) * MaxSizeFactor), RandomState);
           Level := NextRandomIntRange(MinLevel, MaxLevel, RandomState);
-          Item := CreateGeneratedEquipment(TItemType(ItemType), Weight, Level, oiUninhabited);
+          Item := CreateGeneratedEquipment(ItemType, Weight, Level, oiUninhabited);
         end;
         if (Item.Cost < 5000) or ((Item.Cost < 5000 * 1.5) and (Count > 2)) or
            ((Item.Cost < 10000) and (Count > 3)) or (Count > 4) then Break;
@@ -1310,20 +1310,20 @@ begin
     for I := 1 to Round(RemapClamped(Radius, 60, 100, 2, 5)) do
     begin
       if (I > 2) and (SeededRandomUnitFloat(RandomState) < 0.4) then Continue;
-      ItemType := NextRandomIntRange(0, 7, RandomState);
-      Count := NextRandomIntRange(Max(1, GoodsMarket[ItemType].BaseStock div 20),
-        Round(RemapClamped(Radius, 60, 100, GoodsMarket[ItemType].BaseStock div 15,
-          GoodsMarket[ItemType].BaseStock div 7)), RandomState);
+      ItemType := TItemType(NextRandomIntRange(0, 7, RandomState));
+      Count := NextRandomIntRange(Max(1, GoodsMarket[Ord(ItemType)].BaseStock div 20),
+        Round(RemapClamped(Radius, 60, 100, GoodsMarket[Ord(ItemType)].BaseStock div 15,
+          GoodsMarket[Ord(ItemType)].BaseStock div 7)), RandomState);
       SavedRandomState := RandomState;
       if Count < 10 then Part := NextRandomIntRange(1, 2, RandomState)
       else Part := NextRandomIntRange(1, 4, RandomState);
       for Part := 1 to Part do
       begin
         GoodsItem := TGoods.Create;
-        Quantity := Count div SeededRandomIntRange(1, 5, RandomState * Part * ItemType) + 1;
+        Quantity := Count div SeededRandomIntRange(1, 5, RandomState * Part * Byte(ItemType)) + 1;
         RandomState := SavedRandomState;
-        GoodsItem.Init(TItemType(ItemType), Quantity);
-        GoodsItem.Cost := GoodsItem.Cost div SeededRandomIntRange(2, 5, RandomState * Part * ItemType * 3);
+        GoodsItem.Init(ItemType, Quantity);
+        GoodsItem.Cost := GoodsItem.Cost div SeededRandomIntRange(2, 5, RandomState * Part * Byte(ItemType) * 3);
         AddSurfaceLootEntry(GoodsItem);
       end;
     end;
@@ -2500,7 +2500,7 @@ var
       begin
         Dominion.FlyToStar := TargetStar;
         Dominion.FlyDate := aGalaxy.Galaxy.CurrentTurn + 10;
-        if (GetPlayer <> nil) and (GetPlayer.CountActiveArtefacts(Ord(t_ArtefactAnalyzer)) > 0) and (TargetStar.Status.CustomFaction = '') then
+        if (GetPlayer <> nil) and (GetPlayer.CountActiveArtefacts(t_ArtefactAnalyzer) > 0) and (TargetStar.Status.CustomFaction = '') then
         begin
           Text := FormatText1(LocalizedText('Artefacts.ArtAnalyzer.AttackPirates'),
             '<color=255,240,100>', '<Star>', TargetStar.Name);
@@ -2523,7 +2523,7 @@ var
       Inc(Dispatched);
     end;
     if (Action = 4) and (Dispatched > 0) and (TargetStar.ControlFaction = sfCoalition) then
-      if (GetPlayer <> nil) and (GetPlayer.CountActiveArtefacts(Ord(t_ArtefactAnalyzer)) > 0) and (TargetStar.Status.CustomFaction = '') then
+      if (GetPlayer <> nil) and (GetPlayer.CountActiveArtefacts(t_ArtefactAnalyzer) > 0) and (TargetStar.Status.CustomFaction = '') then
       begin
         Text := FormatText1(LocalizedText('Artefacts.ArtAnalyzer.AttackPirates'),
           '<color=255,240,100>', '<Star>', TargetStar.Name);
@@ -2704,7 +2704,7 @@ begin
     TNormalShip(Ship).TrainSkillsAutomatically;
     SpawnPlanet.OwnerId := OldOwner;
   end;
-  if (GetPlayer <> nil) and (GetPlayer.CountActiveArtefacts(Ord(t_ArtefactAnalyzer)) > 0) then
+  if (GetPlayer <> nil) and (GetPlayer.CountActiveArtefacts(t_ArtefactAnalyzer) > 0) then
   begin
     MessageText := FormatText1(LocalizedText('Artefacts.ArtAnalyzer.AttackPirates'), '<color=255,240,100>', '<Star>', TargetStar.Name);
     if MessageText <> '' then AddOrUpdatePlayerBubble(0, aGalaxy.Galaxy.CurrentTurn, MessageText, '');
@@ -2854,7 +2854,7 @@ begin
       ForceGoodsScarcity(False, [ItemType]);
     if GoodsSurplusTicks[ItemType] > 0 then
       ForceGoodsSurplus(False, [ItemType]);
-    StoredUnits := GetPlayer.CountStoredItemUnits(Self, ItemType);
+    StoredUnits := GetPlayer.CountStoredItemUnits(Self, TItemType(ItemType));
     if (GetPlayer.CurrentPlanet = Self) and (GetPlayer.ConsecutiveDockedDays > 1) then
       Inc(StoredUnits, GetPlayer.CargoGoods[ItemType].Count);
     EconomyFactor := aConst.GoodsMarket[ItemType].EconomyFactors[Economy];
@@ -3342,7 +3342,7 @@ begin
       oiUninhabited: Text := LocalizedText('Planet.NotCivil.Info.TextAboutPlanet');
     end;
   if GetPlayer <> nil then
-    if (GetPlayer.CountActiveArtefacts(Ord(t_ArtefactAnalyzer)) > 0) and (OwnerId = oiUninhabited) and not ForMap then
+    if (GetPlayer.CountActiveArtefacts(t_ArtefactAnalyzer) > 0) and (OwnerId = oiUninhabited) and not ForMap then
       Text := Text + #13#10 + BuildNonCivilTreasureHintText;
   if ForMap and (OwnerId = oiPirate) and (Galaxy.CoalitionDefeatedTurn = 0) then
     Text := Text + #13#10 + '<color=255,0,0>' + LocalizedText('Planet.Civil.Info.TextPlanetControlledByPirates') + '</color>';
@@ -4481,7 +4481,7 @@ procedure TPlanet.RefreshEquipmentShopInventory;
 var
   Index, Attempts: Integer;
   Item: TEquipment;
-  ItemType: Byte;
+  ItemType: TItemType;
 begin
   if TShopUpdateMode(ShopUpdateMode) in [sumDisabled, sumGoodsOnly] then Exit;
   if (aGalaxy.Galaxy.CurrentTurn + Integer(GenerationSeed)) mod 7 = 0 then
@@ -4505,9 +4505,9 @@ begin
       Attempts := 0;
       repeat
         Inc(Attempts);
-        ItemType := SeededRandomIntRange(42, 52, aGalaxy.Galaxy.CurrentTurn * GenerationSeed * 175 + Attempts);
+        ItemType := TItemType(SeededRandomIntRange(42, 52, aGalaxy.Galaxy.CurrentTurn * GenerationSeed * 175 + Attempts));
       until (Attempts > 30) or
-        (CountEquipmentShopItemsInBucket(ItemType) < aConst.PlanetEquipmentOfferQuotas[RaceId][ItemType - Ord(t_Hull)]);
+        (CountEquipmentShopItemsInBucket(ItemType) < aConst.PlanetEquipmentOfferQuotas[RaceId][Ord(ItemType) - Ord(t_Hull)]);
       Item := GenerateEquipmentOffer(GetPlayer, ItemType);
       if Item <> nil then
       begin
@@ -4550,7 +4550,7 @@ begin
   if Flagship then HullType := htFlagship;
   if (GetPlayer <> Target) and (Target.GetHull.HullType <> htSpecial) and
     (Target.GetHull.HullType <> HullType) then Exit;
-  MaxLevel := InventionLevels[aConst.EquipmentInventionIndices[Ord(t_Hull)]];
+  MaxLevel := InventionLevels[aConst.EquipmentInventionIndices[t_Hull]];
   MinLevel := Max(1, MaxLevel div 2 - 1);
   case aGalaxy.Galaxy.GetHullGrowthMod of
     1:
@@ -4667,7 +4667,7 @@ end;
 { @end $793DC4 }
 
 { @routine $794124 TPlanet_GenerateEquipmentOffer }
-function TPlanet.GenerateEquipmentOffer(Ship: Pointer; ItemType: Byte): TEquipment;
+function TPlanet.GenerateEquipmentOffer(Ship: Pointer; ItemType: TItemType): TEquipment;
 var
   Target: TShip;
   Priority, Attempts, Module, MinLevel, MaxLevel, MinSize, MaxSize, Special: Integer;
@@ -4676,9 +4676,9 @@ begin
   Result := nil;
   if (Ship = nil) or not (TObject(Ship) is TShip) then Exit;
   Target := Ship;
-  if ItemType in [Ord(t_FuelTanks)..Ord(t_DefGenerator)] then
+  if ItemType in [t_FuelTanks..t_DefGenerator] then
   begin
-    if not (ItemType in [Ord(t_FuelTanks)..Ord(t_Engine)]) and (Target.GetSlotCountForItemType(ItemType) = 0) and
+    if not (ItemType in [t_FuelTanks..t_Engine]) and (Target.GetSlotCountForItemType(ItemType) = 0) and
       (GetPlayer <> Target) then Exit;
     MinLevel := 1;
     MaxLevel := InventionLevels[aConst.EquipmentInventionIndices[ItemType]];
@@ -4693,15 +4693,15 @@ begin
     end;
     Owner := RaceToOwner(RaceId);
     if OwnerId = oiPirate then Owner := oiPirate;
-    Result := CreateGeneratedEquipment(TItemType(ItemType), NextRandomIntRange(MinSize, MaxSize, RandomState), NextRandomIntRange(MinLevel, MaxLevel, RandomState), Owner);
+    Result := CreateGeneratedEquipment(ItemType, NextRandomIntRange(MinSize, MaxSize, RandomState), NextRandomIntRange(MinLevel, MaxLevel, RandomState), Owner);
     if Target.CanGenerateMicroModuleForLoadout then
     begin
       Special := SelectEquipmentOfferSpecialMicroModule(Result);
       if Special >= 0 then ApplySpecialMicroModule(Special, Result);
     end;
   end
-  else if ItemType in [Ord(t_Weapon1)..Ord(t_CustomWeapon)] then Result := GenerateWeaponOffer(Ship)
-  else if ItemType = Byte(t_Hull) then Result := GenerateHullOffer(Ship);
+  else if ItemType in [t_Weapon1..t_CustomWeapon] then Result := GenerateWeaponOffer(Ship)
+  else if ItemType = t_Hull then Result := GenerateHullOffer(Ship);
   if Result <> nil then
   begin
     if Result.CanImprove then
@@ -4730,19 +4730,19 @@ function TPlanet.BuildEquipmentOfferBatch(Ship: Pointer; UnusedForceGeneratedOff
 var
   Offers: TObjectList;
   i, j: Integer;
-  ItemType: Byte;
+  ItemType: TItemType;
   Item: TItem;
 begin
   Offers := TObjectList.Create;
   for j := 1 to aConst.PlanetEquipmentOfferQuotas[RaceId, 0] do
   begin
-    Item := GenerateEquipmentOffer(Ship, Ord(t_Hull));
+    Item := GenerateEquipmentOffer(Ship, t_Hull);
     if Item <> nil then Offers.Add(Item);
   end;
   for i := 1 to CountItemTypesInMask([Ord(t_FuelTanks)..Ord(t_DefGenerator)]) do
   begin
-    ItemType := GetItemTypeFromMask([Ord(t_FuelTanks)..Ord(t_DefGenerator)], i);
-    for j := 1 to aConst.PlanetEquipmentOfferQuotas[RaceId, ItemType - Ord(t_Hull)] do
+    ItemType := TItemType(GetItemTypeFromMask([Ord(t_FuelTanks)..Ord(t_DefGenerator)], i));
+    for j := 1 to aConst.PlanetEquipmentOfferQuotas[RaceId, Ord(ItemType) - Ord(t_Hull)] do
     begin
       Item := GenerateEquipmentOffer(Ship, ItemType);
       if Item <> nil then Offers.Add(Item);
@@ -4750,7 +4750,7 @@ begin
   end;
   for i := 1 to aConst.PlanetEquipmentOfferQuotas[RaceId, 8] do
   begin
-    Item := GenerateEquipmentOffer(Ship, Ord(t_Weapon1));
+    Item := GenerateEquipmentOffer(Ship, t_Weapon1);
     if Item <> nil then Offers.Add(Item);
   end;
   Result := Offers;
@@ -4777,7 +4777,7 @@ end;
 { @end $7945DC }
 
 { @routine $7946D4 TPlanet_CountEquipmentShopItemsInBucket }
-function TPlanet.CountEquipmentShopItemsInBucket(ItemType: Byte): Integer;
+function TPlanet.CountEquipmentShopItemsInBucket(ItemType: TItemType): Integer;
 // The t_Weapon1 shop bucket counts every weapon subtype.
 var
   i, Count: Integer;
@@ -4787,7 +4787,7 @@ begin
   for i := 0 to EquipmentShop.Count - 1 do
   begin
     Item := EquipmentShop[i];
-    if (Byte(Item.ItemType) = ItemType) or ((Item.ItemType in [t_Weapon1..t_CustomWeapon]) and (ItemType = Byte(t_Weapon1))) then Inc(Count);
+    if (Item.ItemType = ItemType) or ((Item.ItemType in [t_Weapon1..t_CustomWeapon]) and (ItemType = t_Weapon1)) then Inc(Count);
   end;
   Result := Count;
 end;
@@ -4911,15 +4911,15 @@ begin
     if Item is TGoods then
       Score := Score + Item.Cost * aConst.GoodsMarket[Ord(Item.ItemType)].AveragePrice * 0.000001
     else if Item.ItemType in [t_Weapon1..t_CustomWeapon] then
-      Score := Score + Item.Cost * GetAverageItemSize(Byte(Item.ItemType)) / Math.Max(Item.Weight, 1) *
+      Score := Score + Item.Cost * GetAverageItemSize(Item.ItemType) / Math.Max(Item.Weight, 1) *
         TEquipment(Item).GetLevel * TWeapon(Item).GetWeaponInfo^.TechLevel * 0.000025
     else if Item.ItemType in [t_Hull..t_DefGenerator] then
-      Score := Score + Item.Cost * GetAverageItemSize(Byte(Item.ItemType)) / Math.Max(Item.Weight, 1) *
+      Score := Score + Item.Cost * GetAverageItemSize(Item.ItemType) / Math.Max(Item.Weight, 1) *
         Sqr(TEquipment(Item).GetLevel) * 0.000025
     else if Item is TMicroModule then
       Score := Score + 121 / (aConst.MicroModuleTemplates[TMicroModule(Item).MicroModuleIndex - 1].Priority + 20)
     else if Item is TArtefact then
-      Score := Score + (GetAverageItemSize(Byte(Item.ItemType)) * 0.5 / Math.Max(Item.Weight, 1) + 0.5) * 10
+      Score := Score + (GetAverageItemSize(Item.ItemType) * 0.5 / Math.Max(Item.Weight, 1) + 0.5) * 10
     else if (Item is TEquipmentWithActCode) and TEquipmentWithActCode(Item).DisplayAsArtefact then
       Score := Score + 10
     else if Item is TUselessItem then Score := Score + 1

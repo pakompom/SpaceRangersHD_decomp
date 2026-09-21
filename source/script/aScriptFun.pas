@@ -3940,13 +3940,13 @@ end;
 procedure SF_ShipEqInSlot(av: array of TVarEC; code: TCodeEC);
 var
   Ship: TShip;
-  ItemType: Byte;
+  ItemType: TItemType;
   SlotIndex: Integer;
 begin
   if High(av) < 2 then raise Exception.Create('Error.Script ShipEqInSlot');
   Ship := TShip(av[1].GetDword);
-  ItemType := av[2].GetInt;
-  if ItemType in [Ord(t_Hull)..Ord(t_DefGenerator)] then av[0].SetDword(Cardinal(PShipEquipmentCacheView(Ship).Slots[ItemType]))
+  ItemType := TItemType(av[2].GetInt);
+  if ItemType in [t_Hull..t_DefGenerator] then av[0].SetDword(Cardinal(PShipEquipmentCacheView(Ship).Slots[ItemType]))
   else
   begin
     if High(av) < 3 then SlotIndex := 0 else SlotIndex := av[3].GetInt - 1;
@@ -3961,7 +3961,7 @@ procedure SF_ArtefactTypeInUse(av: array of TVarEC; code: TCodeEC);
 var
   Ship: TShip;
   Item: TArtefact;
-  ItemType: Byte;
+  ItemType: TItemType;
   Name: WideString;
   I, Count: Integer;
 begin
@@ -3985,8 +3985,8 @@ begin
   end
   else
   begin
-    if Item <> nil then ItemType := Ord(TArtefact(av[2].GetDword).GetEffectiveType)
-    else ItemType := av[2].GetInt;
+    if Item <> nil then ItemType := TArtefact(av[2].GetDword).GetEffectiveType
+    else ItemType := TItemType(av[2].GetInt);
     av[0].SetInt(Ship.CountActiveArtefacts(ItemType));
   end;
 end;
@@ -3996,13 +3996,13 @@ end;
 procedure SF_ArtefactTypeBoosted(av: array of TVarEC; code: TCodeEC);
 var
   Ship: TShip;
-  ItemType: Byte;
+  ItemType: TItemType;
 begin
   if High(av) < 2 then raise Exception.Create('Error.Script ArtefactTypeBoosted');
   Ship := TShip(av[1].GetDword);
   if (av[2].RealVType = vkDword) and (av[2].GetDword > $FF) then
-    ItemType := Ord(TArtefact(av[2].GetDword).GetEffectiveType)
-  else ItemType := av[2].GetInt;
+    ItemType := TArtefact(av[2].GetDword).GetEffectiveType
+  else ItemType := TItemType(av[2].GetInt);
   av[0].SetInt(Ord(Ship.CanBoostArtefact(ItemType, nil, False)));
 end;
 { @end $612CAC }
@@ -5742,7 +5742,7 @@ begin
           end
           else
             for I := 1 to Ship.WeaponCount do
-              if Ship.Weapons[I] = Item then Ship.UnequipSlot(Byte(Item.ItemType), I);
+              if Ship.Weapons[I] = Item then Ship.UnequipSlot(Item.ItemType, I);
         end
         else
         begin
@@ -5751,7 +5751,7 @@ begin
             Ship.EquipItem(TEquipment(Item));
             if High(av) > 3 then TEquipment(Item).AssignedSlotData := av[4].GetInt - 1;
           end
-          else Ship.UnequipSlot(Byte(Item.ItemType), 0);
+          else Ship.UnequipSlot(Item.ItemType, 0);
         end;
         Ship.RefreshAssignedItemSlots;
         Ship.RefreshDerivedStats(True);
@@ -6443,16 +6443,16 @@ begin
     if Ship.GetHull = Item then
     begin
       Ship.GetHull.OwnerShip := nil;
-      Ship.UnequipSlot(Ord(t_Hull), 0);
+      Ship.UnequipSlot(t_Hull, 0);
     end
     else if (Item is TEquipment) and ((Item as TEquipment).EquippedFlag <> 0) then
     begin
-      if Item.ItemType in [t_FuelTanks..t_DefGenerator] then Ship.UnequipSlot(Byte(Item.ItemType), 0);
+      if Item.ItemType in [t_FuelTanks..t_DefGenerator] then Ship.UnequipSlot(Item.ItemType, 0);
       if Item is TWeapon then
         for WeaponIndex := 1 to Ship.CountEquippedWeapons do
           if Ship.Weapons[WeaponIndex] = Item then
           begin
-            Ship.UnequipSlot(Ord(t_Weapon1), WeaponIndex);
+            Ship.UnequipSlot(t_Weapon1, WeaponIndex);
             Break;
           end;
     end;
@@ -7355,7 +7355,7 @@ begin
     Source.RefreshAssignedItemSlots;
     for I := 0 to 4 do
     begin
-      Weapon := Source.FindEquippedItemInSlot(Ord(t_Weapon1), I) as TWeapon;
+      Weapon := Source.FindEquippedItemInSlot(t_Weapon1, I) as TWeapon;
       if Source.IsEquipmentUsable(Weapon) then
       begin
         if Weapon.ItemType <> t_CustomWeapon then ab_Weapon_Initialize(@Ship.Weapons[I], Ord(Weapon.ItemType))

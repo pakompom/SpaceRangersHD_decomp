@@ -219,7 +219,7 @@ var
   Unused38, Unused3C, Unused40, Unused44: Integer;
   SavedNextItemId: Cardinal;
   Event: TGalaxyEvent;
-  ItemType: Byte;
+  ItemType: TItemType;
   Weight, Level: Integer;
   Info: PWeaponInfo;
   MinSize, MaxSize: Single;
@@ -328,10 +328,10 @@ begin
           end
           else
           begin
-            ItemType := PickRandomItemType([Ord(t_FuelTanks)..Ord(t_DefGenerator)]);
+            ItemType := TItemType(PickRandomItemType([Ord(t_FuelTanks)..Ord(t_DefGenerator)]));
             Weight := RandomRange(Round(GetAverageItemSize(ItemType) * MinSize), Round(GetAverageItemSize(ItemType) * MaxSize));
             Level := RandomRange(MinLevel, MaxLevel);
-            Item := CreateGeneratedEquipment(TItemType(ItemType), Weight, Level, oiUninhabited);
+            Item := CreateGeneratedEquipment(ItemType, Weight, Level, oiUninhabited);
           end;
           Item.ConditionPercent := SeededRandomFloatRange(Item.Id * (Attempts + 11) * 123, 10, 100);
           Inc(Attempts);

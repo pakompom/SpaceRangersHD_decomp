@@ -196,7 +196,7 @@ begin
     begin
       MaximumSlots := 1;
       if EquipmentSlotLayouts[I].ItemType = t_Weapon1 then MaximumSlots := 5;
-      SlotCount := ShipToInspect.GetSlotCountForItemType(Ord(EquipmentSlotLayouts[I].ItemType));
+      SlotCount := ShipToInspect.GetSlotCountForItemType(EquipmentSlotLayouts[I].ItemType);
       for J := 0 to SlotCount - 1 do
       begin
         EquipmentAnimations[I, J] := GetByName('S_' + EquipmentSlotLayouts[I].Name + '_' + IntToStr(J) + 'anim') as TgaiGI;
@@ -894,11 +894,11 @@ begin
     Stage := 6;
     for I := 0 to 7 do
     begin
-      SlotCount := ShipToInspect.GetSlotCountForItemType(Ord(EquipmentSlotLayouts[I].ItemType));
+      SlotCount := ShipToInspect.GetSlotCountForItemType(EquipmentSlotLayouts[I].ItemType);
       Stage := 7;
       for SlotIndex := 0 to SlotCount - 1 do
       begin
-        Item := ShipToInspect.FindEquippedItemInSlot(Ord(EquipmentSlotLayouts[I].ItemType), SlotIndex);
+        Item := ShipToInspect.FindEquippedItemInSlot(EquipmentSlotLayouts[I].ItemType, SlotIndex);
         Stage := 8;
         Image := GetByName('S_' + EquipmentSlotLayouts[I].Name + '_' + IntToStr(SlotIndex) + 'i') as TImageGI;
         Stage := 9;
@@ -975,12 +975,12 @@ begin
       end;
     end;
     Stage := 20;
-    SlotCount := ShipToInspect.GetSlotCountForItemType(Ord(t_Artefact));
+    SlotCount := ShipToInspect.GetSlotCountForItemType(t_Artefact);
     for SlotIndex := 0 to SlotCount - 1 do
     begin
       Stage := 21;
-      Artefact := ShipToInspect.FindEquippedItemInSlot(Ord(t_Artefact), SlotIndex) as TArtefact;
-      CanBoost := (Artefact <> nil) and (Artefact.BrokenFlag = 0) and ShipToInspect.CanBoostArtefact(Ord(Artefact.ItemType), nil, False);
+      Artefact := ShipToInspect.FindEquippedItemInSlot(t_Artefact, SlotIndex) as TArtefact;
+      CanBoost := (Artefact <> nil) and (Artefact.BrokenFlag = 0) and ShipToInspect.CanBoostArtefact(Artefact.ItemType, nil, False);
       Stage := 22;
       GetByName('Art' + IntToStr(SlotIndex) + 'n').SetActive((Artefact <> nil) and (Artefact.BrokenFlag = 0) and not CanBoost);
       GetByName('Art' + IntToStr(SlotIndex) + 'b').SetActive((Artefact <> nil) and Boolean(Artefact.BrokenFlag) and not CanBoost);
@@ -1137,10 +1137,10 @@ begin
   CenterY := False;
   if not Found then
   begin
-    SlotCount := ShipToInspect.GetSlotCountForItemType(Ord(t_Artefact));
+    SlotCount := ShipToInspect.GetSlotCountForItemType(t_Artefact);
     for SlotIndex := 0 to SlotCount - 1 do
     begin
-      Item := ShipToInspect.FindEquippedItemInSlot(Ord(t_Artefact), SlotIndex);
+      Item := ShipToInspect.FindEquippedItemInSlot(t_Artefact, SlotIndex);
       if Item <> nil then
         with ArtefactZones[SlotIndex] do
           if HitTest(GetCursorPoint) then
@@ -1156,10 +1156,10 @@ begin
   if not Found then
     for I := 0 to 7 do
     begin
-      SlotCount := ShipToInspect.GetSlotCountForItemType(Ord(EquipmentSlotLayouts[I].ItemType));
+      SlotCount := ShipToInspect.GetSlotCountForItemType(EquipmentSlotLayouts[I].ItemType);
       for SlotIndex := 0 to SlotCount - 1 do
       begin
-        Item := ShipToInspect.FindEquippedItemInSlot(Ord(EquipmentSlotLayouts[I].ItemType), SlotIndex);
+        Item := ShipToInspect.FindEquippedItemInSlot(EquipmentSlotLayouts[I].ItemType, SlotIndex);
         if Item = nil then Continue;
         with GetByName('S_' + EquipmentSlotLayouts[I].Name + '_' + IntToStr(SlotIndex) + 'z') as TZoneGI do
             if HitTest(GetCursorPoint) then

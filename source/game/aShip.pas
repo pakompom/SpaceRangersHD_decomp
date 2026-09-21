@@ -11,7 +11,7 @@ type
   // These are cached pointers; the owning inventory remains a separate list.
   TShipEquipmentCacheView = packed record // @size $118
     Prefix: array[0..$F7] of Byte; // @offset $00
-    Slots: array[42..49] of TEquipment; // @offset $F8
+    Slots: array[t_Hull..t_DefGenerator] of TEquipment; // @offset $F8
   end;
   PShipEquipmentCacheView = ^TShipEquipmentCacheView;
 
@@ -489,7 +489,7 @@ type
     function IsEquipmentUsable(Item: TEquipment): Boolean; // @addr 0x75E980 @note "Does not require EquippedFlag."
     procedure RebuildEquipmentCache; // @addr 0x7605F4 @note "Can unequip items whose slots are unavailable."
     procedure EquipItem(Item: TEquipment); // @addr 0x75E9CC @note "Does not add Item to the inventory."
-    procedure UnequipSlot(ItemType: Byte; WeaponIndex: Integer); // @addr 0x75EA9C @note "Direct types 42..49 require a populated slot; weapon types 50..68 require a valid one-based WeaponIndex. Compacts the weapon cache; does not remove/free inventory."
+    procedure UnequipSlot(ItemType: TItemType; WeaponIndex: Integer); // @addr 0x75EA9C @note "Direct types 42..49 require a populated slot; weapon types 50..68 require a valid one-based WeaponIndex. Compacts the weapon cache; does not remove/free inventory."
     procedure UnequipItem(Item: TEquipment); // @addr 0x75EB74 @note "Only affects cached installed equipment. Requires non-nil Item."
     function CanRepairArtefactsAtLocation: Boolean; // @addr 0x75E70C @note "Pirate/science bases, licensed station names and the main pirate planet; follows DockedTo recursively."
     function CountEquippedWeapons: TWeaponCount; // @addr 0x75A9C0
@@ -524,7 +524,7 @@ type
     function CreateAndEquipRepairRobot(Weight: Integer; Level: Byte; Owner: TOwnerId): TRepairRobot; // @addr 0x76B180
     function CreateAndEquipCargoHook(Weight: Integer; Level: Byte; Owner: TOwnerId): TCargoHook; // @addr 0x76B1DC
     function CreateAndEquipDefGenerator(Weight: Integer; Level: Byte; Owner: TOwnerId): TDefGenerator; // @addr 0x76B238
-    function CreateAndEquipWeapon(ItemType: Byte; Weight: Integer; Level: Byte; Owner: TOwnerId): TWeapon; // @addr 0x76B294
+    function CreateAndEquipWeapon(ItemType: TItemType; Weight: Integer; Level: Byte; Owner: TOwnerId): TWeapon; // @addr 0x76B294
 
     function GetEquipmentStatBonus(BonusKind: TEquipmentBonusKind; Item: TEquipment): Integer; // @addr 0x75F5C4
     function GetTotalStatBonus(BonusKind: TEquipmentBonusKind): Integer; // @addr 0x75F60C
@@ -610,9 +610,9 @@ type
     function IsCargoGoodIllegalOnCurrentPlanet(Good: Byte): Boolean; // @addr 0x75D45C
 
     function GetSlotCount(SlotKind: TShipSlotKind): Integer; // @addr 0x77411C
-    function GetSlotCountForItemType(ItemType: Byte): Integer; // @addr 0x774598
+    function GetSlotCountForItemType(ItemType: TItemType): Integer; // @addr 0x774598
     // Slot indices are zero-based.
-    function FindEquippedItemInSlot(ItemType: Byte; SlotIndex: Integer): TEquipment; // @addr 0x774878
+    function FindEquippedItemInSlot(ItemType: TItemType; SlotIndex: Integer): TEquipment; // @addr 0x774878
     function CountUnequippedItemsInSlot(SlotIndex: Integer): Integer; // @addr 0x7749E8
     function FindFreeUnequippedSlot: Integer; // @addr 0x774A60
     function HasScriptControl: Boolean; // @addr 0x77D8B4
@@ -621,9 +621,9 @@ type
     function HasNamedScriptFaction: Boolean; // @addr 0x77E7CC @note "Requires a nonempty faction other than the exact SubFactionFixedStanding marker."
     function GetScriptStandingOverrideMode: Integer; // @addr 0x77E854 @note "0 normal, 1 independent faction, 2 fixed standing. The SubFaction substring test accepts absence as mode one."
 
-    function CountActiveArtefacts(ArtefactType: Byte): Integer; // @addr 0x775AC8 @note "Uses custom SharedEffect types and excludes broken items. Activation exceptions can count some unequipped artefacts."
+    function CountActiveArtefacts(ArtefactType: TItemType): Integer; // @addr 0x775AC8 @note "Uses custom SharedEffect types and excludes broken items. Activation exceptions can count some unequipped artefacts."
     function HasEquippedArtefactOfSameUseGroup(Item: TItem): Boolean; // @addr 0x775B8C @note "Uses custom SharedUse and ConfigBlockName. Includes Item itself if equipped, and does not exclude broken items."
-    function CanBoostArtefact(ArtefactType: Byte; Item: TEquipment; IgnoreArtefactAvailability: Boolean): Boolean; // @addr 0x775D0C @note "Item=nil checks cached installed equipment. A supplied item need not be equipped; eligible equipment types depend on ArtefactType."
+    function CanBoostArtefact(ArtefactType: TItemType; Item: TEquipment; IgnoreArtefactAvailability: Boolean): Boolean; // @addr 0x775D0C @note "Item=nil checks cached installed equipment. A supplied item need not be equipped; eligible equipment types depend on ArtefactType."
 
     procedure AddPickupTarget(Item: TItem; Prioritize: Boolean); // @addr 0x76BD40 @note "Existing targets keep their position."
     procedure RemovePickupTarget(Item: TItem); // @addr 0x76BDB8
@@ -737,7 +737,7 @@ uses fShip2, aGalaxyEvent, fEquipmentShop, fGoodsShop2, ThreadCalc, EC_Mem, aEFi
 constructor TShip.Create;
 var
   I: Integer;
-  Kind: Byte;
+  Kind: TItemType;
   Skill: TPilotSkill;
   Series: Byte;
 begin
@@ -754,10 +754,10 @@ begin
   end;
   if Integer(Seed) < 0 then RaiseWideMessage('TShip.Create; - FRnd<0');
   RandomState := Seed;
-  for Kind := 0 to 7 do
+  for Kind := t_Food to t_Narcotics do
   begin
-    CargoGoods[Kind].Count := 0;
-    CargoGoods[Kind].TotalCost := 0;
+    CargoGoods[Ord(Kind)].Count := 0;
+    CargoGoods[Ord(Kind)].TotalCost := 0;
   end;
   // The contiguous Hull..DefGenerator fields are indexed by native item type.
   for Kind := Low(PShipEquipmentCacheView(Self).Slots) to High(PShipEquipmentCacheView(Self).Slots) do
@@ -1925,7 +1925,7 @@ var
   Lost: Integer;
   Roll: Double;
 begin
-  if (GetFuelTanks = nil) or (GetFuelTanks.BrokenFlag = 0) or (CountActiveArtefacts(Ord(t_ArtefactFuel)) > 0) then Exit;
+  if (GetFuelTanks = nil) or (GetFuelTanks.BrokenFlag = 0) or (CountActiveArtefacts(t_ArtefactFuel) > 0) then Exit;
   Roll := NextRandomUnitFloat(RandomState);
   if Roll < 0.1 then Lost := 1
   else if Roll < 0.3 then Lost := 2
@@ -2081,13 +2081,13 @@ begin
         if GetFuelTanks <> nil then
           if GetFuelTanks.Fuel < GetFuelTanks.Capacity then
             Inc(GetFuelTanks.Fuel, Min(
-              (aConst.FuelArtefactBase + aConst.FuelArtefactBoost * Ord(CanBoostArtefact(Ord(t_ArtefactFuel), nil, False))) * CountActiveArtefacts(Ord(t_ArtefactFuel)),
+              (aConst.FuelArtefactBase + aConst.FuelArtefactBoost * Ord(CanBoostArtefact(t_ArtefactFuel, nil, False))) * CountActiveArtefacts(t_ArtefactFuel),
               GetFuelTanks.Capacity - GetFuelTanks.Fuel));
         if (GetEngine <> nil) and (GetEngine.OutputPercent < 100) then
           Inc(GetEngine.OutputPercent, Min(
-            (aConst.EngineArtefactBase + aConst.EngineArtefactBoost * Ord(CanBoostArtefact(Ord(t_ArtefactPower), GetEngine, False))) * CountActiveArtefacts(Ord(t_ArtefactPower)),
+            (aConst.EngineArtefactBase + aConst.EngineArtefactBoost * Ord(CanBoostArtefact(t_ArtefactPower, GetEngine, False))) * CountActiveArtefacts(t_ArtefactPower),
             100 - GetEngine.OutputPercent));
-        for I := 1 to CountActiveArtefacts(Ord(t_ArtefactNano)) do ApplyNanoArtefactRepair;
+        for I := 1 to CountActiveArtefacts(t_ArtefactNano) do ApplyNanoArtefactRepair;
         RefreshDerivedStats(True);
       end;
       Stage := 8;
@@ -2289,7 +2289,7 @@ begin
   if GetPlayer <> Self then
   begin
     Result := Result + #13#10 + FormatText1(LookupLocalizedTextByKey('ShipInfo.SpaceRelation'), '<color=255,240,100>', '<Type>', LowerCaseWideString(GetRelationLevelTextToShip(GetPlayer)));
-    if GetPlayer.CountActiveArtefacts(Ord(t_ArtefactAnalyzer)) > 0 then
+    if GetPlayer.CountActiveArtefacts(t_ArtefactAnalyzer) > 0 then
       Result := Result + #13#10 + FormatText1(LookupLocalizedTextByKey('Artefacts.Analyzer.TextToRadar'), '<color=255,240,100>', '<ChanceToWin>', IntToStr(GetPlayer.GetWinChancePercent(Self)));
   end;
 end;
@@ -3497,16 +3497,16 @@ begin
     if Dword(DamageFlags) and (1 shl Ord(dkBonusToDamaged)) <> 0 then DamageValue := (1 + (1 - GetHull.HullPoints / GetHull.Weight) * 0.33) * DamageValue;
   end;
   if Dword(DamageFlags) and (1 shl Ord(dkEnergy)) <> 0 then
-    for J := 1 to CountActiveArtefacts(Ord(t_ArtEnergyDef)) do
-      if NextRandomUnitFloat(RandomState) < 0.3 * (Ord(CanBoostArtefact(Ord(t_ArtEnergyDef), nil, False)) + 1) then
+    for J := 1 to CountActiveArtefacts(t_ArtEnergyDef) do
+      if NextRandomUnitFloat(RandomState) < 0.3 * (Ord(CanBoostArtefact(t_ArtEnergyDef, nil, False)) + 1) then
       begin
         DamageValue := 0;
         Break;
       end;
   if Dword(DamageFlags) and (1 shl Ord(dkMissile)) <> 0 then
-    for J := 1 to CountActiveArtefacts(Ord(t_ArtMissileDef)) do
+    for J := 1 to CountActiveArtefacts(t_ArtMissileDef) do
       DamageValue := DamageValue / (1 + NextRandomFloatRange(0.1, 0.4, RandomState) *
-        (Ord(CanBoostArtefact(Ord(t_ArtMissileDef), nil, False)) + 1));
+        (Ord(CanBoostArtefact(t_ArtMissileDef, nil, False)) + 1));
   if (Attacker <> nil) and (GetPlayer = Attacker) then
   begin
     if Attacker.IsHealthEffectActive(10) or Attacker.IsHealthEffectActive(7) or
@@ -3632,11 +3632,11 @@ begin
       else
       begin
         if DropRoll < 0.85 then DropCount := 1 else DropCount := 2;
-        if (Attacker <> nil) and (Attacker.CountActiveArtefacts(Ord(t_ArtefactMiniExpl)) > 0) then
+        if (Attacker <> nil) and (Attacker.CountActiveArtefacts(t_ArtefactMiniExpl) > 0) then
         begin
           if NextRandomUnitFloat(RandomState) > 0.6 then Inc(DropCount)
-          else if (NextRandomUnitFloat(RandomState) > 0.8 - Attacker.CountActiveArtefacts(Ord(t_ArtefactMiniExpl)) * 0.2 *
-            (Ord(Attacker.CanBoostArtefact(Ord(t_ArtefactMiniExpl), nil, False)) + 1)) or
+          else if (NextRandomUnitFloat(RandomState) > 0.8 - Attacker.CountActiveArtefacts(t_ArtefactMiniExpl) * 0.2 *
+            (Ord(Attacker.CanBoostArtefact(t_ArtefactMiniExpl, nil, False)) + 1)) or
             (ScannerEffects and (Dword(DamageFlags) and (1 shl Ord(dkMoreDrop)) <> 0) and (NextRandomUnitFloat(RandomState) > 0.9)) then
             DropRandomValuableItemsOnDestruction(1);
         end;
@@ -3871,25 +3871,25 @@ begin
       else AdjustedDamage := (GetDefenseDamageFactor * 0.5 + 0.5) * RolledDamage - GetArmor;
     end;
   end;
-  if (Source.GetDefGenerator <> nil) and (Source.CountActiveArtefacts(Ord(t_ArtDefToEnergy)) > 0) and
+  if (Source.GetDefGenerator <> nil) and (Source.CountActiveArtefacts(t_ArtDefToEnergy) > 0) and
     (dkEnergy in Weapon.GetWeaponInfo.DamageFlags) then
     AdjustedDamage := (1 + (RemapClamped(Source.CountWeaponsByDamageFlags(EnergyDamageFlags), 1, 5,
-      DefenseToEnergyUpperFactor + ShortInt(Source.CanBoostArtefact(Ord(t_ArtDefToEnergy), Weapon, False)) * DefenseToEnergyUpperBoost,
-      DefenseToEnergyMinimumFactor + ShortInt(Source.CanBoostArtefact(Ord(t_ArtDefToEnergy), Weapon, False)) * DefenseToEnergyMinimumBoost) - 1) *
-      Source.CountActiveArtefacts(Ord(t_ArtDefToEnergy))) * AdjustedDamage;
+      DefenseToEnergyUpperFactor + ShortInt(Source.CanBoostArtefact(t_ArtDefToEnergy, Weapon, False)) * DefenseToEnergyUpperBoost,
+      DefenseToEnergyMinimumFactor + ShortInt(Source.CanBoostArtefact(t_ArtDefToEnergy, Weapon, False)) * DefenseToEnergyMinimumBoost) - 1) *
+      Source.CountActiveArtefacts(t_ArtDefToEnergy)) * AdjustedDamage;
   if dkEnergy in Weapon.GetWeaponInfo.DamageFlags then
-    for I := 1 to Source.CountActiveArtefacts(Ord(t_ArtEnergyPulse)) do
+    for I := 1 to Source.CountActiveArtefacts(t_ArtEnergyPulse) do
       if NextRandomUnitFloat(RandomState) < EnergyPulseArtefactChance then
-        AdjustedDamage := (EnergyPulseArtefactFactor + ShortInt(Source.CanBoostArtefact(Ord(t_ArtEnergyPulse), Weapon, False)) *
+        AdjustedDamage := (EnergyPulseArtefactFactor + ShortInt(Source.CanBoostArtefact(t_ArtEnergyPulse, Weapon, False)) *
           EnergyPulseArtefactBoostFactor) * AdjustedDamage;
-  if (Source.CountActiveArtefacts(Ord(t_ArtDecelerate)) > 0) and (dkSplinter in Weapon.GetWeaponInfo.DamageFlags) then
+  if (Source.CountActiveArtefacts(t_ArtDecelerate) > 0) and (dkSplinter in Weapon.GetWeaponInfo.DamageFlags) then
   begin
     Include(Flags, dkDecelerateA);
-    if Source.CanBoostArtefact(Ord(t_ArtDecelerate), Weapon, False) or (Source.CountActiveArtefacts(Ord(t_ArtDecelerate)) > 1) then Include(Flags, dkDecelerateAEx);
+    if Source.CanBoostArtefact(t_ArtDecelerate, Weapon, False) or (Source.CountActiveArtefacts(t_ArtDecelerate) > 1) then Include(Flags, dkDecelerateAEx);
   end;
   if dkSplinter in Weapon.GetWeaponInfo.DamageFlags then
-    for I := 1 to Source.CountActiveArtefacts(Ord(t_ArtSplinter)) do
-      AdjustedDamage := (SplinterArtefactFactor + ShortInt(Source.CanBoostArtefact(Ord(t_ArtSplinter), Weapon, False)) *
+    for I := 1 to Source.CountActiveArtefacts(t_ArtSplinter) do
+      AdjustedDamage := (SplinterArtefactFactor + ShortInt(Source.CanBoostArtefact(t_ArtSplinter, Weapon, False)) *
         SplinterArtefactBoostFactor) * AdjustedDamage;
   Damage := Round(AdjustedDamage);
   ScriptFlags := Integer(Flags);
@@ -4443,11 +4443,11 @@ begin
     PrimaryFilm.SetWeaponHit(StepIndex, Film, Word(DisplayColor), -DrainedDamage, False, True);
     PrimaryFilm.AttachObject(StepIndex, Film);
   end;
-  if (PrimaryDamage <> 0) and (Target.CountActiveArtefacts(Ord(t_ArtefactDef)) > 0) then
+  if (PrimaryDamage <> 0) and (Target.CountActiveArtefacts(t_ArtefactDef) > 0) then
   begin
     Reflect := PrimaryDamage < 0;
     if not Reflect then
-      for J := 1 to Target.CountActiveArtefacts(Ord(t_ArtefactDef)) do
+      for J := 1 to Target.CountActiveArtefacts(t_ArtefactDef) do
         if RandomUnitFloat > Target.GetDefenseDamageFactor then
         begin
           Reflect := True;
@@ -4801,8 +4801,8 @@ begin
       Damage := Max((1 - Sqrt(DistanceSquared) / CurrentStar.DamageRadius) * 30 * Galaxy.GetStarDamageDifficultyScale, 1)
     else
       Damage := Max((1 - Sqrt(DistanceSquared) / CurrentStar.DamageRadius) * 100 * Galaxy.GetStarDamageDifficultyScale, 1);
-    for I := 1 to CountActiveArtefacts(Ord(t_ArtefactPower)) do
-      Damage := (1 - StarHeatArtefactReduction - ShortInt(CanBoostArtefact(Ord(t_ArtefactPower), GetHull, False)) * StarHeatArtefactBoostReduction) * Damage;
+    for I := 1 to CountActiveArtefacts(t_ArtefactPower) do
+      Damage := (1 - StarHeatArtefactReduction - ShortInt(CanBoostArtefact(t_ArtefactPower, GetHull, False)) * StarHeatArtefactBoostReduction) * Damage;
     Damage := ScriptItemsAct(satOnTakingDamage, CurrentStar, nil, Round(Damage));
     Result := Round(Damage);
     GetHull.HullPoints := Max(GetHull.HullPoints - Round(Damage), 0);
@@ -4971,7 +4971,7 @@ end;
 { @routine $75AFF4 TShip_HasScannerArtefact }
 function TShip.HasScannerArtefact(UnusedTarget: TShip): Boolean;
 begin
-  Result := CountActiveArtefacts(Ord(t_ArtefactScaner)) > 0;
+  Result := CountActiveArtefacts(t_ArtefactScaner) > 0;
 end;
 { @end $75AFF4 }
 
@@ -5890,9 +5890,9 @@ procedure TShip.EquipItem(Item: TEquipment);
 begin
   if Item.ItemType in [t_Hull..t_DefGenerator] then
   begin
-    if PShipEquipmentCacheView(Self).Slots[Byte(Item.ItemType)] <> nil then
-      PShipEquipmentCacheView(Self).Slots[Byte(Item.ItemType)].Unequip;
-    PShipEquipmentCacheView(Self).Slots[Byte(Item.ItemType)] := Item;
+    if PShipEquipmentCacheView(Self).Slots[Item.ItemType] <> nil then
+      PShipEquipmentCacheView(Self).Slots[Item.ItemType].Unequip;
+    PShipEquipmentCacheView(Self).Slots[Item.ItemType] := Item;
   end
   else if Item.ItemType in [t_Weapon1..t_CustomWeapon] then
   begin
@@ -5905,16 +5905,16 @@ end;
 { @end $75E9CC }
 
 { @routine $75EA9C TShip_UnequipSlot }
-procedure TShip.UnequipSlot(ItemType: Byte; WeaponIndex: Integer);
+procedure TShip.UnequipSlot(ItemType: TItemType; WeaponIndex: Integer);
 var
   I: Integer;
 begin
-  if ItemType in [Ord(t_Hull)..Ord(t_DefGenerator)] then
+  if ItemType in [t_Hull..t_DefGenerator] then
   begin
     PShipEquipmentCacheView(Self).Slots[ItemType].Unequip;
     PShipEquipmentCacheView(Self).Slots[ItemType] := nil;
   end
-  else if ItemType in [Ord(t_Weapon1)..Ord(t_CustomWeapon)] then
+  else if ItemType in [t_Weapon1..t_CustomWeapon] then
   begin
     Weapons[WeaponIndex].Unequip;
     Weapons[WeaponIndex] := nil;
@@ -5938,12 +5938,12 @@ begin
     for I := 1 to CountEquippedWeapons do
       if Weapons[I] = Item then
       begin
-        UnequipSlot(Ord(t_Weapon1), I);
+        UnequipSlot(t_Weapon1, I);
         Break;
       end;
   end
   else if (Item.ItemType in [t_Hull..t_DefGenerator]) and
-    (PShipEquipmentCacheView(Self).Slots[Byte(Item.ItemType)] = Item) then UnequipSlot(Byte(Item.ItemType), 0);
+    (PShipEquipmentCacheView(Self).Slots[Item.ItemType] = Item) then UnequipSlot(Item.ItemType, 0);
 end;
 { @end $75EB74 }
 
@@ -5955,8 +5955,8 @@ var
 begin
   Mass := GetHull.Weight - CargoFreeSpace + GetHull.CalculateMass;
   if Artefacts.Count > 0 then
-    for I := 1 to CountActiveArtefacts(Ord(t_ArtefactAntigrav)) do
-      Mass := Mass * (AntigravityArtefactMassFactor + AntigravityArtefactBoostFactor * ShortInt(CanBoostArtefact(Ord(t_ArtefactAntigrav), nil, False)));
+    for I := 1 to CountActiveArtefacts(t_ArtefactAntigrav) do
+      Mass := Mass * (AntigravityArtefactMassFactor + AntigravityArtefactBoostFactor * ShortInt(CanBoostArtefact(t_ArtefactAntigrav, nil, False)));
   if (PilotRace = oiMaloc) and IsHealthEffectActive(9) then Mass := Mass * 1.2;
   Bonus := GetTotalStatBonus(bonMass);
   if GetHull.MicroModuleIndex <> 0 then Inc(Bonus, MicroModuleTemplates[GetHull.MicroModuleIndex - 1].StatBonuses[bonMass]);
@@ -5989,8 +5989,8 @@ begin
     Inc(Bonus, MicroModuleTemplates[ItemForModule.SpecialModuleIndex - 1].StatBonuses[bonMass]);
   Mass := Mass * (1 + Bonus / 100);
   if Artefacts.Count > 0 then
-    for I := 1 to CountActiveArtefacts(Ord(t_ArtefactAntigrav)) do
-      Mass := Mass * (AntigravityArtefactMassFactor + AntigravityArtefactBoostFactor * ShortInt(CanBoostArtefact(Ord(t_ArtefactAntigrav), nil, False)));
+    for I := 1 to CountActiveArtefacts(t_ArtefactAntigrav) do
+      Mass := Mass * (AntigravityArtefactMassFactor + AntigravityArtefactBoostFactor * ShortInt(CanBoostArtefact(t_ArtefactAntigrav, nil, False)));
   Result := Round(Mass);
 end;
 { @end $75ED40 }
@@ -6058,11 +6058,11 @@ begin
   if GetEngine <> nil then
     Result := SeededRandomIntRange(OwnerInfo[GetEngine.OwnerId].MinimumAfterburnerWear, OwnerInfo[GetEngine.OwnerId].MaximumAfterburnerWear, Galaxy.CurrentTurn)
   else Result := 1;
-  Count := CountActiveArtefacts(Ord(t_ArtForsage));
+  Count := CountActiveArtefacts(t_ArtForsage);
   if Count <> 0 then
   begin
     Factor := AfterburnerArtefactWearFactor;
-    if CanBoostArtefact(Ord(t_ArtForsage), nil, False) then Factor := Factor + AfterburnerArtefactBoostWearFactor;
+    if CanBoostArtefact(t_ArtForsage, nil, False) then Factor := Factor + AfterburnerArtefactBoostWearFactor;
     Wear := Result;
     for I := 1 to Count do Wear := Wear * Factor;
     Result := Round(Wear);
@@ -6227,20 +6227,20 @@ begin
     Repair := ScriptItemsAct(satOnDroidRepair, nil, nil, Repair);
     if TypeId <> stKling then
     begin
-      if CountActiveArtefacts(Ord(t_ArtefactDroid)) > 0 then
+      if CountActiveArtefacts(t_ArtefactDroid) > 0 then
       begin
-        if CanBoostArtefact(Ord(t_ArtefactDroid), nil, False) then
+        if CanBoostArtefact(t_ArtefactDroid, nil, False) then
           ApplyItemDegradation(GetRepairRobot, idkUse, NextRandomUnitFloat(RandomState) * 2 *
-            (1 + CountActiveArtefacts(Ord(t_ArtefactDroid)) * (DroidArtefactWear + DroidArtefactBoostWear)))
+            (1 + CountActiveArtefacts(t_ArtefactDroid) * (DroidArtefactWear + DroidArtefactBoostWear)))
         else
           ApplyItemDegradation(GetRepairRobot, idkUse, NextRandomUnitFloat(RandomState) * 2 *
-            (1 + CountActiveArtefacts(Ord(t_ArtefactDroid)) * DroidArtefactWear));
+            (1 + CountActiveArtefacts(t_ArtefactDroid) * DroidArtefactWear));
       end
       else ApplyItemDegradation(GetRepairRobot, idkUse, NextRandomUnitFloat(RandomState) * 2);
     end;
   end
-  else if CountActiveArtefacts(Ord(t_ArtefactDroid)) > 0 then
-    Repair := CountActiveArtefacts(Ord(t_ArtefactDroid)) * (DroidArtefactRepair + DroidArtefactBoostRepair * Byte(CanBoostArtefact(Ord(t_ArtefactDroid), nil, False)))
+  else if CountActiveArtefacts(t_ArtefactDroid) > 0 then
+    Repair := CountActiveArtefacts(t_ArtefactDroid) * (DroidArtefactRepair + DroidArtefactBoostRepair * Byte(CanBoostArtefact(t_ArtefactDroid, nil, False)))
   else Exit;
   if Repair > 0 then Inc(GetHull.HullPoints, Min(Repair, GetHull.Weight - GetHull.HullPoints));
 end;
@@ -6251,7 +6251,7 @@ function TShip.GetCargoHookMinPullSpeed: Single;
 begin
   Result := 0;
   if GetCargoHook <> nil then
-    Result := Max(0.1, GetCargoHook.MinPullSpeed + CountActiveArtefacts(Ord(t_ArtefactHook)) * (CargoHookArtefactSpeed + CargoHookArtefactBoostSpeed * Byte(CanBoostArtefact(Ord(t_ArtefactHook), nil, False))) + GetTotalStatBonus(bonHookMinSpeed));
+    Result := Max(0.1, GetCargoHook.MinPullSpeed + CountActiveArtefacts(t_ArtefactHook) * (CargoHookArtefactSpeed + CargoHookArtefactBoostSpeed * Byte(CanBoostArtefact(t_ArtefactHook, nil, False))) + GetTotalStatBonus(bonHookMinSpeed));
 end;
 { @end $75FB54 }
 
@@ -6260,7 +6260,7 @@ function TShip.GetCargoHookMaxPullSpeed: Single;
 begin
   Result := 0;
   if GetCargoHook <> nil then
-    Result := Max(0.1, GetCargoHook.MaxPullSpeed + CountActiveArtefacts(Ord(t_ArtefactHook)) * (CargoHookArtefactSpeed + CargoHookArtefactBoostSpeed * Byte(CanBoostArtefact(Ord(t_ArtefactHook), nil, False))) + GetTotalStatBonus(bonHookMaxSpeed));
+    Result := Max(0.1, GetCargoHook.MaxPullSpeed + CountActiveArtefacts(t_ArtefactHook) * (CargoHookArtefactSpeed + CargoHookArtefactBoostSpeed * Byte(CanBoostArtefact(t_ArtefactHook, nil, False))) + GetTotalStatBonus(bonHookMaxSpeed));
 end;
 { @end $75FC30 }
 
@@ -6269,7 +6269,7 @@ function TShip.GetCargoHookRange: Integer;
 begin
   Result := 0;
   if GetCargoHook <> nil then
-    Result := GetCargoHook.Range + CountActiveArtefacts(Ord(t_ArtefactHook)) * (CargoHookArtefactRange + CargoHookArtefactBoostRange * Byte(CanBoostArtefact(Ord(t_ArtefactHook), nil, False))) + GetTotalStatBonus(bonHookRadius);
+    Result := GetCargoHook.Range + CountActiveArtefacts(t_ArtefactHook) * (CargoHookArtefactRange + CargoHookArtefactBoostRange * Byte(CanBoostArtefact(t_ArtefactHook, nil, False))) + GetTotalStatBonus(bonHookRadius);
 end;
 { @end $75FD0C }
 
@@ -6436,10 +6436,10 @@ procedure TShip.RebuildEquipmentCache;
 var
   I: Integer;
   Item: TEquipment;
-  Kind: Byte;
+  Kind: TItemType;
 begin
   Hull := THull(Inventory[0]);
-  for Kind := 43 to 49 do PShipEquipmentCacheView(Self).Slots[Kind] := nil;
+  for Kind := t_FuelTanks to t_DefGenerator do PShipEquipmentCacheView(Self).Slots[Kind] := nil;
   for I := 1 to 5 do Weapons[I] := nil;
   WeaponCount := 0;
   UsableWeaponCount := 0;
@@ -6448,11 +6448,11 @@ begin
   begin
     Item := TEquipment(Inventory[I]);
     if (Item.EquippedFlag <> 0) and not (Item.ItemType in [t_FuelTanks..t_Engine]) and
-       (GetSlotCountForItemType(Byte(Item.ItemType)) <= 0) and
-       (ItemTypeToSlotKind(Byte(Item.ItemType)) <> sskUnsupported) then Item.EquippedFlag := 0;
+       (GetSlotCountForItemType(Item.ItemType) <= 0) and
+       (ItemTypeToSlotKind(Item.ItemType) <> sskUnsupported) then Item.EquippedFlag := 0;
     if Item.EquippedFlag <> 0 then
     begin
-      if Item.ItemType in [t_Hull..t_DefGenerator] then PShipEquipmentCacheView(Self).Slots[Byte(Item.ItemType)] := Item
+      if Item.ItemType in [t_Hull..t_DefGenerator] then PShipEquipmentCacheView(Self).Slots[Item.ItemType] := Item
       else if Item.ItemType in [t_Weapon1..t_CustomWeapon] then
       begin
         Inc(WeaponCount);
@@ -6887,7 +6887,7 @@ begin
     Item := Artefacts[I];
     Item.Unequip;
   end;
-  RemainingSlots := GetSlotCountForItemType(Ord(t_Artefact));
+  RemainingSlots := GetSlotCountForItemType(t_Artefact);
   if RemainingSlots <= 0 then Exit;
   for I := 0 to Artefacts.Count - 1 do
   begin
@@ -6988,7 +6988,7 @@ begin
       begin
         for I := 1 to 5 do SavedWeapons[I] := Weapons[I];
         SavedTarget := (Item as TWeapon).Target;
-        UnequipSlot(Byte(Item.ItemType), WeaponIndex);
+        UnequipSlot(Item.ItemType, WeaponIndex);
         TemporarilyUnequipped := True;
         Break;
       end;
@@ -7145,7 +7145,7 @@ begin
     Inc(Bonus, GetEquipmentStatBonus(bonHull, Hull));
   end;
   Value := Hull.Armor + Bonus;
-  Value := Value + CountActiveArtefacts(Ord(t_ArtefactHull)) * (HullArtefactArmor + HullArtefactBoostArmor * Byte(CanBoostArtefact(Ord(t_ArtefactHull), Hull, False)));
+  Value := Value + CountActiveArtefacts(t_ArtefactHull) * (HullArtefactArmor + HullArtefactBoostArmor * Byte(CanBoostArtefact(t_ArtefactHull, Hull, False)));
   Result := Max(0, Value);
 end;
 { @end $762C3C }
@@ -7169,10 +7169,10 @@ begin
     Inc(Bonus, GetEquipmentStatBonus(bonSpeed, Engine));
   Value := Engine.Speed;
   if ApplyBrokenPenalty and (Engine.BrokenFlag <> 0) then Value := Round(Value * 0.6);
-  Value := Value + CountActiveArtefacts(Ord(t_ArtWeaponToSpeed)) * (WeaponToSpeedArtefactBonus + WeaponToSpeedArtefactBoost * Byte(CanBoostArtefact(Ord(t_ArtWeaponToSpeed), Engine, False)));
+  Value := Value + CountActiveArtefacts(t_ArtWeaponToSpeed) * (WeaponToSpeedArtefactBonus + WeaponToSpeedArtefactBoost * Byte(CanBoostArtefact(t_ArtWeaponToSpeed, Engine, False)));
   Value := Max(Min(200, Engine.Speed), Value + Bonus);
-  for I := 1 to CountActiveArtefacts(Ord(t_ArtefactSpeed)) do
-    Value := Round(Value * (SpeedArtefactFactor + SpeedArtefactBoostFactor * ShortInt(CanBoostArtefact(Ord(t_ArtefactSpeed), nil, False))));
+  for I := 1 to CountActiveArtefacts(t_ArtefactSpeed) do
+    Value := Round(Value * (SpeedArtefactFactor + SpeedArtefactBoostFactor * ShortInt(CanBoostArtefact(t_ArtefactSpeed, nil, False))));
   Result := Max(0, Value);
 end;
 { @end $762D30 }
@@ -7188,9 +7188,9 @@ begin
     Inc(Bonus, GetEquipmentStatBonus(bonJump, Engine));
   Value := Engine.JumpRange;
   if not CanUseEquipmentTech(Engine) then Value := Value div 2;
-  if CountActiveArtefacts(Ord(t_ArtGiperJump)) > 0 then
-    Value := Max(Value, Round(Sqrt(CountActiveArtefacts(Ord(t_ArtGiperJump))) *
-      (HyperJumpArtefactRange + HyperJumpArtefactBoostRange * Ord(CanBoostArtefact(Ord(t_ArtGiperJump), Engine, False)))));
+  if CountActiveArtefacts(t_ArtGiperJump) > 0 then
+    Value := Max(Value, Round(Sqrt(CountActiveArtefacts(t_ArtGiperJump)) *
+      (HyperJumpArtefactRange + HyperJumpArtefactBoostRange * Ord(CanBoostArtefact(t_ArtGiperJump, Engine, False)))));
   Result := Max(0, Value + Bonus);
 end;
 { @end $762EA0 }
@@ -7205,7 +7205,7 @@ begin
   if (Radar.EquippedFlag = 0) and (Radar.SpecialModuleIndex <> 0) then
     Inc(Bonus, GetEquipmentStatBonus(bonRadar, Radar));
   Value := Radar.Range;
-  Value := Value + CountActiveArtefacts(Ord(t_ArtefactRadar)) * (RadarArtefactRange + RadarArtefactBoostRange * Byte(CanBoostArtefact(Ord(t_ArtefactRadar), Radar, False)));
+  Value := Value + CountActiveArtefacts(t_ArtefactRadar) * (RadarArtefactRange + RadarArtefactBoostRange * Byte(CanBoostArtefact(t_ArtefactRadar, Radar, False)));
   Result := Max(0, Value + Bonus);
 end;
 { @end $762FD8 }
@@ -7220,7 +7220,7 @@ begin
   if (Scanner.EquippedFlag = 0) and (Scanner.SpecialModuleIndex <> 0) then
     Inc(Bonus, GetEquipmentStatBonus(bonScan, Scanner));
   Value := Scanner.ScanPower;
-  Value := Value + CountActiveArtefacts(Ord(t_ArtefactScaner)) * (ScannerArtefactPower + ScannerArtefactBoostPower * Byte(CanBoostArtefact(Ord(t_ArtefactScaner), Scanner, False)));
+  Value := Value + CountActiveArtefacts(t_ArtefactScaner) * (ScannerArtefactPower + ScannerArtefactBoostPower * Byte(CanBoostArtefact(t_ArtefactScaner, Scanner, False)));
   Result := Max(0, Value + Bonus);
 end;
 { @end $76308C }
@@ -7235,7 +7235,7 @@ begin
   if (RepairRobot.EquippedFlag = 0) and (RepairRobot.SpecialModuleIndex <> 0) then
     Inc(Bonus, GetEquipmentStatBonus(bonDroid, RepairRobot));
   Value := RepairRobot.RepairPoints;
-  Value := Value + CountActiveArtefacts(Ord(t_ArtefactDroid)) * (DroidArtefactRepair + DroidArtefactBoostRepair * Byte(CanBoostArtefact(Ord(t_ArtefactDroid), RepairRobot, False)));
+  Value := Value + CountActiveArtefacts(t_ArtefactDroid) * (DroidArtefactRepair + DroidArtefactBoostRepair * Byte(CanBoostArtefact(t_ArtefactDroid, RepairRobot, False)));
   Result := Max(0, Value + Bonus);
 end;
 { @end $763140 }
@@ -7250,7 +7250,7 @@ begin
   if (CargoHook.EquippedFlag = 0) and (CargoHook.SpecialModuleIndex <> 0) then
     Inc(Bonus, GetEquipmentStatBonus(bonHook, CargoHook));
   Value := CargoHook.PickupPower;
-  Value := Value + CountActiveArtefacts(Ord(t_ArtefactHook)) * (CargoHookArtefactPower + CargoHookArtefactBoostPower * Byte(CanBoostArtefact(Ord(t_ArtefactHook), CargoHook, False)));
+  Value := Value + CountActiveArtefacts(t_ArtefactHook) * (CargoHookArtefactPower + CargoHookArtefactBoostPower * Byte(CanBoostArtefact(t_ArtefactHook, CargoHook, False)));
   Result := Max(0, Value + Bonus);
 end;
 { @end $7631F4 }
@@ -7267,11 +7267,11 @@ begin
     Inc(Percent, GetEquipmentStatBonus(bonDef, DefGenerator));
   Factor := DefGenerator.DamageFactor;
   if Percent <> 0 then Factor := Factor - (1 - DefensePercentToDamageFactor(Percent));
-  Factor := Factor - CountActiveArtefacts(Ord(t_ArtefactDef)) * (DefenseArtefactBonus + DefenseArtefactBoost * ShortInt(CanBoostArtefact(Ord(t_ArtefactDef), DefGenerator, False)));
-  for I := 1 to CountActiveArtefacts(Ord(t_ArtDefToEnergy)) do
-    Factor := Min(1, Factor + (1 - Factor) * (DefenseToEnergyPenalty + DefenseToEnergyBoostPenalty * ShortInt(CanBoostArtefact(Ord(t_ArtDefToEnergy), DefGenerator, False))));
-  if (CountActiveArtefacts(Ord(t_ArtDefToArms1)) > 0) and not CanBoostArtefact(Ord(t_ArtDefToArms1), DefGenerator, False) then
-    for I := 1 to CountActiveArtefacts(Ord(t_ArtDefToArms1)) do Factor := Min(1, Factor + (1 - Factor) * DefenseToWeaponPenalty);
+  Factor := Factor - CountActiveArtefacts(t_ArtefactDef) * (DefenseArtefactBonus + DefenseArtefactBoost * ShortInt(CanBoostArtefact(t_ArtefactDef, DefGenerator, False)));
+  for I := 1 to CountActiveArtefacts(t_ArtDefToEnergy) do
+    Factor := Min(1, Factor + (1 - Factor) * (DefenseToEnergyPenalty + DefenseToEnergyBoostPenalty * ShortInt(CanBoostArtefact(t_ArtDefToEnergy, DefGenerator, False))));
+  if (CountActiveArtefacts(t_ArtDefToArms1) > 0) and not CanBoostArtefact(t_ArtDefToArms1, DefGenerator, False) then
+    for I := 1 to CountActiveArtefacts(t_ArtDefToArms1) do Factor := Min(1, Factor + (1 - Factor) * DefenseToWeaponPenalty);
   Result := Min(1, Max(0.01, Factor));
 end;
 { @end $7632A8 }
@@ -7404,21 +7404,21 @@ begin
   Result := 1;
   Flags := Weapon.GetWeaponInfo.DamageFlags;
   if dkEnergy in Flags then
-    for I := 1 to CountActiveArtefacts(Ord(t_ArtEnergyPulse)) do
-      Result := Result * (1 + (EnergyPulseArtefactFactor + ShortInt(CanBoostArtefact(Ord(t_ArtEnergyPulse), Weapon, False)) * EnergyPulseArtefactBoostFactor) * EnergyPulseArtefactChance);
-  if (CountActiveArtefacts(Ord(t_ArtDefToEnergy)) > 0) and (dkEnergy in Flags) and (GetDefGenerator <> nil) then
+    for I := 1 to CountActiveArtefacts(t_ArtEnergyPulse) do
+      Result := Result * (1 + (EnergyPulseArtefactFactor + ShortInt(CanBoostArtefact(t_ArtEnergyPulse, Weapon, False)) * EnergyPulseArtefactBoostFactor) * EnergyPulseArtefactChance);
+  if (CountActiveArtefacts(t_ArtDefToEnergy) > 0) and (dkEnergy in Flags) and (GetDefGenerator <> nil) then
     Result := Result * (1 + (
       (CountWeaponsByDamageFlags(EnergyDamageFlags) + 1) * RemapClamped(
         CountWeaponsByDamageFlags(EnergyDamageFlags) + 1, 1, 5,
-        DefenseToEnergyUpperFactor + ShortInt(CanBoostArtefact(Ord(t_ArtDefToEnergy), Weapon, False)) * DefenseToEnergyUpperBoost,
-        DefenseToEnergyMinimumFactor + ShortInt(CanBoostArtefact(Ord(t_ArtDefToEnergy), Weapon, False)) * DefenseToEnergyMinimumBoost) -
+        DefenseToEnergyUpperFactor + ShortInt(CanBoostArtefact(t_ArtDefToEnergy, Weapon, False)) * DefenseToEnergyUpperBoost,
+        DefenseToEnergyMinimumFactor + ShortInt(CanBoostArtefact(t_ArtDefToEnergy, Weapon, False)) * DefenseToEnergyMinimumBoost) -
       CountWeaponsByDamageFlags(EnergyDamageFlags) * RemapClamped(
         CountWeaponsByDamageFlags(EnergyDamageFlags), 1, 5,
-        DefenseToEnergyUpperFactor + ShortInt(CanBoostArtefact(Ord(t_ArtDefToEnergy), Weapon, False)) * DefenseToEnergyUpperBoost,
-        DefenseToEnergyMinimumFactor + ShortInt(CanBoostArtefact(Ord(t_ArtDefToEnergy), Weapon, False)) * DefenseToEnergyMinimumBoost) - 1) * CountActiveArtefacts(Ord(t_ArtDefToEnergy)));
+        DefenseToEnergyUpperFactor + ShortInt(CanBoostArtefact(t_ArtDefToEnergy, Weapon, False)) * DefenseToEnergyUpperBoost,
+        DefenseToEnergyMinimumFactor + ShortInt(CanBoostArtefact(t_ArtDefToEnergy, Weapon, False)) * DefenseToEnergyMinimumBoost) - 1) * CountActiveArtefacts(t_ArtDefToEnergy));
   if dkSplinter in Flags then
-    for I := 1 to CountActiveArtefacts(Ord(t_ArtSplinter)) do
-      Result := Result * (SplinterArtefactFactor + ShortInt(CanBoostArtefact(Ord(t_ArtSplinter), Weapon, False)) * SplinterArtefactBoostFactor);
+    for I := 1 to CountActiveArtefacts(t_ArtSplinter) do
+      Result := Result * (SplinterArtefactFactor + ShortInt(CanBoostArtefact(t_ArtSplinter, Weapon, False)) * SplinterArtefactBoostFactor);
 end;
 { @end $763F98 }
 
@@ -7637,8 +7637,8 @@ begin
   begin
     if dkDestruct in Flags then Result := Result + 1;
     if dkDecelerate in Flags then Result := Result + 2;
-    if (CountActiveArtefacts(Ord(t_ArtDecelerate)) > 0) and (dkSplinter in Flags) then
-      Result := Result + 5 + 5 * Ord(CanBoostArtefact(Ord(t_ArtDecelerate), Weapon, False) or (CountActiveArtefacts(Ord(t_ArtDecelerate)) > 1));
+    if (CountActiveArtefacts(t_ArtDecelerate) > 0) and (dkSplinter in Flags) then
+      Result := Result + 5 + 5 * Ord(CanBoostArtefact(t_ArtDecelerate, Weapon, False) or (CountActiveArtefacts(t_ArtDecelerate) > 1));
     Result := Result + Integer(CountWeaponsByDamageFlags(AcidFlags)) * Weapon.GetShotCount;
     if dkAcid in Flags then
     begin
@@ -7779,7 +7779,8 @@ var
   I: Integer;
   Item, Best: TEquipment;
   Score, BestScore: Single;
-  Kind, PriceMode: Byte;
+  Kind: TItemType;
+  PriceMode: Byte;
   BestProtected, ItemProtected: Boolean;
 begin
   if IsDocked or (CargoFreeSpace < 0) then PriceMode := 3 else PriceMode := 0;
@@ -7789,7 +7790,7 @@ begin
     Item := Inventory[I];
     if Item is TWeapon then Item.Unequip
     else if (Item.ItemType in [t_FuelTanks..t_DefGenerator]) and
-       (PShipEquipmentCacheView(Self).Slots[Ord(Item.ItemType)] <> Item) then Item.Unequip;
+       (PShipEquipmentCacheView(Self).Slots[Item.ItemType] <> Item) then Item.Unequip;
   end;
   for I := 1 to 5 do Weapons[I] := nil;
   WeaponCount := 0;
@@ -7803,7 +7804,7 @@ begin
   end
   else
     for I := 1 to GetSlotCount(sskWeapon) do EquipItem(SelectBestUnequippedWeapon);
-  for Kind := 43 to 49 do
+  for Kind := t_FuelTanks to t_DefGenerator do
   begin
     if PShipEquipmentCacheView(Self).Slots[Kind] <> nil then PShipEquipmentCacheView(Self).Slots[Kind].Unequip;
     if GetSlotCountForItemType(Kind) > 0 then
@@ -7814,7 +7815,7 @@ begin
       for I := 1 to Inventory.Count - 1 do
       begin
         Item := Inventory[I];
-        if Byte(Item.ItemType) = Kind then
+        if Item.ItemType = Kind then
         begin
           BestProtected := (Best <> nil) and ((Best.NoDropFlag > 0) or
             ((Best.ScriptItem <> nil) and (TScriptItem(Best.ScriptItem).Name <> '')));
@@ -7824,10 +7825,10 @@ begin
             if not ItemProtected then Continue;
           begin
             Score := EvaluateItem(Item, PriceMode);
-            if (Kind = 43) and (Best <> nil) and (GetJumpDestinationDistance <= (Best as TFuelTanks).Fuel) and
+            if (Kind = t_FuelTanks) and (Best <> nil) and (GetJumpDestinationDistance <= (Best as TFuelTanks).Fuel) and
                (GetJumpDestinationDistance > (Item as TFuelTanks).Fuel) then Continue;
-            if ((Score >= 0) or (Kind in [43..44]) or
-                ((Kind = 48) and (TypeId in [stRanger, stPirate]) and (GetSlotCount(sskCargoHook) > 0)) or
+            if ((Score >= 0) or (Kind in [t_FuelTanks..t_Engine]) or
+                ((Kind = t_CargoHook) and (TypeId in [stRanger, stPirate]) and (GetSlotCount(sskCargoHook) > 0)) or
                 (Item.NoDropFlag > 0) or (Item.ScriptItem <> nil) or
                 ((CargoFreeSpace >= 0) and (PriceMode <> 0) and (EvaluateItem(Item, 0) >= 0))) and
                ((Best = nil) or (Score > BestScore) or ((Score = BestScore) and (Best.Weight > Item.Weight)) or
@@ -9154,7 +9155,7 @@ var
     if WeaponIndex <> 0 then
     begin
       SavedTarget := Selected.Target;
-      UnequipSlot(Byte(Selected.ItemType), WeaponIndex);
+      UnequipSlot(Selected.ItemType, WeaponIndex);
     end;
   end;
 
@@ -9247,7 +9248,7 @@ begin
         (OldItem.NoDropFlag <= 0) then
       begin
         if OldItem is TWeapon then TemporarilyUnequipWeapon(TWeapon(OldItem))
-        else UnequipSlot(Byte(OldItem.ItemType), 0);
+        else UnequipSlot(OldItem.ItemType, 0);
         LiquidateInventoryItem(OldItem);
         I := Inventory.Count;
       end;
@@ -9262,7 +9263,7 @@ begin
     if not (OfferItem.ItemType in [t_Hull..t_CustomWeapon]) or
       ((OfferItem.ScriptItem <> nil) and (TScriptItem(OfferItem.ScriptItem).Name <> '')) or
       (OfferItem.NoDropFlag > 0) or
-      (not (OfferItem.ItemType in [t_Hull..t_Engine]) and (GetSlotCountForItemType(Byte(OfferItem.ItemType)) = 0)) then Continue;
+      (not (OfferItem.ItemType in [t_Hull..t_Engine]) and (GetSlotCountForItemType(OfferItem.ItemType) = 0)) then Continue;
     if OfferItem.ItemType = t_Hull then
     begin
       if (Self is TRuins) or (GetHull.HullType <> (OfferItem as THull).HullType) or
@@ -9277,7 +9278,7 @@ begin
       end;
     end;
     if OfferItem is TWeapon then OldItem := ReplacementWeapon
-    else OldItem := PShipEquipmentCacheView(Self).Slots[Byte(OfferItem.ItemType)];
+    else OldItem := PShipEquipmentCacheView(Self).Slots[OfferItem.ItemType];
     if (OfferItem.ItemType in [t_FuelTanks..t_Engine]) and (OldItem = nil) and
       (not UseMoney or (Money >= OfferItem.Cost)) then
     begin
@@ -9294,7 +9295,7 @@ begin
         ((OldItem.ScriptItem <> nil) and (TScriptItem(OldItem.ScriptItem).Name <> '')) or
         (OldItem.NoDropFlag > 0) then Continue;
       if OldItem is TWeapon then TemporarilyUnequipWeapon(nil)
-      else if not (OldItem is THull) then UnequipSlot(Byte(OldItem.ItemType), 0);
+      else if not (OldItem is THull) then UnequipSlot(OldItem.ItemType, 0);
       OldEffectiveness := CalculateItemEffectiveness(OldItem);
       NewEffectiveness := CalculateItemEffectiveness(OfferItem);
       if TypeId = stRanger then
@@ -9329,13 +9330,13 @@ begin
   if BestItem <> nil then
   begin
     if BestItem is TWeapon then OldItem := ReplacementWeapon
-    else OldItem := PShipEquipmentCacheView(Self).Slots[Byte(BestItem.ItemType)];
+    else OldItem := PShipEquipmentCacheView(Self).Slots[BestItem.ItemType];
     Offers.Delete(Offers.IndexOf(BestItem));
     Bought := True;
     if OldItem <> nil then
     begin
       if OldItem is TWeapon then TemporarilyUnequipWeapon(nil)
-      else UnequipSlot(Byte(OldItem.ItemType), 0);
+      else UnequipSlot(OldItem.ItemType, 0);
       if UseMoney then SetMoney(OldItem.CalculateResaleValue(GetEffectiveSkillLevel(psTrading)) + Money);
       Inventory.Delete(Inventory.IndexOf(OldItem));
       OldItem.Free;
@@ -9477,12 +9478,12 @@ end;
 { @end $76B238 }
 
 { @routine $76B294 TShip_CreateAndEquipWeapon }
-function TShip.CreateAndEquipWeapon(ItemType: Byte; Weight: Integer; Level: Byte; Owner: TOwnerId): TWeapon;
+function TShip.CreateAndEquipWeapon(ItemType: TItemType; Weight: Integer; Level: Byte; Owner: TOwnerId): TWeapon;
 var
   Item: TWeapon;
 begin
   Item := TWeapon.Create;
-  Item.Init(TItemType(ItemType), Weight, Level, Owner);
+  Item.Init(ItemType, Weight, Level, Owner);
   Inventory.Add(Item);
   EquipItem(Item);
   Result := Item;
@@ -10362,7 +10363,7 @@ TEFilm(PrimaryFilm).SetGateEffectSize(StartStepIndex, EffectFilm, Gate.Effect.Si
         Dec(OrderStateData);
         if (Cardinal(OrderStateData) > 1) and not AbductedByPirateClan then
         begin
-          Dec(OrderStateData, Min(CountActiveArtefacts(Ord(t_ArtGiperJump)) * (Integer(CanBoostArtefact(Ord(t_ArtGiperJump), nil, False)) + 1), Cardinal(OrderStateData)));
+          Dec(OrderStateData, Min(CountActiveArtefacts(t_ArtGiperJump) * (Integer(CanBoostArtefact(t_ArtGiperJump, nil, False)) + 1), Cardinal(OrderStateData)));
           OrderStateData := Max(1, Int64(Cardinal(OrderStateData)));
         end;
       end;
@@ -11617,24 +11618,24 @@ begin
   begin
     if SlotKind = sskWeapon then
     begin
-      if (CountActiveArtefacts(Ord(t_ArtWeaponToSpeed)) > 0) and not CanBoostArtefact(Ord(t_ArtWeaponToSpeed), GetHull, False) then
-        Result := Min(DefaultHullSlotCounts[SlotKind], Max(MinimumHullSlotCounts[SlotKind], Result - CountActiveArtefacts(Ord(t_ArtWeaponToSpeed))));
-      if (CountActiveArtefacts(Ord(t_ArtDefToArms1)) > 0) and (GetDefGenerator <> nil) then
-        Result := Min(DefaultHullSlotCounts[SlotKind], Max(MinimumHullSlotCounts[SlotKind], Result + CountActiveArtefacts(Ord(t_ArtDefToArms1))));
-      if (CountActiveArtefacts(Ord(t_ArtDefToArms2)) > 0) and (GetHull.GetSlotCount(sskDefGenerator) > 0) then
-        Result := Min(DefaultHullSlotCounts[SlotKind], Max(MinimumHullSlotCounts[SlotKind], Result + 1 + CountActiveArtefacts(Ord(t_ArtDefToArms2))));
+      if (CountActiveArtefacts(t_ArtWeaponToSpeed) > 0) and not CanBoostArtefact(t_ArtWeaponToSpeed, GetHull, False) then
+        Result := Min(DefaultHullSlotCounts[SlotKind], Max(MinimumHullSlotCounts[SlotKind], Result - CountActiveArtefacts(t_ArtWeaponToSpeed)));
+      if (CountActiveArtefacts(t_ArtDefToArms1) > 0) and (GetDefGenerator <> nil) then
+        Result := Min(DefaultHullSlotCounts[SlotKind], Max(MinimumHullSlotCounts[SlotKind], Result + CountActiveArtefacts(t_ArtDefToArms1)));
+      if (CountActiveArtefacts(t_ArtDefToArms2) > 0) and (GetHull.GetSlotCount(sskDefGenerator) > 0) then
+        Result := Min(DefaultHullSlotCounts[SlotKind], Max(MinimumHullSlotCounts[SlotKind], Result + 1 + CountActiveArtefacts(t_ArtDefToArms2)));
     end
     else if SlotKind = sskDefGenerator then
     begin
-      if CountActiveArtefacts(Ord(t_ArtDefToArms2)) > 0 then
+      if CountActiveArtefacts(t_ArtDefToArms2) > 0 then
         Result := Min(DefaultHullSlotCounts[SlotKind], Max(MinimumHullSlotCounts[SlotKind], Result - 1));
     end
     else if SlotKind = sskRepairRobot then
     begin
-      if CountActiveArtefacts(Ord(t_ArtArtefactor)) > 0 then
+      if CountActiveArtefacts(t_ArtArtefactor) > 0 then
         Result := Min(DefaultHullSlotCounts[SlotKind], Max(MinimumHullSlotCounts[SlotKind], Result - 1));
     end
-    else if (SlotKind = sskArtefact) and (Result > 0) and (CountActiveArtefacts(Ord(t_ArtArtefactor)) > 0) and
+    else if (SlotKind = sskArtefact) and (Result > 0) and (CountActiveArtefacts(t_ArtArtefactor) > 0) and
       (GetHull.GetSlotCount(sskRepairRobot) > 0) then
       Result := Min(DefaultHullSlotCounts[SlotKind], Max(MinimumHullSlotCounts[SlotKind], Result + 3));
   end;
@@ -11642,7 +11643,7 @@ end;
 { @end $77411C }
 
 { @routine $774598 TShip_GetSlotCountForItemType }
-function TShip.GetSlotCountForItemType(ItemType: Byte): Integer;
+function TShip.GetSlotCountForItemType(ItemType: TItemType): Integer;
 begin
   Result := GetSlotCount(ItemTypeToSlotKind(ItemType));
 end;
@@ -11658,8 +11659,8 @@ var
   NoFreeSlot: Boolean;
 begin
   Used := 0;
-  Count := GetSlotCountForItemType(Byte(ItemType));
-  Kind := ItemTypeToSlotKind(Byte(ItemType));
+  Count := GetSlotCountForItemType(ItemType);
+  Kind := ItemTypeToSlotKind(ItemType);
   if Kind <> sskArtefact then
   begin
     for I := 0 to Inventory.Count - 1 do
@@ -11667,7 +11668,7 @@ begin
       Item := Inventory[I];
       if Item.EquippedFlag <> 0 then
       begin
-        ItemKind := ItemTypeToSlotKind(Byte(Item.ItemType));
+        ItemKind := ItemTypeToSlotKind(Item.ItemType);
         if Kind = ItemKind then
         begin
           Slot := Item.AssignedSlotData and EquipmentSlotIndexMask;
@@ -11696,7 +11697,7 @@ begin
       Item := Artefacts[I];
       if Item.EquippedFlag <> 0 then
       begin
-        ItemKind := ItemTypeToSlotKind(Byte(Item.ItemType));
+        ItemKind := ItemTypeToSlotKind(Item.ItemType);
         if Kind = ItemKind then
         begin
           Slot := Item.AssignedSlotData and EquipmentSlotIndexMask;
@@ -11738,7 +11739,7 @@ end;
 { @end $77480C }
 
 { @routine $774878 TShip_FindEquippedItemInSlot }
-function TShip.FindEquippedItemInSlot(ItemType: Byte; SlotIndex: Integer): TEquipment;
+function TShip.FindEquippedItemInSlot(ItemType: TItemType; SlotIndex: Integer): TEquipment;
 var I: Integer; Item: TEquipment; Kind: TShipSlotKind;
 begin
   Kind := ItemTypeToSlotKind(ItemType);
@@ -11747,7 +11748,7 @@ begin
     for I := 0 to Inventory.Count - 1 do
     begin
       Item := TEquipment(Inventory[I]);
-      if (Item.EquippedFlag <> 0) and (ItemTypeToSlotKind(Byte(Item.ItemType)) = Kind) and
+      if (Item.EquippedFlag <> 0) and (ItemTypeToSlotKind(Item.ItemType) = Kind) and
          (Integer(Item.AssignedSlotData) and EquipmentSlotIndexMask = SlotIndex) then
       begin
         Result := Item;
@@ -12103,7 +12104,7 @@ end;
 { @end $7759DC }
 
 { @routine $775AC8 TShip_CountActiveArtefacts }
-function TShip.CountActiveArtefacts(ArtefactType: Byte): Integer;
+function TShip.CountActiveArtefacts(ArtefactType: TItemType): Integer;
 var
   I: Integer;
   Item: TArtefact;
@@ -12111,13 +12112,13 @@ var
 begin
   Result := 0;
   AllActive := False;
-  if (ArtefactType in [Ord(t_ArtefactRadar), Ord(t_ArtefactScaner), Ord(t_ArtefactAnalyzer), Ord(t_ArtBio)]) and (ArtefactType <> Byte(t_ArtArtefactor)) then
-    AllActive := (CountActiveArtefacts(Ord(t_ArtArtefactor)) > 0) and
-      ((not (TurnCalculationPhase in [tcpGalaxyRunning, tcpPlayerStarRunning])) or (CountActiveArtefacts(Ord(t_ArtArtefactor)) > 1));
+  if (ArtefactType in [t_ArtefactRadar, t_ArtefactScaner, t_ArtefactAnalyzer, t_ArtBio]) and (ArtefactType <> t_ArtArtefactor) then
+    AllActive := (CountActiveArtefacts(t_ArtArtefactor) > 0) and
+      ((not (TurnCalculationPhase in [tcpGalaxyRunning, tcpPlayerStarRunning])) or (CountActiveArtefacts(t_ArtArtefactor) > 1));
   for I := 0 to Artefacts.Count - 1 do
   begin
     Item := TArtefact(Artefacts[I]);
-    if (Byte(Item.GetEffectiveType) = ArtefactType) and (Item.BrokenFlag = 0) and
+    if (Item.GetEffectiveType = ArtefactType) and (Item.BrokenFlag = 0) and
        ((Item.EquippedFlag or Byte(AllActive)) <> 0) then Inc(Result);
   end;
 end;
@@ -12170,7 +12171,7 @@ end;
 { @end $775B8C }
 
 { @routine $775D0C TShip_CanBoostArtefact }
-function TShip.CanBoostArtefact(ArtefactType: Byte; Item: TEquipment; IgnoreArtefactAvailability: Boolean): Boolean;
+function TShip.CanBoostArtefact(ArtefactType: TItemType; Item: TEquipment; IgnoreArtefactAvailability: Boolean): Boolean;
 var Equipment: TEquipment;
 
   // @nested $775CD4 IsArtefactBoostEquipment
@@ -12182,33 +12183,33 @@ var Equipment: TEquipment;
 begin
   Result := False;
   if not IgnoreArtefactAvailability and (CountActiveArtefacts(ArtefactType) <= 0) then Exit;
-  if not (ArtefactType in [Ord(t_ArtefactHull)..Ord(t_ArtefactDef),
-    Ord(t_ArtefactMiniExpl), Ord(t_ArtefactAntigrav), Ord(t_ArtDefToEnergy)..Ord(t_ArtGiperJump),
-    Ord(t_ArtDefToArms1), Ord(t_ArtPDTurret), Ord(t_ArtFastRacks)]) then Exit;
+  if not (ArtefactType in [t_ArtefactHull..t_ArtefactDef,
+    t_ArtefactMiniExpl, t_ArtefactAntigrav, t_ArtDefToEnergy..t_ArtGiperJump,
+    t_ArtDefToArms1, t_ArtPDTurret, t_ArtFastRacks]) then Exit;
   if Item = nil then
   begin
     case ArtefactType of
-      Ord(t_ArtefactHull): Result := IsArtefactBoostEquipment(GetHull);
-      Ord(t_ArtefactFuel): Result := IsArtefactBoostEquipment(GetFuelTanks);
-      Ord(t_ArtefactSpeed): Result := IsArtefactBoostEquipment(GetEngine);
-      Ord(t_ArtefactPower): Result := IsArtefactBoostEquipment(GetEngine) or IsArtefactBoostEquipment(GetHull);
-      Ord(t_ArtefactRadar): Result := IsArtefactBoostEquipment(GetRadar);
-      Ord(t_ArtefactScaner): Result := IsArtefactBoostEquipment(GetScanner);
-      Ord(t_ArtefactDroid): Result := IsArtefactBoostEquipment(GetRepairRobot);
-      Ord(t_ArtefactHook): Result := IsArtefactBoostEquipment(GetCargoHook);
-      Ord(t_ArtefactDef): Result := IsArtefactBoostEquipment(GetDefGenerator);
-      Ord(t_ArtefactAntigrav): Result := IsArtefactBoostEquipment(GetHull);
-      Ord(t_ArtDefToEnergy): Result := IsArtefactBoostEquipment(GetDefGenerator);
-      Ord(t_ArtGiperJump): Result := IsArtefactBoostEquipment(GetEngine);
-      Ord(t_ArtDefToArms1): Result := IsArtefactBoostEquipment(GetDefGenerator);
-      Ord(t_ArtForsage): Result := IsArtefactBoostEquipment(GetEngine);
-      Ord(t_ArtWeaponToSpeed): Result := IsArtefactBoostEquipment(GetEngine) or IsArtefactBoostEquipment(GetHull);
-      Ord(t_ArtEnergyDef): Result := IsArtefactBoostEquipment(GetHull);
-      Ord(t_ArtMissileDef): Result := IsArtefactBoostEquipment(GetHull);
-      Ord(t_ArtefactMiniExpl): Result := IsArtefactBoostEquipment(GetScanner);
-      Ord(t_ArtPDTurret): Result := IsArtefactBoostEquipment(GetRadar);
+      t_ArtefactHull: Result := IsArtefactBoostEquipment(GetHull);
+      t_ArtefactFuel: Result := IsArtefactBoostEquipment(GetFuelTanks);
+      t_ArtefactSpeed: Result := IsArtefactBoostEquipment(GetEngine);
+      t_ArtefactPower: Result := IsArtefactBoostEquipment(GetEngine) or IsArtefactBoostEquipment(GetHull);
+      t_ArtefactRadar: Result := IsArtefactBoostEquipment(GetRadar);
+      t_ArtefactScaner: Result := IsArtefactBoostEquipment(GetScanner);
+      t_ArtefactDroid: Result := IsArtefactBoostEquipment(GetRepairRobot);
+      t_ArtefactHook: Result := IsArtefactBoostEquipment(GetCargoHook);
+      t_ArtefactDef: Result := IsArtefactBoostEquipment(GetDefGenerator);
+      t_ArtefactAntigrav: Result := IsArtefactBoostEquipment(GetHull);
+      t_ArtDefToEnergy: Result := IsArtefactBoostEquipment(GetDefGenerator);
+      t_ArtGiperJump: Result := IsArtefactBoostEquipment(GetEngine);
+      t_ArtDefToArms1: Result := IsArtefactBoostEquipment(GetDefGenerator);
+      t_ArtForsage: Result := IsArtefactBoostEquipment(GetEngine);
+      t_ArtWeaponToSpeed: Result := IsArtefactBoostEquipment(GetEngine) or IsArtefactBoostEquipment(GetHull);
+      t_ArtEnergyDef: Result := IsArtefactBoostEquipment(GetHull);
+      t_ArtMissileDef: Result := IsArtefactBoostEquipment(GetHull);
+      t_ArtefactMiniExpl: Result := IsArtefactBoostEquipment(GetScanner);
+      t_ArtPDTurret: Result := IsArtefactBoostEquipment(GetRadar);
     end;
-    if ArtefactType = Byte(t_ArtefactNano) then
+    if ArtefactType = t_ArtefactNano then
       if IsArtefactBoostEquipment(GetEngine) or IsArtefactBoostEquipment(GetFuelTanks) or
         IsArtefactBoostEquipment(GetRadar) or IsArtefactBoostEquipment(GetScanner) or
         IsArtefactBoostEquipment(GetRepairRobot) or IsArtefactBoostEquipment(GetCargoHook) or
@@ -12218,19 +12219,19 @@ begin
         IsArtefactBoostEquipment(Weapons[3]) or
         IsArtefactBoostEquipment(Weapons[4]) or
         IsArtefactBoostEquipment(Weapons[5]) then Result := True;
-    if (ArtefactType = Byte(t_ArtDefToEnergy)) or (ArtefactType = Byte(t_ArtEnergyPulse)) then
+    if (ArtefactType = t_ArtDefToEnergy) or (ArtefactType = t_ArtEnergyPulse) then
       if (IsArtefactBoostEquipment(Weapons[1]) and (dkEnergy in Weapons[1].GetWeaponInfo.DamageFlags)) or
         (IsArtefactBoostEquipment(Weapons[2]) and (dkEnergy in Weapons[2].GetWeaponInfo.DamageFlags)) or
         (IsArtefactBoostEquipment(Weapons[3]) and (dkEnergy in Weapons[3].GetWeaponInfo.DamageFlags)) or
         (IsArtefactBoostEquipment(Weapons[4]) and (dkEnergy in Weapons[4].GetWeaponInfo.DamageFlags)) or
         (IsArtefactBoostEquipment(Weapons[5]) and (dkEnergy in Weapons[5].GetWeaponInfo.DamageFlags)) then Result := True;
-    if (ArtefactType = Byte(t_ArtSplinter)) or (ArtefactType = Byte(t_ArtDecelerate)) then
+    if (ArtefactType = t_ArtSplinter) or (ArtefactType = t_ArtDecelerate) then
       if (IsArtefactBoostEquipment(Weapons[1]) and (dkSplinter in Weapons[1].GetWeaponInfo.DamageFlags)) or
         (IsArtefactBoostEquipment(Weapons[2]) and (dkSplinter in Weapons[2].GetWeaponInfo.DamageFlags)) or
         (IsArtefactBoostEquipment(Weapons[3]) and (dkSplinter in Weapons[3].GetWeaponInfo.DamageFlags)) or
         (IsArtefactBoostEquipment(Weapons[4]) and (dkSplinter in Weapons[4].GetWeaponInfo.DamageFlags)) or
         (IsArtefactBoostEquipment(Weapons[5]) and (dkSplinter in Weapons[5].GetWeaponInfo.DamageFlags)) then Result := True;
-    if ArtefactType = Byte(t_ArtFastRacks) then
+    if ArtefactType = t_ArtFastRacks then
       if (IsArtefactBoostEquipment(Weapons[1]) and (Weapons[1].GetWeaponInfo.ShotType in [wstTorpedo, wstMissile, wstRocket])) or
         (IsArtefactBoostEquipment(Weapons[2]) and (Weapons[2].GetWeaponInfo.ShotType in [wstTorpedo, wstMissile, wstRocket])) or
         (IsArtefactBoostEquipment(Weapons[3]) and (Weapons[3].GetWeaponInfo.ShotType in [wstTorpedo, wstMissile, wstRocket])) or
@@ -12242,33 +12243,33 @@ begin
     Equipment := Item;
     if not IsArtefactBoostEquipment(Equipment) then Exit;
     case ArtefactType of
-      Ord(t_ArtefactHull): if not (Equipment is THull) then Exit;
-      Ord(t_ArtefactFuel): if not (Equipment is TFuelTanks) then Exit;
-      Ord(t_ArtefactSpeed): if not (Equipment is TEngine) then Exit;
-      Ord(t_ArtefactPower): if not ((Equipment is TEngine) or (Equipment is THull)) then Exit;
-      Ord(t_ArtefactRadar): if not (Equipment is TRadar) then Exit;
-      Ord(t_ArtefactScaner): if not (Equipment is TScaner) then Exit;
-      Ord(t_ArtefactDroid): if not (Equipment is TRepairRobot) then Exit;
-      Ord(t_ArtefactDef): if not (Equipment is TDefGenerator) then Exit;
-      Ord(t_ArtefactAntigrav): if not (Equipment is THull) then Exit;
-      Ord(t_ArtefactHook): if not (Equipment is TCargoHook) then Exit;
-      Ord(t_ArtGiperJump): if not (Equipment is TEngine) then Exit;
-      Ord(t_ArtDefToArms1): if not (Equipment is TDefGenerator) then Exit;
-      Ord(t_ArtForsage): if not (Equipment is TEngine) then Exit;
-      Ord(t_ArtEnergyDef): if not (Equipment is THull) then Exit;
-      Ord(t_ArtMissileDef): if not (Equipment is THull) then Exit;
-      Ord(t_ArtefactMiniExpl): if not (Equipment is TScaner) then Exit;
-      Ord(t_ArtPDTurret): if not (Equipment is TRadar) then Exit;
+      t_ArtefactHull: if not (Equipment is THull) then Exit;
+      t_ArtefactFuel: if not (Equipment is TFuelTanks) then Exit;
+      t_ArtefactSpeed: if not (Equipment is TEngine) then Exit;
+      t_ArtefactPower: if not ((Equipment is TEngine) or (Equipment is THull)) then Exit;
+      t_ArtefactRadar: if not (Equipment is TRadar) then Exit;
+      t_ArtefactScaner: if not (Equipment is TScaner) then Exit;
+      t_ArtefactDroid: if not (Equipment is TRepairRobot) then Exit;
+      t_ArtefactDef: if not (Equipment is TDefGenerator) then Exit;
+      t_ArtefactAntigrav: if not (Equipment is THull) then Exit;
+      t_ArtefactHook: if not (Equipment is TCargoHook) then Exit;
+      t_ArtGiperJump: if not (Equipment is TEngine) then Exit;
+      t_ArtDefToArms1: if not (Equipment is TDefGenerator) then Exit;
+      t_ArtForsage: if not (Equipment is TEngine) then Exit;
+      t_ArtEnergyDef: if not (Equipment is THull) then Exit;
+      t_ArtMissileDef: if not (Equipment is THull) then Exit;
+      t_ArtefactMiniExpl: if not (Equipment is TScaner) then Exit;
+      t_ArtPDTurret: if not (Equipment is TRadar) then Exit;
     end;
-    if (ArtefactType = Byte(t_ArtefactNano)) and (Equipment is THull) then Exit;
-    if (ArtefactType = Byte(t_ArtWeaponToSpeed)) and not ((Equipment is THull) or (Equipment is TEngine)) then Exit;
-    if (ArtefactType = Byte(t_ArtDefToEnergy)) and not ((Equipment is TDefGenerator) or
+    if (ArtefactType = t_ArtefactNano) and (Equipment is THull) then Exit;
+    if (ArtefactType = t_ArtWeaponToSpeed) and not ((Equipment is THull) or (Equipment is TEngine)) then Exit;
+    if (ArtefactType = t_ArtDefToEnergy) and not ((Equipment is TDefGenerator) or
       ((Equipment is TWeapon) and (dkEnergy in TWeapon(Equipment).GetWeaponInfo.DamageFlags))) then Exit;
-    if (ArtefactType = Byte(t_ArtEnergyPulse)) and not ((Equipment is TWeapon) and
+    if (ArtefactType = t_ArtEnergyPulse) and not ((Equipment is TWeapon) and
       (dkEnergy in TWeapon(Equipment).GetWeaponInfo.DamageFlags)) then Exit;
-    if ((ArtefactType = Byte(t_ArtSplinter)) or (ArtefactType = Byte(t_ArtDecelerate))) and not ((Equipment is TWeapon) and
+    if ((ArtefactType = t_ArtSplinter) or (ArtefactType = t_ArtDecelerate)) and not ((Equipment is TWeapon) and
       (dkSplinter in TWeapon(Equipment).GetWeaponInfo.DamageFlags)) then Exit;
-    if (ArtefactType = Byte(t_ArtFastRacks)) and not ((Equipment is TWeapon) and
+    if (ArtefactType = t_ArtFastRacks) and not ((Equipment is TWeapon) and
       (TWeapon(Equipment).GetWeaponInfo.ShotType in [wstTorpedo, wstMissile, wstRocket])) then Exit;
     if not (Equipment.ItemType in [t_Hull..t_CustomWeapon]) then Exit;
     Result := True;
@@ -12326,7 +12327,7 @@ begin
   if Item <> nil then
   begin
     Item.ConditionPercent := Item.ConditionPercent + NanoArtefactRepair / OwnerInfo[Item.OwnerId].EquipmentDurabilityFactor;
-    if CanBoostArtefact(Ord(t_ArtefactNano), Item, False) then
+    if CanBoostArtefact(t_ArtefactNano, Item, False) then
       Item.ConditionPercent := Item.ConditionPercent + NanoArtefactBoostRepair / OwnerInfo[Item.OwnerId].EquipmentDurabilityFactor;
     if Item.ConditionPercent > 100 then Item.ConditionPercent := 100;
     if (Item.ConditionPercent > 0) and (Item.BrokenFlag <> 0) then
@@ -13575,10 +13576,10 @@ begin
       if IsHealthEffectActive(17) then OldSpeed := OldSpeed * 1.3;
       if Artefacts.Count > 0 then
       begin
-        if CountActiveArtefacts(Ord(t_ArtefactSpeed)) > 0 then
-          OldSpeed := OldSpeed * Math.Power(SpeedArtefactFactor + SpeedArtefactBoostFactor * ShortInt(CanBoostArtefact(Ord(t_ArtefactSpeed), nil, False)), CountActiveArtefacts(Ord(t_ArtefactSpeed)));
-        if CountActiveArtefacts(Ord(t_ArtWeaponToSpeed)) > 0 then
-          OldSpeed := OldSpeed + CountActiveArtefacts(Ord(t_ArtWeaponToSpeed)) * (WeaponToSpeedArtefactBonus + WeaponToSpeedArtefactBoost * Byte(CanBoostArtefact(Ord(t_ArtWeaponToSpeed), GetEngine, False)));
+        if CountActiveArtefacts(t_ArtefactSpeed) > 0 then
+          OldSpeed := OldSpeed * Math.Power(SpeedArtefactFactor + SpeedArtefactBoostFactor * ShortInt(CanBoostArtefact(t_ArtefactSpeed, nil, False)), CountActiveArtefacts(t_ArtefactSpeed));
+        if CountActiveArtefacts(t_ArtWeaponToSpeed) > 0 then
+          OldSpeed := OldSpeed + CountActiveArtefacts(t_ArtWeaponToSpeed) * (WeaponToSpeedArtefactBonus + WeaponToSpeedArtefactBoost * Byte(CanBoostArtefact(t_ArtWeaponToSpeed, GetEngine, False)));
       end;
     end;
     OldSpeed := Max(167.0, OldSpeed + GetTotalStatBonus(bonSpeed));
@@ -13958,7 +13959,7 @@ var
   I: Integer;
 begin
   Result := 0.1 * Strength + 5;
-  for I := 1 to CountActiveArtefacts(Ord(t_ArtefactHull)) do Result := Result * (HullArtefactStatusDecayFactor + ShortInt(CanBoostArtefact(Ord(t_ArtefactHull), nil, False)) * HullArtefactBoostStatusDecay);
+  for I := 1 to CountActiveArtefacts(t_ArtefactHull) do Result := Result * (HullArtefactStatusDecayFactor + ShortInt(CanBoostArtefact(t_ArtefactHull, nil, False)) * HullArtefactBoostStatusDecay);
   if (TypeId = stKling) and (Ord((Self as TKling).KlingType) = 0) then Result := Result * 2;
 end;
 { @end $77DF7C }
@@ -13970,7 +13971,7 @@ var
 begin
   Result := 0.2;
   if IsEquipmentUsable(GetRepairRobot) then Result := 0.2 + Result;
-  for I := 1 to CountActiveArtefacts(Ord(t_ArtefactDroid)) do Result := Result * (DroidArtefactStatusDecayFactor + ShortInt(CanBoostArtefact(Ord(t_ArtefactDroid), nil, False)) * DroidArtefactBoostStatusDecay);
+  for I := 1 to CountActiveArtefacts(t_ArtefactDroid) do Result := Result * (DroidArtefactStatusDecayFactor + ShortInt(CanBoostArtefact(t_ArtefactDroid, nil, False)) * DroidArtefactBoostStatusDecay);
   if (TypeId = stKling) and (Ord((Self as TKling).KlingType) = 0) then Result := Result * 2;
 end;
 { @end $77E030 }

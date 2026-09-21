@@ -1033,12 +1033,12 @@ end;
 { @routine $509D44 CheatDevice }
 procedure CheatDevice;
 var
-  Kind: Byte;
+  Kind: TItemType;
 begin
   if (Galaxy <> nil) and (GetPlayer <> nil) then
   begin
-    for Kind := 43 to 49 do
-      GetPlayer.Inventory.Add(CreateGeneratedEquipment(TItemType(Kind),
+    for Kind := t_FuelTanks to t_DefGenerator do
+      GetPlayer.Inventory.Add(CreateGeneratedEquipment(Kind,
         Round(GetAverageItemSize(Kind) * EquipmentSizeFactors[5]), 8, GetPlayer.OwnerId));
     ReportCheat(10, DecodeTextW('DREAVNIYCHER')); // 'DEVICE'
   end;

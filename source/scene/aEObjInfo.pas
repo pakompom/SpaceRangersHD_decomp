@@ -262,7 +262,7 @@ begin
               if Relation <> rlHostile then Ships[Index].Relation := Relation;
             end;
       Stage := 27;
-      if (GetPlayer <> Ship) and not (Ship is TRuins) and (GetPlayer.CountActiveArtefacts(Ord(t_ArtefactAnalyzer)) > 0) and
+      if (GetPlayer <> Ship) and not (Ship is TRuins) and (GetPlayer.CountActiveArtefacts(t_ArtefactAnalyzer) > 0) and
         GetPlayer.CanResolveObjectWithScanner(Ship) then
         Ships[Index].WinChance := GetPlayer.GetWinChancePercent(Ship)
       else Ships[Index].WinChance := -1;

@@ -1352,7 +1352,7 @@ begin
   end;
   (GetByName('InfoShipDef') as TLabelGI).SetText(Text);
   (GetByName('InfoShipRel') as TLabelGI).SetText(Ship.GetRelationLevelTextToShip(GetPlayer));
-  if (GetPlayer <> Ship) and not (Ship is TRuins) and (GetPlayer.CountActiveArtefacts(Ord(t_ArtefactAnalyzer)) > 0) and GetPlayer.CanResolveObjectWithScanner(Ship) then
+  if (GetPlayer <> Ship) and not (Ship is TRuins) and (GetPlayer.CountActiveArtefacts(t_ArtefactAnalyzer) > 0) and GetPlayer.CanResolveObjectWithScanner(Ship) then
   begin
     (GetByName('ISWin') as TLabelGI).SetActive(True);
     (GetByName('InfoShipWin') as TLabelGI).SetActive(True);

@@ -12,7 +12,7 @@ const
   EquipmentSecondaryFireFlag = $80;
 
 type
-  TItemTypeNameTable = array[0..75] of WideString;
+  TItemTypeNameTable = array[TItemType] of WideString;
   PItemTypeNameTable = ^TItemTypeNameTable;
 
   TItemLootPool = (
@@ -5700,7 +5700,7 @@ var
 begin
   Self.ItemType := ItemType;
   OwnerId := Owner;
-  if not (Self.ItemType in [t_Artefact..t_Artefact2]) then Weight := GetAverageItemSize(Ord(Self.ItemType));
+  if not (Self.ItemType in [t_Artefact..t_Artefact2]) then Weight := GetAverageItemSize(Self.ItemType);
   case ItemType of
     t_ArtefactHull:
       begin
@@ -6443,7 +6443,7 @@ begin
   else if GetInnermostScreenLoop = ScannerScreen then Ship := ScannerScreen.ShipToInspect
   else if GetInnermostScreenLoop = ShipScreen then Ship := PlayerHoldShip;
   if Ship = nil then Exit;
-  if Ship.CanBoostArtefact(Ord(GetEffectiveType), nil, True) then
+  if Ship.CanBoostArtefact(GetEffectiveType, nil, True) then
   begin
     if EquippedFlag <> 0 then
       Result := #13#10' '#13#10 + LocalizedColorText('Artefacts.TextArtGettingBoost')
@@ -6452,7 +6452,7 @@ begin
   end
   else
     for I := 0 to Ship.Inventory.Count - 1 do
-      if Ship.CanBoostArtefact(Ord(GetEffectiveType), TEquipment(Ship.Inventory[I]), True) then
+      if Ship.CanBoostArtefact(GetEffectiveType, TEquipment(Ship.Inventory[I]), True) then
       begin
         Result := #13#10' '#13#10 + LocalizedColorText('Artefacts.TextArtCanGetBoost');
         Break;

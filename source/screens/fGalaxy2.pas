@@ -547,7 +547,7 @@ begin
   end;
   with GetByName('RadarDetect') as TCircleGI do
   begin
-    if (GetPlayer.GetRadar <> nil) and (GetPlayer.CountActiveArtefacts(Ord(t_ArtefactRadar)) > 0) then
+    if (GetPlayer.GetRadar <> nil) and (GetPlayer.CountActiveArtefacts(t_ArtefactRadar) > 0) then
     begin
       SetActive(True);
       SetCenter(ToAbsolutePoint(GalaxyPointToMapPoint(GetPlayer.CurrentStar.Position)));
@@ -669,7 +669,7 @@ function TfGalaxy2.CanShowExtendedRadarInfo(Star: TStar): Boolean;
 var First, Second: TPointF;
 begin
   Result := False;
-  if (GetPlayer.GetRadar <> nil) and (GetPlayer.CountActiveArtefacts(Ord(t_ArtefactRadar)) > 0) then
+  if (GetPlayer.GetRadar <> nil) and (GetPlayer.CountActiveArtefacts(t_ArtefactRadar) > 0) then
   begin
     First := Star.Position;
     Second := GetPlayer.CurrentStar.Position;

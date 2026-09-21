@@ -1175,7 +1175,7 @@ begin
       end;
       if GetPlayer <> nil then
       begin
-        Item := GetPlayer.FindEquippedItemInSlot(Ord(t_Weapon1), Value - 1) as TWeapon;
+        Item := GetPlayer.FindEquippedItemInSlot(t_Weapon1, Value - 1) as TWeapon;
         if GetPlayer.GetSlotCount(sskWeapon) <= Value - 1 then
           Button.SetImageDisabledPath('GI,Bm.FormAB2.' + GiResourceSuffix + 'W' + IntToStr(Value) + 'H')
         else if Item = nil then
@@ -1188,10 +1188,10 @@ begin
       WeaponSecondaryImages[Value - 1].SetActive(False);
       with WeaponIcons[Value - 1] do
       begin
-        if (GetPlayer <> nil) and (GetPlayer.FindEquippedItemInSlot(Ord(t_Weapon1), Value - 1) <> nil) then
+        if (GetPlayer <> nil) and (GetPlayer.FindEquippedItemInSlot(t_Weapon1, Value - 1) <> nil) then
         begin
           WeaponIcons[Value - 1].SetActive(True);
-          SetImagePath('GI,' + GetPlayer.FindEquippedItemInSlot(Ord(t_Weapon1), Value - 1).GetBitmapResourceName + 's');
+          SetImagePath('GI,' + GetPlayer.FindEquippedItemInSlot(t_Weapon1, Value - 1).GetBitmapResourceName + 's');
         end
         else if Button.UserIndex >= 0 then
         begin
@@ -1212,9 +1212,9 @@ begin
       WeaponButtons[SlotIndex].HelpCallback := UpdateHelp;
       if WeaponButtons[SlotIndex].UserState = 0 then
         WeaponButtons[SlotIndex].UserState := Integer(TImageGI.Create(WeaponButtons[SlotIndex]));
-      if (GetPlayer <> nil) and (GetPlayer.FindEquippedItemInSlot(Ord(t_Weapon1), SlotIndex) <> nil) then
+      if (GetPlayer <> nil) and (GetPlayer.FindEquippedItemInSlot(t_Weapon1, SlotIndex) <> nil) then
       begin
-        Item := GetPlayer.FindEquippedItemInSlot(Ord(t_Weapon1), SlotIndex) as TWeapon;
+        Item := GetPlayer.FindEquippedItemInSlot(t_Weapon1, SlotIndex) as TWeapon;
         MicroModule := Item.MicroModuleIndex;
         Item.MicroModuleIndex := 0;
         WeaponName := Item.GetShortName;
@@ -1447,7 +1447,7 @@ begin
       PlayerArcadeShip.Weapons[Index].SlotData := PlayerArcadeShip.Weapons[Index].SlotData xor EquipmentSecondaryFireFlag;
       if Galaxy <> nil then Galaxy.CheckIntegrityChecksum1(640);
       if GetPlayer <> nil then
-        with GetPlayer.FindEquippedItemInSlot(Ord(t_Weapon1), PlayerArcadeShip.Weapons[Index].SlotData and EquipmentSlotIndexMask) as TWeapon do
+        with GetPlayer.FindEquippedItemInSlot(t_Weapon1, PlayerArcadeShip.Weapons[Index].SlotData and EquipmentSlotIndexMask) as TWeapon do
           AssignedSlotData := PlayerArcadeShip.Weapons[Index].SlotData;
       NormalizeWeaponSelection;
       UpdateWeaponPanel;
@@ -3197,7 +3197,7 @@ var
   Item: TItem;
   UnusedRecord: record Reserved: Integer; end; // Native unused four-byte slot before the temporary point records.
 begin
-  if (PlayerArcadeShip = nil) or ((GetPlayer <> nil) and (GetPlayer.CountActiveArtefacts(Ord(t_ArtefactScaner)) <= 0)) or
+  if (PlayerArcadeShip = nil) or ((GetPlayer <> nil) and (GetPlayer.CountActiveArtefacts(t_ArtefactScaner) <= 0)) or
     (ExitCode <> 0) or (ArcadeViewMode = 5) then
   begin
     for Index := 0 to 7 do ClearEnemyStatus(Index);
@@ -3255,7 +3255,7 @@ begin
               SetDepth(1);
             end;
           end;
-          if (GetPlayer <> nil) and (GetPlayer.CountActiveArtefacts(Ord(t_ArtefactAnalyzer)) <= 0) then
+          if (GetPlayer <> nil) and (GetPlayer.CountActiveArtefacts(t_ArtefactAnalyzer) <= 0) then
             if EnemyRewardIcons[Index] <> nil then
             begin
               EnemyRewardIcons[Index].Free;
@@ -3263,7 +3263,7 @@ begin
               EnemyRewardBackdrops[Index].Free;
               EnemyRewardBackdrops[Index] := nil;
             end;
-          if (GetPlayer <> nil) and (GetPlayer.CountActiveArtefacts(Ord(t_ArtefactAnalyzer)) > 0) and (EnemyRewardIcons[Index] = nil) then
+          if (GetPlayer <> nil) and (GetPlayer.CountActiveArtefacts(t_ArtefactAnalyzer) > 0) and (EnemyRewardIcons[Index] = nil) then
           begin
             EnemyRewardBackdrops[Index] := TImageGI.Create(MapPanel);
             with EnemyRewardBackdrops[Index] as TImageGI do
@@ -3373,7 +3373,7 @@ begin
           begin
             with EnemyRewardIcons[Index] as TImageGI do
             begin
-              if GetPlayer.CountActiveArtefacts(Ord(t_ArtefactAnalyzer)) <= 0 then
+              if GetPlayer.CountActiveArtefacts(t_ArtefactAnalyzer) <= 0 then
               begin
                 EnemyRewardIcons[Index].Free;
                 EnemyRewardIcons[Index] := nil;
@@ -4026,7 +4026,7 @@ begin
         Obj := Space.Objects[Index];
         if Obj is TabShipAI then Inc(ShipCount);
       end;
-      if (GetPlayer <> nil) and (GetPlayer.CountActiveArtefacts(Ord(t_ArtefactAnalyzer)) > 0) then Text := IntToStr(ShipCount)
+      if (GetPlayer <> nil) and (GetPlayer.CountActiveArtefacts(t_ArtefactAnalyzer) > 0) then Text := IntToStr(ShipCount)
       else Text := LocalizedColorText('FormAB.Unknow');
       (GetByName('InfoPirate') as TLabelGI).SetText(Text);
       with GetByName('InfoPlanetImage') as TGraphBufGI do
@@ -4276,7 +4276,7 @@ begin
     SlotCount := GetPlayer.GetSlotCount(sskWeapon);
     for SlotIndex := 0 to SlotCount - 1 do
     begin
-      Item := GetPlayer.FindEquippedItemInSlot(Ord(t_Weapon1), SlotIndex) as TWeapon;
+      Item := GetPlayer.FindEquippedItemInSlot(t_Weapon1, SlotIndex) as TWeapon;
       if GetPlayer.IsEquipmentUsable(Item) then
       begin
         if (CampaignWeapons[PlayerArcadeShip.WeaponCount] <> Item) or

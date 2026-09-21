@@ -903,7 +903,7 @@ begin
       if ((((Entry.TerrainKind = ptWater) and (GetPlayer.CurrentPlanet.WaterExplored >= Entry.SurfaceTileIndex)) or
            ((Entry.TerrainKind = ptLand) and (GetPlayer.CurrentPlanet.LandExplored >= Entry.SurfaceTileIndex)) or
            ((Entry.TerrainKind = ptHill) and (GetPlayer.CurrentPlanet.HillExplored >= Entry.SurfaceTileIndex))) and not Entry.Unavailable) or
-         ((GetPlayer.CountActiveArtefacts(Ord(t_ArtefactAnalyzer)) > 0) and (Entry.Item is TEquipmentWithActCode) and TEquipmentWithActCode(Entry.Item).DisplayAsArtefact) then
+         ((GetPlayer.CountActiveArtefacts(t_ArtefactAnalyzer) > 0) and (Entry.Item is TEquipmentWithActCode) and TEquipmentWithActCode(Entry.Item).DisplayAsArtefact) then
       begin
         if not (((Entry.TerrainKind = ptWater) and (GetPlayer.CurrentPlanet.WaterExplored >= Entry.SurfaceTileIndex)) or
                 ((Entry.TerrainKind = ptLand) and (GetPlayer.CurrentPlanet.LandExplored >= Entry.SurfaceTileIndex)) or

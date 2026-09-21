@@ -98,7 +98,7 @@ type
     procedure RegenerateSatelliteOffer; // @addr 0x716D90 @note "Invalidates TargetPlanet on the existing offer."
     procedure RefreshShopInventory; // @addr 0x717024 @note "Disabled in modes 1 and 3; otherwise follows the station's weekly schedule after initial setup."
     function CalculateEquipmentShopTargetCount: Integer; // @addr 0x717278 @note "Returns 10..18; advances the station RNG state."
-    function CountEquipmentShopItems(ItemType: Byte): Integer; // @addr 0x717318 @note "Bucket 50 includes all weapon item types 50..68."
+    function CountEquipmentShopItems(ItemType: TItemType): Integer; // @addr 0x717318 @note "Bucket 50 includes all weapon item types 50..68."
     function FindMostExpensiveShopItem(MinCost, MaxCost: Integer): TItem; // @addr 0x717390 @note "Excludes hulls; inclusive cost bounds. Borrowed result, nil when absent."
     function RemoveSimilarShopItem(Item: TEquipment): Boolean; // @addr 0x71742C @note "Frees at most one existing offer matching type and level; never inserts Item. May also compare size when below the target shop count."
     function SelectEquipmentOfferSpecialMicroModule(Item: TEquipment; Planet: TPlanet): Integer; // @addr 0x717710 @note "Returns a zero-based module index or -1; advances the station RNG."
@@ -108,7 +108,7 @@ type
     function GeneratePlanetHullOffer(Ship: TObject; Planet: TPlanet): THull; // @addr 0x71AD84 @note "Type-13 fallback through the planet's hull generator; may apply a special module."
     function GenerateHullOffer(Ship: TObject; Planet: TPlanet): THull; // @addr 0x71AE50 @note "Returns a newly allocated offer or nil; Planet supplies local technology."
     function GenerateWeaponOffer(Ship: TObject; Planet: TPlanet): TWeapon; // @addr 0x71B540 @note "Chooses the weapon type; returns a newly allocated offer or nil."
-    function GenerateEquipmentOffer(Ship: TObject; Planet: TPlanet; ItemType: Byte): TEquipment; // @addr 0x71B938 @note "Accepts types 42..68; weapon types all select the weapon generator. Does not insert the result into EquipmentShop."
+    function GenerateEquipmentOffer(Ship: TObject; Planet: TPlanet; ItemType: TItemType): TEquipment; // @addr 0x71B938 @note "Accepts types 42..68; weapon types all select the weapon generator. Does not insert the result into EquipmentShop."
     function GenerateEquipmentOfferBatch(Ship: TShip; UnusedForceGeneratedOffers: Boolean): TObjectList; // @addr 0x71BF18 @note "Returns a new owning list of offers. Ignores the Boolean argument."
     procedure UpdateGoodsMarketState; // @addr 0x71C0A8 @note "Does nothing in modes 1 and 2."
     procedure ForceGoodsForSale(GoodsMask: TItemTypeMask); // @addr 0x719F44 @ida "void __usercall $name(TRuins *Self@<eax>, TItemTypeMask *GoodsMask@<edx>);" @note "Script.GoodsRuinsForBuy. Restocks selected goods and sets prices near the global minimum."
@@ -197,7 +197,7 @@ const
     [htTransport..htDiplomat],
     [htPirate]); // @addr $87C218
   StationOfferWeaponLevelBonus: array[6..13] of Integer = (1,1,2,1,1,1,2,1); // @addr $87C228
-  StationOfferEquipmentLevelBonus: array[6..13,43..49] of Integer = (
+  StationOfferEquipmentLevelBonus: array[6..13,t_FuelTanks..t_DefGenerator] of Integer = (
     (1,0,1,0,0,0,0), (0,0,0,0,0,1,0), (0,0,0,0,0,0,0), (0,0,0,1,0,1,0),
     (0,0,0,0,0,1,0), (0,0,0,0,0,1,0), (0,0,0,0,0,1,0), (0,0,0,0,0,0,0)); // @addr $87C248
 
@@ -352,13 +352,13 @@ begin
   CreateAndEquipRepairRobot(RandomStationEquipmentSize(RepairRobotBaseSize),
     Galaxy.ScaleIntByTechLevel(1, NextRandomIntRange(StationRepairLevels[TypeId].Minimum, StationRepairLevels[TypeId].Maximum, RandomState)), EquipmentOwner);
   if (WeaponInfos[StationWeaponTypes[TypeId, 2]].TechLevel <= Galaxy.TechLevel) and (NextRandomUnitFloat(RandomState) > 0.6) then
-    Weapon := CreateAndEquipWeapon(Ord(StationWeaponTypes[TypeId, 2]), RandomStationEquipmentSize(WeaponInfos[StationWeaponTypes[TypeId, 2]].AverageSize),
+    Weapon := CreateAndEquipWeapon(StationWeaponTypes[TypeId, 2], RandomStationEquipmentSize(WeaponInfos[StationWeaponTypes[TypeId, 2]].AverageSize),
       Galaxy.ScaleIntByTechLevel(StationWeaponGeneration[TypeId].AdvancedLevel, NextRandomIntRange(StationWeaponGeneration[TypeId].AdvancedLevel + 1, 8, RandomState)), EquipmentOwner)
   else if (WeaponInfos[StationWeaponTypes[TypeId, 1]].TechLevel <= Galaxy.TechLevel) and (NextRandomUnitFloat(RandomState) > 0.6) then
-    Weapon := CreateAndEquipWeapon(Ord(StationWeaponTypes[TypeId, 1]), RandomStationEquipmentSize(WeaponInfos[StationWeaponTypes[TypeId, 1]].AverageSize),
+    Weapon := CreateAndEquipWeapon(StationWeaponTypes[TypeId, 1], RandomStationEquipmentSize(WeaponInfos[StationWeaponTypes[TypeId, 1]].AverageSize),
       Galaxy.ScaleIntByTechLevel(StationWeaponGeneration[TypeId].IntermediateLevel, NextRandomIntRange(StationWeaponGeneration[TypeId].IntermediateLevel + 1, 8, RandomState)), EquipmentOwner)
   else
-    Weapon := CreateAndEquipWeapon(Ord(StationWeaponTypes[TypeId, 0]), RandomStationEquipmentSize(WeaponInfos[StationWeaponTypes[TypeId, 0]].AverageSize),
+    Weapon := CreateAndEquipWeapon(StationWeaponTypes[TypeId, 0], RandomStationEquipmentSize(WeaponInfos[StationWeaponTypes[TypeId, 0]].AverageSize),
       Galaxy.ScaleIntByTechLevel(StationWeaponGeneration[TypeId].BasicLevel, NextRandomIntRange(StationWeaponGeneration[TypeId].BasicLevel + 1, 8, RandomState)), EquipmentOwner);
   Weapon.Range := Max(Weapon.Range, StationWeaponGeneration[TypeId].MinimumRange);
   if TypeId = Byte(rstDominion) then
@@ -912,8 +912,8 @@ end;
 
 { @routine $717024 TRuins_RefreshShopInventory }
 procedure TRuins.RefreshShopInventory;
-type TQuotas = array[42..50] of Integer;
-var I, Attempts, Added: Integer; Item: TEquipment; Kind: Byte; Planet: TPlanet;
+type TQuotas = array[t_Hull..t_Weapon1] of Integer;
+var I, Attempts, Added: Integer; Item: TEquipment; Kind: TItemType; Planet: TPlanet;
 begin
   if ShopUpdateMode in [sumDisabled, sumGoodsOnly] then Exit;
   if (Galaxy.CurrentTurn > CreationTurn + 1) and (Integer(Seed + Cardinal(Galaxy.CurrentTurn)) mod 7 <> 0) then Exit;
@@ -939,7 +939,7 @@ begin
     Attempts := 0;
     repeat
       Inc(Attempts);
-      Kind := SeededRandomIntRange(42, 50, (Seed * Cardinal(Galaxy.CurrentTurn)) * 175 + Cardinal(Attempts));
+      Kind := TItemType(SeededRandomIntRange(Ord(t_Hull), Ord(t_Weapon1), (Seed * Cardinal(Galaxy.CurrentTurn)) * 175 + Cardinal(Attempts)));
     until (Attempts > 20) or (CountEquipmentShopItems(Kind) < TQuotas(StationEquipmentOfferQuotas[TypeId])[Kind]);
     Item := GenerateEquipmentOffer(GetPlayer, Planet, Kind);
     if Item <> nil then
@@ -953,18 +953,18 @@ end;
 
 { @routine $717278 TRuins_CalculateEquipmentShopTargetCount }
 function TRuins.CalculateEquipmentShopTargetCount: Integer;
-type TQuotas = array[42..50] of Integer;
-var Count: Integer; Kind: Byte;
+type TQuotas = array[t_Hull..t_Weapon1] of Integer;
+var Count: Integer; Kind: TItemType;
 begin
   Count := 0;
-  for Kind := 42 to 50 do Inc(Count, TQuotas(StationEquipmentOfferQuotas[TypeId])[Kind]);
+  for Kind := t_Hull to t_Weapon1 do Inc(Count, TQuotas(StationEquipmentOfferQuotas[TypeId])[Kind]);
   Result := Round(Count + NextRandomIntRange(-2, 2, RandomState));
   Result := Max(10, Min(Result, 18));
 end;
 { @end $717278 }
 
 { @routine $717318 TRuins_CountEquipmentShopItems }
-function TRuins.CountEquipmentShopItems(ItemType: Byte): Integer;
+function TRuins.CountEquipmentShopItems(ItemType: TItemType): Integer;
 var I, Count: Integer; Item: TItem;
 begin
   Count := 0;
@@ -972,7 +972,7 @@ begin
   begin
     Item := TItem(EquipmentShop[I]);
     // The t_Weapon1 shop bucket counts every weapon subtype.
-    if (Byte(Item.ItemType) = ItemType) or ((Item.ItemType in [t_Weapon1..t_CustomWeapon]) and (ItemType = Byte(t_Weapon1))) then Inc(Count);
+    if (Item.ItemType = ItemType) or ((Item.ItemType in [t_Weapon1..t_CustomWeapon]) and (ItemType = t_Weapon1)) then Inc(Count);
   end;
   Result := Count;
 end;
@@ -1347,7 +1347,7 @@ begin
   if Cardinal(OrderStateData) <= 1 then Exit;
   if Ship.ScriptShip <> nil then Exit;
   if Ship.HasScriptControl then Exit;
-  if Ship.CountActiveArtefacts(Ord(t_ArtGiperJump)) > 0 then Exit;
+  if Ship.CountActiveArtefacts(t_ArtGiperJump) > 0 then Exit;
   if not (Ship is TNormalShip) then Exit;
   Candidate := TNormalShip(Ship);
   if Candidate.AbductedByPirateClan then Exit;
@@ -1980,7 +1980,7 @@ begin
     if Flagship then HullType := htFlagship;
     if (GetPlayer = Buyer) or (Buyer.GetHull.HullType = htSpecial) or (Buyer.GetHull.HullType = HullType) then
     begin
-      MaxLevel := Planet.InventionLevels[EquipmentInventionIndices[Ord(t_Hull)]];
+      MaxLevel := Planet.InventionLevels[EquipmentInventionIndices[t_Hull]];
       MinLevel := Max(1, MaxLevel div 2 - 1);
       MaxLevel := Min(8, MaxLevel + StationOfferHullLevelBonus[TypeId]);
       case Galaxy.GetHullGrowthMod of
@@ -2108,15 +2108,15 @@ end;
 { @end $71B540 }
 
 { @routine $71B938 TRuins_GenerateEquipmentOffer }
-function TRuins.GenerateEquipmentOffer(Ship: TObject; Planet: TPlanet; ItemType: Byte): TEquipment;
+function TRuins.GenerateEquipmentOffer(Ship: TObject; Planet: TPlanet; ItemType: TItemType): TEquipment;
 var Buyer: TShip; Attempts, Priority, ModuleIndex, MinLevel, MaxLevel, MinSize, MaxSize, SpecialModule: Integer; Owner: TOwnerId;
 begin
   Result := nil;
   if (Ship = nil) or not (Ship is TShip) then Exit;
   Buyer := TShip(Ship);
-  if ItemType in [Ord(t_FuelTanks)..Ord(t_DefGenerator)] then
+  if ItemType in [t_FuelTanks..t_DefGenerator] then
   begin
-    if not (ItemType in [Ord(t_FuelTanks),Ord(t_Engine)]) and (Buyer.GetSlotCountForItemType(ItemType) = 0) and (GetPlayer <> Buyer) then Exit;
+    if not (ItemType in [t_FuelTanks,t_Engine]) and (Buyer.GetSlotCountForItemType(ItemType) = 0) and (GetPlayer <> Buyer) then Exit;
     MinLevel := 1;
     MaxLevel := Planet.InventionLevels[EquipmentInventionIndices[ItemType]];
     MinLevel := Max(MinLevel, MaxLevel div 2 - 1);
@@ -2131,15 +2131,15 @@ begin
     Owner := PickRandomEquipmentOwner(RandomState);
     if (CurrentStar.ControlFaction = sfPirates) and (CurrentStanding in FactionStandingMasks[sfPirates]) and
        ((NextRandomIntRange(1, 100, RandomState) < 70) or (Galaxy.CoalitionDefeatedTurn <> 0)) then Owner := oiPirate;
-    Result := CreateGeneratedEquipment(TItemType(ItemType), NextRandomIntRange(MinSize, MaxSize, RandomState), NextRandomIntRange(MinLevel, MaxLevel, RandomState), Owner);
+    Result := CreateGeneratedEquipment(ItemType, NextRandomIntRange(MinSize, MaxSize, RandomState), NextRandomIntRange(MinLevel, MaxLevel, RandomState), Owner);
     if Buyer.CanGenerateMicroModuleForLoadout then
     begin
       SpecialModule := SelectEquipmentOfferSpecialMicroModule(Result, Planet);
       if SpecialModule >= 0 then ApplySpecialMicroModule(SpecialModule, Result);
     end;
   end
-  else if ItemType in [Ord(t_Weapon1)..Ord(t_CustomWeapon)] then Result := GenerateWeaponOffer(Ship, Planet)
-  else if ItemType = Byte(t_Hull) then Result := GenerateHullOffer(Ship, Planet);
+  else if ItemType in [t_Weapon1..t_CustomWeapon] then Result := GenerateWeaponOffer(Ship, Planet)
+  else if ItemType = t_Hull then Result := GenerateHullOffer(Ship, Planet);
   if Result = nil then Exit;
   case TypeId of
     Ord(rstBusinessCenter):
@@ -2188,23 +2188,23 @@ end;
 
 { @routine $71BF18 TRuins_GenerateEquipmentOfferBatch }
 function TRuins.GenerateEquipmentOfferBatch(Ship: TShip; UnusedForceGeneratedOffers: Boolean): TObjectList;
-type TQuotasByItemType = array[42..50] of Integer;
+type TQuotasByItemType = array[t_Hull..t_Weapon1] of Integer;
 var
   Item: TEquipment;
   I, J: Integer;
-  Kind: Byte;
+  Kind: TItemType;
   Planet: TPlanet;
 begin
   Result := TObjectList.Create;
   for J := 1 to StationEquipmentOfferQuotas[TypeId].Hulls do
   begin
     Planet := TPlanet(CurrentStar.SelectRandomInhabitedPlanet);
-    Item := GenerateEquipmentOffer(Ship, Planet, Ord(t_Hull));
+    Item := GenerateEquipmentOffer(Ship, Planet, t_Hull);
     if Item <> nil then Result.Add(Item);
   end;
   for I := 1 to CountItemTypesInMask([Ord(t_FuelTanks)..Ord(t_DefGenerator)]) do
   begin
-    Kind := GetItemTypeFromMask([Ord(t_FuelTanks)..Ord(t_DefGenerator)], I);
+    Kind := TItemType(GetItemTypeFromMask([Ord(t_FuelTanks)..Ord(t_DefGenerator)], I));
     for J := 1 to TQuotasByItemType(StationEquipmentOfferQuotas[TypeId])[Kind] do
     begin
       Planet := TPlanet(CurrentStar.SelectRandomInhabitedPlanet);
@@ -2215,7 +2215,7 @@ begin
   for I := 1 to StationEquipmentOfferQuotas[TypeId].Weapons do
   begin
     Planet := TPlanet(CurrentStar.SelectRandomInhabitedPlanet);
-    Item := GenerateEquipmentOffer(Ship, Planet, Ord(t_Weapon1));
+    Item := GenerateEquipmentOffer(Ship, Planet, t_Weapon1);
     if Item <> nil then Result.Add(Item);
   end;
 end;

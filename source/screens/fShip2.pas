@@ -26,7 +26,7 @@ type
   public
     function CanUseLocalStorage: Boolean; // @addr $6F5A10 Native Self/result stack ordering establishes this as a method.
     function GetLocalStorageOwner: TObject; // @addr $6F5A70 Borrows the current planet or docked ship.
-    function SlotToTip(SlotName: WideString): Byte; // @addr 0x6F7FBC @note "Matches the second underscore-delimited component against eight equipment slot names; raises on no match."
+    function SlotToTip(SlotName: WideString): TItemType; // @addr 0x6F7FBC @note "Matches the second underscore-delimited component against eight equipment slot names; raises on no match."
     PlayServiceAnimations: Boolean; // @offset $D5 Restarts active hull/equipment repair animations on the next OnOpen.
     ReopenRequested: Boolean; // @offset $D4 Requests a background refresh and another ship-screen pass; OnOpen selects the script re-entry events.
     ItemInfoWindow: TWindowGI; // @offset 0xD8
@@ -1837,14 +1837,14 @@ end;
 { @end $6F7FA8 }
 
 { @routine $6F7FBC TfShip2_SlotToTip }
-function TfShip2.SlotToTip(SlotName: WideString): Byte;
+function TfShip2.SlotToTip(SlotName: WideString): TItemType;
 var Name: WideString; I: Integer;
 begin
   Name := ExtractDelimitedPartW(SlotName, 1, '_');
   for I := 0 to 7 do
     if Name = EquipmentSlotLayouts[I].Name then
     begin
-      Result := Byte(EquipmentSlotLayouts[I].ItemType);
+      Result := EquipmentSlotLayouts[I].ItemType;
       Exit;
     end;
   raise Exception.Create('SlotToTip');
@@ -1866,7 +1866,7 @@ begin
   begin
     MaximumSlots := 1;
     if EquipmentSlotLayouts[I].ItemType = t_Weapon1 then MaximumSlots := 5;
-    Count := PlayerHoldShip.GetSlotCountForItemType(Byte(EquipmentSlotLayouts[I].ItemType));
+    Count := PlayerHoldShip.GetSlotCountForItemType(EquipmentSlotLayouts[I].ItemType);
     for Slot := 0 to Count - 1 do
     begin
       EquipmentSlotZones[I,Slot] := GetByName('S_' + EquipmentSlotLayouts[I].Name + '_' + IntToStr(Slot) + 'z') as TZoneGI;
@@ -1919,7 +1919,7 @@ begin
   RefreshEquipmentSlotControls;
   with GetByName('LifeLeft') as TImageGI do
   begin
-    if PlayerHoldShip.CountActiveArtefacts(Ord(t_ArtBio)) > 0 then
+    if PlayerHoldShip.CountActiveArtefacts(t_ArtBio) > 0 then
     begin
       SetActive(True);
       if PlayerHoldShip.HasActiveDisease then SetImagePath('GI,Bm.FormShip2.' + GiResourceSuffix + 'LifeRed')
@@ -1930,7 +1930,7 @@ begin
   end;
   with GetByName('LifeRight') as TImageGI do
   begin
-    if PlayerHoldShip.CountActiveArtefacts(Ord(t_ArtBio)) > 0 then
+    if PlayerHoldShip.CountActiveArtefacts(t_ArtBio) > 0 then
     begin
       SetActive(True);
       if PlayerHoldShip.HasActiveDisease then SetImagePath('GI,Bm.FormShip2.' + GiResourceSuffix + 'LifeRed')
@@ -1960,10 +1960,10 @@ begin
   end;
   for I := 0 to 7 do
   begin
-    SlotCount := PlayerHoldShip.GetSlotCountForItemType(Byte(EquipmentSlotLayouts[I].ItemType));
+    SlotCount := PlayerHoldShip.GetSlotCountForItemType(EquipmentSlotLayouts[I].ItemType);
     for Slot := 0 to SlotCount - 1 do
     begin
-      Item := PlayerHoldShip.FindEquippedItemInSlot(Byte(EquipmentSlotLayouts[I].ItemType),Slot);
+      Item := PlayerHoldShip.FindEquippedItemInSlot(EquipmentSlotLayouts[I].ItemType,Slot);
       SlotImage := GetByName('S_' + EquipmentSlotLayouts[I].Name + '_' + IntToStr(Slot) + 'i') as TImageGI;
       if SlotImage.UserValue = 0 then
       begin
@@ -2018,7 +2018,7 @@ begin
       else if (SelectedHoldKind = phkGoods) and (Item <> nil) and (Item.ScriptItem <> nil) and (TScriptItem(Item.ScriptItem).RunActionCode(satOnCheckingUsabilityGoods,PlayerHoldShip,TObject(SelectedGoodsIndex),TObject(SelectedGoodsQuantity),0) > 0) then Highlight := True
       else if (SelectedHoldKind = phkEquipment) and (SelectedHoldItem.ItemType = t_Cistern) and (Item <> nil) and (Item.ItemType = t_FuelTanks) and ((SelectedHoldItem as TCistern).Fuel > 0) and ((Item as TFuelTanks).Fuel < (Item as TFuelTanks).Capacity) then Highlight := True
       else Highlight := (SelectedHoldKind = phkEquipment) and IsCompatibleSlot(SelectedHoldItem.ItemType,EquipmentSlotLayouts[I].ItemType);
-      Boost := (SelectedHoldKind = phkArtefact) and (SelectedHoldItem is TArtefact) and PlayerHoldShip.IsEquipmentUsable(Item) and PlayerHoldShip.CanBoostArtefact(Byte(TArtefact(SelectedHoldItem).GetEffectiveType),Item,True);
+      Boost := (SelectedHoldKind = phkArtefact) and (SelectedHoldItem is TArtefact) and PlayerHoldShip.IsEquipmentUsable(Item) and PlayerHoldShip.CanBoostArtefact(TArtefact(SelectedHoldItem).GetEffectiveType,Item,True);
       if Highlight and (Item <> nil) and (Item.NoDropFlag > 0) then Highlight := False;
       GetByName('S_' + EquipmentSlotLayouts[I].Name + '_' + IntToStr(Slot) + 'a').SetActive(Highlight and not Boost);
       GetByName('S_' + EquipmentSlotLayouts[I].Name + '_' + IntToStr(Slot) + 'n').SetActive((Item <> nil) and not Highlight and PlayerHoldShip.IsEquipmentUsable(Item) and not Boost);
@@ -2034,10 +2034,10 @@ begin
       for Slot := SlotCount to 0 do
         (GetByName('S_' + EquipmentSlotLayouts[I].Name + '_' + IntToStr(Slot) + 'z') as TZoneGI).ZoneMouseDownCallback := nil;
   end;
-  SlotCount := PlayerHoldShip.GetSlotCountForItemType(Ord(t_Artefact));
+  SlotCount := PlayerHoldShip.GetSlotCountForItemType(t_Artefact);
   for Slot := 0 to SlotCount - 1 do
   begin
-    Artefact := PlayerHoldShip.FindEquippedItemInSlot(Ord(t_Artefact),Slot) as TArtefact;
+    Artefact := PlayerHoldShip.FindEquippedItemInSlot(t_Artefact,Slot) as TArtefact;
     Highlight := (SelectedHoldKind = phkArtefact) and (SelectedHoldItem.ItemType in [t_Artefact..t_ArtefactAntigrav,t_ArtDefToEnergy..t_ArtGiperJump,t_ArtDefToArms1..t_ArtFastRacks]);
     DuplicateSlot := -1;
     if Highlight and not Galaxy.AreDuplicateArtefactsEnabled then
@@ -2061,8 +2061,8 @@ begin
     end;
     if (DuplicateSlot >= 0) and (Slot <> DuplicateSlot) then Highlight := False;
     if not Highlight and (Artefact <> nil) and (Artefact.BrokenFlag = 0) and
-      (PlayerHoldShip.CanBoostArtefact(Byte(Artefact.GetEffectiveType),nil,False) or
-      ((SelectedHoldKind = phkEquipment) and (SelectedHoldItem is TEquipment) and PlayerHoldShip.CanBoostArtefact(Byte(Artefact.GetEffectiveType),TEquipment(SelectedHoldItem),True))) then Boost := True else Boost := False;
+      (PlayerHoldShip.CanBoostArtefact(Artefact.GetEffectiveType,nil,False) or
+      ((SelectedHoldKind = phkEquipment) and (SelectedHoldItem is TEquipment) and PlayerHoldShip.CanBoostArtefact(Artefact.GetEffectiveType,TEquipment(SelectedHoldItem),True))) then Boost := True else Boost := False;
     if Highlight and (Artefact <> nil) and (Artefact.NoDropFlag > 0) then Highlight := False;
     GetByName('Art' + IntToStr(Slot) + 'n').SetActive((Artefact <> nil) and not Highlight and (Artefact.BrokenFlag = 0) and not Boost);
     GetByName('Art' + IntToStr(Slot) + 'b').SetActive((Artefact <> nil) and not Highlight and (Artefact.BrokenFlag <> 0) and not Boost);
@@ -2172,7 +2172,7 @@ begin
   else if ((SelectedHoldKind in [phkEquipment,phkArtefact]) and (PlayerHoldShip.GetHull.ScriptItem <> nil) and (TScriptItem(PlayerHoldShip.GetHull.ScriptItem).RunActionCode(satOnCheckingUsability2,PlayerHoldShip,SelectedHoldItem,nil,0) > 0)) then GetByName('HullA').SetActive(True)
   else if ((SelectedHoldKind = phkGoods) and (PlayerHoldShip.GetHull.ScriptItem <> nil) and (TScriptItem(PlayerHoldShip.GetHull.ScriptItem).RunActionCode(satOnCheckingUsabilityGoods,PlayerHoldShip,TObject(SelectedGoodsIndex),TObject(SelectedGoodsQuantity),0) > 0)) then GetByName('HullA').SetActive(True)
   else GetByName('HullA').SetActive((SelectedHoldKind = phkEquipment) and (SelectedHoldItem.ItemType = t_Hull) and IsHoldNormalShip and (TItem(PlayerHoldShip.Inventory[0]).NoDropFlag = 0));
-  if (SelectedHoldKind = phkArtefact) and (SelectedHoldItem is TArtefact) and not GetByName('HullA').Active and PlayerHoldShip.CanBoostArtefact(Byte(TArtefact(SelectedHoldItem).GetEffectiveType),PlayerHoldShip.GetHull,True) then GetByName('HullEx').SetActive(True)
+  if (SelectedHoldKind = phkArtefact) and (SelectedHoldItem is TArtefact) and not GetByName('HullA').Active and PlayerHoldShip.CanBoostArtefact(TArtefact(SelectedHoldItem).GetEffectiveType,PlayerHoldShip.GetHull,True) then GetByName('HullEx').SetActive(True)
   else GetByName('HullEx').SetActive(False);
   GetByName('Forsage').SetActive(PlayerHoldShip.GetSlotCount(sskAfterburner) > 0);
   GetByName('ForsageLight').SetActive(PlayerHoldShip.AfterburnerActive and PlayerHoldShip.IsEquipmentUsable(PlayerHoldShip.GetEngine));
@@ -2407,7 +2407,7 @@ end;
 { @routine $6FCE0C TfShip2_EquipmentSlotMouseDown }
 procedure TfShip2.EquipmentSlotMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint);
 var
-  ItemType: Byte;
+  ItemType: TItemType;
   Slot, Quantity: Integer;
   Item: TEquipment;
   Text: WideString;
@@ -2476,7 +2476,7 @@ begin
       end;
     end
     else if (SelectedHoldKind = phkEquipment) and (SelectedHoldItem.ItemType = t_Cistern) and ((SelectedHoldItem as TCistern).Fuel > 0) and
-      (ItemType = Byte(t_FuelTanks)) and (PlayerHoldShip.FindEquippedItemInSlot(ItemType,Slot) <> nil) and
+      (ItemType = t_FuelTanks) and (PlayerHoldShip.FindEquippedItemInSlot(ItemType,Slot) <> nil) and
       ((PlayerHoldShip.FindEquippedItemInSlot(ItemType,Slot) as TFuelTanks).Fuel < (PlayerHoldShip.FindEquippedItemInSlot(ItemType,Slot) as TFuelTanks).Capacity) then
     begin
       Item := PlayerHoldShip.FindEquippedItemInSlot(ItemType,Slot);
@@ -2491,7 +2491,7 @@ begin
         Galaxy.PrimeIntegrityChecksum1(441);
       end;
     end
-    else if (SelectedHoldKind = phkEquipment) and IsCompatibleSlot(TItemType(ItemType),SelectedHoldItem.ItemType) then
+    else if (SelectedHoldKind = phkEquipment) and IsCompatibleSlot(ItemType,SelectedHoldItem.ItemType) then
     begin
       Item := PlayerHoldShip.FindEquippedItemInSlot(ItemType,Slot);
       if (Item <> nil) and (Item.EquippedFlag <> 0) then PlayerHoldShip.UnequipItem(Item);
@@ -2583,7 +2583,7 @@ begin
   Galaxy.CheckIntegrityChecksum1(443);
   if SelectedHoldKind = phkEmpty then
   begin
-    Equipment := PlayerHoldShip.FindEquippedItemInSlot(Ord(t_Artefact),Slot);
+    Equipment := PlayerHoldShip.FindEquippedItemInSlot(t_Artefact,Slot);
     if Equipment <> nil then
     begin
       Item := Equipment as TArtefact;
@@ -2602,7 +2602,7 @@ begin
   end
   else if SelectedHoldKind = phkArtefact then
   begin
-    Equipment := PlayerHoldShip.FindEquippedItemInSlot(Ord(t_Artefact),Slot);
+    Equipment := PlayerHoldShip.FindEquippedItemInSlot(t_Artefact,Slot);
     if (Equipment <> nil) and (Equipment.EquippedFlag <> 0) then Equipment.Unequip;
     PlayerHoldShip.Artefacts.Add(SelectedHoldItem);
     (SelectedHoldItem as TEquipment).AssignedSlotData := Slot;
@@ -2647,7 +2647,7 @@ var
 begin
   Slot := ExtractDigitsToIntW(Sender.ControlName);
   Galaxy.CheckIntegrityChecksum1(443);
-  Item := PlayerHoldShip.FindEquippedItemInSlot(Ord(t_Artefact),Slot);
+  Item := PlayerHoldShip.FindEquippedItemInSlot(t_Artefact,Slot);
   if Item = nil then Exit;
   if SelectedHoldKind in [phkGoods] then
   begin
@@ -3753,7 +3753,7 @@ begin
         else
         begin
           if ((SelectedHoldKind = phkEquipment) or (SelectedHoldKind = phkArtefact)) and
-            (PlayerHoldShip.FindEquippedItemInSlot(Byte(SelectedHoldItem.ItemType),-SelectedHoldSlot - 1) = nil) then
+            (PlayerHoldShip.FindEquippedItemInSlot(SelectedHoldItem.ItemType,-SelectedHoldSlot - 1) = nil) then
           begin
             (SelectedHoldItem as TEquipment).EquippedFlag := 0;
             (SelectedHoldItem as TEquipment).Equip;
@@ -4095,7 +4095,7 @@ var
         Index := 0;
         while Index < PlayerHoldShip.GetSlotCount(sskArtefact) do
         begin
-          Equipment := PlayerHoldShip.FindEquippedItemInSlot(Byte(ItemType),Index);
+          Equipment := PlayerHoldShip.FindEquippedItemInSlot(ItemType,Index);
           if Equipment = nil then
           begin
             Inc(Slot,Index);
@@ -4137,7 +4137,7 @@ var
         Index := 0;
         while Index < PlayerHoldShip.GetSlotCount(sskWeapon) do
         begin
-          if PlayerHoldShip.FindEquippedItemInSlot(Byte(SelectedHoldItem.ItemType),Index) = nil then
+          if PlayerHoldShip.FindEquippedItemInSlot(SelectedHoldItem.ItemType,Index) = nil then
           begin
             Inc(Slot,Index);
             Break;
@@ -4914,12 +4914,12 @@ begin
       if SelectedHoldKind = phkEquipment then
       begin
         I := 0;
-        while I < PlayerHoldShip.GetSlotCountForItemType(Byte(SelectedHoldItem.ItemType)) do
+        while I < PlayerHoldShip.GetSlotCountForItemType(SelectedHoldItem.ItemType) do
         begin
-          if PlayerHoldShip.FindEquippedItemInSlot(Byte(SelectedHoldItem.ItemType),I) = nil then Break;
+          if PlayerHoldShip.FindEquippedItemInSlot(SelectedHoldItem.ItemType,I) = nil then Break;
           Inc(I);
         end;
-        if I < PlayerHoldShip.GetSlotCountForItemType(Byte(SelectedHoldItem.ItemType)) then
+        if I < PlayerHoldShip.GetSlotCountForItemType(SelectedHoldItem.ItemType) then
         begin
           if SelectedHoldItem is TWeapon then (SelectedHoldItem as TWeapon).Target := nil;
           PlayerHoldShip.Inventory.Add(SelectedHoldItem);
@@ -4934,16 +4934,16 @@ begin
         (not PlayerHoldShip.HasEquippedArtefactOfSameUseGroup(SelectedHoldItem) or Galaxy.AreDuplicateArtefactsEnabled) then
       begin
         I := 0;
-        while I < PlayerHoldShip.GetSlotCountForItemType(Byte(SelectedHoldItem.ItemType)) do
+        while I < PlayerHoldShip.GetSlotCountForItemType(SelectedHoldItem.ItemType) do
         begin
-          if PlayerHoldShip.FindEquippedItemInSlot(Byte(SelectedHoldItem.ItemType),I) = nil then Break;
+          if PlayerHoldShip.FindEquippedItemInSlot(SelectedHoldItem.ItemType,I) = nil then Break;
           Inc(I);
         end;
-        if I < PlayerHoldShip.GetSlotCountForItemType(Byte(SelectedHoldItem.ItemType)) then
+        if I < PlayerHoldShip.GetSlotCountForItemType(SelectedHoldItem.ItemType) then
         begin
           PlayerHoldShip.Artefacts.Add(SelectedHoldItem);
-          if (PlayerHoldShip.GetSlotCountForItemType(Byte(SelectedHoldItem.ItemType)) <= Integer((SelectedHoldItem as TEquipment).AssignedSlotData)) or
-            (PlayerHoldShip.FindEquippedItemInSlot(Byte(SelectedHoldItem.ItemType),Integer((SelectedHoldItem as TEquipment).AssignedSlotData)) <> nil) then
+          if (PlayerHoldShip.GetSlotCountForItemType(SelectedHoldItem.ItemType) <= Integer((SelectedHoldItem as TEquipment).AssignedSlotData)) or
+            (PlayerHoldShip.FindEquippedItemInSlot(SelectedHoldItem.ItemType,Integer((SelectedHoldItem as TEquipment).AssignedSlotData)) <> nil) then
             (SelectedHoldItem as TEquipment).AssignedSlotData := I;
           (SelectedHoldItem as TEquipment).EquippedFlag := 0;
           (SelectedHoldItem as TEquipment).Equip;
@@ -5401,12 +5401,12 @@ begin
       Inc(Weapon.Ammo,Amount);
       SoundManager.PlaySound('Sound.Buy');
       Cost := 0;
-      while Cost < PlayerHoldShip.GetSlotCountForItemType(Byte(SelectedHoldItem.ItemType)) do
+      while Cost < PlayerHoldShip.GetSlotCountForItemType(SelectedHoldItem.ItemType) do
       begin
-        if PlayerHoldShip.FindEquippedItemInSlot(Byte(SelectedHoldItem.ItemType),Cost) = nil then Break;
+        if PlayerHoldShip.FindEquippedItemInSlot(SelectedHoldItem.ItemType,Cost) = nil then Break;
         Inc(Cost);
       end;
-      if Cost < PlayerHoldShip.GetSlotCountForItemType(Byte(SelectedHoldItem.ItemType)) then
+      if Cost < PlayerHoldShip.GetSlotCountForItemType(SelectedHoldItem.ItemType) then
       begin
         if SelectedHoldItem is TWeapon then (SelectedHoldItem as TWeapon).Target := nil;
         PlayerHoldShip.Inventory.Add(SelectedHoldItem);
@@ -5501,12 +5501,12 @@ begin
     if SelectedHoldKind = phkEquipment then
     begin
       I := 0;
-      while I < PlayerHoldShip.GetSlotCountForItemType(Byte(SelectedHoldItem.ItemType)) do
+      while I < PlayerHoldShip.GetSlotCountForItemType(SelectedHoldItem.ItemType) do
       begin
-        if PlayerHoldShip.FindEquippedItemInSlot(Byte(SelectedHoldItem.ItemType),I) = nil then Break;
+        if PlayerHoldShip.FindEquippedItemInSlot(SelectedHoldItem.ItemType,I) = nil then Break;
         Inc(I);
       end;
-      if I < PlayerHoldShip.GetSlotCountForItemType(Byte(SelectedHoldItem.ItemType)) then
+      if I < PlayerHoldShip.GetSlotCountForItemType(SelectedHoldItem.ItemType) then
       begin
         if SelectedHoldItem is TWeapon then (SelectedHoldItem as TWeapon).Target := nil;
         PlayerHoldShip.Inventory.Add(SelectedHoldItem);
@@ -5622,12 +5622,12 @@ begin
   if SelectedHoldKind = phkEquipment then
   begin
     I := 0;
-    while I < PlayerHoldShip.GetSlotCountForItemType(Byte(SelectedHoldItem.ItemType)) do
+    while I < PlayerHoldShip.GetSlotCountForItemType(SelectedHoldItem.ItemType) do
     begin
-      if PlayerHoldShip.FindEquippedItemInSlot(Byte(SelectedHoldItem.ItemType),I) = nil then Break;
+      if PlayerHoldShip.FindEquippedItemInSlot(SelectedHoldItem.ItemType,I) = nil then Break;
       Inc(I);
     end;
-    if I < PlayerHoldShip.GetSlotCountForItemType(Byte(SelectedHoldItem.ItemType)) then
+    if I < PlayerHoldShip.GetSlotCountForItemType(SelectedHoldItem.ItemType) then
     begin
       if SelectedHoldItem is TWeapon then (SelectedHoldItem as TWeapon).Target := nil;
       PlayerHoldShip.Inventory.Add(SelectedHoldItem);
@@ -5697,10 +5697,10 @@ begin
   CenterY := False;
   if not Found then
   begin
-    Count := PlayerHoldShip.GetSlotCountForItemType(Ord(t_Artefact));
+    Count := PlayerHoldShip.GetSlotCountForItemType(t_Artefact);
     for Slot := 0 to Count - 1 do
     begin
-      Item := PlayerHoldShip.FindEquippedItemInSlot(Ord(t_Artefact),Slot);
+      Item := PlayerHoldShip.FindEquippedItemInSlot(t_Artefact,Slot);
       if Item <> nil then
         with ArtefactSlotZones[Slot] do
           if HitTest(GetCursorPoint) then
@@ -5717,10 +5717,10 @@ begin
   if not Found then
     for I := 0 to 7 do
     begin
-      Count := PlayerHoldShip.GetSlotCountForItemType(Byte(EquipmentSlotLayouts[I].ItemType));
+      Count := PlayerHoldShip.GetSlotCountForItemType(EquipmentSlotLayouts[I].ItemType);
       for Slot := 0 to Count - 1 do
       begin
-        Item := PlayerHoldShip.FindEquippedItemInSlot(Byte(EquipmentSlotLayouts[I].ItemType),Slot);
+        Item := PlayerHoldShip.FindEquippedItemInSlot(EquipmentSlotLayouts[I].ItemType,Slot);
         if Item <> nil then
           with EquipmentSlotZones[I,Slot] do
             if HitTest(GetCursorPoint) then
@@ -7174,7 +7174,7 @@ begin
     begin
       if I < 13 then Kind := 1 else Kind := 2;
       Name := CaptainHealthDefinitions[I].Name + '~' + CaptainHealthDefinitions[I].Text;
-      if PlayerHoldShip.CountActiveArtefacts(Ord(t_ArtBio)) > 0 then
+      if PlayerHoldShip.CountActiveArtefacts(t_ArtBio) > 0 then
       begin
         Turn := PlayerHoldShip.CaptainHealth[I].ExpireTurn;
         if Kind = 1 then
@@ -7188,7 +7188,7 @@ begin
     if PlayerHoldShip.RadiationHealth[I].Progress > 0 then
     begin
       Name := RadiationHealthDefinitions[I].Name + '~' + RadiationHealthDefinitions[I].Text;
-      if PlayerHoldShip.CountActiveArtefacts(Ord(t_ArtBio)) > 0 then
+      if PlayerHoldShip.CountActiveArtefacts(t_ArtBio) > 0 then
       begin
         Turn := Round(100 - 100 * PlayerHoldShip.RadiationHealth[1].Progress);
         Name := Name + #13#10 + FormatText1(LocalizedText('Illness.ExtraIllness.' + IntToStr(I) + '.TextEx'),'<color=255,240,100>','<Percent>',IntToStr(Turn) + '%');

@@ -168,9 +168,9 @@ begin
     else CreateAndEquipHull(Round(HullBaseSize * EquipmentSizeFactors[5]), 1, OwnerId, SelectRandomHullSeries, False);
     CreateAndEquipFuelTanks(Round(FuelTanksBaseSize * EquipmentSizeFactors[5]), 1, OwnerId);
     CreateAndEquipEngine(Round(EquipmentSizeFactors[NextRandomIntRange(1, 2, RandomState)] * EngineBaseSize), NextRandomIntRange(1, 2, RandomState), OwnerId);
-    if GetSlotCountForItemType(Ord(t_CargoHook)) > 0 then CreateAndEquipCargoHook(CargoHookBaseSize, NextRandomIntRange(1, 2, RandomState), OwnerId);
-    if GetSlotCount(sskWeapon) > WeaponCount then CreateAndEquipWeapon(Ord(t_Weapon1), WeaponInfos[t_Weapon1].AverageSize, 1, OwnerId);
-    if GetSlotCountForItemType(Ord(t_Radar)) > 0 then CreateAndEquipRadar(Round(EquipmentSizeFactors[NextRandomIntRange(2, 4, RandomState)] * RadarBaseSize), 1, OwnerId);
+    if GetSlotCountForItemType(t_CargoHook) > 0 then CreateAndEquipCargoHook(CargoHookBaseSize, NextRandomIntRange(1, 2, RandomState), OwnerId);
+    if GetSlotCount(sskWeapon) > WeaponCount then CreateAndEquipWeapon(t_Weapon1, WeaponInfos[t_Weapon1].AverageSize, 1, OwnerId);
+    if GetSlotCountForItemType(t_Radar) > 0 then CreateAndEquipRadar(Round(EquipmentSizeFactors[NextRandomIntRange(2, 4, RandomState)] * RadarBaseSize), 1, OwnerId);
   end else RefreshGraphic;
   RefreshDerivedStats(True);
   RefreshCurrentStanding;
@@ -1803,14 +1803,14 @@ begin
   if dkReduceEngine in Flags then SlowFactor := 1 + 2 * SlowFactor;
   DisruptionFactor := 0;
   if dkDecelerate in Flags then DisruptionFactor := DisruptionFactor + 1;
-  if (CountActiveArtefacts(Ord(t_ArtDecelerate)) > 0) and (dkSplinter in Flags) then
-    DisruptionFactor := DisruptionFactor + CountActiveArtefacts(Ord(t_ArtDecelerate)) * ((Ord(CanBoostArtefact(Ord(t_ArtDecelerate), Weapon, False)) * 1) + 1);
+  if (CountActiveArtefacts(t_ArtDecelerate) > 0) and (dkSplinter in Flags) then
+    DisruptionFactor := DisruptionFactor + CountActiveArtefacts(t_ArtDecelerate) * ((Ord(CanBoostArtefact(t_ArtDecelerate, Weapon, False)) * 1) + 1);
   TotalDisruption := DisruptionFactor;
   for I := 1 to CountEquippedWeapons do begin
     if dkDecelerate in Weapons[I].GetDamageFlags then TotalDisruption := TotalDisruption + 1;
-    if (CountActiveArtefacts(Ord(t_ArtDecelerate)) > 0) and (dkSplinter in Weapons[I].GetDamageFlags) then
+    if (CountActiveArtefacts(t_ArtDecelerate) > 0) and (dkSplinter in Weapons[I].GetDamageFlags) then
       // The native loop tests each equipped weapon but boosts the candidate.
-      TotalDisruption := TotalDisruption + CountActiveArtefacts(Ord(t_ArtDecelerate)) * ((Ord(CanBoostArtefact(Ord(t_ArtDecelerate), Weapon, False)) * 1) + 1);
+      TotalDisruption := TotalDisruption + CountActiveArtefacts(t_ArtDecelerate) * ((Ord(CanBoostArtefact(t_ArtDecelerate, Weapon, False)) * 1) + 1);
   end;
   DisruptionFactor := DisruptionFactor / Max(TotalDisruption, 1) * RemapClamped(TotalDisruption, 1, 3, 1, 2);
   if SlowFactor > 0.01 then

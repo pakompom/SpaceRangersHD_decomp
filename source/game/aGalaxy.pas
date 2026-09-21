@@ -2363,7 +2363,7 @@ begin
       PreviousTechLevel := TechLevel;
       RefreshTechLevel;
       if GetPlayer <> nil then
-        if GetPlayer.CountActiveArtefacts(Ord(t_ArtefactAnalyzer)) > 0 then begin
+        if GetPlayer.CountActiveArtefacts(t_ArtefactAnalyzer) > 0 then begin
           Text := '';
           if TechLevel > PreviousTechLevel then Text := LocalizedText('Artefacts.ArtAnalyzer.TechLevelUp');
           if TechLevel < PreviousTechLevel then Text := LocalizedText('Artefacts.ArtAnalyzer.TechLevelDown');
@@ -8713,7 +8713,7 @@ end;
 function TGalaxy.CountExistingSatellites: Integer;
 var I, J, K: Integer; Star: TStar; Ship: TShip; Item: TItem; Stored: TStoredItem;
 begin
-  Result := GetPlayer.CountStoredItemUnits(nil, 73) + GetPlayer.Satellites.Count;
+  Result := GetPlayer.CountStoredItemUnits(nil, t_Satellite) + GetPlayer.Satellites.Count;
   for I := 0 to Galaxy.Stars.Count - 1 do begin
     Star := TStar(Galaxy.Stars[I]);
     for J := 0 to Star.Items.Count - 1 do begin
@@ -12666,7 +12666,7 @@ begin
                 BertorBoost := (CombatEvent^.Attacker is TKling)
                   and ((CombatEvent^.Attacker as TKling).DominatorSeries = dsBlazer)
                   and (CombatEvent^.Attacker as TKling).HasNearbyBertorAura;
-                for ArtefactIndex := 1 to ((TWeapon(CombatEvent^.Weapon).GetAttackCount * TShip(CombatEvent^.Attacker).CountActiveArtefacts(Ord(t_ArtFastRacks))) * (Integer(TShip(CombatEvent^.Attacker).CanBoostArtefact(Ord(t_ArtFastRacks), TWeapon(CombatEvent^.Weapon), False)) + 1)) do
+                for ArtefactIndex := 1 to ((TWeapon(CombatEvent^.Weapon).GetAttackCount * TShip(CombatEvent^.Attacker).CountActiveArtefacts(t_ArtFastRacks)) * (Integer(TShip(CombatEvent^.Attacker).CanBoostArtefact(t_ArtFastRacks, TWeapon(CombatEvent^.Weapon), False)) + 1)) do
                 begin
                   if (NextRandomUnitFloat(TShip(CombatEvent^.Attacker).RandomState) <= aConst.ExtraMissileChance) and (TObject(CombatEvent^.Target) is TShip) then
                     Inc(AttackCount);
@@ -13229,17 +13229,17 @@ begin
           begin
             if (StepIndex div (Count div (aConst.PointDefensePassCount + 2)) <= aConst.PointDefensePassCount)
               and (not Ship.IsHullDestroyed
-              and (Ship.InNormalSpace and ((Ship.CountActiveArtefacts(Ord(t_ArtPDTurret)) > 0)
+              and (Ship.InNormalSpace and ((Ship.CountActiveArtefacts(t_ArtPDTurret) > 0)
               and ((GetPlayer = Ship) or (Galaxy.StasisModEnabled <> 1))))) then
             begin
-              for ArtefactIndex := 1 to Ship.CountActiveArtefacts(Ord(t_ArtPDTurret)) do
+              for ArtefactIndex := 1 to Ship.CountActiveArtefacts(t_ArtPDTurret) do
               begin
                 CandidateIndex := 0;
                 InterceptedMissile := nil;
                 NearestMissileDistance := 0;
                 BestMissilePriority := -1;
                 MissilePriority := 0;
-                PointDefenseRangeSquared := (aConst.PointDefenseBaseRange + aConst.PointDefenseBonusRange) * (aConst.PointDefenseBaseRange + aConst.PointDefenseBonusRange * Ord(Ship.CanBoostArtefact(Ord(t_ArtPDTurret), nil, False)));
+                PointDefenseRangeSquared := (aConst.PointDefenseBaseRange + aConst.PointDefenseBonusRange) * (aConst.PointDefenseBaseRange + aConst.PointDefenseBonusRange * Ord(Ship.CanBoostArtefact(t_ArtPDTurret, nil, False)));
                 while Self.Missiles.Count > CandidateIndex do
                 begin
                   Missile := Self.Missiles[CandidateIndex];

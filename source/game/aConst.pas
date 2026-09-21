@@ -81,10 +81,6 @@ type
 
   PEquipmentSizeFactorTable = ^TEquipmentSizeFactorTable;
 
-  TEquipmentInventionIndexTable = array[42..49] of Byte;
-
-  PEquipmentInventionIndexTable = ^TEquipmentInventionIndexTable;
-
   TStationEquipmentOfferQuota = packed record // @size 0x24
     Hulls: Integer; // @offset 0x00
     FuelTanks: Integer; // @offset 0x04
@@ -139,7 +135,7 @@ procedure LoadHullSeriesConfiguration; // @addr $836DBC
 
 procedure InitializeGameplayConfig; // @addr 0x82D200
 
-function ItemTypeToSlotKind(ItemType: Byte): TShipSlotKind; // @addr 0x82F368
+function ItemTypeToSlotKind(ItemType: TItemType): TShipSlotKind; // @addr 0x82F368
 function ClassifyWeaponDamageFlags(Flags: TDamageFlagSet): TWeaponDamageClass; // @addr $837CF0 Missile bit takes precedence over splinter; otherwise energy.
 function ShipToHullType(Ship: TObject): Byte; // @addr $82F1F4 Class/subtype mapping used by hull generation and legacy saves; only TObject RTTI operations precede explicit subclass casts.
 function RaceToOwner(RaceId: TOwnerId): TOwnerId; // @addr $82DDD4 @note "Identity conversion for Coalition races 0..4; raises for all other values."
@@ -155,7 +151,7 @@ function CustomFactionToFilmColor(Faction: WideString): Cardinal; // @addr $82E0
 function GetCustomFactionPlanetIconNumber(Faction: WideString): Integer; // @addr $82E380 @note "Race.PlanetIconNum lookup; returns -1 for an absent entry. Film owner codes offset a nonnegative result by eight."
 function SizeTagToLevel(const Tag: WideString): Byte; // @addr $82F100 @note "Zero, Mini, Small, Average, Big, Huge map to 0..5; unknown tags map to zero."
 function GenerateValueForSizeLevel(Level: Byte; Minimum, Maximum: Integer; VariationPercent: Byte; Seed: Cardinal): Integer; // @addr $82EF58 @note "Seeded variation around a size bucket; unknown nonzero levels use the midpoint."
-function GetAverageItemSize(ItemType: Byte): Integer; // @addr 0x82EC68
+function GetAverageItemSize(ItemType: TItemType): Integer; // @addr 0x82EC68
 function PickRandomItemType(Mask: TItemTypeSelection): Byte; // @addr $837B50 @ida "unsigned __int8 __usercall $name@<al>(TItemTypeSelection *Mask@<eax>);"
 function PickRandomItemTypeFromSeed(Mask: TItemTypeSelection; var Seed: Cardinal): Byte; // @addr $837BCC @ida "unsigned __int8 __usercall $name@<al>(TItemTypeSelection *Mask@<eax>, unsigned int *Seed@<edx>);" @note "Selects a set bit among 0..75 while advancing Seed; an empty mask returns 76."
 function CountItemTypesInMask(Mask: TItemTypeSelection): Integer; // @addr 0x837C50 @ida "int __usercall $name@<eax>(TItemTypeSelection *Mask@<eax>);" @note "Copies the ten-byte mask, then counts bits 0..75; ignores storage bits 76..79."
@@ -622,6 +618,10 @@ type
     t_TreasureMap = 74,
     t_UselessCountableItem = 75
   ); // @size 0x1
+
+  TEquipmentInventionIndexTable = array[t_Hull..t_DefGenerator] of Byte;
+
+  PEquipmentInventionIndexTable = ^TEquipmentInventionIndexTable;
 
   // Native record RTTI at $82B460.
   SEquipment = record // @size $8
@@ -1863,51 +1863,51 @@ end;
 { @end $82EBE8 }
 
 { @routine $82EC68 GetAverageItemSize }
-function GetAverageItemSize(ItemType: Byte): Integer;
+function GetAverageItemSize(ItemType: TItemType): Integer;
 begin
   case ItemType of
-    Ord(t_ArtefactHull): Result := 12;
-    Ord(t_ArtefactFuel): Result := 4;
-    Ord(t_ArtefactSpeed): Result := 12;
-    Ord(t_ArtefactPower): Result := 7;
-    Ord(t_ArtefactRadar): Result := 10;
-    Ord(t_ArtefactScaner): Result := 8;
-    Ord(t_ArtefactDroid): Result := 10;
-    Ord(t_ArtefactNano): Result := 3;
-    Ord(t_ArtefactHook): Result := 3;
-    Ord(t_ArtefactDef): Result := 12;
-    Ord(t_ArtefactAnalyzer): Result := 5;
-    Ord(t_ArtefactMiniExpl): Result := 10;
-    Ord(t_ArtefactAntigrav): Result := 20;
-    Ord(t_ArtefactTransmitter): Result := 3;
-    Ord(t_ArtefactBomb): Result := 5;
-    Ord(t_ArtefactTranclucator): Result := 50;
-    Ord(t_ArtDefToEnergy): Result := 5;
-    Ord(t_ArtEnergyPulse): Result := 8;
-    Ord(t_ArtEnergyDef): Result := 5;
-    Ord(t_ArtSplinter): Result := 10;
-    Ord(t_ArtDecelerate): Result := 5;
-    Ord(t_ArtMissileDef): Result := 6;
-    Ord(t_ArtForsage): Result := 6;
-    Ord(t_ArtWeaponToSpeed): Result := 7;
-    Ord(t_ArtGiperJump): Result := 5;
-    Ord(t_ArtBlackHole): Result := 3;
-    Ord(t_ArtDefToArms1): Result := 9;
-    Ord(t_ArtDefToArms2): Result := 7;
-    Ord(t_ArtArtefactor): Result := 3;
-    Ord(t_ArtBio): Result := 2;
-    Ord(t_ArtPDTurret): Result := 15;
-    Ord(t_ArtFastRacks): Result := 10;
-    Ord(t_Hull): Result := HullBaseSize;
-    Ord(t_FuelTanks): Result := FuelTanksBaseSize;
-    Ord(t_Engine): Result := EngineBaseSize;
-    Ord(t_Radar): Result := RadarBaseSize;
-    Ord(t_Scaner): Result := ScannerBaseSize;
-    Ord(t_RepairRobot): Result := RepairRobotBaseSize;
-    Ord(t_CargoHook): Result := CargoHookBaseSize;
-    Ord(t_DefGenerator): Result := DefGeneratorBaseSize;
+    t_ArtefactHull: Result := 12;
+    t_ArtefactFuel: Result := 4;
+    t_ArtefactSpeed: Result := 12;
+    t_ArtefactPower: Result := 7;
+    t_ArtefactRadar: Result := 10;
+    t_ArtefactScaner: Result := 8;
+    t_ArtefactDroid: Result := 10;
+    t_ArtefactNano: Result := 3;
+    t_ArtefactHook: Result := 3;
+    t_ArtefactDef: Result := 12;
+    t_ArtefactAnalyzer: Result := 5;
+    t_ArtefactMiniExpl: Result := 10;
+    t_ArtefactAntigrav: Result := 20;
+    t_ArtefactTransmitter: Result := 3;
+    t_ArtefactBomb: Result := 5;
+    t_ArtefactTranclucator: Result := 50;
+    t_ArtDefToEnergy: Result := 5;
+    t_ArtEnergyPulse: Result := 8;
+    t_ArtEnergyDef: Result := 5;
+    t_ArtSplinter: Result := 10;
+    t_ArtDecelerate: Result := 5;
+    t_ArtMissileDef: Result := 6;
+    t_ArtForsage: Result := 6;
+    t_ArtWeaponToSpeed: Result := 7;
+    t_ArtGiperJump: Result := 5;
+    t_ArtBlackHole: Result := 3;
+    t_ArtDefToArms1: Result := 9;
+    t_ArtDefToArms2: Result := 7;
+    t_ArtArtefactor: Result := 3;
+    t_ArtBio: Result := 2;
+    t_ArtPDTurret: Result := 15;
+    t_ArtFastRacks: Result := 10;
+    t_Hull: Result := HullBaseSize;
+    t_FuelTanks: Result := FuelTanksBaseSize;
+    t_Engine: Result := EngineBaseSize;
+    t_Radar: Result := RadarBaseSize;
+    t_Scaner: Result := ScannerBaseSize;
+    t_RepairRobot: Result := RepairRobotBaseSize;
+    t_CargoHook: Result := CargoHookBaseSize;
+    t_DefGenerator: Result := DefGeneratorBaseSize;
   else
-    if ItemType in [Ord(t_Weapon1)..Ord(t_CustomWeapon)] then Result := WeaponInfos[TItemType(ItemType)].AverageSize
+    if ItemType in [t_Weapon1..t_CustomWeapon] then Result := WeaponInfos[ItemType].AverageSize
     else
     begin
       Exception.Create('Error ItemAverageSize'); // Native allocates the exception without raising it.
@@ -1992,19 +1992,19 @@ end;
 { @end $82F30C }
 
 { @routine $82F368 ItemTypeToSlotKind }
-function ItemTypeToSlotKind(ItemType: Byte): TShipSlotKind;
+function ItemTypeToSlotKind(ItemType: TItemType): TShipSlotKind;
 begin
   case ItemType of
-    Ord(t_FuelTanks): Result := sskFuelTanks;
-    Ord(t_Engine): Result := sskEngine;
-    Ord(t_Radar): Result := sskRadar;
-    Ord(t_Scaner): Result := sskScanner;
-    Ord(t_RepairRobot): Result := sskRepairRobot;
-    Ord(t_CargoHook): Result := sskCargoHook;
-    Ord(t_DefGenerator): Result := sskDefGenerator;
+    t_FuelTanks: Result := sskFuelTanks;
+    t_Engine: Result := sskEngine;
+    t_Radar: Result := sskRadar;
+    t_Scaner: Result := sskScanner;
+    t_RepairRobot: Result := sskRepairRobot;
+    t_CargoHook: Result := sskCargoHook;
+    t_DefGenerator: Result := sskDefGenerator;
   else
-    if ItemType in [Ord(t_Weapon1)..Ord(t_CustomWeapon)] then Result := sskWeapon
-    else if ItemType in [Ord(t_Artefact)..Ord(t_ArtFastRacks)] then Result := sskArtefact
+    if ItemType in [t_Weapon1..t_CustomWeapon] then Result := sskWeapon
+    else if ItemType in [t_Artefact..t_ArtFastRacks] then Result := sskArtefact
     else Result := sskUnsupported;
   end;
 end;

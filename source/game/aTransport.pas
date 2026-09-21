@@ -154,10 +154,10 @@ begin
   CreateAndEquipHull(Round(HullBaseSize * EquipmentSizeFactors[I]), 1, OwnerId, SelectRandomHullSeries, HomePlanet.OwnerId = oiPirate);
   CreateAndEquipFuelTanks(Round(FuelTanksBaseSize * EquipmentSizeFactors[5]), 1, HomePlanet.OwnerId);
   CreateAndEquipEngine(Round(EngineBaseSize * EquipmentSizeFactors[1]), 1, HomePlanet.OwnerId);
-  if (NextRandomIntRange(1, 10, RandomState) > 9) and (GetSlotCountForItemType(Ord(t_CargoHook)) > 0) then
+  if (NextRandomIntRange(1, 10, RandomState) > 9) and (GetSlotCountForItemType(t_CargoHook) > 0) then
     CreateAndEquipCargoHook(CargoHookBaseSize, NextRandomIntRange(1, 1, RandomState), HomePlanet.OwnerId);
-  if GetSlotCount(sskWeapon) > WeaponCount then CreateAndEquipWeapon(Ord(t_Weapon1), WeaponInfos[t_Weapon1].AverageSize, 1, HomePlanet.OwnerId);
-  if GetSlotCountForItemType(Ord(t_Radar)) > 0 then CreateAndEquipRadar(Round(EquipmentSizeFactors[NextRandomIntRange(2, 4, RandomState)] * RadarBaseSize), 1, HomePlanet.OwnerId);
+  if GetSlotCount(sskWeapon) > WeaponCount then CreateAndEquipWeapon(t_Weapon1, WeaponInfos[t_Weapon1].AverageSize, 1, HomePlanet.OwnerId);
+  if GetSlotCountForItemType(t_Radar) > 0 then CreateAndEquipRadar(Round(EquipmentSizeFactors[NextRandomIntRange(2, 4, RandomState)] * RadarBaseSize), 1, HomePlanet.OwnerId);
   TrainSkillsAutomatically;
   RefreshDerivedStats(True);
   RefreshCurrentStanding;
