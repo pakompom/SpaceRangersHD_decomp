@@ -223,6 +223,93 @@ impl Compiler {
         }
         Ok(names)
     }
+    pub fn enum_range(&self, bounds: &Value) -> Result<(String, i64, i64)> {
+        let lower = string(bounds, "lower");
+        let upper = string(bounds, "upper");
+        let mut found = None;
+        for d in self.types.values().filter(|d| d.kind == "enum") {
+            let members = array(&d.data, "members");
+            let ordinal = |name: &str| {
+                members
+                    .iter()
+                    .find(|m| {
+                        m[0].as_str()
+                            .is_some_and(|member| member.eq_ignore_ascii_case(name))
+                    })
+                    .and_then(|m| m[1].as_i64())
+            };
+            if let Some(lo) = ordinal(lower) {
+                let hi = ordinal(upper).with_context(|| {
+                    format!("array bounds {lower} and {upper} must belong to the same enum")
+                })?;
+                ensure!(lo <= hi, "empty/reversed array range: {lower}..{upper}");
+                ensure!(found.is_none(), "ambiguous enum array bound: {lower}");
+                found = Some((d.name.clone(), lo, hi));
+            }
+        }
+        found.with_context(|| format!("unknown enum array bound: {lower}"))
+    }
+    fn ordinal_bounds(&self, typ: &Value, seen: &mut BTreeSet<String>) -> Result<(i64, i64)> {
+        if let Some(bounds) = typ.get("enum_range") {
+            let (_, lower, upper) = self.enum_range(bounds)?;
+            return Ok((lower, upper));
+        }
+        if let Some(bounds) = typ.get("subrange") {
+            return Ok((integer(bounds, "lower")?, integer(bounds, "upper")?));
+        }
+        let name = typ
+            .as_str()
+            .context("array index must be an ordinal type")?;
+        let key = name.to_lowercase();
+        let bounds = match key.as_str() {
+            "boolean" => Some((0, 1)),
+            "byte" | "char" => Some((0, 255)),
+            "shortint" => Some((-128, 127)),
+            "word" | "widechar" => Some((0, 65535)),
+            "smallint" => Some((-32768, 32767)),
+            "integer" | "longint" => Some((i32::MIN as i64, i32::MAX as i64)),
+            "cardinal" | "longword" | "dword" => Some((0, u32::MAX as i64)),
+            _ => None,
+        };
+        if let Some(bounds) = bounds {
+            return Ok(bounds);
+        }
+        ensure!(seen.insert(key), "cyclic array index type: {name}");
+        let d = self.lookup(name)?;
+        if d.kind == "alias" {
+            return self.ordinal_bounds(&d.data["type"], seen);
+        }
+        ensure!(
+            d.kind == "enum",
+            "array index must be an ordinal type: {name}"
+        );
+        let values = array(&d.data, "members")
+            .iter()
+            .map(|m| m[1].as_i64().context("invalid enum value"))
+            .collect::<Result<Vec<_>>>()?;
+        Ok((
+            *values.iter().min().context("empty array index enum")?,
+            *values.iter().max().context("empty array index enum")?,
+        ))
+    }
+    pub fn array_bounds(&self, typ: &Value) -> Result<(i64, i64)> {
+        if let Some(index) = typ.get("index") {
+            return self.ordinal_bounds(index, &mut BTreeSet::new());
+        }
+        let lower = integer(typ, "lower")?;
+        let upper = lower
+            .checked_add(integer(typ, "count")? - 1)
+            .context("array bounds overflow")?;
+        Ok((lower, upper))
+    }
+    fn array_count(&self, typ: &Value) -> Result<i64> {
+        let (lower, upper) = self.array_bounds(typ)?;
+        ensure!(upper >= lower, "empty/reversed array range");
+        upper
+            .checked_sub(lower)
+            .and_then(|n| n.checked_add(1))
+            .context("array count overflow")
+    }
     pub fn size(&mut self, typ: &Value) -> Result<i64> {
         if let Some(bounds) = typ.get("subrange") {
             return Ok(subrange_storage(bounds)?.1);
@@ -279,7 +366,7 @@ impl Compiler {
         if let Some(element) = typ.get("array") {
             return self
                 .size(element)?
-                .checked_mul(integer(typ, "count")?)
+                .checked_mul(self.array_count(typ)?)
                 .context("array size overflow");
         }
         bail!("unsized or unsupported field type: {typ}")
@@ -380,7 +467,7 @@ impl Compiler {
             return self.ctype(&json!({"pointer":inner}), name);
         }
         if let Some(inner) = typ.get("array") {
-            return self.ctype(inner, &format!("{name}[{}]", integer(typ, "count")?));
+            return self.ctype(inner, &format!("{name}[{}]", self.array_count(typ)?));
         }
         bail!("open arrays are only allowed as routine parameters; sets need a named alias")
     }
@@ -392,7 +479,7 @@ impl Compiler {
             if let Some(element) = typ.get("array") {
                 let stride = self.size(element)?;
                 let slots = self.managed_storage(element)?;
-                return Ok((0..integer(typ, "count")?)
+                return Ok((0..self.array_count(typ)?)
                     .flat_map(|i| {
                         slots
                             .iter()
@@ -571,6 +658,72 @@ mod tests {
         );
         assert!(c.wide_integer(&json!("TWide"))?);
         assert!(compiler("unit X; interface type Bad = 2..1; implementation end.").is_err());
+        Ok(())
+    }
+    #[test]
+    fn ordinal_array_indices_preserve_bounds_layout_and_managed_slots() -> Result<()> {
+        let mut c = compiler(
+            "unit X; interface type TKind = (kFirst=2, kLast=4); // @size 1\n\
+             TAlias = TKind; TRange = -1..1;\n\
+             TNames = array[TAlias] of WideString;\n\
+             TGrid = array[TRange, TKind] of Word;\n\
+             TFlags = array[Boolean] of Byte; implementation end.",
+        )?;
+        let names = c.lookup("TNames")?;
+        assert_eq!(c.array_bounds(&names.data["type"])?, (2, 4));
+        assert_eq!(
+            crate::pascal::render::spelling(&names.data["type"])?,
+            "array[TAlias] of WideString"
+        );
+        assert_eq!(c.size(&json!("TNames"))?, 12);
+        assert_eq!(
+            c.ctype(&names.data["type"], "Names")?,
+            "unsigned __int16 * Names[3]"
+        );
+        assert_eq!(
+            c.managed_storage(&json!("TNames"))?,
+            vec![
+                (0, "widestring".into()),
+                (4, "widestring".into()),
+                (8, "widestring".into())
+            ]
+        );
+        assert_eq!(c.size(&json!("TGrid"))?, 18);
+        assert_eq!(c.size(&json!("TFlags"))?, 2);
+        c.build()?;
+        for text in [
+            "unit X; interface type TBad = array[Single] of Byte; implementation end.",
+            "unit X; interface type TA = TB; TB = TA; TBad = array[TA] of Byte; implementation end.",
+            "unit X; interface type TBad = array[Missing] of Byte; implementation end.",
+        ] {
+            let mut invalid = compiler(text)?;
+            assert!(invalid.size(&json!("TBad")).is_err());
+        }
+        Ok(())
+    }
+    #[test]
+    fn enum_subrange_indices_keep_nonzero_bounds_and_reject_mixed_domains() -> Result<()> {
+        let mut c = compiler(
+            "unit X; interface type TKind = (kFirst=2, kMiddle=4, kLast=7); // @size 1\n\
+             TOther = (oFirst, oLast); // @size 1\n\
+             TBand = array[kFirst..kMiddle] of WideString; implementation end.",
+        )?;
+        let band = c.lookup("TBand")?;
+        assert_eq!(c.array_bounds(&band.data["type"])?, (2, 4));
+        assert_eq!(c.size(&json!("TBand"))?, 12);
+        assert_eq!(
+            crate::pascal::render::spelling(&band.data["type"])?,
+            "array[kFirst..kMiddle] of WideString"
+        );
+        assert_eq!(c.managed_storage(&json!("TBand"))?.last().unwrap().0, 8);
+        for (lower, upper) in [
+            ("kLast", "kFirst"),
+            ("kFirst", "oLast"),
+            ("Missing", "kLast"),
+        ] {
+            assert!(c.enum_range(&json!({"lower":lower,"upper":upper})).is_err());
+        }
+        c.build()?;
         Ok(())
     }
     #[test]

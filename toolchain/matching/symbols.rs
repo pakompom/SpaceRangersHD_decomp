@@ -209,8 +209,10 @@ impl Evidence {
                 }
                 if let Some(array) = spec.get("array") {
                     let stride = project.compiler.size(array)?;
-                    e.arrays
-                        .insert(addr, (spec["lower"].as_i64().unwrap_or(0) * stride, stride));
+                    e.arrays.insert(
+                        addr,
+                        (project.compiler.array_bounds(&spec)?.0 * stride, stride),
+                    );
                 }
             }
             if d.kind == "constant" || d.kind == "global" && d.data.get("initializer").is_some() {

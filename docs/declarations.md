@@ -101,7 +101,9 @@ method counts and relocated parent chain. Extended method RTTI is unresolved.
 
 ### Arrays, enums and sets
 
-Supported types include fixed arrays (`array[0..7] of T`), pointer aliases
+Supported types include fixed arrays with numeric bounds (`array[0..7] of T`)
+or a named ordinal index (`array[TRangerCareer] of Byte`), enum subranges
+(`array[bonSkill1..bonSkill6] of Integer`), pointer aliases
 (`PItem = ^TItem`), scalar aliases, explicitly sized enums and sets:
 
 ```pascal

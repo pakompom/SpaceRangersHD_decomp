@@ -31,11 +31,21 @@ impl Parser<'_> {
                 let mut known = true;
                 loop {
                     if self.annotated {
-                        let lo = self.integer()?;
-                        self.expect("..")?;
-                        let hi = self.integer()?;
-                        ensure!(hi >= lo, "empty/reversed array range");
-                        dimensions.push((lo, hi));
+                        if self.current()?.kind == Kind::Identifier {
+                            let lower = self.qualified()?;
+                            let index = if self.accept("..")? {
+                                json!({"enum_range":{"lower":lower,"upper":self.qualified()?}})
+                            } else {
+                                json!(lower)
+                            };
+                            dimensions.push(json!({"index":index}));
+                        } else {
+                            let lo = self.integer()?;
+                            self.expect("..")?;
+                            let hi = self.integer()?;
+                            ensure!(hi >= lo, "empty/reversed array range");
+                            dimensions.push(json!({"lower":lo,"count":hi-lo+1}));
+                        }
                     } else {
                         let bound = self.expression(0)?;
                         if bound.kind == "binary" && bound.value.as_deref() == Some("..") {
@@ -52,7 +62,7 @@ impl Parser<'_> {
                                 ),
                             ) {
                                 (Ok(lo), Ok(hi)) if lo.is_i64() && hi.is_i64() => {
-                                    dimensions.push((lo.as_i64().unwrap(), hi.as_i64().unwrap()))
+                                    dimensions.push(json!({"lower":lo,"count":hi.as_i64().unwrap()-lo.as_i64().unwrap()+1}))
                                 }
                                 _ => known = false,
                             }
@@ -70,8 +80,9 @@ impl Parser<'_> {
                 if !known {
                     return Ok(json!({"source_type":self.text[start.start..self.last().end]}));
                 }
-                for (lo, hi) in dimensions.into_iter().rev() {
-                    typ = json!({"array":typ,"count":hi-lo+1,"lower":lo});
+                for mut dimension in dimensions.into_iter().rev() {
+                    dimension["array"] = typ;
+                    typ = dimension;
                 }
                 return Ok(typ);
             }

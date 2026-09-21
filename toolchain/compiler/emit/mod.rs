@@ -220,6 +220,11 @@ impl<'a> Emitter<'a> {
     }
     pub fn typ(&mut self, spec: &Value) -> Result<String> {
         if spec.is_object() {
+            if let Some(bounds) = spec.get("enum_range") {
+                let (name, _, _) = self.project.compiler.enum_range(bounds)?;
+                self.typ(&json!(name))?;
+                return crate::pascal::render::spelling(spec);
+            }
             if spec.get("subrange").is_some() {
                 return crate::pascal::render::spelling(spec);
             }
@@ -268,6 +273,13 @@ impl<'a> Emitter<'a> {
                 return Ok(name);
             }
             if let Some(inner) = spec.get("array") {
+                if let Some(index) = spec.get("index") {
+                    return Ok(format!(
+                        "array[{}] of {}",
+                        self.typ(index)?,
+                        self.typ(inner)?
+                    ));
+                }
                 let lo = integer(spec, "lower")?;
                 return Ok(format!(
                     "array[{lo}..{}] of {}",

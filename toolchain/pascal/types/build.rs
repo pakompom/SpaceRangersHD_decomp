@@ -1,6 +1,9 @@
 use super::*;
 impl Compiler {
     fn validate_arrays(&mut self, typ: &Value) -> Result<()> {
+        if typ.get("array").is_some() {
+            self.array_count(typ)?;
+        }
         if let Some(element) = typ.get("dynamic_array") {
             self.size(element)?;
         }

@@ -73,6 +73,13 @@ pub fn spelling(spec: &Value) -> Result<String> {
     if let Some(bounds) = spec.get("subrange") {
         return Ok(format!("{}..{}", bounds["lower"], bounds["upper"]));
     }
+    if let Some(bounds) = spec.get("enum_range") {
+        return Ok(format!(
+            "{}..{}",
+            string(bounds, "lower"),
+            string(bounds, "upper")
+        ));
+    }
     if let Some(signature) = spec.get("callable") {
         let d = Decl {
             name: String::new(),
@@ -109,6 +116,13 @@ pub fn spelling(spec: &Value) -> Result<String> {
         }
     }
     if let Some(inner) = spec.get("array") {
+        if let Some(index) = spec.get("index") {
+            return Ok(format!(
+                "array[{}] of {}",
+                spelling(index)?,
+                spelling(inner)?
+            ));
+        }
         let low = spec["lower"].as_i64().unwrap_or(0);
         let count = spec["count"].as_i64().unwrap_or(0);
         return Ok(format!(
