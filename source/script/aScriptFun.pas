@@ -2093,9 +2093,9 @@ begin
   Obj := TObject(av[1].GetDword);
   if High(av) > 1 then
   begin
-    if av[2].GetString = 'EminentWarrior' then av[0].SetInt(Ord(Galaxy.EminentCareerShips[Ord(rcWarrior)] = Obj))
-    else if av[2].GetString = 'EminentTrader' then av[0].SetInt(Ord(Galaxy.EminentCareerShips[Ord(rcTrader)] = Obj))
-    else if av[2].GetString = 'EminentPirate' then av[0].SetInt(Ord(Galaxy.EminentCareerShips[Ord(rcPirate)] = Obj))
+    if av[2].GetString = 'EminentWarrior' then av[0].SetInt(Ord(Galaxy.EminentCareerShips[rcWarrior] = Obj))
+    else if av[2].GetString = 'EminentTrader' then av[0].SetInt(Ord(Galaxy.EminentCareerShips[rcTrader] = Obj))
+    else if av[2].GetString = 'EminentPirate' then av[0].SetInt(Ord(Galaxy.EminentCareerShips[rcPirate] = Obj))
     else raise Exception.Create(AnsiString('Error.Script RangerStatus - unknown keyword ' + av[2].GetString));
   end
   else
@@ -2133,9 +2133,9 @@ begin
     Ranger.ExcludedFromRating := av[2].GetInt <> 0;
     if Ranger.ExcludedFromRating then
     begin
-      if Galaxy.EminentCareerShips[Ord(rcTrader)] = Ranger then Galaxy.EminentCareerShips[Ord(rcTrader)] := nil;
-      if Galaxy.EminentCareerShips[Ord(rcPirate)] = Ranger then Galaxy.EminentCareerShips[Ord(rcPirate)] := nil;
-      if Galaxy.EminentCareerShips[Ord(rcWarrior)] = Ranger then Galaxy.EminentCareerShips[Ord(rcWarrior)] := nil;
+      if Galaxy.EminentCareerShips[rcTrader] = Ranger then Galaxy.EminentCareerShips[rcTrader] := nil;
+      if Galaxy.EminentCareerShips[rcPirate] = Ranger then Galaxy.EminentCareerShips[rcPirate] := nil;
+      if Galaxy.EminentCareerShips[rcWarrior] = Ranger then Galaxy.EminentCareerShips[rcWarrior] := nil;
     end;
   end;
 end;
@@ -5254,40 +5254,40 @@ begin
       if WriteValue then Ship.StoreOnLanding := av[3].GetInt <> 0;
     end;
     7: begin
-      av[0].SetInt(Ord(Ship.StoragePermissions[1]));
-      if WriteValue then Ship.StoragePermissions[1] := av[3].GetInt <> 0;
+      av[0].SetInt(Ord(Ship.StoragePermissions[tskPlanet]));
+      if WriteValue then Ship.StoragePermissions[tskPlanet] := av[3].GetInt <> 0;
     end;
     8: begin
-      av[0].SetInt(Ord(Ship.StoragePermissions[2]));
-      if WriteValue then Ship.StoragePermissions[2] := av[3].GetInt <> 0;
+      av[0].SetInt(Ord(Ship.StoragePermissions[tskStation]));
+      if WriteValue then Ship.StoragePermissions[tskStation] := av[3].GetInt <> 0;
     end;
     9: begin
-      av[0].SetInt(Ord(Ship.CollectionPermissions[0]));
-      if WriteValue then Ship.CollectionPermissions[0] := av[3].GetInt <> 0;
+      av[0].SetInt(Ord(Ship.CollectionPermissions[tckOther]));
+      if WriteValue then Ship.CollectionPermissions[tckOther] := av[3].GetInt <> 0;
     end;
     10: begin
-      av[0].SetInt(Ord(Ship.CollectionPermissions[1]));
-      if WriteValue then Ship.CollectionPermissions[1] := av[3].GetInt <> 0;
+      av[0].SetInt(Ord(Ship.CollectionPermissions[tckArtefact]));
+      if WriteValue then Ship.CollectionPermissions[tckArtefact] := av[3].GetInt <> 0;
     end;
     11: begin
-      av[0].SetInt(Ord(Ship.CollectionPermissions[2]));
-      if WriteValue then Ship.CollectionPermissions[2] := av[3].GetInt <> 0;
+      av[0].SetInt(Ord(Ship.CollectionPermissions[tckMicroModule]));
+      if WriteValue then Ship.CollectionPermissions[tckMicroModule] := av[3].GetInt <> 0;
     end;
     12: begin
-      av[0].SetInt(Ord(Ship.CollectionPermissions[3]));
-      if WriteValue then Ship.CollectionPermissions[3] := av[3].GetInt <> 0;
+      av[0].SetInt(Ord(Ship.CollectionPermissions[tckEquipment]));
+      if WriteValue then Ship.CollectionPermissions[tckEquipment] := av[3].GetInt <> 0;
     end;
     13: begin
-      av[0].SetInt(Ord(Ship.CollectionPermissions[4]));
-      if WriteValue then Ship.CollectionPermissions[4] := av[3].GetInt <> 0;
+      av[0].SetInt(Ord(Ship.CollectionPermissions[tckUseless]));
+      if WriteValue then Ship.CollectionPermissions[tckUseless] := av[3].GetInt <> 0;
     end;
     14: begin
-      av[0].SetInt(Ord(Ship.CollectionPermissions[5]));
-      if WriteValue then Ship.CollectionPermissions[5] := av[3].GetInt <> 0;
+      av[0].SetInt(Ord(Ship.CollectionPermissions[tckGoods]));
+      if WriteValue then Ship.CollectionPermissions[tckGoods] := av[3].GetInt <> 0;
     end;
     15: begin
-      av[0].SetInt(Ord(Ship.CollectionPermissions[6]));
-      if WriteValue then Ship.CollectionPermissions[6] := av[3].GetInt <> 0;
+      av[0].SetInt(Ord(Ship.CollectionPermissions[tckCountable]));
+      if WriteValue then Ship.CollectionPermissions[tckCountable] := av[3].GetInt <> 0;
     end;
   else raise Exception.Create('Error.Script SF_TranclucatorData - unknown property ' + IntToWideString(Kind));
   end;
@@ -5587,7 +5587,7 @@ begin
   if Obj is TScriptItem then Item := TScriptItem(Obj).Item;
   if Item <> nil then
   begin
-    IsGoods := Byte(Item.ItemType) in [Ord(t_Food)..Ord(t_Narcotics)];
+    IsGoods := Item.ItemType in [t_Food..t_Narcotics];
     IsCountable := not IsGoods and (Item is TCountableItem);
     if (IsCountable or IsGoods) and (High(av) > 1) and (av[2].RealVType = vkString) and (av[2].GetString = 'Count') then
     begin
@@ -6447,7 +6447,7 @@ begin
     end
     else if (Item is TEquipment) and ((Item as TEquipment).EquippedFlag <> 0) then
     begin
-      if Byte(Item.ItemType) in [Ord(t_FuelTanks)..Ord(t_DefGenerator)] then Ship.UnequipSlot(Byte(Item.ItemType), 0);
+      if Item.ItemType in [t_FuelTanks..t_DefGenerator] then Ship.UnequipSlot(Byte(Item.ItemType), 0);
       if Item is TWeapon then
         for WeaponIndex := 1 to Ship.CountEquippedWeapons do
           if Ship.Weapons[WeaponIndex] = Item then
@@ -7580,11 +7580,11 @@ begin
     if (Skill < 0) or (Skill > 5) then raise Exception.Create('Error.Script ShipSkill - invalid skill index');
   end;
   if Current then av[0].SetInt(Ship.GetEffectiveSkillLevel(TPilotSkill(Skill)))
-  else av[0].SetInt(Ship.BaseSkills[Byte(Skill)]);
+  else av[0].SetInt(Ship.BaseSkills[TPilotSkill(Skill)]);
   if High(av) > 2 then
   begin
     Value := av[3].GetInt;
-    Ship.BaseSkills[Byte(Skill)] := Max(0, Min(6, Value));
+    Ship.BaseSkills[TPilotSkill(Skill)] := Max(0, Min(6, Value));
   end;
 end;
 { @end $6201D0 }
@@ -7885,15 +7885,15 @@ procedure SF_ShipStatus(av: array of TVarEC; code: TCodeEC);
 var
   Obj: TObject;
   Ranger: TRanger;
-  Index: Byte;
+  Career: TRangerCareer;
 begin
   if High(av) < 2 then raise Exception.Create('Error.Script ShipStatus');
   Obj := TObject(av[1].GetDword);
   if Obj is TRanger then Ranger := TRanger(Obj)
   else raise Exception.Create('Error.Script ShipStatus - not Ranger');
-  Index := av[2].GetInt;
-  av[0].SetInt(Ranger.CareerStatus[Index]);
-  if High(av) > 2 then Ranger.CareerStatus[Index] := av[3].GetInt;
+  Career := TRangerCareer(av[2].GetInt);
+  av[0].SetInt(Ranger.CareerStatus[Career]);
+  if High(av) > 2 then Ranger.CareerStatus[Career] := av[3].GetInt;
 end;
 { @end $621BA4 }
 
@@ -10247,7 +10247,7 @@ procedure SF_BonusValue(av: array of TVarEC; code: TCodeEC);
 begin
   if High(av) < 2 then raise Exception.Create('Error.Script BonusValue');
   if (av[1].GetInt < 0) or (av[1].GetInt >= MicroModuleTemplateCount) then raise Exception.Create('Error.Script BonusValue - number out of range');
-  av[0].SetInt(MicroModuleTemplates[av[1].GetInt].StatBonuses[Ord(TEquipmentBonusKind(av[2].GetInt))]);
+  av[0].SetInt(MicroModuleTemplates[av[1].GetInt].StatBonuses[TEquipmentBonusKind(av[2].GetInt)]);
 end;
 { @end $62A0BC }
 
@@ -10755,7 +10755,7 @@ begin
   if (High(av) > 2) and (av[3].GetInt <> 0) and (CurrentScreenId = screenStarMap) then
   begin
     RequestedScreenId := screenStarMap;
-    TMessageLoopGI(RegisteredScreens[Ord(CurrentScreenId)]).RequestClose(1);
+    TMessageLoopGI(RegisteredScreens[CurrentScreenId]).RequestClose(1);
   end;
 end;
 { @end $62C0C8 }
@@ -10863,7 +10863,7 @@ begin
   else
   begin
     Kind := av[1].GetDword;
-    if Kind < 256 then av[0].SetString(ItemTypeNames[Byte(Kind)])
+    if Kind < 256 then av[0].SetString(ItemTypeNames[TItemType(Kind)])
     else
     begin
       Obj := TObject(Kind);
@@ -11008,14 +11008,14 @@ begin
   begin
     GameEndReason := av[1].GetInt;
     RequestedScreenId := screenGameEnd;
-    TMessageLoopGI(RegisteredScreens[Ord(CurrentScreenId)]).RequestClose(1);
+    TMessageLoopGI(RegisteredScreens[CurrentScreenId]).RequestClose(1);
   end
   else
   begin
     ScoreScreen.RecordPlayerResult(GetPlayer <> nil);
     AboutScreen.ReturnToScores := True;
     RequestedScreenId := screenAbout;
-    TMessageLoopGI(RegisteredScreens[Ord(CurrentScreenId)]).RequestClose(1);
+    TMessageLoopGI(RegisteredScreens[CurrentScreenId]).RequestClose(1);
   end;
 end;
 { @end $62D368 }
@@ -11031,7 +11031,7 @@ begin
   else Event.AddTextData('');
   GameEndReason := gerDefault;
   RequestedScreenId := screenGameEnd;
-  TMessageLoopGI(RegisteredScreens[Ord(CurrentScreenId)]).RequestClose(1);
+  TMessageLoopGI(RegisteredScreens[CurrentScreenId]).RequestClose(1);
 end;
 { @end $62D418 }
 
@@ -11046,7 +11046,7 @@ begin
   else Event.AddTextData('');
   GameEndReason := gerDefault;
   RequestedScreenId := screenGameEnd;
-  TMessageLoopGI(RegisteredScreens[Ord(CurrentScreenId)]).RequestClose(1);
+  TMessageLoopGI(RegisteredScreens[CurrentScreenId]).RequestClose(1);
 end;
 { @end $62D550 }
 
@@ -11117,7 +11117,7 @@ begin
     QueuedVideos.Add(Request);
     if CurrentScript <> nil then CurrentScript.InitCode.LocalVar.GetVar('GVideoStatus').SetInt(1);
     RequestedScreenId := CurrentScreenId;
-    TMessageLoopGI(RegisteredScreens[Ord(CurrentScreenId)]).RequestClose(1);
+    TMessageLoopGI(RegisteredScreens[CurrentScreenId]).RequestClose(1);
   end;
 end;
 { @end $62D724 }
@@ -12497,7 +12497,7 @@ end;
 
 { @routine $632B68 SF_BonusText }
 procedure SF_BonusText(av: array of TVarEC; code: TCodeEC);
-var Index, Count: Integer; Text: WideString; Bonus: Byte; Value: Integer;
+var Index, Count: Integer; Text: WideString; Bonus: TEquipmentBonusKind; Value: Integer;
 begin
   if High(av) < 1 then raise Exception.Create('Error.Script BonusText');
   Index := av[1].GetInt;
@@ -12519,7 +12519,7 @@ begin
   begin
     ReplaceTextToken(Text, '<ExCount>', IntToStr(Count), '<color=255,240,100>');
     if MicroModuleTemplates[Index].SeparatedNumbers then
-      for Bonus := 0 to 42 do
+      for Bonus := Low(TEquipmentBonusKind) to High(TEquipmentBonusKind) do
       begin
         Value := Count * MicroModuleTemplates[Index].StatBonuses[Bonus];
         if Value > 0 then ReplaceTextToken(Text, '<' + EquipmentBonusNames[Bonus] + '>', '+' + IntToStr(Value), '<color=255,240,100>')
@@ -13334,7 +13334,7 @@ begin
   Item := nil;
   if Obj is TItem then Item := TItem(Obj);
   if Obj is TScriptItem then Item := TScriptItem(Obj).Item;
-  if Item <> nil then CanBreak := (Byte(Item.ItemType) in [Ord(t_FuelTanks)..Ord(t_CustomWeapon), Ord(t_Satellite)]) or (Byte(Item.ItemType) in [Ord(t_Artefact), Ord(t_ArtefactHull)..Ord(t_ArtefactAntigrav), Ord(t_ArtDefToEnergy)..Ord(t_ArtGiperJump), Ord(t_ArtBio)..Ord(t_ArtFastRacks)]);
+  if Item <> nil then CanBreak := (Item.ItemType in [t_FuelTanks..t_CustomWeapon, t_Satellite]) or (Item.ItemType in [t_Artefact, t_ArtefactHull..t_ArtefactAntigrav, t_ArtDefToEnergy..t_ArtGiperJump, t_ArtBio..t_ArtFastRacks]);
   av[0].SetDword(Ord(CanBreak));
 end;
 { @end $635A40 }
@@ -13399,7 +13399,7 @@ begin
   if Obj is TItem then Item := TItem(Obj);
   if Obj is TScriptItem then Item := TScriptItem(Obj).Item;
   if Item <> nil then
-    if Byte(Item.ItemType) in [Ord(t_Hull)..Ord(t_CustomWeapon)] then
+    if Item.ItemType in [t_Hull..t_CustomWeapon] then
     begin
       OldLevel := (Item as TEquipment).GetLevel;
       if High(av) > 1 then
@@ -13454,7 +13454,7 @@ begin
             TDefGenerator(Item).DamageFactor := TDefGenerator(Item).DamageFactor + TDefGenerator(NewBase).DamageFactor - TDefGenerator(OldBase).DamageFactor;
           end;
         else
-          if Byte(Item.ItemType) in [Ord(t_Weapon1)..Ord(t_CustomWeapon)] then
+          if Item.ItemType in [t_Weapon1..t_CustomWeapon] then
           begin
             TWeapon(Item).TechLevel := NewLevel;
             TWeapon(Item).Range := TWeapon(Item).Range + TWeapon(NewBase).Range - TWeapon(OldBase).Range;
@@ -13523,7 +13523,7 @@ begin
   if Obj is TItem then Item := TItem(Obj);
   if Obj is TScriptItem then Item := TScriptItem(Obj).Item;
   if Item <> nil then
-    if Byte(TWeapon(Item).GetWeaponInfo.ShotType) in [Ord(wstTorpedo)..Ord(wstRocket)] then
+    if TWeapon(Item).GetWeaponInfo.ShotType in [wstTorpedo..wstRocket] then
     begin
       // Native checks the base equipment class here, then accesses weapon fields.
       Needed := TWeapon(Item as TEquipment).AmmoCapacity - TWeapon(Item as TEquipment).Ammo;
@@ -13593,10 +13593,10 @@ begin
   Ship := TShip(av[1].GetDword);
   Kind := TEquipmentBonusKind(av[2].GetInt);
   if (High(av) > 2) and (av[3].RealVType = vkString) and (av[3].GetString = 'Total') then
-    av[0].SetInt(Ship.GetTotalStatBonus(Ord(Kind)))
+    av[0].SetInt(Ship.GetTotalStatBonus(Kind))
   else
   begin
-    av[0].SetInt(Ship.GetOwnStatBonus(Ord(Kind)));
+    av[0].SetInt(Ship.GetOwnStatBonus(Kind));
     if High(av) > 2 then Ship.SetStatBonus(Kind, av[3].GetInt);
   end;
 end;
@@ -13609,7 +13609,7 @@ var
   Index, Count: Integer;
 begin
   if High(av) < 1 then raise Exception.Create('Error.Script SF_ItemExtraSpecials');
-  if (High(av) = 1) and (Byte(TItem(av[1].GetDword).ItemType) in [Ord(t_Food)..Ord(t_Narcotics)]) then
+  if (High(av) = 1) and (TItem(av[1].GetDword).ItemType in [t_Food..t_Narcotics]) then
   begin
     av[0].SetInt(0);
     Exit;
@@ -13635,7 +13635,7 @@ var
   Entry: PExtraSpecial;
 begin
   if High(av) < 2 then raise Exception.Create('Error.Script SF_ItemExtraSpecialsCountByType');
-  if Byte(TItem(av[1].GetDword).ItemType) in [Ord(t_Food)..Ord(t_Narcotics)] then
+  if TItem(av[1].GetDword).ItemType in [t_Food..t_Narcotics] then
   begin
     av[0].SetInt(0);
     Exit;
@@ -14954,34 +14954,34 @@ var Id: TGameScreenId; Name: WideString;
 begin
   if High(av) < 1 then
   begin
-    if TMessageLoopGI(RegisteredScreens[Ord(RequestedScreenId)]) = nil then av[0].SetString('')
-    else av[0].SetString(TMessageLoopGI(RegisteredScreens[Ord(RequestedScreenId)]).RegisteredLoopName);
+    if TMessageLoopGI(RegisteredScreens[RequestedScreenId]) = nil then av[0].SetString('')
+    else av[0].SetString(TMessageLoopGI(RegisteredScreens[RequestedScreenId]).RegisteredLoopName);
     Exit;
   end;
 
   Name := av[1].GetString;
   for Id := screenNone to screenAchievements do
-    if (TMessageLoopGI(RegisteredScreens[Ord(Id)]) <> nil) and
-      (TObject(RegisteredScreens[Ord(Id)]) is TMessageLoopGI) and
-      ((TObject(RegisteredScreens[Ord(Id)]) as TMessageLoopGI).RegisteredLoopName = Name) then
+    if (TMessageLoopGI(RegisteredScreens[Id]) <> nil) and
+      (TObject(RegisteredScreens[Id]) is TMessageLoopGI) and
+      ((TObject(RegisteredScreens[Id]) as TMessageLoopGI).RegisteredLoopName = Name) then
     begin
       RequestedScreenId := Id;
-      if TMessageLoopGI(RegisteredScreens[Ord(Id)]) = ShipScreen then
+      if TMessageLoopGI(RegisteredScreens[Id]) = ShipScreen then
       begin
         if High(av) >= 2 then ShipScreen.ShipToInspect := TShip(av[2].GetDword);
         ShipReturnScreenId := CurrentScreenId;
         if not ((CurrentScreenId <> screenStarMap) and
-          (TMessageLoopGI(RegisteredScreens[Ord(CurrentScreenId)]) is TMessageLoopGIWithMainPanel) and
-          (TMessageLoopGIWithMainPanel(TMessageLoopGI(RegisteredScreens[Ord(CurrentScreenId)])).MainPanel <> nil)) then
+          (TMessageLoopGI(RegisteredScreens[CurrentScreenId]) is TMessageLoopGIWithMainPanel) and
+          (TMessageLoopGIWithMainPanel(TMessageLoopGI(RegisteredScreens[CurrentScreenId])).MainPanel <> nil)) then
         begin
           ShipReturnScreenId := CurrentScreenId;
           GetInnermostScreenLoop.RequestClose(1);
         end
-        else TMessageLoopGIWithMainPanel(TMessageLoopGI(RegisteredScreens[Ord(CurrentScreenId)])).MainPanel.ShipClicked(nil);
+        else TMessageLoopGIWithMainPanel(TMessageLoopGI(RegisteredScreens[CurrentScreenId])).MainPanel.ShipClicked(nil);
       end
       else
       begin
-        if TMessageLoopGI(RegisteredScreens[Ord(Id)]) = ScannerScreen then
+        if TMessageLoopGI(RegisteredScreens[Id]) = ScannerScreen then
         begin
           if High(av) >= 2 then ScannerTarget := TObject(av[2].GetDword) else ScannerTarget := nil;
           ScannerReturnScreenId := FormToId(GetInnermostScreenLoop);
@@ -15002,11 +15002,11 @@ begin
   if High(av) < 1 then raise Exception.Create('Error.Script RunChildForm');
   Name := av[1].GetString;
   for Id := screenNone to screenAchievements do
-    if (TMessageLoopGI(RegisteredScreens[Ord(Id)]) <> nil) and
-      (TObject(RegisteredScreens[Ord(Id)]) is TMessageLoopGI) and
-      ((TObject(RegisteredScreens[Ord(Id)]) as TMessageLoopGI).RegisteredLoopName = Name) then
+    if (TMessageLoopGI(RegisteredScreens[Id]) <> nil) and
+      (TObject(RegisteredScreens[Id]) is TMessageLoopGI) and
+      ((TObject(RegisteredScreens[Id]) as TMessageLoopGI).RegisteredLoopName = Name) then
     begin
-      Child := TMessageLoopGI(RegisteredScreens[Ord(Id)]);
+      Child := TMessageLoopGI(RegisteredScreens[Id]);
       Parent := GetInnermostScreenLoop;
       ChildBackground := nil;
       Background := Child.FindControlByPath('BGBuf');
@@ -15208,7 +15208,7 @@ begin
   Position.Y := av[2].GetInt;
   StarMapScreen.SetMapCenterManually(TruncatePointF(Position));
   SpaceViewPosition := Position;
-  if (High(av) >= 3) and (TMessageLoopGI(RegisteredScreens[Ord(CurrentScreenId)]) = StarMapScreen) then
+  if (High(av) >= 3) and (TMessageLoopGI(RegisteredScreens[CurrentScreenId]) = StarMapScreen) then
   begin
     Count := av[3].GetInt;
     for Index := 0 to Count - 1 do
@@ -15275,14 +15275,14 @@ begin
   begin
     if CurrentScreenId = screenShip then ShipScreen.StartMoneyWarning
     else if (CurrentScreenId = screenGoodsShop) and GetPlayer.InNormalSpace then GoodsShopScreen.FlashMoneyWarning
-    else if TMessageLoopGI(RegisteredScreens[Ord(CurrentScreenId)]) is TMessageLoopGIWithMainPanel then
-      TMessageLoopGIWithMainPanel(TMessageLoopGI(RegisteredScreens[Ord(CurrentScreenId)])).MainPanel.FlashMoneyWarning;
+    else if TMessageLoopGI(RegisteredScreens[CurrentScreenId]) is TMessageLoopGIWithMainPanel then
+      TMessageLoopGIWithMainPanel(TMessageLoopGI(RegisteredScreens[CurrentScreenId])).MainPanel.FlashMoneyWarning;
   end
   else if (av[1].GetString = 'Space') and (CurrentScreenId <> screenShip) then
   begin
     if (CurrentScreenId = screenGoodsShop) and GetPlayer.InNormalSpace then GoodsShopScreen.FlashCargoWarning
-    else if TMessageLoopGI(RegisteredScreens[Ord(CurrentScreenId)]) is TMessageLoopGIWithMainPanel then
-      TMessageLoopGIWithMainPanel(TMessageLoopGI(RegisteredScreens[Ord(CurrentScreenId)])).MainPanel.FlashCargoWarning;
+    else if TMessageLoopGI(RegisteredScreens[CurrentScreenId]) is TMessageLoopGIWithMainPanel then
+      TMessageLoopGIWithMainPanel(TMessageLoopGI(RegisteredScreens[CurrentScreenId])).MainPanel.FlashCargoWarning;
   end;
 end;
 { @end $63EBF0 }
@@ -15311,7 +15311,7 @@ begin
   av[0].SetDword(Cardinal(Info));
   if High(av) > 1 then Kind := av[2].GetInt else Kind := Ord(t_Weapon1);
   if not (Kind in [Ord(t_Weapon1)..Ord(t_Weapon18)]) then raise Exception.Create(AnsiString('Error.Script InventNewCustomWeapon - invalid type ' + av[2].GetString));
-  Base := @WeaponInfos[Kind];
+  Base := @WeaponInfos[TItemType(Kind)];
   Info.TechLevel := Base.TechLevel;
   Info.InventionIndex := Base.InventionIndex;
   Info.CostFactor := Base.CostFactor;
@@ -15354,7 +15354,7 @@ var Info: PWeaponInfo; Key: WideString;
 begin
   if High(av) < 2 then raise Exception.Create('Error.Script GetCustomWeaponStats');
   if av[1].RealVType = vkString then Info := Galaxy.RequireCustomWeaponInfo(av[1].GetString)
-  else Info := @WeaponInfos[Ord(TItemType(av[1].GetInt))];
+  else Info := @WeaponInfos[TItemType(av[1].GetInt)];
   Key := av[2].GetString;
   if Key = 'TechLevel' then av[0].SetInt(Info.TechLevel)
   else if Key = 'AverageSize' then av[0].SetInt(Info.AverageSize)
@@ -15403,7 +15403,7 @@ var Info: PWeaponInfo;
 begin
   if High(av) < 1 then raise Exception.Create('Error.Script GetCustomWeaponPrimaryDamageType');
   if av[1].RealVType = vkString then Info := Galaxy.RequireCustomWeaponInfo(av[1].GetString)
-  else Info := @WeaponInfos[Ord(TItemType(av[1].GetInt))];
+  else Info := @WeaponInfos[TItemType(av[1].GetInt)];
   av[0].SetInt(Ord(ClassifyWeaponDamageFlags(Info.DamageFlags)));
 end;
 { @end $63FB94 }
@@ -15441,7 +15441,7 @@ begin
   Info.TechLevel := av[2].GetInt;
   if not (TItemType(av[3].GetInt) in [t_Weapon1..t_Weapon18]) then
     raise Exception.Create('Error.Script SetCustomWeaponPrimaryData invalid tech');
-  Info.InventionIndex := WeaponInfos[Ord(TItemType(av[3].GetInt))].InventionIndex;
+  Info.InventionIndex := WeaponInfos[TItemType(av[3].GetInt)].InventionIndex;
   Info.ArcadeWeaponType := av[4].GetInt;
 end;
 { @end $63FFD0 }
@@ -15657,7 +15657,8 @@ end;
 procedure InitializeScriptBuiltinsAndConstants(Scope: TVarArrayEC);
 var
   WeaponIndex: Integer;
-  ActionIndex, BonusIndex: Byte;
+  ActionIndex: Byte;
+  BonusIndex: TEquipmentBonusKind;
 begin
   RegisterExpressionBuiltins(Scope);
   Scope.Add('GRun', vkExternFun).SetExternFun(@SF_GRun);
@@ -16416,8 +16417,8 @@ begin
   Scope.Add('TalkBreakPartner', vkInt).SetInt(tkPartnerBreak);
   Scope.Add('TalkPartnerTheEnd', vkInt).SetInt(tkPartnerEnd);
   Scope.Add('TalkPartnerRiot', vkInt).SetInt(tkPartnerRiot);
-  for BonusIndex := 0 to 42 do
-    Scope.Add(EquipmentBonusNames[BonusIndex], vkInt).SetInt(BonusIndex);
+  for BonusIndex := Low(TEquipmentBonusKind) to High(TEquipmentBonusKind) do
+    Scope.Add(EquipmentBonusNames[BonusIndex], vkInt).SetInt(Ord(BonusIndex));
   for ActionIndex := 0 to 61 do
     Scope.Add(ScriptActionTypeNames[ActionIndex], vkInt).SetInt(ActionIndex);
   ScriptRequestThread := TScriptThread.Create;

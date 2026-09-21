@@ -198,12 +198,12 @@ begin
   CreateAndEquipHull(RoundAndTruncateToHundreds((HullCapacityScale * 6000) * Galaxy.GetDominatorBossHullScale * NextRandomFloatRange(0.9, 1.1, RandomState)), 8, Ord(oiDominator), -1, False);
   CreateAndEquipFuelTanks(100, 8, Ord(oiDominator));
   CreateAndEquipEngine(Round(EngineBaseSize * EquipmentSizeFactors[1]), 8, Ord(oiDominator));
-  CreateAndEquipWeapon(Ord(t_Weapon15), Round(WeaponInfos[Ord(t_Weapon15)].AverageSize * EquipmentSizeFactors[5]), 8, Ord(oiDominator));
-  CreateAndEquipWeapon(Ord(t_Weapon15), Round(WeaponInfos[Ord(t_Weapon15)].AverageSize * EquipmentSizeFactors[5]), 8, Ord(oiDominator));
-  CreateAndEquipWeapon(Ord(t_Weapon13), Round(WeaponInfos[Ord(t_Weapon13)].AverageSize * EquipmentSizeFactors[5]), 8, Ord(oiDominator));
-  CreateAndEquipWeapon(Ord(t_Weapon11), Round(WeaponInfos[Ord(t_Weapon11)].AverageSize * EquipmentSizeFactors[5]), 8, Ord(oiDominator));
+  CreateAndEquipWeapon(Ord(t_Weapon15), Round(WeaponInfos[t_Weapon15].AverageSize * EquipmentSizeFactors[5]), 8, Ord(oiDominator));
+  CreateAndEquipWeapon(Ord(t_Weapon15), Round(WeaponInfos[t_Weapon15].AverageSize * EquipmentSizeFactors[5]), 8, Ord(oiDominator));
+  CreateAndEquipWeapon(Ord(t_Weapon13), Round(WeaponInfos[t_Weapon13].AverageSize * EquipmentSizeFactors[5]), 8, Ord(oiDominator));
+  CreateAndEquipWeapon(Ord(t_Weapon11), Round(WeaponInfos[t_Weapon11].AverageSize * EquipmentSizeFactors[5]), 8, Ord(oiDominator));
   if Galaxy.GetDifficultyTierIndex > 0 then
-    CreateAndEquipWeapon(Ord(t_Weapon12), Round(WeaponInfos[Ord(t_Weapon12)].AverageSize * EquipmentSizeFactors[5]), 8, Ord(oiDominator));
+    CreateAndEquipWeapon(Ord(t_Weapon12), Round(WeaponInfos[t_Weapon12].AverageSize * EquipmentSizeFactors[5]), 8, Ord(oiDominator));
   CreateAndEquipDefGenerator(Round(DefGeneratorBaseSize * EquipmentSizeFactors[5]), 8, Ord(oiDominator));
   CreateAndEquipRepairRobot(Round(RepairRobotBaseSize * EquipmentSizeFactors[5]), Round(RemapClamped(Galaxy.GetEffectiveDifficultyLevel, 0, 24, 4, 8)), OwnerId);
   SetInventoryDominatorOwner;
@@ -243,12 +243,12 @@ begin
   CreateAndEquipHull(RoundAndTruncateToHundreds((HullCapacityScale * 4000) * Galaxy.GetDominatorBossHullScale * NextRandomFloatRange(0.9, 1.1, RandomState)), 8, Ord(oiDominator), -1, False);
   CreateAndEquipFuelTanks(100, 8, Ord(oiDominator));
   CreateAndEquipEngine(Round(EngineBaseSize * EquipmentSizeFactors[1]), 8, Ord(oiDominator));
-  CreateAndEquipWeapon(Ord(t_Weapon15), Round(WeaponInfos[Ord(t_Weapon15)].AverageSize * EquipmentSizeFactors[5]), 8, Ord(oiDominator));
-  CreateAndEquipWeapon(Ord(t_Weapon14), Round(WeaponInfos[Ord(t_Weapon14)].AverageSize * EquipmentSizeFactors[5]), 8, Ord(oiDominator));
-  CreateAndEquipWeapon(Ord(t_Weapon13), Round(WeaponInfos[Ord(t_Weapon13)].AverageSize * EquipmentSizeFactors[5]), 8, Ord(oiDominator));
-  CreateAndEquipWeapon(Ord(t_Weapon9), Round(WeaponInfos[Ord(t_Weapon9)].AverageSize * EquipmentSizeFactors[5]), 8, Ord(oiDominator));
+  CreateAndEquipWeapon(Ord(t_Weapon15), Round(WeaponInfos[t_Weapon15].AverageSize * EquipmentSizeFactors[5]), 8, Ord(oiDominator));
+  CreateAndEquipWeapon(Ord(t_Weapon14), Round(WeaponInfos[t_Weapon14].AverageSize * EquipmentSizeFactors[5]), 8, Ord(oiDominator));
+  CreateAndEquipWeapon(Ord(t_Weapon13), Round(WeaponInfos[t_Weapon13].AverageSize * EquipmentSizeFactors[5]), 8, Ord(oiDominator));
+  CreateAndEquipWeapon(Ord(t_Weapon9), Round(WeaponInfos[t_Weapon9].AverageSize * EquipmentSizeFactors[5]), 8, Ord(oiDominator));
   if Galaxy.GetDifficultyTierIndex > 0 then
-    CreateAndEquipWeapon(Ord(t_Weapon10), Round(WeaponInfos[Ord(t_Weapon10)].AverageSize * EquipmentSizeFactors[5]), 8, Ord(oiDominator));
+    CreateAndEquipWeapon(Ord(t_Weapon10), Round(WeaponInfos[t_Weapon10].AverageSize * EquipmentSizeFactors[5]), 8, Ord(oiDominator));
   CreateAndEquipDefGenerator(Round(DefGeneratorBaseSize * EquipmentSizeFactors[5]), 8, Ord(oiDominator));
   Inc(CreateAndEquipRepairRobot(Round(RepairRobotBaseSize * EquipmentSizeFactors[5]), Round(RemapClamped(Galaxy.GetEffectiveDifficultyLevel, 0, 24, 4, 8)), OwnerId).RepairPoints, Galaxy.GetEffectiveDifficultyLevel);
   SetInventoryDominatorOwner;
@@ -300,16 +300,16 @@ begin
   Inc(CreateAndEquipHull(RoundAndTruncateToHundreds((HullCapacityScale * 10000) * Galaxy.GetDominatorBossHullScale * NextRandomFloatRange(0.9, 1.1, RandomState)), 8, Ord(oiDominator), -1, False).Armor, Galaxy.GetEffectiveDifficultyLevel div 4);
   CreateAndEquipFuelTanks(100, 8, Ord(oiDominator));
   CreateAndEquipEngine(Round(EngineBaseSize * EquipmentSizeFactors[1]), 8, Ord(oiDominator));
-  Weapon := CreateAndEquipWeapon(Ord(t_Weapon13), Round(WeaponInfos[Ord(t_Weapon13)].AverageSize * EquipmentSizeFactors[5]), 8, Ord(oiDominator));
+  Weapon := CreateAndEquipWeapon(Ord(t_Weapon13), Round(WeaponInfos[t_Weapon13].AverageSize * EquipmentSizeFactors[5]), 8, Ord(oiDominator));
   Inc(Weapon.Range, 5 * Galaxy.GetEffectiveDifficultyLevel);
   Inc(Weapon.MaxDamage, Galaxy.GetEffectiveDifficultyLevel div 2);
-  CreateAndEquipWeapon(Ord(t_Weapon4), Round(WeaponInfos[Ord(t_Weapon4)].AverageSize * EquipmentSizeFactors[5]), 8, Ord(oiDominator));
-  CreateAndEquipWeapon(Ord(t_Weapon4), Round(WeaponInfos[Ord(t_Weapon4)].AverageSize * EquipmentSizeFactors[5]), 8, Ord(oiDominator));
-  Weapon := CreateAndEquipWeapon(Ord(t_Weapon9), Round(WeaponInfos[Ord(t_Weapon9)].AverageSize * EquipmentSizeFactors[5]), 8, Ord(oiDominator));
+  CreateAndEquipWeapon(Ord(t_Weapon4), Round(WeaponInfos[t_Weapon4].AverageSize * EquipmentSizeFactors[5]), 8, Ord(oiDominator));
+  CreateAndEquipWeapon(Ord(t_Weapon4), Round(WeaponInfos[t_Weapon4].AverageSize * EquipmentSizeFactors[5]), 8, Ord(oiDominator));
+  Weapon := CreateAndEquipWeapon(Ord(t_Weapon9), Round(WeaponInfos[t_Weapon9].AverageSize * EquipmentSizeFactors[5]), 8, Ord(oiDominator));
   Inc(Weapon.Range, 5 * Galaxy.GetEffectiveDifficultyLevel);
   Inc(Weapon.MaxDamage, Galaxy.GetEffectiveDifficultyLevel div 2);
   if Galaxy.GetDifficultyTierIndex > 1 then
-    CreateAndEquipWeapon(Ord(t_Weapon15), Round(WeaponInfos[Ord(t_Weapon15)].AverageSize * EquipmentSizeFactors[5]), 8, Ord(oiDominator));
+    CreateAndEquipWeapon(Ord(t_Weapon15), Round(WeaponInfos[t_Weapon15].AverageSize * EquipmentSizeFactors[5]), 8, Ord(oiDominator));
   CreateAndEquipDefGenerator(Round(DefGeneratorBaseSize * EquipmentSizeFactors[5]), 8, Ord(oiDominator));
   CreateAndEquipRepairRobot(Round(RepairRobotBaseSize * EquipmentSizeFactors[5]), Round(RemapClamped(Galaxy.GetEffectiveDifficultyLevel, 0, 24, 4, 8)), OwnerId);
   SetInventoryDominatorOwner;
@@ -404,7 +404,7 @@ var
 
 begin
   InitializeDominator(Kind, Planet, Series);
-  ControlPercent := Galaxy.GetFactionControlPercent(Ord(sfDominators));
+  ControlPercent := Galaxy.GetFactionControlPercent(sfDominators);
   Rating := Round(125 * Galaxy.GetEffectiveDifficultyLevel + RemapClamped(Galaxy.CurrentTurn, 300, 22200, 0, 3000));
   WarRating := -150 * Galaxy.WarDeltaWin[1];
   DistanceRating := 0;
@@ -461,7 +461,7 @@ begin
         if Roll <= WeightSum then begin
           MaximumSizeIndex := DominatorEquipmentSizeIndices[Ord(KlingType), 0];
           MinimumSizeIndex := DominatorEquipmentSizeIndices[Ord(KlingType), 1];
-          if WeaponInfos[WeaponType].ShotType = wstAreaDamage then begin
+          if WeaponInfos[TItemType(WeaponType)].ShotType = wstAreaDamage then begin
             MaximumSizeIndex := 2;
             MinimumSizeIndex := 1;
           end;
@@ -470,7 +470,7 @@ begin
              ((DominatorSeries <> dsTerron) or not (WeaponType in [63, 64])) and
              ((DominatorSeries <> dsKeller) or not (WeaponType in [62, 64])));
           if Accepted then CreateAndEquipWeapon(WeaponType,
-            RandomEquipmentSize(WeaponInfos[WeaponType].AverageSize, MaximumSizeIndex, MinimumSizeIndex), RandomTuning(8, 9), Ord(oiDominator));
+            RandomEquipmentSize(WeaponInfos[TItemType(WeaponType)].AverageSize, MaximumSizeIndex, MinimumSizeIndex), RandomTuning(8, 9), Ord(oiDominator));
           Chosen := True;
         end;
         Inc(WeaponType);
@@ -749,13 +749,13 @@ begin
     SelectKellerReinforcementMission;
     if InNormalSpace then begin
       CoordinateSeriesInvasions(dsKeller);
-      if (Galaxy.CountFactionStars(Ord(sfDominators)) < 2) and (GetPlayer <> nil) and
+      if (Galaxy.CountFactionStars(sfDominators) < 2) and (GetPlayer <> nil) and
         (GetPlayer.IsOutsideStarSpace or (GetPlayer.CurrentStar <> CurrentStar)) then IntervalBonus := 30
       else IntervalBonus := 1;
       if ((Galaxy.KellerResearchTargetStarId <> 0) and (Galaxy.KellerResearchTargetStarId <> CurrentStar.Id)) or
         (Galaxy.CurrentTurn mod Galaxy.ScaleIntByTechLevel(5, IntervalBonus + 30) = 0) or (GetHull.HullPoints < 1300) or
         ((GetPlayer <> nil) and ((GetPlayer.CurrentStar = CurrentStar) or (GetPlayer.OrderTarget = CurrentStar)) and
-        (Galaxy.TechLevel < 7) and (Galaxy.GetFactionControlPercent(Ord(sfCoalition)) < 70)) then begin
+        (Galaxy.TechLevel < 7) and (Galaxy.GetFactionControlPercent(sfCoalition) < 70)) then begin
         Stage := 2;
         Hole := Galaxy.FindHoleInStarByKind(CurrentStar, 4);
         if Hole <> nil then
@@ -998,7 +998,7 @@ begin
   if (Galaxy.KellerMissionState = 0) and (Galaxy.KellerLeaveTurn = 0) then
     if (Galaxy.CurrentTurn mod (NextRandomIntRange(60, 80, RandomState) + Galaxy.ScaleIntByTechLevel(20, 0)) = 0) or
       (Galaxy.CurrentTurn mod 230 = 0) or
-      ((Galaxy.CurrentTurn mod NextRandomIntRange(5, 10, RandomState) = 0) and (Galaxy.CountFactionStars(Ord(sfDominators)) < 2)) or
+      ((Galaxy.CurrentTurn mod NextRandomIntRange(5, 10, RandomState) = 0) and (Galaxy.CountFactionStars(sfDominators) < 2)) or
       (Galaxy.KellerResearchTargetStarId <> 0) then begin
       if Galaxy.KellerResearchTargetStarId = 0 then Galaxy.KellerTargetStar := FindKellerAttackTarget
       else Galaxy.KellerTargetStar := Galaxy.IdToStar(Galaxy.KellerResearchTargetStarId);
@@ -1019,7 +1019,7 @@ begin
   if (Galaxy.KellerMissionState = 0) and (Galaxy.KellerResearchTargetStarId = 0) and (Galaxy.KellerLeaveTurn = 0) and
     (NextRandomIntRange(0, 1000, RandomState) + 1000 <= Galaxy.CurrentTurn) then
     if NextRandomIntRange(0, 10000, RandomState) <
-      Galaxy.GetFactionControlPercent(Ord(sfDominators)) * (100 - Galaxy.GetFactionControlPercent(Ord(sfDominators))) then
+      Galaxy.GetFactionControlPercent(sfDominators) * (100 - Galaxy.GetFactionControlPercent(sfDominators)) then
       if NextRandomIntRange(0, 1000, RandomState) > RemapClamped(Galaxy.GetDominatorSeriesControlShare(dsKeller), 0.7, 1.2, 0, 1000) then begin
         Galaxy.KellerTargetStar := FindKellerReinforcementTarget;
         if Galaxy.KellerTargetStar <> nil then Galaxy.KellerMissionState := 1;
@@ -1072,7 +1072,7 @@ begin
     Hole.Star1.DominatorSeries := dsKeller;
     Threshold := Round(Galaxy.GetDominatorAggressionLevel * 1.25) + 60;
     RandomMaximum := Round(Galaxy.GetDominatorAggressionLevel * 0.125) + 1;
-    Count := NextRandomIntRange(1, RandomMaximum, RandomState) + Round(RemapClamped(Galaxy.GetFactionControlPercent(Ord(sfDominators)), 0, Threshold, 12, 2));
+    Count := NextRandomIntRange(1, RandomMaximum, RandomState) + Round(RemapClamped(Galaxy.GetFactionControlPercent(sfDominators), 0, Threshold, 12, 2));
     if Galaxy.CurrentTurn >= 666 then
       if Galaxy.DominatorModLevel = 1 then Count := 15
       else if Galaxy.DominatorModLevel = 2 then Count := 17
@@ -1274,7 +1274,7 @@ var TargetStar: TStar; TargetCount, NonDominatorCount, OtherSeriesCount, Action:
   end;
 begin
   if GetPlayer = nil then Exit;
-  ControlPercent := Galaxy.GetFactionControlPercent(Ord(sfDominators));
+  ControlPercent := Galaxy.GetFactionControlPercent(sfDominators);
   BaseChance := Round(Galaxy.ScaleDifficultyExponentially(Galaxy.GetDominatorAggressionLevel, 10, 2));
   ControlThreshold := Round(5 * Galaxy.GetDominatorAggressionLevel / 8) + 80;
   Chance := Round(RemapClamped(ControlPercent, 1, ControlThreshold, BaseChance, 0));
@@ -1739,9 +1739,9 @@ procedure TKling.RefreshCombatSkills;
 var Percent: Byte; Lower, Upper, Maximum, Minimum, Threshold, StartPercent, MidPercent: Integer;
 begin
   if KlingType = ktBoss then begin
-    BaseSkills[0] := 6;
-    BaseSkills[1] := 6;
-    BaseSkills[5] := 6;
+    BaseSkills[psAccuracy] := 6;
+    BaseSkills[psManeuverability] := 6;
+    BaseSkills[psLeadership] := 6;
   end else begin
     FreeExperience := Galaxy.CurrentTurn;
     Minimum := 0;
@@ -1754,13 +1754,13 @@ begin
       else if Galaxy.DominatorModLevel = 3 then begin Maximum := 6; Minimum := 5; Threshold := 100; end;
     StartPercent := 1;
     MidPercent := Threshold div 2;
-    Percent := Galaxy.GetFactionControlPercent(Ord(sfDominators));
+    Percent := Galaxy.GetFactionControlPercent(sfDominators);
     Lower := Round(RemapClamped(Percent, StartPercent, MidPercent, Maximum, Minimum));
     Upper := Round(RemapClamped(Percent, MidPercent, Threshold, Maximum, Minimum));
     Lower := Min(Lower, Upper);
-    BaseSkills[0] := NextRandomIntRange(Lower, Upper, RandomState);
-    BaseSkills[1] := NextRandomIntRange(Lower, Upper, RandomState);
-    BaseSkills[2] := 6;
+    BaseSkills[psAccuracy] := NextRandomIntRange(Lower, Upper, RandomState);
+    BaseSkills[psManeuverability] := NextRandomIntRange(Lower, Upper, RandomState);
+    BaseSkills[psTechnical] := 6;
   end;
   TechKnowledge := 8;
 end;

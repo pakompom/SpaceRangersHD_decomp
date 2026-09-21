@@ -78,9 +78,9 @@ type
 const
   // Entries 22..27 of the $515C66 dispatch table enter $516662. These reads reload
   // the unchanged BonusKind byte at EBP-5; $87B3B8 is the base biased by -22*4.
-  PirateSkillBonusWeights: array[22..27] of Integer = (90, 90, 90, 90, 30, 5); // @addr $87AD18 @indexrefs "$5166B8,$516732,$51679D,$516815"
+  PirateSkillBonusWeights: array[bonSkill1..bonSkill6] of Integer = (90, 90, 90, 90, 30, 5); // @addr $87AD18 @indexrefs "$5166B8,$516732,$51679D,$516815"
   // EvaluateStatBonus dispatch bounds the indexed BonusKind to 13..20.
-  PirateSlotBonusWeights: array[13..20] of Integer = (100, 150, 150, 400, 150, 100, 20, 100); // @addr $87AD30 @indexrefs "$0051603E,$0051607E,$005160BE,$005160EF,$0051614B,$0051618B,$005161BC,$005161EB,$00516229,$0051625A,$00516289,$005162C7,$005162F8,$00516327,$00516365,$005163C1,$0051640B,$005164A2,$0051651C,$00516578,$00516614,$00516644"
+  PirateSlotBonusWeights: array[bonSlotRadar..bonSlotForsage] of Integer = (100, 150, 150, 400, 150, 100, 20, 100); // @addr $87AD30 @indexrefs "$0051603E,$0051607E,$005160BE,$005160EF,$0051614B,$0051618B,$005161BC,$005161EB,$00516229,$0051625A,$00516289,$005162C7,$005162F8,$00516327,$00516365,$005163C1,$0051640B,$005164A2,$0051651C,$00516578,$00516614,$00516644"
 
 implementation
 
@@ -169,7 +169,7 @@ begin
     CreateAndEquipFuelTanks(Round(FuelTanksBaseSize * EquipmentSizeFactors[5]), 1, OwnerId);
     CreateAndEquipEngine(Round(EquipmentSizeFactors[NextRandomIntRange(1, 2, RandomState)] * EngineBaseSize), NextRandomIntRange(1, 2, RandomState), OwnerId);
     if GetSlotCountForItemType(Ord(t_CargoHook)) > 0 then CreateAndEquipCargoHook(CargoHookBaseSize, NextRandomIntRange(1, 2, RandomState), OwnerId);
-    if GetSlotCount(sskWeapon) > WeaponCount then CreateAndEquipWeapon(Ord(t_Weapon1), WeaponInfos[Ord(t_Weapon1)].AverageSize, 1, OwnerId);
+    if GetSlotCount(sskWeapon) > WeaponCount then CreateAndEquipWeapon(Ord(t_Weapon1), WeaponInfos[t_Weapon1].AverageSize, 1, OwnerId);
     if GetSlotCountForItemType(Ord(t_Radar)) > 0 then CreateAndEquipRadar(Round(EquipmentSizeFactors[NextRandomIntRange(2, 4, RandomState)] * RadarBaseSize), 1, OwnerId);
   end else RefreshGraphic;
   RefreshDerivedStats(True);
@@ -323,7 +323,7 @@ begin
             Planet := SelectNearestQueuedPlanet;
             if (Planet <> nil) and (Planet.CurrentStar = CurrentStar) then OrderLanding(Planet, True)
             else begin
-              Station := FindNearestDockableStation(NonTargetableStationStandingMasks[Ord(sfPirates)]);
+              Station := FindNearestDockableStation(NonTargetableStationStandingMasks[sfPirates]);
               if Station <> nil then OrderLanding(Station, True) else EngageEnemyShip;
             end;
           end else begin
@@ -375,7 +375,7 @@ begin
         if (Order = soMove) and (PickupTargets = nil) and (NextRandomIntRange(1, 10, RandomState) <= 3) then TryCollectBestFloatingItem(50);
         Stage := 23;
         if (Order = soNone) and (NextRandomIntRange(1, 10, RandomState) <= 2) then begin
-          Station := FindNearestDockableStation(NonTargetableStationStandingMasks[Ord(sfPirates)]);
+          Station := FindNearestDockableStation(NonTargetableStationStandingMasks[sfPirates]);
           if Station <> nil then OrderLanding(Station, True);
         end;
         Stage := 24;
@@ -1070,7 +1070,7 @@ begin
   if Galaxy.GetAIJunkToleranceLevel < CurrentStar.Items.Count then
     for I := 0 to CurrentStar.Items.Count - 1 do begin
       Item := CurrentStar.Items[I];
-      if ((Item.ItemType = t_Minerals) or not (Byte(Item.ItemType) in [Ord(t_Food)..Ord(t_Narcotics)])) and
+      if ((Item.ItemType = t_Minerals) or not (Item.ItemType in [t_Food..t_Narcotics])) and
         ((Item.ItemType <> t_Minerals) or not IsRecentlyDroppedItem(Item)) and
         ((Item.ScriptItem = nil) or (TScriptItem(Item.ScriptItem).Name = '')) and not CanCargoHookHandleItem(Item, Self) then
         if (GetPlayer.CurrentStar <> CurrentStar) or (GetRelationLevelToShip(GetPlayer) <= rlBad) or
@@ -1582,9 +1582,9 @@ begin
   if InFear and not PirateSystem then RetreatFactor := 1.4 * RetreatFactor;
   if (OwnerId = Byte(oiPirate)) or (HostileSystem and (Station <> nil)) then begin
     if (OwnerId = Byte(oiPirate)) and not PirateSystem then RetreatFactor := RetreatFactor * 0.25;
-    DominatorAndCustomStrength := CurrentStar.GetCachedFactionStrength(Ord(sfDominators));
-    CoalitionStrength := CurrentStar.GetCachedFactionStrength(Ord(sfCoalition));
-    PirateStrength := CurrentStar.GetCachedFactionStrength(Ord(sfPirates));
+    DominatorAndCustomStrength := CurrentStar.GetCachedFactionStrength(sfDominators);
+    CoalitionStrength := CurrentStar.GetCachedFactionStrength(sfCoalition);
+    PirateStrength := CurrentStar.GetCachedFactionStrength(sfPirates);
     StrengthScale := 1 / Max(1, Galaxy.AverageRangerStrength);
     if TransitOriginStar <> nil then
       for I := 0 to CurrentStar.Ships.Count - 1 do begin
@@ -1708,54 +1708,54 @@ begin
     bonHookRadius: Result := Value * 0.1;
     bonMass: Result := RemapClamped(Value + GetHull.Weight * 0.1, HullMassEvaluationStart, HullMassEvaluationEnd, 1, 0.333) * 6000;
     bonSlotRadar:
-      if (GetSlotCount(sskRadar) = 0) and (Value > 0) then Result := PirateSlotBonusWeights[Ord(BonusKind)] * 0.3
-      else if (GetRadar <> nil) and (Value < 0) then Result := -PirateSlotBonusWeights[Ord(BonusKind)] - PirateSlotBonusWeights[18] * CountMissileWeapons
-      else if (GetSlotCount(sskRadar) = 1) and (Value < 0) then Result := PirateSlotBonusWeights[Ord(BonusKind)] * -0.3;
+      if (GetSlotCount(sskRadar) = 0) and (Value > 0) then Result := PirateSlotBonusWeights[BonusKind] * 0.3
+      else if (GetRadar <> nil) and (Value < 0) then Result := -PirateSlotBonusWeights[BonusKind] - PirateSlotBonusWeights[bonSlotWeapon] * CountMissileWeapons
+      else if (GetSlotCount(sskRadar) = 1) and (Value < 0) then Result := PirateSlotBonusWeights[BonusKind] * -0.3;
     bonSlotScaner:
-      if (GetSlotCount(sskScanner) = 0) and (Value > 0) then Result := PirateSlotBonusWeights[Ord(BonusKind)] * 0.3
-      else if (GetScanner <> nil) and (Value < 0) then Result := -PirateSlotBonusWeights[Ord(BonusKind)] - CountWeaponsByDamageFlags(ScannerFlags) * 0.1 * PirateSlotBonusWeights[18]
-      else if (GetSlotCount(sskScanner) = 1) and (Value < 0) then Result := PirateSlotBonusWeights[Ord(BonusKind)] * -0.3;
+      if (GetSlotCount(sskScanner) = 0) and (Value > 0) then Result := PirateSlotBonusWeights[BonusKind] * 0.3
+      else if (GetScanner <> nil) and (Value < 0) then Result := -PirateSlotBonusWeights[BonusKind] - CountWeaponsByDamageFlags(ScannerFlags) * 0.1 * PirateSlotBonusWeights[bonSlotWeapon]
+      else if (GetSlotCount(sskScanner) = 1) and (Value < 0) then Result := PirateSlotBonusWeights[BonusKind] * -0.3;
     bonSlotDroid:
-      if (GetSlotCount(sskRepairRobot) = 0) and (Value > 0) then Result := PirateSlotBonusWeights[Ord(BonusKind)] * 0.3
-      else if (GetRepairRobot <> nil) and (Value < 0) then Result := -PirateSlotBonusWeights[Ord(BonusKind)]
-      else if (GetSlotCount(sskRepairRobot) = 1) and (Value < 0) then Result := PirateSlotBonusWeights[Ord(BonusKind)] * -0.3;
+      if (GetSlotCount(sskRepairRobot) = 0) and (Value > 0) then Result := PirateSlotBonusWeights[BonusKind] * 0.3
+      else if (GetRepairRobot <> nil) and (Value < 0) then Result := -PirateSlotBonusWeights[BonusKind]
+      else if (GetSlotCount(sskRepairRobot) = 1) and (Value < 0) then Result := PirateSlotBonusWeights[BonusKind] * -0.3;
     bonSlotHook:
-      if (GetSlotCount(sskCargoHook) = 0) and (Value > 0) then Result := PirateSlotBonusWeights[Ord(BonusKind)] * 0.3
-      else if (GetCargoHook <> nil) and (Value < 0) then Result := -PirateSlotBonusWeights[Ord(BonusKind)]
-      else if (GetSlotCount(sskCargoHook) = 1) and (Value < 0) then Result := PirateSlotBonusWeights[Ord(BonusKind)] * -0.3;
+      if (GetSlotCount(sskCargoHook) = 0) and (Value > 0) then Result := PirateSlotBonusWeights[BonusKind] * 0.3
+      else if (GetCargoHook <> nil) and (Value < 0) then Result := -PirateSlotBonusWeights[BonusKind]
+      else if (GetSlotCount(sskCargoHook) = 1) and (Value < 0) then Result := PirateSlotBonusWeights[BonusKind] * -0.3;
     bonSlotDef:
-      if (GetSlotCount(sskDefGenerator) = 0) and (Value > 0) then Result := PirateSlotBonusWeights[Ord(BonusKind)] * 0.3
-      else if (GetDefGenerator <> nil) and (Value < 0) then Result := -PirateSlotBonusWeights[Ord(BonusKind)]
-      else if (GetSlotCount(sskDefGenerator) = 1) and (Value < 0) then Result := PirateSlotBonusWeights[Ord(BonusKind)] * -0.3;
+      if (GetSlotCount(sskDefGenerator) = 0) and (Value > 0) then Result := PirateSlotBonusWeights[BonusKind] * 0.3
+      else if (GetDefGenerator <> nil) and (Value < 0) then Result := -PirateSlotBonusWeights[BonusKind]
+      else if (GetSlotCount(sskDefGenerator) = 1) and (Value < 0) then Result := PirateSlotBonusWeights[BonusKind] * -0.3;
     bonSlotWeapon:
       begin
         if (GetSlotCount(sskWeapon) < 5) and (Value > 0) then
-          Result := Min(Value, 5 - GetSlotCount(sskWeapon)) * PirateSlotBonusWeights[Ord(BonusKind)];
-        if Value < 0 then Result := Max(Value, -GetSlotCount(sskWeapon)) * PirateSlotBonusWeights[Ord(BonusKind)];
+          Result := Min(Value, 5 - GetSlotCount(sskWeapon)) * PirateSlotBonusWeights[BonusKind];
+        if Value < 0 then Result := Max(Value, -GetSlotCount(sskWeapon)) * PirateSlotBonusWeights[BonusKind];
         if CountEquippedWeapons > Max(Value + GetSlotCount(sskWeapon), 1) then
-          Result := Result - (PirateSlotBonusWeights[Ord(BonusKind)] * 0.6) * (CountEquippedWeapons - Max(1, Value + GetSlotCount(sskWeapon)));
+          Result := Result - (PirateSlotBonusWeights[BonusKind] * 0.6) * (CountEquippedWeapons - Max(1, Value + GetSlotCount(sskWeapon)));
       end;
     bonSlotArt:
       begin
-        if (GetSlotCount(sskArtefact) < DefaultHullSlotCounts[8]) and (Value > 0) then
-          Result := Min(Value, DefaultHullSlotCounts[8] - GetSlotCount(sskArtefact)) * PirateSlotBonusWeights[Ord(BonusKind)];
-        if Value < 0 then Result := Max(Value, -GetSlotCount(sskArtefact)) * PirateSlotBonusWeights[Ord(BonusKind)];
+        if (GetSlotCount(sskArtefact) < DefaultHullSlotCounts[sskArtefact]) and (Value > 0) then
+          Result := Min(Value, DefaultHullSlotCounts[sskArtefact] - GetSlotCount(sskArtefact)) * PirateSlotBonusWeights[BonusKind];
+        if Value < 0 then Result := Max(Value, -GetSlotCount(sskArtefact)) * PirateSlotBonusWeights[BonusKind];
         if Artefacts <> nil then
           if Artefacts.Count > Max(Value + GetSlotCount(sskArtefact), 0) then Result := -1000;
       end;
     bonSlotForsage:
-      if (GetSlotCount(sskAfterburner) = 0) and (Value > 0) then Result := PirateSlotBonusWeights[Ord(BonusKind)]
-      else if (GetSlotCount(sskAfterburner) = 1) and (Value < 0) then Result := -PirateSlotBonusWeights[Ord(BonusKind)];
+      if (GetSlotCount(sskAfterburner) = 0) and (Value > 0) then Result := PirateSlotBonusWeights[BonusKind]
+      else if (GetSlotCount(sskAfterburner) = 1) and (Value < 0) then Result := -PirateSlotBonusWeights[BonusKind];
     bonSkill1..bonSkill6:
       begin
         if Value > 0 then
-          Result := Min(6 - GetEffectiveSkillLevel(TPilotSkill(EquipmentBonusSkills[Ord(BonusKind) - 22])), Value) * PirateSkillBonusWeights[Ord(BonusKind)];
-        if (Value > 0) and (Value + GetEffectiveSkillLevel(TPilotSkill(EquipmentBonusSkills[Ord(BonusKind) - 22])) > 6) then
-          Result := Result + (PirateSkillBonusWeights[Ord(BonusKind)] * 0.05) * (Value + GetEffectiveSkillLevel(TPilotSkill(EquipmentBonusSkills[Ord(BonusKind) - 22])) - 6);
+          Result := Min(6 - GetEffectiveSkillLevel(EquipmentBonusSkills[Ord(BonusKind) - Ord(bonSkill1)]), Value) * PirateSkillBonusWeights[BonusKind];
+        if (Value > 0) and (Value + GetEffectiveSkillLevel(EquipmentBonusSkills[Ord(BonusKind) - Ord(bonSkill1)]) > 6) then
+          Result := Result + (PirateSkillBonusWeights[BonusKind] * 0.05) * (Value + GetEffectiveSkillLevel(EquipmentBonusSkills[Ord(BonusKind) - Ord(bonSkill1)]) - 6);
         if Value < 0 then
-          Result := Min(GetEffectiveSkillLevel(TPilotSkill(EquipmentBonusSkills[Ord(BonusKind) - 22])), -Value) * -PirateSkillBonusWeights[Ord(BonusKind)];
-        if (Value < 0) and (Value + GetEffectiveSkillLevel(TPilotSkill(EquipmentBonusSkills[Ord(BonusKind) - 22])) < 0) then
-          Result := Result + (PirateSkillBonusWeights[Ord(BonusKind)] * 0.03) * (Value + GetEffectiveSkillLevel(TPilotSkill(EquipmentBonusSkills[Ord(BonusKind) - 22])));
+          Result := Min(GetEffectiveSkillLevel(EquipmentBonusSkills[Ord(BonusKind) - Ord(bonSkill1)]), -Value) * -PirateSkillBonusWeights[BonusKind];
+        if (Value < 0) and (Value + GetEffectiveSkillLevel(EquipmentBonusSkills[Ord(BonusKind) - Ord(bonSkill1)]) < 0) then
+          Result := Result + (PirateSkillBonusWeights[BonusKind] * 0.03) * (Value + GetEffectiveSkillLevel(EquipmentBonusSkills[Ord(BonusKind) - Ord(bonSkill1)]));
       end;
   else Result := 0;
   end;
@@ -1765,7 +1765,7 @@ begin
   if (PirateType = 2) and (BonusKind in [bonScan, bonWEnergy..bonWRadius]) then Result := Result * 1.3;
   if (PirateType = 3) and (BonusKind in [bonSpeed, bonRadar, bonDroid, bonWRadius, bonMass]) then Result := Result * 1.3;
   if (PirateType = 3) and (BonusKind in [bonWEnergy..bonWMissile]) then Result := Result * 0.7;
-  if BonusKind in [bonSkill1..bonSkill6] then Result := Result * 0.01 * (100 + SeededRandomIntRange(-75, 75, Seed + 131 * Ord(BonusKind))) * RaceSkillEvaluationFactors[PilotRace, EquipmentBonusSkills[Ord(BonusKind) - 22]]
+  if BonusKind in [bonSkill1..bonSkill6] then Result := Result * 0.01 * (100 + SeededRandomIntRange(-75, 75, Seed + 131 * Ord(BonusKind))) * RaceSkillEvaluationFactors[PilotRace, EquipmentBonusSkills[Ord(BonusKind) - Ord(bonSkill1)]]
   else Result := Result * 0.01 * (100 + SeededRandomIntRange(-25, 25, Seed + 131 * Ord(BonusKind)));
 end;
 { @end $515C30 }
@@ -1851,13 +1851,13 @@ begin
     if dkDroidBlock in Flags then Result := Result + ScannerFactor * 5;
   end;
   SpeedFactor := Max(100, SmoothedEnemySpeed) * GetHull.Weight / (HullBaseSize * Max(100, SmoothedSpeed * EquipmentSizeFactors[1]));
-  case Byte(Weapon.GetWeaponInfo.ShotType) of
-    Ord(wstRocket): Result := Result * 0.9 * Weapon.GetShotCount * (1 + StatusFactor);
-    Ord(wstMissile): Result := Result * (0.9 + Weapon.GetWeaponInfo.SecondaryDamageRadius * 0.2 * 0.01 + StatusFactor) * Weapon.GetShotCount;
-    Ord(wstTorpedo): Result := Result * (1 + Weapon.GetWeaponInfo.SecondaryDamageRadius * 0.2 * 0.01 + StatusFactor);
-    Ord(wstChain): Result := Result * (1.3 + (Weapon.GetShotCount - 1) * 0.1) * (1 + StatusFactor);
-    Ord(wstSplash): Result := Result * (1 + Weapon.GetWeaponInfo.SecondaryDamageRadius * 0.4 * 0.01 * SpeedFactor + StatusFactor);
-    Ord(wstAreaDamage): Result := Result * (1 + Weapon.Range * 0.3 * 0.01 * SpeedFactor + StatusFactor);
+  case Weapon.GetWeaponInfo.ShotType of
+    wstRocket: Result := Result * 0.9 * Weapon.GetShotCount * (1 + StatusFactor);
+    wstMissile: Result := Result * (0.9 + Weapon.GetWeaponInfo.SecondaryDamageRadius * 0.2 * 0.01 + StatusFactor) * Weapon.GetShotCount;
+    wstTorpedo: Result := Result * (1 + Weapon.GetWeaponInfo.SecondaryDamageRadius * 0.2 * 0.01 + StatusFactor);
+    wstChain: Result := Result * (1.3 + (Weapon.GetShotCount - 1) * 0.1) * (1 + StatusFactor);
+    wstSplash: Result := Result * (1 + Weapon.GetWeaponInfo.SecondaryDamageRadius * 0.4 * 0.01 * SpeedFactor + StatusFactor);
+    wstAreaDamage: Result := Result * (1 + Weapon.Range * 0.3 * 0.01 * SpeedFactor + StatusFactor);
   else Result := Result * (1 + StatusFactor);
   end;
   Result := Result * Weapon.GetAttackCount;
@@ -1876,7 +1876,7 @@ begin Result := True; end;
 function TPirate.AcceptPickupDistance(Item: TItem; Distance: Double): Boolean;
 begin
   if Speed < 1 then begin Result := False; Exit; end;
-  Result := (Byte(Item.ItemType) in [Ord(t_Technics), Ord(t_Luxury), Ord(t_Alcohol)..Ord(t_Narcotics)]) or (2 * Speed >= Distance) or
+  Result := (Item.ItemType in [t_Technics, t_Luxury, t_Alcohol..t_Narcotics]) or (2 * Speed >= Distance) or
     (Item.Cost >= RemapClamped(Distance / Speed, 1, 10, 0.01, 0.05) * Wealth);
 end;
 { @end $517430 }

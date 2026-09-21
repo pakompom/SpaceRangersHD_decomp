@@ -362,7 +362,7 @@ begin
     else if TalkShip <> nil then
       (GetByName('TalkShipChar') as TLabelGI).SetText(TalkShip.GetLocalizedTypeName)
     else if TalkPlanet <> nil then
-      (GetByName('TalkShipChar') as TLabelGI).SetText(PlanetEconomyInfo[Ord(TalkPlanet.Economy)].DisplayName)
+      (GetByName('TalkShipChar') as TLabelGI).SetText(PlanetEconomyInfo[TalkPlanet.Economy].DisplayName)
     else (GetByName('TalkShipChar') as TLabelGI).SetText('');
     Portrait := GetByName('CaptainI') as TImageGI;
     if TalkShip <> nil then Portrait.SetImagePath('GI,' + TalkShip.GetCaptainPortraitResourceBase + 'i')

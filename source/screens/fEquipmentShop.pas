@@ -636,8 +636,8 @@ begin
           else if (Slot.Item is TMicroModule) and (MicroModuleTemplates[TEquipment(Slot.Item).MicroModuleIndex - 1].KindGraph <> '') and
             CacheDataRoot.FileExistsByPath('Bm.FormShop2.' + GiResourceSuffix + 'Slot' + MicroModuleTemplates[TEquipment(Slot.Item).MicroModuleIndex - 1].KindGraph + LevelSuffix) then
             SetImagePath('GI,Bm.FormShop2.' + GiResourceSuffix + 'Slot' + MicroModuleTemplates[TEquipment(Slot.Item).MicroModuleIndex - 1].KindGraph + LevelSuffix)
-          else if CacheDataRoot.FileExistsByPath('Bm.FormShop2.' + GiResourceSuffix + 'Slot' + ItemTypeNames[Ord(Slot.Item.ItemType)] + LevelSuffix) then
-            SetImagePath('GI,Bm.FormShop2.' + GiResourceSuffix + 'Slot' + ItemTypeNames[Ord(Slot.Item.ItemType)] + LevelSuffix)
+          else if CacheDataRoot.FileExistsByPath('Bm.FormShop2.' + GiResourceSuffix + 'Slot' + ItemTypeNames[Slot.Item.ItemType] + LevelSuffix) then
+            SetImagePath('GI,Bm.FormShop2.' + GiResourceSuffix + 'Slot' + ItemTypeNames[Slot.Item.ItemType] + LevelSuffix)
           else if (Slot.Item is TArtefact) and CacheDataRoot.FileExistsByPath('Bm.FormShop2.' + GiResourceSuffix + 'SlotArtefact') then
             SetImagePath('GI,Bm.FormShop2.' + GiResourceSuffix + 'SlotArtefact')
           else if (Slot.Item is TWeapon) and CacheDataRoot.FileExistsByPath('Bm.FormShop2.' + GiResourceSuffix + 'SlotWeapon' + LevelSuffix) then
@@ -1346,7 +1346,7 @@ begin
   if Hull.GetSlotCount(sskWeapon) < 3 then AddOverlay('InfoHull_W3');
   if Hull.GetSlotCount(sskWeapon) < 4 then AddOverlay('InfoHull_W4');
   if Hull.GetSlotCount(sskWeapon) < 5 then AddOverlay('InfoHull_W5');
-  for I := 1 to DefaultHullSlotCounts[Ord(sskArtefact)] do
+  for I := 1 to DefaultHullSlotCounts[sskArtefact] do
     if Hull.GetSlotCount(sskArtefact) < I then AddOverlay('InfoHull_A' + IntToWideString(I));
   if Hull.GetSlotCount(sskEngine) < 1 then AddOverlay('InfoHull_Engine');
   if Hull.GetSlotCount(sskFuelTanks) < 1 then AddOverlay('InfoHull_FuelTanks');
@@ -1389,7 +1389,7 @@ begin
   Target.GetByName('InfoHull_W3').SetActive(not (Hull.GetSlotCount(sskWeapon) >= 3));
   Target.GetByName('InfoHull_W4').SetActive(not (Hull.GetSlotCount(sskWeapon) >= 4));
   Target.GetByName('InfoHull_W5').SetActive(not (Hull.GetSlotCount(sskWeapon) >= 5));
-  for I := 1 to DefaultHullSlotCounts[Ord(sskArtefact)] do
+  for I := 1 to DefaultHullSlotCounts[sskArtefact] do
   begin
     Control := Target.FindControlByPath('InfoHull_A' + IntToWideString(I));
     if Control <> nil then Control.SetActive(not (Hull.GetSlotCount(sskArtefact) >= I));

@@ -100,7 +100,7 @@ begin
     begin
       AppendLogLineThreadSafe(E.ClassName + ' ' + E.Message);
       RequestedScreenId := screenNone;
-      TMessageLoopGI(RegisteredScreens[Ord(CurrentScreenId)]).RequestClose(1);
+      TMessageLoopGI(RegisteredScreens[CurrentScreenId]).RequestClose(1);
       ExitScreenLoop := True;
       raise Exception.Create('Error in procedure ThCa label = ' + IntToStr(Stage));
     end;

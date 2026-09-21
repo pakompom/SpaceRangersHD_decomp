@@ -112,6 +112,16 @@ const
 
 type
   TPercent = 0..100;
+
+  TPilotSkill = (
+    psAccuracy = 0,
+    psManeuverability = 1,
+    psTechnical = 2,
+    psTrading = 3,
+    psCharisma = 4,
+    psLeadership = 5
+  ); // @size 0x1
+
   TProgramIndex = 0..11;
 
   // MatrixGame's SRobotGameState / CGame.SaveResult ABI, also stored in battle history.
@@ -320,7 +330,7 @@ type
     InventionProgressScale: Single; // @offset 0x00  Used by TPlanet.CalculateInventionProgressRate.
     InitialInventionBoostCount: Integer; // @offset 0x04
     GoodsFactors: array[0..7] of TPlanetGoodsFactors; // @offset 0x08
-    GovernmentRollThresholds: array[0..4] of Byte; // @offset 0x88  Cumulative thresholds indexed by TPlanetGovernment.
+    GovernmentRollThresholds: array[TPlanetGovernment] of Byte; // @offset 0x88  Cumulative thresholds indexed by TPlanetGovernment.
     RevolutionChance: Single; // @offset 0x90
     FriendlyRelationScale: Single; // @offset $94 Scales transport-to-transport relations ($720764) and partner-gift gains ($6DD9D8/$6E1A8C).
     PirateRelationFactor: Single; // @offset 0x98  Multiplies owner-table relations for pirates at Coalition planets.
@@ -353,7 +363,7 @@ type
   TOwnerRelationRow = array[0..7] of Byte;
   TOwnerRelationTable = array[0..7] of TOwnerRelationRow;
   POwnerRelationTable = ^TOwnerRelationTable;
-  TFactionStandingMasks = array[0..2] of TStationStandingMask;
+  TFactionStandingMasks = array[TStarFaction] of TStationStandingMask;
   PFactionStandingMasks = ^TFactionStandingMasks;
   TQuestType = (qtSendLetter = 0, qtKillShip = 1, qtPlanetQuest = 2,
     qtDefendSystem = 3, qtDefendShip = 4); // @size 0x1
@@ -364,9 +374,9 @@ type
     BaseDuration: Integer; // @offset 0x04
     BaseRewardMoney: Integer; // @offset 0x08
   end;
-  TQuestTuningTable = array[0..4] of TQuestTuning;
+  TQuestTuningTable = array[TQuestType] of TQuestTuning;
   PQuestTuningTable = ^TQuestTuningTable;
-  TQuestExperienceTable = array[0..4] of Integer;
+  TQuestExperienceTable = array[TQuestType] of Integer;
   PQuestExperienceTable = ^TQuestExperienceTable;
 
   TRelationLevel = (rlHostile = 0, rlBad = 1, rlNormal = 2,
@@ -396,7 +406,7 @@ type
   PGalaxyDifficultyTuningTable = ^TGalaxyDifficultyTuningTable;
 
   TDominatorSeries = (dsBlazer = 0, dsKeller = 1, dsTerron = 2); // @size 0x1
-  TFactionStrengthValues = array[0..2] of Single;
+  TFactionStrengthValues = array[TStarFaction] of Single;
 
   TStarStatus = record // @size $1C
     ThreatLevel: Byte; // @offset $00  0..100.
@@ -406,7 +416,7 @@ type
     Battle: Byte; // @offset $08  Script.StarBattle.
     DominatorSeries: TDominatorSeries; // @offset $09  Script.StarSeries.
     PreviousControlFaction: TStarFaction; // @offset $0A
-    CachedFactionStrength: TFactionStrengthValues; // @offset $0C  Coalition, Dominators/custom, pirates; indexed by Ord(TStarFaction).
+    CachedFactionStrength: TFactionStrengthValues; // @offset $0C  Coalition, Dominators/custom, pirates; indexed by TStarFaction.
     FactionStrengthCacheTurn: Integer; // @offset $18
   end;
 

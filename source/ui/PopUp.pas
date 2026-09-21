@@ -105,7 +105,7 @@ begin
     SetDepth(-1000);
     SetSize(Classes.Point(GameScreenWidth, GameScreenHeight));
     SetPositionModeW(True);
-    MessageLoop := TObject(RegisteredScreens[Ord(CurrentScreenId)]) as TMessageLoopGI;
+    MessageLoop := TObject(RegisteredScreens[CurrentScreenId]) as TMessageLoopGI;
     while TextQueue.Count > 0 do
     begin
       Text := PWideString(TextQueue[0])^;

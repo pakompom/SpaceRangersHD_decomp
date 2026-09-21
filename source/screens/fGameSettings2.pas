@@ -17,7 +17,7 @@ type
     CharacterPreset: Integer; // @offset 0xE0
     CaptainPortraitIndex: Integer; // @offset 0xE4
     LastPortraitByRace: array[0..4] of Integer; // @offset 0xE8
-    StartingSkills: array[0..1] of Byte; // @offset 0xFC
+    StartingSkills: array[0..1] of TPilotSkill; // @offset 0xFC
     SelectedSkillSlot: Integer; // @offset 0x100
     StartingItemChoices: array[0..1] of Integer; // @offset 0x104 // Choice values are 1..12; ItemTypeByChoice is zero-based.
     SelectedItemSlot: Integer; // @offset 0x10C
@@ -252,9 +252,9 @@ begin
   for I := 0 to 11 do ItemTypeByChoice[I] := I + 43;
   for I := 0 to 11 do
     if ItemTypeByChoice[I] in [Ord(t_Weapon1)..Ord(t_Weapon18)] then
-      (GetByName('ItemI' + IntToStr(I + 1)) as TImageGI).SetImagePath('GI,Bm.Items.' + GiResourceSuffix + ItemTypeNames[ItemTypeByChoice[I]] + 's')
+      (GetByName('ItemI' + IntToStr(I + 1)) as TImageGI).SetImagePath('GI,Bm.Items.' + GiResourceSuffix + ItemTypeNames[TItemType(ItemTypeByChoice[I])] + 's')
     else
-      (GetByName('ItemI' + IntToStr(I + 1)) as TImageGI).SetImagePath('GI,Bm.Items.' + GiResourceSuffix + ItemTypeNames[ItemTypeByChoice[I]] + IntToStr(1) + 's');
+      (GetByName('ItemI' + IntToStr(I + 1)) as TImageGI).SetImagePath('GI,Bm.Items.' + GiResourceSuffix + ItemTypeNames[TItemType(ItemTypeByChoice[I])] + IntToStr(1) + 's');
   for I := 1 to 4 do
     for J := 0 to 7 do
       with GetByName('Level' + IntToStr(I) + '_' + IntToStr(J)) as TGraphButtonGI do
@@ -424,13 +424,13 @@ begin
     (ExtractDigitsToIntW(NewGameSettingsConfig.GetParamByPathOrMarker('Skill2')) in [0..5]) and
     (ExtractDigitsToIntW(NewGameSettingsConfig.GetParamByPathOrMarker('Skill1')) <> ExtractDigitsToIntW(NewGameSettingsConfig.GetParamByPathOrMarker('Skill2'))) then
   begin
-    StartingSkills[0] := ExtractDigitsToIntW(NewGameSettingsConfig.GetParamByPathOrMarker('Skill1'));
-    StartingSkills[1] := ExtractDigitsToIntW(NewGameSettingsConfig.GetParamByPathOrMarker('Skill2'));
+    StartingSkills[0] := TPilotSkill(ExtractDigitsToIntW(NewGameSettingsConfig.GetParamByPathOrMarker('Skill1')));
+    StartingSkills[1] := TPilotSkill(ExtractDigitsToIntW(NewGameSettingsConfig.GetParamByPathOrMarker('Skill2')));
   end
   else
   begin
-    StartingSkills[0] := 0;
-    StartingSkills[1] := 3;
+    StartingSkills[0] := psAccuracy;
+    StartingSkills[1] := psTrading;
   end;
   RefreshStartingSkills;
   SelectedItemSlot := 0;
@@ -943,11 +943,11 @@ end;
 
 { @routine $574C64 TfGameSettings2_RefreshStartingSkills }
 procedure TfGameSettings2.RefreshStartingSkills;
-var Skill: Byte; Number, Slot: Integer; Selected: Boolean;
+var Skill: TPilotSkill; Number, Slot: Integer; Selected: Boolean;
 begin
-  with GetByName('SkillCur') do SetPosition(Classes.Point(68 + 55 * StartingSkills[SelectedSkillSlot],109));
+  with GetByName('SkillCur') do SetPosition(Classes.Point(68 + 55 * Ord(StartingSkills[SelectedSkillSlot]),109));
   Number := 1;
-  for Skill := 0 to 5 do
+  for Skill := Low(TPilotSkill) to High(TPilotSkill) do
   begin
     Selected := False;
     for Slot := 0 to 1 do
@@ -964,11 +964,11 @@ end;
 
 { @routine $574DA4 TfGameSettings2_StartingSkillClicked }
 procedure TfGameSettings2.StartingSkillClicked(Sender: TObjectGI);
-var Slot: Integer; Skill: Byte;
+var Slot: Integer; Skill: TPilotSkill;
 begin
   if (GetByName('LevelOpen') as TGraphButtonGI).Active then
   begin
-    Skill := ExtractDigitsToIntW(Sender.ControlName) - 1;
+    Skill := TPilotSkill(ExtractDigitsToIntW(Sender.ControlName) - 1);
     for Slot := 0 to 1 do
       if StartingSkills[Slot] = Skill then
       begin
@@ -1209,8 +1209,8 @@ begin
       NewGameSettingsConfig.SetOrAddParam('Race', OwnerInfo[RaceToOwner(PlayerRace)].InternalName);
       NewGameSettingsConfig.SetOrAddParam('Char', IntToStr(CharacterPreset));
       NewGameSettingsConfig.SetOrAddParam('Face', IntToStr(CaptainPortraitIndex));
-      NewGameSettingsConfig.SetOrAddParam('Skill1', IntToStr(StartingSkills[0]));
-      NewGameSettingsConfig.SetOrAddParam('Skill2', IntToStr(StartingSkills[1]));
+      NewGameSettingsConfig.SetOrAddParam('Skill1', IntToStr(Ord(StartingSkills[0])));
+      NewGameSettingsConfig.SetOrAddParam('Skill2', IntToStr(Ord(StartingSkills[1])));
       NewGameSettingsConfig.SetOrAddParam('Item1', IntToStr(StartingItemChoices[0]));
       NewGameSettingsConfig.SetOrAddParam('Item2', IntToStr(StartingItemChoices[1]));
       for I := 0 to 7 do NewGameSettingsConfig.SetOrAddParam('Level' + IntToStr(I), IntToStr(DifficultyLevels[I]));

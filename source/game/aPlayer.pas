@@ -868,18 +868,18 @@ begin
   inherited InitializeAtPlanet(Planet, InitialMoney);
   BaseNodes := RoundAndTruncateToTens(BaseNodes * GalaxyDifficultyTuning[Galaxy.DifficultyLevels[7]].ArcadeRewardScale);
   PreferredCareer := rcTrader;
-  CareerStatus[Ord(rcTrader)] := 0;
-  CareerStatus[Ord(rcWarrior)] := 0;
-  CareerStatus[Ord(rcPirate)] := 0;
-  EminentProgress[Ord(rcTrader)] := 0;
-  EminentProgress[Ord(rcPirate)] := 0;
-  EminentProgress[Ord(rcWarrior)] := 0;
-  BaseSkills[0] := 0;
-  BaseSkills[1] := 0;
-  BaseSkills[2] := 0;
-  BaseSkills[3] := 0;
-  BaseSkills[4] := 0;
-  BaseSkills[5] := 0;
+  CareerStatus[rcTrader] := 0;
+  CareerStatus[rcWarrior] := 0;
+  CareerStatus[rcPirate] := 0;
+  EminentProgress[rcTrader] := 0;
+  EminentProgress[rcPirate] := 0;
+  EminentProgress[rcWarrior] := 0;
+  BaseSkills[psAccuracy] := 0;
+  BaseSkills[psManeuverability] := 0;
+  BaseSkills[psTechnical] := 0;
+  BaseSkills[psTrading] := 0;
+  BaseSkills[psCharisma] := 0;
+  BaseSkills[psLeadership] := 0;
 end;
 { @end $586710 }
 
@@ -911,8 +911,8 @@ begin
       CreateAndEquipEngine(Round(EngineBaseSize * EquipmentSizeFactors[2]), 1, OwnerId);
       CreateAndEquipRadar(Round(RadarBaseSize * EquipmentSizeFactors[2]), 1, OwnerId);
       CreateAndEquipCargoHook(Round(CargoHookBaseSize * EquipmentSizeFactors[2]), 1, OwnerId);
-      CreateAndEquipWeapon(Ord(t_Weapon1), Round(WeaponInfos[Ord(t_Weapon1)].AverageSize * EquipmentSizeFactors[1]), 3, OwnerId);
-      CreateAndEquipWeapon(Ord(t_Weapon2), Round(WeaponInfos[Ord(t_Weapon2)].AverageSize * EquipmentSizeFactors[2]), 2, OwnerId);
+      CreateAndEquipWeapon(Ord(t_Weapon1), Round(WeaponInfos[t_Weapon1].AverageSize * EquipmentSizeFactors[1]), 3, OwnerId);
+      CreateAndEquipWeapon(Ord(t_Weapon2), Round(WeaponInfos[t_Weapon2].AverageSize * EquipmentSizeFactors[2]), 2, OwnerId);
     end;
     2:
     begin
@@ -924,8 +924,8 @@ begin
       CreateAndEquipEngine(Round(EngineBaseSize * EquipmentSizeFactors[2]), 1, OwnerId);
       CreateAndEquipRadar(Round(RadarBaseSize * EquipmentSizeFactors[2]), 1, OwnerId);
       CreateAndEquipCargoHook(Round(CargoHookBaseSize * EquipmentSizeFactors[1]), 1, OwnerId);
-      CreateAndEquipWeapon(Ord(t_Weapon2), Round(WeaponInfos[Ord(t_Weapon2)].AverageSize * EquipmentSizeFactors[2]), 3, OwnerId);
-      CreateAndEquipWeapon(Ord(t_Weapon3), Round(WeaponInfos[Ord(t_Weapon3)].AverageSize * EquipmentSizeFactors[2]), 2, OwnerId);
+      CreateAndEquipWeapon(Ord(t_Weapon2), Round(WeaponInfos[t_Weapon2].AverageSize * EquipmentSizeFactors[2]), 3, OwnerId);
+      CreateAndEquipWeapon(Ord(t_Weapon3), Round(WeaponInfos[t_Weapon3].AverageSize * EquipmentSizeFactors[2]), 2, OwnerId);
     end;
     3:
     begin
@@ -940,7 +940,7 @@ begin
       GetRadar.ConditionPercent := NextRandomIntRange(20, 80, RandomState);
       CreateAndEquipCargoHook(Round(CargoHookBaseSize * EquipmentSizeFactors[1]), 2, OwnerId);
       GetCargoHook.ConditionPercent := NextRandomIntRange(20, 80, RandomState);
-      CreateAndEquipWeapon(Ord(t_Weapon1), Round(WeaponInfos[Ord(t_Weapon1)].AverageSize * EquipmentSizeFactors[2]), 1, OwnerId).ConditionPercent := NextRandomIntRange(20, 80, RandomState);
+      CreateAndEquipWeapon(Ord(t_Weapon1), Round(WeaponInfos[t_Weapon1].AverageSize * EquipmentSizeFactors[2]), 1, OwnerId).ConditionPercent := NextRandomIntRange(20, 80, RandomState);
     end;
     4:
     begin
@@ -951,8 +951,8 @@ begin
       CreateAndEquipEngine(Round(EngineBaseSize * EquipmentSizeFactors[2]), 1, OwnerId);
       CreateAndEquipRadar(Round(RadarBaseSize * EquipmentSizeFactors[2]), 1, OwnerId);
       CreateAndEquipCargoHook(Round(CargoHookBaseSize * EquipmentSizeFactors[2]), 2, OwnerId);
-      CreateAndEquipWeapon(Ord(t_Weapon2), Round(WeaponInfos[Ord(t_Weapon2)].AverageSize * EquipmentSizeFactors[2]), 2, OwnerId);
-      CreateAndEquipWeapon(Ord(t_Weapon3), Round(WeaponInfos[Ord(t_Weapon3)].AverageSize * EquipmentSizeFactors[3]), 2, OwnerId);
+      CreateAndEquipWeapon(Ord(t_Weapon2), Round(WeaponInfos[t_Weapon2].AverageSize * EquipmentSizeFactors[2]), 2, OwnerId);
+      CreateAndEquipWeapon(Ord(t_Weapon3), Round(WeaponInfos[t_Weapon3].AverageSize * EquipmentSizeFactors[3]), 2, OwnerId);
     end;
     5:
     begin
@@ -963,7 +963,7 @@ begin
       CreateAndEquipEngine(Round(EngineBaseSize * EquipmentSizeFactors[1]), 3, OwnerId);
       CreateAndEquipRadar(Round(RadarBaseSize * EquipmentSizeFactors[2]), 1, OwnerId);
       CreateAndEquipCargoHook(Round(CargoHookBaseSize * EquipmentSizeFactors[2]), 1, OwnerId);
-      CreateAndEquipWeapon(Ord(t_Weapon1), Round(WeaponInfos[Ord(t_Weapon1)].AverageSize * EquipmentSizeFactors[3]), 1, OwnerId);
+      CreateAndEquipWeapon(Ord(t_Weapon1), Round(WeaponInfos[t_Weapon1].AverageSize * EquipmentSizeFactors[3]), 1, OwnerId);
     end;
     6:
     begin
@@ -974,7 +974,7 @@ begin
       CreateAndEquipEngine(Round(EngineBaseSize * EquipmentSizeFactors[1]), 3, OwnerId);
       CreateAndEquipRadar(Round(RadarBaseSize * EquipmentSizeFactors[2]), 1, OwnerId);
       CreateAndEquipCargoHook(Round(CargoHookBaseSize * EquipmentSizeFactors[2]), 1, OwnerId);
-      CreateAndEquipWeapon(Ord(t_Weapon1), Round(WeaponInfos[Ord(t_Weapon1)].AverageSize * EquipmentSizeFactors[3]), 1, OwnerId);
+      CreateAndEquipWeapon(Ord(t_Weapon1), Round(WeaponInfos[t_Weapon1].AverageSize * EquipmentSizeFactors[3]), 1, OwnerId);
     end;
     7:
     begin
@@ -986,9 +986,9 @@ begin
       CreateAndEquipEngine(Round(EngineBaseSize * EquipmentSizeFactors[1]), 2, OwnerId);
       CreateAndEquipRadar(Round(RadarBaseSize * EquipmentSizeFactors[2]), 2, OwnerId);
       CreateAndEquipCargoHook(Round(CargoHookBaseSize * EquipmentSizeFactors[2]), 1, OwnerId);
-      CreateAndEquipWeapon(Ord(t_Weapon1), Round(WeaponInfos[Ord(t_Weapon1)].AverageSize * EquipmentSizeFactors[2]), 2, OwnerId);
-      CreateAndEquipWeapon(Ord(t_Weapon1), Round(WeaponInfos[Ord(t_Weapon1)].AverageSize * EquipmentSizeFactors[2]), 2, OwnerId);
-      CreateAndEquipWeapon(Ord(t_Weapon2), Round(WeaponInfos[Ord(t_Weapon2)].AverageSize * EquipmentSizeFactors[3]), 1, OwnerId);
+      CreateAndEquipWeapon(Ord(t_Weapon1), Round(WeaponInfos[t_Weapon1].AverageSize * EquipmentSizeFactors[2]), 2, OwnerId);
+      CreateAndEquipWeapon(Ord(t_Weapon1), Round(WeaponInfos[t_Weapon1].AverageSize * EquipmentSizeFactors[2]), 2, OwnerId);
+      CreateAndEquipWeapon(Ord(t_Weapon2), Round(WeaponInfos[t_Weapon2].AverageSize * EquipmentSizeFactors[3]), 1, OwnerId);
     end;
     8:
     begin
@@ -1003,7 +1003,7 @@ begin
       GetRadar.ConditionPercent := NextRandomIntRange(20, 80, RandomState);
       CreateAndEquipCargoHook(Round(CargoHookBaseSize * EquipmentSizeFactors[1]), 2, OwnerId);
       GetCargoHook.ConditionPercent := NextRandomIntRange(20, 80, RandomState);
-      CreateAndEquipWeapon(Ord(t_Weapon2), Round(WeaponInfos[Ord(t_Weapon2)].AverageSize * EquipmentSizeFactors[2]), 3, OwnerId).ConditionPercent := NextRandomIntRange(20, 80, RandomState);
+      CreateAndEquipWeapon(Ord(t_Weapon2), Round(WeaponInfos[t_Weapon2].AverageSize * EquipmentSizeFactors[2]), 3, OwnerId).ConditionPercent := NextRandomIntRange(20, 80, RandomState);
     end;
     9:
     begin
@@ -1014,7 +1014,7 @@ begin
       CreateAndEquipEngine(Round(EngineBaseSize * EquipmentSizeFactors[1]), 2, OwnerId);
       CreateAndEquipRadar(Round(RadarBaseSize * EquipmentSizeFactors[2]), 1, OwnerId);
       CreateAndEquipCargoHook(Round(CargoHookBaseSize * EquipmentSizeFactors[2]), 1, OwnerId);
-      CreateAndEquipWeapon(Ord(t_Weapon1), Round(WeaponInfos[Ord(t_Weapon1)].AverageSize * EquipmentSizeFactors[2]), 2, OwnerId);
+      CreateAndEquipWeapon(Ord(t_Weapon1), Round(WeaponInfos[t_Weapon1].AverageSize * EquipmentSizeFactors[2]), 2, OwnerId);
       New(Entry);
       GetPlayer.StorageEntries.Add(Entry);
       Entry.Item := TGoods.Create;
@@ -1040,7 +1040,7 @@ begin
       GetRadar.ConditionPercent := NextRandomIntRange(20, 80, RandomState);
       CreateAndEquipCargoHook(Round(CargoHookBaseSize * EquipmentSizeFactors[1]), 2, OwnerId);
       GetCargoHook.ConditionPercent := NextRandomIntRange(20, 80, RandomState);
-      CreateAndEquipWeapon(Ord(t_Weapon4), Round(WeaponInfos[Ord(t_Weapon4)].AverageSize * EquipmentSizeFactors[3]), 1, OwnerId).ConditionPercent := NextRandomIntRange(60, 90, RandomState);
+      CreateAndEquipWeapon(Ord(t_Weapon4), Round(WeaponInfos[t_Weapon4].AverageSize * EquipmentSizeFactors[3]), 1, OwnerId).ConditionPercent := NextRandomIntRange(60, 90, RandomState);
       New(Entry);
       GetPlayer.StorageEntries.Add(Entry);
       Entry.Item := TGoods.Create;
@@ -1061,8 +1061,8 @@ begin
       CreateAndEquipRadar(Round(RadarBaseSize * EquipmentSizeFactors[2]), 1, OwnerId);
       CreateAndEquipCargoHook(Round(CargoHookBaseSize * EquipmentSizeFactors[2]), 1, OwnerId);
       CreateAndEquipDefGenerator(Round(DefGeneratorBaseSize * EquipmentSizeFactors[2]), 3, OwnerId);
-      CreateAndEquipWeapon(Ord(t_Weapon1), Round(WeaponInfos[Ord(t_Weapon1)].AverageSize * EquipmentSizeFactors[3]), 2, OwnerId);
-      CreateAndEquipWeapon(Ord(t_Weapon2), Round(WeaponInfos[Ord(t_Weapon2)].AverageSize * EquipmentSizeFactors[2]), 2, OwnerId);
+      CreateAndEquipWeapon(Ord(t_Weapon1), Round(WeaponInfos[t_Weapon1].AverageSize * EquipmentSizeFactors[3]), 2, OwnerId);
+      CreateAndEquipWeapon(Ord(t_Weapon2), Round(WeaponInfos[t_Weapon2].AverageSize * EquipmentSizeFactors[2]), 2, OwnerId);
     end;
     12:
     begin
@@ -1077,7 +1077,7 @@ begin
       GetRadar.ConditionPercent := NextRandomIntRange(20, 80, RandomState);
       CreateAndEquipCargoHook(Round(CargoHookBaseSize * EquipmentSizeFactors[2]), 1, OwnerId);
       GetCargoHook.ConditionPercent := NextRandomIntRange(20, 80, RandomState);
-      CreateAndEquipWeapon(Ord(t_Weapon1), Round(WeaponInfos[Ord(t_Weapon1)].AverageSize * EquipmentSizeFactors[3]), 1, OwnerId).ConditionPercent := NextRandomIntRange(20, 80, RandomState);
+      CreateAndEquipWeapon(Ord(t_Weapon1), Round(WeaponInfos[t_Weapon1].AverageSize * EquipmentSizeFactors[3]), 1, OwnerId).ConditionPercent := NextRandomIntRange(20, 80, RandomState);
       New(Entry);
       GetPlayer.StorageEntries.Add(Entry);
       Entry.Item := TGoods.Create;
@@ -1099,7 +1099,7 @@ begin
       CreateAndEquipRadar(Round(RadarBaseSize * EquipmentSizeFactors[2]), 1, OwnerId);
       CreateAndEquipScanner(Round(ScannerBaseSize * EquipmentSizeFactors[3]), 1, OwnerId);
       CreateAndEquipCargoHook(Round(CargoHookBaseSize * EquipmentSizeFactors[3]), 1, OwnerId);
-      CreateAndEquipWeapon(Ord(t_Weapon1), Round(WeaponInfos[Ord(t_Weapon1)].AverageSize * EquipmentSizeFactors[3]), 1, OwnerId);
+      CreateAndEquipWeapon(Ord(t_Weapon1), Round(WeaponInfos[t_Weapon1].AverageSize * EquipmentSizeFactors[3]), 1, OwnerId);
     end;
     14:
     begin
@@ -1111,8 +1111,8 @@ begin
       CreateAndEquipRadar(Round(RadarBaseSize * EquipmentSizeFactors[3]), 3, OwnerId);
       CreateAndEquipScanner(Round(ScannerBaseSize * EquipmentSizeFactors[3]), 1, OwnerId);
       CreateAndEquipCargoHook(Round(CargoHookBaseSize * EquipmentSizeFactors[3]), 1, OwnerId);
-      CreateAndEquipWeapon(Ord(t_Weapon1), Round(WeaponInfos[Ord(t_Weapon1)].AverageSize * EquipmentSizeFactors[3]), 2, OwnerId);
-      CreateAndEquipWeapon(Ord(t_Weapon2), Round(WeaponInfos[Ord(t_Weapon2)].AverageSize * EquipmentSizeFactors[4]), 2, OwnerId);
+      CreateAndEquipWeapon(Ord(t_Weapon1), Round(WeaponInfos[t_Weapon1].AverageSize * EquipmentSizeFactors[3]), 2, OwnerId);
+      CreateAndEquipWeapon(Ord(t_Weapon2), Round(WeaponInfos[t_Weapon2].AverageSize * EquipmentSizeFactors[4]), 2, OwnerId);
     end;
     15:
     begin
@@ -1125,8 +1125,8 @@ begin
       CreateAndEquipEngine(Round(EngineBaseSize * EquipmentSizeFactors[2]), 2, OwnerId);
       CreateAndEquipRadar(Round(RadarBaseSize * EquipmentSizeFactors[3]), 1, OwnerId);
       CreateAndEquipCargoHook(Round(CargoHookBaseSize * EquipmentSizeFactors[3]), 1, OwnerId);
-      CreateAndEquipWeapon(Ord(t_Weapon1), Round(WeaponInfos[Ord(t_Weapon1)].AverageSize * EquipmentSizeFactors[4]), 2, OwnerId);
-      CreateAndEquipWeapon(Ord(t_Weapon1), Round(WeaponInfos[Ord(t_Weapon1)].AverageSize * EquipmentSizeFactors[3]), 3, OwnerId);
+      CreateAndEquipWeapon(Ord(t_Weapon1), Round(WeaponInfos[t_Weapon1].AverageSize * EquipmentSizeFactors[4]), 2, OwnerId);
+      CreateAndEquipWeapon(Ord(t_Weapon1), Round(WeaponInfos[t_Weapon1].AverageSize * EquipmentSizeFactors[3]), 3, OwnerId);
     end;
     16:
     begin
@@ -1137,9 +1137,9 @@ begin
       CreateAndEquipEngine(Round(EngineBaseSize * EquipmentSizeFactors[2]), 1, OwnerId);
       CreateAndEquipRadar(Round(RadarBaseSize * EquipmentSizeFactors[3]), 1, OwnerId);
       CreateAndEquipCargoHook(Round(CargoHookBaseSize * EquipmentSizeFactors[3]), 1, OwnerId);
-      CreateAndEquipWeapon(Ord(t_Weapon1), Round(WeaponInfos[Ord(t_Weapon1)].AverageSize * EquipmentSizeFactors[3]), 3, OwnerId);
-      CreateAndEquipWeapon(Ord(t_Weapon2), Round(WeaponInfos[Ord(t_Weapon2)].AverageSize * EquipmentSizeFactors[3]), 2, OwnerId);
-      CreateAndEquipWeapon(Ord(t_Weapon3), Round(WeaponInfos[Ord(t_Weapon3)].AverageSize * EquipmentSizeFactors[3]), 2, OwnerId);
+      CreateAndEquipWeapon(Ord(t_Weapon1), Round(WeaponInfos[t_Weapon1].AverageSize * EquipmentSizeFactors[3]), 3, OwnerId);
+      CreateAndEquipWeapon(Ord(t_Weapon2), Round(WeaponInfos[t_Weapon2].AverageSize * EquipmentSizeFactors[3]), 2, OwnerId);
+      CreateAndEquipWeapon(Ord(t_Weapon3), Round(WeaponInfos[t_Weapon3].AverageSize * EquipmentSizeFactors[3]), 2, OwnerId);
     end;
     17:
     begin
@@ -1150,7 +1150,7 @@ begin
       CreateAndEquipEngine(Round(EngineBaseSize * EquipmentSizeFactors[3]), 2, OwnerId);
       CreateAndEquipRadar(Round(RadarBaseSize * EquipmentSizeFactors[3]), 1, OwnerId);
       CreateAndEquipCargoHook(Round(CargoHookBaseSize * EquipmentSizeFactors[3]), 1, OwnerId);
-      CreateAndEquipWeapon(Ord(t_Weapon4), Round(WeaponInfos[Ord(t_Weapon4)].AverageSize * EquipmentSizeFactors[3]), 2, OwnerId);
+      CreateAndEquipWeapon(Ord(t_Weapon4), Round(WeaponInfos[t_Weapon4].AverageSize * EquipmentSizeFactors[3]), 2, OwnerId);
     end;
     18:
     begin
@@ -1162,7 +1162,7 @@ begin
       CreateAndEquipEngine(Round(EngineBaseSize * EquipmentSizeFactors[2]), 1, OwnerId).ConditionPercent := NextRandomIntRange(10, 50, RandomState);
       CreateAndEquipRadar(Round(RadarBaseSize * EquipmentSizeFactors[1]), 1, OwnerId).ConditionPercent := NextRandomIntRange(10, 50, RandomState);
       CreateAndEquipCargoHook(Round(CargoHookBaseSize * EquipmentSizeFactors[2]), 1, OwnerId).ConditionPercent := NextRandomIntRange(10, 50, RandomState);
-      CreateAndEquipWeapon(Ord(t_Weapon1), Round(WeaponInfos[Ord(t_Weapon1)].AverageSize * EquipmentSizeFactors[4]), 1, OwnerId).ConditionPercent := NextRandomIntRange(10, 50, RandomState);
+      CreateAndEquipWeapon(Ord(t_Weapon1), Round(WeaponInfos[t_Weapon1].AverageSize * EquipmentSizeFactors[4]), 1, OwnerId).ConditionPercent := NextRandomIntRange(10, 50, RandomState);
     end;
     19:
     begin
@@ -1173,8 +1173,8 @@ begin
       CreateAndEquipEngine(Round(EngineBaseSize * EquipmentSizeFactors[2]), 2, OwnerId);
       CreateAndEquipRadar(Round(RadarBaseSize * EquipmentSizeFactors[2]), 1, OwnerId);
       CreateAndEquipCargoHook(Round(CargoHookBaseSize * EquipmentSizeFactors[1]), 2, OwnerId);
-      CreateAndEquipWeapon(Ord(t_Weapon2), Round(WeaponInfos[Ord(t_Weapon2)].AverageSize * EquipmentSizeFactors[2]), 3, OwnerId);
-      CreateAndEquipWeapon(Ord(t_Weapon3), Round(WeaponInfos[Ord(t_Weapon3)].AverageSize * EquipmentSizeFactors[3]), 2, OwnerId);
+      CreateAndEquipWeapon(Ord(t_Weapon2), Round(WeaponInfos[t_Weapon2].AverageSize * EquipmentSizeFactors[2]), 3, OwnerId);
+      CreateAndEquipWeapon(Ord(t_Weapon3), Round(WeaponInfos[t_Weapon3].AverageSize * EquipmentSizeFactors[3]), 2, OwnerId);
     end;
     20:
     begin
@@ -1187,7 +1187,7 @@ begin
       CreateAndEquipEngine(Round(EngineBaseSize * EquipmentSizeFactors[3]), 1, OwnerId);
       CreateAndEquipRadar(Round(RadarBaseSize * EquipmentSizeFactors[2]), 1, OwnerId);
       CreateAndEquipCargoHook(Round(CargoHookBaseSize * EquipmentSizeFactors[2]), 1, OwnerId);
-      CreateAndEquipWeapon(Ord(t_Weapon1), Round(WeaponInfos[Ord(t_Weapon1)].AverageSize * EquipmentSizeFactors[2]), 1, OwnerId);
+      CreateAndEquipWeapon(Ord(t_Weapon1), Round(WeaponInfos[t_Weapon1].AverageSize * EquipmentSizeFactors[2]), 1, OwnerId);
       New(Entry);
       GetPlayer.StorageEntries.Add(Entry);
       Entry.Item := TGoods.Create;
@@ -1207,8 +1207,8 @@ begin
       CreateAndEquipEngine(Round(EngineBaseSize * EquipmentSizeFactors[2]), 1, OwnerId);
       CreateAndEquipRadar(Round(RadarBaseSize * EquipmentSizeFactors[2]), 1, OwnerId);
       CreateAndEquipCargoHook(Round(CargoHookBaseSize * EquipmentSizeFactors[3]), 2, OwnerId);
-      CreateAndEquipWeapon(Ord(t_Weapon1), Round(WeaponInfos[Ord(t_Weapon1)].AverageSize * EquipmentSizeFactors[3]), 3, OwnerId);
-      CreateAndEquipWeapon(Ord(t_Weapon2), Round(WeaponInfos[Ord(t_Weapon2)].AverageSize * EquipmentSizeFactors[3]), 2, OwnerId);
+      CreateAndEquipWeapon(Ord(t_Weapon1), Round(WeaponInfos[t_Weapon1].AverageSize * EquipmentSizeFactors[3]), 3, OwnerId);
+      CreateAndEquipWeapon(Ord(t_Weapon2), Round(WeaponInfos[t_Weapon2].AverageSize * EquipmentSizeFactors[3]), 2, OwnerId);
     end;
     22:
     begin
@@ -1220,7 +1220,7 @@ begin
       CreateAndEquipRadar(Round(RadarBaseSize * EquipmentSizeFactors[3]), 1, OwnerId);
       CreateAndEquipScanner(Round(ScannerBaseSize * EquipmentSizeFactors[4]), 1, OwnerId);
       CreateAndEquipCargoHook(Round(CargoHookBaseSize * EquipmentSizeFactors[3]), 1, OwnerId);
-      CreateAndEquipWeapon(Ord(t_Weapon1), Round(WeaponInfos[Ord(t_Weapon1)].AverageSize * EquipmentSizeFactors[3]), 1, OwnerId);
+      CreateAndEquipWeapon(Ord(t_Weapon1), Round(WeaponInfos[t_Weapon1].AverageSize * EquipmentSizeFactors[3]), 1, OwnerId);
     end;
     23:
     begin
@@ -1232,7 +1232,7 @@ begin
       CreateAndEquipRadar(Round(RadarBaseSize * EquipmentSizeFactors[2]), 1, OwnerId);
       CreateAndEquipScanner(Round(ScannerBaseSize * EquipmentSizeFactors[2]), 1, OwnerId);
       CreateAndEquipCargoHook(Round(CargoHookBaseSize * EquipmentSizeFactors[3]), 1, OwnerId);
-      CreateAndEquipWeapon(Ord(t_Weapon1), Round(WeaponInfos[Ord(t_Weapon1)].AverageSize * EquipmentSizeFactors[2]), 1, OwnerId);
+      CreateAndEquipWeapon(Ord(t_Weapon1), Round(WeaponInfos[t_Weapon1].AverageSize * EquipmentSizeFactors[2]), 1, OwnerId);
       New(Entry);
       GetPlayer.StorageEntries.Add(Entry);
       Entry.Item := TGoods.Create;
@@ -1254,7 +1254,7 @@ begin
       CreateAndEquipScanner(Round(ScannerBaseSize * EquipmentSizeFactors[2]), 1, OwnerId);
       CreateAndEquipCargoHook(Round(CargoHookBaseSize * EquipmentSizeFactors[3]), 2, OwnerId);
       CreateAndEquipRepairRobot(Round(RepairRobotBaseSize * EquipmentSizeFactors[3]), 2, OwnerId);
-      CreateAndEquipWeapon(Ord(t_Weapon1), Round(WeaponInfos[Ord(t_Weapon1)].AverageSize * EquipmentSizeFactors[3]), 1, OwnerId);
+      CreateAndEquipWeapon(Ord(t_Weapon1), Round(WeaponInfos[t_Weapon1].AverageSize * EquipmentSizeFactors[3]), 1, OwnerId);
       New(Entry);
       GetPlayer.StorageEntries.Add(Entry);
       Entry.Item := TGoods.Create;
@@ -1278,7 +1278,7 @@ begin
       GetRadar.ConditionPercent := NextRandomIntRange(10, 50, RandomState);
       CreateAndEquipCargoHook(Round(CargoHookBaseSize * EquipmentSizeFactors[2]), 1, OwnerId);
       GetCargoHook.ConditionPercent := NextRandomIntRange(10, 50, RandomState);
-      CreateAndEquipWeapon(Ord(t_Weapon1), Round(WeaponInfos[Ord(t_Weapon1)].AverageSize * EquipmentSizeFactors[2]), 1, OwnerId).ConditionPercent := NextRandomIntRange(10, 50, RandomState);
+      CreateAndEquipWeapon(Ord(t_Weapon1), Round(WeaponInfos[t_Weapon1].AverageSize * EquipmentSizeFactors[2]), 1, OwnerId).ConditionPercent := NextRandomIntRange(10, 50, RandomState);
     end;
   end;
   GetHull.Weight := RoundAndTruncateToTens(GetHull.Weight * HullCapacityScale /
@@ -1355,7 +1355,7 @@ begin
       end;
       if PendingPirateLicenseCash > 0 then
       begin
-        GainExperience(Round(PendingPirateLicenseCash * CareerStatus[Ord(rcPirate)] * 0.001), 3);
+        GainExperience(Round(PendingPirateLicenseCash * CareerStatus[rcPirate] * 0.001), 3);
         Inc(PirateLicenseCash, PendingPirateLicenseCash);
         PendingPirateLicenseCash := 0;
         if PirateLicenseCash > 100000000 then PirateLicenseCash := 100000000;
@@ -1513,7 +1513,7 @@ begin
           RadiationHealth[I].Progress := 0.0;
         end;
       Stage := 10;
-      StimulantExcess := CountActiveStimulants - GetPlayer.GetTotalStatBonus(Ord(bonStimCapacity));
+      StimulantExcess := CountActiveStimulants - GetPlayer.GetTotalStatBonus(bonStimCapacity);
       { The native one-pass loop retains its dormant footer after Break. }
       while StimulantExcess >= 2 do
       begin
@@ -1668,7 +1668,7 @@ end;
 { @routine $58B8D0 TPlayer_GetPirateServiceDiscount }
 function TPlayer.GetPirateServiceDiscount: TPercent;
 begin
-  Result := Round(CareerStatus[Ord(rcPirate)] / 1.3) + 1;
+  Result := Round(CareerStatus[rcPirate] / 1.3) + 1;
 end;
 { @end $58B8D0 }
 
@@ -2578,7 +2578,7 @@ begin
       Artefact := Artefacts[I];
       if Artefact.EquippedFlag = 0 then Continue;
       Slot := Artefact.AssignedSlotData and EquipmentSlotIndexMask;
-      if (Slot >= 0) and (DefaultHullSlotCounts[8] > Slot) then ArtefactIds[Slot] := Artefact.Id;
+      if (Slot >= 0) and (DefaultHullSlotCounts[sskArtefact] > Slot) then ArtefactIds[Slot] := Artefact.Id;
     end;
   end;
 end;
@@ -2660,7 +2660,7 @@ procedure TPlayer.ApplyEquipmentConfiguration(Index: Integer);
     for I := 0 to Inventory.Count - 1 do
     begin
       Item := Inventory[I];
-      if Byte(Item.ItemType) in [Ord(t_Hull)..Ord(t_CustomWeapon)] then Item.Unequip;
+      if Item.ItemType in [t_Hull..t_CustomWeapon] then Item.Unequip;
     end;
     for I := 0 to Artefacts.Count - 1 do
     begin
@@ -2869,9 +2869,9 @@ end;
 function TPlayer.GetMaxPiratePartners: Integer;
 begin
   Result := 0;
-  if CareerStatus[Ord(rcPirate)] > 60 then Inc(Result);
-  if CareerStatus[Ord(rcPirate)] > 75 then Inc(Result);
-  if Galaxy.EminentCareerShips[Ord(rcPirate)] = Self then Inc(Result);
+  if CareerStatus[rcPirate] > 60 then Inc(Result);
+  if CareerStatus[rcPirate] > 75 then Inc(Result);
+  if Galaxy.EminentCareerShips[rcPirate] = Self then Inc(Result);
   if PirateLicenseTicks > 0 then Inc(Result);
 end;
 { @end $590BF0 }
@@ -2880,10 +2880,10 @@ end;
 function TPlayer.GetMaxDominionShips: Integer;
 begin
   Result := 0;
-  if CareerStatus[Ord(rcPirate)] > 50 then Inc(Result);
-  if CareerStatus[Ord(rcPirate)] > 60 then Inc(Result);
-  if CareerStatus[Ord(rcPirate)] > 75 then Inc(Result);
-  if Galaxy.EminentCareerShips[Ord(rcPirate)] = Self then Inc(Result);
+  if CareerStatus[rcPirate] > 50 then Inc(Result);
+  if CareerStatus[rcPirate] > 60 then Inc(Result);
+  if CareerStatus[rcPirate] > 75 then Inc(Result);
+  if Galaxy.EminentCareerShips[rcPirate] = Self then Inc(Result);
   if PirateLicenseTicks > 0 then Inc(Result);
 end;
 { @end $590C44 }
@@ -3084,7 +3084,7 @@ begin
   end;
   RuinsMode := SelectedMode;
   RequestedScreenId := screenRuinsTalk;
-  TMessageLoopGI(RegisteredScreens[Ord(CurrentScreenId)]).RequestClose(1);
+  TMessageLoopGI(RegisteredScreens[CurrentScreenId]).RequestClose(1);
 end;
 { @end $591568 }
 
@@ -3111,7 +3111,7 @@ begin
     else RequestedScreenId := screenPlanetNO;
     ExitRuinsMode;
   end;
-  TMessageLoopGI(RegisteredScreens[Ord(CurrentScreenId)]).RequestClose(1);
+  TMessageLoopGI(RegisteredScreens[CurrentScreenId]).RequestClose(1);
 end;
 { @end $59165C }
 
@@ -3157,10 +3157,10 @@ end;
 { @routine $591890 TPlayer_CanSelectShipTarget }
 function TPlayer.CanSelectShipTarget(Ship: TShip): Boolean;
 type
-  TOwnerMasks = array[0..2] of TOwnerMask;
+  TOwnerMasks = array[TStarFaction] of TOwnerMask;
 
 var
-  Faction: Byte;
+  Faction: TStarFaction;
 begin
   Result := False;
   if (Ship.TargetingRestriction = 1) and (Ship.EnemyShip <> Self) and (EnemyShip <> Ship) then Exit;
@@ -3168,7 +3168,7 @@ begin
     (Ship.EnemyShip <> Self) and (EnemyShip <> Ship) then Exit;
   if Ship.TypeId in [Ord(rstRangerCenter)..Ord(rstCustomStation)] then
   begin
-    for Faction := 0 to 2 do
+    for Faction := Low(TStarFaction) to High(TStarFaction) do
       if (OwnerId in TOwnerMasks(PlanetOwnerMasks)[Faction]) and
         (Ship.CurrentStanding in NonTargetableStationStandingMasks[Faction]) and
         ((Ship.ScriptShip = nil) or (Ship.OwnerId in TOwnerMasks(PlanetOwnerMasks)[Faction])) then Exit;

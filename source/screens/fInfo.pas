@@ -1455,7 +1455,7 @@ var
             for I := 0 to Weapon.ExtraSpecials.Count - 1 do
             begin
               Entry := Weapon.ExtraSpecials[I];
-              Inc(EffectiveRange,MicroModuleTemplates[Entry.ModuleIndexPlusOne - 1].StatBonuses[Ord(bonWRadius)] * Entry.Count);
+              Inc(EffectiveRange,MicroModuleTemplates[Entry.ModuleIndexPlusOne - 1].StatBonuses[bonWRadius] * Entry.Count);
             end;
           if Weapon.GetWeaponInfo.ShotType in [wstTorpedo..wstRocket] then
             EffectiveRange := Min(EffectiveRange - Weapon.CalculateGeneratedRange + Weapon.GetWeaponInfo.MissileRange,Weapon.GetWeaponInfo.MissileRange);
@@ -1657,7 +1657,7 @@ begin
       if (GetByName('M11S14') as TGraphButtonGI).Down then Inc(ArtifactSlots);
       if (GetByName('M11S15') as TGraphButtonGI).Down then Inc(ArtifactSlots);
       if (GetByName('M11S16') as TGraphButtonGI).Down then Inc(ArtifactSlots);
-      for I := 18 to DefaultHullSlotCounts[Ord(sskArtefact)] + 13 do
+      for I := 18 to DefaultHullSlotCounts[sskArtefact] + 13 do
       begin
         Control := FindControlByPath('M11S' + IntToWideString(I));
         if (Control <> nil) and (Control as TGraphButtonGI).Down then Inc(ArtifactSlots);

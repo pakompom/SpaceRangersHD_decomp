@@ -79,7 +79,7 @@ type
     gmfNormal=5,
     gmfNormalBold=6
   ); // @size 0x04
-  TGameScreenTable = array[0..41] of TObject;
+  TGameScreenTable = array[TGameScreenId] of TObject;
 
 function FormToId(Screen: TObject): TGameScreenId; // @addr 0x45E874 @note "Raises when absent; nil matches the first empty slot."
 function GetRegisteredScreenLoop(ScreenId: TGameScreenId): TObject; // @addr 0x45E8D4 @note "No bounds check."
@@ -259,7 +259,7 @@ var
 begin
   Id := screenNone;
   repeat
-    if RegisteredScreens[Ord(Id)] = Screen then
+    if RegisteredScreens[Id] = Screen then
     begin
       Result := Id;
       Exit;
@@ -273,7 +273,7 @@ end;
 { @routine $45E8D4 GetRegisteredScreenLoop }
 function GetRegisteredScreenLoop(ScreenId: TGameScreenId): TObject;
 begin
-  Result := RegisteredScreens[Ord(ScreenId)];
+  Result := RegisteredScreens[ScreenId];
 end;
 { @end $45E8D4 }
 

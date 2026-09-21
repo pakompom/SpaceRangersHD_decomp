@@ -167,8 +167,8 @@ var
 begin
   Stage := 0;
   try
-    SetLength(ArtefactZones, DefaultHullSlotCounts[8]);
-    for I := 0 to DefaultHullSlotCounts[8] - 1 do ArtefactZones[I] := GetByName('Art' + IntToStr(I) + 'z') as TZoneGI;
+    SetLength(ArtefactZones, DefaultHullSlotCounts[sskArtefact]);
+    for I := 0 to DefaultHullSlotCounts[sskArtefact] - 1 do ArtefactZones[I] := GetByName('Art' + IntToStr(I) + 'z') as TZoneGI;
     Stage := 1;
     if AuxRenderBuffer.GetPixels = nil then CaptureScreenBackground(True, 0);
     BackgroundBuffer.BindExternalGraphBuf(AuxRenderBuffer);
@@ -741,13 +741,13 @@ begin
         SetImageKindY(ikyCenter);
       end;
       Skill := TPilotSkill(ExtractDigitsToIntW(Sender.ControlName));
-      Title := WrapTextInColor(LocalizedText('Skills.' + SkillConfigNames[Ord(Skill)] + '.Name'), InfoNameColorTag);
-      Text := FormatText1(LocalizedText('Skills.' + SkillConfigNames[Ord(Skill)] + '.Text'), '<color=255,240,100>', '<SkillValue>', IntToStr(PilotSkillEffects[ShipToInspect.GetEffectiveSkillLevel(Skill), Ord(Skill)]));
+      Title := WrapTextInColor(LocalizedText('Skills.' + SkillConfigNames[Skill] + '.Name'), InfoNameColorTag);
+      Text := FormatText1(LocalizedText('Skills.' + SkillConfigNames[Skill] + '.Text'), '<color=255,240,100>', '<SkillValue>', IntToStr(PilotSkillEffects[ShipToInspect.GetEffectiveSkillLevel(Skill), Skill]));
       ReplaceTextToken(Text, '<SkillLevel>', IntToStr(ShipToInspect.GetEffectiveSkillLevel(Skill)), '<color=255,240,100>');
       if Skill = psTechnical then ReplaceTextToken(Text, '<N>', IntToStr(ShipToInspect.GetSatelliteLimit), '<color=255,240,100>');
       if Skill = psTrading then ReplaceTextToken(Text, '<SkillValue2>', IntToStr(TradingSkillSalePercent[ShipToInspect.GetEffectiveSkillLevel(Skill)]), '<color=255,240,100>');
       if Skill = psLeadership then ReplaceTextToken(Text, '<SkillValue2>', IntToStr(LeadershipExperiencePercent[ShipToInspect.GetEffectiveSkillLevel(Skill)]), '<color=255,240,100>');
-      if ShipToInspect.GetBaseSkillLevel(Skill) < 6 then Text := Text + #13#10 + #13#10 + FormatText1(LocalizedText('Skills.PointForNextLevel'), '<color=255,240,100>', '<PointForNextLevel>', IntToStr(SkillTrainingCosts[ShipToInspect.BaseSkills[Ord(Skill)] + 1, Ord(Skill)]));
+      if ShipToInspect.GetBaseSkillLevel(Skill) < 6 then Text := Text + #13#10 + #13#10 + FormatText1(LocalizedText('Skills.PointForNextLevel'), '<color=255,240,100>', '<PointForNextLevel>', IntToStr(SkillTrainingCosts[ShipToInspect.BaseSkills[Skill] + 1, Skill]));
     end;
     (GetByName('RankName') as TLabelGI).SetText(Title);
     (GetByName('RankText') as TLabelGI).SetText(Text);
@@ -1004,7 +1004,7 @@ begin
       with GetByName('Art' + IntToStr(SlotIndex) + 'z') as TZoneGI do SetActive(Artefact <> nil);
     end;
     Stage := 26;
-    for SlotIndex := SlotCount to DefaultHullSlotCounts[8] - 1 do
+    for SlotIndex := SlotCount to DefaultHullSlotCounts[sskArtefact] - 1 do
     begin
       GetByName('Art' + IntToStr(SlotIndex) + 'n').SetActive(False);
       GetByName('Art' + IntToStr(SlotIndex) + 'b').SetActive(False);

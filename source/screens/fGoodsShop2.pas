@@ -200,7 +200,7 @@ begin
   begin
     (GetByName('NameFace') as TLabelGI).SetText(GetPlayer.CurrentPlanet.GetFullName(#13#10));
     if GetPlayer.CurrentPlanet.IsMainPiratePlanet then (GetByName('CharFace') as TLabelGI).SetText('')
-    else (GetByName('CharFace') as TLabelGI).SetText(PlanetEconomyInfo[Ord(GetPlayer.CurrentPlanet.Economy)].ShortDisplayName + #13#10 + PlanetGovernmentMarket[Ord(GetPlayer.CurrentPlanet.Government)].DisplayName);
+    else (GetByName('CharFace') as TLabelGI).SetText(PlanetEconomyInfo[GetPlayer.CurrentPlanet.Economy].ShortDisplayName + #13#10 + PlanetGovernmentMarket[GetPlayer.CurrentPlanet.Government].DisplayName);
     (GetByName('ImageFace') as TImageGI).SetImagePath('GI,Bm.FormGoods2.' + GiResourceSuffix + 'PlanetL');
     with GetByName('GraphBufFace') as TGraphBufGI do
     begin

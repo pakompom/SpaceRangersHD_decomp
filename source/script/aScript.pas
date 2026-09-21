@@ -661,7 +661,7 @@ begin
     else ScriptArcadeReturnScreenId := Ord(CurrentScreenId);
     end;
     RequestedScreenId := screenArcadeBattle;
-    TMessageLoopGI(RegisteredScreens[Ord(CurrentScreenId)]).RequestClose(1);
+    TMessageLoopGI(RegisteredScreens[CurrentScreenId]).RequestClose(1);
     Result := True;
   end;
 end;
@@ -681,7 +681,7 @@ begin
     else QuestReturnScreenId := CurrentScreenId;
     end;
     RequestedScreenId := screenPlanetQuest;
-    TMessageLoopGI(RegisteredScreens[Ord(CurrentScreenId)]).RequestClose(1);
+    TMessageLoopGI(RegisteredScreens[CurrentScreenId]).RequestClose(1);
     Result := True;
   end;
 end;
@@ -711,7 +711,7 @@ begin
     end;
     if Failed then
     begin
-      if ShowMessageBoxGI(TMessageLoopGI(RegisteredScreens[Ord(CurrentScreenId)]), LocalizedColorText('FormGov.BattlePlanetQuestCrashed'), mbgOK or mbgCancel or mbgQuestion) = mbgResultOK then
+      if ShowMessageBoxGI(TMessageLoopGI(RegisteredScreens[CurrentScreenId]), LocalizedColorText('FormGov.BattlePlanetQuestCrashed'), mbgOK or mbgCancel or mbgQuestion) = mbgResultOK then
         Status := 3
       else raise Exception.Create('Error in Matrix.dll');
     end;
@@ -719,13 +719,13 @@ begin
     if Status = 1 then
     begin
       RequestedScreenId := screenMainMenu;
-      TMessageLoopGI(RegisteredScreens[Ord(CurrentScreenId)]).RequestClose(1);
+      TMessageLoopGI(RegisteredScreens[CurrentScreenId]).RequestClose(1);
       Exit;
     end;
     if Status = 3 then Status := 2
     else Status := 3;
     RequestedScreenId := CurrentScreenId;
-    TMessageLoopGI(RegisteredScreens[Ord(CurrentScreenId)]).RequestClose(1);
+    TMessageLoopGI(RegisteredScreens[CurrentScreenId]).RequestClose(1);
     CompleteQueuedPlanetaryBattle(Status);
     Result := True;
   end;
@@ -742,9 +742,9 @@ begin
   if QueuedVideos.Count > 0 then
   begin
     Request := PScriptVDRequest(QueuedVideos[0]);
-    if not SkipVideo and (TMessageLoopGI(RegisteredScreens[Ord(CurrentScreenId)]) = RuinsTalkScreen) then
+    if not SkipVideo and (TMessageLoopGI(RegisteredScreens[CurrentScreenId]) = RuinsTalkScreen) then
     begin
-      Video := TMessageLoopGI(RegisteredScreens[Ord(CurrentScreenId)]).GetByName('Film') as TxvidGI;
+      Video := TMessageLoopGI(RegisteredScreens[CurrentScreenId]).GetByName('Film') as TxvidGI;
       Video.SetActive(True);
       if Video.ImageOpen(Request.Video, False) then
       begin
@@ -789,7 +789,7 @@ begin
       begin
         HangarScreen.TryTakeOff;
         ScriptEndTurnRequested := False;
-        TMessageLoopGI(RegisteredScreens[Ord(CurrentScreenId)]).RequestClose(1);
+        TMessageLoopGI(RegisteredScreens[CurrentScreenId]).RequestClose(1);
         Result := True;
       end;
     end;
@@ -805,13 +805,13 @@ begin
   begin
     ScriptEndTurnRequested := False;
     if CurrentScreenId = screenRuinsTalk then
-      TMessageLoopGIWithMainPanel(TMessageLoopGI(RegisteredScreens[Ord(CurrentScreenId)])).MainPanel.EndTurnClicked(nil)
+      TMessageLoopGIWithMainPanel(TMessageLoopGI(RegisteredScreens[CurrentScreenId])).MainPanel.EndTurnClicked(nil)
     else if CurrentScreenId = screenPlanet then
-      TMessageLoopGIWithMainPanel(TMessageLoopGI(RegisteredScreens[Ord(CurrentScreenId)])).MainPanel.EndTurnClicked(nil)
+      TMessageLoopGIWithMainPanel(TMessageLoopGI(RegisteredScreens[CurrentScreenId])).MainPanel.EndTurnClicked(nil)
     else if CurrentScreenId = screenPlanetNO then
-      TMessageLoopGIWithMainPanel(TMessageLoopGI(RegisteredScreens[Ord(CurrentScreenId)])).MainPanel.EndTurnClicked(nil)
+      TMessageLoopGIWithMainPanel(TMessageLoopGI(RegisteredScreens[CurrentScreenId])).MainPanel.EndTurnClicked(nil)
     else if CurrentScreenId = screenStarMap then
-      TfStarMap(TMessageLoopGI(RegisteredScreens[Ord(CurrentScreenId)])).EndTurnAfterOpen := True;
+      TfStarMap(TMessageLoopGI(RegisteredScreens[CurrentScreenId])).EndTurnAfterOpen := True;
     Result := True;
   end;
 end;
@@ -933,7 +933,7 @@ begin
     if CurrentScreenId = screenShip then
     begin
       ShipReturnScreenId := screenStarMap;
-      TfShip2(TMessageLoopGI(RegisteredScreens[Ord(CurrentScreenId)])).CloseClicked(nil);
+      TfShip2(TMessageLoopGI(RegisteredScreens[CurrentScreenId])).CloseClicked(nil);
       Exit;
     end;
     if GetPlayer.DockedTo <> nil then RequestedScreenId := screenRuinsTalk
@@ -943,7 +943,7 @@ begin
       else RequestedScreenId := screenPlanet;
     end
     else RequestedScreenId := screenStarMap;
-    TMessageLoopGI(RegisteredScreens[Ord(CurrentScreenId)]).RequestClose(1);
+    TMessageLoopGI(RegisteredScreens[CurrentScreenId]).RequestClose(1);
   end;
 end;
 { @end $64D8F8 }
@@ -1567,12 +1567,12 @@ begin
     if Ship.CargoFreeSpace < Group.MinFreeCargoSpace then Continue;
     if Ship is TRanger then
     begin
-      if TRanger(Ship).CareerStatus[Ord(rcTrader)] < Group.MinTraderStatus then Continue;
-      if TRanger(Ship).CareerStatus[Ord(rcTrader)] > Group.MaxTraderStatus then Continue;
-      if TRanger(Ship).CareerStatus[Ord(rcWarrior)] < Group.MinWarriorStatus then Continue;
-      if TRanger(Ship).CareerStatus[Ord(rcWarrior)] > Group.MaxWarriorStatus then Continue;
-      if TRanger(Ship).CareerStatus[Ord(rcPirate)] < Group.MinPirateStatus then Continue;
-      if TRanger(Ship).CareerStatus[Ord(rcPirate)] > Group.MaxPirateStatus then Continue;
+      if TRanger(Ship).CareerStatus[rcTrader] < Group.MinTraderStatus then Continue;
+      if TRanger(Ship).CareerStatus[rcTrader] > Group.MaxTraderStatus then Continue;
+      if TRanger(Ship).CareerStatus[rcWarrior] < Group.MinWarriorStatus then Continue;
+      if TRanger(Ship).CareerStatus[rcWarrior] > Group.MaxWarriorStatus then Continue;
+      if TRanger(Ship).CareerStatus[rcPirate] < Group.MinPirateStatus then Continue;
+      if TRanger(Ship).CareerStatus[rcPirate] > Group.MaxPirateStatus then Continue;
     end;
     if (Group.MaxDistanceFromPlanet < 10000) and (Ship.CurrentPlanet <> Group.Planet) then
     begin
@@ -2630,12 +2630,12 @@ begin
           if (Ship.CargoFreeSpace < Requirement.MinFreeCargoSpace) and (Requirement.MinFreeCargoSpace > 0) then Continue;
           if Ship is TRanger then
           begin
-            if TRanger(Ship).CareerStatus[Ord(rcTrader)] < Requirement.MinTraderStatus then Continue;
-            if TRanger(Ship).CareerStatus[Ord(rcTrader)] > Requirement.MaxTraderStatus then Continue;
-            if TRanger(Ship).CareerStatus[Ord(rcWarrior)] < Requirement.MinWarriorStatus then Continue;
-            if TRanger(Ship).CareerStatus[Ord(rcWarrior)] > Requirement.MaxWarriorStatus then Continue;
-            if TRanger(Ship).CareerStatus[Ord(rcPirate)] < Requirement.MinPirateStatus then Continue;
-            if TRanger(Ship).CareerStatus[Ord(rcPirate)] > Requirement.MaxPirateStatus then Continue;
+            if TRanger(Ship).CareerStatus[rcTrader] < Requirement.MinTraderStatus then Continue;
+            if TRanger(Ship).CareerStatus[rcTrader] > Requirement.MaxTraderStatus then Continue;
+            if TRanger(Ship).CareerStatus[rcWarrior] < Requirement.MinWarriorStatus then Continue;
+            if TRanger(Ship).CareerStatus[rcWarrior] > Requirement.MaxWarriorStatus then Continue;
+            if TRanger(Ship).CareerStatus[rcPirate] < Requirement.MinPirateStatus then Continue;
+            if TRanger(Ship).CareerStatus[rcPirate] > Requirement.MaxPirateStatus then Continue;
           end;
           if (Requirement.MinStrength <> 0) or (Requirement.MaxStrength <> 0) then
           begin

@@ -35,7 +35,7 @@ type
   ); // @size 0x1
 
   TShipStatBonusEntry = record // @size 0x08
-    BonusKind: Byte; // @offset 0x00
+    BonusKind: TEquipmentBonusKind; // @offset 0x00
     BonusValue: Integer; // @offset 0x04
   end;
   PShipStatBonusEntry = ^TShipStatBonusEntry;
@@ -57,14 +57,6 @@ type
   TWeaponCount = 0..5;
   TPilotSkillLevel = 0..6;
 
-  TPilotSkill = (
-    psAccuracy = 0,
-    psManeuverability = 1,
-    psTechnical = 2,
-    psTrading = 3,
-    psCharisma = 4,
-    psLeadership = 5
-  ); // @size 0x1
 
   TCargoGoodsEntry = packed record // @size 0x10
     Count: Integer; // @offset 0x00
@@ -122,7 +114,7 @@ type
     Weapons: array[1..5] of TWeapon; // @offset 0x118
     WeaponCount: Byte; // @offset 0x12C
     UsableWeaponCount: Byte; // @offset 0x12D
-    BaseSkills: array[0..5] of Byte; // @offset 0x12E
+    BaseSkills: array[TPilotSkill] of Byte; // @offset 0x12E
     CaptainHealth: array[1..24] of TCaptainHealthState; // @offset 0x138  1..12: diseases; 13..24: stimulants.
     RadiationHealth: array[1..1] of TCaptainHealthState; // @offset 0x378  Same native record as diseases/stimulants.
     CustomShipInfos: TList; // @offset 0x390  Owns PCustomShipInfo records; deletion may be deferred during action callbacks.
@@ -534,9 +526,9 @@ type
     function CreateAndEquipDefGenerator(Weight: Integer; Level, Owner: Byte): TDefGenerator; // @addr 0x76B238
     function CreateAndEquipWeapon(ItemType: Byte; Weight: Integer; Level, Owner: Byte): TWeapon; // @addr 0x76B294
 
-    function GetEquipmentStatBonus(BonusKind: Byte; Item: TEquipment): Integer; // @addr 0x75F5C4
-    function GetTotalStatBonus(BonusKind: Byte): Integer; // @addr 0x75F60C
-    function GetOwnStatBonus(BonusKind: Byte): Integer; // @addr 0x77D998
+    function GetEquipmentStatBonus(BonusKind: TEquipmentBonusKind; Item: TEquipment): Integer; // @addr 0x75F5C4
+    function GetTotalStatBonus(BonusKind: TEquipmentBonusKind): Integer; // @addr 0x75F60C
+    function GetOwnStatBonus(BonusKind: TEquipmentBonusKind): Integer; // @addr 0x77D998
 
     function CalculateHullArmor(Hull: THull): Integer; // @addr 0x762C3C
     function CalculateEngineSpeed(Engine: TEngine; ApplyBrokenPenalty: Boolean): Integer; // @addr 0x762D30
@@ -719,8 +711,8 @@ var
   StationSize: Integer = 128; // @addr $87C6F4
   DefaultShipSmallSize: Integer = 50; // @addr $87C6F8
   DefaultShipLargeSize: Integer = 80; // @addr $87C6FC
-  SkillBonusEvaluationWeights: array[22..27] of Integer = (100, 100, 80, 80, 60, 60); // @addr $87C700 bonSkill1..bonSkill6.
-  SlotBonusEvaluationWeights: array[13..20] of Integer = (100, 100, 200, 100, 200, 75, 10, 30); // @addr $87C718 bonSlotRadar..bonSlotForsage.
+  SkillBonusEvaluationWeights: array[bonSkill1..bonSkill6] of Integer = (100, 100, 80, 80, 60, 60); // @addr $87C700 bonSkill1..bonSkill6.
+  SlotBonusEvaluationWeights: array[bonSlotRadar..bonSlotForsage] of Integer = (100, 100, 200, 100, 200, 75, 10, 30); // @addr $87C718 bonSlotRadar..bonSlotForsage.
 
 function CreateShipByType(ShipType: Byte): TShip; // @addr 0x75E500 @note "Allocates an unregistered instance; caller must initialize or deserialize it."
 
@@ -745,7 +737,9 @@ uses fShip2, aGalaxyEvent, fEquipmentShop, fGoodsShop2, ThreadCalc, EC_Mem, aEFi
 constructor TShip.Create;
 var
   I: Integer;
-  Kind, Skill, Series: Byte;
+  Kind: Byte;
+  Skill: TPilotSkill;
+  Series: Byte;
 begin
   inherited Create;
   PortraitFaceId := -1;
@@ -770,7 +764,7 @@ begin
     PShipEquipmentCacheView(Self).Slots[Kind] := nil;
   for I := 1 to 5 do Weapons[I] := nil;
   WeaponCount := 0;
-  for Skill := 0 to 5 do BaseSkills[Skill] := 0;
+  for Skill := Low(TPilotSkill) to High(TPilotSkill) do BaseSkills[Skill] := 0;
   MovementPath := TSPath.Create;
   OrderNone(False);
   Inventory := TObjectList.Create;
@@ -955,7 +949,9 @@ var
   Good: Byte;
   Item: TItem;
   I, Count: Integer;
-  Award, Skill, Series: Byte;
+  Award: Byte;
+  Skill: TPilotSkill;
+  Series: Byte;
   SourceId: Cardinal;
   Info: PCustomShipInfo;
   Reserved: array[0..3] of Byte; // Native unreferenced slot before managed cleanup temporaries.
@@ -1133,7 +1129,7 @@ begin
     end;
   end;
   Buffer.AddBoolean(DestroyQueued);
-  for Skill := 0 to 5 do Buffer.AddAnsiChar(AnsiChar(BaseSkills[Skill]));
+  for Skill := Low(TPilotSkill) to High(TPilotSkill) do Buffer.AddAnsiChar(AnsiChar(BaseSkills[Skill]));
   Buffer.AddWideChar(WideChar(NodeReserve));
   Buffer.AddDWord(TotalExperience);
   Buffer.AddDWord(FreeExperience);
@@ -1200,7 +1196,8 @@ var
   I, Count: Integer;
   Award: Byte;
   SavedPartner: TShip;
-  Skill, Series: Byte;
+  Skill: TPilotSkill;
+  Series: Byte;
   Bonus: PShipStatBonusEntry;
   Effect: PCombatStatusEffect;
   Info: PCustomShipInfo;
@@ -1285,7 +1282,7 @@ begin
       for I := 0 to Count - 1 do
       begin
         New(Bonus);
-        Bonus.BonusKind := Buffer.GetByte;
+        Bonus.BonusKind := TEquipmentBonusKind(Buffer.GetByte);
         Bonus.BonusValue := Buffer.GetInt32;
         StatBonuses.Add(Bonus);
       end;
@@ -1411,7 +1408,7 @@ begin
     AwardVisibleCount := Count;
   end;
   DestroyQueued := Buffer.GetBoolean;
-  for Skill := 0 to 5 do BaseSkills[Skill] := Buffer.GetByte;
+  for Skill := Low(TPilotSkill) to High(TPilotSkill) do BaseSkills[Skill] := Buffer.GetByte;
   NodeReserve := Buffer.GetWord;
   TotalExperience := Buffer.GetUInt32;
   FreeExperience := Buffer.GetUInt32;
@@ -1536,8 +1533,8 @@ begin
   Text := IntToStr(CargoGoods[0].Count);
   for I := 1 to 7 do Text := Text + ',' + IntToStr(CargoGoods[Byte(I)].Count);
   Block.AddParam(DecodeTextW('Gronordos'), Text); // 'Goods'
-  Text := IntToStr(BaseSkills[0]);
-  for I := 1 to 5 do Text := Text + ',' + IntToStr(BaseSkills[Byte(I)]);
+  Text := IntToStr(BaseSkills[psAccuracy]);
+  for I := 1 to 5 do Text := Text + ',' + IntToStr(BaseSkills[TPilotSkill(I)]);
   Block.AddParam(DecodeTextW('SekaiAlalas'), Text); // 'Skills'
   Block.AddParam(DecodeTextW('Mnognoenyj'), IntToStr(Money)); // 'Money'
   Block.AddParam(DecodeTextW('Eoxepl'), IntToStr(TotalExperience)); // 'Exp'
@@ -1622,7 +1619,7 @@ begin
   Text := Block.GetParam(DecodeTextW('Gronordos')); // 'Goods'
   for I := 0 to 7 do CargoGoods[Byte(I)].Count := StrToInt(ExtractDelimitedPartW(Text, I, ','));
   Text := Block.GetParam(DecodeTextW('SekaiAlalas')); // 'Skills'
-  for I := 0 to 5 do BaseSkills[Byte(I)] := StrToInt(ExtractDelimitedPartW(Text, I, ','));
+  for I := 0 to 5 do BaseSkills[TPilotSkill(I)] := StrToInt(ExtractDelimitedPartW(Text, I, ','));
   SetMoney(StrToInt(Block.GetParam(DecodeTextW('Mnognoenyj')))); // 'Money'
   TotalExperience := StrToInt(Block.GetParam(DecodeTextW('Eoxepl'))); // 'Exp'
   FreeExperience := StrToInt(Block.GetParam(DecodeTextW('FarweyeAETxopa'))); // 'FreeExp'
@@ -1675,7 +1672,7 @@ begin
     begin
       Part := ExtractDelimitedPartW(Text, I, ',');
       for ItemType := Byte(Low(TItemType)) to Byte(High(TItemType)) do
-        if ItemTypeNames[ItemType] = Part then
+        if ItemTypeNames[TItemType(ItemType)] = Part then
         begin
           if (ItemType in [Ord(t_Hull)..Ord(t_Satellite)]) and (ItemType <> Byte(t_Hull)) then
           begin
@@ -1699,9 +1696,9 @@ begin
     begin
       Part := ExtractDelimitedPartW(Text, I, ',');
       for ItemType := Byte(Low(TItemType)) to Byte(High(TItemType)) do
-        if ItemTypeNames[ItemType] = Part then
+        if ItemTypeNames[TItemType(ItemType)] = Part then
         begin
-          if (ItemTypeNames[ItemType] = Part) and (ItemType in [Ord(t_ArtefactHull)..Ord(t_ArtFastRacks)]) then
+          if (ItemTypeNames[TItemType(ItemType)] = Part) and (ItemType in [Ord(t_ArtefactHull)..Ord(t_ArtFastRacks)]) then
             Artefacts.Add(CreateConfiguredArtefactByItemType(TItemType(ItemType), 6));
           Break;
         end;
@@ -1720,7 +1717,7 @@ begin
     begin
       Part := ExtractDelimitedPartW(Text, I, ',');
       for ItemType := Byte(Low(TItemType)) to Byte(High(TItemType)) do
-        if ItemTypeNames[ItemType] = Part then
+        if ItemTypeNames[TItemType(ItemType)] = Part then
         begin
           if ((ItemType in [Ord(t_Food)..Ord(t_Narcotics)]) or (ItemType in [Ord(t_Hull)..Ord(t_CustomWeapon)]) or (ItemType in [Ord(t_ArtefactHull)..Ord(t_ArtFastRacks)]) or (ItemType in [Ord(t_Protoplasm)..Ord(t_Satellite)])) and (ItemType <> Byte(t_Hull)) then
           begin
@@ -2950,7 +2947,7 @@ begin
   if DestroyQueued then Exit;
   if NextRandomUnitFloat(RandomState) < 0.002 then Exit;
   if DaysSincePlayerSeen < 20 then Exit;
-  if (Galaxy.CountFactionStars(Ord(sfCoalition)) * 2.5 < Galaxy.CountEligibleRangers) and
+  if (Galaxy.CountFactionStars(sfCoalition) * 2.5 < Galaxy.CountEligibleRangers) and
     (Self is TRanger) and ((Self as TRanger).PlaceInRating > 10) then Exit;
   if GetPlayer = Self then Exit;
   BestDistance := 1e20;
@@ -4671,7 +4668,7 @@ begin
     if (GetPlayer = Self) and ((Galaxy.GodModEnabled = 1) or (Galaxy.SpecialSimulationMode <> 0)) then Damage := 0
     else
     begin
-      Factor := Max(0, 1 - GetTotalStatBonus(Ord(bonResistAsteroid)) * 0.01);
+      Factor := Max(0, 1 - GetTotalStatBonus(bonResistAsteroid) * 0.01);
       if IsEquipmentUsable(GetDefGenerator) then
         Damage := Round(RemapClamped(NextRandomUnitFloat(RandomState), 0, 1,
           GetHull.Weight * AsteroidMinDamageFactorWithDefGenerator,
@@ -4860,7 +4857,7 @@ begin
   for I := 0 to Inventory.Count - 1 do
   begin
     Item := Inventory[I];
-    if (Item.EquippedFlag <> 0) and (Byte(Item.ItemType) in [Ord(t_Weapon1)..Ord(t_CustomWeapon)]) then Inc(Count);
+    if (Item.EquippedFlag <> 0) and (Item.ItemType in [t_Weapon1..t_CustomWeapon]) then Inc(Count);
   end;
   Result := Count;
 end;
@@ -5003,14 +5000,14 @@ end;
 { @routine $75B0A4 TShip_GetWeaponMaxDamage }
 function TShip.GetWeaponMaxDamage(Weapon: TWeapon): Integer;
 var
-  BonusKind: Byte;
+  BonusKind: TEquipmentBonusKind;
   Bonus, I: Integer;
   Extra: PExtraSpecial;
 begin
   Result := Max(Weapon.MaxDamage, Weapon.MinDamage);
-  if Byte(Weapon.ItemType) in [Ord(t_Weapon1)..Ord(t_CustomWeapon)] then
+  if Weapon.ItemType in [t_Weapon1..t_CustomWeapon] then
   begin
-    BonusKind := WeaponDamageClasses[Ord(ClassifyWeaponDamageFlags(Weapon.GetWeaponInfo.DamageFlags))].BonusKind;
+    BonusKind := WeaponDamageClasses[ClassifyWeaponDamageFlags(Weapon.GetWeaponInfo.DamageFlags)].BonusKind;
     Bonus := GetTotalStatBonus(BonusKind);
     if (Weapon.GetWeaponInfo.ShotType in [wstMissile..wstRocket]) and not Galaxy.AreOldMissileBonusesEnabled then
     begin
@@ -5222,12 +5219,12 @@ function TShip.GetRelationLevelTextToShip(Ship: TShip): WideString;
 var Level: TRelationLevel;
 begin
   Level := GetRelationLevelToShip(Ship);
-  Result := RelationInfo[Ord(Level)].DisplayName;
+  Result := RelationInfo[Level].DisplayName;
   if (Level <> rlHostile) and (Self is TRuins) and (Ship is TRanger) and
      (RangerRelations <> nil) and (RangerRelations.Count > 0) then
   begin
     Level := RelationValueToLevel(Byte(RangerRelations[Galaxy.Rangers.IndexOf(Ship)]));
-    if Level <> rlHostile then Result := RelationInfo[Ord(Level)].DisplayName;
+    if Level <> rlHostile then Result := RelationInfo[Level].DisplayName;
   end;
 end;
 { @end $75BEC0 }
@@ -5578,7 +5575,7 @@ begin
           end;
         end;
         ProfitableCount := Floor(Profit / (ShopGoodsSellPrice(Good, nil) - UnitCost));
-        ExperienceFactor := 0.0001 * GalaxyDifficultyTuning[Galaxy.DifficultyLevels[1]].GoodsEventDurationFactor * Max(0, (Self as TPlayer).CareerStatus[Ord(rcTrader)] - 50);
+        ExperienceFactor := 0.0001 * GalaxyDifficultyTuning[Galaxy.DifficultyLevels[1]].GoodsEventDurationFactor * Max(0, (Self as TPlayer).CareerStatus[rcTrader] - 50);
         Experience := ProfitableCount * ExperienceFactor * GoodsMarketBase[Good].AveragePrice *
           Min(1.0, (ShopGoodsSellPrice(Good, nil) - UnitCost) * GoodsMarketBase[Good].TradeExperienceFactor / ShopGoodsSellPrice(Good, nil));
         Inc(TradeExperience, Floor(Experience));
@@ -5884,20 +5881,20 @@ end;
 function TShip.IsEquipmentUsable(Item: TEquipment): Boolean;
 begin
   Result := (Item <> nil) and
-    ((not (Byte(Item.ItemType) in [Ord(t_FuelTanks)..Ord(t_CustomWeapon), Ord(t_Satellite)])) or (Item.BrokenFlag = 0)) and CanUseEquipmentTech(Item);
+    ((not (Item.ItemType in [t_FuelTanks..t_CustomWeapon, t_Satellite])) or (Item.BrokenFlag = 0)) and CanUseEquipmentTech(Item);
 end;
 { @end $75E980 }
 
 { @routine $75E9CC TShip_EquipItem }
 procedure TShip.EquipItem(Item: TEquipment);
 begin
-  if Byte(Item.ItemType) in [Ord(t_Hull)..Ord(t_DefGenerator)] then
+  if Item.ItemType in [t_Hull..t_DefGenerator] then
   begin
     if PShipEquipmentCacheView(Self).Slots[Byte(Item.ItemType)] <> nil then
       PShipEquipmentCacheView(Self).Slots[Byte(Item.ItemType)].Unequip;
     PShipEquipmentCacheView(Self).Slots[Byte(Item.ItemType)] := Item;
   end
-  else if Byte(Item.ItemType) in [Ord(t_Weapon1)..Ord(t_CustomWeapon)] then
+  else if Item.ItemType in [t_Weapon1..t_CustomWeapon] then
   begin
     if WeaponCount < 5 then Inc(WeaponCount);
     if Weapons[WeaponCount] <> nil then Weapons[WeaponCount].Unequip;
@@ -5945,7 +5942,7 @@ begin
         Break;
       end;
   end
-  else if (Byte(Item.ItemType) in [Ord(t_Hull)..Ord(t_DefGenerator)]) and
+  else if (Item.ItemType in [t_Hull..t_DefGenerator]) and
     (PShipEquipmentCacheView(Self).Slots[Byte(Item.ItemType)] = Item) then UnequipSlot(Byte(Item.ItemType), 0);
 end;
 { @end $75EB74 }
@@ -5961,8 +5958,8 @@ begin
     for I := 1 to CountActiveArtefacts(Ord(t_ArtefactAntigrav)) do
       Mass := Mass * (AntigravityArtefactMassFactor + AntigravityArtefactBoostFactor * ShortInt(CanBoostArtefact(Ord(t_ArtefactAntigrav), nil, False)));
   if (PilotRace = Byte(oiMaloc)) and IsHealthEffectActive(9) then Mass := Mass * 1.2;
-  Bonus := GetTotalStatBonus(Ord(bonMass));
-  if GetHull.MicroModuleIndex <> 0 then Inc(Bonus, MicroModuleTemplates[GetHull.MicroModuleIndex - 1].StatBonuses[Ord(bonMass)]);
+  Bonus := GetTotalStatBonus(bonMass);
+  if GetHull.MicroModuleIndex <> 0 then Inc(Bonus, MicroModuleTemplates[GetHull.MicroModuleIndex - 1].StatBonuses[bonMass]);
   Mass := Mass * (1 + Bonus / 100);
   Result := Round(Mass);
 end;
@@ -5987,9 +5984,9 @@ begin
     Item := TEquipment(Artefacts[I]);
     if Item.EquippedFlag <> 0 then Mass := Mass + Item.Weight;
   end;
-  Bonus := GetTotalStatBonus(Ord(bonMass));
+  Bonus := GetTotalStatBonus(bonMass);
   if (ItemForModule <> nil) and (ItemForModule.SpecialModuleIndex <> 0) then
-    Inc(Bonus, MicroModuleTemplates[ItemForModule.SpecialModuleIndex - 1].StatBonuses[Ord(bonMass)]);
+    Inc(Bonus, MicroModuleTemplates[ItemForModule.SpecialModuleIndex - 1].StatBonuses[bonMass]);
   Mass := Mass * (1 + Bonus / 100);
   if Artefacts.Count > 0 then
     for I := 1 to CountActiveArtefacts(Ord(t_ArtefactAntigrav)) do
@@ -6078,7 +6075,7 @@ function TShip.GetFuelLimitedJumpRange: Integer;
 begin
   if (GetFuelTanks = nil) or not CanUseEquipmentTech(GetFuelTanks) or (GetEngine = nil) or not CanUseEquipmentTech(GetEngine) then
   begin Result := 0; Exit; end;
-  Result := Min(GetFuelTanks.Fuel + GetOwnStatBonus(Ord(bonFuel)), GetJumpRange);
+  Result := Min(GetFuelTanks.Fuel + GetOwnStatBonus(bonFuel), GetJumpRange);
 end;
 { @end $75F1DC }
 
@@ -6144,16 +6141,16 @@ end;
 { @end $75F2F8 }
 
 { @routine $75F5C4 TShip_GetEquipmentStatBonus }
-function TShip.GetEquipmentStatBonus(BonusKind: Byte; Item: TEquipment): Integer;
+function TShip.GetEquipmentStatBonus(BonusKind: TEquipmentBonusKind; Item: TEquipment): Integer;
 begin
   if (Item.SpecialModuleIndex <> 0) and
      IsMicroModuleRaciallyRestricted(Item.SpecialModuleIndex - 1) then Result := 0
-  else Result := Item.GetStatBonus(TEquipmentBonusKind(BonusKind));
+  else Result := Item.GetStatBonus(BonusKind);
 end;
 { @end $75F5C4 }
 
 { @routine $75F60C TShip_GetTotalStatBonus }
-function TShip.GetTotalStatBonus(BonusKind: Byte): Integer;
+function TShip.GetTotalStatBonus(BonusKind: TEquipmentBonusKind): Integer;
 var
   Item: TEquipment;
   I, Strength: Integer;
@@ -6175,9 +6172,9 @@ begin
   Strength := Round(GetCombatStatusStrength(cseMagnetic));
   if Strength >= 1 then
     case BonusKind of
-      Ord(bonScan), Ord(bonDef): Dec(Result, Strength);
-      Ord(bonWRadius): Dec(Result, Strength * 10);
-      Ord(bonRadar): Dec(Result, Strength * 100);
+      bonScan, bonDef: Dec(Result, Strength);
+      bonWRadius: Dec(Result, Strength * 10);
+      bonRadar: Dec(Result, Strength * 100);
     end;
 end;
 { @end $75F60C }
@@ -6254,7 +6251,7 @@ function TShip.GetCargoHookMinPullSpeed: Single;
 begin
   Result := 0;
   if GetCargoHook <> nil then
-    Result := Max(0.1, GetCargoHook.MinPullSpeed + CountActiveArtefacts(Ord(t_ArtefactHook)) * (CargoHookArtefactSpeed + CargoHookArtefactBoostSpeed * Byte(CanBoostArtefact(Ord(t_ArtefactHook), nil, False))) + GetTotalStatBonus(Ord(bonHookMinSpeed)));
+    Result := Max(0.1, GetCargoHook.MinPullSpeed + CountActiveArtefacts(Ord(t_ArtefactHook)) * (CargoHookArtefactSpeed + CargoHookArtefactBoostSpeed * Byte(CanBoostArtefact(Ord(t_ArtefactHook), nil, False))) + GetTotalStatBonus(bonHookMinSpeed));
 end;
 { @end $75FB54 }
 
@@ -6263,7 +6260,7 @@ function TShip.GetCargoHookMaxPullSpeed: Single;
 begin
   Result := 0;
   if GetCargoHook <> nil then
-    Result := Max(0.1, GetCargoHook.MaxPullSpeed + CountActiveArtefacts(Ord(t_ArtefactHook)) * (CargoHookArtefactSpeed + CargoHookArtefactBoostSpeed * Byte(CanBoostArtefact(Ord(t_ArtefactHook), nil, False))) + GetTotalStatBonus(Ord(bonHookMaxSpeed)));
+    Result := Max(0.1, GetCargoHook.MaxPullSpeed + CountActiveArtefacts(Ord(t_ArtefactHook)) * (CargoHookArtefactSpeed + CargoHookArtefactBoostSpeed * Byte(CanBoostArtefact(Ord(t_ArtefactHook), nil, False))) + GetTotalStatBonus(bonHookMaxSpeed));
 end;
 { @end $75FC30 }
 
@@ -6272,7 +6269,7 @@ function TShip.GetCargoHookRange: Integer;
 begin
   Result := 0;
   if GetCargoHook <> nil then
-    Result := GetCargoHook.Range + CountActiveArtefacts(Ord(t_ArtefactHook)) * (CargoHookArtefactRange + CargoHookArtefactBoostRange * Byte(CanBoostArtefact(Ord(t_ArtefactHook), nil, False))) + GetTotalStatBonus(Ord(bonHookRadius));
+    Result := GetCargoHook.Range + CountActiveArtefacts(Ord(t_ArtefactHook)) * (CargoHookArtefactRange + CargoHookArtefactBoostRange * Byte(CanBoostArtefact(Ord(t_ArtefactHook), nil, False))) + GetTotalStatBonus(bonHookRadius);
 end;
 { @end $75FD0C }
 
@@ -6309,7 +6306,7 @@ end;
 { @routine $75FE40 TShip_GetAttackMultiplier }
 function TShip.GetAttackMultiplier: Integer;
 begin
-  Result := Max(0, 1 + GetOwnStatBonus(Ord(bonAttacks)));
+  Result := Max(0, 1 + GetOwnStatBonus(bonAttacks));
 end;
 { @end $75FE40 }
 
@@ -6450,20 +6447,20 @@ begin
   for I := 1 to Inventory.Count - 1 do
   begin
     Item := TEquipment(Inventory[I]);
-    if (Item.EquippedFlag <> 0) and not (Byte(Item.ItemType) in [Ord(t_FuelTanks)..Ord(t_Engine)]) and
+    if (Item.EquippedFlag <> 0) and not (Item.ItemType in [t_FuelTanks..t_Engine]) and
        (GetSlotCountForItemType(Byte(Item.ItemType)) <= 0) and
        (ItemTypeToSlotKind(Byte(Item.ItemType)) <> sskUnsupported) then Item.EquippedFlag := 0;
     if Item.EquippedFlag <> 0 then
     begin
-      if Byte(Item.ItemType) in [Ord(t_Hull)..Ord(t_DefGenerator)] then PShipEquipmentCacheView(Self).Slots[Byte(Item.ItemType)] := Item
-      else if Byte(Item.ItemType) in [Ord(t_Weapon1)..Ord(t_CustomWeapon)] then
+      if Item.ItemType in [t_Hull..t_DefGenerator] then PShipEquipmentCacheView(Self).Slots[Byte(Item.ItemType)] := Item
+      else if Item.ItemType in [t_Weapon1..t_CustomWeapon] then
       begin
         Inc(WeaponCount);
         Weapons[WeaponCount] := Item as TWeapon;
         if IsEquipmentUsable(Weapons[WeaponCount]) then Inc(UsableWeaponCount);
       end;
     end
-    else if Byte(Item.ItemType) in [Ord(t_Hull)..Ord(t_DefGenerator)] then HasInactiveDirectEquipment := 1;
+    else if Item.ItemType in [t_Hull..t_DefGenerator] then HasInactiveDirectEquipment := 1;
   end;
   RemoveInvalidPickupTargets;
 end;
@@ -6567,7 +6564,7 @@ end;
 function TShip.NeedsEquipmentType(ItemType: TItemType): Boolean;
 begin
   Result := False;
-  if ((Byte(ItemType) in [Ord(t_FuelTanks), Ord(t_Engine), Ord(t_RepairRobot), Ord(t_DefGenerator)]) or (Byte(ItemType) in [Ord(t_Weapon1)..Ord(t_CustomWeapon)])) and (CountCarriedEquipmentByType(ItemType) <= 0) then Result := True;
+  if ((ItemType in [t_FuelTanks, t_Engine, t_RepairRobot, t_DefGenerator]) or (ItemType in [t_Weapon1..t_CustomWeapon])) and (CountCarriedEquipmentByType(ItemType) <= 0) then Result := True;
 end;
 { @end $760BE4 }
 
@@ -6594,11 +6591,11 @@ var
   Item: TItem;
 begin
   Result := 0;
-  if Byte(ItemType) in [Ord(t_Hull)..Ord(t_CustomWeapon)] then
+  if ItemType in [t_Hull..t_CustomWeapon] then
     for I := 1 to Inventory.Count - 1 do
     begin
       Item := Inventory[I];
-      if (Item.ItemType = ItemType) or ((Byte(ItemType) in [Ord(t_Weapon1)..Ord(t_CustomWeapon)]) and (Byte(Item.ItemType) in [Ord(t_Weapon1)..Ord(t_CustomWeapon)])) then Inc(Result);
+      if (Item.ItemType = ItemType) or ((ItemType in [t_Weapon1..t_CustomWeapon]) and (Item.ItemType in [t_Weapon1..t_CustomWeapon])) then Inc(Result);
     end;
 end;
 { @end $760CD0 }
@@ -6868,7 +6865,7 @@ var
         Candidate := Artefacts[I];
         if (Candidate.EquippedFlag = 0) and
            ((Candidate.ItemType = ArtefactType) or
-            ((Byte(Candidate.ItemType) in [Ord(t_Artefact)..Ord(t_Artefact2)]) and (TArtefactCustom(Candidate).CountsAsItemType = ArtefactType))) and
+            ((Candidate.ItemType in [t_Artefact..t_Artefact2]) and (TArtefactCustom(Candidate).CountsAsItemType = ArtefactType))) and
            (not HasEquippedArtefactOfSameUseGroup(Candidate) or Galaxy.AreDuplicateArtefactsEnabled) then
         begin
           Score := EvaluateItem(Candidate, 3);
@@ -6895,7 +6892,7 @@ begin
   for I := 0 to Artefacts.Count - 1 do
   begin
     Item := Artefacts[I];
-    if (Byte(Item.ItemType) in [Ord(t_Artefact)..Ord(t_ArtefactAntigrav), Ord(t_ArtDefToEnergy)..Ord(t_ArtGiperJump), Ord(t_ArtDefToArms1)..Ord(t_ArtFastRacks)]) and
+    if (Item.ItemType in [t_Artefact..t_ArtefactAntigrav, t_ArtDefToEnergy..t_ArtGiperJump, t_ArtDefToArms1..t_ArtFastRacks]) and
        ((Item.NoDropFlag > 0) or ((Item.ScriptItem <> nil) and (TScriptItem(Item.ScriptItem).Name <> ''))) then
     begin
       Item.Equip;
@@ -6909,7 +6906,7 @@ begin
   HasSplinter := SplinterCount > 0;
   HasMissiles := False;
   for I := 1 to WeaponCount do
-    if Byte(Weapons[I].GetWeaponInfo.ShotType) in [Ord(wstTorpedo)..Ord(wstRocket)] then
+    if Weapons[I].GetWeaponInfo.ShotType in [wstTorpedo..wstRocket] then
     begin
       HasMissiles := True;
       Break;
@@ -6959,7 +6956,7 @@ var
   SavedTarget: TObject;
   Damage, WeaponRange, OtherRange, MinRange, DamageValue: Single;
   Weapon: TWeapon;
-  DamageBonusKind: Byte;
+  DamageBonusKind: TEquipmentBonusKind;
   SavedChaoticRandom: Boolean;
   SavedWeapons: array[1..5] of TWeapon;
 begin
@@ -6968,9 +6965,9 @@ begin
     ((Item as TEquipment).BrokenFlag <> 0) and (Item.ItemType <> t_Engine) then Exit;
   if (Item is TEquipment) and not CanUseEquipmentTech(TEquipment(Item)) then Exit;
   if (CurrentPlanet = nil) and (DockedTo = nil) and (Item is TWeapon) and
-    (Byte(TWeapon(Item).GetWeaponInfo.ShotType) in [Ord(wstTorpedo)..Ord(wstRocket)]) and (TWeapon(Item).Ammo <= 0) then Exit;
+    (TWeapon(Item).GetWeaponInfo.ShotType in [wstTorpedo..wstRocket]) and (TWeapon(Item).Ammo <= 0) then Exit;
   if (Item is TEngine) and (TEngine(Item).Speed < 100) and not (Self is TRuins) then Exit;
-  if not (Byte(Item.ItemType) in [Ord(t_Hull)..Ord(t_CustomWeapon)]) then
+  if not (Item.ItemType in [t_Hull..t_CustomWeapon]) then
   begin
     if Item is TArtefact then
       Result := 5000 / Max(1, Item.Weight) / Max(0.25, TEquipment(Item).GetFragilityFactor(EmptyDamageFlags))
@@ -6982,7 +6979,7 @@ begin
   Equipment := Item as TEquipment;
   for I := 1 to 5 do SavedWeapons[I] := nil;
   SavedTarget := nil;
-  TemporarilyUnequipped := (Equipment.EquippedFlag <> 0) and (Byte(Equipment.ItemType) in [Ord(t_Weapon1)..Ord(t_CustomWeapon)]);
+  TemporarilyUnequipped := (Equipment.EquippedFlag <> 0) and (Equipment.ItemType in [t_Weapon1..t_CustomWeapon]);
   if TemporarilyUnequipped then
   begin
     TemporarilyUnequipped := False;
@@ -6998,7 +6995,7 @@ begin
   end;
   SavedChaoticRandom := Galaxy.CustomRules.ChaoticRandom;
   Galaxy.CustomRules.ChaoticRandom := False;
-  if Byte(Equipment.ItemType) in [Ord(t_Hull)..Ord(t_DefGenerator)] then
+  if Equipment.ItemType in [t_Hull..t_DefGenerator] then
   begin
     case Equipment.ItemType of
       t_Hull: begin
@@ -7027,7 +7024,7 @@ begin
       t_DefGenerator: Result := EvaluateStatBonus(bonDef, Round(100 - CalculateDefGeneratorFactor(TDefGenerator(Equipment)) * 100));
     end;
   end
-  else if Byte(Equipment.ItemType) in [Ord(t_Weapon1)..Ord(t_CustomWeapon)] then
+  else if Equipment.ItemType in [t_Weapon1..t_CustomWeapon] then
   begin
     Weapon := TWeapon(Equipment);
     WeaponRange := GetWeaponRange(Weapon);
@@ -7039,11 +7036,11 @@ begin
       OtherRange := GetWeaponRange(Weapons[WeaponIndex]);
       if OtherRange < MinRange then MinRange := OtherRange;
     end;
-    DamageBonusKind := WeaponDamageClasses[Ord(ClassifyWeaponDamageFlags(Weapon.GetWeaponInfo.DamageFlags))].BonusKind;
-    DamageValue := EvaluateStatBonus(TEquipmentBonusKind(DamageBonusKind), Round(Damage));
+    DamageBonusKind := WeaponDamageClasses[ClassifyWeaponDamageFlags(Weapon.GetWeaponInfo.DamageFlags)].BonusKind;
+    DamageValue := EvaluateStatBonus(DamageBonusKind, Round(Damage));
     Result := Result + DamageValue * (1 + EvaluateStatBonus(bonWRadius, Round(WeaponRange)) * 0.002);
     Result := Result + EvaluateStatBonus(bonWRadius, Round((WeaponRange + MinRange) * 0.5)) * 0.5;
-    if ((CurrentPlanet <> nil) or (DockedTo <> nil)) and (Byte(Weapon.GetWeaponInfo.ShotType) in [Ord(wstTorpedo)..Ord(wstRocket)]) then
+    if ((CurrentPlanet <> nil) or (DockedTo <> nil)) and (Weapon.GetWeaponInfo.ShotType in [wstTorpedo..wstRocket]) then
       Result := Result * (RemapClamped(Weapon.AmmoCapacity, 30, 100, 0, 0.5) + RemapClamped(Weapon.AmmoCapacity, 0, 30, 0, 0.5));
   end
   else
@@ -7057,7 +7054,7 @@ begin
   Galaxy.CustomRules.ChaoticRandom := SavedChaoticRandom;
   if ((Equipment.ScriptItem <> nil) and (TScriptItem(Equipment.ScriptItem).Name <> '')) or (Equipment.NoDropFlag > 0) then
     Result := Max(Result, 0) * 10
-  else if (Equipment.BrokenFlag <> 0) and (Equipment is TWeapon) and (Byte(TWeapon(Equipment).GetWeaponInfo.Availability) = 4) then
+  else if (Equipment.BrokenFlag <> 0) and (Equipment is TWeapon) and (TWeapon(Equipment).GetWeaponInfo.Availability = waNotSoldAndNodeRepair) then
     Result := 0
   else if (Equipment.BrokenFlag <> 0) and not CanRepairEquipmentTech(Equipment) then
     Result := 0
@@ -7111,17 +7108,17 @@ var
   Range, I, TemplateRange: Integer;
   Extra: PExtraSpecial;
 begin
-  if not (Byte(Weapon.ItemType) in [Ord(t_Weapon1)..Ord(t_CustomWeapon)]) then
+  if not (Weapon.ItemType in [t_Weapon1..t_CustomWeapon]) then
   begin
     Result := 0;
     Exit;
   end;
-  Range := Weapon.Range + GetTotalStatBonus(Ord(bonWRadius));
+  Range := Weapon.Range + GetTotalStatBonus(bonWRadius);
   if Weapon.ExtraSpecials <> nil then
     for I := 0 to Weapon.ExtraSpecials.Count - 1 do
     begin
       Extra := Weapon.ExtraSpecials[I];
-      Inc(Range, MicroModuleTemplates[Extra.ModuleIndexPlusOne - 1].StatBonuses[Ord(bonWRadius)] * Extra.Count);
+      Inc(Range, MicroModuleTemplates[Extra.ModuleIndexPlusOne - 1].StatBonuses[bonWRadius] * Extra.Count);
     end;
   if Weapon.GetWeaponInfo.ShotType in [wstTorpedo..wstRocket] then
   begin
@@ -7141,11 +7138,11 @@ var
   Bonus, Value: Integer;
 begin
   if Hull.ItemType <> t_Hull then begin Result := 0; Exit; end;
-  Bonus := GetTotalStatBonus(Ord(bonHull));
+  Bonus := GetTotalStatBonus(bonHull);
   if GetHull <> Hull then
   begin
-    Dec(Bonus, GetEquipmentStatBonus(Ord(bonHull), GetHull));
-    Inc(Bonus, GetEquipmentStatBonus(Ord(bonHull), Hull));
+    Dec(Bonus, GetEquipmentStatBonus(bonHull, GetHull));
+    Inc(Bonus, GetEquipmentStatBonus(bonHull, Hull));
   end;
   Value := Hull.Armor + Bonus;
   Value := Value + CountActiveArtefacts(Ord(t_ArtefactHull)) * (HullArtefactArmor + HullArtefactBoostArmor * Byte(CanBoostArtefact(Ord(t_ArtefactHull), Hull, False)));
@@ -7167,9 +7164,9 @@ var
   Bonus, Value, I: Integer;
 begin
   if Engine.ItemType <> t_Engine then begin Result := 0; Exit; end;
-  Bonus := GetTotalStatBonus(Ord(bonSpeed));
+  Bonus := GetTotalStatBonus(bonSpeed);
   if (Engine.EquippedFlag = 0) and (Engine.SpecialModuleIndex <> 0) then
-    Inc(Bonus, GetEquipmentStatBonus(Ord(bonSpeed), Engine));
+    Inc(Bonus, GetEquipmentStatBonus(bonSpeed, Engine));
   Value := Engine.Speed;
   if ApplyBrokenPenalty and (Engine.BrokenFlag <> 0) then Value := Round(Value * 0.6);
   Value := Value + CountActiveArtefacts(Ord(t_ArtWeaponToSpeed)) * (WeaponToSpeedArtefactBonus + WeaponToSpeedArtefactBoost * Byte(CanBoostArtefact(Ord(t_ArtWeaponToSpeed), Engine, False)));
@@ -7186,9 +7183,9 @@ var
   Bonus, Value: Integer;
 begin
   if Engine.ItemType <> t_Engine then begin Result := 0; Exit; end;
-  Bonus := GetTotalStatBonus(Ord(bonJump));
+  Bonus := GetTotalStatBonus(bonJump);
   if (Engine.EquippedFlag = 0) and (Engine.SpecialModuleIndex <> 0) then
-    Inc(Bonus, GetEquipmentStatBonus(Ord(bonJump), Engine));
+    Inc(Bonus, GetEquipmentStatBonus(bonJump, Engine));
   Value := Engine.JumpRange;
   if not CanUseEquipmentTech(Engine) then Value := Value div 2;
   if CountActiveArtefacts(Ord(t_ArtGiperJump)) > 0 then
@@ -7204,9 +7201,9 @@ var
   Bonus, Value: Integer;
 begin
   if Radar.ItemType <> t_Radar then begin Result := 0; Exit; end;
-  Bonus := GetTotalStatBonus(Ord(bonRadar));
+  Bonus := GetTotalStatBonus(bonRadar);
   if (Radar.EquippedFlag = 0) and (Radar.SpecialModuleIndex <> 0) then
-    Inc(Bonus, GetEquipmentStatBonus(Ord(bonRadar), Radar));
+    Inc(Bonus, GetEquipmentStatBonus(bonRadar, Radar));
   Value := Radar.Range;
   Value := Value + CountActiveArtefacts(Ord(t_ArtefactRadar)) * (RadarArtefactRange + RadarArtefactBoostRange * Byte(CanBoostArtefact(Ord(t_ArtefactRadar), Radar, False)));
   Result := Max(0, Value + Bonus);
@@ -7219,9 +7216,9 @@ var
   Bonus, Value: Integer;
 begin
   if Scanner.ItemType <> t_Scaner then begin Result := 0; Exit; end;
-  Bonus := GetTotalStatBonus(Ord(bonScan));
+  Bonus := GetTotalStatBonus(bonScan);
   if (Scanner.EquippedFlag = 0) and (Scanner.SpecialModuleIndex <> 0) then
-    Inc(Bonus, GetEquipmentStatBonus(Ord(bonScan), Scanner));
+    Inc(Bonus, GetEquipmentStatBonus(bonScan, Scanner));
   Value := Scanner.ScanPower;
   Value := Value + CountActiveArtefacts(Ord(t_ArtefactScaner)) * (ScannerArtefactPower + ScannerArtefactBoostPower * Byte(CanBoostArtefact(Ord(t_ArtefactScaner), Scanner, False)));
   Result := Max(0, Value + Bonus);
@@ -7234,9 +7231,9 @@ var
   Bonus, Value: Integer;
 begin
   if RepairRobot.ItemType <> t_RepairRobot then begin Result := 0; Exit; end;
-  Bonus := GetTotalStatBonus(Ord(bonDroid));
+  Bonus := GetTotalStatBonus(bonDroid);
   if (RepairRobot.EquippedFlag = 0) and (RepairRobot.SpecialModuleIndex <> 0) then
-    Inc(Bonus, GetEquipmentStatBonus(Ord(bonDroid), RepairRobot));
+    Inc(Bonus, GetEquipmentStatBonus(bonDroid, RepairRobot));
   Value := RepairRobot.RepairPoints;
   Value := Value + CountActiveArtefacts(Ord(t_ArtefactDroid)) * (DroidArtefactRepair + DroidArtefactBoostRepair * Byte(CanBoostArtefact(Ord(t_ArtefactDroid), RepairRobot, False)));
   Result := Max(0, Value + Bonus);
@@ -7249,9 +7246,9 @@ var
   Bonus, Value: Integer;
 begin
   if CargoHook.ItemType <> t_CargoHook then begin Result := 0; Exit; end;
-  Bonus := GetTotalStatBonus(Ord(bonHook));
+  Bonus := GetTotalStatBonus(bonHook);
   if (CargoHook.EquippedFlag = 0) and (CargoHook.SpecialModuleIndex <> 0) then
-    Inc(Bonus, GetEquipmentStatBonus(Ord(bonHook), CargoHook));
+    Inc(Bonus, GetEquipmentStatBonus(bonHook, CargoHook));
   Value := CargoHook.PickupPower;
   Value := Value + CountActiveArtefacts(Ord(t_ArtefactHook)) * (CargoHookArtefactPower + CargoHookArtefactBoostPower * Byte(CanBoostArtefact(Ord(t_ArtefactHook), CargoHook, False)));
   Result := Max(0, Value + Bonus);
@@ -7265,9 +7262,9 @@ var
   Factor: Single;
 begin
   if DefGenerator.ItemType <> t_DefGenerator then begin Result := 0; Exit; end;
-  Percent := GetTotalStatBonus(Ord(bonDef));
+  Percent := GetTotalStatBonus(bonDef);
   if (DefGenerator.EquippedFlag = 0) and (DefGenerator.SpecialModuleIndex <> 0) then
-    Inc(Percent, GetEquipmentStatBonus(Ord(bonDef), DefGenerator));
+    Inc(Percent, GetEquipmentStatBonus(bonDef, DefGenerator));
   Factor := DefGenerator.DamageFactor;
   if Percent <> 0 then Factor := Factor - (1 - DefensePercentToDamageFactor(Percent));
   Factor := Factor - CountActiveArtefacts(Ord(t_ArtefactDef)) * (DefenseArtefactBonus + DefenseArtefactBoost * ShortInt(CanBoostArtefact(Ord(t_ArtefactDef), DefGenerator, False)));
@@ -7306,42 +7303,42 @@ begin
       if (Item.ExtraSpecials = nil) or (Item.ExtraSpecials.Count = 0) then
       begin
         Module := @MicroModuleTemplates[ModuleIndex];
-        if ItemType <> t_Hull then AccumulateEquipmentBonus(EvaluateStatBonus(bonHull, Module.StatBonuses[Ord(bonHull)]));
+        if ItemType <> t_Hull then AccumulateEquipmentBonus(EvaluateStatBonus(bonHull, Module.StatBonuses[bonHull]));
         if ItemType <> t_Engine then
         begin
-          AccumulateEquipmentBonus(EvaluateStatBonus(bonSpeed, Module.StatBonuses[Ord(bonSpeed)]));
-          AccumulateEquipmentBonus(EvaluateStatBonus(bonJump, Module.StatBonuses[Ord(bonJump)]));
+          AccumulateEquipmentBonus(EvaluateStatBonus(bonSpeed, Module.StatBonuses[bonSpeed]));
+          AccumulateEquipmentBonus(EvaluateStatBonus(bonJump, Module.StatBonuses[bonJump]));
         end;
-        if (GetRadar <> nil) and (ItemType <> t_Radar) then AccumulateEquipmentBonus(EvaluateStatBonus(bonRadar, Module.StatBonuses[Ord(bonRadar)]));
-        if (GetScanner <> nil) and (ItemType <> t_Scaner) then AccumulateEquipmentBonus(EvaluateStatBonus(bonScan, Module.StatBonuses[Ord(bonScan)]));
-        if (GetRepairRobot <> nil) and (ItemType <> t_RepairRobot) then AccumulateEquipmentBonus(EvaluateStatBonus(bonDroid, Module.StatBonuses[Ord(bonDroid)]));
+        if (GetRadar <> nil) and (ItemType <> t_Radar) then AccumulateEquipmentBonus(EvaluateStatBonus(bonRadar, Module.StatBonuses[bonRadar]));
+        if (GetScanner <> nil) and (ItemType <> t_Scaner) then AccumulateEquipmentBonus(EvaluateStatBonus(bonScan, Module.StatBonuses[bonScan]));
+        if (GetRepairRobot <> nil) and (ItemType <> t_RepairRobot) then AccumulateEquipmentBonus(EvaluateStatBonus(bonDroid, Module.StatBonuses[bonDroid]));
         if (GetCargoHook <> nil) and (ItemType <> t_CargoHook) then
         begin
           // Native expression adds raw hook power to the evaluated bonus before subtracting its evaluation.
-          AccumulateEquipmentBonus(EvaluateStatBonus(bonHook, Module.StatBonuses[Ord(bonHook)]) + CalculateCargoHookPower(GetCargoHook) - EvaluateStatBonus(bonHook, CalculateCargoHookPower(GetCargoHook)));
-          AccumulateEquipmentBonus(EvaluateStatBonus(bonHookRadius, Module.StatBonuses[Ord(bonHookRadius)]));
+          AccumulateEquipmentBonus(EvaluateStatBonus(bonHook, Module.StatBonuses[bonHook]) + CalculateCargoHookPower(GetCargoHook) - EvaluateStatBonus(bonHook, CalculateCargoHookPower(GetCargoHook)));
+          AccumulateEquipmentBonus(EvaluateStatBonus(bonHookRadius, Module.StatBonuses[bonHookRadius]));
         end;
         if (GetDefGenerator <> nil) and (ItemType <> t_DefGenerator) then
-          AccumulateEquipmentBonus(EvaluateStatBonus(bonDef, Module.StatBonuses[Ord(bonDef)] + Integer(Round(100 - CalculateDefGeneratorFactor(GetDefGenerator) * 100))) -
+          AccumulateEquipmentBonus(EvaluateStatBonus(bonDef, Module.StatBonuses[bonDef] + Integer(Round(100 - CalculateDefGeneratorFactor(GetDefGenerator) * 100))) -
             EvaluateStatBonus(bonDef, Round(100 - CalculateDefGeneratorFactor(GetDefGenerator) * 100)));
-        AccumulateEquipmentBonus(EvaluateStatBonus(bonWRadius, Module.StatBonuses[Ord(bonWRadius)]) * CountEquippedWeapons);
-        if not (Byte(ItemType) in [Ord(t_Weapon1)..Ord(t_CustomWeapon)]) then
+        AccumulateEquipmentBonus(EvaluateStatBonus(bonWRadius, Module.StatBonuses[bonWRadius]) * CountEquippedWeapons);
+        if not (ItemType in [t_Weapon1..t_CustomWeapon]) then
           for I := 1 to CountEquippedWeapons do
           begin
             DamageBonus := 0;
-            if dkEnergy in Weapons[I].GetWeaponInfo.DamageFlags then DamageBonus := DamageBonus + EvaluateStatBonus(bonWEnergy, Module.StatBonuses[Ord(bonWEnergy)]);
-            if dkSplinter in Weapons[I].GetWeaponInfo.DamageFlags then DamageBonus := DamageBonus + EvaluateStatBonus(bonWSplinter, Module.StatBonuses[Ord(bonWSplinter)]);
-            if dkMissile in Weapons[I].GetWeaponInfo.DamageFlags then DamageBonus := DamageBonus + EvaluateStatBonus(bonWMissile, Module.StatBonuses[Ord(bonWMissile)]);
+            if dkEnergy in Weapons[I].GetWeaponInfo.DamageFlags then DamageBonus := DamageBonus + EvaluateStatBonus(bonWEnergy, Module.StatBonuses[bonWEnergy]);
+            if dkSplinter in Weapons[I].GetWeaponInfo.DamageFlags then DamageBonus := DamageBonus + EvaluateStatBonus(bonWSplinter, Module.StatBonuses[bonWSplinter]);
+            if dkMissile in Weapons[I].GetWeaponInfo.DamageFlags then DamageBonus := DamageBonus + EvaluateStatBonus(bonWMissile, Module.StatBonuses[bonWMissile]);
             if (DamageBonus > 0.001) or (DamageBonus < -0.001) then
               DamageBonus := EvaluateWeaponDamage(Weapons[I], False, DamageBonus);
             AccumulateEquipmentBonus(DamageBonus);
           end;
-        AccumulateEquipmentBonus(EvaluateStatBonus(bonSkill1, Module.StatBonuses[Ord(bonSkill1)]));
-        AccumulateEquipmentBonus(EvaluateStatBonus(bonSkill2, Module.StatBonuses[Ord(bonSkill2)]));
-        AccumulateEquipmentBonus(EvaluateStatBonus(bonSkill3, Module.StatBonuses[Ord(bonSkill3)]));
-        AccumulateEquipmentBonus(EvaluateStatBonus(bonSkill4, Module.StatBonuses[Ord(bonSkill4)]));
-        AccumulateEquipmentBonus(EvaluateStatBonus(bonSkill5, Module.StatBonuses[Ord(bonSkill5)]));
-        AccumulateEquipmentBonus(EvaluateStatBonus(bonSkill6, Module.StatBonuses[Ord(bonSkill6)]));
+        AccumulateEquipmentBonus(EvaluateStatBonus(bonSkill1, Module.StatBonuses[bonSkill1]));
+        AccumulateEquipmentBonus(EvaluateStatBonus(bonSkill2, Module.StatBonuses[bonSkill2]));
+        AccumulateEquipmentBonus(EvaluateStatBonus(bonSkill3, Module.StatBonuses[bonSkill3]));
+        AccumulateEquipmentBonus(EvaluateStatBonus(bonSkill4, Module.StatBonuses[bonSkill4]));
+        AccumulateEquipmentBonus(EvaluateStatBonus(bonSkill5, Module.StatBonuses[bonSkill5]));
+        AccumulateEquipmentBonus(EvaluateStatBonus(bonSkill6, Module.StatBonuses[bonSkill6]));
       end
       else
       begin
@@ -7364,7 +7361,7 @@ begin
           AccumulateEquipmentBonus(EvaluateStatBonus(bonDef, Item.GetStatBonus(bonDef) + Integer(Round(100 - CalculateDefGeneratorFactor(GetDefGenerator) * 100))) -
             EvaluateStatBonus(bonDef, Round(100 - CalculateDefGeneratorFactor(GetDefGenerator) * 100)));
         AccumulateEquipmentBonus(EvaluateStatBonus(bonWRadius, Item.GetStatBonus(bonWRadius)) * CountEquippedWeapons);
-        if not (Byte(ItemType) in [Ord(t_Weapon1)..Ord(t_CustomWeapon)]) then
+        if not (ItemType in [t_Weapon1..t_CustomWeapon]) then
           for I := 1 to CountEquippedWeapons do
           begin
             DamageBonus := 0;
@@ -7387,8 +7384,8 @@ begin
         EvaluateStatBonus(bonMass, CalculateEquippedMass(nil)));
       if Item.MicroModuleIndex <> 0 then
       begin
-        Positive := Positive + Round(MicroModuleTemplates[Item.MicroModuleIndex - 1].StatBonuses[Ord(bonExtraAkrinEff)] * Positive * 0.0001);
-        Nonpositive := Nonpositive + Round(MicroModuleTemplates[Item.MicroModuleIndex - 1].StatBonuses[Ord(bonExtraAkrinPenalty)] * Nonpositive * 0.0001);
+        Positive := Positive + Round(MicroModuleTemplates[Item.MicroModuleIndex - 1].StatBonuses[bonExtraAkrinEff] * Positive * 0.0001);
+        Nonpositive := Nonpositive + Round(MicroModuleTemplates[Item.MicroModuleIndex - 1].StatBonuses[bonExtraAkrinPenalty] * Nonpositive * 0.0001);
       end;
       Result := Positive + Nonpositive;
     end;
@@ -7555,54 +7552,54 @@ begin
     bonHookRadius: Result := Value * 0.1;
     bonMass: Result := RemapClamped(Value, HullMassEvaluationStart, HullMassEvaluationEnd, 1, 0.333) * 5000;
     bonSlotRadar:
-      if (GetSlotCount(sskRadar) = 0) and (Value > 0) then Result := SlotBonusEvaluationWeights[Ord(BonusKind)] * 0.3
-      else if (GetRadar <> nil) and (Value < 0) then Result := -SlotBonusEvaluationWeights[Ord(BonusKind)] - SlotBonusEvaluationWeights[18] * CountMissileWeapons
-      else if (GetSlotCount(sskRadar) = 1) and (Value < 0) then Result := SlotBonusEvaluationWeights[Ord(BonusKind)] * -0.3;
+      if (GetSlotCount(sskRadar) = 0) and (Value > 0) then Result := SlotBonusEvaluationWeights[BonusKind] * 0.3
+      else if (GetRadar <> nil) and (Value < 0) then Result := -SlotBonusEvaluationWeights[BonusKind] - SlotBonusEvaluationWeights[bonSlotWeapon] * CountMissileWeapons
+      else if (GetSlotCount(sskRadar) = 1) and (Value < 0) then Result := SlotBonusEvaluationWeights[BonusKind] * -0.3;
     bonSlotScaner:
-      if (GetSlotCount(sskScanner) = 0) and (Value > 0) then Result := SlotBonusEvaluationWeights[Ord(BonusKind)] * 0.3
-      else if (GetScanner <> nil) and (Value < 0) then Result := -SlotBonusEvaluationWeights[Ord(BonusKind)] - CountWeaponsByDamageFlags(ScannerFlags) * 0.1 * SlotBonusEvaluationWeights[18]
-      else if (GetSlotCount(sskScanner) = 1) and (Value < 0) then Result := SlotBonusEvaluationWeights[Ord(BonusKind)] * -0.3;
+      if (GetSlotCount(sskScanner) = 0) and (Value > 0) then Result := SlotBonusEvaluationWeights[BonusKind] * 0.3
+      else if (GetScanner <> nil) and (Value < 0) then Result := -SlotBonusEvaluationWeights[BonusKind] - CountWeaponsByDamageFlags(ScannerFlags) * 0.1 * SlotBonusEvaluationWeights[bonSlotWeapon]
+      else if (GetSlotCount(sskScanner) = 1) and (Value < 0) then Result := SlotBonusEvaluationWeights[BonusKind] * -0.3;
     bonSlotDroid:
-      if (GetSlotCount(sskRepairRobot) = 0) and (Value > 0) then Result := SlotBonusEvaluationWeights[Ord(BonusKind)] * 0.3
-      else if (GetRepairRobot <> nil) and (Value < 0) then Result := -SlotBonusEvaluationWeights[Ord(BonusKind)]
-      else if (GetSlotCount(sskRepairRobot) = 1) and (Value < 0) then Result := SlotBonusEvaluationWeights[Ord(BonusKind)] * -0.3;
+      if (GetSlotCount(sskRepairRobot) = 0) and (Value > 0) then Result := SlotBonusEvaluationWeights[BonusKind] * 0.3
+      else if (GetRepairRobot <> nil) and (Value < 0) then Result := -SlotBonusEvaluationWeights[BonusKind]
+      else if (GetSlotCount(sskRepairRobot) = 1) and (Value < 0) then Result := SlotBonusEvaluationWeights[BonusKind] * -0.3;
     bonSlotHook:
-      if (GetSlotCount(sskCargoHook) = 0) and (Value > 0) then Result := SlotBonusEvaluationWeights[Ord(BonusKind)] * 0.3
-      else if (GetCargoHook <> nil) and (Value < 0) then Result := -SlotBonusEvaluationWeights[Ord(BonusKind)]
-      else if (GetSlotCount(sskCargoHook) = 1) and (Value < 0) then Result := SlotBonusEvaluationWeights[Ord(BonusKind)] * -0.3;
+      if (GetSlotCount(sskCargoHook) = 0) and (Value > 0) then Result := SlotBonusEvaluationWeights[BonusKind] * 0.3
+      else if (GetCargoHook <> nil) and (Value < 0) then Result := -SlotBonusEvaluationWeights[BonusKind]
+      else if (GetSlotCount(sskCargoHook) = 1) and (Value < 0) then Result := SlotBonusEvaluationWeights[BonusKind] * -0.3;
     bonSlotDef:
-      if (GetSlotCount(sskDefGenerator) = 0) and (Value > 0) then Result := SlotBonusEvaluationWeights[Ord(BonusKind)] * 0.3
-      else if (GetDefGenerator <> nil) and (Value < 0) then Result := -SlotBonusEvaluationWeights[Ord(BonusKind)]
-      else if (GetSlotCount(sskDefGenerator) = 1) and (Value < 0) then Result := SlotBonusEvaluationWeights[Ord(BonusKind)] * -0.3;
+      if (GetSlotCount(sskDefGenerator) = 0) and (Value > 0) then Result := SlotBonusEvaluationWeights[BonusKind] * 0.3
+      else if (GetDefGenerator <> nil) and (Value < 0) then Result := -SlotBonusEvaluationWeights[BonusKind]
+      else if (GetSlotCount(sskDefGenerator) = 1) and (Value < 0) then Result := SlotBonusEvaluationWeights[BonusKind] * -0.3;
     bonSlotWeapon:
       begin
         if (GetSlotCount(sskWeapon) < 5) and (Value > 0) then
-          Result := Min(Value, 5 - GetSlotCount(sskWeapon)) * SlotBonusEvaluationWeights[Ord(BonusKind)];
-        if Value < 0 then Result := Max(Value, -GetSlotCount(sskWeapon)) * SlotBonusEvaluationWeights[Ord(BonusKind)];
+          Result := Min(Value, 5 - GetSlotCount(sskWeapon)) * SlotBonusEvaluationWeights[BonusKind];
+        if Value < 0 then Result := Max(Value, -GetSlotCount(sskWeapon)) * SlotBonusEvaluationWeights[BonusKind];
         if CountEquippedWeapons > Max(Value + GetSlotCount(sskWeapon), 1) then
-          Result := Result - (SlotBonusEvaluationWeights[Ord(BonusKind)] * 0.6) * (CountEquippedWeapons - Max(1, Value + GetSlotCount(sskWeapon)));
+          Result := Result - (SlotBonusEvaluationWeights[BonusKind] * 0.6) * (CountEquippedWeapons - Max(1, Value + GetSlotCount(sskWeapon)));
       end;
     bonSlotArt:
       begin
-        if (GetSlotCount(sskArtefact) < DefaultHullSlotCounts[8]) and (Value > 0) then
-          Result := Min(Value, DefaultHullSlotCounts[8] - GetSlotCount(sskArtefact)) * SlotBonusEvaluationWeights[Ord(BonusKind)];
-        if Value < 0 then Result := Max(Value, -GetSlotCount(sskArtefact)) * SlotBonusEvaluationWeights[Ord(BonusKind)];
+        if (GetSlotCount(sskArtefact) < DefaultHullSlotCounts[sskArtefact]) and (Value > 0) then
+          Result := Min(Value, DefaultHullSlotCounts[sskArtefact] - GetSlotCount(sskArtefact)) * SlotBonusEvaluationWeights[BonusKind];
+        if Value < 0 then Result := Max(Value, -GetSlotCount(sskArtefact)) * SlotBonusEvaluationWeights[BonusKind];
         if Artefacts <> nil then
           if Artefacts.Count > Max(Value + GetSlotCount(sskArtefact), 0) then Result := -1000;
       end;
     bonSlotForsage:
-      if (GetSlotCount(sskAfterburner) = 0) and (Value > 0) then Result := SlotBonusEvaluationWeights[Ord(BonusKind)]
-      else if (GetSlotCount(sskAfterburner) = 1) and (Value < 0) then Result := -SlotBonusEvaluationWeights[Ord(BonusKind)];
+      if (GetSlotCount(sskAfterburner) = 0) and (Value > 0) then Result := SlotBonusEvaluationWeights[BonusKind]
+      else if (GetSlotCount(sskAfterburner) = 1) and (Value < 0) then Result := -SlotBonusEvaluationWeights[BonusKind];
     bonSkill1..bonSkill6:
       begin
         if Value > 0 then
-          Result := Min(6 - GetEffectiveSkillLevel(TPilotSkill(EquipmentBonusSkills[Ord(BonusKind) - 22])), Value) * SkillBonusEvaluationWeights[Ord(BonusKind)];
-        if (Value > 0) and (Value + GetEffectiveSkillLevel(TPilotSkill(EquipmentBonusSkills[Ord(BonusKind) - 22])) > 6) then
-          Result := Result + (SkillBonusEvaluationWeights[Ord(BonusKind)] * 0.05) * (Value + GetEffectiveSkillLevel(TPilotSkill(EquipmentBonusSkills[Ord(BonusKind) - 22])) - 6);
+          Result := Min(6 - GetEffectiveSkillLevel(EquipmentBonusSkills[Ord(BonusKind) - Ord(bonSkill1)]), Value) * SkillBonusEvaluationWeights[BonusKind];
+        if (Value > 0) and (Value + GetEffectiveSkillLevel(EquipmentBonusSkills[Ord(BonusKind) - Ord(bonSkill1)]) > 6) then
+          Result := Result + (SkillBonusEvaluationWeights[BonusKind] * 0.05) * (Value + GetEffectiveSkillLevel(EquipmentBonusSkills[Ord(BonusKind) - Ord(bonSkill1)]) - 6);
         if Value < 0 then
-          Result := Min(GetEffectiveSkillLevel(TPilotSkill(EquipmentBonusSkills[Ord(BonusKind) - 22])), -Value) * -SkillBonusEvaluationWeights[Ord(BonusKind)];
-        if (Value < 0) and (Value + GetEffectiveSkillLevel(TPilotSkill(EquipmentBonusSkills[Ord(BonusKind) - 22])) < 0) then
-          Result := Result + (SkillBonusEvaluationWeights[Ord(BonusKind)] * 0.03) * (Value + GetEffectiveSkillLevel(TPilotSkill(EquipmentBonusSkills[Ord(BonusKind) - 22])));
+          Result := Min(GetEffectiveSkillLevel(EquipmentBonusSkills[Ord(BonusKind) - Ord(bonSkill1)]), -Value) * -SkillBonusEvaluationWeights[BonusKind];
+        if (Value < 0) and (Value + GetEffectiveSkillLevel(EquipmentBonusSkills[Ord(BonusKind) - Ord(bonSkill1)]) < 0) then
+          Result := Result + (SkillBonusEvaluationWeights[BonusKind] * 0.03) * (Value + GetEffectiveSkillLevel(EquipmentBonusSkills[Ord(BonusKind) - Ord(bonSkill1)]));
       end;
   else Result := 0;
   end;
@@ -7656,14 +7653,14 @@ begin
     if dkDroidBlock in Flags then Result := Result + ScannerFactor * 5;
   end;
   SpeedFactor := Max(100, SmoothedEnemySpeed) * GetHull.Weight / (HullBaseSize * Max(100, SmoothedSpeed * EquipmentSizeFactors[1]));
-  case Byte(Weapon.GetWeaponInfo.ShotType) of
-    Ord(wstRocket): Result := Result * 1.0 * Weapon.GetShotCount * (1 + StatusFactor);
-    Ord(wstMissile): Result := Result * (1 + Weapon.GetWeaponInfo.SecondaryDamageRadius * 0.5 * 0.01 + StatusFactor) * Weapon.GetShotCount;
-    Ord(wstTorpedo): Result := Result * (1 + Weapon.GetWeaponInfo.SecondaryDamageRadius * 0.5 * 0.01 + StatusFactor);
-    Ord(wstChain): Result := Result * (1.1 + (Weapon.GetShotCount - 1) * 0.2) * (1 + StatusFactor);
-    Ord(wstSplash): Result := Result * (1 + Weapon.GetWeaponInfo.SecondaryDamageRadius * 1.0 * 0.01 * SpeedFactor + StatusFactor);
-    Ord(wstExploder): Result := Result * (1 + Weapon.GetWeaponInfo.SecondaryDamageRadius * 0.1 * 0.01 * SpeedFactor + StatusFactor);
-    Ord(wstAreaDamage): Result := Result * (1 + Weapon.Range * 1.3 * 0.01 * SpeedFactor + StatusFactor);
+  case Weapon.GetWeaponInfo.ShotType of
+    wstRocket: Result := Result * 1.0 * Weapon.GetShotCount * (1 + StatusFactor);
+    wstMissile: Result := Result * (1 + Weapon.GetWeaponInfo.SecondaryDamageRadius * 0.5 * 0.01 + StatusFactor) * Weapon.GetShotCount;
+    wstTorpedo: Result := Result * (1 + Weapon.GetWeaponInfo.SecondaryDamageRadius * 0.5 * 0.01 + StatusFactor);
+    wstChain: Result := Result * (1.1 + (Weapon.GetShotCount - 1) * 0.2) * (1 + StatusFactor);
+    wstSplash: Result := Result * (1 + Weapon.GetWeaponInfo.SecondaryDamageRadius * 1.0 * 0.01 * SpeedFactor + StatusFactor);
+    wstExploder: Result := Result * (1 + Weapon.GetWeaponInfo.SecondaryDamageRadius * 0.1 * 0.01 * SpeedFactor + StatusFactor);
+    wstAreaDamage: Result := Result * (1 + Weapon.Range * 1.3 * 0.01 * SpeedFactor + StatusFactor);
   else Result := Result * (1 + StatusFactor);
   end;
   Result := Result * Weapon.GetAttackCount;
@@ -7791,7 +7788,7 @@ begin
   begin
     Item := Inventory[I];
     if Item is TWeapon then Item.Unequip
-    else if (Byte(Item.ItemType) in [Ord(t_FuelTanks)..Ord(t_DefGenerator)]) and
+    else if (Item.ItemType in [t_FuelTanks..t_DefGenerator]) and
        (PShipEquipmentCacheView(Self).Slots[Ord(Item.ItemType)] <> Item) then Item.Unequip;
   end;
   for I := 1 to 5 do Weapons[I] := nil;
@@ -7801,7 +7798,7 @@ begin
     for I := 1 to Inventory.Count - 1 do
     begin
       Item := Inventory[I];
-      if Byte(Item.ItemType) in [Ord(t_Weapon1)..Ord(t_CustomWeapon)] then EquipItem(Item as TWeapon);
+      if Item.ItemType in [t_Weapon1..t_CustomWeapon] then EquipItem(Item as TWeapon);
     end;
   end
   else
@@ -9049,7 +9046,7 @@ end;
 { @routine $76A044 TShip_GetSatelliteLimit }
 function TShip.GetSatelliteLimit: Integer;
 begin
-  Result := TechnicalSkillSatelliteLimits[GetEffectiveSkillLevel(psTechnical)] + GetTotalStatBonus(Ord(bonZonds));
+  Result := TechnicalSkillSatelliteLimits[GetEffectiveSkillLevel(psTechnical)] + GetTotalStatBonus(bonZonds);
 end;
 { @end $76A044 }
 
@@ -9078,7 +9075,7 @@ begin
   Result := False;
   if Item <> nil then
   begin
-    if Byte(Item.ItemType) in [Ord(t_Radar)..Ord(t_Scaner)] then Result := True
+    if Item.ItemType in [t_Radar..t_Scaner] then Result := True
     else if (Item.ItemType = t_CargoHook) and not (TypeId in [stRanger, stPirate]) then Result := True;
   end;
 end;
@@ -11606,40 +11603,40 @@ function TShip.GetSlotCount(SlotKind: TShipSlotKind): Integer;
 begin
   Result := GetHull.GetSlotCount(SlotKind);
   case SlotKind of
-    sskRadar: Inc(Result, GetOwnStatBonus(Ord(bonSlotRadar)));
-    sskScanner: Inc(Result, GetOwnStatBonus(Ord(bonSlotScaner)));
-    sskRepairRobot: Inc(Result, GetOwnStatBonus(Ord(bonSlotDroid)));
-    sskCargoHook: Inc(Result, GetOwnStatBonus(Ord(bonSlotHook)));
-    sskDefGenerator: Inc(Result, GetOwnStatBonus(Ord(bonSlotDef)));
-    sskWeapon: Inc(Result, GetOwnStatBonus(Ord(bonSlotWeapon)));
-    sskArtefact: Inc(Result, GetOwnStatBonus(Ord(bonSlotArt)));
-    sskAfterburner: Inc(Result, GetOwnStatBonus(Ord(bonSlotForsage)));
+    sskRadar: Inc(Result, GetOwnStatBonus(bonSlotRadar));
+    sskScanner: Inc(Result, GetOwnStatBonus(bonSlotScaner));
+    sskRepairRobot: Inc(Result, GetOwnStatBonus(bonSlotDroid));
+    sskCargoHook: Inc(Result, GetOwnStatBonus(bonSlotHook));
+    sskDefGenerator: Inc(Result, GetOwnStatBonus(bonSlotDef));
+    sskWeapon: Inc(Result, GetOwnStatBonus(bonSlotWeapon));
+    sskArtefact: Inc(Result, GetOwnStatBonus(bonSlotArt));
+    sskAfterburner: Inc(Result, GetOwnStatBonus(bonSlotForsage));
   end;
-  Result := Min(DefaultHullSlotCounts[Ord(SlotKind)], Max(MinimumHullSlotCounts[Ord(SlotKind)], Result));
+  Result := Min(DefaultHullSlotCounts[SlotKind], Max(MinimumHullSlotCounts[SlotKind], Result));
   if Artefacts.Count > 0 then
   begin
     if SlotKind = sskWeapon then
     begin
       if (CountActiveArtefacts(Ord(t_ArtWeaponToSpeed)) > 0) and not CanBoostArtefact(Ord(t_ArtWeaponToSpeed), GetHull, False) then
-        Result := Min(DefaultHullSlotCounts[Ord(SlotKind)], Max(MinimumHullSlotCounts[Ord(SlotKind)], Result - CountActiveArtefacts(Ord(t_ArtWeaponToSpeed))));
+        Result := Min(DefaultHullSlotCounts[SlotKind], Max(MinimumHullSlotCounts[SlotKind], Result - CountActiveArtefacts(Ord(t_ArtWeaponToSpeed))));
       if (CountActiveArtefacts(Ord(t_ArtDefToArms1)) > 0) and (GetDefGenerator <> nil) then
-        Result := Min(DefaultHullSlotCounts[Ord(SlotKind)], Max(MinimumHullSlotCounts[Ord(SlotKind)], Result + CountActiveArtefacts(Ord(t_ArtDefToArms1))));
+        Result := Min(DefaultHullSlotCounts[SlotKind], Max(MinimumHullSlotCounts[SlotKind], Result + CountActiveArtefacts(Ord(t_ArtDefToArms1))));
       if (CountActiveArtefacts(Ord(t_ArtDefToArms2)) > 0) and (GetHull.GetSlotCount(sskDefGenerator) > 0) then
-        Result := Min(DefaultHullSlotCounts[Ord(SlotKind)], Max(MinimumHullSlotCounts[Ord(SlotKind)], Result + 1 + CountActiveArtefacts(Ord(t_ArtDefToArms2))));
+        Result := Min(DefaultHullSlotCounts[SlotKind], Max(MinimumHullSlotCounts[SlotKind], Result + 1 + CountActiveArtefacts(Ord(t_ArtDefToArms2))));
     end
     else if SlotKind = sskDefGenerator then
     begin
       if CountActiveArtefacts(Ord(t_ArtDefToArms2)) > 0 then
-        Result := Min(DefaultHullSlotCounts[Ord(SlotKind)], Max(MinimumHullSlotCounts[Ord(SlotKind)], Result - 1));
+        Result := Min(DefaultHullSlotCounts[SlotKind], Max(MinimumHullSlotCounts[SlotKind], Result - 1));
     end
     else if SlotKind = sskRepairRobot then
     begin
       if CountActiveArtefacts(Ord(t_ArtArtefactor)) > 0 then
-        Result := Min(DefaultHullSlotCounts[Ord(SlotKind)], Max(MinimumHullSlotCounts[Ord(SlotKind)], Result - 1));
+        Result := Min(DefaultHullSlotCounts[SlotKind], Max(MinimumHullSlotCounts[SlotKind], Result - 1));
     end
     else if (SlotKind = sskArtefact) and (Result > 0) and (CountActiveArtefacts(Ord(t_ArtArtefactor)) > 0) and
       (GetHull.GetSlotCount(sskRepairRobot) > 0) then
-      Result := Min(DefaultHullSlotCounts[Ord(SlotKind)], Max(MinimumHullSlotCounts[Ord(SlotKind)], Result + 3));
+      Result := Min(DefaultHullSlotCounts[SlotKind], Max(MinimumHullSlotCounts[SlotKind], Result + 3));
   end;
 end;
 { @end $77411C }
@@ -13150,13 +13147,13 @@ function TShip.TrainSkill(Skill: TPilotSkill): Boolean;
 var
   Expected: Integer;
 begin
-  if (BaseSkills[Ord(Skill)] < 6) and
-    (SkillTrainingCosts[BaseSkills[Ord(Skill)] + 1, Ord(Skill)] <= FreeExperience) then
+  if (BaseSkills[Skill] < 6) and
+    (SkillTrainingCosts[BaseSkills[Skill] + 1, Skill] <= FreeExperience) then
   begin
-    Inc(BaseSkills[Ord(Skill)]);
+    Inc(BaseSkills[Skill]);
     Expected := FreeExperience;
-    Dec(FreeExperience, SkillTrainingCosts[BaseSkills[Ord(Skill)], Ord(Skill)]);
-    if (Expected - SkillTrainingCosts[BaseSkills[Ord(Skill)], Ord(Skill)] <> FreeExperience) and
+    Dec(FreeExperience, SkillTrainingCosts[BaseSkills[Skill], Skill]);
+    if (Expected - SkillTrainingCosts[BaseSkills[Skill], Skill] <> FreeExperience) and
        not GR_Main.CCInterface.GetTamperDetected then GR_Main.CCInterface.SetTamperDetected(True);
     Expected := FreeExperience;
     Result := True;
@@ -13174,15 +13171,15 @@ end;
 { @routine $77BA18 TShip_CanTrainSkill }
 function TShip.CanTrainSkill(Skill: TPilotSkill): Boolean;
 begin
-  Result := (BaseSkills[Ord(Skill)] < 6) and
-    (SkillTrainingCosts[BaseSkills[Ord(Skill)] + 1, Ord(Skill)] <= FreeExperience);
+  Result := (BaseSkills[Skill] < 6) and
+    (SkillTrainingCosts[BaseSkills[Skill] + 1, Skill] <= FreeExperience);
 end;
 { @end $77BA18 }
 
 { @routine $77BA78 TShip_GetBaseSkillLevel }
 function TShip.GetBaseSkillLevel(Skill: TPilotSkill): Byte;
 begin
-  Result := BaseSkills[Ord(Skill)];
+  Result := BaseSkills[Skill];
 end;
 { @end $77BA78 }
 
@@ -13190,10 +13187,10 @@ end;
 function TShip.GetEffectiveSkillLevel(Skill: TPilotSkill; IgnoreStatusEffects: Boolean): TPilotSkillLevel;
 var
   Level: Integer;
-  BonusKind: Byte;
+  BonusKind: TEquipmentBonusKind;
 begin
-  Level := Integer(Self.BaseSkills[Ord(Skill)]);
-  BonusKind := (Ord(Skill) + Ord(bonSkill1));
+  Level := Integer(Self.BaseSkills[Skill]);
+  BonusKind := TEquipmentBonusKind(Ord(Skill) + Ord(bonSkill1));
   if not (IgnoreStatusEffects) then
   begin
     if Self.IsHealthEffectActive(1) then
@@ -13584,7 +13581,7 @@ begin
           OldSpeed := OldSpeed + CountActiveArtefacts(Ord(t_ArtWeaponToSpeed)) * (WeaponToSpeedArtefactBonus + WeaponToSpeedArtefactBoost * Byte(CanBoostArtefact(Ord(t_ArtWeaponToSpeed), GetEngine, False)));
       end;
     end;
-    OldSpeed := Max(167.0, OldSpeed + GetTotalStatBonus(Ord(bonSpeed)));
+    OldSpeed := Max(167.0, OldSpeed + GetTotalStatBonus(bonSpeed));
     Result := Round(OldSpeed);
     Exit;
   end
@@ -13786,7 +13783,7 @@ end;
 { @end $77D904 }
 
 { @routine $77D998 TShip_GetOwnStatBonus }
-function TShip.GetOwnStatBonus(BonusKind: Byte): Integer;
+function TShip.GetOwnStatBonus(BonusKind: TEquipmentBonusKind): Integer;
 var
   I: Integer;
   Bonus: PShipStatBonusEntry;
@@ -13819,7 +13816,7 @@ begin
   for I := 0 to StatBonuses.Count - 1 do
   begin
     Bonus := StatBonuses[I];
-    if Bonus.BonusKind = Byte(BonusKind) then
+    if Bonus.BonusKind = BonusKind then
     begin
       Found := True;
       Break;
@@ -13838,7 +13835,7 @@ begin
   else
   begin
     New(Bonus);
-    Bonus.BonusKind := Byte(BonusKind);
+    Bonus.BonusKind := BonusKind;
     Bonus.BonusValue := Value;
     StatBonuses.Add(Bonus);
   end;

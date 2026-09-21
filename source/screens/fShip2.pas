@@ -885,8 +885,8 @@ var
   Control: TObjectGI;
 begin
   inherited OnOpen;
-  SetLength(ArtefactSlotZones,DefaultHullSlotCounts[8]);
-  for I := 0 to DefaultHullSlotCounts[8] - 1 do
+  SetLength(ArtefactSlotZones,DefaultHullSlotCounts[sskArtefact]);
+  for I := 0 to DefaultHullSlotCounts[sskArtefact] - 1 do
     ArtefactSlotZones[I] := GetByName('Art' + IntToStr(I) + 'z') as TZoneGI;
   if ShipToInspect <> nil then PlayerHoldShip := ShipToInspect else PlayerHoldShip := GetPlayer;
   (GetByName('PM_Ship') as TGraphButtonGI).SetHitTestDisabled(True);
@@ -1284,7 +1284,7 @@ begin
           end;
         end;
   end;
-  for J := 0 to DefaultHullSlotCounts[8] - 1 do
+  for J := 0 to DefaultHullSlotCounts[sskArtefact] - 1 do
   begin
     Control := FindControlByPath('Art' + IntToStr(J) + 'Repair');
     if Control <> nil then Control.SetActive(False);
@@ -1794,14 +1794,14 @@ begin
         SetImageKindY(ikyCenter);
       end;
       Skill := TPilotSkill(ExtractDigitsToIntW(Sender.ControlName));
-      Title := WrapTextInColor(LocalizedText('Skills.' + SkillConfigNames[Ord(Skill)] + '.Name'),InfoNameColorTag);
-      Description := FormatText1(LocalizedText('Skills.' + SkillConfigNames[Ord(Skill)] + '.Text'),'<color=255,240,100>','<SkillValue>',IntToStr(PilotSkillEffects[PlayerHoldShip.GetEffectiveSkillLevel(Skill),Ord(Skill)]));
+      Title := WrapTextInColor(LocalizedText('Skills.' + SkillConfigNames[Skill] + '.Name'),InfoNameColorTag);
+      Description := FormatText1(LocalizedText('Skills.' + SkillConfigNames[Skill] + '.Text'),'<color=255,240,100>','<SkillValue>',IntToStr(PilotSkillEffects[PlayerHoldShip.GetEffectiveSkillLevel(Skill), Skill]));
       ReplaceTextToken(Description,'<SkillLevel>',IntToStr(PlayerHoldShip.GetEffectiveSkillLevel(Skill)),'<color=255,240,100>');
       if Skill = psTechnical then ReplaceTextToken(Description,'<N>',IntToStr(PlayerHoldShip.GetSatelliteLimit),'<color=255,240,100>');
       if Skill = psTrading then ReplaceTextToken(Description,'<SkillValue2>',IntToStr(TradingSkillSalePercent[PlayerHoldShip.GetEffectiveSkillLevel(Skill)]),'<color=255,240,100>');
       if Skill = psLeadership then ReplaceTextToken(Description,'<SkillValue2>',IntToStr(LeadershipExperiencePercent[PlayerHoldShip.GetEffectiveSkillLevel(Skill)]),'<color=255,240,100>');
       if PlayerHoldShip.GetBaseSkillLevel(Skill) < 6 then
-        Description := Description + #13#10 + #13#10 + FormatText1(LocalizedText('Skills.PointForNextLevel'),'<color=255,240,100>','<PointForNextLevel>',IntToStr(SkillTrainingCosts[PlayerHoldShip.BaseSkills[Ord(Skill)] + 1,Ord(Skill)]));
+        Description := Description + #13#10 + #13#10 + FormatText1(LocalizedText('Skills.PointForNextLevel'),'<color=255,240,100>','<PointForNextLevel>',IntToStr(SkillTrainingCosts[PlayerHoldShip.BaseSkills[Skill] + 1, Skill]));
     end;
     (GetByName('RankName') as TLabelGI).SetText(Title);
     (GetByName('RankText') as TLabelGI).SetText(Description);
@@ -2038,12 +2038,12 @@ begin
   for Slot := 0 to SlotCount - 1 do
   begin
     Artefact := PlayerHoldShip.FindEquippedItemInSlot(Ord(t_Artefact),Slot) as TArtefact;
-    Highlight := (SelectedHoldKind = phkArtefact) and (Byte(SelectedHoldItem.ItemType) in [Ord(t_Artefact)..Ord(t_ArtefactAntigrav),Ord(t_ArtDefToEnergy)..Ord(t_ArtGiperJump),Ord(t_ArtDefToArms1)..Ord(t_ArtFastRacks)]);
+    Highlight := (SelectedHoldKind = phkArtefact) and (SelectedHoldItem.ItemType in [t_Artefact..t_ArtefactAntigrav,t_ArtDefToEnergy..t_ArtGiperJump,t_ArtDefToArms1..t_ArtFastRacks]);
     DuplicateSlot := -1;
     if Highlight and not Galaxy.AreDuplicateArtefactsEnabled then
     begin
       SelectedType := SelectedHoldItem.ItemType;
-      if (Byte(SelectedType) in [Ord(t_Artefact)..Ord(t_Artefact2)]) and TArtefactCustom(SelectedHoldItem).SharedUse then SelectedType := TArtefactCustom(SelectedHoldItem).CountsAsItemType;
+      if (SelectedType in [t_Artefact..t_Artefact2]) and TArtefactCustom(SelectedHoldItem).SharedUse then SelectedType := TArtefactCustom(SelectedHoldItem).CountsAsItemType;
       for I := 0 to PlayerHoldShip.Artefacts.Count - 1 do
       begin
         Item := TEquipment(PlayerHoldShip.Artefacts[I]);
@@ -2051,7 +2051,7 @@ begin
         begin
           InstalledType := Item.ItemType;
           if (Byte(InstalledType) in [8..9]) and TArtefactCustom(Item).SharedUse then InstalledType := TArtefactCustom(Item).CountsAsItemType;
-          if (SelectedType = InstalledType) and (not (Byte(SelectedType) in [Ord(t_Artefact)..Ord(t_Artefact2)]) or (Item.ConfigBlockName = TEquipment(SelectedHoldItem).ConfigBlockName)) then
+          if (SelectedType = InstalledType) and (not (SelectedType in [t_Artefact..t_Artefact2]) or (Item.ConfigBlockName = TEquipment(SelectedHoldItem).ConfigBlockName)) then
           begin
             DuplicateSlot := Item.AssignedSlotData;
             Break;
@@ -2084,12 +2084,12 @@ begin
       SetActive((Artefact <> nil) or Highlight);
       if Highlight or (SelectedHoldKind = phkEmpty) then ZoneMouseDownCallback := ArtefactSlotMouseDown
       else if (Artefact <> nil) and (SelectedHoldKind = phkEquipment) then ZoneMouseDownCallback := UseOnArtefactSlot
-      else if (Artefact <> nil) and (SelectedHoldKind = phkArtefact) and not (Byte(SelectedHoldItem.ItemType) in [Ord(t_Artefact)..Ord(t_ArtefactAntigrav),Ord(t_ArtDefToEnergy)..Ord(t_ArtGiperJump),Ord(t_ArtDefToArms1)..Ord(t_ArtFastRacks)]) then ZoneMouseDownCallback := UseOnArtefactSlot
+      else if (Artefact <> nil) and (SelectedHoldKind = phkArtefact) and not (SelectedHoldItem.ItemType in [t_Artefact..t_ArtefactAntigrav,t_ArtDefToEnergy..t_ArtGiperJump,t_ArtDefToArms1..t_ArtFastRacks]) then ZoneMouseDownCallback := UseOnArtefactSlot
       else ZoneMouseDownCallback := nil;
     end;
     GetByName('Art' + IntToStr(Slot) + 'off').SetActive(False);
   end;
-  for Slot := SlotCount to DefaultHullSlotCounts[8] - 1 do
+  for Slot := SlotCount to DefaultHullSlotCounts[sskArtefact] - 1 do
   begin
     GetByName('Art' + IntToStr(Slot) + 'n').SetActive(False);
     GetByName('Art' + IntToStr(Slot) + 'b').SetActive(False);
@@ -2500,7 +2500,7 @@ begin
       (SelectedHoldItem as TEquipment).Equip;
       if SelectedHoldItem is TWeapon then (SelectedHoldItem as TWeapon).Target := nil;
       SoundManager.PlaySound('Sound.SlotPut');
-      if (PlayerHoldShip is TTranclucator) and (SelectedHoldItem is TWeapon) and (Byte(TWeapon(SelectedHoldItem).GetWeaponInfo.ShotType) in [Ord(wstTorpedo)..Ord(wstRocket)]) and (PlayerHoldShip.GetRadar = nil) then
+      if (PlayerHoldShip is TTranclucator) and (SelectedHoldItem is TWeapon) and (TWeapon(SelectedHoldItem).GetWeaponInfo.ShotType in [wstTorpedo..wstRocket]) and (PlayerHoldShip.GetRadar = nil) then
         ShowMessageBoxGI(Self,LocalizedColorText('FormShip.TrancMissileWarning'),mbgOK or mbgWarning);
       SelectedHoldKind := phkEmpty;
       SelectedHoldItem := nil;
@@ -4194,7 +4194,7 @@ begin
           Break;
         end;
       end;
-      for I := 1 to DefaultHullSlotCounts[8] do
+      for I := 1 to DefaultHullSlotCounts[sskArtefact] do
       begin
         Zone := ArtefactSlotZones[I - 1];
         if Zone.Parent.Active and Zone.ContainsPoint(Point) then
@@ -4411,7 +4411,7 @@ begin
             Break;
           end;
         end;
-        for I := 1 to DefaultHullSlotCounts[8] do
+        for I := 1 to DefaultHullSlotCounts[sskArtefact] do
         begin
           Zone := ArtefactSlotZones[I - 1];
           if Zone.ContainsPoint(Point) then
@@ -5491,7 +5491,7 @@ begin
         Item.Repair;
         if Item is THull then Control := GetByName('HullRepair')
         else if Item is TWeapon then Control := GetByName('S_Weapon_' + IntToStr(Integer(Item.AssignedSlotData) and EquipmentSlotIndexMask) + 'Repair')
-        else Control := GetByName('S_' + ItemTypeNames[Ord(Item.ItemType)] + '_' + IntToStr(Integer(Item.AssignedSlotData) and EquipmentSlotIndexMask) + 'Repair');
+        else Control := GetByName('S_' + ItemTypeNames[Item.ItemType] + '_' + IntToStr(Integer(Item.AssignedSlotData) and EquipmentSlotIndexMask) + 'Repair');
         if Control <> nil then
           with Control as TgaiGI do SetActive(True);
       end;

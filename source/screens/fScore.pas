@@ -35,7 +35,7 @@ type
     AwardCount: Integer; // @offset 0x48  Defaults can have a count without individual IDs.
     AwardIds: array of Byte; // @offset 0x4C
     TotalExperience: Integer; // @offset 0x50
-    SkillLevels: array[0..5] of Byte; // @offset 0x54
+    SkillLevels: array[TPilotSkill] of Byte; // @offset 0x54
     GenerationSeed: Integer; // @offset 0x5C
     ScoreTags: TBufEC; // @offset 0x60  Owned buffer.
     QuestResults: array of TScoreQuestResult; // @offset 0x64
@@ -160,7 +160,7 @@ begin
     end;
   end;
   TotalExperience := GetPlayer.TotalExperience;
-  for Skill := Low(TPilotSkill) to High(TPilotSkill) do SkillLevels[Ord(Skill)] := GetPlayer.GetBaseSkillLevel(Skill);
+  for Skill := Low(TPilotSkill) to High(TPilotSkill) do SkillLevels[Skill] := GetPlayer.GetBaseSkillLevel(Skill);
   ScoreTags.Clear;
   if GR_Main.CCInterface.Buffer.DataSize > 0 then ScoreTags.AddBytes(GR_Main.CCInterface.Buffer.Data, GR_Main.CCInterface.Buffer.DataSize);
   GenerationSeed := Galaxy.GenerationSeed;
@@ -250,7 +250,7 @@ end;
 { @routine $57BFF0 TfScoreUnit_SaveToBuffer }
 procedure TfScoreUnit.SaveToBuffer(Buffer: TBufEC);
 var
-  Skill: Byte;
+  Skill: TPilotSkill;
   I: Integer;
   Difficulty: Byte;
 begin
@@ -272,7 +272,7 @@ begin
   Buffer.AddIntegerValue(High(AwardIds) + 1);
   for I := 0 to High(AwardIds) do Buffer.AddAnsiChar(AnsiChar(AwardIds[I]));
   Buffer.AddIntegerValue(TotalExperience);
-  for Skill := 0 to 5 do Buffer.AddAnsiChar(AnsiChar(SkillLevels[Skill]));
+  for Skill := Low(TPilotSkill) to High(TPilotSkill) do Buffer.AddAnsiChar(AnsiChar(SkillLevels[Skill]));
   Buffer.AddBoolean(Disqualified);
   Buffer.AddBuffer(ScoreTags);
   Buffer.AddIntegerValue(GenerationSeed);
@@ -308,7 +308,7 @@ end;
 { @routine $57C374 TfScoreUnit_LoadFromBuffer }
 procedure TfScoreUnit.LoadFromBuffer(Buffer: TBufEC; FileVersion: Integer);
 var
-  Skill: Byte;
+  Skill: TPilotSkill;
   I, Count: Integer;
   Difficulty: Byte;
   Marker: Integer;
@@ -335,7 +335,7 @@ begin
     SetLength(AwardIds, Count);
     for I := 0 to Count - 1 do AwardIds[I] := Buffer.GetByte;
     TotalExperience := Buffer.GetInt32;
-    for Skill := 0 to 5 do SkillLevels[Skill] := Buffer.GetByte;
+    for Skill := Low(TPilotSkill) to High(TPilotSkill) do SkillLevels[Skill] := Buffer.GetByte;
     if FileVersion < 1 then
     begin
       Disqualified := False;
@@ -406,12 +406,12 @@ begin
   Text := Text + 'Rank=' + LocalizedText('Rank.' + CoalitionRankNames[Rank] + '.Name') + #13#10;
   Text := Text + 'LiberationSystem=' + WideString(IntToStr(LiberatedSystemCount)) + #13#10;
   Text := Text + 'Rewards=' + WideString(IntToStr(AwardCount)) + #13#10;
-  Text := Text + 'SkillAccuracy=' + WideString(IntToStr(SkillLevels[0])) + #13#10;
-  Text := Text + 'SkillMobility=' + WideString(IntToStr(SkillLevels[1])) + #13#10;
-  Text := Text + 'SkillTechnical=' + WideString(IntToStr(SkillLevels[2])) + #13#10;
-  Text := Text + 'SkillTrader=' + WideString(IntToStr(SkillLevels[3])) + #13#10;
-  Text := Text + 'SkillCharm=' + WideString(IntToStr(SkillLevels[4])) + #13#10;
-  Text := Text + 'SkillLeadership=' + WideString(IntToStr(SkillLevels[5])) + #13#10 + #13#10 + #13#10;
+  Text := Text + 'SkillAccuracy=' + WideString(IntToStr(SkillLevels[psAccuracy])) + #13#10;
+  Text := Text + 'SkillMobility=' + WideString(IntToStr(SkillLevels[psManeuverability])) + #13#10;
+  Text := Text + 'SkillTechnical=' + WideString(IntToStr(SkillLevels[psTechnical])) + #13#10;
+  Text := Text + 'SkillTrader=' + WideString(IntToStr(SkillLevels[psTrading])) + #13#10;
+  Text := Text + 'SkillCharm=' + WideString(IntToStr(SkillLevels[psCharisma])) + #13#10;
+  Text := Text + 'SkillLeadership=' + WideString(IntToStr(SkillLevels[psLeadership])) + #13#10 + #13#10 + #13#10;
   Text := Text + '*************** Protect database ****************' + #13#10 + #13#10;
   Buffer := TBufEC.Create;
   Encoded := TBufEC.Create;
@@ -495,7 +495,7 @@ procedure TfScore.InitializeDefaultEntry(Index: Integer; var Entry: TfScoreUnit)
 var
   Count, I: Integer;
   Kind: TQuestType;
-  QuestCounts: array[0..4] of Integer;
+  QuestCounts: array[TQuestType] of Integer;
 begin
   case Index of
     0:
@@ -517,17 +517,17 @@ begin
         Entry.LiberatedSystemCount := 15;
         Entry.AwardCount := 14;
         Entry.TotalExperience := 100000;
-        Entry.SkillLevels[0] := 4;
-        Entry.SkillLevels[1] := 5;
-        Entry.SkillLevels[2] := 4;
-        Entry.SkillLevels[3] := 5;
-        Entry.SkillLevels[4] := 5;
-        Entry.SkillLevels[5] := 5;
-        QuestCounts[Ord(qtSendLetter)] := 20;
-        QuestCounts[Ord(qtKillShip)] := 5;
-        QuestCounts[Ord(qtPlanetQuest)] := 30;
-        QuestCounts[Ord(qtDefendSystem)] := 8;
-        QuestCounts[Ord(qtDefendShip)] := 12;
+        Entry.SkillLevels[psAccuracy] := 4;
+        Entry.SkillLevels[psManeuverability] := 5;
+        Entry.SkillLevels[psTechnical] := 4;
+        Entry.SkillLevels[psTrading] := 5;
+        Entry.SkillLevels[psCharisma] := 5;
+        Entry.SkillLevels[psLeadership] := 5;
+        QuestCounts[qtSendLetter] := 20;
+        QuestCounts[qtKillShip] := 5;
+        QuestCounts[qtPlanetQuest] := 30;
+        QuestCounts[qtDefendSystem] := 8;
+        QuestCounts[qtDefendShip] := 12;
         Entry.PlanetBattles := 7;
         Entry.VictoryAchieved := True;
         Entry.BlazerEndingState := 3;
@@ -553,17 +553,17 @@ begin
         Entry.LiberatedSystemCount := 13;
         Entry.AwardCount := 11;
         Entry.TotalExperience := 90000;
-        Entry.SkillLevels[0] := 5;
-        Entry.SkillLevels[1] := 5;
-        Entry.SkillLevels[2] := 4;
-        Entry.SkillLevels[3] := 5;
-        Entry.SkillLevels[4] := 3;
-        Entry.SkillLevels[5] := 4;
-        QuestCounts[Ord(qtSendLetter)] := 18;
-        QuestCounts[Ord(qtKillShip)] := 2;
-        QuestCounts[Ord(qtPlanetQuest)] := 28;
-        QuestCounts[Ord(qtDefendSystem)] := 8;
-        QuestCounts[Ord(qtDefendShip)] := 2;
+        Entry.SkillLevels[psAccuracy] := 5;
+        Entry.SkillLevels[psManeuverability] := 5;
+        Entry.SkillLevels[psTechnical] := 4;
+        Entry.SkillLevels[psTrading] := 5;
+        Entry.SkillLevels[psCharisma] := 3;
+        Entry.SkillLevels[psLeadership] := 4;
+        QuestCounts[qtSendLetter] := 18;
+        QuestCounts[qtKillShip] := 2;
+        QuestCounts[qtPlanetQuest] := 28;
+        QuestCounts[qtDefendSystem] := 8;
+        QuestCounts[qtDefendShip] := 2;
         Entry.PlanetBattles := 6;
         Entry.VictoryAchieved := True;
         Entry.BlazerEndingState := 2;
@@ -589,17 +589,17 @@ begin
         Entry.LiberatedSystemCount := 8;
         Entry.AwardCount := 7;
         Entry.TotalExperience := 85000;
-        Entry.SkillLevels[0] := 5;
-        Entry.SkillLevels[1] := 5;
-        Entry.SkillLevels[2] := 4;
-        Entry.SkillLevels[3] := 3;
-        Entry.SkillLevels[4] := 3;
-        Entry.SkillLevels[5] := 5;
-        QuestCounts[Ord(qtSendLetter)] := 14;
-        QuestCounts[Ord(qtKillShip)] := 18;
-        QuestCounts[Ord(qtPlanetQuest)] := 26;
-        QuestCounts[Ord(qtDefendSystem)] := 11;
-        QuestCounts[Ord(qtDefendShip)] := 14;
+        Entry.SkillLevels[psAccuracy] := 5;
+        Entry.SkillLevels[psManeuverability] := 5;
+        Entry.SkillLevels[psTechnical] := 4;
+        Entry.SkillLevels[psTrading] := 3;
+        Entry.SkillLevels[psCharisma] := 3;
+        Entry.SkillLevels[psLeadership] := 5;
+        QuestCounts[qtSendLetter] := 14;
+        QuestCounts[qtKillShip] := 18;
+        QuestCounts[qtPlanetQuest] := 26;
+        QuestCounts[qtDefendSystem] := 11;
+        QuestCounts[qtDefendShip] := 14;
         Entry.PlanetBattles := 11;
         Entry.VictoryAchieved := True;
         Entry.BlazerEndingState := 1;
@@ -625,17 +625,17 @@ begin
         Entry.LiberatedSystemCount := 6;
         Entry.AwardCount := 12;
         Entry.TotalExperience := 80000;
-        Entry.SkillLevels[0] := 3;
-        Entry.SkillLevels[1] := 5;
-        Entry.SkillLevels[2] := 4;
-        Entry.SkillLevels[3] := 5;
-        Entry.SkillLevels[4] := 5;
-        Entry.SkillLevels[5] := 2;
-        QuestCounts[Ord(qtSendLetter)] := 8;
-        QuestCounts[Ord(qtKillShip)] := 19;
-        QuestCounts[Ord(qtPlanetQuest)] := 5;
-        QuestCounts[Ord(qtDefendSystem)] := 1;
-        QuestCounts[Ord(qtDefendShip)] := 0;
+        Entry.SkillLevels[psAccuracy] := 3;
+        Entry.SkillLevels[psManeuverability] := 5;
+        Entry.SkillLevels[psTechnical] := 4;
+        Entry.SkillLevels[psTrading] := 5;
+        Entry.SkillLevels[psCharisma] := 5;
+        Entry.SkillLevels[psLeadership] := 2;
+        QuestCounts[qtSendLetter] := 8;
+        QuestCounts[qtKillShip] := 19;
+        QuestCounts[qtPlanetQuest] := 5;
+        QuestCounts[qtDefendSystem] := 1;
+        QuestCounts[qtDefendShip] := 0;
         Entry.PlanetBattles := 9;
         Entry.VictoryAchieved := True;
         Entry.BlazerEndingState := 2;
@@ -661,17 +661,17 @@ begin
         Entry.LiberatedSystemCount := 7;
         Entry.AwardCount := 11;
         Entry.TotalExperience := 76000;
-        Entry.SkillLevels[0] := 5;
-        Entry.SkillLevels[1] := 4;
-        Entry.SkillLevels[2] := 3;
-        Entry.SkillLevels[3] := 1;
-        Entry.SkillLevels[4] := 2;
-        Entry.SkillLevels[5] := 5;
-        QuestCounts[Ord(qtSendLetter)] := 7;
-        QuestCounts[Ord(qtKillShip)] := 13;
-        QuestCounts[Ord(qtPlanetQuest)] := 10;
-        QuestCounts[Ord(qtDefendSystem)] := 15;
-        QuestCounts[Ord(qtDefendShip)] := 4;
+        Entry.SkillLevels[psAccuracy] := 5;
+        Entry.SkillLevels[psManeuverability] := 4;
+        Entry.SkillLevels[psTechnical] := 3;
+        Entry.SkillLevels[psTrading] := 1;
+        Entry.SkillLevels[psCharisma] := 2;
+        Entry.SkillLevels[psLeadership] := 5;
+        QuestCounts[qtSendLetter] := 7;
+        QuestCounts[qtKillShip] := 13;
+        QuestCounts[qtPlanetQuest] := 10;
+        QuestCounts[qtDefendSystem] := 15;
+        QuestCounts[qtDefendShip] := 4;
         Entry.PlanetBattles := 3;
         Entry.VictoryAchieved := True;
         Entry.BlazerEndingState := 1;
@@ -697,17 +697,17 @@ begin
         Entry.LiberatedSystemCount := 11;
         Entry.AwardCount := 10;
         Entry.TotalExperience := 63000;
-        Entry.SkillLevels[0] := 3;
-        Entry.SkillLevels[1] := 4;
-        Entry.SkillLevels[2] := 4;
-        Entry.SkillLevels[3] := 2;
-        Entry.SkillLevels[4] := 5;
-        Entry.SkillLevels[5] := 1;
-        QuestCounts[Ord(qtSendLetter)] := 17;
-        QuestCounts[Ord(qtKillShip)] := 10;
-        QuestCounts[Ord(qtPlanetQuest)] := 3;
-        QuestCounts[Ord(qtDefendSystem)] := 9;
-        QuestCounts[Ord(qtDefendShip)] := 18;
+        Entry.SkillLevels[psAccuracy] := 3;
+        Entry.SkillLevels[psManeuverability] := 4;
+        Entry.SkillLevels[psTechnical] := 4;
+        Entry.SkillLevels[psTrading] := 2;
+        Entry.SkillLevels[psCharisma] := 5;
+        Entry.SkillLevels[psLeadership] := 1;
+        QuestCounts[qtSendLetter] := 17;
+        QuestCounts[qtKillShip] := 10;
+        QuestCounts[qtPlanetQuest] := 3;
+        QuestCounts[qtDefendSystem] := 9;
+        QuestCounts[qtDefendShip] := 18;
         Entry.PlanetBattles := 5;
         Entry.VictoryAchieved := True;
         Entry.BlazerEndingState := 3;
@@ -733,17 +733,17 @@ begin
         Entry.LiberatedSystemCount := 8;
         Entry.AwardCount := 7;
         Entry.TotalExperience := 52000;
-        Entry.SkillLevels[0] := 2;
-        Entry.SkillLevels[1] := 5;
-        Entry.SkillLevels[2] := 2;
-        Entry.SkillLevels[3] := 4;
-        Entry.SkillLevels[4] := 2;
-        Entry.SkillLevels[5] := 3;
-        QuestCounts[Ord(qtSendLetter)] := 5;
-        QuestCounts[Ord(qtKillShip)] := 20;
-        QuestCounts[Ord(qtPlanetQuest)] := 6;
-        QuestCounts[Ord(qtDefendSystem)] := 18;
-        QuestCounts[Ord(qtDefendShip)] := 4;
+        Entry.SkillLevels[psAccuracy] := 2;
+        Entry.SkillLevels[psManeuverability] := 5;
+        Entry.SkillLevels[psTechnical] := 2;
+        Entry.SkillLevels[psTrading] := 4;
+        Entry.SkillLevels[psCharisma] := 2;
+        Entry.SkillLevels[psLeadership] := 3;
+        QuestCounts[qtSendLetter] := 5;
+        QuestCounts[qtKillShip] := 20;
+        QuestCounts[qtPlanetQuest] := 6;
+        QuestCounts[qtDefendSystem] := 18;
+        QuestCounts[qtDefendShip] := 4;
         Entry.PlanetBattles := 2;
         Entry.VictoryAchieved := True;
         Entry.BlazerEndingState := 2;
@@ -769,17 +769,17 @@ begin
         Entry.LiberatedSystemCount := 6;
         Entry.AwardCount := 9;
         Entry.TotalExperience := 45000;
-        Entry.SkillLevels[0] := 4;
-        Entry.SkillLevels[1] := 2;
-        Entry.SkillLevels[2] := 5;
-        Entry.SkillLevels[3] := 1;
-        Entry.SkillLevels[4] := 1;
-        Entry.SkillLevels[5] := 0;
-        QuestCounts[Ord(qtSendLetter)] := 10;
-        QuestCounts[Ord(qtKillShip)] := 18;
-        QuestCounts[Ord(qtPlanetQuest)] := 15;
-        QuestCounts[Ord(qtDefendSystem)] := 10;
-        QuestCounts[Ord(qtDefendShip)] := 0;
+        Entry.SkillLevels[psAccuracy] := 4;
+        Entry.SkillLevels[psManeuverability] := 2;
+        Entry.SkillLevels[psTechnical] := 5;
+        Entry.SkillLevels[psTrading] := 1;
+        Entry.SkillLevels[psCharisma] := 1;
+        Entry.SkillLevels[psLeadership] := 0;
+        QuestCounts[qtSendLetter] := 10;
+        QuestCounts[qtKillShip] := 18;
+        QuestCounts[qtPlanetQuest] := 15;
+        QuestCounts[qtDefendSystem] := 10;
+        QuestCounts[qtDefendShip] := 0;
         Entry.PlanetBattles := 1;
         Entry.VictoryAchieved := True;
         Entry.BlazerEndingState := 2;
@@ -805,17 +805,17 @@ begin
         Entry.LiberatedSystemCount := 5;
         Entry.AwardCount := 7;
         Entry.TotalExperience := 38500;
-        Entry.SkillLevels[0] := 2;
-        Entry.SkillLevels[1] := 3;
-        Entry.SkillLevels[2] := 4;
-        Entry.SkillLevels[3] := 4;
-        Entry.SkillLevels[4] := 0;
-        Entry.SkillLevels[5] := 2;
-        QuestCounts[Ord(qtSendLetter)] := 16;
-        QuestCounts[Ord(qtKillShip)] := 3;
-        QuestCounts[Ord(qtPlanetQuest)] := 6;
-        QuestCounts[Ord(qtDefendSystem)] := 5;
-        QuestCounts[Ord(qtDefendShip)] := 8;
+        Entry.SkillLevels[psAccuracy] := 2;
+        Entry.SkillLevels[psManeuverability] := 3;
+        Entry.SkillLevels[psTechnical] := 4;
+        Entry.SkillLevels[psTrading] := 4;
+        Entry.SkillLevels[psCharisma] := 0;
+        Entry.SkillLevels[psLeadership] := 2;
+        QuestCounts[qtSendLetter] := 16;
+        QuestCounts[qtKillShip] := 3;
+        QuestCounts[qtPlanetQuest] := 6;
+        QuestCounts[qtDefendSystem] := 5;
+        QuestCounts[qtDefendShip] := 8;
         Entry.PlanetBattles := 2;
         Entry.VictoryAchieved := True;
         Entry.BlazerEndingState := 2;
@@ -841,17 +841,17 @@ begin
         Entry.LiberatedSystemCount := 3;
         Entry.AwardCount := 5;
         Entry.TotalExperience := 33000;
-        Entry.SkillLevels[0] := 0;
-        Entry.SkillLevels[1] := 3;
-        Entry.SkillLevels[2] := 0;
-        Entry.SkillLevels[3] := 3;
-        Entry.SkillLevels[4] := 5;
-        Entry.SkillLevels[5] := 3;
-        QuestCounts[Ord(qtSendLetter)] := 5;
-        QuestCounts[Ord(qtKillShip)] := 13;
-        QuestCounts[Ord(qtPlanetQuest)] := 8;
-        QuestCounts[Ord(qtDefendSystem)] := 0;
-        QuestCounts[Ord(qtDefendShip)] := 0;
+        Entry.SkillLevels[psAccuracy] := 0;
+        Entry.SkillLevels[psManeuverability] := 3;
+        Entry.SkillLevels[psTechnical] := 0;
+        Entry.SkillLevels[psTrading] := 3;
+        Entry.SkillLevels[psCharisma] := 5;
+        Entry.SkillLevels[psLeadership] := 3;
+        QuestCounts[qtSendLetter] := 5;
+        QuestCounts[qtKillShip] := 13;
+        QuestCounts[qtPlanetQuest] := 8;
+        QuestCounts[qtDefendSystem] := 0;
+        QuestCounts[qtDefendShip] := 0;
         Entry.PlanetBattles := 3;
         Entry.VictoryAchieved := True;
         Entry.BlazerEndingState := 1;
@@ -877,17 +877,17 @@ begin
         Entry.LiberatedSystemCount := 1;
         Entry.AwardCount := 1;
         Entry.TotalExperience := 12000;
-        Entry.SkillLevels[0] := 2;
-        Entry.SkillLevels[1] := 3;
-        Entry.SkillLevels[2] := 1;
-        Entry.SkillLevels[3] := 1;
-        Entry.SkillLevels[4] := 2;
-        Entry.SkillLevels[5] := 1;
-        QuestCounts[Ord(qtSendLetter)] := 10;
-        QuestCounts[Ord(qtKillShip)] := 0;
-        QuestCounts[Ord(qtPlanetQuest)] := 6;
-        QuestCounts[Ord(qtDefendSystem)] := 0;
-        QuestCounts[Ord(qtDefendShip)] := 4;
+        Entry.SkillLevels[psAccuracy] := 2;
+        Entry.SkillLevels[psManeuverability] := 3;
+        Entry.SkillLevels[psTechnical] := 1;
+        Entry.SkillLevels[psTrading] := 1;
+        Entry.SkillLevels[psCharisma] := 2;
+        Entry.SkillLevels[psLeadership] := 1;
+        QuestCounts[qtSendLetter] := 10;
+        QuestCounts[qtKillShip] := 0;
+        QuestCounts[qtPlanetQuest] := 6;
+        QuestCounts[qtDefendSystem] := 0;
+        QuestCounts[qtDefendShip] := 4;
         Entry.PlanetBattles := 0;
         Entry.VictoryAchieved := False;
         Entry.BlazerEndingState := 1;
@@ -898,11 +898,11 @@ begin
   Entry.PlayerName := LookupLocalizedTextByKey(WideString('FormScore.Winners.' + IntToStr(Index) + '.Name'));
   Entry.PilotRace := OwnerToRace(OwnerFromInternalName(LookupLocalizedTextByKey(WideString('FormScore.Winners.' + IntToStr(Index) + '.Race'))));
   Entry.Rank := Round(RemapClamped(Index, 0, 10, 6, 3));
-  Count := QuestCounts[Ord(qtSendLetter)] + QuestCounts[Ord(qtKillShip)] + QuestCounts[Ord(qtPlanetQuest)] + QuestCounts[Ord(qtDefendSystem)] + QuestCounts[Ord(qtDefendShip)];
+  Count := QuestCounts[qtSendLetter] + QuestCounts[qtKillShip] + QuestCounts[qtPlanetQuest] + QuestCounts[qtDefendSystem] + QuestCounts[qtDefendShip];
   SetLength(Entry.QuestResults, Count);
   Count := 0;
   for Kind := Low(TQuestType) to High(TQuestType) do
-    for I := 0 to QuestCounts[Ord(Kind)] - 1 do
+    for I := 0 to QuestCounts[Kind] - 1 do
     begin
       Entry.QuestResults[Count].Successful := True;
       Entry.QuestResults[Count].QuestType := Kind;
@@ -1512,33 +1512,33 @@ begin
     else if Entry.Rank = 7 then SetImagePath('GI,Bm.FormShip.' + GiResourceSuffix + 'Rank7');
   with GetByName('Skill0') as TImageGI do
   begin
-    SetActive(Entry.SkillLevels[0] > 0);
-    if Active then SetImagePath('GI,Bm.FormScore2.' + GiResourceSuffix + 'Skill' + WideString(IntToStr(Entry.SkillLevels[0] - 1)));
+    SetActive(Entry.SkillLevels[psAccuracy] > 0);
+    if Active then SetImagePath('GI,Bm.FormScore2.' + GiResourceSuffix + 'Skill' + WideString(IntToStr(Entry.SkillLevels[psAccuracy] - 1)));
   end;
   with GetByName('Skill1') as TImageGI do
   begin
-    SetActive(Entry.SkillLevels[1] > 0);
-    if Active then SetImagePath('GI,Bm.FormScore2.' + GiResourceSuffix + 'Skill' + WideString(IntToStr(Entry.SkillLevels[1] - 1)));
+    SetActive(Entry.SkillLevels[psManeuverability] > 0);
+    if Active then SetImagePath('GI,Bm.FormScore2.' + GiResourceSuffix + 'Skill' + WideString(IntToStr(Entry.SkillLevels[psManeuverability] - 1)));
   end;
   with GetByName('Skill2') as TImageGI do
   begin
-    SetActive(Entry.SkillLevels[2] > 0);
-    if Active then SetImagePath('GI,Bm.FormScore2.' + GiResourceSuffix + 'Skill' + WideString(IntToStr(Entry.SkillLevels[2] - 1)));
+    SetActive(Entry.SkillLevels[psTechnical] > 0);
+    if Active then SetImagePath('GI,Bm.FormScore2.' + GiResourceSuffix + 'Skill' + WideString(IntToStr(Entry.SkillLevels[psTechnical] - 1)));
   end;
   with GetByName('Skill3') as TImageGI do
   begin
-    SetActive(Entry.SkillLevels[3] > 0);
-    if Active then SetImagePath('GI,Bm.FormScore2.' + GiResourceSuffix + 'Skill' + WideString(IntToStr(Entry.SkillLevels[3] - 1)));
+    SetActive(Entry.SkillLevels[psTrading] > 0);
+    if Active then SetImagePath('GI,Bm.FormScore2.' + GiResourceSuffix + 'Skill' + WideString(IntToStr(Entry.SkillLevels[psTrading] - 1)));
   end;
   with GetByName('Skill4') as TImageGI do
   begin
-    SetActive(Entry.SkillLevels[4] > 0);
-    if Active then SetImagePath('GI,Bm.FormScore2.' + GiResourceSuffix + 'Skill' + WideString(IntToStr(Entry.SkillLevels[4] - 1)));
+    SetActive(Entry.SkillLevels[psCharisma] > 0);
+    if Active then SetImagePath('GI,Bm.FormScore2.' + GiResourceSuffix + 'Skill' + WideString(IntToStr(Entry.SkillLevels[psCharisma] - 1)));
   end;
   with GetByName('Skill5') as TImageGI do
   begin
-    SetActive(Entry.SkillLevels[5] > 0);
-    if Active then SetImagePath('GI,Bm.FormScore2.' + GiResourceSuffix + 'Skill' + WideString(IntToStr(Entry.SkillLevels[5] - 1)));
+    SetActive(Entry.SkillLevels[psLeadership] > 0);
+    if Active then SetImagePath('GI,Bm.FormScore2.' + GiResourceSuffix + 'Skill' + WideString(IntToStr(Entry.SkillLevels[psLeadership] - 1)));
   end;
   (GetByName('IDate') as TLabelGI).SetText(FormatText1(LocalizedColorText('FormScore.DateWin'),
     '<color=255,222,0>', '<Date>', FormatGameTurnDate(Entry.FinishedTurn)));

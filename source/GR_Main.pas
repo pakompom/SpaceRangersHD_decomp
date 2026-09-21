@@ -3717,13 +3717,13 @@ begin
     if WParam <> 0 then
     begin
       if CurrentScreenId = screenPlanetNO then
-        TMessageLoopGI(RegisteredScreens[Ord(CurrentScreenId)]).UpdateActionCursor(False)
+        TMessageLoopGI(RegisteredScreens[CurrentScreenId]).UpdateActionCursor(False)
       else if (CurrentScreenId = screenShip) or (CurrentScreenId = screenStarMap) then
-        TMessageLoopGI(RegisteredScreens[Ord(CurrentScreenId)]).UpdateActionCursor(True);
-      if (TMessageLoopGI(RegisteredScreens[Ord(screenShip)]) <> nil) and
-         (TMessageLoopGI(RegisteredScreens[Ord(screenShip)]).GetActionParentLoop <> nil) and
-         (TMessageLoopGI(RegisteredScreens[Ord(screenShip)]).GetActionParentLoop = TMessageLoopGI(RegisteredScreens[Ord(CurrentScreenId)])) then
-        TMessageLoopGI(RegisteredScreens[Ord(screenShip)]).UpdateActionCursor(True);
+        TMessageLoopGI(RegisteredScreens[CurrentScreenId]).UpdateActionCursor(True);
+      if (TMessageLoopGI(RegisteredScreens[screenShip]) <> nil) and
+         (TMessageLoopGI(RegisteredScreens[screenShip]).GetActionParentLoop <> nil) and
+         (TMessageLoopGI(RegisteredScreens[screenShip]).GetActionParentLoop = TMessageLoopGI(RegisteredScreens[CurrentScreenId])) then
+        TMessageLoopGI(RegisteredScreens[screenShip]).UpdateActionCursor(True);
     end;
   end
   else if Message = WM_DESTROY then

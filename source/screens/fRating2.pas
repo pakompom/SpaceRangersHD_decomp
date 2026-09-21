@@ -395,7 +395,7 @@ end;
 
 { @routine $5676B4 TfRating2_ShowCareerHint }
 procedure TfRating2.ShowCareerHint(Sender: TObjectGI);
-var I: Byte; Cursor: TPoint; Text: WideString; Ranger: TRanger;
+var Career: TRangerCareer; Cursor: TPoint; Text: WideString; Ranger: TRanger;
   // @nested $567654 FormatCareerHintColumn
   function FormatCareerHintColumn(Column: Integer): WideString; // @addr 0x567654 @calls "0x56786f,0x5678b9,0x567901,0x56791b" @note "Nested in TfRating2.ShowCareerHint; caller supplies its parent frame."
   begin
@@ -419,10 +419,10 @@ begin
       LoadGiByPathIntoGraphBuf('Bm.FormRating2.' + GiResourceSuffix + 'DutyB',GraphBuf);
   end;
   Text := '<td=' + FormatCareerHintColumn(1) + '><align=left>' + LocalizedColorText('FormRating.Rating.Title') + '</align>' + #13#10;
-  for I := 0 to 2 do
-    Text := Text + '<td=' + FormatCareerHintColumn(1) + '><align=left>' + LocalizedColorText('FormRating.Rating.' + CareerTuning[I].Name) +
+  for Career := Low(TRangerCareer) to High(TRangerCareer) do
+    Text := Text + '<td=' + FormatCareerHintColumn(1) + '><align=left>' + LocalizedColorText('FormRating.Rating.' + CareerTuning[Career].Name) +
       '<td=' + FormatCareerHintColumn(2) + '>:</align><td=' + FormatCareerHintColumn(3) + '><align=right>' +
-      WrapTextInColor(IntToStr(Ranger.CareerStatus[I]) ,'<color=255,240,100>') + '</align>' + #13#10;
+      WrapTextInColor(IntToStr(Ranger.CareerStatus[Career]) ,'<color=255,240,100>') + '</align>' + #13#10;
   with GetByName('RewardText') as TLabelGI do SetText(Text);
   with GetByName('RewardImage') as TGraphBufGI do
   begin
@@ -1069,7 +1069,7 @@ end;
 procedure TfRating2.RefreshFeaturedRangers;
 var Ship: TShip;
 begin
-  if Galaxy.EminentCareerShips[Ord(rcTrader)] = nil then
+  if Galaxy.EminentCareerShips[rcTrader] = nil then
   begin
     GetByName('TraderCaptainI').SetActive(False);
     GetByName('TraderCaptainA').SetActive(False);
@@ -1080,7 +1080,7 @@ begin
   end
   else
   begin
-    Ship := TShip(Galaxy.EminentCareerShips[Ord(rcTrader)]);
+    Ship := TShip(Galaxy.EminentCareerShips[rcTrader]);
     with GetByName('ButTrader') as TGraphButtonGI do
     begin
       SetDisabled(False);
@@ -1114,7 +1114,7 @@ begin
       RestartPlayback;
     end;
   end;
-  if Galaxy.EminentCareerShips[Ord(rcWarrior)] = nil then
+  if Galaxy.EminentCareerShips[rcWarrior] = nil then
   begin
     GetByName('WarriorCaptainI').SetActive(False);
     GetByName('WarriorCaptainA').SetActive(False);
@@ -1125,7 +1125,7 @@ begin
   end
   else
   begin
-    Ship := TShip(Galaxy.EminentCareerShips[Ord(rcWarrior)]);
+    Ship := TShip(Galaxy.EminentCareerShips[rcWarrior]);
     with GetByName('ButWarior') as TGraphButtonGI do
     begin
       SetDisabled(False);
@@ -1159,7 +1159,7 @@ begin
       RestartPlayback;
     end;
   end;
-  if Galaxy.EminentCareerShips[Ord(rcPirate)] = nil then
+  if Galaxy.EminentCareerShips[rcPirate] = nil then
   begin
     GetByName('PirateCaptainI').SetActive(False);
     GetByName('PirateCaptainA').SetActive(False);
@@ -1170,7 +1170,7 @@ begin
   end
   else
   begin
-    Ship := TShip(Galaxy.EminentCareerShips[Ord(rcPirate)]);
+    Ship := TShip(Galaxy.EminentCareerShips[rcPirate]);
     with GetByName('ButPirate') as TGraphButtonGI do
     begin
       SetDisabled(False);

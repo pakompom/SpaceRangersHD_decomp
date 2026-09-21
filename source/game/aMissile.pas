@@ -122,14 +122,14 @@ begin
   MicroModuleIndex := Weapon.MicroModuleIndex;
   SpecialModuleIndex := Weapon.SpecialModuleIndex;
   MaxDamage := OwnerShip.GetWeaponMaxDamage(Weapon);
-  SpeedBonus := Self.OwnerShip.GetTotalStatBonus(Ord(bonMissileSpeed));
+  SpeedBonus := Self.OwnerShip.GetTotalStatBonus(bonMissileSpeed);
   SpecialBonus := 0;
-  if SpecialModuleIndex > 0 then SpecialBonus := MicroModuleTemplates[SpecialModuleIndex - 1].StatBonuses[Ord(bonMissileSpeed)];
+  if SpecialModuleIndex > 0 then SpecialBonus := MicroModuleTemplates[SpecialModuleIndex - 1].StatBonuses[bonMissileSpeed];
   if MicroModuleIndex > 0 then
   begin
-    Inc(SpeedBonus, MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[Ord(bonMissileSpeed)]);
-    if SpecialBonus < 0 then Inc(SpecialBonus, Round(SpecialBonus * MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[Ord(bonExtraAkrinPenalty)] * 0.0001))
-    else Inc(SpecialBonus, Round(SpecialBonus * MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[Ord(bonExtraAkrinEff)] * 0.0001));
+    Inc(SpeedBonus, MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonMissileSpeed]);
+    if SpecialBonus < 0 then Inc(SpecialBonus, Round(SpecialBonus * MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonExtraAkrinPenalty] * 0.0001))
+    else Inc(SpecialBonus, Round(SpecialBonus * MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonExtraAkrinEff] * 0.0001));
   end;
   Inc(SpeedBonus, SpecialBonus);
   TechLevel := Weapon.TechLevel;
@@ -912,7 +912,7 @@ end;
 { @routine $4F3434 TMissile_GetWeaponInfo }
 function TMissile.GetWeaponInfo: PWeaponInfo;
 begin
-  Result := @WeaponInfos[ItemType];
+  Result := @WeaponInfos[TItemType(ItemType)];
 end;
 { @end $4F3434 }
 

@@ -16,7 +16,7 @@ type
     PlayerName: WideString; // @offset 0x3C
     CharacterPreset: Integer; // @offset 0x40
     StartingItemTypes: array[0..1] of Byte; // @offset 0x44
-    StartingSkills: array[0..1] of Byte; // @offset 0x46
+    StartingSkills: array[0..1] of TPilotSkill; // @offset 0x46
     IronWill: Boolean; // @offset 0x48
 
     procedure Execute; override; // @addr 0x8183AC
@@ -336,37 +336,37 @@ begin
       1:
         begin
           Player.PreferredCareer := rcWarrior;
-          Player.CareerStatus[Ord(rcWarrior)] := NextRandomIntRange(70,90,Galaxy.RandomState);
-          Player.CareerStatus[Ord(rcPirate)] := (100 - Player.CareerStatus[Ord(rcWarrior)]) div NextRandomIntRange(2,3,Galaxy.RandomState);
-          Player.CareerStatus[Ord(rcTrader)] := 100 - Player.CareerStatus[Ord(rcWarrior)] - Player.CareerStatus[Ord(rcPirate)];
+          Player.CareerStatus[rcWarrior] := NextRandomIntRange(70,90,Galaxy.RandomState);
+          Player.CareerStatus[rcPirate] := (100 - Player.CareerStatus[rcWarrior]) div NextRandomIntRange(2,3,Galaxy.RandomState);
+          Player.CareerStatus[rcTrader] := 100 - Player.CareerStatus[rcWarrior] - Player.CareerStatus[rcPirate];
         end;
       2:
         begin
           Player.PreferredCareer := rcWarrior;
-          Player.CareerStatus[Ord(rcWarrior)] := NextRandomIntRange(60,70,Galaxy.RandomState);
-          Player.CareerStatus[Ord(rcPirate)] := (100 - Player.CareerStatus[Ord(rcWarrior)]) div NextRandomIntRange(3,4,Galaxy.RandomState);
-          Player.CareerStatus[Ord(rcTrader)] := 100 - Player.CareerStatus[Ord(rcWarrior)] - Player.CareerStatus[Ord(rcPirate)];
+          Player.CareerStatus[rcWarrior] := NextRandomIntRange(60,70,Galaxy.RandomState);
+          Player.CareerStatus[rcPirate] := (100 - Player.CareerStatus[rcWarrior]) div NextRandomIntRange(3,4,Galaxy.RandomState);
+          Player.CareerStatus[rcTrader] := 100 - Player.CareerStatus[rcWarrior] - Player.CareerStatus[rcPirate];
         end;
       3:
         begin
           Player.PreferredCareer := rcTrader;
-          Player.CareerStatus[Ord(rcTrader)] := NextRandomIntRange(70,90,Galaxy.RandomState);
-          Player.CareerStatus[Ord(rcPirate)] := (100 - Player.CareerStatus[Ord(rcTrader)]) div NextRandomIntRange(2,3,Galaxy.RandomState);
-          Player.CareerStatus[Ord(rcWarrior)] := 100 - Player.CareerStatus[Ord(rcTrader)] - Player.CareerStatus[Ord(rcPirate)];
+          Player.CareerStatus[rcTrader] := NextRandomIntRange(70,90,Galaxy.RandomState);
+          Player.CareerStatus[rcPirate] := (100 - Player.CareerStatus[rcTrader]) div NextRandomIntRange(2,3,Galaxy.RandomState);
+          Player.CareerStatus[rcWarrior] := 100 - Player.CareerStatus[rcTrader] - Player.CareerStatus[rcPirate];
         end;
       4:
         begin
           Player.PreferredCareer := rcPirate;
-          Player.CareerStatus[Ord(rcPirate)] := NextRandomIntRange(60,70,Galaxy.RandomState);
-          Player.CareerStatus[Ord(rcTrader)] := (100 - Player.CareerStatus[Ord(rcPirate)]) div NextRandomIntRange(2,3,Galaxy.RandomState);
-          Player.CareerStatus[Ord(rcWarrior)] := 100 - Player.CareerStatus[Ord(rcPirate)] - Player.CareerStatus[Ord(rcTrader)];
+          Player.CareerStatus[rcPirate] := NextRandomIntRange(60,70,Galaxy.RandomState);
+          Player.CareerStatus[rcTrader] := (100 - Player.CareerStatus[rcPirate]) div NextRandomIntRange(2,3,Galaxy.RandomState);
+          Player.CareerStatus[rcWarrior] := 100 - Player.CareerStatus[rcPirate] - Player.CareerStatus[rcTrader];
         end;
       5:
         begin
           Player.PreferredCareer := rcPirate;
-          Player.CareerStatus[Ord(rcPirate)] := NextRandomIntRange(70,90,Galaxy.RandomState);
-          Player.CareerStatus[Ord(rcTrader)] := (100 - Player.CareerStatus[Ord(rcPirate)]) div NextRandomIntRange(2,3,Galaxy.RandomState);
-          Player.CareerStatus[Ord(rcWarrior)] := 100 - Player.CareerStatus[Ord(rcPirate)] - Player.CareerStatus[Ord(rcTrader)];
+          Player.CareerStatus[rcPirate] := NextRandomIntRange(70,90,Galaxy.RandomState);
+          Player.CareerStatus[rcTrader] := (100 - Player.CareerStatus[rcPirate]) div NextRandomIntRange(2,3,Galaxy.RandomState);
+          Player.CareerStatus[rcWarrior] := 100 - Player.CareerStatus[rcPirate] - Player.CareerStatus[rcTrader];
         end;
     end;
     Player.InitializePlayerAtPlanet(Planet,GalaxyDifficultyTuning[Galaxy.DifficultyLevels[1]].StartingPlayerMoney,CharacterPreset);
@@ -374,37 +374,37 @@ begin
       1:
         begin
           Player.PreferredCareer := rcWarrior;
-          Player.CareerStatus[Ord(rcWarrior)] := NextRandomIntRange(70,90,Galaxy.RandomState);
-          Player.CareerStatus[Ord(rcPirate)] := (100 - Player.CareerStatus[Ord(rcWarrior)]) div NextRandomIntRange(2,3,Galaxy.RandomState);
-          Player.CareerStatus[Ord(rcTrader)] := 100 - Player.CareerStatus[Ord(rcWarrior)] - Player.CareerStatus[Ord(rcPirate)];
+          Player.CareerStatus[rcWarrior] := NextRandomIntRange(70,90,Galaxy.RandomState);
+          Player.CareerStatus[rcPirate] := (100 - Player.CareerStatus[rcWarrior]) div NextRandomIntRange(2,3,Galaxy.RandomState);
+          Player.CareerStatus[rcTrader] := 100 - Player.CareerStatus[rcWarrior] - Player.CareerStatus[rcPirate];
         end;
       2:
         begin
           Player.PreferredCareer := rcWarrior;
-          Player.CareerStatus[Ord(rcWarrior)] := NextRandomIntRange(60,70,Galaxy.RandomState);
-          Player.CareerStatus[Ord(rcPirate)] := (100 - Player.CareerStatus[Ord(rcWarrior)]) div NextRandomIntRange(3,4,Galaxy.RandomState);
-          Player.CareerStatus[Ord(rcTrader)] := 100 - Player.CareerStatus[Ord(rcWarrior)] - Player.CareerStatus[Ord(rcPirate)];
+          Player.CareerStatus[rcWarrior] := NextRandomIntRange(60,70,Galaxy.RandomState);
+          Player.CareerStatus[rcPirate] := (100 - Player.CareerStatus[rcWarrior]) div NextRandomIntRange(3,4,Galaxy.RandomState);
+          Player.CareerStatus[rcTrader] := 100 - Player.CareerStatus[rcWarrior] - Player.CareerStatus[rcPirate];
         end;
       3:
         begin
           Player.PreferredCareer := rcTrader;
-          Player.CareerStatus[Ord(rcTrader)] := NextRandomIntRange(70,90,Galaxy.RandomState);
-          Player.CareerStatus[Ord(rcPirate)] := (100 - Player.CareerStatus[Ord(rcTrader)]) div NextRandomIntRange(2,3,Galaxy.RandomState);
-          Player.CareerStatus[Ord(rcWarrior)] := 100 - Player.CareerStatus[Ord(rcTrader)] - Player.CareerStatus[Ord(rcPirate)];
+          Player.CareerStatus[rcTrader] := NextRandomIntRange(70,90,Galaxy.RandomState);
+          Player.CareerStatus[rcPirate] := (100 - Player.CareerStatus[rcTrader]) div NextRandomIntRange(2,3,Galaxy.RandomState);
+          Player.CareerStatus[rcWarrior] := 100 - Player.CareerStatus[rcTrader] - Player.CareerStatus[rcPirate];
         end;
       4:
         begin
           Player.PreferredCareer := rcPirate;
-          Player.CareerStatus[Ord(rcPirate)] := NextRandomIntRange(60,70,Galaxy.RandomState);
-          Player.CareerStatus[Ord(rcTrader)] := (100 - Player.CareerStatus[Ord(rcPirate)]) div NextRandomIntRange(2,3,Galaxy.RandomState);
-          Player.CareerStatus[Ord(rcWarrior)] := 100 - Player.CareerStatus[Ord(rcPirate)] - Player.CareerStatus[Ord(rcTrader)];
+          Player.CareerStatus[rcPirate] := NextRandomIntRange(60,70,Galaxy.RandomState);
+          Player.CareerStatus[rcTrader] := (100 - Player.CareerStatus[rcPirate]) div NextRandomIntRange(2,3,Galaxy.RandomState);
+          Player.CareerStatus[rcWarrior] := 100 - Player.CareerStatus[rcPirate] - Player.CareerStatus[rcTrader];
         end;
       5:
         begin
           Player.PreferredCareer := rcPirate;
-          Player.CareerStatus[Ord(rcPirate)] := NextRandomIntRange(70,90,Galaxy.RandomState);
-          Player.CareerStatus[Ord(rcTrader)] := (100 - Player.CareerStatus[Ord(rcPirate)]) div NextRandomIntRange(2,3,Galaxy.RandomState);
-          Player.CareerStatus[Ord(rcWarrior)] := 100 - Player.CareerStatus[Ord(rcPirate)] - Player.CareerStatus[Ord(rcTrader)];
+          Player.CareerStatus[rcPirate] := NextRandomIntRange(70,90,Galaxy.RandomState);
+          Player.CareerStatus[rcTrader] := (100 - Player.CareerStatus[rcPirate]) div NextRandomIntRange(2,3,Galaxy.RandomState);
+          Player.CareerStatus[rcWarrior] := 100 - Player.CareerStatus[rcPirate] - Player.CareerStatus[rcTrader];
         end;
     end;
     SetPlayer(Player,Galaxy);
@@ -521,7 +521,7 @@ begin
             Planet.SpawnTransport(0,100);
             Planet.SpawnTransport(0,100);
             Planet.BuyWarrior(100);
-            if Galaxy.Rangers.Count < Galaxy.CountFactionStars(Ord(sfCoalition)) * 1.2 then
+            if Galaxy.Rangers.Count < Galaxy.CountFactionStars(sfCoalition) * 1.2 then
             begin
               Planet.BuyRanger(100);
               Galaxy.RefreshRangerStrengthStats;
@@ -648,27 +648,27 @@ begin
         50:
           begin
             Item := TWeapon.Create;
-            (Item as TWeapon).Init(t_Weapon1,Round(WeaponInfos[Ord(t_Weapon1)].AverageSize * EquipmentSizeFactors[4]),3,GetPlayer.OwnerId);
+            (Item as TWeapon).Init(t_Weapon1,Round(WeaponInfos[t_Weapon1].AverageSize * EquipmentSizeFactors[4]),3,GetPlayer.OwnerId);
           end;
         51:
           begin
             Item := TWeapon.Create;
-            (Item as TWeapon).Init(t_Weapon2,Round(WeaponInfos[Ord(t_Weapon2)].AverageSize * EquipmentSizeFactors[3]),2,GetPlayer.OwnerId);
+            (Item as TWeapon).Init(t_Weapon2,Round(WeaponInfos[t_Weapon2].AverageSize * EquipmentSizeFactors[3]),2,GetPlayer.OwnerId);
           end;
         52:
           begin
             Item := TWeapon.Create;
-            (Item as TWeapon).Init(t_Weapon3,Round(WeaponInfos[Ord(t_Weapon3)].AverageSize * EquipmentSizeFactors[2]),2,GetPlayer.OwnerId);
+            (Item as TWeapon).Init(t_Weapon3,Round(WeaponInfos[t_Weapon3].AverageSize * EquipmentSizeFactors[2]),2,GetPlayer.OwnerId);
           end;
         53:
           begin
             Item := TWeapon.Create;
-            (Item as TWeapon).Init(t_Weapon4,Round(WeaponInfos[Ord(t_Weapon4)].AverageSize * EquipmentSizeFactors[3]),1,GetPlayer.OwnerId);
+            (Item as TWeapon).Init(t_Weapon4,Round(WeaponInfos[t_Weapon4].AverageSize * EquipmentSizeFactors[3]),1,GetPlayer.OwnerId);
           end;
         54:
           begin
             Item := TWeapon.Create;
-            (Item as TWeapon).Init(t_Weapon5,Round(WeaponInfos[Ord(t_Weapon5)].AverageSize * EquipmentSizeFactors[4]),1,GetPlayer.OwnerId);
+            (Item as TWeapon).Init(t_Weapon5,Round(WeaponInfos[t_Weapon5].AverageSize * EquipmentSizeFactors[4]),1,GetPlayer.OwnerId);
           end;
       else
         Item := TRadar.Create;

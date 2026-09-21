@@ -3405,9 +3405,9 @@ var
   I: Integer;
 begin
   EnemyStar := nil;
-  CoalitionPercent := Galaxy.GetFactionControlPercent(Ord(sfCoalition));
-  DominatorPercent := Galaxy.GetFactionControlPercent(Ord(sfDominators));
-  PiratePercent := Galaxy.GetFactionControlPercent(Ord(sfPirates));
+  CoalitionPercent := Galaxy.GetFactionControlPercent(sfCoalition);
+  DominatorPercent := Galaxy.GetFactionControlPercent(sfDominators);
+  PiratePercent := Galaxy.GetFactionControlPercent(sfPirates);
   for I := 0 to Galaxy.Stars.Count - 1 do
     if ((TObject(GetPlayer.CurrentStar.StarDistances[I].Star) as TStar).ControlFaction in [sfDominators, sfPirates]) and
       ((TObject(GetPlayer.CurrentStar.StarDistances[I].Star) as TStar).Constellation.Id <> 20) then
@@ -3683,7 +3683,7 @@ begin
     ActiveLoadPanel.RefreshBackgroundImages;
     ActiveLoadPanel.StartClosingShutters;
   end
-  else (TObject(RegisteredScreens[Ord(CurrentScreenId)]) as TMessageLoopGI).RequestClose(1);
+  else (TObject(RegisteredScreens[CurrentScreenId]) as TMessageLoopGI).RequestClose(1);
   if Action = 0 then BreakUiMessage;
 end;
 { @end $5BE3E0 }
@@ -4526,7 +4526,7 @@ begin
   BusinessQuoteLargeAmount := Min(10000000, Max(1000, GetPlayer.Money));
   BusinessQuoteMediumAmount := Min(10000000, Max(1000, GetPlayer.Money div 2));
   BusinessQuoteSmallAmount := Min(10000000, Max(1000, GetPlayer.Money div 4));
-  BusinessDepositQuoteInterestRate := RoundTo(RemapClamped(Galaxy.GetFactionControlPercent(Ord(sfDominators)), 5, 95, 7, 1), -1);
+  BusinessDepositQuoteInterestRate := RoundTo(RemapClamped(Galaxy.GetFactionControlPercent(sfDominators), 5, 95, 7, 1), -1);
   DialogText := LocalizedColorText('FormRuins.BK.Deposit.BK');
   ReplaceTextToken(DialogText, '<BK>', GetPlayer.DockedTo.Name, '<color=255,240,100>');
   ReplaceTextToken(DialogText, '<Percent>', FloatToStrF(BusinessDepositQuoteInterestRate, ffFixed, 1, 1), '<color=255,240,100>');
@@ -4688,7 +4688,7 @@ begin
       case Kind of
         cpCreateRangerCenter:
         begin
-          if Galaxy.ShipTypeCounts[Ord(rstRangerCenter)] > Galaxy.CountFactionStars(Ord(sfCoalition)) * 0.33 then Continue;
+          if Galaxy.ShipTypeCounts[Ord(rstRangerCenter)] > Galaxy.CountFactionStars(sfCoalition) * 0.33 then Continue;
           BestStar := nil;
           BestScore := 0;
           for I := 1 to Galaxy.Stars.Count - 1 do
@@ -4731,7 +4731,7 @@ begin
         end;
         cpCreatePirateBase:
         begin
-          if Galaxy.ShipTypeCounts[Ord(rstPirateBase)] > Galaxy.CountFactionStars(Ord(sfCoalition)) * 0.22 then Continue;
+          if Galaxy.ShipTypeCounts[Ord(rstPirateBase)] > Galaxy.CountFactionStars(sfCoalition) * 0.22 then Continue;
           BestStar := nil;
           BestScore := 0;
           for I := 1 to Galaxy.Stars.Count - 1 do
@@ -4774,7 +4774,7 @@ begin
         end;
         cpCreateMilitaryBase:
         begin
-          if Galaxy.ShipTypeCounts[Ord(rstMilitaryBase)] > Galaxy.CountFactionStars(Ord(sfCoalition)) * 0.22 then Continue;
+          if Galaxy.ShipTypeCounts[Ord(rstMilitaryBase)] > Galaxy.CountFactionStars(sfCoalition) * 0.22 then Continue;
           BestStar := nil;
           BestScore := 0;
           for I := 1 to Galaxy.Stars.Count - 1 do
@@ -4817,7 +4817,7 @@ begin
         end;
         cpCreateScienceBase:
         begin
-          if Galaxy.ShipTypeCounts[Ord(rstScienceBase)] > Galaxy.CountFactionStars(Ord(sfCoalition)) * 0.15 then Continue;
+          if Galaxy.ShipTypeCounts[Ord(rstScienceBase)] > Galaxy.CountFactionStars(sfCoalition) * 0.15 then Continue;
           BestStar := nil;
           BestScore := 0;
           for I := 1 to Galaxy.Stars.Count - 1 do
@@ -4860,7 +4860,7 @@ begin
         end;
         cpCreateBusinessCenter:
         begin
-          if Galaxy.ShipTypeCounts[Ord(rstBusinessCenter)] > Galaxy.CountFactionStars(Ord(sfCoalition)) * 0.1 then Continue;
+          if Galaxy.ShipTypeCounts[Ord(rstBusinessCenter)] > Galaxy.CountFactionStars(sfCoalition) * 0.1 then Continue;
           BestStar := nil;
           BestScore := 0;
           for I := 1 to Galaxy.Stars.Count - 1 do
@@ -4903,7 +4903,7 @@ begin
         end;
         cpCreateMedicalBase:
         begin
-          if Galaxy.ShipTypeCounts[Ord(rstMedicalBase)] > Galaxy.CountFactionStars(Ord(sfCoalition)) * 0.15 then Continue;
+          if Galaxy.ShipTypeCounts[Ord(rstMedicalBase)] > Galaxy.CountFactionStars(sfCoalition) * 0.15 then Continue;
           BestStar := nil;
           BestScore := 0;
           for I := 1 to Galaxy.Stars.Count - 1 do
@@ -5319,7 +5319,7 @@ begin
     SeededRandomIntRange(Galaxy.ComputeScaledMiniMoney(2) div 2, 2 * Galaxy.ComputeScaledMiniMoney(2), Galaxy.GenerationSeed + Galaxy.CurrentTurn div 10)) + 30);
   DistantTradeAdviceCost := RoundAndTruncateToTens(SeededRandomIntRange(NearbyTradeAdviceCost div 3, NearbyTradeAdviceCost div 2,
     Galaxy.GenerationSeed + Galaxy.CurrentTurn div 10 + 1231341) + 10);
-  Discount := Round(GetPlayer.CareerStatus[Ord(rcTrader)] / 1.3) + 1;
+  Discount := Round(GetPlayer.CareerStatus[rcTrader] / 1.3) + 1;
   NearbyTradeAdviceCost := Max(Int64(10), NearbyTradeAdviceCost - Round(NearbyTradeAdviceCost / 100 * Discount));
   DistantTradeAdviceCost := Max(Int64(5), DistantTradeAdviceCost - Round(DistantTradeAdviceCost / 100 * Discount));
   ReplaceTextToken(DialogText, '<BK>', GetPlayer.DockedTo.Name, '<color=255,240,100>');
@@ -5647,7 +5647,7 @@ begin
       if OfferCount > Max(2, (Rank shr 1) + 1) then Break;
     end;
   end;
-  Bonus := GetPlayer.GetTotalStatBonus(Ord(bonStimCapacity)) + GetPlayer.CountActiveArtefacts(Ord(t_ArtBio));
+  Bonus := GetPlayer.GetTotalStatBonus(bonStimCapacity) + GetPlayer.CountActiveArtefacts(Ord(t_ArtBio));
   MaxStimulants := Max(GetPlayer.CountActiveStimulants,
     Floor(SeededRandomFloatRange(Galaxy.CurrentTurn div 70 * GetPlayer.DockedTo.Id, 0, 1) *
       (Max(2, Max(2, Integer(Rank)) + Bonus) - 1)) + 2);
@@ -6045,7 +6045,7 @@ var
   begin
     Result := False;
     if (Item.ScriptItem <> nil) and (TScriptItem(Item.ScriptItem).Name <> '') then Exit;
-    if (Kind in [Ord(t_Weapon1)..Ord(t_CustomWeapon)]) and not (Byte(Item.ItemType) in [Ord(t_Weapon1)..Ord(t_CustomWeapon)]) then Exit;
+    if (Kind in [Ord(t_Weapon1)..Ord(t_CustomWeapon)]) and not (Item.ItemType in [t_Weapon1..t_CustomWeapon]) then Exit;
     if not (Kind in [Ord(t_Weapon1)..Ord(t_CustomWeapon)]) and (Kind <> Byte(Item.ItemType)) then Exit;
     if Kind = 42 then
     begin
@@ -6071,7 +6071,7 @@ var
     ReplaceTextToken(Text, '<Size>', IntToStr(Item.Weight), '<color=255,240,100>');
     ReplaceTextToken(Text, '<Cost>', IntToStr(Item.Cost), '<color=255,240,100>');
     if Item is TWeapon then Stats := LocalizedColorText('FormRuins.CB.ConstructPirate.StatsWeapon')
-    else Stats := LocalizedColorText('FormRuins.CB.ConstructPirate.Stats' + ItemTypeNames[Byte(Item.ItemType)]);
+    else Stats := LocalizedColorText('FormRuins.CB.ConstructPirate.Stats' + ItemTypeNames[Item.ItemType]);
     Item.ReplaceInfoTokens(Stats, '<color=255,240,100>', nil);
     if (Item is THull) and (THull(Item).HullSeries <> -1) then
     begin
@@ -6260,7 +6260,7 @@ begin
       Text := Text + Item.GetShortName + ' - ' + RemoveTextTagsW(Item.GetDisplayName) + #13#10
     else
     begin
-      Text := Text + LocalizedText('Items.' + ItemTypeNames[Kind] + '.ShortName') + ' - ';
+      Text := Text + LocalizedText('Items.' + ItemTypeNames[TItemType(Kind)] + '.ShortName') + ' - ';
       if THull(ConstructionEquipment[42].Item).GetSlotCount(ItemTypeToSlotKind(Kind)) > 0 then
         Text := Text + LocalizedColorText('FormRuins.CB.ConstructPirate.NotInstalled') + #13#10
       else Text := Text + LocalizedColorText('FormRuins.CB.ConstructPirate.NotAvailable') + #13#10;
@@ -7052,9 +7052,9 @@ begin
     Exit;
   end;
   Star := nil;
-  CoalitionPercent := Galaxy.GetFactionControlPercent(Ord(sfCoalition));
-  DominatorPercent := Galaxy.GetFactionControlPercent(Ord(sfDominators));
-  PiratePercent := Galaxy.GetFactionControlPercent(Ord(sfPirates));
+  CoalitionPercent := Galaxy.GetFactionControlPercent(sfCoalition);
+  DominatorPercent := Galaxy.GetFactionControlPercent(sfDominators);
+  PiratePercent := Galaxy.GetFactionControlPercent(sfPirates);
   for I := 0 to Galaxy.Stars.Count - 1 do
     if ((TObject(GetPlayer.CurrentStar.StarDistances[I].Star) as TStar).ControlFaction in [sfCoalition, sfDominators]) and
       ((TObject(GetPlayer.CurrentStar.StarDistances[I].Star) as TStar).Constellation.Id <> 20) then

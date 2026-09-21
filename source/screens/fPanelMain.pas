@@ -481,12 +481,12 @@ begin
     if (GetPlayer.PendingDockDialogue > 0) and (GetPlayer.DockedTo <> nil) then
     begin
       RequestedScreenId := screenRuinsTalk;
-      TMessageLoopGI(RegisteredScreens[Ord(CurrentScreenId)]).RequestClose(1);
+      TMessageLoopGI(RegisteredScreens[CurrentScreenId]).RequestClose(1);
     end
     else if (GetPlayer.PendingDockDialogue > 0) and (GetPlayer.CurrentPlanet <> nil) and (GetPlayer.CurrentPlanet.OwnerId <> Byte(oiUninhabited)) then
     begin
       RequestedScreenId := screenGovernment;
-      TMessageLoopGI(RegisteredScreens[Ord(CurrentScreenId)]).RequestClose(1);
+      TMessageLoopGI(RegisteredScreens[CurrentScreenId]).RequestClose(1);
     end;
   end;
 end;

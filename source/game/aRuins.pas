@@ -170,15 +170,15 @@ const
     (BasicLevel: 4; IntermediateLevel: 2; AdvancedLevel: 2; MinimumRange: 300),
     (BasicLevel: 4; IntermediateLevel: 2; AdvancedLevel: 2; MinimumRange: 350),
     (BasicLevel: 4; IntermediateLevel: 2; AdvancedLevel: 2; MinimumRange: 400)); // @addr $87C14C
-  StationWeaponTypes: array[6..12, 0..2] of Byte = (
-    (52, 56, 59),
-    (52, 55, 60),
-    (52, 58, 56),
-    (52, 54, 61),
-    (51, 57, 55),
-    (50, 54, 55),
-    (52, 55, 60)); // @addr $87C1BC
-  StationSkillBonusWeights: array[22..27] of Integer = (100, 100, 80, 0, 0, 0); // @addr $87C1D4
+  StationWeaponTypes: array[6..12, 0..2] of TItemType = (
+    (t_Weapon3, t_Weapon7, t_Weapon10),
+    (t_Weapon3, t_Weapon6, t_Weapon11),
+    (t_Weapon3, t_Weapon9, t_Weapon7),
+    (t_Weapon3, t_Weapon5, t_Weapon12),
+    (t_Weapon2, t_Weapon8, t_Weapon6),
+    (t_Weapon1, t_Weapon5, t_Weapon6),
+    (t_Weapon3, t_Weapon6, t_Weapon11)); // @addr $87C1BC
+  StationSkillBonusWeights: array[bonSkill1..bonSkill6] of Integer = (100, 100, 80, 0, 0, 0); // @addr $87C1D4
   StationOfferHullLevelBonus: array[6..12] of Integer = (0,0,1,0,0,0,0); // @addr $87C1EC
   StationOfferHullTypes: array[6..12] of TStationHullTypes = (
     [htRanger],
@@ -352,13 +352,13 @@ begin
   CreateAndEquipRepairRobot(RandomStationEquipmentSize(RepairRobotBaseSize),
     Galaxy.ScaleIntByTechLevel(1, NextRandomIntRange(StationRepairLevels[TypeId].Minimum, StationRepairLevels[TypeId].Maximum, RandomState)), EquipmentOwner);
   if (WeaponInfos[StationWeaponTypes[TypeId, 2]].TechLevel <= Galaxy.TechLevel) and (NextRandomUnitFloat(RandomState) > 0.6) then
-    Weapon := CreateAndEquipWeapon(StationWeaponTypes[TypeId, 2], RandomStationEquipmentSize(WeaponInfos[StationWeaponTypes[TypeId, 2]].AverageSize),
+    Weapon := CreateAndEquipWeapon(Ord(StationWeaponTypes[TypeId, 2]), RandomStationEquipmentSize(WeaponInfos[StationWeaponTypes[TypeId, 2]].AverageSize),
       Galaxy.ScaleIntByTechLevel(StationWeaponGeneration[TypeId].AdvancedLevel, NextRandomIntRange(StationWeaponGeneration[TypeId].AdvancedLevel + 1, 8, RandomState)), EquipmentOwner)
   else if (WeaponInfos[StationWeaponTypes[TypeId, 1]].TechLevel <= Galaxy.TechLevel) and (NextRandomUnitFloat(RandomState) > 0.6) then
-    Weapon := CreateAndEquipWeapon(StationWeaponTypes[TypeId, 1], RandomStationEquipmentSize(WeaponInfos[StationWeaponTypes[TypeId, 1]].AverageSize),
+    Weapon := CreateAndEquipWeapon(Ord(StationWeaponTypes[TypeId, 1]), RandomStationEquipmentSize(WeaponInfos[StationWeaponTypes[TypeId, 1]].AverageSize),
       Galaxy.ScaleIntByTechLevel(StationWeaponGeneration[TypeId].IntermediateLevel, NextRandomIntRange(StationWeaponGeneration[TypeId].IntermediateLevel + 1, 8, RandomState)), EquipmentOwner)
   else
-    Weapon := CreateAndEquipWeapon(StationWeaponTypes[TypeId, 0], RandomStationEquipmentSize(WeaponInfos[StationWeaponTypes[TypeId, 0]].AverageSize),
+    Weapon := CreateAndEquipWeapon(Ord(StationWeaponTypes[TypeId, 0]), RandomStationEquipmentSize(WeaponInfos[StationWeaponTypes[TypeId, 0]].AverageSize),
       Galaxy.ScaleIntByTechLevel(StationWeaponGeneration[TypeId].BasicLevel, NextRandomIntRange(StationWeaponGeneration[TypeId].BasicLevel + 1, 8, RandomState)), EquipmentOwner);
   Weapon.Range := Max(Weapon.Range, StationWeaponGeneration[TypeId].MinimumRange);
   if TypeId = Byte(rstDominion) then
@@ -545,7 +545,7 @@ begin
   begin
     Name := ExtractDelimitedPartW(Text, I, ',');
     for Kind := 0 to 75 do
-      if ItemTypeNames[Kind] = Name then
+      if ItemTypeNames[TItemType(Kind)] = Name then
       begin
         if Kind in [42..68] then
         begin
@@ -578,7 +578,7 @@ begin
   begin
     Name := ExtractDelimitedPartW(Text, I, ',');
     for Kind := 0 to 75 do
-      if ItemTypeNames[Kind] = Name then
+      if ItemTypeNames[TItemType(Kind)] = Name then
       begin
         if (Kind in [0..7]) or (Kind in [42..68]) or (Kind in [10..41]) or (Kind in [69..73]) then
         begin
@@ -735,7 +735,7 @@ begin
             FlyToStar := nil;
             FlyDate := Galaxy.CurrentTurn + 30;
           end;
-          Imbalance := Abs(CurrentStar.GetCachedFactionStrength(Ord(sfCoalition)) - CurrentStar.GetCachedFactionStrength(Ord(sfDominators)) * 2.5) / Max(0.001, CurrentStar.GetCachedFactionStrength(Ord(sfPirates)));
+          Imbalance := Abs(CurrentStar.GetCachedFactionStrength(sfCoalition) - CurrentStar.GetCachedFactionStrength(sfDominators) * 2.5) / Max(0.001, CurrentStar.GetCachedFactionStrength(sfPirates));
           LocalBalance := EvaluateLocalForceBalance(Position);
           if ((LocalBalance < -150) or (Imbalance > 30)) and (FlyDate < Galaxy.CurrentTurn + 25) and (FlyDate > Galaxy.CurrentTurn) then
           begin
@@ -1614,7 +1614,7 @@ var I: Integer; Planet: TPlanet; Independent: Boolean;
 begin
   EnemyShip := Attacker;
   if CurrentStanding = ssCustom then Exit;
-  Independent := not (CurrentStanding in FactionStandingMasks[Ord(CurrentStar.ControlFaction)]) or (CurrentStar.Status.CustomFaction <> '');
+  Independent := not (CurrentStanding in FactionStandingMasks[CurrentStar.ControlFaction]) or (CurrentStar.Status.CustomFaction <> '');
   if Attacker.TypeId = stRanger then
   begin
     ChangeRelationToRanger(Attacker, -10);
@@ -1765,16 +1765,16 @@ procedure TRuins.GenerateCombatSkills;
 var Level, Accuracy, Maneuverability: Integer;
 begin
   Level := Round(RemapClamped(Galaxy.TechLevel, 3, 8, 0, 4));
-  if Galaxy.GetFactionControlPercent(Ord(sfDominators)) < 40 then Dec(Level, 2);
-  if Galaxy.GetFactionControlPercent(Ord(sfDominators)) > 80 then Inc(Level);
+  if Galaxy.GetFactionControlPercent(sfDominators) < 40 then Dec(Level, 2);
+  if Galaxy.GetFactionControlPercent(sfDominators) > 80 then Inc(Level);
   if Galaxy.WarDeltaWin[1] > -3 then Inc(Level);
   if Galaxy.WarDeltaWin[1] < 3 then Dec(Level, 2);
   Accuracy := NextRandomIntRange(Level - 1, Level + 1, RandomState);
   Maneuverability := NextRandomIntRange(Level - 1, Level + 1, RandomState);
   Accuracy := Min(5, Max(0, Accuracy));
   Maneuverability := Min(5, Max(0, Maneuverability));
-  BaseSkills[0] := Accuracy;
-  BaseSkills[1] := Maneuverability;
+  BaseSkills[psAccuracy] := Accuracy;
+  BaseSkills[psManeuverability] := Maneuverability;
 end;
 { @end $71A0FC }
 
@@ -1848,13 +1848,13 @@ begin
     bonSkill1..bonSkill6:
       begin
         if Value > 0 then
-          Result := Min(6 - GetEffectiveSkillLevel(TPilotSkill(EquipmentBonusSkills[Ord(BonusKind) - 22])), Value) * StationSkillBonusWeights[Ord(BonusKind)];
-        if (Value > 0) and (Value + GetEffectiveSkillLevel(TPilotSkill(EquipmentBonusSkills[Ord(BonusKind) - 22])) > 6) then
-          Result := Result + (StationSkillBonusWeights[Ord(BonusKind)] * 0.05) * (Value + GetEffectiveSkillLevel(TPilotSkill(EquipmentBonusSkills[Ord(BonusKind) - 22])) - 6);
+          Result := Min(6 - GetEffectiveSkillLevel(EquipmentBonusSkills[Ord(BonusKind) - Ord(bonSkill1)]), Value) * StationSkillBonusWeights[BonusKind];
+        if (Value > 0) and (Value + GetEffectiveSkillLevel(EquipmentBonusSkills[Ord(BonusKind) - Ord(bonSkill1)]) > 6) then
+          Result := Result + (StationSkillBonusWeights[BonusKind] * 0.05) * (Value + GetEffectiveSkillLevel(EquipmentBonusSkills[Ord(BonusKind) - Ord(bonSkill1)]) - 6);
         if Value < 0 then
-          Result := Min(GetEffectiveSkillLevel(TPilotSkill(EquipmentBonusSkills[Ord(BonusKind) - 22])), -Value) * -StationSkillBonusWeights[Ord(BonusKind)];
-        if (Value < 0) and (Value + GetEffectiveSkillLevel(TPilotSkill(EquipmentBonusSkills[Ord(BonusKind) - 22])) < 0) then
-          Result := Result + (StationSkillBonusWeights[Ord(BonusKind)] * 0.03) * (Value + GetEffectiveSkillLevel(TPilotSkill(EquipmentBonusSkills[Ord(BonusKind) - 22])));
+          Result := Min(GetEffectiveSkillLevel(EquipmentBonusSkills[Ord(BonusKind) - Ord(bonSkill1)]), -Value) * -StationSkillBonusWeights[BonusKind];
+        if (Value < 0) and (Value + GetEffectiveSkillLevel(EquipmentBonusSkills[Ord(BonusKind) - Ord(bonSkill1)]) < 0) then
+          Result := Result + (StationSkillBonusWeights[BonusKind] * 0.03) * (Value + GetEffectiveSkillLevel(EquipmentBonusSkills[Ord(BonusKind) - Ord(bonSkill1)]));
       end;
   end;
   if TypeId = Byte(rstDominion) then
@@ -1901,13 +1901,13 @@ begin
       Result := Result + ShotTotal * 2;
     end;
   end;
-  case Byte(Weapon.GetWeaponInfo.ShotType) of
-    Ord(wstRocket): Result := Result * 1.1 * Weapon.GetShotCount * (1 + StatusFactor);
-    Ord(wstMissile): Result := Result * (1.1 + Weapon.GetWeaponInfo.SecondaryDamageRadius * 0.5 * 0.01 + StatusFactor) * Weapon.GetShotCount;
-    Ord(wstTorpedo): Result := Result * (1 + Weapon.GetWeaponInfo.SecondaryDamageRadius * 0.5 * 0.01 + StatusFactor);
-    Ord(wstChain): Result := Result * (1.1 + (Weapon.GetShotCount - 1) * 0.2) * (1 + StatusFactor);
-    Ord(wstSplash): Result := Result * (1 + Weapon.GetWeaponInfo.SecondaryDamageRadius * 1.0 * 0.01 + StatusFactor);
-    Ord(wstAreaDamage): Result := Result * (1 + Weapon.Range * 1.3 * 0.01 + StatusFactor);
+  case Weapon.GetWeaponInfo.ShotType of
+    wstRocket: Result := Result * 1.1 * Weapon.GetShotCount * (1 + StatusFactor);
+    wstMissile: Result := Result * (1.1 + Weapon.GetWeaponInfo.SecondaryDamageRadius * 0.5 * 0.01 + StatusFactor) * Weapon.GetShotCount;
+    wstTorpedo: Result := Result * (1 + Weapon.GetWeaponInfo.SecondaryDamageRadius * 0.5 * 0.01 + StatusFactor);
+    wstChain: Result := Result * (1.1 + (Weapon.GetShotCount - 1) * 0.2) * (1 + StatusFactor);
+    wstSplash: Result := Result * (1 + Weapon.GetWeaponInfo.SecondaryDamageRadius * 1.0 * 0.01 + StatusFactor);
+    wstAreaDamage: Result := Result * (1 + Weapon.Range * 1.3 * 0.01 + StatusFactor);
   else Result := Result * (1 + StatusFactor);
   end;
   Result := Result * Weapon.GetAttackCount;
@@ -2055,11 +2055,11 @@ begin
     Buyer := TShip(Ship);
     Availability := [Ord(waFree)];
     if (Buyer.TypeId = stKling) and (OwnerId in PlanetOwnerMasks.Dominators) then Availability := Availability + [Ord(waNotSoldAndNodeRepair)];
-    if (Buyer.TypeId in [stRanger, stPirate]) and (CurrentStanding in FactionStandingMasks[Ord(sfPirates)]) and
-       ((CurrentStar.ControlFaction = sfPirates) or not (CurrentStanding in FactionStandingMasks[Ord(sfCoalition)])) then
+    if (Buyer.TypeId in [stRanger, stPirate]) and (CurrentStanding in FactionStandingMasks[sfPirates]) and
+       ((CurrentStar.ControlFaction = sfPirates) or not (CurrentStanding in FactionStandingMasks[sfCoalition])) then
       Availability := Availability + [Ord(waPirateOnly)];
-    if (Buyer.TypeId in [stRanger..stWarrior]) and (CurrentStanding in FactionStandingMasks[Ord(sfCoalition)]) and
-       ((CurrentStar.ControlFaction = sfCoalition) or not (CurrentStanding in FactionStandingMasks[Ord(sfPirates)])) then
+    if (Buyer.TypeId in [stRanger..stWarrior]) and (CurrentStanding in FactionStandingMasks[sfCoalition]) and
+       ((CurrentStar.ControlFaction = sfCoalition) or not (CurrentStanding in FactionStandingMasks[sfPirates])) then
       Availability := Availability + [Ord(waCoalitionOnly), Ord(waMalocOnly)..Ord(waGaalOnly)];
     // The native counter guard has no back edge: only one offer is generated.
     Attempts := 0;
@@ -2084,7 +2084,7 @@ begin
       MinLevel := Max(MinLevel, MaxLevel div 2 - 1);
       MaxLevel := Min(8, MaxLevel + StationOfferWeaponLevelBonus[TypeId]);
       Owner := PickRandomEquipmentOwner(RandomState);
-      if (CurrentStar.ControlFaction = sfPirates) and (CurrentStanding in FactionStandingMasks[Ord(sfPirates)]) and
+      if (CurrentStar.ControlFaction = sfPirates) and (CurrentStanding in FactionStandingMasks[sfPirates]) and
          ((NextRandomIntRange(1, 100, RandomState) < 70) or (Galaxy.CoalitionDefeatedTurn <> 0)) then Owner := 7;
       for I := 0 to 7 do if OwnerWeaponAvailability[I] = Info.Availability then
       begin
@@ -2129,7 +2129,7 @@ begin
       MaxSize := MaxSize * 2;
     end;
     Owner := PickRandomEquipmentOwner(RandomState);
-    if (CurrentStar.ControlFaction = sfPirates) and (CurrentStanding in FactionStandingMasks[Ord(sfPirates)]) and
+    if (CurrentStar.ControlFaction = sfPirates) and (CurrentStanding in FactionStandingMasks[sfPirates]) and
        ((NextRandomIntRange(1, 100, RandomState) < 70) or (Galaxy.CoalitionDefeatedTurn <> 0)) then Owner := 7;
     Result := CreateGeneratedEquipment(TItemType(ItemType), NextRandomIntRange(MinSize, MaxSize, RandomState), NextRandomIntRange(MinLevel, MaxLevel, RandomState), Owner);
     if Buyer.CanGenerateMicroModuleForLoadout then

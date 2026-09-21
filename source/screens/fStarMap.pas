@@ -3558,7 +3558,7 @@ begin
       CustomSelectionActive := False;
       Weapon := GetPlayer.FindEquippedItemInSlot(Ord(t_Weapon1), Index) as TWeapon;
       if not GetPlayer.IsEquipmentUsable(Weapon) or
-        ((Byte(Weapon.GetWeaponInfo.ShotType) in [Ord(wstTorpedo)..Ord(wstRocket)]) and (Weapon.Ammo <= 0)) then SelectedWeapons[Index] := False
+        ((Weapon.GetWeaponInfo.ShotType in [wstTorpedo..wstRocket]) and (Weapon.Ammo <= 0)) then SelectedWeapons[Index] := False
       else
       begin
         Weapon.Target := nil;
@@ -3993,7 +3993,7 @@ begin
             (GetByName('InfoPlanetOwner') as TLabelGI).SetText(OwnerInfo[(Obj as TPlanet).OwnerId].DisplayName)
           else (GetByName('InfoPlanetOwner') as TLabelGI).SetText((Obj as TPlanet).GetNativeRaceName);
           (GetByName('InfoPlanetPop') as TLabelGI).SetText(IntToStr(Round((Obj as TPlanet).Population / 1000)));
-          (GetByName('InfoPlanetEco') as TLabelGI).SetText(PlanetEconomyInfo[Ord((Obj as TPlanet).Economy)].DisplayName);
+          (GetByName('InfoPlanetEco') as TLabelGI).SetText(PlanetEconomyInfo[(Obj as TPlanet).Economy].DisplayName);
           (GetByName('InfoPlanetGov') as TLabelGI).SetText((Obj as TPlanet).GetGovernmentName);
           (GetByName('InfoPlanetRel') as TLabelGI).SetText((Obj as TPlanet).GetRelationLevelTextToShip(GetPlayer));
           ShipScreen.LayoutObjectInfo(PlanetInfoPanel as TWindowGI, GetByName('InfoPlanetName') as TLabelGI,
@@ -5258,7 +5258,7 @@ begin
       if SelectedWeapons[Slot] then
       begin
         Weapon := GetPlayer.FindEquippedItemInSlot($32, Slot) as TWeapon;
-        if not (Byte(Weapon.GetWeaponInfo.ShotType) in [Ord(wstTorpedo)..Ord(wstRocket)]) then
+        if not (Weapon.GetWeaponInfo.ShotType in [wstTorpedo..wstRocket]) then
         begin
           RangeValue := GetPlayer.GetWeaponActionRange(Weapon);
           if DirectRange > RangeValue then RangeMaximum := DirectRange
@@ -6733,9 +6733,9 @@ begin
                  (GetByName('InfoPlanetOwner') as TLabelGI).SetText(OwnerInfo[Ord(TOwnerId(RaceToOwner(Planet^.RaceId)))].
                  DisplayName);
                (GetByName('InfoPlanetPop') as TLabelGI).SetText(IntToStr(Round(Planet^.Population / 1000)));
-               (GetByName('InfoPlanetEco') as TLabelGI).SetText(PlanetEconomyInfo[Ord(Planet^.Economy)].DisplayName);
-               (GetByName('InfoPlanetGov') as TLabelGI).SetText(PlanetGovernmentMarket[Ord(Planet^.Government)].DisplayName);
-               (GetByName('InfoPlanetRel') as TLabelGI).SetText(RelationInfo[Ord(Planet^.Relation)].DisplayName);
+               (GetByName('InfoPlanetEco') as TLabelGI).SetText(PlanetEconomyInfo[Planet^.Economy].DisplayName);
+               (GetByName('InfoPlanetGov') as TLabelGI).SetText(PlanetGovernmentMarket[Planet^.Government].DisplayName);
+               (GetByName('InfoPlanetRel') as TLabelGI).SetText(RelationInfo[Planet^.Relation].DisplayName);
                ShipScreen.LayoutObjectInfo(PlanetInfoPanel as TWindowGI, GetByName('InfoPlanetName') as TLabelGI,
                GetByName('IPOwner') as TLabelGI,
                GetByName('InfoPlanetOwner') as TLabelGI,
@@ -7058,7 +7058,7 @@ begin
            else (GetByName('InfoShipSize') as TLabelGI).SetText(WrapTextInColor('???', ColorTag));
            (GetByName('InfoShipDef') as TLabelGI).SetText(Ship^.DefenseText);
            (GetByName('InfoShipDamage') as TLabelGI).SetText(Ship^.DamageText);
-           (GetByName('InfoShipRel') as TLabelGI).SetText(RelationInfo[Ord(Ship^.Relation)].DisplayName);
+           (GetByName('InfoShipRel') as TLabelGI).SetText(RelationInfo[Ship^.Relation].DisplayName);
            if Ship^.WinChance >= 0 then
            begin
              (GetByName('ISWin') as TLabelGI).SetActive(True);

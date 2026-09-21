@@ -487,9 +487,9 @@ begin
       Panel.SetShutterOpenFraction(0);
       Panel.SetProgress(Fraction);
       Panel.Show;
-      TMessageLoopGI(RegisteredScreens[Ord(CurrentScreenId)]).SetCursorActive(False);
-      TMessageLoopGI(RegisteredScreens[Ord(CurrentScreenId)]).InvalidateViewport;
-      TMessageLoopGI(RegisteredScreens[Ord(CurrentScreenId)]).Present;
+      TMessageLoopGI(RegisteredScreens[CurrentScreenId]).SetCursorActive(False);
+      TMessageLoopGI(RegisteredScreens[CurrentScreenId]).InvalidateViewport;
+      TMessageLoopGI(RegisteredScreens[CurrentScreenId]).Present;
       Panel.Hide;
     end;
 end;
@@ -551,7 +551,7 @@ begin
   SavedDirectory := GetCurrentDir;
   LooseFileRoot := SavedDirectory + '\';
   try
-    TMessageLoopGI(RegisteredScreens[Ord(CurrentScreenId)]).CaptureCursorState(@CursorState);
+    TMessageLoopGI(RegisteredScreens[CurrentScreenId]).CaptureCursorState(@CursorState);
     if InstallConfig.CountParams('RobotPath') > 0 then
     begin
       SetCurrentDir(AnsiString(InstallConfig.GetParam('RobotPath')));
@@ -655,16 +655,16 @@ begin
     begin
       ExitScreenLoop := True;
       RequestedScreenId := screenNone;
-      TMessageLoopGI(RegisteredScreens[Ord(CurrentScreenId)]).RequestClose(1);
+      TMessageLoopGI(RegisteredScreens[CurrentScreenId]).RequestClose(1);
       Result := 0;
       Exit;
     end;
-    TMessageLoopGI(RegisteredScreens[Ord(CurrentScreenId)]).RestoreCursorState(@CursorState);
+    TMessageLoopGI(RegisteredScreens[CurrentScreenId]).RestoreCursorState(@CursorState);
     if ShowSystemMouse then
       while ShowCursor(True) < 0 do
     else
       while ShowCursor(False) >= 0 do;
-    TMessageLoopGI(RegisteredScreens[Ord(CurrentScreenId)]).InvalidateViewport;
+    TMessageLoopGI(RegisteredScreens[CurrentScreenId]).InvalidateViewport;
   finally
     SetCurrentDir(SavedDirectory);
     LooseFileRoot := '';

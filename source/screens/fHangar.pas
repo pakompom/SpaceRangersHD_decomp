@@ -444,7 +444,7 @@ begin
   begin
     GameEndReason := gerPlayerDeath;
     RequestedScreenId := screenGameEnd;
-    TMessageLoopGI(RegisteredScreens[Ord(CurrentScreenId)]).RequestClose(1);
+    TMessageLoopGI(RegisteredScreens[CurrentScreenId]).RequestClose(1);
     Exit;
   end;
 

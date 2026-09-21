@@ -404,7 +404,7 @@ begin
   if (CurrentScreenId <> screenPlanetQuest) and
     ((CurrentScreenId <> screenGovernment) or (GovernmentScreen.PendingTransition = 0)) and
     ((CurrentScreenId <> screenStarMap) or (StarMapScreen.PlanetBattleState = 0)) then
-    (TObject(RegisteredScreens[Ord(CurrentScreenId)]) as TMessageLoopGI).OnClose;
+    (TObject(RegisteredScreens[CurrentScreenId]) as TMessageLoopGI).OnClose;
   for I := MessageLoopStack.Count - 1 downto 0 do begin
     Loop := MessageLoopStack[I];
     if Loop is TfShip2 then (Loop as TfShip2).ReturnSelectedHoldEntry;
@@ -581,7 +581,7 @@ begin
   end;
   if (GetPlayer.IsOnPlanet and (GetPlayer.CurrentPlanet.OwnerId <> Byte(oiUninhabited))) or
     (GetPlayer.IsDockedToShip and (GetPlayer.DockedTo is TRuins)) then BuildTemporaryShopSlotGrid;
-  if ReopenScreen then (TObject(RegisteredScreens[Ord(CurrentScreenId)]) as TMessageLoopGI).OnOpen;
+  if ReopenScreen then (TObject(RegisteredScreens[CurrentScreenId]) as TMessageLoopGI).OnOpen;
   Galaxy.ClearIntegrityStatus;
   Galaxy.PrimeIntegrityChecksum(1);
   MemorySnapshotBuffer.Free;

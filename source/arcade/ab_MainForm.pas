@@ -1196,7 +1196,7 @@ begin
         else if Button.UserIndex >= 0 then
         begin
           WeaponIcons[Value - 1].SetActive(True);
-          SetImagePath('GI,Bm.Items.' + GiResourceSuffix + ItemTypeNames[PlayerArcadeShip.Weapons[Button.UserIndex].ItemType] + 's');
+          SetImagePath('GI,Bm.Items.' + GiResourceSuffix + ItemTypeNames[TItemType(PlayerArcadeShip.Weapons[Button.UserIndex].ItemType)] + 's');
         end
         else WeaponIcons[Value - 1].SetActive(False);
         SetImageKindX(ikxCenter);

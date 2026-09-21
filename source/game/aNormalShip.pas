@@ -107,9 +107,9 @@ end;
 { @routine $73D9D8 TNormalShip_Destroy }
 destructor TNormalShip.Destroy;
 var
-  Career: Byte;
+  Career: TRangerCareer;
 begin
-  for Career := 0 to 2 do
+  for Career := Low(TRangerCareer) to High(TRangerCareer) do
     if Galaxy.EminentCareerShips[Career] = Self then Galaxy.EminentCareerShips[Career] := nil;
   inherited Destroy;
 end;
@@ -900,7 +900,7 @@ begin
       begin
         if not QuestTargetKill then IncrementWordSaturating(OtherNormal.CurrentSystemKills.Normal);
       end
-      else if (Victim.TypeId in [Ord(rstRangerCenter)..Ord(rstCustomStation)]) and (Victim.CurrentStanding in FactionStandingMasks[Ord(CurrentStar.ControlFaction)]) then
+      else if (Victim.TypeId in [Ord(rstRangerCenter)..Ord(rstCustomStation)]) and (Victim.CurrentStanding in FactionStandingMasks[CurrentStar.ControlFaction]) then
         IncrementWordSaturating(TSystemKillCountArray(OtherNormal.CurrentSystemKills)[Ord(CurrentStar.ControlFaction)]);
       RecordShipKillCategory(OtherNormal, Victim);
     end;
@@ -1152,7 +1152,7 @@ begin
   for I := 0 to Count do
     if MatchesOwnerName(Owner, LookupLocalizedTextByKey('Reward.' + IntToStr(I) + '.Race')) and
       (SysToReward(LookupLocalizedTextByKey('Reward.' + IntToStr(I) + '.Type')) in Kinds) and
-      MatchesCareerName(Byte(GetDominantCareer), LookupLocalizedTextByKey('Reward.' + IntToStr(I) + '.Status')) then
+      MatchesCareerName(GetDominantCareer, LookupLocalizedTextByKey('Reward.' + IntToStr(I) + '.Status')) then
     begin
       KillName := LocalizedText('Reward.' + IntToStr(I) + '.Kill');
       if (Length(KillName) = 0) or (SysToShipType(KillName) in VictimTypes) then Candidates.Add(Pointer(I));
@@ -1510,7 +1510,7 @@ end;
       Count := Min(10, EnemyShip.EstimateOrderTravelTurns);
       if not (Cardinal(Count) in Definitions[EntryIndex].ShipBadTurnBeforeEndOrder) then Continue;
     end;
-    if (Self is TRanger) and (Definitions[EntryIndex].ShipStatus <> []) and not (Byte((Self as TRanger).GetDominantCareer) in Definitions[EntryIndex].ShipStatus) then Continue;
+    if (Self is TRanger) and (Definitions[EntryIndex].ShipStatus <> []) and not ((Self as TRanger).GetDominantCareer in Definitions[EntryIndex].ShipStatus) then Continue;
     if (Definitions[EntryIndex].PlayerStatus <> []) and not (GetPlayer.GetDominantCareer in Definitions[EntryIndex].PlayerStatus) then Continue;
     if (Definitions[EntryIndex].ShipStrength <> []) and not (GetRelativeStrengthCategory in Definitions[EntryIndex].ShipStrength) then Continue;
     if (Definitions[EntryIndex].PlayerStrength <> []) and not (GetPlayer.GetRelativeStrengthCategory in Definitions[EntryIndex].PlayerStrength) then Continue;
@@ -1655,10 +1655,10 @@ begin
     BestSkill := psAccuracy;
     for Bonus := 22 to 27 do
     begin
-      Skill := TPilotSkill(EquipmentBonusSkills[Bonus - 22]);
-      if BaseSkills[Ord(Skill)] < 6 then
+      Skill := EquipmentBonusSkills[Bonus - 22];
+      if BaseSkills[Skill] < 6 then
       begin
-        Score := Sqr(EvaluateStatBonus(TEquipmentBonusKind(Bonus), 1)) / SkillTrainingCosts[BaseSkills[Ord(Skill)] + 1, Ord(Skill)];
+        Score := Sqr(EvaluateStatBonus(TEquipmentBonusKind(Bonus), 1)) / SkillTrainingCosts[BaseSkills[Skill] + 1, Skill];
         if Score > BestScore then
         begin
           BestScore := Score;
@@ -1666,7 +1666,7 @@ begin
         end;
       end;
     end;
-    if (BestScore < 0) or (SkillTrainingCosts[BaseSkills[Ord(BestSkill)] + 1, Ord(BestSkill)] > FreeExperience) then Break;
+    if (BestScore < 0) or (SkillTrainingCosts[BaseSkills[BestSkill] + 1, BestSkill] > FreeExperience) then Break;
   until not TrainSkill(BestSkill);
 end;
 { @end $747A78 }

@@ -827,7 +827,7 @@ end;
 procedure TItem.SaveToBlock(Block: TBlockParEC);
 begin
   Block.AddParam(DecodeTextW('IQNaaWmee'), GetDisplayName); // 'IName'
-  Block.AddParam(DecodeTextW('InToyAple'), ItemTypeNames[Ord(ItemType)]); // 'IType'
+  Block.AddParam(DecodeTextW('InToyAple'), ItemTypeNames[ItemType]); // 'IType'
   Block.AddParam(DecodeTextW('OpwRn3ewr'), OwnerInfo[OwnerId].InternalName); // 'Owner'
   Block.AddParam(DecodeTextW('SaiRzoe'), IntToStr(Weight)); // 'Size'
   Block.AddParam(DecodeTextW('CfoTsat'), IntToStr(Cost)); // 'Cost'
@@ -884,8 +884,8 @@ end;
 function TItem.CalculateResaleValue(TradingSkill: Byte): Integer;
 begin
   if Self is TEquipment then
-    Result := Max(1, Round((Cost - (Self as TEquipment).CalculateRepairCost) * 0.01 * PilotSkillEffects[TradingSkill, Ord(psTrading)]))
-  else Result := Round(Cost * 0.01 * PilotSkillEffects[TradingSkill, Ord(psTrading)]);
+    Result := Max(1, Round((Cost - (Self as TEquipment).CalculateRepairCost) * 0.01 * PilotSkillEffects[TradingSkill, psTrading]))
+  else Result := Round(Cost * 0.01 * PilotSkillEffects[TradingSkill, psTrading]);
 end;
 { @end $7EEF64 }
 
@@ -902,7 +902,7 @@ function TItem.GetCategoryConfigName: WideString;
 begin
   if ItemType in [t_Weapon1..t_CustomWeapon] then Result := 'Weapon'
   else if ItemType in [t_ArtefactHull..t_ArtFastRacks] then Result := 'Artefact'
-  else Result := ItemTypeNames[Ord(ItemType)];
+  else Result := ItemTypeNames[ItemType];
 end;
 { @end $7EF0B8 }
 
@@ -1430,13 +1430,13 @@ begin
   if BrokenFlag <> 0 then
   begin
     if ItemType in [t_FuelTanks..t_DefGenerator] then
-      Result := WrapTextInColor(Prefix + LocalizedText('Items.' + ItemTypeNames[Ord(ItemType)] + '.Broken'), '<color=255,0,0>')
+      Result := WrapTextInColor(Prefix + LocalizedText('Items.' + ItemTypeNames[ItemType] + '.Broken'), '<color=255,0,0>')
     else if ItemType in [t_Weapon1..t_CustomWeapon] then
       Result := WrapTextInColor(Prefix + LocalizedText('Items.Weapon.Broken'), '<color=255,0,0>')
     else if ItemType in [t_Artefact..t_Artefact2] then
       Result := WrapTextInColor(Prefix + LocalizedText('Artefacts.CustomArtefacts.' + ConfigBlockName + '.Broken'), '<color=255,0,0>')
     else if ItemType in [t_Artefact, t_ArtefactHull..t_ArtefactAntigrav, t_ArtDefToEnergy..t_ArtGiperJump, t_ArtBio..t_ArtFastRacks] then
-      Result := WrapTextInColor(Prefix + LocalizedText('Artefacts.' + ItemTypeNames[Ord(ItemType)] + '.Broken'), '<color=255,0,0>')
+      Result := WrapTextInColor(Prefix + LocalizedText('Artefacts.' + ItemTypeNames[ItemType] + '.Broken'), '<color=255,0,0>')
     else if ItemType = t_Satellite then
       Result := WrapTextInColor(Prefix + LocalizedText('Items.Satellite.Broken'), '<color=255,0,0>')
     else Result := '';
@@ -1465,13 +1465,13 @@ end;
 function TEquipment.GetBrokenInBattleText: WideString;
 begin
   if ItemType in [t_FuelTanks..t_DefGenerator] then
-    Result := LocalizedText('Items.' + ItemTypeNames[Ord(ItemType)] + '.BrokenInBattle')
+    Result := LocalizedText('Items.' + ItemTypeNames[ItemType] + '.BrokenInBattle')
   else if ItemType in [t_Weapon1..t_CustomWeapon] then
     Result := FormatText1(LocalizedText('Items.Weapon.BrokenInBattle'), '<color=255,240,100>', '<Name>', GetDisplayName)
   else if ItemType in [t_Artefact..t_Artefact2] then
     Result := LocalizedText('Artefacts.CustomArtefacts.' + ConfigBlockName + '.BrokenInBattle')
   else if ItemType in [t_Artefact, t_ArtefactHull..t_ArtefactAntigrav, t_ArtDefToEnergy..t_ArtGiperJump, t_ArtBio..t_ArtFastRacks] then
-    Result := LocalizedText('Artefacts.' + ItemTypeNames[Ord(ItemType)] + '.BrokenInBattle')
+    Result := LocalizedText('Artefacts.' + ItemTypeNames[ItemType] + '.BrokenInBattle')
   else Result := '';
 end;
 { @end $7F1E24 }
@@ -1480,13 +1480,13 @@ end;
 function TEquipment.GetBrokenInUseText: WideString;
 begin
   if ItemType in [t_FuelTanks..t_DefGenerator] then
-    Result := LocalizedText('Items.' + ItemTypeNames[Ord(ItemType)] + '.BrokenInUse')
+    Result := LocalizedText('Items.' + ItemTypeNames[ItemType] + '.BrokenInUse')
   else if ItemType in [t_Weapon1..t_CustomWeapon] then
     Result := FormatText1(LocalizedText('Items.Weapon.BrokenInUse'), '<color=255,240,100>', '<Name>', GetDisplayName)
   else if ItemType in [t_Artefact..t_Artefact2] then
     Result := LocalizedText('Artefacts.CustomArtefacts.' + ConfigBlockName + '.BrokenInUse')
   else if ItemType in [t_Artefact, t_ArtefactHull..t_ArtefactAntigrav, t_ArtDefToEnergy..t_ArtGiperJump, t_ArtBio..t_ArtFastRacks] then
-    Result := LocalizedText('Artefacts.' + ItemTypeNames[Ord(ItemType)] + '.BrokenInUse')
+    Result := LocalizedText('Artefacts.' + ItemTypeNames[ItemType] + '.BrokenInUse')
   else Result := '';
 end;
 { @end $7F208C }
@@ -1496,13 +1496,13 @@ function TEquipment.GetBrokenByForceText: WideString;
 begin
   Result := '';
   if ItemType in [t_FuelTanks..t_DefGenerator] then
-    Result := LocalizedText('Items.' + ItemTypeNames[Ord(ItemType)] + '.BrokenByForce')
+    Result := LocalizedText('Items.' + ItemTypeNames[ItemType] + '.BrokenByForce')
   else if ItemType in [t_Weapon1..t_CustomWeapon] then
     Result := FormatText1(LocalizedText('Items.Weapon.BrokenByForce'), '<color=255,240,100>', '<Name>', GetDisplayName)
   else if ItemType in [t_Artefact..t_Artefact2] then
     Result := LocalizedText('Artefacts.CustomArtefacts.' + ConfigBlockName + '.BrokenByForce')
   else if ItemType in [t_Artefact, t_ArtefactHull..t_ArtefactAntigrav, t_ArtDefToEnergy..t_ArtGiperJump, t_ArtBio..t_ArtFastRacks] then
-    Result := LocalizedText('Artefacts.' + ItemTypeNames[Ord(ItemType)] + '.BrokenByForce')
+    Result := LocalizedText('Artefacts.' + ItemTypeNames[ItemType] + '.BrokenByForce')
   else Exit;
   if Result = '' then Result := GetBrokenInUseText;
 end;
@@ -1547,8 +1547,8 @@ end;
 function TEquipment.GetDescriptionText: WideString;
 begin
   if (ItemType in [t_FuelTanks..t_DefGenerator]) and (OwnerId = Byte(oiDominator)) then
-    Result := LocalizedText('Items.' + ItemTypeNames[Ord(ItemType)] + '.KlingDescription.' + IntToStr(GetLevel))
-  else Result := LocalizedText('Items.' + ItemTypeNames[Ord(ItemType)] + '.Description.' + IntToStr(GetLevel));
+    Result := LocalizedText('Items.' + ItemTypeNames[ItemType] + '.KlingDescription.' + IntToStr(GetLevel))
+  else Result := LocalizedText('Items.' + ItemTypeNames[ItemType] + '.Description.' + IntToStr(GetLevel));
 end;
 { @end $7F2728 }
 
@@ -1561,15 +1561,15 @@ begin
   else if SpecialModuleIndex <> 0 then
     Result := WrapTextInColor(GetSpecialModuleName, GetMicroModuleTextColorTag(SpecialModuleIndex - 1))
   else if CustomFaction <> '' then
-    Result := LocalizedText('Items.' + ItemTypeNames[Ord(ItemType)] + '.' + CustomFaction + 'Name');
+    Result := LocalizedText('Items.' + ItemTypeNames[ItemType] + '.' + CustomFaction + 'Name');
   if Result = '' then
   begin
     if OwnerId <> Byte(oiDominator) then
     begin
-      TypeName := LocalizedText('Items.' + ItemTypeNames[Ord(ItemType)] + '.Type.' + IntToStr(GetLevel));
-      Result := ReplaceColoredToken(LocalizedText('Items.' + ItemTypeNames[Ord(ItemType)] + '.Name'), '<Type>', TypeName, '');
+      TypeName := LocalizedText('Items.' + ItemTypeNames[ItemType] + '.Type.' + IntToStr(GetLevel));
+      Result := ReplaceColoredToken(LocalizedText('Items.' + ItemTypeNames[ItemType] + '.Name'), '<Type>', TypeName, '');
     end
-    else Result := LocalizedText('Items.' + ItemTypeNames[Ord(ItemType)] + '.KlingName');
+    else Result := LocalizedText('Items.' + ItemTypeNames[ItemType] + '.KlingName');
   end;
   if HasMicroModule then
     Result := Result + ' ' + WrapTextInColor(GetMicroModuleQuotedName, GetMicroModuleNameColorTag(MicroModuleIndex - 1));
@@ -1581,8 +1581,8 @@ function TEquipment.GetShortName: WideString;
 begin
   if NameOverride <> '' then Result := NameOverride
   else if OwnerId <> Byte(oiDominator) then
-    Result := LocalizedText('Items.' + ItemTypeNames[Ord(ItemType)] + '.ShortName')
-  else Result := LocalizedText('Items.' + ItemTypeNames[Ord(ItemType)] + '.KlingName');
+    Result := LocalizedText('Items.' + ItemTypeNames[ItemType] + '.ShortName')
+  else Result := LocalizedText('Items.' + ItemTypeNames[ItemType] + '.KlingName');
 end;
 { @end $7F2B74 }
 
@@ -1661,16 +1661,16 @@ begin
   if ConfigBlockName <> '' then
     Result := 'Bm.Items.' + GiResourceSuffix + ConfigBlockName
   else if (SpecialModuleIndex > 0) and (MicroModuleTemplates[SpecialModuleIndex - 1].KindGraph <> '') then
-    Result := 'Bm.Items.' + GiResourceSuffix + ItemTypeNames[Ord(ItemType)] + MicroModuleTemplates[SpecialModuleIndex - 1].KindGraph
+    Result := 'Bm.Items.' + GiResourceSuffix + ItemTypeNames[ItemType] + MicroModuleTemplates[SpecialModuleIndex - 1].KindGraph
   else if CustomFaction <> '' then
   begin
-    Path := 'Bm.Items.' + GiResourceSuffix + ItemTypeNames[Ord(ItemType)] + CustomFaction;
+    Path := 'Bm.Items.' + GiResourceSuffix + ItemTypeNames[ItemType] + CustomFaction;
     if CacheDataRoot.FileExistsByPath(Path + 'a') and CacheDataRoot.FileExistsByPath(Path + 'i') and
       CacheDataRoot.FileExistsByPath(Path + 's') then Result := Path;
   end;
   if Result = '' then
-    if OwnerId = Byte(oiDominator) then Result := 'Bm.Items.' + GiResourceSuffix + ItemTypeNames[Ord(ItemType)] + 'Kling0'
-    else Result := 'Bm.Items.' + GiResourceSuffix + ItemTypeNames[Ord(ItemType)] + IntToStr(GetLevel - 1);
+    if OwnerId = Byte(oiDominator) then Result := 'Bm.Items.' + GiResourceSuffix + ItemTypeNames[ItemType] + 'Kling0'
+    else Result := 'Bm.Items.' + GiResourceSuffix + ItemTypeNames[ItemType] + IntToStr(GetLevel - 1);
 end;
 { @end $7F2F00 }
 
@@ -1706,26 +1706,26 @@ function TEquipment.GetStatBonus(BonusKind: TEquipmentBonusKind): Integer;
 var I, SpecialBonus: Integer; Entry: PExtraSpecial;
 begin
   if (BonusKind in [bonSkill1..bonSkill6, bonStimCapacity]) and (MicroModuleIndex <> 0) then
-    Result := MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[Ord(BonusKind)]
+    Result := MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[BonusKind]
   else Result := 0;
   if (ItemType in [t_Weapon1..t_CustomWeapon]) and
      (BonusKind in [bonWEnergy..bonWRadius, bonMissileSpeed]) then Exit;
   if SpecialModuleIndex <> 0 then
-    SpecialBonus := MicroModuleTemplates[SpecialModuleIndex - 1].StatBonuses[Ord(BonusKind)]
+    SpecialBonus := MicroModuleTemplates[SpecialModuleIndex - 1].StatBonuses[BonusKind]
   else SpecialBonus := 0;
   if ExtraSpecials <> nil then
     for I := 0 to ExtraSpecials.Count - 1 do
     begin
       Entry := ExtraSpecials[I];
-      Inc(SpecialBonus, MicroModuleTemplates[Entry.ModuleIndexPlusOne - 1].StatBonuses[Ord(BonusKind)] * Entry.Count);
+      Inc(SpecialBonus, MicroModuleTemplates[Entry.ModuleIndexPlusOne - 1].StatBonuses[BonusKind] * Entry.Count);
     end;
   if (SpecialBonus <> 0) and (MicroModuleIndex <> 0) and
      not (BonusKind in [bonExtraAkrinEff, bonExtraAkrinPenalty]) then
   begin
     if (BonusKind in [bonMass]) = (SpecialBonus > 0) then
-      Inc(SpecialBonus, Round(MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[Ord(bonExtraAkrinPenalty)] * SpecialBonus * 0.0001))
+      Inc(SpecialBonus, Round(MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonExtraAkrinPenalty] * SpecialBonus * 0.0001))
     else
-      Inc(SpecialBonus, Round(MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[Ord(bonExtraAkrinEff)] * SpecialBonus * 0.0001));
+      Inc(SpecialBonus, Round(MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonExtraAkrinEff] * SpecialBonus * 0.0001));
   end;
   Inc(Result, SpecialBonus);
 end;
@@ -1739,7 +1739,7 @@ var
 begin
   if (BonusKind in [bonSkill1..bonSkill6, bonStimCapacity]) and (MicroModuleIndex <> 0) and
     not MicroModuleTemplates[MicroModuleIndex - 1].SeparatedNumbers then
-    Result := MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[Ord(BonusKind)]
+    Result := MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[BonusKind]
   else Result := 0;
   if (ItemType in [t_Weapon1..t_CustomWeapon]) and (BonusKind in [bonWEnergy..bonWRadius, bonMissileSpeed]) then Exit;
   CombinedBonus := 0;
@@ -1747,20 +1747,20 @@ begin
   ExtraSeparatedBonus := 0;
   if SpecialModuleIndex <> 0 then
     if MicroModuleTemplates[SpecialModuleIndex - 1].SeparatedNumbers then
-      SeparatedBonus := MicroModuleTemplates[SpecialModuleIndex - 1].StatBonuses[Ord(BonusKind)]
-    else CombinedBonus := MicroModuleTemplates[SpecialModuleIndex - 1].StatBonuses[Ord(BonusKind)];
+      SeparatedBonus := MicroModuleTemplates[SpecialModuleIndex - 1].StatBonuses[BonusKind]
+    else CombinedBonus := MicroModuleTemplates[SpecialModuleIndex - 1].StatBonuses[BonusKind];
   if ExtraSpecials <> nil then
     for Index := 0 to ExtraSpecials.Count - 1 do
     begin
       Entry := ExtraSpecials[Index];
       if MicroModuleTemplates[Entry.ModuleIndexPlusOne - 1].SeparatedNumbers then
-        ExtraSeparatedBonus := CombinedBonus + MicroModuleTemplates[Entry.ModuleIndexPlusOne - 1].StatBonuses[Ord(BonusKind)] * Entry.Count
-      else CombinedBonus := CombinedBonus + MicroModuleTemplates[Entry.ModuleIndexPlusOne - 1].StatBonuses[Ord(BonusKind)] * Entry.Count;
+        ExtraSeparatedBonus := CombinedBonus + MicroModuleTemplates[Entry.ModuleIndexPlusOne - 1].StatBonuses[BonusKind] * Entry.Count
+      else CombinedBonus := CombinedBonus + MicroModuleTemplates[Entry.ModuleIndexPlusOne - 1].StatBonuses[BonusKind] * Entry.Count;
     end;
   if MicroModuleIndex <> 0 then
   begin
-    EffectPercent := MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[Ord(bonExtraAkrinEff)];
-    PenaltyPercent := MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[Ord(bonExtraAkrinPenalty)];
+    EffectPercent := MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonExtraAkrinEff];
+    PenaltyPercent := MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonExtraAkrinPenalty];
   end
   else
   begin
@@ -1797,16 +1797,16 @@ var
 
   // @nested $7F3830 ExpandModuleTokens
   function ExpandModuleTokens(Text: WideString; ModuleIndexPlusOne, Count: Integer): WideString; // @addr 0x7F3830 @calls "0x7F3B99 0x7F3D35 0x7F3E85" @note "Uses the parent description, bonus multipliers and color. RET 4 removes Result; the caller removes ParentFrame. Count 0 suppresses numeric bonuses."
-  var BonusIndex: Byte; Value: Integer;
+  var BonusIndex: TEquipmentBonusKind; Value: Integer;
   begin
     // The native helper reads the captured description; Text remains an unused managed parameter.
     Result := Description;
-    for BonusIndex := 0 to 42 do
+    for BonusIndex := Low(TEquipmentBonusKind) to High(TEquipmentBonusKind) do
     begin
       Value := MicroModuleTemplates[ModuleIndexPlusOne - 1].StatBonuses[BonusIndex];
       Value := Value * Count;
-      if (Count <> 0) and (EffectPercent <> 0) and not (BonusIndex in [29..30]) then
-        if (BonusIndex in [28]) = (Value > 0) then Value := Value + Round(Value * PenaltyPercent * 0.0001)
+      if (Count <> 0) and (EffectPercent <> 0) and not (BonusIndex in [bonExtraAkrinEff..bonExtraAkrinPenalty]) then
+        if (BonusIndex in [bonMass]) = (Value > 0) then Value := Value + Round(Value * PenaltyPercent * 0.0001)
         else Value := Value + Round(Value * EffectPercent * 0.0001);
       if Value > 0 then
         ReplaceTextToken(Result, '<' + EquipmentBonusNames[BonusIndex] + '>', '+' + IntToStr(Value), ColorTag)
@@ -1820,8 +1820,8 @@ begin
   Result := '';
   if MicroModuleIndex <> 0 then
   begin
-    EffectPercent := MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[Ord(bonExtraAkrinEff)];
-    PenaltyPercent := MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[Ord(bonExtraAkrinPenalty)];
+    EffectPercent := MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonExtraAkrinEff];
+    PenaltyPercent := MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonExtraAkrinPenalty];
   end
   else
   begin
@@ -1873,10 +1873,10 @@ begin
     begin
       StatBonus := GetDescriptionStatBonus(BonusKind);
       if StatBonus > 0 then
-        ReplaceTextToken(Result, '<' + EquipmentBonusNames[Ord(BonusKind)] + '>', '+' + IntToStr(StatBonus), ColorTag)
+        ReplaceTextToken(Result, '<' + EquipmentBonusNames[BonusKind] + '>', '+' + IntToStr(StatBonus), ColorTag)
       else if StatBonus < 0 then
-        ReplaceTextToken(Result, '<' + EquipmentBonusNames[Ord(BonusKind)] + '>', IntToStr(StatBonus), ColorTag)
-      else ReplaceTextToken(Result, '<' + EquipmentBonusNames[Ord(BonusKind)] + '>', '--', ColorTag);
+        ReplaceTextToken(Result, '<' + EquipmentBonusNames[BonusKind] + '>', IntToStr(StatBonus), ColorTag)
+      else ReplaceTextToken(Result, '<' + EquipmentBonusNames[BonusKind] + '>', '--', ColorTag);
     end;
 end;
 { @end $7F3AAC }
@@ -2186,9 +2186,9 @@ end;
 { @routine $7F55C8 THull_HasStandardStats }
 function THull.HasStandardStats: Boolean;
 begin
-  if (MicroModuleIndex = 0) or (MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[Ord(bonHull)] = 0) then
+  if (MicroModuleIndex = 0) or (MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonHull] = 0) then
     Result := CalculateGeneratedArmor = Armor
-  else Result := CalculateGeneratedArmor = Armor - MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[Ord(bonHull)];
+  else Result := CalculateGeneratedArmor = Armor - MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonHull];
 end;
 { @end $7F55C8 }
 
@@ -2266,24 +2266,24 @@ begin
   ReplaceTextToken(Text, '<FragilityE>', IntToStr(Round(GetFragilityFactor([dkEnergy]) * 100)), ColorTag);
   ReplaceTextToken(Text, '<FragilityS>', IntToStr(Round(GetFragilityFactor([dkSplinter]) * 100)), ColorTag);
   ReplaceTextToken(Text, '<FragilityM>', IntToStr(Round(GetFragilityFactor([dkMissile]) * 100)), ColorTag);
-  if (MicroModuleIndex = 0) or (MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[Ord(bonHull)] = 0) then BonusText := ''
+  if (MicroModuleIndex = 0) or (MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonHull] = 0) then BonusText := ''
   else
   begin
-    if MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[Ord(bonHull)] > 0 then
-      BonusText := WrapTextInColor('+' + IntToStr(MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[Ord(bonHull)]), '<color=0,255,0>')
-    else BonusText := WrapTextInColor(IntToStr(MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[Ord(bonHull)]), '<color=255,0,0>');
+    if MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonHull] > 0 then
+      BonusText := WrapTextInColor('+' + IntToStr(MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonHull]), '<color=0,255,0>')
+    else BonusText := WrapTextInColor(IntToStr(MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonHull]), '<color=255,0,0>');
   end;
   StatBonus := GetStatBonus(bonHull);
   if StatBonus <> 0 then
     if StatBonus > 0 then BonusText := BonusText + WrapTextInColor('+' + IntToStr(StatBonus), '<color=255,167,84>')
     else BonusText := BonusText + WrapTextInColor(IntToStr(StatBonus), '<color=255,167,84>');
-  if OwnerShip <> nil then StatBonus := TShip(OwnerShip).GetTotalStatBonus(Ord(bonHull)) - StatBonus
+  if OwnerShip <> nil then StatBonus := TShip(OwnerShip).GetTotalStatBonus(bonHull) - StatBonus
   else StatBonus := 0;
   if StatBonus <> 0 then
     if StatBonus > 0 then BonusText := BonusText + WrapTextInColor('(+' + IntToStr(StatBonus) + ')', '<color=255,167,84>')
     else BonusText := BonusText + WrapTextInColor('(' + IntToStr(StatBonus) + ')', '<color=255,167,84>');
   if MicroModuleIndex = 0 then BaseArmor := Armor
-  else BaseArmor := Armor - MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[Ord(bonHull)];
+  else BaseArmor := Armor - MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonHull];
   if CalculateGeneratedArmor = BaseArmor then ReplaceTextToken(Text, '<HitProtect>', WideString(IntToStr(BaseArmor)) + BonusText, ColorTag)
   else if CalculateGeneratedArmor < BaseArmor then
     ReplaceTextToken(Text, '<HitProtect>', WrapTextInColor(IntToStr(BaseArmor), '<color=0,255,0>') + BonusText, ColorTag)
@@ -2334,24 +2334,24 @@ function THull.GetSlotCount(Kind: TShipSlotKind): Integer;
 var BonusKind: TEquipmentBonusKind; I, Maximum, Minimum: Integer; Entry: PExtraSpecial;
 begin
   Result := GetBaseHullSlotCount(Kind, HullType, OwnerId, OwnerShip);
-  BonusKind := HullSlotBonusKinds[Ord(Kind)];
-  Maximum := DefaultHullSlotCounts[Ord(Kind)];
-  Minimum := MinimumHullSlotCounts[Ord(Kind)];
+  BonusKind := HullSlotBonusKinds[Kind];
+  Maximum := DefaultHullSlotCounts[Kind];
+  Minimum := MinimumHullSlotCounts[Kind];
   if SpecialModuleIndex <> 0 then
-    Result := Min(Maximum, Max(Minimum, Result + MicroModuleTemplates[SpecialModuleIndex - 1].StatBonuses[Ord(BonusKind)]));
+    Result := Min(Maximum, Max(Minimum, Result + MicroModuleTemplates[SpecialModuleIndex - 1].StatBonuses[BonusKind]));
   if ExtraSpecials <> nil then
   begin
     for I := 0 to ExtraSpecials.Count - 1 do
     begin
       Entry := ExtraSpecials[I];
-      Inc(Result, MicroModuleTemplates[Entry.ModuleIndexPlusOne - 1].StatBonuses[Ord(BonusKind)] * Entry.Count);
+      Inc(Result, MicroModuleTemplates[Entry.ModuleIndexPlusOne - 1].StatBonuses[BonusKind] * Entry.Count);
     end;
     Result := Min(Maximum, Max(Minimum, Result));
   end;
   if HullSeries <> -1 then
-    Result := Min(Maximum, Max(Minimum, Result + HullSeriesDefinitions[HullSeries].SlotBonuses[Ord(Kind)]));
+    Result := Min(Maximum, Max(Minimum, Result + HullSeriesDefinitions[HullSeries].SlotBonuses[Kind]));
   if MicroModuleIndex <> 0 then
-    Result := Min(Maximum, Max(Minimum, Result + MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[Ord(BonusKind)]));
+    Result := Min(Maximum, Max(Minimum, Result + MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[BonusKind]));
 end;
 { @end $7F6B4C }
 
@@ -2396,27 +2396,27 @@ begin
   begin
     Result := 0;
     for DamageClass := wdcEnergy to wdcMissile do
-      Result := GetFragilityFactor([TDamageKind(WeaponDamageClasses[Ord(DamageClass)].Kind)]) + Result;
+      Result := GetFragilityFactor([TDamageKind(WeaponDamageClasses[DamageClass].Kind)]) + Result;
     Result := Result / 3;
     Exit;
   end;
   DamageClass := ClassifyWeaponDamageFlags(DamageFlags);
-  Result := HullFragilityByType[HullType] * HullLevelStats[TechLevel].Fragility[Ord(DamageClass)] * HullFragilityByOwner[Ord(DamageClass), OwnerId];
-  if PirateBuilt then Result := Result * HullFragilityByOwner[Ord(DamageClass), 7];
-  if MicroModuleIndex <> 0 then Result := Result * MicroModuleTemplates[MicroModuleIndex - 1].FragilityFactorByDamageClass[Ord(DamageClass)];
-  if SpecialModuleIndex <> 0 then Result := Result * MicroModuleTemplates[SpecialModuleIndex - 1].FragilityFactorByDamageClass[Ord(DamageClass)];
+  Result := HullFragilityByType[HullType] * HullLevelStats[TechLevel].Fragility[DamageClass] * HullFragilityByOwner[DamageClass, OwnerId];
+  if PirateBuilt then Result := Result * HullFragilityByOwner[DamageClass, 7];
+  if MicroModuleIndex <> 0 then Result := Result * MicroModuleTemplates[MicroModuleIndex - 1].FragilityFactorByDamageClass[DamageClass];
+  if SpecialModuleIndex <> 0 then Result := Result * MicroModuleTemplates[SpecialModuleIndex - 1].FragilityFactorByDamageClass[DamageClass];
   if ExtraSpecials <> nil then
     for I := 0 to ExtraSpecials.Count - 1 do
     begin
       Entry := ExtraSpecials[I];
-      Factor := MicroModuleTemplates[Entry.ModuleIndexPlusOne - 1].FragilityFactorByDamageClass[Ord(DamageClass)];
+      Factor := MicroModuleTemplates[Entry.ModuleIndexPlusOne - 1].FragilityFactorByDamageClass[DamageClass];
       if Abs(Factor - 1) > 0.000001 then
       begin
         if Entry.Count = 1 then Result := Result * Factor
         else Result := Power(Factor, Entry.Count) * Result;
       end;
     end;
-  if HullSeries <> -1 then Result := Result * HullSeriesDefinitions[HullSeries].FragilityByDamageClass[Ord(DamageClass)];
+  if HullSeries <> -1 then Result := Result * HullSeriesDefinitions[HullSeries].FragilityByDamageClass[DamageClass];
 end;
 { @end $7F7038 }
 
@@ -2544,9 +2544,9 @@ end;
 function TFuelTanks.HasStandardStats: Boolean;
 var BaseCapacity, ExpectedWeight, SizePercent: Integer;
 begin
-  if (MicroModuleIndex = 0) or (MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[Ord(bonFuel)] = 0) then
+  if (MicroModuleIndex = 0) or (MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonFuel] = 0) then
     BaseCapacity := Capacity
-  else BaseCapacity := Capacity - MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[Ord(bonFuel)];
+  else BaseCapacity := Capacity - MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonFuel];
   ExpectedWeight := Round((BaseCapacity - FuelCapacityByLevel[TechLevel]) * FuelTanksBaseSize / 20);
   if MicroModuleIndex <> 0 then SizePercent := MicroModuleTemplates[MicroModuleIndex - 1].SizePercent else SizePercent := 0;
   if SizePercent > 0 then ExpectedWeight := Round(ExpectedWeight * SizePercent / 100);
@@ -2579,12 +2579,12 @@ end;
 procedure TFuelTanks.ReplaceInfoTokens(var Text: WideString; ColorTag: WideString; Ship: Pointer);
 var BonusText: WideString; BaseValue, SizePercent, ExpectedWeight: Integer;
 begin
-  if (MicroModuleIndex = 0) or (MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[Ord(bonFuel)] = 0) then BonusText := ''
-  else if MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[Ord(bonFuel)] > 0 then
-    BonusText := WrapTextInColor('+' + IntToStr(MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[Ord(bonFuel)]), '<color=0,255,0>')
-  else BonusText := WrapTextInColor(IntToStr(MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[Ord(bonFuel)]), '<color=255,0,0>');
+  if (MicroModuleIndex = 0) or (MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonFuel] = 0) then BonusText := ''
+  else if MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonFuel] > 0 then
+    BonusText := WrapTextInColor('+' + IntToStr(MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonFuel]), '<color=0,255,0>')
+  else BonusText := WrapTextInColor(IntToStr(MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonFuel]), '<color=255,0,0>');
   if MicroModuleIndex = 0 then BaseValue := Capacity
-  else BaseValue := Capacity - MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[Ord(bonFuel)];
+  else BaseValue := Capacity - MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonFuel];
   ExpectedWeight := Round((BaseValue - FuelCapacityByLevel[TechLevel]) * FuelTanksBaseSize / 20);
   if MicroModuleIndex <> 0 then SizePercent := MicroModuleTemplates[MicroModuleIndex - 1].SizePercent else SizePercent := 0;
   if SizePercent > 0 then ExpectedWeight := Round(ExpectedWeight * SizePercent / 100);
@@ -2736,12 +2736,12 @@ end;
 function TEngine.HasStandardStats: Boolean;
 var StandardSpeed, StandardJump: Boolean;
 begin
-  if (MicroModuleIndex = 0) or (MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[Ord(bonSpeed)] = 0) then
+  if (MicroModuleIndex = 0) or (MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonSpeed] = 0) then
     StandardSpeed := CalculateGeneratedSpeed = Speed
-  else StandardSpeed := CalculateGeneratedSpeed = Speed - MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[Ord(bonSpeed)];
-  if (MicroModuleIndex = 0) or (MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[Ord(bonJump)] = 0) then
+  else StandardSpeed := CalculateGeneratedSpeed = Speed - MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonSpeed];
+  if (MicroModuleIndex = 0) or (MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonJump] = 0) then
     StandardJump := CalculateGeneratedJumpRange = JumpRange
-  else StandardJump := CalculateGeneratedJumpRange = JumpRange - MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[Ord(bonJump)];
+  else StandardJump := CalculateGeneratedJumpRange = JumpRange - MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonJump];
   Result := StandardSpeed and StandardJump;
 end;
 { @end $7F8B0C }
@@ -2769,7 +2769,7 @@ procedure TEngine.ReplaceInfoTokens(var Text: WideString; ColorTag: WideString; 
 var BonusText: WideString; BaseValue, StatBonus: Integer;
 begin
   if MicroModuleIndex = 0 then StatBonus := 0
-  else StatBonus := MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[Ord(bonSpeed)];
+  else StatBonus := MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonSpeed];
   BaseValue := Max(0, Speed - StatBonus);
   StatBonus := Max(0, Speed) - BaseValue;
   if StatBonus = 0 then BonusText := ''
@@ -2780,7 +2780,7 @@ begin
     if StatBonus > 0 then BonusText := BonusText + WrapTextInColor('+' + IntToStr(StatBonus), '<color=255,167,84>')
     else BonusText := BonusText + WrapTextInColor(IntToStr(StatBonus), '<color=255,167,84>');
   if (Ship <> nil) and (EquippedFlag <> 0) then
-    StatBonus := Max(TShip(Ship).GetTotalStatBonus(Ord(bonSpeed)) - StatBonus, -(Speed + StatBonus))
+    StatBonus := Max(TShip(Ship).GetTotalStatBonus(bonSpeed) - StatBonus, -(Speed + StatBonus))
   else StatBonus := 0;
   if StatBonus <> 0 then
     if StatBonus > 0 then BonusText := BonusText + WrapTextInColor('(+' + IntToStr(StatBonus) + ')', '<color=255,167,84>')
@@ -2790,7 +2790,7 @@ begin
     ReplaceTextToken(Text, '<Speed>', WrapTextInColor(IntToStr(BaseValue), '<color=0,255,0>') + BonusText, ColorTag)
   else ReplaceTextToken(Text, '<Speed>', WrapTextInColor(IntToStr(BaseValue), '<color=255,0,0>') + BonusText, ColorTag);
   if MicroModuleIndex = 0 then StatBonus := 0
-  else StatBonus := MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[Ord(bonJump)];
+  else StatBonus := MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonJump];
   BaseValue := Max(0, JumpRange - StatBonus);
   StatBonus := Max(0, JumpRange) - BaseValue;
   if StatBonus = 0 then BonusText := ''
@@ -2801,7 +2801,7 @@ begin
     if StatBonus > 0 then BonusText := BonusText + WrapTextInColor('+' + IntToStr(StatBonus), '<color=255,167,84>')
     else BonusText := BonusText + WrapTextInColor(IntToStr(StatBonus), '<color=255,167,84>');
   if (Ship <> nil) and (EquippedFlag <> 0) then
-    StatBonus := Max(TShip(Ship).GetTotalStatBonus(Ord(bonJump)) - StatBonus, -(JumpRange + StatBonus))
+    StatBonus := Max(TShip(Ship).GetTotalStatBonus(bonJump) - StatBonus, -(JumpRange + StatBonus))
   else StatBonus := 0;
   if StatBonus <> 0 then
     if StatBonus > 0 then BonusText := BonusText + WrapTextInColor('(+' + IntToStr(StatBonus) + ')', '<color=255,167,84>')
@@ -2900,9 +2900,9 @@ end;
 { @routine $7F9ED8 TRadar_HasStandardStats }
 function TRadar.HasStandardStats: Boolean;
 begin
-  if (MicroModuleIndex = 0) or (MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[Ord(bonRadar)] = 0) then
+  if (MicroModuleIndex = 0) or (MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonRadar] = 0) then
     Result := CalculateGeneratedRange = Range
-  else Result := CalculateGeneratedRange = Range - MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[Ord(bonRadar)];
+  else Result := CalculateGeneratedRange = Range - MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonRadar];
 end;
 { @end $7F9ED8 }
 
@@ -2928,22 +2928,22 @@ end;
 procedure TRadar.ReplaceInfoTokens(var Text: WideString; ColorTag: WideString; Ship: Pointer);
 var BonusText: WideString; BaseValue, StatBonus: Integer;
 begin
-  if (MicroModuleIndex = 0) or (MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[Ord(bonRadar)] = 0) then BonusText := ''
-  else if MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[Ord(bonRadar)] > 0 then
-    BonusText := WrapTextInColor('+' + IntToStr(MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[Ord(bonRadar)]), '<color=0,255,0>')
-  else BonusText := WrapTextInColor(IntToStr(MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[Ord(bonRadar)]), '<color=255,0,0>');
+  if (MicroModuleIndex = 0) or (MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonRadar] = 0) then BonusText := ''
+  else if MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonRadar] > 0 then
+    BonusText := WrapTextInColor('+' + IntToStr(MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonRadar]), '<color=0,255,0>')
+  else BonusText := WrapTextInColor(IntToStr(MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonRadar]), '<color=255,0,0>');
   StatBonus := Max(-Max(0, Range), GetStatBonus(bonRadar));
   if StatBonus <> 0 then
     if StatBonus > 0 then BonusText := BonusText + WrapTextInColor('+' + IntToStr(StatBonus), '<color=255,167,84>')
     else BonusText := BonusText + WrapTextInColor(IntToStr(StatBonus), '<color=255,167,84>');
   if (Ship <> nil) and (EquippedFlag <> 0) then
-    StatBonus := Max(TShip(Ship).GetTotalStatBonus(Ord(bonRadar)) - StatBonus, -(Range + StatBonus))
+    StatBonus := Max(TShip(Ship).GetTotalStatBonus(bonRadar) - StatBonus, -(Range + StatBonus))
   else StatBonus := 0;
   if StatBonus <> 0 then
     if StatBonus > 0 then BonusText := BonusText + WrapTextInColor('(+' + IntToStr(StatBonus) + ')', '<color=255,167,84>')
     else BonusText := BonusText + WrapTextInColor('(' + IntToStr(StatBonus) + ')', '<color=255,167,84>');
   if MicroModuleIndex = 0 then BaseValue := Range
-  else BaseValue := Range - MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[Ord(bonRadar)];
+  else BaseValue := Range - MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonRadar];
   if HasStandardStats then ReplaceTextToken(Text, '<Radius>', WideString(IntToStr(BaseValue)) + BonusText, ColorTag)
   else if CalculateGeneratedRange < BaseValue then
     ReplaceTextToken(Text, '<Radius>', WrapTextInColor(IntToStr(BaseValue), '<color=0,255,0>') + BonusText, ColorTag)
@@ -3041,9 +3041,9 @@ end;
 { @routine $7FACD0 TScaner_HasStandardStats }
 function TScaner.HasStandardStats: Boolean;
 begin
-  if (MicroModuleIndex = 0) or (MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[Ord(bonScan)] = 0) then
+  if (MicroModuleIndex = 0) or (MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonScan] = 0) then
     Result := CalculateGeneratedScanPower = ScanPower
-  else Result := CalculateGeneratedScanPower = ScanPower - MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[Ord(bonScan)];
+  else Result := CalculateGeneratedScanPower = ScanPower - MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonScan];
 end;
 { @end $7FACD0 }
 
@@ -3070,7 +3070,7 @@ procedure TScaner.ReplaceInfoTokens(var Text: WideString; ColorTag: WideString; 
 var BonusText: WideString; BaseValue, StatBonus: Integer;
 begin
   if MicroModuleIndex = 0 then StatBonus := 0
-  else StatBonus := MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[Ord(bonScan)];
+  else StatBonus := MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonScan];
   BaseValue := Max(0, ScanPower - StatBonus);
   StatBonus := Max(0, ScanPower) - BaseValue;
   if StatBonus = 0 then BonusText := ''
@@ -3081,7 +3081,7 @@ begin
     if StatBonus > 0 then BonusText := BonusText + WrapTextInColor('+' + IntToStr(StatBonus), '<color=255,167,84>')
     else BonusText := BonusText + WrapTextInColor(IntToStr(StatBonus), '<color=255,167,84>');
   if (Ship <> nil) and (EquippedFlag <> 0) then
-    StatBonus := Max(TShip(Ship).GetTotalStatBonus(Ord(bonScan)) - StatBonus, -(ScanPower + StatBonus))
+    StatBonus := Max(TShip(Ship).GetTotalStatBonus(bonScan) - StatBonus, -(ScanPower + StatBonus))
   else StatBonus := 0;
   if StatBonus <> 0 then
     if StatBonus > 0 then BonusText := BonusText + WrapTextInColor('(+' + IntToStr(StatBonus) + ')', '<color=255,167,84>')
@@ -3126,7 +3126,7 @@ begin
   begin
     if TechLevel < 5 then Inc(RepairPoints, 5);
     if (MicroModuleIndex <> 0) and
-      (MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[Ord(bonDroid)] <> 0) then
+      (MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonDroid] <> 0) then
       case MicroModuleTemplates[MicroModuleIndex - 1].ConfigNumber of
         122: Inc(RepairPoints, 7);
         21: Inc(RepairPoints, 4);
@@ -3196,9 +3196,9 @@ end;
 { @routine $7FBB5C TRepairRobot_HasStandardStats }
 function TRepairRobot.HasStandardStats: Boolean;
 begin
-  if (MicroModuleIndex = 0) or (MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[Ord(bonDroid)] = 0) then
+  if (MicroModuleIndex = 0) or (MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonDroid] = 0) then
     Result := CalculateGeneratedRepairPoints = RepairPoints
-  else Result := CalculateGeneratedRepairPoints = RepairPoints - MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[Ord(bonDroid)];
+  else Result := CalculateGeneratedRepairPoints = RepairPoints - MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonDroid];
 end;
 { @end $7FBB5C }
 
@@ -3224,22 +3224,22 @@ end;
 procedure TRepairRobot.ReplaceInfoTokens(var Text: WideString; ColorTag: WideString; Ship: Pointer);
 var BonusText: WideString; BaseValue, StatBonus: Integer;
 begin
-  if (MicroModuleIndex = 0) or (MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[Ord(bonDroid)] = 0) then BonusText := ''
-  else if MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[Ord(bonDroid)] > 0 then
-    BonusText := WrapTextInColor('+' + IntToStr(MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[Ord(bonDroid)]), '<color=0,255,0>')
-  else BonusText := WrapTextInColor(IntToStr(MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[Ord(bonDroid)]), '<color=255,0,0>');
+  if (MicroModuleIndex = 0) or (MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonDroid] = 0) then BonusText := ''
+  else if MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonDroid] > 0 then
+    BonusText := WrapTextInColor('+' + IntToStr(MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonDroid]), '<color=0,255,0>')
+  else BonusText := WrapTextInColor(IntToStr(MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonDroid]), '<color=255,0,0>');
   StatBonus := Max(-Max(0, RepairPoints), GetStatBonus(bonDroid));
   if StatBonus <> 0 then
     if StatBonus > 0 then BonusText := BonusText + WrapTextInColor('+' + IntToStr(StatBonus), '<color=255,167,84>')
     else BonusText := BonusText + WrapTextInColor(IntToStr(StatBonus), '<color=255,167,84>');
   if (Ship <> nil) and (EquippedFlag <> 0) then
-    StatBonus := Max(TShip(Ship).GetTotalStatBonus(Ord(bonDroid)) - StatBonus, -(RepairPoints + StatBonus))
+    StatBonus := Max(TShip(Ship).GetTotalStatBonus(bonDroid) - StatBonus, -(RepairPoints + StatBonus))
   else StatBonus := 0;
   if StatBonus <> 0 then
     if StatBonus > 0 then BonusText := BonusText + WrapTextInColor('(+' + IntToStr(StatBonus) + ')', '<color=255,167,84>')
     else BonusText := BonusText + WrapTextInColor('(' + IntToStr(StatBonus) + ')', '<color=255,167,84>');
   if MicroModuleIndex = 0 then BaseValue := RepairPoints
-  else BaseValue := RepairPoints - MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[Ord(bonDroid)];
+  else BaseValue := RepairPoints - MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonDroid];
   if HasStandardStats then ReplaceTextToken(Text, '<RecoverHitPoints>', WideString(IntToStr(BaseValue)) + BonusText, ColorTag)
   else if CalculateGeneratedRepairPoints < BaseValue then
     ReplaceTextToken(Text, '<RecoverHitPoints>', WrapTextInColor(IntToStr(BaseValue), '<color=0,255,0>') + BonusText, ColorTag)
@@ -3414,12 +3414,12 @@ end;
 function TCargoHook.HasStandardStats: Boolean;
 var StandardPower, StandardRange: Boolean;
 begin
-  if (MicroModuleIndex = 0) or (MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[Ord(bonHook)] = 0) then
+  if (MicroModuleIndex = 0) or (MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonHook] = 0) then
     StandardPower := CalculateGeneratedPickupPower = PickupPower
-  else StandardPower := CalculateGeneratedPickupPower = PickupPower - MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[Ord(bonHook)];
-  if (MicroModuleIndex = 0) or (MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[Ord(bonHookRadius)] = 0) then
+  else StandardPower := CalculateGeneratedPickupPower = PickupPower - MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonHook];
+  if (MicroModuleIndex = 0) or (MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonHookRadius] = 0) then
     StandardRange := CalculateGeneratedRange = Range
-  else StandardRange := CalculateGeneratedRange = Range - MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[Ord(bonHookRadius)];
+  else StandardRange := CalculateGeneratedRange = Range - MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonHookRadius];
   Result := StandardPower and StandardRange;
 end;
 { @end $7FCF64 }
@@ -3446,42 +3446,42 @@ end;
 procedure TCargoHook.ReplaceInfoTokens(var Text: WideString; ColorTag: WideString; Ship: Pointer);
 var BonusText: WideString; BaseValue, StatBonus: Integer;
 begin
-  if (MicroModuleIndex = 0) or (MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[Ord(bonHook)] = 0) then BonusText := ''
-  else if MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[Ord(bonHook)] > 0 then
-    BonusText := WrapTextInColor('+' + IntToStr(MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[Ord(bonHook)]), '<color=0,255,0>')
-  else BonusText := WrapTextInColor(IntToStr(MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[Ord(bonHook)]), '<color=255,0,0>');
+  if (MicroModuleIndex = 0) or (MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonHook] = 0) then BonusText := ''
+  else if MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonHook] > 0 then
+    BonusText := WrapTextInColor('+' + IntToStr(MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonHook]), '<color=0,255,0>')
+  else BonusText := WrapTextInColor(IntToStr(MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonHook]), '<color=255,0,0>');
   StatBonus := Max(-Max(0, PickupPower), GetStatBonus(bonHook));
   if StatBonus <> 0 then
     if StatBonus > 0 then BonusText := BonusText + WrapTextInColor('+' + IntToStr(StatBonus), '<color=255,167,84>')
     else BonusText := BonusText + WrapTextInColor(IntToStr(StatBonus), '<color=255,167,84>');
   if (Ship <> nil) and (EquippedFlag <> 0) then
-    StatBonus := Max(TShip(Ship).GetTotalStatBonus(Ord(bonHook)) - StatBonus, -(PickupPower + StatBonus))
+    StatBonus := Max(TShip(Ship).GetTotalStatBonus(bonHook) - StatBonus, -(PickupPower + StatBonus))
   else StatBonus := 0;
   if StatBonus <> 0 then
     if StatBonus > 0 then BonusText := BonusText + WrapTextInColor('(+' + IntToStr(StatBonus) + ')', '<color=255,167,84>')
     else BonusText := BonusText + WrapTextInColor('(' + IntToStr(StatBonus) + ')', '<color=255,167,84>');
   if MicroModuleIndex = 0 then BaseValue := PickupPower
-  else BaseValue := PickupPower - MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[Ord(bonHook)];
+  else BaseValue := PickupPower - MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonHook];
   if CalculateGeneratedPickupPower = BaseValue then ReplaceTextToken(Text, '<PickUpSize>', WideString(IntToStr(BaseValue)) + BonusText, ColorTag)
   else if CalculateGeneratedPickupPower < BaseValue then
     ReplaceTextToken(Text, '<PickUpSize>', WrapTextInColor(IntToStr(BaseValue), '<color=0,255,0>') + BonusText, ColorTag)
   else ReplaceTextToken(Text, '<PickUpSize>', WrapTextInColor(IntToStr(BaseValue), '<color=255,0,0>') + BonusText, ColorTag);
-  if (MicroModuleIndex = 0) or (MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[Ord(bonHookRadius)] = 0) then BonusText := ''
-  else if MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[Ord(bonHookRadius)] > 0 then
-    BonusText := WrapTextInColor('+' + IntToStr(MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[Ord(bonHookRadius)]), '<color=0,255,0>')
-  else BonusText := WrapTextInColor(IntToStr(MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[Ord(bonHookRadius)]), '<color=255,0,0>');
+  if (MicroModuleIndex = 0) or (MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonHookRadius] = 0) then BonusText := ''
+  else if MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonHookRadius] > 0 then
+    BonusText := WrapTextInColor('+' + IntToStr(MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonHookRadius]), '<color=0,255,0>')
+  else BonusText := WrapTextInColor(IntToStr(MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonHookRadius]), '<color=255,0,0>');
   StatBonus := Max(-Max(0, Range), GetStatBonus(bonHookRadius));
   if StatBonus <> 0 then
     if StatBonus > 0 then BonusText := BonusText + WrapTextInColor('+' + IntToStr(StatBonus), '<color=255,167,84>')
     else BonusText := BonusText + WrapTextInColor(IntToStr(StatBonus), '<color=255,167,84>');
   if (Ship <> nil) and (EquippedFlag <> 0) then
-    StatBonus := Max(TShip(Ship).GetTotalStatBonus(Ord(bonHookRadius)) - StatBonus, -(Range + StatBonus))
+    StatBonus := Max(TShip(Ship).GetTotalStatBonus(bonHookRadius) - StatBonus, -(Range + StatBonus))
   else StatBonus := 0;
   if StatBonus <> 0 then
     if StatBonus > 0 then BonusText := BonusText + WrapTextInColor('(+' + IntToStr(StatBonus) + ')', '<color=255,167,84>')
     else BonusText := BonusText + WrapTextInColor('(' + IntToStr(StatBonus) + ')', '<color=255,167,84>');
   if MicroModuleIndex = 0 then BaseValue := Range
-  else BaseValue := Range - MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[Ord(bonHookRadius)];
+  else BaseValue := Range - MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonHookRadius];
   if CalculateGeneratedRange = BaseValue then ReplaceTextToken(Text, '<Radius>', WideString(IntToStr(BaseValue)) + BonusText, '<color=255,240,100>')
   else if CalculateGeneratedRange < BaseValue then
     ReplaceTextToken(Text, '<Radius>', WrapTextInColor(IntToStr(BaseValue), '<color=0,255,0>') + BonusText, ColorTag)
@@ -3596,11 +3596,11 @@ var ActualPercent, BonusPercent, GeneratedPercent: Integer;
 begin
   ActualPercent := Round(DamageFactor * 100);
   GeneratedPercent := Round(CalculateGeneratedDamageFactor * 100);
-  if (MicroModuleIndex = 0) or (MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[Ord(bonDef)] = 0) then
+  if (MicroModuleIndex = 0) or (MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonDef] = 0) then
     Result := ActualPercent = GeneratedPercent
   else
   begin
-    BonusPercent := Round(MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[Ord(bonDef)]);
+    BonusPercent := Round(MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonDef]);
     Result := ActualPercent + BonusPercent = GeneratedPercent;
   end;
 end;
@@ -3632,7 +3632,7 @@ var
   DisplayPercent: Byte;
 begin
   ModuleBonus := 0;
-  if MicroModuleIndex <> 0 then ModuleBonus := MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[Ord(bonDef)];
+  if MicroModuleIndex <> 0 then ModuleBonus := MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonDef];
   DisplayPercent := DefenseDamageFactorToPercent(DamageFactor);
   if ModuleBonus = 0 then BonusText := ''
   else if ModuleBonus > 0 then BonusText := WrapTextInColor('+' + IntToStr(ModuleBonus), '<color=0,255,0>')
@@ -3642,7 +3642,7 @@ begin
     if StatBonus > 0 then BonusText := BonusText + WrapTextInColor('+' + IntToStr(StatBonus), '<color=255,167,84>')
     else BonusText := BonusText + WrapTextInColor(IntToStr(StatBonus), '<color=255,167,84>');
   if (Ship <> nil) and (EquippedFlag <> 0) then
-    StatBonus := Max(TShip(Ship).GetTotalStatBonus(Ord(bonDef)) - StatBonus, -(DisplayPercent + StatBonus))
+    StatBonus := Max(TShip(Ship).GetTotalStatBonus(bonDef) - StatBonus, -(DisplayPercent + StatBonus))
   else StatBonus := 0;
   if StatBonus <> 0 then
     if StatBonus > 0 then BonusText := BonusText + WrapTextInColor('(+' + IntToStr(StatBonus) + ')', '<color=255,167,84>')
@@ -3650,8 +3650,8 @@ begin
 
   ActualFactorPercent := Round(DamageFactor * 100);
   GeneratedFactorPercent := Round(CalculateGeneratedDamageFactor * 100);
-  if (MicroModuleIndex <> 0) and (MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[Ord(bonDef)] <> 0) then
-    Inc(ActualFactorPercent, Round(MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[Ord(bonDef)]));
+  if (MicroModuleIndex <> 0) and (MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonDef] <> 0) then
+    Inc(ActualFactorPercent, Round(MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonDef]));
   if HasStandardStats then ReplaceTextToken(Text, '<Percent>', WideString(IntToStr(DisplayPercent - ModuleBonus)) + BonusText, ColorTag)
   else if ActualFactorPercent < GeneratedFactorPercent then
     ReplaceTextToken(Text, '<Percent>', WrapTextInColor(IntToStr(DisplayPercent - ModuleBonus), '<color=0,255,0>') + BonusText, ColorTag)
@@ -3781,7 +3781,7 @@ begin
     Ammo := Buffer.GetUInt32;
     AmmoCapacity := Buffer.GetUInt32;
     if (LoadedSaveVersion < 118) and (MicroModuleIndex <> 0) and
-      (MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[Ord(bonWMissile)] <> 0) then
+      (MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonWMissile] <> 0) then
       case MicroModuleTemplates[MicroModuleIndex - 1].ConfigNumber of
         204: Inc(MaxDamage, 10);
         210: Inc(MaxDamage, 15);
@@ -3790,7 +3790,7 @@ begin
         18: Inc(MaxDamage, 4);
         119: Dec(MaxDamage, 2);
       else
-        Inc(MaxDamage, MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[Ord(bonWMissile)] div 2);
+        Inc(MaxDamage, MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonWMissile] div 2);
       end;
   end;
 end;
@@ -3904,10 +3904,10 @@ end;
 
 { @routine $7FFBA8 TWeapon_CalculateStandardMaxDamage }
 function TWeapon.CalculateStandardMaxDamage: Integer;
-var BonusKind: Byte;
+var BonusKind: TEquipmentBonusKind;
 begin
   Result := CalculateGeneratedMaxDamage;
-  BonusKind := WeaponDamageClasses[Ord(ClassifyWeaponDamageFlags(GetWeaponInfo.DamageFlags))].BonusKind;
+  BonusKind := WeaponDamageClasses[ClassifyWeaponDamageFlags(GetWeaponInfo.DamageFlags)].BonusKind;
   if MicroModuleIndex <> 0 then Inc(Result, MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[BonusKind]);
   if SpecialModuleIndex <> 0 then Inc(Result, MicroModuleTemplates[SpecialModuleIndex - 1].StatBonuses[BonusKind]);
 end;
@@ -3917,8 +3917,8 @@ end;
 function TWeapon.CalculateStandardRange: Integer;
 begin
   Result := CalculateGeneratedRange;
-  if MicroModuleIndex <> 0 then Inc(Result, MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[Ord(bonWRadius)]);
-  if SpecialModuleIndex <> 0 then Inc(Result, MicroModuleTemplates[SpecialModuleIndex - 1].StatBonuses[Ord(bonWRadius)]);
+  if MicroModuleIndex <> 0 then Inc(Result, MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonWRadius]);
+  if SpecialModuleIndex <> 0 then Inc(Result, MicroModuleTemplates[SpecialModuleIndex - 1].StatBonuses[bonWRadius]);
 end;
 { @end $7FFC38 }
 
@@ -3944,9 +3944,9 @@ begin
     else DetailImprovement := 2;
   CurrentDamage := MaxDamage;
   BaseDamage := Info.MaxDamage;
-  if (Byte(Info.ShotType) in [Ord(wstMissile)..Ord(wstRocket)]) and (MicroModuleIndex > 0) and not Galaxy.AreOldMissileBonusesEnabled then
+  if (Info.ShotType in [wstMissile..wstRocket]) and (MicroModuleIndex > 0) and not Galaxy.AreOldMissileBonusesEnabled then
   begin
-    ModuleDamage := MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[WeaponDamageClasses[Ord(ClassifyWeaponDamageFlags(Info.DamageFlags))].BonusKind];
+    ModuleDamage := MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[WeaponDamageClasses[ClassifyWeaponDamageFlags(Info.DamageFlags)].BonusKind];
     CurrentDamage := Ceil(CurrentDamage - (1 - 1 / GetShotCount) * ModuleDamage);
   end;
   if DetailImprovement = 1 then
@@ -4030,7 +4030,7 @@ begin
   ReplaceInfoTokens(Text, ColorTag, Ship);
   LevelText := ' (' + GetLevelLetter + ')';
   Text := Text + #13#10 + FormatText1(LocalizedText('Items.Weapon.AddText'), ColorTag, '<WeaponType>',
-    LocalizedText('Items.Weapon.Type' + WeaponDamageClasses[Ord(DamageClass)].Name) + LevelText);
+    LocalizedText('Items.Weapon.Type' + WeaponDamageClasses[DamageClass].Name) + LevelText);
   Text := Text + GetBonusDescription(ColorTag);
   if ScriptItem <> nil then Text := TScriptItem(ScriptItem).FormatDataText(Text, ColorTag);
   Result := Text + GetConditionText(True);
@@ -4043,16 +4043,16 @@ var
   BonusText: WideString;
   UnusedNativeText: WideString; // Native initializes/finalizes this extra string slot without reading it.
   ModuleBonus, EffectiveBonus, BaseDamage, I: Integer;
-  DamageClass: Byte;
+  DamageClass: TWeaponDamageClass;
   ExpectedRange, CurrentRange, BaseRange, ExpectedDamage: Integer;
   Entry: PExtraSpecial;
   ShipBonus: Integer;
 begin
-  if Cardinal(GetDamageFlags) and $100000 <> 0 then // Native flag displays the maximum as the minimum too.
+  if Cardinal(GetDamageFlags) and DamageNoDeltaMask <> 0 then // Native flag displays the maximum as the minimum too.
     ReplaceTextToken(Text, '<MinDamage>', IntToStr(Max(MaxDamage, MinDamage)), ColorTag)
   else ReplaceTextToken(Text, '<MinDamage>', IntToStr(MinDamage), ColorTag);
   ModuleBonus := 0;
-  DamageClass := Byte(ClassifyWeaponDamageFlags(GetWeaponInfo.DamageFlags));
+  DamageClass := ClassifyWeaponDamageFlags(GetWeaponInfo.DamageFlags);
   if MicroModuleIndex <> 0 then Inc(ModuleBonus, MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[WeaponDamageClasses[DamageClass].BonusKind]);
   BonusText := '';
   BaseDamage := Max(MaxDamage, MinDamage) - ModuleBonus;
@@ -4081,11 +4081,11 @@ begin
       for I := 0 to ExtraSpecials.Count - 1 do
       begin
         Entry := ExtraSpecials[I];
-        Inc(ModuleBonus, MicroModuleTemplates[Entry.ModuleIndexPlusOne - 1].StatBonuses[Ord(bonWRadius)] * Entry.Count);
+        Inc(ModuleBonus, MicroModuleTemplates[Entry.ModuleIndexPlusOne - 1].StatBonuses[bonWRadius] * Entry.Count);
       end;
     ExpectedRange := CalculateGeneratedRange + ModuleBonus;
     CurrentRange := Range + ModuleBonus;
-    if MicroModuleIndex <> 0 then Inc(ModuleBonus, MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[Ord(bonWRadius)])
+    if MicroModuleIndex <> 0 then Inc(ModuleBonus, MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonWRadius])
     else ModuleBonus := 0;
     BaseRange := CurrentRange - ModuleBonus;
     EffectiveBonus := Max(CurrentRange, GetWeaponInfo.MissileRange) - Max(BaseRange, GetWeaponInfo.MissileRange);
@@ -4094,7 +4094,7 @@ begin
       if EffectiveBonus < 0 then BonusText := WrapTextInColor(IntToStr(EffectiveBonus), '<color=255,0,0>')
       else BonusText := WrapTextInColor('-0', '<color=255,0,0>')
     else BonusText := '';
-    if (Ship <> nil) and (EquippedFlag <> 0) then ShipBonus := TShip(Ship).GetTotalStatBonus(Ord(bonWRadius))
+    if (Ship <> nil) and (EquippedFlag <> 0) then ShipBonus := TShip(Ship).GetTotalStatBonus(bonWRadius)
     else ShipBonus := 0;
     EffectiveBonus := Max(CurrentRange + ShipBonus, GetWeaponInfo.MissileRange) - Max(CurrentRange, GetWeaponInfo.MissileRange);
     if ShipBonus > 0 then BonusText := BonusText + WrapTextInColor('(+' + IntToStr(EffectiveBonus) + ')', '<color=255,167,84>')
@@ -4115,17 +4115,17 @@ begin
       for I := 0 to ExtraSpecials.Count - 1 do
       begin
         Entry := ExtraSpecials[I];
-        Inc(ModuleBonus, MicroModuleTemplates[Entry.ModuleIndexPlusOne - 1].StatBonuses[Ord(bonWRadius)] * Entry.Count);
+        Inc(ModuleBonus, MicroModuleTemplates[Entry.ModuleIndexPlusOne - 1].StatBonuses[bonWRadius] * Entry.Count);
       end;
     ExpectedRange := CalculateGeneratedRange + ModuleBonus;
     CurrentRange := Range + ModuleBonus;
-    if MicroModuleIndex <> 0 then Inc(ModuleBonus, MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[Ord(bonWRadius)])
+    if MicroModuleIndex <> 0 then Inc(ModuleBonus, MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonWRadius])
     else ModuleBonus := 0;
     BaseRange := CurrentRange - ModuleBonus;
     if ModuleBonus > 0 then BonusText := WrapTextInColor('+' + IntToStr(ModuleBonus), '<color=0,255,0>')
     else if ModuleBonus < 0 then BonusText := WrapTextInColor(IntToStr(ModuleBonus), '<color=255,0,0>')
     else BonusText := '';
-    if (Ship <> nil) and (EquippedFlag <> 0) then ShipBonus := TShip(Ship).GetTotalStatBonus(Ord(bonWRadius))
+    if (Ship <> nil) and (EquippedFlag <> 0) then ShipBonus := TShip(Ship).GetTotalStatBonus(bonWRadius)
     else ShipBonus := 0;
     if ShipBonus <> 0 then
       if ShipBonus > 0 then BonusText := BonusText + WrapTextInColor('+' + IntToStr(ShipBonus), '<color=255,167,84>')
@@ -4150,13 +4150,13 @@ function TWeapon.GetShotDelayFactor: Double;
 var SpeedPercent, I: Integer; Entry: PExtraSpecial;
 begin
   SpeedPercent := GetWeaponInfo.ShotSpeedPercent;
-  if MicroModuleIndex <> 0 then Inc(SpeedPercent, MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[Ord(bonShotSpeed)]);
-  if SpecialModuleIndex <> 0 then Inc(SpeedPercent, MicroModuleTemplates[SpecialModuleIndex - 1].StatBonuses[Ord(bonShotSpeed)]);
+  if MicroModuleIndex <> 0 then Inc(SpeedPercent, MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonShotSpeed]);
+  if SpecialModuleIndex <> 0 then Inc(SpeedPercent, MicroModuleTemplates[SpecialModuleIndex - 1].StatBonuses[bonShotSpeed]);
   if ExtraSpecials <> nil then
     for I := 0 to ExtraSpecials.Count - 1 do
     begin
       Entry := ExtraSpecials[I];
-      Inc(SpeedPercent, MicroModuleTemplates[Entry.ModuleIndexPlusOne - 1].StatBonuses[Ord(bonShotSpeed)] * Entry.Count);
+      Inc(SpeedPercent, MicroModuleTemplates[Entry.ModuleIndexPlusOne - 1].StatBonuses[bonShotSpeed] * Entry.Count);
     end;
   SpeedPercent := Max(0, Min(100, SpeedPercent));
   Result := 1 - SpeedPercent * 0.01;
@@ -4168,8 +4168,8 @@ function TWeapon.GetBitmapResourceName: WideString;
 begin
   if ConfigBlockName <> '' then Result := 'Bm.Items.' + GiResourceSuffix + ConfigBlockName
   else if (SpecialModuleIndex > 0) and (MicroModuleTemplates[SpecialModuleIndex - 1].KindGraph <> '') then
-    Result := 'Bm.Items.' + GiResourceSuffix + ItemTypeNames[Ord(ItemType)] + MicroModuleTemplates[SpecialModuleIndex - 1].KindGraph
-  else Result := 'Bm.Items.' + GiResourceSuffix + ItemTypeNames[Ord(ItemType)];
+    Result := 'Bm.Items.' + GiResourceSuffix + ItemTypeNames[ItemType] + MicroModuleTemplates[SpecialModuleIndex - 1].KindGraph
+  else Result := 'Bm.Items.' + GiResourceSuffix + ItemTypeNames[ItemType];
 end;
 { @end $801CC8 }
 
@@ -4240,13 +4240,13 @@ var I: Integer; Entry: PExtraSpecial;
 begin
   Result := GetWeaponInfo.ShotCount;
   if not (GetWeaponInfo.ShotType in [wstChain, wstMissile, wstRocket]) then Exit;
-  if SpecialModuleIndex <> 0 then Inc(Result, MicroModuleTemplates[SpecialModuleIndex - 1].StatBonuses[Ord(bonShots)]);
-  if MicroModuleIndex <> 0 then Inc(Result, MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[Ord(bonShots)]);
+  if SpecialModuleIndex <> 0 then Inc(Result, MicroModuleTemplates[SpecialModuleIndex - 1].StatBonuses[bonShots]);
+  if MicroModuleIndex <> 0 then Inc(Result, MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonShots]);
   if ExtraSpecials <> nil then
     for I := 0 to ExtraSpecials.Count - 1 do
     begin
       Entry := ExtraSpecials[I];
-      Inc(Result, MicroModuleTemplates[Entry.ModuleIndexPlusOne - 1].StatBonuses[Ord(bonShots)] * Entry.Count);
+      Inc(Result, MicroModuleTemplates[Entry.ModuleIndexPlusOne - 1].StatBonuses[bonShots] * Entry.Count);
     end;
   Result := Max(Result, 1);
 end;
@@ -4257,13 +4257,13 @@ function TWeapon.GetAttackCount: Integer;
 var I: Integer; Entry: PExtraSpecial;
 begin
   Result := GetWeaponInfo.AttackCount;
-  if SpecialModuleIndex <> 0 then Inc(Result, MicroModuleTemplates[SpecialModuleIndex - 1].StatBonuses[Ord(bonAttacks)]);
-  if MicroModuleIndex <> 0 then Inc(Result, MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[Ord(bonAttacks)]);
+  if SpecialModuleIndex <> 0 then Inc(Result, MicroModuleTemplates[SpecialModuleIndex - 1].StatBonuses[bonAttacks]);
+  if MicroModuleIndex <> 0 then Inc(Result, MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonAttacks]);
   if ExtraSpecials <> nil then
     for I := 0 to ExtraSpecials.Count - 1 do
     begin
       Entry := ExtraSpecials[I];
-      Inc(Result, MicroModuleTemplates[Entry.ModuleIndexPlusOne - 1].StatBonuses[Ord(bonAttacks)] * Entry.Count);
+      Inc(Result, MicroModuleTemplates[Entry.ModuleIndexPlusOne - 1].StatBonuses[bonAttacks] * Entry.Count);
     end;
   Result := Max(Result, 1);
 end;
@@ -4272,7 +4272,7 @@ end;
 { @routine $8022A4 TWeapon_GetWeaponInfo }
 function TWeapon.GetWeaponInfo: PWeaponInfo;
 begin
-  Result := @WeaponInfos[Ord(ItemType)];
+  Result := @WeaponInfos[ItemType];
 end;
 { @end $8022A4 }
 
@@ -4353,7 +4353,7 @@ end;
 { @routine $802634 TGoods_GetBitmapResourceName }
 function TGoods.GetBitmapResourceName: WideString;
 begin
-  Result := 'Bm.Items.' + GiResourceSuffix + ItemTypeNames[Ord(ItemType)];
+  Result := 'Bm.Items.' + GiResourceSuffix + ItemTypeNames[ItemType];
 end;
 { @end $802634 }
 
@@ -4990,7 +4990,7 @@ end;
 function TSatellite.GetBrokenInUseText: WideString;
 var PlanetName: WideString;
 begin
-  Result := LocalizedText('Items.' + ItemTypeNames[Ord(ItemType)] + '.BrokenInUse');
+  Result := LocalizedText('Items.' + ItemTypeNames[ItemType] + '.BrokenInUse');
   if TargetPlanet <> nil then PlanetName := (TObject(TargetPlanet) as TPlanet).Name
   else PlanetName := '';
   ReplaceTextToken(Result, '<Name>', GetDisplayName, '<color=255,240,100>');
@@ -5002,7 +5002,7 @@ end;
 function TSatellite.GetIdleInfoText: WideString;
 var PlanetName: WideString;
 begin
-  Result := LocalizedText('Items.' + ItemTypeNames[Ord(ItemType)] + '.IdleInfo');
+  Result := LocalizedText('Items.' + ItemTypeNames[ItemType] + '.IdleInfo');
   if TargetPlanet <> nil then PlanetName := (TObject(TargetPlanet) as TPlanet).Name
   else PlanetName := '';
   ReplaceTextToken(Result, '<Name>', GetDisplayName, '<color=255,240,100>');
@@ -5251,8 +5251,8 @@ begin
   Result := LocalizedColorText('MicroModuls.' + MicroModuleTemplates[ModuleIndex].ConfigName + '.Text');
   for Kind := Low(TEquipmentBonusKind) to High(TEquipmentBonusKind) do
     if Kind in [bonExtraAkrinEff..bonExtraAkrinPenalty] then begin
-      Value := MicroModuleTemplates[Index - 1].StatBonuses[Ord(Kind)];
-      if Value = 0 then ReplaceTextToken(Result, '<' + EquipmentBonusNames[Ord(Kind)] + '>', '--', ColorTag)
+      Value := MicroModuleTemplates[Index - 1].StatBonuses[Kind];
+      if Value = 0 then ReplaceTextToken(Result, '<' + EquipmentBonusNames[Kind] + '>', '--', ColorTag)
       else begin
         if Value > 0 then Text := '+' else Text := '-';
         Value := Abs(Value);
@@ -5260,13 +5260,13 @@ begin
         Value := Value div 100;
         if Fraction <> 0 then Text := Text + IntToStr(Value) + '.' + IntToStr(Fraction)
         else Text := Text + IntToStr(Value);
-        ReplaceTextToken(Result, '<' + EquipmentBonusNames[Ord(Kind)] + '>', Text, ColorTag);
+        ReplaceTextToken(Result, '<' + EquipmentBonusNames[Kind] + '>', Text, ColorTag);
       end;
     end else begin
-      Value := MicroModuleTemplates[Index - 1].StatBonuses[Ord(Kind)];
-      if Value > 0 then ReplaceTextToken(Result, '<' + EquipmentBonusNames[Ord(Kind)] + '>', '+' + IntToStr(Value), ColorTag)
-      else if Value < 0 then ReplaceTextToken(Result, '<' + EquipmentBonusNames[Ord(Kind)] + '>', IntToStr(Value), ColorTag)
-      else ReplaceTextToken(Result, '<' + EquipmentBonusNames[Ord(Kind)] + '>', '--', ColorTag);
+      Value := MicroModuleTemplates[Index - 1].StatBonuses[Kind];
+      if Value > 0 then ReplaceTextToken(Result, '<' + EquipmentBonusNames[Kind] + '>', '+' + IntToStr(Value), ColorTag)
+      else if Value < 0 then ReplaceTextToken(Result, '<' + EquipmentBonusNames[Kind] + '>', IntToStr(Value), ColorTag)
+      else ReplaceTextToken(Result, '<' + EquipmentBonusNames[Kind] + '>', '--', ColorTag);
     end;
 end;
 { @end $8077B4 }
@@ -5332,7 +5332,7 @@ end;
 
 { @routine $807FBC ApplyMicroModule }
 function ApplyMicroModule(ModuleIndex: Integer; Item: TEquipment): Boolean;
-var BonusKind: Byte;
+var BonusKind: TEquipmentBonusKind;
 begin
   if (ModuleIndex = -1) or (Item = nil) then
   begin
@@ -5346,37 +5346,37 @@ begin
   case Item.ItemType of
     t_Hull:
       begin
-        Inc((Item as THull).Armor, MicroModuleTemplates[Item.MicroModuleIndex - 1].StatBonuses[Ord(bonHull)]);
+        Inc((Item as THull).Armor, MicroModuleTemplates[Item.MicroModuleIndex - 1].StatBonuses[bonHull]);
         (Item as THull).HullPoints := Min(Item.Weight, (Item as THull).HullPoints);
       end;
-    t_FuelTanks: Inc((Item as TFuelTanks).Capacity, MicroModuleTemplates[Item.MicroModuleIndex - 1].StatBonuses[Ord(bonFuel)]);
+    t_FuelTanks: Inc((Item as TFuelTanks).Capacity, MicroModuleTemplates[Item.MicroModuleIndex - 1].StatBonuses[bonFuel]);
     t_Engine:
       begin
-        Inc((Item as TEngine).Speed, MicroModuleTemplates[Item.MicroModuleIndex - 1].StatBonuses[Ord(bonSpeed)]);
-        Inc((Item as TEngine).JumpRange, MicroModuleTemplates[Item.MicroModuleIndex - 1].StatBonuses[Ord(bonJump)]);
+        Inc((Item as TEngine).Speed, MicroModuleTemplates[Item.MicroModuleIndex - 1].StatBonuses[bonSpeed]);
+        Inc((Item as TEngine).JumpRange, MicroModuleTemplates[Item.MicroModuleIndex - 1].StatBonuses[bonJump]);
       end;
-    t_Radar: Inc((Item as TRadar).Range, MicroModuleTemplates[Item.MicroModuleIndex - 1].StatBonuses[Ord(bonRadar)]);
-    t_Scaner: Inc((Item as TScaner).ScanPower, MicroModuleTemplates[Item.MicroModuleIndex - 1].StatBonuses[Ord(bonScan)]);
-    t_RepairRobot: Inc((Item as TRepairRobot).RepairPoints, MicroModuleTemplates[Item.MicroModuleIndex - 1].StatBonuses[Ord(bonDroid)]);
+    t_Radar: Inc((Item as TRadar).Range, MicroModuleTemplates[Item.MicroModuleIndex - 1].StatBonuses[bonRadar]);
+    t_Scaner: Inc((Item as TScaner).ScanPower, MicroModuleTemplates[Item.MicroModuleIndex - 1].StatBonuses[bonScan]);
+    t_RepairRobot: Inc((Item as TRepairRobot).RepairPoints, MicroModuleTemplates[Item.MicroModuleIndex - 1].StatBonuses[bonDroid]);
     t_CargoHook:
       begin
-        Inc((Item as TCargoHook).PickupPower, MicroModuleTemplates[Item.MicroModuleIndex - 1].StatBonuses[Ord(bonHook)]);
-        Inc((Item as TCargoHook).Range, MicroModuleTemplates[Item.MicroModuleIndex - 1].StatBonuses[Ord(bonHookRadius)]);
-        (Item as TCargoHook).MinPullSpeed := (Item as TCargoHook).MinPullSpeed + MicroModuleTemplates[Item.MicroModuleIndex - 1].StatBonuses[Ord(bonHookMinSpeed)];
-        (Item as TCargoHook).MaxPullSpeed := (Item as TCargoHook).MaxPullSpeed + MicroModuleTemplates[Item.MicroModuleIndex - 1].StatBonuses[Ord(bonHookMaxSpeed)];
+        Inc((Item as TCargoHook).PickupPower, MicroModuleTemplates[Item.MicroModuleIndex - 1].StatBonuses[bonHook]);
+        Inc((Item as TCargoHook).Range, MicroModuleTemplates[Item.MicroModuleIndex - 1].StatBonuses[bonHookRadius]);
+        (Item as TCargoHook).MinPullSpeed := (Item as TCargoHook).MinPullSpeed + MicroModuleTemplates[Item.MicroModuleIndex - 1].StatBonuses[bonHookMinSpeed];
+        (Item as TCargoHook).MaxPullSpeed := (Item as TCargoHook).MaxPullSpeed + MicroModuleTemplates[Item.MicroModuleIndex - 1].StatBonuses[bonHookMaxSpeed];
       end;
     t_DefGenerator:
-      if MicroModuleTemplates[Item.MicroModuleIndex - 1].StatBonuses[Ord(bonDef)] <> 0 then
+      if MicroModuleTemplates[Item.MicroModuleIndex - 1].StatBonuses[bonDef] <> 0 then
         (Item as TDefGenerator).DamageFactor := (Item as TDefGenerator).DamageFactor -
-          (1 - DefensePercentToDamageFactor(MicroModuleTemplates[Item.MicroModuleIndex - 1].StatBonuses[Ord(bonDef)]));
+          (1 - DefensePercentToDamageFactor(MicroModuleTemplates[Item.MicroModuleIndex - 1].StatBonuses[bonDef]));
   else
     if Item.ItemType in [t_Weapon1..t_CustomWeapon] then
     begin
-      BonusKind := WeaponDamageClasses[Ord(ClassifyWeaponDamageFlags(TWeapon(Item).GetWeaponInfo.DamageFlags))].BonusKind;
+      BonusKind := WeaponDamageClasses[ClassifyWeaponDamageFlags(TWeapon(Item).GetWeaponInfo.DamageFlags)].BonusKind;
       Inc((Item as TWeapon).MaxDamage, MicroModuleTemplates[Item.MicroModuleIndex - 1].StatBonuses[BonusKind]);
-      Inc((Item as TWeapon).Range, MicroModuleTemplates[Item.MicroModuleIndex - 1].StatBonuses[Ord(bonWRadius)]);
+      Inc((Item as TWeapon).Range, MicroModuleTemplates[Item.MicroModuleIndex - 1].StatBonuses[bonWRadius]);
       if TWeapon(Item).GetWeaponInfo.ShotType in [wstTorpedo..wstRocket] then
-        Inc((Item as TWeapon).AmmoCapacity, MicroModuleTemplates[Item.MicroModuleIndex - 1].StatBonuses[Ord(bonAmmo)]);
+        Inc((Item as TWeapon).AmmoCapacity, MicroModuleTemplates[Item.MicroModuleIndex - 1].StatBonuses[bonAmmo]);
     end
     else Exception.Create('Микромодуль в оборудование хотели вставить, в которое вставить микромодуль нельзя!'); // Native allocates without raising.
   end;
@@ -5385,7 +5385,7 @@ end;
 
 { @routine $808524 RemoveMicroModule }
 procedure RemoveMicroModule(Item: TEquipment);
-var BonusKind: Byte;
+var BonusKind: TEquipmentBonusKind;
 begin
   if (Item = nil) or (Item.MicroModuleIndex = 0) then Exit;
   Item.Weight := Round(Max(1, Item.Weight / MicroModuleTemplates[Item.MicroModuleIndex - 1].SizePercent * 100));
@@ -5393,37 +5393,37 @@ begin
   case Item.ItemType of
     t_Hull:
       begin
-        Dec((Item as THull).Armor, MicroModuleTemplates[Item.MicroModuleIndex - 1].StatBonuses[Ord(bonHull)]);
+        Dec((Item as THull).Armor, MicroModuleTemplates[Item.MicroModuleIndex - 1].StatBonuses[bonHull]);
         (Item as THull).HullPoints := Min(Item.Weight, (Item as THull).HullPoints);
       end;
-    t_FuelTanks: Dec((Item as TFuelTanks).Capacity, MicroModuleTemplates[Item.MicroModuleIndex - 1].StatBonuses[Ord(bonFuel)]);
+    t_FuelTanks: Dec((Item as TFuelTanks).Capacity, MicroModuleTemplates[Item.MicroModuleIndex - 1].StatBonuses[bonFuel]);
     t_Engine:
       begin
-        Dec((Item as TEngine).Speed, MicroModuleTemplates[Item.MicroModuleIndex - 1].StatBonuses[Ord(bonSpeed)]);
-        Dec((Item as TEngine).JumpRange, MicroModuleTemplates[Item.MicroModuleIndex - 1].StatBonuses[Ord(bonJump)]);
+        Dec((Item as TEngine).Speed, MicroModuleTemplates[Item.MicroModuleIndex - 1].StatBonuses[bonSpeed]);
+        Dec((Item as TEngine).JumpRange, MicroModuleTemplates[Item.MicroModuleIndex - 1].StatBonuses[bonJump]);
       end;
-    t_Radar: Dec((Item as TRadar).Range, MicroModuleTemplates[Item.MicroModuleIndex - 1].StatBonuses[Ord(bonRadar)]);
-    t_Scaner: Dec((Item as TScaner).ScanPower, MicroModuleTemplates[Item.MicroModuleIndex - 1].StatBonuses[Ord(bonScan)]);
-    t_RepairRobot: Dec((Item as TRepairRobot).RepairPoints, MicroModuleTemplates[Item.MicroModuleIndex - 1].StatBonuses[Ord(bonDroid)]);
+    t_Radar: Dec((Item as TRadar).Range, MicroModuleTemplates[Item.MicroModuleIndex - 1].StatBonuses[bonRadar]);
+    t_Scaner: Dec((Item as TScaner).ScanPower, MicroModuleTemplates[Item.MicroModuleIndex - 1].StatBonuses[bonScan]);
+    t_RepairRobot: Dec((Item as TRepairRobot).RepairPoints, MicroModuleTemplates[Item.MicroModuleIndex - 1].StatBonuses[bonDroid]);
     t_CargoHook:
       begin
-        Dec((Item as TCargoHook).PickupPower, MicroModuleTemplates[Item.MicroModuleIndex - 1].StatBonuses[Ord(bonHook)]);
-        Dec((Item as TCargoHook).Range, MicroModuleTemplates[Item.MicroModuleIndex - 1].StatBonuses[Ord(bonHookRadius)]);
-        (Item as TCargoHook).MinPullSpeed := (Item as TCargoHook).MinPullSpeed - MicroModuleTemplates[Item.MicroModuleIndex - 1].StatBonuses[Ord(bonHookMinSpeed)];
-        (Item as TCargoHook).MaxPullSpeed := (Item as TCargoHook).MaxPullSpeed - MicroModuleTemplates[Item.MicroModuleIndex - 1].StatBonuses[Ord(bonHookMaxSpeed)];
+        Dec((Item as TCargoHook).PickupPower, MicroModuleTemplates[Item.MicroModuleIndex - 1].StatBonuses[bonHook]);
+        Dec((Item as TCargoHook).Range, MicroModuleTemplates[Item.MicroModuleIndex - 1].StatBonuses[bonHookRadius]);
+        (Item as TCargoHook).MinPullSpeed := (Item as TCargoHook).MinPullSpeed - MicroModuleTemplates[Item.MicroModuleIndex - 1].StatBonuses[bonHookMinSpeed];
+        (Item as TCargoHook).MaxPullSpeed := (Item as TCargoHook).MaxPullSpeed - MicroModuleTemplates[Item.MicroModuleIndex - 1].StatBonuses[bonHookMaxSpeed];
       end;
     t_DefGenerator:
-      if MicroModuleTemplates[Item.MicroModuleIndex - 1].StatBonuses[Ord(bonDef)] <> 0 then
+      if MicroModuleTemplates[Item.MicroModuleIndex - 1].StatBonuses[bonDef] <> 0 then
         (Item as TDefGenerator).DamageFactor := (Item as TDefGenerator).DamageFactor +
-          (1 - DefensePercentToDamageFactor(MicroModuleTemplates[Item.MicroModuleIndex - 1].StatBonuses[Ord(bonDef)]));
+          (1 - DefensePercentToDamageFactor(MicroModuleTemplates[Item.MicroModuleIndex - 1].StatBonuses[bonDef]));
   else
     if Item.ItemType in [t_Weapon1..t_CustomWeapon] then
     begin
-      BonusKind := WeaponDamageClasses[Ord(ClassifyWeaponDamageFlags(TWeapon(Item).GetWeaponInfo.DamageFlags))].BonusKind;
+      BonusKind := WeaponDamageClasses[ClassifyWeaponDamageFlags(TWeapon(Item).GetWeaponInfo.DamageFlags)].BonusKind;
       Dec((Item as TWeapon).MaxDamage, MicroModuleTemplates[Item.MicroModuleIndex - 1].StatBonuses[BonusKind]);
-      Dec((Item as TWeapon).Range, MicroModuleTemplates[Item.MicroModuleIndex - 1].StatBonuses[Ord(bonWRadius)]);
+      Dec((Item as TWeapon).Range, MicroModuleTemplates[Item.MicroModuleIndex - 1].StatBonuses[bonWRadius]);
       if TWeapon(Item).GetWeaponInfo.ShotType in [wstTorpedo..wstRocket] then
-        Dec((Item as TWeapon).AmmoCapacity, MicroModuleTemplates[Item.MicroModuleIndex - 1].StatBonuses[Ord(bonAmmo)]);
+        Dec((Item as TWeapon).AmmoCapacity, MicroModuleTemplates[Item.MicroModuleIndex - 1].StatBonuses[bonAmmo]);
     end;
   end;
   Item.MicroModuleIndex := 0;
@@ -5432,7 +5432,7 @@ end;
 
 { @routine $8089D8 ApplySpecialMicroModule }
 procedure ApplySpecialMicroModule(ModuleIndex: Integer; Item: TEquipment);
-var BonusKind: Byte;
+var BonusKind: TEquipmentBonusKind;
 begin
   if (ModuleIndex = -1) or (Item = nil) or (Item.SpecialModuleIndex <> 0) then
   begin
@@ -5450,11 +5450,11 @@ begin
   end;
   if Item.ItemType in [t_Weapon1..t_CustomWeapon] then
   begin
-    BonusKind := WeaponDamageClasses[Ord(ClassifyWeaponDamageFlags(TWeapon(Item).GetWeaponInfo.DamageFlags))].BonusKind;
+    BonusKind := WeaponDamageClasses[ClassifyWeaponDamageFlags(TWeapon(Item).GetWeaponInfo.DamageFlags)].BonusKind;
     Inc((Item as TWeapon).MaxDamage, MicroModuleTemplates[ModuleIndex].StatBonuses[BonusKind]);
-    Inc((Item as TWeapon).Range, MicroModuleTemplates[ModuleIndex].StatBonuses[Ord(bonWRadius)]);
+    Inc((Item as TWeapon).Range, MicroModuleTemplates[ModuleIndex].StatBonuses[bonWRadius]);
     if TWeapon(Item).GetWeaponInfo.ShotType in [wstTorpedo..wstRocket] then
-      Inc((Item as TWeapon).AmmoCapacity, MicroModuleTemplates[ModuleIndex].StatBonuses[Ord(bonAmmo)]);
+      Inc((Item as TWeapon).AmmoCapacity, MicroModuleTemplates[ModuleIndex].StatBonuses[bonAmmo]);
   end;
   if MicroModuleTemplates[ModuleIndex].CustomFaction <> '' then Item.CustomFaction := MicroModuleTemplates[ModuleIndex].CustomFaction;
 end;
@@ -5462,7 +5462,7 @@ end;
 
 { @routine $808C84 RemoveSpecialMicroModule }
 procedure RemoveSpecialMicroModule(Item: TEquipment);
-var BonusKind: Byte;
+var BonusKind: TEquipmentBonusKind;
 begin
   if (Item = nil) or (Item.SpecialModuleIndex = 0) then Exit;
   Item.Weight := Round(Max(1, Item.Weight * 100 / MicroModuleTemplates[Item.SpecialModuleIndex - 1].SizePercent));
@@ -5472,11 +5472,11 @@ begin
     if (Item.Cost < 0) or (Item.Cost > 100000000) then Item.Cost := 100000000;
   end;
   if Item.ItemType in [t_Weapon1..t_CustomWeapon] then begin
-    BonusKind := WeaponDamageClasses[Ord(ClassifyWeaponDamageFlags(TWeapon(Item).GetWeaponInfo.DamageFlags))].BonusKind;
+    BonusKind := WeaponDamageClasses[ClassifyWeaponDamageFlags(TWeapon(Item).GetWeaponInfo.DamageFlags)].BonusKind;
     Dec((Item as TWeapon).MaxDamage, MicroModuleTemplates[Item.SpecialModuleIndex - 1].StatBonuses[BonusKind]);
-    Dec((Item as TWeapon).Range, MicroModuleTemplates[Item.SpecialModuleIndex - 1].StatBonuses[Ord(bonWRadius)]);
+    Dec((Item as TWeapon).Range, MicroModuleTemplates[Item.SpecialModuleIndex - 1].StatBonuses[bonWRadius]);
     if TWeapon(Item).GetWeaponInfo.ShotType in [wstTorpedo..wstRocket] then
-      Dec((Item as TWeapon).AmmoCapacity, MicroModuleTemplates[Item.SpecialModuleIndex - 1].StatBonuses[Ord(bonAmmo)]);
+      Dec((Item as TWeapon).AmmoCapacity, MicroModuleTemplates[Item.SpecialModuleIndex - 1].StatBonuses[bonAmmo]);
   end;
   if (Item.CustomFaction <> '') and (MicroModuleTemplates[Item.SpecialModuleIndex - 1].CustomFaction = Item.CustomFaction) then Item.CustomFaction := '';
   Item.SpecialModuleIndex := 0;
@@ -5520,8 +5520,8 @@ begin
   if Item.MicroModuleIndex <> 0 then Exit;
   if (Item.SpecialModuleIndex <> 0) and
     MicroModuleTemplates[Item.SpecialModuleIndex - 1].BlocksMicroModuleSlot then Exit;
-  if (MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[Ord(bonExtraAkrinEff)] <> 0) and (Item.SpecialModuleIndex = 0) then Exit;
-  if (MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[Ord(bonExtraAkrinPenalty)] <> 0) and (Item.SpecialModuleIndex = 0) then Exit;
+  if (MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonExtraAkrinEff] <> 0) and (Item.SpecialModuleIndex = 0) then Exit;
+  if (MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonExtraAkrinPenalty] <> 0) and (Item.SpecialModuleIndex = 0) then Exit;
   if Item is TWeapon then Result := IsBonusCompatibleWithWeapon(MicroModuleIndex - 1, TWeapon(Item))
   else if Item is THull then Result := IsBonusCompatibleWithHull(MicroModuleIndex - 1, THull(Item))
   else Result := IsBonusCompatibleWithEquipment(MicroModuleIndex - 1, Item);
@@ -5535,9 +5535,9 @@ begin
   if Item.MicroModuleIndex <> 0 then Exit;
   if (Item.SpecialModuleIndex <> 0) and
     MicroModuleTemplates[Item.SpecialModuleIndex - 1].BlocksMicroModuleSlot then Exit;
-  if (MicroModuleTemplates[ModuleIndex].StatBonuses[Ord(bonExtraAkrinEff)] <> 0) and
+  if (MicroModuleTemplates[ModuleIndex].StatBonuses[bonExtraAkrinEff] <> 0) and
     (Item.SpecialModuleIndex = 0) then Exit;
-  if (MicroModuleTemplates[ModuleIndex].StatBonuses[Ord(bonExtraAkrinPenalty)] <> 0) and
+  if (MicroModuleTemplates[ModuleIndex].StatBonuses[bonExtraAkrinPenalty] <> 0) and
     (Item.SpecialModuleIndex = 0) then Exit;
   if MicroModuleTemplates[ModuleIndex].SpecialOnly then Exit;
   if Item is TWeapon then Result := IsBonusCompatibleWithWeapon(ModuleIndex, TWeapon(Item))
@@ -6080,7 +6080,7 @@ function TArtefact.GetBitmapResourceName: WideString;
 begin
   if Self is TArtefactCustom then Result := 'Bm.Items.' + GiResourceSuffix + ConfigBlockName + '_'
   else if ConfigBlockName <> '' then Result := 'Bm.Items.' + GiResourceSuffix + ConfigBlockName
-  else Result := 'Bm.Items.' + GiResourceSuffix + ItemTypeNames[Ord(ItemType)] + '_';
+  else Result := 'Bm.Items.' + GiResourceSuffix + ItemTypeNames[ItemType] + '_';
 end;
 { @end $80A760 }
 
@@ -6088,7 +6088,7 @@ end;
 function TArtefact.GetDisplayName: WideString;
 begin
   if NameOverride <> '' then Result := NameOverride
-  else Result := LocalizedText('Artefacts.' + ItemTypeNames[Ord(ItemType)] + '.Name');
+  else Result := LocalizedText('Artefacts.' + ItemTypeNames[ItemType] + '.Name');
 end;
 { @end $80A868 }
 
@@ -6098,14 +6098,14 @@ begin
   if (ConfigBlockName <> '') and (LanguageDataConfig.GetBlock('Artefacts').CountBlocks(ConfigBlockName) > 0) then
     Result := LocalizedColorText('Artefacts.' + ConfigBlockName + '.Text') + GetBonusDescription(ColorTag) + GetConditionText(True) + GetBoostStatusText
   else
-    Result := LocalizedColorText('Artefacts.' + ItemTypeNames[Ord(ItemType)] + '.Text') + GetBonusDescription(ColorTag) + GetConditionText(True) + GetBoostStatusText;
+    Result := LocalizedColorText('Artefacts.' + ItemTypeNames[ItemType] + '.Text') + GetBonusDescription(ColorTag) + GetConditionText(True) + GetBoostStatusText;
 end;
 { @end $80A928 }
 
 { @routine $80AAE0 TArtefact_GetDescriptionText }
 function TArtefact.GetDescriptionText: WideString;
 begin
-  Result := LocalizedColorText('Artefacts.' + ItemTypeNames[Ord(ItemType)] + '.Description');
+  Result := LocalizedColorText('Artefacts.' + ItemTypeNames[ItemType] + '.Description');
 end;
 { @end $80AAE0 }
 
@@ -6116,7 +6116,7 @@ begin
   Result := '';
   if ItemType in [t_Artefact..t_Artefact2] then
     Block := LanguageDataConfig.GetBlock('Artefacts').GetBlock('CustomArtefacts').GetBlock(ConfigBlockName).FindBlock('OnUseCode')
-  else Block := LanguageDataConfig.GetBlock('Artefacts').GetBlock(ItemTypeNames[Ord(ItemType)]).FindBlock('OnUseCode');
+  else Block := LanguageDataConfig.GetBlock('Artefacts').GetBlock(ItemTypeNames[ItemType]).FindBlock('OnUseCode');
   if Block <> nil then Result := Block.ConcatenateValues;
 end;
 { @end $80AB90 }
@@ -6134,12 +6134,12 @@ begin
   ActCodeInitialized := True;
   if ItemType in [t_Artefact..t_Artefact2] then
     Config := LanguageDataConfig.GetBlock('Artefacts').GetBlock('CustomArtefacts').GetBlock(ConfigBlockName)
-  else Config := LanguageDataConfig.GetBlock('Artefacts').GetBlock(ItemTypeNames[Ord(ItemType)]);
+  else Config := LanguageDataConfig.GetBlock('Artefacts').GetBlock(ItemTypeNames[ItemType]);
   if Config <> nil then
   begin
     if ItemType in [t_Artefact..t_Artefact2] then
       ActionCode := GetCachedActionCode(ArtefactScriptCache, ConfigBlockName, Config)
-    else ActionCode := GetCachedActionCode(ArtefactKindScriptCache, ItemTypeNames[Ord(ItemType)], Config);
+    else ActionCode := GetCachedActionCode(ArtefactKindScriptCache, ItemTypeNames[ItemType], Config);
     Result := ActionCode;
   end;
 end;
@@ -6200,7 +6200,7 @@ function TArtefactTransmitter.GetInfoText(ColorTag: WideString; Ship: Pointer): 
 var
   DisplayPower: Integer;
 begin
-  Result := LocalizedColorText('Artefacts.' + ItemTypeNames[Ord(ItemType)] + '.Text') +
+  Result := LocalizedColorText('Artefacts.' + ItemTypeNames[ItemType] + '.Text') +
     GetConditionText(True) + GetBoostStatusText;
   if Power < 0 then DisplayPower := 0
   else DisplayPower := Power;
@@ -6316,8 +6316,8 @@ begin
   if NameOverride <> '' then Result := NameOverride
   else if Ship <> nil then begin
     if Length((TObject(Ship) as TShip).Name) > 0 then Result := (TObject(Ship) as TShip).Name
-    else Result := LocalizedText('Artefacts.' + ItemTypeNames[Ord(ItemType)] + '.Name') + '-' + IntToStr(Int64(Cardinal((TObject(Ship) as TShip).Id)));
-  end else Result := LocalizedText('Artefacts.' + ItemTypeNames[Ord(ItemType)] + '.Name');
+    else Result := LocalizedText('Artefacts.' + ItemTypeNames[ItemType] + '.Name') + '-' + IntToStr(Int64(Cardinal((TObject(Ship) as TShip).Id)));
+  end else Result := LocalizedText('Artefacts.' + ItemTypeNames[ItemType] + '.Name');
 end;
 { @end $80B5A8 }
 
@@ -6338,7 +6338,7 @@ begin
     Name := Block.GetParam('CountsAs');
     for Kind := Low(TItemType) to High(TItemType) do
       if (Kind in [t_Artefact..t_ArtefactAntigrav, t_ArtDefToEnergy..t_ArtGiperJump, t_ArtDefToArms1..t_ArtFastRacks]) and
-         not (Kind in [t_Artefact..t_Artefact2]) and (ItemTypeNames[Ord(Kind)] = Name) then begin
+         not (Kind in [t_Artefact..t_Artefact2]) and (ItemTypeNames[Kind] = Name) then begin
         CountsAsItemType := Kind;
         Break;
       end;
@@ -6567,7 +6567,7 @@ end;
 { @routine $80CD0C GetItemTypeBitmapPath }
 function GetItemTypeBitmapPath(ItemType: TItemType): WideString;
 begin
-  Result := 'Bm.Items.' + GiResourceSuffix + ItemTypeNames[Ord(ItemType)];
+  Result := 'Bm.Items.' + GiResourceSuffix + ItemTypeNames[ItemType];
 end;
 { @end $80CD0C }
 

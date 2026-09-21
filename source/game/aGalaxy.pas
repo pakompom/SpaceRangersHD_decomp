@@ -217,7 +217,7 @@ type
     BestRangerStrength: Single; // @offset 0x6C  May include independent pirates after Coalition defeat.
     StrongestRanger: TObject; // @offset 0x70  Can differ from BestRangerStrength after Coalition defeat.
     WealthiestRanger: TObject; // @offset 0x74
-    EminentCareerShips: array[0..2] of TObject; // @offset 0x78  Trader, pirate, warrior.
+    EminentCareerShips: array[TRangerCareer] of TObject; // @offset 0x78  Trader, pirate, warrior.
     ShipTypeCounts: TShipPopulationCounts; // @offset 0x84  Cached counts indexed by ship type, 0..13.
     NextPlanetNewsId: Cardinal; // @offset 0xBC
     PlanetNews: TList; // @offset 0xC0  Owns PPlanetNewsEntry records.
@@ -367,8 +367,8 @@ type
     procedure RefreshRangerRatingPlaces; // @addr 0x7BA96C @note "Assigns one-based positions by descending TotalExperience, including excluded rangers; leaves the Rangers list order unchanged."
     function FindStrongestRanger: Pointer; // @addr 0x7BAB14 @note "Ignores ExcludedFromRating rangers; returns nil if none has positive strength."
     function FindWealthiestRanger: Pointer; // @addr 0x7BAB90 @note "Ignores ExcludedFromRating rangers; returns nil if none has positive wealth."
-    function CountFactionStars(Faction: Byte): Integer; // @addr 0x7BAC10 @note "Excludes stars with a custom faction."
-    function GetFactionControlPercent(Faction: Byte): TPercent; // @addr 0x7BAC78
+    function CountFactionStars(Faction: TStarFaction): Integer; // @addr 0x7BAC10 @note "Excludes stars with a custom faction."
+    function GetFactionControlPercent(Faction: TStarFaction): TPercent; // @addr 0x7BAC78
     function GetDominatorSeriesControlShare(Series: TDominatorSeries): Single; // @addr 0x7BACBC @note "Active Galaxy only. Fraction of Dominator systems in Series, multiplied by the number of unresolved series; not a percentage."
     function CountStarsInBattle: Integer; // @addr 0x7BAD94
     function TurnToDateTime(Turn: Integer): Double; // @addr 0x7BB330 @note "Delphi TDateTime; -1 selects CurrentTurn."
@@ -701,7 +701,7 @@ end;
     function CountForcesByOwnerGroups(out Strength: Extended; IncludeCoalition, IncludeDominators, IncludePirates, IncludeCustom: Boolean): Integer; // @addr 0x7C4DEC @note "Includes local garrison ships absent from Ships, avoiding duplicate list entries."
     function CountRatedRangersByCareerMask(CareerMask: TRangerCareerSet): Byte; // @addr 0x7C4EF8 @note "Includes docked and hyperspace entries in Ships; excludes ExcludedFromRating. Byte count can wrap."
     function GetRangerNamesByCareerMask(CareerMask: TRangerCareerSet): WideString; // @addr 0x7C4F88 @ida "void __usercall $name(TStar *Self@<eax>, unsigned __int8 CareerMask@<dl>, unsigned __int16 **Result@<ecx>);" @note "Unlike CountRatedRangersByCareerMask, includes ExcludedFromRating entries."
-    function GetCachedFactionStrength(FactionGroup: Byte): Single; // @addr 0x7C5088 @note "Group 0 Coalition, 1 Dominators/custom, 2 pirates. Lazily refreshes all three once per active Galaxy.CurrentTurn."
+    function GetCachedFactionStrength(FactionGroup: TStarFaction): Single; // @addr 0x7C5088 @note "Group 0 Coalition, 1 Dominators/custom, 2 pirates. Lazily refreshes all three once per active Galaxy.CurrentTurn."
     function SumBestRangerRelativeStrength(ShipTypeMask: TShipTypeMask): Single; // @addr 0x7C5474 @note "Sums StrengthInBestRanger over Ships, excluding the three bosses; no docking/hyperspace filter."
     function FindNearestStarByFaction(Faction: TStarFaction; InBattle: Boolean): TStar; // @addr 0x7C5734 @note "Starts at distance-cache index one and excludes custom factions. Requires a current distance cache."
     function GetBoundaryPointTowardStar(Star: TStar): TPointF; // @addr 0x7C57BC
@@ -857,9 +857,9 @@ begin
   end;
   PreviousFilmActivity := 0;
   ShownPlayerTips := 0;
-  EminentCareerShips[Ord(rcTrader)] := nil;
-  EminentCareerShips[Ord(rcPirate)] := nil;
-  EminentCareerShips[Ord(rcWarrior)] := nil;
+  EminentCareerShips[rcTrader] := nil;
+  EminentCareerShips[rcPirate] := nil;
+  EminentCareerShips[rcWarrior] := nil;
   ReservedMessageCounter := 0;
   TurnsSinceLastShipMessage := 0;
   IronWill := False;
@@ -1062,7 +1062,7 @@ procedure TGalaxy.SaveToBuffer(Buffer: TBufEC);
 var I, J, Count: Integer; Star: TStar; Planet: TPlanet; Ranger: TRanger;
   OldQuest: PPlayerOldQuest; Gate: PJumpGateEntry; Constellation: TConstellation;
   Template: TScriptTemplUnit; Script: TScript; Group: TGroup; ShopSlot: TShopSlot;
-  Hole: THole; Career: Byte; News: PPlanetNewsEntry; Series, Difficulty: Byte;
+  Hole: THole; Career: TRangerCareer; News: PPlanetNewsEntry; Series, Difficulty: Byte;
   Stored: TStoredItem; WeaponInfo: PWeaponInfo; Race: Byte;
 begin
   if (TemporaryShopSlots <> nil) and (GetPlayer.CurrentPlanet <> TemporaryShopPlanet) and
@@ -1222,7 +1222,7 @@ begin
   else Buffer.AddDWord(TerronShip.Id);
   Buffer.AddDWord(PlayerStar.Id);
   Buffer.AddDWord(PieceCreatorTargetStarId);
-  for Career := 0 to 2 do begin
+  for Career := Low(TRangerCareer) to High(TRangerCareer) do begin
     if EminentCareerShips[Career] = nil then Buffer.AddDWord(0)
     else Buffer.AddDWord((EminentCareerShips[Career] as TShip).Id);
   end;
@@ -1382,7 +1382,7 @@ procedure TGalaxy.LoadFromBuffer(Buffer: TBufEC);
 var I, J, K, Count, TemplateIndex, ShipCount: Integer; X, Y: Single;
   Star: TStar; Planet: TPlanet; Ship: TShip; OldQuest: PPlayerOldQuest;
   Gate: PJumpGateEntry; Constellation: TConstellation; Template: TScriptTemplUnit;
-  Script: TScript; Group: TGroup; ShopSlot: TShopSlot; Hole: THole; Career: Byte;
+  Script: TScript; Group: TGroup; ShopSlot: TShopSlot; Hole: THole; Career: TRangerCareer;
   News: PPlanetNewsEntry; Variables: TVarArrayEC; Variable, Existing: TVarEC;
   Series, Difficulty: Byte; LoadedPlanet: TPlanet; SavedRandomState: Cardinal;
   Event: TGalaxyEvent; StateOverride: TInterfaceStateOverride;
@@ -1616,7 +1616,7 @@ begin
     PlayerStar := TStar(Buffer.GetUInt32);
     PieceCreatorTargetStarId := Buffer.GetUInt32;
     Stage := 14;
-    for Career := 0 to 2 do EminentCareerShips[Career] := TObject(Buffer.GetUInt32);
+    for Career := Low(TRangerCareer) to High(TRangerCareer) do EminentCareerShips[Career] := TObject(Buffer.GetUInt32);
     Stage := 15;
     Count := Rangers.Count;
     for I := 0 to Count - 1 do Rangers[I] := TObject(IdToShip(Cardinal(Rangers[I]), True)) as TShip;
@@ -1661,7 +1661,7 @@ begin
     TerronShip := TObject(IdToShip(Cardinal(TerronShip), True)) as TKling;
     PlayerStar := TObject(IdToStar(Cardinal(PlayerStar))) as TStar;
     Stage := 24;
-    for Career := 0 to 2 do EminentCareerShips[Career] := TObject(IdToShip(Cardinal(EminentCareerShips[Career]), True)) as TRanger;
+    for Career := Low(TRangerCareer) to High(TRangerCareer) do EminentCareerShips[Career] := TObject(IdToShip(Cardinal(EminentCareerShips[Career]), True)) as TRanger;
     Stage := 25;
     if PlayerOldQuests <> nil then begin
       PlayerOldQuests.Free;
@@ -2299,8 +2299,8 @@ begin
       if Random(50) = 0 then CheckPlatformModules;
       Stage := 13;
       if ((((CurrentTurn + Integer(GenerationSeed)) mod GetTurnsBetweenLiberationGroups) = 0) and (CurrentTurn >= 300)) or
-         (WarDeltaWin[0] < -5) or ((CountFactionStars(Ord(sfCoalition)) < 5) and (LiberationGroups.Count = 0)) or
-         (CountFactionStars(Ord(sfCoalition)) = 1) then begin
+         (WarDeltaWin[0] < -5) or ((CountFactionStars(sfCoalition) < 5) and (LiberationGroups.Count = 0)) or
+         (CountFactionStars(sfCoalition) = 1) then begin
         Stage := 14;
         if LiberationGroups.Count < 2 then TryCreateLiberationGroup;
       end;
@@ -3688,7 +3688,7 @@ var
   Good: Byte;
   Asteroid: TAsteroid;
   Ship: TShip;
-  Skill: Byte;
+  Skill: TPilotSkill;
   RangerQuest: PQuest;
   Quest: TTextQuest;
   Parameter: TParameter;
@@ -3834,7 +3834,7 @@ begin
     begin
       Ship := TShip(Star.Ships[J]);
       AccumulateIntegrityObject(Ship);
-      for Skill := 0 to 5 do AccumulateIntegrityUInt32(Ship.BaseSkills[Skill]);
+      for Skill := Low(TPilotSkill) to High(TPilotSkill) do AccumulateIntegrityUInt32(Ship.BaseSkills[Skill]);
       for K := 0 to Ship.Inventory.Count - 1 do AccumulateIntegrityItem(Ship.Inventory[K]);
       for K := 0 to Ship.Artefacts.Count - 1 do AccumulateIntegrityItem(Ship.Artefacts[K]);
       if Ship.GuaranteedDeathDropItems <> nil then
@@ -3843,7 +3843,7 @@ begin
         for K := 0 to Ship.StatBonuses.Count - 1 do
         begin
           AccumulateIntegrityUInt32(PShipStatBonusEntry(Ship.StatBonuses[K]).BonusValue);
-          AccumulateIntegrityByte(PShipStatBonusEntry(Ship.StatBonuses[K]).BonusKind);
+          AccumulateIntegrityByte(Ord(PShipStatBonusEntry(Ship.StatBonuses[K]).BonusKind));
         end;
       if Ship is TRuins then
         for K := 0 to (Ship as TRuins).EquipmentShop.Count - 1 do
@@ -4171,12 +4171,12 @@ begin
   Buffer.AddIntegerValue(GetPlayer.CargoFreeSpace);
   Buffer.AddIntegerValue(GetPlayer.Speed);
   Buffer.AddSingle(GetPlayer.DefenseDamageFactor);
-  Buffer.AddAnsiChar(AnsiChar(GetPlayer.BaseSkills[0]));
-  Buffer.AddAnsiChar(AnsiChar(GetPlayer.BaseSkills[1]));
-  Buffer.AddAnsiChar(AnsiChar(GetPlayer.BaseSkills[2]));
-  Buffer.AddAnsiChar(AnsiChar(GetPlayer.BaseSkills[3]));
-  Buffer.AddAnsiChar(AnsiChar(GetPlayer.BaseSkills[4]));
-  Buffer.AddAnsiChar(AnsiChar(GetPlayer.BaseSkills[5]));
+  Buffer.AddAnsiChar(AnsiChar(GetPlayer.BaseSkills[psAccuracy]));
+  Buffer.AddAnsiChar(AnsiChar(GetPlayer.BaseSkills[psManeuverability]));
+  Buffer.AddAnsiChar(AnsiChar(GetPlayer.BaseSkills[psTechnical]));
+  Buffer.AddAnsiChar(AnsiChar(GetPlayer.BaseSkills[psTrading]));
+  Buffer.AddAnsiChar(AnsiChar(GetPlayer.BaseSkills[psCharisma]));
+  Buffer.AddAnsiChar(AnsiChar(GetPlayer.BaseSkills[psLeadership]));
   Buffer.AddWideChar(WideChar(GetPlayer.PlaceInRating));
   Buffer.AddIntegerValue(GetPlayer.TotalShipKillCount);
   Buffer.AddIntegerValue(GetPlayer.PirateKillCount);
@@ -4196,8 +4196,8 @@ begin
   if GetPlayer.AwardIds = nil then Buffer.AddAnsiChar(#0)
   else Buffer.AddAnsiChar(AnsiChar(GetPlayer.AwardIds.Count));
   Buffer.AddAnsiStringZ('TESTBUILD');
-  Buffer.AddByte(CountFactionStars(Ord(sfCoalition)));
-  Buffer.AddByte(CountFactionStars(Ord(sfPirates)));
+  Buffer.AddByte(CountFactionStars(sfCoalition));
+  Buffer.AddByte(CountFactionStars(sfPirates));
   Count := 0;
   for I := 0 to Rangers.Count - 1 do begin
     Partner := Rangers[I];
@@ -5027,7 +5027,7 @@ begin
   for I := 0 to CountDelimitedPartsW(Key, ',') - 1 do begin
     Value := ExtractDelimitedPartW(Key, I, ',');
     for ItemType := Byte(Low(TItemType)) to Byte(High(TItemType)) do
-      if ItemTypeNames[ItemType] = Value then begin
+      if ItemTypeNames[TItemType(ItemType)] = Value then begin
         if (ItemType in [Ord(t_Food)..Ord(t_Narcotics), Ord(t_ArtefactHull)..Ord(t_Satellite)]) and (ItemType <> Byte(t_Hull)) then begin
           Item := CreateDefaultItemByType(TItemType(ItemType));
           if ItemType = Byte(t_Minerals) then TGoods(Item).NaturalFlag := True;
@@ -8027,20 +8027,20 @@ end;
 { @end $7BAB90 }
 
 { @routine $7BAC10 TGalaxy_CountFactionStars }
-function TGalaxy.CountFactionStars(Faction: Byte): Integer;
+function TGalaxy.CountFactionStars(Faction: TStarFaction): Integer;
 var Index: Integer; Star: TStar;
 begin
   Result := 0;
   for Index := 0 to Stars.Count - 1 do
   begin
     Star := Stars[Index];
-    if (Star.Status.CustomFaction = '') and (Byte(Star.ControlFaction) = Faction) then Inc(Result);
+    if (Star.Status.CustomFaction = '') and (Star.ControlFaction = Faction) then Inc(Result);
   end;
 end;
 { @end $7BAC10 }
 
 { @routine $7BAC78 TGalaxy_GetFactionControlPercent }
-function TGalaxy.GetFactionControlPercent(Faction: Byte): TPercent;
+function TGalaxy.GetFactionControlPercent(Faction: TStarFaction): TPercent;
 begin
   Result := Round(CountFactionStars(Faction) / Stars.Count * 100);
 end;
@@ -8395,7 +8395,7 @@ begin
   Nearest := nil;
   for I := 1 to CountItemTypesInMask([Ord(t_Weapon1)..Ord(t_Weapon18)]) do
   begin
-    Info := @WeaponInfos[Ord(TItemType(GetItemTypeFromMask([Ord(t_Weapon1)..Ord(t_Weapon18)], I)))];
+    Info := @WeaponInfos[TItemType(GetItemTypeFromMask([Ord(t_Weapon1)..Ord(t_Weapon18)], I))];
     if Byte(Info.Availability) in AvailabilityMask then
     begin
       Distance := TechDistance(Info.TechLevel);
@@ -8467,7 +8467,7 @@ begin
         end
         else if Context is TRuins then
         begin
-          if TRuins(Context).CurrentStanding in aConst.FactionStandingMasks[Ord(TRuins(Context).CurrentStar.ControlFaction)] then
+          if TRuins(Context).CurrentStanding in aConst.FactionStandingMasks[TRuins(Context).CurrentStar.ControlFaction] then
           begin
             if aConst.MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask *
               TModuleOwnerMasks(aConst.PlanetOwnerMasks)[Ord(TRuins(Context).CurrentStar.ControlFaction)] = [] then Continue;
@@ -8553,7 +8553,7 @@ begin
         end
         else if Context is TRuins then
         begin
-          if TRuins(Context).CurrentStanding in aConst.FactionStandingMasks[Ord(TRuins(Context).CurrentStar.ControlFaction)] then
+          if TRuins(Context).CurrentStanding in aConst.FactionStandingMasks[TRuins(Context).CurrentStar.ControlFaction] then
           begin
             if aConst.MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask *
               TModuleOwnerMasks(aConst.PlanetOwnerMasks)[Ord(TRuins(Context).CurrentStar.ControlFaction)] = [] then Continue;
@@ -8955,7 +8955,7 @@ begin
       end;
       if not Hostile then begin
         Star := Constellation.Stars[NextRandomIntRange(0, Constellation.Stars.Count - 1, RandomState)];
-        if (Star.Battle = 0) and (StationDefaultStandings[Ord(StationType)] in FactionStandingMasks[Ord(Star.ControlFaction)]) and
+        if (Star.Battle = 0) and (StationDefaultStandings[Ord(StationType)] in FactionStandingMasks[Star.ControlFaction]) and
           (GetPlayer.CurrentStar <> Star) and (Star.DaysSincePlayerVisit >= 70) and (Star.CountShipsByTypeMask(StationMask) <= 1) and
           ((StationType <> rstPirateBase) or (Star.CountShipsByTypeMask(MilitaryBaseMask) <= 0)) and
           ((StationType <> rstMilitaryBase) or (Star.CountShipsByTypeMask(PirateBaseMask) <= 0)) then begin
@@ -9228,7 +9228,7 @@ var
 begin
   Result := False;
   EmergencyControlPercent := 5;
-  if (Galaxy.GetFactionControlPercent(Ord(sfCoalition)) > 90) and
+  if (Galaxy.GetFactionControlPercent(sfCoalition) > 90) and
     (NextRandomUnitFloat(Self.RandomState) < 0.5) and (Galaxy.WarDeltaWin[0] > 3) then Exit;
   if (Galaxy.WarDeltaWin[0] > 5) and (NextRandomUnitFloat(Self.RandomState) < 0.8) then Exit;
   Constellation := nil;
@@ -9273,7 +9273,7 @@ begin
       Star := TStar(Constellation.Stars[Index]);
       if (Star.ControlFaction = sfCoalition) and (Star.Battle = 0) and (Star.Status.CustomFaction = '') and
         (not Star.HasLiberationGroupOrder or
-          (Galaxy.GetFactionControlPercent(Ord(sfCoalition)) <= EmergencyControlPercent)) then
+          (Galaxy.GetFactionControlPercent(sfCoalition) <= EmergencyControlPercent)) then
       begin
         for j := 0 to Star.Planets.Count - 1 do
         begin
@@ -9313,7 +9313,7 @@ begin
         Star := TStar(Constellation.Stars[Index]);
         if (Star.ControlFaction = sfCoalition) and (Star.Battle = 0) and (Star.Status.CustomFaction = '') and
           (not Star.HasLiberationGroupOrder or
-            (Galaxy.GetFactionControlPercent(Ord(sfCoalition)) <= EmergencyControlPercent)) then
+            (Galaxy.GetFactionControlPercent(sfCoalition) <= EmergencyControlPercent)) then
         begin
           for j := 0 to Star.Ships.Count - 1 do
           begin
@@ -9336,7 +9336,7 @@ begin
           end;
         end;
       end;
-    if (ShipCount >= 1) and (Galaxy.GetFactionControlPercent(Ord(sfCoalition)) <= EmergencyControlPercent) then
+    if (ShipCount >= 1) and (Galaxy.GetFactionControlPercent(sfCoalition) <= EmergencyControlPercent) then
     begin
       if GetPlayer <> nil then GroupStrength := GetPlayer.Strength * 2 + GroupStrength;
       if (10 * GroupStrength >= NextRandomIntRange(3, 10, Self.RandomState) * EnemyStrength) or
@@ -9603,7 +9603,7 @@ end;
 procedure TGalaxy.ProcessCoalitionDefeat;
 var I, J: Integer; Ship: TShip; Star: TStar; Text: WideString; Bubble: TMessagePlayer; Contested: Boolean; CoalitionStrength, PirateStrength: Single;
 begin
-  if (GetPlayer <> nil) and (CountFactionStars(Ord(sfCoalition)) <= 0) and (GetPlayer.OwnerId = Byte(oiPirate)) and
+  if (GetPlayer <> nil) and (CountFactionStars(sfCoalition) <= 0) and (GetPlayer.OwnerId = Byte(oiPirate)) and
     (PirateWinType <> 3) and (CoalitionDefeatedTurn = 0) and
     ((MainPiratePlanet = nil) or (GetPlayer.CurrentStar <> MainPiratePlanet.CurrentStar)) then begin
     for I := 0 to Galaxy.Stars.Count - 1 do begin
@@ -9634,9 +9634,9 @@ begin
     if (Bubble <> nil) and (Bubble.Kind = 3) then begin Bubble.Kind := 4; Bubble.WasRead := False; end;
     Bubble := FindPlayerBubbleByKey('KellerWin', False);
     if (Bubble <> nil) and (Bubble.Kind = 3) then begin Bubble.Kind := 4; Bubble.WasRead := False; end;
-    EminentCareerShips[Ord(rcTrader)] := nil;
-    EminentCareerShips[Ord(rcPirate)] := nil;
-    EminentCareerShips[Ord(rcWarrior)] := nil;
+    EminentCareerShips[rcTrader] := nil;
+    EminentCareerShips[rcPirate] := nil;
+    EminentCareerShips[rcWarrior] := nil;
     CoalitionDefeatedTurn := CurrentTurn;
     Galaxy.PirateWinTurn := Galaxy.CurrentTurn;
     Galaxy.PirateWinType := 5;
@@ -9719,7 +9719,7 @@ end;
 { @routine $7C1744 TGalaxy_GetCoalitionToPirateSystemRatio }
 function TGalaxy.GetCoalitionToPirateSystemRatio: Single;
 begin
-  Result := Galaxy.CountFactionStars(Ord(sfCoalition)) / Max(1, Galaxy.CountFactionStars(Ord(sfPirates)) - 1);
+  Result := Galaxy.CountFactionStars(sfCoalition) / Max(1, Galaxy.CountFactionStars(sfPirates) - 1);
 end;
 { @end $7C1744 }
 
@@ -10976,7 +10976,7 @@ end;
 { @end $7C5068 }
 
 { @routine $7C5088 TStar_GetCachedFactionStrength }
-function TStar.GetCachedFactionStrength(FactionGroup: Byte): Single;
+function TStar.GetCachedFactionStrength(FactionGroup: TStarFaction): Single;
 var I: Integer; Ship: TShip; RelativeScale, Weight, Strength, DominatorAndCustomStrength, CoalitionStrength, PirateStrength, Extra: Single;
 begin
   if Galaxy.CurrentTurn = FactionStrengthCacheTurn then Result := Status.CachedFactionStrength[FactionGroup]
@@ -11011,9 +11011,9 @@ begin
       end;
     end;
     // Native $7C5420/$7C5429/$7C5432 store these in TStar+$4C/$50/$54.
-    Status.CachedFactionStrength[Ord(sfCoalition)] := CoalitionStrength;
-    Status.CachedFactionStrength[Ord(sfDominators)] := DominatorAndCustomStrength;
-    Status.CachedFactionStrength[Ord(sfPirates)] := PirateStrength;
+    Status.CachedFactionStrength[sfCoalition] := CoalitionStrength;
+    Status.CachedFactionStrength[sfDominators] := DominatorAndCustomStrength;
+    Status.CachedFactionStrength[sfPirates] := PirateStrength;
     Result := Status.CachedFactionStrength[FactionGroup];
   end;
 end;
@@ -11180,29 +11180,29 @@ begin
         (Galaxy.CurrentTurn div 10) * GenerationSeed), '<color=255,240,100>', '<Star>', Name, '<Names>', Names));
     end
     else if (SeededRandomIntRange(0, 100, Galaxy.CurrentTurn * GenerationSeed * 3011) < 100) and
-      (Galaxy.CountPlanetNewsByType(23) = 0) and (Galaxy.EminentCareerShips[Ord(rcTrader)] <> nil) and
-      (Galaxy.EminentCareerShips[Ord(rcTrader)] as TRanger).InHyperspace and
-      ((Galaxy.EminentCareerShips[Ord(rcTrader)] as TRanger).CurrentStar = Self) then
+      (Galaxy.CountPlanetNewsByType(23) = 0) and (Galaxy.EminentCareerShips[rcTrader] <> nil) and
+      (Galaxy.EminentCareerShips[rcTrader] as TRanger).InHyperspace and
+      ((Galaxy.EminentCareerShips[rcTrader] as TRanger).CurrentStar = Self) then
     begin
-      Names := (Galaxy.EminentCareerShips[Ord(rcTrader)] as TRanger).Name;
+      Names := (Galaxy.EminentCareerShips[rcTrader] as TRanger).Name;
       Galaxy.AddPlanetNews(23, FormatText2(PickLocalizedTextVariant('GalaxyNews.Star.Rangers.BestTrader',
         (Galaxy.CurrentTurn div 10) * GenerationSeed), '<color=255,240,100>', '<Star>', Name, '<Name>', Names));
     end
     else if (SeededRandomIntRange(0, 100, Galaxy.CurrentTurn * GenerationSeed * 3111) < 100) and
-      (Galaxy.CountPlanetNewsByType(23) = 0) and (Galaxy.EminentCareerShips[Ord(rcPirate)] <> nil) and
-      (Galaxy.EminentCareerShips[Ord(rcPirate)] as TRanger).InHyperspace and
-      ((Galaxy.EminentCareerShips[Ord(rcPirate)] as TRanger).CurrentStar = Self) then
+      (Galaxy.CountPlanetNewsByType(23) = 0) and (Galaxy.EminentCareerShips[rcPirate] <> nil) and
+      (Galaxy.EminentCareerShips[rcPirate] as TRanger).InHyperspace and
+      ((Galaxy.EminentCareerShips[rcPirate] as TRanger).CurrentStar = Self) then
     begin
-      Names := (Galaxy.EminentCareerShips[Ord(rcPirate)] as TRanger).Name;
+      Names := (Galaxy.EminentCareerShips[rcPirate] as TRanger).Name;
       Galaxy.AddPlanetNews(23, FormatText2(PickLocalizedTextVariant('GalaxyNews.Star.Rangers.BestPirate',
         (Galaxy.CurrentTurn div 10) * GenerationSeed), '<color=255,240,100>', '<Star>', Name, '<Name>', Names));
     end
     else if (SeededRandomIntRange(0, 100, Galaxy.CurrentTurn * GenerationSeed * 3211) < 100) and
-      (Galaxy.CountPlanetNewsByType(23) = 0) and (Galaxy.EminentCareerShips[Ord(rcWarrior)] <> nil) and
-      (Galaxy.EminentCareerShips[Ord(rcWarrior)] as TRanger).InHyperspace and
-      ((Galaxy.EminentCareerShips[Ord(rcWarrior)] as TRanger).CurrentStar = Self) then
+      (Galaxy.CountPlanetNewsByType(23) = 0) and (Galaxy.EminentCareerShips[rcWarrior] <> nil) and
+      (Galaxy.EminentCareerShips[rcWarrior] as TRanger).InHyperspace and
+      ((Galaxy.EminentCareerShips[rcWarrior] as TRanger).CurrentStar = Self) then
     begin
-      Names := (Galaxy.EminentCareerShips[Ord(rcWarrior)] as TRanger).Name;
+      Names := (Galaxy.EminentCareerShips[rcWarrior] as TRanger).Name;
       Galaxy.AddPlanetNews(23, FormatText2(PickLocalizedTextVariant('GalaxyNews.Star.Rangers.BestWarrior',
         (Galaxy.CurrentTurn div 10) * GenerationSeed), '<color=255,240,100>', '<Star>', Name, '<Name>', Names));
     end;
@@ -11611,7 +11611,7 @@ begin
                 begin
                   Self.CombatEvents.Add(CombatEvent);
                   if (Weapon.GetAttackCount > 1)
-                    and not (Byte(Weapon.GetWeaponInfo^.ShotType) in [Ord(wstTorpedo)..Ord(wstRocket)]) then
+                    and not (Weapon.GetWeaponInfo^.ShotType in [wstTorpedo..wstRocket]) then
                   begin
                     for CandidateIndex := 2 to Weapon.GetAttackCount do
                     begin
@@ -11629,7 +11629,7 @@ begin
                 begin
                   Self.CombatEvents.Insert(i, CombatEvent);
                   if (Weapon.GetAttackCount > 1)
-                    and not (Byte(Weapon.GetWeaponInfo^.ShotType) in [Ord(wstTorpedo)..Ord(wstRocket)]) then
+                    and not (Weapon.GetWeaponInfo^.ShotType in [wstTorpedo..wstRocket]) then
                   begin
                     for CandidateIndex := 2 to Weapon.GetAttackCount do
                     begin
@@ -12410,7 +12410,7 @@ begin
                     end;
                     Stage := 29093;
                     Point := HitShip.Position;
-                    if Byte(Missile.GetWeaponInfo^.ShotType) in [Ord(wstTorpedo)..Ord(wstMissile)] then
+                    if Missile.GetWeaponInfo^.ShotType in [wstTorpedo..wstMissile] then
                     begin
                       Stage := 29094;
                       CandidateCount := Self.Ships.Count;
@@ -12633,7 +12633,7 @@ begin
             end;
             TShip(CombatEvent^.Attacker).ReduceCombatStatusStrength(cseWeaponBlock, 1.0);
           end;
-          if Byte(TWeapon(CombatEvent^.Weapon).GetWeaponInfo^.ShotType) in [Ord(wstTorpedo)..Ord(wstRocket)] then
+          if TWeapon(CombatEvent^.Weapon).GetWeaponInfo^.ShotType in [wstTorpedo..wstRocket] then
           begin
             Stage := 2931;
             if TWeapon(CombatEvent^.Weapon).Ammo > 0 then
@@ -12661,7 +12661,7 @@ begin
               begin
                 Quantity := 1;
                 AttackCount := TWeapon(CombatEvent^.Weapon).GetAttackCount;
-                if Byte(TWeapon(CombatEvent^.Weapon).GetWeaponInfo^.ShotType) in [Ord(wstMissile)..Ord(wstRocket)] then
+                if TWeapon(CombatEvent^.Weapon).GetWeaponInfo^.ShotType in [wstMissile..wstRocket] then
                   Quantity := TWeapon(CombatEvent^.Weapon).GetShotCount;
                 BertorBoost := (CombatEvent^.Attacker is TKling)
                   and ((CombatEvent^.Attacker as TKling).DominatorSeries = dsBlazer)
@@ -13206,7 +13206,7 @@ begin
                   Item := OwnerShip.Inventory[EntryIndex];
                   if Item.OwnerId = Byte(oiDominator) then
                   begin
-                    if (Byte((Item as TEquipment).DominatorSeries) <> Byte((Ship as TKling).DominatorSeries)) and ((Byte(Item.ItemType) in [Ord(t_FuelTanks) .. Ord(t_CustomWeapon), Ord(t_Satellite)]) and (Item is TEquipment)) then
+                    if ((Item as TEquipment).DominatorSeries <> (Ship as TKling).DominatorSeries) and ((Item.ItemType in [t_FuelTanks .. t_CustomWeapon, t_Satellite]) and (Item is TEquipment)) then
                     begin
                       if (Item as TEquipment).EquippedFlag <> 0 then
                       begin

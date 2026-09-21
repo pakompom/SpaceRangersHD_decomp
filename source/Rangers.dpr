@@ -404,10 +404,10 @@ begin
       Buffer := Buffer.Next;
     end;
   end;
-  if RegisteredScreens[Ord(CurrentScreenId)] <> nil then
+  if RegisteredScreens[CurrentScreenId] <> nil then
   begin
     FullFrameRedrawRequested := True;
-    (TObject(RegisteredScreens[Ord(CurrentScreenId)]) as TMessageLoopGI).InvalidateViewport;
+    (TObject(RegisteredScreens[CurrentScreenId]) as TMessageLoopGI).InvalidateViewport;
   end;
   if MemorySnapshotActive then RestoreGameFromMemorySnapshot;
 end;

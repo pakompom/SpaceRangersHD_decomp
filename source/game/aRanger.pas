@@ -11,7 +11,7 @@ type
     rcmDecrease = 3, rcmDecreaseWithFloor20 = 4
   ); // @size 0x1
 
-  TRangerCareerValues = array[0..2] of Byte;
+  TRangerCareerValues = array[TRangerCareer] of Byte;
 
   TRangerProgramMask = set of 0..15; // @size 2 Bits 0..11 select program IDs.
 
@@ -46,9 +46,9 @@ type
   public
     PlaceInRating: Word; // @offset 0x510  One-based experience ranking.
     ExcludedFromRating: Boolean; // @offset 0x512  Excludes strength/title eligibility; placement sorting still assigns a position.
-    CareerStatus: array[0..2] of Byte; // @offset 0x513  TRangerCareer order.
-    EminentProgress: array[0..2] of Byte; // @offset 0x516  TRangerCareer order.
-    PendingCareerActivity: array[0..2] of Byte; // @offset 0x519  Trader, pirate, warrior.
+    CareerStatus: TRangerCareerValues; // @offset 0x513  TRangerCareer order.
+    EminentProgress: TRangerCareerValues; // @offset 0x516  TRangerCareer order.
+    PendingCareerActivity: TRangerCareerValues; // @offset 0x519  Trader, pirate, warrior.
     PreferredCareer: TRangerCareer; // @offset 0x51C  AI preference; may differ from GetDominantCareer.
     Aggression: Byte; // @offset 0x51D  Initialized in 0..100.
     Quests: TList; // @offset 0x520  Owned PQuest records.
@@ -171,11 +171,11 @@ var
   PendingPlayerFollowTarget: TShip = nil; // @addr 0x87C360
   PlayerAutomaticControl: Boolean = False; // @addr 0x87C364  Auto-equips in the follow helper and uses NPC dialogue branches for the player.
   PlayerEquipmentBrokenThisTurn: Boolean = False; // @addr $87C368 Set by equipped-item breakage; ShouldContinuePlayerTravel checks it.
-  RangerSkillBonusEvaluationWeights: array[0..2, 22..27] of Integer = (
+  RangerSkillBonusEvaluationWeights: array[TRangerCareer, bonSkill1..bonSkill6] of Integer = (
     (70, 70, 100, 100, 50, 50),
     (100, 80, 80, 80, 70, 50),
     (80, 100, 100, 80, 50, 80)); // @addr $87C36C Career, then bonSkill1..bonSkill6.
-  RangerSlotBonusEvaluationWeights: array[0..2, 13..20] of Integer = (
+  RangerSlotBonusEvaluationWeights: array[TRangerCareer, bonSlotRadar..bonSlotForsage] of Integer = (
     (150, 80, 100, 500, 100, 75, 30, 30),
     (100, 150, 150, 500, 150, 150, 30, 50),
     (120, 120, 200, 500, 200, 100, 30, 30)); // @addr $87C3B4 Career, then bonSlotRadar..bonSlotForsage.
@@ -314,53 +314,53 @@ begin
   case PreferredCareer of
     rcTrader:
     begin
-      CareerStatus[Ord(rcTrader)] := 90;
-      CareerStatus[Ord(rcPirate)] := 5;
-      CareerStatus[Ord(rcWarrior)] := 5;
-      EminentProgress[Ord(rcTrader)] := 90;
-      EminentProgress[Ord(rcPirate)] := 0;
-      EminentProgress[Ord(rcWarrior)] := 0;
-      if NextRandomUnitFloat(RandomState) < 0.5 then Inc(BaseSkills[1]);
-      Inc(BaseSkills[2]);
-      if NextRandomUnitFloat(RandomState) < 0.5 then Inc(BaseSkills[2]);
-      Inc(BaseSkills[3]);
-      if NextRandomUnitFloat(RandomState) < 0.5 then Inc(BaseSkills[3]);
-      if NextRandomUnitFloat(RandomState) < 0.5 then Inc(BaseSkills[4]);
+      CareerStatus[rcTrader] := 90;
+      CareerStatus[rcPirate] := 5;
+      CareerStatus[rcWarrior] := 5;
+      EminentProgress[rcTrader] := 90;
+      EminentProgress[rcPirate] := 0;
+      EminentProgress[rcWarrior] := 0;
+      if NextRandomUnitFloat(RandomState) < 0.5 then Inc(BaseSkills[psManeuverability]);
+      Inc(BaseSkills[psTechnical]);
+      if NextRandomUnitFloat(RandomState) < 0.5 then Inc(BaseSkills[psTechnical]);
+      Inc(BaseSkills[psTrading]);
+      if NextRandomUnitFloat(RandomState) < 0.5 then Inc(BaseSkills[psTrading]);
+      if NextRandomUnitFloat(RandomState) < 0.5 then Inc(BaseSkills[psCharisma]);
     end;
     rcPirate:
     begin
-      CareerStatus[Ord(rcTrader)] := 30;
-      CareerStatus[Ord(rcPirate)] := 40;
-      CareerStatus[Ord(rcWarrior)] := 30;
-      EminentProgress[Ord(rcTrader)] := 0;
-      EminentProgress[Ord(rcPirate)] := 70;
-      EminentProgress[Ord(rcWarrior)] := 0;
-      Inc(BaseSkills[0]);
-      Inc(BaseSkills[0]);
-      if NextRandomUnitFloat(RandomState) < 0.5 then Inc(BaseSkills[1]);
-      if NextRandomUnitFloat(RandomState) < 0.5 then Inc(BaseSkills[1]);
-      if NextRandomUnitFloat(RandomState) < 0.5 then Inc(BaseSkills[3]);
-      if NextRandomUnitFloat(RandomState) < 0.5 then Inc(BaseSkills[3]);
-      Inc(BaseSkills[4]);
-      if NextRandomUnitFloat(RandomState) < 0.5 then Inc(BaseSkills[4]);
-      if NextRandomUnitFloat(RandomState) < 0.5 then Inc(BaseSkills[5]);
+      CareerStatus[rcTrader] := 30;
+      CareerStatus[rcPirate] := 40;
+      CareerStatus[rcWarrior] := 30;
+      EminentProgress[rcTrader] := 0;
+      EminentProgress[rcPirate] := 70;
+      EminentProgress[rcWarrior] := 0;
+      Inc(BaseSkills[psAccuracy]);
+      Inc(BaseSkills[psAccuracy]);
+      if NextRandomUnitFloat(RandomState) < 0.5 then Inc(BaseSkills[psManeuverability]);
+      if NextRandomUnitFloat(RandomState) < 0.5 then Inc(BaseSkills[psManeuverability]);
+      if NextRandomUnitFloat(RandomState) < 0.5 then Inc(BaseSkills[psTrading]);
+      if NextRandomUnitFloat(RandomState) < 0.5 then Inc(BaseSkills[psTrading]);
+      Inc(BaseSkills[psCharisma]);
+      if NextRandomUnitFloat(RandomState) < 0.5 then Inc(BaseSkills[psCharisma]);
+      if NextRandomUnitFloat(RandomState) < 0.5 then Inc(BaseSkills[psLeadership]);
     end;
     rcWarrior:
     begin
-      CareerStatus[Ord(rcTrader)] := 30;
-      CareerStatus[Ord(rcPirate)] := 30;
-      CareerStatus[Ord(rcWarrior)] := 40;
-      EminentProgress[Ord(rcTrader)] := 0;
-      EminentProgress[Ord(rcPirate)] := 0;
-      EminentProgress[Ord(rcWarrior)] := 90;
-      if NextRandomUnitFloat(RandomState) < 0.5 then Inc(BaseSkills[1]);
-      if NextRandomUnitFloat(RandomState) < 0.5 then Inc(BaseSkills[1]);
-      if NextRandomUnitFloat(RandomState) < 0.5 then Inc(BaseSkills[3]);
-      if NextRandomUnitFloat(RandomState) < 0.5 then Inc(BaseSkills[0]);
-      if NextRandomUnitFloat(RandomState) < 0.5 then Inc(BaseSkills[2]);
-      if NextRandomUnitFloat(RandomState) < 0.5 then Inc(BaseSkills[2]);
-      if NextRandomUnitFloat(RandomState) < 0.5 then Inc(BaseSkills[5]);
-      if NextRandomUnitFloat(RandomState) < 0.2 then Inc(BaseSkills[5]);
+      CareerStatus[rcTrader] := 30;
+      CareerStatus[rcPirate] := 30;
+      CareerStatus[rcWarrior] := 40;
+      EminentProgress[rcTrader] := 0;
+      EminentProgress[rcPirate] := 0;
+      EminentProgress[rcWarrior] := 90;
+      if NextRandomUnitFloat(RandomState) < 0.5 then Inc(BaseSkills[psManeuverability]);
+      if NextRandomUnitFloat(RandomState) < 0.5 then Inc(BaseSkills[psManeuverability]);
+      if NextRandomUnitFloat(RandomState) < 0.5 then Inc(BaseSkills[psTrading]);
+      if NextRandomUnitFloat(RandomState) < 0.5 then Inc(BaseSkills[psAccuracy]);
+      if NextRandomUnitFloat(RandomState) < 0.5 then Inc(BaseSkills[psTechnical]);
+      if NextRandomUnitFloat(RandomState) < 0.5 then Inc(BaseSkills[psTechnical]);
+      if NextRandomUnitFloat(RandomState) < 0.5 then Inc(BaseSkills[psLeadership]);
+      if NextRandomUnitFloat(RandomState) < 0.2 then Inc(BaseSkills[psLeadership]);
     end;
   end;
   ClearPendingCareerActivity;
@@ -373,7 +373,7 @@ begin
   CreateAndEquipFuelTanks(Round(FuelTanksBaseSize * EquipmentSizeFactors[5]), 1, OwnerId);
   CreateAndEquipEngine(Round(EquipmentSizeFactors[NextRandomIntRange(1, 2, RandomState)] * EngineBaseSize), NextRandomIntRange(1, 2, RandomState), OwnerId);
   if GetSlotCountForItemType(Ord(t_CargoHook)) > 0 then CreateAndEquipCargoHook(CargoHookBaseSize, NextRandomIntRange(1, 2, RandomState), OwnerId);
-  if GetSlotCount(sskWeapon) > WeaponCount then CreateAndEquipWeapon(Ord(t_Weapon1), WeaponInfos[Ord(t_Weapon1)].AverageSize, 1, OwnerId);
+  if GetSlotCount(sskWeapon) > WeaponCount then CreateAndEquipWeapon(Ord(t_Weapon1), WeaponInfos[t_Weapon1].AverageSize, 1, OwnerId);
   if GetSlotCountForItemType(Ord(t_Radar)) > 0 then CreateAndEquipRadar(Round(EquipmentSizeFactors[NextRandomIntRange(2, 4, RandomState)] * RadarBaseSize), 1, OwnerId);
   RefreshDerivedStats(True);
   RefreshCurrentStanding;
@@ -451,12 +451,12 @@ var
   ProgramIndex: Byte;
 begin
   inherited SaveToBuffer(Buffer);
-  Buffer.AddAnsiChar(AnsiChar(CareerStatus[Ord(rcTrader)]));
-  Buffer.AddAnsiChar(AnsiChar(CareerStatus[Ord(rcPirate)]));
-  Buffer.AddAnsiChar(AnsiChar(CareerStatus[Ord(rcWarrior)]));
-  Buffer.AddAnsiChar(AnsiChar(EminentProgress[Ord(rcTrader)]));
-  Buffer.AddAnsiChar(AnsiChar(EminentProgress[Ord(rcPirate)]));
-  Buffer.AddAnsiChar(AnsiChar(EminentProgress[Ord(rcWarrior)]));
+  Buffer.AddAnsiChar(AnsiChar(CareerStatus[rcTrader]));
+  Buffer.AddAnsiChar(AnsiChar(CareerStatus[rcPirate]));
+  Buffer.AddAnsiChar(AnsiChar(CareerStatus[rcWarrior]));
+  Buffer.AddAnsiChar(AnsiChar(EminentProgress[rcTrader]));
+  Buffer.AddAnsiChar(AnsiChar(EminentProgress[rcPirate]));
+  Buffer.AddAnsiChar(AnsiChar(EminentProgress[rcWarrior]));
   Buffer.AddAnsiChar(AnsiChar(PreferredCareer));
   Buffer.AddAnsiChar(AnsiChar(Aggression));
   Count := Quests.Count;
@@ -479,9 +479,9 @@ begin
     Buffer.AddWideStringZ(Quest.CompletionText);
     Buffer.AddWideStringZ(Quest.SpecialCompletionText);
   end;
-  Buffer.AddAnsiChar(AnsiChar(PendingCareerActivity[0]));
-  Buffer.AddAnsiChar(AnsiChar(PendingCareerActivity[1]));
-  Buffer.AddAnsiChar(AnsiChar(PendingCareerActivity[2]));
+  Buffer.AddAnsiChar(AnsiChar(PendingCareerActivity[rcTrader]));
+  Buffer.AddAnsiChar(AnsiChar(PendingCareerActivity[rcPirate]));
+  Buffer.AddAnsiChar(AnsiChar(PendingCareerActivity[rcWarrior]));
   Buffer.AddDWord(PrisonTermRemaining);
   if LastDockedNonPlanetLocation = nil then Buffer.AddDWord(0)
   else Buffer.AddDWord(LastDockedNonPlanetLocation.Id);
@@ -500,12 +500,12 @@ var
 begin
   inherited LoadFromBuffer(Buffer, Galaxy);
   if (LoadedSaveVersion < 139) and (CreationTurn < 666) then CreationTurn := 667;
-  CareerStatus[Ord(rcTrader)] := Buffer.GetByte;
-  CareerStatus[Ord(rcPirate)] := Buffer.GetByte;
-  CareerStatus[Ord(rcWarrior)] := Buffer.GetByte;
-  EminentProgress[Ord(rcTrader)] := Buffer.GetByte;
-  EminentProgress[Ord(rcPirate)] := Buffer.GetByte;
-  EminentProgress[Ord(rcWarrior)] := Buffer.GetByte;
+  CareerStatus[rcTrader] := Buffer.GetByte;
+  CareerStatus[rcPirate] := Buffer.GetByte;
+  CareerStatus[rcWarrior] := Buffer.GetByte;
+  EminentProgress[rcTrader] := Buffer.GetByte;
+  EminentProgress[rcPirate] := Buffer.GetByte;
+  EminentProgress[rcWarrior] := Buffer.GetByte;
   PreferredCareer := TRangerCareer(Buffer.GetByte);
   Aggression := Buffer.GetByte;
   { Native loading uses the custom list; fresh initialization uses TList. }
@@ -529,9 +529,9 @@ begin
     Quest.SpecialCompletionText := Buffer.ReadWideString;
     if LoadedSaveVersion <= 141 then Buffer.GetUInt32;
   end;
-  PendingCareerActivity[0] := Buffer.GetByte;
-  PendingCareerActivity[1] := Buffer.GetByte;
-  PendingCareerActivity[2] := Buffer.GetByte;
+  PendingCareerActivity[rcTrader] := Buffer.GetByte;
+  PendingCareerActivity[rcPirate] := Buffer.GetByte;
+  PendingCareerActivity[rcWarrior] := Buffer.GetByte;
   if LoadedSaveVersion >= 60 then PrisonTermRemaining := Buffer.GetUInt32
   else PrisonTermRemaining := Buffer.GetByte;
   LastDockedNonPlanetLocation := TShip(Buffer.GetUInt32);
@@ -853,7 +853,7 @@ begin
       for I := 1 to WeaponCount do
       begin
         Weapon := Weapons[I];
-        if IsEquipmentUsable(Weapon) and (not (Byte(Weapon.GetWeaponInfo.ShotType) in [Ord(wstTorpedo)..Ord(wstRocket)]) or (Weapon.Ammo > 0)) and
+        if IsEquipmentUsable(Weapon) and (not (Weapon.GetWeaponInfo.ShotType in [wstTorpedo..wstRocket]) or (Weapon.Ammo > 0)) and
           (GetWeaponRange(Weapon) * GetWeaponRange(Weapon) >= PointDistanceSquared(Position, PendingPlayerFollowTarget.Position)) then
           Weapon.Target := PendingPlayerFollowTarget
         else Weapon.Target := nil;
@@ -908,9 +908,9 @@ function TRanger.GetDominantCareer: TRangerCareer;
 var
   Maximum: Integer;
 begin
-  Maximum := Max(Max(CareerStatus[Ord(rcTrader)], CareerStatus[Ord(rcPirate)]), CareerStatus[Ord(rcWarrior)]);
-  if CareerStatus[Ord(rcTrader)] = Maximum then Result := rcTrader
-  else if CareerStatus[Ord(rcPirate)] = Maximum then Result := rcPirate
+  Maximum := Max(Max(CareerStatus[rcTrader], CareerStatus[rcPirate]), CareerStatus[rcWarrior]);
+  if CareerStatus[rcTrader] = Maximum then Result := rcTrader
+  else if CareerStatus[rcPirate] = Maximum then Result := rcPirate
   else Result := rcWarrior;
 end;
 { @end $727B7C }
@@ -920,9 +920,9 @@ function TRanger.GetCareerSimilarity(Values: TRangerCareerValues): TPercent;
 var
   TraderSimilarity, PirateSimilarity, WarriorSimilarity: Integer;
 begin
-  TraderSimilarity := 100 - Abs(CareerStatus[Ord(rcTrader)] - Values[Ord(rcTrader)]);
-  PirateSimilarity := 100 - Abs(CareerStatus[Ord(rcPirate)] - Values[Ord(rcPirate)]);
-  WarriorSimilarity := 100 - Abs(CareerStatus[Ord(rcWarrior)] - Values[Ord(rcWarrior)]);
+  TraderSimilarity := 100 - Abs(CareerStatus[rcTrader] - Values[rcTrader]);
+  PirateSimilarity := 100 - Abs(CareerStatus[rcPirate] - Values[rcPirate]);
+  WarriorSimilarity := 100 - Abs(CareerStatus[rcWarrior] - Values[rcWarrior]);
   Result := (TraderSimilarity + PirateSimilarity + WarriorSimilarity) div 3;
 end;
 { @end $727C18 }
@@ -942,9 +942,9 @@ begin
   for I := 0 to LanguageDataConfig.GetBlock(Path).GetParamCount - 1 do
   begin
     Text := LanguageDataConfig.GetBlock(Path).GetParamValue(I);
-    Values[0] := StrToInt(TrimWideString(ExtractDelimitedPartW(Text, 0, ',')));
-    Values[1] := StrToInt(TrimWideString(ExtractDelimitedPartW(Text, 1, ',')));
-    Values[2] := StrToInt(TrimWideString(ExtractDelimitedPartW(Text, 2, ',')));
+    Values[rcTrader] := StrToInt(TrimWideString(ExtractDelimitedPartW(Text, 0, ',')));
+    Values[rcPirate] := StrToInt(TrimWideString(ExtractDelimitedPartW(Text, 1, ',')));
+    Values[rcWarrior] := StrToInt(TrimWideString(ExtractDelimitedPartW(Text, 2, ',')));
     if GetCareerSimilarity(Values) > Best then
     begin
       Best := GetCareerSimilarity(Values);
@@ -957,7 +957,7 @@ end;
 { @routine $727F64 TRanger_GetStrengthScaledPirateStatus }
 function TRanger.GetStrengthScaledPirateStatus: TPercent;
 begin
-  Result := Round(RemapClamped(CareerStatus[Ord(rcPirate)] * StrengthInBestRanger, 0.0, 100.0, 0.0, 100.0));
+  Result := Round(RemapClamped(CareerStatus[rcPirate] * StrengthInBestRanger, 0.0, 100.0, 0.0, 100.0));
 end;
 { @end $727F64 }
 
@@ -1032,16 +1032,16 @@ end;
 { @routine $728360 TRanger_NeedsStrengthCatchup }
 function TRanger.NeedsStrengthCatchup: Boolean;
 begin
-  Result := (Strength / Galaxy.AverageRangerStrength < CareerTuning[Ord(PreferredCareer)].MinimumStrengthToAverageRatio) or
-    (StrengthInBestRanger < CareerTuning[Ord(PreferredCareer)].MinimumStrengthToBestRatio);
+  Result := (Strength / Galaxy.AverageRangerStrength < CareerTuning[PreferredCareer].MinimumStrengthToAverageRatio) or
+    (StrengthInBestRanger < CareerTuning[PreferredCareer].MinimumStrengthToBestRatio);
 end;
 { @end $728360 }
 
 { @routine $7283D0 TRanger_NeedsWealthCatchup }
 function TRanger.NeedsWealthCatchup: Boolean;
 begin
-  Result := (Wealth / Galaxy.AverageRangerCapital < CareerTuning[Ord(PreferredCareer)].MinimumWealthToAverageRatio) or
-    (WealthInBestRanger < CareerTuning[Ord(PreferredCareer)].MinimumWealthToBestRatio);
+  Result := (Wealth / Galaxy.AverageRangerCapital < CareerTuning[PreferredCareer].MinimumWealthToAverageRatio) or
+    (WealthInBestRanger < CareerTuning[PreferredCareer].MinimumWealthToBestRatio);
 end;
 { @end $7283D0 }
 
@@ -1160,33 +1160,33 @@ end;
 { @routine $7291D0 TRanger_AddTraderCareerActivity }
 procedure TRanger.AddTraderCareerActivity(Amount: Byte);
 begin
-  if Cardinal(PendingCareerActivity[0]) + Amount < 100 then Inc(PendingCareerActivity[0], Amount)
-  else PendingCareerActivity[0] := 100;
+  if Cardinal(PendingCareerActivity[rcTrader]) + Amount < 100 then Inc(PendingCareerActivity[rcTrader], Amount)
+  else PendingCareerActivity[rcTrader] := 100;
 end;
 { @end $7291D0 }
 
 { @routine $729210 TRanger_AddPirateCareerActivity }
 procedure TRanger.AddPirateCareerActivity(Amount: Byte);
 begin
-  if Cardinal(PendingCareerActivity[1]) + Amount < 100 then Inc(PendingCareerActivity[1], Amount)
-  else PendingCareerActivity[1] := 100;
+  if Cardinal(PendingCareerActivity[rcPirate]) + Amount < 100 then Inc(PendingCareerActivity[rcPirate], Amount)
+  else PendingCareerActivity[rcPirate] := 100;
 end;
 { @end $729210 }
 
 { @routine $729250 TRanger_AddWarriorCareerActivity }
 procedure TRanger.AddWarriorCareerActivity(Amount: Byte);
 begin
-  if Cardinal(PendingCareerActivity[2]) + Amount < 100 then Inc(PendingCareerActivity[2], Amount)
-  else PendingCareerActivity[2] := 100;
+  if Cardinal(PendingCareerActivity[rcWarrior]) + Amount < 100 then Inc(PendingCareerActivity[rcWarrior], Amount)
+  else PendingCareerActivity[rcWarrior] := 100;
 end;
 { @end $729250 }
 
 { @routine $729290 TRanger_ClearPendingCareerActivity }
 procedure TRanger.ClearPendingCareerActivity;
 begin
-  PendingCareerActivity[0] := 0;
-  PendingCareerActivity[1] := 0;
-  PendingCareerActivity[2] := 0;
+  PendingCareerActivity[rcTrader] := 0;
+  PendingCareerActivity[rcPirate] := 0;
+  PendingCareerActivity[rcWarrior] := 0;
 end;
 { @end $729290 }
 
@@ -1241,14 +1241,14 @@ var
   end;
 
 begin
-  if (GetPlayer <> Self) and ((Galaxy.EminentCareerShips[Ord(rcTrader)] = Self) or (Galaxy.EminentCareerShips[Ord(rcPirate)] = Self) or (Galaxy.EminentCareerShips[Ord(rcWarrior)] = Self)) then
+  if (GetPlayer <> Self) and ((Galaxy.EminentCareerShips[rcTrader] = Self) or (Galaxy.EminentCareerShips[rcPirate] = Self) or (Galaxy.EminentCareerShips[rcWarrior] = Self)) then
   begin
     ClearPendingCareerActivity;
     Exit;
   end;
-  if PendingCareerActivity[0] > 0 then
+  if PendingCareerActivity[rcTrader] > 0 then
   begin
-    Delta := PendingCareerActivity[0];
+    Delta := PendingCareerActivity[rcTrader];
     if GetPlayer = Self then
     begin
       Amount := TradeExperience;
@@ -1260,76 +1260,76 @@ begin
     if Delta mod 2 <> 0 then Inc(Delta);
     Delta := Min(8, Delta);
     Delta := Delta div 2;
-    IncreaseRangerCareerAxis(CareerStatus[Ord(rcTrader)], CareerStatus[Ord(rcPirate)], CareerStatus[Ord(rcWarrior)], Delta);
-    if (Galaxy.EminentCareerShips[Ord(rcTrader)] <> Self) and (PlaceInRating < Galaxy.Rangers.Count div 2) and
+    IncreaseRangerCareerAxis(CareerStatus[rcTrader], CareerStatus[rcPirate], CareerStatus[rcWarrior], Delta);
+    if (Galaxy.EminentCareerShips[rcTrader] <> Self) and (PlaceInRating < Galaxy.Rangers.Count div 2) and
       (Galaxy.CoalitionDefeatedTurn = 0) and not ExcludedFromRating then
     begin
-      if EminentProgress[Ord(rcTrader)] + Delta * 2 >= 100 then
+      if EminentProgress[rcTrader] + Delta * 2 >= 100 then
       begin
-        if CareerStatus[Ord(rcTrader)] < 60 then IncreaseRangerCareerAxis(CareerStatus[Ord(rcTrader)], CareerStatus[Ord(rcPirate)], CareerStatus[Ord(rcWarrior)], (60 - CareerStatus[Ord(rcTrader)]) div 2 + 1);
+        if CareerStatus[rcTrader] < 60 then IncreaseRangerCareerAxis(CareerStatus[rcTrader], CareerStatus[rcPirate], CareerStatus[rcWarrior], (60 - CareerStatus[rcTrader]) div 2 + 1);
         Amount := RoundAndTruncateToTens(NextRandomIntRange(100, 250, RandomState) / GalaxyDifficultyTuning[Galaxy.DifficultyLevels[7]].GoodsEventDurationFactor);
         Text := FormatText2(PickLocalizedTextVariant('GalaxyNews.EminentRangers.EminentTrader', Seed * Cardinal(Galaxy.CurrentTurn div 10)),
           '<color=255,240,100>', '<Name>', Name, '<Points>', IntToStr(Amount));
         if GetPlayer = Self then Galaxy.AddPlanetNewsWithPlayerBubble(38, Text)
         else Galaxy.AddPlanetNews(38, Text);
-        EminentProgress[Ord(rcTrader)] := 0;
+        EminentProgress[rcTrader] := 0;
         HalveAllRangerEminentProgress(rcTrader);
         GainExperience(Amount, 0);
-        Galaxy.EminentCareerShips[Ord(rcTrader)] := Self;
+        Galaxy.EminentCareerShips[rcTrader] := Self;
       end
-      else Inc(EminentProgress[Ord(rcTrader)], Delta * 2);
+      else Inc(EminentProgress[rcTrader], Delta * 2);
     end;
   end;
-  if PendingCareerActivity[1] > 0 then
+  if PendingCareerActivity[rcPirate] > 0 then
   begin
-    Delta := PendingCareerActivity[1];
+    Delta := PendingCareerActivity[rcPirate];
     if Delta mod 2 <> 0 then Inc(Delta);
     Delta := Min(8, Delta);
     Delta := Delta div 2;
-    IncreaseRangerCareerAxis(CareerStatus[Ord(rcPirate)], CareerStatus[Ord(rcTrader)], CareerStatus[Ord(rcWarrior)], Delta);
-    if (Galaxy.EminentCareerShips[Ord(rcPirate)] <> Self) and (PlaceInRating < Galaxy.Rangers.Count div 2) and
+    IncreaseRangerCareerAxis(CareerStatus[rcPirate], CareerStatus[rcTrader], CareerStatus[rcWarrior], Delta);
+    if (Galaxy.EminentCareerShips[rcPirate] <> Self) and (PlaceInRating < Galaxy.Rangers.Count div 2) and
       (Galaxy.CoalitionDefeatedTurn = 0) and not ExcludedFromRating then
     begin
-      if EminentProgress[Ord(rcPirate)] + Delta * 2 >= 100 then
+      if EminentProgress[rcPirate] + Delta * 2 >= 100 then
       begin
-        if CareerStatus[Ord(rcPirate)] < 60 then IncreaseRangerCareerAxis(CareerStatus[Ord(rcPirate)], CareerStatus[Ord(rcTrader)], CareerStatus[Ord(rcWarrior)], (60 - CareerStatus[Ord(rcPirate)]) div 2 + 1);
+        if CareerStatus[rcPirate] < 60 then IncreaseRangerCareerAxis(CareerStatus[rcPirate], CareerStatus[rcTrader], CareerStatus[rcWarrior], (60 - CareerStatus[rcPirate]) div 2 + 1);
         Amount := RoundAndTruncateToTens(NextRandomIntRange(250, 1000, RandomState) * GalaxyDifficultyTuning[Galaxy.DifficultyLevels[7]].GoodsEventDurationFactor);
         Text := FormatText2(PickLocalizedTextVariant('GalaxyNews.EminentRangers.EminentPirate', Seed * Cardinal(Galaxy.CurrentTurn div 10)),
           '<color=255,240,100>', '<Name>', Name, '<Points>', IntToStr(Amount));
         if GetPlayer = Self then Galaxy.AddPlanetNewsWithPlayerBubble(39, Text)
         else Galaxy.AddPlanetNews(39, Text);
-        EminentProgress[Ord(rcPirate)] := 0;
+        EminentProgress[rcPirate] := 0;
         HalveAllRangerEminentProgress(rcPirate);
         RemoveExperience(Amount);
-        Galaxy.EminentCareerShips[Ord(rcPirate)] := Self;
+        Galaxy.EminentCareerShips[rcPirate] := Self;
       end
-      else Inc(EminentProgress[Ord(rcPirate)], Delta * 2);
+      else Inc(EminentProgress[rcPirate], Delta * 2);
     end;
   end;
-  if PendingCareerActivity[2] > 0 then
+  if PendingCareerActivity[rcWarrior] > 0 then
   begin
-    Delta := PendingCareerActivity[2];
+    Delta := PendingCareerActivity[rcWarrior];
     if Delta mod 2 <> 0 then Inc(Delta);
     Delta := Min(8, Delta);
     Delta := Delta div 2;
-    IncreaseRangerCareerAxis(CareerStatus[Ord(rcWarrior)], CareerStatus[Ord(rcTrader)], CareerStatus[Ord(rcPirate)], Delta);
-    if (Galaxy.EminentCareerShips[Ord(rcWarrior)] <> Self) and (PlaceInRating < Galaxy.Rangers.Count div 2) and
+    IncreaseRangerCareerAxis(CareerStatus[rcWarrior], CareerStatus[rcTrader], CareerStatus[rcPirate], Delta);
+    if (Galaxy.EminentCareerShips[rcWarrior] <> Self) and (PlaceInRating < Galaxy.Rangers.Count div 2) and
       (Galaxy.CoalitionDefeatedTurn = 0) and not ExcludedFromRating then
     begin
-      if EminentProgress[Ord(rcWarrior)] + Delta * 2 >= 100 then
+      if EminentProgress[rcWarrior] + Delta * 2 >= 100 then
       begin
-        if CareerStatus[Ord(rcWarrior)] < 60 then IncreaseRangerCareerAxis(CareerStatus[Ord(rcWarrior)], CareerStatus[Ord(rcTrader)], CareerStatus[Ord(rcPirate)], (60 - CareerStatus[Ord(rcWarrior)]) div 2 + 1);
+        if CareerStatus[rcWarrior] < 60 then IncreaseRangerCareerAxis(CareerStatus[rcWarrior], CareerStatus[rcTrader], CareerStatus[rcPirate], (60 - CareerStatus[rcWarrior]) div 2 + 1);
         Amount := RoundAndTruncateToTens(NextRandomIntRange(250, 1000, RandomState) / GalaxyDifficultyTuning[Galaxy.DifficultyLevels[7]].GoodsEventDurationFactor);
         Text := FormatText2(PickLocalizedTextVariant('GalaxyNews.EminentRangers.EminentWarrior', Seed * Cardinal(Galaxy.CurrentTurn div 10)),
           '<color=255,240,100>', '<Name>', Name, '<Points>', IntToStr(Amount));
         if GetPlayer = Self then Galaxy.AddPlanetNewsWithPlayerBubble(37, Text)
         else Galaxy.AddPlanetNews(37, Text);
-        EminentProgress[Ord(rcWarrior)] := 0;
+        EminentProgress[rcWarrior] := 0;
         HalveAllRangerEminentProgress(rcWarrior);
         GainExperience(Amount, 0);
-        Galaxy.EminentCareerShips[Ord(rcWarrior)] := Self;
+        Galaxy.EminentCareerShips[rcWarrior] := Self;
       end
-      else Inc(EminentProgress[Ord(rcWarrior)], Delta * 2);
+      else Inc(EminentProgress[rcWarrior], Delta * 2);
     end;
   end;
   ClearPendingCareerActivity;
@@ -1345,7 +1345,7 @@ begin
   for I := 0 to Galaxy.Rangers.Count - 1 do
   begin
     Ranger := TRanger(Galaxy.Rangers[I]);
-    Ranger.EminentProgress[Ord(Career)] := Round(Ranger.EminentProgress[Ord(Career)] * 0.5);
+    Ranger.EminentProgress[Career] := Round(Ranger.EminentProgress[Career] * 0.5);
   end;
 end;
 { @end $729E64 }
@@ -1910,8 +1910,8 @@ begin
         else
           Result := OwnerRelations[RaceToOwner(PilotRace), RaceToOwner(Ship.PilotRace)] shr 1;
         if (Ship.OwnerId = Byte(oiPirate)) and (Galaxy.CoalitionDefeatedTurn = 0) then
-          if (Cardinal(Galaxy.GetFactionControlPercent(Ord(sfPirates))) * 2 > Cardinal(Galaxy.GetFactionControlPercent(Ord(sfCoalition))) * 3) and
-            (Galaxy.GetFactionControlPercent(Ord(sfPirates)) > 7) then Result := 10;
+          if (Cardinal(Galaxy.GetFactionControlPercent(sfPirates)) * 2 > Cardinal(Galaxy.GetFactionControlPercent(sfCoalition)) * 3) and
+            (Galaxy.GetFactionControlPercent(sfPirates) > 7) then Result := 10;
       end;
     stWarrior: Result := Byte((Ship as TWarrior).HomePlanet.RangerRelations[Galaxy.Rangers.IndexOf(Self)]);
     Ord(rstDominion):
@@ -2303,7 +2303,7 @@ var
     Ship: TShip;
     Text: WideString;
   begin
-    PrisonTermRemaining := Round(RemapClamped(CareerStatus[Ord(rcPirate)], 0.0, 100.0, 61.0, 140.0));
+    PrisonTermRemaining := Round(RemapClamped(CareerStatus[rcPirate], 0.0, 100.0, 61.0, 140.0));
     CurrentSystemKills.Normal := 0;
     CurrentSystemKills.Pirate := 0;
     if CurrentPlanet.OwnerId = Byte(oiPirate) then
@@ -3231,54 +3231,54 @@ begin
     bonHookRadius: Result := Value * 0.15;
     bonMass: Result := RemapClamped(Value + GetHull.Weight * 0.1, HullMassEvaluationStart, HullMassEvaluationEnd, 1, 0.333) * 5000;
     bonSlotRadar:
-      if (GetSlotCount(sskRadar) = 0) and (Value > 0) then Result := RangerSlotBonusEvaluationWeights[Ord(PreferredCareer), Ord(BonusKind)] * 0.3
-      else if (GetRadar <> nil) and (Value < 0) then Result := -RangerSlotBonusEvaluationWeights[Ord(PreferredCareer), Ord(BonusKind)] - RangerSlotBonusEvaluationWeights[Ord(PreferredCareer), 18] * CountMissileWeapons
-      else if (GetSlotCount(sskRadar) = 1) and (Value < 0) then Result := RangerSlotBonusEvaluationWeights[Ord(PreferredCareer), Ord(BonusKind)] * -0.3;
+      if (GetSlotCount(sskRadar) = 0) and (Value > 0) then Result := RangerSlotBonusEvaluationWeights[PreferredCareer, BonusKind] * 0.3
+      else if (GetRadar <> nil) and (Value < 0) then Result := -RangerSlotBonusEvaluationWeights[PreferredCareer, BonusKind] - RangerSlotBonusEvaluationWeights[PreferredCareer, bonSlotWeapon] * CountMissileWeapons
+      else if (GetSlotCount(sskRadar) = 1) and (Value < 0) then Result := RangerSlotBonusEvaluationWeights[PreferredCareer, BonusKind] * -0.3;
     bonSlotScaner:
-      if (GetSlotCount(sskScanner) = 0) and (Value > 0) then Result := RangerSlotBonusEvaluationWeights[Ord(PreferredCareer), Ord(BonusKind)] * 0.3
-      else if (GetScanner <> nil) and (Value < 0) then Result := -RangerSlotBonusEvaluationWeights[Ord(PreferredCareer), Ord(BonusKind)] - CountWeaponsByDamageFlags(ScannerFlags) * 0.1 * RangerSlotBonusEvaluationWeights[Ord(PreferredCareer), 18]
-      else if (GetSlotCount(sskScanner) = 1) and (Value < 0) then Result := RangerSlotBonusEvaluationWeights[Ord(PreferredCareer), Ord(BonusKind)] * -0.3;
+      if (GetSlotCount(sskScanner) = 0) and (Value > 0) then Result := RangerSlotBonusEvaluationWeights[PreferredCareer, BonusKind] * 0.3
+      else if (GetScanner <> nil) and (Value < 0) then Result := -RangerSlotBonusEvaluationWeights[PreferredCareer, BonusKind] - CountWeaponsByDamageFlags(ScannerFlags) * 0.1 * RangerSlotBonusEvaluationWeights[PreferredCareer, bonSlotWeapon]
+      else if (GetSlotCount(sskScanner) = 1) and (Value < 0) then Result := RangerSlotBonusEvaluationWeights[PreferredCareer, BonusKind] * -0.3;
     bonSlotDroid:
-      if (GetSlotCount(sskRepairRobot) = 0) and (Value > 0) then Result := RangerSlotBonusEvaluationWeights[Ord(PreferredCareer), Ord(BonusKind)] * 0.3
-      else if (GetRepairRobot <> nil) and (Value < 0) then Result := -RangerSlotBonusEvaluationWeights[Ord(PreferredCareer), Ord(BonusKind)]
-      else if (GetSlotCount(sskRepairRobot) = 1) and (Value < 0) then Result := RangerSlotBonusEvaluationWeights[Ord(PreferredCareer), Ord(BonusKind)] * -0.3;
+      if (GetSlotCount(sskRepairRobot) = 0) and (Value > 0) then Result := RangerSlotBonusEvaluationWeights[PreferredCareer, BonusKind] * 0.3
+      else if (GetRepairRobot <> nil) and (Value < 0) then Result := -RangerSlotBonusEvaluationWeights[PreferredCareer, BonusKind]
+      else if (GetSlotCount(sskRepairRobot) = 1) and (Value < 0) then Result := RangerSlotBonusEvaluationWeights[PreferredCareer, BonusKind] * -0.3;
     bonSlotHook:
-      if (GetSlotCount(sskCargoHook) = 0) and (Value > 0) then Result := RangerSlotBonusEvaluationWeights[Ord(PreferredCareer), Ord(BonusKind)] * 0.3
-      else if (GetCargoHook <> nil) and (Value < 0) then Result := -RangerSlotBonusEvaluationWeights[Ord(PreferredCareer), Ord(BonusKind)]
-      else if (GetSlotCount(sskCargoHook) = 1) and (Value < 0) then Result := RangerSlotBonusEvaluationWeights[Ord(PreferredCareer), Ord(BonusKind)] * -0.3;
+      if (GetSlotCount(sskCargoHook) = 0) and (Value > 0) then Result := RangerSlotBonusEvaluationWeights[PreferredCareer, BonusKind] * 0.3
+      else if (GetCargoHook <> nil) and (Value < 0) then Result := -RangerSlotBonusEvaluationWeights[PreferredCareer, BonusKind]
+      else if (GetSlotCount(sskCargoHook) = 1) and (Value < 0) then Result := RangerSlotBonusEvaluationWeights[PreferredCareer, BonusKind] * -0.3;
     bonSlotDef:
-      if (GetSlotCount(sskDefGenerator) = 0) and (Value > 0) then Result := RangerSlotBonusEvaluationWeights[Ord(PreferredCareer), Ord(BonusKind)] * 0.3
-      else if (GetDefGenerator <> nil) and (Value < 0) then Result := -RangerSlotBonusEvaluationWeights[Ord(PreferredCareer), Ord(BonusKind)]
-      else if (GetSlotCount(sskDefGenerator) = 1) and (Value < 0) then Result := RangerSlotBonusEvaluationWeights[Ord(PreferredCareer), Ord(BonusKind)] * -0.3;
+      if (GetSlotCount(sskDefGenerator) = 0) and (Value > 0) then Result := RangerSlotBonusEvaluationWeights[PreferredCareer, BonusKind] * 0.3
+      else if (GetDefGenerator <> nil) and (Value < 0) then Result := -RangerSlotBonusEvaluationWeights[PreferredCareer, BonusKind]
+      else if (GetSlotCount(sskDefGenerator) = 1) and (Value < 0) then Result := RangerSlotBonusEvaluationWeights[PreferredCareer, BonusKind] * -0.3;
     bonSlotWeapon:
       begin
         if (GetSlotCount(sskWeapon) < 5) and (Value > 0) then
-          Result := Min(Value, 5 - GetSlotCount(sskWeapon)) * RangerSlotBonusEvaluationWeights[Ord(PreferredCareer), Ord(BonusKind)];
-        if Value < 0 then Result := Max(Value, -GetSlotCount(sskWeapon)) * RangerSlotBonusEvaluationWeights[Ord(PreferredCareer), Ord(BonusKind)];
+          Result := Min(Value, 5 - GetSlotCount(sskWeapon)) * RangerSlotBonusEvaluationWeights[PreferredCareer, BonusKind];
+        if Value < 0 then Result := Max(Value, -GetSlotCount(sskWeapon)) * RangerSlotBonusEvaluationWeights[PreferredCareer, BonusKind];
         if CountEquippedWeapons > Max(Value + GetSlotCount(sskWeapon), 1) then
-          Result := Result - (RangerSlotBonusEvaluationWeights[Ord(PreferredCareer), Ord(BonusKind)] * 0.6) * (CountEquippedWeapons - Max(1, Value + GetSlotCount(sskWeapon)));
+          Result := Result - (RangerSlotBonusEvaluationWeights[PreferredCareer, BonusKind] * 0.6) * (CountEquippedWeapons - Max(1, Value + GetSlotCount(sskWeapon)));
       end;
     bonSlotArt:
       begin
-        if (GetSlotCount(sskArtefact) < DefaultHullSlotCounts[8]) and (Value > 0) then
-          Result := Min(Value, DefaultHullSlotCounts[8] - GetSlotCount(sskArtefact)) * RangerSlotBonusEvaluationWeights[Ord(PreferredCareer), Ord(BonusKind)];
-        if Value < 0 then Result := Max(Value, -GetSlotCount(sskArtefact)) * RangerSlotBonusEvaluationWeights[Ord(PreferredCareer), Ord(BonusKind)];
+        if (GetSlotCount(sskArtefact) < DefaultHullSlotCounts[sskArtefact]) and (Value > 0) then
+          Result := Min(Value, DefaultHullSlotCounts[sskArtefact] - GetSlotCount(sskArtefact)) * RangerSlotBonusEvaluationWeights[PreferredCareer, BonusKind];
+        if Value < 0 then Result := Max(Value, -GetSlotCount(sskArtefact)) * RangerSlotBonusEvaluationWeights[PreferredCareer, BonusKind];
         if Artefacts <> nil then
           if Artefacts.Count > Max(Value + GetSlotCount(sskArtefact), 0) then Result := -1000;
       end;
     bonSlotForsage:
-      if (GetSlotCount(sskAfterburner) = 0) and (Value > 0) then Result := RangerSlotBonusEvaluationWeights[Ord(PreferredCareer), Ord(BonusKind)]
-      else if (GetSlotCount(sskAfterburner) = 1) and (Value < 0) then Result := -RangerSlotBonusEvaluationWeights[Ord(PreferredCareer), Ord(BonusKind)];
+      if (GetSlotCount(sskAfterburner) = 0) and (Value > 0) then Result := RangerSlotBonusEvaluationWeights[PreferredCareer, BonusKind]
+      else if (GetSlotCount(sskAfterburner) = 1) and (Value < 0) then Result := -RangerSlotBonusEvaluationWeights[PreferredCareer, BonusKind];
     bonSkill1..bonSkill6:
       begin
         if Value > 0 then
-          Result := Min(6 - GetEffectiveSkillLevel(TPilotSkill(EquipmentBonusSkills[Ord(BonusKind) - 22])), Value) * RangerSkillBonusEvaluationWeights[Ord(PreferredCareer), Ord(BonusKind)];
-        if (Value > 0) and (Value + GetEffectiveSkillLevel(TPilotSkill(EquipmentBonusSkills[Ord(BonusKind) - 22])) > 6) then
-          Result := Result + (RangerSkillBonusEvaluationWeights[Ord(PreferredCareer), Ord(BonusKind)] * 0.05) * (Value + GetEffectiveSkillLevel(TPilotSkill(EquipmentBonusSkills[Ord(BonusKind) - 22])) - 6);
+          Result := Min(6 - GetEffectiveSkillLevel(EquipmentBonusSkills[Ord(BonusKind) - Ord(bonSkill1)]), Value) * RangerSkillBonusEvaluationWeights[PreferredCareer, BonusKind];
+        if (Value > 0) and (Value + GetEffectiveSkillLevel(EquipmentBonusSkills[Ord(BonusKind) - Ord(bonSkill1)]) > 6) then
+          Result := Result + (RangerSkillBonusEvaluationWeights[PreferredCareer, BonusKind] * 0.05) * (Value + GetEffectiveSkillLevel(EquipmentBonusSkills[Ord(BonusKind) - Ord(bonSkill1)]) - 6);
         if Value < 0 then
-          Result := Min(GetEffectiveSkillLevel(TPilotSkill(EquipmentBonusSkills[Ord(BonusKind) - 22])), -Value) * -RangerSkillBonusEvaluationWeights[Ord(PreferredCareer), Ord(BonusKind)];
-        if (Value < 0) and (Value + GetEffectiveSkillLevel(TPilotSkill(EquipmentBonusSkills[Ord(BonusKind) - 22])) < 0) then
-          Result := Result + (RangerSkillBonusEvaluationWeights[Ord(PreferredCareer), Ord(BonusKind)] * 0.03) * (Value + GetEffectiveSkillLevel(TPilotSkill(EquipmentBonusSkills[Ord(BonusKind) - 22])));
+          Result := Min(GetEffectiveSkillLevel(EquipmentBonusSkills[Ord(BonusKind) - Ord(bonSkill1)]), -Value) * -RangerSkillBonusEvaluationWeights[PreferredCareer, BonusKind];
+        if (Value < 0) and (Value + GetEffectiveSkillLevel(EquipmentBonusSkills[Ord(BonusKind) - Ord(bonSkill1)]) < 0) then
+          Result := Result + (RangerSkillBonusEvaluationWeights[PreferredCareer, BonusKind] * 0.03) * (Value + GetEffectiveSkillLevel(EquipmentBonusSkills[Ord(BonusKind) - Ord(bonSkill1)]));
       end;
   else Result := 0;
   end;
@@ -3290,7 +3290,7 @@ begin
     (BonusKind in [bonFuel, bonJump]) then Result := Result * 1.3;
   if BonusKind in [bonSkill1..bonSkill6] then
     Result := Result * 0.01 * (100 + SeededRandomIntRange(-60, 60, Ord(BonusKind) * 131 + Seed)) *
-      RaceSkillEvaluationFactors[PilotRace, EquipmentBonusSkills[Ord(BonusKind) - 22]]
+      RaceSkillEvaluationFactors[PilotRace, EquipmentBonusSkills[Ord(BonusKind) - Ord(bonSkill1)]]
   else
     Result := Result * 0.01 * (100 + SeededRandomIntRange(-15, 15, Ord(BonusKind) * 131 + Seed));
 end;
@@ -3345,34 +3345,34 @@ begin
   SpeedFactor := Max(100, SmoothedEnemySpeed) * GetHull.Weight / (HullBaseSize * Max(100, SmoothedSpeed * EquipmentSizeFactors[1]));
   case PreferredCareer of
     rcWarrior:
-      case Byte(Weapon.GetWeaponInfo.ShotType) of
-        Ord(wstRocket): Result := Result * 0.8 * Weapon.GetShotCount * (1 + StatusFactor);
-        Ord(wstMissile): Result := Result * (0.8 + Weapon.GetWeaponInfo.SecondaryDamageRadius * 0.5 * 0.01 + StatusFactor) * Weapon.GetShotCount;
-        Ord(wstTorpedo): Result := Result * (1 + Weapon.GetWeaponInfo.SecondaryDamageRadius * 0.5 * 0.01 + StatusFactor);
-        Ord(wstChain): Result := Result * (1.1 + (Weapon.GetShotCount - 1) * 0.2) * (1 + StatusFactor);
-        Ord(wstSplash): Result := Result * (1 + Weapon.GetWeaponInfo.SecondaryDamageRadius * 1.0 * 0.01 * SpeedFactor + StatusFactor);
-        Ord(wstExploder): Result := Result * (1 + Weapon.GetWeaponInfo.SecondaryDamageRadius * 0.1 * 0.01 * SpeedFactor + StatusFactor);
-        Ord(wstAreaDamage): Result := Result * (1 + Weapon.Range * 1.3 * 0.01 * SpeedFactor + StatusFactor);
+      case Weapon.GetWeaponInfo.ShotType of
+        wstRocket: Result := Result * 0.8 * Weapon.GetShotCount * (1 + StatusFactor);
+        wstMissile: Result := Result * (0.8 + Weapon.GetWeaponInfo.SecondaryDamageRadius * 0.5 * 0.01 + StatusFactor) * Weapon.GetShotCount;
+        wstTorpedo: Result := Result * (1 + Weapon.GetWeaponInfo.SecondaryDamageRadius * 0.5 * 0.01 + StatusFactor);
+        wstChain: Result := Result * (1.1 + (Weapon.GetShotCount - 1) * 0.2) * (1 + StatusFactor);
+        wstSplash: Result := Result * (1 + Weapon.GetWeaponInfo.SecondaryDamageRadius * 1.0 * 0.01 * SpeedFactor + StatusFactor);
+        wstExploder: Result := Result * (1 + Weapon.GetWeaponInfo.SecondaryDamageRadius * 0.1 * 0.01 * SpeedFactor + StatusFactor);
+        wstAreaDamage: Result := Result * (1 + Weapon.Range * 1.3 * 0.01 * SpeedFactor + StatusFactor);
       else Result := Result * (1 + StatusFactor);
       end;
     rcPirate:
-      case Byte(Weapon.GetWeaponInfo.ShotType) of
-        Ord(wstRocket): Result := Result * 0.6 * Weapon.GetShotCount * (1 + StatusFactor);
-        Ord(wstMissile): Result := Result * (0.6 + Weapon.GetWeaponInfo.SecondaryDamageRadius * 0.1 * 0.01 + StatusFactor) * Weapon.GetShotCount;
-        Ord(wstTorpedo): Result := Result * (1 + Weapon.GetWeaponInfo.SecondaryDamageRadius * 0.1 * 0.01 + StatusFactor);
-        Ord(wstChain): Result := Result * (1.1 + (Weapon.GetShotCount - 1) * 0.2) * (1 + StatusFactor);
-        Ord(wstSplash): Result := Result * (1 + Weapon.GetWeaponInfo.SecondaryDamageRadius * 0.2 * 0.01 * SpeedFactor + StatusFactor);
-        Ord(wstAreaDamage): Result := Result * (1 + Weapon.Range * 0.16 * 0.01 * SpeedFactor + StatusFactor);
+      case Weapon.GetWeaponInfo.ShotType of
+        wstRocket: Result := Result * 0.6 * Weapon.GetShotCount * (1 + StatusFactor);
+        wstMissile: Result := Result * (0.6 + Weapon.GetWeaponInfo.SecondaryDamageRadius * 0.1 * 0.01 + StatusFactor) * Weapon.GetShotCount;
+        wstTorpedo: Result := Result * (1 + Weapon.GetWeaponInfo.SecondaryDamageRadius * 0.1 * 0.01 + StatusFactor);
+        wstChain: Result := Result * (1.1 + (Weapon.GetShotCount - 1) * 0.2) * (1 + StatusFactor);
+        wstSplash: Result := Result * (1 + Weapon.GetWeaponInfo.SecondaryDamageRadius * 0.2 * 0.01 * SpeedFactor + StatusFactor);
+        wstAreaDamage: Result := Result * (1 + Weapon.Range * 0.16 * 0.01 * SpeedFactor + StatusFactor);
       else Result := Result * (1 + StatusFactor);
       end;
     rcTrader:
-      case Byte(Weapon.GetWeaponInfo.ShotType) of
-        Ord(wstRocket): Result := Result * 1.2 * Weapon.GetShotCount * (1 + StatusFactor);
-        Ord(wstMissile): Result := Result * (1.2 + Weapon.GetWeaponInfo.SecondaryDamageRadius * 0.2 * 0.01 + StatusFactor) * Weapon.GetShotCount;
-        Ord(wstTorpedo): Result := Result * (1 + Weapon.GetWeaponInfo.SecondaryDamageRadius * 0.2 * 0.01 + StatusFactor);
-        Ord(wstChain): Result := Result * (1.1 + (Weapon.GetShotCount - 1) * 0.2) * (1 + StatusFactor);
-        Ord(wstSplash): Result := Result * (1 + Weapon.GetWeaponInfo.SecondaryDamageRadius * 0.1 * 0.01 * SpeedFactor + StatusFactor);
-        Ord(wstAreaDamage): Result := Result * (1 + Weapon.Range * 0.16 * 0.01 * SpeedFactor + StatusFactor);
+      case Weapon.GetWeaponInfo.ShotType of
+        wstRocket: Result := Result * 1.2 * Weapon.GetShotCount * (1 + StatusFactor);
+        wstMissile: Result := Result * (1.2 + Weapon.GetWeaponInfo.SecondaryDamageRadius * 0.2 * 0.01 + StatusFactor) * Weapon.GetShotCount;
+        wstTorpedo: Result := Result * (1 + Weapon.GetWeaponInfo.SecondaryDamageRadius * 0.2 * 0.01 + StatusFactor);
+        wstChain: Result := Result * (1.1 + (Weapon.GetShotCount - 1) * 0.2) * (1 + StatusFactor);
+        wstSplash: Result := Result * (1 + Weapon.GetWeaponInfo.SecondaryDamageRadius * 0.1 * 0.01 * SpeedFactor + StatusFactor);
+        wstAreaDamage: Result := Result * (1 + Weapon.Range * 0.16 * 0.01 * SpeedFactor + StatusFactor);
       else Result := Result * (1 + StatusFactor);
       end;
   end;
@@ -3651,7 +3651,7 @@ var
   procedure FinalizeSuccessfulQuestTurnIn; // @addr 0x734D44 @ida "void __cdecl $name(void *ParentFrame);" @note "Caller-popped static link; ranger -4, quest -8, seed input -12, experience -16, response output -20, event -24, quest index -28. Grants experience, archives the quest and updates relations."
   begin
     Experience := RoundAndTruncateToTens(SeededRandomFloatRange((GenerationSeed + Galaxy.CurrentTurn) div 100 + 123, 0.7, 1.5) *
-      (Galaxy.ScaleIntByTechLevel(QuestExperience[Ord(Quest.QuestType)], 2 * QuestExperience[Ord(Quest.QuestType)]) /
+      (Galaxy.ScaleIntByTechLevel(QuestExperience[Quest.QuestType], 2 * QuestExperience[Quest.QuestType]) /
         GalaxyDifficultyTuning[Galaxy.DifficultyLevels[7]].QuestTimeAndExperienceFactor));
     GainExperience(Experience, 0);
     if GetPlayer = Self then begin
@@ -3968,7 +3968,7 @@ begin
     end;
   end;
   Amount := RoundAndTruncateToTens(SeededRandomFloatRange((Integer(CurrentPlanet.GenerationSeed) + Galaxy.CurrentTurn) div 100 + $707D5B, 0.7, 1.5) *
-    (Galaxy.ScaleIntByTechLevel(QuestExperience[2], 2 * QuestExperience[2]) / GalaxyDifficultyTuning[Galaxy.DifficultyLevels[7]].QuestTimeAndExperienceFactor));
+    (Galaxy.ScaleIntByTechLevel(QuestExperience[qtPlanetQuest], 2 * QuestExperience[qtPlanetQuest]) / GalaxyDifficultyTuning[Galaxy.DifficultyLevels[7]].QuestTimeAndExperienceFactor));
   case Difficulty of
     1: Amount := Amount * 2;
     2: Amount := Round(Amount * 0.9);
@@ -4032,7 +4032,7 @@ begin
   if not ((FractionalQuotient(CurrentPlanet.GenerationSeed, Galaxy.CurrentTurn + 100) >= 1.5) and (ForcedPlanetQuestId < 0)) then
   begin
     if not HasQuestOfType(qtSendLetter) and (ForcedPlanetQuestId < 0) then
-      if FractionalQuotient(CurrentPlanet.GenerationSeed, (Galaxy.CurrentTurn + 111) div Interval) < PlanetGovernmentMarket[Ord(CurrentPlanet.Government)].QuestOfferProbabilities[0] then begin
+      if FractionalQuotient(CurrentPlanet.GenerationSeed, (Galaxy.CurrentTurn + 111) div Interval) < PlanetGovernmentMarket[CurrentPlanet.Government].QuestOfferProbabilities[qtSendLetter] then begin
         Attempts := 0;
         repeat
           Inc(Attempts);
@@ -4056,7 +4056,7 @@ begin
                     ((Planet.OwnerId = Byte(oiPirate)) or (Pos('OnlyPirate', ToFactions) <= 0)) and
                     ((Planet.OwnerId <> Byte(oiPirate)) or (Pos('OnlyNonPirate', ToFactions) <= 0)) and
                     ((LanguageDataConfig.CountParamsByPath('Quest.SendLetter.' + IntToStr(QuestNumber) + '.PlayerRace') = 0) or
-                    (Pos(OwnerToSys(RaceToOwner(GetPlayer.PilotRace)), LookupLocalizedTextByKey('Quest.SendLetter.' + IntToStr(QuestNumber) + '.PlayerRace')) > 0)) and (not Galaxy.HasPlayerQuestHistory(qtSendLetter, QuestNumber)) and MatchesCareerName(Ord(GetDominantCareer), LookupLocalizedTextByKey('Quest.SendLetter.' + IntToStr(QuestNumber) + '.Status')) then begin
+                    (Pos(OwnerToSys(RaceToOwner(GetPlayer.PilotRace)), LookupLocalizedTextByKey('Quest.SendLetter.' + IntToStr(QuestNumber) + '.PlayerRace')) > 0)) and (not Galaxy.HasPlayerQuestHistory(qtSendLetter, QuestNumber)) and MatchesCareerName(GetDominantCareer, LookupLocalizedTextByKey('Quest.SendLetter.' + IntToStr(QuestNumber) + '.Status')) then begin
                     Found := True;
                     Break;
                   end;
@@ -4066,10 +4066,10 @@ begin
                   Quest.QuestType := qtSendLetter;
                   Quest.Planet := CurrentPlanet;
                   Quest.Successful := False;
-                  Quest.DeadlineTurn := QuestTuning[Ord(Quest.QuestType)].BaseDuration + 15 * (CurrentStar.StarDistances[I].Distance div 20 + 1);
+                  Quest.DeadlineTurn := QuestTuning[Quest.QuestType].BaseDuration + 15 * (CurrentStar.StarDistances[I].Distance div 20 + 1);
                   if IsHealthEffectActive(24) then Quest.DeadlineTurn := Round(Quest.DeadlineTurn * 1.5);
                   Quest.DeadlineTurn := Galaxy.CurrentTurn + Round(Quest.DeadlineTurn / GalaxyDifficultyTuning[Galaxy.DifficultyLevels[5]].QuestTimeAndExperienceFactor);
-                  Quest.RewardMoney := QuestTuning[Ord(Quest.QuestType)].BaseRewardMoney + Round(QuestTuning[Ord(Quest.QuestType)].RewardCapitalPercent * Min(Galaxy.AverageRangerCapital * 0.01, GetPlayer.Wealth * 0.01));
+                  Quest.RewardMoney := QuestTuning[Quest.QuestType].BaseRewardMoney + Round(QuestTuning[Quest.QuestType].RewardCapitalPercent * Min(Galaxy.AverageRangerCapital * 0.01, GetPlayer.Wealth * 0.01));
                   Quest.RewardMoney := Round(Quest.RewardMoney * GalaxyDifficultyTuning[Galaxy.DifficultyLevels[5]].QuestMoneyFactor);
                   if IsHealthEffectActive(23) then Quest.RewardMoney := Round(Quest.RewardMoney * SeededRandomFloatRange((Integer(CurrentPlanet.GenerationSeed) + Galaxy.CurrentTurn) div Interval, 1.3, 2.3));
                   Quest.RewardMoney := Quest.RewardMoney + Round(Quest.RewardMoney * GetEffectiveSkillLevel(psCharisma) * 0.1);
@@ -4086,7 +4086,7 @@ begin
         until Attempts > 20;
       end;
     if not HasQuestOfType(qtKillShip) and (Galaxy.CurrentTurn > 665) and (ForcedPlanetQuestId < 0) then
-      if FractionalQuotient(CurrentPlanet.GenerationSeed, (Galaxy.CurrentTurn + 222) div Interval) < PlanetGovernmentMarket[Ord(CurrentPlanet.Government)].QuestOfferProbabilities[1] then
+      if FractionalQuotient(CurrentPlanet.GenerationSeed, (Galaxy.CurrentTurn + 222) div Interval) < PlanetGovernmentMarket[CurrentPlanet.Government].QuestOfferProbabilities[qtKillShip] then
         for I := Min(20, Galaxy.Stars.Count - 1) downto 1 do begin
           Star := TObject(CurrentStar.StarDistances[I].Star) as TStar;
           if (Star.Constellation.Id <> 20) and Star.IsConstellationVisible and (Star.ControlFaction <> sfDominators) and (Star.Status.CustomFaction = '') then
@@ -4121,7 +4121,7 @@ begin
                       ((Target is TPirate) and ((Target as TPirate).PirateType = 0) and (Target.OwnerId = Byte(oiPirate)) and
                        (Pos(OwnerToSys(RaceToOwner(Target.PilotRace)), LookupLocalizedTextByKey('Quest.KillShip.' + IntToStr(QuestNumber) + '.ShipRace')) > 0))) and
                     ((LanguageDataConfig.CountParamsByPath('Quest.KillShip.' + IntToStr(QuestNumber) + '.PlayerRace') = 0) or
-                    (Pos(OwnerToSys(RaceToOwner(GetPlayer.PilotRace)), LookupLocalizedTextByKey('Quest.KillShip.' + IntToStr(QuestNumber) + '.PlayerRace')) > 0)) and (not Galaxy.HasPlayerQuestHistory(qtKillShip, QuestNumber)) and MatchesCareerName(Ord(GetDominantCareer), LookupLocalizedTextByKey('Quest.KillShip.' + IntToStr(QuestNumber) + '.Status')) then begin
+                    (Pos(OwnerToSys(RaceToOwner(GetPlayer.PilotRace)), LookupLocalizedTextByKey('Quest.KillShip.' + IntToStr(QuestNumber) + '.PlayerRace')) > 0)) and (not Galaxy.HasPlayerQuestHistory(qtKillShip, QuestNumber)) and MatchesCareerName(GetDominantCareer, LookupLocalizedTextByKey('Quest.KillShip.' + IntToStr(QuestNumber) + '.Status')) then begin
                     ShipTypes := LookupLocalizedTextByKey('Quest.KillShip.' + IntToStr(QuestNumber) + '.ShipType');
                     case Target.TypeId of
                       stRanger: begin
@@ -4147,10 +4147,10 @@ begin
                   Quest.QuestType := qtKillShip;
                   Quest.Planet := CurrentPlanet;
                   Quest.Successful := False;
-                  Quest.DeadlineTurn := QuestTuning[Ord(Quest.QuestType)].BaseDuration + Round(RemapClamped(Target.Wealth, GetPlayer.Wealth div 2, 2 * GetPlayer.Wealth, 0, 30) + PointDistance(CurrentStar.Position, Target.CurrentStar.Position));
+                  Quest.DeadlineTurn := QuestTuning[Quest.QuestType].BaseDuration + Round(RemapClamped(Target.Wealth, GetPlayer.Wealth div 2, 2 * GetPlayer.Wealth, 0, 30) + PointDistance(CurrentStar.Position, Target.CurrentStar.Position));
                   if IsHealthEffectActive(24) then Quest.DeadlineTurn := Round(Quest.DeadlineTurn * 1.5);
                   Quest.DeadlineTurn := Galaxy.CurrentTurn + Round(Quest.DeadlineTurn / GalaxyDifficultyTuning[Galaxy.DifficultyLevels[5]].QuestTimeAndExperienceFactor);
-                  Quest.RewardMoney := QuestTuning[Ord(Quest.QuestType)].BaseRewardMoney + Round((QuestTuning[Ord(Quest.QuestType)].RewardCapitalPercent * Min(Galaxy.AverageRangerCapital * 0.01, GetPlayer.Wealth * 0.01)) * RemapClamped(Target.Wealth, GetPlayer.Wealth div 2, 2 * GetPlayer.Wealth, 0.8, 1.2));
+                  Quest.RewardMoney := QuestTuning[Quest.QuestType].BaseRewardMoney + Round((QuestTuning[Quest.QuestType].RewardCapitalPercent * Min(Galaxy.AverageRangerCapital * 0.01, GetPlayer.Wealth * 0.01)) * RemapClamped(Target.Wealth, GetPlayer.Wealth div 2, 2 * GetPlayer.Wealth, 0.8, 1.2));
                   Quest.RewardMoney := Round(Quest.RewardMoney * GalaxyDifficultyTuning[Galaxy.DifficultyLevels[5]].QuestMoneyFactor);
                   if IsHealthEffectActive(23) then Quest.RewardMoney := Round(Quest.RewardMoney * SeededRandomFloatRange((Integer(CurrentPlanet.GenerationSeed) + Galaxy.CurrentTurn) div Interval, 1.3, 2.3));
                   Quest.RewardMoney := Quest.RewardMoney + Round(Quest.RewardMoney * GetEffectiveSkillLevel(psCharisma) * 0.1);
@@ -4167,7 +4167,7 @@ begin
     FirstStar := 10;
     if ForcedPlanetQuestId >= 0 then FirstStar := 0;
     if not HasQuestOfType(qtPlanetQuest) then
-      if (ForcedPlanetQuestId >= 0) or (FractionalQuotient(CurrentPlanet.GenerationSeed, (Galaxy.CurrentTurn + 333) div Interval) < PlanetGovernmentMarket[Ord(CurrentPlanet.Government)].QuestOfferProbabilities[2]) then
+      if (ForcedPlanetQuestId >= 0) or (FractionalQuotient(CurrentPlanet.GenerationSeed, (Galaxy.CurrentTurn + 333) div Interval) < PlanetGovernmentMarket[CurrentPlanet.Government].QuestOfferProbabilities[qtPlanetQuest]) then
         for I := FirstStar to Galaxy.Stars.Count - 1 do begin
           Star := TObject(CurrentStar.StarDistances[I].Star) as TStar;
           if (Star.ShipTypeCounts[stKling] <= 0) and (Star.Battle = 0) and (Star.ControlFaction <> sfDominators) and (Star.Status.CustomFaction = '') and
@@ -4221,10 +4221,10 @@ begin
                       Quest.Successful := False;
                       Quest.DeadlineTurn := 15 * (CurrentStar.StarDistances[I].Distance div 20 + 1);
                       if not TextQuest.CompleteOnFinish then Quest.DeadlineTurn := Quest.DeadlineTurn * 2;
-                      Quest.DeadlineTurn := Quest.DeadlineTurn + QuestTuning[Ord(Quest.QuestType)].BaseDuration;
+                      Quest.DeadlineTurn := Quest.DeadlineTurn + QuestTuning[Quest.QuestType].BaseDuration;
                       if IsHealthEffectActive(24) then Quest.DeadlineTurn := Round(Quest.DeadlineTurn * 1.5);
                       Quest.DeadlineTurn := Galaxy.CurrentTurn + Round(Quest.DeadlineTurn / GalaxyDifficultyTuning[Galaxy.DifficultyLevels[5]].QuestTimeAndExperienceFactor);
-                      Quest.RewardMoney := QuestTuning[Ord(Quest.QuestType)].BaseRewardMoney + Round((QuestTuning[Ord(Quest.QuestType)].RewardCapitalPercent * Min(Galaxy.AverageRangerCapital * 0.01, GetPlayer.Wealth * 0.01)) * RemapClamped(TextQuest.Difficulty, 50, 100, 1, 2.1));
+                      Quest.RewardMoney := QuestTuning[Quest.QuestType].BaseRewardMoney + Round((QuestTuning[Quest.QuestType].RewardCapitalPercent * Min(Galaxy.AverageRangerCapital * 0.01, GetPlayer.Wealth * 0.01)) * RemapClamped(TextQuest.Difficulty, 50, 100, 1, 2.1));
                       Quest.RewardMoney := Round(Quest.RewardMoney * GalaxyDifficultyTuning[Galaxy.DifficultyLevels[5]].QuestMoneyFactor);
                       if IsHealthEffectActive(23) then Quest.RewardMoney := Round(Quest.RewardMoney * SeededRandomFloatRange((Integer(CurrentPlanet.GenerationSeed) + Galaxy.CurrentTurn) div Interval, 1.3, 2.3));
                       Quest.RewardMoney := Quest.RewardMoney + Round(Quest.RewardMoney * GetEffectiveSkillLevel(psCharisma) * 0.1);
@@ -4241,7 +4241,7 @@ begin
             end;
         end;
     if not HasQuestOfType(qtDefendSystem) and (ForcedPlanetQuestId < 0) and (CurrentStar.ShipTypeCounts[stKling] = 0) then
-      if FractionalQuotient(CurrentPlanet.GenerationSeed, (Galaxy.CurrentTurn + 444) div Interval) < PlanetGovernmentMarket[Ord(CurrentPlanet.Government)].QuestOfferProbabilities[3] then
+      if FractionalQuotient(CurrentPlanet.GenerationSeed, (Galaxy.CurrentTurn + 444) div Interval) < PlanetGovernmentMarket[CurrentPlanet.Government].QuestOfferProbabilities[qtDefendSystem] then
         for I := 0 to CurrentStar.Ships.Count - 1 do begin
           if CurrentStar.ShipTypeCounts[stPirate] < 2 then Break;
           Target := CurrentStar.Ships[I];
@@ -4254,7 +4254,7 @@ begin
               if (Pos(OwnerToSys(RaceToOwner(CurrentPlanet.RaceId)), FromFactions) > 0) and
                 ((CurrentPlanet.OwnerId = Byte(oiPirate)) or (Pos('OnlyPirate', FromFactions) <= 0)) and
                 ((CurrentPlanet.OwnerId <> Byte(oiPirate)) or (Pos('OnlyNonPirate', FromFactions) <= 0)) and ((LanguageDataConfig.CountParamsByPath('Quest.DefSystem.' + IntToStr(QuestNumber) + '.PlayerRace') = 0) or
-                (Pos(OwnerToSys(RaceToOwner(GetPlayer.PilotRace)), LookupLocalizedTextByKey('Quest.DefSystem.' + IntToStr(QuestNumber) + '.PlayerRace')) > 0)) and (not Galaxy.HasPlayerQuestHistory(qtDefendSystem, QuestNumber)) and MatchesCareerName(Ord(GetDominantCareer), LookupLocalizedTextByKey('Quest.DefSystem.' + IntToStr(QuestNumber) + '.Status')) then begin
+                (Pos(OwnerToSys(RaceToOwner(GetPlayer.PilotRace)), LookupLocalizedTextByKey('Quest.DefSystem.' + IntToStr(QuestNumber) + '.PlayerRace')) > 0)) and (not Galaxy.HasPlayerQuestHistory(qtDefendSystem, QuestNumber)) and MatchesCareerName(GetDominantCareer, LookupLocalizedTextByKey('Quest.DefSystem.' + IntToStr(QuestNumber) + '.Status')) then begin
                 Found := True;
                 Break;
               end;
@@ -4264,10 +4264,10 @@ begin
               Quest.QuestType := qtDefendSystem;
               Quest.Planet := CurrentPlanet;
               Quest.Successful := False;
-              Quest.DeadlineTurn := QuestTuning[Ord(Quest.QuestType)].BaseDuration + SeededRandomIntRange(-10, 10, CurrentPlanet.GenerationSeed);
+              Quest.DeadlineTurn := QuestTuning[Quest.QuestType].BaseDuration + SeededRandomIntRange(-10, 10, CurrentPlanet.GenerationSeed);
               if IsHealthEffectActive(24) then Quest.DeadlineTurn := Round(Quest.DeadlineTurn / 1.5);
               Quest.DeadlineTurn := Galaxy.CurrentTurn + Round(Quest.DeadlineTurn * GalaxyDifficultyTuning[Galaxy.DifficultyLevels[5]].QuestTimeAndExperienceFactor);
-              Quest.RewardMoney := QuestTuning[Ord(Quest.QuestType)].BaseRewardMoney + Round(QuestTuning[Ord(Quest.QuestType)].RewardCapitalPercent * Min(Galaxy.AverageRangerCapital * 0.01, GetPlayer.Wealth * 0.01));
+              Quest.RewardMoney := QuestTuning[Quest.QuestType].BaseRewardMoney + Round(QuestTuning[Quest.QuestType].RewardCapitalPercent * Min(Galaxy.AverageRangerCapital * 0.01, GetPlayer.Wealth * 0.01));
               Quest.RewardMoney := Round(Quest.RewardMoney * GalaxyDifficultyTuning[Galaxy.DifficultyLevels[5]].QuestMoneyFactor);
               if IsHealthEffectActive(23) then Quest.RewardMoney := Round(Quest.RewardMoney * SeededRandomFloatRange((Integer(CurrentPlanet.GenerationSeed) + Galaxy.CurrentTurn) div Interval, 1.3, 2.3));
               Quest.RewardMoney := Quest.RewardMoney + Round(Quest.RewardMoney * GetEffectiveSkillLevel(psCharisma) * 0.1);
@@ -4281,7 +4281,7 @@ begin
           end;
         end;
     if not HasQuestOfType(qtDefendShip) and (ForcedPlanetQuestId < 0) then
-      if FractionalQuotient(CurrentPlanet.GenerationSeed, (Galaxy.CurrentTurn + 555) div Interval) < PlanetGovernmentMarket[Ord(CurrentPlanet.Government)].QuestOfferProbabilities[4] then
+      if FractionalQuotient(CurrentPlanet.GenerationSeed, (Galaxy.CurrentTurn + 555) div Interval) < PlanetGovernmentMarket[CurrentPlanet.Government].QuestOfferProbabilities[qtDefendShip] then
         for I := 0 to Min(20, Galaxy.Stars.Count - 1) do begin
           Star := TObject(CurrentStar.StarDistances[I].Star) as TStar;
           if (Star.ShipTypeCounts[stKling] <= 0) and (Star.ShipTypeCounts[stPirate] >= 1) and (Star.Constellation.Id <> 20) and Star.IsConstellationVisible then
@@ -4304,7 +4304,7 @@ begin
                       if (Pos(OwnerToSys(RaceToOwner(CurrentPlanet.RaceId)), FromFactions) > 0) and
                         ((CurrentPlanet.OwnerId = Byte(oiPirate)) or (Pos('OnlyPirate', FromFactions) <= 0)) and
                         ((CurrentPlanet.OwnerId <> Byte(oiPirate)) or (Pos('OnlyNonPirate', FromFactions) <= 0)) and (not Galaxy.HasPlayerQuestHistory(qtDefendShip, QuestNumber)) and ((LanguageDataConfig.CountParamsByPath('Quest.DefShip.' + IntToStr(QuestNumber) + '.PlayerRace') = 0) or
-                        (Pos(OwnerToSys(RaceToOwner(GetPlayer.PilotRace)), LookupLocalizedTextByKey('Quest.DefShip.' + IntToStr(QuestNumber) + '.PlayerRace')) > 0)) and MatchesCareerName(Ord(GetDominantCareer), LookupLocalizedTextByKey('Quest.DefShip.' + IntToStr(QuestNumber) + '.Status')) then
+                        (Pos(OwnerToSys(RaceToOwner(GetPlayer.PilotRace)), LookupLocalizedTextByKey('Quest.DefShip.' + IntToStr(QuestNumber) + '.PlayerRace')) > 0)) and MatchesCareerName(GetDominantCareer, LookupLocalizedTextByKey('Quest.DefShip.' + IntToStr(QuestNumber) + '.Status')) then
                         if ((I = 0) and (LookupLocalizedTextByKey('Quest.DefShip.' + IntToStr(QuestNumber) + '.InThisSystem') = 'Yes')) or
                           ((I > 0) and (LookupLocalizedTextByKey('Quest.DefShip.' + IntToStr(QuestNumber) + '.InThisSystem') = 'No')) then begin
                           ShipTypes := LookupLocalizedTextByKey('Quest.DefShip.' + IntToStr(QuestNumber) + '.ShipType');
@@ -4332,10 +4332,10 @@ begin
                       Quest.QuestType := qtDefendShip;
                       Quest.Planet := CurrentPlanet;
                       Quest.Successful := False;
-                      Quest.DeadlineTurn := QuestTuning[Ord(Quest.QuestType)].BaseDuration + SeededRandomIntRange(-10, 10, CurrentPlanet.GenerationSeed);
+                      Quest.DeadlineTurn := QuestTuning[Quest.QuestType].BaseDuration + SeededRandomIntRange(-10, 10, CurrentPlanet.GenerationSeed);
                       if IsHealthEffectActive(24) then Quest.DeadlineTurn := Round(Quest.DeadlineTurn / 1.5);
                       Quest.DeadlineTurn := Galaxy.CurrentTurn + Round(Quest.DeadlineTurn * GalaxyDifficultyTuning[Galaxy.DifficultyLevels[5]].QuestTimeAndExperienceFactor);
-                      Quest.RewardMoney := QuestTuning[Ord(Quest.QuestType)].BaseRewardMoney + Round(QuestTuning[Ord(Quest.QuestType)].RewardCapitalPercent * Min(Galaxy.AverageRangerCapital * 0.01, GetPlayer.Wealth * 0.01));
+                      Quest.RewardMoney := QuestTuning[Quest.QuestType].BaseRewardMoney + Round(QuestTuning[Quest.QuestType].RewardCapitalPercent * Min(Galaxy.AverageRangerCapital * 0.01, GetPlayer.Wealth * 0.01));
                       Quest.RewardMoney := Round(Quest.RewardMoney * GalaxyDifficultyTuning[Galaxy.DifficultyLevels[5]].QuestMoneyFactor);
                       if IsHealthEffectActive(23) then Quest.RewardMoney := Round(Quest.RewardMoney * SeededRandomFloatRange((Integer(CurrentPlanet.GenerationSeed) + Galaxy.CurrentTurn) div Interval, 1.3, 2.3));
                       Quest.RewardMoney := Quest.RewardMoney + Round(Quest.RewardMoney * GetEffectiveSkillLevel(psCharisma) * 0.1);

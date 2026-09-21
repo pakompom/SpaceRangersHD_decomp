@@ -180,7 +180,7 @@ begin
   ReplaceTextToken(Text, '<AllPoints>', WideString(IntToStr(Galaxy.GetCheatPoints)), '<color=255,240,100>');
   if ShipScreen.IsOpen then Parent := ShipScreen
   else if RangerRatingScreen.IsOpen then Parent := RangerRatingScreen
-  else Parent := TObject(RegisteredScreens[Ord(CurrentScreenId)]) as TMessageLoopGI;
+  else Parent := TObject(RegisteredScreens[CurrentScreenId]) as TMessageLoopGI;
   ShowMessageBoxGI(Parent, Text, mbgCancel);
   FullFrameRedrawRequested := True;
   Parent.InvalidateViewport;
@@ -701,7 +701,7 @@ begin
           end;
       end;
     end;
-    GetPlayer.CareerStatus[Ord(rcPirate)] := 100;
+    GetPlayer.CareerStatus[rcPirate] := 100;
     GetPlayer.ChangePlanetRelations(nil, rcmDecrease, 60, [0, 2, 3, 4]);
     if CurrentScreenId = screenRuinsTalk then StarMapScreen.MainPanel.RefreshMoneyAndCargo
     else if CurrentScreenId = screenGoodsShop then
@@ -999,7 +999,7 @@ begin
     begin
       Kind := GetItemTypeFromMask([Ord(t_Weapon1)..Ord(t_Weapon18)], I);
       GetPlayer.Inventory.Add(CreateGeneratedEquipment(TItemType(Kind),
-        Round(WeaponInfos[Kind].AverageSize * EquipmentSizeFactors[5]), Galaxy.TechLevel, GetPlayer.OwnerId));
+        Round(WeaponInfos[TItemType(Kind)].AverageSize * EquipmentSizeFactors[5]), Galaxy.TechLevel, GetPlayer.OwnerId));
     end;
     for I := 0 to Galaxy.CustomWeaponTypes.Count - 1 do
     begin
@@ -1101,7 +1101,7 @@ end;
 { @routine $50A0E0 CheatSkill }
 procedure CheatSkill;
 var
-  I: Byte;
+  Skill: TPilotSkill;
   Ship: TShip;
 begin
   if (Galaxy <> nil) and (GetPlayer <> nil) then
@@ -1112,7 +1112,7 @@ begin
     else if GetInnermostScreenLoop = ShipScreen then Ship := PlayerHoldShip;
     if Ship = nil then Ship := GetPlayer;
     ReportCheat(10, DecodeTextW('SXKOINLAL0')); // 'SKILL'
-    for I := 0 to 5 do Ship.BaseSkills[I] := 6;
+    for Skill := Low(TPilotSkill) to High(TPilotSkill) do Ship.BaseSkills[Skill] := 6;
     if GetInnermostScreenLoop = ScannerScreen then ScannerScreen.CloseClicked(nil)
     else if GetInnermostScreenLoop = ShipScreen then ShipScreen.CloseClicked(nil);
   end;
@@ -1339,7 +1339,7 @@ begin
   if (Galaxy <> nil) and (GetPlayer <> nil) and GetPlayer.InNormalSpace and
     (CurrentScreenId = screenStarMap) and (StarMapScreen.Mode = smmOrders) then
   begin
-    Parent := TObject(RegisteredScreens[Ord(CurrentScreenId)]) as TMessageLoopGI;
+    Parent := TObject(RegisteredScreens[CurrentScreenId]) as TMessageLoopGI;
     Items := TList.Create;
     Block := GameDataConfig.GetBlock('ABMap');
     Count := Block.GetBlockCount;
@@ -1395,7 +1395,7 @@ begin
     ScoreScreen.RecordPlayerResult(True);
     AboutScreen.ReturnToScores := True;
     RequestedScreenId := screenAbout;
-    (TObject(RegisteredScreens[Ord(CurrentScreenId)]) as TMessageLoopGI).RequestClose(1);
+    (TObject(RegisteredScreens[CurrentScreenId]) as TMessageLoopGI).RequestClose(1);
   end;
 end;
 { @end $50B118 }
@@ -1423,9 +1423,9 @@ begin
         begin
           AmmoCapacity := CalculateGeneratedAmmoCapacity;
           if MicroModuleIndex <> 0 then
-            Inc(AmmoCapacity, MicroModuleTemplates[Item.MicroModuleIndex - 1].StatBonuses[Ord(bonAmmo)]);
+            Inc(AmmoCapacity, MicroModuleTemplates[Item.MicroModuleIndex - 1].StatBonuses[bonAmmo]);
           if SpecialModuleIndex <> 0 then
-            Inc(AmmoCapacity, MicroModuleTemplates[Item.SpecialModuleIndex - 1].StatBonuses[Ord(bonAmmo)]);
+            Inc(AmmoCapacity, MicroModuleTemplates[Item.SpecialModuleIndex - 1].StatBonuses[bonAmmo]);
         end;
       end;
     end;
@@ -1606,17 +1606,17 @@ begin
     (Galaxy.FinalizationNameEncoded = '') and
     (CurrentScreenId in [screenHangar, screenPlanet, screenPlanetNO, screenEquipmentShop,
       screenGovernment, screenStarMap, screenRuinsTalk, screenInfo, screenGoodsShop]) and
-    (TMessageLoopGI(RegisteredScreens[Ord(CurrentScreenId)]).ChildLoop = nil) then
+    (TMessageLoopGI(RegisteredScreens[CurrentScreenId]).ChildLoop = nil) then
   begin
     Galaxy.CheckIntegrityChecksum(888);
     Galaxy.CampaignFlag183 := 1;
     CaptureSavePreview;
-    CaptureGalaxyPreview(TMessageLoopGI(RegisteredScreens[Ord(CurrentScreenId)]));
+    CaptureGalaxyPreview(TMessageLoopGI(RegisteredScreens[CurrentScreenId]));
     Galaxy.PrimeIntegrityChecksum(889);
     SaveManagerReturnScreenId := CurrentScreenId;
     SaveManagerMode := smmSave;
     RequestedScreenId := screenSaveManager;
-    TMessageLoopGI(RegisteredScreens[Ord(CurrentScreenId)]).RequestClose(1);
+    TMessageLoopGI(RegisteredScreens[CurrentScreenId]).RequestClose(1);
   end;
 end;
 { @end $50BA24 }
@@ -1647,7 +1647,7 @@ begin
           Path := 'Weapon' + IntToStr(Number);
           Inc(Number);
         end
-        else Path := ItemTypeNames[Ord(Item.ItemType)];
+        else Path := ItemTypeNames[Item.ItemType];
         Item.SaveToBlock(Block.AddBlockByPath(Path));
       end;
     end;
@@ -1724,7 +1724,7 @@ var
 begin
   if Galaxy <> nil then Galaxy.CheckIntegrityChecksum(888);
   Value := '';
-  if ShowTextInputDialog(TObject(RegisteredScreens[Ord(CurrentScreenId)]) as TMessageLoopGI, 'Enter script command', Value, 255, 0, 0) = 1 then
+  if ShowTextInputDialog(TObject(RegisteredScreens[CurrentScreenId]) as TMessageLoopGI, 'Enter script command', Value, 255, 0, 0) = 1 then
   try
     Count := Length(Value);
     if Count > 0 then
@@ -1756,7 +1756,7 @@ begin
       else ExecuteScriptText(Value, nil);
     end;
   except
-    on E: Exception do ShowMessageBoxGI(TObject(RegisteredScreens[Ord(CurrentScreenId)]) as TMessageLoopGI, E.Message, mbgCancel);
+    on E: Exception do ShowMessageBoxGI(TObject(RegisteredScreens[CurrentScreenId]) as TMessageLoopGI, E.Message, mbgCancel);
   end;
   if Galaxy <> nil then Galaxy.PrimeIntegrityChecksum(889);
 end;
@@ -1802,7 +1802,7 @@ procedure CheatSeed;
 var
   Value: WideString;
 begin
-  if TMessageLoopGI(RegisteredScreens[Ord(CurrentScreenId)]) = NewGameScreen then
+  if TMessageLoopGI(RegisteredScreens[CurrentScreenId]) = NewGameScreen then
     if (NewGameScreen.GetByName('ButExtended') as TGraphButtonGI).Down then
     begin
       if NewGameSeedText = '' then

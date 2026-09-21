@@ -338,7 +338,7 @@ type
     ShipTurnBeforeEndOrder: TGreetingCountMask; // @offset $17
     PlayerTurnBeforeEndOrder: TGreetingCountMask; // @offset $19
     ShipBadTurnBeforeEndOrder: TGreetingCountMask; // @offset $1B
-    ShipStatus: TGreetingMask; // @offset $1D
+    ShipStatus: TRangerCareerSet; // @offset $1D
     PlayerStatus: TRangerCareerSet; // @offset $1E
     ShipStrength: TGreetingMask; // @offset $1F
     PlayerStrength: TGreetingMask; // @offset $20
@@ -972,113 +972,113 @@ begin
   end;
   PopupController := TfPopUpController.Create;
   LoadScreen := TfLoad.Create;
-  RegisteredScreens[Ord(screenLoad)] := LoadScreen;
+  RegisteredScreens[screenLoad] := LoadScreen;
   LoadScreen.InitializeFromConfig(UiStyleConfig, 'Load', True);
   LoadScreen.InitializeLayout;
   MainMenuScreen := TfMainForm.Create;
-  RegisteredScreens[Ord(screenMainMenu)] := MainMenuScreen;
+  RegisteredScreens[screenMainMenu] := MainMenuScreen;
   MainMenuScreen.InitializeFromConfig(UiStyleConfig, 'MainForm', True);
   PlanetQuestScreen := TfPlanetQuest.Create;
-  RegisteredScreens[Ord(screenPlanetQuest)] := PlanetQuestScreen;
+  RegisteredScreens[screenPlanetQuest] := PlanetQuestScreen;
   PlanetQuestScreen.InitializeFromConfig(UiStyleConfig, 'PlanetQuest', True);
   GameLoadScreen := TfGameLoad.Create;
-  RegisteredScreens[Ord(screenGameLoad)] := GameLoadScreen;
+  RegisteredScreens[screenGameLoad] := GameLoadScreen;
   GameLoadScreen.InitializeFromConfig(UiStyleConfig, 'GameLoad', True);
   NewGameScreen := TfGameSettings2.Create;
-  RegisteredScreens[Ord(screenNewGame)] := NewGameScreen;
+  RegisteredScreens[screenNewGame] := NewGameScreen;
   NewGameScreen.InitializeFromConfig(UiStyleConfig, 'GameSettings', True);
   IntroductionScreen := TfIntroduction.Create;
-  RegisteredScreens[Ord(screenIntroduction)] := IntroductionScreen;
+  RegisteredScreens[screenIntroduction] := IntroductionScreen;
   IntroductionScreen.InitializeFromConfig(UiStyleConfig, 'Introduction', True);
   HangarScreen := TfHangar.Create;
-  RegisteredScreens[Ord(screenHangar)] := HangarScreen;
+  RegisteredScreens[screenHangar] := HangarScreen;
   HangarScreen.InitializeFromConfig(UiStyleConfig, 'Hangar', True);
   PlanetScreen := TfPlanet.Create;
-  RegisteredScreens[Ord(screenPlanet)] := PlanetScreen;
+  RegisteredScreens[screenPlanet] := PlanetScreen;
   PlanetScreen.InitializeFromConfig(UiStyleConfig, 'Planet', True);
   UninhabitedPlanetScreen := TfPlanetNO.Create;
-  RegisteredScreens[Ord(screenPlanetNO)] := UninhabitedPlanetScreen;
+  RegisteredScreens[screenPlanetNO] := UninhabitedPlanetScreen;
   UninhabitedPlanetScreen.InitializeFromConfig(UiStyleConfig, 'PlanetNO', True);
   RuinsTalkScreen := TfRuinsTalk.Create;
-  RegisteredScreens[Ord(screenRuinsTalk)] := RuinsTalkScreen;
+  RegisteredScreens[screenRuinsTalk] := RuinsTalkScreen;
   RuinsTalkScreen.InitializeFromConfig(UiStyleConfig, 'RuinsTalk', True);
   ArcadeBattleScreen := TfAB.Create;
-  RegisteredScreens[Ord(screenArcadeBattle)] := ArcadeBattleScreen;
+  RegisteredScreens[screenArcadeBattle] := ArcadeBattleScreen;
   ArcadeBattleScreen.InitializeFromConfig(UiStyleConfig, 'AB', True);
   GovernmentScreen := TfGov.Create;
-  RegisteredScreens[Ord(screenGovernment)] := GovernmentScreen;
+  RegisteredScreens[screenGovernment] := GovernmentScreen;
   GovernmentScreen.InitializeFromConfig(UiStyleConfig, 'Gov', True);
   InfoScreen := TfInfo.Create;
-  RegisteredScreens[Ord(screenInfo)] := InfoScreen;
+  RegisteredScreens[screenInfo] := InfoScreen;
   InfoScreen.InitializeFromConfig(UiStyleConfig, 'Info', True);
   RangerRatingScreen := TfRating2.Create;
-  RegisteredScreens[Ord(screenRating)] := RangerRatingScreen;
+  RegisteredScreens[screenRating] := RangerRatingScreen;
   RangerRatingScreen.InitializeFromConfig(UiStyleConfig, 'Rating', True);
   RewardsScreen := TfRewards.Create;
-  RegisteredScreens[Ord(screenRewards)] := RewardsScreen;
+  RegisteredScreens[screenRewards] := RewardsScreen;
   RewardsScreen.InitializeFromConfig(UiStyleConfig, 'Rewards', True);
   ShipScreen := TfShip2.Create;
-  RegisteredScreens[Ord(screenShip)] := ShipScreen;
+  RegisteredScreens[screenShip] := ShipScreen;
   ShipScreen.InitializeFromConfig(UiStyleConfig, 'Ship', True);
   TalkScreen := TfTalk.Create;
-  RegisteredScreens[Ord(screenTalk)] := TalkScreen;
+  RegisteredScreens[screenTalk] := TalkScreen;
   TalkScreen.InitializeFromConfig(UiStyleConfig, 'Talk', True);
   ScannerScreen := TfScaner.Create;
-  RegisteredScreens[Ord(screenScanner)] := ScannerScreen;
+  RegisteredScreens[screenScanner] := ScannerScreen;
   ScannerScreen.InitializeFromConfig(UiStyleConfig, 'Scaner', True);
   StarMapScreen := TfStarMap.Create;
-  RegisteredScreens[Ord(screenStarMap)] := StarMapScreen;
+  RegisteredScreens[screenStarMap] := StarMapScreen;
   StarMapScreen.InitializeFromConfig(UiStyleConfig, 'StarMap', True);
   FilmScreen := TfFilm.Create;
-  RegisteredScreens[Ord(screenFilm)] := FilmScreen;
+  RegisteredScreens[screenFilm] := FilmScreen;
   FilmScreen.InitializeFromConfig(UiStyleConfig, 'Film', True);
   GalaxyScreen := TfGalaxy2.Create;
-  RegisteredScreens[Ord(screenGalaxy)] := GalaxyScreen;
+  RegisteredScreens[screenGalaxy] := GalaxyScreen;
   GalaxyScreen.InitializeFromConfig(UiStyleConfig, 'Galaxy', True);
   JumpScreen := TfJump.Create;
-  RegisteredScreens[Ord(screenJump)] := JumpScreen;
+  RegisteredScreens[screenJump] := JumpScreen;
   JumpScreen.InitializeFromConfig(UiStyleConfig, 'Jump', True);
   EquipmentShopScreen := TfEquipmentShop.Create;
-  RegisteredScreens[Ord(screenEquipmentShop)] := EquipmentShopScreen;
+  RegisteredScreens[screenEquipmentShop] := EquipmentShopScreen;
   EquipmentShopScreen.InitializeFromConfig(UiStyleConfig, 'EquipmentShop', True);
   GoodsShopScreen := TfGoodsShop2.Create;
-  RegisteredScreens[Ord(screenGoodsShop)] := GoodsShopScreen;
+  RegisteredScreens[screenGoodsShop] := GoodsShopScreen;
   GoodsShopScreen.InitializeFromConfig(UiStyleConfig, 'GoodsShop', True);
   SaveManagerScreen := TfSaveManager.Create;
-  RegisteredScreens[Ord(screenSaveManager)] := SaveManagerScreen;
+  RegisteredScreens[screenSaveManager] := SaveManagerScreen;
   SaveManagerScreen.InitializeFromConfig(UiStyleConfig, 'SaveManager', True);
   GameMenuScreen := TfGameMenu.Create;
-  RegisteredScreens[Ord(screenGameMenu)] := GameMenuScreen;
+  RegisteredScreens[screenGameMenu] := GameMenuScreen;
   GameMenuScreen.InitializeFromConfig(UiStyleConfig, 'GameMenu', True);
   SettingsScreen := TfCfgSettings.Create;
-  RegisteredScreens[Ord(screenSettings)] := SettingsScreen;
+  RegisteredScreens[screenSettings] := SettingsScreen;
   SettingsScreen.InitializeFromConfig(UiStyleConfig, 'CfgSettings', True);
   GameEndScreen := TfGameEnd.Create;
-  RegisteredScreens[Ord(screenGameEnd)] := GameEndScreen;
+  RegisteredScreens[screenGameEnd] := GameEndScreen;
   GameEndScreen.InitializeFromConfig(UiStyleConfig, 'GameEnd', True);
   AboutScreen := TfAbout.Create;
-  RegisteredScreens[Ord(screenAbout)] := AboutScreen;
+  RegisteredScreens[screenAbout] := AboutScreen;
   AboutScreen.InitializeFromConfig(UiStyleConfig, 'About', True);
   ScoreScreen := TfScore.Create;
-  RegisteredScreens[Ord(screenScores)] := ScoreScreen;
+  RegisteredScreens[screenScores] := ScoreScreen;
   ScoreScreen.InitializeFromConfig(UiStyleConfig, 'Score', True);
   SelectFaceScreen := TfSelectFace.Create;
-  RegisteredScreens[Ord(screenSelectFace)] := SelectFaceScreen;
+  RegisteredScreens[screenSelectFace] := SelectFaceScreen;
   SelectFaceScreen.InitializeFromConfig(UiStyleConfig, 'SelectFace', True);
   JournalScreen := TfJournal.Create;
-  RegisteredScreens[Ord(screenJournal)] := JournalScreen;
+  RegisteredScreens[screenJournal] := JournalScreen;
   JournalScreen.InitializeFromConfig(UiStyleConfig, 'Journal', True);
   LoadRobotScreen := TfLoadRobot.Create;
-  RegisteredScreens[Ord(screenLoadRobot)] := LoadRobotScreen;
+  RegisteredScreens[screenLoadRobot] := LoadRobotScreen;
   LoadRobotScreen.InitializeFromConfig(UiStyleConfig, 'LoadRobot', True);
   LoadQuestScreen := TfLoadQuest.Create;
-  RegisteredScreens[Ord(screenLoadQuest)] := LoadQuestScreen;
+  RegisteredScreens[screenLoadQuest] := LoadQuestScreen;
   LoadQuestScreen.InitializeFromConfig(UiStyleConfig, 'LoadQuest', True);
   LoadArcadeScreen := TfLoadAB.Create;
-  RegisteredScreens[Ord(screenLoadArcade)] := LoadArcadeScreen;
+  RegisteredScreens[screenLoadArcade] := LoadArcadeScreen;
   LoadArcadeScreen.InitializeFromConfig(UiStyleConfig, 'LoadAB', True);
   AchievementsScreen := TfAchievements.Create;
-  RegisteredScreens[Ord(screenAchievements)] := AchievementsScreen;
+  RegisteredScreens[screenAchievements] := AchievementsScreen;
   AchievementsScreen.InitializeFromConfig(UiStyleConfig, 'Achievements', True);
   SpaceObjectUiLoop := TMessageLoopGI.Create;
   SpaceObjectUiLoop.InitializeDefaults;
@@ -1210,10 +1210,10 @@ end;
 { @routine $52BE1C FindMessageLoop }
 function FindMessageLoop(Name: WideString): TMessageLoopGI;
 var
-  Index: Byte;
+  Index: TGameScreenId;
 begin
   Result := nil;
-  for Index := 0 to 41 do
+  for Index := Low(TGameScreenId) to High(TGameScreenId) do
     if (TMessageLoopGI(RegisteredScreens[Index]) <> nil) and
        (TObject(RegisteredScreens[Index]) is TMessageLoopGI) and
        ((TObject(RegisteredScreens[Index]) as TMessageLoopGI).RegisteredLoopName = Name) then
@@ -1230,7 +1230,7 @@ var
   Index, Count: Integer;
   SatelliteTemplate: TSputnikTempl;
   PlanetTemplate: TPlanetTempl;
-  ScreenIndex: Byte;
+  ScreenIndex: TGameScreenId;
   Slot: TShopSlot;
 begin
   ArcadeHitSounds := nil;
@@ -1503,7 +1503,7 @@ begin
     LoadArcadeScreen := nil;
   end;
   // Native code omits AchievementsScreen from this cleanup list.
-  for ScreenIndex := 0 to 41 do RegisteredScreens[ScreenIndex] := nil;
+  for ScreenIndex := Low(TGameScreenId) to High(TGameScreenId) do RegisteredScreens[ScreenIndex] := nil;
   if PopupController <> nil then
   begin
     PopupController.Free;
@@ -1622,7 +1622,7 @@ begin
     begin
       CurrentScreenId := RequestedScreenId;
       RequestedScreenId := screenNone;
-      TMessageLoopGI(RegisteredScreens[Ord(CurrentScreenId)]).RunContinuous;
+      TMessageLoopGI(RegisteredScreens[CurrentScreenId]).RunContinuous;
       PreviousScreenId := CurrentScreenId;
       CurrentScreenId := screenNone;
     end
@@ -1631,7 +1631,7 @@ begin
       if RequestedScreenId = screenNone then Exit;
       CurrentScreenId := RequestedScreenId;
       RequestedScreenId := screenNone;
-      TMessageLoopGI(RegisteredScreens[Ord(CurrentScreenId)]).Run;
+      TMessageLoopGI(RegisteredScreens[CurrentScreenId]).Run;
       PreviousScreenId := CurrentScreenId;
       CurrentScreenId := screenNone;
     end;
@@ -2458,9 +2458,9 @@ begin
         ShipStatus := [];
         if (Text <> '') and (Text <> 'Any') then
         begin
-          if Pos('Trader', AnsiString(Text)) > 0 then Include(ShipStatus, 0);
-          if Pos('Pirate', AnsiString(Text)) > 0 then Include(ShipStatus, 1);
-          if Pos('Warrior', AnsiString(Text)) > 0 then Include(ShipStatus, 2);
+          if Pos('Trader', AnsiString(Text)) > 0 then Include(ShipStatus, rcTrader);
+          if Pos('Pirate', AnsiString(Text)) > 0 then Include(ShipStatus, rcPirate);
+          if Pos('Warrior', AnsiString(Text)) > 0 then Include(ShipStatus, rcWarrior);
         end;
         Text := ReadShipGreetingField('PlayerStatus');
         PlayerStatus := [];
@@ -3530,7 +3530,7 @@ end;
 { @routine $538C18 GetInnermostScreenLoop }
 function GetInnermostScreenLoop: TMessageLoopGI;
 begin
-  Result := TMessageLoopGI(RegisteredScreens[Ord(CurrentScreenId)]);
+  Result := TMessageLoopGI(RegisteredScreens[CurrentScreenId]);
   while Result.ChildLoop <> nil do Result := Result.ChildLoop;
 end;
 { @end $538C18 }
