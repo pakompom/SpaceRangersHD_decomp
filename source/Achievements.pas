@@ -491,7 +491,7 @@ begin
       for J := 0 to Star.Planets.Count - 1 do
       begin
         Planet := Star.Planets[J];
-        if Planet.OwnerId <> Byte(oiUninhabited) then
+        if Planet.OwnerId <> oiUninhabited then
         begin
           Inc(Count);
           if Planet.GetRelationLevelToShip(GetPlayer) > rlHostile then Exit;

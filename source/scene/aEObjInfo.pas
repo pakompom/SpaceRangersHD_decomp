@@ -23,8 +23,8 @@ type
   TEOTPlanet = record // @size $28
     Id: Cardinal; // @offset $00
     Name: WideString; // @offset $04
-    OwnerId: Byte; // @offset $08
-    RaceId: Byte; // @offset $09
+    OwnerId: TOwnerId; // @offset $08
+    RaceId: TOwnerId; // @offset $09
     Population: Integer; // @offset $0C
     Economy: TPlanetEconomy; // @offset $10
     Government: TPlanetGovernment; // @offset $11
@@ -43,7 +43,7 @@ type
     Id: Cardinal; // @offset $00
     Name: WideString; // @offset $04
     FullName: WideString; // @offset $08
-    OwnerId: Byte; // @offset $0C
+    OwnerId: TOwnerId; // @offset $0C
     DominatorSeries: TDominatorSeries; // @offset $0D
     TypeName: WideString; // @offset $10
     Speed: Integer; // @offset $14
@@ -74,7 +74,7 @@ type
     InfoText: WideString; // @offset $10
     Weight: Integer; // @offset $14
     Cost: Integer; // @offset $18
-    OwnerId: Byte; // @offset $1C
+    OwnerId: TOwnerId; // @offset $1C
     ConditionPercent: Double; // @offset $20
     Fragility: Double; // @offset $28
     DominatorSeries: TDominatorSeries; // @offset $30
@@ -223,7 +223,7 @@ begin
       end;
       Stage := 23;
       Ships[Index].OwnerId := Ship.OwnerId;
-      if Ships[Index].OwnerId = Byte(oiDominator) then Ships[Index].DominatorSeries := (Ship as TKling).DominatorSeries;
+      if Ships[Index].OwnerId = oiDominator then Ships[Index].DominatorSeries := (Ship as TKling).DominatorSeries;
       if Ship is TRanger then Ships[Index].TypeName := (Ship as TRanger).GetCharacterName
       else Ships[Index].TypeName := Ship.GetLocalizedTypeName;
       Ships[Index].Speed := Ship.CalculateSpeed;
@@ -301,7 +301,7 @@ begin
         Items[Index].ImagePath := 'GI,' + GetItemTypeBitmapPath(Item.ItemType);
         Items[Index].Name := WrapTextInColor(GoodsMarket[Byte(Item.ItemType)].DisplayName, InfoNameColorTag);
         Items[Index].InfoText := LocalizedText('Items.Goods.Text.' + IntToStr(Byte(Item.ItemType) + 1));
-        Items[Index].OwnerId := Byte(oiUninhabited);
+        Items[Index].OwnerId := oiUninhabited;
       end
       else
       begin
@@ -535,8 +535,8 @@ begin
   begin
     Planets[Index].Id := Buffer.GetUInt32;
     Planets[Index].Name := Buffer.ReadWideString;
-    Planets[Index].OwnerId := Buffer.GetByte;
-    Planets[Index].RaceId := Buffer.GetByte;
+    Planets[Index].OwnerId := TOwnerId(Buffer.GetByte);
+    Planets[Index].RaceId := TOwnerId(Buffer.GetByte);
     Planets[Index].Population := Buffer.GetInt32;
     Planets[Index].Economy := TPlanetEconomy(Buffer.GetByte);
     Planets[Index].Government := TPlanetGovernment(Buffer.GetByte);
@@ -555,7 +555,7 @@ begin
     Ships[Index].Id := Buffer.GetUInt32;
     Ships[Index].Name := Buffer.ReadWideString;
     Ships[Index].FullName := Buffer.ReadWideString;
-    Ships[Index].OwnerId := Buffer.GetByte;
+    Ships[Index].OwnerId := TOwnerId(Buffer.GetByte);
     Ships[Index].DominatorSeries := TDominatorSeries(Buffer.GetByte);
     Ships[Index].TypeName := Buffer.ReadWideString;
     Ships[Index].Speed := Buffer.GetInt32;
@@ -588,7 +588,7 @@ begin
     Items[Index].InfoText := Buffer.ReadWideString;
     Items[Index].Weight := Buffer.GetInt32;
     Items[Index].Cost := Buffer.GetInt32;
-    Items[Index].OwnerId := Buffer.GetByte;
+    Items[Index].OwnerId := TOwnerId(Buffer.GetByte);
     Items[Index].ConditionPercent := Buffer.GetSingle;
     Items[Index].Fragility := Buffer.GetSingle;
     Items[Index].DominatorSeries := TDominatorSeries(Buffer.GetByte);

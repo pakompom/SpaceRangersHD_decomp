@@ -165,7 +165,7 @@ var
   NameLabel, ForceLabel: TLabelGI;
   Text, ColoredName: WideString;
   Planet: TPlanet;
-  OwnerId: Byte;
+  OwnerId: TOwnerId;
   HoleImage: TImageGI;
   BufferOffset: TPoint;
   Hole, SelectedHole: THole;
@@ -361,7 +361,7 @@ begin
       for J := 0 to Star.Planets.Count - 1 do
       begin
         Planet := Star.Planets[J];
-        if Planet.OwnerId <> Byte(oiUninhabited) then Break;
+        if Planet.OwnerId <> oiUninhabited then Break;
       end;
       Text := Star.Name;
       if Star.Status.CustomFaction <> '' then ColoredName := WrapTextInColor(Text, LookupNamedColorTag(Star.Status.CustomFaction))
@@ -373,8 +373,8 @@ begin
         ColoredName := ColoredName + WrapTextInColor(Copy(Text, 1, K), OwnerInfo[Planet.OwnerId].ColorTag);
         Delete(Text, 1, K);
         if Text <> '' then
-          for OwnerId := Byte(oiMaloc) to 7 do
-            if (OwnerId <> Byte(oiUninhabited)) and (Star.CountPlanetsByOwner(OwnerId) > 0) and (Planet.OwnerId <> OwnerId) then
+          for OwnerId := oiMaloc to oiPirate do
+            if (OwnerId <> oiUninhabited) and (Star.CountPlanetsByOwner(OwnerId) > 0) and (Planet.OwnerId <> OwnerId) then
             begin
               K := Length(Star.Name) div Star.CountDistinctInhabitedPlanetOwners;
               Inc(J);
@@ -1174,7 +1174,7 @@ var
   IconInset: Cardinal;
   NameWidth, DetailWidth, RowCount, SummaryLines: Integer;
   ObjectDistance: Single;
-  OwnerId: Byte;
+  OwnerId: TOwnerId;
   CurrentChild: TObjectGI;
   Planet: TPlanet;
   CustomInfo: TCustomSystemInfo;
@@ -1318,7 +1318,7 @@ begin
     end;
     if TObject(Objects[I]) is TPlanet then OwnerId := TPlanet(Objects[I]).OwnerId
     else if TObject(Objects[I]) is TRuins then OwnerId := TRuins(Objects[I]).OwnerId
-    else OwnerId := Byte(oiUninhabited);
+    else OwnerId := oiUninhabited;
     if TObject(Objects[I]) is TRuins then
     begin
       with TLabelGI.Create(Owner) do
@@ -1386,7 +1386,7 @@ begin
           DetailWidth := Max(DetailWidth, ClientSize.X + GiScalePixels(35));
         end;
     end
-    else if OwnerId <> Byte(oiUninhabited) then
+    else if OwnerId <> oiUninhabited then
       if not (TObject(Objects[I]) is TPlanet) or not (TObject(Objects[I]) as TPlanet).IsMainPiratePlanet then
         with TGraphBufGI.Create(Owner, False) do
         begin
@@ -1403,7 +1403,7 @@ begin
     if TObject(Objects[I]) is TPlanet then
     begin
       Planet := TPlanet(Objects[I]);
-      if (Planet.OwnerId in [Ord(oiMaloc)..Ord(oiGaal), Ord(oiPirate)]) and not Planet.IsMainPiratePlanet and (Planet.CurrentStar.Status.CustomFaction = '') then
+      if (Planet.OwnerId in [oiMaloc..oiGaal, oiPirate]) and not Planet.IsMainPiratePlanet and (Planet.CurrentStar.Status.CustomFaction = '') then
       begin
         IconX := NameWidth + 5 + RowHeight + 5 + 1;
         with TImageGI.Create(Owner) do
@@ -1444,7 +1444,7 @@ begin
           SetText(LowerCaseWideString(LocalizedText('ShipType.TypeName.PB')));
           DetailWidth := Max(DetailWidth, ClientSize.X + GiScalePixels(35));
         end
-      else if (Planet.OwnerId = Byte(oiUninhabited)) and (Planet.GetUnexploredSurfaceTileCount = 0) then
+      else if (Planet.OwnerId = oiUninhabited) and (Planet.GetUnexploredSurfaceTileCount = 0) then
         with TLabelGI.Create(Owner) do
         begin
           if GiResourceVariant = 2 then SetFontName(MiniFontName) else SetFontName(SmallFontName);
@@ -1582,18 +1582,18 @@ var
         stRanger:
           if TRanger(Ship).ExcludedFromRating or Ship.HasScriptStateText then
           begin
-            if ((GetPlayer = Ship) or (GetPlayer = Ship.PartnerShip)) and (GetPlayer.OwnerId = Byte(oiPirate)) then Inc(ScriptedPirates)
+            if ((GetPlayer = Ship) or (GetPlayer = Ship.PartnerShip)) and (GetPlayer.OwnerId = oiPirate) then Inc(ScriptedPirates)
             else Inc(ScriptedCoalition);
           end
-          else if ((GetPlayer = Ship) or (GetPlayer = Ship.PartnerShip)) and (GetPlayer.OwnerId = Byte(oiPirate)) then Inc(RoleCounts[11])
+          else if ((GetPlayer = Ship) or (GetPlayer = Ship.PartnerShip)) and (GetPlayer.OwnerId = oiPirate) then Inc(RoleCounts[11])
           else Inc(RoleCounts[0]);
         stPirate:
           if Ship.HasScriptStateText then
           begin
-            if Ship.OwnerId = Byte(oiPirate) then Inc(ScriptedPirates)
+            if Ship.OwnerId = oiPirate then Inc(ScriptedPirates)
             else Inc(ScriptedCoalition);
           end
-          else if Ship.OwnerId <> Byte(oiPirate) then Inc(RoleCounts[2])
+          else if Ship.OwnerId <> oiPirate then Inc(RoleCounts[2])
           else
           begin
             if TPirate(Ship).PirateType <> 0 then Inc(RoleCounts[12])
@@ -1686,7 +1686,7 @@ begin
   for I := 0 to Star.Ships.Count - 1 do
   begin
     Ship := Star.Ships[I];
-    if (Ship.CurrentPlanet = nil) or (Ship.CurrentPlanet.OwnerId <> Byte(oiUninhabited)) then AccumulateShip;
+    if (Ship.CurrentPlanet = nil) or (Ship.CurrentPlanet.OwnerId <> oiUninhabited) then AccumulateShip;
   end;
   for I := 0 to Star.Planets.Count - 1 do
   begin
@@ -1915,7 +1915,7 @@ begin
   else if GetPlayer.IsOnPlanet then
   begin
     if not MusicInPlanetEnabled then MusicManager.RequestFadeOut
-    else if GetPlayer.CurrentPlanet.OwnerId = Byte(oiPirate) then
+    else if GetPlayer.CurrentPlanet.OwnerId = oiPirate then
     begin
       if not GetPlayer.CurrentPlanet.IsMainPiratePlanet then
         MusicManager.PlayCategory('Nation.' + OwnerInfo[RaceToOwner(GetPlayer.CurrentPlanet.RaceId)].InternalName + 'Pirate')

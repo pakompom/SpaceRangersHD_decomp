@@ -276,13 +276,13 @@ begin
         SetImagePath('GI,Bm.FormRating2.' + GiResourceSuffix + 'Rank' + IntToStr(DominatorShipDefinitions[Ord((ShipToInspect as TKling).KlingType)].RankImageIndex))
       else if ShipToInspect is TRuins then SetImagePath('GI,Bm.FormRating2.' + GiResourceSuffix + 'Rank7')
       else if ShipToInspect is TTranclucator then SetImagePath('GI,Bm.FormRating2.' + GiResourceSuffix + 'Rank4')
-      else if (ShipToInspect is TNormalShip) and (ShipToInspect.OwnerId <> Byte(oiPirate)) then
+      else if (ShipToInspect is TNormalShip) and (ShipToInspect.OwnerId <> oiPirate) then
         SetImagePath('GI,Bm.FormRating2.2Rank' + IntToStr((ShipToInspect as TNormalShip).Rank + 1))
       else SetActive(False);
     end;
     Stage := 16;
     with GetByName('RankI2') as TImageGI do
-      if (ShipToInspect is TNormalShip) and (ShipToInspect.OwnerId = Byte(oiPirate)) then
+      if (ShipToInspect is TNormalShip) and (ShipToInspect.OwnerId = oiPirate) then
       begin
         SetActive(True);
         MouseEnterCallback := ShowPropertyInfo;

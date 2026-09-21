@@ -307,7 +307,7 @@ begin
   ReleaseAllTextureSurfaces;
   if GetPlayer.DockedTo <> nil then RequestedScreenId := screenRuinsTalk
   else if GetPlayer.CurrentPlanet = nil then RaiseWideMessage('No player location')
-  else if GetPlayer.CurrentPlanet.OwnerId = Byte(oiUninhabited) then RequestedScreenId := screenPlanetNO
+  else if GetPlayer.CurrentPlanet.OwnerId = oiUninhabited then RequestedScreenId := screenPlanetNO
   else RequestedScreenId := screenPlanet;
   RequestClose(1);
 end;

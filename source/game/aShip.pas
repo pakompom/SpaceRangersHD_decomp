@@ -79,7 +79,7 @@ type
     Name: WideString; // @offset 0x08
     TypeNameOverrideKey: WideString; // @offset 0x0C
     TypeId: Byte; // @offset 0x10  st* ship codes and TStationType station codes are declared in aGalaxyStruct.
-    OwnerId: Byte; // @offset 0x11
+    OwnerId: TOwnerId; // @offset 0x11
     Position: TPointF; // @offset 0x14
     CurrentPlanet: TPlanet; // @offset 0x1C
     DockedTo: TShip; // @offset 0x20  Includes TRuins stations.
@@ -148,7 +148,7 @@ type
     PartnerShip: TShip; // @offset 0x3FC
     PartnershipDaysRemaining: Integer; // @offset 0x400
     PortraitFaceId: Integer; // @offset 0x404
-    PilotRace: Byte; // @offset 0x408
+    PilotRace: TOwnerId; // @offset 0x408
     MovementSpeed: Double; // @offset 0x410
     MovementTurnRate: Double; // @offset 0x418  Angular increment used by path construction, in degrees.
     MovementDirection: Double; // @offset 0x420  Heading in degrees.
@@ -516,15 +516,15 @@ type
     function GetAttackMultiplier: Integer; // @addr 0x75FE40
     procedure ReloadWeaponAmmo; // @addr 0x768CA4
 
-    function CreateAndEquipHull(Capacity: Word; Level, Owner: Byte; Series: Integer; PirateBuilt: Boolean): THull; // @addr 0x76AF14
-    function CreateAndEquipFuelTanks(Weight: Integer; Level, Owner: Byte): TFuelTanks; // @addr 0x76B010
-    function CreateAndEquipEngine(Weight: Integer; Level, Owner: Byte): TEngine; // @addr 0x76B06C
-    function CreateAndEquipRadar(Weight: Integer; Level, Owner: Byte): TRadar; // @addr 0x76B0C8
-    function CreateAndEquipScanner(Weight: Integer; Level, Owner: Byte): TScaner; // @addr 0x76B124
-    function CreateAndEquipRepairRobot(Weight: Integer; Level, Owner: Byte): TRepairRobot; // @addr 0x76B180
-    function CreateAndEquipCargoHook(Weight: Integer; Level, Owner: Byte): TCargoHook; // @addr 0x76B1DC
-    function CreateAndEquipDefGenerator(Weight: Integer; Level, Owner: Byte): TDefGenerator; // @addr 0x76B238
-    function CreateAndEquipWeapon(ItemType: Byte; Weight: Integer; Level, Owner: Byte): TWeapon; // @addr 0x76B294
+    function CreateAndEquipHull(Capacity: Word; Level: Byte; Owner: TOwnerId; Series: Integer; PirateBuilt: Boolean): THull; // @addr 0x76AF14
+    function CreateAndEquipFuelTanks(Weight: Integer; Level: Byte; Owner: TOwnerId): TFuelTanks; // @addr 0x76B010
+    function CreateAndEquipEngine(Weight: Integer; Level: Byte; Owner: TOwnerId): TEngine; // @addr 0x76B06C
+    function CreateAndEquipRadar(Weight: Integer; Level: Byte; Owner: TOwnerId): TRadar; // @addr 0x76B0C8
+    function CreateAndEquipScanner(Weight: Integer; Level: Byte; Owner: TOwnerId): TScaner; // @addr 0x76B124
+    function CreateAndEquipRepairRobot(Weight: Integer; Level: Byte; Owner: TOwnerId): TRepairRobot; // @addr 0x76B180
+    function CreateAndEquipCargoHook(Weight: Integer; Level: Byte; Owner: TOwnerId): TCargoHook; // @addr 0x76B1DC
+    function CreateAndEquipDefGenerator(Weight: Integer; Level: Byte; Owner: TOwnerId): TDefGenerator; // @addr 0x76B238
+    function CreateAndEquipWeapon(ItemType: Byte; Weight: Integer; Level: Byte; Owner: TOwnerId): TWeapon; // @addr 0x76B294
 
     function GetEquipmentStatBonus(BonusKind: TEquipmentBonusKind; Item: TEquipment): Integer; // @addr 0x75F5C4
     function GetTotalStatBonus(BonusKind: TEquipmentBonusKind): Integer; // @addr 0x75F60C
@@ -690,18 +690,18 @@ var
   TradeGoodsCostBasis: TGoods = nil; // @addr $87C420 Reused payload for the purchased portion of the sale.
   DominatorShipSmallSizes: array[0..2, 0..7] of Integer = ((127, 110, 70, 60, 45, 40, 130, 40), (127, 110, 70, 60, 45, 40, 130, 40), (127, 110, 70, 60, 45, 40, 130, 40)); // @addr $87C424
   DominatorShipLargeSizes: array[0..2, 0..7] of Integer = ((127, 127, 100, 90, 65, 60, 160, 60), (127, 127, 100, 90, 65, 60, 160, 60), (127, 127, 100, 90, 65, 60, 160, 60)); // @addr $87C484
-  RangerSmallSizes: array[0..7] of Integer = (50, 50, 50, 50, 50, 50, 50, 50); // @addr $87C4E4
-  RangerLargeSizes: array[0..7] of Integer = (80, 80, 80, 80, 80, 80, 80, 80); // @addr $87C504
-  TransportSmallSizes: array[3..5, 0..7] of Integer = ((50, 50, 50, 50, 50, 50, 50, 50), (50, 50, 50, 50, 50, 50, 50, 50), (50, 50, 50, 50, 50, 50, 50, 50)); // @addr $87C524
-  TransportLargeSizes: array[3..5, 0..7] of Integer = ((90, 90, 90, 90, 90, 90, 90, 90), (90, 90, 90, 90, 90, 90, 90, 90), (90, 90, 90, 90, 90, 90, 90, 90)); // @addr $87C584
-  PirateSmallSizes: array[0..7] of Integer = (45, 45, 45, 55, 45, 45, 45, 45); // @addr $87C5E4
-  PirateLargeSizes: array[0..7] of Integer = (80, 80, 80, 90, 80, 80, 80, 80); // @addr $87C604
-  PirateClanSmallSizes: array[0..7] of Integer = (45, 45, 45, 55, 45, 45, 45, 45); // @addr $87C624
-  PirateClanLargeSizes: array[0..7] of Integer = (80, 80, 80, 90, 80, 80, 80, 80); // @addr $87C644
-  WarriorSmallSizes: array[0..7] of Integer = (45, 45, 45, 55, 45, 45, 45, 45); // @addr $87C664
-  WarriorLargeSizes: array[0..7] of Integer = (80, 80, 80, 80, 80, 80, 80, 80); // @addr $87C684
-  BigWarriorSmallSizes: array[0..7] of Integer = (80, 80, 80, 80, 80, 80, 80, 80); // @addr $87C6A4
-  BigWarriorLargeSizes: array[0..7] of Integer = (130, 130, 130, 130, 130, 130, 130, 130); // @addr $87C6C4
+  RangerSmallSizes: array[TOwnerId] of Integer = (50, 50, 50, 50, 50, 50, 50, 50); // @addr $87C4E4
+  RangerLargeSizes: array[TOwnerId] of Integer = (80, 80, 80, 80, 80, 80, 80, 80); // @addr $87C504
+  TransportSmallSizes: array[3..5, TOwnerId] of Integer = ((50, 50, 50, 50, 50, 50, 50, 50), (50, 50, 50, 50, 50, 50, 50, 50), (50, 50, 50, 50, 50, 50, 50, 50)); // @addr $87C524
+  TransportLargeSizes: array[3..5, TOwnerId] of Integer = ((90, 90, 90, 90, 90, 90, 90, 90), (90, 90, 90, 90, 90, 90, 90, 90), (90, 90, 90, 90, 90, 90, 90, 90)); // @addr $87C584
+  PirateSmallSizes: array[TOwnerId] of Integer = (45, 45, 45, 55, 45, 45, 45, 45); // @addr $87C5E4
+  PirateLargeSizes: array[TOwnerId] of Integer = (80, 80, 80, 90, 80, 80, 80, 80); // @addr $87C604
+  PirateClanSmallSizes: array[TOwnerId] of Integer = (45, 45, 45, 55, 45, 45, 45, 45); // @addr $87C624
+  PirateClanLargeSizes: array[TOwnerId] of Integer = (80, 80, 80, 90, 80, 80, 80, 80); // @addr $87C644
+  WarriorSmallSizes: array[TOwnerId] of Integer = (45, 45, 45, 55, 45, 45, 45, 45); // @addr $87C664
+  WarriorLargeSizes: array[TOwnerId] of Integer = (80, 80, 80, 80, 80, 80, 80, 80); // @addr $87C684
+  BigWarriorSmallSizes: array[TOwnerId] of Integer = (80, 80, 80, 80, 80, 80, 80, 80); // @addr $87C6A4
+  BigWarriorLargeSizes: array[TOwnerId] of Integer = (130, 130, 130, 130, 130, 130, 130, 130); // @addr $87C6C4
   TranclucatorSmallSize: Integer = 40; // @addr $87C6E4
   TranclucatorLargeSize: Integer = 50; // @addr $87C6E8
   SpecialHullSmallSize: Integer = 50; // @addr $87C6EC
@@ -717,8 +717,8 @@ var
 function CreateShipByType(ShipType: Byte): TShip; // @addr 0x75E500 @note "Allocates an unregistered instance; caller must initialize or deserialize it."
 
 function CompareShipGroupsStrength(Ships, Opponents: TList): Single; // @addr 0x75E454 @note "Lists contain TShip. Sum of pairwise ChanceToWin divided by Opponents.Count squared; requires nonempty Opponents when Ships is nonempty."
-function CalculateFuelCost(Amount: Integer; OwnerId: Byte): Single; // @addr 0x75F034 @note "Owner six skips racial scaling. Uses active galaxy turn and difficulty."
-function CalculateRoundedFuelCost(Amount: Integer; OwnerId: Byte): Integer; // @addr 0x75F0D4
+function CalculateFuelCost(Amount: Integer; OwnerId: TOwnerId): Single; // @addr 0x75F034 @note "Owner six skips racial scaling. Uses active galaxy turn and difficulty."
+function CalculateRoundedFuelCost(Amount: Integer; OwnerId: TOwnerId): Integer; // @addr 0x75F0D4
 
 var
   KlingCheapDropValueFactors: array[0..7] of Double = (0.1, 0.85, 0.9, 1, 1.2, 1.5, 0.7, 4); // @addr $87C738 Indexed by KlingType.
@@ -1209,7 +1209,7 @@ begin
   if LoadedSaveVersion >= 97 then TypeNameOverrideKey := Buffer.ReadWideString
   else TypeNameOverrideKey := '';
   TypeId := Buffer.GetByte;
-  OwnerId := Buffer.GetByte;
+  OwnerId := TOwnerId(Buffer.GetByte);
   Position.X := Buffer.GetSingle;
   Position.Y := Buffer.GetSingle;
   TransitOriginStar := TStar(Buffer.GetUInt32);
@@ -1229,22 +1229,22 @@ begin
   if Integer(Seed) < 0 then ShowMessage('TShip.Create; - FRnd<0');
   CreationTurn := Buffer.GetUInt32;
   PortraitFaceId := Buffer.GetInt32;
-  if LoadedSaveVersion >= 125 then PilotRace := Buffer.GetByte
-  else if OwnerId = Byte(oiPirate) then PilotRace := Buffer.GetByte
-  else if OwnerId in [Ord(oiMaloc)..Ord(oiGaal)] then PilotRace := OwnerToRace(OwnerId)
-  else PilotRace := Byte(oiMaloc);
+  if LoadedSaveVersion >= 125 then PilotRace := TOwnerId(Buffer.GetByte)
+  else if OwnerId = oiPirate then PilotRace := TOwnerId(Buffer.GetByte)
+  else if OwnerId in [oiMaloc..oiGaal] then PilotRace := OwnerToRace(OwnerId)
+  else PilotRace := oiMaloc;
   if LoadedSaveVersion < 102 then
   begin
     if TypeId = Byte(rstMedicalBase) then
     begin
-      OwnerId := Byte(oiGaal);
-      PilotRace := Byte(oiGaal);
+      OwnerId := oiGaal;
+      PilotRace := oiGaal;
       if PortraitFaceId > 14 then PortraitFaceId := -1;
     end;
     if TypeId = Byte(rstBusinessCenter) then
     begin
-      OwnerId := Byte(oiHuman);
-      PilotRace := Byte(oiHuman);
+      OwnerId := oiHuman;
+      PilotRace := oiHuman;
     end;
   end;
   Count := Buffer.GetWord;
@@ -1699,7 +1699,7 @@ begin
         if ItemTypeNames[TItemType(ItemType)] = Part then
         begin
           if (ItemTypeNames[TItemType(ItemType)] = Part) and (ItemType in [Ord(t_ArtefactHull)..Ord(t_ArtFastRacks)]) then
-            Artefacts.Add(CreateConfiguredArtefactByItemType(TItemType(ItemType), 6));
+            Artefacts.Add(CreateConfiguredArtefactByItemType(TItemType(ItemType), oiUninhabited));
           Break;
         end;
     end;
@@ -1846,9 +1846,9 @@ begin
   if (LoadedSaveVersion in [92, 93]) and (Self is TNormalShip) and not (Self is TPlayer) then
   begin
     // Preserve the native legacy portrait exception, including its repeated type test.
-    if (PilotRace = Byte(oiHuman)) and (PortraitFaceId in [25..32]) and (GetPlayer <> Self) and
+    if (PilotRace = oiHuman) and (PortraitFaceId in [25..32]) and (GetPlayer <> Self) and
        (GetPlayer <> nil) and (Self is TNormalShip) then Exit;
-    if (Self is TPirate) and (OwnerId = Byte(oiPirate)) then GetHull.OwnerId := RaceToOwner(PilotRace)
+    if (Self is TPirate) and (OwnerId = oiPirate) then GetHull.OwnerId := RaceToOwner(PilotRace)
     else GetHull.OwnerId := OwnerId;
     GetHull.HullType := ShipToHullType(Self);
     GetHull.SpecialModuleIndex := 0;
@@ -1960,7 +1960,7 @@ var
   Text: WideString;
 begin
   if ((DockedTo <> nil) and (DockedTo is TRuins)) or
-    ((CurrentPlanet <> nil) and (CurrentPlanet.OwnerId in [Ord(oiMaloc)..Ord(oiGaal), Ord(oiPirate)]) and (Ord(TPlanet(PAnsiChar(CurrentPlanet) + 0).GetRelationLevelToShip(Self)) <> 0)) or (Self is TRuins) then
+    ((CurrentPlanet <> nil) and (CurrentPlanet.OwnerId in [oiMaloc..oiGaal, oiPirate]) and (Ord(TPlanet(PAnsiChar(CurrentPlanet) + 0).GetRelationLevelToShip(Self)) <> 0)) or (Self is TRuins) then
   begin
     if GetPlayer <> Self then TechKnowledge := Max(TechKnowledge, Galaxy.TechLevel)
     else
@@ -2562,7 +2562,7 @@ var
   Star: TStar;
   Ship: TShip;
   Planet: TPlanet;
-  Owner: Byte;
+  Owner: TOwnerId;
   Faces, Usage: array[0..100] of Integer;
 begin
   if GetPlayer = Self then
@@ -2790,7 +2790,7 @@ begin
       Graphic.SetAlpha(255);
     end;
   end
-  else if (Self is TPirate) and (OwnerId = Byte(oiPirate)) and (TPirate(Self).PirateType <> 0) then
+  else if (Self is TPirate) and (OwnerId = oiPirate) and (TPirate(Self).PirateType <> 0) then
   begin
     RetainSpaceObject(Graphic, TShip2SE.CreateEmpty);
     PirateClanShipTemplates[GetHull.OwnerId].CopyTo(Graphic);
@@ -2974,7 +2974,7 @@ begin
     while I < Destination.Planets.Count do
     begin
       Planet := Destination.Planets[I];
-      if Planet.OwnerId in [Ord(oiMaloc)..Ord(oiGaal), Ord(oiPirate)] then Break;
+      if Planet.OwnerId in [oiMaloc..oiGaal, oiPirate] then Break;
       Planet := nil;
       Inc(I);
     end;
@@ -3129,10 +3129,10 @@ function TShip.FindFirstInhabitedPlanetInStar: TPlanet;
 var I: Integer;
 begin
   Result := TPlanet(CurrentStar.Planets[0]);
-  if Result.OwnerId = Byte(oiUninhabited) then
+  if Result.OwnerId = oiUninhabited then
     for I := 1 to CurrentStar.Planets.Count - 1 do begin
       Result := TPlanet(CurrentStar.Planets[I]);
-      if Result.OwnerId <> Byte(oiUninhabited) then Break;
+      if Result.OwnerId <> oiUninhabited then Break;
     end;
 end;
 { @end $752E1C }
@@ -3283,7 +3283,7 @@ var I: Integer; Planet: TPlanet;
 begin
   for I := 0 to Star.Planets.Count - 1 do begin
     Planet := TPlanet(Star.Planets[I]);
-    if (Planet.OwnerId <> Byte(oiUninhabited)) and CanQueueReachablePlanet(Planet) then begin Result := True; Exit; end;
+    if (Planet.OwnerId <> oiUninhabited) and CanQueueReachablePlanet(Planet) then begin Result := True; Exit; end;
   end;
   Result := False;
 end;
@@ -3455,7 +3455,7 @@ begin
     Result := 0;
     Exit;
   end;
-  if (HitRange <> -1) and ((OwnerId in [Ord(oiMaloc)..Ord(oiGaal), Ord(oiPirate)]) or (TypeId = stTranclucator)) and
+  if (HitRange <> -1) and ((OwnerId in [oiMaloc..oiGaal, oiPirate]) or (TypeId = stTranclucator)) and
     (Attacker <> nil) and (GetRelationLevelToShip(Attacker) > rlHostile) then
   begin
     Result := 0;
@@ -3587,10 +3587,10 @@ begin
           Event.AddData(TypeId);
           Event.AddData(CurrentStar.Id);
           Event.AddData(Id);
-          Event.AddData(OwnerId);
+          Event.AddData(Ord(OwnerId));
           Event.AddTextData(GetName);
           Event.AddData(Attacker.Id);
-          Event.AddData(Attacker.OwnerId);
+          Event.AddData(Ord(Attacker.OwnerId));
           Event.AddTextData(Attacker.GetName);
           Event.AddData(GetFullHullRelativeStrengthPercent);
           Event.AddTextData(GetFullName(' '));
@@ -3618,12 +3618,12 @@ begin
       Cistern := TCistern.Create;
       I := NextRandomIntRange(10, Round(RemapClamped(GetHull.Weight, 200, 2000, 10, 150)), RandomState);
       Cistern.Init(NextRandomIntRange(1, I, RandomState), RoundAndTruncateToFives(I), OwnerId);
-      if OwnerId = Byte(oiDominator) then Cistern.DominatorSeries := (Self as TKling).DominatorSeries;
+      if OwnerId = oiDominator then Cistern.DominatorSeries := (Self as TKling).DominatorSeries;
       Inventory.Add(Cistern);
       DropCarriedItemAsMovingLoot(Cistern);
     end;
-    if Self is TRuins then JettisonCargoGoodsTowardTargetValue(Galaxy.ComputeScaledHugeMoney(2))
-    else if (CurrentStar.Items = nil) or (CurrentStar.Items.Count < 20) or (OwnerId = Byte(oiDominator)) or HasIndependentScriptFaction then
+    if Self is TRuins then JettisonCargoGoodsTowardTargetValue(Galaxy.ComputeScaledHugeMoney(oiHuman))
+    else if (CurrentStar.Items = nil) or (CurrentStar.Items.Count < 20) or (OwnerId = oiDominator) or HasIndependentScriptFaction then
     begin
       DropRoll := NextRandomUnitFloat(RandomState);
       if (DropRoll < 0.1) and (not (Self is TKling) or (Attacker = nil) or not (Attacker is TKling) or
@@ -3643,7 +3643,7 @@ begin
         if ScannerEffects and (Dword(DamageFlags) and (1 shl Ord(dkMoreDrop)) <> 0) and (NextRandomUnitFloat(RandomState) > 0.6) then Inc(DropCount);
         DropRandomCheapItemsOnDestruction(DropCount);
       end;
-      if (OwnerId = Byte(oiPirate)) and (TypeId = stPirate) and ((RandomState + Cardinal(Galaxy.CurrentTurn)) mod 31 = 0) then
+      if (OwnerId = oiPirate) and (TypeId = stPirate) and ((RandomState + Cardinal(Galaxy.CurrentTurn)) mod 31 = 0) then
       begin
         Module := TMicroModule.Create;
         MinimumPriority := Round(RemapClamped(WealthInBestRanger, 0.5, 2, 10, 0));
@@ -3656,11 +3656,11 @@ begin
         Module.Init(Galaxy.SelectMicroModule(Byte(MinimumPriority), Byte(MaximumPriority),
           Id + Trunc(Integer(Galaxy.GenerationSeed)), Self));
         Module.DominatorSeries := dsBlazer;
-        Module.OwnerId := Byte(oiPirate);
+        Module.OwnerId := oiPirate;
         Inventory.Add(Module);
         DropCarriedItemAsMovingLoot(Module);
       end;
-      if OwnerId = Byte(oiDominator) then
+      if OwnerId = oiDominator then
       begin
         if ((RandomState + Cardinal(Galaxy.CurrentTurn)) mod 2 = 0) or ((Self as TKling).KlingType = ktBoss) then
         begin
@@ -3690,7 +3690,7 @@ begin
           Module.Init(Galaxy.SelectMicroModule(Byte(MinimumPriority), Byte(MaximumPriority),
             Id + Trunc(Integer(Galaxy.GenerationSeed)), Self));
           Module.DominatorSeries := (Self as TKling).DominatorSeries;
-          Module.OwnerId := Byte(oiDominator);
+          Module.OwnerId := oiDominator;
           Inventory.Add(Module);
           DropCarriedItemAsMovingLoot(Module);
         end;
@@ -3726,7 +3726,7 @@ begin
       else GetEngine.OutputPercent := 0;
     if TypeId <> stTranclucator then
     begin
-      if OwnerId <> Byte(oiDominator) then
+      if OwnerId <> oiDominator then
       begin
         Wear := RemapClamped(AdjustedDamage, 1, GetHull.Weight * 0.1, 0.05, 0.15);
         if Self is TRanger then
@@ -3784,7 +3784,7 @@ begin
       end;
     end;
     if ScannerEffects and (Dword(DamageFlags) and (1 shl Ord(dkDropCargo)) <> 0) and (NextRandomUnitFloat(RandomState) > 0.95) then
-      JettisonCargoGoodsTowardTargetValue(Galaxy.ComputeScaledMiniMoney(2));
+      JettisonCargoGoodsTowardTargetValue(Galaxy.ComputeScaledMiniMoney(oiHuman));
     if ScannerEffects and (Dword(DamageFlags) and (1 shl Ord(dkBlockWeapon)) <> 0) then AddCombatStatusStrength(cseWeaponBlock, 0.1, Attacker);
     if ScannerEffects and (Dword(DamageFlags) and (1 shl Ord(dkDroidBlock)) <> 0) then AddCombatStatusStrength(cseDroidBlock, 0.1, Attacker);
     if Dword(DamageFlags) and (1 shl Ord(dkShock)) <> 0 then
@@ -4437,9 +4437,9 @@ begin
     Effect := TWeaponSE.Create('Weapon.NoGraph', Classes.Point(0, 0), 0, -1);
     Film := PrimaryFilm.AddObject(0, Effect);
     PrimaryFilm.SetWeaponEndpoints(StepIndex, Film, FilmObject, FilmObject);
-    if GetPlayer = Self then DisplayColor := OwnerToFilmColor(ShortInt(RaceToOwner(PilotRace)))
+    if GetPlayer = Self then DisplayColor := OwnerToFilmColor(RaceToOwner(PilotRace))
     else if HasNamedScriptFaction then DisplayColor := CustomFactionToFilmColor(TScriptShip(ScriptShip).StateText)
-    else DisplayColor := OwnerToFilmColor(ShortInt(OwnerId));
+    else DisplayColor := OwnerToFilmColor(OwnerId);
     PrimaryFilm.SetWeaponHit(StepIndex, Film, Word(DisplayColor), -DrainedDamage, False, True);
     PrimaryFilm.AttachObject(StepIndex, Film);
   end;
@@ -4693,9 +4693,9 @@ begin
       end;
     end;
   end;
-  if GetPlayer = Self then DamageColor := OwnerToFilmColor(ShortInt(RaceToOwner(PilotRace)))
+  if GetPlayer = Self then DamageColor := OwnerToFilmColor(RaceToOwner(PilotRace))
   else if HasNamedScriptFaction then DamageColor := CustomFactionToFilmColor(TScriptShip(ScriptShip).StateText)
-  else DamageColor := OwnerToFilmColor(ShortInt(OwnerId));
+  else DamageColor := OwnerToFilmColor(OwnerId);
   if Damage <= 0 then DamageColor := 0;
   Result := Damage;
   if (GetPlayer = Self) and (GetHull.HullPoints < 1) then
@@ -5324,10 +5324,10 @@ begin
           (Other.PartnerShip <> Target) and (Target.PartnerShip <> Other) and (NextRandomUnitFloat(RandomState) <= 0.9) and
           (not (Other is TWarrior) or ((Other as TWarrior).WarriorType <> wtFlagship)) and
           ((GetPlayer <> Other) or (CurrentStar.ControlFaction <> sfCoalition) or (CurrentStar.Status.CustomFaction <> '') or
-            (TypeId <> stWarrior) or (GetPlayer.OwnerId <> Byte(oiPirate)) or not (Target is TNormalShip) or
+            (TypeId <> stWarrior) or (GetPlayer.OwnerId <> oiPirate) or not (Target is TNormalShip) or
             (not (Target.TypeId in [stTransport, stWarrior]) and ((Target.TypeId <> stRanger) or (Target.GetDominantCareer = rcPirate)))) and
           ((GetPlayer <> Other) or (CurrentStar.ControlFaction <> sfPirates) or (CurrentStar.Status.CustomFaction <> '') or
-            (TypeId <> stPirate) or (OwnerId <> Byte(oiPirate)) or (GetPlayer.OwnerId = Byte(oiPirate)) or not (Target is TNormalShip) or (Target.OwnerId <> Byte(oiPirate))) then begin
+            (TypeId <> stPirate) or (OwnerId <> oiPirate) or (GetPlayer.OwnerId = oiPirate) or not (Target is TNormalShip) or (Target.OwnerId <> oiPirate)) then begin
           if (GetPlayer = Other) and not PlayerAutomaticControl then begin
             if Cardinal(ReservedMessageCounter) < 7 then Continue;
             ReservedMessageCounter := 0;
@@ -5486,8 +5486,8 @@ function TShip.IsCargoGoodIllegalOnCurrentPlanet(Good: Byte): Boolean;
 begin
   Result := False;
   if (CurrentPlanet <> nil) and not CurrentPlanet.IsMainPiratePlanet then
-    if CurrentPlanet.OwnerId = Byte(oiPirate) then Result := False
-    else if not GoodsLegalOnPlanet[Good, CurrentPlanet.RaceId, Ord(CurrentPlanet.Government)] then Result := True
+    if CurrentPlanet.OwnerId = oiPirate then Result := False
+    else if not GoodsLegalOnPlanet[Good, CurrentPlanet.RaceId, CurrentPlanet.Government] then Result := True
     else if (Good in [0..1]) and IsHealthEffectActive(12) then Result := True;
 end;
 { @end $75D45C }
@@ -5552,7 +5552,7 @@ begin
       if Profit < 0 then Dec(TradeLossBalance, Profit)
       else
       begin
-        if (Self is TNormalShip) and (OwnerId = Byte(oiPirate)) and Illegal then
+        if (Self is TNormalShip) and (OwnerId = oiPirate) and Illegal then
         begin
           Inc(ContrabandProfit, Profit);
           if ContrabandProfit >= 3000 then
@@ -5847,7 +5847,7 @@ begin
   if (Galaxy = nil) or Galaxy.IsEquipmentKnowledgeUnrestricted then Result := True
   else if (Self is TTranclucator) and (TTranclucator(Self).OwnerShip <> nil) then
     Result := TTranclucator(Self).OwnerShip.CanUseEquipmentTech(Item)
-  else if (Self is TKling) or (Item.OwnerId <> Byte(oiDominator)) then Result := True
+  else if (Self is TKling) or (Item.OwnerId <> oiDominator) then Result := True
   else
   begin
     if Item is TWeapon then Level := TWeapon(Item).GetWeaponInfo.TechLevel
@@ -5866,7 +5866,7 @@ begin
   if (Galaxy = nil) or Galaxy.IsEquipmentKnowledgeUnrestricted then Result := True
   else if (Self is TTranclucator) and (TTranclucator(Self).OwnerShip <> nil) then
     Result := TTranclucator(Self).OwnerShip.CanRepairEquipmentTech(Item)
-  else if (Item is THull) or (Self is TKling) or (Item.OwnerId <> Byte(oiDominator)) then Result := True
+  else if (Item is THull) or (Self is TKling) or (Item.OwnerId <> oiDominator) then Result := True
   else
   begin
     Level := Item.GetLevel;
@@ -5957,7 +5957,7 @@ begin
   if Artefacts.Count > 0 then
     for I := 1 to CountActiveArtefacts(Ord(t_ArtefactAntigrav)) do
       Mass := Mass * (AntigravityArtefactMassFactor + AntigravityArtefactBoostFactor * ShortInt(CanBoostArtefact(Ord(t_ArtefactAntigrav), nil, False)));
-  if (PilotRace = Byte(oiMaloc)) and IsHealthEffectActive(9) then Mass := Mass * 1.2;
+  if (PilotRace = oiMaloc) and IsHealthEffectActive(9) then Mass := Mass * 1.2;
   Bonus := GetTotalStatBonus(bonMass);
   if GetHull.MicroModuleIndex <> 0 then Inc(Bonus, MicroModuleTemplates[GetHull.MicroModuleIndex - 1].StatBonuses[bonMass]);
   Mass := Mass * (1 + Bonus / 100);
@@ -6024,26 +6024,26 @@ begin
   if GetFuelTanks <> nil then
   begin
     if CurrentPlanet <> nil then Result := Round(CalculateFuelCost(GetFuelTanks.Capacity - GetFuelTanks.Fuel, CurrentPlanet.OwnerId))
-    else Result := Round(CalculateFuelCost(GetFuelTanks.Capacity - GetFuelTanks.Fuel, 6));
+    else Result := Round(CalculateFuelCost(GetFuelTanks.Capacity - GetFuelTanks.Fuel, oiUninhabited));
   end
   else Result := 0;
 end;
 { @end $75EFA8 }
 
 { @routine $75F034 CalculateFuelCost }
-function CalculateFuelCost(Amount: Integer; OwnerId: Byte): Single;
+function CalculateFuelCost(Amount: Integer; OwnerId: TOwnerId): Single;
 var Value: Single;
 begin
   Value := Amount + 0;
   Value := Value * RemapClamped(Galaxy.CurrentTurn, 1000, 15000, 1, 10);
-  if OwnerId <> Byte(oiUninhabited) then Value := Value * OwnerInfo[OwnerId].FuelPriceFactor;
+  if OwnerId <> oiUninhabited then Value := Value * OwnerInfo[OwnerId].FuelPriceFactor;
   Value := Value * GalaxyDifficultyTuning[Galaxy.DifficultyLevels[7]].GoodsEventDurationFactor;
   Result := Value;
 end;
 { @end $75F034 }
 
 { @routine $75F0D4 CalculateRoundedFuelCost }
-function CalculateRoundedFuelCost(Amount: Integer; OwnerId: Byte): Integer;
+function CalculateRoundedFuelCost(Amount: Integer; OwnerId: TOwnerId): Integer;
 begin
   Result := Round(CalculateFuelCost(Amount, OwnerId));
 end;
@@ -6092,7 +6092,7 @@ end;
 function TShip.IsMicroModuleRaciallyRestricted(ModuleIndex: Integer): Boolean;
 const
   AllSeries = [Ord(dsBlazer)..Ord(dsTerron)];
-  PlanetOwners = [Ord(oiMaloc)..Ord(oiGaal)];
+  PlanetOwners = [oiMaloc..oiGaal];
   NoOwners = [];
 var
   Position, NameLength: Integer;
@@ -6126,15 +6126,15 @@ begin
         Exit;
       end;
     end;
-    if (Self is TKling) and (Ord(oiDominator) in MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask) and
+    if (Self is TKling) and (oiDominator in MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask) and
       (Byte((Self as TKling).DominatorSeries) in MicroModuleTemplates[ModuleIndex].AllowedDominatorSeriesMask) then Exit;
     if ((Self is TNormalShip) or (Self is TRuins)) and
       ((RaceToOwner(PilotRace) in MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask) or
-       ((OwnerId = Byte(oiPirate)) and (Ord(oiPirate) in MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask))) then Exit;
+       ((OwnerId = oiPirate) and (oiPirate in MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask))) then Exit;
     if not (Self is TKling) and
       (MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask * PlanetOwners = NoOwners) and
       (OwnerId in MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask) then Exit;
-    if (Self is TTranclucator) and (Ord(oiUninhabited) in MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask) then Exit;
+    if (Self is TTranclucator) and (oiUninhabited in MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask) then Exit;
     Result := True;
   end;
 end;
@@ -6399,7 +6399,7 @@ begin
     Small := StationSize;
     Large := StationSize;
   end
-  else if (Self is TPirate) and (OwnerId = Byte(oiPirate)) and ((Self as TPirate).PirateType <> 0) then
+  else if (Self is TPirate) and (OwnerId = oiPirate) and ((Self as TPirate).PirateType <> 0) then
   begin
     Small := PirateClanSmallSizes[GetHull.OwnerId];
     Large := PirateClanLargeSizes[GetHull.OwnerId];
@@ -6771,7 +6771,7 @@ var I: Integer; Good: TItemType; Item: TEquipment; Artefact: TArtefact; Goods: T
 begin
   Result := False;
   if Location <> nil then
-    if not (Location is TPlanet) or ((Location as TPlanet).OwnerId in [Ord(oiMaloc)..Ord(oiGaal), Ord(oiPirate)]) then begin
+    if not (Location is TPlanet) or ((Location as TPlanet).OwnerId in [oiMaloc..oiGaal, oiPirate]) then begin
       for I := Inventory.Count - 1 downto 0 do begin
         Item := Inventory[I];
         if (Item.NoDropFlag <= 0) and (Item.EquippedFlag = 0) and (Item.ItemType <> t_Hull) and GetPlayer.CanAccessStoredItem(Item) then begin
@@ -6806,7 +6806,7 @@ var I, J: Integer; Item: TItem; Entry: PStorageEntry; Stack: TCountableItem;
 begin
   Result := False;
   if Location <> nil then
-    if not (Location is TPlanet) or ((Location as TPlanet).OwnerId in [Ord(oiMaloc)..Ord(oiGaal), Ord(oiPirate)]) then begin
+    if not (Location is TPlanet) or ((Location as TPlanet).OwnerId in [oiMaloc..oiGaal, oiPirate]) then begin
       for I := GetPlayer.StorageEntries.Count - 1 downto 0 do begin
         Entry := GetPlayer.StorageEntries[I];
         if (Entry.LocationOwner <> Location) or (Entry.Item.ItemType = t_Hull) then Continue;
@@ -8150,7 +8150,7 @@ begin
     for J := 0 to Star.Planets.Count - 1 do
     begin
       Planet := Star.Planets[J];
-      if not (Planet.OwnerId in [Ord(oiUninhabited)]) or (Planet.SurfaceLootEntries = nil) then Continue;
+      if not (Planet.OwnerId in [oiUninhabited]) or (Planet.SurfaceLootEntries = nil) then Continue;
       AlreadyMapped := False;
       for K := 0 to GetPlayer.Inventory.Count - 1 do
       begin
@@ -8856,7 +8856,7 @@ begin
   end;
   if not (TypeId in [stRanger, stPirate, stWarrior]) then Exit;
   if not (((DockedTo <> nil) and (DockedTo is TRuins)) or
-    ((CurrentPlanet <> nil) and (CurrentPlanet.OwnerId in [Ord(oiMaloc)..Ord(oiGaal), Ord(oiPirate)]))) then Exit;
+    ((CurrentPlanet <> nil) and (CurrentPlanet.OwnerId in [oiMaloc..oiGaal, oiPirate]))) then Exit;
   Equipped := 0;
   Specials := 0;
   for I := 0 to Inventory.Count - 1 do
@@ -8891,7 +8891,7 @@ begin
     if (NextRandomUnitFloat(RandomState) < 0.5) and IsEquipmentUsable(Item) and
       (Item.ItemType in [t_Hull..t_CustomWeapon]) and
       ((Item.EquippedFlag <> 0) or (Item.ItemType = t_Hull)) and Item.CanImprove and
-      (Item.OwnerId in [Ord(oiMaloc)..Ord(oiGaal), Ord(oiPirate)]) and
+      (Item.OwnerId in [oiMaloc..oiGaal, oiPirate]) and
       (not (Item is TWeapon) or (TWeapon(Item).GetWeaponInfo.Availability <> waNotSoldAndNodeRepair)) and
       (BestCost < Item.Cost) then
     begin BestCost := Item.Cost; Best := Item; end;
@@ -9038,7 +9038,7 @@ begin
   Result := 0;
   for I := 1 to Inventory.Count - 1 do begin
     Item := TEquipment(Inventory[I]);
-    if (Item.OwnerId = Byte(oiDominator)) and (Item.EquippedFlag = 0) then Inc(Result);
+    if (Item.OwnerId = oiDominator) and (Item.EquippedFlag = 0) then Inc(Result);
   end;
 end;
 { @end $769FE0 }
@@ -9361,7 +9361,7 @@ end;
 { @end $76A430 }
 
 { @routine $76AF14 TShip_CreateAndEquipHull }
-function TShip.CreateAndEquipHull(Capacity: Word; Level, Owner: Byte; Series: Integer; PirateBuilt: Boolean): THull;
+function TShip.CreateAndEquipHull(Capacity: Word; Level: Byte; Owner: TOwnerId; Series: Integer; PirateBuilt: Boolean): THull;
 var
   Item: THull;
   Kind: Byte;
@@ -9386,7 +9386,7 @@ end;
 { @end $76AF9C }
 
 { @routine $76B010 TShip_CreateAndEquipFuelTanks }
-function TShip.CreateAndEquipFuelTanks(Weight: Integer; Level, Owner: Byte): TFuelTanks;
+function TShip.CreateAndEquipFuelTanks(Weight: Integer; Level: Byte; Owner: TOwnerId): TFuelTanks;
 var
   Item: TFuelTanks;
 begin
@@ -9399,7 +9399,7 @@ end;
 { @end $76B010 }
 
 { @routine $76B06C TShip_CreateAndEquipEngine }
-function TShip.CreateAndEquipEngine(Weight: Integer; Level, Owner: Byte): TEngine;
+function TShip.CreateAndEquipEngine(Weight: Integer; Level: Byte; Owner: TOwnerId): TEngine;
 var
   Item: TEngine;
 begin
@@ -9412,7 +9412,7 @@ end;
 { @end $76B06C }
 
 { @routine $76B0C8 TShip_CreateAndEquipRadar }
-function TShip.CreateAndEquipRadar(Weight: Integer; Level, Owner: Byte): TRadar;
+function TShip.CreateAndEquipRadar(Weight: Integer; Level: Byte; Owner: TOwnerId): TRadar;
 var
   Item: TRadar;
 begin
@@ -9425,7 +9425,7 @@ end;
 { @end $76B0C8 }
 
 { @routine $76B124 TShip_CreateAndEquipScanner }
-function TShip.CreateAndEquipScanner(Weight: Integer; Level, Owner: Byte): TScaner;
+function TShip.CreateAndEquipScanner(Weight: Integer; Level: Byte; Owner: TOwnerId): TScaner;
 var
   Item: TScaner;
 begin
@@ -9438,7 +9438,7 @@ end;
 { @end $76B124 }
 
 { @routine $76B180 TShip_CreateAndEquipRepairRobot }
-function TShip.CreateAndEquipRepairRobot(Weight: Integer; Level, Owner: Byte): TRepairRobot;
+function TShip.CreateAndEquipRepairRobot(Weight: Integer; Level: Byte; Owner: TOwnerId): TRepairRobot;
 var
   Item: TRepairRobot;
 begin
@@ -9451,7 +9451,7 @@ end;
 { @end $76B180 }
 
 { @routine $76B1DC TShip_CreateAndEquipCargoHook }
-function TShip.CreateAndEquipCargoHook(Weight: Integer; Level, Owner: Byte): TCargoHook;
+function TShip.CreateAndEquipCargoHook(Weight: Integer; Level: Byte; Owner: TOwnerId): TCargoHook;
 var
   Item: TCargoHook;
 begin
@@ -9464,7 +9464,7 @@ end;
 { @end $76B1DC }
 
 { @routine $76B238 TShip_CreateAndEquipDefGenerator }
-function TShip.CreateAndEquipDefGenerator(Weight: Integer; Level, Owner: Byte): TDefGenerator;
+function TShip.CreateAndEquipDefGenerator(Weight: Integer; Level: Byte; Owner: TOwnerId): TDefGenerator;
 var
   Item: TDefGenerator;
 begin
@@ -9477,7 +9477,7 @@ end;
 { @end $76B238 }
 
 { @routine $76B294 TShip_CreateAndEquipWeapon }
-function TShip.CreateAndEquipWeapon(ItemType: Byte; Weight: Integer; Level, Owner: Byte): TWeapon;
+function TShip.CreateAndEquipWeapon(ItemType: Byte; Weight: Integer; Level: Byte; Owner: TOwnerId): TWeapon;
 var
   Item: TWeapon;
 begin
@@ -10717,7 +10717,7 @@ begin
           if (GetPlayer = Self) and not CurrentPlanet.HasPlayerLanded then
           begin
             CurrentPlanet.HasPlayerLanded := True;
-            if CurrentPlanet.OwnerId = Byte(oiUninhabited) then
+            if CurrentPlanet.OwnerId = oiUninhabited then
             begin
               TrySetAchievementProgress('EXPLORER', GetPlayer.AchievementStats.UninhabitedPlanetsVisited);
               TryAddAchievementProgress('EXPLORER', 1);
@@ -12176,7 +12176,7 @@ var Equipment: TEquipment;
   // @nested $775CD4 IsArtefactBoostEquipment
   function IsArtefactBoostEquipment(Item: TEquipment): Boolean; // @addr $775CD4 @note "Nested in CanBoostArtefact with unused caller-popped static link. OwnerId=6 and empty CustomFaction; nil returns false."
   begin
-    Result := (Item <> nil) and (Item.OwnerId = Byte(oiUninhabited)) and (Item.CustomFaction = '');
+    Result := (Item <> nil) and (Item.OwnerId = oiUninhabited) and (Item.CustomFaction = '');
   end;
 
 begin
@@ -12356,7 +12356,7 @@ var Count, I: Integer; Key: WideString; Variants: array[0..9] of WideString;
   function GetTalkContextPrefix(Ship: TShip): WideString; // @addr $776BF0
   begin
     Result := 'Talk.';
-    if (Ship.OwnerId = Byte(oiPirate)) and (Ship is TNormalShip) then Result := Result + 'PirateClan.'
+    if (Ship.OwnerId = oiPirate) and (Ship is TNormalShip) then Result := Result + 'PirateClan.'
     else if Ship.IsFemaleHumanPilot then Result := Result + 'Female.';
   end;
 
@@ -13615,14 +13615,14 @@ end;
 { @routine $77D09C TShip_IsFemaleHumanPilot }
 function TShip.IsFemaleHumanPilot: Boolean;
 begin
-  Result := (PilotRace = Byte(oiHuman)) and (PortraitFaceId in [25..32]) and (GetPlayer <> Self) and (GetPlayer <> nil) and (Self is TNormalShip) and (Galaxy.SpecialSimulationMode = 0);
+  Result := (PilotRace = oiHuman) and (PortraitFaceId in [25..32]) and (GetPlayer <> Self) and (GetPlayer <> nil) and (Self is TNormalShip) and (Galaxy.SpecialSimulationMode = 0);
 end;
 { @end $77D09C }
 
 { @routine $77D108 TShip_UsesVeteranHumanRangerAppearance }
 function TShip.UsesVeteranHumanRangerAppearance: Boolean;
 begin
-  Result := (TypeId = stRanger) and (PilotRace = Byte(oiHuman)) and (Cardinal(Id) mod 6 = 0) and (CreationTurn < 666) and (GetPlayer <> Self) and (GetPlayer <> nil) and not IsFemaleHumanPilot and (Galaxy.SpecialSimulationMode = 0);
+  Result := (TypeId = stRanger) and (PilotRace = oiHuman) and (Cardinal(Id) mod 6 = 0) and (CreationTurn < 666) and (GetPlayer <> Self) and (GetPlayer <> nil) and not IsFemaleHumanPilot and (Galaxy.SpecialSimulationMode = 0);
 end;
 { @end $77D108 }
 

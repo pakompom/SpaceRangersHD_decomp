@@ -274,11 +274,11 @@ var
   ArcadeWeaponLoopSounds: array[0..17] of WideString; // @addr $88A598 ABSound.WeaponLoop entries, after the time value.
 var
   ArcadeWeaponLoopTicks: array[0..17] of Integer; // @addr $88A5E0 First configured value divided by 20; -1 when absent.
-  RaceShipTemplates: array[0..7, 0..5] of TObjectSE; // @addr $88A628 @note "Retained SE.Ship templates indexed by race and six ordinary ship kinds."
+  RaceShipTemplates: array[TOwnerId, 0..5] of TObjectSE; // @addr $88A628 @note "Retained SE.Ship templates indexed by race and six ordinary ship kinds."
   BlazerShipTemplates: array[0..7] of TObjectSE; // @addr $88A6E8
   KellerShipTemplates: array[0..7] of TObjectSE; // @addr $88A708
   TerronShipTemplates: array[0..7] of TObjectSE; // @addr $88A728
-  PirateClanShipTemplates: array[0..7] of TObjectSE; // @addr $88A748
+  PirateClanShipTemplates: array[TOwnerId] of TObjectSE; // @addr $88A748
   PlanetSpaceTemplates: array of TPlanetSpaceTemplate; // @addr $88A768
 
 type
@@ -559,7 +559,7 @@ end;
 { @routine $526C04 FinalizeScriptHostRuntime }
 procedure FinalizeScriptHostRuntime;
 var
-  Race, Kind, Series: Byte;
+  Race: TOwnerId; Kind, Series: Byte;
   Item: TObject;
   Index: Integer;
 begin
@@ -609,7 +609,7 @@ begin
     CloseHandle(ScriptUiAbortEvent);
     ScriptUiAbortEvent := 0;
   end;
-  for Race := 0 to 7 do
+  for Race := oiMaloc to oiPirate do
   begin
     for Kind := 0 to 5 do
       if RaceShipTemplates[Race, Kind] <> nil then
@@ -651,7 +651,7 @@ var
 { @routine $526F10 InitializeGlobalUiRuntime }
 procedure InitializeGlobalUiRuntime;
 var
-  Race: Byte;
+  Race: TOwnerId;
   Index, TemplateIndex, Count: Integer;
   SatelliteTemplate: TSputnikTempl;
   PlanetTemplate: TPlanetTempl;
@@ -908,7 +908,7 @@ begin
   end;
   if ReloadScriptTemplates then
   begin
-    for Race := 0 to 7 do
+    for Race := oiMaloc to oiPirate do
     begin
       ShipBlock := GameDataConfig.GetBlockByPath('SE.Ship').FindBlock(OwnerInfo[Race].InternalName);
       for Kind := 0 to 5 do RaceShipTemplates[Race, Kind] := nil;
@@ -1539,7 +1539,7 @@ end;
 { @routine $52C68C ResetScriptHostRuntimeState }
 procedure ResetScriptHostRuntimeState;
 var
-  Race, Kind, Series: Byte;
+  Race: TOwnerId; Kind, Series: Byte;
   Index: Integer;
 begin
   if ScriptTemplates <> nil then
@@ -1579,7 +1579,7 @@ begin
     ScriptLibraryCache.Free;
     ScriptLibraryCache := nil;
   end;
-  for Race := 0 to 7 do
+  for Race := oiMaloc to oiPirate do
   begin
     for Kind := 0 to 5 do
       if RaceShipTemplates[Race, Kind] <> nil then
@@ -2198,11 +2198,11 @@ begin
   if (Text <> '') and (Text <> 'Any') then
   begin
     Names := AnsiString(Text);
-    if Pos('Maloc', Names) > 0 then Include(Result, 0);
-    if Pos('Peleng', Names) > 0 then Include(Result, 1);
-    if Pos('People', Names) > 0 then Include(Result, 2);
-    if Pos('Fei', Names) > 0 then Include(Result, 3);
-    if Pos('Gaal', Names) > 0 then Include(Result, 4);
+    if Pos('Maloc', Names) > 0 then Include(Result, oiMaloc);
+    if Pos('Peleng', Names) > 0 then Include(Result, oiPeleng);
+    if Pos('People', Names) > 0 then Include(Result, oiHuman);
+    if Pos('Fei', Names) > 0 then Include(Result, oiFeyan);
+    if Pos('Gaal', Names) > 0 then Include(Result, oiGaal);
   end;
 end;
 { @end $52DC80 }
@@ -2687,7 +2687,7 @@ begin
           if Pos('Many', AnsiString(Text)) > 0 then Include(TransportInCurStar, 10);
         end;
         Text := ReadShipGreetingField('LastPlanetRace');
-        if Text = 'Any' then LastPlanetRace := [0..4] else LastPlanetRace := ParseRobotMapRaceMask(Text);
+        if Text = 'Any' then LastPlanetRace := [oiMaloc..oiGaal] else LastPlanetRace := ParseRobotMapRaceMask(Text);
         Text := ReadShipGreetingField('LastPlanetRelations');
         LastPlanetRelations := [];
         if (Text <> '') and (Text <> 'Any') then
@@ -3254,7 +3254,7 @@ begin
         else if Text = 'Any' then CurStarInBattle := 2
         else CurStarInBattle := 1;
         Text := ReadGovernmentGreetingField('ToPlanetRace');
-        if Text = 'Any' then ToPlanetRace := [0..4] else ToPlanetRace := ParseRobotMapRaceMask(Text);
+        if Text = 'Any' then ToPlanetRace := [oiMaloc..oiGaal] else ToPlanetRace := ParseRobotMapRaceMask(Text);
         Text := ReadGovernmentGreetingField('ToPlanetRaceIsPlayerRace');
         if Text = 'Yes' then ToPlanetRaceIsPlayerRace := 0
         else if Text = 'No' then ToPlanetRaceIsPlayerRace := 1
@@ -3490,11 +3490,11 @@ begin
         if Block.CountParams('Owner') > 0 then
         begin
           Text := Block.GetParam('Owner');
-          if Pos('Maloc', AnsiString(Text)) > 0 then Include(PlanetAdvertDefinitions[GroupIndex].Adverts[AdvertIndex].Owner, 0);
-          if Pos('Peleng', AnsiString(Text)) > 0 then Include(PlanetAdvertDefinitions[GroupIndex].Adverts[AdvertIndex].Owner, 1);
-          if Pos('People', AnsiString(Text)) > 0 then Include(PlanetAdvertDefinitions[GroupIndex].Adverts[AdvertIndex].Owner, 2);
-          if Pos('Fei', AnsiString(Text)) > 0 then Include(PlanetAdvertDefinitions[GroupIndex].Adverts[AdvertIndex].Owner, 3);
-          if Pos('Gaal', AnsiString(Text)) > 0 then Include(PlanetAdvertDefinitions[GroupIndex].Adverts[AdvertIndex].Owner, 4);
+          if Pos('Maloc', AnsiString(Text)) > 0 then Include(PlanetAdvertDefinitions[GroupIndex].Adverts[AdvertIndex].Owner, oiMaloc);
+          if Pos('Peleng', AnsiString(Text)) > 0 then Include(PlanetAdvertDefinitions[GroupIndex].Adverts[AdvertIndex].Owner, oiPeleng);
+          if Pos('People', AnsiString(Text)) > 0 then Include(PlanetAdvertDefinitions[GroupIndex].Adverts[AdvertIndex].Owner, oiHuman);
+          if Pos('Fei', AnsiString(Text)) > 0 then Include(PlanetAdvertDefinitions[GroupIndex].Adverts[AdvertIndex].Owner, oiFeyan);
+          if Pos('Gaal', AnsiString(Text)) > 0 then Include(PlanetAdvertDefinitions[GroupIndex].Adverts[AdvertIndex].Owner, oiGaal);
         end;
         Inc(AdvertIndex);
         if AdvertIndex >= Count - 1 then Break;

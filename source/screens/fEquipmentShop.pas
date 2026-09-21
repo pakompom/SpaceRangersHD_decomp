@@ -260,13 +260,13 @@ end;
 
 { @routine $7DCF7C GetShopItemIconName }
 function GetShopItemIconName(Item: TItem): WideString;
-var Owner: Byte;
+var Owner: TOwnerId;
 begin
   if (Item is TEquipment) and (Item.ItemType in [t_FuelTanks..t_DefGenerator]) and
     (GetPlayer <> nil) and GetPlayer.IsHealthEffectActive(3) then
   begin
     Owner := Item.OwnerId;
-    Item.OwnerId := Byte(oiDominator);
+    Item.OwnerId := oiDominator;
     Result := Item.GetBitmapResourceName;
     Item.OwnerId := Owner;
   end
@@ -419,7 +419,7 @@ end;
 { @routine $7DD948 TfEquipmentShop_OnOpen }
 procedure TfEquipmentShop.OnOpen;
 var
-  Owner: Byte;
+  Owner: TOwnerId;
   Size: Integer;
   BackgroundPath: WideString;
   SavedSlots: TList;
@@ -475,12 +475,12 @@ begin
   begin
     if GetPlayer.IsOnPlanet then Owner := RaceToOwner(GetPlayer.CurrentPlanet.RaceId)
     else if GetPlayer.IsDockedToShip then Owner := GetPlayer.DockedTo.OwnerId
-    else Owner := 0;
+    else Owner := oiMaloc;
     SetActive(True);
-    if Owner = 1 then SetImagePath('GI,Bm.FormShop2.' + GiResourceSuffix + 'Peleng')
-    else if Owner = 2 then SetImagePath('GI,Bm.FormShop2.' + GiResourceSuffix + 'People')
-    else if Owner = 3 then SetImagePath('GI,Bm.FormShop2.' + GiResourceSuffix + 'Fei')
-    else if Owner = 4 then SetImagePath('GI,Bm.FormShop2.' + GiResourceSuffix + 'Gaal')
+    if Owner = oiPeleng then SetImagePath('GI,Bm.FormShop2.' + GiResourceSuffix + 'Peleng')
+    else if Owner = oiHuman then SetImagePath('GI,Bm.FormShop2.' + GiResourceSuffix + 'People')
+    else if Owner = oiFeyan then SetImagePath('GI,Bm.FormShop2.' + GiResourceSuffix + 'Fei')
+    else if Owner = oiGaal then SetImagePath('GI,Bm.FormShop2.' + GiResourceSuffix + 'Gaal')
     else SetActive(False);
   end;
   with GetByName('Left') as TGraphButtonGI do DownCallback := ScrollLeft;
@@ -1564,7 +1564,7 @@ begin
   end;
   if GetPlayer.IsOnPlanet then
   begin
-    if GetPlayer.CurrentPlanet.OwnerId = Byte(oiPirate) then
+    if GetPlayer.CurrentPlanet.OwnerId = oiPirate then
     begin
       if not GetPlayer.CurrentPlanet.IsMainPiratePlanet then
         MusicManager.PlayCategory('Nation.' + OwnerInfo[RaceToOwner(GetPlayer.CurrentPlanet.RaceId)].InternalName + 'Pirate')

@@ -7,7 +7,7 @@ interface
 uses Windows, aGalaxyStruct;
 
 type
-  TOwnerWeaponAvailabilityTable = array[0..7] of TWeaponAvailability;
+  TOwnerWeaponAvailabilityTable = array[TOwnerId] of TWeaponAvailability;
   POwnerWeaponAvailabilityTable = ^TOwnerWeaponAvailabilityTable;
 
   // Names and ordinals from the native bon* configuration/script table.
@@ -104,7 +104,7 @@ type
   // aGalaxyStruct mask has the same bits but different DCU alignment.
   TItemTypeSelection = set of 0..79; // @size 10
   TScriptActionTypeNames = array[0..61] of WideString;
-  TGoodsLegalityTable = array[0..7, 0..4, 0..4] of Boolean;
+  TGoodsLegalityTable = array[0..7, oiMaloc..oiGaal, TPlanetGovernment] of Boolean;
 
   TProgramNameTable = array[0..11] of WideString;
   TProgramDurationTable = array[0..11] of Integer;
@@ -124,9 +124,9 @@ var
   // Native WideString defaults: initialization pairs $83887C..$838A68.
 
 procedure IncrementWordSaturating(var Value: Word); // @addr $837B34
-function OwnerToSys(OwnerId: Byte): WideString; // @addr $82E4EC
+function OwnerToSys(OwnerId: TOwnerId): WideString; // @addr $82E4EC
 function IsKnownOwnerName(const Name: WideString): Boolean; // @addr $82E764
-function MatchesOwnerName(OwnerId: Byte; const Name: WideString): Boolean; // @addr $82E94C Unrecognized names act as a wildcard.
+function MatchesOwnerName(OwnerId: TOwnerId; const Name: WideString): Boolean; // @addr $82E94C Unrecognized names act as a wildcard.
 function MatchesCareerName(Career: TRangerCareer; const Names: WideString): Boolean; // @addr $82E9E0 Case-sensitive substring, Any, or empty string.
 
 procedure LoadArtefactConfiguration; // @addr $82FFD8
@@ -142,15 +142,15 @@ procedure InitializeGameplayConfig; // @addr 0x82D200
 function ItemTypeToSlotKind(ItemType: Byte): TShipSlotKind; // @addr 0x82F368
 function ClassifyWeaponDamageFlags(Flags: TDamageFlagSet): TWeaponDamageClass; // @addr $837CF0 Missile bit takes precedence over splinter; otherwise energy.
 function ShipToHullType(Ship: TObject): Byte; // @addr $82F1F4 Class/subtype mapping used by hull generation and legacy saves; only TObject RTTI operations precede explicit subclass casts.
-function RaceToOwner(RaceId: Byte): TOwnerIndex; // @addr $82DDD4 @note "Identity conversion for Coalition races 0..4; raises for all other values."
-function OwnerFromInternalName(const Name: WideString): Byte; // @addr $82E638
+function RaceToOwner(RaceId: TOwnerId): TOwnerId; // @addr $82DDD4 @note "Identity conversion for Coalition races 0..4; raises for all other values."
+function OwnerFromInternalName(const Name: WideString): TOwnerId; // @addr $82E638
 
-function OwnerToRace(OwnerId: Byte): Byte; // @addr 0x82DD48 @note "Identity conversion for Coalition owners 0..4; raises for all other values."
-function RaceToSys(RaceId: Byte): WideString; // @addr 0x82DED4 @note "Raises outside Coalition races 0..4."
-function NumberToRace(Value: Integer): Byte; // @addr 0x82E8C0 @note "Accepts 0..4; raises otherwise."
+function OwnerToRace(OwnerId: TOwnerId): TOwnerId; // @addr 0x82DD48 @note "Identity conversion for Coalition owners 0..4; raises for all other values."
+function RaceToSys(RaceId: TOwnerId): WideString; // @addr 0x82DED4 @note "Raises outside Coalition races 0..4."
+function NumberToRace(Value: Integer): TOwnerId; // @addr 0x82E8C0 @note "Accepts 0..4; raises otherwise."
 function SysToReward(const Name: WideString): Byte; // @addr 0x82EA40 @note "Case-sensitive lookup; raises for an unknown name."
 function SysToShipType(const Name: WideString): Byte; // @addr 0x82EBE8 @note "Case-sensitive lookup among 14 ship types; raises for an unknown name."
-function OwnerToFilmColor(OwnerId: ShortInt): Cardinal; // @addr 0x82DFE4 @note "Maps owner IDs 0..5 and 7 to fixed RGB colors through CurrentPixelFormat; other values use magenta."
+function OwnerToFilmColor(OwnerId: TOwnerId): Cardinal; // @addr 0x82DFE4 @note "Maps owner IDs 0..5 and 7 to fixed RGB colors through CurrentPixelFormat; other values use magenta."
 function CustomFactionToFilmColor(Faction: WideString): Cardinal; // @addr $82E0F4
 function GetCustomFactionPlanetIconNumber(Faction: WideString): Integer; // @addr $82E380 @note "Race.PlanetIconNum lookup; returns -1 for an absent entry. Film owner codes offset a nonnegative result by eight."
 function SizeTagToLevel(const Tag: WideString): Byte; // @addr $82F100 @note "Zero, Mini, Small, Average, Big, Huge map to 0..5; unknown tags map to zero."
@@ -160,7 +160,7 @@ function PickRandomItemType(Mask: TItemTypeSelection): Byte; // @addr $837B50 @i
 function PickRandomItemTypeFromSeed(Mask: TItemTypeSelection; var Seed: Cardinal): Byte; // @addr $837BCC @ida "unsigned __int8 __usercall $name@<al>(TItemTypeSelection *Mask@<eax>, unsigned int *Seed@<edx>);" @note "Selects a set bit among 0..75 while advancing Seed; an empty mask returns 76."
 function CountItemTypesInMask(Mask: TItemTypeSelection): Integer; // @addr 0x837C50 @ida "int __usercall $name@<eax>(TItemTypeSelection *Mask@<eax>);" @note "Copies the ten-byte mask, then counts bits 0..75; ignores storage bits 76..79."
 function GetItemTypeFromMask(Mask: TItemTypeSelection; Index: Integer): Byte; // @addr 0x837C98 @ida "unsigned __int8 __usercall $name@<al>(TItemTypeSelection *Mask@<eax>, int Index@<edx>);" @note "One-based selected-bit index among types 0..75; returns zero if no index matches."
-function PickRandomEquipmentOwner(RandomValue: Dword): Byte; // @addr 0x82E9BC @note "Only Coalition manufacturers are eligible."
+function PickRandomEquipmentOwner(RandomValue: Dword): TOwnerId; // @addr 0x82E9BC @note "Only Coalition manufacturers are eligible."
 
 function LookupNamedColorTag(Name: WideString): WideString; // @addr $82E244
 
@@ -782,7 +782,7 @@ type
     ColorTag: WideString; // @offset 0x1C
   end;
 
-  TOwnerInfoTable = array[0..7] of TOwnerInfo;
+  TOwnerInfoTable = array[TOwnerId] of TOwnerInfo;
 
   POwnerInfoTable = ^TOwnerInfoTable;
 
@@ -799,7 +799,7 @@ type
   PPlanetGovernmentMarketTable = ^TPlanetGovernmentMarketTable;
 
 var
-  OwnerInfo: array[0..7] of TOwnerInfo = (
+  OwnerInfo: array[TOwnerId] of TOwnerInfo = (
     (InternalName: 'Maloc';
       DisplayName: '';
       FuelPriceFactor: 0.7;
@@ -865,7 +865,7 @@ var
       FearThresholdScale: 0.5;
       ColorTag: '<color=255,255,255>')); // @addr $87D758
 var
-  PlanetOwnerMasks: TPlanetOwnerMasks = (Coalition: [Ord(oiMaloc)..Ord(oiGaal)]; Dominators: [Ord(oiDominator)]; PirateClan: [Ord(oiPirate)]); // @addr $87D858
+  PlanetOwnerMasks: TPlanetOwnerMasks = (Coalition: [oiMaloc..oiGaal]; Dominators: [oiDominator]; PirateClan: [oiPirate]); // @addr $87D858
   OwnerRelations: TOwnerRelationTable = (
     (100, 80, 70, 40, 60, 0, 0, 30),
     (70, 100, 70, 30, 40, 0, 0, 30),
@@ -1080,7 +1080,7 @@ var
   PirateRankPointThresholds: array[0..7] of Word = (100, 250, 450, 700, 1000, 1500, 3000, 0); // @addr $87E608 Zero threshold at the maximum rank.
   SkillConfigNames: array[TPilotSkill] of WideString = ('sAccuracy', 'sMobility', 'sTechnical', 'sTrader', 'sCharm', 'sLeadership'); // @addr $87E618
 var
-  RaceSkillEvaluationFactors: array[0..4, TPilotSkill] of Single = (
+  RaceSkillEvaluationFactors: array[oiMaloc..oiGaal, TPilotSkill] of Single = (
     (1.2, 1.1, 0.9, 0.8, 1.0, 1.0),
     (1.0, 1.2, 0.8, 1.1, 1.0, 0.9),
     (0.9, 0.8, 1.0, 1.2, 1.0, 1.1),
@@ -1110,7 +1110,7 @@ var
   WealthDemandScales: array[0..5] of Single = (0.0, 0.01, 0.0125, 0.016666667, 0.02, 0.025); // @addr $87E748 Fractions of cached ship wealth used for negotiated amounts.
   MinimumHullSlotCounts: array[TShipSlotKind] of Integer = (1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0); // @addr $87E760 Includes the unsupported-slot sentinel.
   DefaultHullSlotCounts: array[TShipSlotKind] of Integer = (1, 1, 1, 1, 1, 1, 1, 5, 4, 1, 0); // @addr $87E78C Artefact limit can be overridden by gameplay configuration.
-  RangerHullSlots: array[0..7, 0..10] of Integer = (
+  RangerHullSlots: array[TOwnerId, TShipSlotKind] of Integer = (
     (1, 1, 1, 1, 1, 1, 1, 4, 2, 0, 0),
     (1, 1, 1, 1, 1, 1, 1, 3, 2, 0, 0),
     (1, 1, 1, 1, 1, 1, 1, 3, 3, 1, 0),
@@ -1119,7 +1119,7 @@ var
     (1, 1, 1, 1, 1, 1, 1, 4, 4, 1, 0),
     (1, 1, 1, 1, 1, 1, 1, 4, 4, 1, 0),
     (1, 1, 1, 1, 1, 1, 1, 4, 4, 1, 0)); // @addr $87E7B8 Native base slot counts; final column is unsupported kind.
-  WarriorHullSlots: array[0..7, 0..10] of Integer = (
+  WarriorHullSlots: array[TOwnerId, TShipSlotKind] of Integer = (
     (1, 1, 1, 1, 0, 0, 1, 5, 1, 0, 0),
     (1, 1, 1, 1, 0, 1, 1, 4, 0, 1, 0),
     (1, 1, 1, 1, 1, 0, 1, 4, 1, 1, 0),
@@ -1128,7 +1128,7 @@ var
     (1, 1, 1, 1, 1, 1, 1, 4, 4, 1, 0),
     (1, 1, 1, 1, 1, 1, 1, 4, 4, 1, 0),
     (1, 1, 1, 1, 1, 1, 1, 4, 4, 1, 0)); // @addr $87E918 Native base slot counts; final column is unsupported kind.
-  PirateHullSlots: array[0..7, 0..10] of Integer = (
+  PirateHullSlots: array[TOwnerId, TShipSlotKind] of Integer = (
     (1, 1, 1, 1, 0, 1, 1, 4, 2, 1, 0),
     (1, 1, 1, 1, 1, 1, 0, 5, 3, 1, 0),
     (1, 1, 1, 1, 1, 1, 1, 4, 1, 1, 0),
@@ -1137,7 +1137,7 @@ var
     (1, 1, 1, 1, 1, 1, 1, 4, 4, 1, 0),
     (1, 1, 1, 1, 1, 1, 1, 4, 4, 1, 0),
     (1, 1, 1, 1, 1, 1, 1, 4, 4, 1, 0)); // @addr $87EA78 Native base slot counts; final column is unsupported kind.
-  TransportHullSlots: array[0..7, 0..10] of Integer = (
+  TransportHullSlots: array[TOwnerId, TShipSlotKind] of Integer = (
     (1, 1, 1, 0, 0, 1, 0, 3, 0, 0, 0),
     (1, 1, 1, 0, 1, 1, 1, 2, 1, 0, 0),
     (1, 1, 1, 0, 1, 1, 0, 2, 0, 0, 0),
@@ -1146,7 +1146,7 @@ var
     (1, 1, 1, 1, 1, 1, 1, 4, 4, 1, 0),
     (1, 1, 1, 1, 1, 1, 1, 4, 4, 1, 0),
     (1, 1, 1, 1, 1, 1, 1, 4, 4, 1, 0)); // @addr $87EBD8 Native base slot counts; final column is unsupported kind.
-  LinerHullSlots: array[0..7, 0..10] of Integer = (
+  LinerHullSlots: array[TOwnerId, TShipSlotKind] of Integer = (
     (1, 1, 1, 0, 1, 0, 1, 4, 0, 0, 0),
     (1, 1, 1, 0, 1, 0, 1, 4, 0, 0, 0),
     (1, 1, 1, 0, 1, 0, 0, 4, 0, 0, 0),
@@ -1155,7 +1155,7 @@ var
     (1, 1, 1, 1, 1, 1, 1, 4, 4, 1, 0),
     (1, 1, 1, 1, 1, 1, 1, 4, 4, 1, 0),
     (1, 1, 1, 1, 1, 1, 1, 4, 4, 1, 0)); // @addr $87ED38 Native base slot counts; final column is unsupported kind.
-  DiplomatHullSlots: array[0..7, 0..10] of Integer = (
+  DiplomatHullSlots: array[TOwnerId, TShipSlotKind] of Integer = (
     (1, 1, 1, 1, 1, 1, 1, 4, 1, 0, 0),
     (1, 1, 1, 1, 1, 1, 0, 3, 1, 1, 0),
     (1, 1, 1, 1, 1, 0, 1, 2, 1, 1, 0),
@@ -1461,7 +1461,7 @@ var
   DefGeneratorLevelFactors: array[1..8] of Single; // @addr $88B40C
   RadarLevelRanges: array[1..8] of Word; // @addr $88B42C Loaded from equipment configuration.
   CargoHookLevelStats: TCargoHookLevelStatsTable; // @addr $88B43C
-  HullFragilityByOwner: array[TWeaponDamageClass, 0..7] of Single; // @addr $88B4BC Damage class, then owner; loaded from mFragilityByOwner*.
+  HullFragilityByOwner: array[TWeaponDamageClass, TOwnerId] of Single; // @addr $88B4BC Damage class, then owner; loaded from mFragilityByOwner*.
   HullFragilityByType: array[0..10] of Single; // @addr $88B51C Loaded from mFragilityByShipType.
   WeaponInfos: array[t_Weapon1..t_Weapon18] of TWeaponInfo; // @addr 0x88B548
 var
@@ -1474,13 +1474,13 @@ type
     Text: WideString; // @offset $04
     AllowedLocationOwners: TOwnerMask; // @offset $08
     AllowedOwners: TOwnerMask; // @offset $09
-    AllowedRatingBands: TOwnerMask; // @offset $0A
-    AllowedRanks: TOwnerMask; // @offset $0B
+    AllowedRatingBands: TByteMask; // @offset $0A
+    AllowedRanks: TByteMask; // @offset $0B
     AllowedCareers: TRangerCareerSet; // @offset $0C
     MedicalPriceSizeLevel: Byte; // @offset $0D Mini..Huge (1..5); GenerateValueForSizeLevel bucket for treatment and stimulation prices.
     DevelopmentRate: Double; // @offset $10 Progress increment factor.
     InfectionChance: Double; // @offset $18
-    Locations: TOwnerMask; // @offset $20 Bits 0=planet, 1=ship interior, 2=normal space, 3=combat infection.
+    Locations: TByteMask; // @offset $20 Bits 0=planet, 1=ship interior, 2=normal space, 3=combat infection.
     Disabled: Boolean; // @offset $21
     Duration: Integer; // @offset $24
   end;
@@ -1530,7 +1530,7 @@ var
   Level, GoodsIndex: Byte;
   Government: TPlanetGovernment;
   Relation: TRelationLevel;
-  KlingKind, Series, Owner: Byte;
+  KlingKind, Series: Byte; Owner: TOwnerId;
   Economy: TPlanetEconomy;
   Difficulty: ^TGalaxyDifficultyTuning;
 
@@ -1589,9 +1589,9 @@ begin
   for KlingKind := 0 to 7 do
     for Series := 0 to 2 do
       DominatorShipDefinitions[KlingKind].DisplayNames[Series] := LookupLocalizedTextByKey('ShipType.Dominator.' + DominatorSeriesNames[Series] + '.' + IntToStr(KlingKind));
-  for Owner := 0 to 7 do OwnerInfo[Owner].DisplayName := LookupLocalizedTextByKey('Race.Name.' + OwnerInfo[Owner].InternalName);
+  for Owner := oiMaloc to oiPirate do OwnerInfo[Owner].DisplayName := LookupLocalizedTextByKey('Race.Name.' + OwnerInfo[Owner].InternalName);
   // Both identical localization passes are present in the native initializer.
-  for Owner := 0 to 7 do OwnerInfo[Owner].DisplayName := LookupLocalizedTextByKey('Race.Name.' + OwnerInfo[Owner].InternalName);
+  for Owner := oiMaloc to oiPirate do OwnerInfo[Owner].DisplayName := LookupLocalizedTextByKey('Race.Name.' + OwnerInfo[Owner].InternalName);
   for Economy := Low(TPlanetEconomy) to High(TPlanetEconomy) do
   begin
     PlanetEconomyInfo[Economy].DisplayName := LookupLocalizedTextByKey('Economy.Name.' + IntToStr(Ord(Economy)));
@@ -1621,50 +1621,50 @@ end;
 { @end $82D200 }
 
 { @routine $82DD48 OwnerToRace }
-function OwnerToRace(OwnerId: Byte): Byte;
+function OwnerToRace(OwnerId: TOwnerId): TOwnerId;
 begin
   case OwnerId of
-    Ord(oiMaloc): Result := Byte(oiMaloc);
-    Ord(oiPeleng): Result := Byte(oiPeleng);
-    Ord(oiHuman): Result := Byte(oiHuman);
-    Ord(oiFeyan): Result := Byte(oiFeyan);
-    Ord(oiGaal): Result := Byte(oiGaal);
+    oiMaloc: Result := oiMaloc;
+    oiPeleng: Result := oiPeleng;
+    oiHuman: Result := oiHuman;
+    oiFeyan: Result := oiFeyan;
+    oiGaal: Result := oiGaal;
   else
     begin
       raise Exception.Create('Error in OwnerToRace');
-      Result := Byte(oiMaloc);
+      Result := oiMaloc;
     end;
   end;
 end;
 { @end $82DD48 }
 
 { @routine $82DDD4 RaceToOwner }
-function RaceToOwner(RaceId: Byte): TOwnerIndex;
+function RaceToOwner(RaceId: TOwnerId): TOwnerId;
 begin
   case RaceId of
-    Ord(oiMaloc): Result := Byte(oiMaloc);
-    Ord(oiPeleng): Result := Byte(oiPeleng);
-    Ord(oiHuman): Result := Byte(oiHuman);
-    Ord(oiFeyan): Result := Byte(oiFeyan);
-    Ord(oiGaal): Result := Byte(oiGaal);
+    oiMaloc: Result := oiMaloc;
+    oiPeleng: Result := oiPeleng;
+    oiHuman: Result := oiHuman;
+    oiFeyan: Result := oiFeyan;
+    oiGaal: Result := oiGaal;
   else
     begin
-      raise Exception.Create('Error in RaceToOwner ' + IntToWideString(RaceId));
-      Result := Byte(oiMaloc);
+      raise Exception.Create('Error in RaceToOwner ' + IntToWideString(Ord(RaceId)));
+      Result := oiMaloc;
     end;
   end;
 end;
 { @end $82DDD4 }
 
 { @routine $82DED4 RaceToSys }
-function RaceToSys(RaceId: Byte): WideString;
+function RaceToSys(RaceId: TOwnerId): WideString;
 begin
   case RaceId of
-    Ord(oiMaloc): Result := 'Maloc';
-    Ord(oiPeleng): Result := 'Peleng';
-    Ord(oiHuman): Result := 'People';
-    Ord(oiFeyan): Result := 'Fei';
-    Ord(oiGaal): Result := 'Gaal';
+    oiMaloc: Result := 'Maloc';
+    oiPeleng: Result := 'Peleng';
+    oiHuman: Result := 'People';
+    oiFeyan: Result := 'Fei';
+    oiGaal: Result := 'Gaal';
   else
     begin
       raise Exception.Create('Error in RaceToSys');
@@ -1675,16 +1675,16 @@ end;
 { @end $82DED4 }
 
 { @routine $82DFE4 OwnerToFilmColor }
-function OwnerToFilmColor(OwnerId: ShortInt): Cardinal;
+function OwnerToFilmColor(OwnerId: TOwnerId): Cardinal;
 begin
-  case Byte(OwnerId) of
-    Ord(oiMaloc): Result := CurrentPixelFormat.PackRgbBytes(255, 0, 0);
-    Ord(oiPeleng): Result := CurrentPixelFormat.PackRgbBytes(0, 255, 0);
-    Ord(oiHuman): Result := CurrentPixelFormat.PackRgbBytes(0, $47, $EA);
-    Ord(oiFeyan): Result := CurrentPixelFormat.PackRgbBytes(255, $93, $F1);
-    Ord(oiGaal): Result := CurrentPixelFormat.PackRgbBytes($ED, $F7, $3E);
-    Ord(oiDominator): Result := CurrentPixelFormat.PackRgbBytes($61, $A7, $BE);
-    Ord(oiPirate): Result := CurrentPixelFormat.PackRgbBytes(255, 255, 255);
+  case OwnerId of
+    oiMaloc: Result := CurrentPixelFormat.PackRgbBytes(255, 0, 0);
+    oiPeleng: Result := CurrentPixelFormat.PackRgbBytes(0, 255, 0);
+    oiHuman: Result := CurrentPixelFormat.PackRgbBytes(0, $47, $EA);
+    oiFeyan: Result := CurrentPixelFormat.PackRgbBytes(255, $93, $F1);
+    oiGaal: Result := CurrentPixelFormat.PackRgbBytes($ED, $F7, $3E);
+    oiDominator: Result := CurrentPixelFormat.PackRgbBytes($61, $A7, $BE);
+    oiPirate: Result := CurrentPixelFormat.PackRgbBytes(255, 255, 255);
   else Result := CurrentPixelFormat.PackRgbBytes(255, 0, 255);
   end;
 end;
@@ -1710,7 +1710,7 @@ begin
         Exit;
       end;
     end;
-  Result := OwnerToFilmColor(Ord(oiUninhabited));
+  Result := OwnerToFilmColor(oiUninhabited);
 end;
 { @end $82E0F4 }
 
@@ -1754,32 +1754,32 @@ end;
 { @end $82E458 }
 
 { @routine $82E4EC OwnerToSys }
-function OwnerToSys(OwnerId: Byte): WideString;
+function OwnerToSys(OwnerId: TOwnerId): WideString;
 begin
   case OwnerId of
-    Ord(oiMaloc): Result := 'Maloc';
-    Ord(oiPeleng): Result := 'Peleng';
-    Ord(oiHuman): Result := 'People';
-    Ord(oiFeyan): Result := 'Fei';
-    Ord(oiGaal): Result := 'Gaal';
-    Ord(oiDominator): Result := 'Kling';
-    Ord(oiPirate): Result := 'PirateClan';
+    oiMaloc: Result := 'Maloc';
+    oiPeleng: Result := 'Peleng';
+    oiHuman: Result := 'People';
+    oiFeyan: Result := 'Fei';
+    oiGaal: Result := 'Gaal';
+    oiDominator: Result := 'Kling';
+    oiPirate: Result := 'PirateClan';
   else Result := 'None';
   end;
 end;
 { @end $82E4EC }
 
 { @routine $82E638 OwnerFromInternalName }
-function OwnerFromInternalName(const Name: WideString): Byte;
+function OwnerFromInternalName(const Name: WideString): TOwnerId;
 begin
-  if Name = 'Maloc' then begin Result := Byte(oiMaloc); Exit; end;
-  if Name = 'Peleng' then begin Result := Byte(oiPeleng); Exit; end;
-  if Name = 'People' then begin Result := Byte(oiHuman); Exit; end;
-  if Name = 'Fei' then begin Result := Byte(oiFeyan); Exit; end;
-  if Name = 'Gaal' then begin Result := Byte(oiGaal); Exit; end;
-  if Name = 'Kling' then begin Result := Byte(oiDominator); Exit; end;
-  if Name = 'PirateClan' then begin Result := Byte(oiPirate); Exit; end;
-  Result := Byte(oiUninhabited);
+  if Name = 'Maloc' then begin Result := oiMaloc; Exit; end;
+  if Name = 'Peleng' then begin Result := oiPeleng; Exit; end;
+  if Name = 'People' then begin Result := oiHuman; Exit; end;
+  if Name = 'Fei' then begin Result := oiFeyan; Exit; end;
+  if Name = 'Gaal' then begin Result := oiGaal; Exit; end;
+  if Name = 'Kling' then begin Result := oiDominator; Exit; end;
+  if Name = 'PirateClan' then begin Result := oiPirate; Exit; end;
+  Result := oiUninhabited;
 end;
 { @end $82E638 }
 
@@ -1799,34 +1799,34 @@ end;
 { @end $82E764 }
 
 { @routine $82E8C0 NumberToRace }
-function NumberToRace(Value: Integer): Byte;
+function NumberToRace(Value: Integer): TOwnerId;
 begin
   case Value of
-    0: Result := Byte(oiMaloc);
-    1: Result := Byte(oiPeleng);
-    2: Result := Byte(oiHuman);
-    3: Result := Byte(oiFeyan);
-    4: Result := Byte(oiGaal);
+    0: Result := oiMaloc;
+    1: Result := oiPeleng;
+    2: Result := oiHuman;
+    3: Result := oiFeyan;
+    4: Result := oiGaal;
   else
     begin
       raise Exception.Create('Error in NumberToRace');
-      Result := Byte(oiMaloc);
+      Result := oiMaloc;
     end;
   end;
 end;
 { @end $82E8C0 }
 
 { @routine $82E94C MatchesOwnerName }
-function MatchesOwnerName(OwnerId: Byte; const Name: WideString): Boolean;
+function MatchesOwnerName(OwnerId: TOwnerId; const Name: WideString): Boolean;
 begin
   Result := not IsKnownOwnerName(Name) or (Name = OwnerToSys(OwnerId));
 end;
 { @end $82E94C }
 
 { @routine $82E9BC PickRandomEquipmentOwner }
-function PickRandomEquipmentOwner(RandomValue: Dword): Byte;
+function PickRandomEquipmentOwner(RandomValue: Dword): TOwnerId;
 begin
-  Result := SeededRandomIntRange(0, 4, RandomValue);
+  Result := TOwnerId(SeededRandomIntRange(0, 4, RandomValue));
 end;
 { @end $82E9BC }
 
@@ -2426,7 +2426,7 @@ end;
 
 { @routine $832C94 LoadEquipmentConfiguration }
 procedure LoadEquipmentConfiguration;
-var Level: Byte; Block: TBlockParEC; Values: WideString; DamageKind: TWeaponDamageClass; Owner, HullKind: Byte;
+var Level: Byte; Block: TBlockParEC; Values: WideString; DamageKind: TWeaponDamageClass; Owner: TOwnerId; HullKind: Byte;
 begin
   Block := LanguageDataConfig.GetBlockByPath('Items.Hull');
   HullBaseSize := StrToInt(AnsiString(Block.GetParam('AverageSize')));
@@ -2438,7 +2438,7 @@ begin
     Values := Block.GetParam('mFragilityByLevel' + WeaponDamageClasses[DamageKind].Name);
     for Level := 1 to 8 do HullLevelStats[Level].Fragility[DamageKind] := ExtractDecimalToSingleW(ExtractDelimitedPartW(Values, Level - 1, ','));
     Values := Block.GetParam('mFragilityByOwner' + WeaponDamageClasses[DamageKind].Name);
-    for Owner := 0 to 7 do HullFragilityByOwner[DamageKind, Owner] := ExtractDecimalToSingleW(ExtractDelimitedPartW(Values, Owner - 0, ','));
+    for Owner := oiMaloc to oiPirate do HullFragilityByOwner[DamageKind, Owner] := ExtractDecimalToSingleW(ExtractDelimitedPartW(Values, Ord(Owner) - 0, ','));
   end;
   Values := Block.GetParam('mFragilityByShipType');
   for HullKind := 0 to 10 do HullFragilityByType[HullKind] := ExtractDecimalToSingleW(ExtractDelimitedPartW(Values, HullKind - 0, ','));
@@ -2693,8 +2693,8 @@ begin
       Value := ReadMicroModuleParam('Owner');
       if (Value = '') or (Value = 'Any') then
       begin
-        if SpecialOnly then AllowedHullOwnerMask := [Ord(oiMaloc)..Ord(oiGaal), Ord(oiPirate)]
-        else AllowedHullOwnerMask := [Ord(oiMaloc)..Ord(oiDominator), Ord(oiPirate)];
+        if SpecialOnly then AllowedHullOwnerMask := [oiMaloc..oiGaal, oiPirate]
+        else AllowedHullOwnerMask := [oiMaloc..oiDominator, oiPirate];
         AllowedDominatorSeriesMask := [Ord(dsBlazer)..Ord(dsTerron)];
         AllowedCustomHullFactions := '';
       end
@@ -2704,37 +2704,37 @@ begin
         AllowedDominatorSeriesMask := [];
         Tokens := ReplaceAllWideString(Value, ' ', '');
         Tokens := '<' + ReplaceAllWideString(Tokens, ',', '>,<') + '>';
-        if ConsumeMicroModuleToken('<Maloc>') then Include(AllowedHullOwnerMask, Ord(oiMaloc));
-        if ConsumeMicroModuleToken('<Peleng>') then Include(AllowedHullOwnerMask, Ord(oiPeleng));
-        if ConsumeMicroModuleToken('<People>') then Include(AllowedHullOwnerMask, Ord(oiHuman));
-        if ConsumeMicroModuleToken('<Fei>') then Include(AllowedHullOwnerMask, Ord(oiFeyan));
-        if ConsumeMicroModuleToken('<Gaal>') then Include(AllowedHullOwnerMask, Ord(oiGaal));
-        if ConsumeMicroModuleToken('<PirateClan>') then Include(AllowedHullOwnerMask, Ord(oiPirate));
-        if ConsumeMicroModuleToken('<None>') then Include(AllowedHullOwnerMask, Ord(oiUninhabited));
+        if ConsumeMicroModuleToken('<Maloc>') then Include(AllowedHullOwnerMask, oiMaloc);
+        if ConsumeMicroModuleToken('<Peleng>') then Include(AllowedHullOwnerMask, oiPeleng);
+        if ConsumeMicroModuleToken('<People>') then Include(AllowedHullOwnerMask, oiHuman);
+        if ConsumeMicroModuleToken('<Fei>') then Include(AllowedHullOwnerMask, oiFeyan);
+        if ConsumeMicroModuleToken('<Gaal>') then Include(AllowedHullOwnerMask, oiGaal);
+        if ConsumeMicroModuleToken('<PirateClan>') then Include(AllowedHullOwnerMask, oiPirate);
+        if ConsumeMicroModuleToken('<None>') then Include(AllowedHullOwnerMask, oiUninhabited);
         if SpecialOnly then
         begin
-          if ConsumeMicroModuleToken('<Kling>') then Include(AllowedHullOwnerMask, Ord(oiDominator));
+          if ConsumeMicroModuleToken('<Kling>') then Include(AllowedHullOwnerMask, oiDominator);
           ConsumeMicroModuleToken('<NonKling>');
         end
         else
         begin
-          if not ConsumeMicroModuleToken('<NonKling>') then Include(AllowedHullOwnerMask, Ord(oiDominator));
+          if not ConsumeMicroModuleToken('<NonKling>') then Include(AllowedHullOwnerMask, oiDominator);
           ConsumeMicroModuleToken('<Kling>');
         end;
         if ConsumeMicroModuleToken('<Blazer>') then
         begin
           Include(AllowedDominatorSeriesMask, Ord(dsBlazer));
-          if SpecialOnly then Include(AllowedHullOwnerMask, Ord(oiDominator));
+          if SpecialOnly then Include(AllowedHullOwnerMask, oiDominator);
         end;
         if ConsumeMicroModuleToken('<Terron>') then
         begin
           Include(AllowedDominatorSeriesMask, Ord(dsTerron));
-          if SpecialOnly then Include(AllowedHullOwnerMask, Ord(oiDominator));
+          if SpecialOnly then Include(AllowedHullOwnerMask, oiDominator);
         end;
         if ConsumeMicroModuleToken('<Keller>') then
         begin
           Include(AllowedDominatorSeriesMask, Ord(dsKeller));
-          if SpecialOnly then Include(AllowedHullOwnerMask, Ord(oiDominator));
+          if SpecialOnly then Include(AllowedHullOwnerMask, oiDominator);
         end;
         if AllowedDominatorSeriesMask = [] then AllowedDominatorSeriesMask := [Ord(dsBlazer)..Ord(dsTerron)];
         AllowedCustomHullFactions := '';
@@ -2822,8 +2822,8 @@ end;
 procedure InitializeCaptainHealthDefinitions;
 var I: Integer; Path, Value: WideString;
 begin
-  CaptainHealthDefinitions[1].AllowedLocationOwners := [0, 1, 2, 3, 4];
-  CaptainHealthDefinitions[1].AllowedOwners := [0, 1, 2, 3, 4];
+  CaptainHealthDefinitions[1].AllowedLocationOwners := [oiMaloc..oiGaal];
+  CaptainHealthDefinitions[1].AllowedOwners := [oiMaloc..oiGaal];
   CaptainHealthDefinitions[1].AllowedRatingBands := [2, 3, 4, 5];
   CaptainHealthDefinitions[1].AllowedRanks := [2, 3, 4, 5, 6, 7];
   CaptainHealthDefinitions[1].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
@@ -2832,8 +2832,8 @@ begin
   CaptainHealthDefinitions[1].InfectionChance := 1.0;
   CaptainHealthDefinitions[1].Locations := [3];
   CaptainHealthDefinitions[1].Duration := 150;
-  CaptainHealthDefinitions[2].AllowedLocationOwners := [1];
-  CaptainHealthDefinitions[2].AllowedOwners := [1, 2, 3, 4];
+  CaptainHealthDefinitions[2].AllowedLocationOwners := [oiPeleng];
+  CaptainHealthDefinitions[2].AllowedOwners := [oiPeleng, oiHuman, oiFeyan, oiGaal];
   CaptainHealthDefinitions[2].AllowedRatingBands := [1, 2, 3, 4, 5];
   CaptainHealthDefinitions[2].AllowedRanks := [3, 4, 5];
   CaptainHealthDefinitions[2].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
@@ -2842,8 +2842,8 @@ begin
   CaptainHealthDefinitions[2].InfectionChance := 1.0;
   CaptainHealthDefinitions[2].Locations := [0];
   CaptainHealthDefinitions[2].Duration := 555;
-  CaptainHealthDefinitions[3].AllowedLocationOwners := [0, 1, 2, 3, 4];
-  CaptainHealthDefinitions[3].AllowedOwners := [0, 1, 2];
+  CaptainHealthDefinitions[3].AllowedLocationOwners := [oiMaloc..oiGaal];
+  CaptainHealthDefinitions[3].AllowedOwners := [oiMaloc, oiPeleng, oiHuman];
   CaptainHealthDefinitions[3].AllowedRatingBands := [3, 4, 5];
   CaptainHealthDefinitions[3].AllowedRanks := [3, 4, 5, 6, 7];
   CaptainHealthDefinitions[3].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
@@ -2852,8 +2852,8 @@ begin
   CaptainHealthDefinitions[3].InfectionChance := 1.0;
   CaptainHealthDefinitions[3].Locations := [3];
   CaptainHealthDefinitions[3].Duration := 200;
-  CaptainHealthDefinitions[4].AllowedLocationOwners := [0, 1, 2, 3, 4];
-  CaptainHealthDefinitions[4].AllowedOwners := [1, 2, 3, 4];
+  CaptainHealthDefinitions[4].AllowedLocationOwners := [oiMaloc..oiGaal];
+  CaptainHealthDefinitions[4].AllowedOwners := [oiPeleng, oiHuman, oiFeyan, oiGaal];
   CaptainHealthDefinitions[4].AllowedRatingBands := [1, 2, 3, 4, 5];
   CaptainHealthDefinitions[4].AllowedRanks := [1, 2, 3, 4, 5, 6, 7];
   CaptainHealthDefinitions[4].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
@@ -2862,8 +2862,8 @@ begin
   CaptainHealthDefinitions[4].InfectionChance := 1.0;
   CaptainHealthDefinitions[4].Locations := [2];
   CaptainHealthDefinitions[4].Duration := 1000;
-  CaptainHealthDefinitions[5].AllowedLocationOwners := [4];
-  CaptainHealthDefinitions[5].AllowedOwners := [0, 1, 2, 3, 4];
+  CaptainHealthDefinitions[5].AllowedLocationOwners := [oiGaal];
+  CaptainHealthDefinitions[5].AllowedOwners := [oiMaloc..oiGaal];
   CaptainHealthDefinitions[5].AllowedRatingBands := [1, 2, 3, 4, 5];
   CaptainHealthDefinitions[5].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
   CaptainHealthDefinitions[5].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
@@ -2872,8 +2872,8 @@ begin
   CaptainHealthDefinitions[5].InfectionChance := 1.0;
   CaptainHealthDefinitions[5].Locations := [0, 1];
   CaptainHealthDefinitions[5].Duration := 170;
-  CaptainHealthDefinitions[6].AllowedLocationOwners := [0, 1, 2, 3, 4];
-  CaptainHealthDefinitions[6].AllowedOwners := [0, 1, 2, 3, 4];
+  CaptainHealthDefinitions[6].AllowedLocationOwners := [oiMaloc..oiGaal];
+  CaptainHealthDefinitions[6].AllowedOwners := [oiMaloc..oiGaal];
   CaptainHealthDefinitions[6].AllowedRatingBands := [1, 2, 3, 4, 5];
   CaptainHealthDefinitions[6].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
   CaptainHealthDefinitions[6].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
@@ -2882,8 +2882,8 @@ begin
   CaptainHealthDefinitions[6].InfectionChance := 1.0;
   CaptainHealthDefinitions[6].Locations := [];
   CaptainHealthDefinitions[6].Duration := 1000;
-  CaptainHealthDefinitions[7].AllowedLocationOwners := [0, 1, 2, 3, 4];
-  CaptainHealthDefinitions[7].AllowedOwners := [0, 1, 2, 3, 4];
+  CaptainHealthDefinitions[7].AllowedLocationOwners := [oiMaloc..oiGaal];
+  CaptainHealthDefinitions[7].AllowedOwners := [oiMaloc..oiGaal];
   CaptainHealthDefinitions[7].AllowedRatingBands := [1, 2, 3, 4, 5];
   CaptainHealthDefinitions[7].AllowedRanks := [1, 2, 3, 4, 5, 6, 7];
   CaptainHealthDefinitions[7].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
@@ -2892,8 +2892,8 @@ begin
   CaptainHealthDefinitions[7].InfectionChance := 1.0;
   CaptainHealthDefinitions[7].Locations := [3];
   CaptainHealthDefinitions[7].Duration := 130;
-  CaptainHealthDefinitions[8].AllowedLocationOwners := [1, 2, 3, 4];
-  CaptainHealthDefinitions[8].AllowedOwners := [1, 2, 3, 4];
+  CaptainHealthDefinitions[8].AllowedLocationOwners := [oiPeleng, oiHuman, oiFeyan, oiGaal];
+  CaptainHealthDefinitions[8].AllowedOwners := [oiPeleng, oiHuman, oiFeyan, oiGaal];
   CaptainHealthDefinitions[8].AllowedRatingBands := [1, 2, 3, 4, 5];
   CaptainHealthDefinitions[8].AllowedRanks := [1, 2, 3, 4, 5, 6, 7];
   CaptainHealthDefinitions[8].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
@@ -2902,8 +2902,8 @@ begin
   CaptainHealthDefinitions[8].InfectionChance := 1.0;
   CaptainHealthDefinitions[8].Locations := [3];
   CaptainHealthDefinitions[8].Duration := 100;
-  CaptainHealthDefinitions[9].AllowedLocationOwners := [0];
-  CaptainHealthDefinitions[9].AllowedOwners := [0];
+  CaptainHealthDefinitions[9].AllowedLocationOwners := [oiMaloc];
+  CaptainHealthDefinitions[9].AllowedOwners := [oiMaloc];
   CaptainHealthDefinitions[9].AllowedRatingBands := [2, 3, 4, 5];
   CaptainHealthDefinitions[9].AllowedRanks := [2, 3, 4, 5, 6, 7];
   CaptainHealthDefinitions[9].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
@@ -2912,8 +2912,8 @@ begin
   CaptainHealthDefinitions[9].InfectionChance := 1.0;
   CaptainHealthDefinitions[9].Locations := [0, 1, 2];
   CaptainHealthDefinitions[9].Duration := 180;
-  CaptainHealthDefinitions[10].AllowedLocationOwners := [0, 1, 2, 3, 4];
-  CaptainHealthDefinitions[10].AllowedOwners := [1];
+  CaptainHealthDefinitions[10].AllowedLocationOwners := [oiMaloc..oiGaal];
+  CaptainHealthDefinitions[10].AllowedOwners := [oiPeleng];
   CaptainHealthDefinitions[10].AllowedRatingBands := [1, 2, 3, 4, 5];
   CaptainHealthDefinitions[10].AllowedRanks := [1, 2, 3, 4, 5, 6, 7];
   CaptainHealthDefinitions[10].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
@@ -2922,8 +2922,8 @@ begin
   CaptainHealthDefinitions[10].InfectionChance := 1.0;
   CaptainHealthDefinitions[10].Locations := [0, 1, 2];
   CaptainHealthDefinitions[10].Duration := 122;
-  CaptainHealthDefinitions[11].AllowedLocationOwners := [0, 1, 2, 3, 4];
-  CaptainHealthDefinitions[11].AllowedOwners := [3];
+  CaptainHealthDefinitions[11].AllowedLocationOwners := [oiMaloc..oiGaal];
+  CaptainHealthDefinitions[11].AllowedOwners := [oiFeyan];
   CaptainHealthDefinitions[11].AllowedRatingBands := [1, 2, 3, 4, 5];
   CaptainHealthDefinitions[11].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
   CaptainHealthDefinitions[11].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
@@ -2932,8 +2932,8 @@ begin
   CaptainHealthDefinitions[11].InfectionChance := 1.0;
   CaptainHealthDefinitions[11].Locations := [0, 1];
   CaptainHealthDefinitions[11].Duration := 164;
-  CaptainHealthDefinitions[12].AllowedLocationOwners := [0, 1, 2, 3, 4];
-  CaptainHealthDefinitions[12].AllowedOwners := [4];
+  CaptainHealthDefinitions[12].AllowedLocationOwners := [oiMaloc..oiGaal];
+  CaptainHealthDefinitions[12].AllowedOwners := [oiGaal];
   CaptainHealthDefinitions[12].AllowedRatingBands := [2, 3, 4, 5];
   CaptainHealthDefinitions[12].AllowedRanks := [2, 3, 4, 5, 6, 7];
   CaptainHealthDefinitions[12].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
@@ -2942,8 +2942,8 @@ begin
   CaptainHealthDefinitions[12].InfectionChance := 0.5;
   CaptainHealthDefinitions[12].Locations := [0, 1, 2];
   CaptainHealthDefinitions[12].Duration := 88;
-  RadiationHealthDefinitions[1].AllowedLocationOwners := [0, 1, 2, 3, 4];
-  RadiationHealthDefinitions[1].AllowedOwners := [0, 1, 2, 3, 4];
+  RadiationHealthDefinitions[1].AllowedLocationOwners := [oiMaloc..oiGaal];
+  RadiationHealthDefinitions[1].AllowedOwners := [oiMaloc..oiGaal];
   RadiationHealthDefinitions[1].AllowedRatingBands := [1, 2, 3, 4, 5];
   RadiationHealthDefinitions[1].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
   RadiationHealthDefinitions[1].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
@@ -2952,8 +2952,8 @@ begin
   RadiationHealthDefinitions[1].InfectionChance := 0.0;
   RadiationHealthDefinitions[1].Locations := [];
   RadiationHealthDefinitions[1].Duration := 30;
-  CaptainHealthDefinitions[13].AllowedLocationOwners := [0, 1, 2, 3, 4];
-  CaptainHealthDefinitions[13].AllowedOwners := [0, 1, 2, 3, 4];
+  CaptainHealthDefinitions[13].AllowedLocationOwners := [oiMaloc..oiGaal];
+  CaptainHealthDefinitions[13].AllowedOwners := [oiMaloc..oiGaal];
   CaptainHealthDefinitions[13].AllowedRatingBands := [1, 2, 3, 4, 5];
   CaptainHealthDefinitions[13].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
   CaptainHealthDefinitions[13].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
@@ -2961,8 +2961,8 @@ begin
   CaptainHealthDefinitions[13].DevelopmentRate := 1.0;
   CaptainHealthDefinitions[13].InfectionChance := 0.9;
   CaptainHealthDefinitions[13].Duration := 140;
-  CaptainHealthDefinitions[14].AllowedLocationOwners := [0, 1, 2, 3, 4];
-  CaptainHealthDefinitions[14].AllowedOwners := [0, 1, 2, 3, 4];
+  CaptainHealthDefinitions[14].AllowedLocationOwners := [oiMaloc..oiGaal];
+  CaptainHealthDefinitions[14].AllowedOwners := [oiMaloc..oiGaal];
   CaptainHealthDefinitions[14].AllowedRatingBands := [1, 2, 3, 4, 5];
   CaptainHealthDefinitions[14].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
   CaptainHealthDefinitions[14].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
@@ -2970,8 +2970,8 @@ begin
   CaptainHealthDefinitions[14].DevelopmentRate := 1.0;
   CaptainHealthDefinitions[14].InfectionChance := 0.9;
   CaptainHealthDefinitions[14].Duration := 130;
-  CaptainHealthDefinitions[15].AllowedLocationOwners := [0, 1, 2, 3, 4];
-  CaptainHealthDefinitions[15].AllowedOwners := [0, 1, 2, 3, 4];
+  CaptainHealthDefinitions[15].AllowedLocationOwners := [oiMaloc..oiGaal];
+  CaptainHealthDefinitions[15].AllowedOwners := [oiMaloc..oiGaal];
   CaptainHealthDefinitions[15].AllowedRatingBands := [1, 2, 3, 4, 5];
   CaptainHealthDefinitions[15].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
   CaptainHealthDefinitions[15].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
@@ -2979,8 +2979,8 @@ begin
   CaptainHealthDefinitions[15].DevelopmentRate := 1.0;
   CaptainHealthDefinitions[15].InfectionChance := 0.8;
   CaptainHealthDefinitions[15].Duration := 140;
-  CaptainHealthDefinitions[16].AllowedLocationOwners := [0, 1, 2, 3, 4];
-  CaptainHealthDefinitions[16].AllowedOwners := [0, 1, 2, 3, 4];
+  CaptainHealthDefinitions[16].AllowedLocationOwners := [oiMaloc..oiGaal];
+  CaptainHealthDefinitions[16].AllowedOwners := [oiMaloc..oiGaal];
   CaptainHealthDefinitions[16].AllowedRatingBands := [1, 2, 3, 4, 5];
   CaptainHealthDefinitions[16].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
   CaptainHealthDefinitions[16].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
@@ -2988,8 +2988,8 @@ begin
   CaptainHealthDefinitions[16].DevelopmentRate := 1.0;
   CaptainHealthDefinitions[16].InfectionChance := 0.4;
   CaptainHealthDefinitions[16].Duration := 120;
-  CaptainHealthDefinitions[17].AllowedLocationOwners := [0, 1, 2, 3, 4];
-  CaptainHealthDefinitions[17].AllowedOwners := [0, 1, 2, 3, 4];
+  CaptainHealthDefinitions[17].AllowedLocationOwners := [oiMaloc..oiGaal];
+  CaptainHealthDefinitions[17].AllowedOwners := [oiMaloc..oiGaal];
   CaptainHealthDefinitions[17].AllowedRatingBands := [1, 2, 3, 4, 5];
   CaptainHealthDefinitions[17].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
   CaptainHealthDefinitions[17].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
@@ -2997,8 +2997,8 @@ begin
   CaptainHealthDefinitions[17].DevelopmentRate := 1.0;
   CaptainHealthDefinitions[17].InfectionChance := 0.9;
   CaptainHealthDefinitions[17].Duration := 90;
-  CaptainHealthDefinitions[18].AllowedLocationOwners := [0, 1, 2, 3, 4];
-  CaptainHealthDefinitions[18].AllowedOwners := [0, 1, 2, 3, 4];
+  CaptainHealthDefinitions[18].AllowedLocationOwners := [oiMaloc..oiGaal];
+  CaptainHealthDefinitions[18].AllowedOwners := [oiMaloc..oiGaal];
   CaptainHealthDefinitions[18].AllowedRatingBands := [1, 2, 3, 4, 5];
   CaptainHealthDefinitions[18].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
   CaptainHealthDefinitions[18].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
@@ -3006,8 +3006,8 @@ begin
   CaptainHealthDefinitions[18].DevelopmentRate := 1.0;
   CaptainHealthDefinitions[18].InfectionChance := 0.8;
   CaptainHealthDefinitions[18].Duration := 300;
-  CaptainHealthDefinitions[19].AllowedLocationOwners := [0, 1, 2, 3, 4];
-  CaptainHealthDefinitions[19].AllowedOwners := [0, 1, 2, 3, 4];
+  CaptainHealthDefinitions[19].AllowedLocationOwners := [oiMaloc..oiGaal];
+  CaptainHealthDefinitions[19].AllowedOwners := [oiMaloc..oiGaal];
   CaptainHealthDefinitions[19].AllowedRatingBands := [1, 2, 3, 4, 5];
   CaptainHealthDefinitions[19].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
   CaptainHealthDefinitions[19].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
@@ -3015,8 +3015,8 @@ begin
   CaptainHealthDefinitions[19].DevelopmentRate := 1.0;
   CaptainHealthDefinitions[19].InfectionChance := 0.9;
   CaptainHealthDefinitions[19].Duration := 140;
-  CaptainHealthDefinitions[20].AllowedLocationOwners := [0, 1, 2, 3, 4];
-  CaptainHealthDefinitions[20].AllowedOwners := [0, 1, 2, 3, 4];
+  CaptainHealthDefinitions[20].AllowedLocationOwners := [oiMaloc..oiGaal];
+  CaptainHealthDefinitions[20].AllowedOwners := [oiMaloc..oiGaal];
   CaptainHealthDefinitions[20].AllowedRatingBands := [1, 2, 3, 4, 5];
   CaptainHealthDefinitions[20].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
   CaptainHealthDefinitions[20].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
@@ -3024,8 +3024,8 @@ begin
   CaptainHealthDefinitions[20].DevelopmentRate := 1.0;
   CaptainHealthDefinitions[20].InfectionChance := 0.9;
   CaptainHealthDefinitions[20].Duration := 200;
-  CaptainHealthDefinitions[21].AllowedLocationOwners := [0, 1, 2, 3, 4];
-  CaptainHealthDefinitions[21].AllowedOwners := [0, 1, 2, 3, 4];
+  CaptainHealthDefinitions[21].AllowedLocationOwners := [oiMaloc..oiGaal];
+  CaptainHealthDefinitions[21].AllowedOwners := [oiMaloc..oiGaal];
   CaptainHealthDefinitions[21].AllowedRatingBands := [1, 2, 3, 4, 5];
   CaptainHealthDefinitions[21].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
   CaptainHealthDefinitions[21].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
@@ -3033,8 +3033,8 @@ begin
   CaptainHealthDefinitions[21].DevelopmentRate := 1.0;
   CaptainHealthDefinitions[21].InfectionChance := 0.9;
   CaptainHealthDefinitions[21].Duration := 200;
-  CaptainHealthDefinitions[22].AllowedLocationOwners := [0, 1, 2, 3, 4];
-  CaptainHealthDefinitions[22].AllowedOwners := [0, 1, 2, 3, 4];
+  CaptainHealthDefinitions[22].AllowedLocationOwners := [oiMaloc..oiGaal];
+  CaptainHealthDefinitions[22].AllowedOwners := [oiMaloc..oiGaal];
   CaptainHealthDefinitions[22].AllowedRatingBands := [1, 2, 3, 4, 5];
   CaptainHealthDefinitions[22].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
   CaptainHealthDefinitions[22].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
@@ -3042,8 +3042,8 @@ begin
   CaptainHealthDefinitions[22].DevelopmentRate := 1.0;
   CaptainHealthDefinitions[22].InfectionChance := 0.25;
   CaptainHealthDefinitions[22].Duration := 150;
-  CaptainHealthDefinitions[23].AllowedLocationOwners := [0, 1, 2, 3, 4];
-  CaptainHealthDefinitions[23].AllowedOwners := [0, 1, 2, 3, 4];
+  CaptainHealthDefinitions[23].AllowedLocationOwners := [oiMaloc..oiGaal];
+  CaptainHealthDefinitions[23].AllowedOwners := [oiMaloc..oiGaal];
   CaptainHealthDefinitions[23].AllowedRatingBands := [1, 2, 3, 4, 5];
   CaptainHealthDefinitions[23].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
   CaptainHealthDefinitions[23].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
@@ -3051,8 +3051,8 @@ begin
   CaptainHealthDefinitions[23].DevelopmentRate := 1.0;
   CaptainHealthDefinitions[23].InfectionChance := 0.15;
   CaptainHealthDefinitions[23].Duration := 90;
-  CaptainHealthDefinitions[24].AllowedLocationOwners := [0, 1, 2, 3, 4];
-  CaptainHealthDefinitions[24].AllowedOwners := [0, 1, 2, 3, 4];
+  CaptainHealthDefinitions[24].AllowedLocationOwners := [oiMaloc..oiGaal];
+  CaptainHealthDefinitions[24].AllowedOwners := [oiMaloc..oiGaal];
   CaptainHealthDefinitions[24].AllowedRatingBands := [1, 2, 3, 4, 5];
   CaptainHealthDefinitions[24].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
   CaptainHealthDefinitions[24].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
@@ -3164,14 +3164,14 @@ begin
       Text := ReadHullSeriesParam('Text');
       Value := ReadHullSeriesParam('Race');
       AllowedOwners := [];
-      if (Value = '') or (Value = 'Any') then AllowedOwners := [0..4]
+      if (Value = '') or (Value = 'Any') then AllowedOwners := [oiMaloc..oiGaal]
       else
       begin
-        if Pos('Maloc', Value) > 0 then Include(AllowedOwners, 0);
-        if Pos('Peleng', Value) > 0 then Include(AllowedOwners, 1);
-        if Pos('People', Value) > 0 then Include(AllowedOwners, 2);
-        if Pos('Fei', Value) > 0 then Include(AllowedOwners, 3);
-        if Pos('Gaal', Value) > 0 then Include(AllowedOwners, 4);
+        if Pos('Maloc', Value) > 0 then Include(AllowedOwners, oiMaloc);
+        if Pos('Peleng', Value) > 0 then Include(AllowedOwners, oiPeleng);
+        if Pos('People', Value) > 0 then Include(AllowedOwners, oiHuman);
+        if Pos('Fei', Value) > 0 then Include(AllowedOwners, oiFeyan);
+        if Pos('Gaal', Value) > 0 then Include(AllowedOwners, oiGaal);
       end;
       Value := ReadHullSeriesParam('ShipType');
       AllowedShipTypes := [];

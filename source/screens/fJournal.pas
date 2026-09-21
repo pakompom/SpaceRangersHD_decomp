@@ -410,7 +410,7 @@ end;
 { @routine $562E10 TfJournal_HasTelevisionReception }
 function TfJournal.HasTelevisionReception: Boolean;
 begin
-  Result := (GetPlayer <> nil) and (GetPlayer.IsDockedToShip or (GetPlayer.IsOnPlanet and (GetPlayer.CurrentPlanet.OwnerId in [Ord(oiMaloc)..Ord(oiGaal), Ord(oiPirate)])));
+  Result := (GetPlayer <> nil) and (GetPlayer.IsDockedToShip or (GetPlayer.IsOnPlanet and (GetPlayer.CurrentPlanet.OwnerId in [oiMaloc..oiGaal, oiPirate])));
 end;
 { @end $562E10 }
 
@@ -517,7 +517,7 @@ begin
       if not MusicInPlanetEnabled then MusicManager.RequestFadeOut
       else if GetPlayer.IsOnPlanet then
       begin
-        if GetPlayer.CurrentPlanet.OwnerId = Byte(oiPirate) then
+        if GetPlayer.CurrentPlanet.OwnerId = oiPirate then
         begin
           if not GetPlayer.CurrentPlanet.IsMainPiratePlanet then
             MusicManager.PlayCategory('Nation.' + OwnerInfo[RaceToOwner(GetPlayer.CurrentPlanet.RaceId)].InternalName + 'Pirate')

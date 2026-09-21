@@ -904,7 +904,7 @@ var
 begin
   if High(av) <> 1 then raise Exception.Create('Error.Script SF_GetOwner');
   Ship := TShip(av[1].GetDword);
-  Owner := Ship.OwnerId;
+  Owner := Ord(Ship.OwnerId);
   av[0].SetInt(Owner);
 end;
 { @end $606630 }
@@ -913,12 +913,12 @@ end;
 procedure SF_GiveReward(av: array of TVarEC; code: TCodeEC);
 var
   Ship: TShip;
-  Owner, Kind: Byte;
+  Owner: TOwnerId; Kind: Byte;
   Award: Integer;
 begin
   if High(av) < 3 then raise Exception.Create('Error.Script SF_GiveReward');
   Ship := TShip(av[1].GetDword);
-  Owner := av[2].GetInt;
+  Owner := TOwnerId(av[2].GetInt);
   Kind := av[3].GetInt;
   Award := (Ship as TNormalShip).SelectAward(Owner, [Kind], [stKling..Ord(rstCustomStation)]);
   if Award = AwardNotFound then RaiseWideMessage('Error RewardNumber=255');
@@ -1242,17 +1242,17 @@ end;
 { @routine $607840 SF_GalaxyMoney }
 procedure SF_GalaxyMoney(av: array of TVarEC; code: TCodeEC);
 var
-  ScaleIndex: Byte;
+  Owner: TOwnerId;
 begin
   if High(av) < 1 then raise Exception.Create('Error.Script SF_GalaxyMoney');
-  ScaleIndex := 2;
-  if High(av) >= 2 then ScaleIndex := av[2].GetInt;
+  Owner := oiHuman;
+  if High(av) >= 2 then Owner := TOwnerId(av[2].GetInt);
   case av[1].GetInt of
-    0: av[0].SetInt(Galaxy.ComputeScaledMiniMoney(ScaleIndex));
-    1: av[0].SetInt(Galaxy.ComputeScaledSmallMoney(ScaleIndex));
-    2: av[0].SetInt(Galaxy.ComputeScaledAverageMoney(ScaleIndex));
-    3: av[0].SetInt(Galaxy.ComputeScaledBigMoney(ScaleIndex));
-    4: av[0].SetInt(Galaxy.ComputeScaledHugeMoney(ScaleIndex));
+    0: av[0].SetInt(Galaxy.ComputeScaledMiniMoney(Owner));
+    1: av[0].SetInt(Galaxy.ComputeScaledSmallMoney(Owner));
+    2: av[0].SetInt(Galaxy.ComputeScaledAverageMoney(Owner));
+    3: av[0].SetInt(Galaxy.ComputeScaledBigMoney(Owner));
+    4: av[0].SetInt(Galaxy.ComputeScaledHugeMoney(Owner));
   else raise Exception.Create('Error.Script SF_GalaxyMoney');
   end;
 end;
@@ -1811,14 +1811,14 @@ begin
     for J := 0 to FilterCount - 1 do
     begin
       Filter := ExtractDelimitedPartW(Filters, J, ',');
-      if (Filter = 'NotMaloc') and (Planet.OwnerId = Byte(oiMaloc)) then Break;
-      if (Filter = 'NotPeleng') and (Planet.OwnerId = Byte(oiPeleng)) then Break;
-      if (Filter = 'NotPeople') and (Planet.OwnerId = Byte(oiHuman)) then Break;
-      if (Filter = 'NotFei') and (Planet.OwnerId = Byte(oiFeyan)) then Break;
-      if (Filter = 'NotGaal') and (Planet.OwnerId = Byte(oiGaal)) then Break;
-      if (Filter = 'NotKling') and (Planet.OwnerId = Byte(oiDominator)) then Break;
-      if (Filter = 'NotPirateClan') and (Planet.OwnerId = Byte(oiPirate)) then Break;
-      if (Filter = 'NotNone') and (Planet.OwnerId = Byte(oiUninhabited)) then Break;
+      if (Filter = 'NotMaloc') and (Planet.OwnerId = oiMaloc) then Break;
+      if (Filter = 'NotPeleng') and (Planet.OwnerId = oiPeleng) then Break;
+      if (Filter = 'NotPeople') and (Planet.OwnerId = oiHuman) then Break;
+      if (Filter = 'NotFei') and (Planet.OwnerId = oiFeyan) then Break;
+      if (Filter = 'NotGaal') and (Planet.OwnerId = oiGaal) then Break;
+      if (Filter = 'NotKling') and (Planet.OwnerId = oiDominator) then Break;
+      if (Filter = 'NotPirateClan') and (Planet.OwnerId = oiPirate) then Break;
+      if (Filter = 'NotNone') and (Planet.OwnerId = oiUninhabited) then Break;
     end;
     if J >= FilterCount then Planets.Add(Planet);
   end;
@@ -2838,7 +2838,7 @@ begin
     for PlanetIndex := 0 to PlanetCount - 1 do
     begin
       Planet := TPlanet(Star.Planets[PlanetIndex]);
-      if Planet.OwnerId <> Byte(oiUninhabited) then Planet.ChangeRelationToRanger(Ranger, Amount);
+      if Planet.OwnerId <> oiUninhabited then Planet.ChangeRelationToRanger(Ranger, Amount);
     end;
   end;
 end;
@@ -3523,9 +3523,9 @@ begin
   Kind := av[2].GetInt;
   Planet := TPlanet(av[3].GetDword);
   av[0].SetInt(0);
-  if (Kind in [Ord(t_Food)..Ord(t_Narcotics)]) and (Planet.OwnerId <> Byte(oiPirate)) then
+  if (Kind in [Ord(t_Food)..Ord(t_Narcotics)]) and (Planet.OwnerId <> oiPirate) then
   begin
-    if not GoodsLegalOnPlanet[Kind, Planet.RaceId, Ord(Planet.Government)] then av[0].SetInt(1)
+    if not GoodsLegalOnPlanet[Kind, Planet.RaceId, Planet.Government] then av[0].SetInt(1)
     else if (Kind in [Ord(t_Food), Ord(t_Medicine)]) and Ship.IsHealthEffectActive(12) then av[0].SetInt(1);
   end;
 end;
@@ -4787,7 +4787,7 @@ begin
   for Index := 0 to Ship.CurrentStar.Planets.Count - 1 do
   begin
     Planet := TPlanet(Ship.CurrentStar.Planets[Index]);
-    if Planet.OwnerId <> Byte(oiUninhabited) then
+    if Planet.OwnerId <> oiUninhabited then
     begin
       Distance := PointDistanceSquared(Ship.Position, Planet.GetPosition);
       if Distance < BestDistance then
@@ -5465,7 +5465,7 @@ begin
   if High(av) < 1 then raise Exception.Create('Error.Script ShipInPirateClan');
   Ship := TShip(av[1].GetDword);
   if GetPlayer = Ship then av[0].SetDword(Ord(GetPlayer.PirateClanReal))
-  else av[0].SetDword(Ord(Ship.OwnerId = Byte(oiPirate)));
+  else av[0].SetDword(Ord(Ship.OwnerId = oiPirate));
 end;
 { @end $618BE8 }
 
@@ -5476,7 +5476,7 @@ var
 begin
   if High(av) < 1 then raise Exception.Create('Error.Script ShipOnSidePirateClan');
   Ship := TShip(av[1].GetDword);
-  av[0].SetDword(Ord(Ship.OwnerId = Byte(oiPirate)));
+  av[0].SetDword(Ord(Ship.OwnerId = oiPirate));
 end;
 { @end $618CA0 }
 
@@ -5650,8 +5650,8 @@ begin
   if Obj is TScriptItem then Item := TScriptItem(Obj).Item;
   if Item <> nil then
   begin
-    Value := Item.OwnerId;
-    if High(av) > 1 then Item.OwnerId := av[2].GetDword;
+    Value := Ord(Item.OwnerId);
+    if High(av) > 1 then Item.OwnerId := TOwnerId(av[2].GetDword);
   end;
   av[0].SetDword(Value);
 end;
@@ -6072,7 +6072,7 @@ end;
 procedure SF_CreateHull(av: array of TVarEC; code: TCodeEC);
 var
   Hull: THull;
-  HullType, Owner: Byte;
+  HullType: Byte; Owner: TOwnerId;
   Level, Capacity, Series: Integer;
   PirateBuilt: Boolean;
 begin
@@ -6080,7 +6080,7 @@ begin
   HullType := av[1].GetDword;
   Capacity := av[2].GetInt;
   Level := av[3].GetInt;
-  Owner := av[4].GetDword;
+  Owner := TOwnerId(av[4].GetDword);
   Series := -1;
   PirateBuilt := False;
   if High(av) > 4 then Series := av[5].GetInt;
@@ -6096,14 +6096,14 @@ procedure SF_CreateEquipment(av: array of TVarEC; code: TCodeEC);
 var
   Item: TEquipment;
   Kind: TItemType;
-  Owner: Byte;
+  Owner: TOwnerId;
   Weight, Level: Integer;
 begin
   if High(av) < 4 then raise Exception.Create('Error.Script CreateEquipment');
   Kind := TItemType(av[1].GetDword);
   Weight := av[2].GetInt;
   Level := av[3].GetInt;
-  Owner := av[4].GetDword;
+  Owner := TOwnerId(av[4].GetDword);
   if Kind = t_Cistern then
   begin
     Item := TCistern.Create;
@@ -6119,11 +6119,11 @@ procedure SF_CreateArt(av: array of TVarEC; code: TCodeEC);
 var
   Item: TArtefact;
   Kind: TItemType;
-  Owner: Byte;
+  Owner: TOwnerId;
 begin
   if High(av) < 2 then raise Exception.Create('Error.Script CreateArt');
   Kind := TItemType(av[1].GetDword);
-  Owner := av[2].GetDword;
+  Owner := TOwnerId(av[2].GetDword);
   Item := CreateConfiguredArtefactByItemType(Kind, Owner);
   av[0].SetDword(Cardinal(Item));
 end;
@@ -6133,7 +6133,7 @@ end;
 procedure SF_CreateCustomWeapon(av: array of TVarEC; code: TCodeEC);
 var
   Item: TWeapon;
-  Owner: Byte;
+  Owner: TOwnerId;
   Weight, Level: Integer;
   Info: PWeaponInfo;
 begin
@@ -6141,7 +6141,7 @@ begin
   Info := Galaxy.RequireCustomWeaponInfo(av[1].GetString);
   Weight := av[2].GetInt;
   Level := av[3].GetInt;
-  Owner := av[4].GetDword;
+  Owner := TOwnerId(av[4].GetDword);
   Item := CreateGeneratedWeapon(Info, Weight, Byte(Level), Owner);
   av[0].SetDword(Cardinal(Item));
 end;
@@ -6152,14 +6152,14 @@ procedure SF_CreateCustomArt(av: array of TVarEC; code: TCodeEC);
 var
   Item: TArtefactCustom;
   ConfigName: WideString;
-  Owner: Byte;
+  Owner: TOwnerId;
   Weight, Cost: Integer;
 begin
   if High(av) < 4 then raise Exception.Create('Error.Script CreateCustomArt');
   ConfigName := av[1].GetString;
   Weight := av[2].GetInt;
   Cost := av[3].GetInt;
-  Owner := av[4].GetDword;
+  Owner := TOwnerId(av[4].GetDword);
   Item := TArtefactCustom.Create;
   Item.ConfigBlockName := ConfigName;
   Item.LoadConfig(True);
@@ -6294,11 +6294,11 @@ end;
 procedure SF_CreateZond(av: array of TVarEC; code: TCodeEC);
 var
   Item: TSatellite;
-  Owner, Kind: Byte;
+  Owner: TOwnerId; Kind: Byte;
 begin
   if High(av) < 2 then raise Exception.Create('Error.Script CreateZond');
   Kind := av[1].GetDword;
-  Owner := av[2].GetDword;
+  Owner := TOwnerId(av[2].GetDword);
   Item := TSatellite.Create;
   Item.InitGenerated(Kind, Owner, NextRandomIntRange(1, 10000, Galaxy.RandomState));
   if High(av) > 4 then
@@ -6356,12 +6356,12 @@ var
 begin
   if High(av) < 1 then raise Exception.Create('Error.Script ShipJoinsClan');
   Ship := TShip(av[1].GetDword);
-  if (Ship.TypeId = stPirate) and (Ship.OwnerId <> Byte(oiPirate)) then
+  if (Ship.TypeId = stPirate) and (Ship.OwnerId <> oiPirate) then
   begin
     Inc(Galaxy.PirateClanCount);
     Dec(Galaxy.PirateCount);
   end;
-  Ship.OwnerId := Byte(oiPirate);
+  Ship.OwnerId := oiPirate;
   if GetPlayer = Ship then GetPlayer.PirateClanReal := True;
 end;
 { @end $61BD74 }
@@ -7509,12 +7509,12 @@ begin
   Ship := TShip(av[1].GetDword);
   if Ship <> nil then
   begin
-    av[0].SetInt(Ship.OwnerId);
+    av[0].SetInt(Ord(Ship.OwnerId));
     if High(av) > 1 then
     begin
-      WasPirateClan := (Ship.TypeId = stPirate) and (Ship.OwnerId = Byte(oiPirate));
-      Ship.OwnerId := av[2].GetInt;
-      IsPirateClan := (Ship.TypeId = stPirate) and (Ship.OwnerId = Byte(oiPirate));
+      WasPirateClan := (Ship.TypeId = stPirate) and (Ship.OwnerId = oiPirate);
+      Ship.OwnerId := TOwnerId(av[2].GetInt);
+      IsPirateClan := (Ship.TypeId = stPirate) and (Ship.OwnerId = oiPirate);
       if WasPirateClan and not IsPirateClan then
       begin
         Dec(Galaxy.PirateClanCount);
@@ -7540,8 +7540,8 @@ begin
   Ship := TShip(av[1].GetDword);
   if Ship <> nil then
   begin
-    av[0].SetInt(Ship.PilotRace);
-    if High(av) > 1 then Ship.PilotRace := av[2].GetInt;
+    av[0].SetInt(Ord(Ship.PilotRace));
+    if High(av) > 1 then Ship.PilotRace := TOwnerId(av[2].GetInt);
   end
   else av[0].SetInt(-1);
 end;
@@ -8582,10 +8582,10 @@ begin
   Planet := TPlanet(av[1].GetDword);
   if Planet <> nil then
   begin
-    av[0].SetInt(Planet.OwnerId);
+    av[0].SetInt(Ord(Planet.OwnerId));
     if High(av) > 1 then
     begin
-      Planet.OwnerId := av[2].GetInt;
+      Planet.OwnerId := TOwnerId(av[2].GetInt);
       Planet.UpdateOwnerFlags;
     end;
   end;
@@ -8601,8 +8601,8 @@ begin
   Planet := TPlanet(av[1].GetDword);
   if Planet <> nil then
   begin
-    av[0].SetInt(Planet.RaceId);
-    if High(av) > 1 then Planet.RaceId := av[2].GetInt;
+    av[0].SetInt(Ord(Planet.RaceId));
+    if High(av) > 1 then Planet.RaceId := TOwnerId(av[2].GetInt);
   end;
 end;
 { @end $623CD4 }
@@ -9253,8 +9253,8 @@ begin
   if High(av) < 1 then raise Exception.Create('Error.Script CreateQuestItem');
   Item := TUselessItem.Create;
   Item.Init(av[1].GetString, dsBlazer, 0, False);
-  if High(av) = 1 then Item.OwnerId := Byte(oiUninhabited)
-  else if av[2].GetInt >= 0 then Item.OwnerId := av[2].GetInt;
+  if High(av) = 1 then Item.OwnerId := oiUninhabited
+  else if av[2].GetInt >= 0 then Item.OwnerId := TOwnerId(av[2].GetInt);
   av[0].SetDword(Cardinal(Item));
 end;
 { @end $626300 }
@@ -9982,7 +9982,7 @@ begin
   for J := 0 to Star.Ships.Count - 1 do
   begin
     Ship := TShip(Star.Ships[J]);
-    if ((Ship.CurrentPlanet = nil) or (Ship.CurrentPlanet.OwnerId <> Byte(oiUninhabited))) and (Ship.CurrentStanding in Standings) then
+    if ((Ship.CurrentPlanet = nil) or (Ship.CurrentPlanet.OwnerId <> oiUninhabited)) and (Ship.CurrentStanding in Standings) then
     begin
       av[0].SetInt(1);
       Exit;
@@ -10344,7 +10344,7 @@ begin
   if not MicroModuleTemplates[av[1].GetInt].SpecialOnly then raise Exception.Create('Error.Script CreateEquipmentWithSpecial - not special');
   Mask := MicroModuleTemplates[av[1].GetInt].AllowedItemTypes;
   Kind := PickRandomItemTypeFromSeed(Mask, Galaxy.RandomState);
-  if High(av) > 3 then Item := CreateGeneratedEquipment(TItemType(Kind), av[2].GetInt, av[3].GetInt, av[4].GetInt)
+  if High(av) > 3 then Item := CreateGeneratedEquipment(TItemType(Kind), av[2].GetInt, av[3].GetInt, TOwnerId(av[4].GetInt))
   else Item := TEquipment(CreateDefaultItemByType(TItemType(Kind)));
   ApplySpecialMicroModule(av[1].GetInt, Item);
   av[0].SetDword(Cardinal(Item));
@@ -10630,7 +10630,7 @@ begin
   MinimumId := av[2].GetDword;
   if (High(av) > 2) and (av[3].GetDword <> 0) then Word(Mask) := av[3].GetDword else Mask := [stKling..stWarrior, Ord(rstRangerCenter)..Ord(rstCustomStation)];
   // Parsed by the native routine but never consulted.
-  if (High(av) > 3) and (av[4].GetDword <> 0) then Byte(OwnerMask) := av[4].GetDword else OwnerMask := [Ord(oiMaloc)..Ord(oiPirate)];
+  if (High(av) > 3) and (av[4].GetDword <> 0) then Byte(OwnerMask) := av[4].GetDword else OwnerMask := [oiMaloc..oiPirate];
   IncludeScripted := False;
   if (High(av) > 4) and (av[5].GetInt <> 0) then IncludeScripted := True;
   if High(av) > 5 then
@@ -10930,18 +10930,18 @@ end;
 
 { @routine $62CE0C SF_StarListToPlanetList }
 procedure SF_StarListToPlanetList(av: array of TVarEC; code: TCodeEC);
-var I, J, Priority, Count, EnemyDistance: Integer; Score, Penalty: Double; Star: TStar; Planet, BestPlanet: TPlanet; Temp: TVarEC; ScorePtr: PDouble; Scores: TList; Weights: array[0..4] of Integer;
+var I, J, Priority, Count, EnemyDistance: Integer; Score, Penalty: Double; Star: TStar; Planet, BestPlanet: TPlanet; Temp: TVarEC; ScorePtr: PDouble; Scores: TList; Weights: array[oiMaloc..oiGaal] of Integer;
 begin
   if High(av) < 6 then raise Exception.Create('Error.Script StarListToPlanetList');
   if av[1].RealVType <> vkArray then raise Exception.Create('Error.Script StarListToPlanetList - not array');
   if (High(av) > 6) and (av[7].RealVType <> vkArray) then raise Exception.Create('Error.Script StarListToPlanetList - not array');
   Penalty := 0;
   if High(av) > 7 then Penalty := av[8].GetInt / 100;
-  Weights[0] := av[2].GetInt;
-  Weights[1] := av[3].GetInt;
-  Weights[2] := av[4].GetInt;
-  Weights[3] := av[5].GetInt;
-  Weights[4] := av[6].GetInt;
+  Weights[oiMaloc] := av[2].GetInt;
+  Weights[oiPeleng] := av[3].GetInt;
+  Weights[oiHuman] := av[4].GetInt;
+  Weights[oiFeyan] := av[5].GetInt;
+  Weights[oiGaal] := av[6].GetInt;
   Count := av[1].GetArray.Count;
   for I := Count - 1 downto 0 do
   begin
@@ -10951,7 +10951,7 @@ begin
     for J := 0 to Star.Planets.Count - 1 do
     begin
       Planet := TPlanet(Star.Planets[J]);
-      if (Planet.OwnerId in [Ord(oiMaloc)..Ord(oiGaal)]) and (Weights[Planet.OwnerId] > Priority) then
+      if (Planet.OwnerId in [oiMaloc..oiGaal]) and (Weights[Planet.OwnerId] > Priority) then
       begin
         BestPlanet := Planet;
         Priority := Weights[Planet.OwnerId];
@@ -11615,7 +11615,7 @@ begin
       for J := 0 to Star.Planets.Count - 1 do
       begin
         Planet := TPlanet(Star.Planets[J]);
-        if Planet.OwnerId <> Byte(oiUninhabited) then
+        if Planet.OwnerId <> oiUninhabited then
         begin
           CalcValue;
           MaxScore := Max(Score, MaxScore);
@@ -11633,7 +11633,7 @@ begin
       for J := 0 to Star.Planets.Count - 1 do
       begin
         Planet := TPlanet(Star.Planets[J]);
-        if Planet.OwnerId <> Byte(oiUninhabited) then
+        if Planet.OwnerId <> oiUninhabited then
         begin
           CalcValue;
           if (BestPlanet = nil) or (Abs(Score - TargetScore) < BestDistance) then
@@ -11680,7 +11680,7 @@ begin
       Planet := TPlanet(Star.Planets[J]);
       if Integer(Planet.OwnerId) < 5 then
       begin
-        Score := Detour * Weights[Planet.OwnerId] / 100;
+        Score := Detour * Weights[Ord(Planet.OwnerId)] / 100;
         if High(av) > 10 then
           for K := 0 to av[10].GetArray.Count - 1 do
             if (TPlanet(av[10].GetArray.GetItem(K).GetDword) = Planet) or

@@ -138,7 +138,7 @@ end;
 
 { @routine $6C7DEC TfGov_InitializeLayout }
 procedure TfGov.InitializeLayout;
-var HalfWidth, ChoiceGrowth: Integer; Owner: Byte;
+var HalfWidth, ChoiceGrowth: Integer; Owner: TOwnerId;
   // @nested $6C79B8 LayoutPortrait
   procedure LayoutPortrait(Name: WideString; Screen: TMessageLoopGI); // @addr $6C79B8 @calls "0x6C7F28" @note "Nested in TfGov.InitializeLayout; captures half-width and Self."
   var I, PortraitX, PortraitY, TableY, Bottom, DeltaX, DeltaY: Integer; Panel: TObjectGI;
@@ -198,7 +198,7 @@ begin
       UseHdPortrait := True;
       UseClassicPortrait := UseTablesForGov;
     end;
-    for Owner := 0 to 7 do LayoutPortrait('Gov' + OwnerInfo[Owner].InternalName, Self);
+    for Owner := oiMaloc to oiPirate do LayoutPortrait('Gov' + OwnerInfo[Owner].InternalName, Self);
     with FindByNameRecursive('PanelTalk') do
     begin
       HalfWidth := Min(Max(ExtraScreenHeight, 0), 250) div 3;
@@ -254,7 +254,7 @@ end;
 { @routine $6C84B0 TfGov_OnOpen }
 procedure TfGov.OnOpen;
 var
-  Owner: Byte;
+  Owner: TOwnerId;
   MapIndex, Money, ExperienceAwarded: Integer;
   Text, WinText, LossText, TerronName: WideString;
   Event: TGalaxyEvent;
@@ -275,7 +275,7 @@ begin
     (GetByName('PM_EndTurn') as TGraphButtonGI).UpCallback := EndTurnClicked;
     (GetByName('PM_Ship') as TGraphButtonGI).UpCallback := ShipClicked;
     if GetPlayer.CurrentPlanet.IsMainPiratePlanet then SoundSection := 0
-    else SoundSection := GetPlayer.CurrentPlanet.RaceId + 1;
+    else SoundSection := Ord(GetPlayer.CurrentPlanet.RaceId) + 1;
     Stage := 2;
     if GetPlayer.CurrentPlanet <> TemporaryShopPlanet then
     begin
@@ -297,12 +297,12 @@ begin
     end;
     if GetPlayer.PendingDockDialogue = 1 then GetPlayer.PendingDockDialogue := 0;
     Stage := 4;
-    for Owner := 0 to 7 do
+    for Owner := oiMaloc to oiPirate do
     begin
       Portrait := FindControlByPath('Gov' + OwnerInfo[Owner].InternalName);
       if Portrait <> nil then Portrait.SetActive(False);
     end;
-    if GetPlayer.CurrentPlanet.IsMainPiratePlanet and (GetPlayer.CurrentPlanet.OwnerId = Byte(oiPirate)) then
+    if GetPlayer.CurrentPlanet.IsMainPiratePlanet and (GetPlayer.CurrentPlanet.OwnerId = oiPirate) then
       PortraitPanel := GetByName('GovPirateClan')
     else PortraitPanel := GetByName('Gov' + OwnerInfo[RaceToOwner(GetPlayer.CurrentPlanet.RaceId)].InternalName);
     PortraitPanel.SetActive(True);
@@ -310,13 +310,13 @@ begin
     begin
       if FindByNameRecursive('Table2') <> nil then
       begin
-        FindByNameRecursive('Table').SetActive((GetPlayer.CurrentPlanet.OwnerId <> Byte(oiPirate)) and UseHdPortrait and UseClassicPortrait);
-        FindByNameRecursive('Table2').SetActive((GetPlayer.CurrentPlanet.OwnerId = Byte(oiPirate)) and UseHdPortrait and UseClassicPortrait);
+        FindByNameRecursive('Table').SetActive((GetPlayer.CurrentPlanet.OwnerId <> oiPirate) and UseHdPortrait and UseClassicPortrait);
+        FindByNameRecursive('Table2').SetActive((GetPlayer.CurrentPlanet.OwnerId = oiPirate) and UseHdPortrait and UseClassicPortrait);
       end
       else FindByNameRecursive('Table').SetActive(UseHdPortrait and UseClassicPortrait);
       with FindByNameRecursive('BG') as TImageGI do
         if GetPlayer.CurrentPlanet.IsMainPiratePlanet then SetImagePath('GI,Bm.Gov.PirateBG')
-        else if GetPlayer.CurrentPlanet.OwnerId = Byte(oiPirate) then
+        else if GetPlayer.CurrentPlanet.OwnerId = oiPirate then
           SetImagePath('GI,Bm.Gov.' + OwnerInfo[RaceToOwner(GetPlayer.CurrentPlanet.RaceId)].InternalName + 'PirateBG')
         else SetImagePath('GI,Bm.Gov.2' + OwnerInfo[RaceToOwner(GetPlayer.CurrentPlanet.RaceId)].InternalName + 'BGi');
       if UseHdPortrait and not UseClassicPortrait then
@@ -371,7 +371,7 @@ begin
       ExpandLocalizedTextMarkupAndPrefixLines(Text);
       Text := WideString(IntToStr(GovernmentBattleDifficulty)) + Text;
       Text := WideString(IntToStr(Min(Galaxy.GetDifficultyTierIndex, 3) + 1)) + Text;
-      Text := WideString(IntToStr(GetPlayer.CurrentPlanet.RaceId + 1)) + Text;
+      Text := WideString(IntToStr(Ord(GetPlayer.CurrentPlanet.RaceId) + 1)) + Text;
       WinText := RobotMapDefinitions[MapIndex].RobotsWin;
       ReplaceTextToken(WinText, '<Star>', GetPlayer.CurrentStar.Name, '<color=255,240,100>');
       ReplaceTextToken(WinText, '<Planet>', GetPlayer.CurrentPlanet.Name, '<color=255,240,100>');
@@ -432,7 +432,7 @@ begin
     begin
       Stage := 13;
       MapIndex := FindRobotMapById(PlanetBattleMapId);
-      Money := RoundAndTruncateToTens(Min(GetPlayer.Wealth * 0.03, Min(Galaxy.ComputeScaledAverageMoney(2) * 7, Galaxy.ComputeScaledHugeMoney(2) * 1.5)));
+      Money := RoundAndTruncateToTens(Min(GetPlayer.Wealth * 0.03, Min(Galaxy.ComputeScaledAverageMoney(oiHuman) * 7, Galaxy.ComputeScaledHugeMoney(oiHuman) * 1.5)));
       Money := Round(Money * GalaxyDifficultyTuning[Galaxy.DifficultyLevels[5]].ArcadeRewardScale);
       case GovernmentBattleDifficulty of
         1: Money := RoundAndTruncateToTens(Money * 0.5);
@@ -471,7 +471,7 @@ begin
     begin
       Stage := 17;
       MapIndex := FindRobotMapById(PlanetBattleMapId);
-      Money := RoundAndTruncateToTens(Max(GetPlayer.Wealth * 0.03, Galaxy.ComputeScaledBigMoney(2)));
+      Money := RoundAndTruncateToTens(Max(GetPlayer.Wealth * 0.03, Galaxy.ComputeScaledBigMoney(oiHuman)));
       Money := Round(Money * GalaxyDifficultyTuning[Galaxy.DifficultyLevels[5]].QuestMoneyFactor);
       if GetPlayer.IsHealthEffectActive(23) then
         Money := Round(SeededRandomFloatRange((Integer(GetPlayer.CurrentPlanet.GenerationSeed) + Galaxy.CurrentTurn) div 33, 1.3, 2.3) * Money);
@@ -954,7 +954,7 @@ procedure TfGov.SelectMusic;
 begin
   if (ActiveLoadPanel <> nil) and (ActiveLoadPanel.GetShutterDirection = -1) then Exit;
   if not MusicInPlanetEnabled then MusicManager.RequestFadeOut
-  else if GetPlayer.CurrentPlanet.OwnerId = Byte(oiPirate) then
+  else if GetPlayer.CurrentPlanet.OwnerId = oiPirate then
   begin
     if not GetPlayer.CurrentPlanet.IsMainPiratePlanet then
       MusicManager.PlayCategory('Nation.' + OwnerInfo[RaceToOwner(GetPlayer.CurrentPlanet.RaceId)].InternalName + 'Pirate')
@@ -973,7 +973,7 @@ begin
   begin
     if GetPlayer.InPrison then
     begin
-      if GetPlayer.CurrentPlanet.OwnerId <> Byte(oiPirate) then
+      if GetPlayer.CurrentPlanet.OwnerId <> oiPirate then
         DialogText := LocalizedColorText('FormGov.Prison.GovAfterPrison')
       else DialogText := LocalizedColorText('FormGov.PirateClanPrison.GovAfterPrison');
       GetPlayer.InPrison := False;
@@ -995,10 +995,10 @@ begin
     else if (GetPlayer.CurrentPlanet.GetRelationLevelToShip(GetPlayer) = rlHostile) and
       not HasPendingScriptRequests and not GetPlayer.CurrentPlanet.IsMainPiratePlanet then
     begin
-      if GetPlayer.OwnerId <> Byte(oiPirate) then DialogText := LocalizedColorText('FormGov.Prison.GovBeforePrison')
+      if GetPlayer.OwnerId <> oiPirate then DialogText := LocalizedColorText('FormGov.Prison.GovBeforePrison')
       else DialogText := LocalizedColorText('FormGov.PirateClanPrison.GovBeforePrison');
       ClearDialogChoices;
-      if GetPlayer.CurrentPlanet.OwnerId <> Byte(oiPirate) then
+      if GetPlayer.CurrentPlanet.OwnerId <> oiPirate then
         AddChoice(LocalizedColorText('FormGov.Prison.PlayerGoToPrison'), 0, EnterPrison)
       else AddChoice(LocalizedColorText('FormGov.PirateClanPrison.PlayerGoToPrison'), 0, EnterPrison);
     end
@@ -1318,7 +1318,7 @@ begin
   GetPlayer.InPrison := True;
   GetPlayer.CurrentSystemKills.Normal := 0;
   GetPlayer.CurrentSystemKills.Pirate := 0;
-  if GetPlayer.CurrentPlanet.OwnerId = Byte(oiPirate) then
+  if GetPlayer.CurrentPlanet.OwnerId = oiPirate then
   begin
     if MainPiratePlanet <> nil then MainPiratePlanet.ChangeRelationToRanger(GetPlayer, 80)
     else GetPlayer.CurrentPlanet.ChangeRelationToRanger(GetPlayer, 80);
@@ -1349,7 +1349,7 @@ end;
 { @routine $6CD5C4 TfGov_ContinueAfterPrison }
 procedure TfGov.ContinueAfterPrison(Action: Integer);
 begin
-  if GetPlayer.CurrentPlanet.OwnerId <> Byte(oiPirate) then
+  if GetPlayer.CurrentPlanet.OwnerId <> oiPirate then
     DialogText := LocalizedColorText('FormGov.Prison.GovAfterPrisonNext')
   else DialogText := LocalizedColorText('FormGov.PirateClanPrison.GovAfterPrisonNext');
   BuildGovernmentChoices(True);
@@ -1360,7 +1360,7 @@ end;
 procedure TfGov.ShowBribeOffer(Action: Integer);
 var Cost, RelationDeficit: Integer; Text: WideString;
 begin
-  if GetPlayer.CurrentPlanet.OwnerId <> Byte(oiPirate) then
+  if GetPlayer.CurrentPlanet.OwnerId <> oiPirate then
   begin
     RelationDeficit := 100 - GetPlayer.CurrentPlanet.RelationToShip(GetPlayer);
     Cost := Round(RemapClamped(RelationDeficit, 0, 100, 1, 5) * (Galaxy.AverageRangerCapital div 100) *
@@ -1391,7 +1391,7 @@ begin
       OwnerInfo[GetPlayer.CurrentPlanet.OwnerId].FuelPriceFactor);
   GetPlayer.SetMoney(GetPlayer.Money - Cost);
   SoundManager.PlaySound('Sound.Sell');
-  if GetPlayer.CurrentPlanet.OwnerId = Byte(oiPirate) then
+  if GetPlayer.CurrentPlanet.OwnerId = oiPirate then
   begin
     if MainPiratePlanet <> nil then MainPiratePlanet.ChangeRelationToRanger(GetPlayer, 100)
     else GetPlayer.CurrentPlanet.ChangeRelationToRanger(GetPlayer, 100);
@@ -1420,7 +1420,7 @@ end;
 procedure TfGov.RequestQuest(Action: Integer);
 var ResponseText: WideString; MapIndex, MapId: Integer;
 begin
-  if (GetPlayer.CurrentPlanet.CurrentStar.Battle <> 0) and (GetPlayer.CurrentPlanet.OwnerId = Byte(oiPirate)) then
+  if (GetPlayer.CurrentPlanet.CurrentStar.Battle <> 0) and (GetPlayer.CurrentPlanet.OwnerId = oiPirate) then
   begin
     DialogText := PickLocalizedTextVariant('FormGov.DontQuest.WarInSystemPirate', (Galaxy.CurrentTurn div 5) * GetPlayer.CurrentPlanet.GenerationSeed + 118123);
     BuildGovernmentChoices(True);
@@ -1698,7 +1698,7 @@ end;
 procedure TfGov.ChoosePrisonInsteadOfBattle(Action: Integer);
 begin
   GetPlayer.CurrentPlanet.SetRelationLevelToRanger(GetPlayer, rlHostile);
-  if GetPlayer.CurrentPlanet.OwnerId = Byte(oiPirate) then
+  if GetPlayer.CurrentPlanet.OwnerId = oiPirate then
   begin
     DialogText := PickLocalizedTextVariant('FormGov.PlanetBattle.GovBeforePrisonPirateClan', (Galaxy.CurrentTurn div 10) * GetPlayer.CurrentPlanet.GenerationSeed + 81263);
     ClearDialogChoices;

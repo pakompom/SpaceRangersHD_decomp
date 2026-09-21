@@ -1393,7 +1393,7 @@ begin
         begin
           if GetPlayer <> TalkShip.PartnerShip then
           begin
-            if (TalkShip.OwnerId <> Byte(oiPirate)) or (TPirate(TalkShip).PirateType = 0) then
+            if (TalkShip.OwnerId <> oiPirate) or (TPirate(TalkShip).PirateType = 0) then
               AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Pirate.PlayerSend'), 0, ShowPiratePartnerOffer, 0);
             AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Trade.PlayerSend'), 0, ShowTrade, 0);
           end
@@ -1462,7 +1462,7 @@ begin
             TargetName := '';
             if GetPlayer.OrderTarget is TPlanet then
             begin
-              if (GetPlayer.OrderTarget as TPlanet).OwnerId in [Ord(oiMaloc)..Ord(oiGaal), Ord(oiPirate)] then
+              if (GetPlayer.OrderTarget as TPlanet).OwnerId in [oiMaloc..oiGaal, oiPirate] then
                 TargetName := (GetPlayer.OrderTarget as TPlanet).Name;
             end
             else if GetPlayer.OrderTarget is TRuins then
@@ -2711,7 +2711,7 @@ begin
   end
   else if (GetPlayer.GetMaxPiratePartners <= GetPlayer.PiratePartners.Count) or
     (GetPlayer.GetEffectiveSkillLevel(psLeadership) <= GetPlayer.CountWingmen) or
-    ((TalkShip is TPirate) and (TalkShip.OwnerId = Byte(oiPirate)) and ((TalkShip as TPirate).PirateRank > GetPlayer.PirateRank)) then
+    ((TalkShip is TPirate) and (TalkShip.OwnerId = oiPirate) and ((TalkShip as TPirate).PirateRank > GetPlayer.PirateRank)) then
   begin
     DialogText := FormatText1(TalkShip.LookupTalkText('Talk.Pirate.NeedPirate'), '<color=255,240,100>', '<Ranger>', GetPlayer.Name);
     BuildStandardChoices(True);
@@ -2781,7 +2781,7 @@ begin
     if ((TalkShip.OrderTarget <> Ship) or (TalkShip.Order <> soFollowShip) or (TalkShip.OrderStateData = FollowMode)) and
       (GetPlayer <> Ship) and (TalkShip <> Ship) and (GetPlayer <> Ship.PartnerShip) and Ship.InNormalSpace then
       if (RadarRangeSquared > PointDistanceSquared(GetPlayer.Position, Ship.Position)) and not (Ship.TypeId in [Ord(rstRangerCenter)..Ord(rstCustomStation)]) and
-        ((Ship.OwnerId <> Byte(oiDominator)) or ((TalkShip.OwnerId = Byte(oiPirate)) and (Galaxy.CoalitionDefeatedTurn <> 0))) then
+        ((Ship.OwnerId <> oiDominator) or ((TalkShip.OwnerId = oiPirate) and (Galaxy.CoalitionDefeatedTurn <> 0))) then
         AddChoice('- ' + Ship.GetFullName(' ') + GetLocalObjectLink(Ship, False), Integer(Ship), OrderPiratePartnerAttack, Integer(Ship));
   end;
   AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Pirate.Back'), 0, ShowGreeting, 0);
@@ -2872,8 +2872,8 @@ end;
 { @routine $6E1088 TfTalk_OrderPiratePartnerJump }
 procedure TfTalk.OrderPiratePartnerJump(Action: Integer);
 begin
-  if ((GetPlayer.OrderTarget as TStar).CountPlanetsByOwner(Ord(oiDominator)) > 0) and
-    ((TalkShip.OwnerId <> Byte(oiPirate)) or (Galaxy.CoalitionDefeatedTurn = 0)) then
+  if ((GetPlayer.OrderTarget as TStar).CountPlanetsByOwner(oiDominator) > 0) and
+    ((TalkShip.OwnerId <> oiPirate) or (Galaxy.CoalitionDefeatedTurn = 0)) then
   begin
     DialogText := FormatText1(TalkShip.LookupTalkText('Talk.Pirate.ComputerDisagreeFlyToStar'), '<color=255,240,100>', '<Star>',
       (GetPlayer.OrderTarget as TStar).Name);
@@ -3189,27 +3189,27 @@ procedure TfTalk.BuildMilitarySupportChoices;
 begin
   ClearChoices(True);
   case TalkShip.PilotRace of
-    Ord(oiMaloc):
+    oiMaloc:
       begin
         AddChoice('- ' + GetPlayer.LookupTalkText('Talk.MilitarySupport.PlayerSendRepairHull'), 0, ShowMilitaryHullRepair, 0);
         AddChoice('- ' + GetPlayer.LookupTalkText('Talk.MilitarySupport.PlayerSendGetBuff'), 0, ShowMilitaryBuff, 0);
       end;
-    Ord(oiPeleng):
+    oiPeleng:
       begin
         AddChoice('- ' + GetPlayer.LookupTalkText('Talk.MilitarySupport.PlayerSendRepairHull'), 0, ShowMilitaryHullRepair, 0);
         AddChoice('- ' + GetPlayer.LookupTalkText('Talk.MilitarySupport.PlayerSendSellRemains'), 0, ShowMilitaryRemains, 0);
       end;
-    Ord(oiHuman):
+    oiHuman:
       begin
         AddChoice('- ' + GetPlayer.LookupTalkText('Talk.MilitarySupport.PlayerSendSellRemains'), 0, ShowMilitaryRemains, 0);
         AddChoice('- ' + GetPlayer.LookupTalkText('Talk.MilitarySupport.PlayerSendGetBuff'), 0, ShowMilitaryBuff, 0);
       end;
-    Ord(oiFeyan):
+    oiFeyan:
       begin
         AddChoice('- ' + GetPlayer.LookupTalkText('Talk.MilitarySupport.PlayerSendRepairEq'), 0, ShowMilitaryEquipmentRepair, 0);
         AddChoice('- ' + GetPlayer.LookupTalkText('Talk.MilitarySupport.PlayerSendSellRemains'), 0, ShowMilitaryRemains, 0);
       end;
-    Ord(oiGaal):
+    oiGaal:
       begin
         AddChoice('- ' + GetPlayer.LookupTalkText('Talk.MilitarySupport.PlayerSendRepairEq'), 0, ShowMilitaryEquipmentRepair, 0);
         AddChoice('- ' + GetPlayer.LookupTalkText('Talk.MilitarySupport.PlayerSendGetBuff'), 0, ShowMilitaryBuff, 0);
@@ -3425,7 +3425,7 @@ begin
   for I := 1 to GetPlayer.Inventory.Count - 1 do
   begin
     Item := GetPlayer.Inventory[I];
-    if (Item.OwnerId = Byte(oiDominator)) and (Item is TUselessItem) and not IsMilitaryProtectedQuestItem(Item) then
+    if (Item.OwnerId = oiDominator) and (Item is TUselessItem) and not IsMilitaryProtectedQuestItem(Item) then
     begin
       Inc(Count);
       if (Galaxy.DominatorResearch[Ord(Item.DominatorSeries)].Progress < 100) and
@@ -3481,7 +3481,7 @@ begin
   for I := GetPlayer.Inventory.Count - 1 downto 1 do
   begin
     Item := GetPlayer.Inventory[I];
-    if (Item.OwnerId = Byte(oiDominator)) and (Item is TUselessItem) and not IsMilitaryProtectedQuestItem(Item) then
+    if (Item.OwnerId = oiDominator) and (Item is TUselessItem) and not IsMilitaryProtectedQuestItem(Item) then
     begin
       GetPlayer.Inventory.Delete(I);
       if (Galaxy.DominatorResearch[Ord(Item.DominatorSeries)].Progress < 100) and
@@ -3526,7 +3526,7 @@ begin
   for I := 1 to GetPlayer.Inventory.Count - 1 do
   begin
     Item := GetPlayer.Inventory[I];
-    if (Item.OwnerId = Byte(oiDominator)) and (Item is TUselessItem) and not IsMilitaryProtectedQuestItem(Item) then
+    if (Item.OwnerId = oiDominator) and (Item is TUselessItem) and not IsMilitaryProtectedQuestItem(Item) then
     begin
       Inc(Count);
       if (Galaxy.DominatorResearch[Ord(Item.DominatorSeries)].Progress < 100) and

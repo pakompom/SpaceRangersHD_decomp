@@ -151,7 +151,7 @@ type
     procedure PublishQuestStatus(Quest: PQuest; Outcome: Integer); // @addr 0x73C6F8 @note "Outcome: 0=active, positive=completed, negative=failed."
     procedure ProcessShipDestructionQuests(Ship: TShip); // @addr 0x73CDBC
     function ShouldKeepShipForQuests(Ship: TShip): Boolean; // @addr 0x73D5F0 @note "Player-only; pending history can also preserve unrelated ships."
-    function CountFailedQuests(OwnerId: Byte; QuestTypes: TQuestTypes): Integer; // @addr 0x7345F0 @note "Uses player history."
+    function CountFailedQuests(OwnerId: TOwnerId; QuestTypes: TQuestTypes): Integer; // @addr 0x7345F0 @note "Uses player history."
     procedure CheckQuestFailureAward(Quest: PQuest; QuestTypes: TQuestTypes); // @addr 0x734870
     function NeedsWealthCatchup: Boolean; // @addr 0x7283D0 @note "Either the absolute or relative career threshold can trigger catch-up."
     procedure AddTraderCareerActivity(Amount: Byte); // @addr 0x7291D0 @note "Saturates at 100."
@@ -369,7 +369,7 @@ begin
   if Length(GetName) = 0 then SelectName(LanguageDataConfig.GetBlock('ShipName'));
   ChameleonActive := False;
   GraphDominator := Galaxy.GraphDominatorSurfacesEnabled and not (Self is TPlayer);
-  CreateAndEquipHull(Round(HullBaseSize * EquipmentSizeFactors[5]), 1, RaceToOwner(PilotRace), SelectRandomHullSeries, HomePlanet.OwnerId = Byte(oiPirate));
+  CreateAndEquipHull(Round(HullBaseSize * EquipmentSizeFactors[5]), 1, RaceToOwner(PilotRace), SelectRandomHullSeries, HomePlanet.OwnerId = oiPirate);
   CreateAndEquipFuelTanks(Round(FuelTanksBaseSize * EquipmentSizeFactors[5]), 1, OwnerId);
   CreateAndEquipEngine(Round(EquipmentSizeFactors[NextRandomIntRange(1, 2, RandomState)] * EngineBaseSize), NextRandomIntRange(1, 2, RandomState), OwnerId);
   if GetSlotCountForItemType(Ord(t_CargoHook)) > 0 then CreateAndEquipCargoHook(CargoHookBaseSize, NextRandomIntRange(1, 2, RandomState), OwnerId);
@@ -634,7 +634,7 @@ begin
     if CurrentPlanet <> nil then
     begin
       Stage := 1;
-      if CurrentPlanet.OwnerId in [Ord(oiMaloc)..Ord(oiGaal), Ord(oiPirate)] then
+      if CurrentPlanet.OwnerId in [oiMaloc..oiGaal, oiPirate] then
       begin
         Stage := 2;
         TryTurnInQuests;
@@ -1067,16 +1067,16 @@ begin
   if (Money < 50000) and (NextRandomUnitFloat(RandomState) < 0.6) and
     (NextRandomFloatRange(0, 1, RandomState) > WealthInBestRanger) then
     case Round(GetPlayer.WealthInBestRanger * 100) of
-      0..20: SetMoney(Money + Galaxy.ComputeScaledAverageMoney(2));
-      21..40: SetMoney(Money + Galaxy.ComputeScaledAverageMoney(2));
-      41..60: SetMoney(Money + Galaxy.ComputeScaledAverageMoney(2));
-      61..90: SetMoney(Money + Galaxy.ComputeScaledBigMoney(2));
-      91..100: SetMoney(Money + Galaxy.ComputeScaledHugeMoney(2));
+      0..20: SetMoney(Money + Galaxy.ComputeScaledAverageMoney(oiHuman));
+      21..40: SetMoney(Money + Galaxy.ComputeScaledAverageMoney(oiHuman));
+      41..60: SetMoney(Money + Galaxy.ComputeScaledAverageMoney(oiHuman));
+      61..90: SetMoney(Money + Galaxy.ComputeScaledBigMoney(oiHuman));
+      91..100: SetMoney(Money + Galaxy.ComputeScaledHugeMoney(oiHuman));
     end;
   if ((NextRandomUnitFloat(RandomState) < 0.05) and (NeedsStrengthCatchup or (NextRandomUnitFloat(RandomState) < 0.3))) or
     (NextRandomUnitFloat(RandomState) < 0.01) then begin
     if (NextRandomFloatRange(0, 0.7, RandomState) > WealthInBestRanger) and (Money < 25000) then
-      SetMoney(Money + Galaxy.ComputeScaledBigMoney(2))
+      SetMoney(Money + Galaxy.ComputeScaledBigMoney(oiHuman))
     else if (NeedsStrengthCatchup and (NextRandomUnitFloat(RandomState) < 0.5)) or (NextRandomUnitFloat(RandomState) < 0.05) then
       ImproveRandomEquipment(True);
   end;
@@ -1379,7 +1379,7 @@ begin
   for I := 0 to PlanetQueue.Count - 1 do
   begin
     Planet := TPlanet(PlanetQueue[I]);
-    if Planet.OwnerId in [Ord(oiMaloc)..Ord(oiGaal), Ord(oiPirate)] then
+    if Planet.OwnerId in [oiMaloc..oiGaal, oiPirate] then
     begin
       Profit := 0;
       PurchaseProfit := 1;
@@ -1437,7 +1437,7 @@ begin
     for J := 0 to Star.Planets.Count - 1 do
     begin
       Planet := TPlanet(Star.Planets[J]);
-      if (Planet.OwnerId in [Ord(oiMaloc)..Ord(oiGaal), Ord(oiPirate)]) and CanQueueReachablePlanet(Planet) and (Planet <> LastDockedPlanet) then
+      if (Planet.OwnerId in [oiMaloc..oiGaal, oiPirate]) and CanQueueReachablePlanet(Planet) and (Planet <> LastDockedPlanet) then
         PlanetQueue.Add(Planet);
     end;
   end;
@@ -1447,7 +1447,7 @@ end;
 { @routine $72A3C8 TRanger_CanQueueReachablePlanet }
 function TRanger.CanQueueReachablePlanet(Planet: TPlanet): Boolean;
 begin
-  Result := (Planet.OwnerId <> Byte(oiDominator)) and (InFear or (Planet.GetRelationLevelToShip(Self) > rlHostile));
+  Result := (Planet.OwnerId <> oiDominator) and (InFear or (Planet.GetRelationLevelToShip(Self) > rlHostile));
 end;
 { @end $72A3C8 }
 
@@ -1636,7 +1636,7 @@ begin
   for I := 0 to CurrentStar.Planets.Count - 1 do
   begin
     Planet := TPlanet(CurrentStar.Planets[I]);
-    if CanQueueReachablePlanet(Planet) and (Planet.OwnerId in [Ord(oiMaloc)..Ord(oiGaal), Ord(oiPirate)]) then
+    if CanQueueReachablePlanet(Planet) and (Planet.OwnerId in [oiMaloc..oiGaal, oiPirate]) then
     begin
       Turns := EstimateTravelTurnsToObject(Planet);
       if BestTurns > Turns then
@@ -1708,7 +1708,7 @@ begin
   for I := 0 to CurrentStar.Planets.Count - 1 do
   begin
     Planet := TPlanet(CurrentStar.Planets[I]);
-    if (Planet <> LastDockedPlanet) and CanQueueReachablePlanet(Planet) and (Planet.OwnerId in [Ord(oiMaloc)..Ord(oiGaal), Ord(oiPirate)]) then
+    if (Planet <> LastDockedPlanet) and CanQueueReachablePlanet(Planet) and (Planet.OwnerId in [oiMaloc..oiGaal, oiPirate]) then
     begin
       Turns := EstimateTravelTurnsToObject(Planet);
       if BestTurns > Turns then
@@ -1909,7 +1909,7 @@ begin
           Result := OwnerRelations[RaceToOwner(PilotRace), RaceToOwner(Ship.PilotRace)]
         else
           Result := OwnerRelations[RaceToOwner(PilotRace), RaceToOwner(Ship.PilotRace)] shr 1;
-        if (Ship.OwnerId = Byte(oiPirate)) and (Galaxy.CoalitionDefeatedTurn = 0) then
+        if (Ship.OwnerId = oiPirate) and (Galaxy.CoalitionDefeatedTurn = 0) then
           if (Cardinal(Galaxy.GetFactionControlPercent(sfPirates)) * 2 > Cardinal(Galaxy.GetFactionControlPercent(sfCoalition)) * 3) and
             (Galaxy.GetFactionControlPercent(sfPirates) > 7) then Result := 10;
       end;
@@ -2018,7 +2018,7 @@ begin
           Threat := Threat + Ship.ChanceToWin(Self);
           Inc(AttackerCount);
         end
-        else if ((((Ship.EnemyShip = Self) and (Ship.OrderTarget = Self)) or (Ship.OwnerId = Byte(oiDominator))) and
+        else if ((((Ship.EnemyShip = Self) and (Ship.OrderTarget = Self)) or (Ship.OwnerId = oiDominator)) and
           (PointDistanceSquared(Position, Ship.Position) < 1440000)) or
           ((Ship.RelationToShip(Self) < 10) and (PointDistanceSquared(Position, Ship.Position) < 360000)) then
         begin
@@ -2111,7 +2111,7 @@ begin
     if (Star.ControlFaction <> sfDominators) or (Star.Battle <> 0) then
     begin
       Effect := RemapClamped(I, 0, LastStar, 0.5, 0.05) * Severity;
-      if (Victim.OwnerId = Byte(oiDominator)) or (Victim.OwnerId = Byte(oiPirate)) then Effect := 0.05 * Effect
+      if (Victim.OwnerId = oiDominator) or (Victim.OwnerId = oiPirate) then Effect := 0.05 * Effect
       else if GetPlayer <> Self then Effect := 0.1 * Effect;
       if Victim is TRuins then Effect := Effect * 3;
       if (Victim is TWarrior) and ((Victim as TWarrior).WarriorType = wtFlagship) then Effect := Effect * 2;
@@ -2133,7 +2133,7 @@ begin
   Effect := Severity * 0.5;
   if Victim.CurrentStar.ControlFaction <> sfPirates then Effect := Effect * 0.5;
   if Victim is TRuins then Effect := Effect * 3
-  else if Victim.OwnerId <> Byte(oiPirate) then Effect := 0.05 * Effect;
+  else if Victim.OwnerId <> oiPirate then Effect := 0.05 * Effect;
   if GetPlayer <> Self then Effect := 0.1 * Effect;
   if (Galaxy.CoalitionDefeatedTurn <> 0) and (CurrentStar.Battle = 0) then Effect := 0.2 * Effect;
   if MainPiratePlanet <> nil then
@@ -2197,7 +2197,7 @@ begin
     for I := 0 to CurrentStar.Ships.Count - 1 do
     begin
       Ship := TShip(CurrentStar.Ships[I]);
-      if (Ship.TypeId = stRanger) and Ship.InNormalSpace and ((Ship.OwnerId = Byte(oiPirate)) = (OwnerId = Byte(oiPirate))) and not Ship.HasScriptControl then
+      if (Ship.TypeId = stRanger) and Ship.InNormalSpace and ((Ship.OwnerId = oiPirate) = (OwnerId = oiPirate)) and not Ship.HasScriptControl then
       begin
         Ranger := Ship as TRanger;
         if (Ranger <> Self) and (Ranger.PartnerShip <> Self) and (Ranger <> EnemyShip) and (Ranger.EnemyShip <> Self) and
@@ -2306,7 +2306,7 @@ var
     PrisonTermRemaining := Round(RemapClamped(CareerStatus[rcPirate], 0.0, 100.0, 61.0, 140.0));
     CurrentSystemKills.Normal := 0;
     CurrentSystemKills.Pirate := 0;
-    if CurrentPlanet.OwnerId = Byte(oiPirate) then
+    if CurrentPlanet.OwnerId = oiPirate then
     begin
       if MainPiratePlanet <> nil then MainPiratePlanet.ChangeRelationToRanger(Self, 80)
       else CurrentPlanet.ChangeRelationToRanger(Self, 80);
@@ -2565,7 +2565,7 @@ begin
     for I := 0 to CurrentStar.Ships.Count - 1 do
     begin
       Ship := TShip(CurrentStar.Ships[I]);
-      if (Ship.OwnerId = Byte(oiDominator)) and Ship.InNormalSpace then
+      if (Ship.OwnerId = oiDominator) and Ship.InNormalSpace then
       begin
     for J := 1 to WeaponCount do
     begin
@@ -2720,7 +2720,7 @@ begin
       EnemyShip := Ship;
       Continue;
     end;
-    if Ship.OwnerId = Byte(oiDominator) then
+    if Ship.OwnerId = oiDominator then
     begin
       if (Chance < BestChance) and (NextRandomUnitFloat(RandomState) > 0.5) then Continue;
     end
@@ -2824,7 +2824,7 @@ var NextDemandTurn: Integer; LicenseFactor: Single;
       Event.AddData(TypeId);
       Event.AddData(CurrentStar.Id);
       Event.AddData(Id);
-      Event.AddData(OwnerId);
+      Event.AddData(Ord(OwnerId));
       Event.AddTextData(GetName);
       Event.AddTextData(TypeNameOverrideKey);
       if GetPlayer.PirateLicenseTicks > 0 then begin
@@ -2836,7 +2836,7 @@ var NextDemandTurn: Integer; LicenseFactor: Single;
     SetMoney(Money - DemandedAmount);
     OtherShip.TruceWithShip(Self);
     if OtherShip is TRanger then (OtherShip as TRanger).ApplyExtortionReputationPenalty(Self);
-    if OtherShip.OwnerId = Byte(oiPirate) then TNormalShip(OtherShip).AddPirateRankPoints(2);
+    if OtherShip.OwnerId = oiPirate then TNormalShip(OtherShip).AddPirateRankPoints(2);
   end;
 begin
   Result := False;
@@ -2900,14 +2900,14 @@ var Forced: Boolean; NextDemandTurn: Integer;
       Event.AddData(TypeId);
       Event.AddData(CurrentStar.Id);
       Event.AddData(Id);
-      Event.AddData(OwnerId);
+      Event.AddData(Ord(OwnerId));
       Event.AddTextData(GetName);
       Event.AddTextData(TypeNameOverrideKey);
     end;
     if GetPlayer = OtherShip then PlayerExtortionPactActive := True;
     OtherShip.OrderMove(Position, True);
     if OtherShip is TRanger then (OtherShip as TRanger).ApplyExtortionReputationPenalty(Self);
-    if OtherShip.OwnerId = Byte(oiPirate) then TNormalShip(OtherShip).AddPirateRankPoints(2);
+    if OtherShip.OwnerId = oiPirate then TNormalShip(OtherShip).AddPirateRankPoints(2);
   end;
 begin
   Result := False;
@@ -2953,7 +2953,7 @@ var Text: WideString; NextDemandTurn: Integer;
       Event.AddData(OtherShip.TypeId);
       Event.AddData(OtherShip.CurrentStar.Id);
       Event.AddData(OtherShip.Id);
-      Event.AddData(OtherShip.OwnerId);
+      Event.AddData(Ord(OtherShip.OwnerId));
       Event.AddTextData(OtherShip.GetName);
       Event.AddTextData(OtherShip.TypeNameOverrideKey);
       if (GetPlayer.PirateLicenseTicks > 0) and (OtherShip.TypeId <> stPirate) and
@@ -2963,8 +2963,8 @@ var Text: WideString; NextDemandTurn: Integer;
         if GetPlayer.PendingPirateLicenseCash > 100000000 then GetPlayer.PendingPirateLicenseCash := 100000000;
       end else SetMoney(Money + OfferedAmount);
     end else SetMoney(Money + OfferedAmount);
-    if (OwnerId = Byte(oiPirate)) and (OtherShip is TRanger) then AddPirateRankPoints(2);
-    if (OwnerId = Byte(oiPirate)) and (OtherShip is TTransport) then AddPirateRankPoints(1);
+    if (OwnerId = oiPirate) and (OtherShip is TRanger) then AddPirateRankPoints(2);
+    if (OwnerId = oiPirate) and (OtherShip is TTransport) then AddPirateRankPoints(1);
     TruceWithShip(OtherShip);
   end;
 begin
@@ -3006,7 +3006,7 @@ begin
   Result := False;
   if Requester is TRanger then begin
     if Target.TypeId in [stRanger..stPirate] then Target.ChangeRelationToRanger(Requester, -20);
-    if (Target.OwnerId = Byte(oiDominator)) or (Target.TypeId = stPirate) then (Requester as TRanger).AddWarriorCareerActivity(1)
+    if (Target.OwnerId = oiDominator) or (Target.TypeId = stPirate) then (Requester as TRanger).AddWarriorCareerActivity(1)
     else (Requester as TRanger).AddPirateCareerActivity(8);
   end;
   if (GetPlayer = Self) and not PlayerAutomaticControl then begin
@@ -3405,7 +3405,7 @@ end;
 { @routine $733DFC TRanger_RefreshCurrentStanding }
 procedure TRanger.RefreshCurrentStanding;
 var
-  Owner: Byte;
+  Owner: TOwnerId;
   StandingMode: Integer;
 begin
   StandingMode := GetScriptStandingOverrideMode;
@@ -3418,7 +3418,7 @@ begin
   if (GetPlayer <> nil) and (GetPlayer = PartnerShip) then Owner := GetPlayer.OwnerId
   else Owner := OwnerId;
   if IsInPrison then CurrentStanding := ssNeutral
-  else if (Owner <> 7) or (Galaxy.PirateWinType = 3) then
+  else if (Owner <> oiPirate) or (Galaxy.PirateWinType = 3) then
   begin
     if (CurrentSystemKills.Pirate > 0) or (CurrentStar.ControlFaction = sfCoalition) then CurrentStanding := ssCoalitionActive
     else CurrentStanding := ssCoalitionPassive;
@@ -3447,7 +3447,7 @@ begin
           not (Quest.ObjectiveTarget is TPlanet) or (GetPlayer.CurrentPlanet <> (Quest.ObjectiveTarget as TPlanet)) then
         begin
           PublishQuestStatus(Quest, -1);
-          if (Quest.Planet.OwnerId = Byte(oiPirate)) and (MainPiratePlanet <> nil) and (MainPiratePlanet.GetRelationLevelToShip(Self) > rlBad) then
+          if (Quest.Planet.OwnerId = oiPirate) and (MainPiratePlanet <> nil) and (MainPiratePlanet.GetRelationLevelToShip(Self) > rlBad) then
           begin
             if MainPiratePlanet.GetRelationLevelToShip(Self) = rlNormal then MainPiratePlanet.SetRelationLevelToRanger(Self, rlBad);
             if MainPiratePlanet.GetRelationLevelToShip(Self) = rlGood then MainPiratePlanet.SetRelationLevelToRanger(Self, rlNormal);
@@ -3503,7 +3503,7 @@ end;
 { @end $733EF0 }
 
 { @routine $7345F0 TRanger_CountFailedQuests }
-function TRanger.CountFailedQuests(OwnerId: Byte; QuestTypes: TQuestTypes): Integer;
+function TRanger.CountFailedQuests(OwnerId: TOwnerId; QuestTypes: TQuestTypes): Integer;
 var
   I: Integer;
   Quest: PPlayerOldQuest;
@@ -3523,7 +3523,7 @@ var
   FailureCount: Integer;
 
   // @nested $734670 GrantQuestFailureMilestoneAward
-  procedure GrantQuestFailureMilestoneAward(InitialThreshold, Multiplier, FailureCount: Integer; OwnerId: Byte); // @addr 0x734670 @ida "void __usercall $name(int InitialThreshold@<eax>, int Multiplier@<edx>, int FailureCount@<ecx>, unsigned __int8 OwnerId@<^0>, void *ParentFrame@<^4>);" @stackpop 0x4 @calls "0x7348D3" @note "Caller-popped static link; ranger -4. Awards only at an exact geometric milestone, checking at most ten thresholds."
+  procedure GrantQuestFailureMilestoneAward(InitialThreshold, Multiplier, FailureCount: Integer; OwnerId: TOwnerId); // @addr 0x734670 @ida "void __usercall $name(int InitialThreshold@<eax>, int Multiplier@<edx>, int FailureCount@<ecx>, unsigned __int8 OwnerId@<^0>, void *ParentFrame@<^4>);" @stackpop 0x4 @calls "0x7348D3" @note "Caller-popped static link; ranger -4. Awards only at an exact geometric milestone, checking at most ten thresholds."
   var
     I, Threshold, Award: Integer;
     Text: WideString;
@@ -3679,7 +3679,7 @@ var
     ArchiveQuest(Index);
     RefreshPlayerQuestTargets;
   if CurrentPlanet <> nil then CurrentPlanet.ChangeRelationToRanger(Self, Max(0, 70 - CurrentPlanet.RelationToShip(Self)));
-  if (CurrentPlanet.OwnerId = Byte(oiPirate)) and (MainPiratePlanet <> nil) then begin
+  if (CurrentPlanet.OwnerId = oiPirate) and (MainPiratePlanet <> nil) then begin
     if MainPiratePlanet.GetRelationLevelToShip(Self) = rlHostile then MainPiratePlanet.SetRelationLevelToRanger(Self, rlBad);
     if MainPiratePlanet.GetRelationLevelToShip(Self) = rlBad then MainPiratePlanet.SetRelationLevelToRanger(Self, rlNormal);
     if MainPiratePlanet.GetRelationLevelToShip(Self) = rlNormal then MainPiratePlanet.SetRelationLevelToRanger(Self, rlGood);
@@ -3704,12 +3704,12 @@ begin
         SetMoney(Money + Quest.RewardMoney);
         ResponseText := Quest.CompletionText;
         Factions := LookupLocalizedTextByKey('Quest.SendLetter.' + IntToStr(Quest.QuestNumber) + '.ToRace');
-        if (CurrentPlanet.OwnerId = Byte(oiPirate)) and (Pos('OnlyNonPirate', Factions) > 0) then begin
+        if (CurrentPlanet.OwnerId = oiPirate) and (Pos('OnlyNonPirate', Factions) > 0) then begin
           ResponseText := LookupLocalizedTextByKey('Quest.GenericCongratPirate');
           ReplaceTextToken(ResponseText, '<Player>', Name, '<color=255,240,100>');
           ReplaceTextToken(ResponseText, '<Money>', IntToStr(Quest.RewardMoney), '<color=255,240,100>');
         end;
-        if (CurrentPlanet.OwnerId <> Byte(oiPirate)) and (Pos('OnlyPirate', Factions) > 0) then begin
+        if (CurrentPlanet.OwnerId <> oiPirate) and (Pos('OnlyPirate', Factions) > 0) then begin
           ResponseText := LookupLocalizedTextByKey('Quest.GenericCongratCoal');
           ReplaceTextToken(ResponseText, '<Player>', Name, '<color=255,240,100>');
           ReplaceTextToken(ResponseText, '<Money>', IntToStr(Quest.RewardMoney), '<color=255,240,100>');
@@ -3722,12 +3722,12 @@ begin
         SetMoney(Money + Quest.RewardMoney);
         ResponseText := Quest.CompletionText;
         Factions := LookupLocalizedTextByKey('Quest.KillShip.' + IntToStr(Quest.QuestNumber) + '.PlanetRace');
-        if (CurrentPlanet.OwnerId = Byte(oiPirate)) and (Pos('OnlyNonPirate', Factions) > 0) then begin
+        if (CurrentPlanet.OwnerId = oiPirate) and (Pos('OnlyNonPirate', Factions) > 0) then begin
           ResponseText := LookupLocalizedTextByKey('Quest.GenericCongratPirate');
           ReplaceTextToken(ResponseText, '<Player>', Name, '<color=255,240,100>');
           ReplaceTextToken(ResponseText, '<Money>', IntToStr(Quest.RewardMoney), '<color=255,240,100>');
         end;
-        if (CurrentPlanet.OwnerId <> Byte(oiPirate)) and (Pos('OnlyPirate', Factions) > 0) then begin
+        if (CurrentPlanet.OwnerId <> oiPirate) and (Pos('OnlyPirate', Factions) > 0) then begin
           ResponseText := LookupLocalizedTextByKey('Quest.GenericCongratCoal');
           ReplaceTextToken(ResponseText, '<Player>', Name, '<color=255,240,100>');
           ReplaceTextToken(ResponseText, '<Money>', IntToStr(Quest.RewardMoney), '<color=255,240,100>');
@@ -3748,12 +3748,12 @@ begin
         SetMoney(Money + Quest.RewardMoney);
         ResponseText := Quest.CompletionText;
         Factions := LookupLocalizedTextByKey('Quest.DefSystem.' + IntToStr(Quest.QuestNumber) + '.PlanetRace');
-        if (CurrentPlanet.OwnerId = Byte(oiPirate)) and (Pos('OnlyNonPirate', Factions) > 0) then begin
+        if (CurrentPlanet.OwnerId = oiPirate) and (Pos('OnlyNonPirate', Factions) > 0) then begin
           ResponseText := LookupLocalizedTextByKey('Quest.GenericCongratPirate');
           ReplaceTextToken(ResponseText, '<Player>', Name, '<color=255,240,100>');
           ReplaceTextToken(ResponseText, '<Money>', IntToStr(Quest.RewardMoney), '<color=255,240,100>');
         end;
-        if (CurrentPlanet.OwnerId <> Byte(oiPirate)) and (Pos('OnlyPirate', Factions) > 0) then begin
+        if (CurrentPlanet.OwnerId <> oiPirate) and (Pos('OnlyPirate', Factions) > 0) then begin
           ResponseText := LookupLocalizedTextByKey('Quest.GenericCongratCoal');
           ReplaceTextToken(ResponseText, '<Player>', Name, '<color=255,240,100>');
           ReplaceTextToken(ResponseText, '<Money>', IntToStr(Quest.RewardMoney), '<color=255,240,100>');
@@ -3766,12 +3766,12 @@ begin
         SetMoney(Money + Quest.RewardMoney);
         if Quest.ObjectiveTarget = nil then ResponseText := Quest.SpecialCompletionText else ResponseText := Quest.CompletionText;
         Factions := LookupLocalizedTextByKey('Quest.DefShip.' + IntToStr(Quest.QuestNumber) + '.PlanetRace');
-        if (CurrentPlanet.OwnerId = Byte(oiPirate)) and (Pos('OnlyNonPirate', Factions) > 0) then begin
+        if (CurrentPlanet.OwnerId = oiPirate) and (Pos('OnlyNonPirate', Factions) > 0) then begin
           ResponseText := LookupLocalizedTextByKey('Quest.GenericCongratPirate');
           ReplaceTextToken(ResponseText, '<Player>', Name, '<color=255,240,100>');
           ReplaceTextToken(ResponseText, '<Money>', IntToStr(Quest.RewardMoney), '<color=255,240,100>');
         end;
-        if (CurrentPlanet.OwnerId <> Byte(oiPirate)) and (Pos('OnlyPirate', Factions) > 0) then begin
+        if (CurrentPlanet.OwnerId <> oiPirate) and (Pos('OnlyPirate', Factions) > 0) then begin
           ResponseText := LookupLocalizedTextByKey('Quest.GenericCongratCoal');
           ReplaceTextToken(ResponseText, '<Player>', Name, '<color=255,240,100>');
           ReplaceTextToken(ResponseText, '<Money>', IntToStr(Quest.RewardMoney), '<color=255,240,100>');
@@ -3865,7 +3865,7 @@ begin
       end;
       Inventory.Add(ModuleItem);
       if GetPlayer = Self then begin
-        if CurrentPlanet.OwnerId = Byte(oiPirate) then
+        if CurrentPlanet.OwnerId = oiPirate then
           ResponseText := ResponseText + #13#10 + LocalizedColorText('PlanetCongratulations.Quest.AddNodPirate') + #13#10 + ModuleItem.GetInfoText('<color=255,240,100>', nil)
         else ResponseText := ResponseText + #13#10 + LocalizedColorText('PlanetCongratulations.Quest.AddNod') + #13#10 + ModuleItem.GetInfoText('<color=255,240,100>', nil);
         ReplaceTextToken(ResponseText, '<Nod>', MicroModuleTemplates[ModuleIndex].Name, '<color=255,240,100>');
@@ -3960,7 +3960,7 @@ begin
       end;
       Inventory.Add(ModuleItem);
       if GetPlayer = Self then begin
-        if CurrentPlanet.OwnerId = Byte(oiPirate) then
+        if CurrentPlanet.OwnerId = oiPirate then
           Result := Result + #13#10 + LocalizedColorText('PlanetCongratulations.Quest.AddNodPirate') + #13#10 + ModuleItem.GetInfoText('<color=255,240,100>', nil)
         else Result := Result + #13#10 + LocalizedColorText('PlanetCongratulations.Quest.AddNod') + #13#10 + ModuleItem.GetInfoText('<color=255,240,100>', nil);
         ReplaceTextToken(Result, '<Nod>', MicroModuleTemplates[ModuleIndex].Name, '<color=255,240,100>');
@@ -3981,7 +3981,7 @@ begin
     ReplaceTextToken(Result, '<Points>', IntToStr(Amount), '');
   end else Result := '';
   if CurrentPlanet <> nil then CurrentPlanet.ChangeRelationToRanger(Self, Max(0, 70 - CurrentPlanet.RelationToShip(Self)));
-  if (CurrentPlanet.OwnerId = Byte(oiPirate)) and (MainPiratePlanet <> nil) then begin
+  if (CurrentPlanet.OwnerId = oiPirate) and (MainPiratePlanet <> nil) then begin
     if MainPiratePlanet.GetRelationLevelToShip(Self) = rlHostile then MainPiratePlanet.SetRelationLevelToRanger(Self, rlBad);
     if MainPiratePlanet.GetRelationLevelToShip(Self) = rlBad then MainPiratePlanet.SetRelationLevelToRanger(Self, rlNormal);
     if MainPiratePlanet.GetRelationLevelToShip(Self) = rlNormal then MainPiratePlanet.SetRelationLevelToRanger(Self, rlGood);
@@ -4020,7 +4020,7 @@ begin
     ResponseText := PickLocalizedTextVariant('FormGov.DontQuest.Distrust', CurrentPlanet.GenerationSeed * (Galaxy.CurrentTurn div 5) + 23236);
     Exit;
   end;
-  if (CurrentPlanet.CurrentStar.Battle <> 0) and (CurrentPlanet.OwnerId = Byte(oiPirate)) then begin
+  if (CurrentPlanet.CurrentStar.Battle <> 0) and (CurrentPlanet.OwnerId = oiPirate) then begin
     ResponseText := PickLocalizedTextVariant('FormGov.DontQuest.WarInSystemPirate', CurrentPlanet.GenerationSeed * (Galaxy.CurrentTurn div 5) + 118123);
     Exit;
   end;
@@ -4041,7 +4041,7 @@ begin
           if (Star.ShipTypeCounts[stKling] <= 0) and (Star.Constellation.Id <> 20) and Star.IsConstellationVisible then
             for J := 0 to Star.Planets.Count - 1 do begin
               Planet := Star.Planets[J];
-              if (Planet.OwnerId in [Ord(oiMaloc)..Ord(oiGaal), Ord(oiPirate)]) and not Planet.NoLanding and (Planet.GetRelationLevelToShip(Self) > rlHostile) then begin
+              if (Planet.OwnerId in [oiMaloc..oiGaal, oiPirate]) and not Planet.NoLanding and (Planet.GetRelationLevelToShip(Self) > rlHostile) then begin
                 MaximumQuest := StrToInt(AnsiString(LanguageDataConfig.GetParamByPathOrMarker('Quest.SendLetter.Count'))) - 1;
                 QuestNumber := SeededRandomIntRange(0, MaximumQuest, (Integer(CurrentPlanet.GenerationSeed) + Galaxy.CurrentTurn) div Interval);
                 Found := False;
@@ -4050,11 +4050,11 @@ begin
                   FromFactions := LookupLocalizedTextByKey('Quest.SendLetter.' + IntToStr(QuestNumber) + '.FromRace');
                   ToFactions := LookupLocalizedTextByKey('Quest.SendLetter.' + IntToStr(QuestNumber) + '.ToRace');
                   if (Pos(OwnerToSys(RaceToOwner(CurrentPlanet.RaceId)), FromFactions) > 0) and
-                    ((CurrentPlanet.OwnerId = Byte(oiPirate)) or (Pos('OnlyPirate', FromFactions) <= 0)) and
-                    ((CurrentPlanet.OwnerId <> Byte(oiPirate)) or (Pos('OnlyNonPirate', FromFactions) <= 0)) and
+                    ((CurrentPlanet.OwnerId = oiPirate) or (Pos('OnlyPirate', FromFactions) <= 0)) and
+                    ((CurrentPlanet.OwnerId <> oiPirate) or (Pos('OnlyNonPirate', FromFactions) <= 0)) and
                     (Pos(OwnerToSys(RaceToOwner(Planet.RaceId)), ToFactions) > 0) and
-                    ((Planet.OwnerId = Byte(oiPirate)) or (Pos('OnlyPirate', ToFactions) <= 0)) and
-                    ((Planet.OwnerId <> Byte(oiPirate)) or (Pos('OnlyNonPirate', ToFactions) <= 0)) and
+                    ((Planet.OwnerId = oiPirate) or (Pos('OnlyPirate', ToFactions) <= 0)) and
+                    ((Planet.OwnerId <> oiPirate) or (Pos('OnlyNonPirate', ToFactions) <= 0)) and
                     ((LanguageDataConfig.CountParamsByPath('Quest.SendLetter.' + IntToStr(QuestNumber) + '.PlayerRace') = 0) or
                     (Pos(OwnerToSys(RaceToOwner(GetPlayer.PilotRace)), LookupLocalizedTextByKey('Quest.SendLetter.' + IntToStr(QuestNumber) + '.PlayerRace')) > 0)) and (not Galaxy.HasPlayerQuestHistory(qtSendLetter, QuestNumber)) and MatchesCareerName(GetDominantCareer, LookupLocalizedTextByKey('Quest.SendLetter.' + IntToStr(QuestNumber) + '.Status')) then begin
                     Found := True;
@@ -4115,10 +4115,10 @@ begin
                 for K := 0 to MaximumQuest do begin
                   FromFactions := LookupLocalizedTextByKey('Quest.KillShip.' + IntToStr(QuestNumber) + '.PlanetRace');
                   if (Pos(OwnerToSys(RaceToOwner(CurrentPlanet.RaceId)), FromFactions) > 0) and
-                    ((CurrentPlanet.OwnerId = Byte(oiPirate)) or (Pos('OnlyPirate', FromFactions) <= 0)) and
-                    ((CurrentPlanet.OwnerId <> Byte(oiPirate)) or (Pos('OnlyNonPirate', FromFactions) <= 0)) and
+                    ((CurrentPlanet.OwnerId = oiPirate) or (Pos('OnlyPirate', FromFactions) <= 0)) and
+                    ((CurrentPlanet.OwnerId <> oiPirate) or (Pos('OnlyNonPirate', FromFactions) <= 0)) and
                     ((Pos(OwnerToSys(Target.OwnerId), LookupLocalizedTextByKey('Quest.KillShip.' + IntToStr(QuestNumber) + '.ShipRace')) > 0) or
-                      ((Target is TPirate) and ((Target as TPirate).PirateType = 0) and (Target.OwnerId = Byte(oiPirate)) and
+                      ((Target is TPirate) and ((Target as TPirate).PirateType = 0) and (Target.OwnerId = oiPirate) and
                        (Pos(OwnerToSys(RaceToOwner(Target.PilotRace)), LookupLocalizedTextByKey('Quest.KillShip.' + IntToStr(QuestNumber) + '.ShipRace')) > 0))) and
                     ((LanguageDataConfig.CountParamsByPath('Quest.KillShip.' + IntToStr(QuestNumber) + '.PlayerRace') = 0) or
                     (Pos(OwnerToSys(RaceToOwner(GetPlayer.PilotRace)), LookupLocalizedTextByKey('Quest.KillShip.' + IntToStr(QuestNumber) + '.PlayerRace')) > 0)) and (not Galaxy.HasPlayerQuestHistory(qtKillShip, QuestNumber)) and MatchesCareerName(GetDominantCareer, LookupLocalizedTextByKey('Quest.KillShip.' + IntToStr(QuestNumber) + '.Status')) then begin
@@ -4174,7 +4174,7 @@ begin
             (Star.Constellation.Id <> 20) and Star.IsConstellationVisible then
             for J := 0 to Star.Planets.Count - 1 do begin
               Planet := Star.Planets[J];
-              if not Planet.NoLanding and (Planet.OwnerId <> Byte(oiDominator)) and (Planet.TextQuestId <> -1) then
+              if not Planet.NoLanding and (Planet.OwnerId <> oiDominator) and (Planet.TextQuestId <> -1) then
                 if Planet.GetRelationLevelToShip(Self) > rlHostile then
                   if (LanguageDataConfig.GetBlockByPath('PlanetQuest.PlanetQuest').CountParams(IntToStr(Planet.TextQuestId)) > 0) and
                     ((ForcedPlanetQuestId < 0) or (Planet.TextQuestId = ForcedPlanetQuestId)) then begin
@@ -4193,26 +4193,26 @@ begin
                     repeat
                       if ForcedPlanetQuestId < 0 then begin
                         if not (
-                          (((CurrentPlanet.RaceId = Byte(oiMaloc)) and (qrMaloc in TextQuest.IssuerRaces)) or
-                          ((CurrentPlanet.RaceId = Byte(oiPeleng)) and (qrPeleng in TextQuest.IssuerRaces)) or
-                          ((CurrentPlanet.RaceId = Byte(oiHuman)) and (qrHuman in TextQuest.IssuerRaces)) or
-                          ((CurrentPlanet.RaceId = Byte(oiFeyan)) and (qrFeyan in TextQuest.IssuerRaces)) or
-                          ((CurrentPlanet.RaceId = Byte(oiGaal)) and (qrGaal in TextQuest.IssuerRaces))) and
-                          (((Planet.OwnerId = Byte(oiUninhabited)) and (qrUninhabited in TextQuest.TargetRaces)) or
-                          ((qrMaloc in TextQuest.TargetRaces) and (Planet.OwnerId = Byte(oiMaloc))) or
-                          ((qrPeleng in TextQuest.TargetRaces) and (Planet.OwnerId = Byte(oiPeleng))) or
-                          ((qrHuman in TextQuest.TargetRaces) and (Planet.OwnerId = Byte(oiHuman))) or
-                          ((qrFeyan in TextQuest.TargetRaces) and (Planet.OwnerId = Byte(oiFeyan))) or
-                          ((qrGaal in TextQuest.TargetRaces) and (Planet.OwnerId = Byte(oiGaal))) or ((TextQuest.TargetRaces = []) and (CurrentPlanet.OwnerId = Planet.OwnerId))) and
+                          (((CurrentPlanet.RaceId = oiMaloc) and (qrMaloc in TextQuest.IssuerRaces)) or
+                          ((CurrentPlanet.RaceId = oiPeleng) and (qrPeleng in TextQuest.IssuerRaces)) or
+                          ((CurrentPlanet.RaceId = oiHuman) and (qrHuman in TextQuest.IssuerRaces)) or
+                          ((CurrentPlanet.RaceId = oiFeyan) and (qrFeyan in TextQuest.IssuerRaces)) or
+                          ((CurrentPlanet.RaceId = oiGaal) and (qrGaal in TextQuest.IssuerRaces))) and
+                          (((Planet.OwnerId = oiUninhabited) and (qrUninhabited in TextQuest.TargetRaces)) or
+                          ((qrMaloc in TextQuest.TargetRaces) and (Planet.OwnerId = oiMaloc)) or
+                          ((qrPeleng in TextQuest.TargetRaces) and (Planet.OwnerId = oiPeleng)) or
+                          ((qrHuman in TextQuest.TargetRaces) and (Planet.OwnerId = oiHuman)) or
+                          ((qrFeyan in TextQuest.TargetRaces) and (Planet.OwnerId = oiFeyan)) or
+                          ((qrGaal in TextQuest.TargetRaces) and (Planet.OwnerId = oiGaal)) or ((TextQuest.TargetRaces = []) and (CurrentPlanet.OwnerId = Planet.OwnerId))) and
                           not Galaxy.HasPlayerQuestHistory(qtPlanetQuest, Planet.TextQuestId) and
                           (((qpcTrader in TextQuest.PlayerCareers) and (GetDominantCareer = rcTrader)) or
                           ((qpcPirate in TextQuest.PlayerCareers) and (GetDominantCareer = rcPirate)) or
                           ((qpcWarrior in TextQuest.PlayerCareers) and (GetDominantCareer = rcWarrior))) and
-                          (((qrMaloc in TextQuest.PlayerRaces) and (PilotRace = Byte(oiMaloc))) or
-                          ((qrPeleng in TextQuest.PlayerRaces) and (PilotRace = Byte(oiPeleng))) or
-                          ((qrHuman in TextQuest.PlayerRaces) and (PilotRace = Byte(oiHuman))) or
-                          ((qrFeyan in TextQuest.PlayerRaces) and (PilotRace = Byte(oiFeyan))) or
-                          ((qrGaal in TextQuest.PlayerRaces) and (PilotRace = Byte(oiGaal))))
+                          (((qrMaloc in TextQuest.PlayerRaces) and (PilotRace = oiMaloc)) or
+                          ((qrPeleng in TextQuest.PlayerRaces) and (PilotRace = oiPeleng)) or
+                          ((qrHuman in TextQuest.PlayerRaces) and (PilotRace = oiHuman)) or
+                          ((qrFeyan in TextQuest.PlayerRaces) and (PilotRace = oiFeyan)) or
+                          ((qrGaal in TextQuest.PlayerRaces) and (PilotRace = oiGaal)))
                         ) then Break;
                         if not (TextQuest.Difficulty < Galaxy.InterpolateSingleByTechLevel(0, 71) + 30 * Max(1, GalaxyDifficultyTuning[Galaxy.DifficultyLevels[5]].GoodsEventDurationFactor)) then Break;
                       end;
@@ -4252,8 +4252,8 @@ begin
             for K := 0 to MaximumQuest do begin
               FromFactions := LookupLocalizedTextByKey('Quest.DefSystem.' + IntToStr(QuestNumber) + '.PlanetRace');
               if (Pos(OwnerToSys(RaceToOwner(CurrentPlanet.RaceId)), FromFactions) > 0) and
-                ((CurrentPlanet.OwnerId = Byte(oiPirate)) or (Pos('OnlyPirate', FromFactions) <= 0)) and
-                ((CurrentPlanet.OwnerId <> Byte(oiPirate)) or (Pos('OnlyNonPirate', FromFactions) <= 0)) and ((LanguageDataConfig.CountParamsByPath('Quest.DefSystem.' + IntToStr(QuestNumber) + '.PlayerRace') = 0) or
+                ((CurrentPlanet.OwnerId = oiPirate) or (Pos('OnlyPirate', FromFactions) <= 0)) and
+                ((CurrentPlanet.OwnerId <> oiPirate) or (Pos('OnlyNonPirate', FromFactions) <= 0)) and ((LanguageDataConfig.CountParamsByPath('Quest.DefSystem.' + IntToStr(QuestNumber) + '.PlayerRace') = 0) or
                 (Pos(OwnerToSys(RaceToOwner(GetPlayer.PilotRace)), LookupLocalizedTextByKey('Quest.DefSystem.' + IntToStr(QuestNumber) + '.PlayerRace')) > 0)) and (not Galaxy.HasPlayerQuestHistory(qtDefendSystem, QuestNumber)) and MatchesCareerName(GetDominantCareer, LookupLocalizedTextByKey('Quest.DefSystem.' + IntToStr(QuestNumber) + '.Status')) then begin
                 Found := True;
                 Break;
@@ -4302,8 +4302,8 @@ begin
                     for K := 0 to MaximumQuest do begin
                       FromFactions := LookupLocalizedTextByKey('Quest.DefShip.' + IntToStr(QuestNumber) + '.PlanetRace');
                       if (Pos(OwnerToSys(RaceToOwner(CurrentPlanet.RaceId)), FromFactions) > 0) and
-                        ((CurrentPlanet.OwnerId = Byte(oiPirate)) or (Pos('OnlyPirate', FromFactions) <= 0)) and
-                        ((CurrentPlanet.OwnerId <> Byte(oiPirate)) or (Pos('OnlyNonPirate', FromFactions) <= 0)) and (not Galaxy.HasPlayerQuestHistory(qtDefendShip, QuestNumber)) and ((LanguageDataConfig.CountParamsByPath('Quest.DefShip.' + IntToStr(QuestNumber) + '.PlayerRace') = 0) or
+                        ((CurrentPlanet.OwnerId = oiPirate) or (Pos('OnlyPirate', FromFactions) <= 0)) and
+                        ((CurrentPlanet.OwnerId <> oiPirate) or (Pos('OnlyNonPirate', FromFactions) <= 0)) and (not Galaxy.HasPlayerQuestHistory(qtDefendShip, QuestNumber)) and ((LanguageDataConfig.CountParamsByPath('Quest.DefShip.' + IntToStr(QuestNumber) + '.PlayerRace') = 0) or
                         (Pos(OwnerToSys(RaceToOwner(GetPlayer.PilotRace)), LookupLocalizedTextByKey('Quest.DefShip.' + IntToStr(QuestNumber) + '.PlayerRace')) > 0)) and MatchesCareerName(GetDominantCareer, LookupLocalizedTextByKey('Quest.DefShip.' + IntToStr(QuestNumber) + '.Status')) then
                         if ((I = 0) and (LookupLocalizedTextByKey('Quest.DefShip.' + IntToStr(QuestNumber) + '.InThisSystem') = 'Yes')) or
                           ((I > 0) and (LookupLocalizedTextByKey('Quest.DefShip.' + IntToStr(QuestNumber) + '.InThisSystem') = 'No')) then begin
@@ -4519,7 +4519,7 @@ begin
           if (Quest.Planet <> nil) and (Quest.Planet.GetRelationLevelToShip(Self) > rlBad) then
             Quest.Planet.SetRelationLevelToRanger(Ranger, rlBad);
           { Native assumes Planet is present after the guarded update above. }
-          if (Quest.Planet.OwnerId = Byte(oiPirate)) and (MainPiratePlanet <> nil) and (MainPiratePlanet.GetRelationLevelToShip(Self) > rlBad) then
+          if (Quest.Planet.OwnerId = oiPirate) and (MainPiratePlanet <> nil) and (MainPiratePlanet.GetRelationLevelToShip(Self) > rlBad) then
           begin
             if MainPiratePlanet.GetRelationLevelToShip(Self) = rlNormal then MainPiratePlanet.SetRelationLevelToRanger(Self, rlBad);
             if MainPiratePlanet.GetRelationLevelToShip(Self) = rlGood then MainPiratePlanet.SetRelationLevelToRanger(Self, rlNormal);
@@ -4546,7 +4546,7 @@ begin
           if (Quest.Planet <> nil) and (Quest.Planet.GetRelationLevelToShip(Self) > rlBad) then
             Quest.Planet.SetRelationLevelToRanger(Ranger, rlBad);
           { Native assumes Planet is present after the guarded update above. }
-          if (Quest.Planet.OwnerId = Byte(oiPirate)) and (MainPiratePlanet <> nil) and (MainPiratePlanet.GetRelationLevelToShip(Self) > rlBad) then
+          if (Quest.Planet.OwnerId = oiPirate) and (MainPiratePlanet <> nil) and (MainPiratePlanet.GetRelationLevelToShip(Self) > rlBad) then
           begin
             if MainPiratePlanet.GetRelationLevelToShip(Self) = rlNormal then MainPiratePlanet.SetRelationLevelToRanger(Self, rlBad);
             if MainPiratePlanet.GetRelationLevelToShip(Self) = rlGood then MainPiratePlanet.SetRelationLevelToRanger(Self, rlNormal);

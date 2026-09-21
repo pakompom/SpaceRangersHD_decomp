@@ -652,7 +652,7 @@ begin
   if Cardinal(Image.GraphBuf.Width) >= Cardinal(Image.GraphBuf.Height) then
     Image.GraphBuf.RescaleRgba(Image.ClientSize.X,Round(Image.ClientSize.X / Cardinal(Image.GraphBuf.Width) * Cardinal(Image.GraphBuf.Height)),5)
   else Image.GraphBuf.RescaleRgba(Round(Image.ClientSize.Y / Cardinal(Image.GraphBuf.Height) * Cardinal(Image.GraphBuf.Width)),Image.ClientSize.Y,5);
-  if Planet.OwnerId <> Byte(oiUninhabited) then
+  if Planet.OwnerId <> oiUninhabited then
   begin
     Emblem := TImageGI.Create(InfoPanel);
     Emblem.SetPositionModeW(True);
@@ -728,8 +728,8 @@ var Size: Integer; Image: TGraphBufGI; Emblem: TImageGI; Caption: TLabelGI;
   begin
     if Star.Status.CustomFaction <> WideString('') then Result := Star.Status.CustomFaction
     else if Star.ControlFaction = sfDominators then Result := DominatorSeriesNames[Ord(Star.DominatorSeries)]
-    else if Star.ControlFaction = sfPirates then Result := OwnerInfo[Ord(oiPirate)].InternalName
-    else Result := OwnerInfo[Ord(oiUninhabited)].InternalName;
+    else if Star.ControlFaction = sfPirates then Result := OwnerInfo[oiPirate].InternalName
+    else Result := OwnerInfo[oiUninhabited].InternalName;
   end;
 begin
   Text := ReplaceAllWideString(Text,'<color=255,240,100>','<color=0,50,200>');
@@ -920,7 +920,7 @@ begin
   end;
   if GetPlayer.IsOnPlanet then
   begin
-    if GetPlayer.CurrentPlanet.OwnerId = Byte(oiPirate) then
+    if GetPlayer.CurrentPlanet.OwnerId = oiPirate then
     begin
       if not GetPlayer.CurrentPlanet.IsMainPiratePlanet then
         MusicManager.PlayCategory('Nation.' + OwnerInfo[RaceToOwner(GetPlayer.CurrentPlanet.RaceId)].InternalName + 'Pirate')
@@ -1147,7 +1147,7 @@ var
   procedure AddInfoSearchResult(Value: TObject); // @addr $59D3F4 @calls "0x59f5c5,0x59f67f,0x59f738,0x59f7f2,0x59f8ac,0x59f965,0x59fa2d,0x59fb38,0x59fd60,0x59fecc,0x5a010e,0x5a038b,0x5a065f,0x5a2a95,0x5a2b79,0x5a2c1a,0x5a2cf4,0x5a2da9,0x5a2e6f,0x5a2efb,0x5a2ff1" Nested in RunSearch; captures location, count, and displayed objects.
   var GoodsText, Color: WideString; Good, GoodIndex: Byte;
   begin
-    if (Value is TShip) and (Ship <> nil) and not (Ship.OwnerId in [Ord(oiMaloc)..Ord(oiGaal),Ord(oiPirate)]) then Exit;
+    if (Value is TShip) and (Ship <> nil) and not (Ship.OwnerId in [oiMaloc..oiGaal,oiPirate]) then Exit;
     if (ResultCount < GetSearchResultLimit) and (Shown.IndexOf(Value) < 0) then
     begin
       Shown.Add(Value);
@@ -1198,13 +1198,13 @@ var
       Description := Description + #13#10 + FormatText1(LocalizedText('FormInfo.Star'),'<color=255,240,100>','<StarName>',Planet.CurrentStar.Name);
         Description := Description + #13#10 + Planet.GetInfoText(True);
         GoodsText := '';
-        if (Planet.IsCoalitionOwned or (Planet.OwnerId = Byte(oiPirate))) and (Planet.CurrentStar.Status.CustomFaction = WideString('')) then
+        if (Planet.IsCoalitionOwned or (Planet.OwnerId = oiPirate)) and (Planet.CurrentStar.Status.CustomFaction = WideString('')) then
         begin
       for GoodIndex := 0 to 7 do
       begin
         Good := GoodsTextOrder[GoodIndex];
         GoodsText := GoodsText + #13#10 + '<td=' + IntToStr(GiScalePixels(5)) + '>' + '<align=center>' + WrapTextInColor(IntToStr(GoodIndex + 1),'') + '.' + '</align>';
-        if GoodsLegalOnPlanet[Good,Planet.RaceId,Ord(Planet.Government)] or (Planet.OwnerId = Byte(oiPirate)) then Color := ''
+        if GoodsLegalOnPlanet[Good,Planet.RaceId, Planet.Government] or (Planet.OwnerId = oiPirate) then Color := ''
         else Color := '<color=255,0,0>';
         GoodsText := GoodsText + '<td=' + IntToStr(GiScalePixels(15)) + '>' + WideString('') + WrapTextInColor(GoodsMarket[Good].DisplayName,Color) + WideString('');
         GoodsText := GoodsText + '<td=' + IntToStr(GiScalePixels(160)) + '>' + '<align=right>' + WrapTextInColor(IntToStr(Planet.Goods[Good].Count),'') + '</align>';
@@ -1383,11 +1383,11 @@ var
       if Value is TPlanet then
       begin
         CandidatePlanet := Value as TPlanet;
-        if (CandidatePlanet.OwnerId = Byte(oiDominator)) and (CandidatePlanet.CurrentStar.Status.CustomFaction = WideString('')) and not IncludeDominators then Exit;
-        if (CandidatePlanet.OwnerId in [Ord(oiMaloc)..Ord(oiGaal),Ord(oiPirate)]) and (CandidatePlanet.CurrentStar.Status.CustomFaction = WideString('')) and not IncludeCoalition then Exit;
+        if (CandidatePlanet.OwnerId = oiDominator) and (CandidatePlanet.CurrentStar.Status.CustomFaction = WideString('')) and not IncludeDominators then Exit;
+        if (CandidatePlanet.OwnerId in [oiMaloc..oiGaal,oiPirate]) and (CandidatePlanet.CurrentStar.Status.CustomFaction = WideString('')) and not IncludeCoalition then Exit;
         if (CandidatePlanet.CurrentStar.Status.CustomFaction <> WideString('')) and (not IncludeDominators or not IncludeCoalition) then Exit;
-        if (CandidatePlanet.OwnerId = Byte(oiUninhabited)) and not IncludeUninhabited then Exit;
-        if (((CandidatePlanet.OwnerId = Byte(oiPirate)) and (CandidatePlanet.CurrentStar.Status.CustomFaction = WideString('')) and
+        if (CandidatePlanet.OwnerId = oiUninhabited) and not IncludeUninhabited then Exit;
+        if (((CandidatePlanet.OwnerId = oiPirate) and (CandidatePlanet.CurrentStar.Status.CustomFaction = WideString('')) and
           (CandidatePlanet.OwnerId in Owners) and IncludeCoalition) or
           (RaceToOwner(CandidatePlanet.RaceId) in Owners) or (CandidatePlanet.CurrentStar.Status.CustomFaction <> WideString('')) or
           (not IncludeDominators and not IncludeCoalition)) then
@@ -1409,7 +1409,7 @@ var
           if StationTypes <> [] then Exit;
         end
         else if not (CandidateStation.TypeId in StationTypes) then Exit;
-        if CandidateStation.OwnerId = Byte(oiDominator) then Exit;
+        if CandidateStation.OwnerId = oiDominator then Exit;
         if CandidateStation.HasIndependentScriptFaction then Exit;
         if (RangeFilter <> 0) and (RangeFilter < Round(PointDistance(CandidateStation.CurrentStar.Position,GetPlayer.CurrentStar.Position))) then Exit;
         if (ConstellationFilter <> WideString('')) and (FindLowercaseInfoText(ConstellationFilter,WideLowerCase(CandidateStation.CurrentStar.Constellation.GetName)) <= 0) then Exit;
@@ -1487,7 +1487,7 @@ var
         // The native category tests these four TypeId values and the six
         // checkbox slots directly, including their historical UI mapping.
         if (CandidateShip.OwnerId in Owners) and
-          ((RaceToOwner(CandidateShip.PilotRace) in Owners) or (Owners = [Ord(oiPirate)])) and
+          ((RaceToOwner(CandidateShip.PilotRace) in Owners) or (Owners = [oiPirate])) and
           not CandidateShip.HasScriptStateText and (CandidateShip.TypeId in [stRanger..stWarrior]) and
           ((CandidateShip.TypeNameOverrideKey = WideString('')) or
             (IncludeRangerType and IncludeWarriorType and IncludePirateType and IncludeTransportType and IncludeLinerType and IncludeDiplomatType)) and
@@ -1509,14 +1509,14 @@ var
   procedure ReadInfoSearchOwners(Category: Integer); // @addr $5A06A0 @calls "0x5a0ccd,0x5a0d60,0x5a0df3,0x5a0e86,0x5a0f19,0x5a0fac,0x5a103f,0x5a11f5,0x5a1770,0x5a18fb,0x5a29f9" Nested in RunSearch; captures the owner filter set.
   begin
     Owners := [];
-    if not (GetByName('M' + IntToFixedWidthWideString(Category,2) + 'Maloc') as TGraphButtonGI).Down then Include(Owners, Ord(oiMaloc));
-    if not (GetByName('M' + IntToFixedWidthWideString(Category,2) + 'Peleng') as TGraphButtonGI).Down then Include(Owners, Ord(oiPeleng));
-    if not (GetByName('M' + IntToFixedWidthWideString(Category,2) + 'People') as TGraphButtonGI).Down then Include(Owners, Ord(oiHuman));
-    if not (GetByName('M' + IntToFixedWidthWideString(Category,2) + 'Fei') as TGraphButtonGI).Down then Include(Owners, Ord(oiFeyan));
-    if not (GetByName('M' + IntToFixedWidthWideString(Category,2) + 'Gaal') as TGraphButtonGI).Down then Include(Owners, Ord(oiGaal));
+    if not (GetByName('M' + IntToFixedWidthWideString(Category,2) + 'Maloc') as TGraphButtonGI).Down then Include(Owners, oiMaloc);
+    if not (GetByName('M' + IntToFixedWidthWideString(Category,2) + 'Peleng') as TGraphButtonGI).Down then Include(Owners, oiPeleng);
+    if not (GetByName('M' + IntToFixedWidthWideString(Category,2) + 'People') as TGraphButtonGI).Down then Include(Owners, oiHuman);
+    if not (GetByName('M' + IntToFixedWidthWideString(Category,2) + 'Fei') as TGraphButtonGI).Down then Include(Owners, oiFeyan);
+    if not (GetByName('M' + IntToFixedWidthWideString(Category,2) + 'Gaal') as TGraphButtonGI).Down then Include(Owners, oiGaal);
     if FindControlByPath('M' + IntToFixedWidthWideString(Category,2) + 'Pirate') <> nil then
-      if not (GetByName('M' + IntToFixedWidthWideString(Category,2) + 'Pirate') as TGraphButtonGI).Down then Include(Owners, Ord(oiPirate));
-    if Owners = [] then Owners := [Ord(oiPirate)];
+      if not (GetByName('M' + IntToFixedWidthWideString(Category,2) + 'Pirate') as TGraphButtonGI).Down then Include(Owners, oiPirate);
+    if Owners = [] then Owners := [oiPirate];
   end;
 
 begin
@@ -1705,7 +1705,7 @@ begin
               begin
                 if ResultCount >= GetSearchResultLimit then Break;
                 Planet := TPlanet(Star.Planets[Index]);
-                if Planet.OwnerId in [Ord(oiMaloc)..Ord(oiGaal),Ord(oiPirate)] then
+                if Planet.OwnerId in [oiMaloc..oiGaal,oiPirate] then
                 begin
                   Heading := '';
                   for GoodsIndex := 0 to 7 do
@@ -1716,7 +1716,7 @@ begin
                       ((MinSellPrice = 0) or (GetPlayer.ShopGoodsSellPrice(Good,Planet) >= MinSellPrice)) then
                     begin
                       Heading := Heading + #13#10 + '<td=' + IntToStr(GiScalePixels(5)) + '>' + '<align=center>' + WrapTextInColor(IntToStr(GoodsIndex + 1),'') + '.' + '</align>';
-                      if GoodsLegalOnPlanet[Good,Planet.RaceId,Ord(Planet.Government)] or (Planet.OwnerId = Byte(oiPirate)) then SearchText := ''
+                      if GoodsLegalOnPlanet[Good,Planet.RaceId, Planet.Government] or (Planet.OwnerId = oiPirate) then SearchText := ''
                       else SearchText := '<color=255,0,0>';
                       Heading := Heading + '<td=' + IntToStr(GiScalePixels(15)) + '>' + WideString('') + WrapTextInColor(GoodsMarket[Good].DisplayName,SearchText) + WideString('');
                       Heading := Heading + '<td=' + IntToStr(GiScalePixels(160)) + '>' + '<align=right>' + WrapTextInColor(IntToStr(Planet.Goods[Good].Count),'') + '</align>';
@@ -1744,11 +1744,11 @@ begin
               for Index := 0 to Star.Ships.Count - 1 do
               begin
                 Ship := TShip(Star.Ships[Index]);
-                if (Ship is TRuins) and ((Ship.CurrentPlanet = nil) or (Ship.CurrentPlanet.OwnerId <> Byte(oiUninhabited))) then
+                if (Ship is TRuins) and ((Ship.CurrentPlanet = nil) or (Ship.CurrentPlanet.OwnerId <> oiUninhabited)) then
                 begin
                   Station := Ship as TRuins;
                   // Native exits here, bypassing the later list release and checksum.
-                  if (Station.OwnerId = Byte(oiDominator)) or Station.HasIndependentScriptFaction then Exit;
+                  if (Station.OwnerId = oiDominator) or Station.HasIndependentScriptFaction then Exit;
                   if not Station.NoLanding then
                   begin
                     Heading := '';
@@ -1813,7 +1813,7 @@ begin
         for Index := 0 to Star.Ships.Count - 1 do
         begin
           Ship := TShip(Star.Ships[Index]);
-          if (Ship.CurrentPlanet = nil) or (Ship.CurrentPlanet.OwnerId <> Byte(oiUninhabited)) then
+          if (Ship.CurrentPlanet = nil) or (Ship.CurrentPlanet.OwnerId <> oiUninhabited) then
           begin
             if SelectedSearchCategory = 0 then
             begin
@@ -1836,7 +1836,7 @@ begin
                 end;
               end;
             end
-            else if (Ship is TRuins) and (Ship.OwnerId <> Byte(oiDominator)) and not Ship.HasIndependentScriptFaction and not TRuins(Ship).NoLanding then
+            else if (Ship is TRuins) and (Ship.OwnerId <> oiDominator) and not Ship.HasIndependentScriptFaction and not TRuins(Ship).NoLanding then
             begin
               for ItemIndex := 0 to (Ship as TRuins).EquipmentShop.Count - 1 do
               begin
@@ -1858,7 +1858,7 @@ begin
             if FindLowercaseInfoText(SearchText,WideLowerCase(Planet.GetFullName(' '))) > 0 then AddInfoSearchResult(Planet);
           end
           else CheckInfoSearchResult(Planet);
-          if Planet.IsCoalitionOwned or (Planet.OwnerId = Byte(oiPirate)) then
+          if Planet.IsCoalitionOwned or (Planet.OwnerId = oiPirate) then
           begin
             if (GetPlayer.CurrentPlanet <> nil) and (GetPlayer.CurrentPlanet = Planet) and (TemporaryShopSlots <> nil) then
             begin

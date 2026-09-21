@@ -368,7 +368,7 @@ var Planet: TPlanet; Station, Ship: TShip; Stations: TList; I, Stage: Integer;
   procedure RepairHullWithNodes; // @addr $518C80
   var Needed, Available, Restored: Integer; Fraction: Single; Entry: PEFilmEndEntry; Effect: TWeaponSE;
   begin
-    if (PilotRace in [Ord(oiMaloc), Ord(oiPeleng)]) and InFear then begin
+    if (PilotRace in [oiMaloc, oiPeleng]) and InFear then begin
       Available := GetCarriedNodeCount;
       if Available > 0 then begin
         Needed := Ceil((GetHull.Weight - GetHull.HullPoints) *
@@ -399,7 +399,7 @@ var Planet: TPlanet; Station, Ship: TShip; Stations: TList; I, Stage: Integer;
   procedure RepairEquipmentWithNodes; // @addr $518F6C
   var I: Integer; Equipment: TEquipment; NeedsRepair: Boolean; TotalCost, Available, Threshold: Integer; Fraction: Single;
   begin
-    if PilotRace in [Ord(oiFeyan), Ord(oiGaal)] then begin
+    if PilotRace in [oiFeyan, oiGaal] then begin
       Available := GetCarriedNodeCount;
       if Available > 0 then begin
         NeedsRepair := False;
@@ -601,7 +601,7 @@ end;
 { @routine $519BEC TWarrior_CanQueueReachablePlanet }
 function TWarrior.CanQueueReachablePlanet(Planet: TPlanet): Boolean;
 begin
-  Result := (Planet.OwnerId <> Byte(oiDominator)) and (Planet.OwnerId <> Byte(oiPirate));
+  Result := (Planet.OwnerId <> oiDominator) and (Planet.OwnerId <> oiPirate);
 end;
 { @end $519BEC }
 
@@ -821,7 +821,7 @@ begin
   if CurrentStar.Battle <> 0 then
     for I := 0 to CurrentStar.Ships.Count - 1 do begin
       Ship := CurrentStar.Ships[I];
-      if (Ship.OwnerId = Byte(oiDominator)) and Ship.InNormalSpace then begin
+      if (Ship.OwnerId = oiDominator) and Ship.InNormalSpace then begin
         Distance := PointDistance(Position, Ship.Position);
         for J := 1 to WeaponCount do begin
           Weapon := Weapons[J];
@@ -930,7 +930,7 @@ begin
   if Galaxy.GetAIJunkToleranceLevel * 1.5 < CurrentStar.Items.Count then
     for I := 0 to CurrentStar.Items.Count - 1 do begin
       Item := CurrentStar.Items[I];
-      if ((Item.ItemType = t_Minerals) or (Item.OwnerId = Byte(oiDominator))) and
+      if ((Item.ItemType = t_Minerals) or (Item.OwnerId = oiDominator)) and
         ((Item.ScriptItem = nil) or (TScriptItem(Item.ScriptItem).Name = '')) then
         if (GetPlayer.CurrentStar <> CurrentStar) or (GetRelationLevelToShip(GetPlayer) <= rlBad) or
           (PointDistance(GetPlayer.Position, Item.Position) >= 800) or
@@ -1050,7 +1050,7 @@ begin
   if Galaxy.GetAIJunkToleranceLevel * 1.5 < CurrentStar.Items.Count then
     for I := 0 to CurrentStar.Items.Count - 1 do begin
       Item := CurrentStar.Items[I];
-      if ((Item.ItemType = t_Minerals) or (Item.OwnerId = Byte(oiDominator))) and
+      if ((Item.ItemType = t_Minerals) or (Item.OwnerId = oiDominator)) and
         ((Item.ScriptItem = nil) or (TScriptItem(Item.ScriptItem).Name = '')) and not AcceptPickupItem(Item) then
         if (GetPlayer.CurrentStar <> CurrentStar) or (GetRelationLevelToShip(GetPlayer) <= rlBad) or
           (PointDistance(GetPlayer.Position, Item.Position) >= 800) or
@@ -1313,7 +1313,7 @@ var Enemies: TList; SupportWeight: Single; OwnMinRange, OwnMaxRange: Integer; Ow
           else NodeValue := NodeValue + Min((Item as TProtoplasm).StackCount, CargoFreeSpace) * RemapClamped(Distance, GetCargoHookRange, 2 * GetCargoHookRange, 0.5, 0);
         end;
       end;
-    if PilotRace <> Byte(oiFeyan) then NodeValue := NodeValue * 2;
+    if PilotRace <> oiFeyan then NodeValue := NodeValue * 2;
     if EnemiesInRange > 0 then begin
       Benefit := AttackPotential * AttackWeight + 0.05 * NodeValue + SupportPotential * SupportWeight;
       Risk := IncomingStrength / OwnDefense * FearWeight;
@@ -1330,7 +1330,7 @@ var Enemies: TList; SupportWeight: Single; OwnMinRange, OwnMaxRange: Integer; Ow
   procedure BoostWithNodes; // @addr $51D5A0
   var Factor: Single;
   begin
-    if (PilotRace in [Ord(oiMaloc), Ord(oiHuman), Ord(oiGaal)]) and (EnemiesInRange > 0) then begin
+    if (PilotRace in [oiMaloc, oiHuman, oiGaal]) and (EnemiesInRange > 0) then begin
       Factor := RemapClamped(CargoFreeSpace, 0, GetHull.Weight div 4, 0.5, 1) * (3 / (EnemiesInRange + 2)) *
         RemapClamped(GetHull.HullPoints, 0, GetHull.Weight div 2, 0.1, 1);
       while (50 - 90 * Factor > GetCombatStatusStrength(cseBWBuff)) and (GetCarriedNodeCount >= Int64(50)) do begin
@@ -1443,7 +1443,7 @@ begin
             if Warrior <> Self then begin
               GarrisonStrength := GarrisonStrength + RemapClamped(Warrior.Strength, 0.1 * Strength, 10 * Strength, 0.3, 3);
               if Warrior.WarriorType = wtFlagship then
-                if Byte(Warrior.PilotRace + Byte(0)) = PilotRace then FlagshipFactor := FlagshipFactor * 0.05
+                if TOwnerId(Byte(Warrior.PilotRace) + Byte(0)) = PilotRace then FlagshipFactor := FlagshipFactor * 0.05
                 else FlagshipFactor := FlagshipFactor * 0.2;
             end;
           end;
@@ -1574,7 +1574,7 @@ begin
   else if OtherShip.TruceShip = Self then Response := LookupVisibleTalkText('Talk.Truce.WeAlreadyHavePact', OtherShip)
   else if (GetPlayer = OtherShip) and PlayerExtortionPactActive then Response := LookupVisibleTalkText('Talk.Truce.WeAlreadyHavePact', OtherShip)
   else if (GetPlayer = OtherShip) and (Galaxy.CurrentTurn < NextDemandTurn) then Response := LookupVisibleTalkText('Talk.Truce.WeAlreadyHavePact', OtherShip)
-  else if (OtherShip is TNormalShip) and (OtherShip.OwnerId = Byte(oiPirate)) and (OtherShip.CurrentStar.ControlFaction = sfCoalition) and
+  else if (OtherShip is TNormalShip) and (OtherShip.OwnerId = oiPirate) and (OtherShip.CurrentStar.ControlFaction = sfCoalition) and
     (TNormalShip(OtherShip).CurrentSystemKills.Normal > 0) then begin
     if 2 * Wealth * (1 / 15) < OfferedAmount then begin
       Response := LookupVisibleTalkText('Talk.Truce.' + GetTypeNameKey + 'Ok', OtherShip);
@@ -1603,7 +1603,7 @@ begin
   Result := False;
   if Requester is TRanger then begin
     if Target.TypeId in [stRanger..stPirate] then Target.ChangeRelationToRanger(Requester, -20);
-    if (Target.OwnerId = Byte(oiDominator)) or (Target.TypeId = stPirate) then (Requester as TRanger).AddWarriorCareerActivity(1)
+    if (Target.OwnerId = oiDominator) or (Target.TypeId = stPirate) then (Requester as TRanger).AddWarriorCareerActivity(1)
     else (Requester as TRanger).AddPirateCareerActivity(8);
   end;
   HostileCount := 0;
@@ -1867,7 +1867,7 @@ begin
   Result := False;
   if WarriorType = wtFlagship then begin
     if (Item.ItemType = t_Protoplasm) and (CargoFreeSpace > 0) then begin Result := True; Exit; end
-    else if (PilotRace in [Ord(oiPeleng)..Ord(oiFeyan)]) and (Item is TUselessItem) then
+    else if (PilotRace in [oiPeleng..oiFeyan]) and (Item is TUselessItem) then
       if (Item as TUselessItem).IsDominatorRemains then begin Result := True; Exit; end;
   end;
 end;

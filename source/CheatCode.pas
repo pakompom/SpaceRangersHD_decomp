@@ -243,7 +243,7 @@ begin
             if PlanetIndex >= Star.Planets.Count then PlanetIndex := 0;
             // Preserve DCC32 O- receiver-before-index evaluation.
           Planet := TPlanet(TList(PAnsiChar(Star.Planets) + 0)[PlanetIndex]);
-          until Planet.OwnerId <> Byte(oiUninhabited);
+          until Planet.OwnerId <> oiUninhabited;
           Planet.SpawnWeightedDominatorShip;
         end;
       end;
@@ -278,7 +278,7 @@ begin
             Inc(PlanetIndex);
             if PlanetIndex >= Star.Planets.Count then PlanetIndex := 0;
             Planet := TPlanet(TList(PAnsiChar(Star.Planets) + 0)[PlanetIndex]);
-          until Planet.OwnerId <> Byte(oiUninhabited);
+          until Planet.OwnerId <> oiUninhabited;
           Planet.BuyWarrior(100);
           Inc(Created);
           if Created >= 500 then
@@ -312,7 +312,7 @@ begin
         for PlanetIndex := 0 to Star.Planets.Count - 1 do
         begin
           Planet := TPlanet(Star.Planets[PlanetIndex]);
-          if Planet.OwnerId <> Byte(oiUninhabited) then
+          if Planet.OwnerId <> oiUninhabited then
             while (Planet.Warriors.Count < RemapClamped(Planet.Radius, 60, 100, 2, 6)) and (Created < 500) do
             begin
               Planet.BuyWarrior(100);
@@ -344,14 +344,14 @@ begin
         for ShipIndex := 0 to Star.Ships.Count - 1 do
         begin
           Ship := TShip(TList(PAnsiChar(Star.Ships) + 0)[ShipIndex]);
-          if (Ship.OwnerId = Byte(oiDominator)) and (Ship.Order = soNone) and Ship.InNormalSpace and not Ship.HasIndependentScriptFaction then
+          if (Ship.OwnerId = oiDominator) and (Ship.Order = soNone) and Ship.InNormalSpace and not Ship.HasIndependentScriptFaction then
             Inc(Eligible);
         end;
         if Eligible > 2 then
           for ShipIndex := 0 to Star.Ships.Count - 1 do
           begin
             Ship := TShip(TList(PAnsiChar(Star.Ships) + 0)[ShipIndex]);
-            if (Ship.OwnerId = Byte(oiDominator)) and (Ship.Order = soNone) and Ship.InNormalSpace and not Ship.HasIndependentScriptFaction then
+            if (Ship.OwnerId = oiDominator) and (Ship.Order = soNone) and Ship.InNormalSpace and not Ship.HasIndependentScriptFaction then
             begin
               Ship.OrderJump(GetPlayer.CurrentStar, True);
               Inc(Sent);
@@ -386,14 +386,14 @@ begin
         for ShipIndex := 0 to Star.Ships.Count - 1 do
         begin
           Ship := TShip(TList(PAnsiChar(Star.Ships) + 0)[ShipIndex]);
-          if (Ship.OwnerId = Byte(oiPirate)) and (Ship.Order = soNone) and Ship.InNormalSpace and not Ship.HasIndependentScriptFaction then
+          if (Ship.OwnerId = oiPirate) and (Ship.Order = soNone) and Ship.InNormalSpace and not Ship.HasIndependentScriptFaction then
             Inc(Eligible);
         end;
         if Eligible > 2 then
           for ShipIndex := 0 to Star.Ships.Count - 1 do
           begin
             Ship := TShip(TList(PAnsiChar(Star.Ships) + 0)[ShipIndex]);
-            if (Ship.OwnerId = Byte(oiPirate)) and (Ship.Order = soNone) and Ship.InNormalSpace and not Ship.HasIndependentScriptFaction then
+            if (Ship.OwnerId = oiPirate) and (Ship.Order = soNone) and Ship.InNormalSpace and not Ship.HasIndependentScriptFaction then
             begin
               Ship.OrderJump(GetPlayer.CurrentStar, True);
               Inc(Sent);
@@ -514,13 +514,13 @@ procedure CheatRobotforce;
 begin
   if (Galaxy <> nil) and (GetPlayer <> nil) and not GetPlayer.InHyperspace then
   begin
-    GetPlayer.Artefacts.Add(CreateConfiguredArtefactByItemType(t_ArtefactTranclucator, 0));
-    GetPlayer.Artefacts.Add(CreateConfiguredArtefactByItemType(t_ArtefactTranclucator, 1));
-    GetPlayer.Artefacts.Add(CreateConfiguredArtefactByItemType(t_ArtefactTranclucator, 2));
-    GetPlayer.Artefacts.Add(CreateConfiguredArtefactByItemType(t_ArtefactTranclucator, 3));
-    GetPlayer.Artefacts.Add(CreateConfiguredArtefactByItemType(t_ArtefactTranclucator, 4));
-    GetPlayer.Artefacts.Add(CreateConfiguredArtefactByItemType(t_ArtefactTranclucator, 6));
-    GetPlayer.Artefacts.Add(CreateConfiguredArtefactByItemType(t_ArtefactTranclucator, 7));
+    GetPlayer.Artefacts.Add(CreateConfiguredArtefactByItemType(t_ArtefactTranclucator, oiMaloc));
+    GetPlayer.Artefacts.Add(CreateConfiguredArtefactByItemType(t_ArtefactTranclucator, oiPeleng));
+    GetPlayer.Artefacts.Add(CreateConfiguredArtefactByItemType(t_ArtefactTranclucator, oiHuman));
+    GetPlayer.Artefacts.Add(CreateConfiguredArtefactByItemType(t_ArtefactTranclucator, oiFeyan));
+    GetPlayer.Artefacts.Add(CreateConfiguredArtefactByItemType(t_ArtefactTranclucator, oiGaal));
+    GetPlayer.Artefacts.Add(CreateConfiguredArtefactByItemType(t_ArtefactTranclucator, oiUninhabited));
+    GetPlayer.Artefacts.Add(CreateConfiguredArtefactByItemType(t_ArtefactTranclucator, oiPirate));
     GetPlayer.RefreshDerivedStats(True);
     ReportCheat(60, DecodeTextW('RFOCBIOLTQFNOCROCRE')); // 'ROBOTFORCE'
   end;
@@ -647,7 +647,7 @@ begin
     (CurrentScreenId <> screenShip) and (GetPlayer.DockedTo.TypeId = Byte(rstScienceBase)) then
   begin
     Info := Galaxy.SelectWeaponInfo(RandomIntRange(1, 100000), [4], 8, 1);
-    Item := CreateGeneratedWeapon(Info, RandomIntRange(77, 200), RandomIntRange(1, 8), 5);
+    Item := CreateGeneratedWeapon(Info, RandomIntRange(77, 200), RandomIntRange(1, 8), oiDominator);
     case RandomIntRange(1, 3) of
       1: Item.DominatorSeries := dsBlazer;
       2: Item.DominatorSeries := dsKeller;
@@ -702,7 +702,7 @@ begin
       end;
     end;
     GetPlayer.CareerStatus[rcPirate] := 100;
-    GetPlayer.ChangePlanetRelations(nil, rcmDecrease, 60, [0, 2, 3, 4]);
+    GetPlayer.ChangePlanetRelations(nil, rcmDecrease, 60, [oiMaloc, oiHuman, oiFeyan, oiGaal]);
     if CurrentScreenId = screenRuinsTalk then StarMapScreen.MainPanel.RefreshMoneyAndCargo
     else if CurrentScreenId = screenGoodsShop then
     begin
@@ -878,7 +878,7 @@ var
   I: Integer;
 begin
   if (Galaxy <> nil) and (GetPlayer <> nil) and GetPlayer.IsOnPlanet and
-    (GetPlayer.CurrentPlanet.OwnerId = Byte(oiPeleng)) and (CurrentScreenId <> screenShip) then
+    (GetPlayer.CurrentPlanet.OwnerId = oiPeleng) and (CurrentScreenId <> screenShip) then
   begin
     for I := 0 to TemporaryShopSlots.Count - 1 do
     begin
@@ -886,7 +886,7 @@ begin
       if (Item <> nil) and (Item is TWeapon) then
         (Item as TWeapon).Range := (Item as TWeapon).Range * 2;
     end;
-    GetPlayer.ChangePlanetRelations(nil, rcmDecrease, 50, [0, 2, 3, 4]);
+    GetPlayer.ChangePlanetRelations(nil, rcmDecrease, 50, [oiMaloc, oiHuman, oiFeyan, oiGaal]);
     ReportCheat(100, DecodeTextW('PLEVLIESNOGASRUEROPTROINSAEN')); // 'PELENGSURPRISE'
   end;
 end;
@@ -925,7 +925,7 @@ begin
       begin
         Ship := TShip(GetPlayer.CurrentStar.Ships[I]);
         if (GetPlayer <> Ship) and not Ship.InHyperspace and
-          ((Ship.CurrentPlanet = nil) or (Ship.CurrentPlanet.OwnerId <> Byte(oiUninhabited))) then Ship.DestroyQueued := True;
+          ((Ship.CurrentPlanet = nil) or (Ship.CurrentPlanet.OwnerId <> oiUninhabited)) then Ship.DestroyQueued := True;
       end;
     ReportCheat(30, DecodeTextW('BLOSOMM')); // 'BOOM'
   end;
@@ -936,7 +936,7 @@ end;
 procedure CheatHaterangers;
 const
   ShipTypes = [htPirate..htDiplomat];
-  Owners = [0..7];
+  Owners = [oiMaloc..oiPirate];
 var
   I: Integer;
   Ship: TShip;
@@ -972,7 +972,7 @@ begin
         Attempts := 0;
         repeat
           Planet := TPlanet(Star.Planets[RandomIntRange(0, Star.Planets.Count - 1)]);
-          if Planet.OwnerId in [Ord(oiMaloc)..Ord(oiGaal), Ord(oiPirate)] then
+          if Planet.OwnerId in [oiMaloc..oiGaal, oiPirate] then
           begin
             Planet.BuyPirate(100);
             Break;
@@ -1015,12 +1015,12 @@ end;
 { @routine $509C7C CheatVertix }
 procedure CheatVertix;
 var
-  Owner: Byte;
+  Owner: TOwnerId;
   Item: TEquipment;
 begin
   if (Galaxy <> nil) and (GetPlayer <> nil) then
   begin
-    for Owner := 0 to 4 do
+    for Owner := oiMaloc to oiGaal do
     begin
       Item := CreateGeneratedEquipment(t_Weapon14, 20, Galaxy.TechLevel, Owner);
       GetPlayer.Inventory.Add(Item);
@@ -1508,7 +1508,7 @@ begin
     for I := 1 to GetPlayer.Inventory.Count - 1 do
     begin
       Item := TEquipment(GetPlayer.Inventory[I]);
-      if Item.EquippedFlag <> 0 then Item.OwnerId := Byte(oiUninhabited);
+      if Item.EquippedFlag <> 0 then Item.OwnerId := oiUninhabited;
     end;
     ReportCheat(10, DecodeTextW('MRALDIETISNOCIHSIMNIA')); // 'MADEINCHINA'
   end;

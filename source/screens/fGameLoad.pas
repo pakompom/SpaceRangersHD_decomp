@@ -120,7 +120,7 @@ begin
     if GetPlayer = nil then MusicManager.PlayCategory('Base')
     else if GetPlayer.IsOnPlanet then
       begin
-        if GetPlayer.CurrentPlanet.OwnerId = Byte(oiPirate) then
+        if GetPlayer.CurrentPlanet.OwnerId = oiPirate then
         begin
           if not GetPlayer.CurrentPlanet.IsMainPiratePlanet then MusicManager.PlayCategory('Nation.' + OwnerInfo[RaceToOwner(GetPlayer.CurrentPlanet.RaceId)].InternalName + 'Pirate')
           else MusicManager.PlayCategory('Nation.PiratePlanetMain');
@@ -139,7 +139,7 @@ begin
         else
         begin
           // Retain the native CurrentPlanet lookup in this non-station docking branch.
-          if GetPlayer.CurrentPlanet.OwnerId = Byte(oiPirate) then
+          if GetPlayer.CurrentPlanet.OwnerId = oiPirate then
             MusicManager.PlayCategory('Nation.' + OwnerInfo[RaceToOwner(GetPlayer.CurrentPlanet.RaceId)].InternalName + 'Pirate')
           else MusicManager.PlayCategory('Nation.' + OwnerInfo[GetPlayer.CurrentPlanet.OwnerId].InternalName);
         end;

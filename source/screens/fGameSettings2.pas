@@ -13,10 +13,10 @@ type
     CollapsedLevelPanelTop: Integer; // @offset 0xD0
     LevelPanelTop: Integer; // @offset 0xD4
     LevelPanelTimer: PCallbackTimerGI; // @offset 0xD8
-    PlayerRace: Byte; // @offset 0xDC
+    PlayerRace: TOwnerId; // @offset 0xDC
     CharacterPreset: Integer; // @offset 0xE0
     CaptainPortraitIndex: Integer; // @offset 0xE4
-    LastPortraitByRace: array[0..4] of Integer; // @offset 0xE8
+    LastPortraitByRace: array[oiMaloc..oiGaal] of Integer; // @offset 0xE8
     StartingSkills: array[0..1] of TPilotSkill; // @offset 0xFC
     SelectedSkillSlot: Integer; // @offset 0x100
     StartingItemChoices: array[0..1] of Integer; // @offset 0x104 // Choice values are 1..12; ItemTypeByChoice is zero-based.
@@ -104,11 +104,11 @@ uses fGameSettings, Classes, Windows, SysUtils, Math, EC_Str, EC_Struct, GI_Grap
 
 { @routine $56CF50 TfGameSettings2_InitializeLayout }
 procedure TfGameSettings2.InitializeLayout;
-var I, J: Integer; Text: WideString; Race: Byte; Unused: Integer; // Native O- stack reserves this unused local.
+var I, J: Integer; Text: WideString; Race: TOwnerId; Unused: Integer; // Native O- stack reserves this unused local.
 begin
   inherited InitializeLayout;
   AppendLogTextThreadSafe('fGameSettings2... ');
-  for Race := 0 to 4 do
+  for Race := oiMaloc to oiGaal do
   begin
     I := -1;
     repeat
@@ -369,33 +369,33 @@ begin
     Text := NewGameSettingsConfig.GetParamByPathOrMarker('Race');
     if Text = 'Maloc' then
     begin
-      PlayerRace := 0;
+      PlayerRace := oiMaloc;
       RaceClicked(GetByName('RaceMaloc'));
     end
     else if Text = 'Peleng' then
     begin
-      PlayerRace := 1;
+      PlayerRace := oiPeleng;
       RaceClicked(GetByName('RacePeleng'));
     end
     else if Text = 'Fei' then
     begin
-      PlayerRace := 3;
+      PlayerRace := oiFeyan;
       RaceClicked(GetByName('RaceFei'));
     end
     else if Text = 'Gaal' then
     begin
-      PlayerRace := 4;
+      PlayerRace := oiGaal;
       RaceClicked(GetByName('RaceGaal'));
     end
     else
     begin
-      PlayerRace := 2;
+      PlayerRace := oiHuman;
       RaceClicked(GetByName('RacePeople'));
     end;
   end
   else
   begin
-    PlayerRace := 2;
+    PlayerRace := oiHuman;
     RaceClicked(GetByName('RacePeople'));
   end;
   if (NewGameSettingsConfig.CountParamsByPath('Name') > 0) and (NewGameSettingsConfig.GetParamByPathOrMarker('Name') <> '') then
@@ -863,12 +863,12 @@ end;
 { @routine $5745C8 TfGameSettings2_RaceClicked }
 procedure TfGameSettings2.RaceClicked(Sender: TObjectGI);
 begin
-  PlayerRace := Sender.UserValue;
-  (GetByName('RaceMaloc') as TGraphButtonGI).SetDown(PlayerRace = 0);
-  (GetByName('RacePeleng') as TGraphButtonGI).SetDown(PlayerRace = 1);
-  (GetByName('RacePeople') as TGraphButtonGI).SetDown(PlayerRace = 2);
-  (GetByName('RaceFei') as TGraphButtonGI).SetDown(PlayerRace = 3);
-  (GetByName('RaceGaal') as TGraphButtonGI).SetDown(PlayerRace = 4);
+  PlayerRace := TOwnerId(Sender.UserValue);
+  (GetByName('RaceMaloc') as TGraphButtonGI).SetDown(PlayerRace = oiMaloc);
+  (GetByName('RacePeleng') as TGraphButtonGI).SetDown(PlayerRace = oiPeleng);
+  (GetByName('RacePeople') as TGraphButtonGI).SetDown(PlayerRace = oiHuman);
+  (GetByName('RaceFei') as TGraphButtonGI).SetDown(PlayerRace = oiFeyan);
+  (GetByName('RaceGaal') as TGraphButtonGI).SetDown(PlayerRace = oiGaal);
   CaptainPortraitIndex := 0;
   RefreshPortrait;
   if not PlayerNameEdited then GeneratePlayerName;

@@ -10,7 +10,7 @@ uses EC_Thread, aGalaxyStruct;
 type
   TThreadCreateNewGame = class(TThreadEC) // @size 0x4C
   public
-    PlayerRace: Byte; // @offset 0x2C
+    PlayerRace: TOwnerId; // @offset 0x2C
     DifficultyLevels: TGalaxyDifficultyLevels; // @offset 0x2D
     CaptainPortraitIndex: Integer; // @offset 0x38
     PlayerName: WideString; // @offset 0x3C
@@ -53,8 +53,8 @@ var
   Center: TPointF;
   Score: Single;
   StartStar: TStar;
-  OwnerId: Byte;
-  NameLists: array[0..7] of TList;
+  OwnerId: TOwnerId;
+  NameLists: array[TOwnerId] of TList;
 begin
   Stage := 0;
   try
@@ -192,7 +192,7 @@ begin
       Star := TStar.Create;
       Galaxy.Stars.Add(Star);
     end;
-    Galaxy.GenerateGalaxyLayout(PlayerRace);
+    Galaxy.GenerateGalaxyLayout(Ord(PlayerRace));
     Stage := 2;
     for I := 0 to Galaxy.Stars.Count - 1 do
     begin
@@ -268,7 +268,7 @@ begin
         end;
     end;
     TStar(Galaxy.Stars[Galaxy.Stars.Count - 1]).Name := SpecialStar.Name;
-    for OwnerId := Byte(oiMaloc) to 7 do
+    for OwnerId := oiMaloc to oiPirate do
     begin
       NameLists[OwnerId] := TList.Create;
       if LanguageDataConfig.GetBlock('PlanetName').CountBlocks(OwnerInfo[OwnerId].InternalName) > 0 then
@@ -298,21 +298,21 @@ begin
         end;
       end;
     end;
-    for OwnerId := Byte(oiMaloc) to 7 do NameLists[OwnerId].Free;
+    for OwnerId := oiMaloc to oiPirate do NameLists[OwnerId].Free;
     if Galaxy.CustomRules.StartInCenter then
     begin
       Center.X := GalaxySizeX * 0.5;
       Center.Y := GalaxySizeY * 0.5;
       StartStar := HomePlanet.CurrentStar;
-      Score := PointDistanceSquared(Center,StartStar.Position) - (StartStar.Planets.Count - StartStar.CountPlanetsByOwner(Ord(oiUninhabited))) * 10 - PointDistanceSquared(SpecialStar.Position,StartStar.Position) * 0.25;
+      Score := PointDistanceSquared(Center,StartStar.Position) - (StartStar.Planets.Count - StartStar.CountPlanetsByOwner(oiUninhabited)) * 10 - PointDistanceSquared(SpecialStar.Position,StartStar.Position) * 0.25;
       for I := 0 to Galaxy.Stars.Count - 1 do
       begin
         Star := Galaxy.Stars[I];
         if (Star <> SpecialStar) and (Star <> StartStar) and (Star.CountPlanetsByOwner(RaceToOwner(PlayerRace)) >= 2) then
-          if PointDistanceSquared(Center,Star.Position) - (Star.Planets.Count - Star.CountPlanetsByOwner(Ord(oiUninhabited))) * 10 - PointDistanceSquared(SpecialStar.Position,Star.Position) * 0.25 < Score then
+          if PointDistanceSquared(Center,Star.Position) - (Star.Planets.Count - Star.CountPlanetsByOwner(oiUninhabited)) * 10 - PointDistanceSquared(SpecialStar.Position,Star.Position) * 0.25 < Score then
           begin
             StartStar := Star;
-            Score := PointDistanceSquared(Center,Star.Position) - (Star.Planets.Count - Star.CountPlanetsByOwner(Ord(oiUninhabited))) * 10 - PointDistanceSquared(SpecialStar.Position,Star.Position) * 0.25;
+            Score := PointDistanceSquared(Center,Star.Position) - (Star.Planets.Count - Star.CountPlanetsByOwner(oiUninhabited)) * 10 - PointDistanceSquared(SpecialStar.Position,Star.Position) * 0.25;
           end;
       end;
       if StartStar <> HomePlanet.CurrentStar then
@@ -504,19 +504,19 @@ begin
     for I := 0 to Galaxy.Planets.Count - 1 do
     begin
       Planet := Galaxy.Planets[I];
-      if (Planet.IsCoalitionOwned or (Planet.OwnerId = Byte(oiPirate))) and
+      if (Planet.IsCoalitionOwned or (Planet.OwnerId = oiPirate)) and
         (Planet.CurrentStar.ControlFaction = sfDominators) then
       begin
-        Planet.OwnerId := Byte(oiDominator);
+        Planet.OwnerId := oiDominator;
         Planet.UpdateOwnerFlags;
       end;
-      if (Planet.OwnerId <> Byte(oiUninhabited)) and (Planet.CurrentStar.ControlFaction = sfPirates) then
+      if (Planet.OwnerId <> oiUninhabited) and (Planet.CurrentStar.ControlFaction = sfPirates) then
       begin
-        Planet.OwnerId := Byte(oiPirate);
+        Planet.OwnerId := oiPirate;
         Planet.UpdateOwnerFlags;
       end;
       case Planet.OwnerId of
-        Ord(oiMaloc)..Ord(oiGaal):
+        oiMaloc..oiGaal:
           begin
             Planet.SpawnTransport(0,100);
             Planet.SpawnTransport(0,100);
@@ -527,13 +527,13 @@ begin
               Galaxy.RefreshRangerStrengthStats;
             end;
           end;
-        Ord(oiDominator):
+        oiDominator:
           while (Planet.CurrentStar.ShipTypeCounts[stKling] < 10) and
             ((Planet.CurrentStar.SumBestRangerRelativeStrength(InitialDominatorShipMask) <
               DominatorRetreatStrengthByTier[Planet.CurrentStar.Constellation.HomeDistanceTier]) or
               (Planet.CurrentStar.ShipTypeCounts[stKling] < 8)) do
             Planet.SpawnWeightedDominatorShip;
-        Ord(oiPirate):
+        oiPirate:
           begin
             Planet.BuyPirate(100);
             Planet.BuyPirate(100);
@@ -591,14 +591,14 @@ begin
       AppendLogLineThreadSafe('Galaxy create exception, not found rc, seed = ' + IntToStr(Integer(Galaxy.GenerationSeed)));
       if GetPlayer.CurrentStar.ControlFaction <> sfDominators then
         for I := 0 to GetPlayer.CurrentStar.Planets.Count - 1 do
-          if TPlanet(GetPlayer.CurrentStar.Planets[I]).OwnerId <> Byte(oiUninhabited) then
+          if TPlanet(GetPlayer.CurrentStar.Planets[I]).OwnerId <> oiUninhabited then
           begin
             GetPlayer.CurrentPlanet := GetPlayer.CurrentStar.Planets[I];
             Break;
           end;
       if GetPlayer.CurrentPlanet = nil then
         for I := 0 to GetPlayer.CurrentStar.Planets.Count - 1 do
-          if TPlanet(GetPlayer.CurrentStar.Planets[I]).OwnerId = Byte(oiUninhabited) then
+          if TPlanet(GetPlayer.CurrentStar.Planets[I]).OwnerId = oiUninhabited then
           begin
             GetPlayer.CurrentPlanet := GetPlayer.CurrentStar.Planets[I];
             Break;

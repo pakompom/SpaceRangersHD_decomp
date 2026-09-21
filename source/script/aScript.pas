@@ -205,7 +205,7 @@ type
     Weight: Integer; // @offset 0x14
     Level: Integer; // @offset 0x18
     DefinitionValue1C: Integer; // @offset $1C Read from the definition; not consulted by LoadFromBuffer item creation.
-    OwnerId: Byte; // @offset 0x20
+    OwnerId: TOwnerId; // @offset 0x20
     ConfigName: WideString; // @offset $24 TUselessItem configuration key for definition kind 4.
     Item: TItem; // @offset 0x28  Borrowed; destruction invalidates the backlink.
     CanSell: Boolean; // @offset 0x2C
@@ -547,7 +547,7 @@ function DecodeScriptEconomyMask(Value: Cardinal): TPlanetEconomies; // @addr 0x
 function DecodeScriptGovernmentMask(Value: Cardinal): TPlanetGovernments; // @addr 0x64EA64
 function DecodeScriptShipTypeMask(Value: Cardinal): TScriptShipTypeMask; // @addr 0x64EB40
 function DecodeScriptDominatorMask(Value: Cardinal; KlingType: Byte): TDominatorSeriesMask; // @addr 0x64ECA8
-function DecodeScriptItemOwner(Value: Integer): Byte; // @addr 0x64F000 @note "Values outside 0..7 become owner 6."
+function DecodeScriptItemOwner(Value: Integer): TOwnerId; // @addr 0x64F000 @note "Values outside 0..7 become owner 6."
 function DecodeScriptRelationLevel(Value: Integer): TRelationLevel; // @addr 0x64F074 @note "Values outside 0..4 become hostile."
 function ScriptShipMatchesType(Ship: TShip; ShipTypeMask: TScriptShipTypeMask; StationNames: WideString; DominatorMasks: array of TDominatorSeriesMask): Boolean; // @addr 0x64F0C4 @note "DominatorMasks requires eight entries indexed by TKlingType. StationNames is a comma-separated filter when ship-type bit 8 is set."
 function CollectScriptCandidateShips(Star: TStar): TList; // @addr 0x64F294 @note "Caller owns the list; ship references are borrowed."
@@ -939,7 +939,7 @@ begin
     if GetPlayer.DockedTo <> nil then RequestedScreenId := screenRuinsTalk
     else if GetPlayer.CurrentPlanet <> nil then
     begin
-      if GetPlayer.CurrentPlanet.OwnerId = Byte(oiUninhabited) then RequestedScreenId := screenPlanetNO
+      if GetPlayer.CurrentPlanet.OwnerId = oiUninhabited then RequestedScreenId := screenPlanetNO
       else RequestedScreenId := screenPlanet;
     end
     else RequestedScreenId := screenStarMap;
@@ -1271,15 +1271,15 @@ function DecodeScriptRaceMask(Value: Cardinal): TOwnerMask;
 begin
   if not ScriptDefinitionBit(Value, 0) then
   begin
-    Result := [0..4];
+    Result := [oiMaloc..oiGaal];
     Exit;
   end;
   Result := [];
-  if ScriptDefinitionBit(Value, 1) then Result := Result + [0];
-  if ScriptDefinitionBit(Value, 2) then Result := Result + [1];
-  if ScriptDefinitionBit(Value, 3) then Result := Result + [2];
-  if ScriptDefinitionBit(Value, 4) then Result := Result + [3];
-  if ScriptDefinitionBit(Value, 5) then Result := Result + [4];
+  if ScriptDefinitionBit(Value, 1) then Result := Result + [oiMaloc];
+  if ScriptDefinitionBit(Value, 2) then Result := Result + [oiPeleng];
+  if ScriptDefinitionBit(Value, 3) then Result := Result + [oiHuman];
+  if ScriptDefinitionBit(Value, 4) then Result := Result + [oiFeyan];
+  if ScriptDefinitionBit(Value, 5) then Result := Result + [oiGaal];
 end;
 { @end $64E780 }
 
@@ -1288,18 +1288,18 @@ function DecodeScriptOwnerMask(Value: Cardinal): TOwnerMask;
 begin
   if not ScriptDefinitionBit(Value, 0) then
   begin
-    Result := [0..7];
+    Result := [oiMaloc..oiPirate];
     Exit;
   end;
   Result := [];
-  if ScriptDefinitionBit(Value, 1) then Result := Result + [0];
-  if ScriptDefinitionBit(Value, 2) then Result := Result + [1];
-  if ScriptDefinitionBit(Value, 3) then Result := Result + [2];
-  if ScriptDefinitionBit(Value, 4) then Result := Result + [3];
-  if ScriptDefinitionBit(Value, 5) then Result := Result + [4];
-  if ScriptDefinitionBit(Value, 6) then Result := Result + [5];
-  if ScriptDefinitionBit(Value, 7) then Result := Result + [6];
-  if ScriptDefinitionBit(Value, 8) then Result := Result + [7];
+  if ScriptDefinitionBit(Value, 1) then Result := Result + [oiMaloc];
+  if ScriptDefinitionBit(Value, 2) then Result := Result + [oiPeleng];
+  if ScriptDefinitionBit(Value, 3) then Result := Result + [oiHuman];
+  if ScriptDefinitionBit(Value, 4) then Result := Result + [oiFeyan];
+  if ScriptDefinitionBit(Value, 5) then Result := Result + [oiGaal];
+  if ScriptDefinitionBit(Value, 6) then Result := Result + [oiDominator];
+  if ScriptDefinitionBit(Value, 7) then Result := Result + [oiUninhabited];
+  if ScriptDefinitionBit(Value, 8) then Result := Result + [oiPirate];
   if ScriptDefinitionBit(Value, 9) and (GetPlayer <> nil) then Result := Result + [GetPlayer.OwnerId];
 end;
 { @end $64E85C }
@@ -1426,17 +1426,17 @@ end;
 { @end $64ECA8 }
 
 { @routine $64F000 DecodeScriptItemOwner }
-function DecodeScriptItemOwner(Value: Integer): Byte;
+function DecodeScriptItemOwner(Value: Integer): TOwnerId;
 begin
-  if Value = 0 then Result := 0
-  else if Value = 1 then Result := 1
-  else if Value = 2 then Result := 2
-  else if Value = 3 then Result := 3
-  else if Value = 4 then Result := 4
-  else if Value = 5 then Result := 5
-  else if Value = 6 then Result := 6
-  else if Value = 7 then Result := 7
-  else Result := 6;
+  if Value = 0 then Result := oiMaloc
+  else if Value = 1 then Result := oiPeleng
+  else if Value = 2 then Result := oiHuman
+  else if Value = 3 then Result := oiFeyan
+  else if Value = 4 then Result := oiGaal
+  else if Value = 5 then Result := oiDominator
+  else if Value = 6 then Result := oiUninhabited
+  else if Value = 7 then Result := oiPirate
+  else Result := oiUninhabited;
 end;
 { @end $64F000 }
 

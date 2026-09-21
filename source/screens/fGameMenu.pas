@@ -206,7 +206,7 @@ begin
     if not MusicInPlanetEnabled then MusicManager.RequestFadeOut
     else
     begin
-      if GetPlayer.CurrentPlanet.OwnerId = Byte(oiPirate) then
+      if GetPlayer.CurrentPlanet.OwnerId = oiPirate then
       begin
         if not GetPlayer.CurrentPlanet.IsMainPiratePlanet then MusicManager.PlayCategory('Nation.' + OwnerInfo[RaceToOwner(GetPlayer.CurrentPlanet.RaceId)].InternalName + 'Pirate')
           else MusicManager.PlayCategory('Nation.PiratePlanetMain');

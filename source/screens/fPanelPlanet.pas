@@ -117,7 +117,7 @@ begin
   if (GetPlayer.CurrentPlanet.GetRelationLevelToShip(GetPlayer) <= rlBad) and
      not GetPlayer.CurrentPlanet.IsMainPiratePlanet then
   begin
-    if GetPlayer.CurrentPlanet.OwnerId = Byte(oiPirate) then
+    if GetPlayer.CurrentPlanet.OwnerId = oiPirate then
       ShowMessageBoxGI(Screen, ReplaceColoredToken(
         LocalizedColorText('FormShip.SellOrBuyInPiratePlanetAndBadRelations'),
         '<Planet>', GetPlayer.CurrentPlanet.Name, '<color=255,240,100>'), mbgCancel or mbgWarning)
@@ -146,7 +146,7 @@ begin
   if (GetPlayer.CurrentPlanet.GetRelationLevelToShip(GetPlayer) <= rlBad) and
      not GetPlayer.CurrentPlanet.IsMainPiratePlanet then
   begin
-    if GetPlayer.CurrentPlanet.OwnerId = Byte(oiPirate) then
+    if GetPlayer.CurrentPlanet.OwnerId = oiPirate then
       ShowMessageBoxGI(Screen, ReplaceColoredToken(
         LocalizedColorText('FormShip.SellOrBuyInPiratePlanetAndBadRelations'),
         '<Planet>', GetPlayer.CurrentPlanet.Name, '<color=255,240,100>'), mbgCancel or mbgWarning)
@@ -189,7 +189,7 @@ begin
   if (GetPlayer.CurrentPlanet.GetRelationLevelToShip(GetPlayer) <= rlBad) and
      not GetPlayer.CurrentPlanet.IsMainPiratePlanet then
   begin
-    if GetPlayer.CurrentPlanet.OwnerId = Byte(oiPirate) then
+    if GetPlayer.CurrentPlanet.OwnerId = oiPirate then
       ShowMessageBoxGI(Screen, ReplaceColoredToken(
         LocalizedColorText('FormShip.SellOrBuyInPiratePlanetAndBadRelations'),
         '<Planet>', GetPlayer.CurrentPlanet.Name, '<color=255,240,100>'), mbgCancel or mbgWarning)

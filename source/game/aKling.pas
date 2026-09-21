@@ -177,7 +177,7 @@ end;
 procedure TKling.InitBlazer(Star: TStar);
 begin
   TypeId := stKling;
-  OwnerId := Byte(oiDominator);
+  OwnerId := oiDominator;
   KlingType := ktBoss;
   DominatorSeries := dsBlazer;
   SetMoney(MaxInt);
@@ -195,16 +195,16 @@ begin
   ActiveProgramAppliedTurn := 0;
   ChameleonActive := False;
   GraphDominator := Galaxy.GraphDominatorSurfacesEnabled;
-  CreateAndEquipHull(RoundAndTruncateToHundreds((HullCapacityScale * 6000) * Galaxy.GetDominatorBossHullScale * NextRandomFloatRange(0.9, 1.1, RandomState)), 8, Ord(oiDominator), -1, False);
-  CreateAndEquipFuelTanks(100, 8, Ord(oiDominator));
-  CreateAndEquipEngine(Round(EngineBaseSize * EquipmentSizeFactors[1]), 8, Ord(oiDominator));
-  CreateAndEquipWeapon(Ord(t_Weapon15), Round(WeaponInfos[t_Weapon15].AverageSize * EquipmentSizeFactors[5]), 8, Ord(oiDominator));
-  CreateAndEquipWeapon(Ord(t_Weapon15), Round(WeaponInfos[t_Weapon15].AverageSize * EquipmentSizeFactors[5]), 8, Ord(oiDominator));
-  CreateAndEquipWeapon(Ord(t_Weapon13), Round(WeaponInfos[t_Weapon13].AverageSize * EquipmentSizeFactors[5]), 8, Ord(oiDominator));
-  CreateAndEquipWeapon(Ord(t_Weapon11), Round(WeaponInfos[t_Weapon11].AverageSize * EquipmentSizeFactors[5]), 8, Ord(oiDominator));
+  CreateAndEquipHull(RoundAndTruncateToHundreds((HullCapacityScale * 6000) * Galaxy.GetDominatorBossHullScale * NextRandomFloatRange(0.9, 1.1, RandomState)), 8, oiDominator, -1, False);
+  CreateAndEquipFuelTanks(100, 8, oiDominator);
+  CreateAndEquipEngine(Round(EngineBaseSize * EquipmentSizeFactors[1]), 8, oiDominator);
+  CreateAndEquipWeapon(Ord(t_Weapon15), Round(WeaponInfos[t_Weapon15].AverageSize * EquipmentSizeFactors[5]), 8, oiDominator);
+  CreateAndEquipWeapon(Ord(t_Weapon15), Round(WeaponInfos[t_Weapon15].AverageSize * EquipmentSizeFactors[5]), 8, oiDominator);
+  CreateAndEquipWeapon(Ord(t_Weapon13), Round(WeaponInfos[t_Weapon13].AverageSize * EquipmentSizeFactors[5]), 8, oiDominator);
+  CreateAndEquipWeapon(Ord(t_Weapon11), Round(WeaponInfos[t_Weapon11].AverageSize * EquipmentSizeFactors[5]), 8, oiDominator);
   if Galaxy.GetDifficultyTierIndex > 0 then
-    CreateAndEquipWeapon(Ord(t_Weapon12), Round(WeaponInfos[t_Weapon12].AverageSize * EquipmentSizeFactors[5]), 8, Ord(oiDominator));
-  CreateAndEquipDefGenerator(Round(DefGeneratorBaseSize * EquipmentSizeFactors[5]), 8, Ord(oiDominator));
+    CreateAndEquipWeapon(Ord(t_Weapon12), Round(WeaponInfos[t_Weapon12].AverageSize * EquipmentSizeFactors[5]), 8, oiDominator);
+  CreateAndEquipDefGenerator(Round(DefGeneratorBaseSize * EquipmentSizeFactors[5]), 8, oiDominator);
   CreateAndEquipRepairRobot(Round(RepairRobotBaseSize * EquipmentSizeFactors[5]), Round(RemapClamped(Galaxy.GetEffectiveDifficultyLevel, 0, 24, 4, 8)), OwnerId);
   SetInventoryDominatorOwner;
   if GetDefGenerator <> nil then begin
@@ -222,7 +222,7 @@ end;
 procedure TKling.InitKeller(Star: TStar);
 begin
   TypeId := stKling;
-  OwnerId := Byte(oiDominator);
+  OwnerId := oiDominator;
   KlingType := ktBoss;
   DominatorSeries := dsKeller;
   SetMoney(MaxInt);
@@ -240,16 +240,16 @@ begin
   ActiveProgramAppliedTurn := 0;
   ChameleonActive := False;
   GraphDominator := Galaxy.GraphDominatorSurfacesEnabled;
-  CreateAndEquipHull(RoundAndTruncateToHundreds((HullCapacityScale * 4000) * Galaxy.GetDominatorBossHullScale * NextRandomFloatRange(0.9, 1.1, RandomState)), 8, Ord(oiDominator), -1, False);
-  CreateAndEquipFuelTanks(100, 8, Ord(oiDominator));
-  CreateAndEquipEngine(Round(EngineBaseSize * EquipmentSizeFactors[1]), 8, Ord(oiDominator));
-  CreateAndEquipWeapon(Ord(t_Weapon15), Round(WeaponInfos[t_Weapon15].AverageSize * EquipmentSizeFactors[5]), 8, Ord(oiDominator));
-  CreateAndEquipWeapon(Ord(t_Weapon14), Round(WeaponInfos[t_Weapon14].AverageSize * EquipmentSizeFactors[5]), 8, Ord(oiDominator));
-  CreateAndEquipWeapon(Ord(t_Weapon13), Round(WeaponInfos[t_Weapon13].AverageSize * EquipmentSizeFactors[5]), 8, Ord(oiDominator));
-  CreateAndEquipWeapon(Ord(t_Weapon9), Round(WeaponInfos[t_Weapon9].AverageSize * EquipmentSizeFactors[5]), 8, Ord(oiDominator));
+  CreateAndEquipHull(RoundAndTruncateToHundreds((HullCapacityScale * 4000) * Galaxy.GetDominatorBossHullScale * NextRandomFloatRange(0.9, 1.1, RandomState)), 8, oiDominator, -1, False);
+  CreateAndEquipFuelTanks(100, 8, oiDominator);
+  CreateAndEquipEngine(Round(EngineBaseSize * EquipmentSizeFactors[1]), 8, oiDominator);
+  CreateAndEquipWeapon(Ord(t_Weapon15), Round(WeaponInfos[t_Weapon15].AverageSize * EquipmentSizeFactors[5]), 8, oiDominator);
+  CreateAndEquipWeapon(Ord(t_Weapon14), Round(WeaponInfos[t_Weapon14].AverageSize * EquipmentSizeFactors[5]), 8, oiDominator);
+  CreateAndEquipWeapon(Ord(t_Weapon13), Round(WeaponInfos[t_Weapon13].AverageSize * EquipmentSizeFactors[5]), 8, oiDominator);
+  CreateAndEquipWeapon(Ord(t_Weapon9), Round(WeaponInfos[t_Weapon9].AverageSize * EquipmentSizeFactors[5]), 8, oiDominator);
   if Galaxy.GetDifficultyTierIndex > 0 then
-    CreateAndEquipWeapon(Ord(t_Weapon10), Round(WeaponInfos[t_Weapon10].AverageSize * EquipmentSizeFactors[5]), 8, Ord(oiDominator));
-  CreateAndEquipDefGenerator(Round(DefGeneratorBaseSize * EquipmentSizeFactors[5]), 8, Ord(oiDominator));
+    CreateAndEquipWeapon(Ord(t_Weapon10), Round(WeaponInfos[t_Weapon10].AverageSize * EquipmentSizeFactors[5]), 8, oiDominator);
+  CreateAndEquipDefGenerator(Round(DefGeneratorBaseSize * EquipmentSizeFactors[5]), 8, oiDominator);
   Inc(CreateAndEquipRepairRobot(Round(RepairRobotBaseSize * EquipmentSizeFactors[5]), Round(RemapClamped(Galaxy.GetEffectiveDifficultyLevel, 0, 24, 4, 8)), OwnerId).RepairPoints, Galaxy.GetEffectiveDifficultyLevel);
   SetInventoryDominatorOwner;
   if (GetDefGenerator <> nil) and GetDefGenerator.HasStandardStats then
@@ -271,7 +271,7 @@ procedure TKling.InitTerron(Star: TStar);
 var I: Integer; Planet: TPlanet; Weapon: TWeapon;
 begin
   TypeId := stKling;
-  OwnerId := Byte(oiDominator);
+  OwnerId := oiDominator;
   KlingType := ktBoss;
   DominatorSeries := dsTerron;
   SetMoney(MaxInt);
@@ -282,9 +282,9 @@ begin
   CurrentStar.Name := LookupLocalizedTextByKey('Star.' + DominatorSeriesNames[Ord(DominatorSeries)]);
   for I := 0 to Star.Planets.Count - 1 do begin
     Planet := Star.Planets[I];
-    if Planet.OwnerId in [Ord(oiMaloc)..Ord(oiGaal), Ord(oiPirate)] then begin
-      Planet.OwnerId := Byte(oiMaloc);
-      Planet.RaceId := Byte(oiMaloc);
+    if Planet.OwnerId in [oiMaloc..oiGaal, oiPirate] then begin
+      Planet.OwnerId := oiMaloc;
+      Planet.RaceId := oiMaloc;
     end;
   end;
   CurrentStar.Ships.Add(Self);
@@ -297,20 +297,20 @@ begin
   ActiveProgramAppliedTurn := 0;
   ChameleonActive := False;
   GraphDominator := Galaxy.GraphDominatorSurfacesEnabled;
-  Inc(CreateAndEquipHull(RoundAndTruncateToHundreds((HullCapacityScale * 10000) * Galaxy.GetDominatorBossHullScale * NextRandomFloatRange(0.9, 1.1, RandomState)), 8, Ord(oiDominator), -1, False).Armor, Galaxy.GetEffectiveDifficultyLevel div 4);
-  CreateAndEquipFuelTanks(100, 8, Ord(oiDominator));
-  CreateAndEquipEngine(Round(EngineBaseSize * EquipmentSizeFactors[1]), 8, Ord(oiDominator));
-  Weapon := CreateAndEquipWeapon(Ord(t_Weapon13), Round(WeaponInfos[t_Weapon13].AverageSize * EquipmentSizeFactors[5]), 8, Ord(oiDominator));
+  Inc(CreateAndEquipHull(RoundAndTruncateToHundreds((HullCapacityScale * 10000) * Galaxy.GetDominatorBossHullScale * NextRandomFloatRange(0.9, 1.1, RandomState)), 8, oiDominator, -1, False).Armor, Galaxy.GetEffectiveDifficultyLevel div 4);
+  CreateAndEquipFuelTanks(100, 8, oiDominator);
+  CreateAndEquipEngine(Round(EngineBaseSize * EquipmentSizeFactors[1]), 8, oiDominator);
+  Weapon := CreateAndEquipWeapon(Ord(t_Weapon13), Round(WeaponInfos[t_Weapon13].AverageSize * EquipmentSizeFactors[5]), 8, oiDominator);
   Inc(Weapon.Range, 5 * Galaxy.GetEffectiveDifficultyLevel);
   Inc(Weapon.MaxDamage, Galaxy.GetEffectiveDifficultyLevel div 2);
-  CreateAndEquipWeapon(Ord(t_Weapon4), Round(WeaponInfos[t_Weapon4].AverageSize * EquipmentSizeFactors[5]), 8, Ord(oiDominator));
-  CreateAndEquipWeapon(Ord(t_Weapon4), Round(WeaponInfos[t_Weapon4].AverageSize * EquipmentSizeFactors[5]), 8, Ord(oiDominator));
-  Weapon := CreateAndEquipWeapon(Ord(t_Weapon9), Round(WeaponInfos[t_Weapon9].AverageSize * EquipmentSizeFactors[5]), 8, Ord(oiDominator));
+  CreateAndEquipWeapon(Ord(t_Weapon4), Round(WeaponInfos[t_Weapon4].AverageSize * EquipmentSizeFactors[5]), 8, oiDominator);
+  CreateAndEquipWeapon(Ord(t_Weapon4), Round(WeaponInfos[t_Weapon4].AverageSize * EquipmentSizeFactors[5]), 8, oiDominator);
+  Weapon := CreateAndEquipWeapon(Ord(t_Weapon9), Round(WeaponInfos[t_Weapon9].AverageSize * EquipmentSizeFactors[5]), 8, oiDominator);
   Inc(Weapon.Range, 5 * Galaxy.GetEffectiveDifficultyLevel);
   Inc(Weapon.MaxDamage, Galaxy.GetEffectiveDifficultyLevel div 2);
   if Galaxy.GetDifficultyTierIndex > 1 then
-    CreateAndEquipWeapon(Ord(t_Weapon15), Round(WeaponInfos[t_Weapon15].AverageSize * EquipmentSizeFactors[5]), 8, Ord(oiDominator));
-  CreateAndEquipDefGenerator(Round(DefGeneratorBaseSize * EquipmentSizeFactors[5]), 8, Ord(oiDominator));
+    CreateAndEquipWeapon(Ord(t_Weapon15), Round(WeaponInfos[t_Weapon15].AverageSize * EquipmentSizeFactors[5]), 8, oiDominator);
+  CreateAndEquipDefGenerator(Round(DefGeneratorBaseSize * EquipmentSizeFactors[5]), 8, oiDominator);
   CreateAndEquipRepairRobot(Round(RepairRobotBaseSize * EquipmentSizeFactors[5]), Round(RemapClamped(Galaxy.GetEffectiveDifficultyLevel, 0, 24, 4, 8)), OwnerId);
   SetInventoryDominatorOwner;
   if (GetDefGenerator <> nil) and GetDefGenerator.HasStandardStats then
@@ -332,7 +332,7 @@ end;
 procedure TKling.InitializeDominator(Kind: TKlingType; Planet: TPlanet; Series: TDominatorSeries);
 begin
   TypeId := stKling;
-  OwnerId := Byte(oiDominator);
+  OwnerId := oiDominator;
   KlingType := Kind;
   DominatorSeries := Series;
   SetMoney(Round(Galaxy.MaxRangerWealth * DominatorShipDefinitions[Ord(Kind)].InitialWealthScale));
@@ -433,17 +433,17 @@ begin
   ChameleonActive := False;
   GraphDominator := Galaxy.GraphDominatorSurfacesEnabled;
   CreateAndEquipHull(Round(RandomInteger(DominatorShipDefinitions[Ord(KlingType)].MinimumHullSize,
-    DominatorShipDefinitions[Ord(KlingType)].MaximumHullSize) * HullCapacityScale), RandomTuning(2, 3), Ord(oiDominator), -1, False);
-  CreateAndEquipEngine(SizeForKind(EngineBaseSize), RandomTuning(10, 11), Ord(oiDominator));
+    DominatorShipDefinitions[Ord(KlingType)].MaximumHullSize) * HullCapacityScale), RandomTuning(2, 3), oiDominator, -1, False);
+  CreateAndEquipEngine(SizeForKind(EngineBaseSize), RandomTuning(10, 11), oiDominator);
   if RandomInteger(1, 100) <= InterpolatedTuning(14, 15) then
-    CreateAndEquipRepairRobot(SizeForKind(RepairRobotBaseSize), RandomTuning(4, 5), Ord(oiDominator));
+    CreateAndEquipRepairRobot(SizeForKind(RepairRobotBaseSize), RandomTuning(4, 5), oiDominator);
   if RandomInteger(1, 100) <= InterpolatedTuning(16, 17) then
-    CreateAndEquipDefGenerator(SizeForKind(DefGeneratorBaseSize), RandomTuning(6, 7), Ord(oiDominator));
+    CreateAndEquipDefGenerator(SizeForKind(DefGeneratorBaseSize), RandomTuning(6, 7), oiDominator);
   TechLevel := Galaxy.TechLevel;
-  CreateAndEquipFuelTanks(SizeForKind(FuelTanksBaseSize), RandomInteger(1, TechLevel), Ord(oiDominator));
-  CreateAndEquipRadar(SizeForKind(RadarBaseSize), RandomInteger(1, TechLevel), Ord(oiDominator));
-  CreateAndEquipScanner(SizeForKind(ScannerBaseSize), RandomInteger(1, TechLevel), Ord(oiDominator));
-  CreateAndEquipCargoHook(SizeForKind(CargoHookBaseSize), RandomInteger(1, Min(TechLevel, 7)), Ord(oiDominator));
+  CreateAndEquipFuelTanks(SizeForKind(FuelTanksBaseSize), RandomInteger(1, TechLevel), oiDominator);
+  CreateAndEquipRadar(SizeForKind(RadarBaseSize), RandomInteger(1, TechLevel), oiDominator);
+  CreateAndEquipScanner(SizeForKind(ScannerBaseSize), RandomInteger(1, TechLevel), oiDominator);
+  CreateAndEquipCargoHook(SizeForKind(CargoHookBaseSize), RandomInteger(1, Min(TechLevel, 7)), oiDominator);
   Distribution := DominatorWeaponDistributionByTier[Tier];
   WeaponCount := RandomTuning(12, 13);
   for I := 1 to WeaponCount do begin
@@ -470,7 +470,7 @@ begin
              ((DominatorSeries <> dsTerron) or not (WeaponType in [63, 64])) and
              ((DominatorSeries <> dsKeller) or not (WeaponType in [62, 64])));
           if Accepted then CreateAndEquipWeapon(WeaponType,
-            RandomEquipmentSize(WeaponInfos[TItemType(WeaponType)].AverageSize, MaximumSizeIndex, MinimumSizeIndex), RandomTuning(8, 9), Ord(oiDominator));
+            RandomEquipmentSize(WeaponInfos[TItemType(WeaponType)].AverageSize, MaximumSizeIndex, MinimumSizeIndex), RandomTuning(8, 9), oiDominator);
           Chosen := True;
         end;
         Inc(WeaponType);
@@ -882,7 +882,7 @@ begin
   if (Speed <> 0) and (CurrentStar.Status.CustomFaction = '') then
     for I := 0 to CurrentStar.Planets.Count - 1 do begin
       Planet := CurrentStar.Planets[I];
-      if (Planet.OwnerId = Byte(oiDominator)) or ((Planet.CurrentStar.Id = Galaxy.KellerResearchTargetStarId) and (Planet.OwnerId <> Byte(oiUninhabited)) and (KellerShip <> nil)) then PlanetQueue.Add(Planet);
+      if (Planet.OwnerId = oiDominator) or ((Planet.CurrentStar.Id = Galaxy.KellerResearchTargetStarId) and (Planet.OwnerId <> oiUninhabited) and (KellerShip <> nil)) then PlanetQueue.Add(Planet);
     end;
 end;
 { @end $5EC094 }
@@ -890,7 +890,7 @@ end;
 { @routine $5EC160 TKling_CanQueueReachablePlanet }
 function TKling.CanQueueReachablePlanet(Planet: TPlanet): Boolean;
 begin
-  Result := Planet.OwnerId = Byte(oiDominator);
+  Result := Planet.OwnerId = oiDominator;
 end;
 { @end $5EC160 }
 
@@ -1449,7 +1449,7 @@ var I: Integer; Equipment: TEquipment;
 begin
   for I := 0 to Inventory.Count - 1 do begin
     Equipment := Inventory[I];
-    Equipment.OwnerId := Byte(oiDominator);
+    Equipment.OwnerId := oiDominator;
     Equipment.DominatorSeries := DominatorSeries;
   end;
 end;
@@ -1499,7 +1499,7 @@ begin end;
 { @routine $5EEB18 TKling_ReactToAttack }
 procedure TKling.ReactToAttack(Attacker: TShip);
 begin
-  if Attacker.OwnerId <> Byte(oiDominator) then EnemyShip := Attacker
+  if Attacker.OwnerId <> oiDominator then EnemyShip := Attacker
   else if (Attacker as TKling).DominatorSeries <> DominatorSeries then EnemyShip := Attacker;
 end;
 { @end $5EEB18 }
@@ -1647,7 +1647,7 @@ begin
         if Ship.InNormalSpace then begin
           if HasIndependentScriptFaction then begin
             if Ship.HasIndependentScriptFaction and (TScriptShip(ScriptShip).StateText = TScriptShip(Ship.ScriptShip).StateText) then Continue;
-          end else if ((Ship.OwnerId = Byte(oiDominator)) and ((Ship as TKling).DominatorSeries = DominatorSeries) and (Ship.CurrentStanding <> ssCustom)) or IsPlayerCamouflageEffective(Ship) then Continue;
+          end else if ((Ship.OwnerId = oiDominator) and ((Ship as TKling).DominatorSeries = DominatorSeries) and (Ship.CurrentStanding <> ssCustom)) or IsPlayerCamouflageEffective(Ship) then Continue;
           if (EnemyShip = nil) or not (Ship.TypeId in [Ord(rstRangerCenter)..Ord(rstCustomStation)]) or (EnemyShip.TypeId in [Ord(rstRangerCenter)..Ord(rstCustomStation)]) then begin
             Distance := PointDistance(Position, Ship.Position);
             if NextRandomFloatRange(0.3, 3, RandomState) * BestDistance > Distance then begin

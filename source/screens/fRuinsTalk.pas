@@ -34,7 +34,7 @@ type
     function CountResearchRemains(Series: Byte; Count: Integer): Integer; // @addr $5A82A0
     function CountResearchEquipment(Count: Integer): Integer; // @addr $5A8354
     procedure BuildResearchItemChoices(Series: Byte; var Text: WideString); // @addr $5A83EC
-    StationOwner: Byte; // @offset $EE Copied from the docked ship on entry.
+    StationOwner: TOwnerId; // @offset $EE Copied from the docked ship on entry.
     StationType: Byte; // @offset $EF Copied from the docked ship on entry.
     procedure ContinueDominatorVictoryDialog(Action: Integer); // @addr $5AB3E4
     function ShowDominatorVictoryDialog: Boolean; // @addr $5AABA4
@@ -531,7 +531,7 @@ end;
 { @routine $5A7100 TfRuinsTalk_OnOpen }
 procedure TfRuinsTalk.OnOpen;
 var
-  Owner, Kind: Byte;
+  Owner: TOwnerId; Kind: Byte;
   Index: Integer;
   Block: TBlockParEC;
   Control: TObjectGI;
@@ -595,7 +595,7 @@ begin
     Choices := GetByName('TalkPA') as TPanelScrollBarGI;
     Choices.SetVerticalScrollbarEnabled(False);
     Stage := 13;
-    for Owner := 0 to 4 do
+    for Owner := oiMaloc to oiGaal do
     begin
       Control := FindControlByPath('Panel' + OwnerInfo[Owner].InternalName);
       if Control <> nil then Control.SetActive(False);
@@ -737,7 +737,7 @@ var
     Result.Cost := Item.Cost;
     Result.Weight := Item.Weight;
     Result.Priority := 0;
-    if (Item.OwnerId = Byte(oiDominator)) and (Item.EquippedFlag = 0) and (Item.NoDropFlag = 0) and (Item.CustomFaction = '') and not (Item is THull) then
+    if (Item.OwnerId = oiDominator) and (Item.EquippedFlag = 0) and (Item.NoDropFlag = 0) and (Item.CustomFaction = '') and not (Item is THull) then
     begin
       if Item is TUselessItem then
       begin
@@ -1364,7 +1364,7 @@ begin
       MusicManager.RequestFadeOut;
       Exit;
     end;
-    if GetPlayer.CurrentPlanet.OwnerId = Byte(oiPirate) then
+    if GetPlayer.CurrentPlanet.OwnerId = oiPirate then
     begin
       if not GetPlayer.CurrentPlanet.IsMainPiratePlanet then MusicManager.PlayCategory('Nation.' + OwnerInfo[RaceToOwner(GetPlayer.CurrentPlanet.RaceId)].InternalName + 'Pirate')
       else MusicManager.PlayCategory('Nation.PiratePlanetMain');
@@ -1630,7 +1630,7 @@ begin
               end
               else
               begin
-                if (GetPlayer.OwnerId <> Byte(oiPirate)) and GetPlayer.TryPromoteRank then
+                if (GetPlayer.OwnerId <> oiPirate) and GetPlayer.TryPromoteRank then
                 begin
                   Stage := 12;
                   DialogText := LocalizedColorText('FormRuins.WB.' + CoalitionRankNames[GetPlayer.Rank] + '.NewRank');
@@ -1671,7 +1671,7 @@ begin
                 end
                 else DialogText := LocalizedColorText('FormRuins.WB.' + CoalitionRankNames[GetPlayer.Rank] + '.Greeting');
                 if ((GetPlayer.DockedTo as TRuins).FlyToStar <> nil) and
-                  ((GetPlayer.DockedTo as TRuins).FlyToStar <> GetPlayer.CurrentStar) and (GetPlayer.OwnerId <> Byte(oiPirate)) then
+                  ((GetPlayer.DockedTo as TRuins).FlyToStar <> GetPlayer.CurrentStar) and (GetPlayer.OwnerId <> oiPirate) then
                 begin
                   DialogText := DialogText + #13#10 + LocalizedColorText('FormRuins.WB.FlyToEnemy.GreetingAdd');
                   ReplaceTextToken(DialogText, '<StarEnemy>', (GetPlayer.DockedTo as TRuins).FlyToStar.Name, '<color=255,240,100>');
@@ -2183,9 +2183,9 @@ begin
       Ord(rstPirateBase):
         begin
           AddChoice('- ' + LocalizedColorText('FormRuins.PB.ChangeNationality.ChangeNationality'), 0, ShowPirateBaseNationalityDialog);
-          if GetPlayer.PirateClanReal and (GetPlayer.OwnerId <> Byte(oiPirate)) and (Galaxy.PirateWinType <> 3) then
+          if GetPlayer.PirateClanReal and (GetPlayer.OwnerId <> oiPirate) and (Galaxy.PirateWinType <> 3) then
             AddChoice('- ' + LocalizedColorText('FormRuins.PB.ChangeSide.ChangeSideToPirate'), 0, ShowPirateBaseSideChangeDialog);
-          if (GetPlayer.OwnerId = Byte(oiPirate)) and (Galaxy.CoalitionDefeatedTurn = 0) then
+          if (GetPlayer.OwnerId = oiPirate) and (Galaxy.CoalitionDefeatedTurn = 0) then
             AddChoice('- ' + LocalizedColorText('FormRuins.PB.ChangeSide.ChangeSideToNormal'), 0, ShowPirateBaseSideChangeDialog);
           AddChoice('- ' + LocalizedColorText('FormRuins.PB.Program.PlayerAsk'), 0, ShowPirateBaseProgramDialog);
           if Galaxy.ArePirateNodesEnabled then
@@ -2206,7 +2206,7 @@ begin
           end
           else
           begin
-            if GetPlayer.OwnerId <> Byte(oiPirate) then
+            if GetPlayer.OwnerId <> oiPirate then
             begin
               AddChoice('- ' + LocalizedColorText('FormRuins.WB.WarWithKlingAndPirates.PlayerSend'), 0, I_WarWithKlingAndPirates);
               if GetPlayer.Rank < 6 then
@@ -2801,18 +2801,18 @@ begin
     if TGalaxyEvent(Galaxy.GalaxyEvents[I]).Turn + 365 < Galaxy.CurrentTurn then Break;
     if TGalaxyEvent(Galaxy.GalaxyEvents[I]).EventType = 'PlayerChangesNationality' then Factor := Factor * 1.5;
   end;
-  ReplaceTextToken(Text, '<MoneyMaloc>', IntToStr(Round(Galaxy.ComputeScaledBigMoney(0) * Factor)), '<color=255,240,100>');
-  ReplaceTextToken(Text, '<MoneyPeleng>', IntToStr(Round(Galaxy.ComputeScaledBigMoney(1) * Factor)), '<color=255,240,100>');
-  ReplaceTextToken(Text, '<MoneyPeople>', IntToStr(Round(Galaxy.ComputeScaledBigMoney(2) * Factor)), '<color=255,240,100>');
-  ReplaceTextToken(Text, '<MoneyFei>', IntToStr(Round(Galaxy.ComputeScaledBigMoney(3) * Factor)), '<color=255,240,100>');
-  ReplaceTextToken(Text, '<MoneyGaal>', IntToStr(Round(Galaxy.ComputeScaledBigMoney(4) * Factor)), '<color=255,240,100>');
+  ReplaceTextToken(Text, '<MoneyMaloc>', IntToStr(Round(Galaxy.ComputeScaledBigMoney(oiMaloc) * Factor)), '<color=255,240,100>');
+  ReplaceTextToken(Text, '<MoneyPeleng>', IntToStr(Round(Galaxy.ComputeScaledBigMoney(oiPeleng) * Factor)), '<color=255,240,100>');
+  ReplaceTextToken(Text, '<MoneyPeople>', IntToStr(Round(Galaxy.ComputeScaledBigMoney(oiHuman) * Factor)), '<color=255,240,100>');
+  ReplaceTextToken(Text, '<MoneyFei>', IntToStr(Round(Galaxy.ComputeScaledBigMoney(oiFeyan) * Factor)), '<color=255,240,100>');
+  ReplaceTextToken(Text, '<MoneyGaal>', IntToStr(Round(Galaxy.ComputeScaledBigMoney(oiGaal) * Factor)), '<color=255,240,100>');
   DialogText := DialogText + Text;
   ClearChoices;
-  A := Galaxy.ComputeScaledBigMoney(0);
-  B := Galaxy.ComputeScaledBigMoney(1);
-  C := Galaxy.ComputeScaledBigMoney(2);
-  D := Galaxy.ComputeScaledBigMoney(3);
-  E := Galaxy.ComputeScaledBigMoney(4);
+  A := Galaxy.ComputeScaledBigMoney(oiMaloc);
+  B := Galaxy.ComputeScaledBigMoney(oiPeleng);
+  C := Galaxy.ComputeScaledBigMoney(oiHuman);
+  D := Galaxy.ComputeScaledBigMoney(oiFeyan);
+  E := Galaxy.ComputeScaledBigMoney(oiGaal);
   if D < E then DE := D else DE := E;
   if C < DE then CDE := C else CDE := DE;
   if B < CDE then BCDE := B else BCDE := CDE;
@@ -2845,11 +2845,11 @@ begin
   SelectFaceScreen.PlayerRace := GetPlayer.PilotRace;
   SelectFaceScreen.CaptainPortraitIndex := GetPlayer.PortraitFaceId;
   SelectFaceScreen.PlayerName := GetPlayer.Name;
-  SelectFaceScreen.NationalityCosts[0] := Round(Galaxy.ComputeScaledBigMoney(0) * Factor);
-  SelectFaceScreen.NationalityCosts[1] := Round(Galaxy.ComputeScaledBigMoney(1) * Factor);
-  SelectFaceScreen.NationalityCosts[2] := Round(Galaxy.ComputeScaledBigMoney(2) * Factor);
-  SelectFaceScreen.NationalityCosts[3] := Round(Galaxy.ComputeScaledBigMoney(3) * Factor);
-  SelectFaceScreen.NationalityCosts[4] := Round(Galaxy.ComputeScaledBigMoney(4) * Factor);
+  SelectFaceScreen.NationalityCosts[oiMaloc] := Round(Galaxy.ComputeScaledBigMoney(oiMaloc) * Factor);
+  SelectFaceScreen.NationalityCosts[oiPeleng] := Round(Galaxy.ComputeScaledBigMoney(oiPeleng) * Factor);
+  SelectFaceScreen.NationalityCosts[oiHuman] := Round(Galaxy.ComputeScaledBigMoney(oiHuman) * Factor);
+  SelectFaceScreen.NationalityCosts[oiFeyan] := Round(Galaxy.ComputeScaledBigMoney(oiFeyan) * Factor);
+  SelectFaceScreen.NationalityCosts[oiGaal] := Round(Galaxy.ComputeScaledBigMoney(oiGaal) * Factor);
   SelectFaceScreen.AvailableMoney := GetPlayer.Money;
   Galaxy.PrimeIntegrityChecksum(320);
   if RunSelectFaceDialog(Self) then
@@ -2857,7 +2857,7 @@ begin
     Galaxy.CheckIntegrityChecksum(321);
     GetPlayer.PortraitFaceId := SelectFaceScreen.CaptainPortraitIndex;
     GetPlayer.PilotRace := SelectFaceScreen.PlayerRace;
-    if GetPlayer.OwnerId <> Byte(oiPirate) then GetPlayer.OwnerId := RaceToOwner(SelectFaceScreen.PlayerRace);
+    if GetPlayer.OwnerId <> oiPirate then GetPlayer.OwnerId := RaceToOwner(SelectFaceScreen.PlayerRace);
     GetPlayer.Name := SelectFaceScreen.PlayerName;
     LastLoadedPlayerName := GetPlayer.Name;
     GetPlayer.SetMoney(Max(0, GetPlayer.Money - Max(0, SelectFaceScreen.AcceptedCost)));
@@ -2882,13 +2882,13 @@ begin
     GetPlayer.ChangeShipRelations(nil, rcmRaiseTo, 45, RelationShipTypes, PlanetOwnerMasks.PirateClan);
     SoundManager.PlaySound('Sound.Sell');
     Event := AddGalaxyEvent('PlayerChangesNationality');
-    Event.AddData(GetPlayer.PilotRace);
+    Event.AddData(Ord(GetPlayer.PilotRace));
     case SelectFaceScreen.PlayerRace of
-      0: DialogText := LocalizedColorText('FormRuins.PB.ChangeNationality.AfterOperationMaloc');
-      1: DialogText := LocalizedColorText('FormRuins.PB.ChangeNationality.AfterOperationPeleng');
-      2: DialogText := LocalizedColorText('FormRuins.PB.ChangeNationality.AfterOperationPeople');
-      3: DialogText := LocalizedColorText('FormRuins.PB.ChangeNationality.AfterOperationFei');
-      4: DialogText := LocalizedColorText('FormRuins.PB.ChangeNationality.AfterOperationGaal');
+      oiMaloc: DialogText := LocalizedColorText('FormRuins.PB.ChangeNationality.AfterOperationMaloc');
+      oiPeleng: DialogText := LocalizedColorText('FormRuins.PB.ChangeNationality.AfterOperationPeleng');
+      oiHuman: DialogText := LocalizedColorText('FormRuins.PB.ChangeNationality.AfterOperationPeople');
+      oiFeyan: DialogText := LocalizedColorText('FormRuins.PB.ChangeNationality.AfterOperationFei');
+      oiGaal: DialogText := LocalizedColorText('FormRuins.PB.ChangeNationality.AfterOperationGaal');
     end;
   end
   else
@@ -2917,9 +2917,9 @@ procedure TfRuinsTalk.ShowPirateBaseSideChangeDialog(Action: Integer);
 var
   I: Integer;
 begin
-  if GetPlayer.OwnerId = Byte(oiPirate) then DialogText := LocalizedColorText('FormRuins.PB.ChangeSide.AnswerChangeSideToNormal')
+  if GetPlayer.OwnerId = oiPirate then DialogText := LocalizedColorText('FormRuins.PB.ChangeSide.AnswerChangeSideToNormal')
   else DialogText := LocalizedColorText('FormRuins.PB.ChangeSide.AnswerChangeSideToPirate');
-  StationServiceQuoteCost := Galaxy.ComputeScaledHugeMoney(2);
+  StationServiceQuoteCost := Galaxy.ComputeScaledHugeMoney(oiHuman);
   for I := Galaxy.GalaxyEvents.Count - 1 downto 0 do
   begin
     if TGalaxyEvent(Galaxy.GalaxyEvents[I]).Turn + 365 < Galaxy.CurrentTurn then Break;
@@ -2945,9 +2945,9 @@ var
   I, RangerIndex: Integer;
   Relation: Byte;
 begin
-  if GetPlayer.OwnerId = Byte(oiPirate) then GetPlayer.OwnerId := RaceToOwner(GetPlayer.PilotRace)
-  else GetPlayer.OwnerId := Byte(oiPirate);
-  StationServiceQuoteCost := Galaxy.ComputeScaledHugeMoney(2);
+  if GetPlayer.OwnerId = oiPirate then GetPlayer.OwnerId := RaceToOwner(GetPlayer.PilotRace)
+  else GetPlayer.OwnerId := oiPirate;
+  StationServiceQuoteCost := Galaxy.ComputeScaledHugeMoney(oiHuman);
   for I := Galaxy.GalaxyEvents.Count - 1 downto 0 do
   begin
     if TGalaxyEvent(Galaxy.GalaxyEvents[I]).Turn + 365 < Galaxy.CurrentTurn then Break;
@@ -2961,7 +2961,7 @@ begin
   RangerIndex := Galaxy.Rangers.IndexOf(GetPlayer);
   if MainPiratePlanet <> nil then Relation := Byte(MainPiratePlanet.RangerRelations[RangerIndex])
   else Relation := 0;
-  if GetPlayer.OwnerId = Byte(oiPirate) then
+  if GetPlayer.OwnerId = oiPirate then
   begin
     if (Relation < 45) and (MainPiratePlanet <> nil) then MainPiratePlanet.RangerRelations[RangerIndex] := Pointer(45);
     GetPlayer.ChangeShipRelations(nil, rcmRaiseTo, 45, RelationShipTypes, PlanetOwnerMasks.PirateClan);
@@ -2978,7 +2978,7 @@ begin
     DialogText := LocalizedColorText('FormRuins.PB.ChangeSide.AnswerPlayerOkNormal');
   end;
   Event := AddGalaxyEvent('PlayerChangesSide');
-  Event.AddData(Ord(GetPlayer.OwnerId = Byte(oiPirate)));
+  Event.AddData(Ord(GetPlayer.OwnerId = oiPirate));
   ClearChoices;
   M_Main(True);
 end;
@@ -2987,7 +2987,7 @@ end;
 { @routine $5B8990 TfRuinsTalk_DeclinePirateBaseSideChange }
 procedure TfRuinsTalk.DeclinePirateBaseSideChange(Action: Integer);
 begin
-  if GetPlayer.OwnerId = Byte(oiPirate) then DialogText := LocalizedColorText('FormRuins.PB.ChangeSide.AnswerPlayerNoNormal')
+  if GetPlayer.OwnerId = oiPirate then DialogText := LocalizedColorText('FormRuins.PB.ChangeSide.AnswerPlayerNoNormal')
   else DialogText := LocalizedColorText('FormRuins.PB.ChangeSide.AnswerPlayerNoPirate');
   ClearChoices;
   M_Main(True);
@@ -3578,8 +3578,8 @@ end;
 { @routine $5BD528 TfRuinsTalk_ShowMilitaryBaseWarOperationDialog }
 procedure TfRuinsTalk.ShowMilitaryBaseWarOperationDialog(Action: Integer);
 begin
-  BusinessQuoteSmallAmount := RoundAndTruncateToTens(Galaxy.ComputeScaledSmallMoney(2));
-  StationServiceQuoteCost := RoundAndTruncateToHundreds(Galaxy.ComputeScaledHugeMoney(2));
+  BusinessQuoteSmallAmount := RoundAndTruncateToTens(Galaxy.ComputeScaledSmallMoney(oiHuman));
+  StationServiceQuoteCost := RoundAndTruncateToHundreds(Galaxy.ComputeScaledHugeMoney(oiHuman));
   StationServiceQuoteCost := RoundAndTruncateToHundreds(StationServiceQuoteCost * RemapClamped(Galaxy.CurrentTurn - GetPlayer.StationServiceLastUseTurns[cpWarOperation], 0, StationServiceRepeatPeriods[cpWarOperation], 7.7, 1));
   DialogText := LocalizedColorText('FormRuins.WB.WarOperation.WB');
   ReplaceTextToken(DialogText, '<DecMoney>', IntToStr(BusinessQuoteSmallAmount), '<color=255,240,100>');
@@ -3607,9 +3607,9 @@ begin
     Group := Galaxy.LiberationGroups[Galaxy.LiberationGroups.Count - 1];
     GetPlayer.SetMoney(GetPlayer.Money - StationServiceQuoteCost);
     GetPlayer.StationServiceLastUseTurns[cpWarOperation] := Galaxy.CurrentTurn;
-    GetPlayer.ChangePlanetRelations(nil, rcmIncrease, 25, [0]);
-    GetPlayer.ChangePlanetRelations(nil, rcmIncrease, 15, [2, 3, 4]);
-    GetPlayer.ChangePlanetRelations(nil, rcmIncrease, 5, [1]);
+    GetPlayer.ChangePlanetRelations(nil, rcmIncrease, 25, [oiMaloc]);
+    GetPlayer.ChangePlanetRelations(nil, rcmIncrease, 15, [oiHuman, oiFeyan, oiGaal]);
+    GetPlayer.ChangePlanetRelations(nil, rcmIncrease, 5, [oiPeleng]);
     for I := Group.Ships.Count - 1 downto 0 do
     begin
       Ship := Group.Ships[I];
@@ -3840,7 +3840,7 @@ var
 begin
   Item := TEquipment(Action);
   StationImprovementItem := Item;
-  if Item.OwnerId = Byte(oiDominator) then
+  if Item.OwnerId = oiDominator then
   begin
     DialogText := LocalizedColorText('FormRuins.SB.Improvement.SBNeedCostImprovementNodes');
   ReplaceTextToken(DialogText, '<MinNode>', IntToStr(Round(Item.CalculateImprovementCost(ikMinor) * 0.01)), '<color=255,240,100>');
@@ -3854,7 +3854,7 @@ begin
   ReplaceTextToken(DialogText, '<Average>', IntToStr(Item.CalculateImprovementCost(ikMedium)), '<color=255,240,100>');
   ReplaceTextToken(DialogText, '<Max>', IntToStr(Item.CalculateImprovementCost(ikMajor)), '<color=255,240,100>');
   ClearChoices;
-  if Item.OwnerId = Byte(oiDominator) then
+  if Item.OwnerId = oiDominator then
   begin
     Nodes := GetPlayer.GetAvailableNodeCount(nil);
     if (Nodes >= Round(Item.CalculateImprovementCost(ikMajor) * 0.01)) and (Item.CalculateImprovementCost(ikMajor) <= GetPlayer.Money) then
@@ -3925,11 +3925,11 @@ begin
   Item := StationImprovementItem;
   Kind := StationImprovementKind;
   Cost := Item.CalculateImprovementCost(Kind);
-  if Item.OwnerId = Byte(oiDominator) then Nodes := Round(Cost * 0.01) else Nodes := 0;
+  if Item.OwnerId = oiDominator then Nodes := Round(Cost * 0.01) else Nodes := 0;
   if (GetPlayer.Money >= Cost) and (GetPlayer.GetAvailableNodeCount(nil) >= Nodes) then
   begin
     GetPlayer.SetMoney(GetPlayer.Money - Cost);
-    if Item.OwnerId = Byte(oiDominator) then GetPlayer.ConsumeAvailableNodes(Nodes, nil);
+    if Item.OwnerId = oiDominator then GetPlayer.ConsumeAvailableNodes(Nodes, nil);
     Item.DetailImprovement := StationImprovementDetail;
     Item.Improve(Kind);
     GetPlayer.RefreshDerivedStats(True);
@@ -4196,7 +4196,7 @@ begin
   for I := GetPlayer.Inventory.Count - 1 downto 0 do
   begin
     Item := GetPlayer.Inventory[I];
-    if (Item.OwnerId = Byte(oiDominator)) and (Item.DominatorSeries = TDominatorSeries(SelectedResearchSeries)) and (Item.NoDropFlag = 0) and (Item is TUselessItem) then
+    if (Item.OwnerId = oiDominator) and (Item.DominatorSeries = TDominatorSeries(SelectedResearchSeries)) and (Item.NoDropFlag = 0) and (Item is TUselessItem) then
       if not IsResearchItemQuestLetter(Item as TUselessItem) and (Item.CustomFaction = '') then
     begin
       Inc(Galaxy.DominatorResearch[SelectedResearchSeries].Material, Item.Weight);
@@ -4236,7 +4236,7 @@ begin
   for I := GetPlayer.Inventory.Count - 1 downto 0 do
   begin
     Item := GetPlayer.Inventory[I];
-    if (Item.OwnerId = Byte(oiDominator)) and not (Item is TUselessItem) and (Item.EquippedFlag = 0) and (Item.NoDropFlag = 0) and (Item.ItemType <> t_Protoplasm) and (Item.ItemType <> t_MicroModule) and (Item.CustomFaction = '') then
+    if (Item.OwnerId = oiDominator) and not (Item is TUselessItem) and (Item.EquippedFlag = 0) and (Item.NoDropFlag = 0) and (Item.ItemType <> t_Protoplasm) and (Item.ItemType <> t_MicroModule) and (Item.CustomFaction = '') then
     begin
       Inc(Galaxy.DominatorResearch[SelectedResearchSeries].Material, Item.Weight);
       Inc(Money, Item.Cost);
@@ -4315,7 +4315,7 @@ var
   Cost: Integer;
 begin
   SelectedResearchSeries := Action - 1;
-  Cost := RoundAndTruncateToHundreds(Min(Galaxy.ComputeScaledHugeMoney(2) * 2, GetPlayer.Wealth div 30) * ResearchProgramCostFactors[SelectedResearchSeries]);
+  Cost := RoundAndTruncateToHundreds(Min(Galaxy.ComputeScaledHugeMoney(oiHuman) * 2, GetPlayer.Wealth div 30) * ResearchProgramCostFactors[SelectedResearchSeries]);
   DialogText := LocalizedColorText('FormRuins.SB.Scn.SBBuyTech' + DominatorSeriesNames[SelectedResearchSeries]);
   ReplaceTextToken(DialogText, '<Money>', IntToStr(Cost), '<color=255,240,100>');
   ReplaceTextToken(DialogText, '<SB>', GetPlayer.DockedTo.Name, '<color=255,240,100>');
@@ -4610,11 +4610,11 @@ begin
   begin
     DialogText := LocalizedColorText('FormRuins.BK.Policy.BK');
     ReplaceTextToken(DialogText, '<BK>', GetPlayer.DockedTo.Name, '<color=255,240,100>');
-    ReplaceTextToken(DialogText, '<Money>', IntToStr(Galaxy.ComputeScaledAverageMoney(2)), '<color=255,240,100>');
+    ReplaceTextToken(DialogText, '<Money>', IntToStr(Galaxy.ComputeScaledAverageMoney(oiHuman)), '<color=255,240,100>');
     ReplaceTextToken(DialogText, '<Year>', IntToStr(5), '<color=255,240,100>');
   end;
   ClearChoices;
-  if Galaxy.ComputeScaledAverageMoney(2) <= GetPlayer.Money then
+  if Galaxy.ComputeScaledAverageMoney(oiHuman) <= GetPlayer.Money then
   AddChoice('- ' + LocalizedColorText('FormRuins.BK.Policy.PlayerOk'), 0, BuyBusinessCenterMedicalPolicy)
   else
   AddChoice('- ' + LocalizedColorText('FormRuins.BK.Policy.PlayerOk'), 0, ScriptDialogBlockCallback);
@@ -4629,9 +4629,9 @@ procedure TfRuinsTalk.BuyBusinessCenterMedicalPolicy(Action: Integer);
 begin
   DialogText := LocalizedColorText('FormRuins.BK.Policy.BKAfterOk');
   ReplaceTextToken(DialogText, '<BK>', GetPlayer.DockedTo.Name, '<color=255,240,100>');
-  ReplaceTextToken(DialogText, '<Money>', IntToStr(Galaxy.ComputeScaledAverageMoney(2)), '<color=255,240,100>');
+  ReplaceTextToken(DialogText, '<Money>', IntToStr(Galaxy.ComputeScaledAverageMoney(oiHuman)), '<color=255,240,100>');
   ReplaceTextToken(DialogText, '<Year>', IntToStr(5), '<color=255,240,100>');
-  GetPlayer.SetMoney(GetPlayer.Money - Galaxy.ComputeScaledAverageMoney(2));
+  GetPlayer.SetMoney(GetPlayer.Money - Galaxy.ComputeScaledAverageMoney(oiHuman));
   GetPlayer.MedicalPolicyTicks := 1825;
   SoundManager.PlaySound('Sound.Sell');
   M_Main(True);
@@ -5017,7 +5017,7 @@ begin
             Planet := Galaxy.Planets[Index];
             if Planet.IsCoalitionOwned and not Planet.IsMainPiratePlanet and
                (SeededRandomUnitFloat(GetPlayer.DockedTo.Seed + Planet.GenerationSeed + Galaxy.CurrentTurn div 60 + 5889) >= 0.9) and
-               (Planet.CurrentStar.ShipTypeCounts[stKling] <= 0) and (Planet.OwnerId <> Byte(oiPirate)) and
+               (Planet.CurrentStar.ShipTypeCounts[stKling] <= 0) and (Planet.OwnerId <> oiPirate) and
                ((Planet.CurrentStar.Battle = 0) or (Planet.CurrentStar.CountPirateShips(False) <= 0)) and
                (Planet.CurrentStar.DaysSincePlayerVisit >= 30) and Planet.CurrentStar.IsConstellationVisible then
             begin
@@ -5111,9 +5111,9 @@ begin
       ReplaceTextToken(DialogText, '<Name>', PirateBase.Name, '<color=255,240,100>');
       ReplaceTextToken(DialogText, '<Star>', PirateBase.CurrentStar.Name, '<color=255,240,100>');
       Galaxy.UpdateConstellationMilitaryStats;
-      GetPlayer.ChangePlanetRelations(nil, rcmDecreaseWithFloor20, 30, [3, 4]);
-      GetPlayer.ChangePlanetRelations(nil, rcmDecreaseWithFloor20, 10, [0, 2]);
-      GetPlayer.ChangePlanetRelations(nil, rcmIncrease, 20, [1]);
+      GetPlayer.ChangePlanetRelations(nil, rcmDecreaseWithFloor20, 30, [oiFeyan, oiGaal]);
+      GetPlayer.ChangePlanetRelations(nil, rcmDecreaseWithFloor20, 10, [oiMaloc, oiHuman]);
+      GetPlayer.ChangePlanetRelations(nil, rcmIncrease, 20, [oiPeleng]);
     end;
     cpCreateMilitaryBase:
     begin
@@ -5123,13 +5123,13 @@ begin
       Galaxy.AddPlanetNewsWithPlayerBubble(41, FormatText3(PickLocalizedTextVariant('GalaxyNews.CreateNewObject.WB', Galaxy.CurrentTurn div 10 * GetPlayer.DockedTo.Seed), '<color=255,240,100>',
         '<Name>', MilitaryBase.GetName, '<Star>', MilitaryBase.CurrentStar.Name, '<Sector>', MilitaryBase.CurrentStar.Constellation.GetName));
       DialogText := LocalizedColorText('FormRuins.BK.Investment.BKAfterInvestment');
-      if GetPlayer.OwnerId <> Byte(oiPirate) then
+      if GetPlayer.OwnerId <> oiPirate then
         ReplaceTextToken(DialogText, '<InvestmentText>', LocalizedColorText('Investment.' + CoalitionProjectNames[Kind] + '.Text'), '')
       else ReplaceTextToken(DialogText, '<InvestmentText>', LocalizedColorText('Investment.' + CoalitionProjectNames[Kind] + '.TextAlt'), '');
       ReplaceTextToken(DialogText, '<BK>', GetPlayer.DockedTo.Name, '<color=255,240,100>');
       ReplaceTextToken(DialogText, '<Name>', MilitaryBase.Name, '<color=255,240,100>');
       ReplaceTextToken(DialogText, '<Star>', MilitaryBase.CurrentStar.Name, '<color=255,240,100>');
-      if GetPlayer.OwnerId <> Byte(oiPirate) then
+      if GetPlayer.OwnerId <> oiPirate then
       begin
         RankPoints := SeededRandomIntRange(50, 200, MilitaryBase.Seed);
         GetPlayer.AddRankPoints(RankPoints);
@@ -5316,7 +5316,7 @@ var
 begin
   DialogText := LocalizedColorText('FormRuins.BK.Trade.BK');
   NearbyTradeAdviceCost := RoundAndTruncateToTens(Min(GetPlayer.Money div 100,
-    SeededRandomIntRange(Galaxy.ComputeScaledMiniMoney(2) div 2, 2 * Galaxy.ComputeScaledMiniMoney(2), Galaxy.GenerationSeed + Galaxy.CurrentTurn div 10)) + 30);
+    SeededRandomIntRange(Galaxy.ComputeScaledMiniMoney(oiHuman) div 2, 2 * Galaxy.ComputeScaledMiniMoney(oiHuman), Galaxy.GenerationSeed + Galaxy.CurrentTurn div 10)) + 30);
   DistantTradeAdviceCost := RoundAndTruncateToTens(SeededRandomIntRange(NearbyTradeAdviceCost div 3, NearbyTradeAdviceCost div 2,
     Galaxy.GenerationSeed + Galaxy.CurrentTurn div 10 + 1231341) + 10);
   Discount := Round(GetPlayer.CareerStatus[rcTrader] / 1.3) + 1;
@@ -5446,7 +5446,7 @@ var
 begin
   if Refresh = 0 then
   begin
-    if GetPlayer.OwnerId <> Byte(oiPirate) then DialogText := LocalizedColorText('FormRuins.MC.Illnes.MCSee')
+    if GetPlayer.OwnerId <> oiPirate then DialogText := LocalizedColorText('FormRuins.MC.Illnes.MCSee')
     else DialogText := LocalizedColorText('FormRuins.MC.Illnes.MCSeePirate');
   end;
   HasDisease := GetPlayer.HasPresentDisease;
@@ -5515,7 +5515,7 @@ begin
       else AddChoice('- ' + FormatText1(LocalizedColorText('FormRuins.MC.Illnes.PlayerIllAll'), '<color=255,240,100>', '<Money>', IntToStr(AllCost)), 0, ScriptDialogBlockCallback);
       AddChoice('- ' + LocalizedColorText('FormRuins.MC.Illnes.PlayerNo'), 0, DeclineMedicalCenterTreatment);
     end
-    else if GetPlayer.OwnerId <> Byte(oiPirate) then
+    else if GetPlayer.OwnerId <> oiPirate then
       AddChoice('- ' + LocalizedColorText('FormRuins.MC.Illnes.PlayerExit'), 0, LeaveMedicalCenterTreatment)
     else AddChoice('- ' + LocalizedColorText('FormRuins.MC.Illnes.PlayerExitPirate'), 0, LeaveMedicalCenterTreatment);
   end
@@ -5526,7 +5526,7 @@ begin
       Key := 'FormRuins.MC.Illnes.MCSeeGood';
       if GetPlayer.DockedTo.CurrentStar.ControlFaction = sfPirates then Key := Key + 'PirateTo'
       else Key := Key + 'NormalTo';
-      if GetPlayer.OwnerId = Byte(oiPirate) then Key := Key + 'Pirate'
+      if GetPlayer.OwnerId = oiPirate then Key := Key + 'Pirate'
       else Key := Key + 'Normal';
       DialogText := DialogText + #13#10 + LocalizedColorText(Key);
     end;
@@ -5614,7 +5614,7 @@ end;
 { @routine $5CF204 TfRuinsTalk_LeaveMedicalCenterTreatment }
 procedure TfRuinsTalk.LeaveMedicalCenterTreatment(Action: Integer);
 begin
-  if (GetPlayer.OwnerId = Byte(oiPirate)) and (GetPlayer.DockedTo.CurrentStar.ControlFaction = sfPirates) then DialogText := LocalizedColorText('FormRuins.MC.Illnes.MCSeeAfterExitPirate')
+  if (GetPlayer.OwnerId = oiPirate) and (GetPlayer.DockedTo.CurrentStar.ControlFaction = sfPirates) then DialogText := LocalizedColorText('FormRuins.MC.Illnes.MCSeeAfterExitPirate')
   else DialogText := LocalizedColorText('FormRuins.MC.Illnes.MCSeeAfterExit');
   ReplaceTextToken(DialogText, '<MC>', GetPlayer.DockedTo.Name, '<color=255,240,100>');
   M_Main(True);
@@ -5892,8 +5892,8 @@ end;
 procedure TfRuinsTalk.BuyStationSpecialShip(Action: Integer);
 const
   RelationShipTypes = [htRanger, htPirate..htDiplomat];
-  PirateOwners = [1];
-  CoalitionOwners = [0, 2..4];
+  PirateOwners = [oiPeleng];
+  CoalitionOwners = [oiMaloc, oiHuman..oiGaal];
 var
   Price: Integer;
   Hull: THull;
@@ -5924,9 +5924,9 @@ begin
     else GetPlayer.AddItemToPlayerStorage(Hull, GetPlayer.DockedTo, -1);
     if GetPlayer.DockedTo.TypeId = Byte(rstPirateBase) then
     begin
-      GetPlayer.ChangePlanetRelations(nil, rcmIncrease, 30, [1]);
+      GetPlayer.ChangePlanetRelations(nil, rcmIncrease, 30, [oiPeleng]);
       GetPlayer.ChangeShipRelations(nil, rcmIncrease, 30, RelationShipTypes, PirateOwners);
-      GetPlayer.ChangePlanetRelations(nil, rcmDecreaseWithFloor20, 50, [0, 2, 3, 4]);
+      GetPlayer.ChangePlanetRelations(nil, rcmDecreaseWithFloor20, 50, [oiMaloc, oiHuman, oiFeyan, oiGaal]);
       GetPlayer.ChangeShipRelations(nil, rcmDecreaseWithFloor20, 50, RelationShipTypes, CoalitionOwners);
     end;
   end
@@ -6593,7 +6593,7 @@ begin
   Discount := GetPlayer.GetPirateServiceDiscount;
   Item := TEquipment(Action);
   NodeCost := 0;
-  if Item.OwnerId = Byte(oiDominator) then
+  if Item.OwnerId = oiDominator then
   begin
     Text := LocalizedColorText('FormRuins.CB.Improvement.CBNeedCostImprovementNodes');
     ReplaceTextToken(Text, '<Nodes>', IntToStr(Round(Item.CalculateImprovementCost(ikMajor) * 0.01 * 1.5)), '<color=255,240,100>');
@@ -6625,12 +6625,12 @@ begin
   Discount := GetPlayer.GetPirateServiceDiscount;
   Item := TEquipment(Action);
   Cost := Item.CalculateImprovementCost(ikMajor);
-  if Item.OwnerId = Byte(oiDominator) then Nodes := Round(Cost * 0.01 * 1.5 * (100 - Discount) / 100) else Nodes := 0;
+  if Item.OwnerId = oiDominator then Nodes := Round(Cost * 0.01 * 1.5 * (100 - Discount) / 100) else Nodes := 0;
   Cost := Round(Cost * (100 - Discount) / 100);
   if (GetPlayer.Money >= Cost) and (GetPlayer.GetAvailableNodeCount(nil) >= Nodes) then
   begin
     GetPlayer.SetMoney(GetPlayer.Money - Cost);
-    if Item.OwnerId = Byte(oiDominator) then GetPlayer.ConsumeAvailableNodes(Nodes, nil);
+    if Item.OwnerId = oiDominator then GetPlayer.ConsumeAvailableNodes(Nodes, nil);
     Item.ImproveAtScientificBase;
     GetPlayer.RefreshDerivedStats(True);
     DialogText := LocalizedColorText('FormRuins.CB.Improvement.CBAfterOk');
@@ -6663,7 +6663,7 @@ begin
   if GetPlayer.PirateLicenseTicks = 0 then
     DialogText := LocalizedColorText('FormRuins.CB.PirateLicense.CBAnswer')
   else DialogText := LocalizedColorText('FormRuins.CB.PirateLicense.CBAnswerProlongate');
-  Cost := RoundAndTruncateToTens(RemapClamped(GetPlayer.PirateLicenseTicks, 0, 365, Galaxy.ComputeScaledAverageMoney(2), 0));
+  Cost := RoundAndTruncateToTens(RemapClamped(GetPlayer.PirateLicenseTicks, 0, 365, Galaxy.ComputeScaledAverageMoney(oiHuman), 0));
   ReplaceTextToken(DialogText, '<Money>', IntToStr(Cost), '<color=255,240,100>');
   ReplaceTextToken(DialogText, '<Discount>', IntToStr(Discount), '<color=255,240,100>');
   Cost := Round(Cost * (100 - Discount) / 100);
@@ -6759,7 +6759,7 @@ var
   // @nested $5D696C GetDominionTravelQuoteCost
   function GetDominionTravelQuoteCost(Index: Integer): Integer; // @addr $5D696C @calls "0x5D6C4E 0x5D6C97"
   begin
-    Result := Min(100000000, Round(Galaxy.ComputeScaledHugeMoney(2) / DominionTravelQuotes[Index].DrawCount * PointDistanceSquared(GetPlayer.CurrentStar.Position, DominionTravelQuotes[Index].Star.Position) / 1600 * (100 - Discount) / 100));
+    Result := Min(100000000, Round(Galaxy.ComputeScaledHugeMoney(oiHuman) / DominionTravelQuotes[Index].DrawCount * PointDistanceSquared(GetPlayer.CurrentStar.Position, DominionTravelQuotes[Index].Star.Position) / 1600 * (100 - Discount) / 100));
   end;
 begin
   Discount := GetPlayer.GetPirateServiceDiscount;
@@ -6917,7 +6917,7 @@ var
   Discount: Byte;
 begin
   Discount := GetPlayer.GetPirateServiceDiscount;
-  Result := Min(100000000, Round((PointDistanceSquared(GetPlayer.DockedTo.CurrentStar.Position, Star.Position) + 6400) * SeededRandomIntRange(Galaxy.ComputeScaledHugeMoney(2) div 2, Galaxy.ComputeScaledHugeMoney(2) * 2, Star.GenerationSeed + 1171 + GetPlayer.DockedTo.CurrentStar.GenerationSeed) / 6400 * (100 - Discount) / 100));
+  Result := Min(100000000, Round((PointDistanceSquared(GetPlayer.DockedTo.CurrentStar.Position, Star.Position) + 6400) * SeededRandomIntRange(Galaxy.ComputeScaledHugeMoney(oiHuman) div 2, Galaxy.ComputeScaledHugeMoney(oiHuman) * 2, Star.GenerationSeed + 1171 + GetPlayer.DockedTo.CurrentStar.GenerationSeed) / 6400 * (100 - Discount) / 100));
 end;
 { @end $5D7D1C }
 
@@ -7140,7 +7140,7 @@ begin
     BuildDominionWarOptions;
     Exit;
   end;
-  StationServiceQuoteCost := ApplyRecentDominionOrderSurcharge(Galaxy.ComputeScaledHugeMoney(2));
+  StationServiceQuoteCost := ApplyRecentDominionOrderSurcharge(Galaxy.ComputeScaledHugeMoney(oiHuman));
   DialogText := LocalizedColorText('FormRuins.CB.WarPlans.WarOperation.CBAboutWarOperation');
   ReplaceTextToken(DialogText, '<Money>', IntToStr(StationServiceQuoteCost), '<color=255,240,100>');
   ClearChoices;
@@ -7163,7 +7163,7 @@ var
 begin
   DialogText := LocalizedColorText('FormRuins.CB.WarPlans.WarOperation.CBAfterOk');
   SoundManager.PlaySound('Sound.Sell');
-  StationServiceQuoteCost := ApplyRecentDominionOrderSurcharge(Galaxy.ComputeScaledHugeMoney(2));
+  StationServiceQuoteCost := ApplyRecentDominionOrderSurcharge(Galaxy.ComputeScaledHugeMoney(oiHuman));
   GetPlayer.SetMoney(GetPlayer.Money - StationServiceQuoteCost);
   if MainPiratePlanet <> nil then MainPiratePlanet.ChangeRelationToRanger(GetPlayer, 10);
   Target := nil;
@@ -7185,7 +7185,7 @@ begin
           for K := 0 to Origin.Ships.Count - 1 do
           begin
             Ship := Origin.Ships[K];
-            if (Ship is TPirate) and (Ship.OwnerId = Byte(oiPirate)) and (Ship.PartnerShip = nil) then
+            if (Ship is TPirate) and (Ship.OwnerId = oiPirate) and (Ship.PartnerShip = nil) then
               if not ((Ship.GetFuelTanks = nil) or (Ship.GetEngine = nil) or
                 (PointDistance(Origin.Position, Candidate.Position) > Min(Ship.GetFuelTanks.Capacity, Ship.GetEngine.JumpRange) + 10)) then
               begin
@@ -7221,7 +7221,7 @@ begin
           for K := 0 to Origin.Ships.Count - 1 do
           begin
             Ship := Origin.Ships[K];
-            if (Ship is TPirate) and (Ship.OwnerId = Byte(oiPirate)) and (Ship.PartnerShip = nil) then
+            if (Ship is TPirate) and (Ship.OwnerId = oiPirate) and (Ship.PartnerShip = nil) then
               if not ((Ship.GetFuelTanks = nil) or (Ship.GetEngine = nil) or
                 (PointDistance(Origin.Position, Target.Position) > Min(Ship.GetFuelTanks.Capacity, Ship.GetEngine.JumpRange) + 10)) then
                 if not Ship.OrderAbsolute and (Ship.AbsoluteScriptOrder = 0) and not Ship.IsOutsideStarSpace and (Ship.ScriptShip = nil) then
@@ -7349,7 +7349,7 @@ begin
   begin
     // Preserve index-before-receiver evaluation under DCC32 O-.
     Ship := Star.Ships[I * 1];
-    if not Ship.InHyperspace and (Ship is TPirate) and (Ship.OwnerId = Byte(oiPirate)) and (Ship.PartnerShip = nil) and
+    if not Ship.InHyperspace and (Ship is TPirate) and (Ship.OwnerId = oiPirate) and (Ship.PartnerShip = nil) and
       (Ship.ScriptShip = nil) and not Ship.HasScriptControl then Inc(Count);
   end;
   if Count < 8 then

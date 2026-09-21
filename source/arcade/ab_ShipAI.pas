@@ -173,7 +173,7 @@ begin
         while Reward = nil do
         begin
           Inc(Index);
-          Reward := CreateRandomLootItem(ilpArcadeBattle, 6, AdvanceRandomSeed(RandomState));
+          Reward := CreateRandomLootItem(ilpArcadeBattle, oiUninhabited, AdvanceRandomSeed(RandomState));
           if GetPlayer.HasMatchingArtefactOrCustomItem(Reward) and (Index < 5) then
           begin
             Reward.Free;
@@ -263,7 +263,7 @@ begin
       begin
         Inc(GetPlayer.HyperspaceKillCount);
         TryAddAchievementProgress('HOLEMAN', 1);
-        if GetPlayer.InHyperspace and (GetPlayer.OwnerId <> Byte(oiPirate)) then GetPlayer.AddRankPoints(2);
+        if GetPlayer.InHyperspace and (GetPlayer.OwnerId <> oiPirate) then GetPlayer.AddRankPoints(2);
       end;
       if (Galaxy <> nil) and (ScriptLabel <> '') then
       begin
@@ -324,14 +324,14 @@ begin
               Min(WeaponTech + 1, 8), Max(1, WeaponTech - 1));
             Weight := RandomRange(Round(Info.AverageSize * MinSize), Round(Info.AverageSize * MaxSize));
             Level := RandomRange(MinLevel, MaxLevel);
-            Item := CreateGeneratedWeapon(Info, Weight, Level, 6);
+            Item := CreateGeneratedWeapon(Info, Weight, Level, oiUninhabited);
           end
           else
           begin
             ItemType := PickRandomItemType([Ord(t_FuelTanks)..Ord(t_DefGenerator)]);
             Weight := RandomRange(Round(GetAverageItemSize(ItemType) * MinSize), Round(GetAverageItemSize(ItemType) * MaxSize));
             Level := RandomRange(MinLevel, MaxLevel);
-            Item := CreateGeneratedEquipment(TItemType(ItemType), Weight, Level, 6);
+            Item := CreateGeneratedEquipment(TItemType(ItemType), Weight, Level, oiUninhabited);
           end;
           Item.ConditionPercent := SeededRandomFloatRange(Item.Id * (Attempts + 11) * 123, 10, 100);
           Inc(Attempts);

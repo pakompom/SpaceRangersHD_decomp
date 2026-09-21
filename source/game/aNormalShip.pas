@@ -40,7 +40,7 @@ type
     procedure SaveToBlock(Block: TBlockParEC); override; // @addr $73DEB8 @slot $10
     procedure LoadFromBlock(Block: TBlockParEC); override; // @addr $73E0F8 @slot $14 Native editable import truncates PirateRankPoints to Word.
     procedure CheckKillCountAwards(Victim: TShip); // @addr $742F74
-    function SelectAward(Owner: Byte; Kinds: TAwardTypeMask; VictimTypes: TShipTypeMask): Byte; // @addr $7431AC @ida "unsigned __int8 __userpurge $name@<al>(TNormalShip *Self@<eax>, unsigned __int8 Owner@<dl>, unsigned __int8 Kinds@<cl>, unsigned __int16 VictimTypes@<^0>);" @note "Returns 255 when no award qualifies; retries duplicates twice."
+    function SelectAward(Owner: TOwnerId; Kinds: TAwardTypeMask; VictimTypes: TShipTypeMask): Byte; // @addr $7431AC @ida "unsigned __int8 __userpurge $name@<al>(TNormalShip *Self@<eax>, unsigned __int8 Owner@<dl>, unsigned __int8 Kinds@<cl>, unsigned __int16 VictimTypes@<^0>);" @note "Returns 255 when no award qualifies; retries duplicates twice."
     procedure ProcessShipKill(Victim: TShip); // @addr $740018 Distributes kill rewards, career/rank changes and event counters.
     function CollectLiberationRewards: WideString; // @addr $73E710 @note "Consumes the pending ceremony, grants rewards and returns the player's presentation text."
     function SelectSituationalMessage(Automatic: Boolean): WideString; // @addr $74414C @note "Automatic messages suppress object links and select the automatic-message category."
@@ -178,7 +178,7 @@ begin
   RankPoints := Buffer.GetWord;
   PirateRank := Buffer.GetByte;
   PirateRankPoints := Buffer.GetUInt32;
-  if (LoadedSaveVersion < 126) and (Buffer.GetByte <> 0) then OwnerId := Byte(oiPirate);
+  if (LoadedSaveVersion < 126) and (Buffer.GetByte <> 0) then OwnerId := oiPirate;
   LastDockedPlanet := TPlanet(Buffer.GetUInt32);
   LastPlayerExtortionTurn := Buffer.GetInt32;
 end;
@@ -296,7 +296,7 @@ begin
   if ProgramWeight > 0 then ProgramWeight := ProgramWeight * SeededRandomIntRange(5, 25, CurrentPlanet.GenerationSeed + Galaxy.CurrentTurn div 100 + 197673);
   if ArtefactWeight > 0 then ArtefactWeight := ArtefactWeight * SeededRandomIntRange(5, 25, CurrentPlanet.GenerationSeed + Galaxy.CurrentTurn div 100 + 719671);
   if ModuleWeight > 0 then ModuleWeight := ModuleWeight * SeededRandomIntRange(5, 25, CurrentPlanet.GenerationSeed + Galaxy.CurrentTurn div 107 + 1967);
-  if (CurrentPlanet.OwnerId = Byte(oiPirate)) and (AwardWeight > 0) then AwardWeight := 1;
+  if (CurrentPlanet.OwnerId = oiPirate) and (AwardWeight > 0) then AwardWeight := 1;
   if (AwardWeight > 0) and (AwardWeight >= Max(ModuleWeight, Max(ProgramWeight, ArtefactWeight))) then RewardKind := 1
   else if (ProgramWeight > 0) and (ProgramWeight >= Max(ModuleWeight, Max(AwardWeight, ArtefactWeight))) then RewardKind := 2
   else if (ArtefactWeight > 0) and (ArtefactWeight >= Max(ModuleWeight, Max(AwardWeight, ProgramWeight))) then RewardKind := 3
@@ -308,7 +308,7 @@ begin
   end;
   if GetPlayer = Self then
   begin
-    if CurrentPlanet.OwnerId <> Byte(oiPirate) then
+    if CurrentPlanet.OwnerId <> oiPirate then
     begin
       if Byte(CurrentPlanet.CurrentStar.PreviousControlFaction) = 1 then
         Result := LocalizedColorText('PlanetCongratulations.LiberationStarNormalsFromKling.' + OwnerToSys(CurrentPlanet.OwnerId) + 'Text')
@@ -347,7 +347,7 @@ begin
     end;
   end
   else Result := '';
-  if CurrentPlanet.OwnerId <> Byte(oiPirate) then Prefix := 'PlanetCongratulations.LiberationAwardNormals.'
+  if CurrentPlanet.OwnerId <> oiPirate then Prefix := 'PlanetCongratulations.LiberationAwardNormals.'
   else Prefix := 'PlanetCongratulations.LiberationAwardPirateClan.';
   case RewardKind of
     1: begin
@@ -441,7 +441,7 @@ var Award: Byte;
 begin
   if CurrentPlanet <> nil then Award := SelectAward(RaceToOwner(CurrentPlanet.RaceId), [atLiberation, atAccomplishment], [stKling..Ord(rstCustomStation)])
   else if DockedTo <> nil then Award := SelectAward(RaceToOwner(DockedTo.PilotRace), [atLiberation, atAccomplishment], [stKling..Ord(rstCustomStation)])
-  else Award := SelectAward(Ord(oiHuman), [atLiberation, atAccomplishment], [stKling..Ord(rstCustomStation)]);
+  else Award := SelectAward(oiHuman, [atLiberation, atAccomplishment], [stKling..Ord(rstCustomStation)]);
   AddAward(Award);
   Result := GetAwardInfo(Award).Name;
 end;
@@ -463,7 +463,7 @@ var
   procedure RecordShipKillCategory(Ship: TNormalShip; Victim: TShip); // @addr $73FF3C @note "Nested helper; unused caller-popped static link."
   begin
     case Victim.TypeId of
-      stTransport: if Victim.OwnerId <> Byte(oiPirate) then
+      stTransport: if Victim.OwnerId <> oiPirate then
         begin
           Inc(Ship.CivilianKillCount);
           if GetPlayer = Ship then TryAddAchievementProgress('BLACKHEAD', 1);
@@ -473,7 +473,7 @@ var
         Inc(Ship.MilitaryKillCount);
         Ship.CheckKillCountAwards(Victim);
       end;
-      stRanger: if ((Victim as TRanger).GetDominantCareer <> rcPirate) and (Victim.OwnerId <> Byte(oiPirate)) and
+      stRanger: if ((Victim as TRanger).GetDominantCareer <> rcPirate) and (Victim.OwnerId <> oiPirate) and
         not (Victim as TRanger).ExcludedFromRating then
         begin
           Inc(Ship.RangerKillCount);
@@ -492,7 +492,7 @@ begin
     Event.AddData(Victim.TypeId);
     Event.AddData(Victim.CurrentStar.Id);
     Event.AddData(Victim.Id);
-    Event.AddData(Victim.OwnerId);
+    Event.AddData(Ord(Victim.OwnerId));
     Event.AddTextData(Victim.GetName);
     Event.AddData(Victim.GetFullHullRelativeStrengthPercent);
     Event.AddTextData(Victim.GetFullName(' '));
@@ -515,11 +515,11 @@ begin
     Event.AddData(Victim.TypeId);
     Event.AddData(Victim.CurrentStar.Id);
     Event.AddData(Victim.Id);
-    Event.AddData(Victim.OwnerId);
+    Event.AddData(Ord(Victim.OwnerId));
     Event.AddTextData(Victim.GetName);
     Event.AddData(Self.TypeId);
     Event.AddData(Self.Id);
-    Event.AddData(Self.OwnerId);
+    Event.AddData(Ord(Self.OwnerId));
     Event.AddTextData(Self.GetName);
     Event.AddData(Victim.GetFullHullRelativeStrengthPercent);
     Event.AddTextData(Victim.GetFullName(' '));
@@ -549,7 +549,7 @@ begin
     end;
     if (PartnerShip <> nil) and (PartnerShip is TNormalShip) and
      (PartnerShip.CurrentStar = CurrentStar) and PartnerShip.InNormalSpace then (PartnerShip as TNormalShip).AddRankPoints(6);
-    if OwnerId = Byte(oiPirate) then PirateReward := 8;
+    if OwnerId = oiPirate then PirateReward := 8;
   end
   else if (Victim.TypeId = stTransport) and (Self is TRanger) then
   begin
@@ -559,7 +559,7 @@ begin
          ((PartnerShip as TNormalShip).CurrentSystemKills.Normal = 0) then
       Inc(TNormalShip(PartnerShip).CurrentSystemKills.Normal);
     Experience := Round(NextRandomIntRange(100, 250, Galaxy.RandomState) * (ShortInt(TNormalShip(Victim).Rank + Byte(0)) * 0.1 + 1));
-    if OwnerId = Byte(oiPirate) then
+    if OwnerId = oiPirate then
     begin
       PirateReward := 8;
       Experience := Round(Experience * 1.5);
@@ -589,7 +589,7 @@ begin
     if GetPlayer = Self then ActivityAmount := 8 else ActivityAmount := 2;
     (Self as TRanger).AddPirateCareerActivity(Byte(ActivityAmount));
       Experience := Round(NextRandomIntRange(100, 250, Galaxy.RandomState) * (ShortInt(TNormalShip(Victim).Rank + Byte(0)) * 0.1 + 1));
-      if OwnerId = Byte(oiPirate) then
+      if OwnerId = oiPirate then
       begin
         PirateReward := 24;
         Experience := Round(Experience * 1.5);
@@ -611,7 +611,7 @@ begin
   else if Victim is TPirate then
   begin
     SourceKind := 2;
-    if (Victim.OwnerId = Byte(oiPirate)) and not QuestTargetKill then
+    if (Victim.OwnerId = oiPirate) and not QuestTargetKill then
     begin
       IncrementWordSaturating(CurrentSystemKills.Pirate);
     if (PartnerShip <> nil) and (PartnerShip is TNormalShip) and
@@ -623,7 +623,7 @@ begin
     if GetPlayer = Self then TryAddAchievementProgress('SHIELD', 1);
     Experience := Round(NextRandomIntRange(250, 500, Galaxy.RandomState) * (ShortInt(TNormalShip(Victim).PirateRank + Byte(0)) * 0.1 + 1));
     RankReward := 10;
-    if OwnerId = Byte(oiPirate) then Experience := Experience div 2;
+    if OwnerId = oiPirate then Experience := Experience div 2;
     if Self is TRanger then (Self as TRanger).AddWarriorCareerActivity(4);
   end
   else if Victim is TKling then
@@ -650,7 +650,7 @@ begin
       if (PartnerShip as TNormalShip).CurrentSystemKills.Dominator = 0 then
         Inc(TNormalShip(PartnerShip).CurrentSystemKills.Dominator);
     end;
-    if OwnerId = Byte(oiPirate) then PirateReward := DominatorShipDefinitions[Ord((Victim as TKling).KlingType)].PirateRankPoints;
+    if OwnerId = oiPirate then PirateReward := DominatorShipDefinitions[Ord((Victim as TKling).KlingType)].PirateRankPoints;
   end
   else if Victim is TWarrior then
   begin
@@ -659,7 +659,7 @@ begin
          (PartnerShip.CurrentStar = CurrentStar) and PartnerShip.InNormalSpace and
          ((PartnerShip as TNormalShip).CurrentSystemKills.Normal = 0) then
       Inc(TNormalShip(PartnerShip).CurrentSystemKills.Normal);
-    if OwnerId = Byte(oiPirate) then
+    if OwnerId = oiPirate then
     begin
       Experience := Round(NextRandomIntRange(250, 500, Galaxy.RandomState) * (ShortInt(TNormalShip(Victim).Rank + Byte(0)) * 0.1 + 1));
       if (Victim as TWarrior).WarriorType = wtFlagship then
@@ -682,7 +682,7 @@ begin
          (PartnerShip.CurrentStar = CurrentStar) and PartnerShip.InNormalSpace and
          ((PartnerShip as TNormalShip).CurrentSystemKills.Normal = 0) then
       Inc(TNormalShip(PartnerShip).CurrentSystemKills.Normal);
-    if OwnerId = Byte(oiPirate) then PirateReward := 8;
+    if OwnerId = oiPirate then PirateReward := 8;
   end
   else if (Victim.TypeId in [Ord(rstRangerCenter)..Ord(rstCustomStation)]) and (Victim.CurrentStanding = ssCoalitionMilitary) then
   begin
@@ -691,7 +691,7 @@ begin
          (PartnerShip.CurrentStar = CurrentStar) and PartnerShip.InNormalSpace and
          ((PartnerShip as TNormalShip).CurrentSystemKills.Normal = 0) then
       Inc(TNormalShip(PartnerShip).CurrentSystemKills.Normal);
-    if OwnerId = Byte(oiPirate) then PirateReward := 32;
+    if OwnerId = oiPirate then PirateReward := 32;
     if Self is TRanger then
     begin
     if GetPlayer = Self then ActivityAmount := 8 else ActivityAmount := 2;
@@ -705,7 +705,7 @@ begin
          (PartnerShip.CurrentStar = CurrentStar) and PartnerShip.InNormalSpace and
          ((PartnerShip as TNormalShip).CurrentSystemKills.Normal = 0) then
       Inc(TNormalShip(PartnerShip).CurrentSystemKills.Normal);
-    if OwnerId = Byte(oiPirate) then PirateReward := 24;
+    if OwnerId = oiPirate then PirateReward := 24;
     if Self is TRanger then
     begin
     if GetPlayer = Self then ActivityAmount := 4 else ActivityAmount := 1;
@@ -779,7 +779,7 @@ begin
   begin
     if RankReward > 0 then
     begin
-      if OwnerId <> Byte(oiPirate) then AddRankPoints(Word(RankReward));
+      if OwnerId <> oiPirate then AddRankPoints(Word(RankReward));
       RankReward := RankReward div 2 + 1;
     end;
     if Experience > 0 then
@@ -811,7 +811,7 @@ begin
     end;
     if PirateReward > 0 then
     begin
-      if OwnerId = Byte(oiPirate) then AddPirateRankPoints(PirateReward);
+      if OwnerId = oiPirate then AddPirateRankPoints(PirateReward);
       PirateReward := PirateReward div 2 + 1;
     end;
     for I := 0 to CurrentStar.Ships.Count - 1 do
@@ -824,10 +824,10 @@ begin
     Event.AddData(Victim.TypeId);
     Event.AddData(Victim.CurrentStar.Id);
     Event.AddData(Victim.Id);
-    Event.AddData(Victim.OwnerId);
+    Event.AddData(Ord(Victim.OwnerId));
     Event.AddTextData(Victim.GetName);
     Event.AddData(OtherShip.Id);
-    Event.AddData(OtherShip.OwnerId);
+    Event.AddData(Ord(OtherShip.OwnerId));
     Event.AddTextData(OtherShip.GetName);
     Event.AddData(Victim.GetFullHullRelativeStrengthPercent);
     Event.AddTextData(Victim.GetFullName(' '));
@@ -846,7 +846,7 @@ begin
     Event.AddData(Victim.TypeId);
     Event.AddData(Victim.CurrentStar.Id);
     Event.AddData(Victim.Id);
-    Event.AddData(Victim.OwnerId);
+    Event.AddData(Ord(Victim.OwnerId));
     Event.AddTextData(Victim.GetName);
     Event.AddData(Victim.GetFullHullRelativeStrengthPercent);
     Event.AddTextData(Victim.GetFullName(' '));
@@ -863,11 +863,11 @@ begin
     Event.AddData(Victim.TypeId);
     Event.AddData(Victim.CurrentStar.Id);
     Event.AddData(Victim.Id);
-    Event.AddData(Victim.OwnerId);
+    Event.AddData(Ord(Victim.OwnerId));
     Event.AddTextData(Victim.GetName);
     Event.AddData(OtherShip.TypeId);
     Event.AddData(OtherShip.Id);
-    Event.AddData(OtherShip.OwnerId);
+    Event.AddData(Ord(OtherShip.OwnerId));
     Event.AddTextData(OtherShip.GetName);
     Event.AddData(Victim.GetFullHullRelativeStrengthPercent);
     Event.AddTextData(Victim.GetFullName(' '));
@@ -879,9 +879,9 @@ begin
     else Event.AddData(0);
       end;
       if OtherNormal is TPirate then (OtherNormal as TPirate).RaidPressure := 0;
-      if (RankReward > 0) and (OtherNormal.OwnerId <> Byte(oiPirate)) then OtherNormal.AddRankPoints(Word(RankReward));
+      if (RankReward > 0) and (OtherNormal.OwnerId <> oiPirate) then OtherNormal.AddRankPoints(Word(RankReward));
       if Experience > 0 then OtherNormal.GainExperience(Experience, SourceKind);
-      if (PirateReward > 0) and (OtherNormal.OwnerId = Byte(oiPirate)) then OtherNormal.AddPirateRankPoints(PirateReward);
+      if (PirateReward > 0) and (OtherNormal.OwnerId = oiPirate) then OtherNormal.AddPirateRankPoints(PirateReward);
       Inc(OtherNormal.TotalShipKillCount);
       if Victim.CurrentStanding = ssCustom then IncrementWordSaturating(OtherNormal.CurrentSystemKills.Custom)
       else if Victim is TKling then
@@ -892,7 +892,7 @@ begin
       end
       else if (Victim is TPirate) or ((Victim is TRanger) and ((Victim as TRanger).GetDominantCareer = rcPirate)) then
       begin
-        if (Victim.OwnerId = Byte(oiPirate)) and not QuestTargetKill then IncrementWordSaturating(OtherNormal.CurrentSystemKills.Pirate);
+        if (Victim.OwnerId = oiPirate) and not QuestTargetKill then IncrementWordSaturating(OtherNormal.CurrentSystemKills.Pirate);
         Inc(OtherNormal.PirateKillCount);
         if (GetPlayer = OtherShip) and (Victim is TPirate) then TryAddAchievementProgress('SHIELD', 1);
       end
@@ -944,7 +944,7 @@ begin
         Normal := Ship as TNormalShip;
         Normal.PendingLiberationCeremonyPlanet := nil;
         if ((Normal.CurrentSystemKills.Dominator > 0) and (Star.PreviousControlFaction = sfDominators)) or
-           ((Normal.CurrentSystemKills.Pirate > 0) and (Star.PreviousControlFaction = sfPirates) and (Normal.OwnerId <> Byte(oiPirate))) or
+           ((Normal.CurrentSystemKills.Pirate > 0) and (Star.PreviousControlFaction = sfPirates) and (Normal.OwnerId <> oiPirate)) or
            ((GetPlayer <> Ship) and (Ship.DaysSincePlayerSeen > 1) and
             (Normal.DominatorKillCount + Normal.PirateKillCount > Normal.LiberatedSystemCount)) then
         begin
@@ -956,7 +956,7 @@ begin
           Normal.CurrentSystemKills.Custom := 0;
           Inc(Normal.LiberatedSystemCount);
           Normal.PendingLiberationCeremonyPlanet := CeremonyPlanet;
-          if Normal.OwnerId <> Byte(oiPirate) then Normal.AddRankPoints(30) else Normal.AddPirateRankPoints(16);
+          if Normal.OwnerId <> oiPirate then Normal.AddRankPoints(30) else Normal.AddPirateRankPoints(16);
           Normal.GainExperience(NextRandomIntRange(250, 500, Galaxy.RandomState), 0);
           if Ship is TRanger then
             for J := 0 to Star.Planets.Count - 1 do
@@ -1002,7 +1002,7 @@ begin
         Normal := Ship as TNormalShip;
         Normal.PendingLiberationCeremonyPlanet := nil;
         if ((Normal.CurrentSystemKills.Dominator > 0) and (Star.PreviousControlFaction = sfDominators)) or
-           ((Normal.CurrentSystemKills.Normal > 0) and (Star.PreviousControlFaction = sfCoalition) and (Normal.OwnerId = Byte(oiPirate))) or
+           ((Normal.CurrentSystemKills.Normal > 0) and (Star.PreviousControlFaction = sfCoalition) and (Normal.OwnerId = oiPirate)) or
            ((GetPlayer <> Ship) and (Ship.DaysSincePlayerSeen > 1) and
             (Normal.MilitaryKillCount + Normal.DominatorKillCount > Normal.LiberatedSystemCount)) then
         begin
@@ -1141,7 +1141,7 @@ end;
 { @end $742FFC }
 
 { @routine $7431AC TNormalShip_SelectAward }
-function TNormalShip.SelectAward(Owner: Byte; Kinds: TAwardTypeMask; VictimTypes: TShipTypeMask): Byte;
+function TNormalShip.SelectAward(Owner: TOwnerId; Kinds: TAwardTypeMask; VictimTypes: TShipTypeMask): Byte;
 var
   I, Count: Integer;
   Candidates: TList;
@@ -1373,7 +1373,7 @@ begin
         if Definitions[EntryIndex].FlyType = 1 then begin
           if not (OrderTarget is TPlanet) then Continue;
           Planet := OrderTarget as TPlanet;
-          if not (Planet.OwnerId in [Ord(oiMaloc)..Ord(oiGaal), Ord(oiPirate)]) then Continue;
+          if not (Planet.OwnerId in [oiMaloc..oiGaal, oiPirate]) then Continue;
           if CurrentStar.Status.CustomFaction <> '' then Continue;
     if (Definitions[EntryIndex].ToPlanetRace <> []) and not (Planet.RaceId in Definitions[EntryIndex].ToPlanetRace) then Continue;
     if (Definitions[EntryIndex].ToPlanetRelations <> []) and not (Planet.GetRelationLevelToShip(GetPlayer) in Definitions[EntryIndex].ToPlanetRelations) then Continue;
@@ -1389,7 +1389,7 @@ begin
     if (Definitions[EntryIndex].ToPlanetGovernment <> []) and not (Planet.Government in Definitions[EntryIndex].ToPlanetGovernment) then Continue;
     if (Definitions[EntryIndex].ToPlanetIsLastPlanet <> 2) and (((Definitions[EntryIndex].ToPlanetIsLastPlanet = 0) and (not (LastDockedPlanet = Planet))) or ((Definitions[EntryIndex].ToPlanetIsLastPlanet = 1) and (LastDockedPlanet = Planet))) then Continue;
     if Definitions[EntryIndex].ToPlanetRaceIsLastPlanetRace <> 2 then begin
-      if not (LastDockedPlanet.OwnerId in [Ord(oiMaloc)..Ord(oiGaal), Ord(oiPirate)]) then Continue;
+      if not (LastDockedPlanet.OwnerId in [oiMaloc..oiGaal, oiPirate]) then Continue;
     if (((Definitions[EntryIndex].ToPlanetRaceIsLastPlanetRace = 0) and (not (Planet.RaceId = LastDockedPlanet.RaceId))) or ((Definitions[EntryIndex].ToPlanetRaceIsLastPlanetRace = 1) and (Planet.RaceId = LastDockedPlanet.RaceId))) then Continue;
     end;
     MessageText := LocalizedColorText('ShipGreetings.' + Definitions[EntryIndex].Name + '.Text');
@@ -1556,7 +1556,7 @@ end;
     if Rejected then Continue;
     if Definitions[EntryIndex].LastPlanetRace <> [] then begin
       if LastDockedPlanet = nil then Continue;
-      if not (LastDockedPlanet.OwnerId in [Ord(oiMaloc)..Ord(oiGaal), Ord(oiPirate)]) then Continue;
+      if not (LastDockedPlanet.OwnerId in [oiMaloc..oiGaal, oiPirate]) then Continue;
       if LastDockedPlanet.CurrentStar.Status.CustomFaction <> '' then Continue;
       if not (LastDockedPlanet.RaceId in Definitions[EntryIndex].LastPlanetRace) then Continue;
     if (Definitions[EntryIndex].LastPlanetRelations <> []) and not (LastDockedPlanet.GetRelationLevelToShip(GetPlayer) in Definitions[EntryIndex].LastPlanetRelations) then Continue;
@@ -1567,11 +1567,11 @@ end;
     end;
     if (Definitions[EntryIndex].LastPlanetIsHomePlanet <> 2) and (((Definitions[EntryIndex].LastPlanetIsHomePlanet = 0) and (not (LastDockedPlanet = HomePlanet))) or ((Definitions[EntryIndex].LastPlanetIsHomePlanet = 1) and (LastDockedPlanet = HomePlanet))) then Continue;
     if Definitions[EntryIndex].LastPlanetRaceIsShipRace <> 2 then begin
-      if not (LastDockedPlanet.OwnerId in [Ord(oiMaloc)..Ord(oiGaal), Ord(oiPirate)]) then Continue;
+      if not (LastDockedPlanet.OwnerId in [oiMaloc..oiGaal, oiPirate]) then Continue;
     if (((Definitions[EntryIndex].LastPlanetRaceIsShipRace = 0) and (not (LastDockedPlanet.RaceId = PilotRace))) or ((Definitions[EntryIndex].LastPlanetRaceIsShipRace = 1) and (LastDockedPlanet.RaceId = PilotRace))) then Continue;
     end;
     if Definitions[EntryIndex].LastPlanetRaceIsPlayerRace <> 2 then begin
-      if not (LastDockedPlanet.OwnerId in [Ord(oiMaloc)..Ord(oiGaal), Ord(oiPirate)]) then Continue;
+      if not (LastDockedPlanet.OwnerId in [oiMaloc..oiGaal, oiPirate]) then Continue;
     if (((Definitions[EntryIndex].LastPlanetRaceIsPlayerRace = 0) and (not (GetPlayer.PilotRace = LastDockedPlanet.RaceId))) or ((Definitions[EntryIndex].LastPlanetRaceIsPlayerRace = 1) and (GetPlayer.PilotRace = LastDockedPlanet.RaceId))) then Continue;
     end;
     if (Definitions[EntryIndex].LastPlanetEconomy <> []) and not (LastDockedPlanet.Economy in Definitions[EntryIndex].LastPlanetEconomy) then Continue;

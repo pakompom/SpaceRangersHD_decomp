@@ -94,7 +94,7 @@ begin
   PlanetPanel.OnOpen;
   LoadPanel.OnOpen;
   if GetPlayer.CurrentPlanet.IsMainPiratePlanet then SoundSection := 0
-  else SoundSection := GetPlayer.CurrentPlanet.RaceId + 1;
+  else SoundSection := Ord(GetPlayer.CurrentPlanet.RaceId) + 1;
   if GetPlayer.CurrentPlanet <> TemporaryShopPlanet then
   begin
     SelectMusic;
@@ -361,7 +361,7 @@ begin
     MusicManager.RequestFadeOut;
     Exit;
   end;
-  if GetPlayer.CurrentPlanet.OwnerId = Byte(oiPirate) then
+  if GetPlayer.CurrentPlanet.OwnerId = oiPirate then
   begin
     if not GetPlayer.CurrentPlanet.IsMainPiratePlanet then
       MusicManager.PlayCategory('Nation.' + OwnerInfo[RaceToOwner(GetPlayer.CurrentPlanet.RaceId)].InternalName + 'Pirate')

@@ -901,11 +901,11 @@ begin
     PShipEquipmentCacheView(Self).Slots[Kind] := nil;
   for I := 1 to 5 do Weapons[I] := nil;
   WeaponCount := 0;
-  case OwnerId * 5 + CharacterPreset of
+  case Ord(OwnerId) * 5 + CharacterPreset of
     1:
     begin
       SetMoney(RoundAndTruncateToTens(SeededRandomFloatRange(Galaxy.GenerationSeed, 0.2, 0.3) * InitialMoney));
-      ChangePlanetRelations(nil, rcmCapAt, 20, [3, 4]);
+      ChangePlanetRelations(nil, rcmCapAt, 20, [oiFeyan, oiGaal]);
       CreateAndEquipHull(NextRandomIntRange(250, 270, RandomState), 2, OwnerId, -1, False);
       CreateAndEquipFuelTanks(Round(FuelTanksBaseSize * EquipmentSizeFactors[5]), 1, OwnerId);
       CreateAndEquipEngine(Round(EngineBaseSize * EquipmentSizeFactors[2]), 1, OwnerId);
@@ -917,8 +917,8 @@ begin
     2:
     begin
       SetMoney(RoundAndTruncateToTens(SeededRandomFloatRange(Galaxy.GenerationSeed, 0.5, 0.9) * InitialMoney));
-      ChangePlanetRelations(nil, rcmCapAt, 1, [3, 4]);
-      ChangePlanetRelations(nil, rcmIncrease, 40, [1, 2]);
+      ChangePlanetRelations(nil, rcmCapAt, 1, [oiFeyan, oiGaal]);
+      ChangePlanetRelations(nil, rcmIncrease, 40, [oiPeleng, oiHuman]);
       CreateAndEquipHull(NextRandomIntRange(240, 270, RandomState), 1, OwnerId, -1, False);
       CreateAndEquipFuelTanks(Round(FuelTanksBaseSize * EquipmentSizeFactors[5]), 1, OwnerId);
       CreateAndEquipEngine(Round(EngineBaseSize * EquipmentSizeFactors[2]), 1, OwnerId);
@@ -930,7 +930,7 @@ begin
     3:
     begin
       SetMoney(RoundAndTruncateToTens(SeededRandomFloatRange(Galaxy.GenerationSeed, 1.2, 1.4) * InitialMoney));
-      ChangePlanetRelations(nil, rcmRaiseTo, 70, [0, 1, 2, 3, 4]);
+      ChangePlanetRelations(nil, rcmRaiseTo, 70, [oiMaloc, oiPeleng, oiHuman, oiFeyan, oiGaal]);
       CreateAndEquipHull(NextRandomIntRange(290, 320, RandomState), 1, OwnerId, -1, False);
       CreateAndEquipFuelTanks(Round(FuelTanksBaseSize * EquipmentSizeFactors[5]), 1, OwnerId);
       GetFuelTanks.ConditionPercent := NextRandomIntRange(20, 80, RandomState);
@@ -945,7 +945,7 @@ begin
     4:
     begin
       SetMoney(RoundAndTruncateToTens(SeededRandomFloatRange(Galaxy.GenerationSeed, 0.9, 1.1) * InitialMoney));
-      ChangePlanetRelations(nil, rcmCapAt, 5, [3, 4]);
+      ChangePlanetRelations(nil, rcmCapAt, 5, [oiFeyan, oiGaal]);
       CreateAndEquipHull(NextRandomIntRange(230, 250, RandomState), 2, OwnerId, -1, False);
       CreateAndEquipFuelTanks(Round(FuelTanksBaseSize * EquipmentSizeFactors[5]), 1, OwnerId);
       CreateAndEquipEngine(Round(EngineBaseSize * EquipmentSizeFactors[2]), 1, OwnerId);
@@ -957,7 +957,7 @@ begin
     5:
     begin
       SetMoney(RoundAndTruncateToTens(SeededRandomFloatRange(Galaxy.GenerationSeed, 1.9, 2.1) * InitialMoney));
-      ChangePlanetRelations(nil, rcmCapAt, 5, [1, 3]);
+      ChangePlanetRelations(nil, rcmCapAt, 5, [oiPeleng, oiFeyan]);
       CreateAndEquipHull(NextRandomIntRange(210, 230, RandomState), 1, OwnerId, -1, False);
       CreateAndEquipFuelTanks(Round(FuelTanksBaseSize * EquipmentSizeFactors[4]), 1, OwnerId);
       CreateAndEquipEngine(Round(EngineBaseSize * EquipmentSizeFactors[1]), 3, OwnerId);
@@ -968,7 +968,7 @@ begin
     6:
     begin
       SetMoney(RoundAndTruncateToTens(SeededRandomFloatRange(Galaxy.GenerationSeed, 2.3, 2.5) * InitialMoney));
-      ChangePlanetRelations(nil, rcmCapAt, 25, [0, 3]);
+      ChangePlanetRelations(nil, rcmCapAt, 25, [oiMaloc, oiFeyan]);
       CreateAndEquipHull(NextRandomIntRange(210, 230, RandomState), 1, OwnerId, -1, False);
       CreateAndEquipFuelTanks(Round(FuelTanksBaseSize * EquipmentSizeFactors[4]), 1, OwnerId);
       CreateAndEquipEngine(Round(EngineBaseSize * EquipmentSizeFactors[1]), 3, OwnerId);
@@ -979,8 +979,8 @@ begin
     7:
     begin
       SetMoney(RoundAndTruncateToTens(SeededRandomFloatRange(Galaxy.GenerationSeed, 1.4, 2.0) * InitialMoney));
-      ChangePlanetRelations(nil, rcmCapAt, 30, [0, 2, 3, 4]);
-      ChangePlanetRelations(nil, rcmCapAt, 60, [1]);
+      ChangePlanetRelations(nil, rcmCapAt, 30, [oiMaloc, oiHuman, oiFeyan, oiGaal]);
+      ChangePlanetRelations(nil, rcmCapAt, 60, [oiPeleng]);
       CreateAndEquipHull(NextRandomIntRange(230, 260, RandomState), 1, OwnerId, -1, False);
       CreateAndEquipFuelTanks(Round(FuelTanksBaseSize * EquipmentSizeFactors[5]), 1, OwnerId);
       CreateAndEquipEngine(Round(EngineBaseSize * EquipmentSizeFactors[1]), 2, OwnerId);
@@ -993,7 +993,7 @@ begin
     8:
     begin
       SetMoney(RoundAndTruncateToTens(SeededRandomFloatRange(Galaxy.GenerationSeed, 0.9, 1.1) * InitialMoney));
-      ChangePlanetRelations(nil, rcmRaiseTo, 50, [1, 2, 3, 4]);
+      ChangePlanetRelations(nil, rcmRaiseTo, 50, [oiPeleng, oiHuman, oiFeyan, oiGaal]);
       CreateAndEquipHull(NextRandomIntRange(280, 320, RandomState), 1, OwnerId, -1, False);
       CreateAndEquipFuelTanks(Round(FuelTanksBaseSize * EquipmentSizeFactors[5]), 1, OwnerId);
       GetFuelTanks.ConditionPercent := NextRandomIntRange(20, 80, RandomState);
@@ -1008,7 +1008,7 @@ begin
     9:
     begin
       SetMoney(RoundAndTruncateToTens(SeededRandomFloatRange(Galaxy.GenerationSeed, 1.9, 2.0) * InitialMoney));
-      ChangePlanetRelations(nil, rcmCapAt, 30, [2, 3]);
+      ChangePlanetRelations(nil, rcmCapAt, 30, [oiHuman, oiFeyan]);
       CreateAndEquipHull(NextRandomIntRange(250, 270, RandomState), 1, OwnerId, -1, False);
       CreateAndEquipFuelTanks(Round(FuelTanksBaseSize * EquipmentSizeFactors[5]), 1, OwnerId);
       CreateAndEquipEngine(Round(EngineBaseSize * EquipmentSizeFactors[1]), 2, OwnerId);
@@ -1028,9 +1028,9 @@ begin
     10:
     begin
       SetMoney(RoundAndTruncateToTens(SeededRandomFloatRange(Galaxy.GenerationSeed, 0.9, 1.1) * InitialMoney));
-      ChangePlanetRelations(nil, rcmCapAt, NextRandomIntRange(10, 35, RandomState), [2]);
-      ChangePlanetRelations(nil, rcmCapAt, NextRandomIntRange(10, 35, RandomState), [3]);
-      ChangePlanetRelations(nil, rcmCapAt, NextRandomIntRange(10, 35, RandomState), [4]);
+      ChangePlanetRelations(nil, rcmCapAt, NextRandomIntRange(10, 35, RandomState), [oiHuman]);
+      ChangePlanetRelations(nil, rcmCapAt, NextRandomIntRange(10, 35, RandomState), [oiFeyan]);
+      ChangePlanetRelations(nil, rcmCapAt, NextRandomIntRange(10, 35, RandomState), [oiGaal]);
       CreateAndEquipHull(NextRandomIntRange(250, 270, RandomState), 1, OwnerId, -1, False);
       CreateAndEquipFuelTanks(Round(FuelTanksBaseSize * EquipmentSizeFactors[5]), 1, OwnerId);
       GetFuelTanks.ConditionPercent := NextRandomIntRange(20, 80, RandomState);
@@ -1054,7 +1054,7 @@ begin
     11:
     begin
       SetMoney(RoundAndTruncateToTens(SeededRandomFloatRange(Galaxy.GenerationSeed, 0.3, 0.5) * InitialMoney));
-      ChangePlanetRelations(nil, rcmCapAt, 15, [1]);
+      ChangePlanetRelations(nil, rcmCapAt, 15, [oiPeleng]);
       CreateAndEquipHull(NextRandomIntRange(210, 230, RandomState), 2, OwnerId, -1, False);
       CreateAndEquipFuelTanks(Round(FuelTanksBaseSize * EquipmentSizeFactors[5]), 1, OwnerId);
       CreateAndEquipEngine(Round(EngineBaseSize * EquipmentSizeFactors[3]), 1, OwnerId);
@@ -1067,7 +1067,7 @@ begin
     12:
     begin
       SetMoney(RoundAndTruncateToTens(SeededRandomFloatRange(Galaxy.GenerationSeed, 1.5, 2.0) * InitialMoney));
-      ChangePlanetRelations(nil, rcmRaiseTo, 90, [0, 1]);
+      ChangePlanetRelations(nil, rcmRaiseTo, 90, [oiMaloc, oiPeleng]);
       CreateAndEquipHull(NextRandomIntRange(250, 270, RandomState), 2, OwnerId, -1, False);
       CreateAndEquipFuelTanks(Round(FuelTanksBaseSize * EquipmentSizeFactors[5]), 1, OwnerId);
       GetFuelTanks.ConditionPercent := NextRandomIntRange(20, 80, RandomState);
@@ -1091,8 +1091,8 @@ begin
     13:
     begin
       SetMoney(RoundAndTruncateToTens(SeededRandomFloatRange(Galaxy.GenerationSeed, 1.3, 1.5) * InitialMoney));
-      ChangePlanetRelations(nil, rcmCapAt, 25, [0]);
-      ChangePlanetRelations(nil, rcmIncrease, 30, [1, 3, 4]);
+      ChangePlanetRelations(nil, rcmCapAt, 25, [oiMaloc]);
+      ChangePlanetRelations(nil, rcmIncrease, 30, [oiPeleng, oiFeyan, oiGaal]);
       CreateAndEquipHull(NextRandomIntRange(280, 310, RandomState), 1, OwnerId, -1, False);
       CreateAndEquipFuelTanks(Round(FuelTanksBaseSize * EquipmentSizeFactors[5]), 1, OwnerId);
       CreateAndEquipEngine(Round(EngineBaseSize * EquipmentSizeFactors[2]), 1, OwnerId);
@@ -1104,7 +1104,7 @@ begin
     14:
     begin
       SetMoney(RoundAndTruncateToTens(SeededRandomFloatRange(Galaxy.GenerationSeed, 1.1, 1.3) * InitialMoney));
-      ChangePlanetRelations(nil, rcmCapAt, 5, [1, 4]);
+      ChangePlanetRelations(nil, rcmCapAt, 5, [oiPeleng, oiGaal]);
       CreateAndEquipHull(NextRandomIntRange(240, 260, RandomState), 1, OwnerId, -1, False);
       CreateAndEquipFuelTanks(Round(FuelTanksBaseSize * EquipmentSizeFactors[5]), 1, OwnerId);
       CreateAndEquipEngine(Round(EngineBaseSize * EquipmentSizeFactors[3]), 1, OwnerId);
@@ -1117,9 +1117,9 @@ begin
     15:
     begin
       SetMoney(RoundAndTruncateToTens(SeededRandomFloatRange(Galaxy.GenerationSeed, 0.2, 0.3) * InitialMoney));
-      ChangePlanetRelations(nil, rcmCapAt, NextRandomIntRange(10, 35, RandomState), [0]);
-      ChangePlanetRelations(nil, rcmCapAt, NextRandomIntRange(10, 35, RandomState), [3]);
-      ChangePlanetRelations(nil, rcmCapAt, NextRandomIntRange(10, 35, RandomState), [4]);
+      ChangePlanetRelations(nil, rcmCapAt, NextRandomIntRange(10, 35, RandomState), [oiMaloc]);
+      ChangePlanetRelations(nil, rcmCapAt, NextRandomIntRange(10, 35, RandomState), [oiFeyan]);
+      ChangePlanetRelations(nil, rcmCapAt, NextRandomIntRange(10, 35, RandomState), [oiGaal]);
       CreateAndEquipHull(NextRandomIntRange(250, 270, RandomState), 1, OwnerId, -1, False);
       CreateAndEquipFuelTanks(Round(FuelTanksBaseSize * EquipmentSizeFactors[5]), 1, OwnerId);
       CreateAndEquipEngine(Round(EngineBaseSize * EquipmentSizeFactors[2]), 2, OwnerId);
@@ -1131,7 +1131,7 @@ begin
     16:
     begin
       SetMoney(RoundAndTruncateToTens(SeededRandomFloatRange(Galaxy.GenerationSeed, 0.2, 0.3) * InitialMoney));
-      ChangePlanetRelations(nil, rcmRaiseTo, 70, [0, 1, 2, 3, 4]);
+      ChangePlanetRelations(nil, rcmRaiseTo, 70, [oiMaloc, oiPeleng, oiHuman, oiFeyan, oiGaal]);
       CreateAndEquipHull(NextRandomIntRange(250, 270, RandomState), 1, OwnerId, -1, False);
       CreateAndEquipFuelTanks(Round(FuelTanksBaseSize * EquipmentSizeFactors[5]), 1, OwnerId);
       CreateAndEquipEngine(Round(EngineBaseSize * EquipmentSizeFactors[2]), 1, OwnerId);
@@ -1144,7 +1144,7 @@ begin
     17:
     begin
       SetMoney(RoundAndTruncateToTens(SeededRandomFloatRange(Galaxy.GenerationSeed, 0.2, 0.3) * InitialMoney));
-      ChangePlanetRelations(nil, rcmCapAt, 70, [0, 1]);
+      ChangePlanetRelations(nil, rcmCapAt, 70, [oiMaloc, oiPeleng]);
       CreateAndEquipHull(NextRandomIntRange(230, 250, RandomState), 1, OwnerId, -1, False);
       CreateAndEquipFuelTanks(Round(FuelTanksBaseSize * EquipmentSizeFactors[5]), 1, OwnerId);
       CreateAndEquipEngine(Round(EngineBaseSize * EquipmentSizeFactors[3]), 2, OwnerId);
@@ -1155,8 +1155,8 @@ begin
     18:
     begin
       SetMoney(RoundAndTruncateToTens(SeededRandomFloatRange(Galaxy.GenerationSeed, 0.8, 1.3) * InitialMoney));
-      ChangePlanetRelations(nil, rcmRaiseTo, 70, [1, 2, 3, 4]);
-      ChangePlanetRelations(nil, rcmCapAt, 25, [0]);
+      ChangePlanetRelations(nil, rcmRaiseTo, 70, [oiPeleng, oiHuman, oiFeyan, oiGaal]);
+      ChangePlanetRelations(nil, rcmCapAt, 25, [oiMaloc]);
       CreateAndEquipHull(NextRandomIntRange(290, 320, RandomState), 1, OwnerId, -1, False).HullPoints := NextRandomIntRange(50, 150, RandomState);
       CreateAndEquipFuelTanks(Round(FuelTanksBaseSize * EquipmentSizeFactors[5]), 1, OwnerId).ConditionPercent := NextRandomIntRange(10, 50, RandomState);
       CreateAndEquipEngine(Round(EngineBaseSize * EquipmentSizeFactors[2]), 1, OwnerId).ConditionPercent := NextRandomIntRange(10, 50, RandomState);
@@ -1167,7 +1167,7 @@ begin
     19:
     begin
       SetMoney(RoundAndTruncateToTens(SeededRandomFloatRange(Galaxy.GenerationSeed, 0.2, 0.3) * InitialMoney));
-      ChangePlanetRelations(nil, rcmCapAt, 15, [4]);
+      ChangePlanetRelations(nil, rcmCapAt, 15, [oiGaal]);
       CreateAndEquipHull(NextRandomIntRange(270, 290, RandomState), 1, OwnerId, -1, False);
       CreateAndEquipFuelTanks(Round(FuelTanksBaseSize * EquipmentSizeFactors[5]), 1, OwnerId);
       CreateAndEquipEngine(Round(EngineBaseSize * EquipmentSizeFactors[2]), 2, OwnerId);
@@ -1179,9 +1179,9 @@ begin
     20:
     begin
       SetMoney(RoundAndTruncateToTens(SeededRandomFloatRange(Galaxy.GenerationSeed, 0.2, 0.3) * InitialMoney));
-      ChangePlanetRelations(nil, rcmCapAt, 5, [0, 2, 4]);
-      ChangePlanetRelations(nil, rcmCapAt, 90, [1]);
-      ChangePlanetRelations(nil, rcmCapAt, 60, [3]);
+      ChangePlanetRelations(nil, rcmCapAt, 5, [oiMaloc, oiHuman, oiGaal]);
+      ChangePlanetRelations(nil, rcmCapAt, 90, [oiPeleng]);
+      ChangePlanetRelations(nil, rcmCapAt, 60, [oiFeyan]);
       CreateAndEquipHull(NextRandomIntRange(230, 250, RandomState), 1, OwnerId, -1, False);
       CreateAndEquipFuelTanks(Round(FuelTanksBaseSize * EquipmentSizeFactors[5]), 1, OwnerId);
       CreateAndEquipEngine(Round(EngineBaseSize * EquipmentSizeFactors[3]), 1, OwnerId);
@@ -1201,7 +1201,7 @@ begin
     21:
     begin
       SetMoney(RoundAndTruncateToTens(SeededRandomFloatRange(Galaxy.GenerationSeed, 0.2, 0.3) * InitialMoney));
-      ChangePlanetRelations(nil, rcmRaiseTo, 70, [0, 1, 2, 3, 4]);
+      ChangePlanetRelations(nil, rcmRaiseTo, 70, [oiMaloc, oiPeleng, oiHuman, oiFeyan, oiGaal]);
       CreateAndEquipHull(NextRandomIntRange(230, 250, RandomState), 2, OwnerId, -1, False);
       CreateAndEquipFuelTanks(Round(FuelTanksBaseSize * EquipmentSizeFactors[5]), 1, OwnerId);
       CreateAndEquipEngine(Round(EngineBaseSize * EquipmentSizeFactors[2]), 1, OwnerId);
@@ -1213,7 +1213,7 @@ begin
     22:
     begin
       SetMoney(RoundAndTruncateToTens(SeededRandomFloatRange(Galaxy.GenerationSeed, 1.2, 1.3) * InitialMoney));
-      ChangePlanetRelations(nil, rcmRaiseTo, 60, [0, 1, 2, 3, 4]);
+      ChangePlanetRelations(nil, rcmRaiseTo, 60, [oiMaloc, oiPeleng, oiHuman, oiFeyan, oiGaal]);
       CreateAndEquipHull(NextRandomIntRange(220, 230, RandomState), 1, OwnerId, -1, False);
       CreateAndEquipFuelTanks(Round(FuelTanksBaseSize * EquipmentSizeFactors[5]), 1, OwnerId);
       CreateAndEquipEngine(Round(EngineBaseSize * EquipmentSizeFactors[3]), 1, OwnerId);
@@ -1225,7 +1225,7 @@ begin
     23:
     begin
       SetMoney(RoundAndTruncateToTens(SeededRandomFloatRange(Galaxy.GenerationSeed, 0.8, 1.2) * InitialMoney));
-      ChangePlanetRelations(nil, rcmCapAt, 5, [0]);
+      ChangePlanetRelations(nil, rcmCapAt, 5, [oiMaloc]);
       CreateAndEquipHull(NextRandomIntRange(280, 310, RandomState), 1, OwnerId, -1, False);
       CreateAndEquipFuelTanks(Round(FuelTanksBaseSize * EquipmentSizeFactors[5]), 1, OwnerId);
       CreateAndEquipEngine(Round(EngineBaseSize * EquipmentSizeFactors[2]), 1, OwnerId);
@@ -1246,7 +1246,7 @@ begin
     24:
     begin
       SetMoney(RoundAndTruncateToTens(SeededRandomFloatRange(Galaxy.GenerationSeed, 0.9, 1.2) * InitialMoney));
-      ChangePlanetRelations(nil, rcmCapAt, 35, [0, 1, 2, 3]);
+      ChangePlanetRelations(nil, rcmCapAt, 35, [oiMaloc, oiPeleng, oiHuman, oiFeyan]);
       CreateAndEquipHull(NextRandomIntRange(250, 260, RandomState), 1, OwnerId, -1, False);
       CreateAndEquipFuelTanks(Round(FuelTanksBaseSize * EquipmentSizeFactors[5]), 1, OwnerId);
       CreateAndEquipEngine(Round(EngineBaseSize * EquipmentSizeFactors[1]), 1, OwnerId);
@@ -1268,7 +1268,7 @@ begin
     25:
     begin
       SetMoney(RoundAndTruncateToTens(SeededRandomFloatRange(Galaxy.GenerationSeed, 0.9, 1.2) * InitialMoney));
-      ChangePlanetRelations(nil, rcmCapAt, 15, [0, 1, 3]);
+      ChangePlanetRelations(nil, rcmCapAt, 15, [oiMaloc, oiPeleng, oiFeyan]);
       CreateAndEquipHull(NextRandomIntRange(280, 300, RandomState), 1, OwnerId, -1, False);
       CreateAndEquipFuelTanks(Round(FuelTanksBaseSize * EquipmentSizeFactors[3]), 1, OwnerId);
       GetFuelTanks.ConditionPercent := NextRandomIntRange(10, 50, RandomState);
@@ -1434,9 +1434,9 @@ begin
             if InNormalSpace and not (2 in CaptainHealthDefinitions[I].Locations) and not (3 in CaptainHealthDefinitions[I].Locations) then Continue;
             if InNormalSpace and (3 in CaptainHealthDefinitions[I].Locations) then
               if (EnemyShip = nil) or not EnemyShip.IsAttackingShip(Self) or (GetHullIntegrityPercent > 50) or
-                ((I = 3) and (EnemyShip.OwnerId <> Byte(oiDominator))) then Continue;
+                ((I = 3) and (EnemyShip.OwnerId <> oiDominator)) then Continue;
             if (CurrentPlanet <> nil) and not (CurrentPlanet.OwnerId in CaptainHealthDefinitions[I].AllowedLocationOwners) then
-              if (CurrentPlanet.OwnerId = Byte(oiUninhabited)) or not (RaceToOwner(CurrentPlanet.RaceId) in CaptainHealthDefinitions[I].AllowedLocationOwners) then Continue;
+              if (CurrentPlanet.OwnerId = oiUninhabited) or not (RaceToOwner(CurrentPlanet.RaceId) in CaptainHealthDefinitions[I].AllowedLocationOwners) then Continue;
             if (DockedTo <> nil) and not (RaceToOwner(DockedTo.PilotRace) in CaptainHealthDefinitions[I].AllowedLocationOwners) and
               not (DockedTo.OwnerId in CaptainHealthDefinitions[I].AllowedLocationOwners) then Continue;
             if (RaceToOwner(PilotRace) in AllowedOwners) and (GetRangerRatingBand in AllowedRatingBands) and
@@ -1543,7 +1543,7 @@ begin
       begin
         if SeededRandomUnitFloat(Integer(Galaxy.GenerationSeed) + 1736605 + Galaxy.CurrentTurn) > 0.8 then
         begin
-          TargetValue := NextRandomIntRange(Galaxy.ComputeScaledSmallMoney(2), Galaxy.ComputeScaledAverageMoney(2), RandomState);
+          TargetValue := NextRandomIntRange(Galaxy.ComputeScaledSmallMoney(oiHuman), Galaxy.ComputeScaledAverageMoney(oiHuman), RandomState);
           SetMoney(TargetValue + Money);
           SoundManager.PlaySound('Sound.Sell');
           AddOrUpdatePlayerBubble(0, Galaxy.CurrentTurn, FormatText2(PickLocalizedTextVariant('GalaxyNews.IllNews.IllLuatan', Seed * Cardinal(Galaxy.CurrentTurn div 10)), '<color=255,240,100>', '<Date>', Galaxy.FormatTurnDate(-1), '<Money>', WideString(IntToStr(TargetValue))), '');
@@ -1554,7 +1554,7 @@ begin
       if IsHealthEffectActive(11) and InNormalSpace and HasCargoGoods and
         (SeededRandomUnitFloat(Integer(Galaxy.GenerationSeed) + 135432 + Galaxy.CurrentTurn) > 0.8) and (Galaxy.CurrentTurn mod 21 = 0) then
       begin
-        TargetValue := NextRandomIntRange(Galaxy.ComputeScaledMiniMoney(2), Galaxy.ComputeScaledBigMoney(2), RandomState);
+        TargetValue := NextRandomIntRange(Galaxy.ComputeScaledMiniMoney(oiHuman), Galaxy.ComputeScaledBigMoney(oiHuman), RandomState);
         JettisonCargoGoodsTowardTargetValue(TargetValue);
         SoundManager.PlaySound('Sound.Sell');
         AddOrUpdatePlayerBubble(0, Galaxy.CurrentTurn, FormatText1(PickLocalizedTextVariant('GalaxyNews.IllNews.IllSeciyanka', Seed * Cardinal(Galaxy.CurrentTurn div 10)), '<color=255,240,100>', '<Date>', Galaxy.FormatTurnDate(-1)), '');
@@ -1744,8 +1744,8 @@ begin
       end;
       for Kind := 0 to 7 do
         if Kind in GoodsMask then
-          if GoodsLegalOnPlanet[Kind, BuyPlanet.RaceId, Ord(BuyPlanet.Government)] then
-            if GoodsLegalOnPlanet[Kind, SellPlanet.RaceId, Ord(SellPlanet.Government)] then
+          if GoodsLegalOnPlanet[Kind, BuyPlanet.RaceId, BuyPlanet.Government] then
+            if GoodsLegalOnPlanet[Kind, SellPlanet.RaceId, SellPlanet.Government] then
               if (BuyPlanet.RelationToShip(Self) >= 20) and (SellPlanet.RelationToShip(Self) >= 20) and
                 (SeededRandomUnitFloat(Kind * Seed * BuyPlanet.GenerationSeed + SellPlanet.GenerationSeed) >= 0.2) then begin
                 Score := ShopGoodsSellPrice(Kind, SellPlanet) / ShopGoodsPurchasePrice(Kind, BuyPlanet);
@@ -3037,7 +3037,7 @@ end;
 procedure TPlayer.RefreshNewsAtLocation;
 begin
   if (Galaxy.CurrentTurn > 300) and (IsOnPlanet or IsDockedToShip) then
-    if (CurrentPlanet = nil) or ((CurrentPlanet.OwnerId in [Ord(oiMaloc)..Ord(oiGaal), Ord(oiPirate)]) and
+    if (CurrentPlanet = nil) or ((CurrentPlanet.OwnerId in [oiMaloc..oiGaal, oiPirate]) and
       (CurrentPlanet.GetRelationLevelToShip(Self) > rlBad)) then
     begin
       MergeGalaxyNews;
@@ -3107,7 +3107,7 @@ begin
   else
   begin
     if RuinsSavedDockedTo <> nil then RequestedScreenId := screenRuinsTalk
-    else if RuinsSavedPlanet.OwnerId <> Byte(oiUninhabited) then RequestedScreenId := screenPlanet
+    else if RuinsSavedPlanet.OwnerId <> oiUninhabited then RequestedScreenId := screenPlanet
     else RequestedScreenId := screenPlanetNO;
     ExitRuinsMode;
   end;
@@ -3139,7 +3139,7 @@ end;
 procedure TPlayer.RefreshCurrentStanding;
 begin
   if IsInPrison then CurrentStanding := ssNeutral
-  else if OwnerId <> Byte(oiPirate) then
+  else if OwnerId <> oiPirate then
   begin
     if (CurrentSystemKills.Pirate > 0) or (CurrentStar.ControlFaction = sfCoalition) then CurrentStanding := ssCoalitionActive
     else CurrentStanding := ssCoalitionPassive;
@@ -3186,7 +3186,7 @@ begin
     if Ship is TRuins then Result := False
     else if (Ship is TKling) and not Ship.HasIndependentScriptFaction then
     begin
-      if (GetPlayer.GetScanner = nil) or (GetPlayer.GetScanner.OwnerId <> Byte(oiDominator)) or
+      if (GetPlayer.GetScanner = nil) or (GetPlayer.GetScanner.OwnerId <> oiDominator) or
         (GetPlayer.GetScanner.DominatorSeries <> TKling(Ship).DominatorSeries) then Result := False;
     end;
     Result := GetPlayer.ScriptItemsAct($12, Ship, nil, Ord(Result)) <> 0;

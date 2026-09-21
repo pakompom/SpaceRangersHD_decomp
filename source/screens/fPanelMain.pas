@@ -437,7 +437,7 @@ begin
   if NavigationLocked then Exit;
   if HasPendingScriptRequests then Exit;
   if GetPlayer = nil then Exit;
-  if (GetPlayer.CurrentPlanet <> nil) and (GetPlayer.CurrentPlanet.OwnerId = Byte(oiDominator)) then Exit;
+  if (GetPlayer.CurrentPlanet <> nil) and (GetPlayer.CurrentPlanet.OwnerId = oiDominator) then Exit;
   if GetPlayer.QueuedTravelTarget <> nil then Exit;
   if GetPlayer.RuinsMode <> 0 then Exit;
   if Screen.ParentLoop <> nil then Exit;
@@ -467,7 +467,7 @@ begin
       CalculateGalaxyTurnAndWait;
     end;
   end;
-  if (GetPlayer = nil) or ((GetPlayer.CurrentPlanet <> nil) and (GetPlayer.CurrentPlanet.OwnerId = Byte(oiDominator))) then
+  if (GetPlayer = nil) or ((GetPlayer.CurrentPlanet <> nil) and (GetPlayer.CurrentPlanet.OwnerId = oiDominator)) then
   begin
     Event := AddGalaxyEvent('PlayerDeath');
     Event.AddTextData('PlanetCaptured');
@@ -483,7 +483,7 @@ begin
       RequestedScreenId := screenRuinsTalk;
       TMessageLoopGI(RegisteredScreens[CurrentScreenId]).RequestClose(1);
     end
-    else if (GetPlayer.PendingDockDialogue > 0) and (GetPlayer.CurrentPlanet <> nil) and (GetPlayer.CurrentPlanet.OwnerId <> Byte(oiUninhabited)) then
+    else if (GetPlayer.PendingDockDialogue > 0) and (GetPlayer.CurrentPlanet <> nil) and (GetPlayer.CurrentPlanet.OwnerId <> oiUninhabited) then
     begin
       RequestedScreenId := screenGovernment;
       TMessageLoopGI(RegisteredScreens[CurrentScreenId]).RequestClose(1);

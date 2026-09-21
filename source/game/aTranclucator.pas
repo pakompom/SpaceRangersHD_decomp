@@ -30,7 +30,7 @@ type
     function ConvertToStoredArtefact: Boolean; // @addr $65E0D0
     procedure UpdateFreeFlightOrder; // @addr $65E300
     procedure EquipEssentialInventory; // @addr $65E748
-    procedure Init(AOwnerShip: TShip; Faction: Byte; BasicEquipment: Boolean); // @addr $65CA28
+    procedure Init(AOwnerShip: TShip; Faction: TOwnerId; BasicEquipment: Boolean); // @addr $65CA28
     procedure SaveToBuffer(Buffer: TBufEC); override; // @addr $65CEC0 @slot 0x00
     procedure LoadFromBuffer(Buffer: TBufEC; Galaxy: TGalaxy); override; // @addr $65D088 @slot 0x04
     procedure ResolveLoadedReferences(Galaxy: TGalaxy); override; // @addr $65D24C @slot 0x08
@@ -168,7 +168,7 @@ end;
 { @end $65C8CC }
 
 { @routine $65CA28 TTranclucator_Init }
-procedure TTranclucator.Init(AOwnerShip: TShip; Faction: Byte; BasicEquipment: Boolean);
+procedure TTranclucator.Init(AOwnerShip: TShip; Faction: TOwnerId; BasicEquipment: Boolean);
 var
   WeaponType: Byte;
   MaximumHullSize: Integer;
@@ -564,7 +564,7 @@ var Good: Byte;
     Item: TEquipment;
     Artefact: TArtefact;
 begin
-  if not (Location is TPlanet) or ((Location as TPlanet).OwnerId in [Ord(oiMaloc)..Ord(oiGaal), Ord(oiPirate)]) then
+  if not (Location is TPlanet) or ((Location as TPlanet).OwnerId in [oiMaloc..oiGaal, oiPirate]) then
   begin
     for I := Inventory.Count - 1 downto 0 do
     begin
@@ -639,7 +639,7 @@ begin
       for I := 0 to CurrentStar.Planets.Count - 1 do
       begin
         Planet := TPlanet(CurrentStar.Planets[I]);
-        if (Planet.OwnerId in [Ord(oiMaloc)..Ord(oiGaal), Ord(oiPirate)]) and (Planet.GetRelationLevelToShip(GetPlayer) >= rlNormal) then
+        if (Planet.OwnerId in [oiMaloc..oiGaal, oiPirate]) and (Planet.GetRelationLevelToShip(GetPlayer) >= rlNormal) then
         begin
           Distance := PointDistance(Position, Planet.GetPosition);
           if BestDistance >= Distance then
@@ -685,7 +685,7 @@ begin
   if IsOnPlanet then Location := CurrentPlanet
   else if IsDockedToShip then Location := DockedTo
   else Exit;
-  if (OwnerShip <> nil) and (not (Location is TPlanet) or ((Location as TPlanet).OwnerId in [Ord(oiMaloc)..Ord(oiGaal), Ord(oiPirate)])) then
+  if (OwnerShip <> nil) and (not (Location is TPlanet) or ((Location as TPlanet).OwnerId in [oiMaloc..oiGaal, oiPirate])) then
   begin
     EnemyShip := nil;
     TruceShip := nil;
@@ -890,7 +890,7 @@ begin
       for I := 0 to CurrentStar.Ships.Count - 1 do
       begin
         Ship := TShip(CurrentStar.Ships[I]);
-        if (Ship.OwnerId = Byte(oiDominator)) and Ship.InNormalSpace then
+        if (Ship.OwnerId = oiDominator) and Ship.InNormalSpace then
         begin
           Distance := PointDistance(Position, Ship.Position);
           for J := 1 to WeaponCount do

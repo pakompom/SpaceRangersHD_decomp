@@ -92,7 +92,7 @@ type
     ItemType: TItemType; // @offset 0x0C
     Position: TPointF; // @offset 0x10
     Weight: Integer; // @offset 0x18  Hull capacity for hull items.
-    OwnerId: Byte; // @offset 0x1C
+    OwnerId: TOwnerId; // @offset 0x1C
     Cost: Integer; // @offset 0x20
     NameOverride: WideString; // @offset 0x24
     FilmObject: TEFilmObj; // @offset 0x28  Borrowed from the active film; not an integer object ID.
@@ -212,7 +212,7 @@ type
     procedure SaveToBlock(Block: TBlockParEC); override; // @addr 0x7F48B4
     procedure LoadFromBlock(Block: TBlockParEC); override; // @addr 0x7F4BF8
 
-    procedure Init(Capacity: Integer; Level, Owner, HullType: Byte; Series: Integer; PirateBuilt: Boolean); // @addr 0x7F4200
+    procedure Init(Capacity: Integer; Level: Byte; Owner: TOwnerId; HullType: Byte; Series: Integer; PirateBuilt: Boolean); // @addr 0x7F4200
     procedure Repair; override; // @addr 0x7F5398
     function GetSlotCount(Kind: TShipSlotKind): Integer; // @addr 0x7F6B4C
     function GetFragilityFactor(DamageFlags: TDamageFlagSet): Single; override; // @addr 0x7F7038 @ida "float __usercall $name@<st0>(THull *Self@<eax>, unsigned int DamageFlags@<edx>);" @note "Zero flags return the average of energy, splinter and missile factors."
@@ -243,7 +243,7 @@ type
     procedure SaveToBlock(Block: TBlockParEC); override; // @addr 0x7F7498
     procedure LoadFromBlock(Block: TBlockParEC); override; // @addr 0x7F762C
 
-    procedure Init(Weight: Integer; Level, Owner: Byte); // @addr 0x7F7390
+    procedure Init(Weight: Integer; Level: Byte; Owner: TOwnerId); // @addr 0x7F7390
     function CalculateGeneratedCapacity: Byte; // @addr 0x7F77B8
     function CalculateGeneratedCost: Integer; // @addr 0x7F78A0
 
@@ -266,7 +266,7 @@ type
     procedure SaveToBlock(Block: TBlockParEC); override; // @addr 0x7F82D4
     procedure LoadFromBlock(Block: TBlockParEC); override; // @addr 0x7F8460
 
-    procedure Init(Weight: Integer; Level, Owner: Byte); // @addr 0x7F8188
+    procedure Init(Weight: Integer; Level: Byte; Owner: TOwnerId); // @addr 0x7F8188
     function CalculateGeneratedSpeed: Integer; // @addr 0x7F85E4
     function CalculateGeneratedJumpRange: ShortInt; // @addr 0x7F860C
     function CalculateGeneratedCost: Integer; // @addr 0x7F86C4
@@ -288,7 +288,7 @@ type
     procedure SaveToBlock(Block: TBlockParEC); override; // @addr 0x7F9A08
     procedure LoadFromBlock(Block: TBlockParEC); override; // @addr 0x7F9B30
 
-    procedure Init(Weight: Integer; Level, Owner: Byte); // @addr 0x7F992C
+    procedure Init(Weight: Integer; Level: Byte; Owner: TOwnerId); // @addr 0x7F992C
     function CalculateGeneratedRange: Integer; // @addr 0x7F9C54
     function CalculateGeneratedCost: Integer; // @addr 0x7F9D10
 
@@ -309,7 +309,7 @@ type
     procedure SaveToBlock(Block: TBlockParEC); override; // @addr 0x7FA810
     procedure LoadFromBlock(Block: TBlockParEC); override; // @addr 0x7FA934
 
-    procedure Init(Weight: Integer; Level, Owner: Byte); // @addr 0x7FA708
+    procedure Init(Weight: Integer; Level: Byte; Owner: TOwnerId); // @addr 0x7FA708
     function CalculateGeneratedScanPower: Integer; // @addr 0x7FAA50
     function CalculateGeneratedCost: Integer; // @addr 0x7FAB14
 
@@ -330,7 +330,7 @@ type
     procedure SaveToBlock(Block: TBlockParEC); override; // @addr 0x7FB6A0
     procedure LoadFromBlock(Block: TBlockParEC); override; // @addr 0x7FB7C8
 
-    procedure Init(Weight: Integer; Level, Owner: Byte); // @addr 0x7FB508
+    procedure Init(Weight: Integer; Level: Byte; Owner: TOwnerId); // @addr 0x7FB508
     function CalculateGeneratedRepairPoints: Byte; // @addr 0x7FB8E8
     function CalculateGeneratedCost: Integer; // @addr 0x7FB9A0
 
@@ -354,7 +354,7 @@ type
     procedure SaveToBlock(Block: TBlockParEC); override; // @addr 0x7FC57C
     procedure LoadFromBlock(Block: TBlockParEC); override; // @addr 0x7FC800
 
-    procedure Init(Weight: Integer; Level, Owner: Byte); // @addr 0x7FC418
+    procedure Init(Weight: Integer; Level: Byte; Owner: TOwnerId); // @addr 0x7FC418
     function CalculateGeneratedPickupPower: Integer; // @addr 0x7FCA30
     function CalculateGeneratedRange: Integer; // @addr 0x7FCA58
     function CalculateGeneratedMinPullSpeed: Single; // @addr 0x7FCA80
@@ -379,7 +379,7 @@ type
     procedure SaveToBlock(Block: TBlockParEC); override; // @addr 0x7FDFBC
     procedure LoadFromBlock(Block: TBlockParEC); override; // @addr 0x7FE0F0
 
-    procedure Init(Weight: Integer; Level, Owner: Byte); // @addr 0x7FDED8
+    procedure Init(Weight: Integer; Level: Byte; Owner: TOwnerId); // @addr 0x7FDED8
     function CalculateGeneratedDamageFactor: Single; // @addr 0x7FE1F8
 
     procedure Improve(Kind: TImprovementKind); override; // @addr 0x7FE338
@@ -409,7 +409,7 @@ type
     procedure SaveToBlock(Block: TBlockParEC); override; // @addr 0x7FF2C0
     procedure LoadFromBlock(Block: TBlockParEC); override; // @addr 0x7FF640
 
-    procedure Init(ItemType: TItemType; Weight: Integer; Level, Owner: Byte); // @addr 0x7FED1C
+    procedure Init(ItemType: TItemType; Weight: Integer; Level: Byte; Owner: TOwnerId); // @addr 0x7FED1C
     procedure Unequip; override; // @addr 0x7FFAB8
     function GetConfigName: WideString; virtual; // @addr 0x8022F0 @slot 0x4C
     function GetWeaponInfo: PWeaponInfo; virtual; // @addr 0x8022A4 @slot 0x50 @calls "0x7599A7 0x801F73 0x7FFBC1 0x7FFD93"
@@ -445,7 +445,7 @@ type
     procedure SaveToBlock(Block: TBlockParEC); override; // @addr 0x7FF5A4
     procedure LoadFromBlock(Block: TBlockParEC); override; // @addr 0x7FF918
 
-    procedure InitCustom(Info: PWeaponInfo; Equipped: Boolean; Weight: Integer; Level, Owner: Byte); // @addr 0x7FEDE0
+    procedure InitCustom(Info: PWeaponInfo; Equipped: Boolean; Weight: Integer; Level: Byte; Owner: TOwnerId); // @addr 0x7FEDE0
     function GetWeaponInfo: PWeaponInfo; override; // @addr 0x8022D4
     function GetConfigName: WideString; override; // @addr 0x802350
 
@@ -550,7 +550,7 @@ type
     procedure SaveToBlock(Block: TBlockParEC); override; // @addr 0x8046EC
     procedure LoadFromBlock(Block: TBlockParEC); override; // @addr 0x804804
 
-    procedure Init(Fuel: Integer; Capacity, Owner: Byte); // @addr 0x8045F4
+    procedure Init(Fuel: Integer; Capacity: Byte; Owner: TOwnerId); // @addr 0x8045F4
 
     function GetDescriptionText: WideString; override; // @addr 0x804AB8
     function GetBitmapResourceName: WideString; override; // @addr 0x804B10
@@ -576,7 +576,7 @@ type
     procedure SaveToBlock(Block: TBlockParEC); override; // @addr 0x805280
     procedure LoadFromBlock(Block: TBlockParEC); override; // @addr 0x8054CC
 
-    procedure InitGenerated(TypeId, Owner: Byte; Seed: Cardinal); // @addr 0x804BE0 @note "Clears deployment state."
+    procedure InitGenerated(TypeId: Byte; Owner: TOwnerId; Seed: Cardinal); // @addr 0x804BE0 @note "Clears deployment state."
 
     function GetDescriptionText: WideString; override; // @addr 0x805E30
     function GetBitmapResourceName: WideString; override; // @addr 0x805EF0
@@ -636,7 +636,7 @@ type
 
     constructor Create; // @addr 0x809C38
     destructor Destroy; override; // @addr 0x809C88
-    procedure Init(Owner: Byte; ItemType: TItemType); virtual; // @addr 0x809D38 @slot 0x4C
+    procedure Init(Owner: TOwnerId; ItemType: TItemType); virtual; // @addr 0x809D38 @slot 0x4C
     function GetEffectiveType: TItemType; // @addr 0x80ADAC @note "Custom artefacts with SharedEffect use CountsAsItemType; otherwise returns ItemType."
     function GetOnUseCodeText: WideString; // @addr 0x80AB90 @note "Returns empty when the OnUseCode block is absent."
     function GetActionCode: Pointer; // @addr 0x80AC84 @note "Borrowed cached result, possibly nil. Marks initialization before resolving the configuration."
@@ -657,7 +657,7 @@ type
     procedure SaveToBlock(Block: TBlockParEC); override; // @addr 0x80AE9C
     procedure LoadFromBlock(Block: TBlockParEC); override; // @addr 0x80AF44
 
-    procedure InitTransmitter(Owner: Byte); // @addr 0x80ADE8
+    procedure InitTransmitter(Owner: TOwnerId); // @addr 0x80ADE8
   end;
 
   TArtefactTranclucator = class(TArtefact) // @size 0x6C
@@ -674,7 +674,7 @@ type
     procedure LoadFromBlock(Block: TBlockParEC); override; // @addr 0x80B484
 
     destructor Destroy; override; // @addr 0x80B138
-    procedure InitTranclucator(Owner: Byte; OwnerShip: Pointer; ExistingShip: Pointer); // @addr 0x80B188 @note "Takes ownership of ExistingShip, or creates a ship when nil."
+    procedure InitTranclucator(Owner: TOwnerId; OwnerShip: Pointer; ExistingShip: Pointer); // @addr 0x80B188 @note "Takes ownership of ExistingShip, or creates a ship when nil."
     function Clone: TItem; override; // @addr 0x80B3A4 @note "Always returns nil."
   end;
 
@@ -701,21 +701,21 @@ type
     function GetDescriptionText: WideString; override; // @addr 0x80C2FC
   end;
 
-function CreateRandomLootItem(Pool: TItemLootPool; Owner: Byte; Seed: Cardinal): TEquipmentWithActCode; // @addr 0x809AB0 @note "Selects across built-in artefacts, custom artefacts and configured useless items. Pool must be nonempty; AnyAvailable is the union of the three eligibility flags."
+function CreateRandomLootItem(Pool: TItemLootPool; Owner: TOwnerId; Seed: Cardinal): TEquipmentWithActCode; // @addr 0x809AB0 @note "Selects across built-in artefacts, custom artefacts and configured useless items. Pool must be nonempty; AnyAvailable is the union of the three eligibility flags."
 
 function ReadSavedMicroModuleIndex(Buffer: TBufEC): Integer; // @addr 0x7F0534 @note "Returns a one-based template index, or 0 if the saved template cannot be resolved."
 function MigrateSavedItemType(ItemType: Byte): TItemType; // @addr 0x80CED4 @note "Applies the ordered item-type insertions for save versions before 164, 78, 131, 78 and 127; arithmetic wraps in a byte."
 
-function GetBaseHullSlotCount(Kind: TShipSlotKind; HullType, Owner: Byte; Ship: Pointer): Integer; // @addr 0x7F6D68
-function CalculateGeneratedHullCost(Capacity, Level: Cardinal; Owner, HullType: Byte): Integer; // @addr 0x7F4F38
+function GetBaseHullSlotCount(Kind: TShipSlotKind; HullType: Byte; Owner: TOwnerId; Ship: Pointer): Integer; // @addr 0x7F6D68
+function CalculateGeneratedHullCost(Capacity, Level: Cardinal; Owner: TOwnerId; HullType: Byte): Integer; // @addr 0x7F4F38
 function CalculateGeneratedFuelCapacity(Weight: Cardinal; Level: Integer): Integer; // @addr 0x7F77E0
-function CalculateGeneratedFuelTanksCost(Weight: Cardinal; Level: Integer; Owner: Byte): Integer; // @addr 0x7F7834
-function CalculateGeneratedEngineCost(Weight: Cardinal; Level, Owner: Byte): Integer; // @addr 0x7F8630
-function CalculateGeneratedRadarCost(Weight: Cardinal; Level, Owner: Byte): Integer; // @addr 0x7F9C7C
-function CalculateGeneratedScanerCost(Weight: Cardinal; Level, Owner: Byte): Integer; // @addr 0x7FAA80
-function CalculateGeneratedRepairRobotCost(Weight: Cardinal; Level, Owner: Byte): Integer; // @addr 0x7FB90C
-function CalculateGeneratedCargoHookCost(Weight: Cardinal; Level, Owner: Byte): Integer; // @addr 0x7FCAD0
-function CalculateGeneratedDefGeneratorCost(Weight: Cardinal; Level, Owner: Byte): Integer; // @addr 0x7FE2A4
+function CalculateGeneratedFuelTanksCost(Weight: Cardinal; Level: Integer; Owner: TOwnerId): Integer; // @addr 0x7F7834
+function CalculateGeneratedEngineCost(Weight: Cardinal; Level: Byte; Owner: TOwnerId): Integer; // @addr 0x7F8630
+function CalculateGeneratedRadarCost(Weight: Cardinal; Level: Byte; Owner: TOwnerId): Integer; // @addr 0x7F9C7C
+function CalculateGeneratedScanerCost(Weight: Cardinal; Level: Byte; Owner: TOwnerId): Integer; // @addr 0x7FAA80
+function CalculateGeneratedRepairRobotCost(Weight: Cardinal; Level: Byte; Owner: TOwnerId): Integer; // @addr 0x7FB90C
+function CalculateGeneratedCargoHookCost(Weight: Cardinal; Level: Byte; Owner: TOwnerId): Integer; // @addr 0x7FCAD0
+function CalculateGeneratedDefGeneratorCost(Weight: Cardinal; Level: Byte; Owner: TOwnerId): Integer; // @addr 0x7FE2A4
 function GetGeneratedDefenseDamageFactor(Level: Byte): Double; // @addr 0x7FE21C
 function DefenseDamageFactorToPercent(Factor: Double): TPercent; // @addr 0x7FE240
 function DefensePercentToDamageFactor(Percent: Integer): Double; // @addr 0x7FE26C
@@ -727,14 +727,14 @@ function GetMicroModuleNameColorTag(ModuleIndex: Integer): WideString; // @addr 
 function GetMicroModuleTextColorTag(ModuleIndex: Integer): WideString; // @addr 0x807DE4
 function GetMicroModuleBitmapResourceName(ModuleIndex: Integer): WideString; // @addr 0x807E8C
 
-function CreateConfiguredArtefactByItemType(ItemType: TItemType; Owner: Byte): TArtefact; // @addr 0x809A44 @note "Returns nil outside item types 10..41."
+function CreateConfiguredArtefactByItemType(ItemType: TItemType; Owner: TOwnerId): TArtefact; // @addr 0x809A44 @note "Returns nil outside item types 10..41."
 
-function CalculateGeneratedWeaponCost(Info: PWeaponInfo; Weight: Cardinal; Level, Owner: Byte): Integer; // @addr 0x7FFC98
+function CalculateGeneratedWeaponCost(Info: PWeaponInfo; Weight: Cardinal; Level: Byte; Owner: TOwnerId): Integer; // @addr 0x7FFC98
 
 function CreateItemByType(ItemType: TItemType): TItem; // @addr 0x80C5EC @note "Constructs the instance without calling its Init routine."
 function CreateDefaultItemByType(ItemType: TItemType): TItem; // @addr 0x80C8A4
-function CreateGeneratedEquipment(ItemType: TItemType; Weight, Level: Integer; Owner: Byte): TEquipment; // @addr 0x80CAAC @note "Clamps Level to 1..8; custom weapons require CreateGeneratedWeapon."
-function CreateGeneratedWeapon(Info: PWeaponInfo; Weight, Level: Integer; Owner: Byte): TWeapon; // @addr 0x80CCA8
+function CreateGeneratedEquipment(ItemType: TItemType; Weight, Level: Integer; Owner: TOwnerId): TEquipment; // @addr 0x80CAAC @note "Clamps Level to 1..8; custom weapons require CreateGeneratedWeapon."
+function CreateGeneratedWeapon(Info: PWeaponInfo; Weight, Level: Integer; Owner: TOwnerId): TWeapon; // @addr 0x80CCA8
 
 // Module indices are zero-based; compatibility checks also accept special bonuses.
 function CanInstallMicroModule(ModuleIndex: Integer; Item: TEquipment): Boolean; // @addr 0x8093B0
@@ -815,7 +815,7 @@ begin
   Position.X := Buffer.GetSingle;
   Position.Y := Buffer.GetSingle;
   Weight := Buffer.GetInt32;
-  OwnerId := Buffer.GetByte;
+  OwnerId := TOwnerId(Buffer.GetByte);
   Cost := Buffer.GetUInt32;
   DestroyFlag := Buffer.GetInt32;
   if Buffer.GetBoolean then NameOverride := Buffer.ReadWideString;
@@ -845,7 +845,7 @@ var
 begin
   Text := Block.GetParam(DecodeTextW('OpwRn3ewr')); // 'Owner'
   for I := 0 to 7 do
-    if Text = OwnerInfo[Byte(I)].InternalName then OwnerId := I;
+    if Text = OwnerInfo[TOwnerId(I)].InternalName then OwnerId := TOwnerId(I);
   Weight := StrToInt(Block.GetParam(DecodeTextW('SaiRzoe'))); // 'Size'
   Cost := StrToInt(Block.GetParam(DecodeTextW('CfoTsat'))); // 'Cost'
   Text := LowerCase(Block.GetParam(DecodeTextW('NeonDarlokpl'))); // 'NoDrop'
@@ -970,7 +970,7 @@ begin
       else if Weight <= 99 then CreateContainer((Self as TEquipment).CustomFaction + '2')
       else CreateContainer((Self as TEquipment).CustomFaction + '3');
     end
-    else if (Self is TEquipment) and (OwnerId = Byte(oiDominator)) then
+    else if (Self is TEquipment) and (OwnerId = oiDominator) then
     begin
       if (Self as TEquipment).DominatorSeries = dsBlazer then
       begin
@@ -1036,10 +1036,10 @@ end;
 { @routine $7F0160 TItem_GetOwnerConfigName }
 function TItem.GetOwnerConfigName: WideString;
 begin
-  if Self is TGoods then Result := OwnerInfo[Ord(oiUninhabited)].InternalName
+  if Self is TGoods then Result := OwnerInfo[oiUninhabited].InternalName
   else if TEquipment(Self).CustomFaction <> '' then Result := TEquipment(Self).CustomFaction
-  else if (OwnerId = Byte(oiDominator)) and (Self is TEquipment) then Result := DominatorSeriesNames[Ord(TEquipment(Self).DominatorSeries)]
-  else if (Self is THull) and (Self as THull).PirateBuilt then Result := OwnerInfo[Ord(oiPirate)].InternalName + OwnerToSys(OwnerId)
+  else if (OwnerId = oiDominator) and (Self is TEquipment) then Result := DominatorSeriesNames[Ord(TEquipment(Self).DominatorSeries)]
+  else if (Self is THull) and (Self as THull).PirateBuilt then Result := OwnerInfo[oiPirate].InternalName + OwnerToSys(OwnerId)
   else Result := OwnerInfo[OwnerId].InternalName;
 end;
 { @end $7F0160 }
@@ -1546,7 +1546,7 @@ end;
 { @routine $7F2728 TEquipment_GetDescriptionText }
 function TEquipment.GetDescriptionText: WideString;
 begin
-  if (ItemType in [t_FuelTanks..t_DefGenerator]) and (OwnerId = Byte(oiDominator)) then
+  if (ItemType in [t_FuelTanks..t_DefGenerator]) and (OwnerId = oiDominator) then
     Result := LocalizedText('Items.' + ItemTypeNames[ItemType] + '.KlingDescription.' + IntToStr(GetLevel))
   else Result := LocalizedText('Items.' + ItemTypeNames[ItemType] + '.Description.' + IntToStr(GetLevel));
 end;
@@ -1564,7 +1564,7 @@ begin
     Result := LocalizedText('Items.' + ItemTypeNames[ItemType] + '.' + CustomFaction + 'Name');
   if Result = '' then
   begin
-    if OwnerId <> Byte(oiDominator) then
+    if OwnerId <> oiDominator then
     begin
       TypeName := LocalizedText('Items.' + ItemTypeNames[ItemType] + '.Type.' + IntToStr(GetLevel));
       Result := ReplaceColoredToken(LocalizedText('Items.' + ItemTypeNames[ItemType] + '.Name'), '<Type>', TypeName, '');
@@ -1580,7 +1580,7 @@ end;
 function TEquipment.GetShortName: WideString;
 begin
   if NameOverride <> '' then Result := NameOverride
-  else if OwnerId <> Byte(oiDominator) then
+  else if OwnerId <> oiDominator then
     Result := LocalizedText('Items.' + ItemTypeNames[ItemType] + '.ShortName')
   else Result := LocalizedText('Items.' + ItemTypeNames[ItemType] + '.KlingName');
 end;
@@ -1669,7 +1669,7 @@ begin
       CacheDataRoot.FileExistsByPath(Path + 's') then Result := Path;
   end;
   if Result = '' then
-    if OwnerId = Byte(oiDominator) then Result := 'Bm.Items.' + GiResourceSuffix + ItemTypeNames[ItemType] + 'Kling0'
+    if OwnerId = oiDominator then Result := 'Bm.Items.' + GiResourceSuffix + ItemTypeNames[ItemType] + 'Kling0'
     else Result := 'Bm.Items.' + GiResourceSuffix + ItemTypeNames[ItemType] + IntToStr(GetLevel - 1);
 end;
 { @end $7F2F00 }
@@ -1890,7 +1890,7 @@ end;
 { @end $7F41B8 }
 
 { @routine $7F4200 THull_Init }
-procedure THull.Init(Capacity: Integer; Level, Owner, HullType: Byte; Series: Integer; PirateBuilt: Boolean);
+procedure THull.Init(Capacity: Integer; Level: Byte; Owner: TOwnerId; HullType: Byte; Series: Integer; PirateBuilt: Boolean);
 begin
   ItemType := t_Hull;
   OwnerShip := nil;
@@ -2107,7 +2107,7 @@ end;
 { @end $7F4F10 }
 
 { @routine $7F4F38 CalculateGeneratedHullCost }
-function CalculateGeneratedHullCost(Capacity, Level: Cardinal; Owner, HullType: Byte): Integer;
+function CalculateGeneratedHullCost(Capacity, Level: Cardinal; Owner: TOwnerId; HullType: Byte): Integer;
 var Kind: TShipSlotKind; Factor: Double;
 begin
   Factor := 1;
@@ -2313,7 +2313,7 @@ begin
       Result := 'Bm.Items.' + GiResourceSuffix + 'Hull_J_alt_'
     else if (HullType = htRanger) and (SpecialModuleIndex = 0) and Ship.UsesVeteranHumanRangerAppearance then
       Result := 'Bm.Items.' + GiResourceSuffix + 'Hull_People_ROld_'
-    else if (Ship.TypeId = stPirate) and (Ship.OwnerId = Byte(oiPirate)) and ((Ship as TPirate).PirateType <> 0) then
+    else if (Ship.TypeId = stPirate) and (Ship.OwnerId = oiPirate) and ((Ship as TPirate).PirateType <> 0) then
       Result := 'Bm.Items.' + GiResourceSuffix + 'Hull_' + OwnerInfo[OwnerId].InternalName + '_PC_';
   end;
 end;
@@ -2356,16 +2356,16 @@ end;
 { @end $7F6B4C }
 
 { @routine $7F6D68 GetBaseHullSlotCount }
-function GetBaseHullSlotCount(Kind: TShipSlotKind; HullType, Owner: Byte; Ship: Pointer): Integer;
+function GetBaseHullSlotCount(Kind: TShipSlotKind; HullType: Byte; Owner: TOwnerId; Ship: Pointer): Integer;
 begin
   Result := 0;
   case HullType of
-    htRanger: Result := RangerHullSlots[Owner, Ord(Kind)];
-    htWarrior: Result := WarriorHullSlots[Owner, Ord(Kind)];
-    htPirate: Result := PirateHullSlots[Owner, Ord(Kind)];
-    htTransport: Result := TransportHullSlots[Owner, Ord(Kind)];
-    htLiner: Result := LinerHullSlots[Owner, Ord(Kind)];
-    htDiplomat: Result := DiplomatHullSlots[Owner, Ord(Kind)];
+    htRanger: Result := RangerHullSlots[Owner, Kind];
+    htWarrior: Result := WarriorHullSlots[Owner, Kind];
+    htPirate: Result := PirateHullSlots[Owner, Kind];
+    htTransport: Result := TransportHullSlots[Owner, Kind];
+    htLiner: Result := LinerHullSlots[Owner, Kind];
+    htDiplomat: Result := DiplomatHullSlots[Owner, Kind];
     htTranclucator: Result := TranclucatorHullSlots[Ord(Kind)];
     htKling: if (Ship = nil) or not (TObject(Ship) is TKling) then
          Result := DominatorHullSlots[0, Ord(Kind)]
@@ -2402,7 +2402,7 @@ begin
   end;
   DamageClass := ClassifyWeaponDamageFlags(DamageFlags);
   Result := HullFragilityByType[HullType] * HullLevelStats[TechLevel].Fragility[DamageClass] * HullFragilityByOwner[DamageClass, OwnerId];
-  if PirateBuilt then Result := Result * HullFragilityByOwner[DamageClass, 7];
+  if PirateBuilt then Result := Result * HullFragilityByOwner[DamageClass, oiPirate];
   if MicroModuleIndex <> 0 then Result := Result * MicroModuleTemplates[MicroModuleIndex - 1].FragilityFactorByDamageClass[DamageClass];
   if SpecialModuleIndex <> 0 then Result := Result * MicroModuleTemplates[SpecialModuleIndex - 1].FragilityFactorByDamageClass[DamageClass];
   if ExtraSpecials <> nil then
@@ -2445,7 +2445,7 @@ end;
 { @end $7F72B8 }
 
 { @routine $7F7390 TFuelTanks_Init }
-procedure TFuelTanks.Init(Weight: Integer; Level, Owner: Byte);
+procedure TFuelTanks.Init(Weight: Integer; Level: Byte; Owner: TOwnerId);
 begin
   ItemType := t_FuelTanks;
   Self.Weight := Weight;
@@ -2514,7 +2514,7 @@ end;
 { @end $7F77E0 }
 
 { @routine $7F7834 CalculateGeneratedFuelTanksCost }
-function CalculateGeneratedFuelTanksCost(Weight: Cardinal; Level: Integer; Owner: Byte): Integer;
+function CalculateGeneratedFuelTanksCost(Weight: Cardinal; Level: Integer; Owner: TOwnerId): Integer;
 begin
   Result := RoundAndTruncateToTens(Weight / FuelTanksBaseSize * Cardinal(Level * Level) * 500 * OwnerInfo[Owner].FuelPriceFactor);
 end;
@@ -2565,7 +2565,7 @@ begin
   if (Text = '') and (CustomFaction <> '') then
     Text := LocalizedText('Items.FuelTanks.' + CustomFaction + 'Text');
   if Text = '' then
-    if OwnerId <> Byte(oiDominator) then Text := LocalizedText('Items.FuelTanks.Text')
+    if OwnerId <> oiDominator then Text := LocalizedText('Items.FuelTanks.Text')
     else Text := LocalizedText('Items.FuelTanks.KlingText');
   ReplaceTextToken(Text, '<Fuel>', IntToStr(Fuel), ColorTag);
   ReplaceInfoTokens(Text, ColorTag, Ship);
@@ -2598,7 +2598,7 @@ end;
 { @end $7F7DB0 }
 
 { @routine $7F8188 TEngine_Init }
-procedure TEngine.Init(Weight: Integer; Level, Owner: Byte);
+procedure TEngine.Init(Weight: Integer; Level: Byte; Owner: TOwnerId);
 begin
   ItemType := t_Engine;
   MicroModuleIndex := 0;
@@ -2671,7 +2671,7 @@ end;
 { @end $7F860C }
 
 { @routine $7F8630 CalculateGeneratedEngineCost }
-function CalculateGeneratedEngineCost(Weight: Cardinal; Level, Owner: Byte): Integer;
+function CalculateGeneratedEngineCost(Weight: Cardinal; Level: Byte; Owner: TOwnerId): Integer;
 begin
   Result := RoundAndTruncateToTens(RemapClamped(EngineBaseSize / Weight, 0.5, 2, 1, 2) * (Level * Level) * 500 * OwnerInfo[Owner].FuelPriceFactor);
 end;
@@ -2755,7 +2755,7 @@ begin
   if (Text = '') and (CustomFaction <> '') then
     Text := LocalizedText('Items.Engine.' + CustomFaction + 'Text');
   if Text = '' then
-    if OwnerId <> Byte(oiDominator) then Text := LocalizedText('Items.Engine.Text')
+    if OwnerId <> oiDominator then Text := LocalizedText('Items.Engine.Text')
     else Text := LocalizedText('Items.Engine.KlingText');
   ReplaceInfoTokens(Text, ColorTag, Ship);
   Text := Text + GetBonusDescription(ColorTag);
@@ -2814,7 +2814,7 @@ end;
 { @end $7F8DF0 }
 
 { @routine $7F992C TRadar_Init }
-procedure TRadar.Init(Weight: Integer; Level, Owner: Byte);
+procedure TRadar.Init(Weight: Integer; Level: Byte; Owner: TOwnerId);
 begin
   ItemType := t_Radar;
   Self.Weight := Weight;
@@ -2871,7 +2871,7 @@ end;
 { @end $7F9C54 }
 
 { @routine $7F9C7C CalculateGeneratedRadarCost }
-function CalculateGeneratedRadarCost(Weight: Cardinal; Level, Owner: Byte): Integer;
+function CalculateGeneratedRadarCost(Weight: Cardinal; Level: Byte; Owner: TOwnerId): Integer;
 begin
   Result := RoundAndTruncateToTens(RemapClamped(RadarBaseSize / Weight, 0.5, 2, 1, 2) * (Level * Level) * 500 * OwnerInfo[Owner].FuelPriceFactor);
 end;
@@ -2915,7 +2915,7 @@ begin
   if (Text = '') and (CustomFaction <> '') then
     Text := LocalizedText('Items.Radar.' + CustomFaction + 'Text');
   if Text = '' then
-    if OwnerId <> Byte(oiDominator) then Text := LocalizedText('Items.Radar.Text')
+    if OwnerId <> oiDominator then Text := LocalizedText('Items.Radar.Text')
     else Text := LocalizedText('Items.Radar.KlingText');
   ReplaceInfoTokens(Text, ColorTag, Ship);
   Text := Text + GetBonusDescription(ColorTag);
@@ -2952,7 +2952,7 @@ end;
 { @end $7FA14C }
 
 { @routine $7FA708 TScaner_Init }
-procedure TScaner.Init(Weight: Integer; Level, Owner: Byte);
+procedure TScaner.Init(Weight: Integer; Level: Byte; Owner: TOwnerId);
 begin
   ItemType := t_Scaner;
   Self.Weight := Weight;
@@ -3011,7 +3011,7 @@ end;
 { @end $7FAA50 }
 
 { @routine $7FAA80 CalculateGeneratedScanerCost }
-function CalculateGeneratedScanerCost(Weight: Cardinal; Level, Owner: Byte): Integer;
+function CalculateGeneratedScanerCost(Weight: Cardinal; Level: Byte; Owner: TOwnerId): Integer;
 begin
   Result := RoundAndTruncateToTens(RemapClamped(ScannerBaseSize / Weight, 0.5, 2, 1, 2) *
     (Level * Level) * 500 * OwnerInfo[Owner].FuelPriceFactor);
@@ -3056,7 +3056,7 @@ begin
   if (Text = '') and (CustomFaction <> '') then
     Text := LocalizedText('Items.Scaner.' + CustomFaction + 'Text');
   if Text = '' then
-    if OwnerId <> Byte(oiDominator) then Text := LocalizedText('Items.Scaner.Text')
+    if OwnerId <> oiDominator then Text := LocalizedText('Items.Scaner.Text')
     else Text := LocalizedText('Items.Scaner.KlingText');
   ReplaceInfoTokens(Text, ColorTag, Ship);
   Text := Text + GetBonusDescription(ColorTag);
@@ -3094,7 +3094,7 @@ end;
 { @end $7FAF4C }
 
 { @routine $7FB508 TRepairRobot_Init }
-procedure TRepairRobot.Init(Weight: Integer; Level, Owner: Byte);
+procedure TRepairRobot.Init(Weight: Integer; Level: Byte; Owner: TOwnerId);
 begin
   ItemType := t_RepairRobot;
   Self.Weight := Weight;
@@ -3166,7 +3166,7 @@ end;
 { @end $7FB8E8 }
 
 { @routine $7FB90C CalculateGeneratedRepairRobotCost }
-function CalculateGeneratedRepairRobotCost(Weight: Cardinal; Level, Owner: Byte): Integer;
+function CalculateGeneratedRepairRobotCost(Weight: Cardinal; Level: Byte; Owner: TOwnerId): Integer;
 begin
   Result := RoundAndTruncateToTens(RemapClamped(RepairRobotBaseSize / Weight, 0.5, 2, 1, 2) *
     (Level * Level) * 500 * OwnerInfo[Owner].FuelPriceFactor);
@@ -3211,7 +3211,7 @@ begin
   if (Text = '') and (CustomFaction <> '') then
     Text := LocalizedText('Items.RepairRobot.' + CustomFaction + 'Text');
   if Text = '' then
-    if OwnerId <> Byte(oiDominator) then Text := LocalizedText('Items.RepairRobot.Text')
+    if OwnerId <> oiDominator then Text := LocalizedText('Items.RepairRobot.Text')
     else Text := LocalizedText('Items.RepairRobot.KlingText');
   ReplaceInfoTokens(Text, ColorTag, Ship);
   Text := Text + GetBonusDescription(ColorTag);
@@ -3255,7 +3255,7 @@ end;
 { @end $7FC3D4 }
 
 { @routine $7FC418 TCargoHook_Init }
-procedure TCargoHook.Init(Weight: Integer; Level, Owner: Byte);
+procedure TCargoHook.Init(Weight: Integer; Level: Byte; Owner: TOwnerId);
 begin
   ItemType := t_CargoHook;
   Self.Weight := Weight;
@@ -3348,7 +3348,7 @@ end;
 { @end $7FCAA8 }
 
 { @routine $7FCAD0 CalculateGeneratedCargoHookCost }
-function CalculateGeneratedCargoHookCost(Weight: Cardinal; Level, Owner: Byte): Integer;
+function CalculateGeneratedCargoHookCost(Weight: Cardinal; Level: Byte; Owner: TOwnerId): Integer;
 begin
   Result := RoundAndTruncateToTens(RemapClamped(CargoHookBaseSize / Weight, 0.5, 2, 1, 2) *
     (Level * Level) * 500 * OwnerInfo[Owner].FuelPriceFactor);
@@ -3433,7 +3433,7 @@ begin
   if (Text = '') and (CustomFaction <> '') then
     Text := LocalizedText('Items.CargoHook.' + CustomFaction + 'Text');
   if Text = '' then
-    if OwnerId <> Byte(oiDominator) then Text := LocalizedText('Items.CargoHook.Text')
+    if OwnerId <> oiDominator then Text := LocalizedText('Items.CargoHook.Text')
     else Text := LocalizedText('Items.CargoHook.KlingText');
   ReplaceInfoTokens(Text, ColorTag, Ship);
   Text := Text + GetBonusDescription(ColorTag);
@@ -3492,7 +3492,7 @@ end;
 { @end $7FD258 }
 
 { @routine $7FDED8 TDefGenerator_Init }
-procedure TDefGenerator.Init(Weight: Integer; Level, Owner: Byte);
+procedure TDefGenerator.Init(Weight: Integer; Level: Byte; Owner: TOwnerId);
 begin
   ItemType := t_DefGenerator;
   Self.Weight := Weight;
@@ -3570,7 +3570,7 @@ end;
 { @end $7FE26C }
 
 { @routine $7FE2A4 CalculateGeneratedDefGeneratorCost }
-function CalculateGeneratedDefGeneratorCost(Weight: Cardinal; Level, Owner: Byte): Integer;
+function CalculateGeneratedDefGeneratorCost(Weight: Cardinal; Level: Byte; Owner: TOwnerId): Integer;
 begin
   Result := RoundAndTruncateToTens(RemapClamped(DefGeneratorBaseSize / Weight, 0.5, 2, 1, 2) *
     (Level * Level) * 500 * OwnerInfo[Owner].FuelPriceFactor);
@@ -3615,7 +3615,7 @@ begin
   if (Text = '') and (CustomFaction <> '') then
     Text := LocalizedText('Items.DefGenerator.' + CustomFaction + 'Text');
   if Text = '' then
-    if OwnerId <> Byte(oiDominator) then Text := LocalizedText('Items.DefGenerator.Text')
+    if OwnerId <> oiDominator then Text := LocalizedText('Items.DefGenerator.Text')
     else Text := LocalizedText('Items.DefGenerator.KlingText');
   ReplaceInfoTokens(Text, ColorTag, Ship);
   Text := Text + GetBonusDescription(ColorTag);
@@ -3667,7 +3667,7 @@ end;
 { @end $7FECE8 }
 
 { @routine $7FED1C TWeapon_Init }
-procedure TWeapon.Init(ItemType: TItemType; Weight: Integer; Level, Owner: Byte);
+procedure TWeapon.Init(ItemType: TItemType; Weight: Integer; Level: Byte; Owner: TOwnerId);
 begin
   Target := nil;
   Self.ItemType := ItemType;
@@ -3689,7 +3689,7 @@ end;
 { @end $7FED1C }
 
 { @routine $7FEDE0 TCustomWeapon_InitCustom }
-procedure TCustomWeapon.InitCustom(Info: PWeaponInfo; Equipped: Boolean; Weight: Integer; Level, Owner: Byte);
+procedure TCustomWeapon.InitCustom(Info: PWeaponInfo; Equipped: Boolean; Weight: Integer; Level: Byte; Owner: TOwnerId);
 begin
   Target := nil;
   ItemType := t_CustomWeapon;
@@ -3923,7 +3923,7 @@ end;
 { @end $7FFC38 }
 
 { @routine $7FFC98 CalculateGeneratedWeaponCost }
-function CalculateGeneratedWeaponCost(Info: PWeaponInfo; Weight: Cardinal; Level, Owner: Byte): Integer;
+function CalculateGeneratedWeaponCost(Info: PWeaponInfo; Weight: Cardinal; Level: Byte; Owner: TOwnerId): Integer;
 var LevelCost: Single;
 begin
   LevelCost := RemapClamped(Level, 1, 8, 1, 4) * Info.CostFactor;
@@ -4384,7 +4384,7 @@ begin
   StackCount := Count;
   Weight := GetUnitSize * Count;
   Cost := Count;
-  OwnerId := Byte(oiUninhabited);
+  OwnerId := oiUninhabited;
   EquippedFlag := 0;
   ConditionPercent := 0;
   BrokenFlag := 1;
@@ -4535,7 +4535,7 @@ begin
   StackCount := Count;
   Weight := Count;
   Cost := Count * 10;
-  OwnerId := Byte(oiDominator);
+  OwnerId := oiDominator;
   Self.DropFlag := DropFlag;
   EquippedFlag := 0;
   ConditionPercent := 0;
@@ -4625,11 +4625,11 @@ begin
   end else ConfigBlockName := ConfigName;
   if ForceArtefactDisplay then DisplayAsArtefact := True
   else CheckIfWeDisplayAsArtefact;
-  if ConfigName = 'Remains' then OwnerId := Byte(oiDominator)
+  if ConfigName = 'Remains' then OwnerId := oiDominator
   else OwnerId := OwnerFromInternalName(LookupLocalizedTextByKey('UselessItems.' + ConfigBlockName + '.Owner'));
   Weight := StrToInt(AnsiString(LookupLocalizedTextByKey('UselessItems.' + ConfigBlockName + '.Size')));
   Weight := Max(1, Round(SeededRandomIntRange(0, Weight, Id * 71621723) * RemapClamped(Galaxy.TechLevel, 4, 8, 0.5, 3) + Weight));
-  Cost := Round(Galaxy.ResolveMoneySizeTag(LookupLocalizedTextByKey('UselessItems.' + ConfigBlockName + '.Cost'), 2) * SeededRandomFloatRange(Id * 13567157, 0.5, 1.2));
+  Cost := Round(Galaxy.ResolveMoneySizeTag(LookupLocalizedTextByKey('UselessItems.' + ConfigBlockName + '.Cost'), oiHuman) * SeededRandomFloatRange(Id * 13567157, 0.5, 1.2));
   Cost := RoundAndTruncateToTens(SeededRandomIntRange(150, 200, Id * 13567157) * RemapClamped(Galaxy.TechLevel, 4, 8, 1, 3) *
     RemapClamped(Weight, 10, 100, 1, 6) * GalaxyDifficultyTuning[Galaxy.DifficultyLevels[7]].ArcadeRewardScale + Cost);
   Repair;
@@ -4730,7 +4730,7 @@ end;
 { @routine $804414 TUselessItem_IsDominatorRemains }
 function TUselessItem.IsDominatorRemains: Boolean;
 begin
-  Result := (OwnerId = Byte(oiDominator)) and (Pos('Remains_', ConfigBlockName) = 1);
+  Result := (OwnerId = oiDominator) and (Pos('Remains_', ConfigBlockName) = 1);
 end;
 { @end $804414 }
 
@@ -4783,7 +4783,7 @@ end;
 { @end $80455C }
 
 { @routine $8045F4 TCistern_Init }
-procedure TCistern.Init(Fuel: Integer; Capacity, Owner: Byte);
+procedure TCistern.Init(Fuel: Integer; Capacity: Byte; Owner: TOwnerId);
 begin
   ItemType := t_Cistern;
   Self.Capacity := Capacity;
@@ -4865,7 +4865,7 @@ end;
 { @end $804B10 }
 
 { @routine $804BE0 TSatellite_InitGenerated }
-procedure TSatellite.InitGenerated(TypeId, Owner: Byte; Seed: Cardinal);
+procedure TSatellite.InitGenerated(TypeId: Byte; Owner: TOwnerId; Seed: Cardinal);
 var Roll: Single; SpeedText: WideString; WearLevel: Byte;
 begin
   ItemType := t_Satellite;
@@ -4884,7 +4884,7 @@ begin
   EquippedFlag := 0;
   Weight := StrToInt(LookupLocalizedTextByKey('Items.Satellite.' + IntToStr(SatelliteTypeId) + '.Size'));
   Weight := Round(NextRandomIntRange(0, Weight, Seed) * RemapClamped(aGalaxy.Galaxy.TechLevel, 4, 8, 1, 1.5) + Weight div 2);
-  Cost := Round(aGalaxy.Galaxy.ResolveMoneySizeTag(LookupLocalizedTextByKey('Items.Satellite.' + IntToStr(SatelliteTypeId) + '.Cost'), 2) *
+  Cost := Round(aGalaxy.Galaxy.ResolveMoneySizeTag(LookupLocalizedTextByKey('Items.Satellite.' + IntToStr(SatelliteTypeId) + '.Cost'), oiHuman) *
     NextRandomFloatRange(1, 2, Seed));
   Cost := RoundAndTruncateToTens(NextRandomIntRange(150, 200, Seed) * RemapClamped(aGalaxy.Galaxy.TechLevel, 4, 8, 1, 3) *
     RemapClamped(Weight, 10, 50, 2, 1) / GalaxyDifficultyTuning[aGalaxy.Galaxy.DifficultyLevels[7]].QuestMoneyFactor + Cost);
@@ -5110,7 +5110,7 @@ end;
 function TTreasureMap.GetBitmapResourceName: WideString;
 var Kind: Integer;
 begin
-  if OwnerId in [Ord(oiMaloc)..Ord(oiHuman)] then Kind := 1 else Kind := 2;
+  if OwnerId in [oiMaloc..oiHuman] then Kind := 1 else Kind := 2;
   Result := 'Bm.ItemsUseless.' + GiResourceSuffix + 'TreasureMap' + IntToStr(Kind) + '_';
 end;
 { @end $806528 }
@@ -5179,11 +5179,11 @@ end;
 procedure TMicroModule.Init(ModuleIndex: Integer);
 begin
   ItemType := t_MicroModule;
-  OwnerId := Byte(oiUninhabited);
+  OwnerId := oiUninhabited;
   MicroModuleIndex := ModuleIndex + 1;
   Repair;
   Weight := 1;
-  Cost := RoundAndTruncateToTens(100 * Galaxy.ComputeScaledSmallMoney(2) /
+  Cost := RoundAndTruncateToTens(100 * Galaxy.ComputeScaledSmallMoney(oiHuman) /
     (MicroModuleTemplates[MicroModuleIndex - 1].Priority + 20) * SeededRandomFloatRange(Id * 1367, 0.5, 1.2));
   Cost := RoundAndTruncateToTens(SeededRandomIntRange(150, 200, Id * 13567157) *
     RemapClamped(Galaxy.TechLevel, 4, 8, 1, 3) * GalaxyDifficultyTuning[Galaxy.DifficultyLevels[7]].QuestMoneyFactor + Cost);
@@ -5558,11 +5558,11 @@ begin
       Result := True;
       Exit;
     end;
-    if (Item.OwnerId = Byte(oiUninhabited)) or ((Item.OwnerId = Byte(oiDominator)) and
+    if (Item.OwnerId = oiUninhabited) or ((Item.OwnerId = oiDominator) and
       (MicroModuleTemplates[ModuleIndex].AllowedDominatorSeriesMask <> [Ord(dsBlazer)..Ord(dsTerron)])) then Exit;
   end;
   Result := Item.OwnerId in MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask;
-  if (Item.OwnerId = Byte(oiDominator)) and not (Byte(Item.DominatorSeries) in
+  if (Item.OwnerId = oiDominator) and not (Byte(Item.DominatorSeries) in
     MicroModuleTemplates[ModuleIndex].AllowedDominatorSeriesMask) then Result := False;
 end;
 { @end $8094A0 }
@@ -5579,12 +5579,12 @@ begin
       Result := True;
       Exit;
     end;
-    if (Hull.OwnerId = Byte(oiUninhabited)) or ((Hull.OwnerId = Byte(oiDominator)) and
+    if (Hull.OwnerId = oiUninhabited) or ((Hull.OwnerId = oiDominator) and
       (MicroModuleTemplates[ModuleIndex].AllowedDominatorSeriesMask <> [Ord(dsBlazer)..Ord(dsTerron)])) then Exit;
   end;
   if ((Hull.OwnerId in MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask) or
-    (Hull.PirateBuilt and (Ord(oiPirate) in MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask))) and
-    ((Hull.OwnerId <> Byte(oiDominator)) or (Byte(Hull.DominatorSeries) in
+    (Hull.PirateBuilt and (oiPirate in MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask))) and
+    ((Hull.OwnerId <> oiDominator) or (Byte(Hull.DominatorSeries) in
       MicroModuleTemplates[ModuleIndex].AllowedDominatorSeriesMask)) then Result := True;
 end;
 { @end $809600 }
@@ -5597,8 +5597,8 @@ begin
   if ((Weapon.CustomFaction <> '') and
     (Pos('<' + Weapon.CustomFaction + '>', MicroModuleTemplates[ModuleIndex].AllowedCustomHullFactions) > 0)) or
     ((Weapon.OwnerId in MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask) and
-     ((Weapon.OwnerId <> Byte(oiDominator)) or (Byte(Weapon.DominatorSeries) in MicroModuleTemplates[ModuleIndex].AllowedDominatorSeriesMask)) and
-     ((Weapon.CustomFaction = '') or ((Weapon.OwnerId <> Byte(oiUninhabited)) and ((Weapon.OwnerId <> Byte(oiDominator)) or
+     ((Weapon.OwnerId <> oiDominator) or (Byte(Weapon.DominatorSeries) in MicroModuleTemplates[ModuleIndex].AllowedDominatorSeriesMask)) and
+     ((Weapon.CustomFaction = '') or ((Weapon.OwnerId <> oiUninhabited) and ((Weapon.OwnerId <> oiDominator) or
        (MicroModuleTemplates[ModuleIndex].AllowedDominatorSeriesMask = [0..2]))))) then
   begin
     if Weapon.ItemType in [t_Weapon1..t_Weapon18] then
@@ -5621,7 +5621,7 @@ end;
 { @end $809770 }
 
 { @routine $809A44 CreateConfiguredArtefactByItemType }
-function CreateConfiguredArtefactByItemType(ItemType: TItemType; Owner: Byte): TArtefact;
+function CreateConfiguredArtefactByItemType(ItemType: TItemType; Owner: TOwnerId): TArtefact;
 var Item: TArtefact;
 begin
   Result := nil;
@@ -5636,7 +5636,7 @@ end;
 { @end $809A44 }
 
 { @routine $809AB0 CreateRandomLootItem }
-function CreateRandomLootItem(Pool: TItemLootPool; Owner: Byte; Seed: Cardinal): TEquipmentWithActCode;
+function CreateRandomLootItem(Pool: TItemLootPool; Owner: TOwnerId; Seed: Cardinal): TEquipmentWithActCode;
 var Index, Count: Integer;
 begin
   Count := Length(ArtefactLootPools[Ord(Pool)]);
@@ -5693,7 +5693,7 @@ end;
 { @end $809CF0 }
 
 { @routine $809D38 TArtefact_Init }
-procedure TArtefact.Init(Owner: Byte; ItemType: TItemType);
+procedure TArtefact.Init(Owner: TOwnerId; ItemType: TItemType);
 var
   MinWeightScale, MaxWeightScale, MinCostScale, MaxCostScale: Single;
   MinExtraWeight, MaxExtraWeight, MinCost, MaxCost: Integer;
@@ -6155,7 +6155,7 @@ end;
 { @end $80ADAC }
 
 { @routine $80ADE8 TArtefactTransmitter_InitTransmitter }
-procedure TArtefactTransmitter.InitTransmitter(Owner: Byte);
+procedure TArtefactTransmitter.InitTransmitter(Owner: TOwnerId);
 begin
   Init(Owner, t_ArtefactTransmitter);
   Power := RoundAndTruncateToTens(SeededRandomIntRange(
@@ -6220,7 +6220,7 @@ end;
 { @end $80B138 }
 
 { @routine $80B188 TArtefactTranclucator_InitTranclucator }
-procedure TArtefactTranclucator.InitTranclucator(Owner: Byte; OwnerShip: Pointer; ExistingShip: Pointer);
+procedure TArtefactTranclucator.InitTranclucator(Owner: TOwnerId; OwnerShip: Pointer; ExistingShip: Pointer);
 var Companion: TTranclucator; I: Integer; Item: TItem;
 begin
   Init(Owner, t_ArtefactTranclucator);
@@ -6497,13 +6497,13 @@ end;
 function CreateDefaultItemByType(ItemType: TItemType): TItem;
 var Item: TItem;
 begin
-  if ItemType in [t_ArtefactHull..t_ArtFastRacks] then Result := CreateConfiguredArtefactByItemType(ItemType, 6)
+  if ItemType in [t_ArtefactHull..t_ArtFastRacks] then Result := CreateConfiguredArtefactByItemType(ItemType, oiUninhabited)
   else if ItemType = t_Hull then begin
     Item := CreateItemByType(ItemType);
     THull(Item).Init(250, 1, RaceToOwner(GetPlayer.PilotRace), 0, -1, False);
     Result := Item;
   end else if ItemType = t_CustomWeapon then Result := nil
-  else if ItemType in [t_Hull..t_CustomWeapon] then Result := CreateGeneratedEquipment(ItemType, 20, 1, 6)
+  else if ItemType in [t_Hull..t_CustomWeapon] then Result := CreateGeneratedEquipment(ItemType, 20, 1, oiUninhabited)
   else begin
     Item := CreateItemByType(ItemType);
     Result := Item;
@@ -6512,7 +6512,7 @@ begin
         t_Protoplasm: TProtoplasm(Item).Init(10, 0);
         t_UselessItem: TUselessItem(Item).Init(DecodeTextW('EdxYahmrpelwefAjsktleoruoeiddc'), dsBlazer, 0, False); // 'ExampleAsteroid'
         t_MicroModule: TMicroModule(Item).Init(1);
-        t_Cistern: TCistern(Item).Init(10, 10, 6);
+        t_Cistern: TCistern(Item).Init(10, 10, oiUninhabited);
         t_Satellite: TSatellite(Item).InitGenerated(1, GetPlayer.OwnerId, NextRandomIntRange(1, 10000, Galaxy.RandomState));
       else
         if ItemType in [t_Food..t_Narcotics] then TGoods(Item).Init(ItemType, 10)
@@ -6523,7 +6523,7 @@ end;
 { @end $80C8A4 }
 
 { @routine $80CAAC CreateGeneratedEquipment }
-function CreateGeneratedEquipment(ItemType: TItemType; Weight, Level: Integer; Owner: Byte): TEquipment;
+function CreateGeneratedEquipment(ItemType: TItemType; Weight, Level: Integer; Owner: TOwnerId): TEquipment;
 var Item: TItem; MinimumLevel: Integer; ActualLevel: Byte;
 begin
   MinimumLevel := Max(1, Level);
@@ -6556,7 +6556,7 @@ end;
 { @end $80CAAC }
 
 { @routine $80CCA8 CreateGeneratedWeapon }
-function CreateGeneratedWeapon(Info: PWeaponInfo; Weight, Level: Integer; Owner: Byte): TWeapon;
+function CreateGeneratedWeapon(Info: PWeaponInfo; Weight, Level: Integer; Owner: TOwnerId): TWeapon;
 begin
   Result := TWeapon(CreateItemByType(Info.ItemType));
   if Info.ItemType in [t_Weapon1..t_Weapon18] then Result.Init(Info.ItemType, Weight, Level, Owner)

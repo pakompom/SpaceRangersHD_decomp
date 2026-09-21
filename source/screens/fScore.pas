@@ -20,7 +20,7 @@ type
     DifficultyPercent: Integer; // @offset 0x10
     PlayerName: WideString; // @offset 0x14
     PortraitFaceId: Integer; // @offset 0x18
-    PilotRace: Byte; // @offset 0x1C
+    PilotRace: TOwnerId; // @offset 0x1C
     FinishedTurn: Integer; // @offset 0x20
     Rank: Byte; // @offset 0x24
     PirateRank: Byte; // @offset 0x25
@@ -321,7 +321,7 @@ begin
     for Difficulty := Low(DifficultyLevels) to High(DifficultyLevels) do DifficultyLevels[Difficulty] := Buffer.GetByte;
     PlayerName := Buffer.ReadWideString;
     PortraitFaceId := Buffer.GetByte;
-    PilotRace := Buffer.GetByte;
+    PilotRace := TOwnerId(Buffer.GetByte);
     FinishedTurn := Buffer.GetInt32;
     Rank := Buffer.GetByte;
     PirateRank := Buffer.GetByte;

@@ -317,8 +317,6 @@ type
 
   // OwnerToSys ($82E4EC) and RaceToSys ($82DED4) establish these IDs.
   // RaceId and PilotRace use the same Coalition values 0..4.
-  TOwnerIndex = 0..7;
-
   TOwnerId = (oiMaloc = 0, oiPeleng = 1, oiHuman = 2, oiFeyan = 3,
     oiGaal = 4, oiDominator = 5, oiUninhabited = 6, oiPirate = 7); // @size $01 OwnerInfo and native planet/ship owner numbering.
 
@@ -337,7 +335,7 @@ type
     UnknownFactor9C: Single; // @offset $9C Native race factor; gameplay meaning unresolved.
     PirateRelationCeiling: Byte; // @offset 0xA0  Upper bound before the fixed minimum relation of 30.
   end;
-  TPlanetRaceMarketTable = array[0..4] of TPlanetRaceMarketInfo;
+  TPlanetRaceMarketTable = array[oiMaloc..oiGaal] of TPlanetRaceMarketInfo;
   PPlanetRaceMarketTable = ^TPlanetRaceMarketTable;
 
   // Native record RTTI at $82CB64.
@@ -346,10 +344,11 @@ type
 
   // Nine quotas per Coalition race: types 42..49, then the shared weapon bucket 50.
   TPlanetEquipmentOfferQuotaRow = array[0..8] of Integer;
-  TPlanetEquipmentOfferQuotaTable = array[0..4] of TPlanetEquipmentOfferQuotaRow;
+  TPlanetEquipmentOfferQuotaTable = array[oiMaloc..oiGaal] of TPlanetEquipmentOfferQuotaRow;
   PPlanetEquipmentOfferQuotaTable = ^TPlanetEquipmentOfferQuotaTable;
 
-  TOwnerMask = set of 0..7; // @size 0x01
+  TByteMask = set of 0..7; // @size $01
+  TOwnerMask = set of TOwnerId; // @size $01
   TStationStandingMask = set of 0..15; // @size $02 Station standing filter; empty accepts every standing.
   // Preserve the full byte for native membership checks; selected series are 0..2.
   TDominatorSeriesMask = set of 0..7; // @size $01
@@ -360,8 +359,8 @@ type
     PirateClan: TOwnerMask; // @offset 0x02 Pirate Clan owner ID 7.
   end;
   PPlanetOwnerMasks = ^TPlanetOwnerMasks;
-  TOwnerRelationRow = array[0..7] of Byte;
-  TOwnerRelationTable = array[0..7] of TOwnerRelationRow;
+  TOwnerRelationRow = array[TOwnerId] of Byte;
+  TOwnerRelationTable = array[TOwnerId] of TOwnerRelationRow;
   POwnerRelationTable = ^TOwnerRelationTable;
   TFactionStandingMasks = array[TStarFaction] of TStationStandingMask;
   PFactionStandingMasks = ^TFactionStandingMasks;

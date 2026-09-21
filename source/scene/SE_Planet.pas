@@ -263,7 +263,7 @@ begin
     MinimapControl.SetPosition(TruncatePointF(MakePointF(Position.X * Space.MinimapScale, Position.Y * Space.MinimapScale)));
     MinimapControl.SetOrigin(MinimapImageOrigin);
     if MinimapOwner <= 7 then
-      MinimapControl.SetImagePath('Bm.Planet.M.' + OwnerInfo[MinimapOwner].InternalName)
+      MinimapControl.SetImagePath('Bm.Planet.M.' + OwnerInfo[TOwnerId(MinimapOwner)].InternalName)
     else
     begin
       OwnerIndex := MinimapOwner - 7 - 1;
@@ -558,7 +558,7 @@ begin
   if MinimapControl <> nil then
   begin
     if MinimapOwner <= 7 then
-      MinimapControl.SetImagePath('Bm.Planet.M.' + OwnerInfo[MinimapOwner].InternalName)
+      MinimapControl.SetImagePath('Bm.Planet.M.' + OwnerInfo[TOwnerId(MinimapOwner)].InternalName)
     else
     begin
       Index := MinimapOwner - 7 - 1;

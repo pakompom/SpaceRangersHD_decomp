@@ -3900,7 +3900,7 @@ var
   Star: TStar;
   Owner: TPanelGI;
   Objects: TList;
-  OwnerId: Byte;
+  OwnerId: TOwnerId;
 begin
   if Space = nil then HideObjectInfo
   else if InfoSpace <> Space then
@@ -3983,7 +3983,7 @@ begin
         end;
         if TObject(Objects[Index]) is TPlanet then OwnerId := TPlanet(Objects[Index]).OwnerId
         else OwnerId := TShip(Objects[Index]).OwnerId;
-        if OwnerId <> Byte(oiUninhabited) then
+        if OwnerId <> oiUninhabited then
         begin
           with TGraphBufGI.Create(Owner, False) do
           begin
@@ -4126,7 +4126,7 @@ begin
     (GetByName('InfoItemPrice') as TLabelGI).SetText(IntToStr(Instance.Cost));
     with GetByName('InfoItemEmRace') as TImageGI do
     begin
-      if Instance is TGoods then SetImagePath(GetFactionEmblemPath(OwnerInfo[Ord(oiUninhabited)].InternalName))
+      if Instance is TGoods then SetImagePath(GetFactionEmblemPath(OwnerInfo[oiUninhabited].InternalName))
       else SetImagePath(GetFactionEmblemPath(Instance.GetOwnerConfigName));
       SetImageKindX(ikxCenter);
       SetImageKindY(ikyCenter);

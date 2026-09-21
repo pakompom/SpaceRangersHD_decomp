@@ -151,7 +151,7 @@ begin
   GraphDominator := Galaxy.GraphDominatorSurfacesEnabled;
   I := 5;
   case TransportType of ttTransport: I := 3; ttLiner: I := 4; ttDiplomat: I := 5; end;
-  CreateAndEquipHull(Round(HullBaseSize * EquipmentSizeFactors[I]), 1, OwnerId, SelectRandomHullSeries, HomePlanet.OwnerId = Byte(oiPirate));
+  CreateAndEquipHull(Round(HullBaseSize * EquipmentSizeFactors[I]), 1, OwnerId, SelectRandomHullSeries, HomePlanet.OwnerId = oiPirate);
   CreateAndEquipFuelTanks(Round(FuelTanksBaseSize * EquipmentSizeFactors[5]), 1, HomePlanet.OwnerId);
   CreateAndEquipEngine(Round(EngineBaseSize * EquipmentSizeFactors[1]), 1, HomePlanet.OwnerId);
   if (NextRandomIntRange(1, 10, RandomState) > 9) and (GetSlotCountForItemType(Ord(t_CargoHook)) > 0) then
@@ -228,7 +228,7 @@ begin
   try
     if CurrentPlanet <> nil then begin
       Stage := 1;
-      if CurrentPlanet.OwnerId in [Ord(oiMaloc)..Ord(oiGaal), Ord(oiPirate)] then begin
+      if CurrentPlanet.OwnerId in [oiMaloc..oiGaal, oiPirate] then begin
         Stage := 2;
         RepairBrokenEquipmentAtLocation;
         AutoEquipInventory;
@@ -328,7 +328,7 @@ begin
         (Star.ControlFaction <> sfDominators) and (Star.Constellation.Id <> 20) and (Star.Status.CustomFaction = '') then
         for J := 0 to Star.Planets.Count - 1 do begin
           Planet := Star.Planets[J];
-          if (Planet.OwnerId in [Ord(oiMaloc)..Ord(oiGaal), Ord(oiPirate)]) and (Planet <> LastDockedPlanet) and
+          if (Planet.OwnerId in [oiMaloc..oiGaal, oiPirate]) and (Planet <> LastDockedPlanet) and
             ((LastDockedPlanet.CurrentStar = CurrentStar) or (CurrentStar = Star) or (CurrentStar.ControlFaction = sfDominators) or (CurrentStar.Status.CustomFaction <> '')) then begin
             PlanetQueue.Add(Planet);
             SmallestShipCount := Min(SmallestShipCount, Star.Ships.Count);
@@ -342,7 +342,7 @@ end;
 { @routine $71FC14 TTransport_CanQueueReachablePlanet }
 function TTransport.CanQueueReachablePlanet(Planet: TPlanet): Boolean;
 begin
-  Result := Planet.OwnerId <> Byte(oiDominator);
+  Result := Planet.OwnerId <> oiDominator;
 end;
 { @end $71FC14 }
 
@@ -659,7 +659,7 @@ begin
   if CurrentStar.Battle <> 0 then
     for I := 0 to CurrentStar.Ships.Count - 1 do begin
       Ship := CurrentStar.Ships[I];
-      if (Ship.OwnerId = Byte(oiDominator)) and Ship.InNormalSpace then
+      if (Ship.OwnerId = oiDominator) and Ship.InNormalSpace then
         for J := 1 to WeaponCount do begin
           Weapon := Weapons[J];
           if (not (Weapon.GetWeaponInfo^.ShotType in [wstTorpedo..wstRocket]) or (Weapon.Ammo <> 0)) and
@@ -718,7 +718,7 @@ begin
       Item := CurrentStar.Items[I];
       if ((Item.ScriptItem = nil) or (TScriptItem(Item.ScriptItem).Name = '')) and
         ((Item.ItemType = t_Minerals) or (2 * Galaxy.GetAIJunkToleranceLevel <= CurrentStar.Items.Count)) and
-        ((Item.ItemType = t_Minerals) or (Item.OwnerId = Byte(oiDominator))) then
+        ((Item.ItemType = t_Minerals) or (Item.OwnerId = oiDominator)) then
         if (GetPlayer.CurrentStar <> CurrentStar) or not GetPlayer.InNormalSpace or (GetRelationLevelToShip(GetPlayer) <= rlBad) or
           (PointDistance(GetPlayer.Position, Item.Position) >= 800) or
           ((NextRandomUnitFloat(RandomState) <= 0.1) and (PointDistance(GetPlayer.Position, Item.Position) >= 200)) then
@@ -811,7 +811,7 @@ var NextDemandTurn: Integer; LicenseFactor: Single;
       Event.AddData(TypeId);
       Event.AddData(CurrentStar.Id);
       Event.AddData(Id);
-      Event.AddData(OwnerId);
+      Event.AddData(Ord(OwnerId));
       Event.AddTextData(GetName);
       Event.AddTextData(TypeNameOverrideKey);
       if GetPlayer.PirateLicenseTicks > 0 then begin
@@ -822,7 +822,7 @@ var NextDemandTurn: Integer; LicenseFactor: Single;
     end else OtherShip.SetMoney(OtherShip.Money + DemandedAmount);
     SetMoney(Money - DemandedAmount);
     OtherShip.TruceWithShip(Self);
-    if OtherShip.OwnerId = Byte(oiPirate) then TNormalShip(OtherShip).AddPirateRankPoints(1);
+    if OtherShip.OwnerId = oiPirate then TNormalShip(OtherShip).AddPirateRankPoints(1);
     if OtherShip is TRanger then (OtherShip as TRanger).ApplyExtortionReputationPenalty(Self);
   end;
 begin
@@ -878,13 +878,13 @@ var Forced: Boolean; NextDemandTurn: Integer;
       Event.AddData(TypeId);
       Event.AddData(CurrentStar.Id);
       Event.AddData(Id);
-      Event.AddData(OwnerId);
+      Event.AddData(Ord(OwnerId));
       Event.AddTextData(GetName);
       Event.AddTextData(TypeNameOverrideKey);
     end;
     OtherShip.OrderMove(Position, True);
     if OtherShip is TRanger then (OtherShip as TRanger).ApplyExtortionReputationPenalty(Self);
-    if OtherShip.OwnerId = Byte(oiPirate) then TNormalShip(OtherShip).AddPirateRankPoints(1);
+    if OtherShip.OwnerId = oiPirate then TNormalShip(OtherShip).AddPirateRankPoints(1);
   end;
 begin
   Result := False;
@@ -946,7 +946,7 @@ begin
   Result := False;
   if Requester is TRanger then begin
     if Target.TypeId in [stRanger..stPirate] then Target.ChangeRelationToRanger(Requester, -20);
-    if (Target.OwnerId = Byte(oiDominator)) or (Target.TypeId = stPirate) then (Requester as TRanger).AddWarriorCareerActivity(1)
+    if (Target.OwnerId = oiDominator) or (Target.TypeId = stPirate) then (Requester as TRanger).AddWarriorCareerActivity(1)
     else (Requester as TRanger).AddPirateCareerActivity(8);
   end;
   if (OrderTarget = Target) and (GetRelationLevelToShip(Target) = rlHostile) then AcceptRequest

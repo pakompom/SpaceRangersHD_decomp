@@ -1020,7 +1020,7 @@ begin
       ((LanguageDataConfig.GetBlock('PlanetQuest').CountBlocks('PlanetQuestLic') <= 0) or
        (LanguageDataConfig.GetBlock('PlanetQuest').GetBlock('PlanetQuestLic').GetParamOrMarker(IntToStr(GetPlayer.CurrentPlanet.TextQuestId)) =
         PlanetQuestScreen.GetQuestContentHash(GetPlayer.CurrentPlanet.TextQuestId))) then
-      MoneyLimitComplement := (Galaxy.ComputeScaledBigMoney(2) + GetPlayer.Money) xor $FFFFFFFF
+      MoneyLimitComplement := (Galaxy.ComputeScaledBigMoney(oiHuman) + GetPlayer.Money) xor $FFFFFFFF
     else if (GetPlayer <> nil) and (QueuedTextQuests.Count = 0) then
       MoneyLimitComplement := (GetPlayer.Money + 50000) xor $FFFFFFFF
     else MoneyLimitComplement := 1000000000 xor $FFFFFFFF;
@@ -1029,7 +1029,7 @@ begin
     begin
       Stage := 6;
       Quest := TTextQuest.Create;
-      if GetPlayer.CurrentPlanet.OwnerId <> Byte(oiPirate) then LoadQuestByName('Prison')
+      if GetPlayer.CurrentPlanet.OwnerId <> oiPirate then LoadQuestByName('Prison')
       else LoadQuestByName('PirateClanPrison');
       Stage := 7;
       Quest.ToStarText.Text := GetPlayer.CurrentStar.Name;
@@ -1590,7 +1590,7 @@ begin
               end;
               GetPlayer.CurrentPlanet.TextQuestId := -1;
               (GetByName('QuestPanel') as TPanelGI).SetActive(False);
-              if GetPlayer.CurrentPlanet.IsCoalitionOwned or (GetPlayer.CurrentPlanet.OwnerId = Byte(oiPirate)) then
+              if GetPlayer.CurrentPlanet.IsCoalitionOwned or (GetPlayer.CurrentPlanet.OwnerId = oiPirate) then
               begin
                 GetPlayer.CurrentPlanet.ChangeRelationToRanger(GetPlayer, Quest.SuccessRelationDelta);
                 if GetPlayer.CurrentPlanet.RelationToShip(GetPlayer) < 20 then
@@ -1629,7 +1629,7 @@ begin
   begin
     GetPlayer.InPrison := False;
     if GetPlayer.CurrentPlanet <> nil then
-      if (GetPlayer.CurrentPlanet.OwnerId = Byte(oiPirate)) and (MainPiratePlanet <> nil) then
+      if (GetPlayer.CurrentPlanet.OwnerId = oiPirate) and (MainPiratePlanet <> nil) then
         MainPiratePlanet.SetRelationLevelToRanger(GetPlayer, rlHostile)
       else GetPlayer.CurrentPlanet.SetRelationLevelToRanger(GetPlayer, rlHostile);
     if not HangarScreen.TryTakeOff then RequestedScreenId := screenHangar;

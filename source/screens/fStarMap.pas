@@ -1731,7 +1731,7 @@ begin
             else if Ship is TPirate then
             begin
               Portrait := Portrait + 'P';
-              if (Ship.OwnerId = Byte(oiPirate)) and (TPirate(Ship).PirateType <> 0) then
+              if (Ship.OwnerId = oiPirate) and (TPirate(Ship).PirateType <> 0) then
                 Portrait := OwnerInfo[RaceToOwner(Ship.PilotRace)].InternalName + Portrait + 'C'
               else Portrait := OwnerInfo[RaceToOwner(Ship.PilotRace)].InternalName + Portrait;
             end
@@ -2776,8 +2776,8 @@ begin
     Galaxy.CheckIntegrityChecksum(33);
     PendingPlayerFollowTarget := nil;
     if not (((GetPlayer.Order = soLand) and (GetPlayer.OrderTarget = Location)) or
-      ((CursorObject as TPlanet).OwnerId = Byte(oiDominator)) or
-      ((GetPlayer.CurrentStar.Status.CustomFaction <> '') and ((CursorObject as TPlanet).OwnerId <> Byte(oiUninhabited)))) then
+      ((CursorObject as TPlanet).OwnerId = oiDominator) or
+      ((GetPlayer.CurrentStar.Status.CustomFaction <> '') and ((CursorObject as TPlanet).OwnerId <> oiUninhabited))) then
     begin
       GetPlayer.OrderLanding(Location, False);
       GetPlayer.OrderDestination := SubtractPointsF(Destination, TPlanet(Location).GetPosition);
@@ -3294,8 +3294,8 @@ begin
       ClearPathOverlay(True);
       Galaxy.CheckIntegrityChecksum(67);
       PendingPlayerFollowTarget := nil;
-      if ((CursorObject as TPlanet).OwnerId <> Byte(oiDominator)) and
-        ((GetPlayer.CurrentStar.Status.CustomFaction = '') or ((CursorObject as TPlanet).OwnerId = Byte(oiUninhabited))) then
+      if ((CursorObject as TPlanet).OwnerId <> oiDominator) and
+        ((GetPlayer.CurrentStar.Status.CustomFaction = '') or ((CursorObject as TPlanet).OwnerId = oiUninhabited)) then
       begin
         GetPlayer.OrderLanding(Planet, False);
         GetPlayer.OrderDestination := SubtractPointsF(Destination, Planet.GetPosition);
@@ -3490,7 +3490,7 @@ begin
         end;
       end;
     end
-    else if ((CursorObject is TPlanet) and ((CursorObject as TPlanet).OwnerId in [Ord(oiMaloc)..Ord(oiGaal), Ord(oiPirate)]) and
+    else if ((CursorObject is TPlanet) and ((CursorObject as TPlanet).OwnerId in [oiMaloc..oiGaal, oiPirate]) and
       ((CursorObject as TPlanet).CurrentStar.Status.CustomFaction = '') and
       (PointDistance(GetPlayer.Position, (CursorObject as TPlanet).GetPosition) <= GetPlayer.GetRadarRange)) or
       ((CursorObject is TRuins) and (CursorObject as TRuins).CanDock(GetPlayer) and
@@ -3763,7 +3763,7 @@ var
   IconInset: Cardinal;
   NameWidth, DetailWidth, StatusCount: Integer;
   Distance: Single;
-  OwnerId: Byte;
+  OwnerId: TOwnerId;
   ImagePath, Text, ColorTag: WideString;
   Child: TObjectGI;
   DamageName, DamageValue: TLabelGI;
@@ -3958,14 +3958,14 @@ begin
       end
       else if Obj is TPlanet then
       begin
-        if ((Obj as TPlanet).OwnerId in [Ord(oiMaloc)..Ord(oiGaal), Ord(oiPirate)]) and not (Obj as TPlanet).IsMainPiratePlanet and
+        if ((Obj as TPlanet).OwnerId in [oiMaloc..oiGaal, oiPirate]) and not (Obj as TPlanet).IsMainPiratePlanet and
           (TPlanet(Obj).CurrentStar.Status.CustomFaction = '') then
         begin
           if DisplayedObject = Obj then Exit;
           PlanetInfoPanel.SetActive(True);
           StandardInfoPanel.SetActive(False);
           (GetByName('InfoPlanetName') as TLabelGI).SetText(WrapTextInColor((Obj as TPlanet).Name, InfoNameColorTag));
-          if (TPlanet(Obj).OwnerId in [Ord(oiMaloc)..Ord(oiGaal), Ord(oiPirate)]) and (TPlanet(Obj).CurrentStar.Status.CustomFaction = '') then
+          if (TPlanet(Obj).OwnerId in [oiMaloc..oiGaal, oiPirate]) and (TPlanet(Obj).CurrentStar.Status.CustomFaction = '') then
           begin
             with GetByName('InfoPlanetEmRace') as TImageGI do
             begin
@@ -4486,7 +4486,7 @@ begin
         end;
         if TObject(Objects[I]) is TPlanet then OwnerId := TPlanet(Objects[I]).OwnerId
         else if TObject(Objects[I]) is TRuins then OwnerId := TShip(Objects[I]).OwnerId
-        else OwnerId := Byte(oiUninhabited);
+        else OwnerId := oiUninhabited;
         if TObject(Objects[I]) is TRuins then
         begin
           with TLabelGI.Create(Panel) do
@@ -4559,7 +4559,7 @@ begin
               DetailWidth := Max(DetailWidth, ClientSize.X + GiScalePixels(35));
             end;
         end
-        else if OwnerId <> Byte(oiUninhabited) then
+        else if OwnerId <> oiUninhabited then
         if not (TObject(Objects[I]) is TPlanet) or not (TObject(Objects[I]) as TPlanet).IsMainPiratePlanet then
           with TGraphBufGI.Create(Panel, False) do
           begin
@@ -4577,7 +4577,7 @@ begin
             SetImageKindX(ikxCenter);
             SetImageKindY(ikyCenter);
           end;
-        if (TObject(Objects[I]) is TPlanet) and ((TObject(Objects[I]) as TPlanet).OwnerId in [Ord(oiMaloc)..Ord(oiGaal), Ord(oiPirate)]) and
+        if (TObject(Objects[I]) is TPlanet) and ((TObject(Objects[I]) as TPlanet).OwnerId in [oiMaloc..oiGaal, oiPirate]) and
           not (TObject(Objects[I]) as TPlanet).IsMainPiratePlanet and ((TObject(Objects[I]) as TPlanet).CurrentStar.Status.CustomFaction = '') then
         begin
           RowX := NameWidth + 5 + RowHeight + 5 + 1;
@@ -4623,7 +4623,7 @@ begin
           end;
         end
         else if TObject(Objects[I]) is TPlanet then
-        if (TObject(Objects[I]) as TPlanet).OwnerId = Byte(oiUninhabited) then
+        if (TObject(Objects[I]) as TPlanet).OwnerId = oiUninhabited then
         if (TObject(Objects[I]) as TPlanet).GetUnexploredSurfaceTileCount = 0 then
         begin
           with TLabelGI.Create(Panel) do
@@ -4801,7 +4801,7 @@ begin
   for Index := 0 to GetPlayer.CurrentStar.Planets.Count - 1 do
   begin
     Planet := TPlanet(GetPlayer.CurrentStar.Planets[Index]);
-    if Planet.OwnerId in [Ord(oiMaloc)..Ord(oiGaal), Ord(oiPirate)] then
+    if Planet.OwnerId in [oiMaloc..oiGaal, oiPirate] then
       if PointDistance(GetPlayer.Position, Planet.GetPosition) <= GetPlayer.GetRadarRange then
       begin
         AddOrUpdatePlayerBubble(7, Galaxy.CurrentTurn, GoodsShopScreen.BuildPriceText(Planet), GetPriceSnapshotKey(Planet));
@@ -6031,7 +6031,7 @@ begin
         Stage := 17;
         StopTurnFilm(True);
         if not IsTurnCalculationRunningUI and (TurnCalculationPhase = tcpPlayerStarFinished) then QueueGalaxyTurnCalculation;
-        if GetPlayer.CurrentPlanet.OwnerId = Byte(oiUninhabited) then
+        if GetPlayer.CurrentPlanet.OwnerId = oiUninhabited then
         begin
           if GetPlayer.GetEngine <> nil then
             GetPlayer.ApplyItemDegradation(GetPlayer.GetEngine, idkUse, NextRandomUnitFloat(GetPlayer.RandomState) * 15);
@@ -6535,7 +6535,7 @@ var
   Panel: TPanelGI;
   Objects, Records: TList;
   Distance: Single;
-  OwnerId: Byte;
+  OwnerId: TOwnerId;
   Snapshot: TEObjInfo;
   FilmObject: TEFilmObj;
   ImagePath, ColorTag: WideString;
@@ -6683,12 +6683,12 @@ begin
            end
       else if Obj is TPlanetSE then
            begin
-             IsCivilized := (Planet^.OwnerId in [Ord(oiMaloc)..Ord(oiGaal), Ord(oiPirate)]) and
+             IsCivilized := (Planet^.OwnerId in [oiMaloc..oiGaal, oiPirate]) and
                             ((MainPiratePlanet = nil) or (Planet^.Id <> MainPiratePlanet.Id));
              if IsCivilized then
              begin
-               if Planet^.OwnerId = Byte(oiPirate) then
-                 IsCivilized := Planet^.Faction = OwnerInfo[Ord(oiPirate)].InternalName + RaceToSys(Planet^.RaceId)
+               if Planet^.OwnerId = oiPirate then
+                 IsCivilized := Planet^.Faction = OwnerInfo[oiPirate].InternalName + RaceToSys(Planet^.RaceId)
                else
                  IsCivilized := Planet^.Faction = OwnerInfo[Planet^.OwnerId].InternalName;
              end;
@@ -6701,7 +6701,7 @@ begin
                StarInfoWindow.SetActive(False);
                StandardInfoPanel.SetActive(False);
                (GetByName('InfoPlanetName') as TLabelGI).SetText(WrapTextInColor(Planet^.Name, InfoNameColorTag));
-               if Planet^.OwnerId in [Ord(oiMaloc)..Ord(oiGaal), Ord(oiPirate)] then
+               if Planet^.OwnerId in [oiMaloc..oiGaal, oiPirate] then
                begin
                  with GetByName('InfoPlanetEmRace') as TImageGI do
                  begin
@@ -6730,7 +6730,7 @@ begin
                if (MainPiratePlanet <> nil) and (Planet^.Id = MainPiratePlanet.Id) then
                  (GetByName('InfoPlanetOwner') as TLabelGI).SetText(OwnerInfo[Planet^.OwnerId].DisplayName)
                else
-                 (GetByName('InfoPlanetOwner') as TLabelGI).SetText(OwnerInfo[Ord(TOwnerId(RaceToOwner(Planet^.RaceId)))].
+                 (GetByName('InfoPlanetOwner') as TLabelGI).SetText(OwnerInfo[RaceToOwner(Planet^.RaceId)].
                  DisplayName);
                (GetByName('InfoPlanetPop') as TLabelGI).SetText(IntToStr(Round(Planet^.Population / 1000)));
                (GetByName('InfoPlanetEco') as TLabelGI).SetText(PlanetEconomyInfo[Planet^.Economy].DisplayName);
@@ -6778,7 +6778,7 @@ begin
                  SetPosition(SubtractPoints(ShipScreen.ItemImageCenter, GetVisualCenter));
                end;
                (GetByName('InfoStdName') as TLabelGI).SetText(WrapTextInColor(Planet^.Name, InfoNameColorTag));
-               if Planet^.OwnerId = Byte(oiUninhabited) then
+               if Planet^.OwnerId = oiUninhabited then
                begin
                  Text := LocalizedText('Planet.NotCivil.Info.TextAboutPlanet');
                  if Planet^.UnexploredWater > 0 then
@@ -6795,19 +6795,19 @@ begin
                end
                else if (MainPiratePlanet <> nil) and (Planet^.Id = MainPiratePlanet.Id) then
                     begin
-                      if Planet^.OwnerId = Byte(oiPirate) then
+                      if Planet^.OwnerId = oiPirate then
                         Text := LocalizedText('Planet.MainPiratePlanet.Info.TextAboutPlanet')
                       else Text := LocalizedText('Planet.MainPiratePlanet.Info.TextAboutPlanetAlt');
                     end
                else
                begin
-                 IsCivilized := Planet^.OwnerId = Byte(oiDominator);
+                 IsCivilized := Planet^.OwnerId = oiDominator;
                  if IsCivilized then
                    IsCivilized := (Planet^.Faction = DominatorSeriesNames[0]) or
                                   (Planet^.Faction = DominatorSeriesNames[2]) or (Planet^.Faction = DominatorSeriesNames[1]);
                  if IsCivilized then Text := LocalizedText('Planet.Kling.Info.TextAboutPlanet')
                  else Text := LocalizedText('Planet.' + Planet^.Faction + '.Info.TextAboutPlanet');
-                 ReplaceTextToken(Text, '<Race>', OwnerInfo[Ord(TOwnerId(RaceToOwner(Planet^.RaceId)))].DisplayName,
+                 ReplaceTextToken(Text, '<Race>', OwnerInfo[RaceToOwner(Planet^.RaceId)].DisplayName,
                  '<color=255,240,100>');
                end;
                (GetByName('InfoStdText') as TLabelGI).SetText(Text);
@@ -7035,7 +7035,7 @@ begin
                SetPosition(SubtractPoints(ShipScreen.ItemImageCenter, GetVisualCenter));
              end;
            end;
-           if (Obj is TRuinsSE) and (Ship^.OwnerId <> Byte(oiDominator)) then
+           if (Obj is TRuinsSE) and (Ship^.OwnerId <> oiDominator) then
            begin
              (GetByName('ISType') as TLabelGI).SetActive(False);
              (GetByName('InfoShipType') as TLabelGI).SetActive(False);
@@ -7349,7 +7349,7 @@ begin
                SetImageKindX(ikxCenter);
                SetImageKindY(ikyCenter);
              end;
-             if Objects[I] = nil then OwnerId := Byte(oiUninhabited)
+             if Objects[I] = nil then OwnerId := oiUninhabited
              else if TObject(Objects[I]) is TPlanetSE then OwnerId := PEPlanetInfo(Records[I])^.OwnerId
              else OwnerId := PEShipInfo(Records[I])^.OwnerId;
              if Objects[I] = nil then
@@ -7429,7 +7429,7 @@ begin
                       DetailWidth := Max(DetailWidth, ClientSize.X + GiScalePixels(35));
                     end;
                   end
-             else if OwnerId <> Byte(oiUninhabited) then
+             else if OwnerId <> oiUninhabited then
                     if (TObject(Objects[I]) is TPlanetSE) and
                        ((MainPiratePlanet = nil) or (PEPlanetInfo(Records[I])^.Id <> MainPiratePlanet.Id)) then
                       with TGraphBufGI.Create(Panel, False) do
@@ -7453,12 +7453,12 @@ begin
                         SetImageKindY(ikyCenter);
                       end;
              IsCivilized := (TObject(Objects[I]) is TPlanetSE) and
-                            (PEPlanetInfo(Records[I])^.OwnerId in [Ord(oiMaloc)..Ord(oiGaal), Ord(oiPirate)]) and
+                            (PEPlanetInfo(Records[I])^.OwnerId in [oiMaloc..oiGaal, oiPirate]) and
                             ((MainPiratePlanet = nil) or (PEPlanetInfo(Records[I])^.Id <> MainPiratePlanet.Id));
              if IsCivilized then
              begin
-               if PEPlanetInfo(Records[I])^.OwnerId = Byte(oiPirate) then
-                 IsCivilized := PEPlanetInfo(Records[I])^.Faction = OwnerInfo[Ord(oiPirate)].InternalName + RaceToSys(PEPlanetInfo(Records[I])^.
+               if PEPlanetInfo(Records[I])^.OwnerId = oiPirate then
+                 IsCivilized := PEPlanetInfo(Records[I])^.Faction = OwnerInfo[oiPirate].InternalName + RaceToSys(PEPlanetInfo(Records[I])^.
                                 RaceId)
                else IsCivilized := PEPlanetInfo(Records[I])^.Faction = OwnerInfo[PEPlanetInfo(Records[I])^.OwnerId].InternalName;
              end;
@@ -7507,7 +7507,7 @@ begin
                       DetailWidth := Max(DetailWidth, ClientSize.X + GiScalePixels(35));
                     end;
                   end
-             else if (TObject(Objects[I]) is TPlanetSE) and (PEPlanetInfo(Records[I])^.OwnerId = Byte(oiUninhabited)) and
+             else if (TObject(Objects[I]) is TPlanetSE) and (PEPlanetInfo(Records[I])^.OwnerId = oiUninhabited) and
                      (PEPlanetInfo(Records[I])^.UnexploredWater = 0) and (PEPlanetInfo(Records[I])^.UnexploredLand = 0) and
                      (PEPlanetInfo(Records[I])^.UnexploredHills = 0) then
                   begin

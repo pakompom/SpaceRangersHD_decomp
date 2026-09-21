@@ -8,13 +8,13 @@ uses GI_MessageLoop, Types;
 type
   TfSelectFace = class(TMessageLoopGI) // @size $110
   public
-    PlayerRace: Byte; // @offset $D0
+    PlayerRace: TOwnerId; // @offset $D0
     CaptainPortraitIndex: Integer; // @offset $D4
-    LastPortraitByRace: array[0..4] of Integer; // @offset $D8
+    LastPortraitByRace: array[oiMaloc..oiGaal] of Integer; // @offset $D8
     PlayerName: WideString; // @offset $EC Bound to the player-name edit control in OnOpen.
 
     PlayerNameEdited: Boolean; // @offset $F0
-    NationalityCosts: array[0..4] of Integer; // @offset $F4
+    NationalityCosts: array[oiMaloc..oiGaal] of Integer; // @offset $F4
     AvailableMoney: Integer; // @offset $108
     AcceptedCost: Integer; // @offset $10C
 
@@ -47,10 +47,10 @@ uses Classes, Windows, GR_Main, GR_Music, Globals, GlobalsV, EC_Str, SysUtils,
 
 { @routine $5641F0 TfSelectFace_InitializeLayout }
 procedure TfSelectFace.InitializeLayout;
-var I: Integer; Face: WideString; Race: Byte; Control: TObjectGI;
+var I: Integer; Face: WideString; Race: TOwnerId; Control: TObjectGI;
 begin
   inherited;
-  for Race := 0 to 4 do
+  for Race := oiMaloc to oiGaal do
   begin
     I := -1;
     repeat
@@ -176,12 +176,12 @@ end;
 { @routine $564BA8 TfSelectFace_SelectRace }
 procedure TfSelectFace.SelectRace(Sender: TObjectGI);
 begin
-  PlayerRace := Sender.UserValue;
-  (GetByName('RaceMaloc') as TGraphButtonGI).SetDown(PlayerRace = 0);
-  (GetByName('RacePeleng') as TGraphButtonGI).SetDown(PlayerRace = 1);
-  (GetByName('RacePeople') as TGraphButtonGI).SetDown(PlayerRace = 2);
-  (GetByName('RaceFei') as TGraphButtonGI).SetDown(PlayerRace = 3);
-  (GetByName('RaceGaal') as TGraphButtonGI).SetDown(PlayerRace = 4);
+  PlayerRace := TOwnerId(Sender.UserValue);
+  (GetByName('RaceMaloc') as TGraphButtonGI).SetDown(PlayerRace = oiMaloc);
+  (GetByName('RacePeleng') as TGraphButtonGI).SetDown(PlayerRace = oiPeleng);
+  (GetByName('RacePeople') as TGraphButtonGI).SetDown(PlayerRace = oiHuman);
+  (GetByName('RaceFei') as TGraphButtonGI).SetDown(PlayerRace = oiFeyan);
+  (GetByName('RaceGaal') as TGraphButtonGI).SetDown(PlayerRace = oiGaal);
 
 end;
 { @end $564BA8 }
@@ -204,11 +204,11 @@ var Cost: Integer; Text: WideString;
 begin
   Cost := 0;
   case PlayerRace of
-    0: Cost := NationalityCosts[0];
-    1: Cost := NationalityCosts[1];
-    2: Cost := NationalityCosts[2];
-    3: Cost := NationalityCosts[3];
-    4: Cost := NationalityCosts[4];
+    oiMaloc: Cost := NationalityCosts[oiMaloc];
+    oiPeleng: Cost := NationalityCosts[oiPeleng];
+    oiHuman: Cost := NationalityCosts[oiHuman];
+    oiFeyan: Cost := NationalityCosts[oiFeyan];
+    oiGaal: Cost := NationalityCosts[oiGaal];
   end;
   if Cost <= AvailableMoney then
   begin
