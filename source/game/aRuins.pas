@@ -2266,7 +2266,7 @@ begin
   Result := 0;
   EquipmentFactor := 1;
   // Keep the native byte load followed by signed extension under DCC32 O-.
-  if TypeId = Byte(rstMilitaryBase) then EquipmentFactor := RemapClamped(ShortInt(GetPlayer.Rank * 1), 0, 7, 0.9, 0.2);
+  if TypeId = Byte(rstMilitaryBase) then EquipmentFactor := RemapClamped(Ord(GetPlayer.Rank), 0, 7, 0.9, 0.2);
   if TypeId = Byte(rstPirateBase) then EquipmentFactor := 0.84;
   for I := 0 to Ship.Inventory.Count - 1 do
   begin

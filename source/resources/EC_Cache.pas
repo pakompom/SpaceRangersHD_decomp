@@ -562,11 +562,12 @@ begin
       if Control.RetainCount > 0 then Break;
       Control := Control.NextBoundControl;
     end;
-    if Control <> nil then Continue;
-    RemainingBytes := RemainingBytes - Removed.ResidentBytes;
-    // DCC32 O- folds +0 after register selection, evaluating the size first.
-    Dec(ResidentBytes, Removed.ResidentBytes + 0);
-    RemoveAndFreeData(Removed);
+    if Control = nil then
+    begin
+      RemainingBytes := RemainingBytes - Removed.ResidentBytes;
+      Dec(ResidentBytes, Removed.ResidentBytes);
+      RemoveAndFreeData(Removed);
+    end;
   end;
   CacheLock.Leave;
 end;

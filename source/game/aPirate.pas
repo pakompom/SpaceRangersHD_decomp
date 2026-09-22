@@ -154,7 +154,7 @@ begin
     Rank := NextRandomIntRange(0, GetPlayer.Rank, RandomState);
     if Rank > 3 then Rank := 3;
     AddRankPoints(NextRandomIntRange(0, CoalitionRankPointThresholds[Rank] div 2, RandomState));
-    if not Galaxy.IsZeroStartingExperienceEnabled then GainExperience(Round(RemapClamped(ShortInt(Rank + Byte(0)), 0, 3, TotalSkillTrainingCost div 8, TotalSkillTrainingCost div 2)), 0);
+    if not Galaxy.IsZeroStartingExperienceEnabled then GainExperience(Round(RemapClamped(Ord(Rank), 0, 3, TotalSkillTrainingCost div 8, TotalSkillTrainingCost div 2)), 0);
     if OwnerId = oiPirate then begin
       PirateRank := NextRandomIntRange(0, GetPlayer.PirateRank, RandomState);
       if PirateRank > 3 then PirateRank := 3;
@@ -703,9 +703,9 @@ var Award: Byte; ProgressFactor, StrengthFactor: Double;
 begin
   if (DaysSincePlayerSeen >= 60) and (GetPlayer <> nil) then
     if (OwnerId = oiPirate) and (PirateType <> 0) then begin
-      ProgressFactor := ShortInt(Galaxy.DifficultyLevels[0] + Byte(0)) * 0.2 + 0.6;
+      ProgressFactor := Ord(Galaxy.DifficultyLevels[0]) * 0.2 + 0.6;
       ProgressFactor := RemapClamped(Galaxy.WarDeltaWin[2], -10, 10, 1.3, 0.7) * ProgressFactor;
-      StrengthFactor := ShortInt(Galaxy.DifficultyLevels[0] + Byte(0)) * 0.1 + 0.6;
+      StrengthFactor := Ord(Galaxy.DifficultyLevels[0]) * 0.1 + 0.6;
       if (0.1 * ProgressFactor > NextRandomUnitFloat(RandomState)) and
         ((0.4 * StrengthFactor > StrengthInBestRanger) or (NextRandomUnitFloat(RandomState) < 0.1)) then
         if (NextRandomFloatRange(0, 0.7, RandomState) > WealthInBestRanger) and (Money < 25000) then
@@ -1189,7 +1189,7 @@ begin
       ((RelationToShip(Ship) < 10) or (NextRandomIntRange(1, 100, RandomState) <= Aggression + 100)) and
       ((not (Ship is TPirate) and (GetPlayer <> Ship) and ((Ship.OwnerId <> oiPirate) or not (Ship is TNormalShip))) or
       (((Ship.OwnerId <> oiPirate) or (Ship.PilotRace <> PilotRace) or (NextRandomIntRange(1, 100, RandomState) <= 50)) and
-      ((ShortInt((Ship as TNormalShip).PirateRank) <= ShortInt(PirateRank + Byte(0))) or (NextRandomIntRange(1, 100, RandomState) <= 70)) and
+      (((Ship as TNormalShip).PirateRank <= Ord(PirateRank)) or (NextRandomIntRange(1, 100, RandomState) <= 70)) and
       (((Ship as TNormalShip).PirateRank <= Integer(PirateRank) + 1) or (NextRandomIntRange(1, 100, RandomState) <= 70)) and
       (((Ship as TNormalShip).PirateRank <= Integer(PirateRank) + 2) or (NextRandomIntRange(1, 100, RandomState) <= 70)) and
       (((Ship as TNormalShip).PirateRank <> 7) or (NextRandomIntRange(1, 100, RandomState) <= 50)))) then begin

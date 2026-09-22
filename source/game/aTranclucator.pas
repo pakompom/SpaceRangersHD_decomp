@@ -526,21 +526,17 @@ var
 begin
   for I := Inventory.Count - 1 downto 0 do
   begin
-    Item := TEquipment(Inventory[I + 0]);
-    if Item.EquippedFlag = 0 then
-    begin
-      Inventory.Delete(Inventory.IndexOf(Pointer(PAnsiChar(Item) + 0)));
-      Destination.Inventory.Add(Item);
-    end;
+    Item := TEquipment(Inventory[I]);
+    if Item.EquippedFlag <> 0 then Continue;
+    Inventory.Delete(Inventory.IndexOf(Item));
+    Destination.Inventory.Add(Item);
   end;
   for I := Artefacts.Count - 1 downto 0 do
   begin
-    Artefact := TArtefact(Artefacts[I + 0]);
-    if Artefact.EquippedFlag = 0 then
-    begin
-      Artefacts.Delete(Artefacts.IndexOf(Pointer(PAnsiChar(Artefact) + 0)));
-      Destination.Artefacts.Add(Artefact);
-    end;
+    Artefact := TArtefact(Artefacts[I]);
+    if Artefact.EquippedFlag <> 0 then Continue;
+    Artefacts.Delete(Artefacts.IndexOf(Artefact));
+    Destination.Artefacts.Add(Artefact);
   end;
   for Good := 0 to 7 do
     with CargoGoods[Good] do
@@ -557,7 +553,6 @@ end;
 { @end $65DB34 }
 
 { @routine $65DC90 TTranclucator_StoreUnequippedCargoAt }
-// The +0 index/pointer expressions below preserve native DCC32 argument scheduling.
 procedure TTranclucator.StoreUnequippedCargoAt(Location: TObject);
 var Good: Byte;
     I: Integer;
@@ -568,21 +563,17 @@ begin
   begin
     for I := Inventory.Count - 1 downto 0 do
     begin
-      Item := TEquipment(Inventory[I + 0]);
-      if Item.EquippedFlag = 0 then
-      begin
-        GetPlayer.AddItemToPlayerStorage(Item, Location, -1);
-        Inventory.Delete(Inventory.IndexOf(Pointer(PAnsiChar(Item) + 0)));
-      end;
+      Item := TEquipment(Inventory[I]);
+      if Item.EquippedFlag <> 0 then Continue;
+      GetPlayer.AddItemToPlayerStorage(Item, Location, -1);
+      Inventory.Delete(Inventory.IndexOf(Item));
     end;
     for I := Artefacts.Count - 1 downto 0 do
     begin
-      Artefact := TArtefact(Artefacts[I + 0]);
-      if Artefact.EquippedFlag = 0 then
-      begin
-        GetPlayer.AddItemToPlayerStorage(Artefact, Location, -1);
-        Artefacts.Delete(Artefacts.IndexOf(Pointer(PAnsiChar(Artefact) + 0)));
-      end;
+      Artefact := TArtefact(Artefacts[I]);
+      if Artefact.EquippedFlag <> 0 then Continue;
+      GetPlayer.AddItemToPlayerStorage(Artefact, Location, -1);
+      Artefacts.Delete(Artefacts.IndexOf(Artefact));
     end;
     for Good := 0 to 7 do
       with CargoGoods[Good] do

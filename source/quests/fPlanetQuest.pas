@@ -1854,20 +1854,19 @@ var
   Variable: TVarEC;
 begin
   Expanded := Text;
-  // +0 preserves the native argument-load order; see docs/development.md.
   for I := 1 to Quest.GetParameterCount do
-    if FindTextPosW('ext_', Quest.GetParameter(I + 0).NameText.Text) = 1 then
-    begin
-      Name := Quest.GetParameter(I + 0).NameText.Text;
-      Token := Name;
-      Name[1] := 'E';
-      Token[1] := 't';
-      Token := '<' + Token + '>';
-      Name := 'GQuestVar' + Name;
-      Variable := SharedScriptVariables.GetVarNE(Name);
-      if Variable <> nil then
-        Expanded := ReplaceAllWideString(Expanded, Token, WrapTextInColor(TrimWideString(Variable.GetString), GetTextColorTag(QuestStyleIndex)));
-    end;
+  begin
+    if FindTextPosW('ext_', Quest.GetParameter(I).NameText.Text) <> 1 then Continue;
+    Name := Quest.GetParameter(I).NameText.Text;
+    Token := Name;
+    Name[1] := 'E';
+    Token[1] := 't';
+    Token := '<' + Token + '>';
+    Name := 'GQuestVar' + Name;
+    Variable := SharedScriptVariables.GetVarNE(Name);
+    if Variable <> nil then
+      Expanded := ReplaceAllWideString(Expanded, Token, WrapTextInColor(TrimWideString(Variable.GetString), GetTextColorTag(QuestStyleIndex)));
+  end;
   Result := Expanded;
 end;
 { @end $5E3FD8 }

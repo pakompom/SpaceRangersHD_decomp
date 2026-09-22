@@ -1653,7 +1653,7 @@ begin
                     Info := Galaxy.SelectWeaponInfo(Seed, [0, 1, Ord(OwnerWeaponAvailability[StationOwner])], Min(Galaxy.TechLevel + 2, 8), Galaxy.TechLevel);
                     Seed := Galaxy.CurrentTurn div 33 * (GetPlayer.DockedTo.Id * (GetPlayer.Rank + 17));
                     Weight := NextRandomIntRange(Round(Info.AverageSize * MinimumSizeFactor), Round(Info.AverageSize * MaximumSizeFactor), Seed);
-                    Level := Round(RemapClamped(Round(RemapClamped(ShortInt(GetPlayer.Rank * 1), 0, 7, 1, 5)), 1, 5, 3, 8));
+                    Level := Round(RemapClamped(Round(RemapClamped(Ord(GetPlayer.Rank), 0, 7, 1, 5)), 1, 5, 3, 8));
                     Item := CreateGeneratedWeapon(Info, Weight, Level, StationOwner);
                   end
                   else
@@ -1661,7 +1661,7 @@ begin
                     ItemType := TItemType(PickRandomItemType([Ord(t_FuelTanks)..Ord(t_DefGenerator)]));
                     Seed := Galaxy.CurrentTurn div 33 * (GetPlayer.DockedTo.Id * (GetPlayer.Rank + 17));
                     Weight := NextRandomIntRange(Round(GetAverageItemSize(ItemType) * MinimumSizeFactor), Round(GetAverageItemSize(ItemType) * MaximumSizeFactor), Seed);
-                    Level := Round(RemapClamped(ShortInt(GetPlayer.Rank * 1), 0, 7, 3, 8));
+                    Level := Round(RemapClamped(Ord(GetPlayer.Rank), 0, 7, 3, 8));
                     Item := CreateGeneratedEquipment(ItemType, Weight, Level, StationOwner);
                   end;
                   if Item <> nil then

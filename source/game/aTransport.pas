@@ -142,7 +142,7 @@ begin
     if Rank > 3 then Rank := 3;
     AddRankPoints(NextRandomIntRange(0, CoalitionRankPointThresholds[Rank] div 2, RandomState));
     if not Galaxy.IsZeroStartingExperienceEnabled then begin
-      GainExperience(Round(RemapClamped(ShortInt(Rank + Byte(0)), 0, 3, TotalSkillTrainingCost div 10, TotalSkillTrainingCost div 4)), 0);
+      GainExperience(Round(RemapClamped(Ord(Rank), 0, 3, TotalSkillTrainingCost div 10, TotalSkillTrainingCost div 4)), 0);
       GainExperience(Round(RemapClamped(Galaxy.TechLevel, 3, 8, TotalSkillTrainingCost div 20,
         NextRandomIntRange(TotalSkillTrainingCost div 20, TotalSkillTrainingCost div 3, RandomState))), 0);
     end;

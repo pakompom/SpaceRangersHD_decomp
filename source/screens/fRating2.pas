@@ -573,7 +573,7 @@ end;
 
 { @routine $5685D0 TfRating2_RebuildTable }
 procedure TfRating2.RebuildTable;
-// Widen before narrowing to preserve both native signed-byte register loads.
+// Compare the signed ordinal values used by the native sort.
 var I, J, Top: Integer; List: TList; A, B: TRanger;
 begin
   ClearRows;
@@ -617,17 +617,17 @@ begin
       begin
           if SortAscending then
           begin
-            if ShortInt(Integer(B.PilotRace) + 0) < ShortInt(Integer(A.PilotRace) + 0) then List.Exchange(I,J);
+            if Ord(B.PilotRace) < Ord(A.PilotRace) then List.Exchange(I,J);
           end
-          else if ShortInt(Integer(B.PilotRace) + 0) > ShortInt(Integer(A.PilotRace) + 0) then List.Exchange(I,J);
+          else if Ord(B.PilotRace) > Ord(A.PilotRace) then List.Exchange(I,J);
       end
       else if SortColumn = rrscRank then
       begin
           if SortAscending then
           begin
-            if ShortInt(Integer(B.Rank) + 0) < ShortInt(Integer(A.Rank) + 0) then List.Exchange(I,J);
+            if Ord(B.Rank) < Ord(A.Rank) then List.Exchange(I,J);
           end
-          else if ShortInt(Integer(B.Rank) + 0) > ShortInt(Integer(A.Rank) + 0) then List.Exchange(I,J);
+          else if Ord(B.Rank) > Ord(A.Rank) then List.Exchange(I,J);
       end
       else if SortColumn = rrscCharacter then
       begin

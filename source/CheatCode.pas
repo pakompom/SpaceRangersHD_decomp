@@ -231,21 +231,18 @@ begin
     for StarIndex := 0 to Galaxy.Stars.Count - 1 do
     begin
       Star := TStar(Galaxy.Stars[StarIndex]);
-      if (Star.ControlFaction = sfDominators) and (Star.Status.CustomFaction = '') then
+      if not ((Star.ControlFaction = sfDominators) and (Star.Status.CustomFaction = '')) then Continue;
+      PlanetIndex := -1;
+      while True do
       begin
-        PlanetIndex := -1;
-        while True do
-        begin
-          if Star.ShipTypeCounts[stKling] >= 12 then Break;
-          Planet := nil;
-          repeat
-            Inc(PlanetIndex);
-            if PlanetIndex >= Star.Planets.Count then PlanetIndex := 0;
-            // Preserve DCC32 O- receiver-before-index evaluation.
-          Planet := TPlanet(TList(PAnsiChar(Star.Planets) + 0)[PlanetIndex]);
-          until Planet.OwnerId <> oiUninhabited;
-          Planet.SpawnWeightedDominatorShip;
-        end;
+        if Star.ShipTypeCounts[stKling] >= 12 then Break;
+        Planet := nil;
+        repeat
+          Inc(PlanetIndex);
+          if PlanetIndex >= Star.Planets.Count then PlanetIndex := 0;
+          Planet := TPlanet(Star.Planets[PlanetIndex]);
+        until Planet.OwnerId <> oiUninhabited;
+        Planet.SpawnWeightedDominatorShip;
       end;
     end;
     ReportCheat(20, DecodeTextW('KULTIZSOSOASNOMEANXI')); // 'KLISSANMAX'
@@ -267,25 +264,23 @@ begin
     for StarIndex := 0 to Galaxy.Stars.Count - 1 do
     begin
       Star := TStar(Galaxy.Stars[StarIndex]);
-      if (Star.ControlFaction = sfPirates) and (Star.Status.CustomFaction = '') then
+      if not ((Star.ControlFaction = sfPirates) and (Star.Status.CustomFaction = '')) then Continue;
+      PlanetIndex := -1;
+      while True do
       begin
-        PlanetIndex := -1;
-        while True do
+        if Star.CountPirateShips(True) >= 12 then Break;
+        Planet := nil;
+        repeat
+          Inc(PlanetIndex);
+          if PlanetIndex >= Star.Planets.Count then PlanetIndex := 0;
+          Planet := TPlanet(Star.Planets[PlanetIndex]);
+        until Planet.OwnerId <> oiUninhabited;
+        Planet.BuyWarrior(100);
+        Inc(Created);
+        if Created >= 500 then
         begin
-          if Star.CountPirateShips(True) >= 12 then Break;
-          Planet := nil;
-          repeat
-            Inc(PlanetIndex);
-            if PlanetIndex >= Star.Planets.Count then PlanetIndex := 0;
-            Planet := TPlanet(TList(PAnsiChar(Star.Planets) + 0)[PlanetIndex]);
-          until Planet.OwnerId <> oiUninhabited;
-          Planet.BuyWarrior(100);
-          Inc(Created);
-          if Created >= 500 then
-          begin
-            ShowCheatFeedback('Sudden break');
-            Break;
-          end;
+          ShowCheatFeedback('Sudden break');
+          Break;
         end;
       end;
     end;
@@ -338,29 +333,27 @@ begin
     for DistanceIndex := 1 to Galaxy.Stars.Count - 1 do
     begin
       Star := TObject(GetPlayer.CurrentStar.StarDistances[DistanceIndex].Star) as TStar;
-      if (Star.ControlFaction = sfDominators) and (Star.Battle = 0) and Galaxy.HasUnresolvedDominatorSeries([dsBlazer, dsKeller, dsTerron]) and (Star.Status.CustomFaction = '') then
+      if not ((Star.ControlFaction = sfDominators) and (Star.Battle = 0) and Galaxy.HasUnresolvedDominatorSeries([dsBlazer, dsKeller, dsTerron]) and (Star.Status.CustomFaction = '')) then Continue;
+      Eligible := 0;
+      for ShipIndex := 0 to Star.Ships.Count - 1 do
       begin
-        Eligible := 0;
+        Ship := TShip(Star.Ships[ShipIndex]);
+        if (Ship.OwnerId = oiDominator) and (Ship.Order = soNone) and Ship.InNormalSpace and not Ship.HasIndependentScriptFaction then
+          Inc(Eligible);
+      end;
+      if Eligible > 2 then
         for ShipIndex := 0 to Star.Ships.Count - 1 do
         begin
-          Ship := TShip(TList(PAnsiChar(Star.Ships) + 0)[ShipIndex]);
+          Ship := TShip(Star.Ships[ShipIndex]);
           if (Ship.OwnerId = oiDominator) and (Ship.Order = soNone) and Ship.InNormalSpace and not Ship.HasIndependentScriptFaction then
-            Inc(Eligible);
-        end;
-        if Eligible > 2 then
-          for ShipIndex := 0 to Star.Ships.Count - 1 do
           begin
-            Ship := TShip(TList(PAnsiChar(Star.Ships) + 0)[ShipIndex]);
-            if (Ship.OwnerId = oiDominator) and (Ship.Order = soNone) and Ship.InNormalSpace and not Ship.HasIndependentScriptFaction then
-            begin
-              Ship.OrderJump(GetPlayer.CurrentStar, True);
-              Inc(Sent);
-              Dec(Eligible);
-              if Eligible <= 2 then Break;
-            end;
+            Ship.OrderJump(GetPlayer.CurrentStar, True);
+            Inc(Sent);
+            Dec(Eligible);
+            if Eligible <= 2 then Break;
           end;
-        if Sent > 20 then Break;
-      end;
+        end;
+      if Sent > 20 then Break;
     end;
     ReportCheat(20, DecodeTextW('KOLEINSOSUAINOCRABLELS')); // 'KLISSANCALL'
   end;
@@ -380,29 +373,27 @@ begin
     for DistanceIndex := 1 to Galaxy.Stars.Count - 1 do
     begin
       Star := TObject(GetPlayer.CurrentStar.StarDistances[DistanceIndex].Star) as TStar;
-      if (Star.ControlFaction = sfPirates) and (Star.Battle = 0) and (Star.Status.CustomFaction = '') then
+      if not ((Star.ControlFaction = sfPirates) and (Star.Battle = 0) and (Star.Status.CustomFaction = '')) then Continue;
+      Eligible := 0;
+      for ShipIndex := 0 to Star.Ships.Count - 1 do
       begin
-        Eligible := 0;
+        Ship := TShip(Star.Ships[ShipIndex]);
+        if (Ship.OwnerId = oiPirate) and (Ship.Order = soNone) and Ship.InNormalSpace and not Ship.HasIndependentScriptFaction then
+          Inc(Eligible);
+      end;
+      if Eligible > 2 then
         for ShipIndex := 0 to Star.Ships.Count - 1 do
         begin
-          Ship := TShip(TList(PAnsiChar(Star.Ships) + 0)[ShipIndex]);
+          Ship := TShip(Star.Ships[ShipIndex]);
           if (Ship.OwnerId = oiPirate) and (Ship.Order = soNone) and Ship.InNormalSpace and not Ship.HasIndependentScriptFaction then
-            Inc(Eligible);
-        end;
-        if Eligible > 2 then
-          for ShipIndex := 0 to Star.Ships.Count - 1 do
           begin
-            Ship := TShip(TList(PAnsiChar(Star.Ships) + 0)[ShipIndex]);
-            if (Ship.OwnerId = oiPirate) and (Ship.Order = soNone) and Ship.InNormalSpace and not Ship.HasIndependentScriptFaction then
-            begin
-              Ship.OrderJump(GetPlayer.CurrentStar, True);
-              Inc(Sent);
-              Dec(Eligible);
-              if Eligible <= 2 then Break;
-            end;
+            Ship.OrderJump(GetPlayer.CurrentStar, True);
+            Inc(Sent);
+            Dec(Eligible);
+            if Eligible <= 2 then Break;
           end;
-        if Sent > 20 then Break;
-      end;
+        end;
+      if Sent > 20 then Break;
     end;
     ReportCheat(20, DecodeTextW('PAIORNAMTZEXCOASLOL')); // 'PIRATECALL'
   end;

@@ -192,7 +192,7 @@ begin
       Star := TStar.Create;
       Galaxy.Stars.Add(Star);
     end;
-    Galaxy.GenerateGalaxyLayout(Ord(PlayerRace));
+    Galaxy.GenerateGalaxyLayout(PlayerRace);
     Stage := 2;
     for I := 0 to Galaxy.Stars.Count - 1 do
     begin

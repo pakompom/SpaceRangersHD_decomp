@@ -1974,36 +1974,33 @@ end;
 { @end $5A402C }
 
 { @routine $5A45BC TfInfo_ToggleVisibleBookmark }
-// The explicit receiver value preserves native loading before the False argument.
 procedure TfInfo.ToggleVisibleBookmark;
 var I, ScrollPosition: Integer; Button: TGraphButtonGI; Finished: Boolean; Entry: TMessagePlayer;
 begin
-  if SearchMode then
+  if not SearchMode then Exit;
+  ScrollPosition := InfoPanel.VerticalScrollBar.Position;
+  I := 0;
+  Finished := False;
+  Button := nil;
+  while not Finished do
   begin
-    ScrollPosition := InfoPanel.VerticalScrollBar.Position;
-    I := 0;
-    Finished := False;
-    Button := nil;
-    while not Finished do
+    Button := InfoPanel.FindByNameRecursive('MemBtn' + IntToStr(I)) as TGraphButtonGI;
+    if Button = nil then Exit;
+    if Button.LocalPosition.Y >= ScrollPosition then Break;
+    Inc(I);
+  end;
+  if Button <> nil then
+  begin
+    Entry := FindPlayerBubbleByText(Button.HelpText,False);
+    if Entry <> nil then
     begin
-      Button := InfoPanel.FindByNameRecursive('MemBtn' + IntToStr(I)) as TGraphButtonGI;
-      if Button = nil then Exit;
-      if Button.LocalPosition.Y >= ScrollPosition then Break;
-      Inc(I);
-    end;
-    if Button <> nil then
-    begin
-      Entry := FindPlayerBubbleByText(Button.HelpText,False);
-      if Entry <> nil then
-      begin
-        RemovePersistentPlayerMessage(Entry,False);
-        MainPanel.Screen.GetByName('PM_WinMsg').SetActive(False);
-        TfPanelMain(Integer(MainPanel) + 0).RebuildMessageButtons(False);
-        Button.SetDisabled(False);
-        SoundManager.PlaySound('Sound.DelMsg');
-      end
-      else BookmarkClicked(Button);
-    end;
+      RemovePersistentPlayerMessage(Entry,False);
+      MainPanel.Screen.GetByName('PM_WinMsg').SetActive(False);
+      MainPanel.RebuildMessageButtons(False);
+      Button.SetDisabled(False);
+      SoundManager.PlaySound('Sound.DelMsg');
+    end
+    else BookmarkClicked(Button);
   end;
 end;
 { @end $5A45BC }

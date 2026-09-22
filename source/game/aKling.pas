@@ -1095,23 +1095,23 @@ begin
   EscortCount := 0;
   for I := 0 to CurrentStar.Ships.Count - 1 do begin
     Ship := CurrentStar.Ships[I];
-    if Ship.InNormalSpace then
-      if not (Ship is TKling) then begin
-        if not IsPlayerCamouflageEffective(Ship) then Exit;
-      end else begin
-        if TKling(Ship).DominatorSeries <> DominatorSeries then Exit;
-        if (TKling(Ship).KlingType in [ktEquentor..ktShtip]) and (Ship <> Self) then Inc(EscortCount);
-      end;
+    if not Ship.InNormalSpace then Continue;
+    if not (Ship is TKling) then begin
+      if not IsPlayerCamouflageEffective(Ship) then Exit;
+    end else begin
+      if TKling(Ship).DominatorSeries <> DominatorSeries then Exit;
+      if (TKling(Ship).KlingType in [ktEquentor..ktShtip]) and (Ship <> Self) then Inc(EscortCount);
+    end;
   end;
   if EscortCount < 2 then Exit;
   Stars := TList.Create;
   for I := 0 to Constellation.Stars.Count - 1 do begin
     Star := Constellation.Stars[I];
-    if (TStar(Integer(Star) + 0) <> CurrentStar) and not IsStarProtectedByScript(Star) and (Star.ShipTypeCounts[stKling] >= 6) and
+    if (Star <> CurrentStar) and not IsStarProtectedByScript(Star) and (Star.ShipTypeCounts[stKling] >= 6) and
       ((KellerShip = nil) or not KellerShip.InNormalSpace or (KellerShip.CurrentStar <> Star)) and
       ((TerronShip = nil) or not TerronShip.InNormalSpace or (TerronShip.CurrentStar <> Star)) and
       ((BlazerShip = nil) or not BlazerShip.InNormalSpace or (BlazerShip.CurrentStar <> Star)) and
-      (Star.ControlFaction in [sfDominators]) and (TDominatorSeries(Byte(Star.DominatorSeries) + Byte(0)) = DominatorSeries) and (Star.Battle = 0) and (Star.Status.CustomFaction = '') then Stars.Add(Star);
+      (Star.ControlFaction in [sfDominators]) and (Star.DominatorSeries = DominatorSeries) and (Star.Battle = 0) and (Star.Status.CustomFaction = '') then Stars.Add(Star);
   end;
   if Stars.Count > 2 then begin
     I := Stars.IndexOf(TransitOriginStar);

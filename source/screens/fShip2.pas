@@ -1448,63 +1448,62 @@ var Index, I: Integer; Icon, Shadow: TGraphBufGR; Award: Byte; Path: WideString;
 begin
   HideRewardTooltip;
   if (Ship.AwardIds = nil) or (Ship.AwardIds.Count < 1) then
-    // The value expression preserves the native receiver-before-argument order.
-    TGraphBufGI(Integer(RewardsBuffer) + 0).SetActive(False)
+  begin
+    RewardsBuffer.SetActive(False);
+    Exit;
+  end;
+  Count := Min(Ship.AwardVisibleCount,Ship.AwardIds.Count);
+  IconSize := GiScalePixels(20);
+  VisibleCount := (RewardsBuffer.ClientSize.X - 2) div IconSize;
+  if Count <= VisibleCount then Spacing := IconSize
   else
   begin
-    Count := Min(Ship.AwardVisibleCount,Ship.AwardIds.Count);
-    IconSize := GiScalePixels(20);
-    VisibleCount := (RewardsBuffer.ClientSize.X - 2) div IconSize;
-    if Count <= VisibleCount then Spacing := IconSize
+    VisibleCount := Min(30,Count);
+    Spacing := (RewardsBuffer.ClientSize.X - 2 - IconSize) / (VisibleCount - 1);
+  end;
+  with RewardsBuffer do
+  begin
+    SetActive(True);
+    SetImageKindX(ikxLeft);
+    SetImageKindY(ikyBottom);
+    GraphBuf.AllocateRgbaTight(Max(ClientSize.X,Round(VisibleCount * Spacing + IconSize - Spacing)) + 2,IconSize + 2);
+    MouseMoveCallback := RewardsMouseMove;
+    MouseLeaveCallback := RewardsMouseLeave;
+    LeftButtonDownCallback := RewardsMouseDown;
+    GraphBuf.ClearPixels;
+    SourceHasPerPixelAlpha := True;
+  end;
+  Icon := TGraphBufGR.Create(False);
+  Shadow := TGraphBufGR.Create(False);
+  Index := Max(0,Count - VisibleCount);
+  I := 0;
+  while Index < Count do
+  begin
+    Award := Byte(Ship.AwardIds[Index]);
+    if Award < 10 then Path := 'Bm.FormRewards.' + GiResourceSuffix + '_0' + IntToStr(Award)
+    else Path := 'Bm.FormRewards.' + GiResourceSuffix + '_' + IntToStr(Award);
+    LoadGiByPathIntoGraphBuf(Path,Icon);
+    if Cardinal(Icon.Width) >= Cardinal(Icon.Height) then
+      Icon.RescaleRgba(IconSize,Round(IconSize / Cardinal(Icon.Width) * Cardinal(Icon.Height)),5)
+    else
+      Icon.RescaleRgba(Round(IconSize / Cardinal(Icon.Height) * Cardinal(Icon.Width)),IconSize,5);
+    Shadow.AllocateRgbaTight(Icon.Width,Icon.Height);
+    Shadow.CopyRect32(Classes.Point(0,0),Icon,Classes.Rect(0,0,Icon.Width,Icon.Height));
+    Shadow.MakeShadow;
+    if (Icon.Height > IconSize) or (RewardsBuffer.GraphBuf.Width < Round(I * Spacing) + Icon.Width) then
+    begin
+      { The native renderer skips icons outside the allocated buffer. }
+    end
     else
     begin
-      VisibleCount := Min(30,Count);
-      Spacing := (RewardsBuffer.ClientSize.X - 2 - IconSize) / (VisibleCount - 1);
+      RewardsBuffer.GraphBuf.BlendRect32(Classes.Point(Round(I * Spacing) + 2,2),Shadow,Classes.Rect(0,0,Icon.Width,Icon.Height));
+      RewardsBuffer.GraphBuf.BlendRect32(Classes.Point(Round(I * Spacing),0),Icon,Classes.Rect(0,0,Icon.Width,Icon.Height));
     end;
-    with RewardsBuffer do
-    begin
-      SetActive(True);
-      SetImageKindX(ikxLeft);
-      SetImageKindY(ikyBottom);
-      GraphBuf.AllocateRgbaTight(Max(ClientSize.X,Round(VisibleCount * Spacing + IconSize - Spacing)) + 2,IconSize + 2);
-      MouseMoveCallback := RewardsMouseMove;
-      MouseLeaveCallback := RewardsMouseLeave;
-      LeftButtonDownCallback := RewardsMouseDown;
-      GraphBuf.ClearPixels;
-      SourceHasPerPixelAlpha := True;
-    end;
-    Icon := TGraphBufGR.Create(False);
-    Shadow := TGraphBufGR.Create(False);
-    Index := Max(0,Count - VisibleCount);
-    I := 0;
-    while Index < Count do
-    begin
-      Award := Byte(Ship.AwardIds[Index]);
-      if Award < 10 then Path := 'Bm.FormRewards.' + GiResourceSuffix + '_0' + IntToStr(Award)
-      else Path := 'Bm.FormRewards.' + GiResourceSuffix + '_' + IntToStr(Award);
-      LoadGiByPathIntoGraphBuf(Path,Icon);
-      if Cardinal(Icon.Width) >= Cardinal(Icon.Height) then
-        Icon.RescaleRgba(IconSize,Round(IconSize / Cardinal(Icon.Width) * Cardinal(Icon.Height)),5)
-      else
-        Icon.RescaleRgba(Round(IconSize / Cardinal(Icon.Height) * Cardinal(Icon.Width)),IconSize,5);
-      Shadow.AllocateRgbaTight(Icon.Width,Icon.Height);
-      Shadow.CopyRect32(Classes.Point(0,0),Icon,Classes.Rect(0,0,Icon.Width,Icon.Height));
-      Shadow.MakeShadow;
-      if (Icon.Height > IconSize) or (RewardsBuffer.GraphBuf.Width < Round(I * Spacing) + Icon.Width) then
-      begin
-        { The native renderer skips icons outside the allocated buffer. }
-      end
-      else
-      begin
-        RewardsBuffer.GraphBuf.BlendRect32(Classes.Point(Round(I * Spacing) + 2,2),Shadow,Classes.Rect(0,0,Icon.Width,Icon.Height));
-        RewardsBuffer.GraphBuf.BlendRect32(Classes.Point(Round(I * Spacing),0),Icon,Classes.Rect(0,0,Icon.Width,Icon.Height));
-      end;
-      Inc(Index);
-      Inc(I);
-    end;
-    Icon.Free;
-    Shadow.Free;
+    Inc(Index);
+    Inc(I);
   end;
+  Icon.Free;
+  Shadow.Free;
 end;
 { @end $6F5ABC }
 

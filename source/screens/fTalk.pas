@@ -756,17 +756,14 @@ begin
   if (Sender.FirstChild <> nil) and (Sender.FirstChild.NextSibling <> nil) and
     (Sender.FirstChild.NextSibling.FirstChild <> nil) and (Sender.FirstChild.NextSibling.FirstChild.FirstChild <> nil) then
     Sender.FirstChild.NextSibling.FirstChild.FirstChild.SetPosition(Classes.Point(0, 0));
-  if not Sender.IsOccludedAtPoint(Point) and ChoiceMousePressed then
-  begin
-    ChoiceMousePressed := False;
-    Choice := TfTalkA(Sender.UserValue);
-    // DCC32 evaluates the callback receiver first with this identity expression.
-    if Assigned(Choice.Callback) then TfTalkA(Cardinal(Choice) * 1).Callback(Choice.Value)
-    else if Assigned(Choice.FallbackCallback) then TfTalkA(Cardinal(Choice) * 1).FallbackCallback(Choice.FallbackText)
-    else Exit;
-    RestartTextPresentation;
-    BreakUiMessage;
-  end;
+  if Sender.IsOccludedAtPoint(Point) or not ChoiceMousePressed then Exit;
+  ChoiceMousePressed := False;
+  Choice := TfTalkA(Sender.UserValue);
+  if Assigned(Choice.Callback) then Choice.Callback(Choice.Value)
+  else if Assigned(Choice.FallbackCallback) then Choice.FallbackCallback(Choice.FallbackText)
+  else Exit;
+  RestartTextPresentation;
+  BreakUiMessage;
 end;
 { @end $6D36D8 }
 

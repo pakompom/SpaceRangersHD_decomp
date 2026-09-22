@@ -6,6 +6,8 @@ interface
 uses EC_Buf, EC_BlockPar, aGalaxyStruct, aConst, aGalaxy, aPlanet, aShip;
 
 type
+  TShipRank = 0..7; // @size $01
+
   TAwardTypeMask = set of 0..7; // @size $01
 
   TSystemKillCountArray = array[0..3] of Word; // @size $08
@@ -30,10 +32,10 @@ type
     CurrentSystemKills: TSystemKillCounts; // @offset 0x4F0
     PendingLiberationCeremonyPlanet: TPlanet; // @offset 0x4F8
     PendingLiberationContribution: Integer; // @offset 0x4FC
-    Rank: Byte; // @offset 0x500
+    Rank: TShipRank; // @offset 0x500
     RankPoints: Word; // @offset 0x502
     LastPlayerExtortionTurn: Integer; // @offset 0x504  Shared 30-turn cooldown for money, cargo and paid-truce demands.
-    PirateRank: Byte; // @offset 0x508
+    PirateRank: TShipRank; // @offset 0x508
     PirateRankPoints: Cardinal; // @offset 0x50C
 
     procedure ClearObjectReferences; override; // @addr $73DE90 @slot $0C Clears pending liberation and last-docked planet after inherited cleanup.
@@ -558,7 +560,7 @@ begin
          (PartnerShip.CurrentStar = CurrentStar) and PartnerShip.InNormalSpace and
          ((PartnerShip as TNormalShip).CurrentSystemKills.Normal = 0) then
       Inc(TNormalShip(PartnerShip).CurrentSystemKills.Normal);
-    Experience := Round(NextRandomIntRange(100, 250, Galaxy.RandomState) * (ShortInt(TNormalShip(Victim).Rank + Byte(0)) * 0.1 + 1));
+    Experience := Round(NextRandomIntRange(100, 250, Galaxy.RandomState) * (Ord(TNormalShip(Victim).Rank) * 0.1 + 1));
     if OwnerId = oiPirate then
     begin
       PirateReward := 8;
@@ -574,7 +576,7 @@ begin
       SourceKind := 2;
       RankReward := 10;
       (Self as TRanger).AddWarriorCareerActivity(4);
-      Experience := Round(NextRandomIntRange(250, 500, Galaxy.RandomState) * (ShortInt(TNormalShip(Victim).PirateRank + Byte(0)) * 0.1 + 1));
+      Experience := Round(NextRandomIntRange(250, 500, Galaxy.RandomState) * (Ord(TNormalShip(Victim).PirateRank) * 0.1 + 1));
     end
     else
     begin
@@ -588,7 +590,7 @@ begin
       end;
     if GetPlayer = Self then ActivityAmount := 8 else ActivityAmount := 2;
     (Self as TRanger).AddPirateCareerActivity(Byte(ActivityAmount));
-      Experience := Round(NextRandomIntRange(100, 250, Galaxy.RandomState) * (ShortInt(TNormalShip(Victim).Rank + Byte(0)) * 0.1 + 1));
+      Experience := Round(NextRandomIntRange(100, 250, Galaxy.RandomState) * (Ord(TNormalShip(Victim).Rank) * 0.1 + 1));
       if OwnerId = oiPirate then
       begin
         PirateReward := 24;
@@ -621,7 +623,7 @@ begin
     end;
     Inc(PirateKillCount);
     if GetPlayer = Self then TryAddAchievementProgress('SHIELD', 1);
-    Experience := Round(NextRandomIntRange(250, 500, Galaxy.RandomState) * (ShortInt(TNormalShip(Victim).PirateRank + Byte(0)) * 0.1 + 1));
+    Experience := Round(NextRandomIntRange(250, 500, Galaxy.RandomState) * (Ord(TNormalShip(Victim).PirateRank) * 0.1 + 1));
     RankReward := 10;
     if OwnerId = oiPirate then Experience := Experience div 2;
     if Self is TRanger then (Self as TRanger).AddWarriorCareerActivity(4);
@@ -661,7 +663,7 @@ begin
       Inc(TNormalShip(PartnerShip).CurrentSystemKills.Normal);
     if OwnerId = oiPirate then
     begin
-      Experience := Round(NextRandomIntRange(250, 500, Galaxy.RandomState) * (ShortInt(TNormalShip(Victim).Rank + Byte(0)) * 0.1 + 1));
+      Experience := Round(NextRandomIntRange(250, 500, Galaxy.RandomState) * (Ord(TNormalShip(Victim).Rank) * 0.1 + 1));
       if (Victim as TWarrior).WarriorType = wtFlagship then
       begin
         Experience := Experience * 2;

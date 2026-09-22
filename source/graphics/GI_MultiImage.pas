@@ -333,21 +333,17 @@ procedure TMultiImageGI.SetUnitPosition(Item: TMultiImageUnitGI; Position: TPoin
 var Column: TMultiImageColGI;
 begin
   // Preserve the native comparison against the control's position.
-  if (Item.Column = nil) or (Self.LocalPosition.X <> Position.X) or (Self.LocalPosition.Y <> Position.Y) then
-  begin
-    Item.Position := Position;
-    Column := GetOrCreateColumn(GetOrCreateRow(Position.Y div TMultiImageGI(PAnsiChar(Self) + 0).CellSize), Position.X div TMultiImageGI(PAnsiChar(Self) + 0).CellSize);
-    if Item.Column <> Column then
-    begin
-      UnlinkUnitFromColumn(Item);
-      Item.Column := Column;
-      if Column.Last <> nil then Column.Last.NextInColumn := Item;
-      Item.PrevInColumn := Column.Last;
-      Item.NextInColumn := nil;
-      Column.Last := TMultiImageUnitGI(PAnsiChar(Item) + 0);
-      if Column.First = nil then Column.First := TMultiImageUnitGI(PAnsiChar(Item) + 0);
-    end;
-  end;
+  if (Item.Column <> nil) and (Self.LocalPosition.X = Position.X) and (Self.LocalPosition.Y = Position.Y) then Exit;
+  Item.Position := Position;
+  Column := GetOrCreateColumn(GetOrCreateRow(Position.Y div CellSize), Position.X div CellSize);
+  if Item.Column = Column then Exit;
+  UnlinkUnitFromColumn(Item);
+  Item.Column := Column;
+  if Column.Last <> nil then Column.Last.NextInColumn := Item;
+  Item.PrevInColumn := Column.Last;
+  Item.NextInColumn := nil;
+  Column.Last := Item;
+  if Column.First = nil then Column.First := Item;
 end;
 { @end $49B028 }
 
@@ -413,47 +409,45 @@ var
 begin
   if not MessageLoop.UpdateRectsEnabled then Exit;
   if not Active then Exit;
-  if IntersectRects(Bounds, HitTestBounds, GameScreenRect) then
+  if not IntersectRects(Bounds, HitTestBounds, GameScreenRect) then Exit;
+  Dec(Bounds.Left, AbsolutePosition.X);
+  Dec(Bounds.Top, AbsolutePosition.Y);
+  Dec(Bounds.Right, AbsolutePosition.X);
+  Dec(Bounds.Bottom, AbsolutePosition.Y);
+  MinColumn := Bounds.Left div CellSize - 1;
+  MaxColumn := (Bounds.Right - 1) div CellSize + 1;
+  MinRow := Bounds.Top div CellSize - 1;
+  MaxRow := (Bounds.Bottom - 1) div CellSize + 1;
+  Row := FirstRow;
+  while Row <> nil do
   begin
-    Dec(Bounds.Left, AbsolutePosition.X);
-    Dec(Bounds.Top, AbsolutePosition.Y);
-    Dec(Bounds.Right, AbsolutePosition.X);
-    Dec(Bounds.Bottom, AbsolutePosition.Y);
-    MinColumn := Bounds.Left div TMultiImageGI(PAnsiChar(Self) + 0).CellSize - 1;
-    MaxColumn := (Bounds.Right - 1) div CellSize + 1;
-    MinRow := Bounds.Top div TMultiImageGI(PAnsiChar(Self) + 0).CellSize - 1;
-    MaxRow := (Bounds.Bottom - 1) div CellSize + 1;
-    Row := FirstRow;
-    while Row <> nil do
+    if (Row.Index >= MinRow) and (Row.Index <= MaxRow) then
     begin
-      if (Row.Index >= MinRow) and (Row.Index <= MaxRow) then
+      Column := Row.First;
+      while Column <> nil do
       begin
-        Column := Row.First;
-        while Column <> nil do
+        if (Column.Index >= MinColumn) and (Column.Index <= MaxColumn) then
         begin
-          if (Column.Index >= MinColumn) and (Column.Index <= MaxColumn) then
+          Item := Column.First;
+          while Item <> nil do
           begin
-            Item := Column.First;
-            while Item <> nil do
-            begin
-              Position.X := AbsolutePosition.X + Item.Position.X;
-              Position.Y := AbsolutePosition.Y + Item.Position.Y;
-              Image := TMultiImageImageGI(TList(PAnsiChar(Images) + 0)[Item.ImageIndex]);
-              Bounds.Left := Position.X + 0 + Image.Bounds.Left;
-              Bounds.Top := Position.Y + 0 + Image.Bounds.Top;
-              Bounds.Right := Position.X + 0 + Image.Bounds.Right;
-              Bounds.Bottom := Position.Y + 0 + Image.Bounds.Bottom;
-              TMessageLoopGI(PAnsiChar(MessageLoop) + 0).QueueUpdateRect(Bounds);
-              Item := Item.NextInColumn;
-            end;
-          end
-          else if Column.Index > MaxColumn then Break;
-          Column := Column.Next;
-        end;
-      end
-      else if Row.Index > MaxRow then Break;
-      Row := Row.Next;
-    end;
+            Position.X := AbsolutePosition.X + Item.Position.X;
+            Position.Y := AbsolutePosition.Y + Item.Position.Y;
+            Image := TMultiImageImageGI(Images[Item.ImageIndex]);
+            Bounds.Left := Position.X + Image.Bounds.Left;
+            Bounds.Top := Position.Y + Image.Bounds.Top;
+            Bounds.Right := Position.X + Image.Bounds.Right;
+            Bounds.Bottom := Position.Y + Image.Bounds.Bottom;
+            MessageLoop.QueueUpdateRect(Bounds);
+            Item := Item.NextInColumn;
+          end;
+        end
+        else if Column.Index > MaxColumn then Break;
+        Column := Column.Next;
+      end;
+    end
+    else if Row.Index > MaxRow then Break;
+    Row := Row.Next;
   end;
 end;
 { @end $49B270 }

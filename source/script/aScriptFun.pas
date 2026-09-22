@@ -868,22 +868,20 @@ begin
     Turn := av[2].GetInt;
     Entry := TJournalRecord.Create;
     Entry.Text := av[1].GetString;
-    { The value-expression receiver preserves native receiver-before-value loads;
-      no addition is emitted. See the DCC32 ABI observations. }
-    TJournalRecord(Integer(Entry) + 0).DateTurn := Turn;
+    Entry.DateTurn := Turn;
     if (GetPlayer.JournalRecords.Count <= 0) or
       (TJournalRecord(GetPlayer.JournalRecords[GetPlayer.JournalRecords.Count - 1]).DateTurn <= Turn) then
-      GetPlayer.JournalRecords.Add(Entry)
-    else
     begin
-      for I := GetPlayer.JournalRecords.Count - 2 downto 0 do
-        if TJournalRecord(GetPlayer.JournalRecords[I]).DateTurn <= Turn then
-        begin
-          GetPlayer.JournalRecords.Insert(I + 1, Entry);
-          Exit;
-        end;
-      GetPlayer.JournalRecords.Insert(0, Entry);
+      GetPlayer.JournalRecords.Add(Entry);
+      Exit;
     end;
+    for I := GetPlayer.JournalRecords.Count - 2 downto 0 do
+      if TJournalRecord(GetPlayer.JournalRecords[I]).DateTurn <= Turn then
+      begin
+        GetPlayer.JournalRecords.Insert(I + 1, Entry);
+        Exit;
+      end;
+    GetPlayer.JournalRecords.Insert(0, Entry);
   end;
 end;
 { @end $6063E8 }
@@ -11945,7 +11943,6 @@ var
   Location: TObject;
   Series: Integer;
 begin
-  // The + 0 expressions retain native DCC32 load/store ordering; no arithmetic is emitted.
   Location := nil;
   if High(av) >= 1 then Location := TObject(av[1].GetDword);
   av[0].SetInt(0);
@@ -11961,26 +11958,24 @@ begin
     begin
       Nodes := TProtoplasm(Entry.Item);
       // Native does not advance Index when the series differs.
-      if (Series < 0) or (Ord(Nodes.DominatorSeries) = Series) then
+      if not ((Series < 0) or (Ord(Nodes.DominatorSeries) = Series)) then Continue;
+      av[0].SetInt(av[0].GetInt + Nodes.Weight);
+      if Remaining <= 0 then begin Inc(Index); Continue; end;
+      if Remaining < Nodes.StackCount then
       begin
-        av[0].SetInt(av[0].GetInt + Nodes.Weight);
-        if Remaining <= 0 then Inc(Index)
-        else if Remaining + 0 < Nodes.StackCount then
-        begin
-          NewCount := Nodes.StackCount - Remaining;
-          Nodes.Cost := Round(Nodes.Cost / Nodes.StackCount * NewCount);
-          Nodes.StackCount := NewCount + 0;
-          Nodes.Weight := NewCount + 0;
-          Remaining := 0;
-          Inc(Index);
-        end
-        else
-        begin
-          Dec(Remaining, Nodes.Weight);
-          GetPlayer.StorageEntries.Delete(Index);
-          Entry.Item.Free;
-          Dispose(Entry);
-        end;
+        NewCount := Nodes.StackCount - Remaining;
+        Nodes.Cost := Round(Nodes.Cost / Nodes.StackCount * NewCount);
+        Nodes.StackCount := NewCount;
+        Nodes.Weight := NewCount;
+        Remaining := 0;
+        Inc(Index);
+      end
+      else
+      begin
+        Dec(Remaining, Nodes.Weight);
+        GetPlayer.StorageEntries.Delete(Index);
+        Entry.Item.Free;
+        Dispose(Entry);
       end;
     end
     else Inc(Index);
@@ -15002,57 +14997,56 @@ begin
   if High(av) < 1 then raise Exception.Create('Error.Script RunChildForm');
   Name := av[1].GetString;
   for Id := screenNone to screenAchievements do
-    if (TMessageLoopGI(RegisteredScreens[Id]) <> nil) and
+  begin
+    if not ((TMessageLoopGI(RegisteredScreens[Id]) <> nil) and
       (TObject(RegisteredScreens[Id]) is TMessageLoopGI) and
-      ((TObject(RegisteredScreens[Id]) as TMessageLoopGI).RegisteredLoopName = Name) then
+      ((TObject(RegisteredScreens[Id]) as TMessageLoopGI).RegisteredLoopName = Name)) then Continue;
+    Child := TMessageLoopGI(RegisteredScreens[Id]);
+    Parent := GetInnermostScreenLoop;
+    ChildBackground := nil;
+    Background := Child.FindControlByPath('BGBuf');
+    if Background <> nil then
     begin
-      Child := TMessageLoopGI(RegisteredScreens[Id]);
-      Parent := GetInnermostScreenLoop;
-      ChildBackground := nil;
-      Background := Child.FindControlByPath('BGBuf');
-      if Background <> nil then
+      CaptureScreenBackground(True, 0);
+      (Background as TGraphBufGI).BindExternalGraphBuf(AuxRenderBuffer);
+    end
+    else
+    begin
+      ChildBackground := Child.FindControlByPath('BGBufChild');
+      if ChildBackground <> nil then
       begin
         CaptureScreenBackground(True, 0);
-        (Background as TGraphBufGI).BindExternalGraphBuf(AuxRenderBuffer);
-      end
-      else
-      begin
-        ChildBackground := Child.FindControlByPath('BGBufChild');
-        if ChildBackground <> nil then
-        begin
-          CaptureScreenBackground(True, 0);
-          (ChildBackground as TGraphBufGI).BindExternalGraphBuf(AuxRenderBuffer);
-          ChildBackground.SetActive(True);
-        end;
+        (ChildBackground as TGraphBufGI).BindExternalGraphBuf(AuxRenderBuffer);
+        ChildBackground.SetActive(True);
       end;
-      Parent.RootUiObject.OnModalSuspend;
-      Parent.CaptureCursorState(@State);
-      Parent.SetCursorActive(False);
-      Parent.DrawQueuedUpdateRects;
-      // The identity expression preserves native RHS-first register allocation.
-      Child.ParentLoop := TMessageLoopGI(Cardinal(Parent) * 1);
-      Parent.ChildLoop := Child;
-      if (Child = GalaxyScreen) and (High(av) >= 2) then GalaxyScreen.ViewMode := av[2].GetInt;
-      if Child.Run = 1 then av[0].SetInt(1) else av[0].SetInt(0);
-      if ChildBackground <> nil then ChildBackground.SetActive(False);
-      Child.ParentLoop := nil;
-      Parent.ChildLoop := nil;
-      if ((Background <> nil) or (ChildBackground <> nil)) and (Parent.ParentLoop <> nil) then
-      begin
-        Root := Parent.ParentLoop;
-        while Root.ParentLoop <> nil do Root := Root.ParentLoop;
-        FullFrameRedrawRequested := True;
-        Root.DrawFrame;
-        CaptureScreenBackground(True, 0);
-      end;
-      Parent.InvalidateViewport;
-      Parent.RestoreCursorState(@State);
-      Parent.UpdateCursorPosition;
-      Parent.RootUiObject.OnModalResume;
-      Parent.Present;
-      PostMouseMoveMessage;
-      Exit;
     end;
+    Parent.RootUiObject.OnModalSuspend;
+    Parent.CaptureCursorState(@State);
+    Parent.SetCursorActive(False);
+    Parent.DrawQueuedUpdateRects;
+    Child.ParentLoop := Parent;
+    Parent.ChildLoop := Child;
+    if (Child = GalaxyScreen) and (High(av) >= 2) then GalaxyScreen.ViewMode := av[2].GetInt;
+    if Child.Run = 1 then av[0].SetInt(1) else av[0].SetInt(0);
+    if ChildBackground <> nil then ChildBackground.SetActive(False);
+    Child.ParentLoop := nil;
+    Parent.ChildLoop := nil;
+    if ((Background <> nil) or (ChildBackground <> nil)) and (Parent.ParentLoop <> nil) then
+    begin
+      Root := Parent.ParentLoop;
+      while Root.ParentLoop <> nil do Root := Root.ParentLoop;
+      FullFrameRedrawRequested := True;
+      Root.DrawFrame;
+      CaptureScreenBackground(True, 0);
+    end;
+    Parent.InvalidateViewport;
+    Parent.RestoreCursorState(@State);
+    Parent.UpdateCursorPosition;
+    Parent.RootUiObject.OnModalResume;
+    Parent.Present;
+    PostMouseMoveMessage;
+    Exit;
+  end;
   raise Exception.Create('Error.Script RunChildForm - ML not found');
 end;
 { @end $63D1D4 }

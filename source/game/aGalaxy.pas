@@ -292,7 +292,7 @@ type
     procedure LoadFromBuffer(Buffer: TBufEC); // @addr 0x79EE00
     procedure SaveEditableState; // @addr 0x7A2054 @note "Replaces the shared editable-save block, including player, holes and stars. Requires a player."
     procedure ApplyEditableState; // @addr 0x7A2AEC @note "Only runs when FinalizationNameEncoded is empty; consumes and clears the shared editable-save block. Requires a player."
-    procedure GenerateGalaxyLayout(PlayerRace: Byte); // @addr 0x7B36A8
+    procedure GenerateGalaxyLayout(PlayerRace: TOwnerId); // @addr 0x7B36A8
     function FindConstellationIndexForStar(Star: TStar): Integer; // @addr 0x7B2954 @note "Uses polygon containment, not Star.Constellation; returns -1 when no polygon contains the star."
     procedure InitializeConstellationDistanceTiers; // @addr 0x7B29C0 @note "Requires a player/home planet and generated outlines. Boss sectors are forced to tier three."
     procedure HideSpecialConstellation; // @addr 0x7B4E44 @note "Requires constellation ID 20 and generated compatible outlines. Merges its visible outline into a neighbor and retains backups for RestoreHiddenForm."
@@ -6201,7 +6201,7 @@ end;
 { @end $7B330C }
 
 { @routine $7B36A8 TGalaxy_GenerateGalaxyLayout }
-procedure TGalaxy.GenerateGalaxyLayout(PlayerRace: Byte);
+procedure TGalaxy.GenerateGalaxyLayout(PlayerRace: TOwnerId);
 var I, J, UnusedIndex, K, FirstIndex, SecondIndex, N, Attempts: Integer;
   Star, OtherStar, SecondStar: TStar; InvalidLayout: Boolean;
   FuelRange, NearestDistance, Distance: Integer; Reached: array of Boolean;
@@ -6212,7 +6212,7 @@ var I, J, UnusedIndex, K, FirstIndex, SecondIndex, N, Attempts: Integer;
   MinimumArea, MaximumArea: Single; PlacementAttempts, TotalLinks, AxisLinks: Integer;
   Link: PConstellationStarLink; Coordinate: Single; GenerationAttempts, HumanPosition: Integer;
   // Native unused scalar locals remain explicit; their original purposes are unknown.
-  Reserved4A, Reserved4B, Reserved4C: Integer; RaceOrder: array[0..7] of Byte;
+  Reserved4A, Reserved4B, Reserved4C: Integer; RaceOrder: array[0..7] of 0..7;
   CoalitionPositions: array[0..4] of Byte;
   Reserved5_0, Reserved5_1, Reserved5_2, Reserved5_3, Reserved5_4, Reserved5_5: Integer;
   Reserved5_6, Reserved5_7, Reserved5_8, Reserved5_9, Reserved5_10, Reserved5_11: Integer;
@@ -6269,7 +6269,7 @@ begin
       RaceOrder[I] := RaceOrder[K];
       RaceOrder[K] := Attempts;
       Inc(N);
-    until (N > 3) and (Byte(PlayerRace + Byte(0)) = RaceOrder[HumanPosition]);
+    until (N > 3) and (Ord(PlayerRace) = RaceOrder[HumanPosition]);
     Constellation := TConstellation(Constellations[RaceOrder[0]]);
     Constellation.ResetGeneratedMapShape;
     Constellation.MapCenter.X := RandomIntRange(0, 2) + (MinimumConstellationDistance * 0.6);
@@ -6447,14 +6447,14 @@ begin
           Distance := Round(PointDistance(Star.Position, OtherStar.Position));
           if NearestDistance > Distance then NearestDistance := Distance;
         end;
-        if (NearestDistance >= 4) and ((NearestDistance <= FuelRange) or (PlayerRace <> ConstellationIndex) or
+        if (NearestDistance >= 4) and ((NearestDistance <= FuelRange) or (Ord(PlayerRace) <> ConstellationIndex) or
           (ConstellationCount >= I)) and ((NearestDistance >= MinimumStarDistance) or (Attempts >= 20)) then Break;
       end;
     end;
     InvalidLayout := False;
     SetLength(Reached, aGalaxy.Galaxy.Stars.Count + 1);
     for K := 0 to aGalaxy.Galaxy.Stars.Count - 1 do Reached[K] := False;
-    Reached[PlayerRace] := True;
+    Reached[Ord(PlayerRace)] := True;
     FuelRange := CalculateGeneratedFuelCapacity(Round(FuelTanksBaseSize * EquipmentSizeFactors[5]), 1);
     N := 0;
     for FirstIndex := 0 to aGalaxy.Galaxy.Stars.Count - 1 do begin
@@ -7870,51 +7870,44 @@ var
   Ranger: TRanger;
   Ship: TShip;
   Star: TStar;
-// The +0 expressions preserve DCC32 O- receiver/value scheduling without
-// emitted arithmetic; original source spelling is unknown. See docs/development.md.
 begin
-  if SpecialSimulationMode <> 0 then AverageRangerCapital := 100000000
-  else
+  if SpecialSimulationMode <> 0 then
   begin
-    WealthiestRanger := nil;
-    MaxRangerWealth := 0;
-    if Rangers.Count <> 0 then
+    AverageRangerCapital := 100000000;
+    Exit;
+  end;
+  WealthiestRanger := nil;
+  MaxRangerWealth := 0;
+  if Rangers.Count = 0 then Exit;
+  Total := 0;
+  Count := 0;
+  for I := 0 to Rangers.Count - 1 do
+  begin
+    Ranger := TRanger(Rangers[I]);
+    if Ranger.ExcludedFromRating then Continue;
+    Total := Total + Ranger.CalculateWealth;
+    Inc(Count);
+    if (MaxRangerWealth < Ranger.Wealth) or (WealthiestRanger = nil) then
     begin
-      Total := 0;
-      Count := 0;
-      for I := 0 to Rangers.Count - 1 do
-      begin
-        Ranger := TRanger(TList(Integer(Rangers) + 0)[I]);
-        if not Ranger.ExcludedFromRating then
-        begin
-          Total := Total + Ranger.CalculateWealth;
-          Inc(Count);
-          if (MaxRangerWealth + 0 < Ranger.Wealth) or (WealthiestRanger = nil) then
-          begin
-            MaxRangerWealth := Ranger.Wealth;
-            TGalaxy(Integer(Self) + 0).WealthiestRanger := Ranger;
-          end;
-        end;
-      end;
-      if CoalitionDefeatedTurn <> 0 then
-        for I := 0 to Stars.Count - 1 do
-        begin
-          Star := TStar(TList(Integer(Stars) + 0)[I]);
-          for J := 0 to Star.Ships.Count - 1 do
-          begin
-            Ship := Star.Ships[J];
-            if (Ship is TPirate) and ((Ship as TPirate).PirateType = 0) and (Ship.OwnerId = oiPirate) then
-            begin
-              Total := Total + Ship.CalculateWealth;
-              Inc(Count);
-            end;
-          end;
-        end;
-      Total := Round(Total / Count); // Native has no guard when all roster entries are excluded.
-      if Total > MaxInt then AverageRangerCapital := MaxInt
-      else TGalaxy(Integer(Self) + 0).AverageRangerCapital := Total;
+      MaxRangerWealth := Ranger.Wealth;
+      WealthiestRanger := Ranger;
     end;
   end;
+  if CoalitionDefeatedTurn <> 0 then
+    for I := 0 to Stars.Count - 1 do
+    begin
+      Star := TStar(Stars[I]);
+      for J := 0 to Star.Ships.Count - 1 do
+      begin
+        Ship := Star.Ships[J];
+        if not ((Ship is TPirate) and ((Ship as TPirate).PirateType = 0) and (Ship.OwnerId = oiPirate)) then Continue;
+        Total := Total + Ship.CalculateWealth;
+        Inc(Count);
+      end;
+    end;
+  Total := Round(Total / Count); // Native has no guard when all roster entries are excluded.
+  if Total > MaxInt then AverageRangerCapital := MaxInt
+  else AverageRangerCapital := Total;
 end;
 { @end $7BA5AC }
 
@@ -8946,41 +8939,39 @@ var I, J: Integer; Hostile, Assigned: Boolean; Constellation: TConstellation; St
 begin
   for I := 0 to Galaxy.Constellations.Count - 1 do begin
     Constellation := TConstellation(Galaxy.Constellations[I]);
-    if (Constellation.Id <> 20) and (Constellation.ShipTypeCounts[Ord(StationType)] <= 0) and
-      (Constellation.CountShipsByTypeMask(StationMask) < Constellation.Stars.Count) and (Constellation.ShipTypeCounts[stKling] <= 0) then begin
-      Hostile := False;
-      for J := 0 to Constellation.Stars.Count - 1 do begin
-        Star := TList(Integer(Constellation.Stars) + 0)[J];
-        if (Star.ControlFaction = sfDominators) or (Star.Status.CustomFaction <> '') then Hostile := True;
+    if not ((Constellation.Id <> 20) and (Constellation.ShipTypeCounts[Ord(StationType)] <= 0) and
+      (Constellation.CountShipsByTypeMask(StationMask) < Constellation.Stars.Count) and (Constellation.ShipTypeCounts[stKling] <= 0)) then Continue;
+    Hostile := False;
+    for J := 0 to Constellation.Stars.Count - 1 do begin
+      Star := Constellation.Stars[J];
+      if (Star.ControlFaction = sfDominators) or (Star.Status.CustomFaction <> '') then Hostile := True;
+    end;
+    if not Hostile then begin
+      Star := Constellation.Stars[NextRandomIntRange(0, Constellation.Stars.Count - 1, RandomState)];
+      if not ((Star.Battle = 0) and (StationDefaultStandings[Ord(StationType)] in FactionStandingMasks[Star.ControlFaction]) and
+        (GetPlayer.CurrentStar <> Star) and (Star.DaysSincePlayerVisit >= 70) and (Star.CountShipsByTypeMask(StationMask) <= 1) and
+        ((StationType <> rstPirateBase) or (Star.CountShipsByTypeMask(MilitaryBaseMask) <= 0)) and
+        ((StationType <> rstMilitaryBase) or (Star.CountShipsByTypeMask(PirateBaseMask) <= 0))) then Continue;
+      if StationType = rstMilitaryBase then begin
+        Assigned := False;
+        for J := 0 to Constellation.Stars.Count - 1 do
+          if HasMilitaryBaseAssignedToStar(TStar(Constellation.Stars[J])) then begin Assigned := True; Break; end;
+        if Assigned then Continue;
       end;
-      if not Hostile then begin
-        Star := Constellation.Stars[NextRandomIntRange(0, Constellation.Stars.Count - 1, RandomState)];
-        if (Star.Battle = 0) and (StationDefaultStandings[Ord(StationType)] in FactionStandingMasks[Star.ControlFaction]) and
-          (GetPlayer.CurrentStar <> Star) and (Star.DaysSincePlayerVisit >= 70) and (Star.CountShipsByTypeMask(StationMask) <= 1) and
-          ((StationType <> rstPirateBase) or (Star.CountShipsByTypeMask(MilitaryBaseMask) <= 0)) and
-          ((StationType <> rstMilitaryBase) or (Star.CountShipsByTypeMask(PirateBaseMask) <= 0)) then begin
-          if StationType = rstMilitaryBase then begin
-            Assigned := False;
-            for J := 0 to Constellation.Stars.Count - 1 do
-              if HasMilitaryBaseAssignedToStar(TStar(TList(Integer(Constellation.Stars) + 0)[J])) then begin Assigned := True; Break; end;
-            if Assigned then Continue;
-          end;
-          if StationType = rstDominion then begin
-            Assigned := False;
-            for J := 0 to Constellation.Stars.Count - 1 do
-              if TStar(TList(Integer(Constellation.Stars) + 0)[J]).Dominion <> nil then begin Assigned := True; Break; end;
-            if Assigned then Continue;
-          end;
-          Station := TRuins.Create;
-          Station.Init(StationType, Star, '');
-          if CoalitionDefeatedTurn = 0 then
-            Galaxy.AddPlanetNewsWithPlayerBubble(41,
-              FormatText3(PickLocalizedTextVariant('GalaxyNews.CreateNewObject.' + ShipTypeNames[Ord(StationType)].Name,
-                GenerationSeed * (Galaxy.CurrentTurn div 10)), '<color=255,240,100>',
-                '<Name>', Station.GetName, '<Star>', Star.Name, '<Sector>', Star.Constellation.GetName));
-          Exit;
-        end;
+      if StationType = rstDominion then begin
+        Assigned := False;
+        for J := 0 to Constellation.Stars.Count - 1 do
+          if TStar(Constellation.Stars[J]).Dominion <> nil then begin Assigned := True; Break; end;
+        if Assigned then Continue;
       end;
+      Station := TRuins.Create;
+      Station.Init(StationType, Star, '');
+      if CoalitionDefeatedTurn = 0 then
+        Galaxy.AddPlanetNewsWithPlayerBubble(41,
+          FormatText3(PickLocalizedTextVariant('GalaxyNews.CreateNewObject.' + ShipTypeNames[Ord(StationType)].Name,
+            GenerationSeed * (Galaxy.CurrentTurn div 10)), '<color=255,240,100>',
+            '<Name>', Station.GetName, '<Star>', Star.Name, '<Sector>', Star.Constellation.GetName));
+      Exit;
     end;
   end;
 end;

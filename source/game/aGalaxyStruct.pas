@@ -190,7 +190,8 @@ type
   TRangerCareerSet = set of TRangerCareer; // @size 0x1
 
   TGalaxyDifficultyIndex = 0..7;
-  TGalaxyDifficultyLevels = array[0..7] of Byte;
+  TDifficultyLevel = 0..9; // @size $01
+  TGalaxyDifficultyLevels = array[0..7] of TDifficultyLevel;
 
   TPlanetEconomy = (peAgricultural = 0, peMixed = 1, peIndustrial = 2); // @size 0x1
   TPlanetEconomies = set of TPlanetEconomy; // @size $01

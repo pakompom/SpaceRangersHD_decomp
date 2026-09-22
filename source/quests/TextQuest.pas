@@ -843,186 +843,179 @@ var
   MaxPriority, TotalPriority, RandomPriority: Double;
   Event: TEvent;
 begin
-  if PlayerInterface <> nil then
+  if PlayerInterface = nil then Exit;
+  Location := GetLocation(FindLocationIndex(LocationId));
+  if TextShown and not Location.IsEmpty then
   begin
-    Location := GetLocation(FindLocationIndex(LocationId));
-    if TextShown and not Location.IsEmpty then
+    TextShown := False;
+    PlayerInterface.AddLocationContinueAction(LocationId);
+    Exit;
+  end;
+  Location.ApplyParameterChanges(Parameters);
+  if Location.Days > 0 then PlayerInterface.AdvanceDays(Location.Days);
+  Inc(Location.VisitCount);
+  GroupCaption := '';
+  ShowParameters;
+  Critical := CheckCriticalParameters;
+  Event := Location.SelectEvent(Parameters);
+  if Event <> nil then
+    if not TextShown or not Location.IsEmpty then
     begin
-      TextShown := False;
-      // The folded +0 makes DCC32 evaluate the receiver before simple arguments.
-      TTextQuestInterface(Pointer(PAnsiChar(PlayerInterface) + 0)).AddLocationContinueAction(LocationId);
+      ShowEvent(Event);
+      if TrimWideString(Event.Text.Text) <> '' then LastEventSource := 'Location ' + IntToWideString(Location.Id);
+    end;
+  if Critical then
+  begin
+    if TextShown then PlayerInterface.AddContinueAction
+    else ShowOutcome;
+    Exit;
+  end;
+  if Location.IsSuccess then begin PlayerInterface.AddSuccessAction; Exit; end;
+  if Location.IsDeath then begin PlayerInterface.AddDeathAction; Exit; end;
+  if Location.IsFailure then begin PlayerInterface.AddFailureAction; Exit; end;
+  Pending := TList.Create;
+  Group := TList.Create;
+  Chosen := TList.Create;
+  for i := 1 to GetPathCount do
+  begin
+    Path := GetPath(i);
+    if (Location.Id <> Path.FromLocationId) or
+      ((Path.TraversalLimit > 0) and (Path.TraversalCount >= Path.TraversalLimit)) then Continue;
+    Eligible := False;
+    for j := 1 to GetLocationCount do
+    begin
+      Target := GetLocation(j);
+      if Target.Id = Path.ToLocationId then
+      begin
+        Eligible := (Target.VisitLimit = 0) or (Target.VisitLimit > Target.VisitCount);
+        Break;
+      end;
+    end;
+    if not Eligible then Continue;
+    Path.CheckAvailable(Parameters);
+    if not Path.Available then
+    begin
+      if not Path.AlwaysShow then Continue;
+      if TrimWideString(Path.Caption.Text) = '' then Continue;
+    end;
+    Pending.Add(Path);
+  end;
+  while Pending.Count > 0 do
+  begin
+    Path := TPath(Pending[0]);
+    GroupCaption := ExpandText(TrimWideString(Path.Caption.Text), False);
+    Group.Add(Path);
+    Pending.Delete(0);
+    for i := Pending.Count - 1 downto 0 do
+    begin
+      Path := TPath(Pending[i]);
+      if GroupCaption = ExpandText(TrimWideString(Path.Caption.Text), False) then
+      begin
+        Pending.Delete(i);
+        if Path.Available or (Group.Count <= 0) then
+        begin
+          Group.Add(Path);
+          if Group.Count > 1 then
+          begin
+            Path := TPath(Group[0]);
+            if not Path.Available then Group.Delete(0);
+          end;
+        end;
+      end;
+    end;
+    MaxPriority := 0;
+    for i := 0 to Group.Count - 1 do
+    begin
+      Path := TPath(Group[i]);
+      if MaxPriority < Path.Priority then MaxPriority := Path.Priority;
+    end;
+    if Group.Count = 1 then
+    begin
+      if System.Random <= MaxPriority then Chosen.Add(Group[0]);
     end
     else
     begin
-      Location.ApplyParameterChanges(Parameters);
-      if Location.Days > 0 then PlayerInterface.AdvanceDays(Location.Days);
-      Inc(Location.VisitCount);
-      GroupCaption := '';
-      ShowParameters;
-      Critical := CheckCriticalParameters;
-      Event := Location.SelectEvent(Parameters);
-      if Event <> nil then
-        if not TextShown or not Location.IsEmpty then
-        begin
-          ShowEvent(Event);
-          if TrimWideString(Event.Text.Text) <> '' then LastEventSource := 'Location ' + IntToWideString(Location.Id);
-        end;
-      if Critical then
+      for i := Group.Count - 1 downto 0 do
       begin
-        if TextShown then PlayerInterface.AddContinueAction
-        else ShowOutcome;
-      end
-      else if Location.IsSuccess then PlayerInterface.AddSuccessAction
-      else if Location.IsDeath then PlayerInterface.AddDeathAction
-      else if Location.IsFailure then PlayerInterface.AddFailureAction
-      else
-      begin
-        Pending := TList.Create;
-        Group := TList.Create;
-        Chosen := TList.Create;
-        for i := 1 to GetPathCount do
-        begin
-          Path := GetPath(i);
-          if (Location.Id <> Path.FromLocationId) or
-            ((Path.TraversalLimit > 0) and (Path.TraversalCount >= Path.TraversalLimit)) then Continue;
-          Eligible := False;
-          for j := 1 to GetLocationCount do
-          begin
-            Target := GetLocation(j);
-            if Target.Id = Path.ToLocationId then
-            begin
-              Eligible := (Target.VisitLimit = 0) or (Target.VisitLimit > Target.VisitCount);
-              Break;
-            end;
-          end;
-          if not Eligible then Continue;
-          Path.CheckAvailable(Parameters);
-          if not Path.Available then
-          begin
-            if not Path.AlwaysShow then Continue;
-            if TrimWideString(Path.Caption.Text) = '' then Continue;
-          end;
-          Pending.Add(Path);
-        end;
-        while Pending.Count > 0 do
-        begin
-          Path := TPath(Pending[0]);
-          GroupCaption := ExpandText(TrimWideString(Path.Caption.Text), False);
-          Group.Add(Path);
-          Pending.Delete(0);
-          for i := Pending.Count - 1 downto 0 do
-          begin
-            Path := TPath(Pending[i]);
-            if GroupCaption = ExpandText(TrimWideString(Path.Caption.Text), False) then
-            begin
-              Pending.Delete(i);
-              if Path.Available or (Group.Count <= 0) then
-              begin
-                Group.Add(Path);
-                if Group.Count > 1 then
-                begin
-                  Path := TPath(Group[0]);
-                  if not Path.Available then Group.Delete(0);
-                end;
-              end;
-            end;
-          end;
-          MaxPriority := 0;
-          for i := 0 to Group.Count - 1 do
-          begin
-            Path := TPath(Group[i]);
-            if MaxPriority < Path.Priority then MaxPriority := Path.Priority;
-          end;
-          if Group.Count = 1 then
-          begin
-            if System.Random <= MaxPriority then Chosen.Add(Group[0]);
-          end
-          else
-          begin
-            for i := Group.Count - 1 downto 0 do
-            begin
-              Path := TPath(Group[i]);
-              if Path.Priority <= MaxPriority * 0.01 then Group.Delete(i);
-            end;
-            TotalPriority := 0;
-            for i := 0 to Group.Count - 1 do
-            begin
-              Path := TPath(Group[i]);
-              TotalPriority := TotalPriority + Path.Priority;
-            end;
-            RandomPriority := System.Random * TotalPriority;
-            Selected := Group.Count - 1;
-            for i := 0 to Group.Count - 1 do
-            begin
-              Path := TPath(Group[i]);
-              if Path.Priority > RandomPriority then
-              begin
-                Selected := i;
-                Break;
-              end;
-              RandomPriority := RandomPriority - Path.Priority;
-            end;
-            Chosen.Add(Group[Selected]);
-          end;
-          Group.Clear;
-        end;
-        if Chosen.Count = 0 then
-        begin
-          Chosen.Free;
-          Group.Free;
-          Pending.Free;
-          Dialogs.ShowMessage(AnsiString('No available answers from location ' + IntToWideString(Location.Id)));
-          Exit;
-        end;
-        if Chosen.Count = 1 then
-        begin
-          Path := TPath(Chosen[0]);
-          if TrimWideString(Path.Caption.Text) = '' then
-          begin
-            Chosen.Free;
-            Group.Free;
-            Pending.Free;
-            FollowPath(Path.Id);
-            Exit;
-          end;
-        end;
-        for i := 1 to Chosen.Count * 2 do
-        begin
-          Selected := System.Random(Chosen.Count);
-          Path := TPath(Chosen[Selected]);
-          j := System.Random(Chosen.Count);
-          Chosen[Selected] := Chosen[j];
-          Chosen[j] := Path;
-        end;
-        for i := 2 to Chosen.Count do
-          for j := 0 to Chosen.Count - i do
-          begin
-            Path := TPath(Chosen[j]);
-            Other := TPath(Chosen[j + 1]);
-            if Other.DisplayOrder < Path.DisplayOrder then
-            begin
-              Chosen[j] := Other;
-              Chosen[j + 1] := Path;
-            end;
-          end;
-        for i := 0 to Chosen.Count - 1 do
-        begin
-          Path := TPath(Chosen[i]);
-          Caption := TrimWideString(Path.Caption.Text);
-          if Caption <> '' then
-          begin
-            Caption := ExpandText(Caption, True);
-            if Path.Available then TTextQuestInterface(Pointer(PAnsiChar(PlayerInterface) + 0)).AddPathAction(Caption, Path.Id)
-            else TTextQuestInterface(Pointer(PAnsiChar(PlayerInterface) + 0)).AddDisabledPath(Caption);
-          end;
-        end;
-        Chosen.Free;
-        Group.Free;
-        Pending.Free;
-        TextShown := False;
+        Path := TPath(Group[i]);
+        if Path.Priority <= MaxPriority * 0.01 then Group.Delete(i);
       end;
+      TotalPriority := 0;
+      for i := 0 to Group.Count - 1 do
+      begin
+        Path := TPath(Group[i]);
+        TotalPriority := TotalPriority + Path.Priority;
+      end;
+      RandomPriority := System.Random * TotalPriority;
+      Selected := Group.Count - 1;
+      for i := 0 to Group.Count - 1 do
+      begin
+        Path := TPath(Group[i]);
+        if Path.Priority > RandomPriority then
+        begin
+          Selected := i;
+          Break;
+        end;
+        RandomPriority := RandomPriority - Path.Priority;
+      end;
+      Chosen.Add(Group[Selected]);
+    end;
+    Group.Clear;
+  end;
+  if Chosen.Count = 0 then
+  begin
+    Chosen.Free;
+    Group.Free;
+    Pending.Free;
+    Dialogs.ShowMessage(AnsiString('No available answers from location ' + IntToWideString(Location.Id)));
+    Exit;
+  end;
+  if Chosen.Count = 1 then
+  begin
+    Path := TPath(Chosen[0]);
+    if TrimWideString(Path.Caption.Text) = '' then
+    begin
+      Chosen.Free;
+      Group.Free;
+      Pending.Free;
+      FollowPath(Path.Id);
+      Exit;
     end;
   end;
+  for i := 1 to Chosen.Count * 2 do
+  begin
+    Selected := System.Random(Chosen.Count);
+    Path := TPath(Chosen[Selected]);
+    j := System.Random(Chosen.Count);
+    Chosen[Selected] := Chosen[j];
+    Chosen[j] := Path;
+  end;
+  for i := 2 to Chosen.Count do
+    for j := 0 to Chosen.Count - i do
+    begin
+      Path := TPath(Chosen[j]);
+      Other := TPath(Chosen[j + 1]);
+      if Other.DisplayOrder < Path.DisplayOrder then
+      begin
+        Chosen[j] := Other;
+        Chosen[j + 1] := Path;
+      end;
+    end;
+  for i := 0 to Chosen.Count - 1 do
+  begin
+    Path := TPath(Chosen[i]);
+    Caption := TrimWideString(Path.Caption.Text);
+    if Caption <> '' then
+    begin
+      Caption := ExpandText(Caption, True);
+      if Path.Available then PlayerInterface.AddPathAction(Caption, Path.Id)
+      else PlayerInterface.AddDisabledPath(Caption);
+    end;
+  end;
+  Chosen.Free;
+  Group.Free;
+  Pending.Free;
+  TextShown := False;
 end;
 { @end $4EB800 }
 

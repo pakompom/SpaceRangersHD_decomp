@@ -143,7 +143,7 @@ begin
     if WarriorType = wtFlagship then begin Inc(Rank); if Rank < 4 then Rank := 4; end;
     AddRankPoints(NextRandomIntRange(0, CoalitionRankPointThresholds[Rank] div 2, RandomState));
     if not Galaxy.IsZeroStartingExperienceEnabled then begin
-      GainExperience(Round(RemapClamped(ShortInt(Rank + Byte(0)), 0, 1000, TotalSkillTrainingCost div 6, TotalSkillTrainingCost div 2)), 0);
+      GainExperience(Round(RemapClamped(Ord(Rank), 0, 1000, TotalSkillTrainingCost div 6, TotalSkillTrainingCost div 2)), 0);
       GainExperience(Round(RemapClamped(Galaxy.TechLevel, 3, 8, 0, NextRandomIntRange(0, TotalSkillTrainingCost div 2, RandomState))), 0);
     end;
   end;
@@ -1440,12 +1440,11 @@ begin
           if Planet.RaceId = PilotRace then Inc(RacePlanetCount);
           for K := 0 to Planet.Warriors.Count - 1 do begin
             Warrior := Planet.Warriors[K];
-            if Warrior <> Self then begin
-              GarrisonStrength := GarrisonStrength + RemapClamped(Warrior.Strength, 0.1 * Strength, 10 * Strength, 0.3, 3);
-              if Warrior.WarriorType = wtFlagship then
-                if TOwnerId(Byte(Warrior.PilotRace) + Byte(0)) = PilotRace then FlagshipFactor := FlagshipFactor * 0.05
-                else FlagshipFactor := FlagshipFactor * 0.2;
-            end;
+            if Warrior = Self then Continue;
+            GarrisonStrength := GarrisonStrength + RemapClamped(Warrior.Strength, 0.1 * Strength, 10 * Strength, 0.3, 3);
+            if Warrior.WarriorType = wtFlagship then
+              if Warrior.PilotRace = PilotRace then FlagshipFactor := FlagshipFactor * 0.05
+              else FlagshipFactor := FlagshipFactor * 0.2;
           end;
         end;
       end;
@@ -1487,12 +1486,12 @@ begin
         if (Score > BestScore) or (BestPlanet = nil) then begin BestScore := Score; BestPlanet := Planet; end;
       end;
     end;
-    if (BestPlanet <> nil) and (TPlanet(Integer(BestPlanet) + 0) <> HomePlanet) then begin
+    if (BestPlanet <> nil) and (BestPlanet <> HomePlanet) then begin
       I := HomePlanet.Warriors.IndexOf(Self);
       if I >= 0 then HomePlanet.Warriors.Delete(I);
       I := BestPlanet.Warriors.IndexOf(Self);
       if I < 0 then BestPlanet.Warriors.Add(Self);
-      HomePlanet := TPlanet(Integer(BestPlanet) + 0);
+      HomePlanet := BestPlanet;
     end;
   end;
 end;

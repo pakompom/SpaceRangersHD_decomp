@@ -3437,33 +3437,30 @@ var
 begin
   for I := Quests.Count - 1 downto 0 do
   begin
-    { The neutral index expression preserves DCC32's native argument evaluation order. }
-    Quest := PQuest(Quests[I + 0]);
+    Quest := PQuest(Quests[I]);
     if Galaxy.CurrentTurn >= Quest.DeadlineTurn then
     begin
       if (Quest.QuestType in [qtSendLetter, qtKillShip, qtPlanetQuest]) and not Quest.Successful then
       begin
-        if (Quest.QuestType <> qtPlanetQuest) or (CurrentScreenId <> screenPlanetQuest) or
-          not (Quest.ObjectiveTarget is TPlanet) or (GetPlayer.CurrentPlanet <> (Quest.ObjectiveTarget as TPlanet)) then
+        if (Quest.QuestType = qtPlanetQuest) and (CurrentScreenId = screenPlanetQuest) and
+          (Quest.ObjectiveTarget is TPlanet) and (GetPlayer.CurrentPlanet = (Quest.ObjectiveTarget as TPlanet)) then Continue;
+        PublishQuestStatus(Quest, -1);
+        if (Quest.Planet.OwnerId = oiPirate) and (MainPiratePlanet <> nil) and (MainPiratePlanet.GetRelationLevelToShip(Self) > rlBad) then
         begin
-          PublishQuestStatus(Quest, -1);
-          if (Quest.Planet.OwnerId = oiPirate) and (MainPiratePlanet <> nil) and (MainPiratePlanet.GetRelationLevelToShip(Self) > rlBad) then
-          begin
-            if MainPiratePlanet.GetRelationLevelToShip(Self) = rlNormal then MainPiratePlanet.SetRelationLevelToRanger(Self, rlBad);
-            if MainPiratePlanet.GetRelationLevelToShip(Self) = rlGood then MainPiratePlanet.SetRelationLevelToRanger(Self, rlNormal);
-            if MainPiratePlanet.GetRelationLevelToShip(Self) >= rlExcellent then MainPiratePlanet.SetRelationLevelToRanger(Self, rlGood);
-          end;
-          if Quest.Planet.GetRelationLevelToShip(Self) > rlBad then Quest.Planet.SetRelationLevelToRanger(Self, rlBad);
-          Text := PickLocalizedTextVariant('GalaxyNews.Quest.Failure.Time', Seed * Cardinal(Galaxy.CurrentTurn div 10));
-          ReplaceTextToken(Text, '<Quest>', Quest.Description, '<color=255,240,100>');
-          ReplaceTextToken(Text, '<Planet>', Quest.Planet.Name, '<color=255,240,100>');
-          ReplaceTextToken(Text, '<Star>', Quest.Planet.CurrentStar.Name, '<color=255,240,100>');
-          ReplaceTextToken(Text, '<Relation>', Quest.Planet.GetRelationLevelTextToShip(Self), '<color=255,240,100>');
-          if Quest.QuestType = qtSendLetter then TryAddAchievementProgress('POSTMAN', 1);
-          AddOrUpdatePlayerBubble(0, Galaxy.CurrentTurn, Text, '');
-          CheckQuestFailureAward(Quest, [qtSendLetter, qtKillShip, qtPlanetQuest]);
-          ArchiveQuest(I);
+          if MainPiratePlanet.GetRelationLevelToShip(Self) = rlNormal then MainPiratePlanet.SetRelationLevelToRanger(Self, rlBad);
+          if MainPiratePlanet.GetRelationLevelToShip(Self) = rlGood then MainPiratePlanet.SetRelationLevelToRanger(Self, rlNormal);
+          if MainPiratePlanet.GetRelationLevelToShip(Self) >= rlExcellent then MainPiratePlanet.SetRelationLevelToRanger(Self, rlGood);
         end;
+        if Quest.Planet.GetRelationLevelToShip(Self) > rlBad then Quest.Planet.SetRelationLevelToRanger(Self, rlBad);
+        Text := PickLocalizedTextVariant('GalaxyNews.Quest.Failure.Time', Seed * Cardinal(Galaxy.CurrentTurn div 10));
+        ReplaceTextToken(Text, '<Quest>', Quest.Description, '<color=255,240,100>');
+        ReplaceTextToken(Text, '<Planet>', Quest.Planet.Name, '<color=255,240,100>');
+        ReplaceTextToken(Text, '<Star>', Quest.Planet.CurrentStar.Name, '<color=255,240,100>');
+        ReplaceTextToken(Text, '<Relation>', Quest.Planet.GetRelationLevelTextToShip(Self), '<color=255,240,100>');
+        if Quest.QuestType = qtSendLetter then TryAddAchievementProgress('POSTMAN', 1);
+        AddOrUpdatePlayerBubble(0, Galaxy.CurrentTurn, Text, '');
+        CheckQuestFailureAward(Quest, [qtSendLetter, qtKillShip, qtPlanetQuest]);
+        ArchiveQuest(I);
       end
       else if (Quest.QuestType in [qtDefendSystem, qtDefendShip]) and not Quest.Successful then
       begin

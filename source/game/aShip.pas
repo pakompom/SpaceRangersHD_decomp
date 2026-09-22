@@ -3388,11 +3388,9 @@ end;
 
 { @routine $75415C TShip_EstimateTravelTurnsToPlanet }
 function TShip.EstimateTravelTurnsToPlanet(Planet: TPlanet): Integer;
-var Point: TPointF;
 begin
   if (Speed = 0) or (Planet = nil) or (Planet.CurrentStar = nil) or (Planet.CurrentStar <> CurrentStar) then begin Result := -1; Exit; end;
-  Point := Planet.GetPosition;
-  Result := Round(PointDistance(PPointF(Integer(@Point) + 0)^, Position) / (Speed + 1)) + 1;
+  Result := Round(PointDistance(Planet.GetPosition, Position) / (Speed + 1)) + 1;
 end;
 { @end $75415C }
 
@@ -3648,7 +3646,7 @@ begin
         Module := TMicroModule.Create;
         MinimumPriority := Round(RemapClamped(WealthInBestRanger, 0.5, 2, 10, 0));
         Inc(MinimumPriority, Round(RemapClamped(GetPlayer.PlaceInRating, 1, Galaxy.Rangers.Count, 0, 10)));
-        Inc(MinimumPriority, Round(RemapClamped(ShortInt(GetPlayer.PirateRank + Byte(0)), 0, 7, 10, 0)));
+        Inc(MinimumPriority, Round(RemapClamped(Ord(GetPlayer.PirateRank), 0, 7, 10, 0)));
         Inc(MinimumPriority, Galaxy.ScaleIntByTechLevel(20, 0));
         Inc(MinimumPriority, SeededRandomIntRange(-10, 10, Id + Trunc(Integer(Galaxy.GenerationSeed))));
         MinimumPriority := Max(1, Min(MinimumPriority, 100));
@@ -3682,7 +3680,7 @@ begin
           Module := TMicroModule.Create;
           MinimumPriority := Round(RemapClamped(WealthInBestRanger, 0.5, 2, 10, 0));
           Inc(MinimumPriority, Round(RemapClamped(GetPlayer.PlaceInRating, 1, Galaxy.Rangers.Count, 0, 10)));
-          Inc(MinimumPriority, Round(RemapClamped(ShortInt(GetPlayer.Rank + Byte(0)), 0, 7, 10, 0)));
+          Inc(MinimumPriority, Round(RemapClamped(Ord(GetPlayer.Rank), 0, 7, 10, 0)));
           Inc(MinimumPriority, Galaxy.ScaleIntByTechLevel(20, 0));
           Inc(MinimumPriority, SeededRandomIntRange(-10, 10, Id + Trunc(Integer(Galaxy.GenerationSeed))));
           MinimumPriority := Max(1, Min(MinimumPriority, 100));
@@ -12902,10 +12900,10 @@ begin
       if Place.TargetValue = 0 then OrderNone(False)
       else if CurrentStar.Items.IndexOf(TScriptItem(Place.TargetValue).Item) < 0 then OrderNone(False)
       else if IsOnPlanet or IsDockedToShip then OrderTakeoff
-      else OrderMove(Place.GetRandomPoint((Cardinal(Integer(Seed) + 0) + CurrentStar.GenerationSeed) * Galaxy.CurrentTurn), False);
+      else OrderMove(Place.GetRandomPoint((Seed + CurrentStar.GenerationSeed) * Galaxy.CurrentTurn), False);
     end
     else if IsOnPlanet or IsDockedToShip then OrderTakeoff
-    else OrderMove(Place.GetRandomPoint((Cardinal(Integer(Seed) + 0) + CurrentStar.GenerationSeed) * Galaxy.CurrentTurn), False);
+    else OrderMove(Place.GetRandomPoint((Seed + CurrentStar.GenerationSeed) * Galaxy.CurrentTurn), False);
   end
   else if State.StateKind = sskFollowGroup then
   begin
@@ -12936,7 +12934,7 @@ begin
   if (WeaponCount > 0) and InNormalSpace then
   begin
     if (State.StateKind <> sskNormalAI) and (Self is TKling) then
-      for WeaponIndex := 1 to WeaponCount do TShip(PAnsiChar(Self) + 0).Weapons[WeaponIndex].Target := nil;
+      for WeaponIndex := 1 to WeaponCount do Weapons[WeaponIndex].Target := nil;
     if HasScriptControl and not (Self is TKling) then AssignWeaponTargetsInStar;
     if State.EnemyGroupIndices <> nil then
     begin
@@ -12945,33 +12943,29 @@ begin
       GroupCount := High(State.EnemyGroupIndices) + 1;
       for WeaponIndex := 1 to WeaponTotal do
       begin
-        Weapon := TShip(PAnsiChar(Self) + 0).Weapons[WeaponIndex];
-        if IsEquipmentUsable(Weapon) then
+        Weapon := Weapons[WeaponIndex];
+        if not IsEquipmentUsable(Weapon) then Continue;
+        BestDistance := 1E15;
+        for BindingIndex := 0 to BindingCount - 1 do
         begin
-          BestDistance := 1E15;
-          for BindingIndex := 0 to BindingCount - 1 do
+          OtherBinding := Binding.Script.Ships[BindingIndex];
+          if not ((CurrentStar = OtherBinding.Ship.CurrentStar) and OtherBinding.Ship.InNormalSpace) then Continue;
+          for GroupIndex := 0 to GroupCount - 1 do
+            if State.EnemyGroupIndices[GroupIndex] = OtherBinding.GroupIndex then Break;
+          if GroupIndex < GroupCount then
           begin
-            OtherBinding := Binding.Script.Ships[BindingIndex];
-            if (TShip(PAnsiChar(Self) + 0).CurrentStar = OtherBinding.Ship.CurrentStar) and OtherBinding.Ship.InNormalSpace then
+            Distance := PointDistanceSquared(Position, OtherBinding.Ship.Position);
+            if (Sqr(GetWeaponRange(Weapon)) >= Distance) and (Distance < BestDistance) then
             begin
-              for GroupIndex := 0 to GroupCount - 1 do
-                if State.EnemyGroupIndices[GroupIndex] = OtherBinding.GroupIndex then Break;
-              if GroupIndex < GroupCount then
-              begin
-                Distance := PointDistanceSquared(Position, OtherBinding.Ship.Position);
-                if (Sqr(GetWeaponRange(Weapon)) >= Distance) and (Distance < BestDistance) then
-                begin
-                  BestDistance := Distance;
-                  Weapon.Target := TObject(PAnsiChar(OtherBinding.Ship) + 0);
-                end;
-              end;
+              BestDistance := Distance;
+              Weapon.Target := OtherBinding.Ship;
             end;
           end;
         end;
       end;
     end;
   end
-  else for WeaponIndex := 1 to WeaponCount do TShip(PAnsiChar(Self) + 0).Weapons[WeaponIndex].Target := nil;
+  else for WeaponIndex := 1 to WeaponCount do Weapons[WeaponIndex].Target := nil;
 end;
 { @end $77A934 }
 

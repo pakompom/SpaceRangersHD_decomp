@@ -2089,8 +2089,9 @@ var I: Integer; Entry: PStorageEntry;
 begin
   Result := 0;
   for I := 0 to StorageEntries.Count - 1 do begin
-    Entry := TList(Integer(StorageEntries) + 0)[I];
-    if (Entry.LocationOwner = Location) and CanAccessStoredItem(Entry.Item) then Result := Max(Result, Entry.SlotIndex + 1);
+    Entry := StorageEntries[I];
+    if not ((Entry.LocationOwner = Location) and CanAccessStoredItem(Entry.Item)) then Continue;
+    Result := Max(Result, Entry.SlotIndex + 1);
   end;
 end;
 { @end $58D9EC }

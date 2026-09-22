@@ -125,23 +125,21 @@ type
   TFontTextCharsEC = array[0..MaxInt div SizeOf(WideChar) - 1] of WideChar;
   PFontTextCharsEC = ^TFontTextCharsEC;
 
-// The + 0 expressions below, including those in Self casts, preserve DCC32's
-// native operand evaluation order. They emit no additional instructions.
-procedure IncludeGlyphBounds(var Bounds: TRect; var X, Y: Integer; var Glyph: PAftGlyphEC); inline;
+procedure IncludeGlyphBounds(var Bounds: TRect; X, Y: Integer; Glyph: PAftGlyphEC); inline;
 begin
   if Glyph.AlphaMaskPlane.DataOffset <> 0 then
   begin
-    if (X + 0) + Glyph.AlphaMaskPlane.Left < Bounds.Left then Bounds.Left := (X + 0) + Glyph.AlphaMaskPlane.Left;
-    if (Y + 0) + Glyph.AlphaMaskPlane.Top < Bounds.Top then Bounds.Top := (Y + 0) + Glyph.AlphaMaskPlane.Top;
-    if (X + 0) + Glyph.AlphaMaskPlane.Left + Glyph.AlphaMaskPlane.Width > Bounds.Right then Bounds.Right := (X + 0) + Glyph.AlphaMaskPlane.Left + Glyph.AlphaMaskPlane.Width;
-    if (Y + 0) + Glyph.AlphaMaskPlane.Top + Glyph.AlphaMaskPlane.Height > Bounds.Bottom then Bounds.Bottom := (Y + 0) + Glyph.AlphaMaskPlane.Top + Glyph.AlphaMaskPlane.Height;
+    if X + Glyph.AlphaMaskPlane.Left < Bounds.Left then Bounds.Left := X + Glyph.AlphaMaskPlane.Left;
+    if Y + Glyph.AlphaMaskPlane.Top < Bounds.Top then Bounds.Top := Y + Glyph.AlphaMaskPlane.Top;
+    if X + Glyph.AlphaMaskPlane.Left + Glyph.AlphaMaskPlane.Width > Bounds.Right then Bounds.Right := X + Glyph.AlphaMaskPlane.Left + Glyph.AlphaMaskPlane.Width;
+    if Y + Glyph.AlphaMaskPlane.Top + Glyph.AlphaMaskPlane.Height > Bounds.Bottom then Bounds.Bottom := Y + Glyph.AlphaMaskPlane.Top + Glyph.AlphaMaskPlane.Height;
   end;
   if Glyph.OpaqueMaskPlane.DataOffset <> 0 then
   begin
-    if (X + 0) + Glyph.OpaqueMaskPlane.Left < Bounds.Left then Bounds.Left := (X + 0) + Glyph.OpaqueMaskPlane.Left;
-    if (Y + 0) + Glyph.OpaqueMaskPlane.Top < Bounds.Top then Bounds.Top := (Y + 0) + Glyph.OpaqueMaskPlane.Top;
-    if (X + 0) + Glyph.OpaqueMaskPlane.Left + Glyph.OpaqueMaskPlane.Width > Bounds.Right then Bounds.Right := (X + 0) + Glyph.OpaqueMaskPlane.Left + Glyph.OpaqueMaskPlane.Width;
-    if (Y + 0) + Glyph.OpaqueMaskPlane.Top + Glyph.OpaqueMaskPlane.Height > Bounds.Bottom then Bounds.Bottom := (Y + 0) + Glyph.OpaqueMaskPlane.Top + Glyph.OpaqueMaskPlane.Height;
+    if X + Glyph.OpaqueMaskPlane.Left < Bounds.Left then Bounds.Left := X + Glyph.OpaqueMaskPlane.Left;
+    if Y + Glyph.OpaqueMaskPlane.Top < Bounds.Top then Bounds.Top := Y + Glyph.OpaqueMaskPlane.Top;
+    if X + Glyph.OpaqueMaskPlane.Left + Glyph.OpaqueMaskPlane.Width > Bounds.Right then Bounds.Right := X + Glyph.OpaqueMaskPlane.Left + Glyph.OpaqueMaskPlane.Width;
+    if Y + Glyph.OpaqueMaskPlane.Top + Glyph.OpaqueMaskPlane.Height > Bounds.Bottom then Bounds.Bottom := Y + Glyph.OpaqueMaskPlane.Top + Glyph.OpaqueMaskPlane.Height;
   end;
 end;
 
@@ -265,7 +263,7 @@ begin
         Inc(PosX, Objects[ObjectIndex].Width)
       else if MatchFixTag(PWideChar(Text) + Index - 1, CharCount - Index + 1) > 0 then Inc(FixedWidthDepth)
       else if MatchFixEndTag(PWideChar(Text) + Index - 1, CharCount - Index + 1) > 0 then
-        TCFontEC(PAnsiChar(Self) + 0).FixedWidthDepth := Max(FixedWidthDepth - 1, 0)
+        FixedWidthDepth := Max(FixedWidthDepth - 1, 0)
       else if ParseFormatTag(PWideChar(Text) + Index - 1, CharCount - Index + 1, FieldWidth, Alignment) > 0 then
       begin
         Index := Index + TokenLength - 1;
@@ -277,7 +275,7 @@ begin
           begin
             if MatchFixTag(PWideChar(Text) + Index - 1, CharCount - Index + 1) > 0 then Inc(FixedWidthDepth)
             else if MatchFixEndTag(PWideChar(Text) + Index - 1, CharCount - Index + 1) > 0 then
-              TCFontEC(PAnsiChar(Self) + 0).FixedWidthDepth := Max(FixedWidthDepth - 1, 0)
+              FixedWidthDepth := Max(FixedWidthDepth - 1, 0)
             else if MatchFormatEndTag(PWideChar(Text) + Index - 1, CharCount - Index + 1) > 0 then
             begin
               Index := Index + TokenLength - 1;
@@ -292,7 +290,7 @@ begin
             Glyph := AddPointerOffset(Glyphs, (GlyphIndex - 1) * SizeOf(TAftGlyphEC));
             IncludeGlyphBounds(Result, PosX, Y, Glyph);
             if FixedWidthDepth > 0 then PosX := PosX + MaxGlyphAdvance
-            else PosX := (PosX + 0) + Glyph.AdvanceA + Glyph.AdvanceB + Glyph.AdvanceC;
+            else PosX := PosX + Glyph.AdvanceA + Glyph.AdvanceB + Glyph.AdvanceC;
             Dec(FieldWidth);
           end;
         end;
@@ -312,13 +310,11 @@ begin
       Continue;
     end;
     GlyphIndex := ReadWordEC(AddPointerOffset(GlyphLookup, Ord(Ch) * 2));
-    if GlyphIndex <> 0 then
-    begin
-      Glyph := AddPointerOffset(Glyphs, (GlyphIndex - 1) * SizeOf(TAftGlyphEC));
-      IncludeGlyphBounds(Result, PosX, Y, Glyph);
-      if FixedWidthDepth > 0 then PosX := PosX + MaxGlyphAdvance
-      else PosX := (PosX + 0) + Glyph.AdvanceA + Glyph.AdvanceB + Glyph.AdvanceC;
-    end;
+    if GlyphIndex = 0 then Continue;
+    Glyph := AddPointerOffset(Glyphs, (GlyphIndex - 1) * SizeOf(TAftGlyphEC));
+    IncludeGlyphBounds(Result, PosX, Y, Glyph);
+    if FixedWidthDepth > 0 then PosX := PosX + MaxGlyphAdvance
+    else PosX := PosX + Glyph.AdvanceA + Glyph.AdvanceB + Glyph.AdvanceC;
   end;
   Result.Right := Max(Result.Right, PosX);
   if TopAdjustment <> nil then TopAdjustment^ := 0;
@@ -334,7 +330,7 @@ begin
         Result.Bottom := Max(Result.Bottom, MiddleY - Objects[Index].Height div 2 + Objects[Index].Height);
       end;
   end;
-  TCFontEC(PAnsiChar(Self) + 0).ObjectCount := SavedObjectCount;
+  ObjectCount := SavedObjectCount;
 end;
 { @end $483E1C }
 
@@ -408,7 +404,7 @@ begin
         end
         else if MatchFixTag(PWideChar(Text) + Index - 1, WordLength - (Index - 1 - WordStart)) > 0 then Inc(FixedWidthDepth)
         else if MatchFixEndTag(PWideChar(Text) + Index - 1, WordLength - (Index - 1 - WordStart)) > 0 then
-          FixedWidthDepth := Max(FixedWidthDepth - 1, 0) + 0
+          FixedWidthDepth := Max(FixedWidthDepth - 1, 0)
         else if ParseFormatTag(PWideChar(Text) + Index - 1, WordLength - (Index - 1 - WordStart), FieldWidth, Alignment) > 0 then
         begin
           Index := Index + TokenLength - 1;
@@ -420,7 +416,7 @@ begin
             begin
               if MatchFixTag(PWideChar(Text) + Index - 1, CharCount - Index + 1) > 0 then Inc(FixedWidthDepth)
               else if MatchFixEndTag(PWideChar(Text) + Index - 1, CharCount - Index + 1) > 0 then
-                FixedWidthDepth := Max(FixedWidthDepth - 1, 0) + 0
+                FixedWidthDepth := Max(FixedWidthDepth - 1, 0)
               else if MatchFormatEndTag(PWideChar(Text) + Index - 1, CharCount - Index + 1) > 0 then
               begin
                 Index := Index + TokenLength - 1;
@@ -445,13 +441,11 @@ begin
           Continue;
         end;
         Index := Index + TokenLength - 1;
-      end
-      else
-      begin
-        if FixedWidthDepth > 0 then WordWidth := WordWidth + MaxGlyphAdvance
-        else WordWidth := WordWidth + GetGlyphAdvance(Ch);
-        if WordWidth <= MaxWidth then FitEnd := Index - 1 - 1;
+        Continue;
       end;
+      if FixedWidthDepth > 0 then WordWidth := WordWidth + MaxGlyphAdvance
+      else WordWidth := WordWidth + GetGlyphAdvance(Ch);
+      if WordWidth <= MaxWidth then FitEnd := Index - 1 - 1;
     end;
     if LineWidth = 0 then
     begin
@@ -493,7 +487,7 @@ begin
     while Text[LineStart + 1 + TokenLength] = ' ' do Inc(TokenLength);
   if LineLength - TokenLength > 0 then
     Lines.AddSlice(PWideChar(Text) + LineStart + TokenLength, LineLength - TokenLength);
-  ObjectCount := SavedObjectCount + 0;
+  ObjectCount := SavedObjectCount;
 end;
 { @end $484734 }
 
@@ -529,7 +523,7 @@ begin
       end
       else if MatchFixTag(PWideChar(Text) + Index - 1, CharCount - Index + 1) > 0 then Inc(FixedWidthDepth)
       else if MatchFixEndTag(PWideChar(Text) + Index - 1, CharCount - Index + 1) > 0 then
-        TCFontEC(PAnsiChar(Self) + 0).FixedWidthDepth := Max(FixedWidthDepth - 1, 0)
+        FixedWidthDepth := Max(FixedWidthDepth - 1, 0)
       else if (FieldWidth < 0) and
         (ParseFormatTag(PWideChar(Text) + Index - 1, CharCount - Index + 1, FieldWidth, Alignment) > 0) then
       begin
@@ -539,7 +533,7 @@ begin
         begin
         if Alignment = 0 then
         begin
-          if FixedWidthDepth > 0 then PosX := PosX + (MaxGlyphAdvance + 0) * (FieldWidth shr 1)
+          if FixedWidthDepth > 0 then PosX := PosX + MaxGlyphAdvance * (FieldWidth shr 1)
           else PosX := PosX + GetGlyphAdvance(' ') * (FieldWidth shr 1);
           FieldWidth := FieldWidth - (FieldWidth shr 1);
         end
@@ -563,33 +557,29 @@ begin
         end;
       end;
       Index := Index + TokenLength - 1;
-    end
-    else
-    begin
-      GlyphIndex := ReadWordEC(AddPointerOffset(GlyphLookup, Ord(Ch) * 2));
-      if GlyphIndex <> 0 then
-      begin
-        Glyph := AddPointerOffset(Glyphs, (GlyphIndex - 1) * SizeOf(TAftGlyphEC));
-        if Glyph.OpaqueMaskPlane.DataOffset <> 0 then
-        begin
-          if (Y + 0) + Glyph.OpaqueMaskPlane.Top < Top then Top := (Y + 0) + Glyph.OpaqueMaskPlane.Top;
-          if (Y + 0) + Glyph.OpaqueMaskPlane.Top + Glyph.OpaqueMaskPlane.Height > Bottom then
-            Bottom := (Y + 0) + Glyph.OpaqueMaskPlane.Top + Glyph.OpaqueMaskPlane.Height;
-          Ex_OKGR_MaskBuf_DrawClip_WORD(Destination, PitchBytes, X + PosX + Glyph.OpaqueMaskPlane.Left,
-            (Y + 0) + Glyph.OpaqueMaskPlane.Top, AddPointerOffset(FontData, Glyph.OpaqueMaskPlane.DataOffset), GetCurrentColor, Clip);
-        end;
-        if Glyph.AlphaMaskPlane.DataOffset <> 0 then
-        begin
-          if (Y + 0) + Glyph.AlphaMaskPlane.Top < Top then Top := (Y + 0) + Glyph.AlphaMaskPlane.Top;
-          if (Y + 0) + Glyph.AlphaMaskPlane.Top + Glyph.AlphaMaskPlane.Height > Bottom then
-            Bottom := (Y + 0) + Glyph.AlphaMaskPlane.Top + Glyph.AlphaMaskPlane.Height;
-          Ex_OKGR_TransBuf_FillAlphaClip_16(Destination, PitchBytes, X + PosX + Glyph.AlphaMaskPlane.Left,
-            (Y + 0) + Glyph.AlphaMaskPlane.Top, AddPointerOffset(FontData, Glyph.AlphaMaskPlane.DataOffset), Clip, GetCurrentColor);
-        end;
-        if FixedWidthDepth > 0 then PosX := PosX + MaxGlyphAdvance
-        else PosX := (PosX + 0) + Glyph.AdvanceA + Glyph.AdvanceB + Glyph.AdvanceC;
-      end;
+      Continue;
     end;
+    GlyphIndex := ReadWordEC(AddPointerOffset(GlyphLookup, Ord(Ch) * 2));
+    if GlyphIndex = 0 then Continue;
+    Glyph := AddPointerOffset(Glyphs, (GlyphIndex - 1) * SizeOf(TAftGlyphEC));
+    if Glyph.OpaqueMaskPlane.DataOffset <> 0 then
+    begin
+      if Y + Glyph.OpaqueMaskPlane.Top < Top then Top := Y + Glyph.OpaqueMaskPlane.Top;
+      if Y + Glyph.OpaqueMaskPlane.Top + Glyph.OpaqueMaskPlane.Height > Bottom then
+        Bottom := Y + Glyph.OpaqueMaskPlane.Top + Glyph.OpaqueMaskPlane.Height;
+      Ex_OKGR_MaskBuf_DrawClip_WORD(Destination, PitchBytes, X + PosX + Glyph.OpaqueMaskPlane.Left,
+        Y + Glyph.OpaqueMaskPlane.Top, AddPointerOffset(FontData, Glyph.OpaqueMaskPlane.DataOffset), GetCurrentColor, Clip);
+    end;
+    if Glyph.AlphaMaskPlane.DataOffset <> 0 then
+    begin
+      if Y + Glyph.AlphaMaskPlane.Top < Top then Top := Y + Glyph.AlphaMaskPlane.Top;
+      if Y + Glyph.AlphaMaskPlane.Top + Glyph.AlphaMaskPlane.Height > Bottom then
+        Bottom := Y + Glyph.AlphaMaskPlane.Top + Glyph.AlphaMaskPlane.Height;
+      Ex_OKGR_TransBuf_FillAlphaClip_16(Destination, PitchBytes, X + PosX + Glyph.AlphaMaskPlane.Left,
+        Y + Glyph.AlphaMaskPlane.Top, AddPointerOffset(FontData, Glyph.AlphaMaskPlane.DataOffset), Clip, GetCurrentColor);
+    end;
+    if FixedWidthDepth > 0 then PosX := PosX + MaxGlyphAdvance
+    else PosX := PosX + Glyph.AdvanceA + Glyph.AdvanceB + Glyph.AdvanceC;
   end;
   if ObjectCount - SavedObjectCount > 0 then
   begin
@@ -633,7 +623,7 @@ begin
       end
       else if MatchFixTag(PWideChar(Text) + Index - 1, CharCount - Index + 1) > 0 then Inc(FixedWidthDepth)
       else if MatchFixEndTag(PWideChar(Text) + Index - 1, CharCount - Index + 1) > 0 then
-        TCFontEC(PAnsiChar(Self) + 0).FixedWidthDepth := Max(FixedWidthDepth - 1, 0)
+        FixedWidthDepth := Max(FixedWidthDepth - 1, 0)
       else if (FieldWidth < 0) and
         (ParseFormatTag(PWideChar(Text) + Index - 1, CharCount - Index + 1, FieldWidth, Alignment) > 0) then
       begin
@@ -643,7 +633,7 @@ begin
         begin
         if Alignment = 0 then
         begin
-          if FixedWidthDepth > 0 then PosX := PosX + (MaxGlyphAdvance + 0) * (FieldWidth shr 1)
+          if FixedWidthDepth > 0 then PosX := PosX + MaxGlyphAdvance * (FieldWidth shr 1)
           else PosX := PosX + GetGlyphAdvance(' ') * (FieldWidth shr 1);
           FieldWidth := FieldWidth - (FieldWidth shr 1);
         end
@@ -667,33 +657,29 @@ begin
         end;
       end;
       Index := Index + TokenLength - 1;
-    end
-    else
-    begin
-      GlyphIndex := ReadWordEC(AddPointerOffset(GlyphLookup, Ord(Ch) * 2));
-      if GlyphIndex <> 0 then
-      begin
-        Glyph := AddPointerOffset(Glyphs, (GlyphIndex - 1) * SizeOf(TAftGlyphEC));
-        if Glyph.OpaqueMaskPlane.DataOffset <> 0 then
-        begin
-          if (Y + 0) + Glyph.OpaqueMaskPlane.Top < Top then Top := (Y + 0) + Glyph.OpaqueMaskPlane.Top;
-          if (Y + 0) + Glyph.OpaqueMaskPlane.Top + Glyph.OpaqueMaskPlane.Height > Bottom then
-            Bottom := (Y + 0) + Glyph.OpaqueMaskPlane.Top + Glyph.OpaqueMaskPlane.Height;
-          Ex_OKGR_MaskBuf_DrawClip_DWORD(Destination, PitchBytes, X + PosX + Glyph.OpaqueMaskPlane.Left,
-            (Y + 0) + Glyph.OpaqueMaskPlane.Top, AddPointerOffset(FontData, Glyph.OpaqueMaskPlane.DataOffset), GetCurrentColor, Clip);
-        end;
-        if Glyph.AlphaMaskPlane.DataOffset <> 0 then
-        begin
-          if (Y + 0) + Glyph.AlphaMaskPlane.Top < Top then Top := (Y + 0) + Glyph.AlphaMaskPlane.Top;
-          if (Y + 0) + Glyph.AlphaMaskPlane.Top + Glyph.AlphaMaskPlane.Height > Bottom then
-            Bottom := (Y + 0) + Glyph.AlphaMaskPlane.Top + Glyph.AlphaMaskPlane.Height;
-          Ex_OKGR_TransBuf_FillAlphaClip_RGBA(Destination, PitchBytes, X + PosX + Glyph.AlphaMaskPlane.Left,
-            (Y + 0) + Glyph.AlphaMaskPlane.Top, AddPointerOffset(FontData, Glyph.AlphaMaskPlane.DataOffset), Clip, GetCurrentColor);
-        end;
-        if FixedWidthDepth > 0 then PosX := PosX + MaxGlyphAdvance
-        else PosX := (PosX + 0) + Glyph.AdvanceA + Glyph.AdvanceB + Glyph.AdvanceC;
-      end;
+      Continue;
     end;
+    GlyphIndex := ReadWordEC(AddPointerOffset(GlyphLookup, Ord(Ch) * 2));
+    if GlyphIndex = 0 then Continue;
+    Glyph := AddPointerOffset(Glyphs, (GlyphIndex - 1) * SizeOf(TAftGlyphEC));
+    if Glyph.OpaqueMaskPlane.DataOffset <> 0 then
+    begin
+      if Y + Glyph.OpaqueMaskPlane.Top < Top then Top := Y + Glyph.OpaqueMaskPlane.Top;
+      if Y + Glyph.OpaqueMaskPlane.Top + Glyph.OpaqueMaskPlane.Height > Bottom then
+        Bottom := Y + Glyph.OpaqueMaskPlane.Top + Glyph.OpaqueMaskPlane.Height;
+      Ex_OKGR_MaskBuf_DrawClip_DWORD(Destination, PitchBytes, X + PosX + Glyph.OpaqueMaskPlane.Left,
+        Y + Glyph.OpaqueMaskPlane.Top, AddPointerOffset(FontData, Glyph.OpaqueMaskPlane.DataOffset), GetCurrentColor, Clip);
+    end;
+    if Glyph.AlphaMaskPlane.DataOffset <> 0 then
+    begin
+      if Y + Glyph.AlphaMaskPlane.Top < Top then Top := Y + Glyph.AlphaMaskPlane.Top;
+      if Y + Glyph.AlphaMaskPlane.Top + Glyph.AlphaMaskPlane.Height > Bottom then
+        Bottom := Y + Glyph.AlphaMaskPlane.Top + Glyph.AlphaMaskPlane.Height;
+      Ex_OKGR_TransBuf_FillAlphaClip_RGBA(Destination, PitchBytes, X + PosX + Glyph.AlphaMaskPlane.Left,
+        Y + Glyph.AlphaMaskPlane.Top, AddPointerOffset(FontData, Glyph.AlphaMaskPlane.DataOffset), Clip, GetCurrentColor);
+    end;
+    if FixedWidthDepth > 0 then PosX := PosX + MaxGlyphAdvance
+    else PosX := PosX + Glyph.AdvanceA + Glyph.AdvanceB + Glyph.AdvanceC;
   end;
   if ObjectCount - SavedObjectCount > 0 then
   begin

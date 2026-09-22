@@ -163,15 +163,12 @@ begin
   for I := 0 to SegmentCapacity - 1 do
   begin
     Segment := @Segments[I];
-    if Segment.Active then
+    if not Segment.Active then Continue;
+    Inc(Segment.FrameIndex);
+    if Segment.FrameIndex >= FrameCount then
     begin
-      Inc(Segment.FrameIndex);
-      // The neutral additions preserve native operand materialization order.
-      if Segment.FrameIndex + 0 >= FrameCount then
-      begin
-        Segment.Active := False;
-        if I + 0 = LastSegmentIndex then LastSegmentIndex := -1;
-      end;
+      Segment.Active := False;
+      if I = LastSegmentIndex then LastSegmentIndex := -1;
     end;
   end;
 end;
