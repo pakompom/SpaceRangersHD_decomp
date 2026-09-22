@@ -7555,15 +7555,12 @@ begin
       for I := 0 to GetPlayer.StorageEntries.Count - 1 do
       begin
         Entry := GetPlayer.StorageEntries[I];
-        if Entry <> nil then
-          if Entry.LocationOwner = Location then
-          begin
-            Item := Entry.Item;
-            if Item <> nil then
-              if (Item.NoDropFlag <= 0) and ((Item.ScriptItem = nil) or TScriptItem(Item.ScriptItem).CanSell) then
-                if Item is TGoods then Inc(Value,TGoods(Item).Quantity * GetPlayer.ShopGoodsSellPrice(Byte(TGoods(Item).ItemType),TObject(Integer(Location) + 0)))
-                else if Item is TEquipment then Inc(Value,Item.CalculateResaleValue(GetPlayer.GetEffectiveSkillLevel(psTrading)));
-          end;
+        if (Entry = nil) or (Entry.LocationOwner <> Location) then Continue;
+        Item := Entry.Item;
+        if Item <> nil then
+          if (Item.NoDropFlag <= 0) and ((Item.ScriptItem = nil) or TScriptItem(Item.ScriptItem).CanSell) then
+            if Item is TGoods then Inc(Value,TGoods(Item).Quantity * GetPlayer.ShopGoodsSellPrice(Byte(Item.ItemType),Location))
+            else if Item is TEquipment then Inc(Value,Item.CalculateResaleValue(GetPlayer.GetEffectiveSkillLevel(psTrading)));
       end;
       if Value > 0 then
       begin

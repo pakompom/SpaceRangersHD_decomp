@@ -9601,18 +9601,17 @@ begin
       Star := TStar(Galaxy.Stars[I]);
       Contested := False;
       for J := 0 to Star.Ships.Count - 1 do begin
-        Ship := TShip(Star.Ships[J + 0]);
+        Ship := TShip(Star.Ships[J]);
         if Ship.CurrentStanding = ssCoalitionMilitary then Exit;
-        if (Ship.OwnerId in PlanetOwnerMasks.Coalition) and (Ship is TNormalShip) and (Ship.OwnerId <> oiPirate) then begin
-          if (Star.ControlFaction = sfDominators) or (Star.Status.CustomFaction <> '') then Exit;
-          if Ship.CurrentStanding in [ssCoalitionMilitary, ssCoalitionActive] then begin Contested := True; Break; end;
-        end;
+        if not ((Ship.OwnerId in PlanetOwnerMasks.Coalition) and (Ship is TNormalShip) and (Ship.OwnerId <> oiPirate)) then Continue;
+        if (Star.ControlFaction = sfDominators) or (Star.Status.CustomFaction <> '') then Exit;
+        if Ship.CurrentStanding in [ssCoalitionMilitary, ssCoalitionActive] then begin Contested := True; Break; end;
       end;
       if Contested then begin
         CoalitionStrength := 0;
         PirateStrength := 0;
         for J := 0 to Star.Ships.Count - 1 do begin
-          Ship := TShip(Star.Ships[J + 0]);
+          Ship := TShip(Star.Ships[J]);
           if Ship.CurrentStanding in [ssCoalitionMilitary, ssCoalitionActive] then CoalitionStrength := CoalitionStrength + Ship.Strength;
           if Ship.CurrentStanding in [ssPirateActive, ssPirateMilitary] then PirateStrength := PirateStrength + Ship.Strength;
         end;

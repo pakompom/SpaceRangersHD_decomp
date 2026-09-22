@@ -7287,22 +7287,19 @@ begin
   for I := 0 to Galaxy.LiberationGroups.Count - 1 do
   begin
     Group := Galaxy.LiberationGroups[I];
-    if Group <> nil then
-      if Group.Ships.Count > 0 then
+    if (Group = nil) or (Group.Ships.Count <= 0) then Continue;
+    Entry := Group.Route[Length(Group.Route) - 1];
+    if Entry.Kind = 3 then
+    begin
+      Star := TStar(Entry.Target);
+      if Star = nil then Continue;
+      if Star.IsConstellationVisible and ((Star.ControlFaction <> sfCoalition) or (Star.Status.CustomFaction <> '')) and
+        ((Group.Route[2].WaitUntilTurn < Turn) or (Target = nil)) then
       begin
-        Entry := Group.Route[Length(Group.Route) - 1];
-        if Entry.Kind = 3 then
-        begin
-          Star := TStar(Entry.Target);
-          if Star <> nil then
-            if Star.IsConstellationVisible and ((Star.ControlFaction <> sfCoalition) or (Star.Status.CustomFaction <> '')) and
-              ((Group.Route[2].WaitUntilTurn < Turn) or (Target = nil)) then
-            begin
-              Target := Star;
-              Turn := Group.Route[2].WaitUntilTurn;
-            end;
-        end;
+        Target := Star;
+        Turn := Group.Route[2].WaitUntilTurn;
       end;
+    end;
   end;
   Base := Galaxy.FindMilitaryBaseInTransit;
   if Base <> nil then
@@ -7347,8 +7344,7 @@ begin
   Star := GetPlayer.DockedTo.CurrentStar;
   for I := 0 to Star.Ships.Count - 1 do
   begin
-    // Preserve index-before-receiver evaluation under DCC32 O-.
-    Ship := Star.Ships[I * 1];
+    Ship := Star.Ships[I];
     if not Ship.InHyperspace and (Ship is TPirate) and (Ship.OwnerId = oiPirate) and (Ship.PartnerShip = nil) and
       (Ship.ScriptShip = nil) and not Ship.HasScriptControl then Inc(Count);
   end;

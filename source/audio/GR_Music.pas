@@ -66,13 +66,13 @@ begin
   DecodeLock := TCriticalSection.Create;
   if AnsiString(LibraryName) = 'vorbisfile.dll' then
   begin
-    Decoder := TOggWorker.Create(@DecodeLock, False);
+    Decoder := TOggWorker.Create(DecodeLock, False);
     BuiltinVorbis := True;
     Buffer := SoundManager.AddBuffer;
   end
   else
   begin
-    Decoder := TOggWorker.Create(@DecodeLock, True);
+    Decoder := TOggWorker.Create(DecodeLock, True);
     if not BuiltinVorbis then
     begin
       AppendLogTextThreadSafe('Load ' + AnsiString(LibraryName) + ' .... ');

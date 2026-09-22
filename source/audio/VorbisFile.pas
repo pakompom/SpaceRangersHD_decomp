@@ -23,7 +23,7 @@ type
     Lock: PCriticalSection; // @offset $2D8
     Bitstream: Integer; // @offset $2DC
     ExternalLibrary: Boolean; // @offset $2E0
-    constructor Create(SharedLock: PCriticalSection; UseExternalLibrary: Boolean); // @addr $84E658
+    constructor Create(var SharedLock: TCriticalSection; UseExternalLibrary: Boolean); // @addr $84E658
     destructor Destroy; override; // @addr $84E6FC @note "Decrements the shared use count without unloading or clearing the decoder."
 
   end;
@@ -113,11 +113,10 @@ end;
 { @end $84E630 }
 
 { @routine $84E658 TOggWorker_Create }
-constructor TOggWorker.Create(SharedLock: PCriticalSection; UseExternalLibrary: Boolean);
+constructor TOggWorker.Create(var SharedLock: TCriticalSection; UseExternalLibrary: Boolean);
 begin
   inherited Create;
-  // Materialize the value before Self, as in the native DCC32 assignment.
-  Lock := PCriticalSection(PAnsiChar(SharedLock) + 0);
+  Lock := @SharedLock;
   if not UseExternalLibrary then
   begin
     Lock^.Enter;

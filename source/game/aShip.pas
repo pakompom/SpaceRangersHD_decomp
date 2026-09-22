@@ -1949,8 +1949,6 @@ begin
 end;
 { @end $74DCD4 }
 
-// Zero-byte pointer additions below retain native argument evaluation order
-// without narrowing object addresses to Integer.
 { @routine $74DFF4 TShip_RefreshTechKnowledgeAtLocation }
 procedure TShip.RefreshTechKnowledgeAtLocation;
 var
@@ -1959,56 +1957,55 @@ var
   Item: TEquipment;
   Text: WideString;
 begin
-  if ((DockedTo <> nil) and (DockedTo is TRuins)) or
-    ((CurrentPlanet <> nil) and (CurrentPlanet.OwnerId in [oiMaloc..oiGaal, oiPirate]) and (Ord(TPlanet(PAnsiChar(CurrentPlanet) + 0).GetRelationLevelToShip(Self)) <> 0)) or (Self is TRuins) then
+  if not (((DockedTo <> nil) and (DockedTo is TRuins)) or
+    ((CurrentPlanet <> nil) and (CurrentPlanet.OwnerId in [oiMaloc..oiGaal, oiPirate]) and (Ord(CurrentPlanet.GetRelationLevelToShip(Self)) <> 0)) or (Self is TRuins)) then Exit;
+  if GetPlayer <> Self then
   begin
-    if GetPlayer <> Self then TechKnowledge := Max(TechKnowledge, Galaxy.TechLevel)
-    else
-    begin
-      UseList := TList.Create;
-      RepairList := TList.Create;
-      for I := 1 to Inventory.Count - 1 do
-      begin
-        Item := TList(PAnsiChar(Inventory) + 0)[I];
-        if not CanUseEquipmentTech(Item) then UseList.Add(Item);
-        if not CanRepairEquipmentTech(Item) then RepairList.Add(Item);
-      end;
-      TechKnowledge := Max(TechKnowledge, Galaxy.TechLevel);
-      for I := UseList.Count - 1 downto 0 do
-      begin
-        Item := UseList[I];
-        if not CanUseEquipmentTech(Item) then UseList.Delete(I);
-      end;
-      for I := RepairList.Count - 1 downto 0 do
-      begin
-        Item := RepairList[I];
-        if not CanRepairEquipmentTech(Item) then RepairList.Delete(I);
-      end;
-      if UseList.Count > 0 then
-      begin
-        Text := LocalizedText('Items.Equpments.NowCanUse');
-        for I := 0 to UseList.Count - 1 do
-        begin
-          Item := UseList[I];
-          Text := Text + #13#10 + '- ' + Item.GetDisplayName;
-        end;
-        AddOrUpdatePlayerBubble(2, Galaxy.CurrentTurn, Text, '');
-      end;
-      if RepairList.Count > 0 then
-      begin
-        Text := LocalizedText('Items.Equpments.NowCanRepair');
-        for I := 0 to RepairList.Count - 1 do
-        begin
-          Item := RepairList[I];
-          Text := Text + #13#10 + '- ' + Item.GetDisplayName;
-        end;
-        AddOrUpdatePlayerBubble(2, Galaxy.CurrentTurn, Text, '');
-      end;
-      UseList.Free;
-      RepairList.Free;
-      GetPlayer.RefreshStorageBubbles;
-    end;
+    TechKnowledge := Max(TechKnowledge, Galaxy.TechLevel);
+    Exit;
   end;
+  UseList := TList.Create;
+  RepairList := TList.Create;
+  for I := 1 to Inventory.Count - 1 do
+  begin
+    Item := Inventory[I];
+    if not CanUseEquipmentTech(Item) then UseList.Add(Item);
+    if not CanRepairEquipmentTech(Item) then RepairList.Add(Item);
+  end;
+  TechKnowledge := Max(TechKnowledge, Galaxy.TechLevel);
+  for I := UseList.Count - 1 downto 0 do
+  begin
+    Item := UseList[I];
+    if not CanUseEquipmentTech(Item) then UseList.Delete(I);
+  end;
+  for I := RepairList.Count - 1 downto 0 do
+  begin
+    Item := RepairList[I];
+    if not CanRepairEquipmentTech(Item) then RepairList.Delete(I);
+  end;
+  if UseList.Count > 0 then
+  begin
+    Text := LocalizedText('Items.Equpments.NowCanUse');
+    for I := 0 to UseList.Count - 1 do
+    begin
+      Item := UseList[I];
+      Text := Text + #13#10 + '- ' + Item.GetDisplayName;
+    end;
+    AddOrUpdatePlayerBubble(2, Galaxy.CurrentTurn, Text, '');
+  end;
+  if RepairList.Count > 0 then
+  begin
+    Text := LocalizedText('Items.Equpments.NowCanRepair');
+    for I := 0 to RepairList.Count - 1 do
+    begin
+      Item := RepairList[I];
+      Text := Text + #13#10 + '- ' + Item.GetDisplayName;
+    end;
+    AddOrUpdatePlayerBubble(2, Galaxy.CurrentTurn, Text, '');
+  end;
+  UseList.Free;
+  RepairList.Free;
+  GetPlayer.RefreshStorageBubbles;
 end;
 { @end $74DFF4 }
 
@@ -3485,7 +3482,7 @@ begin
     (Attacker.GetScannerPower > GetDefensePercent) and
     (Attacker.GetRadarRange * Attacker.GetRadarRange >= PointDistanceSquared(Position, Attacker.Position)) then
     DamageValue := (1 + (Attacker.GetScannerPower - GetDefensePercent) * 0.01) * DamageValue;
-  ScannerEffects := (TDamageFlagSet(Dword(DamageFlags) + 0) * ScannerDamageFlags <> NoDamageFlags) and (HitRange = -1) and (Attacker <> nil) and
+  ScannerEffects := (ScannerDamageFlags * DamageFlags <> NoDamageFlags) and (HitRange = -1) and (Attacker <> nil) and
     Attacker.IsEquipmentUsable(Attacker.GetScanner) and
     (Attacker.GetScannerPower >= GetDefensePercent) and
     (Attacker.GetRadarRange * Attacker.GetRadarRange >= PointDistanceSquared(Position, Attacker.Position));

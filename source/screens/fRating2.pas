@@ -716,7 +716,6 @@ var Ranger: TRanger; Panel, BarPanel: TPanelGI; Image: TImageGI;
 
   // @nested $5692B4 CreateRatingRowAwardStrip
   procedure CreateRatingRowAwardStrip; // @addr 0x5692B4 @ida "void __cdecl $name(void *ParentFrame);" @stackpop 0 @calls "0x56ab1c" @note "Nested in TfRating2.CreateRow; requires its parent frame."
-  // Value expressions retain native maximum and image-receiver evaluation order.
   var I, J: Integer; Buffer: TGraphBufGI; Icon: TGraphBufGR; Award: Byte;
     Path: WideString; Size, Step, Count: Integer;
   begin
@@ -736,7 +735,7 @@ var Ranger: TRanger; Panel, BarPanel: TPanelGI; Image: TImageGI;
       Buffer.MouseLeaveCallback := HintMouseLeave;
       Buffer.LeftButtonDownCallback := AwardsMouseDown;
       Buffer.UserValue := Ranger.Id;
-      TGraphBufGR(Integer(Buffer.GraphBuf) + 0).AllocateRgbaTight(Max(Buffer.ClientSize.X + 0,Step * Count + Size - Step),Size);
+      Buffer.GraphBuf.AllocateRgbaTight(Max(Buffer.ClientSize.X,Step * Count + Size - Step),Size);
       for I := 0 to Size - 1 do
         Buffer.GraphBuf.FillRect32(Classes.Rect(0,I,Buffer.GraphBuf.Width,I + 1),Integer(Round(I / Size * 240) + 10) shl 24 or (250 shl 16) or (250 shl 8) or 50);
       Buffer.SourceHasPerPixelAlpha := True;
@@ -753,8 +752,9 @@ var Ranger: TRanger; Panel, BarPanel: TPanelGI; Image: TImageGI;
         if Cardinal(Icon.Width) >= Cardinal(Icon.Height) then
           Icon.RescaleRgba(Size,Round(Size / Cardinal(Icon.Width) * Cardinal(Icon.Height)),5)
         else Icon.RescaleRgba(Round(Size / Cardinal(Icon.Height) * Cardinal(Icon.Width)),Size,5);
-        if (Icon.Height <= Size) and (Icon.Width + J * Step <= Buffer.GraphBuf.Width) then
-          TGraphBufGR(Integer(Buffer.GraphBuf) + 0).BlendRect32(Classes.Point(J * Step,0),Icon,Classes.Rect(0,0,Icon.Width,Icon.Height));
+        if Icon.Height <= Size then
+          if Icon.Width + J * Step <= Buffer.GraphBuf.Width then
+            Buffer.GraphBuf.BlendRect32(Classes.Point(J * Step,0),Icon,Classes.Rect(0,0,Icon.Width,Icon.Height));
         Inc(I);
         Inc(J);
       end;
