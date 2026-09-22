@@ -257,6 +257,15 @@ impl Emitter<'_> {
                 self.depend(unit, &d.data["type"])?;
             }
         }
+        for d in self.project.compiler.decls.clone() {
+            if d.is_inline_helper() {
+                let own = owner(&d);
+                let unit = unit(&mut units, &own);
+                let sig = self.signature(unit, &d)?;
+                unit.interface.push(format!("{sig} inline;"));
+                symbol_units.insert(d.name.to_lowercase(), own);
+            }
+        }
         for d in self.stub_declarations.values().cloned().collect::<Vec<_>>() {
             let own = owner(&d);
             let unit = unit(&mut units, &own);

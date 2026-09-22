@@ -51,7 +51,7 @@ var
 
 implementation
 
-uses SysUtils, Math, EC_Cache, EC_Str, GR_Main, GI_Main, GR_GraphBuf, EC_Mem;
+uses EC_Struct, SysUtils, Math, EC_Cache, EC_Str, GR_Main, GI_Main, GR_GraphBuf, EC_Mem;
 
 { @routine $495504 TRotateImage5GI_Create }
 constructor TRotateImage5GI.Create(Owner: TObjectGI);
@@ -179,10 +179,10 @@ begin
     except
       raise Exception.Create('Error in TRotateImage5GI.SetImage');
     end;
-    Radius := Sqr(Pivot.X - 0) + Sqr(Pivot.Y - 0);
-    Radius := Max(Radius, Sqr(Pivot.X - ImageSize.X) + Sqr(Pivot.Y - ImageSize.Y));
-    Radius := Max(Radius, Sqr(Pivot.X - ImageSize.X) + Sqr(Pivot.Y - 0));
-    Radius := Max(Radius, Sqr(Pivot.X - 0) + Sqr(Pivot.Y - ImageSize.Y));
+    Radius := SquaredDistanceToPoint(Pivot, 0, 0);
+    Radius := Max(Radius, SquaredDistanceToPoint(Pivot, ImageSize.X, ImageSize.Y));
+    Radius := Max(Radius, SquaredDistanceToPoint(Pivot, ImageSize.X, 0));
+    Radius := Max(Radius, SquaredDistanceToPoint(Pivot, 0, ImageSize.Y));
     Radius := Floor(Sqrt(Radius) * 2.0 + 2.0);
     SetSize(Classes.Point(Trunc(Radius), Trunc(Radius)));
     SetOrigin(Classes.Point(ClientSize.X div 2, ClientSize.Y div 2));

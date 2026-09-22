@@ -16,6 +16,22 @@ pub struct Decl {
     pub type_span: Option<(usize, usize)>,
 }
 
+impl Decl {
+    pub fn is_inline_helper(&self) -> bool {
+        self.kind == "routine"
+            && !self.meta.contains_key("addr")
+            && self.data["owner"].is_null()
+            && self.data.get("external").is_none()
+            && matches!(
+                self.data["routine_kind"].as_str(),
+                Some("function" | "procedure")
+            )
+            && self.data["directives"]
+                .as_array()
+                .is_some_and(|values| values.iter().any(|v| v == "inline"))
+    }
+}
+
 #[derive(Debug, Clone, Serialize)]
 pub struct Node {
     pub kind: String,

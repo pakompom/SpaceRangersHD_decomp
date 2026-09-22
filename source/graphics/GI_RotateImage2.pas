@@ -30,7 +30,7 @@ type
 
 implementation
 
-uses Classes, SysUtils, Math, EC_Cache, EC_Mem, GR_Main, GI_Main;
+uses EC_Struct, Classes, SysUtils, Math, EC_Cache, EC_Mem, GR_Main, GI_Main;
 { @routine $494438 TRotateImage2GI_Create }
 constructor TRotateImage2GI.Create(Owner: TObjectGI);
 begin
@@ -107,10 +107,10 @@ begin
   try
     RotationCache.SetCacheKey(IntToStr(ImageSize.X) + ',' + IntToStr(ImageSize.Y) + ',' +
       IntToStr(Cardinal(Image.Bitmap.Width)) + ',' + IntToStr(Cardinal(Image.Bitmap.Height)) + ',' + IntToStr(Pivot.X) + ',' + IntToStr(Pivot.Y));
-    Radius := Sqr(Pivot.X - 0) + Sqr(Pivot.Y - 0);
-    Radius := Max(Radius, Sqr(Pivot.X - ImageSize.X) + Sqr(Pivot.Y - ImageSize.Y));
-    Radius := Max(Radius, Sqr(Pivot.X - ImageSize.X) + Sqr(Pivot.Y - 0));
-    Radius := Max(Radius, Sqr(Pivot.X - 0) + Sqr(Pivot.Y - ImageSize.Y));
+    Radius := SquaredDistanceToPoint(Pivot, 0, 0);
+    Radius := Max(Radius, SquaredDistanceToPoint(Pivot, ImageSize.X, ImageSize.Y));
+    Radius := Max(Radius, SquaredDistanceToPoint(Pivot, ImageSize.X, 0));
+    Radius := Max(Radius, SquaredDistanceToPoint(Pivot, 0, ImageSize.Y));
     Radius := Floor(Sqrt(Radius) * 2.0 + 2.0);
     SetSize(Classes.Point(Trunc(Radius), Trunc(Radius)));
     SetOrigin(Classes.Point(ClientSize.X div 2, ClientSize.Y div 2));

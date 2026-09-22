@@ -43,7 +43,7 @@ type
 
 implementation
 
-uses SysUtils, Math, EC_Cache, EC_Mem, GI_GAI, GI_Main, GR_Main, GR_GraphBuf, GR_gi;
+uses EC_Struct, SysUtils, Math, EC_Cache, EC_Mem, GI_GAI, GI_Main, GR_Main, GR_GraphBuf, GR_gi;
 
 { @routine $497078 TRotateImageGaiGI_Create }
 constructor TRotateImageGaiGI.Create(Owner: TObjectGI);
@@ -132,10 +132,10 @@ begin
       raise Exception.Create('Error in TRotateImageGaiGI.SetImage');
     end;
     Self.ImageSize := ImageSize;
-    Radius := Sqr(Pivot.X - 0) + Sqr(Pivot.Y - 0);
-    Radius := Max(Radius, Sqr(Pivot.X - ImageSize.X) + Sqr(Pivot.Y - ImageSize.Y));
-    Radius := Max(Radius, Sqr(Pivot.X - ImageSize.X) + Sqr(Pivot.Y - 0));
-    Radius := Max(Radius, Sqr(Pivot.X - 0) + Sqr(Pivot.Y - ImageSize.Y));
+    Radius := SquaredDistanceToPoint(Pivot, 0, 0);
+    Radius := Max(Radius, SquaredDistanceToPoint(Pivot, ImageSize.X, ImageSize.Y));
+    Radius := Max(Radius, SquaredDistanceToPoint(Pivot, ImageSize.X, 0));
+    Radius := Max(Radius, SquaredDistanceToPoint(Pivot, 0, ImageSize.Y));
     Radius := Floor(Sqrt(Radius) * 2.0 + 2.0);
     SetSize(Classes.Point(Trunc(Radius), Trunc(Radius)));
     SetOrigin(Classes.Point(ClientSize.X div 2, ClientSize.Y div 2));

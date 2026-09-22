@@ -649,6 +649,9 @@ mod tests {
     fn annotation_errors_and_method_contracts() {
         for source in [
             "unit X; interface var Value: Integer; implementation end.",
+            "unit X; interface function Work: Integer; implementation end.",
+            "unit X; interface function Work: Integer; inline; // @calls \"0x1000\"\n implementation end.",
+            "unit X; interface type T = class // @size 4\n function Work: Integer; inline; end; implementation end.",
             "unit X; interface type T = record Value: Integer; // @offset 0 @offset 4\n end; // @size 4\n implementation end.",
             "unit X; interface procedure Work; // @addr $1000 @slot 4\n implementation end.",
             "unit X; interface procedure Work; // @addr $1000 @mystery 1\n implementation end.",

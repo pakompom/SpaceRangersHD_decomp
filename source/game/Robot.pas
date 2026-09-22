@@ -293,6 +293,11 @@ begin
 end;
 { @end $83C620 }
 
+function CenterSpan(SpanStart, SpanEnd, ContentStart, ContentEnd: Integer): Integer; inline;
+begin
+  Result := SpanStart + (SpanEnd - SpanStart) div 2 - (ContentEnd - ContentStart) div 2;
+end;
+
 { @routine $83C8C0 RobotRenderText }
 procedure RobotRenderText(Text, FontName: PWideChar; Color: Cardinal;
   Width, Height, AlignX, AlignY, Wrap, OffsetX, OffsetY: Integer;
@@ -445,7 +450,7 @@ begin
           else if AlignX = 1 then
           begin
             Bounds := Font.MeasureTaggedTextBounds(WrappedLines.GetCurrentText, 0, 0, nil);
-            Font.DrawTaggedText32(Buffer.GetPixels, Buffer.PitchBytes, (Width - 0) div 2 - (Bounds.Right - Bounds.Left) div 2 + OffsetX, CurrentY + OffsetY, WrappedLines.GetCurrentText, DrawClip);
+            Font.DrawTaggedText32(Buffer.GetPixels, Buffer.PitchBytes, CenterSpan(0, Width, Bounds.Left, Bounds.Right) + OffsetX, CurrentY + OffsetY, WrappedLines.GetCurrentText, DrawClip);
           end
           else if (AlignX = 3) and not WrappedLines.IsAtLast then
             Font.DrawJustifiedTaggedText32(Buffer.GetPixels, Buffer.PitchBytes, DrawX + OffsetX, CurrentY + OffsetY, WrappedLines.GetCurrentText, Width - 4, DrawClip)

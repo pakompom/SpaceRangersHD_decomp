@@ -35,12 +35,18 @@ function SubtractPoints(Left, Right: TPoint): TPoint; // @addr 0x45EE5C
 function HalfPointF(Point: TPointF): TPointF; // @addr $45EE94
 function AddPointsF(Left, Right: TPointF): TPointF; // @addr $45EED0
 function SubtractPointsF(Left, Right: TPointF): TPointF; // @addr $45EF08
+function SquaredDistanceToPoint(const Point: TPoint; X, Y: Integer): Integer; inline;
 function IntersectRects(out Intersection: TRect; const First, Second: TRect): Boolean; // @addr 0x45EF40 @ida "bool __usercall $name@<al>(TRect *Intersection@<eax>, const TRect *First@<edx>, const TRect *Second@<ecx>);" @note "Returns false without writing Intersection when the rectangles do not overlap."
 
 var
   StartupCleanupObject: TObject; // @addr $889E08 @note "Freed on both startup shutdown paths; concrete class unresolved."
 
 implementation
+
+function SquaredDistanceToPoint(const Point: TPoint; X, Y: Integer): Integer; inline;
+begin
+  Result := Sqr(Point.X - X) + Sqr(Point.Y - Y);
+end;
 
 { @routine $45ED00 MakePointF }
 function MakePointF(X, Y: Single): TPointF;

@@ -222,6 +222,78 @@ begin ProgramHelper; end.
 }
 
 #[test]
+fn public_inline_helpers_preserve_source_without_native_addresses() -> Result<()> {
+    let fixture = Fixture::new("public-inline-helpers")?;
+    fs::write(
+        fixture.0.join("source/Geometry.pas"),
+        r#"unit Geometry;
+interface
+type TCoordinate = record // @size 8
+  X: Integer; // @offset 0
+  Y: Integer; // @offset 4
+end;
+function SquaredDistance(const Point: TCoordinate; X, Y: Integer): Integer; inline;
+function NativeInline(Value: Integer): Integer; inline; // @addr $1100
+implementation
+function SquaredDistance(const Point: TCoordinate; X, Y: Integer): Integer; inline;
+begin Result := Sqr(Point.X - X) + Sqr(Point.Y - Y); end;
+{ @routine $1100 NativeInline }
+function NativeInline(Value: Integer): Integer;
+begin Result := Value * 2; end;
+{ @end $1100 }
+end.
+"#,
+    )?;
+    fs::write(
+        fixture.0.join("source/Consumer.pas"),
+        r#"unit Consumer;
+interface
+function Distance: Integer; // @addr $1200
+implementation
+uses Geometry;
+{ @routine $1200 Distance }
+function Distance: Integer;
+var Point: TCoordinate;
+begin Point.X := 3; Point.Y := 4; Result := SquaredDistance(Point, 0, 0); end;
+{ @end $1200 }
+end.
+"#,
+    )?;
+    fs::write(
+        fixture.0.join("source/Rangers.dpr"),
+        "program Rangers; uses Consumer;\n{ @routine $1300 MainEntry }\nbegin Distance; end.\n{ @end $1300 }\n",
+    )?;
+    fs::write(
+        fixture.0.join("source/Rangers.pas"),
+        "unit Rangers; interface\nprocedure MainEntry; // @addr $1300\nimplementation end.\n",
+    )?;
+    let mut project = Project::open(&fixture.0)?;
+    assert!(project.routine("SquaredDistance").is_err());
+    assert_eq!(project.routine("NativeInline")?.meta["addr"], 0x1100);
+    let manifest = project.compiler.build()?;
+    let functions = manifest["functions"].as_array().unwrap();
+    assert_eq!(functions.len(), 3);
+    assert!(functions.iter().all(|f| f["name"] != "SquaredDistance"));
+    assert_eq!(project.bodies()?.len(), 3);
+    for retain_all in [false, true] {
+        let output = fixture.0.join(format!("generated-{retain_all}"));
+        Emitter::new(&mut project)?.write_units(&output, retain_all)?;
+        let generated = fs::read_to_string(output.join("Geometry.pas"))?;
+        let interface = generated.split("implementation").next().unwrap();
+        assert!(interface.contains("function SquaredDistance"));
+        assert!(interface.contains("Integer; inline;"));
+        assert!(interface.contains("TCoordinate = record"));
+        assert!(generated.contains("Result := Sqr(Point.X - X) + Sqr(Point.Y - Y)"));
+        assert!(!generated.contains("MissingImplementation"));
+        assert!(fs::read_to_string(output.join("Consumer.pas"))?.contains("Geometry"));
+        assert!(
+            !fs::read_to_string(output.join("RecoveredExports.inc"))?.contains("SquaredDistance")
+        );
+    }
+    Ok(())
+}
+
+#[test]
 fn public_array_metadata_preserves_source_order_across_type_sections() -> Result<()> {
     let fixture = Fixture::new("public-array-order")?;
     fs::create_dir_all(fixture.0.join("source/runtime"))?;

@@ -2432,51 +2432,65 @@ begin
   HullBaseSize := StrToInt(AnsiString(Block.GetParam('AverageSize')));
   HullCapacityScale := HullBaseSize / 500;
   Values := Block.GetParam('mAlloy');
-  for Level := 1 to 8 do HullLevelStats[Level].Armor := StrToInt(AnsiString(ExtractDelimitedPartW(Values, Level - 1, ',')));
+  for Level := Low(HullLevelStats) to High(HullLevelStats) do
+    HullLevelStats[Level].Armor := StrToInt(AnsiString(ExtractDelimitedPartW(Values, Level - Low(HullLevelStats), ',')));
   for DamageKind := Low(TWeaponDamageClass) to High(TWeaponDamageClass) do
   begin
     Values := Block.GetParam('mFragilityByLevel' + WeaponDamageClasses[DamageKind].Name);
-    for Level := 1 to 8 do HullLevelStats[Level].Fragility[DamageKind] := ExtractDecimalToSingleW(ExtractDelimitedPartW(Values, Level - 1, ','));
+    for Level := Low(HullLevelStats) to High(HullLevelStats) do
+      HullLevelStats[Level].Fragility[DamageKind] := ExtractDecimalToSingleW(ExtractDelimitedPartW(Values, Level - Low(HullLevelStats), ','));
     Values := Block.GetParam('mFragilityByOwner' + WeaponDamageClasses[DamageKind].Name);
-    for Owner := oiMaloc to oiPirate do HullFragilityByOwner[DamageKind, Owner] := ExtractDecimalToSingleW(ExtractDelimitedPartW(Values, Ord(Owner) - 0, ','));
+    for Owner := Low(TOwnerId) to High(TOwnerId) do
+      HullFragilityByOwner[DamageKind, Owner] := ExtractDecimalToSingleW(ExtractDelimitedPartW(Values, Ord(Owner) - Ord(Low(TOwnerId)), ','));
   end;
   Values := Block.GetParam('mFragilityByShipType');
-  for HullKind := 0 to 10 do HullFragilityByType[HullKind] := ExtractDecimalToSingleW(ExtractDelimitedPartW(Values, HullKind - 0, ','));
+  for HullKind := Low(HullFragilityByType) to High(HullFragilityByType) do
+    HullFragilityByType[HullKind] := ExtractDecimalToSingleW(ExtractDelimitedPartW(Values, HullKind - Low(HullFragilityByType), ','));
   Block := LanguageDataConfig.GetBlockByPath('Items.FuelTanks');
   FuelTanksBaseSize := StrToInt(AnsiString(Block.GetParam('AverageSize')));
   Values := Block.GetParam('mCapacity');
-  for Level := 1 to 8 do FuelCapacityByLevel[Level] := StrToInt(AnsiString(ExtractDelimitedPartW(Values, Level - 1, ',')));
+  for Level := Low(FuelCapacityByLevel) to High(FuelCapacityByLevel) do
+    FuelCapacityByLevel[Level] := StrToInt(AnsiString(ExtractDelimitedPartW(Values, Level - Low(FuelCapacityByLevel), ',')));
   Block := LanguageDataConfig.GetBlockByPath('Items.Engine');
   EngineBaseSize := StrToInt(AnsiString(Block.GetParam('AverageSize')));
   Values := Block.GetParam('mSpeed');
-  for Level := 1 to 8 do EngineLevelStats[Level].Speed := StrToInt(AnsiString(ExtractDelimitedPartW(Values, Level - 1, ',')));
+  for Level := Low(EngineLevelStats) to High(EngineLevelStats) do
+    EngineLevelStats[Level].Speed := StrToInt(AnsiString(ExtractDelimitedPartW(Values, Level - Low(EngineLevelStats), ',')));
   Values := Block.GetParam('mJump');
-  for Level := 1 to 8 do EngineLevelStats[Level].JumpRange := StrToInt(AnsiString(ExtractDelimitedPartW(Values, Level - 1, ',')));
+  for Level := Low(EngineLevelStats) to High(EngineLevelStats) do
+    EngineLevelStats[Level].JumpRange := StrToInt(AnsiString(ExtractDelimitedPartW(Values, Level - Low(EngineLevelStats), ',')));
   AfterburnerSpeedFactor := ExtractDecimalToSingleW(Block.GetParam('ForsageCoef'));
   Block := LanguageDataConfig.GetBlockByPath('Items.RepairRobot');
   RepairRobotBaseSize := StrToInt(AnsiString(Block.GetParam('AverageSize')));
   Values := Block.GetParam('mRepair');
-  for Level := 1 to 8 do RepairRobotLevelPoints[Level] := StrToInt(AnsiString(ExtractDelimitedPartW(Values, Level - 1, ',')));
+  for Level := Low(RepairRobotLevelPoints) to High(RepairRobotLevelPoints) do
+    RepairRobotLevelPoints[Level] := StrToInt(AnsiString(ExtractDelimitedPartW(Values, Level - Low(RepairRobotLevelPoints), ',')));
   Block := LanguageDataConfig.GetBlockByPath('Items.DefGenerator');
   DefGeneratorBaseSize := StrToInt(AnsiString(Block.GetParam('AverageSize')));
   Values := Block.GetParam('mDef');
-  for Level := 1 to 8 do DefGeneratorLevelFactors[Level] := 1 - ExtractDecimalToSingleW(ExtractDelimitedPartW(Values, Level - 1, ','));
+  for Level := Low(DefGeneratorLevelFactors) to High(DefGeneratorLevelFactors) do
+    DefGeneratorLevelFactors[Level] := 1 - ExtractDecimalToSingleW(ExtractDelimitedPartW(Values, Level - Low(DefGeneratorLevelFactors), ','));
   Block := LanguageDataConfig.GetBlockByPath('Items.Radar');
   RadarBaseSize := StrToInt(AnsiString(Block.GetParam('AverageSize')));
   Values := Block.GetParam('mRadius');
-  for Level := 1 to 8 do RadarLevelRanges[Level] := StrToInt(AnsiString(ExtractDelimitedPartW(Values, Level - 1, ',')));
+  for Level := Low(RadarLevelRanges) to High(RadarLevelRanges) do
+    RadarLevelRanges[Level] := StrToInt(AnsiString(ExtractDelimitedPartW(Values, Level - Low(RadarLevelRanges), ',')));
   Block := LanguageDataConfig.GetBlockByPath('Items.Scaner');
   ScannerBaseSize := StrToInt(AnsiString(Block.GetParam('AverageSize')));
   Block := LanguageDataConfig.GetBlockByPath('Items.CargoHook');
   CargoHookBaseSize := StrToInt(AnsiString(Block.GetParam('AverageSize')));
   Values := Block.GetParam('mMass');
-  for Level := 1 to 8 do CargoHookLevelStats[Level].PickupPower := StrToInt(AnsiString(ExtractDelimitedPartW(Values, Level - 1, ',')));
+  for Level := Low(CargoHookLevelStats) to High(CargoHookLevelStats) do
+    CargoHookLevelStats[Level].PickupPower := StrToInt(AnsiString(ExtractDelimitedPartW(Values, Level - Low(CargoHookLevelStats), ',')));
   Values := Block.GetParam('mRadius');
-  for Level := 1 to 8 do CargoHookLevelStats[Level].Range := StrToInt(AnsiString(ExtractDelimitedPartW(Values, Level - 1, ',')));
+  for Level := Low(CargoHookLevelStats) to High(CargoHookLevelStats) do
+    CargoHookLevelStats[Level].Range := StrToInt(AnsiString(ExtractDelimitedPartW(Values, Level - Low(CargoHookLevelStats), ',')));
   Values := Block.GetParam('mSpeedFar');
-  for Level := 1 to 8 do CargoHookLevelStats[Level].MinPullSpeed := ExtractDecimalToSingleW(ExtractDelimitedPartW(Values, Level - 1, ','));
+  for Level := Low(CargoHookLevelStats) to High(CargoHookLevelStats) do
+    CargoHookLevelStats[Level].MinPullSpeed := ExtractDecimalToSingleW(ExtractDelimitedPartW(Values, Level - Low(CargoHookLevelStats), ','));
   Values := Block.GetParam('mSpeedClose');
-  for Level := 1 to 8 do CargoHookLevelStats[Level].MaxPullSpeed := ExtractDecimalToSingleW(ExtractDelimitedPartW(Values, Level - 1, ','));
+  for Level := Low(CargoHookLevelStats) to High(CargoHookLevelStats) do
+    CargoHookLevelStats[Level].MaxPullSpeed := ExtractDecimalToSingleW(ExtractDelimitedPartW(Values, Level - Low(CargoHookLevelStats), ','));
 end;
 { @end $832C94 }
 

@@ -137,6 +137,9 @@ impl Compiler {
             common["name"] = json!(d.name);
             common["source"] = json!(d.source);
             if d.kind == "routine" {
+                if d.is_inline_helper() {
+                    continue;
+                }
                 if yes(&d.data, "interface_method") || directive(&d, "abstract") {
                     if d.meta.contains_key("calls") {
                         common["decl"] = json!(self.prototype(&d)?);

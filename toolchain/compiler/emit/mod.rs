@@ -850,6 +850,17 @@ impl<'a> Emitter<'a> {
         }
         let library_units = self.library_units();
         for d in self.project.compiler.decls.clone() {
+            if d.is_inline_helper() {
+                for p in array(&d.data, "params") {
+                    if !p["type"].is_null() {
+                        self.typ(&p["type"])?;
+                    }
+                }
+                if !d.data["result"].is_null() {
+                    self.typ(&d.data["result"])?;
+                }
+                continue;
+            }
             let initialized = d.kind == "global" && d.data.get("initializer").is_some();
             if (!self.unqualified.contains(&d.name.to_lowercase())
                 || self.body_names.contains(&d.name.to_lowercase()))

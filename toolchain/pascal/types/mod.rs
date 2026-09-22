@@ -131,6 +131,7 @@ impl Compiler {
                 );
                 if !yes(&d.data, "interface_method")
                     && !directive(d, "abstract")
+                    && !d.is_inline_helper()
                     && (d.kind != "constant" || d.meta.contains_key("addr"))
                 {
                     let addr = d

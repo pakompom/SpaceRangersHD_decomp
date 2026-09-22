@@ -379,6 +379,16 @@ impl Parser<'_> {
         let virtual_method = directives
             .iter()
             .any(|s| matches!(s.as_str(), "virtual" | "override"));
+        let inline_helper = owner.is_none()
+            && external.is_none()
+            && matches!(kind.as_str(), "function" | "procedure")
+            && directives.iter().any(|s| s == "inline");
+        if inline_helper && !meta.contains_key("addr") {
+            ensure!(
+                meta.keys().all(|k| k == "note"),
+                "inline helpers without @addr have no native routine metadata"
+            );
+        }
         if self.annotated && !implementation && abstract_method {
             ensure!(
                 matches!(kind.as_str(), "function" | "procedure")
@@ -438,6 +448,7 @@ impl Parser<'_> {
                 || implementation
                 || interface_method
                 || meta.contains_key("addr")
+                || inline_helper
                 || abstract_method,
             "routine {name} needs @addr"
         );

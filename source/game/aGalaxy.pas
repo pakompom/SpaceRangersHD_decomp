@@ -3158,6 +3158,10 @@ end;
 
 { @routine $7A6AE4 TGalaxy_GenerateSpaceBackground }
 procedure TGalaxy.GenerateSpaceBackground(BackgroundIndex: Integer);
+const
+  MinGroupCount = 4;
+  MaxNearGroupCount = 5;
+  MaxFarGroupCount = 6;
 var
   EntryIndex, Capacity: Integer;
   I, GroupCount, GroupSize, J, K, ImageKind: Integer;
@@ -3207,7 +3211,7 @@ begin
   else Style := GameDataConfig.GetBlockByPath('StyleGarbage').GetParam(IntToStr(BackgroundIndex));
   ImageKindCount := CountDelimitedPartsW(Style, ',');
   for I := 0 to ImageKindCount - 1 do ImageKinds[I] := ExtractDigitsToIntW(ExtractDelimitedPartW(Style, I, ','));
-  GroupCount := Round((RadiusFraction * 1 + 4) * Density);
+  GroupCount := Round((RadiusFraction * (MaxNearGroupCount - MinGroupCount) + MinGroupCount) * Density);
   Quadrant := 0;
   for I := 0 to GroupCount - 1 do
   begin
@@ -3258,7 +3262,7 @@ begin
       end;
     end;
   end;
-  GroupCount := Round((RadiusFraction * 2 + 4) * Density);
+  GroupCount := Round((RadiusFraction * (MaxFarGroupCount - MinGroupCount) + MinGroupCount) * Density);
   for I := 0 to GroupCount - 1 do
   begin
     repeat
