@@ -290,10 +290,14 @@ type
   TWeaponAvailabilityMask = set of TWeaponAvailability; // @size $02
 
 
+  // English ShipType.Dominator entries name the same seven ordinary types in every series.
+  // Type zero selects the series boss: Blazer, Keller or Terron.
   TKlingType = (
-    ktBoss = 0, ktEquentor = 1, ktUrgant = 2, ktSmersh = 3,
-    ktMenok = 4, ktShtip = 5, ktBertor = 6, ktKlig = 7
+    ktBoss = 0, ktEquantor = 1, ktUrgant = 2, ktSmersh = 3,
+    ktMenoc = 4, ktShtip = 5, ktBertor = 6, ktKlig = 7
   ); // @size 0x1
+
+  TDominatorSeries = (dsBlazer = 0, dsKeller = 1, dsTerron = 2); // @size 0x1
 
   // Shared ship career category; non-ranger implementations can return a fixed career.
   TRangerCareer = (rcTrader = 0, rcPirate = 1, rcWarrior = 2); // @size 0x1
@@ -398,7 +402,7 @@ type
   TGoodsIndex = 0..7;
   TGoodsTextOrder = array[TGoodsIndex] of TGoodsIndex;
   PGoodsTextOrder = ^TGoodsTextOrder;
-  TDominatorSeriesNameTable = array[0..2] of WideString;
+  TDominatorSeriesNameTable = array[TDominatorSeries] of WideString;
   PDominatorSeriesNameTable = ^TDominatorSeriesNameTable;
   // Native record RTTI at $82A354.
 
@@ -484,8 +488,8 @@ type
   TByteMask = set of 0..7; // @size $01
   TOwnerMask = set of TOwnerId; // @size $01
   TShipStandings = set of TShipStanding; // @size $02 Faction and station-search filters; an empty station filter accepts every standing.
-  // Preserve the full byte for native membership checks; selected series are 0..2.
-  TDominatorSeriesMask = set of 0..7; // @size $01
+  // Series filters retain the native one-byte set storage and membership checks.
+  TDominatorSeriesMask = set of TDominatorSeries; // @size $01
 
   TPlanetOwnerMasks = packed record // @size 0x03
     Coalition: TOwnerMask; // @offset 0x00 Coalition owner IDs 0..4.
@@ -538,7 +542,6 @@ type
   TGalaxyDifficultyTuningTable = array[0..9] of TGalaxyDifficultyTuning;
   PGalaxyDifficultyTuningTable = ^TGalaxyDifficultyTuningTable;
 
-  TDominatorSeries = (dsBlazer = 0, dsKeller = 1, dsTerron = 2); // @size 0x1
   TFactionStrengthValues = array[TStarFaction] of Single;
 
   TStarStatus = record // @size $1C

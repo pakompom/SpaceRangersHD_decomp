@@ -197,7 +197,7 @@ begin
     else if Key = 'HACKER' then Result := Stats.SuccessfulDominatorHacks
     else if Key = 'PRISONBAIL' then Result := Stats.PrisonersBailedOut
     else if Key = 'DRAIN' then Result := Stats.DrainedHullPoints
-    else if Key = 'BERTORSLAYER' then Result := GetPlayer.DominatorKillsByType[Ord(ktBertor)]
+    else if Key = 'BERTORSLAYER' then Result := GetPlayer.DominatorKillsByType[ktBertor]
     else if Key = 'SIDECHANGER' then Result := GetPlayer.SideChangeCount
     ;
     if Result = StoredValue then Result := 0;

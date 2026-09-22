@@ -1089,7 +1089,7 @@ begin
     Inc(TotalShipKillCount);
     Inc(DominatorKillCount);
     Inc(CurrentSystemKills.Dominator);
-    AddRankPoints(NextRandomIntRange(DominatorShipDefinitions[Ord(ktShtip)].RankPoints, DominatorShipDefinitions[Ord(ktEquentor)].RankPoints, RandomState));
+    AddRankPoints(NextRandomIntRange(DominatorShipDefinitions[ktShtip].RankPoints, DominatorShipDefinitions[ktEquantor].RankPoints, RandomState));
     GainExperience(NextRandomIntRange(250, 500, Galaxy.RandomState), esUnscaled);
     AddWarriorCareerActivity(4);
     if (Galaxy.CurrentTurn < GalaxyWarmupTurns) and (((DominatorKillCount mod 13 = 0) and (NextRandomUnitFloat(RandomState) < 0.3)) or
@@ -2089,7 +2089,7 @@ begin
   begin
     if Victim is TKling then
     begin
-      if (Victim as TKling).KlingType = ktBertor then TrySetAchievementProgress('BERTORSLAYER', GetPlayer.DominatorKillsByType[6]);
+      if (Victim as TKling).KlingType = ktBertor then TrySetAchievementProgress('BERTORSLAYER', GetPlayer.DominatorKillsByType[ktBertor]);
       case (Victim as TKling).DominatorSeries of
         dsBlazer: TryAddAchievementProgress('REDKILLS', 1);
         dsTerron: TryAddAchievementProgress('GREENKILLS', 1);

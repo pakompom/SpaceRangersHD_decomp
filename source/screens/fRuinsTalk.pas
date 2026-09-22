@@ -29,11 +29,11 @@ type
   public
     ResearchItemVisited: array of Boolean; // @offset $F8
     ResearchItemIndexes: array of Integer; // @offset $FC Negative entries terminate the sorted sale list.
-    function SortResearchItems(Series: Byte): Integer; // @addr $5A7FA0 Returns inventory count; unused sorted slots are -1.
+    function SortResearchItems(Series: TDominatorSeries): Integer; // @addr $5A7FA0 Returns inventory count; unused sorted slots are -1.
     function IsResearchItemQuestLetter(Item: TItem): Boolean; // @addr $5A813C
-    function CountResearchRemains(Series: Byte; Count: Integer): Integer; // @addr $5A82A0
+    function CountResearchRemains(Series: TDominatorSeries; Count: Integer): Integer; // @addr $5A82A0
     function CountResearchEquipment(Count: Integer): Integer; // @addr $5A8354
-    procedure BuildResearchItemChoices(Series: Byte; var Text: WideString); // @addr $5A83EC
+    procedure BuildResearchItemChoices(Series: TDominatorSeries; var Text: WideString); // @addr $5A83EC
     StationOwner: TOwnerId; // @offset $EE Copied from the docked ship on entry.
     StationType: TStationType; // @offset $EF Copied from the docked ship on entry.
     procedure ContinueDominatorVictoryDialog(Action: Integer); // @addr $5AB3E4
@@ -325,11 +325,11 @@ var
   InvestmentMedicalBaseStar: TStar; // @addr $88A8C8
   InvestmentDefensePlanet: TPlanet; // @addr $88A8CC
   InvestmentQuoteCosts: array[TCoalitionProject] of Integer; // @addr $88A8D0
-  SelectedResearchSeries: Byte; // @addr $88A900
+  SelectedResearchSeries: TDominatorSeries; // @addr $88A900
   NearbyTradeAdviceCost: Integer; // @addr $88A904
   DistantTradeAdviceCost: Integer; // @addr $88A908
   PirateProgramQuoteCosts: array[TProgramIndex] of Integer; // @addr $88A90C
-  PirateChameleonQuoteCosts: array[0..2] of Integer; // @addr $88A93C
+  PirateChameleonQuoteCosts: array[TDominatorSeries] of Integer; // @addr $88A93C
   // Shared quote amounts are replaced when opening either banking dialog.
   StationImprovementItem: TEquipment; // @addr $88A948
   StationImprovementKind: TImprovementKind; // @addr $88A94C
@@ -717,7 +717,7 @@ end;
 { @end $5A7D4C }
 
 { @routine $5A7FA0 TfRuinsTalk_SortResearchItems }
-function TfRuinsTalk.SortResearchItems(Series: Byte): Integer;
+function TfRuinsTalk.SortResearchItems(Series: TDominatorSeries): Integer;
 var
   I, Count, BestIndex, SortedCount: Integer;
   Item: TEquipment;
@@ -741,7 +741,7 @@ var
     begin
       if Item is TUselessItem then
       begin
-        if TDominatorSeries(Series) = Item.DominatorSeries then Result.Priority := 5 else Result.Priority := 4;
+        if Series = Item.DominatorSeries then Result.Priority := 5 else Result.Priority := 4;
       end
       else if Item is TCountableItem then Result.Priority := 2
       else if Item is TMicroModule then Result.Priority := 1
@@ -819,7 +819,7 @@ end;
 { @end $5A813C }
 
 { @routine $5A82A0 TfRuinsTalk_CountResearchRemains }
-function TfRuinsTalk.CountResearchRemains(Series: Byte; Count: Integer): Integer;
+function TfRuinsTalk.CountResearchRemains(Series: TDominatorSeries; Count: Integer): Integer;
 var
   Matches, I, Index: Integer;
   Item: TEquipment;
@@ -830,7 +830,7 @@ begin
     Index := ResearchItemIndexes[I];
     if Index < 0 then Break;
     Item := GetPlayer.Inventory[Index];
-    if (Item.DominatorSeries = TDominatorSeries(Series)) and (Item is TUselessItem) then
+    if (Item.DominatorSeries = Series) and (Item is TUselessItem) then
       if (Item as TUselessItem).IsDominatorRemains and not IsResearchItemQuestLetter(Item) then Inc(Matches);
   end;
   Result := Matches;
@@ -856,7 +856,7 @@ end;
 { @end $5A8354 }
 
 { @routine $5A83EC TfRuinsTalk_BuildResearchItemChoices }
-procedure TfRuinsTalk.BuildResearchItemChoices(Series: Byte; var Text: WideString);
+procedure TfRuinsTalk.BuildResearchItemChoices(Series: TDominatorSeries; var Text: WideString);
 var
   I, Count, Index, Number: Integer;
   Item: TEquipment;
@@ -867,9 +867,9 @@ begin
   Count := SortResearchItems(Series);
   if CountResearchRemains(Series, Count) > 0 then
     case Series of
-      0: AddChoice('- ' + LocalizedColorText('FormRuins.SB.Scn.PlayerSaleAllUselessBlazer'), Count, SellResearchRemains);
-      1: AddChoice('- ' + LocalizedColorText('FormRuins.SB.Scn.PlayerSaleAllUselessKeller'), Count, SellResearchRemains);
-      2: AddChoice('- ' + LocalizedColorText('FormRuins.SB.Scn.PlayerSaleAllUselessTerron'), Count, SellResearchRemains);
+      dsBlazer: AddChoice('- ' + LocalizedColorText('FormRuins.SB.Scn.PlayerSaleAllUselessBlazer'), Count, SellResearchRemains);
+      dsKeller: AddChoice('- ' + LocalizedColorText('FormRuins.SB.Scn.PlayerSaleAllUselessKeller'), Count, SellResearchRemains);
+      dsTerron: AddChoice('- ' + LocalizedColorText('FormRuins.SB.Scn.PlayerSaleAllUselessTerron'), Count, SellResearchRemains);
     end;
   if CountResearchEquipment(Count) > 1 then
     AddChoice('- ' + LocalizedColorText('FormRuins.SB.Scn.PlayerSaleAllEq'), Count, SellResearchEquipment);
@@ -880,7 +880,7 @@ begin
     Item := GetPlayer.Inventory[Index];
     Inc(Number);
     Description := NormalizeTextHighlightColors(RemoveTextTagsW(Item.GetDisplayName)) + ' (' + WrapTextInColor(IntToStr(Item.Cost), TextHighlightColorTag) + ' cr)';
-    if (Item.DominatorSeries = TDominatorSeries(Series)) and (Item is TUselessItem) then Description := Description + Bonus;
+    if (Item.DominatorSeries = Series) and (Item is TUselessItem) then Description := Description + Bonus;
     Items := Items + #13#10 + IntToStr(Number) + ') ' + Description;
     AddChoice('- ' + FormatText1(LocalizedColorText('FormRuins.SB.Scn.PlayerSale'), '', '<ItemName>', Description), Index, SellResearchItem);
   end;
@@ -3330,24 +3330,24 @@ end;
 { @routine $5BB194 TfRuinsTalk_ShowPirateBaseChameleonDialog }
 procedure TfRuinsTalk.ShowPirateBaseChameleonDialog(Action: Integer);
 var
-  I: Byte;
+  I: TDominatorSeries;
   Text, SeriesName: WideString;
   Value, Cost: Integer;
   SeriesCost, BaseCost: Single;
 begin
   BaseCost := Max(1000, Galaxy.ComputeScaledBigMoney(GetPlayer.DockedTo.OwnerId));
   SeriesCost := 0;
-  for I := 0 to 2 do
+  for I := Low(TDominatorSeries) to High(TDominatorSeries) do
   begin
     case I of
-      1: SeriesCost := BaseCost * 1.1;
-      0: SeriesCost := BaseCost * 1.2;
-      2: SeriesCost := BaseCost * 1.3;
+      dsKeller: SeriesCost := BaseCost * 1.1;
+      dsBlazer: SeriesCost := BaseCost * 1.2;
+      dsTerron: SeriesCost := BaseCost * 1.3;
     end;
     PirateChameleonQuoteCosts[I] := Round(SeriesCost + GetPlayer.ChameleonCharges[I] * SeriesCost * 0.1);
   end;
   Text := '-----------------------' + #13#10;
-  for I := 0 to 2 do
+  for I := Low(TDominatorSeries) to High(TDominatorSeries) do
   begin
     SeriesName := LookupLocalizedTextByKey('ShipType.Dominator.' + DominatorSeriesNames[I] + '.0');
     Cost := PirateChameleonQuoteCosts[I];
@@ -3356,9 +3356,9 @@ begin
   Text := Text + '-----------------------';
   DialogText := FormatText1(LocalizedColorText('FormRuins.PB.Chameleon.PBAsk'), '', '<List>', Text);
   ClearChoices;
-  for I := 0 to 2 do
+  for I := Low(TDominatorSeries) to High(TDominatorSeries) do
   begin
-    Value := I;
+    Value := Ord(I);
     SeriesName := LookupLocalizedTextByKey('ShipType.Dominator.' + DominatorSeriesNames[I] + '.0');
     Cost := PirateChameleonQuoteCosts[I];
     Text := FormatText2(LocalizedColorText('FormRuins.PB.Chameleon.PlayerOk'), TextHighlightColorTag, '<Series>', SeriesName, '<Cost>', IntToStr(Cost));
@@ -3372,10 +3372,10 @@ end;
 { @routine $5BB720 TfRuinsTalk_BuyPirateBaseChameleon }
 procedure TfRuinsTalk.BuyPirateBaseChameleon(Action: Integer);
 var
-  Series: Byte;
+  Series: TDominatorSeries;
   Cost: Integer;
 begin
-  Series := Action;
+  Series := TDominatorSeries(Action);
   Cost := PirateChameleonQuoteCosts[Series];
   Inc(GetPlayer.ChameleonCharges[Series]);
   GetPlayer.SetMoney(Max(0, GetPlayer.Money - Cost));
@@ -3456,7 +3456,7 @@ end;
 { @routine $5BC3D8 TfRuinsTalk_ShowMilitaryBaseNextRankDialog }
 procedure TfRuinsTalk.ShowMilitaryBaseNextRankDialog(Action: Integer);
 var
-  I: Byte;
+  I: TKlingType;
   Token: WideString;
 begin
   DialogText := LocalizedColorText('FormRuins.WB.NextRank.WBAnswer');
@@ -3466,12 +3466,12 @@ begin
   ReplaceTextToken(DialogText, '<RankPointsForLiberationSystem>', IntToStr(30), TextHighlightColorTag);
   ReplaceTextToken(DialogText, '<RankPointsForDeadPirates>', IntToStr(10), TextHighlightColorTag);
   ReplaceTextToken(DialogText, '<RankPointsForDeadPiratesInGiperSpace>', IntToStr(2), TextHighlightColorTag);
-  for I := 0 to 7 do
-    if I <> 0 then
+  for I := Low(TKlingType) to High(TKlingType) do
+    if I <> ktBoss then
     begin
-      Token := '<Name' + IntToStr(I) + '>';
-      ReplaceTextToken(DialogText, Token, DominatorShipDefinitions[I].DisplayNames[Ord(dsBlazer)], '');
-      Token := '<RankPointsFor' + DominatorShipTypeNames[I] + '>';
+      Token := '<Name' + IntToStr(Ord(I)) + '>';
+      ReplaceTextToken(DialogText, Token, DominatorShipDefinitions[I].DisplayNames[dsBlazer], '');
+      Token := '<RankPointsFor' + DominatorShipTypeKeys[I] + '>';
       ReplaceTextToken(DialogText, Token, IntToStr(DominatorShipDefinitions[I].RankPoints), TextHighlightColorTag);
     end;
   M_Main(True);
@@ -4136,11 +4136,11 @@ begin
     begin
       Info := LocalizedColorText('FormRuins.SB.Scn.SBSectionInfoAdd');
       if GetPlayer.CountUnequippedDominatorEquipment > 0 then
-        AddChoice('- ' + LocalizedColorText('FormRuins.SB.Scn.Section' + DominatorSeriesNames[Ord(Series)]), Ord(Series) + 1, SelectScienceBaseResearchSection)
-      else AddChoice('- ' + LocalizedColorText('FormRuins.SB.Scn.Section' + DominatorSeriesNames[Ord(Series)]), 0, ScriptDialogBlockCallback);
-  ReplaceTextToken(Info, '<Count>', IntToStr(Galaxy.DominatorResearch[Ord(Series)].Material), TextHighlightColorTag);
+        AddChoice('- ' + LocalizedColorText('FormRuins.SB.Scn.Section' + DominatorSeriesNames[Series]), Ord(Series) + 1, SelectScienceBaseResearchSection)
+      else AddChoice('- ' + LocalizedColorText('FormRuins.SB.Scn.Section' + DominatorSeriesNames[Series]), 0, ScriptDialogBlockCallback);
+  ReplaceTextToken(Info, '<Count>', IntToStr(Galaxy.DominatorResearch[Series].Material), TextHighlightColorTag);
   ReplaceTextToken(Info, '<Speed>', IntToStr(Galaxy.GetDominatorResearchEfficiency(Series)), TextHighlightColorTag);
-  ReplaceTextToken(Info, '<Day>', IntToStr(Round(Max(1.0, (100 - Galaxy.DominatorResearch[Ord(Series)].Progress) / Galaxy.GetDominatorResearchRate(Series)))), TextHighlightColorTag);
+  ReplaceTextToken(Info, '<Day>', IntToStr(Round(Max(1.0, (100 - Galaxy.DominatorResearch[Series].Progress) / Galaxy.GetDominatorResearchRate(Series)))), TextHighlightColorTag);
     end
     else Info := LocalizedColorText('FormRuins.SB.Scn.SBSectionInfoEnd');
     case Series of
@@ -4161,7 +4161,7 @@ end;
 procedure TfRuinsTalk.SelectScienceBaseResearchSection(Action: Integer);
 var
   Text: WideString;
-  Series: Byte;
+  Series: TDominatorSeries;
 begin
   ClearChoices;
   if Action = 0 then
@@ -4172,7 +4172,7 @@ begin
   else
   begin
     Text := '';
-    Series := Action - 1;
+    Series := TDominatorSeries(Action - 1);
     SelectedResearchSeries := Series;
     BuildResearchItemChoices(Series, Text);
     DialogText := LocalizedColorText('FormRuins.SB.Scn.SBSection1');
@@ -4196,7 +4196,7 @@ begin
   for I := GetPlayer.Inventory.Count - 1 downto 0 do
   begin
     Item := GetPlayer.Inventory[I];
-    if (Item.OwnerId = oiDominator) and (Item.DominatorSeries = TDominatorSeries(SelectedResearchSeries)) and (Item.NoDropFlag = 0) and (Item is TUselessItem) then
+    if (Item.OwnerId = oiDominator) and (Item.DominatorSeries = SelectedResearchSeries) and (Item.NoDropFlag = 0) and (Item is TUselessItem) then
       if not IsResearchItemQuestLetter(Item as TUselessItem) and (Item.CustomFaction = '') then
     begin
       Inc(Galaxy.DominatorResearch[SelectedResearchSeries].Material, Item.Weight);
@@ -4273,7 +4273,7 @@ var
 begin
   Item := GetPlayer.Inventory[Action];
   Inc(Galaxy.DominatorResearch[SelectedResearchSeries].Material, Item.Weight);
-  if (Item.DominatorSeries = TDominatorSeries(SelectedResearchSeries)) and (Item is TUselessItem) then Money := Item.Cost * 2
+  if (Item.DominatorSeries = SelectedResearchSeries) and (Item is TUselessItem) then Money := Item.Cost * 2
   else Money := Item.Cost;
   GetPlayer.SetMoney(GetPlayer.Money + Money);
   SoundManager.PlaySound('Sound.Sell');
@@ -4314,7 +4314,7 @@ procedure TfRuinsTalk.BuyScienceBaseResearchProgram(Action: Integer);
 var
   Cost: Integer;
 begin
-  SelectedResearchSeries := Action - 1;
+  SelectedResearchSeries := TDominatorSeries(Action - 1);
   Cost := RoundAndTruncateToHundreds(Min(Galaxy.ComputeScaledHugeMoney(oiHuman) * 2, GetPlayer.Wealth div 30) * ResearchProgramCostFactors[SelectedResearchSeries]);
   DialogText := LocalizedColorText('FormRuins.SB.Scn.SBBuyTech' + DominatorSeriesNames[SelectedResearchSeries]);
   ReplaceTextToken(DialogText, '<Money>', IntToStr(Cost), TextHighlightColorTag);
@@ -4336,9 +4336,9 @@ begin
   GetPlayer.SetMoney(GetPlayer.Money - Cost);
   SoundManager.PlaySound('Sound.Sell');
   case SelectedResearchSeries of
-    Ord(dsBlazer): GetPlayer.ProgramCounts[prgLogicalNegation] := 1;
-    Ord(dsKeller): GetPlayer.ProgramCounts[prgDematerial] := 1;
-    Ord(dsTerron): GetPlayer.ProgramCounts[prgEnergotron] := 1;
+    dsBlazer: GetPlayer.ProgramCounts[prgLogicalNegation] := 1;
+    dsKeller: GetPlayer.ProgramCounts[prgDematerial] := 1;
+    dsTerron: GetPlayer.ProgramCounts[prgEnergotron] := 1;
   end;
   DialogText := LocalizedColorText('FormRuins.SB.Scn.SBAfterPlayerBuyTech' + DominatorSeriesNames[SelectedResearchSeries]);
   ReplaceTextToken(DialogText, '<Money>', IntToStr(Cost), TextHighlightColorTag);

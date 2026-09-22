@@ -985,7 +985,7 @@ begin
       MouseEnterCallback := ShowShipPropertyInfo;
       MouseLeaveCallback := HideShipPropertyInfo;
     end;
-    if PlayerHoldShip is TKling then SetImagePath(RankToImage(Byte(DominatorShipDefinitions[Ord((PlayerHoldShip as TKling).KlingType)].RankImageIndex)))
+    if PlayerHoldShip is TKling then SetImagePath(RankToImage(Byte(DominatorShipDefinitions[(PlayerHoldShip as TKling).KlingType].RankImageIndex)))
     else if PlayerHoldShip is TRuins then SetImagePath(RankToImage(6))
     else if PlayerHoldShip is TTranclucator then SetImagePath(RankToImage(3))
     else if (PlayerHoldShip is TNormalShip) and (PlayerHoldShip.OwnerId <> oiPirate) then SetImagePath(RankToImage((PlayerHoldShip as TNormalShip).Rank))
@@ -3535,7 +3535,7 @@ function TfShip2.ConfigureChameleon: Boolean;
 var
   Choice, ExpectedCharges, I: Integer;
   Series: TDominatorSeries;
-  VisualType: Byte;
+  VisualType: TKlingType;
   Ship: TShip;
 
   // @nested $700FFC ChameleonDialogChoiceToSeries
@@ -3557,7 +3557,7 @@ begin
     Galaxy.CheckIntegrityChecksum1(427);
     ReturnSelectedHoldEntry;
     VisualType := PlayerHoldShip.SelectChameleonVisualType;
-    if ShowChameleonDialog(Self,PlayerHoldShip.ChameleonCharges[0],PlayerHoldShip.ChameleonCharges[1],PlayerHoldShip.ChameleonCharges[2],
+    if ShowChameleonDialog(Self,PlayerHoldShip.ChameleonCharges[dsBlazer],PlayerHoldShip.ChameleonCharges[dsKeller],PlayerHoldShip.ChameleonCharges[dsTerron],
       VisualType,PlayerHoldShip.ChameleonActive,Choice) = 1 then
     begin
       if Choice = 1 then
@@ -3573,12 +3573,12 @@ begin
       else
       begin
         Series := ChameleonDialogChoiceToSeries(Choice);
-        ExpectedCharges := Max(0,PlayerHoldShip.ChameleonCharges[Ord(Series)] - 1);
-        PlayerHoldShip.ChameleonCharges[Ord(Series)] := ExpectedCharges;
+        ExpectedCharges := Max(0,PlayerHoldShip.ChameleonCharges[Series] - 1);
+        PlayerHoldShip.ChameleonCharges[Series] := ExpectedCharges;
         PlayerHoldShip.ChameleonSeries := Series;
         PlayerHoldShip.ChameleonActive := True;
         SysUtils.Sleep(1);
-        if (PlayerHoldShip.ChameleonCharges[Ord(Series)] <> ExpectedCharges) and not GR_Main.CCInterface.GetTamperDetected then
+        if (PlayerHoldShip.ChameleonCharges[Series] <> ExpectedCharges) and not GR_Main.CCInterface.GetTamperDetected then
           GR_Main.CCInterface.SetTamperDetected(True);
       end;
       ReleaseSpaceObject(PlayerHoldShip.Graphic);
@@ -7117,7 +7117,7 @@ var
   I, Kind, Turn: Integer;
   ProgramIndex: TProgramIndex;
   Name, SeriesName, TypeName, CountText, Text, ChargesText, Description, Title: WideString;
-  ColorIndex: Byte;
+  Series: TDominatorSeries;
   Info: PCustomShipInfo;
   Block: TBlockParEC;
 
@@ -7151,14 +7151,14 @@ var
     Panel.VerticalScrollBar.SetSmallChange(LabelControl.GetLineHeight);
   end;
 
-  // @nested $710030 GetShipInfoColor
-  function GetShipInfoColor(ColorIndex: Byte): WideString; // @addr $710030 @calls "0x710A3A" Nested in BuildAdditionalInfoPanel; does not access its parent frame.
+  // @nested $710030 ChameleonSeriesColor
+  function ChameleonSeriesColor(Series: TDominatorSeries): WideString; // @addr $710030 @calls "0x710A3A" Nested in BuildAdditionalInfoPanel; does not access its parent frame.
   begin
     Result := '';
-    case ColorIndex of
-      0: Result := RedColorTag;
-      1: Result := AzureColorTag;
-      2: Result := GreenColorTag;
+    case Series of
+      dsBlazer: Result := RedColorTag;
+      dsKeller: Result := AzureColorTag;
+      dsTerron: Result := GreenColorTag;
     end;
   end;
 
@@ -7229,8 +7229,8 @@ begin
       Text := '';
       if GetPlayer.ChameleonActive then
       begin
-        SeriesName := LookupLocalizedTextByKey('ShipType.Dominator.' + DominatorSeriesNames[Ord(GetPlayer.ChameleonSeries)] + '.0');
-        TypeName := LookupLocalizedTextByKey('ShipType.Dominator.' + DominatorSeriesNames[Ord(GetPlayer.ChameleonSeries)] + '.' + IntToStr(GetPlayer.ChameleonVisualType));
+        SeriesName := LookupLocalizedTextByKey('ShipType.Dominator.' + DominatorSeriesNames[GetPlayer.ChameleonSeries] + '.0');
+        TypeName := LookupLocalizedTextByKey('ShipType.Dominator.' + DominatorSeriesNames[GetPlayer.ChameleonSeries] + '.' + IntToStr(Ord(GetPlayer.ChameleonVisualType)));
         CountText := IntToStr(GetPlayer.ChameleonDisplayCount);
         Text := FormatText3(LocalizedText('ShipInfo.AddInfo.Chameleon.Text'),TextHighlightColorTag,'<Series>',SeriesName,'<Type>',TypeName,'<Count>',CountText);
       end;
@@ -7239,13 +7239,13 @@ begin
         if Length(Text) > 0 then Text := Text + #13#10;
         Text := Text + LocalizedText('ShipInfo.AddInfo.Chameleon.Charge');
         ChargesText := '';
-        for ColorIndex := 0 to 2 do
-          if GetPlayer.ChameleonCharges[ColorIndex] > 0 then
+        for Series := Low(TDominatorSeries) to High(TDominatorSeries) do
+          if GetPlayer.ChameleonCharges[Series] > 0 then
           begin
-            SeriesName := LookupLocalizedTextByKey('ShipType.Dominator.' + DominatorSeriesNames[ColorIndex] + '.0');
-            CountText := FormatText1(LocalizedText('ShipInfo.AddInfo.Chameleon.Count'),TextHighlightColorTag,'<Count>',IntToStr(GetPlayer.ChameleonCharges[ColorIndex]));
+            SeriesName := LookupLocalizedTextByKey('ShipType.Dominator.' + DominatorSeriesNames[Series] + '.0');
+            CountText := FormatText1(LocalizedText('ShipInfo.AddInfo.Chameleon.Count'),TextHighlightColorTag,'<Count>',IntToStr(GetPlayer.ChameleonCharges[Series]));
             if Length(ChargesText) > 0 then ChargesText := ChargesText + #13#10;
-            ChargesText := ChargesText + WrapTextInColor(SeriesName,GetShipInfoColor(ColorIndex)) + ' - ' + CountText;
+            ChargesText := ChargesText + WrapTextInColor(SeriesName,ChameleonSeriesColor(Series)) + ' - ' + CountText;
           end;
         Text := Text + #13#10 + ChargesText;
       end;

@@ -1360,7 +1360,7 @@ end;
 
 var
   // Native managed-string initialization pairs at $7E3C0C, $7E3C04 and $7E3BFC.
-  ShopDominatorImagePrefixes: array[0..2] of WideString = ('B', 'K', 'T'); // @addr $87CD18
+  ShopDominatorImagePrefixes: TDominatorSeriesNameTable = ('B', 'K', 'T'); // @addr $87CD18
 
 { @routine $7E2450 TfEquipmentShop_RefreshHullInfo }
 procedure TfEquipmentShop.RefreshHullInfo(Target: TMessageLoopGI; Hull: THull; Text: WideString; SuppressImage: Boolean);
@@ -1370,7 +1370,7 @@ var
   Control: TObjectGI;
   I: Integer;
   PreviewPath, SeriesName: WideString;
-  HullKind: THullType; DisplayKind: Byte;
+  HullKind: THullType; DisplayKind: TKlingType;
   Series: TDominatorSeries;
   BarWidth, CapWidth, MinimumWidth: Integer;
   UnusedNativeLocal: array[0..7] of Byte; { Eight unreferenced frame bytes precede the managed temporaries; original local type is unknown. }
@@ -1401,11 +1401,11 @@ begin
   Target.GetByName('InfoHull_RepairRobot').SetActive(not (Hull.GetSlotCount(sskRepairRobot) >= 1));
   Target.GetByName('InfoHull_CargoHook').SetActive(not (Hull.GetSlotCount(sskCargoHook) >= 1));
   Target.GetByName('InfoHull_DefGenerator').SetActive(not (Hull.GetSlotCount(sskDefGenerator) >= 1));
-  DisplayKind := 0;
+  DisplayKind := ktBoss;
   Series := dsBlazer;
   HullKind := Hull.HullType;
   if (Hull.OwnerShip <> nil) and (GetPlayer = Hull.OwnerShip) and GetPlayer.ChameleonActive and
-    (GetPlayer.ChameleonVisualType in [0..7]) and (GetPlayer.ChameleonVisualType <> 0) then
+    (GetPlayer.ChameleonVisualType in [Low(TKlingType)..High(TKlingType)]) and (GetPlayer.ChameleonVisualType <> ktBoss) then
   begin
     HullKind := htKling;
     DisplayKind := GetPlayer.ChameleonVisualType;
@@ -1414,7 +1414,7 @@ begin
   if (Hull.OwnerShip <> nil) and (TObject(Hull.OwnerShip) is TKling) then
   begin
     HullKind := htKling;
-    DisplayKind := Byte((TObject(Hull.OwnerShip) as TKling).KlingType);
+    DisplayKind := (TObject(Hull.OwnerShip) as TKling).KlingType;
     Series := (TObject(Hull.OwnerShip) as TKling).DominatorSeries;
   end;
   if not SuppressImage then
@@ -1424,7 +1424,7 @@ begin
       begin
         SetImagePath('GraphBuf');
         PreviewPath := '';
-        if DisplayKind <> 0 then PreviewPath := GameDataConfig.GetParamByPathOrMarker('SE.Ship.' + DominatorSeriesNames[Ord(Series)] + '.' + ShopDominatorImagePrefixes[Ord(Series)] + IntToWideString(DisplayKind) + '.' + GiResourceSuffix + 'ImageP');
+        if DisplayKind <> ktBoss then PreviewPath := GameDataConfig.GetParamByPathOrMarker('SE.Ship.' + DominatorSeriesNames[Series] + '.' + ShopDominatorImagePrefixes[Series] + IntToWideString(Ord(DisplayKind)) + '.' + GiResourceSuffix + 'ImageP');
         if PreviewPath <> '' then
           with GraphBufControl do
           begin
@@ -1437,7 +1437,7 @@ begin
           with GraphBufControl do
           begin
             SourceHasPerPixelAlpha := True;
-            if DisplayKind = 0 then
+            if DisplayKind = ktBoss then
               case Series of
                 dsTerron: LoadGiByPathIntoGraphBuf('Bm.Ruins.Terroni', GraphBuf);
                 dsKeller: LoadGiByPathIntoGraphBuf('Bm.Ruins.Kelleri', GraphBuf);

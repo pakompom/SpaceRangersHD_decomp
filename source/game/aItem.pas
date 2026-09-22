@@ -1038,7 +1038,7 @@ function TItem.GetOwnerConfigName: WideString;
 begin
   if Self is TGoods then Result := OwnerInfo[oiUninhabited].InternalName
   else if TEquipment(Self).CustomFaction <> '' then Result := TEquipment(Self).CustomFaction
-  else if (OwnerId = oiDominator) and (Self is TEquipment) then Result := DominatorSeriesNames[Ord(TEquipment(Self).DominatorSeries)]
+  else if (OwnerId = oiDominator) and (Self is TEquipment) then Result := DominatorSeriesNames[TEquipment(Self).DominatorSeries]
   else if (Self is THull) and (Self as THull).PirateBuilt then Result := OwnerInfo[oiPirate].InternalName + OwnerToSys(OwnerId)
   else Result := OwnerInfo[OwnerId].InternalName;
 end;
@@ -1309,14 +1309,14 @@ begin
     if Text <> '' then
       Block.AddParam(DecodeTextW('IaEoxRtfrGahSjp6etcEi3awlhs4'), Text); // 'IExtraSpecials'
   end;
-  Block.AddParam(DecodeTextW('D9o5meScewr3iwegs4'), DominatorSeriesNames[Ord(DominatorSeries)]); // 'DomSeries'
+  Block.AddParam(DecodeTextW('D9o5meScewr3iwegs4'), DominatorSeriesNames[DominatorSeries]); // 'DomSeries'
 end;
 { @end $7F0B6C }
 
 { @routine $7F1064 TEquipment_LoadFromBlock }
 procedure TEquipment.LoadFromBlock(Block: TBlockParEC);
 var
-  I: Integer;
+  SeriesIndex: Integer;
   Text: WideString;
 begin
   inherited LoadFromBlock(Block);
@@ -1325,8 +1325,8 @@ begin
   MicroModuleIndex := StrToInt(Block.GetParam(DecodeTextW('BrognWulso'))); // 'Bonus'
   SpecialModuleIndex := StrToInt(Block.GetParam(DecodeTextW('SrpeeIcjigaEl4'))); // 'Special'
   Text := Block.GetParam(DecodeTextW('D9o5meScewr3iwegs4')); // 'DomSeries'
-  for I := 0 to 2 do
-    if Text = DominatorSeriesNames[Byte(I)] then DominatorSeries := TDominatorSeries(I);
+  for SeriesIndex := Ord(Low(TDominatorSeries)) to Ord(High(TDominatorSeries)) do
+    if Text = DominatorSeriesNames[TDominatorSeries(SeriesIndex)] then DominatorSeries := TDominatorSeries(SeriesIndex);
 end;
 { @end $7F1064 }
 
@@ -4619,7 +4619,7 @@ begin
   if ConfigName = 'Remains' then begin
     repeat
       ConfigBlockName := 'Remains_' + IntToStr(SeededRandomIntRange(0, UselessItemRemainsCount - 1, Seed));
-      if Pos(DominatorSeriesNames[Ord(Series)], LookupLocalizedTextByKey('UselessItems.' + ConfigBlockName + '.Owner')) > 0 then Break;
+      if Pos(DominatorSeriesNames[Series], LookupLocalizedTextByKey('UselessItems.' + ConfigBlockName + '.Owner')) > 0 then Break;
       Inc(Seed);
     until False;
   end else ConfigBlockName := ConfigName;
@@ -5559,10 +5559,10 @@ begin
       Exit;
     end;
     if (Item.OwnerId = oiUninhabited) or ((Item.OwnerId = oiDominator) and
-      (MicroModuleTemplates[ModuleIndex].AllowedDominatorSeriesMask <> [Ord(dsBlazer)..Ord(dsTerron)])) then Exit;
+      (MicroModuleTemplates[ModuleIndex].AllowedDominatorSeriesMask <> [dsBlazer..dsTerron])) then Exit;
   end;
   Result := Item.OwnerId in MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask;
-  if (Item.OwnerId = oiDominator) and not (Byte(Item.DominatorSeries) in
+  if (Item.OwnerId = oiDominator) and not (Item.DominatorSeries in
     MicroModuleTemplates[ModuleIndex].AllowedDominatorSeriesMask) then Result := False;
 end;
 { @end $8094A0 }
@@ -5580,11 +5580,11 @@ begin
       Exit;
     end;
     if (Hull.OwnerId = oiUninhabited) or ((Hull.OwnerId = oiDominator) and
-      (MicroModuleTemplates[ModuleIndex].AllowedDominatorSeriesMask <> [Ord(dsBlazer)..Ord(dsTerron)])) then Exit;
+      (MicroModuleTemplates[ModuleIndex].AllowedDominatorSeriesMask <> [dsBlazer..dsTerron])) then Exit;
   end;
   if ((Hull.OwnerId in MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask) or
     (Hull.PirateBuilt and (oiPirate in MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask))) and
-    ((Hull.OwnerId <> oiDominator) or (Byte(Hull.DominatorSeries) in
+    ((Hull.OwnerId <> oiDominator) or (Hull.DominatorSeries in
       MicroModuleTemplates[ModuleIndex].AllowedDominatorSeriesMask)) then Result := True;
 end;
 { @end $809600 }
@@ -5597,9 +5597,9 @@ begin
   if ((Weapon.CustomFaction <> '') and
     (Pos('<' + Weapon.CustomFaction + '>', MicroModuleTemplates[ModuleIndex].AllowedCustomHullFactions) > 0)) or
     ((Weapon.OwnerId in MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask) and
-     ((Weapon.OwnerId <> oiDominator) or (Byte(Weapon.DominatorSeries) in MicroModuleTemplates[ModuleIndex].AllowedDominatorSeriesMask)) and
+     ((Weapon.OwnerId <> oiDominator) or (Weapon.DominatorSeries in MicroModuleTemplates[ModuleIndex].AllowedDominatorSeriesMask)) and
      ((Weapon.CustomFaction = '') or ((Weapon.OwnerId <> oiUninhabited) and ((Weapon.OwnerId <> oiDominator) or
-       (MicroModuleTemplates[ModuleIndex].AllowedDominatorSeriesMask = [0..2]))))) then
+       (MicroModuleTemplates[ModuleIndex].AllowedDominatorSeriesMask = [dsBlazer..dsTerron]))))) then
   begin
     if Weapon.ItemType in [t_IndustrialLaser..t_Lirecron] then
     begin

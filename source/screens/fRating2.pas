@@ -1281,7 +1281,7 @@ end;
 
 { @routine $56C768 TfRating2_ShowDominatorKillsHint }
 procedure TfRating2.ShowDominatorKillsHint(Sender: TObjectGI);
-var I: Byte; Cursor: TPoint; Text: WideString; Ranger: TRanger;
+var DisplayIndex: TDominatorDisplayIndex; Cursor: TPoint; Text: WideString; Ranger: TRanger;
   // @nested $56C708 FormatDominatorKillsHintColumn
   function FormatDominatorKillsHintColumn(Column: Integer): WideString; // @addr 0x56C708 @calls "0x56c93f,0x56c99e,0x56ca03,0x56ca20" @note "Nested in TfRating2.ShowDominatorKillsHint; caller supplies its parent frame."
   begin
@@ -1309,11 +1309,11 @@ begin
   if GetPlayer = Ranger then
   begin
   Text := '<td=' + FormatDominatorKillsHintColumn(1) + '><align=left>' + LocalizedText('FormRating.Dominator') + '</align>' + #13#10;
-  for I := 0 to 7 do
-    if Ord(DominatorDisplayOrder[I]) <> 0 then
-    Text := Text + '<td=' + FormatDominatorKillsHintColumn(1) + '><align=left>' + LocalizedColorText(AnsiString('ShipType.Dominator.Blazer.') + IntToStr(Ord(DominatorDisplayOrder[I]))) +
+  for DisplayIndex := Low(DominatorDisplayOrder) to High(DominatorDisplayOrder) do
+    if DominatorDisplayOrder[DisplayIndex] <> ktBoss then
+    Text := Text + '<td=' + FormatDominatorKillsHintColumn(1) + '><align=left>' + LocalizedColorText(AnsiString('ShipType.Dominator.Blazer.') + IntToStr(Ord(DominatorDisplayOrder[DisplayIndex]))) +
       '<td=' + FormatDominatorKillsHintColumn(2) + '>:</align><td=' + FormatDominatorKillsHintColumn(3) + '><align=left>' +
-      WrapTextInColor(IntToStr(GetPlayer.DominatorKillsByType[Ord(DominatorDisplayOrder[I])]) ,TextHighlightColorTag) + '</align>' + #13#10;
+      WrapTextInColor(IntToStr(GetPlayer.DominatorKillsByType[DominatorDisplayOrder[DisplayIndex]]) ,TextHighlightColorTag) + '</align>' + #13#10;
   with GetByName('RewardText') as TLabelGI do SetText(Text);
   end;
   with GetByName('RewardImage') as TGraphBufGI do

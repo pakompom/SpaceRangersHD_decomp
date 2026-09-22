@@ -6803,8 +6803,8 @@ begin
                begin
                  IsCivilized := Planet^.OwnerId = oiDominator;
                  if IsCivilized then
-                   IsCivilized := (Planet^.Faction = DominatorSeriesNames[0]) or
-                                  (Planet^.Faction = DominatorSeriesNames[2]) or (Planet^.Faction = DominatorSeriesNames[1]);
+                   IsCivilized := (Planet^.Faction = DominatorSeriesNames[dsBlazer]) or
+                                  (Planet^.Faction = DominatorSeriesNames[dsTerron]) or (Planet^.Faction = DominatorSeriesNames[dsKeller]);
                  if IsCivilized then Text := LocalizedText('Planet.Kling.Info.TextAboutPlanet')
                  else Text := LocalizedText('Planet.' + Planet^.Faction + '.Info.TextAboutPlanet');
                  ReplaceTextToken(Text, '<Race>', OwnerInfo[RaceToOwner(Planet^.RaceId)].DisplayName,

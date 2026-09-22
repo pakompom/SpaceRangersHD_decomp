@@ -225,7 +225,7 @@ type
     KellerTargetStar: TStar; // @offset 0xC8
     KellerMissionState: Integer; // @offset 0xCC
     ChecksumScalarD0: Single; // @offset $D0 Read as Single by the dormant checksum; gameplay meaning unresolved.
-    DominatorResearch: array[0..2] of TDominatorResearchEntry; // @offset 0xD4  TDominatorSeries order.
+    DominatorResearch: array[TDominatorSeries] of TDominatorResearchEntry; // @offset 0xD4  TDominatorSeries order.
     ChecksumScalarEC: Single; // @offset $EC Read as Single by the dormant checksum; gameplay meaning unresolved.
     TechLevel: Byte; // @offset 0xF0
     WarDeltaWin: array[0..2] of Integer; // @offset 0xF4  Script.DeltaWin faction indices.
@@ -1023,14 +1023,14 @@ end;
 
 { @routine $79D768 TGalaxy_InitializeCampaignState }
 procedure TGalaxy.InitializeCampaignState;
-var I: Byte;
+var I: TDominatorSeries;
 begin
   CurrentTurn := 0;
   PirateCount := 0;
   TransportCount := 0;
   StarMapWeaponPanelOpen := True;
   ChecksumScalarD0 := 0;
-  for I := 0 to 2 do begin
+  for I := Low(TDominatorSeries) to High(TDominatorSeries) do begin
     DominatorResearch[I].Progress := 0;
     case DifficultyLevels[2] of
       0: DominatorResearch[I].Material := 200;
@@ -1062,7 +1062,7 @@ procedure TGalaxy.SaveToBuffer(Buffer: TBufEC);
 var I, J, Count: Integer; Star: TStar; Planet: TPlanet; Ranger: TRanger;
   OldQuest: PPlayerOldQuest; Gate: PJumpGateEntry; Constellation: TConstellation;
   Template: TScriptTemplUnit; Script: TScript; Group: TGroup; ShopSlot: TShopSlot;
-  Hole: THole; Career: TRangerCareer; News: PPlanetNewsEntry; Series, Difficulty: Byte;
+  Hole: THole; Career: TRangerCareer; News: PPlanetNewsEntry; Series: TDominatorSeries; Difficulty: Byte;
   Stored: TStoredItem; WeaponInfo: PWeaponInfo; Race: TOwnerId;
 begin
   if (TemporaryShopSlots <> nil) and (GetPlayer.CurrentPlanet <> TemporaryShopPlanet) and
@@ -1250,7 +1250,7 @@ begin
   Buffer.AddDWord(ReservedMessageCounter);
   Buffer.AddDWord(TurnsSinceLastShipMessage);
   Buffer.AddSingle(ChecksumScalarD0);
-  for Series := 0 to 2 do begin
+  for Series := Low(TDominatorSeries) to High(TDominatorSeries) do begin
     Buffer.AddSingle(DominatorResearch[Series].Progress);
     Buffer.AddDWord(DominatorResearch[Series].Material);
   end;
@@ -1384,7 +1384,7 @@ var I, J, K, Count, TemplateIndex, ShipCount: Integer; X, Y: Single;
   Gate: PJumpGateEntry; Constellation: TConstellation; Template: TScriptTemplUnit;
   Script: TScript; Group: TGroup; ShopSlot: TShopSlot; Hole: THole; Career: TRangerCareer;
   News: PPlanetNewsEntry; Variables: TVarArrayEC; Variable, Existing: TVarEC;
-  Series, Difficulty: Byte; LoadedPlanet: TPlanet; SavedRandomState: Cardinal;
+  Series: TDominatorSeries; Difficulty: Byte; LoadedPlanet: TPlanet; SavedRandomState: Cardinal;
   Event: TGalaxyEvent; StateOverride: TInterfaceStateOverride;
   TextOverride: TInterfaceTextOverride; ImageOverride: TInterfaceImageOverride;
   PositionOverride: TInterfacePosOverride; SizeOverride: TInterfaceSizeOverride;
@@ -1697,7 +1697,7 @@ begin
     ReservedMessageCounter := Buffer.GetUInt32;
     TurnsSinceLastShipMessage := Buffer.GetUInt32;
     ChecksumScalarD0 := Buffer.GetSingle;
-    for Series := 0 to 2 do begin
+    for Series := Low(TDominatorSeries) to High(TDominatorSeries) do begin
       DominatorResearch[Series].Progress := Buffer.GetSingle;
       DominatorResearch[Series].Material := Buffer.GetUInt32;
     end;
@@ -2509,7 +2509,7 @@ begin
     end;
     if Self.TerronSeriesResolvedTurn <> 0 then
     begin
-      Self.DominatorResearch[2].Progress := 100;
+      Self.DominatorResearch[dsTerron].Progress := 100;
       if Self.CoalitionDefeatedTurn = 0 then
         AddOrUpdatePlayerBubble(pmQuestActive, Self.TerronSeriesResolvedTurn, ReplaceColoredToken(LocalizedColorText('FormRuinsRC.Win.AddNews'), '<Date>', FormatGameTurnDate(Self.TerronSeriesResolvedTurn), TextHighlightColorTag), 'TerronWin');
     end;
@@ -2529,7 +2529,7 @@ begin
     if Self.KellerResearchTargetStarId <> 0 then Self.KellerSeriesResolvedTurn := Self.CurrentTurn;
     if Self.KellerSeriesResolvedTurn <> 0 then
     begin
-      Self.DominatorResearch[1].Progress := 100;
+      Self.DominatorResearch[dsKeller].Progress := 100;
       if Self.CoalitionDefeatedTurn = 0 then
         AddOrUpdatePlayerBubble(pmQuestActive, Self.KellerSeriesResolvedTurn, ReplaceColoredToken(LocalizedColorText('FormRuinsRC.Win.AddNews'), '<Date>', FormatGameTurnDate(Self.KellerSeriesResolvedTurn), TextHighlightColorTag), 'KellerWin');
     end;
@@ -2552,7 +2552,7 @@ begin
     end;
     if Self.BlazerSeriesResolvedTurn <> 0 then
     begin
-      Self.DominatorResearch[0].Progress := 100;
+      Self.DominatorResearch[dsBlazer].Progress := 100;
       if Self.CoalitionDefeatedTurn = 0 then
         AddOrUpdatePlayerBubble(pmQuestActive, Self.BlazerSeriesResolvedTurn, ReplaceColoredToken(LocalizedColorText('FormRuinsRC.Win.AddNews'), '<Date>', FormatGameTurnDate(Self.BlazerSeriesResolvedTurn), TextHighlightColorTag), 'BlazerWin');
       if (Self.BlazerLandingPlanetId <> 0) and (aKling.BlazerShip <> nil) and TShip(aKling.BlazerShip).InNormalSpace then
@@ -4258,7 +4258,7 @@ begin
   Buffer.AddBoolean(GR_Main.CCInterface.GetEditableStateApplied);
   Buffer.AddWideStringZ(FinalizationNameEncoded);
   Buffer.AddBoolean(CustomRules.Enabled);
-  for Good := 0 to 7 do Buffer.AddIntegerValue(GetPlayer.DominatorKillsByType[Good]);
+  for Good := 0 to 7 do Buffer.AddIntegerValue(GetPlayer.DominatorKillsByType[TKlingType(Good)]);
   Buffer.AddAnsiChar(AnsiChar(TechLevel));
   Buffer.CompressZlibPayloadInPlace(False);
   Crc := Buffer.ComputeCrc32;
@@ -4937,7 +4937,7 @@ begin
     sfPirates: Block.AddParam(Key, DecodeTextW('Pui4rfawtqeEs')); // 'Pirates'
     sfDominators: Block.AddParam(Key, DecodeTextW('Kzlwiqndgus')); // 'Klings'
   end;
-  Block.AddParam(DecodeTextW('D9o5meScewr3iwegs4'), DominatorSeriesNames[Ord(DominatorSeries)]); // 'DomSeries'
+  Block.AddParam(DecodeTextW('D9o5meScewr3iwegs4'), DominatorSeriesNames[DominatorSeries]); // 'DomSeries'
   ShipBlock := Block.AddBlockByPath(DecodeTextW('SahainpaLeikswt')); // 'ShipList'
   for I := 0 to Ships.Count - 1 do begin
     Ship := TShip(Ships[I]);
@@ -4989,7 +4989,7 @@ begin
   else if Key = DecodeTextW('Pui4rfawtqeEs') then ControlFaction := sfPirates // 'Pirates'
   else if Key = DecodeTextW('Kzlwiqndgus') then ControlFaction := sfDominators; // 'Klings'
   Key := Block.GetParam(DecodeTextW('D9o5meScewr3iwegs4')); // 'DomSeries'
-  for I := 0 to 2 do if Key = DominatorSeriesNames[Byte(I)] then DominatorSeries := TDominatorSeries(I);
+  for I := Ord(Low(TDominatorSeries)) to Ord(High(TDominatorSeries)) do if Key = DominatorSeriesNames[TDominatorSeries(I)] then DominatorSeries := TDominatorSeries(I);
   with Block.GetBlockByPath(DecodeTextW('SahainpaLeikswt')) do begin // 'ShipList'
   for I := 0 to Ships.Count - 1 do begin
     Ship := TShip(Ships[I]);
@@ -5408,7 +5408,7 @@ begin
              (Ship.GetHullIntegrityPercent > 30) and (Target.GetHullIntegrityPercent > 10) and
              (I > Max(4, Count div 2)) and (ShipTypeCounts[stKling] > 7) and
              (((Ship as TKling).KlingType in [ktSmersh..ktShtip]) or
-              (((Ship as TKling).KlingType in [ktEquentor..ktUrgant]) and (I in [5, 6]) and (ShipTypeCounts[stKling] > 9))) and
+              (((Ship as TKling).KlingType in [ktEquantor..ktUrgant]) and (I in [5, 6]) and (ShipTypeCounts[stKling] > 9))) and
              (GetPlayer <> nil) and Target.InHyperspace and (Target.OrderTarget is TStar) and
              ((Target.OrderTarget as TStar).ControlFaction = sfCoalition) and not IsStarProtectedByScript(Target.OrderTarget as TStar) and
              ((Galaxy.CurrentTurn > GalaxyWarmupTurns) or (GetPlayer.CurrentStar <> Target.OrderTarget)) and
@@ -8449,7 +8449,7 @@ begin
     begin
       if (Context is TKling) and not TShip(Context).HasScriptStateText then
       begin
-        if not (Byte((Context as TKling).DominatorSeries) in aConst.MicroModuleTemplates[ModuleIndex].AllowedDominatorSeriesMask) then Continue;
+        if not ((Context as TKling).DominatorSeries in aConst.MicroModuleTemplates[ModuleIndex].AllowedDominatorSeriesMask) then Continue;
         if not (oiDominator in aConst.MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask) then Continue;
         if not aConst.MicroModuleTemplates[ModuleIndex].RacialRestriction and
           (aConst.MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask <> [oiDominator]) and
@@ -8535,7 +8535,7 @@ begin
     begin
       if (Context is TKling) and not TShip(Context).HasScriptStateText then
       begin
-        if not (Byte((Context as TKling).DominatorSeries) in aConst.MicroModuleTemplates[ModuleIndex].AllowedDominatorSeriesMask) then Continue;
+        if not ((Context as TKling).DominatorSeries in aConst.MicroModuleTemplates[ModuleIndex].AllowedDominatorSeriesMask) then Continue;
         if not (oiDominator in aConst.MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask) then Continue;
         if not aConst.MicroModuleTemplates[ModuleIndex].RacialRestriction and
           (aConst.MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask <> [oiDominator]) and
@@ -8653,15 +8653,15 @@ end;
 
 { @routine $7BCF04 TGalaxy_HasUnresolvedDominatorSeries }
 function TGalaxy.HasUnresolvedDominatorSeries(Series: TDominatorSeriesSet): Boolean;
-var I: Byte;
+var I: TDominatorSeries;
 begin
   Result := False;
-  for I := 0 to 2 do begin
-    if TDominatorSeries(I) in Series then
+  for I := Low(TDominatorSeries) to High(TDominatorSeries) do begin
+    if I in Series then
       case I of
-        0: Result := BlazerSeriesResolvedTurn = 0;
-        1: Result := KellerSeriesResolvedTurn = 0;
-        2: Result := TerronSeriesResolvedTurn = 0;
+        dsBlazer: Result := BlazerSeriesResolvedTurn = 0;
+        dsKeller: Result := KellerSeriesResolvedTurn = 0;
+        dsTerron: Result := TerronSeriesResolvedTurn = 0;
       end;
     if Result then Break;
   end;
@@ -8989,13 +8989,13 @@ var Series: TDominatorSeries;
   Progress: Single;
   News: WideString;
 begin
-  if ((DominatorResearch[0].Progress < 100) or (DominatorResearch[1].Progress < 100) or
-      (DominatorResearch[2].Progress < 100)) and (ShipTypeCounts[rstScienceBase] > 0) then
+  if ((DominatorResearch[dsBlazer].Progress < 100) or (DominatorResearch[dsKeller].Progress < 100) or
+      (DominatorResearch[dsTerron].Progress < 100)) and (ShipTypeCounts[rstScienceBase] > 0) then
     for Series := dsBlazer to dsTerron do
-      if DominatorResearch[Ord(Series)].Progress < 100 then begin
-        Progress := DominatorResearch[Ord(Series)].Progress + GetDominatorResearchRate(Series);
+      if DominatorResearch[Series].Progress < 100 then begin
+        Progress := DominatorResearch[Series].Progress + GetDominatorResearchRate(Series);
         if CurrentTurn mod NextRandomIntRange(2, 5, RandomState) = 0 then
-          DominatorResearch[Ord(Series)].Material := Max(0, DominatorResearch[Ord(Series)].Material -
+          DominatorResearch[Series].Material := Max(0, DominatorResearch[Series].Material -
             NextRandomIntRange(1, GalaxyDifficultyTuning[DifficultyLevels[2]].MaximumResearchMaterialConsumption, RandomState));
         if Progress >= 100 then begin
           case Series of
@@ -9007,18 +9007,18 @@ begin
           Inc(GetPlayer.AchievementStats.CompletedResearchPrograms);
           GetPlayer.AchievementStats.CheckScienceAchievement;
         end;
-        DominatorResearch[Ord(Series)].Progress := Min(100, Progress);
+        DominatorResearch[Series].Progress := Min(100, Progress);
       end;
 end;
 { @end $7BE398 }
 
 { @routine $7BE6B4 TGalaxy_IsDominatorResearchComplete }
 function TGalaxy.IsDominatorResearchComplete(Series: TDominatorSeriesSet): Boolean;
-var I: Byte;
+var I: TDominatorSeries;
 begin
   Result := True;
-  for I := 0 to 2 do
-    if (TDominatorSeries(I) in Series) and (DominatorResearch[I].Progress < 100) then begin
+  for I := Low(TDominatorSeries) to High(TDominatorSeries) do
+    if (I in Series) and (DominatorResearch[I].Progress < 100) then begin
       Result := False;
       Break;
     end;
@@ -9030,14 +9030,14 @@ function TGalaxy.GetDominatorResearchRate(Series: TDominatorSeries): Single;
 var Efficiency: Integer;
 begin
   Efficiency := GetDominatorResearchEfficiency(Series);
-  Result := RemapClamped(Efficiency, 0, 100, 0.00001, GalaxyDifficultyTuning[DifficultyLevels[2]].MaximumDominatorResearchRate) * DominatorResearchRateMultipliers[Ord(Series)];
+  Result := RemapClamped(Efficiency, 0, 100, 0.00001, GalaxyDifficultyTuning[DifficultyLevels[2]].MaximumDominatorResearchRate) * DominatorResearchRateMultipliers[Series];
 end;
 { @end $7BE710 }
 
 { @routine $7BE78C TGalaxy_GetDominatorResearchEfficiency }
 function TGalaxy.GetDominatorResearchEfficiency(Series: TDominatorSeries): TPercent;
 begin
-  Result := Trunc(RemapClamped(DominatorResearch[Ord(Series)].Material, 0, 300, 20, 100));
+  Result := Trunc(RemapClamped(DominatorResearch[Series].Material, 0, 300, 20, 100));
 end;
 { @end $7BE78C }
 
@@ -10447,7 +10447,7 @@ var Ship: TShip;
   DominatorCount, CoalitionCount, CoalitionPassiveCount, NeutralCount, PiratePassiveCount, PirateCount: Integer;
   Planet: TPlanet;
   I: Integer;
-  SeriesCounts: array[0..2] of Integer;
+  SeriesCounts: array[TDominatorSeries] of Integer;
 
   // @nested $7C3B8C CountShipStanding
   procedure CountShipStanding; // @addr 0x7C3B8C @ida "void __cdecl $name(void *ParentFrame);" @note "Caller-popped static link; ship -4, standing counters -8..-28."
@@ -10507,9 +10507,9 @@ begin
   CoalitionPassiveCount := 0;
   PiratePassiveCount := 0;
   NeutralCount := 0;
-  SeriesCounts[Ord(dsBlazer)] := 0;
-  SeriesCounts[Ord(dsTerron)] := 0;
-  SeriesCounts[Ord(dsKeller)] := 0;
+  SeriesCounts[dsBlazer] := 0;
+  SeriesCounts[dsTerron] := 0;
+  SeriesCounts[dsKeller] := 0;
   for I := 0 to Ships.Count - 1 do begin
     Ship := TShip(Ships[I]);
     if not Ship.InHyperspace and ((Ship.CurrentPlanet = nil) or (Ship.CurrentPlanet.OwnerId <> oiUninhabited)) and
@@ -10519,9 +10519,9 @@ begin
       CountShipStanding;
       if (Ship is TKling) and (Ship.CurrentStanding = ssDominator) then begin
         with Ship as TKling do begin
-        Inc(SeriesCounts[Ord(DominatorSeries)]);
-        if KlingType = ktBertor then Inc(SeriesCounts[Ord(DominatorSeries)], 3);
-        if KlingType = ktBoss then Inc(SeriesCounts[Ord(DominatorSeries)], 10);
+        Inc(SeriesCounts[DominatorSeries]);
+        if KlingType = ktBertor then Inc(SeriesCounts[DominatorSeries], 3);
+        if KlingType = ktBoss then Inc(SeriesCounts[DominatorSeries], 10);
         end;
       end;
     end;
@@ -10546,8 +10546,8 @@ begin
       Planet := TPlanet(Planets[I]);
       if Planet.OwnerId <> oiUninhabited then begin Planet.OwnerId := oiDominator; Planet.UpdateOwnerFlags; end;
     end;
-    if SeriesCounts[Ord(dsBlazer)] >= Max(SeriesCounts[Ord(dsTerron)], SeriesCounts[Ord(dsKeller)]) then DominatorSeries := dsBlazer
-    else if SeriesCounts[Ord(dsTerron)] >= Max(SeriesCounts[Ord(dsBlazer)], SeriesCounts[Ord(dsKeller)]) then DominatorSeries := dsTerron
+    if SeriesCounts[dsBlazer] >= Max(SeriesCounts[dsTerron], SeriesCounts[dsKeller]) then DominatorSeries := dsBlazer
+    else if SeriesCounts[dsTerron] >= Max(SeriesCounts[dsBlazer], SeriesCounts[dsKeller]) then DominatorSeries := dsTerron
     else DominatorSeries := dsKeller;
     Battle := Byte(CoalitionCount + PirateCount + CoalitionPassiveCount + PiratePassiveCount + NeutralCount > 0);
   end else if Galaxy.CoalitionDefeatedTurn > 0 then SetPirates
@@ -10769,7 +10769,7 @@ begin
     if not Ship.IsOutsideStarSpace and (Ship.CurrentStanding <> ssCustom) and
       (Ship <> BlazerShip) and (Ship <> KellerShip) and (Ship <> TerronShip) and
       (Ship is TKling) and ((Ship as TKling).DominatorSeries = DominatorSeries) and
-      ((Ship as TKling).KlingType in [ktEquentor..ktShtip]) then Inc(Result);
+      ((Ship as TKling).KlingType in [ktEquantor..ktShtip]) then Inc(Result);
   end;
 end;
 { @end $7C4788 }
@@ -10991,7 +10991,7 @@ begin
         (TRuins(Ship.DockedTo).FlyToStar = nil) or (TRuins(Ship.DockedTo).FlyToStar = Self) then begin
         if Ship.GetHull.HullPoints < Ship.GetHull.Weight * 0.25 then Weight := Weight - 0.5;
         Strength := Min(10, Max(0.1, Ship.Strength * RelativeScale)) * Weight;
-        if Ship is TKling then Strength := DominatorShipDefinitions[Ord((Ship as TKling).KlingType)].FactionStrengthWeight * Strength;
+        if Ship is TKling then Strength := DominatorShipDefinitions[(Ship as TKling).KlingType].FactionStrengthWeight * Strength;
         if Ship.CurrentStanding in [ssCoalitionMilitary, ssCoalitionActive] then CoalitionStrength := CoalitionStrength + Strength
         else if Ship.CurrentStanding in [ssPirateActive, ssPirateMilitary] then PirateStrength := PirateStrength + Strength
         else if Ship.CurrentStanding in [ssDominator, ssCustom] then DominatorAndCustomStrength := DominatorAndCustomStrength + Strength;
@@ -11356,20 +11356,20 @@ begin
             (Item is TUselessItem) and (Item as TUselessItem).IsDominatorRemains then
     begin
       Series := TDominatorSeries(TEquipment(Item).DominatorSeries);
-      if (Galaxy.DominatorResearch[Ord(Series)].Progress < 100) and Galaxy.IsDominatorSeriesUnresolved(Series) then
+      if (Galaxy.DominatorResearch[Series].Progress < 100) and Galaxy.IsDominatorSeriesUnresolved(Series) then
         Ship.SetMoney(Round(Item.Cost * 3.0) + Ship.Money)
       else Ship.SetMoney(Round(Item.Cost * 2.0) + Ship.Money);
-      if (Galaxy.DominatorResearch[Ord(Series)].Progress < 100) and Galaxy.IsDominatorSeriesUnresolved(Series) then
-        Inc(Galaxy.DominatorResearch[Ord(Series)].Material, Item.Weight)
+      if (Galaxy.DominatorResearch[Series].Progress < 100) and Galaxy.IsDominatorSeriesUnresolved(Series) then
+        Inc(Galaxy.DominatorResearch[Series].Material, Item.Weight)
       else
       begin
         ResearchCount := 0;
         for Series := dsBlazer to dsTerron do
-          if (Galaxy.DominatorResearch[Ord(Series)].Progress < 100) and Galaxy.IsDominatorSeriesUnresolved(Series) then Inc(ResearchCount);
+          if (Galaxy.DominatorResearch[Series].Progress < 100) and Galaxy.IsDominatorSeriesUnresolved(Series) then Inc(ResearchCount);
         if ResearchCount > 0 then
           for Series := dsBlazer to dsTerron do
-            if (Galaxy.DominatorResearch[Ord(Series)].Progress < 100) and Galaxy.IsDominatorSeriesUnresolved(Series) then
-              Inc(Galaxy.DominatorResearch[Ord(Series)].Material, Item.Weight div ResearchCount);
+            if (Galaxy.DominatorResearch[Series].Progress < 100) and Galaxy.IsDominatorSeriesUnresolved(Series) then
+              Inc(Galaxy.DominatorResearch[Series].Material, Item.Weight div ResearchCount);
       end;
     end
     else Ship.Inventory.Add(Item);
@@ -13195,7 +13195,7 @@ begin
               OwnerShip := Self.Ships[CandidateIndex];
               if not OwnerShip.IsHullDestroyed and OwnerShip.InNormalSpace and (Ship <> OwnerShip)
                 and (not (OwnerShip is TKling)
-                or not (Byte((OwnerShip as TKling).KlingType) in [0, 6]))
+                or not ((OwnerShip as TKling).KlingType in [ktBoss, ktBertor]))
                 and (PointDistance(Ship.Position, OwnerShip.Position) <= 500.0) then
                 for EntryIndex := 0 to (OwnerShip.Inventory.Count - 1) do
                 begin

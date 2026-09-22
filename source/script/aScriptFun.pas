@@ -2007,8 +2007,8 @@ end;
 procedure SF_PlayerDominatorStatistic(av: array of TVarEC; code: TCodeEC);
 begin
   if High(av) < 1 then raise Exception.Create('Error.Script PlayerDominatorStatistic');
-  av[0].SetInt(GetPlayer.DominatorKillsByType[Ord(TKlingType(av[1].GetInt))]);
-  if High(av) > 1 then GetPlayer.DominatorKillsByType[Ord(TKlingType(av[1].GetInt))] := av[2].GetInt;
+  av[0].SetInt(GetPlayer.DominatorKillsByType[TKlingType(av[1].GetInt)]);
+  if High(av) > 1 then GetPlayer.DominatorKillsByType[TKlingType(av[1].GetInt)] := av[2].GetInt;
 end;
 { @end $60A494 }
 
@@ -8825,11 +8825,11 @@ end;
 procedure SF_GalaxyDominatorResearchPercent(av: array of TVarEC; code: TCodeEC);
 begin
   if High(av) < 1 then
-    av[0].SetFloat((Galaxy.DominatorResearch[0].Progress + Galaxy.DominatorResearch[1].Progress + Galaxy.DominatorResearch[2].Progress) / 3)
+    av[0].SetFloat((Galaxy.DominatorResearch[dsBlazer].Progress + Galaxy.DominatorResearch[dsKeller].Progress + Galaxy.DominatorResearch[dsTerron].Progress) / 3)
   else
   begin
-    av[0].SetFloat(Galaxy.DominatorResearch[Ord(TDominatorSeries(av[1].GetInt))].Progress);
-    if High(av) > 1 then Galaxy.DominatorResearch[Ord(TDominatorSeries(av[1].GetInt))].Progress := av[2].GetFloat;
+    av[0].SetFloat(Galaxy.DominatorResearch[TDominatorSeries(av[1].GetInt)].Progress);
+    if High(av) > 1 then Galaxy.DominatorResearch[TDominatorSeries(av[1].GetInt)].Progress := av[2].GetFloat;
   end;
 end;
 { @end $6248EC }
@@ -8838,8 +8838,8 @@ end;
 procedure SF_GalaxyDominatorResearchMaterial(av: array of TVarEC; code: TCodeEC);
 begin
   if High(av) < 1 then raise Exception.Create('Error.Script GalaxyDominatorResearchMaterial');
-  av[0].SetInt(Galaxy.DominatorResearch[Ord(TDominatorSeries(av[1].GetInt))].Material);
-  if High(av) > 1 then Galaxy.DominatorResearch[Ord(TDominatorSeries(av[1].GetInt))].Material := av[2].GetInt;
+  av[0].SetInt(Galaxy.DominatorResearch[TDominatorSeries(av[1].GetInt)].Material);
+  if High(av) > 1 then Galaxy.DominatorResearch[TDominatorSeries(av[1].GetInt)].Material := av[2].GetInt;
 end;
 { @end $6249C4 }
 
@@ -10771,10 +10771,10 @@ end;
 
 { @routine $62C420 SF_PlayerChameleonCharges }
 procedure SF_PlayerChameleonCharges(av: array of TVarEC; code: TCodeEC);
-var Index: Byte;
+var Index: TDominatorSeries;
 begin
   if High(av) < 1 then raise Exception.Create('Error.Script PlayerChameleonCharges');
-  Index := av[1].GetInt;
+  Index := TDominatorSeries(av[1].GetInt);
   av[0].SetInt(GetPlayer.ChameleonCharges[Index]);
   if High(av) > 1 then GetPlayer.ChameleonCharges[Index] := av[2].GetInt;
 end;
@@ -10797,10 +10797,10 @@ end;
 
 { @routine $62C58C SF_PlayerChameleonDetected }
 procedure SF_PlayerChameleonDetected(av: array of TVarEC; code: TCodeEC);
-var Index: Byte;
+var Index: TDominatorSeries;
 begin
   if High(av) < 1 then raise Exception.Create('Error.Script PlayerChameleonDetected');
-  Index := av[1].GetInt;
+  Index := TDominatorSeries(av[1].GetInt);
   av[0].SetInt(Ord(GetPlayer.ChameleonDetected[Index]));
   if High(av) > 1 then GetPlayer.ChameleonDetected[Index] := av[2].GetInt <> 0;
 end;
@@ -10808,10 +10808,10 @@ end;
 
 { @routine $62C658 SF_PlayerLogicChameleon }
 procedure SF_PlayerLogicChameleon(av: array of TVarEC; code: TCodeEC);
-var Index: Byte;
+var Index: TDominatorSeries;
 begin
   if High(av) < 1 then raise Exception.Create('Error.Script PlayerLogicChameleon');
-  Index := av[1].GetInt;
+  Index := TDominatorSeries(av[1].GetInt);
   av[0].SetInt(GetPlayer.ChameleonLogic[Index]);
   if High(av) > 1 then GetPlayer.ChameleonLogic[Index] := av[2].GetInt;
 end;

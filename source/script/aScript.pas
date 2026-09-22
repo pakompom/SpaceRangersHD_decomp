@@ -30,7 +30,7 @@ type
   TScriptActionTypeSet = set of TScriptActionType; // @size $08
   TScriptStepTypeSet = set of 0..11; // @size $02
   TScriptShipTypeMask = set of THullType; // @size 0x02
-  TScriptDominatorMasks = array[0..7] of TDominatorSeriesMask; // TKlingType index; TDominatorSeries bits.
+  TScriptDominatorMasks = array[TKlingType] of TDominatorSeriesMask; // TKlingType index; TDominatorSeries bits.
 
   TScriptStar = class;
   TScriptConstellation = class;
@@ -546,7 +546,7 @@ function DecodeScriptOwnerMask(Value: Cardinal): TOwnerMask; // @addr 0x64E85C @
 function DecodeScriptEconomyMask(Value: Cardinal): TPlanetEconomies; // @addr 0x64E9CC
 function DecodeScriptGovernmentMask(Value: Cardinal): TPlanetGovernments; // @addr 0x64EA64
 function DecodeScriptShipTypeMask(Value: Cardinal): TScriptShipTypeMask; // @addr 0x64EB40
-function DecodeScriptDominatorMask(Value: Cardinal; KlingType: Byte): TDominatorSeriesMask; // @addr 0x64ECA8
+function DecodeScriptDominatorMask(Value: Cardinal; KlingType: TKlingType): TDominatorSeriesMask; // @addr 0x64ECA8
 function DecodeScriptItemOwner(Value: Integer): TOwnerId; // @addr 0x64F000 @note "Values outside 0..7 become owner 6."
 function DecodeScriptRelationLevel(Value: Integer): TRelationLevel; // @addr 0x64F074 @note "Values outside 0..4 become hostile."
 function ScriptShipMatchesType(Ship: TShip; ShipTypeMask: TScriptShipTypeMask; StationNames: WideString; DominatorMasks: array of TDominatorSeriesMask): Boolean; // @addr 0x64F0C4 @note "DominatorMasks requires eight entries indexed by TKlingType. StationNames is a comma-separated filter when ship-type bit 8 is set."
@@ -1364,62 +1364,62 @@ end;
 { @end $64EB40 }
 
 { @routine $64ECA8 DecodeScriptDominatorMask }
-function DecodeScriptDominatorMask(Value: Cardinal; KlingType: Byte): TDominatorSeriesMask;
+function DecodeScriptDominatorMask(Value: Cardinal; KlingType: TKlingType): TDominatorSeriesMask;
 begin
   if not ScriptDefinitionBit(Value, 0) then
   begin
-    Result := [0..2];
+    Result := [dsBlazer..dsTerron];
     Exit;
   end;
   Result := [];
   case KlingType of
-    0:
+    ktBoss:
       begin
-        if ScriptDefinitionBit(Value, 7) then Result := Result + [0];
-        if ScriptDefinitionBit(Value, 13) then Result := Result + [1];
-        if ScriptDefinitionBit(Value, 19) then Result := Result + [2];
+        if ScriptDefinitionBit(Value, 7) then Result := Result + [dsBlazer];
+        if ScriptDefinitionBit(Value, 13) then Result := Result + [dsKeller];
+        if ScriptDefinitionBit(Value, 19) then Result := Result + [dsTerron];
       end;
-    1:
+    ktEquantor:
       begin
-        if ScriptDefinitionBit(Value, 8) then Result := Result + [0];
-        if ScriptDefinitionBit(Value, 14) then Result := Result + [1];
-        if ScriptDefinitionBit(Value, 20) then Result := Result + [2];
+        if ScriptDefinitionBit(Value, 8) then Result := Result + [dsBlazer];
+        if ScriptDefinitionBit(Value, 14) then Result := Result + [dsKeller];
+        if ScriptDefinitionBit(Value, 20) then Result := Result + [dsTerron];
       end;
-    2:
+    ktUrgant:
       begin
-        if ScriptDefinitionBit(Value, 9) then Result := Result + [0];
-        if ScriptDefinitionBit(Value, 15) then Result := Result + [1];
-        if ScriptDefinitionBit(Value, 21) then Result := Result + [2];
+        if ScriptDefinitionBit(Value, 9) then Result := Result + [dsBlazer];
+        if ScriptDefinitionBit(Value, 15) then Result := Result + [dsKeller];
+        if ScriptDefinitionBit(Value, 21) then Result := Result + [dsTerron];
       end;
-    3:
+    ktSmersh:
       begin
-        if ScriptDefinitionBit(Value, 10) then Result := Result + [0];
-        if ScriptDefinitionBit(Value, 16) then Result := Result + [1];
-        if ScriptDefinitionBit(Value, 22) then Result := Result + [2];
+        if ScriptDefinitionBit(Value, 10) then Result := Result + [dsBlazer];
+        if ScriptDefinitionBit(Value, 16) then Result := Result + [dsKeller];
+        if ScriptDefinitionBit(Value, 22) then Result := Result + [dsTerron];
       end;
-    4:
+    ktMenoc:
       begin
-        if ScriptDefinitionBit(Value, 11) then Result := Result + [0];
-        if ScriptDefinitionBit(Value, 17) then Result := Result + [1];
-        if ScriptDefinitionBit(Value, 23) then Result := Result + [2];
+        if ScriptDefinitionBit(Value, 11) then Result := Result + [dsBlazer];
+        if ScriptDefinitionBit(Value, 17) then Result := Result + [dsKeller];
+        if ScriptDefinitionBit(Value, 23) then Result := Result + [dsTerron];
       end;
-    5:
+    ktShtip:
       begin
-        if ScriptDefinitionBit(Value, 12) then Result := Result + [0];
-        if ScriptDefinitionBit(Value, 18) then Result := Result + [1];
-        if ScriptDefinitionBit(Value, 24) then Result := Result + [2];
+        if ScriptDefinitionBit(Value, 12) then Result := Result + [dsBlazer];
+        if ScriptDefinitionBit(Value, 18) then Result := Result + [dsKeller];
+        if ScriptDefinitionBit(Value, 24) then Result := Result + [dsTerron];
       end;
-    6:
+    ktBertor:
       begin
-        if ScriptDefinitionBit(Value, 26) then Result := Result + [0];
-        if ScriptDefinitionBit(Value, 28) then Result := Result + [1];
-        if ScriptDefinitionBit(Value, 30) then Result := Result + [2];
+        if ScriptDefinitionBit(Value, 26) then Result := Result + [dsBlazer];
+        if ScriptDefinitionBit(Value, 28) then Result := Result + [dsKeller];
+        if ScriptDefinitionBit(Value, 30) then Result := Result + [dsTerron];
       end;
-    7:
+    ktKlig:
       begin
-        if ScriptDefinitionBit(Value, 27) then Result := Result + [0];
-        if ScriptDefinitionBit(Value, 29) then Result := Result + [1];
-        if ScriptDefinitionBit(Value, 31) then Result := Result + [2];
+        if ScriptDefinitionBit(Value, 27) then Result := Result + [dsBlazer];
+        if ScriptDefinitionBit(Value, 29) then Result := Result + [dsKeller];
+        if ScriptDefinitionBit(Value, 31) then Result := Result + [dsTerron];
       end;
   end;
 end;
@@ -1477,7 +1477,7 @@ begin
     if I >= Count then Exit;
   end;
   if Ship is TKling then
-    if not (Byte((Ship as TKling).DominatorSeries) in DominatorMasks[Ord((Ship as TKling).KlingType)]) then Exit;
+    if not ((Ship as TKling).DominatorSeries in DominatorMasks[Ord((Ship as TKling).KlingType)]) then Exit;
   Result := True;
 end;
 { @end $64F0C4 }
@@ -2764,7 +2764,7 @@ var
   Item, OtherItem: TItem;
   Planet: TPlanet;
   Version, Mask: Cardinal;
-  KlingType: Byte;
+  KlingType: TKlingType;
 
   // @nested $6532F0 CompileStateActionCode
   procedure CompileStateActionCode(State: TScriptState); // @addr 0x6532F0 @note "Nested helper; captures Self at ParentFrame-4. Caller removes ParentFrame."
@@ -2906,7 +2906,7 @@ begin
         Star.ShipRequirements[J].OwnerMask := DecodeScriptOwnerMask(Buffer.GetUInt32);
         Mask := Buffer.GetUInt32;
         Star.ShipRequirements[J].ShipTypeMask := DecodeScriptShipTypeMask(Mask);
-        for KlingType := 0 to 7 do Star.ShipRequirements[J].DominatorMasks[KlingType] := DecodeScriptDominatorMask(Mask, KlingType);
+        for KlingType := Low(TKlingType) to High(TKlingType) do Star.ShipRequirements[J].DominatorMasks[KlingType] := DecodeScriptDominatorMask(Mask, KlingType);
         Star.ShipRequirements[J].PlayerOnly := Buffer.GetBoolean;
         Star.ShipRequirements[J].MinSpeed := Buffer.GetInt32;
         Star.ShipRequirements[J].MaxSpeed := Buffer.GetInt32;
@@ -3044,7 +3044,7 @@ begin
     Group.OwnerMask := DecodeScriptOwnerMask(Buffer.GetUInt32);
     Mask := Buffer.GetUInt32;
     Group.ShipTypeMask := DecodeScriptShipTypeMask(Mask);
-    for KlingType := 0 to 7 do Group.DominatorMasks[KlingType] := DecodeScriptDominatorMask(Mask, KlingType);
+    for KlingType := Low(TKlingType) to High(TKlingType) do Group.DominatorMasks[KlingType] := DecodeScriptDominatorMask(Mask, KlingType);
     Group.MinCount := Buffer.GetInt32;
     Group.MaxCount := Buffer.GetInt32;
     Group.MinSpeed := Buffer.GetInt32;

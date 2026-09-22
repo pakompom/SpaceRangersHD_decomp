@@ -727,7 +727,7 @@ var Size: Integer; Image: TGraphBufGI; Emblem: TImageGI; Caption: TLabelGI;
   function GetInfoStarFactionName(Star: TStar): WideString; // @addr $59AEA4 @calls "0x59B12B" Nested in AddStarInfoText; static link unused.
   begin
     if Star.Status.CustomFaction <> WideString('') then Result := Star.Status.CustomFaction
-    else if Star.ControlFaction = sfDominators then Result := DominatorSeriesNames[Ord(Star.DominatorSeries)]
+    else if Star.ControlFaction = sfDominators then Result := DominatorSeriesNames[Star.DominatorSeries]
     else if Star.ControlFaction = sfPirates then Result := OwnerInfo[oiPirate].InternalName
     else Result := OwnerInfo[oiUninhabited].InternalName;
   end;

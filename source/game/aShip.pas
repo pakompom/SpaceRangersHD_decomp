@@ -170,10 +170,10 @@ type
     DestroyQueued: Boolean; // @offset 0x460  Script.ShipDestroy.
     ChameleonActive: Boolean; // @offset 0x461
     ChameleonSeries: TDominatorSeries; // @offset 0x462
-    ChameleonVisualType: Byte; // @offset 0x463  Hull-dependent disguise silhouette.
+    ChameleonVisualType: TKlingType; // @offset 0x463  Hull-dependent disguise silhouette.
     ChameleonDisplayCount: Integer; // @offset $464 Serialized counter displayed in active chameleon info ($7100F4); no gameplay update recovered.
-    ChameleonDetected: array[0..2] of Boolean; // @offset 0x468  TDominatorSeries order.
-    ChameleonCharges: array[0..2] of Integer; // @offset 0x46C  TDominatorSeries order.
+    ChameleonDetected: array[TDominatorSeries] of Boolean; // @offset 0x468  TDominatorSeries order.
+    ChameleonCharges: array[TDominatorSeries] of Integer; // @offset 0x46C  TDominatorSeries order.
     RepulsionPosition: TPointF; // @offset 0x47C  Predicted position adjusted when separating following ships.
     FilmAlpha: Single; // @offset 0x488  May extend beyond 0..255; clamped when emitting film commands.
     FilmAlphaStep: Single; // @offset 0x48C
@@ -398,7 +398,7 @@ type
     procedure RefreshGraphic; // @addr 0x7517FC @note "ScriptChameleon preserves the assigned graphic while updating GraphDominator."
     procedure CreateNormalGraphic; // @addr 0x75188C
     procedure CreateDominatorGraphic; // @addr 0x752128
-    function SelectChameleonVisualType: Byte; // @addr 0x7515F0
+    function SelectChameleonVisualType: TKlingType; // @addr 0x7515F0
     function HasPlayerChameleonCharges: Boolean; // @addr 0x7515B4 @note "Reads the player rather than Self; requires a player."
     function IsPlayerChameleonEffectiveAgainstSelf: Boolean; // @addr 0x7516E4 @note "Requires a player; action-17 script handlers can override the default result."
 
@@ -688,8 +688,8 @@ var
   DamageScriptActionTypes: array[TWeaponDamageClass] of TScriptActionType = (satOnTakingDamageEn, satOnTakingDamageSp, satOnTakingDamageMi); // @addr $87C418 Energy, splinter and missile hit callbacks.
   TradeGoodsSold: TGoods = nil; // @addr $87C41C Reused script-event payload for the goods leaving the ship.
   TradeGoodsCostBasis: TGoods = nil; // @addr $87C420 Reused payload for the purchased portion of the sale.
-  DominatorShipSmallSizes: array[0..2, 0..7] of Integer = ((127, 110, 70, 60, 45, 40, 130, 40), (127, 110, 70, 60, 45, 40, 130, 40), (127, 110, 70, 60, 45, 40, 130, 40)); // @addr $87C424
-  DominatorShipLargeSizes: array[0..2, 0..7] of Integer = ((127, 127, 100, 90, 65, 60, 160, 60), (127, 127, 100, 90, 65, 60, 160, 60), (127, 127, 100, 90, 65, 60, 160, 60)); // @addr $87C484
+  DominatorShipSmallSizes: array[TDominatorSeries, TKlingType] of Integer = ((127, 110, 70, 60, 45, 40, 130, 40), (127, 110, 70, 60, 45, 40, 130, 40), (127, 110, 70, 60, 45, 40, 130, 40)); // @addr $87C424
+  DominatorShipLargeSizes: array[TDominatorSeries, TKlingType] of Integer = ((127, 127, 100, 90, 65, 60, 160, 60), (127, 127, 100, 90, 65, 60, 160, 60), (127, 127, 100, 90, 65, 60, 160, 60)); // @addr $87C484
   RangerSmallSizes: array[TOwnerId] of Integer = (50, 50, 50, 50, 50, 50, 50, 50); // @addr $87C4E4
   RangerLargeSizes: array[TOwnerId] of Integer = (80, 80, 80, 80, 80, 80, 80, 80); // @addr $87C504
   TransportSmallSizes: array[htTransport..htDiplomat, TOwnerId] of Integer = ((50, 50, 50, 50, 50, 50, 50, 50), (50, 50, 50, 50, 50, 50, 50, 50), (50, 50, 50, 50, 50, 50, 50, 50)); // @addr $87C524
@@ -721,13 +721,13 @@ function CalculateFuelCost(Amount: Integer; OwnerId: TOwnerId): Single; // @addr
 function CalculateRoundedFuelCost(Amount: Integer; OwnerId: TOwnerId): Integer; // @addr 0x75F0D4
 
 var
-  KlingCheapDropValueFactors: array[0..7] of Double = (0.1, 0.85, 0.9, 1, 1.2, 1.5, 0.7, 4); // @addr $87C738 Indexed by KlingType.
-  KlingValuableDropValueFactors: array[0..7] of Double = (0.1, 0.8, 0.9, 1, 2, 4, 0.7, 8); // @addr $87C778 Indexed by KlingType.
+  KlingCheapDropValueFactors: array[TKlingType] of Double = (0.1, 0.85, 0.9, 1, 1.2, 1.5, 0.7, 4); // @addr $87C738 Indexed by KlingType.
+  KlingValuableDropValueFactors: array[TKlingType] of Double = (0.1, 0.8, 0.9, 1, 2, 4, 0.7, 8); // @addr $87C778 Indexed by KlingType.
 
 // Nested LookupTalkText helper; the native caller removes its unused static link.
 
 const
-  DominatorProgramDropCostFactors: array[0..7] of Double = (0.2, 1.6, 1.8, 2.0, 4.0, 8.0, 1.4, 16.0); // @addr $87C7B8 TKlingType order.
+  DominatorProgramDropCostFactors: array[TKlingType] of Double = (0.2, 1.6, 1.8, 2.0, 4.0, 8.0, 1.4, 16.0); // @addr $87C7B8 TKlingType order.
 
 implementation
 
@@ -739,7 +739,7 @@ var
   I: Integer;
   Kind: TItemType;
   Skill: TPilotSkill;
-  Series: Byte;
+  Series: TDominatorSeries;
 begin
   inherited Create;
   PortraitFaceId := -1;
@@ -803,7 +803,7 @@ begin
   TechKnowledge := 0;
   CustomShipInfos := TList.Create;
   ChameleonActive := False;
-  for Series := 0 to 2 do
+  for Series := Low(TDominatorSeries) to High(TDominatorSeries) do
   begin
     ChameleonDetected[Series] := False;
     ChameleonCharges[Series] := 0;
@@ -951,7 +951,7 @@ var
   I, Count: Integer;
   Award: Byte;
   Skill: TPilotSkill;
-  Series: Byte;
+  Series: TDominatorSeries;
   SourceId: Cardinal;
   Info: PCustomShipInfo;
   Reserved: array[0..3] of Byte; // Native unreferenced slot before managed cleanup temporaries.
@@ -1149,7 +1149,7 @@ begin
   Buffer.AddAnsiChar(AnsiChar(ChameleonSeries));
   Buffer.AddAnsiChar(AnsiChar(ChameleonVisualType));
   Buffer.AddIntegerValue(ChameleonDisplayCount);
-  for Series := 0 to 2 do
+  for Series := Low(TDominatorSeries) to High(TDominatorSeries) do
   begin
     Buffer.AddBoolean(ChameleonDetected[Series]);
     Buffer.AddIntegerValue(ChameleonCharges[Series]);
@@ -1197,7 +1197,7 @@ var
   Award: Byte;
   SavedPartner: TShip;
   Skill: TPilotSkill;
-  Series: Byte;
+  Series: TDominatorSeries;
   Bonus: PShipStatBonusEntry;
   Effect: PCombatStatusEffect;
   Info: PCustomShipInfo;
@@ -1427,9 +1427,9 @@ begin
   UnknownF4 := Buffer.GetInt32;
   ChameleonActive := Buffer.GetBoolean;
   ChameleonSeries := TDominatorSeries(Buffer.GetByte);
-  ChameleonVisualType := Buffer.GetByte;
+  ChameleonVisualType := TKlingType(Buffer.GetByte);
   ChameleonDisplayCount := Buffer.GetInt32;
-  for Series := 0 to 2 do
+  for Series := Low(TDominatorSeries) to High(TDominatorSeries) do
   begin
     ChameleonDetected[Series] := Buffer.GetBoolean;
     ChameleonCharges[Series] := Buffer.GetInt32;
@@ -2212,7 +2212,7 @@ end;
 function TShip.GetFactionNameKey: WideString;
 begin
   if HasNamedScriptFaction then Result := TScriptShip(ScriptShip).StateText
-  else if Self is TKling then Result := DominatorSeriesNames[Ord((Self as TKling).DominatorSeries)]
+  else if Self is TKling then Result := DominatorSeriesNames[(Self as TKling).DominatorSeries]
   else Result := OwnerInfo[OwnerId].InternalName;
 end;
 { @end $74F20C }
@@ -2669,23 +2669,23 @@ end;
 
 { @routine $7515B4 TShip_HasPlayerChameleonCharges }
 function TShip.HasPlayerChameleonCharges: Boolean;
-var I: Byte;
+var I: TDominatorSeries;
 begin
   Result := False;
-  for I := 0 to 2 do
+  for I := Low(TDominatorSeries) to High(TDominatorSeries) do
     if GetPlayer.ChameleonCharges[I] > 0 then begin Result := True; Exit; end;
 end;
 { @end $7515B4 }
 
 { @routine $7515F0 TShip_SelectChameleonVisualType }
-function TShip.SelectChameleonVisualType: Byte;
-var HullSize, AverageSize: Integer; Distance, BestDistance: Double; Kind, BestKind: Byte;
+function TShip.SelectChameleonVisualType: TKlingType;
+var HullSize, AverageSize: Integer; Distance, BestDistance: Double; Kind, BestKind: TKlingType;
 begin
   HullSize := Round(GetHull.Weight / HullCapacityScale);
   BestDistance := -1;
-  BestKind := Ord(ktKlig);
+  BestKind := ktKlig;
   for Kind := Low(DominatorShipDefinitions) to High(DominatorShipDefinitions) do
-    if Kind <> Ord(ktBoss) then
+    if Kind <> ktBoss then
     begin
       AverageSize := (DominatorShipDefinitions[Kind].MinimumHullSize + DominatorShipDefinitions[Kind].MaximumHullSize) div 2;
       Distance := Abs(AverageSize - HullSize) / Min(1, AverageSize); // Native uses Min, including its possible zero divisor.
@@ -2765,9 +2765,9 @@ begin
       begin
         RetainSpaceObject(Graphic, TShip2SE.CreateEmpty);
         case (Self as TKling).DominatorSeries of
-          dsBlazer: BlazerShipTemplates[Ord((Self as TKling).KlingType)].CopyTo(Graphic);
-          dsKeller: KellerShipTemplates[Ord((Self as TKling).KlingType)].CopyTo(Graphic);
-          dsTerron: TerronShipTemplates[Ord((Self as TKling).KlingType)].CopyTo(Graphic);
+          dsBlazer: BlazerShipTemplates[(Self as TKling).KlingType].CopyTo(Graphic);
+          dsKeller: KellerShipTemplates[(Self as TKling).KlingType].CopyTo(Graphic);
+          dsTerron: TerronShipTemplates[(Self as TKling).KlingType].CopyTo(Graphic);
         end;
         Graphic.SetAlpha(200);
       end;
@@ -2821,7 +2821,7 @@ end;
 procedure TShip.CreateDominatorGraphic;
 var
   Series: TDominatorSeries;
-  Kind: Byte;
+  Kind: TKlingType;
   Divisor: Integer;
 begin
   if (Graphic <> nil) and GraphDominator then Exit;
@@ -2841,7 +2841,7 @@ begin
   begin
     Divisor := 7;
     Divisor := (Id shr 1) mod Divisor;
-    Kind := Byte(Divisor) + 1;
+    Kind := TKlingType(Byte(Divisor) + 1);
     Divisor := 3;
     Series := TDominatorSeries(Id mod Divisor);
   end;
@@ -4630,7 +4630,7 @@ var
 begin
   SourceShip := InterceptorSourceShip;
   if SourceShip = nil then Damage := 25 else Damage := SourceShip.GetInterceptorDamage;
-  if (Self is TKling) and (Ord((Self as TKling).KlingType) = 0) then Damage := Max(1, Damage div 2);
+  if (Self is TKling) and ((Self as TKling).KlingType = ktBoss) then Damage := Max(1, Damage div 2);
   Result := ApplyDamage(SourceShip, Damage, -1, DamageColor, InterceptorDamageFlags);
   if (GetPlayer = Self) and (GetHull.HullPoints < 1) then
   begin
@@ -4936,7 +4936,7 @@ begin
     end;
     MinimumDamage := MinimumDamage * GetAttackMultiplier;
     MaximumDamage := MaximumDamage * GetAttackMultiplier;
-    if (TypeId = stKling) and (Ord((Self as TKling).KlingType) = 0) then
+    if (TypeId = stKling) and ((Self as TKling).KlingType = ktBoss) then
     begin
       DifficultyFactor := Galaxy.InterpolateDifficulty(-1, 0.7, 1, 1.2, 1.5) * 2;
       MinimumDamage := Round(MinimumDamage * DifficultyFactor);
@@ -6087,7 +6087,7 @@ end;
 { @routine $75F2F8 TShip_IsMicroModuleRaciallyRestricted }
 function TShip.IsMicroModuleRaciallyRestricted(ModuleIndex: Integer): Boolean;
 const
-  AllSeries = [Ord(dsBlazer)..Ord(dsTerron)];
+  AllSeries = [dsBlazer..dsTerron];
   PlanetOwners = [oiMaloc..oiGaal];
   NoOwners = [];
 var
@@ -6123,7 +6123,7 @@ begin
       end;
     end;
     if (Self is TKling) and (oiDominator in MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask) and
-      (Byte((Self as TKling).DominatorSeries) in MicroModuleTemplates[ModuleIndex].AllowedDominatorSeriesMask) then Exit;
+      ((Self as TKling).DominatorSeries in MicroModuleTemplates[ModuleIndex].AllowedDominatorSeriesMask) then Exit;
     if ((Self is TNormalShip) or (Self is TRuins)) and
       ((RaceToOwner(PilotRace) in MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask) or
        ((OwnerId = oiPirate) and (oiPirate in MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask))) then Exit;
@@ -6352,7 +6352,7 @@ end;
 procedure TShip.RefreshGraphicSize;
 var
   Size, Small, Large: Integer;
-  Kind: Byte;
+  Kind: TKlingType;
   Series: TDominatorSeries;
 begin
   if (Graphic is TShip2SE) and (TShip2SE(Graphic).SmallSize > 0) and (TShip2SE(Graphic).LargeSize > 0) then
@@ -6384,11 +6384,11 @@ begin
     end
     else
     begin
-      Kind := Ord((Self as TKling).KlingType);
+      Kind := (Self as TKling).KlingType;
       Series := (Self as TKling).DominatorSeries;
     end;
-    Small := DominatorShipSmallSizes[Ord(Series), Kind];
-    Large := DominatorShipLargeSizes[Ord(Series), Kind];
+    Small := DominatorShipSmallSizes[Series, Kind];
+    Large := DominatorShipLargeSizes[Series, Kind];
   end
   else if Self is TRuins then
   begin
@@ -7120,7 +7120,7 @@ begin
   if Weapon.GetWeaponInfo.ShotType in [wstTorpedo..wstRocket] then
   begin
     TemplateRange := Weapon.GetWeaponInfo.MissileRange;
-    if (Self is TKling) and (Ord((Self as TKling).KlingType) = 0) then Range := Max(Range, TemplateRange)
+    if (Self is TKling) and ((Self as TKling).KlingType = ktBoss) then Range := Max(Range, TemplateRange)
     else if Self is TRuins then Range := Max(Range, TemplateRange)
     else if Galaxy.AreMaxRangeMissilesEnabled or (GetPlayer = Self) then Range := Min(GetRadarRange, Max(Range, TemplateRange))
     else Range := Min(GetRadarRange, Range);
@@ -7971,7 +7971,7 @@ var
       Candidate := Inventory[Index];
       if (Candidate.DestroyFlag > 0) or (Candidate.NoDropFlag > 0) then Continue;
       Value := Candidate.Cost / Max(Int64(1), Round(Galaxy.GetDropValueModifier * Galaxy.AverageRangerCapital) div 25);
-      if Self is TKling then Value := KlingCheapDropValueFactors[Ord((Self as TKling).KlingType)] * Value;
+      if Self is TKling then Value := KlingCheapDropValueFactors[(Self as TKling).KlingType] * Value;
       if (Candidate.Cost > 1000) and
         (NextRandomIntRange(1, 100, RandomState) > Round(100 * Exp(2 - 2 * Value))) then Continue;
       if (Result = nil) or (Candidate.Cost < NextRandomFloatRange(0.5, 1, RandomState) * Result.Cost) then
@@ -8010,7 +8010,7 @@ var
       Candidate := Inventory[Index];
       if (Candidate.DestroyFlag > 0) or (Candidate.NoDropFlag > 0) then Continue;
       Value := Candidate.Cost / Max(Int64(1), Round(Galaxy.GetDropValueModifier * Galaxy.AverageRangerCapital) div 12);
-      if Self is TKling then Value := KlingValuableDropValueFactors[Ord((Self as TKling).KlingType)] * Value;
+      if Self is TKling then Value := KlingValuableDropValueFactors[(Self as TKling).KlingType] * Value;
       if (Candidate.Cost > 1000) and
         (NextRandomIntRange(1, 100, RandomState) > Round(100 * Exp(0.3 - 0.3 * Value))) then Continue;
       if (Result = nil) or (Candidate.Cost > NextRandomFloatRange(0.5, 1, RandomState) * Result.Cost) then
@@ -8044,7 +8044,7 @@ begin
     if Item.NoDropFlag > 0 then Continue;
     if Item.ItemType in [t_Hull..t_Engine] then Continue;
     if (Item.ItemType in [t_IndustrialLaser..t_CustomWeapon]) and ((WeaponCount <= 1) or (TWeapon(Item).GetWeaponInfo^.ShotType = wstAreaDamage)) then Continue;
-    Value := DominatorProgramDropCostFactors[Ord((Self as TKling).KlingType)] *
+    Value := DominatorProgramDropCostFactors[(Self as TKling).KlingType] *
       (Item.Cost / Max(Int64(1), Round(Galaxy.GetDropValueModifier * Galaxy.AverageRangerCapital) div 12));
     if (Item.Cost > 1000) and (NextRandomIntRange(1, 100, RandomState) > Round(Exp(0.3 - 0.3 * Value) * 100)) then Continue;
     if (Item.Cost > 1000) and (NextRandomIntRange(1, 100, RandomState) > Round(Exp(0.3 - 0.3 * Value * 0.5) * 100)) then begin
@@ -10072,7 +10072,7 @@ var
   Countdown: Integer;
   Node: PSPathNode;
   I, J: Integer;
-  K: Byte;
+  K: TDominatorSeries;
   Item: TItem;
   PickupDistance: Single;
   PickupNode: PSPathNode;
@@ -10445,7 +10445,7 @@ TEFilm(PrimaryFilm).SetGateEffectSize(StartStepIndex, EffectFilm, Gate.Effect.Si
           begin
             TEFilm(PrimaryFilm).SetViewCenter(StartStepIndex, OrderDestination);
             TEFilm(PrimaryFilm).SetCameraAnchor(StartStepIndex, OrderDestination, False);
-            for K := 0 to 2 do GetPlayer.ChameleonDetected[K] := False;
+            for K := Low(TDominatorSeries) to High(TDominatorSeries) do GetPlayer.ChameleonDetected[K] := False;
             GetPlayer.ReportIdleSatellites(GetPlayer.CurrentStar);
             TryAddAchievementProgress('JUMPER', 1);
           end;
@@ -10511,7 +10511,7 @@ TEFilm(PrimaryFilm).SetGateEffectSize(StartStepIndex, EffectFilm, Gate.Effect.Si
           begin
             TEFilm(PrimaryFilm).SetViewCenter(StartStepIndex, Position);
             TEFilm(PrimaryFilm).SetCameraAnchor(StartStepIndex, Position, False);
-            for K := 0 to 2 do GetPlayer.ChameleonDetected[K] := False;
+            for K := Low(TDominatorSeries) to High(TDominatorSeries) do GetPlayer.ChameleonDetected[K] := False;
             GetPlayer.ReportIdleSatellites(GetPlayer.CurrentStar);
           end;
         end;
@@ -12050,7 +12050,7 @@ begin
         for J := 0 to Star.Ships.Count - 1 do begin
           Ship := Star.Ships[J];
           if Ship.InNormalSpace and (Ship is TKling) and not Ship.HasIndependentScriptFaction and
-            (Ship.Order in [soNone, soMove]) and ((Ship as TKling).KlingType in [ktEquentor..ktShtip]) then Inc(Available);
+            (Ship.Order in [soNone, soMove]) and ((Ship as TKling).KlingType in [ktEquantor..ktShtip]) then Inc(Available);
         end;
         if Available <= 1 then Available := 0
         else Available := Max(1, Available - NextRandomIntRange(2, 5, RandomState));
@@ -12058,7 +12058,7 @@ begin
           for J := 0 to Star.Ships.Count - 1 do begin
             Ship := Star.Ships[J];
             if Ship.InNormalSpace and (Ship is TKling) and not Ship.HasIndependentScriptFaction and
-              (Ship.Order in [soNone, soMove]) and ((Ship as TKling).KlingType in [ktEquentor..ktShtip]) then begin
+              (Ship.Order in [soNone, soMove]) and ((Ship as TKling).KlingType in [ktEquantor..ktShtip]) then begin
               if (Star.DominatorSeries = dsKeller) and (1 - Penalty * 0.01 > NextRandomUnitFloat(RandomState)) and
                 (KellerShip <> nil) and (Galaxy.KellerLeaveTurn = 0) then Ship.OrderJump(CurrentStar, True);
               if (Star.DominatorSeries = dsBlazer) and (1 - Penalty * 0.01 > NextRandomUnitFloat(RandomState)) and
@@ -12792,7 +12792,7 @@ end;
 
 { @routine $779DF0 TShip_GetGreetingText }
 function TShip.GetGreetingText: WideString;
-var Key: WideString; Chameleon: Boolean; Series: Byte;
+var Key: WideString; Chameleon: Boolean; Series: TDominatorSeries;
 begin
   Chameleon := GetPlayer.ChameleonActive;
   if Self is TTranclucator then Key := 'Talk.Tranclucator.Greeting'
@@ -12842,13 +12842,13 @@ begin
     else begin
       if (Self as TKling).ActiveProgramAppliedTurn > 0 then Key := 'ShipGreetings.Dominator.ProgrammRun'
       else begin
-        Series := Byte((Self as TKling).DominatorSeries);
+        Series := (Self as TKling).DominatorSeries;
         case Series of
-          0: Key := 'ShipGreetings.Dominator.' + DominatorSeriesNames[0];
-          1: Key := 'ShipGreetings.Dominator.' + DominatorSeriesNames[1];
-          2: Key := 'ShipGreetings.Dominator.' + DominatorSeriesNames[2];
+          dsBlazer: Key := 'ShipGreetings.Dominator.' + DominatorSeriesNames[dsBlazer];
+          dsKeller: Key := 'ShipGreetings.Dominator.' + DominatorSeriesNames[dsKeller];
+          dsTerron: Key := 'ShipGreetings.Dominator.' + DominatorSeriesNames[dsTerron];
         end;
-        if Chameleon and (Byte(GetPlayer.ChameleonSeries) = Series) and not GetPlayer.ChameleonDetected[Series] then Key := Key + 'Chameleon';
+        if Chameleon and (GetPlayer.ChameleonSeries = Series) and not GetPlayer.ChameleonDetected[Series] then Key := Key + 'Chameleon';
       end;
     end;
   end else begin Result := 'no greeting'; Exit; end;
@@ -13953,7 +13953,7 @@ var
 begin
   Result := 0.1 * Strength + 5;
   for I := 1 to CountActiveArtefacts(t_ArtefactHull) do Result := Result * (HullArtefactStatusDecayFactor + ShortInt(CanBoostArtefact(t_ArtefactHull, nil, False)) * HullArtefactBoostStatusDecay);
-  if (TypeId = stKling) and (Ord((Self as TKling).KlingType) = 0) then Result := Result * 2;
+  if (TypeId = stKling) and ((Self as TKling).KlingType = ktBoss) then Result := Result * 2;
 end;
 { @end $77DF7C }
 
@@ -13965,7 +13965,7 @@ begin
   Result := 0.2;
   if IsEquipmentUsable(GetRepairRobot) then Result := 0.2 + Result;
   for I := 1 to CountActiveArtefacts(t_ArtefactDroid) do Result := Result * (DroidArtefactStatusDecayFactor + ShortInt(CanBoostArtefact(t_ArtefactDroid, nil, False)) * DroidArtefactBoostStatusDecay);
-  if (TypeId = stKling) and (Ord((Self as TKling).KlingType) = 0) then Result := Result * 2;
+  if (TypeId = stKling) and ((Self as TKling).KlingType = ktBoss) then Result := Result * 2;
 end;
 { @end $77E030 }
 
@@ -13973,7 +13973,7 @@ end;
 function TShip.GetMagneticStatusDecay(Strength: Single): Single;
 begin
   Result := 0.1 * Strength + 5;
-  if (TypeId = stKling) and (Ord((Self as TKling).KlingType) = 0) then Result := Result * 2;
+  if (TypeId = stKling) and ((Self as TKling).KlingType = ktBoss) then Result := Result * 2;
 end;
 { @end $77E0F8 }
 

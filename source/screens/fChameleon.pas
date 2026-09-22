@@ -3,14 +3,14 @@ unit fChameleon;
 
 interface
 
-uses Classes, Types, GI_MessageLoop, GI_Image;
+uses Classes, Types, GI_MessageLoop, GI_Image, aGalaxyStruct;
 
 type
   TfChameleon = class(TMessageLoopGI) // @size $F4
   public
     ChameleonActive: Boolean; // @offset $D0
-    VisualType: Byte; // @offset $D1
-    Charges: array[0..2] of Integer; // @offset $D4
+    VisualType: TKlingType; // @offset $D1
+    Charges: array[TDominatorSeries] of Integer; // @offset $D4
     Choice: Integer; // @offset $E0 One-based: disable, Blazer, Keller, Terron.
     ChoiceImages: array[1..4] of TImageGI; // @offset $E4 Disabled choices have nil entries.
     procedure OnOpen; override; // @addr $52278C
@@ -25,7 +25,7 @@ type
     procedure MainKeyDown(Sender: TObjectGI; Key: Cardinal); // @addr $523B14
   end;
 
-function ShowChameleonDialog(Parent: TMessageLoopGI; BlazerCharges, KellerCharges: Integer; TerronCharges: Integer; VisualType: Byte; Active: Boolean; var Choice: Integer): Cardinal; // @addr $523BB4
+function ShowChameleonDialog(Parent: TMessageLoopGI; BlazerCharges, KellerCharges: Integer; TerronCharges: Integer; VisualType: TKlingType; Active: Boolean; var Choice: Integer): Cardinal; // @addr $523BB4
 
 implementation
 
@@ -40,7 +40,7 @@ var
   AcceptButton, CancelButton: TGraphButtonGI;
   Size: TPoint;
   SeriesText, NameText, ShipName: WideString;
-  Series: Byte;
+  Series: TDominatorSeries;
   Disabled, NeedSelection, HasSelection: Boolean;
   WorkRect: TRect;
 
@@ -57,13 +57,13 @@ var
   end;
 
   // @nested $5226C4 ChameleonSeriesColor
-  function ChameleonSeriesColor(Series: Byte): WideString; // @addr $5226C4 @calls "0x522D67"
+  function ChameleonSeriesColor(Series: TDominatorSeries): WideString; // @addr $5226C4 @calls "0x522D67"
   begin
     Result := '';
     case Series of
-      0: Result := RedColorTag;
-      1: Result := AzureColorTag;
-      2: Result := DarkGreenColorTag;
+      dsBlazer: Result := RedColorTag;
+      dsKeller: Result := AzureColorTag;
+      dsTerron: Result := DarkGreenColorTag;
     end;
   end;
 
@@ -110,7 +110,7 @@ begin
   Caption.SetDepth(0);
   Caption.SetFontName(NormalFontName);
   Caption.SetTextColor(CurrentPixelFormat.PackRgbBytes(0,0,0));
-  ShipName := LookupLocalizedTextByKey('ShipType.Dominator.' + DominatorSeriesNames[0] + '.' + IntToStr(VisualType));
+  ShipName := LookupLocalizedTextByKey('ShipType.Dominator.' + DominatorSeriesNames[dsBlazer] + '.' + IntToStr(Ord(VisualType)));
   Caption.SetText(LocalizedText('ShipInfo.AddInfo.Chameleon.Name') + ' - ' + WrapTextInColor(ShipName,DialogHighlightColorTag));
   Caption.SetTextAlignX(taxCenter);
   Caption.SetTextAlignY(tayAuto);
@@ -123,7 +123,7 @@ begin
   AddChoice(Index,20,Y,LocalizedText('ShipInfo.AddInfo.Chameleon.Disable'),ChameleonActive,not ChameleonActive);
   NeedSelection := not ChameleonActive;
   HasSelection := ChameleonActive;
-  for Series := 0 to 2 do
+  for Series := Low(TDominatorSeries) to High(TDominatorSeries) do
   begin
     Inc(Y,20);
     Inc(Index);
@@ -292,7 +292,7 @@ end;
 { @end $523B80 }
 
 { @routine $523BB4 ShowChameleonDialog }
-function ShowChameleonDialog(Parent: TMessageLoopGI; BlazerCharges, KellerCharges: Integer; TerronCharges: Integer; VisualType: Byte; Active: Boolean; var Choice: Integer): Cardinal;
+function ShowChameleonDialog(Parent: TMessageLoopGI; BlazerCharges, KellerCharges: Integer; TerronCharges: Integer; VisualType: TKlingType; Active: Boolean; var Choice: Integer): Cardinal;
 var
   Dialog: TfChameleon;
   CursorState: TCursorStateGI;
@@ -308,9 +308,9 @@ begin
   try
     Dialog.ChameleonActive := Active;
     Dialog.VisualType := VisualType;
-    Dialog.Charges[0] := BlazerCharges;
-    Dialog.Charges[1] := KellerCharges;
-    Dialog.Charges[2] := TerronCharges;
+    Dialog.Charges[dsBlazer] := BlazerCharges;
+    Dialog.Charges[dsKeller] := KellerCharges;
+    Dialog.Charges[dsTerron] := TerronCharges;
     Result := Dialog.Run;
     Choice := Dialog.Choice;
     Parent.InvalidateViewport;

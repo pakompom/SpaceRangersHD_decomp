@@ -18,7 +18,7 @@ type
   end;
   PPlanetSurfaceLootEntry = ^TPlanetSurfaceLootEntry;
 
-  TDominatorSpawnWeightRow = array[0..7] of Integer;
+  TDominatorSpawnWeightRow = array[TKlingType] of Integer;
   TDominatorSpawnWeightTable = array[1..5] of TDominatorSpawnWeightRow;
 
   // VMT 0x77F7AC; the satellite wrapper owns a retained space-object reference.
@@ -1904,7 +1904,7 @@ begin
     begin
       Part := ExtractDelimitedPartW(Part, 1, '.');
       for Series := dsBlazer to dsTerron do
-        if aConst.DominatorSeriesNames[Ord(Series)] = Part then CurrentStar.DominatorSeries := Series;
+        if aConst.DominatorSeriesNames[Series] = Part then CurrentStar.DominatorSeries := Series;
       for Owner := oiMaloc to oiPirate do
         if aConst.OwnerInfo[Owner].InternalName = Part then
         begin
@@ -3387,7 +3387,7 @@ function TPlanet.GetFactionResourceName: WideString;
 begin
   if CustomFaction <> '' then Result := CustomFaction
   else if CurrentStar.Status.CustomFaction <> '' then Result := CurrentStar.Status.CustomFaction
-  else if CurrentStar.ControlFaction = sfDominators then Result := aConst.DominatorSeriesNames[Ord(CurrentStar.DominatorSeries)]
+  else if CurrentStar.ControlFaction = sfDominators then Result := aConst.DominatorSeriesNames[CurrentStar.DominatorSeries]
   else if IsMainPiratePlanet then Result := aConst.OwnerInfo[OwnerId].InternalName
   else if OwnerId = oiPirate then Result := aConst.OwnerInfo[oiPirate].InternalName + RaceToSys(RaceId)
   else Result := aConst.OwnerInfo[OwnerId].InternalName;
@@ -3890,10 +3890,10 @@ begin
     if (Kind = ktBertor) and
       (CurrentStar.Constellation.HasBertorOfSeries(CurrentStar.DominatorSeries) or
        (aKling.DominatorSpawnPlanet = Self)) then Continue;
-    Inc(Total, DominatorSpawnWeights[Level, Ord(Kind)]);
-    if (DominatorSpawnWeights[Level, Ord(Kind)] > LargestWeight) or (LargestKind = ktBoss) then
+    Inc(Total, DominatorSpawnWeights[Level, Kind]);
+    if (DominatorSpawnWeights[Level, Kind] > LargestWeight) or (LargestKind = ktBoss) then
     begin
-      LargestWeight := DominatorSpawnWeights[Level, Ord(Kind)];
+      LargestWeight := DominatorSpawnWeights[Level, Kind];
       LargestKind := Kind;
     end;
   end;
@@ -3905,7 +3905,7 @@ begin
     if (Kind = ktBertor) and
       (CurrentStar.Constellation.HasBertorOfSeries(CurrentStar.DominatorSeries) or
        (aKling.DominatorSpawnPlanet = Self)) then Continue;
-    Inc(Accumulated, DominatorSpawnWeights[Level, Ord(Kind)]);
+    Inc(Accumulated, DominatorSpawnWeights[Level, Kind]);
     if Roll <= Accumulated then
     begin
       Result := SpawnDominatorShip(Kind);
@@ -3977,7 +3977,7 @@ begin
       begin
         for Kind := ktBoss to ktKlig do
           for Series := dsBlazer to dsTerron do
-            if Byte(Series) in TScriptGroup(Rules).DominatorMasks[Ord(Kind)] then Inc(Count);
+            if Series in TScriptGroup(Rules).DominatorMasks[Kind] then Inc(Count);
       end
       else Inc(Count);
     end;
@@ -3992,7 +3992,7 @@ begin
       begin
         for Series := dsBlazer to dsTerron do
         begin
-          if Byte(Series) in TScriptGroup(Rules).DominatorMasks[Ord(Kind)] then
+          if Series in TScriptGroup(Rules).DominatorMasks[Kind] then
           begin
             Dec(Count);
             SelectedKind := Kind;

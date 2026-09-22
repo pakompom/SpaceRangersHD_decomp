@@ -417,7 +417,7 @@ var
 type
   // Native record RTTI at $82A510.
   TKlingTypeInfo = record // @size $38
-    DisplayNames: array[0..2] of WideString; // @offset $00 Indexed by TDominatorSeries; replaced by localized names during configuration loading.
+    DisplayNames: array[TDominatorSeries] of WideString; // @offset $00 Replaced by localized ShipType.Dominator names during configuration loading.
     MinimumHullSize: Integer; // @offset $0C InitGenerated ($5E978C): random hull-size bounds before HullCapacityScale.
     MaximumHullSize: Integer; // @offset $10 Also averaged by SelectChameleonVisualType ($7515F0).
     InitialWealthScale: Double; // @offset $18 InitializeDominator ($5E91DC): scales Galaxy.MaxRangerWealth.
@@ -428,13 +428,14 @@ type
     RankImageIndex: Integer; // @offset $28 Rank graphic selected by scanner and ship screens.
     FactionStrengthWeight: Double; // @offset $30 Multiplies Dominator strength in TStar.GetCachedFactionStrength ($7C5088).
   end;
-  TDominatorShipDefinitions = array[0..7] of TKlingTypeInfo;
+  TDominatorDisplayIndex = 0..7; // @size $01 Position in DominatorDisplayOrder, not a ship type ID.
+  TDominatorShipDefinitions = array[TKlingType] of TKlingTypeInfo;
 
 const
-  DominatorDisplayOrder: array[0..7] of TKlingType = (ktBoss, ktBertor, ktEquentor, ktUrgant, ktSmersh, ktMenok, ktShtip, ktKlig); // @addr $87D10C
+  DominatorDisplayOrder: array[TDominatorDisplayIndex] of TKlingType = (ktBoss, ktBertor, ktEquantor, ktUrgant, ktSmersh, ktMenoc, ktShtip, ktKlig); // @addr $87D10C
 var
-  DominatorShipTypeNames: array[0..7] of WideString = ('K0', 'K1', 'K2', 'K3', 'K4', 'K5', 'K6', 'K7'); // @addr $87D114
-  DominatorShipDefinitions: array[0..7] of TKlingTypeInfo = (
+  DominatorShipTypeKeys: array[TKlingType] of WideString = ('K0', 'K1', 'K2', 'K3', 'K4', 'K5', 'K6', 'K7'); // @addr $87D114 Military-base rank-dialog keys, not display names.
+  DominatorShipDefinitions: array[TKlingType] of TKlingTypeInfo = (
     (DisplayNames: ('Blazer', 'Keller', 'Terron'); MinimumHullSize: 0; MaximumHullSize: 0; InitialWealthScale: 10; BaseNodeReserve: 500; KillExperience: 5000; RankPoints: 250; PirateRankPoints: 0; RankImageIndex: 7; FactionStrengthWeight: 10),
     (DisplayNames: ('Blazer', 'Keller', 'Terron'); MinimumHullSize: 900; MaximumHullSize: 1400; InitialWealthScale: 0.7; BaseNodeReserve: 100; KillExperience: 1000; RankPoints: 48; PirateRankPoints: 16; RankImageIndex: 5; FactionStrengthWeight: 5),
     (DisplayNames: ('Blazer', 'Keller', 'Terron'); MinimumHullSize: 700; MaximumHullSize: 900; InitialWealthScale: 0.6; BaseNodeReserve: 50; KillExperience: 500; RankPoints: 24; PirateRankPoints: 8; RankImageIndex: 4; FactionStrengthWeight: 3.5),
@@ -446,10 +447,10 @@ var
   ); // @addr $87D134 TKlingType order; native name initializer pairs $838A84..$838B3C.
 var
   DominatorRetreatStrengthByTier: array[0..3] of Double = (2, 2.2, 2.6, 3); // @addr $87D2F4 Minimum reinforced-system strength by constellation distance tier.
-  DominatorSeriesNames: array[0..2] of WideString = ('Blazer', 'Keller', 'Terron'); // @addr $87D314
+  DominatorSeriesNames: array[TDominatorSeries] of WideString = ('Blazer', 'Keller', 'Terron'); // @addr $87D314
 var
-  DominatorResearchRateMultipliers: array[0..2] of Double = (1.0, 1.2, 0.8); // @addr $87D320 Native Blazer, Keller, Terron research multipliers.
-  ResearchProgramCostFactors: array[0..2] of Double = (1, 1.4, 1.8); // @addr $87D338
+  DominatorResearchRateMultipliers: array[TDominatorSeries] of Double = (1.0, 1.2, 0.8); // @addr $87D320 Native Blazer, Keller, Terron research multipliers.
+  ResearchProgramCostFactors: array[TDominatorSeries] of Double = (1, 1.4, 1.8); // @addr $87D338
 var
   ScriptActionTypeNames: array[TScriptActionType] of WideString = (
     't_OnStep', 't_OnWeaponShot', 't_OnMissileShot',
@@ -1495,7 +1496,7 @@ var
   Level, GoodsIndex: Byte;
   Government: TPlanetGovernment;
   Relation: TRelationLevel;
-  KlingKind, Series: Byte; Owner: TOwnerId;
+  KlingKind: TKlingType; Series: TDominatorSeries; Owner: TOwnerId;
   Economy: TPlanetEconomy;
   Difficulty: ^TGalaxyDifficultyTuning;
 
@@ -1551,9 +1552,9 @@ begin
   for GoodsIndex := Low(TGoodsIndex) to High(TGoodsIndex) do GoodsMarket[GoodsIndex].TradeName := LocalizedText('Items.Goods.NameBuy.' + IntToStr(GoodsIndex + 1));
   for Government := Low(TPlanetGovernment) to High(TPlanetGovernment) do PlanetGovernmentMarket[Government].DisplayName := LocalizedText('Goverment.Type.' + IntToStr(Ord(Government)));
   for Relation := Low(TRelationLevel) to High(TRelationLevel) do RelationInfo[Relation].DisplayName := LocalizedText('Relations.Type.' + IntToStr(Ord(Relation)));
-  for KlingKind := 0 to 7 do
-    for Series := 0 to 2 do
-      DominatorShipDefinitions[KlingKind].DisplayNames[Series] := LookupLocalizedTextByKey('ShipType.Dominator.' + DominatorSeriesNames[Series] + '.' + IntToStr(KlingKind));
+  for KlingKind := Low(TKlingType) to High(TKlingType) do
+    for Series := Low(TDominatorSeries) to High(TDominatorSeries) do
+      DominatorShipDefinitions[KlingKind].DisplayNames[Series] := LookupLocalizedTextByKey('ShipType.Dominator.' + DominatorSeriesNames[Series] + '.' + IntToStr(Ord(KlingKind)));
   for Owner := oiMaloc to oiPirate do OwnerInfo[Owner].DisplayName := LookupLocalizedTextByKey('Race.Name.' + OwnerInfo[Owner].InternalName);
   // Both identical localization passes are present in the native initializer.
   for Owner := oiMaloc to oiPirate do OwnerInfo[Owner].DisplayName := LookupLocalizedTextByKey('Race.Name.' + OwnerInfo[Owner].InternalName);
@@ -2674,7 +2675,7 @@ begin
       begin
         if SpecialOnly then AllowedHullOwnerMask := [oiMaloc..oiGaal, oiPirate]
         else AllowedHullOwnerMask := [oiMaloc..oiDominator, oiPirate];
-        AllowedDominatorSeriesMask := [Ord(dsBlazer)..Ord(dsTerron)];
+        AllowedDominatorSeriesMask := [dsBlazer..dsTerron];
         AllowedCustomHullFactions := '';
       end
       else
@@ -2702,20 +2703,20 @@ begin
         end;
         if ConsumeMicroModuleToken('<Blazer>') then
         begin
-          Include(AllowedDominatorSeriesMask, Ord(dsBlazer));
+          Include(AllowedDominatorSeriesMask, dsBlazer);
           if SpecialOnly then Include(AllowedHullOwnerMask, oiDominator);
         end;
         if ConsumeMicroModuleToken('<Terron>') then
         begin
-          Include(AllowedDominatorSeriesMask, Ord(dsTerron));
+          Include(AllowedDominatorSeriesMask, dsTerron);
           if SpecialOnly then Include(AllowedHullOwnerMask, oiDominator);
         end;
         if ConsumeMicroModuleToken('<Keller>') then
         begin
-          Include(AllowedDominatorSeriesMask, Ord(dsKeller));
+          Include(AllowedDominatorSeriesMask, dsKeller);
           if SpecialOnly then Include(AllowedHullOwnerMask, oiDominator);
         end;
-        if AllowedDominatorSeriesMask = [] then AllowedDominatorSeriesMask := [Ord(dsBlazer)..Ord(dsTerron)];
+        if AllowedDominatorSeriesMask = [] then AllowedDominatorSeriesMask := [dsBlazer..dsTerron];
         AllowedCustomHullFactions := '';
         for Part := 0 to CountDelimitedPartsW(Tokens, ',') - 1 do
         begin

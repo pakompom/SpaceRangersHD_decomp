@@ -629,10 +629,10 @@ begin
   else if Victim is TKling then
   begin
     Inc(DominatorKillCount);
-    if GetPlayer = Self then Inc(GetPlayer.DominatorKillsByType[Ord((Victim as TKling).KlingType)]);
+    if GetPlayer = Self then Inc(GetPlayer.DominatorKillsByType[(Victim as TKling).KlingType]);
     IncrementWordSaturating(CurrentSystemKills.Dominator);
-    RankReward := DominatorShipDefinitions[Ord((Victim as TKling).KlingType)].RankPoints;
-    Experience := Round(DominatorShipDefinitions[Ord((Victim as TKling).KlingType)].KillExperience * Galaxy.GetDominatorKillExperienceScale);
+    RankReward := DominatorShipDefinitions[(Victim as TKling).KlingType].RankPoints;
+    Experience := Round(DominatorShipDefinitions[(Victim as TKling).KlingType].KillExperience * Galaxy.GetDominatorKillExperienceScale);
     SourceKind := esDominators;
     if Self is TRanger then
     begin
@@ -646,11 +646,11 @@ begin
     if (PartnerShip <> nil) and (PartnerShip is TNormalShip) and
      (PartnerShip.CurrentStar = CurrentStar) and PartnerShip.InNormalSpace then
     begin
-      (PartnerShip as TNormalShip).AddRankPoints(DominatorShipDefinitions[Ord((Victim as TKling).KlingType)].RankPoints div 2 + 1);
+      (PartnerShip as TNormalShip).AddRankPoints(DominatorShipDefinitions[(Victim as TKling).KlingType].RankPoints div 2 + 1);
       if (PartnerShip as TNormalShip).CurrentSystemKills.Dominator = 0 then
         Inc(TNormalShip(PartnerShip).CurrentSystemKills.Dominator);
     end;
-    if OwnerId = oiPirate then PirateReward := DominatorShipDefinitions[Ord((Victim as TKling).KlingType)].PirateRankPoints;
+    if OwnerId = oiPirate then PirateReward := DominatorShipDefinitions[(Victim as TKling).KlingType].PirateRankPoints;
   end
   else if Victim is TWarrior then
   begin
@@ -888,7 +888,7 @@ begin
       begin
         Inc(OtherNormal.DominatorKillCount);
         IncrementWordSaturating(OtherNormal.CurrentSystemKills.Dominator);
-        if GetPlayer = OtherShip then Inc(GetPlayer.DominatorKillsByType[Ord((Victim as TKling).KlingType)]);
+        if GetPlayer = OtherShip then Inc(GetPlayer.DominatorKillsByType[(Victim as TKling).KlingType]);
       end
       else if (Victim is TPirate) or ((Victim is TRanger) and ((Victim as TRanger).GetDominantCareer = rcPirate)) then
       begin

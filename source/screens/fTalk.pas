@@ -1430,7 +1430,7 @@ begin
               ((TalkShip as TKling).ActiveProgramAppliedTurn = 0) then
               AddChoice('- ' + FormatText1(GetPlayer.LookupTalkText('Talk.Dominator.ProgrammPlayer'),
                 TextHighlightColorTag, '<Name>', GetPlayer.GetProgramName(ProgramIndex)), Ord(ProgramIndex), RunDominatorProgram, 0);
-          if RecognizesPlayer or GetPlayer.ChameleonDetected[Ord((TalkShip as TKling).DominatorSeries)] or
+          if RecognizesPlayer or GetPlayer.ChameleonDetected[(TalkShip as TKling).DominatorSeries] or
             ((TalkShip as TKling).DominatorSeries <> GetPlayer.ChameleonSeries) then
           begin
             AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Dominator.HiPlayer'), 0, ShowDominatorGreeting, 0);
@@ -1518,7 +1518,7 @@ begin
           DialogText := TalkShip.LookupTalkText('Talk.Dominator.Chameleon.BossTerronToStar')
         else if (TalkShip = TerronShip) and (Galaxy.TerronGrowLockTurn <> 0) then
           DialogText := TalkShip.LookupTalkText('Talk.Dominator.Chameleon.BossTerronGrowLock')
-        else DialogText := TalkShip.LookupTalkText('Talk.Dominator.Chameleon.Boss' + DominatorSeriesNames[Ord((TalkShip as TKling).DominatorSeries)]);
+        else DialogText := TalkShip.LookupTalkText('Talk.Dominator.Chameleon.Boss' + DominatorSeriesNames[(TalkShip as TKling).DominatorSeries]);
         BuildBuiltinChoices;
         Exit;
       end;
@@ -3047,7 +3047,7 @@ end;
 { @routine $6E2808 TfTalk_ShowDominatorGreeting }
 procedure TfTalk.ShowDominatorGreeting(Action: Integer);
 begin
-  DialogText := TalkShip.LookupTalkText('Talk.Dominator.Hi' + DominatorSeriesNames[Ord((TalkShip as TKling).DominatorSeries)]);
+  DialogText := TalkShip.LookupTalkText('Talk.Dominator.Hi' + DominatorSeriesNames[(TalkShip as TKling).DominatorSeries]);
   BuildStandardChoices(True);
 end;
 { @end $6E2808 }
@@ -3055,7 +3055,7 @@ end;
 { @routine $6E28D4 TfTalk_ShowDominatorPeace }
 procedure TfTalk.ShowDominatorPeace(Action: Integer);
 begin
-  DialogText := TalkShip.LookupTalkText('Talk.Dominator.Peace' + DominatorSeriesNames[Ord((TalkShip as TKling).DominatorSeries)]);
+  DialogText := TalkShip.LookupTalkText('Talk.Dominator.Peace' + DominatorSeriesNames[(TalkShip as TKling).DominatorSeries]);
   BuildStandardChoices(True);
 end;
 { @end $6E28D4 }
@@ -3063,7 +3063,7 @@ end;
 { @routine $6E29A8 TfTalk_ShowDominatorGoods }
 procedure TfTalk.ShowDominatorGoods(Action: Integer);
 begin
-  DialogText := TalkShip.LookupTalkText('Talk.Dominator.Goods' + DominatorSeriesNames[Ord((TalkShip as TKling).DominatorSeries)]);
+  DialogText := TalkShip.LookupTalkText('Talk.Dominator.Goods' + DominatorSeriesNames[(TalkShip as TKling).DominatorSeries]);
   BuildStandardChoices(True);
 end;
 { @end $6E29A8 }
@@ -3071,7 +3071,7 @@ end;
 { @routine $6E2A7C TfTalk_ShowDominatorCommand }
 procedure TfTalk.ShowDominatorCommand(Action: Integer);
 begin
-  DialogText := TalkShip.LookupTalkText('Talk.Dominator.Command' + DominatorSeriesNames[Ord((TalkShip as TKling).DominatorSeries)]);
+  DialogText := TalkShip.LookupTalkText('Talk.Dominator.Command' + DominatorSeriesNames[(TalkShip as TKling).DominatorSeries]);
   BuildStandardChoices(True);
 end;
 { @end $6E2A7C }
@@ -3425,7 +3425,7 @@ begin
     if (Item.OwnerId = oiDominator) and (Item is TUselessItem) and not IsMilitaryProtectedQuestItem(Item) then
     begin
       Inc(Count);
-      if (Galaxy.DominatorResearch[Ord(Item.DominatorSeries)].Progress < 100) and
+      if (Galaxy.DominatorResearch[Item.DominatorSeries].Progress < 100) and
         Galaxy.IsDominatorSeriesUnresolved(Item.DominatorSeries) then
         Inc(Cost, Round(Item.Cost * 1.5))
       else Inc(Cost, Item.Cost);
@@ -3454,18 +3454,18 @@ end;
 procedure DonateMilitaryResearchMaterial(Series: TDominatorSeries; Amount: Integer);
 var Other: TDominatorSeries; Count: Integer;
 begin
-  if (Galaxy.DominatorResearch[Ord(Series)].Progress < 100) and Galaxy.IsDominatorSeriesUnresolved(Series) then
-    Inc(Galaxy.DominatorResearch[Ord(Series)].Material, Amount)
+  if (Galaxy.DominatorResearch[Series].Progress < 100) and Galaxy.IsDominatorSeriesUnresolved(Series) then
+    Inc(Galaxy.DominatorResearch[Series].Material, Amount)
   else
   begin
     Count := 0;
     for Other := dsBlazer to dsTerron do
-      if (Galaxy.DominatorResearch[Ord(Other)].Progress < 100) and Galaxy.IsDominatorSeriesUnresolved(Other) then
+      if (Galaxy.DominatorResearch[Other].Progress < 100) and Galaxy.IsDominatorSeriesUnresolved(Other) then
         Inc(Count);
     if Count <> 0 then
       for Other := dsBlazer to dsTerron do
-        if (Galaxy.DominatorResearch[Ord(Other)].Progress < 100) and Galaxy.IsDominatorSeriesUnresolved(Other) then
-          Inc(Galaxy.DominatorResearch[Ord(Other)].Material, Amount div Count);
+        if (Galaxy.DominatorResearch[Other].Progress < 100) and Galaxy.IsDominatorSeriesUnresolved(Other) then
+          Inc(Galaxy.DominatorResearch[Other].Material, Amount div Count);
   end;
 end;
 { @end $6E50D0 }
@@ -3481,7 +3481,7 @@ begin
     if (Item.OwnerId = oiDominator) and (Item is TUselessItem) and not IsMilitaryProtectedQuestItem(Item) then
     begin
       GetPlayer.Inventory.Delete(I);
-      if (Galaxy.DominatorResearch[Ord(Item.DominatorSeries)].Progress < 100) and
+      if (Galaxy.DominatorResearch[Item.DominatorSeries].Progress < 100) and
         Galaxy.IsDominatorSeriesUnresolved(Item.DominatorSeries) then
         Inc(Cost, Round(Item.Cost * 1.5))
       else Inc(Cost, Item.Cost);
@@ -3507,7 +3507,7 @@ begin
     if I >= 0 then
     begin
       GetPlayer.Inventory.Delete(I);
-      if (Galaxy.DominatorResearch[Ord(Item.DominatorSeries)].Progress < 100) and
+      if (Galaxy.DominatorResearch[Item.DominatorSeries].Progress < 100) and
         Galaxy.IsDominatorSeriesUnresolved(Item.DominatorSeries) then Cost := Round(Item.Cost * 1.5)
       else Cost := Item.Cost;
       DonateMilitaryResearchMaterial(Item.DominatorSeries, Item.Weight);
@@ -3526,11 +3526,11 @@ begin
     if (Item.OwnerId = oiDominator) and (Item is TUselessItem) and not IsMilitaryProtectedQuestItem(Item) then
     begin
       Inc(Count);
-      if (Galaxy.DominatorResearch[Ord(Item.DominatorSeries)].Progress < 100) and
+      if (Galaxy.DominatorResearch[Item.DominatorSeries].Progress < 100) and
         Galaxy.IsDominatorSeriesUnresolved(Item.DominatorSeries) then Cost := Round(Item.Cost * 1.5)
       else Cost := Item.Cost;
       Caption := Item.GetDisplayName + ' (' + WrapTextInColor(WideString(IntToStr(Cost)), TextHighlightColorTag) + ' cr)';
-      if (Galaxy.DominatorResearch[Ord(Item.DominatorSeries)].Progress < 100) and
+      if (Galaxy.DominatorResearch[Item.DominatorSeries].Progress < 100) and
         Galaxy.IsDominatorSeriesUnresolved(Item.DominatorSeries) then Caption := Caption + BonusCaption;
       AddChoice('- ' + Caption, Integer(Item), SellIndividualMilitaryRemains, 0);
       DialogText := DialogText + #13#10 + WideString(IntToStr(Count)) + ') ' + Caption;

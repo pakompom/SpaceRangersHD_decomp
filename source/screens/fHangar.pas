@@ -64,7 +64,7 @@ type
   end;
 
 const
-  HangarDominatorPortraitScales: array[0..2,0..7] of Single = (
+  HangarDominatorPortraitScales: array[TDominatorSeries, TKlingType] of Single = (
     (1.0,1.1,1.1,0.7,0.7,0.3,1.0,0.5),
     (1.0,1.2,0.9,0.9,0.8,0.7,1.0,0.5),
     (1.0,1.1,0.9,0.7,0.6,0.5,1.0,0.5)); // @addr $87BECC
@@ -923,8 +923,8 @@ end;
 { @routine $66DF3C TfHangar_GetShipPortraitScale }
 function TfHangar.GetShipPortraitScale(Ship: TShip): Single;
 begin
-  if Ship.ChameleonActive then Result := HangarDominatorPortraitScales[Ord(Ship.ChameleonSeries),Ship.ChameleonVisualType]
-  else if Ship is TKling then Result := HangarDominatorPortraitScales[Ord((Ship as TKling).DominatorSeries),Ord((Ship as TKling).KlingType)]
+  if Ship.ChameleonActive then Result := HangarDominatorPortraitScales[Ship.ChameleonSeries,Ship.ChameleonVisualType]
+  else if Ship is TKling then Result := HangarDominatorPortraitScales[(Ship as TKling).DominatorSeries,(Ship as TKling).KlingType]
   else Result := 1.0;
 end;
 { @end $66DF3C }

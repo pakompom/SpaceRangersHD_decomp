@@ -91,7 +91,7 @@ type
   end;
 
 var
-  DominatorEquipmentSizeIndices: array[0..7, 0..1] of Integer = ((1, 1), (1, 3), (2, 4), (3, 4), (3, 5), (4, 5), (1, 1), (4, 5)); // @addr $87B420 Maximum-size index followed by minimum-size index.
+  DominatorEquipmentSizeIndices: array[TKlingType, 0..1] of Integer = ((1, 1), (1, 3), (2, 4), (3, 4), (3, 5), (4, 5), (1, 1), (4, 5)); // @addr $87B420 Maximum-size index followed by minimum-size index.
   DominatorWeaponDistributionByTier: array[1..7] of Integer = (1, 1, 2, 2, 3, 3, 4); // @addr $87B460
   DominatorWeaponWeights: array[1..4, TKlingType, t_IndustrialLaser..t_TorpedoTube] of Integer = (
     ((0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 25, 25, 50),
@@ -181,7 +181,7 @@ begin
   KlingType := ktBoss;
   DominatorSeries := dsBlazer;
   SetMoney(MaxInt);
-  NodeReserve := Round(NextRandomFloatRange(0.8, 1.2, RandomState) * DominatorShipDefinitions[Ord(KlingType)].BaseNodeReserve * Galaxy.GetNodeDropModifier);
+  NodeReserve := Round(NextRandomFloatRange(0.8, 1.2, RandomState) * DominatorShipDefinitions[KlingType].BaseNodeReserve * Galaxy.GetNodeDropModifier);
   Position.X := 0;
   Position.Y := 0;
   CurrentStar := Star;
@@ -190,7 +190,7 @@ begin
   HomePlanet := nil;
   CurrentPlanet := nil;
   Inc(CurrentStar.ShipTypeCounts[stKling]);
-  Name := DominatorShipDefinitions[Ord(KlingType)].DisplayNames[Ord(DominatorSeries)];
+  Name := DominatorShipDefinitions[KlingType].DisplayNames[DominatorSeries];
   RefreshCombatSkills;
   ActiveProgramAppliedTurn := 0;
   ChameleonActive := False;
@@ -226,7 +226,7 @@ begin
   KlingType := ktBoss;
   DominatorSeries := dsKeller;
   SetMoney(MaxInt);
-  NodeReserve := Round(NextRandomFloatRange(0.8, 1.2, RandomState) * DominatorShipDefinitions[Ord(KlingType)].BaseNodeReserve);
+  NodeReserve := Round(NextRandomFloatRange(0.8, 1.2, RandomState) * DominatorShipDefinitions[KlingType].BaseNodeReserve);
   Position.X := 0;
   Position.Y := 0;
   CurrentStar := Star;
@@ -235,7 +235,7 @@ begin
   HomePlanet := nil;
   CurrentPlanet := nil;
   Inc(CurrentStar.ShipTypeCounts[stKling]);
-  Name := DominatorShipDefinitions[Ord(KlingType)].DisplayNames[Ord(DominatorSeries)];
+  Name := DominatorShipDefinitions[KlingType].DisplayNames[DominatorSeries];
   RefreshCombatSkills;
   ActiveProgramAppliedTurn := 0;
   ChameleonActive := False;
@@ -275,11 +275,11 @@ begin
   KlingType := ktBoss;
   DominatorSeries := dsTerron;
   SetMoney(MaxInt);
-  NodeReserve := Round(NextRandomFloatRange(0.8, 1.2, RandomState) * DominatorShipDefinitions[Ord(KlingType)].BaseNodeReserve);
+  NodeReserve := Round(NextRandomFloatRange(0.8, 1.2, RandomState) * DominatorShipDefinitions[KlingType].BaseNodeReserve);
   Position.X := 1000;
   Position.Y := 0;
   CurrentStar := Star;
-  CurrentStar.Name := LookupLocalizedTextByKey('Star.' + DominatorSeriesNames[Ord(DominatorSeries)]);
+  CurrentStar.Name := LookupLocalizedTextByKey('Star.' + DominatorSeriesNames[DominatorSeries]);
   for I := 0 to Star.Planets.Count - 1 do begin
     Planet := Star.Planets[I];
     if Planet.OwnerId in [oiMaloc..oiGaal, oiPirate] then begin
@@ -292,7 +292,7 @@ begin
   HomePlanet := nil;
   CurrentPlanet := nil;
   Inc(CurrentStar.ShipTypeCounts[stKling]);
-  Name := DominatorShipDefinitions[Ord(KlingType)].DisplayNames[Ord(DominatorSeries)];
+  Name := DominatorShipDefinitions[KlingType].DisplayNames[DominatorSeries];
   RefreshCombatSkills;
   ActiveProgramAppliedTurn := 0;
   ChameleonActive := False;
@@ -335,8 +335,8 @@ begin
   OwnerId := oiDominator;
   KlingType := Kind;
   DominatorSeries := Series;
-  SetMoney(Round(Galaxy.MaxRangerWealth * DominatorShipDefinitions[Ord(Kind)].InitialWealthScale));
-  NodeReserve := Round((NextRandomUnitFloat(RandomState) + 0.5) * DominatorShipDefinitions[Ord(Kind)].BaseNodeReserve);
+  SetMoney(Round(Galaxy.MaxRangerWealth * DominatorShipDefinitions[Kind].InitialWealthScale));
+  NodeReserve := Round((NextRandomUnitFloat(RandomState) + 0.5) * DominatorShipDefinitions[Kind].BaseNodeReserve);
   if KlingType <> ktBoss then begin
     CurrentStar := Planet.CurrentStar;
     CurrentStar.Ships.Add(Self);
@@ -381,8 +381,8 @@ var
   // @nested $5E95A8 SizeForKind
   function SizeForKind(BaseSize: Integer): Integer; // @addr $5E95A8
   begin
-    Result := RandomEquipmentSize(BaseSize, DominatorEquipmentSizeIndices[Ord(KlingType), 1],
-      DominatorEquipmentSizeIndices[Ord(KlingType), 0]);
+    Result := RandomEquipmentSize(BaseSize, DominatorEquipmentSizeIndices[KlingType, 1],
+      DominatorEquipmentSizeIndices[KlingType, 0]);
   end;
   // @nested $5E95F0 RandomTuning
   function RandomTuning(MinimumColumn, MaximumColumn: Integer): Integer; // @addr $5E95F0
@@ -432,8 +432,8 @@ begin
   MiddleControl := Round(RemapClamped(Galaxy.CurrentTurn, GalaxyWarmupTurns, 11250, MaximumControl div 4, 3 * MaximumControl div 4));
   ChameleonActive := False;
   GraphDominator := Galaxy.GraphDominatorSurfacesEnabled;
-  CreateAndEquipHull(Round(RandomInteger(DominatorShipDefinitions[Ord(KlingType)].MinimumHullSize,
-    DominatorShipDefinitions[Ord(KlingType)].MaximumHullSize) * HullCapacityScale), RandomTuning(2, 3), oiDominator, -1, False);
+  CreateAndEquipHull(Round(RandomInteger(DominatorShipDefinitions[KlingType].MinimumHullSize,
+    DominatorShipDefinitions[KlingType].MaximumHullSize) * HullCapacityScale), RandomTuning(2, 3), oiDominator, -1, False);
   CreateAndEquipEngine(SizeForKind(EngineBaseSize), RandomTuning(10, 11), oiDominator);
   if RandomInteger(1, 100) <= InterpolatedTuning(14, 15) then
     CreateAndEquipRepairRobot(SizeForKind(RepairRobotBaseSize), RandomTuning(4, 5), oiDominator);
@@ -459,8 +459,8 @@ begin
       while (WeaponType <= t_TorpedoTube) and not Chosen do begin
         Inc(WeightSum, DominatorWeaponWeights[Distribution, KlingType, WeaponType]);
         if Roll <= WeightSum then begin
-          MaximumSizeIndex := DominatorEquipmentSizeIndices[Ord(KlingType), 0];
-          MinimumSizeIndex := DominatorEquipmentSizeIndices[Ord(KlingType), 1];
+          MaximumSizeIndex := DominatorEquipmentSizeIndices[KlingType, 0];
+          MinimumSizeIndex := DominatorEquipmentSizeIndices[KlingType, 1];
           if WeaponInfos[WeaponType].ShotType = wstAreaDamage then begin
             MaximumSizeIndex := 2;
             MinimumSizeIndex := 1;
@@ -814,7 +814,7 @@ begin
   Result := nil;
   Count := 0;
   PlayerIsBertor := (GetPlayer.CurrentStar = CurrentStar) and GetPlayer.InNormalSpace and
-    IsPlayerCamouflageEffective(GetPlayer) and GetPlayer.ChameleonActive and (GetPlayer.ChameleonVisualType in [6]);
+    IsPlayerCamouflageEffective(GetPlayer) and GetPlayer.ChameleonActive and (GetPlayer.ChameleonVisualType in [ktBertor]);
   if PlayerIsBertor then begin Result := GetPlayer; Inc(Count); end;
   for I := 0 to CurrentStar.Ships.Count - 1 do begin
     Ship := CurrentStar.Ships[I];
@@ -1100,7 +1100,7 @@ begin
       if not IsPlayerCamouflageEffective(Ship) then Exit;
     end else begin
       if TKling(Ship).DominatorSeries <> DominatorSeries then Exit;
-      if (TKling(Ship).KlingType in [ktEquentor..ktShtip]) and (Ship <> Self) then Inc(EscortCount);
+      if (TKling(Ship).KlingType in [ktEquantor..ktShtip]) and (Ship <> Self) then Inc(EscortCount);
     end;
   end;
   if EscortCount < 2 then Exit;
@@ -1261,7 +1261,7 @@ var TargetStar: TStar; TargetCount, NonDominatorCount, OtherSeriesCount, Action:
       Inc(SendIndex);
       if (Ship is TKling) and ((Ship as TKling).DominatorSeries = Series) and not Ship.OrderAbsolute and
         not Ship.IsOutsideStarSpace and (Ship <> BlazerShip) and (Ship <> KellerShip) and (Ship <> TerronShip) and
-        ((Ship as TKling).KlingType in [ktEquentor..ktShtip]) and ((Ship as TKling).ActiveProgramAppliedTurn <= 0) then begin
+        ((Ship as TKling).KlingType in [ktEquantor..ktShtip]) and ((Ship as TKling).ActiveProgramAppliedTurn <= 0) then begin
         Ship.OrderJump(TargetStar, True);
         Inc(Sent);
       end;
@@ -1391,13 +1391,13 @@ var
 begin
   if TypeNameOverrideKey <> '' then
   begin
-    Path := 'ShipType.Dominator.' + DominatorSeriesNames[Ord(DominatorSeries)] + '.' + TypeNameOverrideKey;
+    Path := 'ShipType.Dominator.' + DominatorSeriesNames[DominatorSeries] + '.' + TypeNameOverrideKey;
     if LanguageDataConfig.CountParamsByPath(Path) > 0 then Text := LocalizedText(Path)
     else Text := LocalizedText('ShipType.TypeName.' + TypeNameOverrideKey);
     if Text <> '' then Result := Text + Separator + Name else Result := Name;
   end
-  else if KlingType = ktBoss then Result := DominatorShipDefinitions[Ord(KlingType)].DisplayNames[Ord(DominatorSeries)]
-  else Result := DominatorShipDefinitions[Ord(KlingType)].DisplayNames[Ord(DominatorSeries)] + Separator + Name;
+  else if KlingType = ktBoss then Result := DominatorShipDefinitions[KlingType].DisplayNames[DominatorSeries]
+  else Result := DominatorShipDefinitions[KlingType].DisplayNames[DominatorSeries] + Separator + Name;
 end;
 { @end $5EE5E0 }
 
@@ -1608,10 +1608,10 @@ end;
 procedure TKling.DetectAttackingPlayer(Attacker: TShip);
 begin
   if (GetPlayer = Attacker) and (Attacker.CurrentStar = CurrentStar) and
-    not TPlayer(Attacker).ChameleonDetected[Ord(DominatorSeries)] and
-    (GetPlayer.ChameleonLogic[Ord(DominatorSeries)] < 2) and not HasIndependentScriptFaction then
+    not TPlayer(Attacker).ChameleonDetected[DominatorSeries] and
+    (GetPlayer.ChameleonLogic[DominatorSeries] < 2) and not HasIndependentScriptFaction then
   begin
-    TPlayer(Attacker).ChameleonDetected[Ord(DominatorSeries)] := True;
+    TPlayer(Attacker).ChameleonDetected[DominatorSeries] := True;
     if TPlayer(Attacker).ChameleonActive and (TPlayer(Attacker).ChameleonSeries = DominatorSeries) then
       AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn,
         LocalizedText('ShipInfo.AddInfo.Chameleon.Detect'), '');
@@ -1624,9 +1624,9 @@ function TKling.IsPlayerCamouflageEffective(Ship: TShip): Boolean;
 begin
   Result := False;
   if (GetPlayer <> nil) and (GetPlayer = Ship) and not HasIndependentScriptFaction and not Ship.IsOutsideStarSpace and
-    (not TPlayer(Ship).ChameleonDetected[Ord(DominatorSeries)] or (GetPlayer.ChameleonLogic[Ord(DominatorSeries)] >= 2)) then begin
-    if (not TPlayer(Ship).ChameleonActive or (TPlayer(Ship).ChameleonSeries <> DominatorSeries)) and (GetPlayer.ChameleonLogic[Ord(DominatorSeries)] = 0) then
-      TPlayer(Ship).ChameleonDetected[Ord(DominatorSeries)] := True
+    (not TPlayer(Ship).ChameleonDetected[DominatorSeries] or (GetPlayer.ChameleonLogic[DominatorSeries] >= 2)) then begin
+    if (not TPlayer(Ship).ChameleonActive or (TPlayer(Ship).ChameleonSeries <> DominatorSeries)) and (GetPlayer.ChameleonLogic[DominatorSeries] = 0) then
+      TPlayer(Ship).ChameleonDetected[DominatorSeries] := True
     else Result := True;
   end;
 end;

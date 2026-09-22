@@ -862,7 +862,7 @@ begin
   if Attacker = nil then Roll := NextRandomIntRange(1, 100, Galaxy.RandomState)
   else
   begin
-    if (Attacker is TKling) and (Ord((Attacker as TKling).KlingType) = 0) then
+    if (Attacker is TKling) and ((Attacker as TKling).KlingType = ktBoss) then
     begin
       Result := True;
       Exit;

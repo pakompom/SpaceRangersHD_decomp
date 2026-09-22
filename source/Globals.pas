@@ -298,9 +298,9 @@ var
 var
   ArcadeWeaponLoopTicks: array[0..17] of Integer; // @addr $88A5E0 First configured value divided by 20; -1 when absent.
   RaceShipTemplates: array[TOwnerId, htRanger..htDiplomat] of TObjectSE; // @addr $88A628 @note "Retained SE.Ship templates indexed by owner and six ordinary hull kinds."
-  BlazerShipTemplates: array[0..7] of TObjectSE; // @addr $88A6E8
-  KellerShipTemplates: array[0..7] of TObjectSE; // @addr $88A708
-  TerronShipTemplates: array[0..7] of TObjectSE; // @addr $88A728
+  BlazerShipTemplates: array[TKlingType] of TObjectSE; // @addr $88A6E8
+  KellerShipTemplates: array[TKlingType] of TObjectSE; // @addr $88A708
+  TerronShipTemplates: array[TKlingType] of TObjectSE; // @addr $88A728
   PirateClanShipTemplates: array[TOwnerId] of TObjectSE; // @addr $88A748
   PlanetSpaceTemplates: array of TPlanetSpaceTemplate; // @addr $88A768
 
@@ -582,7 +582,7 @@ end;
 { @routine $526C04 FinalizeScriptHostRuntime }
 procedure FinalizeScriptHostRuntime;
 var
-  Race: TOwnerId; Kind: THullType; Series: Byte;
+  Race: TOwnerId; Kind: THullType; KlingKind: TKlingType;
   Item: TObject;
   Index: Integer;
 begin
@@ -640,12 +640,12 @@ begin
     if PirateClanShipTemplates[Race] <> nil then
       ReleaseSpaceObject(PirateClanShipTemplates[Race]);
   end;
-  for Series := 0 to 7 do
-    if Series <> 0 then
+  for KlingKind := Low(TKlingType) to High(TKlingType) do
+    if KlingKind <> ktBoss then
     begin
-      if BlazerShipTemplates[Series] <> nil then ReleaseSpaceObject(BlazerShipTemplates[Series]);
-      if KellerShipTemplates[Series] <> nil then ReleaseSpaceObject(KellerShipTemplates[Series]);
-      if TerronShipTemplates[Series] <> nil then ReleaseSpaceObject(TerronShipTemplates[Series]);
+      if BlazerShipTemplates[KlingKind] <> nil then ReleaseSpaceObject(BlazerShipTemplates[KlingKind]);
+      if KellerShipTemplates[KlingKind] <> nil then ReleaseSpaceObject(KellerShipTemplates[KlingKind]);
+      if TerronShipTemplates[KlingKind] <> nil then ReleaseSpaceObject(TerronShipTemplates[KlingKind]);
     end;
   if FilmHistory <> nil then
   begin
@@ -679,7 +679,7 @@ var
   SatelliteTemplate: TSputnikTempl;
   PlanetTemplate: TPlanetTempl;
   Section: TBlockParEC;
-  Series: Byte; Kind: THullType;
+  KlingKind: TKlingType; Kind: THullType;
   ScriptTemplate: TScriptTemplUnit;
   Text, WarningText: WideString;
   ShipBlock: TBlockParEC;
@@ -955,12 +955,12 @@ begin
       end;
     end;
     Index := 1;
-    for Series := 0 to 7 do
-      if Series <> 0 then
+    for KlingKind := Low(TKlingType) to High(TKlingType) do
+      if KlingKind <> ktBoss then
       begin
-        RetainSpaceObject(BlazerShipTemplates[Series], CreateSpaceObjectByName('Ship2', WideString('Ship.Blazer.B' + IntToStr(Index)), Classes.Point(0, 0)));
-        RetainSpaceObject(KellerShipTemplates[Series], CreateSpaceObjectByName('Ship2', WideString('Ship.Keller.K' + IntToStr(Index)), Classes.Point(0, 0)));
-        RetainSpaceObject(TerronShipTemplates[Series], CreateSpaceObjectByName('Ship2', WideString('Ship.Terron.T' + IntToStr(Index)), Classes.Point(0, 0)));
+        RetainSpaceObject(BlazerShipTemplates[KlingKind], CreateSpaceObjectByName('Ship2', WideString('Ship.Blazer.B' + IntToStr(Index)), Classes.Point(0, 0)));
+        RetainSpaceObject(KellerShipTemplates[KlingKind], CreateSpaceObjectByName('Ship2', WideString('Ship.Keller.K' + IntToStr(Index)), Classes.Point(0, 0)));
+        RetainSpaceObject(TerronShipTemplates[KlingKind], CreateSpaceObjectByName('Ship2', WideString('Ship.Terron.T' + IntToStr(Index)), Classes.Point(0, 0)));
         Inc(Index);
       end;
   end;
@@ -1562,7 +1562,7 @@ end;
 { @routine $52C68C ResetScriptHostRuntimeState }
 procedure ResetScriptHostRuntimeState;
 var
-  Race: TOwnerId; Kind: THullType; Series: Byte;
+  Race: TOwnerId; Kind: THullType; KlingKind: TKlingType;
   Index: Integer;
 begin
   if ScriptTemplates <> nil then
@@ -1610,12 +1610,12 @@ begin
     if PirateClanShipTemplates[Race] <> nil then
       ReleaseSpaceObject(PirateClanShipTemplates[Race]);
   end;
-  for Series := 0 to 7 do
-    if Series <> 0 then
+  for KlingKind := Low(TKlingType) to High(TKlingType) do
+    if KlingKind <> ktBoss then
     begin
-      if BlazerShipTemplates[Series] <> nil then ReleaseSpaceObject(BlazerShipTemplates[Series]);
-      if KellerShipTemplates[Series] <> nil then ReleaseSpaceObject(KellerShipTemplates[Series]);
-      if TerronShipTemplates[Series] <> nil then ReleaseSpaceObject(TerronShipTemplates[Series]);
+      if BlazerShipTemplates[KlingKind] <> nil then ReleaseSpaceObject(BlazerShipTemplates[KlingKind]);
+      if KellerShipTemplates[KlingKind] <> nil then ReleaseSpaceObject(KellerShipTemplates[KlingKind]);
+      if TerronShipTemplates[KlingKind] <> nil then ReleaseSpaceObject(TerronShipTemplates[KlingKind]);
     end;
   ReloadScriptTemplates := True;
 end;

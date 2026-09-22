@@ -65,7 +65,7 @@ type
     ScanLocked: Boolean; // @offset 0x562  Player-global Script.NoScanToShip lock.
     HyperspaceKillCount: Integer; // @offset 0x564  Script.ShipStatistic kind 8.
     BlackHoleKillCount: Integer; // @offset 0x568  Script.ShipStatistic kind 7.
-    DominatorKillsByType: array[0..7] of Integer; // @offset $56C Indexed by TKlingType. Arcade Keller contributes to the boss slot (zero).
+    DominatorKillsByType: array[TKlingType] of Integer; // @offset $56C Indexed by TKlingType. Arcade Keller contributes to the boss slot (zero).
     ScriptShipBindings: TList; // @offset 0x58C
     QuestTargetKillShip: TShip; // @offset 0x590
     QuestTargetDefendShip: TShip; // @offset 0x594
@@ -121,7 +121,7 @@ type
     RuinsStatusText: WideString; // @offset 0xDE0
     AwardedAchievementKeys: TBlockParEC; // @offset 0xDE4
     BombKillsThisTurn: Integer; // @offset 0xDE8  Reset by NextDay; incremented for player bomb kills and checked for BOMBER.
-    ChameleonLogic: array[0..2] of Byte; // @offset 0xDEC  Script.PlayerLogicChameleon modes, indexed by TDominatorSeries.
+    ChameleonLogic: array[TDominatorSeries] of Byte; // @offset 0xDEC  Script.PlayerLogicChameleon modes, indexed by TDominatorSeries.
 
     procedure InitializePlayerAtPlanet(Planet: TPlanet; InitialMoney, CharacterPreset: Integer); // @addr $586710 Inherited ranger registration followed by player career/skill defaults; CharacterPreset is unused here.
     procedure ApplyCharacterPreset(Planet: TPlanet; InitialMoney, CharacterPreset: Integer); // @addr $5867F0 Twenty-five race/preset loadouts, stored cargo and initial planet relations. Planet is unused.
@@ -279,7 +279,7 @@ var
   ServiceIndex: TCoalitionProject;
   I, J: Integer;
   RewardIndex: TProgramIndex;
-  KillIndex, LogicIndex: Byte;
+  KillIndex: TKlingType; LogicIndex: TDominatorSeries;
 begin
   inherited Create;
   StorageEntries := TList.Create;
@@ -288,8 +288,8 @@ begin
   ScriptShipBindings := TList.Create;
   HyperspaceKillCount := 0;
   BlackHoleKillCount := 0;
-  for KillIndex := 0 to 7 do DominatorKillsByType[KillIndex] := 0;
-  for LogicIndex := 0 to 2 do ChameleonLogic[LogicIndex] := 0;
+  for KillIndex := Low(TKlingType) to High(TKlingType) do DominatorKillsByType[KillIndex] := 0;
+  for LogicIndex := Low(TDominatorSeries) to High(TDominatorSeries) do ChameleonLogic[LogicIndex] := 0;
   DebtAmount := 0;
   DebtDueTurn := 0;
   DebtDefaultCount := 0;
@@ -418,7 +418,7 @@ var
   ServiceIndex: TCoalitionProject;
   RewardIndex: TProgramIndex;
   News: PPlanetNewsEntry;
-  KillIndex, LogicIndex: Byte;
+  KillIndex: TKlingType; LogicIndex: TDominatorSeries;
 begin
   inherited SaveToBuffer(Buffer);
   Buffer.AddBoolean(InPrison);
@@ -426,8 +426,8 @@ begin
   Buffer.AddBoolean(ScanLocked);
   Buffer.AddIntegerValue(HyperspaceKillCount);
   Buffer.AddIntegerValue(BlackHoleKillCount);
-  for KillIndex := 0 to 7 do Buffer.AddIntegerValue(DominatorKillsByType[KillIndex]);
-  for LogicIndex := 0 to 2 do Buffer.AddAnsiChar(AnsiChar(ChameleonLogic[LogicIndex]));
+  for KillIndex := Low(TKlingType) to High(TKlingType) do Buffer.AddIntegerValue(DominatorKillsByType[KillIndex]);
+  for LogicIndex := Low(TDominatorSeries) to High(TDominatorSeries) do Buffer.AddAnsiChar(AnsiChar(ChameleonLogic[LogicIndex]));
   Buffer.AddIntegerValue(StorageEntries.Count);
   for I := 0 to StorageEntries.Count - 1 do
   begin
@@ -557,7 +557,7 @@ var
   News: PPlanetNewsEntry;
   AchievementIndex: Integer;
   Data: PAchievementData;
-  KillIndex, LogicIndex: Byte;
+  KillIndex: TKlingType; LogicIndex: TDominatorSeries;
 begin
   inherited LoadFromBuffer(Buffer, Galaxy);
   if LoadedSaveVersion <= 164 then ClearRecentlyDroppedItems;
@@ -567,17 +567,17 @@ begin
   HyperspaceKillCount := Buffer.GetInt32;
   BlackHoleKillCount := Buffer.GetInt32;
   if LoadedSaveVersion >= 89 then
-    for KillIndex := 0 to 7 do DominatorKillsByType[KillIndex] := Buffer.GetInt32
+    for KillIndex := Low(TKlingType) to High(TKlingType) do DominatorKillsByType[KillIndex] := Buffer.GetInt32
   else if LoadedSaveVersion >= 74 then
   begin
-    for KillIndex := 0 to 5 do DominatorKillsByType[KillIndex] := Buffer.GetInt32;
-    DominatorKillsByType[6] := 0;
-    DominatorKillsByType[7] := 0;
+    for KillIndex := ktBoss to ktShtip do DominatorKillsByType[KillIndex] := Buffer.GetInt32;
+    DominatorKillsByType[ktBertor] := 0;
+    DominatorKillsByType[ktKlig] := 0;
   end
   else
-    for KillIndex := 0 to 7 do DominatorKillsByType[KillIndex] := 0;
+    for KillIndex := Low(TKlingType) to High(TKlingType) do DominatorKillsByType[KillIndex] := 0;
   if LoadedSaveVersion >= 155 then
-    for LogicIndex := 0 to 2 do ChameleonLogic[LogicIndex] := Buffer.GetByte;
+    for LogicIndex := Low(TDominatorSeries) to High(TDominatorSeries) do ChameleonLogic[LogicIndex] := Buffer.GetByte;
   Count := Buffer.GetInt32;
   if (Count < 0) or (Count > MaxSavedListCount) then raise EAbort.Create('Err');
   for I := 0 to Count - 1 do
@@ -1691,7 +1691,7 @@ var
   Count: Integer;
 begin
   Inc(DestroyedDominatorHullMass, Victim.GetHull.Weight);
-  if ((Victim as TKling).KlingType in [ktEquentor..ktSmersh, ktBertor]) and
+  if ((Victim as TKling).KlingType in [ktEquantor..ktSmersh, ktBertor]) and
     (DestroyedDominatorHullMass > Galaxy.ScaleIntByTechLevel(500, 3000) *
       GalaxyDifficultyTuning[Galaxy.DifficultyLevels[7]].GoodsEventDurationFactor) and
     (Galaxy.CurrentTurn > TurnsPerYear * GalaxyDifficultyTuning[Galaxy.DifficultyLevels[7]].GoodsEventDurationFactor + LastDominatorProgramRewardTurn) then
@@ -3168,7 +3168,7 @@ var
 begin
   Result := False;
   if (Ship.TargetingRestriction = 1) and (Ship.EnemyShip <> Self) and (EnemyShip <> Ship) then Exit;
-  if (Ship is TKling) and (ChameleonLogic[Ord(TKling(Ship).DominatorSeries)] >= 2) and
+  if (Ship is TKling) and (ChameleonLogic[TKling(Ship).DominatorSeries] >= 2) and
     (Ship.EnemyShip <> Self) and (EnemyShip <> Ship) then Exit;
   if Ship.TypeId in [rstRangerCenter..rstCustomStation] then
   begin

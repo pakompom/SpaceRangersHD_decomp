@@ -1540,7 +1540,7 @@ var
   Summary, Line: WideString;
   I, J, GroupIndex: Integer;
   Planet: TPlanet;
-  Kind: TKlingType;
+  DominatorIndex: TDominatorDisplayIndex;
   Role: Byte;
   PirateRole: Integer;
   ColorTag: WideString;
@@ -1684,7 +1684,7 @@ begin
   OtherFaction := '';
   Summary := '';
   for Series := dsBlazer to dsTerron do
-    for Kind := Low(TKlingType) to High(TKlingType) do DominatorCounts[Series, Kind] := 0;
+    for DominatorIndex := Ord(Low(TKlingType)) to Ord(High(TKlingType)) do DominatorCounts[Series, TKlingType(DominatorIndex)] := 0;
   for Role := 0 to 10 do RoleCounts[Role] := 0;
   for I := 0 to Star.Ships.Count - 1 do
   begin
@@ -1796,14 +1796,14 @@ begin
     LineActive := False;
     HasSeparator := False;
     ColorTag := SeriesColor;
-    for Kind := Low(TKlingType) to High(TKlingType) do
-      if (DominatorDisplayOrder[Ord(Kind)] <> ktBoss) and (DominatorCounts[Series, DominatorDisplayOrder[Ord(Kind)]] > 0) then
+    for DominatorIndex := Low(DominatorDisplayOrder) to High(DominatorDisplayOrder) do
+      if (DominatorDisplayOrder[DominatorIndex] <> ktBoss) and (DominatorCounts[Series, DominatorDisplayOrder[DominatorIndex]] > 0) then
       begin
         if HasSeparator then Line := Line + WrapTextInColor('-', GrayColorTag);
         HasSeparator := True;
         LineActive := True;
-        Line := Line + WrapTextInColor(LocalizedText('FormGalaxy.DomikShip' + IntToStr(Ord(DominatorDisplayOrder[Ord(Kind)]))), ColorTag);
-        Line := Line + WrapTextInColor(IntToStr(DominatorCounts[Series, DominatorDisplayOrder[Ord(Kind)]]), GalaxySummaryWhiteColorTag);
+        Line := Line + WrapTextInColor(LocalizedText('FormGalaxy.DomikShip' + IntToStr(Ord(DominatorDisplayOrder[DominatorIndex]))), ColorTag);
+        Line := Line + WrapTextInColor(IntToStr(DominatorCounts[Series, DominatorDisplayOrder[DominatorIndex]]), GalaxySummaryWhiteColorTag);
       end;
     AppendLine;
   end;

@@ -273,7 +273,7 @@ begin
       SetActive(True);
       Stage := 15;
       if ShipToInspect is TKling then
-        SetImagePath('GI,Bm.FormRating2.' + GiResourceSuffix + 'Rank' + IntToStr(DominatorShipDefinitions[Ord((ShipToInspect as TKling).KlingType)].RankImageIndex))
+        SetImagePath('GI,Bm.FormRating2.' + GiResourceSuffix + 'Rank' + IntToStr(DominatorShipDefinitions[(ShipToInspect as TKling).KlingType].RankImageIndex))
       else if ShipToInspect is TRuins then SetImagePath('GI,Bm.FormRating2.' + GiResourceSuffix + 'Rank7')
       else if ShipToInspect is TTranclucator then SetImagePath('GI,Bm.FormRating2.' + GiResourceSuffix + 'Rank4')
       else if (ShipToInspect is TNormalShip) and (ShipToInspect.OwnerId <> oiPirate) then
