@@ -373,9 +373,9 @@ type
     function CountStarsInBattle: Integer; // @addr 0x7BAD94
     function TurnToDateTime(Turn: Integer): Double; // @addr 0x7BB330 @note "Delphi TDateTime; -1 selects CurrentTurn."
     function FormatTurnDate(Turn: Integer): WideString; // @addr 0x7BB370 @note "-1 selects CurrentTurn."
-    procedure AddPlanetNews(NewsType: Byte; Text: WideString); // @addr 0x7BB598 @note "Rejects empty text; identical existing text suppresses insertion regardless of NewsType."
-    procedure AddPlanetNewsWithPlayerBubble(NewsType: Byte; Text: WideString); // @addr 0x7BB524 @note "Adds a player bubble only after turn 300; news insertion still uses duplicate-text suppression."
-    function CountPlanetNewsByType(NewsType: Byte): Integer; // @addr 0x7BB6E8
+    procedure AddPlanetNews(NewsType: TGalaxyNewsKind; Text: WideString); // @addr 0x7BB598 @note "Rejects empty text; identical existing text suppresses insertion regardless of NewsType."
+    procedure AddPlanetNewsWithPlayerBubble(NewsType: TGalaxyNewsKind; Text: WideString); // @addr 0x7BB524 @note "Adds a player bubble only after turn 300; news insertion still uses duplicate-text suppression."
+    function CountPlanetNewsByType(NewsType: TGalaxyNewsKind): Integer; // @addr 0x7BB6E8
     procedure PrunePlanetNews; // @addr 0x7BB748 @note "Removes entries more than 30 days old."
     procedure UpdateConstellationMilitaryStats; // @addr 0x7BB7FC
     procedure CreateDominatorSpawnProxy(Star: TStar); // @addr 0x7BB7BC @note "Replaces the global spawn-planet pointer without freeing its previous value; does not register the proxy in star or galaxy planet lists."
@@ -1435,7 +1435,7 @@ begin
       Crc := UpdateCrc32(Crc, PWideChar(WeaponInfo.ConfigName), Length(WeaponInfo.ConfigName) * 2);
       WeaponInfo.TypeHash := FinishCrc32(Crc);
       WeaponInfo.TechLevel := Buffer.GetByte;
-      WeaponInfo.InventionIndex := Buffer.GetByte;
+      WeaponInfo.InventionIndex := TPlanetInvention(Buffer.GetByte);
       WeaponInfo.CostFactor := Buffer.GetSingle;
       WeaponInfo.MinDamage := Buffer.GetInt32;
       WeaponInfo.MaxDamage := Buffer.GetInt32;
@@ -1690,7 +1690,7 @@ begin
       PlanetNews.Add(News);
       News.Id := Buffer.GetUInt32;
       News.Turn := Buffer.GetUInt32;
-      News.NewsType := Buffer.GetByte;
+      News.NewsType := TGalaxyNewsKind(Buffer.GetByte);
       News.Text := Buffer.ReadWideString;
     end;
     Stage := 28;
@@ -2490,7 +2490,7 @@ begin
         Radius := SeededRandomIntRange(System.Round(Hole.Star2.MapDiameter * 0.5 * 0.7), System.Round(Hole.Star2.MapDiameter * 0.5 * 0.9), (Hole.Star2.GenerationSeed + Self.CurrentTurn + j) * Self.GenerationSeed);
         Hole.Position2 := MakePointF(System.Sin(Angle) * Radius, -System.Cos(Angle) * Radius);
         if Self.CoalitionDefeatedTurn = 0 then
-          Self.AddPlanetNews(36, FormatText2(PickLocalizedTextVariant('GalaxyNews.BlackHole.Create', (Hole.Star1.GenerationSeed + Self.CurrentTurn) * Self.GenerationSeed), '<color=255,240,100>', '<Star1>', Hole.Star1.Name, '<Star2>', Hole.Star2.Name));
+          Self.AddPlanetNews(gnWormholeCreated, FormatText2(PickLocalizedTextVariant('GalaxyNews.BlackHole.Create', (Hole.Star1.GenerationSeed + Self.CurrentTurn) * Self.GenerationSeed), '<color=255,240,100>', '<Star1>', Hole.Star1.Name, '<Star2>', Hole.Star2.Name));
       end;
     end;
   end;
@@ -8157,7 +8157,7 @@ end;
 { @end $7BB370 }
 
 { @routine $7BB524 TGalaxy_AddPlanetNewsWithPlayerBubble }
-procedure TGalaxy.AddPlanetNewsWithPlayerBubble(NewsType: Byte; Text: WideString);
+procedure TGalaxy.AddPlanetNewsWithPlayerBubble(NewsType: TGalaxyNewsKind; Text: WideString);
 begin
   if CurrentTurn > GalaxyWarmupTurns then AddOrUpdatePlayerBubble(pmGalaxyNews, CurrentTurn, Text, '');
   AddPlanetNews(NewsType, Text);
@@ -8165,7 +8165,7 @@ end;
 { @end $7BB524 }
 
 { @routine $7BB598 TGalaxy_AddPlanetNews }
-procedure TGalaxy.AddPlanetNews(NewsType: Byte; Text: WideString);
+procedure TGalaxy.AddPlanetNews(NewsType: TGalaxyNewsKind; Text: WideString);
 var Entry: PPlanetNewsEntry; Index: Integer;
 begin
   if Text = '' then raise Exception.Create('Error! Получена пустая планетарная новость');
@@ -8186,7 +8186,7 @@ end;
 { @end $7BB598 }
 
 { @routine $7BB6E8 TGalaxy_CountPlanetNewsByType }
-function TGalaxy.CountPlanetNewsByType(NewsType: Byte): Integer;
+function TGalaxy.CountPlanetNewsByType(NewsType: TGalaxyNewsKind): Integer;
 var Entry: PPlanetNewsEntry; Index: Integer;
 begin
   Result := 0;
@@ -8253,12 +8253,12 @@ begin
   for I := 0 to Planets.Count - 1 do begin
     Planet := Planets[I];
     if Planet.IsCoalitionOwned or (Planet.OwnerId = oiPirate) then begin
-      if Planet.InventionLevels[7] > HighestLevel then begin
-        if Planet.InventionLevels[7] = HighestLevel + 1 then PreviousCount := HighestCount else PreviousCount := 0;
+      if Planet.InventionLevels[piMainTech] > HighestLevel then begin
+        if Planet.InventionLevels[piMainTech] = HighestLevel + 1 then PreviousCount := HighestCount else PreviousCount := 0;
         HighestCount := 1;
-        HighestLevel := Planet.InventionLevels[7];
-      end else if Planet.InventionLevels[7] = HighestLevel then Inc(HighestCount)
-      else if Planet.InventionLevels[7] = HighestLevel - 1 then Inc(PreviousCount);
+        HighestLevel := Planet.InventionLevels[piMainTech];
+      end else if Planet.InventionLevels[piMainTech] = HighestLevel then Inc(HighestCount)
+      else if Planet.InventionLevels[piMainTech] = HighestLevel - 1 then Inc(PreviousCount);
     end;
   end;
   if HighestCount >= 5 then TechLevel := Max(1, HighestLevel)
@@ -8973,7 +8973,7 @@ begin
       Station := TRuins.Create;
       Station.Init(StationType, Star, '');
       if CoalitionDefeatedTurn = 0 then
-        Galaxy.AddPlanetNewsWithPlayerBubble(41,
+        Galaxy.AddPlanetNewsWithPlayerBubble(gnStationCreated,
           FormatText3(PickLocalizedTextVariant('GalaxyNews.CreateNewObject.' + ShipTypeNames[Ord(StationType)].Name,
             GenerationSeed * (Galaxy.CurrentTurn div 10)), '<color=255,240,100>',
             '<Name>', Station.GetName, '<Star>', Star.Name, '<Sector>', Star.Constellation.GetName));
@@ -9003,7 +9003,7 @@ begin
             dsKeller: News := 'Programms.Dematerial.GalaxyNews';
             dsTerron: News := 'Programms.Energotron.GalaxyNews';
           end;
-          Galaxy.AddPlanetNewsWithPlayerBubble(43, PickLocalizedTextVariant(News, GenerationSeed * (Galaxy.CurrentTurn div 10)));
+          Galaxy.AddPlanetNewsWithPlayerBubble(gnDominatorResearchCompleted, PickLocalizedTextVariant(News, GenerationSeed * (Galaxy.CurrentTurn div 10)));
           Inc(GetPlayer.AchievementStats.CompletedResearchPrograms);
           GetPlayer.AchievementStats.CheckScienceAchievement;
         end;
@@ -9427,7 +9427,7 @@ begin
   ReplaceTextToken(Text, '<WBSector>', Station.CurrentStar.Constellation.GetName, '<color=255,240,100>');
   ReplaceTextToken(Text, '<SectorEnemy>', Target.Constellation.GetName, '<color=255,240,100>');
   ReplaceTextToken(Text, '<Date>', Galaxy.FormatTurnDate(Turn), '<color=255,240,100>');
-  Galaxy.AddPlanetNewsWithPlayerBubble(45, Text);
+  Galaxy.AddPlanetNewsWithPlayerBubble(gnMilitaryBaseOperation, Text);
   Result := True;
 end;
 { @end $7C00DC }
@@ -9564,7 +9564,7 @@ begin
   begin
     Station := Candidates[NextRandomIntRange(0, Count * 100 - 1, Seed) div 100];
     Station.SpecialServiceActive := True;
-    Self.AddPlanetNewsWithPlayerBubble(44, FormatText3(PickLocalizedTextVariant('FormRuins.' + Station.GetTypeNameKey + '.SpecialShip.News', (Galaxy.CurrentTurn div 10) * Self.GenerationSeed), '<color=255,240,100>', '<Name>', Station.GetName, '<Star>', Station.CurrentStar.Name, '<Sector>', TConstellation(Station.CurrentStar.Constellation).GetName));
+    Self.AddPlanetNewsWithPlayerBubble(gnStationSpecialShip, FormatText3(PickLocalizedTextVariant('FormRuins.' + Station.GetTypeNameKey + '.SpecialShip.News', (Galaxy.CurrentTurn div 10) * Self.GenerationSeed), '<color=255,240,100>', '<Name>', Station.GetName, '<Star>', Station.CurrentStar.Name, '<Sector>', TConstellation(Station.CurrentStar.Constellation).GetName));
   end;
 end;
 { @end $7C097C }
@@ -9639,7 +9639,7 @@ begin
     TryUnlockAchievement('PIRATEWIN');
     Text := PickLocalizedTextVariant('GalaxyNews.Globals.CoalitionDefeated', Galaxy.CurrentTurn div 23);
     AddOrUpdatePlayerBubble(pmGalaxyNews, CurrentTurn, Text, '').NotificationSoundKind := 1;
-    AddPlanetNews(35, Text);
+    AddPlanetNews(gnCoalitionDefeated, Text);
   end;
 end;
 { @end $7C0FD0 }
@@ -10273,30 +10273,30 @@ begin
   GetControlPresence(PlayerPartyPresent, CoalitionPresent, DominatorsPresent, PiratesPresent, CustomPresent);
   if Boolean(Battle) and CoalitionPresent and not DominatorsPresent and (ControlFaction = sfCoalition) and
     (Status.CustomFaction = '') and (Galaxy.CurrentTurn - 1 <= LastDominatorPresenceTurn) and
-    IsConstellationVisible and (Galaxy.CountPlanetNewsByType(25) < 2) and (Galaxy.CoalitionDefeatedTurn = 0) then
-    Galaxy.AddPlanetNews(25, FormatText1(PickLocalizedTextVariant('GalaxyNews.Star.Kling.Lost',
+    IsConstellationVisible and (Galaxy.CountPlanetNewsByType(gnDominatorAttackRepelled) < 2) and (Galaxy.CoalitionDefeatedTurn = 0) then
+    Galaxy.AddPlanetNews(gnDominatorAttackRepelled, FormatText1(PickLocalizedTextVariant('GalaxyNews.Star.Kling.Lost',
       (Galaxy.CurrentTurn div 10) * GenerationSeed), '<color=255,240,100>', '<Star>', Name));
   if Boolean(Battle) and CoalitionPresent and not PiratesPresent and (ControlFaction = sfCoalition) and
     (Status.CustomFaction = '') and (Galaxy.CurrentTurn - 1 <= LastPiratePresenceTurn) and
-    IsConstellationVisible and (Galaxy.CountPlanetNewsByType(28) < 2) and (Galaxy.CoalitionDefeatedTurn = 0) then
-    Galaxy.AddPlanetNews(28, FormatText1(PickLocalizedTextVariant('GalaxyNews.Star.Pirates.Lost',
+    IsConstellationVisible and (Galaxy.CountPlanetNewsByType(gnPirateAttackRepelled) < 2) and (Galaxy.CoalitionDefeatedTurn = 0) then
+    Galaxy.AddPlanetNews(gnPirateAttackRepelled, FormatText1(PickLocalizedTextVariant('GalaxyNews.Star.Pirates.Lost',
       (Galaxy.CurrentTurn div 10) * GenerationSeed), '<color=255,240,100>', '<Star>', Name));
   if DominatorsPresent then LastDominatorPresenceTurn := Galaxy.CurrentTurn;
   if PiratesPresent then LastPiratePresenceTurn := Galaxy.CurrentTurn;
   if DominatorsPresent and CoalitionPresent then
   begin
-    if IsConstellationVisible and (Galaxy.CountPlanetNewsByType(24) < 2) and (Battle = 0) and
+    if IsConstellationVisible and (Galaxy.CountPlanetNewsByType(gnDominatorAttack) < 2) and (Battle = 0) and
       (ControlFaction = sfCoalition) and (Status.CustomFaction = '') and (Galaxy.CoalitionDefeatedTurn = 0) then
-      Galaxy.AddPlanetNews(24, FormatText1(PickLocalizedTextVariant('GalaxyNews.Star.Kling.Attack',
+      Galaxy.AddPlanetNews(gnDominatorAttack, FormatText1(PickLocalizedTextVariant('GalaxyNews.Star.Kling.Attack',
         (Galaxy.CurrentTurn div 10) * GenerationSeed), '<color=255,240,100>', '<Star>', Name));
     Battle := 1;
     Exit;
   end;
   if PiratesPresent and CoalitionPresent then
   begin
-    if IsConstellationVisible and (Galaxy.CountPlanetNewsByType(27) < 2) and (Battle = 0) and
+    if IsConstellationVisible and (Galaxy.CountPlanetNewsByType(gnPirateAttack) < 2) and (Battle = 0) and
       (ControlFaction = sfCoalition) and (Status.CustomFaction = '') and (Galaxy.CoalitionDefeatedTurn = 0) then
-      Galaxy.AddPlanetNews(27, FormatText1(PickLocalizedTextVariant('GalaxyNews.Star.Pirates.Attack',
+      Galaxy.AddPlanetNews(gnPirateAttack, FormatText1(PickLocalizedTextVariant('GalaxyNews.Star.Pirates.Attack',
         (Galaxy.CurrentTurn div 10) * GenerationSeed), '<color=255,240,100>', '<Star>', Name));
     Battle := 1;
     Exit;
@@ -10362,11 +10362,11 @@ begin
     begin
       if Galaxy.CoalitionDefeatedTurn = 0 then
         if ControlFaction = sfCoalition then
-          Galaxy.AddPlanetNewsWithPlayerBubble(33, FormatText2(
+          Galaxy.AddPlanetNewsWithPlayerBubble(gnDominatorsTakeCoalitionSystem, FormatText2(
             PickLocalizedTextVariant('GalaxyNews.Globals.KlingTakeSystemFromNormals', (Galaxy.CurrentTurn div 10) * GenerationSeed),
             '<color=255,240,100>', '<Star>', Name, '<Sector>', Constellation.GetName))
         else if Galaxy.CoalitionDefeatedTurn = 0 then
-          Galaxy.AddPlanetNewsWithPlayerBubble(34, FormatText2(
+          Galaxy.AddPlanetNewsWithPlayerBubble(gnDominatorsTakePirateSystem, FormatText2(
             PickLocalizedTextVariant('GalaxyNews.Globals.KlingTakeSystemFromPirateClan', (Galaxy.CurrentTurn div 10) * GenerationSeed),
             '<color=255,240,100>', '<Star>', Name, '<Sector>', Constellation.GetName))
         else
@@ -10420,7 +10420,7 @@ begin
         if Planet.OwnerId = oiPirate then Planet.Government := TPlanetGovernment(SeededRandomIntRange(0, 4, Planet.RandomState));
         Planet.OwnerId := RaceToOwner(Planet.RaceId);
         Planet.UpdateOwnerFlags;
-        Planet.InventionLevels[7] := Max(Integer(Planet.InventionLevels[7]), Galaxy.TechLevel - 2);
+        Planet.InventionLevels[piMainTech] := Max(Integer(Planet.InventionLevels[piMainTech]), Galaxy.TechLevel - 2);
         CoalitionCaptured := True;
       end;
     end;
@@ -11116,90 +11116,90 @@ begin
   begin
     Chance := Round(RemapClamped(Galaxy.PlanetNews.Count, 0, MaxPlanetNews, 95, 5));
     if (SeededRandomIntRange(0, 100, Galaxy.CurrentTurn * GenerationSeed * 2111) < Chance) and
-      (Galaxy.CountPlanetNewsByType(18) = 0) and (ShipTypeCounts[stTransport] > 9) then
+      (Galaxy.CountPlanetNewsByType(gnTransportActivity) = 0) and (ShipTypeCounts[stTransport] > 9) then
     begin
-      Galaxy.AddPlanetNews(18, FormatText1(PickLocalizedTextVariant('GalaxyNews.Star.Transport.Many',
+      Galaxy.AddPlanetNews(gnTransportActivity, FormatText1(PickLocalizedTextVariant('GalaxyNews.Star.Transport.Many',
         (Galaxy.CurrentTurn div 10) * GenerationSeed), '<color=255,240,100>', '<Star>', Name));
     end
     else if (SeededRandomIntRange(0, 100, Galaxy.CurrentTurn * GenerationSeed * 2211) < Chance) and
-      (Galaxy.CountPlanetNewsByType(18) = 0) and (ShipTypeCounts[stTransport] > 9) then
+      (Galaxy.CountPlanetNewsByType(gnTransportActivity) = 0) and (ShipTypeCounts[stTransport] > 9) then
     begin
-      Galaxy.AddPlanetNews(18, FormatText1(PickLocalizedTextVariant('GalaxyNews.Star.Transport.Many1',
+      Galaxy.AddPlanetNews(gnTransportActivity, FormatText1(PickLocalizedTextVariant('GalaxyNews.Star.Transport.Many1',
         (Galaxy.CurrentTurn div 10) * GenerationSeed), '<color=255,240,100>', '<Star>', Name));
     end
     else if (SeededRandomIntRange(0, 100, Galaxy.CurrentTurn * GenerationSeed * 2311) < Chance) and
-      (Galaxy.CountPlanetNewsByType(19) < 1) and (DaysSincePlayerVisit > 30) and
+      (Galaxy.CountPlanetNewsByType(gnManyPirates) < 1) and (DaysSincePlayerVisit > 30) and
       (ShipTypeCounts[stKling] = 0) and (ShipTypeCounts[stPirate] > 4) and (ControlFaction <> sfPirates) then
     begin
       Names := IntToStr(NextRandomIntRange(1, 2, RandomState) + ShipTypeCounts[stPirate]);
-      Galaxy.AddPlanetNews(19, FormatText2(PickLocalizedTextVariant('GalaxyNews.Star.Pirates.Many',
+      Galaxy.AddPlanetNews(gnManyPirates, FormatText2(PickLocalizedTextVariant('GalaxyNews.Star.Pirates.Many',
         (Galaxy.CurrentTurn div 10) * GenerationSeed), '<color=255,240,100>', '<Star>', Name, '<AttackCount>', Names));
     end
     else if (SeededRandomIntRange(0, 100, Galaxy.CurrentTurn * GenerationSeed * 2411) < Chance) and
-      (Galaxy.CountPlanetNewsByType(20) < 1) and (DaysSincePlayerVisit > 30) and
+      (Galaxy.CountPlanetNewsByType(gnSomePirates) < 1) and (DaysSincePlayerVisit > 30) and
       (ShipTypeCounts[stKling] = 0) and (ShipTypeCounts[stPirate] > 2) and (ControlFaction <> sfPirates) then
     begin
       Names := IntToStr(NextRandomIntRange(1, 2, RandomState) + ShipTypeCounts[stPirate]);
-      Galaxy.AddPlanetNews(20, FormatText2(PickLocalizedTextVariant('GalaxyNews.Star.Pirates.Some',
+      Galaxy.AddPlanetNews(gnSomePirates, FormatText2(PickLocalizedTextVariant('GalaxyNews.Star.Pirates.Some',
         (Galaxy.CurrentTurn div 10) * GenerationSeed), '<color=255,240,100>', '<Star>', Name, '<AttackCount>', Names));
     end
     else if (SeededRandomIntRange(50, 100, Galaxy.CurrentTurn * GenerationSeed * 2511) < Chance) and
-      (Galaxy.CountPlanetNewsByType(21) < 1) and (DaysSincePlayerVisit > 30) and
+      (Galaxy.CountPlanetNewsByType(gnNoPirates) < 1) and (DaysSincePlayerVisit > 30) and
       (ShipTypeCounts[stKling] = 0) and (ShipTypeCounts[stPirate] = 0) and (ControlFaction <> sfPirates) then
     begin
       Names := IntToStr(NextRandomIntRange(1, 2, RandomState) + ShipTypeCounts[stPirate]);
-      Galaxy.AddPlanetNews(21, FormatText2(PickLocalizedTextVariant('GalaxyNews.Star.Pirates.None',
+      Galaxy.AddPlanetNews(gnNoPirates, FormatText2(PickLocalizedTextVariant('GalaxyNews.Star.Pirates.None',
         (Galaxy.CurrentTurn div 10) * GenerationSeed), '<color=255,240,100>', '<Star>', Name, '<AttackCount>', Names));
     end
     else if (SeededRandomIntRange(0, 100, Galaxy.CurrentTurn * GenerationSeed * 2611) < 90) and
-      (Galaxy.CountPlanetNewsByType(22) = 0) and (ShipTypeCounts[stRanger] >= 4) and
+      (Galaxy.CountPlanetNewsByType(gnManyRangers) = 0) and (ShipTypeCounts[stRanger] >= 4) and
       (CountRatedRangersByCareerMask([rcTrader]) > 4) then
     begin
       Names := GetRangerNamesByCareerMask([rcTrader]);
-      Galaxy.AddPlanetNews(22, FormatText2(PickLocalizedTextVariant('GalaxyNews.Star.Rangers.ManyTrader',
+      Galaxy.AddPlanetNews(gnManyRangers, FormatText2(PickLocalizedTextVariant('GalaxyNews.Star.Rangers.ManyTrader',
         (Galaxy.CurrentTurn div 10) * GenerationSeed), '<color=255,240,100>', '<Star>', Name, '<Names>', Names));
     end
     else if (SeededRandomIntRange(0, 100, Galaxy.CurrentTurn * GenerationSeed * 2711) < 90) and
-      (Galaxy.CountPlanetNewsByType(22) = 0) and (ShipTypeCounts[stRanger] >= 4) and
+      (Galaxy.CountPlanetNewsByType(gnManyRangers) = 0) and (ShipTypeCounts[stRanger] >= 4) and
       (CountRatedRangersByCareerMask([rcPirate]) > 4) then
     begin
       Names := GetRangerNamesByCareerMask([rcPirate]);
-      Galaxy.AddPlanetNews(22, FormatText2(PickLocalizedTextVariant('GalaxyNews.Star.Rangers.ManyPirate',
+      Galaxy.AddPlanetNews(gnManyRangers, FormatText2(PickLocalizedTextVariant('GalaxyNews.Star.Rangers.ManyPirate',
         (Galaxy.CurrentTurn div 10) * GenerationSeed), '<color=255,240,100>', '<Star>', Name, '<Names>', Names));
     end
     else if (SeededRandomIntRange(0, 100, Galaxy.CurrentTurn * GenerationSeed * 2811) < 90) and
-      (Galaxy.CountPlanetNewsByType(22) = 0) and (ShipTypeCounts[stKling] = 0) and (ShipTypeCounts[stRanger] >= 4) and
+      (Galaxy.CountPlanetNewsByType(gnManyRangers) = 0) and (ShipTypeCounts[stKling] = 0) and (ShipTypeCounts[stRanger] >= 4) and
       (CountRatedRangersByCareerMask([rcWarrior]) > 4) then
     begin
       Names := GetRangerNamesByCareerMask([rcWarrior]);
-      Galaxy.AddPlanetNews(22, FormatText2(PickLocalizedTextVariant('GalaxyNews.Star.Rangers.ManyWarrior',
+      Galaxy.AddPlanetNews(gnManyRangers, FormatText2(PickLocalizedTextVariant('GalaxyNews.Star.Rangers.ManyWarrior',
         (Galaxy.CurrentTurn div 10) * GenerationSeed), '<color=255,240,100>', '<Star>', Name, '<Names>', Names));
     end
     else if (SeededRandomIntRange(0, 100, Galaxy.CurrentTurn * GenerationSeed * 3011) < 100) and
-      (Galaxy.CountPlanetNewsByType(23) = 0) and (Galaxy.EminentCareerShips[rcTrader] <> nil) and
+      (Galaxy.CountPlanetNewsByType(gnEminentRangerLocation) = 0) and (Galaxy.EminentCareerShips[rcTrader] <> nil) and
       (Galaxy.EminentCareerShips[rcTrader] as TRanger).InHyperspace and
       ((Galaxy.EminentCareerShips[rcTrader] as TRanger).CurrentStar = Self) then
     begin
       Names := (Galaxy.EminentCareerShips[rcTrader] as TRanger).Name;
-      Galaxy.AddPlanetNews(23, FormatText2(PickLocalizedTextVariant('GalaxyNews.Star.Rangers.BestTrader',
+      Galaxy.AddPlanetNews(gnEminentRangerLocation, FormatText2(PickLocalizedTextVariant('GalaxyNews.Star.Rangers.BestTrader',
         (Galaxy.CurrentTurn div 10) * GenerationSeed), '<color=255,240,100>', '<Star>', Name, '<Name>', Names));
     end
     else if (SeededRandomIntRange(0, 100, Galaxy.CurrentTurn * GenerationSeed * 3111) < 100) and
-      (Galaxy.CountPlanetNewsByType(23) = 0) and (Galaxy.EminentCareerShips[rcPirate] <> nil) and
+      (Galaxy.CountPlanetNewsByType(gnEminentRangerLocation) = 0) and (Galaxy.EminentCareerShips[rcPirate] <> nil) and
       (Galaxy.EminentCareerShips[rcPirate] as TRanger).InHyperspace and
       ((Galaxy.EminentCareerShips[rcPirate] as TRanger).CurrentStar = Self) then
     begin
       Names := (Galaxy.EminentCareerShips[rcPirate] as TRanger).Name;
-      Galaxy.AddPlanetNews(23, FormatText2(PickLocalizedTextVariant('GalaxyNews.Star.Rangers.BestPirate',
+      Galaxy.AddPlanetNews(gnEminentRangerLocation, FormatText2(PickLocalizedTextVariant('GalaxyNews.Star.Rangers.BestPirate',
         (Galaxy.CurrentTurn div 10) * GenerationSeed), '<color=255,240,100>', '<Star>', Name, '<Name>', Names));
     end
     else if (SeededRandomIntRange(0, 100, Galaxy.CurrentTurn * GenerationSeed * 3211) < 100) and
-      (Galaxy.CountPlanetNewsByType(23) = 0) and (Galaxy.EminentCareerShips[rcWarrior] <> nil) and
+      (Galaxy.CountPlanetNewsByType(gnEminentRangerLocation) = 0) and (Galaxy.EminentCareerShips[rcWarrior] <> nil) and
       (Galaxy.EminentCareerShips[rcWarrior] as TRanger).InHyperspace and
       ((Galaxy.EminentCareerShips[rcWarrior] as TRanger).CurrentStar = Self) then
     begin
       Names := (Galaxy.EminentCareerShips[rcWarrior] as TRanger).Name;
-      Galaxy.AddPlanetNews(23, FormatText2(PickLocalizedTextVariant('GalaxyNews.Star.Rangers.BestWarrior',
+      Galaxy.AddPlanetNews(gnEminentRangerLocation, FormatText2(PickLocalizedTextVariant('GalaxyNews.Star.Rangers.BestWarrior',
         (Galaxy.CurrentTurn div 10) * GenerationSeed), '<color=255,240,100>', '<Star>', Name, '<Name>', Names));
     end;
   end;

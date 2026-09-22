@@ -233,7 +233,7 @@ begin
   ReplaceTextToken(Text, '<SectorNormal>', AssemblyStar.Constellation.GetName, '<color=255,240,100>');
   ReplaceTextToken(Text, '<SectorEnemy>', TargetStar.Constellation.GetName, '<color=255,240,100>');
   ReplaceTextToken(Text, '<Date>', Galaxy.FormatTurnDate(Route[2].WaitUntilTurn), '<color=255,240,100>');
-  Galaxy.AddPlanetNews(26, Text);
+  Galaxy.AddPlanetNews(gnLiberationGroupCreated, Text);
 end;
 { @end $4EEB84 }
 

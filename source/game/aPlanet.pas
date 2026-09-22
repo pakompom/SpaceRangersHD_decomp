@@ -50,8 +50,8 @@ type
     Reserved34: Cardinal; // @offset 0x34  Cleared by Create; no subsequent use identified in this build.
     Radius: Integer; // @offset 0x38  Script.PlanetSize.
     OrbitalVelocity: Double; // @offset 0x40  Degrees per unscaled movement step.
-    InventionLevels: array[0..19] of Byte; // @offset 0x48  Slot 7 is the main technology level used to gate the other tracks.
-    CurrentInvention: Byte; // @offset 0x5C
+    InventionLevels: array[TPlanetInvention] of Byte; // @offset 0x48  piMainTech is the main technology level used to gate the other tracks.
+    CurrentInvention: TPlanetInvention; // @offset 0x5C
     CurrentInventionPoints: Single; // @offset 0x60
     ResearchLevelPercent: Byte; // @offset 0x64  Selection ceiling, compared with invention level * 12.5.
     ResearchLevelStep: Byte; // @offset 0x65  Increment used when no eligible invention remains.
@@ -142,7 +142,7 @@ type
     function AddSurfaceLootEntry(Item: TItem): Boolean; // @addr 0x790294 @note "Takes item ownership, allocates a 12-byte entry and always returns true on completion. Requires positive surface area; resets exploration if fully explored."
     function TryResetSurfaceLootAfterLongAbsence: Boolean; // @addr 0x7904B0 @note "Requires OwnerId=6, at least 720 days without a player visit and no deployed player probe here. Clears unavailable loot flags and resets exploration if any flag changed."
     procedure BoostInventionLevels(Count: Integer); // @addr 0x7905D4 @note "Increments the current track, clears its progress and selects the next track after every increment."
-    procedure SelectCurrentInvention; // @addr 0x79061C @note "Chooses among tracks permitted by ResearchLevelPercent and main technology slot 7; raises if no choice is found."
+    procedure SelectCurrentInvention; // @addr 0x79061C @note "Chooses among tracks permitted by ResearchLevelPercent and the piMainTech track; raises if no choice is found."
     procedure AdvanceInventionProgress; // @addr 0x790788 @note "Uses the difficulty multiplier; completion requires progress strictly above 100. Levels cap at 8 and excess progress is discarded."
     function CalculateInventionProgressRate: Single; // @addr 0x7909E8 @note "Radius factor times economy and race multipliers; excludes the difficulty multiplier."
     function BuildGovernmentGreeting: WideString; // @addr 0x7953E8
@@ -313,7 +313,8 @@ procedure TPlanet.InitGenerated(Star: TStar; TotalPlanetCount, InhabitedCountOrS
   retain unreferenced native frame slots, as in InitGeneratedUninhabited. }
 var
   OtherPlanet, PreviousPlanet: TPlanet;
-  Invention, Good: Byte;
+  Invention: TPlanetInvention;
+  Good: Byte;
   Quantity, Count, I, Part, LeastOwnerPlanetCount, ExistingRing, ModuleIndex: Integer;
   SavedRandomState: Cardinal;
   EconomyRoll: Integer;
@@ -766,8 +767,8 @@ begin
     else Economy := peIndustrial;
     Population := CalculateBasePopulation;
   end;
-  for Invention := 0 to 19 do InventionLevels[Invention] := PlanetInventionInfo[Invention].InitialLevel;
-  CurrentInvention := 0;
+  for Invention := Low(TPlanetInvention) to High(TPlanetInvention) do InventionLevels[Invention] := PlanetInventionInfo[Invention].InitialLevel;
+  CurrentInvention := piHull;
   CurrentInventionPoints := 0;
   ResearchLevelPercent := 30;
   BoostInventionLevels(aConst.PlanetRaceMarket[RaceId].InitialInventionBoostCount);
@@ -799,7 +800,7 @@ begin
             Series := aGalaxy.Galaxy.SelectHullSeries(ItemOwner, HullType, 1, 100);
             (Item as THull).Init(NextRandomIntRange(Round(HullBaseSize * EquipmentSizeFactors[5]),
               Round(HullBaseSize * EquipmentSizeFactors[4]), RandomState),
-              NextRandomIntRange(1, InventionLevels[0], RandomState), ItemOwner, HullType, Series, False);
+              NextRandomIntRange(1, InventionLevels[piHull], RandomState), ItemOwner, HullType, Series, False);
           end;
         t_FuelTanks:
           for I := 1 to NextRandomIntRange(1, 2, RandomState) do
@@ -808,7 +809,7 @@ begin
             EquipmentShop.Add(Item);
             (Item as TFuelTanks).Init(NextRandomIntRange(Round(FuelTanksBaseSize * EquipmentSizeFactors[5]),
               Round(FuelTanksBaseSize * EquipmentSizeFactors[1]), RandomState),
-              NextRandomIntRange(1, InventionLevels[1], RandomState), OwnerId);
+              NextRandomIntRange(1, InventionLevels[piFuelTanks], RandomState), OwnerId);
           end;
         t_Engine:
           for I := 1 to NextRandomIntRange(1, 3, RandomState) do
@@ -817,7 +818,7 @@ begin
             EquipmentShop.Add(Item);
             (Item as TEngine).Init(NextRandomIntRange(Round(EngineBaseSize * EquipmentSizeFactors[5]),
               Round(EngineBaseSize * EquipmentSizeFactors[1]), RandomState),
-              NextRandomIntRange(1, InventionLevels[2], RandomState), OwnerId);
+              NextRandomIntRange(1, InventionLevels[piEngine], RandomState), OwnerId);
           end;
         t_Radar:
           for I := 1 to NextRandomIntRange(1, 2, RandomState) do
@@ -826,7 +827,7 @@ begin
             EquipmentShop.Add(Item);
             (Item as TRadar).Init(NextRandomIntRange(Round(RadarBaseSize * EquipmentSizeFactors[5]),
               Round(RadarBaseSize * EquipmentSizeFactors[1]), RandomState),
-              NextRandomIntRange(1, InventionLevels[3], RandomState), OwnerId);
+              NextRandomIntRange(1, InventionLevels[piRadar], RandomState), OwnerId);
           end;
         t_Scaner:
           for I := 1 to NextRandomIntRange(1, 2, RandomState) do
@@ -835,7 +836,7 @@ begin
             EquipmentShop.Add(Item);
             (Item as TScaner).Init(NextRandomIntRange(Round(ScannerBaseSize * EquipmentSizeFactors[5]),
               Round(ScannerBaseSize * EquipmentSizeFactors[1]), RandomState),
-              NextRandomIntRange(1, InventionLevels[4], RandomState), OwnerId);
+              NextRandomIntRange(1, InventionLevels[piScanner], RandomState), OwnerId);
           end;
         t_RepairRobot:
           for I := 1 to NextRandomIntRange(1, 2, RandomState) do
@@ -844,7 +845,7 @@ begin
             EquipmentShop.Add(Item);
             (Item as TRepairRobot).Init(NextRandomIntRange(Round(RepairRobotBaseSize * EquipmentSizeFactors[5]),
               Round(RepairRobotBaseSize * EquipmentSizeFactors[1]), RandomState),
-              NextRandomIntRange(1, InventionLevels[5], RandomState), OwnerId);
+              NextRandomIntRange(1, InventionLevels[piRepairRobot], RandomState), OwnerId);
           end;
         t_CargoHook:
           for I := 1 to NextRandomIntRange(1, 2, RandomState) do
@@ -853,7 +854,7 @@ begin
             EquipmentShop.Add(Item);
             (Item as TCargoHook).Init(NextRandomIntRange(Round(CargoHookBaseSize * EquipmentSizeFactors[5]),
               Round(CargoHookBaseSize * EquipmentSizeFactors[1]), RandomState),
-              NextRandomIntRange(1, InventionLevels[6], RandomState), OwnerId);
+              NextRandomIntRange(1, InventionLevels[piCargoHook], RandomState), OwnerId);
           end;
         t_DefGenerator:
           for I := 1 to NextRandomIntRange(1, 2, RandomState) do
@@ -862,16 +863,16 @@ begin
             EquipmentShop.Add(Item);
             (Item as TDefGenerator).Init(NextRandomIntRange(Round(DefGeneratorBaseSize * EquipmentSizeFactors[5]),
               Round(DefGeneratorBaseSize * EquipmentSizeFactors[1]), RandomState),
-              NextRandomIntRange(1, InventionLevels[7], RandomState), OwnerId);
+              NextRandomIntRange(1, InventionLevels[piMainTech], RandomState), OwnerId);
           end;
         t_Weapon1:
-          for I := 1 to NextRandomIntRange(2, InventionLevels[7] + 2, RandomState) do
+          for I := 1 to NextRandomIntRange(2, InventionLevels[piMainTech] + 2, RandomState) do
           begin
-            WeaponInfo := aGalaxy.Galaxy.SelectWeaponInfo(RandomIntRange(1, 100000), [Ord(waFree)], InventionLevels[7], 1);
+            WeaponInfo := aGalaxy.Galaxy.SelectWeaponInfo(RandomIntRange(1, 100000), [Ord(waFree)], InventionLevels[piMainTech], 1);
             GeneratedWeapon := CreateGeneratedWeapon(WeaponInfo,
               NextRandomIntRange(Round(WeaponInfo.AverageSize * EquipmentSizeFactors[5]),
                 Round(WeaponInfo.AverageSize * EquipmentSizeFactors[1]), RandomState),
-              NextRandomIntRange(1, InventionLevels[7], RandomState), OwnerId);
+              NextRandomIntRange(1, InventionLevels[piMainTech], RandomState), OwnerId);
             EquipmentShop.Add(GeneratedWeapon);
           end;
       end;
@@ -988,11 +989,11 @@ end;
 
 { @routine $783378 TPlanet_InitDominatorSpawnProxy }
 procedure TPlanet.InitDominatorSpawnProxy(Star: TStar);
-var Index: Byte;
+var Index: TPlanetInvention;
 begin
   CurrentStar := Star;
   OwnerId := oiDominator;
-  for Index := 0 to 19 do InventionLevels[Index] := 8;
+  for Index := Low(TPlanetInvention) to High(TPlanetInvention) do InventionLevels[Index] := 8;
 end;
 { @end $783378 }
 
@@ -1005,7 +1006,8 @@ procedure TPlanet.InitGeneratedUninhabited(Star: TStar);
   finalization explicitly identify that unused slot as a managed WideString. }
 var
   UnusedPlanet, PreviousPlanet: TPlanet;
-  Invention, Good: Byte;
+  Invention: TPlanetInvention;
+  Good: Byte;
   Quantity, Count, I, Part, UnusedCount, ExistingRing, ModuleIndex: Integer;
   SavedRandomState: Cardinal;
   UnusedOrbit, PreviousExtent, SatelliteRadius, UnusedRadius, MinOrbitRadius, MaxOrbitRadius: Double;
@@ -1118,8 +1120,8 @@ begin
   Government := pgAnarchy;
   Economy := peMixed;
   Population := CalculateBasePopulation;
-  for Invention := 0 to 19 do InventionLevels[Invention] := PlanetInventionInfo[Invention].InitialLevel;
-  CurrentInvention := 0;
+  for Invention := Low(TPlanetInvention) to High(TPlanetInvention) do InventionLevels[Invention] := PlanetInventionInfo[Invention].InitialLevel;
+  CurrentInvention := piHull;
   CurrentInventionPoints := 0;
   ResearchLevelPercent := 30;
   BoostInventionLevels(aConst.PlanetRaceMarket[RaceId].InitialInventionBoostCount);
@@ -1152,7 +1154,7 @@ begin
             Series := aGalaxy.Galaxy.SelectHullSeries(ItemOwner, HullType, 1, 100);
             (Item as THull).Init(NextRandomIntRange(Round(HullBaseSize * EquipmentSizeFactors[5]),
               Round(HullBaseSize * EquipmentSizeFactors[4]), RandomState),
-              NextRandomIntRange(1, InventionLevels[0], RandomState), ItemOwner, HullType, Series, False);
+              NextRandomIntRange(1, InventionLevels[piHull], RandomState), ItemOwner, HullType, Series, False);
           end;
         t_FuelTanks:
           for I := 1 to NextRandomIntRange(1, 2, RandomState) do
@@ -1161,7 +1163,7 @@ begin
             EquipmentShop.Add(Item);
             (Item as TFuelTanks).Init(NextRandomIntRange(Round(FuelTanksBaseSize * EquipmentSizeFactors[5]),
               Round(FuelTanksBaseSize * EquipmentSizeFactors[1]), RandomState),
-              NextRandomIntRange(1, InventionLevels[1], RandomState), OwnerId);
+              NextRandomIntRange(1, InventionLevels[piFuelTanks], RandomState), OwnerId);
           end;
         t_Engine:
           for I := 1 to NextRandomIntRange(1, 3, RandomState) do
@@ -1170,7 +1172,7 @@ begin
             EquipmentShop.Add(Item);
             (Item as TEngine).Init(NextRandomIntRange(Round(EngineBaseSize * EquipmentSizeFactors[5]),
               Round(EngineBaseSize * EquipmentSizeFactors[1]), RandomState),
-              NextRandomIntRange(1, InventionLevels[2], RandomState), OwnerId);
+              NextRandomIntRange(1, InventionLevels[piEngine], RandomState), OwnerId);
           end;
         t_Radar:
           for I := 1 to NextRandomIntRange(1, 2, RandomState) do
@@ -1179,7 +1181,7 @@ begin
             EquipmentShop.Add(Item);
             (Item as TRadar).Init(NextRandomIntRange(Round(RadarBaseSize * EquipmentSizeFactors[5]),
               Round(RadarBaseSize * EquipmentSizeFactors[1]), RandomState),
-              NextRandomIntRange(1, InventionLevels[3], RandomState), OwnerId);
+              NextRandomIntRange(1, InventionLevels[piRadar], RandomState), OwnerId);
           end;
         t_Scaner:
           for I := 1 to NextRandomIntRange(1, 2, RandomState) do
@@ -1188,7 +1190,7 @@ begin
             EquipmentShop.Add(Item);
             (Item as TScaner).Init(NextRandomIntRange(Round(ScannerBaseSize * EquipmentSizeFactors[5]),
               Round(ScannerBaseSize * EquipmentSizeFactors[1]), RandomState),
-              NextRandomIntRange(1, InventionLevels[4], RandomState), OwnerId);
+              NextRandomIntRange(1, InventionLevels[piScanner], RandomState), OwnerId);
           end;
         t_RepairRobot:
           for I := 1 to NextRandomIntRange(1, 2, RandomState) do
@@ -1197,7 +1199,7 @@ begin
             EquipmentShop.Add(Item);
             (Item as TRepairRobot).Init(NextRandomIntRange(Round(RepairRobotBaseSize * EquipmentSizeFactors[5]),
               Round(RepairRobotBaseSize * EquipmentSizeFactors[1]), RandomState),
-              NextRandomIntRange(1, InventionLevels[5], RandomState), OwnerId);
+              NextRandomIntRange(1, InventionLevels[piRepairRobot], RandomState), OwnerId);
           end;
         t_CargoHook:
           for I := 1 to NextRandomIntRange(1, 2, RandomState) do
@@ -1206,7 +1208,7 @@ begin
             EquipmentShop.Add(Item);
             (Item as TCargoHook).Init(NextRandomIntRange(Round(CargoHookBaseSize * EquipmentSizeFactors[5]),
               Round(CargoHookBaseSize * EquipmentSizeFactors[1]), RandomState),
-              NextRandomIntRange(1, InventionLevels[6], RandomState), OwnerId);
+              NextRandomIntRange(1, InventionLevels[piCargoHook], RandomState), OwnerId);
           end;
         t_DefGenerator:
           for I := 1 to NextRandomIntRange(1, 2, RandomState) do
@@ -1215,16 +1217,16 @@ begin
             EquipmentShop.Add(Item);
             (Item as TDefGenerator).Init(NextRandomIntRange(Round(DefGeneratorBaseSize * EquipmentSizeFactors[5]),
               Round(DefGeneratorBaseSize * EquipmentSizeFactors[1]), RandomState),
-              NextRandomIntRange(1, InventionLevels[7], RandomState), OwnerId);
+              NextRandomIntRange(1, InventionLevels[piMainTech], RandomState), OwnerId);
           end;
         t_Weapon1:
-          for I := 1 to NextRandomIntRange(2, InventionLevels[7] + 2, RandomState) do
+          for I := 1 to NextRandomIntRange(2, InventionLevels[piMainTech] + 2, RandomState) do
           begin
-            WeaponInfo := aGalaxy.Galaxy.SelectWeaponInfo(RandomIntRange(1, 100000), [Ord(waFree)], InventionLevels[7], 1);
+            WeaponInfo := aGalaxy.Galaxy.SelectWeaponInfo(RandomIntRange(1, 100000), [Ord(waFree)], InventionLevels[piMainTech], 1);
             GeneratedWeapon := CreateGeneratedWeapon(WeaponInfo,
               NextRandomIntRange(Round(WeaponInfo.AverageSize * EquipmentSizeFactors[5]),
                 Round(WeaponInfo.AverageSize * EquipmentSizeFactors[1]), RandomState),
-              NextRandomIntRange(1, InventionLevels[7], RandomState), OwnerId);
+              NextRandomIntRange(1, InventionLevels[piMainTech], RandomState), OwnerId);
             EquipmentShop.Add(GeneratedWeapon);
           end;
       end;
@@ -1343,7 +1345,8 @@ end;
 { @routine $785188 TPlanet_SaveToBuffer }
 procedure TPlanet.SaveToBuffer(Buffer: TBufEC);
 var
-  Track, Kind: Byte;
+  Track: TPlanetInvention;
+  Kind: Byte;
   i, Count: Integer;
   Ship: TShip;
   Satellite: TSputnik;
@@ -1368,7 +1371,7 @@ begin
   Buffer.AddIntegerValue(Self.HillExplored);
   Buffer.AddAnsiChar(AnsiChar(Self.ProbeOrbitCount));
   Buffer.AddBoolean(Self.HasPlayerLanded);
-  for Track := 0 to 19 do Buffer.AddAnsiChar(AnsiChar(Self.InventionLevels[Track]));
+  for Track := Low(TPlanetInvention) to High(TPlanetInvention) do Buffer.AddAnsiChar(AnsiChar(Self.InventionLevels[Track]));
   Buffer.AddAnsiChar(AnsiChar(Self.CurrentInvention));
   Buffer.AddSingle(Self.CurrentInventionPoints);
   Buffer.AddAnsiChar(AnsiChar(Self.ResearchLevelPercent));
@@ -1460,7 +1463,7 @@ end;
 { @routine $7857C0 TPlanet_LoadFromBuffer }
 procedure TPlanet.LoadFromBuffer(Buffer: TBufEC; Galaxy: TGalaxy);
 var
-  Track: Byte;
+  Track: TPlanetInvention;
   Item: TItem;
   Good: Byte;
   i, Count: Integer;
@@ -1492,16 +1495,16 @@ begin
     if GlobalsV.LoadedSaveVersion >= 99 then HasPlayerLanded := Buffer.GetBoolean
     else HasPlayerLanded := False;
     Stage := 1;
-    for Track := 0 to 19 do
+    for Track := Low(TPlanetInvention) to High(TPlanetInvention) do
       if GlobalsV.LoadedSaveVersion <= 90 then
       begin
         Buffer.GetByte;
         InventionLevels[Track] := Buffer.GetByte;
-        if Track >= 8 then InventionLevels[Track] := Min(8, Integer(InventionLevels[Track]) * 2 - 1);
+        if Track >= piWeapon1 then InventionLevels[Track] := Min(8, Integer(InventionLevels[Track]) * 2 - 1);
       end
       else InventionLevels[Track] := Buffer.GetByte;
-    if GlobalsV.LoadedSaveVersion <= 90 then CurrentInvention := Buffer.GetByte shr 1
-    else CurrentInvention := Buffer.GetByte;
+    if GlobalsV.LoadedSaveVersion <= 90 then CurrentInvention := TPlanetInvention(Buffer.GetByte shr 1)
+    else CurrentInvention := TPlanetInvention(Buffer.GetByte);
     CurrentInventionPoints := Buffer.GetSingle;
     ResearchLevelPercent := Buffer.GetByte;
     ResearchLevelStep := Buffer.GetByte;
@@ -1627,11 +1630,11 @@ begin
   Block.AddParam(DecodeTextW('OcrublietyRnakdlipuns'), SysUtils.FloatToStr(Orbit.Radius)); // 'OrbitRadius'
   Block.AddParam(DecodeTextW('OsrabniktuAinegilne'), SysUtils.FloatToStr(Orbit.AngleDegrees)); // 'OrbitAngle'
   Block.AddParam(DecodeTextW('Rpe7lyamtgi4oendThokP4lWasyfeKry'), SysUtils.IntToStr(Byte(RangerRelations[0]))); // 'RelationToPlayer'
-  Block.AddParam(DecodeTextW('IsMraliunaTrepcohaLienvuelle'), SysUtils.IntToStr(InventionLevels[7])); // 'IMainTechLevel'
-  Text := SysUtils.IntToStr(InventionLevels[0]);
-  for i := 1 to 19 do Text := Text + ',' + SysUtils.IntToStr(InventionLevels[Byte(i)]);
+  Block.AddParam(DecodeTextW('IsMraliunaTrepcohaLienvuelle'), SysUtils.IntToStr(InventionLevels[piMainTech])); // 'IMainTechLevel'
+  Text := SysUtils.IntToStr(InventionLevels[piHull]);
+  for i := Ord(piFuelTanks) to Ord(High(TPlanetInvention)) do Text := Text + ',' + SysUtils.IntToStr(InventionLevels[TPlanetInvention(i)]);
   Block.AddParam(DecodeTextW('Toe5cfh2LSexvNejlusw'), Text); // 'TechLevels'
-  Block.AddParam(DecodeTextW('C2u4rrrTeengtyIwnsvgeEn6tjieodn'), SysUtils.IntToStr(CurrentInvention)); // 'CurrentInvention'
+  Block.AddParam(DecodeTextW('C2u4rrrTeengtyIwnsvgeEn6tjieodn'), SysUtils.IntToStr(Ord(CurrentInvention))); // 'CurrentInvention'
   Block.AddParam(DecodeTextW('CluurtreewnstQIvnhv6eenwtfijo6ntPwoSirn5tts7'), SysUtils.FloatToStr(CurrentInventionPoints)); // 'CurrentInventionPoints'
   with Block.AddBlockByPath(DecodeTextW('EdqeSahloEp')) do // 'EqShop'
   begin
@@ -1833,8 +1836,8 @@ begin
     end;
   end;
   Text := Block.GetParam(DecodeTextW('Toe5cfh2LSexvNejlusw')); // 'TechLevels'
-  for i := 0 to 19 do InventionLevels[Byte(i)] := SysUtils.StrToInt(ExtractDelimitedPartW(Text, i, ','));
-  CurrentInvention := SysUtils.StrToInt(Block.GetParam(DecodeTextW('C2u4rrrTeengtyIwnsvgeEn6tjieodn'))); // 'CurrentInvention'
+  for i := Ord(Low(TPlanetInvention)) to Ord(High(TPlanetInvention)) do InventionLevels[TPlanetInvention(i)] := SysUtils.StrToInt(ExtractDelimitedPartW(Text, i, ','));
+  CurrentInvention := TPlanetInvention(SysUtils.StrToInt(Block.GetParam(DecodeTextW('C2u4rrrTeengtyIwnsvgeEn6tjieodn')))); // 'CurrentInvention'
   CurrentInventionPoints := ExtractDecimalToSingleW(Block.GetParam(DecodeTextW('CluurtreewnstQIvnhv6eenwtfijo6ntPwoSirn5tts7'))); // 'CurrentInventionPoints'
   with Block.GetBlockByPath(DecodeTextW('GlamrirLihsaoln')) do // 'Garrison'
   begin
@@ -2913,11 +2916,11 @@ var
   Ranger: TRanger;
   ItemType: Byte;
   GoodsMask: TItemTypeMask;
-  NewsType: Byte;
+  NewsType: TGalaxyNewsKind;
 begin
   NewGovernment := Government;
   Attempts := 0;
-  NewsType := 1;
+  NewsType := gnRevolutionAnarchy;
   repeat
     Roll := NextRandomIntRange(0, 100, RandomState);
     for Candidate := pgDemocracy downto pgAnarchy do
@@ -2925,11 +2928,11 @@ begin
       begin
         NewGovernment := Candidate;
         case NewGovernment of
-          pgAnarchy: NewsType := 1;
-          pgDictatorship: NewsType := 2;
-          pgMonarchy: NewsType := 3;
-          pgRepublic: NewsType := 4;
-          pgDemocracy: NewsType := 5;
+          pgAnarchy: NewsType := gnRevolutionAnarchy;
+          pgDictatorship: NewsType := gnRevolutionDictatorship;
+          pgMonarchy: NewsType := gnRevolutionMonarchy;
+          pgRepublic: NewsType := gnRevolutionRepublic;
+          pgDemocracy: NewsType := gnRevolutionDemocracy;
         end;
         Break;
       end;
@@ -2938,12 +2941,12 @@ begin
       if Government <> pgAnarchy then
       begin
         NewGovernment := pgAnarchy;
-        NewsType := 1;
+        NewsType := gnRevolutionAnarchy;
       end
       else
       begin
         NewGovernment := pgDemocracy;
-        NewsType := 5;
+        NewsType := gnRevolutionDemocracy;
       end;
     // The native news-duplication test has an empty body.
     if CurrentStar.IsConstellationVisible and
@@ -2957,8 +2960,9 @@ begin
       ChangeRelationToRanger(Ranger, aConst.PlanetGovernmentMarket[Government].RevolutionRelationDelta[
         Ranger.GetDominantCareer]);
   end;
+  // Native emits every revolution under the anarchy ID, regardless of NewGovernment.
   if CurrentStar.IsConstellationVisible and (aGalaxy.Galaxy.CoalitionDefeatedTurn = 0) then
-    aGalaxy.Galaxy.AddPlanetNews(1, FormatText2(
+    aGalaxy.Galaxy.AddPlanetNews(gnRevolutionAnarchy, FormatText2(
       PickLocalizedTextVariant('GalaxyNews.Planet.Revolution.' + SysUtils.IntToStr(Ord(Government)),
         (aGalaxy.Galaxy.CurrentTurn div 10) * Integer(GenerationSeed)),
       '<color=255,240,100>', '<Star>', CurrentStar.Name, '<Planet>', Name));
@@ -3002,182 +3006,182 @@ begin
     TriggerGovernmentRevolution
   else if (SeededRandomIntRange(0, 100,
     aGalaxy.Galaxy.CurrentTurn * Integer(GenerationSeed) * 1117) < EconomicEventChance) and
-    (not CurrentStar.IsConstellationVisible or (aGalaxy.Galaxy.CountPlanetNewsByType(6) = 0)) and
+    (not CurrentStar.IsConstellationVisible or (aGalaxy.Galaxy.CountPlanetNewsByType(gnMineralDeposit) = 0)) and
     (Economy in [peMixed, peIndustrial]) then
   begin
     ForceGoodsScarcity(True, [2]);
     ForceGoodsSurplus(True, [4]);
     if CurrentStar.IsConstellationVisible and (aGalaxy.Galaxy.CoalitionDefeatedTurn = 0) then
-      aGalaxy.Galaxy.AddPlanetNews(6, FormatText2(
+      aGalaxy.Galaxy.AddPlanetNews(gnMineralDeposit, FormatText2(
         PickLocalizedTextVariant('GalaxyNews.Planet.MineralDeposit',
           (aGalaxy.Galaxy.CurrentTurn div 10) * Integer(GenerationSeed)),
         '<color=255,240,100>', '<Star>', CurrentStar.Name, '<Planet>', Name));
   end
   else if (SeededRandomIntRange(0, 100,
     aGalaxy.Galaxy.CurrentTurn * Integer(GenerationSeed) * 1127) < EconomicEventChance) and
-    (not CurrentStar.IsConstellationVisible or (aGalaxy.Galaxy.CountPlanetNewsByType(7) = 0)) and
+    (not CurrentStar.IsConstellationVisible or (aGalaxy.Galaxy.CountPlanetNewsByType(gnMineralShortage) = 0)) and
     (Economy in [peIndustrial]) then
   begin
     ForceGoodsScarcity(True, [4]);
     if CurrentStar.IsConstellationVisible and (aGalaxy.Galaxy.CoalitionDefeatedTurn = 0) then
-      aGalaxy.Galaxy.AddPlanetNews(7, FormatText2(
+      aGalaxy.Galaxy.AddPlanetNews(gnMineralShortage, FormatText2(
         PickLocalizedTextVariant('GalaxyNews.Planet.NeedMineral',
           (aGalaxy.Galaxy.CurrentTurn div 10) * Integer(GenerationSeed)),
         '<color=255,240,100>', '<Star>', CurrentStar.Name, '<Planet>', Name));
   end
   else if (SeededRandomIntRange(0, 100,
     aGalaxy.Galaxy.CurrentTurn * Integer(GenerationSeed) * 1217) < EconomicEventChance) and
-    (not CurrentStar.IsConstellationVisible or (aGalaxy.Galaxy.CountPlanetNewsByType(8) = 0)) and
+    (not CurrentStar.IsConstellationVisible or (aGalaxy.Galaxy.CountPlanetNewsByType(gnArmsSurplus) = 0)) and
     (Economy in [peMixed, peIndustrial]) and
     (RaceToOwner(RaceId) in [oiMaloc, oiHuman, oiFeyan]) then
   begin
     ForceGoodsScarcity(True, [2]);
     ForceGoodsSurplus(True, [6]);
     if CurrentStar.IsConstellationVisible and (aGalaxy.Galaxy.CoalitionDefeatedTurn = 0) then
-      aGalaxy.Galaxy.AddPlanetNews(8, FormatText2(
+      aGalaxy.Galaxy.AddPlanetNews(gnArmsSurplus, FormatText2(
         PickLocalizedTextVariant('GalaxyNews.Planet.ManyArms',
           (aGalaxy.Galaxy.CurrentTurn div 10) * Integer(GenerationSeed)),
         '<color=255,240,100>', '<Star>', CurrentStar.Name, '<Planet>', Name));
   end
   else if (SeededRandomIntRange(0, 100,
     aGalaxy.Galaxy.CurrentTurn * Integer(GenerationSeed) * 1227) < EconomicEventChance) and
-    (not CurrentStar.IsConstellationVisible or (aGalaxy.Galaxy.CountPlanetNewsByType(9) = 0)) and
+    (not CurrentStar.IsConstellationVisible or (aGalaxy.Galaxy.CountPlanetNewsByType(gnArmsShortage) = 0)) and
     (Economy in [peMixed]) and
     (RaceToOwner(RaceId) in [oiMaloc..oiHuman]) then
   begin
     ForceGoodsScarcity(True, [6]);
     if CurrentStar.IsConstellationVisible and (aGalaxy.Galaxy.CoalitionDefeatedTurn = 0) then
-      aGalaxy.Galaxy.AddPlanetNews(9, FormatText2(
+      aGalaxy.Galaxy.AddPlanetNews(gnArmsShortage, FormatText2(
         PickLocalizedTextVariant('GalaxyNews.Planet.NeedArms',
           (aGalaxy.Galaxy.CurrentTurn div 10) * Integer(GenerationSeed)),
         '<color=255,240,100>', '<Star>', CurrentStar.Name, '<Planet>', Name));
   end
   else if (SeededRandomIntRange(0, 100,
     aGalaxy.Galaxy.CurrentTurn * Integer(GenerationSeed) * 1237) < EconomicEventChance) and
-    (not CurrentStar.IsConstellationVisible or (aGalaxy.Galaxy.CountPlanetNewsByType(9) = 0)) and
+    (not CurrentStar.IsConstellationVisible or (aGalaxy.Galaxy.CountPlanetNewsByType(gnArmsShortage) = 0)) and
     (Economy in [peMixed]) and
     (RaceToOwner(RaceId) in [oiMaloc..oiFeyan]) and
     (Government in [pgDemocracy]) then
   begin
     ForceGoodsScarcity(True, [6]);
     if CurrentStar.IsConstellationVisible and (aGalaxy.Galaxy.CoalitionDefeatedTurn = 0) then
-      aGalaxy.Galaxy.AddPlanetNews(9, FormatText2(
+      aGalaxy.Galaxy.AddPlanetNews(gnArmsShortage, FormatText2(
         PickLocalizedTextVariant('GalaxyNews.Planet.NeedArmsForRevolution',
           (aGalaxy.Galaxy.CurrentTurn div 10) * Integer(GenerationSeed)),
         '<color=255,240,100>', '<Star>', CurrentStar.Name, '<Planet>', Name));
   end
   else if (SeededRandomIntRange(0, 100,
     aGalaxy.Galaxy.CurrentTurn * Integer(GenerationSeed) * 1317) < EconomicEventChance) and
-    (not CurrentStar.IsConstellationVisible or (aGalaxy.Galaxy.CountPlanetNewsByType(10) = 0)) and
+    (not CurrentStar.IsConstellationVisible or (aGalaxy.Galaxy.CountPlanetNewsByType(gnTechnicsSurplus) = 0)) and
     (Economy in [peMixed, peIndustrial]) and
     (RaceToOwner(RaceId) in [oiHuman..oiGaal]) then
   begin
     ForceGoodsSurplus(True, [2, 6]);
     if CurrentStar.IsConstellationVisible and (aGalaxy.Galaxy.CoalitionDefeatedTurn = 0) then
-      aGalaxy.Galaxy.AddPlanetNews(10, FormatText2(
+      aGalaxy.Galaxy.AddPlanetNews(gnTechnicsSurplus, FormatText2(
         PickLocalizedTextVariant('GalaxyNews.Planet.ManyTechnics',
           (aGalaxy.Galaxy.CurrentTurn div 10) * Integer(GenerationSeed)),
         '<color=255,240,100>', '<Star>', CurrentStar.Name, '<Planet>', Name));
   end
   else if (SeededRandomIntRange(0, 100,
     aGalaxy.Galaxy.CurrentTurn * Integer(GenerationSeed) * 71417) < EconomicEventChance) and
-    (not CurrentStar.IsConstellationVisible or (aGalaxy.Galaxy.CountPlanetNewsByType(11) = 0)) and
+    (not CurrentStar.IsConstellationVisible or (aGalaxy.Galaxy.CountPlanetNewsByType(gnFoodSurplus) = 0)) and
     (Economy in [peAgricultural, peMixed]) then
   begin
     ForceGoodsSurplus(True, [0]);
     if CurrentStar.IsConstellationVisible and (aGalaxy.Galaxy.CoalitionDefeatedTurn = 0) then
-      aGalaxy.Galaxy.AddPlanetNews(11, FormatText2(
+      aGalaxy.Galaxy.AddPlanetNews(gnFoodSurplus, FormatText2(
         PickLocalizedTextVariant('GalaxyNews.Planet.ManyFood',
           (aGalaxy.Galaxy.CurrentTurn div 10) * Integer(GenerationSeed)),
         '<color=255,240,100>', '<Star>', CurrentStar.Name, '<Planet>', Name));
   end
   else if (SeededRandomIntRange(0, 100,
     aGalaxy.Galaxy.CurrentTurn * Integer(GenerationSeed) * 31427) < EconomicEventChance) and
-    (not CurrentStar.IsConstellationVisible or (aGalaxy.Galaxy.CountPlanetNewsByType(11) = 0)) and
+    (not CurrentStar.IsConstellationVisible or (aGalaxy.Galaxy.CountPlanetNewsByType(gnFoodSurplus) = 0)) and
     (Economy in [peAgricultural]) then
   begin
     ForceGoodsSurplus(True, [0]);
     ForceGoodsScarcity(True, [2]);
     if CurrentStar.IsConstellationVisible and (aGalaxy.Galaxy.CoalitionDefeatedTurn = 0) then
-      aGalaxy.Galaxy.AddPlanetNews(11, FormatText2(
+      aGalaxy.Galaxy.AddPlanetNews(gnFoodSurplus, FormatText2(
         PickLocalizedTextVariant('GalaxyNews.Planet.ManyFoodNeedTechnics',
           (aGalaxy.Galaxy.CurrentTurn div 10) * Integer(GenerationSeed)),
         '<color=255,240,100>', '<Star>', CurrentStar.Name, '<Planet>', Name));
   end
   else if (SeededRandomIntRange(0, 100,
     aGalaxy.Galaxy.CurrentTurn * Integer(GenerationSeed) * 21437) < EconomicEventChance) and
-    (not CurrentStar.IsConstellationVisible or (aGalaxy.Galaxy.CountPlanetNewsByType(12) = 0)) and
+    (not CurrentStar.IsConstellationVisible or (aGalaxy.Galaxy.CountPlanetNewsByType(gnFoodShortage) = 0)) and
     (Economy in [peAgricultural, peMixed, peIndustrial]) and
     (RaceToOwner(RaceId) in [oiMaloc..oiFeyan]) then
   begin
     ForceGoodsScarcity(True, [0, 1, 7]);
     if CurrentStar.IsConstellationVisible and (aGalaxy.Galaxy.CoalitionDefeatedTurn = 0) then
-      aGalaxy.Galaxy.AddPlanetNews(12, FormatText2(
+      aGalaxy.Galaxy.AddPlanetNews(gnFoodShortage, FormatText2(
         PickLocalizedTextVariant('GalaxyNews.Planet.NeedFood',
           (aGalaxy.Galaxy.CurrentTurn div 10) * Integer(GenerationSeed)),
         '<color=255,240,100>', '<Star>', CurrentStar.Name, '<Planet>', Name));
   end
   else if (SeededRandomIntRange(0, 100,
     aGalaxy.Galaxy.CurrentTurn * Integer(GenerationSeed) * 1517) < EconomicEventChance) and
-    (not CurrentStar.IsConstellationVisible or (aGalaxy.Galaxy.CountPlanetNewsByType(13) = 0)) and
+    (not CurrentStar.IsConstellationVisible or (aGalaxy.Galaxy.CountPlanetNewsByType(gnMedicineSurplus) = 0)) and
     (Economy in [peMixed]) and
     (RaceToOwner(RaceId) in [oiHuman..oiGaal]) then
   begin
     ForceGoodsSurplus(True, [1]);
     if CurrentStar.IsConstellationVisible and (aGalaxy.Galaxy.CoalitionDefeatedTurn = 0) then
-      aGalaxy.Galaxy.AddPlanetNews(13, FormatText2(
+      aGalaxy.Galaxy.AddPlanetNews(gnMedicineSurplus, FormatText2(
         PickLocalizedTextVariant('GalaxyNews.Planet.ManyMedicine',
           (aGalaxy.Galaxy.CurrentTurn div 10) * Integer(GenerationSeed)),
         '<color=255,240,100>', '<Star>', CurrentStar.Name, '<Planet>', Name));
   end
   else if (SeededRandomIntRange(0, 100,
     aGalaxy.Galaxy.CurrentTurn * Integer(GenerationSeed) * 1617) < EconomicEventChance) and
-    (not CurrentStar.IsConstellationVisible or (aGalaxy.Galaxy.CountPlanetNewsByType(14) = 0)) and
+    (not CurrentStar.IsConstellationVisible or (aGalaxy.Galaxy.CountPlanetNewsByType(gnLuxurySurplus) = 0)) and
     (Economy in [peAgricultural, peMixed, peIndustrial]) and
     (RaceToOwner(RaceId) in [oiPeleng..oiGaal]) then
   begin
     ForceGoodsSurplus(True, [3]);
     if CurrentStar.IsConstellationVisible and (aGalaxy.Galaxy.CoalitionDefeatedTurn = 0) then
-      aGalaxy.Galaxy.AddPlanetNews(14, FormatText2(
+      aGalaxy.Galaxy.AddPlanetNews(gnLuxurySurplus, FormatText2(
         PickLocalizedTextVariant('GalaxyNews.Planet.ManyLuxury',
           (aGalaxy.Galaxy.CurrentTurn div 10) * Integer(GenerationSeed)),
         '<color=255,240,100>', '<Star>', CurrentStar.Name, '<Planet>', Name));
   end
   else if (SeededRandomIntRange(0, 100,
     aGalaxy.Galaxy.CurrentTurn * Integer(GenerationSeed) * 1717) < EconomicEventChance) and
-    (not CurrentStar.IsConstellationVisible or (aGalaxy.Galaxy.CountPlanetNewsByType(15) = 0)) and
+    (not CurrentStar.IsConstellationVisible or (aGalaxy.Galaxy.CountPlanetNewsByType(gnLuxuryShortage) = 0)) and
     (Economy in [peAgricultural, peMixed]) and
     (RaceToOwner(RaceId) in [oiHuman..oiGaal]) then
   begin
     ForceGoodsScarcity(True, [3]);
     if CurrentStar.IsConstellationVisible and (aGalaxy.Galaxy.CoalitionDefeatedTurn = 0) then
-      aGalaxy.Galaxy.AddPlanetNews(15, FormatText2(
+      aGalaxy.Galaxy.AddPlanetNews(gnLuxuryShortage, FormatText2(
         PickLocalizedTextVariant('GalaxyNews.Planet.NeedLuxury',
           (aGalaxy.Galaxy.CurrentTurn div 10) * Integer(GenerationSeed)),
         '<color=255,240,100>', '<Star>', CurrentStar.Name, '<Planet>', Name));
   end
   else if (SeededRandomIntRange(0, 100,
     aGalaxy.Galaxy.CurrentTurn * Integer(GenerationSeed) * 1817) < EconomicEventChance) and
-    (not CurrentStar.IsConstellationVisible or (aGalaxy.Galaxy.CountPlanetNewsByType(16) = 0)) and
+    (not CurrentStar.IsConstellationVisible or (aGalaxy.Galaxy.CountPlanetNewsByType(gnAlcoholSurplus) = 0)) and
     (Economy in [peAgricultural, peMixed]) and
     (RaceToOwner(RaceId) in [oiPeleng..oiHuman]) then
   begin
     ForceGoodsSurplus(True, [5]);
     if CurrentStar.IsConstellationVisible and (aGalaxy.Galaxy.CoalitionDefeatedTurn = 0) then
-      aGalaxy.Galaxy.AddPlanetNews(16, FormatText2(
+      aGalaxy.Galaxy.AddPlanetNews(gnAlcoholSurplus, FormatText2(
         PickLocalizedTextVariant('GalaxyNews.Planet.ManyAlcohol',
           (aGalaxy.Galaxy.CurrentTurn div 10) * Integer(GenerationSeed)),
         '<color=255,240,100>', '<Star>', CurrentStar.Name, '<Planet>', Name));
   end
   else if (SeededRandomIntRange(0, 100,
     aGalaxy.Galaxy.CurrentTurn * Integer(GenerationSeed) * 1917) < EconomicEventChance) and
-    (not CurrentStar.IsConstellationVisible or (aGalaxy.Galaxy.CountPlanetNewsByType(17) = 0)) and
+    (not CurrentStar.IsConstellationVisible or (aGalaxy.Galaxy.CountPlanetNewsByType(gnAlcoholShortage) = 0)) and
     (Economy in [peMixed, peIndustrial]) and
     (RaceToOwner(RaceId) in [oiHuman,oiGaal]) then
   begin
     ForceGoodsScarcity(True, [5]);
     if CurrentStar.IsConstellationVisible and (aGalaxy.Galaxy.CoalitionDefeatedTurn = 0) then
-      aGalaxy.Galaxy.AddPlanetNews(17, FormatText2(
+      aGalaxy.Galaxy.AddPlanetNews(gnAlcoholShortage, FormatText2(
         PickLocalizedTextVariant('GalaxyNews.Planet.NeedAlcohol',
           (aGalaxy.Galaxy.CurrentTurn div 10) * Integer(GenerationSeed)),
         '<color=255,240,100>', '<Star>', CurrentStar.Name, '<Planet>', Name));
@@ -3647,7 +3651,7 @@ end;
 { @routine $79061C TPlanet_SelectCurrentInvention }
 procedure TPlanet.SelectCurrentInvention;
 var
-  Track: Byte;
+  Track: TPlanetInvention;
   Chance: Double;
   Found: Boolean;
   i, Index: Integer;
@@ -3655,14 +3659,14 @@ begin
   Found := False;
   Chance := 0.03;
   repeat
-    Index := NextRandomIntRange(0, 19, RandomState);
-    for i := 0 to 19 do
+    Index := NextRandomIntRange(Ord(Low(TPlanetInvention)), Ord(High(TPlanetInvention)), RandomState);
+    for i := Ord(Low(TPlanetInvention)) to Ord(High(TPlanetInvention)) do
     begin
-      IncrementWrapped(Index, 0, 19);
-      Track := Index;
+      IncrementWrapped(Index, Ord(Low(TPlanetInvention)), Ord(High(TPlanetInvention)));
+      Track := TPlanetInvention(Index);
       if (ResearchLevelPercent > System.Round(InventionLevels[Track] * 12.5)) and
-        (aConst.PlanetInventionInfo[Track].RequiredMainTechLevel <= InventionLevels[7]) and
-        (InventionLevels[Track] <= InventionLevels[7]) and
+        (aConst.PlanetInventionInfo[Track].RequiredMainTechLevel <= InventionLevels[piMainTech]) and
+        (InventionLevels[Track] <= InventionLevels[piMainTech]) and
         (NextRandomUnitFloat(RandomState) <= Chance) then
       begin
         CurrentInvention := Track;
@@ -3680,13 +3684,13 @@ end;
 { @routine $790788 TPlanet_AdvanceInventionProgress }
 procedure TPlanet.AdvanceInventionProgress;
 var
-  Track: Byte;
+  Track: TPlanetInvention;
   Average, Progress: Double;
   Complete, RaiseCeiling: Boolean;
   Count: Integer;
 begin
   Complete := True;
-  for Track := 0 to 19 do
+  for Track := Low(TPlanetInvention) to High(TPlanetInvention) do
     if InventionLevels[Track] < 8 then Complete := False;
   if Complete then Exit;
   Progress := CalculateInventionProgressRate;
@@ -3697,21 +3701,21 @@ begin
     InventionLevels[CurrentInvention] := Min(8, InventionLevels[CurrentInvention] + 1);
     CurrentInventionPoints := 0;
     Complete := True;
-    for Track := 0 to 19 do
+    for Track := Low(TPlanetInvention) to High(TPlanetInvention) do
       if InventionLevels[Track] < 8 then Complete := False;
     if Complete then Exit;
     RaiseCeiling := True;
     repeat
-      for Track := 0 to 19 do
+      for Track := Low(TPlanetInvention) to High(TPlanetInvention) do
         if (ResearchLevelPercent > System.Round(InventionLevels[Track] * 12.5)) and
-          (aConst.PlanetInventionInfo[Track].RequiredMainTechLevel <= InventionLevels[7]) and
-          (InventionLevels[Track] <= InventionLevels[7]) then RaiseCeiling := False;
+          (aConst.PlanetInventionInfo[Track].RequiredMainTechLevel <= InventionLevels[piMainTech]) and
+          (InventionLevels[Track] <= InventionLevels[piMainTech]) then RaiseCeiling := False;
       if not RaiseCeiling then
       begin
         Average := 0;
         Count := 0;
-        for Track := 0 to 19 do
-          if aConst.PlanetInventionInfo[Track].RequiredMainTechLevel <= InventionLevels[7] then
+        for Track := Low(TPlanetInvention) to High(TPlanetInvention) do
+          if aConst.PlanetInventionInfo[Track].RequiredMainTechLevel <= InventionLevels[piMainTech] then
           begin
             Average := Average + InventionLevels[Track] * 12.5;
             Inc(Count);
@@ -4323,7 +4327,7 @@ begin
   Result := -1;
   if not IsMainPiratePlanet then
     if NextRandomIntRange(1, 100, RandomState) > aGalaxy.Galaxy.GetMicroModuleOfferRollThresholdPercent then Exit;
-  Ceiling := System.Round(InventionLevels[7] * 100 / 8);
+  Ceiling := System.Round(InventionLevels[piMainTech] * 100 / 8);
   Minimum := 0;
   Maximum := 0;
   Count := 0;
@@ -4377,7 +4381,7 @@ begin
   Result := -1;
   if not IsMainPiratePlanet then
     if NextRandomIntRange(1, 100, RandomState) > aGalaxy.Galaxy.GetMicroModuleOfferRollThresholdPercent then Exit;
-  Ceiling := System.Round(InventionLevels[7] * 100 / 8);
+  Ceiling := System.Round(InventionLevels[piMainTech] * 100 / 8);
   Minimum := 0;
   Maximum := 0;
   Count := 0;
@@ -4431,7 +4435,7 @@ begin
   Result := -1;
   if not IsMainPiratePlanet then
     if NextRandomIntRange(1, 100, RandomState) > aGalaxy.Galaxy.GetMicroModuleOfferRollThresholdPercent then Exit;
-  Ceiling := System.Round(InventionLevels[7] * 100 / 8);
+  Ceiling := System.Round(InventionLevels[piMainTech] * 100 / 8);
   Minimum := 0;
   Maximum := 0;
   Count := 0;
@@ -4633,7 +4637,7 @@ begin
   if Attempts <= 100 then
   begin
     Inc(Attempts);
-    Info := aGalaxy.Galaxy.SelectWeaponInfo(RandomState, Available, InventionLevels[7], 1);
+    Info := aGalaxy.Galaxy.SelectWeaponInfo(RandomState, Available, InventionLevels[piMainTech], 1);
     AdvanceRandomSeed(RandomState);
     // The native comparison has no rejecting branch, but both counts are called.
     if not (Target.TypeId in [stRanger, stPirate]) and (Info.ShotType in [wstTorpedo..wstRocket]) then
@@ -4646,7 +4650,7 @@ begin
       MaxSize := MaxSize * 2;
     end;
     MinLevel := 1;
-    MaxLevel := Min(InventionLevels[7], InventionLevels[Info.InventionIndex]);
+    MaxLevel := Min(InventionLevels[piMainTech], InventionLevels[Info.InventionIndex]);
     if CurrentStar.Constellation.Id = 20 then MaxLevel := Max(MaxLevel, Integer(aGalaxy.Galaxy.TechLevel));
     MinLevel := Max(MinLevel, MaxLevel div 2 - 1);
     Owner := RaceToOwner(RaceId);

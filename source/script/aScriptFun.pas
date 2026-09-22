@@ -850,8 +850,8 @@ end;
 procedure SF_AddPlanetNews(av: array of TVarEC; code: TCodeEC);
 begin
   if High(av) < 1 then raise Exception.Create('Error.Script AddPlanetNews');
-  if High(av) > 1 then Galaxy.AddPlanetNews(av[2].GetInt, av[1].GetString)
-  else Galaxy.AddPlanetNews(0, av[1].GetString);
+  if High(av) > 1 then Galaxy.AddPlanetNews(TGalaxyNewsKind(av[2].GetInt), av[1].GetString)
+  else Galaxy.AddPlanetNews(gnScript, av[1].GetString);
 end;
 { @end $6062F0 }
 
@@ -8737,8 +8737,8 @@ var
 begin
   if High(av) < 1 then raise Exception.Create('Error.Script PlanetCurInvention');
   Planet := TPlanet(av[1].GetDword);
-  av[0].SetInt(Planet.CurrentInvention);
-  if High(av) > 1 then Planet.CurrentInvention := av[2].GetInt;
+  av[0].SetInt(Ord(Planet.CurrentInvention));
+  if High(av) > 1 then Planet.CurrentInvention := TPlanetInvention(av[2].GetInt);
 end;
 { @end $62443C }
 
@@ -8758,11 +8758,11 @@ end;
 procedure SF_PlanetInventionLevel(av: array of TVarEC; code: TCodeEC);
 var
   Planet: TPlanet;
-  Index: Byte;
+  Index: TPlanetInvention;
 begin
   if High(av) < 2 then raise Exception.Create('Error.Script PlanetInventionLevel');
   Planet := TPlanet(av[1].GetDword);
-  Index := av[2].GetInt;
+  Index := TPlanetInvention(av[2].GetInt);
   av[0].SetInt(Planet.InventionLevels[Index]);
   if High(av) > 2 then Planet.InventionLevels[Index] := av[3].GetInt;
 end;
@@ -11592,12 +11592,12 @@ procedure SF_FindPlanetByAdvancement(av: array of TVarEC; code: TCodeEC);
 var Score: Integer; Planet: TPlanet; MaxScore, MinScore, TargetScore, BestDistance, Percent, I, J, Faction: Integer; Star: TStar; BestPlanet: TPlanet;
   // @nested $62F3F0 CalcValue
   procedure CalcValue; // @addr 0x62F3F0 @ida "void __cdecl $name(void *ParentFrame);" @note "Nested in SF_FindPlanetByAdvancement; reads its selected planet and writes its local score."
-  var I: Byte;
+  var I: TPlanetInvention;
   begin
     Score := 0;
-    for I := 0 to 19 do Score := Score + Planet.InventionLevels[I];
-    for I := 0 to 7 do Score := Score + 2 * Planet.InventionLevels[I];
-    Score := Score + 8 * Planet.InventionLevels[7] + 4 * Planet.InventionLevels[0] + 2 * Planet.InventionLevels[5];
+    for I := Low(TPlanetInvention) to High(TPlanetInvention) do Score := Score + Planet.InventionLevels[I];
+    for I := piHull to piMainTech do Score := Score + 2 * Planet.InventionLevels[I];
+    Score := Score + 8 * Planet.InventionLevels[piMainTech] + 4 * Planet.InventionLevels[piHull] + 2 * Planet.InventionLevels[piRepairRobot];
   end;
 begin
   if High(av) < 1 then raise Exception.Create('Error.Script FindPlanetByAdvancement');
@@ -11816,7 +11816,7 @@ begin
   av[0].SetInt(0);
   Index := av[1].GetInt;
   if (Index >= 0) and (Index < Galaxy.PlanetNews.Count) then
-    av[0].SetInt(PPlanetNewsEntry(Galaxy.PlanetNews[Index]).NewsType);
+    av[0].SetInt(Ord(PPlanetNewsEntry(Galaxy.PlanetNews[Index]).NewsType));
 end;
 { @end $630230 }
 

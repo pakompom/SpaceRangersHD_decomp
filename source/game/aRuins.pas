@@ -1042,7 +1042,7 @@ var I, Candidate, Count: Integer; Template: PMicroModuleTemplate; Ceiling, Minim
 begin
   Result := -1;
   if NextRandomIntRange(1, 100, RandomState) > Galaxy.GetMicroModuleOfferRollThresholdPercent then Exit;
-  Ceiling := Round(Planet.InventionLevels[7] * 100 / 8);
+  Ceiling := Round(Planet.InventionLevels[piMainTech] * 100 / 8);
   Minimum := 0;
   Maximum := 0;
   Count := 0;
@@ -1095,7 +1095,7 @@ var I, Candidate, Count: Integer; Template: PMicroModuleTemplate; Ceiling, Minim
 begin
   Result := -1;
   if NextRandomIntRange(1, 100, RandomState) > Galaxy.GetMicroModuleOfferRollThresholdPercent then Exit;
-  Ceiling := Round(Planet.InventionLevels[7] * 100 / 8);
+  Ceiling := Round(Planet.InventionLevels[piMainTech] * 100 / 8);
   Minimum := 0;
   Maximum := 0;
   Count := 0;
@@ -1148,7 +1148,7 @@ var I, Candidate, Count: Integer; Template: PMicroModuleTemplate; Ceiling, Minim
 begin
   Result := -1;
   if NextRandomIntRange(1, 100, RandomState) > Galaxy.GetMicroModuleOfferRollThresholdPercent then Exit;
-  Ceiling := Round(Planet.InventionLevels[7] * 100 / 8);
+  Ceiling := Round(Planet.InventionLevels[piMainTech] * 100 / 8);
   Minimum := 0;
   Maximum := 0;
   Count := 0;
@@ -2066,7 +2066,7 @@ begin
     if Attempts <= 100 then
     begin
       Inc(Attempts);
-      Info := Galaxy.SelectWeaponInfo(RandomState, Availability, Planet.InventionLevels[7], 1);
+      Info := Galaxy.SelectWeaponInfo(RandomState, Availability, Planet.InventionLevels[piMainTech], 1);
       AdvanceRandomSeed(RandomState);
       if not (Buyer.TypeId in [stRanger, stPirate]) and (Info.ShotType in [wstTorpedo..wstRocket]) then
       begin
@@ -2080,7 +2080,7 @@ begin
         MaxSize := MaxSize * 2;
       end;
       MinLevel := 1;
-      MaxLevel := Min(Planet.InventionLevels[7], Planet.InventionLevels[Info.InventionIndex]);
+      MaxLevel := Min(Planet.InventionLevels[piMainTech], Planet.InventionLevels[Info.InventionIndex]);
       MinLevel := Max(MinLevel, MaxLevel div 2 - 1);
       MaxLevel := Min(8, MaxLevel + StationOfferWeaponLevelBonus[TypeId]);
       Owner := PickRandomEquipmentOwner(RandomState);

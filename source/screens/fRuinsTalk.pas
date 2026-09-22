@@ -5084,7 +5084,7 @@ begin
       GetPlayer.SetMoney(GetPlayer.Money - StationServiceQuoteCost);
       RangerCenter := TRuins.Create;
       RangerCenter.Init(rstRangerCenter, InvestmentRangerCenterStar, '');
-      Galaxy.AddPlanetNewsWithPlayerBubble(41, FormatText3(PickLocalizedTextVariant('GalaxyNews.CreateNewObject.RC', Galaxy.CurrentTurn div 10 * GetPlayer.DockedTo.Seed), '<color=255,240,100>',
+      Galaxy.AddPlanetNewsWithPlayerBubble(gnStationCreated, FormatText3(PickLocalizedTextVariant('GalaxyNews.CreateNewObject.RC', Galaxy.CurrentTurn div 10 * GetPlayer.DockedTo.Seed), '<color=255,240,100>',
         '<Name>', RangerCenter.GetName, '<Star>', RangerCenter.CurrentStar.Name, '<Sector>', RangerCenter.CurrentStar.Constellation.GetName));
       DialogText := LocalizedColorText('FormRuins.BK.Investment.BKAfterInvestment');
       ReplaceTextToken(DialogText, '<InvestmentText>', LocalizedColorText('Investment.' + CoalitionProjectNames[Kind] + '.Text'), '');
@@ -5104,7 +5104,7 @@ begin
       GetPlayer.SetMoney(GetPlayer.Money - StationServiceQuoteCost);
       PirateBase := TRuins.Create;
       PirateBase.Init(rstPirateBase, InvestmentPirateBaseStar, '');
-      Galaxy.AddPlanetNewsWithPlayerBubble(41, FormatText3(PickLocalizedTextVariant('GalaxyNews.CreateNewObject.PB', Galaxy.CurrentTurn div 10 * GetPlayer.DockedTo.Seed), '<color=255,240,100>',
+      Galaxy.AddPlanetNewsWithPlayerBubble(gnStationCreated, FormatText3(PickLocalizedTextVariant('GalaxyNews.CreateNewObject.PB', Galaxy.CurrentTurn div 10 * GetPlayer.DockedTo.Seed), '<color=255,240,100>',
         '<Name>', PirateBase.GetName, '<Star>', PirateBase.CurrentStar.Name, '<Sector>', PirateBase.CurrentStar.Constellation.GetName));
       DialogText := LocalizedColorText('FormRuins.BK.Investment.BKAfterInvestment');
       ReplaceTextToken(DialogText, '<InvestmentText>', LocalizedColorText('Investment.' + CoalitionProjectNames[Kind] + '.Text'), '');
@@ -5121,7 +5121,7 @@ begin
       GetPlayer.SetMoney(GetPlayer.Money - StationServiceQuoteCost);
       MilitaryBase := TRuins.Create;
       MilitaryBase.Init(rstMilitaryBase, InvestmentMilitaryBaseStar, '');
-      Galaxy.AddPlanetNewsWithPlayerBubble(41, FormatText3(PickLocalizedTextVariant('GalaxyNews.CreateNewObject.WB', Galaxy.CurrentTurn div 10 * GetPlayer.DockedTo.Seed), '<color=255,240,100>',
+      Galaxy.AddPlanetNewsWithPlayerBubble(gnStationCreated, FormatText3(PickLocalizedTextVariant('GalaxyNews.CreateNewObject.WB', Galaxy.CurrentTurn div 10 * GetPlayer.DockedTo.Seed), '<color=255,240,100>',
         '<Name>', MilitaryBase.GetName, '<Star>', MilitaryBase.CurrentStar.Name, '<Sector>', MilitaryBase.CurrentStar.Constellation.GetName));
       DialogText := LocalizedColorText('FormRuins.BK.Investment.BKAfterInvestment');
       if GetPlayer.OwnerId <> oiPirate then
@@ -5147,7 +5147,7 @@ begin
       GetPlayer.SetMoney(GetPlayer.Money - StationServiceQuoteCost);
       ScienceBase := TRuins.Create;
       ScienceBase.Init(rstScienceBase, InvestmentScienceBaseStar, '');
-      Galaxy.AddPlanetNewsWithPlayerBubble(41, FormatText3(PickLocalizedTextVariant('GalaxyNews.CreateNewObject.SB', Galaxy.CurrentTurn div 10 * GetPlayer.DockedTo.Seed), '<color=255,240,100>',
+      Galaxy.AddPlanetNewsWithPlayerBubble(gnStationCreated, FormatText3(PickLocalizedTextVariant('GalaxyNews.CreateNewObject.SB', Galaxy.CurrentTurn div 10 * GetPlayer.DockedTo.Seed), '<color=255,240,100>',
         '<Name>', ScienceBase.GetName, '<Star>', ScienceBase.CurrentStar.Name, '<Sector>', ScienceBase.CurrentStar.Constellation.GetName));
       DialogText := LocalizedColorText('FormRuins.BK.Investment.BKAfterInvestment');
       ReplaceTextToken(DialogText, '<InvestmentText>', LocalizedColorText('Investment.' + CoalitionProjectNames[Kind] + '.Text'), '');
@@ -5163,7 +5163,7 @@ begin
       GetPlayer.SetMoney(GetPlayer.Money - StationServiceQuoteCost);
       BusinessCenter := TRuins.Create;
       BusinessCenter.Init(rstBusinessCenter, InvestmentBusinessCenterStar, '');
-      Galaxy.AddPlanetNewsWithPlayerBubble(41, FormatText3(PickLocalizedTextVariant('GalaxyNews.CreateNewObject.BK', Galaxy.CurrentTurn div 10 * GetPlayer.DockedTo.Seed), '<color=255,240,100>',
+      Galaxy.AddPlanetNewsWithPlayerBubble(gnStationCreated, FormatText3(PickLocalizedTextVariant('GalaxyNews.CreateNewObject.BK', Galaxy.CurrentTurn div 10 * GetPlayer.DockedTo.Seed), '<color=255,240,100>',
         '<Name>', BusinessCenter.GetName, '<Star>', BusinessCenter.CurrentStar.Name, '<Sector>', BusinessCenter.CurrentStar.Constellation.GetName));
       DialogText := LocalizedColorText('FormRuins.BK.Investment.BKAfterInvestment');
       ReplaceTextToken(DialogText, '<InvestmentText>', LocalizedColorText('Investment.' + CoalitionProjectNames[Kind] + '.Text'), '');
@@ -5179,7 +5179,7 @@ begin
       GetPlayer.SetMoney(GetPlayer.Money - StationServiceQuoteCost);
       MedicalBase := TRuins.Create;
       MedicalBase.Init(rstMedicalBase, InvestmentMedicalBaseStar, '');
-      Galaxy.AddPlanetNewsWithPlayerBubble(41, FormatText3(PickLocalizedTextVariant('GalaxyNews.CreateNewObject.MC', Galaxy.CurrentTurn div 10 * GetPlayer.DockedTo.Seed), '<color=255,240,100>',
+      Galaxy.AddPlanetNewsWithPlayerBubble(gnStationCreated, FormatText3(PickLocalizedTextVariant('GalaxyNews.CreateNewObject.MC', Galaxy.CurrentTurn div 10 * GetPlayer.DockedTo.Seed), '<color=255,240,100>',
         '<Name>', MedicalBase.GetName, '<Star>', MedicalBase.CurrentStar.Name, '<Sector>', MedicalBase.CurrentStar.Constellation.GetName));
       DialogText := LocalizedColorText('FormRuins.BK.Investment.BKAfterInvestment');
       ReplaceTextToken(DialogText, '<InvestmentText>', LocalizedColorText('Investment.' + CoalitionProjectNames[Kind] + '.Text'), '');
@@ -5206,7 +5206,7 @@ begin
         if (GetPlayer <> Ranger) and not Ranger.ExcludedFromRating and (Ranger.Wealth <= Galaxy.AverageRangerCapital) then
           Ranger.SetMoney(Ranger.Money + Round(StationServiceQuoteCost / Count));
       end;
-      Galaxy.AddPlanetNewsWithPlayerBubble(42, FormatText1(PickLocalizedTextVariant('Investment.' + CoalitionProjectNames[Kind] + '.GalaxyMessage', Integer(Kind) + Galaxy.CurrentTurn div 10 * GetPlayer.DockedTo.Seed), '<color=255,240,100>',
+      Galaxy.AddPlanetNewsWithPlayerBubble(gnCoalitionInvestment, FormatText1(PickLocalizedTextVariant('Investment.' + CoalitionProjectNames[Kind] + '.GalaxyMessage', Integer(Kind) + Galaxy.CurrentTurn div 10 * GetPlayer.DockedTo.Seed), '<color=255,240,100>',
         '<Money>', IntToStr(StationServiceQuoteCost)));
       DialogText := LocalizedColorText('FormRuins.BK.Investment.BKAfterInvestment');
       ReplaceTextToken(DialogText, '<InvestmentText>', LocalizedColorText('Investment.' + CoalitionProjectNames[Kind] + '.Text'), '');
@@ -5226,7 +5226,7 @@ begin
           if Ship.TypeId = stPirate then Ship.SetMoney(Ship.Money + StationServiceQuoteCost div Count);
         end;
       end;
-      Galaxy.AddPlanetNewsWithPlayerBubble(42, FormatText2(PickLocalizedTextVariant('Investment.' + CoalitionProjectNames[Kind] + '.GalaxyMessage', Integer(Kind) + Galaxy.CurrentTurn div 10 * GetPlayer.DockedTo.Seed), '<color=255,240,100>',
+      Galaxy.AddPlanetNewsWithPlayerBubble(gnCoalitionInvestment, FormatText2(PickLocalizedTextVariant('Investment.' + CoalitionProjectNames[Kind] + '.GalaxyMessage', Integer(Kind) + Galaxy.CurrentTurn div 10 * GetPlayer.DockedTo.Seed), '<color=255,240,100>',
         '<Money>', IntToStr(StationServiceQuoteCost), '<BK>', GetPlayer.DockedTo.Name));
       DialogText := LocalizedColorText('FormRuins.BK.Investment.BKAfterInvestment');
       ReplaceTextToken(DialogText, '<InvestmentText>', LocalizedColorText('Investment.' + CoalitionProjectNames[Kind] + '.Text'), '');
@@ -5246,7 +5246,7 @@ begin
           if Ship.TypeId = stTransport then Ship.SetMoney(Ship.Money + StationServiceQuoteCost div Count);
         end;
       end;
-      Galaxy.AddPlanetNewsWithPlayerBubble(42, FormatText2(PickLocalizedTextVariant('Investment.' + CoalitionProjectNames[Kind] + '.GalaxyMessage', Integer(Kind) + Galaxy.CurrentTurn div 10 * GetPlayer.DockedTo.Seed), '<color=255,240,100>',
+      Galaxy.AddPlanetNewsWithPlayerBubble(gnCoalitionInvestment, FormatText2(PickLocalizedTextVariant('Investment.' + CoalitionProjectNames[Kind] + '.GalaxyMessage', Integer(Kind) + Galaxy.CurrentTurn div 10 * GetPlayer.DockedTo.Seed), '<color=255,240,100>',
         '<Money>', IntToStr(StationServiceQuoteCost), '<BK>', GetPlayer.DockedTo.Name));
       DialogText := LocalizedColorText('FormRuins.BK.Investment.BKAfterInvestment');
       ReplaceTextToken(DialogText, '<InvestmentText>', LocalizedColorText('Investment.' + CoalitionProjectNames[Kind] + '.Text'), '');
@@ -5256,7 +5256,7 @@ begin
     cpLostSubsidy:
     begin
       GetPlayer.SetMoney(GetPlayer.Money - StationServiceQuoteCost);
-      Galaxy.AddPlanetNewsWithPlayerBubble(42, FormatText2(PickLocalizedTextVariant('Investment.' + CoalitionProjectNames[Kind] + '.GalaxyMessage', Integer(Kind) + Galaxy.CurrentTurn div 10 * GetPlayer.DockedTo.Seed), '<color=255,240,100>',
+      Galaxy.AddPlanetNewsWithPlayerBubble(gnCoalitionInvestment, FormatText2(PickLocalizedTextVariant('Investment.' + CoalitionProjectNames[Kind] + '.GalaxyMessage', Integer(Kind) + Galaxy.CurrentTurn div 10 * GetPlayer.DockedTo.Seed), '<color=255,240,100>',
         '<Money>', IntToStr(StationServiceQuoteCost), '<BK>', GetPlayer.DockedTo.Name));
       DialogText := LocalizedColorText('FormRuins.BK.Investment.BKAfterInvestment');
       ReplaceTextToken(DialogText, '<InvestmentText>', LocalizedColorText('Investment.' + CoalitionProjectNames[Kind] + '.Text'), '');
@@ -5283,7 +5283,7 @@ begin
       ReplaceTextToken(Text, '<Planet>', InvestmentDefensePlanet.Name, '<color=255,240,100>');
       ReplaceTextToken(Text, '<Star>', InvestmentDefensePlanet.CurrentStar.Name, '<color=255,240,100>');
       ReplaceTextToken(Text, '<Money>', IntToStr(StationServiceQuoteCost), '<color=255,240,100>');
-      Galaxy.AddPlanetNewsWithPlayerBubble(42, Text);
+      Galaxy.AddPlanetNewsWithPlayerBubble(gnCoalitionInvestment, Text);
       DialogText := LocalizedColorText('FormRuins.BK.Investment.BKAfterInvestment');
       ReplaceTextToken(DialogText, '<InvestmentText>', LocalizedColorText('Investment.' + CoalitionProjectNames[Kind] + '.Text'), '');
       ReplaceTextToken(DialogText, '<BK>', GetPlayer.DockedTo.Name, '<color=255,240,100>');

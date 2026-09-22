@@ -1270,8 +1270,8 @@ begin
         Amount := RoundAndTruncateToTens(NextRandomIntRange(100, 250, RandomState) / GalaxyDifficultyTuning[Galaxy.DifficultyLevels[7]].GoodsEventDurationFactor);
         Text := FormatText2(PickLocalizedTextVariant('GalaxyNews.EminentRangers.EminentTrader', Seed * Cardinal(Galaxy.CurrentTurn div 10)),
           '<color=255,240,100>', '<Name>', Name, '<Points>', IntToStr(Amount));
-        if GetPlayer = Self then Galaxy.AddPlanetNewsWithPlayerBubble(38, Text)
-        else Galaxy.AddPlanetNews(38, Text);
+        if GetPlayer = Self then Galaxy.AddPlanetNewsWithPlayerBubble(gnEminentTrader, Text)
+        else Galaxy.AddPlanetNews(gnEminentTrader, Text);
         EminentProgress[rcTrader] := 0;
         HalveAllRangerEminentProgress(rcTrader);
         GainExperience(Amount, 0);
@@ -1296,8 +1296,8 @@ begin
         Amount := RoundAndTruncateToTens(NextRandomIntRange(250, 1000, RandomState) * GalaxyDifficultyTuning[Galaxy.DifficultyLevels[7]].GoodsEventDurationFactor);
         Text := FormatText2(PickLocalizedTextVariant('GalaxyNews.EminentRangers.EminentPirate', Seed * Cardinal(Galaxy.CurrentTurn div 10)),
           '<color=255,240,100>', '<Name>', Name, '<Points>', IntToStr(Amount));
-        if GetPlayer = Self then Galaxy.AddPlanetNewsWithPlayerBubble(39, Text)
-        else Galaxy.AddPlanetNews(39, Text);
+        if GetPlayer = Self then Galaxy.AddPlanetNewsWithPlayerBubble(gnEminentPirate, Text)
+        else Galaxy.AddPlanetNews(gnEminentPirate, Text);
         EminentProgress[rcPirate] := 0;
         HalveAllRangerEminentProgress(rcPirate);
         RemoveExperience(Amount);
@@ -1322,8 +1322,8 @@ begin
         Amount := RoundAndTruncateToTens(NextRandomIntRange(250, 1000, RandomState) / GalaxyDifficultyTuning[Galaxy.DifficultyLevels[7]].GoodsEventDurationFactor);
         Text := FormatText2(PickLocalizedTextVariant('GalaxyNews.EminentRangers.EminentWarrior', Seed * Cardinal(Galaxy.CurrentTurn div 10)),
           '<color=255,240,100>', '<Name>', Name, '<Points>', IntToStr(Amount));
-        if GetPlayer = Self then Galaxy.AddPlanetNewsWithPlayerBubble(37, Text)
-        else Galaxy.AddPlanetNews(37, Text);
+        if GetPlayer = Self then Galaxy.AddPlanetNewsWithPlayerBubble(gnEminentWarrior, Text)
+        else Galaxy.AddPlanetNews(gnEminentWarrior, Text);
         EminentProgress[rcWarrior] := 0;
         HalveAllRangerEminentProgress(rcWarrior);
         GainExperience(Amount, 0);
@@ -2336,8 +2336,8 @@ var
       ReplaceTextToken(Text, '<Name>', GetName, '<color=255,240,100>');
       ReplaceTextToken(Text, '<FullName>', GetFullName(' '), '<color=255,240,100>');
       if (GetPlayer.CurrentStar = CurrentStar) and GetPlayer.InNormalSpace and (Galaxy.CoalitionDefeatedTurn = 0) then
-        Galaxy.AddPlanetNewsWithPlayerBubble(40, Text)
-      else Galaxy.AddPlanetNews(40, Text);
+        Galaxy.AddPlanetNewsWithPlayerBubble(gnImprisonment, Text)
+      else Galaxy.AddPlanetNews(gnImprisonment, Text);
     end;
   end;
 

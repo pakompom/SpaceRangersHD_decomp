@@ -554,7 +554,7 @@ type
     t_UselessCountableItem = 75
   ); // @size 0x1
 
-  TEquipmentInventionIndexTable = array[t_Hull..t_DefGenerator] of Byte;
+  TEquipmentInventionIndexTable = array[t_Hull..t_DefGenerator] of TPlanetInvention;
 
   PEquipmentInventionIndexTable = ^TEquipmentInventionIndexTable;
 
@@ -1223,10 +1223,10 @@ type
   tInventionInfo = record // @size 0x08
     Name: WideString; // @offset $00 Native initialization names the research levels.
     InitialLevel: Byte; // @offset 0x04
-    RequiredMainTechLevel: Byte; // @offset 0x05  Compared with InventionLevels[7], not ResearchLevelPercent.
+    RequiredMainTechLevel: Byte; // @offset 0x05  Compared with InventionLevels[piMainTech], not ResearchLevelPercent.
   end;
 
-  TPlanetInventionInfoTable = array[0..19] of tInventionInfo;
+  TPlanetInventionInfoTable = array[TPlanetInvention] of tInventionInfo;
 
   PPlanetInventionInfoTable = ^TPlanetInventionInfoTable;
 
@@ -1234,7 +1234,7 @@ var
   EquipmentBonusSkills: array[0..5] of TPilotSkill = (psAccuracy, psManeuverability, psTechnical, psTrading, psCharisma, psLeadership); // @addr $87F4A0 Maps bonSkill1..bonSkill6 to native pilot skills.
   EquipmentSizeFactors: TEquipmentSizeFactorTable = (2.0, 1.5, 1.0, 0.7, 0.5); // @addr $87F4A8
   WeaponRangeLevelFactors: TWeaponRangeLevelFactors = (0.9, 0.95, 0.95, 1.0, 1.0, 1.05, 1.05, 1.1); // @addr $87F4BC Native technology multiplier, immediately after EquipmentSizeFactors.
-  PlanetInventionInfo: array[0..19] of tInventionInfo = (
+  PlanetInventionInfo: array[TPlanetInvention] of tInventionInfo = (
     (Name: 'Hull level'; InitialLevel: 1; RequiredMainTechLevel: 1),
     (Name: 'FuelTanks level'; InitialLevel: 1; RequiredMainTechLevel: 1),
     (Name: 'Engine level'; InitialLevel: 1; RequiredMainTechLevel: 1),
@@ -1260,7 +1260,7 @@ type
     ItemType: TItemType; // @offset 0x00
     ConfigName: WideString; // @offset 0x04  Custom weapon configuration key.
     TechLevel: Byte; // @offset 0x08
-    InventionIndex: Byte; // @offset 0x09  Planetary invention used to determine the available weapon level.
+    InventionIndex: TPlanetInvention; // @offset 0x09  Planetary invention used to determine the available weapon level.
     CostFactor: Single; // @offset 0x0C
     MinDamage: Integer; // @offset 0x10
     MaxDamage: Integer; // @offset 0x14
@@ -1400,7 +1400,7 @@ var
   HullFragilityByType: array[0..10] of Single; // @addr $88B51C Loaded from mFragilityByShipType.
   WeaponInfos: array[t_Weapon1..t_Weapon18] of TWeaponInfo; // @addr 0x88B548
 var
-  EquipmentInventionIndices: TEquipmentInventionIndexTable = (0, 1, 2, 3, 4, 5, 6, 7); // @addr $87F57C
+  EquipmentInventionIndices: TEquipmentInventionIndexTable = (piHull, piFuelTanks, piEngine, piRadar, piScanner, piRepairRobot, piCargoHook, piMainTech); // @addr $87F57C
   CoalitionProjectNames: array[TCoalitionProject] of WideString = ('CreateRC', 'CreatePB', 'CreateWB', 'CreateSB', 'CreateBK', 'CreateMC', 'RangersSubsidy', 'PiratesSubsidy', 'TransportSubsidy', 'LostSubsidy', 'WarSubsidy', 'WarOperation'); // @addr $87F584
 type
   // Native record RTTI at $82CFAC.
@@ -2506,24 +2506,24 @@ begin
   WeaponInfos[t_Weapon9].SecondarySE := 'Weapon.Nine';
   WeaponInfos[t_Weapon13].SecondarySE := 'Weapon.12';
   WeaponInfos[t_Weapon14].AreaSE := 'Weapon.13';
-  WeaponInfos[t_Weapon1].InventionIndex := 8;
-  WeaponInfos[t_Weapon2].InventionIndex := 9;
-  WeaponInfos[t_Weapon3].InventionIndex := 10;
-  WeaponInfos[t_Weapon4].InventionIndex := 11;
-  WeaponInfos[t_Weapon5].InventionIndex := 12;
-  WeaponInfos[t_Weapon6].InventionIndex := 13;
-  WeaponInfos[t_Weapon7].InventionIndex := 14;
-  WeaponInfos[t_Weapon8].InventionIndex := 15;
-  WeaponInfos[t_Weapon9].InventionIndex := 16;
-  WeaponInfos[t_Weapon10].InventionIndex := 17;
-  WeaponInfos[t_Weapon11].InventionIndex := 18;
-  WeaponInfos[t_Weapon12].InventionIndex := 19;
-  WeaponInfos[t_Weapon13].InventionIndex := 19;
-  WeaponInfos[t_Weapon14].InventionIndex := 19;
-  WeaponInfos[t_Weapon15].InventionIndex := 19;
-  WeaponInfos[t_Weapon16].InventionIndex := 16;
-  WeaponInfos[t_Weapon17].InventionIndex := 10;
-  WeaponInfos[t_Weapon18].InventionIndex := 11;
+  WeaponInfos[t_Weapon1].InventionIndex := piWeapon1;
+  WeaponInfos[t_Weapon2].InventionIndex := piWeapon2;
+  WeaponInfos[t_Weapon3].InventionIndex := piWeapon3;
+  WeaponInfos[t_Weapon4].InventionIndex := piWeapon4;
+  WeaponInfos[t_Weapon5].InventionIndex := piWeapon5;
+  WeaponInfos[t_Weapon6].InventionIndex := piWeapon6;
+  WeaponInfos[t_Weapon7].InventionIndex := piWeapon7;
+  WeaponInfos[t_Weapon8].InventionIndex := piWeapon8;
+  WeaponInfos[t_Weapon9].InventionIndex := piWeapon9;
+  WeaponInfos[t_Weapon10].InventionIndex := piWeapon10;
+  WeaponInfos[t_Weapon11].InventionIndex := piWeapon11;
+  WeaponInfos[t_Weapon12].InventionIndex := piWeapon12;
+  WeaponInfos[t_Weapon13].InventionIndex := piWeapon12;
+  WeaponInfos[t_Weapon14].InventionIndex := piWeapon12;
+  WeaponInfos[t_Weapon15].InventionIndex := piWeapon12;
+  WeaponInfos[t_Weapon16].InventionIndex := piWeapon9;
+  WeaponInfos[t_Weapon17].InventionIndex := piWeapon3;
+  WeaponInfos[t_Weapon18].InventionIndex := piWeapon4;
   WeaponInfos[t_Weapon13].Availability := waNotSoldAndNodeRepair;
   WeaponInfos[t_Weapon14].Availability := waNotSoldAndNodeRepair;
   WeaponInfos[t_Weapon15].Availability := waNotSoldAndNodeRepair;

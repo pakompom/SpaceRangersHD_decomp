@@ -288,6 +288,31 @@ type
   TRangerCareer = (rcTrader = 0, rcPirate = 1, rcWarrior = 2); // @size 0x1
   TRangerCareerSet = set of TRangerCareer; // @size 0x1
 
+  // PlanetInventionInfo ($87F4DC) and EquipmentInventionIndices ($87F57C).
+  // Research-track IDs are distinct from item types and numeric technology levels.
+  TPlanetInvention = (
+    piHull = 0,
+    piFuelTanks = 1,
+    piEngine = 2,
+    piRadar = 3,
+    piScanner = 4,
+    piRepairRobot = 5,
+    piCargoHook = 6,
+    piMainTech = 7,
+    piWeapon1 = 8,
+    piWeapon2 = 9,
+    piWeapon3 = 10,
+    piWeapon4 = 11,
+    piWeapon5 = 12,
+    piWeapon6 = 13,
+    piWeapon7 = 14,
+    piWeapon8 = 15,
+    piWeapon9 = 16,
+    piWeapon10 = 17,
+    piWeapon11 = 18,
+    piWeapon12 = 19
+  ); // @size $01
+
   TGalaxyDifficultyIndex = 0..7;
   TDifficultyLevel = 0..9; // @size $01
   TGalaxyDifficultyLevels = array[0..7] of TDifficultyLevel;
@@ -521,11 +546,62 @@ type
     FactionStrengthCacheTurn: Integer; // @offset $18
   end;
 
+  // GalaxyNews producers and CountPlanetNewsByType ($7BB6E8) share these IDs.
+  // Distinct from pm* player-message presentation kinds.
+  TGalaxyNewsKind = (
+    gnScript = 0,
+    gnRevolutionAnarchy = 1,
+    gnRevolutionDictatorship = 2,
+    gnRevolutionMonarchy = 3,
+    gnRevolutionRepublic = 4,
+    gnRevolutionDemocracy = 5,
+    gnMineralDeposit = 6,
+    gnMineralShortage = 7,
+    gnArmsSurplus = 8,
+    gnArmsShortage = 9,
+    gnTechnicsSurplus = 10,
+    gnFoodSurplus = 11,
+    gnFoodShortage = 12,
+    gnMedicineSurplus = 13,
+    gnLuxurySurplus = 14,
+    gnLuxuryShortage = 15,
+    gnAlcoholSurplus = 16,
+    gnAlcoholShortage = 17,
+    gnTransportActivity = 18,
+    gnManyPirates = 19,
+    gnSomePirates = 20,
+    gnNoPirates = 21,
+    gnManyRangers = 22,
+    gnEminentRangerLocation = 23,
+    gnDominatorAttack = 24,
+    gnDominatorAttackRepelled = 25,
+    gnLiberationGroupCreated = 26,
+    gnPirateAttack = 27,
+    gnPirateAttackRepelled = 28,
+    gnCoalitionTakesDominatorSystem = 29,
+    gnCoalitionTakesPirateSystem = 30,
+    gnPiratesTakeDominatorSystem = 31,
+    gnPiratesTakeCoalitionSystem = 32,
+    gnDominatorsTakeCoalitionSystem = 33,
+    gnDominatorsTakePirateSystem = 34,
+    gnCoalitionDefeated = 35,
+    gnWormholeCreated = 36,
+    gnEminentWarrior = 37,
+    gnEminentTrader = 38,
+    gnEminentPirate = 39,
+    gnImprisonment = 40,
+    gnStationCreated = 41,
+    gnCoalitionInvestment = 42,
+    gnDominatorResearchCompleted = 43,
+    gnStationSpecialShip = 44,
+    gnMilitaryBaseOperation = 45
+  ); // @size $01
+
   // Native record RTTI at $4DB4BC.
   TPlanetNews = record // @size 0x10
     Id: Cardinal; // @offset 0x00
     Turn: Integer; // @offset 0x04
-    NewsType: Byte; // @offset 0x08
+    NewsType: TGalaxyNewsKind; // @offset 0x08
     Text: WideString; // @offset 0x0C
   end;
 

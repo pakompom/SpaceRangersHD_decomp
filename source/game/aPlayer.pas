@@ -686,7 +686,7 @@ begin
     NewsEntries.Add(News);
     News.Id := Buffer.GetUInt32;
     News.Turn := Buffer.GetUInt32;
-    News.NewsType := Buffer.GetByte;
+    News.NewsType := TGalaxyNewsKind(Buffer.GetByte);
     News.Text := Buffer.ReadWideString;
   end;
   PendingDockDialogue := Buffer.GetByte;

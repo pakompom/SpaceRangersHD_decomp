@@ -977,13 +977,13 @@ begin
       begin
         Text := FormatText3(PickLocalizedTextVariant('GalaxyNews.Globals.NormalsTakeSystemFromKling', SourceShip.Seed * (Galaxy.CurrentTurn div 10)),
           '<color=255,240,100>', '<Star>', Star.Name, '<Sector>', Star.Constellation.GetName, '<Planet>', CeremonyPlanet.Name);
-        Galaxy.AddPlanetNews(29, Text);
+        Galaxy.AddPlanetNews(gnCoalitionTakesDominatorSystem, Text);
       end
       else
       begin
         Text := FormatText3(PickLocalizedTextVariant('GalaxyNews.Globals.NormalsTakeSystemFromPirateClan', SourceShip.Seed * (Galaxy.CurrentTurn div 10)),
           '<color=255,240,100>', '<Star>', Star.Name, '<Sector>', Star.Constellation.GetName, '<Planet>', CeremonyPlanet.Name);
-        Galaxy.AddPlanetNews(30, Text);
+        Galaxy.AddPlanetNews(gnCoalitionTakesPirateSystem, Text);
       end;
       with AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn, Text, '') do
       begin
@@ -1039,7 +1039,7 @@ begin
     begin
       Text := FormatText3(PickLocalizedTextVariant('GalaxyNews.Globals.PirateClanTakeSystemFromNormals', SourceShip.Seed * (Galaxy.CurrentTurn div 10)),
           '<color=255,240,100>', '<Star>', Star.Name, '<Sector>', Star.Constellation.GetName, '<Planet>', CeremonyPlanet.Name);
-      if Galaxy.CoalitionDefeatedTurn = 0 then Galaxy.AddPlanetNews(32, Text);
+      if Galaxy.CoalitionDefeatedTurn = 0 then Galaxy.AddPlanetNews(gnPiratesTakeCoalitionSystem, Text);
     end
     else
     begin
@@ -1049,7 +1049,7 @@ begin
       else
         Text := FormatText3(PickLocalizedTextVariant('GalaxyNews.Globals.PirateClanTakeSystemFromKlingAlt', SourceShip.Seed * (Galaxy.CurrentTurn div 10)),
           '<color=255,240,100>', '<Star>', Star.Name, '<Sector>', Star.Constellation.GetName, '<Planet>', CeremonyPlanet.Name);
-      if Galaxy.CoalitionDefeatedTurn = 0 then Galaxy.AddPlanetNews(31, Text);
+      if Galaxy.CoalitionDefeatedTurn = 0 then Galaxy.AddPlanetNews(gnPiratesTakeDominatorSystem, Text);
     end;
     with AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn, Text, '') do
       begin

@@ -1803,7 +1803,7 @@ begin
   else DockedTo := TObject(Galaxy.IdToShip(Cardinal(DockedTo), True)) as TShip;
   HomePlanet := TObject(Galaxy.IdToPlanet(Cardinal(HomePlanet))) as TPlanet;
   if (LoadedSaveVersion < 146) and (HomePlanet <> nil) then
-    TechKnowledge := Max(TechKnowledge, HomePlanet.InventionLevels[7]);
+    TechKnowledge := Max(TechKnowledge, HomePlanet.InventionLevels[piMainTech]);
   if PickupTargets <> nil then
   begin
     Count := PickupTargets.Count;
