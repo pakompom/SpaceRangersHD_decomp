@@ -175,9 +175,9 @@ begin
     Stage := 2;
     ShipToInspect := ScannerTarget as TShip;
     Stage := 3;
-    if GetPlayer <> nil then GetPlayer.ScriptItemsAct($10, ShipToInspect, nil, 0);
+    if GetPlayer <> nil then GetPlayer.ScriptItemsAct(satOnScan, ShipToInspect, nil, 0);
     Stage := 4;
-    ShipToInspect.ScriptItemsAct($18, nil, nil, 0);
+    ShipToInspect.ScriptItemsAct(satOnEnteringForm, nil, nil, 0);
     Stage := 5;
     CompactHullInfo := ShipToInspect.TypeId in [Ord(rstRangerCenter)..Ord(rstCustomStation)];
     Stage := 6;
@@ -635,7 +635,7 @@ begin
       if Sender.UserData <> 0 then
       begin
         Info := PCustomShipInfo(Sender.UserData);
-        RunCustomShipInfoActionCode(Info, $31, ShipToInspect, nil, nil, 0);
+        RunCustomShipInfoActionCode(Info, satOnShowingItemInfo, ShipToInspect, nil, nil, 0);
         Description := Info.Description;
         if Description = '' then Description := LocalizedColorText('ShipInfo.AddInfo.CustomInfos.' + Info.TypeName + '.Description');
         ReplaceTextToken(Description, '<Data1>', IntToStr(Info.Data[1]), '<color=255,240,100>');
@@ -1287,8 +1287,8 @@ begin
     end;
     if (Galaxy <> nil) and not Galaxy.Destroying and (GetPlayer <> nil) then
     begin
-      if Item.ScriptItem <> nil then TScriptItem(Item.ScriptItem).RunActionCode($31, ShipToInspect, nil, nil, 0);
-      if Item is TEquipmentWithActCode then RunItemConfigActionCode(Item, $31, ShipToInspect, nil, nil, 0);
+      if Item.ScriptItem <> nil then TScriptItem(Item.ScriptItem).RunActionCode(satOnShowingItemInfo, ShipToInspect, nil, nil, 0);
+      if Item is TEquipmentWithActCode then RunItemConfigActionCode(Item, satOnShowingItemInfo, ShipToInspect, nil, nil, 0);
     end;
     if (Item.ItemType = t_Hull) and (ShipToInspect.TypeId <> stTranclucator) and (ShipToInspect.TypeId <> stKling) and not CompactHullInfo then
     begin

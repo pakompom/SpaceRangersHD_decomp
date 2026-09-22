@@ -27,7 +27,7 @@ const
 
 type
 
-  TScriptActionTypeSet = set of 0..61; // @size $08
+  TScriptActionTypeSet = set of TScriptActionType; // @size $08
   TScriptStepTypeSet = set of 0..11; // @size $02
   TScriptShipTypeMask = set of 0..15; // @size 0x02
   TScriptDominatorMasks = array[0..7] of TDominatorSeriesMask; // TKlingType index; TDominatorSeries bits.
@@ -168,7 +168,7 @@ type
     Hit: Boolean; // @offset 0x29
     HitPlayer: Boolean; // @offset 0x2A
     function GetGroup: TScriptGroup; // @addr 0x64FB00
-    function RunActionCode(ActionType: Byte; Ship: TShip; Object1, Object2: TObject; Param: Integer): Integer; // @addr 0x65B30C @note "Returns the event parameter after script changes. Object slots can carry event-specific integers."
+    function RunActionCode(ActionType: TScriptActionType; Ship: TShip; Object1, Object2: TObject; Param: Integer): Integer; // @addr 0x65B30C @note "Returns the event parameter after script changes. Object slots can carry event-specific integers."
 
     constructor Create; // @addr 0x64FA6C
     destructor Destroy; override; // @addr 0x64FAB0
@@ -221,7 +221,7 @@ type
     ActionCodeInitialized: Boolean; // @offset 0x5E
     Script: TScript; // @offset 0x60
     procedure CompileActionCode; // @addr 0x65ABC4 @note "Requires nonempty OnActionText and an empty ActionCode slot."
-    function RunActionCode(ActionType: Byte; Ship: TShip; Object1, Object2: TObject; Param: Integer): Integer; // @addr 0x65AF44 @note "Returns the event parameter after script changes. Object slots can carry event-specific integers."
+    function RunActionCode(ActionType: TScriptActionType; Ship: TShip; Object1, Object2: TObject; Param: Integer): Integer; // @addr 0x65AF44 @note "Returns the event parameter after script changes. Object slots can carry event-specific integers."
     function FormatDataText(Text, ColorTag: WideString): WideString; // @addr 0x65C114
 
     constructor Create; // @addr 0x650228
@@ -562,8 +562,8 @@ procedure ExecuteGameplayUiCode(Block: TBlockParEC; VirtualKey: Cardinal); // @a
 procedure ScriptSnap(out Snapshot: TScriptContextSnapshot); // @addr 0x65AABC @note "When CurrentScript is nil, only Snapshot.Script is written."
 procedure ScriptUnSnap(Snapshot: TScriptContextSnapshot); // @addr 0x65AB28
 function RunItemUseCode(Item: TItem; Ship: TShip): Integer; // @addr 0x65B66C @note "Returns ScriptItemActParam, initially zero."
-function RunItemConfigActionCode(Item: TItem; ActionType: Byte; Ship: TShip; Object1, Object2: TObject; Param: Integer): Integer; // @addr 0x65B880 @note "Uses artifact or useless-item configuration code. Object slots can carry event-specific integers."
-function RunCustomShipInfoActionCode(Info: PCustomShipInfo; ActionType: Byte; Ship: TShip; Object1, Object2: TObject; Param: Integer): Integer; // @addr 0x65BC78 @note "Returns the event parameter after script changes. Object slots can carry event-specific integers."
+function RunItemConfigActionCode(Item: TItem; ActionType: TScriptActionType; Ship: TShip; Object1, Object2: TObject; Param: Integer): Integer; // @addr 0x65B880 @note "Uses artifact or useless-item configuration code. Object slots can carry event-specific integers."
+function RunCustomShipInfoActionCode(Info: PCustomShipInfo; ActionType: TScriptActionType; Ship: TShip; Object1, Object2: TObject; Param: Integer): Integer; // @addr 0x65BC78 @note "Returns the event parameter after script changes. Object slots can carry event-specific integers."
 function GetScriptContextDescription: WideString; // @addr 0x65C308
 
 implementation
@@ -2772,7 +2772,7 @@ var
     SourceText, ActionTypes, StepTypes: WideString;
     I, Count: Integer;
     Step: Cardinal;
-    Action: Byte;
+    Action: TScriptActionType;
   begin
     if State.OnActionText[1] = '[' then
     begin
@@ -4661,7 +4661,7 @@ end;
 { @routine $65A350 TScriptCacheUnit_Initialize }
 procedure TScriptCacheUnit.Initialize(Name, SourceText, ActionTypes, StepTypes: WideString);
 var
-  Action: Byte;
+  Action: TScriptActionType;
   I: Integer;
   Step: Cardinal;
   Count: Integer;
@@ -4809,7 +4809,7 @@ var
   I: Integer;
   Step: Cardinal;
   Count: Integer;
-  Action: Byte;
+  Action: TScriptActionType;
   SourceText, ActionTypes, StepTypes: WideString;
 begin
   ActionCodeInitialized := True;
@@ -4857,7 +4857,7 @@ end;
 { @end $65ABC4 }
 
 { @routine $65AF44 TScriptItem_RunActionCode }
-function TScriptItem.RunActionCode(ActionType: Byte; Ship: TShip; Object1, Object2: TObject; Param: Integer): Integer;
+function TScriptItem.RunActionCode(ActionType: TScriptActionType; Ship: TShip; Object1, Object2: TObject; Param: Integer): Integer;
 var
   Snapshot: TScriptContextSnapshot;
 begin
@@ -4878,7 +4878,7 @@ begin
         Script.PublishCurrentShip(Ship);
         ScriptItemContextStack.Add(Item);
         ScriptItemInfoContextStack.Add(nil);
-        ScriptActionTypeStack.Add(Pointer(ActionType));
+        ScriptActionTypeStack.Add(Pointer(Ord(ActionType)));
         ScriptActionObject1Stack.Add(Object1);
         ScriptActionObject2Stack.Add(Object2);
         ScriptActionParamStack.Add(Pointer(Param));
@@ -4908,7 +4908,7 @@ end;
 { @end $65AF44 }
 
 { @routine $65B30C TScriptShip_RunActionCode }
-function TScriptShip.RunActionCode(ActionType: Byte; Ship: TShip; Object1, Object2: TObject; Param: Integer): Integer;
+function TScriptShip.RunActionCode(ActionType: TScriptActionType; Ship: TShip; Object1, Object2: TObject; Param: Integer): Integer;
 var
   Snapshot: TScriptContextSnapshot;
 begin
@@ -4921,7 +4921,7 @@ begin
           Script.PublishCurrentShip(Ship);
           ScriptItemContextStack.Add(nil);
           ScriptItemInfoContextStack.Add(nil);
-          ScriptActionTypeStack.Add(Pointer(ActionType));
+          ScriptActionTypeStack.Add(Pointer(Ord(ActionType)));
           ScriptActionObject1Stack.Add(Object1);
           ScriptActionObject2Stack.Add(Object2);
           ScriptActionParamStack.Add(Pointer(Param));
@@ -4994,7 +4994,7 @@ end;
 { @end $65B66C }
 
 { @routine $65B880 RunItemConfigActionCode }
-function RunItemConfigActionCode(Item: TItem; ActionType: Byte; Ship: TShip; Object1, Object2: TObject; Param: Integer): Integer;
+function RunItemConfigActionCode(Item: TItem; ActionType: TScriptActionType; Ship: TShip; Object1, Object2: TObject; Param: Integer): Integer;
 var
   Entry: TScriptCacheUnit;
   Binding: TScriptItem;
@@ -5014,7 +5014,7 @@ begin
         try
           ScriptItemContextStack.Add(Item);
           ScriptItemInfoContextStack.Add(nil);
-          ScriptActionTypeStack.Add(Pointer(ActionType));
+          ScriptActionTypeStack.Add(Pointer(Ord(ActionType)));
           ScriptActionObject1Stack.Add(Object1);
           ScriptActionObject2Stack.Add(Object2);
           ScriptActionParamStack.Add(Pointer(Param));
@@ -5051,7 +5051,7 @@ end;
 { @end $65B880 }
 
 { @routine $65BC78 RunCustomShipInfoActionCode }
-function RunCustomShipInfoActionCode(Info: PCustomShipInfo; ActionType: Byte; Ship: TShip; Object1, Object2: TObject; Param: Integer): Integer;
+function RunCustomShipInfoActionCode(Info: PCustomShipInfo; ActionType: TScriptActionType; Ship: TShip; Object1, Object2: TObject; Param: Integer): Integer;
 var
   Config: TBlockParEC;
   Entry: TScriptCacheUnit;
@@ -5082,7 +5082,7 @@ begin
       begin
         ScriptItemContextStack.Add(nil);
         ScriptItemInfoContextStack.Add(Info);
-        ScriptActionTypeStack.Add(Pointer(ActionType));
+        ScriptActionTypeStack.Add(Pointer(Ord(ActionType)));
         ScriptActionObject1Stack.Add(Object1);
         ScriptActionObject2Stack.Add(Object2);
         ScriptActionParamStack.Add(Pointer(Param));

@@ -5753,7 +5753,7 @@ begin
         end;
         Ship.RefreshAssignedItemSlots;
         Ship.RefreshDerivedStats(True);
-        Ship.ScriptItemsAct($34, nil, nil, 0);
+        Ship.ScriptItemsAct(satOnNonStandartEqChange, nil, nil, 0);
       end;
     end;
   end;
@@ -13868,14 +13868,14 @@ end;
 { @routine $637908 SF_CreateActCodeEvent }
 procedure SF_CreateActCodeEvent(av: array of TVarEC; code: TCodeEC);
 var
-  ActionType: Byte;
+  ActionType: TScriptActionType;
   Obj, Object1, Object2: TObject;
   Info: PCustomShipInfo;
   Ship: TShip;
   Param, I: Integer;
 begin
   if High(av) < 2 then raise Exception.Create('Error.Script CreateActCodeEvent');
-  ActionType := av[1].GetInt;
+  ActionType := TScriptActionType(av[1].GetInt);
   if av[2].RealVType = vkString then
   begin
     if High(av) < 3 then raise Exception.Create('Error.Script CreateActCodeEvent cant call info without ship');
@@ -15651,7 +15651,7 @@ end;
 procedure InitializeScriptBuiltinsAndConstants(Scope: TVarArrayEC);
 var
   WeaponIndex: Integer;
-  ActionIndex: Byte;
+  ActionIndex: TScriptActionType;
   BonusIndex: TEquipmentBonusKind;
 begin
   RegisterExpressionBuiltins(Scope);
@@ -16413,8 +16413,8 @@ begin
   Scope.Add('TalkPartnerRiot', vkInt).SetInt(Ord(tkPartnerRiot));
   for BonusIndex := Low(TEquipmentBonusKind) to High(TEquipmentBonusKind) do
     Scope.Add(EquipmentBonusNames[BonusIndex], vkInt).SetInt(Ord(BonusIndex));
-  for ActionIndex := 0 to 61 do
-    Scope.Add(ScriptActionTypeNames[ActionIndex], vkInt).SetInt(ActionIndex);
+  for ActionIndex := Low(TScriptActionType) to High(TScriptActionType) do
+    Scope.Add(ScriptActionTypeNames[ActionIndex], vkInt).SetInt(Ord(ActionIndex));
   ScriptRequestThread := TScriptThread.Create;
   ScriptRequestThread.SetPriority(2);
   ScriptItemContextStack := TList.Create;

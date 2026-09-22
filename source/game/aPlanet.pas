@@ -4999,23 +4999,23 @@ begin
     if Rules[RuleIndex].Goods <> 42 then Good := Rules[RuleIndex].Goods;
     Greeting := LocalizedColorText('GovGreetings.' + Rules[RuleIndex].Name + '.Text');
     if (Rules[RuleIndex].CurPlanetRace <> []) and not (RaceId in Rules[RuleIndex].CurPlanetRace) then Continue;
-    if Rules[RuleIndex].CurPlanetPirateClan <> 2 then
+    if Rules[RuleIndex].CurPlanetPirateClan <> gcAny then
     begin
-      if (Rules[RuleIndex].CurPlanetPirateClan = 0) and (OwnerId <> oiPirate) then Continue;
-      if (Rules[RuleIndex].CurPlanetPirateClan = 1) and (OwnerId = oiPirate) then Continue;
+      if (Rules[RuleIndex].CurPlanetPirateClan = gcYes) and (OwnerId <> oiPirate) then Continue;
+      if (Rules[RuleIndex].CurPlanetPirateClan = gcNo) and (OwnerId = oiPirate) then Continue;
     end;
-    if Rules[RuleIndex].CurPlanetRaceIsPlayerRace <> 2 then
+    if Rules[RuleIndex].CurPlanetRaceIsPlayerRace <> gcAny then
     begin
-      if (Rules[RuleIndex].CurPlanetRaceIsPlayerRace = 0) and (GetPlayer.PilotRace <> RaceId) then Continue;
-      if (Rules[RuleIndex].CurPlanetRaceIsPlayerRace = 1) and (GetPlayer.PilotRace = RaceId) then Continue;
+      if (Rules[RuleIndex].CurPlanetRaceIsPlayerRace = gcYes) and (GetPlayer.PilotRace <> RaceId) then Continue;
+      if (Rules[RuleIndex].CurPlanetRaceIsPlayerRace = gcNo) and (GetPlayer.PilotRace = RaceId) then Continue;
     end;
     if (Rules[RuleIndex].CurPlanetRelations <> []) and not (GetRelationLevelToShip(GetPlayer) in Rules[RuleIndex].CurPlanetRelations) then Continue;
     if Good <> 50 then
     begin
-      if Rules[RuleIndex].CurPlanetGoodsPermit <> 2 then
+      if Rules[RuleIndex].CurPlanetGoodsPermit <> gcAny then
       begin
-        if (Rules[RuleIndex].CurPlanetGoodsPermit = 0) and (not GoodsLegalOnPlanet[Good, RaceId, Government]) then Continue;
-        if (Rules[RuleIndex].CurPlanetGoodsPermit = 1) and (GoodsLegalOnPlanet[Good, RaceId, Government] = True) then Continue;
+        if (Rules[RuleIndex].CurPlanetGoodsPermit = gcYes) and (not GoodsLegalOnPlanet[Good, RaceId, Government]) then Continue;
+        if (Rules[RuleIndex].CurPlanetGoodsPermit = gcNo) and (GoodsLegalOnPlanet[Good, RaceId, Government] = True) then Continue;
       end;
       if (Rules[RuleIndex].CurPlanetGoodsCnt <> []) and not (aGalaxy.Galaxy.ClassifyGoodsQuantity(Goods[Good].Count, Good) in Rules[RuleIndex].CurPlanetGoodsCnt) then Continue;
       if (Rules[RuleIndex].CurPlanetGoodsSale <> []) and not (aGalaxy.Galaxy.ClassifyGoodsPrice(GetPlayer.ShopGoodsPurchasePrice(Good, nil), Good) in Rules[RuleIndex].CurPlanetGoodsSale) then Continue;
@@ -5051,25 +5051,25 @@ begin
       end;
     end;
     if Rejected then Continue;
-    if Rules[RuleIndex].CurStarInBattle <> 2 then
+    if Rules[RuleIndex].CurStarInBattle <> gcAny then
     begin
-      if (Rules[RuleIndex].CurStarInBattle = 0) and (not (Boolean(CurrentStar.Battle) and DominatorsPresent)) then Continue;
-      if (Rules[RuleIndex].CurStarInBattle = 1) and (Boolean(CurrentStar.Battle) and DominatorsPresent) then Continue;
+      if (Rules[RuleIndex].CurStarInBattle = gcYes) and (not (Boolean(CurrentStar.Battle) and DominatorsPresent)) then Continue;
+      if (Rules[RuleIndex].CurStarInBattle = gcNo) and (Boolean(CurrentStar.Battle) and DominatorsPresent) then Continue;
     end;
-    if Rules[RuleIndex].CurStarInBattlePirates <> 2 then
+    if Rules[RuleIndex].CurStarInBattlePirates <> gcAny then
     begin
-      if (Rules[RuleIndex].CurStarInBattlePirates = 0) and (not (Boolean(CurrentStar.Battle) and PiratesPresent)) then Continue;
-      if (Rules[RuleIndex].CurStarInBattlePirates = 1) and (Boolean(CurrentStar.Battle) and PiratesPresent) then Continue;
+      if (Rules[RuleIndex].CurStarInBattlePirates = gcYes) and (not (Boolean(CurrentStar.Battle) and PiratesPresent)) then Continue;
+      if (Rules[RuleIndex].CurStarInBattlePirates = gcNo) and (Boolean(CurrentStar.Battle) and PiratesPresent) then Continue;
     end;
-    if Rules[RuleIndex].CoalitionAlreadyDefeated <> 2 then
+    if Rules[RuleIndex].CoalitionAlreadyDefeated <> gcAny then
     begin
-      if (Rules[RuleIndex].CoalitionAlreadyDefeated = 0) and (aGalaxy.Galaxy.CoalitionDefeatedTurn = 0) then Continue;
-      if (Rules[RuleIndex].CoalitionAlreadyDefeated = 1) and (aGalaxy.Galaxy.CoalitionDefeatedTurn <> 0) then Continue;
+      if (Rules[RuleIndex].CoalitionAlreadyDefeated = gcYes) and (aGalaxy.Galaxy.CoalitionDefeatedTurn = 0) then Continue;
+      if (Rules[RuleIndex].CoalitionAlreadyDefeated = gcNo) and (aGalaxy.Galaxy.CoalitionDefeatedTurn <> 0) then Continue;
     end;
-    if Rules[RuleIndex].DominatorsAlreadyDefeated <> 2 then
+    if Rules[RuleIndex].DominatorsAlreadyDefeated <> gcAny then
     begin
-      if (Rules[RuleIndex].DominatorsAlreadyDefeated = 0) and (aGalaxy.Galaxy.HasUnresolvedDominatorSeries([dsBlazer, dsKeller, dsTerron])) then Continue;
-      if (Rules[RuleIndex].DominatorsAlreadyDefeated = 1) and (not aGalaxy.Galaxy.HasUnresolvedDominatorSeries([dsBlazer, dsKeller, dsTerron])) then Continue;
+      if (Rules[RuleIndex].DominatorsAlreadyDefeated = gcYes) and (aGalaxy.Galaxy.HasUnresolvedDominatorSeries([dsBlazer, dsKeller, dsTerron])) then Continue;
+      if (Rules[RuleIndex].DominatorsAlreadyDefeated = gcNo) and (not aGalaxy.Galaxy.HasUnresolvedDominatorSeries([dsBlazer, dsKeller, dsTerron])) then Continue;
     end;
     if Rules[RuleIndex].ToPlanetRace <> [] then
     begin
@@ -5080,10 +5080,10 @@ begin
         if not Star.IsConstellationVisible then Continue;
         if Star.Constellation.Id = 20 then Continue;
         if Star.Status.CustomFaction <> '' then Continue;
-        if Rules[RuleIndex].ToPlanetInCurStar <> 2 then
+        if Rules[RuleIndex].ToPlanetInCurStar <> gcAny then
         begin
-          if (Rules[RuleIndex].ToPlanetInCurStar = 0) and (CurrentStar <> Star) then Continue;
-          if (Rules[RuleIndex].ToPlanetInCurStar = 1) and (CurrentStar = Star) then Continue;
+          if (Rules[RuleIndex].ToPlanetInCurStar = gcYes) and (CurrentStar <> Star) then Continue;
+          if (Rules[RuleIndex].ToPlanetInCurStar = gcNo) and (CurrentStar = Star) then Continue;
         end;
         Rejected := False;
         for ShipType := 0 to 4 do
@@ -5113,15 +5113,15 @@ begin
           end;
         end;
         if Rejected then Continue;
-        if Rules[RuleIndex].ToStarControlByKling <> 2 then
+        if Rules[RuleIndex].ToStarControlByKling <> gcAny then
         begin
-          if (Rules[RuleIndex].ToStarControlByKling = 0) and (Star.ControlFaction <> sfDominators) then Continue;
-          if (Rules[RuleIndex].ToStarControlByKling = 1) and (Star.ControlFaction <> sfCoalition) then Continue;
+          if (Rules[RuleIndex].ToStarControlByKling = gcYes) and (Star.ControlFaction <> sfDominators) then Continue;
+          if (Rules[RuleIndex].ToStarControlByKling = gcNo) and (Star.ControlFaction <> sfCoalition) then Continue;
         end;
-        if Rules[RuleIndex].ToStarInBattle <> 2 then
+        if Rules[RuleIndex].ToStarInBattle <> gcAny then
         begin
-          if (Rules[RuleIndex].ToStarInBattle = 0) and (not Boolean(Star.Battle)) then Continue;
-          if (Rules[RuleIndex].ToStarInBattle = 1) and (Boolean(Star.Battle)) then Continue;
+          if (Rules[RuleIndex].ToStarInBattle = gcYes) and (not Boolean(Star.Battle)) then Continue;
+          if (Rules[RuleIndex].ToStarInBattle = gcNo) and (Boolean(Star.Battle)) then Continue;
         end;
         for I := 0 to Star.Planets.Count - 1 do
         begin
@@ -5129,15 +5129,15 @@ begin
           if Planet = Self then Continue;
           if not (Planet.OwnerId in [oiMaloc..oiGaal, oiPirate]) then Continue;
           if not (Planet.RaceId in Rules[RuleIndex].ToPlanetRace) then Continue;
-          if Rules[RuleIndex].ToPlanetRaceIsPlayerRace <> 2 then
+          if Rules[RuleIndex].ToPlanetRaceIsPlayerRace <> gcAny then
           begin
-            if (Rules[RuleIndex].ToPlanetRaceIsPlayerRace = 0) and (GetPlayer.PilotRace <> Planet.RaceId) then Continue;
-            if (Rules[RuleIndex].ToPlanetRaceIsPlayerRace = 1) and (GetPlayer.PilotRace = Planet.RaceId) then Continue;
+            if (Rules[RuleIndex].ToPlanetRaceIsPlayerRace = gcYes) and (GetPlayer.PilotRace <> Planet.RaceId) then Continue;
+            if (Rules[RuleIndex].ToPlanetRaceIsPlayerRace = gcNo) and (GetPlayer.PilotRace = Planet.RaceId) then Continue;
           end;
-          if Rules[RuleIndex].ToPlanetRaceIsCurPlanetRace <> 2 then
+          if Rules[RuleIndex].ToPlanetRaceIsCurPlanetRace <> gcAny then
           begin
-            if (Rules[RuleIndex].ToPlanetRaceIsCurPlanetRace = 0) and (RaceId <> Planet.RaceId) then Continue;
-            if (Rules[RuleIndex].ToPlanetRaceIsCurPlanetRace = 1) and (RaceId = Planet.RaceId) then Continue;
+            if (Rules[RuleIndex].ToPlanetRaceIsCurPlanetRace = gcYes) and (RaceId <> Planet.RaceId) then Continue;
+            if (Rules[RuleIndex].ToPlanetRaceIsCurPlanetRace = gcNo) and (RaceId = Planet.RaceId) then Continue;
           end;
           if Rules[RuleIndex].ToPlanetRelations <> [] then
           begin
@@ -5146,10 +5146,10 @@ begin
           end;
           if Good <> 50 then
           begin
-            if Rules[RuleIndex].ToPlanetGoodsPermit <> 2 then
+            if Rules[RuleIndex].ToPlanetGoodsPermit <> gcAny then
             begin
-              if (Rules[RuleIndex].ToPlanetGoodsPermit = 0) and (not GoodsLegalOnPlanet[Good, Planet.RaceId, Planet.Government]) then Continue;
-              if (Rules[RuleIndex].ToPlanetGoodsPermit = 1) and (GoodsLegalOnPlanet[Good, Planet.RaceId, Planet.Government] = True) then Continue;
+              if (Rules[RuleIndex].ToPlanetGoodsPermit = gcYes) and (not GoodsLegalOnPlanet[Good, Planet.RaceId, Planet.Government]) then Continue;
+              if (Rules[RuleIndex].ToPlanetGoodsPermit = gcNo) and (GoodsLegalOnPlanet[Good, Planet.RaceId, Planet.Government] = True) then Continue;
             end;
             if (Rules[RuleIndex].ToPlanetGoodsCnt <> []) and not (aGalaxy.Galaxy.ClassifyGoodsQuantity(Planet.Goods[Good].Count, Good) in Rules[RuleIndex].ToPlanetGoodsCnt) then Continue;
             if (Rules[RuleIndex].ToPlanetGoodsSale <> []) and not (aGalaxy.Galaxy.ClassifyGoodsPrice(GetPlayer.ShopGoodsPurchasePrice(Good, Planet), Good) in Rules[RuleIndex].ToPlanetGoodsSale) then Continue;

@@ -557,7 +557,7 @@ begin
     AnimationRestartRequested := False;
     MainPanel.RebuildMessageButtons(False);
     Stage := 29;
-    if GetPlayer <> nil then GetPlayer.ScriptItemsAct($18, nil, nil, 0);
+    if GetPlayer <> nil then GetPlayer.ScriptItemsAct(satOnEnteringForm, nil, nil, 0);
     Galaxy.PrimeIntegrityChecksum(170);
   except
     on E: Exception do
@@ -573,7 +573,7 @@ end;
 procedure TfGov.OnClose;
 begin
   if Galaxy <> nil then Galaxy.CheckIntegrityChecksum(171);
-  if GetPlayer <> nil then GetPlayer.ScriptItemsAct($19, nil, nil, 0);
+  if GetPlayer <> nil then GetPlayer.ScriptItemsAct(satOnLeavingForm, nil, nil, 0);
   LoadPanel.OnClose;
   ScriptDialogIndex := -1;
   ClearDialogChoices;

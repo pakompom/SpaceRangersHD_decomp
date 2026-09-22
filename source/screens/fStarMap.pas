@@ -723,7 +723,7 @@ begin
       ShipToInspect := nil;
       HideLargeHelp;
       PlayerStar.RefreshMovementStepParameters;
-      if GetPlayer <> nil then GetPlayer.ScriptItemsAct($18, nil, nil, 0);
+      if GetPlayer <> nil then GetPlayer.ScriptItemsAct(satOnEnteringForm, nil, nil, 0);
       Galaxy.PrimeIntegrityChecksum(1117);
       if EndTurnAfterOpen then
       begin
@@ -804,7 +804,7 @@ begin
     Stage := 15;
     WaitForTurnCalculation;
     Stage := 16;
-    if GetPlayer <> nil then GetPlayer.ScriptItemsAct($19, nil, nil, 0);
+    if GetPlayer <> nil then GetPlayer.ScriptItemsAct(satOnLeavingForm, nil, nil, 0);
     CacheLoadLoggingEnabled := False;
     Galaxy.ClearIntegrityStatus;
     Stage := 17;
@@ -2659,9 +2659,9 @@ begin
       if CustomSelectionItem <> nil then
       begin
         if CustomSelectionItem.ScriptItem <> nil then
-          ActionResult := TScriptItem(CustomSelectionItem.ScriptItem).RunActionCode($35, GetPlayer, CursorObject, nil, ActionResult);
+          ActionResult := TScriptItem(CustomSelectionItem.ScriptItem).RunActionCode(satOnCustomTargetting, GetPlayer, CursorObject, nil, ActionResult);
         if CustomSelectionItem is TEquipmentWithActCode then
-          ActionResult := RunItemConfigActionCode(CustomSelectionItem, $35, GetPlayer, CursorObject, nil, ActionResult);
+          ActionResult := RunItemConfigActionCode(CustomSelectionItem, satOnCustomTargetting, GetPlayer, CursorObject, nil, ActionResult);
       end
       else
         for Index := 0 to GetPlayer.CustomShipInfos.Count - 1 do
@@ -2669,7 +2669,7 @@ begin
           Info := GetPlayer.CustomShipInfos[Index];
           if not Info.DeleteQueued and (Info.TypeName = CustomSelectionInfoName) then
           begin
-            ActionResult := RunCustomShipInfoActionCode(Info, $35, GetPlayer, CursorObject, nil, ActionResult);
+            ActionResult := RunCustomShipInfoActionCode(Info, satOnCustomTargetting, GetPlayer, CursorObject, nil, ActionResult);
             Break;
           end;
         end;
@@ -5519,9 +5519,9 @@ begin
       if CustomSelectionItem <> nil then
       begin
         if CustomSelectionItem.ScriptItem <> nil then
-          ActionResult := TScriptItem(CustomSelectionItem.ScriptItem).RunActionCode($36, GetPlayer, Obj, nil, ActionResult);
+          ActionResult := TScriptItem(CustomSelectionItem.ScriptItem).RunActionCode(satOnCustomTargettingCheck, GetPlayer, Obj, nil, ActionResult);
         if CustomSelectionItem is TEquipmentWithActCode then
-          ActionResult := RunItemConfigActionCode(CustomSelectionItem, $36, GetPlayer, Obj, nil, ActionResult);
+          ActionResult := RunItemConfigActionCode(CustomSelectionItem, satOnCustomTargettingCheck, GetPlayer, Obj, nil, ActionResult);
       end
       else
       begin
@@ -5530,7 +5530,7 @@ begin
           Info := GetPlayer.CustomShipInfos[Index];
           if not Info.DeleteQueued and (Info.TypeName = CustomSelectionInfoName) then
           begin
-            ActionResult := RunCustomShipInfoActionCode(Info, $36, GetPlayer, Obj, nil, ActionResult);
+            ActionResult := RunCustomShipInfoActionCode(Info, satOnCustomTargettingCheck, GetPlayer, Obj, nil, ActionResult);
             Break;
           end;
         end;

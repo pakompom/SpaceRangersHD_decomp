@@ -1359,8 +1359,8 @@ begin
       MessageText := '';
       IncrementWrapped(EntryIndex, Minimum, LastIndex);
       if IsFemaleHumanPilot <> (Definitions[EntryIndex].Female = 0) then Continue;
-    if (Definitions[EntryIndex].CoalitionAlreadyDefeated <> 2) and (((Definitions[EntryIndex].CoalitionAlreadyDefeated = 0) and (not (Galaxy.CoalitionDefeatedTurn <> 0))) or ((Definitions[EntryIndex].CoalitionAlreadyDefeated = 1) and (Galaxy.CoalitionDefeatedTurn <> 0))) then Continue;
-    if (Definitions[EntryIndex].DominatorsAlreadyDefeated <> 2) and (((Definitions[EntryIndex].DominatorsAlreadyDefeated = 0) and (not (not Galaxy.HasUnresolvedDominatorSeries([dsBlazer, dsKeller, dsTerron])))) or ((Definitions[EntryIndex].DominatorsAlreadyDefeated = 1) and (not Galaxy.HasUnresolvedDominatorSeries([dsBlazer, dsKeller, dsTerron])))) then Continue;
+    if (Definitions[EntryIndex].CoalitionAlreadyDefeated <> gcAny) and (((Definitions[EntryIndex].CoalitionAlreadyDefeated = gcYes) and (not (Galaxy.CoalitionDefeatedTurn <> 0))) or ((Definitions[EntryIndex].CoalitionAlreadyDefeated = gcNo) and (Galaxy.CoalitionDefeatedTurn <> 0))) then Continue;
+    if (Definitions[EntryIndex].DominatorsAlreadyDefeated <> gcAny) and (((Definitions[EntryIndex].DominatorsAlreadyDefeated = gcYes) and (not (not Galaxy.HasUnresolvedDominatorSeries([dsBlazer, dsKeller, dsTerron])))) or ((Definitions[EntryIndex].DominatorsAlreadyDefeated = gcNo) and (not Galaxy.HasUnresolvedDominatorSeries([dsBlazer, dsKeller, dsTerron])))) then Continue;
       if BestPriority > 0 then begin
         CandidatePriority := Definitions[EntryIndex].Priority;
         if CandidatePriority * SeededRandomIntRange(1, 100, Seed + EntryIndex * (Galaxy.CurrentTurn div 20)) <
@@ -1368,11 +1368,11 @@ begin
       end;
       Good := 50;
       if Definitions[EntryIndex].Goods <> 42 then Good := Definitions[EntryIndex].Goods;
-      if (Definitions[EntryIndex].AutoTalk <> 2) and
-        ((Automatic and (Definitions[EntryIndex].AutoTalk = 1)) or (not Automatic and (Definitions[EntryIndex].AutoTalk = 0))) then Continue;
-      if Definitions[EntryIndex].FlyType = 0 then MessageText := LocalizedColorText('ShipGreetings.' + Definitions[EntryIndex].Name + '.Text')
+      if (Definitions[EntryIndex].AutoTalk <> gcAny) and
+        ((Automatic and (Definitions[EntryIndex].AutoTalk = gcNo)) or (not Automatic and (Definitions[EntryIndex].AutoTalk = gcYes))) then Continue;
+      if Definitions[EntryIndex].FlyType = gfAny then MessageText := LocalizedColorText('ShipGreetings.' + Definitions[EntryIndex].Name + '.Text')
       else begin
-        if Definitions[EntryIndex].FlyType = 1 then begin
+        if Definitions[EntryIndex].FlyType = gfToPlanet then begin
           if not (OrderTarget is TPlanet) then Continue;
           Planet := OrderTarget as TPlanet;
           if not (Planet.OwnerId in [oiMaloc..oiGaal, oiPirate]) then Continue;
@@ -1384,15 +1384,15 @@ begin
     if (Definitions[EntryIndex].ToPlanetGoodsSale <> []) and not (Galaxy.ClassifyGoodsPrice(GetPlayer.ShopGoodsPurchasePrice(Good, Planet), Good) in Definitions[EntryIndex].ToPlanetGoodsSale) then Continue;
     if (Definitions[EntryIndex].ToPlanetGoodsBuy <> []) and not (Galaxy.ClassifyGoodsPrice(GetPlayer.ShopGoodsSellPrice(Good, Planet), Good) in Definitions[EntryIndex].ToPlanetGoodsBuy) then Continue;
     end;
-    if (Definitions[EntryIndex].ToPlanetIsHomePlanet <> 2) and (((Definitions[EntryIndex].ToPlanetIsHomePlanet = 0) and (not (HomePlanet = Planet))) or ((Definitions[EntryIndex].ToPlanetIsHomePlanet = 1) and (HomePlanet = Planet))) then Continue;
-    if (Definitions[EntryIndex].ToPlanetRaceIsShipRace <> 2) and (((Definitions[EntryIndex].ToPlanetRaceIsShipRace = 0) and (not (Planet.RaceId = PilotRace))) or ((Definitions[EntryIndex].ToPlanetRaceIsShipRace = 1) and (Planet.RaceId = PilotRace))) then Continue;
-    if (Definitions[EntryIndex].ToPlanetRaceIsPlayerRace <> 2) and (((Definitions[EntryIndex].ToPlanetRaceIsPlayerRace = 0) and (not (GetPlayer.PilotRace = Planet.RaceId))) or ((Definitions[EntryIndex].ToPlanetRaceIsPlayerRace = 1) and (GetPlayer.PilotRace = Planet.RaceId))) then Continue;
+    if (Definitions[EntryIndex].ToPlanetIsHomePlanet <> gcAny) and (((Definitions[EntryIndex].ToPlanetIsHomePlanet = gcYes) and (not (HomePlanet = Planet))) or ((Definitions[EntryIndex].ToPlanetIsHomePlanet = gcNo) and (HomePlanet = Planet))) then Continue;
+    if (Definitions[EntryIndex].ToPlanetRaceIsShipRace <> gcAny) and (((Definitions[EntryIndex].ToPlanetRaceIsShipRace = gcYes) and (not (Planet.RaceId = PilotRace))) or ((Definitions[EntryIndex].ToPlanetRaceIsShipRace = gcNo) and (Planet.RaceId = PilotRace))) then Continue;
+    if (Definitions[EntryIndex].ToPlanetRaceIsPlayerRace <> gcAny) and (((Definitions[EntryIndex].ToPlanetRaceIsPlayerRace = gcYes) and (not (GetPlayer.PilotRace = Planet.RaceId))) or ((Definitions[EntryIndex].ToPlanetRaceIsPlayerRace = gcNo) and (GetPlayer.PilotRace = Planet.RaceId))) then Continue;
     if (Definitions[EntryIndex].ToPlanetEconomy <> []) and not (Planet.Economy in Definitions[EntryIndex].ToPlanetEconomy) then Continue;
     if (Definitions[EntryIndex].ToPlanetGovernment <> []) and not (Planet.Government in Definitions[EntryIndex].ToPlanetGovernment) then Continue;
-    if (Definitions[EntryIndex].ToPlanetIsLastPlanet <> 2) and (((Definitions[EntryIndex].ToPlanetIsLastPlanet = 0) and (not (LastDockedPlanet = Planet))) or ((Definitions[EntryIndex].ToPlanetIsLastPlanet = 1) and (LastDockedPlanet = Planet))) then Continue;
-    if Definitions[EntryIndex].ToPlanetRaceIsLastPlanetRace <> 2 then begin
+    if (Definitions[EntryIndex].ToPlanetIsLastPlanet <> gcAny) and (((Definitions[EntryIndex].ToPlanetIsLastPlanet = gcYes) and (not (LastDockedPlanet = Planet))) or ((Definitions[EntryIndex].ToPlanetIsLastPlanet = gcNo) and (LastDockedPlanet = Planet))) then Continue;
+    if Definitions[EntryIndex].ToPlanetRaceIsLastPlanetRace <> gcAny then begin
       if not (LastDockedPlanet.OwnerId in [oiMaloc..oiGaal, oiPirate]) then Continue;
-    if (((Definitions[EntryIndex].ToPlanetRaceIsLastPlanetRace = 0) and (not (Planet.RaceId = LastDockedPlanet.RaceId))) or ((Definitions[EntryIndex].ToPlanetRaceIsLastPlanetRace = 1) and (Planet.RaceId = LastDockedPlanet.RaceId))) then Continue;
+    if (((Definitions[EntryIndex].ToPlanetRaceIsLastPlanetRace = gcYes) and (not (Planet.RaceId = LastDockedPlanet.RaceId))) or ((Definitions[EntryIndex].ToPlanetRaceIsLastPlanetRace = gcNo) and (Planet.RaceId = LastDockedPlanet.RaceId))) then Continue;
     end;
     MessageText := LocalizedColorText('ShipGreetings.' + Definitions[EntryIndex].Name + '.Text');
     MessageText := ReplaceColoredToken(MessageText, '<ToPlanet>', Planet.Name + GetLocalObjectLink(Planet, Automatic), '<color=255,240,100>');
@@ -1400,10 +1400,10 @@ begin
     MessageText := ReplaceColoredToken(MessageText, '<ToPlanetGoodsSale>', IntToStr(GetPlayer.ShopGoodsPurchasePrice(Good, Planet)), '<color=255,240,100>');
     MessageText := ReplaceColoredToken(MessageText, '<ToPlanetGoodsBuy>', IntToStr(GetPlayer.ShopGoodsSellPrice(Good, Planet)), '<color=255,240,100>');
     end;
-  end else if Definitions[EntryIndex].FlyType = 2 then begin
+  end else if Definitions[EntryIndex].FlyType = gfToStar then begin
     if not (OrderTarget is TStar) then Continue;
-    if (Definitions[EntryIndex].HomePlanetInToStar <> 2) and (((Definitions[EntryIndex].HomePlanetInToStar = 0) and (not (HomePlanet.CurrentStar = OrderTarget))) or ((Definitions[EntryIndex].HomePlanetInToStar = 1) and (HomePlanet.CurrentStar = OrderTarget))) then Continue;
-    if (Definitions[EntryIndex].HomePlanetInCurStar <> 2) and (((Definitions[EntryIndex].HomePlanetInCurStar = 0) and (not (HomePlanet.CurrentStar = CurrentStar))) or ((Definitions[EntryIndex].HomePlanetInCurStar = 1) and (HomePlanet.CurrentStar = CurrentStar))) then Continue;
+    if (Definitions[EntryIndex].HomePlanetInToStar <> gcAny) and (((Definitions[EntryIndex].HomePlanetInToStar = gcYes) and (not (HomePlanet.CurrentStar = OrderTarget))) or ((Definitions[EntryIndex].HomePlanetInToStar = gcNo) and (HomePlanet.CurrentStar = OrderTarget))) then Continue;
+    if (Definitions[EntryIndex].HomePlanetInCurStar <> gcAny) and (((Definitions[EntryIndex].HomePlanetInCurStar = gcYes) and (not (HomePlanet.CurrentStar = CurrentStar))) or ((Definitions[EntryIndex].HomePlanetInCurStar = gcNo) and (HomePlanet.CurrentStar = CurrentStar))) then Continue;
     Rejected := False;
     for ShipKind := 0 to 4 do begin
       case ShipKind of
@@ -1424,18 +1424,18 @@ begin
       end;
     end;
     if Rejected then Continue;
-    if Definitions[EntryIndex].ToStarControlByKling <> 2 then begin
+    if Definitions[EntryIndex].ToStarControlByKling <> gcAny then begin
       if (OrderTarget as TStar).Status.CustomFaction <> '' then Continue;
-    if (((Definitions[EntryIndex].ToStarControlByKling = 0) and (not ((OrderTarget as TStar).ControlFaction = sfDominators))) or ((Definitions[EntryIndex].ToStarControlByKling = 1) and ((OrderTarget as TStar).ControlFaction = sfDominators))) then Continue;
+    if (((Definitions[EntryIndex].ToStarControlByKling = gcYes) and (not ((OrderTarget as TStar).ControlFaction = sfDominators))) or ((Definitions[EntryIndex].ToStarControlByKling = gcNo) and ((OrderTarget as TStar).ControlFaction = sfDominators))) then Continue;
     end;
-    if Definitions[EntryIndex].ToStarControlByPirates <> 2 then begin
+    if Definitions[EntryIndex].ToStarControlByPirates <> gcAny then begin
       if (OrderTarget as TStar).Status.CustomFaction <> '' then Continue;
-    if (((Definitions[EntryIndex].ToStarControlByPirates = 0) and (not ((OrderTarget as TStar).ControlFaction = sfPirates))) or ((Definitions[EntryIndex].ToStarControlByPirates = 1) and ((OrderTarget as TStar).ControlFaction = sfPirates))) then Continue;
+    if (((Definitions[EntryIndex].ToStarControlByPirates = gcYes) and (not ((OrderTarget as TStar).ControlFaction = sfPirates))) or ((Definitions[EntryIndex].ToStarControlByPirates = gcNo) and ((OrderTarget as TStar).ControlFaction = sfPirates))) then Continue;
     end;
-    if (Definitions[EntryIndex].ToStarInBattle <> 2) and (((Definitions[EntryIndex].ToStarInBattle = 0) and (not ((OrderTarget as TStar).Battle <> 0))) or ((Definitions[EntryIndex].ToStarInBattle = 1) and ((OrderTarget as TStar).Battle <> 0))) then Continue;
+    if (Definitions[EntryIndex].ToStarInBattle <> gcAny) and (((Definitions[EntryIndex].ToStarInBattle = gcYes) and (not ((OrderTarget as TStar).Battle <> 0))) or ((Definitions[EntryIndex].ToStarInBattle = gcNo) and ((OrderTarget as TStar).Battle <> 0))) then Continue;
     MessageText := LocalizedColorText('ShipGreetings.' + Definitions[EntryIndex].Name + '.Text');
     MessageText := ReplaceColoredToken(MessageText, '<ToStar>', (OrderTarget as TStar).Name, '<color=255,240,100>');
-  end else if Definitions[EntryIndex].FlyType = 3 then begin
+  end else if Definitions[EntryIndex].FlyType = gfToItem then begin
     if (Order <> soMove) or not OrderAbsolute then Continue;
     Rejected := False;
     Item := nil;
@@ -1446,9 +1446,9 @@ begin
         (GetPickupApproachPosition(Item.Position).Y = OrderDestination.Y) then begin
         ItemTypes := Definitions[EntryIndex].ItemType;
         if (ItemTypes = '') or (ItemTypes = 'Any') or (FindTextPosW(Item.GetCategoryConfigName, ItemTypes) <> 0) then begin
-          if (Definitions[EntryIndex].ShipNeedInItem <> 2) and
-            (((Definitions[EntryIndex].ShipNeedInItem = 0) and not ShouldPickUpItem(Item)) or
-             ((Definitions[EntryIndex].ShipNeedInItem = 1) and ShouldPickUpItem(Item))) then Continue;
+          if (Definitions[EntryIndex].ShipNeedInItem <> gcAny) and
+            (((Definitions[EntryIndex].ShipNeedInItem = gcYes) and not ShouldPickUpItem(Item)) or
+             ((Definitions[EntryIndex].ShipNeedInItem = gcNo) and ShouldPickUpItem(Item))) then Continue;
           Rejected := True;
           Break;
         end;
@@ -1457,12 +1457,12 @@ begin
     if not Rejected then Continue;
     MessageText := LocalizedColorText('ShipGreetings.' + Definitions[EntryIndex].Name + '.Text');
     MessageText := ReplaceColoredToken(MessageText, '<Item>', Item.GetDisplayName + GetLocalObjectLink(Item, Automatic), '<color=255,240,100>');
-  end else if Definitions[EntryIndex].FlyType = 4 then begin
+  end else if Definitions[EntryIndex].FlyType = gfToShip then begin
     if not (OrderTarget is TShip) then Continue;
     if (Definitions[EntryIndex].ToShipType <> []) and not ((OrderTarget as TShip).GetGreetingShipCategory in Definitions[EntryIndex].ToShipType) then Continue;
     if (Definitions[EntryIndex].ToShipRace <> []) and not ((OrderTarget as TShip).PilotRace in Definitions[EntryIndex].ToShipRace) then Continue;
-    if (Definitions[EntryIndex].ToShipInPlanet <> 2) and (((Definitions[EntryIndex].ToShipInPlanet = 0) and (not ((OrderTarget as TShip).CurrentPlanet <> nil))) or ((Definitions[EntryIndex].ToShipInPlanet = 1) and ((OrderTarget as TShip).CurrentPlanet <> nil))) then Continue;
-    if (Definitions[EntryIndex].ToShipBad <> 2) and (((Definitions[EntryIndex].ToShipBad = 0) and (not ((OrderTarget as TShip).EnemyShip = Self))) or ((Definitions[EntryIndex].ToShipBad = 1) and ((OrderTarget as TShip).EnemyShip = Self))) then Continue;
+    if (Definitions[EntryIndex].ToShipInPlanet <> gcAny) and (((Definitions[EntryIndex].ToShipInPlanet = gcYes) and (not ((OrderTarget as TShip).CurrentPlanet <> nil))) or ((Definitions[EntryIndex].ToShipInPlanet = gcNo) and ((OrderTarget as TShip).CurrentPlanet <> nil))) then Continue;
+    if (Definitions[EntryIndex].ToShipBad <> gcAny) and (((Definitions[EntryIndex].ToShipBad = gcYes) and (not ((OrderTarget as TShip).EnemyShip = Self))) or ((Definitions[EntryIndex].ToShipBad = gcNo) and ((OrderTarget as TShip).EnemyShip = Self))) then Continue;
     if (Definitions[EntryIndex].ToShipRelations <> []) and not (GetRelationLevelToShip(OrderTarget as TShip) in Definitions[EntryIndex].ToShipRelations) then Continue;
     MessageText := LocalizedColorText('ShipGreetings.' + Definitions[EntryIndex].Name + '.Text');
     MessageText := ReplaceColoredToken(MessageText, '<ToShip>', (OrderTarget as TShip).GetName + GetLocalObjectLink(OrderTarget, Automatic), '<color=255,240,100>');
@@ -1476,30 +1476,30 @@ end;
     if (Definitions[EntryIndex].Relations <> []) and not (GetRelationLevelToShip(GetPlayer) in Definitions[EntryIndex].Relations) then Continue;
     if (Definitions[EntryIndex].ShipRace <> []) and not (PilotRace in Definitions[EntryIndex].ShipRace) then Continue;
     if (Definitions[EntryIndex].PlayerRace <> []) and not (GetPlayer.PilotRace in Definitions[EntryIndex].PlayerRace) then Continue;
-    if (Definitions[EntryIndex].ShipRaceIsPlayerRace <> 2) and (((Definitions[EntryIndex].ShipRaceIsPlayerRace = 0) and (not (GetPlayer.PilotRace = PilotRace))) or ((Definitions[EntryIndex].ShipRaceIsPlayerRace = 1) and (GetPlayer.PilotRace = PilotRace))) then Continue;
-    if Definitions[EntryIndex].PlayerAttackGoodShip <> 2 then begin
+    if (Definitions[EntryIndex].ShipRaceIsPlayerRace <> gcAny) and (((Definitions[EntryIndex].ShipRaceIsPlayerRace = gcYes) and (not (GetPlayer.PilotRace = PilotRace))) or ((Definitions[EntryIndex].ShipRaceIsPlayerRace = gcNo) and (GetPlayer.PilotRace = PilotRace))) then Continue;
+    if Definitions[EntryIndex].PlayerAttackGoodShip <> gcAny then begin
       if GetPlayer.OrderTarget is TShip then begin
         Other := GetPlayer.OrderTarget as TShip;
         Rejected := (Other is TNormalShip) and (GetPlayer <> Other.OrderTarget) and
           (GetRelationLevelToShip(Other) = rlExcellent) and (Other.GetRelationLevelToShip(GetPlayer) = rlHostile);
       end else Rejected := False;
-      if Definitions[EntryIndex].PlayerAttackGoodShip = 1 then
+      if Definitions[EntryIndex].PlayerAttackGoodShip = gcNo then
         if Rejected then Continue;
-      if (Definitions[EntryIndex].PlayerAttackGoodShip = 0) and not Rejected then Continue;
+      if (Definitions[EntryIndex].PlayerAttackGoodShip = gcYes) and not Rejected then Continue;
       if Rejected then begin
     MessageText := ReplaceColoredToken(MessageText, '<FullShipGood>', (GetPlayer.OrderTarget as TShip).GetFullName(' ') + GetLocalObjectLink(GetPlayer.OrderTarget, Automatic), '');
     end;
   end;
-    if (Definitions[EntryIndex].InFear <> 2) and (((Definitions[EntryIndex].InFear = 0) and (not (InFear))) or ((Definitions[EntryIndex].InFear = 1) and (InFear))) then Continue;
-    if Definitions[EntryIndex].ShipBadFlyToShip <> 2 then begin
+    if (Definitions[EntryIndex].InFear <> gcAny) and (((Definitions[EntryIndex].InFear = gcYes) and (not (InFear))) or ((Definitions[EntryIndex].InFear = gcNo) and (InFear))) then Continue;
+    if Definitions[EntryIndex].ShipBadFlyToShip <> gcAny then begin
       Rejected := IsEnemyPursuingSelf;
-    if (((Definitions[EntryIndex].ShipBadFlyToShip = 0) and (not (Rejected))) or ((Definitions[EntryIndex].ShipBadFlyToShip = 1) and (Rejected))) then Continue;
+    if (((Definitions[EntryIndex].ShipBadFlyToShip = gcYes) and (not (Rejected))) or ((Definitions[EntryIndex].ShipBadFlyToShip = gcNo) and (Rejected))) then Continue;
     end;
     if (Definitions[EntryIndex].ShipBadType <> []) and (EnemyShip <> nil) and not (EnemyShip.GetGreetingShipCategory in Definitions[EntryIndex].ShipBadType) then Continue;
     if (Definitions[EntryIndex].ShipBadRace <> []) and (EnemyShip <> nil) and not (EnemyShip.PilotRace in Definitions[EntryIndex].ShipBadRace) then Continue;
-    if (Definitions[EntryIndex].ShipFlyToPlayer <> 2) and (((Definitions[EntryIndex].ShipFlyToPlayer = 0) and (not (GetPlayer = OrderTarget))) or ((Definitions[EntryIndex].ShipFlyToPlayer = 1) and (GetPlayer = OrderTarget))) then Continue;
-    if (Definitions[EntryIndex].PlayerFlyToShip <> 2) and (((Definitions[EntryIndex].PlayerFlyToShip = 0) and (not (GetPlayer.OrderTarget = Self))) or ((Definitions[EntryIndex].PlayerFlyToShip = 1) and (GetPlayer.OrderTarget = Self))) then Continue;
-    if (Definitions[EntryIndex].PlayerIsShipBad <> 2) and (((Definitions[EntryIndex].PlayerIsShipBad = 0) and (not (GetPlayer = EnemyShip))) or ((Definitions[EntryIndex].PlayerIsShipBad = 1) and (GetPlayer = EnemyShip))) then Continue;
+    if (Definitions[EntryIndex].ShipFlyToPlayer <> gcAny) and (((Definitions[EntryIndex].ShipFlyToPlayer = gcYes) and (not (GetPlayer = OrderTarget))) or ((Definitions[EntryIndex].ShipFlyToPlayer = gcNo) and (GetPlayer = OrderTarget))) then Continue;
+    if (Definitions[EntryIndex].PlayerFlyToShip <> gcAny) and (((Definitions[EntryIndex].PlayerFlyToShip = gcYes) and (not (GetPlayer.OrderTarget = Self))) or ((Definitions[EntryIndex].PlayerFlyToShip = gcNo) and (GetPlayer.OrderTarget = Self))) then Continue;
+    if (Definitions[EntryIndex].PlayerIsShipBad <> gcAny) and (((Definitions[EntryIndex].PlayerIsShipBad = gcYes) and (not (GetPlayer = EnemyShip))) or ((Definitions[EntryIndex].PlayerIsShipBad = gcNo) and (GetPlayer = EnemyShip))) then Continue;
     if (Definitions[EntryIndex].ShipTurnBeforeEndOrder <> []) then begin
       Count := Min(10, EstimateOrderTravelTurns);
       if not (Cardinal(Count) in Definitions[EntryIndex].ShipTurnBeforeEndOrder) then Continue;
@@ -1530,12 +1530,12 @@ end;
     if Good <> 50 then begin
     if (Definitions[EntryIndex].ShipGoodsCnt <> []) and not (Galaxy.ClassifyGoodsQuantity(CargoGoods[Good].Count, Good) in Definitions[EntryIndex].ShipGoodsCnt) then Continue;
     if (Definitions[EntryIndex].PlayerGoodsCnt <> []) and not (Galaxy.ClassifyGoodsQuantity(GetPlayer.CargoGoods[Good].Count, Good) in Definitions[EntryIndex].PlayerGoodsCnt) then Continue;
-    if (Definitions[EntryIndex].ShipHaveGoods <> 2) and (((Definitions[EntryIndex].ShipHaveGoods = 0) and (CargoGoods[Good].Count = 0)) or ((Definitions[EntryIndex].ShipHaveGoods = 1) and (CargoGoods[Good].Count > 0))) then Continue;
-    if (Definitions[EntryIndex].PlayerHaveGoods <> 2) and (((Definitions[EntryIndex].PlayerHaveGoods = 0) and (GetPlayer.CargoGoods[Good].Count = 0)) or ((Definitions[EntryIndex].PlayerHaveGoods = 1) and (GetPlayer.CargoGoods[Good].Count > 0))) then Continue;
+    if (Definitions[EntryIndex].ShipHaveGoods <> gcAny) and (((Definitions[EntryIndex].ShipHaveGoods = gcYes) and (CargoGoods[Good].Count = 0)) or ((Definitions[EntryIndex].ShipHaveGoods = gcNo) and (CargoGoods[Good].Count > 0))) then Continue;
+    if (Definitions[EntryIndex].PlayerHaveGoods <> gcAny) and (((Definitions[EntryIndex].PlayerHaveGoods = gcYes) and (GetPlayer.CargoGoods[Good].Count = 0)) or ((Definitions[EntryIndex].PlayerHaveGoods = gcNo) and (GetPlayer.CargoGoods[Good].Count > 0))) then Continue;
     end;
     if (Definitions[EntryIndex].ShipGoodsTypeCnt <> []) and not (CountCargoGoodsTypes in Definitions[EntryIndex].ShipGoodsTypeCnt) then Continue;
     if (Definitions[EntryIndex].PlayerGoodsTypeCnt <> []) and not (GetPlayer.CountCargoGoodsTypes in Definitions[EntryIndex].PlayerGoodsTypeCnt) then Continue;
-    if (Definitions[EntryIndex].ShipMayScanPlayer <> 2) and (((Definitions[EntryIndex].ShipMayScanPlayer = 0) and (not (CanResolveObjectWithScanner(GetPlayer) and (GetRadarRange > 0)))) or ((Definitions[EntryIndex].ShipMayScanPlayer = 1) and (CanResolveObjectWithScanner(GetPlayer) and (GetRadarRange > 0)))) then Continue;
+    if (Definitions[EntryIndex].ShipMayScanPlayer <> gcAny) and (((Definitions[EntryIndex].ShipMayScanPlayer = gcYes) and (not (CanResolveObjectWithScanner(GetPlayer) and (GetRadarRange > 0)))) or ((Definitions[EntryIndex].ShipMayScanPlayer = gcNo) and (CanResolveObjectWithScanner(GetPlayer) and (GetRadarRange > 0)))) then Continue;
     Rejected := False;
     for ShipKind := 0 to 4 do begin
       case ShipKind of
@@ -1567,18 +1567,18 @@ end;
     if (Definitions[EntryIndex].LastPlanetGoodsSale <> []) and not (Galaxy.ClassifyGoodsPrice(GetPlayer.ShopGoodsPurchasePrice(Good, LastDockedPlanet), Good) in Definitions[EntryIndex].LastPlanetGoodsSale) then Continue;
     if (Definitions[EntryIndex].LastPlanetGoodsBuy <> []) and not (Galaxy.ClassifyGoodsPrice(GetPlayer.ShopGoodsSellPrice(Good, LastDockedPlanet), Good) in Definitions[EntryIndex].LastPlanetGoodsBuy) then Continue;
     end;
-    if (Definitions[EntryIndex].LastPlanetIsHomePlanet <> 2) and (((Definitions[EntryIndex].LastPlanetIsHomePlanet = 0) and (not (LastDockedPlanet = HomePlanet))) or ((Definitions[EntryIndex].LastPlanetIsHomePlanet = 1) and (LastDockedPlanet = HomePlanet))) then Continue;
-    if Definitions[EntryIndex].LastPlanetRaceIsShipRace <> 2 then begin
+    if (Definitions[EntryIndex].LastPlanetIsHomePlanet <> gcAny) and (((Definitions[EntryIndex].LastPlanetIsHomePlanet = gcYes) and (not (LastDockedPlanet = HomePlanet))) or ((Definitions[EntryIndex].LastPlanetIsHomePlanet = gcNo) and (LastDockedPlanet = HomePlanet))) then Continue;
+    if Definitions[EntryIndex].LastPlanetRaceIsShipRace <> gcAny then begin
       if not (LastDockedPlanet.OwnerId in [oiMaloc..oiGaal, oiPirate]) then Continue;
-    if (((Definitions[EntryIndex].LastPlanetRaceIsShipRace = 0) and (not (LastDockedPlanet.RaceId = PilotRace))) or ((Definitions[EntryIndex].LastPlanetRaceIsShipRace = 1) and (LastDockedPlanet.RaceId = PilotRace))) then Continue;
+    if (((Definitions[EntryIndex].LastPlanetRaceIsShipRace = gcYes) and (not (LastDockedPlanet.RaceId = PilotRace))) or ((Definitions[EntryIndex].LastPlanetRaceIsShipRace = gcNo) and (LastDockedPlanet.RaceId = PilotRace))) then Continue;
     end;
-    if Definitions[EntryIndex].LastPlanetRaceIsPlayerRace <> 2 then begin
+    if Definitions[EntryIndex].LastPlanetRaceIsPlayerRace <> gcAny then begin
       if not (LastDockedPlanet.OwnerId in [oiMaloc..oiGaal, oiPirate]) then Continue;
-    if (((Definitions[EntryIndex].LastPlanetRaceIsPlayerRace = 0) and (not (GetPlayer.PilotRace = LastDockedPlanet.RaceId))) or ((Definitions[EntryIndex].LastPlanetRaceIsPlayerRace = 1) and (GetPlayer.PilotRace = LastDockedPlanet.RaceId))) then Continue;
+    if (((Definitions[EntryIndex].LastPlanetRaceIsPlayerRace = gcYes) and (not (GetPlayer.PilotRace = LastDockedPlanet.RaceId))) or ((Definitions[EntryIndex].LastPlanetRaceIsPlayerRace = gcNo) and (GetPlayer.PilotRace = LastDockedPlanet.RaceId))) then Continue;
     end;
     if (Definitions[EntryIndex].LastPlanetEconomy <> []) and not (LastDockedPlanet.Economy in Definitions[EntryIndex].LastPlanetEconomy) then Continue;
     if (Definitions[EntryIndex].LastPlanetGovernment <> []) and not (LastDockedPlanet.Government in Definitions[EntryIndex].LastPlanetGovernment) then Continue;
-    if (Definitions[EntryIndex].LastPlanetInCurStar <> 2) and (((Definitions[EntryIndex].LastPlanetInCurStar = 0) and (not (LastDockedPlanet.CurrentStar = CurrentStar))) or ((Definitions[EntryIndex].LastPlanetInCurStar = 1) and (LastDockedPlanet.CurrentStar = CurrentStar))) then Continue;
+    if (Definitions[EntryIndex].LastPlanetInCurStar <> gcAny) and (((Definitions[EntryIndex].LastPlanetInCurStar = gcYes) and (not (LastDockedPlanet.CurrentStar = CurrentStar))) or ((Definitions[EntryIndex].LastPlanetInCurStar = gcNo) and (LastDockedPlanet.CurrentStar = CurrentStar))) then Continue;
     if Definitions[EntryIndex].LastPlanetDistToShipInTurn <> [] then begin
       Count := Min(10, EstimateTravelTurnsToPlanet(LastDockedPlanet));
       if Count = -1 then Continue;

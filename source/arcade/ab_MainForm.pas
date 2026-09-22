@@ -437,7 +437,7 @@ begin
       Ship.CreateShipVisual(GetPlayer.Graphic.GraphKey, GetPlayer.Graphic.Size.X)
     else
       Ship.CreateShipVisual(GetPlayer.Graphic.GraphKey, Round((GetPlayer.Graphic.Size.X shl 10) / 800));
-    GetPlayer.ScriptItemsAct($37, Ship, nil, 0);
+    GetPlayer.ScriptItemsAct(satOnStartAB, Ship, nil, 0);
   end;
   Ship.MaxSpeed := 11;
   Ship.TurnSpeed := PlayerInitialTurnSpeed;

@@ -244,7 +244,7 @@ begin
       DeletionPending := True;
       Galaxy.CheckIntegrityChecksum1(650);
       Inc(GetPlayer.DominatorKillsByType[0]);
-      KellerShip.ScriptItemsAct(61, nil, nil, 0);
+      KellerShip.ScriptItemsAct(satOnDeath, nil, nil, 0);
       KellerShip.Free;
       Galaxy.PrimeIntegrityChecksum1(651);
     end

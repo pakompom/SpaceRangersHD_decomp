@@ -700,8 +700,8 @@ begin
     OwnerShip.AddItemToPlayerStorage(Artefact, Location, -1);
     GetPlayer.RefreshStorageBubbles;
     OwnerShip.RefreshDerivedStats(True);
-    ScriptItemsAct($2E, Artefact, Location, 0);
-    GetPlayer.ScriptItemsAct($2E, Artefact, Location, 0);
+    ScriptItemsAct(satOnTrancPacking, Artefact, Location, 0);
+    GetPlayer.ScriptItemsAct(satOnTrancPacking, Artefact, Location, 0);
     Result := True;
   end;
 end;

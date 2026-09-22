@@ -99,7 +99,7 @@ type
   // These helpers copy a byte-aligned set parameter. The separately compiled
   // aGalaxyStruct mask has the same bits but different DCU alignment.
   TItemTypeSelection = set of 0..79; // @size 10
-  TScriptActionTypeNames = array[0..61] of WideString;
+  TScriptActionTypeNames = array[TScriptActionType] of WideString;
   TGoodsLegalityTable = array[TGoodsIndex, oiMaloc..oiGaal, TPlanetGovernment] of Boolean;
 
   TProgramNameTable = array[TProgramIndex] of WideString;
@@ -450,73 +450,8 @@ var
 var
   DominatorResearchRateMultipliers: array[0..2] of Double = (1.0, 1.2, 0.8); // @addr $87D320 Native Blazer, Keller, Terron research multipliers.
   ResearchProgramCostFactors: array[0..2] of Double = (1, 1.4, 1.8); // @addr $87D338
-const
-  // Ordinals of the native ScriptActionTypeNames table at $87D350.
-  // These ordinary constants preserve the byte API and existing set layout.
-  satOnStep = 0;
-  satOnWeaponShot = 1;
-  satOnMissileShot = 2;
-  satOnDealingDamage = 3;
-  satOnDealingFatalDamage = 4;
-  satOnDealingKamikazeDamage = 5;
-  satOnTakingDamage = 6;
-  satOnTakingDamageEn = 7;
-  satOnTakingDamageSp = 8;
-  satOnTakingDamageMi = 9;
-  satOnWeaponShot2 = 10;
-  satOnMissileShot2 = 11;
-  satOnGettingWeaponHit = 12;
-  satOnGettingMissileHit = 13;
-  satOnDroidRepair = 14;
-  satOnItemPickUp = 15;
-  satOnScan = 16;
-  satOnChameleonConfusion = 17;
-  satOnScanPossibility = 18;
-  satOnAnotherItem = 19;
-  satOnAnotherItem2 = 20;
-  satOnAnotherGoods = 21;
-  satOnItemHit = 22;
-  satOnMissileHittingObject = 23;
-  satOnEnteringForm = 24;
-  satOnLeavingForm = 25;
-  satOnReEnteringForm = 26;
-  satOnEnteringOtherShip = 27;
-  satOnLeavingOtherShip = 28;
-  satOnReEnteringOtherShip = 29;
-  satOnPlayerSkillIncrease = 30;
-  satOnPlayerTalkedWithShip = 31;
-  satOnShipTalkedWithPlayer = 32;
-  satOnDropItem = 33;
-  satOnDropItemFixed = 34;
-  satOnMovingItemToStorage = 35;
-  satOnReduceEqBattle = 36;
-  satOnReduceEqUse = 37;
-  satOnReduceEqForce = 38;
-  satOnReduceEqForsage = 39;
-  satOnItemDestroy = 40;
-  satOnPlayerChangeHull = 41;
-  satOnPlayerUseMM = 42;
-  satOnPlayerBuyEq = 43;
-  satOnItemEquip = 44;
-  satOnItemDeEquip = 45;
-  satOnTrancPacking = 46;
-  satOnShipBuysGoods = 47;
-  satOnShipSellsGoods = 48;
-  satOnShowingItemInfo = 49;
-  satOnShowingShipInfo = 50;
-  satOnShowingStarInfo = 51;
-  satOnNonStandartEqChange = 52;
-  satOnCustomTargetting = 53;
-  satOnCustomTargettingCheck = 54;
-  satOnStartAB = 55;
-  satOnABItemDrop = 56;
-  satOnGovItemReward = 57;
-  satOnCheckingUsability = 58;
-  satOnCheckingUsability2 = 59;
-  satOnCheckingUsabilityGoods = 60;
-  satOnDeath = 61;
 var
-  ScriptActionTypeNames: array[0..61] of WideString = (
+  ScriptActionTypeNames: array[TScriptActionType] of WideString = (
     't_OnStep', 't_OnWeaponShot', 't_OnMissileShot',
     't_OnDealingDamage', 't_OnDealingFatalDamage', 't_OnDealingKamikazeDamage',
     't_OnTakingDamage', 't_OnTakingDamageEn', 't_OnTakingDamageSp',

@@ -1313,8 +1313,8 @@ begin
   if ShipToInspect <> nil then PlayerHoldShip := ShipToInspect else PlayerHoldShip := GetPlayer;
   if not ReopenRequested then
   begin
-    PlayerHoldShip.ScriptItemsAct($19,nil,nil,0);
-    if GetPlayer <> PlayerHoldShip then GetPlayer.ScriptItemsAct($1C,nil,nil,0);
+    PlayerHoldShip.ScriptItemsAct(satOnLeavingForm,nil,nil,0);
+    if GetPlayer <> PlayerHoldShip then GetPlayer.ScriptItemsAct(satOnLeavingOtherShip,nil,nil,0);
   end;
   BackgroundBuffer.GraphBuf.Clear;
     if HoldScrollTimer <> nil then

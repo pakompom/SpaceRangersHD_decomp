@@ -308,7 +308,7 @@ type
     function CheckDockingPermission(Ship: TShip; var Response: WideString): Boolean; virtual; // @addr 0x77F4D0 @slot 0xCC @note "Base implementation clears Response and returns false."
 
     procedure ScriptNextDay; // @addr 0x77B05C @note "Requires ScriptShip; script execution can remove the binding."
-    function ScriptItemsAct(ActionType: Byte; Object1, Object2: TObject; Param: Integer): Integer; // @addr 0x77E910 @note "Returns Param after script handlers modify it; object slots may carry event-specific integer values."
+    function ScriptItemsAct(ActionType: TScriptActionType; Object1, Object2: TObject; Param: Integer): Integer; // @addr 0x77E910 @note "Returns Param after script handlers modify it; object slots may carry event-specific integer values."
     procedure RefreshCurrentStanding; virtual; // @addr 0x77E6E0 @slot 0xC4 @calls "0x7C72BB 0x7D0336 0x7D03DD"
     function ScanForCollectableItems: Boolean; // @addr 0x76B2F4
     function TryCollectBestFloatingItem(MaximumTravelTurns: Integer): Boolean; // @addr 0x76B490 @note "May queue nearby pickups and issue/cancel a move order; true means a move order remains."
@@ -685,7 +685,7 @@ type
 
 var
   SimulationContext: ShortInt = 0; // @addr $87C414  Suppresses duplicate Pirate Clan abduction effects during turn simulation.
-  DamageScriptActionTypes: array[0..2] of Byte = (7, 8, 9); // @addr $87C418 Energy, splinter and missile hit callbacks.
+  DamageScriptActionTypes: array[TWeaponDamageClass] of TScriptActionType = (satOnTakingDamageEn, satOnTakingDamageSp, satOnTakingDamageMi); // @addr $87C418 Energy, splinter and missile hit callbacks.
   TradeGoodsSold: TGoods = nil; // @addr $87C41C Reused script-event payload for the goods leaving the ship.
   TradeGoodsCostBasis: TGoods = nil; // @addr $87C420 Reused payload for the purchased portion of the sale.
   DominatorShipSmallSizes: array[0..2, 0..7] of Integer = ((127, 110, 70, 60, 45, 40, 130, 40), (127, 110, 70, 60, 45, 40, 130, 40), (127, 110, 70, 60, 45, 40, 130, 40)); // @addr $87C424
@@ -3555,7 +3555,7 @@ begin
     Exit;
   end;
   if Attacker <> nil then AdjustedDamage := Attacker.ScriptItemsAct(satOnDealingDamage, Self, nil, AdjustedDamage);
-  AdjustedDamage := ScriptItemsAct(DamageScriptActionTypes[Ord(ClassifyWeaponDamageFlags(DamageFlags))], Source, nil, AdjustedDamage);
+  AdjustedDamage := ScriptItemsAct(DamageScriptActionTypes[ClassifyWeaponDamageFlags(DamageFlags)], Source, nil, AdjustedDamage);
   if AdjustedDamage <= 0 then
   begin
     Result := 0;
@@ -14148,7 +14148,7 @@ end;
 { @end $77E854 }
 
 { @routine $77E910 TShip_ScriptItemsAct }
-function TShip.ScriptItemsAct(ActionType: Byte; Object1, Object2: TObject; Param: Integer): Integer;
+function TShip.ScriptItemsAct(ActionType: TScriptActionType; Object1, Object2: TObject; Param: Integer): Integer;
 var
   I, NewIndex: Integer;
   Item: TItem;
@@ -14256,12 +14256,12 @@ begin
       begin
         if Item.ItemType in [t_Weapon1..t_CustomWeapon] then
         begin
-          if (ActionType in [1, 2, 10]) and (Object2 <> Item) then
+          if (ActionType in [satOnWeaponShot, satOnMissileShot, satOnWeaponShot2]) and (Object2 <> Item) then
           begin
             Dec(I);
             Continue;
           end;
-          if (ActionType in [11, 23]) and (Object2 <> nil) and (TMissile(Object2).WeaponId <> Item.Id) then
+          if (ActionType in [satOnMissileShot2, satOnMissileHittingObject]) and (Object2 <> nil) and (TMissile(Object2).WeaponId <> Item.Id) then
           begin
             Dec(I);
             Continue;

@@ -1077,13 +1077,13 @@ begin
   TalkScreen.ParentLoop := ParentLoop;
   ParentLoop.ChildLoop := TalkScreen;
   OtherShip := TalkShip;
-  if GetPlayer <> nil then GetPlayer.ScriptItemsAct($18, OtherShip, nil, 0);
-  if OtherShip <> nil then OtherShip.ScriptItemsAct($18, nil, nil, 0);
+  if GetPlayer <> nil then GetPlayer.ScriptItemsAct(satOnEnteringForm, OtherShip, nil, 0);
+  if OtherShip <> nil then OtherShip.ScriptItemsAct(satOnEnteringForm, nil, nil, 0);
   if TalkScreen.Run = 1 then
   begin
     Result := True;
-    if GetPlayer <> nil then GetPlayer.ScriptItemsAct($19, OtherShip, nil, 0);
-    if OtherShip <> nil then OtherShip.ScriptItemsAct($19, nil, nil, 0);
+    if GetPlayer <> nil then GetPlayer.ScriptItemsAct(satOnLeavingForm, OtherShip, nil, 0);
+    if OtherShip <> nil then OtherShip.ScriptItemsAct(satOnLeavingForm, nil, nil, 0);
   end
   else Result := False;
   TalkScreen.ParentLoop := nil;

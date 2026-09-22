@@ -3193,7 +3193,7 @@ begin
       if (GetPlayer.GetScanner = nil) or (GetPlayer.GetScanner.OwnerId <> oiDominator) or
         (GetPlayer.GetScanner.DominatorSeries <> TKling(Ship).DominatorSeries) then Result := False;
     end;
-    Result := GetPlayer.ScriptItemsAct($12, Ship, nil, Ord(Result)) <> 0;
+    Result := GetPlayer.ScriptItemsAct(satOnScanPossibility, Ship, nil, Ord(Result)) <> 0;
   end;
 end;
 { @end $5919A8 }
