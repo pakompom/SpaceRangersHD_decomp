@@ -6,6 +6,9 @@ interface
 
 uses Direct3D9, Classes, Types;
 
+const
+  RgbWhite = $FFFFFF; // White texture tint; alpha is supplied separately.
+
 type
   TScreenVertexGR = packed record // @size 28
     X: Single; // @offset 0

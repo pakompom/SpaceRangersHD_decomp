@@ -1245,8 +1245,8 @@ begin
       tkAttack:
         begin
           AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Attack.PlayerOk'), 0, AcceptScriptedConversation, 0);
-          if (TalkShip.EnemyShip <> nil) and ((TalkShip.EnemyShip.RelationToShip(GetPlayer) >= 80) or
-            ((TalkShip.EnemyShip.RelationToShip(GetPlayer) >= 60) and (GetPlayer.GetDominantCareer <> rcPirate))) then
+          if (TalkShip.EnemyShip <> nil) and ((TalkShip.EnemyShip.RelationToShip(GetPlayer) >= RelationExcellentMin) or
+            ((TalkShip.EnemyShip.RelationToShip(GetPlayer) >= RelationGoodMin) and (GetPlayer.GetDominantCareer <> rcPirate))) then
           begin
             if not (TalkShip.EnemyShip is TTranclucator) then
               AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Attack.PlayerWeFriends'), 0, FastExit, 0)
@@ -1679,7 +1679,7 @@ begin
   else if (TalkShip.GetCurrentPickupItem <> nil) and (GetPlayer <> TalkShip.PartnerShip) then
     DialogText := FormatText1(TalkShip.LookupTalkText('Talk.Trade.AnswerAlreadyTakeItem'), '<color=255,240,100>', '<Item>',
       TalkShip.GetCurrentPickupItem.GetDisplayName + GetLocalObjectLink(TalkShip.GetCurrentPickupItem, False))
-  else if not TalkShip.HasCargoGoods and ((Capacity < 1) or (Money < GoodsMarket[0].AveragePrice)) then
+  else if not TalkShip.HasCargoGoods and ((Capacity < 1) or (Money < GoodsMarket[Ord(t_Food)].AveragePrice)) then
     DialogText := TalkShip.LookupTalkText('Talk.Trade.AnswerNoNeedGoods')
   else if PointDistanceSquared(GetPlayer.Position, TalkShip.Position) > 250000 then
     DialogText := TalkShip.LookupTalkText('Talk.Trade.AnswerBigDist')
@@ -2844,7 +2844,7 @@ begin
     Name := (GetPlayer.OrderTarget as TPlanet).Name;
     Relation := (GetPlayer.OrderTarget as TPlanet).RelationToShip(TalkShip);
   end;
-  if Relation < 10 then
+  if Relation < RelationBadMin then
     DialogText := FormatText1(TalkShip.LookupTalkText('Talk.Pirate.ComputerDisagreeLandingToObject'), '<color=255,240,100>', '<ObjectName>', Name)
   else
   begin

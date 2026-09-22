@@ -333,7 +333,7 @@ begin
   ChameleonActive := False;
   GraphDominator := Galaxy.GraphDominatorSurfacesEnabled;
   RefreshShopInventory;
-  for Good := 0 to 7 do
+  for Good := Ord(t_Food) to Ord(t_Narcotics) do
   begin
     ShopGoods[Good].Count := Round(GoodsMarket[Good].BaseStock * StationGoodsFactors[TypeId, Good].StockFactor);
     ShopGoods[Good].PriceState := GoodsMarket[Good].AveragePrice;
@@ -387,7 +387,7 @@ begin
     Buffer.AddAnsiChar(AnsiChar(Item.ItemType));
     Item.SaveToBuffer(Buffer);
   end;
-  for Good := 0 to 7 do
+  for Good := Ord(t_Food) to Ord(t_Narcotics) do
   begin
     Buffer.AddIntegerValue(ShopGoods[Good].Count);
     Buffer.AddSingle(ShopGoods[Good].PriceState);
@@ -413,14 +413,14 @@ begin
   inherited LoadFromBuffer(Buffer, Galaxy);
   if LoadedSaveVersion < 102 then Buffer.GetByte;
   Count := Buffer.GetWord;
-  if (Count < 0) or (Count > 10000) then raise EAbort.Create('Err');
+  if (Count < 0) or (Count > MaxSavedListCount) then raise EAbort.Create('Err');
   for I := 0 to Count - 1 do
   begin
     Item := CreateItemByType(MigrateSavedItemType(Buffer.GetByte));
     EquipmentShop.Add(Item);
     Item.LoadFromBuffer(Buffer, Galaxy);
   end;
-  for Good := 0 to 7 do
+  for Good := Ord(t_Food) to Ord(t_Narcotics) do
   begin
     ShopGoods[Good].Count := Buffer.GetInt32;
     ShopGoods[Good].PriceState := Buffer.GetSingle;
@@ -1236,7 +1236,7 @@ begin
     for I := 0 to CurrentStar.Ships.Count - 1 do
     begin
       Ship := TShip(CurrentStar.Ships[I]);
-      if ((Ship.OwnerId = oiDominator) or (Ship.RelationToShip(Self) < 10)) and Ship.InNormalSpace and
+      if ((Ship.OwnerId = oiDominator) or (Ship.RelationToShip(Self) < RelationBadMin)) and Ship.InNormalSpace and
          (not HasIndependentScriptFaction or not Ship.HasIndependentScriptFaction or
           (TScriptShip(ScriptShip).StateText <> TScriptShip(Ship.ScriptShip).StateText)) then
         for J := 1 to WeaponCount do
@@ -1598,7 +1598,7 @@ begin
   else if NewRelation > 100 then Relation := 100
   else Relation := NewRelation;
   RangerRelations[Index] := Pointer(Relation);
-  if (Relation < 10) and ((EnemyShip = nil) or (EnemyShip.CurrentStar <> CurrentStar)) then EnemyShip := TShip(Ranger);
+  if (Relation < RelationBadMin) and ((EnemyShip = nil) or (EnemyShip.CurrentStar <> CurrentStar)) then EnemyShip := TShip(Ranger);
   if GetPlayer = Ranger then
   begin
     if RandomIntRange(0, 100) = 0 then SysUtils.Sleep(1);
@@ -1749,7 +1749,7 @@ end;
 procedure TRuins.ForceGoodsForSale(GoodsMask: TItemTypeMask);
 var Good: Byte;
 begin
-  for Good := 0 to 7 do
+  for Good := Ord(t_Food) to Ord(t_Narcotics) do
     if Good in GoodsMask then
     begin
       ShopGoods[Good].PriceState := GoodsMarket[Good].MinPrice * NextRandomFloatRange(0.9, 1.1, RandomState);
@@ -2227,7 +2227,7 @@ var Good: Byte; TargetPrice, PriceStep: Single; TargetCount, CountStep: Integer;
 begin
   if ShopUpdateMode in [sumDisabled, sumEquipmentOnly] then Exit;
   Race := PilotRace;
-  for Good := 0 to 7 do
+  for Good := Ord(t_Food) to Ord(t_Narcotics) do
   begin
     TargetCount := Round(GoodsMarket[Good].BaseStock * PlanetRaceMarket[Race].GoodsFactors[Good].StockFactor * StationGoodsFactors[TypeId, Good].StockFactor);
     TargetPrice := GoodsMarket[Good].AveragePrice * PlanetRaceMarket[Race].GoodsFactors[Good].PriceFactor * StationGoodsFactors[TypeId, Good].PriceFactor /

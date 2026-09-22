@@ -538,7 +538,7 @@ begin
     Artefacts.Delete(Artefacts.IndexOf(Artefact));
     Destination.Artefacts.Add(Artefact);
   end;
-  for Good := 0 to 7 do
+  for Good := Ord(t_Food) to Ord(t_Narcotics) do
     with CargoGoods[Good] do
     begin
       AddGoods(Good, Count, TotalCost);
@@ -575,7 +575,7 @@ begin
       GetPlayer.AddItemToPlayerStorage(Artefact, Location, -1);
       Artefacts.Delete(Artefacts.IndexOf(Artefact));
     end;
-    for Good := 0 to 7 do
+    for Good := Ord(t_Food) to Ord(t_Narcotics) do
       with CargoGoods[Good] do
       begin
         GetPlayer.AddGoodsToPlayerStorage(Good, Count, TotalCost, Location, -1);
@@ -900,7 +900,7 @@ begin
     begin
       Ship := TShip(CurrentStar.Ships[I]);
       if Ship.InNormalSpace and (Ship <> Self) and (Ship <> OwnerShip) and
-        ((RelationToShip(Ship) < 10) or (Ship = EnemyShip) or (Ship.EnemyShip = Self)) then
+        ((RelationToShip(Ship) < RelationBadMin) or (Ship = EnemyShip) or (Ship.EnemyShip = Self)) then
         for J := 1 to WeaponCount do
         begin
           Weapon := Weapons[J];

@@ -240,7 +240,7 @@ begin
     X := Left;
     while (X < Right) do
     begin
-      DrawTexture(Bitmap.Bitmap.GetTexture, X, Y, 255, $FFFFFF, @ClipRect, False, False);
+      DrawTexture(Bitmap.Bitmap.GetTexture, X, Y, 255, RgbWhite, @ClipRect, False, False);
       Inc(X, Width);
     end;
     Inc(Y, Height);

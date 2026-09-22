@@ -409,7 +409,7 @@ begin
         begin
           Origin := Data.GetFrameOrigin(Data.GetSequenceFrameIndex(0, Star.FrameIndex));
           DrawTexture(Data.GetOrCreateFrameSurface(Data.GetSequenceFrameIndex(0, Star.FrameIndex)),
-            Origin.X + Bounds.Left, Origin.Y + Bounds.Top, 255, $FFFFFF, @ClipRect, False, False);
+            Origin.X + Bounds.Left, Origin.Y + Bounds.Top, 255, RgbWhite, @ClipRect, False, False);
         end
         else
         begin

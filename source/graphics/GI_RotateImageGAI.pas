@@ -270,7 +270,7 @@ begin
         if Data <> nil then ImageCache.Release;
       end;
     end;
-    Vertices[0].Color := (Cardinal(Alpha) shl 24) or $FFFFFF;
+    Vertices[0].Color := (Cardinal(Alpha) shl 24) or RgbWhite;
     Vertices[1].Color := Vertices[0].Color;
     Vertices[2].Color := Vertices[0].Color;
     Vertices[3].Color := Vertices[0].Color;

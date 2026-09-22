@@ -576,11 +576,11 @@ begin
   if LoadedSaveVersion >= 155 then
     for LogicIndex := 0 to 2 do ChameleonLogic[LogicIndex] := Buffer.GetByte;
   Count := Buffer.GetInt32;
-  if (Count < 0) or (Count > 10000) then raise EAbort.Create('Err');
+  if (Count < 0) or (Count > MaxSavedListCount) then raise EAbort.Create('Err');
   for I := 0 to Count - 1 do
   begin
     New(Entry);
-    if Buffer.GetByte = 0 then Entry.LocationOwner := TObject(Buffer.GetUInt32 or $80000000)
+    if Buffer.GetByte = 0 then Entry.LocationOwner := TObject(Buffer.GetUInt32 or StoredItemPlanetFlag)
     else Entry.LocationOwner := TObject(Buffer.GetUInt32);
     Entry.SlotIndex := Buffer.GetInt32;
     Entry.Item := CreateItemByType(MigrateSavedItemType(Buffer.GetByte));
@@ -668,7 +668,7 @@ begin
   Count := Buffer.GetByte;
   for I := 0 to Count - 1 do UnresolvedFlagsDA8[I] := Buffer.GetBoolean;
   Count := Buffer.GetUInt32;
-  if (Count < 0) or (Count > 10000) then raise EAbort.Create('Err');
+  if (Count < 0) or (Count > MaxSavedListCount) then raise EAbort.Create('Err');
   for I := 0 to Count - 1 do
   begin
     Journal := TJournalRecord.Create;
@@ -676,7 +676,7 @@ begin
     Journal.LoadFromBuffer(Buffer);
   end;
   Count := Buffer.GetWord;
-  if (Count < 0) or (Count > 10000) then raise EAbort.Create('Err');
+  if (Count < 0) or (Count > MaxSavedListCount) then raise EAbort.Create('Err');
   for I := 0 to Count - 1 do
   begin
     New(News);
@@ -766,8 +766,8 @@ begin
   for I := 0 to StorageEntries.Count - 1 do
   begin
     Entry := PStorageEntry(StorageEntries[I]);
-    if Cardinal(Entry.LocationOwner) and $80000000 <> 0 then
-      Entry.LocationOwner := Galaxy.IdToPlanet(Cardinal(Entry.LocationOwner) and $7FFFFFFF)
+    if Cardinal(Entry.LocationOwner) and StoredItemPlanetFlag <> 0 then
+      Entry.LocationOwner := Galaxy.IdToPlanet(Cardinal(Entry.LocationOwner) and TaggedObjectIdMask)
     else Entry.LocationOwner := Galaxy.IdToShip(Cardinal(Entry.LocationOwner), True);
     Entry.Item.ResolveLoadedReferences(Galaxy);
   end;
@@ -1020,7 +1020,7 @@ begin
       Entry.Item := TGoods.Create;
       Quantity := NextRandomIntRange(7, 17, RandomState);
       (Entry.Item as TGoods).Init(t_Luxury, Quantity);
-      Entry.Item.Cost := Quantity * (GoodsMarket[3].AveragePrice div 4);
+      Entry.Item.Cost := Quantity * (GoodsMarket[Ord(t_Luxury)].AveragePrice div 4);
       if GetPlayer.DockedTo <> nil then Entry.LocationOwner := GetPlayer.DockedTo
       else Entry.LocationOwner := GetPlayer.CurrentPlanet;
       Entry.SlotIndex := 0;
@@ -1046,7 +1046,7 @@ begin
       Entry.Item := TGoods.Create;
       Quantity := NextRandomIntRange(4, 10, RandomState);
       (Entry.Item as TGoods).Init(t_Narcotics, Quantity);
-      Entry.Item.Cost := Quantity * (GoodsMarket[7].AveragePrice div 2);
+      Entry.Item.Cost := Quantity * (GoodsMarket[Ord(t_Narcotics)].AveragePrice div 2);
       if GetPlayer.DockedTo <> nil then Entry.LocationOwner := GetPlayer.DockedTo
       else Entry.LocationOwner := GetPlayer.CurrentPlanet;
       Entry.SlotIndex := 0;
@@ -1083,7 +1083,7 @@ begin
       Entry.Item := TGoods.Create;
       Quantity := NextRandomIntRange(100, 200, RandomState);
       (Entry.Item as TGoods).Init(t_Minerals, Quantity);
-      Entry.Item.Cost := Quantity * (GoodsMarket[4].AveragePrice div 2);
+      Entry.Item.Cost := Quantity * (GoodsMarket[Ord(t_Minerals)].AveragePrice div 2);
       if GetPlayer.DockedTo <> nil then Entry.LocationOwner := GetPlayer.DockedTo
       else Entry.LocationOwner := GetPlayer.CurrentPlanet;
       Entry.SlotIndex := 0;
@@ -1193,7 +1193,7 @@ begin
       Entry.Item := TGoods.Create;
       Quantity := NextRandomIntRange(14, 20, RandomState);
       (Entry.Item as TGoods).Init(t_Narcotics, Quantity);
-      Entry.Item.Cost := Quantity * (GoodsMarket[7].AveragePrice div 2);
+      Entry.Item.Cost := Quantity * (GoodsMarket[Ord(t_Narcotics)].AveragePrice div 2);
       if GetPlayer.DockedTo <> nil then Entry.LocationOwner := GetPlayer.DockedTo
       else Entry.LocationOwner := GetPlayer.CurrentPlanet;
       Entry.SlotIndex := 0;
@@ -1238,7 +1238,7 @@ begin
       Entry.Item := TGoods.Create;
       Quantity := NextRandomIntRange(15, 30, RandomState);
       (Entry.Item as TGoods).Init(t_Luxury, Quantity);
-      Entry.Item.Cost := Quantity * (GoodsMarket[3].AveragePrice div 2);
+      Entry.Item.Cost := Quantity * (GoodsMarket[Ord(t_Luxury)].AveragePrice div 2);
       if GetPlayer.DockedTo <> nil then Entry.LocationOwner := GetPlayer.DockedTo
       else Entry.LocationOwner := GetPlayer.CurrentPlanet;
       Entry.SlotIndex := 0;
@@ -1260,7 +1260,7 @@ begin
       Entry.Item := TGoods.Create;
       Quantity := NextRandomIntRange(10, 20, RandomState);
       (Entry.Item as TGoods).Init(t_Alcohol, Quantity);
-      Entry.Item.Cost := Quantity * (GoodsMarket[5].AveragePrice div 2);
+      Entry.Item.Cost := Quantity * (GoodsMarket[Ord(t_Alcohol)].AveragePrice div 2);
       if GetPlayer.DockedTo <> nil then Entry.LocationOwner := GetPlayer.DockedTo
       else Entry.LocationOwner := GetPlayer.CurrentPlanet;
       Entry.SlotIndex := 0;

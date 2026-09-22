@@ -452,7 +452,7 @@ begin
         while TileIndex < Image.TileCount do
         begin
           TileOrigin := Image.GetTileOrigin(TileIndex);
-          DrawTexture(Image.GetOrCreateSurface(TileIndex), X + TileOrigin.X, Y + TileOrigin.Y, Alpha, $FFFFFF, @ClipRect, False, HardwareMirrorHorizontal);
+          DrawTexture(Image.GetOrCreateSurface(TileIndex), X + TileOrigin.X, Y + TileOrigin.Y, Alpha, RgbWhite, @ClipRect, False, HardwareMirrorHorizontal);
           Inc(TileIndex);
         end;
         Inc(X, Width);
@@ -467,7 +467,7 @@ begin
       X := Left;
       while X < Right do
       begin
-        DrawTexture(Image.GetOrCreateSurface(0), X, Y, Alpha, $FFFFFF, @ClipRect, False, HardwareMirrorHorizontal);
+        DrawTexture(Image.GetOrCreateSurface(0), X, Y, Alpha, RgbWhite, @ClipRect, False, HardwareMirrorHorizontal);
         Inc(X, Width);
       end;
       Inc(Y, Height);

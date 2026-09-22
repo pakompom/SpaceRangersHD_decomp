@@ -3017,7 +3017,7 @@ begin
     begin
       if TurnCalculationPhase = tcpGalaxyFinished then QueuePlayerStarTurnCalculation
       else if ((GetPlayer.Order <> soJump) and (GetPlayer.Order <> soJumpHole)) or
-        ((GetPlayer.Order = soJumpHole) and (GetPlayer.OrderStateData = -65536)) then
+        ((GetPlayer.Order = soJumpHole) and (GetPlayer.OrderStateData = HoleExitOrderState)) then
       begin
         StarMapScreen.SetMapCenterManually(TruncatePointF(GetPlayer.Position));
         StarMapScreen.ResumeMode := smrTurnFilm;

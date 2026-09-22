@@ -1162,7 +1162,7 @@ var
       Description := FormatText1(LocalizedText('FormInfo.Sector'),'<color=255,240,100>','<SectorName>',Station.CurrentStar.Constellation.GetName);
       Description := Description + #13#10 + FormatText1(LocalizedText('FormInfo.Star'),'<color=255,240,100>','<StarName>',Station.CurrentStar.Name);
       GoodsText := '';
-      for GoodIndex := 0 to 7 do
+      for GoodIndex := Low(GoodsTextOrder) to High(GoodsTextOrder) do
       begin
         Good := GoodsTextOrder[GoodIndex];
         GoodsText := GoodsText + #13#10 + '<td=' + IntToStr(GiScalePixels(5)) + '>' + '<align=center>' + WrapTextInColor(IntToStr(GoodIndex + 1),'') + '.' + '</align>';
@@ -1200,7 +1200,7 @@ var
         GoodsText := '';
         if (Planet.IsCoalitionOwned or (Planet.OwnerId = oiPirate)) and (Planet.CurrentStar.Status.CustomFaction = WideString('')) then
         begin
-      for GoodIndex := 0 to 7 do
+      for GoodIndex := Low(GoodsTextOrder) to High(GoodsTextOrder) do
       begin
         Good := GoodsTextOrder[GoodIndex];
         GoodsText := GoodsText + #13#10 + '<td=' + IntToStr(GiScalePixels(5)) + '>' + '<align=center>' + WrapTextInColor(IntToStr(GoodIndex + 1),'') + '.' + '</align>';
@@ -1708,7 +1708,7 @@ begin
                 if Planet.OwnerId in [oiMaloc..oiGaal,oiPirate] then
                 begin
                   Heading := '';
-                  for GoodsIndex := 0 to 7 do
+                  for GoodsIndex := Low(GoodsTextOrder) to High(GoodsTextOrder) do
                   begin
                     Good := GoodsTextOrder[GoodsIndex];
                     if ((MinGoodsCount = 0) or (Planet.Goods[Good].Count >= MinGoodsCount)) and GoodsSelected[Good] and
@@ -1752,7 +1752,7 @@ begin
                   if not Station.NoLanding then
                   begin
                     Heading := '';
-                    for GoodsIndex := 0 to 7 do
+                    for GoodsIndex := Low(GoodsTextOrder) to High(GoodsTextOrder) do
                     begin
                       Good := GoodsTextOrder[GoodsIndex];
                       if ((MinGoodsCount = 0) or (Station.ShopGoods[Good].Count >= MinGoodsCount)) and GoodsSelected[Good] and

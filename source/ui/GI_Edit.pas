@@ -524,7 +524,7 @@ begin
     begin
       Bitmap := AcquireOrCreateBitmap(BackgroundCache);
       if HardwareRenderingEnabled then
-        DrawTexture(Bitmap.Bitmap.GetTexture, HitTestBounds.Left, HitTestBounds.Top, 255, $FFFFFF, @ClipRect, False, False)
+        DrawTexture(Bitmap.Bitmap.GetTexture, HitTestBounds.Left, HitTestBounds.Top, 255, RgbWhite, @ClipRect, False, False)
       else
         Ex_OKGR_Copy_XY_XY_WORD(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes, ClipRect.Left, ClipRect.Top, Bitmap.Bitmap.GetPixels, Bitmap.Bitmap.PitchBytes, ClipRect.Left - HitTestBounds.Left, ClipRect.Top - HitTestBounds.Top, ClipRect.Right - ClipRect.Left, ClipRect.Bottom - ClipRect.Top);
     end;
@@ -569,7 +569,7 @@ begin
         begin
           Buffer.ClearPixels;
           Font.DrawTaggedText32(Buffer.GetPixels, Buffer.PitchBytes, X - HitTestBounds.Left, Y - HitTestBounds.Top, CharacterText, Classes.Rect(0, 0, Buffer.Width, Buffer.Height));
-          DrawTexture(Buffer.GetTexture, HitTestBounds.Left, HitTestBounds.Top, 255, $FFFFFF, @ClipRect, False, False);
+          DrawTexture(Buffer.GetTexture, HitTestBounds.Left, HitTestBounds.Top, 255, RgbWhite, @ClipRect, False, False);
         end
         else Font.DrawTaggedText16(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes, X, Y, CharacterText, ClipRect);
       end;

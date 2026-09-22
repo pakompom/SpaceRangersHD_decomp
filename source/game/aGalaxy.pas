@@ -1462,7 +1462,7 @@ begin
     end;
     Stage := 1;
     Count := Buffer.GetWord;
-    if (Count < 1) or (Count > 10000) then raise EAbort.Create('Err');
+    if (Count < 1) or (Count > MaxSavedListCount) then raise EAbort.Create('Err');
     for I := 0 to Count - 1 do begin
       Constellation := TConstellation.Create;
       Constellations.Add(Constellation);
@@ -1472,7 +1472,7 @@ begin
     MainPiratePlanet := nil;
     Stage := 2;
     Count := Buffer.GetWord;
-    if (Count < 1) or (Count > 10000) then raise EAbort.Create('Err');
+    if (Count < 1) or (Count > MaxSavedListCount) then raise EAbort.Create('Err');
     for I := 0 to Count - 1 do begin
       Star := TStar.Create;
       Stars.Add(Star);
@@ -1480,7 +1480,7 @@ begin
     end;
     Stage := 3;
     Count := Buffer.GetWord;
-    if (Count < 0) or (Count > 10000) then raise EAbort.Create('Err');
+    if (Count < 0) or (Count > MaxSavedListCount) then raise EAbort.Create('Err');
     for I := 0 to Count - 1 do begin
       Hole := THole.Create;
       Holes.Add(Hole);
@@ -1488,7 +1488,7 @@ begin
     end;
     if LoadedSaveVersion >= 122 then begin
       Count := Buffer.GetWord;
-      if (Count < 0) or (Count > 10000) then raise EAbort.Create('Err');
+      if (Count < 0) or (Count > MaxSavedListCount) then raise EAbort.Create('Err');
       for I := 0 to Count - 1 do begin
         Stored := TStoredItem.CreateEmpty;
         StoredItems.Add(Stored);
@@ -1498,7 +1498,7 @@ begin
     Stage := 4;
     ClearJumpGates;
     Count := Buffer.GetWord;
-    if (Count < 0) or (Count > 10000) then raise EAbort.Create('Err');
+    if (Count < 0) or (Count > MaxSavedListCount) then raise EAbort.Create('Err');
     for I := 0 to Count - 1 do begin
       Gate := CreateJumpGate(False);
       X := Buffer.GetSingle;
@@ -1511,7 +1511,7 @@ begin
     end;
     Stage := 5;
     Count := Buffer.GetWord;
-    if (Count < 1) or (Count > 10000) then raise EAbort.Create('Err');
+    if (Count < 1) or (Count > MaxSavedListCount) then raise EAbort.Create('Err');
     for I := 0 to Count - 1 do Planets.Add(Pointer(Buffer.GetUInt32));
     for I := 0 to Stars.Count - 1 do begin
       Star := TStar(Stars[I]);
@@ -1528,14 +1528,14 @@ begin
     end;
     Stage := 6;
     Count := Buffer.GetWord;
-    if (Count < 1) or (Count > 10000) then raise EAbort.Create('Err');
+    if (Count < 1) or (Count > MaxSavedListCount) then raise EAbort.Create('Err');
     for I := 0 to Count - 1 do Rangers.Add(Pointer(Buffer.GetUInt32));
     if LoadedSaveVersion >= 133 then
       for Race := oiMaloc to oiGaal do RangerSpawnQuotas[Race] := Buffer.GetInt32;
     if LoadedSaveVersion < 102 then begin
       Stage := 7;
       Count := Buffer.GetWord;
-      if (Count < 0) or (Count > 10000) then raise EAbort.Create('Err');
+      if (Count < 0) or (Count > MaxSavedListCount) then raise EAbort.Create('Err');
       for I := 0 to Count - 1 do Buffer.GetUInt32;
     end;
     KellerTargetStar := TStar(Buffer.GetUInt32);
@@ -1670,7 +1670,7 @@ begin
     PlayerOldQuests := TList.Create;
     Count := Buffer.GetWord;
     Stage := 26;
-    if (Count < 0) or (Count > 10000) then raise EAbort.Create('Err in PlayerQuests load');
+    if (Count < 0) or (Count > MaxSavedListCount) then raise EAbort.Create('Err in PlayerQuests load');
     for I := 0 to Count - 1 do begin
       New(OldQuest);
       PlayerOldQuests.Add(OldQuest);
@@ -1684,7 +1684,7 @@ begin
     end;
     Stage := 27;
     Count := Buffer.GetWord;
-    if (Count < 0) or (Count > 10000) then raise EAbort.Create('Err');
+    if (Count < 0) or (Count > MaxSavedListCount) then raise EAbort.Create('Err');
     for I := 0 to Count - 1 do begin
       New(News);
       PlanetNews.Add(News);
@@ -1789,7 +1789,7 @@ begin
     end;
     if LoadedSaveVersion >= 112 then begin
       Count := Buffer.GetWord;
-      if (Count < 0) or (Count > 10000) then raise EAbort.Create('Err');
+      if (Count < 0) or (Count > MaxSavedListCount) then raise EAbort.Create('Err');
       for I := 0 to Count - 1 do begin
         StateOverride := TInterfaceStateOverride.Create;
         InterfaceStateOverrides.Add(StateOverride);
@@ -1798,14 +1798,14 @@ begin
     end;
     if LoadedSaveVersion >= 117 then begin
       Count := Buffer.GetWord;
-      if (Count < 0) or (Count > 10000) then raise EAbort.Create('Err');
+      if (Count < 0) or (Count > MaxSavedListCount) then raise EAbort.Create('Err');
       for I := 0 to Count - 1 do begin
         TextOverride := TInterfaceTextOverride.Create;
         InterfaceTextOverrides.Add(TextOverride);
         TextOverride.LoadFromBuffer(Buffer);
       end;
       Count := Buffer.GetWord;
-      if (Count < 0) or (Count > 10000) then raise EAbort.Create('Err');
+      if (Count < 0) or (Count > MaxSavedListCount) then raise EAbort.Create('Err');
       for I := 0 to Count - 1 do begin
         ImageOverride := TInterfaceImageOverride.Create;
         InterfaceImageOverrides.Add(ImageOverride);
@@ -1814,7 +1814,7 @@ begin
     end;
     if LoadedSaveVersion >= 119 then begin
       Count := Buffer.GetWord;
-      if (Count < 0) or (Count > 10000) then raise EAbort.Create('Err');
+      if (Count < 0) or (Count > MaxSavedListCount) then raise EAbort.Create('Err');
       for I := 0 to Count - 1 do begin
         PositionOverride := TInterfacePosOverride.Create;
         InterfacePositionOverrides.Add(PositionOverride);
@@ -1823,7 +1823,7 @@ begin
     end;
     if LoadedSaveVersion >= 134 then begin
       Count := Buffer.GetWord;
-      if (Count < 0) or (Count > 10000) then raise EAbort.Create('Err');
+      if (Count < 0) or (Count > MaxSavedListCount) then raise EAbort.Create('Err');
       for I := 0 to Count - 1 do begin
         SizeOverride := TInterfaceSizeOverride.Create;
         InterfaceSizeOverrides.Add(SizeOverride);
@@ -3640,7 +3640,7 @@ begin
     (ShipScreen.SelectedHoldItem <> nil) then XorStateObject(ShipScreen.SelectedHoldItem);
   XorStateUInt32(PCardinal(@GoodsShopScreen.PartnerCargoLimit)^);
   XorStateUInt32(PCardinal(@GoodsShopScreen.PartnerMoneyLimit)^);
-  for Good := 0 to 7 do begin
+  for Good := Ord(t_Food) to Ord(t_Narcotics) do begin
   XorStateUInt32(PCardinal(@GoodsShopScreen.TradeRows[Good].Count)^);
   XorStateUInt32(PCardinal(@GoodsShopScreen.TradeRows[Good].MaximumPrice)^);
   XorStateUInt32(PCardinal(@GoodsShopScreen.TradeRows[Good].PurchasePrice)^);
@@ -3977,7 +3977,7 @@ begin
         if ShipScreen.SelectedHoldItem <> nil then AccumulateIntegrityItem(Pointer(ShipScreen.SelectedHoldItem));
     AccumulateIntegrityUInt32(GoodsShopScreen.PartnerCargoLimit);
     AccumulateIntegrityUInt32(GoodsShopScreen.PartnerMoneyLimit);
-    for Good := 0 to 7 do
+    for Good := Ord(t_Food) to Ord(t_Narcotics) do
     begin
       AccumulateIntegrityUInt32(GoodsShopScreen.TradeRows[Good].Count);
       AccumulateIntegritySingle(GoodsShopScreen.TradeRows[Good].MaximumPrice);
@@ -4777,7 +4777,7 @@ begin
     BackgroundImage := Buffer.GetByte;
     Stage := 1;
     Count := Buffer.GetWord;
-    if (Count < 0) or (Count > 10000) then raise EAbort.Create('Err');
+    if (Count < 0) or (Count > MaxSavedListCount) then raise EAbort.Create('Err');
     Stage := 2;
     for I := 0 to Count - 1 do begin
       Planet := TPlanet.Create;
@@ -4787,7 +4787,7 @@ begin
     end;
     Stage := 3;
     Count := Buffer.GetWord;
-    if (Count < 0) or (Count > 10000) then raise EAbort.Create('Err');
+    if (Count < 0) or (Count > MaxSavedListCount) then raise EAbort.Create('Err');
     Stage := 4;
     for I := 0 to Count - 1 do begin
       Asteroid := TAsteroid.Create;
@@ -4797,7 +4797,7 @@ begin
     end;
     Stage := 5;
     Count := Buffer.GetWord;
-    if (Count < 0) or (Count > 10000) then raise EAbort.Create('Err');
+    if (Count < 0) or (Count > MaxSavedListCount) then raise EAbort.Create('Err');
     Stage := 6;
     for I := 0 to Count - 1 do begin
       Tag := Buffer.GetByte;
@@ -4809,7 +4809,7 @@ begin
     end;
     Stage := 7;
     Count := Buffer.GetWord;
-    if (Count < 0) or (Count > 10000) then raise EAbort.Create('Err');
+    if (Count < 0) or (Count > MaxSavedListCount) then raise EAbort.Create('Err');
     Stage := 8;
     for I := 0 to Count - 1 do begin
       Item := CreateItemByType(MigrateSavedItemType(Buffer.GetByte));
@@ -4818,7 +4818,7 @@ begin
     end;
     Stage := 9;
     Count := Buffer.GetWord;
-    if (Count < 0) or (Count > 10000) then raise EAbort.Create('Err');
+    if (Count < 0) or (Count > MaxSavedListCount) then raise EAbort.Create('Err');
     for I := 0 to Count - 1 do begin
       Drop := AllocEC(SizeOf(TMovingDropItemEntry));
       Drop.Destination.X := Buffer.GetSingle;
@@ -5920,7 +5920,7 @@ begin
   if PendingPlayerFollowTarget <> nil then Destination := PendingPlayerFollowTarget.Position
   else if GetPlayer.Order = soMove then Destination := GetPlayer.OrderDestination
   else if GetPlayer.Order = soJump then Destination := GetPlayer.OrderDestination
-  else if (GetPlayer.Order = soJumpHole) and (GetPlayer.OrderStateData <> -65536) then Destination := GetPlayer.OrderDestination
+  else if (GetPlayer.Order = soJumpHole) and (GetPlayer.OrderStateData <> HoleExitOrderState) then Destination := GetPlayer.OrderDestination
   else if GetPlayer.Order = soLand then
   begin
     if GetPlayer.OrderTarget is TShip then Destination := TShip(GetPlayer.OrderTarget).Position
@@ -8318,7 +8318,7 @@ var
   Good: Byte;
   PriceSpread: Single;
 begin
-  for Good := 0 to 7 do
+  for Good := Ord(t_Food) to Ord(t_Narcotics) do
   begin
     aConst.GoodsMarket[Good].MinPrice := Self.ScaleGoodsPriceByGalaxyAge(aConst.GoodsMarketBase[Good].MinPrice);
     aConst.GoodsMarket[Good].AveragePrice := Self.ScaleGoodsPriceByGalaxyAge(aConst.GoodsMarketBase[Good].AveragePrice);

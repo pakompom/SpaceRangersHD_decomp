@@ -773,7 +773,7 @@ begin
   BoostInventionLevels(aConst.PlanetRaceMarket[RaceId].InitialInventionBoostCount);
   ResearchLevelPercent := NextRandomIntRange(20, 40, RandomState);
   ResearchLevelStep := NextRandomIntRange(5, 10, RandomState);
-  for Good := 0 to 7 do
+  for Good := Ord(t_Food) to Ord(t_Narcotics) do
   begin
     Goods[Good].Count := NextRandomIntRange(GoodsMarket[Good].BaseStock div 2, GoodsMarket[Good].BaseStock, RandomState);
     Goods[Good].PriceState := GoodsMarket[Good].AveragePrice;
@@ -1125,7 +1125,7 @@ begin
   BoostInventionLevels(aConst.PlanetRaceMarket[RaceId].InitialInventionBoostCount);
   ResearchLevelPercent := NextRandomIntRange(20, 40, RandomState);
   ResearchLevelStep := NextRandomIntRange(5, 10, RandomState);
-  for Good := 0 to 7 do
+  for Good := Ord(t_Food) to Ord(t_Narcotics) do
   begin
     Goods[Good].Count := NextRandomIntRange(GoodsMarket[Good].BaseStock div 2, GoodsMarket[Good].BaseStock, RandomState);
     Goods[Good].PriceState := GoodsMarket[Good].AveragePrice;
@@ -1513,7 +1513,7 @@ begin
     Government := TPlanetGovernment(Buffer.GetByte);
     if GlobalsV.LoadedSaveVersion < 96 then Buffer.GetByte;
     Stage := 2;
-    for Good := 0 to 7 do
+    for Good := Ord(t_Food) to Ord(t_Narcotics) do
     begin
       Goods[Good].Count := Buffer.GetInt32;
       Goods[Good].PriceState := Buffer.GetSingle;
@@ -1524,11 +1524,11 @@ begin
     end;
     Stage := 3;
     Count := Buffer.GetWord;
-    if (Count < 0) or (Count > 10000) then raise SysUtils.EAbort.Create('Err');
+    if (Count < 0) or (Count > MaxSavedListCount) then raise SysUtils.EAbort.Create('Err');
     for i := 0 to Count - 1 do RangerRelations.Add(Pointer(Buffer.GetByte));
     Stage := 4;
     Count := Buffer.GetWord;
-    if (Count < 0) or (Count > 10000) then raise SysUtils.EAbort.Create('Err');
+    if (Count < 0) or (Count > MaxSavedListCount) then raise SysUtils.EAbort.Create('Err');
     for i := 0 to Count - 1 do
     begin
       Item := CreateItemByType(MigrateSavedItemType(Buffer.GetByte));
@@ -1537,7 +1537,7 @@ begin
     end;
     Stage := 5;
     Count := Buffer.GetWord;
-    if (Count < 0) or (Count > 10000) then raise SysUtils.EAbort.Create('Err');
+    if (Count < 0) or (Count > MaxSavedListCount) then raise SysUtils.EAbort.Create('Err');
     for i := 0 to Count - 1 do
     begin
       ShipType := Buffer.GetByte;
@@ -2167,7 +2167,7 @@ begin
       end;
       oiDominator:
       begin
-        for Good := 0 to 7 do Goods[Good].Count := 0;
+        for Good := Ord(t_Food) to Ord(t_Narcotics) do Goods[Good].Count := 0;
         Money := 0;
         if NextRandomUnitFloat(RandomState) < 0.7 then AdvanceInventionProgress;
         if NextRandomUnitFloat(RandomState) < 0.2 then RefreshEquipmentShopInventory;
@@ -3234,7 +3234,7 @@ begin
   else Exit;
   SelectedGood := 42;
   ConditionIndex := 0;
-  for GoodsIndex := 0 to 7 do
+  for GoodsIndex := Ord(t_Food) to Ord(t_Narcotics) do
     if aConst.GoodsLegalOnPlanet[GoodsIndex, RaceId, Government] then
       if Goods[GoodsIndex].Count >= aConst.GoodsMarket[GoodsIndex].BaseStock div 2 then
       begin
@@ -4304,7 +4304,7 @@ begin
   begin
     Ship := CurrentStar.Ships[i];
     if Ship.InNormalSpace then
-      if RelationToShip(Ship) < 10 then
+      if RelationToShip(Ship) < RelationBadMin then
       begin
         Result := True;
         Exit;

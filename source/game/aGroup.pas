@@ -5,6 +5,11 @@ interface
 
 uses Classes, EC_Buf, EC_Struct, Windows, aGalaxy, aShip;
 
+const
+  GroupWaitArrival = 0;
+  GroupWaitAssembly = 2;
+  GroupWaitUntilTurn = 3;
+
 type
   TGroupRouteOrder = record // @size $18
     Kind: Byte; // @offset $00 Same numeric orders as TShipOrder.
@@ -42,7 +47,7 @@ type
 
 implementation
 
-uses SysUtils, Math, aPlanet, aMyFunction, Globals, GlobalsV;
+uses SysUtils, Math, aPlanet, aMyFunction, Globals, GlobalsV, aGalaxyStruct;
 
 { @routine $4EE1E0 TGroup_Create }
 constructor TGroup.Create;
@@ -85,11 +90,11 @@ begin
   for I := 0 to Count - 1 do begin
     Order := Route[I];
     Buffer.AddAnsiChar(AnsiChar(Order.Kind));
-    if Order.Kind = 3 then Buffer.AddDWord((Order.Target as TStar).Id)
-    else if Order.Kind = 4 then Buffer.AddDWord((Order.Target as THole).Id)
-    else if Order.Kind = 2 then begin if Order.Target is TShip then Buffer.AddDWord(Cardinal((Order.Target as TShip).Id) or $80000000)
+    if Order.Kind = Byte(soJump) then Buffer.AddDWord((Order.Target as TStar).Id)
+    else if Order.Kind = Byte(soJumpHole) then Buffer.AddDWord((Order.Target as THole).Id)
+    else if Order.Kind = Byte(soLand) then begin if Order.Target is TShip then Buffer.AddDWord(Cardinal((Order.Target as TShip).Id) or OrderTargetShipFlag)
          else Buffer.AddDWord((Order.Target as TPlanet).Id);
-    end else if Order.Kind = 6 then Buffer.AddDWord((Order.Target as TShip).Id)
+    end else if Order.Kind = Byte(soFollowShip) then Buffer.AddDWord((Order.Target as TShip).Id)
     else Buffer.AddDWord(0);
     Buffer.AddSingle(Order.Destination.X);
     Buffer.AddSingle(Order.Destination.Y);
@@ -110,10 +115,10 @@ begin
   RandomState := Buffer.GetUInt32;
   Buffer.GetByte;
   Count := Buffer.GetWord;
-  if (Count < 0) or (Count > 10000) then raise EAbort.Create('Err TGroup.Load FShips');
+  if (Count < 0) or (Count > MaxSavedListCount) then raise EAbort.Create('Err TGroup.Load FShips');
   for I := 0 to Count - 1 do Ships.Add(Pointer(Buffer.GetUInt32));
   Count := Buffer.GetWord;
-  if (Count < 0) or (Count > 10000) then raise EAbort.Create('Err TGroup.Load FOrders');
+  if (Count < 0) or (Count > MaxSavedListCount) then raise EAbort.Create('Err TGroup.Load FOrders');
   SetLength(Route, Count);
   for I := 0 to Count - 1 do begin
     Route[I].Kind := Buffer.GetByte;
@@ -136,12 +141,12 @@ begin
     Ship.LiberationGroup := Self;
   end;
   for I := 0 to Length(Route) - 1 do begin
-    if Route[I].Kind = 3 then Route[I].Target := TObject(Galaxy.IdToStar(Cardinal(Route[I].Target))) as TStar
-    else if Route[I].Kind = 4 then Route[I].Target := TObject(Galaxy.IdToHole(Cardinal(Route[I].Target))) as THole
-    else if Route[I].Kind = 2 then begin if Cardinal(Route[I].Target) and $80000000 = $80000000 then
-           Route[I].Target := TObject(Galaxy.IdToShip(Cardinal(Route[I].Target) and $7FFFFFFF, True)) as TShip
+    if Route[I].Kind = Byte(soJump) then Route[I].Target := TObject(Galaxy.IdToStar(Cardinal(Route[I].Target))) as TStar
+    else if Route[I].Kind = Byte(soJumpHole) then Route[I].Target := TObject(Galaxy.IdToHole(Cardinal(Route[I].Target))) as THole
+    else if Route[I].Kind = Byte(soLand) then begin if Cardinal(Route[I].Target) and OrderTargetShipFlag = OrderTargetShipFlag then
+           Route[I].Target := TObject(Galaxy.IdToShip(Cardinal(Route[I].Target) and TaggedObjectIdMask, True)) as TShip
          else Route[I].Target := TObject(Galaxy.IdToPlanet(Cardinal(Route[I].Target))) as TPlanet;
-    end else if Route[I].Kind = 6 then Route[I].Target := TObject(Galaxy.IdToShip(Cardinal(Route[I].Target), True)) as TShip
+    end else if Route[I].Kind = Byte(soFollowShip) then Route[I].Target := TObject(Galaxy.IdToShip(Cardinal(Route[I].Target), True)) as TShip
     else Route[I].Target := nil;
     end;
 end;
@@ -210,18 +215,18 @@ begin
   Result := True;
   if not (((TargetStar <> nil) and (AssemblyStar <> nil)) or SelectLiberationTarget) then Exit;
   SetLength(Route, 4);
-  with Route[0] do begin Kind := 3; Target := AssemblyStar; WaitMode := 0; WaitUntilTurn := 0; end;
+  with Route[0] do begin Kind := Byte(soJump); Target := AssemblyStar; WaitMode := GroupWaitArrival; WaitUntilTurn := 0; end;
   Planet := TObject(AssemblyStar.FindFirstInhabitedPlanet) as TPlanet;
   if Planet = nil then begin Result := False; Disband; Exit; end;
-  with Route[1] do begin Kind := 2; Target := Planet; WaitMode := 0; WaitUntilTurn := 0; end;
+  with Route[1] do begin Kind := Byte(soLand); Target := Planet; WaitMode := GroupWaitArrival; WaitUntilTurn := 0; end;
   with Route[2] do begin
-    Kind := 1;
+    Kind := Byte(soMove);
     Target := nil;
     Destination := AssemblyStar.GetBoundaryPointTowardStar(TargetStar);
-    WaitMode := 3;
+    WaitMode := GroupWaitUntilTurn;
     WaitUntilTurn := Galaxy.CurrentTurn + NextRandomIntRange(45, 55, RandomState);
   end;
-  with Route[3] do begin Kind := 3; Target := TargetStar; WaitMode := 0; WaitUntilTurn := 0; end;
+  with Route[3] do begin Kind := Byte(soJump); Target := TargetStar; WaitMode := GroupWaitArrival; WaitUntilTurn := 0; end;
   if TargetStar.Status.CustomFaction <> '' then Text := PickLocalizedTextVariant('GalaxyNews.Group.WarriorLiberator.Create' + TargetStar.Status.CustomFaction, RandomState * (Galaxy.CurrentTurn mod 71))
   else if TargetStar.ControlFaction = sfPirates then Text := PickLocalizedTextVariant('GalaxyNews.Group.WarriorLiberator.CreatePirates', RandomState * (Galaxy.CurrentTurn mod 71))
   else Text := PickLocalizedTextVariant('GalaxyNews.Group.WarriorLiberator.Create', RandomState * (Galaxy.CurrentTurn mod 71));

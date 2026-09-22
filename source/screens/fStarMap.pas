@@ -800,7 +800,7 @@ begin
     Stage := 13;
     if Galaxy <> nil then SpaceProcess.CloseSpace;
     Stage := 14;
-    if CacheLoader.IsRunning then CacheLoader.WaitForIdle($FFFFFFFF);
+    if CacheLoader.IsRunning then CacheLoader.WaitForIdle(INFINITE);
     Stage := 15;
     WaitForTurnCalculation;
     Stage := 16;

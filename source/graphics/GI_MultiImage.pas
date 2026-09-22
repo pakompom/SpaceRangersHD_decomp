@@ -497,7 +497,7 @@ begin
               Data := AcquireCachedGi(Image.ImageCache);
               try
                 if HardwareRenderingEnabled then
-                  DrawTexture(Data.GetOrCreateSurface(0), Bounds.Left, Bounds.Top, 255, $FFFFFF, @ClipRect, False, False)
+                  DrawTexture(Data.GetOrCreateSurface(0), Bounds.Left, Bounds.Top, 255, RgbWhite, @ClipRect, False, False)
                 else
                   Data.Image.DrawToGraphBuf(ScreenRenderBuffer, Bounds.Left, Bounds.Top, ClipRect, 0, 255);
               finally

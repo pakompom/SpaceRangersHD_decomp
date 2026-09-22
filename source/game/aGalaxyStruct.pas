@@ -16,6 +16,21 @@ const
   // TerronToStarTurn packs this transformation marker with a turn number.
   TerronTransformationFlag = $40000000;
 
+  // RelationValueToLevel boundaries; distinct from the rl* category ordinals.
+  RelationBadMin = 10;
+  RelationNormalMin = 30;
+  RelationGoodMin = 60;
+  RelationExcellentMin = 80;
+
+  // Common collection-count guard in saved galaxy/ship/planet records.
+  MaxSavedListCount = 10000;
+  // soJumpHole has finished transit and is following its emergence path.
+  HoleExitOrderState = -65536;
+  // The landing target and stored-item loader use opposite high-bit tags.
+  OrderTargetShipFlag = $80000000;
+  StoredItemPlanetFlag = $80000000;
+  TaggedObjectIdMask = $7FFFFFFF;
+
   // TShip.TypeId names from ShipTypeNames at $87D038 (initialized by the table
   // at $838040) and the subclass initializers.
   // These are distinct from the hull-generation codes returned by ShipToHullType.

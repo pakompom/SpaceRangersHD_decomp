@@ -228,7 +228,7 @@ begin
   else
   begin
     if not (GetPlayer.Order in [soJump, soJumpHole, soTeleport]) or
-      ((GetPlayer.Order = soJumpHole) and (GetPlayer.OrderStateData = -65536)) then
+      ((GetPlayer.Order = soJumpHole) and (GetPlayer.OrderStateData = HoleExitOrderState)) then
     begin
       QueueGalaxyTurnCalculation;
       StarMapScreen.SetMapCenterManually(TruncatePointF(GetPlayer.Position));

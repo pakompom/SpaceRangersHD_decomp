@@ -136,7 +136,7 @@ begin
   Name := '';
   SelectUniqueName(ModShipNameConfig);
   if Length(GetName) = 0 then SelectUniqueName(LanguageDataConfig.GetBlock('ShipName'));
-  for Good := 0 to 7 do begin CargoGoods[Good].Count := 0; CargoGoods[Good].TotalCost := 0; end;
+  for Good := Ord(t_Food) to Ord(t_Narcotics) do begin CargoGoods[Good].Count := 0; CargoGoods[Good].TotalCost := 0; end;
   if GetPlayer <> nil then begin
     Rank := NextRandomIntRange(0, GetPlayer.Rank, RandomState);
     if Rank > 3 then Rank := 3;
@@ -352,7 +352,7 @@ var Good: Byte; Quantity: Integer;
 begin
   case TransportType of
   ttTransport:
-    for Good := 0 to 7 do begin
+    for Good := Ord(t_Food) to Ord(t_Narcotics) do begin
       if (Good in [Ord(t_Food)..Ord(t_Narcotics)]) and (CurrentPlanet.Goods[Good].Count > 0) and
         (ShopGoodsPurchasePrice(Good, nil) < GoodsMarket[Good].AveragePrice) and (CargoFreeSpace > 0) then begin
         Quantity := Min(Trunc(Money / ShopGoodsPurchasePrice(Good, nil)), CargoFreeSpace);
@@ -364,8 +364,8 @@ begin
           SellGoodsToLocation(Good, CargoGoods[Good].Count);
     end;
   ttLiner:
-    for Good := 0 to 7 do begin
-      if (Good in [0..3, 5, 7]) and (CurrentPlanet.Goods[Good].Count > 0) and
+    for Good := Ord(t_Food) to Ord(t_Narcotics) do begin
+      if (Good in [Ord(t_Food)..Ord(t_Luxury), Ord(t_Alcohol), Ord(t_Narcotics)]) and (CurrentPlanet.Goods[Good].Count > 0) and
         (ShopGoodsPurchasePrice(Good, nil) < GoodsMarket[Good].AveragePrice) and (CargoFreeSpace > 0) then begin
         Quantity := Min(Trunc(Money / ShopGoodsPurchasePrice(Good, nil)), CargoFreeSpace);
         Quantity := Min(Quantity, CurrentPlanet.Goods[Good].Count);
@@ -376,8 +376,8 @@ begin
           SellGoodsToLocation(Good, CargoGoods[Good].Count);
     end;
   ttDiplomat:
-    for Good := 0 to 7 do begin
-      if (Good in [2, 3, 5..7]) and (CurrentPlanet.Goods[Good].Count > 0) and
+    for Good := Ord(t_Food) to Ord(t_Narcotics) do begin
+      if (Good in [Ord(t_Technics), Ord(t_Luxury), Ord(t_Alcohol)..Ord(t_Narcotics)]) and (CurrentPlanet.Goods[Good].Count > 0) and
         (ShopGoodsPurchasePrice(Good, nil) < GoodsMarket[Good].AveragePrice) and (CargoFreeSpace > 0) then begin
         Quantity := Min(Trunc(Money / ShopGoodsPurchasePrice(Good, nil)), CargoFreeSpace);
         Quantity := Min(Quantity, CurrentPlanet.Goods[Good].Count);
@@ -505,7 +505,7 @@ begin
         ttTransport: Award := SelectAward(RaceToOwner(CurrentPlanet.RaceId), [atAccomplishment, atCowardice], [stKling..Ord(rstCustomStation)]);
         ttLiner: Award := SelectAward(RaceToOwner(CurrentPlanet.RaceId), [atAccomplishment], [stKling..Ord(rstCustomStation)]);
         ttDiplomat: Award := SelectAward(RaceToOwner(CurrentPlanet.RaceId), [atAccomplishment..atPerfidy], [stKling..Ord(rstCustomStation)]);
-      else Award := 255;
+      else Award := AwardNotFound;
       end;
       if Award <> AwardNotFound then AddAward(Award);
     end;
@@ -548,7 +548,7 @@ begin
   Value := Amount + Relation;
   if Value < 0 then Relation := 0 else if Value > 100 then Relation := 100 else Relation := Value;
   RangerRelations[Index] := Pointer(Relation);
-  if (Relation < 10) and ((EnemyShip = nil) or (EnemyShip.CurrentStar <> CurrentStar)) then EnemyShip := TShip(Ranger);
+  if (Relation < RelationBadMin) and ((EnemyShip = nil) or (EnemyShip.CurrentStar <> CurrentStar)) then EnemyShip := TShip(Ranger);
   if GetPlayer = Ranger then begin
     if RandomIntRange(0, 100) = 0 then SysUtils.Sleep(1);
     if (Byte(RangerRelations[Index]) <> Relation) and not GR_Main.CCInterface.GetTamperDetected then GR_Main.CCInterface.SetTamperDetected(True);
@@ -592,7 +592,7 @@ begin
           Threat := Ship.ChanceToWin(Self) + Threat;
           Inc(EnemyCount);
         end else if ((Ship.EnemyShip = Self) and (Ship.OrderTarget = Self)) or
-          ((Ship.RelationToShip(Self) < 10) and (PointDistanceSquared(Position, Ship.Position) < 250000)) then begin
+          ((Ship.RelationToShip(Self) < RelationBadMin) and (PointDistanceSquared(Position, Ship.Position) < 250000)) then begin
           Threat := Ship.ChanceToWin(Self) + Threat;
           if (EnemyShip = nil) or (EnemyShip.CurrentStar <> CurrentStar) or EnemyShip.IsOutsideStarSpace then EnemyShip := Ship
           else if (EnemyShip <> Ship) and (OrderTarget <> EnemyShip) then
@@ -639,7 +639,7 @@ end;
 
 { @routine $721250 TTransport_TrustsAttackRequester }
 function TTransport.TrustsAttackRequester(Ship: TShip): Boolean;
-begin Result := RelationToShip(Ship) >= 30; end;
+begin Result := RelationToShip(Ship) >= RelationNormalMin; end;
 { @end $721250 }
 
 { @routine $721274 TTransport_AcceptsAppealFrom }
@@ -860,7 +860,7 @@ var Forced: Boolean; NextDemandTurn: Integer;
     LowValue := GetWealthScaledAmount(1);
     HighValue := GetWealthScaledAmount(4);
     for Pass := 1 to 3 do begin
-      for Good := 0 to 7 do
+      for Good := Ord(t_Food) to Ord(t_Narcotics) do
         if CargoGoods[Good].Count > 0 then begin
           Divisor := RemapClamped(CargoGoods[Good].Count * GoodsMarket[Good].AveragePrice, LowValue, HighValue, 2, 8);
           Count := Max(Int64(1), Round(CargoGoods[Good].Count / Divisor));
@@ -951,7 +951,7 @@ begin
   end;
   if (OrderTarget = Target) and (GetRelationLevelToShip(Target) = rlHostile) then AcceptRequest
   else if TruceShip = Target then Response := FormatText1(LookupVisibleTalkText('Talk.Attack.WeAlreadyHavePact', Requester), '<color=255,240,100>', '<Target>', Target.GetName)
-  else if RelationToShip(Target) >= 30 then begin
+  else if RelationToShip(Target) >= RelationNormalMin then begin
     if not (Target is TTranclucator) then Response := LookupVisibleTalkText('Talk.Attack.' + GetTypeNameKey + 'WeFriends', Requester)
     else if TTranclucator(Target).OwnerShip = Self then Response := LookupVisibleTalkText('Talk.Attack.' + GetTypeNameKey + 'ItsMyTranc', Requester)
     else if TTranclucator(Target).OwnerShip = Requester then Response := LookupVisibleTalkText('Talk.Attack.' + GetTypeNameKey + 'ItsYourTranc', Requester)

@@ -764,7 +764,7 @@ begin
           RemoveUnusedEmbeddedControls(Font);
           TextTexture.SetSurface(Texture, 0);
         end;
-        DrawTexture(Texture, AbsolutePosition.X, AbsolutePosition.Y, 255, $FFFFFF, @ClipRect, False, False);
+        DrawTexture(Texture, AbsolutePosition.X, AbsolutePosition.Y, 255, RgbWhite, @ClipRect, False, False);
         if BorderEnabled then
         begin
           Color := Color565ToArgb(BorderLightColor);

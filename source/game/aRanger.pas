@@ -512,7 +512,7 @@ begin
   Quests := TObjectList.Create;
   Count := Buffer.GetWord;
   { The signed lower bound is retained even though GetWord cannot return it. }
-  if (Count < 0) or (Count > 10000) then raise EAbort.Create('Err in FQuests load');
+  if (Count < 0) or (Count > MaxSavedListCount) then raise EAbort.Create('Err in FQuests load');
   for I := 0 to Count - 1 do
   begin
     New(Quest);
@@ -1146,7 +1146,7 @@ begin
         rcTrader: Award := SelectAward(RaceToOwner(CurrentPlanet.RaceId), [atAccomplishment, atSecretMission, atCowardice, atPlanetBattle], [stKling..Ord(rstCustomStation)]);
         rcPirate: Award := SelectAward(RaceToOwner(CurrentPlanet.RaceId), [atAccomplishment, atSecretMission, atCowardice, atPerfidy, atPlanetBattle], [stKling..Ord(rstCustomStation)]);
         rcWarrior: Award := SelectAward(RaceToOwner(CurrentPlanet.RaceId), [atAccomplishment, atSecretMission, atPlanetBattle], [stKling..Ord(rstCustomStation)]);
-        else Award := 255;
+        else Award := AwardNotFound;
       end;
       if Award <> AwardNotFound then AddAward(Award);
     end;
@@ -1383,7 +1383,7 @@ begin
     begin
       Profit := 0;
       PurchaseProfit := 1;
-      for Good := 0 to 7 do
+      for Good := Ord(t_Food) to Ord(t_Narcotics) do
       begin
         if CargoGoods[Good].Count > 0 then
         begin
@@ -1462,7 +1462,7 @@ var
   Good: Byte;
   EnemyStrength, FriendlyStrength: Single;
 begin
-  for Good := 0 to 7 do
+  for Good := Ord(t_Food) to Ord(t_Narcotics) do
     if CargoGoods[Good].Count > 0 then Exit;
   if GetCargoHook = nil then Exit;
   if GetHull.Weight > GetHull.HullPoints then Exit;
@@ -1762,7 +1762,7 @@ var
   Cost: Single;
   BestPlanet: TPlanet;
 begin
-  for Good := 0 to 7 do
+  for Good := Ord(t_Food) to Ord(t_Narcotics) do
     if CargoGoods[Good].Count <> 0 then
     begin
       Cost := GetAverageCargoCost(Good);
@@ -1787,7 +1787,7 @@ begin
   begin
     BestRatio := 0;
     BestGood := 0;
-    for Good := 0 to 7 do
+    for Good := Ord(t_Food) to Ord(t_Narcotics) do
       if CurrentPlanet.Goods[Good].Count > 0 then
         if (GoodsMarket[Good].AveragePrice * 1.1 > ShopGoodsPurchasePrice(Good, nil)) and
           (GoodsMarket[Good].AveragePrice / ShopGoodsPurchasePrice(Good, nil) > BestRatio) and
@@ -1948,12 +1948,12 @@ begin
   else if NewRelation > 100 then Relation := 100
   else Relation := NewRelation;
   RangerRelations[Index] := Pointer(Relation);
-  if (PartnerShip = Ranger) and (Relation <= 30) then
+  if (PartnerShip = Ranger) and (Relation <= RelationNormalMin) then
   begin
     CheckForPartnershipBreakup;
     Relation := Byte(RangerRelations[Index]);
   end;
-  if (Relation < 10) and ((EnemyShip = nil) or (EnemyShip.CurrentStar <> CurrentStar)) then EnemyShip := TShip(Ranger);
+  if (Relation < RelationBadMin) and ((EnemyShip = nil) or (EnemyShip.CurrentStar <> CurrentStar)) then EnemyShip := TShip(Ranger);
   if GetPlayer = Ranger then
   begin
     if RandomIntRange(0, 100) = 0 then SysUtils.Sleep(1);
@@ -2020,7 +2020,7 @@ begin
         end
         else if ((((Ship.EnemyShip = Self) and (Ship.OrderTarget = Self)) or (Ship.OwnerId = oiDominator)) and
           (PointDistanceSquared(Position, Ship.Position) < 1440000)) or
-          ((Ship.RelationToShip(Self) < 10) and (PointDistanceSquared(Position, Ship.Position) < 360000)) then
+          ((Ship.RelationToShip(Self) < RelationBadMin) and (PointDistanceSquared(Position, Ship.Position) < 360000)) then
         begin
           Inc(AttackerCount);
           Threat := Threat + Ship.ChanceToWin(Self);
@@ -2202,7 +2202,7 @@ begin
         Ranger := Ship as TRanger;
         if (Ranger <> Self) and (Ranger.PartnerShip <> Self) and (Ranger <> EnemyShip) and (Ranger.EnemyShip <> Self) and
           (GetPlayer <> Ranger) and (MaxDistance >= PointDistanceSquared(Position, Ranger.Position)) and
-          (Ranger.RelationToShip(Self) >= 30) and ((NextRandomUnitFloat(RandomState) >= 0.7) or (Rank >= Ranger.Rank)) and
+          (Ranger.RelationToShip(Self) >= RelationNormalMin) and ((NextRandomUnitFloat(RandomState) >= 0.7) or (Rank >= Ranger.Rank)) and
           (PlaceInRating <= Ranger.PlaceInRating) then
         begin
           Amount := Min(Round(Money * 0.7), Ranger.Wealth div 8);
@@ -2254,7 +2254,7 @@ begin
       NotifyPartnershipExpired(Leader);
     end;
   end
-  else if RelationToShip(PartnerShip) < 30 then
+  else if RelationToShip(PartnerShip) < RelationNormalMin then
   begin
     if CanNotifyPartner then
     begin
@@ -2278,7 +2278,7 @@ end;
 { @routine $72D5FC TRanger_TrustsAttackRequester }
 function TRanger.TrustsAttackRequester(Ship: TShip): Boolean;
 begin
-  Result := RelationToShip(Ship) >= 30;
+  Result := RelationToShip(Ship) >= RelationNormalMin;
 end;
 { @end $72D5FC }
 
@@ -2597,7 +2597,7 @@ begin
   for I := 0 to CurrentStar.Ships.Count - 1 do
   begin
     Ship := TShip(CurrentStar.Ships[I]);
-    if not Ship.IsOutsideStarSpace and (Ship <> Self) and ((RelationToShip(Ship) < 10) or (Ship = EnemyShip) or (Ship.EnemyShip = Self)) and
+    if not Ship.IsOutsideStarSpace and (Ship <> Self) and ((RelationToShip(Ship) < RelationBadMin) or (Ship = EnemyShip) or (Ship.EnemyShip = Self)) and
       (Ship.LiberationGroup = nil) and (TruceShip <> Ship) and ((GetPlayer <> Ship) or (GetPlayer.TruceShip <> Self)) then
     begin
       { Native can replace an existing weapon target in this pass. }
@@ -2730,9 +2730,9 @@ begin
       if (PreferredCareer = rcPirate) and (GetDesiredCargoFreeSpace <= CargoFreeSpace) and (GetCargoHook <> nil) then
       begin
         if NextRandomIntRange(0, 30, RandomState) + 60 < RelationToShip(Ship) then Continue;
-        if (RelationToShip(Ship) >= 60) and ((Aggression * 0.01 + Chance < 2) or (NextRandomUnitFloat(RandomState) > 0.2)) then Continue;
+        if (RelationToShip(Ship) >= RelationGoodMin) and ((Aggression * 0.01 + Chance < 2) or (NextRandomUnitFloat(RandomState) > 0.2)) then Continue;
       end
-      else if (CurrentStar.Battle <> 0) or (RelationToShip(Ship) >= 10) then Continue;
+      else if (CurrentStar.Battle <> 0) or (RelationToShip(Ship) >= RelationBadMin) then Continue;
       if ((Chance < 1) and not IsTargetStillPursuable(Ship)) or
         ((Ship.TypeId = stRanger) and (Chance < 0.9) and (GetPlayer <> Ship)) then Continue;
     end;
@@ -2882,7 +2882,7 @@ var Forced: Boolean; NextDemandTurn: Integer;
     LowValue := GetWealthScaledAmount(1);
     HighValue := GetWealthScaledAmount(4);
     for Pass := 1 to 3 do begin
-      for Good := 0 to 7 do
+      for Good := Ord(t_Food) to Ord(t_Narcotics) do
         if CargoGoods[Good].Count > 0 then begin
           Divisor := RemapClamped(CargoGoods[Good].Count * GoodsMarket[Good].AveragePrice, LowValue, HighValue, 2, 8);
           Count := Max(Int64(1), Round(CargoGoods[Good].Count / Divisor));
@@ -3020,7 +3020,7 @@ begin
   end
   else if (PartnerShip = Requester) or ((OrderTarget = Target) and (GetRelationLevelToShip(Target) = rlHostile)) then AcceptAttackRequest
   else if TruceShip = Target then Response := FormatText1(LookupVisibleTalkText('Talk.Attack.WeAlreadyHavePact', Requester), '<color=255,240,100>', '<Target>', Target.GetName)
-  else if ((RelationToShip(Target) >= 80) or ((RelationToShip(Target) >= 30) and (PreferredCareer <> rcPirate))) and (PartnerShip <> Requester) then begin
+  else if ((RelationToShip(Target) >= RelationExcellentMin) or ((RelationToShip(Target) >= RelationNormalMin) and (PreferredCareer <> rcPirate))) and (PartnerShip <> Requester) then begin
     if not (Target is TTranclucator) then Response := LookupVisibleTalkText('Talk.Attack.' + GetTypeNameKey + 'WeFriends', Requester)
     else if TTranclucator(Target).OwnerShip = Self then Response := LookupVisibleTalkText('Talk.Attack.' + GetTypeNameKey + 'ItsMyTranc', Requester)
     else if TTranclucator(Target).OwnerShip = Requester then Response := LookupVisibleTalkText('Talk.Attack.' + GetTypeNameKey + 'ItsYourTranc', Requester)

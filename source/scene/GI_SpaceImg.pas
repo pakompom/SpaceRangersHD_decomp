@@ -346,7 +346,7 @@ begin
           Data.GetOrCreateFrameSurface(Data.GetSequenceFrameIndex(0, Image.FrameIndex));
           Origin := Data.GetFrameOrigin(Data.GetSequenceFrameIndex(0, Image.FrameIndex));
           DrawTexture(Data.GetOrCreateFrameSurface(Data.GetSequenceFrameIndex(0, Image.FrameIndex)),
-            Bounds.Left + Origin.X, Bounds.Top + Origin.Y, 255, $FFFFFF, @ClipRect, False, False);
+            Bounds.Left + Origin.X, Bounds.Top + Origin.Y, 255, RgbWhite, @ClipRect, False, False);
         end
         else
           Frame.DrawToGraphBuf(ScreenRenderBuffer,

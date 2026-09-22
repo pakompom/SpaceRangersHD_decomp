@@ -1582,8 +1582,8 @@ begin
     Difficulty.MaximumDominatorResearchRate := ExtrapolateGeometricDifficulty(Level, GalaxyDifficultyTuning[2].MaximumDominatorResearchRate, GalaxyDifficultyTuning[3].MaximumDominatorResearchRate);
     Difficulty.CoalitionToPirateBalanceRatio := ExtrapolateGeometricDifficulty(Level, GalaxyDifficultyTuning[2].CoalitionToPirateBalanceRatio, GalaxyDifficultyTuning[3].CoalitionToPirateBalanceRatio);
   end;
-  for GoodsIndex := 0 to 7 do GoodsMarket[GoodsIndex].DisplayName := LocalizedText('Items.Goods.Name.' + IntToStr(GoodsIndex + 1));
-  for GoodsIndex := 0 to 7 do GoodsMarket[GoodsIndex].TradeName := LocalizedText('Items.Goods.NameBuy.' + IntToStr(GoodsIndex + 1));
+  for GoodsIndex := Ord(t_Food) to Ord(t_Narcotics) do GoodsMarket[GoodsIndex].DisplayName := LocalizedText('Items.Goods.Name.' + IntToStr(GoodsIndex + 1));
+  for GoodsIndex := Ord(t_Food) to Ord(t_Narcotics) do GoodsMarket[GoodsIndex].TradeName := LocalizedText('Items.Goods.NameBuy.' + IntToStr(GoodsIndex + 1));
   for Government := Low(TPlanetGovernment) to High(TPlanetGovernment) do PlanetGovernmentMarket[Government].DisplayName := LocalizedText('Goverment.Type.' + IntToStr(Ord(Government)));
   for Relation := Low(TRelationLevel) to High(TRelationLevel) do RelationInfo[Relation].DisplayName := LocalizedText('Relations.Type.' + IntToStr(Ord(Relation)));
   for KlingKind := 0 to 7 do
@@ -1599,7 +1599,7 @@ begin
   end;
   if not GoodsMarketBaseCaptured then
   begin
-    for GoodsIndex := 0 to 7 do GoodsMarketBase[GoodsIndex] := GoodsMarket[GoodsIndex];
+    for GoodsIndex := Ord(t_Food) to Ord(t_Narcotics) do GoodsMarketBase[GoodsIndex] := GoodsMarket[GoodsIndex];
     GoodsMarketBaseCaptured := True;
   end;
   InitializeWeaponVisualResources;
@@ -1980,11 +1980,11 @@ end;
 function RelationValueToLevel(Value: Byte): TRelationLevel;
 begin
   case Value of
-    0..9: Result := rlHostile;
-    10..29: Result := rlBad;
-    30..59: Result := rlNormal;
-    60..79: Result := rlGood;
-    80..100: Result := rlExcellent;
+    0..RelationBadMin - 1: Result := rlHostile;
+    RelationBadMin..RelationNormalMin - 1: Result := rlBad;
+    RelationNormalMin..RelationGoodMin - 1: Result := rlNormal;
+    RelationGoodMin..RelationExcellentMin - 1: Result := rlGood;
+    RelationExcellentMin..100: Result := rlExcellent;
   else
     Result := rlNormal;
   end;

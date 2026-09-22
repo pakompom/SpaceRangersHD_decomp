@@ -487,7 +487,7 @@ var
 begin
   if GetPlayer.InNormalSpace then
   begin
-    for Good := 0 to 7 do
+    for Good := Ord(t_Food) to Ord(t_Narcotics) do
     begin
       TradeRows[Good].Count := TalkShip.CargoGoods[Good].Count;
       TradeRows[Good].MaximumPrice := GoodsMarket[Good].MaxPrice;

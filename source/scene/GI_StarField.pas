@@ -438,7 +438,7 @@ begin
         if IntersectRects(Intersection, ClipRect, Bounds) then
         begin
           if HardwareRenderingEnabled then
-            DrawTexture(Data.GetOrCreateFrameSurface(I), Bounds.Left, Bounds.Top, 255, $FFFFFF, @Intersection, False, False)
+            DrawTexture(Data.GetOrCreateFrameSurface(I), Bounds.Left, Bounds.Top, 255, RgbWhite, @Intersection, False, False)
           else
             Frame.DrawToGraphBuf(ScreenRenderBuffer, Bounds.Left, Bounds.Top, Intersection, 0, 255);
         end;

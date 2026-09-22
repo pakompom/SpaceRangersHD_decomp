@@ -374,7 +374,7 @@ begin
           if HardwareRenderingEnabled then
           begin
             Origin := Data.GetFrameOrigin(Data.GetSequenceFrameIndex(0, Segment.FrameIndex));
-            DrawTexture(Data.GetOrCreateFrameSurface(Data.GetSequenceFrameIndex(0, Segment.FrameIndex)), Origin.X + Bounds.Left, Origin.Y + Bounds.Top, 255, $FFFFFF, @ClipRect, False, False);
+            DrawTexture(Data.GetOrCreateFrameSurface(Data.GetSequenceFrameIndex(0, Segment.FrameIndex)), Origin.X + Bounds.Left, Origin.Y + Bounds.Top, 255, RgbWhite, @ClipRect, False, False);
           end
           else
           begin
@@ -428,7 +428,7 @@ begin
             if HardwareRenderingEnabled then
             begin
               Origin := Data.GetFrameOrigin(Data.GetSequenceFrameIndex(0, Segment.FrameIndex));
-              DrawTexture(Data.GetOrCreateFrameSurface(Data.GetSequenceFrameIndex(0, Segment.FrameIndex)), Origin.X + Bounds.Left, Origin.Y + Bounds.Top, 255, $FFFFFF, @Intersection, False, False);
+              DrawTexture(Data.GetOrCreateFrameSurface(Data.GetSequenceFrameIndex(0, Segment.FrameIndex)), Origin.X + Bounds.Left, Origin.Y + Bounds.Top, 255, RgbWhite, @Intersection, False, False);
             end
             else
             begin

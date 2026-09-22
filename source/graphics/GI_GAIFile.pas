@@ -207,7 +207,7 @@ begin
   if (LoaderThread <> nil) and LoaderThread.IsRunning then
   begin
     LoaderThread.RequestStop;
-    LoaderThread.WaitForIdle($FFFFFFFF);
+    LoaderThread.WaitForIdle(INFINITE);
   end;
   if (ImageFile <> nil) and (ImageFile.OpenDepth > 0) then ImageFile.ReleaseHandle;
   if FrameDirectory <> nil then
@@ -243,7 +243,7 @@ begin
   if LoaderThread.IsRunning then
   begin
     LoaderThread.RequestStop;
-    LoaderThread.WaitForIdle($FFFFFFFF);
+    LoaderThread.WaitForIdle(INFINITE);
   end;
   Data := Pointer(ReadDWordEC(AddPointerOffset(FrameBuffers, FrameIndex * SizeOf(Pointer))));
   if Data <> nil then
@@ -270,7 +270,7 @@ begin
   if LoaderThread.IsRunning then
   begin
     LoaderThread.RequestStop;
-    LoaderThread.WaitForIdle($FFFFFFFF);
+    LoaderThread.WaitForIdle(INFINITE);
   end;
   if SequenceFrameCount > PreloadCount then
   begin
@@ -372,7 +372,7 @@ begin
   if LoaderThread.IsRunning then
   begin
     LoaderThread.RequestStop;
-    LoaderThread.WaitForIdle($FFFFFFFF);
+    LoaderThread.WaitForIdle(INFINITE);
   end;
   if SequenceFrames <> nil then
   begin

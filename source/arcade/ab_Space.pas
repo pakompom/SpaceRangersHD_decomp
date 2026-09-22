@@ -257,7 +257,7 @@ begin
     Objects.Add(Ship);
   end;
   Kind := 0;
-  MineralBudget := Min(CargoHookLevelStats[8].PickupPower, GetPlayer.Wealth div 40 div GoodsMarket[4].AveragePrice);
+  MineralBudget := Min(CargoHookLevelStats[8].PickupPower, GetPlayer.Wealth div 40 div GoodsMarket[Ord(t_Minerals)].AveragePrice);
   MineralBudget := Round(RemapClamped(Danger + ApproachDanger, 0, 250, 0.2, 1.2) * MineralBudget);
   MineralBudget := Round(RemapClamped(Count, 0, 4, 0.8, 1.2) * MineralBudget);
   for Index := 1 to 8 do
@@ -347,7 +347,7 @@ begin
     Objects.Add(Ship);
   end;
   Kind := 0;
-  MineralBudget := Min(CargoHookLevelStats[8].PickupPower, GetPlayer.Wealth div 40 div GoodsMarket[4].AveragePrice);
+  MineralBudget := Min(CargoHookLevelStats[8].PickupPower, GetPlayer.Wealth div 40 div GoodsMarket[Ord(t_Minerals)].AveragePrice);
   MineralBudget := Round(RemapClamped(Count, 2, 4, 0.8, 1.2) * MineralBudget);
   for Index := 1 to 8 do
   begin

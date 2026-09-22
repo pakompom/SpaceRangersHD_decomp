@@ -702,7 +702,7 @@ begin
           TextureCache.SetSurface(Texture, 0);
         end;
       end;
-      DrawTexture(Texture, HitTestBounds.Left, HitTestBounds.Top, 255, $FFFFFF, @ClipRect, False, False);
+      DrawTexture(Texture, HitTestBounds.Left, HitTestBounds.Top, 255, RgbWhite, @ClipRect, False, False);
       if HasCloud1 then
       begin
         Texture := TextureCache.GetSurface(1);
@@ -718,7 +718,7 @@ begin
           Texture.UnlockRect(0);
           TextureCache.SetSurface(Texture, 1);
         end;
-        DrawTexture(Texture, HitTestBounds.Left, HitTestBounds.Top, 255, $FFFFFF, @ClipRect, False, False);
+        DrawTexture(Texture, HitTestBounds.Left, HitTestBounds.Top, 255, RgbWhite, @ClipRect, False, False);
       end
       else TextureCache.SetSurface(nil, 1);
       if HasCloud2 then
@@ -736,7 +736,7 @@ begin
           Texture.UnlockRect(0);
           TextureCache.SetSurface(Texture, 2);
         end;
-        DrawTexture(Texture, HitTestBounds.Left, HitTestBounds.Top, 255, $FFFFFF, @ClipRect, False, False);
+        DrawTexture(Texture, HitTestBounds.Left, HitTestBounds.Top, 255, RgbWhite, @ClipRect, False, False);
       end
       else TextureCache.SetSurface(nil, 2);
       if HasCloud3 then
@@ -754,7 +754,7 @@ begin
           Texture.UnlockRect(0);
           TextureCache.SetSurface(Texture, 3);
         end;
-        DrawTexture(Texture, HitTestBounds.Left, HitTestBounds.Top, 255, $FFFFFF, @ClipRect, False, False);
+        DrawTexture(Texture, HitTestBounds.Left, HitTestBounds.Top, 255, RgbWhite, @ClipRect, False, False);
       end
       else TextureCache.SetSurface(nil, 3);
       if not AtmosphereImageCache.HasEmptyCacheKey and AtmosphereDirty and (AtmosphereColor <> 0) then
@@ -775,7 +775,7 @@ begin
       end;
       Texture := TextureCache.GetSurface(4);
       if not AtmosphereImageCache.HasEmptyCacheKey and (Texture <> nil) and (AtmosphereColor <> 0) then
-        DrawTexture(Texture, HitTestBounds.Left, HitTestBounds.Top, 255, $FFFFFF, @ClipRect, False, False);
+        DrawTexture(Texture, HitTestBounds.Left, HitTestBounds.Top, 255, RgbWhite, @ClipRect, False, False);
     end
     else
     begin

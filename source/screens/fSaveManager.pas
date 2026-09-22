@@ -169,7 +169,7 @@ begin
   end;
   GetByName('CaptionLoad').SetActive(SaveManagerMode = smmLoad);
   GetByName('CaptionSave').SetActive(SaveManagerMode = smmSave);
-  if (SaveWriter <> nil) and SaveWriter.IsRunning then SaveWriter.WaitForIdle($FFFFFFFF);
+  if (SaveWriter <> nil) and SaveWriter.IsRunning then SaveWriter.WaitForIdle(INFINITE);
   RebuildSlotControls;
   if Slots.Count <= 0 then PreviewSound.SetVolume(1);
   Closing := False;

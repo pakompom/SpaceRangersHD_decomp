@@ -490,7 +490,7 @@ end;
 procedure TPirate.TryJumpToNearbyBattle(UnusedMode: Byte);
 var I: Integer; Star: TStar; Good: Byte;
 begin
-  for Good := 0 to 7 do if CargoGoods[Good].Count > 0 then Exit;
+  for Good := Ord(t_Food) to Ord(t_Narcotics) do if CargoGoods[Good].Count > 0 then Exit;
   for I := 1 to Galaxy.Stars.Count - 1 do begin
     if CurrentStar.StarDistances[I].Distance > JumpRange then Break;
     Star := TObject(CurrentStar.StarDistances[I].Star) as TStar;
@@ -584,7 +584,7 @@ procedure TPirate.SellAllCargoGoods;
 var
   Good: Byte;
 begin
-  for Good := 0 to 7 do
+  for Good := Ord(t_Food) to Ord(t_Narcotics) do
     if CargoGoods[Good].Count > 0 then SellGoodsToLocation(Good, CargoGoods[Good].Count);
 end;
 { @end $50F108 }
@@ -804,7 +804,7 @@ begin
   Value := Max(0, Min(100, Amount + Relation));
   Relation := Value;
   RangerRelations[Index] := Pointer(Relation);
-  if (Relation < 10) and ((EnemyShip = nil) or (EnemyShip.CurrentStar <> CurrentStar)) then EnemyShip := TShip(Ranger);
+  if (Relation < RelationBadMin) and ((EnemyShip = nil) or (EnemyShip.CurrentStar <> CurrentStar)) then EnemyShip := TShip(Ranger);
   if GetPlayer = Ranger then begin
     if RandomIntRange(0, 100) = 0 then SysUtils.Sleep(1);
     if (Byte(RangerRelations[Index]) <> Relation) and not GR_Main.CCInterface.GetTamperDetected then GR_Main.CCInterface.SetTamperDetected(True);
@@ -868,7 +868,7 @@ begin
           Threat := Ship.ChanceToWin(Self) + Threat;
           Inc(EnemyCount);
         end else if ((Ship.EnemyShip = Self) and (Ship.OrderTarget = Self)) or
-          ((Ship.RelationToShip(Self) < 10) and (PointDistanceSquared(Position, Ship.Position) < 250000)) then begin
+          ((Ship.RelationToShip(Self) < RelationBadMin) and (PointDistanceSquared(Position, Ship.Position) < 250000)) then begin
           Inc(EnemyCount);
           Threat := Ship.ChanceToWin(Self) + Threat;
           if (EnemyShip = nil) or (EnemyShip.CurrentStar <> CurrentStar) or EnemyShip.IsOutsideStarSpace then EnemyShip := Ship
@@ -916,7 +916,7 @@ end;
 
 { @routine $510E88 TPirate_TrustsAttackRequester }
 function TPirate.TrustsAttackRequester(Ship: TShip): Boolean;
-begin Result := RelationToShip(Ship) >= 30; end;
+begin Result := RelationToShip(Ship) >= RelationNormalMin; end;
 { @end $510E88 }
 
 { @routine $510EAC TPirate_AcceptsAppealFrom }
@@ -1023,7 +1023,7 @@ begin
   for I := 0 to CurrentStar.Ships.Count - 1 do begin
     Ship := CurrentStar.Ships[I];
     if Ship.InNormalSpace and (Ship <> Self) and
-      ((RelationToShip(Ship) < 10) or (Ship = EnemyShip) or (Ship.EnemyShip = Self)) and (TruceShip <> Ship) then
+      ((RelationToShip(Ship) < RelationBadMin) or (Ship = EnemyShip) or (Ship.EnemyShip = Self)) and (TruceShip <> Ship) then
       for J := 1 to WeaponCount do begin
         Weapon := Weapons[J];
         // Native hostile-ship pass can replace an earlier weapon target.
@@ -1161,7 +1161,7 @@ begin
         Ship := CurrentStar.Ships[I];
         if Ship.InNormalSpace and (TruceShip <> Ship) and (Ship.TruceShip <> Self) and
           (not (Ship.TypeId in [Ord(rstRangerCenter)..Ord(rstCustomStation)]) or not (Ship.CurrentStanding in [ssNeutral..ssPirateMilitary])) and
-          ((RelationToShip(Ship) < 10) or Ship.AbductedByPirateClan) then begin
+          ((RelationToShip(Ship) < RelationBadMin) or Ship.AbductedByPirateClan) then begin
           Distance := PointDistance(Position, Ship.Position);
           if NextRandomFloatRange(0.3, 3, RandomState) * BestDistance > Distance then begin EnemyShip := Ship; BestDistance := Distance; end;
         end;
@@ -1183,10 +1183,10 @@ begin
     Ship := CurrentStar.Ships[I];
     if Ship.InNormalSpace and (TruceShip <> Ship) and not (Ship.TypeId in [Ord(rstRangerCenter)..Ord(rstCustomStation)]) and (Ship.TypeId <> stTranclucator) and (Ship <> Self) and
       not (Ship.TargetingRestriction in [1..3, 5]) and not AcceptsRansomDemandFrom(Ship) and
-      ((RelationToShip(Ship) < 80) or (NextRandomIntRange(1, 100, RandomState) <= Aggression - 1)) and
-      ((RelationToShip(Ship) < 60) or (NextRandomIntRange(1, 100, RandomState) <= Aggression + 33)) and
-      ((RelationToShip(Ship) < 30) or (NextRandomIntRange(1, 100, RandomState) <= Aggression + 66)) and
-      ((RelationToShip(Ship) < 10) or (NextRandomIntRange(1, 100, RandomState) <= Aggression + 100)) and
+      ((RelationToShip(Ship) < RelationExcellentMin) or (NextRandomIntRange(1, 100, RandomState) <= Aggression - 1)) and
+      ((RelationToShip(Ship) < RelationGoodMin) or (NextRandomIntRange(1, 100, RandomState) <= Aggression + 33)) and
+      ((RelationToShip(Ship) < RelationNormalMin) or (NextRandomIntRange(1, 100, RandomState) <= Aggression + 66)) and
+      ((RelationToShip(Ship) < RelationBadMin) or (NextRandomIntRange(1, 100, RandomState) <= Aggression + 100)) and
       ((not (Ship is TPirate) and (GetPlayer <> Ship) and ((Ship.OwnerId <> oiPirate) or not (Ship is TNormalShip))) or
       (((Ship.OwnerId <> oiPirate) or (Ship.PilotRace <> PilotRace) or (NextRandomIntRange(1, 100, RandomState) <= 50)) and
       (((Ship as TNormalShip).PirateRank <= Ord(PirateRank)) or (NextRandomIntRange(1, 100, RandomState) <= 70)) and
@@ -1300,7 +1300,7 @@ var Forced: Boolean; NextDemandTurn: Integer;
     LowValue := GetWealthScaledAmount(2);
     HighValue := GetWealthScaledAmount(4);
     for Pass := 1 to 3 do begin
-      for Good := 0 to 7 do
+      for Good := Ord(t_Food) to Ord(t_Narcotics) do
         if CargoGoods[Good].Count > 0 then begin
           Divisor := RemapClamped(CargoGoods[Good].Count * GoodsMarket[Good].AveragePrice, LowValue, HighValue, 2, 8);
           Count := Max(Int64(1), Round(CargoGoods[Good].Count / Divisor));
@@ -1429,7 +1429,7 @@ begin
   end;
   if (OrderTarget = Target) and (GetRelationLevelToShip(Target) = rlHostile) then AcceptRequest
   else if TruceShip = Target then Response := FormatText1(LookupVisibleTalkText('Talk.Attack.WeAlreadyHavePact', Requester), '<color=255,240,100>', '<Target>', Target.GetName)
-  else if (RelationToShip(Target) >= 60) and FriendsPreferred then begin
+  else if (RelationToShip(Target) >= RelationGoodMin) and FriendsPreferred then begin
     if not (Target is TTranclucator) then Response := LookupVisibleTalkText('Talk.Attack.' + GetTypeNameKey + 'WeFriends', Requester)
     else if TTranclucator(Target).OwnerShip = Self then Response := LookupVisibleTalkText('Talk.Attack.' + GetTypeNameKey + 'ItsMyTranc', Requester)
     else if TTranclucator(Target).OwnerShip = Requester then Response := LookupVisibleTalkText('Talk.Attack.' + GetTypeNameKey + 'ItsYourTranc', Requester)
@@ -1504,7 +1504,7 @@ begin
         PartnerShip := nil;
         NotifyPiratePartnershipExpired(Leader);
       end;
-    end else if RelationToShip(PartnerShip) < 30 then begin
+    end else if RelationToShip(PartnerShip) < RelationNormalMin then begin
       if CanNotifyPartner then begin
         Leader := PartnerShip;
         if (Order = soFollowShip) and (OrderTarget = PartnerShip) then OrderNone(False);

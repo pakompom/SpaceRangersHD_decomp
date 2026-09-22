@@ -534,7 +534,7 @@ begin
       X := Left;
       while X < Right do
       begin
-        DrawTexture(GraphBuf.GetTexture, X, Y, 255 - (Ord(HalfAlpha) shl 7), $FFFFFF, @ClipRect, False, False);
+        DrawTexture(GraphBuf.GetTexture, X, Y, 255 - (Ord(HalfAlpha) shl 7), RgbWhite, @ClipRect, False, False);
         Inc(X, Width);
       end;
       Inc(Y, Height);

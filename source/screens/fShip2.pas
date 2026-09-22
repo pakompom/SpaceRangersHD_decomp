@@ -369,7 +369,7 @@ begin
     Entry := PlayerHoldEntries[I];
     Entry.Retained := Entry.Kind = phkEmpty;
   end;
-  for Goods := 0 to 7 do
+  for Goods := Ord(t_Food) to Ord(t_Narcotics) do
   begin
     if not IncludeFilteredItems then
       if not GetPlayer.CanAccessHoldGoods(Goods) then Continue;
@@ -7637,7 +7637,7 @@ begin
       Value := 0;
       if GetPlayer.CurrentPlanet <> nil then Location := GetPlayer.CurrentPlanet
       else Location := GetPlayer.DockedTo;
-      for Good := 0 to 7 do
+      for Good := Ord(t_Food) to Ord(t_Narcotics) do
         Inc(Value,PlayerHoldShip.CargoGoods[Good].Count * GetPlayer.ShopGoodsSellPrice(Good,Location));
       for I := 1 to PlayerHoldShip.Inventory.Count - 1 do
       begin
@@ -7904,7 +7904,7 @@ begin
       end;
       Dec(I);
     end;
-    for Good := 0 to 7 do
+    for Good := Ord(t_Food) to Ord(t_Narcotics) do
       if PlayerHoldShip.CargoGoods[Good].Count > 0 then
         if GetPlayer.CanAccessHoldGoods(Good) then
         begin

@@ -1033,7 +1033,7 @@ begin
       X := Left;
       while X < Right do
       begin
-        DrawTexture(Texture, FrameOrigin.X + X, FrameOrigin.Y + Y, Alpha, $FFFFFF, @ClipRect, False, HardwareMirrorHorizontal);
+        DrawTexture(Texture, FrameOrigin.X + X, FrameOrigin.Y + Y, Alpha, RgbWhite, @ClipRect, False, HardwareMirrorHorizontal);
         Inc(X, Width);
       end;
       Inc(Y, Height);
@@ -1071,7 +1071,7 @@ begin
         begin
           Texture := Image.GetOrCreateFrameSurface(GetSequenceFrameSourceIndex(SequenceFrame));
           FrameOrigin := Image.GetFrameOrigin(GetSequenceFrameSourceIndex(SequenceFrame));
-          DrawTexture(Texture, FrameOrigin.X + X, FrameOrigin.Y + Y, Alpha, $FFFFFF, @ClipRect, False, HardwareMirrorHorizontal);
+          DrawTexture(Texture, FrameOrigin.X + X, FrameOrigin.Y + Y, Alpha, RgbWhite, @ClipRect, False, HardwareMirrorHorizontal);
         end;
         Inc(X, Width);
       end;
@@ -1136,7 +1136,7 @@ begin
       X := Left;
       while X < Right do
       begin
-        DrawTexture(Texture, X, Y, Alpha, $FFFFFF, @ClipRect, False, HardwareMirrorHorizontal);
+        DrawTexture(Texture, X, Y, Alpha, RgbWhite, @ClipRect, False, HardwareMirrorHorizontal);
         Inc(X, Width);
       end;
       Inc(Y, Height);
@@ -1194,7 +1194,7 @@ begin
       X := Left;
       while X < Right do
       begin
-        DrawTexture(Texture, X, Y, Alpha, $FFFFFF, @ClipRect, False, HardwareMirrorHorizontal);
+        DrawTexture(Texture, X, Y, Alpha, RgbWhite, @ClipRect, False, HardwareMirrorHorizontal);
         Inc(X, Width);
       end;
       Inc(Y, Height);

@@ -752,7 +752,7 @@ begin
   Value := Amount + Relation;
   if Value < 0 then Relation := 0 else if Value > 100 then Relation := 100 else Relation := Value;
   HomePlanet.RangerRelations[Index] := Pointer(Relation);
-  if (Relation < 10) and ((EnemyShip = nil) or (EnemyShip.CurrentStar <> CurrentStar)) then EnemyShip := TShip(Ranger);
+  if (Relation < RelationBadMin) and ((EnemyShip = nil) or (EnemyShip.CurrentStar <> CurrentStar)) then EnemyShip := TShip(Ranger);
   if GetPlayer = Ranger then begin
     if RandomIntRange(0, 100) = 0 then SysUtils.Sleep(1);
     if (Byte(HomePlanet.RangerRelations[Index]) <> Relation) and not GR_Main.CCInterface.GetTamperDetected then GR_Main.CCInterface.SetTamperDetected(True);
@@ -796,7 +796,7 @@ end;
 
 { @routine $51A7C8 TWarrior_TrustsAttackRequester }
 function TWarrior.TrustsAttackRequester(Ship: TShip): Boolean;
-begin Result := RelationToShip(Ship) >= 30; end;
+begin Result := RelationToShip(Ship) >= RelationNormalMin; end;
 { @end $51A7C8 }
 
 { @routine $51A7EC TWarrior_AcceptsAppealFrom }
@@ -867,7 +867,7 @@ begin
     Stage := 31;
     if Ship.InNormalSpace and (Ship <> Self) and (EnemyShip <> Ship) then begin
       Stage := 32;
-      if (RelationToShip(Ship) < 10) or (EnemyShip = Ship) or (Ship.EnemyShip = Self) then begin
+      if (RelationToShip(Ship) < RelationBadMin) or (EnemyShip = Ship) or (Ship.EnemyShip = Self) then begin
         Stage := 33;
         if TruceShip <> Ship then begin
           Stage := 34;
@@ -1131,7 +1131,7 @@ begin
     OwnAttack := CalculateAttackStrength;
     for I := 0 to CurrentStar.Ships.Count - 1 do begin
       Ship := CurrentStar.Ships[I];
-      if Ship.InNormalSpace and (RelationToShip(Ship) < 10) and (TruceShip <> Ship) then begin
+      if Ship.InNormalSpace and (RelationToShip(Ship) < RelationBadMin) and (TruceShip <> Ship) then begin
         Score := Ship.CalculateAttackStrength * Max(1.0, OwnAttack / Ship.CalculateDefenseStrength);
         Distance := PointDistance(Position, Ship.Position);
         if MaxRange > Distance then Score := Score * RemapClamped(Distance, MinRange, MaxRange, 1.5, 1)
@@ -1150,7 +1150,7 @@ begin
       BestDistance := 1;
       for I := 0 to CurrentStar.Ships.Count - 1 do begin
         Ship := CurrentStar.Ships[I];
-        if Ship.InNormalSpace and (RelationToShip(Ship) < 10) and (TruceShip <> Ship) then begin
+        if Ship.InNormalSpace and (RelationToShip(Ship) < RelationBadMin) and (TruceShip <> Ship) then begin
           if Ship.CurrentStanding in [ssDominator, ssPirateMilitary] then begin
             EnemyShip := Ship;
             if ChanceToWin(Ship) > 1 then Exit;
@@ -1617,7 +1617,7 @@ begin
   if (OrderTarget = Target) and (GetRelationLevelToShip(Target) = rlHostile) and (HostileCount <= 1) then AcceptRequest
   else if (LiberationGroup <> nil) and (Requester.LiberationGroup <> LiberationGroup) then Response := LookupVisibleTalkText('Talk.Attack.' + GetTypeNameKey + 'HaveBusiness', Requester)
   else if TruceShip = Target then Response := FormatText1(LookupVisibleTalkText('Talk.Attack.WeAlreadyHavePact', Requester), '<color=255,240,100>', '<Target>', Target.GetName)
-  else if RelationToShip(Target) >= 30 then begin
+  else if RelationToShip(Target) >= RelationNormalMin then begin
     if not (Target is TTranclucator) then Response := LookupVisibleTalkText('Talk.Attack.' + GetTypeNameKey + 'WeFriends', Requester)
     else if TTranclucator(Target).OwnerShip = Self then Response := LookupVisibleTalkText('Talk.Attack.' + GetTypeNameKey + 'ItsMyTranc', Requester)
     else if TTranclucator(Target).OwnerShip = Requester then Response := LookupVisibleTalkText('Talk.Attack.' + GetTypeNameKey + 'ItsYourTranc', Requester)

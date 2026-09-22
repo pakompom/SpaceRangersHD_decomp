@@ -3821,11 +3821,11 @@ begin
   begin
     Direct3DDevice.BeginScene;
     if not AlternateViewportEnabled then
-      DrawTexture(ScreenRenderBuffer.GetTexture, 0, 0, 255, $FFFFFF, nil, False, False)
+      DrawTexture(ScreenRenderBuffer.GetTexture, 0, 0, 255, RgbWhite, nil, False, False)
     else if ScaleViewportToWindow then
-      DrawTextureSized(ScreenRenderBuffer.GetTexture, 0, 0, PresentationWidth, PresentationHeight, 255, $FFFFFF, nil, False, False)
+      DrawTextureSized(ScreenRenderBuffer.GetTexture, 0, 0, PresentationWidth, PresentationHeight, 255, RgbWhite, nil, False, False)
     else
-      DrawTexture(ScreenRenderBuffer.GetTexture, ViewportOffset.X, ViewportOffset.Y, 255, $FFFFFF, nil, False, False);
+      DrawTexture(ScreenRenderBuffer.GetTexture, ViewportOffset.X, ViewportOffset.Y, 255, RgbWhite, nil, False, False);
     Direct3DDevice.EndScene;
     Direct3DDevice.Present(nil, nil, 0, nil);
   end;
@@ -3867,11 +3867,11 @@ begin
     Y := Integer(ViewHeight - Height) div 2;
     Direct3DDevice.Clear(0, nil, D3DCLEAR_TARGET, 0, 1, 0);
     if HardwareRenderingEnabled then
-      DrawTextureSized(OffscreenTexture, X, Y, Width, Height, 255, $FFFFFF, @GameScreenRect, False, False)
+      DrawTextureSized(OffscreenTexture, X, Y, Width, Height, 255, RgbWhite, @GameScreenRect, False, False)
     else
     begin
       Direct3DDevice.BeginScene;
-      DrawTextureSized(OffscreenTexture, X, Y, Width, Height, 255, $FFFFFF, @GameScreenRect, False, False);
+      DrawTextureSized(OffscreenTexture, X, Y, Width, Height, 255, RgbWhite, @GameScreenRect, False, False);
       Direct3DDevice.EndScene;
       Direct3DDevice.Present(nil, nil, 0, nil);
     end;

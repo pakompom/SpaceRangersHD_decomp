@@ -971,7 +971,7 @@ begin
   else Buffer.AddDWord(DockedTo.Id);
   if HomePlanet = nil then Buffer.AddDWord(0)
   else Buffer.AddDWord(HomePlanet.Id);
-  for Good := 0 to 7 do
+  for Good := Ord(t_Food) to Ord(t_Narcotics) do
   begin
     Buffer.AddDWord(CargoGoods[Good].Count);
     Buffer.AddDWord(CargoGoods[Good].TotalCost);
@@ -1099,7 +1099,7 @@ begin
   else if Order = soTeleport then Buffer.AddDWord((OrderTarget as TStar).Id)
   else if Order = soLand then
   begin
-    if OrderTarget is TShip then Buffer.AddDWord((OrderTarget as TShip).Id or $80000000)
+    if OrderTarget is TShip then Buffer.AddDWord((OrderTarget as TShip).Id or OrderTargetShipFlag)
     else Buffer.AddDWord((OrderTarget as TPlanet).Id);
   end
   else if Order = soFollowShip then Buffer.AddDWord((OrderTarget as TShip).Id)
@@ -1216,7 +1216,7 @@ begin
   CurrentPlanet := TPlanet(Buffer.GetUInt32);
   DockedTo := TShip(Buffer.GetUInt32);
   HomePlanet := TPlanet(Buffer.GetUInt32);
-  for Good := 0 to 7 do
+  for Good := Ord(t_Food) to Ord(t_Narcotics) do
   begin
     CargoGoods[Good].Count := Buffer.GetUInt32;
     CargoGoods[Good].TotalCost := Buffer.GetUInt32;
@@ -1248,7 +1248,7 @@ begin
     end;
   end;
   Count := Buffer.GetWord;
-  if (Count < 0) or (Count > 10000) then raise EAbort.Create('Item count in equipment > 10000');
+  if (Count < 0) or (Count > MaxSavedListCount) then raise EAbort.Create('Item count in equipment > 10000');
   for I := 0 to Count - 1 do
   begin
     Item := CreateItemByType(MigrateSavedItemType(Buffer.GetByte));
@@ -1257,7 +1257,7 @@ begin
     if Item is THull then THull(Item).OwnerShip := Self;
   end;
   Count := Buffer.GetWord;
-  if (Count < 0) or (Count > 10000) then raise EAbort.Create('Artefacts count > 10000');
+  if (Count < 0) or (Count > MaxSavedListCount) then raise EAbort.Create('Artefacts count > 10000');
   for I := 0 to Count - 1 do
   begin
     Item := CreateItemByType(MigrateSavedItemType(Buffer.GetByte));
@@ -1265,7 +1265,7 @@ begin
     Item.LoadFromBuffer(Buffer, Galaxy);
   end;
   Count := Buffer.GetWord;
-  if (Count < 0) or (Count > 10000) then raise EAbort.Create('Err');
+  if (Count < 0) or (Count > MaxSavedListCount) then raise EAbort.Create('Err');
   for I := 0 to Count - 1 do
   begin
     Item := CreateItemByType(MigrateSavedItemType(Buffer.GetByte));
@@ -1275,7 +1275,7 @@ begin
   if LoadedSaveVersion >= 68 then
   begin
     Count := Buffer.GetWord;
-    if (Count < 0) or (Count > 10000) then raise EAbort.Create('Err');
+    if (Count < 0) or (Count > MaxSavedListCount) then raise EAbort.Create('Err');
     if Count > 0 then
     begin
       StatBonuses := TList.Create;
@@ -1291,7 +1291,7 @@ begin
   if LoadedSaveVersion >= 77 then
   begin
     Count := Buffer.GetWord;
-    if (Count < 0) or (Count > 10000) then raise EAbort.Create('Err');
+    if (Count < 0) or (Count > MaxSavedListCount) then raise EAbort.Create('Err');
     if Count > 0 then
     begin
       CombatStatusEffects := TList.Create;
@@ -1336,7 +1336,7 @@ begin
     end;
   end;
   Count := Buffer.GetWord;
-  if (Count < 0) or (Count > 10000) then raise EAbort.Create('Err');
+  if (Count < 0) or (Count > MaxSavedListCount) then raise EAbort.Create('Err');
   if Count > 0 then
   begin
     if PickupTargets <> nil then PickupTargets.Free;
@@ -1346,7 +1346,7 @@ begin
   if LoadedSaveVersion >= 81 then
   begin
   Count := Buffer.GetWord;
-  if (Count < 0) or (Count > 10000) then raise EAbort.Create('Err');
+  if (Count < 0) or (Count > MaxSavedListCount) then raise EAbort.Create('Err');
   if Count > 0 then
   begin
     if RecentlyDroppedItemIds <> nil then RecentlyDroppedItemIds.Free;
@@ -1392,7 +1392,7 @@ begin
   // Native replaces the constructor-created list without freeing it here.
   RangerRelations := TList.Create;
   Count := Buffer.GetWord;
-  if (Count < 0) or (Count > 10000) then raise EAbort.Create('Error FRelationToRangers not in 0..10000');
+  if (Count < 0) or (Count > MaxSavedListCount) then raise EAbort.Create('Error FRelationToRangers not in 0..10000');
   for I := 0 to Count - 1 do RangerRelations.Add(Pointer(Buffer.GetByte));
   AwardIds := nil;
   Count := Buffer.GetByte;
@@ -1530,7 +1530,7 @@ begin
   else Block.AddParam(DecodeTextW('ImPolearnBelt'), ''); // 'IPlanet'
   if DockedTo <> nil then Block.AddParam(DecodeTextW('ImRyuWirnas'), DockedTo.Name) // 'IRuins'
   else Block.AddParam(DecodeTextW('ImRyuWirnas'), ''); // 'IRuins'
-  Text := IntToStr(CargoGoods[0].Count);
+  Text := IntToStr(CargoGoods[Ord(t_Food)].Count);
   for I := 1 to 7 do Text := Text + ',' + IntToStr(CargoGoods[Byte(I)].Count);
   Block.AddParam(DecodeTextW('Gronordos'), Text); // 'Goods'
   Text := IntToStr(BaseSkills[psAccuracy]);
@@ -1819,8 +1819,8 @@ begin
   else if Order = soTeleport then OrderTarget := TObject(Galaxy.IdToStar(Cardinal(OrderTarget))) as TStar
   else if Order = soLand then
   begin
-    if (Cardinal(OrderTarget) and $80000000) = $80000000 then
-      OrderTarget := TObject(Galaxy.IdToShip(Cardinal(OrderTarget) and $7FFFFFFF, True)) as TShip
+    if (Cardinal(OrderTarget) and OrderTargetShipFlag) = OrderTargetShipFlag then
+      OrderTarget := TObject(Galaxy.IdToShip(Cardinal(OrderTarget) and TaggedObjectIdMask, True)) as TShip
     else OrderTarget := TObject(Galaxy.IdToPlanet(Cardinal(OrderTarget))) as TPlanet;
   end
   else if Order = soFollowShip then OrderTarget := TObject(Galaxy.IdToShip(Cardinal(OrderTarget), True)) as TShip;
@@ -2332,7 +2332,7 @@ var
   Good: Byte;
 begin
   Result := False;
-  for Good := 0 to 7 do
+  for Good := Ord(t_Food) to Ord(t_Narcotics) do
     if CargoGoods[Good].Count > 0 then
     begin
       Result := True;
@@ -2347,7 +2347,7 @@ var
   Good: Byte;
 begin
   Result := 0;
-  for Good := 0 to 7 do if CargoGoods[Good].Count > 0 then Inc(Result);
+  for Good := Ord(t_Food) to Ord(t_Narcotics) do if CargoGoods[Good].Count > 0 then Inc(Result);
 end;
 { @end $74FFD8 }
 
@@ -2449,7 +2449,7 @@ begin
     Item := TItem(Artefacts[I]);
     Inc(Capital, Item.Cost);
   end;
-  for Good := 0 to 7 do Inc(Capital, CargoGoods[Good].TotalCost);
+  for Good := Ord(t_Food) to Ord(t_Narcotics) do Inc(Capital, CargoGoods[Good].TotalCost);
   if GetPlayer = Self then
   begin
     for I := 0 to GetPlayer.StorageEntries.Count - 1 do
@@ -5267,7 +5267,7 @@ begin
   if Ship.InterceptorSourceShip = Self then Ship.ClearIncomingInterceptors;
   if Ship.GetHull.InterceptorTarget = Self then Ship.GetHull.InterceptorTarget := nil;
   if InterceptorSourceShip = Ship then ClearIncomingInterceptors;
-  if (TypeId = stRanger) and (Ship.RelationToRanger(Self) < 10) then Ship.ChangeRelationToRanger(Self, 10);
+  if (TypeId = stRanger) and (Ship.RelationToRanger(Self) < RelationBadMin) then Ship.ChangeRelationToRanger(Self, 10);
   if Ship.TypeId = stRanger then ChangeRelationToRanger(Ship, 30);
   if (Order = soFollowShip) and ((OrderTarget as TShip) = Ship) then begin
     OrderNone(False);
@@ -5483,7 +5483,7 @@ begin
   if (CurrentPlanet <> nil) and not CurrentPlanet.IsMainPiratePlanet then
     if CurrentPlanet.OwnerId = oiPirate then Result := False
     else if not GoodsLegalOnPlanet[Good, CurrentPlanet.RaceId, CurrentPlanet.Government] then Result := True
-    else if (Good in [0..1]) and IsHealthEffectActive(12) then Result := True;
+    else if (Good in [Ord(t_Food)..Ord(t_Medicine)]) and IsHealthEffectActive(12) then Result := True;
 end;
 { @end $75D45C }
 
@@ -5644,7 +5644,7 @@ begin
   if LiberationGroup = nil then Exit;
   RouteOrder := (LiberationGroup as TGroup).Route[LiberationGroupRouteIndex];
   case RouteOrder.Kind of
-  3: begin
+  Ord(soJump): begin
     if IsOutsideStarSpace then Exit;
     if CurrentStar = RouteOrder.Target then begin
       Inc(LiberationGroupRouteIndex);
@@ -5654,7 +5654,7 @@ begin
     end;
     if (Order = soNone) or (Order = soFollowShip) then OrderJump(RouteOrder.Target as TStar, False);
   end;
-  2: begin
+  Ord(soLand): begin
     if CurrentPlanet = RouteOrder.Target then begin
       Inc(LiberationGroupRouteIndex);
       if LiberationGroupRouteIndex >= Length((LiberationGroup as TGroup).Route) then LeaveLiberationGroup;
@@ -5673,7 +5673,7 @@ begin
     end;
     if (Order = soNone) or (Order = soFollowShip) then OrderLanding(RouteOrder.Target, False);
   end;
-  1: begin
+  Ord(soMove): begin
     if IsOutsideStarSpace then Exit;
     if CurrentStar.Battle <> 0 then begin
       LeaveLiberationGroup;
@@ -5684,23 +5684,23 @@ begin
       end;
       Exit;
     end;
-    if (PointDistance(Position, RouteOrder.Destination) < 300) and (RouteOrder.WaitMode in [0]) then begin
+    if (PointDistance(Position, RouteOrder.Destination) < 300) and (RouteOrder.WaitMode in [GroupWaitArrival]) then begin
       Inc(LiberationGroupRouteIndex);
       if LiberationGroupRouteIndex >= Length((LiberationGroup as TGroup).Route) then LeaveLiberationGroup;
       Exit;
     end;
-    if (RouteOrder.WaitMode in [2]) and (LiberationGroup as TGroup).AreShipsAssembled then begin
+    if (RouteOrder.WaitMode in [GroupWaitAssembly]) and (LiberationGroup as TGroup).AreShipsAssembled then begin
       (LiberationGroup as TGroup).AdvanceRouteForShips;
       Exit;
     end;
-    if (RouteOrder.WaitMode in [3]) and ((LiberationGroup as TGroup).Route[LiberationGroupRouteIndex].WaitUntilTurn <= Galaxy.CurrentTurn) then begin
+    if (RouteOrder.WaitMode in [GroupWaitUntilTurn]) and ((LiberationGroup as TGroup).Route[LiberationGroupRouteIndex].WaitUntilTurn <= Galaxy.CurrentTurn) then begin
       Inc(LiberationGroupRouteIndex);
       if LiberationGroupRouteIndex >= Length((LiberationGroup as TGroup).Route) then LeaveLiberationGroup;
       ProcessLiberationGroupRoute;
       Exit;
     end;
     if (EnemyShip <> nil) and (EnemyShip.CurrentStar = CurrentStar) and EnemyShip.InNormalSpace and
-      (RouteOrder.WaitMode in [3]) and ((LiberationGroup as TGroup).Route[LiberationGroupRouteIndex].WaitUntilTurn > Galaxy.CurrentTurn + 7) then begin
+      (RouteOrder.WaitMode in [GroupWaitUntilTurn]) and ((LiberationGroup as TGroup).Route[LiberationGroupRouteIndex].WaitUntilTurn > Galaxy.CurrentTurn + 7) then begin
       for I := 0 to CurrentStar.Ships.Count - 1 do begin
         Ship := CurrentStar.Ships[I];
         if Ship.InNormalSpace and (Ship.LiberationGroup = LiberationGroup) and (Ship.EnemyShip = nil) and
@@ -6309,7 +6309,7 @@ end;
 { @routine $75FE78 TShip_AddAward }
 procedure TShip.AddAward(AwardId: Byte);
 begin
-  if AwardId = 255 then RaiseWideMessage('Error RewardNumber=255');
+  if AwardId = AwardNotFound then RaiseWideMessage('Error RewardNumber=255');
   if AwardIds = nil then AwardIds := TList.Create;
   if AwardIds.Count = 255 then Exit;
   if AwardIds.Count = AwardVisibleCount then Inc(AwardVisibleCount);
@@ -6496,7 +6496,7 @@ var
   Good: Byte;
 begin
   Result := 0;
-  for Good := 0 to 7 do Inc(Result, CargoGoods[Good].Count);
+  for Good := Ord(t_Food) to Ord(t_Narcotics) do Inc(Result, CargoGoods[Good].Count);
 end;
 { @end $76086C }
 
@@ -8315,7 +8315,7 @@ begin
   Drops := 0;
   for Pass := 1 to 3 do
   begin
-    for Good := 0 to 7 do
+    for Good := Ord(t_Food) to Ord(t_Narcotics) do
       if CargoGoods[Good].Count > 0 then
       begin
         Factor := RemapClamped(CargoGoods[Good].Count * GoodsMarket[Good].AveragePrice,
@@ -8342,7 +8342,7 @@ var
   Good: Byte;
   Quantity: Integer;
 begin
-  for Good := 0 to 7 do
+  for Good := Ord(t_Food) to Ord(t_Narcotics) do
     if CargoGoods[Good].Count > 0 then
     begin
       Quantity := CargoGoods[Good].Count;
@@ -8498,7 +8498,7 @@ var
 begin
   BestValue := 100000;
   Result := 255;
-  for Good := 0 to 7 do
+  for Good := Ord(t_Food) to Ord(t_Narcotics) do
     if CargoGoods[Good].Count <> 0 then
     begin
       Value := GoodsMarket[Good].AveragePrice;
@@ -8602,7 +8602,7 @@ begin
     end;
   until Done;
   if CargoFreeSpace < 0 then
-    for Good := 0 to 7 do
+    for Good := Ord(t_Food) to Ord(t_Narcotics) do
       if CargoGoods[Good].Count > 0 then
       begin
         Count := Min(-CargoFreeSpace, CargoGoods[Good].Count);
@@ -10498,7 +10498,7 @@ TEFilm(PrimaryFilm).SetGateEffectSize(StartStepIndex, EffectFilm, Gate.Effect.Si
         OrderDestination.Y := Trunc(Point.Y + -Cos(Angle) * 400);
         MovementDirection := RadiansToHeadingDegrees(ArcTan2(-(OrderDestination.X - Point.X), -(-(OrderDestination.Y - Point.Y))));
         MovementDirection := WrapHeadingDegrees(MovementDirection + SeededRandomIntRange(-5, 5, (CurrentStar.GenerationSeed + Galaxy.CurrentTurn) * Seed * 4));
-        OrderStateData := -65536;
+        OrderStateData := HoleExitOrderState;
         OrderTarget := nil;
         BuildOrderMovementPath(1000);
         if MovementPath.ActiveTail <> nil then OrderDestination := MovementPath.ActiveTail.Position else OrderDestination := Position;
@@ -10808,7 +10808,7 @@ begin
   end
   else if Order = soJumpHole then
   begin
-    if (OrderStateData = -65536) and (MovementPath.ActiveHead <> nil) then AdvancePath
+    if (OrderStateData = HoleExitOrderState) and (MovementPath.ActiveHead <> nil) then AdvancePath
     else if not InHyperspace and (MovementPath.ActiveHead <> nil) then
     begin
       AdvancePath;
@@ -10864,7 +10864,7 @@ procedure TShip.ClearCompletedTakeoffOrHoleOrder(UnusedStepIndex: Integer; Unuse
 begin
   if IsHullDestroyed then Exit;
   if Order = soTakeoff then OrderNone(True)
-  else if (Order = soJumpHole) and (OrderStateData = -65536) then OrderNone(True);
+  else if (Order = soJumpHole) and (OrderStateData = HoleExitOrderState) then OrderNone(True);
 end;
 { @end $770FA0 }
 
@@ -10882,7 +10882,7 @@ begin
     else if Order = soJumpHole then
     begin
       if not InNormalSpace then Break;
-      if OrderStateData = -65536 then Break;
+      if OrderStateData = HoleExitOrderState then Break;
       if MovementPath.ActiveHead = nil then Break;
       if PointDistanceSquared(MovementPath.ActiveTail.Position, OrderDestination) <= 0 then Exit;
     end
@@ -11113,7 +11113,7 @@ begin
   end
   else if Order = soJumpHole then
   begin
-    if OrderStateData = -65536 then AppendStarAvoidingPathWithTurnPadding(OrderDestination, MaximumNodes)
+    if OrderStateData = HoleExitOrderState then AppendStarAvoidingPathWithTurnPadding(OrderDestination, MaximumNodes)
     else
     begin
       Hole := OrderTarget as THole;
@@ -11306,7 +11306,7 @@ begin
   end;
   TurnStep := MovementTurnRate * BaseMovementStepsPerTurn * CurrentStar.MovementStepScale;
   Step := MovementSpeed * BaseMovementStepsPerTurn * CurrentStar.MovementStepScale;
-  if (Order = soTakeoff) or ((Order = soJumpHole) and (OrderStateData = -65536)) then
+  if (Order = soTakeoff) or ((Order = soJumpHole) and (OrderStateData = HoleExitOrderState)) then
   begin
     Step := Step / 2;
     TurnStep := TurnStep / 2;
@@ -11391,7 +11391,7 @@ begin
   if MovementPath.ActiveTail = nil then Point := Position else Point := MovementPath.ActiveTail.Position;
   if (Point.X = Destination.X) and (Point.Y = Destination.Y) then Exit;
   Step := MovementSpeed * BaseMovementStepsPerTurn * CurrentStar.MovementStepScale;
-  if (Order = soTakeoff) or ((Order = soJumpHole) and (OrderStateData = -65536)) then Step := Min(2, Step / 2);
+  if (Order = soTakeoff) or ((Order = soJumpHole) and (OrderStateData = HoleExitOrderState)) then Step := Min(2, Step / 2);
   Heading := RadiansToHeadingDegrees(ArcTan2(-(Point.X - Destination.X), Point.Y - Destination.Y));
   if Abs(Point.X - Destination.X) < Abs(Point.Y - Destination.Y) then UseY := True else UseY := False;
   Distance := Sqrt((Point.X - Destination.X) * (Point.X - Destination.X) + (Point.Y - Destination.Y) * (Point.Y - Destination.Y));

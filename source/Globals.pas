@@ -7,6 +7,8 @@ interface
 uses fMainForm, fCfgSettings, fGameEnd, fAbout, fIntroduction, fGameSettings, fGameSettings2, fLoadAB, fAchievements, fFilm, fRating2, fGameMenu, fGameLoad, fPlanet, fGov, fInfo, fScaner, fRewards, fGalaxy2, fGoodsShop2, EC_Expression, fTalk, ab_MainForm, fLoad, fJump, ThreadCalc, fJournal, fSelectFace, fLoadQuest, fPlanetQuest, fPlanetNO, aItem, aGalaxyStruct, aShip, fScore, fLoadRobot, fStarMap, aEFilm, aEFilmEnd, SE_Space, SE_Process, aPlanet, fShip2, fHangar, fRuinsTalk, fEquipmentShop, fSaveManager, GI_GraphButton, GI_MessageLoop, EC_Buf, EC_Struct, fFilmFile, SyncObjs, Classes, Types;
 
 const
+  PersistentMessageLifetimeTurns = 1000000; // Finite native lifetime for retained notices.
+
   // PlayerMessagePresentations order; keep the stored Kind byte and set widths.
   pmGalaxyNews = 0;
   pmRadio = 1;
@@ -81,13 +83,13 @@ var
     (NormalImage: 'GalaxyN'; ActiveImage: 'GalaxyA'; PressedImage: 'GalaxyD'; LifetimeTurns: 10),
     (NormalImage: 'EtherN'; ActiveImage: 'EtherA'; PressedImage: 'EtherD'; LifetimeTurns: 0),
     (NormalImage: 'ShipPlusN'; ActiveImage: 'ShipPlusA'; PressedImage: 'ShipPlusD'; LifetimeTurns: 5),
-    (NormalImage: 'QuestNormalN'; ActiveImage: 'QuestNormalA'; PressedImage: 'QuestNormalD'; LifetimeTurns: 1000000),
-    (NormalImage: 'QuestOkN'; ActiveImage: 'QuestOkA'; PressedImage: 'QuestOkD'; LifetimeTurns: 1000000),
-    (NormalImage: 'QuestCancelN'; ActiveImage: 'QuestCancelA'; PressedImage: 'QuestCancelD'; LifetimeTurns: 1000000),
+    (NormalImage: 'QuestNormalN'; ActiveImage: 'QuestNormalA'; PressedImage: 'QuestNormalD'; LifetimeTurns: PersistentMessageLifetimeTurns),
+    (NormalImage: 'QuestOkN'; ActiveImage: 'QuestOkA'; PressedImage: 'QuestOkD'; LifetimeTurns: PersistentMessageLifetimeTurns),
+    (NormalImage: 'QuestCancelN'; ActiveImage: 'QuestCancelA'; PressedImage: 'QuestCancelD'; LifetimeTurns: PersistentMessageLifetimeTurns),
     (NormalImage: 'TipsN'; ActiveImage: 'TipsA'; PressedImage: 'TipsD'; LifetimeTurns: 182),
-    (NormalImage: 'UserN'; ActiveImage: 'UserA'; PressedImage: 'UserD'; LifetimeTurns: 1000000),
+    (NormalImage: 'UserN'; ActiveImage: 'UserA'; PressedImage: 'UserD'; LifetimeTurns: PersistentMessageLifetimeTurns),
     (NormalImage: 'ShipMinusN'; ActiveImage: 'ShipMinusA'; PressedImage: 'ShipMinusD'; LifetimeTurns: 5),
-    (NormalImage: 'StorageN'; ActiveImage: 'StorageA'; PressedImage: 'StorageD'; LifetimeTurns: 1000000),
+    (NormalImage: 'StorageN'; ActiveImage: 'StorageA'; PressedImage: 'StorageD'; LifetimeTurns: PersistentMessageLifetimeTurns),
     (NormalImage: 'Ether2N'; ActiveImage: 'Ether2A'; PressedImage: 'Ether2D'; LifetimeTurns: 0)); // @addr $87AD94 Native image defaults and turn lifetimes.
 
 type
