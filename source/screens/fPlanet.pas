@@ -248,7 +248,7 @@ begin
          (LanguageDataConfig.GetBlockByPath('PlanetQuest.PlanetQuest').CountParams(IntToStr(Quest.QuestNumber)) > 0) then
       begin
         QuestNumber := Quest.QuestNumber;
-        if (Quest.QuestNumber < 10000) or
+        if (Quest.QuestNumber < FirstLicensedQuestId) or
           ((LanguageDataConfig.GetBlock('PlanetQuest').CountBlocks('PlanetQuestLic') > 0) and
            (LanguageDataConfig.GetBlock('PlanetQuest').GetBlock('PlanetQuestLic').GetParamOrMarker(IntToStr(Quest.QuestNumber)) =
             PlanetQuestScreen.GetQuestContentHash(Quest.QuestNumber))) then

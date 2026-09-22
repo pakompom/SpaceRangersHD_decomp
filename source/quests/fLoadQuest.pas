@@ -66,7 +66,7 @@ var
 
 implementation
 
-uses EC_CacheBitmap, Classes, EC_BlockPar, EC_Buf, EC_Cache, EC_CacheBuf, EC_File, EC_Str, GI_GraphBuf, GI_GraphButton, GI_Label, GI_Main, GI_Panel, GI_PanelScrollBar, GI_ScrollBar, GR_GraphBuf, GR_Main, Globals, GlobalsV, Math, SysUtils, TextQuest, Windows, aConst, aGalaxy, aMyFunction;
+uses EC_CacheBitmap, Classes, EC_BlockPar, EC_Buf, EC_Cache, EC_CacheBuf, EC_File, EC_Str, GI_GraphBuf, GI_GraphButton, GI_Label, GI_Main, GI_Panel, GI_PanelScrollBar, GI_ScrollBar, GR_GraphBuf, GR_Main, Globals, GlobalsV, Math, SysUtils, TextQuest, Windows, aConst, aGalaxy, aMyFunction, aGalaxyStruct;
 
 { @routine $5592F4 TfLoadQuest_Create }
 constructor TfLoadQuest.Create;
@@ -186,7 +186,7 @@ begin
         if Entries[SelectedIndex].QuestId >= 0 then
         begin
           LoadCompletionData;
-          if (Entries[SelectedIndex].QuestId >= 0) and (Entries[SelectedIndex].QuestId < 10000) then
+          if (Entries[SelectedIndex].QuestId >= 0) and (Entries[SelectedIndex].QuestId < FirstLicensedQuestId) then
           begin
             QuestId := Entries[SelectedIndex].QuestId;
             if (QuestId < 0) or ((High(CompletionData) + 1) div 2 <= QuestId) or (CompletionData[QuestId * 2 + 1] = 0) then
@@ -421,7 +421,7 @@ begin
   Row.SetSize(Background.ClientSize);
   Background.SetActive(True);
   TitleRight := GiScalePixels(262);
-  if (Entries[Index].QuestId >= 0) and (Entries[Index].QuestId < 10000) then
+  if (Entries[Index].QuestId >= 0) and (Entries[Index].QuestId < FirstLicensedQuestId) then
   begin
     LengthImage := TImageGI.Create(Row);
     LengthImage.SetDepth(9);
@@ -770,7 +770,7 @@ procedure TfLoadQuest.RecordCompletion(QuestId, Value, Status: Integer);
 var
   Count, I: Integer;
 begin
-  if (QuestId < 0) or (QuestId >= 10000) then Exit;
+  if (QuestId < 0) or (QuestId >= FirstLicensedQuestId) then Exit;
   Count := (High(CompletionData) + 1) div 2;
   if QuestId >= Count then
   begin
@@ -801,7 +801,7 @@ begin
     begin
       if Entries[I + GroupCount].RequiredAccess <> Access then Break;
       QuestId := Entries[I + GroupCount].QuestId;
-      if (QuestId >= 0) and (QuestId < 10000) then
+      if (QuestId >= 0) and (QuestId < FirstLicensedQuestId) then
       begin
         CompletionIndex := QuestId;
         if CompletionIndex >= 0 then

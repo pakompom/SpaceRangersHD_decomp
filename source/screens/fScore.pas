@@ -22,8 +22,8 @@ type
     PortraitFaceId: Integer; // @offset 0x18
     PilotRace: TOwnerId; // @offset 0x1C
     FinishedTurn: Integer; // @offset 0x20
-    Rank: Byte; // @offset 0x24
-    PirateRank: Byte; // @offset 0x25
+    Rank: TShipRank; // @offset 0x24
+    PirateRank: TShipRank; // @offset 0x25
     OtherShipKillCount: Integer; // @offset 0x28
     PirateKillCount: Integer; // @offset 0x2C
     DominatorKillCount: Integer; // @offset 0x30

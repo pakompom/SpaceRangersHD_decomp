@@ -5,15 +5,13 @@ interface
 
 uses EC_Struct, EC_BlockPar, EC_Buf, aItem, aShip, aConst, aGalaxy, aGalaxyStruct, aNormalShip, aPlanet;
 
-const
-  // BuyWarrior / BuyFlagship and GetDefaultHullType distinguish these subtypes.
-  wtRegular = 0;
-  wtFlagship = 1;
-
 type
+  // BuyWarrior / BuyFlagship and GetDefaultHullType distinguish these subtypes.
+  TWarriorType = (wtRegular = 0, wtFlagship = 1); // @size $01
+
   TWarrior = class(TNormalShip) // @size 0x514
   public
-    WarriorType: Byte; // @offset 0x510  wtRegular / wtFlagship; exposed as Script.ShipSubType.
+    WarriorType: TWarriorType; // @offset 0x510  wtRegular / wtFlagship; exposed as Script.ShipSubType.
 
     procedure SaveToBuffer(Buffer: TBufEC); override; // @addr $00518304 @slot $00
     procedure LoadFromBuffer(Buffer: TBufEC; Galaxy: TGalaxy); override; // @addr $00518330 @slot $04
@@ -51,7 +49,7 @@ type
     procedure MoveToRandomPlanetOrbit; // @addr $51F3A0
     procedure ConsumeNodes(Amount: Integer); // @addr $51F450
 
-    procedure InitGenerated(Planet: TPlanet; InitialMoney: Integer; Kind: Byte); // @addr 0x517804 @note "Sets location, money and WarriorType; registers the ship with its star and home garrison."
+    procedure InitGenerated(Planet: TPlanet; InitialMoney: Integer; Kind: TWarriorType); // @addr 0x517804 @note "Sets location, money and WarriorType; registers the ship with its star and home garrison."
 
     procedure NextDay; override; // @addr 0x51837C @slot 0x18
     procedure NextDayLogic; override; // @addr 0x5185F0 @slot 0x1C @calls "0x51846C"
@@ -95,7 +93,7 @@ end;
 { @end $5176F0 }
 
 { @routine $517804 TWarrior_InitGenerated }
-procedure TWarrior.InitGenerated(Planet: TPlanet; InitialMoney: Integer; Kind: Byte);
+procedure TWarrior.InitGenerated(Planet: TPlanet; InitialMoney: Integer; Kind: TWarriorType);
 var FirstNameIndex, LastNameIndex: Integer; Ranger: TRanger; TechLevel: Byte; Config: TBlockParEC; Weapon: TWeapon;
   // @nested $517754 SelectTechLevel
   function SelectTechLevel(Minimum, Maximum: Integer): Integer; // @addr $517754 @note "Nested helper with caller-popped static link."
@@ -143,8 +141,8 @@ begin
     if WarriorType = wtFlagship then begin Inc(Rank); if Rank < 4 then Rank := 4; end;
     AddRankPoints(NextRandomIntRange(0, CoalitionRankPointThresholds[Rank] div 2, RandomState));
     if not Galaxy.IsZeroStartingExperienceEnabled then begin
-      GainExperience(Round(RemapClamped(Ord(Rank), 0, 1000, TotalSkillTrainingCost div 6, TotalSkillTrainingCost div 2)), 0);
-      GainExperience(Round(RemapClamped(Galaxy.TechLevel, 3, 8, 0, NextRandomIntRange(0, TotalSkillTrainingCost div 2, RandomState))), 0);
+      GainExperience(Round(RemapClamped(Ord(Rank), 0, 1000, TotalSkillTrainingCost div 6, TotalSkillTrainingCost div 2)), esUnscaled);
+      GainExperience(Round(RemapClamped(Galaxy.TechLevel, 3, 8, 0, NextRandomIntRange(0, TotalSkillTrainingCost div 2, RandomState))), esUnscaled);
     end;
   end;
   ChameleonActive := False;
@@ -214,7 +212,7 @@ end;
 procedure TWarrior.LoadFromBuffer(Buffer: TBufEC; Galaxy: TGalaxy);
 begin
   inherited;
-  if LoadedSaveVersion >= 130 then WarriorType := Buffer.GetByte
+  if LoadedSaveVersion >= 130 then WarriorType := TWarriorType(Buffer.GetByte)
   else WarriorType := wtRegular;
 end;
 { @end $518330 }
@@ -269,7 +267,7 @@ begin
       Stage := 4;
     end else if DockedTo <> nil then begin
       Stage := 5;
-      if not (DockedTo.TypeId in [Ord(rstRangerCenter)..Ord(rstCustomStation)]) then begin
+      if not (DockedTo.TypeId in [rstRangerCenter..rstCustomStation]) then begin
         if DockedTo.InNormalSpace then OrderTakeoff else OrderNone(False);
         Exit;
       end;
@@ -287,7 +285,7 @@ begin
         RestoreEssentialEquipment;
         Stage := 6;
         if LiberationGroup <> nil then ProcessLiberationGroupRoute;
-        if (DockedTo.TypeId = Byte(rstMilitaryBase)) and (TRuins(DockedTo).FlyToStar <> nil) and (TRuins(DockedTo).FlyToStar <> DockedTo.CurrentStar) then Exit;
+        if (DockedTo.TypeId = rstMilitaryBase) and (TRuins(DockedTo).FlyToStar <> nil) and (TRuins(DockedTo).FlyToStar <> DockedTo.CurrentStar) then Exit;
         if DockedTo.InNormalSpace then OrderTakeoff;
         Stage := 7;
       end;
@@ -522,7 +520,7 @@ begin
               Stations := TList.Create;
               for I := 0 to CurrentStar.Ships.Count - 1 do begin
                 Ship := CurrentStar.Ships[I];
-                if (Ship.TypeId in [Ord(rstRangerCenter)..Ord(rstCustomStation)]) and Ship.CanDock(Self) and (Ship.CurrentStanding in [ssCoalitionMilitary..ssNeutral]) then begin
+                if (Ship.TypeId in [rstRangerCenter..rstCustomStation]) and Ship.CanDock(Self) and (Ship.CurrentStanding in [ssCoalitionMilitary..ssNeutral]) then begin
                   if PointDistanceSquared(Position, Ship.Position) >= Sqr(CalculateSpeed) then Stations.Add(Ship);
                 end;
               end;
@@ -714,13 +712,13 @@ procedure TWarrior.ProcessUnseenProgression;
 var Award: Byte;
 begin
   if (DaysSincePlayerSeen >= 60) and (GetPlayer <> nil) then begin
-    if NextRandomUnitFloat(RandomState) < 0.05 then GainExperience(SeededRandomIntRange(100, 500, RandomState), 0);
+    if NextRandomUnitFloat(RandomState) < 0.05 then GainExperience(SeededRandomIntRange(100, 500, RandomState), esUnscaled);
     if (GetPlayer.Rank > Rank) and (NextRandomUnitFloat(RandomState) < 0.01) and ((Rank < 4) or ((WarriorType = wtFlagship) and (Rank < 6))) then begin
       AddRankPoints(NextRandomIntRange(10, 20, RandomState));
       TryPromoteRank;
     end;
     if (NextRandomUnitFloat(RandomState) < 0.02) and (CurrentPlanet <> nil) and ((AwardIds = nil) or (2 * (Rank + 1) > AwardIds.Count)) then begin
-      Award := SelectAward(RaceToOwner(CurrentPlanet.RaceId), [atAccomplishment, atSecretMission], [stKling..Ord(rstCustomStation)]);
+      Award := SelectAward(RaceToOwner(CurrentPlanet.RaceId), [atAccomplishment, atSecretMission], [stKling..rstCustomStation]);
       if Award <> AwardNotFound then AddAward(Award);
     end;
   end;
@@ -1432,7 +1430,7 @@ begin
       StationCount := 0;
       for J := 0 to Star.Ships.Count - 1 do begin
         Ship := Star.Ships[J];
-        if (Ship.TypeId in [Ord(rstRangerCenter)..Ord(rstCustomStation)]) and (Ship.CurrentStanding in NonTargetableStationStandingMasks[sfCoalition]) then Inc(StationCount);
+        if (Ship.TypeId in [rstRangerCenter..rstCustomStation]) and (Ship.CurrentStanding in NonTargetableStationStandingMasks[sfCoalition]) then Inc(StationCount);
       end;
       for J := 0 to Star.Planets.Count - 1 do begin
         Planet := Star.Planets[J];

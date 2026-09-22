@@ -896,7 +896,7 @@ end;
 
 { @routine $5EC180 TKling_RetreatToReinforcedStar }
 function TKling.RetreatToReinforcedStar: Boolean;
-const DominatorShipMask = [0];
+const DominatorShipMask = [stKling];
 var I: Integer; Star: TStar; Stars: TList;
 begin
   Result := False;
@@ -935,7 +935,7 @@ end;
 
 { @routine $5EC3B0 TKling_FindKellerAttackTarget }
 function TKling.FindKellerAttackTarget: TStar;
-const CoalitionShipMask = [1..5];
+const CoalitionShipMask = [stRanger..stTranclucator];
 var I, J, Score, BestScore, Index: Integer; BestStar, Star, Neighbor: TStar;
 begin
   BestScore := MaxInt;
@@ -1648,7 +1648,7 @@ begin
           if HasIndependentScriptFaction then begin
             if Ship.HasIndependentScriptFaction and (TScriptShip(ScriptShip).StateText = TScriptShip(Ship.ScriptShip).StateText) then Continue;
           end else if ((Ship.OwnerId = oiDominator) and ((Ship as TKling).DominatorSeries = DominatorSeries) and (Ship.CurrentStanding <> ssCustom)) or IsPlayerCamouflageEffective(Ship) then Continue;
-          if (EnemyShip = nil) or not (Ship.TypeId in [Ord(rstRangerCenter)..Ord(rstCustomStation)]) or (EnemyShip.TypeId in [Ord(rstRangerCenter)..Ord(rstCustomStation)]) then begin
+          if (EnemyShip = nil) or not (Ship.TypeId in [rstRangerCenter..rstCustomStation]) or (EnemyShip.TypeId in [rstRangerCenter..rstCustomStation]) then begin
             Distance := PointDistance(Position, Ship.Position);
             if NextRandomFloatRange(0.3, 3, RandomState) * BestDistance > Distance then begin
               EnemyShip := Ship;

@@ -189,7 +189,7 @@ impl<'a> Emitter<'a> {
             if typ.get("set").is_some() {
                 return Ok(1);
             }
-            if typ.get("subrange").is_some() {
+            if typ.get("subrange").is_some() || typ.get("enum_range").is_some() {
                 return Ok(self.project.compiler.size(typ)?.min(8));
             }
             return Ok(4);

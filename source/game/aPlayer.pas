@@ -1358,7 +1358,7 @@ begin
       end;
       if PendingPirateLicenseCash > 0 then
       begin
-        GainExperience(Round(PendingPirateLicenseCash * CareerStatus[rcPirate] * 0.001), 3);
+        GainExperience(Round(PendingPirateLicenseCash * CareerStatus[rcPirate] * 0.001), esNormalShips);
         Inc(PirateLicenseCash, PendingPirateLicenseCash);
         PendingPirateLicenseCash := 0;
         if PirateLicenseCash > MaxMonetaryValue then PirateLicenseCash := MaxMonetaryValue;
@@ -1368,14 +1368,14 @@ begin
         Dec(PirateLicenseTicks);
         if PirateLicenseTicks = 0 then
           AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn, PickLocalizedTextVariant('GalaxyNews.PirateLicense.End', Galaxy.CurrentTurn div 10), '')
-        else if Galaxy.ShipTypeCounts[Ord(rstDominion)] <= 0 then
+        else if Galaxy.ShipTypeCounts[rstDominion] <= 0 then
         begin
           Found := 0;
           for I := 0 to Galaxy.Stars.Count - 1 do
           begin
             Star := TStar(Galaxy.Stars[I]);
             for J := 0 to Star.Ships.Count - 1 do
-              if TShip(Star.Ships[J]).TypeId = Byte(rstDominion) then
+              if TShip(Star.Ships[J]).TypeId = rstDominion then
               begin
                 Inc(Found);
                 Break;
@@ -3170,7 +3170,7 @@ begin
   if (Ship.TargetingRestriction = 1) and (Ship.EnemyShip <> Self) and (EnemyShip <> Ship) then Exit;
   if (Ship is TKling) and (ChameleonLogic[Ord(TKling(Ship).DominatorSeries)] >= 2) and
     (Ship.EnemyShip <> Self) and (EnemyShip <> Ship) then Exit;
-  if Ship.TypeId in [Ord(rstRangerCenter)..Ord(rstCustomStation)] then
+  if Ship.TypeId in [rstRangerCenter..rstCustomStation] then
   begin
     for Faction := Low(TStarFaction) to High(TStarFaction) do
       if (OwnerId in TOwnerMasks(PlanetOwnerMasks)[Faction]) and

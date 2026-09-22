@@ -404,9 +404,9 @@ end;
 procedure CheatRangerpoints;
 begin
   if (Galaxy <> nil) and (CurrentScreenId <> screenShip) and (GetPlayer <> nil) and
-    GetPlayer.IsDockedToShip and (GetPlayer.DockedTo.TypeId = Byte(rstRangerCenter)) and (GetPlayer.FreeExperience < 1000) then
+    GetPlayer.IsDockedToShip and (GetPlayer.DockedTo.TypeId = rstRangerCenter) and (GetPlayer.FreeExperience < 1000) then
   begin
-    GetPlayer.GainExperience(1000, 0);
+    GetPlayer.GainExperience(1000, esUnscaled);
     ReportCheat(150, DecodeTextW('RIALNOGDEPROPRONIHNITIS')); // 'RANGERPOINTS'
   end;
 end;
@@ -463,7 +463,7 @@ begin
   if (Galaxy <> nil) and (CurrentScreenId <> screenShip) and (GetPlayer <> nil) and GetPlayer.IsOnPlanet then
   begin
     RestoreTemporaryShopStock;
-    Info := Galaxy.SelectWeaponInfo(RandomIntRange(1, 100000), [0], 8, 1);
+    Info := Galaxy.SelectWeaponInfo(RandomIntRange(1, 100000), [waFree], 8, 1);
     Item := CreateGeneratedWeapon(Info, RandomIntRange(14, 200), RandomIntRange(1, 8), RaceToOwner(GetPlayer.CurrentPlanet.RaceId));
     GetPlayer.CurrentPlanet.EquipmentShop.Add(Item);
     Item.Cost := RandomIntRange(1, 10);
@@ -635,9 +635,9 @@ var
   Info: PWeaponInfo;
 begin
   if (Galaxy <> nil) and (GetPlayer <> nil) and GetPlayer.IsDockedToShip and
-    (CurrentScreenId <> screenShip) and (GetPlayer.DockedTo.TypeId = Byte(rstScienceBase)) then
+    (CurrentScreenId <> screenShip) and (GetPlayer.DockedTo.TypeId = rstScienceBase) then
   begin
-    Info := Galaxy.SelectWeaponInfo(RandomIntRange(1, 100000), [4], 8, 1);
+    Info := Galaxy.SelectWeaponInfo(RandomIntRange(1, 100000), [waNotSoldAndNodeRepair], 8, 1);
     Item := CreateGeneratedWeapon(Info, RandomIntRange(77, 200), RandomIntRange(1, 8), oiDominator);
     case RandomIntRange(1, 3) of
       1: Item.DominatorSeries := dsBlazer;
@@ -667,7 +667,7 @@ var
   Ship: TShip;
 begin
   if (Galaxy <> nil) and (GetPlayer <> nil) and GetPlayer.IsDockedToShip and
-    (CurrentScreenId <> screenShip) and (GetPlayer.DockedTo.TypeId = Byte(rstPirateBase)) then
+    (CurrentScreenId <> screenShip) and (GetPlayer.DockedTo.TypeId = rstPirateBase) then
   begin
     for I := 0 to Galaxy.Stars.Count - 1 do
     begin
@@ -675,7 +675,7 @@ begin
       for J := 0 to Star.Ships.Count - 1 do
       begin
         Ship := TShip(Star.Ships[J]);
-        if not (Ship.TypeId in [stKling, stTranclucator..Ord(rstCustomStation)]) then
+        if not (Ship.TypeId in [stKling, stTranclucator..rstCustomStation]) then
           if not ((Ship.TypeId = stPirate) or (GetPlayer = Ship) or
             ((Ship.TypeId = stRanger) and ((Ship as TRanger).PreferredCareer = rcPirate))) then
           begin
@@ -773,14 +773,14 @@ var
   Station: TRuins;
   Ship: TShip;
   I, TotalKinds, Remaining, Choice: Integer;
-  Kind: Byte;
+  Kind: TStationType;
   Kinds: TShipTypeMask; // Shared DCU set has the native word-aligned local layout.
 begin
   if (Galaxy <> nil) and (GetPlayer <> nil) then
   begin
     TotalKinds := 7;
     Remaining := TotalKinds;
-    Kinds := [6..12];
+    Kinds := [rstRangerCenter..rstDominion];
     for I := 0 to GetPlayer.CurrentStar.Ships.Count - 1 do
     begin
       Ship := TShip(GetPlayer.CurrentStar.Ships[I]);
@@ -794,14 +794,14 @@ begin
     begin
       Choice := RandomIntRange(1, Remaining);
       I := 0;
-      for Kind := 6 to 12 do
+      for Kind := rstRangerCenter to rstDominion do
         if Kind in Kinds then
         begin
           Inc(I);
           if I = Choice then
           begin
             Station := TRuins.Create;
-            Station.Init(TStationType(Kind), GetPlayer.CurrentStar, '');
+            Station.Init(Kind, GetPlayer.CurrentStar, '');
             Break;
           end;
         end;
@@ -818,7 +818,7 @@ var
   Constellation: TConstellation;
 begin
   if (Galaxy <> nil) and (GetPlayer <> nil) and GetPlayer.IsDockedToShip and
-    (CurrentScreenId <> screenShip) and (GetPlayer.DockedTo.TypeId = Byte(rstPirateBase)) then
+    (CurrentScreenId <> screenShip) and (GetPlayer.DockedTo.TypeId = rstPirateBase) then
   begin
     I := 0;
     // Native search skips hidden sectors here, then randomly seeks a hidden one.
@@ -953,7 +953,7 @@ var
   Planet: TPlanet;
 begin
   if (Galaxy <> nil) and (GetPlayer <> nil) and GetPlayer.IsDockedToShip and
-    (CurrentScreenId <> screenShip) and (GetPlayer.DockedTo.TypeId = Byte(rstPirateBase)) then
+    (CurrentScreenId <> screenShip) and (GetPlayer.DockedTo.TypeId = rstPirateBase) then
   begin
     for I := 0 to Galaxy.Stars.Count - 1 do
     begin

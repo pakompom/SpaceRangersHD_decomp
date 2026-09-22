@@ -1634,7 +1634,7 @@ var
             else if (Ship as TTranclucator).OwnerShip.OwnerId in PlanetOwnerMasks.PirateClan then Inc(PirateTranclucators);
           end;
       else
-        if Ship.TypeId in [Ord(rstRangerCenter)..Ord(rstCustomStation)] then
+        if Ship.TypeId in [rstRangerCenter..rstCustomStation] then
           case Star.ControlFaction of
             sfCoalition:
               if Ship.CurrentStanding in [ssCoalitionMilitary..ssPiratePassive] then Inc(CoalitionStations)
@@ -1929,7 +1929,7 @@ begin
   else if GetPlayer.IsDockedToShip then
   begin
     if not MusicInPlanetEnabled then MusicManager.RequestFadeOut
-    else if GetPlayer.DockedTo.TypeId in [Ord(rstPirateBase), Ord(rstDominion)] then
+    else if GetPlayer.DockedTo.TypeId in [rstPirateBase, rstDominion] then
       MusicManager.PlayCategory('Nation.' + OwnerInfo[RaceToOwner(GetPlayer.DockedTo.PilotRace)].InternalName + 'Pirate')
     else MusicManager.PlayCategory('Nation.' + OwnerInfo[RaceToOwner(GetPlayer.DockedTo.PilotRace)].InternalName);
   end

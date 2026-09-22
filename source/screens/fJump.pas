@@ -122,9 +122,9 @@ begin
     end;
     LoadPanel.SetProgress(1);
     LoadPanel.Hide;
-    if GetPlayer.DockedTo.TypeId = Byte(rstMilitaryBase) then
+    if GetPlayer.DockedTo.TypeId = rstMilitaryBase then
       MovieConfig := LanguageDataConfig.GetParamByPathOrMarker('FormRuins.WB.HyperJumpVideo')
-    else if GetPlayer.DockedTo.TypeId = Byte(rstDominion) then
+    else if GetPlayer.DockedTo.TypeId = rstDominion then
       MovieConfig := LanguageDataConfig.GetParamByPathOrMarker('FormRuins.CB.HyperJumpVideo')
     else
     begin

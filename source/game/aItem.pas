@@ -188,7 +188,7 @@ type
     HullPoints: Integer; // @offset 0x60
     TechLevel: Byte; // @offset 0x64
     Armor: ShortInt; // @offset 0x65
-    HullType: Byte; // @offset 0x66 ht* categories in aGalaxyStruct.
+    HullType: THullType; // @offset 0x66 ht* categories in aGalaxyStruct.
     HullSeries: Integer; // @offset 0x68  -1 means no series.
     OwnerShip: Pointer; // @offset 0x6C  Borrowed; not serialized by the hull.
     CapitalShip: Byte; // @offset 0x70  Script.CapitalShipStats.
@@ -212,7 +212,7 @@ type
     procedure SaveToBlock(Block: TBlockParEC); override; // @addr 0x7F48B4
     procedure LoadFromBlock(Block: TBlockParEC); override; // @addr 0x7F4BF8
 
-    procedure Init(Capacity: Integer; Level: Byte; Owner: TOwnerId; HullType: Byte; Series: Integer; PirateBuilt: Boolean); // @addr 0x7F4200
+    procedure Init(Capacity: Integer; Level: Byte; Owner: TOwnerId; HullType: THullType; Series: Integer; PirateBuilt: Boolean); // @addr 0x7F4200
     procedure Repair; override; // @addr 0x7F5398
     function GetSlotCount(Kind: TShipSlotKind): Integer; // @addr 0x7F6B4C
     function GetFragilityFactor(DamageFlags: TDamageFlagSet): Single; override; // @addr 0x7F7038 @ida "float __usercall $name@<st0>(THull *Self@<eax>, unsigned int DamageFlags@<edx>);" @note "Zero flags return the average of energy, splinter and missile factors."
@@ -706,8 +706,8 @@ function CreateRandomLootItem(Pool: TItemLootPool; Owner: TOwnerId; Seed: Cardin
 function ReadSavedMicroModuleIndex(Buffer: TBufEC): Integer; // @addr 0x7F0534 @note "Returns a one-based template index, or 0 if the saved template cannot be resolved."
 function MigrateSavedItemType(ItemType: Byte): TItemType; // @addr 0x80CED4 @note "Applies the ordered item-type insertions for save versions before 164, 78, 131, 78 and 127; arithmetic wraps in a byte."
 
-function GetBaseHullSlotCount(Kind: TShipSlotKind; HullType: Byte; Owner: TOwnerId; Ship: Pointer): Integer; // @addr 0x7F6D68
-function CalculateGeneratedHullCost(Capacity, Level: Cardinal; Owner: TOwnerId; HullType: Byte): Integer; // @addr 0x7F4F38
+function GetBaseHullSlotCount(Kind: TShipSlotKind; HullType: THullType; Owner: TOwnerId; Ship: Pointer): Integer; // @addr 0x7F6D68
+function CalculateGeneratedHullCost(Capacity, Level: Cardinal; Owner: TOwnerId; HullType: THullType): Integer; // @addr 0x7F4F38
 function CalculateGeneratedFuelCapacity(Weight: Cardinal; Level: Integer): Integer; // @addr 0x7F77E0
 function CalculateGeneratedFuelTanksCost(Weight: Cardinal; Level: Integer; Owner: TOwnerId): Integer; // @addr 0x7F7834
 function CalculateGeneratedEngineCost(Weight: Cardinal; Level: Byte; Owner: TOwnerId): Integer; // @addr 0x7F8630
@@ -1890,7 +1890,7 @@ end;
 { @end $7F41B8 }
 
 { @routine $7F4200 THull_Init }
-procedure THull.Init(Capacity: Integer; Level: Byte; Owner: TOwnerId; HullType: Byte; Series: Integer; PirateBuilt: Boolean);
+procedure THull.Init(Capacity: Integer; Level: Byte; Owner: TOwnerId; HullType: THullType; Series: Integer; PirateBuilt: Boolean);
 begin
   ItemType := t_Hull;
   OwnerShip := nil;
@@ -1990,19 +1990,19 @@ begin
   TechLevel := Buffer.GetByte;
   Armor := ShortInt(Buffer.GetByte);
   SavedHullType := Buffer.GetByte;
-  if LoadedSaveVersion >= 88 then HullType := SavedHullType
+  if LoadedSaveVersion >= 88 then HullType := THullType(SavedHullType)
   else if LoadedSaveVersion >= 67 then
   begin
     if (SavedHullType > 6) and (SavedHullType < 24) then SavedHullType := 6;
     if SavedHullType >= 24 then Dec(SavedHullType, 17);
-    HullType := SavedHullType;
+    HullType := THullType(SavedHullType);
   end
   else if SavedHullType > 26 then HullType := htSpecial
   else
   begin
     if (SavedHullType > 6) and (SavedHullType < 24) then SavedHullType := 6;
     if SavedHullType >= 24 then Dec(SavedHullType, 17);
-    HullType := SavedHullType;
+    HullType := THullType(SavedHullType);
   end;
   if (HullType = htSpecial) and (SpecialModuleIndex = 0) then HullType := htRanger;
   if LoadedSaveVersion >= 163 then HullSeries := ReadSavedHullSeriesIndex(Buffer)
@@ -2078,7 +2078,7 @@ begin
   Block.AddParam(DecodeTextW('Hristophorisnotuse'), IntToStr(HullPoints)); // 'Hitpoints'
   Block.AddParam(DecodeTextW('Tre4cwh0L6eHv3ealf'), IntToStr(TechLevel)); // 'TechLevel'
   Block.AddParam(DecodeTextW('Alrumuotr'), IntToStr(Armor)); // 'Armor'
-  Block.AddParam(DecodeTextW('SohtiEprTtyopwec'), IntToStr(HullType)); // 'ShipType'
+  Block.AddParam(DecodeTextW('SohtiEprTtyopwec'), IntToStr(Ord(HullType))); // 'ShipType'
   Block.AddParam(DecodeTextW('Stearoidess'), IntToStr(HullSeries)); // 'Series'
   if HullSeries <> -1 then
     Block.AddParam(DecodeTextW('IfSoenrOilets2Noarmye'), GetSeriesName); // 'ISeriesName'
@@ -2093,7 +2093,7 @@ begin
   HullPoints := StrToInt(Block.GetParam(DecodeTextW('Hristophorisnotuse'))); // 'Hitpoints'
   TechLevel := StrToInt(Block.GetParam(DecodeTextW('Tre4cwh0L6eHv3ealf'))); // 'TechLevel'
   Armor := StrToInt(Block.GetParam(DecodeTextW('Alrumuotr'))); // 'Armor'
-  HullType := StrToInt(Block.GetParam(DecodeTextW('SohtiEprTtyopwec'))); // 'ShipType'
+  HullType := THullType(StrToInt(Block.GetParam(DecodeTextW('SohtiEprTtyopwec')))); // 'ShipType'
   HullSeries := StrToInt(Block.GetParam(DecodeTextW('Stearoidess'))); // 'Series'
   PirateBuilt := LowerCase(Block.GetParam(DecodeTextW('BlueivlitoBuyAPIinroaLtte'))) = 'true'; // 'BuiltByPirate'
 end;
@@ -2107,7 +2107,7 @@ end;
 { @end $7F4F10 }
 
 { @routine $7F4F38 CalculateGeneratedHullCost }
-function CalculateGeneratedHullCost(Capacity, Level: Cardinal; Owner: TOwnerId; HullType: Byte): Integer;
+function CalculateGeneratedHullCost(Capacity, Level: Cardinal; Owner: TOwnerId; HullType: THullType): Integer;
 var Kind: TShipSlotKind; Factor: Double;
 begin
   Factor := 1;
@@ -2356,7 +2356,7 @@ end;
 { @end $7F6B4C }
 
 { @routine $7F6D68 GetBaseHullSlotCount }
-function GetBaseHullSlotCount(Kind: TShipSlotKind; HullType: Byte; Owner: TOwnerId; Ship: Pointer): Integer;
+function GetBaseHullSlotCount(Kind: TShipSlotKind; HullType: THullType; Owner: TOwnerId; Ship: Pointer): Integer;
 begin
   Result := 0;
   case HullType of
@@ -2366,16 +2366,16 @@ begin
     htTransport: Result := TransportHullSlots[Owner, Kind];
     htLiner: Result := LinerHullSlots[Owner, Kind];
     htDiplomat: Result := DiplomatHullSlots[Owner, Kind];
-    htTranclucator: Result := TranclucatorHullSlots[Ord(Kind)];
+    htTranclucator: Result := TranclucatorHullSlots[Kind];
     htKling: if (Ship = nil) or not (TObject(Ship) is TKling) then
-         Result := DominatorHullSlots[0, Ord(Kind)]
-       else Result := DominatorHullSlots[Ord((TObject(Ship) as TKling).KlingType), Ord(Kind)];
-    htStation: if Ship = nil then Result := StationHullSlots[0, Ord(Kind)]
-       else if not (TShip(Ship).TypeId in [Ord(rstRangerCenter)..Ord(rstCustomStation)]) then
-         Result := StationHullSlots[0, Ord(Kind)]
-       else Result := StationHullSlots[TShip(Ship).TypeId - Ord(rstRangerCenter), Ord(Kind)];
-    htSpecial: Result := HullType9Slots[Ord(Kind)];
-    htFlagship: Result := HullType10Slots[Ord(Kind)];
+         Result := DominatorHullSlots[ktBoss, Kind]
+       else Result := DominatorHullSlots[(TObject(Ship) as TKling).KlingType, Kind];
+    htStation: if Ship = nil then Result := StationHullSlots[rstRangerCenter, Kind]
+       else if not (TShip(Ship).TypeId in [rstRangerCenter..rstCustomStation]) then
+         Result := StationHullSlots[rstRangerCenter, Kind]
+       else Result := StationHullSlots[TShip(Ship).TypeId, Kind];
+    htSpecial: Result := SpecialHullSlots[Kind];
+    htFlagship: Result := FlagshipHullSlots[Kind];
   else RaiseWideMessage('SlotCount error');
   end;
 end;
@@ -6500,7 +6500,7 @@ begin
   if ItemType in [t_ArtefactHull..t_ArtFastRacks] then Result := CreateConfiguredArtefactByItemType(ItemType, oiUninhabited)
   else if ItemType = t_Hull then begin
     Item := CreateItemByType(ItemType);
-    THull(Item).Init(250, 1, RaceToOwner(GetPlayer.PilotRace), 0, -1, False);
+    THull(Item).Init(250, 1, RaceToOwner(GetPlayer.PilotRace), htRanger, -1, False);
     Result := Item;
   end else if ItemType = t_CustomWeapon then Result := nil
   else if ItemType in [t_Hull..t_CustomWeapon] then Result := CreateGeneratedEquipment(ItemType, 20, 1, oiUninhabited)
@@ -6536,7 +6536,7 @@ begin
     begin
       ActualLevel := Max(0, Min(MinimumLevel, 8));
       case ItemType of
-        t_Hull: THull(Item).Init(Weight, ActualLevel, Owner, 0, -1, False);
+        t_Hull: THull(Item).Init(Weight, ActualLevel, Owner, htRanger, -1, False);
         t_FuelTanks: TFuelTanks(Item).Init(Weight, ActualLevel, Owner);
         t_Engine: TEngine(Item).Init(Weight, ActualLevel, Owner);
         t_Radar: TRadar(Item).Init(Weight, ActualLevel, Owner);

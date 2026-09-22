@@ -32,7 +32,7 @@ uses Classes, Windows, SysUtils, Math, EC_Str, EC_Struct, GI_GraphButton,
 { @routine $8183AC TThreadCreateNewGame_Execute }
 procedure TThreadCreateNewGame.Execute;
 const
-  InitialDominatorShipMask = [0];
+  InitialDominatorShipMask = [stKling];
 var
   ControlWord: Word;
   I, J, K, N: Integer;
@@ -580,7 +580,7 @@ begin
     for I := 0 to GetPlayer.CurrentStar.Ships.Count - 1 do
     begin
       Ship := GetPlayer.CurrentStar.Ships[I];
-      if Ship.TypeId = Byte(rstRangerCenter) then
+      if Ship.TypeId = rstRangerCenter then
       begin
         GetPlayer.DockedTo := Ship;
         Break;

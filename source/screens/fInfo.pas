@@ -292,7 +292,7 @@ begin
   GetByName('PanelSearch').SetActive(SearchMode);
   with GetByName('BGCity2') as TImageGI do
   begin
-    SetActive(GetPlayer.IsDockedToShip and (GetPlayer.DockedTo.TypeId = Byte(rstMilitaryBase)));
+    SetActive(GetPlayer.IsDockedToShip and (GetPlayer.DockedTo.TypeId = rstMilitaryBase));
     if Active then
     begin
       SetImagePath('GAI,' + GetPlayer.CurrentStar.GetBackgroundImagePath(I));
@@ -397,14 +397,14 @@ end;
 procedure TfInfo.EndTurnClicked(Sender: TObjectGI);
 begin
   if (GetPlayer = nil) or (GetPlayer.QueuedTravelTarget <> nil) then Exit;
-  if GetPlayer.IsDockedToShip and (GetPlayer.DockedTo.TypeId = Byte(rstDominion)) and
+  if GetPlayer.IsDockedToShip and (GetPlayer.DockedTo.TypeId = rstDominion) and
     (GetPlayer.DockedTo.Order = soTeleport) and (Cardinal(GetPlayer.DockedTo.OrderStateData) > 0) and
     not GetPlayer.DockedTo.InHyperspace then
   begin
     RuinsTalkScreen.DepartWithStation(1);
     Exit;
   end;
-  if GetPlayer.IsDockedToShip and (GetPlayer.DockedTo.TypeId = Byte(rstDominion)) and
+  if GetPlayer.IsDockedToShip and (GetPlayer.DockedTo.TypeId = rstDominion) and
     ((GetPlayer.DockedTo as TRuins).FlyToStar <> nil) and
     ((GetPlayer.DockedTo as TRuins).FlyToStar <> GetPlayer.CurrentStar) and
     ((GetPlayer.DockedTo as TRuins).FlyDate <= Galaxy.CurrentTurn) then
@@ -412,7 +412,7 @@ begin
     RuinsTalkScreen.DepartWithStation(1);
     Exit;
   end;
-  if GetPlayer.IsDockedToShip and (GetPlayer.DockedTo.TypeId = Byte(rstMilitaryBase)) and
+  if GetPlayer.IsDockedToShip and (GetPlayer.DockedTo.TypeId = rstMilitaryBase) and
     ((GetPlayer.DockedTo as TRuins).FlyToStar <> nil) and
     ((GetPlayer.DockedTo as TRuins).FlyToStar <> GetPlayer.CurrentStar) and
     ((GetPlayer.DockedTo as TRuins).FlyDate <= Galaxy.CurrentTurn) then
@@ -935,7 +935,7 @@ begin
       MusicManager.RequestFadeOut;
       Exit;
     end;
-    if GetPlayer.DockedTo.TypeId in [Ord(rstPirateBase),Ord(rstDominion)] then
+    if GetPlayer.DockedTo.TypeId in [rstPirateBase,rstDominion] then
       MusicManager.PlayCategory('Nation.' + OwnerInfo[RaceToOwner(GetPlayer.DockedTo.PilotRace)].InternalName + 'Pirate')
     else MusicManager.PlayCategory('Nation.' + OwnerInfo[RaceToOwner(GetPlayer.DockedTo.PilotRace)].InternalName);
   end;
@@ -1040,7 +1040,7 @@ var
   SearchText: WideString;
   GoodsIndex: Byte;
   Control: TObjectGI;
-  StationType: Byte;
+  StationType: TStationType;
   MinGoodsCount, MinSellPrice, MaxBuyPrice: Integer;
   GoodsSelected: array[0..7] of Boolean;
   Good: Byte;
@@ -1618,7 +1618,7 @@ begin
       ConstellationFilter := TrimWideString(WideLowerCase((GetByName('M10Const') as TEditGI).Text));
       StarFilter := TrimWideString(WideLowerCase((GetByName('M10Star') as TEditGI).Text));
       StationTypes := [];
-      for StationType := Ord(rstRangerCenter) to Ord(rstDominion) do
+      for StationType := rstRangerCenter to rstDominion do
       begin
         Control := FindControlByPath('M10Type' + ShipTypeNames[StationType].Name);
         if (Control <> nil) and (Control as TGraphButtonGI).Down then Include(StationTypes,StationType);
@@ -2009,7 +2009,7 @@ end;
 function TfInfo.IsAtBusinessCenter: Boolean;
 begin
   Result := False;
-  if (GetPlayer <> nil) and (GetPlayer.DockedTo <> nil) and (GetPlayer.DockedTo.TypeId = Byte(rstRangerCenter)) then Result := True;
+  if (GetPlayer <> nil) and (GetPlayer.DockedTo <> nil) and (GetPlayer.DockedTo.TypeId = rstRangerCenter) then Result := True;
 end;
 { @end $5A476C }
 
@@ -2367,7 +2367,7 @@ end;
 { @routine $5A5DF4 TfInfo_GetSearchResultLimit }
 function TfInfo.GetSearchResultLimit: Integer;
 begin
-  if (GetPlayer <> nil) and (GetPlayer.DockedTo <> nil) and (GetPlayer.DockedTo.TypeId = Byte(rstRangerCenter)) then Result := MaxSearchResult
+  if (GetPlayer <> nil) and (GetPlayer.DockedTo <> nil) and (GetPlayer.DockedTo.TypeId = rstRangerCenter) then Result := MaxSearchResult
   else Result := 30;
 end;
 { @end $5A5DF4 }

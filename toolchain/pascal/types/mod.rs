@@ -328,6 +328,10 @@ impl Compiler {
             .context("array count overflow")
     }
     pub fn size(&mut self, typ: &Value) -> Result<i64> {
+        if let Some(bounds) = typ.get("enum_range") {
+            let (_, lower, upper) = self.enum_range(bounds)?;
+            return Ok(subrange_storage(&json!({"lower":lower,"upper":upper}))?.1);
+        }
         if let Some(bounds) = typ.get("subrange") {
             return Ok(subrange_storage(bounds)?.1);
         }
@@ -389,6 +393,10 @@ impl Compiler {
         bail!("unsized or unsupported field type: {typ}")
     }
     pub fn ctype(&mut self, typ: &Value, name: &str) -> Result<String> {
+        if let Some(bounds) = typ.get("enum_range") {
+            let (_, lower, upper) = self.enum_range(bounds)?;
+            return self.ctype(&json!({"subrange":{"lower":lower,"upper":upper}}), name);
+        }
         if let Some(bounds) = typ.get("subrange") {
             return Ok(format!("{} {name}", subrange_storage(bounds)?.0)
                 .trim()
@@ -539,6 +547,9 @@ impl Compiler {
     }
     pub fn scalar(&mut self, typ: &Value) -> Result<bool> {
         if typ.is_object() {
+            if typ.get("enum_range").is_some() {
+                return Ok(self.size(typ)? <= 4);
+            }
             if let Some(bounds) = typ.get("subrange") {
                 return Ok(subrange_storage(bounds)?.1 <= 4);
             }
@@ -741,6 +752,53 @@ mod tests {
             assert!(c.enum_range(&json!({"lower":lower,"upper":upper})).is_err());
         }
         c.build()?;
+        Ok(())
+    }
+    #[test]
+    fn named_enum_subranges_keep_storage_bounds_and_register_abi() -> Result<()> {
+        // DCC32 18.5 with Z1 sizes subranges from their bounds, even when
+        // the parent enum has four-byte storage.
+        let mut c = compiler(
+            "unit X; interface type TKind = (kFirst=0, kSecond=1, kStation=6, kLast=300); // @size 4\n\
+             TSmall = kFirst..kSecond; TStations = kStation..kLast;\n\
+             TAlias = TStations; TNames = array[TAlias] of WideString;\n\
+             function Station(A: TSmall; B: TStations): TStations; // @addr $1000\n\
+             implementation end.",
+        )?;
+        assert_eq!(c.size(&json!("TSmall"))?, 1);
+        assert_eq!(c.size(&json!("TStations"))?, 2);
+        let stations = c.lookup("TStations")?;
+        assert_eq!(
+            crate::pascal::render::spelling(&stations.data["type"])?,
+            "kStation..kLast"
+        );
+        assert_eq!(
+            c.layout(&stations)?["decl"],
+            "typedef unsigned __int16 TStations;"
+        );
+        let names = c.lookup("TNames")?;
+        assert_eq!(c.array_bounds(&names.data["type"])?, (6, 300));
+        assert_eq!(c.size(&json!("TNames"))?, 295 * 4);
+        assert_eq!(c.managed_storage(&json!("TNames"))?.len(), 295);
+        let routine = c
+            .decls
+            .iter()
+            .find(|d| d.name == "Station")
+            .unwrap()
+            .clone();
+        assert_eq!(
+            c.prototype(&routine)?.as_deref(),
+            Some("TStations __usercall Station@<ax>(TSmall A@<al>, TStations B@<dx>);")
+        );
+        c.build()?;
+        for bounds in ["kSecond..kFirst", "kFirst..other", "missing..kSecond"] {
+            let mut invalid = compiler(&format!(
+                "unit X; interface type TKind = (kFirst, kSecond); // @size 1\n\
+                 TOther = (other); // @size 1\n\
+                 TBad = {bounds}; implementation end."
+            ))?;
+            assert!(invalid.size(&json!("TBad")).is_err());
+        }
         Ok(())
     }
     #[test]

@@ -218,7 +218,7 @@ begin
     Data := AcquireOrCreateBuffer(Control);
     Quest.LoadFromReader(Data.Buffer, False);
     if not StandaloneQuestMode then
-      if QuestId >= 10000 then
+      if QuestId >= FirstLicensedQuestId then
         if (LanguageDataConfig.GetBlock('PlanetQuest').CountBlocks('PlanetQuestLic') <= 0) or
           (LanguageDataConfig.GetBlock('PlanetQuest').GetBlock('PlanetQuestLic').GetParamOrMarker(IntToStr(QuestId)) <>
             ScriptDwordToHex(Data.Buffer.ComputeCrc32 xor $FFFFFFFF)) then
@@ -1016,7 +1016,7 @@ begin
     LayoutParameterPanel;
     Stage := 4;
     if (QueuedTextQuests.Count = 0) and (GetPlayer <> nil) and
-      (GetPlayer.CurrentPlanet <> nil) and (GetPlayer.CurrentPlanet.TextQuestId >= 10000) and
+      (GetPlayer.CurrentPlanet <> nil) and (GetPlayer.CurrentPlanet.TextQuestId >= FirstLicensedQuestId) and
       ((LanguageDataConfig.GetBlock('PlanetQuest').CountBlocks('PlanetQuestLic') <= 0) or
        (LanguageDataConfig.GetBlock('PlanetQuest').GetBlock('PlanetQuestLic').GetParamOrMarker(IntToStr(GetPlayer.CurrentPlanet.TextQuestId)) =
         PlanetQuestScreen.GetQuestContentHash(GetPlayer.CurrentPlanet.TextQuestId))) then

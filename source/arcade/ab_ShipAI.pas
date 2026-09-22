@@ -320,7 +320,7 @@ begin
           if RandomRange(1, 110) > 70 then
           begin
             WeaponTech := RandomRange(Max(1, Galaxy.TechLevel - 1), Min(8, Galaxy.TechLevel + 1));
-            Info := Galaxy.SelectWeaponInfo(RandomRange(1, 100000), [0],
+            Info := Galaxy.SelectWeaponInfo(RandomRange(1, 100000), [waFree],
               Min(WeaponTech + 1, 8), Max(1, WeaponTech - 1));
             Weight := RandomRange(Round(Info.AverageSize * MinSize), Round(Info.AverageSize * MaxSize));
             Level := RandomRange(MinLevel, MaxLevel);

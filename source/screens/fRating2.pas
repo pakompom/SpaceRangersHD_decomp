@@ -701,7 +701,7 @@ var Ranger: TRanger; Panel, BarPanel: TPanelGI; Image: TImageGI;
   Caption: TLabelGI; Ratio: Single; ExtraKills: Integer; Animation: TgaiGI;
 
   // @nested $569044 GetRatingRankImagePath
-  function GetRatingRankImagePath(Rank: Byte): WideString; // @addr 0x569044 @calls "0x56add4" @note "Nested in TfRating2.CreateRow; caller supplies its parent frame."
+  function GetRatingRankImagePath(Rank: TShipRank): WideString; // @addr 0x569044 @calls "0x56add4" @note "Nested in TfRating2.CreateRow; caller supplies its parent frame."
   begin
     if Rank = 0 then Result := 'GI,Bm.FormRating2.' + GiResourceSuffix + 'Rank1'
     else if Rank = 1 then Result := 'GI,Bm.FormRating2.' + GiResourceSuffix + 'Rank2'
@@ -1225,7 +1225,7 @@ begin
   else if GetPlayer.IsDockedToShip then
   begin
     if not MusicInPlanetEnabled then MusicManager.RequestFadeOut
-    else if GetPlayer.DockedTo.TypeId in [Ord(rstPirateBase), Ord(rstDominion)] then
+    else if GetPlayer.DockedTo.TypeId in [rstPirateBase, rstDominion] then
       MusicManager.PlayCategory('Nation.' + OwnerInfo[RaceToOwner(GetPlayer.DockedTo.PilotRace)].InternalName + 'Pirate')
     else MusicManager.PlayCategory('Nation.' + OwnerInfo[RaceToOwner(GetPlayer.DockedTo.PilotRace)].InternalName);
   end

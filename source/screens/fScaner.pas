@@ -81,7 +81,7 @@ type
     procedure CloseClicked(Sender: TObjectGI); // @addr 0x6E99FC
   end;
 
-function GetPirateRankSmallImagePath(Rank: Byte): WideString; // @addr $6E6A98
+function GetPirateRankSmallImagePath(Rank: TShipRank): WideString; // @addr $6E6A98
 
 implementation
 
@@ -91,7 +91,7 @@ uses Classes, SysUtils, Math, Windows, EC_Struct, EC_Str, GR_Main, GR_GraphBuf,
   aRanger, aKling, aRuins, aTranclucator;
 
 { @routine $6E6A98 GetPirateRankSmallImagePath }
-function GetPirateRankSmallImagePath(Rank: Byte): WideString;
+function GetPirateRankSmallImagePath(Rank: TShipRank): WideString;
 begin
   case Rank of
     0..7: Result := 'GI,Bm.FormShip2.PRank' + IntToStr(Rank + 1) + 's';
@@ -179,7 +179,7 @@ begin
     Stage := 4;
     ShipToInspect.ScriptItemsAct(satOnEnteringForm, nil, nil, 0);
     Stage := 5;
-    CompactHullInfo := ShipToInspect.TypeId in [Ord(rstRangerCenter)..Ord(rstCustomStation)];
+    CompactHullInfo := ShipToInspect.TypeId in [rstRangerCenter..rstCustomStation];
     Stage := 6;
     CountCargoEntries;
     VisibleCargoCount := 6;

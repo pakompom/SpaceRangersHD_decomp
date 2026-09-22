@@ -78,7 +78,7 @@ type
     procedure BuildReachablePlanetQueue; override; // @addr 0x72A278 @slot 0x64 @note "Replaces PlanetQueue; excludes LastDockedPlanet. A scripted system encountered in distance order ends the scan."
     function CanQueueReachablePlanet(Planet: TPlanet): Boolean; override; // @addr 0x72A3C8 @slot 0x68
     procedure SelectIdleFreeFlightDestination(UnusedMode: Byte); // @addr 0x72A408 @note "The native UnusedMode comparison has no branch effect. Chooses travel toward combat opportunities only with no cargo, a gripper and a full hull."
-    function TryOrderTravelToShipTypeLocation(ShipType: Byte): Boolean; // @addr 0x72A89C @note "Native distant-system branch tests ships in the current system (0x72A9CA), rather than the candidate system."
+    function TryOrderTravelToShipTypeLocation(ShipType: TShipType): Boolean; // @addr 0x72A89C @note "Native distant-system branch tests ships in the current system (0x72A9CA), rather than the candidate system."
     procedure SelectNearestReachableDestination; // @addr 0x72AA44 @note "Can follow a partner's travel order; otherwise favors short travel to a suitable planet, station or peaceful system."
     procedure SelectAlternateReachableDestination; // @addr 0x72AF44 @note "Excludes the last docked planet/station and can favor leaving their system."
     procedure RepairBrokenEquipmentAtLocation; override; // @addr 0x72B7C4 @slot 0x60 @note "Repairs eligible installed items even without sufficient money; subtracts cost only when Money is strictly greater."
@@ -220,7 +220,7 @@ begin
     for J := 0 to Star.Ships.Count - 1 do
     begin
       Ship := TShip(Star.Ships[J]);
-      if (Ship.TypeId in [stRanger..stPirate, Ord(rstRangerCenter)..Ord(rstCustomStation)]) and (Ship <> Self) then Ship.RangerRelations.Delete(RangerIndex);
+      if (Ship.TypeId in [stRanger..stPirate, rstRangerCenter..rstCustomStation]) and (Ship <> Self) then Ship.RangerRelations.Delete(RangerIndex);
     end;
   end;
   for I := 0 to Galaxy.Planets.Count - 1 do
@@ -395,7 +395,7 @@ begin
     for J := 0 to Star.Ships.Count - 1 do
     begin
       Ship := TShip(Star.Ships[J]);
-      if (Ship.TypeId in [stRanger..stPirate, Ord(rstRangerCenter)..Ord(rstCustomStation)]) and (Ship <> Self) then
+      if (Ship.TypeId in [stRanger..stPirate, rstRangerCenter..rstCustomStation]) and (Ship <> Self) then
         Ship.RangerRelations.Add(Pointer(OwnerRelations[RaceToOwner(Ship.PilotRace), RaceToOwner(PilotRace)]));
     end;
   end;
@@ -431,7 +431,7 @@ begin
     for J := 0 to Star.Ships.Count - 1 do
     begin
       Ship := TShip(Star.Ships[J]);
-      if (Ship.TypeId in [stRanger..stPirate, Ord(rstRangerCenter)..Ord(rstCustomStation)]) and (Ship <> Self) then
+      if (Ship.TypeId in [stRanger..stPirate, rstRangerCenter..rstCustomStation]) and (Ship <> Self) then
         Ship.RangerRelations.Add(Pointer(OwnerRelations[Ship.OwnerId, OwnerId]));
     end;
   end;
@@ -666,19 +666,19 @@ begin
     if DockedTo <> nil then
     begin
       Stage := 4;
-      if not (DockedTo.TypeId in [Ord(rstRangerCenter)..Ord(rstCustomStation)]) then
+      if not (DockedTo.TypeId in [rstRangerCenter..rstCustomStation]) then
       begin
         if DockedTo.InNormalSpace then OrderTakeoff else OrderNone(False);
         Exit;
       end;
       SynchronizeDockedLocation;
       case DockedTo.TypeId of
-        Ord(rstRangerCenter):
+        rstRangerCenter:
         begin
           DepositCarriedNodes;
           TrainSkillsAutomatically;
         end;
-        Ord(rstMilitaryBase): if (Rank < 6) or ((GetPlayer <> nil) and (GetPlayer.Rank >= 7)) then TryPromoteRank;
+        rstMilitaryBase: if (Rank < 6) or ((GetPlayer <> nil) and (GetPlayer.Rank >= 7)) then TryPromoteRank;
       end;
       if GetPlayer <> Self then SimulateUnseenProgression;
       RepairBrokenEquipmentAtLocation;
@@ -749,7 +749,7 @@ begin
       else
       begin
         SelectAlternateReachableDestination;
-        if GetCarriedNodeCount > 0 then TryOrderTravelToShipTypeLocation(6);
+        if GetCarriedNodeCount > 0 then TryOrderTravelToShipTypeLocation(rstRangerCenter);
         if (BlazerShip <> nil) and (BlazerShip.CurrentStar = CurrentStar) and BlazerShip.InNormalSpace and (Aggression < 40) then NavigateToEscapePlanet(True);
         if (Order <> soLand) and (Order <> soJump) then EngageEnemyShip
         else
@@ -790,8 +790,8 @@ begin
         if (Order = soNone) and (HasInactiveDirectEquipment <> 0) and (GetDesiredCargoFreeSpace > CargoFreeSpace) then SelectNearestReachableDestination;
         if (Order = soNone) or (OrderTarget = PartnerShip) or ((Order = soJump) and not OrderAbsolute) then TryMirrorPartnerTravelOrders;
         if (Order = soNone) and CanRefuel then SelectNearestReachableDestination;
-        if (Order = soNone) and (GetCarriedNodeCount > 0) then TryOrderTravelToShipTypeLocation(6);
-        if (Order = soNone) and CanPromoteRank then TryOrderTravelToShipTypeLocation(8);
+        if (Order = soNone) and (GetCarriedNodeCount > 0) then TryOrderTravelToShipTypeLocation(rstRangerCenter);
+        if (Order = soNone) and CanPromoteRank then TryOrderTravelToShipTypeLocation(rstMilitaryBase);
       end
       else
       begin
@@ -800,8 +800,8 @@ begin
           SelectEnemyShipInStar;
           EngageEnemyShip;
         end;
-        if (Order = soNone) and (GetCarriedNodeCount > 0) then TryOrderTravelToShipTypeLocation(6);
-        if (Order = soNone) and CanPromoteRank then TryOrderTravelToShipTypeLocation(8);
+        if (Order = soNone) and (GetCarriedNodeCount > 0) then TryOrderTravelToShipTypeLocation(rstRangerCenter);
+        if (Order = soNone) and CanPromoteRank then TryOrderTravelToShipTypeLocation(rstMilitaryBase);
         if (Order = soNone) and HasCargoGoods and (GetDesiredCargoFreeSpace > CargoFreeSpace) then
           if NeedsWealthCatchup then OrderBestQueuedTradePlanet
           else SelectNearestReachableDestination;
@@ -1090,14 +1090,14 @@ begin
     Inc(DominatorKillCount);
     Inc(CurrentSystemKills.Dominator);
     AddRankPoints(NextRandomIntRange(DominatorShipDefinitions[Ord(ktShtip)].RankPoints, DominatorShipDefinitions[Ord(ktEquentor)].RankPoints, RandomState));
-    GainExperience(NextRandomIntRange(250, 500, Galaxy.RandomState), 0);
+    GainExperience(NextRandomIntRange(250, 500, Galaxy.RandomState), esUnscaled);
     AddWarriorCareerActivity(4);
     if (Galaxy.CurrentTurn < GalaxyWarmupTurns) and (((DominatorKillCount mod 13 = 0) and (NextRandomUnitFloat(RandomState) < 0.3)) or
       (DominatorKillCount mod 20 = 0)) then begin
       Inc(LiberatedSystemCount);
       AddRankPoints(30);
-      GainExperience(NextRandomIntRange(500, 1000, Galaxy.RandomState), 0);
-      AddAward(SelectAward(PickRandomEquipmentOwner(RandomState), [atLiberation], [stKling..Ord(rstCustomStation)]));
+      GainExperience(NextRandomIntRange(500, 1000, Galaxy.RandomState), esUnscaled);
+      AddAward(SelectAward(PickRandomEquipmentOwner(RandomState), [atLiberation], [stKling..rstCustomStation]));
     end;
   end
   else if (NextRandomUnitFloat(RandomState) < 0.1) and ((GetDominantCareer <> rcPirate) or (NextRandomUnitFloat(RandomState) < 0.1)) then begin
@@ -1120,13 +1120,13 @@ begin
       ((GetPlayer.PlaceInRating < PlaceInRating) or (NextRandomUnitFloat(RandomState) < 0.4)) and (NextRandomUnitFloat(RandomState) < 0.3)) or
     ((Galaxy.CurrentTurn < GalaxyWarmupTurns) and (NextRandomUnitFloat(RandomState) < 0.3)) then begin
     case Round(RemapClamped(GetPlayer.PlaceInRating, 1, Galaxy.Rangers.Count, 0, 100)) of
-      0..20: GainExperience(NextRandomIntRange(100, 1000, RandomState), 0);
-      21..40: GainExperience(NextRandomIntRange(100, 500, RandomState), 0);
-      41..60: GainExperience(NextRandomIntRange(100, 500, RandomState), 0);
-      61..80: GainExperience(NextRandomIntRange(100, 500, RandomState), 0);
-      81..100: GainExperience(NextRandomIntRange(100, 500, RandomState), 0);
+      0..20: GainExperience(NextRandomIntRange(100, 1000, RandomState), esUnscaled);
+      21..40: GainExperience(NextRandomIntRange(100, 500, RandomState), esUnscaled);
+      41..60: GainExperience(NextRandomIntRange(100, 500, RandomState), esUnscaled);
+      61..80: GainExperience(NextRandomIntRange(100, 500, RandomState), esUnscaled);
+      81..100: GainExperience(NextRandomIntRange(100, 500, RandomState), esUnscaled);
     end;
-    if CurrentStar.ShipTypeCounts[stKling] > 0 then GainExperience(NextRandomIntRange(100, 500, RandomState), 0);
+    if CurrentStar.ShipTypeCounts[stKling] > 0 then GainExperience(NextRandomIntRange(100, 500, RandomState), esUnscaled);
   end;
   if (Rank < 5) and (GetPlayer.Rank > Byte(Rank + 1)) and (NextRandomUnitFloat(RandomState) < 0.05) then begin
     AddRankPoints(NextRandomIntRange(2, 20, RandomState));
@@ -1143,9 +1143,9 @@ begin
       ((GetPlayer.AwardIds = nil) and ((AwardIds = nil) or (AwardIds.Count < 4)) and (NextRandomUnitFloat(RandomState) < 0.006)) or
       (((AwardIds = nil) or (DominatorKillCount div 10 > AwardIds.Count)) and (NextRandomUnitFloat(RandomState) < 0.004)) then begin
       case GetDominantCareer of
-        rcTrader: Award := SelectAward(RaceToOwner(CurrentPlanet.RaceId), [atAccomplishment, atSecretMission, atCowardice, atPlanetBattle], [stKling..Ord(rstCustomStation)]);
-        rcPirate: Award := SelectAward(RaceToOwner(CurrentPlanet.RaceId), [atAccomplishment, atSecretMission, atCowardice, atPerfidy, atPlanetBattle], [stKling..Ord(rstCustomStation)]);
-        rcWarrior: Award := SelectAward(RaceToOwner(CurrentPlanet.RaceId), [atAccomplishment, atSecretMission, atPlanetBattle], [stKling..Ord(rstCustomStation)]);
+        rcTrader: Award := SelectAward(RaceToOwner(CurrentPlanet.RaceId), [atAccomplishment, atSecretMission, atCowardice, atPlanetBattle], [stKling..rstCustomStation]);
+        rcPirate: Award := SelectAward(RaceToOwner(CurrentPlanet.RaceId), [atAccomplishment, atSecretMission, atCowardice, atPerfidy, atPlanetBattle], [stKling..rstCustomStation]);
+        rcWarrior: Award := SelectAward(RaceToOwner(CurrentPlanet.RaceId), [atAccomplishment, atSecretMission, atPlanetBattle], [stKling..rstCustomStation]);
         else Award := AwardNotFound;
       end;
       if Award <> AwardNotFound then AddAward(Award);
@@ -1256,7 +1256,7 @@ begin
     end
     else Amount := Round(RemapClamped(Delta, 1.0, 100.0, 10.0, 100.0));
     if IsHealthEffectActive(22) then Amount := Round(Amount * 1.5);
-    GainExperience(Amount, 4);
+    GainExperience(Amount, esTraderCareer);
     if Delta mod 2 <> 0 then Inc(Delta);
     Delta := Min(8, Delta);
     Delta := Delta div 2;
@@ -1274,7 +1274,7 @@ begin
         else Galaxy.AddPlanetNews(gnEminentTrader, Text);
         EminentProgress[rcTrader] := 0;
         HalveAllRangerEminentProgress(rcTrader);
-        GainExperience(Amount, 0);
+        GainExperience(Amount, esUnscaled);
         Galaxy.EminentCareerShips[rcTrader] := Self;
       end
       else Inc(EminentProgress[rcTrader], Delta * 2);
@@ -1326,7 +1326,7 @@ begin
         else Galaxy.AddPlanetNews(gnEminentWarrior, Text);
         EminentProgress[rcWarrior] := 0;
         HalveAllRangerEminentProgress(rcWarrior);
-        GainExperience(Amount, 0);
+        GainExperience(Amount, esUnscaled);
         Galaxy.EminentCareerShips[rcWarrior] := Self;
       end
       else Inc(EminentProgress[rcWarrior], Delta * 2);
@@ -1454,8 +1454,8 @@ end;
 { @routine $72A408 TRanger_SelectIdleFreeFlightDestination }
 procedure TRanger.SelectIdleFreeFlightDestination(UnusedMode: Byte);
 const
-  CoalitionShipTypes = [1..5];
-  DominatorShipType = [0];
+  CoalitionShipTypes = [stRanger..stTranclucator];
+  DominatorShipType = [stKling];
 var
   I, CareerThreshold, ShipCount: Integer;
   Star, NextStar: TStar;
@@ -1534,7 +1534,7 @@ end;
 { @end $72A408 }
 
 { @routine $72A89C TRanger_TryOrderTravelToShipTypeLocation }
-function TRanger.TryOrderTravelToShipTypeLocation(ShipType: Byte): Boolean;
+function TRanger.TryOrderTravelToShipTypeLocation(ShipType: TShipType): Boolean;
 var
   I, J: Integer;
   Star: TStar;
@@ -1649,7 +1649,7 @@ begin
   for I := 0 to CurrentStar.Ships.Count - 1 do
   begin
     Ship := TShip(CurrentStar.Ships[I]);
-    if (Ship.TypeId in [Ord(rstRangerCenter)..Ord(rstCustomStation)]) and Ship.CanDock(Self) then
+    if (Ship.TypeId in [rstRangerCenter..rstCustomStation]) and Ship.CanDock(Self) then
     begin
       Turns := EstimateTravelTurnsToObject(Ship);
       if BestTurns > Turns then
@@ -1721,7 +1721,7 @@ begin
   for I := 0 to CurrentStar.Ships.Count - 1 do
   begin
     Ship := TShip(CurrentStar.Ships[I]);
-    if (Ship <> LastDockedNonPlanetLocation) and (Ship.TypeId in [Ord(rstRangerCenter)..Ord(rstCustomStation)]) and Ship.CanDock(Self) then
+    if (Ship <> LastDockedNonPlanetLocation) and (Ship.TypeId in [rstRangerCenter..rstCustomStation]) and Ship.CanDock(Self) then
     begin
       Turns := EstimateTravelTurnsToObject(Ship);
       if BestTurns > Turns then
@@ -1914,7 +1914,7 @@ begin
             (Galaxy.GetFactionControlPercent(sfPirates) > 7) then Result := 10;
       end;
     stWarrior: Result := Byte((Ship as TWarrior).HomePlanet.RangerRelations[Galaxy.Rangers.IndexOf(Self)]);
-    Ord(rstDominion):
+    rstDominion:
       if PreferredCareer = rcTrader then Result := 40
       else if PreferredCareer = rcWarrior then Result := 45
       else Result := 50;
@@ -2097,9 +2097,9 @@ begin
       end;
     end;
     if Victim.TypeId = stWarrior then TryAddAchievementProgress('WARRIORKILLS', 1);
-    if Victim.TypeId = Byte(rstPirateBase) then TryAddAchievementProgress('COUNTERTERRORIST', 1)
-    else if (Victim.TypeId = Byte(rstMedicalBase)) and (CurrentStar.ControlFaction <> sfPirates) then TryAddAchievementProgress('TERRORIST', 1)
-    else if Victim.TypeId in [Ord(rstRangerCenter), Ord(rstMilitaryBase)..Ord(rstBusinessCenter)] then TryAddAchievementProgress('TERRORIST', 1);
+    if Victim.TypeId = rstPirateBase then TryAddAchievementProgress('COUNTERTERRORIST', 1)
+    else if (Victim.TypeId = rstMedicalBase) and (CurrentStar.ControlFaction <> sfPirates) then TryAddAchievementProgress('TERRORIST', 1)
+    else if Victim.TypeId in [rstRangerCenter, rstMilitaryBase..rstBusinessCenter] then TryAddAchievementProgress('TERRORIST', 1);
   end;
   if Self = Victim then Exit;
   if Victim.HasScriptBindings then Exit;
@@ -2821,7 +2821,7 @@ var NextDemandTurn: Integer; LicenseFactor: Single;
       LastPlayerExtortionTurn := Galaxy.CurrentTurn;
       Event := AddGalaxyEvent('PlayerExtortsMoney');
       Event.AddData(DemandedAmount);
-      Event.AddData(TypeId);
+      Event.AddData(Ord(TypeId));
       Event.AddData(CurrentStar.Id);
       Event.AddData(Id);
       Event.AddData(Ord(OwnerId));
@@ -2897,7 +2897,7 @@ var Forced: Boolean; NextDemandTurn: Integer;
       LastPlayerExtortionTurn := Galaxy.CurrentTurn;
       Event := AddGalaxyEvent('PlayerExtortsGoods');
       Event.AddData(TotalValue);
-      Event.AddData(TypeId);
+      Event.AddData(Ord(TypeId));
       Event.AddData(CurrentStar.Id);
       Event.AddData(Id);
       Event.AddData(Ord(OwnerId));
@@ -2950,7 +2950,7 @@ var Text: WideString; NextDemandTurn: Integer;
     if GetPlayer = Self then begin
       Event := AddGalaxyEvent('PlayerAcceptsMoneyForTruce');
       Event.AddData(OfferedAmount);
-      Event.AddData(OtherShip.TypeId);
+      Event.AddData(Ord(OtherShip.TypeId));
       Event.AddData(OtherShip.CurrentStar.Id);
       Event.AddData(OtherShip.Id);
       Event.AddData(Ord(OtherShip.OwnerId));
@@ -3531,7 +3531,7 @@ var
       if FailureCount < Threshold then Break;
       if FailureCount = Threshold then
       begin
-        Award := Integer(SelectAward(OwnerId, [atCowardice], [stKling..Ord(rstCustomStation)])) and $FF;
+        Award := Integer(SelectAward(OwnerId, [atCowardice], [stKling..rstCustomStation])) and $FF;
         if Award <> AwardNotFound then
         begin
           AddAward(Award);
@@ -3650,7 +3650,7 @@ var
     Experience := RoundAndTruncateToTens(SeededRandomFloatRange((GenerationSeed + Galaxy.CurrentTurn) div 100 + 123, 0.7, 1.5) *
       (Galaxy.ScaleIntByTechLevel(QuestExperience[Quest.QuestType], 2 * QuestExperience[Quest.QuestType]) /
         GalaxyDifficultyTuning[Galaxy.DifficultyLevels[7]].QuestTimeAndExperienceFactor));
-    GainExperience(Experience, 0);
+    GainExperience(Experience, esUnscaled);
     if GetPlayer = Self then begin
       ResponseText := ResponseText + #13#10 + ' ' + #13#10 + WrapTextInColor(LocalizedColorText('PlanetCongratulations.Quest.AddPoints'), DarkGreenColorTag);
       ReplaceTextToken(ResponseText, '<Points>', IntToStr(Experience), '');
@@ -3810,8 +3810,8 @@ begin
   end;
   case RewardKind of
     1: begin
-      if CurrentPlanet <> nil then Award := SelectAward(RaceToOwner(CurrentPlanet.RaceId), [atAccomplishment, atSecretMission], [stKling..Ord(rstCustomStation)])
-      else Award := SelectAward(DockedTo.OwnerId, [atAccomplishment, atSecretMission], [stKling..Ord(rstCustomStation)]);
+      if CurrentPlanet <> nil then Award := SelectAward(RaceToOwner(CurrentPlanet.RaceId), [atAccomplishment, atSecretMission], [stKling..rstCustomStation])
+      else Award := SelectAward(DockedTo.OwnerId, [atAccomplishment, atSecretMission], [stKling..rstCustomStation]);
       if Award <> AwardNotFound then begin
         AddAward(Award);
         if GetPlayer = Self then begin
@@ -3908,7 +3908,7 @@ begin
   else Exit;
   case RewardKind of
     1: begin
-      Award := SelectAward(RaceToOwner(CurrentPlanet.RaceId), [atPlanetBattle], [stKling..Ord(rstCustomStation)]);
+      Award := SelectAward(RaceToOwner(CurrentPlanet.RaceId), [atPlanetBattle], [stKling..rstCustomStation]);
       if Award <> AwardNotFound then begin
         AddAward(Award);
         if GetPlayer = Self then begin
@@ -3971,7 +3971,7 @@ begin
     2: Amount := Round(Amount * 0.9);
     3: Amount := Round(Amount * 0.6);
   end;
-  GainExperience(Amount, 0);
+  GainExperience(Amount, esUnscaled);
   ExperienceAwarded := Amount;
   if GetPlayer = Self then begin
     Result := Result + #13#10 + ' ' + #13#10 + WrapTextInColor(LocalizedColorText('PlanetCongratulations.Quest.AddPoints'), DarkGreenColorTag);

@@ -1458,7 +1458,7 @@ begin
     begin
       QuestNegotiationLevel := 0;
       DialogText := GetPlayer.BuildQuestText(QuestOffer, qtkOffer);
-      if (QuestOffer.QuestType = qtPlanetQuest) and (QuestOffer.QuestNumber >= 10000) then
+      if (QuestOffer.QuestType = qtPlanetQuest) and (QuestOffer.QuestNumber >= FirstLicensedQuestId) then
         if (LanguageDataConfig.GetBlock('PlanetQuest').CountBlocks('PlanetQuestLic') <= 0) or
           (LanguageDataConfig.GetBlock('PlanetQuest').GetBlock('PlanetQuestLic').GetParamOrMarker(WideString(IntToStr(QuestOffer.QuestNumber))) <>
            PlanetQuestScreen.GetQuestContentHash(QuestOffer.QuestNumber)) then

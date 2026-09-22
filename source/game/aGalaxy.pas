@@ -7,7 +7,7 @@ uses aGalaxyStruct, aPath, SE_Space, aConst, GI_Panel, GI_MessageLoop, EC_Buf, E
 
 type
   TDifficultyTier = 0..9;
-  TShipPopulationCounts = array[0..13] of Integer; // @size $38
+  TShipPopulationCounts = array[TShipType] of Integer; // @size $38
   PShipPopulationCounts = ^TShipPopulationCounts;
 
   // Applying overrides raises for a missing form; a missing control is logged.
@@ -392,7 +392,7 @@ type
     function SelectWeaponInfo(Seed: Cardinal; AvailabilityMask: TWeaponAvailabilityMask; MaximumTechLevel, MinimumTechLevel: Byte): PWeaponInfo; // @addr 0x7BC1D8 @ida "PWeaponInfo __userpurge $name@<eax>(TGalaxy *Self@<eax>, unsigned int Seed@<edx>, unsigned __int16 AvailabilityMask@<cx>, unsigned __int8 MaximumTechLevel@<^4>, unsigned __int8 MinimumTechLevel@<^0>);" @note "Borrowed template. Uses the closest eligible technology when the interval has no match; falls back to the first built-in template when no availability matches."
     function SelectMicroModule(MinimumPriority, MaximumPriority: Byte; Seed: Cardinal; Context: TObject): Integer; // @addr 0x7BC3B0 @note "Zero-based index; Context may be a planet or ship, or nil. Relaxes the priority interval after repeated misses. No termination guarantee when every template fails the context filter."
     function SelectMicroModuleForEquipment(MinimumPriority, MaximumPriority: Byte; Seed: Cardinal; Context: TObject; Item: Pointer): Integer; // @addr 0x7BC7B8 @note "Zero-based index. The final attempt-limit fallback can return an incompatible module; callers must check CanInstallMicroModule. Context rejection can bypass the attempt-limit check."
-    function SelectHullSeries(OwnerId: TOwnerId; HullType, MinimumRarity, MaximumRarity: Byte): Integer; // @addr 0x7BCC34 @note "Zero-based series index or -1; advances Self.RandomState."
+    function SelectHullSeries(OwnerId: TOwnerId; HullType: THullType; MinimumRarity, MaximumRarity: Byte): Integer; // @addr 0x7BCC34 @note "Zero-based series index or -1; advances Self.RandomState."
     function ResolveMoneySizeTag(Tag: WideString; Owner: TOwnerId): Integer; // @addr 0x7BD64C @note "Accepts Zero, Mini, Small, Average, Big and Huge; unknown tags raise. Uses active Galaxy for scaling."
 
     function GetMiniGoodsQuantity(GoodsType: Byte): Integer; // @addr 0x7BD850
@@ -499,7 +499,7 @@ end;
     OutlineBounds: TRect; // @offset 0x2C
     OutlineBoundsSize: TPoint; // @offset 0x3C
     StarLinks: TList; // @offset 0x44  Owns PConstellationStarLink entries.
-    ShipTypeCounts: array[0..13] of Integer; // @offset 0x48  Sum of member stars' cached population counts.
+    ShipTypeCounts: array[TShipType] of Integer; // @offset 0x48  Sum of member stars' cached population counts.
     OutlinePolygons: TPolygon2D; // @offset 0x80  Owned polygon chain.
     HiddenOutlinePolygonsBackup: TPolygon2D; // @offset 0x84  Owned polygon chain.
     SerializedValue88: Word; // @offset 0x88  Saved value; meaning unresolved.
@@ -625,7 +625,7 @@ end;
     LastLiberationRewardsTurn: Integer; // @offset 0x8C
     LiberationRewardsPending: Boolean; // @offset 0x90  Consumed after ProcessSystemLiberationRewards.
     StarDistances: array of TStarDistanceEntry; // @offset 0x94  Includes Self; sorted by rounded distance. Coordinate setters do not refresh this cache.
-    ShipTypeCounts: array[0..13] of Integer; // @offset 0x98  AI population counts; excludes most docked and hyperspace ships.
+    ShipTypeCounts: array[TShipType] of Integer; // @offset 0x98  AI population counts; excludes most docked and hyperspace ships.
     Constellation: TConstellation; // @offset 0xD0
     ConstellationGraphIndex: Word; // @offset 0xD4  One-based temporary index used while building StarLinks.
     NoComeKling: Boolean; // @offset 0xD8  Script.NoComeKlingToStar.
@@ -2325,7 +2325,7 @@ begin
           for J := 0 to Script.EtherIds.GetCount - 1 do begin
             Stage := 5;
             Bubble := FindPlayerBubbleByKey(Script.EtherIds.GetTextAt(J), False);
-            if (Bubble <> nil) and (Bubble.Kind = 3) then begin Bubble.Kind := 5; Bubble.WasRead := False; end;
+            if (Bubble <> nil) and (Bubble.Kind = pmQuestActive) then begin Bubble.Kind := pmQuestCancelled; Bubble.WasRead := False; end;
           end;
           Stage := 6;
           Scripts.Delete(I);
@@ -4755,7 +4755,7 @@ var I, Count: Integer;
   Asteroid: TAsteroid;
   Ship: TShip;
   Item: TItem;
-  ShipType: Byte;
+  ShipType: TShipType;
   Drop: PMovingDropItemEntry;
   Definition: TBlockParEC;
   Tag: Byte;
@@ -4802,7 +4802,7 @@ begin
     for I := 0 to Count - 1 do begin
       Tag := Buffer.GetByte;
       if Tag = 255 then Ship := TPlayer.Create
-      else begin ShipType := Tag; Ship := CreateShipByType(ShipType); end;
+      else begin ShipType := TShipType(Tag); Ship := CreateShipByType(ShipType); end;
       Ships.Add(Ship);
       Ship.CurrentStar := Self;
       Ship.LoadFromBuffer(Buffer, Galaxy);
@@ -4972,7 +4972,7 @@ end;
 
 { @routine $7AE54C TStar_LoadFromBlock }
 procedure TStar.LoadFromBlock(Block: TBlockParEC);
-var I: Integer; Key, Value: WideString; Planet: TPlanet; Ship: TShip; StationType: Byte; X, Y: Single; Link: PConstellationStarLink; Asteroid: TAsteroid; Style: WideString; Part, Variants, Variant: Integer; Item: TItem; ItemType: TItemType; Angle: Double;
+var I: Integer; Key, Value: WideString; Planet: TPlanet; Ship: TShip; StationType: TShipType; X, Y: Single; Link: PConstellationStarLink; Asteroid: TAsteroid; Style: WideString; Part, Variants, Variant: Integer; Item: TItem; ItemType: TItemType; Angle: Double;
 begin
   Name := Block.GetParam(DecodeTextW('Sgt3adr3Nsaym7ee')); // 'StarName'
   X := ExtractDecimalToSingleW(Block.GetParam('X'));
@@ -4999,8 +4999,8 @@ begin
   Key := GetParam(DecodeTextW('CorzeSafteetNgehwjRuuti5nrse')); // 'CreateNewRuins'
   for I := 0 to CountDelimitedPartsW(Key, ',') - 1 do begin
     Value := ExtractDelimitedPartW(Key, I, ',');
-    for StationType := 0 to 13 do
-      if ShipTypeNames[StationType].Name = Value then begin TRuins.Create.Init(TStationType(StationType), Self, ''); Break; end;
+    for StationType := Low(TShipType) to High(TShipType) do
+      if ShipTypeNames[StationType].Name = Value then begin TRuins.Create.Init(StationType, Self, ''); Break; end;
   end;
   end;
   with Block.GetBlockByPath(DecodeTextW('PalkainrestaLuiksete')) do begin // 'PlanetList'
@@ -7844,10 +7844,10 @@ end;
 
 { @routine $7BA508 TConstellation_CountShipsByTypeMask }
 function TConstellation.CountShipsByTypeMask(ShipTypeMask: TShipTypeMask): Integer;
-var Count: Integer; I: Byte;
+var Count: Integer; I: TShipType;
 begin
   Count := 0;
-  for I := 0 to 13 do
+  for I := Low(TShipType) to High(TShipType) do
     if I in ShipTypeMask then Inc(Count, ShipTypeCounts[I]);
   Result := Count;
 end;
@@ -8222,17 +8222,17 @@ end;
 
 { @routine $7BB7FC TGalaxy_UpdateConstellationMilitaryStats }
 procedure TGalaxy.UpdateConstellationMilitaryStats;
-var I, J: Integer; Constellation: TConstellation; Star: TStar; Kind: Byte;
+var I, J: Integer; Constellation: TConstellation; Star: TStar; Kind: TShipType;
 begin
   // The native cache indexes all fourteen ship types at $84..$B8.
-  for Kind := 0 to 13 do ShipTypeCounts[Kind] := 0;
+  for Kind := Low(TShipType) to High(TShipType) do ShipTypeCounts[Kind] := 0;
   for I := 0 to Constellations.Count - 1 do begin
     Constellation := Constellations[I];
-    for Kind := 0 to 13 do Constellation.ShipTypeCounts[Kind] := 0;
+    for Kind := Low(TShipType) to High(TShipType) do Constellation.ShipTypeCounts[Kind] := 0;
     for J := 0 to Constellation.Stars.Count - 1 do begin
       Star := Constellation.Stars[J];
       Star.RefreshShipTypeCounts;
-      for Kind := 0 to 13 do begin
+      for Kind := Low(TShipType) to High(TShipType) do begin
         Inc(Constellation.ShipTypeCounts[Kind], Star.ShipTypeCounts[Kind]);
         Inc(ShipTypeCounts[Kind], Star.ShipTypeCounts[Kind]);
       end;
@@ -8278,7 +8278,7 @@ begin
         Ship := TShip(Other.Ships[J]);
         if Ship.InNormalSpace then begin
           if ((Ship is TKling) or (Ship.CurrentStanding = ssPirateMilitary)) and (Ship.Order = soJump) and (Ship.OrderTarget = Star) then Ship.OrderNone(False);
-          if (Ship is TRuins) and (Ship.TypeId = Byte(rstDominion)) and ((Ship as TRuins).FlyToStar = Star) then begin
+          if (Ship is TRuins) and (Ship.TypeId = rstDominion) and ((Ship as TRuins).FlyToStar = Star) then begin
             (Ship as TRuins).FlyToStar := nil;
             (Ship as TRuins).FlyDate := 0;
             Ship.OrderNone(False);
@@ -8393,7 +8393,7 @@ begin
   for I := 1 to CountItemTypesInMask([Ord(t_IndustrialLaser)..Ord(t_Lirecron)]) do
   begin
     Info := @WeaponInfos[TItemType(GetItemTypeFromMask([Ord(t_IndustrialLaser)..Ord(t_Lirecron)], I))];
-    if Byte(Info.Availability) in AvailabilityMask then
+    if Info.Availability in AvailabilityMask then
     begin
       Distance := TechDistance(Info.TechLevel);
       if Distance > 0 then
@@ -8410,7 +8410,7 @@ begin
   for I := 0 to CustomWeaponTypes.Count - 1 do
   begin
     Info := PWeaponInfo(CustomWeaponTypes[I]);
-    if Byte(Info.Availability) in AvailabilityMask then
+    if Info.Availability in AvailabilityMask then
     begin
       Distance := TechDistance(Info.TechLevel);
       if Distance > 0 then
@@ -8609,7 +8609,7 @@ end;
 { @end $7BC7B8 }
 
 { @routine $7BCC34 TGalaxy_SelectHullSeries }
-function TGalaxy.SelectHullSeries(OwnerId: TOwnerId; HullType, MinimumRarity, MaximumRarity: Byte): Integer;
+function TGalaxy.SelectHullSeries(OwnerId: TOwnerId; HullType: THullType; MinimumRarity, MaximumRarity: Byte): Integer;
 var I, J, Temp: Integer; Indices: array of Integer;
 begin
   SetLength(Indices, HullSeriesCount);
@@ -8927,7 +8927,7 @@ begin
     Count := 0;
     for I := 0 to Galaxy.Constellations.Count - 1 do begin
       Constellation := TConstellation(Galaxy.Constellations[I]);
-      if Constellation.Visible and (Constellation.ShipTypeCounts[Ord(Kind)] > 0) then Inc(Count);
+      if Constellation.Visible and (Constellation.ShipTypeCounts[Kind] > 0) then Inc(Count);
     end;
     if (Count = 0) and (NextRandomUnitFloat(RandomState) < 0.3) then begin ReplenishStationType(Kind); Exit; end;
   end;
@@ -8938,14 +8938,14 @@ end;
 { @routine $7BDF64 TGalaxy_ReplenishStationType }
 procedure TGalaxy.ReplenishStationType(StationType: TStationType);
 const
-  StationMask = [Ord(rstRangerCenter)..Ord(rstDominion)];
-  MilitaryBaseMask = [Ord(rstMilitaryBase)];
-  PirateBaseMask = [Ord(rstPirateBase)];
+  StationMask = [rstRangerCenter..rstDominion];
+  MilitaryBaseMask = [rstMilitaryBase];
+  PirateBaseMask = [rstPirateBase];
 var I, J: Integer; Hostile, Assigned: Boolean; Constellation: TConstellation; Star: TStar; Station: TRuins;
 begin
   for I := 0 to Galaxy.Constellations.Count - 1 do begin
     Constellation := TConstellation(Galaxy.Constellations[I]);
-    if not ((Constellation.Id <> 20) and (Constellation.ShipTypeCounts[Ord(StationType)] <= 0) and
+    if not ((Constellation.Id <> 20) and (Constellation.ShipTypeCounts[StationType] <= 0) and
       (Constellation.CountShipsByTypeMask(StationMask) < Constellation.Stars.Count) and (Constellation.ShipTypeCounts[stKling] <= 0)) then Continue;
     Hostile := False;
     for J := 0 to Constellation.Stars.Count - 1 do begin
@@ -8954,7 +8954,7 @@ begin
     end;
     if not Hostile then begin
       Star := Constellation.Stars[NextRandomIntRange(0, Constellation.Stars.Count - 1, RandomState)];
-      if not ((Star.Battle = 0) and (StationDefaultStandings[Ord(StationType)] in FactionStandingMasks[Star.ControlFaction]) and
+      if not ((Star.Battle = 0) and (StationDefaultStandings[StationType] in FactionStandingMasks[Star.ControlFaction]) and
         (GetPlayer.CurrentStar <> Star) and (Star.DaysSincePlayerVisit >= 70) and (Star.CountShipsByTypeMask(StationMask) <= 1) and
         ((StationType <> rstPirateBase) or (Star.CountShipsByTypeMask(MilitaryBaseMask) <= 0)) and
         ((StationType <> rstMilitaryBase) or (Star.CountShipsByTypeMask(PirateBaseMask) <= 0))) then Continue;
@@ -8974,7 +8974,7 @@ begin
       Station.Init(StationType, Star, '');
       if CoalitionDefeatedTurn = 0 then
         Galaxy.AddPlanetNewsWithPlayerBubble(gnStationCreated,
-          FormatText3(PickLocalizedTextVariant('GalaxyNews.CreateNewObject.' + ShipTypeNames[Ord(StationType)].Name,
+          FormatText3(PickLocalizedTextVariant('GalaxyNews.CreateNewObject.' + ShipTypeNames[StationType].Name,
             GenerationSeed * (Galaxy.CurrentTurn div 10)), TextHighlightColorTag,
             '<Name>', Station.GetName, '<Star>', Star.Name, '<Sector>', Star.Constellation.GetName));
       Exit;
@@ -8990,7 +8990,7 @@ var Series: TDominatorSeries;
   News: WideString;
 begin
   if ((DominatorResearch[0].Progress < 100) or (DominatorResearch[1].Progress < 100) or
-      (DominatorResearch[2].Progress < 100)) and (ShipTypeCounts[Ord(rstScienceBase)] > 0) then
+      (DominatorResearch[2].Progress < 100)) and (ShipTypeCounts[rstScienceBase] > 0) then
     for Series := dsBlazer to dsTerron do
       if DominatorResearch[Ord(Series)].Progress < 100 then begin
         Progress := DominatorResearch[Ord(Series)].Progress + GetDominatorResearchRate(Series);
@@ -9047,12 +9047,12 @@ var Star: TStar; Ship: TShip; I, J, Number: Integer;
 begin
   Result := nil;
   Number := 1;
-  if ShipTypeCounts[Ord(StationType)] > 0 then
+  if ShipTypeCounts[StationType] > 0 then
     for I := 0 to Galaxy.Stars.Count - 1 do begin
       Star := TStar(Galaxy.Stars[I]);
       for J := 0 to Star.Ships.Count - 1 do begin
         Ship := TShip(Star.Ships[J]);
-        if Ship.TypeId = Byte(StationType) then begin
+        if Ship.TypeId = StationType then begin
           if Number = Index then begin Result := Ship; Exit; end;
           Inc(Number);
         end;
@@ -9069,7 +9069,7 @@ var Deposit, Chance, Roll: Integer;
   Text: WideString;
 begin
   if (GetPlayer.DepositAmount <> 0) and (GetPlayer.DepositDayCount <> 0) and (GetPlayer.DepositDayCount mod TurnsPerYear = 0) then begin
-    Station := TObject(FindStationByTypeAndIndex(SeededRandomIntRange(1, ShipTypeCounts[Ord(rstBusinessCenter)],
+    Station := TObject(FindStationByTypeAndIndex(SeededRandomIntRange(1, ShipTypeCounts[rstBusinessCenter],
       Galaxy.GenerationSeed + Galaxy.CurrentTurn div 33), rstBusinessCenter)) as TRuins;
     if Station <> nil then begin
       Text := PickLocalizedTextVariant('GalaxyNews.BK.DepositPrizeLose', Station.Seed * (Galaxy.CurrentTurn div 10));
@@ -9105,7 +9105,7 @@ var
   Event: TGalaxyEvent;
 begin
   if GetPlayer = nil then Exit;
-  if Self.ShipTypeCounts[Ord(rstBusinessCenter)] > 0 then
+  if Self.ShipTypeCounts[rstBusinessCenter] > 0 then
   begin
     if (GetPlayer.DepositAmount > 0) and (GetPlayer.DebtAmount = 0) then
     begin
@@ -9167,11 +9167,11 @@ var Year, Month, Day: Word;
   Event: TGalaxyEvent;
 begin
   if GetPlayer <> nil then
-    if ShipTypeCounts[Ord(rstRangerCenter)] > 0 then begin
+    if ShipTypeCounts[rstRangerCenter] > 0 then begin
       if Galaxy.CurrentTurn > GalaxyWarmupTurns then begin
         DecodeDate(GameTurnToDateTime(Galaxy.CurrentTurn - GalaxyWarmupTurns), Year, Month, Day);
         if (Day = 31) and (Month = 12) then begin
-          Station := TObject(FindStationByTypeAndIndex(SeededRandomIntRange(1, ShipTypeCounts[Ord(rstRangerCenter)],
+          Station := TObject(FindStationByTypeAndIndex(SeededRandomIntRange(1, ShipTypeCounts[rstRangerCenter],
             Galaxy.GenerationSeed + Galaxy.CurrentTurn), rstRangerCenter)) as TRuins;
           if Station <> nil then begin
             Item := TMicroModule.Create;
@@ -9375,11 +9375,11 @@ begin
   Station := nil;
   for I := 0 to Galaxy.Stars.Count - 1 do begin
     Star := TStar(Galaxy.Stars[I]);
-    if (Star.ShipTypeCounts[Ord(rstMilitaryBase)] <> 0) and (not Star.Constellation.HasDominatorPresence) and
+    if (Star.ShipTypeCounts[rstMilitaryBase] <> 0) and (not Star.Constellation.HasDominatorPresence) and
       (SeededRandomUnitFloat((GenerationSeed + I) * CurrentTurn * Star.GenerationSeed) >= 0.2) then begin
       for J := 0 to Star.Ships.Count - 1 do begin
         Ship := TShip(Star.Ships[J]);
-        if Ship.TypeId = Byte(rstMilitaryBase) then begin
+        if Ship.TypeId = rstMilitaryBase then begin
           Station := Ship as TRuins;
           if Station.FlyToStar <> nil then Station := nil
           else if Station.HasScriptControl then Station := nil;
@@ -9391,13 +9391,13 @@ begin
   end;
   if Station = nil then Exit;
   Count := 0;
-  for I := 0 to Galaxy.Stars.Count - 1 do Inc(Count, TStar(Galaxy.Stars[I]).ShipTypeCounts[Ord(rstMilitaryBase)]);
+  for I := 0 to Galaxy.Stars.Count - 1 do Inc(Count, TStar(Galaxy.Stars[I]).ShipTypeCounts[rstMilitaryBase]);
   if Count < 2 then Exit;
   Target := nil;
   for I := 0 to Galaxy.Stars.Count - 1 do begin
     Star := TStar(Galaxy.Stars[I]);
     if Star.IsConstellationVisible and (Star.Constellation.Id <> 20) and
-      (Star.Constellation.ShipTypeCounts[Ord(rstMilitaryBase)] <= 0) and (Star.ControlFaction = sfDominators) and
+      (Star.Constellation.ShipTypeCounts[rstMilitaryBase] <= 0) and (Star.ControlFaction = sfDominators) and
       (Star.Ships.Count <= Star.ShipTypeCounts[stKling]) and (Star.ShipTypeCounts[stKling] >= 5) and
       (not HasMilitaryBaseAssignedToStar(Star)) and (not HasLiberationGroupTargetingStar(Star)) and
       (SeededRandomUnitFloat((GenerationSeed + I) * CurrentTurn * Star.GenerationSeed) >= 0.7) and
@@ -9440,7 +9440,7 @@ begin
     Star := TStar(Galaxy.Stars[I]);
     for J := 0 to Star.Ships.Count - 1 do begin
       Ship := TShip(Star.Ships[J]);
-      if (Ship.TypeId = Byte(rstMilitaryBase)) and ((Ship as TRuins).FlyToStar <> nil) and
+      if (Ship.TypeId = rstMilitaryBase) and ((Ship as TRuins).FlyToStar <> nil) and
         (not Ship.InNormalSpace or ((Ship as TRuins).FlyToStar <> Ship.CurrentStar)) then begin
         Result := Ship;
         Exit;
@@ -9459,7 +9459,7 @@ begin
     SystemStar := TStar(Galaxy.Stars[I]);
     for J := 0 to SystemStar.Ships.Count - 1 do begin
       Ship := TShip(SystemStar.Ships[J]);
-      if (Ship.TypeId = Byte(rstMilitaryBase)) and ((Ship as TRuins).FlyToStar = (TObject(Star) as TStar)) then begin Result := True; Exit; end;
+      if (Ship.TypeId = rstMilitaryBase) and ((Ship as TRuins).FlyToStar = (TObject(Star) as TStar)) then begin Result := True; Exit; end;
     end;
   end;
   Result := False;
@@ -9512,7 +9512,7 @@ begin
     for j := 0 to ShipCount - 1 do
     begin
       Ship := TShip(Star.Ships[j]);
-      if Ship.TypeId = Byte(rstPirateBase) then
+      if Ship.TypeId = rstPirateBase then
       begin
         Station := Ship as TRuins;
         if Station.SpecialServiceActive then
@@ -9522,7 +9522,7 @@ begin
           ((PirateCandidate = nil) or (NextRandomIntRange(0, 100, Seed) < 50)) then
           PirateCandidate := Station;
       end
-      else if Ship.TypeId = Byte(rstScienceBase) then
+      else if Ship.TypeId = rstScienceBase then
       begin
         Station := Ship as TRuins;
         if Station.SpecialServiceActive then
@@ -9532,7 +9532,7 @@ begin
           ((ScienceCandidate = nil) or (NextRandomIntRange(0, 100, Seed) < 50)) then
           ScienceCandidate := Station;
       end
-      else if Ship.TypeId = Byte(rstMilitaryBase) then
+      else if Ship.TypeId = rstMilitaryBase then
       begin
         Station := Ship as TRuins;
         if Station.SpecialServiceActive then
@@ -9625,11 +9625,11 @@ begin
       end;
     end;
     Bubble := FindPlayerBubbleByKey('BlazerWin', False);
-    if (Bubble <> nil) and (Bubble.Kind = 3) then begin Bubble.Kind := 4; Bubble.WasRead := False; end;
+    if (Bubble <> nil) and (Bubble.Kind = pmQuestActive) then begin Bubble.Kind := pmQuestSucceeded; Bubble.WasRead := False; end;
     Bubble := FindPlayerBubbleByKey('TerronWin', False);
-    if (Bubble <> nil) and (Bubble.Kind = 3) then begin Bubble.Kind := 4; Bubble.WasRead := False; end;
+    if (Bubble <> nil) and (Bubble.Kind = pmQuestActive) then begin Bubble.Kind := pmQuestSucceeded; Bubble.WasRead := False; end;
     Bubble := FindPlayerBubbleByKey('KellerWin', False);
-    if (Bubble <> nil) and (Bubble.Kind = 3) then begin Bubble.Kind := 4; Bubble.WasRead := False; end;
+    if (Bubble <> nil) and (Bubble.Kind = pmQuestActive) then begin Bubble.Kind := pmQuestSucceeded; Bubble.WasRead := False; end;
     EminentCareerShips[rcTrader] := nil;
     EminentCareerShips[rcPirate] := nil;
     EminentCareerShips[rcWarrior] := nil;
@@ -10680,13 +10680,13 @@ end;
 
 { @routine $7C44D0 TStar_RefreshShipTypeCounts }
 procedure TStar.RefreshShipTypeCounts;
-var I: Integer; Ship: TShip; Kind: Byte;
+var I: Integer; Ship: TShip; Kind: TShipType;
 begin
-  for Kind := 0 to 13 do ShipTypeCounts[Kind] := 0;
+  for Kind := Low(TShipType) to High(TShipType) do ShipTypeCounts[Kind] := 0;
   for I := 0 to Ships.Count - 1 do
   begin
     Ship := TShip(Ships[I]);
-    if (Dominion = Ship) or Ship.InNormalSpace or ((Ship.TypeId in [Ord(rstRangerCenter)..Ord(rstCustomStation)]) and Ship.InHyperspace) then
+    if (Dominion = Ship) or Ship.InNormalSpace or ((Ship.TypeId in [rstRangerCenter..rstCustomStation]) and Ship.InHyperspace) then
       Inc(ShipTypeCounts[Ship.TypeId]);
   end;
 end;
@@ -10707,10 +10707,10 @@ end;
 
 { @routine $7C45E4 TStar_CountShipsByTypeMask }
 function TStar.CountShipsByTypeMask(ShipTypeMask: TShipTypeMask): Integer;
-var Count: Integer; I: Byte;
+var Count: Integer; I: TShipType;
 begin
   Count := 0;
-  for I := 0 to 13 do if I in ShipTypeMask then Inc(Count, ShipTypeCounts[I]);
+  for I := Low(TShipType) to High(TShipType) do if I in ShipTypeMask then Inc(Count, ShipTypeCounts[I]);
   Result := Count;
 end;
 { @end $7C45E4 }

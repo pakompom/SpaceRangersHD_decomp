@@ -9,20 +9,22 @@ uses fMainForm, fCfgSettings, fGameEnd, fAbout, fIntroduction, fGameSettings, fG
 const
   PersistentMessageLifetimeTurns = 1000000; // Finite native lifetime for retained notices.
 
-  // PlayerMessagePresentations order; keep the stored Kind byte and set widths.
-  pmGalaxyNews = 0;
-  pmRadio = 1;
-  pmShipPositive = 2;
-  pmQuestActive = 3;
-  pmQuestSucceeded = 4;
-  pmQuestCancelled = 5; // QuestCancel presentation is also used for generic warnings.
-  pmTip = 6;
-  pmUserNote = 7;
-  pmShipNegative = 8;
-  pmStorage = 9;
-  pmRadioPlayer = 10; // Radio message with the player among its ship targets.
-
 type
+  // PlayerMessagePresentations order, also persisted in the message queue.
+  TPlayerMessageKind = (
+    pmGalaxyNews = 0,
+    pmRadio = 1,
+    pmShipPositive = 2,
+    pmQuestActive = 3,
+    pmQuestSucceeded = 4,
+    pmQuestCancelled = 5, // QuestCancel presentation also carries generic warnings.
+    pmTip = 6,
+    pmUserNote = 7,
+    pmShipNegative = 8,
+    pmStorage = 9,
+    pmRadioPlayer = 10 // Radio message with the player among its ship targets.
+  ); // @size $01
+
   // Greeting configuration predicates; omitted-field defaults vary by rule.
   TGreetingCondition = (gcYes = 0, gcNo = 1, gcAny = 2); // @size $01
   TGreetingFlightKind = (gfAny = 0, gfToPlanet = 1, gfToStar = 2, gfToItem = 3, gfToShip = 4); // @size $01
@@ -66,7 +68,7 @@ type
     MaskName: WideString; // @offset $08
   end;
 
-  TPlayerMessageKindSet = set of 0..15; // @size $02 Native exclusion mask for persistent-message searches.
+  TPlayerMessageKindSet = set of TPlayerMessageKind; // @size $02 Native exclusion mask for persistent-message searches.
 
   TPlayerMessageTarget = packed record // @size 0x08
     ShipId: Cardinal; // @offset 0x00
@@ -81,10 +83,10 @@ type
     LifetimeTurns: Integer; // @offset $0C
   end;
 
-  TPlayerMessagePresentations = array[0..10] of TMessagePlayerTypeGraph;
+  TPlayerMessagePresentations = array[TPlayerMessageKind] of TMessagePlayerTypeGraph;
 
 var
-  PlayerMessagePresentations: array[0..10] of TMessagePlayerTypeGraph = (
+  PlayerMessagePresentations: array[TPlayerMessageKind] of TMessagePlayerTypeGraph = (
     (NormalImage: 'GalaxyN'; ActiveImage: 'GalaxyA'; PressedImage: 'GalaxyD'; LifetimeTurns: 10),
     (NormalImage: 'EtherN'; ActiveImage: 'EtherA'; PressedImage: 'EtherD'; LifetimeTurns: 0),
     (NormalImage: 'ShipPlusN'; ActiveImage: 'ShipPlusA'; PressedImage: 'ShipPlusD'; LifetimeTurns: 5),
@@ -103,7 +105,7 @@ type
     Prev: TMessagePlayer; // @offset 0x04
     Next: TMessagePlayer; // @offset 0x08
     Key: WideString; // @offset 0x0C
-    Kind: Byte; // @offset 0x10
+    Kind: TPlayerMessageKind; // @offset 0x10
     ImageNameOverride: WideString; // @offset 0x14
     NotificationSoundKind: Integer; // @offset 0x18  0: new message; 1: system liberation; some message kinds override it.
     Turn: Integer; // @offset 0x1C
@@ -164,7 +166,7 @@ function FindPlayerBubbleByKey(const Key: WideString; SkipLock: Boolean): TMessa
 procedure RemovePlayerBubblePages(const Prefix: WideString; FirstPage: Integer); // @addr $52D260 @note "Removes matching prefix keys whose integer suffix is at least FirstPage; leaves unnumbered keys alone."
 procedure RemovePlayerBubbleByKey(const Key: WideString); // @addr 0x52D17C @note "Removes only the first exact match."
 function CreatePersistentPlayerMessage: TMessagePlayer; // @addr 0x52D484 @note "Appends a new node owned by the global message queue."
-function AddOrUpdatePlayerBubble(Kind: Byte; Turn: Integer; const Text, Key: WideString): TMessagePlayer; // @addr 0x52D520 @note "Returns a borrowed queue node. An existing key updates kind/turn and nonempty text; otherwise an exact text match is returned unchanged."
+function AddOrUpdatePlayerBubble(Kind: TPlayerMessageKind; Turn: Integer; const Text, Key: WideString): TMessagePlayer; // @addr 0x52D520 @note "Returns a borrowed queue node. An existing key updates kind/turn and nonempty text; otherwise an exact text match is returned unchanged."
 procedure PruneExpiredPersistentPlayerMessages; // @addr 0x52D698
 
 var
@@ -295,7 +297,7 @@ var
   ArcadeWeaponLoopSounds: array[0..17] of WideString; // @addr $88A598 ABSound.WeaponLoop entries, after the time value.
 var
   ArcadeWeaponLoopTicks: array[0..17] of Integer; // @addr $88A5E0 First configured value divided by 20; -1 when absent.
-  RaceShipTemplates: array[TOwnerId, 0..5] of TObjectSE; // @addr $88A628 @note "Retained SE.Ship templates indexed by race and six ordinary ship kinds."
+  RaceShipTemplates: array[TOwnerId, htRanger..htDiplomat] of TObjectSE; // @addr $88A628 @note "Retained SE.Ship templates indexed by owner and six ordinary hull kinds."
   BlazerShipTemplates: array[0..7] of TObjectSE; // @addr $88A6E8
   KellerShipTemplates: array[0..7] of TObjectSE; // @addr $88A708
   TerronShipTemplates: array[0..7] of TObjectSE; // @addr $88A728
@@ -499,7 +501,7 @@ type
     Image1: WideString; // @offset $04
     Image2: WideString; // @offset $08
     War: Integer; // @offset $0C Clamped to -1..1.
-    Goods: Byte; // @offset $10 0..7, or 42 when absent/unrecognized.
+    Goods: Byte; // @offset $10 0..7, or UnspecifiedGoods when absent/unrecognized.
     Owner: TOwnerMask; // @offset $11
   end;
 
@@ -580,7 +582,7 @@ end;
 { @routine $526C04 FinalizeScriptHostRuntime }
 procedure FinalizeScriptHostRuntime;
 var
-  Race: TOwnerId; Kind, Series: Byte;
+  Race: TOwnerId; Kind: THullType; Series: Byte;
   Item: TObject;
   Index: Integer;
 begin
@@ -632,7 +634,7 @@ begin
   end;
   for Race := oiMaloc to oiPirate do
   begin
-    for Kind := 0 to 5 do
+    for Kind := htRanger to htDiplomat do
       if RaceShipTemplates[Race, Kind] <> nil then
         ReleaseSpaceObject(RaceShipTemplates[Race, Kind]);
     if PirateClanShipTemplates[Race] <> nil then
@@ -677,7 +679,7 @@ var
   SatelliteTemplate: TSputnikTempl;
   PlanetTemplate: TPlanetTempl;
   Section: TBlockParEC;
-  Series, Kind: Byte;
+  Series: Byte; Kind: THullType;
   ScriptTemplate: TScriptTemplUnit;
   Text, WarningText: WideString;
   ShipBlock: TBlockParEC;
@@ -932,22 +934,22 @@ begin
     for Race := oiMaloc to oiPirate do
     begin
       ShipBlock := GameDataConfig.GetBlockByPath('SE.Ship').FindBlock(OwnerInfo[Race].InternalName);
-      for Kind := 0 to 5 do RaceShipTemplates[Race, Kind] := nil;
+      for Kind := htRanger to htDiplomat do RaceShipTemplates[Race, Kind] := nil;
       PirateClanShipTemplates[Race] := nil;
       if ShipBlock <> nil then
       begin
         if ShipBlock.CountBlocks('Ranger') > 0 then
-          RetainSpaceObject(RaceShipTemplates[Race, 0], CreateSpaceObjectByName('Ship2', 'Ship.' + OwnerInfo[Race].InternalName + '.Ranger', Classes.Point(0, 0)));
+          RetainSpaceObject(RaceShipTemplates[Race, htRanger], CreateSpaceObjectByName('Ship2', 'Ship.' + OwnerInfo[Race].InternalName + '.Ranger', Classes.Point(0, 0)));
         if ShipBlock.CountBlocks('Warrior') > 0 then
-          RetainSpaceObject(RaceShipTemplates[Race, 1], CreateSpaceObjectByName('Ship2', 'Ship.' + OwnerInfo[Race].InternalName + '.Warrior', Classes.Point(0, 0)));
+          RetainSpaceObject(RaceShipTemplates[Race, htWarrior], CreateSpaceObjectByName('Ship2', 'Ship.' + OwnerInfo[Race].InternalName + '.Warrior', Classes.Point(0, 0)));
         if ShipBlock.CountBlocks('Pirate') > 0 then
-          RetainSpaceObject(RaceShipTemplates[Race, 2], CreateSpaceObjectByName('Ship2', 'Ship.' + OwnerInfo[Race].InternalName + '.Pirate', Classes.Point(0, 0)));
+          RetainSpaceObject(RaceShipTemplates[Race, htPirate], CreateSpaceObjectByName('Ship2', 'Ship.' + OwnerInfo[Race].InternalName + '.Pirate', Classes.Point(0, 0)));
         if ShipBlock.CountBlocks('Transport') > 0 then
-          RetainSpaceObject(RaceShipTemplates[Race, 3], CreateSpaceObjectByName('Ship2', 'Ship.' + OwnerInfo[Race].InternalName + '.Transport', Classes.Point(0, 0)));
+          RetainSpaceObject(RaceShipTemplates[Race, htTransport], CreateSpaceObjectByName('Ship2', 'Ship.' + OwnerInfo[Race].InternalName + '.Transport', Classes.Point(0, 0)));
         if ShipBlock.CountBlocks('Liner') > 0 then
-          RetainSpaceObject(RaceShipTemplates[Race, 4], CreateSpaceObjectByName('Ship2', 'Ship.' + OwnerInfo[Race].InternalName + '.Liner', Classes.Point(0, 0)));
+          RetainSpaceObject(RaceShipTemplates[Race, htLiner], CreateSpaceObjectByName('Ship2', 'Ship.' + OwnerInfo[Race].InternalName + '.Liner', Classes.Point(0, 0)));
         if ShipBlock.CountBlocks('Diplomat') > 0 then
-          RetainSpaceObject(RaceShipTemplates[Race, 5], CreateSpaceObjectByName('Ship2', 'Ship.' + OwnerInfo[Race].InternalName + '.Diplomat', Classes.Point(0, 0)));
+          RetainSpaceObject(RaceShipTemplates[Race, htDiplomat], CreateSpaceObjectByName('Ship2', 'Ship.' + OwnerInfo[Race].InternalName + '.Diplomat', Classes.Point(0, 0)));
         if ShipBlock.CountBlocks('PirateClan') > 0 then
           RetainSpaceObject(PirateClanShipTemplates[Race], CreateSpaceObjectByName('Ship2', 'Ship.' + OwnerInfo[Race].InternalName + '.PirateClan', Classes.Point(0, 0)));
       end;
@@ -1560,7 +1562,7 @@ end;
 { @routine $52C68C ResetScriptHostRuntimeState }
 procedure ResetScriptHostRuntimeState;
 var
-  Race: TOwnerId; Kind, Series: Byte;
+  Race: TOwnerId; Kind: THullType; Series: Byte;
   Index: Integer;
 begin
   if ScriptTemplates <> nil then
@@ -1602,7 +1604,7 @@ begin
   end;
   for Race := oiMaloc to oiPirate do
   begin
-    for Kind := 0 to 5 do
+    for Kind := htRanger to htDiplomat do
       if RaceShipTemplates[Race, Kind] <> nil then
         ReleaseSpaceObject(RaceShipTemplates[Race, Kind]);
     if PirateClanShipTemplates[Race] <> nil then
@@ -1705,7 +1707,7 @@ end;
 procedure TMessagePlayer.LoadFromBuffer(Buffer: TBufEC);
 begin
   Key := Buffer.ReadWideString;
-  Kind := Buffer.GetByte;
+  Kind := TPlayerMessageKind(Buffer.GetByte);
   NotificationSoundKind := Buffer.GetInt32;
   Turn := Buffer.GetInt32;
   Text := Buffer.ReadWideString;
@@ -1996,7 +1998,7 @@ end;
 { @end $52D484 }
 
 { @routine $52D520 AddOrUpdatePlayerBubble }
-function AddOrUpdatePlayerBubble(Kind: Byte; Turn: Integer; const Text, Key: WideString): TMessagePlayer;
+function AddOrUpdatePlayerBubble(Kind: TPlayerMessageKind; Turn: Integer; const Text, Key: WideString): TMessagePlayer;
 var Entry: TMessagePlayer;
 begin
   PersistentPlayerMessageLock.Enter;
@@ -2609,7 +2611,7 @@ begin
           if Pos('Huge', AnsiString(Text)) > 0 then Include(StrengthShipWithPlayer, 5);
         end;
         Text := ReadShipGreetingField('Goods');
-        if Text = '' then Goods := 42
+        if Text = '' then Goods := UnspecifiedGoods
         else if Text = 'Food' then Goods := 0
         else if Text = 'Medicine' then Goods := 1
         else if Text = 'Technics' then Goods := 2
@@ -2618,7 +2620,7 @@ begin
         else if Text = 'Alcohol' then Goods := 5
         else if Text = 'Arms' then Goods := 6
         else if Text = 'Narcotics' then Goods := 7
-        else Goods := 42;
+        else Goods := UnspecifiedGoods;
         Text := ReadShipGreetingField('ShipGoodsCnt');
         ShipGoodsCnt := [];
         if (Text <> '') and (Text <> 'Any') then
@@ -3151,7 +3153,7 @@ begin
           if Pos('Admiral', AnsiString(Text)) > 0 then Include(PlayerRank, 7);
         end;
         Text := ReadGovernmentGreetingField('Goods');
-        if Text = '' then Goods := 42
+        if Text = '' then Goods := UnspecifiedGoods
         else if Text = 'Food' then Goods := 0
         else if Text = 'Medicine' then Goods := 1
         else if Text = 'Technics' then Goods := 2
@@ -3160,7 +3162,7 @@ begin
         else if Text = 'Alcohol' then Goods := 5
         else if Text = 'Arms' then Goods := 6
         else if Text = 'Narcotics' then Goods := 7
-        else Goods := 42;
+        else Goods := UnspecifiedGoods;
         Text := ReadGovernmentGreetingField('CurPlanetRace');
         CurPlanetRace := ParseRobotMapRaceMask(Text);
         Text := ReadGovernmentGreetingField('CurPlanetRaceIsPlayerRace');
@@ -3493,7 +3495,7 @@ begin
           else if PlanetAdvertDefinitions[GroupIndex].Adverts[AdvertIndex].War > 1 then
             PlanetAdvertDefinitions[GroupIndex].Adverts[AdvertIndex].War := 1;
         end;
-        PlanetAdvertDefinitions[GroupIndex].Adverts[AdvertIndex].Goods := 42;
+        PlanetAdvertDefinitions[GroupIndex].Adverts[AdvertIndex].Goods := UnspecifiedGoods;
         if Block.CountParams('Goods') > 0 then
         begin
           Text := Block.GetParam('Goods');
@@ -3505,7 +3507,7 @@ begin
           else if Text = 'Alcohol' then PlanetAdvertDefinitions[GroupIndex].Adverts[AdvertIndex].Goods := 5
           else if Text = 'Arms' then PlanetAdvertDefinitions[GroupIndex].Adverts[AdvertIndex].Goods := 6
           else if Text = 'Narcotics' then PlanetAdvertDefinitions[GroupIndex].Adverts[AdvertIndex].Goods := 7
-          else PlanetAdvertDefinitions[GroupIndex].Adverts[AdvertIndex].Goods := 42;
+          else PlanetAdvertDefinitions[GroupIndex].Adverts[AdvertIndex].Goods := UnspecifiedGoods;
         end;
         PlanetAdvertDefinitions[GroupIndex].Adverts[AdvertIndex].Owner := [];
         if Block.CountParams('Owner') > 0 then

@@ -528,7 +528,7 @@ begin
       else if GetPlayer.IsDockedToShip then
       begin
         if not MusicInPlanetEnabled then MusicManager.RequestFadeOut
-        else if GetPlayer.DockedTo.TypeId in [Ord(rstPirateBase), Ord(rstDominion)] then
+        else if GetPlayer.DockedTo.TypeId in [rstPirateBase, rstDominion] then
           MusicManager.PlayCategory('Nation.' + OwnerInfo[RaceToOwner(GetPlayer.DockedTo.PilotRace)].InternalName + 'Pirate')
         else MusicManager.PlayCategory('Nation.' + OwnerInfo[RaceToOwner(GetPlayer.DockedTo.PilotRace)].InternalName);
       end;

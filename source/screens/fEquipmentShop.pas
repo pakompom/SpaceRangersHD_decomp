@@ -444,7 +444,7 @@ begin
     else if GetPlayer.IsDockedToShip then UpCallback := StationPanel.ServicesClicked;
   with GetByName('BGCity2') as TImageGI do
   begin
-    SetActive(GetPlayer.IsDockedToShip and (GetPlayer.DockedTo.TypeId = Byte(rstMilitaryBase)));
+    SetActive(GetPlayer.IsDockedToShip and (GetPlayer.DockedTo.TypeId = rstMilitaryBase));
     if Active then
     begin
       SetImagePath('GAI,' + GetPlayer.CurrentStar.GetBackgroundImagePath(Size));
@@ -738,20 +738,20 @@ procedure TfEquipmentShop.EndTurnClicked(Sender: TObjectGI);
 begin
   if GetPlayer = nil then Exit;
   if GetPlayer.QueuedTravelTarget <> nil then Exit;
-  if GetPlayer.IsDockedToShip and (GetPlayer.DockedTo.TypeId = Byte(rstDominion)) and
+  if GetPlayer.IsDockedToShip and (GetPlayer.DockedTo.TypeId = rstDominion) and
     (GetPlayer.DockedTo.Order = soTeleport) and (Cardinal(GetPlayer.DockedTo.OrderStateData) > 0) and not GetPlayer.DockedTo.InHyperspace then
   begin
     RuinsTalkScreen.DepartWithStation(1);
     Exit;
   end;
-  if GetPlayer.IsDockedToShip and (GetPlayer.DockedTo.TypeId = Byte(rstDominion)) and
+  if GetPlayer.IsDockedToShip and (GetPlayer.DockedTo.TypeId = rstDominion) and
     ((GetPlayer.DockedTo as TRuins).FlyToStar <> nil) and ((GetPlayer.DockedTo as TRuins).FlyToStar <> GetPlayer.CurrentStar) and
     ((GetPlayer.DockedTo as TRuins).FlyDate <= Galaxy.CurrentTurn) then
   begin
     RuinsTalkScreen.DepartWithStation(1);
     Exit;
   end;
-  if GetPlayer.IsDockedToShip and (GetPlayer.DockedTo.TypeId = Byte(rstMilitaryBase)) and
+  if GetPlayer.IsDockedToShip and (GetPlayer.DockedTo.TypeId = rstMilitaryBase) and
     ((GetPlayer.DockedTo as TRuins).FlyToStar <> nil) and ((GetPlayer.DockedTo as TRuins).FlyToStar <> GetPlayer.CurrentStar) and
     ((GetPlayer.DockedTo as TRuins).FlyDate <= Galaxy.CurrentTurn) then
   begin
@@ -1370,7 +1370,7 @@ var
   Control: TObjectGI;
   I: Integer;
   PreviewPath, SeriesName: WideString;
-  HullKind, DisplayKind: Byte;
+  HullKind: THullType; DisplayKind: Byte;
   Series: TDominatorSeries;
   BarWidth, CapWidth, MinimumWidth: Integer;
   UnusedNativeLocal: array[0..7] of Byte; { Eight unreferenced frame bytes precede the managed temporaries; original local type is unknown. }
@@ -1407,20 +1407,20 @@ begin
   if (Hull.OwnerShip <> nil) and (GetPlayer = Hull.OwnerShip) and GetPlayer.ChameleonActive and
     (GetPlayer.ChameleonVisualType in [0..7]) and (GetPlayer.ChameleonVisualType <> 0) then
   begin
-    HullKind := 6;
+    HullKind := htKling;
     DisplayKind := GetPlayer.ChameleonVisualType;
     Series := GetPlayer.ChameleonSeries;
   end;
   if (Hull.OwnerShip <> nil) and (TObject(Hull.OwnerShip) is TKling) then
   begin
-    HullKind := 6;
+    HullKind := htKling;
     DisplayKind := Byte((TObject(Hull.OwnerShip) as TKling).KlingType);
     Series := (TObject(Hull.OwnerShip) as TKling).DominatorSeries;
   end;
   if not SuppressImage then
     with Target.GetByName('InfoHullImage') as TImageGI do
     begin
-      if HullKind = 6 then
+      if HullKind = htKling then
       begin
         SetImagePath('GraphBuf');
         PreviewPath := '';
@@ -1575,7 +1575,7 @@ begin
   else if GetPlayer.IsDockedToShip then
   begin
     if not MusicInPlanetEnabled then MusicManager.RequestFadeOut
-    else if GetPlayer.DockedTo.TypeId in [Ord(rstPirateBase), Ord(rstDominion)] then
+    else if GetPlayer.DockedTo.TypeId in [rstPirateBase, rstDominion] then
       MusicManager.PlayCategory('Nation.' + OwnerInfo[RaceToOwner(GetPlayer.DockedTo.PilotRace)].InternalName + 'Pirate')
     else MusicManager.PlayCategory('Nation.' + OwnerInfo[RaceToOwner(GetPlayer.DockedTo.PilotRace)].InternalName);
   end;

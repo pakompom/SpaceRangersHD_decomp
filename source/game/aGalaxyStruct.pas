@@ -31,34 +31,50 @@ const
   StoredItemPlanetFlag = $80000000;
   TaggedObjectIdMask = $7FFFFFFF;
 
-  // TShip.TypeId names from ShipTypeNames at $87D038 (initialized by the table
-  // at $838040) and the subclass initializers.
-  // These are distinct from the hull-generation codes returned by ShipToHullType.
-  stKling = 0;
-  stRanger = 1;
-  stTransport = 2;
-  stPirate = 3;
-  stWarrior = 4;
-  stTranclucator = 5;
-
-  // Hull categories from ShipToHullType ($82F1F4), GetDefaultHullType ($74F294),
-  // and ApplySpecialMicroModule ($8089D8). They are not TShip.TypeId values.
-  htRanger = 0;
-  htWarrior = 1;
-  htPirate = 2;
-  htTransport = 3;
-  htLiner = 4;
-  htDiplomat = 5;
-  htKling = 6;
-  htTranclucator = 7;
-  htStation = 8;
-  htSpecial = 9;
-  htFlagship = 10;
+  // Configuration/adverts leave goods unspecified; greetings translate that to a skip marker.
+  UnspecifiedGoods = 42;
+  NoGreetingGoods = 50;
+  // Higher text-quest IDs use PlanetQuestLic rather than standalone completion records.
+  FirstLicensedQuestId = 10000;
 
   // SelectAward returns this sentinel when no individual award qualifies.
   AwardNotFound = $FF;
 
 type
+  // ShipTypeNames and subclass initializers share this ship/station domain.
+  TShipType = (
+    stKling = 0,
+    stRanger = 1,
+    stTransport = 2,
+    stPirate = 3,
+    stWarrior = 4,
+    stTranclucator = 5,
+    rstRangerCenter = 6,
+    rstPirateBase = 7,
+    rstMilitaryBase = 8,
+    rstScienceBase = 9,
+    rstBusinessCenter = 10,
+    rstMedicalBase = 11,
+    rstDominion = 12,
+    rstCustomStation = 13
+  ); // @size $01
+  TStationType = rstRangerCenter..rstCustomStation;
+
+  // Hull categories differ from TShip.TypeId; transports have three hull kinds.
+  THullType = (
+    htRanger = 0,
+    htWarrior = 1,
+    htPirate = 2,
+    htTransport = 3,
+    htLiner = 4,
+    htDiplomat = 5,
+    htKling = 6,
+    htTranclucator = 7,
+    htStation = 8,
+    htSpecial = 9,
+    htFlagship = 10
+  ); // @size $01
+
   // ScriptActionTypeNames ($87D350), action masks and ship/item dispatch.
   TScriptActionType = (
     satOnStep = 0,
@@ -195,7 +211,14 @@ type
     tkPartnerRiot = 6
   ); // @size $01
 
+  // GainExperience applies separate diminishing returns to these sources.
+  TExperienceSource = (
+    esUnscaled = 0, esDominators = 1, esPirates = 2,
+    esNormalShips = 3, esTraderCareer = 4
+  ); // @size $01
+
   TPercent = 0..100;
+  TShipRank = 0..7; // @size $01 Shared ordinal range; Coalition and pirate titles differ.
 
   TPilotSkill = (
     psAccuracy = 0,
@@ -249,9 +272,7 @@ type
     wstRocket = 7
   ); // @size 0x1
 
-  TShipTypeMask = set of 0..15; // @size $02 Shared ship/station type bits. DCU alignment is visible in CheatRndbase.
-
-  TWeaponAvailabilityMask = set of 0..15; // @size 2
+  TShipTypeMask = set of TShipType; // @size $02 Shared ship/station type bits. DCU alignment is visible in CheatRndbase.
 
   TWeaponAvailability = (
     waFree = 0,
@@ -266,18 +287,8 @@ type
     waGaalOnly = 9,
     waSystemOnly = 10
   ); // @size 0x1
+  TWeaponAvailabilityMask = set of TWeaponAvailability; // @size $02
 
-
-  TStationType = (
-    rstRangerCenter = 6,
-    rstPirateBase = 7,
-    rstMilitaryBase = 8,
-    rstScienceBase = 9,
-    rstBusinessCenter = 10,
-    rstMedicalBase = 11,
-    rstDominion = 12,
-    rstCustomStation = 13
-  ); // @size 0x1
 
   TKlingType = (
     ktBoss = 0, ktEquentor = 1, ktUrgant = 2, ktSmersh = 3,
@@ -469,11 +480,6 @@ type
   // Native record RTTI at $82CB64.
 
   // Native record RTTI at $82A25C.
-
-  // Nine quotas per Coalition race: types 42..49, then the shared weapon bucket 50.
-  TPlanetEquipmentOfferQuotaRow = array[0..8] of Integer;
-  TPlanetEquipmentOfferQuotaTable = array[oiMaloc..oiGaal] of TPlanetEquipmentOfferQuotaRow;
-  PPlanetEquipmentOfferQuotaTable = ^TPlanetEquipmentOfferQuotaTable;
 
   TByteMask = set of 0..7; // @size $01
   TOwnerMask = set of TOwnerId; // @size $01

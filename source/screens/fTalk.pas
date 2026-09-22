@@ -1886,7 +1886,7 @@ var RadarRangeSquared: Integer; Ship: TShip; AllowTargets: Boolean; SavedText: W
       if (TalkShip.OrderTarget <> Ship) and (GetPlayer <> Ship) and (Ship <> TalkShip) and
         (GetPlayer <> Ship.PartnerShip) and Ship.InNormalSpace and
         (RadarRangeSquared > PointDistanceSquared(GetPlayer.Position, Ship.Position)) and
-        not (Ship.TypeId in [Ord(rstRangerCenter)..Ord(rstCustomStation)]) and GetPlayer.CanSelectShipTarget(Ship) and
+        not (Ship.TypeId in [rstRangerCenter..rstCustomStation]) and GetPlayer.CanSelectShipTarget(Ship) and
         not (Ship.TargetingRestriction in [1, 2]) then
         AddChoice('- ' + Ship.GetFullName(' ') + GetLocalObjectLink(Ship, False), Integer(Ship), RequestAttackTarget, Integer(Ship));
     end;
@@ -2777,7 +2777,7 @@ begin
     Ship := GetPlayer.CurrentStar.Ships[I];
     if ((TalkShip.OrderTarget <> Ship) or (TalkShip.Order <> soFollowShip) or (TalkShip.OrderStateData = FollowMode)) and
       (GetPlayer <> Ship) and (TalkShip <> Ship) and (GetPlayer <> Ship.PartnerShip) and Ship.InNormalSpace then
-      if (RadarRangeSquared > PointDistanceSquared(GetPlayer.Position, Ship.Position)) and not (Ship.TypeId in [Ord(rstRangerCenter)..Ord(rstCustomStation)]) and
+      if (RadarRangeSquared > PointDistanceSquared(GetPlayer.Position, Ship.Position)) and not (Ship.TypeId in [rstRangerCenter..rstCustomStation]) and
         ((Ship.OwnerId <> oiDominator) or ((TalkShip.OwnerId = oiPirate) and (Galaxy.CoalitionDefeatedTurn <> 0))) then
         AddChoice('- ' + Ship.GetFullName(' ') + GetLocalObjectLink(Ship, False), Integer(Ship), OrderPiratePartnerAttack, Integer(Ship));
   end;

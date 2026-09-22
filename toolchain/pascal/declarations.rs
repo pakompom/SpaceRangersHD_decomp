@@ -178,6 +178,9 @@ impl Parser<'_> {
             return Ok(json!({"source_type":self.text[start.start..self.last().end]}));
         }
         if self.accept("..")? {
+            if self.annotated {
+                return Ok(json!({"enum_range":{"lower":name,"upper":self.qualified()?}}));
+            }
             self.expression(0)?;
             return Ok(json!({"source_type":self.text[start.start..self.last().end]}));
         }

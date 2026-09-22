@@ -154,7 +154,7 @@ begin
     Rank := NextRandomIntRange(0, GetPlayer.Rank, RandomState);
     if Rank > 3 then Rank := 3;
     AddRankPoints(NextRandomIntRange(0, CoalitionRankPointThresholds[Rank] div 2, RandomState));
-    if not Galaxy.IsZeroStartingExperienceEnabled then GainExperience(Round(RemapClamped(Ord(Rank), 0, 3, TotalSkillTrainingCost div 8, TotalSkillTrainingCost div 2)), 0);
+    if not Galaxy.IsZeroStartingExperienceEnabled then GainExperience(Round(RemapClamped(Ord(Rank), 0, 3, TotalSkillTrainingCost div 8, TotalSkillTrainingCost div 2)), esUnscaled);
     if OwnerId = oiPirate then begin
       PirateRank := NextRandomIntRange(0, GetPlayer.PirateRank, RandomState);
       if PirateRank > 3 then PirateRank := 3;
@@ -268,7 +268,7 @@ begin
     end;
     if DockedTo <> nil then begin
       Stage := 5;
-      if not (DockedTo.TypeId in [Ord(rstRangerCenter)..Ord(rstCustomStation)]) then begin
+      if not (DockedTo.TypeId in [rstRangerCenter..rstCustomStation]) then begin
         if DockedTo.InNormalSpace then OrderTakeoff else OrderNone(False);
         Exit;
       end;
@@ -327,7 +327,7 @@ begin
               if Station <> nil then OrderLanding(Station, True) else EngageEnemyShip;
             end;
           end else begin
-            if NextRandomUnitFloat(RandomState) > 0.8 then TryDockAtStation([6..13]);
+            if NextRandomUnitFloat(RandomState) > 0.8 then TryDockAtStation([rstRangerCenter..rstCustomStation]);
             if Order <> soLand then
               if NextRandomUnitFloat(RandomState) > 0.66 then NavigateToEscapePlanet(True) else NavigateToQueuedPlanet(True);
             if (Order in [soLand, soJump]) and (EstimateOrderTravelTurns > 4) and (EnemyShip <> nil) and
@@ -354,7 +354,7 @@ begin
           Stage := 18;
           Collecting := TryCollectBestFloatingItem(50);
           if not Collecting and (GetDesiredCargoFreeSpace > CargoFreeSpace) then
-            if NextRandomUnitFloat(RandomState) > 0.8 then TryDockAtStation([6..13]) else NavigateToQueuedPlanet(True);
+            if NextRandomUnitFloat(RandomState) > 0.8 then TryDockAtStation([rstRangerCenter..rstCustomStation]) else NavigateToQueuedPlanet(True);
           Stage := 19;
           if (EnemyShip <> nil) and (OrderTarget = EnemyShip) and (EnemyShip.CurrentPlanet <> nil) and (NextRandomUnitFloat(RandomState) < 0.2) then OrderNone(False);
           if not OrderAbsolute and not Collecting then begin
@@ -558,7 +558,7 @@ begin
   end;
   for I := 0 to CurrentStar.Ships.Count - 1 do begin
     Ship := CurrentStar.Ships[I];
-    if (Ship.TypeId in [Ord(rstRangerCenter)..Ord(rstCustomStation)]) and Ship.CanDock(Self) and (Ship.EnemyShip <> Self) and (EnemyShip <> Ship) then begin
+    if (Ship.TypeId in [rstRangerCenter..rstCustomStation]) and Ship.CanDock(Self) and (Ship.EnemyShip <> Self) and (EnemyShip <> Ship) then begin
       CandidateTurns := EstimateTravelTurnsToObject(Ship);
       if BestTurns > CandidateTurns then begin BestTurns := CandidateTurns; Target := Ship; end;
     end;
@@ -714,7 +714,7 @@ begin
       if (0.05 * ProgressFactor > NextRandomUnitFloat(RandomState)) and
         ((0.3 * StrengthFactor > StrengthInBestRanger) or (0.7 * StrengthFactor > StrengthInAverageRanger) or
         (0.001 * ProgressFactor > NextRandomUnitFloat(RandomState))) then GenerateExtraWeapon;
-      if 0.05 * ProgressFactor > NextRandomUnitFloat(RandomState) then GainExperience(SeededRandomIntRange(100, 500, RandomState), 0);
+      if 0.05 * ProgressFactor > NextRandomUnitFloat(RandomState) then GainExperience(SeededRandomIntRange(100, 500, RandomState), esUnscaled);
       if (GetPlayer.PirateRank > PirateRank) and (NextRandomUnitFloat(RandomState) < 0.01) and (PirateRank < 4) then begin
         // Native adds Coalition rank points before attempting a pirate promotion.
         AddRankPoints(NextRandomIntRange(16, 32, RandomState));
@@ -722,7 +722,7 @@ begin
       end;
       if (NextRandomUnitFloat(RandomState) < 0.02) and (CurrentPlanet <> nil) and
         ((AwardIds = nil) or (2 * (Rank + 1) > AwardIds.Count)) then begin
-        Award := SelectAward(RaceToOwner(CurrentPlanet.RaceId), [atAccomplishment, atSecretMission, atPerfidy], [stKling..Ord(rstCustomStation)]);
+        Award := SelectAward(RaceToOwner(CurrentPlanet.RaceId), [atAccomplishment, atSecretMission, atPerfidy], [stKling..rstCustomStation]);
         if Award <> AwardNotFound then AddAward(Award);
       end;
     end else begin
@@ -733,7 +733,7 @@ begin
         else ImproveRandomEquipment(True);
       if (NextRandomUnitFloat(RandomState) < 0.05) and ((StrengthInBestRanger < 0.5) or (StrengthInAverageRanger < 1) or
         (NextRandomUnitFloat(RandomState) < 0.001)) then GenerateExtraWeapon;
-      if NextRandomUnitFloat(RandomState) < 0.2 then GainExperience(NextRandomIntRange(250, 1000, RandomState), 0);
+      if NextRandomUnitFloat(RandomState) < 0.2 then GainExperience(NextRandomIntRange(250, 1000, RandomState), esUnscaled);
       if (OwnerId = oiPirate) and (GetPlayer.PirateRank > PirateRank) and (NextRandomUnitFloat(RandomState) < 0.01) and (PirateRank < 4) then begin
         AddRankPoints(NextRandomIntRange(16, 32, RandomState));
         TryPromotePirateRank;
@@ -744,7 +744,7 @@ begin
       end;
       if (NextRandomUnitFloat(RandomState) < 0.03) and (CurrentPlanet <> nil) and
         ((AwardIds = nil) or (2 * (Rank + 1) > AwardIds.Count)) then begin
-        Award := SelectAward(RaceToOwner(CurrentPlanet.RaceId), [atAccomplishment..atPerfidy], [stKling..Ord(rstCustomStation)]);
+        Award := SelectAward(RaceToOwner(CurrentPlanet.RaceId), [atAccomplishment..atPerfidy], [stKling..rstCustomStation]);
         if Award <> AwardNotFound then AddAward(Award);
       end;
     end;
@@ -764,7 +764,7 @@ begin
         else Result := Max(50, OwnerRelations[OwnerId, Ship.OwnerId]);
       stWarrior: Result := Min(50, Max(10, OwnerRelations[RaceToOwner(PilotRace), RaceToOwner(Ship.PilotRace)] - 30));
       stKling, stTranclucator: Result := 50;
-      Ord(rstRangerCenter)..Ord(rstCustomStation): if Ship.CurrentStanding in [ssCoalitionMilitary, ssCoalitionActive] then Result := 30 else Result := 100;
+      rstRangerCenter..rstCustomStation: if Ship.CurrentStanding in [ssCoalitionMilitary, ssCoalitionActive] then Result := 30 else Result := 100;
     else Result := 0;
     end
   else begin
@@ -775,7 +775,7 @@ begin
       stPirate: Result := Max(60, OwnerRelations[RaceToOwner(PilotRace), RaceToOwner(Ship.PilotRace)]);
       stWarrior: Result := Min(50, Max(10, OwnerRelations[RaceToOwner(PilotRace), RaceToOwner(Ship.PilotRace)] - 30));
       stKling, stTranclucator: Result := 50;
-      Ord(rstRangerCenter)..Ord(rstCustomStation): if (Ship.CurrentStanding in [ssCoalitionMilitary, ssCoalitionActive]) and (OwnerId = oiPirate) then Result := 30 else Result := 100;
+      rstRangerCenter..rstCustomStation: if (Ship.CurrentStanding in [ssCoalitionMilitary, ssCoalitionActive]) and (OwnerId = oiPirate) then Result := 30 else Result := 100;
     else Result := 50;
     end;
   end;
@@ -1116,7 +1116,7 @@ begin
         if PriorityTargetFound and (Ship.TargetingRestriction <> 6) then Continue;
         if (Ship.TargetingRestriction in [1..3, 5]) or (Ship = Self) or not Ship.InNormalSpace or (TruceShip = Ship) or (Ship.TruceShip = Self) or
           ((GetPlayer = Ship) and (GetPlayer.TruceShip = Self)) or (Ship.LiberationGroup <> nil) or (GetPlayer.QuestTargetKillShip = Ship) or
-          ((Ship.TypeId in [Ord(rstRangerCenter)..Ord(rstCustomStation)]) and ((OwnerId <> oiPirate) or (CurrentStar.Battle = 0) or (Ship.CurrentStanding in [ssNeutral..ssPirateMilitary]))) or (Ship.TypeId = stTranclucator) then Continue;
+          ((Ship.TypeId in [rstRangerCenter..rstCustomStation]) and ((OwnerId <> oiPirate) or (CurrentStar.Battle = 0) or (Ship.CurrentStanding in [ssNeutral..ssPirateMilitary]))) or (Ship.TypeId = stTranclucator) then Continue;
         if (CurrentStar.ControlFaction = sfDominators) or (CurrentStar.Status.CustomFaction <> '') or
           ((CurrentStar.ControlFaction = sfPirates) and (OwnerId = oiPirate) and (Galaxy.CoalitionDefeatedTurn = 0)) then begin
           if not (Ship is TNormalShip) or ((OwnerId = oiPirate) and (Ship.OwnerId <> oiPirate)) then begin
@@ -1160,7 +1160,7 @@ begin
       for I := 0 to CurrentStar.Ships.Count - 1 do begin
         Ship := CurrentStar.Ships[I];
         if Ship.InNormalSpace and (TruceShip <> Ship) and (Ship.TruceShip <> Self) and
-          (not (Ship.TypeId in [Ord(rstRangerCenter)..Ord(rstCustomStation)]) or not (Ship.CurrentStanding in [ssNeutral..ssPirateMilitary])) and
+          (not (Ship.TypeId in [rstRangerCenter..rstCustomStation]) or not (Ship.CurrentStanding in [ssNeutral..ssPirateMilitary])) and
           ((RelationToShip(Ship) < RelationBadMin) or Ship.AbductedByPirateClan) then begin
           Distance := PointDistance(Position, Ship.Position);
           if NextRandomFloatRange(0.3, 3, RandomState) * BestDistance > Distance then begin EnemyShip := Ship; BestDistance := Distance; end;
@@ -1181,7 +1181,7 @@ begin
   if NextRandomIntRange(1, 100, RandomState) < RemapClamped(CurrentStar.CountPirateShips(True), 30, 60, 0, 100) * (1 + RaidPressure * 0.1) then Aggression := 100;
   for I := 0 to CurrentStar.Ships.Count - 1 do begin
     Ship := CurrentStar.Ships[I];
-    if Ship.InNormalSpace and (TruceShip <> Ship) and not (Ship.TypeId in [Ord(rstRangerCenter)..Ord(rstCustomStation)]) and (Ship.TypeId <> stTranclucator) and (Ship <> Self) and
+    if Ship.InNormalSpace and (TruceShip <> Ship) and not (Ship.TypeId in [rstRangerCenter..rstCustomStation]) and (Ship.TypeId <> stTranclucator) and (Ship <> Self) and
       not (Ship.TargetingRestriction in [1..3, 5]) and not AcceptsRansomDemandFrom(Ship) and
       ((RelationToShip(Ship) < RelationExcellentMin) or (NextRandomIntRange(1, 100, RandomState) <= Aggression - 1)) and
       ((RelationToShip(Ship) < RelationGoodMin) or (NextRandomIntRange(1, 100, RandomState) <= Aggression + 33)) and
@@ -1259,7 +1259,7 @@ var NextDemandTurn: Integer;
       LastPlayerExtortionTurn := Galaxy.CurrentTurn;
       Event := AddGalaxyEvent('PlayerExtortsMoney');
       Event.AddData(DemandedAmount);
-      Event.AddData(TypeId);
+      Event.AddData(Ord(TypeId));
       Event.AddData(CurrentStar.Id);
       Event.AddData(Id);
       Event.AddData(Ord(OwnerId));
@@ -1315,7 +1315,7 @@ var Forced: Boolean; NextDemandTurn: Integer;
       LastPlayerExtortionTurn := Galaxy.CurrentTurn;
       Event := AddGalaxyEvent('PlayerExtortsGoods');
       Event.AddData(TotalValue);
-      Event.AddData(TypeId);
+      Event.AddData(Ord(TypeId));
       Event.AddData(CurrentStar.Id);
       Event.AddData(Id);
       Event.AddData(Ord(OwnerId));
@@ -1573,7 +1573,7 @@ begin
   if not PirateSystem then
     for I := 0 to CurrentStar.Ships.Count - 1 do begin
       Ship := CurrentStar.Ships[I];
-      if (Ship is TRuins) and (Ship.TypeId = Byte(rstDominion)) and (CurrentStar.Dominion <> Ship) and Ship.InNormalSpace and Ship.CanDock(Self) and
+      if (Ship is TRuins) and (Ship.TypeId = rstDominion) and (CurrentStar.Dominion <> Ship) and Ship.InNormalSpace and Ship.CanDock(Self) and
         ((TRuins(Ship).FlyToStar = nil) or (TRuins(Ship).FlyToStar = CurrentStar)) then begin Station := TRuins(Ship); Break; end;
     end;
   RetreatFactor := (100 + SeededRandomIntRange(-15, 15, Seed + Id)) * 0.02;

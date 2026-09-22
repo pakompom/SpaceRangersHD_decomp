@@ -261,13 +261,13 @@ function RunShipEquipment(ParentLoop: TMessageLoopGI): Boolean; // @addr $7120F0
 
 function CompareStoredItems(Left, Right: PStorageEntry; Sort: TPlayerHoldSort): Integer; // @addr $712A10
 
-function RankToImage(Rank: Byte): WideString; // @addr $6F0130
+function RankToImage(Rank: TShipRank): WideString; // @addr $6F0130
 
-function RankToImageSmall(Rank: Byte): WideString; // @addr $6F0258
+function RankToImageSmall(Rank: TShipRank): WideString; // @addr $6F0258
 
-function PirateRankToImage(Rank: Byte): WideString; // @addr $6F038C
+function PirateRankToImage(Rank: TShipRank): WideString; // @addr $6F038C
 
-function PirateRankToImageSmall(Rank: Byte): WideString; // @addr $6F04D0
+function PirateRankToImageSmall(Rank: TShipRank): WideString; // @addr $6F04D0
 
 procedure InitializePlayerHoldView; // @addr 0x6F0638
 procedure FinalizePlayerHoldView; // @addr 0x6F0650
@@ -299,7 +299,7 @@ var
   OtherSkillPointColor: Cardinal; // @addr $88B0E0
 
 { @routine $6F0130 RankToImage }
-function RankToImage(Rank: Byte): WideString;
+function RankToImage(Rank: TShipRank): WideString;
 begin
   if Rank in [0..7] then
     Result := 'GI,Bm.FormRating2.2Rank' + IntToStr(Integer(Rank) + 1)
@@ -309,7 +309,7 @@ end;
 { @end $6F0130 }
 
 { @routine $6F0258 RankToImageSmall }
-function RankToImageSmall(Rank: Byte): WideString;
+function RankToImageSmall(Rank: TShipRank): WideString;
 begin
   if Rank in [0..7] then
     Result := 'GI,Bm.FormShip2.2Rank' + IntToStr(Integer(Rank) + 1)
@@ -319,7 +319,7 @@ end;
 { @end $6F0258 }
 
 { @routine $6F038C PirateRankToImage }
-function PirateRankToImage(Rank: Byte): WideString;
+function PirateRankToImage(Rank: TShipRank): WideString;
 begin
   if Rank in [0..7] then
     Result := 'GI,Bm.FormShip2.PRank' + IntToStr(Integer(Rank) + 1)
@@ -329,7 +329,7 @@ end;
 { @end $6F038C }
 
 { @routine $6F04D0 PirateRankToImageSmall }
-function PirateRankToImageSmall(Rank: Byte): WideString;
+function PirateRankToImageSmall(Rank: TShipRank): WideString;
 begin
   if Rank in [0..7] then
     Result := 'GI,Bm.FormShip2.PRank' + IntToStr(Integer(Rank) + 1) + 's'
@@ -2299,7 +2299,7 @@ begin
     UpCallback := TrainSkillClicked;
   end;
   if ((Kind = phkEquipment) or (Kind = phkArtefact)) and (Item as TEquipment).NeedsRepair and
-    ((Item.ItemType <> t_Protoplasm) or (GetPlayer.DockedTo.TypeId <> Byte(rstRangerCenter))) and not PreserveSpaceMusic and (GetPlayer.IsDockedToShip or (GetPlayer.IsOnPlanet and not (GetPlayer.CurrentPlanet.OwnerId in [oiDominator,oiUninhabited]))) then
+    ((Item.ItemType <> t_Protoplasm) or (GetPlayer.DockedTo.TypeId <> rstRangerCenter)) and not PreserveSpaceMusic and (GetPlayer.IsDockedToShip or (GetPlayer.IsOnPlanet and not (GetPlayer.CurrentPlanet.OwnerId in [oiDominator,oiUninhabited]))) then
   begin
     OpenSpecialSlot1;
     with GetByName('SC_Slot1_Text') as TLabelGI do
@@ -2427,7 +2427,7 @@ begin
     Item := PlayerHoldShip.FindEquippedItemInSlot(ItemType,Slot);
     if Item <> nil then
     begin
-      if (PlayerHoldShip is TRuins) and ((Item is TEngine) or (Item is TFuelTanks) or ((Item is TCargoHook) and (PlayerHoldShip.TypeId = Byte(rstDominion)))) then
+      if (PlayerHoldShip is TRuins) and ((Item is TEngine) or (Item is TFuelTanks) or ((Item is TCargoHook) and (PlayerHoldShip.TypeId = rstDominion))) then
       begin
         SoundManager.PlaySound('Sound.NoMoney');
         ShowMessageBoxGI(Self,FormatText1(LocalizedColorText('FormShip.RuinMoveItemInvalid'),TextHighlightColorTag,'<Item>',RemoveTextTagsW(Item.GetDisplayName)),mbgCancel or mbgWarning);
@@ -7335,7 +7335,7 @@ begin
   else if GetPlayer.IsDockedToShip then
   begin
     if not MusicInPlanetEnabled then MusicManager.RequestFadeOut
-    else if GetPlayer.DockedTo.TypeId in [Ord(rstPirateBase),Ord(rstDominion)] then
+    else if GetPlayer.DockedTo.TypeId in [rstPirateBase,rstDominion] then
       MusicManager.PlayCategory('Nation.' + OwnerInfo[RaceToOwner(GetPlayer.DockedTo.PilotRace)].InternalName + 'Pirate')
     else MusicManager.PlayCategory('Nation.' + OwnerInfo[RaceToOwner(GetPlayer.DockedTo.PilotRace)].InternalName);
   end

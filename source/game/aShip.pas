@@ -78,7 +78,7 @@ type
     Id: Integer; // @offset 0x04
     Name: WideString; // @offset 0x08
     TypeNameOverrideKey: WideString; // @offset 0x0C
-    TypeId: Byte; // @offset 0x10  st* ship codes and TStationType station codes are declared in aGalaxyStruct.
+    TypeId: TShipType; // @offset 0x10
     OwnerId: TOwnerId; // @offset 0x11
     Position: TPointF; // @offset 0x14
     CurrentPlanet: TPlanet; // @offset 0x1C
@@ -353,7 +353,7 @@ type
     function GetRepairStrengthFactor: Double; // @addr 0x750758
     function GetFullHullRelativeStrengthPercent: Byte; // @addr 0x750820 @note "Temporarily restores hull points. Leaves cached Strength and player galaxy-strength statistics at the full-hull values; byte result is not clamped."
     function GetEstimatedMemoryUsage: Integer; virtual; // @addr 0x74FE50 @slot 0x44 @note "Counts the instance and selected list storage; excludes item objects and managed strings."
-    function GetDefaultHullType: Byte; // @addr 0x74F294
+    function GetDefaultHullType: THullType; // @addr 0x74F294
     function SelectRandomHullSeries: Integer; // @addr 0x76AF9C @note "Normal ships use PilotRace rather than OwnerId; selects rarity 1..100 through the galaxy RNG."
     function NextRandomInteger(Minimum, Maximum: Integer): Integer; // @addr 0x74F384
     function GetTurnSeedFraction(TurnOffset: Integer): Single; // @addr 0x74FE0C @note "Fractional part of signed Seed divided by CurrentTurn + TurnOffset; denominator must be nonzero. Does not advance RandomState."
@@ -679,7 +679,7 @@ type
     function CalculateSpeed: Integer; virtual; // @addr 0x77CA70 @slot 0x4C @calls "0x75FF76"
     function CountUnequippedDominatorEquipment: Integer; // @addr 0x769FE0 @note "Skips inventory index 0."
     function TrainSkill(Skill: TPilotSkill): Boolean; // @addr 0x77B8C4
-    procedure GainExperience(Amount: Integer; SourceKind: Byte); // @addr 0x77B558 @note "Source kind 0 bypasses diminishing returns."
+    procedure GainExperience(Amount: Integer; SourceKind: TExperienceSource); // @addr 0x77B558 @note "Source kind 0 bypasses diminishing returns."
     procedure DepositCarriedNodes; // @addr 0x77B7B4 @note "Deposits every carried stack and awards experience."
   end;
 
@@ -692,8 +692,8 @@ var
   DominatorShipLargeSizes: array[0..2, 0..7] of Integer = ((127, 127, 100, 90, 65, 60, 160, 60), (127, 127, 100, 90, 65, 60, 160, 60), (127, 127, 100, 90, 65, 60, 160, 60)); // @addr $87C484
   RangerSmallSizes: array[TOwnerId] of Integer = (50, 50, 50, 50, 50, 50, 50, 50); // @addr $87C4E4
   RangerLargeSizes: array[TOwnerId] of Integer = (80, 80, 80, 80, 80, 80, 80, 80); // @addr $87C504
-  TransportSmallSizes: array[3..5, TOwnerId] of Integer = ((50, 50, 50, 50, 50, 50, 50, 50), (50, 50, 50, 50, 50, 50, 50, 50), (50, 50, 50, 50, 50, 50, 50, 50)); // @addr $87C524
-  TransportLargeSizes: array[3..5, TOwnerId] of Integer = ((90, 90, 90, 90, 90, 90, 90, 90), (90, 90, 90, 90, 90, 90, 90, 90), (90, 90, 90, 90, 90, 90, 90, 90)); // @addr $87C584
+  TransportSmallSizes: array[htTransport..htDiplomat, TOwnerId] of Integer = ((50, 50, 50, 50, 50, 50, 50, 50), (50, 50, 50, 50, 50, 50, 50, 50), (50, 50, 50, 50, 50, 50, 50, 50)); // @addr $87C524
+  TransportLargeSizes: array[htTransport..htDiplomat, TOwnerId] of Integer = ((90, 90, 90, 90, 90, 90, 90, 90), (90, 90, 90, 90, 90, 90, 90, 90), (90, 90, 90, 90, 90, 90, 90, 90)); // @addr $87C584
   PirateSmallSizes: array[TOwnerId] of Integer = (45, 45, 45, 55, 45, 45, 45, 45); // @addr $87C5E4
   PirateLargeSizes: array[TOwnerId] of Integer = (80, 80, 80, 90, 80, 80, 80, 80); // @addr $87C604
   PirateClanSmallSizes: array[TOwnerId] of Integer = (45, 45, 45, 55, 45, 45, 45, 45); // @addr $87C624
@@ -714,7 +714,7 @@ var
   SkillBonusEvaluationWeights: array[bonSkill1..bonSkill6] of Integer = (100, 100, 80, 80, 60, 60); // @addr $87C700 bonSkill1..bonSkill6.
   SlotBonusEvaluationWeights: array[bonSlotRadar..bonSlotForsage] of Integer = (100, 100, 200, 100, 200, 75, 10, 30); // @addr $87C718 bonSlotRadar..bonSlotForsage.
 
-function CreateShipByType(ShipType: Byte): TShip; // @addr 0x75E500 @note "Allocates an unregistered instance; caller must initialize or deserialize it."
+function CreateShipByType(ShipType: TShipType): TShip; // @addr 0x75E500 @note "Allocates an unregistered instance; caller must initialize or deserialize it."
 
 function CompareShipGroupsStrength(Ships, Opponents: TList): Single; // @addr 0x75E454 @note "Lists contain TShip. Sum of pairwise ChanceToWin divided by Opponents.Count squared; requires nonempty Opponents when Ships is nonempty."
 function CalculateFuelCost(Amount: Integer; OwnerId: TOwnerId): Single; // @addr 0x75F034 @note "Owner six skips racial scaling. Uses active galaxy turn and difficulty."
@@ -1208,7 +1208,7 @@ begin
   Name := Buffer.ReadWideString;
   if LoadedSaveVersion >= 97 then TypeNameOverrideKey := Buffer.ReadWideString
   else TypeNameOverrideKey := '';
-  TypeId := Buffer.GetByte;
+  TypeId := TShipType(Buffer.GetByte);
   OwnerId := TOwnerId(Buffer.GetByte);
   Position.X := Buffer.GetSingle;
   Position.Y := Buffer.GetSingle;
@@ -1235,13 +1235,13 @@ begin
   else PilotRace := oiMaloc;
   if LoadedSaveVersion < 102 then
   begin
-    if TypeId = Byte(rstMedicalBase) then
+    if TypeId = rstMedicalBase then
     begin
       OwnerId := oiGaal;
       PilotRace := oiGaal;
       if PortraitFaceId > 14 then PortraitFaceId := -1;
     end;
-    if TypeId = Byte(rstBusinessCenter) then
+    if TypeId = rstBusinessCenter then
     begin
       OwnerId := oiHuman;
       PilotRace := oiHuman;
@@ -2218,9 +2218,9 @@ end;
 { @end $74F20C }
 
 { @routine $74F294 TShip_GetDefaultHullType }
-function TShip.GetDefaultHullType: Byte;
+function TShip.GetDefaultHullType: THullType;
 var
-  Kind: Byte;
+  Kind: THullType;
 begin
   case TypeId of
     stKling: Kind := htKling;
@@ -2240,7 +2240,7 @@ begin
       else Kind := htWarrior;
       end;
     stTranclucator: Kind := htTranclucator;
-    Ord(rstRangerCenter)..Ord(rstCustomStation): Kind := htStation;
+    rstRangerCenter..rstCustomStation: Kind := htStation;
   else Kind := htRanger;
   end;
   Result := Kind;
@@ -3112,7 +3112,7 @@ begin
   BestDistance := 0;
   for I := 0 to CurrentStar.Ships.Count - 1 do begin
     Ship := TShip(CurrentStar.Ships[I]);
-    if (Ship.TypeId in [Ord(rstRangerCenter)..Ord(rstCustomStation)]) and ((StandingMask = []) or
+    if (Ship.TypeId in [rstRangerCenter..rstCustomStation]) and ((StandingMask = []) or
       (Ship.CurrentStanding in StandingMask)) and Ship.CanDock(Self) then begin
       Distance := PointDistanceSquared(Position, Ship.Position);
       if (Distance < BestDistance) or (Result = nil) then begin Result := Ship; BestDistance := Distance; end;
@@ -3579,7 +3579,7 @@ begin
         if (Attacker as TTranclucator).OwnerShip = GetPlayer then
         begin
           Event := AddGalaxyEvent('PlayerTranclucatorKillsShip');
-          Event.AddData(TypeId);
+          Event.AddData(Ord(TypeId));
           Event.AddData(CurrentStar.Id);
           Event.AddData(Id);
           Event.AddData(Ord(OwnerId));
@@ -3592,7 +3592,7 @@ begin
           Event.AddTextData(TypeNameOverrideKey);
           if Self is TKling then Event.AddData(Byte((Self as TKling).KlingType))
           else if Self is TTransport then Event.AddData(Byte((Self as TTransport).TransportType))
-          else if Self is TWarrior then Event.AddData((Self as TWarrior).WarriorType)
+          else if Self is TWarrior then Event.AddData(Ord((Self as TWarrior).WarriorType))
           else if Self is TPirate then Event.AddData((Self as TPirate).PirateType)
           else Event.AddData(0);
         end;
@@ -5748,17 +5748,17 @@ end;
 { @end $75E454 }
 
 { @routine $75E500 CreateShipByType }
-function CreateShipByType(ShipType: Byte): TShip;
+function CreateShipByType(ShipType: TShipType): TShip;
 begin
   Result := nil;
   case ShipType of
-    1: Result := TRanger.Create;
-    0: Result := TKling.Create;
-    2: Result := TTransport.Create;
-    3: Result := TPirate.Create;
-    4: Result := TWarrior.Create;
-    5: Result := TTranclucator.Create;
-    6..13: Result := TRuins.Create;
+    stRanger: Result := TRanger.Create;
+    stKling: Result := TKling.Create;
+    stTransport: Result := TTransport.Create;
+    stPirate: Result := TPirate.Create;
+    stWarrior: Result := TWarrior.Create;
+    stTranclucator: Result := TTranclucator.Create;
+    rstRangerCenter..rstCustomStation: Result := TRuins.Create;
   else
     // The original constructs the exception without raising it.
     Exception.Create('function CreateShipByType(shiptype: tShipType): TShip;');
@@ -5826,7 +5826,7 @@ end;
 { @routine $75E70C TShip_CanRepairArtefactsAtLocation }
 function TShip.CanRepairArtefactsAtLocation: Boolean;
 begin
-  if TypeId in [Ord(rstPirateBase), Ord(rstScienceBase)] then begin Result := True; Exit; end;
+  if TypeId in [rstPirateBase, rstScienceBase] then begin Result := True; Exit; end;
   if (TypeNameOverrideKey <> '') and (FindTextOffsetW(TypeNameOverrideKey, '_licensed') >= 0) then begin Result := True; Exit; end;
   if (CurrentPlanet <> nil) and CurrentPlanet.IsMainPiratePlanet then begin Result := True; Exit; end;
   if DockedTo = nil then Result := False
@@ -6502,6 +6502,7 @@ end;
 
 { @routine $7608A0 TShip_CalculateFollowRadius }
 function TShip.CalculateFollowRadius: Integer;
+const NoWeaponRange = 999999;
 var Mode: Byte; I: Integer; Target: TShip; Weapon: TWeapon;
 begin
   if Order <> soFollowShip then raise Exception.Create('TShip.CalcFollowRadius()');
@@ -6509,7 +6510,7 @@ begin
   Mode := Byte(OrderStateData);
   case Mode of
     1: begin
-         Result := 999999;
+         Result := NoWeaponRange;
          for I := 1 to WeaponCount do
          begin
            Weapon := Weapons[I];
@@ -6524,9 +6525,9 @@ begin
            if IsEquipmentUsable(Weapon) and (GetWeaponRange(Weapon) > Result) then Result := GetWeaponRange(Weapon);
          end;
        end;
-  else Result := 999999;
+  else Result := NoWeaponRange;
   end;
-  if (Result > 0) and (Result < 999999) then Result := Round(Result * 0.85)
+  if (Result > 0) and (Result < NoWeaponRange) then Result := Round(Result * 0.85)
   else Result := Trunc(CollisionRadius + Target.CollisionRadius) + 15;
 end;
 { @end $7608A0 }
@@ -7855,7 +7856,7 @@ var
   Candidate: TItem;
   CanDrop: Boolean;
 begin
-  CanDrop := InNormalSpace and not (TypeId in [Ord(rstRangerCenter)..Ord(rstCustomStation)]);
+  CanDrop := InNormalSpace and not (TypeId in [rstRangerCenter..rstCustomStation]);
   if (CargoFreeSpace < 0) and NoDrop and CanDrop then
   begin
     if ScriptShip = nil then
@@ -8622,7 +8623,7 @@ end;
 procedure TShip.LiquidateInventoryItem(Item: TItem);
 begin
   if (Item.ItemType = t_Protoplasm) and (GetPlayer <> Self) and
-    (((Self is TRanger) and (DockedTo <> nil) and (DockedTo.TypeId = Byte(rstRangerCenter))) or
+    (((Self is TRanger) and (DockedTo <> nil) and (DockedTo.TypeId = rstRangerCenter)) or
     (DaysSincePlayerSeen > 100) or ((Self is TWarrior) and ((Self as TWarrior).WarriorType = wtFlagship))) then
   begin
     DepositCarriedNodes;
@@ -8981,7 +8982,7 @@ begin
   else MaximumLevel := Galaxy.TechLevel;
   MaximumLevel := Max(MinimumLevel, Min(MaximumLevel, 8));
   MinimumLevel := Max(1, Min(MinimumLevel, MaximumLevel - 2));
-  Info := Galaxy.SelectWeaponInfo(RandomState, [Ord(waFree)], MaximumLevel, MinimumLevel);
+  Info := Galaxy.SelectWeaponInfo(RandomState, [waFree], MaximumLevel, MinimumLevel);
   Weapon := CreateGeneratedWeapon(Info,
     NextRandomIntRange(Round(Info.AverageSize * EquipmentSizeFactors[5]),
       Round(Info.AverageSize * EquipmentSizeFactors[3]), RandomState),
@@ -9361,7 +9362,7 @@ end;
 function TShip.CreateAndEquipHull(Capacity: Word; Level: Byte; Owner: TOwnerId; Series: Integer; PirateBuilt: Boolean): THull;
 var
   Item: THull;
-  Kind: Byte;
+  Kind: THullType;
 begin
   Item := THull.Create;
   Kind := GetDefaultHullType;
@@ -10266,7 +10267,7 @@ TEFilm(PrimaryFilm).AttachObject(StartStepIndex + 1, EffectFilm);
             InitializeFilm(0);
           end;
           if GetPlayer = Self then TEFilm(PrimaryFilm).SetCameraAnchor(StartStepIndex, Position, True);
-          if (Self is TRuins) and (TypeId = Byte(rstDominion)) and (TransitOriginStar = CurrentStar) then TRuins(Self).ReportAbductionOutcome;
+          if (Self is TRuins) and (TypeId = rstDominion) and (TransitOriginStar = CurrentStar) then TRuins(Self).ReportAbductionOutcome;
         end
         else
         begin
@@ -13063,12 +13064,12 @@ end;
 { @end $77B4B8 }
 
 { @routine $77B558 TShip_GainExperience }
-procedure TShip.GainExperience(Amount: Integer; SourceKind: Byte);
+procedure TShip.GainExperience(Amount: Integer; SourceKind: TExperienceSource);
 var
   Awarded: Integer;
 begin
   Awarded := Amount;
-  if SourceKind = 0 then
+  if SourceKind = esUnscaled then
   begin
     Inc(TotalExperience, Amount);
     Inc(FreeExperience, Amount);
@@ -13077,19 +13078,19 @@ begin
   begin
     if GetPlayer = Self then
       case SourceKind of
-        1: begin
+        esDominators: begin
           Awarded := Round(Awarded / (GetPlayer.ExperienceByDominators * 0.000001 + 1));
           Inc(GetPlayer.ExperienceByDominators, Awarded);
         end;
-        2: begin
+        esPirates: begin
           Awarded := Round(Awarded / ((GetPlayer.ExperienceByPirates + GetPlayer.ExperienceByNormals) * 0.000001 + 1));
           Inc(GetPlayer.ExperienceByPirates, Awarded);
         end;
-        3: begin
+        esNormalShips: begin
           Awarded := Round(Awarded / ((GetPlayer.ExperienceByPirates + GetPlayer.ExperienceByNormals) * 0.000001 + 1));
           Inc(GetPlayer.ExperienceByNormals, Awarded);
         end;
-        4: begin
+        esTraderCareer: begin
           Awarded := Round(Awarded / (GetPlayer.ExperienceByTraderCareer * 0.000001 + 1));
           Inc(GetPlayer.ExperienceByTraderCareer, Awarded);
         end;
@@ -13124,8 +13125,8 @@ begin
     if Item.ItemType = t_Protoplasm then
     begin
       Inc(NodeReserve, Item.Weight);
-      if (Self is TWarrior) and ((Self as TWarrior).WarriorType = wtFlagship) then GainExperience(Round(Item.Weight * 2.0), 0)
-      else GainExperience(Item.Weight, 0);
+      if (Self is TWarrior) and ((Self as TWarrior).WarriorType = wtFlagship) then GainExperience(Round(Item.Weight * 2.0), esUnscaled)
+      else GainExperience(Item.Weight, esUnscaled);
       if Self is TRanger then Inc((Self as TRanger).BaseNodes, Item.Weight);
       Inventory.Delete(I);
       Item.Free;
@@ -13490,7 +13491,7 @@ begin
   if (DaysSincePlayerSeen > 100) and (TypeId in [stRanger..stWarrior]) and
     (CountPresentDiseasesAndActiveStimulants < Integer(Seed) mod 3 + 1) then
   begin
-    if (DockedTo <> nil) and (DockedTo.TypeId = Byte(rstMedicalBase)) then
+    if (DockedTo <> nil) and (DockedTo.TypeId = rstMedicalBase) then
     begin
       for I := 1 to 12 do
         if CaptainHealth[I].Progress <> 0 then

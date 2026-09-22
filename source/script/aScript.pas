@@ -29,7 +29,7 @@ type
 
   TScriptActionTypeSet = set of TScriptActionType; // @size $08
   TScriptStepTypeSet = set of 0..11; // @size $02
-  TScriptShipTypeMask = set of 0..15; // @size 0x02
+  TScriptShipTypeMask = set of THullType; // @size 0x02
   TScriptDominatorMasks = array[0..7] of TDominatorSeriesMask; // TKlingType index; TDominatorSeries bits.
 
   TScriptStar = class;
@@ -1343,21 +1343,21 @@ var
 begin
   if not ScriptDefinitionBit(Value, 0) then
   begin
-    Result := [0..8];
+    Result := [htRanger..htStation];
     Exit;
   end;
   Result := [];
-  if ScriptDefinitionBit(Value, 1) then Result := Result + [0];
-  if ScriptDefinitionBit(Value, 2) then Result := Result + [1];
-  if ScriptDefinitionBit(Value, 3) then Result := Result + [2];
-  if ScriptDefinitionBit(Value, 4) then Result := Result + [3];
-  if ScriptDefinitionBit(Value, 5) then Result := Result + [4];
-  if ScriptDefinitionBit(Value, 6) then Result := Result + [5];
-  if ScriptDefinitionBit(Value, 25) then Result := Result + [7];
+  if ScriptDefinitionBit(Value, 1) then Result := Result + [htRanger];
+  if ScriptDefinitionBit(Value, 2) then Result := Result + [htWarrior];
+  if ScriptDefinitionBit(Value, 3) then Result := Result + [htPirate];
+  if ScriptDefinitionBit(Value, 4) then Result := Result + [htTransport];
+  if ScriptDefinitionBit(Value, 5) then Result := Result + [htLiner];
+  if ScriptDefinitionBit(Value, 6) then Result := Result + [htDiplomat];
+  if ScriptDefinitionBit(Value, 25) then Result := Result + [htTranclucator];
   for I := 7 to 24 do
     if ScriptDefinitionBit(Value, I) then
     begin
-      Result := Result + [6];
+      Result := Result + [htKling];
       Break;
     end;
 end;
@@ -1460,10 +1460,10 @@ var
 begin
   Result := False;
   if not (ShipToHullType(Ship) in ShipTypeMask) then Exit;
-  if (Ship is TRuins) and (8 in ShipTypeMask) then
+  if (Ship is TRuins) and (htStation in ShipTypeMask) then
   begin
     Name := '';
-    if not (Ship.TypeId in [Ord(rstRangerCenter)..Ord(rstCustomStation)]) then Exit;
+    if not (Ship.TypeId in [rstRangerCenter..rstCustomStation]) then Exit;
     if TRuins(Ship).NoLanding then Exit;
     if Ship.TypeNameOverrideKey <> '' then Name := Ship.TypeNameOverrideKey
     else Name := ShipTypeNames[Ship.TypeId].Name;
@@ -2932,7 +2932,7 @@ begin
         Star.ShipRequirements[J].MinStrength := Buffer.GetSingle;
         Star.ShipRequirements[J].MaxStrength := Buffer.GetSingle;
         Star.ShipRequirements[J].StationNames := TrimWideString(Buffer.ReadWideString);
-        if Star.ShipRequirements[J].StationNames <> '' then Star.ShipRequirements[J].ShipTypeMask := Star.ShipRequirements[J].ShipTypeMask + [8];
+        if Star.ShipRequirements[J].StationNames <> '' then Star.ShipRequirements[J].ShipTypeMask := Star.ShipRequirements[J].ShipTypeMask + [htStation];
       end;
     end;
   end;
@@ -3072,7 +3072,7 @@ begin
     Group.MinStrength := Buffer.GetSingle;
     Group.MaxStrength := Buffer.GetSingle;
     Group.StationNames := TrimWideString(Buffer.ReadWideString);
-    if Group.StationNames <> '' then Group.ShipTypeMask := Group.ShipTypeMask + [8];
+    if Group.StationNames <> '' then Group.ShipTypeMask := Group.ShipTypeMask + [htStation];
   end;
   Count := Buffer.GetInt32;
   if Count > 0 then

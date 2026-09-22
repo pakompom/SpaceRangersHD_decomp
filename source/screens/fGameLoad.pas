@@ -129,7 +129,7 @@ begin
       end
       else if GetPlayer.IsDockedToShip then
       begin
-        if GetPlayer.DockedTo.TypeId in [Ord(rstRangerCenter)..Ord(rstCustomStation)] then
+        if GetPlayer.DockedTo.TypeId in [rstRangerCenter..rstCustomStation] then
         begin
           Category := GetPlayer.DockedTo.TypeNameOverrideKey;
           if (Category <> '') and (MainDataConfig.GetBlock('Music').CountBlocks(Category) > 0) then

@@ -918,7 +918,7 @@ begin
   Ship := TShip(av[1].GetDword);
   Owner := TOwnerId(av[2].GetInt);
   Kind := TAwardKind(av[3].GetInt);
-  Award := (Ship as TNormalShip).SelectAward(Owner, [Kind], [stKling..Ord(rstCustomStation)]);
+  Award := (Ship as TNormalShip).SelectAward(Owner, [Kind], [stKling..rstCustomStation]);
   if Award = AwardNotFound then RaiseWideMessage('Error RewardNumber=255');
   Ship.AddAward(Award);
   av[0].SetInt(Award);
@@ -2141,13 +2141,13 @@ end;
 
 { @routine $60AF68 SF_ShipFind }
 procedure SF_ShipFind(av: array of TVarEC; code: TCodeEC);
-var Kind: Byte; Star: TStar; Ship: TShip; I: Integer;
+var Kind: TShipType; Star: TStar; Ship: TShip; I: Integer;
 begin
   if High(av) <> 1 then raise Exception.Create('Error.Script ShipFind');
   av[0].SetDword(0);
   if GetPlayer <> nil then
   begin
-    Kind := av[1].GetInt;
+    Kind := TShipType(av[1].GetInt);
     Star := GetPlayer.CurrentStar;
     for I := 0 to Star.Ships.Count - 1 do
     begin
@@ -2659,12 +2659,12 @@ var
   Obj: TObject;
   InPlayerSystem: Boolean;
   Key: WideString;
-  Kind: Byte;
+  Kind: TPlayerMessageKind;
   MessageEntry: TMessagePlayer;
 begin
   if High(av) < 3 then raise Exception.Create('Error.Script Ether');
   av[0].SetInt(0);
-  Kind := av[1].GetInt;
+  Kind := TPlayerMessageKind(av[1].GetInt);
   Key := av[2].GetString;
   Obj := nil;
   InPlayerSystem := False;
@@ -2684,9 +2684,9 @@ begin
     // Native constructs but does not raise this exception.
     else Exception.Create('Error.Script Ether objtype');
   end;
-  if not (Kind in [1, 10]) or (Obj = nil) or InPlayerSystem then
+  if not (Kind in [pmRadio, pmRadioPlayer]) or (Obj = nil) or InPlayerSystem then
   begin
-    if (Kind = 3) and (Key <> '') and (CurrentScript <> nil) and (CurrentScript.EtherIds.IndexOf(Key) < 0) then
+    if (Kind = pmQuestActive) and (Key <> '') and (CurrentScript <> nil) and (CurrentScript.EtherIds.IndexOf(Key) < 0) then
       CurrentScript.EtherIds.Add(Key);
     MessageEntry := AddOrUpdatePlayerBubble(Kind, Galaxy.CurrentTurn,
       ReplaceAllWideString(ReplaceAllWideString(av[3].GetString, '<clr>', TextHighlightColorTag), '<clrEnd>', EndColorTag), Key);
@@ -2718,12 +2718,12 @@ var
   Obj: TObject;
   InPlayerSystem: Boolean;
   Key: WideString;
-  Kind: Byte;
+  Kind: TPlayerMessageKind;
   MessageEntry: TMessagePlayer;
 begin
   if High(av) < 3 then raise Exception.Create('Error.Script Ether');
   av[0].SetInt(0);
-  Kind := av[2].GetInt;
+  Kind := TPlayerMessageKind(av[2].GetInt);
   Key := av[3].GetString;
   Obj := nil;
   InPlayerSystem := False;
@@ -2743,9 +2743,9 @@ begin
     // Native constructs but does not raise this exception.
     else Exception.Create('Error.Script Ether objtype');
   end;
-  if not (Kind in [1, 10]) or (Obj = nil) or InPlayerSystem then
+  if not (Kind in [pmRadio, pmRadioPlayer]) or (Obj = nil) or InPlayerSystem then
   begin
-    if (Kind = 3) and (Key <> '') and (CurrentScript <> nil) and (CurrentScript.EtherIds.IndexOf(Key) < 0) then
+    if (Kind = pmQuestActive) and (Key <> '') and (CurrentScript <> nil) and (CurrentScript.EtherIds.IndexOf(Key) < 0) then
       CurrentScript.EtherIds.Add(Key);
     MessageEntry := AddOrUpdatePlayerBubble(Kind, Galaxy.CurrentTurn,
       ReplaceAllWideString(ReplaceAllWideString(av[4].GetString, '<clr>', TextHighlightColorTag), '<clrEnd>', EndColorTag), Key);
@@ -2810,7 +2810,7 @@ var
 begin
   if High(av) < 1 then raise Exception.Create('Error.Script EtherState');
   MessageEntry := FindPlayerBubbleByKey(av[1].GetString, False);
-  if MessageEntry = nil then av[0].SetInt(-1) else av[0].SetInt(MessageEntry.Kind);
+  if MessageEntry = nil then av[0].SetInt(-1) else av[0].SetInt(Ord(MessageEntry.Kind));
 end;
 { @end $60D1A0 }
 
@@ -6070,12 +6070,12 @@ end;
 procedure SF_CreateHull(av: array of TVarEC; code: TCodeEC);
 var
   Hull: THull;
-  HullType: Byte; Owner: TOwnerId;
+  HullType: THullType; Owner: TOwnerId;
   Level, Capacity, Series: Integer;
   PirateBuilt: Boolean;
 begin
   if High(av) < 4 then raise Exception.Create('Error.Script CreateHull');
-  HullType := av[1].GetDword;
+  HullType := THullType(av[1].GetDword);
   Capacity := av[2].GetInt;
   Level := av[3].GetInt;
   Owner := TOwnerId(av[4].GetDword);
@@ -8946,8 +8946,8 @@ begin
   else if Obj is THull then Hull := THull(Obj)
   else if (Obj is TScriptItem) and ((Obj as TScriptItem).Item is THull) then Hull := (Obj as TScriptItem).Item as THull
   else Exit;
-  av[0].SetInt(Hull.HullType);
-  if High(av) > 1 then Hull.HullType := av[2].GetInt;
+  av[0].SetInt(Ord(Hull.HullType));
+  if High(av) > 1 then Hull.HullType := THullType(av[2].GetInt);
 end;
 { @end $625268 }
 
@@ -9395,7 +9395,7 @@ begin
   begin
     Station := nil;
     Kind := av[2].GetInt;
-    if Byte(Kind) in [Ord(rstRangerCenter)..Ord(rstCustomStation)] then
+    if TShipType(Kind) in [rstRangerCenter..rstCustomStation] then
     begin
       Station := TRuins.Create;
       Station.Init(TStationType(Kind), Star, '');
@@ -9430,7 +9430,7 @@ var
   Obj: TObject;
   Station: TRuins;
   Kind: Integer;
-  Index: Byte;
+  Index: TShipType;
 begin
   if High(av) < 2 then raise Exception.Create('Error.Script RuinsChangeType');
   Obj := TObject(av[1].GetDword);
@@ -9438,15 +9438,15 @@ begin
   begin
     Station := TRuins(Obj);
     if av[2].RealVType = vkString then
-      for Index := Ord(rstRangerCenter) to Ord(rstCustomStation) do
+      for Index := rstRangerCenter to rstCustomStation do
         if av[2].GetString = ShipTypeNames[Index].Name then
         begin
           Station.TypeId := Index;
           Exit;
         end;
     Kind := av[2].GetInt;
-    Index := Kind;
-    if Index in [Ord(rstRangerCenter)..Ord(rstCustomStation)] then Station.TypeId := Index;
+    Index := TShipType(Kind);
+    if Index in [rstRangerCenter..rstCustomStation] then Station.TypeId := Index;
   end;
 end;
 { @end $626D74 }
@@ -9500,7 +9500,7 @@ end;
 procedure SF_MissileType(av: array of TVarEC; code: TCodeEC);
 begin
   if High(av) < 1 then raise Exception.Create('Error.Script MissileType');
-  av[0].SetInt(TMissile(av[1].GetDword).ItemType);
+  av[0].SetInt(Ord(TMissile(av[1].GetDword).ItemType));
 end;
 { @end $627170 }
 
@@ -10626,7 +10626,7 @@ begin
   else if av[1].RealVType <> vkArray then raise Exception.Create('Error.Script BuildListOfNewShips - not array');
   av[1].GetArray.Clear;
   MinimumId := av[2].GetDword;
-  if (High(av) > 2) and (av[3].GetDword <> 0) then Word(Mask) := av[3].GetDword else Mask := [stKling..stWarrior, Ord(rstRangerCenter)..Ord(rstCustomStation)];
+  if (High(av) > 2) and (av[3].GetDword <> 0) then Word(Mask) := av[3].GetDword else Mask := [stKling..stWarrior, rstRangerCenter..rstCustomStation];
   // Parsed by the native routine but never consulted.
   if (High(av) > 3) and (av[4].GetDword <> 0) then Byte(OwnerMask) := av[4].GetDword else OwnerMask := [oiMaloc..oiPirate];
   IncludeScripted := False;
@@ -10667,7 +10667,7 @@ begin
       Ship := TShip(Star.Ships[J]);
       if Ship.TypeId <> stWarrior then CheckShip(Ship);
     end;
-    if 4 in Mask then
+    if stWarrior in Mask then
       for J := 0 to Star.Planets.Count - 1 do
       begin
         Planet := TPlanet(Star.Planets[J]);
@@ -10678,7 +10678,7 @@ begin
         end;
       end;
   end;
-  if 5 in Mask then
+  if stTranclucator in Mask then
   begin
     for I := 0 to Galaxy.Stars.Count - 1 do
     begin
@@ -12046,7 +12046,7 @@ var
 begin
   if High(av) < 1 then raise Exception.Create('Error.Script ShipTypeN');
   Ship := TShip(av[1].GetDword);
-  av[0].SetInt(Ship.TypeId);
+  av[0].SetInt(Ord(Ship.TypeId));
 end;
 { @end $630E08 }
 
@@ -12059,7 +12059,7 @@ begin
   Ship := TShip(av[1].GetDword);
   if Ship is TKling then av[0].SetInt(Ord(TKling(Ship).KlingType))
   else if Ship is TTransport then av[0].SetInt(Ord(TTransport(Ship).TransportType))
-  else if Ship is TWarrior then av[0].SetInt(TWarrior(Ship).WarriorType)
+  else if Ship is TWarrior then av[0].SetInt(Ord(TWarrior(Ship).WarriorType))
   else if Ship is TPirate then av[0].SetInt(TPirate(Ship).PirateType)
   else if Ship is TRanger then av[0].SetInt(Ord(TRanger(Ship).PreferredCareer))
   else av[0].SetInt(0);
@@ -12067,7 +12067,7 @@ begin
   begin
     if Ship is TKling then TKling(Ship).KlingType := TKlingType(av[2].GetInt)
     else if Ship is TTransport then TTransport(Ship).TransportType := TTransportType(av[2].GetInt)
-    else if Ship is TWarrior then TWarrior(Ship).WarriorType := av[2].GetInt
+    else if Ship is TWarrior then TWarrior(Ship).WarriorType := TWarriorType(av[2].GetInt)
     else if Ship is TPirate then TPirate(Ship).PirateType := av[2].GetInt
     else if Ship is TRanger then TRanger(Ship).PreferredCareer := TRangerCareer(av[2].GetInt);
   end;
@@ -12448,7 +12448,7 @@ end;
 
 { @routine $63292C SF_SpawnMissile }
 procedure SF_SpawnMissile(av: array of TVarEC; code: TCodeEC);
-var Star: TStar; Target: TObject; X, Y: Integer; Direction: Single; MinDamage, MaxDamage: Integer; Speed: Single; Kind: Byte; Module, Special: Integer; Missile: TMissile; Step: Integer;
+var Star: TStar; Target: TObject; X, Y: Integer; Direction: Single; MinDamage, MaxDamage: Integer; Speed: Single; Kind: TItemType; Module, Special: Integer; Missile: TMissile; Step: Integer;
 begin
   if High(av) < 9 then raise Exception.Create('Error.Script SpawnMissile');
   Star := TStar(av[1].GetDword);
@@ -12476,7 +12476,7 @@ begin
   end
   else
   begin
-    Kind := av[9].GetInt;
+    Kind := TItemType(av[9].GetInt);
     Missile := TMissile.Create;
     Missile.InitializeUnownedShot(Star, Target, X, Y, Direction, MinDamage, MaxDamage, Speed, Kind, Module, Special);
   end;
@@ -15920,12 +15920,12 @@ begin
   Scope.Add('Trader', vkInt).SetInt(Ord(rcTrader));
   Scope.Add('Pirate', vkInt).SetInt(Ord(rcPirate));
   Scope.Add('Warrior', vkInt).SetInt(Ord(rcWarrior));
-  Scope.Add('t_Kling', vkInt).SetInt(stKling);
-  Scope.Add('t_Ranger', vkInt).SetInt(stRanger);
-  Scope.Add('t_Transport', vkInt).SetInt(stTransport);
-  Scope.Add('t_Pirate', vkInt).SetInt(stPirate);
-  Scope.Add('t_Warrior', vkInt).SetInt(stWarrior);
-  Scope.Add('t_Tranclucator', vkInt).SetInt(stTranclucator);
+  Scope.Add('t_Kling', vkInt).SetInt(Ord(stKling));
+  Scope.Add('t_Ranger', vkInt).SetInt(Ord(stRanger));
+  Scope.Add('t_Transport', vkInt).SetInt(Ord(stTransport));
+  Scope.Add('t_Pirate', vkInt).SetInt(Ord(stPirate));
+  Scope.Add('t_Warrior', vkInt).SetInt(Ord(stWarrior));
+  Scope.Add('t_Tranclucator', vkInt).SetInt(Ord(stTranclucator));
   Scope.Add('t_RC', vkInt).SetInt(Ord(rstRangerCenter));
   Scope.Add('t_PB', vkInt).SetInt(Ord(rstPirateBase));
   Scope.Add('t_WB', vkInt).SetInt(Ord(rstMilitaryBase));

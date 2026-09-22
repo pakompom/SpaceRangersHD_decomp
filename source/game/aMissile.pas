@@ -3,7 +3,7 @@ unit aMissile;
 
 interface
 
-uses EC_Buf, EC_Struct, SE_Space, aEFilm, aGalaxy, aGalaxyStruct, aItem, aShip;
+uses EC_Buf, EC_Struct, SE_Space, aEFilm, aGalaxy, aGalaxyStruct, aItem, aShip, aConst;
 
 type
   TMissile = class(TObjectEx) // @size 0x74
@@ -11,7 +11,7 @@ type
     Graphic: TObjectSE; // @offset 0x04
     Id: Cardinal; // @offset 0x08
     WeaponId: Integer; // @offset 0x0C Matches TItem.Id.
-    ItemType: Byte; // @offset 0x10
+    ItemType: TItemType; // @offset 0x10
     TechLevel: Byte; // @offset 0x11
     MinDamage: Integer; // @offset 0x14
     MaxDamage: Integer; // @offset 0x18
@@ -42,7 +42,7 @@ type
     procedure SaveToBuffer(Buffer: TBufEC); virtual; // @addr $4F063C @slot $00
     procedure LoadFromBuffer(Buffer: TBufEC; World: TGalaxy); virtual; // @addr $4F0AB8 @slot $04
     procedure ResolveLoadedReferences(World: TGalaxy); // @addr $4F0F68
-    procedure InitializeUnownedShot(Star: TStar; Target: TObject; X, Y: Integer; Direction: Single; MinDamage, MaxDamage: Integer; MaximumSpeed: Single; ItemType: Byte; ModuleIndex, SpecialIndex: Integer); // @addr $4F04E8
+    procedure InitializeUnownedShot(Star: TStar; Target: TObject; X, Y: Integer; Direction: Single; MinDamage, MaxDamage: Integer; MaximumSpeed: Single; ItemType: TItemType; ModuleIndex, SpecialIndex: Integer); // @addr $4F04E8
     function CanBeHit(Attacker: TShip; UnusedWeapon: TWeapon): Boolean; // @addr $4F3204
     procedure RetargetTorpedo; // @addr $4F285C
     function TryReturnToOwner(StepIndex: Integer; RecordFilm: Boolean; PreviousPosition: TPointF; Ship: TShip): Boolean; // @addr $4F2620
@@ -73,7 +73,7 @@ type
 
 implementation
 
-uses Classes, GR_Main, SE_Weapon, EC_BlockPar, Math, Globals, GlobalsV, SysUtils, aConst, aMyFunction, aAsteroid, aPlayer, aKling;
+uses Classes, GR_Main, SE_Weapon, EC_BlockPar, Math, Globals, GlobalsV, SysUtils, aMyFunction, aAsteroid, aPlayer, aKling;
 
 { @routine $4F005C TMissile_Create }
 constructor TMissile.Create;
@@ -117,7 +117,7 @@ begin
   Self.OwnerShip := OwnerShip;
   Self.Target := Target;
   WeaponId := Weapon.Id;
-  ItemType := Byte(Weapon.ItemType);
+  ItemType := Weapon.ItemType;
   MinDamage := OwnerShip.GetWeaponMinDamage(Weapon);
   MicroModuleIndex := Weapon.MicroModuleIndex;
   SpecialModuleIndex := Weapon.SpecialModuleIndex;
@@ -157,7 +157,7 @@ end;
 { @end $4F04A8 }
 
 { @routine $4F04E8 TMissile_InitializeUnownedShot }
-procedure TMissile.InitializeUnownedShot(Star: TStar; Target: TObject; X, Y: Integer; Direction: Single; MinDamage, MaxDamage: Integer; MaximumSpeed: Single; ItemType: Byte; ModuleIndex, SpecialIndex: Integer);
+procedure TMissile.InitializeUnownedShot(Star: TStar; Target: TObject; X, Y: Integer; Direction: Single; MinDamage, MaxDamage: Integer; MaximumSpeed: Single; ItemType: TItemType; ModuleIndex, SpecialIndex: Integer);
 begin
   Star.Missiles.Add(Self);
   CurrentStar := Star;
@@ -181,7 +181,7 @@ end;
 procedure TCustomMissile.InitializeUnownedShot(Star: TStar; Target: TObject; X, Y: Integer; Direction: Single; MinDamage, MaxDamage: Integer; MaximumSpeed: Single; WeaponName: WideString; ModuleIndex, SpecialIndex: Integer);
 begin
   WeaponInfo := Galaxy.RequireCustomWeaponInfo(WeaponName);
-  inherited InitializeUnownedShot(Star, Target, X, Y, Direction, MinDamage, MaxDamage, MaximumSpeed, Byte(WeaponInfo.ItemType), ModuleIndex, SpecialIndex);
+  inherited InitializeUnownedShot(Star, Target, X, Y, Direction, MinDamage, MaxDamage, MaximumSpeed, WeaponInfo.ItemType, ModuleIndex, SpecialIndex);
 end;
 { @end $4F05A8 }
 
@@ -288,7 +288,7 @@ begin
   Id := Buffer.GetUInt32;
   if Id >= World.NextMissileId then World.NextMissileId := Id + 1;
   if LoadedSaveVersion >= 159 then WeaponId := Buffer.GetUInt32;
-  ItemType := Byte(MigrateSavedItemType(Buffer.GetByte));
+  ItemType := MigrateSavedItemType(Buffer.GetByte);
   TechLevel := Buffer.GetByte;
   if LoadedSaveVersion >= 100 then
   begin
@@ -418,13 +418,13 @@ begin
     if PlayShotSound then
     begin
       if Self is TCustomMissile then Config := GameDataConfig.GetBlockByPath('SE.' + GetWeaponInfo.PrimarySE)
-      else Config := GameDataConfig.GetBlockByPath('SE.Weapon.' + IntToStr(ItemType - 50));
+      else Config := GameDataConfig.GetBlockByPath('SE.Weapon.' + IntToStr(Ord(ItemType) - Ord(t_IndustrialLaser)));
       Palette := Config.FindBlock('Palettes');
       if Palette <> nil then Palette := Palette.FindBlock(IntToStr(GetShotVisual));
       if (Palette <> nil) and (Palette.CountParams('SoundShot') > 0) then PrimaryFilm.PlayObjectSound(StepIndex, FilmObject, Palette.GetParam('SoundShot'))
       else if Config.CountParams('SoundShot') > 0 then PrimaryFilm.PlayObjectSound(StepIndex, FilmObject, Config.GetParam('SoundShot'))
       else if Self is TCustomMissile then PrimaryFilm.PlayObjectSound(StepIndex, FilmObject, 'Sound.shot' + GetWeaponInfo.ConfigName)
-      else PrimaryFilm.PlayObjectSound(StepIndex, FilmObject, 'Sound.shot' + IntToStr(ItemType - 50));
+      else PrimaryFilm.PlayObjectSound(StepIndex, FilmObject, 'Sound.shot' + IntToStr(Ord(ItemType) - Ord(t_IndustrialLaser)));
     end;
   end;
   if FlightTicks = 0 then
@@ -896,7 +896,7 @@ function TMissile.GetGraphSuffix: WideString;
 begin
   Result := '';
   if SpecialModuleIndex <> 0 then Result := MicroModuleTemplates[SpecialModuleIndex - 1].MissileGraph;
-  if Result = '' then Result := IntToStr(ItemType - 50 + 1);
+  if Result = '' then Result := IntToStr(Ord(ItemType) - Ord(t_IndustrialLaser) + 1);
 end;
 { @end $4F3340 }
 
@@ -912,7 +912,7 @@ end;
 { @routine $4F3434 TMissile_GetWeaponInfo }
 function TMissile.GetWeaponInfo: PWeaponInfo;
 begin
-  Result := @WeaponInfos[TItemType(ItemType)];
+  Result := @WeaponInfos[ItemType];
 end;
 { @end $4F3434 }
 

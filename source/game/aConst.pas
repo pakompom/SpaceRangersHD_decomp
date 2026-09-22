@@ -92,7 +92,7 @@ type
     DefGenerators: Integer; // @offset 0x1C
     Weapons: Integer; // @offset 0x20  Shared quota for item types 50..68.
   end;
-  TStationEquipmentOfferQuotaTable = array[6..13] of TStationEquipmentOfferQuota;
+  TStationEquipmentOfferQuotaTable = array[TStationType] of TStationEquipmentOfferQuota;
   PStationEquipmentOfferQuotaTable = ^TStationEquipmentOfferQuotaTable;
 
   TWeaponRangeLevelFactors = array[1..8] of Single;
@@ -113,7 +113,7 @@ type
   THullLevelStatsTable = array[1..8] of THullLevelStats;
 
   TTransportTypeNameTable = array[0..2] of WideString;
-  THullShipTypeMask = set of 0..15; // @size $02 ht* hull-category bits, distinct from TShip.TypeId.
+  THullShipTypeMask = set of THullType; // @size $02 ht* hull-category bits, distinct from TShip.TypeId.
 
 var
   // Native WideString defaults: initialization pairs $8381A4..$8382F8.
@@ -137,7 +137,7 @@ procedure InitializeGameplayConfig; // @addr 0x82D200
 
 function ItemTypeToSlotKind(ItemType: TItemType): TShipSlotKind; // @addr 0x82F368
 function ClassifyWeaponDamageFlags(Flags: TDamageFlagSet): TWeaponDamageClass; // @addr $837CF0 Missile bit takes precedence over splinter; otherwise energy.
-function ShipToHullType(Ship: TObject): Byte; // @addr $82F1F4 Class/subtype mapping used by hull generation and legacy saves; only TObject RTTI operations precede explicit subclass casts.
+function ShipToHullType(Ship: TObject): THullType; // @addr $82F1F4 Class/subtype mapping used by hull generation and legacy saves; only TObject RTTI operations precede explicit subclass casts.
 function RaceToOwner(RaceId: TOwnerId): TOwnerId; // @addr $82DDD4 @note "Identity conversion for Coalition races 0..4; raises for all other values."
 function OwnerFromInternalName(const Name: WideString): TOwnerId; // @addr $82E638
 
@@ -145,7 +145,7 @@ function OwnerToRace(OwnerId: TOwnerId): TOwnerId; // @addr 0x82DD48 @note "Iden
 function RaceToSys(RaceId: TOwnerId): WideString; // @addr 0x82DED4 @note "Raises outside Coalition races 0..4."
 function NumberToRace(Value: Integer): TOwnerId; // @addr 0x82E8C0 @note "Accepts 0..4; raises otherwise."
 function SysToReward(const Name: WideString): TAwardKind; // @addr 0x82EA40 @note "Case-sensitive lookup; raises for an unknown name."
-function SysToShipType(const Name: WideString): Byte; // @addr 0x82EBE8 @note "Case-sensitive lookup among 14 ship types; raises for an unknown name."
+function SysToShipType(const Name: WideString): TShipType; // @addr 0x82EBE8 @note "Case-sensitive lookup among 14 ship types; raises for an unknown name."
 function OwnerToFilmColor(OwnerId: TOwnerId): Cardinal; // @addr 0x82DFE4 @note "Maps owner IDs 0..5 and 7 to fixed RGB colors through CurrentPixelFormat; other values use magenta."
 function CustomFactionToFilmColor(Faction: WideString): Cardinal; // @addr $82E0F4
 function GetCustomFactionPlanetIconNumber(Faction: WideString): Integer; // @addr $82E380 @note "Race.PlanetIconNum lookup; returns -1 for an absent entry. Film owner codes offset a nonnegative result by eight."
@@ -385,12 +385,12 @@ type
     Name: WideString; // @offset $00
   end;
 
-  TShipTypeNameTable = array[0..13] of TShipTypeInfo;
+  TShipTypeNameTable = array[TShipType] of TShipTypeInfo;
 
   PShipTypeNameTable = ^TShipTypeNameTable;
 
 var
-  ShipTypeNames: array[0..13] of TShipTypeInfo = ((Name: 'Kling'), (Name: 'Ranger'), (Name: 'Transport'), (Name: 'Pirate'), (Name: 'Warrior'), (Name: 'Tranclucator'), (Name: 'RC'), (Name: 'PB'), (Name: 'WB'), (Name: 'SB'), (Name: 'BK'), (Name: 'MC'), (Name: 'CB'), (Name: 'UB')); // @addr $87D038
+  ShipTypeNames: array[TShipType] of TShipTypeInfo = ((Name: 'Kling'), (Name: 'Ranger'), (Name: 'Transport'), (Name: 'Pirate'), (Name: 'Warrior'), (Name: 'Tranclucator'), (Name: 'RC'), (Name: 'PB'), (Name: 'WB'), (Name: 'SB'), (Name: 'BK'), (Name: 'MC'), (Name: 'CB'), (Name: 'UB')); // @addr $87D038
 type
   // Native record RTTI at $82A45C.
   TStatusInfo = record // @size $28
@@ -404,7 +404,7 @@ type
   TCareerTuningTable = array[TRangerCareer] of TStatusInfo;
 
 var
-  StationDefaultStandings: array[6..13] of TShipStanding = (ssCoalitionMilitary, ssPiratePassive, ssCoalitionMilitary, ssCoalitionActive, ssCoalitionActive, ssNeutral, ssPirateMilitary, ssUnaligned); // @addr $87D070 Standing used to gate station spawning by faction, including the custom station.
+  StationDefaultStandings: array[TStationType] of TShipStanding = (ssCoalitionMilitary, ssPiratePassive, ssCoalitionMilitary, ssCoalitionActive, ssCoalitionActive, ssNeutral, ssPirateMilitary, ssUnaligned); // @addr $87D070 Standing used to gate station spawning by faction, including the custom station.
   NonTargetableStationStandingMasks: TFactionStandingMasks = ([ssCoalitionMilitary..ssNeutral], [ssDominator], [ssPiratePassive..ssPirateMilitary]); // @addr $87D078 Standing masks used by TPlayer.CanSelectShipTarget.
   FactionStandingMasks: TFactionStandingMasks = ([ssCoalitionMilitary..ssPiratePassive], [ssDominator], [ssCoalitionPassive..ssPirateMilitary]); // @addr $87D080
   CareerTuning: array[TRangerCareer] of TStatusInfo = (
@@ -589,10 +589,15 @@ type
     Name: WideString; // @offset $4
   end;
 
+  // Nine quotas per Coalition race, with every weapon sharing the final category.
+  TPlanetEquipmentOfferQuotaRow = array[t_Hull..WeaponCategoryItemType] of Integer;
+  TPlanetEquipmentOfferQuotaTable = array[oiMaloc..oiGaal] of TPlanetEquipmentOfferQuotaRow;
+  PPlanetEquipmentOfferQuotaTable = ^TPlanetEquipmentOfferQuotaTable;
+
   TEquipmentSlotLayouts = array[0..7] of SEquipment;
 
 var
-  NonNegotiatingShipTypes: TShipTypeMask = [stKling, stTranclucator..Ord(rstCustomStation)]; // @addr $87D448  Excluded from ransom offers and ordinary ally requests.
+  NonNegotiatingShipTypes: TShipTypeMask = [stKling, stTranclucator..rstCustomStation]; // @addr $87D448  Excluded from ransom offers and ordinary ally requests.
 const
   EquipmentSlotLayouts: array[0..7] of SEquipment = (
     (ItemType: t_FuelTanks; Name: 'FuelTanks'),
@@ -938,7 +943,7 @@ var
     (Hulls: 3; FuelTanks: 2; Engines: 2; Radars: 2; Scanners: 3; RepairRobots: 2; CargoHooks: 2; DefGenerators: 2; Weapons: 4),
     (Hulls: 4; FuelTanks: 2; Engines: 2; Radars: 2; Scanners: 2; RepairRobots: 2; CargoHooks: 2; DefGenerators: 2; Weapons: 4)
   ); // @addr $87DC98 Native defaults; aRuins accesses this table through an external-unit reference. Original defining unit is inferred.
-  StationGoodsFactors: array[6..13, TGoodsIndex] of TPlanetGoodsFactors = (
+  StationGoodsFactors: array[TStationType, TGoodsIndex] of TPlanetGoodsFactors = (
     ((PriceFactor: 1.0; StockFactor: 0.05), (PriceFactor: 1.0; StockFactor: 0.1), (PriceFactor: 1.0; StockFactor: 0.1), (PriceFactor: 1.0; StockFactor: 0.15), (PriceFactor: 0.8; StockFactor: 0.1), (PriceFactor: 1.0; StockFactor: 0.1), (PriceFactor: 1.0; StockFactor: 0.1), (PriceFactor: 0.5; StockFactor: 0.01)),
     ((PriceFactor: 0.9; StockFactor: 0.15), (PriceFactor: 1.0; StockFactor: 0.1), (PriceFactor: 1.0; StockFactor: 0.2), (PriceFactor: 1.0; StockFactor: 0.05), (PriceFactor: 0.8; StockFactor: 0.15), (PriceFactor: 0.9; StockFactor: 0.2), (PriceFactor: 0.9; StockFactor: 0.3), (PriceFactor: 0.9; StockFactor: 0.2)),
     ((PriceFactor: 1.1; StockFactor: 0.1), (PriceFactor: 1.0; StockFactor: 0.05), (PriceFactor: 1.0; StockFactor: 0.1), (PriceFactor: 0.4; StockFactor: 0.1), (PriceFactor: 1.0; StockFactor: 0.05), (PriceFactor: 1.0; StockFactor: 0.05), (PriceFactor: 0.8; StockFactor: 0.3), (PriceFactor: 0.5; StockFactor: 0.01)),
@@ -1032,12 +1037,12 @@ var
     ((True, True, True, True, True), (True, True, True, True, True), (True, True, True, True, False), (True, True, False, False, False), (True, True, False, False, False)),
     ((True, False, False, False, False), (True, True, True, True, True), (True, False, True, False, False), (True, True, False, False, False), (True, False, False, False, False))); // @addr $87E4D8 Indexed by goods, native race and government; False marks prohibited goods.
   MedalNames: array[0..5] of WideString = ('ForLiberationSystem', 'ForAccomplishment', 'ForSecretMission', 'ForCowardice', 'ForPerfidy', 'ForPlanetBattle'); // @addr $87E5A0
-  CoalitionRankNames: array[0..7] of WideString = ('Rookie', 'Cadet', 'Pilot', 'Wingman', 'Leader', 'Ace', 'Commander', 'Admiral'); // @addr $87E5B8 Native initialization table.
+  CoalitionRankNames: array[TShipRank] of WideString = ('Rookie', 'Cadet', 'Pilot', 'Wingman', 'Leader', 'Ace', 'Commander', 'Admiral'); // @addr $87E5B8 Native initialization table.
 var
-  CoalitionRankPointThresholds: array[0..7] of Word = (100, 250, 450, 700, 1000, 1500, 2000, 0); // @addr $87E5D8 Zero threshold at the maximum rank.
-  PirateRankNames: array[0..7] of WideString = ('Noobie', 'Kid', 'Rader', 'Skipper', 'Rough', 'Ataman', 'Khan', 'Baron'); // @addr $87E5E8 Native initialization descriptors at $83841C..$838458.
+  CoalitionRankPointThresholds: array[TShipRank] of Word = (100, 250, 450, 700, 1000, 1500, 2000, 0); // @addr $87E5D8 Zero threshold at the maximum rank.
+  PirateRankNames: array[TShipRank] of WideString = ('Noobie', 'Kid', 'Rader', 'Skipper', 'Rough', 'Ataman', 'Khan', 'Baron'); // @addr $87E5E8 Native initialization descriptors at $83841C..$838458.
 var
-  PirateRankPointThresholds: array[0..7] of Word = (100, 250, 450, 700, 1000, 1500, 3000, 0); // @addr $87E608 Zero threshold at the maximum rank.
+  PirateRankPointThresholds: array[TShipRank] of Word = (100, 250, 450, 700, 1000, 1500, 3000, 0); // @addr $87E608 Zero threshold at the maximum rank.
   SkillConfigNames: array[TPilotSkill] of WideString = ('sAccuracy', 'sMobility', 'sTechnical', 'sTrader', 'sCharm', 'sLeadership'); // @addr $87E618
 var
   RaceSkillEvaluationFactors: array[oiMaloc..oiGaal, TPilotSkill] of Single = (
@@ -1124,8 +1129,8 @@ var
     (1, 1, 1, 1, 1, 1, 1, 4, 4, 1, 0),
     (1, 1, 1, 1, 1, 1, 1, 4, 4, 1, 0),
     (1, 1, 1, 1, 1, 1, 1, 4, 4, 1, 0)); // @addr $87EE98 Native base slot counts; final column is unsupported kind.
-  TranclucatorHullSlots: array[0..10] of Integer = (1, 1, 0, 0, 1, 1, 1, 5, 4, 0, 0); // @addr $87EFF8 Native base slot counts; final column is unsupported kind.
-  StationHullSlots: array[0..7, 0..10] of Integer = (
+  TranclucatorHullSlots: array[TShipSlotKind] of Integer = (1, 1, 0, 0, 1, 1, 1, 5, 4, 0, 0); // @addr $87EFF8 Native base slot counts; final column is unsupported kind.
+  StationHullSlots: array[TStationType, TShipSlotKind] of Integer = (
     (1, 1, 1, 1, 1, 1, 1, 5, 4, 0, 0),
     (1, 1, 1, 1, 1, 1, 1, 5, 4, 0, 0),
     (1, 1, 1, 1, 1, 1, 1, 5, 4, 0, 0),
@@ -1134,7 +1139,7 @@ var
     (1, 1, 1, 1, 1, 1, 1, 5, 4, 0, 0),
     (1, 1, 1, 1, 1, 1, 1, 5, 4, 0, 0),
     (1, 1, 1, 1, 1, 1, 1, 5, 4, 0, 0)); // @addr $87F024 Native base slot counts; final column is unsupported kind.
-  DominatorHullSlots: array[0..7, 0..10] of Integer = (
+  DominatorHullSlots: array[TKlingType, TShipSlotKind] of Integer = (
     (1, 1, 1, 1, 1, 1, 1, 5, 4, 0, 0),
     (1, 1, 1, 1, 1, 1, 1, 5, 4, 0, 0),
     (1, 1, 1, 1, 1, 1, 1, 5, 4, 0, 0),
@@ -1143,8 +1148,8 @@ var
     (1, 1, 1, 1, 1, 1, 1, 5, 4, 0, 0),
     (1, 1, 1, 1, 1, 1, 1, 5, 4, 0, 0),
     (1, 1, 1, 1, 1, 1, 1, 5, 4, 1, 0)); // @addr $87F184 Native base slot counts; final column is unsupported kind.
-  HullType9Slots: array[0..10] of Integer = (1, 1, 1, 1, 1, 1, 1, 5, 4, 1, 0); // @addr $87F2E4 Native base slot counts; final column is unsupported kind.
-  HullType10Slots: array[0..10] of Integer = (1, 1, 1, 1, 1, 1, 1, 5, 4, 0, 0); // @addr $87F310 Native base slot counts; final column is unsupported kind.
+  SpecialHullSlots: array[TShipSlotKind] of Integer = (1, 1, 1, 1, 1, 1, 1, 5, 4, 1, 0); // @addr $87F2E4 Native base slot counts; final column is unsupported kind.
+  FlagshipHullSlots: array[TShipSlotKind] of Integer = (1, 1, 1, 1, 1, 1, 1, 5, 4, 0, 0); // @addr $87F310 Native base slot counts; final column is unsupported kind.
   HullSlotBonusKinds: array[TShipSlotKind] of TEquipmentBonusKind = (bonNull, bonNull, bonSlotRadar, bonSlotScaner, bonSlotDroid, bonSlotHook, bonSlotDef, bonSlotWeapon, bonSlotArt, bonSlotForsage, bonNull); // @addr $87F33C
   OwnerWeaponAvailability: TOwnerWeaponAvailabilityTable = (waMalocOnly, waPelengOnly, waPeopleOnly, waFeiOnly, waGaalOnly, waNotSoldAndNodeRepair, waNotSold, waPirateOnly); // @addr $87F348
   WeaponDamageFlagNames: array[0..20] of WideString = (
@@ -1422,7 +1427,7 @@ var
   RadarLevelRanges: array[1..8] of Word; // @addr $88B42C Loaded from equipment configuration.
   CargoHookLevelStats: TCargoHookLevelStatsTable; // @addr $88B43C
   HullFragilityByOwner: array[TWeaponDamageClass, TOwnerId] of Single; // @addr $88B4BC Damage class, then owner; loaded from mFragilityByOwner*.
-  HullFragilityByType: array[0..10] of Single; // @addr $88B51C Loaded from mFragilityByShipType.
+  HullFragilityByType: array[THullType] of Single; // @addr $88B51C Loaded from mFragilityByShipType.
   WeaponInfos: array[t_IndustrialLaser..t_Lirecron] of TWeaponInfo; // @addr 0x88B548
 var
   EquipmentInventionIndices: TEquipmentInventionIndexTable = (piHull, piFuelTanks, piEngine, piRadar, piScanner, piRepairRobot, piCargoHook, piMainTech); // @addr $87F57C
@@ -1812,13 +1817,13 @@ end;
 { @end $82EA40 }
 
 { @routine $82EBE8 SysToShipType }
-function SysToShipType(const Name: WideString): Byte;
-var Kind: Byte;
+function SysToShipType(const Name: WideString): TShipType;
+var Kind: TShipType;
 begin
-  for Kind := 0 to 13 do
+  for Kind := Low(TShipType) to High(TShipType) do
     if ShipTypeNames[Kind].Name = Name then begin Result := Kind; Exit; end;
   RaiseWideMessage('Error in SysToShipType');
-  Result := 0;
+  Result := stKling;
 end;
 { @end $82EBE8 }
 
@@ -1917,7 +1922,7 @@ end;
 { @end $82F100 }
 
 { @routine $82F1F4 ShipToHullType }
-function ShipToHullType(Ship: TObject): Byte;
+function ShipToHullType(Ship: TObject): THullType;
 begin
   Result := htRanger;
   if Ship is TRanger then Result := htRanger
@@ -2386,7 +2391,7 @@ end;
 
 { @routine $832C94 LoadEquipmentConfiguration }
 procedure LoadEquipmentConfiguration;
-var Level: Byte; Block: TBlockParEC; Values: WideString; DamageKind: TWeaponDamageClass; Owner: TOwnerId; HullKind: Byte;
+var Level: Byte; Block: TBlockParEC; Values: WideString; DamageKind: TWeaponDamageClass; Owner: TOwnerId; HullKind: THullType;
 begin
   Block := LanguageDataConfig.GetBlockByPath('Items.Hull');
   HullBaseSize := StrToInt(AnsiString(Block.GetParam('AverageSize')));
@@ -2405,7 +2410,7 @@ begin
   end;
   Values := Block.GetParam('mFragilityByShipType');
   for HullKind := Low(HullFragilityByType) to High(HullFragilityByType) do
-    HullFragilityByType[HullKind] := ExtractDecimalToSingleW(ExtractDelimitedPartW(Values, HullKind - Low(HullFragilityByType), ','));
+    HullFragilityByType[HullKind] := ExtractDecimalToSingleW(ExtractDelimitedPartW(Values, Ord(HullKind) - Ord(Low(HullFragilityByType)), ','));
   Block := LanguageDataConfig.GetBlockByPath('Items.FuelTanks');
   FuelTanksBaseSize := StrToInt(AnsiString(Block.GetParam('AverageSize')));
   Values := Block.GetParam('mCapacity');
@@ -2569,7 +2574,7 @@ var
   Kind, DamageKind: Byte;
   BonusKind: TEquipmentBonusKind;
   DamageClass: TWeaponDamageClass;
-  StationKind: Byte;
+  StationKind: TStationType;
   BlockIndices: array of Integer;
   SortKeys: array of Integer;
 
@@ -2767,9 +2772,9 @@ begin
       OfferStationTypes := [];
       OfferStationNames := ReplaceAllWideString(Value, ' ', '');
       OfferStationNames := '<' + ReplaceAllWideString(OfferStationNames, ',', '>,<') + '>';
-      if Value = 'Any' then OfferStationTypes := [Ord(rstRangerCenter)..Ord(rstDominion)]
+      if Value = 'Any' then OfferStationTypes := [rstRangerCenter..rstDominion]
       else if Value <> '' then
-        for StationKind := Ord(rstRangerCenter) to Ord(rstDominion) do
+        for StationKind := rstRangerCenter to rstDominion do
           if Pos(ShipTypeNames[StationKind].Name, Value) > 0 then Include(OfferStationTypes, StationKind);
       OnPlanets := ExtractDigitsToIntW(ReadMicroModuleParam('OnPlanets')) <> 0;
       Value := ReadMicroModuleParam('WeaponMods');

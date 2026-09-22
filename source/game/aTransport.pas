@@ -142,9 +142,9 @@ begin
     if Rank > 3 then Rank := 3;
     AddRankPoints(NextRandomIntRange(0, CoalitionRankPointThresholds[Rank] div 2, RandomState));
     if not Galaxy.IsZeroStartingExperienceEnabled then begin
-      GainExperience(Round(RemapClamped(Ord(Rank), 0, 3, TotalSkillTrainingCost div 10, TotalSkillTrainingCost div 4)), 0);
+      GainExperience(Round(RemapClamped(Ord(Rank), 0, 3, TotalSkillTrainingCost div 10, TotalSkillTrainingCost div 4)), esUnscaled);
       GainExperience(Round(RemapClamped(Galaxy.TechLevel, 3, 8, TotalSkillTrainingCost div 20,
-        NextRandomIntRange(TotalSkillTrainingCost div 20, TotalSkillTrainingCost div 3, RandomState))), 0);
+        NextRandomIntRange(TotalSkillTrainingCost div 20, TotalSkillTrainingCost div 3, RandomState))), esUnscaled);
     end;
   end;
   ChameleonActive := False;
@@ -201,8 +201,8 @@ begin
   inherited NextDay;
   try
     if TradeExperience > 0 then begin
-      if IsHealthEffectActive(22) then GainExperience(Round(TradeExperience * 1.5), 4)
-      else GainExperience(TradeExperience, 4);
+      if IsHealthEffectActive(22) then GainExperience(Round(TradeExperience * 1.5), esTraderCareer)
+      else GainExperience(TradeExperience, esTraderCareer);
       TradeExperience := 0;
     end;
     if (ScriptShip <> nil) and HasScriptControl then begin
@@ -495,16 +495,16 @@ procedure TTransport.ProcessUnseenProgression;
 var Award: Byte;
 begin
   if (DaysSincePlayerSeen >= 60) and (GetPlayer <> nil) then begin
-    if NextRandomUnitFloat(RandomState) < 0.06 then GainExperience(SeededRandomIntRange(100, 500, Seed + Cardinal(Galaxy.CurrentTurn div 59) + 789), 0);
+    if NextRandomUnitFloat(RandomState) < 0.06 then GainExperience(SeededRandomIntRange(100, 500, Seed + Cardinal(Galaxy.CurrentTurn div 59) + 789), esUnscaled);
     if (GetPlayer.Rank > Rank) and (NextRandomUnitFloat(RandomState) < 0.03) and (Rank < 4) then begin
       AddRankPoints(NextRandomIntRange(10, 20, RandomState));
       TryPromoteRank;
     end;
     if (NextRandomUnitFloat(RandomState) < 0.01) and ((AwardIds = nil) or (2 * Rank > AwardIds.Count)) then begin
       case TransportType of
-        ttTransport: Award := SelectAward(RaceToOwner(CurrentPlanet.RaceId), [atAccomplishment, atCowardice], [stKling..Ord(rstCustomStation)]);
-        ttLiner: Award := SelectAward(RaceToOwner(CurrentPlanet.RaceId), [atAccomplishment], [stKling..Ord(rstCustomStation)]);
-        ttDiplomat: Award := SelectAward(RaceToOwner(CurrentPlanet.RaceId), [atAccomplishment..atPerfidy], [stKling..Ord(rstCustomStation)]);
+        ttTransport: Award := SelectAward(RaceToOwner(CurrentPlanet.RaceId), [atAccomplishment, atCowardice], [stKling..rstCustomStation]);
+        ttLiner: Award := SelectAward(RaceToOwner(CurrentPlanet.RaceId), [atAccomplishment], [stKling..rstCustomStation]);
+        ttDiplomat: Award := SelectAward(RaceToOwner(CurrentPlanet.RaceId), [atAccomplishment..atPerfidy], [stKling..rstCustomStation]);
       else Award := AwardNotFound;
       end;
       if Award <> AwardNotFound then AddAward(Award);
@@ -526,8 +526,8 @@ begin
     // Native's reversed clamp always produces 20, but still performs the calculation.
     Value := Min(20, Max(Value, 70));
     Result := Value;
-  end else if Ship.TypeId = Byte(rstDominion) then Result := 40
-  else if Ship.TypeId = Byte(rstPirateBase) then Result := 50
+  end else if Ship.TypeId = rstDominion then Result := 40
+  else if Ship.TypeId = rstPirateBase then Result := 50
   else if Ship.TypeId in [stKling, stTranclucator] then Result := 50 else Result := 100;
 end;
 { @end $720764 }
@@ -808,7 +808,7 @@ var NextDemandTurn: Integer; LicenseFactor: Single;
       LastPlayerExtortionTurn := Galaxy.CurrentTurn;
       Event := AddGalaxyEvent('PlayerExtortsMoney');
       Event.AddData(DemandedAmount);
-      Event.AddData(TypeId);
+      Event.AddData(Ord(TypeId));
       Event.AddData(CurrentStar.Id);
       Event.AddData(Id);
       Event.AddData(Ord(OwnerId));
@@ -875,7 +875,7 @@ var Forced: Boolean; NextDemandTurn: Integer;
       LastPlayerExtortionTurn := Galaxy.CurrentTurn;
       Event := AddGalaxyEvent('PlayerExtortsGoods');
       Event.AddData(TotalValue);
-      Event.AddData(TypeId);
+      Event.AddData(Ord(TypeId));
       Event.AddData(CurrentStar.Id);
       Event.AddData(Id);
       Event.AddData(Ord(OwnerId));

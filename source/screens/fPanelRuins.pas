@@ -110,7 +110,7 @@ begin
   if (GetPlayer.PendingDockDialogue > 1) and (RuinsTalkScreen = Screen) then Exit;
   if (GetPlayer.RuinsMode > 0) and (RuinsTalkScreen = Screen) then Exit;
   if HasPendingScriptRequests then Exit;
-  if (GetPlayer.DockedTo.TypeId = Byte(rstBusinessCenter)) and (GetPlayer.DebtDefaultCount > 1) then
+  if (GetPlayer.DockedTo.TypeId = rstBusinessCenter) and (GetPlayer.DebtDefaultCount > 1) then
     ShowMessageBoxGI(Screen, LocalizedColorText('FormRuins.BK.DebtNoAccess'), mbgCancel or mbgWarning)
   else
   begin
@@ -128,7 +128,7 @@ begin
   if (GetPlayer.PendingDockDialogue > 1) and (RuinsTalkScreen = Screen) then Exit;
   if (GetPlayer.RuinsMode > 0) and (RuinsTalkScreen = Screen) then Exit;
   if HasPendingScriptRequests then Exit;
-  if (GetPlayer.DockedTo.TypeId = Byte(rstBusinessCenter)) and (GetPlayer.DebtDefaultCount > 1) then
+  if (GetPlayer.DockedTo.TypeId = rstBusinessCenter) and (GetPlayer.DebtDefaultCount > 1) then
     ShowMessageBoxGI(Screen, LocalizedColorText('FormRuins.BK.DebtNoAccess'), mbgCancel or mbgWarning)
   else
   begin
@@ -146,7 +146,7 @@ begin
   if (GetPlayer.PendingDockDialogue > 1) and (RuinsTalkScreen = Screen) then Exit;
   if (GetPlayer.RuinsMode > 0) and (RuinsTalkScreen = Screen) then Exit;
   if HasPendingScriptRequests then Exit;
-  if (GetPlayer.DockedTo.TypeId = Byte(rstBusinessCenter)) and (GetPlayer.DebtDefaultCount > 1) then
+  if (GetPlayer.DockedTo.TypeId = rstBusinessCenter) and (GetPlayer.DebtDefaultCount > 1) then
     ShowMessageBoxGI(Screen, LocalizedColorText('FormRuins.BK.DebtNoAccess'), mbgCancel or mbgWarning)
   else
   begin
