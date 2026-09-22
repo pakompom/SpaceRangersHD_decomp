@@ -6027,9 +6027,10 @@ end;
 
 { @routine $75F034 CalculateFuelCost }
 function CalculateFuelCost(Amount: Integer; OwnerId: TOwnerId): Single;
-var Value: Single;
+var Value: Single; BaseCost: Integer;
 begin
-  Value := Amount + 0;
+  BaseCost := Amount;
+  Value := BaseCost;
   Value := Value * RemapClamped(Galaxy.CurrentTurn, 1000, 15000, 1, 10);
   if OwnerId <> oiUninhabited then Value := Value * OwnerInfo[OwnerId].FuelPriceFactor;
   Value := Value * GalaxyDifficultyTuning[Galaxy.DifficultyLevels[7]].GoodsEventDurationFactor;

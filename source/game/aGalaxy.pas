@@ -8797,8 +8797,10 @@ end;
 
 { @routine $7BD8D0 TGalaxy_GetAverageGoodsQuantity }
 function TGalaxy.GetAverageGoodsQuantity(GoodsType: Byte): Integer;
+var Stock: Integer;
 begin
-  Result := Round(GoodsMarket[GoodsType].BaseStock * 1);
+  Stock := GoodsMarket[GoodsType].BaseStock;
+  Result := Round(Stock);
 end;
 { @end $7BD8D0 }
 
