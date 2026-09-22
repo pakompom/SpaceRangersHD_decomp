@@ -166,8 +166,8 @@ var
   Event: TGalaxyEvent;
 begin
   Text := LocalizedColorText('Cheat.Info');
-  ReplaceTextToken(Text, '<Name>', Name, '<color=255,240,100>');
-  ReplaceTextToken(Text, '<CheatPoints>', WideString(IntToStr(Points)), '<color=255,240,100>');
+  ReplaceTextToken(Text, '<Name>', Name, TextHighlightColorTag);
+  ReplaceTextToken(Text, '<CheatPoints>', WideString(IntToStr(Points)), TextHighlightColorTag);
   if Galaxy <> nil then
   begin
     AddCheatPoints(Points);
@@ -177,7 +177,7 @@ begin
   end;
   Text := Text + #13#10 + LocalizedColorText('Cheat.Ok');
   // Native code reads the total without a nil-galaxy guard.
-  ReplaceTextToken(Text, '<AllPoints>', WideString(IntToStr(Galaxy.GetCheatPoints)), '<color=255,240,100>');
+  ReplaceTextToken(Text, '<AllPoints>', WideString(IntToStr(Galaxy.GetCheatPoints)), TextHighlightColorTag);
   if ShipScreen.IsOpen then Parent := ShipScreen
   else if RangerRatingScreen.IsOpen then Parent := RangerRatingScreen
   else Parent := TObject(RegisteredScreens[CurrentScreenId]) as TMessageLoopGI;

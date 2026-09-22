@@ -213,13 +213,13 @@ begin
   if Cost <= AvailableMoney then
   begin
     AcceptedCost := Cost;
-    Text := FormatText1(LanguageDataConfig.GetParamByPathOrMarker('FormRuins.PB.ChangeNationality.Confirm'),'<color=255,240,100>','<Money>',IntToStr(Cost));
+    Text := FormatText1(LanguageDataConfig.GetParamByPathOrMarker('FormRuins.PB.ChangeNationality.Confirm'),TextHighlightColorTag,'<Money>',IntToStr(Cost));
     if ShowMessageBoxGI(Self,Text,mbgOK or mbgCancel or mbgQuestion) = mbgResultOK then RequestClose(1);
   end
   else
   begin
     AcceptedCost := 0;
-    Text := FormatText1(LanguageDataConfig.GetParamByPathOrMarker('FormRuins.PB.ChangeNationality.NoMoney'),'<color=255,240,100>','<Money>',IntToStr(Cost));
+    Text := FormatText1(LanguageDataConfig.GetParamByPathOrMarker('FormRuins.PB.ChangeNationality.NoMoney'),TextHighlightColorTag,'<Money>',IntToStr(Cost));
     ShowMessageBoxGI(Self,Text,mbgOK or mbgWarning);
   end;
 end;

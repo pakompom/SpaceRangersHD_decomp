@@ -1943,7 +1943,7 @@ begin
     begin
       AddOrUpdatePlayerBubble(pmShipNegative, Galaxy.CurrentTurn,
         FormatText1(LocalizedText('Items.FuelTanks.NoFuelJump'),
-          '<color=255,240,100>', '<Star>', (OrderTarget as TStar).Name), '').Targets[0].ShipId := Id;
+          TextHighlightColorTag, '<Star>', (OrderTarget as TStar).Name), '').Targets[0].ShipId := Id;
       OrderMove(OrderDestination, False);
     end;
 end;
@@ -2105,7 +2105,7 @@ begin
                 if Order = soJump then
                   if GetFuelLimitedJumpRange < System.Round(PointDistance((OrderTarget as TStar).Position, CurrentStar.Position)) then
                   begin
-                    AddOrUpdatePlayerBubble(pmShipNegative, aGalaxy.Galaxy.CurrentTurn, FormatText1(LocalizedText('Items.Engine.NoPowerJump'), '<color=255,240,100>', '<Star>', (OrderTarget as TStar).Name), '').Targets[0].ShipId := Id;
+                    AddOrUpdatePlayerBubble(pmShipNegative, aGalaxy.Galaxy.CurrentTurn, FormatText1(LocalizedText('Items.Engine.NoPowerJump'), TextHighlightColorTag, '<Star>', (OrderTarget as TStar).Name), '').Targets[0].ShipId := Id;
                     OrderMove(OrderDestination, False);
                   end;
           end;
@@ -2261,33 +2261,33 @@ begin
   case Order of
     soLand:
       if OrderTarget is TPlanet then
-        Result := Result + ' ' + ReplaceColoredToken(LookupLocalizedTextByKey('ShipInfo.Order.LandingToPlanet'), '<Planet>', (OrderTarget as TPlanet).Name, '<color=255,240,100>')
+        Result := Result + ' ' + ReplaceColoredToken(LookupLocalizedTextByKey('ShipInfo.Order.LandingToPlanet'), '<Planet>', (OrderTarget as TPlanet).Name, TextHighlightColorTag)
       else if OrderTarget is TShip then
-        Result := Result + ' ' + ReplaceColoredToken(LookupLocalizedTextByKey('ShipInfo.Order.LandingToShip'), '<Ship>', (OrderTarget as TShip).Name, '<color=255,240,100>');
+        Result := Result + ' ' + ReplaceColoredToken(LookupLocalizedTextByKey('ShipInfo.Order.LandingToShip'), '<Ship>', (OrderTarget as TShip).Name, TextHighlightColorTag);
     soJump:
-      Result := Result + ' ' + ReplaceColoredToken(LookupLocalizedTextByKey('ShipInfo.Order.GoToStar'), '<Star>', (OrderTarget as TStar).Name, '<color=255,240,100>');
+      Result := Result + ' ' + ReplaceColoredToken(LookupLocalizedTextByKey('ShipInfo.Order.GoToStar'), '<Star>', (OrderTarget as TStar).Name, TextHighlightColorTag);
     soFollowShip:
       if (OrderTarget as TShip).CurrentPlanet = nil then
       begin
         if EnemyShip <> OrderTarget then
-          Result := Result + ' ' + ReplaceColoredToken(LookupLocalizedTextByKey('ShipInfo.Order.GoToShip'), '<Ship>', (OrderTarget as TShip).GetName, '<color=255,240,100>')
+          Result := Result + ' ' + ReplaceColoredToken(LookupLocalizedTextByKey('ShipInfo.Order.GoToShip'), '<Ship>', (OrderTarget as TShip).GetName, TextHighlightColorTag)
         else
-          Result := Result + ' ' + ReplaceColoredToken(LookupLocalizedTextByKey('ShipInfo.Order.GoToShipBad'), '<Ship>', (OrderTarget as TShip).GetName, '<color=255,240,100>');
+          Result := Result + ' ' + ReplaceColoredToken(LookupLocalizedTextByKey('ShipInfo.Order.GoToShipBad'), '<Ship>', (OrderTarget as TShip).GetName, TextHighlightColorTag);
       end
       else Result := Result + ' ' + LookupLocalizedTextByKey('ShipInfo.Order.None');
     soMove:
       Result := Result + ' ' + LookupLocalizedTextByKey('ShipInfo.Order.Move');
   end;
-  Result := Result + #13#10 + FormatText1(LookupLocalizedTextByKey('ShipInfo.SpaceSize'), '<color=255,240,100>', '<Size>', IntToStr(GetHull.Weight));
+  Result := Result + #13#10 + FormatText1(LookupLocalizedTextByKey('ShipInfo.SpaceSize'), TextHighlightColorTag, '<Size>', IntToStr(GetHull.Weight));
   if GetHull.Weight > GetHull.HullPoints then
-    Result := Result + ' ' + FormatText1(LookupLocalizedTextByKey('ShipInfo.SpaceDamageProc'), '<color=255,240,100>', '<Proc>', IntToStr(Trunc(100 - GetHull.HullPoints / (GetHull.Weight * 0.01))));
-  Result := Result + #13#10 + FormatText1(LookupLocalizedTextByKey('ShipInfo.SpaceSpeed'), '<color=255,240,100>', '<Speed>', IntToStr(CalculateSpeed));
-  Result := Result + #13#10 + FormatText1(LookupLocalizedTextByKey('ShipInfo.SpaceDefField'), '<color=255,240,100>', '<Proc>', IntToStr(GetDefensePercent));
+    Result := Result + ' ' + FormatText1(LookupLocalizedTextByKey('ShipInfo.SpaceDamageProc'), TextHighlightColorTag, '<Proc>', IntToStr(Trunc(100 - GetHull.HullPoints / (GetHull.Weight * 0.01))));
+  Result := Result + #13#10 + FormatText1(LookupLocalizedTextByKey('ShipInfo.SpaceSpeed'), TextHighlightColorTag, '<Speed>', IntToStr(CalculateSpeed));
+  Result := Result + #13#10 + FormatText1(LookupLocalizedTextByKey('ShipInfo.SpaceDefField'), TextHighlightColorTag, '<Proc>', IntToStr(GetDefensePercent));
   if GetPlayer <> Self then
   begin
-    Result := Result + #13#10 + FormatText1(LookupLocalizedTextByKey('ShipInfo.SpaceRelation'), '<color=255,240,100>', '<Type>', LowerCaseWideString(GetRelationLevelTextToShip(GetPlayer)));
+    Result := Result + #13#10 + FormatText1(LookupLocalizedTextByKey('ShipInfo.SpaceRelation'), TextHighlightColorTag, '<Type>', LowerCaseWideString(GetRelationLevelTextToShip(GetPlayer)));
     if GetPlayer.CountActiveArtefacts(t_ArtefactAnalyzer) > 0 then
-      Result := Result + #13#10 + FormatText1(LookupLocalizedTextByKey('Artefacts.Analyzer.TextToRadar'), '<color=255,240,100>', '<ChanceToWin>', IntToStr(GetPlayer.GetWinChancePercent(Self)));
+      Result := Result + #13#10 + FormatText1(LookupLocalizedTextByKey('Artefacts.Analyzer.TextToRadar'), TextHighlightColorTag, '<ChanceToWin>', IntToStr(GetPlayer.GetWinChancePercent(Self)));
   end;
 end;
 { @end $74F3B4 }
@@ -2407,7 +2407,7 @@ function TShip.LookupVisibleTalkText(const Path: WideString; OtherShip: TShip): 
 begin
   if (GetPlayer <> nil) and (GetPlayer.CurrentStar = CurrentStar) then begin
     Result := LookupTalkText(Path);
-    ReplaceTextToken(Result, '<TalkShip>', OtherShip.GetName, '<color=255,240,100>');
+    ReplaceTextToken(Result, '<TalkShip>', OtherShip.GetName, TextHighlightColorTag);
   end else Result := '';
 end;
 { @end $750178 }
@@ -3401,10 +3401,10 @@ begin
   else if Self is TTranclucator then Text := PickLocalizedTextVariant('GalaxyNews.DeadShip.Tranclucator', Seed + Galaxy.CurrentTurn div 11)
   else Exit;
   if Self is TTranclucator then GetPlayer.RefreshStorageBubbles;
-  ReplaceTextToken(Text, '<Star>', CurrentStar.Name, '<color=255,240,100>');
-  ReplaceTextToken(Text, '<Date>', Galaxy.FormatTurnDate(-1), '<color=255,240,100>');
-  ReplaceTextToken(Text, '<Name>', GetName, '<color=255,240,100>');
-  ReplaceTextToken(Text, '<FullName>', GetFullName(' '), '<color=255,240,100>');
+  ReplaceTextToken(Text, '<Star>', CurrentStar.Name, TextHighlightColorTag);
+  ReplaceTextToken(Text, '<Date>', Galaxy.FormatTurnDate(-1), TextHighlightColorTag);
+  ReplaceTextToken(Text, '<Name>', GetName, TextHighlightColorTag);
+  ReplaceTextToken(Text, '<FullName>', GetFullName(' '), TextHighlightColorTag);
   AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn, Text, '');
 end;
 { @end $7541D8 }
@@ -4942,7 +4942,7 @@ begin
       MinimumDamage := Round(MinimumDamage * DifficultyFactor);
       MaximumDamage := Round(MaximumDamage * DifficultyFactor);
     end;
-    Result := WideString(IntToStr(MinimumDamage)) + WrapTextInColor('-', '<color=127,127,127>') + WideString(IntToStr(MaximumDamage));
+    Result := WideString(IntToStr(MinimumDamage)) + WrapTextInColor('-', GrayColorTag) + WideString(IntToStr(MaximumDamage));
     Result := WideString('(' + IntToStr(GetEffectiveSkillLevel(psAccuracy)) + ') ') + Result;
   end;
 end;
@@ -10121,7 +10121,7 @@ begin
     if GetFuelTanks.Fuel < Round(PointDistance((OrderTarget as TStar).Position, CurrentStar.Position)) then
     begin
       AddOrUpdatePlayerBubble(pmShipNegative, Galaxy.CurrentTurn,
-        FormatText1(LocalizedText('Items.FuelTanks.NoFuelJump'), '<color=255,240,100>', '<Star>', (OrderTarget as TStar).Name), '').Targets[0].ShipId := Id;
+        FormatText1(LocalizedText('Items.FuelTanks.NoFuelJump'), TextHighlightColorTag, '<Star>', (OrderTarget as TStar).Name), '').Targets[0].ShipId := Id;
       OrderMove(OrderDestination, False);
     end;
   if RecordFilm and ((Order <> soNone) or not IsOnPlanet) and ((Order <> soNone) or not IsDockedToShip) then
@@ -12331,7 +12331,7 @@ begin
       Item.BrokenFlag := 0;
       if GetPlayer = Self then
         AddOrUpdatePlayerBubble(pmShipPositive, Galaxy.CurrentTurn, FormatText1(LocalizedText('Artefacts.ArtNano.RepairItem'),
-          '<color=255,240,100>', '<Name>', Item.GetDisplayName), '').Targets[0].ShipId := Id;
+          TextHighlightColorTag, '<Name>', Item.GetDisplayName), '').Targets[0].ShipId := Id;
     end;
   end;
 end;
@@ -12377,7 +12377,7 @@ begin
   until I > 9;
   if Count = 0 then
   begin
-    Result := 'String: ' + WrapTextInColor(Key, '<color=255,240,100>') + ' is unavailable';
+    Result := 'String: ' + WrapTextInColor(Key, TextHighlightColorTag) + ' is unavailable';
     Exit;
   end;
 
@@ -12387,13 +12387,13 @@ begin
     Count := SeededRandomIntRange(0, Count - 1, (Galaxy.CurrentTurn + Integer(Seed)) div 10);
     Result := Variants[Count];
   end;
-  if HomePlanet <> nil then Result := ReplaceColoredToken(Result, '<HomePlanet>', HomePlanet.Name, '<color=255,240,100>');
-  Result := ReplaceColoredToken(Result, '<Ship>', GetName, '<color=255,240,100>');
-  Result := ReplaceColoredToken(Result, '<FullShip>', GetFullName(' '), '<color=255,240,100>');
-  Result := ReplaceAllWideString(Result, '<clr>', '<color=255,240,100>');
-  Result := ReplaceAllWideString(Result, '<clrEnd>', '</color>');
+  if HomePlanet <> nil then Result := ReplaceColoredToken(Result, '<HomePlanet>', HomePlanet.Name, TextHighlightColorTag);
+  Result := ReplaceColoredToken(Result, '<Ship>', GetName, TextHighlightColorTag);
+  Result := ReplaceColoredToken(Result, '<FullShip>', GetFullName(' '), TextHighlightColorTag);
+  Result := ReplaceAllWideString(Result, '<clr>', TextHighlightColorTag);
+  Result := ReplaceAllWideString(Result, '<clrEnd>', EndColorTag);
   if (GetPlayer = Self) and (TalkShip <> nil) then
-    Result := ReplaceColoredToken(Result, '<TalkShip>', TalkShip.GetName, '<color=255,240,100>');
+    Result := ReplaceColoredToken(Result, '<TalkShip>', TalkShip.GetName, TextHighlightColorTag);
 end;
 { @end $776C98 }
 
@@ -12447,8 +12447,8 @@ begin
   RadarSquared := Sqr(GetPlayer.GetRadarRange);
   if not ((RadarSquared >= PointDistanceSquared(Position, GetPlayer.Position)) or
     (RadarSquared >= PointDistanceSquared(OtherShip.Position, GetPlayer.Position))) then Exit;
-  Header := '<color=255,240,100>' + GetFullName(' ') + '</color>' + LookupTalkText('Talk.To') + '<color=255,240,100>' + OtherShip.GetFullName(' ') + '</color>';
-  Request := '- ' + ReplaceColoredToken(LookupTalkText('Talk.Money.Send'), '<Money>', IntToStr(Amount), '<color=255,240,100>');
+  Header := TextHighlightColorTag + GetFullName(' ') + EndColorTag + LookupTalkText('Talk.To') + TextHighlightColorTag + OtherShip.GetFullName(' ') + EndColorTag;
+  Request := '- ' + ReplaceColoredToken(LookupTalkText('Talk.Money.Send'), '<Money>', IntToStr(Amount), TextHighlightColorTag);
   Response := '- ' + Response;
   with AddOrUpdatePlayerBubble(pmRadio, Galaxy.CurrentTurn, Header + #13#10 + Request + #13#10 + Response, '') do begin
     Targets[0].ShipId := Self.Id;
@@ -12465,7 +12465,7 @@ begin
   RadarSquared := Sqr(GetPlayer.GetRadarRange);
   if not ((RadarSquared >= PointDistanceSquared(Position, GetPlayer.Position)) or
     (RadarSquared >= PointDistanceSquared(OtherShip.Position, GetPlayer.Position))) then Exit;
-  Header := '<color=255,240,100>' + GetFullName(' ') + '</color>' + LookupTalkText('Talk.To') + '<color=255,240,100>' + OtherShip.GetFullName(' ') + '</color>';
+  Header := TextHighlightColorTag + GetFullName(' ') + EndColorTag + LookupTalkText('Talk.To') + TextHighlightColorTag + OtherShip.GetFullName(' ') + EndColorTag;
   Request := '- ' + WrapTextInColor(LookupTalkText('Talk.Goods.Send'), '');
   Response := '- ' + Response;
   with AddOrUpdatePlayerBubble(pmRadio, Galaxy.CurrentTurn, Header + #13#10 + Request + #13#10 + Response, '') do begin
@@ -12486,10 +12486,10 @@ begin
       if ((GetPlayer <> OtherShip) or not GetPlayer.ChameleonActive or not IsPlayerChameleonEffectiveAgainstSelf) and
         not NoTalk and not OtherShip.NoTalk then begin
         Request := LookupVisibleTalkText('Talk.DropGoodsInFear.Drop', OtherShip);
-        ReplaceTextToken(Request, '<ShipBad>', OtherShip.GetName, '<color=255,240,100>');
-        ReplaceTextToken(Request, '<FullShipBad>', OtherShip.GetFullName(' '), '<color=255,240,100>');
-        ReplaceTextToken(Request, '<Star>', CurrentStar.Name, '<color=255,240,100>');
-        Header := '<color=255,240,100>' + GetFullName(' ') + '</color>' + ':';
+        ReplaceTextToken(Request, '<ShipBad>', OtherShip.GetName, TextHighlightColorTag);
+        ReplaceTextToken(Request, '<FullShipBad>', OtherShip.GetFullName(' '), TextHighlightColorTag);
+        ReplaceTextToken(Request, '<Star>', CurrentStar.Name, TextHighlightColorTag);
+        Header := TextHighlightColorTag + GetFullName(' ') + EndColorTag + ':';
         Request := '- ' + Request;
         with AddOrUpdatePlayerBubble(pmRadio, Galaxy.CurrentTurn, Header + #13#10 + Request, '') do begin
           Targets[0].ShipId := Self.Id;
@@ -12510,8 +12510,8 @@ begin
   if not ((RadarSquared >= PointDistanceSquared(Position, GetPlayer.Position)) or
     (RadarSquared >= PointDistanceSquared(OtherShip.Position, GetPlayer.Position))) then Exit;
   if NoTalk or OtherShip.NoTalk then Exit;
-  Header := '<color=255,240,100>' + GetFullName(' ') + '</color>' + LookupTalkText('Talk.To') + '<color=255,240,100>' + OtherShip.GetFullName(' ') + '</color>';
-  Request := '- ' + ReplaceColoredToken(LookupTalkText('Talk.Truce.' + GetTypeNameKey + 'Send'), '<Money>', IntToStr(Amount), '<color=255,240,100>');
+  Header := TextHighlightColorTag + GetFullName(' ') + EndColorTag + LookupTalkText('Talk.To') + TextHighlightColorTag + OtherShip.GetFullName(' ') + EndColorTag;
+  Request := '- ' + ReplaceColoredToken(LookupTalkText('Talk.Truce.' + GetTypeNameKey + 'Send'), '<Money>', IntToStr(Amount), TextHighlightColorTag);
   Response := '- ' + Response;
   with AddOrUpdatePlayerBubble(pmRadio, Galaxy.CurrentTurn, Header + #13#10 + Request + #13#10 + Response, '') do begin
     Targets[0].ShipId := Self.Id;
@@ -12529,8 +12529,8 @@ begin
   if not ((RadarSquared >= PointDistanceSquared(Position, GetPlayer.Position)) or
     (RadarSquared >= PointDistanceSquared(OtherShip.Position, GetPlayer.Position))) then Exit;
   if NoTalk or OtherShip.NoTalk then Exit;
-  Header := '<color=255,240,100>' + GetFullName(' ') + '</color>' + LookupTalkText('Talk.To') + '<color=255,240,100>' + OtherShip.GetFullName(' ') + '</color>';
-  Request := '- ' + ReplaceColoredToken(LookupTalkText('Talk.Attack.' + GetTypeNameKey + 'Send'), '<Target>', Target.GetFullName(' '), '<color=255,240,100>');
+  Header := TextHighlightColorTag + GetFullName(' ') + EndColorTag + LookupTalkText('Talk.To') + TextHighlightColorTag + OtherShip.GetFullName(' ') + EndColorTag;
+  Request := '- ' + ReplaceColoredToken(LookupTalkText('Talk.Attack.' + GetTypeNameKey + 'Send'), '<Target>', Target.GetFullName(' '), TextHighlightColorTag);
   Response := '- ' + Response;
   with AddOrUpdatePlayerBubble(pmRadio, Galaxy.CurrentTurn, Header + #13#10 + Request + #13#10 + Response, '') do begin
     Targets[0].ShipId := Self.Id;
@@ -12549,8 +12549,8 @@ begin
   if not ((RadarSquared >= PointDistanceSquared(Position, GetPlayer.Position)) or
     (RadarSquared >= PointDistanceSquared(OtherShip.Position, GetPlayer.Position))) then Exit;
   if NoTalk or OtherShip.NoTalk then Exit;
-  Header := '<color=255,240,100>' + GetFullName(' ') + '</color>' + LookupTalkText('Talk.To') + '<color=255,240,100>' + OtherShip.GetFullName(' ') + '</color>';
-  Request := '- ' + FormatText1(LookupTalkText('Talk.Partner.Send'), '<color=255,240,100>', '<Money>', IntToStr(Amount));
+  Header := TextHighlightColorTag + GetFullName(' ') + EndColorTag + LookupTalkText('Talk.To') + TextHighlightColorTag + OtherShip.GetFullName(' ') + EndColorTag;
+  Request := '- ' + FormatText1(LookupTalkText('Talk.Partner.Send'), TextHighlightColorTag, '<Money>', IntToStr(Amount));
   Response := '- ' + Response;
   with AddOrUpdatePlayerBubble(pmRadio, Galaxy.CurrentTurn, Header + #13#10 + Request + #13#10 + Response, '') do begin
     Targets[0].ShipId := Self.Id;
@@ -12572,7 +12572,7 @@ begin
       if (RadarSquared >= PointDistanceSquared(Position, GetPlayer.Position)) or
         (RadarSquared >= PointDistanceSquared(Leader.Position, GetPlayer.Position)) then
         if not NoTalk and (not Leader.NoTalk or (GetPlayer = Leader)) then begin
-          Header := '<color=255,240,100>' + GetFullName(' ') + '</color>' + LookupTalkText('Talk.To') + '<color=255,240,100>' + Leader.GetFullName(' ') + '</color>';
+          Header := TextHighlightColorTag + GetFullName(' ') + EndColorTag + LookupTalkText('Talk.To') + TextHighlightColorTag + Leader.GetFullName(' ') + EndColorTag;
           Request := #13#10'- ' + LookupTalkText('Talk.Partner.MateBreak');
           Response := #13#10'- ' + LookupTalkText('Talk.Partner.AnswerLiderBreak');
           if Leader.NoTalk then Response := '';
@@ -12601,7 +12601,7 @@ begin
       if (RadarSquared >= PointDistanceSquared(Position, GetPlayer.Position)) or
         (RadarSquared >= PointDistanceSquared(Leader.Position, GetPlayer.Position)) then
         if not NoTalk and (not Leader.NoTalk or (GetPlayer = Leader)) then begin
-          Header := '<color=255,240,100>' + GetFullName(' ') + '</color>' + LookupTalkText('Talk.To') + '<color=255,240,100>' + Leader.GetFullName(' ') + '</color>';
+          Header := TextHighlightColorTag + GetFullName(' ') + EndColorTag + LookupTalkText('Talk.To') + TextHighlightColorTag + Leader.GetFullName(' ') + EndColorTag;
           if (GetPlayer <> Leader) or (GetPlayer.GetEffectiveSkillLevel(psLeadership) > GetPlayer.CountWingmen) then
             Request := #13#10'- ' + LookupTalkText('Talk.Partner.MateTheEnd')
           else Request := #13#10'- ' + LookupTalkText('Talk.Partner.MateTheEndLowLeadership');
@@ -12630,7 +12630,7 @@ begin
       if (RadarSquared >= PointDistanceSquared(Position, GetPlayer.Position)) or
         (RadarSquared >= PointDistanceSquared(Leader.Position, GetPlayer.Position)) then
         if not NoTalk and (not Leader.NoTalk or (GetPlayer = Leader)) then begin
-          Header := '<color=255,240,100>' + GetFullName(' ') + '</color>' + LookupTalkText('Talk.To') + '<color=255,240,100>' + Leader.GetFullName(' ') + '</color>';
+          Header := TextHighlightColorTag + GetFullName(' ') + EndColorTag + LookupTalkText('Talk.To') + TextHighlightColorTag + Leader.GetFullName(' ') + EndColorTag;
           Request := #13#10'- ' + LookupTalkText('Talk.Partner.MateRiot');
           Response := #13#10'- ' + LookupTalkText('Talk.Partner.AnswerLiderRiot');
           if Leader.NoTalk then Response := '';
@@ -12651,7 +12651,7 @@ begin
   begin
     TurnsSinceLastShipMessage := 0;
     with AddOrUpdatePlayerBubble(pmRadio, Galaxy.CurrentTurn,
-      WrapTextInColor(GetFullName(' '), '<color=255,240,100>') + #13#10 + ' ' + #13#10 + Text, '') do
+      WrapTextInColor(GetFullName(' '), TextHighlightColorTag) + #13#10 + ' ' + #13#10 + Text, '') do
     begin
       Targets[0].ShipId := Id;
       Targets[1].ShipId := GetPlayer.Id;
@@ -12673,7 +12673,7 @@ begin
       if (RadarSquared >= PointDistanceSquared(Position, GetPlayer.Position)) or
         (RadarSquared >= PointDistanceSquared(Leader.Position, GetPlayer.Position)) then
         if not NoTalk and (not Leader.NoTalk or (GetPlayer = Leader)) then begin
-          Header := '<color=255,240,100>' + GetFullName(' ') + '</color>' + LookupTalkText('Talk.To') + '<color=255,240,100>' + Leader.GetFullName(' ') + '</color>';
+          Header := TextHighlightColorTag + GetFullName(' ') + EndColorTag + LookupTalkText('Talk.To') + TextHighlightColorTag + Leader.GetFullName(' ') + EndColorTag;
           Request := #13#10'- ' + LookupTalkText('Talk.Pirate.MateBreakRelation');
           Response := #13#10'- ' + LookupTalkText('Talk.Pirate.AnswerLiderBreak');
           if Leader.NoTalk then Response := '';
@@ -12700,7 +12700,7 @@ begin
       if (RadarSquared >= PointDistanceSquared(Position, GetPlayer.Position)) or
         (RadarSquared >= PointDistanceSquared(Leader.Position, GetPlayer.Position)) then
         if not NoTalk and (not Leader.NoTalk or (GetPlayer = Leader)) then begin
-          Header := '<color=255,240,100>' + GetFullName(' ') + '</color>' + LookupTalkText('Talk.To') + '<color=255,240,100>' + Leader.GetFullName(' ') + '</color>';
+          Header := TextHighlightColorTag + GetFullName(' ') + EndColorTag + LookupTalkText('Talk.To') + TextHighlightColorTag + Leader.GetFullName(' ') + EndColorTag;
           Request := #13#10'- ' + LookupTalkText('Talk.Pirate.MateBreakRating');
           Response := #13#10'- ' + LookupTalkText('Talk.Pirate.AnswerLiderBreak');
           if Leader.NoTalk then Response := '';
@@ -12729,7 +12729,7 @@ begin
       if (RadarSquared >= PointDistanceSquared(Position, GetPlayer.Position)) or
         (RadarSquared >= PointDistanceSquared(Leader.Position, GetPlayer.Position)) then
         if not NoTalk and (not Leader.NoTalk or (GetPlayer = Leader)) then begin
-          Header := '<color=255,240,100>' + GetFullName(' ') + '</color>' + LookupTalkText('Talk.To') + '<color=255,240,100>' + Leader.GetFullName(' ') + '</color>';
+          Header := TextHighlightColorTag + GetFullName(' ') + EndColorTag + LookupTalkText('Talk.To') + TextHighlightColorTag + Leader.GetFullName(' ') + EndColorTag;
           if (GetPlayer <> Leader) or (GetPlayer.GetEffectiveSkillLevel(psLeadership) > GetPlayer.CountWingmen) then
             Request := #13#10'- ' + LookupTalkText('Talk.Pirate.MateTheEnd')
           else Request := #13#10'- ' + LookupTalkText('Talk.Pirate.MateTheEndLowLeadership');
@@ -12758,7 +12758,7 @@ begin
       if (RadarSquared >= PointDistanceSquared(Position, GetPlayer.Position)) or
         (RadarSquared >= PointDistanceSquared(Leader.Position, GetPlayer.Position)) then
         if not NoTalk and (not Leader.NoTalk or (GetPlayer = Leader)) then begin
-          Header := '<color=255,240,100>' + GetFullName(' ') + '</color>' + LookupTalkText('Talk.To') + '<color=255,240,100>' + Leader.GetFullName(' ') + '</color>';
+          Header := TextHighlightColorTag + GetFullName(' ') + EndColorTag + LookupTalkText('Talk.To') + TextHighlightColorTag + Leader.GetFullName(' ') + EndColorTag;
           Request := #13#10'- ' + LookupTalkText('Talk.Pirate.MateRiot');
           Response := #13#10'- ' + LookupTalkText('Talk.Pirate.AnswerLiderRiot');
           if Leader.NoTalk then Response := '';
@@ -12853,7 +12853,7 @@ begin
   end else begin Result := 'no greeting'; Exit; end;
   Result := LookupTalkText(Key);
   if (Self is TKling) and ((Self as TKling).ActiveProgramAppliedTurn > 0) then
-    ReplaceTextToken(Result, '<Name>', GetPlayer.GetProgramName((Self as TKling).ActiveProgramId), '<color=255,240,100>');
+    ReplaceTextToken(Result, '<Name>', GetPlayer.GetProgramName((Self as TKling).ActiveProgramId), TextHighlightColorTag);
 end;
 { @end $779DF0 }
 

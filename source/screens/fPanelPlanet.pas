@@ -120,11 +120,11 @@ begin
     if GetPlayer.CurrentPlanet.OwnerId = oiPirate then
       ShowMessageBoxGI(Screen, ReplaceColoredToken(
         LocalizedColorText('FormShip.SellOrBuyInPiratePlanetAndBadRelations'),
-        '<Planet>', GetPlayer.CurrentPlanet.Name, '<color=255,240,100>'), mbgCancel or mbgWarning)
+        '<Planet>', GetPlayer.CurrentPlanet.Name, TextHighlightColorTag), mbgCancel or mbgWarning)
     else
       ShowMessageBoxGI(Screen, ReplaceColoredToken(
         LocalizedColorText('FormShip.SellOrBuyInPlanetAndBadRelations'),
-        '<Planet>', GetPlayer.CurrentPlanet.Name, '<color=255,240,100>'), mbgCancel or mbgWarning);
+        '<Planet>', GetPlayer.CurrentPlanet.Name, TextHighlightColorTag), mbgCancel or mbgWarning);
   end
   else
   begin
@@ -149,11 +149,11 @@ begin
     if GetPlayer.CurrentPlanet.OwnerId = oiPirate then
       ShowMessageBoxGI(Screen, ReplaceColoredToken(
         LocalizedColorText('FormShip.SellOrBuyInPiratePlanetAndBadRelations'),
-        '<Planet>', GetPlayer.CurrentPlanet.Name, '<color=255,240,100>'), mbgCancel or mbgWarning)
+        '<Planet>', GetPlayer.CurrentPlanet.Name, TextHighlightColorTag), mbgCancel or mbgWarning)
     else
       ShowMessageBoxGI(Screen, ReplaceColoredToken(
         LocalizedColorText('FormShip.SellOrBuyInPlanetAndBadRelations'),
-        '<Planet>', GetPlayer.CurrentPlanet.Name, '<color=255,240,100>'), mbgCancel or mbgWarning);
+        '<Planet>', GetPlayer.CurrentPlanet.Name, TextHighlightColorTag), mbgCancel or mbgWarning);
   end
   else
   begin
@@ -192,11 +192,11 @@ begin
     if GetPlayer.CurrentPlanet.OwnerId = oiPirate then
       ShowMessageBoxGI(Screen, ReplaceColoredToken(
         LocalizedColorText('FormShip.SellOrBuyInPiratePlanetAndBadRelations'),
-        '<Planet>', GetPlayer.CurrentPlanet.Name, '<color=255,240,100>'), mbgCancel or mbgWarning)
+        '<Planet>', GetPlayer.CurrentPlanet.Name, TextHighlightColorTag), mbgCancel or mbgWarning)
     else
       ShowMessageBoxGI(Screen, ReplaceColoredToken(
         LocalizedColorText('FormShip.SellOrBuyInPlanetAndBadRelations'),
-        '<Planet>', GetPlayer.CurrentPlanet.Name, '<color=255,240,100>'), mbgCancel or mbgWarning);
+        '<Planet>', GetPlayer.CurrentPlanet.Name, TextHighlightColorTag), mbgCancel or mbgWarning);
   end
   else
   begin

@@ -320,7 +320,7 @@ begin
   with GetByName('LoadABCnt') as TLabelGI do SetText(LoadArcadeScreen.GetCatalogSummary);
   with GetByName('ModsCnt') as TLabelGI do
   begin
-    if SkipModsOnReload then SetText('<color=255,0,0>' + IntToWideString(CountDelimitedPartsW(SelectedMods, ',')) + '</color>')
+    if SkipModsOnReload then SetText(RedColorTag + IntToWideString(CountDelimitedPartsW(SelectedMods, ',')) + EndColorTag)
     else SetText(IntToWideString(CountDelimitedPartsW(SelectedMods, ',')));
   end;
   if ShowWineWarning then

@@ -234,8 +234,8 @@ var
   ButtonPrefix: WideString;
   PinWidth: Integer;
 begin
-  Text := ReplaceAllWideString(Text, '<color=255,240,100>', '<color=0,0,0>');
-  Text := ReplaceAllWideString(Text, '<color=0,255,0>', '<color=255,255,0>');
+  Text := ReplaceAllWideString(Text, TextHighlightColorTag, BlackColorTag);
+  Text := ReplaceAllWideString(Text, GreenColorTag, YellowColorTag);
   Image := TImageGI.Create(InfoPanel);
   if Compact = 0 then Image.SetImagePath('GI,Bm.FormInfo2.' + GiResourceSuffix + 'CaptionL')
   else Image.SetImagePath('GI,Bm.FormInfo2.' + GiResourceSuffix + 'Caption');
@@ -312,7 +312,7 @@ end;
 { @routine $562734 TfJournal_AddEntryText }
 procedure TfJournal.AddEntryText(Text: WideString; Align: TTextAlignXGI; FontName: WideString);
 begin
-  Text := ReplaceAllWideString(Text, '<color=255,240,100>', '<color=0,50,200>');
+  Text := ReplaceAllWideString(Text, TextHighlightColorTag, DialogHighlightColorTag);
   with TLabelGI.Create(InfoPanel) do
   begin
     if FontName = '' then
@@ -481,7 +481,7 @@ begin
         if ShowMessageBoxGI(Self, LookupLocalizedTextByKey('FormInfo.ExtractRecord'), mbgOK or mbgCancel or mbgQuestion) = mbgResultOK then
         begin
           FileName := GetPlayer.ExportJournal;
-          ShowMessageBoxGI(Self, ReplaceColoredToken(LocalizedText('FormInfo.ExtractRecordDone'), '<FileName>', FileName, '<color=255,240,100>'), mbgOK or mbgUnused04);
+          ShowMessageBoxGI(Self, ReplaceColoredToken(LocalizedText('FormInfo.ExtractRecordDone'), '<FileName>', FileName, TextHighlightColorTag), mbgOK or mbgUnused04);
           RebuildJournalEntries;
           BreakUiMessage;
         end;
@@ -490,7 +490,7 @@ begin
       if ShowMessageBoxGI(Self, LookupLocalizedTextByKey('FormInfo.ExtractNews'), mbgOK or mbgCancel or mbgQuestion) = mbgResultOK then
       begin
         FileName := GetPlayer.ExportNews;
-        ShowMessageBoxGI(Self, ReplaceColoredToken(LocalizedText('FormInfo.ExtractNewsDone'), '<FileName>', FileName, '<color=255,240,100>'), mbgOK or mbgUnused04);
+        ShowMessageBoxGI(Self, ReplaceColoredToken(LocalizedText('FormInfo.ExtractNewsDone'), '<FileName>', FileName, TextHighlightColorTag), mbgOK or mbgUnused04);
         RebuildNewsEntries;
         BreakUiMessage;
       end;
@@ -566,7 +566,7 @@ begin
     Inc(Count);
     if Count > MaxPlayerNews then Break;
     Entry := GetPlayer.NewsEntries[I];
-    AddEntryHeading(WrapTextInColor(Galaxy.FormatTurnDate(Entry.Turn) + HeadingSuffix, '<color=255,240,100>'), WrapTextInColor(Galaxy.FormatTurnDate(Entry.Turn), '<color=255,240,100>') + #13#10 + ' ' + #13#10 + Entry.Text, 1, 0);
+    AddEntryHeading(WrapTextInColor(Galaxy.FormatTurnDate(Entry.Turn) + HeadingSuffix, TextHighlightColorTag), WrapTextInColor(Galaxy.FormatTurnDate(Entry.Turn), TextHighlightColorTag) + #13#10 + ' ' + #13#10 + Entry.Text, 1, 0);
     AddEntryText(' .', taxCenter, '');
     AddEntryText(Entry.Text, taxAuto, '');
     AddEntryText(' .', taxCenter, '');
@@ -591,14 +591,14 @@ begin
   for I := Count - 1 downto 0 do
   begin
     Entry := GetPlayer.JournalRecords[I];
-    AddEntryHeading(WrapTextInColor(Galaxy.FormatTurnDate(Entry.DateTurn), '<color=255,240,100>'), WrapTextInColor(Galaxy.FormatTurnDate(Entry.DateTurn), '<color=255,240,100>') + #13#10 + ' ' + #13#10 + Entry.Text, 1, I);
+    AddEntryHeading(WrapTextInColor(Galaxy.FormatTurnDate(Entry.DateTurn), TextHighlightColorTag), WrapTextInColor(Galaxy.FormatTurnDate(Entry.DateTurn), TextHighlightColorTag) + #13#10 + ' ' + #13#10 + Entry.Text, 1, I);
     AddEntryText(' .', taxCenter, '');
     AddEntryText(Entry.Text, taxAuto, '');
     AddEntryText(' .', taxCenter, '');
     AddEntrySpacing(10);
     Inc(Displayed);
   end;
-  if Displayed > 0 then AddEntryText(FormatText1(LocalizedColorText('FormInfo.RecordCount'), '<color=0,50,200>', '<Count>', IntToStr(Displayed)), taxCenter, SmallFontName);
+  if Displayed > 0 then AddEntryText(FormatText1(LocalizedColorText('FormInfo.RecordCount'), DialogHighlightColorTag, '<Count>', IntToStr(Displayed)), taxCenter, SmallFontName);
   for I := 1 to 12 do AddEntryText(' .', taxCenter, '');
   FinishEntries;
 end;

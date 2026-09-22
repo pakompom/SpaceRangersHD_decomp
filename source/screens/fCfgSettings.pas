@@ -940,8 +940,8 @@ begin
     ValueLabel := TLabelGI(Sender.UserIndex);
     Index := Sender.Position;
     if GameDisplayModes[Index].Width = 0 then
-      ValueLabel.SetText(ValueLabel.HelpText + '<color=255,240,100>' + ' ' + LocalizedText('FormCfgSettings.HelpAuto') + '</color>')
-    else ValueLabel.SetText(ValueLabel.HelpText + '<color=255,240,100>' + ' ' + WideString(IntToStr(GameDisplayModes[Index].Width)) + 'x' + WideString(IntToStr(GameDisplayModes[Index].Height)) + '</color>');
+      ValueLabel.SetText(ValueLabel.HelpText + TextHighlightColorTag + ' ' + LocalizedText('FormCfgSettings.HelpAuto') + EndColorTag)
+    else ValueLabel.SetText(ValueLabel.HelpText + TextHighlightColorTag + ' ' + WideString(IntToStr(GameDisplayModes[Index].Width)) + 'x' + WideString(IntToStr(GameDisplayModes[Index].Height)) + EndColorTag);
   end;
 end;
 { @end $5FABE8 }
@@ -955,8 +955,8 @@ begin
     ValueLabel := TLabelGI(Sender.UserIndex);
     Index := Sender.Position;
     if RobotDisplayModes[Index].Width = 0 then
-      ValueLabel.SetText(ValueLabel.HelpText + '<color=255,240,100>' + ' ' + LocalizedText('FormCfgSettings.HelpAuto') + '</color>')
-    else ValueLabel.SetText(ValueLabel.HelpText + '<color=255,240,100>' + ' ' + WideString(IntToStr(RobotDisplayModes[Index].Width)) + 'x' + WideString(IntToStr(RobotDisplayModes[Index].Height)) + '</color>');
+      ValueLabel.SetText(ValueLabel.HelpText + TextHighlightColorTag + ' ' + LocalizedText('FormCfgSettings.HelpAuto') + EndColorTag)
+    else ValueLabel.SetText(ValueLabel.HelpText + TextHighlightColorTag + ' ' + WideString(IntToStr(RobotDisplayModes[Index].Width)) + 'x' + WideString(IntToStr(RobotDisplayModes[Index].Height)) + EndColorTag);
   end;
 end;
 { @end $5FADDC }
@@ -969,7 +969,7 @@ begin
   begin
     ValueLabel := TLabelGI(Sender.UserIndex);
     Index := Sender.Position;
-    ValueLabel.SetText(ReplaceColoredToken(ValueLabel.HelpText, '<Value>', WideString(IntToStr(SupportedMultiSamples[Index])), '<color=255,240,100>'));
+    ValueLabel.SetText(ReplaceColoredToken(ValueLabel.HelpText, '<Value>', WideString(IntToStr(SupportedMultiSamples[Index])), TextHighlightColorTag));
   end;
 end;
 { @end $5FAFD0 }
@@ -985,7 +985,7 @@ begin
   if Sender.UserIndex <> 0 then
   begin
     ValueLabel := TLabelGI(Sender.UserIndex);
-    ValueLabel.SetText(ReplaceColoredToken(ValueLabel.HelpText, '<Value>', WideString(IntToStr(Sender.Position)), '<color=255,240,100>'));
+    ValueLabel.SetText(ReplaceColoredToken(ValueLabel.HelpText, '<Value>', WideString(IntToStr(Sender.Position)), TextHighlightColorTag));
   end;
 end;
 { @end $5FB0D0 }
@@ -1001,7 +1001,7 @@ begin
   if Sender.UserIndex <> 0 then
   begin
     ValueLabel := TLabelGI(Sender.UserIndex);
-    ValueLabel.SetText(ReplaceColoredToken(ValueLabel.HelpText, '<Value>', WideString(IntToStr(Sender.Position)), '<color=255,240,100>'));
+    ValueLabel.SetText(ReplaceColoredToken(ValueLabel.HelpText, '<Value>', WideString(IntToStr(Sender.Position)), TextHighlightColorTag));
   end;
 end;
 { @end $5FB264 }
@@ -1013,7 +1013,7 @@ begin
   if Sender.UserIndex <> 0 then
   begin
     ValueLabel := TLabelGI(Sender.UserIndex);
-    ValueLabel.SetText(ReplaceColoredToken(ValueLabel.HelpText, '<Value>', WideString(IntToStr(Sender.Position)), '<color=255,240,100>'));
+    ValueLabel.SetText(ReplaceColoredToken(ValueLabel.HelpText, '<Value>', WideString(IntToStr(Sender.Position)), TextHighlightColorTag));
   end;
 end;
 { @end $5FB3F8 }
@@ -1029,9 +1029,9 @@ begin
     if Value = 0 then Text := LocalizedText('FormCfgSettings.TurnSaveStepNever')
     else if Value = 1 then Text := LocalizedText('FormCfgSettings.TurnSaveStep1')
     else if (Value >= 2) and (Value <= 4) then
-      Text := ReplaceColoredToken(LocalizedText('FormCfgSettings.TurnSaveStep2'), '<Value>', WideString(IntToStr(Value)), '<color=255,240,100>')
-    else Text := ReplaceColoredToken(LocalizedText('FormCfgSettings.TurnSaveStep3'), '<Value>', WideString(IntToStr(Value)), '<color=255,240,100>');
-    ValueLabel.SetText(ReplaceColoredToken(ValueLabel.HelpText, '<Text>', Text, '<color=255,240,100>'));
+      Text := ReplaceColoredToken(LocalizedText('FormCfgSettings.TurnSaveStep2'), '<Value>', WideString(IntToStr(Value)), TextHighlightColorTag)
+    else Text := ReplaceColoredToken(LocalizedText('FormCfgSettings.TurnSaveStep3'), '<Value>', WideString(IntToStr(Value)), TextHighlightColorTag);
+    ValueLabel.SetText(ReplaceColoredToken(ValueLabel.HelpText, '<Text>', Text, TextHighlightColorTag));
   end;
 end;
 { @end $5FB4E8 }
@@ -1046,9 +1046,9 @@ begin
     Value := Sender.Position;
     if Value <= 0 then Text := LocalizedText('FormCfgSettings.ForsageTurnOffNever')
     else if Value < 100 then
-      Text := ReplaceColoredToken(LocalizedText('FormCfgSettings.ForsageTurnOffStep'), '<Value>', WideString(IntToStr(100 - Value)), '<color=255,240,100>')
+      Text := ReplaceColoredToken(LocalizedText('FormCfgSettings.ForsageTurnOffStep'), '<Value>', WideString(IntToStr(100 - Value)), TextHighlightColorTag)
     else Text := LocalizedText('FormCfgSettings.ForsageTurnOffAlways');
-    ValueLabel.SetText(ReplaceColoredToken(ValueLabel.HelpText, '<Text>', Text, '<color=255,240,100>'));
+    ValueLabel.SetText(ReplaceColoredToken(ValueLabel.HelpText, '<Text>', Text, TextHighlightColorTag));
   end;
 end;
 { @end $5FB7C4 }

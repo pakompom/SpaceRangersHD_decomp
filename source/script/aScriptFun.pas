@@ -2689,7 +2689,7 @@ begin
     if (Kind = 3) and (Key <> '') and (CurrentScript <> nil) and (CurrentScript.EtherIds.IndexOf(Key) < 0) then
       CurrentScript.EtherIds.Add(Key);
     MessageEntry := AddOrUpdatePlayerBubble(Kind, Galaxy.CurrentTurn,
-      ReplaceAllWideString(ReplaceAllWideString(av[3].GetString, '<clr>', '<color=255,240,100>'), '<clrEnd>', '</color>'), Key);
+      ReplaceAllWideString(ReplaceAllWideString(av[3].GetString, '<clr>', TextHighlightColorTag), '<clrEnd>', EndColorTag), Key);
     if Obj <> nil then
     begin
       if Obj is TShip then MessageEntry.Targets[0].ShipId := TShip(Obj).Id
@@ -2748,7 +2748,7 @@ begin
     if (Kind = 3) and (Key <> '') and (CurrentScript <> nil) and (CurrentScript.EtherIds.IndexOf(Key) < 0) then
       CurrentScript.EtherIds.Add(Key);
     MessageEntry := AddOrUpdatePlayerBubble(Kind, Galaxy.CurrentTurn,
-      ReplaceAllWideString(ReplaceAllWideString(av[4].GetString, '<clr>', '<color=255,240,100>'), '<clrEnd>', '</color>'), Key);
+      ReplaceAllWideString(ReplaceAllWideString(av[4].GetString, '<clr>', TextHighlightColorTag), '<clrEnd>', EndColorTag), Key);
     MessageEntry.ImageNameOverride := av[1].GetString;
     if Obj <> nil then
     begin
@@ -2902,7 +2902,7 @@ begin
     Text := av[1].GetString;
     Text := ReplaceAllWideString(Text, '<br>', #13#10);
     Text := ReplaceAllWideString(Text, '<ll>', #13#10' '#13#10);
-    if GetPlayer <> nil then Text := ReplaceAllWideString(Text, '<Player>', '<color=255,240,100>' + GetPlayer.Name + '</color>');
+    if GetPlayer <> nil then Text := ReplaceAllWideString(Text, '<Player>', TextHighlightColorTag + GetPlayer.Name + EndColorTag);
     av[0].SetString(Text);
   end
   else
@@ -2914,7 +2914,7 @@ begin
       Color := av[High(av)].GetString;
       if Color <> '' then Color := '<color=' + Color + '>';
     end
-    else Color := '<color=255,240,100>';
+    else Color := TextHighlightColorTag;
     for I := 0 to Count - 1 do
       Text := ReplaceAllWideString(Text, av[2 + I * 2].GetString, WrapTextInColor(av[2 + I * 2 + 1].GetString, Color));
     av[0].SetString(Text);
@@ -3031,11 +3031,11 @@ procedure SF_DText(av: array of TVarEC; code: TCodeEC);
 begin
   if High(av) < 1 then raise Exception.Create('Error.Script DText');
   if GetPlayer.IsDockedToShip then
-    RuinsTalkScreen.DialogText := ReplaceAllWideString(ReplaceAllWideString(av[1].GetString, '<clr>', '<color=255,240,100>'), '<clrEnd>', '</color>')
+    RuinsTalkScreen.DialogText := ReplaceAllWideString(ReplaceAllWideString(av[1].GetString, '<clr>', TextHighlightColorTag), '<clrEnd>', EndColorTag)
   else if not GetPlayer.IsOnPlanet then
-    TalkScreen.DialogText := ReplaceAllWideString(ReplaceAllWideString(av[1].GetString, '<clr>', '<color=255,240,100>'), '<clrEnd>', '</color>')
+    TalkScreen.DialogText := ReplaceAllWideString(ReplaceAllWideString(av[1].GetString, '<clr>', TextHighlightColorTag), '<clrEnd>', EndColorTag)
   else
-    GovernmentScreen.DialogText := ReplaceAllWideString(ReplaceAllWideString(av[1].GetString, '<clr>', '<color=255,240,100>'), '<clrEnd>', '</color>');
+    GovernmentScreen.DialogText := ReplaceAllWideString(ReplaceAllWideString(av[1].GetString, '<clr>', TextHighlightColorTag), '<clrEnd>', EndColorTag);
 end;
 { @end $60DD84 }
 
@@ -3044,11 +3044,11 @@ procedure SF_DAddText(av: array of TVarEC; code: TCodeEC);
 begin
   if High(av) < 1 then raise Exception.Create('Error.Script DAddText');
   if GetPlayer.IsDockedToShip then
-    RuinsTalkScreen.DialogText := RuinsTalkScreen.DialogText + ReplaceAllWideString(ReplaceAllWideString(av[1].GetString, '<clr>', '<color=255,240,100>'), '<clrEnd>', '</color>')
+    RuinsTalkScreen.DialogText := RuinsTalkScreen.DialogText + ReplaceAllWideString(ReplaceAllWideString(av[1].GetString, '<clr>', TextHighlightColorTag), '<clrEnd>', EndColorTag)
   else if not GetPlayer.IsOnPlanet then
-    TalkScreen.DialogText := TalkScreen.DialogText + ReplaceAllWideString(ReplaceAllWideString(av[1].GetString, '<clr>', '<color=255,240,100>'), '<clrEnd>', '</color>')
+    TalkScreen.DialogText := TalkScreen.DialogText + ReplaceAllWideString(ReplaceAllWideString(av[1].GetString, '<clr>', TextHighlightColorTag), '<clrEnd>', EndColorTag)
   else
-    GovernmentScreen.DialogText := GovernmentScreen.DialogText + ReplaceAllWideString(ReplaceAllWideString(av[1].GetString, '<clr>', '<color=255,240,100>'), '<clrEnd>', '</color>');
+    GovernmentScreen.DialogText := GovernmentScreen.DialogText + ReplaceAllWideString(ReplaceAllWideString(av[1].GetString, '<clr>', TextHighlightColorTag), '<clrEnd>', EndColorTag);
 end;
 { @end $60DFA0 }
 
@@ -4876,7 +4876,7 @@ begin
     if FindTextOffsetW(Text, '<') >= 0 then
     begin
       Text := ReplaceAllWideString(Text, '<br>', #13#10);
-      if GetPlayer <> nil then Text := ReplaceAllWideString(Text, '<PlayerFull>', WrapTextInColor(GetPlayer.GetFullName(' '), '<color=255,240,100>'));
+      if GetPlayer <> nil then Text := ReplaceAllWideString(Text, '<PlayerFull>', WrapTextInColor(GetPlayer.GetFullName(' '), TextHighlightColorTag));
     end;
     av[0].SetString(ReplaceAllWideString(Text, #13#10' ', #13#10));
   end;
@@ -12504,7 +12504,7 @@ begin
 
   if High(av) < 2 then
   begin
-    av[0].SetString(GetMicroModuleInfoText(Index, '<color=255,240,100>'));
+    av[0].SetString(GetMicroModuleInfoText(Index, TextHighlightColorTag));
     Exit;
   end;
 
@@ -12512,14 +12512,14 @@ begin
   Text := LocalizedColorText('MicroModuls.' + MicroModuleTemplates[Index].ConfigName + '.ExText');
   if Text <> '' then
   begin
-    ReplaceTextToken(Text, '<ExCount>', IntToStr(Count), '<color=255,240,100>');
+    ReplaceTextToken(Text, '<ExCount>', IntToStr(Count), TextHighlightColorTag);
     if MicroModuleTemplates[Index].SeparatedNumbers then
       for Bonus := Low(TEquipmentBonusKind) to High(TEquipmentBonusKind) do
       begin
         Value := Count * MicroModuleTemplates[Index].StatBonuses[Bonus];
-        if Value > 0 then ReplaceTextToken(Text, '<' + EquipmentBonusNames[Bonus] + '>', '+' + IntToStr(Value), '<color=255,240,100>')
-        else if Value < 0 then ReplaceTextToken(Text, '<' + EquipmentBonusNames[Bonus] + '>', IntToStr(Value), '<color=255,240,100>')
-        else ReplaceTextToken(Text, '<' + EquipmentBonusNames[Bonus] + '>', '--', '<color=255,240,100>');
+        if Value > 0 then ReplaceTextToken(Text, '<' + EquipmentBonusNames[Bonus] + '>', '+' + IntToStr(Value), TextHighlightColorTag)
+        else if Value < 0 then ReplaceTextToken(Text, '<' + EquipmentBonusNames[Bonus] + '>', IntToStr(Value), TextHighlightColorTag)
+        else ReplaceTextToken(Text, '<' + EquipmentBonusNames[Bonus] + '>', '--', TextHighlightColorTag);
       end;
   end;
   av[0].SetString(WrapTextInColor(Text, GetMicroModuleTextColorTag(Index)));
@@ -14093,14 +14093,14 @@ begin
     if ShowFeedback then
     begin
       SoundManager.PlaySound('Sound.UseATranc');
-      ShowMessageBoxGI(ShipScreen, FormatText1(LocalizedColorText('FormShip.UseTransmitter'), '<color=255,240,100>', '<Star>', GetPlayer.CurrentStar.Name), mbgCancel or mbgUnused04);
+      ShowMessageBoxGI(ShipScreen, FormatText1(LocalizedColorText('FormShip.UseTransmitter'), TextHighlightColorTag, '<Star>', GetPlayer.CurrentStar.Name), mbgCancel or mbgUnused04);
     end;
   end
   else if ShowFeedback then
   begin
     SoundManager.PlaySound('Sound.NoMoney');
     // The native failure message reads ScriptUseItem even when an explicit artefact was supplied.
-    ShowMessageBoxGI(ShipScreen, FormatText1(LocalizedColorText('FormShip.NotUseTransmitter'), '<color=255,240,100>', '<Count>', WideString(IntToStr(MinTransmitterPower - (ScriptUseItem as TArtefactTransmitter).Power))), mbgCancel or mbgUnused04);
+    ShowMessageBoxGI(ShipScreen, FormatText1(LocalizedColorText('FormShip.NotUseTransmitter'), TextHighlightColorTag, '<Count>', WideString(IntToStr(MinTransmitterPower - (ScriptUseItem as TArtefactTransmitter).Power))), mbgCancel or mbgUnused04);
   end;
 end;
 { @end $638654 }

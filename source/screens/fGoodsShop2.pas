@@ -703,7 +703,7 @@ begin
       Limit := Max(0, Count);
       if DraggedGoodsIndex < 10 then
       begin
-        Description := FormatText1(LocalizedText('FormGS.Buy'), '<color=0,50,200>', '<Name>', LowerCaseWideString(GoodsMarket[ShopGoodsOrder[DraggedGoodsIndex mod 10]].TradeName));
+        Description := FormatText1(LocalizedText('FormGS.Buy'), DialogHighlightColorTag, '<Name>', LowerCaseWideString(GoodsMarket[ShopGoodsOrder[DraggedGoodsIndex mod 10]].TradeName));
         Price := GetPlayer.ShopGoodsPurchasePrice(ShopGoodsOrder[DraggedGoodsIndex mod 10], nil);
         Maximum := GetPlayer.GetLocationGoodsEntry(ShopGoodsOrder[DraggedGoodsIndex]).Count;
         Available := GetPlayer.GetCargoFreeSpace;
@@ -712,7 +712,7 @@ begin
       end
       else
       begin
-        Description := FormatText1(LocalizedText('FormGS.Sell'), '<color=0,50,200>', '<Name>', LowerCaseWideString(GoodsMarket[ShopGoodsOrder[DraggedGoodsIndex mod 10]].TradeName));
+        Description := FormatText1(LocalizedText('FormGS.Sell'), DialogHighlightColorTag, '<Name>', LowerCaseWideString(GoodsMarket[ShopGoodsOrder[DraggedGoodsIndex mod 10]].TradeName));
         Price := GetPlayer.ShopGoodsSellPrice(ShopGoodsOrder[DraggedGoodsIndex mod 10], nil);
         Maximum := GetPlayer.CargoGoods[ShopGoodsOrder[DraggedGoodsIndex - 10]].Count;
         if not GetPlayer.InNormalSpace then
@@ -852,22 +852,22 @@ begin
         Profit := GetPlayer.ShopGoodsSellPrice(Good, nil) - Integer(Round(GetPlayer.GetAverageCargoCost(Good)));
       end;
       Text := LookupLocalizedTextByKey('FormGS.' + Action + 'Help');
-      ReplaceTextToken(Text, '<Goods>', GoodsMarket[Good].TradeName, '<color=255,240,100>');
-      ReplaceTextToken(Text, '<Count>', IntToStr(Count), '<color=255,240,100>');
-      ReplaceTextToken(Text, '<Cost>', IntToStr(Price), '<color=255,240,100>');
-      if Profit > 0 then Color := '<color=0,255,0>'
-      else if Profit < 0 then Color := '<color=255,0,0>'
+      ReplaceTextToken(Text, '<Goods>', GoodsMarket[Good].TradeName, TextHighlightColorTag);
+      ReplaceTextToken(Text, '<Count>', IntToStr(Count), TextHighlightColorTag);
+      ReplaceTextToken(Text, '<Cost>', IntToStr(Price), TextHighlightColorTag);
+      if Profit > 0 then Color := GreenColorTag
+      else if Profit < 0 then Color := RedColorTag
       else if Profit = 0 then Color := '';
       ReplaceTextToken(Text, '<OldCost>', IntToStr(Round(GetPlayer.GetAverageCargoCost(Good))), Color);
-      ReplaceTextToken(Text, '<Profit>', IntToStr(Profit), '<color=255,240,100>');
+      ReplaceTextToken(Text, '<Profit>', IntToStr(Profit), TextHighlightColorTag);
     end
     else if Index < 10 then
     begin
       if GetPlayer.IsOutsideStarSpace then
-        Text := FormatText1(LookupLocalizedTextByKey('FormGS.NotGoodsForBuyHelp'), '<color=255,240,100>', '<Goods>', LowerCaseWideString(GoodsMarket[Good].DisplayName))
-      else Text := FormatText1(LookupLocalizedTextByKey('FormGS.NotGoodsForBuyHelpInShip'), '<color=255,240,100>', '<Goods>', LowerCaseWideString(GoodsMarket[Good].DisplayName));
+        Text := FormatText1(LookupLocalizedTextByKey('FormGS.NotGoodsForBuyHelp'), TextHighlightColorTag, '<Goods>', LowerCaseWideString(GoodsMarket[Good].DisplayName))
+      else Text := FormatText1(LookupLocalizedTextByKey('FormGS.NotGoodsForBuyHelpInShip'), TextHighlightColorTag, '<Goods>', LowerCaseWideString(GoodsMarket[Good].DisplayName));
     end
-    else Text := FormatText1(LookupLocalizedTextByKey('FormGS.NotGoodsForSaleHelp'), '<color=255,240,100>', '<Goods>', LowerCaseWideString(GoodsMarket[Good].DisplayName));
+    else Text := FormatText1(LookupLocalizedTextByKey('FormGS.NotGoodsForSaleHelp'), TextHighlightColorTag, '<Goods>', LowerCaseWideString(GoodsMarket[Good].DisplayName));
   end;
   if (HoveredControl = nil) or (HoveredControl.HelpText = '') then ShowHelpText(Text, Text <> '');
 end;
@@ -966,29 +966,29 @@ begin
   if GiResourceVariant = 1 then SeparatorLength := 76 else SeparatorLength := 95;
   for RowNumber := 1 to SeparatorLength do Separator := Separator + '-';
   if Location is TPlanet then
-    Title := FormatText1(LocalizedColorText('FormGS.PlanetInfo'), '<color=255,240,100>', '<Planet>', (Location as TPlanet).Name)
+    Title := FormatText1(LocalizedColorText('FormGS.PlanetInfo'), TextHighlightColorTag, '<Planet>', (Location as TPlanet).Name)
   else if Location is TRuins then
-    Title := WrapTextInColor((Location as TRuins).GetColoredFullName('<color=255,240,100>'), '')
-  else if GetPlayer.InNormalSpace then Title := WrapTextInColor(TalkShip.GetFullName(' '), '<color=255,240,100>');
+    Title := WrapTextInColor((Location as TRuins).GetColoredFullName(TextHighlightColorTag), '')
+  else if GetPlayer.InNormalSpace then Title := WrapTextInColor(TalkShip.GetFullName(' '), TextHighlightColorTag);
   Text := '<td=' + IntToStr(GiScalePixels(0)) + '>' + '<align=left>' + Title + '</align>';
   Text := Text + '<td=' + IntToStr(GiScalePixels(230)) + '>' + '<align=center>' +
-    WrapTextInColor(Galaxy.FormatTurnDate(Galaxy.CurrentTurn), '<color=0,255,0>') + '</align>';
+    WrapTextInColor(Galaxy.FormatTurnDate(Galaxy.CurrentTurn), GreenColorTag) + '</align>';
   if Location is TPlanet then
-    Info := FormatText1(LocalizedColorText('FormGS.StarInfo'), '<color=255,240,100>', '<Star>', (Location as TPlanet).CurrentStar.Name)
+    Info := FormatText1(LocalizedColorText('FormGS.StarInfo'), TextHighlightColorTag, '<Star>', (Location as TPlanet).CurrentStar.Name)
   else if Location is TShip then
-    Info := FormatText1(LocalizedColorText('FormGS.StarInfo'), '<color=255,240,100>', '<Star>', (Location as TShip).CurrentStar.Name);
+    Info := FormatText1(LocalizedColorText('FormGS.StarInfo'), TextHighlightColorTag, '<Star>', (Location as TShip).CurrentStar.Name);
   Text := Text + '<td=' + IntToStr(GiScalePixels(400)) + '>' + '<align=center>' + WrapTextInColor(Info, '') + '</align>';
   Text := Text + #13#10 + Separator;
   Text := Text + #13#10 + '<td=' + IntToStr(GiScalePixels(10)) + '>' + '<align=center>' +
-    WrapTextInColor(LocalizedColorText('FormGS.ColumnNumber'), '<color=255,240,100>') + '</align>';
+    WrapTextInColor(LocalizedColorText('FormGS.ColumnNumber'), TextHighlightColorTag) + '</align>';
   Text := Text + '<td=' + IntToStr(GiScalePixels(30)) + '>' + '<align=left>' +
-    WrapTextInColor(LocalizedColorText('FormGS.ColumnName'), '<color=255,240,100>') + '</align>';
+    WrapTextInColor(LocalizedColorText('FormGS.ColumnName'), TextHighlightColorTag) + '</align>';
   Text := Text + '<td=' + IntToStr(GiScalePixels(190)) + '>' + '<align=center>' +
-    WrapTextInColor(LocalizedColorText('FormGS.ColumnCount'), '<color=255,240,100>') + '</align>';
+    WrapTextInColor(LocalizedColorText('FormGS.ColumnCount'), TextHighlightColorTag) + '</align>';
   Text := Text + '<td=' + IntToStr(GiScalePixels(300)) + '>' + '<align=center>' +
-    WrapTextInColor(LocalizedColorText('FormGS.ColumnCost'), '<color=255,240,100>') + '</align>';
+    WrapTextInColor(LocalizedColorText('FormGS.ColumnCost'), TextHighlightColorTag) + '</align>';
   Text := Text + '<td=' + IntToStr(GiScalePixels(410)) + '>' + '<align=center>' +
-    WrapTextInColor(LocalizedColorText('FormGS.ColumnLegality'), '<color=255,240,100>') + '</align>';
+    WrapTextInColor(LocalizedColorText('FormGS.ColumnLegality'), TextHighlightColorTag) + '</align>';
   Text := Text + #13#10 + Separator;
   RowNumber := 1;
   for Index := 0 to 7 do
@@ -1016,7 +1016,7 @@ begin
     if Location is TPlanet then GetPlayer.CurrentPlanet := TPlanet(Location)
     else if Location is TRuins then GetPlayer.DockedTo := TShip(Location);
     if not GetPlayer.IsCargoGoodIllegalOnCurrentPlanet(Good) then Info := LookupLocalizedTextByKey('FormGS.LegalityOk')
-    else Info := WrapTextInColor(LookupLocalizedTextByKey('FormGS.LegalityNo'), '<color=255,0,0>');
+    else Info := WrapTextInColor(LookupLocalizedTextByKey('FormGS.LegalityNo'), RedColorTag);
     GetPlayer.CurrentPlanet := SavedPlanet;
     GetPlayer.DockedTo := SavedDockedTo;
     Text := Text + '<td=' + IntToStr(GiScalePixels(405)) + '><align=center>' + WrapTextInColor(Info, '') + '</align>';

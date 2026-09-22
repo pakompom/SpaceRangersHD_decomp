@@ -1269,7 +1269,7 @@ begin
         if CareerStatus[rcTrader] < 60 then IncreaseRangerCareerAxis(CareerStatus[rcTrader], CareerStatus[rcPirate], CareerStatus[rcWarrior], (60 - CareerStatus[rcTrader]) div 2 + 1);
         Amount := RoundAndTruncateToTens(NextRandomIntRange(100, 250, RandomState) / GalaxyDifficultyTuning[Galaxy.DifficultyLevels[7]].GoodsEventDurationFactor);
         Text := FormatText2(PickLocalizedTextVariant('GalaxyNews.EminentRangers.EminentTrader', Seed * Cardinal(Galaxy.CurrentTurn div 10)),
-          '<color=255,240,100>', '<Name>', Name, '<Points>', IntToStr(Amount));
+          TextHighlightColorTag, '<Name>', Name, '<Points>', IntToStr(Amount));
         if GetPlayer = Self then Galaxy.AddPlanetNewsWithPlayerBubble(gnEminentTrader, Text)
         else Galaxy.AddPlanetNews(gnEminentTrader, Text);
         EminentProgress[rcTrader] := 0;
@@ -1295,7 +1295,7 @@ begin
         if CareerStatus[rcPirate] < 60 then IncreaseRangerCareerAxis(CareerStatus[rcPirate], CareerStatus[rcTrader], CareerStatus[rcWarrior], (60 - CareerStatus[rcPirate]) div 2 + 1);
         Amount := RoundAndTruncateToTens(NextRandomIntRange(250, 1000, RandomState) * GalaxyDifficultyTuning[Galaxy.DifficultyLevels[7]].GoodsEventDurationFactor);
         Text := FormatText2(PickLocalizedTextVariant('GalaxyNews.EminentRangers.EminentPirate', Seed * Cardinal(Galaxy.CurrentTurn div 10)),
-          '<color=255,240,100>', '<Name>', Name, '<Points>', IntToStr(Amount));
+          TextHighlightColorTag, '<Name>', Name, '<Points>', IntToStr(Amount));
         if GetPlayer = Self then Galaxy.AddPlanetNewsWithPlayerBubble(gnEminentPirate, Text)
         else Galaxy.AddPlanetNews(gnEminentPirate, Text);
         EminentProgress[rcPirate] := 0;
@@ -1321,7 +1321,7 @@ begin
         if CareerStatus[rcWarrior] < 60 then IncreaseRangerCareerAxis(CareerStatus[rcWarrior], CareerStatus[rcTrader], CareerStatus[rcPirate], (60 - CareerStatus[rcWarrior]) div 2 + 1);
         Amount := RoundAndTruncateToTens(NextRandomIntRange(250, 1000, RandomState) / GalaxyDifficultyTuning[Galaxy.DifficultyLevels[7]].GoodsEventDurationFactor);
         Text := FormatText2(PickLocalizedTextVariant('GalaxyNews.EminentRangers.EminentWarrior', Seed * Cardinal(Galaxy.CurrentTurn div 10)),
-          '<color=255,240,100>', '<Name>', Name, '<Points>', IntToStr(Amount));
+          TextHighlightColorTag, '<Name>', Name, '<Points>', IntToStr(Amount));
         if GetPlayer = Self then Galaxy.AddPlanetNewsWithPlayerBubble(gnEminentWarrior, Text)
         else Galaxy.AddPlanetNews(gnEminentWarrior, Text);
         EminentProgress[rcWarrior] := 0;
@@ -2330,11 +2330,11 @@ var
     else
     begin
       Text := PickLocalizedTextVariant('GalaxyNews.GoToPrison.' + GetTypeNameKey, Seed + Cardinal(Galaxy.CurrentTurn div 10));
-      ReplaceTextToken(Text, '<Star>', CurrentStar.Name, '<color=255,240,100>');
-      ReplaceTextToken(Text, '<Planet>', CurrentPlanet.Name, '<color=255,240,100>');
-      ReplaceTextToken(Text, '<Month>', IntToStr(Cardinal(PrisonTermRemaining) div 30), '<color=255,240,100>');
-      ReplaceTextToken(Text, '<Name>', GetName, '<color=255,240,100>');
-      ReplaceTextToken(Text, '<FullName>', GetFullName(' '), '<color=255,240,100>');
+      ReplaceTextToken(Text, '<Star>', CurrentStar.Name, TextHighlightColorTag);
+      ReplaceTextToken(Text, '<Planet>', CurrentPlanet.Name, TextHighlightColorTag);
+      ReplaceTextToken(Text, '<Month>', IntToStr(Cardinal(PrisonTermRemaining) div 30), TextHighlightColorTag);
+      ReplaceTextToken(Text, '<Name>', GetName, TextHighlightColorTag);
+      ReplaceTextToken(Text, '<FullName>', GetFullName(' '), TextHighlightColorTag);
       if (GetPlayer.CurrentStar = CurrentStar) and GetPlayer.InNormalSpace and (Galaxy.CoalitionDefeatedTurn = 0) then
         Galaxy.AddPlanetNewsWithPlayerBubble(gnImprisonment, Text)
       else Galaxy.AddPlanetNews(gnImprisonment, Text);
@@ -2845,7 +2845,7 @@ begin
   if OtherShip is TRanger then ReactToExtortionDemand(OtherShip);
   if ((GetPlayer <> OtherShip) or (PlayerAutomaticControl <> False)) and ((EnemyShip = nil) or (CurrentStar <> EnemyShip.CurrentStar)) then EnemyShip := OtherShip;
   if (GetPlayer = Self) and not PlayerAutomaticControl then begin
-    if OtherShip.ShowPlayerDialogue(tkMoneyDemand, FormatText1(OtherShip.LookupTalkText('Talk.Money.Send'), '<color=255,240,100>', '<Money>', IntToStr(DemandedAmount)), DemandedAmount) <> 0 then begin
+    if OtherShip.ShowPlayerDialogue(tkMoneyDemand, FormatText1(OtherShip.LookupTalkText('Talk.Money.Send'), TextHighlightColorTag, '<Money>', IntToStr(DemandedAmount)), DemandedAmount) <> 0 then begin
       AcceptMoneyDemand;
       Result := True;
       PlayerStar.InterruptLongTravel := True;
@@ -2974,7 +2974,7 @@ begin
   if (GetPlayer = Self) and not PlayerAutomaticControl then begin
     if Cardinal(ReservedMessageCounter) < 7 then Exit;
     Text := OtherShip.LookupTalkText('Talk.Truce.' + OtherShip.GetTypeNameKey + 'Send');
-    if OtherShip.ShowPlayerDialogue(tkTruceOffer, FormatText1(Text, '<color=255,240,100>', '<Money>', IntToStr(OfferedAmount)), 0) <> 0 then begin
+    if OtherShip.ShowPlayerDialogue(tkTruceOffer, FormatText1(Text, TextHighlightColorTag, '<Money>', IntToStr(OfferedAmount)), 0) <> 0 then begin
       AcceptTrucePayment;
       Result := True;
       PlayerStar.InterruptLongTravel := True;
@@ -3011,7 +3011,7 @@ begin
   end;
   if (GetPlayer = Self) and not PlayerAutomaticControl then begin
     if Requester.ShowPlayerDialogue(tkAttack, FormatText1(Requester.LookupTalkText('Talk.Attack.' + Requester.GetTypeNameKey + 'Send'),
-      '<color=255,240,100>', '<Target>', Target.GetName + GetLocalObjectLink(Target, False)), 0) <> 0 then begin
+      TextHighlightColorTag, '<Target>', Target.GetName + GetLocalObjectLink(Target, False)), 0) <> 0 then begin
       SetJointAttackTarget(Requester, Target);
       Result := True;
       PlayerStar.InterruptLongTravel := True;
@@ -3019,7 +3019,7 @@ begin
     end;
   end
   else if (PartnerShip = Requester) or ((OrderTarget = Target) and (GetRelationLevelToShip(Target) = rlHostile)) then AcceptAttackRequest
-  else if TruceShip = Target then Response := FormatText1(LookupVisibleTalkText('Talk.Attack.WeAlreadyHavePact', Requester), '<color=255,240,100>', '<Target>', Target.GetName)
+  else if TruceShip = Target then Response := FormatText1(LookupVisibleTalkText('Talk.Attack.WeAlreadyHavePact', Requester), TextHighlightColorTag, '<Target>', Target.GetName)
   else if ((RelationToShip(Target) >= RelationExcellentMin) or ((RelationToShip(Target) >= RelationNormalMin) and (PreferredCareer <> rcPirate))) and (PartnerShip <> Requester) then begin
     if not (Target is TTranclucator) then Response := LookupVisibleTalkText('Talk.Attack.' + GetTypeNameKey + 'WeFriends', Requester)
     else if TTranclucator(Target).OwnerShip = Self then Response := LookupVisibleTalkText('Talk.Attack.' + GetTypeNameKey + 'ItsMyTranc', Requester)
@@ -3038,7 +3038,7 @@ begin
   Result := False;
   if RelationToShip(OtherShip) < 45 then Response := LookupVisibleTalkText('Talk.Partner.Suspect', OtherShip)
   else if PartnerShip <> nil then
-    Response := FormatText1(LookupVisibleTalkText('Talk.Partner.AlreadyHavePartner', OtherShip), '<color=255,240,100>', '<Partner>', (PartnerShip as TRanger).Name)
+    Response := FormatText1(LookupVisibleTalkText('Talk.Partner.AlreadyHavePartner', OtherShip), TextHighlightColorTag, '<Partner>', (PartnerShip as TRanger).Name)
   else if CountWingmen > 0 then Response := LookupVisibleTalkText('Talk.Partner.ILeader', OtherShip)
   else if (OtherShip is TRanger) and (Integer(OtherShip.GetEffectiveSkillLevel(psLeadership)) <= (OtherShip as TRanger).CountWingmen) then
     Response := LookupVisibleTalkText('Talk.Partner.NeedLeadership', OtherShip)
@@ -3046,7 +3046,7 @@ begin
     Response := LookupVisibleTalkText('Talk.Partner.YouNeedInMoreRank', OtherShip)
   else if CalculatePartnershipMonths(PaymentAmount, OtherShip) = 0 then Response := LookupVisibleTalkText('Talk.Partner.SmallMoney', OtherShip)
   else Result := True;
-  Response := FormatText1(Response, '<color=255,240,100>', '<Ranger>', (OtherShip as TRanger).Name);
+  Response := FormatText1(Response, TextHighlightColorTag, '<Ranger>', (OtherShip as TRanger).Name);
 end;
 { @end $7312A0 }
 
@@ -3056,7 +3056,7 @@ begin
   if BuildPartnershipOfferResponse(OtherShip, Response, PaymentAmount) then
   begin
     PartnershipDaysRemaining := 30 * CalculatePartnershipMonths(PaymentAmount, OtherShip);
-    Response := FormatText2(LookupVisibleTalkText('Talk.Partner.Ok', OtherShip), '<color=255,240,100>',
+    Response := FormatText2(LookupVisibleTalkText('Talk.Partner.Ok', OtherShip), TextHighlightColorTag,
       '<Month>', IntToStr(CalculatePartnershipMonths(PaymentAmount, OtherShip)), '<Ranger>', (OtherShip as TRanger).Name);
     PartnerShip := OtherShip;
     OrderAbsolute := False;
@@ -3080,7 +3080,7 @@ end;
 function TRanger.GetProgramInfoText(ProgramIndex: TProgramIndex): WideString;
 begin
   Result := FormatText1(LocalizedText('Programms.' + ProgramNames[ProgramIndex] + '.Text'),
-    '<color=255,240,100>', '<Count>', IntToStr(ProgramCounts[ProgramIndex]));
+    TextHighlightColorTag, '<Count>', IntToStr(ProgramCounts[ProgramIndex]));
 end;
 { @end $731920 }
 
@@ -3453,10 +3453,10 @@ begin
         end;
         if Quest.Planet.GetRelationLevelToShip(Self) > rlBad then Quest.Planet.SetRelationLevelToRanger(Self, rlBad);
         Text := PickLocalizedTextVariant('GalaxyNews.Quest.Failure.Time', Seed * Cardinal(Galaxy.CurrentTurn div 10));
-        ReplaceTextToken(Text, '<Quest>', Quest.Description, '<color=255,240,100>');
-        ReplaceTextToken(Text, '<Planet>', Quest.Planet.Name, '<color=255,240,100>');
-        ReplaceTextToken(Text, '<Star>', Quest.Planet.CurrentStar.Name, '<color=255,240,100>');
-        ReplaceTextToken(Text, '<Relation>', Quest.Planet.GetRelationLevelTextToShip(Self), '<color=255,240,100>');
+        ReplaceTextToken(Text, '<Quest>', Quest.Description, TextHighlightColorTag);
+        ReplaceTextToken(Text, '<Planet>', Quest.Planet.Name, TextHighlightColorTag);
+        ReplaceTextToken(Text, '<Star>', Quest.Planet.CurrentStar.Name, TextHighlightColorTag);
+        ReplaceTextToken(Text, '<Relation>', Quest.Planet.GetRelationLevelTextToShip(Self), TextHighlightColorTag);
         if Quest.QuestType = qtSendLetter then TryAddAchievementProgress('POSTMAN', 1);
         AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn, Text, '');
         CheckQuestFailureAward(Quest, [qtSendLetter, qtKillShip, qtPlanetQuest]);
@@ -3470,24 +3470,24 @@ begin
           if Quest.Planet <> nil then
           begin
             Text := PickLocalizedTextVariant('GalaxyNews.Quest.Successful.DefSystem', Galaxy.GenerationSeed * Cardinal(Galaxy.CurrentTurn div 10));
-            ReplaceTextToken(Text, '<Star>', Quest.Planet.CurrentStar.Name, '<color=255,240,100>');
+            ReplaceTextToken(Text, '<Star>', Quest.Planet.CurrentStar.Name, TextHighlightColorTag);
           end
           else
           begin
             Text := PickLocalizedTextVariant('GalaxyNews.Quest.Successful.DefSystemRuins', Galaxy.GenerationSeed * Cardinal(Galaxy.CurrentTurn div 10));
-            ReplaceTextToken(Text, '<Star>', (Quest.ObjectiveTarget as TStar).Name, '<color=255,240,100>');
+            ReplaceTextToken(Text, '<Star>', (Quest.ObjectiveTarget as TStar).Name, TextHighlightColorTag);
           end;
         end;
         qtDefendShip:
         begin
           if Quest.Planet <> nil then Text := PickLocalizedTextVariant('GalaxyNews.Quest.Successful.DefShip', Galaxy.GenerationSeed * Cardinal(Galaxy.CurrentTurn div 10))
           else Text := PickLocalizedTextVariant('GalaxyNews.Quest.Successful.DefShipRuins', Galaxy.GenerationSeed * Cardinal(Galaxy.CurrentTurn div 10));
-          ReplaceTextToken(Text, '<Ship>', (Quest.ObjectiveTarget as TShip).GetName, '<color=255,240,100>');
+          ReplaceTextToken(Text, '<Ship>', (Quest.ObjectiveTarget as TShip).GetName, TextHighlightColorTag);
         end;
         end;
-        ReplaceTextToken(Text, '<Player>', GetPlayer.Name, '<color=255,240,100>');
+        ReplaceTextToken(Text, '<Player>', GetPlayer.Name, TextHighlightColorTag);
         { Native code still dereferences Planet after the nil-planet text branches. }
-        ReplaceTextToken(Text, '<Planet>', Quest.Planet.Name, '<color=255,240,100>');
+        ReplaceTextToken(Text, '<Planet>', Quest.Planet.Name, TextHighlightColorTag);
         AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn, Text, '');
         Quest.Successful := True;
         PublishQuestStatus(Quest, 0);
@@ -3538,7 +3538,7 @@ var
           if GetPlayer = Self then
           begin
             Text := PickLocalizedTextVariant('GalaxyNews.BadReward.FailQuest', Seed + Cardinal(Galaxy.CurrentTurn div 10));
-            ReplaceTextToken(Text, '<Reward>', GetAwardInfo(Award).Name, '<color=255,240,100>');
+            ReplaceTextToken(Text, '<Reward>', GetAwardInfo(Award).Name, TextHighlightColorTag);
             AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn, Text, '');
           end;
         end;
@@ -3652,7 +3652,7 @@ var
         GalaxyDifficultyTuning[Galaxy.DifficultyLevels[7]].QuestTimeAndExperienceFactor));
     GainExperience(Experience, 0);
     if GetPlayer = Self then begin
-      ResponseText := ResponseText + #13#10 + ' ' + #13#10 + WrapTextInColor(LocalizedColorText('PlanetCongratulations.Quest.AddPoints'), '<color=45,105,45>');
+      ResponseText := ResponseText + #13#10 + ' ' + #13#10 + WrapTextInColor(LocalizedColorText('PlanetCongratulations.Quest.AddPoints'), DarkGreenColorTag);
       ReplaceTextToken(ResponseText, '<Points>', IntToStr(Experience), '');
     end else ResponseText := '';
     if GetPlayer = Self then begin
@@ -3663,13 +3663,13 @@ var
       Event.AddData(Experience);
     end;
     if (GetPlayer = Self) and (CurrentPlanet <> nil) then begin
-      ReplaceTextToken(ResponseText, '<Star>', CurrentPlanet.CurrentStar.Name, '<color=255,240,100>');
-      ReplaceTextToken(ResponseText, '<Planet>', CurrentPlanet.Name, '<color=255,240,100>');
+      ReplaceTextToken(ResponseText, '<Star>', CurrentPlanet.CurrentStar.Name, TextHighlightColorTag);
+      ReplaceTextToken(ResponseText, '<Planet>', CurrentPlanet.Name, TextHighlightColorTag);
     end;
     PublishQuestStatus(Quest, 1);
     if GetPlayer = Self then begin
-      ReplaceTextToken(ResponseText, '<Ranger>', Name, '<color=255,240,100>');
-      ReplaceTextToken(ResponseText, '<Money>', IntToStr(Quest.RewardMoney), '<color=255,240,100>');
+      ReplaceTextToken(ResponseText, '<Ranger>', Name, TextHighlightColorTag);
+      ReplaceTextToken(ResponseText, '<Money>', IntToStr(Quest.RewardMoney), TextHighlightColorTag);
     end;
     if Quest.QuestType = qtDefendSystem then TryAddAchievementProgress('GUARD', 1);
     if Quest.QuestType = qtSendLetter then TryAddAchievementProgress('DELIVERY', 1);
@@ -3703,13 +3703,13 @@ begin
         Factions := LookupLocalizedTextByKey('Quest.SendLetter.' + IntToStr(Quest.QuestNumber) + '.ToRace');
         if (CurrentPlanet.OwnerId = oiPirate) and (Pos('OnlyNonPirate', Factions) > 0) then begin
           ResponseText := LookupLocalizedTextByKey('Quest.GenericCongratPirate');
-          ReplaceTextToken(ResponseText, '<Player>', Name, '<color=255,240,100>');
-          ReplaceTextToken(ResponseText, '<Money>', IntToStr(Quest.RewardMoney), '<color=255,240,100>');
+          ReplaceTextToken(ResponseText, '<Player>', Name, TextHighlightColorTag);
+          ReplaceTextToken(ResponseText, '<Money>', IntToStr(Quest.RewardMoney), TextHighlightColorTag);
         end;
         if (CurrentPlanet.OwnerId <> oiPirate) and (Pos('OnlyPirate', Factions) > 0) then begin
           ResponseText := LookupLocalizedTextByKey('Quest.GenericCongratCoal');
-          ReplaceTextToken(ResponseText, '<Player>', Name, '<color=255,240,100>');
-          ReplaceTextToken(ResponseText, '<Money>', IntToStr(Quest.RewardMoney), '<color=255,240,100>');
+          ReplaceTextToken(ResponseText, '<Player>', Name, TextHighlightColorTag);
+          ReplaceTextToken(ResponseText, '<Money>', IntToStr(Quest.RewardMoney), TextHighlightColorTag);
         end;
         RewardText := LookupLocalizedTextOrEmpty('Quest.SendLetter.' + IntToStr(Quest.QuestNumber) + '.GovernmentAward');
       end;
@@ -3721,13 +3721,13 @@ begin
         Factions := LookupLocalizedTextByKey('Quest.KillShip.' + IntToStr(Quest.QuestNumber) + '.PlanetRace');
         if (CurrentPlanet.OwnerId = oiPirate) and (Pos('OnlyNonPirate', Factions) > 0) then begin
           ResponseText := LookupLocalizedTextByKey('Quest.GenericCongratPirate');
-          ReplaceTextToken(ResponseText, '<Player>', Name, '<color=255,240,100>');
-          ReplaceTextToken(ResponseText, '<Money>', IntToStr(Quest.RewardMoney), '<color=255,240,100>');
+          ReplaceTextToken(ResponseText, '<Player>', Name, TextHighlightColorTag);
+          ReplaceTextToken(ResponseText, '<Money>', IntToStr(Quest.RewardMoney), TextHighlightColorTag);
         end;
         if (CurrentPlanet.OwnerId <> oiPirate) and (Pos('OnlyPirate', Factions) > 0) then begin
           ResponseText := LookupLocalizedTextByKey('Quest.GenericCongratCoal');
-          ReplaceTextToken(ResponseText, '<Player>', Name, '<color=255,240,100>');
-          ReplaceTextToken(ResponseText, '<Money>', IntToStr(Quest.RewardMoney), '<color=255,240,100>');
+          ReplaceTextToken(ResponseText, '<Player>', Name, TextHighlightColorTag);
+          ReplaceTextToken(ResponseText, '<Money>', IntToStr(Quest.RewardMoney), TextHighlightColorTag);
         end;
         RewardText := LookupLocalizedTextOrEmpty('Quest.KillShip.' + IntToStr(Quest.QuestNumber) + '.GovernmentAward');
       end;
@@ -3747,13 +3747,13 @@ begin
         Factions := LookupLocalizedTextByKey('Quest.DefSystem.' + IntToStr(Quest.QuestNumber) + '.PlanetRace');
         if (CurrentPlanet.OwnerId = oiPirate) and (Pos('OnlyNonPirate', Factions) > 0) then begin
           ResponseText := LookupLocalizedTextByKey('Quest.GenericCongratPirate');
-          ReplaceTextToken(ResponseText, '<Player>', Name, '<color=255,240,100>');
-          ReplaceTextToken(ResponseText, '<Money>', IntToStr(Quest.RewardMoney), '<color=255,240,100>');
+          ReplaceTextToken(ResponseText, '<Player>', Name, TextHighlightColorTag);
+          ReplaceTextToken(ResponseText, '<Money>', IntToStr(Quest.RewardMoney), TextHighlightColorTag);
         end;
         if (CurrentPlanet.OwnerId <> oiPirate) and (Pos('OnlyPirate', Factions) > 0) then begin
           ResponseText := LookupLocalizedTextByKey('Quest.GenericCongratCoal');
-          ReplaceTextToken(ResponseText, '<Player>', Name, '<color=255,240,100>');
-          ReplaceTextToken(ResponseText, '<Money>', IntToStr(Quest.RewardMoney), '<color=255,240,100>');
+          ReplaceTextToken(ResponseText, '<Player>', Name, TextHighlightColorTag);
+          ReplaceTextToken(ResponseText, '<Money>', IntToStr(Quest.RewardMoney), TextHighlightColorTag);
         end;
         RewardText := LookupLocalizedTextOrEmpty('Quest.DefSystem.' + IntToStr(Quest.QuestNumber) + '.GovernmentAward');
       end;
@@ -3765,13 +3765,13 @@ begin
         Factions := LookupLocalizedTextByKey('Quest.DefShip.' + IntToStr(Quest.QuestNumber) + '.PlanetRace');
         if (CurrentPlanet.OwnerId = oiPirate) and (Pos('OnlyNonPirate', Factions) > 0) then begin
           ResponseText := LookupLocalizedTextByKey('Quest.GenericCongratPirate');
-          ReplaceTextToken(ResponseText, '<Player>', Name, '<color=255,240,100>');
-          ReplaceTextToken(ResponseText, '<Money>', IntToStr(Quest.RewardMoney), '<color=255,240,100>');
+          ReplaceTextToken(ResponseText, '<Player>', Name, TextHighlightColorTag);
+          ReplaceTextToken(ResponseText, '<Money>', IntToStr(Quest.RewardMoney), TextHighlightColorTag);
         end;
         if (CurrentPlanet.OwnerId <> oiPirate) and (Pos('OnlyPirate', Factions) > 0) then begin
           ResponseText := LookupLocalizedTextByKey('Quest.GenericCongratCoal');
-          ReplaceTextToken(ResponseText, '<Player>', Name, '<color=255,240,100>');
-          ReplaceTextToken(ResponseText, '<Money>', IntToStr(Quest.RewardMoney), '<color=255,240,100>');
+          ReplaceTextToken(ResponseText, '<Player>', Name, TextHighlightColorTag);
+          ReplaceTextToken(ResponseText, '<Money>', IntToStr(Quest.RewardMoney), TextHighlightColorTag);
         end;
         RewardText := LookupLocalizedTextOrEmpty('Quest.DefShip.' + IntToStr(Quest.QuestNumber) + '.GovernmentAward');
       end;
@@ -3816,7 +3816,7 @@ begin
         AddAward(Award);
         if GetPlayer = Self then begin
           ResponseText := ResponseText + #13#10 + LocalizedColorText('PlanetCongratulations.Quest.AddReward');
-          ReplaceTextToken(ResponseText, '<Reward>', GetAwardInfo(Award).Name, '<color=255,240,100>');
+          ReplaceTextToken(ResponseText, '<Reward>', GetAwardInfo(Award).Name, TextHighlightColorTag);
         end else ResponseText := '';
       end;
     end;
@@ -3828,8 +3828,8 @@ begin
       Inc(ProgramCounts[ProgramIndex], Quantity);
       if GetPlayer = Self then begin
         ResponseText := ResponseText + #13#10 + LocalizedColorText('PlanetCongratulations.Quest.AddProgramms');
-        ReplaceTextToken(ResponseText, '<Programm>', GetProgramName(ProgramIndex), '<color=255,240,100>');
-        ReplaceTextToken(ResponseText, '<Count>', IntToStr(Quantity), '<color=255,240,100>');
+        ReplaceTextToken(ResponseText, '<Programm>', GetProgramName(ProgramIndex), TextHighlightColorTag);
+        ReplaceTextToken(ResponseText, '<Count>', IntToStr(Quantity), TextHighlightColorTag);
       end else ResponseText := '';
     end;
     3: begin
@@ -3840,7 +3840,7 @@ begin
       if GetPlayer = Self then begin
         GetPlayer.ScriptItemsAct(satOnGovItemReward, RewardItem, nil, 0);
         ResponseText := ResponseText + #13#10 + LocalizedColorText('PlanetCongratulations.Quest.AddArtefact') + #13#10 + RewardItem.GetDescriptionText;
-        ReplaceTextToken(ResponseText, '<Artefact>', RewardItem.GetDisplayName, '<color=255,240,100>');
+        ReplaceTextToken(ResponseText, '<Artefact>', RewardItem.GetDisplayName, TextHighlightColorTag);
       end else ResponseText := '';
     end;
     4: begin
@@ -3863,9 +3863,9 @@ begin
       Inventory.Add(ModuleItem);
       if GetPlayer = Self then begin
         if CurrentPlanet.OwnerId = oiPirate then
-          ResponseText := ResponseText + #13#10 + LocalizedColorText('PlanetCongratulations.Quest.AddNodPirate') + #13#10 + ModuleItem.GetInfoText('<color=255,240,100>', nil)
-        else ResponseText := ResponseText + #13#10 + LocalizedColorText('PlanetCongratulations.Quest.AddNod') + #13#10 + ModuleItem.GetInfoText('<color=255,240,100>', nil);
-        ReplaceTextToken(ResponseText, '<Nod>', MicroModuleTemplates[ModuleIndex].Name, '<color=255,240,100>');
+          ResponseText := ResponseText + #13#10 + LocalizedColorText('PlanetCongratulations.Quest.AddNodPirate') + #13#10 + ModuleItem.GetInfoText(TextHighlightColorTag, nil)
+        else ResponseText := ResponseText + #13#10 + LocalizedColorText('PlanetCongratulations.Quest.AddNod') + #13#10 + ModuleItem.GetInfoText(TextHighlightColorTag, nil);
+        ReplaceTextToken(ResponseText, '<Nod>', MicroModuleTemplates[ModuleIndex].Name, TextHighlightColorTag);
       end else ResponseText := '';
     end;
   end;
@@ -3913,7 +3913,7 @@ begin
         AddAward(Award);
         if GetPlayer = Self then begin
           Result := Result + #13#10 + LocalizedColorText('PlanetCongratulations.Quest.AddReward');
-          ReplaceTextToken(Result, '<Reward>', GetAwardInfo(Award).Name, '<color=255,240,100>');
+          ReplaceTextToken(Result, '<Reward>', GetAwardInfo(Award).Name, TextHighlightColorTag);
         end else Result := '';
       end;
     end;
@@ -3925,8 +3925,8 @@ begin
       Inc(ProgramCounts[ProgramIndex], Quantity);
       if GetPlayer = Self then begin
         Result := Result + #13#10 + LocalizedColorText('PlanetCongratulations.Quest.AddProgramms');
-        ReplaceTextToken(Result, '<Programm>', GetProgramName(ProgramIndex), '<color=255,240,100>');
-        ReplaceTextToken(Result, '<Count>', IntToStr(Quantity), '<color=255,240,100>');
+        ReplaceTextToken(Result, '<Programm>', GetProgramName(ProgramIndex), TextHighlightColorTag);
+        ReplaceTextToken(Result, '<Count>', IntToStr(Quantity), TextHighlightColorTag);
       end else Result := '';
     end;
     3: begin
@@ -3936,7 +3936,7 @@ begin
       if GetPlayer = Self then begin
         GetPlayer.ScriptItemsAct(satOnGovItemReward, RewardItem, nil, 0);
         Result := Result + #13#10 + LocalizedColorText('PlanetCongratulations.Quest.AddArtefact') + #13#10 + RewardItem.GetDescriptionText;
-        ReplaceTextToken(Result, '<Artefact>', RewardItem.GetDisplayName, '<color=255,240,100>');
+        ReplaceTextToken(Result, '<Artefact>', RewardItem.GetDisplayName, TextHighlightColorTag);
       end else Result := '';
     end;
     4: begin
@@ -3958,9 +3958,9 @@ begin
       Inventory.Add(ModuleItem);
       if GetPlayer = Self then begin
         if CurrentPlanet.OwnerId = oiPirate then
-          Result := Result + #13#10 + LocalizedColorText('PlanetCongratulations.Quest.AddNodPirate') + #13#10 + ModuleItem.GetInfoText('<color=255,240,100>', nil)
-        else Result := Result + #13#10 + LocalizedColorText('PlanetCongratulations.Quest.AddNod') + #13#10 + ModuleItem.GetInfoText('<color=255,240,100>', nil);
-        ReplaceTextToken(Result, '<Nod>', MicroModuleTemplates[ModuleIndex].Name, '<color=255,240,100>');
+          Result := Result + #13#10 + LocalizedColorText('PlanetCongratulations.Quest.AddNodPirate') + #13#10 + ModuleItem.GetInfoText(TextHighlightColorTag, nil)
+        else Result := Result + #13#10 + LocalizedColorText('PlanetCongratulations.Quest.AddNod') + #13#10 + ModuleItem.GetInfoText(TextHighlightColorTag, nil);
+        ReplaceTextToken(Result, '<Nod>', MicroModuleTemplates[ModuleIndex].Name, TextHighlightColorTag);
       end else Result := '';
     end;
   end;
@@ -3974,7 +3974,7 @@ begin
   GainExperience(Amount, 0);
   ExperienceAwarded := Amount;
   if GetPlayer = Self then begin
-    Result := Result + #13#10 + ' ' + #13#10 + WrapTextInColor(LocalizedColorText('PlanetCongratulations.Quest.AddPoints'), '<color=45,105,45>');
+    Result := Result + #13#10 + ' ' + #13#10 + WrapTextInColor(LocalizedColorText('PlanetCongratulations.Quest.AddPoints'), DarkGreenColorTag);
     ReplaceTextToken(Result, '<Points>', IntToStr(Amount), '');
   end else Result := '';
   if CurrentPlanet <> nil then CurrentPlanet.ChangeRelationToRanger(Self, Max(0, 70 - CurrentPlanet.RelationToShip(Self)));
@@ -4361,37 +4361,37 @@ begin
       if Kind = qtkCompletion then Suffix := '.End'
       else Suffix := '.Start';
       Text := LocalizedColorText('Quest.SendLetter.' + IntToStr(Quest.QuestNumber) + Suffix);
-      ReplaceTextToken(Text, '<ToPlanet>', (Quest.ObjectiveTarget as TPlanet).Name, '<color=255,240,100>');
-      ReplaceTextToken(Text, '<ToStar>', (Quest.ObjectiveTarget as TPlanet).CurrentStar.Name, '<color=255,240,100>');
+      ReplaceTextToken(Text, '<ToPlanet>', (Quest.ObjectiveTarget as TPlanet).Name, TextHighlightColorTag);
+      ReplaceTextToken(Text, '<ToStar>', (Quest.ObjectiveTarget as TPlanet).CurrentStar.Name, TextHighlightColorTag);
       if CurrentPlanet <> nil then
-      ReplaceTextToken(Text, '<Parsec>', IntToStr(Round(PointDistance((Quest.ObjectiveTarget as TPlanet).CurrentStar.Position, CurrentPlanet.CurrentStar.Position))), '<color=255,240,100>')
+      ReplaceTextToken(Text, '<Parsec>', IntToStr(Round(PointDistance((Quest.ObjectiveTarget as TPlanet).CurrentStar.Position, CurrentPlanet.CurrentStar.Position))), TextHighlightColorTag)
       else
-      ReplaceTextToken(Text, '<Parsec>', IntToStr(Round(PointDistance((Quest.ObjectiveTarget as TPlanet).CurrentStar.Position, CurrentStar.Position))), '<color=255,240,100>');
-      ReplaceTextToken(Text, '<Date>', Galaxy.FormatTurnDate(Quest.DeadlineTurn), '<color=255,240,100>');
-      ReplaceTextToken(Text, '<Day>', IntToStr(Quest.DeadlineTurn - Galaxy.CurrentTurn), '<color=255,240,100>');
-      ReplaceTextToken(Text, '<Money>', IntToStr(Quest.RewardMoney), '<color=255,240,100>');
+      ReplaceTextToken(Text, '<Parsec>', IntToStr(Round(PointDistance((Quest.ObjectiveTarget as TPlanet).CurrentStar.Position, CurrentStar.Position))), TextHighlightColorTag);
+      ReplaceTextToken(Text, '<Date>', Galaxy.FormatTurnDate(Quest.DeadlineTurn), TextHighlightColorTag);
+      ReplaceTextToken(Text, '<Day>', IntToStr(Quest.DeadlineTurn - Galaxy.CurrentTurn), TextHighlightColorTag);
+      ReplaceTextToken(Text, '<Money>', IntToStr(Quest.RewardMoney), TextHighlightColorTag);
       if Quest.Planet <> nil then begin
-      ReplaceTextToken(Text, '<FromPlanet>', Quest.Planet.Name, '<color=255,240,100>');
-      ReplaceTextToken(Text, '<FromStar>', Quest.Planet.CurrentStar.Name, '<color=255,240,100>');
+      ReplaceTextToken(Text, '<FromPlanet>', Quest.Planet.Name, TextHighlightColorTag);
+      ReplaceTextToken(Text, '<FromStar>', Quest.Planet.CurrentStar.Name, TextHighlightColorTag);
       end
       else
-      ReplaceTextToken(Text, '<FromPlanet>', '*** Какая еще планета? Это база!!! ***', '<color=255,0,0>');
+      ReplaceTextToken(Text, '<FromPlanet>', '*** Какая еще планета? Это база!!! ***', RedColorTag);
       Result := Text;
     end;
     qtKillShip: begin
       if Kind = qtkCompletion then Suffix := '.End'
       else Suffix := '.Start';
       Text := LocalizedColorText('Quest.KillShip.' + IntToStr(Quest.QuestNumber) + Suffix);
-      ReplaceTextToken(Text, '<InStar>', (Quest.ObjectiveTarget as TShip).CurrentStar.Name, '<color=255,240,100>');
-      ReplaceTextToken(Text, '<Date>', Galaxy.FormatTurnDate(Quest.DeadlineTurn), '<color=255,240,100>');
-      ReplaceTextToken(Text, '<Day>', IntToStr(Quest.DeadlineTurn - Galaxy.CurrentTurn), '<color=255,240,100>');
-      ReplaceTextToken(Text, '<Money>', IntToStr(Quest.RewardMoney), '<color=255,240,100>');
+      ReplaceTextToken(Text, '<InStar>', (Quest.ObjectiveTarget as TShip).CurrentStar.Name, TextHighlightColorTag);
+      ReplaceTextToken(Text, '<Date>', Galaxy.FormatTurnDate(Quest.DeadlineTurn), TextHighlightColorTag);
+      ReplaceTextToken(Text, '<Day>', IntToStr(Quest.DeadlineTurn - Galaxy.CurrentTurn), TextHighlightColorTag);
+      ReplaceTextToken(Text, '<Money>', IntToStr(Quest.RewardMoney), TextHighlightColorTag);
       if Quest.Planet <> nil then begin
-      ReplaceTextToken(Text, '<FromPlanet>', Quest.Planet.Name, '<color=255,240,100>');
-      ReplaceTextToken(Text, '<FromStar>', Quest.Planet.CurrentStar.Name, '<color=255,240,100>');
+      ReplaceTextToken(Text, '<FromPlanet>', Quest.Planet.Name, TextHighlightColorTag);
+      ReplaceTextToken(Text, '<FromStar>', Quest.Planet.CurrentStar.Name, TextHighlightColorTag);
       end;
-      ReplaceTextToken(Text, '<Ship>', (Quest.ObjectiveTarget as TShip).GetName, '<color=255,240,100>');
-      ReplaceTextToken(Text, '<FullShip>', (Quest.ObjectiveTarget as TShip).GetFullName(' '), '<color=255,240,100>');
+      ReplaceTextToken(Text, '<Ship>', (Quest.ObjectiveTarget as TShip).GetName, TextHighlightColorTag);
+      ReplaceTextToken(Text, '<FullShip>', (Quest.ObjectiveTarget as TShip).GetFullName(' '), TextHighlightColorTag);
       Result := Text;
     end;
     qtPlanetQuest: begin
@@ -4411,15 +4411,15 @@ begin
       end;
       if Kind = qtkCompletion then Text := TextQuest.QuestSuccessGovMessageText.Text
       else Text := TextQuest.QuestDescriptionText.Text;
-      ReplaceTextToken(Text, '<Ranger>', GetPlayer.Name, '<color=255,240,100>');
-      ReplaceTextToken(Text, '<ToPlanet>', (Quest.ObjectiveTarget as TPlanet).Name, '<color=255,240,100>');
-      ReplaceTextToken(Text, '<ToStar>', (Quest.ObjectiveTarget as TPlanet).CurrentStar.Name, '<color=255,240,100>');
-      ReplaceTextToken(Text, '<Parsec>', IntToStr(Round(PointDistance(Quest.Planet.CurrentStar.Position, (Quest.ObjectiveTarget as TPlanet).CurrentStar.Position))), '<color=255,240,100>');
-      ReplaceTextToken(Text, '<Date>', Galaxy.FormatTurnDate(Quest.DeadlineTurn), '<color=255,240,100>');
-      ReplaceTextToken(Text, '<Day>', IntToStr(Quest.DeadlineTurn - Galaxy.CurrentTurn), '<color=255,240,100>');
-      ReplaceTextToken(Text, '<Money>', IntToStr(Quest.RewardMoney), '<color=255,240,100>');
-      ReplaceTextToken(Text, '<FromPlanet>', Quest.Planet.Name, '<color=255,240,100>');
-      ReplaceTextToken(Text, '<FromStar>', Quest.Planet.CurrentStar.Name, '<color=255,240,100>');
+      ReplaceTextToken(Text, '<Ranger>', GetPlayer.Name, TextHighlightColorTag);
+      ReplaceTextToken(Text, '<ToPlanet>', (Quest.ObjectiveTarget as TPlanet).Name, TextHighlightColorTag);
+      ReplaceTextToken(Text, '<ToStar>', (Quest.ObjectiveTarget as TPlanet).CurrentStar.Name, TextHighlightColorTag);
+      ReplaceTextToken(Text, '<Parsec>', IntToStr(Round(PointDistance(Quest.Planet.CurrentStar.Position, (Quest.ObjectiveTarget as TPlanet).CurrentStar.Position))), TextHighlightColorTag);
+      ReplaceTextToken(Text, '<Date>', Galaxy.FormatTurnDate(Quest.DeadlineTurn), TextHighlightColorTag);
+      ReplaceTextToken(Text, '<Day>', IntToStr(Quest.DeadlineTurn - Galaxy.CurrentTurn), TextHighlightColorTag);
+      ReplaceTextToken(Text, '<Money>', IntToStr(Quest.RewardMoney), TextHighlightColorTag);
+      ReplaceTextToken(Text, '<FromPlanet>', Quest.Planet.Name, TextHighlightColorTag);
+      ReplaceTextToken(Text, '<FromStar>', Quest.Planet.CurrentStar.Name, TextHighlightColorTag);
       ExpandLocalizedTextMarkup(Text);
       TextQuest.Free;
       Result := Text;
@@ -4428,15 +4428,15 @@ begin
       if Kind = qtkCompletion then Suffix := '.End'
       else Suffix := '.Start';
       Text := LocalizedColorText('Quest.DefSystem.' + IntToStr(Quest.QuestNumber) + Suffix);
-      ReplaceTextToken(Text, '<Date>', Galaxy.FormatTurnDate(Quest.DeadlineTurn), '<color=255,240,100>');
-      ReplaceTextToken(Text, '<Day>', IntToStr(Quest.DeadlineTurn - Galaxy.CurrentTurn), '<color=255,240,100>');
-      ReplaceTextToken(Text, '<Money>', IntToStr(Quest.RewardMoney), '<color=255,240,100>');
+      ReplaceTextToken(Text, '<Date>', Galaxy.FormatTurnDate(Quest.DeadlineTurn), TextHighlightColorTag);
+      ReplaceTextToken(Text, '<Day>', IntToStr(Quest.DeadlineTurn - Galaxy.CurrentTurn), TextHighlightColorTag);
+      ReplaceTextToken(Text, '<Money>', IntToStr(Quest.RewardMoney), TextHighlightColorTag);
       if Quest.Planet <> nil then begin
-      ReplaceTextToken(Text, '<FromPlanet>', Quest.Planet.Name, '<color=255,240,100>');
+      ReplaceTextToken(Text, '<FromPlanet>', Quest.Planet.Name, TextHighlightColorTag);
       end
       else
-      ReplaceTextToken(Text, '<FromPlanet>', '*** Какая еще планета? Это база!!! ***', '<color=255,0,0>');
-      ReplaceTextToken(Text, '<FromStar>', (Quest.ObjectiveTarget as TStar).Name, '<color=255,240,100>');
+      ReplaceTextToken(Text, '<FromPlanet>', '*** Какая еще планета? Это база!!! ***', RedColorTag);
+      ReplaceTextToken(Text, '<FromStar>', (Quest.ObjectiveTarget as TStar).Name, TextHighlightColorTag);
       Result := Text;
     end;
     qtDefendShip: begin
@@ -4444,16 +4444,16 @@ begin
       else if Kind = qtkProtectedShipLost then Suffix := '.Special'
       else Suffix := '.Start';
       Text := LocalizedColorText('Quest.DefShip.' + IntToStr(Quest.QuestNumber) + Suffix);
-      ReplaceTextToken(Text, '<Date>', Galaxy.FormatTurnDate(Quest.DeadlineTurn), '<color=255,240,100>');
-      ReplaceTextToken(Text, '<Day>', IntToStr(Quest.DeadlineTurn - Galaxy.CurrentTurn), '<color=255,240,100>');
-      ReplaceTextToken(Text, '<Money>', IntToStr(Quest.RewardMoney), '<color=255,240,100>');
+      ReplaceTextToken(Text, '<Date>', Galaxy.FormatTurnDate(Quest.DeadlineTurn), TextHighlightColorTag);
+      ReplaceTextToken(Text, '<Day>', IntToStr(Quest.DeadlineTurn - Galaxy.CurrentTurn), TextHighlightColorTag);
+      ReplaceTextToken(Text, '<Money>', IntToStr(Quest.RewardMoney), TextHighlightColorTag);
       if Quest.Planet <> nil then begin
-      ReplaceTextToken(Text, '<FromPlanet>', Quest.Planet.Name, '<color=255,240,100>');
-      ReplaceTextToken(Text, '<FromStar>', Quest.Planet.CurrentStar.Name, '<color=255,240,100>');
+      ReplaceTextToken(Text, '<FromPlanet>', Quest.Planet.Name, TextHighlightColorTag);
+      ReplaceTextToken(Text, '<FromStar>', Quest.Planet.CurrentStar.Name, TextHighlightColorTag);
       end;
-      ReplaceTextToken(Text, '<InStar>', (Quest.ObjectiveTarget as TShip).CurrentStar.Name, '<color=255,240,100>');
-      ReplaceTextToken(Text, '<Ship>', (Quest.ObjectiveTarget as TShip).GetName, '<color=255,240,100>');
-      ReplaceTextToken(Text, '<FullShip>', (Quest.ObjectiveTarget as TShip).GetFullName(' '), '<color=255,240,100>');
+      ReplaceTextToken(Text, '<InStar>', (Quest.ObjectiveTarget as TShip).CurrentStar.Name, TextHighlightColorTag);
+      ReplaceTextToken(Text, '<Ship>', (Quest.ObjectiveTarget as TShip).GetName, TextHighlightColorTag);
+      ReplaceTextToken(Text, '<FullShip>', (Quest.ObjectiveTarget as TShip).GetFullName(' '), TextHighlightColorTag);
       if (Galaxy.TechLevel < 7) and (Suffix = '.Start') then Text := Text + #13#10 + LocalizedColorText('Quest.DefShip.AddText');
       Result := Text;
     end;
@@ -4468,16 +4468,16 @@ begin
   Text := '';
   if Outcome = 0 then begin
     if Quest.Successful then
-      Text := Text + WrapTextInColor(LocalizedColorText('Quest.Info.CurQuests.Accepted'), '<color=255,240,100>') + #13#10
+      Text := Text + WrapTextInColor(LocalizedColorText('Quest.Info.CurQuests.Accepted'), TextHighlightColorTag) + #13#10
     else begin
-      Text := Text + WrapTextInColor(LocalizedColorText('Quest.Info.CurQuests.NotAccepted'), '<color=255,240,100>') + #13#10;
-      Text := Text + FormatText1(LocalizedColorText('Quest.Info.CountDay'), '<color=255,240,100>', '<Day>', IntToStr(Quest.DeadlineTurn - Galaxy.CurrentTurn)) + #13#10;
+      Text := Text + WrapTextInColor(LocalizedColorText('Quest.Info.CurQuests.NotAccepted'), TextHighlightColorTag) + #13#10;
+      Text := Text + FormatText1(LocalizedColorText('Quest.Info.CountDay'), TextHighlightColorTag, '<Day>', IntToStr(Quest.DeadlineTurn - Galaxy.CurrentTurn)) + #13#10;
     end;
   end
   else if Outcome > 0 then
-    Text := Text + WrapTextInColor(LocalizedColorText('Quest.Info.OldQuests.Accepted'), '<color=0,255,0>') + #13#10
-  else Text := Text + WrapTextInColor(LocalizedColorText('Quest.Info.OldQuests.NotAccepted'), '<color=255,0,0>') + #13#10;
-  Text := Text + FormatText2(LocalizedColorText('Quest.Info.FromPlanet'), '<color=255,240,100>', '<Planet>', Quest.Planet.Name,
+    Text := Text + WrapTextInColor(LocalizedColorText('Quest.Info.OldQuests.Accepted'), GreenColorTag) + #13#10
+  else Text := Text + WrapTextInColor(LocalizedColorText('Quest.Info.OldQuests.NotAccepted'), RedColorTag) + #13#10;
+  Text := Text + FormatText2(LocalizedColorText('Quest.Info.FromPlanet'), TextHighlightColorTag, '<Planet>', Quest.Planet.Name,
     '<System>', Quest.Planet.CurrentStar.Name) + #13#10;
   Text := Text + #13#10 + ' ' + #13#10 + Quest.Description;
   if Outcome = 0 then begin
@@ -4525,10 +4525,10 @@ begin
           if GetPlayer = Ranger then
           begin
             Text := PickLocalizedTextVariant('GalaxyNews.Quest.Failure.DeadShipInDefSystem', Seed * Cardinal(Galaxy.CurrentTurn div 10));
-            ReplaceTextToken(Text, '<Planet>', Quest.Planet.Name, '<color=255,240,100>');
-            ReplaceTextToken(Text, '<Relation>', Quest.Planet.GetRelationLevelTextToShip(Ranger), '<color=255,240,100>');
-            ReplaceTextToken(Text, '<Ship>', Ship.GetFullName(' '), '<color=255,240,100>');
-            ReplaceTextToken(Text, '<Star>', (Quest.ObjectiveTarget as TStar).Name, '<color=255,240,100>');
+            ReplaceTextToken(Text, '<Planet>', Quest.Planet.Name, TextHighlightColorTag);
+            ReplaceTextToken(Text, '<Relation>', Quest.Planet.GetRelationLevelTextToShip(Ranger), TextHighlightColorTag);
+            ReplaceTextToken(Text, '<Ship>', Ship.GetFullName(' '), TextHighlightColorTag);
+            ReplaceTextToken(Text, '<Star>', (Quest.ObjectiveTarget as TStar).Name, TextHighlightColorTag);
             AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn, Text, '');
           end;
         { The original calls these on Self, even while iterating another ranger's quests. }
@@ -4552,10 +4552,10 @@ begin
           if GetPlayer = Ranger then
           begin
             Text := PickLocalizedTextVariant('GalaxyNews.Quest.Failure.DeadDefShip', Seed * Cardinal(Galaxy.CurrentTurn div 10));
-            ReplaceTextToken(Text, '<Planet>', Quest.Planet.Name, '<color=255,240,100>');
-            ReplaceTextToken(Text, '<Relation>', Quest.Planet.GetRelationLevelTextToShip(Ranger), '<color=255,240,100>');
-            ReplaceTextToken(Text, '<Ship>', Ship.GetFullName(' '), '<color=255,240,100>');
-            ReplaceTextToken(Text, '<Star>', Ship.CurrentStar.Name, '<color=255,240,100>');
+            ReplaceTextToken(Text, '<Planet>', Quest.Planet.Name, TextHighlightColorTag);
+            ReplaceTextToken(Text, '<Relation>', Quest.Planet.GetRelationLevelTextToShip(Ranger), TextHighlightColorTag);
+            ReplaceTextToken(Text, '<Ship>', Ship.GetFullName(' '), TextHighlightColorTag);
+            ReplaceTextToken(Text, '<Star>', Ship.CurrentStar.Name, TextHighlightColorTag);
             AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn, Text, '');
           end;
           PublishQuestStatus(Quest, -1);
@@ -4577,8 +4577,8 @@ begin
         if GetPlayer = Ranger then
         begin
           Text := PickLocalizedTextVariant('GalaxyNews.Quest.Successful.KillShip', Galaxy.GenerationSeed * Cardinal(Galaxy.CurrentTurn div 10));
-          ReplaceTextToken(Text, '<Planet>', Quest.Planet.Name, '<color=255,240,100>');
-          ReplaceTextToken(Text, '<Ship>', Ship.GetFullName(' '), '<color=255,240,100>');
+          ReplaceTextToken(Text, '<Planet>', Quest.Planet.Name, TextHighlightColorTag);
+          ReplaceTextToken(Text, '<Ship>', Ship.GetFullName(' '), TextHighlightColorTag);
           AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn, Text, '');
         end;
         Quest.Successful := True;

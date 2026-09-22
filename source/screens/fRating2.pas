@@ -293,7 +293,7 @@ var Cursor: TPoint; I: Integer; Text, PartnerInfo, Names: WideString;
       begin
         Ally := TRanger(Galaxy.Rangers[I]);
         if (GetPlayer <> Ally) and (Ally.PartnerShip = Ranger) then
-          Result := FormatText2(LocalizedColorText('FormRating.PartnerBossOneText'),'<color=255,240,100>','<Name>',Ally.GetName,'<Date>',Galaxy.FormatTurnDate(Galaxy.CurrentTurn + Ally.PartnershipDaysRemaining));
+          Result := FormatText2(LocalizedColorText('FormRating.PartnerBossOneText'),TextHighlightColorTag,'<Name>',Ally.GetName,'<Date>',Galaxy.FormatTurnDate(Galaxy.CurrentTurn + Ally.PartnershipDaysRemaining));
       end;
     end
     else
@@ -304,8 +304,8 @@ var Cursor: TPoint; I: Integer; Text, PartnerInfo, Names: WideString;
         Ally := TRanger(Galaxy.Rangers[I]);
         if (GetPlayer <> Ally) and (Ally.PartnerShip = Ranger) then
         begin
-        if Names <> WideString('') then Names := Names + ', ' + FormatText2(LocalizedColorText('FormRating.AddInfoAboutPartner'),'<color=255,240,100>','<Name>',Ally.GetName,'<Date>',Galaxy.FormatTurnDate(Galaxy.CurrentTurn + Ally.PartnershipDaysRemaining))
-        else Names := FormatText2(LocalizedColorText('FormRating.AddInfoAboutPartner'),'<color=255,240,100>','<Name>',Ally.GetName,'<Date>',Galaxy.FormatTurnDate(Galaxy.CurrentTurn + Ally.PartnershipDaysRemaining));
+        if Names <> WideString('') then Names := Names + ', ' + FormatText2(LocalizedColorText('FormRating.AddInfoAboutPartner'),TextHighlightColorTag,'<Name>',Ally.GetName,'<Date>',Galaxy.FormatTurnDate(Galaxy.CurrentTurn + Ally.PartnershipDaysRemaining))
+        else Names := FormatText2(LocalizedColorText('FormRating.AddInfoAboutPartner'),TextHighlightColorTag,'<Name>',Ally.GetName,'<Date>',Galaxy.FormatTurnDate(Galaxy.CurrentTurn + Ally.PartnershipDaysRemaining));
         end;
       end;
       Result := FormatText1(LocalizedColorText('FormRating.PartnerBossManyText'),'','<Names>',Names);
@@ -316,7 +316,7 @@ begin
   if GetPlayer = Rows[Sender.UserValue].Ranger then
   begin
     with GetByName('RewardName') as TLabelGI do
-      SetText(FormatText1(LocalizedColorText('FormRating.PlayerName'),'<color=255,240,100>','<Name>',GetPlayer.GetName));
+      SetText(FormatText1(LocalizedColorText('FormRating.PlayerName'),TextHighlightColorTag,'<Name>',GetPlayer.GetName));
     if GetPlayer.CountWingmen > 0 then
     begin
       Names := '';
@@ -325,15 +325,15 @@ begin
         Ally := TRanger(Galaxy.Rangers[I]);
         if (GetPlayer <> Ally) and (GetPlayer = Ally.PartnerShip) then
         begin
-        if Names <> WideString('') then Names := Names + ', ' + FormatText2(LocalizedColorText('FormRating.AddInfoAboutPartner'),'<color=255,240,100>','<Name>',Ally.GetName,'<Date>',Galaxy.FormatTurnDate(Galaxy.CurrentTurn + Ally.PartnershipDaysRemaining))
-        else Names := FormatText2(LocalizedColorText('FormRating.AddInfoAboutPartner'),'<color=255,240,100>','<Name>',Ally.GetName,'<Date>',Galaxy.FormatTurnDate(Galaxy.CurrentTurn + Ally.PartnershipDaysRemaining));
+        if Names <> WideString('') then Names := Names + ', ' + FormatText2(LocalizedColorText('FormRating.AddInfoAboutPartner'),TextHighlightColorTag,'<Name>',Ally.GetName,'<Date>',Galaxy.FormatTurnDate(Galaxy.CurrentTurn + Ally.PartnershipDaysRemaining))
+        else Names := FormatText2(LocalizedColorText('FormRating.AddInfoAboutPartner'),TextHighlightColorTag,'<Name>',Ally.GetName,'<Date>',Galaxy.FormatTurnDate(Galaxy.CurrentTurn + Ally.PartnershipDaysRemaining));
         end;
       end;
       for I := 0 to GetPlayer.PiratePartners.Count - 1 do
       begin
         Pirate := TPirate(GetPlayer.PiratePartners[I]);
-        if Names <> WideString('') then Names := Names + ', ' + FormatText2(LocalizedColorText('FormRating.AddInfoAboutPirate'),'<color=255,240,100>','<Name>',Pirate.GetName,'<Date>',Galaxy.FormatTurnDate(Galaxy.CurrentTurn + Pirate.PartnershipDaysRemaining))
-        else Names := FormatText2(LocalizedColorText('FormRating.AddInfoAboutPirate'),'<color=255,240,100>','<Name>',Pirate.GetName,'<Date>',Galaxy.FormatTurnDate(Galaxy.CurrentTurn + Pirate.PartnershipDaysRemaining));
+        if Names <> WideString('') then Names := Names + ', ' + FormatText2(LocalizedColorText('FormRating.AddInfoAboutPirate'),TextHighlightColorTag,'<Name>',Pirate.GetName,'<Date>',Galaxy.FormatTurnDate(Galaxy.CurrentTurn + Pirate.PartnershipDaysRemaining))
+        else Names := FormatText2(LocalizedColorText('FormRating.AddInfoAboutPirate'),TextHighlightColorTag,'<Name>',Pirate.GetName,'<Date>',Galaxy.FormatTurnDate(Galaxy.CurrentTurn + Pirate.PartnershipDaysRemaining));
       end;
       PartnerInfo := FormatText1(LocalizedColorText('FormRating.PlayerPartnerOk'),'','<Names>',Names);
     end
@@ -347,9 +347,9 @@ begin
   else if Rows[Sender.UserValue].Ranger.IsInPrison then
   begin
     with GetByName('RewardName') as TLabelGI do
-      SetText(FormatText1(LocalizedColorText('FormRating.InPrisonName'),'<color=255,240,100>','<Name>',Rows[Sender.UserValue].Ranger.GetName));
+      SetText(FormatText1(LocalizedColorText('FormRating.InPrisonName'),TextHighlightColorTag,'<Name>',Rows[Sender.UserValue].Ranger.GetName));
     if Rows[Sender.UserValue].Ranger.CurrentPlanet <> nil then
-      Text := FormatText1(LocalizedColorText('FormRating.InPrisonText'),'<color=255,240,100>','<Planet>',Rows[Sender.UserValue].Ranger.CurrentPlanet.Name)
+      Text := FormatText1(LocalizedColorText('FormRating.InPrisonText'),TextHighlightColorTag,'<Planet>',Rows[Sender.UserValue].Ranger.CurrentPlanet.Name)
     else Text := '';
     with GetByName('RewardText') as TLabelGI do SetText(Text);
     with GetByName('RewardImage') as TGraphBufGI do
@@ -358,10 +358,10 @@ begin
   else if Rows[Sender.UserValue].Ranger.PartnerShip <> nil then
   begin
     with GetByName('RewardName') as TLabelGI do
-      SetText(FormatText1(LocalizedColorText('FormRating.PartnerName'),'<color=255,240,100>','<Name>',Rows[Sender.UserValue].Ranger.GetName));
+      SetText(FormatText1(LocalizedColorText('FormRating.PartnerName'),TextHighlightColorTag,'<Name>',Rows[Sender.UserValue].Ranger.GetName));
     Text := LocalizedColorText('FormRating.PartnerText');
-    ReplaceTextToken(Text,'<Name>',Rows[Sender.UserValue].Ranger.PartnerShip.GetName,'<color=255,240,100>');
-    ReplaceTextToken(Text,'<Date>',Galaxy.FormatTurnDate(Galaxy.CurrentTurn + Rows[Sender.UserValue].Ranger.PartnershipDaysRemaining),'<color=255,240,100>');
+    ReplaceTextToken(Text,'<Name>',Rows[Sender.UserValue].Ranger.PartnerShip.GetName,TextHighlightColorTag);
+    ReplaceTextToken(Text,'<Date>',Galaxy.FormatTurnDate(Galaxy.CurrentTurn + Rows[Sender.UserValue].Ranger.PartnershipDaysRemaining),TextHighlightColorTag);
     if Rows[Sender.UserValue].Ranger.PartnershipDaysRemaining = 0 then
       Text := Text + ' ' + LocalizedColorText('FormRating.PartnerTextDateEnd');
     if Rows[Sender.UserValue].Ranger.CountWingmen > 0 then
@@ -373,7 +373,7 @@ begin
   else if Rows[Sender.UserValue].Ranger.CountWingmen > 0 then
   begin
     with GetByName('RewardName') as TLabelGI do
-      SetText(FormatText1(LocalizedColorText('FormRating.PartnerName'),'<color=255,240,100>','<Name>',Rows[Sender.UserValue].Ranger.GetName));
+      SetText(FormatText1(LocalizedColorText('FormRating.PartnerName'),TextHighlightColorTag,'<Name>',Rows[Sender.UserValue].Ranger.GetName));
     Text := FormatRangerWingmenHint(Rows[Sender.UserValue].Ranger);
     with GetByName('RewardText') as TLabelGI do SetText(Text);
     with GetByName('RewardImage') as TGraphBufGI do
@@ -407,14 +407,14 @@ begin
   if GetPlayer = Ranger then
   begin
     with GetByName('RewardName') as TLabelGI do
-      SetText(FormatText1(LocalizedColorText('FormRating.PlayerName'),'<color=255,240,100>','<Name>',Ranger.GetName));
+      SetText(FormatText1(LocalizedColorText('FormRating.PlayerName'),TextHighlightColorTag,'<Name>',Ranger.GetName));
     with GetByName('RewardImage') as TGraphBufGI do
       LoadGiByPathIntoGraphBuf('Bm.FormRating2.' + GiResourceSuffix + 'PlayerB',GraphBuf);
   end
   else
   begin
     with GetByName('RewardName') as TLabelGI do
-      SetText(FormatText1(LocalizedColorText('FormRating.PartnerName'),'<color=255,240,100>','<Name>',Ranger.GetName));
+      SetText(FormatText1(LocalizedColorText('FormRating.PartnerName'),TextHighlightColorTag,'<Name>',Ranger.GetName));
     with GetByName('RewardImage') as TGraphBufGI do
       LoadGiByPathIntoGraphBuf('Bm.FormRating2.' + GiResourceSuffix + 'DutyB',GraphBuf);
   end;
@@ -422,7 +422,7 @@ begin
   for Career := Low(TRangerCareer) to High(TRangerCareer) do
     Text := Text + '<td=' + FormatCareerHintColumn(1) + '><align=left>' + LocalizedColorText('FormRating.Rating.' + CareerTuning[Career].Name) +
       '<td=' + FormatCareerHintColumn(2) + '>:</align><td=' + FormatCareerHintColumn(3) + '><align=right>' +
-      WrapTextInColor(IntToStr(Ranger.CareerStatus[Career]) ,'<color=255,240,100>') + '</align>' + #13#10;
+      WrapTextInColor(IntToStr(Ranger.CareerStatus[Career]) ,TextHighlightColorTag) + '</align>' + #13#10;
   with GetByName('RewardText') as TLabelGI do SetText(Text);
   with GetByName('RewardImage') as TGraphBufGI do
   begin
@@ -1295,14 +1295,14 @@ begin
   if GetPlayer = Ranger then
   begin
     with GetByName('RewardName') as TLabelGI do
-      SetText(FormatText1(LocalizedColorText('FormRating.PlayerName'),'<color=255,240,100>','<Name>',Ranger.GetName));
+      SetText(FormatText1(LocalizedColorText('FormRating.PlayerName'),TextHighlightColorTag,'<Name>',Ranger.GetName));
     with GetByName('RewardImage') as TGraphBufGI do
       LoadGiByPathIntoGraphBuf('Bm.FormRating2.' + GiResourceSuffix + 'PlayerB',GraphBuf);
   end
   else
   begin
     with GetByName('RewardName') as TLabelGI do
-      SetText(FormatText1(LocalizedColorText('FormRating.PartnerName'),'<color=255,240,100>','<Name>',Ranger.GetName));
+      SetText(FormatText1(LocalizedColorText('FormRating.PartnerName'),TextHighlightColorTag,'<Name>',Ranger.GetName));
     with GetByName('RewardImage') as TGraphBufGI do
       LoadGiByPathIntoGraphBuf('Bm.FormRating2.' + GiResourceSuffix + 'DutyB',GraphBuf);
   end;
@@ -1313,7 +1313,7 @@ begin
     if Ord(DominatorDisplayOrder[I]) <> 0 then
     Text := Text + '<td=' + FormatDominatorKillsHintColumn(1) + '><align=left>' + LocalizedColorText(AnsiString('ShipType.Dominator.Blazer.') + IntToStr(Ord(DominatorDisplayOrder[I]))) +
       '<td=' + FormatDominatorKillsHintColumn(2) + '>:</align><td=' + FormatDominatorKillsHintColumn(3) + '><align=left>' +
-      WrapTextInColor(IntToStr(GetPlayer.DominatorKillsByType[Ord(DominatorDisplayOrder[I])]) ,'<color=255,240,100>') + '</align>' + #13#10;
+      WrapTextInColor(IntToStr(GetPlayer.DominatorKillsByType[Ord(DominatorDisplayOrder[I])]) ,TextHighlightColorTag) + '</align>' + #13#10;
   with GetByName('RewardText') as TLabelGI do SetText(Text);
   end;
   with GetByName('RewardImage') as TGraphBufGI do

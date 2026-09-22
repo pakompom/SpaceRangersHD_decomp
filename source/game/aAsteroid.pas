@@ -242,7 +242,7 @@ end;
 function TAsteroid.GetDisplayName: WideString;
 begin
   Result := LocalizedText('Asteroid.Name');
-  ReplaceTextToken(Result, '<Number>', IntToWideString(Id), '<color=255,240,100>');
+  ReplaceTextToken(Result, '<Number>', IntToWideString(Id), TextHighlightColorTag);
 end;
 { @end $797A64 }
 
@@ -251,11 +251,11 @@ function TAsteroid.GetInfoText: WideString;
 var Speed: Single;
 begin
   Result := LocalizedText('Asteroid.Text');
-  ReplaceTextToken(Result, '<Number>', IntToWideString(Id), '<color=255,240,100>');
+  ReplaceTextToken(Result, '<Number>', IntToWideString(Id), TextHighlightColorTag);
   Speed := Sqrt(Sqr(Velocity.X) + Sqr(Velocity.Y));
   Speed := Speed * BaseMovementStepsPerTurn * 19968 * AsteroidWorldScale;
-  ReplaceTextToken(Result, '<Speed>', IntToWideString(Round(Speed)), '<color=255,240,100>');
-  ReplaceTextToken(Result, '<Count>', IntToWideString(MineralCount), '<color=255,240,100>');
+  ReplaceTextToken(Result, '<Speed>', IntToWideString(Round(Speed)), TextHighlightColorTag);
+  ReplaceTextToken(Result, '<Count>', IntToWideString(MineralCount), TextHighlightColorTag);
 end;
 { @end $797B38 }
 

@@ -624,14 +624,14 @@ begin
     SetDisabled((GetPlayer = nil) or (GetPlayer.GetHull.HullPoints >= GetPlayer.GetHull.Weight));
     if Disabled then HelpText := LocalizedColorText('Help.ButRepair')
     else HelpText := LocalizedColorText('Help.ButRepair') + ' ' +
-      FormatText1(LocalizedColorText('FormHangar.HullStatus.Cost'),'<color=255,240,100>','<Money>',IntToStr(GetPlayer.GetHull.CalculateRepairCost));
+      FormatText1(LocalizedColorText('FormHangar.HullStatus.Cost'),TextHighlightColorTag,'<Money>',IntToStr(GetPlayer.GetHull.CalculateRepairCost));
   end;
   with GetByName('ButRefuel') as TGraphButtonGI do
   begin
     SetDisabled((GetPlayer = nil) or (GetPlayer.GetFullRefuelCost <= 0));
     if Disabled then HelpText := LocalizedColorText('Help.ButRefuel')
     else HelpText := LocalizedColorText('Help.ButRefuel') + ' ' +
-      FormatText1(LocalizedColorText('FormHangar.FuelTankStatus.Cost'),'<color=255,240,100>','<Money>',IntToStr(GetPlayer.GetFullRefuelCost));
+      FormatText1(LocalizedColorText('FormHangar.FuelTankStatus.Cost'),TextHighlightColorTag,'<Money>',IntToStr(GetPlayer.GetFullRefuelCost));
   end;
   (GetByName('ButTakeOff') as TGraphButtonGI).SetDisabled(not RefreshTakeOffStatus);
 end;
@@ -646,7 +646,7 @@ begin
     Galaxy.CheckIntegrityChecksum(215);
     GetPlayer.SetMoney(0);
     Galaxy.PrimeIntegrityChecksum(216);
-    ShowMessageBoxGI(Self,FormatText1(LocalizedColorText('FormHangar.HullStatus.NotMoney'),'<color=255,240,100>','<Money>',IntToStr(GetPlayer.GetHull.CalculateRepairCost)),mbgCancel or mbgError);
+    ShowMessageBoxGI(Self,FormatText1(LocalizedColorText('FormHangar.HullStatus.NotMoney'),TextHighlightColorTag,'<Money>',IntToStr(GetPlayer.GetHull.CalculateRepairCost)),mbgCancel or mbgError);
     MainPanel.FlashMoneyWarning;
     Exit;
   end;
@@ -685,7 +685,7 @@ begin
   if LoadPanel.IsAnimatingShutters or MainPanel.NavigationLocked or HasPendingScriptRequests then Exit;
   if GetPlayer.GetFullRefuelCost > GetPlayer.Money then
   begin
-    ShowMessageBoxGI(Self,FormatText1(LocalizedColorText('FormHangar.FuelTankStatus.NotMoney'),'<color=255,240,100>','<Money>',IntToStr(GetPlayer.GetFullRefuelCost)),mbgCancel or mbgError);
+    ShowMessageBoxGI(Self,FormatText1(LocalizedColorText('FormHangar.FuelTankStatus.NotMoney'),TextHighlightColorTag,'<Money>',IntToStr(GetPlayer.GetFullRefuelCost)),mbgCancel or mbgError);
     MainPanel.FlashMoneyWarning;
     Exit;
   end;
@@ -1259,16 +1259,16 @@ begin
     (GetByName('InfoShipName') as TLabelGI).SetText(WrapTextInColor(Ship.GetFullName(' '),InfoNameColorTag));
     if (Ship <> nil) and (GetPlayer = Ship.PartnerShip) then
       (GetByName('InfoShipName') as TLabelGI).SetText((GetByName('InfoShipName') as TLabelGI).GetText + #13#10 +
-        WrapTextInColor(LookupLocalizedTextByKey('FormInfo.Partner'),'<color=255,240,100>'));
+        WrapTextInColor(LookupLocalizedTextByKey('FormInfo.Partner'),TextHighlightColorTag));
     if (Ship is TKling) and ((Ship as TKling).ActiveProgramAppliedTurn > 0) and ((Ship as TKling).ActiveProgramId in [prgShipwreck..prgDisconnection]) then
       (GetByName('InfoShipName') as TLabelGI).SetText((GetByName('InfoShipName') as TLabelGI).GetText + #13#10 +
-        WrapTextInColor(LocalizedText('Programms.' + ProgramNames[(Ship as TKling).ActiveProgramId] + '.AddToShipInfo'),'<color=255,0,0>'));
+        WrapTextInColor(LocalizedText('Programms.' + ProgramNames[(Ship as TKling).ActiveProgramId] + '.AddToShipInfo'),RedColorTag));
     if (Ship is TRanger) and (Cardinal((Ship as TRanger).PrisonTermRemaining) > 0) then
       (GetByName('InfoShipName') as TLabelGI).SetText((GetByName('InfoShipName') as TLabelGI).GetText + #13#10 +
-        WrapTextInColor(LocalizedColorText('FormHangar.Prison'),'<color=255,0,0>'))
+        WrapTextInColor(LocalizedColorText('FormHangar.Prison'),RedColorTag))
     else if (Ship is TPirate) and (Cardinal((Ship as TPirate).PrisonTermRemaining) > 0) then
       (GetByName('InfoShipName') as TLabelGI).SetText((GetByName('InfoShipName') as TLabelGI).GetText + #13#10 +
-        WrapTextInColor(LocalizedColorText('FormHangar.Prison'),'<color=255,0,0>'));
+        WrapTextInColor(LocalizedColorText('FormHangar.Prison'),RedColorTag));
   end
   else (GetByName('InfoShipName') as TLabelGI).SetText(WrapTextInColor(Ship.GetFullName(' '),InfoNameColorTag));
   if Ship.GetFactionNameKey <> 'None' then
@@ -1332,7 +1332,7 @@ begin
   end;
   (GetByName('InfoShipSpeed') as TLabelGI).SetText(IntToStr(Ship.CalculateSpeed));
   (GetByName('InfoShipDamage') as TLabelGI).SetText(WrapTextInColor('???',''));
-  if Ship.GetHull.HullPoints <= Ship.GetHull.Weight / 2 then ColorTag := '<color=255,166,0>' else ColorTag := '';
+  if Ship.GetHull.HullPoints <= Ship.GetHull.Weight / 2 then ColorTag := OrangeColorTag else ColorTag := '';
   if GetPlayer.CanResolveObjectWithScanner(Ship) or (GetPlayer = Ship) or (GetPlayer = Ship.PartnerShip) or (Ship.TypeId = stTranclucator) then
   begin
     Text := WrapTextInColor(IntToStr(Ship.GetHull.HullPoints),ColorTag) + '/' + IntToStr(Ship.GetHull.Weight);

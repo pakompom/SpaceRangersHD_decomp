@@ -3910,7 +3910,7 @@ begin
     begin
       GetByName('InfoStar').SetActive(True);
       if StartArcadeSpace = Space then Star := GetPlayer.TransitOriginStar else Star := GetPlayer.CurrentStar;
-      (GetByName('InfoStarName') as TLabelGI).SetText(WrapTextInColor(Star.Name, '<color=255,240,100>'));
+      (GetByName('InfoStarName') as TLabelGI).SetText(WrapTextInColor(Star.Name, TextHighlightColorTag));
       with GetByName('InfoStarImage') as TGraphBufGI do
       begin
         SourceHasPerPixelAlpha := True;
@@ -4016,7 +4016,7 @@ begin
     begin
       GetByName('InfoStar').SetActive(False);
       GetByName('InfoPanel').SetActive(True);
-      (GetByName('InfoName') as TLabelGI).SetText(WrapTextInColor(LocalizedColorText('FormAB.InfoName'), '<color=255,240,100>'));
+      (GetByName('InfoName') as TLabelGI).SetText(WrapTextInColor(LocalizedColorText('FormAB.InfoName'), TextHighlightColorTag));
       (GetByName('InfoExit') as TLabelGI).SetText(IntToStr(Space.OutgoingCount));
       Text := Space.GetDangerText;
       (GetByName('InfoDanger') as TLabelGI).SetText(Text);
@@ -4120,7 +4120,7 @@ begin
     begin
       (GetByName('InfoItemName') as TLabelGI).SetText('');
       (GetByName('InfoItemName') as TLabelGI).SetText(WrapTextInColor(Instance.GetDisplayName, InfoNameColorTag));
-      (GetByName('InfoItemText') as TLabelGI).SetText(Instance.GetInfoText('<color=255,240,100>', nil));
+      (GetByName('InfoItemText') as TLabelGI).SetText(Instance.GetInfoText(TextHighlightColorTag, nil));
     end;
     (GetByName('InfoItemSize') as TLabelGI).SetText(IntToStr(Instance.Weight));
     (GetByName('InfoItemPrice') as TLabelGI).SetText(IntToStr(Instance.Cost));

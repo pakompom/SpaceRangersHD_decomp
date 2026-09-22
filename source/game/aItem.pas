@@ -1418,45 +1418,45 @@ begin
   if PrefixNewLine then Prefix := #13#10 else Prefix := '';
   if (GetPlayer <> nil) and not GetPlayer.CanUseEquipmentTech(Self) then
   begin
-    Result := WrapTextInColor(Prefix + LocalizedText('Items.Equpments.CanNotBeUsed'), '<color=255,0,0>');
+    Result := WrapTextInColor(Prefix + LocalizedText('Items.Equpments.CanNotBeUsed'), RedColorTag);
     Exit;
   end;
   if (GetPlayer <> nil) and not GetPlayer.CanRepairEquipmentTech(Self) and (BrokenFlag <> 0) and
     not (ItemType in [t_FuelTanks..t_Engine]) then
   begin
-    Result := WrapTextInColor(Prefix + LocalizedText('Items.Equpments.CanNotBeUsed'), '<color=255,0,0>');
+    Result := WrapTextInColor(Prefix + LocalizedText('Items.Equpments.CanNotBeUsed'), RedColorTag);
     Exit;
   end;
   if BrokenFlag <> 0 then
   begin
     if ItemType in [t_FuelTanks..t_DefGenerator] then
-      Result := WrapTextInColor(Prefix + LocalizedText('Items.' + ItemTypeNames[ItemType] + '.Broken'), '<color=255,0,0>')
+      Result := WrapTextInColor(Prefix + LocalizedText('Items.' + ItemTypeNames[ItemType] + '.Broken'), RedColorTag)
     else if ItemType in [t_Weapon1..t_CustomWeapon] then
-      Result := WrapTextInColor(Prefix + LocalizedText('Items.Weapon.Broken'), '<color=255,0,0>')
+      Result := WrapTextInColor(Prefix + LocalizedText('Items.Weapon.Broken'), RedColorTag)
     else if ItemType in [t_Artefact..t_Artefact2] then
-      Result := WrapTextInColor(Prefix + LocalizedText('Artefacts.CustomArtefacts.' + ConfigBlockName + '.Broken'), '<color=255,0,0>')
+      Result := WrapTextInColor(Prefix + LocalizedText('Artefacts.CustomArtefacts.' + ConfigBlockName + '.Broken'), RedColorTag)
     else if ItemType in [t_Artefact, t_ArtefactHull..t_ArtefactAntigrav, t_ArtDefToEnergy..t_ArtGiperJump, t_ArtBio..t_ArtFastRacks] then
-      Result := WrapTextInColor(Prefix + LocalizedText('Artefacts.' + ItemTypeNames[ItemType] + '.Broken'), '<color=255,0,0>')
+      Result := WrapTextInColor(Prefix + LocalizedText('Artefacts.' + ItemTypeNames[ItemType] + '.Broken'), RedColorTag)
     else if ItemType = t_Satellite then
-      Result := WrapTextInColor(Prefix + LocalizedText('Items.Satellite.Broken'), '<color=255,0,0>')
+      Result := WrapTextInColor(Prefix + LocalizedText('Items.Satellite.Broken'), RedColorTag)
     else Result := '';
   end
   else if Self is TArtefact then
   begin
     // Native retains this transmitter branch despite the initial supported-type set.
     if (ItemType = t_ArtefactTransmitter) and ((Self as TArtefactTransmitter).Power < MinTransmitterPower) then
-      Result := WrapTextInColor(Prefix + LocalizedText('Artefacts.ArtTransmitter.Broken'), '<color=254,217,7>')
+      Result := WrapTextInColor(Prefix + LocalizedText('Artefacts.ArtTransmitter.Broken'), GoldColorTag)
     else Result := '';
   end
   else if ConditionPercent < 20 then
-    Result := WrapTextInColor(Prefix + LocalizedText('Items.Equpments.SmallDuration'), '<color=254,217,7>')
+    Result := WrapTextInColor(Prefix + LocalizedText('Items.Equpments.SmallDuration'), GoldColorTag)
   else if ConditionPercent < 50 then
-    Result := WrapTextInColor(Prefix + LocalizedText('Items.Equpments.AverageDuration'), '<color=127,127,127>')
+    Result := WrapTextInColor(Prefix + LocalizedText('Items.Equpments.AverageDuration'), GrayColorTag)
   else Result := '';
   if (GetPlayer <> nil) and not GetPlayer.CanRepairEquipmentTech(Self) then
   begin
     if not PrefixNewLine then Result := '';
-    Result := WrapTextInColor(Prefix + LocalizedText('Items.Equpments.CanNotBeRepaired'), '<color=127,127,127>') + Result;
+    Result := WrapTextInColor(Prefix + LocalizedText('Items.Equpments.CanNotBeRepaired'), GrayColorTag) + Result;
   end;
 end;
 { @end $7F170C }
@@ -1467,7 +1467,7 @@ begin
   if ItemType in [t_FuelTanks..t_DefGenerator] then
     Result := LocalizedText('Items.' + ItemTypeNames[ItemType] + '.BrokenInBattle')
   else if ItemType in [t_Weapon1..t_CustomWeapon] then
-    Result := FormatText1(LocalizedText('Items.Weapon.BrokenInBattle'), '<color=255,240,100>', '<Name>', GetDisplayName)
+    Result := FormatText1(LocalizedText('Items.Weapon.BrokenInBattle'), TextHighlightColorTag, '<Name>', GetDisplayName)
   else if ItemType in [t_Artefact..t_Artefact2] then
     Result := LocalizedText('Artefacts.CustomArtefacts.' + ConfigBlockName + '.BrokenInBattle')
   else if ItemType in [t_Artefact, t_ArtefactHull..t_ArtefactAntigrav, t_ArtDefToEnergy..t_ArtGiperJump, t_ArtBio..t_ArtFastRacks] then
@@ -1482,7 +1482,7 @@ begin
   if ItemType in [t_FuelTanks..t_DefGenerator] then
     Result := LocalizedText('Items.' + ItemTypeNames[ItemType] + '.BrokenInUse')
   else if ItemType in [t_Weapon1..t_CustomWeapon] then
-    Result := FormatText1(LocalizedText('Items.Weapon.BrokenInUse'), '<color=255,240,100>', '<Name>', GetDisplayName)
+    Result := FormatText1(LocalizedText('Items.Weapon.BrokenInUse'), TextHighlightColorTag, '<Name>', GetDisplayName)
   else if ItemType in [t_Artefact..t_Artefact2] then
     Result := LocalizedText('Artefacts.CustomArtefacts.' + ConfigBlockName + '.BrokenInUse')
   else if ItemType in [t_Artefact, t_ArtefactHull..t_ArtefactAntigrav, t_ArtDefToEnergy..t_ArtGiperJump, t_ArtBio..t_ArtFastRacks] then
@@ -1498,7 +1498,7 @@ begin
   if ItemType in [t_FuelTanks..t_DefGenerator] then
     Result := LocalizedText('Items.' + ItemTypeNames[ItemType] + '.BrokenByForce')
   else if ItemType in [t_Weapon1..t_CustomWeapon] then
-    Result := FormatText1(LocalizedText('Items.Weapon.BrokenByForce'), '<color=255,240,100>', '<Name>', GetDisplayName)
+    Result := FormatText1(LocalizedText('Items.Weapon.BrokenByForce'), TextHighlightColorTag, '<Name>', GetDisplayName)
   else if ItemType in [t_Artefact..t_Artefact2] then
     Result := LocalizedText('Artefacts.CustomArtefacts.' + ConfigBlockName + '.BrokenByForce')
   else if ItemType in [t_Artefact, t_ArtefactHull..t_ArtefactAntigrav, t_ArtDefToEnergy..t_ArtGiperJump, t_ArtBio..t_ArtFastRacks] then
@@ -1837,7 +1837,7 @@ begin
       (GetSpecialModuleName <> '') then
     begin
       Result := #13#10' '#13#10 + LocalizedText('Items.Weapon.WSpecial') + ' ' +
-        WrapTextInColor(GetSpecialModuleName, '<color=255,240,100>');
+        WrapTextInColor(GetSpecialModuleName, TextHighlightColorTag);
       if Description <> '' then Result := Result + #13#10 + WrapTextInColor(Description, GetMicroModuleTextColorTag(SpecialModuleIndex - 1));
     end
     else if Description <> '' then Result := #13#10' '#13#10 + WrapTextInColor(Description, GetMicroModuleTextColorTag(SpecialModuleIndex - 1));
@@ -2249,7 +2249,7 @@ begin
   if (OwnerShip <> nil) and TShip(OwnerShip).UsesVeteranHumanRangerAppearance then
     Text := LocalizedText('HullType.HullOldfag.Text') + ' ' + Text
   else if HullSeries <> -1 then Text := HullSeriesDefinitions[HullSeries].Text + ' ' + Text;
-  if HullPoints <= Weight / 2 then SizeColor := '<color=254,217,7>' else SizeColor := ColorTag;
+  if HullPoints <= Weight / 2 then SizeColor := GoldColorTag else SizeColor := ColorTag;
   ReplaceTextToken(Text, '<Size>', IntToStr(HullPoints), SizeColor);
   ReplaceTextToken(Text, '<MaxSize>', IntToStr(Weight), ColorTag);
   ReplaceInfoTokens(Text, ColorTag, Ship);
@@ -2270,24 +2270,24 @@ begin
   else
   begin
     if MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonHull] > 0 then
-      BonusText := WrapTextInColor('+' + IntToStr(MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonHull]), '<color=0,255,0>')
-    else BonusText := WrapTextInColor(IntToStr(MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonHull]), '<color=255,0,0>');
+      BonusText := WrapTextInColor('+' + IntToStr(MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonHull]), GreenColorTag)
+    else BonusText := WrapTextInColor(IntToStr(MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonHull]), RedColorTag);
   end;
   StatBonus := GetStatBonus(bonHull);
   if StatBonus <> 0 then
-    if StatBonus > 0 then BonusText := BonusText + WrapTextInColor('+' + IntToStr(StatBonus), '<color=255,167,84>')
-    else BonusText := BonusText + WrapTextInColor(IntToStr(StatBonus), '<color=255,167,84>');
+    if StatBonus > 0 then BonusText := BonusText + WrapTextInColor('+' + IntToStr(StatBonus), EquipmentBonusColorTag)
+    else BonusText := BonusText + WrapTextInColor(IntToStr(StatBonus), EquipmentBonusColorTag);
   if OwnerShip <> nil then StatBonus := TShip(OwnerShip).GetTotalStatBonus(bonHull) - StatBonus
   else StatBonus := 0;
   if StatBonus <> 0 then
-    if StatBonus > 0 then BonusText := BonusText + WrapTextInColor('(+' + IntToStr(StatBonus) + ')', '<color=255,167,84>')
-    else BonusText := BonusText + WrapTextInColor('(' + IntToStr(StatBonus) + ')', '<color=255,167,84>');
+    if StatBonus > 0 then BonusText := BonusText + WrapTextInColor('(+' + IntToStr(StatBonus) + ')', EquipmentBonusColorTag)
+    else BonusText := BonusText + WrapTextInColor('(' + IntToStr(StatBonus) + ')', EquipmentBonusColorTag);
   if MicroModuleIndex = 0 then BaseArmor := Armor
   else BaseArmor := Armor - MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonHull];
   if CalculateGeneratedArmor = BaseArmor then ReplaceTextToken(Text, '<HitProtect>', WideString(IntToStr(BaseArmor)) + BonusText, ColorTag)
   else if CalculateGeneratedArmor < BaseArmor then
-    ReplaceTextToken(Text, '<HitProtect>', WrapTextInColor(IntToStr(BaseArmor), '<color=0,255,0>') + BonusText, ColorTag)
-  else ReplaceTextToken(Text, '<HitProtect>', WrapTextInColor(IntToStr(BaseArmor), '<color=255,0,0>') + BonusText, ColorTag);
+    ReplaceTextToken(Text, '<HitProtect>', WrapTextInColor(IntToStr(BaseArmor), GreenColorTag) + BonusText, ColorTag)
+  else ReplaceTextToken(Text, '<HitProtect>', WrapTextInColor(IntToStr(BaseArmor), RedColorTag) + BonusText, ColorTag);
 end;
 { @end $7F5F7C }
 
@@ -2581,8 +2581,8 @@ var BonusText: WideString; BaseValue, SizePercent, ExpectedWeight: Integer;
 begin
   if (MicroModuleIndex = 0) or (MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonFuel] = 0) then BonusText := ''
   else if MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonFuel] > 0 then
-    BonusText := WrapTextInColor('+' + IntToStr(MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonFuel]), '<color=0,255,0>')
-  else BonusText := WrapTextInColor(IntToStr(MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonFuel]), '<color=255,0,0>');
+    BonusText := WrapTextInColor('+' + IntToStr(MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonFuel]), GreenColorTag)
+  else BonusText := WrapTextInColor(IntToStr(MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonFuel]), RedColorTag);
   if MicroModuleIndex = 0 then BaseValue := Capacity
   else BaseValue := Capacity - MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonFuel];
   ExpectedWeight := Round((BaseValue - FuelCapacityByLevel[TechLevel]) * FuelTanksBaseSize / 20);
@@ -2592,8 +2592,8 @@ begin
   if SizePercent > 0 then ExpectedWeight := Round(ExpectedWeight * SizePercent / 100);
   if Abs(ExpectedWeight - Weight) <= 1 then ReplaceTextToken(Text, '<Capacity>', WideString(IntToStr(BaseValue)) + BonusText, ColorTag)
   else if ExpectedWeight > Weight then
-    ReplaceTextToken(Text, '<Capacity>', WrapTextInColor(IntToStr(BaseValue), '<color=0,255,0>') + BonusText, ColorTag)
-  else ReplaceTextToken(Text, '<Capacity>', WrapTextInColor(IntToStr(BaseValue), '<color=255,0,0>') + BonusText, ColorTag);
+    ReplaceTextToken(Text, '<Capacity>', WrapTextInColor(IntToStr(BaseValue), GreenColorTag) + BonusText, ColorTag)
+  else ReplaceTextToken(Text, '<Capacity>', WrapTextInColor(IntToStr(BaseValue), RedColorTag) + BonusText, ColorTag);
 end;
 { @end $7F7DB0 }
 
@@ -2773,43 +2773,43 @@ begin
   BaseValue := Max(0, Speed - StatBonus);
   StatBonus := Max(0, Speed) - BaseValue;
   if StatBonus = 0 then BonusText := ''
-  else if StatBonus > 0 then BonusText := WrapTextInColor('+' + IntToStr(StatBonus), '<color=0,255,0>')
-  else BonusText := WrapTextInColor(IntToStr(StatBonus), '<color=255,0,0>');
+  else if StatBonus > 0 then BonusText := WrapTextInColor('+' + IntToStr(StatBonus), GreenColorTag)
+  else BonusText := WrapTextInColor(IntToStr(StatBonus), RedColorTag);
   StatBonus := Max(-Max(0, Speed), GetStatBonus(bonSpeed));
   if StatBonus <> 0 then
-    if StatBonus > 0 then BonusText := BonusText + WrapTextInColor('+' + IntToStr(StatBonus), '<color=255,167,84>')
-    else BonusText := BonusText + WrapTextInColor(IntToStr(StatBonus), '<color=255,167,84>');
+    if StatBonus > 0 then BonusText := BonusText + WrapTextInColor('+' + IntToStr(StatBonus), EquipmentBonusColorTag)
+    else BonusText := BonusText + WrapTextInColor(IntToStr(StatBonus), EquipmentBonusColorTag);
   if (Ship <> nil) and (EquippedFlag <> 0) then
     StatBonus := Max(TShip(Ship).GetTotalStatBonus(bonSpeed) - StatBonus, -(Speed + StatBonus))
   else StatBonus := 0;
   if StatBonus <> 0 then
-    if StatBonus > 0 then BonusText := BonusText + WrapTextInColor('(+' + IntToStr(StatBonus) + ')', '<color=255,167,84>')
-    else BonusText := BonusText + WrapTextInColor('(' + IntToStr(StatBonus) + ')', '<color=255,167,84>');
+    if StatBonus > 0 then BonusText := BonusText + WrapTextInColor('(+' + IntToStr(StatBonus) + ')', EquipmentBonusColorTag)
+    else BonusText := BonusText + WrapTextInColor('(' + IntToStr(StatBonus) + ')', EquipmentBonusColorTag);
   if CalculateGeneratedSpeed = BaseValue then ReplaceTextToken(Text, '<Speed>', WideString(IntToStr(BaseValue)) + BonusText, ColorTag)
   else if CalculateGeneratedSpeed < BaseValue then
-    ReplaceTextToken(Text, '<Speed>', WrapTextInColor(IntToStr(BaseValue), '<color=0,255,0>') + BonusText, ColorTag)
-  else ReplaceTextToken(Text, '<Speed>', WrapTextInColor(IntToStr(BaseValue), '<color=255,0,0>') + BonusText, ColorTag);
+    ReplaceTextToken(Text, '<Speed>', WrapTextInColor(IntToStr(BaseValue), GreenColorTag) + BonusText, ColorTag)
+  else ReplaceTextToken(Text, '<Speed>', WrapTextInColor(IntToStr(BaseValue), RedColorTag) + BonusText, ColorTag);
   if MicroModuleIndex = 0 then StatBonus := 0
   else StatBonus := MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonJump];
   BaseValue := Max(0, JumpRange - StatBonus);
   StatBonus := Max(0, JumpRange) - BaseValue;
   if StatBonus = 0 then BonusText := ''
-  else if StatBonus > 0 then BonusText := WrapTextInColor('+' + IntToStr(StatBonus), '<color=0,255,0>')
-  else BonusText := WrapTextInColor(IntToStr(StatBonus), '<color=255,0,0>');
+  else if StatBonus > 0 then BonusText := WrapTextInColor('+' + IntToStr(StatBonus), GreenColorTag)
+  else BonusText := WrapTextInColor(IntToStr(StatBonus), RedColorTag);
   StatBonus := Max(-Max(0, JumpRange), GetStatBonus(bonJump));
   if StatBonus <> 0 then
-    if StatBonus > 0 then BonusText := BonusText + WrapTextInColor('+' + IntToStr(StatBonus), '<color=255,167,84>')
-    else BonusText := BonusText + WrapTextInColor(IntToStr(StatBonus), '<color=255,167,84>');
+    if StatBonus > 0 then BonusText := BonusText + WrapTextInColor('+' + IntToStr(StatBonus), EquipmentBonusColorTag)
+    else BonusText := BonusText + WrapTextInColor(IntToStr(StatBonus), EquipmentBonusColorTag);
   if (Ship <> nil) and (EquippedFlag <> 0) then
     StatBonus := Max(TShip(Ship).GetTotalStatBonus(bonJump) - StatBonus, -(JumpRange + StatBonus))
   else StatBonus := 0;
   if StatBonus <> 0 then
-    if StatBonus > 0 then BonusText := BonusText + WrapTextInColor('(+' + IntToStr(StatBonus) + ')', '<color=255,167,84>')
-    else BonusText := BonusText + WrapTextInColor('(' + IntToStr(StatBonus) + ')', '<color=255,167,84>');
+    if StatBonus > 0 then BonusText := BonusText + WrapTextInColor('(+' + IntToStr(StatBonus) + ')', EquipmentBonusColorTag)
+    else BonusText := BonusText + WrapTextInColor('(' + IntToStr(StatBonus) + ')', EquipmentBonusColorTag);
   if CalculateGeneratedJumpRange = BaseValue then ReplaceTextToken(Text, '<Parsec>', WideString(IntToStr(BaseValue)) + BonusText, ColorTag)
   else if CalculateGeneratedJumpRange < BaseValue then
-    ReplaceTextToken(Text, '<Parsec>', WrapTextInColor(IntToStr(BaseValue), '<color=0,255,0>') + BonusText, ColorTag)
-  else ReplaceTextToken(Text, '<Parsec>', WrapTextInColor(IntToStr(BaseValue), '<color=255,0,0>') + BonusText, ColorTag);
+    ReplaceTextToken(Text, '<Parsec>', WrapTextInColor(IntToStr(BaseValue), GreenColorTag) + BonusText, ColorTag)
+  else ReplaceTextToken(Text, '<Parsec>', WrapTextInColor(IntToStr(BaseValue), RedColorTag) + BonusText, ColorTag);
 end;
 { @end $7F8DF0 }
 
@@ -2930,24 +2930,24 @@ var BonusText: WideString; BaseValue, StatBonus: Integer;
 begin
   if (MicroModuleIndex = 0) or (MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonRadar] = 0) then BonusText := ''
   else if MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonRadar] > 0 then
-    BonusText := WrapTextInColor('+' + IntToStr(MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonRadar]), '<color=0,255,0>')
-  else BonusText := WrapTextInColor(IntToStr(MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonRadar]), '<color=255,0,0>');
+    BonusText := WrapTextInColor('+' + IntToStr(MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonRadar]), GreenColorTag)
+  else BonusText := WrapTextInColor(IntToStr(MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonRadar]), RedColorTag);
   StatBonus := Max(-Max(0, Range), GetStatBonus(bonRadar));
   if StatBonus <> 0 then
-    if StatBonus > 0 then BonusText := BonusText + WrapTextInColor('+' + IntToStr(StatBonus), '<color=255,167,84>')
-    else BonusText := BonusText + WrapTextInColor(IntToStr(StatBonus), '<color=255,167,84>');
+    if StatBonus > 0 then BonusText := BonusText + WrapTextInColor('+' + IntToStr(StatBonus), EquipmentBonusColorTag)
+    else BonusText := BonusText + WrapTextInColor(IntToStr(StatBonus), EquipmentBonusColorTag);
   if (Ship <> nil) and (EquippedFlag <> 0) then
     StatBonus := Max(TShip(Ship).GetTotalStatBonus(bonRadar) - StatBonus, -(Range + StatBonus))
   else StatBonus := 0;
   if StatBonus <> 0 then
-    if StatBonus > 0 then BonusText := BonusText + WrapTextInColor('(+' + IntToStr(StatBonus) + ')', '<color=255,167,84>')
-    else BonusText := BonusText + WrapTextInColor('(' + IntToStr(StatBonus) + ')', '<color=255,167,84>');
+    if StatBonus > 0 then BonusText := BonusText + WrapTextInColor('(+' + IntToStr(StatBonus) + ')', EquipmentBonusColorTag)
+    else BonusText := BonusText + WrapTextInColor('(' + IntToStr(StatBonus) + ')', EquipmentBonusColorTag);
   if MicroModuleIndex = 0 then BaseValue := Range
   else BaseValue := Range - MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonRadar];
   if HasStandardStats then ReplaceTextToken(Text, '<Radius>', WideString(IntToStr(BaseValue)) + BonusText, ColorTag)
   else if CalculateGeneratedRange < BaseValue then
-    ReplaceTextToken(Text, '<Radius>', WrapTextInColor(IntToStr(BaseValue), '<color=0,255,0>') + BonusText, ColorTag)
-  else ReplaceTextToken(Text, '<Radius>', WrapTextInColor(IntToStr(BaseValue), '<color=255,0,0>') + BonusText, ColorTag);
+    ReplaceTextToken(Text, '<Radius>', WrapTextInColor(IntToStr(BaseValue), GreenColorTag) + BonusText, ColorTag)
+  else ReplaceTextToken(Text, '<Radius>', WrapTextInColor(IntToStr(BaseValue), RedColorTag) + BonusText, ColorTag);
 end;
 { @end $7FA14C }
 
@@ -3074,22 +3074,22 @@ begin
   BaseValue := Max(0, ScanPower - StatBonus);
   StatBonus := Max(0, ScanPower) - BaseValue;
   if StatBonus = 0 then BonusText := ''
-  else if StatBonus > 0 then BonusText := WrapTextInColor('+' + IntToStr(StatBonus), '<color=0,255,0>')
-  else BonusText := WrapTextInColor(IntToStr(StatBonus), '<color=255,0,0>');
+  else if StatBonus > 0 then BonusText := WrapTextInColor('+' + IntToStr(StatBonus), GreenColorTag)
+  else BonusText := WrapTextInColor(IntToStr(StatBonus), RedColorTag);
   StatBonus := Max(-Max(0, ScanPower), GetStatBonus(bonScan));
   if StatBonus <> 0 then
-    if StatBonus > 0 then BonusText := BonusText + WrapTextInColor('+' + IntToStr(StatBonus), '<color=255,167,84>')
-    else BonusText := BonusText + WrapTextInColor(IntToStr(StatBonus), '<color=255,167,84>');
+    if StatBonus > 0 then BonusText := BonusText + WrapTextInColor('+' + IntToStr(StatBonus), EquipmentBonusColorTag)
+    else BonusText := BonusText + WrapTextInColor(IntToStr(StatBonus), EquipmentBonusColorTag);
   if (Ship <> nil) and (EquippedFlag <> 0) then
     StatBonus := Max(TShip(Ship).GetTotalStatBonus(bonScan) - StatBonus, -(ScanPower + StatBonus))
   else StatBonus := 0;
   if StatBonus <> 0 then
-    if StatBonus > 0 then BonusText := BonusText + WrapTextInColor('(+' + IntToStr(StatBonus) + ')', '<color=255,167,84>')
-    else BonusText := BonusText + WrapTextInColor('(' + IntToStr(StatBonus) + ')', '<color=255,167,84>');
+    if StatBonus > 0 then BonusText := BonusText + WrapTextInColor('(+' + IntToStr(StatBonus) + ')', EquipmentBonusColorTag)
+    else BonusText := BonusText + WrapTextInColor('(' + IntToStr(StatBonus) + ')', EquipmentBonusColorTag);
   if CalculateGeneratedScanPower = BaseValue then ReplaceTextToken(Text, '<Percent>', WideString(IntToStr(BaseValue)) + BonusText, ColorTag)
   else if CalculateGeneratedScanPower < BaseValue then
-    ReplaceTextToken(Text, '<Percent>', WrapTextInColor(IntToStr(BaseValue), '<color=0,255,0>') + BonusText, ColorTag)
-  else ReplaceTextToken(Text, '<Percent>', WrapTextInColor(IntToStr(BaseValue), '<color=255,0,0>') + BonusText, ColorTag);
+    ReplaceTextToken(Text, '<Percent>', WrapTextInColor(IntToStr(BaseValue), GreenColorTag) + BonusText, ColorTag)
+  else ReplaceTextToken(Text, '<Percent>', WrapTextInColor(IntToStr(BaseValue), RedColorTag) + BonusText, ColorTag);
 end;
 { @end $7FAF4C }
 
@@ -3226,24 +3226,24 @@ var BonusText: WideString; BaseValue, StatBonus: Integer;
 begin
   if (MicroModuleIndex = 0) or (MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonDroid] = 0) then BonusText := ''
   else if MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonDroid] > 0 then
-    BonusText := WrapTextInColor('+' + IntToStr(MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonDroid]), '<color=0,255,0>')
-  else BonusText := WrapTextInColor(IntToStr(MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonDroid]), '<color=255,0,0>');
+    BonusText := WrapTextInColor('+' + IntToStr(MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonDroid]), GreenColorTag)
+  else BonusText := WrapTextInColor(IntToStr(MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonDroid]), RedColorTag);
   StatBonus := Max(-Max(0, RepairPoints), GetStatBonus(bonDroid));
   if StatBonus <> 0 then
-    if StatBonus > 0 then BonusText := BonusText + WrapTextInColor('+' + IntToStr(StatBonus), '<color=255,167,84>')
-    else BonusText := BonusText + WrapTextInColor(IntToStr(StatBonus), '<color=255,167,84>');
+    if StatBonus > 0 then BonusText := BonusText + WrapTextInColor('+' + IntToStr(StatBonus), EquipmentBonusColorTag)
+    else BonusText := BonusText + WrapTextInColor(IntToStr(StatBonus), EquipmentBonusColorTag);
   if (Ship <> nil) and (EquippedFlag <> 0) then
     StatBonus := Max(TShip(Ship).GetTotalStatBonus(bonDroid) - StatBonus, -(RepairPoints + StatBonus))
   else StatBonus := 0;
   if StatBonus <> 0 then
-    if StatBonus > 0 then BonusText := BonusText + WrapTextInColor('(+' + IntToStr(StatBonus) + ')', '<color=255,167,84>')
-    else BonusText := BonusText + WrapTextInColor('(' + IntToStr(StatBonus) + ')', '<color=255,167,84>');
+    if StatBonus > 0 then BonusText := BonusText + WrapTextInColor('(+' + IntToStr(StatBonus) + ')', EquipmentBonusColorTag)
+    else BonusText := BonusText + WrapTextInColor('(' + IntToStr(StatBonus) + ')', EquipmentBonusColorTag);
   if MicroModuleIndex = 0 then BaseValue := RepairPoints
   else BaseValue := RepairPoints - MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonDroid];
   if HasStandardStats then ReplaceTextToken(Text, '<RecoverHitPoints>', WideString(IntToStr(BaseValue)) + BonusText, ColorTag)
   else if CalculateGeneratedRepairPoints < BaseValue then
-    ReplaceTextToken(Text, '<RecoverHitPoints>', WrapTextInColor(IntToStr(BaseValue), '<color=0,255,0>') + BonusText, ColorTag)
-  else ReplaceTextToken(Text, '<RecoverHitPoints>', WrapTextInColor(IntToStr(BaseValue), '<color=255,0,0>') + BonusText, ColorTag);
+    ReplaceTextToken(Text, '<RecoverHitPoints>', WrapTextInColor(IntToStr(BaseValue), GreenColorTag) + BonusText, ColorTag)
+  else ReplaceTextToken(Text, '<RecoverHitPoints>', WrapTextInColor(IntToStr(BaseValue), RedColorTag) + BonusText, ColorTag);
 end;
 { @end $7FBDF8 }
 
@@ -3448,46 +3448,46 @@ var BonusText: WideString; BaseValue, StatBonus: Integer;
 begin
   if (MicroModuleIndex = 0) or (MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonHook] = 0) then BonusText := ''
   else if MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonHook] > 0 then
-    BonusText := WrapTextInColor('+' + IntToStr(MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonHook]), '<color=0,255,0>')
-  else BonusText := WrapTextInColor(IntToStr(MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonHook]), '<color=255,0,0>');
+    BonusText := WrapTextInColor('+' + IntToStr(MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonHook]), GreenColorTag)
+  else BonusText := WrapTextInColor(IntToStr(MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonHook]), RedColorTag);
   StatBonus := Max(-Max(0, PickupPower), GetStatBonus(bonHook));
   if StatBonus <> 0 then
-    if StatBonus > 0 then BonusText := BonusText + WrapTextInColor('+' + IntToStr(StatBonus), '<color=255,167,84>')
-    else BonusText := BonusText + WrapTextInColor(IntToStr(StatBonus), '<color=255,167,84>');
+    if StatBonus > 0 then BonusText := BonusText + WrapTextInColor('+' + IntToStr(StatBonus), EquipmentBonusColorTag)
+    else BonusText := BonusText + WrapTextInColor(IntToStr(StatBonus), EquipmentBonusColorTag);
   if (Ship <> nil) and (EquippedFlag <> 0) then
     StatBonus := Max(TShip(Ship).GetTotalStatBonus(bonHook) - StatBonus, -(PickupPower + StatBonus))
   else StatBonus := 0;
   if StatBonus <> 0 then
-    if StatBonus > 0 then BonusText := BonusText + WrapTextInColor('(+' + IntToStr(StatBonus) + ')', '<color=255,167,84>')
-    else BonusText := BonusText + WrapTextInColor('(' + IntToStr(StatBonus) + ')', '<color=255,167,84>');
+    if StatBonus > 0 then BonusText := BonusText + WrapTextInColor('(+' + IntToStr(StatBonus) + ')', EquipmentBonusColorTag)
+    else BonusText := BonusText + WrapTextInColor('(' + IntToStr(StatBonus) + ')', EquipmentBonusColorTag);
   if MicroModuleIndex = 0 then BaseValue := PickupPower
   else BaseValue := PickupPower - MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonHook];
   if CalculateGeneratedPickupPower = BaseValue then ReplaceTextToken(Text, '<PickUpSize>', WideString(IntToStr(BaseValue)) + BonusText, ColorTag)
   else if CalculateGeneratedPickupPower < BaseValue then
-    ReplaceTextToken(Text, '<PickUpSize>', WrapTextInColor(IntToStr(BaseValue), '<color=0,255,0>') + BonusText, ColorTag)
-  else ReplaceTextToken(Text, '<PickUpSize>', WrapTextInColor(IntToStr(BaseValue), '<color=255,0,0>') + BonusText, ColorTag);
+    ReplaceTextToken(Text, '<PickUpSize>', WrapTextInColor(IntToStr(BaseValue), GreenColorTag) + BonusText, ColorTag)
+  else ReplaceTextToken(Text, '<PickUpSize>', WrapTextInColor(IntToStr(BaseValue), RedColorTag) + BonusText, ColorTag);
   if (MicroModuleIndex = 0) or (MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonHookRadius] = 0) then BonusText := ''
   else if MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonHookRadius] > 0 then
-    BonusText := WrapTextInColor('+' + IntToStr(MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonHookRadius]), '<color=0,255,0>')
-  else BonusText := WrapTextInColor(IntToStr(MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonHookRadius]), '<color=255,0,0>');
+    BonusText := WrapTextInColor('+' + IntToStr(MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonHookRadius]), GreenColorTag)
+  else BonusText := WrapTextInColor(IntToStr(MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonHookRadius]), RedColorTag);
   StatBonus := Max(-Max(0, Range), GetStatBonus(bonHookRadius));
   if StatBonus <> 0 then
-    if StatBonus > 0 then BonusText := BonusText + WrapTextInColor('+' + IntToStr(StatBonus), '<color=255,167,84>')
-    else BonusText := BonusText + WrapTextInColor(IntToStr(StatBonus), '<color=255,167,84>');
+    if StatBonus > 0 then BonusText := BonusText + WrapTextInColor('+' + IntToStr(StatBonus), EquipmentBonusColorTag)
+    else BonusText := BonusText + WrapTextInColor(IntToStr(StatBonus), EquipmentBonusColorTag);
   if (Ship <> nil) and (EquippedFlag <> 0) then
     StatBonus := Max(TShip(Ship).GetTotalStatBonus(bonHookRadius) - StatBonus, -(Range + StatBonus))
   else StatBonus := 0;
   if StatBonus <> 0 then
-    if StatBonus > 0 then BonusText := BonusText + WrapTextInColor('(+' + IntToStr(StatBonus) + ')', '<color=255,167,84>')
-    else BonusText := BonusText + WrapTextInColor('(' + IntToStr(StatBonus) + ')', '<color=255,167,84>');
+    if StatBonus > 0 then BonusText := BonusText + WrapTextInColor('(+' + IntToStr(StatBonus) + ')', EquipmentBonusColorTag)
+    else BonusText := BonusText + WrapTextInColor('(' + IntToStr(StatBonus) + ')', EquipmentBonusColorTag);
   if MicroModuleIndex = 0 then BaseValue := Range
   else BaseValue := Range - MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonHookRadius];
-  if CalculateGeneratedRange = BaseValue then ReplaceTextToken(Text, '<Radius>', WideString(IntToStr(BaseValue)) + BonusText, '<color=255,240,100>')
+  if CalculateGeneratedRange = BaseValue then ReplaceTextToken(Text, '<Radius>', WideString(IntToStr(BaseValue)) + BonusText, TextHighlightColorTag)
   else if CalculateGeneratedRange < BaseValue then
-    ReplaceTextToken(Text, '<Radius>', WrapTextInColor(IntToStr(BaseValue), '<color=0,255,0>') + BonusText, ColorTag)
-  else ReplaceTextToken(Text, '<Radius>', WrapTextInColor(IntToStr(BaseValue), '<color=255,0,0>') + BonusText, ColorTag);
-  ReplaceTextToken(Text, '<SpeedMin>', IntToStr(Round(CargoHookLevelStats[TechLevel].MinPullSpeed)), '<color=255,240,100>');
-  ReplaceTextToken(Text, '<SpeedMax>', IntToStr(Round(CargoHookLevelStats[TechLevel].MaxPullSpeed)), '<color=255,240,100>');
+    ReplaceTextToken(Text, '<Radius>', WrapTextInColor(IntToStr(BaseValue), GreenColorTag) + BonusText, ColorTag)
+  else ReplaceTextToken(Text, '<Radius>', WrapTextInColor(IntToStr(BaseValue), RedColorTag) + BonusText, ColorTag);
+  ReplaceTextToken(Text, '<SpeedMin>', IntToStr(Round(CargoHookLevelStats[TechLevel].MinPullSpeed)), TextHighlightColorTag);
+  ReplaceTextToken(Text, '<SpeedMax>', IntToStr(Round(CargoHookLevelStats[TechLevel].MaxPullSpeed)), TextHighlightColorTag);
 end;
 { @end $7FD258 }
 
@@ -3635,18 +3635,18 @@ begin
   if MicroModuleIndex <> 0 then ModuleBonus := MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonDef];
   DisplayPercent := DefenseDamageFactorToPercent(DamageFactor);
   if ModuleBonus = 0 then BonusText := ''
-  else if ModuleBonus > 0 then BonusText := WrapTextInColor('+' + IntToStr(ModuleBonus), '<color=0,255,0>')
-  else BonusText := WrapTextInColor(IntToStr(ModuleBonus), '<color=255,0,0>');
+  else if ModuleBonus > 0 then BonusText := WrapTextInColor('+' + IntToStr(ModuleBonus), GreenColorTag)
+  else BonusText := WrapTextInColor(IntToStr(ModuleBonus), RedColorTag);
   StatBonus := Max(-Max(0, DisplayPercent), GetStatBonus(bonDef));
   if StatBonus <> 0 then
-    if StatBonus > 0 then BonusText := BonusText + WrapTextInColor('+' + IntToStr(StatBonus), '<color=255,167,84>')
-    else BonusText := BonusText + WrapTextInColor(IntToStr(StatBonus), '<color=255,167,84>');
+    if StatBonus > 0 then BonusText := BonusText + WrapTextInColor('+' + IntToStr(StatBonus), EquipmentBonusColorTag)
+    else BonusText := BonusText + WrapTextInColor(IntToStr(StatBonus), EquipmentBonusColorTag);
   if (Ship <> nil) and (EquippedFlag <> 0) then
     StatBonus := Max(TShip(Ship).GetTotalStatBonus(bonDef) - StatBonus, -(DisplayPercent + StatBonus))
   else StatBonus := 0;
   if StatBonus <> 0 then
-    if StatBonus > 0 then BonusText := BonusText + WrapTextInColor('(+' + IntToStr(StatBonus) + ')', '<color=255,167,84>')
-    else BonusText := BonusText + WrapTextInColor('(' + IntToStr(StatBonus) + ')', '<color=255,167,84>');
+    if StatBonus > 0 then BonusText := BonusText + WrapTextInColor('(+' + IntToStr(StatBonus) + ')', EquipmentBonusColorTag)
+    else BonusText := BonusText + WrapTextInColor('(' + IntToStr(StatBonus) + ')', EquipmentBonusColorTag);
 
   ActualFactorPercent := Round(DamageFactor * 100);
   GeneratedFactorPercent := Round(CalculateGeneratedDamageFactor * 100);
@@ -3654,8 +3654,8 @@ begin
     Inc(ActualFactorPercent, Round(MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonDef]));
   if HasStandardStats then ReplaceTextToken(Text, '<Percent>', WideString(IntToStr(DisplayPercent - ModuleBonus)) + BonusText, ColorTag)
   else if ActualFactorPercent < GeneratedFactorPercent then
-    ReplaceTextToken(Text, '<Percent>', WrapTextInColor(IntToStr(DisplayPercent - ModuleBonus), '<color=0,255,0>') + BonusText, ColorTag)
-  else ReplaceTextToken(Text, '<Percent>', WrapTextInColor(IntToStr(DisplayPercent - ModuleBonus), '<color=255,0,0>') + BonusText, ColorTag);
+    ReplaceTextToken(Text, '<Percent>', WrapTextInColor(IntToStr(DisplayPercent - ModuleBonus), GreenColorTag) + BonusText, ColorTag)
+  else ReplaceTextToken(Text, '<Percent>', WrapTextInColor(IntToStr(DisplayPercent - ModuleBonus), RedColorTag) + BonusText, ColorTag);
 end;
 { @end $7FE6EC }
 
@@ -4063,16 +4063,16 @@ begin
       Entry := ExtraSpecials[I];
       Inc(BaseDamage, MicroModuleTemplates[Entry.ModuleIndexPlusOne - 1].StatBonuses[WeaponDamageClasses[DamageClass].BonusKind] * Entry.Count);
     end;
-  if ModuleBonus > 0 then BonusText := WrapTextInColor('+' + IntToStr(ModuleBonus), '<color=0,255,0>');
-  if ModuleBonus < 0 then BonusText := WrapTextInColor(IntToStr(ModuleBonus), '<color=255,0,0>');
+  if ModuleBonus > 0 then BonusText := WrapTextInColor('+' + IntToStr(ModuleBonus), GreenColorTag);
+  if ModuleBonus < 0 then BonusText := WrapTextInColor(IntToStr(ModuleBonus), RedColorTag);
   if (Ship <> nil) and (EquippedFlag <> 0) then ShipBonus := TShip(Ship).GetTotalStatBonus(WeaponDamageClasses[DamageClass].BonusKind)
   else ShipBonus := 0;
   if ShipBonus <> 0 then
-    if ShipBonus > 0 then BonusText := BonusText + WrapTextInColor('(+' + IntToStr(ShipBonus) + ')', '<color=255,167,84>')
-    else BonusText := BonusText + WrapTextInColor('(' + IntToStr(ShipBonus) + ')', '<color=255,167,84>');
+    if ShipBonus > 0 then BonusText := BonusText + WrapTextInColor('(+' + IntToStr(ShipBonus) + ')', EquipmentBonusColorTag)
+    else BonusText := BonusText + WrapTextInColor('(' + IntToStr(ShipBonus) + ')', EquipmentBonusColorTag);
   if BaseDamage = ExpectedDamage then ReplaceTextToken(Text, '<MaxDamage>', IntToStr(BaseDamage), ColorTag)
-  else if BaseDamage > ExpectedDamage then ReplaceTextToken(Text, '<MaxDamage>', WrapTextInColor(IntToStr(BaseDamage), '<color=0,255,0>'), ColorTag)
-  else ReplaceTextToken(Text, '<MaxDamage>', WrapTextInColor(IntToStr(BaseDamage), '<color=255,0,0>'), ColorTag);
+  else if BaseDamage > ExpectedDamage then ReplaceTextToken(Text, '<MaxDamage>', WrapTextInColor(IntToStr(BaseDamage), GreenColorTag), ColorTag)
+  else ReplaceTextToken(Text, '<MaxDamage>', WrapTextInColor(IntToStr(BaseDamage), RedColorTag), ColorTag);
   ReplaceTextToken(Text, '<Bonus>', BonusText, ColorTag);
   if GetWeaponInfo.ShotType in [wstTorpedo..wstRocket] then
   begin
@@ -4089,21 +4089,21 @@ begin
     else ModuleBonus := 0;
     BaseRange := CurrentRange - ModuleBonus;
     EffectiveBonus := Max(CurrentRange, GetWeaponInfo.MissileRange) - Max(BaseRange, GetWeaponInfo.MissileRange);
-    if ModuleBonus > 0 then BonusText := WrapTextInColor('+' + IntToStr(EffectiveBonus), '<color=0,255,0>')
+    if ModuleBonus > 0 then BonusText := WrapTextInColor('+' + IntToStr(EffectiveBonus), GreenColorTag)
     else if ModuleBonus < 0 then
-      if EffectiveBonus < 0 then BonusText := WrapTextInColor(IntToStr(EffectiveBonus), '<color=255,0,0>')
-      else BonusText := WrapTextInColor('-0', '<color=255,0,0>')
+      if EffectiveBonus < 0 then BonusText := WrapTextInColor(IntToStr(EffectiveBonus), RedColorTag)
+      else BonusText := WrapTextInColor('-0', RedColorTag)
     else BonusText := '';
     if (Ship <> nil) and (EquippedFlag <> 0) then ShipBonus := TShip(Ship).GetTotalStatBonus(bonWRadius)
     else ShipBonus := 0;
     EffectiveBonus := Max(CurrentRange + ShipBonus, GetWeaponInfo.MissileRange) - Max(CurrentRange, GetWeaponInfo.MissileRange);
-    if ShipBonus > 0 then BonusText := BonusText + WrapTextInColor('(+' + IntToStr(EffectiveBonus) + ')', '<color=255,167,84>')
+    if ShipBonus > 0 then BonusText := BonusText + WrapTextInColor('(+' + IntToStr(EffectiveBonus) + ')', EquipmentBonusColorTag)
     else if ShipBonus < 0 then
-      if EffectiveBonus < 0 then BonusText := BonusText + WrapTextInColor(IntToStr(EffectiveBonus) + ')', '<color=255,167,84>') // Native negative branch omits the opening parenthesis.
-      else BonusText := BonusText + WrapTextInColor('(-0)', '<color=255,167,84>');
+      if EffectiveBonus < 0 then BonusText := BonusText + WrapTextInColor(IntToStr(EffectiveBonus) + ')', EquipmentBonusColorTag) // Native negative branch omits the opening parenthesis.
+      else BonusText := BonusText + WrapTextInColor('(-0)', EquipmentBonusColorTag);
     if BaseRange = ExpectedRange then ReplaceTextToken(Text, '<Radius>', WideString(IntToStr(Max(BaseRange, GetWeaponInfo.MissileRange))) + BonusText, ColorTag)
-    else if BaseRange > ExpectedRange then ReplaceTextToken(Text, '<Radius>', WrapTextInColor(IntToStr(Max(BaseRange, GetWeaponInfo.MissileRange)), '<color=0,255,0>') + BonusText, ColorTag)
-    else ReplaceTextToken(Text, '<Radius>', WrapTextInColor(IntToStr(Max(BaseRange, GetWeaponInfo.MissileRange)), '<color=255,0,0>') + BonusText, ColorTag);
+    else if BaseRange > ExpectedRange then ReplaceTextToken(Text, '<Radius>', WrapTextInColor(IntToStr(Max(BaseRange, GetWeaponInfo.MissileRange)), GreenColorTag) + BonusText, ColorTag)
+    else ReplaceTextToken(Text, '<Radius>', WrapTextInColor(IntToStr(Max(BaseRange, GetWeaponInfo.MissileRange)), RedColorTag) + BonusText, ColorTag);
     ReplaceTextToken(Text, '<Count>', IntToStr(Ammo), ColorTag);
     ReplaceTextToken(Text, '<MaxCount>', IntToStr(AmmoCapacity), ColorTag);
     ReplaceTextToken(Text, '<CntShots>', IntToStr(GetShotCount), ColorTag);
@@ -4122,17 +4122,17 @@ begin
     if MicroModuleIndex <> 0 then Inc(ModuleBonus, MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[bonWRadius])
     else ModuleBonus := 0;
     BaseRange := CurrentRange - ModuleBonus;
-    if ModuleBonus > 0 then BonusText := WrapTextInColor('+' + IntToStr(ModuleBonus), '<color=0,255,0>')
-    else if ModuleBonus < 0 then BonusText := WrapTextInColor(IntToStr(ModuleBonus), '<color=255,0,0>')
+    if ModuleBonus > 0 then BonusText := WrapTextInColor('+' + IntToStr(ModuleBonus), GreenColorTag)
+    else if ModuleBonus < 0 then BonusText := WrapTextInColor(IntToStr(ModuleBonus), RedColorTag)
     else BonusText := '';
     if (Ship <> nil) and (EquippedFlag <> 0) then ShipBonus := TShip(Ship).GetTotalStatBonus(bonWRadius)
     else ShipBonus := 0;
     if ShipBonus <> 0 then
-      if ShipBonus > 0 then BonusText := BonusText + WrapTextInColor('+' + IntToStr(ShipBonus), '<color=255,167,84>')
-      else BonusText := BonusText + WrapTextInColor(IntToStr(ShipBonus), '<color=255,167,84>');
+      if ShipBonus > 0 then BonusText := BonusText + WrapTextInColor('+' + IntToStr(ShipBonus), EquipmentBonusColorTag)
+      else BonusText := BonusText + WrapTextInColor(IntToStr(ShipBonus), EquipmentBonusColorTag);
     if BaseRange = ExpectedRange then ReplaceTextToken(Text, '<Radius>', WideString(IntToStr(BaseRange)) + BonusText, ColorTag)
-    else if BaseRange > ExpectedRange then ReplaceTextToken(Text, '<Radius>', WrapTextInColor(IntToStr(BaseRange), '<color=0,255,0>') + BonusText, ColorTag)
-    else ReplaceTextToken(Text, '<Radius>', WrapTextInColor(IntToStr(BaseRange), '<color=255,0,0>') + BonusText, ColorTag);
+    else if BaseRange > ExpectedRange then ReplaceTextToken(Text, '<Radius>', WrapTextInColor(IntToStr(BaseRange), GreenColorTag) + BonusText, ColorTag)
+    else ReplaceTextToken(Text, '<Radius>', WrapTextInColor(IntToStr(BaseRange), RedColorTag) + BonusText, ColorTag);
   end;
   ReplaceTextToken(Text, '<CntAttacks>', IntToStr(GetAttackCount), ColorTag);
 end;
@@ -4993,8 +4993,8 @@ begin
   Result := LocalizedText('Items.' + ItemTypeNames[ItemType] + '.BrokenInUse');
   if TargetPlanet <> nil then PlanetName := (TObject(TargetPlanet) as TPlanet).Name
   else PlanetName := '';
-  ReplaceTextToken(Result, '<Name>', GetDisplayName, '<color=255,240,100>');
-  ReplaceTextToken(Result, '<Planet>', PlanetName, '<color=255,240,100>');
+  ReplaceTextToken(Result, '<Name>', GetDisplayName, TextHighlightColorTag);
+  ReplaceTextToken(Result, '<Planet>', PlanetName, TextHighlightColorTag);
 end;
 { @end $805B1C }
 
@@ -5005,9 +5005,9 @@ begin
   Result := LocalizedText('Items.' + ItemTypeNames[ItemType] + '.IdleInfo');
   if TargetPlanet <> nil then PlanetName := (TObject(TargetPlanet) as TPlanet).Name
   else PlanetName := '';
-  ReplaceTextToken(Result, '<Name>', GetDisplayName, '<color=255,240,100>');
-  ReplaceTextToken(Result, '<Size>', IntToStr(Weight), '<color=255,240,100>');
-  ReplaceTextToken(Result, '<Planet>', PlanetName, '<color=255,240,100>');
+  ReplaceTextToken(Result, '<Name>', GetDisplayName, TextHighlightColorTag);
+  ReplaceTextToken(Result, '<Size>', IntToStr(Weight), TextHighlightColorTag);
+  ReplaceTextToken(Result, '<Planet>', PlanetName, TextHighlightColorTag);
 end;
 { @end $805C84 }
 
@@ -5094,8 +5094,8 @@ end;
 function TTreasureMap.GetInfoText(ColorTag: WideString; Ship: Pointer): WideString;
 begin
   Result := LocalizedText('Items.TreasureMap.Text') + ' ' + LocalizedText('Items.TreasureMap.Hint');
-  ReplaceTextToken(Result, '<Planet>', GetTargetPlanetName, '<color=255,240,100>');
-  ReplaceTextToken(Result, '<Ship>', SourceShipName, '<color=255,240,100>');
+  ReplaceTextToken(Result, '<Planet>', GetTargetPlanetName, TextHighlightColorTag);
+  ReplaceTextToken(Result, '<Ship>', SourceShipName, TextHighlightColorTag);
 end;
 { @end $806334 }
 
@@ -5130,26 +5130,26 @@ var I, Number: Integer; Entry: PPlanetSurfaceLootEntry;
   // @nested $806650 ItemColorTag
   function ItemColorTag(Item: TItem): WideString; // @addr $806650 @calls "0x806D4B" @note "Nested helper of BuildPreviewTable; caller removes the unused static link."
   begin
-    if Item is TGoods then Result := '<color=127,127,127>'
-    else if Item is TArtefact then Result := '<color=255,0,0>'
-    else if Item is TCistern then Result := '<color=127,127,127>'
-    else if Item is TMicroModule then Result := '<color=255,0,255>'
-    else if Item is TEquipment then Result := '<color=254,217,7>'
+    if Item is TGoods then Result := GrayColorTag
+    else if Item is TArtefact then Result := RedColorTag
+    else if Item is TCistern then Result := GrayColorTag
+    else if Item is TMicroModule then Result := MagentaColorTag
+    else if Item is TEquipment then Result := GoldColorTag
     else Result := '';
   end;
 
 begin
-  Rule := WrapTextInColor(StringOfChar('-', TreasureMapRuleLengths[PageIndex]), '<color=127,127,127>');
-  Caption := FormatText1(LocalizedColorText('FormGS.PlanetInfo'), '<color=255,240,100>', '<Planet>', (TObject(Planet) as TPlanet).Name);
+  Rule := WrapTextInColor(StringOfChar('-', TreasureMapRuleLengths[PageIndex]), GrayColorTag);
+  Caption := FormatText1(LocalizedColorText('FormGS.PlanetInfo'), TextHighlightColorTag, '<Planet>', (TObject(Planet) as TPlanet).Name);
   Header := Header + #13#10 + '<td=' + IntToStr(0) + '>' + '<align=left>' + Caption + '</align>';
-  Header := Header + '<td=' + IntToStr(TreasureMapColumnPositions[PageIndex, 3] div 2) + '>' + '<align=center>' + WrapTextInColor(LocalizedText('Items.TreasureMap.Name'), '<color=0,255,0>') + '</align>';
-  Caption := FormatText1(LocalizedColorText('FormGS.StarInfo'), '<color=255,240,100>', '<Star>', (TObject(Planet) as TPlanet).CurrentStar.Name);
+  Header := Header + '<td=' + IntToStr(TreasureMapColumnPositions[PageIndex, 3] div 2) + '>' + '<align=center>' + WrapTextInColor(LocalizedText('Items.TreasureMap.Name'), GreenColorTag) + '</align>';
+  Caption := FormatText1(LocalizedColorText('FormGS.StarInfo'), TextHighlightColorTag, '<Star>', (TObject(Planet) as TPlanet).CurrentStar.Name);
   Header := Header + '<td=' + IntToStr(TreasureMapColumnPositions[PageIndex, 3]) + '>' + '<align=right>' + WrapTextInColor(Caption, '') + '</align>';
   Header := Header + #13#10 + Rule + #13#10;
-  Header := Header + '<td=' + IntToStr(TreasureMapColumnPositions[PageIndex, 0]) + '>' + '<align=right>' + WrapTextInColor(LocalizedColorText('FormGS.ColumnNumber'), '<color=255,240,100>') + '</align>';
-  Header := Header + '<td=' + IntToStr(TreasureMapColumnPositions[PageIndex, 1]) + '>' + WrapTextInColor(LocalizedColorText('FormGS.ColumnName'), '<color=255,240,100>');
-  Header := Header + '<td=' + IntToStr(TreasureMapColumnPositions[PageIndex, 2]) + '>' + '<align=right>' + WrapTextInColor(LocalizedColorText('FormShip.StorageInfo.Size'), '<color=255,240,100>') + '</align>';
-  Header := Header + '<td=' + IntToStr(TreasureMapColumnPositions[PageIndex, 3]) + '>' + '<align=right>' + WrapTextInColor(LocalizedColorText('FormShip.StorageInfo.Cost'), '<color=255,240,100>') + '</align>';
+  Header := Header + '<td=' + IntToStr(TreasureMapColumnPositions[PageIndex, 0]) + '>' + '<align=right>' + WrapTextInColor(LocalizedColorText('FormGS.ColumnNumber'), TextHighlightColorTag) + '</align>';
+  Header := Header + '<td=' + IntToStr(TreasureMapColumnPositions[PageIndex, 1]) + '>' + WrapTextInColor(LocalizedColorText('FormGS.ColumnName'), TextHighlightColorTag);
+  Header := Header + '<td=' + IntToStr(TreasureMapColumnPositions[PageIndex, 2]) + '>' + '<align=right>' + WrapTextInColor(LocalizedColorText('FormShip.StorageInfo.Size'), TextHighlightColorTag) + '</align>';
+  Header := Header + '<td=' + IntToStr(TreasureMapColumnPositions[PageIndex, 3]) + '>' + '<align=right>' + WrapTextInColor(LocalizedColorText('FormShip.StorageInfo.Cost'), TextHighlightColorTag) + '</align>';
   Header := Header + #13#10 + Rule;
   if Planet <> nil then
     if TObject(Planet) is TPlanet then begin
@@ -5164,8 +5164,8 @@ begin
               Rows := Rows + #13#10;
               Rows := Rows + '<td=' + IntToStr(TreasureMapColumnPositions[PageIndex, 0]) + '>' + '<align=right>' + WrapTextInColor(IntToStr(Number), '') + '</align>';
               Rows := Rows + '<td=' + IntToStr(TreasureMapColumnPositions[PageIndex, 1]) + '>' + '' + WrapTextInColor(Entry.Item.GetDisplayName, ItemColorTag(Entry.Item)) + '';
-              Rows := Rows + '<td=' + IntToStr(TreasureMapColumnPositions[PageIndex, 2]) + '>' + '<align=right>' + WrapTextInColor(IntToStr(Entry.Item.Weight), '<color=0,255,0>') + '</align>';
-              Rows := Rows + '<td=' + IntToStr(TreasureMapColumnPositions[PageIndex, 3]) + '>' + '<align=right>' + WrapTextInColor(IntToStr(Entry.Item.Cost), '<color=0,255,255>') + '</align>';
+              Rows := Rows + '<td=' + IntToStr(TreasureMapColumnPositions[PageIndex, 2]) + '>' + '<align=right>' + WrapTextInColor(IntToStr(Entry.Item.Weight), GreenColorTag) + '</align>';
+              Rows := Rows + '<td=' + IntToStr(TreasureMapColumnPositions[PageIndex, 3]) + '>' + '<align=right>' + WrapTextInColor(IntToStr(Entry.Item.Cost), CyanColorTag) + '</align>';
               Inc(Number);
             end;
         end;
@@ -5305,9 +5305,9 @@ begin
     Result := '<color=' + MicroModuleTemplates[ModuleIndex].Color + '>'
   else
     case GetMicroModulePriorityColorTier(ModuleIndex) of
-      2: Result := '<color=255,240,100>';
-      3: Result := '<color=255,0,0>';
-    else Result := '<color=17,139,255>';
+      2: Result := TextHighlightColorTag;
+      3: Result := RedColorTag;
+    else Result := MicroModuleHighPriorityColorTag;
     end;
 end;
 { @end $807CBC }
@@ -5317,7 +5317,7 @@ function GetMicroModuleTextColorTag(ModuleIndex: Integer): WideString;
 begin
   if MicroModuleTemplates[ModuleIndex].Color <> '' then
     Result := '<color=' + MicroModuleTemplates[ModuleIndex].Color + '>'
-  else Result := '<color=255,167,84>';
+  else Result := EquipmentBonusColorTag;
 end;
 { @end $807DE4 }
 
@@ -5509,7 +5509,7 @@ end;
 { @routine $809260 TMicroModule_GetHighlightedName }
 function TMicroModule.GetHighlightedName: WideString;
 begin
-  Result := WrapTextInColor(MicroModuleTemplates[MicroModuleIndex - 1].Name, '<color=255,240,100>');
+  Result := WrapTextInColor(MicroModuleTemplates[MicroModuleIndex - 1].Name, TextHighlightColorTag);
 end;
 { @end $809260 }
 

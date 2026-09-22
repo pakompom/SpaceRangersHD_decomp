@@ -1962,7 +1962,7 @@ begin
     Result := ReplaceAllWideString(Result, '<br>', #13#10);
     Result := ReplaceAllWideString(Result, '<ll>', #13#10' '#13#10);
     if GetPlayer <> nil then
-      Result := ReplaceAllWideString(Result, '<Player>', '<color=255,240,100>' + GetPlayer.Name + '</color>');
+      Result := ReplaceAllWideString(Result, '<Player>', TextHighlightColorTag + GetPlayer.Name + EndColorTag);
   end;
 end;
 { @end $82F3F4 }
@@ -1984,9 +1984,9 @@ begin
     Result := ReplaceAllWideString(Result, '<br>', #13#10);
     Result := ReplaceAllWideString(Result, '<ll>', #13#10' '#13#10);
     if GetPlayer <> nil then
-      Result := ReplaceAllWideString(Result, '<Player>', '<color=255,240,100>' + GetPlayer.Name + '</color>');
-    Result := ReplaceAllWideString(Result, '<clr>', '<color=255,240,100>');
-    Result := ReplaceAllWideString(Result, '<clrEnd>', '</color>');
+      Result := ReplaceAllWideString(Result, '<Player>', TextHighlightColorTag + GetPlayer.Name + EndColorTag);
+    Result := ReplaceAllWideString(Result, '<clr>', TextHighlightColorTag);
+    Result := ReplaceAllWideString(Result, '<clrEnd>', EndColorTag);
   end;
 end;
 { @end $82F644 }
@@ -1999,9 +1999,9 @@ begin
     Text := ReplaceAllWideString(Text, '<br>', #13#10);
     Text := ReplaceAllWideString(Text, '<ll>', #13#10' '#13#10);
     if GetPlayer <> nil then
-      Text := ReplaceAllWideString(Text, '<Player>', '<color=255,240,100>' + GetPlayer.Name + '</color>');
-    Text := ReplaceAllWideString(Text, '<clr>', '<color=255,240,100>');
-    Text := ReplaceAllWideString(Text, '<clrEnd>', '</color>');
+      Text := ReplaceAllWideString(Text, '<Player>', TextHighlightColorTag + GetPlayer.Name + EndColorTag);
+    Text := ReplaceAllWideString(Text, '<clr>', TextHighlightColorTag);
+    Text := ReplaceAllWideString(Text, '<clrEnd>', EndColorTag);
   end;
 end;
 { @end $82F900 }
@@ -2014,9 +2014,9 @@ begin
     Text := ReplaceAllWideString(Text, '<br>', #13#10);
     Text := ReplaceAllWideString(Text, '<ll>', #13#10' '#13#10);
     if GetPlayer <> nil then
-      Text := ReplaceAllWideString(Text, '<Player>', '<color=255,240,100>' + GetPlayer.Name + '</color>');
-    Text := ReplaceAllWideString(Text, '<clr>', '<color=255,240,100>');
-    Text := ReplaceAllWideString(Text, '<clrEnd>', '</color>');
+      Text := ReplaceAllWideString(Text, '<Player>', TextHighlightColorTag + GetPlayer.Name + EndColorTag);
+    Text := ReplaceAllWideString(Text, '<clr>', TextHighlightColorTag);
+    Text := ReplaceAllWideString(Text, '<clrEnd>', EndColorTag);
   end;
   Text := LocalizedTextLinePrefix + TrimWideString(Text);
   Text := ReplaceAllWideString(Text, #13#10, #13#10 + LocalizedTextLinePrefix);
@@ -2039,7 +2039,7 @@ begin
     Inc(I);
   until I > 9;
   if Count = 0 then
-    Result := 'String: ' + WrapTextInColor(Path, '<color=255,240,100>') + ' is unavailable'
+    Result := 'String: ' + WrapTextInColor(Path, TextHighlightColorTag) + ' is unavailable'
   else if Count = 1 then Result := Variants[0]
   else
   begin

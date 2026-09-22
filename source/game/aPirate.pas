@@ -948,11 +948,11 @@ var I: Integer; Ship: TShip;
       if Self = Ship.EnemyShip then Ship.EnemyShip := nil;
     end;
     Text := PickLocalizedTextVariant('GalaxyNews.GoToPrison.' + GetTypeNameKey, Seed + Cardinal(Galaxy.CurrentTurn div 10));
-    ReplaceTextToken(Text, '<Star>', CurrentStar.Name, '<color=255,240,100>');
-    ReplaceTextToken(Text, '<Planet>', CurrentPlanet.Name, '<color=255,240,100>');
-    ReplaceTextToken(Text, '<Month>', IntToStr(Int64(PrisonTermRemaining div 30)), '<color=255,240,100>');
-    ReplaceTextToken(Text, '<Name>', GetName, '<color=255,240,100>');
-    ReplaceTextToken(Text, '<FullName>', GetFullName(' '), '<color=255,240,100>');
+    ReplaceTextToken(Text, '<Star>', CurrentStar.Name, TextHighlightColorTag);
+    ReplaceTextToken(Text, '<Planet>', CurrentPlanet.Name, TextHighlightColorTag);
+    ReplaceTextToken(Text, '<Month>', IntToStr(Int64(PrisonTermRemaining div 30)), TextHighlightColorTag);
+    ReplaceTextToken(Text, '<Name>', GetName, TextHighlightColorTag);
+    ReplaceTextToken(Text, '<FullName>', GetFullName(' '), TextHighlightColorTag);
     if (GetPlayer.CurrentStar = CurrentStar) and GetPlayer.InNormalSpace and (Galaxy.CoalitionDefeatedTurn = 0) then
       AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn, Text, '');
   end;
@@ -1428,7 +1428,7 @@ begin
     else (Requester as TRanger).AddPirateCareerActivity(1);
   end;
   if (OrderTarget = Target) and (GetRelationLevelToShip(Target) = rlHostile) then AcceptRequest
-  else if TruceShip = Target then Response := FormatText1(LookupVisibleTalkText('Talk.Attack.WeAlreadyHavePact', Requester), '<color=255,240,100>', '<Target>', Target.GetName)
+  else if TruceShip = Target then Response := FormatText1(LookupVisibleTalkText('Talk.Attack.WeAlreadyHavePact', Requester), TextHighlightColorTag, '<Target>', Target.GetName)
   else if (RelationToShip(Target) >= RelationGoodMin) and FriendsPreferred then begin
     if not (Target is TTranclucator) then Response := LookupVisibleTalkText('Talk.Attack.' + GetTypeNameKey + 'WeFriends', Requester)
     else if TTranclucator(Target).OwnerShip = Self then Response := LookupVisibleTalkText('Talk.Attack.' + GetTypeNameKey + 'ItsMyTranc', Requester)
@@ -1446,7 +1446,7 @@ function TPirate.AcceptPartnershipOffer(OtherShip: TShip; var Response: WideStri
 begin
   if BuildPartnershipOfferResponse(OtherShip, Response, PaymentAmount) then begin
     PartnershipDaysRemaining := 30 * CalculatePartnershipMonths(PaymentAmount, OtherShip);
-    Response := FormatText2(LookupVisibleTalkText('Talk.Pirate.Ok', OtherShip), '<color=255,240,100>',
+    Response := FormatText2(LookupVisibleTalkText('Talk.Pirate.Ok', OtherShip), TextHighlightColorTag,
       '<Month>', IntToStr(CalculatePartnershipMonths(PaymentAmount, OtherShip)), '<Ranger>', (OtherShip as TRanger).Name);
     PartnerShip := OtherShip;
     OrderAbsolute := False;
@@ -1464,14 +1464,14 @@ begin
   if PartnerShip = OtherShip then begin Result := True; Exit; end;
   Result := False;
   if RelationToShip(OtherShip) < 45 then Response := LookupVisibleTalkText('Talk.Pirate.Suspect', OtherShip)
-  else if PartnerShip <> nil then Response := FormatText1(LookupVisibleTalkText('Talk.Pirate.AlreadyHavePartner', OtherShip), '<color=255,240,100>', '<Partner>', (PartnerShip as TRanger).Name)
+  else if PartnerShip <> nil then Response := FormatText1(LookupVisibleTalkText('Talk.Pirate.AlreadyHavePartner', OtherShip), TextHighlightColorTag, '<Partner>', (PartnerShip as TRanger).Name)
   else if ((OtherShip is TPlayer) and (TPlayer(OtherShip).GetMaxPiratePartners <= TPlayer(OtherShip).PiratePartners.Count)) or
     ((OwnerId = oiPirate) and (GetPlayer.PirateRank < PirateRank)) then Response := LookupVisibleTalkText('Talk.Pirate.NeedPirate', OtherShip)
   else if (OtherShip is TRanger) and (OtherShip.GetEffectiveSkillLevel(psLeadership) <= (OtherShip as TRanger).CountWingmen) then
     Response := LookupVisibleTalkText('Talk.Partner.NeedLeadership', OtherShip)
   else if CalculatePartnershipMonths(PaymentAmount, OtherShip) = 0 then Response := LookupVisibleTalkText('Talk.Pirate.SmallMoney', OtherShip)
   else Result := True;
-  Response := FormatText1(Response, '<color=255,240,100>', '<Ranger>', (OtherShip as TRanger).Name);
+  Response := FormatText1(Response, TextHighlightColorTag, '<Ranger>', (OtherShip as TRanger).Name);
 end;
 { @end $5147D4 }
 

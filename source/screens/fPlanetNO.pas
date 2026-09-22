@@ -256,7 +256,7 @@ begin
   end;
   if GetPlayer.HasSatelliteOnPlanet(GetPlayer.CurrentPlanet) and
     (ShowMessageBoxGI(Self,FormatText1(LanguageDataConfig.GetParamByPathOrMarker('FormPlanetNO.SatelliteInPlanet'),
-      '<color=255,240,100>','<Name>',GetPlayer.CurrentPlanet.Name),mbgOK or mbgCancel) <> mbgResultOK) then Exit;
+      TextHighlightColorTag,'<Name>',GetPlayer.CurrentPlanet.Name),mbgOK or mbgCancel) <> mbgResultOK) then Exit;
   Galaxy.CheckIntegrityChecksum(113);
   CloseResearchPanel;
   ReturnHeldSatellite;
@@ -384,10 +384,10 @@ begin
       if Text = WideString('') then Text := LocalizedColorText('PlanetQuest.StartText.QuestExtern');
       if Quest <> nil then
       begin
-        ReplaceTextToken(Text,'<CurPlanet>',(Quest.ObjectiveTarget as TPlanet).Name,'<color=255,240,100>');
-        ReplaceTextToken(Text,'<CurStar>',(Quest.ObjectiveTarget as TPlanet).CurrentStar.Name,'<color=255,240,100>');
-        ReplaceTextToken(Text,'<FromPlanet>',Quest.Planet.Name,'<color=255,240,100>');
-        ReplaceTextToken(Text,'<FromStar>',Quest.Planet.CurrentStar.Name,'<color=255,240,100>');
+        ReplaceTextToken(Text,'<CurPlanet>',(Quest.ObjectiveTarget as TPlanet).Name,TextHighlightColorTag);
+        ReplaceTextToken(Text,'<CurStar>',(Quest.ObjectiveTarget as TPlanet).CurrentStar.Name,TextHighlightColorTag);
+        ReplaceTextToken(Text,'<FromPlanet>',Quest.Planet.Name,TextHighlightColorTag);
+        ReplaceTextToken(Text,'<FromStar>',Quest.Planet.CurrentStar.Name,TextHighlightColorTag);
       end;
       SetText(Text);
       Window.SetSize(Classes.Point(ClientSize.X + Window.WorkSubRect.Left + Window.WorkSubRect.Right,ClientSize.Y + Window.WorkSubRect.Top + Window.WorkSubRect.Bottom));
@@ -1018,12 +1018,12 @@ begin
   end;
   (GetByName('ButLeft') as TGraphButtonGI).SetDisabled(SatelliteInventoryPageStart <= 0);
   (GetByName('ButRight') as TGraphButtonGI).SetDisabled(GetPlayer.GetSatelliteTrajectoryIndexLimit < SatelliteInventoryPageStart + 6);
-  (GetByName('WaterSpace') as TLabelGI).SetText(ReplaceColoredToken(LocalizedColorText('FormPlanetNO.Space'),'<val>',IntToStr(GetPlayer.CurrentPlanet.WaterTiles),'<color=0,50,200>'));
-  (GetByName('LandSpace') as TLabelGI).SetText(ReplaceColoredToken(LocalizedColorText('FormPlanetNO.Space'),'<val>',IntToStr(GetPlayer.CurrentPlanet.LandTiles),'<color=0,50,200>'));
-  (GetByName('HillSpace') as TLabelGI).SetText(ReplaceColoredToken(LocalizedColorText('FormPlanetNO.Space'),'<val>',IntToStr(GetPlayer.CurrentPlanet.HillTiles),'<color=0,50,200>'));
-  (GetByName('WaterComplate') as TLabelGI).SetText(ReplaceColoredToken(LocalizedColorText('FormPlanetNO.Complate'),'<val>',IntToStr(GetPlayer.CurrentPlanet.WaterExplored),'<color=0,50,200>'));
-  (GetByName('LandComplate') as TLabelGI).SetText(ReplaceColoredToken(LocalizedColorText('FormPlanetNO.Complate'),'<val>',IntToStr(GetPlayer.CurrentPlanet.LandExplored),'<color=0,50,200>'));
-  (GetByName('HillComplate') as TLabelGI).SetText(ReplaceColoredToken(LocalizedColorText('FormPlanetNO.Complate'),'<val>',IntToStr(GetPlayer.CurrentPlanet.HillExplored),'<color=0,50,200>'));
+  (GetByName('WaterSpace') as TLabelGI).SetText(ReplaceColoredToken(LocalizedColorText('FormPlanetNO.Space'),'<val>',IntToStr(GetPlayer.CurrentPlanet.WaterTiles),DialogHighlightColorTag));
+  (GetByName('LandSpace') as TLabelGI).SetText(ReplaceColoredToken(LocalizedColorText('FormPlanetNO.Space'),'<val>',IntToStr(GetPlayer.CurrentPlanet.LandTiles),DialogHighlightColorTag));
+  (GetByName('HillSpace') as TLabelGI).SetText(ReplaceColoredToken(LocalizedColorText('FormPlanetNO.Space'),'<val>',IntToStr(GetPlayer.CurrentPlanet.HillTiles),DialogHighlightColorTag));
+  (GetByName('WaterComplate') as TLabelGI).SetText(ReplaceColoredToken(LocalizedColorText('FormPlanetNO.Complate'),'<val>',IntToStr(GetPlayer.CurrentPlanet.WaterExplored),DialogHighlightColorTag));
+  (GetByName('LandComplate') as TLabelGI).SetText(ReplaceColoredToken(LocalizedColorText('FormPlanetNO.Complate'),'<val>',IntToStr(GetPlayer.CurrentPlanet.LandExplored),DialogHighlightColorTag));
+  (GetByName('HillComplate') as TLabelGI).SetText(ReplaceColoredToken(LocalizedColorText('FormPlanetNO.Complate'),'<val>',IntToStr(GetPlayer.CurrentPlanet.HillExplored),DialogHighlightColorTag));
   WaterRate := 0;
   LandRate := 0;
   HillRate := 0;
@@ -1043,7 +1043,7 @@ begin
     if Active then
     begin
       WaterRate := Min(999,Ceil((GetPlayer.CurrentPlanet.WaterTiles - GetPlayer.CurrentPlanet.WaterExplored) / WaterRate));
-      SetText(ReplaceColoredToken(LocalizedColorText('FormPlanetNO.TimeLeft'),'<val>',IntToStr(WaterRate),'<color=0,50,200>'));
+      SetText(ReplaceColoredToken(LocalizedColorText('FormPlanetNO.TimeLeft'),'<val>',IntToStr(WaterRate),DialogHighlightColorTag));
     end;
   end;
   with GetByName('LandTimeLeft') as TLabelGI do
@@ -1052,7 +1052,7 @@ begin
     if Active then
     begin
       LandRate := Min(999,Ceil((GetPlayer.CurrentPlanet.LandTiles - GetPlayer.CurrentPlanet.LandExplored) / LandRate));
-      SetText(ReplaceColoredToken(LocalizedColorText('FormPlanetNO.TimeLeft'),'<val>',IntToStr(LandRate),'<color=0,50,200>'));
+      SetText(ReplaceColoredToken(LocalizedColorText('FormPlanetNO.TimeLeft'),'<val>',IntToStr(LandRate),DialogHighlightColorTag));
     end;
   end;
   with GetByName('HillTimeLeft') as TLabelGI do
@@ -1061,7 +1061,7 @@ begin
     if Active then
     begin
       HillRate := Min(999,Ceil((GetPlayer.CurrentPlanet.HillTiles - GetPlayer.CurrentPlanet.HillExplored) / HillRate));
-      SetText(ReplaceColoredToken(LocalizedColorText('FormPlanetNO.TimeLeft'),'<val>',IntToStr(HillRate),'<color=0,50,200>'));
+      SetText(ReplaceColoredToken(LocalizedColorText('FormPlanetNO.TimeLeft'),'<val>',IntToStr(HillRate),DialogHighlightColorTag));
     end;
   end;
   GetByName('Light1').SetActive(GetPlayer.CurrentPlanet.WaterExplored >= GetPlayer.CurrentPlanet.WaterTiles);
@@ -1428,7 +1428,7 @@ begin
     SetPosition(SubtractPoints(ShipScreen.ItemImageCenter,GetVisualCenter));
   end;
   ItemInfoNameLabel.SetText(WrapTextInColor(Equipment.GetDisplayName,InfoNameColorTag));
-  ItemInfoTextLabel.SetText(Equipment.GetInfoText('<color=255,240,100>',GetPlayer));
+  ItemInfoTextLabel.SetText(Equipment.GetInfoText(TextHighlightColorTag,GetPlayer));
   ItemInfoSizeLabel.SetText(IntToStr(Equipment.Weight));
   ItemInfoCostLabel.SetText(IntToStr(Equipment.Cost));
   with ItemInfoRaceIcon do

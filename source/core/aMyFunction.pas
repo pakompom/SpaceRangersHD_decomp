@@ -11,6 +11,34 @@ const
   GameTwoPi = 6.2831852;
   RandomFloatResolution = 1000;
 
+  // Complete markup tags. Keep these untyped so they remain string literals.
+  // Dialogs remap the standard highlight and equipment colors for light panels.
+  TextHighlightColorTag = '<color=255,240,100>';
+  DialogHighlightColorTag = '<color=0,50,200>';
+  EquipmentBonusColorTag = '<color=255,167,84>';
+  DialogEquipmentBonusColorTag = '<color=240,100,30>';
+  DialogGreenColorTag = '<color=0,130,0>';
+  EndColorTag = '</color>';
+
+  // Shared palette; the same colors serve several unrelated display roles.
+  // Exact spelling matters to ReplaceAllWideString; padded RGB tags differ.
+  RedColorTag = '<color=255,0,0>';
+  GreenColorTag = '<color=0,255,0>';
+  GrayColorTag = '<color=127,127,127>';
+  YellowColorTag = '<color=255,255,0>';
+  BlackColorTag = '<color=0,0,0>';
+  MagentaColorTag = '<color=255,0,255>';
+  CyanColorTag = '<color=0,255,255>';
+  OrangeColorTag = '<color=255,166,0>';
+  GoldColorTag = '<color=254,217,7>';
+  AzureColorTag = '<color=0,128,255>';
+  DarkGreenColorTag = '<color=45,105,45>';
+  BrightBlueColorTag = '<color=0,71,234>';
+
+  MicroModuleHighPriorityColorTag = '<color=17,139,255>';
+  DefaultInfoNameColorTag = '<color=57,239,255>';
+  DefaultInfoHullSeriesColorTag = '<color=82,166,255>';
+
 type
   TPolarPoint = record // @size 0x10  Natural Double alignment is visible in TPlanet.PredictPosition locals.
     AngleDegrees: Double; // @offset 0x00  Clockwise from the negative Y axis.
@@ -24,8 +52,8 @@ type
 
 var
   // Configured by GI_Main from StyleColor.InfoNameColor / InfoHullSeriesColor.
-  InfoNameColorTag: WideString = '<color=57,239,255>'; // @addr $8830AC
-  InfoHullSeriesColorTag: WideString = '<color=82,166,255>'; // @addr $8830B0
+  InfoNameColorTag: WideString = DefaultInfoNameColorTag; // @addr $8830AC
+  InfoHullSeriesColorTag: WideString = DefaultInfoHullSeriesColorTag; // @addr $8830B0
 
 type
   TObjectList = class(TList) // @size 0x10
@@ -771,7 +799,7 @@ end;
 { @routine $873A04 ReplaceTextToken }
 procedure ReplaceTextToken(var Text: WideString; Token, Replacement, ColorTag: WideString);
 begin
-  if ColorTag <> '' then Replacement := ColorTag + Replacement + '</color>';
+  if ColorTag <> '' then Replacement := ColorTag + Replacement + EndColorTag;
   Text := ReplaceAllWideString(Text, Token, Replacement);
 end;
 { @end $873A04 }
@@ -779,7 +807,7 @@ end;
 { @routine $873ACC ReplaceColoredToken }
 function ReplaceColoredToken(Text, Token, Replacement, ColorTag: WideString): WideString;
 begin
-  if ColorTag <> '' then Replacement := ColorTag + Replacement + '</color>';
+  if ColorTag <> '' then Replacement := ColorTag + Replacement + EndColorTag;
   Result := ReplaceAllWideString(Text, Token, Replacement);
 end;
 { @end $873ACC }
@@ -787,7 +815,7 @@ end;
 { @routine $873B88 FormatText1 }
 function FormatText1(Text, ColorTag, Token, Replacement: WideString): WideString;
 begin
-  if ColorTag <> '' then Replacement := ColorTag + Replacement + '</color>';
+  if ColorTag <> '' then Replacement := ColorTag + Replacement + EndColorTag;
   Result := ReplaceAllWideString(Text, Token, Replacement);
 end;
 { @end $873B88 }
@@ -797,8 +825,8 @@ function FormatText2(Text, ColorTag, Token1, Replacement1, Token2, Replacement2:
 begin
   if ColorTag <> '' then
   begin
-    Replacement1 := ColorTag + Replacement1 + '</color>';
-    Replacement2 := ColorTag + Replacement2 + '</color>';
+    Replacement1 := ColorTag + Replacement1 + EndColorTag;
+    Replacement2 := ColorTag + Replacement2 + EndColorTag;
   end;
   Result := ReplaceAllWideString(ReplaceAllWideString(Text, Token1, Replacement1), Token2, Replacement2);
 end;
@@ -809,9 +837,9 @@ function FormatText3(Text, ColorTag, Token1, Replacement1, Token2, Replacement2,
 begin
   if ColorTag <> '' then
   begin
-    Replacement1 := ColorTag + Replacement1 + '</color>';
-    Replacement2 := ColorTag + Replacement2 + '</color>';
-    Replacement3 := ColorTag + Replacement3 + '</color>';
+    Replacement1 := ColorTag + Replacement1 + EndColorTag;
+    Replacement2 := ColorTag + Replacement2 + EndColorTag;
+    Replacement3 := ColorTag + Replacement3 + EndColorTag;
   end;
   Result := ReplaceAllWideString(ReplaceAllWideString(ReplaceAllWideString(Text, Token1, Replacement1), Token2, Replacement2), Token3, Replacement3);
 end;
@@ -820,7 +848,7 @@ end;
 { @routine $873E88 WrapTextInColor }
 function WrapTextInColor(Text, ColorTag: WideString): WideString;
 begin
-  if (ColorTag <> '') and (Text <> '') then Result := ColorTag + Text + '</color>'
+  if (ColorTag <> '') and (Text <> '') then Result := ColorTag + Text + EndColorTag
   else Result := Text;
 end;
 { @end $873E88 }
@@ -828,12 +856,12 @@ end;
 { @routine $873F30 NormalizeTextHighlightColors }
 function NormalizeTextHighlightColors(Text: WideString): WideString;
 begin
-  Result := FormatText1(Text, '', '<color=17,139,255>', '<color=255,240,100>');
-  Result := FormatText1(Result, '', '<color=127,127,127>', '<color=255,240,100>');
-  Result := FormatText1(Result, '', '<color=191,185,128>', '<color=255,240,100>');
-  Result := FormatText1(Result, '', InfoNameColorTag, '<color=255,240,100>');
-  Result := FormatText1(Result, '', '<color=39,172,177>', '<color=255,240,100>');
-  Result := FormatText1(Result, '', InfoHullSeriesColorTag, '<color=255,240,100>');
+  Result := FormatText1(Text, '', MicroModuleHighPriorityColorTag, TextHighlightColorTag);
+  Result := FormatText1(Result, '', GrayColorTag, TextHighlightColorTag);
+  Result := FormatText1(Result, '', '<color=191,185,128>', TextHighlightColorTag);
+  Result := FormatText1(Result, '', InfoNameColorTag, TextHighlightColorTag);
+  Result := FormatText1(Result, '', '<color=39,172,177>', TextHighlightColorTag);
+  Result := FormatText1(Result, '', InfoHullSeriesColorTag, TextHighlightColorTag);
 end;
 { @end $873F30 }
 

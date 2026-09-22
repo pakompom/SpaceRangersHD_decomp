@@ -365,22 +365,22 @@ begin
       Stage := 8;
       MapIndex := FindRobotMapById(PlanetBattleMapId);
       Text := RobotMapDefinitions[MapIndex].RobotsStart;
-      ReplaceTextToken(Text, '<Star>', GetPlayer.CurrentStar.Name, '<color=255,240,100>');
-      ReplaceTextToken(Text, '<Planet>', GetPlayer.CurrentPlanet.Name, '<color=255,240,100>');
-      ReplaceTextToken(Text, '<Player>', GetPlayer.Name, '<color=255,240,100>');
+      ReplaceTextToken(Text, '<Star>', GetPlayer.CurrentStar.Name, TextHighlightColorTag);
+      ReplaceTextToken(Text, '<Planet>', GetPlayer.CurrentPlanet.Name, TextHighlightColorTag);
+      ReplaceTextToken(Text, '<Player>', GetPlayer.Name, TextHighlightColorTag);
       ExpandLocalizedTextMarkupAndPrefixLines(Text);
       Text := WideString(IntToStr(GovernmentBattleDifficulty)) + Text;
       Text := WideString(IntToStr(Min(Galaxy.GetDifficultyTierIndex, 3) + 1)) + Text;
       Text := WideString(IntToStr(Ord(GetPlayer.CurrentPlanet.RaceId) + 1)) + Text;
       WinText := RobotMapDefinitions[MapIndex].RobotsWin;
-      ReplaceTextToken(WinText, '<Star>', GetPlayer.CurrentStar.Name, '<color=255,240,100>');
-      ReplaceTextToken(WinText, '<Planet>', GetPlayer.CurrentPlanet.Name, '<color=255,240,100>');
-      ReplaceTextToken(WinText, '<Player>', GetPlayer.Name, '<color=255,240,100>');
+      ReplaceTextToken(WinText, '<Star>', GetPlayer.CurrentStar.Name, TextHighlightColorTag);
+      ReplaceTextToken(WinText, '<Planet>', GetPlayer.CurrentPlanet.Name, TextHighlightColorTag);
+      ReplaceTextToken(WinText, '<Player>', GetPlayer.Name, TextHighlightColorTag);
       ExpandLocalizedTextMarkupAndPrefixLines(WinText);
       LossText := RobotMapDefinitions[MapIndex].RobotsLoss;
-      ReplaceTextToken(LossText, '<Star>', GetPlayer.CurrentStar.Name, '<color=255,240,100>');
-      ReplaceTextToken(LossText, '<Planet>', GetPlayer.CurrentPlanet.Name, '<color=255,240,100>');
-      ReplaceTextToken(LossText, '<Player>', GetPlayer.Name, '<color=255,240,100>');
+      ReplaceTextToken(LossText, '<Star>', GetPlayer.CurrentStar.Name, TextHighlightColorTag);
+      ReplaceTextToken(LossText, '<Planet>', GetPlayer.CurrentPlanet.Name, TextHighlightColorTag);
+      ReplaceTextToken(LossText, '<Player>', GetPlayer.Name, TextHighlightColorTag);
       ExpandLocalizedTextMarkupAndPrefixLines(LossText);
       TerronName := GetPlayer.CurrentPlanet.GetFullName(' ') + ', ' + LookupLocalizedTextOrEmpty('FormShip.StorageInfo.StarInfo') + ' ' + GetPlayer.CurrentStar.Name;
       Stage := 9;
@@ -444,10 +444,10 @@ begin
       SoundManager.PlaySound('Sound.Sell');
       GetPlayer.CurrentPlanet.ChangeRelationToRanger(GetPlayer, -40);
       DialogText := RobotMapDefinitions[MapIndex].GovTextLoss;
-      ReplaceTextToken(DialogText, '<Star>', GetPlayer.CurrentStar.Name, '<color=255,240,100>');
-      ReplaceTextToken(DialogText, '<Planet>', GetPlayer.CurrentPlanet.Name, '<color=255,240,100>');
-      ReplaceTextToken(DialogText, '<Player>', GetPlayer.Name, '<color=255,240,100>');
-      ReplaceTextToken(DialogText, '<Money>', WideString(IntToStr(Money)), '<color=255,240,100>');
+      ReplaceTextToken(DialogText, '<Star>', GetPlayer.CurrentStar.Name, TextHighlightColorTag);
+      ReplaceTextToken(DialogText, '<Planet>', GetPlayer.CurrentPlanet.Name, TextHighlightColorTag);
+      ReplaceTextToken(DialogText, '<Player>', GetPlayer.Name, TextHighlightColorTag);
+      ReplaceTextToken(DialogText, '<Money>', WideString(IntToStr(Money)), TextHighlightColorTag);
       Stage := 15;
       BuildGovernmentChoices(True);
       Stage := 16;
@@ -486,10 +486,10 @@ begin
       SoundManager.PlaySound('Sound.LiberationSystem');
       Stage := 19;
       DialogText := RobotMapDefinitions[MapIndex].GovTextWin;
-      ReplaceTextToken(DialogText, '<Star>', GetPlayer.CurrentStar.Name, '<color=255,240,100>');
-      ReplaceTextToken(DialogText, '<Planet>', GetPlayer.CurrentPlanet.Name, '<color=255,240,100>');
-      ReplaceTextToken(DialogText, '<Player>', GetPlayer.Name, '<color=255,240,100>');
-      ReplaceTextToken(DialogText, '<Money>', WideString(IntToStr(Money)), '<color=255,240,100>');
+      ReplaceTextToken(DialogText, '<Star>', GetPlayer.CurrentStar.Name, TextHighlightColorTag);
+      ReplaceTextToken(DialogText, '<Planet>', GetPlayer.CurrentPlanet.Name, TextHighlightColorTag);
+      ReplaceTextToken(DialogText, '<Player>', GetPlayer.Name, TextHighlightColorTag);
+      ReplaceTextToken(DialogText, '<Money>', WideString(IntToStr(Money)), TextHighlightColorTag);
       DialogText := DialogText + GetPlayer.GrantPlanetQuestReward(GovernmentBattleDifficulty, ExperienceAwarded);
       Event := AddGalaxyEvent('PlayerFinishesPlanetaryBattle');
       Event.AddData(PlanetBattleMapId);
@@ -764,7 +764,7 @@ begin
   SetTextAlignX(taxLeft);
   SetTextAlignY(tayAuto);
   if not Assigned(Callback) then Text := RemoveTextTagsW(Text);
-  SetText('<Object=0,20,14,0>' + ReplaceAllWideString(Text, '<color=255,240,100>', '<color=0,50,200>'));
+  SetText('<Object=0,20,14,0>' + ReplaceAllWideString(Text, TextHighlightColorTag, DialogHighlightColorTag));
   SetTextColor(CurrentPixelFormat.PackRgbBytes(0, 0, 0));
   if not Assigned(Choice.Callback) then SetTextColor(CurrentPixelFormat.PackRgbBytes(127, 127, 127));
   CreateEmbeddedControl := CreateDialogObject;
@@ -870,7 +870,7 @@ begin
     DialogText := ReplaceAllWideString(DialogText, #13#10 + LocalizedTextLinePrefix, #13#10);
     DialogText := ReplaceAllWideString(DialogText, #13#10, #13#10 + LocalizedTextLinePrefix);
     FormattedTextLength := Length(DialogText);
-    DialogText := ReplaceAllWideString(DialogText, '<color=255,240,100>', '<color=0,50,200>');
+    DialogText := ReplaceAllWideString(DialogText, TextHighlightColorTag, DialogHighlightColorTag);
     (GetByName('TalkText') as TLabelGI).SetText(DialogText);
     TextPanel := GetByName('TextScroll') as TPanelScrollBarGI;
     TextPanel.SetScrollOffset(Point(0, 0));
@@ -940,7 +940,7 @@ procedure TfGov.AddMessageClicked(Sender: TObjectGI);
 var Text: WideString;
 begin
   Text := (GetByName('TalkText') as TLabelGI).GetText;
-  Text := ReplaceAllWideString(Text, '<color=0,50,200>', '<color=255,240,100>');
+  Text := ReplaceAllWideString(Text, DialogHighlightColorTag, TextHighlightColorTag);
   (Sender as TGraphButtonGI).SetDisabled(True);
   SoundManager.PlaySound('Sound.UserMsgAdd');
   AddOrUpdatePlayerBubble(pmUserNote, Galaxy.CurrentTurn, Text, '');
@@ -1366,12 +1366,12 @@ begin
     Cost := Round(RemapClamped(RelationDeficit, 0, 100, 1, 5) * (Galaxy.AverageRangerCapital div 100) *
       OwnerInfo[GetPlayer.CurrentPlanet.OwnerId].FuelPriceFactor);
     Text := PickLocalizedTextVariant('FormGov.Bribe.Question', (Galaxy.CurrentTurn div 10) * GetPlayer.CurrentPlanet.GenerationSeed + 223429);
-    ReplaceTextToken(Text, '<Money>', WideString(IntToStr(Cost)), '<color=255,240,100>');
+    ReplaceTextToken(Text, '<Money>', WideString(IntToStr(Cost)), TextHighlightColorTag);
     DialogText := Text;
     ClearDialogChoices;
     if GetPlayer.Money >= Cost then
       AddChoice(FormatText2(PickLocalizedTextVariant('FormGov.Bribe.Ok', (Galaxy.CurrentTurn div 5) * GetPlayer.CurrentPlanet.GenerationSeed + 8168236),
-        '<color=255,240,100>', '<Money>', WideString(IntToStr(Cost)), '<Planet>', GetPlayer.CurrentPlanet.Name), 0, PayBribe);
+        TextHighlightColorTag, '<Money>', WideString(IntToStr(Cost)), '<Planet>', GetPlayer.CurrentPlanet.Name), 0, PayBribe);
     AddChoice(PickLocalizedTextVariant('FormGov.Bribe.No', (Galaxy.CurrentTurn div 5) * GetPlayer.CurrentPlanet.GenerationSeed + 23985), 0, DeclineBribe);
   end
   else
@@ -1402,8 +1402,8 @@ begin
     GetPlayer.ChangePlanetRelations(GetPlayer.CurrentStar, rcmIncrease, 20, PlanetOwnerMasks.Coalition);
   end;
   DialogText := PickLocalizedTextVariant('FormGov.Bribe.QuestionOk', (Galaxy.CurrentTurn div 5) * GetPlayer.CurrentPlanet.GenerationSeed + 7156317);
-  ReplaceTextToken(DialogText, '<Money>', WideString(IntToStr(Cost)), '<color=255,240,100>');
-  ReplaceTextToken(DialogText, '<Planet>', GetPlayer.CurrentPlanet.Name, '<color=255,240,100>');
+  ReplaceTextToken(DialogText, '<Money>', WideString(IntToStr(Cost)), TextHighlightColorTag);
+  ReplaceTextToken(DialogText, '<Planet>', GetPlayer.CurrentPlanet.Name, TextHighlightColorTag);
   BuildGovernmentChoices(True);
 end;
 { @end $6CDADC }
@@ -1438,9 +1438,9 @@ begin
     begin
       MapIndex := FindRobotMapById(MapId);
       DialogText := RobotMapDefinitions[MapIndex].GovTextStart;
-      ReplaceTextToken(DialogText, '<Star>', GetPlayer.CurrentStar.Name, '<color=255,240,100>');
-      ReplaceTextToken(DialogText, '<Planet>', GetPlayer.CurrentPlanet.Name, '<color=255,240,100>');
-      ReplaceTextToken(DialogText, '<Player>', GetPlayer.Name, '<color=255,240,100>');
+      ReplaceTextToken(DialogText, '<Star>', GetPlayer.CurrentStar.Name, TextHighlightColorTag);
+      ReplaceTextToken(DialogText, '<Planet>', GetPlayer.CurrentPlanet.Name, TextHighlightColorTag);
+      ReplaceTextToken(DialogText, '<Player>', GetPlayer.Name, TextHighlightColorTag);
       ClearDialogChoices;
       if (RobotInterface <> nil) and (RobotInterface.Support() = 0) then
         AddChoice(LocalizedColorText('FormGov.I_QuestAccept'), MapId, ShowPlanetBattleSupport)
@@ -1718,7 +1718,7 @@ procedure TfGov.ShowMapOffer(Action: Integer);
 var Cost: Integer;
 begin
   Cost := RoundAndTruncateToTens(Min(GetPlayer.Wealth div 40, Galaxy.ComputeScaledBigMoney(GetPlayer.CurrentPlanet.OwnerId)) + 50);
-  DialogText := FormatText2(PickLocalizedTextVariant('FormGov.BuyMap.GovAsk', (Galaxy.CurrentTurn div 10) * GetPlayer.CurrentPlanet.GenerationSeed), '<color=255,240,100>', '<Name>',
+  DialogText := FormatText2(PickLocalizedTextVariant('FormGov.BuyMap.GovAsk', (Galaxy.CurrentTurn div 10) * GetPlayer.CurrentPlanet.GenerationSeed), TextHighlightColorTag, '<Name>',
     (TObject(GetPlayer.CurrentPlanet.FindUnchartedNeighborConstellation) as TConstellation).GetName,
     '<Money>', WideString(IntToStr(Cost)));
   ClearDialogChoices;
@@ -1764,7 +1764,7 @@ begin
       ((Ship.ScriptShip = nil) or ((Ship.ScriptShip as TScriptShip).State.StateKind = sskNormalAI)) and
       Ship.IsInPrison and (Ship.GetPrisonTermRemaining > 0) then
     begin
-      RowText := FormatText2(LocalizedColorText('FormGov.GuarantPrison.ShipRow'), '<color=255,240,100>',
+      RowText := FormatText2(LocalizedColorText('FormGov.GuarantPrison.ShipRow'), TextHighlightColorTag,
         '<Ship>', Ship.GetFullName(' '), '<Cost>', WideString(IntToStr(Ship.GetPrisonReleaseCost)));
       Text := Text + #13#10 + ' - ' + RowText;
       Ships.Add(Ship);
@@ -1779,7 +1779,7 @@ begin
     begin
       Cost := Ship.GetPrisonReleaseCost;
       Text := LocalizedColorText('FormGov.GuarantPrison.PlayerOk');
-      Text := FormatText2(Text, '<color=255,240,100>', '<Ship>', Ship.GetFullName(' '),
+      Text := FormatText2(Text, TextHighlightColorTag, '<Ship>', Ship.GetFullName(' '),
         '<Cost>', WideString(IntToStr(Cost)));
       if GetPlayer.Money >= Cost then AddChoice(Text, Integer(Ship), PayPrisonBail)
       else AddChoice(Text, 0, ScriptDialogBlockCallback);

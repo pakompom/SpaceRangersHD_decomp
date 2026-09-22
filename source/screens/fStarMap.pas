@@ -501,19 +501,19 @@ begin
   begin
     MapIndex := FindRobotMapById(PlanetBattleMapId);
     StartText := RobotMapDefinitions[MapIndex].RobotsStart;
-    ReplaceTextToken(StartText, '<Star>', GetPlayer.CurrentStar.Name, '<color=255,240,100>');
-    ReplaceTextToken(StartText, '<Player>', GetPlayer.Name, '<color=255,240,100>');
+    ReplaceTextToken(StartText, '<Star>', GetPlayer.CurrentStar.Name, TextHighlightColorTag);
+    ReplaceTextToken(StartText, '<Player>', GetPlayer.Name, TextHighlightColorTag);
     ExpandLocalizedTextMarkupAndPrefixLines(StartText);
     StartText := WideString(IntToStr(1)) + StartText;
     StartText := WideString(IntToStr(Min(Galaxy.GetDifficultyTierIndex, 3) + 1)) + StartText;
     StartText := WideString(IntToStr(6)) + StartText;
     WinText := RobotMapDefinitions[MapIndex].RobotsWin;
-    ReplaceTextToken(WinText, '<Star>', GetPlayer.CurrentStar.Name, '<color=255,240,100>');
-    ReplaceTextToken(WinText, '<Player>', GetPlayer.Name, '<color=255,240,100>');
+    ReplaceTextToken(WinText, '<Star>', GetPlayer.CurrentStar.Name, TextHighlightColorTag);
+    ReplaceTextToken(WinText, '<Player>', GetPlayer.Name, TextHighlightColorTag);
     ExpandLocalizedTextMarkupAndPrefixLines(WinText);
     LossText := RobotMapDefinitions[MapIndex].RobotsLoss;
-    ReplaceTextToken(LossText, '<Star>', GetPlayer.CurrentStar.Name, '<color=255,240,100>');
-    ReplaceTextToken(LossText, '<Player>', GetPlayer.Name, '<color=255,240,100>');
+    ReplaceTextToken(LossText, '<Star>', GetPlayer.CurrentStar.Name, TextHighlightColorTag);
+    ReplaceTextToken(LossText, '<Player>', GetPlayer.Name, TextHighlightColorTag);
     ExpandLocalizedTextMarkupAndPrefixLines(LossText);
     if TerronShip <> nil then TerronName := TerronShip.GetFullName(' ');
     if IsTurnCalculationRunning and (WaitForSingleObject(ScriptUiRequestEvent, 0) <> WAIT_OBJECT_0) then WaitForTurnCalculation;
@@ -3893,7 +3893,7 @@ begin
 
         if Obj is TShip then
         if (Obj as TShip).PartnerShip = GetPlayer then
-          (GetByName('InfoStdName') as TLabelGI).SetText((GetByName('InfoStdName') as TLabelGI).GetText + #13#10 + WrapTextInColor(LookupLocalizedTextByKey('FormInfo.Partner'), '<color=255,240,100>'));
+          (GetByName('InfoStdName') as TLabelGI).SetText((GetByName('InfoStdName') as TLabelGI).GetText + #13#10 + WrapTextInColor(LookupLocalizedTextByKey('FormInfo.Partner'), TextHighlightColorTag));
 
         (GetByName('InfoStdText') as TLabelGI).SetText(LocalizedText('FormInfo.ObjOutOfRange'));
         ShipScreen.LayoutItemInfo(StandardInfoPanel as TWindowGI, GetByName('InfoStdName') as TLabelGI, GetByName('InfoStdText') as TLabelGI, True, True, 0);
@@ -4074,7 +4074,7 @@ begin
       begin
         (GetByName('InfoItemName') as TLabelGI).SetText('');
         (GetByName('InfoItemName') as TLabelGI).SetText(WrapTextInColor(TItem(Obj).GetDisplayName, InfoNameColorTag));
-        (GetByName('InfoItemText') as TLabelGI).SetText(TItem(Obj).GetInfoText('<color=255,240,100>', nil));
+        (GetByName('InfoItemText') as TLabelGI).SetText(TItem(Obj).GetInfoText(TextHighlightColorTag, nil));
       end;
       (GetByName('InfoItemSize') as TLabelGI).SetText(IntToStr(TItem(Obj).Weight));
       (GetByName('InfoItemPrice') as TLabelGI).SetText(IntToStr(TItem(Obj).Cost));
@@ -4141,11 +4141,11 @@ begin
 
         if Obj is TShip then
         if (Obj as TShip).PartnerShip = GetPlayer then
-          (GetByName('InfoShipName') as TLabelGI).SetText((GetByName('InfoShipName') as TLabelGI).GetText + #13#10 + WrapTextInColor(LookupLocalizedTextByKey('FormInfo.Partner'), '<color=255,240,100>'));
+          (GetByName('InfoShipName') as TLabelGI).SetText((GetByName('InfoShipName') as TLabelGI).GetText + #13#10 + WrapTextInColor(LookupLocalizedTextByKey('FormInfo.Partner'), TextHighlightColorTag));
         if (Obj is TKling) and ((Obj as TKling).ActiveProgramAppliedTurn > 0) and
           ((Obj as TKling).ActiveProgramId in [prgShipwreck..prgDisconnection]) then
           (GetByName('InfoShipName') as TLabelGI).SetText((GetByName('InfoShipName') as TLabelGI).GetText + #13#10 +
-            WrapTextInColor(LocalizedText('Programms.' + ProgramNames[(Obj as TKling).ActiveProgramId] + '.AddToShipInfo'), '<color=255,0,0>'));
+            WrapTextInColor(LocalizedText('Programms.' + ProgramNames[(Obj as TKling).ActiveProgramId] + '.AddToShipInfo'), RedColorTag));
       end
       else
         (GetByName('InfoShipName') as TLabelGI).SetText(WrapTextInColor((Obj as TShip).GetFullName(' '), InfoNameColorTag));
@@ -4217,7 +4217,7 @@ begin
       end;
       (GetByName('InfoShipSpeed') as TLabelGI).SetText(IntToStr((Obj as TShip).CalculateSpeed));
       (GetByName('InfoShipDamage') as TLabelGI).SetText(WrapTextInColor('???', ''));
-      if (Obj as TShip).GetHull.HullPoints <= (Obj as TShip).GetHull.Weight / 2 then ColorTag := '<color=255,166,0>'
+      if (Obj as TShip).GetHull.HullPoints <= (Obj as TShip).GetHull.Weight / 2 then ColorTag := OrangeColorTag
       else ColorTag := '';
       if GetPlayer.CanResolveObjectWithScanner(Obj) or (GetPlayer = Obj) or ((Obj as TShip).PartnerShip = GetPlayer) or ((Obj as TShip).TypeId = stTranclucator) then
       begin
@@ -5108,7 +5108,7 @@ begin
     if SelectedWeapons[Slot] then Image.SetPosition(Classes.Point(Image.LocalPosition.X, 0))
     else Image.SetPosition(Classes.Point(Image.LocalPosition.X, -2));
     if Weapon <> nil then
-      WeaponButtons[Slot].HelpText := Weapon.GetDisplayName + ' (' + WrapTextInColor(IntToStr(Slot + 1), '<color=255,240,100>') + ')';
+      WeaponButtons[Slot].HelpText := Weapon.GetDisplayName + ' (' + WrapTextInColor(IntToStr(Slot + 1), TextHighlightColorTag) + ')';
   end;
 end;
 { @end $6BA8CC }
@@ -6782,13 +6782,13 @@ begin
                begin
                  Text := LocalizedText('Planet.NotCivil.Info.TextAboutPlanet');
                  if Planet^.UnexploredWater > 0 then
-                   ReplaceTextToken(Text, '<Water>', IntToStr(Planet^.UnexploredWater), '<color=255,240,100>')
+                   ReplaceTextToken(Text, '<Water>', IntToStr(Planet^.UnexploredWater), TextHighlightColorTag)
                  else ReplaceTextToken(Text, '<Water>', '-', '');
                  if Planet^.UnexploredLand > 0 then
-                   ReplaceTextToken(Text, '<Land>', IntToStr(Planet^.UnexploredLand), '<color=255,240,100>')
+                   ReplaceTextToken(Text, '<Land>', IntToStr(Planet^.UnexploredLand), TextHighlightColorTag)
                  else ReplaceTextToken(Text, '<Land>', '-', '');
                  if Planet^.UnexploredHills > 0 then
-                   ReplaceTextToken(Text, '<Hill>', IntToStr(Planet^.UnexploredHills), '<color=255,240,100>')
+                   ReplaceTextToken(Text, '<Hill>', IntToStr(Planet^.UnexploredHills), TextHighlightColorTag)
                  else ReplaceTextToken(Text, '<Hill>', '-', '');
                  if GetPlayer <> nil then
                    if GetPlayer.CountActiveArtefacts(t_ArtefactAnalyzer) > 0 then Text := Text + #13#10 + Planet^.TreasureHint;
@@ -6808,7 +6808,7 @@ begin
                  if IsCivilized then Text := LocalizedText('Planet.Kling.Info.TextAboutPlanet')
                  else Text := LocalizedText('Planet.' + Planet^.Faction + '.Info.TextAboutPlanet');
                  ReplaceTextToken(Text, '<Race>', OwnerInfo[RaceToOwner(Planet^.RaceId)].DisplayName,
-                 '<color=255,240,100>');
+                 TextHighlightColorTag);
                end;
                (GetByName('InfoStdText') as TLabelGI).SetText(Text);
                ShipScreen.LayoutItemInfo(StandardInfoPanel as TWindowGI, GetByName('InfoStdName') as TLabelGI, GetByName(
@@ -7047,7 +7047,7 @@ begin
              (GetByName('InfoShipType') as TLabelGI).SetText(Ship^.TypeName);
            end;
            (GetByName('InfoShipSpeed') as TLabelGI).SetText(IntToStr(Ship^.Speed));
-           if Ship^.HullPoints <= Ship^.HullCapacity / 2 then ColorTag := '<color=255,166,0>'
+           if Ship^.HullPoints <= Ship^.HullCapacity / 2 then ColorTag := OrangeColorTag
            else ColorTag := '';
            if Ship^.ScannerResolved then
            begin

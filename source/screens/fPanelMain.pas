@@ -106,7 +106,7 @@ var
 
 implementation
 
-uses aGalaxy, aScript, aPlayer, Globals, GlobalsV, GR_Main, SysUtils, ThreadCalc, aCalc, fStarMap, GI_Window, GI_GAI, GI_Main, GR_gi, Windows, Messages, fPanelLoad, fShip2, fRating2, fGalaxy2, fJournal, fSaveManager, GI_MessageBox, aConst, EC_Str, aPlanet, aGalaxyStruct, aGalaxyEvent, aSaveLoad, aEFilm, aShip;
+uses aMyFunction, aGalaxy, aScript, aPlayer, Globals, GlobalsV, GR_Main, SysUtils, ThreadCalc, aCalc, fStarMap, GI_Window, GI_GAI, GI_Main, GR_gi, Windows, Messages, fPanelLoad, fShip2, fRating2, fGalaxy2, fJournal, fSaveManager, GI_MessageBox, aConst, EC_Str, aPlanet, aGalaxyStruct, aGalaxyEvent, aSaveLoad, aEFilm, aShip;
 
 { @routine $8138D8 TfPanelMain_Create }
 constructor TfPanelMain.Create;
@@ -687,7 +687,7 @@ begin
   if SaveManagerScreen.QuickSaveExists(SlotIndex) then
   begin
     if (QuickSaveExtraSlots > 0) or (SlotIndex > 1) then
-      Text := ReplaceColoredToken(LookupLocalizedTextByKey('FormSaveManager.QueryQuickN'), '<Num>', WideString(IntToStr(SlotIndex)), '<color=255,240,100>')
+      Text := ReplaceColoredToken(LookupLocalizedTextByKey('FormSaveManager.QueryQuickN'), '<Num>', WideString(IntToStr(SlotIndex)), TextHighlightColorTag)
     else
       Text := LookupLocalizedTextByKey('FormSaveManager.QueryQuick');
     if ShowMessageBoxGI(Screen, Text, mbgOK or mbgCancel or mbgQuestion) = mbgResultOK then
@@ -701,7 +701,7 @@ begin
   else if QuickSaveExtraSlots + 1 >= SlotIndex then
   begin
     if QuickSaveExtraSlots > 0 then
-      Text := ReplaceColoredToken(LookupLocalizedTextByKey('FormSaveManager.QuickNotExistN'), '<Num>', WideString(IntToStr(SlotIndex)), '<color=255,240,100>')
+      Text := ReplaceColoredToken(LookupLocalizedTextByKey('FormSaveManager.QuickNotExistN'), '<Num>', WideString(IntToStr(SlotIndex)), TextHighlightColorTag)
     else
       Text := LookupLocalizedTextByKey('FormSaveManager.QuickNotExist');
     ShowMessageBoxGI(Screen, Text, mbgOK or mbgUnused04);

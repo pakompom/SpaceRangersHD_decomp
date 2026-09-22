@@ -685,7 +685,7 @@ begin
   FixedWidth := FindTextOffsetW(LowerCaseWideString(Text), '<fix>') >= 0;
   Text := RemoveMatchingTextTagsW(Text, 'fix', 'FIX');
   Text := RemoveMatchingTextTagsW(Text, '/fix', '/FIX');
-  Text := ReplaceAllWideString(Text, GetTextColorTag(QuestStyleIndex), '<color=255,240,100>');
+  Text := ReplaceAllWideString(Text, GetTextColorTag(QuestStyleIndex), TextHighlightColorTag);
   Lines := TStringsEC.Create;
   Lines.SetText(Text);
   Lines.First;
@@ -1516,7 +1516,7 @@ begin
     if GetPlayer <> nil then
       Result := ReplaceAllWideString(Result, '<Player>', WrapTextInColor(GetPlayer.Name, GetTextColorTag(QuestStyleIndex)));
     Expanded := ReplaceAllWideString(Expanded, '<clr>', GetTextColorTag(QuestStyleIndex));
-    Expanded := ReplaceAllWideString(Expanded, '<clrEnd>', '</color>');
+    Expanded := ReplaceAllWideString(Expanded, '<clrEnd>', EndColorTag);
   end;
   Result := Expanded;
 end;
@@ -1577,8 +1577,8 @@ begin
               begin
                 GovernmentQuest.Successful := True;
                 News := PickLocalizedTextVariant('GalaxyNews.Quest.Successful.PlanetaryQuest', (Galaxy.CurrentTurn div 10) * Integer(Galaxy.GenerationSeed));
-                ReplaceTextToken(News, '<FromPlanet>', GovernmentQuest.Planet.Name, '<color=255,240,100>');
-                ReplaceTextToken(News, '<ToPlanet>', GetPlayer.CurrentPlanet.Name, '<color=255,240,100>');
+                ReplaceTextToken(News, '<FromPlanet>', GovernmentQuest.Planet.Name, TextHighlightColorTag);
+                ReplaceTextToken(News, '<ToPlanet>', GetPlayer.CurrentPlanet.Name, TextHighlightColorTag);
                 AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn, News, '');
               end;
               ItemName := LookupLocalizedTextByKey('PlanetQuest.ItemForPlanetQuest.' + IntToStr(GovernmentQuest.QuestNumber));
@@ -1649,9 +1649,9 @@ begin
               GovernmentQuest.Successful := False;
               GetPlayer.PublishQuestStatus(GovernmentQuest, -1);
               News := PickLocalizedTextVariant('GalaxyNews.Quest.Failure.PlanetaryQuest', Integer(GetPlayer.Seed) * (Galaxy.CurrentTurn div 10));
-              ReplaceTextToken(News, '<ToPlanet>', GetPlayer.CurrentPlanet.Name, '<color=255,240,100>');
-              ReplaceTextToken(News, '<FromPlanet>', GovernmentQuest.Planet.Name, '<color=255,240,100>');
-              ReplaceTextToken(News, '<Relation>', GovernmentQuest.Planet.GetRelationLevelTextToShip(GetPlayer), '<color=255,240,100>');
+              ReplaceTextToken(News, '<ToPlanet>', GetPlayer.CurrentPlanet.Name, TextHighlightColorTag);
+              ReplaceTextToken(News, '<FromPlanet>', GovernmentQuest.Planet.Name, TextHighlightColorTag);
+              ReplaceTextToken(News, '<Relation>', GovernmentQuest.Planet.GetRelationLevelTextToShip(GetPlayer), TextHighlightColorTag);
               AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn, News, '');
               GetPlayer.CurrentPlanet.TextQuestId := -1;
               GetPlayer.ArchiveQuest(I);

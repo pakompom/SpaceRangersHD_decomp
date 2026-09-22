@@ -4777,8 +4777,8 @@ end;
 procedure LoadInformationColorTags;
 var Block: TBlockParEC;
 begin
-  InfoNameColorTag := '<color=57,239,255>';
-  InfoHullSeriesColorTag := '<color=82,166,255>';
+  InfoNameColorTag := DefaultInfoNameColorTag;
+  InfoHullSeriesColorTag := DefaultInfoHullSeriesColorTag;
   if GameDataConfig.CountBlocks('StyleColor') > 0 then
   begin
     Block := GameDataConfig.GetBlock('StyleColor');

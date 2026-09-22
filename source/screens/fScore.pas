@@ -98,6 +98,9 @@ uses aKling, SysUtils, Windows, Math, EC_File, EC_Str, GR_Main, GlobalsV, Global
   aGalaxy, SimpleSteamApi, aConst, aMyFunction, aRanger, aShip, Achievements,
   GI_GraphButton, GI_Image, GI_Label, GI_Panel, GI_MessageBox, aSaveLoad, GI_GAI, ExceptionInfo;
 
+const
+  ScoreValueColorTag = '<color=255,222,0>';
+
 { @routine $57B77C TfScoreUnit_Create }
 constructor TfScoreUnit.Create;
 begin
@@ -1368,7 +1371,7 @@ var Text: WideString; Entry: TfScoreUnit;
 begin
   Entry := Entries[SelectedIndex];
   Text := FormatText2(LanguageDataConfig.GetParamByPathOrMarker('FormScore.QueryDelete'),
-    '<color=255,240,100>', '<Name>', Entry.PlayerName, '<Score>', WideString(IntToStr(Entry.TotalScore)));
+    TextHighlightColorTag, '<Name>', Entry.PlayerName, '<Score>', WideString(IntToStr(Entry.TotalScore)));
   if ShowMessageBoxGI(Self, Text, mbgOK or mbgCancel or mbgQuestion) <> mbgResultOK then PostMouseMoveMessage
   else
   begin
@@ -1541,19 +1544,19 @@ begin
     if Active then SetImagePath('GI,Bm.FormScore2.' + GiResourceSuffix + 'Skill' + WideString(IntToStr(Entry.SkillLevels[psLeadership] - 1)));
   end;
   (GetByName('IDate') as TLabelGI).SetText(FormatText1(LocalizedColorText('FormScore.DateWin'),
-    '<color=255,222,0>', '<Date>', FormatGameTurnDate(Entry.FinishedTurn)));
+    ScoreValueColorTag, '<Date>', FormatGameTurnDate(Entry.FinishedTurn)));
   (GetByName('ITurn') as TLabelGI).SetText(FormatText1(LocalizedColorText('FormScore.TurnWin'),
-    '<color=255,222,0>', '<Date>', WideString(IntToStr(Max(0, Entry.FinishedTurn - GalaxyWarmupTurns)))));
+    ScoreValueColorTag, '<Date>', WideString(IntToStr(Max(0, Entry.FinishedTurn - GalaxyWarmupTurns)))));
   (GetByName('IRank') as TLabelGI).SetText(FormatText1(LocalizedColorText('FormScore.Rank'),
-    '<color=255,240,100>', '<Rank>', LocalizedText('Rank.' + CoalitionRankNames[Entry.Rank] + '.Name')));
+    TextHighlightColorTag, '<Rank>', LocalizedText('Rank.' + CoalitionRankNames[Entry.Rank] + '.Name')));
   (GetByName('IKillDominator') as TLabelGI).SetText(WideString(IntToStr(Entry.DominatorKillCount)));
   (GetByName('IKillPirate') as TLabelGI).SetText(WideString(IntToStr(Entry.PirateKillCount)));
   (GetByName('IKillNormal') as TLabelGI).SetText(WideString(IntToStr(Entry.OtherShipKillCount)));
   (GetByName('IKillHyper') as TLabelGI).SetText(WideString(IntToStr(Entry.ArcadeKillCount)));
   (GetByName('ILiberationSystem') as TLabelGI).SetText(FormatText1(LocalizedColorText('FormScore.LiberationSystem'),
-    '<color=255,222,0>', '<LiberationSystem>', WideString(IntToStr(Entry.LiberatedSystemCount))));
+    ScoreValueColorTag, '<LiberationSystem>', WideString(IntToStr(Entry.LiberatedSystemCount))));
   (GetByName('IRewards') as TLabelGI).SetText(FormatText1(LocalizedColorText('FormScore.Rewards'),
-    '<color=255,240,100>', '<Rewards>', WideString(IntToStr(Entry.AwardCount))));
+    TextHighlightColorTag, '<Rewards>', WideString(IntToStr(Entry.AwardCount))));
   LetterQuests := 0;
   ShipKillQuests := 0;
   PlanetQuests := 0;
@@ -1567,7 +1570,7 @@ begin
       else if Entry.QuestResults[I].QuestType = qtDefendSystem then Inc(SystemDefenseQuests)
       else if Entry.QuestResults[I].QuestType = qtDefendShip then Inc(ShipDefenseQuests);
   (GetByName('IQuests') as TLabelGI).SetText(FormatText1(LocalizedColorText('FormScore.Quests'),
-    '<color=255,240,100>', '<Quests>', WideString(IntToStr(LetterQuests + ShipKillQuests + PlanetQuests + SystemDefenseQuests + ShipDefenseQuests))));
+    TextHighlightColorTag, '<Quests>', WideString(IntToStr(LetterQuests + ShipKillQuests + PlanetQuests + SystemDefenseQuests + ShipDefenseQuests))));
   if GiResourceVariant = 2 then Separator := '+' else Separator := ':';
   with GetByName('IQuests') do
   begin
@@ -1602,7 +1605,7 @@ begin
         if I in [1, 3, 5, 7, 9] then
         begin
           HelpText := FormatText1(LookupLocalizedTextByKey(WideString('FormScore.Quests' + IntToStr((I - 1) div 2 + 1))),
-            '<color=255,240,100>', '<N>', GetText);
+            TextHighlightColorTag, '<N>', GetText);
           MouseEnterCallback := QuestHelpMouseEnter;
           MouseLeaveCallback := QuestHelpMouseLeave;
         end;
@@ -1614,9 +1617,9 @@ begin
     end;
   end;
   (GetByName('IPlanetBattles') as TLabelGI).SetText(FormatText1(LocalizedColorText('FormScore.PlanetBattles'),
-    '<color=255,240,100>', '<PlanetBattles>', WideString(IntToStr(Entry.PlanetBattles))));
+    TextHighlightColorTag, '<PlanetBattles>', WideString(IntToStr(Entry.PlanetBattles))));
   (GetByName('IExp') as TLabelGI).SetText(FormatText1(LocalizedColorText('FormScore.Exp'),
-    '<color=255,222,0>', '<Exp>', WideString(IntToStr(Entry.TotalExperience))));
+    ScoreValueColorTag, '<Exp>', WideString(IntToStr(Entry.TotalExperience))));
   ResolvedColor := '<color=255,100,50>';
   UnresolvedColor := '<color=30,252,30>';
   case Entry.BlazerEndingState of
@@ -1652,7 +1655,7 @@ begin
   end;
   if Entry.VictoryAchieved then
     (GetByName('ITotal') as TLabelGI).SetText(FormatText1(LocalizedColorText('FormScore.TotalWin'),
-      '<color=255,222,0>', '<Total>', WideString(IntToStr(Entry.TotalScore))))
+      ScoreValueColorTag, '<Total>', WideString(IntToStr(Entry.TotalScore))))
   else (GetByName('ITotal') as TLabelGI).SetText(LocalizedColorText('FormScore.TotalLoss'));
   (GetByName('INote') as TLabelGI).SetText(LocalizedColorText('FormScore.Note'));
 end;
@@ -1684,9 +1687,9 @@ begin
   else FileName := GetGameUserDirectory + 'ToServer' + WideString(IntToStr(Index + 1)) + '.txt';
   Entry.ExportToFile(FileName);
   Text := LocalizedColorText('FormScore.ToServer');
-  Text := ReplaceColoredToken(Text, '<Player>', Entry.PlayerName, '<color=255,240,100>');
-  Text := ReplaceColoredToken(Text, '<File>', ReplaceAllWideString(FileName, '\', ' \ '), '<color=255,240,100>');
-  Text := ReplaceColoredToken(Text, '<WinGameDate>', FormatGameTurnDate(Entry.FinishedTurn), '<color=255,240,100>');
+  Text := ReplaceColoredToken(Text, '<Player>', Entry.PlayerName, TextHighlightColorTag);
+  Text := ReplaceColoredToken(Text, '<File>', ReplaceAllWideString(FileName, '\', ' \ '), TextHighlightColorTag);
+  Text := ReplaceColoredToken(Text, '<WinGameDate>', FormatGameTurnDate(Entry.FinishedTurn), TextHighlightColorTag);
   Entry.Exported := True;
   ShowMessageBoxGI(Self, Text, mbgOK or mbgUnused04 or mbgLeftAlign);
   RefreshDetails;

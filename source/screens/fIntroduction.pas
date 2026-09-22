@@ -108,9 +108,9 @@ begin
     SetDisabled(True);
   end;
   if NewGameGenerationThread = nil then
-    Text := FormatText1(LocalizedText('FormIntroduction.Text'),'<color=255,240,100>','<Player>',GetPlayer.Name)
+    Text := FormatText1(LocalizedText('FormIntroduction.Text'),TextHighlightColorTag,'<Player>',GetPlayer.Name)
   else
-    Text := FormatText1(LocalizedText('FormIntroduction.Text'),'<color=255,240,100>','<Player>',NewGameGenerationThread.PlayerName);
+    Text := FormatText1(LocalizedText('FormIntroduction.Text'),TextHighlightColorTag,'<Player>',NewGameGenerationThread.PlayerName);
   with GetByName('GBText') as TGraphBufGI do
   begin
     SourceHasPerPixelAlpha := True;

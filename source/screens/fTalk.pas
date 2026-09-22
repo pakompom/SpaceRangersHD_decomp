@@ -567,7 +567,7 @@ begin
   SetTextAlignX(taxLeft);
   SetTextAlignY(tayAuto);
   if not Assigned(Callback) then Text := RemoveTextTagsW(Text);
-  SetText('<Object=0,20,14,0>' + ReplaceAllWideString(Text, '<color=255,240,100>', '<color=0,50,200>'));
+  SetText('<Object=0,20,14,0>' + ReplaceAllWideString(Text, TextHighlightColorTag, DialogHighlightColorTag));
   SetTextColor(CurrentPixelFormat.PackRgbBytes(0, 0, 0));
   if not Assigned(Choice.Callback) then SetTextColor(CurrentPixelFormat.PackRgbBytes(127, 127, 127));
   CreateEmbeddedControl := CreateDialogObject;
@@ -809,7 +809,7 @@ begin
   else
   begin
     PresentedTextLength := Length(DialogText);
-    DialogText := ReplaceAllWideString(DialogText, '<color=255,240,100>', '<color=0,50,200>');
+    DialogText := ReplaceAllWideString(DialogText, TextHighlightColorTag, DialogHighlightColorTag);
     (GetByName('TalkText') as TLabelGI).SetText(DialogText);
     TextPanel := GetByName('TextScroll') as TPanelScrollBarGI;
     TextPanel.SetScrollOffset(Point(0, 0));
@@ -948,7 +948,7 @@ var
   Text: WideString;
 begin
   Text := (GetByName('TalkText') as TLabelGI).GetText;
-  Text := ReplaceAllWideString(Text, '<color=0,50,200>', '<color=255,240,100>');
+  Text := ReplaceAllWideString(Text, DialogHighlightColorTag, TextHighlightColorTag);
   Text := RemoveMatchingTextTagsW(Text, 'object', 'OBJECT');
   (GetByName('UserMsgAdd') as TGraphButtonGI).SetDisabled(True);
   SoundManager.PlaySound('Sound.UserMsgAdd');
@@ -1362,11 +1362,11 @@ begin
                 else if GetPlayer.OrderTarget is TRuins then TargetName := (GetPlayer.OrderTarget as TRuins).GetColoredFullName('')
                 else TargetName := '';
                 if Length(TargetName) > 0 then
-                  AddChoice(FormatText1('- ' + GetPlayer.LookupTalkText('Talk.Partner.LandingToObject'), '<color=255,240,100>', '<ObjectName>', TargetName), 0, OrderPartnerLand, 0);
+                  AddChoice(FormatText1('- ' + GetPlayer.LookupTalkText('Talk.Partner.LandingToObject'), TextHighlightColorTag, '<ObjectName>', TargetName), 0, OrderPartnerLand, 0);
               end;
             soJump:
               if GetPlayer.OrderTarget <> TalkShip.OrderTarget then
-                AddChoice(FormatText1('- ' + GetPlayer.LookupTalkText('Talk.Partner.FlyToStar'), '<color=255,240,100>', '<Star>', (GetPlayer.OrderTarget as TStar).Name), 0, OrderPartnerJump, 0);
+                AddChoice(FormatText1('- ' + GetPlayer.LookupTalkText('Talk.Partner.FlyToStar'), TextHighlightColorTag, '<Star>', (GetPlayer.OrderTarget as TStar).Name), 0, OrderPartnerJump, 0);
           end;
           if TalkShip.HasLooseNonScriptItemsOrGoods or not GetPlayer.CanResolveObjectWithScanner(TalkShip) then
             AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Partner.PlayerSendDropCargo'), 0, OrderPartnerDropCargo, 0);
@@ -1407,11 +1407,11 @@ begin
                 else if GetPlayer.OrderTarget is TRuins then TargetName := (GetPlayer.OrderTarget as TRuins).GetColoredFullName('')
                 else TargetName := '';
                 if Length(TargetName) > 0 then
-                  AddChoice(FormatText1('- ' + GetPlayer.LookupTalkText('Talk.Pirate.LandingToObject'), '<color=255,240,100>', '<ObjectName>', TargetName), 0, OrderPiratePartnerLand, 0);
+                  AddChoice(FormatText1('- ' + GetPlayer.LookupTalkText('Talk.Pirate.LandingToObject'), TextHighlightColorTag, '<ObjectName>', TargetName), 0, OrderPiratePartnerLand, 0);
               end;
             soJump:
               if GetPlayer.OrderTarget <> TalkShip.OrderTarget then
-                AddChoice(FormatText1('- ' + GetPlayer.LookupTalkText('Talk.Pirate.FlyToStar'), '<color=255,240,100>', '<Star>', (GetPlayer.OrderTarget as TStar).Name), 0, OrderPiratePartnerJump, 0);
+                AddChoice(FormatText1('- ' + GetPlayer.LookupTalkText('Talk.Pirate.FlyToStar'), TextHighlightColorTag, '<Star>', (GetPlayer.OrderTarget as TStar).Name), 0, OrderPiratePartnerJump, 0);
           end;
           AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Pirate.FinancesCheck'), 0, ShowPiratePartnerFinances, 0);
           AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Pirate.PlayerDismissSend'), 0, ShowPartnerDismissal, 0);
@@ -1429,7 +1429,7 @@ begin
             if (GetPlayer.ProgramCounts[ProgramIndex] > 0) and (ProgramIndex in [prgShipwreck..prgDisconnection]) and
               ((TalkShip as TKling).ActiveProgramAppliedTurn = 0) then
               AddChoice('- ' + FormatText1(GetPlayer.LookupTalkText('Talk.Dominator.ProgrammPlayer'),
-                '<color=255,240,100>', '<Name>', GetPlayer.GetProgramName(ProgramIndex)), Ord(ProgramIndex), RunDominatorProgram, 0);
+                TextHighlightColorTag, '<Name>', GetPlayer.GetProgramName(ProgramIndex)), Ord(ProgramIndex), RunDominatorProgram, 0);
           if RecognizesPlayer or GetPlayer.ChameleonDetected[Ord((TalkShip as TKling).DominatorSeries)] or
             ((TalkShip as TKling).DominatorSeries <> GetPlayer.ChameleonSeries) then
           begin
@@ -1466,8 +1466,8 @@ begin
               TargetName := (GetPlayer.OrderTarget as TRuins).GetColoredFullName('');
             if Length(TargetName) > 0 then
             begin
-              AddChoice(FormatText1('- ' + GetPlayer.LookupTalkText('Talk.Tranclucator.LandingToObject'), '<color=255,240,100>', '<ObjectName>', TargetName), 0, OrderTranclucatorLand, 0);
-              AddChoice(FormatText1('- ' + GetPlayer.LookupTalkText('Talk.Tranclucator.LandingToStorage'), '<color=255,240,100>', '<ObjectName>', TargetName), 0, OrderTranclucatorStoreCargo, 0);
+              AddChoice(FormatText1('- ' + GetPlayer.LookupTalkText('Talk.Tranclucator.LandingToObject'), TextHighlightColorTag, '<ObjectName>', TargetName), 0, OrderTranclucatorLand, 0);
+              AddChoice(FormatText1('- ' + GetPlayer.LookupTalkText('Talk.Tranclucator.LandingToStorage'), TextHighlightColorTag, '<ObjectName>', TargetName), 0, OrderTranclucatorStoreCargo, 0);
             end;
           end;
           if GetPlayer <> TalkShip.OrderTarget then
@@ -1674,10 +1674,10 @@ begin
     DialogText := TalkShip.LookupTalkText('Talk.Trade.AnswerBadRelations')
   else if (TalkShip.EnemyShip <> nil) and ((TalkShip.EnemyShip.OrderTarget = TalkShip) or (TalkShip.OrderTarget = TalkShip.EnemyShip)) and
     (GetPlayer <> TalkShip.PartnerShip) then
-    DialogText := FormatText1(TalkShip.LookupTalkText('Talk.Trade.AnswerWar'), '<color=255,240,100>', '<ShipBad>',
+    DialogText := FormatText1(TalkShip.LookupTalkText('Talk.Trade.AnswerWar'), TextHighlightColorTag, '<ShipBad>',
       TalkShip.EnemyShip.GetName + GetLocalObjectLink(TalkShip.EnemyShip, False))
   else if (TalkShip.GetCurrentPickupItem <> nil) and (GetPlayer <> TalkShip.PartnerShip) then
-    DialogText := FormatText1(TalkShip.LookupTalkText('Talk.Trade.AnswerAlreadyTakeItem'), '<color=255,240,100>', '<Item>',
+    DialogText := FormatText1(TalkShip.LookupTalkText('Talk.Trade.AnswerAlreadyTakeItem'), TextHighlightColorTag, '<Item>',
       TalkShip.GetCurrentPickupItem.GetDisplayName + GetLocalObjectLink(TalkShip.GetCurrentPickupItem, False))
   else if not TalkShip.HasCargoGoods and ((Capacity < 1) or (Money < GoodsMarket[Ord(t_Food)].AveragePrice)) then
     DialogText := TalkShip.LookupTalkText('Talk.Trade.AnswerNoNeedGoods')
@@ -1686,7 +1686,7 @@ begin
   else
   begin
     if Capacity > 0 then DialogText := FormatText1(TalkShip.LookupTalkText('Talk.Trade.TradeOkMayBuyOk'),
-      '<color=255,240,100>', '<Cnt>', WideString(IntToStr(Capacity)))
+      TextHighlightColorTag, '<Cnt>', WideString(IntToStr(Capacity)))
     else DialogText := TalkShip.LookupTalkText('Talk.Trade.TradeOkMayBuyNo');
     AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Trade.TradeGo'), 0, OpenTrade, 0);
   end;
@@ -1757,7 +1757,7 @@ begin
       DialogText := TalkShip.LookupTalkText('Talk.Money.ComputerAsk');
       ClearChoices(False);
       AddChoice('- ' + ReplaceColoredToken(GetPlayer.LookupTalkText('Talk.Money.PlayerSendSum'), '<Money>',
-        WideString(IntToStr(ExtortionDemandAmount)), '<color=255,240,100>'), 0, DemandMoney, 0);
+        WideString(IntToStr(ExtortionDemandAmount)), TextHighlightColorTag), 0, DemandMoney, 0);
       if ExtortionDemandAmount div 2 > 10 then AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Money.PlayerLess'), 0, HalveMoneyDemand, 0);
       if 3 * (TalkShip.GetWealthScaledAmount(3) + GetPlayer.GetWealthScaledAmount(3)) >= 2 * ExtortionDemandAmount then
         AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Money.PlayerMore'), 0, DoubleMoneyDemand, 0);
@@ -1833,7 +1833,7 @@ begin
     if GetPlayer.Money > 0 then
     begin
       AddChoice('- ' + ReplaceColoredToken(GetPlayer.LookupTalkText('Talk.Truce.PlayerSendSum'), '<Money>',
-        WideString(IntToStr(TruceOfferAmount)), '<color=255,240,100>'), 0, AcceptTruceOffer, 0);
+        WideString(IntToStr(TruceOfferAmount)), TextHighlightColorTag), 0, AcceptTruceOffer, 0);
       if TruceOfferAmount div 2 > 100 then AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Truce.PlayerLess'), 0, HalveTruceOffer, 0);
       if GetPlayer.Money > TruceOfferAmount then AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Truce.PlayerMore'), 0, DoubleTruceOffer, 0);
     end
@@ -1918,7 +1918,7 @@ begin
       not (Ship.TargetingRestriction in [1, 2]) then
     begin
       DialogText := FormatText1(TalkShip.LookupTalkText('Talk.Attack.ComputerReadyAttack'),
-        '<color=255,240,100>', '<Target>', Ship.GetFullName(' ') + GetLocalObjectLink(Ship, False));
+        TextHighlightColorTag, '<Target>', Ship.GetFullName(' ') + GetLocalObjectLink(Ship, False));
       AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Attack.PlayerOk'), Integer(Ship), AcceptJointAttack, 0);
       AllowTargets := True;
     end
@@ -2032,7 +2032,7 @@ begin
   begin
     if TalkShip.GetRelationLevelToShip(GetPlayer) = rlHostile then
       DialogText := TalkShip.LookupTalkText('Talk.Protect.ComputerNotFearAndWar')
-    else DialogText := FormatText1(TalkShip.LookupTalkText('Talk.Protect.' + TalkShip.GetTypeNameKey + 'No'), '<color=255,240,100>', '<Target>', Target.GetFullName(' ') + GetLocalObjectLink(Target, False));
+    else DialogText := FormatText1(TalkShip.LookupTalkText('Talk.Protect.' + TalkShip.GetTypeNameKey + 'No'), TextHighlightColorTag, '<Target>', Target.GetFullName(' ') + GetLocalObjectLink(Target, False));
     BuildStandardChoices(True);
     ClearChoices(False);
     AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Exit'), 0, FastExit, 0);
@@ -2072,7 +2072,7 @@ begin
     Target.ChangeRelationToRanger(GetPlayer, 50);
     if TalkShip.TypeId = stPirate then GetPlayer.AddWarriorCareerActivity(4);
     if Target.TypeId = stPirate then GetPlayer.AddPirateCareerActivity(8);
-    DialogText := FormatText1(TalkShip.LookupTalkText('Talk.Protect.' + TalkShip.GetTypeNameKey + 'Ok'), '<color=255,240,100>', '<Target>', Target.GetFullName(' ') + GetLocalObjectLink(Target, False));
+    DialogText := FormatText1(TalkShip.LookupTalkText('Talk.Protect.' + TalkShip.GetTypeNameKey + 'Ok'), TextHighlightColorTag, '<Target>', Target.GetFullName(' ') + GetLocalObjectLink(Target, False));
     RecognizesPlayer := not Target.IsPlayerChameleonEffectiveAgainstSelf;
     if RecognizesPlayer and (Target.TypeId in [stRanger..stPirate]) then
     begin
@@ -2089,13 +2089,13 @@ begin
         Target.SetMoney(Target.Money - Reward);
         GetPlayer.SetMoney(GetPlayer.Money + Reward);
         Target.ShowMessageToPlayer(FormatText1(Target.LookupTalkText('Talk.Protect.TargetGiveMoney'),
-          '<color=255,240,100>', '<Money>', WideString(IntToStr(Reward))));
+          TextHighlightColorTag, '<Money>', WideString(IntToStr(Reward))));
       end
       else Target.ShowMessageToPlayer(Target.LookupTalkText('Talk.Protect.TargetThanks'));
     end;
     if TalkShip is TPirate then TryAddAchievementProgress('NEGOCIANT', 1);
   end
-  else DialogText := FormatText1(TalkShip.LookupTalkText('Talk.Protect.' + TalkShip.GetTypeNameKey + 'No'), '<color=255,240,100>', '<Target>', Target.GetFullName(' ') + GetLocalObjectLink(Target, False));
+  else DialogText := FormatText1(TalkShip.LookupTalkText('Talk.Protect.' + TalkShip.GetTypeNameKey + 'No'), TextHighlightColorTag, '<Target>', Target.GetFullName(' ') + GetLocalObjectLink(Target, False));
   ClearChoices(False);
   AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Exit'), 0, FastExit, 0);
 end;
@@ -2132,30 +2132,30 @@ begin
   end
   else if TalkShip.PartnerShip <> nil then
   begin
-    DialogText := FormatText1(TalkShip.LookupTalkText('Talk.Partner.AlreadyHavePartner'), '<color=255,240,100>', '<Partner>', (TalkShip.PartnerShip as TRanger).Name);
+    DialogText := FormatText1(TalkShip.LookupTalkText('Talk.Partner.AlreadyHavePartner'), TextHighlightColorTag, '<Partner>', (TalkShip.PartnerShip as TRanger).Name);
     BuildStandardChoices(True);
   end
   else if (TalkShip as TRanger).CountWingmen > 0 then
   begin
-    DialogText := FormatText1(TalkShip.LookupTalkText('Talk.Partner.ILeader'), '<color=255,240,100>', '<Ranger>', GetPlayer.Name);
+    DialogText := FormatText1(TalkShip.LookupTalkText('Talk.Partner.ILeader'), TextHighlightColorTag, '<Ranger>', GetPlayer.Name);
     BuildStandardChoices(True);
   end
   else if GetPlayer.GetEffectiveSkillLevel(psLeadership) <= GetPlayer.CountWingmen then
   begin
-    DialogText := FormatText1(TalkShip.LookupTalkText('Talk.Partner.NeedLeadership'), '<color=255,240,100>', '<Ranger>', GetPlayer.Name);
+    DialogText := FormatText1(TalkShip.LookupTalkText('Talk.Partner.NeedLeadership'), TextHighlightColorTag, '<Ranger>', GetPlayer.Name);
     BuildStandardChoices(True);
   end
   else if (TalkShip as TRanger).Rank > GetPlayer.Rank then
   begin
-    DialogText := FormatText1(TalkShip.LookupTalkText('Talk.Partner.YouNeedInMoreRank'), '<color=255,240,100>', '<Ranger>', GetPlayer.Name);
+    DialogText := FormatText1(TalkShip.LookupTalkText('Talk.Partner.YouNeedInMoreRank'), TextHighlightColorTag, '<Ranger>', GetPlayer.Name);
     BuildStandardChoices(True);
   end
   else
   begin
     if TalkShip.BuildPartnershipOfferResponse(GetPlayer, Response, PartnerOfferAmount) then
-      DialogText := FormatText2(TalkShip.LookupTalkText('Talk.Partner.ComputerSayOk'), '<color=255,240,100>',
+      DialogText := FormatText2(TalkShip.LookupTalkText('Talk.Partner.ComputerSayOk'), TextHighlightColorTag,
         '<Money>', WideString(IntToStr(PartnerOfferAmount)), '<Month>', WideString(IntToStr(TalkShip.CalculatePartnershipMonths(PartnerOfferAmount, GetPlayer))))
-    else DialogText := FormatText1(TalkShip.LookupTalkText('Talk.Partner.ComputerSayNo'), '<color=255,240,100>', '<Money>', WideString(IntToStr(PartnerOfferAmount)));
+    else DialogText := FormatText1(TalkShip.LookupTalkText('Talk.Partner.ComputerSayNo'), TextHighlightColorTag, '<Money>', WideString(IntToStr(PartnerOfferAmount)));
     ClearChoices(False);
     if TalkShip.BuildPartnershipOfferResponse(GetPlayer, Response, PartnerOfferAmount) then
       AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Partner.PlayerOk'), 0, AcceptPartnerOffer, 0);
@@ -2220,7 +2220,7 @@ begin
   TalkShip.OrderLanding(GetPlayer.OrderTarget, True);
   if GetPlayer.OrderTarget is TPlanet then Name := (GetPlayer.OrderTarget as TPlanet).Name
   else if GetPlayer.OrderTarget is TRuins then Name := (GetPlayer.OrderTarget as TRuins).GetColoredFullName('');
-  DialogText := FormatText1(TalkShip.LookupTalkText('Talk.Partner.ComputerAgreeLandingToObject'), '<color=255,240,100>', '<ObjectName>', Name);
+  DialogText := FormatText1(TalkShip.LookupTalkText('Talk.Partner.ComputerAgreeLandingToObject'), TextHighlightColorTag, '<ObjectName>', Name);
   if GetPlayer.CountPartnersInNormalSpace > 1 then
   begin
     DialogText := DialogText + #13#10;
@@ -2241,7 +2241,7 @@ end;
 procedure TfTalk.OrderPartnerJump(Action: Integer);
 begin
   TalkShip.OrderJump(GetPlayer.OrderTarget as TStar, True);
-  DialogText := FormatText1(TalkShip.LookupTalkText('Talk.Partner.ComputerAgreeFlyToStar'), '<color=255,240,100>', '<Star>',
+  DialogText := FormatText1(TalkShip.LookupTalkText('Talk.Partner.ComputerAgreeFlyToStar'), TextHighlightColorTag, '<Star>',
     (GetPlayer.OrderTarget as TStar).Name);
   if GetPlayer.CountPartnersInNormalSpace > 1 then
   begin
@@ -2283,7 +2283,7 @@ end;
 procedure TfTalk.ShowPartnerFinances(Action: Integer);
 begin
   DialogText := TalkShip.LookupTalkText('Talk.Partner.FinancesReport');
-  ReplaceTextToken(DialogText, '<Money>', WideString(IntToStr(TalkShip.Money)), '<color=255,240,100>');
+  ReplaceTextToken(DialogText, '<Money>', WideString(IntToStr(TalkShip.Money)), TextHighlightColorTag);
   ClearChoices(False);
   if GetPlayer.Money > 0 then AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Partner.FinancesOfferGift'), 0, ShowPartnerGift, 0);
   AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Partner.FinancesConfirmed'), 0, ShowGreeting, 0);
@@ -2298,7 +2298,7 @@ begin
   DialogText := TalkShip.LookupTalkText('Talk.Partner.FinancesWaitForGift');
   ClearChoices(False);
   Text := '- ' + GetPlayer.LookupTalkText('Talk.Partner.FinancesSendGift');
-  ReplaceTextToken(Text, '<Money>', WideString(IntToStr(PartnerGiftAmount)), '<color=255,240,100>');
+  ReplaceTextToken(Text, '<Money>', WideString(IntToStr(PartnerGiftAmount)), TextHighlightColorTag);
   AddChoice(Text, 0, GivePartnerGift, 0);
   if PartnerGiftAmount div 2 > 0 then AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Partner.PlayerLess'), 0, HalvePartnerGift, 0);
   if GetPlayer.Money > PartnerGiftAmount then AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Partner.PlayerMore'), 0, DoublePartnerGift, 0);
@@ -2318,7 +2318,7 @@ begin
   GetPlayer.SetMoney(Max(0, GetPlayer.Money - PartnerGiftAmount));
   TalkShip.SetMoney(TalkShip.Money + PartnerGiftAmount);
   DialogText := TalkShip.LookupTalkText('Talk.Partner.FinancesGotGift');
-  ReplaceTextToken(DialogText, '<Money>', WideString(IntToStr(TalkShip.Money)), '<color=255,240,100>');
+  ReplaceTextToken(DialogText, '<Money>', WideString(IntToStr(TalkShip.Money)), TextHighlightColorTag);
   BuildStandardChoices(True);
 end;
 { @end $6DD9D8 }
@@ -2449,15 +2449,15 @@ var
   begin
     if Ship.GetCollectionPermission(TTranclucatorCollectionKind(Kind)) then
     begin
-      Caption := WrapTextInColor(LocalizedColorText('Talk.Tranclucator.Options.CollectNo'), '<color=255,0,0>');
+      Caption := WrapTextInColor(LocalizedColorText('Talk.Tranclucator.Options.CollectNo'), RedColorTag);
       Value := Kind * 10;
     end
     else
     begin
-      Caption := WrapTextInColor(LocalizedColorText('Talk.Tranclucator.Options.CollectYes'), '<color=45,105,45>');
+      Caption := WrapTextInColor(LocalizedColorText('Talk.Tranclucator.Options.CollectYes'), DarkGreenColorTag);
       Value := Kind * 10 + 1;
     end;
-    AddChoice('- ' + FormatText1(Caption, '<color=255,240,100>', '<Item>',
+    AddChoice('- ' + FormatText1(Caption, TextHighlightColorTag, '<Item>',
       LocalizedColorText(WideString('Talk.Tranclucator.Options.Collect' + IntToStr(Kind)))), Value, ShowTranclucatorOptions, 0);
   end;
 
@@ -2483,15 +2483,15 @@ var
   begin
     if Ship.GetStoragePermission(TTranclucatorStorageKind(Kind)) then
     begin
-      Caption := WrapTextInColor(LocalizedColorText('Talk.Tranclucator.Options.LandNo'), '<color=255,0,0>');
+      Caption := WrapTextInColor(LocalizedColorText('Talk.Tranclucator.Options.LandNo'), RedColorTag);
       Value := Kind * 1000;
     end
     else
     begin
-      Caption := WrapTextInColor(LocalizedColorText('Talk.Tranclucator.Options.LandYes'), '<color=45,105,45>');
+      Caption := WrapTextInColor(LocalizedColorText('Talk.Tranclucator.Options.LandYes'), DarkGreenColorTag);
       Value := Kind * 1000 + 100;
     end;
-    AddChoice('- ' + FormatText1(Caption, '<color=255,240,100>', '<Land>',
+    AddChoice('- ' + FormatText1(Caption, TextHighlightColorTag, '<Land>',
       LocalizedColorText(WideString('Talk.Tranclucator.Options.Land' + IntToStr(Kind)))), Value, ShowTranclucatorOptions, 0);
   end;
 
@@ -2517,12 +2517,12 @@ var
   begin
     if Ship.AutoArrange then
     begin
-      Caption := WrapTextInColor(LocalizedColorText('Talk.Tranclucator.Options.ArrangeNo'), '<color=255,0,0>');
+      Caption := WrapTextInColor(LocalizedColorText('Talk.Tranclucator.Options.ArrangeNo'), RedColorTag);
       Value := 10000;
     end
     else
     begin
-      Caption := WrapTextInColor(LocalizedColorText('Talk.Tranclucator.Options.ArrangeYes'), '<color=45,105,45>');
+      Caption := WrapTextInColor(LocalizedColorText('Talk.Tranclucator.Options.ArrangeYes'), DarkGreenColorTag);
       Value := 20000;
     end;
     AddChoice('- ' + Caption, Value, ShowTranclucatorOptions, 0);
@@ -2559,13 +2559,13 @@ begin
   if Ship.GetCargoHook <> nil then Text := GetTranclucatorCollectionText else Text := '';
   if Text = '' then Text := '---';
   ExpandLocalizedTextMarkup(Text);
-  DialogText := DialogText + FormatText1(LocalizedColorText('Talk.Tranclucator.Options.CollectText'), '<color=255,240,100>', '<List>', Text);
+  DialogText := DialogText + FormatText1(LocalizedColorText('Talk.Tranclucator.Options.CollectText'), TextHighlightColorTag, '<List>', Text);
   DialogText := DialogText + #13#10;
   if Ship.GetCargoHook <> nil then Text := GetTranclucatorStorageText else Text := '';
   if Length(Text) > 0 then
   begin
     ExpandLocalizedTextMarkup(Text);
-    DialogText := DialogText + FormatText1(LocalizedColorText('Talk.Tranclucator.Options.LandText'), '<color=255,240,100>', '<List>', Text);
+    DialogText := DialogText + FormatText1(LocalizedColorText('Talk.Tranclucator.Options.LandText'), TextHighlightColorTag, '<List>', Text);
   end
   else DialogText := DialogText + LocalizedColorText('Talk.Tranclucator.Options.LandBad');
   DialogText := DialogText + #13#10;
@@ -2612,7 +2612,7 @@ begin
   Ship.OrderLanding(GetPlayer.OrderTarget, True);
   if GetPlayer.OrderTarget is TPlanet then Name := (GetPlayer.OrderTarget as TPlanet).Name
   else if GetPlayer.OrderTarget is TRuins then Name := (GetPlayer.OrderTarget as TRuins).GetColoredFullName('');
-  DialogText := FormatText1(TalkShip.LookupTalkText('Talk.Tranclucator.AgreeLandingToObject'), '<color=255,240,100>', '<ObjectName>', Name);
+  DialogText := FormatText1(TalkShip.LookupTalkText('Talk.Tranclucator.AgreeLandingToObject'), TextHighlightColorTag, '<ObjectName>', Name);
   ClearChoices(False);
   AddTranclucatorGroupChoice;
   AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Exit'), 0, FastExit, 0);
@@ -2632,7 +2632,7 @@ begin
   Ship.OrderLanding(GetPlayer.OrderTarget, True);
   if GetPlayer.OrderTarget is TShip then Name := (GetPlayer.OrderTarget as TShip).Name
   else Name := (GetPlayer.OrderTarget as TPlanet).Name;
-  DialogText := FormatText1(TalkShip.LookupTalkText('Talk.Tranclucator.AgreeLandingToStorage'), '<color=255,240,100>', '<ObjectName>', Name);
+  DialogText := FormatText1(TalkShip.LookupTalkText('Talk.Tranclucator.AgreeLandingToStorage'), TextHighlightColorTag, '<ObjectName>', Name);
   ClearChoices(False);
   AddTranclucatorGroupChoice;
   AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Exit'), 0, FastExit, 0);
@@ -2703,22 +2703,22 @@ begin
   end
   else if TalkShip.PartnerShip <> nil then
   begin
-    DialogText := FormatText1(TalkShip.LookupTalkText('Talk.Pirate.AlreadyHavePartner'), '<color=255,240,100>', '<Partner>', (TalkShip.PartnerShip as TRanger).Name);
+    DialogText := FormatText1(TalkShip.LookupTalkText('Talk.Pirate.AlreadyHavePartner'), TextHighlightColorTag, '<Partner>', (TalkShip.PartnerShip as TRanger).Name);
     BuildStandardChoices(True);
   end
   else if (GetPlayer.GetMaxPiratePartners <= GetPlayer.PiratePartners.Count) or
     (GetPlayer.GetEffectiveSkillLevel(psLeadership) <= GetPlayer.CountWingmen) or
     ((TalkShip is TPirate) and (TalkShip.OwnerId = oiPirate) and ((TalkShip as TPirate).PirateRank > GetPlayer.PirateRank)) then
   begin
-    DialogText := FormatText1(TalkShip.LookupTalkText('Talk.Pirate.NeedPirate'), '<color=255,240,100>', '<Ranger>', GetPlayer.Name);
+    DialogText := FormatText1(TalkShip.LookupTalkText('Talk.Pirate.NeedPirate'), TextHighlightColorTag, '<Ranger>', GetPlayer.Name);
     BuildStandardChoices(True);
   end
   else
   begin
     if TalkShip.BuildPartnershipOfferResponse(GetPlayer, Response, PartnerOfferAmount) then
-      DialogText := FormatText2(TalkShip.LookupTalkText('Talk.Partner.ComputerSayOk'), '<color=255,240,100>',
+      DialogText := FormatText2(TalkShip.LookupTalkText('Talk.Partner.ComputerSayOk'), TextHighlightColorTag,
         '<Money>', WideString(IntToStr(PartnerOfferAmount)), '<Month>', WideString(IntToStr(TalkShip.CalculatePartnershipMonths(PartnerOfferAmount, GetPlayer))))
-    else DialogText := FormatText1(TalkShip.LookupTalkText('Talk.Pirate.ComputerSayNo'), '<color=255,240,100>', '<Money>', WideString(IntToStr(PartnerOfferAmount)));
+    else DialogText := FormatText1(TalkShip.LookupTalkText('Talk.Pirate.ComputerSayNo'), TextHighlightColorTag, '<Money>', WideString(IntToStr(PartnerOfferAmount)));
     ClearChoices(False);
     if TalkShip.BuildPartnershipOfferResponse(GetPlayer, Response, PartnerOfferAmount) then
       AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Pirate.PlayerOk'), 0, AcceptPiratePartnerOffer, 0);
@@ -2792,7 +2792,7 @@ var
 begin
   Target := TShip(Action);
   TalkShip.SetJointAttackTarget(TalkShip, Target);
-  DialogText := FormatText1(TalkShip.LookupTalkText('Talk.Pirate.AttackShipOk'), '<color=255,240,100>', '<ShipName>', Target.GetFullName(' '));
+  DialogText := FormatText1(TalkShip.LookupTalkText('Talk.Pirate.AttackShipOk'), TextHighlightColorTag, '<ShipName>', Target.GetFullName(' '));
   if GetPlayer.CountPartnersInNormalSpace > 1 then
   begin
     DialogText := DialogText + #13#10 + TalkShip.LookupTalkText('Talk.Partner.IsOrderForAll');
@@ -2845,11 +2845,11 @@ begin
     Relation := (GetPlayer.OrderTarget as TPlanet).RelationToShip(TalkShip);
   end;
   if Relation < RelationBadMin then
-    DialogText := FormatText1(TalkShip.LookupTalkText('Talk.Pirate.ComputerDisagreeLandingToObject'), '<color=255,240,100>', '<ObjectName>', Name)
+    DialogText := FormatText1(TalkShip.LookupTalkText('Talk.Pirate.ComputerDisagreeLandingToObject'), TextHighlightColorTag, '<ObjectName>', Name)
   else
   begin
     TalkShip.OrderLanding(GetPlayer.OrderTarget, True);
-    DialogText := FormatText1(TalkShip.LookupTalkText('Talk.Pirate.ComputerAgreeLandingToObject'), '<color=255,240,100>', '<ObjectName>', Name);
+    DialogText := FormatText1(TalkShip.LookupTalkText('Talk.Pirate.ComputerAgreeLandingToObject'), TextHighlightColorTag, '<ObjectName>', Name);
   end;
   if GetPlayer.CountPartnersInNormalSpace > 1 then
   begin
@@ -2872,7 +2872,7 @@ begin
   if ((GetPlayer.OrderTarget as TStar).CountPlanetsByOwner(oiDominator) > 0) and
     ((TalkShip.OwnerId <> oiPirate) or (Galaxy.CoalitionDefeatedTurn = 0)) then
   begin
-    DialogText := FormatText1(TalkShip.LookupTalkText('Talk.Pirate.ComputerDisagreeFlyToStar'), '<color=255,240,100>', '<Star>',
+    DialogText := FormatText1(TalkShip.LookupTalkText('Talk.Pirate.ComputerDisagreeFlyToStar'), TextHighlightColorTag, '<Star>',
       (GetPlayer.OrderTarget as TStar).Name);
     ClearChoices(False);
     AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Pirate.Back'), 0, ShowGreeting, 0);
@@ -2880,7 +2880,7 @@ begin
   else
   begin
     TalkShip.OrderJump(GetPlayer.OrderTarget as TStar, True);
-    DialogText := FormatText1(TalkShip.LookupTalkText('Talk.Pirate.ComputerAgreeFlyToStar'), '<color=255,240,100>', '<Star>',
+    DialogText := FormatText1(TalkShip.LookupTalkText('Talk.Pirate.ComputerAgreeFlyToStar'), TextHighlightColorTag, '<Star>',
       (GetPlayer.OrderTarget as TStar).Name);
     if GetPlayer.CountPartnersInNormalSpace > 1 then
     begin
@@ -2902,7 +2902,7 @@ end;
 procedure TfTalk.ShowPiratePartnerFinances(Action: Integer);
 begin
   DialogText := TalkShip.LookupTalkText('Talk.Pirate.FinancesReport');
-  ReplaceTextToken(DialogText, '<Money>', WideString(IntToStr(TalkShip.Money)), '<color=255,240,100>');
+  ReplaceTextToken(DialogText, '<Money>', WideString(IntToStr(TalkShip.Money)), TextHighlightColorTag);
   ClearChoices(False);
   if GetPlayer.Money > 0 then AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Pirate.FinancesOfferGift'), 0, ShowPiratePartnerGift, 0);
   AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Pirate.FinancesConfirmed'), 0, ShowGreeting, 0);
@@ -2917,7 +2917,7 @@ begin
   DialogText := TalkShip.LookupTalkText('Talk.Pirate.FinancesWaitForGift');
   ClearChoices(False);
   Text := '- ' + GetPlayer.LookupTalkText('Talk.Pirate.FinancesSendGift');
-  ReplaceTextToken(Text, '<Money>', WideString(IntToStr(PartnerGiftAmount)), '<color=255,240,100>');
+  ReplaceTextToken(Text, '<Money>', WideString(IntToStr(PartnerGiftAmount)), TextHighlightColorTag);
   AddChoice(Text, 0, GivePiratePartnerGift, 0);
   if PartnerGiftAmount div 2 > 0 then AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Pirate.PlayerLess'), 0, HalvePiratePartnerGift, 0);
   if GetPlayer.Money > PartnerGiftAmount then AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Pirate.PlayerMore'), 0, DoublePiratePartnerGift, 0);
@@ -2939,7 +2939,7 @@ begin
   GetPlayer.SetMoney(Max(0, GetPlayer.Money - PartnerGiftAmount));
   TalkShip.SetMoney(TalkShip.Money + PartnerGiftAmount);
   DialogText := TalkShip.LookupTalkText('Talk.Pirate.FinancesGotGift');
-  ReplaceTextToken(DialogText, '<Money>', WideString(IntToStr(TalkShip.Money)), '<color=255,240,100>');
+  ReplaceTextToken(DialogText, '<Money>', WideString(IntToStr(TalkShip.Money)), TextHighlightColorTag);
   BuildStandardChoices(True);
 end;
 { @end $6E1A8C }
@@ -3025,7 +3025,7 @@ begin
   end;
 
   DialogText := TalkShip.LookupTalkText('Talk.Dominator.ProgrammOk');
-  ReplaceTextToken(DialogText, '<Name>', GetPlayer.GetProgramName(ProgramIndex), '<color=255,240,100>');
+  ReplaceTextToken(DialogText, '<Name>', GetPlayer.GetProgramName(ProgramIndex), TextHighlightColorTag);
   (TalkShip as TKling).ActiveProgramAppliedTurn := Galaxy.CurrentTurn;
   (TalkShip as TKling).ActiveProgramId := ProgramIndex;
   Inc(GetPlayer.AchievementStats.SuccessfulDominatorHacks);
@@ -3234,7 +3234,7 @@ begin
   else
   begin
     DialogText := TalkShip.LookupTalkText('Talk.MilitarySupport.Answer' + RaceToSys(TalkShip.PilotRace));
-    ReplaceTextToken(DialogText, '<ShipName>', TalkShip.GetFullName(' '), '<color=255,240,100>');
+    ReplaceTextToken(DialogText, '<ShipName>', TalkShip.GetFullName(' '), TextHighlightColorTag);
     BuildMilitarySupportChoices;
   end;
 end;
@@ -3281,7 +3281,7 @@ begin
     if Available > 0 then
     begin
       DialogText := TalkShip.LookupTalkText('Talk.MilitarySupport.AnswerRepairHull');
-      ReplaceTextToken(DialogText, '<Nodes>', WideString(IntToStr(Cost)), '<color=255,240,100>');
+      ReplaceTextToken(DialogText, '<Nodes>', WideString(IntToStr(Cost)), TextHighlightColorTag);
       ClearChoices(True);
       if Available = Cost then Caption := GetPlayer.LookupTalkText('Talk.MilitarySupport.RepairHullOk')
       else Caption := GetPlayer.LookupTalkText('Talk.MilitarySupport.RepairHullPartialOk');
@@ -3291,7 +3291,7 @@ begin
     else
     begin
       DialogText := TalkShip.LookupTalkText('Talk.MilitarySupport.AnswerRepairHullNoNodes');
-      ReplaceTextToken(DialogText, '<Nodes>', WideString(IntToStr(Cost)), '<color=255,240,100>');
+      ReplaceTextToken(DialogText, '<Nodes>', WideString(IntToStr(Cost)), TextHighlightColorTag);
       BuildMilitarySupportChoices;
     end;
   end;
@@ -3356,7 +3356,7 @@ begin
     if Available > 0 then
     begin
       DialogText := TalkShip.LookupTalkText('Talk.MilitarySupport.AnswerRepairEq');
-      ReplaceTextToken(DialogText, '<Nodes>', WideString(IntToStr(Cost)), '<color=255,240,100>');
+      ReplaceTextToken(DialogText, '<Nodes>', WideString(IntToStr(Cost)), TextHighlightColorTag);
       ClearChoices(True);
       if Available = Cost then Caption := GetPlayer.LookupTalkText('Talk.MilitarySupport.RepairEqOk')
       else Caption := GetPlayer.LookupTalkText('Talk.MilitarySupport.RepairEqPartialOk');
@@ -3366,7 +3366,7 @@ begin
     else
     begin
       DialogText := TalkShip.LookupTalkText('Talk.MilitarySupport.AnswerRepairEqNoNodes');
-      ReplaceTextToken(DialogText, '<Nodes>', WideString(IntToStr(Cost)), '<color=255,240,100>');
+      ReplaceTextToken(DialogText, '<Nodes>', WideString(IntToStr(Cost)), TextHighlightColorTag);
       BuildMilitarySupportChoices;
     end;
   end;
@@ -3439,8 +3439,8 @@ begin
   else
   begin
     DialogText := TalkShip.LookupTalkText('Talk.MilitarySupport.AnswerSellRemains');
-    ReplaceTextToken(DialogText, '<Remains>', WideString(IntToStr(Count)), '<color=255,240,100>');
-    ReplaceTextToken(DialogText, '<Cost>', WideString(IntToStr(Cost)), '<color=255,240,100>');
+    ReplaceTextToken(DialogText, '<Remains>', WideString(IntToStr(Count)), TextHighlightColorTag);
+    ReplaceTextToken(DialogText, '<Cost>', WideString(IntToStr(Cost)), TextHighlightColorTag);
     ClearChoices(True);
     AddChoice('- ' + GetPlayer.LookupTalkText('Talk.MilitarySupport.SellRemainsSellAll'), 0, SellAllMilitaryRemains, 0);
     if Count > 1 then
@@ -3518,7 +3518,7 @@ begin
   end;
   DialogText := TalkShip.LookupTalkText('Talk.MilitarySupport.AnswerSellSomeRemains');
   ClearChoices(True);
-  BonusCaption := ' ' + WrapTextInColor(LookupLocalizedTextOrEmpty('Talk.MilitarySupport.ItemsCool'), '<color=255,240,100>');
+  BonusCaption := ' ' + WrapTextInColor(LookupLocalizedTextOrEmpty('Talk.MilitarySupport.ItemsCool'), TextHighlightColorTag);
   Count := 0;
   for I := 1 to GetPlayer.Inventory.Count - 1 do
   begin
@@ -3529,7 +3529,7 @@ begin
       if (Galaxy.DominatorResearch[Ord(Item.DominatorSeries)].Progress < 100) and
         Galaxy.IsDominatorSeriesUnresolved(Item.DominatorSeries) then Cost := Round(Item.Cost * 1.5)
       else Cost := Item.Cost;
-      Caption := Item.GetDisplayName + ' (' + WrapTextInColor(WideString(IntToStr(Cost)), '<color=255,240,100>') + ' cr)';
+      Caption := Item.GetDisplayName + ' (' + WrapTextInColor(WideString(IntToStr(Cost)), TextHighlightColorTag) + ' cr)';
       if (Galaxy.DominatorResearch[Ord(Item.DominatorSeries)].Progress < 100) and
         Galaxy.IsDominatorSeriesUnresolved(Item.DominatorSeries) then Caption := Caption + BonusCaption;
       AddChoice('- ' + Caption, Integer(Item), SellIndividualMilitaryRemains, 0);
@@ -3552,7 +3552,7 @@ var Cost: Integer; Caption: WideString;
 begin
   Cost := 100;
   DialogText := TalkShip.LookupTalkText('Talk.MilitarySupport.AnswerBuff');
-  ReplaceTextToken(DialogText, '<Nodes>', WideString(IntToStr(Cost)), '<color=255,240,100>');
+  ReplaceTextToken(DialogText, '<Nodes>', WideString(IntToStr(Cost)), TextHighlightColorTag);
   ClearChoices(True);
   if GetPlayer.GetCombatStatusStrength(cseBWBuff) > 0.01 then
     Caption := GetPlayer.LookupTalkText('Talk.MilitarySupport.BuffProlongateOk')

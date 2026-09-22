@@ -501,8 +501,8 @@ var
   Caption: TLabelGI;
   Button: TGraphButtonGI;
 begin
-  Title := ReplaceAllWideString(Title,'<color=255,240,100>','<color=0,0,0>');
-  Title := ReplaceAllWideString(Title,'<color=0,255,0>','<color=255,255,0>');
+  Title := ReplaceAllWideString(Title,TextHighlightColorTag,BlackColorTag);
+  Title := ReplaceAllWideString(Title,GreenColorTag,YellowColorTag);
   Image := TImageGI.Create(InfoPanel);
   if LayoutKind = 0 then Image.SetImagePath('GI,Bm.FormInfo2.' + GiResourceSuffix + 'CaptionL')
   else Image.SetImagePath('GI,Bm.FormInfo2.' + GiResourceSuffix + 'Caption');
@@ -585,7 +585,7 @@ end;
 procedure TfInfo.AddInfoText(Text: WideString; Alignment: TTextAlignXGI; Font: WideString);
 var Caption: TLabelGI;
 begin
-  Text := ReplaceAllWideString(Text,'<color=255,240,100>','<color=0,50,200>');
+  Text := ReplaceAllWideString(Text,TextHighlightColorTag,DialogHighlightColorTag);
   Caption := TLabelGI.Create(InfoPanel);
   if Font = WideString('') then
   begin
@@ -611,7 +611,7 @@ end;
 procedure TfInfo.AddInfoImageText(ImagePath, Text: WideString);
 var Size: Integer; Image: TGraphBufGI; Caption: TLabelGI;
 begin
-  Text := ReplaceAllWideString(Text,'<color=255,240,100>','<color=0,50,200>');
+  Text := ReplaceAllWideString(Text,TextHighlightColorTag,DialogHighlightColorTag);
   Size := GiScalePixels(64);
   Image := TGraphBufGI.Create(InfoPanel,False);
   Image.SetPositionModeW(True);
@@ -641,7 +641,7 @@ end;
 procedure TfInfo.AddPlanetInfoText(Planet: TPlanet; Text: WideString);
 var Size: Integer; Image: TGraphBufGI; Emblem: TImageGI; Caption: TLabelGI;
 begin
-  Text := ReplaceAllWideString(Text,'<color=255,240,100>','<color=0,50,200>');
+  Text := ReplaceAllWideString(Text,TextHighlightColorTag,DialogHighlightColorTag);
   Size := GiScalePixels(64);
   Image := TGraphBufGI.Create(InfoPanel,False);
   Image.SetPositionModeW(True);
@@ -683,9 +683,9 @@ end;
 procedure TfInfo.AddItemInfoText(Item: TItem; Text: WideString);
 var Size: Integer; Image: TGraphBufGI; Caption: TLabelGI; Emblem: TImageGI;
 begin
-  Text := ReplaceAllWideString(Text,'<color=255,240,100>','<color=0,50,200>');
-  Text := ReplaceAllWideString(Text,'<color=0,255,0>','<color=0,130,0>');
-  Text := ReplaceAllWideString(Text,'<color=255,167,84>','<color=240,100,30>');
+  Text := ReplaceAllWideString(Text,TextHighlightColorTag,DialogHighlightColorTag);
+  Text := ReplaceAllWideString(Text,GreenColorTag,DialogGreenColorTag);
+  Text := ReplaceAllWideString(Text,EquipmentBonusColorTag,DialogEquipmentBonusColorTag);
   Size := GiScalePixels(64);
   Image := TGraphBufGI.Create(InfoPanel,False);
   Image.SetPositionModeW(True);
@@ -732,7 +732,7 @@ var Size: Integer; Image: TGraphBufGI; Emblem: TImageGI; Caption: TLabelGI;
     else Result := OwnerInfo[oiUninhabited].InternalName;
   end;
 begin
-  Text := ReplaceAllWideString(Text,'<color=255,240,100>','<color=0,50,200>');
+  Text := ReplaceAllWideString(Text,TextHighlightColorTag,DialogHighlightColorTag);
   Size := GiScalePixels(64);
   Image := TGraphBufGI.Create(InfoPanel,False);
   Image.SetPositionModeW(True);
@@ -958,8 +958,8 @@ begin
   begin
     Entry := Galaxy.PlanetNews[I];
     // Native retains this empty local string in the heading expression.
-    AddInfoHeading(WrapTextInColor(Galaxy.FormatTurnDate(Entry.Turn) + Source,'<color=255,240,100>'),
-      WrapTextInColor(Galaxy.FormatTurnDate(Entry.Turn),'<color=255,240,100>') + #13#10 + ' ' + #13#10 + Entry.Text,1,0,0);
+    AddInfoHeading(WrapTextInColor(Galaxy.FormatTurnDate(Entry.Turn) + Source,TextHighlightColorTag),
+      WrapTextInColor(Galaxy.FormatTurnDate(Entry.Turn),TextHighlightColorTag) + #13#10 + ' ' + #13#10 + Entry.Text,1,0,0);
     AddInfoText(' .',taxCenter,'');
     AddInfoText(Entry.Text,taxAuto,'');
     AddInfoText(' .',taxCenter,'');
@@ -1070,48 +1070,48 @@ var
   var Detail, Text: WideString;
   begin
     Text := '';
-    Text := Text + FormatText1(LocalizedText('FormInfo.Equipment.Cost'),'<color=255,240,100>','<val>',IntToStr(Item.GetConditionAdjustedCost));
+    Text := Text + FormatText1(LocalizedText('FormInfo.Equipment.Cost'),TextHighlightColorTag,'<val>',IntToStr(Item.GetConditionAdjustedCost));
     if Item.ItemType in [t_Hull..t_CustomWeapon] then Text := Text + ', ';
     if Item is TScaner then
     begin
       Detail := FormatText1(LocalizedText('FormInfo.Equipment.Scaner'),'','<val>','<Percent>');
-      TEquipment(Item).ReplaceInfoTokens(Detail,'<color=255,240,100>',nil);
+      TEquipment(Item).ReplaceInfoTokens(Detail,TextHighlightColorTag,nil);
       Text := Text + Detail;
     end
     else if Item is TRadar then
     begin
       Detail := FormatText1(LocalizedText('FormInfo.Equipment.Radar'),'','<val>','<Radius>');
-      TEquipment(Item).ReplaceInfoTokens(Detail,'<color=255,240,100>',nil);
+      TEquipment(Item).ReplaceInfoTokens(Detail,TextHighlightColorTag,nil);
       Text := Text + Detail;
     end
     else if Item is TFuelTanks then
     begin
       Detail := FormatText1(LocalizedText('FormInfo.Equipment.Fuel'),'','<val>','<Capacity>');
-      TEquipment(Item).ReplaceInfoTokens(Detail,'<color=255,240,100>',nil);
+      TEquipment(Item).ReplaceInfoTokens(Detail,TextHighlightColorTag,nil);
       Text := Text + Detail;
     end
     else if Item is TEngine then
     begin
       Detail := FormatText1(LocalizedText('FormInfo.Equipment.Speed'),'','<val>','<Speed>') + ', ' + FormatText1(LocalizedText('FormInfo.Equipment.Jump'),'','<val>','<Parsec>');
-      TEquipment(Item).ReplaceInfoTokens(Detail,'<color=255,240,100>',nil);
+      TEquipment(Item).ReplaceInfoTokens(Detail,TextHighlightColorTag,nil);
       Text := Text + Detail;
     end
     else if Item is TRepairRobot then
     begin
       Detail := FormatText1(LocalizedText('FormInfo.Equipment.Droid'),'','<val>','<RecoverHitPoints>');
-      TEquipment(Item).ReplaceInfoTokens(Detail,'<color=255,240,100>',nil);
+      TEquipment(Item).ReplaceInfoTokens(Detail,TextHighlightColorTag,nil);
       Text := Text + Detail;
     end
     else if Item is TCargoHook then
     begin
       Detail := FormatText1(LocalizedText('FormInfo.Equipment.Hook'),'','<val>','<PickUpSize>') + ', ' + FormatText1(LocalizedText('FormInfo.Equipment.HookRadius'),'','<val>','<Radius>');
-      TEquipment(Item).ReplaceInfoTokens(Detail,'<color=255,240,100>',nil);
+      TEquipment(Item).ReplaceInfoTokens(Detail,TextHighlightColorTag,nil);
       Text := Text + Detail;
     end
     else if Item is TDefGenerator then
     begin
       Detail := FormatText1(LocalizedText('FormInfo.Equipment.Defend'),'','<val>','<Percent>');
-      TEquipment(Item).ReplaceInfoTokens(Detail,'<color=255,240,100>',nil);
+      TEquipment(Item).ReplaceInfoTokens(Detail,TextHighlightColorTag,nil);
       Text := Text + Detail;
     end
     else if Item is TWeapon then
@@ -1121,24 +1121,24 @@ var
           FormatText1(LocalizedText('FormInfo.Equipment.Radius'),'','<val>','<Radius>')
       else Detail := FormatText2(LocalizedText('FormInfo.Equipment.Damage'),'','<min>','<MinDamage>','<max>','<MaxDamage><Bonus>') + ', ' +
           FormatText1(LocalizedText('FormInfo.Equipment.Radius'),'','<val>','<Radius>');
-      TEquipment(Item).ReplaceInfoTokens(Detail,'<color=255,240,100>',nil);
+      TEquipment(Item).ReplaceInfoTokens(Detail,TextHighlightColorTag,nil);
       Text := Text + Detail;
       if ((Item as TWeapon).SpecialModuleIndex <> 0) and
         (MicroModuleTemplates[(Item as TWeapon).SpecialModuleIndex - 1].TextReplace = WideString('')) then
         Text := Text + #13#10 + LocalizedText('Items.Weapon.WSpecial') + ' ' +
-          WrapTextInColor(TEquipment(Item).GetSpecialModuleName,'<color=255,240,100>');
+          WrapTextInColor(TEquipment(Item).GetSpecialModuleName,TextHighlightColorTag);
     end
     else if Item is THull then
     begin
       Detail := FormatText1(LocalizedText('FormInfo.Equipment.Protect'),'','<val>','<HitProtect>') + #13#10 +
         LocalizedText('FormInfo.Equipment.Susceptibility');
-      TEquipment(Item).ReplaceInfoTokens(Detail,'<color=255,240,100>',nil);
+      TEquipment(Item).ReplaceInfoTokens(Detail,TextHighlightColorTag,nil);
       Text := Text + Detail;
       if THull(Item).HullSeries <> -1 then
-        Text := Text + #13#10 + FormatText1(LocalizedText('FormInfo.Equipment.Series'),'<color=255,240,100>','<val>',HullSeriesDefinitions[THull(Item).HullSeries].Name);
+        Text := Text + #13#10 + FormatText1(LocalizedText('FormInfo.Equipment.Series'),TextHighlightColorTag,'<val>',HullSeriesDefinitions[THull(Item).HullSeries].Name);
     end;
     if (Item is TEquipment) and (Item.ItemType in [t_FuelTanks..t_CustomWeapon,t_Satellite]) then
-      Text := Text + #13#10 + FormatText1(LocalizedText('FormInfo.Equipment.Reliability'),'<color=255,240,100>','<val>',
+      Text := Text + #13#10 + FormatText1(LocalizedText('FormInfo.Equipment.Reliability'),TextHighlightColorTag,'<val>',
         GetInfoQualityGrade(TEquipment(Item).GetFragilityFactor([])));
     Result := Text;
   end;
@@ -1153,14 +1153,14 @@ var
       Shown.Add(Value);
       if not Found then
       begin
-        AddInfoText(FormatText1(LocalizedText('FormInfo.ObjectFoundStart'),'<color=255,240,100>','<Count>',IntToStr(GetSearchResultLimit)),taxCenter,'');
+        AddInfoText(FormatText1(LocalizedText('FormInfo.ObjectFoundStart'),TextHighlightColorTag,'<Count>',IntToStr(GetSearchResultLimit)),taxCenter,'');
         AddInfoText(' .',taxCenter,'');
       end;
       if (Value is TRuins) and not TRuins(Value).NoLanding then
       begin
         Station := Value as TRuins;
-      Description := FormatText1(LocalizedText('FormInfo.Sector'),'<color=255,240,100>','<SectorName>',Station.CurrentStar.Constellation.GetName);
-      Description := Description + #13#10 + FormatText1(LocalizedText('FormInfo.Star'),'<color=255,240,100>','<StarName>',Station.CurrentStar.Name);
+      Description := FormatText1(LocalizedText('FormInfo.Sector'),TextHighlightColorTag,'<SectorName>',Station.CurrentStar.Constellation.GetName);
+      Description := Description + #13#10 + FormatText1(LocalizedText('FormInfo.Star'),TextHighlightColorTag,'<StarName>',Station.CurrentStar.Name);
       GoodsText := '';
       for GoodIndex := Low(GoodsTextOrder) to High(GoodsTextOrder) do
       begin
@@ -1174,28 +1174,28 @@ var
         GoodsText := GoodsText + '<td=' + IntToStr(GiScalePixels(255)) + '><align=right>' + WrapTextInColor(IntToStr(GetPlayer.ShopGoodsSellPrice(Good,Station)),'') + '</align>';
       end;
         Description := Description + GoodsText;
-        Heading := WrapTextInColor('- ' + WrapTextInColor(Station.GetFullName(' '),'<color=255,240,100>') + ' -','<color=255,240,100>');
+        Heading := WrapTextInColor('- ' + WrapTextInColor(Station.GetFullName(' '),TextHighlightColorTag) + ' -',TextHighlightColorTag);
         AddInfoHeading(Heading,Heading + #13#10 + Description,0,0,Integer(Cardinal(Station.Id) or $80000000));
         AddInfoText(' .',taxCenter,'');
         AddInfoImageText(ExtractDelimitedPartW(Station.GetShipPortraitImagePath,1,','),Description);
       end
       else if Value is TShip then
       begin
-      Description := FormatText1(LocalizedText('FormInfo.Sector'),'<color=255,240,100>','<SectorName>',Ship.CurrentStar.Constellation.GetName);
-      Description := Description + #13#10 + FormatText1(LocalizedText('FormInfo.Star'),'<color=255,240,100>','<StarName>',Ship.CurrentStar.Name);
+      Description := FormatText1(LocalizedText('FormInfo.Sector'),TextHighlightColorTag,'<SectorName>',Ship.CurrentStar.Constellation.GetName);
+      Description := Description + #13#10 + FormatText1(LocalizedText('FormInfo.Star'),TextHighlightColorTag,'<StarName>',Ship.CurrentStar.Name);
         if Ship.CurrentPlanet <> nil then
-          Description := Description + #13#10 + FormatText1(LocalizedText('FormInfo.Planet'),'<color=255,240,100>','<PlanetName>',Ship.CurrentPlanet.Name);
+          Description := Description + #13#10 + FormatText1(LocalizedText('FormInfo.Planet'),TextHighlightColorTag,'<PlanetName>',Ship.CurrentPlanet.Name);
         if Ship.IsInPrison then Description := Description + #13#10 + LocalizedText('FormInfo.InPrison');
         Ship.DaysSincePlayerSeen := 0;
-        Heading := WrapTextInColor('- ' + WrapTextInColor(Ship.GetFullName(' '),'<color=255,240,100>') + ' -','<color=255,240,100>');
+        Heading := WrapTextInColor('- ' + WrapTextInColor(Ship.GetFullName(' '),TextHighlightColorTag) + ' -',TextHighlightColorTag);
         AddInfoHeading(Heading,Heading + #13#10 + Description,0,0,0);
         AddInfoText(' .',taxCenter,'');
         AddInfoImageText(ExtractDelimitedPartW(Ship.GetShipPortraitImagePath,1,','),Description);
       end
       else if Value is TPlanet then
       begin
-      Description := FormatText1(LocalizedText('FormInfo.Sector'),'<color=255,240,100>','<SectorName>',Planet.CurrentStar.Constellation.GetName);
-      Description := Description + #13#10 + FormatText1(LocalizedText('FormInfo.Star'),'<color=255,240,100>','<StarName>',Planet.CurrentStar.Name);
+      Description := FormatText1(LocalizedText('FormInfo.Sector'),TextHighlightColorTag,'<SectorName>',Planet.CurrentStar.Constellation.GetName);
+      Description := Description + #13#10 + FormatText1(LocalizedText('FormInfo.Star'),TextHighlightColorTag,'<StarName>',Planet.CurrentStar.Name);
         Description := Description + #13#10 + Planet.GetInfoText(True);
         GoodsText := '';
         if (Planet.IsCoalitionOwned or (Planet.OwnerId = oiPirate)) and (Planet.CurrentStar.Status.CustomFaction = WideString('')) then
@@ -1205,7 +1205,7 @@ var
         Good := GoodsTextOrder[GoodIndex];
         GoodsText := GoodsText + #13#10 + '<td=' + IntToStr(GiScalePixels(5)) + '>' + '<align=center>' + WrapTextInColor(IntToStr(GoodIndex + 1),'') + '.' + '</align>';
         if GoodsLegalOnPlanet[Good,Planet.RaceId, Planet.Government] or (Planet.OwnerId = oiPirate) then Color := ''
-        else Color := '<color=255,0,0>';
+        else Color := RedColorTag;
         GoodsText := GoodsText + '<td=' + IntToStr(GiScalePixels(15)) + '>' + WideString('') + WrapTextInColor(GoodsMarket[Good].DisplayName,Color) + WideString('');
         GoodsText := GoodsText + '<td=' + IntToStr(GiScalePixels(160)) + '>' + '<align=right>' + WrapTextInColor(IntToStr(Planet.Goods[Good].Count),'') + '</align>';
         GoodsText := GoodsText + '<td=' + IntToStr(GiScalePixels(205)) + '><align=right>' + WrapTextInColor(IntToStr(GetPlayer.ShopGoodsPurchasePrice(Good,Planet)),'') + '</align>';
@@ -1214,15 +1214,15 @@ var
       end;
         end;
         Description := Description + GoodsText;
-        Heading := WrapTextInColor('- ' + WrapTextInColor(Planet.GetFullName(' '),'<color=255,240,100>') + ' -','<color=255,240,100>');
+        Heading := WrapTextInColor('- ' + WrapTextInColor(Planet.GetFullName(' '),TextHighlightColorTag) + ' -',TextHighlightColorTag);
         AddInfoHeading(Heading,Heading + #13#10 + Description,0,0,Planet.Id);
         AddInfoText(' .',taxCenter,'');
         AddPlanetInfoText(Value as TPlanet,Description);
       end
       else if Value is TStar then
       begin
-        Description := FormatText1(LocalizedText('FormInfo.Sector'),'<color=255,240,100>','<SectorName>',Star.Constellation.GetName);
-        Heading := FormatText1('- ' + LocalizedText('FormInfo.StarInfo.StarName') + ' -','<color=255,240,100>','<StarName>',(Value as TStar).Name);
+        Description := FormatText1(LocalizedText('FormInfo.Sector'),TextHighlightColorTag,'<SectorName>',Star.Constellation.GetName);
+        Heading := FormatText1('- ' + LocalizedText('FormInfo.StarInfo.StarName') + ' -',TextHighlightColorTag,'<StarName>',(Value as TStar).Name);
         if TStar(Value).Status.CustomFaction <> WideString('') then
           Description := Description + #13#10 + LocalizedText('FormInfo.StarInfo.ControlledBy' + TStar(Value).Status.CustomFaction)
         else
@@ -1234,17 +1234,17 @@ var
         if GetPlayer.CurrentStar <> Value then
         begin
           Description := Description + #13#10 + LocalizedText('FormInfo.StarInfo.RelativeLocation');
-          Description := Description + #13#10 + FormatText1(LocalizedText('FormInfo.StarInfo.RelativeLocationDist'),'<color=255,240,100>','<Dist>',IntToStr(Round(PointDistance((Value as TStar).Position,GetPlayer.CurrentStar.Position))));
+          Description := Description + #13#10 + FormatText1(LocalizedText('FormInfo.StarInfo.RelativeLocationDist'),TextHighlightColorTag,'<Dist>',IntToStr(Round(PointDistance((Value as TStar).Position,GetPlayer.CurrentStar.Position))));
           Bearing := Round(PointBearingDegrees((Value as TStar).Position,GetPlayer.CurrentStar.Position));
           Bearing := Bearing + 180 - 15;
           if Bearing >= 360 then Dec(Bearing,360);
           Bearing := Bearing div 30 + 1;
           if Bearing = 1 then
-            Description := Description + #13#10 + FormatText1(LocalizedText('FormInfo.StarInfo.RelativeLocationAngle0'),'<color=255,240,100>','<Angle>',IntToStr(Bearing));
+            Description := Description + #13#10 + FormatText1(LocalizedText('FormInfo.StarInfo.RelativeLocationAngle0'),TextHighlightColorTag,'<Angle>',IntToStr(Bearing));
           if (Bearing > 1) and (Bearing <= 4) then
-            Description := Description + #13#10 + FormatText1(LocalizedText('FormInfo.StarInfo.RelativeLocationAngle1'),'<color=255,240,100>','<Angle>',IntToStr(Bearing));
+            Description := Description + #13#10 + FormatText1(LocalizedText('FormInfo.StarInfo.RelativeLocationAngle1'),TextHighlightColorTag,'<Angle>',IntToStr(Bearing));
           if Bearing > 4 then
-            Description := Description + #13#10 + FormatText1(LocalizedText('FormInfo.StarInfo.RelativeLocationAngle2'),'<color=255,240,100>','<Angle>',IntToStr(Bearing));
+            Description := Description + #13#10 + FormatText1(LocalizedText('FormInfo.StarInfo.RelativeLocationAngle2'),TextHighlightColorTag,'<Angle>',IntToStr(Bearing));
         end;
         if (Value as TStar).Battle <> 0 then Description := Description + #13#10 + LocalizedText('FormInfo.StarInfo.BattleInSystem');
         AddInfoHeading(Heading,Heading + #13#10 + Description,0,0,0);
@@ -1255,18 +1255,18 @@ var
       begin
         if Planet <> nil then
         begin
-      Description := FormatText1(LocalizedText('FormInfo.Sector'),'<color=255,240,100>','<SectorName>',Planet.CurrentStar.Constellation.GetName);
-      Description := Description + #13#10 + FormatText1(LocalizedText('FormInfo.Star'),'<color=255,240,100>','<StarName>',Planet.CurrentStar.Name);
-          Description := Description + #13#10 + FormatText1(LocalizedText('FormInfo.Planet'),'<color=255,240,100>','<PlanetName>',Planet.Name);
+      Description := FormatText1(LocalizedText('FormInfo.Sector'),TextHighlightColorTag,'<SectorName>',Planet.CurrentStar.Constellation.GetName);
+      Description := Description + #13#10 + FormatText1(LocalizedText('FormInfo.Star'),TextHighlightColorTag,'<StarName>',Planet.CurrentStar.Name);
+          Description := Description + #13#10 + FormatText1(LocalizedText('FormInfo.Planet'),TextHighlightColorTag,'<PlanetName>',Planet.Name);
         end
         else
         begin
-      Description := FormatText1(LocalizedText('FormInfo.Sector'),'<color=255,240,100>','<SectorName>',Ship.CurrentStar.Constellation.GetName);
-      Description := Description + #13#10 + FormatText1(LocalizedText('FormInfo.Star'),'<color=255,240,100>','<StarName>',Ship.CurrentStar.Name);
-          Description := Description + #13#10 + WrapTextInColor(Ship.GetFullName(' '),'<color=255,240,100>');
+      Description := FormatText1(LocalizedText('FormInfo.Sector'),TextHighlightColorTag,'<SectorName>',Ship.CurrentStar.Constellation.GetName);
+      Description := Description + #13#10 + FormatText1(LocalizedText('FormInfo.Star'),TextHighlightColorTag,'<StarName>',Ship.CurrentStar.Name);
+          Description := Description + #13#10 + WrapTextInColor(Ship.GetFullName(' '),TextHighlightColorTag);
         end;
-        Heading := WrapTextInColor('- ' + WrapTextInColor(RemoveTextTagsW(TItem(Value).GetDisplayName),'<color=255,240,100>') + ' [' +
-          WrapTextInColor(IntToStr(TItem(Value).Weight),'<color=0,255,0>') + ']' + ' -','<color=255,240,100>');
+        Heading := WrapTextInColor('- ' + WrapTextInColor(RemoveTextTagsW(TItem(Value).GetDisplayName),TextHighlightColorTag) + ' [' +
+          WrapTextInColor(IntToStr(TItem(Value).Weight),GreenColorTag) + ']' + ' -',TextHighlightColorTag);
         Description := Description + #13#10 + GetInfoEquipmentSummary(TItem(Value));
         AddInfoHeading(Heading,Heading + #13#10 + Description,0,0,0);
         AddInfoText(' .',taxCenter,'');
@@ -1532,7 +1532,7 @@ begin
   if GetPlayer.Money < 3 then
   begin
     ClearInfoContents;
-    AddInfoText(FormatText1(LocalizedText('FormInfo.NotMoney'),'<color=255,240,100>','<Money>',IntToStr(3)),taxCenter,'');
+    AddInfoText(FormatText1(LocalizedText('FormInfo.NotMoney'),TextHighlightColorTag,'<Money>',IntToStr(3)),taxCenter,'');
     FinishInfoLayout;
     MainPanel.FlashMoneyWarning;
   end
@@ -1717,7 +1717,7 @@ begin
                     begin
                       Heading := Heading + #13#10 + '<td=' + IntToStr(GiScalePixels(5)) + '>' + '<align=center>' + WrapTextInColor(IntToStr(GoodsIndex + 1),'') + '.' + '</align>';
                       if GoodsLegalOnPlanet[Good,Planet.RaceId, Planet.Government] or (Planet.OwnerId = oiPirate) then SearchText := ''
-                      else SearchText := '<color=255,0,0>';
+                      else SearchText := RedColorTag;
                       Heading := Heading + '<td=' + IntToStr(GiScalePixels(15)) + '>' + WideString('') + WrapTextInColor(GoodsMarket[Good].DisplayName,SearchText) + WideString('');
                       Heading := Heading + '<td=' + IntToStr(GiScalePixels(160)) + '>' + '<align=right>' + WrapTextInColor(IntToStr(Planet.Goods[Good].Count),'') + '</align>';
                       Heading := Heading + '<td=' + IntToStr(GiScalePixels(205)) + '><align=right>' + WrapTextInColor(IntToStr(GetPlayer.ShopGoodsPurchasePrice(Good,Planet)),'') + '</align>';
@@ -1727,11 +1727,11 @@ begin
                   end;
                   if Heading <> WideString('') then
                   begin
-                    Description := FormatText1(LocalizedText('FormInfo.Sector'),'<color=255,240,100>','<SectorName>',Planet.CurrentStar.Constellation.GetName);
-                    Description := Description + #13#10 + FormatText1(LocalizedText('FormInfo.Star'),'<color=255,240,100>','<StarName>',Planet.CurrentStar.Name);
+                    Description := FormatText1(LocalizedText('FormInfo.Sector'),TextHighlightColorTag,'<SectorName>',Planet.CurrentStar.Constellation.GetName);
+                    Description := Description + #13#10 + FormatText1(LocalizedText('FormInfo.Star'),TextHighlightColorTag,'<StarName>',Planet.CurrentStar.Name);
                     Description := Description + #13#10 + Planet.GetInfoText(False);
                     Description := Description + Heading;
-                    Heading := WrapTextInColor('- ' + WrapTextInColor(Planet.GetFullName(' '),'<color=255,240,100>') + ' -','<color=255,240,100>');
+                    Heading := WrapTextInColor('- ' + WrapTextInColor(Planet.GetFullName(' '),TextHighlightColorTag) + ' -',TextHighlightColorTag);
                     AddInfoHeading(Heading,Heading + #13#10 + Description,0,0,Planet.Id);
                     AddInfoText(' .',taxCenter,'');
                     AddPlanetInfoText(Planet,Description);
@@ -1770,10 +1770,10 @@ begin
                     end;
                     if Heading <> WideString('') then
                     begin
-                      Description := FormatText1(LocalizedText('FormInfo.Sector'),'<color=255,240,100>','<SectorName>',Station.CurrentStar.Constellation.GetName);
-                      Description := Description + #13#10 + FormatText1(LocalizedText('FormInfo.Star'),'<color=255,240,100>','<StarName>',Station.CurrentStar.Name);
+                      Description := FormatText1(LocalizedText('FormInfo.Sector'),TextHighlightColorTag,'<SectorName>',Station.CurrentStar.Constellation.GetName);
+                      Description := Description + #13#10 + FormatText1(LocalizedText('FormInfo.Star'),TextHighlightColorTag,'<StarName>',Station.CurrentStar.Name);
                       Description := Description + Heading;
-                      Heading := WrapTextInColor('- ' + WrapTextInColor(Station.GetFullName(' '),'<color=255,240,100>') + ' -','<color=255,240,100>');
+                      Heading := WrapTextInColor('- ' + WrapTextInColor(Station.GetFullName(' '),TextHighlightColorTag) + ' -',TextHighlightColorTag);
                       AddInfoHeading(Heading,Heading + #13#10 + Description,0,0,Integer(Cardinal(Station.Id) or $80000000));
                       AddInfoText(' .',taxCenter,'');
                       AddInfoImageText(ExtractDelimitedPartW(Station.GetShipPortraitImagePath,1,','),Description);
@@ -1907,7 +1907,7 @@ begin
       AddInfoSpacing(10);
       AddInfoSeparator;
       AddInfoText(' .',taxCenter,'');
-      AddInfoText(FormatText1(LocalizedText('FormInfo.ObjectFoundEnd'),'<color=255,240,100>','<Count>',IntToStr(ResultCount)),taxCenter,'');
+      AddInfoText(FormatText1(LocalizedText('FormInfo.ObjectFoundEnd'),TextHighlightColorTag,'<Count>',IntToStr(ResultCount)),taxCenter,'');
       GetPlayer.SetMoney(GetPlayer.Money - 3);
       SoundManager.PlaySound('Sound.Sell');
       SetFocusedControl(nil);
@@ -1932,9 +1932,9 @@ end;
 procedure TfInfo.AddEquipmentInfoText(Item: TItem; Text: WideString);
 var Size, Height: Integer; Slots, Image: TGraphBufGI; Caption: TLabelGI;
 begin
-  Text := ReplaceAllWideString(Text,'<color=255,240,100>','<color=0,50,200>');
-  Text := ReplaceAllWideString(Text,'<color=0,255,0>','<color=0,130,0>');
-  Text := ReplaceAllWideString(Text,'<color=255,167,84>','<color=240,100,30>');
+  Text := ReplaceAllWideString(Text,TextHighlightColorTag,DialogHighlightColorTag);
+  Text := ReplaceAllWideString(Text,GreenColorTag,DialogGreenColorTag);
+  Text := ReplaceAllWideString(Text,EquipmentBonusColorTag,DialogEquipmentBonusColorTag);
   Size := GiScalePixels(64);
   Height := Size;
   if Item is THull then
@@ -2070,7 +2070,7 @@ begin
     AddInfoSpacing(10);
     AddSearchPriceLabel(LocalizedColorText('FormInfo.SearchInfo2'));
     AddInfoSpacing(5);
-    AddInfoText(FormatText1(LocalizedColorText('FormInfo.SearchInfo3'),'<color=0,50,200>','<Count>',IntToStr(GetSearchResultLimit)),taxAuto,SmallFontName);
+    AddInfoText(FormatText1(LocalizedColorText('FormInfo.SearchInfo3'),DialogHighlightColorTag,'<Count>',IntToStr(GetSearchResultLimit)),taxAuto,SmallFontName);
     AddInfoSpacing(10);
     AddInfoSeparator;
     AddInfoSpacing(5);

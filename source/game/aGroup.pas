@@ -228,11 +228,11 @@ begin
   if TargetStar.Status.CustomFaction <> '' then Text := PickLocalizedTextVariant('GalaxyNews.Group.WarriorLiberator.Create' + TargetStar.Status.CustomFaction, RandomState * (Galaxy.CurrentTurn mod 71))
   else if TargetStar.ControlFaction = sfPirates then Text := PickLocalizedTextVariant('GalaxyNews.Group.WarriorLiberator.CreatePirates', RandomState * (Galaxy.CurrentTurn mod 71))
   else Text := PickLocalizedTextVariant('GalaxyNews.Group.WarriorLiberator.Create', RandomState * (Galaxy.CurrentTurn mod 71));
-  ReplaceTextToken(Text, '<StarNormal>', AssemblyStar.Name, '<color=255,240,100>');
-  ReplaceTextToken(Text, '<StarEnemy>', TargetStar.Name, '<color=255,240,100>');
-  ReplaceTextToken(Text, '<SectorNormal>', AssemblyStar.Constellation.GetName, '<color=255,240,100>');
-  ReplaceTextToken(Text, '<SectorEnemy>', TargetStar.Constellation.GetName, '<color=255,240,100>');
-  ReplaceTextToken(Text, '<Date>', Galaxy.FormatTurnDate(Route[2].WaitUntilTurn), '<color=255,240,100>');
+  ReplaceTextToken(Text, '<StarNormal>', AssemblyStar.Name, TextHighlightColorTag);
+  ReplaceTextToken(Text, '<StarEnemy>', TargetStar.Name, TextHighlightColorTag);
+  ReplaceTextToken(Text, '<SectorNormal>', AssemblyStar.Constellation.GetName, TextHighlightColorTag);
+  ReplaceTextToken(Text, '<SectorEnemy>', TargetStar.Constellation.GetName, TextHighlightColorTag);
+  ReplaceTextToken(Text, '<Date>', Galaxy.FormatTurnDate(Route[2].WaitUntilTurn), TextHighlightColorTag);
   Galaxy.AddPlanetNews(gnLiberationGroupCreated, Text);
 end;
 { @end $4EEB84 }
@@ -273,8 +273,8 @@ begin
   if TShip(Ship).LiberationGroupRouteIndex <> 0 then begin
     Star := Route[3].Target as TStar;
     if Galaxy.CurrentTurn < Route[2].WaitUntilTurn then
-      Result := FormatText2(PickLocalizedTextVariant('ShipGreetings.Group.WarriorLiberatorBefore', NextRandomIntRange(100, 1000, RandomState)), '<color=255,240,100>', '<StarEnemy>', Star.Name, '<Date>', Galaxy.FormatTurnDate(Route[2].WaitUntilTurn))
-    else Result := FormatText2(PickLocalizedTextVariant('ShipGreetings.Group.WarriorLiberatorAfter', NextRandomIntRange(100, 1000, RandomState)), '<color=255,240,100>', '<StarEnemy>', Star.Name, '<Date>', Galaxy.FormatTurnDate(Route[2].WaitUntilTurn));
+      Result := FormatText2(PickLocalizedTextVariant('ShipGreetings.Group.WarriorLiberatorBefore', NextRandomIntRange(100, 1000, RandomState)), TextHighlightColorTag, '<StarEnemy>', Star.Name, '<Date>', Galaxy.FormatTurnDate(Route[2].WaitUntilTurn))
+    else Result := FormatText2(PickLocalizedTextVariant('ShipGreetings.Group.WarriorLiberatorAfter', NextRandomIntRange(100, 1000, RandomState)), TextHighlightColorTag, '<StarEnemy>', Star.Name, '<Date>', Galaxy.FormatTurnDate(Route[2].WaitUntilTurn));
   end;
 end;
 { @end $4EF144 }

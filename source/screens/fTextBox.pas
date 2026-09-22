@@ -115,7 +115,7 @@ begin
   CaptionLabel.SetTextAlignY(tayCenter);
   CaptionLabel.SetTextColor(CurrentPixelFormat.PackRgbBytes(0,0,0));
   CaptionLabel.SetFontName(NormalBoldFontName);
-  CaptionLabel.SetText(ReplaceAllWideString(ReplaceAllWideString(Caption,'<color=255,240,100>','<color=0,50,200>'),'<color=0,255,0>','<color=255,255,0>'));
+  CaptionLabel.SetText(ReplaceAllWideString(ReplaceAllWideString(Caption,TextHighlightColorTag,DialogHighlightColorTag),GreenColorTag,YellowColorTag));
   Edit := TEditGI.Create(ContentPanel);
   with Edit do
   begin

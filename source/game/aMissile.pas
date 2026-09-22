@@ -814,19 +814,19 @@ begin
   Result := LocalizedText('Items.Weapon.Missile.' + GetGraphSuffix + '.Text') + #13#10;
   if OwnerShip <> nil then
     Result := Result + FormatText1(LocalizedText('Items.Weapon.Missile.TextFrom'),
-      '<color=255,240,100>', '<Name>', OwnerShip.GetName) + #13#10;
+      TextHighlightColorTag, '<Name>', OwnerShip.GetName) + #13#10;
   if (Target <> nil) and (Target is TAsteroid) then
     Result := Result + FormatText1(LocalizedText('Items.Weapon.Missile.TextTarget'),
-      '<color=255,240,100>', '<Name>', TAsteroid(Target).GetDisplayName) + #13#10
+      TextHighlightColorTag, '<Name>', TAsteroid(Target).GetDisplayName) + #13#10
   else if (Target <> nil) and (Target is TItem) then
     Result := Result + FormatText1(LocalizedText('Items.Weapon.Missile.TextTarget'),
-      '<color=255,240,100>', '<Name>', TItem(Target).GetDisplayName) + #13#10
+      TextHighlightColorTag, '<Name>', TItem(Target).GetDisplayName) + #13#10
   else if (Target <> nil) and (Target is TShip) then
     Result := Result + FormatText1(LocalizedText('Items.Weapon.Missile.TextTarget'),
-      '<color=255,240,100>', '<Name>', TShip(Target).GetName) + #13#10
+      TextHighlightColorTag, '<Name>', TShip(Target).GetName) + #13#10
   else if (Target <> nil) and (Target is TMissile) then
     Result := Result + FormatText1(LocalizedText('Items.Weapon.Missile.TextTarget'),
-      '<color=255,240,100>', '<Name>', TMissile(Target).GetDisplayName) + #13#10
+      TextHighlightColorTag, '<Name>', TMissile(Target).GetDisplayName) + #13#10
   else
     Result := Result + LocalizedText('Items.Weapon.Missile.TextNoTarget') + #13#10;
   if OwnerShip <> nil then
@@ -847,9 +847,9 @@ begin
         DamageText := '???';
       end;
       Result := Result + FormatText1(LocalizedText('Items.Weapon.Missile.TextSpeed'),
-        '<color=255,240,100>', '<Speed>', SpeedText) + ', ';
+        TextHighlightColorTag, '<Speed>', SpeedText) + ', ';
       Result := Result + FormatText1(LocalizedText('Items.Weapon.Missile.TextDamage'),
-        '<color=255,240,100>', '<Damage>', DamageText) + #13#10;
+        TextHighlightColorTag, '<Damage>', DamageText) + #13#10;
     end;
 end;
 { @end $4F2B04 }

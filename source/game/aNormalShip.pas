@@ -358,7 +358,7 @@ begin
       if GetPlayer = Self then
       begin
         Result := Result + #13#10 + LocalizedColorText(Prefix + 'AddReward');
-        ReplaceTextToken(Result, '<Reward>', GetAwardInfo(Award).Name, '<color=255,240,100>');
+        ReplaceTextToken(Result, '<Reward>', GetAwardInfo(Award).Name, TextHighlightColorTag);
       end
       else Result := '';
     end;
@@ -373,8 +373,8 @@ begin
       if GetPlayer = Self then
       begin
         Result := Result + #13#10 + LocalizedColorText(Prefix + 'AddProgramms');
-        ReplaceTextToken(Result, '<Programm>', (Self as TRanger).GetProgramName(ProgramIndex), '<color=255,240,100>');
-        ReplaceTextToken(Result, '<Count>', IntToStr(Quantity), '<color=255,240,100>');
+        ReplaceTextToken(Result, '<Programm>', (Self as TRanger).GetProgramName(ProgramIndex), TextHighlightColorTag);
+        ReplaceTextToken(Result, '<Count>', IntToStr(Quantity), TextHighlightColorTag);
       end
       else Result := '';
     end;
@@ -387,7 +387,7 @@ begin
       begin
         GetPlayer.ScriptItemsAct(satOnGovItemReward, RewardItem, nil, 0);
         Result := Result + #13#10 + LocalizedColorText(Prefix + 'AddArtefact') + #13#10 + RewardItem.GetDescriptionText;
-        ReplaceTextToken(Result, '<Artefact>', RewardItem.GetDisplayName, '<color=255,240,100>');
+        ReplaceTextToken(Result, '<Artefact>', RewardItem.GetDisplayName, TextHighlightColorTag);
       end
       else Result := '';
     end;
@@ -412,8 +412,8 @@ begin
       Inventory.Add(ModuleItem);
       if GetPlayer = Self then
       begin
-        Result := Result + #13#10 + LocalizedColorText(Prefix + 'AddNod') + #13#10 + ModuleItem.GetInfoText('<color=255,240,100>', nil);
-        ReplaceTextToken(Result, '<Nod>', MicroModuleTemplates[ModuleIndex].Name, '<color=255,240,100>');
+        Result := Result + #13#10 + LocalizedColorText(Prefix + 'AddNod') + #13#10 + ModuleItem.GetInfoText(TextHighlightColorTag, nil);
+        ReplaceTextToken(Result, '<Nod>', MicroModuleTemplates[ModuleIndex].Name, TextHighlightColorTag);
       end
       else Result := '';
     end;
@@ -423,14 +423,14 @@ begin
   GainExperience(I, 0);
   if GetPlayer = Self then
   begin
-    Result := Result + #13#10 + ' ' + #13#10 + WrapTextInColor(LocalizedColorText(Prefix + 'AddPoints'), '<color=45,105,45>');
+    Result := Result + #13#10 + ' ' + #13#10 + WrapTextInColor(LocalizedColorText(Prefix + 'AddPoints'), DarkGreenColorTag);
     ReplaceTextToken(Result, '<Points>', IntToStr(I), '');
   end
   else Result := '';
   if GetPlayer = Self then
   begin
-    ReplaceTextToken(Result, '<Star>', CurrentPlanet.CurrentStar.Name, '<color=255,240,100>');
-    ReplaceTextToken(Result, '<Planet>', CurrentPlanet.Name, '<color=255,240,100>');
+    ReplaceTextToken(Result, '<Star>', CurrentPlanet.CurrentStar.Name, TextHighlightColorTag);
+    ReplaceTextToken(Result, '<Planet>', CurrentPlanet.Name, TextHighlightColorTag);
   end;
   PendingLiberationCeremonyPlanet := nil;
   PendingLiberationContribution := 0;
@@ -976,13 +976,13 @@ begin
       if Star.PreviousControlFaction = sfDominators then
       begin
         Text := FormatText3(PickLocalizedTextVariant('GalaxyNews.Globals.NormalsTakeSystemFromKling', SourceShip.Seed * (Galaxy.CurrentTurn div 10)),
-          '<color=255,240,100>', '<Star>', Star.Name, '<Sector>', Star.Constellation.GetName, '<Planet>', CeremonyPlanet.Name);
+          TextHighlightColorTag, '<Star>', Star.Name, '<Sector>', Star.Constellation.GetName, '<Planet>', CeremonyPlanet.Name);
         Galaxy.AddPlanetNews(gnCoalitionTakesDominatorSystem, Text);
       end
       else
       begin
         Text := FormatText3(PickLocalizedTextVariant('GalaxyNews.Globals.NormalsTakeSystemFromPirateClan', SourceShip.Seed * (Galaxy.CurrentTurn div 10)),
-          '<color=255,240,100>', '<Star>', Star.Name, '<Sector>', Star.Constellation.GetName, '<Planet>', CeremonyPlanet.Name);
+          TextHighlightColorTag, '<Star>', Star.Name, '<Sector>', Star.Constellation.GetName, '<Planet>', CeremonyPlanet.Name);
         Galaxy.AddPlanetNews(gnCoalitionTakesPirateSystem, Text);
       end;
       with AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn, Text, '') do
@@ -1038,17 +1038,17 @@ begin
     if Star.PreviousControlFaction = sfCoalition then
     begin
       Text := FormatText3(PickLocalizedTextVariant('GalaxyNews.Globals.PirateClanTakeSystemFromNormals', SourceShip.Seed * (Galaxy.CurrentTurn div 10)),
-          '<color=255,240,100>', '<Star>', Star.Name, '<Sector>', Star.Constellation.GetName, '<Planet>', CeremonyPlanet.Name);
+          TextHighlightColorTag, '<Star>', Star.Name, '<Sector>', Star.Constellation.GetName, '<Planet>', CeremonyPlanet.Name);
       if Galaxy.CoalitionDefeatedTurn = 0 then Galaxy.AddPlanetNews(gnPiratesTakeCoalitionSystem, Text);
     end
     else
     begin
       if Galaxy.CoalitionDefeatedTurn = 0 then
         Text := FormatText3(PickLocalizedTextVariant('GalaxyNews.Globals.PirateClanTakeSystemFromKling', SourceShip.Seed * (Galaxy.CurrentTurn div 10)),
-          '<color=255,240,100>', '<Star>', Star.Name, '<Sector>', Star.Constellation.GetName, '<Planet>', CeremonyPlanet.Name)
+          TextHighlightColorTag, '<Star>', Star.Name, '<Sector>', Star.Constellation.GetName, '<Planet>', CeremonyPlanet.Name)
       else
         Text := FormatText3(PickLocalizedTextVariant('GalaxyNews.Globals.PirateClanTakeSystemFromKlingAlt', SourceShip.Seed * (Galaxy.CurrentTurn div 10)),
-          '<color=255,240,100>', '<Star>', Star.Name, '<Sector>', Star.Constellation.GetName, '<Planet>', CeremonyPlanet.Name);
+          TextHighlightColorTag, '<Star>', Star.Name, '<Sector>', Star.Constellation.GetName, '<Planet>', CeremonyPlanet.Name);
       if Galaxy.CoalitionDefeatedTurn = 0 then Galaxy.AddPlanetNews(gnPiratesTakeDominatorSystem, Text);
     end;
     with AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn, Text, '') do
@@ -1086,7 +1086,7 @@ procedure TNormalShip.CheckKillCountAwards(Victim: TShip);
           begin
             ShipTypeName := ShipTypeNames[VictimType].Name;
             Text := PickLocalizedTextVariant('GalaxyNews.BadReward.Kill' + ShipTypeName, Seed + Cardinal(Galaxy.CurrentTurn div 10));
-            ReplaceTextToken(Text, '<Reward>', GetAwardInfo(Byte(Award)).Name, '<color=255,240,100>');
+            ReplaceTextToken(Text, '<Reward>', GetAwardInfo(Byte(Award)).Name, TextHighlightColorTag);
             AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn, Text, '');
           end;
         end;
@@ -1229,7 +1229,7 @@ begin
      (Galaxy.CoalitionDefeatedTurn = 0) then
     AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn,
       FormatText1(PickLocalizedTextVariant('GalaxyNews.WB.NewRank', Seed * (Galaxy.CurrentTurn div 10)),
-        '<color=255,240,100>', '<Rank>', GetPlayer.GetNextRankName), '');
+        TextHighlightColorTag, '<Rank>', GetPlayer.GetNextRankName), '');
 end;
 { @end $7439B8 }
 
@@ -1395,10 +1395,10 @@ begin
     if (((Definitions[EntryIndex].ToPlanetRaceIsLastPlanetRace = gcYes) and (not (Planet.RaceId = LastDockedPlanet.RaceId))) or ((Definitions[EntryIndex].ToPlanetRaceIsLastPlanetRace = gcNo) and (Planet.RaceId = LastDockedPlanet.RaceId))) then Continue;
     end;
     MessageText := LocalizedColorText('ShipGreetings.' + Definitions[EntryIndex].Name + '.Text');
-    MessageText := ReplaceColoredToken(MessageText, '<ToPlanet>', Planet.Name + GetLocalObjectLink(Planet, Automatic), '<color=255,240,100>');
+    MessageText := ReplaceColoredToken(MessageText, '<ToPlanet>', Planet.Name + GetLocalObjectLink(Planet, Automatic), TextHighlightColorTag);
     if Good <> 50 then begin
-    MessageText := ReplaceColoredToken(MessageText, '<ToPlanetGoodsSale>', IntToStr(GetPlayer.ShopGoodsPurchasePrice(Good, Planet)), '<color=255,240,100>');
-    MessageText := ReplaceColoredToken(MessageText, '<ToPlanetGoodsBuy>', IntToStr(GetPlayer.ShopGoodsSellPrice(Good, Planet)), '<color=255,240,100>');
+    MessageText := ReplaceColoredToken(MessageText, '<ToPlanetGoodsSale>', IntToStr(GetPlayer.ShopGoodsPurchasePrice(Good, Planet)), TextHighlightColorTag);
+    MessageText := ReplaceColoredToken(MessageText, '<ToPlanetGoodsBuy>', IntToStr(GetPlayer.ShopGoodsSellPrice(Good, Planet)), TextHighlightColorTag);
     end;
   end else if Definitions[EntryIndex].FlyType = gfToStar then begin
     if not (OrderTarget is TStar) then Continue;
@@ -1434,7 +1434,7 @@ begin
     end;
     if (Definitions[EntryIndex].ToStarInBattle <> gcAny) and (((Definitions[EntryIndex].ToStarInBattle = gcYes) and (not ((OrderTarget as TStar).Battle <> 0))) or ((Definitions[EntryIndex].ToStarInBattle = gcNo) and ((OrderTarget as TStar).Battle <> 0))) then Continue;
     MessageText := LocalizedColorText('ShipGreetings.' + Definitions[EntryIndex].Name + '.Text');
-    MessageText := ReplaceColoredToken(MessageText, '<ToStar>', (OrderTarget as TStar).Name, '<color=255,240,100>');
+    MessageText := ReplaceColoredToken(MessageText, '<ToStar>', (OrderTarget as TStar).Name, TextHighlightColorTag);
   end else if Definitions[EntryIndex].FlyType = gfToItem then begin
     if (Order <> soMove) or not OrderAbsolute then Continue;
     Rejected := False;
@@ -1456,7 +1456,7 @@ begin
     end;
     if not Rejected then Continue;
     MessageText := LocalizedColorText('ShipGreetings.' + Definitions[EntryIndex].Name + '.Text');
-    MessageText := ReplaceColoredToken(MessageText, '<Item>', Item.GetDisplayName + GetLocalObjectLink(Item, Automatic), '<color=255,240,100>');
+    MessageText := ReplaceColoredToken(MessageText, '<Item>', Item.GetDisplayName + GetLocalObjectLink(Item, Automatic), TextHighlightColorTag);
   end else if Definitions[EntryIndex].FlyType = gfToShip then begin
     if not (OrderTarget is TShip) then Continue;
     if (Definitions[EntryIndex].ToShipType <> []) and not ((OrderTarget as TShip).GetGreetingShipCategory in Definitions[EntryIndex].ToShipType) then Continue;
@@ -1465,10 +1465,10 @@ begin
     if (Definitions[EntryIndex].ToShipBad <> gcAny) and (((Definitions[EntryIndex].ToShipBad = gcYes) and (not ((OrderTarget as TShip).EnemyShip = Self))) or ((Definitions[EntryIndex].ToShipBad = gcNo) and ((OrderTarget as TShip).EnemyShip = Self))) then Continue;
     if (Definitions[EntryIndex].ToShipRelations <> []) and not (GetRelationLevelToShip(OrderTarget as TShip) in Definitions[EntryIndex].ToShipRelations) then Continue;
     MessageText := LocalizedColorText('ShipGreetings.' + Definitions[EntryIndex].Name + '.Text');
-    MessageText := ReplaceColoredToken(MessageText, '<ToShip>', (OrderTarget as TShip).GetName + GetLocalObjectLink(OrderTarget, Automatic), '<color=255,240,100>');
-    MessageText := ReplaceColoredToken(MessageText, '<ToFullShip>', (OrderTarget as TShip).GetFullName(' ') + GetLocalObjectLink(OrderTarget, Automatic), '<color=255,240,100>');
+    MessageText := ReplaceColoredToken(MessageText, '<ToShip>', (OrderTarget as TShip).GetName + GetLocalObjectLink(OrderTarget, Automatic), TextHighlightColorTag);
+    MessageText := ReplaceColoredToken(MessageText, '<ToFullShip>', (OrderTarget as TShip).GetFullName(' ') + GetLocalObjectLink(OrderTarget, Automatic), TextHighlightColorTag);
     if (OrderTarget as TShip).CurrentPlanet <> nil then begin
-    MessageText := ReplaceColoredToken(MessageText, '<ToShipInPlanet>', (OrderTarget as TShip).CurrentPlanet.GetFullName(' ') + GetLocalObjectLink((OrderTarget as TShip).CurrentPlanet, Automatic), '<color=255,240,100>');
+    MessageText := ReplaceColoredToken(MessageText, '<ToShipInPlanet>', (OrderTarget as TShip).CurrentPlanet.GetFullName(' ') + GetLocalObjectLink((OrderTarget as TShip).CurrentPlanet, Automatic), TextHighlightColorTag);
     end;
   end;
 end;
@@ -1606,26 +1606,26 @@ end;
     end;
     if Rejected then Continue;
     end;
-    MessageText := ReplaceColoredToken(MessageText, '<LastPlanet>', LastDockedPlanet.Name + GetLocalObjectLink(LastDockedPlanet, Automatic), '<color=255,240,100>');
-    MessageText := ReplaceColoredToken(MessageText, '<LastPlanetStar>', LastDockedPlanet.CurrentStar.Name, '<color=255,240,100>');
+    MessageText := ReplaceColoredToken(MessageText, '<LastPlanet>', LastDockedPlanet.Name + GetLocalObjectLink(LastDockedPlanet, Automatic), TextHighlightColorTag);
+    MessageText := ReplaceColoredToken(MessageText, '<LastPlanetStar>', LastDockedPlanet.CurrentStar.Name, TextHighlightColorTag);
     if Good <> 50 then begin
-    MessageText := ReplaceColoredToken(MessageText, '<LastPlanetGoodsSale>', IntToStr(GetPlayer.ShopGoodsPurchasePrice(Good, LastDockedPlanet)), '<color=255,240,100>');
-    MessageText := ReplaceColoredToken(MessageText, '<LastPlanetGoodsBuy>', IntToStr(GetPlayer.ShopGoodsSellPrice(Good, LastDockedPlanet)), '<color=255,240,100>');
+    MessageText := ReplaceColoredToken(MessageText, '<LastPlanetGoodsSale>', IntToStr(GetPlayer.ShopGoodsPurchasePrice(Good, LastDockedPlanet)), TextHighlightColorTag);
+    MessageText := ReplaceColoredToken(MessageText, '<LastPlanetGoodsBuy>', IntToStr(GetPlayer.ShopGoodsSellPrice(Good, LastDockedPlanet)), TextHighlightColorTag);
     end;
   end;
   if MessageText <> '' then begin
-    MessageText := ReplaceColoredToken(MessageText, '<Ship>', GetName + GetLocalObjectLink(Self, Automatic), '<color=255,240,100>');
-    MessageText := ReplaceColoredToken(MessageText, '<FullShip>', GetFullName(' ') + GetLocalObjectLink(Self, Automatic), '<color=255,240,100>');
+    MessageText := ReplaceColoredToken(MessageText, '<Ship>', GetName + GetLocalObjectLink(Self, Automatic), TextHighlightColorTag);
+    MessageText := ReplaceColoredToken(MessageText, '<FullShip>', GetFullName(' ') + GetLocalObjectLink(Self, Automatic), TextHighlightColorTag);
     if EnemyShip <> nil then begin
-    MessageText := ReplaceColoredToken(MessageText, '<ShipBad>', EnemyShip.GetName + GetLocalObjectLink(EnemyShip, Automatic), '<color=255,240,100>');
-    MessageText := ReplaceColoredToken(MessageText, '<FullShipBad>', EnemyShip.GetFullName(' ') + GetLocalObjectLink(EnemyShip, Automatic), '<color=255,240,100>');
+    MessageText := ReplaceColoredToken(MessageText, '<ShipBad>', EnemyShip.GetName + GetLocalObjectLink(EnemyShip, Automatic), TextHighlightColorTag);
+    MessageText := ReplaceColoredToken(MessageText, '<FullShipBad>', EnemyShip.GetFullName(' ') + GetLocalObjectLink(EnemyShip, Automatic), TextHighlightColorTag);
     end;
-    MessageText := ReplaceColoredToken(MessageText, '<ShipRank>', GetRankName, '<color=255,240,100>');
-    MessageText := ReplaceColoredToken(MessageText, '<PlayerRank>', GetPlayer.GetRankName, '<color=255,240,100>');
-    MessageText := ReplaceColoredToken(MessageText, '<CurStar>', CurrentStar.Name, '<color=255,240,100>');
+    MessageText := ReplaceColoredToken(MessageText, '<ShipRank>', GetRankName, TextHighlightColorTag);
+    MessageText := ReplaceColoredToken(MessageText, '<PlayerRank>', GetPlayer.GetRankName, TextHighlightColorTag);
+    MessageText := ReplaceColoredToken(MessageText, '<CurStar>', CurrentStar.Name, TextHighlightColorTag);
     if HomePlanet <> nil then begin
-    MessageText := ReplaceColoredToken(MessageText, '<HomePlanet>', HomePlanet.Name + GetLocalObjectLink(HomePlanet, Automatic), '<color=255,240,100>');
-    MessageText := ReplaceColoredToken(MessageText, '<HomePlanetStar>', HomePlanet.CurrentStar.Name, '<color=255,240,100>');
+    MessageText := ReplaceColoredToken(MessageText, '<HomePlanet>', HomePlanet.Name + GetLocalObjectLink(HomePlanet, Automatic), TextHighlightColorTag);
+    MessageText := ReplaceColoredToken(MessageText, '<HomePlanetStar>', HomePlanet.CurrentStar.Name, TextHighlightColorTag);
     end;
     BestText := MessageText;
     if CandidatePriority = -1 then BestPriority := Definitions[EntryIndex].Priority else BestPriority := CandidatePriority;

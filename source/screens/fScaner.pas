@@ -638,19 +638,19 @@ begin
         RunCustomShipInfoActionCode(Info, satOnShowingItemInfo, ShipToInspect, nil, nil, 0);
         Description := Info.Description;
         if Description = '' then Description := LocalizedColorText('ShipInfo.AddInfo.CustomInfos.' + Info.TypeName + '.Description');
-        ReplaceTextToken(Description, '<Data1>', IntToStr(Info.Data[1]), '<color=255,240,100>');
-        ReplaceTextToken(Description, '<Data2>', IntToStr(Info.Data[2]), '<color=255,240,100>');
-        ReplaceTextToken(Description, '<Data3>', IntToStr(Info.Data[3]), '<color=255,240,100>');
-        ReplaceTextToken(Description, '<TextData1>', Info.TextData1, '<color=255,240,100>');
-        ReplaceTextToken(Description, '<TextData2>', Info.TextData2, '<color=255,240,100>');
-        ReplaceTextToken(Description, '<TextData3>', Info.TextData3, '<color=255,240,100>');
+        ReplaceTextToken(Description, '<Data1>', IntToStr(Info.Data[1]), TextHighlightColorTag);
+        ReplaceTextToken(Description, '<Data2>', IntToStr(Info.Data[2]), TextHighlightColorTag);
+        ReplaceTextToken(Description, '<Data3>', IntToStr(Info.Data[3]), TextHighlightColorTag);
+        ReplaceTextToken(Description, '<TextData1>', Info.TextData1, TextHighlightColorTag);
+        ReplaceTextToken(Description, '<TextData2>', Info.TextData2, TextHighlightColorTag);
+        ReplaceTextToken(Description, '<TextData3>', Info.TextData3, TextHighlightColorTag);
         Caption := LocalizedColorText('ShipInfo.AddInfo.CustomInfos.' + Info.TypeName + '.Name');
-        ReplaceTextToken(Caption, '<Data1>', IntToStr(Info.Data[1]), '<color=255,240,100>');
-        ReplaceTextToken(Caption, '<Data2>', IntToStr(Info.Data[2]), '<color=255,240,100>');
-        ReplaceTextToken(Caption, '<Data3>', IntToStr(Info.Data[3]), '<color=255,240,100>');
-        ReplaceTextToken(Caption, '<TextData1>', Info.TextData1, '<color=255,240,100>');
-        ReplaceTextToken(Caption, '<TextData2>', Info.TextData2, '<color=255,240,100>');
-        ReplaceTextToken(Caption, '<TextData3>', Info.TextData3, '<color=255,240,100>');
+        ReplaceTextToken(Caption, '<Data1>', IntToStr(Info.Data[1]), TextHighlightColorTag);
+        ReplaceTextToken(Caption, '<Data2>', IntToStr(Info.Data[2]), TextHighlightColorTag);
+        ReplaceTextToken(Caption, '<Data3>', IntToStr(Info.Data[3]), TextHighlightColorTag);
+        ReplaceTextToken(Caption, '<TextData1>', Info.TextData1, TextHighlightColorTag);
+        ReplaceTextToken(Caption, '<TextData2>', Info.TextData2, TextHighlightColorTag);
+        ReplaceTextToken(Caption, '<TextData3>', Info.TextData3, TextHighlightColorTag);
         Sender.HelpText := Caption + '~' + Description;
       end;
       with GetByName('RankImage') as TGraphBufGI do
@@ -711,8 +711,8 @@ begin
           Text := Ship.GetRankDescription;
           if Ship.Rank <> 7 then
             if Ship.GetRankPointsToNextRank > 0 then
-              Text := Text + ' ' + FormatText2(LocalizedText('Rank.NextRankText'), '<color=255,240,100>', '<NextRank>', Ship.GetNextRankName, '<WarPoints>', IntToStr(Ship.GetRankPointsToNextRank))
-            else Text := Text + ' ' + FormatText1(LocalizedText('Rank.NextRankGetText'), '<color=255,240,100>', '<NextRank>', Ship.GetNextRankName);
+              Text := Text + ' ' + FormatText2(LocalizedText('Rank.NextRankText'), TextHighlightColorTag, '<NextRank>', Ship.GetNextRankName, '<WarPoints>', IntToStr(Ship.GetRankPointsToNextRank))
+            else Text := Text + ' ' + FormatText1(LocalizedText('Rank.NextRankGetText'), TextHighlightColorTag, '<NextRank>', Ship.GetNextRankName);
         end;
       end
       else if (Sender.ControlName = 'RankI2') and (ShipToInspect is TNormalShip) then
@@ -728,7 +728,7 @@ begin
         end;
         Title := WrapTextInColor(Ship.GetPirateRankLongName, InfoNameColorTag);
         Text := Ship.GetPirateRankDescription;
-        Text := Text + #13#10 + FormatText1(LocalizedText('RankPirate.NextRankText'), '<color=255,240,100>', '<WarPoints>', IntToStr(Ship.GetPirateRankPointsToNextRank));
+        Text := Text + #13#10 + FormatText1(LocalizedText('RankPirate.NextRankText'), TextHighlightColorTag, '<WarPoints>', IntToStr(Ship.GetPirateRankPointsToNextRank));
       end;
     end
     else if Sender is TZoneGI then
@@ -742,12 +742,12 @@ begin
       end;
       Skill := TPilotSkill(ExtractDigitsToIntW(Sender.ControlName));
       Title := WrapTextInColor(LocalizedText('Skills.' + SkillConfigNames[Skill] + '.Name'), InfoNameColorTag);
-      Text := FormatText1(LocalizedText('Skills.' + SkillConfigNames[Skill] + '.Text'), '<color=255,240,100>', '<SkillValue>', IntToStr(PilotSkillEffects[ShipToInspect.GetEffectiveSkillLevel(Skill), Skill]));
-      ReplaceTextToken(Text, '<SkillLevel>', IntToStr(ShipToInspect.GetEffectiveSkillLevel(Skill)), '<color=255,240,100>');
-      if Skill = psTechnical then ReplaceTextToken(Text, '<N>', IntToStr(ShipToInspect.GetSatelliteLimit), '<color=255,240,100>');
-      if Skill = psTrading then ReplaceTextToken(Text, '<SkillValue2>', IntToStr(TradingSkillSalePercent[ShipToInspect.GetEffectiveSkillLevel(Skill)]), '<color=255,240,100>');
-      if Skill = psLeadership then ReplaceTextToken(Text, '<SkillValue2>', IntToStr(LeadershipExperiencePercent[ShipToInspect.GetEffectiveSkillLevel(Skill)]), '<color=255,240,100>');
-      if ShipToInspect.GetBaseSkillLevel(Skill) < 6 then Text := Text + #13#10 + #13#10 + FormatText1(LocalizedText('Skills.PointForNextLevel'), '<color=255,240,100>', '<PointForNextLevel>', IntToStr(SkillTrainingCosts[ShipToInspect.BaseSkills[Skill] + 1, Skill]));
+      Text := FormatText1(LocalizedText('Skills.' + SkillConfigNames[Skill] + '.Text'), TextHighlightColorTag, '<SkillValue>', IntToStr(PilotSkillEffects[ShipToInspect.GetEffectiveSkillLevel(Skill), Skill]));
+      ReplaceTextToken(Text, '<SkillLevel>', IntToStr(ShipToInspect.GetEffectiveSkillLevel(Skill)), TextHighlightColorTag);
+      if Skill = psTechnical then ReplaceTextToken(Text, '<N>', IntToStr(ShipToInspect.GetSatelliteLimit), TextHighlightColorTag);
+      if Skill = psTrading then ReplaceTextToken(Text, '<SkillValue2>', IntToStr(TradingSkillSalePercent[ShipToInspect.GetEffectiveSkillLevel(Skill)]), TextHighlightColorTag);
+      if Skill = psLeadership then ReplaceTextToken(Text, '<SkillValue2>', IntToStr(LeadershipExperiencePercent[ShipToInspect.GetEffectiveSkillLevel(Skill)]), TextHighlightColorTag);
+      if ShipToInspect.GetBaseSkillLevel(Skill) < 6 then Text := Text + #13#10 + #13#10 + FormatText1(LocalizedText('Skills.PointForNextLevel'), TextHighlightColorTag, '<PointForNextLevel>', IntToStr(SkillTrainingCosts[ShipToInspect.BaseSkills[Skill] + 1, Skill]));
     end;
     (GetByName('RankName') as TLabelGI).SetText(Title);
     (GetByName('RankText') as TLabelGI).SetText(Text);
@@ -877,10 +877,10 @@ begin
     Stage := 2;
     (GetByName('IMass') as TLabelGI).SetText(IntToStr(ShipToInspect.CalculateMass));
     Stage := 3;
-    if ShipToInspect.CalculateSpeed <= 0 then Text := '<color=255,0,0>' else Text := '';
+    if ShipToInspect.CalculateSpeed <= 0 then Text := RedColorTag else Text := '';
     (GetByName('ISpeed') as TLabelGI).SetText(WrapTextInColor(IntToStr(ShipToInspect.CalculateSpeed), Text));
     Stage := 4;
-    if ShipToInspect.GetCargoFreeSpace < 0 then Text := '<color=255,0,0>' else Text := '';
+    if ShipToInspect.GetCargoFreeSpace < 0 then Text := RedColorTag else Text := '';
     (GetByName('IEmpty') as TLabelGI).SetText(WrapTextInColor(IntToStr(ShipToInspect.GetCargoFreeSpace), Text));
     (GetByName('S_Left') as TGraphButtonGI).SetDisabled(not (CargoOffset > 0));
     (GetByName('S_Right') as TGraphButtonGI).SetDisabled(not (CargoOffset + VisibleCargoCount <= CargoEntryCount));
@@ -1292,7 +1292,7 @@ begin
     end;
     if (Item.ItemType = t_Hull) and (ShipToInspect.TypeId <> stTranclucator) and (ShipToInspect.TypeId <> stKling) and not CompactHullInfo then
     begin
-      EquipmentShopScreen.RefreshHullInfo(Self, Item as THull, Equipment.GetInfoText('<color=255,240,100>', ShipToInspect), True);
+      EquipmentShopScreen.RefreshHullInfo(Self, Item as THull, Equipment.GetInfoText(TextHighlightColorTag, ShipToInspect), True);
       ItemInfoWindow.SetActive(False);
       Portrait := ShipToInspect.GetShipPortraitImagePath;
       if Portrait <> '' then
@@ -1350,7 +1350,7 @@ begin
       end;
       (GetByName('InfoName') as TLabelGI).SetText('');
       (GetByName('InfoName') as TLabelGI).SetText(WrapTextInColor(Equipment.GetDisplayName, InfoNameColorTag));
-      (GetByName('InfoText') as TLabelGI).SetText(Equipment.GetInfoText('<color=255,240,100>', ShipToInspect));
+      (GetByName('InfoText') as TLabelGI).SetText(Equipment.GetInfoText(TextHighlightColorTag, ShipToInspect));
       (GetByName('InfoSize') as TLabelGI).SetText(IntToStr(Equipment.Weight));
       (GetByName('InfoPrice') as TLabelGI).SetText(IntToStr(Equipment.Cost));
       with GetByName('EmRace') as TImageGI do
@@ -1576,19 +1576,19 @@ begin
       if Description = '' then Description := LocalizedColorText('ShipInfo.AddInfo.CustomInfos.' + Info.TypeName + '.Description');
       if Description <> 'NoShow' then
       begin
-        ReplaceTextToken(Description, '<Data1>', IntToStr(Info.Data[1]), '<color=255,240,100>');
-        ReplaceTextToken(Description, '<Data2>', IntToStr(Info.Data[2]), '<color=255,240,100>');
-        ReplaceTextToken(Description, '<Data3>', IntToStr(Info.Data[3]), '<color=255,240,100>');
-        ReplaceTextToken(Description, '<TextData1>', Info.TextData1, '<color=255,240,100>');
-        ReplaceTextToken(Description, '<TextData2>', Info.TextData2, '<color=255,240,100>');
-        ReplaceTextToken(Description, '<TextData3>', Info.TextData3, '<color=255,240,100>');
+        ReplaceTextToken(Description, '<Data1>', IntToStr(Info.Data[1]), TextHighlightColorTag);
+        ReplaceTextToken(Description, '<Data2>', IntToStr(Info.Data[2]), TextHighlightColorTag);
+        ReplaceTextToken(Description, '<Data3>', IntToStr(Info.Data[3]), TextHighlightColorTag);
+        ReplaceTextToken(Description, '<TextData1>', Info.TextData1, TextHighlightColorTag);
+        ReplaceTextToken(Description, '<TextData2>', Info.TextData2, TextHighlightColorTag);
+        ReplaceTextToken(Description, '<TextData3>', Info.TextData3, TextHighlightColorTag);
         Caption := Block.GetParam('Name');
-        ReplaceTextToken(Caption, '<Data1>', IntToStr(Info.Data[1]), '<color=255,240,100>');
-        ReplaceTextToken(Caption, '<Data2>', IntToStr(Info.Data[2]), '<color=255,240,100>');
-        ReplaceTextToken(Caption, '<Data3>', IntToStr(Info.Data[3]), '<color=255,240,100>');
-        ReplaceTextToken(Caption, '<TextData1>', Info.TextData1, '<color=255,240,100>');
-        ReplaceTextToken(Caption, '<TextData2>', Info.TextData2, '<color=255,240,100>');
-        ReplaceTextToken(Caption, '<TextData3>', Info.TextData3, '<color=255,240,100>');
+        ReplaceTextToken(Caption, '<Data1>', IntToStr(Info.Data[1]), TextHighlightColorTag);
+        ReplaceTextToken(Caption, '<Data2>', IntToStr(Info.Data[2]), TextHighlightColorTag);
+        ReplaceTextToken(Caption, '<Data3>', IntToStr(Info.Data[3]), TextHighlightColorTag);
+        ReplaceTextToken(Caption, '<TextData1>', Info.TextData1, TextHighlightColorTag);
+        ReplaceTextToken(Caption, '<TextData2>', Info.TextData2, TextHighlightColorTag);
+        ReplaceTextToken(Caption, '<TextData3>', Info.TextData3, TextHighlightColorTag);
         AddRow(StrToInt(AnsiString(Block.GetParam('Icon'))), Caption,
           Caption + '~' + Description, Integer(Info));
       end;

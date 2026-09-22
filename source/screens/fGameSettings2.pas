@@ -1044,10 +1044,10 @@ begin
   Average := 0;
   for I := 0 to 7 do Average := Average + 50 + DifficultyLevels[I] * 50;
   Average := Average div 8;
-  if Average = 50 then Color := '<color=0,255,0>'
+  if Average = 50 then Color := GreenColorTag
   else if Average <= 100 then Color := '<color=254,255,255>'
-  else if Average <= 150 then Color := '<color=255,240,100>'
-  else if Average <= 200 then Color := '<color=255,166,0>'
+  else if Average <= 150 then Color := TextHighlightColorTag
+  else if Average <= 200 then Color := OrangeColorTag
   else Color := '<color=255,' + IntToWideString(Round(RemapClamped(Average, 200, 500, 166, 0))) + ',0>';
   (GetByName('LevelProc') as TLabelGI).SetText(WrapTextInColor(IntToStr(Average) + '%', Color));
 end;
@@ -1320,7 +1320,7 @@ begin
   if Sender <> nil then PlayerNameEdited := True;
   (GetByName('Ok') as TGraphButtonGI).SetDisabled(not ValidatePlayerName((GetByName('PlayerName') as TEditGI).Text));
   Text := LocalizedColorText('FormGameSet2.' + OwnerInfo[RaceToOwner(PlayerRace)].InternalName + '.Char' + IntToStr(CharacterPreset));
-  ReplaceTextToken(Text, '<Name>', TrimWideString((GetByName('PlayerName') as TEditGI).Text), '<color=255,240,100>');
+  ReplaceTextToken(Text, '<Name>', TrimWideString((GetByName('PlayerName') as TEditGI).Text), TextHighlightColorTag);
   (GetByName('Info') as TLabelGI).SetText(Text);
 end;
 { @end $577924 }
@@ -1699,7 +1699,7 @@ procedure TfGameSettings2.FormatExtendedInteger(Sender: TCountBarGI);
 begin
   if Sender.UserIndex <> 0 then
     with TLabelGI(Sender.UserIndex) do
-      SetText(HelpText + '<color=255,240,100>' + ' ' + IntToStr(Sender.Position) + '</color>');
+      SetText(HelpText + TextHighlightColorTag + ' ' + IntToStr(Sender.Position) + EndColorTag);
 end;
 { @end $579CE4 }
 
@@ -1712,11 +1712,11 @@ begin
     begin
       Value := Sender.Position;
       if Value = 0 then
-        SetText(HelpText + '<color=255,240,100>' + ' ' + LocalizedText('FormGameSet2.Extended.HelpAuto') + '</color>')
+        SetText(HelpText + TextHighlightColorTag + ' ' + LocalizedText('FormGameSet2.Extended.HelpAuto') + EndColorTag)
       else if Value <= 25 then
-        SetText(HelpText + '<color=255,240,100>' + ' ' + IntToStr(50 + Round((Value - 1) * 6.25)) + '%' + '</color>')
+        SetText(HelpText + TextHighlightColorTag + ' ' + IntToStr(50 + Round((Value - 1) * 6.25)) + '%' + EndColorTag)
       else
-        SetText(HelpText + '<color=255,166,0>' + ' ' + IntToStr(50 + Round((Value - 1) * 6.25)) + '%' + '</color>');
+        SetText(HelpText + OrangeColorTag + ' ' + IntToStr(50 + Round((Value - 1) * 6.25)) + '%' + EndColorTag);
     end;
 end;
 { @end $579DE8 }
@@ -1729,7 +1729,7 @@ begin
     with TLabelGI(Sender.UserIndex) do
     begin
       Value := Sender.Position;
-      SetText(HelpText + '<color=255,240,100>' + ' ' + IntToStr(50 + Round(Value * 6.25)) + '%' + '</color>');
+      SetText(HelpText + TextHighlightColorTag + ' ' + IntToStr(50 + Round(Value * 6.25)) + '%' + EndColorTag);
     end;
 end;
 { @end $57A058 }
@@ -1742,7 +1742,7 @@ begin
     with TLabelGI(Sender.UserIndex) do
     begin
       Value := Sender.Position;
-      SetText(HelpText + '<color=255,240,100>' + ' ' + IntToStr(Value) + '%' + '</color>');
+      SetText(HelpText + TextHighlightColorTag + ' ' + IntToStr(Value) + '%' + EndColorTag);
     end;
 end;
 { @end $57A188 }

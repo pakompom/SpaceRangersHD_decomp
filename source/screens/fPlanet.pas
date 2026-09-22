@@ -268,10 +268,10 @@ begin
     if Text = '' then Text := LocalizedColorText('PlanetQuest.StartText.QuestExtern');
     if Quest <> nil then
     begin
-      ReplaceTextToken(Text, '<CurPlanet>', (Quest.ObjectiveTarget as TPlanet).Name, '<color=255,240,100>');
-      ReplaceTextToken(Text, '<CurStar>', (Quest.ObjectiveTarget as TPlanet).CurrentStar.Name, '<color=255,240,100>');
-      ReplaceTextToken(Text, '<FromPlanet>', Quest.Planet.Name, '<color=255,240,100>');
-      ReplaceTextToken(Text, '<FromStar>', Quest.Planet.CurrentStar.Name, '<color=255,240,100>');
+      ReplaceTextToken(Text, '<CurPlanet>', (Quest.ObjectiveTarget as TPlanet).Name, TextHighlightColorTag);
+      ReplaceTextToken(Text, '<CurStar>', (Quest.ObjectiveTarget as TPlanet).CurrentStar.Name, TextHighlightColorTag);
+      ReplaceTextToken(Text, '<FromPlanet>', Quest.Planet.Name, TextHighlightColorTag);
+      ReplaceTextToken(Text, '<FromStar>', Quest.Planet.CurrentStar.Name, TextHighlightColorTag);
     end;
     SetText(Text);
     Window.SetSize(Classes.Point(ClientSize.X + Window.WorkSubRect.Left + Window.WorkSubRect.Right,

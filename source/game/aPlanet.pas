@@ -2506,7 +2506,7 @@ var
         if (GetPlayer <> nil) and (GetPlayer.CountActiveArtefacts(t_ArtefactAnalyzer) > 0) and (TargetStar.Status.CustomFaction = '') then
         begin
           Text := FormatText1(LocalizedText('Artefacts.ArtAnalyzer.AttackPirates'),
-            '<color=255,240,100>', '<Star>', TargetStar.Name);
+            TextHighlightColorTag, '<Star>', TargetStar.Name);
           if Text <> '' then AddOrUpdatePlayerBubble(pmGalaxyNews, aGalaxy.Galaxy.CurrentTurn, Text, '');
         end;
         Exit;
@@ -2529,7 +2529,7 @@ var
       if (GetPlayer <> nil) and (GetPlayer.CountActiveArtefacts(t_ArtefactAnalyzer) > 0) and (TargetStar.Status.CustomFaction = '') then
       begin
         Text := FormatText1(LocalizedText('Artefacts.ArtAnalyzer.AttackPirates'),
-          '<color=255,240,100>', '<Star>', TargetStar.Name);
+          TextHighlightColorTag, '<Star>', TargetStar.Name);
         if Text <> '' then AddOrUpdatePlayerBubble(pmGalaxyNews, aGalaxy.Galaxy.CurrentTurn, Text, '');
       end;
   end;
@@ -2709,7 +2709,7 @@ begin
   end;
   if (GetPlayer <> nil) and (GetPlayer.CountActiveArtefacts(t_ArtefactAnalyzer) > 0) then
   begin
-    MessageText := FormatText1(LocalizedText('Artefacts.ArtAnalyzer.AttackPirates'), '<color=255,240,100>', '<Star>', TargetStar.Name);
+    MessageText := FormatText1(LocalizedText('Artefacts.ArtAnalyzer.AttackPirates'), TextHighlightColorTag, '<Star>', TargetStar.Name);
     if MessageText <> '' then AddOrUpdatePlayerBubble(pmGalaxyNews, aGalaxy.Galaxy.CurrentTurn, MessageText, '');
   end;
 end;
@@ -2965,7 +2965,7 @@ begin
     aGalaxy.Galaxy.AddPlanetNews(gnRevolutionAnarchy, FormatText2(
       PickLocalizedTextVariant('GalaxyNews.Planet.Revolution.' + SysUtils.IntToStr(Ord(Government)),
         (aGalaxy.Galaxy.CurrentTurn div 10) * Integer(GenerationSeed)),
-      '<color=255,240,100>', '<Star>', CurrentStar.Name, '<Planet>', Name));
+      TextHighlightColorTag, '<Star>', CurrentStar.Name, '<Planet>', Name));
   // The goods event uses Candidate even when the attempt limit changes NewGovernment.
   case Candidate of
     pgAnarchy: ForceGoodsScarcity(True, [0, 1, 2, 6]);
@@ -3015,7 +3015,7 @@ begin
       aGalaxy.Galaxy.AddPlanetNews(gnMineralDeposit, FormatText2(
         PickLocalizedTextVariant('GalaxyNews.Planet.MineralDeposit',
           (aGalaxy.Galaxy.CurrentTurn div 10) * Integer(GenerationSeed)),
-        '<color=255,240,100>', '<Star>', CurrentStar.Name, '<Planet>', Name));
+        TextHighlightColorTag, '<Star>', CurrentStar.Name, '<Planet>', Name));
   end
   else if (SeededRandomIntRange(0, 100,
     aGalaxy.Galaxy.CurrentTurn * Integer(GenerationSeed) * 1127) < EconomicEventChance) and
@@ -3027,7 +3027,7 @@ begin
       aGalaxy.Galaxy.AddPlanetNews(gnMineralShortage, FormatText2(
         PickLocalizedTextVariant('GalaxyNews.Planet.NeedMineral',
           (aGalaxy.Galaxy.CurrentTurn div 10) * Integer(GenerationSeed)),
-        '<color=255,240,100>', '<Star>', CurrentStar.Name, '<Planet>', Name));
+        TextHighlightColorTag, '<Star>', CurrentStar.Name, '<Planet>', Name));
   end
   else if (SeededRandomIntRange(0, 100,
     aGalaxy.Galaxy.CurrentTurn * Integer(GenerationSeed) * 1217) < EconomicEventChance) and
@@ -3041,7 +3041,7 @@ begin
       aGalaxy.Galaxy.AddPlanetNews(gnArmsSurplus, FormatText2(
         PickLocalizedTextVariant('GalaxyNews.Planet.ManyArms',
           (aGalaxy.Galaxy.CurrentTurn div 10) * Integer(GenerationSeed)),
-        '<color=255,240,100>', '<Star>', CurrentStar.Name, '<Planet>', Name));
+        TextHighlightColorTag, '<Star>', CurrentStar.Name, '<Planet>', Name));
   end
   else if (SeededRandomIntRange(0, 100,
     aGalaxy.Galaxy.CurrentTurn * Integer(GenerationSeed) * 1227) < EconomicEventChance) and
@@ -3054,7 +3054,7 @@ begin
       aGalaxy.Galaxy.AddPlanetNews(gnArmsShortage, FormatText2(
         PickLocalizedTextVariant('GalaxyNews.Planet.NeedArms',
           (aGalaxy.Galaxy.CurrentTurn div 10) * Integer(GenerationSeed)),
-        '<color=255,240,100>', '<Star>', CurrentStar.Name, '<Planet>', Name));
+        TextHighlightColorTag, '<Star>', CurrentStar.Name, '<Planet>', Name));
   end
   else if (SeededRandomIntRange(0, 100,
     aGalaxy.Galaxy.CurrentTurn * Integer(GenerationSeed) * 1237) < EconomicEventChance) and
@@ -3068,7 +3068,7 @@ begin
       aGalaxy.Galaxy.AddPlanetNews(gnArmsShortage, FormatText2(
         PickLocalizedTextVariant('GalaxyNews.Planet.NeedArmsForRevolution',
           (aGalaxy.Galaxy.CurrentTurn div 10) * Integer(GenerationSeed)),
-        '<color=255,240,100>', '<Star>', CurrentStar.Name, '<Planet>', Name));
+        TextHighlightColorTag, '<Star>', CurrentStar.Name, '<Planet>', Name));
   end
   else if (SeededRandomIntRange(0, 100,
     aGalaxy.Galaxy.CurrentTurn * Integer(GenerationSeed) * 1317) < EconomicEventChance) and
@@ -3081,7 +3081,7 @@ begin
       aGalaxy.Galaxy.AddPlanetNews(gnTechnicsSurplus, FormatText2(
         PickLocalizedTextVariant('GalaxyNews.Planet.ManyTechnics',
           (aGalaxy.Galaxy.CurrentTurn div 10) * Integer(GenerationSeed)),
-        '<color=255,240,100>', '<Star>', CurrentStar.Name, '<Planet>', Name));
+        TextHighlightColorTag, '<Star>', CurrentStar.Name, '<Planet>', Name));
   end
   else if (SeededRandomIntRange(0, 100,
     aGalaxy.Galaxy.CurrentTurn * Integer(GenerationSeed) * 71417) < EconomicEventChance) and
@@ -3093,7 +3093,7 @@ begin
       aGalaxy.Galaxy.AddPlanetNews(gnFoodSurplus, FormatText2(
         PickLocalizedTextVariant('GalaxyNews.Planet.ManyFood',
           (aGalaxy.Galaxy.CurrentTurn div 10) * Integer(GenerationSeed)),
-        '<color=255,240,100>', '<Star>', CurrentStar.Name, '<Planet>', Name));
+        TextHighlightColorTag, '<Star>', CurrentStar.Name, '<Planet>', Name));
   end
   else if (SeededRandomIntRange(0, 100,
     aGalaxy.Galaxy.CurrentTurn * Integer(GenerationSeed) * 31427) < EconomicEventChance) and
@@ -3106,7 +3106,7 @@ begin
       aGalaxy.Galaxy.AddPlanetNews(gnFoodSurplus, FormatText2(
         PickLocalizedTextVariant('GalaxyNews.Planet.ManyFoodNeedTechnics',
           (aGalaxy.Galaxy.CurrentTurn div 10) * Integer(GenerationSeed)),
-        '<color=255,240,100>', '<Star>', CurrentStar.Name, '<Planet>', Name));
+        TextHighlightColorTag, '<Star>', CurrentStar.Name, '<Planet>', Name));
   end
   else if (SeededRandomIntRange(0, 100,
     aGalaxy.Galaxy.CurrentTurn * Integer(GenerationSeed) * 21437) < EconomicEventChance) and
@@ -3119,7 +3119,7 @@ begin
       aGalaxy.Galaxy.AddPlanetNews(gnFoodShortage, FormatText2(
         PickLocalizedTextVariant('GalaxyNews.Planet.NeedFood',
           (aGalaxy.Galaxy.CurrentTurn div 10) * Integer(GenerationSeed)),
-        '<color=255,240,100>', '<Star>', CurrentStar.Name, '<Planet>', Name));
+        TextHighlightColorTag, '<Star>', CurrentStar.Name, '<Planet>', Name));
   end
   else if (SeededRandomIntRange(0, 100,
     aGalaxy.Galaxy.CurrentTurn * Integer(GenerationSeed) * 1517) < EconomicEventChance) and
@@ -3132,7 +3132,7 @@ begin
       aGalaxy.Galaxy.AddPlanetNews(gnMedicineSurplus, FormatText2(
         PickLocalizedTextVariant('GalaxyNews.Planet.ManyMedicine',
           (aGalaxy.Galaxy.CurrentTurn div 10) * Integer(GenerationSeed)),
-        '<color=255,240,100>', '<Star>', CurrentStar.Name, '<Planet>', Name));
+        TextHighlightColorTag, '<Star>', CurrentStar.Name, '<Planet>', Name));
   end
   else if (SeededRandomIntRange(0, 100,
     aGalaxy.Galaxy.CurrentTurn * Integer(GenerationSeed) * 1617) < EconomicEventChance) and
@@ -3145,7 +3145,7 @@ begin
       aGalaxy.Galaxy.AddPlanetNews(gnLuxurySurplus, FormatText2(
         PickLocalizedTextVariant('GalaxyNews.Planet.ManyLuxury',
           (aGalaxy.Galaxy.CurrentTurn div 10) * Integer(GenerationSeed)),
-        '<color=255,240,100>', '<Star>', CurrentStar.Name, '<Planet>', Name));
+        TextHighlightColorTag, '<Star>', CurrentStar.Name, '<Planet>', Name));
   end
   else if (SeededRandomIntRange(0, 100,
     aGalaxy.Galaxy.CurrentTurn * Integer(GenerationSeed) * 1717) < EconomicEventChance) and
@@ -3158,7 +3158,7 @@ begin
       aGalaxy.Galaxy.AddPlanetNews(gnLuxuryShortage, FormatText2(
         PickLocalizedTextVariant('GalaxyNews.Planet.NeedLuxury',
           (aGalaxy.Galaxy.CurrentTurn div 10) * Integer(GenerationSeed)),
-        '<color=255,240,100>', '<Star>', CurrentStar.Name, '<Planet>', Name));
+        TextHighlightColorTag, '<Star>', CurrentStar.Name, '<Planet>', Name));
   end
   else if (SeededRandomIntRange(0, 100,
     aGalaxy.Galaxy.CurrentTurn * Integer(GenerationSeed) * 1817) < EconomicEventChance) and
@@ -3171,7 +3171,7 @@ begin
       aGalaxy.Galaxy.AddPlanetNews(gnAlcoholSurplus, FormatText2(
         PickLocalizedTextVariant('GalaxyNews.Planet.ManyAlcohol',
           (aGalaxy.Galaxy.CurrentTurn div 10) * Integer(GenerationSeed)),
-        '<color=255,240,100>', '<Star>', CurrentStar.Name, '<Planet>', Name));
+        TextHighlightColorTag, '<Star>', CurrentStar.Name, '<Planet>', Name));
   end
   else if (SeededRandomIntRange(0, 100,
     aGalaxy.Galaxy.CurrentTurn * Integer(GenerationSeed) * 1917) < EconomicEventChance) and
@@ -3184,7 +3184,7 @@ begin
       aGalaxy.Galaxy.AddPlanetNews(gnAlcoholShortage, FormatText2(
         PickLocalizedTextVariant('GalaxyNews.Planet.NeedAlcohol',
           (aGalaxy.Galaxy.CurrentTurn div 10) * Integer(GenerationSeed)),
-        '<color=255,240,100>', '<Star>', CurrentStar.Name, '<Planet>', Name));
+        TextHighlightColorTag, '<Star>', CurrentStar.Name, '<Planet>', Name));
   end;
 end;
 { @end $78D6C0 }
@@ -3349,21 +3349,21 @@ begin
     if (GetPlayer.CountActiveArtefacts(t_ArtefactAnalyzer) > 0) and (OwnerId = oiUninhabited) and not ForMap then
       Text := Text + #13#10 + BuildNonCivilTreasureHintText;
   if ForMap and (OwnerId = oiPirate) and (Galaxy.CoalitionDefeatedTurn = 0) then
-    Text := Text + #13#10 + '<color=255,0,0>' + LocalizedText('Planet.Civil.Info.TextPlanetControlledByPirates') + '</color>';
-  if WaterTiles - WaterExplored > 0 then ReplaceTextToken(Text, '<Water>', WideString(IntToStr(WaterTiles - WaterExplored)), '<color=255,240,100>')
+    Text := Text + #13#10 + RedColorTag + LocalizedText('Planet.Civil.Info.TextPlanetControlledByPirates') + EndColorTag;
+  if WaterTiles - WaterExplored > 0 then ReplaceTextToken(Text, '<Water>', WideString(IntToStr(WaterTiles - WaterExplored)), TextHighlightColorTag)
   else ReplaceTextToken(Text, '<Water>', '-', '');
-  if LandTiles - LandExplored > 0 then ReplaceTextToken(Text, '<Land>', WideString(IntToStr(LandTiles - LandExplored)), '<color=255,240,100>')
+  if LandTiles - LandExplored > 0 then ReplaceTextToken(Text, '<Land>', WideString(IntToStr(LandTiles - LandExplored)), TextHighlightColorTag)
   else ReplaceTextToken(Text, '<Land>', '-', '');
-  if HillTiles - HillExplored > 0 then ReplaceTextToken(Text, '<Hill>', WideString(IntToStr(HillTiles - HillExplored)), '<color=255,240,100>')
+  if HillTiles - HillExplored > 0 then ReplaceTextToken(Text, '<Hill>', WideString(IntToStr(HillTiles - HillExplored)), TextHighlightColorTag)
   else ReplaceTextToken(Text, '<Hill>', '-', '');
-  ReplaceTextToken(Text, '<Planet>', Name, '<color=255,240,100>');
-  ReplaceTextToken(Text, '<Star>', CurrentStar.Name, '<color=255,240,100>');
-  if IsMainPiratePlanet then ReplaceTextToken(Text, '<Race>', aConst.OwnerInfo[OwnerId].DisplayName, '<color=255,240,100>')
-  else ReplaceTextToken(Text, '<Race>', GetNativeRaceName, '<color=255,240,100>');
-  ReplaceTextToken(Text, '<Population>', WideString(IntToStr(Round(Population / 1000))), '<color=255,240,100>');
-  ReplaceTextToken(Text, '<Economy>', aConst.PlanetEconomyInfo[Economy].DisplayName, '<color=255,240,100>');
-  ReplaceTextToken(Text, '<Goverment>', GetGovernmentName, '<color=255,240,100>');
-  ReplaceTextToken(Text, '<Relation>', GetRelationLevelTextToShip(GetPlayer), '<color=255,240,100>');
+  ReplaceTextToken(Text, '<Planet>', Name, TextHighlightColorTag);
+  ReplaceTextToken(Text, '<Star>', CurrentStar.Name, TextHighlightColorTag);
+  if IsMainPiratePlanet then ReplaceTextToken(Text, '<Race>', aConst.OwnerInfo[OwnerId].DisplayName, TextHighlightColorTag)
+  else ReplaceTextToken(Text, '<Race>', GetNativeRaceName, TextHighlightColorTag);
+  ReplaceTextToken(Text, '<Population>', WideString(IntToStr(Round(Population / 1000))), TextHighlightColorTag);
+  ReplaceTextToken(Text, '<Economy>', aConst.PlanetEconomyInfo[Economy].DisplayName, TextHighlightColorTag);
+  ReplaceTextToken(Text, '<Goverment>', GetGovernmentName, TextHighlightColorTag);
+  ReplaceTextToken(Text, '<Relation>', GetRelationLevelTextToShip(GetPlayer), TextHighlightColorTag);
   Result := Text;
 end;
 { @end $78F238 }
@@ -4284,14 +4284,14 @@ function TPlanet.GetCivilInfoText: WideString;
 var Text: WideString;
 begin
   Text := LocalizedText('Planet.Civil.Info.TextAboutPlanet');
-  ReplaceTextToken(Text, '<Planet>', Name, '<color=255,240,100>');
-  ReplaceTextToken(Text, '<Star>', CurrentStar.Name, '<color=255,240,100>');
-  if IsMainPiratePlanet then ReplaceTextToken(Text, '<Race>', aConst.OwnerInfo[OwnerId].DisplayName, '<color=255,240,100>')
-  else ReplaceTextToken(Text, '<Race>', GetNativeRaceName, '<color=255,240,100>');
-  ReplaceTextToken(Text, '<Population>', WideString(IntToStr(Round(Population / 1000))), '<color=255,240,100>');
-  ReplaceTextToken(Text, '<Economy>', aConst.PlanetEconomyInfo[Economy].DisplayName, '<color=255,240,100>');
-  ReplaceTextToken(Text, '<Goverment>', GetGovernmentName, '<color=255,240,100>');
-  ReplaceTextToken(Text, '<Relation>', GetRelationLevelTextToShip(GetPlayer), '<color=255,240,100>');
+  ReplaceTextToken(Text, '<Planet>', Name, TextHighlightColorTag);
+  ReplaceTextToken(Text, '<Star>', CurrentStar.Name, TextHighlightColorTag);
+  if IsMainPiratePlanet then ReplaceTextToken(Text, '<Race>', aConst.OwnerInfo[OwnerId].DisplayName, TextHighlightColorTag)
+  else ReplaceTextToken(Text, '<Race>', GetNativeRaceName, TextHighlightColorTag);
+  ReplaceTextToken(Text, '<Population>', WideString(IntToStr(Round(Population / 1000))), TextHighlightColorTag);
+  ReplaceTextToken(Text, '<Economy>', aConst.PlanetEconomyInfo[Economy].DisplayName, TextHighlightColorTag);
+  ReplaceTextToken(Text, '<Goverment>', GetGovernmentName, TextHighlightColorTag);
+  ReplaceTextToken(Text, '<Relation>', GetRelationLevelTextToShip(GetPlayer), TextHighlightColorTag);
   if (GetRelationLevelToShip(GetPlayer) <= rlBad) and not IsMainPiratePlanet then
     Text := Text + #13#10 + LocalizedText('Planet.Civil.Info.BadDopInfo');
   Result := Text;
@@ -5161,13 +5161,13 @@ begin
           end;
           if (Rules[RuleIndex].ToPlanetEconomy <> []) and not (Planet.Economy in Rules[RuleIndex].ToPlanetEconomy) then Continue;
           if (Rules[RuleIndex].ToPlanetGovernment <> []) and not (Planet.Government in Rules[RuleIndex].ToPlanetGovernment) then Continue;
-          Greeting := ReplaceColoredToken(Greeting, '<ToPlanet>', Planet.Name, '<color=255,240,100>');
-          Greeting := ReplaceColoredToken(Greeting, '<ToStar>', Planet.CurrentStar.Name, '<color=255,240,100>');
+          Greeting := ReplaceColoredToken(Greeting, '<ToPlanet>', Planet.Name, TextHighlightColorTag);
+          Greeting := ReplaceColoredToken(Greeting, '<ToStar>', Planet.CurrentStar.Name, TextHighlightColorTag);
           if Good <> 50 then
           begin
-            Greeting := ReplaceColoredToken(Greeting, '<ToPlanetGoodsCnt>', WideString(IntToStr(Planet.Goods[Good].Count)), '<color=255,240,100>');
-            Greeting := ReplaceColoredToken(Greeting, '<ToPlanetGoodsSale>', WideString(IntToStr(GetPlayer.ShopGoodsPurchasePrice(Good, Planet))), '<color=255,240,100>');
-            Greeting := ReplaceColoredToken(Greeting, '<ToPlanetGoodsBuy>', WideString(IntToStr(GetPlayer.ShopGoodsSellPrice(Good, Planet))), '<color=255,240,100>');
+            Greeting := ReplaceColoredToken(Greeting, '<ToPlanetGoodsCnt>', WideString(IntToStr(Planet.Goods[Good].Count)), TextHighlightColorTag);
+            Greeting := ReplaceColoredToken(Greeting, '<ToPlanetGoodsSale>', WideString(IntToStr(GetPlayer.ShopGoodsPurchasePrice(Good, Planet))), TextHighlightColorTag);
+            Greeting := ReplaceColoredToken(Greeting, '<ToPlanetGoodsBuy>', WideString(IntToStr(GetPlayer.ShopGoodsSellPrice(Good, Planet))), TextHighlightColorTag);
           end;
           FoundPlanet := True;
           Break;
@@ -5179,14 +5179,14 @@ begin
     if Greeting <> '' then
     begin
       Result := Greeting;
-      Result := ReplaceColoredToken(Result, '<PlayerRank>', GetPlayer.GetRankName, '<color=255,240,100>');
-      Result := ReplaceColoredToken(Result, '<CurPlanet>', Name, '<color=255,240,100>');
-      Result := ReplaceColoredToken(Result, '<CurStar>', CurrentStar.Name, '<color=255,240,100>');
+      Result := ReplaceColoredToken(Result, '<PlayerRank>', GetPlayer.GetRankName, TextHighlightColorTag);
+      Result := ReplaceColoredToken(Result, '<CurPlanet>', Name, TextHighlightColorTag);
+      Result := ReplaceColoredToken(Result, '<CurStar>', CurrentStar.Name, TextHighlightColorTag);
       if Good <> 50 then
       begin
-        Result := ReplaceColoredToken(Result, '<CurPlanetGoodsCnt>', WideString(IntToStr(Goods[Good].Count)), '<color=255,240,100>');
-        Result := ReplaceColoredToken(Result, '<CurPlanetGoodsSale>', WideString(IntToStr(GetPlayer.ShopGoodsPurchasePrice(Good, nil))), '<color=255,240,100>');
-        Result := ReplaceColoredToken(Result, '<CurPlanetGoodsBuy>', WideString(IntToStr(GetPlayer.ShopGoodsSellPrice(Good, nil))), '<color=255,240,100>');
+        Result := ReplaceColoredToken(Result, '<CurPlanetGoodsCnt>', WideString(IntToStr(Goods[Good].Count)), TextHighlightColorTag);
+        Result := ReplaceColoredToken(Result, '<CurPlanetGoodsSale>', WideString(IntToStr(GetPlayer.ShopGoodsPurchasePrice(Good, nil))), TextHighlightColorTag);
+        Result := ReplaceColoredToken(Result, '<CurPlanetGoodsBuy>', WideString(IntToStr(GetPlayer.ShopGoodsSellPrice(Good, nil))), TextHighlightColorTag);
       end;
       if Priority = -1 then BestPriority := Rules[RuleIndex].Priority
       else BestPriority := Priority;

@@ -210,11 +210,11 @@ begin
         Stage := 21;
         Ships[Index].FullName := WrapTextInColor(Ship.GetFullName(' '), InfoNameColorTag);
         if (Ship <> nil) and (GetPlayer = Ship.PartnerShip) then
-          Ships[Index].FullName := Ships[Index].FullName + #13#10 + WrapTextInColor(LookupLocalizedTextByKey('FormInfo.Partner'), '<color=255,240,100>');
+          Ships[Index].FullName := Ships[Index].FullName + #13#10 + WrapTextInColor(LookupLocalizedTextByKey('FormInfo.Partner'), TextHighlightColorTag);
         if (Ship is TKling) and ((Ship as TKling).ActiveProgramAppliedTurn > 0) and
           ((Ship as TKling).ActiveProgramId in [prgShipwreck..prgDisconnection]) then
           Ships[Index].FullName := Ships[Index].FullName + #13#10 + WrapTextInColor(
-            LocalizedText('Programms.' + ProgramNames[(Ship as TKling).ActiveProgramId] + '.AddToShipInfo'), '<color=255,0,0>');
+            LocalizedText('Programms.' + ProgramNames[(Ship as TKling).ActiveProgramId] + '.AddToShipInfo'), RedColorTag);
       end
       else
       begin
@@ -308,7 +308,7 @@ begin
         Stage := 32;
         Items[Index].ImagePath := 'GI,' + Item.GetBitmapResourceName + 's';
         Items[Index].Name := WrapTextInColor(Item.GetDisplayName, InfoNameColorTag);
-        Items[Index].InfoText := Item.GetInfoText('<color=255,240,100>', nil);
+        Items[Index].InfoText := Item.GetInfoText(TextHighlightColorTag, nil);
         Items[Index].OwnerId := Item.OwnerId;
       end;
       if Item is TEquipment then

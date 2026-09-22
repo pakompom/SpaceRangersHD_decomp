@@ -277,7 +277,7 @@ begin
           else if (GetPlayer.CurrentPlanet.CurrentStar.Status.CustomFaction <> '') and
             (LocalizedColorText('FormGameEnd.LossInPlanet' + GetPlayer.CurrentPlanet.CurrentStar.Status.CustomFaction) <> '') then
             Text := PickLocalizedTextVariant('FormGameEnd.LossInPlanet' + GetPlayer.CurrentPlanet.CurrentStar.Status.CustomFaction,Random(100000));
-          ReplaceTextToken(Text,'<Planet>',GetPlayer.CurrentPlanet.Name,'<color=255,240,100>');
+          ReplaceTextToken(Text,'<Planet>',GetPlayer.CurrentPlanet.Name,TextHighlightColorTag);
         end
         else ReplaceTextToken(Text,'<Planet>','','');
       end;
@@ -291,13 +291,13 @@ begin
     end;
   end;
   if LastLoadedPlayerName = '' then LastLoadedPlayerName := 'GPlayerName='#39;
-  ReplaceTextToken(Text,'<Player>',LastLoadedPlayerName,'<color=255,240,100>');
-  ReplaceTextToken(Text,'<Date>',FormatGameTurnDate(Galaxy.CurrentTurn),'<color=255,240,100>');
+  ReplaceTextToken(Text,'<Player>',LastLoadedPlayerName,TextHighlightColorTag);
+  ReplaceTextToken(Text,'<Date>',FormatGameTurnDate(Galaxy.CurrentTurn),TextHighlightColorTag);
   if FindTextOffsetW(Text,'<Money>') >= 0 then
-    if LastMedicalPolicyTicks = 0 then ReplaceTextToken(Text,'<Money>','10.000','<color=255,240,100>')
+    if LastMedicalPolicyTicks = 0 then ReplaceTextToken(Text,'<Money>','10.000',TextHighlightColorTag)
     else
     begin
-      ReplaceTextToken(Text,'<Money>','20.000','<color=255,240,100>');
+      ReplaceTextToken(Text,'<Money>','20.000',TextHighlightColorTag);
       TryUnlockAchievement('INSURANCE');
     end;
   ReplaceTextToken(Text,'<br>',#13#10,'');

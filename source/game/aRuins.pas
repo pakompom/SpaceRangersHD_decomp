@@ -1389,7 +1389,7 @@ begin
     if Ship.AbductedByPirateClan then Inc(Abducted);
     if Ship.InNormalSpace and (Ship is TPirate) and (Ship.ScriptShip = nil) and (Ship.Order in [soNone, soMove]) then Inc(Pirates);
   end;
-  Text := '<color=255,240,100>' + GetFullName(' ') + '</color>' + #13#10;
+  Text := TextHighlightColorTag + GetFullName(' ') + EndColorTag + #13#10;
   if Abducted = 0 then Text := Text + LookupTalkText('Talk.PirateClan.RuinTalkAfterAbduct.Failure')
   else if Pirates = 0 then Text := Text + LookupTalkText('Talk.PirateClan.RuinTalkAfterAbduct.SuccessNoPirate')
   else Text := Text + LookupTalkText('Talk.PirateClan.RuinTalkAfterAbduct.Success');

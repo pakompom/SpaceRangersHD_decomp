@@ -19,7 +19,7 @@ procedure NotifyLocalAchievement(Block: TBlockParEC); // @addr $591A60 Queues th
 
 implementation
 
-uses SysUtils, EC_Buf, GR_Main, GI_MessageLoop, Achievements, EC_File, DateUtils, Math, GlobalsV, aConst;
+uses aMyFunction, SysUtils, EC_Buf, GR_Main, GI_MessageLoop, Achievements, EC_File, DateUtils, Math, GlobalsV, aConst;
 
 { @routine $591A60 NotifyLocalAchievement }
 procedure NotifyLocalAchievement(Block: TBlockParEC);
@@ -30,7 +30,7 @@ begin
     Text := LocalizedColorText('Achievements.AchievementReceived');
     ReplaceTextToken(Text, '<Achievement>',
       LocalizedColorText('Achievements.' + Block.GetParam('Id') + '.Name'),
-      '<color=0,71,234>');
+      BrightBlueColorTag);
     ImagePath := 'GI,Bm.FormAchievements.Img.' + Block.GetParam('Id');
     PopupController.QueueNotification(Text, ImagePath);
   end;

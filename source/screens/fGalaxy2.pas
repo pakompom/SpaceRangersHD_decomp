@@ -83,6 +83,9 @@ implementation
 
 uses Globals, GR_Main, GR_GraphBuf, Windows, SysUtils, Math, aPlayer, aItem, aMyFunction, aGalaxyStruct, aKling, aConst, EC_Str, GR_Music, GI_Main, GlobalsV, aPlanet, fStarMap, aGalaxyEvent, SE_Hole, GI_MessageBox, aScript, aRanger, aTransport, aPirate, aWarrior, aTranclucator, aVector, GI_Circle, EC_Mem, GI_Window, SE_Star, SE_Planet, SE_Ruins, SE_Ship2, aRuins;
 
+const
+  GalaxySummaryWhiteColorTag = '<color=255,255,254>';
+
 { @routine $6718DC TfGalaxy2_Create }
 constructor TfGalaxy2.Create;
 begin
@@ -407,7 +410,7 @@ begin
           if CanRevealBossPresence(BlazerShip) and GetPlayer.CanResolveObjectWithScanner(BlazerShip) then
           begin
             if Length(BossText) > 0 then BossText := BossText + '-';
-            BossText := BossText + WrapTextInColor(LocalizedText('FormGalaxy.Boss1')[1], '<color=255,0,0>');
+            BossText := BossText + WrapTextInColor(LocalizedText('FormGalaxy.Boss1')[1], RedColorTag);
           end
           else Inc(BlazerCount);
         end;
@@ -416,7 +419,7 @@ begin
           if CanRevealBossPresence(KellerShip) and GetPlayer.CanResolveObjectWithScanner(KellerShip) then
           begin
             if Length(BossText) > 0 then BossText := BossText + '-';
-            BossText := BossText + WrapTextInColor(LocalizedText('FormGalaxy.Boss2')[1], '<color=0,128,255>');
+            BossText := BossText + WrapTextInColor(LocalizedText('FormGalaxy.Boss2')[1], AzureColorTag);
           end
           else Inc(KellerCount);
         end;
@@ -425,34 +428,34 @@ begin
           if CanRevealBossPresence(TerronShip) and GetPlayer.CanResolveObjectWithScanner(TerronShip) then
           begin
             if Length(BossText) > 0 then BossText := BossText + '-';
-            BossText := BossText + WrapTextInColor(LocalizedText('FormGalaxy.Boss3')[1], '<color=0,255,0>');
+            BossText := BossText + WrapTextInColor(LocalizedText('FormGalaxy.Boss3')[1], GreenColorTag);
           end
           else Inc(TerronCount);
         end;
         if CoalitionCount > 0 then
         begin
           if Length(ForceText) > 0 then ForceText := ForceText + '-';
-          ForceText := ForceText + WrapTextInColor(IntToStr(CoalitionCount), '<color=255,240,100>');
+          ForceText := ForceText + WrapTextInColor(IntToStr(CoalitionCount), TextHighlightColorTag);
         end;
         if BlazerCount > 0 then
         begin
           if Length(ForceText) > 0 then ForceText := ForceText + '-';
-          ForceText := ForceText + WrapTextInColor(IntToStr(BlazerCount), '<color=255,0,0>');
+          ForceText := ForceText + WrapTextInColor(IntToStr(BlazerCount), RedColorTag);
         end;
         if KellerCount > 0 then
         begin
           if Length(ForceText) > 0 then ForceText := ForceText + '-';
-          ForceText := ForceText + WrapTextInColor(IntToStr(KellerCount), '<color=0,128,255>');
+          ForceText := ForceText + WrapTextInColor(IntToStr(KellerCount), AzureColorTag);
         end;
         if TerronCount > 0 then
         begin
           if Length(ForceText) > 0 then ForceText := ForceText + '-';
-          ForceText := ForceText + WrapTextInColor(IntToStr(TerronCount), '<color=0,255,0>');
+          ForceText := ForceText + WrapTextInColor(IntToStr(TerronCount), GreenColorTag);
         end;
         if PirateCount > 0 then
         begin
           if Length(ForceText) > 0 then ForceText := ForceText + '-';
-          ForceText := ForceText + WrapTextInColor(IntToStr(PirateCount), '<color=255,255,254>');
+          ForceText := ForceText + WrapTextInColor(IntToStr(PirateCount), GalaxySummaryWhiteColorTag);
         end;
         if CustomCount > 0 then
         begin
@@ -463,7 +466,7 @@ begin
         begin
           if Length(ForceText) > 0 then ForceText := ForceText + '-';
           if OtherFaction <> '' then ForceText := ForceText + WrapTextInColor(IntToStr(OtherCount), LookupNamedColorTag(OtherFaction))
-          else ForceText := ForceText + WrapTextInColor(IntToStr(OtherCount), '<color=127,127,127>');
+          else ForceText := ForceText + WrapTextInColor(IntToStr(OtherCount), GrayColorTag);
         end;
         if Length(BossText) > 0 then
         begin
@@ -1089,7 +1092,7 @@ begin
       GetPlayer.OrderNone(False);
       Galaxy.PrimeIntegrityChecksum(152);
       ShowMessageBoxGI(Self, FormatText1(LocalizedText('FormGalaxy.NeedFuelOrEngine'),
-        '<color=255,240,100>', '<Star>', SelectedJumpStar.Name), mbgCancel or mbgError);
+        TextHighlightColorTag, '<Star>', SelectedJumpStar.Name), mbgCancel or mbgError);
       if Sender <> nil then BreakUiMessage;
       Exit;
     end
@@ -1651,9 +1654,9 @@ var
   begin
     Result := '';
     case Series of
-      dsBlazer: Result := '<color=255,0,0>';
-      dsKeller: Result := '<color=0,128,255>';
-      dsTerron: Result := '<color=0,255,0>';
+      dsBlazer: Result := RedColorTag;
+      dsKeller: Result := AzureColorTag;
+      dsTerron: Result := GreenColorTag;
     end;
   end;
 
@@ -1705,33 +1708,33 @@ begin
     Role := GalaxyMapFriendlyShipOrder[GroupIndex];
     if RoleCounts[Role] > 0 then
     begin
-      if HasSeparator then Line := Line + WrapTextInColor('-', '<color=127,127,127>');
+      if HasSeparator then Line := Line + WrapTextInColor('-', GrayColorTag);
       HasSeparator := True;
       LineActive := True;
-      Line := Line + WrapTextInColor(LocalizedText('FormGalaxy.FriendShip' + IntToStr(GroupIndex)), '<color=254,217,7>');
-      Line := Line + WrapTextInColor(IntToStr(RoleCounts[Role]), '<color=255,255,254>');
+      Line := Line + WrapTextInColor(LocalizedText('FormGalaxy.FriendShip' + IntToStr(GroupIndex)), GoldColorTag);
+      Line := Line + WrapTextInColor(IntToStr(RoleCounts[Role]), GalaxySummaryWhiteColorTag);
     end;
   end;
   if ScriptedCoalition > 0 then
   begin
-    if HasSeparator then Line := Line + WrapTextInColor('-', '<color=127,127,127>');
-    Line := Line + WrapTextInColor('?', '<color=254,217,7>');
-    Line := Line + WrapTextInColor(IntToStr(ScriptedCoalition), '<color=255,255,254>');
+    if HasSeparator then Line := Line + WrapTextInColor('-', GrayColorTag);
+    Line := Line + WrapTextInColor('?', GoldColorTag);
+    Line := Line + WrapTextInColor(IntToStr(ScriptedCoalition), GalaxySummaryWhiteColorTag);
     LineActive := True;
   end;
   if (CoalitionStations > 0) or (CoalitionTranclucators > 0) then Line := Line + '     ';
   if CoalitionStations > 0 then
   begin
-    Line := Line + WrapTextInColor('(', '<color=127,127,127>');
-    Line := Line + WrapTextInColor(IntToStr(CoalitionStations), '<color=255,0,255>');
-    Line := Line + WrapTextInColor(')', '<color=127,127,127>');
+    Line := Line + WrapTextInColor('(', GrayColorTag);
+    Line := Line + WrapTextInColor(IntToStr(CoalitionStations), MagentaColorTag);
+    Line := Line + WrapTextInColor(')', GrayColorTag);
     LineActive := True;
   end;
   if CoalitionTranclucators > 0 then
   begin
-    Line := Line + WrapTextInColor('(', '<color=127,127,127>');
-    Line := Line + WrapTextInColor(IntToStr(CoalitionTranclucators), '<color=0,255,255>');
-    Line := Line + WrapTextInColor(')', '<color=127,127,127>');
+    Line := Line + WrapTextInColor('(', GrayColorTag);
+    Line := Line + WrapTextInColor(IntToStr(CoalitionTranclucators), CyanColorTag);
+    Line := Line + WrapTextInColor(')', GrayColorTag);
     LineActive := True;
   end;
   AppendLine;
@@ -1741,49 +1744,49 @@ begin
   for PirateRole := 1 to 3 do
     if RoleCounts[PirateRole + 10] > 0 then
     begin
-      if HasSeparator then Line := Line + WrapTextInColor('-', '<color=127,127,127>');
+      if HasSeparator then Line := Line + WrapTextInColor('-', GrayColorTag);
       HasSeparator := True;
       LineActive := True;
-      Line := Line + WrapTextInColor(LocalizedText('FormGalaxy.PirateClanShip' + IntToStr(PirateRole)), '<color=255,255,254>');
-      Line := Line + WrapTextInColor(IntToStr(RoleCounts[PirateRole + 10]), '<color=255,255,254>');
+      Line := Line + WrapTextInColor(LocalizedText('FormGalaxy.PirateClanShip' + IntToStr(PirateRole)), GalaxySummaryWhiteColorTag);
+      Line := Line + WrapTextInColor(IntToStr(RoleCounts[PirateRole + 10]), GalaxySummaryWhiteColorTag);
     end;
   if ScriptedPirates > 0 then
   begin
-    if HasSeparator then Line := Line + WrapTextInColor('-', '<color=127,127,127>');
-    Line := Line + WrapTextInColor('?', '<color=255,255,254>');
-    Line := Line + WrapTextInColor(IntToStr(ScriptedPirates), '<color=255,255,254>');
+    if HasSeparator then Line := Line + WrapTextInColor('-', GrayColorTag);
+    Line := Line + WrapTextInColor('?', GalaxySummaryWhiteColorTag);
+    Line := Line + WrapTextInColor(IntToStr(ScriptedPirates), GalaxySummaryWhiteColorTag);
     LineActive := True;
   end;
   if (PirateStations > 0) or (PirateTranclucators > 0) then Line := Line + '     ';
   if PirateStations > 0 then
   begin
-    Line := Line + WrapTextInColor('(', '<color=127,127,127>');
-    Line := Line + WrapTextInColor(IntToStr(PirateStations), '<color=255,0,255>');
-    Line := Line + WrapTextInColor(')', '<color=127,127,127>');
+    Line := Line + WrapTextInColor('(', GrayColorTag);
+    Line := Line + WrapTextInColor(IntToStr(PirateStations), MagentaColorTag);
+    Line := Line + WrapTextInColor(')', GrayColorTag);
     LineActive := True;
   end;
   if PirateTranclucators > 0 then
   begin
-    Line := Line + WrapTextInColor('(', '<color=127,127,127>');
-    Line := Line + WrapTextInColor(IntToStr(PirateTranclucators), '<color=0,255,255>');
-    Line := Line + WrapTextInColor(')', '<color=127,127,127>');
+    Line := Line + WrapTextInColor('(', GrayColorTag);
+    Line := Line + WrapTextInColor(IntToStr(PirateTranclucators), CyanColorTag);
+    Line := Line + WrapTextInColor(')', GrayColorTag);
     LineActive := True;
   end;
   AppendLine;
   Line := '';
   if StarFactionCount > 0 then
   begin
-    Line := Line + WrapTextInColor('(', '<color=127,127,127>');
+    Line := Line + WrapTextInColor('(', GrayColorTag);
     Line := Line + WrapTextInColor(IntToStr(StarFactionCount), LookupNamedColorTag(StarFaction));
-    Line := Line + WrapTextInColor(')', '<color=127,127,127>');
+    Line := Line + WrapTextInColor(')', GrayColorTag);
     LineActive := True;
   end;
   if OtherFactionCount > 0 then
   begin
-    Line := Line + WrapTextInColor('(', '<color=127,127,127>');
+    Line := Line + WrapTextInColor('(', GrayColorTag);
     if OtherFaction <> '' then Line := Line + WrapTextInColor(IntToStr(OtherFactionCount), LookupNamedColorTag(OtherFaction))
-    else Line := Line + WrapTextInColor(IntToStr(OtherFactionCount), '<color=127,127,127>');
-    Line := Line + WrapTextInColor(')', '<color=127,127,127>');
+    else Line := Line + WrapTextInColor(IntToStr(OtherFactionCount), GrayColorTag);
+    Line := Line + WrapTextInColor(')', GrayColorTag);
     LineActive := True;
   end;
   AppendLine;
@@ -1796,11 +1799,11 @@ begin
     for Kind := Low(TKlingType) to High(TKlingType) do
       if (DominatorDisplayOrder[Ord(Kind)] <> ktBoss) and (DominatorCounts[Series, DominatorDisplayOrder[Ord(Kind)]] > 0) then
       begin
-        if HasSeparator then Line := Line + WrapTextInColor('-', '<color=127,127,127>');
+        if HasSeparator then Line := Line + WrapTextInColor('-', GrayColorTag);
         HasSeparator := True;
         LineActive := True;
         Line := Line + WrapTextInColor(LocalizedText('FormGalaxy.DomikShip' + IntToStr(Ord(DominatorDisplayOrder[Ord(Kind)]))), ColorTag);
-        Line := Line + WrapTextInColor(IntToStr(DominatorCounts[Series, DominatorDisplayOrder[Ord(Kind)]]), '<color=255,255,254>');
+        Line := Line + WrapTextInColor(IntToStr(DominatorCounts[Series, DominatorDisplayOrder[Ord(Kind)]]), GalaxySummaryWhiteColorTag);
       end;
     AppendLine;
   end;
@@ -1812,7 +1815,7 @@ begin
     ColorTag := SeriesColor;
     if DominatorCounts[Series, ktBoss] > 0 then
     begin
-      if LineActive then Line := Line + WrapTextInColor(', ', '<color=127,127,127>');
+      if LineActive then Line := Line + WrapTextInColor(', ', GrayColorTag);
       Line := Line + WrapTextInColor(LocalizedText('FormGalaxy.Boss' + IntToStr(GroupIndex)), ColorTag);
       LineActive := True;
     end;
@@ -1823,8 +1826,8 @@ begin
   LineActive := False;
   if UnknownCount > 0 then
   begin
-    Line := Line + WrapTextInColor(LocalizedText('FormGalaxy.UnknowShip') + ': ', '<color=127,127,127>');
-    Line := Line + WrapTextInColor(IntToStr(UnknownCount), '<color=255,255,254>');
+    Line := Line + WrapTextInColor(LocalizedText('FormGalaxy.UnknowShip') + ': ', GrayColorTag);
+    Line := Line + WrapTextInColor(IntToStr(UnknownCount), GalaxySummaryWhiteColorTag);
     LineActive := True;
   end;
   AppendLine;

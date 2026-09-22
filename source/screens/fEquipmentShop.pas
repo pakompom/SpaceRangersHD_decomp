@@ -974,7 +974,7 @@ begin
     begin
       SoundManager.PlaySound('Sound.NoMoney');
       if Slot.Item is THull then
-        ShowMessageBoxGI(Self, FormatText1(LanguageDataConfig.GetParamByPathOrMarker('FormShop.NoMoney'), '<color=255,240,100>', '<Money>', IntToWideString(Galaxy.PendingEquipmentPurchasePrice - GetPlayer.Money)), mbgCancel or mbgError);
+        ShowMessageBoxGI(Self, FormatText1(LanguageDataConfig.GetParamByPathOrMarker('FormShop.NoMoney'), TextHighlightColorTag, '<Money>', IntToWideString(Galaxy.PendingEquipmentPurchasePrice - GetPlayer.Money)), mbgCancel or mbgError);
       Galaxy.CheckIntegrityChecksum(309);
       MainPanel.FlashMoneyWarning;
       if not (Slot.Item is THull) and (GetPlayer.CargoFreeSpace < Slot.Item.Weight) then MainPanel.FlashCargoWarning;
@@ -992,16 +992,16 @@ begin
       begin
         if Slot.Item.GetConditionAdjustedCost <= GetPlayer.Money then
         begin
-          if ShowMessageBoxGI(Self, FormatText1(LanguageDataConfig.GetParamByPathOrMarker('FormShop.BuyHull'), '<color=255,240,100>', '<Money>', IntToWideString(Galaxy.PendingEquipmentPurchasePrice)), mbgOK or mbgCancel or mbgQuestion) <> mbgResultOK then Exit;
+          if ShowMessageBoxGI(Self, FormatText1(LanguageDataConfig.GetParamByPathOrMarker('FormShop.BuyHull'), TextHighlightColorTag, '<Money>', IntToWideString(Galaxy.PendingEquipmentPurchasePrice)), mbgOK or mbgCancel or mbgQuestion) <> mbgResultOK then Exit;
         end
         else
         begin
-          if ShowMessageBoxGI(Self, FormatText1(LanguageDataConfig.GetParamByPathOrMarker('FormShop.UpgradeHull'), '<color=255,240,100>', '<Money>', IntToWideString(Galaxy.PendingEquipmentPurchasePrice)), mbgOK or mbgCancel or mbgQuestion) <> mbgResultOK then Exit;
+          if ShowMessageBoxGI(Self, FormatText1(LanguageDataConfig.GetParamByPathOrMarker('FormShop.UpgradeHull'), TextHighlightColorTag, '<Money>', IntToWideString(Galaxy.PendingEquipmentPurchasePrice)), mbgOK or mbgCancel or mbgQuestion) <> mbgResultOK then Exit;
         end;
       end
       else
       begin
-        if ShowMessageBoxGI(Self, FormatText2(LanguageDataConfig.GetParamByPathOrMarker('FormShop.Buy'), '<color=255,240,100>', '<Item>', RemoveTextTagsW(Slot.Item.GetDisplayName), '<Money>', IntToWideString(Galaxy.PendingEquipmentPurchasePrice)), mbgOK or mbgCancel or mbgQuestion) <> mbgResultOK then Exit;
+        if ShowMessageBoxGI(Self, FormatText2(LanguageDataConfig.GetParamByPathOrMarker('FormShop.Buy'), TextHighlightColorTag, '<Item>', RemoveTextTagsW(Slot.Item.GetDisplayName), '<Money>', IntToWideString(Galaxy.PendingEquipmentPurchasePrice)), mbgOK or mbgCancel or mbgQuestion) <> mbgResultOK then Exit;
       end;
       SoundManager.PlaySound('Sound.Buy');
       Galaxy.CheckIntegrityChecksum(196);
@@ -1239,7 +1239,7 @@ begin
     end;
     if Item.ItemType = t_Hull then
     begin
-      RefreshHullInfo(Self, Item as THull, Equipment.GetInfoText('<color=255,240,100>', nil), False);
+      RefreshHullInfo(Self, Item as THull, Equipment.GetInfoText(TextHighlightColorTag, nil), False);
       ItemInfoWindow.SetActive(False);
     end
     else
@@ -1255,10 +1255,10 @@ begin
       end;
       (GetByName('InfoName') as TLabelGI).SetText('');
       (GetByName('InfoName') as TLabelGI).SetText(WrapTextInColor(Equipment.GetDisplayName, InfoNameColorTag));
-      (GetByName('InfoText') as TLabelGI).SetText(Equipment.GetInfoText('<color=255,240,100>', nil));
+      (GetByName('InfoText') as TLabelGI).SetText(Equipment.GetInfoText(TextHighlightColorTag, nil));
       (GetByName('InfoSize') as TLabelGI).SetText(IntToWideString(Equipment.Weight));
       Price := IntToWideString(Equipment.GetConditionAdjustedCost);
-      if Equipment.GetConditionAdjustedCost < Equipment.Cost then Price := WrapTextInColor(Price, '<color=255,0,0>');
+      if Equipment.GetConditionAdjustedCost < Equipment.Cost then Price := WrapTextInColor(Price, RedColorTag);
       (GetByName('InfoPrice') as TLabelGI).SetText(Price);
       with GetByName('EmRace') as TImageGI do
       begin

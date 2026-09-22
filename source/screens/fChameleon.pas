@@ -29,7 +29,7 @@ function ShowChameleonDialog(Parent: TMessageLoopGI; BlazerCharges, KellerCharge
 
 implementation
 
-uses Windows, SysUtils, EC_Str, EC_Struct, GI_Window, GI_Label, GI_GraphButton, GI_Main, GR_Main, GR_Sound, Globals, GlobalsV, aConst;
+uses aMyFunction, Windows, SysUtils, EC_Str, EC_Struct, GI_Window, GI_Label, GI_GraphButton, GI_Main, GR_Main, GR_Sound, Globals, GlobalsV, aConst;
 
 { @routine $52278C TfChameleon_OnOpen }
 procedure TfChameleon.OnOpen;
@@ -61,9 +61,9 @@ var
   begin
     Result := '';
     case Series of
-      0: Result := '<color=255,0,0>';
-      1: Result := '<color=0,128,255>';
-      2: Result := '<color=45,105,45>';
+      0: Result := RedColorTag;
+      1: Result := AzureColorTag;
+      2: Result := DarkGreenColorTag;
     end;
   end;
 
@@ -111,7 +111,7 @@ begin
   Caption.SetFontName(NormalFontName);
   Caption.SetTextColor(CurrentPixelFormat.PackRgbBytes(0,0,0));
   ShipName := LookupLocalizedTextByKey('ShipType.Dominator.' + DominatorSeriesNames[0] + '.' + IntToStr(VisualType));
-  Caption.SetText(LocalizedText('ShipInfo.AddInfo.Chameleon.Name') + ' - ' + WrapTextInColor(ShipName,'<color=0,50,200>'));
+  Caption.SetText(LocalizedText('ShipInfo.AddInfo.Chameleon.Name') + ' - ' + WrapTextInColor(ShipName,DialogHighlightColorTag));
   Caption.SetTextAlignX(taxCenter);
   Caption.SetTextAlignY(tayAuto);
   Caption.SetPosition(Classes.Point(0,WorkRect.Bottom));

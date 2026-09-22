@@ -1486,7 +1486,7 @@ begin
               Inc(CaptainHealth[I].ApplicationCount);
               CaptainHealth[I].ExpireTurn := Galaxy.CurrentTurn + Round(RemapClamped(SeededRandomUnitFloat(Integer(Galaxy.GenerationSeed) + I + Galaxy.CurrentTurn), 0.0, 1.0, 0.9, 2.0) * CaptainHealthDefinitions[I].Duration);
               Text := LocalizedColorText(WideString('Illness.Illness.' + IntToStr(I - 1) + '.Start'));
-              AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn, FormatText2(Text, '<color=255,240,100>', '<Date>', Galaxy.FormatTurnDate(-1), '<Name>', CaptainHealthDefinitions[I].Name), '');
+              AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn, FormatText2(Text, TextHighlightColorTag, '<Date>', Galaxy.FormatTurnDate(-1), '<Name>', CaptainHealthDefinitions[I].Name), '');
               AchievementStats.CheckAllDiseasesAchievement;
               Inc(DiseaseContractionCount);
             end;
@@ -1496,7 +1496,7 @@ begin
             CaptainHealth[I].Progress := 0.0;
             StatusEffectSourceNames[I] := '';
             Text := LocalizedColorText(WideString('Illness.Illness.' + IntToStr(I - 1) + '.End'));
-            AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn, FormatText2(Text, '<color=255,240,100>', '<Date>', Galaxy.FormatTurnDate(-1), '<Name>', CaptainHealthDefinitions[I].Name), '');
+            AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn, FormatText2(Text, TextHighlightColorTag, '<Date>', Galaxy.FormatTurnDate(-1), '<Name>', CaptainHealthDefinitions[I].Name), '');
           end;
         end;
       Stage := 8;
@@ -1504,7 +1504,7 @@ begin
         if (CaptainHealth[I].Progress = 100.0) and (CaptainHealth[I].ExpireTurn <= Galaxy.CurrentTurn) then
         begin
           Text := LocalizedColorText(WideString('Illness.Stimulant.' + IntToStr(I - 12 - 1) + '.End'));
-          AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn, FormatText1(Text, '<color=255,240,100>', '<Date>', Galaxy.FormatTurnDate(-1)), '');
+          AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn, FormatText1(Text, TextHighlightColorTag, '<Date>', Galaxy.FormatTurnDate(-1)), '');
           CaptainHealth[I].Progress := 0.0;
         end;
       Stage := 9;
@@ -1512,7 +1512,7 @@ begin
         if (RadiationHealth[I].Progress <> 0.0) and (RadiationHealth[I].ExpireTurn <= Galaxy.CurrentTurn) then
         begin
           Text := LocalizedColorText(WideString('Illness.ExtraIllness.' + IntToStr(I) + '.End'));
-          AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn, FormatText1(Text, '<color=255,240,100>', '<Date>', Galaxy.FormatTurnDate(-1)), '');
+          AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn, FormatText1(Text, TextHighlightColorTag, '<Date>', Galaxy.FormatTurnDate(-1)), '');
           RadiationHealth[I].Progress := 0.0;
         end;
       Stage := 10;
@@ -1534,7 +1534,7 @@ begin
               CaptainHealth[I].ExpireTurn := Galaxy.CurrentTurn + Round(RemapClamped(SeededRandomUnitFloat(Integer(Galaxy.GenerationSeed) + I + Galaxy.CurrentTurn), 0.0, 1.0, 0.5, 3.0) * CaptainHealthDefinitions[I].Duration);
               Inc(CaptainHealth[I].ApplicationCount);
               Text := LocalizedColorText(WideString('Illness.Illness.' + IntToStr(I - 1) + '.Start'));
-              AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn, FormatText2(Text, '<color=255,240,100>', '<Date>', Galaxy.FormatTurnDate(-1), '<Name>', CaptainHealthDefinitions[I].Name), '');
+              AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn, FormatText2(Text, TextHighlightColorTag, '<Date>', Galaxy.FormatTurnDate(-1), '<Name>', CaptainHealthDefinitions[I].Name), '');
               Inc(DiseaseContractionCount);
               AchievementStats.CheckAllDiseasesAchievement;
             end;
@@ -1549,9 +1549,9 @@ begin
           TargetValue := NextRandomIntRange(Galaxy.ComputeScaledSmallMoney(oiHuman), Galaxy.ComputeScaledAverageMoney(oiHuman), RandomState);
           SetMoney(TargetValue + Money);
           SoundManager.PlaySound('Sound.Sell');
-          AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn, FormatText2(PickLocalizedTextVariant('GalaxyNews.IllNews.IllLuatan', Seed * Cardinal(Galaxy.CurrentTurn div 10)), '<color=255,240,100>', '<Date>', Galaxy.FormatTurnDate(-1), '<Money>', WideString(IntToStr(TargetValue))), '');
+          AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn, FormatText2(PickLocalizedTextVariant('GalaxyNews.IllNews.IllLuatan', Seed * Cardinal(Galaxy.CurrentTurn div 10)), TextHighlightColorTag, '<Date>', Galaxy.FormatTurnDate(-1), '<Money>', WideString(IntToStr(TargetValue))), '');
         end
-        else AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn, FormatText1(PickLocalizedTextVariant('GalaxyNews.IllNews.IllLuatanNo', Seed * Cardinal(Galaxy.CurrentTurn div 10)), '<color=255,240,100>', '<Date>', Galaxy.FormatTurnDate(-1)), '');
+        else AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn, FormatText1(PickLocalizedTextVariant('GalaxyNews.IllNews.IllLuatanNo', Seed * Cardinal(Galaxy.CurrentTurn div 10)), TextHighlightColorTag, '<Date>', Galaxy.FormatTurnDate(-1)), '');
       end;
       Stage := 12;
       if IsHealthEffectActive(11) and InNormalSpace and HasCargoGoods and
@@ -1560,7 +1560,7 @@ begin
         TargetValue := NextRandomIntRange(Galaxy.ComputeScaledMiniMoney(oiHuman), Galaxy.ComputeScaledBigMoney(oiHuman), RandomState);
         JettisonCargoGoodsTowardTargetValue(TargetValue);
         SoundManager.PlaySound('Sound.Sell');
-        AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn, FormatText1(PickLocalizedTextVariant('GalaxyNews.IllNews.IllSeciyanka', Seed * Cardinal(Galaxy.CurrentTurn div 10)), '<color=255,240,100>', '<Date>', Galaxy.FormatTurnDate(-1)), '');
+        AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn, FormatText1(PickLocalizedTextVariant('GalaxyNews.IllNews.IllSeciyanka', Seed * Cardinal(Galaxy.CurrentTurn div 10)), TextHighlightColorTag, '<Date>', Galaxy.FormatTurnDate(-1)), '');
       end;
       Stage := 13;
       RefreshDerivedStats(True);
@@ -1704,7 +1704,7 @@ begin
     if Galaxy.CoalitionDefeatedTurn = 0 then
       AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn,
         FormatText2(PickLocalizedTextVariant('GalaxyNews.WB.NewProgramm', Seed * Cardinal(Galaxy.CurrentTurn div 10)),
-          '<color=255,240,100>', '<Count>', IntToStr(Count), '<Programm>', GetProgramName(ProgramIndex)), '');
+          TextHighlightColorTag, '<Count>', IntToStr(Count), '<Programm>', GetProgramName(ProgramIndex)), '');
     Result := True;
   end
   else Result := False;
@@ -1818,12 +1818,12 @@ end;
 function TPlayer.GetStorageColumnHeaderText: WideString;
 var Text: WideString;
 begin
-  Text := '<color=255,240,100>';
+  Text := TextHighlightColorTag;
   Text := Text + '<td=' + IntToStr(StorageHeaderColumns[GiResourceVariant].Size) + '><align=right>' +
     LocalizedText('FormShip.StorageInfo.Size') + '</align>';
   Text := Text + '<td=' + IntToStr(StorageHeaderColumns[GiResourceVariant].Cost) + '><align=right>' +
     LocalizedText('FormShip.StorageInfo.Cost') + '</align>';
-  Text := Text + '</color>';
+  Text := Text + EndColorTag;
   Result := Text;
 end;
 { @end $58C398 }
@@ -1831,7 +1831,7 @@ end;
 { @routine $58C5D0 TPlayer_GetStorageDividerText }
 function TPlayer.GetStorageDividerText: WideString;
 begin
-  Result := WrapTextInColor(StringOfChar('-', StorageDividerLengths[GiResourceVariant]), '<color=127,127,127>');
+  Result := WrapTextInColor(StringOfChar('-', StorageDividerLengths[GiResourceVariant]), GrayColorTag);
 end;
 { @end $58C5D0 }
 
@@ -1859,51 +1859,51 @@ begin
         begin
           TempText := FormatText1(LocalizedText('FormShip.StorageInfo.Star'),
             '', '<Star>', (TObject(Satellite.TargetPlanet) as TPlanet).CurrentStar.Name);
-          TempText := WrapTextInColor(TempText + '. ', '<color=255,240,100>') +
-            WrapTextInColor((TObject(Satellite.TargetPlanet) as TPlanet).GetFullName(' ') + '.', '<color=255,240,100>');
+          TempText := WrapTextInColor(TempText + '. ', TextHighlightColorTag) +
+            WrapTextInColor((TObject(Satellite.TargetPlanet) as TPlanet).GetFullName(' ') + '.', TextHighlightColorTag);
           RemainingText := ' ' + LocalizedText('FormShip.StorageInfo.PlanetNO');
           if Planet.WaterTiles - Planet.WaterExplored > 0 then
-            ReplaceTextToken(RemainingText, '<Water>', IntToStr(Planet.WaterTiles - Planet.WaterExplored), '<color=0,128,255>')
-          else ReplaceTextToken(RemainingText, '<Water>', '-', '<color=127,127,127>');
+            ReplaceTextToken(RemainingText, '<Water>', IntToStr(Planet.WaterTiles - Planet.WaterExplored), AzureColorTag)
+          else ReplaceTextToken(RemainingText, '<Water>', '-', GrayColorTag);
           if Planet.LandTiles - Planet.LandExplored > 0 then
-            ReplaceTextToken(RemainingText, '<Land>', IntToStr(Planet.LandTiles - Planet.LandExplored), '<color=0,255,0>')
-          else ReplaceTextToken(RemainingText, '<Land>', '-', '<color=127,127,127>');
+            ReplaceTextToken(RemainingText, '<Land>', IntToStr(Planet.LandTiles - Planet.LandExplored), GreenColorTag)
+          else ReplaceTextToken(RemainingText, '<Land>', '-', GrayColorTag);
           if Planet.HillTiles - Planet.HillExplored > 0 then
-            ReplaceTextToken(RemainingText, '<Hill>', IntToStr(Planet.HillTiles - Planet.HillExplored), '<color=254,217,7>')
-          else ReplaceTextToken(RemainingText, '<Hill>', '-', '<color=127,127,127>');
+            ReplaceTextToken(RemainingText, '<Hill>', IntToStr(Planet.HillTiles - Planet.HillExplored), GoldColorTag)
+          else ReplaceTextToken(RemainingText, '<Hill>', '-', GrayColorTag);
           TempText := TempText + RemainingText;
           Text := Text + #13#10 + Divider + #13#10 + '<td=' + IntToStr(ProbeSummaryColumns[GiResourceVariant].Heading) +
             '><align=center>' + TempText + '</align>' + #13#10 + Divider + #13#10;
           Inc(HeaderCount);
           Inc(LineCount);
         end;
-        SizeText := WrapTextInColor(IntToStr(Satellite.Weight), '<color=0,255,0>');
+        SizeText := WrapTextInColor(IntToStr(Satellite.Weight), GreenColorTag);
         TempText := '';
         if Satellite.WaterExplorationRate > 0 then
-          TempText := TempText + WrapTextInColor(IntToStr(Satellite.WaterExplorationRate), '<color=0,128,255>')
-        else TempText := TempText + WrapTextInColor('-', '<color=127,127,127>');
+          TempText := TempText + WrapTextInColor(IntToStr(Satellite.WaterExplorationRate), AzureColorTag)
+        else TempText := TempText + WrapTextInColor('-', GrayColorTag);
         TempText := TempText + '/';
         if Satellite.LandExplorationRate > 0 then
-          TempText := TempText + WrapTextInColor(IntToStr(Satellite.LandExplorationRate), '<color=0,255,0>')
-        else TempText := TempText + WrapTextInColor('-', '<color=127,127,127>');
+          TempText := TempText + WrapTextInColor(IntToStr(Satellite.LandExplorationRate), GreenColorTag)
+        else TempText := TempText + WrapTextInColor('-', GrayColorTag);
         TempText := TempText + '/';
         if Satellite.HillExplorationRate > 0 then
-          TempText := TempText + WrapTextInColor(IntToStr(Satellite.HillExplorationRate), '<color=254,217,7>')
-        else TempText := TempText + WrapTextInColor('-', '<color=127,127,127>');
+          TempText := TempText + WrapTextInColor(IntToStr(Satellite.HillExplorationRate), GoldColorTag)
+        else TempText := TempText + WrapTextInColor('-', GrayColorTag);
         ExplorationText := TempText;
         Condition := Trunc(Satellite.ConditionPercent);
         if Satellite.ConditionPercent > 0 then
           TempText := IntToStr(Condition) + '.' + IntToStr(Trunc(Satellite.ConditionPercent * 10) mod 10) + '%'
         else TempText := '0.0%';
-        if Condition > 75 then TempText := WrapTextInColor(TempText, '<color=0,255,0>')
-        else if Condition > 50 then TempText := WrapTextInColor(TempText, '<color=255,240,100>')
-        else if Condition > 25 then TempText := WrapTextInColor(TempText, '<color=254,217,7>')
-        else TempText := WrapTextInColor(TempText, '<color=255,0,0>');
+        if Condition > 75 then TempText := WrapTextInColor(TempText, GreenColorTag)
+        else if Condition > 50 then TempText := WrapTextInColor(TempText, TextHighlightColorTag)
+        else if Condition > 25 then TempText := WrapTextInColor(TempText, GoldColorTag)
+        else TempText := WrapTextInColor(TempText, RedColorTag);
         ConditionText := TempText;
         StatusText := '';
         ExplorationTurns := GetSatelliteExplorationTurns(Satellite);
         if ExplorationTurns = 0 then
-          StatusText := ' ' + WrapTextInColor(LocalizedText('Items.Satellite.WorkEnd'), '<color=255,0,0>');
+          StatusText := ' ' + WrapTextInColor(LocalizedText('Items.Satellite.WorkEnd'), RedColorTag);
         Text := Text + '- ' + Satellite.GetDisplayName;
         Text := Text + '<td=' + IntToStr(ProbeSummaryColumns[GiResourceVariant].Size) + '><align=right>' + SizeText + '</align>';
         Text := Text + '<td=' + IntToStr(ProbeSummaryColumns[GiResourceVariant].Exploration) + '><align=right>' + ExplorationText + '</align>';
@@ -2305,7 +2305,7 @@ begin
           if HeaderCount = 0 then
           begin
             Heading := WrapTextInColor(FormatText1(LocalizedText('FormShip.StorageInfo.Star'),
-              '', '<Star>', Star.Name), '<color=255,240,100>');
+              '', '<Star>', Star.Name), TextHighlightColorTag);
             Text := Text + #13#10 + Divider + #13#10 + '<td=' + IntToStr(TranclucatorSummaryWidths[GiResourceVariant]) +
               '><align=center>' + Heading + '</align>' + #13#10 + Divider + #13#10;
             Inc(HeaderCount);
@@ -2399,7 +2399,7 @@ begin
     Heading := BuildTranclucatorStorageSummary(AddedLines);
     if HasDeployedSatellites or (Length(Heading) > 0) then
     begin
-      Text := WrapTextInColor(LocalizedText('FormShip.StorageInfo.Main'), '<color=0,255,0>') + #13#10;
+      Text := WrapTextInColor(LocalizedText('FormShip.StorageInfo.Main'), GreenColorTag) + #13#10;
       Text := Text + BuildDeployedSatelliteSummary(AddedLines);
       Text := Text + Heading;
       AddOrUpdatePlayerBubble(pmStorage, Galaxy.CurrentTurn, Text, 'sys_storage1');
@@ -2411,7 +2411,7 @@ begin
     PreviousLocation := nil;
     LineCount := 0;
     Text := WrapTextInColor(LocalizedText('FormShip.StorageInfo.Main') +
-      'onepage' + GetStorageColumnHeaderText, '<color=0,255,0>') + #13#10;
+      'onepage' + GetStorageColumnHeaderText, GreenColorTag) + #13#10;
     for I := 0 to StorageEntries.Count - 1 do
     begin
       Entry := StorageEntries[I];
@@ -2421,20 +2421,20 @@ begin
         begin
           if Page = 1 then
             ReplaceTextToken(Text, 'onepage', ' (' + LocalizedText('FormShip.StorageInfo.Page') + ' ' +
-              WrapTextInColor(IntToStr(Page), '<color=255,0,255>') + ')', '');
+              WrapTextInColor(IntToStr(Page), MagentaColorTag) + ')', '');
           AddOrUpdatePlayerBubble(pmStorage, Galaxy.CurrentTurn, Text, 'sys_storage' + IntToStr(Page));
           Inc(Page);
           Text := WrapTextInColor(LocalizedText('FormShip.StorageInfo.Main') + ' (' + LocalizedText('FormShip.StorageInfo.Page') + ' ' +
-              WrapTextInColor(IntToStr(Page), '<color=255,0,255>') + ')',
-          '<color=0,255,0>') + GetStorageColumnHeaderText + #13#10;
+              WrapTextInColor(IntToStr(Page), MagentaColorTag) + ')',
+          GreenColorTag) + GetStorageColumnHeaderText + #13#10;
           LineCount := 0;
         end;
         if Entry.LocationOwner is TPlanet then
         begin
           Heading := FormatText1(LocalizedText('FormShip.StorageInfo.Star'),
             '', '<Star>', (Entry.LocationOwner as TPlanet).CurrentStar.Name);
-          Heading := WrapTextInColor(Heading + '. ', '<color=255,240,100>') +
-            WrapTextInColor((Entry.LocationOwner as TPlanet).GetFullName(' ') + '.', '<color=255,240,100>');
+          Heading := WrapTextInColor(Heading + '. ', TextHighlightColorTag) +
+            WrapTextInColor((Entry.LocationOwner as TPlanet).GetFullName(' ') + '.', TextHighlightColorTag);
           Text := Text + Divider + #13#10 + '<td=' + IntToStr(StorageItemColumns[GiResourceVariant].Heading) +
             '><align=center>' + Heading + '</align>' + #13#10 + Divider + #13#10;
           Inc(LineCount, 3);
@@ -2443,8 +2443,8 @@ begin
         begin
           Heading := FormatText1(LocalizedText('FormShip.StorageInfo.Star'),
             '', '<Star>', (Entry.LocationOwner as TShip).CurrentStar.Name);
-          Heading := WrapTextInColor(Heading + '. ', '<color=255,240,100>') +
-            WrapTextInColor((Entry.LocationOwner as TShip).GetFullName(' ') + '.', '<color=255,240,100>');
+          Heading := WrapTextInColor(Heading + '. ', TextHighlightColorTag) +
+            WrapTextInColor((Entry.LocationOwner as TShip).GetFullName(' ') + '.', TextHighlightColorTag);
           Text := Text + Divider + #13#10 + '<td=' + IntToStr(StorageItemColumns[GiResourceVariant].Heading) +
             '><align=center>' + Heading + '</align>' + #13#10 + Divider + #13#10;
           Inc(LineCount, 3);
@@ -2455,9 +2455,9 @@ begin
       else ConditionText := '';
       Text := Text + '- ' + Entry.Item.GetDisplayName + ConditionText;
       Text := Text + '<td=' + IntToStr(StorageItemColumns[GiResourceVariant].Size) + '><align=right>' +
-        WrapTextInColor(IntToStr(Entry.Item.Weight), '<color=0,255,0>') + '</align>';
+        WrapTextInColor(IntToStr(Entry.Item.Weight), GreenColorTag) + '</align>';
       Text := Text + '<td=' + IntToStr(StorageItemColumns[GiResourceVariant].Cost) + '><align=right>' +
-        WrapTextInColor(IntToStr(Entry.Item.Cost), '<color=0,255,255>') + '</align>';
+        WrapTextInColor(IntToStr(Entry.Item.Cost), CyanColorTag) + '</align>';
       Text := Text + #13#10;
       Inc(LineCount);
     end;
@@ -2469,12 +2469,12 @@ begin
       begin
         if Page = 1 then
           ReplaceTextToken(Text, 'onepage', ' (' + LocalizedText('FormShip.StorageInfo.Page') + ' ' +
-              WrapTextInColor(IntToStr(Page), '<color=255,0,255>') + ')', '');
+              WrapTextInColor(IntToStr(Page), MagentaColorTag) + ')', '');
         AddOrUpdatePlayerBubble(pmStorage, Galaxy.CurrentTurn, Text, 'sys_storage' + IntToStr(Page));
         Inc(Page);
         Text := WrapTextInColor(LocalizedText('FormShip.StorageInfo.Main') + ' (' + LocalizedText('FormShip.StorageInfo.Page') + ' ' +
-              WrapTextInColor(IntToStr(Page), '<color=255,0,255>') + ')',
-          '<color=0,255,0>') + #13#10;
+              WrapTextInColor(IntToStr(Page), MagentaColorTag) + ')',
+          GreenColorTag) + #13#10;
       end;
       if HasDeployedSatellites then Text := Text + BuildDeployedSatelliteSummary(AddedLines);
     end;
@@ -2485,12 +2485,12 @@ begin
       begin
         if Page = 1 then
           ReplaceTextToken(Text, 'onepage', ' (' + LocalizedText('FormShip.StorageInfo.Page') + ' ' +
-              WrapTextInColor(IntToStr(Page), '<color=255,0,255>') + ')', '');
+              WrapTextInColor(IntToStr(Page), MagentaColorTag) + ')', '');
         AddOrUpdatePlayerBubble(pmStorage, Galaxy.CurrentTurn, Text, 'sys_storage' + IntToStr(Page));
         Inc(Page);
         Text := WrapTextInColor(LocalizedText('FormShip.StorageInfo.Main') + ' (' + LocalizedText('FormShip.StorageInfo.Page') + ' ' +
-              WrapTextInColor(IntToStr(Page), '<color=255,0,255>') + ')',
-          '<color=0,255,0>') + #13#10;
+              WrapTextInColor(IntToStr(Page), MagentaColorTag) + ')',
+          GreenColorTag) + #13#10;
       end;
       Text := Text + Heading;
     end;

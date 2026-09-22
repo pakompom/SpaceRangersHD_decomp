@@ -38,7 +38,7 @@ function ShowMessageBoxGI(Parent: TMessageLoopGI; const Text: WideString; Option
 
 implementation
 
-uses Classes, EC_Str, GI_GraphButton, GI_Image, GI_Label, GI_Main, GI_Window,
+uses aMyFunction, Classes, EC_Str, GI_GraphButton, GI_Image, GI_Label, GI_Main, GI_Window,
   Globals, GR_Main, Types, Windows;
 
 { @routine $4D74C4 TMessageBoxGI_OnOpen }
@@ -81,7 +81,7 @@ begin
   TextLabel.SetFontName(NormalFontName);
   TextLabel.SetTextColor(CurrentPixelFormat.PackRgbBytes(0, 0, 0));
   TextLabel.SetText(ReplaceAllWideString(ReplaceAllWideString(MessageText,
-    '<color=255,240,100>', '<color=0,50,200>'), '<color=0,255,0>', '<color=255,255,0>'));
+    TextHighlightColorTag, DialogHighlightColorTag), GreenColorTag, YellowColorTag));
   Attempts := 100;
   while Attempts > 0 do
   begin

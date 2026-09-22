@@ -1005,7 +1005,7 @@ begin
       if Galaxy.KellerTargetStar <> nil then begin
         Galaxy.KellerMissionState := 1;
         if (GetPlayer <> nil) and (GetPlayer.CountActiveArtefacts(t_ArtefactAnalyzer) > 0) then begin
-          Text := FormatText1(LocalizedColorText('Artefacts.ArtAnalyzer.KellerHole'), '<color=255,240,100>', '<Star>', Galaxy.KellerTargetStar.Name);
+          Text := FormatText1(LocalizedColorText('Artefacts.ArtAnalyzer.KellerHole'), TextHighlightColorTag, '<Star>', Galaxy.KellerTargetStar.Name);
           if Text <> '' then AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn, Text, '');
         end;
       end;
@@ -1268,7 +1268,7 @@ var TargetStar: TStar; TargetCount, NonDominatorCount, OtherSeriesCount, Action:
     end;
     if (Action = 6) and (Sent > 0) and (TargetStar.ControlFaction <> sfDominators) and (TargetStar.Status.CustomFaction = '') then
       if (GetPlayer <> nil) and (GetPlayer.CountActiveArtefacts(t_ArtefactAnalyzer) > 0) then begin
-        Text := FormatText1(LocalizedText('Artefacts.ArtAnalyzer.AttackDomik'), '<color=255,240,100>', '<Star>', TargetStar.Name);
+        Text := FormatText1(LocalizedText('Artefacts.ArtAnalyzer.AttackDomik'), TextHighlightColorTag, '<Star>', TargetStar.Name);
         if Text <> '' then AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn, Text, '');
       end;
   end;
