@@ -986,9 +986,9 @@ var
 begin
   if (Galaxy <> nil) and (GetPlayer <> nil) then
   begin
-    for I := 1 to CountItemTypesInMask([Ord(t_Weapon1)..Ord(t_Weapon18)]) do
+    for I := 1 to CountItemTypesInMask([Ord(t_IndustrialLaser)..Ord(t_Lirecron)]) do
     begin
-      Kind := GetItemTypeFromMask([Ord(t_Weapon1)..Ord(t_Weapon18)], I);
+      Kind := GetItemTypeFromMask([Ord(t_IndustrialLaser)..Ord(t_Lirecron)], I);
       GetPlayer.Inventory.Add(CreateGeneratedEquipment(TItemType(Kind),
         Round(WeaponInfos[TItemType(Kind)].AverageSize * EquipmentSizeFactors[5]), Galaxy.TechLevel, GetPlayer.OwnerId));
     end;
@@ -1013,7 +1013,7 @@ begin
   begin
     for Owner := oiMaloc to oiGaal do
     begin
-      Item := CreateGeneratedEquipment(t_Weapon14, 20, Galaxy.TechLevel, Owner);
+      Item := CreateGeneratedEquipment(t_Vertix, 20, Galaxy.TechLevel, Owner);
       GetPlayer.Inventory.Add(Item);
     end;
     ReportCheat(10, DecodeTextW('VREVRETOIYX')); // 'VERTIX'

@@ -554,6 +554,31 @@ type
     t_UselessCountableItem = 75
   ); // @size 0x1
 
+const
+  // English Items.Weapon.Name resource names; retain the native enum spellings for RTTI.
+  t_IndustrialLaser = t_Weapon1;
+  t_FragmentationCannon = t_Weapon2;
+  t_Flux = t_Weapon3;
+  t_MissileLauncher = t_Weapon4;
+  t_Treton = t_Weapon5;
+  t_WavePhaser = t_Weapon6;
+  t_FlowBlaster = t_Weapon7;
+  t_ElectronicCutter = t_Weapon8;
+  t_Multiresonator = t_Weapon9;
+  t_AtomicVision = t_Weapon10;
+  t_Disintegrator = t_Weapon11;
+  t_Turbogravitron = t_Weapon12;
+  t_IMHO9000 = t_Weapon13;
+  t_Vertix = t_Weapon14;
+  t_TorpedoTube = t_Weapon15;
+  t_Esodapher = t_Weapon16;
+  t_Caphasitor = t_Weapon17;
+  t_Lirecron = t_Weapon18;
+
+  // Equipment slot and shop APIs use the first weapon type to represent all weapons.
+  WeaponCategoryItemType = t_IndustrialLaser;
+
+type
   TEquipmentInventionIndexTable = array[t_Hull..t_DefGenerator] of TPlanetInvention;
 
   PEquipmentInventionIndexTable = ^TEquipmentInventionIndexTable;
@@ -577,7 +602,7 @@ const
     (ItemType: t_RepairRobot; Name: 'RepairRobot'),
     (ItemType: t_CargoHook; Name: 'CargoHook'),
     (ItemType: t_DefGenerator; Name: 'DefGenerator'),
-    (ItemType: t_Weapon1; Name: 'Weapon')); // @addr $87D44C Name initialization descriptors at $83883C..$838878; used by both the ship inventory and scanner.
+    (ItemType: WeaponCategoryItemType; Name: 'Weapon')); // @addr $87D44C Name initialization descriptors at $83883C..$838878; used by both the ship inventory and scanner.
 var
   ItemTypeNames: array[TItemType] of WideString = (
     'Food', 'Medicine', 'Technics', 'Luxury',
@@ -1289,7 +1314,7 @@ type
 
   PWeaponInfo = ^TWeaponInfo;
 
-  TWeaponInfoTable = array[t_Weapon1..t_Weapon18] of TWeaponInfo;
+  TWeaponInfoTable = array[t_IndustrialLaser..t_Lirecron] of TWeaponInfo;
 
   PWeaponInfoTable = ^TWeaponInfoTable;
 
@@ -1398,7 +1423,7 @@ var
   CargoHookLevelStats: TCargoHookLevelStatsTable; // @addr $88B43C
   HullFragilityByOwner: array[TWeaponDamageClass, TOwnerId] of Single; // @addr $88B4BC Damage class, then owner; loaded from mFragilityByOwner*.
   HullFragilityByType: array[0..10] of Single; // @addr $88B51C Loaded from mFragilityByShipType.
-  WeaponInfos: array[t_Weapon1..t_Weapon18] of TWeaponInfo; // @addr 0x88B548
+  WeaponInfos: array[t_IndustrialLaser..t_Lirecron] of TWeaponInfo; // @addr 0x88B548
 var
   EquipmentInventionIndices: TEquipmentInventionIndexTable = (piHull, piFuelTanks, piEngine, piRadar, piScanner, piRepairRobot, piCargoHook, piMainTech); // @addr $87F57C
   CoalitionProjectNames: array[TCoalitionProject] of WideString = ('CreateRC', 'CreatePB', 'CreateWB', 'CreateSB', 'CreateBK', 'CreateMC', 'RangersSubsidy', 'PiratesSubsidy', 'TransportSubsidy', 'LostSubsidy', 'WarSubsidy', 'WarOperation'); // @addr $87F584
@@ -1842,7 +1867,7 @@ begin
     t_CargoHook: Result := CargoHookBaseSize;
     t_DefGenerator: Result := DefGeneratorBaseSize;
   else
-    if ItemType in [t_Weapon1..t_CustomWeapon] then Result := WeaponInfos[ItemType].AverageSize
+    if ItemType in [t_IndustrialLaser..t_CustomWeapon] then Result := WeaponInfos[ItemType].AverageSize
     else
     begin
       Exception.Create('Error ItemAverageSize'); // Native allocates the exception without raising it.
@@ -1938,7 +1963,7 @@ begin
     t_CargoHook: Result := sskCargoHook;
     t_DefGenerator: Result := sskDefGenerator;
   else
-    if ItemType in [t_Weapon1..t_CustomWeapon] then Result := sskWeapon
+    if ItemType in [t_IndustrialLaser..t_CustomWeapon] then Result := sskWeapon
     else if ItemType in [t_Artefact..t_ArtFastRacks] then Result := sskArtefact
     else Result := sskUnsupported;
   end;
@@ -2503,33 +2528,33 @@ begin
     WeaponInfos[TItemType(Kind)].DefaultPalette := 0;
     WeaponInfos[TItemType(Kind)].TypeHash := Kind * 171;
   end;
-  WeaponInfos[t_Weapon9].SecondarySE := 'Weapon.Nine';
-  WeaponInfos[t_Weapon13].SecondarySE := 'Weapon.12';
-  WeaponInfos[t_Weapon14].AreaSE := 'Weapon.13';
-  WeaponInfos[t_Weapon1].InventionIndex := piWeapon1;
-  WeaponInfos[t_Weapon2].InventionIndex := piWeapon2;
-  WeaponInfos[t_Weapon3].InventionIndex := piWeapon3;
-  WeaponInfos[t_Weapon4].InventionIndex := piWeapon4;
-  WeaponInfos[t_Weapon5].InventionIndex := piWeapon5;
-  WeaponInfos[t_Weapon6].InventionIndex := piWeapon6;
-  WeaponInfos[t_Weapon7].InventionIndex := piWeapon7;
-  WeaponInfos[t_Weapon8].InventionIndex := piWeapon8;
-  WeaponInfos[t_Weapon9].InventionIndex := piWeapon9;
-  WeaponInfos[t_Weapon10].InventionIndex := piWeapon10;
-  WeaponInfos[t_Weapon11].InventionIndex := piWeapon11;
-  WeaponInfos[t_Weapon12].InventionIndex := piWeapon12;
-  WeaponInfos[t_Weapon13].InventionIndex := piWeapon12;
-  WeaponInfos[t_Weapon14].InventionIndex := piWeapon12;
-  WeaponInfos[t_Weapon15].InventionIndex := piWeapon12;
-  WeaponInfos[t_Weapon16].InventionIndex := piWeapon9;
-  WeaponInfos[t_Weapon17].InventionIndex := piWeapon3;
-  WeaponInfos[t_Weapon18].InventionIndex := piWeapon4;
-  WeaponInfos[t_Weapon13].Availability := waNotSoldAndNodeRepair;
-  WeaponInfos[t_Weapon14].Availability := waNotSoldAndNodeRepair;
-  WeaponInfos[t_Weapon15].Availability := waNotSoldAndNodeRepair;
-  WeaponInfos[t_Weapon16].Availability := waPirateOnly;
-  WeaponInfos[t_Weapon17].Availability := waPirateOnly;
-  WeaponInfos[t_Weapon18].Availability := waPirateOnly;
+  WeaponInfos[t_Multiresonator].SecondarySE := 'Weapon.Nine';
+  WeaponInfos[t_IMHO9000].SecondarySE := 'Weapon.12';
+  WeaponInfos[t_Vertix].AreaSE := 'Weapon.13';
+  WeaponInfos[t_IndustrialLaser].InventionIndex := piIndustrialLaser;
+  WeaponInfos[t_FragmentationCannon].InventionIndex := piFragmentationCannon;
+  WeaponInfos[t_Flux].InventionIndex := piFlux;
+  WeaponInfos[t_MissileLauncher].InventionIndex := piMissileLauncher;
+  WeaponInfos[t_Treton].InventionIndex := piTreton;
+  WeaponInfos[t_WavePhaser].InventionIndex := piWavePhaser;
+  WeaponInfos[t_FlowBlaster].InventionIndex := piFlowBlaster;
+  WeaponInfos[t_ElectronicCutter].InventionIndex := piElectronicCutter;
+  WeaponInfos[t_Multiresonator].InventionIndex := piMultiresonator;
+  WeaponInfos[t_AtomicVision].InventionIndex := piAtomicVision;
+  WeaponInfos[t_Disintegrator].InventionIndex := piDisintegrator;
+  WeaponInfos[t_Turbogravitron].InventionIndex := piTurbogravitron;
+  WeaponInfos[t_IMHO9000].InventionIndex := piTurbogravitron;
+  WeaponInfos[t_Vertix].InventionIndex := piTurbogravitron;
+  WeaponInfos[t_TorpedoTube].InventionIndex := piTurbogravitron;
+  WeaponInfos[t_Esodapher].InventionIndex := piMultiresonator;
+  WeaponInfos[t_Caphasitor].InventionIndex := piFlux;
+  WeaponInfos[t_Lirecron].InventionIndex := piMissileLauncher;
+  WeaponInfos[t_IMHO9000].Availability := waNotSoldAndNodeRepair;
+  WeaponInfos[t_Vertix].Availability := waNotSoldAndNodeRepair;
+  WeaponInfos[t_TorpedoTube].Availability := waNotSoldAndNodeRepair;
+  WeaponInfos[t_Esodapher].Availability := waPirateOnly;
+  WeaponInfos[t_Caphasitor].Availability := waPirateOnly;
+  WeaponInfos[t_Lirecron].Availability := waPirateOnly;
 end;
 { @end $8337CC }
 

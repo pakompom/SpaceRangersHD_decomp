@@ -648,27 +648,27 @@ begin
         50:
           begin
             Item := TWeapon.Create;
-            (Item as TWeapon).Init(t_Weapon1,Round(WeaponInfos[t_Weapon1].AverageSize * EquipmentSizeFactors[4]),3,GetPlayer.OwnerId);
+            (Item as TWeapon).Init(t_IndustrialLaser,Round(WeaponInfos[t_IndustrialLaser].AverageSize * EquipmentSizeFactors[4]),3,GetPlayer.OwnerId);
           end;
         51:
           begin
             Item := TWeapon.Create;
-            (Item as TWeapon).Init(t_Weapon2,Round(WeaponInfos[t_Weapon2].AverageSize * EquipmentSizeFactors[3]),2,GetPlayer.OwnerId);
+            (Item as TWeapon).Init(t_FragmentationCannon,Round(WeaponInfos[t_FragmentationCannon].AverageSize * EquipmentSizeFactors[3]),2,GetPlayer.OwnerId);
           end;
         52:
           begin
             Item := TWeapon.Create;
-            (Item as TWeapon).Init(t_Weapon3,Round(WeaponInfos[t_Weapon3].AverageSize * EquipmentSizeFactors[2]),2,GetPlayer.OwnerId);
+            (Item as TWeapon).Init(t_Flux,Round(WeaponInfos[t_Flux].AverageSize * EquipmentSizeFactors[2]),2,GetPlayer.OwnerId);
           end;
         53:
           begin
             Item := TWeapon.Create;
-            (Item as TWeapon).Init(t_Weapon4,Round(WeaponInfos[t_Weapon4].AverageSize * EquipmentSizeFactors[3]),1,GetPlayer.OwnerId);
+            (Item as TWeapon).Init(t_MissileLauncher,Round(WeaponInfos[t_MissileLauncher].AverageSize * EquipmentSizeFactors[3]),1,GetPlayer.OwnerId);
           end;
         54:
           begin
             Item := TWeapon.Create;
-            (Item as TWeapon).Init(t_Weapon5,Round(WeaponInfos[t_Weapon5].AverageSize * EquipmentSizeFactors[4]),1,GetPlayer.OwnerId);
+            (Item as TWeapon).Init(t_Treton,Round(WeaponInfos[t_Treton].AverageSize * EquipmentSizeFactors[4]),1,GetPlayer.OwnerId);
           end;
       else
         Item := TRadar.Create;

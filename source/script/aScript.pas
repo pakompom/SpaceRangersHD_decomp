@@ -3443,10 +3443,10 @@ begin
       end
       else if ScriptItem.DefinitionKind = 0 then RaiseWideMessage('Script unknow item type')
       else if (ScriptItem.DefinitionKind = 1) and (ScriptItem.DefinitionType >= 0) and
-        (ScriptItem.DefinitionType < CountItemTypesInMask([Ord(t_Weapon1)..Ord(t_Weapon18)])) then
+        (ScriptItem.DefinitionType < CountItemTypesInMask([Ord(t_IndustrialLaser)..Ord(t_Lirecron)])) then
       begin
         Item := TWeapon.Create;
-        (Item as TWeapon).Init(TItemType(GetItemTypeFromMask([Ord(t_Weapon1)..Ord(t_Weapon18)], ScriptItem.DefinitionType + 1)), ScriptItem.Weight,
+        (Item as TWeapon).Init(TItemType(GetItemTypeFromMask([Ord(t_IndustrialLaser)..Ord(t_Lirecron)], ScriptItem.DefinitionType + 1)), ScriptItem.Weight,
           ScriptItem.Level, ScriptItem.OwnerId);
       end
       else if ScriptItem.DefinitionKind = 1 then RaiseWideMessage('Script unknow item type')

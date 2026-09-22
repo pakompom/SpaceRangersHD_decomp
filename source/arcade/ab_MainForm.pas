@@ -447,15 +447,15 @@ begin
     Ship.MaxHealth := 1000;
     Ship.Health := 1000;
     Ship.WeaponCount := 5;
-    ab_Weapon_Initialize(@Ship.Weapons[0], PickRandomItemType([Ord(t_Weapon1)..Ord(t_Weapon18)]));
+    ab_Weapon_Initialize(@Ship.Weapons[0], PickRandomItemType([Ord(t_IndustrialLaser)..Ord(t_Lirecron)]));
     Ship.Weapons[0].SlotData := 0;
-    ab_Weapon_Initialize(@Ship.Weapons[1], PickRandomItemType([Ord(t_Weapon1)..Ord(t_Weapon18)]));
+    ab_Weapon_Initialize(@Ship.Weapons[1], PickRandomItemType([Ord(t_IndustrialLaser)..Ord(t_Lirecron)]));
     Ship.Weapons[1].SlotData := 1;
-    ab_Weapon_Initialize(@Ship.Weapons[2], PickRandomItemType([Ord(t_Weapon1)..Ord(t_Weapon18)]));
+    ab_Weapon_Initialize(@Ship.Weapons[2], PickRandomItemType([Ord(t_IndustrialLaser)..Ord(t_Lirecron)]));
     Ship.Weapons[2].SlotData := 2;
-    ab_Weapon_Initialize(@Ship.Weapons[3], PickRandomItemType([Ord(t_Weapon1)..Ord(t_Weapon18)]));
+    ab_Weapon_Initialize(@Ship.Weapons[3], PickRandomItemType([Ord(t_IndustrialLaser)..Ord(t_Lirecron)]));
     Ship.Weapons[3].SlotData := 3 or EquipmentSecondaryFireFlag;
-    ab_Weapon_Initialize(@Ship.Weapons[4], PickRandomItemType([Ord(t_Weapon1)..Ord(t_Weapon18)]));
+    ab_Weapon_Initialize(@Ship.Weapons[4], PickRandomItemType([Ord(t_IndustrialLaser)..Ord(t_Lirecron)]));
     Ship.Weapons[4].SlotData := 4 or EquipmentSecondaryFireFlag;
     Ship.PrimaryWeapon := -1;
     Ship.SecondaryWeapon := -1;
@@ -483,11 +483,11 @@ begin
     Ship.Health := 500;
     Ship.MaxHealth := 500;
     Ship.WeaponCount := 5;
-    ab_Weapon_Initialize(@Ship.Weapons[0], PickRandomItemType([Ord(t_Weapon1)..Ord(t_Weapon18)]));
-    ab_Weapon_Initialize(@Ship.Weapons[1], PickRandomItemType([Ord(t_Weapon1)..Ord(t_Weapon18)]));
-    ab_Weapon_Initialize(@Ship.Weapons[2], PickRandomItemType([Ord(t_Weapon1)..Ord(t_Weapon18)]));
-    ab_Weapon_Initialize(@Ship.Weapons[3], PickRandomItemType([Ord(t_Weapon1)..Ord(t_Weapon18)]));
-    ab_Weapon_Initialize(@Ship.Weapons[4], PickRandomItemType([Ord(t_Weapon1)..Ord(t_Weapon18)]));
+    ab_Weapon_Initialize(@Ship.Weapons[0], PickRandomItemType([Ord(t_IndustrialLaser)..Ord(t_Lirecron)]));
+    ab_Weapon_Initialize(@Ship.Weapons[1], PickRandomItemType([Ord(t_IndustrialLaser)..Ord(t_Lirecron)]));
+    ab_Weapon_Initialize(@Ship.Weapons[2], PickRandomItemType([Ord(t_IndustrialLaser)..Ord(t_Lirecron)]));
+    ab_Weapon_Initialize(@Ship.Weapons[3], PickRandomItemType([Ord(t_IndustrialLaser)..Ord(t_Lirecron)]));
+    ab_Weapon_Initialize(@Ship.Weapons[4], PickRandomItemType([Ord(t_IndustrialLaser)..Ord(t_Lirecron)]));
     Ship.PrimaryWeapon := 0;
     ShipX0 := Ship;
     Ship := TabShipAI.Create;
@@ -499,11 +499,11 @@ begin
     Ship.Health := 500;
     Ship.MaxHealth := 500;
     Ship.WeaponCount := 5;
-    ab_Weapon_Initialize(@Ship.Weapons[0], PickRandomItemType([Ord(t_Weapon1)..Ord(t_Weapon18)]));
-    ab_Weapon_Initialize(@Ship.Weapons[1], PickRandomItemType([Ord(t_Weapon1)..Ord(t_Weapon18)]));
-    ab_Weapon_Initialize(@Ship.Weapons[2], PickRandomItemType([Ord(t_Weapon1)..Ord(t_Weapon18)]));
-    ab_Weapon_Initialize(@Ship.Weapons[3], PickRandomItemType([Ord(t_Weapon1)..Ord(t_Weapon18)]));
-    ab_Weapon_Initialize(@Ship.Weapons[4], PickRandomItemType([Ord(t_Weapon1)..Ord(t_Weapon18)]));
+    ab_Weapon_Initialize(@Ship.Weapons[0], PickRandomItemType([Ord(t_IndustrialLaser)..Ord(t_Lirecron)]));
+    ab_Weapon_Initialize(@Ship.Weapons[1], PickRandomItemType([Ord(t_IndustrialLaser)..Ord(t_Lirecron)]));
+    ab_Weapon_Initialize(@Ship.Weapons[2], PickRandomItemType([Ord(t_IndustrialLaser)..Ord(t_Lirecron)]));
+    ab_Weapon_Initialize(@Ship.Weapons[3], PickRandomItemType([Ord(t_IndustrialLaser)..Ord(t_Lirecron)]));
+    ab_Weapon_Initialize(@Ship.Weapons[4], PickRandomItemType([Ord(t_IndustrialLaser)..Ord(t_Lirecron)]));
     Ship.PrimaryWeapon := 0;
     ShipX1 := Ship;
     Ship := TabShipAI.Create;
@@ -515,11 +515,11 @@ begin
     Ship.Health := 500;
     Ship.MaxHealth := 500;
     Ship.WeaponCount := 5;
-    ab_Weapon_Initialize(@Ship.Weapons[0], PickRandomItemType([Ord(t_Weapon1)..Ord(t_Weapon18)]));
-    ab_Weapon_Initialize(@Ship.Weapons[1], PickRandomItemType([Ord(t_Weapon1)..Ord(t_Weapon18)]));
-    ab_Weapon_Initialize(@Ship.Weapons[2], PickRandomItemType([Ord(t_Weapon1)..Ord(t_Weapon18)]));
-    ab_Weapon_Initialize(@Ship.Weapons[3], PickRandomItemType([Ord(t_Weapon1)..Ord(t_Weapon18)]));
-    ab_Weapon_Initialize(@Ship.Weapons[4], PickRandomItemType([Ord(t_Weapon1)..Ord(t_Weapon18)]));
+    ab_Weapon_Initialize(@Ship.Weapons[0], PickRandomItemType([Ord(t_IndustrialLaser)..Ord(t_Lirecron)]));
+    ab_Weapon_Initialize(@Ship.Weapons[1], PickRandomItemType([Ord(t_IndustrialLaser)..Ord(t_Lirecron)]));
+    ab_Weapon_Initialize(@Ship.Weapons[2], PickRandomItemType([Ord(t_IndustrialLaser)..Ord(t_Lirecron)]));
+    ab_Weapon_Initialize(@Ship.Weapons[3], PickRandomItemType([Ord(t_IndustrialLaser)..Ord(t_Lirecron)]));
+    ab_Weapon_Initialize(@Ship.Weapons[4], PickRandomItemType([Ord(t_IndustrialLaser)..Ord(t_Lirecron)]));
     Ship.PrimaryWeapon := 0;
     for Index := 0 to 3 do
     begin
@@ -1175,7 +1175,7 @@ begin
       end;
       if GetPlayer <> nil then
       begin
-        Item := GetPlayer.FindEquippedItemInSlot(t_Weapon1, Value - 1) as TWeapon;
+        Item := GetPlayer.FindEquippedItemInSlot(WeaponCategoryItemType, Value - 1) as TWeapon;
         if GetPlayer.GetSlotCount(sskWeapon) <= Value - 1 then
           Button.SetImageDisabledPath('GI,Bm.FormAB2.' + GiResourceSuffix + 'W' + IntToStr(Value) + 'H')
         else if Item = nil then
@@ -1188,10 +1188,10 @@ begin
       WeaponSecondaryImages[Value - 1].SetActive(False);
       with WeaponIcons[Value - 1] do
       begin
-        if (GetPlayer <> nil) and (GetPlayer.FindEquippedItemInSlot(t_Weapon1, Value - 1) <> nil) then
+        if (GetPlayer <> nil) and (GetPlayer.FindEquippedItemInSlot(WeaponCategoryItemType, Value - 1) <> nil) then
         begin
           WeaponIcons[Value - 1].SetActive(True);
-          SetImagePath('GI,' + GetPlayer.FindEquippedItemInSlot(t_Weapon1, Value - 1).GetBitmapResourceName + 's');
+          SetImagePath('GI,' + GetPlayer.FindEquippedItemInSlot(WeaponCategoryItemType, Value - 1).GetBitmapResourceName + 's');
         end
         else if Button.UserIndex >= 0 then
         begin
@@ -1212,9 +1212,9 @@ begin
       WeaponButtons[SlotIndex].HelpCallback := UpdateHelp;
       if WeaponButtons[SlotIndex].UserState = 0 then
         WeaponButtons[SlotIndex].UserState := Integer(TImageGI.Create(WeaponButtons[SlotIndex]));
-      if (GetPlayer <> nil) and (GetPlayer.FindEquippedItemInSlot(t_Weapon1, SlotIndex) <> nil) then
+      if (GetPlayer <> nil) and (GetPlayer.FindEquippedItemInSlot(WeaponCategoryItemType, SlotIndex) <> nil) then
       begin
-        Item := GetPlayer.FindEquippedItemInSlot(t_Weapon1, SlotIndex) as TWeapon;
+        Item := GetPlayer.FindEquippedItemInSlot(WeaponCategoryItemType, SlotIndex) as TWeapon;
         MicroModule := Item.MicroModuleIndex;
         Item.MicroModuleIndex := 0;
         WeaponName := Item.GetShortName;
@@ -1447,7 +1447,7 @@ begin
       PlayerArcadeShip.Weapons[Index].SlotData := PlayerArcadeShip.Weapons[Index].SlotData xor EquipmentSecondaryFireFlag;
       if Galaxy <> nil then Galaxy.CheckIntegrityChecksum1(640);
       if GetPlayer <> nil then
-        with GetPlayer.FindEquippedItemInSlot(t_Weapon1, PlayerArcadeShip.Weapons[Index].SlotData and EquipmentSlotIndexMask) as TWeapon do
+        with GetPlayer.FindEquippedItemInSlot(WeaponCategoryItemType, PlayerArcadeShip.Weapons[Index].SlotData and EquipmentSlotIndexMask) as TWeapon do
           AssignedSlotData := PlayerArcadeShip.Weapons[Index].SlotData;
       NormalizeWeaponSelection;
       UpdateWeaponPanel;
@@ -4276,7 +4276,7 @@ begin
     SlotCount := GetPlayer.GetSlotCount(sskWeapon);
     for SlotIndex := 0 to SlotCount - 1 do
     begin
-      Item := GetPlayer.FindEquippedItemInSlot(t_Weapon1, SlotIndex) as TWeapon;
+      Item := GetPlayer.FindEquippedItemInSlot(WeaponCategoryItemType, SlotIndex) as TWeapon;
       if GetPlayer.IsEquipmentUsable(Item) then
       begin
         if (CampaignWeapons[PlayerArcadeShip.WeaponCount] <> Item) or

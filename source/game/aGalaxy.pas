@@ -8390,9 +8390,9 @@ begin
   Candidates := TList.Create;
   NearestDistance := 0;
   Nearest := nil;
-  for I := 1 to CountItemTypesInMask([Ord(t_Weapon1)..Ord(t_Weapon18)]) do
+  for I := 1 to CountItemTypesInMask([Ord(t_IndustrialLaser)..Ord(t_Lirecron)]) do
   begin
-    Info := @WeaponInfos[TItemType(GetItemTypeFromMask([Ord(t_Weapon1)..Ord(t_Weapon18)], I))];
+    Info := @WeaponInfos[TItemType(GetItemTypeFromMask([Ord(t_IndustrialLaser)..Ord(t_Lirecron)], I))];
     if Byte(Info.Availability) in AvailabilityMask then
     begin
       Distance := TechDistance(Info.TechLevel);

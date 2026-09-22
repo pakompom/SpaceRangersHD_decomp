@@ -156,17 +156,17 @@ begin
     CreateAndEquipFuelTanks(Round(2 * FuelTanksBaseSize * EquipmentSizeFactors[5]), 1, OwnerId);
     CreateAndEquipEngine(Round(2 * EngineBaseSize * EquipmentSizeFactors[1]), 1, OwnerId);
     if GetSlotCount(sskWeapon) > WeaponCount then begin
-      Weapon := CreateAndEquipWeapon(t_Weapon3, 2 * WeaponInfos[t_Weapon3].AverageSize, 1, OwnerId);
+      Weapon := CreateAndEquipWeapon(t_Flux, 2 * WeaponInfos[t_Flux].AverageSize, 1, OwnerId);
       Weapon.DetailImprovement := 3;
       Weapon.Improve(ikAny);
     end;
     if GetSlotCount(sskWeapon) > WeaponCount then begin
-      Weapon := CreateAndEquipWeapon(t_Weapon3, 2 * WeaponInfos[t_Weapon3].AverageSize, 1, OwnerId);
+      Weapon := CreateAndEquipWeapon(t_Flux, 2 * WeaponInfos[t_Flux].AverageSize, 1, OwnerId);
       Weapon.DetailImprovement := 3;
       Weapon.Improve(ikAny);
     end;
     if GetSlotCount(sskWeapon) > WeaponCount then begin
-      Weapon := CreateAndEquipWeapon(t_Weapon3, 2 * WeaponInfos[t_Weapon3].AverageSize, 1, OwnerId);
+      Weapon := CreateAndEquipWeapon(t_Flux, 2 * WeaponInfos[t_Flux].AverageSize, 1, OwnerId);
       Weapon.DetailImprovement := 3;
       Weapon.Improve(ikAny);
     end;
@@ -176,8 +176,8 @@ begin
     CreateAndEquipHull(Round(HullBaseSize * EquipmentSizeFactors[5]), Min(TechLevel, SelectTechLevel(1, 6)), RaceToOwner(PilotRace), SelectRandomHullSeries, False);
     CreateAndEquipFuelTanks(Round(FuelTanksBaseSize * EquipmentSizeFactors[5]), 1, OwnerId);
     CreateAndEquipEngine(Round(EngineBaseSize * EquipmentSizeFactors[1]), 1, OwnerId);
-    if GetSlotCount(sskWeapon) > WeaponCount then CreateAndEquipWeapon(t_Weapon1, WeaponInfos[t_Weapon1].AverageSize, 1, OwnerId);
-    if GetSlotCount(sskWeapon) > WeaponCount then CreateAndEquipWeapon(t_Weapon3, WeaponInfos[t_Weapon3].AverageSize, 1, OwnerId);
+    if GetSlotCount(sskWeapon) > WeaponCount then CreateAndEquipWeapon(t_IndustrialLaser, WeaponInfos[t_IndustrialLaser].AverageSize, 1, OwnerId);
+    if GetSlotCount(sskWeapon) > WeaponCount then CreateAndEquipWeapon(t_Flux, WeaponInfos[t_Flux].AverageSize, 1, OwnerId);
     if GetSlotCountForItemType(t_Radar) > 0 then CreateAndEquipRadar(Round(EquipmentSizeFactors[NextRandomIntRange(2, 4, RandomState)] * RadarBaseSize), 1, OwnerId);
   end;
   if GetCargoFreeSpace < 0 then begin

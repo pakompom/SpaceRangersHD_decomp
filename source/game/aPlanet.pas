@@ -788,7 +788,7 @@ begin
   HomeRangerCount := 0;
   HomeTransportCount := 0;
   if OwnerId <> oiUninhabited then
-    for ItemType := t_Hull to t_Weapon1 do
+    for ItemType := t_Hull to WeaponCategoryItemType do
       case ItemType of
         t_Hull:
           for I := 1 to NextRandomIntRange(1, 5, RandomState) do
@@ -865,7 +865,7 @@ begin
               Round(DefGeneratorBaseSize * EquipmentSizeFactors[1]), RandomState),
               NextRandomIntRange(1, InventionLevels[piMainTech], RandomState), OwnerId);
           end;
-        t_Weapon1:
+        WeaponCategoryItemType:
           for I := 1 to NextRandomIntRange(2, InventionLevels[piMainTech] + 2, RandomState) do
           begin
             WeaponInfo := aGalaxy.Galaxy.SelectWeaponInfo(RandomIntRange(1, 100000), [Ord(waFree)], InventionLevels[piMainTech], 1);
@@ -1142,7 +1142,7 @@ begin
   HomeTransportCount := 0;
   // Kept even though OwnerId was assigned 6 above: the original emits this stock-generation branch.
   if OwnerId <> oiUninhabited then
-    for ItemType := t_Hull to t_Weapon1 do
+    for ItemType := t_Hull to WeaponCategoryItemType do
       case ItemType of
         t_Hull:
           for I := 1 to NextRandomIntRange(1, 5, RandomState) do
@@ -1219,7 +1219,7 @@ begin
               Round(DefGeneratorBaseSize * EquipmentSizeFactors[1]), RandomState),
               NextRandomIntRange(1, InventionLevels[piMainTech], RandomState), OwnerId);
           end;
-        t_Weapon1:
+        WeaponCategoryItemType:
           for I := 1 to NextRandomIntRange(2, InventionLevels[piMainTech] + 2, RandomState) do
           begin
             WeaponInfo := aGalaxy.Galaxy.SelectWeaponInfo(RandomIntRange(1, 100000), [Ord(waFree)], InventionLevels[piMainTech], 1);
@@ -1500,7 +1500,7 @@ begin
       begin
         Buffer.GetByte;
         InventionLevels[Track] := Buffer.GetByte;
-        if Track >= piWeapon1 then InventionLevels[Track] := Min(8, Integer(InventionLevels[Track]) * 2 - 1);
+        if Track >= piIndustrialLaser then InventionLevels[Track] := Min(8, Integer(InventionLevels[Track]) * 2 - 1);
       end
       else InventionLevels[Track] := Buffer.GetByte;
     if GlobalsV.LoadedSaveVersion <= 90 then CurrentInvention := TPlanetInvention(Buffer.GetByte shr 1)
@@ -4704,7 +4704,7 @@ begin
       if Special >= 0 then ApplySpecialMicroModule(Special, Result);
     end;
   end
-  else if ItemType in [t_Weapon1..t_CustomWeapon] then Result := GenerateWeaponOffer(Ship)
+  else if ItemType in [t_IndustrialLaser..t_CustomWeapon] then Result := GenerateWeaponOffer(Ship)
   else if ItemType = t_Hull then Result := GenerateHullOffer(Ship);
   if Result <> nil then
   begin
@@ -4754,7 +4754,7 @@ begin
   end;
   for i := 1 to aConst.PlanetEquipmentOfferQuotas[RaceId, 8] do
   begin
-    Item := GenerateEquipmentOffer(Ship, t_Weapon1);
+    Item := GenerateEquipmentOffer(Ship, WeaponCategoryItemType);
     if Item <> nil then Offers.Add(Item);
   end;
   Result := Offers;
@@ -4768,7 +4768,7 @@ var
   ItemType: Byte;
 begin
   Count := 0;
-  for ItemType := Byte(t_Hull) to Byte(t_Weapon1) do
+  for ItemType := Byte(t_Hull) to Byte(WeaponCategoryItemType) do
     Count := Count + aConst.PlanetEquipmentOfferQuotas[RaceId][ItemType - Ord(t_Hull)];
   Result := System.Round(RemapClamped(Population, 100000, 1000000, 0.5, 1.3) * Count) +
     SeededRandomIntRange(-2, 2, (GenerationSeed - aGalaxy.Galaxy.CurrentTurn) * 1011011);
@@ -4782,7 +4782,7 @@ end;
 
 { @routine $7946D4 TPlanet_CountEquipmentShopItemsInBucket }
 function TPlanet.CountEquipmentShopItemsInBucket(ItemType: TItemType): Integer;
-// The t_Weapon1 shop bucket counts every weapon subtype.
+// The WeaponCategoryItemType shop bucket counts every weapon subtype.
 var
   i, Count: Integer;
   Item: TItem;
@@ -4791,7 +4791,7 @@ begin
   for i := 0 to EquipmentShop.Count - 1 do
   begin
     Item := EquipmentShop[i];
-    if (Item.ItemType = ItemType) or ((Item.ItemType in [t_Weapon1..t_CustomWeapon]) and (ItemType = t_Weapon1)) then Inc(Count);
+    if (Item.ItemType = ItemType) or ((Item.ItemType in [t_IndustrialLaser..t_CustomWeapon]) and (ItemType = WeaponCategoryItemType)) then Inc(Count);
   end;
   Result := Count;
 end;
@@ -4914,7 +4914,7 @@ begin
     Item := PPlanetSurfaceLootEntry(SurfaceLootEntries[Index]).Item;
     if Item is TGoods then
       Score := Score + Item.Cost * aConst.GoodsMarket[Ord(Item.ItemType)].AveragePrice * 0.000001
-    else if Item.ItemType in [t_Weapon1..t_CustomWeapon] then
+    else if Item.ItemType in [t_IndustrialLaser..t_CustomWeapon] then
       Score := Score + Item.Cost * GetAverageItemSize(Item.ItemType) / Math.Max(Item.Weight, 1) *
         TEquipment(Item).GetLevel * TWeapon(Item).GetWeaponInfo^.TechLevel * 0.000025
     else if Item.ItemType in [t_Hull..t_DefGenerator] then

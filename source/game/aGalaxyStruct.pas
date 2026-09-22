@@ -290,6 +290,7 @@ type
 
   // PlanetInventionInfo ($87F4DC) and EquipmentInventionIndices ($87F57C).
   // Research-track IDs are distinct from item types and numeric technology levels.
+  // Weapon tracks use English Items.Weapon.Name names; later weapons can share a track.
   TPlanetInvention = (
     piHull = 0,
     piFuelTanks = 1,
@@ -299,18 +300,18 @@ type
     piRepairRobot = 5,
     piCargoHook = 6,
     piMainTech = 7,
-    piWeapon1 = 8,
-    piWeapon2 = 9,
-    piWeapon3 = 10,
-    piWeapon4 = 11,
-    piWeapon5 = 12,
-    piWeapon6 = 13,
-    piWeapon7 = 14,
-    piWeapon8 = 15,
-    piWeapon9 = 16,
-    piWeapon10 = 17,
-    piWeapon11 = 18,
-    piWeapon12 = 19
+    piIndustrialLaser = 8,
+    piFragmentationCannon = 9,
+    piFlux = 10,
+    piMissileLauncher = 11,
+    piTreton = 12,
+    piWavePhaser = 13,
+    piFlowBlaster = 14,
+    piElectronicCutter = 15,
+    piMultiresonator = 16,
+    piAtomicVision = 17,
+    piDisintegrator = 18,
+    piTurbogravitron = 19
   ); // @size $01
 
   TGalaxyDifficultyIndex = 0..7;

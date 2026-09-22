@@ -4852,7 +4852,7 @@ begin
   for I := 0 to Inventory.Count - 1 do
   begin
     Item := Inventory[I];
-    if (Item.EquippedFlag <> 0) and (Item.ItemType in [t_Weapon1..t_CustomWeapon]) then Inc(Count);
+    if (Item.EquippedFlag <> 0) and (Item.ItemType in [t_IndustrialLaser..t_CustomWeapon]) then Inc(Count);
   end;
   Result := Count;
 end;
@@ -5000,7 +5000,7 @@ var
   Extra: PExtraSpecial;
 begin
   Result := Max(Weapon.MaxDamage, Weapon.MinDamage);
-  if Weapon.ItemType in [t_Weapon1..t_CustomWeapon] then
+  if Weapon.ItemType in [t_IndustrialLaser..t_CustomWeapon] then
   begin
     BonusKind := WeaponDamageClasses[ClassifyWeaponDamageFlags(Weapon.GetWeaponInfo.DamageFlags)].BonusKind;
     Bonus := GetTotalStatBonus(BonusKind);
@@ -5889,7 +5889,7 @@ begin
       PShipEquipmentCacheView(Self).Slots[Item.ItemType].Unequip;
     PShipEquipmentCacheView(Self).Slots[Item.ItemType] := Item;
   end
-  else if Item.ItemType in [t_Weapon1..t_CustomWeapon] then
+  else if Item.ItemType in [t_IndustrialLaser..t_CustomWeapon] then
   begin
     if WeaponCount < 5 then Inc(WeaponCount);
     if Weapons[WeaponCount] <> nil then Weapons[WeaponCount].Unequip;
@@ -5909,7 +5909,7 @@ begin
     PShipEquipmentCacheView(Self).Slots[ItemType].Unequip;
     PShipEquipmentCacheView(Self).Slots[ItemType] := nil;
   end
-  else if ItemType in [t_Weapon1..t_CustomWeapon] then
+  else if ItemType in [t_IndustrialLaser..t_CustomWeapon] then
   begin
     Weapons[WeaponIndex].Unequip;
     Weapons[WeaponIndex] := nil;
@@ -5933,7 +5933,7 @@ begin
     for I := 1 to CountEquippedWeapons do
       if Weapons[I] = Item then
       begin
-        UnequipSlot(t_Weapon1, I);
+        UnequipSlot(WeaponCategoryItemType, I);
         Break;
       end;
   end
@@ -6449,7 +6449,7 @@ begin
     if Item.EquippedFlag <> 0 then
     begin
       if Item.ItemType in [t_Hull..t_DefGenerator] then PShipEquipmentCacheView(Self).Slots[Item.ItemType] := Item
-      else if Item.ItemType in [t_Weapon1..t_CustomWeapon] then
+      else if Item.ItemType in [t_IndustrialLaser..t_CustomWeapon] then
       begin
         Inc(WeaponCount);
         Weapons[WeaponCount] := Item as TWeapon;
@@ -6560,7 +6560,7 @@ end;
 function TShip.NeedsEquipmentType(ItemType: TItemType): Boolean;
 begin
   Result := False;
-  if ((ItemType in [t_FuelTanks, t_Engine, t_RepairRobot, t_DefGenerator]) or (ItemType in [t_Weapon1..t_CustomWeapon])) and (CountCarriedEquipmentByType(ItemType) <= 0) then Result := True;
+  if ((ItemType in [t_FuelTanks, t_Engine, t_RepairRobot, t_DefGenerator]) or (ItemType in [t_IndustrialLaser..t_CustomWeapon])) and (CountCarriedEquipmentByType(ItemType) <= 0) then Result := True;
 end;
 { @end $760BE4 }
 
@@ -6591,7 +6591,7 @@ begin
     for I := 1 to Inventory.Count - 1 do
     begin
       Item := Inventory[I];
-      if (Item.ItemType = ItemType) or ((ItemType in [t_Weapon1..t_CustomWeapon]) and (Item.ItemType in [t_Weapon1..t_CustomWeapon])) then Inc(Result);
+      if (Item.ItemType = ItemType) or ((ItemType in [t_IndustrialLaser..t_CustomWeapon]) and (Item.ItemType in [t_IndustrialLaser..t_CustomWeapon])) then Inc(Result);
     end;
 end;
 { @end $760CD0 }
@@ -6610,7 +6610,7 @@ begin
   for Index := 1 to Inventory.Count - 1 do
   begin
     Candidate := Inventory[Index];
-    if (Candidate.ItemType in [t_Weapon1..t_CustomWeapon]) and (Candidate.EquippedFlag = 0) then
+    if (Candidate.ItemType in [t_IndustrialLaser..t_CustomWeapon]) and (Candidate.EquippedFlag = 0) then
       if Result = nil then Result := Candidate as TWeapon
       else
       begin
@@ -6975,7 +6975,7 @@ begin
   Equipment := Item as TEquipment;
   for I := 1 to 5 do SavedWeapons[I] := nil;
   SavedTarget := nil;
-  TemporarilyUnequipped := (Equipment.EquippedFlag <> 0) and (Equipment.ItemType in [t_Weapon1..t_CustomWeapon]);
+  TemporarilyUnequipped := (Equipment.EquippedFlag <> 0) and (Equipment.ItemType in [t_IndustrialLaser..t_CustomWeapon]);
   if TemporarilyUnequipped then
   begin
     TemporarilyUnequipped := False;
@@ -7020,7 +7020,7 @@ begin
       t_DefGenerator: Result := EvaluateStatBonus(bonDef, Round(100 - CalculateDefGeneratorFactor(TDefGenerator(Equipment)) * 100));
     end;
   end
-  else if Equipment.ItemType in [t_Weapon1..t_CustomWeapon] then
+  else if Equipment.ItemType in [t_IndustrialLaser..t_CustomWeapon] then
   begin
     Weapon := TWeapon(Equipment);
     WeaponRange := GetWeaponRange(Weapon);
@@ -7074,7 +7074,7 @@ var
 begin
   Result := 1;
   ItemKind := Byte(Item.ItemType);
-  if ItemKind in [Ord(t_Weapon1)..Ord(t_CustomWeapon)] then
+  if ItemKind in [Ord(t_IndustrialLaser)..Ord(t_CustomWeapon)] then
   begin
     if (Cardinal(TWeapon(Item).GetDamageFlags) and (1 shl Ord(dkUndefendable))) <> 0 then
     begin
@@ -7104,7 +7104,7 @@ var
   Range, I, TemplateRange: Integer;
   Extra: PExtraSpecial;
 begin
-  if not (Weapon.ItemType in [t_Weapon1..t_CustomWeapon]) then
+  if not (Weapon.ItemType in [t_IndustrialLaser..t_CustomWeapon]) then
   begin
     Result := 0;
     Exit;
@@ -7318,7 +7318,7 @@ begin
           AccumulateEquipmentBonus(EvaluateStatBonus(bonDef, Module.StatBonuses[bonDef] + Integer(Round(100 - CalculateDefGeneratorFactor(GetDefGenerator) * 100))) -
             EvaluateStatBonus(bonDef, Round(100 - CalculateDefGeneratorFactor(GetDefGenerator) * 100)));
         AccumulateEquipmentBonus(EvaluateStatBonus(bonWRadius, Module.StatBonuses[bonWRadius]) * CountEquippedWeapons);
-        if not (ItemType in [t_Weapon1..t_CustomWeapon]) then
+        if not (ItemType in [t_IndustrialLaser..t_CustomWeapon]) then
           for I := 1 to CountEquippedWeapons do
           begin
             DamageBonus := 0;
@@ -7357,7 +7357,7 @@ begin
           AccumulateEquipmentBonus(EvaluateStatBonus(bonDef, Item.GetStatBonus(bonDef) + Integer(Round(100 - CalculateDefGeneratorFactor(GetDefGenerator) * 100))) -
             EvaluateStatBonus(bonDef, Round(100 - CalculateDefGeneratorFactor(GetDefGenerator) * 100)));
         AccumulateEquipmentBonus(EvaluateStatBonus(bonWRadius, Item.GetStatBonus(bonWRadius)) * CountEquippedWeapons);
-        if not (ItemType in [t_Weapon1..t_CustomWeapon]) then
+        if not (ItemType in [t_IndustrialLaser..t_CustomWeapon]) then
           for I := 1 to CountEquippedWeapons do
           begin
             DamageBonus := 0;
@@ -7790,12 +7790,12 @@ begin
   end;
   for I := 1 to 5 do Weapons[I] := nil;
   WeaponCount := 0;
-  if CountCarriedEquipmentByType(t_Weapon1) < GetSlotCount(sskWeapon) then
+  if CountCarriedEquipmentByType(WeaponCategoryItemType) < GetSlotCount(sskWeapon) then
   begin
     for I := 1 to Inventory.Count - 1 do
     begin
       Item := Inventory[I];
-      if Item.ItemType in [t_Weapon1..t_CustomWeapon] then EquipItem(Item as TWeapon);
+      if Item.ItemType in [t_IndustrialLaser..t_CustomWeapon] then EquipItem(Item as TWeapon);
     end;
   end
   else
@@ -7925,7 +7925,7 @@ begin
         begin
           Candidate := Inventory[I];
           if Candidate.NoDropFlag > 0 then Continue;
-          if (Candidate.ItemType in [t_Weapon1..t_CustomWeapon]) and (Candidate.Weight > GetHull.Weight * 0.2) then
+          if (Candidate.ItemType in [t_IndustrialLaser..t_CustomWeapon]) and (Candidate.Weight > GetHull.Weight * 0.2) then
           begin
             Item := TEquipment(Candidate);
             Break;
@@ -7936,7 +7936,7 @@ begin
             Break;
           end;
         end;
-        if (Item <> nil) and ((Item.ItemType in [t_Weapon1..t_CustomWeapon]) or (Item.ItemType = t_CargoHook)) then
+        if (Item <> nil) and ((Item.ItemType in [t_IndustrialLaser..t_CustomWeapon]) or (Item.ItemType = t_CargoHook)) then
         begin
           if CanDrop then DropCarriedItemAsMovingLoot(Item) else LiquidateInventoryItem(Item);
         end
@@ -8042,7 +8042,7 @@ begin
     Item := Inventory[I];
     if Item.NoDropFlag > 0 then Continue;
     if Item.ItemType in [t_Hull..t_Engine] then Continue;
-    if (Item.ItemType in [t_Weapon1..t_CustomWeapon]) and ((WeaponCount <= 1) or (TWeapon(Item).GetWeaponInfo^.ShotType = wstAreaDamage)) then Continue;
+    if (Item.ItemType in [t_IndustrialLaser..t_CustomWeapon]) and ((WeaponCount <= 1) or (TWeapon(Item).GetWeaponInfo^.ShotType = wstAreaDamage)) then Continue;
     Value := DominatorProgramDropCostFactors[Ord((Self as TKling).KlingType)] *
       (Item.Cost / Max(Int64(1), Round(Galaxy.GetDropValueModifier * Galaxy.AverageRangerCapital) div 12));
     if (Item.Cost > 1000) and (NextRandomIntRange(1, 100, RandomState) > Round(Exp(0.3 - 0.3 * Value) * 100)) then Continue;
@@ -8710,7 +8710,7 @@ begin
     if (Item.BrokenFlag = 0) and (Byte(Item.ItemType) in WearableTypes) then
       if GetDefGenerator = Item then ApplyItemDegradation(Item, idkBattle, BaseDurabilityDamage * 1.3)
       else if GetRepairRobot = Item then ApplyItemDegradation(Item, idkBattle, BaseDurabilityDamage * 1.25)
-      else if Item.ItemType in [t_Weapon1..t_CustomWeapon] then ApplyItemDegradation(Item, idkBattle, BaseDurabilityDamage * 1.15)
+      else if Item.ItemType in [t_IndustrialLaser..t_CustomWeapon] then ApplyItemDegradation(Item, idkBattle, BaseDurabilityDamage * 1.15)
       else ApplyItemDegradation(Item, idkBattle, BaseDurabilityDamage);
   end;
   for I := 0 to Artefacts.Count - 1 do
@@ -9060,7 +9060,7 @@ begin
   if (TEquipment(Item).EquippedFlag = 0) and (Item.ItemType <> t_Hull) then Exit;
   Result := True;
   if Item.ItemType in [t_Hull..t_Engine] then Exit;
-  if (Item.ItemType in [t_Weapon1..t_CustomWeapon]) and (WeaponCount <= 1) then Exit;
+  if (Item.ItemType in [t_IndustrialLaser..t_CustomWeapon]) and (WeaponCount <= 1) then Exit;
   if (Item.ItemType = t_CargoHook) and (TypeId in [stRanger, stPirate]) and (GetSlotCount(sskCargoHook) > 0) then Exit;
   Result := False;
 end;
@@ -9607,12 +9607,12 @@ begin
       if (Item.ItemType = Other.ItemType) and (Other.Weight + CargoFreeSpace > Item.Weight) and (Other.EquippedFlag <> 0) then
         if EvaluateItem(Item, 1) > EvaluateItem(Other, 1) then begin Result := True; Exit; end;
     end;
-  end else if (Item.ItemType in [t_Weapon1..t_CustomWeapon]) and IsEquipmentUsable(Item as TEquipment) then begin
+  end else if (Item.ItemType in [t_IndustrialLaser..t_CustomWeapon]) and IsEquipmentUsable(Item as TEquipment) then begin
     EquippedWeight := 0;
     EquippedValue := 0;
     for I := 1 to Inventory.Count - 1 do begin
       Other := Inventory[I];
-      if (Other.ItemType in [t_Weapon1..t_CustomWeapon]) and (Other.EquippedFlag <> 0) then begin
+      if (Other.ItemType in [t_IndustrialLaser..t_CustomWeapon]) and (Other.EquippedFlag <> 0) then begin
         EquippedValue := EquippedValue + EvaluateItem(Other, 1);
         Inc(EquippedWeight, Other.Weight);
       end;
@@ -11728,7 +11728,7 @@ begin
   ReassignActiveItemSlots(t_RepairRobot);
   ReassignActiveItemSlots(t_CargoHook);
   ReassignActiveItemSlots(t_DefGenerator);
-  ReassignActiveItemSlots(t_Weapon1);
+  ReassignActiveItemSlots(WeaponCategoryItemType);
   ReassignActiveItemSlots(t_Artefact);
   RefreshInactiveItemSlotAssignments;
 end;
@@ -14254,7 +14254,7 @@ begin
       Stage := 14;
       if Item.ScriptItem <> nil then
       begin
-        if Item.ItemType in [t_Weapon1..t_CustomWeapon] then
+        if Item.ItemType in [t_IndustrialLaser..t_CustomWeapon] then
         begin
           if (ActionType in [satOnWeaponShot, satOnMissileShot, satOnWeaponShot2]) and (Object2 <> Item) then
           begin

@@ -93,7 +93,7 @@ type
 var
   DominatorEquipmentSizeIndices: array[0..7, 0..1] of Integer = ((1, 1), (1, 3), (2, 4), (3, 4), (3, 5), (4, 5), (1, 1), (4, 5)); // @addr $87B420 Maximum-size index followed by minimum-size index.
   DominatorWeaponDistributionByTier: array[1..7] of Integer = (1, 1, 2, 2, 3, 3, 4); // @addr $87B460
-  DominatorWeaponWeights: array[1..4, TKlingType, t_Weapon1..t_Weapon15] of Integer = (
+  DominatorWeaponWeights: array[1..4, TKlingType, t_IndustrialLaser..t_TorpedoTube] of Integer = (
     ((0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 25, 25, 50),
      (0, 0, 0, 0, 0, 0, 0, 0, 0, 30, 5, 30, 5, 25, 5),
      (0, 0, 0, 30, 0, 0, 0, 0, 25, 5, 5, 0, 30, 0, 5),
@@ -198,12 +198,12 @@ begin
   CreateAndEquipHull(RoundAndTruncateToHundreds((HullCapacityScale * 6000) * Galaxy.GetDominatorBossHullScale * NextRandomFloatRange(0.9, 1.1, RandomState)), 8, oiDominator, -1, False);
   CreateAndEquipFuelTanks(100, 8, oiDominator);
   CreateAndEquipEngine(Round(EngineBaseSize * EquipmentSizeFactors[1]), 8, oiDominator);
-  CreateAndEquipWeapon(t_Weapon15, Round(WeaponInfos[t_Weapon15].AverageSize * EquipmentSizeFactors[5]), 8, oiDominator);
-  CreateAndEquipWeapon(t_Weapon15, Round(WeaponInfos[t_Weapon15].AverageSize * EquipmentSizeFactors[5]), 8, oiDominator);
-  CreateAndEquipWeapon(t_Weapon13, Round(WeaponInfos[t_Weapon13].AverageSize * EquipmentSizeFactors[5]), 8, oiDominator);
-  CreateAndEquipWeapon(t_Weapon11, Round(WeaponInfos[t_Weapon11].AverageSize * EquipmentSizeFactors[5]), 8, oiDominator);
+  CreateAndEquipWeapon(t_TorpedoTube, Round(WeaponInfos[t_TorpedoTube].AverageSize * EquipmentSizeFactors[5]), 8, oiDominator);
+  CreateAndEquipWeapon(t_TorpedoTube, Round(WeaponInfos[t_TorpedoTube].AverageSize * EquipmentSizeFactors[5]), 8, oiDominator);
+  CreateAndEquipWeapon(t_IMHO9000, Round(WeaponInfos[t_IMHO9000].AverageSize * EquipmentSizeFactors[5]), 8, oiDominator);
+  CreateAndEquipWeapon(t_Disintegrator, Round(WeaponInfos[t_Disintegrator].AverageSize * EquipmentSizeFactors[5]), 8, oiDominator);
   if Galaxy.GetDifficultyTierIndex > 0 then
-    CreateAndEquipWeapon(t_Weapon12, Round(WeaponInfos[t_Weapon12].AverageSize * EquipmentSizeFactors[5]), 8, oiDominator);
+    CreateAndEquipWeapon(t_Turbogravitron, Round(WeaponInfos[t_Turbogravitron].AverageSize * EquipmentSizeFactors[5]), 8, oiDominator);
   CreateAndEquipDefGenerator(Round(DefGeneratorBaseSize * EquipmentSizeFactors[5]), 8, oiDominator);
   CreateAndEquipRepairRobot(Round(RepairRobotBaseSize * EquipmentSizeFactors[5]), Round(RemapClamped(Galaxy.GetEffectiveDifficultyLevel, 0, 24, 4, 8)), OwnerId);
   SetInventoryDominatorOwner;
@@ -243,12 +243,12 @@ begin
   CreateAndEquipHull(RoundAndTruncateToHundreds((HullCapacityScale * 4000) * Galaxy.GetDominatorBossHullScale * NextRandomFloatRange(0.9, 1.1, RandomState)), 8, oiDominator, -1, False);
   CreateAndEquipFuelTanks(100, 8, oiDominator);
   CreateAndEquipEngine(Round(EngineBaseSize * EquipmentSizeFactors[1]), 8, oiDominator);
-  CreateAndEquipWeapon(t_Weapon15, Round(WeaponInfos[t_Weapon15].AverageSize * EquipmentSizeFactors[5]), 8, oiDominator);
-  CreateAndEquipWeapon(t_Weapon14, Round(WeaponInfos[t_Weapon14].AverageSize * EquipmentSizeFactors[5]), 8, oiDominator);
-  CreateAndEquipWeapon(t_Weapon13, Round(WeaponInfos[t_Weapon13].AverageSize * EquipmentSizeFactors[5]), 8, oiDominator);
-  CreateAndEquipWeapon(t_Weapon9, Round(WeaponInfos[t_Weapon9].AverageSize * EquipmentSizeFactors[5]), 8, oiDominator);
+  CreateAndEquipWeapon(t_TorpedoTube, Round(WeaponInfos[t_TorpedoTube].AverageSize * EquipmentSizeFactors[5]), 8, oiDominator);
+  CreateAndEquipWeapon(t_Vertix, Round(WeaponInfos[t_Vertix].AverageSize * EquipmentSizeFactors[5]), 8, oiDominator);
+  CreateAndEquipWeapon(t_IMHO9000, Round(WeaponInfos[t_IMHO9000].AverageSize * EquipmentSizeFactors[5]), 8, oiDominator);
+  CreateAndEquipWeapon(t_Multiresonator, Round(WeaponInfos[t_Multiresonator].AverageSize * EquipmentSizeFactors[5]), 8, oiDominator);
   if Galaxy.GetDifficultyTierIndex > 0 then
-    CreateAndEquipWeapon(t_Weapon10, Round(WeaponInfos[t_Weapon10].AverageSize * EquipmentSizeFactors[5]), 8, oiDominator);
+    CreateAndEquipWeapon(t_AtomicVision, Round(WeaponInfos[t_AtomicVision].AverageSize * EquipmentSizeFactors[5]), 8, oiDominator);
   CreateAndEquipDefGenerator(Round(DefGeneratorBaseSize * EquipmentSizeFactors[5]), 8, oiDominator);
   Inc(CreateAndEquipRepairRobot(Round(RepairRobotBaseSize * EquipmentSizeFactors[5]), Round(RemapClamped(Galaxy.GetEffectiveDifficultyLevel, 0, 24, 4, 8)), OwnerId).RepairPoints, Galaxy.GetEffectiveDifficultyLevel);
   SetInventoryDominatorOwner;
@@ -300,16 +300,16 @@ begin
   Inc(CreateAndEquipHull(RoundAndTruncateToHundreds((HullCapacityScale * 10000) * Galaxy.GetDominatorBossHullScale * NextRandomFloatRange(0.9, 1.1, RandomState)), 8, oiDominator, -1, False).Armor, Galaxy.GetEffectiveDifficultyLevel div 4);
   CreateAndEquipFuelTanks(100, 8, oiDominator);
   CreateAndEquipEngine(Round(EngineBaseSize * EquipmentSizeFactors[1]), 8, oiDominator);
-  Weapon := CreateAndEquipWeapon(t_Weapon13, Round(WeaponInfos[t_Weapon13].AverageSize * EquipmentSizeFactors[5]), 8, oiDominator);
+  Weapon := CreateAndEquipWeapon(t_IMHO9000, Round(WeaponInfos[t_IMHO9000].AverageSize * EquipmentSizeFactors[5]), 8, oiDominator);
   Inc(Weapon.Range, 5 * Galaxy.GetEffectiveDifficultyLevel);
   Inc(Weapon.MaxDamage, Galaxy.GetEffectiveDifficultyLevel div 2);
-  CreateAndEquipWeapon(t_Weapon4, Round(WeaponInfos[t_Weapon4].AverageSize * EquipmentSizeFactors[5]), 8, oiDominator);
-  CreateAndEquipWeapon(t_Weapon4, Round(WeaponInfos[t_Weapon4].AverageSize * EquipmentSizeFactors[5]), 8, oiDominator);
-  Weapon := CreateAndEquipWeapon(t_Weapon9, Round(WeaponInfos[t_Weapon9].AverageSize * EquipmentSizeFactors[5]), 8, oiDominator);
+  CreateAndEquipWeapon(t_MissileLauncher, Round(WeaponInfos[t_MissileLauncher].AverageSize * EquipmentSizeFactors[5]), 8, oiDominator);
+  CreateAndEquipWeapon(t_MissileLauncher, Round(WeaponInfos[t_MissileLauncher].AverageSize * EquipmentSizeFactors[5]), 8, oiDominator);
+  Weapon := CreateAndEquipWeapon(t_Multiresonator, Round(WeaponInfos[t_Multiresonator].AverageSize * EquipmentSizeFactors[5]), 8, oiDominator);
   Inc(Weapon.Range, 5 * Galaxy.GetEffectiveDifficultyLevel);
   Inc(Weapon.MaxDamage, Galaxy.GetEffectiveDifficultyLevel div 2);
   if Galaxy.GetDifficultyTierIndex > 1 then
-    CreateAndEquipWeapon(t_Weapon15, Round(WeaponInfos[t_Weapon15].AverageSize * EquipmentSizeFactors[5]), 8, oiDominator);
+    CreateAndEquipWeapon(t_TorpedoTube, Round(WeaponInfos[t_TorpedoTube].AverageSize * EquipmentSizeFactors[5]), 8, oiDominator);
   CreateAndEquipDefGenerator(Round(DefGeneratorBaseSize * EquipmentSizeFactors[5]), 8, oiDominator);
   CreateAndEquipRepairRobot(Round(RepairRobotBaseSize * EquipmentSizeFactors[5]), Round(RemapClamped(Galaxy.GetEffectiveDifficultyLevel, 0, 24, 4, 8)), OwnerId);
   SetInventoryDominatorOwner;
@@ -452,11 +452,11 @@ begin
     repeat
       Inc(Attempts);
       if Attempts > 1000 then Break;
-      WeaponType := t_Weapon1;
+      WeaponType := t_IndustrialLaser;
       Roll := RandomInteger(1, 100);
       Chosen := False;
       WeightSum := 0;
-      while (WeaponType <= t_Weapon15) and not Chosen do begin
+      while (WeaponType <= t_TorpedoTube) and not Chosen do begin
         Inc(WeightSum, DominatorWeaponWeights[Distribution, KlingType, WeaponType]);
         if Roll <= WeightSum then begin
           MaximumSizeIndex := DominatorEquipmentSizeIndices[Ord(KlingType), 0];
@@ -466,9 +466,9 @@ begin
             MinimumSizeIndex := 1;
           end;
           Accepted := not Galaxy.AreDominatorRacialWeaponsEnabled or
-            (((DominatorSeries <> dsBlazer) or not (WeaponType in [t_Weapon13, t_Weapon14])) and
-             ((DominatorSeries <> dsTerron) or not (WeaponType in [t_Weapon14, t_Weapon15])) and
-             ((DominatorSeries <> dsKeller) or not (WeaponType in [t_Weapon13, t_Weapon15])));
+            (((DominatorSeries <> dsBlazer) or not (WeaponType in [t_IMHO9000, t_Vertix])) and
+             ((DominatorSeries <> dsTerron) or not (WeaponType in [t_Vertix, t_TorpedoTube])) and
+             ((DominatorSeries <> dsKeller) or not (WeaponType in [t_IMHO9000, t_TorpedoTube])));
           if Accepted then CreateAndEquipWeapon(WeaponType,
             RandomEquipmentSize(WeaponInfos[WeaponType].AverageSize, MaximumSizeIndex, MinimumSizeIndex), RandomTuning(8, 9), oiDominator);
           Chosen := True;

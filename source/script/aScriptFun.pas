@@ -5955,7 +5955,7 @@ begin
       end;
       Stat := av[2].GetInt;
     end;
-    if Item.ItemType in [t_Weapon1..t_CustomWeapon] then
+    if Item.ItemType in [t_IndustrialLaser..t_CustomWeapon] then
       case Stat of
         0: av[0].SetInt((Item as TWeapon).MaxDamage);
         1: av[0].SetInt((Item as TWeapon).MinDamage);
@@ -6025,7 +6025,7 @@ begin
   if Obj is TScriptItem then Item := TScriptItem(Obj).Item;
   if Item <> nil then
   begin
-    if Item.ItemType in [t_Weapon1..t_CustomWeapon] then
+    if Item.ItemType in [t_IndustrialLaser..t_CustomWeapon] then
       case Stat of
         0: (Item as TWeapon).MaxDamage := Value;
         1: (Item as TWeapon).MinDamage := Value;
@@ -6450,7 +6450,7 @@ begin
         for WeaponIndex := 1 to Ship.CountEquippedWeapons do
           if Ship.Weapons[WeaponIndex] = Item then
           begin
-            Ship.UnequipSlot(t_Weapon1, WeaponIndex);
+            Ship.UnequipSlot(WeaponCategoryItemType, WeaponIndex);
             Break;
           end;
     end;
@@ -7353,7 +7353,7 @@ begin
     Source.RefreshAssignedItemSlots;
     for I := 0 to 4 do
     begin
-      Weapon := Source.FindEquippedItemInSlot(t_Weapon1, I) as TWeapon;
+      Weapon := Source.FindEquippedItemInSlot(WeaponCategoryItemType, I) as TWeapon;
       if Source.IsEquipmentUsable(Weapon) then
       begin
         if Weapon.ItemType <> t_CustomWeapon then ab_Weapon_Initialize(@Ship.Weapons[I], Ord(Weapon.ItemType))
@@ -13449,7 +13449,7 @@ begin
             TDefGenerator(Item).DamageFactor := TDefGenerator(Item).DamageFactor + TDefGenerator(NewBase).DamageFactor - TDefGenerator(OldBase).DamageFactor;
           end;
         else
-          if Item.ItemType in [t_Weapon1..t_CustomWeapon] then
+          if Item.ItemType in [t_IndustrialLaser..t_CustomWeapon] then
           begin
             TWeapon(Item).TechLevel := NewLevel;
             TWeapon(Item).Range := TWeapon(Item).Range + TWeapon(NewBase).Range - TWeapon(OldBase).Range;
@@ -15303,8 +15303,8 @@ begin
   if High(av) < 1 then raise Exception.Create('Error.Script InventNewCustomWeapon');
   Info := Galaxy.GetOrCreateCustomWeaponInfo(av[1].GetString);
   av[0].SetDword(Cardinal(Info));
-  if High(av) > 1 then Kind := av[2].GetInt else Kind := Ord(t_Weapon1);
-  if not (Kind in [Ord(t_Weapon1)..Ord(t_Weapon18)]) then raise Exception.Create(AnsiString('Error.Script InventNewCustomWeapon - invalid type ' + av[2].GetString));
+  if High(av) > 1 then Kind := av[2].GetInt else Kind := Ord(t_IndustrialLaser);
+  if not (Kind in [Ord(t_IndustrialLaser)..Ord(t_Lirecron)]) then raise Exception.Create(AnsiString('Error.Script InventNewCustomWeapon - invalid type ' + av[2].GetString));
   Base := @WeaponInfos[TItemType(Kind)];
   Info.TechLevel := Base.TechLevel;
   Info.InventionIndex := Base.InventionIndex;
@@ -15433,7 +15433,7 @@ begin
   Info := PWeaponInfo(av[1].GetDword);
   av[0].SetDword(Cardinal(Info));
   Info.TechLevel := av[2].GetInt;
-  if not (TItemType(av[3].GetInt) in [t_Weapon1..t_Weapon18]) then
+  if not (TItemType(av[3].GetInt) in [t_IndustrialLaser..t_Lirecron]) then
     raise Exception.Create('Error.Script SetCustomWeaponPrimaryData invalid tech');
   Info.InventionIndex := WeaponInfos[TItemType(av[3].GetInt)].InventionIndex;
   Info.ArcadeWeaponType := av[4].GetInt;
@@ -15907,8 +15907,8 @@ begin
   Scope.Add('t_RepairRobot', vkInt).SetInt(Ord(t_RepairRobot));
   Scope.Add('t_CargoHook', vkInt).SetInt(Ord(t_CargoHook));
   Scope.Add('t_DefGenerator', vkInt).SetInt(Ord(t_DefGenerator));
-  for WeaponIndex := 1 to CountItemTypesInMask([Ord(t_Weapon1)..Ord(t_Weapon18)]) do
-    Scope.Add('t_Weapon' + IntToStr(WeaponIndex), vkInt).SetInt(GetItemTypeFromMask([Ord(t_Weapon1)..Ord(t_Weapon18)], WeaponIndex));
+  for WeaponIndex := 1 to CountItemTypesInMask([Ord(t_IndustrialLaser)..Ord(t_Lirecron)]) do
+    Scope.Add('t_Weapon' + IntToStr(WeaponIndex), vkInt).SetInt(GetItemTypeFromMask([Ord(t_IndustrialLaser)..Ord(t_Lirecron)], WeaponIndex));
   Scope.Add('t_CustomWeapon', vkInt).SetInt(Ord(t_CustomWeapon));
   Scope.Add('t_Protoplasm', vkInt).SetInt(Ord(t_Protoplasm));
   Scope.Add('t_UselessItem', vkInt).SetInt(Ord(t_UselessItem));

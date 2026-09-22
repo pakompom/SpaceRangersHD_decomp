@@ -6046,8 +6046,8 @@ var
   begin
     Result := False;
     if (Item.ScriptItem <> nil) and (TScriptItem(Item.ScriptItem).Name <> '') then Exit;
-    if (Kind in [t_Weapon1..t_CustomWeapon]) and not (Item.ItemType in [t_Weapon1..t_CustomWeapon]) then Exit;
-    if not (Kind in [t_Weapon1..t_CustomWeapon]) and (Kind <> Item.ItemType) then Exit;
+    if (Kind in [t_IndustrialLaser..t_CustomWeapon]) and not (Item.ItemType in [t_IndustrialLaser..t_CustomWeapon]) then Exit;
+    if not (Kind in [t_IndustrialLaser..t_CustomWeapon]) and (Kind <> Item.ItemType) then Exit;
     if Kind = t_Hull then
     begin
       if not (THull(Item).HullType in [htPirate, htSpecial]) or (THull(Item).GetSlotCount(sskCargoHook) < 1) or (THull(Item).CapitalShip <> 0) then Exit;
@@ -6058,7 +6058,7 @@ var
       end
       else if not (Item.OwnerId in PlanetOwnerMasks.Coalition) then Exit;
     end;
-    if Kind in [t_Weapon1..t_CustomWeapon] then
+    if Kind in [t_IndustrialLaser..t_CustomWeapon] then
       for I := 1 to 5 do
         if ConstructionWeapons[I].Item = Item then Exit;
     Result := True;
@@ -6143,7 +6143,7 @@ begin
         end;
       end;
     end;
-  if not (Kind in [t_Hull..t_Engine, t_CargoHook]) and ((Kind <> t_Weapon1) or (ConstructionWeapons[1].Item <> nil)) then
+  if not (Kind in [t_Hull..t_Engine, t_CargoHook]) and ((Kind <> WeaponCategoryItemType) or (ConstructionWeapons[1].Item <> nil)) then
     AddChoice('- ' + LocalizedColorText('FormRuins.CB.ConstructPirate.skip'), 0, SkipConstructionItem);
   AddChoice('- ' + LocalizedColorText('FormRuins.CB.ConstructPirate.cancel'), 0, DeclineDominionShipConstruction);
   Result := Count;
@@ -6310,7 +6310,7 @@ begin
   end
   else if ConstructionWeapons[1].Item = nil then
   begin
-    BuildConstructionItemChoices(t_Weapon1);
+    BuildConstructionItemChoices(WeaponCategoryItemType);
     DialogText := DialogText + #13#10 + #13#10 + LocalizedColorText('FormRuins.CB.ConstructPirate.PickWeapon');
   end
   else
@@ -6356,7 +6356,7 @@ begin
   DialogText := '';
   AppendConstructionItemList;
   ClearChoices;
-  BuildConstructionItemChoices(t_Weapon1);
+  BuildConstructionItemChoices(WeaponCategoryItemType);
   DialogText := DialogText + #13#10 + #13#10 + LocalizedColorText('FormRuins.CB.ConstructPirate.PickWeapon');
 end;
 { @end $5D3E28 }

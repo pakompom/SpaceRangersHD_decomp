@@ -171,13 +171,13 @@ const
     (BasicLevel: 4; IntermediateLevel: 2; AdvancedLevel: 2; MinimumRange: 350),
     (BasicLevel: 4; IntermediateLevel: 2; AdvancedLevel: 2; MinimumRange: 400)); // @addr $87C14C
   StationWeaponTypes: array[6..12, 0..2] of TItemType = (
-    (t_Weapon3, t_Weapon7, t_Weapon10),
-    (t_Weapon3, t_Weapon6, t_Weapon11),
-    (t_Weapon3, t_Weapon9, t_Weapon7),
-    (t_Weapon3, t_Weapon5, t_Weapon12),
-    (t_Weapon2, t_Weapon8, t_Weapon6),
-    (t_Weapon1, t_Weapon5, t_Weapon6),
-    (t_Weapon3, t_Weapon6, t_Weapon11)); // @addr $87C1BC
+    (t_Flux, t_FlowBlaster, t_AtomicVision),
+    (t_Flux, t_WavePhaser, t_Disintegrator),
+    (t_Flux, t_Multiresonator, t_FlowBlaster),
+    (t_Flux, t_Treton, t_Turbogravitron),
+    (t_FragmentationCannon, t_ElectronicCutter, t_WavePhaser),
+    (t_IndustrialLaser, t_Treton, t_WavePhaser),
+    (t_Flux, t_WavePhaser, t_Disintegrator)); // @addr $87C1BC
   StationSkillBonusWeights: array[bonSkill1..bonSkill6] of Integer = (100, 100, 80, 0, 0, 0); // @addr $87C1D4
   StationOfferHullLevelBonus: array[6..12] of Integer = (0,0,1,0,0,0,0); // @addr $87C1EC
   StationOfferHullTypes: array[6..12] of TStationHullTypes = (
@@ -912,7 +912,7 @@ end;
 
 { @routine $717024 TRuins_RefreshShopInventory }
 procedure TRuins.RefreshShopInventory;
-type TQuotas = array[t_Hull..t_Weapon1] of Integer;
+type TQuotas = array[t_Hull..WeaponCategoryItemType] of Integer;
 var I, Attempts, Added: Integer; Item: TEquipment; Kind: TItemType; Planet: TPlanet;
 begin
   if ShopUpdateMode in [sumDisabled, sumGoodsOnly] then Exit;
@@ -939,7 +939,7 @@ begin
     Attempts := 0;
     repeat
       Inc(Attempts);
-      Kind := TItemType(SeededRandomIntRange(Ord(t_Hull), Ord(t_Weapon1), (Seed * Cardinal(Galaxy.CurrentTurn)) * 175 + Cardinal(Attempts)));
+      Kind := TItemType(SeededRandomIntRange(Ord(t_Hull), Ord(WeaponCategoryItemType), (Seed * Cardinal(Galaxy.CurrentTurn)) * 175 + Cardinal(Attempts)));
     until (Attempts > 20) or (CountEquipmentShopItems(Kind) < TQuotas(StationEquipmentOfferQuotas[TypeId])[Kind]);
     Item := GenerateEquipmentOffer(GetPlayer, Planet, Kind);
     if Item <> nil then
@@ -953,11 +953,11 @@ end;
 
 { @routine $717278 TRuins_CalculateEquipmentShopTargetCount }
 function TRuins.CalculateEquipmentShopTargetCount: Integer;
-type TQuotas = array[t_Hull..t_Weapon1] of Integer;
+type TQuotas = array[t_Hull..WeaponCategoryItemType] of Integer;
 var Count: Integer; Kind: TItemType;
 begin
   Count := 0;
-  for Kind := t_Hull to t_Weapon1 do Inc(Count, TQuotas(StationEquipmentOfferQuotas[TypeId])[Kind]);
+  for Kind := t_Hull to WeaponCategoryItemType do Inc(Count, TQuotas(StationEquipmentOfferQuotas[TypeId])[Kind]);
   Result := Round(Count + NextRandomIntRange(-2, 2, RandomState));
   Result := Max(10, Min(Result, 18));
 end;
@@ -971,8 +971,8 @@ begin
   for I := 0 to EquipmentShop.Count - 1 do
   begin
     Item := TItem(EquipmentShop[I]);
-    // The t_Weapon1 shop bucket counts every weapon subtype.
-    if (Item.ItemType = ItemType) or ((Item.ItemType in [t_Weapon1..t_CustomWeapon]) and (ItemType = t_Weapon1)) then Inc(Count);
+    // The WeaponCategoryItemType shop bucket counts every weapon subtype.
+    if (Item.ItemType = ItemType) or ((Item.ItemType in [t_IndustrialLaser..t_CustomWeapon]) and (ItemType = WeaponCategoryItemType)) then Inc(Count);
   end;
   Result := Count;
 end;
@@ -1017,7 +1017,7 @@ begin
         t_CargoHook: if (Existing as TCargoHook).TechLevel = (Item as TCargoHook).TechLevel then Result := True;
         t_DefGenerator: if (Existing as TDefGenerator).TechLevel = (Item as TDefGenerator).TechLevel then Result := True;
       else
-        if Existing.ItemType in [t_Weapon1..t_CustomWeapon] then
+        if Existing.ItemType in [t_IndustrialLaser..t_CustomWeapon] then
           if (Existing as TWeapon).TechLevel = (Item as TWeapon).TechLevel then Result := True;
       end;
       if Result then
@@ -2138,7 +2138,7 @@ begin
       if SpecialModule >= 0 then ApplySpecialMicroModule(SpecialModule, Result);
     end;
   end
-  else if ItemType in [t_Weapon1..t_CustomWeapon] then Result := GenerateWeaponOffer(Ship, Planet)
+  else if ItemType in [t_IndustrialLaser..t_CustomWeapon] then Result := GenerateWeaponOffer(Ship, Planet)
   else if ItemType = t_Hull then Result := GenerateHullOffer(Ship, Planet);
   if Result = nil then Exit;
   case TypeId of
@@ -2188,7 +2188,7 @@ end;
 
 { @routine $71BF18 TRuins_GenerateEquipmentOfferBatch }
 function TRuins.GenerateEquipmentOfferBatch(Ship: TShip; UnusedForceGeneratedOffers: Boolean): TObjectList;
-type TQuotasByItemType = array[t_Hull..t_Weapon1] of Integer;
+type TQuotasByItemType = array[t_Hull..WeaponCategoryItemType] of Integer;
 var
   Item: TEquipment;
   I, J: Integer;
@@ -2215,7 +2215,7 @@ begin
   for I := 1 to StationEquipmentOfferQuotas[TypeId].Weapons do
   begin
     Planet := TPlanet(CurrentStar.SelectRandomInhabitedPlanet);
-    Item := GenerateEquipmentOffer(Ship, Planet, t_Weapon1);
+    Item := GenerateEquipmentOffer(Ship, Planet, WeaponCategoryItemType);
     if Item <> nil then Result.Add(Item);
   end;
 end;

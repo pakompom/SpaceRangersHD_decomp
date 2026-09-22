@@ -900,7 +900,7 @@ end;
 { @routine $7EF0B8 TItem_GetCategoryConfigName }
 function TItem.GetCategoryConfigName: WideString;
 begin
-  if ItemType in [t_Weapon1..t_CustomWeapon] then Result := 'Weapon'
+  if ItemType in [t_IndustrialLaser..t_CustomWeapon] then Result := 'Weapon'
   else if ItemType in [t_ArtefactHull..t_ArtFastRacks] then Result := 'Artefact'
   else Result := ItemTypeNames[ItemType];
 end;
@@ -1431,7 +1431,7 @@ begin
   begin
     if ItemType in [t_FuelTanks..t_DefGenerator] then
       Result := WrapTextInColor(Prefix + LocalizedText('Items.' + ItemTypeNames[ItemType] + '.Broken'), RedColorTag)
-    else if ItemType in [t_Weapon1..t_CustomWeapon] then
+    else if ItemType in [t_IndustrialLaser..t_CustomWeapon] then
       Result := WrapTextInColor(Prefix + LocalizedText('Items.Weapon.Broken'), RedColorTag)
     else if ItemType in [t_Artefact..t_Artefact2] then
       Result := WrapTextInColor(Prefix + LocalizedText('Artefacts.CustomArtefacts.' + ConfigBlockName + '.Broken'), RedColorTag)
@@ -1466,7 +1466,7 @@ function TEquipment.GetBrokenInBattleText: WideString;
 begin
   if ItemType in [t_FuelTanks..t_DefGenerator] then
     Result := LocalizedText('Items.' + ItemTypeNames[ItemType] + '.BrokenInBattle')
-  else if ItemType in [t_Weapon1..t_CustomWeapon] then
+  else if ItemType in [t_IndustrialLaser..t_CustomWeapon] then
     Result := FormatText1(LocalizedText('Items.Weapon.BrokenInBattle'), TextHighlightColorTag, '<Name>', GetDisplayName)
   else if ItemType in [t_Artefact..t_Artefact2] then
     Result := LocalizedText('Artefacts.CustomArtefacts.' + ConfigBlockName + '.BrokenInBattle')
@@ -1481,7 +1481,7 @@ function TEquipment.GetBrokenInUseText: WideString;
 begin
   if ItemType in [t_FuelTanks..t_DefGenerator] then
     Result := LocalizedText('Items.' + ItemTypeNames[ItemType] + '.BrokenInUse')
-  else if ItemType in [t_Weapon1..t_CustomWeapon] then
+  else if ItemType in [t_IndustrialLaser..t_CustomWeapon] then
     Result := FormatText1(LocalizedText('Items.Weapon.BrokenInUse'), TextHighlightColorTag, '<Name>', GetDisplayName)
   else if ItemType in [t_Artefact..t_Artefact2] then
     Result := LocalizedText('Artefacts.CustomArtefacts.' + ConfigBlockName + '.BrokenInUse')
@@ -1497,7 +1497,7 @@ begin
   Result := '';
   if ItemType in [t_FuelTanks..t_DefGenerator] then
     Result := LocalizedText('Items.' + ItemTypeNames[ItemType] + '.BrokenByForce')
-  else if ItemType in [t_Weapon1..t_CustomWeapon] then
+  else if ItemType in [t_IndustrialLaser..t_CustomWeapon] then
     Result := FormatText1(LocalizedText('Items.Weapon.BrokenByForce'), TextHighlightColorTag, '<Name>', GetDisplayName)
   else if ItemType in [t_Artefact..t_Artefact2] then
     Result := LocalizedText('Artefacts.CustomArtefacts.' + ConfigBlockName + '.BrokenByForce')
@@ -1521,7 +1521,7 @@ begin
     t_CargoHook: Result := (Self as TCargoHook).TechLevel;
     t_DefGenerator: Result := (Self as TDefGenerator).TechLevel;
   else
-    if ItemType in [t_Weapon1..t_CustomWeapon] then Result := (Self as TWeapon).TechLevel
+    if ItemType in [t_IndustrialLaser..t_CustomWeapon] then Result := (Self as TWeapon).TechLevel
     else Result := 0;
   end;
 end;
@@ -1708,7 +1708,7 @@ begin
   if (BonusKind in [bonSkill1..bonSkill6, bonStimCapacity]) and (MicroModuleIndex <> 0) then
     Result := MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[BonusKind]
   else Result := 0;
-  if (ItemType in [t_Weapon1..t_CustomWeapon]) and
+  if (ItemType in [t_IndustrialLaser..t_CustomWeapon]) and
      (BonusKind in [bonWEnergy..bonWRadius, bonMissileSpeed]) then Exit;
   if SpecialModuleIndex <> 0 then
     SpecialBonus := MicroModuleTemplates[SpecialModuleIndex - 1].StatBonuses[BonusKind]
@@ -1741,7 +1741,7 @@ begin
     not MicroModuleTemplates[MicroModuleIndex - 1].SeparatedNumbers then
     Result := MicroModuleTemplates[MicroModuleIndex - 1].StatBonuses[BonusKind]
   else Result := 0;
-  if (ItemType in [t_Weapon1..t_CustomWeapon]) and (BonusKind in [bonWEnergy..bonWRadius, bonMissileSpeed]) then Exit;
+  if (ItemType in [t_IndustrialLaser..t_CustomWeapon]) and (BonusKind in [bonWEnergy..bonWRadius, bonMissileSpeed]) then Exit;
   CombinedBonus := 0;
   SeparatedBonus := 0;
   ExtraSeparatedBonus := 0;
@@ -4286,7 +4286,7 @@ end;
 { @routine $8022F0 TWeapon_GetConfigName }
 function TWeapon.GetConfigName: WideString;
 begin
-  Result := IntToStr(Ord(ItemType) - Ord(t_Weapon1) + 1);
+  Result := IntToStr(Ord(ItemType) - Ord(t_IndustrialLaser) + 1);
 end;
 { @end $8022F0 }
 
@@ -5370,7 +5370,7 @@ begin
         (Item as TDefGenerator).DamageFactor := (Item as TDefGenerator).DamageFactor -
           (1 - DefensePercentToDamageFactor(MicroModuleTemplates[Item.MicroModuleIndex - 1].StatBonuses[bonDef]));
   else
-    if Item.ItemType in [t_Weapon1..t_CustomWeapon] then
+    if Item.ItemType in [t_IndustrialLaser..t_CustomWeapon] then
     begin
       BonusKind := WeaponDamageClasses[ClassifyWeaponDamageFlags(TWeapon(Item).GetWeaponInfo.DamageFlags)].BonusKind;
       Inc((Item as TWeapon).MaxDamage, MicroModuleTemplates[Item.MicroModuleIndex - 1].StatBonuses[BonusKind]);
@@ -5417,7 +5417,7 @@ begin
         (Item as TDefGenerator).DamageFactor := (Item as TDefGenerator).DamageFactor +
           (1 - DefensePercentToDamageFactor(MicroModuleTemplates[Item.MicroModuleIndex - 1].StatBonuses[bonDef]));
   else
-    if Item.ItemType in [t_Weapon1..t_CustomWeapon] then
+    if Item.ItemType in [t_IndustrialLaser..t_CustomWeapon] then
     begin
       BonusKind := WeaponDamageClasses[ClassifyWeaponDamageFlags(TWeapon(Item).GetWeaponInfo.DamageFlags)].BonusKind;
       Dec((Item as TWeapon).MaxDamage, MicroModuleTemplates[Item.MicroModuleIndex - 1].StatBonuses[BonusKind]);
@@ -5448,7 +5448,7 @@ begin
     (Item as THull).HullPoints := Item.Weight;
     if (Item.Cost < 0) or (Item.Cost > MaxMonetaryValue) then Item.Cost := MaxMonetaryValue;
   end;
-  if Item.ItemType in [t_Weapon1..t_CustomWeapon] then
+  if Item.ItemType in [t_IndustrialLaser..t_CustomWeapon] then
   begin
     BonusKind := WeaponDamageClasses[ClassifyWeaponDamageFlags(TWeapon(Item).GetWeaponInfo.DamageFlags)].BonusKind;
     Inc((Item as TWeapon).MaxDamage, MicroModuleTemplates[ModuleIndex].StatBonuses[BonusKind]);
@@ -5471,7 +5471,7 @@ begin
     (Item as THull).HullPoints := Min(Item.Weight, (Item as THull).HullPoints);
     if (Item.Cost < 0) or (Item.Cost > MaxMonetaryValue) then Item.Cost := MaxMonetaryValue;
   end;
-  if Item.ItemType in [t_Weapon1..t_CustomWeapon] then begin
+  if Item.ItemType in [t_IndustrialLaser..t_CustomWeapon] then begin
     BonusKind := WeaponDamageClasses[ClassifyWeaponDamageFlags(TWeapon(Item).GetWeaponInfo.DamageFlags)].BonusKind;
     Dec((Item as TWeapon).MaxDamage, MicroModuleTemplates[Item.SpecialModuleIndex - 1].StatBonuses[BonusKind]);
     Dec((Item as TWeapon).Range, MicroModuleTemplates[Item.SpecialModuleIndex - 1].StatBonuses[bonWRadius]);
@@ -5601,7 +5601,7 @@ begin
      ((Weapon.CustomFaction = '') or ((Weapon.OwnerId <> oiUninhabited) and ((Weapon.OwnerId <> oiDominator) or
        (MicroModuleTemplates[ModuleIndex].AllowedDominatorSeriesMask = [0..2]))))) then
   begin
-    if Weapon.ItemType in [t_Weapon1..t_Weapon18] then
+    if Weapon.ItemType in [t_IndustrialLaser..t_Lirecron] then
     begin
       if Byte(Weapon.ItemType) in MicroModuleTemplates[ModuleIndex].AllowedItemTypes then Result := True;
     end
@@ -6485,7 +6485,7 @@ begin
     t_Artefact, t_Artefact2: Result := TArtefactCustom.Create;
     t_CustomWeapon: Result := TCustomWeapon.Create;
   else
-    if ItemType in [t_Weapon1..t_Weapon18] then Result := TWeapon.Create
+    if ItemType in [t_IndustrialLaser..t_Lirecron] then Result := TWeapon.Create
     else if ItemType in [t_Food..t_Narcotics] then Result := TGoods.Create
     else if ItemType in [t_ArtefactHull..t_ArtFastRacks] then Result := TArtefact.Create
     else Exception.Create('Error CreateItemByType'); // Native allocates without raising.
@@ -6547,7 +6547,7 @@ begin
       else
         if ItemType = t_CustomWeapon then
           raise Exception.Create('Error CreateEq - cant create custom weapons')
-        else if ItemType in [t_Weapon1..t_CustomWeapon] then TWeapon(Item).Init(ItemType, Weight, ActualLevel, Owner)
+        else if ItemType in [t_IndustrialLaser..t_CustomWeapon] then TWeapon(Item).Init(ItemType, Weight, ActualLevel, Owner)
         else begin Item.Free; Result := nil; end;
       end;
     end;
@@ -6559,7 +6559,7 @@ end;
 function CreateGeneratedWeapon(Info: PWeaponInfo; Weight, Level: Integer; Owner: TOwnerId): TWeapon;
 begin
   Result := TWeapon(CreateItemByType(Info.ItemType));
-  if Info.ItemType in [t_Weapon1..t_Weapon18] then Result.Init(Info.ItemType, Weight, Level, Owner)
+  if Info.ItemType in [t_IndustrialLaser..t_Lirecron] then Result.Init(Info.ItemType, Weight, Level, Owner)
   else TCustomWeapon(Result).InitCustom(Info, False, Weight, Level, Owner);
 end;
 { @end $80CCA8 }
@@ -6595,8 +6595,8 @@ begin
   if (LoadedSaveVersion < 164) and (TItemType(ItemType) > t_Artefact) then Inc(ItemType);
   if (LoadedSaveVersion < 78) and (TItemType(ItemType) > t_ArtBio) then Inc(ItemType);
   if (LoadedSaveVersion < 131) and (TItemType(ItemType) > t_ArtPDTurret) then Inc(ItemType);
-  if (LoadedSaveVersion < 78) and (TItemType(ItemType) > t_Weapon15) then Inc(ItemType, 3);
-  if (LoadedSaveVersion < 127) and (TItemType(ItemType) > t_Weapon18) then Inc(ItemType);
+  if (LoadedSaveVersion < 78) and (TItemType(ItemType) > t_TorpedoTube) then Inc(ItemType, 3);
+  if (LoadedSaveVersion < 127) and (TItemType(ItemType) > t_Lirecron) then Inc(ItemType);
   Result := TItemType(ItemType);
 end;
 { @end $80CED4 }

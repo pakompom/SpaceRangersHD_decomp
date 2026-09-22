@@ -225,8 +225,24 @@ impl Compiler {
         Ok(names)
     }
     pub fn enum_range(&self, bounds: &Value) -> Result<(String, i64, i64)> {
-        let lower = string(bounds, "lower");
-        let upper = string(bounds, "upper");
+        let resolve_alias = |name: &str| -> Result<String> {
+            let mut name = name.to_owned();
+            let mut seen = BTreeSet::new();
+            while let Some(d) = self.decls.iter().find(|d| {
+                d.kind == "constant"
+                    && d.data["type"].is_null()
+                    && d.name.eq_ignore_ascii_case(&name)
+            }) {
+                ensure!(
+                    seen.insert(name.to_lowercase()),
+                    "cyclic enum constant alias: {name}"
+                );
+                name = string(&d.data, "initializer").trim().to_owned();
+            }
+            Ok(name)
+        };
+        let lower = resolve_alias(string(bounds, "lower"))?;
+        let upper = resolve_alias(string(bounds, "upper"))?;
         let mut found = None;
         for d in self.types.values().filter(|d| d.kind == "enum") {
             let members = array(&d.data, "members");
@@ -239,8 +255,8 @@ impl Compiler {
                     })
                     .and_then(|m| m[1].as_i64())
             };
-            if let Some(lo) = ordinal(lower) {
-                let hi = ordinal(upper).with_context(|| {
+            if let Some(lo) = ordinal(&lower) {
+                let hi = ordinal(&upper).with_context(|| {
                     format!("array bounds {lower} and {upper} must belong to the same enum")
                 })?;
                 ensure!(lo <= hi, "empty/reversed array range: {lower}..{upper}");
@@ -725,6 +741,33 @@ mod tests {
             assert!(c.enum_range(&json!({"lower":lower,"upper":upper})).is_err());
         }
         c.build()?;
+        Ok(())
+    }
+    #[test]
+    fn enum_constant_aliases_preserve_array_bounds_and_domains() -> Result<()> {
+        let mut c = compiler(
+            "unit X; interface type TKind = (kFirst=2, kLast=4); // @size 1\n\
+             TOther = (oFirst, oLast); // @size 1\n\
+             const First = kFirst; Last = kLast; Chained = FIRST; Other = oLast;\n\
+             CycleA = CycleB; CycleB = CycleA; Stored: TKind = kFirst;\n\
+             type TBand = array[Chained..Last] of WideString; implementation end.",
+        )?;
+        let band = c.lookup("TBand")?;
+        assert_eq!(c.array_bounds(&band.data["type"])?, (2, 4));
+        assert_eq!(c.size(&json!("TBand"))?, 12);
+        assert_eq!(c.managed_storage(&json!("TBand"))?.last().unwrap().0, 8);
+        assert_eq!(
+            crate::pascal::render::spelling(&band.data["type"])?,
+            "array[Chained..Last] of WideString"
+        );
+        for (lower, upper) in [
+            ("Last", "First"),
+            ("First", "Other"),
+            ("CycleA", "Last"),
+            ("Stored", "Last"),
+        ] {
+            assert!(c.enum_range(&json!({"lower":lower,"upper":upper})).is_err());
+        }
         Ok(())
     }
     #[test]

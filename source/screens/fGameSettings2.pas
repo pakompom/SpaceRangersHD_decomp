@@ -251,7 +251,7 @@ begin
     end;
   for I := 0 to 11 do ItemTypeByChoice[I] := I + 43;
   for I := 0 to 11 do
-    if ItemTypeByChoice[I] in [Ord(t_Weapon1)..Ord(t_Weapon18)] then
+    if ItemTypeByChoice[I] in [Ord(t_IndustrialLaser)..Ord(t_Lirecron)] then
       (GetByName('ItemI' + IntToStr(I + 1)) as TImageGI).SetImagePath('GI,Bm.Items.' + GiResourceSuffix + ItemTypeNames[TItemType(ItemTypeByChoice[I])] + 's')
     else
       (GetByName('ItemI' + IntToStr(I + 1)) as TImageGI).SetImagePath('GI,Bm.Items.' + GiResourceSuffix + ItemTypeNames[TItemType(ItemTypeByChoice[I])] + IntToStr(1) + 's');

@@ -1269,7 +1269,7 @@ begin
   for I := 0 to 7 do
   begin
     SlotCount := 1;
-    if EquipmentSlotLayouts[I].ItemType = t_Weapon1 then SlotCount := 5;
+    if EquipmentSlotLayouts[I].ItemType = WeaponCategoryItemType then SlotCount := 5;
     for J := 0 to SlotCount - 1 do
       with GetByName('S_' + EquipmentSlotLayouts[I].Name + '_' + IntToStr(J) + 'Repair') as TgaiGI do
         if Active then
@@ -1853,7 +1853,7 @@ end;
 { @routine $6F808C TfShip2_IsCompatibleSlot }
 function TfShip2.IsCompatibleSlot(ItemType, SlotType: TItemType): Boolean;
 begin
-  Result := (ItemType = SlotType) or ((ItemType in [t_Weapon1..t_CustomWeapon]) and (SlotType in [t_Weapon1..t_CustomWeapon]));
+  Result := (ItemType = SlotType) or ((ItemType in [t_IndustrialLaser..t_CustomWeapon]) and (SlotType in [t_IndustrialLaser..t_CustomWeapon]));
 end;
 { @end $6F808C }
 
@@ -1864,7 +1864,7 @@ begin
   for I := 0 to 7 do
   begin
     MaximumSlots := 1;
-    if EquipmentSlotLayouts[I].ItemType = t_Weapon1 then MaximumSlots := 5;
+    if EquipmentSlotLayouts[I].ItemType = WeaponCategoryItemType then MaximumSlots := 5;
     Count := PlayerHoldShip.GetSlotCountForItemType(EquipmentSlotLayouts[I].ItemType);
     for Slot := 0 to Count - 1 do
     begin
@@ -1874,7 +1874,7 @@ begin
       GetByName('S_' + EquipmentSlotLayouts[I].Name + '_' + IntToStr(Slot) + 'off').SetActive(False);
       GetByName('S_' + EquipmentSlotLayouts[I].Name + '_' + IntToStr(Slot) + 'Set').SetActive(False);
     end;
-    if EquipmentSlotLayouts[I].ItemType = t_Weapon1 then
+    if EquipmentSlotLayouts[I].ItemType = WeaponCategoryItemType then
     begin
       for Slot := Count to 4 do
       begin
@@ -2024,7 +2024,7 @@ begin
       GetByName('S_' + EquipmentSlotLayouts[I].Name + '_' + IntToStr(Slot) + 'b').SetActive((Item <> nil) and not Highlight and not PlayerHoldShip.IsEquipmentUsable(Item) and not Boost);
       GetByName('S_' + EquipmentSlotLayouts[I].Name + '_' + IntToStr(Slot) + 'Ex').SetActive(Boost);
     end;
-    if EquipmentSlotLayouts[I].ItemType = t_Weapon1 then
+    if EquipmentSlotLayouts[I].ItemType = WeaponCategoryItemType then
     begin
       for Slot := SlotCount to 4 do
         (GetByName('S_' + EquipmentSlotLayouts[I].Name + '_' + IntToStr(Slot) + 'z') as TZoneGI).ZoneMouseDownCallback := nil;
@@ -4129,7 +4129,7 @@ var
     begin
       Slot := -1;
       if SelectedHoldItem.ItemType in [t_FuelTanks..t_DefGenerator] then Slot := Ord(SelectedHoldItem.ItemType) - 42
-      else if SelectedHoldItem.ItemType in [t_Weapon1..t_CustomWeapon] then Slot := 8;
+      else if SelectedHoldItem.ItemType in [t_IndustrialLaser..t_CustomWeapon] then Slot := 8;
       if Slot < 0 then Exit;
       if Slot >= 8 then
       begin

@@ -914,8 +914,8 @@ begin
       CreateAndEquipEngine(Round(EngineBaseSize * EquipmentSizeFactors[2]), 1, OwnerId);
       CreateAndEquipRadar(Round(RadarBaseSize * EquipmentSizeFactors[2]), 1, OwnerId);
       CreateAndEquipCargoHook(Round(CargoHookBaseSize * EquipmentSizeFactors[2]), 1, OwnerId);
-      CreateAndEquipWeapon(t_Weapon1, Round(WeaponInfos[t_Weapon1].AverageSize * EquipmentSizeFactors[1]), 3, OwnerId);
-      CreateAndEquipWeapon(t_Weapon2, Round(WeaponInfos[t_Weapon2].AverageSize * EquipmentSizeFactors[2]), 2, OwnerId);
+      CreateAndEquipWeapon(t_IndustrialLaser, Round(WeaponInfos[t_IndustrialLaser].AverageSize * EquipmentSizeFactors[1]), 3, OwnerId);
+      CreateAndEquipWeapon(t_FragmentationCannon, Round(WeaponInfos[t_FragmentationCannon].AverageSize * EquipmentSizeFactors[2]), 2, OwnerId);
     end;
     2:
     begin
@@ -927,8 +927,8 @@ begin
       CreateAndEquipEngine(Round(EngineBaseSize * EquipmentSizeFactors[2]), 1, OwnerId);
       CreateAndEquipRadar(Round(RadarBaseSize * EquipmentSizeFactors[2]), 1, OwnerId);
       CreateAndEquipCargoHook(Round(CargoHookBaseSize * EquipmentSizeFactors[1]), 1, OwnerId);
-      CreateAndEquipWeapon(t_Weapon2, Round(WeaponInfos[t_Weapon2].AverageSize * EquipmentSizeFactors[2]), 3, OwnerId);
-      CreateAndEquipWeapon(t_Weapon3, Round(WeaponInfos[t_Weapon3].AverageSize * EquipmentSizeFactors[2]), 2, OwnerId);
+      CreateAndEquipWeapon(t_FragmentationCannon, Round(WeaponInfos[t_FragmentationCannon].AverageSize * EquipmentSizeFactors[2]), 3, OwnerId);
+      CreateAndEquipWeapon(t_Flux, Round(WeaponInfos[t_Flux].AverageSize * EquipmentSizeFactors[2]), 2, OwnerId);
     end;
     3:
     begin
@@ -943,7 +943,7 @@ begin
       GetRadar.ConditionPercent := NextRandomIntRange(20, 80, RandomState);
       CreateAndEquipCargoHook(Round(CargoHookBaseSize * EquipmentSizeFactors[1]), 2, OwnerId);
       GetCargoHook.ConditionPercent := NextRandomIntRange(20, 80, RandomState);
-      CreateAndEquipWeapon(t_Weapon1, Round(WeaponInfos[t_Weapon1].AverageSize * EquipmentSizeFactors[2]), 1, OwnerId).ConditionPercent := NextRandomIntRange(20, 80, RandomState);
+      CreateAndEquipWeapon(t_IndustrialLaser, Round(WeaponInfos[t_IndustrialLaser].AverageSize * EquipmentSizeFactors[2]), 1, OwnerId).ConditionPercent := NextRandomIntRange(20, 80, RandomState);
     end;
     4:
     begin
@@ -954,8 +954,8 @@ begin
       CreateAndEquipEngine(Round(EngineBaseSize * EquipmentSizeFactors[2]), 1, OwnerId);
       CreateAndEquipRadar(Round(RadarBaseSize * EquipmentSizeFactors[2]), 1, OwnerId);
       CreateAndEquipCargoHook(Round(CargoHookBaseSize * EquipmentSizeFactors[2]), 2, OwnerId);
-      CreateAndEquipWeapon(t_Weapon2, Round(WeaponInfos[t_Weapon2].AverageSize * EquipmentSizeFactors[2]), 2, OwnerId);
-      CreateAndEquipWeapon(t_Weapon3, Round(WeaponInfos[t_Weapon3].AverageSize * EquipmentSizeFactors[3]), 2, OwnerId);
+      CreateAndEquipWeapon(t_FragmentationCannon, Round(WeaponInfos[t_FragmentationCannon].AverageSize * EquipmentSizeFactors[2]), 2, OwnerId);
+      CreateAndEquipWeapon(t_Flux, Round(WeaponInfos[t_Flux].AverageSize * EquipmentSizeFactors[3]), 2, OwnerId);
     end;
     5:
     begin
@@ -966,7 +966,7 @@ begin
       CreateAndEquipEngine(Round(EngineBaseSize * EquipmentSizeFactors[1]), 3, OwnerId);
       CreateAndEquipRadar(Round(RadarBaseSize * EquipmentSizeFactors[2]), 1, OwnerId);
       CreateAndEquipCargoHook(Round(CargoHookBaseSize * EquipmentSizeFactors[2]), 1, OwnerId);
-      CreateAndEquipWeapon(t_Weapon1, Round(WeaponInfos[t_Weapon1].AverageSize * EquipmentSizeFactors[3]), 1, OwnerId);
+      CreateAndEquipWeapon(t_IndustrialLaser, Round(WeaponInfos[t_IndustrialLaser].AverageSize * EquipmentSizeFactors[3]), 1, OwnerId);
     end;
     6:
     begin
@@ -977,7 +977,7 @@ begin
       CreateAndEquipEngine(Round(EngineBaseSize * EquipmentSizeFactors[1]), 3, OwnerId);
       CreateAndEquipRadar(Round(RadarBaseSize * EquipmentSizeFactors[2]), 1, OwnerId);
       CreateAndEquipCargoHook(Round(CargoHookBaseSize * EquipmentSizeFactors[2]), 1, OwnerId);
-      CreateAndEquipWeapon(t_Weapon1, Round(WeaponInfos[t_Weapon1].AverageSize * EquipmentSizeFactors[3]), 1, OwnerId);
+      CreateAndEquipWeapon(t_IndustrialLaser, Round(WeaponInfos[t_IndustrialLaser].AverageSize * EquipmentSizeFactors[3]), 1, OwnerId);
     end;
     7:
     begin
@@ -989,9 +989,9 @@ begin
       CreateAndEquipEngine(Round(EngineBaseSize * EquipmentSizeFactors[1]), 2, OwnerId);
       CreateAndEquipRadar(Round(RadarBaseSize * EquipmentSizeFactors[2]), 2, OwnerId);
       CreateAndEquipCargoHook(Round(CargoHookBaseSize * EquipmentSizeFactors[2]), 1, OwnerId);
-      CreateAndEquipWeapon(t_Weapon1, Round(WeaponInfos[t_Weapon1].AverageSize * EquipmentSizeFactors[2]), 2, OwnerId);
-      CreateAndEquipWeapon(t_Weapon1, Round(WeaponInfos[t_Weapon1].AverageSize * EquipmentSizeFactors[2]), 2, OwnerId);
-      CreateAndEquipWeapon(t_Weapon2, Round(WeaponInfos[t_Weapon2].AverageSize * EquipmentSizeFactors[3]), 1, OwnerId);
+      CreateAndEquipWeapon(t_IndustrialLaser, Round(WeaponInfos[t_IndustrialLaser].AverageSize * EquipmentSizeFactors[2]), 2, OwnerId);
+      CreateAndEquipWeapon(t_IndustrialLaser, Round(WeaponInfos[t_IndustrialLaser].AverageSize * EquipmentSizeFactors[2]), 2, OwnerId);
+      CreateAndEquipWeapon(t_FragmentationCannon, Round(WeaponInfos[t_FragmentationCannon].AverageSize * EquipmentSizeFactors[3]), 1, OwnerId);
     end;
     8:
     begin
@@ -1006,7 +1006,7 @@ begin
       GetRadar.ConditionPercent := NextRandomIntRange(20, 80, RandomState);
       CreateAndEquipCargoHook(Round(CargoHookBaseSize * EquipmentSizeFactors[1]), 2, OwnerId);
       GetCargoHook.ConditionPercent := NextRandomIntRange(20, 80, RandomState);
-      CreateAndEquipWeapon(t_Weapon2, Round(WeaponInfos[t_Weapon2].AverageSize * EquipmentSizeFactors[2]), 3, OwnerId).ConditionPercent := NextRandomIntRange(20, 80, RandomState);
+      CreateAndEquipWeapon(t_FragmentationCannon, Round(WeaponInfos[t_FragmentationCannon].AverageSize * EquipmentSizeFactors[2]), 3, OwnerId).ConditionPercent := NextRandomIntRange(20, 80, RandomState);
     end;
     9:
     begin
@@ -1017,7 +1017,7 @@ begin
       CreateAndEquipEngine(Round(EngineBaseSize * EquipmentSizeFactors[1]), 2, OwnerId);
       CreateAndEquipRadar(Round(RadarBaseSize * EquipmentSizeFactors[2]), 1, OwnerId);
       CreateAndEquipCargoHook(Round(CargoHookBaseSize * EquipmentSizeFactors[2]), 1, OwnerId);
-      CreateAndEquipWeapon(t_Weapon1, Round(WeaponInfos[t_Weapon1].AverageSize * EquipmentSizeFactors[2]), 2, OwnerId);
+      CreateAndEquipWeapon(t_IndustrialLaser, Round(WeaponInfos[t_IndustrialLaser].AverageSize * EquipmentSizeFactors[2]), 2, OwnerId);
       New(Entry);
       GetPlayer.StorageEntries.Add(Entry);
       Entry.Item := TGoods.Create;
@@ -1043,7 +1043,7 @@ begin
       GetRadar.ConditionPercent := NextRandomIntRange(20, 80, RandomState);
       CreateAndEquipCargoHook(Round(CargoHookBaseSize * EquipmentSizeFactors[1]), 2, OwnerId);
       GetCargoHook.ConditionPercent := NextRandomIntRange(20, 80, RandomState);
-      CreateAndEquipWeapon(t_Weapon4, Round(WeaponInfos[t_Weapon4].AverageSize * EquipmentSizeFactors[3]), 1, OwnerId).ConditionPercent := NextRandomIntRange(60, 90, RandomState);
+      CreateAndEquipWeapon(t_MissileLauncher, Round(WeaponInfos[t_MissileLauncher].AverageSize * EquipmentSizeFactors[3]), 1, OwnerId).ConditionPercent := NextRandomIntRange(60, 90, RandomState);
       New(Entry);
       GetPlayer.StorageEntries.Add(Entry);
       Entry.Item := TGoods.Create;
@@ -1064,8 +1064,8 @@ begin
       CreateAndEquipRadar(Round(RadarBaseSize * EquipmentSizeFactors[2]), 1, OwnerId);
       CreateAndEquipCargoHook(Round(CargoHookBaseSize * EquipmentSizeFactors[2]), 1, OwnerId);
       CreateAndEquipDefGenerator(Round(DefGeneratorBaseSize * EquipmentSizeFactors[2]), 3, OwnerId);
-      CreateAndEquipWeapon(t_Weapon1, Round(WeaponInfos[t_Weapon1].AverageSize * EquipmentSizeFactors[3]), 2, OwnerId);
-      CreateAndEquipWeapon(t_Weapon2, Round(WeaponInfos[t_Weapon2].AverageSize * EquipmentSizeFactors[2]), 2, OwnerId);
+      CreateAndEquipWeapon(t_IndustrialLaser, Round(WeaponInfos[t_IndustrialLaser].AverageSize * EquipmentSizeFactors[3]), 2, OwnerId);
+      CreateAndEquipWeapon(t_FragmentationCannon, Round(WeaponInfos[t_FragmentationCannon].AverageSize * EquipmentSizeFactors[2]), 2, OwnerId);
     end;
     12:
     begin
@@ -1080,7 +1080,7 @@ begin
       GetRadar.ConditionPercent := NextRandomIntRange(20, 80, RandomState);
       CreateAndEquipCargoHook(Round(CargoHookBaseSize * EquipmentSizeFactors[2]), 1, OwnerId);
       GetCargoHook.ConditionPercent := NextRandomIntRange(20, 80, RandomState);
-      CreateAndEquipWeapon(t_Weapon1, Round(WeaponInfos[t_Weapon1].AverageSize * EquipmentSizeFactors[3]), 1, OwnerId).ConditionPercent := NextRandomIntRange(20, 80, RandomState);
+      CreateAndEquipWeapon(t_IndustrialLaser, Round(WeaponInfos[t_IndustrialLaser].AverageSize * EquipmentSizeFactors[3]), 1, OwnerId).ConditionPercent := NextRandomIntRange(20, 80, RandomState);
       New(Entry);
       GetPlayer.StorageEntries.Add(Entry);
       Entry.Item := TGoods.Create;
@@ -1102,7 +1102,7 @@ begin
       CreateAndEquipRadar(Round(RadarBaseSize * EquipmentSizeFactors[2]), 1, OwnerId);
       CreateAndEquipScanner(Round(ScannerBaseSize * EquipmentSizeFactors[3]), 1, OwnerId);
       CreateAndEquipCargoHook(Round(CargoHookBaseSize * EquipmentSizeFactors[3]), 1, OwnerId);
-      CreateAndEquipWeapon(t_Weapon1, Round(WeaponInfos[t_Weapon1].AverageSize * EquipmentSizeFactors[3]), 1, OwnerId);
+      CreateAndEquipWeapon(t_IndustrialLaser, Round(WeaponInfos[t_IndustrialLaser].AverageSize * EquipmentSizeFactors[3]), 1, OwnerId);
     end;
     14:
     begin
@@ -1114,8 +1114,8 @@ begin
       CreateAndEquipRadar(Round(RadarBaseSize * EquipmentSizeFactors[3]), 3, OwnerId);
       CreateAndEquipScanner(Round(ScannerBaseSize * EquipmentSizeFactors[3]), 1, OwnerId);
       CreateAndEquipCargoHook(Round(CargoHookBaseSize * EquipmentSizeFactors[3]), 1, OwnerId);
-      CreateAndEquipWeapon(t_Weapon1, Round(WeaponInfos[t_Weapon1].AverageSize * EquipmentSizeFactors[3]), 2, OwnerId);
-      CreateAndEquipWeapon(t_Weapon2, Round(WeaponInfos[t_Weapon2].AverageSize * EquipmentSizeFactors[4]), 2, OwnerId);
+      CreateAndEquipWeapon(t_IndustrialLaser, Round(WeaponInfos[t_IndustrialLaser].AverageSize * EquipmentSizeFactors[3]), 2, OwnerId);
+      CreateAndEquipWeapon(t_FragmentationCannon, Round(WeaponInfos[t_FragmentationCannon].AverageSize * EquipmentSizeFactors[4]), 2, OwnerId);
     end;
     15:
     begin
@@ -1128,8 +1128,8 @@ begin
       CreateAndEquipEngine(Round(EngineBaseSize * EquipmentSizeFactors[2]), 2, OwnerId);
       CreateAndEquipRadar(Round(RadarBaseSize * EquipmentSizeFactors[3]), 1, OwnerId);
       CreateAndEquipCargoHook(Round(CargoHookBaseSize * EquipmentSizeFactors[3]), 1, OwnerId);
-      CreateAndEquipWeapon(t_Weapon1, Round(WeaponInfos[t_Weapon1].AverageSize * EquipmentSizeFactors[4]), 2, OwnerId);
-      CreateAndEquipWeapon(t_Weapon1, Round(WeaponInfos[t_Weapon1].AverageSize * EquipmentSizeFactors[3]), 3, OwnerId);
+      CreateAndEquipWeapon(t_IndustrialLaser, Round(WeaponInfos[t_IndustrialLaser].AverageSize * EquipmentSizeFactors[4]), 2, OwnerId);
+      CreateAndEquipWeapon(t_IndustrialLaser, Round(WeaponInfos[t_IndustrialLaser].AverageSize * EquipmentSizeFactors[3]), 3, OwnerId);
     end;
     16:
     begin
@@ -1140,9 +1140,9 @@ begin
       CreateAndEquipEngine(Round(EngineBaseSize * EquipmentSizeFactors[2]), 1, OwnerId);
       CreateAndEquipRadar(Round(RadarBaseSize * EquipmentSizeFactors[3]), 1, OwnerId);
       CreateAndEquipCargoHook(Round(CargoHookBaseSize * EquipmentSizeFactors[3]), 1, OwnerId);
-      CreateAndEquipWeapon(t_Weapon1, Round(WeaponInfos[t_Weapon1].AverageSize * EquipmentSizeFactors[3]), 3, OwnerId);
-      CreateAndEquipWeapon(t_Weapon2, Round(WeaponInfos[t_Weapon2].AverageSize * EquipmentSizeFactors[3]), 2, OwnerId);
-      CreateAndEquipWeapon(t_Weapon3, Round(WeaponInfos[t_Weapon3].AverageSize * EquipmentSizeFactors[3]), 2, OwnerId);
+      CreateAndEquipWeapon(t_IndustrialLaser, Round(WeaponInfos[t_IndustrialLaser].AverageSize * EquipmentSizeFactors[3]), 3, OwnerId);
+      CreateAndEquipWeapon(t_FragmentationCannon, Round(WeaponInfos[t_FragmentationCannon].AverageSize * EquipmentSizeFactors[3]), 2, OwnerId);
+      CreateAndEquipWeapon(t_Flux, Round(WeaponInfos[t_Flux].AverageSize * EquipmentSizeFactors[3]), 2, OwnerId);
     end;
     17:
     begin
@@ -1153,7 +1153,7 @@ begin
       CreateAndEquipEngine(Round(EngineBaseSize * EquipmentSizeFactors[3]), 2, OwnerId);
       CreateAndEquipRadar(Round(RadarBaseSize * EquipmentSizeFactors[3]), 1, OwnerId);
       CreateAndEquipCargoHook(Round(CargoHookBaseSize * EquipmentSizeFactors[3]), 1, OwnerId);
-      CreateAndEquipWeapon(t_Weapon4, Round(WeaponInfos[t_Weapon4].AverageSize * EquipmentSizeFactors[3]), 2, OwnerId);
+      CreateAndEquipWeapon(t_MissileLauncher, Round(WeaponInfos[t_MissileLauncher].AverageSize * EquipmentSizeFactors[3]), 2, OwnerId);
     end;
     18:
     begin
@@ -1165,7 +1165,7 @@ begin
       CreateAndEquipEngine(Round(EngineBaseSize * EquipmentSizeFactors[2]), 1, OwnerId).ConditionPercent := NextRandomIntRange(10, 50, RandomState);
       CreateAndEquipRadar(Round(RadarBaseSize * EquipmentSizeFactors[1]), 1, OwnerId).ConditionPercent := NextRandomIntRange(10, 50, RandomState);
       CreateAndEquipCargoHook(Round(CargoHookBaseSize * EquipmentSizeFactors[2]), 1, OwnerId).ConditionPercent := NextRandomIntRange(10, 50, RandomState);
-      CreateAndEquipWeapon(t_Weapon1, Round(WeaponInfos[t_Weapon1].AverageSize * EquipmentSizeFactors[4]), 1, OwnerId).ConditionPercent := NextRandomIntRange(10, 50, RandomState);
+      CreateAndEquipWeapon(t_IndustrialLaser, Round(WeaponInfos[t_IndustrialLaser].AverageSize * EquipmentSizeFactors[4]), 1, OwnerId).ConditionPercent := NextRandomIntRange(10, 50, RandomState);
     end;
     19:
     begin
@@ -1176,8 +1176,8 @@ begin
       CreateAndEquipEngine(Round(EngineBaseSize * EquipmentSizeFactors[2]), 2, OwnerId);
       CreateAndEquipRadar(Round(RadarBaseSize * EquipmentSizeFactors[2]), 1, OwnerId);
       CreateAndEquipCargoHook(Round(CargoHookBaseSize * EquipmentSizeFactors[1]), 2, OwnerId);
-      CreateAndEquipWeapon(t_Weapon2, Round(WeaponInfos[t_Weapon2].AverageSize * EquipmentSizeFactors[2]), 3, OwnerId);
-      CreateAndEquipWeapon(t_Weapon3, Round(WeaponInfos[t_Weapon3].AverageSize * EquipmentSizeFactors[3]), 2, OwnerId);
+      CreateAndEquipWeapon(t_FragmentationCannon, Round(WeaponInfos[t_FragmentationCannon].AverageSize * EquipmentSizeFactors[2]), 3, OwnerId);
+      CreateAndEquipWeapon(t_Flux, Round(WeaponInfos[t_Flux].AverageSize * EquipmentSizeFactors[3]), 2, OwnerId);
     end;
     20:
     begin
@@ -1190,7 +1190,7 @@ begin
       CreateAndEquipEngine(Round(EngineBaseSize * EquipmentSizeFactors[3]), 1, OwnerId);
       CreateAndEquipRadar(Round(RadarBaseSize * EquipmentSizeFactors[2]), 1, OwnerId);
       CreateAndEquipCargoHook(Round(CargoHookBaseSize * EquipmentSizeFactors[2]), 1, OwnerId);
-      CreateAndEquipWeapon(t_Weapon1, Round(WeaponInfos[t_Weapon1].AverageSize * EquipmentSizeFactors[2]), 1, OwnerId);
+      CreateAndEquipWeapon(t_IndustrialLaser, Round(WeaponInfos[t_IndustrialLaser].AverageSize * EquipmentSizeFactors[2]), 1, OwnerId);
       New(Entry);
       GetPlayer.StorageEntries.Add(Entry);
       Entry.Item := TGoods.Create;
@@ -1210,8 +1210,8 @@ begin
       CreateAndEquipEngine(Round(EngineBaseSize * EquipmentSizeFactors[2]), 1, OwnerId);
       CreateAndEquipRadar(Round(RadarBaseSize * EquipmentSizeFactors[2]), 1, OwnerId);
       CreateAndEquipCargoHook(Round(CargoHookBaseSize * EquipmentSizeFactors[3]), 2, OwnerId);
-      CreateAndEquipWeapon(t_Weapon1, Round(WeaponInfos[t_Weapon1].AverageSize * EquipmentSizeFactors[3]), 3, OwnerId);
-      CreateAndEquipWeapon(t_Weapon2, Round(WeaponInfos[t_Weapon2].AverageSize * EquipmentSizeFactors[3]), 2, OwnerId);
+      CreateAndEquipWeapon(t_IndustrialLaser, Round(WeaponInfos[t_IndustrialLaser].AverageSize * EquipmentSizeFactors[3]), 3, OwnerId);
+      CreateAndEquipWeapon(t_FragmentationCannon, Round(WeaponInfos[t_FragmentationCannon].AverageSize * EquipmentSizeFactors[3]), 2, OwnerId);
     end;
     22:
     begin
@@ -1223,7 +1223,7 @@ begin
       CreateAndEquipRadar(Round(RadarBaseSize * EquipmentSizeFactors[3]), 1, OwnerId);
       CreateAndEquipScanner(Round(ScannerBaseSize * EquipmentSizeFactors[4]), 1, OwnerId);
       CreateAndEquipCargoHook(Round(CargoHookBaseSize * EquipmentSizeFactors[3]), 1, OwnerId);
-      CreateAndEquipWeapon(t_Weapon1, Round(WeaponInfos[t_Weapon1].AverageSize * EquipmentSizeFactors[3]), 1, OwnerId);
+      CreateAndEquipWeapon(t_IndustrialLaser, Round(WeaponInfos[t_IndustrialLaser].AverageSize * EquipmentSizeFactors[3]), 1, OwnerId);
     end;
     23:
     begin
@@ -1235,7 +1235,7 @@ begin
       CreateAndEquipRadar(Round(RadarBaseSize * EquipmentSizeFactors[2]), 1, OwnerId);
       CreateAndEquipScanner(Round(ScannerBaseSize * EquipmentSizeFactors[2]), 1, OwnerId);
       CreateAndEquipCargoHook(Round(CargoHookBaseSize * EquipmentSizeFactors[3]), 1, OwnerId);
-      CreateAndEquipWeapon(t_Weapon1, Round(WeaponInfos[t_Weapon1].AverageSize * EquipmentSizeFactors[2]), 1, OwnerId);
+      CreateAndEquipWeapon(t_IndustrialLaser, Round(WeaponInfos[t_IndustrialLaser].AverageSize * EquipmentSizeFactors[2]), 1, OwnerId);
       New(Entry);
       GetPlayer.StorageEntries.Add(Entry);
       Entry.Item := TGoods.Create;
@@ -1257,7 +1257,7 @@ begin
       CreateAndEquipScanner(Round(ScannerBaseSize * EquipmentSizeFactors[2]), 1, OwnerId);
       CreateAndEquipCargoHook(Round(CargoHookBaseSize * EquipmentSizeFactors[3]), 2, OwnerId);
       CreateAndEquipRepairRobot(Round(RepairRobotBaseSize * EquipmentSizeFactors[3]), 2, OwnerId);
-      CreateAndEquipWeapon(t_Weapon1, Round(WeaponInfos[t_Weapon1].AverageSize * EquipmentSizeFactors[3]), 1, OwnerId);
+      CreateAndEquipWeapon(t_IndustrialLaser, Round(WeaponInfos[t_IndustrialLaser].AverageSize * EquipmentSizeFactors[3]), 1, OwnerId);
       New(Entry);
       GetPlayer.StorageEntries.Add(Entry);
       Entry.Item := TGoods.Create;
@@ -1281,7 +1281,7 @@ begin
       GetRadar.ConditionPercent := NextRandomIntRange(10, 50, RandomState);
       CreateAndEquipCargoHook(Round(CargoHookBaseSize * EquipmentSizeFactors[2]), 1, OwnerId);
       GetCargoHook.ConditionPercent := NextRandomIntRange(10, 50, RandomState);
-      CreateAndEquipWeapon(t_Weapon1, Round(WeaponInfos[t_Weapon1].AverageSize * EquipmentSizeFactors[2]), 1, OwnerId).ConditionPercent := NextRandomIntRange(10, 50, RandomState);
+      CreateAndEquipWeapon(t_IndustrialLaser, Round(WeaponInfos[t_IndustrialLaser].AverageSize * EquipmentSizeFactors[2]), 1, OwnerId).ConditionPercent := NextRandomIntRange(10, 50, RandomState);
     end;
   end;
   GetHull.Weight := RoundAndTruncateToTens(GetHull.Weight * HullCapacityScale /

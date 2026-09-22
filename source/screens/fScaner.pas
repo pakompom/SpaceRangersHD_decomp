@@ -195,7 +195,7 @@ begin
     for I := 0 to 7 do
     begin
       MaximumSlots := 1;
-      if EquipmentSlotLayouts[I].ItemType = t_Weapon1 then MaximumSlots := 5;
+      if EquipmentSlotLayouts[I].ItemType = WeaponCategoryItemType then MaximumSlots := 5;
       SlotCount := ShipToInspect.GetSlotCountForItemType(EquipmentSlotLayouts[I].ItemType);
       for J := 0 to SlotCount - 1 do
       begin
@@ -204,7 +204,7 @@ begin
         GetByName('S_' + EquipmentSlotLayouts[I].Name + '_' + IntToStr(J) + 'off').SetActive(False);
         GetByName('S_' + EquipmentSlotLayouts[I].Name + '_' + IntToStr(J) + 'Set').SetActive(False);
       end;
-      if EquipmentSlotLayouts[I].ItemType = t_Weapon1 then
+      if EquipmentSlotLayouts[I].ItemType = WeaponCategoryItemType then
       begin
         for J := SlotCount to 4 do
         begin
@@ -961,7 +961,7 @@ begin
         GetByName('S_' + EquipmentSlotLayouts[I].Name + '_' + IntToStr(SlotIndex) + 'Ex').SetActive(False);
         Stage := 17;
       end;
-      if EquipmentSlotLayouts[I].ItemType = t_Weapon1 then
+      if EquipmentSlotLayouts[I].ItemType = WeaponCategoryItemType then
       begin
         Stage := 18;
         for SlotIndex := SlotCount to 4 do
