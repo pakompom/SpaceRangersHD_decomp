@@ -7115,7 +7115,7 @@ var
   Panel: TPanelScrollBarGI;
   Height: Integer;
   I, Kind, Turn: Integer;
-  ProgramIndex: Byte;
+  ProgramIndex: TProgramIndex;
   Name, SeriesName, TypeName, CountText, Text, ChargesText, Description, Title: WideString;
   ColorIndex: Byte;
   Info: PCustomShipInfo;

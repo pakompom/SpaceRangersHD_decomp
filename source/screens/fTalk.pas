@@ -1213,7 +1213,7 @@ end;
 { @routine $6D5048 TfTalk_BuildBuiltinChoices }
 procedure TfTalk.BuildBuiltinChoices;
 var HasAttackChoice, RecognizesPlayer: Boolean; TargetName: WideString;
-  Callback: TDialogChoiceEventGI; ProgramIndex: Byte; I: Integer;
+  Callback: TDialogChoiceEventGI; ProgramIndex: TProgramIndex; I: Integer;
 begin
   RecognizesPlayer := not TalkShip.IsPlayerChameleonEffectiveAgainstSelf;
   if TalkScripted then
@@ -1429,7 +1429,7 @@ begin
             if (GetPlayer.ProgramCounts[ProgramIndex] > 0) and (ProgramIndex in [prgShipwreck..prgDisconnection]) and
               ((TalkShip as TKling).ActiveProgramAppliedTurn = 0) then
               AddChoice('- ' + FormatText1(GetPlayer.LookupTalkText('Talk.Dominator.ProgrammPlayer'),
-                '<color=255,240,100>', '<Name>', GetPlayer.GetProgramName(ProgramIndex)), ProgramIndex, RunDominatorProgram, 0);
+                '<color=255,240,100>', '<Name>', GetPlayer.GetProgramName(ProgramIndex)), Ord(ProgramIndex), RunDominatorProgram, 0);
           if RecognizesPlayer or GetPlayer.ChameleonDetected[Ord((TalkShip as TKling).DominatorSeries)] or
             ((TalkShip as TKling).DominatorSeries <> GetPlayer.ChameleonSeries) then
           begin
@@ -3007,9 +3007,9 @@ end;
 
 { @routine $6E2464 TfTalk_RunDominatorProgram }
 procedure TfTalk.RunDominatorProgram(Action: Integer);
-var ProgramIndex: Byte; Remaining: Integer;
+var ProgramIndex: TProgramIndex; Remaining: Integer;
 begin
-  ProgramIndex := Action;
+  ProgramIndex := TProgramIndex(Action);
   Remaining := GetPlayer.ProgramCounts[ProgramIndex] - 1;
   GetPlayer.ProgramCounts[ProgramIndex] := Remaining;
   SysUtils.Sleep(1);

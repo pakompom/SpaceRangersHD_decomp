@@ -11,7 +11,7 @@ type
     KlingType: TKlingType; // @offset 0x4D0  Script.ShipSubType.
     DominatorSeries: TDominatorSeries; // @offset 0x4D1
     ActiveProgramAppliedTurn: Integer; // @offset 0x4D4  Zero means inactive.
-    ActiveProgramId: Byte; // @offset 0x4D8
+    ActiveProgramId: TProgramIndex; // @offset 0x4D8
     AuraEffectShownThisTurn: Boolean; // @offset 0x4D9
 
     procedure SaveToBuffer(Buffer: TBufEC); override; // @addr $005EA15C @slot $00
@@ -77,7 +77,7 @@ type
     function GetName: WideString; override; // @addr 0x5EE5C0 @slot 0x24
     function GetFullName(const Separator: WideString): WideString; override; // @addr 0x5EE5E0 @slot 0x28
 
-    function IsProgramActive(ProgramId: Byte): Boolean; // @addr 0x5EE81C @note "Checks the stored active flag and ID; expiration is handled by the daily ship update."
+    function IsProgramActive(ProgramId: TProgramIndex): Boolean; // @addr 0x5EE81C @note "Checks the stored active flag and ID; expiration is handled by the daily ship update."
     function ShouldKamikaze: Boolean; // @addr 0x5EBF40 @note "Requires a live enemy in the same star and KlingType=ktKlig. Existing kamikaze mode bypasses the proximity/strength test."
     procedure OpenKellerMissionHole; // @addr 0x5ECD28 @note "Advances mission state 2 to 3, creates the type-4 hole and sends Keller through it with generated reinforcements."
     procedure DetectAttackingPlayer(Attacker: TShip); // @addr $5EF1F4 Marks this series as aware of the player's camouflage and reports a matching active disguise.
@@ -525,7 +525,7 @@ begin
   KlingType := TKlingType(Buffer.GetByte);
   DominatorSeries := TDominatorSeries(Buffer.GetByte);
   ActiveProgramAppliedTurn := Buffer.GetInt32;
-  ActiveProgramId := Buffer.GetByte;
+  ActiveProgramId := TProgramIndex(Buffer.GetByte);
   if LoadedSaveVersion <= 147 then ClearRecentlyDroppedItems;
 end;
 { @end $5EA1BC }
@@ -1430,7 +1430,7 @@ end;
 { @end $5EE804 }
 
 { @routine $5EE81C TKling_IsProgramActive }
-function TKling.IsProgramActive(ProgramId: Byte): Boolean;
+function TKling.IsProgramActive(ProgramId: TProgramIndex): Boolean;
 begin
   Result := (ActiveProgramAppliedTurn > 0) and (ProgramId = ActiveProgramId);
 end;

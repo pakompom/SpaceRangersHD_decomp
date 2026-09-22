@@ -1088,11 +1088,11 @@ begin
         CurrentStanding := OwnerShip.CurrentStanding
       else if OwnerShip.CurrentStanding in [ssCoalitionActive, ssCoalitionPassive] then
       begin
-        if Byte(CurrentStar.ControlFaction) in [0, 1] then CurrentStanding := ssCoalitionActive else CurrentStanding := ssNeutral;
+        if CurrentStar.ControlFaction in [sfCoalition, sfDominators] then CurrentStanding := ssCoalitionActive else CurrentStanding := ssNeutral;
       end
       else if OwnerShip.CurrentStanding in [ssPiratePassive, ssPirateActive] then
       begin
-        if Byte(CurrentStar.ControlFaction) in [1, 2] then CurrentStanding := ssPirateActive else CurrentStanding := ssNeutral;
+        if CurrentStar.ControlFaction in [sfDominators, sfPirates] then CurrentStanding := ssPirateActive else CurrentStanding := ssNeutral;
       end
       else CurrentStanding := OwnerShip.CurrentStanding;
     end;

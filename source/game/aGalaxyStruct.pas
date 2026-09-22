@@ -41,21 +41,6 @@ const
   stWarrior = 4;
   stTranclucator = 5;
 
-  // CurrentStanding categories: native GetControlPresence ($7C2538),
-  // ResetControlFaction ($7C3B8C), and subclass RefreshCurrentStanding methods.
-  // The companion ShipStanding reference uses CoalMilitary/Active/Passive and
-  // PirateMilitary/Active/Passive for the same IDs. Keep the stored Byte ABI.
-  ssDominator = 0;
-  ssUnaligned = 1;
-  ssCoalitionMilitary = 2;
-  ssCoalitionActive = 3;
-  ssCoalitionPassive = 4;
-  ssNeutral = 5;
-  ssPiratePassive = 6;
-  ssPirateActive = 7;
-  ssPirateMilitary = 8;
-  ssCustom = 9;
-
   // Hull categories from ShipToHullType ($82F1F4), GetDefaultHullType ($74F294),
   // and ApplySpecialMicroModule ($8089D8). They are not TShip.TypeId values.
   htRanger = 0;
@@ -70,25 +55,25 @@ const
   htSpecial = 9;
   htFlagship = 10;
 
-  // ProgramNames at $87F5E4 (initializer descriptors $838044..$8380A0).
-  // Used by ranger inventory, Dominator effects, and script prog* identifiers.
-  prgKellerCall = 0;
-  prgLogicalNegation = 1;
-  prgDematerial = 2;
-  prgEnergotron = 3;
-  prgSabCrack = 4;
-  prgIntercom = 5;
-  prgShipwreck = 6;
-  prgWeaponBlocking = 7;
-  prgInsanity = 8;
-  prgShock = 9;
-  prgSelfDestruction = 10;
-  prgDisconnection = 11;
-
   // SelectAward returns this sentinel when no individual award qualifies.
   AwardNotFound = $FF;
 
 type
+  // CurrentStanding categories: GetControlPresence ($7C2538),
+  // ResetControlFaction ($7C3B8C), and subclass RefreshCurrentStanding methods.
+  TShipStanding = (
+    ssDominator = 0,
+    ssUnaligned = 1,
+    ssCoalitionMilitary = 2,
+    ssCoalitionActive = 3,
+    ssCoalitionPassive = 4,
+    ssNeutral = 5,
+    ssPiratePassive = 6,
+    ssPirateActive = 7,
+    ssPirateMilitary = 8,
+    ssCustom = 9
+  ); // @size $01
+
   // Award categories from SysToReward ($82EA40); distinct from individual award IDs.
   TAwardKind = (
     atLiberation = 0,
@@ -155,7 +140,22 @@ type
     psLeadership = 5
   ); // @size 0x1
 
-  TProgramIndex = 0..11;
+  // ProgramNames ($87F5E4; initializer descriptors $838044..$8380A0),
+  // ranger inventory, Dominator effects and script prog* IDs.
+  TProgramIndex = (
+    prgKellerCall = 0,
+    prgLogicalNegation = 1,
+    prgDematerial = 2,
+    prgEnergotron = 3,
+    prgSabCrack = 4,
+    prgIntercom = 5,
+    prgShipwreck = 6,
+    prgWeaponBlocking = 7,
+    prgInsanity = 8,
+    prgShock = 9,
+    prgSelfDestruction = 10,
+    prgDisconnection = 11
+  ); // @size $01
 
   // MatrixGame's SRobotGameState / CGame.SaveResult ABI, also stored in battle history.
   TPlanetBattleStatistics = record // @size $18
@@ -385,7 +385,7 @@ type
 
   TByteMask = set of 0..7; // @size $01
   TOwnerMask = set of TOwnerId; // @size $01
-  TStationStandingMask = set of 0..15; // @size $02 Station standing filter; empty accepts every standing.
+  TShipStandings = set of TShipStanding; // @size $02 Faction and station-search filters; an empty station filter accepts every standing.
   // Preserve the full byte for native membership checks; selected series are 0..2.
   TDominatorSeriesMask = set of 0..7; // @size $01
 
@@ -398,7 +398,7 @@ type
   TOwnerRelationRow = array[TOwnerId] of Byte;
   TOwnerRelationTable = array[TOwnerId] of TOwnerRelationRow;
   POwnerRelationTable = ^TOwnerRelationTable;
-  TFactionStandingMasks = array[TStarFaction] of TStationStandingMask;
+  TFactionStandingMasks = array[TStarFaction] of TShipStandings;
   PFactionStandingMasks = ^TFactionStandingMasks;
   TQuestType = (qtSendLetter = 0, qtKillShip = 1, qtPlanetQuest = 2,
     qtDefendSystem = 3, qtDefendShip = 4); // @size 0x1

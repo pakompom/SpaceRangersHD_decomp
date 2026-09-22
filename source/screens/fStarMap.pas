@@ -4143,7 +4143,7 @@ begin
         if (Obj as TShip).PartnerShip = GetPlayer then
           (GetByName('InfoShipName') as TLabelGI).SetText((GetByName('InfoShipName') as TLabelGI).GetText + #13#10 + WrapTextInColor(LookupLocalizedTextByKey('FormInfo.Partner'), '<color=255,240,100>'));
         if (Obj is TKling) and ((Obj as TKling).ActiveProgramAppliedTurn > 0) and
-          ((Obj as TKling).ActiveProgramId in [6..11]) then
+          ((Obj as TKling).ActiveProgramId in [prgShipwreck..prgDisconnection]) then
           (GetByName('InfoShipName') as TLabelGI).SetText((GetByName('InfoShipName') as TLabelGI).GetText + #13#10 +
             WrapTextInColor(LocalizedText('Programms.' + ProgramNames[(Obj as TKling).ActiveProgramId] + '.AddToShipInfo'), '<color=255,0,0>'));
       end

@@ -13,7 +13,7 @@ type
 
   TRangerCareerValues = array[TRangerCareer] of Byte;
 
-  TRangerProgramMask = set of 0..15; // @size 2 Bits 0..11 select program IDs.
+  TRangerProgramMask = set of TProgramIndex; // @size 2 Bits 0..11 select program IDs.
 
   TQuestTextKind = (qtkOffer = 0, qtkCompletion = 1, qtkProtectedShipLost = 2); // @size 0x4
 
@@ -55,7 +55,7 @@ type
     PrisonTermRemaining: Integer; // @offset 0x524
     LastDockedNonPlanetLocation: TShip; // @offset 0x528
     BaseNodes: Integer; // @offset 0x52C
-    ProgramCounts: array[0..11] of Integer; // @offset 0x530
+    ProgramCounts: array[TProgramIndex] of Integer; // @offset 0x530
 
     destructor Destroy; override; // @addr 0x724D3C @note "Requires registered ranger/home-planet state. Removes quests and relation-column entries, adjusts the player index and refreshes galaxy ratings."
     procedure InitializeAtPlanet(Planet: TPlanet; InitialMoney: Integer); virtual; // @addr 0x72528C @slot 0xD0 @note "For a fresh inherited TNormalShip instance; creates loadout, career, quests and relation entries and registers it in the galaxy."
@@ -111,12 +111,12 @@ type
     function BuildAttackRequestResponse(Requester: TShip; var Response: WideString; Target: TShip): Boolean; override; // @addr 0x730C40 @slot 0xB4 @note "May change relations/career activity even on refusal; acceptance issues a joint attack."
     function BuildPartnershipOfferResponse(OtherShip: TShip; var Response: WideString; PaymentAmount: Integer): Boolean; override; // @addr 0x7312A0 @slot 0xBC @note "Checks eligibility and formats refusal text; OtherShip must be a ranger. Success does not clear preexisting Response."
     function AcceptPartnershipOffer(OtherShip: TShip; var Response: WideString; PaymentAmount: Integer): Boolean; override; // @addr 0x73168C @slot 0xB8 @note "Calls the eligibility method, then sets PartnerShip/duration and transfers payment. Requires a ranger requester."
-    function GetProgramName(ProgramIndex: Byte): WideString; // @addr 0x73187C
-    function GetProgramInfoText(ProgramIndex: Byte): WideString; // @addr 0x731920
+    function GetProgramName(ProgramIndex: TProgramIndex): WideString; // @addr 0x73187C
+    function GetProgramInfoText(ProgramIndex: TProgramIndex): WideString; // @addr 0x731920
     function CountProgramsInFilter(Filter: TRangerProgramMask): Integer; // @addr 0x731A80 @note "Sums owned quantities for bits 0..11; higher bits are ignored. Native signed 32-bit additions wrap on overflow."
-    function SelectRandomProgramIdFromFilter(Filter: TRangerProgramMask): Byte; // @addr 0x731AC8 @note "Selects an allowed ID regardless of inventory counts; deterministic system/turn seed. Empty filter returns zero after 10000 attempts."
-    function SelectProgramReward: Byte; // @addr 0x731B38 @note "Favors program 5 until enough copies exist; otherwise selects among IDs 6..11."
-    function GetProgramRewardCount(ProgramIndex: Byte): Integer; // @addr 0x731BA4 @note "At least one; uses galaxy seed, turn and difficulty."
+    function SelectRandomProgramIdFromFilter(Filter: TRangerProgramMask): TProgramIndex; // @addr 0x731AC8 @note "Selects an allowed ID regardless of inventory counts; deterministic system/turn seed. Empty filter returns zero after 10000 attempts."
+    function SelectProgramReward: TProgramIndex; // @addr 0x731B38 @note "Favors program 5 until enough copies exist; otherwise selects among IDs 6..11."
+    function GetProgramRewardCount(ProgramIndex: TProgramIndex): Integer; // @addr 0x731BA4 @note "At least one; uses galaxy seed, turn and difficulty."
     function AdjustItemEvaluation(Item: TItem; PriceMode: Byte; Effectiveness: Single): Single; override; // @addr 0x731C88 @slot 0x50
     function EvaluateStatBonus(BonusKind: TEquipmentBonusKind; Value: Integer): Single; override; // @addr 0x7322A8 @slot 0x54
     function EvaluateWeaponDamage(Weapon: TWeapon; IncludeAdditiveBonuses: Boolean; BaseDamage: Single): Single; override; // @addr 0x733250 @slot 0x58
@@ -137,7 +137,7 @@ type
     function GetDominantCareer: TRangerCareer; override; // @addr 0x727B7C @slot 0x38 @note "Ties favor trader, then pirate."
     function GetCareerSimilarity(Values: TRangerCareerValues): TPercent; // @addr 0x727C18 @ida "unsigned __int8 __userpurge $name@<al>(TRanger *Self@<eax>, unsigned int Values@<^0>);" @note "Values occupies the low three bytes of one stack slot; result is the average of 100 minus each career-distance."
     function GetCharacterName: WideString; // @addr 0x727CA0 @note "Selects the closest configured ShipCharacter profile; equal similarities retain the earlier profile."
-    function HasProgram(ProgramIndex: Byte): Boolean; // @addr 0x731A58 @note "Does not mask or validate ProgramIndex."
+    function HasProgram(ProgramIndex: TProgramIndex): Boolean; // @addr 0x731A58 @note "Does not mask or validate ProgramIndex."
     function NeedsStrengthCatchup: Boolean; // @addr 0x728360
     procedure RefreshPlayerQuestTargets; // @addr 0x73D6D8 @note "Does nothing for NPC rangers."
     function GenerateQuestOffer(var Quest: TQuest; var ResponseText: WideString): Boolean; // @addr 0x7380E8 @note "Requires CurrentPlanet."
@@ -247,7 +247,7 @@ procedure TRanger.InitializeAtPlanet(Planet: TPlanet; InitialMoney: Integer);
 var
   I, J: Integer;
   OtherPlanet: TPlanet;
-  ProgramIndex: Byte;
+  ProgramIndex: TProgramIndex;
   Star: TStar;
   Ship: TShip;
   Ranger: TRanger;
@@ -448,7 +448,7 @@ procedure TRanger.SaveToBuffer(Buffer: TBufEC);
 var
   I, Count: Integer;
   Quest: PQuest;
-  ProgramIndex: Byte;
+  ProgramIndex: TProgramIndex;
 begin
   inherited SaveToBuffer(Buffer);
   Buffer.AddAnsiChar(AnsiChar(CareerStatus[rcTrader]));
@@ -496,7 +496,7 @@ procedure TRanger.LoadFromBuffer(Buffer: TBufEC; Galaxy: TGalaxy);
 var
   I, Count: Integer;
   Quest: PQuest;
-  ProgramIndex: Byte;
+  ProgramIndex: TProgramIndex;
 begin
   inherited LoadFromBuffer(Buffer, Galaxy);
   if (LoadedSaveVersion < 139) and (CreationTurn < 666) then CreationTurn := 667;
@@ -3070,14 +3070,14 @@ end;
 { @end $73168C }
 
 { @routine $73187C TRanger_GetProgramName }
-function TRanger.GetProgramName(ProgramIndex: Byte): WideString;
+function TRanger.GetProgramName(ProgramIndex: TProgramIndex): WideString;
 begin
   Result := LocalizedText('Programms.' + ProgramNames[ProgramIndex] + '.Name');
 end;
 { @end $73187C }
 
 { @routine $731920 TRanger_GetProgramInfoText }
-function TRanger.GetProgramInfoText(ProgramIndex: Byte): WideString;
+function TRanger.GetProgramInfoText(ProgramIndex: TProgramIndex): WideString;
 begin
   Result := FormatText1(LocalizedText('Programms.' + ProgramNames[ProgramIndex] + '.Text'),
     '<color=255,240,100>', '<Count>', IntToStr(ProgramCounts[ProgramIndex]));
@@ -3085,7 +3085,7 @@ end;
 { @end $731920 }
 
 { @routine $731A58 TRanger_HasProgram }
-function TRanger.HasProgram(ProgramIndex: Byte): Boolean;
+function TRanger.HasProgram(ProgramIndex: TProgramIndex): Boolean;
 begin
   Result := ProgramCounts[ProgramIndex] > 0;
 end;
@@ -3094,7 +3094,7 @@ end;
 { @routine $731A80 TRanger_CountProgramsInFilter }
 function TRanger.CountProgramsInFilter(Filter: TRangerProgramMask): Integer;
 var
-  I: Byte;
+  I: TProgramIndex;
 begin
   Result := 0;
   for I := Low(ProgramCounts) to High(ProgramCounts) do
@@ -3103,18 +3103,18 @@ end;
 { @end $731A80 }
 
 { @routine $731AC8 TRanger_SelectRandomProgramIdFromFilter }
-function TRanger.SelectRandomProgramIdFromFilter(Filter: TRangerProgramMask): Byte;
+function TRanger.SelectRandomProgramIdFromFilter(Filter: TRangerProgramMask): TProgramIndex;
 var
-  ProgramId: Byte;
+  ProgramId: TProgramIndex;
   Attempt: Integer;
 begin
   Attempt := 0;
-  Result := 0;
+  Result := prgKellerCall;
   while True do
   begin
     Inc(Attempt);
     if Attempt > 10000 then Break;
-    ProgramId := SeededRandomIntRange(Low(ProgramCounts), High(ProgramCounts), CurrentStar.GenerationSeed * (Galaxy.CurrentTurn div 65) + Attempt);
+    ProgramId := TProgramIndex(SeededRandomIntRange(Ord(Low(ProgramCounts)), Ord(High(ProgramCounts)), CurrentStar.GenerationSeed * (Galaxy.CurrentTurn div 65) + Attempt));
     if ProgramId in Filter then
     begin
       Result := ProgramId;
@@ -3125,7 +3125,7 @@ end;
 { @end $731AC8 }
 
 { @routine $731B38 TRanger_SelectProgramReward }
-function TRanger.SelectProgramReward: Byte;
+function TRanger.SelectProgramReward: TProgramIndex;
 const
   BasicProgram = [prgIntercom];
   OtherPrograms = [prgShipwreck..prgDisconnection];
@@ -3136,7 +3136,7 @@ end;
 { @end $731B38 }
 
 { @routine $731BA4 TRanger_GetProgramRewardCount }
-function TRanger.GetProgramRewardCount(ProgramIndex: Byte): Integer;
+function TRanger.GetProgramRewardCount(ProgramIndex: TProgramIndex): Integer;
 begin
   if ProgramIndex = prgIntercom then
     Result := Round(SeededRandomIntRange(12, 20, Galaxy.GenerationSeed + Cardinal(Galaxy.CurrentTurn div 35)) /
@@ -3618,7 +3618,7 @@ var
   AwardWeight, ProgramWeight, ArtefactWeight, ModuleWeight: Single;
   RewardItem: TItem;
   RewardText: WideString;
-  ProgramIndex: Byte;
+  ProgramIndex: TProgramIndex;
   ModuleItem: TMicroModule;
   Factions: WideString;
   // @nested $734A44 ConsumeQuestDeliveryItem
@@ -3824,7 +3824,7 @@ begin
       ProgramIndex := SelectRandomProgramIdFromFilter(RewardPrograms);
       Quantity := SeededRandomIntRange(1,
         Round(RemapClamped(CountProgramsInFilter(RewardPrograms), 2, 10, GalaxyDifficultyTuning[Galaxy.DifficultyLevels[7]].MaximumQuestProgramRewardCount, 1)),
-        ProgramIndex + CurrentStar.GenerationSeed * (Galaxy.CurrentTurn div 25));
+        Integer(ProgramIndex) + CurrentStar.GenerationSeed * (Galaxy.CurrentTurn div 25));
       Inc(ProgramCounts[ProgramIndex], Quantity);
       if GetPlayer = Self then begin
         ResponseText := ResponseText + #13#10 + LocalizedColorText('PlanetCongratulations.Quest.AddProgramms');
@@ -3881,7 +3881,7 @@ var
   Award: Byte;
   AwardWeight, ProgramWeight, ArtefactWeight, ModuleWeight: Single;
   RewardItem: TItem;
-  ProgramIndex: Byte;
+  ProgramIndex: TProgramIndex;
   ModuleItem: TMicroModule;
   Event: TGalaxyEvent;
 begin
@@ -3921,7 +3921,7 @@ begin
       ProgramIndex := SelectRandomProgramIdFromFilter(RewardPrograms);
       Quantity := SeededRandomIntRange(1,
         Round(RemapClamped(CountProgramsInFilter(RewardPrograms), 2, 10, GalaxyDifficultyTuning[Galaxy.DifficultyLevels[7]].MaximumQuestProgramRewardCount, 1)),
-        ProgramIndex + CurrentStar.GenerationSeed * (Galaxy.CurrentTurn div 25));
+        Integer(ProgramIndex) + CurrentStar.GenerationSeed * (Galaxy.CurrentTurn div 25));
       Inc(ProgramCounts[ProgramIndex], Quantity);
       if GetPlayer = Self then begin
         Result := Result + #13#10 + LocalizedColorText('PlanetCongratulations.Quest.AddProgramms');

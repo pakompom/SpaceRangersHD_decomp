@@ -244,7 +244,7 @@ end;
 
 { @routine $5185F0 TWarrior_NextDayLogic }
 procedure TWarrior.NextDayLogic;
-const FriendlyStationMask = [2,3];
+const FriendlyStationMask = [ssCoalitionMilitary, ssCoalitionActive];
 var Planet: TPlanet; Station: TShip; Stage: Integer;
 begin
   Stage := 0;
@@ -362,7 +362,7 @@ end;
 
 { @routine $519250 TWarrior_NextDayFlagshipLogic }
 procedure TWarrior.NextDayFlagshipLogic;
-const FriendlyStationMask = [2,3]; AnyStationMask = [0..15] - [0..15];
+const FriendlyStationMask = [ssCoalitionMilitary, ssCoalitionActive]; AnyStationMask = [];
 var Planet: TPlanet; Station, Ship: TShip; Stations: TList; I, Stage: Integer;
   // @nested $518C80 RepairHullWithNodes
   procedure RepairHullWithNodes; // @addr $518C80

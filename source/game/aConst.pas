@@ -102,8 +102,8 @@ type
   TScriptActionTypeNames = array[0..61] of WideString;
   TGoodsLegalityTable = array[TGoodsIndex, oiMaloc..oiGaal, TPlanetGovernment] of Boolean;
 
-  TProgramNameTable = array[0..11] of WideString;
-  TProgramDurationTable = array[0..11] of Integer;
+  TProgramNameTable = array[TProgramIndex] of WideString;
+  TProgramDurationTable = array[TProgramIndex] of Integer;
   TWeaponDamageClass = (wdcEnergy = 0, wdcSplinter = 1, wdcMissile = 2); // @size $01
 
   THullLevelStats = record // @size $10
@@ -404,7 +404,7 @@ type
   TCareerTuningTable = array[TRangerCareer] of TStatusInfo;
 
 var
-  StationDefaultStandings: array[6..13] of Byte = (ssCoalitionMilitary, ssPiratePassive, ssCoalitionMilitary, ssCoalitionActive, ssCoalitionActive, ssNeutral, ssPirateMilitary, ssUnaligned); // @addr $87D070 Standing used to gate station spawning by faction, including the custom station.
+  StationDefaultStandings: array[6..13] of TShipStanding = (ssCoalitionMilitary, ssPiratePassive, ssCoalitionMilitary, ssCoalitionActive, ssCoalitionActive, ssNeutral, ssPirateMilitary, ssUnaligned); // @addr $87D070 Standing used to gate station spawning by faction, including the custom station.
   NonTargetableStationStandingMasks: TFactionStandingMasks = ([ssCoalitionMilitary..ssNeutral], [ssDominator], [ssPiratePassive..ssPirateMilitary]); // @addr $87D078 Standing masks used by TPlayer.CanSelectShipTarget.
   FactionStandingMasks: TFactionStandingMasks = ([ssCoalitionMilitary..ssPiratePassive], [ssDominator], [ssCoalitionPassive..ssPirateMilitary]); // @addr $87D080
   CareerTuning: array[TRangerCareer] of TStatusInfo = (
@@ -1491,13 +1491,13 @@ type
 
 var
   StationServiceRepeatPeriods: array[TCoalitionProject] of Integer = (100, 400, 300, 200, 350, 250, 150, 220, 40, 50, 70, 80); // @addr $87F5B4
-  ProgramNames: array[0..11] of WideString = (
+  ProgramNames: array[TProgramIndex] of WideString = (
     'KellerCall', 'LogicalNegation', 'Dematerial', 'Energotron', 'SabCrack', 'Intercom',
     'Shipwreck', 'WeaponBlocking', 'Insanity', 'Shock', 'SelfDestruction', 'Disconnection'); // @addr $87F5E4 Native WideString initializer descriptors at $838044..$8380A0.
 var
   ProgramDuration: TProgramDurationTable = (0, 0, 0, 0, 0, 0, 0, 10, 23, 7, 0, 0); // @addr $87F614
-  PirateProgramBatchSizes: array[0..11] of Integer = (0, 0, 0, 0, 0, 5, 3, 3, 3, 3, 1, 1); // @addr $87F644
-  PirateProgramBaseCosts: array[0..11] of Integer = (0, 0, 0, 0, 0, 500, 1000, 800, 300, 200, 1200, 900); // @addr $87F674
+  PirateProgramBatchSizes: array[TProgramIndex] of Integer = (0, 0, 0, 0, 0, 5, 3, 3, 3, 3, 1, 1); // @addr $87F644
+  PirateProgramBaseCosts: array[TProgramIndex] of Integer = (0, 0, 0, 0, 0, 500, 1000, 800, 300, 200, 1200, 900); // @addr $87F674
   GoodsMarketBaseCaptured: Boolean = False; // @addr $87F6A4 Set after the one-time localized base-table copy.
   IntegrityDataEnd: Cardinal = 0; // @addr $87F6A8 Four-byte zero marker at the exclusive boundary of that native checksum span.
   LastMedicalPolicyTicks: Integer = 0; // @addr $87F6AC Updated by TPlayer.NextDay and read by TfGameEnd.OnOpen; score-related role not fully recovered.

@@ -212,7 +212,7 @@ begin
         if (Ship <> nil) and (GetPlayer = Ship.PartnerShip) then
           Ships[Index].FullName := Ships[Index].FullName + #13#10 + WrapTextInColor(LookupLocalizedTextByKey('FormInfo.Partner'), '<color=255,240,100>');
         if (Ship is TKling) and ((Ship as TKling).ActiveProgramAppliedTurn > 0) and
-          ((Ship as TKling).ActiveProgramId in [6..11]) then
+          ((Ship as TKling).ActiveProgramId in [prgShipwreck..prgDisconnection]) then
           Ships[Index].FullName := Ships[Index].FullName + #13#10 + WrapTextInColor(
             LocalizedText('Programms.' + ProgramNames[(Ship as TKling).ActiveProgramId] + '.AddToShipInfo'), '<color=255,0,0>');
       end

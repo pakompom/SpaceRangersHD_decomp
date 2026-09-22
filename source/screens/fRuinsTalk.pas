@@ -328,7 +328,7 @@ var
   SelectedResearchSeries: Byte; // @addr $88A900
   NearbyTradeAdviceCost: Integer; // @addr $88A904
   DistantTradeAdviceCost: Integer; // @addr $88A908
-  PirateProgramQuoteCosts: array[0..11] of Integer; // @addr $88A90C
+  PirateProgramQuoteCosts: array[TProgramIndex] of Integer; // @addr $88A90C
   PirateChameleonQuoteCosts: array[0..2] of Integer; // @addr $88A93C
   // Shared quote amounts are replaced when opening either banking dialog.
   StationImprovementItem: TEquipment; // @addr $88A948
@@ -3090,7 +3090,7 @@ end;
 { @routine $5B9348 TfRuinsTalk_ShowPirateBaseProgramDialog }
 procedure TfRuinsTalk.ShowPirateBaseProgramDialog(Action: Integer);
 var
-  I: Byte;
+  I: TProgramIndex;
   Text: WideString;
   Discount, Nodes: Integer;
 begin
@@ -3120,7 +3120,7 @@ begin
       Text := ' - ' + LocalizedColorText('FormRuins.PB.Program.PlayerOk');
       Text := FormatText1(Text, '<color=255,240,100>', '<Nod>', WrapTextInColor(IntToStr(PirateProgramQuoteCosts[I]), '<color=255,240,100>'));
       Text := FormatText1(Text, '<color=255,240,100>', '<Text>', WrapTextInColor(GetPlayer.GetProgramName(I), '<color=255,240,100>'));
-      if PirateProgramQuoteCosts[I] <= Nodes then AddChoice(Text, I, BuyPirateBaseProgram)
+      if PirateProgramQuoteCosts[I] <= Nodes then AddChoice(Text, Ord(I), BuyPirateBaseProgram)
       else AddChoice(Text, 0, ScriptDialogBlockCallback);
     end;
   AddChoice(LocalizedColorText('FormRuins.PB.Program.PlayerNo'), 0, DeclinePirateBaseProgram);
@@ -3130,10 +3130,10 @@ end;
 { @routine $5B9AF0 TfRuinsTalk_BuyPirateBaseProgram }
 procedure TfRuinsTalk.BuyPirateBaseProgram(Action: Integer);
 var
-  ProgramIndex: Byte;
+  ProgramIndex: TProgramIndex;
   Cost, CarriedNodes, BaseNodes: Integer;
 begin
-  ProgramIndex := Action;
+  ProgramIndex := TProgramIndex(Action);
   Cost := PirateProgramQuoteCosts[ProgramIndex];
   CarriedNodes := GetPlayer.GetAvailableNodeCount(nil);
   BaseNodes := GetPlayer.BaseNodes;
@@ -3536,7 +3536,7 @@ end;
 procedure TfRuinsTalk.ShowMilitaryBaseProgramsDialog(Action: Integer);
 var
   Text, Info: WideString;
-  I: Byte;
+  I: TProgramIndex;
 begin
   Text := '';
   for I := Low(ProgramNames) to High(ProgramNames) do
@@ -3560,7 +3560,7 @@ end;
 { @routine $5BD3FC TfRuinsTalk_AcceptMilitaryBasePrograms }
 procedure TfRuinsTalk.AcceptMilitaryBasePrograms(Action: Integer);
 var
-  I: Byte;
+  I: TProgramIndex;
 begin
   for I := Low(ProgramNames) to High(ProgramNames) do
     if GetPlayer.ProgramRewardStocks[I] > 0 then

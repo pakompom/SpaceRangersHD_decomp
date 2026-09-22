@@ -1113,7 +1113,7 @@ end;
 { @routine $50A234 CheatProgram }
 procedure CheatProgram;
 var
-  I: Byte;
+  I: TProgramIndex;
 begin
   if (Galaxy <> nil) and (GetPlayer <> nil) then
   begin

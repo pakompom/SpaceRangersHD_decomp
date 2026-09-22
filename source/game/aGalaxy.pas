@@ -11568,7 +11568,7 @@ begin
       Ship := Self.Ships[Index];
       if not Ship.IsOutsideStarSpace and ((Galaxy.StasisModEnabled <> 1) or (GetPlayer = Ship))
         and ((Ship.TypeId <> stKling) or (((Ship as TKling).ActiveProgramAppliedTurn <= 0)
-        or not (Byte((Ship as TKling).ActiveProgramId) in [7, 11]))) then
+        or not ((Ship as TKling).ActiveProgramId in [prgWeaponBlocking, prgDisconnection]))) then
       begin
         for AttackRound := 1 to Ship.GetAttackMultiplier do
         begin

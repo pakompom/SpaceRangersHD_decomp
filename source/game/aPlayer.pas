@@ -86,7 +86,7 @@ type
     StationServiceLastUseTurns: array[TCoalitionProject] of Integer; // @offset $5D0 Initialized to 150; last-use turns for investment/service cooldowns. Native reads $5C7072/$5BD5A5 and write $5CA6A5.
     StatusEffectSourceNames: array[1..24] of WideString; // @offset 0x600
     DiseaseImmunity: Byte; // @offset 0x660  Clamped to 0..100.
-    ProgramRewardStocks: array[0..11] of Integer; // @offset $664 Programs awarded for destroyed Dominator hull mass.
+    ProgramRewardStocks: array[TProgramIndex] of Integer; // @offset $664 Programs awarded for destroyed Dominator hull mass.
     LastDominatorProgramRewardTurn: Integer; // @offset $694
     DestroyedDominatorHullMass: Integer; // @offset $698 Accumulated capacity; reset after a program reward.
     Satellites: TObjectList; // @offset 0x69C  Owned deployed TSatellite instances.
@@ -278,7 +278,8 @@ constructor TPlayer.Create;
 var
   ServiceIndex: TCoalitionProject;
   I, J: Integer;
-  RewardIndex, KillIndex, LogicIndex: Byte;
+  RewardIndex: TProgramIndex;
+  KillIndex, LogicIndex: Byte;
 begin
   inherited Create;
   StorageEntries := TList.Create;
@@ -415,7 +416,7 @@ var
   I, J, ConfigurationCount, SlotCount, ListCount, NewsCount: Integer;
   Entry: PStorageEntry;
   ServiceIndex: TCoalitionProject;
-  RewardIndex: Byte;
+  RewardIndex: TProgramIndex;
   News: PPlanetNewsEntry;
   KillIndex, LogicIndex: Byte;
 begin
@@ -550,7 +551,7 @@ var
   I, Count, J, ConfigurationCount, SlotCount, PartnerCount: Integer;
   Entry: PStorageEntry;
   ServiceIndex: TCoalitionProject;
-  RewardIndex: Byte;
+  RewardIndex: TProgramIndex;
   Satellite: TSatellite;
   Journal: TJournalRecord;
   News: PPlanetNewsEntry;
@@ -823,7 +824,7 @@ end;
 
 { @routine $5859E8 TPlayer_SaveToBlock }
 procedure TPlayer.SaveToBlock(Block: TBlockParEC);
-var I: Byte;
+var I: TProgramIndex;
 begin
   Block.AddParam(DecodeTextW('InChukriSotoanriIndo'), WideString(IntToStr(CurrentStar.Id))); // 'ICurStarId'
   inherited SaveToBlock(Block);
@@ -845,7 +846,7 @@ end;
 
 { @routine $5860F0 TPlayer_LoadFromBlock }
 procedure TPlayer.LoadFromBlock(Block: TBlockParEC);
-var I: Byte;
+var I: TProgramIndex;
 begin
   inherited LoadFromBlock(Block);
   DebtAmount := StrToInt(AnsiString(Block.GetParam(DecodeTextW('D5eyb7tn')))); // 'Debt'
@@ -1676,7 +1677,7 @@ end;
 
 { @routine $58B910 TPlayer_CountProgramRewardStocks }
 function TPlayer.CountProgramRewardStocks: Integer;
-var I: Byte;
+var I: TProgramIndex;
 begin
   Result := 0;
   for I := Low(ProgramRewardStocks) to High(ProgramRewardStocks) do Inc(Result, ProgramRewardStocks[I]);
@@ -1686,7 +1687,7 @@ end;
 { @routine $58B944 TPlayer_TryAwardDominatorPrograms }
 function TPlayer.TryAwardDominatorPrograms(Victim: TShip): Boolean;
 var
-  ProgramIndex: Byte;
+  ProgramIndex: TProgramIndex;
   Count: Integer;
 begin
   Inc(DestroyedDominatorHullMass, Victim.GetHull.Weight);

@@ -280,7 +280,7 @@ var
   Award: Byte;
   AwardWeight, ProgramWeight, ArtefactWeight, ModuleWeight: Single;
   RewardItem: TItem;
-  ProgramIndex: Byte;
+  ProgramIndex: TProgramIndex;
   ModuleItem: TMicroModule;
   Event: TGalaxyEvent;
 begin
@@ -312,14 +312,14 @@ begin
   begin
     if CurrentPlanet.OwnerId <> oiPirate then
     begin
-      if Byte(CurrentPlanet.CurrentStar.PreviousControlFaction) = 1 then
+      if CurrentPlanet.CurrentStar.PreviousControlFaction = sfDominators then
         Result := LocalizedColorText('PlanetCongratulations.LiberationStarNormalsFromKling.' + OwnerToSys(CurrentPlanet.OwnerId) + 'Text')
       else
         Result := LocalizedColorText('PlanetCongratulations.LiberationStarNormalsFromPirateClan.' + OwnerToSys(CurrentPlanet.OwnerId) + 'Text');
     end
     else
     begin
-      if Byte(CurrentPlanet.CurrentStar.PreviousControlFaction) = 0 then
+      if CurrentPlanet.CurrentStar.PreviousControlFaction = sfCoalition then
         Prefix := 'PlanetCongratulations.LiberationStarPirateClanFromNormals.'
       else Prefix := 'PlanetCongratulations.LiberationStarPirateClanFromKling.';
       TotalPriority := 0;
@@ -368,7 +368,7 @@ begin
       Quantity := SeededRandomIntRange(1,
         Round(RemapClamped((Self as TRanger).CountProgramsInFilter(RewardPrograms), 2, 10,
           GalaxyDifficultyTuning[Galaxy.DifficultyLevels[7]].MaximumQuestProgramRewardCount, 1)),
-        ProgramIndex + CurrentStar.GenerationSeed * (Galaxy.CurrentTurn div 25));
+        Integer(ProgramIndex) + CurrentStar.GenerationSeed * (Galaxy.CurrentTurn div 25));
       Inc((Self as TRanger).ProgramCounts[ProgramIndex], Quantity);
       if GetPlayer = Self then
       begin

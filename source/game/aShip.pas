@@ -190,7 +190,7 @@ type
     InterceptorSourceShip: TShip; // @offset 0x4A4
     InterceptorGraphic: TObjectSE; // @offset 0x4A8  Retained visual for incoming interceptor passes.
     AuxiliaryFilmObject: TEFilmObj; // @offset 0x4AC  Borrowed auxiliary graphic entry.
-    CurrentStanding: Byte; // @offset $4B0 ss* faction-combat category, exposed by Script.ShipStanding.
+    CurrentStanding: TShipStanding; // @offset $4B0 ss* faction-combat category, exposed by Script.ShipStanding.
     SmoothedSpeed: Integer; // @offset 0x4B4
     SmoothedEnemySpeed: Integer; // @offset 0x4B8  Retained while EnemyShip is absent or outside this system.
 
@@ -422,7 +422,7 @@ type
     function IsTargetStillPursuable(Target: TShip): Boolean; // @addr 0x7536F0 @note "False only when Target is jumping and its distance is at least twice Self.Speed; does not validate shared star or speed."
     function HasLandablePlanetInStar(Star: TStar): Boolean; // @addr 0x7539DC
     function FindFirstInhabitedPlanetInStar: TPlanet; // @addr 0x752E1C @note "Requires a nonempty planet list; returns the last planet if all are uninhabited."
-    function FindNearestDockableStation(StandingMask: TStationStandingMask): TShip; // @addr 0x752D3C @note "Types 6..13 whose CanDock(Self) succeeds. Zero mask permits every standing; does not independently filter hyperspace/docking."
+    function FindNearestDockableStation(StandingMask: TShipStandings): TShip; // @addr 0x752D3C @note "Types 6..13 whose CanDock(Self) succeeds. Zero mask permits every standing; does not independently filter hyperspace/docking."
     function GetFullFuelBaseJumpRange: Integer; // @addr 0x753A44 @note "Minimum of raw tank Capacity and engine JumpRange; requires both items and ignores bonuses/condition."
     function DistanceToNearestShipByTypeMask(ShipTypeMask: TShipTypeMask): Double; // @addr 0x753D58 @note "Excludes Self but includes docked/hyperspace entries; no match returns sqrt(1000000000)."
     function EstimateOrderTravelTurns: Integer; // @addr 0x753E00 @note "Uses rounded distance / (Speed + 1) + 1; unsupported orders return zero."
@@ -1480,7 +1480,7 @@ begin
   end;
   if LoadedSaveVersion >= 85 then
   begin
-    CurrentStanding := Buffer.GetByte;
+    CurrentStanding := TShipStanding(Buffer.GetByte);
     SmoothedSpeed := Buffer.GetInt32;
     SmoothedEnemySpeed := Buffer.GetInt32;
   end
@@ -3105,7 +3105,7 @@ end;
 { @end $752C50 }
 
 { @routine $752D3C TShip_FindNearestDockableStation }
-function TShip.FindNearestDockableStation(StandingMask: TStationStandingMask): TShip;
+function TShip.FindNearestDockableStation(StandingMask: TShipStandings): TShip;
 var I: Integer; Ship: TShip; BestDistance, Distance: Double;
 begin
   Result := nil;

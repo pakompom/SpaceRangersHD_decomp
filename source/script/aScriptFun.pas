@@ -4533,7 +4533,7 @@ end;
 procedure SF_HaveProgramm(av: array of TVarEC; code: TCodeEC);
 begin
   if High(av) <> 1 then raise Exception.Create('Error.Script HaveProgramm');
-  av[0].SetInt(Ord(GetPlayer.HasProgram(av[1].GetDword)));
+  av[0].SetInt(Ord(GetPlayer.HasProgram(TProgramIndex(av[1].GetDword))));
 end;
 { @end $614EC4 }
 
@@ -4549,7 +4549,7 @@ end;
 procedure SF_SetProgramm(av: array of TVarEC; code: TCodeEC);
 begin
   if High(av) < 2 then raise Exception.Create('Error.Script SetProgramm');
-  av[0].SetInt(Ord(GetPlayer.HasProgram(av[1].GetDword)));
+  av[0].SetInt(Ord(GetPlayer.HasProgram(TProgramIndex(av[1].GetDword))));
   GetPlayer.ProgramCounts[TProgramIndex(av[1].GetDword)] := av[2].GetInt;
 end;
 { @end $614FE4 }
@@ -4558,15 +4558,15 @@ end;
 procedure SF_DomikProgramm(av: array of TVarEC; code: TCodeEC);
 var
   Ship: TKling;
-  ProgramId: Byte;
+  ProgramId: TProgramIndex;
   Count: Integer;
 begin
   if High(av) < 1 then raise Exception.Create('Error.Script DomikProgramm');
   Ship := TKling(av[1].GetDword);
-  av[0].SetInt(Ship.ActiveProgramId);
+  av[0].SetInt(Ord(Ship.ActiveProgramId));
   if High(av) > 1 then
   begin
-    ProgramId := av[2].GetDword;
+    ProgramId := TProgramIndex(av[2].GetDword);
     Ship.ActiveProgramId := ProgramId;
     case ProgramId of
       prgShipwreck: begin
@@ -9418,7 +9418,7 @@ begin
     Station := TRuins.Create;
     av[0].SetDword(Cardinal(Station));
     Station.Init(rstCustomStation, Star, av[2].GetString);
-    if High(av) > 2 then Station.CurrentStanding := av[3].GetInt
+    if High(av) > 2 then Station.CurrentStanding := TShipStanding(av[3].GetInt)
     else Station.CurrentStanding := ssUnaligned;
   end;
 end;
@@ -9460,8 +9460,8 @@ begin
   Ship := TShip(av[1].GetDword);
   if Ship <> nil then
   begin
-    av[0].SetInt(Ship.CurrentStanding);
-    if High(av) > 1 then Ship.CurrentStanding := av[2].GetInt;
+    av[0].SetInt(Ord(Ship.CurrentStanding));
+    if High(av) > 1 then Ship.CurrentStanding := TShipStanding(av[2].GetInt);
   end;
 end;
 { @end $626EAC }
@@ -9954,7 +9954,7 @@ end;
 
 { @routine $628E64 SF_StarEnemyThreatLevel }
 procedure SF_StarEnemyThreatLevel(av: array of TVarEC; code: TCodeEC);
-var Star, Other: TStar; Ship: TShip; I, J: Integer; Standings: TShipTypeMask; IncludePirates: Boolean;
+var Star, Other: TStar; Ship: TShip; I, J: Integer; Standings: TShipStandings; IncludePirates: Boolean;
 begin
   if High(av) < 1 then raise Exception.Create('Error.Script StarEnemyThreatLeve');
   Star := TStar(av[1].GetDword);
@@ -15934,12 +15934,12 @@ begin
   Scope.Add('t_MC', vkInt).SetInt(Ord(rstMedicalBase));
   Scope.Add('t_CB', vkInt).SetInt(Ord(rstDominion));
   Scope.Add('t_UB', vkInt).SetInt(Ord(rstCustomStation));
-  Scope.Add('progKellerCall', vkInt).SetInt(prgKellerCall);
-  Scope.Add('progLogicalNegation', vkInt).SetInt(prgLogicalNegation);
-  Scope.Add('progDematerial', vkInt).SetInt(prgDematerial);
-  Scope.Add('progEnergotron', vkInt).SetInt(prgEnergotron);
-  Scope.Add('progSabCrack', vkInt).SetInt(prgSabCrack);
-  Scope.Add('progIntercom', vkInt).SetInt(prgIntercom);
+  Scope.Add('progKellerCall', vkInt).SetInt(Ord(prgKellerCall));
+  Scope.Add('progLogicalNegation', vkInt).SetInt(Ord(prgLogicalNegation));
+  Scope.Add('progDematerial', vkInt).SetInt(Ord(prgDematerial));
+  Scope.Add('progEnergotron', vkInt).SetInt(Ord(prgEnergotron));
+  Scope.Add('progSabCrack', vkInt).SetInt(Ord(prgSabCrack));
+  Scope.Add('progIntercom', vkInt).SetInt(Ord(prgIntercom));
   Scope.Add('StarShips', vkExternFun).SetExternFun(@SF_StarShips);
   Scope.Add('StarPlanets', vkExternFun).SetExternFun(@SF_StarPlanets);
   Scope.Add('StarMissiles', vkExternFun).SetExternFun(@SF_StarMissiles);
