@@ -1126,13 +1126,13 @@ end;
 { @routine $50A2E4 CheatIllness }
 procedure CheatIllness;
 var
-  I: Integer;
+  I: TCaptainHealthEffect;
   Player: TPlayer;
 begin
   if (Galaxy <> nil) and (GetPlayer <> nil) then
   begin
     Player := GetPlayer;
-    for I := 1 to 12 do
+    for I := Low(TCaptainDisease) to High(TCaptainDisease) do
     begin
       Player.CaptainHealth[I].Progress := 100;
       Player.CaptainHealth[I].AppliedTurn := Galaxy.CurrentTurn;
@@ -1146,13 +1146,13 @@ end;
 { @routine $50A3E8 CheatStimulant }
 procedure CheatStimulant;
 var
-  I: Integer;
+  I: TCaptainHealthEffect;
   Player: TPlayer;
 begin
   if (Galaxy <> nil) and (GetPlayer <> nil) then
   begin
     Player := GetPlayer;
-    for I := 13 to 24 do
+    for I := Low(TCaptainStimulant) to High(TCaptainStimulant) do
     begin
       Player.CaptainHealth[I].Progress := 100;
       Player.CaptainHealth[I].AppliedTurn := Galaxy.CurrentTurn;

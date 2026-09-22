@@ -849,7 +849,7 @@ begin
   begin
     if PendingPlayerFollowTarget.InNormalSpace and InNormalSpace and (PendingPlayerFollowTarget.CurrentStar = CurrentStar) then
     begin
-      OrderFollowShip(PendingPlayerFollowTarget, 1, False);
+      OrderFollowShip(PendingPlayerFollowTarget, fmMinWeaponRange, False);
       for I := 1 to WeaponCount do
       begin
         Weapon := Weapons[I];
@@ -1255,7 +1255,7 @@ begin
       TradeExperience := 0;
     end
     else Amount := Round(RemapClamped(Delta, 1.0, 100.0, 10.0, 100.0));
-    if IsHealthEffectActive(22) then Amount := Round(Amount * 1.5);
+    if IsHealthEffectActive(heBusinessMark) then Amount := Round(Amount * 1.5);
     GainExperience(Amount, esTraderCareer);
     if Delta mod 2 <> 0 then Inc(Delta);
     Delta := Min(8, Delta);
@@ -2760,7 +2760,7 @@ begin
   if (EnemyShip <> nil) and (EnemyShip.CurrentStar = CurrentStar) then
     if EnemyShip.InNormalSpace then
     begin
-      OrderFollowShip(EnemyShip, 1, False);
+      OrderFollowShip(EnemyShip, fmMinWeaponRange, False);
       if ChanceToWin(EnemyShip) < 0.8 then RequestAlliesAttackShip(EnemyShip);
     end
     else if (ChanceToWin(EnemyShip) > 3) and (GetHullIntegrityPercent > 70) and (EnemyShip.GetHullIntegrityPercent > 70) then
@@ -2921,7 +2921,7 @@ begin
       GetPlayer.ScriptItemsAct(satOnShipTalkedWithPlayer, OtherShip, nil, 0);
     end;
   end else begin
-    Forced := (GetPlayer = OtherShip) and OtherShip.IsHealthEffectActive(14);
+    Forced := (GetPlayer = OtherShip) and OtherShip.IsHealthEffectActive(heOneEyedKhamas);
     NextDemandTurn := LastPlayerExtortionTurn + 30;
   if OtherShip.TruceShip = Self then Response := LookupVisibleTalkText('Talk.Goods.WeAlreadyHavePact', OtherShip)
   else if (GetPlayer = OtherShip) and PlayerExtortionPactActive then Response := LookupVisibleTalkText('Talk.Goods.WeAlreadyHavePact', OtherShip)
@@ -4064,11 +4064,11 @@ begin
                   Quest.Planet := CurrentPlanet;
                   Quest.Successful := False;
                   Quest.DeadlineTurn := QuestTuning[Quest.QuestType].BaseDuration + 15 * (CurrentStar.StarDistances[I].Distance div 20 + 1);
-                  if IsHealthEffectActive(24) then Quest.DeadlineTurn := Round(Quest.DeadlineTurn * 1.5);
+                  if IsHealthEffectActive(heAbsoluteStatus) then Quest.DeadlineTurn := Round(Quest.DeadlineTurn * 1.5);
                   Quest.DeadlineTurn := Galaxy.CurrentTurn + Round(Quest.DeadlineTurn / GalaxyDifficultyTuning[Galaxy.DifficultyLevels[5]].QuestTimeAndExperienceFactor);
                   Quest.RewardMoney := QuestTuning[Quest.QuestType].BaseRewardMoney + Round(QuestTuning[Quest.QuestType].RewardCapitalPercent * Min(Galaxy.AverageRangerCapital * 0.01, GetPlayer.Wealth * 0.01));
                   Quest.RewardMoney := Round(Quest.RewardMoney * GalaxyDifficultyTuning[Galaxy.DifficultyLevels[5]].QuestMoneyFactor);
-                  if IsHealthEffectActive(23) then Quest.RewardMoney := Round(Quest.RewardMoney * SeededRandomFloatRange((Integer(CurrentPlanet.GenerationSeed) + Galaxy.CurrentTurn) div Interval, 1.3, 2.3));
+                  if IsHealthEffectActive(heDoubleplex) then Quest.RewardMoney := Round(Quest.RewardMoney * SeededRandomFloatRange((Integer(CurrentPlanet.GenerationSeed) + Galaxy.CurrentTurn) div Interval, 1.3, 2.3));
                   Quest.RewardMoney := Quest.RewardMoney + Round(Quest.RewardMoney * GetEffectiveSkillLevel(psCharisma) * 0.1);
                   Quest.RewardMoney := RoundAndTruncateToHundreds(Quest.RewardMoney);
                   Quest.ObjectiveTarget := Planet;
@@ -4145,11 +4145,11 @@ begin
                   Quest.Planet := CurrentPlanet;
                   Quest.Successful := False;
                   Quest.DeadlineTurn := QuestTuning[Quest.QuestType].BaseDuration + Round(RemapClamped(Target.Wealth, GetPlayer.Wealth div 2, 2 * GetPlayer.Wealth, 0, 30) + PointDistance(CurrentStar.Position, Target.CurrentStar.Position));
-                  if IsHealthEffectActive(24) then Quest.DeadlineTurn := Round(Quest.DeadlineTurn * 1.5);
+                  if IsHealthEffectActive(heAbsoluteStatus) then Quest.DeadlineTurn := Round(Quest.DeadlineTurn * 1.5);
                   Quest.DeadlineTurn := Galaxy.CurrentTurn + Round(Quest.DeadlineTurn / GalaxyDifficultyTuning[Galaxy.DifficultyLevels[5]].QuestTimeAndExperienceFactor);
                   Quest.RewardMoney := QuestTuning[Quest.QuestType].BaseRewardMoney + Round((QuestTuning[Quest.QuestType].RewardCapitalPercent * Min(Galaxy.AverageRangerCapital * 0.01, GetPlayer.Wealth * 0.01)) * RemapClamped(Target.Wealth, GetPlayer.Wealth div 2, 2 * GetPlayer.Wealth, 0.8, 1.2));
                   Quest.RewardMoney := Round(Quest.RewardMoney * GalaxyDifficultyTuning[Galaxy.DifficultyLevels[5]].QuestMoneyFactor);
-                  if IsHealthEffectActive(23) then Quest.RewardMoney := Round(Quest.RewardMoney * SeededRandomFloatRange((Integer(CurrentPlanet.GenerationSeed) + Galaxy.CurrentTurn) div Interval, 1.3, 2.3));
+                  if IsHealthEffectActive(heDoubleplex) then Quest.RewardMoney := Round(Quest.RewardMoney * SeededRandomFloatRange((Integer(CurrentPlanet.GenerationSeed) + Galaxy.CurrentTurn) div Interval, 1.3, 2.3));
                   Quest.RewardMoney := Quest.RewardMoney + Round(Quest.RewardMoney * GetEffectiveSkillLevel(psCharisma) * 0.1);
                   Quest.RewardMoney := RoundAndTruncateToHundreds(Quest.RewardMoney);
                   Quest.ObjectiveTarget := Target;
@@ -4219,11 +4219,11 @@ begin
                       Quest.DeadlineTurn := 15 * (CurrentStar.StarDistances[I].Distance div 20 + 1);
                       if not TextQuest.CompleteOnFinish then Quest.DeadlineTurn := Quest.DeadlineTurn * 2;
                       Quest.DeadlineTurn := Quest.DeadlineTurn + QuestTuning[Quest.QuestType].BaseDuration;
-                      if IsHealthEffectActive(24) then Quest.DeadlineTurn := Round(Quest.DeadlineTurn * 1.5);
+                      if IsHealthEffectActive(heAbsoluteStatus) then Quest.DeadlineTurn := Round(Quest.DeadlineTurn * 1.5);
                       Quest.DeadlineTurn := Galaxy.CurrentTurn + Round(Quest.DeadlineTurn / GalaxyDifficultyTuning[Galaxy.DifficultyLevels[5]].QuestTimeAndExperienceFactor);
                       Quest.RewardMoney := QuestTuning[Quest.QuestType].BaseRewardMoney + Round((QuestTuning[Quest.QuestType].RewardCapitalPercent * Min(Galaxy.AverageRangerCapital * 0.01, GetPlayer.Wealth * 0.01)) * RemapClamped(TextQuest.Difficulty, 50, 100, 1, 2.1));
                       Quest.RewardMoney := Round(Quest.RewardMoney * GalaxyDifficultyTuning[Galaxy.DifficultyLevels[5]].QuestMoneyFactor);
-                      if IsHealthEffectActive(23) then Quest.RewardMoney := Round(Quest.RewardMoney * SeededRandomFloatRange((Integer(CurrentPlanet.GenerationSeed) + Galaxy.CurrentTurn) div Interval, 1.3, 2.3));
+                      if IsHealthEffectActive(heDoubleplex) then Quest.RewardMoney := Round(Quest.RewardMoney * SeededRandomFloatRange((Integer(CurrentPlanet.GenerationSeed) + Galaxy.CurrentTurn) div Interval, 1.3, 2.3));
                       Quest.RewardMoney := Quest.RewardMoney + Round(Quest.RewardMoney * GetEffectiveSkillLevel(psCharisma) * 0.1);
                       Quest.RewardMoney := RoundAndTruncateToHundreds(Quest.RewardMoney);
                       Quest.ObjectiveTarget := Planet;
@@ -4262,11 +4262,11 @@ begin
               Quest.Planet := CurrentPlanet;
               Quest.Successful := False;
               Quest.DeadlineTurn := QuestTuning[Quest.QuestType].BaseDuration + SeededRandomIntRange(-10, 10, CurrentPlanet.GenerationSeed);
-              if IsHealthEffectActive(24) then Quest.DeadlineTurn := Round(Quest.DeadlineTurn / 1.5);
+              if IsHealthEffectActive(heAbsoluteStatus) then Quest.DeadlineTurn := Round(Quest.DeadlineTurn / 1.5);
               Quest.DeadlineTurn := Galaxy.CurrentTurn + Round(Quest.DeadlineTurn * GalaxyDifficultyTuning[Galaxy.DifficultyLevels[5]].QuestTimeAndExperienceFactor);
               Quest.RewardMoney := QuestTuning[Quest.QuestType].BaseRewardMoney + Round(QuestTuning[Quest.QuestType].RewardCapitalPercent * Min(Galaxy.AverageRangerCapital * 0.01, GetPlayer.Wealth * 0.01));
               Quest.RewardMoney := Round(Quest.RewardMoney * GalaxyDifficultyTuning[Galaxy.DifficultyLevels[5]].QuestMoneyFactor);
-              if IsHealthEffectActive(23) then Quest.RewardMoney := Round(Quest.RewardMoney * SeededRandomFloatRange((Integer(CurrentPlanet.GenerationSeed) + Galaxy.CurrentTurn) div Interval, 1.3, 2.3));
+              if IsHealthEffectActive(heDoubleplex) then Quest.RewardMoney := Round(Quest.RewardMoney * SeededRandomFloatRange((Integer(CurrentPlanet.GenerationSeed) + Galaxy.CurrentTurn) div Interval, 1.3, 2.3));
               Quest.RewardMoney := Quest.RewardMoney + Round(Quest.RewardMoney * GetEffectiveSkillLevel(psCharisma) * 0.1);
               Quest.RewardMoney := RoundAndTruncateToHundreds(Quest.RewardMoney);
               Quest.ObjectiveTarget := CurrentPlanet.CurrentStar;
@@ -4330,11 +4330,11 @@ begin
                       Quest.Planet := CurrentPlanet;
                       Quest.Successful := False;
                       Quest.DeadlineTurn := QuestTuning[Quest.QuestType].BaseDuration + SeededRandomIntRange(-10, 10, CurrentPlanet.GenerationSeed);
-                      if IsHealthEffectActive(24) then Quest.DeadlineTurn := Round(Quest.DeadlineTurn / 1.5);
+                      if IsHealthEffectActive(heAbsoluteStatus) then Quest.DeadlineTurn := Round(Quest.DeadlineTurn / 1.5);
                       Quest.DeadlineTurn := Galaxy.CurrentTurn + Round(Quest.DeadlineTurn * GalaxyDifficultyTuning[Galaxy.DifficultyLevels[5]].QuestTimeAndExperienceFactor);
                       Quest.RewardMoney := QuestTuning[Quest.QuestType].BaseRewardMoney + Round(QuestTuning[Quest.QuestType].RewardCapitalPercent * Min(Galaxy.AverageRangerCapital * 0.01, GetPlayer.Wealth * 0.01));
                       Quest.RewardMoney := Round(Quest.RewardMoney * GalaxyDifficultyTuning[Galaxy.DifficultyLevels[5]].QuestMoneyFactor);
-                      if IsHealthEffectActive(23) then Quest.RewardMoney := Round(Quest.RewardMoney * SeededRandomFloatRange((Integer(CurrentPlanet.GenerationSeed) + Galaxy.CurrentTurn) div Interval, 1.3, 2.3));
+                      if IsHealthEffectActive(heDoubleplex) then Quest.RewardMoney := Round(Quest.RewardMoney * SeededRandomFloatRange((Integer(CurrentPlanet.GenerationSeed) + Galaxy.CurrentTurn) div Interval, 1.3, 2.3));
                       Quest.RewardMoney := Quest.RewardMoney + Round(Quest.RewardMoney * GetEffectiveSkillLevel(psCharisma) * 0.1);
                       Quest.RewardMoney := RoundAndTruncateToHundreds(Quest.RewardMoney);
                       Quest.ObjectiveTarget := DefendedShip;

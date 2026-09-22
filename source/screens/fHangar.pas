@@ -436,7 +436,7 @@ begin
   PlayerStar.RefreshSpaceObjectPositions;
   RestoreTemporaryShopStock;
   RunGlobalScriptsForContext(GetPlayer.CurrentStar,1);
-  if (GetPlayer <> nil) and GetPlayer.IsHealthEffectActive(3) then Galaxy.EnableDominatorSurfaces
+  if (GetPlayer <> nil) and GetPlayer.IsHealthEffectActive(heHolyFanaticism) then Galaxy.EnableDominatorSurfaces
   else Galaxy.DisableDominatorSurfaces;
   CalculatePlayerStarTurnAndWait;
   if ExitScreenLoop then Exit;

@@ -6,6 +6,16 @@ interface
 uses EC_Buf, EC_Struct, SE_Space, aEFilm, aGalaxy, aGalaxyStruct, aItem, aShip, aConst;
 
 type
+  // Saved target tags; unknown byte values leave references unresolved.
+  TMissileTargetKind = (
+    mtkNone = 0,
+    mtkShip = 1,
+    mtkItem = 2,
+    mtkAsteroid = 3,
+    mtkMissile = 4
+  ); // @size $01
+
+type
   TMissile = class(TObjectEx) // @size 0x74
   public
     Graphic: TObjectSE; // @offset 0x04
@@ -32,8 +42,8 @@ type
     FlightTicks: Integer; // @offset $54 Advanced by 200 / MovementStepCount.
     DestroyQueued: Boolean; // @offset 0x58  StepDay marks intercepted/expired missiles; NextDay removes them.
     FilmObject: TEFilmObj; // @offset 0x5C
-    SavedTargetKind: Byte; // @offset $60 Serialized target discriminator.
-    SavedPreviousTargetKind: Byte; // @offset $61
+    SavedTargetKind: TMissileTargetKind; // @offset $60
+    SavedPreviousTargetKind: TMissileTargetKind; // @offset $61
     LastTargetPosition: TPointF; // @offset $64
     LastTargetDistance: Single; // @offset $6C Squared distance used to detect overshooting, not a random seed.
     OvershootTicks: Integer; // @offset $70
@@ -204,55 +214,55 @@ begin
   Buffer.AddSingle(TurnDirection);
   if CurrentStar = nil then Buffer.AddDWord(0) else Buffer.AddDWord(CurrentStar.Id);
   if OwnerShip = nil then Buffer.AddDWord(0) else Buffer.AddDWord(OwnerShip.Id);
-  if Target = nil then Buffer.AddAnsiChar(AnsiChar(0))
+  if Target = nil then Buffer.AddAnsiChar(AnsiChar(mtkNone))
   else if Target is TShip then
     begin
-      Buffer.AddAnsiChar(AnsiChar(1));
+      Buffer.AddAnsiChar(AnsiChar(mtkShip));
       Buffer.AddDWord((Target as TShip).Id);
     end
     else if Target is TItem then
     begin
-      Buffer.AddAnsiChar(AnsiChar(2));
+      Buffer.AddAnsiChar(AnsiChar(mtkItem));
       Buffer.AddDWord((Target as TItem).Id);
     end
     else if Target is TAsteroid then
     begin
-      Buffer.AddAnsiChar(AnsiChar(3));
+      Buffer.AddAnsiChar(AnsiChar(mtkAsteroid));
       Buffer.AddDWord((Target as TAsteroid).Id);
     end
     else if Target is TMissile then
     begin
-      Buffer.AddAnsiChar(AnsiChar(4));
+      Buffer.AddAnsiChar(AnsiChar(mtkMissile));
       Buffer.AddDWord((Target as TMissile).Id);
     end
-    else Buffer.AddAnsiChar(AnsiChar(0));
+    else Buffer.AddAnsiChar(AnsiChar(mtkNone));
   Buffer.AddAnsiChar(AnsiChar(ShotIndex));
   Buffer.AddIntegerValue(FlightTicks);
   Buffer.AddSingle(SourceHeading);
   Buffer.AddSingle(Speed);
   Buffer.AddSingle(MaximumSpeed);
-  if PreviousTarget = nil then Buffer.AddAnsiChar(AnsiChar(0))
+  if PreviousTarget = nil then Buffer.AddAnsiChar(AnsiChar(mtkNone))
   else if PreviousTarget is TShip then
     begin
-      Buffer.AddAnsiChar(AnsiChar(1));
+      Buffer.AddAnsiChar(AnsiChar(mtkShip));
       Buffer.AddDWord((PreviousTarget as TShip).Id);
     end
     else if PreviousTarget is TItem then
     begin
-      Buffer.AddAnsiChar(AnsiChar(2));
+      Buffer.AddAnsiChar(AnsiChar(mtkItem));
       Buffer.AddDWord((PreviousTarget as TItem).Id);
     end
     else if PreviousTarget is TAsteroid then
     begin
-      Buffer.AddAnsiChar(AnsiChar(3));
+      Buffer.AddAnsiChar(AnsiChar(mtkAsteroid));
       Buffer.AddDWord((PreviousTarget as TAsteroid).Id);
     end
     else if PreviousTarget is TMissile then
     begin
-      Buffer.AddAnsiChar(AnsiChar(4));
+      Buffer.AddAnsiChar(AnsiChar(mtkMissile));
       Buffer.AddDWord((PreviousTarget as TMissile).Id);
     end
-    else Buffer.AddAnsiChar(AnsiChar(0));
+    else Buffer.AddAnsiChar(AnsiChar(mtkNone));
   Buffer.AddSingle(LastTargetPosition.X);
   Buffer.AddSingle(LastTargetPosition.Y);
   Buffer.AddSingle(LastTargetDistance);
@@ -349,16 +359,16 @@ begin
   TurnDirection := Buffer.GetSingle;
   CurrentStar := TStar(Buffer.GetUInt32);
   OwnerShip := TShip(Buffer.GetUInt32);
-  SavedTargetKind := Buffer.GetByte;
-  if SavedTargetKind = 0 then Target := nil else Target := TObject(Buffer.GetUInt32);
+  SavedTargetKind := TMissileTargetKind(Buffer.GetByte);
+  if SavedTargetKind = mtkNone then Target := nil else Target := TObject(Buffer.GetUInt32);
   ShotIndex := Buffer.GetByte;
   FlightTicks := Buffer.GetInt32;
   SourceHeading := Buffer.GetSingle;
   Speed := Buffer.GetSingle;
   if LoadedSaveVersion >= 95 then MaximumSpeed := Buffer.GetSingle
   else MaximumSpeed := RemapClamped(TechLevel, 1, 8, GetWeaponInfo.MissileMinSpeed, GetWeaponInfo.MissileMaxSpeed);
-  SavedPreviousTargetKind := Buffer.GetByte;
-  if SavedPreviousTargetKind = 0 then PreviousTarget := nil else PreviousTarget := TObject(Buffer.GetUInt32);
+  SavedPreviousTargetKind := TMissileTargetKind(Buffer.GetByte);
+  if SavedPreviousTargetKind = mtkNone then PreviousTarget := nil else PreviousTarget := TObject(Buffer.GetUInt32);
   LastTargetPosition.X := Buffer.GetSingle;
   LastTargetPosition.Y := Buffer.GetSingle;
   LastTargetDistance := Buffer.GetSingle;
@@ -378,14 +388,14 @@ procedure TMissile.ResolveLoadedReferences(World: TGalaxy);
 begin
   CurrentStar := TObject(World.IdToStar(Cardinal(CurrentStar))) as TStar;
   OwnerShip := TObject(World.IdToShip(Cardinal(OwnerShip), True)) as TShip;
-  if SavedTargetKind = 1 then Target := TObject(World.IdToShip(Cardinal(Target), True)) as TShip
-  else if SavedTargetKind = 2 then Target := TObject(World.IdToItem(Cardinal(Target), True)) as TItem
-  else if SavedTargetKind = 3 then Target := TObject(World.IdToAsteroid(Cardinal(Target))) as TAsteroid
-  else if SavedTargetKind = 4 then Target := TObject(World.IdToMissile(Cardinal(Target))) as TMissile;
-  if SavedPreviousTargetKind = 1 then PreviousTarget := TObject(World.IdToShip(Cardinal(PreviousTarget), True)) as TShip
-  else if SavedPreviousTargetKind = 2 then PreviousTarget := TObject(World.IdToItem(Cardinal(PreviousTarget), True)) as TItem
-  else if SavedPreviousTargetKind = 3 then PreviousTarget := TObject(World.IdToAsteroid(Cardinal(PreviousTarget))) as TAsteroid
-  else if SavedPreviousTargetKind = 4 then PreviousTarget := TObject(World.IdToMissile(Cardinal(PreviousTarget))) as TMissile;
+  if SavedTargetKind = mtkShip then Target := TObject(World.IdToShip(Cardinal(Target), True)) as TShip
+  else if SavedTargetKind = mtkItem then Target := TObject(World.IdToItem(Cardinal(Target), True)) as TItem
+  else if SavedTargetKind = mtkAsteroid then Target := TObject(World.IdToAsteroid(Cardinal(Target))) as TAsteroid
+  else if SavedTargetKind = mtkMissile then Target := TObject(World.IdToMissile(Cardinal(Target))) as TMissile;
+  if SavedPreviousTargetKind = mtkShip then PreviousTarget := TObject(World.IdToShip(Cardinal(PreviousTarget), True)) as TShip
+  else if SavedPreviousTargetKind = mtkItem then PreviousTarget := TObject(World.IdToItem(Cardinal(PreviousTarget), True)) as TItem
+  else if SavedPreviousTargetKind = mtkAsteroid then PreviousTarget := TObject(World.IdToAsteroid(Cardinal(PreviousTarget))) as TAsteroid
+  else if SavedPreviousTargetKind = mtkMissile then PreviousTarget := TObject(World.IdToMissile(Cardinal(PreviousTarget))) as TMissile;
 end;
 { @end $4F0F68 }
 

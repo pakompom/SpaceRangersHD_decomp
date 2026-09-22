@@ -7169,19 +7169,19 @@ begin
   Panel.SetDragScrollingEnabled(True);
   Height := 0;
   for I := 1 to 24 do
-    if PlayerHoldShip.IsHealthEffectActive(I) then
+    if PlayerHoldShip.IsHealthEffectActive(TCaptainHealthEffect(I)) then
     begin
       if I < 13 then Kind := 1 else Kind := 2;
-      Name := CaptainHealthDefinitions[I].Name + '~' + CaptainHealthDefinitions[I].Text;
+      Name := CaptainHealthDefinitions[TCaptainHealthEffect(I)].Name + '~' + CaptainHealthDefinitions[TCaptainHealthEffect(I)].Text;
       if PlayerHoldShip.CountActiveArtefacts(t_ArtBio) > 0 then
       begin
-        Turn := PlayerHoldShip.CaptainHealth[I].ExpireTurn;
+        Turn := PlayerHoldShip.CaptainHealth[TCaptainHealthEffect(I)].ExpireTurn;
         if Kind = 1 then
           Name := Name + #13#10 + FormatText1(LocalizedText('Illness.Illness.EndDate'),TextHighlightColorTag,'<Date>',Galaxy.FormatTurnDate(Turn))
         else
           Name := Name + #13#10 + FormatText1(LocalizedText('Illness.Stimulant.EndDate'),TextHighlightColorTag,'<Date>',Galaxy.FormatTurnDate(Turn));
       end;
-      AddLine(Kind,CaptainHealthDefinitions[I].Name,Name,0);
+      AddLine(Kind,CaptainHealthDefinitions[TCaptainHealthEffect(I)].Name,Name,0);
     end;
   for I := 1 to 1 do
     if PlayerHoldShip.RadiationHealth[I].Progress > 0 then

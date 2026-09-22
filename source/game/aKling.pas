@@ -591,7 +591,7 @@ begin
           not (TShip(OrderTarget).Order in [soMove, soJump]) then OrderNone(False);
         if (PartnerShip <> nil) and (PartnerShip.CurrentStar <> CurrentStar) then OrderJump(PartnerShip.CurrentStar, True)
         else if (PartnerShip <> nil) and PartnerShip.InNormalSpace and (PartnerShip.Order = soJump) and (PartnerShip.EstimateOrderTravelTurns <= 3) then
-          OrderFollowShip(PartnerShip, 0, True)
+          OrderFollowShip(PartnerShip, fmFollowNear, True)
         else if (not OrderAbsolute or not (OrderTarget is TShip)) and (not (OrderTarget is TStar) or (EstimateOrderTravelTurns >= 3)) then begin
           Stage := 4;
           SelectEnemyShipInStar;
@@ -614,7 +614,7 @@ begin
             if Ship <> nil then
               if Sqrt(Sqr(Ship.Position.X) + Sqr(Ship.Position.Y)) > Min(8 * Ship.Speed, 2 * Speed) then begin
                 Stage := 12;
-                OrderFollowShip(Ship, 1, False);
+                OrderFollowShip(Ship, fmMinWeaponRange, False);
               end;
           end;
           Stage := 13;
@@ -1667,7 +1667,7 @@ begin
   if Order = soFollowShip then OrderNone(False);
   if (EnemyShip <> nil) and (EnemyShip.CurrentStar = CurrentStar) then
     if EnemyShip.InNormalSpace then
-      if ShouldKamikaze then OrderFollowShip(EnemyShip, 3, False) else OrderFollowShip(EnemyShip, 1, False)
+      if ShouldKamikaze then OrderFollowShip(EnemyShip, fmKamikaze, False) else OrderFollowShip(EnemyShip, fmMinWeaponRange, False)
     else if EnemyShip.CurrentPlanet <> nil then OrderMove(EnemyShip.CurrentPlanet.GetPosition, False);
 end;
 { @end $5EF630 }

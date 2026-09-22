@@ -155,7 +155,15 @@ type
 
 function GetCurrentAchievementProgress(Key: WideString; StoredValue: Integer): Integer; // @addr $5930B4
 
-function GetAchievementBackend: Byte; // @addr $59457C 1=Steam, 2=Steam without achievement support, 3=local.
+type
+  TAchievementBackend = (
+    achSteam = 1, // API reports achievement definitions.
+    achSteamWithoutAchievements = 2, // Initialized without achievement definitions; recording disabled.
+    achLocal = 3 // Local achievement storage.
+  ); // @size $01
+
+function GetAchievementBackend: TAchievementBackend; // @addr $59457C
+
 function GetAvailableAchievementCount: Integer; // @addr $5945B0 Capped at 82.
 function CreateAchievementData: PAchievementData; // @addr $594BEC Allocates three 255-character caller-owned string buffers.
 procedure FreeAchievementData(Data: PAchievementData); // @addr $594C6C Nil-safe; releases all three string cells and the record.
@@ -524,11 +532,11 @@ end;
 
 { @routine $594038 TAchievementStats_CheckAllDiseasesAchievement }
 procedure TAchievementStats.CheckAllDiseasesAchievement;
-var I: Integer;
+var I: TCaptainHealthEffect;
 begin
   if (GetPlayer <> nil) and (Galaxy <> nil) then
   begin
-    for I := 1 to 12 do
+    for I := Low(TCaptainDisease) to High(TCaptainDisease) do
       if GetPlayer.CaptainHealth[I].ApplicationCount = 0 then Exit;
     TryUnlockAchievement('ILL');
   end;
@@ -537,10 +545,10 @@ end;
 
 { @routine $594094 TAchievementStats_CheckAllDrugsAchievement }
 procedure TAchievementStats.CheckAllDrugsAchievement;
-var I: Integer;
+var I: TCaptainHealthEffect;
 begin
   if (GetPlayer <> nil) and (Galaxy <> nil) then begin
-    for I := 13 to 24 do
+    for I := Low(TCaptainStimulant) to High(TCaptainStimulant) do
       if GetPlayer.CaptainHealth[I].ApplicationCount = 0 then Exit;
     TryUnlockAchievement('NARKOMAN');
   end;
@@ -627,14 +635,14 @@ end;
 { @end $5943B4 }
 
 { @routine $59457C GetAchievementBackend }
-function GetAchievementBackend: Byte;
+function GetAchievementBackend: TAchievementBackend;
 begin
   if SteamInitialized then
   begin
-    if SteamAchievementsCount > 0 then Result := 1
-    else Result := 2;
+    if SteamAchievementsCount > 0 then Result := achSteam
+    else Result := achSteamWithoutAchievements;
   end
-  else Result := 3;
+  else Result := achLocal;
 end;
 { @end $59457C }
 
@@ -642,9 +650,9 @@ end;
 function GetAvailableAchievementCount: Integer;
 begin
   case GetAchievementBackend of
-    1: Result := Min(82, SteamAchievementsCount);
-    3: Result := 82;
-    2: Result := 0;
+    achSteam: Result := Min(82, SteamAchievementsCount);
+    achLocal: Result := 82;
+    achSteamWithoutAchievements: Result := 0;
   else Result := 0;
   end;
 end;
@@ -662,9 +670,9 @@ begin
   Block := AchievementDefinitions.FindBlock(Key);
   if Block = nil then Exit;
   case GetAchievementBackend of
-    1: Result := SteamUnlockAchievement(StrToInt(AnsiString(Block.GetParam('Num'))));
-    3: Result := UnlockLocalAchievement(Block);
-    2: Result := False;
+    achSteam: Result := SteamUnlockAchievement(StrToInt(AnsiString(Block.GetParam('Num'))));
+    achLocal: Result := UnlockLocalAchievement(Block);
+    achSteamWithoutAchievements: Result := False;
   else Result := False;
   end;
   if Result and (GetPlayer <> nil) then GetPlayer.AwardedAchievementKeys.AddChildBlock(Key);
@@ -686,9 +694,9 @@ begin
   if Amount + Data.Value <= Data.MaxValue then Increment := Amount
   else Increment := Data.MaxValue - Data.Value;
   case GetAchievementBackend of
-    1: Result := SteamIncreaseStat(StrToInt(AnsiString(Block.GetParam('Num'))), Increment);
-    3: Result := IncreaseLocalAchievementProgress(Block, Increment);
-    2: Result := False;
+    achSteam: Result := SteamIncreaseStat(StrToInt(AnsiString(Block.GetParam('Num'))), Increment);
+    achLocal: Result := IncreaseLocalAchievementProgress(Block, Increment);
+    achSteamWithoutAchievements: Result := False;
   else Result := False;
   end;
   FreeAchievementData(Data);
@@ -718,9 +726,9 @@ begin
     Exit;
   end;
   case GetAchievementBackend of
-    1: Result := SteamIncreaseStat(StrToInt(AnsiString(Block.GetParam('Num'))), Increment);
-    3: Result := IncreaseLocalAchievementProgress(Block, Increment);
-    2: Result := False;
+    achSteam: Result := SteamIncreaseStat(StrToInt(AnsiString(Block.GetParam('Num'))), Increment);
+    achLocal: Result := IncreaseLocalAchievementProgress(Block, Increment);
+    achSteamWithoutAchievements: Result := False;
   else Result := False;
   end;
   FreeAchievementData(Data);
@@ -740,8 +748,8 @@ begin
   begin
     Result := CreateAchievementData;
     case GetAchievementBackend of
-      1: SteamAchievementData(StrToInt(AnsiString(Block.GetParam('Num'))), Result);
-      3: GetLocalAchievementData(Key, Result);
+      achSteam: SteamAchievementData(StrToInt(AnsiString(Block.GetParam('Num'))), Result);
+      achLocal: GetLocalAchievementData(Key, Result);
     end;
     TruncateStartupWideString(Result.Name);
     TruncateStartupWideString(Result.Description);

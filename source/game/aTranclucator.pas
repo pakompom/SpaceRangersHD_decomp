@@ -397,7 +397,7 @@ begin
           if FollowOwner and (OwnerShip <> nil) then
           begin
             Stage := 12;
-            OrderFollowShip(OwnerShip, 0, False);
+            OrderFollowShip(OwnerShip, fmFollowNear, False);
           end
           else
           begin
@@ -711,12 +711,12 @@ end;
 procedure TTranclucator.UpdateFreeFlightOrder;
 begin
   if (EnemyShip <> nil) and (EnemyShip.CurrentStar = CurrentStar) and EnemyShip.InNormalSpace then
-    OrderFollowShip(EnemyShip, 1, False)
+    OrderFollowShip(EnemyShip, fmMinWeaponRange, False)
   else if (OwnerShip <> nil) and (OwnerShip.CurrentStar = CurrentStar) and OwnerShip.InNormalSpace then
   begin
     if (OwnerShip.Order = soFollowShip) and (OwnerShip.EnemyShip = OwnerShip.OrderTarget) and (OwnerShip.EnemyShip <> Self) then
-      OrderFollowShip(OwnerShip.EnemyShip, 1, False)
-    else OrderFollowShip(OwnerShip, 0, False);
+      OrderFollowShip(OwnerShip.EnemyShip, fmMinWeaponRange, False)
+    else OrderFollowShip(OwnerShip, fmFollowNear, False);
   end
   else if (OwnerShip <> nil) and (OwnerShip.CurrentStar = CurrentStar) and (OwnerShip.CurrentPlanet <> nil) then
     OrderMove(OwnerShip.CurrentPlanet.GetPosition, False)

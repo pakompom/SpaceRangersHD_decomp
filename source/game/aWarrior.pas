@@ -1178,7 +1178,7 @@ begin
       (EnemyShip.EnemyShip = Self) and (EnemyShip.OrderTarget = Self) and (EnemyShip.Speed > Speed) and
       (Ship.GetRelationLevelToShip(EnemyShip) <= rlHostile);
     if EnemyShip.InNormalSpace then begin
-      if RetreatToFlagship then OrderFollowShip(Ship, 0, False) else OrderFollowShip(EnemyShip, 1, False);
+      if RetreatToFlagship then OrderFollowShip(Ship, fmFollowNear, False) else OrderFollowShip(EnemyShip, fmMinWeaponRange, False);
       if ChanceToWin(EnemyShip) < 0.8 then RequestAlliesAttackShip(EnemyShip);
     end else if ChanceToWin(EnemyShip) > 0.5 then begin
       if EnemyShip.CurrentPlanet <> nil then begin
@@ -1408,7 +1408,7 @@ begin
   Enemies.Free;
   Allies.Free;
   if (BestShip <> nil) and (BestShipScore >= BestPositionScore) then
-    if GetRelationLevelToShip(BestShip) > rlHostile then OrderFollowShip(BestShip, 0, False) else OrderFollowShip(BestShip, 1, False)
+    if GetRelationLevelToShip(BestShip) > rlHostile then OrderFollowShip(BestShip, fmFollowNear, False) else OrderFollowShip(BestShip, fmMinWeaponRange, False)
   else OrderMove(Destination, False);
 end;
 { @end $51D714 }

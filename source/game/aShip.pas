@@ -34,6 +34,14 @@ type
     soJumpHole = 4, soTakeoff = 5, soFollowShip = 6, soTeleport = 7
   ); // @size 0x1
 
+  // Follow modes in OrderStateData; unknown byte values are preserved.
+  TFollowMode = (
+    fmFollowNear = 0,
+    fmMinWeaponRange = 1,
+    fmMaxWeaponRange = 2, // No built-in caller.
+    fmKamikaze = 3
+  ); // @size $01
+
   TShipStatBonusEntry = record // @size 0x08
     BonusKind: TEquipmentBonusKind; // @offset 0x00
     BonusValue: Integer; // @offset 0x04
@@ -115,7 +123,7 @@ type
     WeaponCount: Byte; // @offset 0x12C
     UsableWeaponCount: Byte; // @offset 0x12D
     BaseSkills: array[TPilotSkill] of Byte; // @offset 0x12E
-    CaptainHealth: array[1..24] of TCaptainHealthState; // @offset 0x138  1..12: diseases; 13..24: stimulants.
+    CaptainHealth: array[TCaptainHealthEffect] of TCaptainHealthState; // @offset 0x138  1..12: diseases; 13..24: stimulants.
     RadiationHealth: array[1..1] of TCaptainHealthState; // @offset 0x378  Same native record as diseases/stimulants.
     CustomShipInfos: TList; // @offset 0x390  Owns PCustomShipInfo records; deletion may be deferred during action callbacks.
     TradeLossBalance: Integer; // @offset 0x394
@@ -366,8 +374,8 @@ type
     procedure RefreshGraphicSize; // @addr 0x7600C4 @note "Requires Graphic; chooses dimensions from ship class, hull and special equipment."
     function GetCargoGoodsWeight: Integer; // @addr 0x76086C
     function CalculateFollowRadius: Integer; // @addr 0x7608A0 @note "Requires a follow order; uses weapon ranges or the ships' collision radii."
-    function GetFollowMode: Byte; // @addr 0x760A4C @note "Raises when the current order is not follow."
-    function GetEffectiveFollowMode: Byte; // @addr 0x760AB0 @note "Requires a follow order; applies tactical and map-edge adjustments without modifying OrderStateData."
+    function GetFollowMode: TFollowMode; // @addr 0x760A4C @note "Requires a follow order."
+    function GetEffectiveFollowMode: TFollowMode; // @addr 0x760AB0 @note "Requires a follow order; adjusts the mode for tactics and map boundaries without changing the order."
     function NeedsEquipmentType(ItemType: TItemType): Boolean; // @addr 0x760BE4
     function CountCarriedEquipmentByType(ItemType: TItemType): Integer; // @addr 0x760CD0 @note "Skips inventory index zero; any weapon request counts all weapon types."
     function SelectBestUnequippedWeapon: TWeapon; // @addr 0x760D4C
@@ -409,7 +417,7 @@ type
     procedure OrderJumpHole(Hole: THole; Absolute: Boolean); // @addr 0x76C7A0 @note "Does not check AbsoluteScriptOrder."
     procedure OrderLanding(Location: TObject; Absolute: Boolean); // @addr 0x76C8B4 @note "Location is a planet or dockable ship."
     procedure OrderTakeoff; // @addr 0x76C940
-    procedure OrderFollowShip(Ship: TShip; FollowMode: Byte; Absolute: Boolean); // @addr 0x76CE94
+    procedure OrderFollowShip(Ship: TShip; FollowMode: TFollowMode; Absolute: Boolean); // @addr 0x76CE94
     procedure OrderTeleport(Star: TStar; Destination: TPointF; TransitionData: Integer; Absolute: Boolean); // @addr 0x76C848
     procedure ClearMovementPath; // @addr 0x774104
     function HasLockedOrFollowOrder: Boolean; // @addr 0x750070 @note "True for OrderAbsolute, AbsoluteScriptOrder, or a follow-ship order."
@@ -652,7 +660,7 @@ type
     function HasActiveStimulant: Boolean; // @addr 0x77C364
     function CountActiveStimulants: Integer; // @addr 0x77C3B0
     function CountPresentDiseasesAndActiveStimulants: Integer; // @addr 0x77C3F8
-    function IsHealthEffectActive(Index: Integer): Boolean; // @addr 0x77C5A0 @note "Captain effect is active only when Progress equals 100."
+    function IsHealthEffectActive(Index: TCaptainHealthEffect): Boolean; // @addr 0x77C5A0 @note "Active when Progress = 100."
     function HasRadiationSickness: Boolean; // @addr 0x77CA44
     function HasDiseaseFromCurrentPlanet: Boolean; // @addr 0x77C424
     function HasDiseaseFromCurrentDockedShip: Boolean; // @addr 0x77C4E8
@@ -788,10 +796,10 @@ begin
   LiberationGroupRouteIndex := 0;
   for I := 1 to 24 do
   begin
-    CaptainHealth[I].Progress := 0;
-    CaptainHealth[I].AppliedTurn := 0;
-    CaptainHealth[I].ExpireTurn := 0;
-    CaptainHealth[I].ApplicationCount := 0;
+    CaptainHealth[TCaptainHealthEffect(I)].Progress := 0;
+    CaptainHealth[TCaptainHealthEffect(I)].AppliedTurn := 0;
+    CaptainHealth[TCaptainHealthEffect(I)].ExpireTurn := 0;
+    CaptainHealth[TCaptainHealthEffect(I)].ApplicationCount := 0;
   end;
   for I := 1 to 1 do
   begin
@@ -1138,10 +1146,10 @@ begin
   Buffer.AddWideChar(WideChar(LiberationGroupRouteIndex));
   for I := 1 to 24 do
   begin
-    Buffer.AddSingle(CaptainHealth[I].Progress);
-    Buffer.AddIntegerValue(CaptainHealth[I].AppliedTurn);
-    Buffer.AddIntegerValue(CaptainHealth[I].ExpireTurn);
-    Buffer.AddIntegerValue(CaptainHealth[I].ApplicationCount);
+    Buffer.AddSingle(CaptainHealth[TCaptainHealthEffect(I)].Progress);
+    Buffer.AddIntegerValue(CaptainHealth[TCaptainHealthEffect(I)].AppliedTurn);
+    Buffer.AddIntegerValue(CaptainHealth[TCaptainHealthEffect(I)].ExpireTurn);
+    Buffer.AddIntegerValue(CaptainHealth[TCaptainHealthEffect(I)].ApplicationCount);
   end;
   Buffer.AddIntegerValue(LastProcessedTurn);
   Buffer.AddIntegerValue(UnknownF4);
@@ -1417,11 +1425,11 @@ begin
   LiberationGroupRouteIndex := Buffer.GetWord;
   for I := 1 to 24 do
   begin
-    CaptainHealth[I].Progress := Buffer.GetSingle;
-    CaptainHealth[I].AppliedTurn := Buffer.GetInt32;
-    CaptainHealth[I].ExpireTurn := Buffer.GetInt32;
-    if LoadedSaveVersion >= 54 then CaptainHealth[I].ApplicationCount := Buffer.GetInt32
-    else CaptainHealth[I].ApplicationCount := 0;
+    CaptainHealth[TCaptainHealthEffect(I)].Progress := Buffer.GetSingle;
+    CaptainHealth[TCaptainHealthEffect(I)].AppliedTurn := Buffer.GetInt32;
+    CaptainHealth[TCaptainHealthEffect(I)].ExpireTurn := Buffer.GetInt32;
+    if LoadedSaveVersion >= 54 then CaptainHealth[TCaptainHealthEffect(I)].ApplicationCount := Buffer.GetInt32
+    else CaptainHealth[TCaptainHealthEffect(I)].ApplicationCount := 0;
   end;
   LastProcessedTurn := Buffer.GetInt32;
   UnknownF4 := Buffer.GetInt32;
@@ -1542,9 +1550,9 @@ begin
   HealthBlock := Block.AddBlockByPath(DecodeTextW('Hrenasletaha')); // 'Health'
   for I := 1 to 24 do
   begin
-    if IsHealthEffectActive(I) then RemainingTurns := CaptainHealth[I].ExpireTurn - Galaxy.CurrentTurn
+    if IsHealthEffectActive(TCaptainHealthEffect(I)) then RemainingTurns := CaptainHealth[TCaptainHealthEffect(I)].ExpireTurn - Galaxy.CurrentTurn
     else RemainingTurns := 0;
-    Text := CaptainHealthDefinitions[I].Name + ',' + IntToStr(RemainingTurns);
+    Text := CaptainHealthDefinitions[TCaptainHealthEffect(I)].Name + ',' + IntToStr(RemainingTurns);
     HealthBlock.AddParam(DecodeTextW('FralcatMoar') + IntToStr(I), Text); // 'Factor'
   end;
   if HasRadiationSickness then RemainingTurns := RadiationHealth[1].ExpireTurn - Galaxy.CurrentTurn
@@ -1627,21 +1635,21 @@ begin
   begin
     for I := 1 to 24 do
     begin
-      if IsHealthEffectActive(I) then OldTurns := CaptainHealth[I].ExpireTurn - Galaxy.CurrentTurn
+      if IsHealthEffectActive(TCaptainHealthEffect(I)) then OldTurns := CaptainHealth[TCaptainHealthEffect(I)].ExpireTurn - Galaxy.CurrentTurn
       else OldTurns := 0;
       Text := GetParam(DecodeTextW('FralcatMoar') + IntToStr(I)); // 'Factor'
       NewTurns := StrToInt(ExtractDelimitedPartW(Text, 1, ','));
       if (OldTurns > 0) and (NewTurns = 0) then
       begin
-        CaptainHealth[I].Progress := 0;
-        CaptainHealth[I].ExpireTurn := 0;
+        CaptainHealth[TCaptainHealthEffect(I)].Progress := 0;
+        CaptainHealth[TCaptainHealthEffect(I)].ExpireTurn := 0;
       end;
       if (OldTurns = 0) and (NewTurns > 0) then
       begin
-        CaptainHealth[I].Progress := 100;
-        CaptainHealth[I].ExpireTurn := NewTurns + Galaxy.CurrentTurn;
+        CaptainHealth[TCaptainHealthEffect(I)].Progress := 100;
+        CaptainHealth[TCaptainHealthEffect(I)].ExpireTurn := NewTurns + Galaxy.CurrentTurn;
       end;
-      if (OldTurns > 0) and (NewTurns > 0) then CaptainHealth[I].ExpireTurn := NewTurns + Galaxy.CurrentTurn;
+      if (OldTurns > 0) and (NewTurns > 0) then CaptainHealth[TCaptainHealthEffect(I)].ExpireTurn := NewTurns + Galaxy.CurrentTurn;
     end;
     if HasRadiationSickness then OldTurns := RadiationHealth[1].ExpireTurn - Galaxy.CurrentTurn
     else OldTurns := 0;
@@ -2093,7 +2101,7 @@ begin
         if InNormalSpace then
         begin
           Stage := 9;
-          if IsHealthEffectActive(10) then WearFactor := 3 else WearFactor := 1;
+          if IsHealthEffectActive(heBitterPelenosia) then WearFactor := 3 else WearFactor := 1;
           if Order in [soMove,soLand,soJump,soTakeoff,soFollowShip] then
           begin
             ApplyItemDegradation(GetEngine, idkUse,
@@ -3186,7 +3194,7 @@ begin
         OrderLanding(PartnerShip.OrderTarget, CanRefuel or (OrderTarget = PartnerShip)); Result := True; Exit;
       end;
       if (PartnerShip.Order = soFollowShip) and (PartnerShip.EstimateOrderTravelTurns < 3) and not OrderAbsolute then begin
-        OrderFollowShip(PartnerShip.OrderTarget as TShip, 0, False); Result := True; Exit;
+        OrderFollowShip(PartnerShip.OrderTarget as TShip, fmFollowNear, False); Result := True; Exit;
       end;
       if (PartnerShip.OrderTarget is TStar) and CanRefuel then begin
         if Self is TPirate then (Self as TPirate).SelectNearestReachableDestination
@@ -3195,7 +3203,7 @@ begin
         Exit;
       end else begin
         if OrderTarget = PartnerShip then begin Result := True; Exit; end;
-        OrderFollowShip(PartnerShip, 0, False);
+        OrderFollowShip(PartnerShip, fmFollowNear, False);
         Result := True;
         Exit;
       end;
@@ -3504,8 +3512,8 @@ begin
         (Ord(CanBoostArtefact(t_ArtMissileDef, nil, False)) + 1));
   if (Attacker <> nil) and (GetPlayer = Attacker) then
   begin
-    if Attacker.IsHealthEffectActive(10) or Attacker.IsHealthEffectActive(7) or
-      Attacker.IsHealthEffectActive(8) then DamageValue := DamageValue * NextRandomUnitFloat(RandomState);
+    if Attacker.IsHealthEffectActive(heBitterPelenosia) or Attacker.IsHealthEffectActive(heWhirlwindConcussion) or
+      Attacker.IsHealthEffectActive(hePulledMuscle) then DamageValue := DamageValue * NextRandomUnitFloat(RandomState);
     if TypeId = stKling then (Self as TKling).DetectAttackingPlayer(Attacker);
   end;
   if DamageValue < 1 then
@@ -5142,7 +5150,7 @@ begin
   end;
   if HasPositiveSpeed then
     if GetPlayer = Self then begin OrderNone(False); PendingPlayerFollowTarget := Target; end
-    else OrderFollowShip(EnemyShip, 1, True);
+    else OrderFollowShip(EnemyShip, fmMinWeaponRange, True);
   Ally.EnemyShip := Target;
   for I := 1 to Ally.WeaponCount do begin
     Weapon := Ally.Weapons[I];
@@ -5152,7 +5160,7 @@ begin
   end;
   if Ally.HasPositiveSpeed then
     if GetPlayer = Ally then begin GetPlayer.OrderNone(False); PendingPlayerFollowTarget := Target; end
-    else Ally.OrderFollowShip(Ally.EnemyShip, 1, True);
+    else Ally.OrderFollowShip(Ally.EnemyShip, fmMinWeaponRange, True);
 end;
 { @end $75B9BC }
 
@@ -5483,7 +5491,7 @@ begin
   if (CurrentPlanet <> nil) and not CurrentPlanet.IsMainPiratePlanet then
     if CurrentPlanet.OwnerId = oiPirate then Result := False
     else if not GoodsLegalOnPlanet[Good, CurrentPlanet.RaceId, CurrentPlanet.Government] then Result := True
-    else if (Good in [Ord(t_Food)..Ord(t_Medicine)]) and IsHealthEffectActive(12) then Result := True;
+    else if (Good in [Ord(t_Food)..Ord(t_Medicine)]) and IsHealthEffectActive(heNewMolizone) then Result := True;
 end;
 { @end $75D45C }
 
@@ -5952,7 +5960,7 @@ begin
   if Artefacts.Count > 0 then
     for I := 1 to CountActiveArtefacts(t_ArtefactAntigrav) do
       Mass := Mass * (AntigravityArtefactMassFactor + AntigravityArtefactBoostFactor * ShortInt(CanBoostArtefact(t_ArtefactAntigrav, nil, False)));
-  if (PilotRace = oiMaloc) and IsHealthEffectActive(9) then Mass := Mass * 1.2;
+  if (PilotRace = oiMaloc) and IsHealthEffectActive(heGrandMalosausus) then Mass := Mass * 1.2;
   Bonus := GetTotalStatBonus(bonMass);
   if GetHull.MicroModuleIndex <> 0 then Inc(Bonus, MicroModuleTemplates[GetHull.MicroModuleIndex - 1].StatBonuses[bonMass]);
   Mass := Mass * (1 + Bonus / 100);
@@ -6181,7 +6189,7 @@ begin
   if not IsEquipmentUsable(GetRadar) then Result := 0 else Result := CalculateRadarRange(GetRadar);
   if GetPlayer = Self then
   begin
-    if IsHealthEffectActive(21) then Result := Result * 2;
+    if IsHealthEffectActive(hePsychotropicCache) then Result := Result * 2;
     if Galaxy.UltraScanModEnabled <> 0 then Result := Max(Result, 25000);
   end;
 end;
@@ -6191,7 +6199,7 @@ end;
 function TShip.GetScannerPower: Integer;
 begin
   Result := 0;
-  if IsEquipmentUsable(GetScanner) then Result := CalculateScannerPower(GetScanner) + 12 * Ord(IsHealthEffectActive(21));
+  if IsEquipmentUsable(GetScanner) then Result := CalculateScannerPower(GetScanner) + 12 * Ord(IsHealthEffectActive(hePsychotropicCache));
 end;
 { @end $75F7D8 }
 
@@ -6503,13 +6511,13 @@ end;
 { @routine $7608A0 TShip_CalculateFollowRadius }
 function TShip.CalculateFollowRadius: Integer;
 const NoWeaponRange = 999999;
-var Mode: Byte; I: Integer; Target: TShip; Weapon: TWeapon;
+var Mode: TFollowMode; I: Integer; Target: TShip; Weapon: TWeapon;
 begin
   if Order <> soFollowShip then raise Exception.Create('TShip.CalcFollowRadius()');
   Target := OrderTarget as TShip;
-  Mode := Byte(OrderStateData);
+  Mode := TFollowMode(Byte(OrderStateData));
   case Mode of
-    1: begin
+    fmMinWeaponRange: begin
          Result := NoWeaponRange;
          for I := 1 to WeaponCount do
          begin
@@ -6517,7 +6525,7 @@ begin
            if IsEquipmentUsable(Weapon) and (GetWeaponRange(Weapon) < Result) then Result := GetWeaponRange(Weapon);
          end;
        end;
-    2: begin
+    fmMaxWeaponRange: begin
          Result := 0;
          for I := 1 to WeaponCount do
          begin
@@ -6533,21 +6541,21 @@ end;
 { @end $7608A0 }
 
 { @routine $760A4C TShip_GetFollowMode }
-function TShip.GetFollowMode: Byte;
+function TShip.GetFollowMode: TFollowMode;
 begin
   if Order <> soFollowShip then raise Exception.Create('TShip.CalcFollowRadius()');
-  Result := Byte(OrderStateData);
+  Result := TFollowMode(Byte(OrderStateData));
 end;
 { @end $760A4C }
 
 { @routine $760AB0 TShip_GetEffectiveFollowMode }
-function TShip.GetEffectiveFollowMode: Byte;
-var Mode: Byte; BoundarySquared, DistanceSquared, TargetDistanceSquared: Single;
+function TShip.GetEffectiveFollowMode: TFollowMode;
+var Mode: TFollowMode; BoundarySquared, DistanceSquared, TargetDistanceSquared: Single;
 begin
   if Order <> soFollowShip then raise Exception.Create('TShip.GetRealFollowType()');
-  Result := 0;
-  Mode := Byte(OrderStateData);
-  if (Mode in [0, 3]) or (WeaponCount <= 0) then Exit;
+  Result := fmFollowNear;
+  Mode := TFollowMode(Byte(OrderStateData));
+  if (Mode in [fmFollowNear, fmKamikaze]) or (WeaponCount <= 0) then Exit;
   if (GetPlayer <> Self) and (SeededRandomIntRange(0, 6, Seed + Galaxy.CurrentTurn) = 0) then Exit;
   BoundarySquared := Sqr(CurrentStar.MapDiameter / 2);
   DistanceSquared := Sqr(Position.X) + Sqr(Position.Y);
@@ -8786,8 +8794,8 @@ begin
   if GetPlayer = Self then
   begin
     DurabilityDamage := DurabilityDamage * GalaxyDifficultyTuning[Galaxy.DifficultyLevels[3]].EquipmentWearFactor;
-    if IsHealthEffectActive(6) then DurabilityDamage := DurabilityDamage * 2;
-    if IsHealthEffectActive(16) then DurabilityDamage := DurabilityDamage * 0.4;
+    if IsHealthEffectActive(heDrugAddiction) then DurabilityDamage := DurabilityDamage * 2;
+    if IsHealthEffectActive(heSuperTechnician) then DurabilityDamage := DurabilityDamage * 0.4;
   end;
   if CanUseEquipmentTech(Item) and (GetEffectiveSkillLevel(psTechnical) > 0) then
     DurabilityDamage := DurabilityDamage / (1 + GetEffectiveSkillLevel(psTechnical) * 0.2);
@@ -10042,13 +10050,13 @@ end;
 { @end $76C940 }
 
 { @routine $76CE94 TShip_OrderFollowShip }
-procedure TShip.OrderFollowShip(Ship: TShip; FollowMode: Byte; Absolute: Boolean);
+procedure TShip.OrderFollowShip(Ship: TShip; FollowMode: TFollowMode; Absolute: Boolean);
 begin
   if AbsoluteScriptOrder > 0 then Exit;
   OrderNone(False);
   Order := soFollowShip;
   OrderTarget := Ship;
-  OrderStateData := FollowMode;
+  OrderStateData := Ord(FollowMode);
   OrderAbsolute := Absolute;
 end;
 { @end $76CE94 }
@@ -12786,7 +12794,7 @@ begin
   if Amount < Wealth / 45 then begin Result := 0; Exit; end;
   Result := Round(RemapClamped(Amount, Wealth / 45, Wealth / 8, 8, 36) *
     RemapClamped(RelationToShip(OtherShip), 50, 100, 0.7, 1.5));
-  if (GetPlayer = OtherShip) and OtherShip.IsHealthEffectActive(20) then Result := Result * 2;
+  if (GetPlayer = OtherShip) and OtherShip.IsHealthEffectActive(heShakhmandooLeader) then Result := Result * 2;
 end;
 { @end $779CF4 }
 
@@ -12911,7 +12919,7 @@ begin
     begin
       FollowTarget := FindScriptFollowTarget;
       if FollowTarget = nil then OrderNone(False)
-      else OrderFollowShip(FollowTarget, 0, False);
+      else OrderFollowShip(FollowTarget, fmFollowNear, False);
     end;
   end
   else if State.StateKind = sskJumpToStar then
@@ -13187,38 +13195,38 @@ begin
   BonusKind := TEquipmentBonusKind(Ord(Skill) + Ord(bonSkill1));
   if not (IgnoreStatusEffects) then
   begin
-    if Self.IsHealthEffectActive(1) then
+    if Self.IsHealthEffectActive(heBlindness) then
     begin
       if Skill = psAccuracy then Dec(Level, 3);
       if Skill = psManeuverability then Dec(Level, 3);
       if Skill = psTechnical then Dec(Level, 3);
       if Skill = psTrading then Dec(Level, 3);
     end;
-    if Self.IsHealthEffectActive(3) then
+    if Self.IsHealthEffectActive(heHolyFanaticism) then
     begin
       if Skill = psAccuracy then Inc(Level, 1);
       if Skill = psManeuverability then Inc(Level, 1);
       if Skill = psCharisma then Dec(Level, 1);
       if Skill = psLeadership then Inc(Level, 2);
     end;
-    if Self.IsHealthEffectActive(5) then
+    if Self.IsHealthEffectActive(heMysteriousLuatanza) then
     begin
       if Skill = psAccuracy then Dec(Level, 2);
       if Skill = psCharisma then Inc(Level, 3);
     end;
-    if Self.IsHealthEffectActive(6) then
+    if Self.IsHealthEffectActive(heDrugAddiction) then
     begin
       if Skill = psAccuracy then Dec(Level, 3);
       if Skill = psManeuverability then Dec(Level, 3);
       if Skill = psTechnical then Dec(Level, 2);
     end;
-    if Self.IsHealthEffectActive(7) then
+    if Self.IsHealthEffectActive(heWhirlwindConcussion) then
     begin
       if Skill = psAccuracy then Dec(Level, 2);
       if Skill = psManeuverability then Dec(Level, 5);
       if Skill = psTrading then Dec(Level, 10);
     end;
-    if Self.IsHealthEffectActive(8) then
+    if Self.IsHealthEffectActive(hePulledMuscle) then
     begin
       if Skill = psAccuracy then Dec(Level, 2);
       if Skill = psManeuverability then Dec(Level, 2);
@@ -13226,75 +13234,75 @@ begin
       if Skill = psCharisma then Dec(Level, 1);
       if Skill = psLeadership then Dec(Level, 1);
     end;
-    if Self.IsHealthEffectActive(9) then
+    if Self.IsHealthEffectActive(heGrandMalosausus) then
     begin
       if Skill = psLeadership then Inc(Level, 3);
       if Skill = psTrading then Inc(Level, 3);
     end;
-    if Self.IsHealthEffectActive(10) then
+    if Self.IsHealthEffectActive(heBitterPelenosia) then
     begin
       if Skill = psTechnical then Dec(Level, 10);
     end;
-    if Self.IsHealthEffectActive(11) then
+    if Self.IsHealthEffectActive(heAkaSezyanka) then
     begin
       if Skill = psAccuracy then Dec(Level, 1);
       if Skill = psTechnical then Dec(Level, 2);
       if Skill = psTrading then Inc(Level, 2);
     end;
-    if Self.IsHealthEffectActive(12) then
+    if Self.IsHealthEffectActive(heNewMolizone) then
     begin
       if Skill = psAccuracy then Inc(Level, 1);
       if Skill = psManeuverability then Inc(Level, 1);
     end;
-    if Self.IsHealthEffectActive(13) then
+    if Self.IsHealthEffectActive(heMaloqSizha) then
     begin
       if Skill = psAccuracy then Inc(Level, 4);
       if Skill = psManeuverability then Inc(Level, 3);
     end;
-    if Self.IsHealthEffectActive(14) then
+    if Self.IsHealthEffectActive(heOneEyedKhamas) then
     begin
       if Skill = psCharisma then Dec(Level, 1);
       if Skill = psLeadership then Dec(Level, 1);
     end;
-    if Self.IsHealthEffectActive(15) then
+    if Self.IsHealthEffectActive(heStardust) then
     begin
       if Skill = psAccuracy then Inc(Level, 1);
       if Skill = psManeuverability then Inc(Level, 1);
       if Skill = psTechnical then Inc(Level, 1);
       if Skill = psTrading then Inc(Level, 1);
     end;
-    if Self.IsHealthEffectActive(16) then
+    if Self.IsHealthEffectActive(heSuperTechnician) then
     begin
       if Skill = psTechnical then Inc(Level, 5);
     end;
-    if Self.IsHealthEffectActive(17) then
+    if Self.IsHealthEffectActive(heGaalianAlacrity) then
     begin
       if Skill = psAccuracy then Inc(Level, 4);
       if Skill = psManeuverability then Inc(Level, 2);
     end;
-    if Self.IsHealthEffectActive(19) then
+    if Self.IsHealthEffectActive(heRagobamWhisper) then
     begin
       if Skill = psCharisma then Inc(Level, 10);
     end;
-    if Self.IsHealthEffectActive(20) then
+    if Self.IsHealthEffectActive(heShakhmandooLeader) then
     begin
       if Skill = psCharisma then Inc(Level, 1);
       if Skill = psLeadership then Inc(Level, 4);
     end;
-    if Self.IsHealthEffectActive(21) then
+    if Self.IsHealthEffectActive(hePsychotropicCache) then
     begin
       if Skill = psCharisma then Dec(Level, 3);
     end;
-    if Self.IsHealthEffectActive(22) then
+    if Self.IsHealthEffectActive(heBusinessMark) then
     begin
       if Skill = psTrading then Inc(Level, 8);
     end;
-    if Self.IsHealthEffectActive(23) then
+    if Self.IsHealthEffectActive(heDoubleplex) then
     begin
       if Skill = psAccuracy then Dec(Level, 1);
       if Skill = psManeuverability then Dec(Level, 1);
     end;
-    if Self.IsHealthEffectActive(24) then
+    if Self.IsHealthEffectActive(heAbsoluteStatus) then
     begin
       if Skill = psCharisma then Inc(Level, 2);
     end;
@@ -13367,9 +13375,9 @@ end;
 
 { @routine $77C23C TShip_HasActiveDisease }
 function TShip.HasActiveDisease: Boolean;
-var I: Integer;
+var I: TCaptainHealthEffect;
 begin
-  for I := 1 to 12 do
+  for I := Low(TCaptainDisease) to High(TCaptainDisease) do
     if CaptainHealth[I].Progress = 100 then
     begin
       Result := True;
@@ -13381,19 +13389,19 @@ end;
 
 { @routine $77C288 TShip_CountActiveDiseases }
 function TShip.CountActiveDiseases: Integer;
-var I: Integer;
+var I: TCaptainHealthEffect;
 begin
   Result := 0;
-  for I := 1 to 12 do
+  for I := Low(TCaptainDisease) to High(TCaptainDisease) do
     if CaptainHealth[I].Progress = 100 then Inc(Result);
 end;
 { @end $77C288 }
 
 { @routine $77C2D0 TShip_HasPresentDisease }
 function TShip.HasPresentDisease: Boolean;
-var I: Integer;
+var I: TCaptainHealthEffect;
 begin
-  for I := 1 to 12 do
+  for I := Low(TCaptainDisease) to High(TCaptainDisease) do
     if CaptainHealth[I].Progress > 0 then
     begin
       Result := True;
@@ -13405,19 +13413,19 @@ end;
 
 { @routine $77C31C TShip_CountPresentDiseases }
 function TShip.CountPresentDiseases: Integer;
-var I: Integer;
+var I: TCaptainHealthEffect;
 begin
   Result := 0;
-  for I := 1 to 12 do
+  for I := Low(TCaptainDisease) to High(TCaptainDisease) do
     if CaptainHealth[I].Progress > 0 then Inc(Result);
 end;
 { @end $77C31C }
 
 { @routine $77C364 TShip_HasActiveStimulant }
 function TShip.HasActiveStimulant: Boolean;
-var I: Integer;
+var I: TCaptainHealthEffect;
 begin
-  for I := 13 to 24 do
+  for I := Low(TCaptainStimulant) to High(TCaptainStimulant) do
     if CaptainHealth[I].Progress = 100 then
     begin
       Result := True;
@@ -13429,10 +13437,10 @@ end;
 
 { @routine $77C3B0 TShip_CountActiveStimulants }
 function TShip.CountActiveStimulants: Integer;
-var I: Integer;
+var I: TCaptainHealthEffect;
 begin
   Result := 0;
-  for I := 13 to 24 do
+  for I := Low(TCaptainStimulant) to High(TCaptainStimulant) do
     if CaptainHealth[I].Progress = 100 then Inc(Result);
 end;
 { @end $77C3B0 }
@@ -13446,9 +13454,9 @@ end;
 
 { @routine $77C424 TShip_HasDiseaseFromCurrentPlanet }
 function TShip.HasDiseaseFromCurrentPlanet: Boolean;
-var I: Integer;
+var I: TCaptainHealthEffect;
 begin
-  for I := 1 to 12 do
+  for I := Low(TCaptainDisease) to High(TCaptainDisease) do
     if (CaptainHealth[I].Progress > 0) and (CurrentPlanet <> nil) and (GetPlayer = Self) and
       (CurrentPlanet.GetFullName(' ') = GetPlayer.StatusEffectSourceNames[I]) then
     begin
@@ -13461,9 +13469,9 @@ end;
 
 { @routine $77C4E8 TShip_HasDiseaseFromCurrentDockedShip }
 function TShip.HasDiseaseFromCurrentDockedShip: Boolean;
-var I: Integer;
+var I: TCaptainHealthEffect;
 begin
-  for I := 1 to 12 do
+  for I := Low(TCaptainDisease) to High(TCaptainDisease) do
     if (CaptainHealth[I].Progress > 0) and (DockedTo <> nil) and (GetPlayer = Self) and
       (DockedTo.GetName = GetPlayer.StatusEffectSourceNames[I]) then
     begin
@@ -13475,7 +13483,7 @@ end;
 { @end $77C4E8 }
 
 { @routine $77C5A0 TShip_IsHealthEffectActive }
-function TShip.IsHealthEffectActive(Index: Integer): Boolean;
+function TShip.IsHealthEffectActive(Index: TCaptainHealthEffect): Boolean;
 begin
   Result := CaptainHealth[Index].Progress = 100;
 end;
@@ -13494,37 +13502,37 @@ begin
     if (DockedTo <> nil) and (DockedTo.TypeId = rstMedicalBase) then
     begin
       for I := 1 to 12 do
-        if CaptainHealth[I].Progress <> 0 then
+        if CaptainHealth[TCaptainHealthEffect(I)].Progress <> 0 then
         begin
-          CaptainHealth[I].Progress := 0;
-          CaptainHealth[I].ExpireTurn := Galaxy.CurrentTurn;
+          CaptainHealth[TCaptainHealthEffect(I)].Progress := 0;
+          CaptainHealth[TCaptainHealthEffect(I)].ExpireTurn := Galaxy.CurrentTurn;
         end;
       Index := NextRandomIntRange(13, 24, RandomState);
-      if CaptainHealth[Index].Progress > 0 then Index := NextRandomIntRange(13, 24, RandomState);
-      if (CaptainHealth[Index].Progress <= 0) and (RaceToOwner(PilotRace) in CaptainHealthDefinitions[Index].AllowedOwners) then
+      if CaptainHealth[TCaptainHealthEffect(Index)].Progress > 0 then Index := NextRandomIntRange(13, 24, RandomState);
+      if (CaptainHealth[TCaptainHealthEffect(Index)].Progress <= 0) and (RaceToOwner(PilotRace) in CaptainHealthDefinitions[TCaptainHealthEffect(Index)].AllowedOwners) then
       begin
-        CaptainHealth[Index].Progress := 100;
-        CaptainHealth[Index].AppliedTurn := Galaxy.CurrentTurn;
-        CaptainHealth[Index].ExpireTurn := Galaxy.CurrentTurn + Round(RemapClamped(SeededRandomUnitFloat(Galaxy.GenerationSeed + Index + Galaxy.CurrentTurn), 0, 1, 0.5, 3) * CaptainHealthDefinitions[Index].Duration);
-        Inc(CaptainHealth[Index].ApplicationCount);
+        CaptainHealth[TCaptainHealthEffect(Index)].Progress := 100;
+        CaptainHealth[TCaptainHealthEffect(Index)].AppliedTurn := Galaxy.CurrentTurn;
+        CaptainHealth[TCaptainHealthEffect(Index)].ExpireTurn := Galaxy.CurrentTurn + Round(RemapClamped(SeededRandomUnitFloat(Galaxy.GenerationSeed + Index + Galaxy.CurrentTurn), 0, 1, 0.5, 3) * CaptainHealthDefinitions[TCaptainHealthEffect(Index)].Duration);
+        Inc(CaptainHealth[TCaptainHealthEffect(Index)].ApplicationCount);
       end;
     end
     else if (DaysSincePlayerSeen mod 100 = 0) and (NextRandomUnitFloat(RandomState) <= 0.1) then
     begin
       Index := NextRandomIntRange(1, 24, RandomState);
-      if CaptainHealth[Index].Progress > 0 then Index := NextRandomIntRange(1, 24, RandomState);
-      if (CaptainHealth[Index].Progress <= 0) and (RaceToOwner(PilotRace) in CaptainHealthDefinitions[Index].AllowedOwners) then
+      if CaptainHealth[TCaptainHealthEffect(Index)].Progress > 0 then Index := NextRandomIntRange(1, 24, RandomState);
+      if (CaptainHealth[TCaptainHealthEffect(Index)].Progress <= 0) and (RaceToOwner(PilotRace) in CaptainHealthDefinitions[TCaptainHealthEffect(Index)].AllowedOwners) then
       begin
-        CaptainHealth[Index].Progress := 100;
-        CaptainHealth[Index].AppliedTurn := Galaxy.CurrentTurn;
-        CaptainHealth[Index].ExpireTurn := Galaxy.CurrentTurn + Round(RemapClamped(SeededRandomUnitFloat(Galaxy.GenerationSeed + Index + Galaxy.CurrentTurn), 0, 1, 0.5, 3) * CaptainHealthDefinitions[Index].Duration);
-        Inc(CaptainHealth[Index].ApplicationCount);
+        CaptainHealth[TCaptainHealthEffect(Index)].Progress := 100;
+        CaptainHealth[TCaptainHealthEffect(Index)].AppliedTurn := Galaxy.CurrentTurn;
+        CaptainHealth[TCaptainHealthEffect(Index)].ExpireTurn := Galaxy.CurrentTurn + Round(RemapClamped(SeededRandomUnitFloat(Galaxy.GenerationSeed + Index + Galaxy.CurrentTurn), 0, 1, 0.5, 3) * CaptainHealthDefinitions[TCaptainHealthEffect(Index)].Duration);
+        Inc(CaptainHealth[TCaptainHealthEffect(Index)].ApplicationCount);
       end;
     end;
   end;
   if CountActiveDiseases > 0 then
     for Index := 1 to 12 do
-      if (CaptainHealth[Index].Progress <> 0) and (CaptainHealth[Index].ExpireTurn <= Galaxy.CurrentTurn) then CaptainHealth[Index].Progress := 0;
+      if (CaptainHealth[TCaptainHealthEffect(Index)].Progress <> 0) and (CaptainHealth[TCaptainHealthEffect(Index)].ExpireTurn <= Galaxy.CurrentTurn) then CaptainHealth[TCaptainHealthEffect(Index)].Progress := 0;
 end;
 { @end $77C5D8 }
 
@@ -13566,7 +13574,7 @@ begin
     end
     else
     begin
-      if IsHealthEffectActive(17) then OldSpeed := OldSpeed * 1.3;
+      if IsHealthEffectActive(heGaalianAlacrity) then OldSpeed := OldSpeed * 1.3;
       if Artefacts.Count > 0 then
       begin
         if CountActiveArtefacts(t_ArtefactSpeed) > 0 then
@@ -13592,7 +13600,7 @@ begin
     CombinedFactor := Exp(-Sqrt(CombinedFactor + MassPenalty + EnginePenalty));
     if AfterburnerActive and IsEquipmentUsable(GetEngine) and (GetSlotCount(sskAfterburner) > 0) then
       CombinedFactor := CombinedFactor * AfterburnerSpeedFactor;
-    if IsHealthEffectActive(17) then CombinedFactor := CombinedFactor * 1.3;
+    if IsHealthEffectActive(heGaalianAlacrity) then CombinedFactor := CombinedFactor * 1.3;
     NewSpeed := CalculateEngineSpeed(GetEngine, False);
     NewSpeed := NewSpeed * CombinedFactor;
     MinimumSpeed := Min(200, GetEngine.Speed);

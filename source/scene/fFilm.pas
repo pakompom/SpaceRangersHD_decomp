@@ -75,7 +75,7 @@ type
 implementation
 
 uses SysUtils, Math, Windows, fFilmFile, Globals, GlobalsV, GR_Main,
-  GR_Sound, GI_Main, aMyFunction, aPlayer, aShip, aEFilmEnd, SE_Process,
+  GR_Sound, GI_Main, aMyFunction, aConst, aPlayer, aShip, aEFilmEnd, SE_Process,
   SE_Space, SE_Ship2, SE_Weapon, SE_Star, SE_Planet, SE_Sputnik, SE_Asteroid,
   aGalaxy, aPlanet, aAsteroid, GI_StarField, GI_StarFieldImg, GI_SpaceImg,
   GR_Rect, GR_GraphBuf, Classes, fStarMap;
@@ -178,7 +178,7 @@ begin
   StopButton.UpCallback := PlayStopClicked;
   TurnSlider.SetRange(0, FilmHistory.GetCount - 1);
   TurnSlider.PositionChangedCallback := TurnSliderChanged;
-  GetByName('MapPanelA').SetActive((GetPlayer <> nil) and GetPlayer.IsHealthEffectActive(1));
+  GetByName('MapPanelA').SetActive((GetPlayer <> nil) and GetPlayer.IsHealthEffectActive(heBlindness));
   SelectHistoryEntry(FilmHistory.GetCount - 1, True);
   CopyLiveVisualStateToFilm;
   AdvanceOneStep;
@@ -455,7 +455,7 @@ begin
   SpaceProcess.BindMinimap(MapPanel);
   SpaceProcess.Space.MinimapScale := MapPanel.ClientSize.X / CurrentFilm.MapDiameter;
   if GetPlayer <> nil then
-    if GetPlayer.IsHealthEffectActive(1) then SpaceProcess.Space.AlphaShift := 2;
+    if GetPlayer.IsHealthEffectActive(heBlindness) then SpaceProcess.Space.AlphaShift := 2;
   SpaceProcess.Space.CreateMinimapViewport;
   StepIndex := 0;
   NextCommand := CurrentFilm.FirstCommand;

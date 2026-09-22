@@ -201,7 +201,7 @@ begin
   inherited NextDay;
   try
     if TradeExperience > 0 then begin
-      if IsHealthEffectActive(22) then GainExperience(Round(TradeExperience * 1.5), esTraderCareer)
+      if IsHealthEffectActive(heBusinessMark) then GainExperience(Round(TradeExperience * 1.5), esTraderCareer)
       else GainExperience(TradeExperience, esTraderCareer);
       TradeExperience := 0;
     end;
@@ -771,7 +771,7 @@ procedure TTransport.EngageEnemyShip;
 begin
   if Order = soFollowShip then OrderNone(False);
   if (EnemyShip <> nil) and (EnemyShip.CurrentStar = CurrentStar) and EnemyShip.InNormalSpace then begin
-    if (CurrentStar.ControlFaction <> sfPirates) or (CurrentStar.Battle <> 0) then OrderFollowShip(EnemyShip, 1, False);
+    if (CurrentStar.ControlFaction <> sfPirates) or (CurrentStar.Battle <> 0) then OrderFollowShip(EnemyShip, fmMinWeaponRange, False);
     if ChanceToWin(EnemyShip) < 0.9 then RequestAlliesAttackShip(EnemyShip);
   end;
 end;
@@ -888,7 +888,7 @@ var Forced: Boolean; NextDemandTurn: Integer;
   end;
 begin
   Result := False;
-  Forced := (GetPlayer = OtherShip) and OtherShip.IsHealthEffectActive(14);
+  Forced := (GetPlayer = OtherShip) and OtherShip.IsHealthEffectActive(heOneEyedKhamas);
   NextDemandTurn := LastPlayerExtortionTurn + 30;
   if OtherShip is TRanger then ReactToExtortionDemand(OtherShip);
   if (GetPlayer <> OtherShip) and ((EnemyShip = nil) or (CurrentStar <> EnemyShip.CurrentStar)) then EnemyShip := OtherShip;

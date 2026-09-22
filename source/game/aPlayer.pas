@@ -84,7 +84,7 @@ type
     PendingPirateLicenseCash: Integer; // @offset 0x5C8  Folded into license proceeds and experience on the next turn.
     QueuedTravelTarget: TStar; // @offset 0x5CC  Player selection for Dominion travel.
     StationServiceLastUseTurns: array[TCoalitionProject] of Integer; // @offset $5D0 Initialized to 150; last-use turns for investment/service cooldowns. Native reads $5C7072/$5BD5A5 and write $5CA6A5.
-    StatusEffectSourceNames: array[1..24] of WideString; // @offset 0x600
+    StatusEffectSourceNames: array[TCaptainHealthEffect] of WideString; // @offset 0x600
     DiseaseImmunity: Byte; // @offset 0x660  Clamped to 0..100.
     ProgramRewardStocks: array[TProgramIndex] of Integer; // @offset $664 Programs awarded for destroyed Dominator hull mass.
     LastDominatorProgramRewardTurn: Integer; // @offset $694
@@ -303,7 +303,7 @@ begin
   PirateLicenseCash := 0;
   PendingPirateLicenseCash := 0;
   for ServiceIndex := Low(StationServiceLastUseTurns) to High(StationServiceLastUseTurns) do StationServiceLastUseTurns[ServiceIndex] := 150;
-  for I := 1 to 24 do StatusEffectSourceNames[I] := '';
+  for I := 1 to 24 do StatusEffectSourceNames[TCaptainHealthEffect(I)] := '';
   DiseaseImmunity := 50;
   for RewardIndex := Low(ProgramRewardStocks) to High(ProgramRewardStocks) do ProgramRewardStocks[RewardIndex] := 0;
   LastDominatorProgramRewardTurn := 0;
@@ -460,7 +460,7 @@ begin
   if QueuedTravelTarget = nil then Buffer.AddDWord(0)
   else Buffer.AddDWord(QueuedTravelTarget.Id);
   for ServiceIndex := Low(StationServiceLastUseTurns) to High(StationServiceLastUseTurns) do Buffer.AddIntegerValue(StationServiceLastUseTurns[ServiceIndex]);
-  for I := 1 to 24 do Buffer.AddWideStringZ(StatusEffectSourceNames[I]);
+  for I := 1 to 24 do Buffer.AddWideStringZ(StatusEffectSourceNames[TCaptainHealthEffect(I)]);
   Buffer.AddAnsiChar(AnsiChar(DiseaseImmunity));
   for RewardIndex := Low(ProgramRewardStocks) to High(ProgramRewardStocks) do Buffer.AddIntegerValue(ProgramRewardStocks[RewardIndex]);
   Buffer.AddIntegerValue(LastDominatorProgramRewardTurn);
@@ -613,7 +613,7 @@ begin
   if LoadedSaveVersion >= 108 then QueuedTravelTarget := TStar(Buffer.GetUInt32)
   else QueuedTravelTarget := nil;
   for ServiceIndex := Low(StationServiceLastUseTurns) to High(StationServiceLastUseTurns) do StationServiceLastUseTurns[ServiceIndex] := Buffer.GetInt32;
-  for I := 1 to 24 do StatusEffectSourceNames[I] := Buffer.ReadWideString;
+  for I := 1 to 24 do StatusEffectSourceNames[TCaptainHealthEffect(I)] := Buffer.ReadWideString;
   DiseaseImmunity := Buffer.GetByte;
   if LoadedSaveVersion < 49 then
   begin
@@ -1302,7 +1302,7 @@ begin
   RefreshGraphicSize;
   RefreshAssignedItemSlots;
   HomePlanet.ChangeRelationToRanger(GetPlayer, 100);
-  for I := 1 to 24 do StatusEffectSourceNames[I] := '';
+  for I := 1 to 24 do StatusEffectSourceNames[TCaptainHealthEffect(I)] := '';
 end;
 { @end $5867F0 }
 
@@ -1429,26 +1429,26 @@ begin
         for J := FirstDisease to LastDisease do
         begin
           IncrementWrapped(I, FirstDisease, LastDisease);
-          with CaptainHealthDefinitions[I] do
+          with CaptainHealthDefinitions[TCaptainHealthEffect(I)] do
           begin
-            if (Galaxy.CurrentTurn < GalaxyWarmupTurns) or CaptainHealthDefinitions[I].Disabled then Continue;
-            if (CurrentPlanet <> nil) and not (0 in CaptainHealthDefinitions[I].Locations) then Continue;
-            if (DockedTo <> nil) and not (1 in CaptainHealthDefinitions[I].Locations) then Continue;
-            if InNormalSpace and not (2 in CaptainHealthDefinitions[I].Locations) and not (3 in CaptainHealthDefinitions[I].Locations) then Continue;
-            if InNormalSpace and (3 in CaptainHealthDefinitions[I].Locations) then
+            if (Galaxy.CurrentTurn < GalaxyWarmupTurns) or CaptainHealthDefinitions[TCaptainHealthEffect(I)].Disabled then Continue;
+            if (CurrentPlanet <> nil) and not (hlPlanet in CaptainHealthDefinitions[TCaptainHealthEffect(I)].Locations) then Continue;
+            if (DockedTo <> nil) and not (hlDocked in CaptainHealthDefinitions[TCaptainHealthEffect(I)].Locations) then Continue;
+            if InNormalSpace and not (hlNormalSpace in CaptainHealthDefinitions[TCaptainHealthEffect(I)].Locations) and not (hlCombat in CaptainHealthDefinitions[TCaptainHealthEffect(I)].Locations) then Continue;
+            if InNormalSpace and (hlCombat in CaptainHealthDefinitions[TCaptainHealthEffect(I)].Locations) then
               if (EnemyShip = nil) or not EnemyShip.IsAttackingShip(Self) or (GetHullIntegrityPercent > 50) or
-                ((I = 3) and (EnemyShip.OwnerId <> oiDominator)) then Continue;
-            if (CurrentPlanet <> nil) and not (CurrentPlanet.OwnerId in CaptainHealthDefinitions[I].AllowedLocationOwners) then
-              if (CurrentPlanet.OwnerId = oiUninhabited) or not (RaceToOwner(CurrentPlanet.RaceId) in CaptainHealthDefinitions[I].AllowedLocationOwners) then Continue;
-            if (DockedTo <> nil) and not (RaceToOwner(DockedTo.PilotRace) in CaptainHealthDefinitions[I].AllowedLocationOwners) and
-              not (DockedTo.OwnerId in CaptainHealthDefinitions[I].AllowedLocationOwners) then Continue;
+                ((TCaptainHealthEffect(I) = heHolyFanaticism) and (EnemyShip.OwnerId <> oiDominator)) then Continue;
+            if (CurrentPlanet <> nil) and not (CurrentPlanet.OwnerId in CaptainHealthDefinitions[TCaptainHealthEffect(I)].AllowedLocationOwners) then
+              if (CurrentPlanet.OwnerId = oiUninhabited) or not (RaceToOwner(CurrentPlanet.RaceId) in CaptainHealthDefinitions[TCaptainHealthEffect(I)].AllowedLocationOwners) then Continue;
+            if (DockedTo <> nil) and not (RaceToOwner(DockedTo.PilotRace) in CaptainHealthDefinitions[TCaptainHealthEffect(I)].AllowedLocationOwners) and
+              not (DockedTo.OwnerId in CaptainHealthDefinitions[TCaptainHealthEffect(I)].AllowedLocationOwners) then Continue;
             if (RaceToOwner(PilotRace) in AllowedOwners) and (GetRangerRatingBand in AllowedRatingBands) and
               (Rank in AllowedRanks) and (GetDominantCareer in AllowedCareers) and
-              (CaptainHealth[I].Progress <= 0.0) and (CaptainHealth[I].ExpireTurn + TurnsPerYear <= Galaxy.CurrentTurn) then
+              (CaptainHealth[TCaptainHealthEffect(I)].Progress <= 0.0) and (CaptainHealth[TCaptainHealthEffect(I)].ExpireTurn + TurnsPerYear <= Galaxy.CurrentTurn) then
             begin
-              if IsHealthEffectActive(4) then ResistanceFactor := 0.1
+              if IsHealthEffectActive(heComplexImmunocide) then ResistanceFactor := 0.1
               else ResistanceFactor := 1.0;
-              if IsHealthEffectActive(18) then ResistanceFactor := ResistanceFactor * 5.0;
+              if IsHealthEffectActive(heBloodDjogar) then ResistanceFactor := ResistanceFactor * 5.0;
               ResistanceFactor := (CountActiveArtefacts(t_ArtBio) + 1) * ResistanceFactor;
               if CurrentPlanet <> nil then LocationId := CurrentPlanet.Id
               else if DockedTo <> nil then LocationId := DockedTo.Id
@@ -1457,13 +1457,13 @@ begin
               if NextRandomFloatRange(0.0, 1.0, LocalSeed) * RemapClamped(DiseaseImmunity, 0.0, 100.0, 50.0, 300.0) * ResistanceFactor <=
                 InfectionChance * 2.0 * GalaxyDifficultyTuning[Galaxy.DifficultyLevels[7]].GoodsEventDurationFactor then
               begin
-                CaptainHealth[I].Progress := 0.1;
-                if InNormalSpace and (3 in CaptainHealthDefinitions[I].Locations) then CaptainHealth[I].Progress := 99.9999;
-                CaptainHealth[I].AppliedTurn := Galaxy.CurrentTurn;
-                CaptainHealth[I].ExpireTurn := Galaxy.CurrentTurn + Round(RemapClamped(SeededRandomUnitFloat(Integer(Galaxy.GenerationSeed) + I + Galaxy.CurrentTurn), 0.0, 1.0, 0.5, 3.0) * CaptainHealthDefinitions[I].Duration);
-                if CurrentPlanet <> nil then StatusEffectSourceNames[I] := CurrentPlanet.GetFullName(' ')
-                else if DockedTo <> nil then StatusEffectSourceNames[I] := DockedTo.GetName
-                else StatusEffectSourceNames[I] := CurrentStar.Name;
+                CaptainHealth[TCaptainHealthEffect(I)].Progress := 0.1;
+                if InNormalSpace and (hlCombat in CaptainHealthDefinitions[TCaptainHealthEffect(I)].Locations) then CaptainHealth[TCaptainHealthEffect(I)].Progress := 99.9999;
+                CaptainHealth[TCaptainHealthEffect(I)].AppliedTurn := Galaxy.CurrentTurn;
+                CaptainHealth[TCaptainHealthEffect(I)].ExpireTurn := Galaxy.CurrentTurn + Round(RemapClamped(SeededRandomUnitFloat(Integer(Galaxy.GenerationSeed) + I + Galaxy.CurrentTurn), 0.0, 1.0, 0.5, 3.0) * CaptainHealthDefinitions[TCaptainHealthEffect(I)].Duration);
+                if CurrentPlanet <> nil then StatusEffectSourceNames[TCaptainHealthEffect(I)] := CurrentPlanet.GetFullName(' ')
+                else if DockedTo <> nil then StatusEffectSourceNames[TCaptainHealthEffect(I)] := DockedTo.GetName
+                else StatusEffectSourceNames[TCaptainHealthEffect(I)] := CurrentStar.Name;
               end;
             end;
           end;
@@ -1471,41 +1471,41 @@ begin
       end;
       Stage := 7;
       for I := 1 to 12 do
-        if CaptainHealth[I].Progress <> 0.0 then
+        if CaptainHealth[TCaptainHealthEffect(I)].Progress <> 0.0 then
         begin
-          if CaptainHealth[I].Progress < 100.0 then
+          if CaptainHealth[TCaptainHealthEffect(I)].Progress < 100.0 then
           begin
             if I in [1..3] then
             begin
-              if (CurrentPlanet <> nil) or (DockedTo <> nil) then CaptainHealth[I].Progress := 100.0;
+              if (CurrentPlanet <> nil) or (DockedTo <> nil) then CaptainHealth[TCaptainHealthEffect(I)].Progress := 100.0;
             end
-            else CaptainHealth[I].Progress := SeededRandomUnitFloat(Integer(Galaxy.GenerationSeed) - I + Galaxy.CurrentTurn) * CaptainHealthDefinitions[I].DevelopmentRate * 2.0 + CaptainHealth[I].Progress + 0.01;
-            if CaptainHealth[I].Progress >= 100.0 then
+            else CaptainHealth[TCaptainHealthEffect(I)].Progress := SeededRandomUnitFloat(Integer(Galaxy.GenerationSeed) - I + Galaxy.CurrentTurn) * CaptainHealthDefinitions[TCaptainHealthEffect(I)].DevelopmentRate * 2.0 + CaptainHealth[TCaptainHealthEffect(I)].Progress + 0.01;
+            if CaptainHealth[TCaptainHealthEffect(I)].Progress >= 100.0 then
             begin
-              CaptainHealth[I].Progress := 100.0;
-              Inc(CaptainHealth[I].ApplicationCount);
-              CaptainHealth[I].ExpireTurn := Galaxy.CurrentTurn + Round(RemapClamped(SeededRandomUnitFloat(Integer(Galaxy.GenerationSeed) + I + Galaxy.CurrentTurn), 0.0, 1.0, 0.9, 2.0) * CaptainHealthDefinitions[I].Duration);
+              CaptainHealth[TCaptainHealthEffect(I)].Progress := 100.0;
+              Inc(CaptainHealth[TCaptainHealthEffect(I)].ApplicationCount);
+              CaptainHealth[TCaptainHealthEffect(I)].ExpireTurn := Galaxy.CurrentTurn + Round(RemapClamped(SeededRandomUnitFloat(Integer(Galaxy.GenerationSeed) + I + Galaxy.CurrentTurn), 0.0, 1.0, 0.9, 2.0) * CaptainHealthDefinitions[TCaptainHealthEffect(I)].Duration);
               Text := LocalizedColorText(WideString('Illness.Illness.' + IntToStr(I - 1) + '.Start'));
-              AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn, FormatText2(Text, TextHighlightColorTag, '<Date>', Galaxy.FormatTurnDate(-1), '<Name>', CaptainHealthDefinitions[I].Name), '');
+              AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn, FormatText2(Text, TextHighlightColorTag, '<Date>', Galaxy.FormatTurnDate(-1), '<Name>', CaptainHealthDefinitions[TCaptainHealthEffect(I)].Name), '');
               AchievementStats.CheckAllDiseasesAchievement;
               Inc(DiseaseContractionCount);
             end;
           end
-          else if (CaptainHealth[I].ExpireTurn <= Galaxy.CurrentTurn) and (not (I in [1..3]) or not CurrentStar.RecordingTurnFilm) then
+          else if (CaptainHealth[TCaptainHealthEffect(I)].ExpireTurn <= Galaxy.CurrentTurn) and (not (I in [1..3]) or not CurrentStar.RecordingTurnFilm) then
           begin
-            CaptainHealth[I].Progress := 0.0;
-            StatusEffectSourceNames[I] := '';
+            CaptainHealth[TCaptainHealthEffect(I)].Progress := 0.0;
+            StatusEffectSourceNames[TCaptainHealthEffect(I)] := '';
             Text := LocalizedColorText(WideString('Illness.Illness.' + IntToStr(I - 1) + '.End'));
-            AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn, FormatText2(Text, TextHighlightColorTag, '<Date>', Galaxy.FormatTurnDate(-1), '<Name>', CaptainHealthDefinitions[I].Name), '');
+            AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn, FormatText2(Text, TextHighlightColorTag, '<Date>', Galaxy.FormatTurnDate(-1), '<Name>', CaptainHealthDefinitions[TCaptainHealthEffect(I)].Name), '');
           end;
         end;
       Stage := 8;
       for I := 13 to 24 do
-        if (CaptainHealth[I].Progress = 100.0) and (CaptainHealth[I].ExpireTurn <= Galaxy.CurrentTurn) then
+        if (CaptainHealth[TCaptainHealthEffect(I)].Progress = 100.0) and (CaptainHealth[TCaptainHealthEffect(I)].ExpireTurn <= Galaxy.CurrentTurn) then
         begin
           Text := LocalizedColorText(WideString('Illness.Stimulant.' + IntToStr(I - 12 - 1) + '.End'));
           AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn, FormatText1(Text, TextHighlightColorTag, '<Date>', Galaxy.FormatTurnDate(-1)), '');
-          CaptainHealth[I].Progress := 0.0;
+          CaptainHealth[TCaptainHealthEffect(I)].Progress := 0.0;
         end;
       Stage := 9;
       for I := 1 to 1 do
@@ -1521,20 +1521,20 @@ begin
       while StimulantExcess >= 2 do
       begin
         I := 6;
-        if CaptainHealth[I].Progress <= 0.0 then
+        if CaptainHealth[TCaptainHealthEffect(I)].Progress <= 0.0 then
         begin
           LocalSeed := Galaxy.GenerationSeed + Cardinal(Galaxy.CurrentTurn);
           if Sqr(Max(0, StimulantExcess - CountActiveArtefacts(t_ArtBio))) * 0.4 > NextRandomFloatRange(0.0, 1000.0, LocalSeed) then
-            if (RaceToOwner(PilotRace) in CaptainHealthDefinitions[I].AllowedOwners) and
-              (GetRangerRatingBand in CaptainHealthDefinitions[I].AllowedRatingBands) and
-              (Rank in CaptainHealthDefinitions[I].AllowedRanks) and
-              (GetDominantCareer in CaptainHealthDefinitions[I].AllowedCareers) then
+            if (RaceToOwner(PilotRace) in CaptainHealthDefinitions[TCaptainHealthEffect(I)].AllowedOwners) and
+              (GetRangerRatingBand in CaptainHealthDefinitions[TCaptainHealthEffect(I)].AllowedRatingBands) and
+              (Rank in CaptainHealthDefinitions[TCaptainHealthEffect(I)].AllowedRanks) and
+              (GetDominantCareer in CaptainHealthDefinitions[TCaptainHealthEffect(I)].AllowedCareers) then
             begin
-              CaptainHealth[I].Progress := 100.0;
-              CaptainHealth[I].ExpireTurn := Galaxy.CurrentTurn + Round(RemapClamped(SeededRandomUnitFloat(Integer(Galaxy.GenerationSeed) + I + Galaxy.CurrentTurn), 0.0, 1.0, 0.5, 3.0) * CaptainHealthDefinitions[I].Duration);
-              Inc(CaptainHealth[I].ApplicationCount);
+              CaptainHealth[TCaptainHealthEffect(I)].Progress := 100.0;
+              CaptainHealth[TCaptainHealthEffect(I)].ExpireTurn := Galaxy.CurrentTurn + Round(RemapClamped(SeededRandomUnitFloat(Integer(Galaxy.GenerationSeed) + I + Galaxy.CurrentTurn), 0.0, 1.0, 0.5, 3.0) * CaptainHealthDefinitions[TCaptainHealthEffect(I)].Duration);
+              Inc(CaptainHealth[TCaptainHealthEffect(I)].ApplicationCount);
               Text := LocalizedColorText(WideString('Illness.Illness.' + IntToStr(I - 1) + '.Start'));
-              AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn, FormatText2(Text, TextHighlightColorTag, '<Date>', Galaxy.FormatTurnDate(-1), '<Name>', CaptainHealthDefinitions[I].Name), '');
+              AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn, FormatText2(Text, TextHighlightColorTag, '<Date>', Galaxy.FormatTurnDate(-1), '<Name>', CaptainHealthDefinitions[TCaptainHealthEffect(I)].Name), '');
               Inc(DiseaseContractionCount);
               AchievementStats.CheckAllDiseasesAchievement;
             end;
@@ -1542,7 +1542,7 @@ begin
         Break;
       end;
       Stage := 11;
-      if IsHealthEffectActive(5) and (Galaxy.CurrentTurn > CaptainHealth[5].AppliedTurn + 15) and (Galaxy.CurrentTurn mod 14 = 0) then
+      if IsHealthEffectActive(heMysteriousLuatanza) and (Galaxy.CurrentTurn > CaptainHealth[heMysteriousLuatanza].AppliedTurn + 15) and (Galaxy.CurrentTurn mod 14 = 0) then
       begin
         if SeededRandomUnitFloat(Integer(Galaxy.GenerationSeed) + 1736605 + Galaxy.CurrentTurn) > 0.8 then
         begin
@@ -1554,7 +1554,7 @@ begin
         else AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn, FormatText1(PickLocalizedTextVariant('GalaxyNews.IllNews.IllLuatanNo', Seed * Cardinal(Galaxy.CurrentTurn div 10)), TextHighlightColorTag, '<Date>', Galaxy.FormatTurnDate(-1)), '');
       end;
       Stage := 12;
-      if IsHealthEffectActive(11) and InNormalSpace and HasCargoGoods and
+      if IsHealthEffectActive(heAkaSezyanka) and InNormalSpace and HasCargoGoods and
         (SeededRandomUnitFloat(Integer(Galaxy.GenerationSeed) + 135432 + Galaxy.CurrentTurn) > 0.8) and (Galaxy.CurrentTurn mod 21 = 0) then
       begin
         TargetValue := NextRandomIntRange(Galaxy.ComputeScaledMiniMoney(oiHuman), Galaxy.ComputeScaledBigMoney(oiHuman), RandomState);
@@ -1614,7 +1614,7 @@ end;
 { @routine $58B69C TPlayer_ApplyBioArtefactHealthEffects }
 procedure TPlayer.ApplyBioArtefactHealthEffects;
 var
-  Selected, I, Count, J: Integer;
+  Selected: Integer; I: TCaptainHealthEffect; Count, J: Integer;
 begin
   for J := 1 to CountActiveArtefacts(t_ArtBio) do
   begin
@@ -1622,7 +1622,7 @@ begin
     begin
       Selected := NextRandomIntRange(1, CountActiveDiseases, RandomState);
       Count := 0;
-      for I := 1 to 12 do
+      for I := Low(TCaptainDisease) to High(TCaptainDisease) do
         if CaptainHealth[I].Progress = 100.0 then
         begin
           Inc(Count);
@@ -1637,7 +1637,7 @@ begin
     begin
       Selected := NextRandomIntRange(1, CountActiveStimulants, RandomState);
       Count := 0;
-      for I := 13 to 24 do
+      for I := Low(TCaptainStimulant) to High(TCaptainStimulant) do
         if CaptainHealth[I].Progress = 100.0 then
         begin
           Inc(Count);

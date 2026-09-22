@@ -3524,7 +3524,7 @@ begin
   if (Kind in [Ord(t_Food)..Ord(t_Narcotics)]) and (Planet.OwnerId <> oiPirate) then
   begin
     if not GoodsLegalOnPlanet[Kind, Planet.RaceId, Planet.Government] then av[0].SetInt(1)
-    else if (Kind in [Ord(t_Food), Ord(t_Medicine)]) and Ship.IsHealthEffectActive(12) then av[0].SetInt(1);
+    else if (Kind in [Ord(t_Food), Ord(t_Medicine)]) and Ship.IsHealthEffectActive(heNewMolizone) then av[0].SetInt(1);
   end;
 end;
 { @end $610F80 }
@@ -4171,7 +4171,7 @@ begin
   if Ship = nil then
   begin
     if Index = 0 then av[0].SetInt(RadiationHealthDefinitions[1].Duration)
-    else av[0].SetInt(CaptainHealthDefinitions[Index].Duration);
+    else av[0].SetInt(CaptainHealthDefinitions[TCaptainHealthEffect(Index)].Duration);
     Exit;
   end;
   if Index = 0 then
@@ -4196,22 +4196,22 @@ begin
   end
   else if (Index > 0) and (Index <= 24) then
   begin
-    if Ship.IsHealthEffectActive(Index) then Remaining := Ship.CaptainHealth[Index].ExpireTurn - Galaxy.CurrentTurn;
+    if Ship.IsHealthEffectActive(TCaptainHealthEffect(Index)) then Remaining := Ship.CaptainHealth[TCaptainHealthEffect(Index)].ExpireTurn - Galaxy.CurrentTurn;
     if High(av) > 2 then
     begin
       Duration := av[3].GetInt;
-      if Duration = -1 then Duration := CaptainHealthDefinitions[Index].Duration;
+      if Duration = -1 then Duration := CaptainHealthDefinitions[TCaptainHealthEffect(Index)].Duration;
       if Duration = 0 then
       begin
-        Ship.CaptainHealth[Index].Progress := 0;
-        Ship.CaptainHealth[Index].ExpireTurn := 0;
+        Ship.CaptainHealth[TCaptainHealthEffect(Index)].Progress := 0;
+        Ship.CaptainHealth[TCaptainHealthEffect(Index)].ExpireTurn := 0;
       end;
       if (Remaining = 0) and (Duration > 0) then
       begin
-        Ship.CaptainHealth[Index].Progress := 100;
-        Ship.CaptainHealth[Index].ExpireTurn := Galaxy.CurrentTurn + Duration;
+        Ship.CaptainHealth[TCaptainHealthEffect(Index)].Progress := 100;
+        Ship.CaptainHealth[TCaptainHealthEffect(Index)].ExpireTurn := Galaxy.CurrentTurn + Duration;
       end;
-      if (Remaining > 0) and (Duration > 0) then Ship.CaptainHealth[Index].ExpireTurn := Galaxy.CurrentTurn + Duration;
+      if (Remaining > 0) and (Duration > 0) then Ship.CaptainHealth[TCaptainHealthEffect(Index)].ExpireTurn := Galaxy.CurrentTurn + Duration;
     end;
   end;
   av[0].SetInt(Remaining);
@@ -4234,8 +4234,8 @@ begin
   end
   else if (Index > 0) and (Index <= 24) then
   begin
-    av[0].SetInt(Round(Ship.CaptainHealth[Index].Progress));
-    if High(av) > 2 then Ship.CaptainHealth[Index].Progress := av[3].GetInt;
+    av[0].SetInt(Round(Ship.CaptainHealth[TCaptainHealthEffect(Index)].Progress));
+    if High(av) > 2 then Ship.CaptainHealth[TCaptainHealthEffect(Index)].Progress := av[3].GetInt;
   end
   else av[0].SetInt(0);
 end;
@@ -8246,13 +8246,14 @@ end;
 procedure SF_OrderFollowShip(av: array of TVarEC; code: TCodeEC);
 var
   Absolute: Boolean;
-  FollowMode, SavedOrderLock: Byte;
+  FollowMode: TFollowMode;
+  SavedOrderLock: Byte;
   Ship: TShip;
 begin
   if High(av) < 2 then raise Exception.Create('Error.Script OrderFollowShip');
   Absolute := False;
-  FollowMode := 0;
-  if High(av) > 2 then FollowMode := av[3].GetInt;
+  FollowMode := fmFollowNear;
+  if High(av) > 2 then FollowMode := TFollowMode(Byte(av[3].GetInt));
   if High(av) > 3 then Absolute := av[4].GetInt <> 0;
   if av[1].GetDword <> 0 then
     if av[2].GetDword <> 0 then

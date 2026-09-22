@@ -1434,6 +1434,15 @@ var
   EquipmentInventionIndices: TEquipmentInventionIndexTable = (piHull, piFuelTanks, piEngine, piRadar, piScanner, piRepairRobot, piCargoHook, piMainTech); // @addr $87F57C
   CoalitionProjectNames: array[TCoalitionProject] of WideString = ('CreateRC', 'CreatePB', 'CreateWB', 'CreateSB', 'CreateBK', 'CreateMC', 'RangersSubsidy', 'PiratesSubsidy', 'TransportSubsidy', 'LostSubsidy', 'WarSubsidy', 'WarOperation'); // @addr $87F584
 type
+  // Locations where captain health effects can be acquired.
+  THealthLocation = (
+    hlPlanet = 0,
+    hlDocked = 1,
+    hlNormalSpace = 2,
+    hlCombat = 3
+  ); // @size $01
+  THealthLocations = set of THealthLocation; // @size $01
+
   // Native record RTTI at $82CFAC.
   TIllnessInfo = record // @size $28 Native TIllnessInfo RTTI at $82CFB0.
     Name: WideString; // @offset $00
@@ -1446,12 +1455,12 @@ type
     MedicalPriceSizeLevel: Byte; // @offset $0D Mini..Huge (1..5); GenerateValueForSizeLevel bucket for treatment and stimulation prices.
     DevelopmentRate: Double; // @offset $10 Progress increment factor.
     InfectionChance: Double; // @offset $18
-    Locations: TByteMask; // @offset $20 Bits 0=planet, 1=ship interior, 2=normal space, 3=combat infection.
+    Locations: THealthLocations; // @offset $20
     Disabled: Boolean; // @offset $21
     Duration: Integer; // @offset $24
   end;
 
-  TCaptainHealthDefinitions = array[1..24] of TIllnessInfo;
+  TCaptainHealthDefinitions = array[TCaptainHealthEffect] of TIllnessInfo;
 
   TRadiationHealthDefinitions = array[1..1] of TIllnessInfo;
 
@@ -1479,7 +1488,7 @@ var
   HullSeriesDefinitions: array of THullTypeInfo; // @addr $88BF50 Loaded from HullType configuration, sorted by numeric suffix.
 var
   HullSeriesCount: Integer; // @addr $88BF54 Native count used by CheatIdeal and hull-series configuration.
-  CaptainHealthDefinitions: array[1..24] of TIllnessInfo; // @addr $88BF58 Native disease/stimulant definitions; eligibility and progression fields verified in TPlayer.NextDay.
+  CaptainHealthDefinitions: array[TCaptainHealthEffect] of TIllnessInfo; // @addr $88BF58 Disease and stimulant definitions.
   RadiationHealthDefinitions: TRadiationHealthDefinitions; // @addr $88C318 Finalized as one TIllnessInfo alongside the 24 captain effects at $838003.
   MicroModuleCandidateIndices: array of Integer; // @addr 0x88C340 @note "Shared selection scratch, sized to MicroModuleTemplateCount when templates load. Callers track the used prefix separately."
 
@@ -2802,126 +2811,138 @@ end;
 procedure InitializeCaptainHealthDefinitions;
 var I: Integer; Path, Value: WideString;
 begin
-  CaptainHealthDefinitions[1].AllowedLocationOwners := [oiMaloc..oiGaal];
-  CaptainHealthDefinitions[1].AllowedOwners := [oiMaloc..oiGaal];
-  CaptainHealthDefinitions[1].AllowedRatingBands := [2, 3, 4, 5];
-  CaptainHealthDefinitions[1].AllowedRanks := [2, 3, 4, 5, 6, 7];
-  CaptainHealthDefinitions[1].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
-  CaptainHealthDefinitions[1].MedicalPriceSizeLevel := 2;
-  CaptainHealthDefinitions[1].DevelopmentRate := 100.0;
-  CaptainHealthDefinitions[1].InfectionChance := 1.0;
-  CaptainHealthDefinitions[1].Locations := [3];
-  CaptainHealthDefinitions[1].Duration := 150;
-  CaptainHealthDefinitions[2].AllowedLocationOwners := [oiPeleng];
-  CaptainHealthDefinitions[2].AllowedOwners := [oiPeleng, oiHuman, oiFeyan, oiGaal];
-  CaptainHealthDefinitions[2].AllowedRatingBands := [1, 2, 3, 4, 5];
-  CaptainHealthDefinitions[2].AllowedRanks := [3, 4, 5];
-  CaptainHealthDefinitions[2].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
-  CaptainHealthDefinitions[2].MedicalPriceSizeLevel := 4;
-  CaptainHealthDefinitions[2].DevelopmentRate := 1.0;
-  CaptainHealthDefinitions[2].InfectionChance := 1.0;
-  CaptainHealthDefinitions[2].Locations := [0];
-  CaptainHealthDefinitions[2].Duration := 555;
-  CaptainHealthDefinitions[3].AllowedLocationOwners := [oiMaloc..oiGaal];
-  CaptainHealthDefinitions[3].AllowedOwners := [oiMaloc, oiPeleng, oiHuman];
-  CaptainHealthDefinitions[3].AllowedRatingBands := [3, 4, 5];
-  CaptainHealthDefinitions[3].AllowedRanks := [3, 4, 5, 6, 7];
-  CaptainHealthDefinitions[3].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
-  CaptainHealthDefinitions[3].MedicalPriceSizeLevel := 3;
-  CaptainHealthDefinitions[3].DevelopmentRate := 100.0;
-  CaptainHealthDefinitions[3].InfectionChance := 1.0;
-  CaptainHealthDefinitions[3].Locations := [3];
-  CaptainHealthDefinitions[3].Duration := 200;
-  CaptainHealthDefinitions[4].AllowedLocationOwners := [oiMaloc..oiGaal];
-  CaptainHealthDefinitions[4].AllowedOwners := [oiPeleng, oiHuman, oiFeyan, oiGaal];
-  CaptainHealthDefinitions[4].AllowedRatingBands := [1, 2, 3, 4, 5];
-  CaptainHealthDefinitions[4].AllowedRanks := [1, 2, 3, 4, 5, 6, 7];
-  CaptainHealthDefinitions[4].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
-  CaptainHealthDefinitions[4].MedicalPriceSizeLevel := 5;
-  CaptainHealthDefinitions[4].DevelopmentRate := 1.0;
-  CaptainHealthDefinitions[4].InfectionChance := 1.0;
-  CaptainHealthDefinitions[4].Locations := [2];
-  CaptainHealthDefinitions[4].Duration := 1000;
-  CaptainHealthDefinitions[5].AllowedLocationOwners := [oiGaal];
-  CaptainHealthDefinitions[5].AllowedOwners := [oiMaloc..oiGaal];
-  CaptainHealthDefinitions[5].AllowedRatingBands := [1, 2, 3, 4, 5];
-  CaptainHealthDefinitions[5].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
-  CaptainHealthDefinitions[5].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
-  CaptainHealthDefinitions[5].MedicalPriceSizeLevel := 1;
-  CaptainHealthDefinitions[5].DevelopmentRate := 10.0;
-  CaptainHealthDefinitions[5].InfectionChance := 1.0;
-  CaptainHealthDefinitions[5].Locations := [0, 1];
-  CaptainHealthDefinitions[5].Duration := 170;
-  CaptainHealthDefinitions[6].AllowedLocationOwners := [oiMaloc..oiGaal];
-  CaptainHealthDefinitions[6].AllowedOwners := [oiMaloc..oiGaal];
-  CaptainHealthDefinitions[6].AllowedRatingBands := [1, 2, 3, 4, 5];
-  CaptainHealthDefinitions[6].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
-  CaptainHealthDefinitions[6].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
-  CaptainHealthDefinitions[6].MedicalPriceSizeLevel := 4;
-  CaptainHealthDefinitions[6].DevelopmentRate := 100.0;
-  CaptainHealthDefinitions[6].InfectionChance := 1.0;
-  CaptainHealthDefinitions[6].Locations := [];
-  CaptainHealthDefinitions[6].Duration := 1000;
-  CaptainHealthDefinitions[7].AllowedLocationOwners := [oiMaloc..oiGaal];
-  CaptainHealthDefinitions[7].AllowedOwners := [oiMaloc..oiGaal];
-  CaptainHealthDefinitions[7].AllowedRatingBands := [1, 2, 3, 4, 5];
-  CaptainHealthDefinitions[7].AllowedRanks := [1, 2, 3, 4, 5, 6, 7];
-  CaptainHealthDefinitions[7].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
-  CaptainHealthDefinitions[7].MedicalPriceSizeLevel := 2;
-  CaptainHealthDefinitions[7].DevelopmentRate := 100.0;
-  CaptainHealthDefinitions[7].InfectionChance := 1.0;
-  CaptainHealthDefinitions[7].Locations := [3];
-  CaptainHealthDefinitions[7].Duration := 130;
-  CaptainHealthDefinitions[8].AllowedLocationOwners := [oiPeleng, oiHuman, oiFeyan, oiGaal];
-  CaptainHealthDefinitions[8].AllowedOwners := [oiPeleng, oiHuman, oiFeyan, oiGaal];
-  CaptainHealthDefinitions[8].AllowedRatingBands := [1, 2, 3, 4, 5];
-  CaptainHealthDefinitions[8].AllowedRanks := [1, 2, 3, 4, 5, 6, 7];
-  CaptainHealthDefinitions[8].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
-  CaptainHealthDefinitions[8].MedicalPriceSizeLevel := 1;
-  CaptainHealthDefinitions[8].DevelopmentRate := 100.0;
-  CaptainHealthDefinitions[8].InfectionChance := 1.0;
-  CaptainHealthDefinitions[8].Locations := [3];
-  CaptainHealthDefinitions[8].Duration := 100;
-  CaptainHealthDefinitions[9].AllowedLocationOwners := [oiMaloc];
-  CaptainHealthDefinitions[9].AllowedOwners := [oiMaloc];
-  CaptainHealthDefinitions[9].AllowedRatingBands := [2, 3, 4, 5];
-  CaptainHealthDefinitions[9].AllowedRanks := [2, 3, 4, 5, 6, 7];
-  CaptainHealthDefinitions[9].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
-  CaptainHealthDefinitions[9].MedicalPriceSizeLevel := 2;
-  CaptainHealthDefinitions[9].DevelopmentRate := 1.0;
-  CaptainHealthDefinitions[9].InfectionChance := 1.0;
-  CaptainHealthDefinitions[9].Locations := [0, 1, 2];
-  CaptainHealthDefinitions[9].Duration := 180;
-  CaptainHealthDefinitions[10].AllowedLocationOwners := [oiMaloc..oiGaal];
-  CaptainHealthDefinitions[10].AllowedOwners := [oiPeleng];
-  CaptainHealthDefinitions[10].AllowedRatingBands := [1, 2, 3, 4, 5];
-  CaptainHealthDefinitions[10].AllowedRanks := [1, 2, 3, 4, 5, 6, 7];
-  CaptainHealthDefinitions[10].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
-  CaptainHealthDefinitions[10].MedicalPriceSizeLevel := 2;
-  CaptainHealthDefinitions[10].DevelopmentRate := 1.0;
-  CaptainHealthDefinitions[10].InfectionChance := 1.0;
-  CaptainHealthDefinitions[10].Locations := [0, 1, 2];
-  CaptainHealthDefinitions[10].Duration := 122;
-  CaptainHealthDefinitions[11].AllowedLocationOwners := [oiMaloc..oiGaal];
-  CaptainHealthDefinitions[11].AllowedOwners := [oiFeyan];
-  CaptainHealthDefinitions[11].AllowedRatingBands := [1, 2, 3, 4, 5];
-  CaptainHealthDefinitions[11].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
-  CaptainHealthDefinitions[11].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
-  CaptainHealthDefinitions[11].MedicalPriceSizeLevel := 4;
-  CaptainHealthDefinitions[11].DevelopmentRate := 1.0;
-  CaptainHealthDefinitions[11].InfectionChance := 1.0;
-  CaptainHealthDefinitions[11].Locations := [0, 1];
-  CaptainHealthDefinitions[11].Duration := 164;
-  CaptainHealthDefinitions[12].AllowedLocationOwners := [oiMaloc..oiGaal];
-  CaptainHealthDefinitions[12].AllowedOwners := [oiGaal];
-  CaptainHealthDefinitions[12].AllowedRatingBands := [2, 3, 4, 5];
-  CaptainHealthDefinitions[12].AllowedRanks := [2, 3, 4, 5, 6, 7];
-  CaptainHealthDefinitions[12].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
-  CaptainHealthDefinitions[12].MedicalPriceSizeLevel := 2;
-  CaptainHealthDefinitions[12].DevelopmentRate := 1.0;
-  CaptainHealthDefinitions[12].InfectionChance := 0.5;
-  CaptainHealthDefinitions[12].Locations := [0, 1, 2];
-  CaptainHealthDefinitions[12].Duration := 88;
+  CaptainHealthDefinitions[heBlindness].AllowedLocationOwners := [oiMaloc..oiGaal];
+  CaptainHealthDefinitions[heBlindness].AllowedOwners := [oiMaloc..oiGaal];
+  CaptainHealthDefinitions[heBlindness].AllowedRatingBands := [2, 3, 4, 5];
+  CaptainHealthDefinitions[heBlindness].AllowedRanks := [2, 3, 4, 5, 6, 7];
+  CaptainHealthDefinitions[heBlindness].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
+  CaptainHealthDefinitions[heBlindness].MedicalPriceSizeLevel := 2;
+  CaptainHealthDefinitions[heBlindness].DevelopmentRate := 100.0;
+  CaptainHealthDefinitions[heBlindness].InfectionChance := 1.0;
+  CaptainHealthDefinitions[heBlindness].Locations := [hlCombat];
+  CaptainHealthDefinitions[heBlindness].Duration := 150;
+
+  CaptainHealthDefinitions[heChekumash].AllowedLocationOwners := [oiPeleng];
+  CaptainHealthDefinitions[heChekumash].AllowedOwners := [oiPeleng, oiHuman, oiFeyan, oiGaal];
+  CaptainHealthDefinitions[heChekumash].AllowedRatingBands := [1, 2, 3, 4, 5];
+  CaptainHealthDefinitions[heChekumash].AllowedRanks := [3, 4, 5];
+  CaptainHealthDefinitions[heChekumash].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
+  CaptainHealthDefinitions[heChekumash].MedicalPriceSizeLevel := 4;
+  CaptainHealthDefinitions[heChekumash].DevelopmentRate := 1.0;
+  CaptainHealthDefinitions[heChekumash].InfectionChance := 1.0;
+  CaptainHealthDefinitions[heChekumash].Locations := [hlPlanet];
+  CaptainHealthDefinitions[heChekumash].Duration := 555;
+
+  CaptainHealthDefinitions[heHolyFanaticism].AllowedLocationOwners := [oiMaloc..oiGaal];
+  CaptainHealthDefinitions[heHolyFanaticism].AllowedOwners := [oiMaloc, oiPeleng, oiHuman];
+  CaptainHealthDefinitions[heHolyFanaticism].AllowedRatingBands := [3, 4, 5];
+  CaptainHealthDefinitions[heHolyFanaticism].AllowedRanks := [3, 4, 5, 6, 7];
+  CaptainHealthDefinitions[heHolyFanaticism].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
+  CaptainHealthDefinitions[heHolyFanaticism].MedicalPriceSizeLevel := 3;
+  CaptainHealthDefinitions[heHolyFanaticism].DevelopmentRate := 100.0;
+  CaptainHealthDefinitions[heHolyFanaticism].InfectionChance := 1.0;
+  CaptainHealthDefinitions[heHolyFanaticism].Locations := [hlCombat];
+  CaptainHealthDefinitions[heHolyFanaticism].Duration := 200;
+
+  CaptainHealthDefinitions[heComplexImmunocide].AllowedLocationOwners := [oiMaloc..oiGaal];
+  CaptainHealthDefinitions[heComplexImmunocide].AllowedOwners := [oiPeleng, oiHuman, oiFeyan, oiGaal];
+  CaptainHealthDefinitions[heComplexImmunocide].AllowedRatingBands := [1, 2, 3, 4, 5];
+  CaptainHealthDefinitions[heComplexImmunocide].AllowedRanks := [1, 2, 3, 4, 5, 6, 7];
+  CaptainHealthDefinitions[heComplexImmunocide].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
+  CaptainHealthDefinitions[heComplexImmunocide].MedicalPriceSizeLevel := 5;
+  CaptainHealthDefinitions[heComplexImmunocide].DevelopmentRate := 1.0;
+  CaptainHealthDefinitions[heComplexImmunocide].InfectionChance := 1.0;
+  CaptainHealthDefinitions[heComplexImmunocide].Locations := [hlNormalSpace];
+  CaptainHealthDefinitions[heComplexImmunocide].Duration := 1000;
+
+  CaptainHealthDefinitions[heMysteriousLuatanza].AllowedLocationOwners := [oiGaal];
+  CaptainHealthDefinitions[heMysteriousLuatanza].AllowedOwners := [oiMaloc..oiGaal];
+  CaptainHealthDefinitions[heMysteriousLuatanza].AllowedRatingBands := [1, 2, 3, 4, 5];
+  CaptainHealthDefinitions[heMysteriousLuatanza].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
+  CaptainHealthDefinitions[heMysteriousLuatanza].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
+  CaptainHealthDefinitions[heMysteriousLuatanza].MedicalPriceSizeLevel := 1;
+  CaptainHealthDefinitions[heMysteriousLuatanza].DevelopmentRate := 10.0;
+  CaptainHealthDefinitions[heMysteriousLuatanza].InfectionChance := 1.0;
+  CaptainHealthDefinitions[heMysteriousLuatanza].Locations := [hlPlanet, hlDocked];
+  CaptainHealthDefinitions[heMysteriousLuatanza].Duration := 170;
+
+  CaptainHealthDefinitions[heDrugAddiction].AllowedLocationOwners := [oiMaloc..oiGaal];
+  CaptainHealthDefinitions[heDrugAddiction].AllowedOwners := [oiMaloc..oiGaal];
+  CaptainHealthDefinitions[heDrugAddiction].AllowedRatingBands := [1, 2, 3, 4, 5];
+  CaptainHealthDefinitions[heDrugAddiction].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
+  CaptainHealthDefinitions[heDrugAddiction].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
+  CaptainHealthDefinitions[heDrugAddiction].MedicalPriceSizeLevel := 4;
+  CaptainHealthDefinitions[heDrugAddiction].DevelopmentRate := 100.0;
+  CaptainHealthDefinitions[heDrugAddiction].InfectionChance := 1.0;
+  CaptainHealthDefinitions[heDrugAddiction].Locations := [];
+  CaptainHealthDefinitions[heDrugAddiction].Duration := 1000;
+
+  CaptainHealthDefinitions[heWhirlwindConcussion].AllowedLocationOwners := [oiMaloc..oiGaal];
+  CaptainHealthDefinitions[heWhirlwindConcussion].AllowedOwners := [oiMaloc..oiGaal];
+  CaptainHealthDefinitions[heWhirlwindConcussion].AllowedRatingBands := [1, 2, 3, 4, 5];
+  CaptainHealthDefinitions[heWhirlwindConcussion].AllowedRanks := [1, 2, 3, 4, 5, 6, 7];
+  CaptainHealthDefinitions[heWhirlwindConcussion].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
+  CaptainHealthDefinitions[heWhirlwindConcussion].MedicalPriceSizeLevel := 2;
+  CaptainHealthDefinitions[heWhirlwindConcussion].DevelopmentRate := 100.0;
+  CaptainHealthDefinitions[heWhirlwindConcussion].InfectionChance := 1.0;
+  CaptainHealthDefinitions[heWhirlwindConcussion].Locations := [hlCombat];
+  CaptainHealthDefinitions[heWhirlwindConcussion].Duration := 130;
+
+  CaptainHealthDefinitions[hePulledMuscle].AllowedLocationOwners := [oiPeleng, oiHuman, oiFeyan, oiGaal];
+  CaptainHealthDefinitions[hePulledMuscle].AllowedOwners := [oiPeleng, oiHuman, oiFeyan, oiGaal];
+  CaptainHealthDefinitions[hePulledMuscle].AllowedRatingBands := [1, 2, 3, 4, 5];
+  CaptainHealthDefinitions[hePulledMuscle].AllowedRanks := [1, 2, 3, 4, 5, 6, 7];
+  CaptainHealthDefinitions[hePulledMuscle].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
+  CaptainHealthDefinitions[hePulledMuscle].MedicalPriceSizeLevel := 1;
+  CaptainHealthDefinitions[hePulledMuscle].DevelopmentRate := 100.0;
+  CaptainHealthDefinitions[hePulledMuscle].InfectionChance := 1.0;
+  CaptainHealthDefinitions[hePulledMuscle].Locations := [hlCombat];
+  CaptainHealthDefinitions[hePulledMuscle].Duration := 100;
+
+  CaptainHealthDefinitions[heGrandMalosausus].AllowedLocationOwners := [oiMaloc];
+  CaptainHealthDefinitions[heGrandMalosausus].AllowedOwners := [oiMaloc];
+  CaptainHealthDefinitions[heGrandMalosausus].AllowedRatingBands := [2, 3, 4, 5];
+  CaptainHealthDefinitions[heGrandMalosausus].AllowedRanks := [2, 3, 4, 5, 6, 7];
+  CaptainHealthDefinitions[heGrandMalosausus].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
+  CaptainHealthDefinitions[heGrandMalosausus].MedicalPriceSizeLevel := 2;
+  CaptainHealthDefinitions[heGrandMalosausus].DevelopmentRate := 1.0;
+  CaptainHealthDefinitions[heGrandMalosausus].InfectionChance := 1.0;
+  CaptainHealthDefinitions[heGrandMalosausus].Locations := [hlPlanet, hlDocked, hlNormalSpace];
+  CaptainHealthDefinitions[heGrandMalosausus].Duration := 180;
+
+  CaptainHealthDefinitions[heBitterPelenosia].AllowedLocationOwners := [oiMaloc..oiGaal];
+  CaptainHealthDefinitions[heBitterPelenosia].AllowedOwners := [oiPeleng];
+  CaptainHealthDefinitions[heBitterPelenosia].AllowedRatingBands := [1, 2, 3, 4, 5];
+  CaptainHealthDefinitions[heBitterPelenosia].AllowedRanks := [1, 2, 3, 4, 5, 6, 7];
+  CaptainHealthDefinitions[heBitterPelenosia].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
+  CaptainHealthDefinitions[heBitterPelenosia].MedicalPriceSizeLevel := 2;
+  CaptainHealthDefinitions[heBitterPelenosia].DevelopmentRate := 1.0;
+  CaptainHealthDefinitions[heBitterPelenosia].InfectionChance := 1.0;
+  CaptainHealthDefinitions[heBitterPelenosia].Locations := [hlPlanet, hlDocked, hlNormalSpace];
+  CaptainHealthDefinitions[heBitterPelenosia].Duration := 122;
+
+  CaptainHealthDefinitions[heAkaSezyanka].AllowedLocationOwners := [oiMaloc..oiGaal];
+  CaptainHealthDefinitions[heAkaSezyanka].AllowedOwners := [oiFeyan];
+  CaptainHealthDefinitions[heAkaSezyanka].AllowedRatingBands := [1, 2, 3, 4, 5];
+  CaptainHealthDefinitions[heAkaSezyanka].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
+  CaptainHealthDefinitions[heAkaSezyanka].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
+  CaptainHealthDefinitions[heAkaSezyanka].MedicalPriceSizeLevel := 4;
+  CaptainHealthDefinitions[heAkaSezyanka].DevelopmentRate := 1.0;
+  CaptainHealthDefinitions[heAkaSezyanka].InfectionChance := 1.0;
+  CaptainHealthDefinitions[heAkaSezyanka].Locations := [hlPlanet, hlDocked];
+  CaptainHealthDefinitions[heAkaSezyanka].Duration := 164;
+
+  CaptainHealthDefinitions[heNewMolizone].AllowedLocationOwners := [oiMaloc..oiGaal];
+  CaptainHealthDefinitions[heNewMolizone].AllowedOwners := [oiGaal];
+  CaptainHealthDefinitions[heNewMolizone].AllowedRatingBands := [2, 3, 4, 5];
+  CaptainHealthDefinitions[heNewMolizone].AllowedRanks := [2, 3, 4, 5, 6, 7];
+  CaptainHealthDefinitions[heNewMolizone].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
+  CaptainHealthDefinitions[heNewMolizone].MedicalPriceSizeLevel := 2;
+  CaptainHealthDefinitions[heNewMolizone].DevelopmentRate := 1.0;
+  CaptainHealthDefinitions[heNewMolizone].InfectionChance := 0.5;
+  CaptainHealthDefinitions[heNewMolizone].Locations := [hlPlanet, hlDocked, hlNormalSpace];
+  CaptainHealthDefinitions[heNewMolizone].Duration := 88;
+
   RadiationHealthDefinitions[1].AllowedLocationOwners := [oiMaloc..oiGaal];
   RadiationHealthDefinitions[1].AllowedOwners := [oiMaloc..oiGaal];
   RadiationHealthDefinitions[1].AllowedRatingBands := [1, 2, 3, 4, 5];
@@ -2932,116 +2953,129 @@ begin
   RadiationHealthDefinitions[1].InfectionChance := 0.0;
   RadiationHealthDefinitions[1].Locations := [];
   RadiationHealthDefinitions[1].Duration := 30;
-  CaptainHealthDefinitions[13].AllowedLocationOwners := [oiMaloc..oiGaal];
-  CaptainHealthDefinitions[13].AllowedOwners := [oiMaloc..oiGaal];
-  CaptainHealthDefinitions[13].AllowedRatingBands := [1, 2, 3, 4, 5];
-  CaptainHealthDefinitions[13].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
-  CaptainHealthDefinitions[13].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
-  CaptainHealthDefinitions[13].MedicalPriceSizeLevel := 2;
-  CaptainHealthDefinitions[13].DevelopmentRate := 1.0;
-  CaptainHealthDefinitions[13].InfectionChance := 0.9;
-  CaptainHealthDefinitions[13].Duration := 140;
-  CaptainHealthDefinitions[14].AllowedLocationOwners := [oiMaloc..oiGaal];
-  CaptainHealthDefinitions[14].AllowedOwners := [oiMaloc..oiGaal];
-  CaptainHealthDefinitions[14].AllowedRatingBands := [1, 2, 3, 4, 5];
-  CaptainHealthDefinitions[14].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
-  CaptainHealthDefinitions[14].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
-  CaptainHealthDefinitions[14].MedicalPriceSizeLevel := 2;
-  CaptainHealthDefinitions[14].DevelopmentRate := 1.0;
-  CaptainHealthDefinitions[14].InfectionChance := 0.9;
-  CaptainHealthDefinitions[14].Duration := 130;
-  CaptainHealthDefinitions[15].AllowedLocationOwners := [oiMaloc..oiGaal];
-  CaptainHealthDefinitions[15].AllowedOwners := [oiMaloc..oiGaal];
-  CaptainHealthDefinitions[15].AllowedRatingBands := [1, 2, 3, 4, 5];
-  CaptainHealthDefinitions[15].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
-  CaptainHealthDefinitions[15].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
-  CaptainHealthDefinitions[15].MedicalPriceSizeLevel := 2;
-  CaptainHealthDefinitions[15].DevelopmentRate := 1.0;
-  CaptainHealthDefinitions[15].InfectionChance := 0.8;
-  CaptainHealthDefinitions[15].Duration := 140;
-  CaptainHealthDefinitions[16].AllowedLocationOwners := [oiMaloc..oiGaal];
-  CaptainHealthDefinitions[16].AllowedOwners := [oiMaloc..oiGaal];
-  CaptainHealthDefinitions[16].AllowedRatingBands := [1, 2, 3, 4, 5];
-  CaptainHealthDefinitions[16].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
-  CaptainHealthDefinitions[16].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
-  CaptainHealthDefinitions[16].MedicalPriceSizeLevel := 2;
-  CaptainHealthDefinitions[16].DevelopmentRate := 1.0;
-  CaptainHealthDefinitions[16].InfectionChance := 0.4;
-  CaptainHealthDefinitions[16].Duration := 120;
-  CaptainHealthDefinitions[17].AllowedLocationOwners := [oiMaloc..oiGaal];
-  CaptainHealthDefinitions[17].AllowedOwners := [oiMaloc..oiGaal];
-  CaptainHealthDefinitions[17].AllowedRatingBands := [1, 2, 3, 4, 5];
-  CaptainHealthDefinitions[17].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
-  CaptainHealthDefinitions[17].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
-  CaptainHealthDefinitions[17].MedicalPriceSizeLevel := 2;
-  CaptainHealthDefinitions[17].DevelopmentRate := 1.0;
-  CaptainHealthDefinitions[17].InfectionChance := 0.9;
-  CaptainHealthDefinitions[17].Duration := 90;
-  CaptainHealthDefinitions[18].AllowedLocationOwners := [oiMaloc..oiGaal];
-  CaptainHealthDefinitions[18].AllowedOwners := [oiMaloc..oiGaal];
-  CaptainHealthDefinitions[18].AllowedRatingBands := [1, 2, 3, 4, 5];
-  CaptainHealthDefinitions[18].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
-  CaptainHealthDefinitions[18].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
-  CaptainHealthDefinitions[18].MedicalPriceSizeLevel := 2;
-  CaptainHealthDefinitions[18].DevelopmentRate := 1.0;
-  CaptainHealthDefinitions[18].InfectionChance := 0.8;
-  CaptainHealthDefinitions[18].Duration := 300;
-  CaptainHealthDefinitions[19].AllowedLocationOwners := [oiMaloc..oiGaal];
-  CaptainHealthDefinitions[19].AllowedOwners := [oiMaloc..oiGaal];
-  CaptainHealthDefinitions[19].AllowedRatingBands := [1, 2, 3, 4, 5];
-  CaptainHealthDefinitions[19].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
-  CaptainHealthDefinitions[19].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
-  CaptainHealthDefinitions[19].MedicalPriceSizeLevel := 2;
-  CaptainHealthDefinitions[19].DevelopmentRate := 1.0;
-  CaptainHealthDefinitions[19].InfectionChance := 0.9;
-  CaptainHealthDefinitions[19].Duration := 140;
-  CaptainHealthDefinitions[20].AllowedLocationOwners := [oiMaloc..oiGaal];
-  CaptainHealthDefinitions[20].AllowedOwners := [oiMaloc..oiGaal];
-  CaptainHealthDefinitions[20].AllowedRatingBands := [1, 2, 3, 4, 5];
-  CaptainHealthDefinitions[20].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
-  CaptainHealthDefinitions[20].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
-  CaptainHealthDefinitions[20].MedicalPriceSizeLevel := 2;
-  CaptainHealthDefinitions[20].DevelopmentRate := 1.0;
-  CaptainHealthDefinitions[20].InfectionChance := 0.9;
-  CaptainHealthDefinitions[20].Duration := 200;
-  CaptainHealthDefinitions[21].AllowedLocationOwners := [oiMaloc..oiGaal];
-  CaptainHealthDefinitions[21].AllowedOwners := [oiMaloc..oiGaal];
-  CaptainHealthDefinitions[21].AllowedRatingBands := [1, 2, 3, 4, 5];
-  CaptainHealthDefinitions[21].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
-  CaptainHealthDefinitions[21].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
-  CaptainHealthDefinitions[21].MedicalPriceSizeLevel := 2;
-  CaptainHealthDefinitions[21].DevelopmentRate := 1.0;
-  CaptainHealthDefinitions[21].InfectionChance := 0.9;
-  CaptainHealthDefinitions[21].Duration := 200;
-  CaptainHealthDefinitions[22].AllowedLocationOwners := [oiMaloc..oiGaal];
-  CaptainHealthDefinitions[22].AllowedOwners := [oiMaloc..oiGaal];
-  CaptainHealthDefinitions[22].AllowedRatingBands := [1, 2, 3, 4, 5];
-  CaptainHealthDefinitions[22].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
-  CaptainHealthDefinitions[22].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
-  CaptainHealthDefinitions[22].MedicalPriceSizeLevel := 2;
-  CaptainHealthDefinitions[22].DevelopmentRate := 1.0;
-  CaptainHealthDefinitions[22].InfectionChance := 0.25;
-  CaptainHealthDefinitions[22].Duration := 150;
-  CaptainHealthDefinitions[23].AllowedLocationOwners := [oiMaloc..oiGaal];
-  CaptainHealthDefinitions[23].AllowedOwners := [oiMaloc..oiGaal];
-  CaptainHealthDefinitions[23].AllowedRatingBands := [1, 2, 3, 4, 5];
-  CaptainHealthDefinitions[23].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
-  CaptainHealthDefinitions[23].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
-  CaptainHealthDefinitions[23].MedicalPriceSizeLevel := 2;
-  CaptainHealthDefinitions[23].DevelopmentRate := 1.0;
-  CaptainHealthDefinitions[23].InfectionChance := 0.15;
-  CaptainHealthDefinitions[23].Duration := 90;
-  CaptainHealthDefinitions[24].AllowedLocationOwners := [oiMaloc..oiGaal];
-  CaptainHealthDefinitions[24].AllowedOwners := [oiMaloc..oiGaal];
-  CaptainHealthDefinitions[24].AllowedRatingBands := [1, 2, 3, 4, 5];
-  CaptainHealthDefinitions[24].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
-  CaptainHealthDefinitions[24].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
-  CaptainHealthDefinitions[24].MedicalPriceSizeLevel := 2;
-  CaptainHealthDefinitions[24].DevelopmentRate := 1.0;
-  CaptainHealthDefinitions[24].InfectionChance := 0.2;
-  CaptainHealthDefinitions[24].Duration := 120;
+
+  CaptainHealthDefinitions[heMaloqSizha].AllowedLocationOwners := [oiMaloc..oiGaal];
+  CaptainHealthDefinitions[heMaloqSizha].AllowedOwners := [oiMaloc..oiGaal];
+  CaptainHealthDefinitions[heMaloqSizha].AllowedRatingBands := [1, 2, 3, 4, 5];
+  CaptainHealthDefinitions[heMaloqSizha].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
+  CaptainHealthDefinitions[heMaloqSizha].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
+  CaptainHealthDefinitions[heMaloqSizha].MedicalPriceSizeLevel := 2;
+  CaptainHealthDefinitions[heMaloqSizha].DevelopmentRate := 1.0;
+  CaptainHealthDefinitions[heMaloqSizha].InfectionChance := 0.9;
+  CaptainHealthDefinitions[heMaloqSizha].Duration := 140;
+
+  CaptainHealthDefinitions[heOneEyedKhamas].AllowedLocationOwners := [oiMaloc..oiGaal];
+  CaptainHealthDefinitions[heOneEyedKhamas].AllowedOwners := [oiMaloc..oiGaal];
+  CaptainHealthDefinitions[heOneEyedKhamas].AllowedRatingBands := [1, 2, 3, 4, 5];
+  CaptainHealthDefinitions[heOneEyedKhamas].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
+  CaptainHealthDefinitions[heOneEyedKhamas].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
+  CaptainHealthDefinitions[heOneEyedKhamas].MedicalPriceSizeLevel := 2;
+  CaptainHealthDefinitions[heOneEyedKhamas].DevelopmentRate := 1.0;
+  CaptainHealthDefinitions[heOneEyedKhamas].InfectionChance := 0.9;
+  CaptainHealthDefinitions[heOneEyedKhamas].Duration := 130;
+
+  CaptainHealthDefinitions[heStardust].AllowedLocationOwners := [oiMaloc..oiGaal];
+  CaptainHealthDefinitions[heStardust].AllowedOwners := [oiMaloc..oiGaal];
+  CaptainHealthDefinitions[heStardust].AllowedRatingBands := [1, 2, 3, 4, 5];
+  CaptainHealthDefinitions[heStardust].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
+  CaptainHealthDefinitions[heStardust].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
+  CaptainHealthDefinitions[heStardust].MedicalPriceSizeLevel := 2;
+  CaptainHealthDefinitions[heStardust].DevelopmentRate := 1.0;
+  CaptainHealthDefinitions[heStardust].InfectionChance := 0.8;
+  CaptainHealthDefinitions[heStardust].Duration := 140;
+
+  CaptainHealthDefinitions[heSuperTechnician].AllowedLocationOwners := [oiMaloc..oiGaal];
+  CaptainHealthDefinitions[heSuperTechnician].AllowedOwners := [oiMaloc..oiGaal];
+  CaptainHealthDefinitions[heSuperTechnician].AllowedRatingBands := [1, 2, 3, 4, 5];
+  CaptainHealthDefinitions[heSuperTechnician].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
+  CaptainHealthDefinitions[heSuperTechnician].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
+  CaptainHealthDefinitions[heSuperTechnician].MedicalPriceSizeLevel := 2;
+  CaptainHealthDefinitions[heSuperTechnician].DevelopmentRate := 1.0;
+  CaptainHealthDefinitions[heSuperTechnician].InfectionChance := 0.4;
+  CaptainHealthDefinitions[heSuperTechnician].Duration := 120;
+
+  CaptainHealthDefinitions[heGaalianAlacrity].AllowedLocationOwners := [oiMaloc..oiGaal];
+  CaptainHealthDefinitions[heGaalianAlacrity].AllowedOwners := [oiMaloc..oiGaal];
+  CaptainHealthDefinitions[heGaalianAlacrity].AllowedRatingBands := [1, 2, 3, 4, 5];
+  CaptainHealthDefinitions[heGaalianAlacrity].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
+  CaptainHealthDefinitions[heGaalianAlacrity].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
+  CaptainHealthDefinitions[heGaalianAlacrity].MedicalPriceSizeLevel := 2;
+  CaptainHealthDefinitions[heGaalianAlacrity].DevelopmentRate := 1.0;
+  CaptainHealthDefinitions[heGaalianAlacrity].InfectionChance := 0.9;
+  CaptainHealthDefinitions[heGaalianAlacrity].Duration := 90;
+
+  CaptainHealthDefinitions[heBloodDjogar].AllowedLocationOwners := [oiMaloc..oiGaal];
+  CaptainHealthDefinitions[heBloodDjogar].AllowedOwners := [oiMaloc..oiGaal];
+  CaptainHealthDefinitions[heBloodDjogar].AllowedRatingBands := [1, 2, 3, 4, 5];
+  CaptainHealthDefinitions[heBloodDjogar].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
+  CaptainHealthDefinitions[heBloodDjogar].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
+  CaptainHealthDefinitions[heBloodDjogar].MedicalPriceSizeLevel := 2;
+  CaptainHealthDefinitions[heBloodDjogar].DevelopmentRate := 1.0;
+  CaptainHealthDefinitions[heBloodDjogar].InfectionChance := 0.8;
+  CaptainHealthDefinitions[heBloodDjogar].Duration := 300;
+
+  CaptainHealthDefinitions[heRagobamWhisper].AllowedLocationOwners := [oiMaloc..oiGaal];
+  CaptainHealthDefinitions[heRagobamWhisper].AllowedOwners := [oiMaloc..oiGaal];
+  CaptainHealthDefinitions[heRagobamWhisper].AllowedRatingBands := [1, 2, 3, 4, 5];
+  CaptainHealthDefinitions[heRagobamWhisper].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
+  CaptainHealthDefinitions[heRagobamWhisper].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
+  CaptainHealthDefinitions[heRagobamWhisper].MedicalPriceSizeLevel := 2;
+  CaptainHealthDefinitions[heRagobamWhisper].DevelopmentRate := 1.0;
+  CaptainHealthDefinitions[heRagobamWhisper].InfectionChance := 0.9;
+  CaptainHealthDefinitions[heRagobamWhisper].Duration := 140;
+
+  CaptainHealthDefinitions[heShakhmandooLeader].AllowedLocationOwners := [oiMaloc..oiGaal];
+  CaptainHealthDefinitions[heShakhmandooLeader].AllowedOwners := [oiMaloc..oiGaal];
+  CaptainHealthDefinitions[heShakhmandooLeader].AllowedRatingBands := [1, 2, 3, 4, 5];
+  CaptainHealthDefinitions[heShakhmandooLeader].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
+  CaptainHealthDefinitions[heShakhmandooLeader].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
+  CaptainHealthDefinitions[heShakhmandooLeader].MedicalPriceSizeLevel := 2;
+  CaptainHealthDefinitions[heShakhmandooLeader].DevelopmentRate := 1.0;
+  CaptainHealthDefinitions[heShakhmandooLeader].InfectionChance := 0.9;
+  CaptainHealthDefinitions[heShakhmandooLeader].Duration := 200;
+
+  CaptainHealthDefinitions[hePsychotropicCache].AllowedLocationOwners := [oiMaloc..oiGaal];
+  CaptainHealthDefinitions[hePsychotropicCache].AllowedOwners := [oiMaloc..oiGaal];
+  CaptainHealthDefinitions[hePsychotropicCache].AllowedRatingBands := [1, 2, 3, 4, 5];
+  CaptainHealthDefinitions[hePsychotropicCache].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
+  CaptainHealthDefinitions[hePsychotropicCache].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
+  CaptainHealthDefinitions[hePsychotropicCache].MedicalPriceSizeLevel := 2;
+  CaptainHealthDefinitions[hePsychotropicCache].DevelopmentRate := 1.0;
+  CaptainHealthDefinitions[hePsychotropicCache].InfectionChance := 0.9;
+  CaptainHealthDefinitions[hePsychotropicCache].Duration := 200;
+
+  CaptainHealthDefinitions[heBusinessMark].AllowedLocationOwners := [oiMaloc..oiGaal];
+  CaptainHealthDefinitions[heBusinessMark].AllowedOwners := [oiMaloc..oiGaal];
+  CaptainHealthDefinitions[heBusinessMark].AllowedRatingBands := [1, 2, 3, 4, 5];
+  CaptainHealthDefinitions[heBusinessMark].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
+  CaptainHealthDefinitions[heBusinessMark].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
+  CaptainHealthDefinitions[heBusinessMark].MedicalPriceSizeLevel := 2;
+  CaptainHealthDefinitions[heBusinessMark].DevelopmentRate := 1.0;
+  CaptainHealthDefinitions[heBusinessMark].InfectionChance := 0.25;
+  CaptainHealthDefinitions[heBusinessMark].Duration := 150;
+
+  CaptainHealthDefinitions[heDoubleplex].AllowedLocationOwners := [oiMaloc..oiGaal];
+  CaptainHealthDefinitions[heDoubleplex].AllowedOwners := [oiMaloc..oiGaal];
+  CaptainHealthDefinitions[heDoubleplex].AllowedRatingBands := [1, 2, 3, 4, 5];
+  CaptainHealthDefinitions[heDoubleplex].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
+  CaptainHealthDefinitions[heDoubleplex].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
+  CaptainHealthDefinitions[heDoubleplex].MedicalPriceSizeLevel := 2;
+  CaptainHealthDefinitions[heDoubleplex].DevelopmentRate := 1.0;
+  CaptainHealthDefinitions[heDoubleplex].InfectionChance := 0.15;
+  CaptainHealthDefinitions[heDoubleplex].Duration := 90;
+
+  CaptainHealthDefinitions[heAbsoluteStatus].AllowedLocationOwners := [oiMaloc..oiGaal];
+  CaptainHealthDefinitions[heAbsoluteStatus].AllowedOwners := [oiMaloc..oiGaal];
+  CaptainHealthDefinitions[heAbsoluteStatus].AllowedRatingBands := [1, 2, 3, 4, 5];
+  CaptainHealthDefinitions[heAbsoluteStatus].AllowedRanks := [0, 1, 2, 3, 4, 5, 6, 7];
+  CaptainHealthDefinitions[heAbsoluteStatus].AllowedCareers := [rcTrader, rcPirate, rcWarrior];
+  CaptainHealthDefinitions[heAbsoluteStatus].MedicalPriceSizeLevel := 2;
+  CaptainHealthDefinitions[heAbsoluteStatus].DevelopmentRate := 1.0;
+  CaptainHealthDefinitions[heAbsoluteStatus].InfectionChance := 0.2;
+  CaptainHealthDefinitions[heAbsoluteStatus].Duration := 120;
+
   for I := 1 to 12 do
-    with CaptainHealthDefinitions[I] do
+    with CaptainHealthDefinitions[TCaptainHealthEffect(I)] do
     begin
       Path := 'Illness.Illness.' + IntToStr(I - 1);
       Name := LocalizedText(Path + '.Name');
@@ -3050,6 +3084,7 @@ begin
       Value := LocalizedText(Path + '.Time');
       if Value <> '' then Duration := StrToInt(AnsiString(Value));
     end;
+
   for I := 1 to 1 do
     with RadiationHealthDefinitions[I] do
     begin
@@ -3060,8 +3095,9 @@ begin
       Value := LocalizedText(Path + '.Time');
       if Value <> '' then Duration := StrToInt(AnsiString(Value));
     end;
+
   for I := 1 to 12 do
-    with CaptainHealthDefinitions[12 + I] do
+    with CaptainHealthDefinitions[TCaptainHealthEffect(12 + I)] do
     begin
       Path := 'Illness.Stimulant.' + IntToStr(I - 1);
       Name := LocalizedText(Path + '.Name');

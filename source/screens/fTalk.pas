@@ -1306,10 +1306,10 @@ begin
       if (TalkShip.GetRelationLevelToShip(GetPlayer) = rlHostile) and (GetPlayer <> TalkShip.PartnerShip) then
       begin
         AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Truce.PlayerSend'), 0, ShowTruceOffer, 0);
-        if GetPlayer.IsHealthEffectActive(5) then Callback := ScriptDialogBlockCallback
+        if GetPlayer.IsHealthEffectActive(heMysteriousLuatanza) then Callback := ScriptDialogBlockCallback
         else Callback := ShowMoneyDemand;
         AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Money.PlayerSend'), 0, Callback, 0);
-        if GetPlayer.IsHealthEffectActive(5) then Callback := ScriptDialogBlockCallback
+        if GetPlayer.IsHealthEffectActive(heMysteriousLuatanza) then Callback := ScriptDialogBlockCallback
         else Callback := DemandCargo;
         AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Goods.PlayerSend'), 0, Callback, 0);
       end
@@ -1318,10 +1318,10 @@ begin
         HasAttackChoice := AddImmediateAttackChoices;
         if (not HasAttackChoice) and (GetPlayer <> TalkShip.PartnerShip) then
         begin
-        if GetPlayer.IsHealthEffectActive(5) then Callback := ScriptDialogBlockCallback
+        if GetPlayer.IsHealthEffectActive(heMysteriousLuatanza) then Callback := ScriptDialogBlockCallback
         else Callback := ShowMoneyDemand;
         AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Money.PlayerSend'), 0, Callback, 0);
-        if GetPlayer.IsHealthEffectActive(5) then Callback := ScriptDialogBlockCallback
+        if GetPlayer.IsHealthEffectActive(heMysteriousLuatanza) then Callback := ScriptDialogBlockCallback
         else Callback := DemandCargo;
         AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Goods.PlayerSend'), 0, Callback, 0);
         end;
@@ -2194,7 +2194,7 @@ end;
 { @routine $6DC880 TfTalk_OrderPartnerFollow }
 procedure TfTalk.OrderPartnerFollow(Action: Integer);
 begin
-  TalkShip.OrderFollowShip(GetPlayer, 0, True);
+  TalkShip.OrderFollowShip(GetPlayer, fmFollowNear, True);
   DialogText := TalkShip.LookupTalkText('Talk.Partner.ComputerAgreeFlyToMe');
   if GetPlayer.CountPartnersInNormalSpace > 1 then
   begin
@@ -2351,7 +2351,7 @@ begin
     Ship := GetPlayer.CurrentStar.Ships[I];
     if (GetPlayer = Ship.PartnerShip) and Ship.InNormalSpace and (GetPlayer <> Ship) and (TalkShip <> Ship) then
     begin
-      if GetPlayer = TalkShip.OrderTarget then Ship.OrderFollowShip(GetPlayer, 0, True)
+      if GetPlayer = TalkShip.OrderTarget then Ship.OrderFollowShip(GetPlayer, fmFollowNear, True)
       else if TalkShip.Order = soFollowShip then Ship.SetJointAttackTarget(Ship, TalkShip.OrderTarget as TShip)
       else if TalkShip.Order = soLand then Ship.OrderLanding(GetPlayer.OrderTarget, True)
       else if TalkShip.Order = soJump then Ship.OrderJump(GetPlayer.OrderTarget as TStar, True);
@@ -2374,7 +2374,7 @@ var
   Ship: TTranclucator;
 begin
   Ship := TalkShip as TTranclucator;
-  Ship.OrderFollowShip(GetPlayer, 0, True);
+  Ship.OrderFollowShip(GetPlayer, fmFollowNear, True);
   Ship.FollowOwner := False;
   Ship.SeekItems := False;
   DialogText := TalkShip.LookupTalkText('Talk.Tranclucator.FlyToMe.Ok');
@@ -2390,7 +2390,7 @@ var
   Ship: TTranclucator;
 begin
   Ship := TalkShip as TTranclucator;
-  Ship.OrderFollowShip(Ship.OwnerShip, 1, False);
+  Ship.OrderFollowShip(Ship.OwnerShip, fmMinWeaponRange, False);
   Ship.FollowOwner := True;
   Ship.SeekItems := False;
   DialogText := TalkShip.LookupTalkText('Talk.Tranclucator.Return.Ok');
@@ -2765,17 +2765,17 @@ var
   Ship: TShip;
   RadarRangeSquared: Integer;
   ReservedFlag: Boolean;
-  FollowMode: Byte;
+  FollowMode: TFollowMode;
 begin
   DialogText := TalkShip.LookupTalkText('Talk.Pirate.AttackList');
   ClearChoices(False);
   ReservedFlag := False;
-  FollowMode := Byte(ReservedFlag);
+  FollowMode := TFollowMode(Byte(ReservedFlag));
   RadarRangeSquared := GetPlayer.GetRadarRange * GetPlayer.GetRadarRange;
   for I := 0 to GetPlayer.CurrentStar.Ships.Count - 1 do
   begin
     Ship := GetPlayer.CurrentStar.Ships[I];
-    if ((TalkShip.OrderTarget <> Ship) or (TalkShip.Order <> soFollowShip) or (TalkShip.OrderStateData = FollowMode)) and
+    if ((TalkShip.OrderTarget <> Ship) or (TalkShip.Order <> soFollowShip) or (TalkShip.OrderStateData = Ord(FollowMode))) and
       (GetPlayer <> Ship) and (TalkShip <> Ship) and (GetPlayer <> Ship.PartnerShip) and Ship.InNormalSpace then
       if (RadarRangeSquared > PointDistanceSquared(GetPlayer.Position, Ship.Position)) and not (Ship.TypeId in [rstRangerCenter..rstCustomStation]) and
         ((Ship.OwnerId <> oiDominator) or ((TalkShip.OwnerId = oiPirate) and (Galaxy.CoalitionDefeatedTurn <> 0))) then
@@ -2811,7 +2811,7 @@ end;
 { @routine $6E095C TfTalk_OrderPiratePartnerFollow }
 procedure TfTalk.OrderPiratePartnerFollow(Action: Integer);
 begin
-  TalkShip.OrderFollowShip(GetPlayer, 0, True);
+  TalkShip.OrderFollowShip(GetPlayer, fmFollowNear, True);
   DialogText := TalkShip.LookupTalkText('Talk.Pirate.ComputerAgreeFlyToMe');
   if GetPlayer.CountPartnersInNormalSpace > 1 then
   begin

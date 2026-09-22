@@ -721,11 +721,18 @@ function GetLocalObjectLink(Obj: TObject; Suppress: Boolean): WideString; // @ad
 
 // Nested in XorProtectedState; ParentFrame is the caller-popped static link.
 
+type
+  TModuleCrcStatus = (
+    mcsUnchecked = 0,
+    mcsAccepted = 1,
+    mcsMismatch = 2
+  ); // @size $01
+
 var
   ReservedMessageCounter: Integer = 0; // @addr $87CCE0 Reset by galaxy construction; meaning unresolved.
   TurnsSinceLastShipMessage: Cardinal = 0; // @addr $87CCE4 Reset by ship messages; incremented by Galaxy.NextDay and saved with galaxy state.
   ModuleSizeIntegrityStatus: Integer = 0; // @addr $87CCE8 Startup size-check marker: positive means mismatch; nonpositive is accepted.
-  ModuleCrcIntegrityStatus: Byte = 0; // @addr $87CCEC 0 unchecked, 1 accepted, 2 mismatch.
+  ModuleCrcIntegrityStatus: TModuleCrcStatus = mcsUnchecked; // @addr $87CCEC Cached module CRC result.
   ModuleCrcFailureValue: Integer = 0; // @addr $87CCF0 Cleared on mismatch while saving star 1; no native readers.
   Galaxy: TGalaxy; // @addr 0x88B0EC
   PlayerStar: TStar; // @addr 0x88B0F0
@@ -4641,13 +4648,13 @@ var FileName: WideString;
     Data.AddIntegerValue(11111);
     Unused := 4;
     if Data.ComputeCrc32 <> ExpectedCRC then begin
-      ModuleCrcIntegrityStatus := 2;
+      ModuleCrcIntegrityStatus := mcsMismatch;
       if Id = 1 then ModuleCrcFailureValue := 0;
     end;
     Data.Free;
   end;
 begin
-  if ModuleCrcIntegrityStatus = 0 then begin
+  if ModuleCrcIntegrityStatus = mcsUnchecked then begin
     Extension := 'll';
     Extension := '.d' + Extension;
     FileName := DecodeTextW('sotoenalm^_^aucah') + Extension; // 'steam_ach'
@@ -4670,7 +4677,7 @@ begin
     CheckModuleCRC($E1CA75C7);
     FileName := Prefix + DecodeTextW('veohrablissufainlae') + Extension; // 'vorbisfile'
     CheckModuleCRC($D1ED59C5);
-    if ModuleCrcIntegrityStatus = 0 then ModuleCrcIntegrityStatus := 1;
+    if ModuleCrcIntegrityStatus = mcsUnchecked then ModuleCrcIntegrityStatus := mcsAccepted;
   end;
   Buffer.AddDWord(Id);
   Buffer.AddIntegerValue(GenerationSeed);
@@ -5584,7 +5591,7 @@ begin
   SpaceProcess.Space.MinimapScale := Minimap.ClientSize.X / ComputeMapDiameter;
   SpaceProcess.Space.AlphaShift := 0;
   if GetPlayer <> nil then
-    if GetPlayer.IsHealthEffectActive(1) then SpaceProcess.Space.AlphaShift := 2;
+    if GetPlayer.IsHealthEffectActive(heBlindness) then SpaceProcess.Space.AlphaShift := 2;
   SpaceProcess.BindMinimap(Minimap);
   Graphic.AttachToSpace(SpaceProcess.Space);
   for I := 0 to Planets.Count - 1 do
@@ -11641,7 +11648,7 @@ begin
                 end;
                 if Ship.TypeId <> stKling then
                 begin
-                  if (GetPlayer = Ship) and Ship.IsHealthEffectActive(10) then
+                  if (GetPlayer = Ship) and Ship.IsHealthEffectActive(heBitterPelenosia) then
                     WearMultiplier := 3.0
                   else
                     WearMultiplier := 1.0;
@@ -11706,7 +11713,7 @@ begin
         begin
           Ship.ClearMovementPath;
           Ship.OrderDestination := Ship.Position;
-          if Ship.GetEffectiveFollowMode = 0 then
+          if Ship.GetEffectiveFollowMode = fmFollowNear then
           begin
             Angle := HeadingDegreesToRadians(Abs(Integer(Cardinal(Galaxy.CurrentTurn) * (Ship.Seed * Cardinal((TObject(Ship.OrderTarget) as TShip).Seed)))) mod 360);
             WorkCount := Ship.CalculateFollowRadius;
@@ -11764,7 +11771,7 @@ begin
             Point := OwnerShip.OrderDestination;
           if (Galaxy.StasisModEnabled = 1) and (GetPlayer = Ship) then
             Point := OwnerShip.Position;
-          if (Ship.GetEffectiveFollowMode = 0)
+          if (Ship.GetEffectiveFollowMode = fmFollowNear)
             and ((Ship is TTranclucator)
             and (Ship as TTranclucator).CanFollowOwnerInCurrentStar) then
           begin
@@ -11775,7 +11782,7 @@ begin
           begin
             WorkCount := Ship.CalculateFollowRadius;
             WorkScale := Ship.MovementSpeed * 200.0 * Self.MovementStepScale;
-            if Ship.GetEffectiveFollowMode = 0 then
+            if Ship.GetEffectiveFollowMode = fmFollowNear then
             begin
               Point.X := Point.X + Ship.RepulsionPosition.X;
               Point.Y := Point.Y + Ship.RepulsionPosition.Y;

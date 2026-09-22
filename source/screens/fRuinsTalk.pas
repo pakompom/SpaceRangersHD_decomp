@@ -2865,11 +2865,11 @@ begin
     Inc(GetPlayer.NationalityChangeCount);
     TryAddAchievementProgress('MANYFACES', 1);
     for J := 1 to 12 do
-      if not CaptainHealthDefinitions[J].Disabled then
-        if not (RaceToOwner(GetPlayer.PilotRace) in CaptainHealthDefinitions[J].AllowedOwners) and (GetPlayer.CaptainHealth[J].Progress < 100) then
+      if not CaptainHealthDefinitions[TCaptainHealthEffect(J)].Disabled then
+        if not (RaceToOwner(GetPlayer.PilotRace) in CaptainHealthDefinitions[TCaptainHealthEffect(J)].AllowedOwners) and (GetPlayer.CaptainHealth[TCaptainHealthEffect(J)].Progress < 100) then
         begin
-          GetPlayer.CaptainHealth[J].Progress := 0;
-          GetPlayer.StatusEffectSourceNames[J] := '';
+          GetPlayer.CaptainHealth[TCaptainHealthEffect(J)].Progress := 0;
+          GetPlayer.StatusEffectSourceNames[TCaptainHealthEffect(J)] := '';
         end;
     GetPlayer.ChangePlanetRelations(nil, rcmRaiseTo, 70, PlanetOwnerMasks.Coalition);
     GetPlayer.ChangeShipRelations(nil, rcmRaiseTo, 70, RelationShipTypes, PlanetOwnerMasks.Coalition);
@@ -5470,21 +5470,21 @@ begin
       for I := 1 to 12 do
       begin
         Text := '';
-        if GetPlayer.CaptainHealth[I].Progress <> 0 then
+        if GetPlayer.CaptainHealth[TCaptainHealthEffect(I)].Progress <> 0 then
         begin
           Text := LocalizedColorText('FormRuins.MC.Illnes.MCSeeIll');
-          ReplaceTextToken(Text, '<IllName>', CaptainHealthDefinitions[I].Name, TextHighlightColorTag);
-          if GetPlayer.CaptainHealth[I].Progress >= 100 then
+          ReplaceTextToken(Text, '<IllName>', CaptainHealthDefinitions[TCaptainHealthEffect(I)].Name, TextHighlightColorTag);
+          if GetPlayer.CaptainHealth[TCaptainHealthEffect(I)].Progress >= 100 then
             ReplaceTextToken(Text, '<MCSeeIllType>', LocalizedColorText('FormRuins.MC.Illnes.MCSeeIllType1'), '')
           else
           begin
             ReplaceTextToken(Text, '<MCSeeIllType>', LocalizedColorText('FormRuins.MC.Illnes.MCSeeIllType2'), '');
-            Inc(GetPlayer.CaptainHealth[I].ApplicationCount);
+            Inc(GetPlayer.CaptainHealth[TCaptainHealthEffect(I)].ApplicationCount);
             GetPlayer.AchievementStats.CheckAllDiseasesAchievement;
           end;
-          ReplaceTextToken(Text, '<Date>', Galaxy.FormatTurnDate(GetPlayer.CaptainHealth[I].AppliedTurn), TextHighlightColorTag);
-          ReplaceTextToken(Text, '<InfectionObjectName>', GetPlayer.StatusEffectSourceNames[I], TextHighlightColorTag);
-          Cost := GenerateValueForSizeLevel(CaptainHealthDefinitions[I].MedicalPriceSizeLevel, Galaxy.ComputeScaledMiniMoney(GetPlayer.DockedTo.OwnerId), Galaxy.ComputeScaledAverageMoney(GetPlayer.DockedTo.OwnerId), 50, (Galaxy.CurrentTurn div 10) * Galaxy.GenerationSeed * I);
+          ReplaceTextToken(Text, '<Date>', Galaxy.FormatTurnDate(GetPlayer.CaptainHealth[TCaptainHealthEffect(I)].AppliedTurn), TextHighlightColorTag);
+          ReplaceTextToken(Text, '<InfectionObjectName>', GetPlayer.StatusEffectSourceNames[TCaptainHealthEffect(I)], TextHighlightColorTag);
+          Cost := GenerateValueForSizeLevel(CaptainHealthDefinitions[TCaptainHealthEffect(I)].MedicalPriceSizeLevel, Galaxy.ComputeScaledMiniMoney(GetPlayer.DockedTo.OwnerId), Galaxy.ComputeScaledAverageMoney(GetPlayer.DockedTo.OwnerId), 50, (Galaxy.CurrentTurn div 10) * Galaxy.GenerationSeed * I);
           Inc(TotalCost, Cost);
           ReplaceTextToken(Text, '<Money>', IntToStr(Cost), TextHighlightColorTag);
           if IllnessText = '' then IllnessText := IllnessText + Text
@@ -5502,13 +5502,13 @@ begin
     if HasDisease then
     begin
       for I := 1 to 12 do
-        if GetPlayer.CaptainHealth[I].Progress <> 0 then
+        if GetPlayer.CaptainHealth[TCaptainHealthEffect(I)].Progress <> 0 then
         begin
-          Cost := GenerateValueForSizeLevel(CaptainHealthDefinitions[I].MedicalPriceSizeLevel, Galaxy.ComputeScaledMiniMoney(GetPlayer.DockedTo.OwnerId), Galaxy.ComputeScaledAverageMoney(GetPlayer.DockedTo.OwnerId), 50, (Galaxy.CurrentTurn div 10) * Galaxy.GenerationSeed * I);
+          Cost := GenerateValueForSizeLevel(CaptainHealthDefinitions[TCaptainHealthEffect(I)].MedicalPriceSizeLevel, Galaxy.ComputeScaledMiniMoney(GetPlayer.DockedTo.OwnerId), Galaxy.ComputeScaledAverageMoney(GetPlayer.DockedTo.OwnerId), 50, (Galaxy.CurrentTurn div 10) * Galaxy.GenerationSeed * I);
           if (GetPlayer.MedicalPolicyTicks > 0) and (GetPlayer.DockedTo.CurrentStar.ControlFaction <> sfPirates) then Cost := Cost div 2;
           if GetPlayer.Money >= Cost then
-            AddChoice('- ' + FormatText2(LocalizedColorText('FormRuins.MC.Illnes.PlayerIll'), TextHighlightColorTag, '<IllName>', CaptainHealthDefinitions[I].Name, '<Money>', IntToStr(Cost)), I, TreatSelectedDiseaseAtMedicalCenter)
-          else AddChoice('- ' + FormatText2(LocalizedColorText('FormRuins.MC.Illnes.PlayerIll'), TextHighlightColorTag, '<IllName>', CaptainHealthDefinitions[I].Name, '<Money>', IntToStr(Cost)), 0, ScriptDialogBlockCallback);
+            AddChoice('- ' + FormatText2(LocalizedColorText('FormRuins.MC.Illnes.PlayerIll'), TextHighlightColorTag, '<IllName>', CaptainHealthDefinitions[TCaptainHealthEffect(I)].Name, '<Money>', IntToStr(Cost)), I, TreatSelectedDiseaseAtMedicalCenter)
+          else AddChoice('- ' + FormatText2(LocalizedColorText('FormRuins.MC.Illnes.PlayerIll'), TextHighlightColorTag, '<IllName>', CaptainHealthDefinitions[TCaptainHealthEffect(I)].Name, '<Money>', IntToStr(Cost)), 0, ScriptDialogBlockCallback);
         end;
       AllCost := TotalCost div 3 + Galaxy.ComputeScaledSmallMoney(GetPlayer.DockedTo.OwnerId);
       if GetPlayer.Money >= AllCost then
@@ -5551,10 +5551,10 @@ begin
         Galaxy.GraphDominatorSurfacesEnabled := True;
         Galaxy.DisableDominatorSurfaces;
       end;
-      GetPlayer.CaptainHealth[I].Progress := 0;
-      GetPlayer.StatusEffectSourceNames[I] := '';
-      Name := CaptainHealthDefinitions[I].Name;
-      Cost := GenerateValueForSizeLevel(CaptainHealthDefinitions[I].MedicalPriceSizeLevel, Galaxy.ComputeScaledMiniMoney(GetPlayer.DockedTo.OwnerId), Galaxy.ComputeScaledAverageMoney(GetPlayer.DockedTo.OwnerId), 50, (Galaxy.CurrentTurn div 10) * Galaxy.GenerationSeed * I);
+      GetPlayer.CaptainHealth[TCaptainHealthEffect(I)].Progress := 0;
+      GetPlayer.StatusEffectSourceNames[TCaptainHealthEffect(I)] := '';
+      Name := CaptainHealthDefinitions[TCaptainHealthEffect(I)].Name;
+      Cost := GenerateValueForSizeLevel(CaptainHealthDefinitions[TCaptainHealthEffect(I)].MedicalPriceSizeLevel, Galaxy.ComputeScaledMiniMoney(GetPlayer.DockedTo.OwnerId), Galaxy.ComputeScaledAverageMoney(GetPlayer.DockedTo.OwnerId), 50, (Galaxy.CurrentTurn div 10) * Galaxy.GenerationSeed * I);
       if (GetPlayer.MedicalPolicyTicks > 0) and (GetPlayer.DockedTo.CurrentStar.ControlFaction <> sfPirates) then Cost := Cost div 2;
       GetPlayer.SetMoney(GetPlayer.Money - Cost);
       GetPlayer.DiseaseImmunity := Min(100, GetPlayer.DiseaseImmunity + 40);
@@ -5586,15 +5586,15 @@ begin
   DateTimeToString(YearText, 'yyyy', Date);
   ReplaceTextToken(DialogText, '<CurrentYear>', YearText, TextHighlightColorTag);
   for I := 1 to 12 do
-    if GetPlayer.CaptainHealth[I].Progress <> 0 then
+    if GetPlayer.CaptainHealth[TCaptainHealthEffect(I)].Progress <> 0 then
     begin
       if I = 3 then
       begin
         Galaxy.GraphDominatorSurfacesEnabled := True;
         Galaxy.DisableDominatorSurfaces;
       end;
-      GetPlayer.CaptainHealth[I].Progress := 0;
-      GetPlayer.StatusEffectSourceNames[I] := '';
+      GetPlayer.CaptainHealth[TCaptainHealthEffect(I)].Progress := 0;
+      GetPlayer.StatusEffectSourceNames[TCaptainHealthEffect(I)] := '';
     end;
   GetPlayer.SetMoney(GetPlayer.Money - QuotedCost);
   GetPlayer.DiseaseImmunity := Min(100, GetPlayer.DiseaseImmunity + 80);
@@ -5641,7 +5641,7 @@ begin
   begin
     AdvanceRandomSeed(Seed);
     I := SeededRandomIntRange(13, 24, Seed);
-    if not (I in Offers) and (SeededRandomUnitFloat(Seed) <= CaptainHealthDefinitions[I].InfectionChance) then
+    if not (I in Offers) and (SeededRandomUnitFloat(Seed) <= CaptainHealthDefinitions[TCaptainHealthEffect(I)].InfectionChance) then
     begin
       Include(Offers, I);
       Inc(OfferCount);
@@ -5686,13 +5686,13 @@ begin
       begin
         Text := '';
         Text := LocalizedColorText('FormRuins.MC.Stimulants.MCStimInfo');
-        ReplaceTextToken(Text, '<StimName>', CaptainHealthDefinitions[I].Name, TextHighlightColorTag);
-        ReplaceTextToken(Text, '<StimText>', CaptainHealthDefinitions[I].Text, '');
-        Duration := CaptainHealthDefinitions[I].Duration + SeededRandomIntRange(CaptainHealthDefinitions[I].Duration div 10,
-    CaptainHealthDefinitions[I].Duration div 3, GetPlayer.DockedTo.Id + I + Galaxy.CurrentTurn div 13);
+        ReplaceTextToken(Text, '<StimName>', CaptainHealthDefinitions[TCaptainHealthEffect(I)].Name, TextHighlightColorTag);
+        ReplaceTextToken(Text, '<StimText>', CaptainHealthDefinitions[TCaptainHealthEffect(I)].Text, '');
+        Duration := CaptainHealthDefinitions[TCaptainHealthEffect(I)].Duration + SeededRandomIntRange(CaptainHealthDefinitions[TCaptainHealthEffect(I)].Duration div 10,
+    CaptainHealthDefinitions[TCaptainHealthEffect(I)].Duration div 3, GetPlayer.DockedTo.Id + I + Galaxy.CurrentTurn div 13);
   Duration := Round(Duration / GalaxyDifficultyTuning[Galaxy.DifficultyLevels[7]].GoodsEventDurationFactor);
         ReplaceTextToken(Text, '<Month>', IntToStr(Duration div 30), TextHighlightColorTag);
-        Cost := GenerateValueForSizeLevel(CaptainHealthDefinitions[I].MedicalPriceSizeLevel, Galaxy.ComputeScaledSmallMoney(GetPlayer.DockedTo.OwnerId), 2 * Galaxy.ComputeScaledAverageMoney(GetPlayer.DockedTo.OwnerId), 50, (Galaxy.CurrentTurn div 13) * Galaxy.GenerationSeed * I);
+        Cost := GenerateValueForSizeLevel(CaptainHealthDefinitions[TCaptainHealthEffect(I)].MedicalPriceSizeLevel, Galaxy.ComputeScaledSmallMoney(GetPlayer.DockedTo.OwnerId), 2 * Galaxy.ComputeScaledAverageMoney(GetPlayer.DockedTo.OwnerId), 50, (Galaxy.CurrentTurn div 13) * Galaxy.GenerationSeed * I);
         if (GetPlayer.MedicalPolicyTicks > 0) and (GetPlayer.DockedTo.CurrentStar.ControlFaction <> sfPirates) then Cost := Cost div 2;
         ReplaceTextToken(Text, '<Money>', IntToStr(Cost), TextHighlightColorTag);
         if StimulantText = '' then StimulantText := StimulantText + Text
@@ -5706,11 +5706,11 @@ begin
     for I := 13 to 24 do
       if I in Offers then
       begin
-        Cost := GenerateValueForSizeLevel(CaptainHealthDefinitions[I].MedicalPriceSizeLevel, Galaxy.ComputeScaledSmallMoney(GetPlayer.DockedTo.OwnerId), 2 * Galaxy.ComputeScaledAverageMoney(GetPlayer.DockedTo.OwnerId), 50, (Galaxy.CurrentTurn div 13) * Galaxy.GenerationSeed * I);
+        Cost := GenerateValueForSizeLevel(CaptainHealthDefinitions[TCaptainHealthEffect(I)].MedicalPriceSizeLevel, Galaxy.ComputeScaledSmallMoney(GetPlayer.DockedTo.OwnerId), 2 * Galaxy.ComputeScaledAverageMoney(GetPlayer.DockedTo.OwnerId), 50, (Galaxy.CurrentTurn div 13) * Galaxy.GenerationSeed * I);
         if (GetPlayer.MedicalPolicyTicks > 0) and (GetPlayer.DockedTo.CurrentStar.ControlFaction <> sfPirates) then Cost := Cost div 2;
-        if (GetPlayer.Money < Cost) or (GetPlayer.CaptainHealth[I].Progress = 100) then
-          AddChoice('- ' + FormatText2(LocalizedColorText('FormRuins.MC.Stimulants.PlayerStim'), TextHighlightColorTag, '<StimName>', CaptainHealthDefinitions[I].Name, '<Money>', IntToStr(Cost)), 0, ScriptDialogBlockCallback)
-        else AddChoice('- ' + FormatText2(LocalizedColorText('FormRuins.MC.Stimulants.PlayerStim'), TextHighlightColorTag, '<StimName>', CaptainHealthDefinitions[I].Name, '<Money>', IntToStr(Cost)), I, BuySelectedStimulantAtMedicalCenter);
+        if (GetPlayer.Money < Cost) or (GetPlayer.CaptainHealth[TCaptainHealthEffect(I)].Progress = 100) then
+          AddChoice('- ' + FormatText2(LocalizedColorText('FormRuins.MC.Stimulants.PlayerStim'), TextHighlightColorTag, '<StimName>', CaptainHealthDefinitions[TCaptainHealthEffect(I)].Name, '<Money>', IntToStr(Cost)), 0, ScriptDialogBlockCallback)
+        else AddChoice('- ' + FormatText2(LocalizedColorText('FormRuins.MC.Stimulants.PlayerStim'), TextHighlightColorTag, '<StimName>', CaptainHealthDefinitions[TCaptainHealthEffect(I)].Name, '<Money>', IntToStr(Cost)), I, BuySelectedStimulantAtMedicalCenter);
       end;
     AddChoice('- ' + LocalizedColorText('FormRuins.MC.Stimulants.PlayerNo'), 0, DeclineMedicalCenterStimulants);
   end
@@ -5731,15 +5731,15 @@ begin
   for I := 13 to 24 do
     if I = StimulantIndex then
     begin
-      GetPlayer.CaptainHealth[I].Progress := 100;
-      GetPlayer.StatusEffectSourceNames[I] := '';
-      Name := CaptainHealthDefinitions[I].Name;
-      Duration := CaptainHealthDefinitions[I].Duration + SeededRandomIntRange(CaptainHealthDefinitions[I].Duration div 10,
-    CaptainHealthDefinitions[I].Duration div 3, GetPlayer.DockedTo.Id + I + Galaxy.CurrentTurn div 13);
+      GetPlayer.CaptainHealth[TCaptainHealthEffect(I)].Progress := 100;
+      GetPlayer.StatusEffectSourceNames[TCaptainHealthEffect(I)] := '';
+      Name := CaptainHealthDefinitions[TCaptainHealthEffect(I)].Name;
+      Duration := CaptainHealthDefinitions[TCaptainHealthEffect(I)].Duration + SeededRandomIntRange(CaptainHealthDefinitions[TCaptainHealthEffect(I)].Duration div 10,
+    CaptainHealthDefinitions[TCaptainHealthEffect(I)].Duration div 3, GetPlayer.DockedTo.Id + I + Galaxy.CurrentTurn div 13);
   Duration := Round(Duration / GalaxyDifficultyTuning[Galaxy.DifficultyLevels[7]].GoodsEventDurationFactor);
-      GetPlayer.CaptainHealth[I].AppliedTurn := Galaxy.CurrentTurn;
-      GetPlayer.CaptainHealth[I].ExpireTurn := Duration + Galaxy.CurrentTurn;
-      Cost := GenerateValueForSizeLevel(CaptainHealthDefinitions[I].MedicalPriceSizeLevel, Galaxy.ComputeScaledSmallMoney(GetPlayer.DockedTo.OwnerId), 2 * Galaxy.ComputeScaledAverageMoney(GetPlayer.DockedTo.OwnerId), 50, (Galaxy.CurrentTurn div 13) * Galaxy.GenerationSeed * I);
+      GetPlayer.CaptainHealth[TCaptainHealthEffect(I)].AppliedTurn := Galaxy.CurrentTurn;
+      GetPlayer.CaptainHealth[TCaptainHealthEffect(I)].ExpireTurn := Duration + Galaxy.CurrentTurn;
+      Cost := GenerateValueForSizeLevel(CaptainHealthDefinitions[TCaptainHealthEffect(I)].MedicalPriceSizeLevel, Galaxy.ComputeScaledSmallMoney(GetPlayer.DockedTo.OwnerId), 2 * Galaxy.ComputeScaledAverageMoney(GetPlayer.DockedTo.OwnerId), 50, (Galaxy.CurrentTurn div 13) * Galaxy.GenerationSeed * I);
       if (GetPlayer.MedicalPolicyTicks > 0) and (GetPlayer.DockedTo.CurrentStar.ControlFaction <> sfPirates) then Cost := Cost div 2;
       GetPlayer.SetMoney(GetPlayer.Money - Cost);
       GetPlayer.DiseaseImmunity := Max(0, GetPlayer.DiseaseImmunity - 20);
@@ -5747,9 +5747,9 @@ begin
       SoundManager.PlaySound('Sound.Sell');
       DialogText := LocalizedColorText('FormRuins.MC.Stimulants.MCAfterPlayerStim');
       ReplaceTextToken(DialogText, '<StimName>', Name, TextHighlightColorTag);
-      ReplaceTextToken(DialogText, '<Date>', Galaxy.FormatTurnDate(GetPlayer.CaptainHealth[I].ExpireTurn), TextHighlightColorTag);
+      ReplaceTextToken(DialogText, '<Date>', Galaxy.FormatTurnDate(GetPlayer.CaptainHealth[TCaptainHealthEffect(I)].ExpireTurn), TextHighlightColorTag);
       ReplaceTextToken(DialogText, '<MC>', GetPlayer.DockedTo.Name, TextHighlightColorTag);
-      Inc(GetPlayer.CaptainHealth[I].ApplicationCount);
+      Inc(GetPlayer.CaptainHealth[TCaptainHealthEffect(I)].ApplicationCount);
       GetPlayer.AchievementStats.CheckAllDrugsAchievement;
       M_Main(True);
       Break;

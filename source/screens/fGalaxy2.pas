@@ -1525,7 +1525,7 @@ end;
 function TfGalaxy2.BuildStarShipSummary(Star: TStar; var LineCount: Integer): WideString;
 var
   Ship: TShip;
-  UnknownCount, OtherFactionCount: Integer;
+  UndetectedShipCount, OtherFactionCount: Integer;
   OtherFaction, StarFaction: WideString;
   StarFactionCount: Integer;
   Kling: TKling;
@@ -1553,7 +1553,7 @@ var
     if Ship.InHyperspace then Exit;
     if not GetPlayer.CanResolveObjectWithScanner(Ship) or not CanRevealBossPresence(Ship) then
     begin
-      Inc(UnknownCount);
+      Inc(UndetectedShipCount);
       Exit;
     end;
     if Ship.CurrentStanding = ssCustom then
@@ -1671,7 +1671,7 @@ var
   end;
 
 begin
-  UnknownCount := 0;
+  UndetectedShipCount := 0;
   OtherFactionCount := 0;
   StarFactionCount := 0;
   CoalitionTranclucators := 0;
@@ -1824,10 +1824,10 @@ begin
   AppendLine;
   Line := '';
   LineActive := False;
-  if UnknownCount > 0 then
+  if UndetectedShipCount > 0 then
   begin
     Line := Line + WrapTextInColor(LocalizedText('FormGalaxy.UnknowShip') + ': ', GrayColorTag);
-    Line := Line + WrapTextInColor(IntToStr(UnknownCount), GalaxySummaryWhiteColorTag);
+    Line := Line + WrapTextInColor(IntToStr(UndetectedShipCount), GalaxySummaryWhiteColorTag);
     LineActive := True;
   end;
   AppendLine;

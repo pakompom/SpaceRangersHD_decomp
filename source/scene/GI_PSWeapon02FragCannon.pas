@@ -15,7 +15,7 @@ type
     Alpha: Byte; // @offset $12
     Velocity: TPointF; // @offset $14
     State: Byte; // @offset $1C
-    Unknown1E: Word; // @offset $1E  Initialized to 30000; unused by the native update.
+    Unknown1E: Word; // @offset $1E  Set to 30000; unused. Possibly a lifetime counter.
   end;
   TFragCannonPalette = array[0..1] of Word;
   TFragCannonPalettes = array of TFragCannonPalette;

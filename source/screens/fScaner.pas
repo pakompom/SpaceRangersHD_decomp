@@ -1560,11 +1560,11 @@ begin
   Panel.SetDragScrollingEnabled(True);
   OffsetY := 0;
   for I := 1 to 24 do
-    if ShipToInspect.IsHealthEffectActive(I) then
+    if ShipToInspect.IsHealthEffectActive(TCaptainHealthEffect(I)) then
     begin
       if I < 13 then IconKind := 1 else IconKind := 2;
-      AddRow(IconKind, CaptainHealthDefinitions[I].Name,
-        CaptainHealthDefinitions[I].Name + '~' + CaptainHealthDefinitions[I].Text, 0);
+      AddRow(IconKind, CaptainHealthDefinitions[TCaptainHealthEffect(I)].Name,
+        CaptainHealthDefinitions[TCaptainHealthEffect(I)].Name + '~' + CaptainHealthDefinitions[TCaptainHealthEffect(I)].Text, 0);
     end;
   for I := 0 to ShipToInspect.CustomShipInfos.Count - 1 do
   begin

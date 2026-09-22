@@ -263,7 +263,7 @@ function GetShopItemIconName(Item: TItem): WideString;
 var Owner: TOwnerId;
 begin
   if (Item is TEquipment) and (Item.ItemType in [t_FuelTanks..t_DefGenerator]) and
-    (GetPlayer <> nil) and GetPlayer.IsHealthEffectActive(3) then
+    (GetPlayer <> nil) and GetPlayer.IsHealthEffectActive(heHolyFanaticism) then
   begin
     Owner := Item.OwnerId;
     Item.OwnerId := oiDominator;

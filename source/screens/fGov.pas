@@ -473,7 +473,7 @@ begin
       MapIndex := FindRobotMapById(PlanetBattleMapId);
       Money := RoundAndTruncateToTens(Max(GetPlayer.Wealth * 0.03, Galaxy.ComputeScaledBigMoney(oiHuman)));
       Money := Round(Money * GalaxyDifficultyTuning[Galaxy.DifficultyLevels[5]].QuestMoneyFactor);
-      if GetPlayer.IsHealthEffectActive(23) then
+      if GetPlayer.IsHealthEffectActive(heDoubleplex) then
         Money := Round(SeededRandomFloatRange((Integer(GetPlayer.CurrentPlanet.GenerationSeed) + Galaxy.CurrentTurn) div 33, 1.3, 2.3) * Money);
       Inc(Money, Round(Money * GetPlayer.GetEffectiveSkillLevel(psCharisma) * 0.1));
       case GovernmentBattleDifficulty of

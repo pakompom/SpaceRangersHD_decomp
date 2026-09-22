@@ -389,7 +389,7 @@ begin
   ArcadeSpaceProcess.OpenSpace(WorldPanel, Self);
   ArcadeSpaceProcess.Space.AlphaShift := 0;
   if GetPlayer <> nil then
-    if GetPlayer.IsHealthEffectActive(1) then ArcadeSpaceProcess.Space.AlphaShift := 2;
+    if GetPlayer.IsHealthEffectActive(heBlindness) then ArcadeSpaceProcess.Space.AlphaShift := 2;
   SkipSavedPixelRestore := True;
   StarField.Stars.Clear;
   StarField.BackgroundScale := 8;

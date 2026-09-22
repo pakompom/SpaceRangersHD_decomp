@@ -41,6 +41,36 @@ const
   AwardNotFound = $FF;
 
 type
+  // Diseases (1..12) and stimulants (13..24); radiation is stored separately.
+  TCaptainHealthEffect = (
+    heBlindness = 1,
+    heChekumash = 2,
+    heHolyFanaticism = 3,
+    heComplexImmunocide = 4,
+    heMysteriousLuatanza = 5,
+    heDrugAddiction = 6,
+    heWhirlwindConcussion = 7,
+    hePulledMuscle = 8,
+    heGrandMalosausus = 9,
+    heBitterPelenosia = 10,
+    heAkaSezyanka = 11,
+    heNewMolizone = 12,
+    heMaloqSizha = 13,
+    heOneEyedKhamas = 14,
+    heStardust = 15,
+    heSuperTechnician = 16,
+    heGaalianAlacrity = 17,
+    heBloodDjogar = 18,
+    heRagobamWhisper = 19,
+    heShakhmandooLeader = 20,
+    hePsychotropicCache = 21,
+    heBusinessMark = 22,
+    heDoubleplex = 23,
+    heAbsoluteStatus = 24
+  ); // @size $04
+  TCaptainDisease = heBlindness..heNewMolizone;
+  TCaptainStimulant = heMaloqSizha..heAbsoluteStatus;
+
   // ShipTypeNames and subclass initializers share this ship/station domain.
   TShipType = (
     stKling = 0,

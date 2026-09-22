@@ -582,7 +582,7 @@ begin
     GetPlayer.OrderTakeoff;
     FilmCameraFollow := True;
     PlayerStar.RefreshSpaceObjectPositions;
-    if (GetPlayer <> nil) and GetPlayer.IsHealthEffectActive(3) then Galaxy.EnableDominatorSurfaces
+    if (GetPlayer <> nil) and GetPlayer.IsHealthEffectActive(heHolyFanaticism) then Galaxy.EnableDominatorSurfaces
     else Galaxy.DisableDominatorSurfaces;
     CalculatePlayerStarTurnAndWait;
     if ExitScreenLoop then Exit;
@@ -629,7 +629,7 @@ begin
     GetPlayer.OrderTakeoff;
     FilmCameraFollow := True;
     PlayerStar.RefreshSpaceObjectPositions;
-    if (GetPlayer <> nil) and GetPlayer.IsHealthEffectActive(3) then Galaxy.EnableDominatorSurfaces
+    if (GetPlayer <> nil) and GetPlayer.IsHealthEffectActive(heHolyFanaticism) then Galaxy.EnableDominatorSurfaces
     else Galaxy.DisableDominatorSurfaces;
     CalculatePlayerStarTurnAndWait;
     if ExitScreenLoop then Exit;
@@ -692,7 +692,7 @@ begin
       StartOrderMode;
     end;
     ResumeMode := smrNormal;
-    GetByName('MapPanelA').SetActive((GetPlayer <> nil) and GetPlayer.IsHealthEffectActive(1));
+    GetByName('MapPanelA').SetActive((GetPlayer <> nil) and GetPlayer.IsHealthEffectActive(heBlindness));
     if ShipScreen.ReopenRequested then
     begin
       SetCursorActive(False);
@@ -938,7 +938,7 @@ begin
       SpaceImage.AddImage(SelectSpaceImageTemplate(Kind), X, Y, Depth);
       Seed := StepRandomSeed(Seed);
     end;
-    if (GetPlayer <> nil) and GetPlayer.IsHealthEffectActive(2) then
+    if (GetPlayer <> nil) and GetPlayer.IsHealthEffectActive(heChekumash) then
     begin
       Attempts := 0;
       repeat
@@ -1466,9 +1466,9 @@ begin
       else if Ship.Order = soFollowShip then
       begin
         if (Ship is TKling) and (Ship as TKling).ShouldKamikaze then EndImage.SetImagePath('Bm.PI.PathEndKamikaze')
-        else if Ship.GetFollowMode = 3 then EndImage.SetImagePath('Bm.PI.PathEndKamikaze')
-        else if Ship.GetFollowMode = 0 then EndImage.SetImagePath('Bm.PI.PathEndFollowNear')
-        else if Ship.GetFollowMode = 1 then EndImage.SetImagePath('Bm.PI.PathEndFollowMin')
+        else if Ship.GetFollowMode = fmKamikaze then EndImage.SetImagePath('Bm.PI.PathEndKamikaze')
+        else if Ship.GetFollowMode = fmFollowNear then EndImage.SetImagePath('Bm.PI.PathEndFollowNear')
+        else if Ship.GetFollowMode = fmMinWeaponRange then EndImage.SetImagePath('Bm.PI.PathEndFollowMin')
         else EndImage.SetImagePath('Bm.PI.PathEndFollowMax');
       end
       else if Ship.Order = soLand then EndImage.SetImagePath('Bm.PI.PathEndLanding')
@@ -1485,8 +1485,8 @@ begin
       end
       else if Ship.Order = soFollowShip then
       begin
-        if Ship.GetFollowMode = 0 then EndImage.HelpText := 'Bm.PI.PathEndFollowNear'
-        else if Ship.GetFollowMode = 1 then EndImage.HelpText := 'Bm.PI.PathEndFollowMin'
+        if Ship.GetFollowMode = fmFollowNear then EndImage.HelpText := 'Bm.PI.PathEndFollowNear'
+        else if Ship.GetFollowMode = fmMinWeaponRange then EndImage.HelpText := 'Bm.PI.PathEndFollowMin'
         else EndImage.HelpText := 'Bm.PI.PathEndFollowMax';
         EndImage.SetImagePath(InitialImagePath);
         PlayerPathTimer := ScheduleCallbackTimer(GetDoubleClickTime + 50, 999, UpdatePathEndImage, Integer(EndImage));
@@ -3008,7 +3008,7 @@ begin
       if PendingPlayerFollowTarget = Ship then Mode := 1
       else if (GetPlayer.Order = soFollowShip) and (GetPlayer.OrderTarget = Ship) then
       begin
-        if Byte(GetPlayer.OrderStateData) = 1 then Mode := 3
+        if TFollowMode(Byte(GetPlayer.OrderStateData)) = fmMinWeaponRange then Mode := 3
         else Mode := 2;
       end;
       if (RightClickOnShip <> 2) or (Mode = 0) then
@@ -3052,13 +3052,13 @@ begin
         else if Mode = 2 then
         begin
           PendingPlayerFollowTarget := nil;
-          GetPlayer.OrderFollowShip(Ship, 0, False);
+          GetPlayer.OrderFollowShip(Ship, fmFollowNear, False);
           ShowLargeHelp(LookupLocalizedTextByKey('Help.MoveNear'));
         end
         else if Mode = 3 then
         begin
           PendingPlayerFollowTarget := nil;
-          GetPlayer.OrderFollowShip(Ship, 1, False);
+          GetPlayer.OrderFollowShip(Ship, fmMinWeaponRange, False);
           ShowLargeHelp(LookupLocalizedTextByKey('Help.MoveShot'));
         end;
         Galaxy.PrimeIntegrityChecksum(48);
@@ -3247,7 +3247,7 @@ begin
       if PendingPlayerFollowTarget = Ship then FollowMode := 1
       else if (GetPlayer.Order = soFollowShip) and (GetPlayer.OrderTarget = Ship) then
       begin
-        if Byte(GetPlayer.OrderStateData) = 1 then FollowMode := 3
+        if TFollowMode(Byte(GetPlayer.OrderStateData)) = fmMinWeaponRange then FollowMode := 3
         else FollowMode := 2;
       end;
       if FollowMode = 0 then
@@ -3277,13 +3277,13 @@ begin
       else if FollowMode = 2 then
       begin
         PendingPlayerFollowTarget := nil;
-        GetPlayer.OrderFollowShip(Ship, 0, False);
+        GetPlayer.OrderFollowShip(Ship, fmFollowNear, False);
         ShowLargeHelp(LookupLocalizedTextByKey('Help.MoveNear'));
       end
       else if FollowMode = 3 then
       begin
         PendingPlayerFollowTarget := nil;
-        GetPlayer.OrderFollowShip(Ship, 1, False);
+        GetPlayer.OrderFollowShip(Ship, fmMinWeaponRange, False);
         ShowLargeHelp(LookupLocalizedTextByKey('Help.MoveShot'));
       end;
       Galaxy.PrimeIntegrityChecksum(66);
@@ -3445,7 +3445,7 @@ begin
           if PendingPlayerFollowTarget = Ship then FollowMode := 1
           else if (GetPlayer.Order = soFollowShip) and (GetPlayer.OrderTarget = Ship) then
           begin
-            if (Byte(GetPlayer.OrderStateData) = 1) and GetPlayer.CanSelectShipTarget(Ship) then FollowMode := 3
+            if (TFollowMode(Byte(GetPlayer.OrderStateData)) = fmMinWeaponRange) and GetPlayer.CanSelectShipTarget(Ship) then FollowMode := 3
             else FollowMode := 2;
           end;
           if FollowMode = 0 then
@@ -3476,13 +3476,13 @@ begin
           else if FollowMode = 2 then
           begin
             PendingPlayerFollowTarget := nil;
-            GetPlayer.OrderFollowShip(Ship, 0, False);
+            GetPlayer.OrderFollowShip(Ship, fmFollowNear, False);
             ShowLargeHelp(LookupLocalizedTextByKey('Help.MoveNear'));
           end
           else if FollowMode = 3 then
           begin
             PendingPlayerFollowTarget := nil;
-            GetPlayer.OrderFollowShip(Ship, 1, False);
+            GetPlayer.OrderFollowShip(Ship, fmMinWeaponRange, False);
             ShowLargeHelp(LookupLocalizedTextByKey('Help.MoveShot'));
           end;
           Galaxy.PrimeIntegrityChecksum(76);
@@ -5720,7 +5720,7 @@ begin
       Ship := PendingPlayerFollowTarget;
       FollowMode := 1;
     end
-    else if Byte(GetPlayer.OrderStateData) = 1 then
+    else if TFollowMode(Byte(GetPlayer.OrderStateData)) = fmMinWeaponRange then
     begin
       Ship := GetPlayer.OrderTarget as TShip;
       FollowMode := 3;
@@ -5752,13 +5752,13 @@ begin
     else if FollowMode = 2 then
     begin
         PendingPlayerFollowTarget := nil;
-        GetPlayer.OrderFollowShip(Ship, 0, False);
+        GetPlayer.OrderFollowShip(Ship, fmFollowNear, False);
         ShowLargeHelp(LookupLocalizedTextByKey('Help.MoveNear'));
     end
     else if FollowMode = 3 then
     begin
         PendingPlayerFollowTarget := nil;
-        GetPlayer.OrderFollowShip(Ship, 1, False);
+        GetPlayer.OrderFollowShip(Ship, fmMinWeaponRange, False);
         ShowLargeHelp(LookupLocalizedTextByKey('Help.MoveShot'));
     end;
     Galaxy.PrimeIntegrityChecksum(90);

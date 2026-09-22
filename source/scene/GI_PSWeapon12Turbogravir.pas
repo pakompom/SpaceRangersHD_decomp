@@ -17,7 +17,7 @@ type
     Velocity: TPoint; // @offset $1C
     FloatVelocity: TPointF; // @offset $24
     State: Byte; // @offset $2C
-    Unknown2E: Word; // @offset $2E Initialized to 30000; unused by native update.
+    Unknown2E: Word; // @offset $2E  Set to 30000; unused. Possibly a lifetime counter.
     Radius: Integer; // @offset $30
   end;
   TTurbogravirPalette = array[0..8] of Single;
