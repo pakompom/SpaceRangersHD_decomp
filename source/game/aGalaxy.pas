@@ -3640,7 +3640,7 @@ begin
     (ShipScreen.SelectedHoldItem <> nil) then XorStateObject(ShipScreen.SelectedHoldItem);
   XorStateUInt32(PCardinal(@GoodsShopScreen.PartnerCargoLimit)^);
   XorStateUInt32(PCardinal(@GoodsShopScreen.PartnerMoneyLimit)^);
-  for Good := Ord(t_Food) to Ord(t_Narcotics) do begin
+  for Good := Low(TGoodsIndex) to High(TGoodsIndex) do begin
   XorStateUInt32(PCardinal(@GoodsShopScreen.TradeRows[Good].Count)^);
   XorStateUInt32(PCardinal(@GoodsShopScreen.TradeRows[Good].MaximumPrice)^);
   XorStateUInt32(PCardinal(@GoodsShopScreen.TradeRows[Good].PurchasePrice)^);
@@ -3977,7 +3977,7 @@ begin
         if ShipScreen.SelectedHoldItem <> nil then AccumulateIntegrityItem(Pointer(ShipScreen.SelectedHoldItem));
     AccumulateIntegrityUInt32(GoodsShopScreen.PartnerCargoLimit);
     AccumulateIntegrityUInt32(GoodsShopScreen.PartnerMoneyLimit);
-    for Good := Ord(t_Food) to Ord(t_Narcotics) do
+    for Good := Low(TGoodsIndex) to High(TGoodsIndex) do
     begin
       AccumulateIntegrityUInt32(GoodsShopScreen.TradeRows[Good].Count);
       AccumulateIntegritySingle(GoodsShopScreen.TradeRows[Good].MaximumPrice);
@@ -4972,7 +4972,7 @@ end;
 
 { @routine $7AE54C TStar_LoadFromBlock }
 procedure TStar.LoadFromBlock(Block: TBlockParEC);
-var I: Integer; Key, Value: WideString; Planet: TPlanet; Ship: TShip; StationType: Byte; X, Y: Single; Link: PConstellationStarLink; Asteroid: TAsteroid; Style: WideString; Part, Variants, Variant: Integer; Item: TItem; ItemType: Byte; Angle: Double;
+var I: Integer; Key, Value: WideString; Planet: TPlanet; Ship: TShip; StationType: Byte; X, Y: Single; Link: PConstellationStarLink; Asteroid: TAsteroid; Style: WideString; Part, Variants, Variant: Integer; Item: TItem; ItemType: TItemType; Angle: Double;
 begin
   Name := Block.GetParam(DecodeTextW('Sgt3adr3Nsaym7ee')); // 'StarName'
   X := ExtractDecimalToSingleW(Block.GetParam('X'));
@@ -5030,11 +5030,11 @@ begin
   Key := GetParam(DecodeTextW('Cur5erawtre3NregwgJou1nfk')); // 'CreateNewJunk'
   for I := 0 to CountDelimitedPartsW(Key, ',') - 1 do begin
     Value := ExtractDelimitedPartW(Key, I, ',');
-    for ItemType := Byte(Low(TItemType)) to Byte(High(TItemType)) do
-      if ItemTypeNames[TItemType(ItemType)] = Value then begin
-        if (ItemType in [Ord(t_Food)..Ord(t_Narcotics), Ord(t_ArtefactHull)..Ord(t_Satellite)]) and (ItemType <> Byte(t_Hull)) then begin
-          Item := CreateDefaultItemByType(TItemType(ItemType));
-          if ItemType = Byte(t_Minerals) then TGoods(Item).NaturalFlag := True;
+    for ItemType := Low(TItemType) to High(TItemType) do
+      if ItemTypeNames[ItemType] = Value then begin
+        if (ItemType in [t_Food..t_Narcotics, t_ArtefactHull..t_Satellite]) and (ItemType <> t_Hull) then begin
+          Item := CreateDefaultItemByType(ItemType);
+          if ItemType = t_Minerals then TGoods(Item).NaturalFlag := True;
           if Item is TCountableItem then TCountableItem(Item).DropFlag := 1;
           if Item <> nil then Items.Add(Item);
           Angle := HeadingDegreesToRadians(RandomIntRange(0, 359));
@@ -8318,7 +8318,7 @@ var
   Good: Byte;
   PriceSpread: Single;
 begin
-  for Good := Ord(t_Food) to Ord(t_Narcotics) do
+  for Good := Low(TGoodsIndex) to High(TGoodsIndex) do
   begin
     aConst.GoodsMarket[Good].MinPrice := Self.ScaleGoodsPriceByGalaxyAge(aConst.GoodsMarketBase[Good].MinPrice);
     aConst.GoodsMarket[Good].AveragePrice := Self.ScaleGoodsPriceByGalaxyAge(aConst.GoodsMarketBase[Good].AveragePrice);

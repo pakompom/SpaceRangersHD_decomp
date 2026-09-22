@@ -100,7 +100,7 @@ type
   // aGalaxyStruct mask has the same bits but different DCU alignment.
   TItemTypeSelection = set of 0..79; // @size 10
   TScriptActionTypeNames = array[0..61] of WideString;
-  TGoodsLegalityTable = array[0..7, oiMaloc..oiGaal, TPlanetGovernment] of Boolean;
+  TGoodsLegalityTable = array[TGoodsIndex, oiMaloc..oiGaal, TPlanetGovernment] of Boolean;
 
   TProgramNameTable = array[0..11] of WideString;
   TProgramDurationTable = array[0..11] of Integer;
@@ -144,7 +144,7 @@ function OwnerFromInternalName(const Name: WideString): TOwnerId; // @addr $82E6
 function OwnerToRace(OwnerId: TOwnerId): TOwnerId; // @addr 0x82DD48 @note "Identity conversion for Coalition owners 0..4; raises for all other values."
 function RaceToSys(RaceId: TOwnerId): WideString; // @addr 0x82DED4 @note "Raises outside Coalition races 0..4."
 function NumberToRace(Value: Integer): TOwnerId; // @addr 0x82E8C0 @note "Accepts 0..4; raises otherwise."
-function SysToReward(const Name: WideString): Byte; // @addr 0x82EA40 @note "Case-sensitive lookup; raises for an unknown name."
+function SysToReward(const Name: WideString): TAwardKind; // @addr 0x82EA40 @note "Case-sensitive lookup; raises for an unknown name."
 function SysToShipType(const Name: WideString): Byte; // @addr 0x82EBE8 @note "Case-sensitive lookup among 14 ship types; raises for an unknown name."
 function OwnerToFilmColor(OwnerId: TOwnerId): Cardinal; // @addr 0x82DFE4 @note "Maps owner IDs 0..5 and 7 to fixed RGB colors through CurrentPixelFormat; other values use magenta."
 function CustomFactionToFilmColor(Faction: WideString): Cardinal; // @addr $82E0F4
@@ -681,12 +681,12 @@ type
     PirateEconomyFactor: Single; // @offset 0x2C
   end;
 
-  TGoodsInfoTable = array[0..7] of TGoodsInfo;
+  TGoodsInfoTable = array[TGoodsIndex] of TGoodsInfo;
 
   PGoodsInfoTable = ^TGoodsInfoTable;
 
 var
-  GoodsMarket: array[0..7] of TGoodsInfo = (
+  GoodsMarket: array[TGoodsIndex] of TGoodsInfo = (
     (InternalName: 'Food';
       DisplayName: '';
       TradeName: '';
@@ -791,7 +791,7 @@ type
     DisplayName: WideString; // @offset 0x04
     RevolutionRelationDelta: array[TRangerCareer] of ShortInt; // @offset 0x08  TRangerCareer order.
     QuestOfferProbabilities: array[TQuestType] of Single; // @offset 0x0C  TQuestType order.
-    GoodsFactors: array[0..7] of TPlanetGoodsFactors; // @offset 0x20
+    GoodsFactors: array[TGoodsIndex] of TPlanetGoodsFactors; // @offset 0x20
   end;
 
   TPlanetGovernmentMarketTable = array[TPlanetGovernment] of TGovermentInfo;
@@ -978,7 +978,7 @@ var
     (Hulls: 3; FuelTanks: 2; Engines: 2; Radars: 2; Scanners: 3; RepairRobots: 2; CargoHooks: 2; DefGenerators: 2; Weapons: 4),
     (Hulls: 4; FuelTanks: 2; Engines: 2; Radars: 2; Scanners: 2; RepairRobots: 2; CargoHooks: 2; DefGenerators: 2; Weapons: 4)
   ); // @addr $87DC98 Native defaults; aRuins accesses this table through an external-unit reference. Original defining unit is inferred.
-  StationGoodsFactors: array[6..13, 0..7] of TPlanetGoodsFactors = (
+  StationGoodsFactors: array[6..13, TGoodsIndex] of TPlanetGoodsFactors = (
     ((PriceFactor: 1.0; StockFactor: 0.05), (PriceFactor: 1.0; StockFactor: 0.1), (PriceFactor: 1.0; StockFactor: 0.1), (PriceFactor: 1.0; StockFactor: 0.15), (PriceFactor: 0.8; StockFactor: 0.1), (PriceFactor: 1.0; StockFactor: 0.1), (PriceFactor: 1.0; StockFactor: 0.1), (PriceFactor: 0.5; StockFactor: 0.01)),
     ((PriceFactor: 0.9; StockFactor: 0.15), (PriceFactor: 1.0; StockFactor: 0.1), (PriceFactor: 1.0; StockFactor: 0.2), (PriceFactor: 1.0; StockFactor: 0.05), (PriceFactor: 0.8; StockFactor: 0.15), (PriceFactor: 0.9; StockFactor: 0.2), (PriceFactor: 0.9; StockFactor: 0.3), (PriceFactor: 0.9; StockFactor: 0.2)),
     ((PriceFactor: 1.1; StockFactor: 0.1), (PriceFactor: 1.0; StockFactor: 0.05), (PriceFactor: 1.0; StockFactor: 0.1), (PriceFactor: 0.4; StockFactor: 0.1), (PriceFactor: 1.0; StockFactor: 0.05), (PriceFactor: 1.0; StockFactor: 0.05), (PriceFactor: 0.8; StockFactor: 0.3), (PriceFactor: 0.5; StockFactor: 0.01)),
@@ -1466,7 +1466,7 @@ var
   WeaponInfos: array[t_Weapon1..t_Weapon18] of TWeaponInfo; // @addr 0x88B548
 var
   EquipmentInventionIndices: TEquipmentInventionIndexTable = (0, 1, 2, 3, 4, 5, 6, 7); // @addr $87F57C
-  CoalitionProjectNames: array[0..11] of WideString = ('CreateRC', 'CreatePB', 'CreateWB', 'CreateSB', 'CreateBK', 'CreateMC', 'RangersSubsidy', 'PiratesSubsidy', 'TransportSubsidy', 'LostSubsidy', 'WarSubsidy', 'WarOperation'); // @addr $87F584
+  CoalitionProjectNames: array[TCoalitionProject] of WideString = ('CreateRC', 'CreatePB', 'CreateWB', 'CreateSB', 'CreateBK', 'CreateMC', 'RangersSubsidy', 'PiratesSubsidy', 'TransportSubsidy', 'LostSubsidy', 'WarSubsidy', 'WarOperation'); // @addr $87F584
 type
   // Native record RTTI at $82CFAC.
   TIllnessInfo = record // @size $28 Native TIllnessInfo RTTI at $82CFB0.
@@ -1490,7 +1490,7 @@ type
   TRadiationHealthDefinitions = array[1..1] of TIllnessInfo;
 
 var
-  StationServiceRepeatPeriods: array[0..11] of Integer = (100, 400, 300, 200, 350, 250, 150, 220, 40, 50, 70, 80); // @addr $87F5B4
+  StationServiceRepeatPeriods: array[TCoalitionProject] of Integer = (100, 400, 300, 200, 350, 250, 150, 220, 40, 50, 70, 80); // @addr $87F5B4
   ProgramNames: array[0..11] of WideString = (
     'KellerCall', 'LogicalNegation', 'Dematerial', 'Energotron', 'SabCrack', 'Intercom',
     'Shipwreck', 'WeaponBlocking', 'Insanity', 'Shock', 'SelfDestruction', 'Disconnection'); // @addr $87F5E4 Native WideString initializer descriptors at $838044..$8380A0.
@@ -1506,7 +1506,7 @@ var
   HullMassEvaluationEnd: Integer; // @addr $88BDBC Initialized from HullBaseSize and EquipmentSizeFactors[1].
   WearMassMin: Integer; // @addr $88BDC0
   WearMassMax: Integer; // @addr $88BDC4
-  GoodsMarketBase: array[0..7] of TGoodsInfo; // @addr $88BDC8
+  GoodsMarketBase: array[TGoodsIndex] of TGoodsInfo; // @addr $88BDC8
   MicroModuleTemplates: array of TMicroModuleInfo; // @addr 0x88BF48
 var
   MicroModuleTemplateCount: Integer; // @addr 0x88BF4C
@@ -1582,8 +1582,8 @@ begin
     Difficulty.MaximumDominatorResearchRate := ExtrapolateGeometricDifficulty(Level, GalaxyDifficultyTuning[2].MaximumDominatorResearchRate, GalaxyDifficultyTuning[3].MaximumDominatorResearchRate);
     Difficulty.CoalitionToPirateBalanceRatio := ExtrapolateGeometricDifficulty(Level, GalaxyDifficultyTuning[2].CoalitionToPirateBalanceRatio, GalaxyDifficultyTuning[3].CoalitionToPirateBalanceRatio);
   end;
-  for GoodsIndex := Ord(t_Food) to Ord(t_Narcotics) do GoodsMarket[GoodsIndex].DisplayName := LocalizedText('Items.Goods.Name.' + IntToStr(GoodsIndex + 1));
-  for GoodsIndex := Ord(t_Food) to Ord(t_Narcotics) do GoodsMarket[GoodsIndex].TradeName := LocalizedText('Items.Goods.NameBuy.' + IntToStr(GoodsIndex + 1));
+  for GoodsIndex := Low(TGoodsIndex) to High(TGoodsIndex) do GoodsMarket[GoodsIndex].DisplayName := LocalizedText('Items.Goods.Name.' + IntToStr(GoodsIndex + 1));
+  for GoodsIndex := Low(TGoodsIndex) to High(TGoodsIndex) do GoodsMarket[GoodsIndex].TradeName := LocalizedText('Items.Goods.NameBuy.' + IntToStr(GoodsIndex + 1));
   for Government := Low(TPlanetGovernment) to High(TPlanetGovernment) do PlanetGovernmentMarket[Government].DisplayName := LocalizedText('Goverment.Type.' + IntToStr(Ord(Government)));
   for Relation := Low(TRelationLevel) to High(TRelationLevel) do RelationInfo[Relation].DisplayName := LocalizedText('Relations.Type.' + IntToStr(Ord(Relation)));
   for KlingKind := 0 to 7 do
@@ -1599,7 +1599,7 @@ begin
   end;
   if not GoodsMarketBaseCaptured then
   begin
-    for GoodsIndex := Ord(t_Food) to Ord(t_Narcotics) do GoodsMarketBase[GoodsIndex] := GoodsMarket[GoodsIndex];
+    for GoodsIndex := Low(TGoodsIndex) to High(TGoodsIndex) do GoodsMarketBase[GoodsIndex] := GoodsMarket[GoodsIndex];
     GoodsMarketBaseCaptured := True;
   end;
   InitializeWeaponVisualResources;
@@ -1839,7 +1839,7 @@ end;
 { @end $82E9E0 }
 
 { @routine $82EA40 SysToReward }
-function SysToReward(const Name: WideString): Byte;
+function SysToReward(const Name: WideString): TAwardKind;
 begin
   if Name = 'ForLiberationSystem' then Result := atLiberation
   else if Name = 'ForAccomplishment' then Result := atAccomplishment

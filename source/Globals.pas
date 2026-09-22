@@ -23,6 +23,7 @@ const
   pmRadioPlayer = 10; // Radio message with the player among its ship targets.
 
 type
+  TGreetingShipCategories = set of TGreetingShipCategory; // @size $01
   TGreetingMask = set of 0..7; // @size $01 Field-specific names and bits are decoded by the loaders.
 
 
@@ -210,7 +211,7 @@ var
   TalkShip: TShip; // @addr 0x88A4C8
   TalkPlanet: TPlanet; // @addr $88A4CC Planet dialogue target, assigned by TPlanet.RequestDialog.
   TalkScripted: Boolean; // @addr $88A4D0 Set for the scripted Keller dialogue.
-  TalkType: Byte; // @addr $88A4D1 tk* conversation ID set by TShip.ShowPlayerDialogue and exposed by SF_GetTalkType.
+  TalkType: TTalkKind; // @addr $88A4D1 tk* conversation ID set by TShip.ShowPlayerDialogue and exposed by SF_GetTalkType.
   TalkAmount: Integer; // @addr $88A4D4 Negotiated amount; ShowPlayerDialogue overwrites it only for positive inputs.
   TalkResponse: Byte; // @addr $88A4D8 Response selected by the conversation UI.
   TalkText: WideString; // @addr $88A4DC Message supplied to the conversation UI.
@@ -338,7 +339,7 @@ type
     Priority: Integer; // @offset $04
     AutoTalk: Byte; // @offset $08
     FlyType: Byte; // @offset $09
-    ShipType: TGreetingMask; // @offset $0A
+    ShipType: TGreetingShipCategories; // @offset $0A
     Relations: TRelationLevels; // @offset $0B
     ShipRace: TOwnerMask; // @offset $0C
     PlayerRace: TOwnerMask; // @offset $0D
@@ -346,7 +347,7 @@ type
     PlayerAttackGoodShip: Byte; // @offset $0F
     InFear: Byte; // @offset $10
     ShipBadFlyToShip: Byte; // @offset $11
-    ShipBadType: TGreetingMask; // @offset $12
+    ShipBadType: TGreetingShipCategories; // @offset $12
     ShipBadRace: TOwnerMask; // @offset $13
     ShipFlyToPlayer: Byte; // @offset $14
     PlayerFlyToShip: Byte; // @offset $15
@@ -420,7 +421,7 @@ type
     TransportInToStar: TGreetingCountMask; // @offset $6D
     ItemType: WideString; // @offset $70
     ShipNeedInItem: Byte; // @offset $74
-    ToShipType: TGreetingMask; // @offset $75
+    ToShipType: TGreetingShipCategories; // @offset $75
     ToShipRace: TOwnerMask; // @offset $76
     ToShipInPlanet: Byte; // @offset $77
     ToShipBad: Byte; // @offset $78

@@ -30,7 +30,7 @@ type
   TRuins = class(TShip) // @size 0x568
   public
     EquipmentShop: TObjectList; // @offset 0x4D0  Owns equipment offers.
-    ShopGoods: array[0..7] of TGoodsTradePriceEntry; // @offset 0x4D4
+    ShopGoods: array[TGoodsIndex] of TGoodsTradePriceEntry; // @offset 0x4D4
     RelocationAge: Integer; // @offset 0x554
     FlyToStar: TStar; // @offset 0x558
     FlyDate: Integer; // @offset 0x55C
@@ -42,7 +42,7 @@ type
 
     function EvaluateStatBonus(BonusKind: TEquipmentBonusKind; Value: Integer): Single; override; // @addr $71A418 @slot $54
     function EvaluateWeaponDamage(Weapon: TWeapon; IncludeAdditiveBonuses: Boolean; BaseDamage: Single): Single; override; // @addr $71A8A4 @slot $58
-    function GetGreetingShipCategory: Byte; override; // @addr $716D24 @slot 0x30
+    function GetGreetingShipCategory: TGreetingShipCategory; override; // @addr $716D24 @slot 0x30
     function GetHomeStar: TStar; override; // @addr $716D4C @slot 0x34
     function GetStrengthScaledPirateStatus: TPercent; override; // @addr $716D64 @slot 0x3C
     function AcceptsRansomDemandFrom(Ship: TShip): Boolean; override; // @addr $719CE4 @slot 0x88
@@ -333,7 +333,7 @@ begin
   ChameleonActive := False;
   GraphDominator := Galaxy.GraphDominatorSurfacesEnabled;
   RefreshShopInventory;
-  for Good := Ord(t_Food) to Ord(t_Narcotics) do
+  for Good := Low(TGoodsIndex) to High(TGoodsIndex) do
   begin
     ShopGoods[Good].Count := Round(GoodsMarket[Good].BaseStock * StationGoodsFactors[TypeId, Good].StockFactor);
     ShopGoods[Good].PriceState := GoodsMarket[Good].AveragePrice;
@@ -387,7 +387,7 @@ begin
     Buffer.AddAnsiChar(AnsiChar(Item.ItemType));
     Item.SaveToBuffer(Buffer);
   end;
-  for Good := Ord(t_Food) to Ord(t_Narcotics) do
+  for Good := Low(TGoodsIndex) to High(TGoodsIndex) do
   begin
     Buffer.AddIntegerValue(ShopGoods[Good].Count);
     Buffer.AddSingle(ShopGoods[Good].PriceState);
@@ -420,7 +420,7 @@ begin
     EquipmentShop.Add(Item);
     Item.LoadFromBuffer(Buffer, Galaxy);
   end;
-  for Good := Ord(t_Food) to Ord(t_Narcotics) do
+  for Good := Low(TGoodsIndex) to High(TGoodsIndex) do
   begin
     ShopGoods[Good].Count := Buffer.GetInt32;
     ShopGoods[Good].PriceState := Buffer.GetSingle;
@@ -814,7 +814,7 @@ end;
 { @end $716BD0 }
 
 { @routine $716D24 TRuins_GetGreetingShipCategory }
-function TRuins.GetGreetingShipCategory: Byte;
+function TRuins.GetGreetingShipCategory: TGreetingShipCategory;
 begin
   Result := gscTransport; // Native default category, also used for transports.
 end;
@@ -1749,7 +1749,7 @@ end;
 procedure TRuins.ForceGoodsForSale(GoodsMask: TItemTypeMask);
 var Good: Byte;
 begin
-  for Good := Ord(t_Food) to Ord(t_Narcotics) do
+  for Good := Low(TGoodsIndex) to High(TGoodsIndex) do
     if Good in GoodsMask then
     begin
       ShopGoods[Good].PriceState := GoodsMarket[Good].MinPrice * NextRandomFloatRange(0.9, 1.1, RandomState);
@@ -1920,7 +1920,7 @@ end;
 
 { @routine $71AD30 TRuins_RefreshCurrentStanding }
 procedure TRuins.RefreshCurrentStanding;
-var StandingMode: Integer;
+var StandingMode: TScriptStandingOverrideMode;
 begin
   StandingMode := GetScriptStandingOverrideMode;
   if StandingMode = ssmCustomFaction then CurrentStanding := ssCustom
@@ -2227,7 +2227,7 @@ var Good: Byte; TargetPrice, PriceStep: Single; TargetCount, CountStep: Integer;
 begin
   if ShopUpdateMode in [sumDisabled, sumEquipmentOnly] then Exit;
   Race := PilotRace;
-  for Good := Ord(t_Food) to Ord(t_Narcotics) do
+  for Good := Low(TGoodsIndex) to High(TGoodsIndex) do
   begin
     TargetCount := Round(GoodsMarket[Good].BaseStock * PlanetRaceMarket[Race].GoodsFactors[Good].StockFactor * StationGoodsFactors[TypeId, Good].StockFactor);
     TargetPrice := GoodsMarket[Good].AveragePrice * PlanetRaceMarket[Race].GoodsFactors[Good].PriceFactor * StationGoodsFactors[TypeId, Good].PriceFactor /

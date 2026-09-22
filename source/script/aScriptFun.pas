@@ -911,13 +911,13 @@ end;
 procedure SF_GiveReward(av: array of TVarEC; code: TCodeEC);
 var
   Ship: TShip;
-  Owner: TOwnerId; Kind: Byte;
+  Owner: TOwnerId; Kind: TAwardKind;
   Award: Integer;
 begin
   if High(av) < 3 then raise Exception.Create('Error.Script SF_GiveReward');
   Ship := TShip(av[1].GetDword);
   Owner := TOwnerId(av[2].GetInt);
-  Kind := av[3].GetInt;
+  Kind := TAwardKind(av[3].GetInt);
   Award := (Ship as TNormalShip).SelectAward(Owner, [Kind], [stKling..Ord(rstCustomStation)]);
   if Award = AwardNotFound then RaiseWideMessage('Error RewardNumber=255');
   Ship.AddAward(Award);
@@ -940,7 +940,7 @@ end;
 procedure SF_CountReward(av: array of TVarEC; code: TCodeEC);
 var
   Ship: TShip;
-  Kind: Byte;
+  Kind: TAwardKind;
   Index, Count: Integer;
 begin
   if High(av) < 1 then raise Exception.Create('Error.Script SF_CountReward');
@@ -958,7 +958,7 @@ begin
   end
   else
   begin
-    Kind := av[2].GetInt;
+    Kind := TAwardKind(av[2].GetInt);
     if Ship.AwardIds = nil then
     begin
       av[0].SetInt(0);
@@ -7227,7 +7227,7 @@ end;
 { @routine $61EAE0 SF_GetTalkType }
 procedure SF_GetTalkType(av: array of TVarEC; code: TCodeEC);
 begin
-  av[0].SetInt(TalkType);
+  av[0].SetInt(Ord(TalkType));
 end;
 { @end $61EAE0 }
 
@@ -15859,12 +15859,12 @@ begin
   Scope.Add('CurrentMods', vkExternFun).SetExternFun(@SF_CurrentMods);
   Scope.Add('RobotSupport', vkExternFun).SetExternFun(@SF_RobotSupport);
   Scope.Add('UselessItem', vkInt).SetInt(Ord(t_UselessItem));
-  Scope.Add('ForLiberationSystem', vkInt).SetInt(atLiberation);
-  Scope.Add('ForAccomplishment', vkInt).SetInt(atAccomplishment);
-  Scope.Add('ForSecretMission', vkInt).SetInt(atSecretMission);
-  Scope.Add('ForCowardice', vkInt).SetInt(atCowardice);
-  Scope.Add('ForPerfidy', vkInt).SetInt(atPerfidy);
-  Scope.Add('ForPlanetBattle', vkInt).SetInt(atPlanetBattle);
+  Scope.Add('ForLiberationSystem', vkInt).SetInt(Ord(atLiberation));
+  Scope.Add('ForAccomplishment', vkInt).SetInt(Ord(atAccomplishment));
+  Scope.Add('ForSecretMission', vkInt).SetInt(Ord(atSecretMission));
+  Scope.Add('ForCowardice', vkInt).SetInt(Ord(atCowardice));
+  Scope.Add('ForPerfidy', vkInt).SetInt(Ord(atPerfidy));
+  Scope.Add('ForPlanetBattle', vkInt).SetInt(Ord(atPlanetBattle));
   Scope.Add('Maloc', vkInt).SetInt(Ord(oiMaloc));
   Scope.Add('Peleng', vkInt).SetInt(Ord(oiPeleng));
   Scope.Add('People', vkInt).SetInt(Ord(oiHuman));
@@ -16404,13 +16404,13 @@ begin
   Scope.Add('t_Satellite', vkInt).SetInt(Ord(t_Satellite));
   Scope.Add('t_MicroModule', vkInt).SetInt(Ord(t_MicroModule));
   Scope.Add('t_UselessCountableItem', vkInt).SetInt(Ord(t_UselessCountableItem));
-  Scope.Add('TalkMoney', vkInt).SetInt(tkMoneyDemand);
-  Scope.Add('TalkGoods', vkInt).SetInt(tkGoodsDemand);
-  Scope.Add('TalkTruce', vkInt).SetInt(tkTruceOffer);
-  Scope.Add('TalkAttack', vkInt).SetInt(tkAttack);
-  Scope.Add('TalkBreakPartner', vkInt).SetInt(tkPartnerBreak);
-  Scope.Add('TalkPartnerTheEnd', vkInt).SetInt(tkPartnerEnd);
-  Scope.Add('TalkPartnerRiot', vkInt).SetInt(tkPartnerRiot);
+  Scope.Add('TalkMoney', vkInt).SetInt(Ord(tkMoneyDemand));
+  Scope.Add('TalkGoods', vkInt).SetInt(Ord(tkGoodsDemand));
+  Scope.Add('TalkTruce', vkInt).SetInt(Ord(tkTruceOffer));
+  Scope.Add('TalkAttack', vkInt).SetInt(Ord(tkAttack));
+  Scope.Add('TalkBreakPartner', vkInt).SetInt(Ord(tkPartnerBreak));
+  Scope.Add('TalkPartnerTheEnd', vkInt).SetInt(Ord(tkPartnerEnd));
+  Scope.Add('TalkPartnerRiot', vkInt).SetInt(Ord(tkPartnerRiot));
   for BonusIndex := Low(TEquipmentBonusKind) to High(TEquipmentBonusKind) do
     Scope.Add(EquipmentBonusNames[BonusIndex], vkInt).SetInt(Ord(BonusIndex));
   for ActionIndex := 0 to 61 do

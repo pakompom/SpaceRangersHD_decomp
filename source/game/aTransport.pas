@@ -40,7 +40,7 @@ type
     procedure ResolveLoadedReferences(Galaxy: TGalaxy); override; // @addr 0x71F060 @slot 0x08
 
     function GetTypeNameKey: WideString; override; // @addr $7203FC @slot $2C
-    function GetGreetingShipCategory: Byte; override; // @addr $720428 @slot $30
+    function GetGreetingShipCategory: TGreetingShipCategory; override; // @addr $720428 @slot $30
     function GetHomeStar: TStar; override; // @addr $720200 @slot $34
     function GetStrengthScaledPirateStatus: TPercent; override; // @addr $720470 @slot $3C
     function GetDominantCareer: TRangerCareer; override; // @addr 0x72045C @slot 0x38 @note "Always rcTrader."
@@ -136,7 +136,7 @@ begin
   Name := '';
   SelectUniqueName(ModShipNameConfig);
   if Length(GetName) = 0 then SelectUniqueName(LanguageDataConfig.GetBlock('ShipName'));
-  for Good := Ord(t_Food) to Ord(t_Narcotics) do begin CargoGoods[Good].Count := 0; CargoGoods[Good].TotalCost := 0; end;
+  for Good := Low(TGoodsIndex) to High(TGoodsIndex) do begin CargoGoods[Good].Count := 0; CargoGoods[Good].TotalCost := 0; end;
   if GetPlayer <> nil then begin
     Rank := NextRandomIntRange(0, GetPlayer.Rank, RandomState);
     if Rank > 3 then Rank := 3;
@@ -352,7 +352,7 @@ var Good: Byte; Quantity: Integer;
 begin
   case TransportType of
   ttTransport:
-    for Good := Ord(t_Food) to Ord(t_Narcotics) do begin
+    for Good := Low(TGoodsIndex) to High(TGoodsIndex) do begin
       if (Good in [Ord(t_Food)..Ord(t_Narcotics)]) and (CurrentPlanet.Goods[Good].Count > 0) and
         (ShopGoodsPurchasePrice(Good, nil) < GoodsMarket[Good].AveragePrice) and (CargoFreeSpace > 0) then begin
         Quantity := Min(Trunc(Money / ShopGoodsPurchasePrice(Good, nil)), CargoFreeSpace);
@@ -364,7 +364,7 @@ begin
           SellGoodsToLocation(Good, CargoGoods[Good].Count);
     end;
   ttLiner:
-    for Good := Ord(t_Food) to Ord(t_Narcotics) do begin
+    for Good := Low(TGoodsIndex) to High(TGoodsIndex) do begin
       if (Good in [Ord(t_Food)..Ord(t_Luxury), Ord(t_Alcohol), Ord(t_Narcotics)]) and (CurrentPlanet.Goods[Good].Count > 0) and
         (ShopGoodsPurchasePrice(Good, nil) < GoodsMarket[Good].AveragePrice) and (CargoFreeSpace > 0) then begin
         Quantity := Min(Trunc(Money / ShopGoodsPurchasePrice(Good, nil)), CargoFreeSpace);
@@ -376,7 +376,7 @@ begin
           SellGoodsToLocation(Good, CargoGoods[Good].Count);
     end;
   ttDiplomat:
-    for Good := Ord(t_Food) to Ord(t_Narcotics) do begin
+    for Good := Low(TGoodsIndex) to High(TGoodsIndex) do begin
       if (Good in [Ord(t_Technics), Ord(t_Luxury), Ord(t_Alcohol)..Ord(t_Narcotics)]) and (CurrentPlanet.Goods[Good].Count > 0) and
         (ShopGoodsPurchasePrice(Good, nil) < GoodsMarket[Good].AveragePrice) and (CargoFreeSpace > 0) then begin
         Quantity := Min(Trunc(Money / ShopGoodsPurchasePrice(Good, nil)), CargoFreeSpace);
@@ -447,7 +447,7 @@ end;
 { @end $7203FC }
 
 { @routine $720428 TTransport_GetGreetingShipCategory }
-function TTransport.GetGreetingShipCategory: Byte;
+function TTransport.GetGreetingShipCategory: TGreetingShipCategory;
 begin
   case TransportType of
     ttTransport: Result := gscTransport;
@@ -860,7 +860,7 @@ var Forced: Boolean; NextDemandTurn: Integer;
     LowValue := GetWealthScaledAmount(1);
     HighValue := GetWealthScaledAmount(4);
     for Pass := 1 to 3 do begin
-      for Good := Ord(t_Food) to Ord(t_Narcotics) do
+      for Good := Low(TGoodsIndex) to High(TGoodsIndex) do
         if CargoGoods[Good].Count > 0 then begin
           Divisor := RemapClamped(CargoGoods[Good].Count * GoodsMarket[Good].AveragePrice, LowValue, HighValue, 2, 8);
           Count := Max(Int64(1), Round(CargoGoods[Good].Count / Divisor));
@@ -1144,7 +1144,7 @@ end;
 { @routine $724B5C TTransport_RefreshCurrentStanding }
 procedure TTransport.RefreshCurrentStanding;
 var
-  StandingMode: Integer;
+  StandingMode: TScriptStandingOverrideMode;
 begin
   StandingMode := GetScriptStandingOverrideMode;
   if StandingMode = ssmCustomFaction then CurrentStanding := ssCustom

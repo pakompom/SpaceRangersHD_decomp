@@ -35,7 +35,7 @@ type
     procedure LoadFromBuffer(Buffer: TBufEC; Galaxy: TGalaxy); override; // @addr $65D088 @slot 0x04
     procedure ResolveLoadedReferences(Galaxy: TGalaxy); override; // @addr $65D24C @slot 0x08
     procedure ClearObjectReferences; override; // @addr $65D290 @slot 0x0C
-    function GetGreetingShipCategory: Byte; override; // @addr $65D94C @slot 0x30
+    function GetGreetingShipCategory: TGreetingShipCategory; override; // @addr $65D94C @slot 0x30
     function GetHomeStar: TStar; override; // @addr $65D974 @slot 0x34
     function GetStrengthScaledPirateStatus: TPercent; override; // @addr $65D98C @slot 0x3C
     procedure RepairBrokenEquipmentAtLocation; override; // @addr $65DA40 @slot 0x60
@@ -441,7 +441,7 @@ end;
 { @end $65D738 }
 
 { @routine $65D94C TTranclucator_GetGreetingShipCategory }
-function TTranclucator.GetGreetingShipCategory: Byte;
+function TTranclucator.GetGreetingShipCategory: TGreetingShipCategory;
 begin
   Result := gscTransport; // Native default category, also used for transports.
 end;
@@ -538,7 +538,7 @@ begin
     Artefacts.Delete(Artefacts.IndexOf(Artefact));
     Destination.Artefacts.Add(Artefact);
   end;
-  for Good := Ord(t_Food) to Ord(t_Narcotics) do
+  for Good := Low(TGoodsIndex) to High(TGoodsIndex) do
     with CargoGoods[Good] do
     begin
       AddGoods(Good, Count, TotalCost);
@@ -575,7 +575,7 @@ begin
       GetPlayer.AddItemToPlayerStorage(Artefact, Location, -1);
       Artefacts.Delete(Artefacts.IndexOf(Artefact));
     end;
-    for Good := Ord(t_Food) to Ord(t_Narcotics) do
+    for Good := Low(TGoodsIndex) to High(TGoodsIndex) do
       with CargoGoods[Good] do
       begin
         GetPlayer.AddGoodsToPlayerStorage(Good, Count, TotalCost, Location, -1);
@@ -1074,7 +1074,7 @@ end;
 
 { @routine $65F240 TTranclucator_RefreshCurrentStanding }
 procedure TTranclucator.RefreshCurrentStanding;
-var StandingMode: Integer;
+var StandingMode: TScriptStandingOverrideMode;
 begin
   StandingMode := GetScriptStandingOverrideMode;
   if StandingMode = ssmCustomFaction then CurrentStanding := ssCustom

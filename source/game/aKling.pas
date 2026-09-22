@@ -70,7 +70,7 @@ type
     procedure TerronNextDayLogic; // @addr 0x5EB9F0
     procedure NextDay; override; // @addr 0x5EA254 @slot 0x18
     procedure NextDayLogic; override; // @addr 0x5EA50C @slot 0x1C @calls "0x5EA36A 0x5EA38A"
-    function GetGreetingShipCategory: Byte; override; // @addr $5EE7C8 @slot $30
+    function GetGreetingShipCategory: TGreetingShipCategory; override; // @addr $5EE7C8 @slot $30
     function GetHomeStar: TStar; override; // @addr $5EE5A8 @slot $34
     function GetStrengthScaledPirateStatus: TPercent; override; // @addr $5EE7F0 @slot $3C
     function GetDominantCareer: TRangerCareer; override; // @addr 0x5EE7DC @slot 0x38 @note "Always rcWarrior."
@@ -1402,7 +1402,7 @@ end;
 { @end $5EE5E0 }
 
 { @routine $5EE7C8 TKling_GetGreetingShipCategory }
-function TKling.GetGreetingShipCategory: Byte;
+function TKling.GetGreetingShipCategory: TGreetingShipCategory;
 begin
   Result := gscKling;
 end;
@@ -1804,7 +1804,7 @@ end;
 
 { @routine $5EFC48 TKling_RefreshCurrentStanding }
 procedure TKling.RefreshCurrentStanding;
-var StandingMode: Integer;
+var StandingMode: TScriptStandingOverrideMode;
 begin
   StandingMode := GetScriptStandingOverrideMode;
   if StandingMode = ssmCustomFaction then CurrentStanding := ssCustom

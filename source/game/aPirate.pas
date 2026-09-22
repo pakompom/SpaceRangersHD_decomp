@@ -61,7 +61,7 @@ type
 
     procedure NextDay; override; // @addr 0x50D718 @slot 0x18
     procedure NextDayLogic; override; // @addr 0x50D938 @slot 0x1C @calls "0x50D7B7"
-    function GetGreetingShipCategory: Byte; override; // @addr $50F5D4 @slot $30
+    function GetGreetingShipCategory: TGreetingShipCategory; override; // @addr $50F5D4 @slot $30
     function GetHomeStar: TStar; override; // @addr $50F3EC @slot $34
     function GetStrengthScaledPirateStatus: TPercent; override; // @addr $50F60C @slot $3C
     function GetDominantCareer: TRangerCareer; override; // @addr 0x50F5F8 @slot 0x38 @note "Always rcPirate."
@@ -490,7 +490,7 @@ end;
 procedure TPirate.TryJumpToNearbyBattle(UnusedMode: Byte);
 var I: Integer; Star: TStar; Good: Byte;
 begin
-  for Good := Ord(t_Food) to Ord(t_Narcotics) do if CargoGoods[Good].Count > 0 then Exit;
+  for Good := Low(TGoodsIndex) to High(TGoodsIndex) do if CargoGoods[Good].Count > 0 then Exit;
   for I := 1 to Galaxy.Stars.Count - 1 do begin
     if CurrentStar.StarDistances[I].Distance > JumpRange then Break;
     Star := TObject(CurrentStar.StarDistances[I].Star) as TStar;
@@ -584,7 +584,7 @@ procedure TPirate.SellAllCargoGoods;
 var
   Good: Byte;
 begin
-  for Good := Ord(t_Food) to Ord(t_Narcotics) do
+  for Good := Low(TGoodsIndex) to High(TGoodsIndex) do
     if CargoGoods[Good].Count > 0 then SellGoodsToLocation(Good, CargoGoods[Good].Count);
 end;
 { @end $50F108 }
@@ -660,7 +660,7 @@ end;
 { @end $50F428 }
 
 { @routine $50F5D4 TPirate_GetGreetingShipCategory }
-function TPirate.GetGreetingShipCategory: Byte;
+function TPirate.GetGreetingShipCategory: TGreetingShipCategory;
 begin
   if OwnerId = oiPirate then Result := gscPirateClan else Result := gscPirate;
 end;
@@ -1300,7 +1300,7 @@ var Forced: Boolean; NextDemandTurn: Integer;
     LowValue := GetWealthScaledAmount(2);
     HighValue := GetWealthScaledAmount(4);
     for Pass := 1 to 3 do begin
-      for Good := Ord(t_Food) to Ord(t_Narcotics) do
+      for Good := Low(TGoodsIndex) to High(TGoodsIndex) do
         if CargoGoods[Good].Count > 0 then begin
           Divisor := RemapClamped(CargoGoods[Good].Count * GoodsMarket[Good].AveragePrice, LowValue, HighValue, 2, 8);
           Count := Max(Int64(1), Round(CargoGoods[Good].Count / Divisor));
@@ -1883,7 +1883,7 @@ end;
 
 { @routine $5174E4 TPirate_RefreshCurrentStanding }
 procedure TPirate.RefreshCurrentStanding;
-var Owner: TOwnerId; StandingMode: Integer;
+var Owner: TOwnerId; StandingMode: TScriptStandingOverrideMode;
 begin
   StandingMode := GetScriptStandingOverrideMode;
   if StandingMode = ssmCustomFaction then CurrentStanding := ssCustom

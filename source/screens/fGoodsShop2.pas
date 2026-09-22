@@ -23,7 +23,7 @@ type
     FaceCaptionHeight: Integer; // @offset $E8 Total original extent from name top to character-description bottom.
     ReopenRequested: Boolean; // @offset $EC Keeps the modal goods shop active for another pass after refreshing the parent background.
 
-    TradeRows: array[0..7] of TGoodsShopTradeRow; // @offset $F0
+    TradeRows: array[TGoodsIndex] of TGoodsShopTradeRow; // @offset $F0
     PartnerCargoLimit: Integer; // @offset $170 Trading partner cargo limit.
     PartnerMoneyLimit: Integer; // @offset $174 Trading partner money limit.
 
@@ -487,7 +487,7 @@ var
 begin
   if GetPlayer.InNormalSpace then
   begin
-    for Good := Ord(t_Food) to Ord(t_Narcotics) do
+    for Good := Low(TGoodsIndex) to High(TGoodsIndex) do
     begin
       TradeRows[Good].Count := TalkShip.CargoGoods[Good].Count;
       TradeRows[Good].MaximumPrice := GoodsMarket[Good].MaxPrice;

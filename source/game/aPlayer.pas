@@ -83,7 +83,7 @@ type
     PirateLicenseCash: Integer; // @offset 0x5C4  Credited license proceeds; decays after expiry.
     PendingPirateLicenseCash: Integer; // @offset 0x5C8  Folded into license proceeds and experience on the next turn.
     QueuedTravelTarget: TStar; // @offset 0x5CC  Player selection for Dominion travel.
-    StationServiceLastUseTurns: array[0..11] of Integer; // @offset $5D0 Initialized to 150; last-use turns for investment/service cooldowns. Native reads $5C7072/$5BD5A5 and write $5CA6A5.
+    StationServiceLastUseTurns: array[TCoalitionProject] of Integer; // @offset $5D0 Initialized to 150; last-use turns for investment/service cooldowns. Native reads $5C7072/$5BD5A5 and write $5CA6A5.
     StatusEffectSourceNames: array[1..24] of WideString; // @offset 0x600
     DiseaseImmunity: Byte; // @offset 0x660  Clamped to 0..100.
     ProgramRewardStocks: array[0..11] of Integer; // @offset $664 Programs awarded for destroyed Dominator hull mass.
@@ -276,7 +276,7 @@ end;
 { @routine $583A74 TPlayer_Create }
 constructor TPlayer.Create;
 var
-  ServiceIndex: Byte;
+  ServiceIndex: TCoalitionProject;
   I, J: Integer;
   RewardIndex, KillIndex, LogicIndex: Byte;
 begin
@@ -414,7 +414,8 @@ procedure TPlayer.SaveToBuffer(Buffer: TBufEC);
 var
   I, J, ConfigurationCount, SlotCount, ListCount, NewsCount: Integer;
   Entry: PStorageEntry;
-  ServiceIndex, RewardIndex: Byte;
+  ServiceIndex: TCoalitionProject;
+  RewardIndex: Byte;
   News: PPlanetNewsEntry;
   KillIndex, LogicIndex: Byte;
 begin
@@ -548,7 +549,8 @@ procedure TPlayer.LoadFromBuffer(Buffer: TBufEC; Galaxy: TGalaxy);
 var
   I, Count, J, ConfigurationCount, SlotCount, PartnerCount: Integer;
   Entry: PStorageEntry;
-  ServiceIndex, RewardIndex: Byte;
+  ServiceIndex: TCoalitionProject;
+  RewardIndex: Byte;
   Satellite: TSatellite;
   Journal: TJournalRecord;
   News: PPlanetNewsEntry;

@@ -8,7 +8,7 @@ uses EC_Buf, EC_BlockPar, aGalaxyStruct, aConst, aGalaxy, aPlanet, aShip;
 type
   TShipRank = 0..7; // @size $01
 
-  TAwardTypeMask = set of 0..7; // @size $01
+  TAwardTypeMask = set of TAwardKind; // @size $01
 
   TSystemKillCountArray = array[0..3] of Word; // @size $08
 

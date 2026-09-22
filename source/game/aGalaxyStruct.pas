@@ -56,23 +56,6 @@ const
   ssPirateMilitary = 8;
   ssCustom = 9;
 
-  // GetScriptStandingOverrideMode ($77E854); its SubFaction test is preserved.
-  ssmNormal = 0;
-  ssmCustomFaction = 1;
-  ssmFixed = 2;
-
-  // Greeting category bits from InitializeShipGreetingDefinitions ($52E9B4) and
-  // TShip virtual slot $30. Transport subtypes and pirate allegiance have
-  // separate greeting categories; these values are distinct from TypeId.
-  gscTransport = 0;
-  gscLiner = 1;
-  gscDiplomat = 2;
-  gscRanger = 3;
-  gscPirate = 4;
-  gscWarrior = 5;
-  gscKling = 6;
-  gscPirateClan = 7;
-
   // Hull categories from ShipToHullType ($82F1F4), GetDefaultHullType ($74F294),
   // and ApplySpecialMicroModule ($8089D8). They are not TShip.TypeId values.
   htRanger = 0;
@@ -102,41 +85,65 @@ const
   prgSelfDestruction = 10;
   prgDisconnection = 11;
 
-  // CoalitionProjectNames ($87F584), investment dispatch ($5C6FBC/$5CA654),
-  // and the military-base war operation ($5BD528) share these cooldown indices.
-  cpCreateRangerCenter = 0;
-  cpCreatePirateBase = 1;
-  cpCreateMilitaryBase = 2;
-  cpCreateScienceBase = 3;
-  cpCreateBusinessCenter = 4;
-  cpCreateMedicalBase = 5;
-  cpRangersSubsidy = 6;
-  cpPiratesSubsidy = 7;
-  cpTransportSubsidy = 8;
-  cpLostSubsidy = 9;
-  cpWarSubsidy = 10;
-  cpWarOperation = 11;
-
-  // Conversation IDs shared by ShowPlayerDialogue ($777284),
-  // TfTalk.BuildBuiltinChoices ($6D5048), and script Talk* constants.
-  tkMoneyDemand = 0;
-  tkGoodsDemand = 1;
-  tkTruceOffer = 2;
-  tkAttack = 3;
-  tkPartnerBreak = 4;
-  tkPartnerEnd = 5;
-  tkPartnerRiot = 6;
-
-  // Award categories from SysToReward ($82EA40); SelectAward returns $FF on failure.
-  atLiberation = 0;
-  atAccomplishment = 1;
-  atSecretMission = 2;
-  atCowardice = 3;
-  atPerfidy = 4;
-  atPlanetBattle = 5;
+  // SelectAward returns this sentinel when no individual award qualifies.
   AwardNotFound = $FF;
 
 type
+  // Award categories from SysToReward ($82EA40); distinct from individual award IDs.
+  TAwardKind = (
+    atLiberation = 0,
+    atAccomplishment = 1,
+    atSecretMission = 2,
+    atCowardice = 3,
+    atPerfidy = 4,
+    atPlanetBattle = 5
+  ); // @size $01
+
+  // GetScriptStandingOverrideMode ($77E854) and its callers use a 32-bit ordinal.
+  TScriptStandingOverrideMode = (ssmNormal = 0, ssmCustomFaction = 1, ssmFixed = 2); // @size $04
+
+  // InitializeShipGreetingDefinitions ($52E9B4) and TShip virtual slot $30.
+  // Transport subtypes and pirate allegiance have distinct greeting categories.
+  TGreetingShipCategory = (
+    gscTransport = 0,
+    gscLiner = 1,
+    gscDiplomat = 2,
+    gscRanger = 3,
+    gscPirate = 4,
+    gscWarrior = 5,
+    gscKling = 6,
+    gscPirateClan = 7
+  ); // @size $01
+
+  // CoalitionProjectNames ($87F584), investment dispatch ($5C6FBC/$5CA654),
+  // and the military-base war operation ($5BD528) share these cooldown indices.
+  TCoalitionProject = (
+    cpCreateRangerCenter = 0,
+    cpCreatePirateBase = 1,
+    cpCreateMilitaryBase = 2,
+    cpCreateScienceBase = 3,
+    cpCreateBusinessCenter = 4,
+    cpCreateMedicalBase = 5,
+    cpRangersSubsidy = 6,
+    cpPiratesSubsidy = 7,
+    cpTransportSubsidy = 8,
+    cpLostSubsidy = 9,
+    cpWarSubsidy = 10,
+    cpWarOperation = 11
+  ); // @size $01
+
+  // ShowPlayerDialogue ($777284), TfTalk.BuildBuiltinChoices ($6D5048),
+  // and the script Talk* constants share these conversation categories.
+  TTalkKind = (
+    tkMoneyDemand = 0,
+    tkGoodsDemand = 1,
+    tkTruceOffer = 2,
+    tkAttack = 3,
+    tkPartnerBreak = 4,
+    tkPartnerEnd = 5,
+    tkPartnerRiot = 6
+  ); // @size $01
+
   TPercent = 0..100;
 
   TPilotSkill = (
@@ -284,7 +291,9 @@ type
   end;
   PGoodsTradePriceEntry = ^TGoodsTradePriceEntry;
 
-  TGoodsTextOrder = array[0..7] of Byte;
+  // Numeric goods-table indices correspond to t_Food..t_Narcotics in aConst.
+  TGoodsIndex = 0..7;
+  TGoodsTextOrder = array[TGoodsIndex] of TGoodsIndex;
   PGoodsTextOrder = ^TGoodsTextOrder;
   TDominatorSeriesNameTable = array[0..2] of WideString;
   PDominatorSeriesNameTable = ^TDominatorSeriesNameTable;
@@ -354,7 +363,7 @@ type
   TPlanetRaceMarketInfo = record // @size 0xA8
     InventionProgressScale: Single; // @offset 0x00  Used by TPlanet.CalculateInventionProgressRate.
     InitialInventionBoostCount: Integer; // @offset 0x04
-    GoodsFactors: array[0..7] of TPlanetGoodsFactors; // @offset 0x08
+    GoodsFactors: array[TGoodsIndex] of TPlanetGoodsFactors; // @offset 0x08
     GovernmentRollThresholds: array[TPlanetGovernment] of Byte; // @offset 0x88  Cumulative thresholds indexed by TPlanetGovernment.
     RevolutionChance: Single; // @offset 0x90
     FriendlyRelationScale: Single; // @offset $94 Scales transport-to-transport relations ($720764) and partner-gift gains ($6DD9D8/$6E1A8C).

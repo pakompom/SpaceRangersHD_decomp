@@ -66,7 +66,7 @@ type
     procedure ClearObjectReferences; override; // @addr 0x7265C8 @slot 0x0C @note "Finalizes and removes quest records and clears LastDockedNonPlanetLocation after inherited reference cleanup."
     function ProcessPendingPlayerFollowTargeting: Boolean; // @addr 0x7277F8 @note "True only for the pending auto-equip branch; normal follow/weapon assignment returns false."
     function GetHomeStar: TStar; override; // @addr 0x72796C @slot 0x34 @note "Requires HomePlanet."
-    function GetGreetingShipCategory: Byte; override; // @addr 0x727B68 @slot 0x30 @note "Returns the ranger category used by ship-greeting filters."
+    function GetGreetingShipCategory: TGreetingShipCategory; override; // @addr 0x727B68 @slot 0x30 @note "Returns the ranger category used by ship-greeting filters."
     function GetStrengthScaledPirateStatus: TPercent; override; // @addr 0x727F64 @slot 0x3C @note "Rounded pirate career status times StrengthInBestRanger, clamped to 0..100."
     function GetDesiredCargoFreeSpace: Integer; override; // @addr 0x727FB8 @slot 0x40
     function GetObjectInfoText(Instance: TObject): WideString; // @addr 0x72805C @note "Dispatches by object class and radar distance; unsupported objects yield unknown object."
@@ -897,7 +897,7 @@ end;
 { @end $7279A8 }
 
 { @routine $727B68 TRanger_GetGreetingShipCategory }
-function TRanger.GetGreetingShipCategory: Byte;
+function TRanger.GetGreetingShipCategory: TGreetingShipCategory;
 begin
   Result := gscRanger;
 end;
@@ -1383,7 +1383,7 @@ begin
     begin
       Profit := 0;
       PurchaseProfit := 1;
-      for Good := Ord(t_Food) to Ord(t_Narcotics) do
+      for Good := Low(TGoodsIndex) to High(TGoodsIndex) do
       begin
         if CargoGoods[Good].Count > 0 then
         begin
@@ -1462,7 +1462,7 @@ var
   Good: Byte;
   EnemyStrength, FriendlyStrength: Single;
 begin
-  for Good := Ord(t_Food) to Ord(t_Narcotics) do
+  for Good := Low(TGoodsIndex) to High(TGoodsIndex) do
     if CargoGoods[Good].Count > 0 then Exit;
   if GetCargoHook = nil then Exit;
   if GetHull.Weight > GetHull.HullPoints then Exit;
@@ -1762,7 +1762,7 @@ var
   Cost: Single;
   BestPlanet: TPlanet;
 begin
-  for Good := Ord(t_Food) to Ord(t_Narcotics) do
+  for Good := Low(TGoodsIndex) to High(TGoodsIndex) do
     if CargoGoods[Good].Count <> 0 then
     begin
       Cost := GetAverageCargoCost(Good);
@@ -1787,7 +1787,7 @@ begin
   begin
     BestRatio := 0;
     BestGood := 0;
-    for Good := Ord(t_Food) to Ord(t_Narcotics) do
+    for Good := Low(TGoodsIndex) to High(TGoodsIndex) do
       if CurrentPlanet.Goods[Good].Count > 0 then
         if (GoodsMarket[Good].AveragePrice * 1.1 > ShopGoodsPurchasePrice(Good, nil)) and
           (GoodsMarket[Good].AveragePrice / ShopGoodsPurchasePrice(Good, nil) > BestRatio) and
@@ -2882,7 +2882,7 @@ var Forced: Boolean; NextDemandTurn: Integer;
     LowValue := GetWealthScaledAmount(1);
     HighValue := GetWealthScaledAmount(4);
     for Pass := 1 to 3 do begin
-      for Good := Ord(t_Food) to Ord(t_Narcotics) do
+      for Good := Low(TGoodsIndex) to High(TGoodsIndex) do
         if CargoGoods[Good].Count > 0 then begin
           Divisor := RemapClamped(CargoGoods[Good].Count * GoodsMarket[Good].AveragePrice, LowValue, HighValue, 2, 8);
           Count := Max(Int64(1), Round(CargoGoods[Good].Count / Divisor));
@@ -3406,7 +3406,7 @@ end;
 procedure TRanger.RefreshCurrentStanding;
 var
   Owner: TOwnerId;
-  StandingMode: Integer;
+  StandingMode: TScriptStandingOverrideMode;
 begin
   StandingMode := GetScriptStandingOverrideMode;
   if StandingMode = ssmCustomFaction then

@@ -62,9 +62,9 @@ type
     IsCoalitionOwned: Boolean; // @offset 0x75  Cached OwnerId membership in the five Coalition races.
     RaceId: TOwnerId; // @offset 0x76
     Government: TPlanetGovernment; // @offset 0x77
-    Goods: array[0..7] of TGoodsTradePriceEntry; // @offset 0x78
-    GoodsScarcityTicks: array[0..7] of Byte; // @offset 0xF8
-    GoodsSurplusTicks: array[0..7] of Byte; // @offset 0x100
+    Goods: array[TGoodsIndex] of TGoodsTradePriceEntry; // @offset 0x78
+    GoodsScarcityTicks: array[TGoodsIndex] of Byte; // @offset 0xF8
+    GoodsSurplusTicks: array[TGoodsIndex] of Byte; // @offset 0x100
     TextQuestId: Integer; // @offset 0x108 // -1 when no text quest is assigned.
     RangerRelations: TList; // @offset 0x10C  Integer scores stored in pointer slots, indexed by Galaxy.Rangers.
     EquipmentShop: TObjectList; // @offset 0x110  Owned TItem stock.
@@ -773,7 +773,7 @@ begin
   BoostInventionLevels(aConst.PlanetRaceMarket[RaceId].InitialInventionBoostCount);
   ResearchLevelPercent := NextRandomIntRange(20, 40, RandomState);
   ResearchLevelStep := NextRandomIntRange(5, 10, RandomState);
-  for Good := Ord(t_Food) to Ord(t_Narcotics) do
+  for Good := Low(TGoodsIndex) to High(TGoodsIndex) do
   begin
     Goods[Good].Count := NextRandomIntRange(GoodsMarket[Good].BaseStock div 2, GoodsMarket[Good].BaseStock, RandomState);
     Goods[Good].PriceState := GoodsMarket[Good].AveragePrice;
@@ -1125,7 +1125,7 @@ begin
   BoostInventionLevels(aConst.PlanetRaceMarket[RaceId].InitialInventionBoostCount);
   ResearchLevelPercent := NextRandomIntRange(20, 40, RandomState);
   ResearchLevelStep := NextRandomIntRange(5, 10, RandomState);
-  for Good := Ord(t_Food) to Ord(t_Narcotics) do
+  for Good := Low(TGoodsIndex) to High(TGoodsIndex) do
   begin
     Goods[Good].Count := NextRandomIntRange(GoodsMarket[Good].BaseStock div 2, GoodsMarket[Good].BaseStock, RandomState);
     Goods[Good].PriceState := GoodsMarket[Good].AveragePrice;
@@ -1513,7 +1513,7 @@ begin
     Government := TPlanetGovernment(Buffer.GetByte);
     if GlobalsV.LoadedSaveVersion < 96 then Buffer.GetByte;
     Stage := 2;
-    for Good := Ord(t_Food) to Ord(t_Narcotics) do
+    for Good := Low(TGoodsIndex) to High(TGoodsIndex) do
     begin
       Goods[Good].Count := Buffer.GetInt32;
       Goods[Good].PriceState := Buffer.GetSingle;
@@ -2167,7 +2167,7 @@ begin
       end;
       oiDominator:
       begin
-        for Good := Ord(t_Food) to Ord(t_Narcotics) do Goods[Good].Count := 0;
+        for Good := Low(TGoodsIndex) to High(TGoodsIndex) do Goods[Good].Count := 0;
         Money := 0;
         if NextRandomUnitFloat(RandomState) < 0.7 then AdvanceInventionProgress;
         if NextRandomUnitFloat(RandomState) < 0.2 then RefreshEquipmentShopInventory;
@@ -3234,7 +3234,7 @@ begin
   else Exit;
   SelectedGood := 42;
   ConditionIndex := 0;
-  for GoodsIndex := Ord(t_Food) to Ord(t_Narcotics) do
+  for GoodsIndex := Low(TGoodsIndex) to High(TGoodsIndex) do
     if aConst.GoodsLegalOnPlanet[GoodsIndex, RaceId, Government] then
       if Goods[GoodsIndex].Count >= aConst.GoodsMarket[GoodsIndex].BaseStock div 2 then
       begin

@@ -60,7 +60,7 @@ type
     procedure AssignWeaponTargetsInStar; override; // @addr 0x51A888 @slot 0x20 @note "Native diagnostic name: TWarrior.ArmsToTarget."
     procedure AssignFlagshipWeaponTargets; // @addr 0x51B778 @note "Flagship branch; shares the TWarrior.ArmsToTarget diagnostic."
     function GetTypeNameKey: WideString; override; // @addr $519FDC @slot $2C
-    function GetGreetingShipCategory: Byte; override; // @addr $51A010 @slot $30
+    function GetGreetingShipCategory: TGreetingShipCategory; override; // @addr $51A010 @slot $30
     function GetHomeStar: TStar; override; // @addr $519D58 @slot $34
     function GetStrengthScaledPirateStatus: TPercent; override; // @addr $51A038 @slot $3C
     function GetDominantCareer: TRangerCareer; override; // @addr 0x51A024 @slot 0x38 @note "Always rcWarrior."
@@ -675,7 +675,7 @@ end;
 { @end $519FDC }
 
 { @routine $51A010 TWarrior_GetGreetingShipCategory }
-function TWarrior.GetGreetingShipCategory: Byte;
+function TWarrior.GetGreetingShipCategory: TGreetingShipCategory;
 begin
   Result := gscWarrior;
 end;
@@ -1883,7 +1883,7 @@ end;
 
 { @routine $520E00 TWarrior_RefreshCurrentStanding }
 procedure TWarrior.RefreshCurrentStanding;
-var StandingMode: Integer;
+var StandingMode: TScriptStandingOverrideMode;
 begin
   StandingMode := GetScriptStandingOverrideMode;
   if StandingMode = ssmCustomFaction then CurrentStanding := ssCustom

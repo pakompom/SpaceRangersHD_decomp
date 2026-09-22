@@ -86,7 +86,7 @@ type
     CurrentStar: TStar; // @offset 0x24
     TransitOriginStar: TStar; // @offset 0x28
     HomePlanet: TPlanet; // @offset 0x2C
-    CargoGoods: array[0..7] of TCargoGoodsEntry; // @offset 0x30
+    CargoGoods: array[TGoodsIndex] of TCargoGoodsEntry; // @offset 0x30
     Wealth: Integer; // @offset 0xB0
     WealthInBestRanger: Single; // @offset 0xB4
     Strength: Single; // @offset 0xB8
@@ -219,7 +219,7 @@ type
     // Signatures come from verified concrete overrides and their callers.
     function GetName: WideString; virtual; abstract; // @slot 0x24
     function GetFullName(const Separator: WideString): WideString; virtual; abstract; // @slot 0x28 @calls "0x777ECB 0x777EFB 0x777F29"
-    function GetGreetingShipCategory: Byte; virtual; abstract; // @slot 0x30 Category bit in ship-greeting ShipType, ToShipType and ShipBadType filters.
+    function GetGreetingShipCategory: TGreetingShipCategory; virtual; abstract; // @slot 0x30 Category bit in ship-greeting ShipType, ToShipType and ShipBadType filters.
     function GetHomeStar: TStar; virtual; abstract; // @slot 0x34
     function GetDominantCareer: TRangerCareer; virtual; abstract; // @slot 0x38
     function GetStrengthScaledPirateStatus: TPercent; virtual; abstract; // @slot 0x3C
@@ -267,7 +267,7 @@ type
     procedure ApplyNanoArtefactRepair; // @addr 0x776890 @note "Prefers installed inventory equipment; selects at most one repairable item and may clear BrokenFlag."
     function CanContactShip(OtherShip: TShip): Boolean; // @addr 0x776B58 @note "Uses Self's radar with a 500-unit minimum and both NoTalk flags; does not test system membership."
     function OpenPlayerConversation(RespectChameleon: Boolean): Boolean; // @addr 0x777128 @note "Turn-worker/UI handshake; waits for conversation completion or shutdown. Requires an active visible-space turn."
-    function ShowPlayerDialogue(Kind: Byte; const Text: WideString; Amount: Integer): Byte; // @addr 0x777284 @note "Returns the global dialogue response, or zero when conversation cannot open. Amount only replaces the global amount when positive."
+    function ShowPlayerDialogue(Kind: TTalkKind; const Text: WideString; Amount: Integer): Byte; // @addr 0x777284 @note "Returns the global dialogue response, or zero when conversation cannot open. Amount only replaces the global amount when positive."
     procedure NotifyMoneyDemand(OtherShip: TShip; Response: WideString; Amount: Integer); // @addr 0x7772E8
     procedure NotifyCargoDemand(OtherShip: TShip; Response: WideString); // @addr 0x777594
     procedure NotifyFearCargoDrop(OtherShip: TShip); // @addr 0x7777F4
@@ -619,7 +619,7 @@ type
     function HasScriptBindings: Boolean; // @addr 0x750910 @note "For the player, checks the script-binding list; for NPC ships, checks ScriptShip."
     function HasIndependentScriptFaction: Boolean; // @addr 0x77E758 @note "Requires a nonempty faction not beginning with SubFaction. The native substring result is used as Boolean, so absence also returns true."
     function HasNamedScriptFaction: Boolean; // @addr 0x77E7CC @note "Requires a nonempty faction other than the exact SubFactionFixedStanding marker."
-    function GetScriptStandingOverrideMode: Integer; // @addr 0x77E854 @note "0 normal, 1 independent faction, 2 fixed standing. The SubFaction substring test accepts absence as mode one."
+    function GetScriptStandingOverrideMode: TScriptStandingOverrideMode; // @addr 0x77E854 @note "0 normal, 1 independent faction, 2 fixed standing. The SubFaction substring test accepts absence as mode one."
 
     function CountActiveArtefacts(ArtefactType: TItemType): Integer; // @addr 0x775AC8 @note "Uses custom SharedEffect types and excludes broken items. Activation exceptions can count some unequipped artefacts."
     function HasEquippedArtefactOfSameUseGroup(Item: TItem): Boolean; // @addr 0x775B8C @note "Uses custom SharedUse and ConfigBlockName. Includes Item itself if equipped, and does not exclude broken items."
@@ -971,7 +971,7 @@ begin
   else Buffer.AddDWord(DockedTo.Id);
   if HomePlanet = nil then Buffer.AddDWord(0)
   else Buffer.AddDWord(HomePlanet.Id);
-  for Good := Ord(t_Food) to Ord(t_Narcotics) do
+  for Good := Low(TGoodsIndex) to High(TGoodsIndex) do
   begin
     Buffer.AddDWord(CargoGoods[Good].Count);
     Buffer.AddDWord(CargoGoods[Good].TotalCost);
@@ -1216,7 +1216,7 @@ begin
   CurrentPlanet := TPlanet(Buffer.GetUInt32);
   DockedTo := TShip(Buffer.GetUInt32);
   HomePlanet := TPlanet(Buffer.GetUInt32);
-  for Good := Ord(t_Food) to Ord(t_Narcotics) do
+  for Good := Low(TGoodsIndex) to High(TGoodsIndex) do
   begin
     CargoGoods[Good].Count := Buffer.GetUInt32;
     CargoGoods[Good].TotalCost := Buffer.GetUInt32;
@@ -1611,7 +1611,7 @@ var
   Text, Part: WideString;
   Item: TItem;
   Hole: THole;
-  ItemType: Byte;
+  ItemType: TItemType;
   Destination: TPointF;
 begin
   Name := Block.GetParam(DecodeTextW('Noasmler')); // 'Name'
@@ -1671,12 +1671,12 @@ begin
     for I := 0 to CountDelimitedPartsW(Text, ',') - 1 do
     begin
       Part := ExtractDelimitedPartW(Text, I, ',');
-      for ItemType := Byte(Low(TItemType)) to Byte(High(TItemType)) do
-        if ItemTypeNames[TItemType(ItemType)] = Part then
+      for ItemType := Low(TItemType) to High(TItemType) do
+        if ItemTypeNames[ItemType] = Part then
         begin
-          if (ItemType in [Ord(t_Hull)..Ord(t_Satellite)]) and (ItemType <> Byte(t_Hull)) then
+          if (ItemType in [t_Hull..t_Satellite]) and (ItemType <> t_Hull) then
           begin
-            Item := CreateDefaultItemByType(TItemType(ItemType));
+            Item := CreateDefaultItemByType(ItemType);
             if Item <> nil then Inventory.Add(Item);
           end;
           Break;
@@ -1695,11 +1695,11 @@ begin
     for I := 0 to CountDelimitedPartsW(Text, ',') - 1 do
     begin
       Part := ExtractDelimitedPartW(Text, I, ',');
-      for ItemType := Byte(Low(TItemType)) to Byte(High(TItemType)) do
-        if ItemTypeNames[TItemType(ItemType)] = Part then
+      for ItemType := Low(TItemType) to High(TItemType) do
+        if ItemTypeNames[ItemType] = Part then
         begin
-          if (ItemTypeNames[TItemType(ItemType)] = Part) and (ItemType in [Ord(t_ArtefactHull)..Ord(t_ArtFastRacks)]) then
-            Artefacts.Add(CreateConfiguredArtefactByItemType(TItemType(ItemType), oiUninhabited));
+          if (ItemTypeNames[ItemType] = Part) and (ItemType in [t_ArtefactHull..t_ArtFastRacks]) then
+            Artefacts.Add(CreateConfiguredArtefactByItemType(ItemType, oiUninhabited));
           Break;
         end;
     end;
@@ -1716,12 +1716,12 @@ begin
     for I := 0 to CountDelimitedPartsW(Text, ',') - 1 do
     begin
       Part := ExtractDelimitedPartW(Text, I, ',');
-      for ItemType := Byte(Low(TItemType)) to Byte(High(TItemType)) do
-        if ItemTypeNames[TItemType(ItemType)] = Part then
+      for ItemType := Low(TItemType) to High(TItemType) do
+        if ItemTypeNames[ItemType] = Part then
         begin
-          if ((ItemType in [Ord(t_Food)..Ord(t_Narcotics)]) or (ItemType in [Ord(t_Hull)..Ord(t_CustomWeapon)]) or (ItemType in [Ord(t_ArtefactHull)..Ord(t_ArtFastRacks)]) or (ItemType in [Ord(t_Protoplasm)..Ord(t_Satellite)])) and (ItemType <> Byte(t_Hull)) then
+          if ((ItemType in [t_Food..t_Narcotics]) or (ItemType in [t_Hull..t_CustomWeapon]) or (ItemType in [t_ArtefactHull..t_ArtFastRacks]) or (ItemType in [t_Protoplasm..t_Satellite])) and (ItemType <> t_Hull) then
           begin
-            Item := CreateDefaultItemByType(TItemType(ItemType));
+            Item := CreateDefaultItemByType(ItemType);
             if Item <> nil then GuaranteedDeathDropItems.Add(Item);
           end;
           Break;
@@ -2332,7 +2332,7 @@ var
   Good: Byte;
 begin
   Result := False;
-  for Good := Ord(t_Food) to Ord(t_Narcotics) do
+  for Good := Low(TGoodsIndex) to High(TGoodsIndex) do
     if CargoGoods[Good].Count > 0 then
     begin
       Result := True;
@@ -2347,7 +2347,7 @@ var
   Good: Byte;
 begin
   Result := 0;
-  for Good := Ord(t_Food) to Ord(t_Narcotics) do if CargoGoods[Good].Count > 0 then Inc(Result);
+  for Good := Low(TGoodsIndex) to High(TGoodsIndex) do if CargoGoods[Good].Count > 0 then Inc(Result);
 end;
 { @end $74FFD8 }
 
@@ -2449,7 +2449,7 @@ begin
     Item := TItem(Artefacts[I]);
     Inc(Capital, Item.Cost);
   end;
-  for Good := Ord(t_Food) to Ord(t_Narcotics) do Inc(Capital, CargoGoods[Good].TotalCost);
+  for Good := Low(TGoodsIndex) to High(TGoodsIndex) do Inc(Capital, CargoGoods[Good].TotalCost);
   if GetPlayer = Self then
   begin
     for I := 0 to GetPlayer.StorageEntries.Count - 1 do
@@ -5644,7 +5644,7 @@ begin
   if LiberationGroup = nil then Exit;
   RouteOrder := (LiberationGroup as TGroup).Route[LiberationGroupRouteIndex];
   case RouteOrder.Kind of
-  Ord(soJump): begin
+  soJump: begin
     if IsOutsideStarSpace then Exit;
     if CurrentStar = RouteOrder.Target then begin
       Inc(LiberationGroupRouteIndex);
@@ -5654,7 +5654,7 @@ begin
     end;
     if (Order = soNone) or (Order = soFollowShip) then OrderJump(RouteOrder.Target as TStar, False);
   end;
-  Ord(soLand): begin
+  soLand: begin
     if CurrentPlanet = RouteOrder.Target then begin
       Inc(LiberationGroupRouteIndex);
       if LiberationGroupRouteIndex >= Length((LiberationGroup as TGroup).Route) then LeaveLiberationGroup;
@@ -5673,7 +5673,7 @@ begin
     end;
     if (Order = soNone) or (Order = soFollowShip) then OrderLanding(RouteOrder.Target, False);
   end;
-  Ord(soMove): begin
+  soMove: begin
     if IsOutsideStarSpace then Exit;
     if CurrentStar.Battle <> 0 then begin
       LeaveLiberationGroup;
@@ -6496,7 +6496,7 @@ var
   Good: Byte;
 begin
   Result := 0;
-  for Good := Ord(t_Food) to Ord(t_Narcotics) do Inc(Result, CargoGoods[Good].Count);
+  for Good := Low(TGoodsIndex) to High(TGoodsIndex) do Inc(Result, CargoGoods[Good].Count);
 end;
 { @end $76086C }
 
@@ -8315,7 +8315,7 @@ begin
   Drops := 0;
   for Pass := 1 to 3 do
   begin
-    for Good := Ord(t_Food) to Ord(t_Narcotics) do
+    for Good := Low(TGoodsIndex) to High(TGoodsIndex) do
       if CargoGoods[Good].Count > 0 then
       begin
         Factor := RemapClamped(CargoGoods[Good].Count * GoodsMarket[Good].AveragePrice,
@@ -8342,7 +8342,7 @@ var
   Good: Byte;
   Quantity: Integer;
 begin
-  for Good := Ord(t_Food) to Ord(t_Narcotics) do
+  for Good := Low(TGoodsIndex) to High(TGoodsIndex) do
     if CargoGoods[Good].Count > 0 then
     begin
       Quantity := CargoGoods[Good].Count;
@@ -8498,7 +8498,7 @@ var
 begin
   BestValue := 100000;
   Result := 255;
-  for Good := Ord(t_Food) to Ord(t_Narcotics) do
+  for Good := Low(TGoodsIndex) to High(TGoodsIndex) do
     if CargoGoods[Good].Count <> 0 then
     begin
       Value := GoodsMarket[Good].AveragePrice;
@@ -8602,7 +8602,7 @@ begin
     end;
   until Done;
   if CargoFreeSpace < 0 then
-    for Good := Ord(t_Food) to Ord(t_Narcotics) do
+    for Good := Low(TGoodsIndex) to High(TGoodsIndex) do
       if CargoGoods[Good].Count > 0 then
       begin
         Count := Min(-CargoFreeSpace, CargoGoods[Good].Count);
@@ -12428,7 +12428,7 @@ end;
 { @end $777128 }
 
 { @routine $777284 TShip_ShowPlayerDialogue }
-function TShip.ShowPlayerDialogue(Kind: Byte; const Text: WideString; Amount: Integer): Byte;
+function TShip.ShowPlayerDialogue(Kind: TTalkKind; const Text: WideString; Amount: Integer): Byte;
 begin
   TalkType := Kind;
   if Amount > 0 then TalkAmount := Amount;
@@ -14087,7 +14087,7 @@ end;
 { @routine $77E6E0 TShip_RefreshCurrentStanding }
 procedure TShip.RefreshCurrentStanding;
 var
-  StandingMode: Integer;
+  StandingMode: TScriptStandingOverrideMode;
 begin
   StandingMode := GetScriptStandingOverrideMode;
   if StandingMode = ssmCustomFaction then CurrentStanding := ssCustom
@@ -14119,7 +14119,7 @@ end;
 { @end $77E7CC }
 
 { @routine $77E854 TShip_GetScriptStandingOverrideMode }
-function TShip.GetScriptStandingOverrideMode: Integer;
+function TShip.GetScriptStandingOverrideMode: TScriptStandingOverrideMode;
 begin
   Result := ssmNormal;
   if (Self.ScriptShip = nil) then

@@ -1697,7 +1697,7 @@ begin
         if Item <> nil then GetPlayer.Artefacts.Add(Item);
       end;
     end;
-    for Good := Ord(t_Food) to Ord(t_Narcotics) do GetPlayer.CargoGoods[Good].Count := GetPlayer.CargoGoods[Good].Count * 2;
+    for Good := Low(TGoodsIndex) to High(TGoodsIndex) do GetPlayer.CargoGoods[Good].Count := GetPlayer.CargoGoods[Good].Count * 2;
     GetPlayer.RefreshDerivedStats(True);
     ReportCheat(10, DecodeTextW('EIXATIRIANORNAEL')); // 'EXTRAONE'
   end;

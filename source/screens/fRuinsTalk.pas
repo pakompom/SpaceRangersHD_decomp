@@ -324,7 +324,7 @@ var
   InvestmentBusinessCenterStar: TStar; // @addr $88A8C4
   InvestmentMedicalBaseStar: TStar; // @addr $88A8C8
   InvestmentDefensePlanet: TPlanet; // @addr $88A8CC
-  InvestmentQuoteCosts: array[0..11] of Integer; // @addr $88A8D0
+  InvestmentQuoteCosts: array[TCoalitionProject] of Integer; // @addr $88A8D0
   SelectedResearchSeries: Byte; // @addr $88A900
   NearbyTradeAdviceCost: Integer; // @addr $88A904
   DistantTradeAdviceCost: Integer; // @addr $88A908
@@ -4669,7 +4669,8 @@ const
   StationTypes = [Ord(rstRangerCenter)..Ord(rstDominion)];
 var
   I, Index, BoundA, BoundB, BestScore, Score: Integer;
-  Kind, Choice: Byte;
+  Kind: TCoalitionProject;
+  Choice: Byte;
   Offers, Text, Name: WideString;
   Star, BestStar: TStar;
   Planet, BestPlanet: TPlanet;
@@ -4678,11 +4679,11 @@ begin
   ClearChoices;
   for Kind := Low(CoalitionProjectNames) to High(CoalitionProjectNames) do
   begin
-    Choice := Kind;
+    Choice := Integer(Kind);
     Text := '';
     BoundA := 1;
     BoundB := Galaxy.Stars.Count - 1;
-    Index := SeededRandomIntRange(BoundA, BoundB, GetPlayer.DockedTo.Seed + Galaxy.GenerationSeed + Galaxy.CurrentTurn div 60 + 1743 + 731 * Kind);
+    Index := SeededRandomIntRange(BoundA, BoundB, GetPlayer.DockedTo.Seed + Galaxy.GenerationSeed + Galaxy.CurrentTurn div 60 + 1743 + 731 * Integer(Kind));
     if GetPlayer.StationServiceLastUseTurns[Kind] <= Galaxy.CurrentTurn - StationServiceRepeatPeriods[Kind] then
     begin
       case Kind of
@@ -4717,7 +4718,7 @@ begin
           if BestStar = nil then Continue;
           InvestmentRangerCenterStar := BestStar;
           StationServiceQuoteCost := SeededRandomIntRange(Galaxy.ComputeScaledHugeMoney(RaceToOwner(GetPlayer.PilotRace)) div 2,
-            2 * Galaxy.ComputeScaledHugeMoney(RaceToOwner(GetPlayer.PilotRace)), 1171 * (Kind + 13) + InvestmentRangerCenterStar.GenerationSeed);
+            2 * Galaxy.ComputeScaledHugeMoney(RaceToOwner(GetPlayer.PilotRace)), 1171 * (Integer(Kind) + 13) + InvestmentRangerCenterStar.GenerationSeed);
           Name := LocalizedColorText('Investment.' + CoalitionProjectNames[Kind] + '.Name');
           ReplaceTextToken(Name, '<Star>', BestStar.Name, '<color=255,240,100>');
           ReplaceTextToken(Name, '<Money>', IntToStr(StationServiceQuoteCost), '<color=255,240,100>');
@@ -4760,7 +4761,7 @@ begin
           if BestStar = nil then Continue;
           InvestmentPirateBaseStar := BestStar;
           StationServiceQuoteCost := SeededRandomIntRange(Galaxy.ComputeScaledHugeMoney(RaceToOwner(GetPlayer.PilotRace)) div 2,
-            2 * Galaxy.ComputeScaledHugeMoney(RaceToOwner(GetPlayer.PilotRace)), 1171 * (Kind + 13) + InvestmentPirateBaseStar.GenerationSeed);
+            2 * Galaxy.ComputeScaledHugeMoney(RaceToOwner(GetPlayer.PilotRace)), 1171 * (Integer(Kind) + 13) + InvestmentPirateBaseStar.GenerationSeed);
           Name := LocalizedColorText('Investment.' + CoalitionProjectNames[Kind] + '.Name');
           ReplaceTextToken(Name, '<Star>', BestStar.Name, '<color=255,240,100>');
           ReplaceTextToken(Name, '<Money>', IntToStr(StationServiceQuoteCost), '<color=255,240,100>');
@@ -4803,7 +4804,7 @@ begin
           if BestStar = nil then Continue;
           InvestmentMilitaryBaseStar := BestStar;
           StationServiceQuoteCost := SeededRandomIntRange(Galaxy.ComputeScaledHugeMoney(RaceToOwner(GetPlayer.PilotRace)) div 2,
-            3 * Galaxy.ComputeScaledHugeMoney(RaceToOwner(GetPlayer.PilotRace)), 1171 * (Kind + 13) + InvestmentMilitaryBaseStar.GenerationSeed);
+            3 * Galaxy.ComputeScaledHugeMoney(RaceToOwner(GetPlayer.PilotRace)), 1171 * (Integer(Kind) + 13) + InvestmentMilitaryBaseStar.GenerationSeed);
           Name := LocalizedColorText('Investment.' + CoalitionProjectNames[Kind] + '.Name');
           ReplaceTextToken(Name, '<Star>', BestStar.Name, '<color=255,240,100>');
           ReplaceTextToken(Name, '<Money>', IntToStr(StationServiceQuoteCost), '<color=255,240,100>');
@@ -4846,7 +4847,7 @@ begin
           if BestStar = nil then Continue;
           InvestmentScienceBaseStar := BestStar;
           StationServiceQuoteCost := SeededRandomIntRange(Galaxy.ComputeScaledHugeMoney(RaceToOwner(GetPlayer.PilotRace)),
-            4 * Galaxy.ComputeScaledHugeMoney(RaceToOwner(GetPlayer.PilotRace)), 1172 * (Kind + 13) + InvestmentScienceBaseStar.GenerationSeed);
+            4 * Galaxy.ComputeScaledHugeMoney(RaceToOwner(GetPlayer.PilotRace)), 1172 * (Integer(Kind) + 13) + InvestmentScienceBaseStar.GenerationSeed);
           Name := LocalizedColorText('Investment.' + CoalitionProjectNames[Kind] + '.Name');
           ReplaceTextToken(Name, '<Star>', BestStar.Name, '<color=255,240,100>');
           ReplaceTextToken(Name, '<Money>', IntToStr(StationServiceQuoteCost), '<color=255,240,100>');
@@ -4889,7 +4890,7 @@ begin
           if BestStar = nil then Continue;
           InvestmentBusinessCenterStar := BestStar;
           StationServiceQuoteCost := SeededRandomIntRange(Galaxy.ComputeScaledHugeMoney(RaceToOwner(GetPlayer.PilotRace)) div 2,
-            2 * Galaxy.ComputeScaledHugeMoney(RaceToOwner(GetPlayer.PilotRace)), 1173 * (Kind + 13) + InvestmentBusinessCenterStar.GenerationSeed);
+            2 * Galaxy.ComputeScaledHugeMoney(RaceToOwner(GetPlayer.PilotRace)), 1173 * (Integer(Kind) + 13) + InvestmentBusinessCenterStar.GenerationSeed);
           Name := LocalizedColorText('Investment.' + CoalitionProjectNames[Kind] + '.Name');
           ReplaceTextToken(Name, '<Star>', BestStar.Name, '<color=255,240,100>');
           ReplaceTextToken(Name, '<Money>', IntToStr(StationServiceQuoteCost), '<color=255,240,100>');
@@ -4932,7 +4933,7 @@ begin
           if BestStar = nil then Continue;
           InvestmentMedicalBaseStar := BestStar;
           StationServiceQuoteCost := SeededRandomIntRange(Galaxy.ComputeScaledHugeMoney(RaceToOwner(GetPlayer.PilotRace)) div 2,
-            2 * Galaxy.ComputeScaledHugeMoney(RaceToOwner(GetPlayer.PilotRace)), 1174 * (Kind + 13) + InvestmentMedicalBaseStar.GenerationSeed);
+            2 * Galaxy.ComputeScaledHugeMoney(RaceToOwner(GetPlayer.PilotRace)), 1174 * (Integer(Kind) + 13) + InvestmentMedicalBaseStar.GenerationSeed);
           Name := LocalizedColorText('Investment.' + CoalitionProjectNames[Kind] + '.Name');
           ReplaceTextToken(Name, '<Star>', BestStar.Name, '<color=255,240,100>');
           ReplaceTextToken(Name, '<Money>', IntToStr(StationServiceQuoteCost), '<color=255,240,100>');
@@ -4949,7 +4950,7 @@ begin
           if Galaxy.CountEligibleRangers < 20 then Continue;
           if SeededRandomUnitFloat(Galaxy.CurrentTurn div 71 + GetPlayer.DockedTo.Seed + 16689) < 0.5 then Continue;
           StationServiceQuoteCost := SeededRandomIntRange(Galaxy.ComputeScaledHugeMoney(RaceToOwner(GetPlayer.PilotRace)) div 4,
-            2 * Galaxy.ComputeScaledHugeMoney(RaceToOwner(GetPlayer.PilotRace)), 1123475 * (Kind + 13));
+            2 * Galaxy.ComputeScaledHugeMoney(RaceToOwner(GetPlayer.PilotRace)), 1123475 * (Integer(Kind) + 13));
           Name := LocalizedColorText('Investment.' + CoalitionProjectNames[Kind] + '.Name');
           ReplaceTextToken(Name, '<Money>', IntToStr(StationServiceQuoteCost), '<color=255,240,100>');
           Text := LocalizedColorText('FormRuins.BK.Investment.BKInvestment');
@@ -4964,7 +4965,7 @@ begin
         begin
           if SeededRandomUnitFloat(Galaxy.CurrentTurn div 71 + GetPlayer.DockedTo.Seed + 5789) < 0.7 then Continue;
           StationServiceQuoteCost := SeededRandomIntRange(Galaxy.ComputeScaledHugeMoney(RaceToOwner(GetPlayer.PilotRace)) div 2,
-            2 * Galaxy.ComputeScaledHugeMoney(RaceToOwner(GetPlayer.PilotRace)), 1175234 * (Kind + 13));
+            2 * Galaxy.ComputeScaledHugeMoney(RaceToOwner(GetPlayer.PilotRace)), 1175234 * (Integer(Kind) + 13));
           Name := LocalizedColorText('Investment.' + CoalitionProjectNames[Kind] + '.Name');
           ReplaceTextToken(Name, '<Money>', IntToStr(StationServiceQuoteCost), '<color=255,240,100>');
           Text := LocalizedColorText('FormRuins.BK.Investment.BKInvestment');
@@ -4979,7 +4980,7 @@ begin
         begin
           if SeededRandomUnitFloat(Galaxy.CurrentTurn div 71 + GetPlayer.DockedTo.Seed + 23739) < 0.5 then Continue;
           StationServiceQuoteCost := SeededRandomIntRange(Galaxy.ComputeScaledHugeMoney(RaceToOwner(GetPlayer.PilotRace)) div 4,
-            Galaxy.ComputeScaledHugeMoney(RaceToOwner(GetPlayer.PilotRace)), 117627 * (Kind + 13));
+            Galaxy.ComputeScaledHugeMoney(RaceToOwner(GetPlayer.PilotRace)), 117627 * (Integer(Kind) + 13));
           Name := LocalizedColorText('Investment.' + CoalitionProjectNames[Kind] + '.Name');
           ReplaceTextToken(Name, '<Money>', IntToStr(StationServiceQuoteCost), '<color=255,240,100>');
           Text := LocalizedColorText('FormRuins.BK.Investment.BKInvestment');
@@ -4993,7 +4994,7 @@ begin
         cpLostSubsidy:
         begin
           StationServiceQuoteCost := SeededRandomIntRange(Galaxy.ComputeScaledHugeMoney(RaceToOwner(GetPlayer.PilotRace)),
-            4 * Galaxy.ComputeScaledHugeMoney(RaceToOwner(GetPlayer.PilotRace)), 1177961 * (Kind + 13));
+            4 * Galaxy.ComputeScaledHugeMoney(RaceToOwner(GetPlayer.PilotRace)), 1177961 * (Integer(Kind) + 13));
           Name := LocalizedColorText('Investment.' + CoalitionProjectNames[Kind] + '.Name');
           ReplaceTextToken(Name, '<Money>', IntToStr(StationServiceQuoteCost), '<color=255,240,100>');
           Text := LocalizedColorText('FormRuins.BK.Investment.BKInvestment');
@@ -5010,7 +5011,7 @@ begin
           BestScore := 0;
           BoundA := 0;
           BoundB := Galaxy.Planets.Count - 1;
-          Index := SeededRandomIntRange(BoundA, BoundB, GetPlayer.DockedTo.Seed + Galaxy.GenerationSeed + Galaxy.CurrentTurn div 60 + 174313 + 73163 * Kind);
+          Index := SeededRandomIntRange(BoundA, BoundB, GetPlayer.DockedTo.Seed + Galaxy.GenerationSeed + Galaxy.CurrentTurn div 60 + 174313 + 73163 * Integer(Kind));
           for I := 0 to Galaxy.Planets.Count - 1 do
           begin
             IncrementWrapped(Index, BoundA, BoundB);
@@ -5033,7 +5034,7 @@ begin
           if BestPlanet = nil then Continue;
           InvestmentDefensePlanet := BestPlanet;
           StationServiceQuoteCost := SeededRandomIntRange(Galaxy.ComputeScaledHugeMoney(RaceToOwner(GetPlayer.PilotRace)),
-            5 * Galaxy.ComputeScaledHugeMoney(RaceToOwner(GetPlayer.PilotRace)), 1178 * (Kind + 13) + InvestmentDefensePlanet.GenerationSeed);
+            5 * Galaxy.ComputeScaledHugeMoney(RaceToOwner(GetPlayer.PilotRace)), 1178 * (Integer(Kind) + 13) + InvestmentDefensePlanet.GenerationSeed);
           Name := LocalizedColorText('Investment.' + CoalitionProjectNames[Kind] + '.Name');
           ReplaceTextToken(Name, '<Planet>', BestPlanet.Name, '<color=255,240,100>');
           ReplaceTextToken(Name, '<Star>', BestPlanet.CurrentStar.Name, '<color=255,240,100>');
@@ -5065,7 +5066,7 @@ const
   PirateTypes = [htPirate];
   TransportTypes = [htRanger..15] - [htRanger..htPirate, htDiplomat..15];
 var
-  Kind: Byte;
+  Kind: TCoalitionProject;
   RangerCenter, PirateBase, MilitaryBase, ScienceBase, BusinessCenter, MedicalBase: TRuins;
   I, J, Experience, RankPoints, Count: Integer;
   Star: TStar;
@@ -5074,7 +5075,7 @@ var
   Warrior: TWarrior;
   Text, ShipNames: WideString;
 begin
-  Kind := Action;
+  Kind := TCoalitionProject(Action);
   StationServiceQuoteCost := InvestmentQuoteCosts[Kind];
   GetPlayer.StationServiceLastUseTurns[Kind] := Galaxy.CurrentTurn;
   case Kind of
@@ -5205,7 +5206,7 @@ begin
         if (GetPlayer <> Ranger) and not Ranger.ExcludedFromRating and (Ranger.Wealth <= Galaxy.AverageRangerCapital) then
           Ranger.SetMoney(Ranger.Money + Round(StationServiceQuoteCost / Count));
       end;
-      Galaxy.AddPlanetNewsWithPlayerBubble(42, FormatText1(PickLocalizedTextVariant('Investment.' + CoalitionProjectNames[Kind] + '.GalaxyMessage', Kind + Galaxy.CurrentTurn div 10 * GetPlayer.DockedTo.Seed), '<color=255,240,100>',
+      Galaxy.AddPlanetNewsWithPlayerBubble(42, FormatText1(PickLocalizedTextVariant('Investment.' + CoalitionProjectNames[Kind] + '.GalaxyMessage', Integer(Kind) + Galaxy.CurrentTurn div 10 * GetPlayer.DockedTo.Seed), '<color=255,240,100>',
         '<Money>', IntToStr(StationServiceQuoteCost)));
       DialogText := LocalizedColorText('FormRuins.BK.Investment.BKAfterInvestment');
       ReplaceTextToken(DialogText, '<InvestmentText>', LocalizedColorText('Investment.' + CoalitionProjectNames[Kind] + '.Text'), '');
@@ -5225,7 +5226,7 @@ begin
           if Ship.TypeId = stPirate then Ship.SetMoney(Ship.Money + StationServiceQuoteCost div Count);
         end;
       end;
-      Galaxy.AddPlanetNewsWithPlayerBubble(42, FormatText2(PickLocalizedTextVariant('Investment.' + CoalitionProjectNames[Kind] + '.GalaxyMessage', Kind + Galaxy.CurrentTurn div 10 * GetPlayer.DockedTo.Seed), '<color=255,240,100>',
+      Galaxy.AddPlanetNewsWithPlayerBubble(42, FormatText2(PickLocalizedTextVariant('Investment.' + CoalitionProjectNames[Kind] + '.GalaxyMessage', Integer(Kind) + Galaxy.CurrentTurn div 10 * GetPlayer.DockedTo.Seed), '<color=255,240,100>',
         '<Money>', IntToStr(StationServiceQuoteCost), '<BK>', GetPlayer.DockedTo.Name));
       DialogText := LocalizedColorText('FormRuins.BK.Investment.BKAfterInvestment');
       ReplaceTextToken(DialogText, '<InvestmentText>', LocalizedColorText('Investment.' + CoalitionProjectNames[Kind] + '.Text'), '');
@@ -5245,7 +5246,7 @@ begin
           if Ship.TypeId = stTransport then Ship.SetMoney(Ship.Money + StationServiceQuoteCost div Count);
         end;
       end;
-      Galaxy.AddPlanetNewsWithPlayerBubble(42, FormatText2(PickLocalizedTextVariant('Investment.' + CoalitionProjectNames[Kind] + '.GalaxyMessage', Kind + Galaxy.CurrentTurn div 10 * GetPlayer.DockedTo.Seed), '<color=255,240,100>',
+      Galaxy.AddPlanetNewsWithPlayerBubble(42, FormatText2(PickLocalizedTextVariant('Investment.' + CoalitionProjectNames[Kind] + '.GalaxyMessage', Integer(Kind) + Galaxy.CurrentTurn div 10 * GetPlayer.DockedTo.Seed), '<color=255,240,100>',
         '<Money>', IntToStr(StationServiceQuoteCost), '<BK>', GetPlayer.DockedTo.Name));
       DialogText := LocalizedColorText('FormRuins.BK.Investment.BKAfterInvestment');
       ReplaceTextToken(DialogText, '<InvestmentText>', LocalizedColorText('Investment.' + CoalitionProjectNames[Kind] + '.Text'), '');
@@ -5255,7 +5256,7 @@ begin
     cpLostSubsidy:
     begin
       GetPlayer.SetMoney(GetPlayer.Money - StationServiceQuoteCost);
-      Galaxy.AddPlanetNewsWithPlayerBubble(42, FormatText2(PickLocalizedTextVariant('Investment.' + CoalitionProjectNames[Kind] + '.GalaxyMessage', Kind + Galaxy.CurrentTurn div 10 * GetPlayer.DockedTo.Seed), '<color=255,240,100>',
+      Galaxy.AddPlanetNewsWithPlayerBubble(42, FormatText2(PickLocalizedTextVariant('Investment.' + CoalitionProjectNames[Kind] + '.GalaxyMessage', Integer(Kind) + Galaxy.CurrentTurn div 10 * GetPlayer.DockedTo.Seed), '<color=255,240,100>',
         '<Money>', IntToStr(StationServiceQuoteCost), '<BK>', GetPlayer.DockedTo.Name));
       DialogText := LocalizedColorText('FormRuins.BK.Investment.BKAfterInvestment');
       ReplaceTextToken(DialogText, '<InvestmentText>', LocalizedColorText('Investment.' + CoalitionProjectNames[Kind] + '.Text'), '');
@@ -5276,7 +5277,7 @@ begin
         Warrior.Name := Warrior.Name + ' ' + GetPlayer.Name;
         ShipNames := ShipNames + Warrior.GetName + #13#10;
       end;
-      Text := PickLocalizedTextVariant('Investment.' + CoalitionProjectNames[Kind] + '.GalaxyMessage', Kind + Galaxy.CurrentTurn div 10 * GetPlayer.DockedTo.Seed);
+      Text := PickLocalizedTextVariant('Investment.' + CoalitionProjectNames[Kind] + '.GalaxyMessage', Integer(Kind) + Galaxy.CurrentTurn div 10 * GetPlayer.DockedTo.Seed);
       ReplaceTextToken(Text, '<BK>', GetPlayer.DockedTo.Name, '<color=255,240,100>');
       ReplaceTextToken(Text, '<Count>', IntToStr(Count), '<color=255,240,100>');
       ReplaceTextToken(Text, '<Planet>', InvestmentDefensePlanet.Name, '<color=255,240,100>');
@@ -7289,7 +7290,7 @@ begin
     Group := Galaxy.LiberationGroups[I];
     if (Group = nil) or (Group.Ships.Count <= 0) then Continue;
     Entry := Group.Route[Length(Group.Route) - 1];
-    if Entry.Kind = 3 then
+    if Entry.Kind = soJump then
     begin
       Star := TStar(Entry.Target);
       if Star = nil then Continue;
