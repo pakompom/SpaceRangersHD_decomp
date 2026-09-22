@@ -5,6 +5,10 @@ interface
 
 uses CPDiapClass, EC_Struct;
 
+const
+  // Arithmetic saturation and numeric-conversion limit; also used on zero division.
+  QuestNumericLimit = 2000000000;
+
 type
   TCPValueKind = (cpvkRange = 0, cpvkFloat = 1,
     cpvkInteger = 2); // @size 0x01
@@ -156,8 +160,8 @@ begin
   if ValueKind = cpvkRange then Result := Range.GetRandomValue
   else if ValueKind = cpvkFloat then
   begin
-    if FloatValue < -2000000000 then Result := -2000000000
-    else if FloatValue > 2000000000 then Result := 2000000000
+    if FloatValue < -QuestNumericLimit then Result := -QuestNumericLimit
+    else if FloatValue > QuestNumericLimit then Result := QuestNumericLimit
     else Result := System.Round(FloatValue + 1E-11);
   end
   else if ValueKind = cpvkInteger then Result := IntValue;

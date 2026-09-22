@@ -763,7 +763,7 @@ begin
     begin
       if Obj is TStarSE then
       begin
-        SetLightAngle(Trunc(ArcTan2(-(Position.X - Obj.Position.X), Position.Y - Obj.Position.Y) * 180 / 3.1415926 * 256 / 360));
+        SetLightAngle(Trunc(ArcTan2(-(Position.X - Obj.Position.X), Position.Y - Obj.Position.Y) * 180 / GamePi * 256 / 360));
         Break;
       end;
       Obj := Obj.Next;

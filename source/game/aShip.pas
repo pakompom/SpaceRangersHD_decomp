@@ -1903,7 +1903,7 @@ end;
 { @routine $74DC04 TShip_SetMoney }
 procedure TShip.SetMoney(Value: Integer);
 begin
-  if Value > 100000000 then Value := 100000000
+  if Value > MaxMonetaryValue then Value := MaxMonetaryValue
   else if Value < 0 then Value := 0;
   if (Integer(EncodedMoney xor $A4A576AD) <> Money) and not GR_Main.CCInterface.GetTamperDetected then
     GR_Main.CCInterface.SetTamperDetected(True);
@@ -1936,12 +1936,12 @@ begin
   Dec(GetFuelTanks.Fuel, Lost);
   if GetPlayer = Self then
   begin
-    AddOrUpdatePlayerBubble(8, Galaxy.CurrentTurn, LocalizedText('Items.FuelTanks.LostFuel'), '').Targets[0].ShipId := Id;
+    AddOrUpdatePlayerBubble(pmShipNegative, Galaxy.CurrentTurn, LocalizedText('Items.FuelTanks.LostFuel'), '').Targets[0].ShipId := Id;
   end;
   if (GetPlayer = Self) and InNormalSpace and (Order = soJump) then
     if GetFuelTanks.Fuel < Round(PointDistance((OrderTarget as TStar).Position, CurrentStar.Position)) then
     begin
-      AddOrUpdatePlayerBubble(8, Galaxy.CurrentTurn,
+      AddOrUpdatePlayerBubble(pmShipNegative, Galaxy.CurrentTurn,
         FormatText1(LocalizedText('Items.FuelTanks.NoFuelJump'),
           '<color=255,240,100>', '<Star>', (OrderTarget as TStar).Name), '').Targets[0].ShipId := Id;
       OrderMove(OrderDestination, False);
@@ -1991,7 +1991,7 @@ begin
       Item := UseList[I];
       Text := Text + #13#10 + '- ' + Item.GetDisplayName;
     end;
-    AddOrUpdatePlayerBubble(2, Galaxy.CurrentTurn, Text, '');
+    AddOrUpdatePlayerBubble(pmShipPositive, Galaxy.CurrentTurn, Text, '');
   end;
   if RepairList.Count > 0 then
   begin
@@ -2001,7 +2001,7 @@ begin
       Item := RepairList[I];
       Text := Text + #13#10 + '- ' + Item.GetDisplayName;
     end;
-    AddOrUpdatePlayerBubble(2, Galaxy.CurrentTurn, Text, '');
+    AddOrUpdatePlayerBubble(pmShipPositive, Galaxy.CurrentTurn, Text, '');
   end;
   UseList.Free;
   RepairList.Free;
@@ -2105,7 +2105,7 @@ begin
                 if Order = soJump then
                   if GetFuelLimitedJumpRange < System.Round(PointDistance((OrderTarget as TStar).Position, CurrentStar.Position)) then
                   begin
-                    AddOrUpdatePlayerBubble(8, aGalaxy.Galaxy.CurrentTurn, FormatText1(LocalizedText('Items.Engine.NoPowerJump'), '<color=255,240,100>', '<Star>', (OrderTarget as TStar).Name), '').Targets[0].ShipId := Id;
+                    AddOrUpdatePlayerBubble(pmShipNegative, aGalaxy.Galaxy.CurrentTurn, FormatText1(LocalizedText('Items.Engine.NoPowerJump'), '<color=255,240,100>', '<Star>', (OrderTarget as TStar).Name), '').Targets[0].ShipId := Id;
                     OrderMove(OrderDestination, False);
                   end;
           end;
@@ -3405,7 +3405,7 @@ begin
   ReplaceTextToken(Text, '<Date>', Galaxy.FormatTurnDate(-1), '<color=255,240,100>');
   ReplaceTextToken(Text, '<Name>', GetName, '<color=255,240,100>');
   ReplaceTextToken(Text, '<FullName>', GetFullName(' '), '<color=255,240,100>');
-  AddOrUpdatePlayerBubble(0, Galaxy.CurrentTurn, Text, '');
+  AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn, Text, '');
 end;
 { @end $7541D8 }
 
@@ -6340,7 +6340,7 @@ begin
   end;
   if GetEngine <> nil then
   begin
-    MovementTurnRate := RemapClamped(Speed, EngineLevelStats[1].Speed / 2, EngineLevelStats[8].Speed, 1, 5) * 200 * 0.005;
+    MovementTurnRate := RemapClamped(Speed, EngineLevelStats[1].Speed / 2, EngineLevelStats[8].Speed, 1, 5) * BaseMovementStepsPerTurn * 0.005;
     MovementSpeed := Speed * 0.005;
   end
   else MovementSpeed := 0;
@@ -8819,15 +8819,15 @@ begin
     if (GetPlayer = Self) and (Item.EquippedFlag <> 0) then
     begin
       case Kind of
-        idkBattle: AddOrUpdatePlayerBubble(8, Galaxy.CurrentTurn, Item.GetBrokenInBattleText, '').Targets[0].ShipId := Id;
-        idkUse, idkAfterburner: AddOrUpdatePlayerBubble(8, Galaxy.CurrentTurn, Item.GetBrokenInUseText, '').Targets[0].ShipId := Id;
-        idkForce: AddOrUpdatePlayerBubble(8, Galaxy.CurrentTurn, Item.GetBrokenByForceText, '').Targets[0].ShipId := Id;
+        idkBattle: AddOrUpdatePlayerBubble(pmShipNegative, Galaxy.CurrentTurn, Item.GetBrokenInBattleText, '').Targets[0].ShipId := Id;
+        idkUse, idkAfterburner: AddOrUpdatePlayerBubble(pmShipNegative, Galaxy.CurrentTurn, Item.GetBrokenInUseText, '').Targets[0].ShipId := Id;
+        idkForce: AddOrUpdatePlayerBubble(pmShipNegative, Galaxy.CurrentTurn, Item.GetBrokenByForceText, '').Targets[0].ShipId := Id;
       end;
       PlayerEquipmentBrokenThisTurn := True;
     end;
     if (GetPlayer = Self) and (Item is TSatellite) and ((Item as TSatellite).TargetPlanet <> nil) then
     begin
-      AddOrUpdatePlayerBubble(8, Galaxy.CurrentTurn, (Item as TSatellite).GetBrokenInUseText, '').Targets[0].ShipId := Id;
+      AddOrUpdatePlayerBubble(pmShipNegative, Galaxy.CurrentTurn, (Item as TSatellite).GetBrokenInUseText, '').Targets[0].ShipId := Id;
       GetPlayer.RefreshStorageBubbles;
     end;
     RefreshDerivedStats(True);
@@ -10120,7 +10120,7 @@ begin
   if (GetPlayer = Self) and (Order = soJump) and InNormalSpace then
     if GetFuelTanks.Fuel < Round(PointDistance((OrderTarget as TStar).Position, CurrentStar.Position)) then
     begin
-      AddOrUpdatePlayerBubble(8, Galaxy.CurrentTurn,
+      AddOrUpdatePlayerBubble(pmShipNegative, Galaxy.CurrentTurn,
         FormatText1(LocalizedText('Items.FuelTanks.NoFuelJump'), '<color=255,240,100>', '<Star>', (OrderTarget as TStar).Name), '').Targets[0].ShipId := Id;
       OrderMove(OrderDestination, False);
     end;
@@ -10988,7 +10988,7 @@ procedure TShip.BuildFullPathTo(Destination: TPointF);
 begin
   ClearMovementPath;
   if MovementSpeed < 0.001 then Exit;
-  AppendStarAvoidingPath(Destination, 999999);
+  AppendStarAvoidingPath(Destination, FullPathNodeLimit);
 end;
 { @end $771898 }
 
@@ -11006,7 +11006,7 @@ begin
   Steps := 0;
   while True do
   begin
-    Inc(Steps, 200);
+    Inc(Steps, BaseMovementStepsPerTurn);
     if Steps > 10000 then Break;
     Destination := AddPointsF(Planet.PredictPosition(Steps), OrderDestination);
     AppendStarAvoidingPath(Destination, Steps);
@@ -11196,10 +11196,10 @@ var
 begin
   AppendTurningPath(Destination, False, MaximumNodes);
   AppendStraightPath(Destination, MaximumNodes);
-  if (PlayerStar = CurrentStar) and (MovementPath.NodeCount < 200) and
+  if (PlayerStar = CurrentStar) and (MovementPath.NodeCount < BaseMovementStepsPerTurn) and
     ((GetPlayer.CurrentPlanet = nil) or ((GetPlayer.CurrentPlanet <> nil) and (GetPlayer.Order = soTakeoff))) then
-    MovementPath.ResampleBezierRange(MovementPath.ActiveHead, MovementPath.ActiveTail, 200);
-  Step := MovementSpeed * 200 * CurrentStar.MovementStepScale;
+    MovementPath.ResampleBezierRange(MovementPath.ActiveHead, MovementPath.ActiveTail, BaseMovementStepsPerTurn);
+  Step := MovementSpeed * BaseMovementStepsPerTurn * CurrentStar.MovementStepScale;
   if MovementPath.ActiveHead <> nil then
   begin
     if PointDistanceSquared(MovementPath.ActiveTail.Position, Destination) < Step * Step then
@@ -11215,7 +11215,7 @@ var
 begin
   AppendTurningPath(Destination, False, MaximumNodes);
   AppendStraightPath(Destination, MaximumNodes);
-  Step := MovementSpeed * 200 * CurrentStar.MovementStepScale;
+  Step := MovementSpeed * BaseMovementStepsPerTurn * CurrentStar.MovementStepScale;
   if MovementPath.ActiveHead <> nil then
   begin
     if PointDistanceSquared(MovementPath.ActiveTail.Position, Destination) < Step * Step then
@@ -11230,10 +11230,10 @@ var
   Step: Single;
 begin
   AppendStarAvoidingPath(Destination, MaximumNodes);
-  if (PlayerStar = CurrentStar) and (MovementPath.NodeCount < 200) and
+  if (PlayerStar = CurrentStar) and (MovementPath.NodeCount < BaseMovementStepsPerTurn) and
     ((GetPlayer.CurrentPlanet = nil) or ((GetPlayer.CurrentPlanet <> nil) and (GetPlayer.Order = soTakeoff))) then
-    MovementPath.ResampleBezierRange(MovementPath.ActiveHead, MovementPath.ActiveTail, 200);
-  Step := MovementSpeed * 200 * CurrentStar.MovementStepScale;
+    MovementPath.ResampleBezierRange(MovementPath.ActiveHead, MovementPath.ActiveTail, BaseMovementStepsPerTurn);
+  Step := MovementSpeed * BaseMovementStepsPerTurn * CurrentStar.MovementStepScale;
   if MovementPath.ActiveHead <> nil then
   begin
     if PointDistanceSquared(MovementPath.ActiveTail.Position, Destination) < Step * Step then
@@ -11250,12 +11250,12 @@ var
   Radius, Angle, Step: Single;
   Point: TPointF;
 begin
-  if MaximumNodes > 200 then MaximumNodes := 200;
+  if MaximumNodes > BaseMovementStepsPerTurn then MaximumNodes := BaseMovementStepsPerTurn;
   if MovementPath.ActiveTail = nil then Point := Position
   else Point := MovementPath.ActiveTail.Position;
   Radius := Sqrt(Point.X * Point.X + Point.Y * Point.Y);
   Angle := ArcTan2(Point.X, -Point.Y);
-  if Radius = 0 then Step := 0 else Step := MovementSpeed * 200 * CurrentStar.MovementStepScale / Radius;
+  if Radius = 0 then Step := 0 else Step := MovementSpeed * BaseMovementStepsPerTurn * CurrentStar.MovementStepScale / Radius;
   for I := 0 to MaximumNodes - 1 do
   begin
     MovementPath.AppendNode;
@@ -11265,8 +11265,8 @@ begin
     Node.Heading := 0;
     Angle := Angle + Step;
   end;
-  if (CurrentStar = PlayerStar) and (MovementPath.NodeCount < 200) then
-    MovementPath.ResampleBezierRange(MovementPath.ActiveHead, MovementPath.ActiveTail, 200);
+  if (CurrentStar = PlayerStar) and (MovementPath.NodeCount < BaseMovementStepsPerTurn) then
+    MovementPath.ResampleBezierRange(MovementPath.ActiveHead, MovementPath.ActiveTail, BaseMovementStepsPerTurn);
 end;
 { @end $772B60 }
 
@@ -11304,8 +11304,8 @@ begin
       end;
     Exit;
   end;
-  TurnStep := MovementTurnRate * 200 * CurrentStar.MovementStepScale;
-  Step := MovementSpeed * 200 * CurrentStar.MovementStepScale;
+  TurnStep := MovementTurnRate * BaseMovementStepsPerTurn * CurrentStar.MovementStepScale;
+  Step := MovementSpeed * BaseMovementStepsPerTurn * CurrentStar.MovementStepScale;
   if (Order = soTakeoff) or ((Order = soJumpHole) and (OrderStateData = -65536)) then
   begin
     Step := Step / 2;
@@ -11390,7 +11390,7 @@ var
 begin
   if MovementPath.ActiveTail = nil then Point := Position else Point := MovementPath.ActiveTail.Position;
   if (Point.X = Destination.X) and (Point.Y = Destination.Y) then Exit;
-  Step := MovementSpeed * 200 * CurrentStar.MovementStepScale;
+  Step := MovementSpeed * BaseMovementStepsPerTurn * CurrentStar.MovementStepScale;
   if (Order = soTakeoff) or ((Order = soJumpHole) and (OrderStateData = -65536)) then Step := Min(2, Step / 2);
   Heading := RadiansToHeadingDegrees(ArcTan2(-(Point.X - Destination.X), Point.Y - Destination.Y));
   if Abs(Point.X - Destination.X) < Abs(Point.Y - Destination.Y) then UseY := True else UseY := False;
@@ -11458,10 +11458,10 @@ begin
   begin
     Point := MovementPath.ActiveTail.Position;
     Heading := MovementPath.ActiveTail.Heading;
-    if PlayerStar = CurrentStar then I := Min(100, MovementPath.NodeCount mod 200);
+    if PlayerStar = CurrentStar then I := Min(100, MovementPath.NodeCount mod BaseMovementStepsPerTurn);
   end;
   Count := CurrentStar.MovementStepCount;
-  Minimum := 1 / (200 * CurrentStar.MovementStepScale);
+  Minimum := 1 / (BaseMovementStepsPerTurn * CurrentStar.MovementStepScale);
   Maximum := 300 / (Count - I);
   if Direction > 0 then
   begin
@@ -11559,8 +11559,8 @@ begin
   if MovementPath.ActiveTail = nil then Point := Position else Point := MovementPath.ActiveTail.Position;
   FromHeading := RadiansToHeadingDegrees(ArcTan2(Point.X, -Point.Y));
   ToHeading := RadiansToHeadingDegrees(ArcTan2(Destination.X, -Destination.Y));
-  DistancePerStep := MovementSpeed * 200 * CurrentStar.MovementStepScale;
-  Step := DistancePerStep * 180 / (3.1415926 * Radius);
+  DistancePerStep := MovementSpeed * BaseMovementStepsPerTurn * CurrentStar.MovementStepScale;
+  Step := DistancePerStep * 180 / (GamePi * Radius);
   Difference := HeadingDifferenceDegrees(FromHeading, ToHeading);
   if Difference < 0 then Step := -Step;
   if Abs(Difference) <= 5 then
@@ -12330,7 +12330,7 @@ begin
     begin
       Item.BrokenFlag := 0;
       if GetPlayer = Self then
-        AddOrUpdatePlayerBubble(2, Galaxy.CurrentTurn, FormatText1(LocalizedText('Artefacts.ArtNano.RepairItem'),
+        AddOrUpdatePlayerBubble(pmShipPositive, Galaxy.CurrentTurn, FormatText1(LocalizedText('Artefacts.ArtNano.RepairItem'),
           '<color=255,240,100>', '<Name>', Item.GetDisplayName), '').Targets[0].ShipId := Id;
     end;
   end;
@@ -12450,7 +12450,7 @@ begin
   Header := '<color=255,240,100>' + GetFullName(' ') + '</color>' + LookupTalkText('Talk.To') + '<color=255,240,100>' + OtherShip.GetFullName(' ') + '</color>';
   Request := '- ' + ReplaceColoredToken(LookupTalkText('Talk.Money.Send'), '<Money>', IntToStr(Amount), '<color=255,240,100>');
   Response := '- ' + Response;
-  with AddOrUpdatePlayerBubble(1, Galaxy.CurrentTurn, Header + #13#10 + Request + #13#10 + Response, '') do begin
+  with AddOrUpdatePlayerBubble(pmRadio, Galaxy.CurrentTurn, Header + #13#10 + Request + #13#10 + Response, '') do begin
     Targets[0].ShipId := Self.Id;
     Targets[1].ShipId := OtherShip.Id;
   end;
@@ -12468,7 +12468,7 @@ begin
   Header := '<color=255,240,100>' + GetFullName(' ') + '</color>' + LookupTalkText('Talk.To') + '<color=255,240,100>' + OtherShip.GetFullName(' ') + '</color>';
   Request := '- ' + WrapTextInColor(LookupTalkText('Talk.Goods.Send'), '');
   Response := '- ' + Response;
-  with AddOrUpdatePlayerBubble(1, Galaxy.CurrentTurn, Header + #13#10 + Request + #13#10 + Response, '') do begin
+  with AddOrUpdatePlayerBubble(pmRadio, Galaxy.CurrentTurn, Header + #13#10 + Request + #13#10 + Response, '') do begin
     Targets[0].ShipId := Self.Id;
     Targets[1].ShipId := OtherShip.Id;
   end;
@@ -12491,7 +12491,7 @@ begin
         ReplaceTextToken(Request, '<Star>', CurrentStar.Name, '<color=255,240,100>');
         Header := '<color=255,240,100>' + GetFullName(' ') + '</color>' + ':';
         Request := '- ' + Request;
-        with AddOrUpdatePlayerBubble(1, Galaxy.CurrentTurn, Header + #13#10 + Request, '') do begin
+        with AddOrUpdatePlayerBubble(pmRadio, Galaxy.CurrentTurn, Header + #13#10 + Request, '') do begin
           Targets[0].ShipId := Self.Id;
           Targets[1].ShipId := OtherShip.Id;
         end;
@@ -12513,7 +12513,7 @@ begin
   Header := '<color=255,240,100>' + GetFullName(' ') + '</color>' + LookupTalkText('Talk.To') + '<color=255,240,100>' + OtherShip.GetFullName(' ') + '</color>';
   Request := '- ' + ReplaceColoredToken(LookupTalkText('Talk.Truce.' + GetTypeNameKey + 'Send'), '<Money>', IntToStr(Amount), '<color=255,240,100>');
   Response := '- ' + Response;
-  with AddOrUpdatePlayerBubble(1, Galaxy.CurrentTurn, Header + #13#10 + Request + #13#10 + Response, '') do begin
+  with AddOrUpdatePlayerBubble(pmRadio, Galaxy.CurrentTurn, Header + #13#10 + Request + #13#10 + Response, '') do begin
     Targets[0].ShipId := Self.Id;
     Targets[1].ShipId := OtherShip.Id;
   end;
@@ -12532,7 +12532,7 @@ begin
   Header := '<color=255,240,100>' + GetFullName(' ') + '</color>' + LookupTalkText('Talk.To') + '<color=255,240,100>' + OtherShip.GetFullName(' ') + '</color>';
   Request := '- ' + ReplaceColoredToken(LookupTalkText('Talk.Attack.' + GetTypeNameKey + 'Send'), '<Target>', Target.GetFullName(' '), '<color=255,240,100>');
   Response := '- ' + Response;
-  with AddOrUpdatePlayerBubble(1, Galaxy.CurrentTurn, Header + #13#10 + Request + #13#10 + Response, '') do begin
+  with AddOrUpdatePlayerBubble(pmRadio, Galaxy.CurrentTurn, Header + #13#10 + Request + #13#10 + Response, '') do begin
     Targets[0].ShipId := Self.Id;
     Targets[1].ShipId := OtherShip.Id;
     Targets[2].ShipId := Target.Id;
@@ -12552,7 +12552,7 @@ begin
   Header := '<color=255,240,100>' + GetFullName(' ') + '</color>' + LookupTalkText('Talk.To') + '<color=255,240,100>' + OtherShip.GetFullName(' ') + '</color>';
   Request := '- ' + FormatText1(LookupTalkText('Talk.Partner.Send'), '<color=255,240,100>', '<Money>', IntToStr(Amount));
   Response := '- ' + Response;
-  with AddOrUpdatePlayerBubble(1, Galaxy.CurrentTurn, Header + #13#10 + Request + #13#10 + Response, '') do begin
+  with AddOrUpdatePlayerBubble(pmRadio, Galaxy.CurrentTurn, Header + #13#10 + Request + #13#10 + Response, '') do begin
     Targets[0].ShipId := Self.Id;
     Targets[1].ShipId := OtherShip.Id;
   end;
@@ -12576,7 +12576,7 @@ begin
           Request := #13#10'- ' + LookupTalkText('Talk.Partner.MateBreak');
           Response := #13#10'- ' + LookupTalkText('Talk.Partner.AnswerLiderBreak');
           if Leader.NoTalk then Response := '';
-          with AddOrUpdatePlayerBubble(1, Galaxy.CurrentTurn, Header + Request + Response, '') do begin
+          with AddOrUpdatePlayerBubble(pmRadio, Galaxy.CurrentTurn, Header + Request + Response, '') do begin
             Targets[0].ShipId := Self.Id;
             Targets[1].ShipId := Leader.Id;
           end;
@@ -12607,7 +12607,7 @@ begin
           else Request := #13#10'- ' + LookupTalkText('Talk.Partner.MateTheEndLowLeadership');
           Response := #13#10'- ' + LookupTalkText('Talk.Partner.AnswerLiderTheEnd');
           if Leader.NoTalk then Response := '';
-          with AddOrUpdatePlayerBubble(1, Galaxy.CurrentTurn, Header + Request + Response, '') do begin
+          with AddOrUpdatePlayerBubble(pmRadio, Galaxy.CurrentTurn, Header + Request + Response, '') do begin
             Targets[0].ShipId := Self.Id;
             Targets[1].ShipId := Leader.Id;
           end;
@@ -12634,7 +12634,7 @@ begin
           Request := #13#10'- ' + LookupTalkText('Talk.Partner.MateRiot');
           Response := #13#10'- ' + LookupTalkText('Talk.Partner.AnswerLiderRiot');
           if Leader.NoTalk then Response := '';
-          with AddOrUpdatePlayerBubble(1, Galaxy.CurrentTurn, Header + Request + Response, '') do begin
+          with AddOrUpdatePlayerBubble(pmRadio, Galaxy.CurrentTurn, Header + Request + Response, '') do begin
             Targets[0].ShipId := Self.Id;
             Targets[1].ShipId := Leader.Id;
           end;
@@ -12650,7 +12650,7 @@ begin
   if not NoTalk and not GetPlayer.NoTalk then
   begin
     TurnsSinceLastShipMessage := 0;
-    with AddOrUpdatePlayerBubble(1, Galaxy.CurrentTurn,
+    with AddOrUpdatePlayerBubble(pmRadio, Galaxy.CurrentTurn,
       WrapTextInColor(GetFullName(' '), '<color=255,240,100>') + #13#10 + ' ' + #13#10 + Text, '') do
     begin
       Targets[0].ShipId := Id;
@@ -12677,7 +12677,7 @@ begin
           Request := #13#10'- ' + LookupTalkText('Talk.Pirate.MateBreakRelation');
           Response := #13#10'- ' + LookupTalkText('Talk.Pirate.AnswerLiderBreak');
           if Leader.NoTalk then Response := '';
-          with AddOrUpdatePlayerBubble(1, Galaxy.CurrentTurn, Header + Request + Response, '') do begin
+          with AddOrUpdatePlayerBubble(pmRadio, Galaxy.CurrentTurn, Header + Request + Response, '') do begin
             Targets[0].ShipId := Self.Id;
             Targets[1].ShipId := Leader.Id;
           end;
@@ -12704,7 +12704,7 @@ begin
           Request := #13#10'- ' + LookupTalkText('Talk.Pirate.MateBreakRating');
           Response := #13#10'- ' + LookupTalkText('Talk.Pirate.AnswerLiderBreak');
           if Leader.NoTalk then Response := '';
-          with AddOrUpdatePlayerBubble(1, Galaxy.CurrentTurn, Header + Request + Response, '') do begin
+          with AddOrUpdatePlayerBubble(pmRadio, Galaxy.CurrentTurn, Header + Request + Response, '') do begin
             Targets[0].ShipId := Self.Id;
             Targets[1].ShipId := Leader.Id;
           end;
@@ -12735,7 +12735,7 @@ begin
           else Request := #13#10'- ' + LookupTalkText('Talk.Pirate.MateTheEndLowLeadership');
           Response := #13#10'- ' + LookupTalkText('Talk.Pirate.AnswerLiderTheEnd');
           if Leader.NoTalk then Response := '';
-          with AddOrUpdatePlayerBubble(1, Galaxy.CurrentTurn, Header + Request + Response, '') do begin
+          with AddOrUpdatePlayerBubble(pmRadio, Galaxy.CurrentTurn, Header + Request + Response, '') do begin
             Targets[0].ShipId := Self.Id;
             Targets[1].ShipId := Leader.Id;
           end;
@@ -12762,7 +12762,7 @@ begin
           Request := #13#10'- ' + LookupTalkText('Talk.Pirate.MateRiot');
           Response := #13#10'- ' + LookupTalkText('Talk.Pirate.AnswerLiderRiot');
           if Leader.NoTalk then Response := '';
-          with AddOrUpdatePlayerBubble(1, Galaxy.CurrentTurn, Header + Request + Response, '') do begin
+          with AddOrUpdatePlayerBubble(pmRadio, Galaxy.CurrentTurn, Header + Request + Response, '') do begin
             Targets[0].ShipId := Self.Id;
             Targets[1].ShipId := Leader.Id;
           end;
@@ -13660,7 +13660,7 @@ begin
       ((GetPlayer = Self) or (GetRelationLevelToShip(Ship) <= rlHostile)) and
       ((GetPlayer <> Self) or (Ship.GetRelationLevelToShip(Self) <= rlHostile) or (EnemyShip = Ship) or (PendingPlayerFollowTarget = Ship)) and
       (Sqr(Ship.Position.X) + Sqr(Ship.Position.Y) >= CurrentStar.DamageRadius * CurrentStar.DamageRadius) and
-      (PointDistanceSquared(Position, Ship.Position) <= 1000000) and
+      (PointDistanceSquared(Position, Ship.Position) <= InterceptorTargetRangeSquared) and
       (Ship.InterceptorPassesRemaining <= 0) and
       ((Current = nil) or IsBetterInterceptorTarget(Current, Ship, Strategy)) then Current := Ship;
   end;

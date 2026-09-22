@@ -1167,9 +1167,9 @@ begin
     for I := 0 to Script.EtherIds.GetCount - 1 do
     begin
       Message := FindPlayerBubbleByKey(Script.EtherIds.GetTextAt(I), False);
-      if (Message <> nil) and (Message.Kind = 3) then
+      if (Message <> nil) and (Message.Kind = pmQuestActive) then
       begin
-        Message.Kind := 5;
+        Message.Kind := pmQuestCancelled;
         Message.WasRead := False;
       end;
     end;

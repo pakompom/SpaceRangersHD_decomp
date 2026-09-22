@@ -481,13 +481,13 @@ begin
   try
     Result := nil;
     PreviousPosition := Position;
-    StepScale := 200 / CurrentStar.MovementStepCount;
+    StepScale := BaseMovementStepsPerTurn / CurrentStar.MovementStepCount;
     Inc(FlightTicks, Round(StepScale));
     TargetPosition := MakePointF(0, 0);
     HasTarget := False;
     DesiredSpeed := MaximumSpeed;
     Stage := 1;
-    if FlightTicks < 200 then
+    if FlightTicks < BaseMovementStepsPerTurn then
     begin
       Stage := 2;
       if OwnerShip <> nil then
@@ -502,14 +502,14 @@ begin
         else if Delta > 0.5 * StepScale then Delta := 0.5 * StepScale;
         Direction := WrapHeadingDegrees(Direction + Delta);
         if RecordFilm then PrimaryFilm.SetObjectAngle(StepIndex, FilmObject, HeadingDegreesToByte(Direction));
-        Position.X := Position.X + Sin(HeadingDegreesToRadians(Direction)) * (Speed / 200 * StepScale);
-        Position.Y := Position.Y - Cos(HeadingDegreesToRadians(Direction)) * (Speed / 200 * StepScale);
+        Position.X := Position.X + Sin(HeadingDegreesToRadians(Direction)) * (Speed / BaseMovementStepsPerTurn * StepScale);
+        Position.Y := Position.Y - Cos(HeadingDegreesToRadians(Direction)) * (Speed / BaseMovementStepsPerTurn * StepScale);
       end
       else
       begin
         Stage := 4;
-        Position.X := Position.X + Sin(HeadingDegreesToRadians(Direction)) * (Speed / 200 * StepScale);
-        Position.Y := Position.Y - Cos(HeadingDegreesToRadians(Direction)) * (Speed / 200 * StepScale);
+        Position.X := Position.X + Sin(HeadingDegreesToRadians(Direction)) * (Speed / BaseMovementStepsPerTurn * StepScale);
+        Position.Y := Position.Y - Cos(HeadingDegreesToRadians(Direction)) * (Speed / BaseMovementStepsPerTurn * StepScale);
       end;
     end
     else
@@ -583,8 +583,8 @@ begin
       if Abs(Speed - DesiredSpeed) <= 10 then Speed := DesiredSpeed
       else if Speed < DesiredSpeed then Speed := Speed + 10
       else if Speed > DesiredSpeed then Speed := Speed - 10;
-        Position.X := Position.X + Sin(HeadingDegreesToRadians(Direction)) * (Speed / 200 * StepScale);
-        Position.Y := Position.Y - Cos(HeadingDegreesToRadians(Direction)) * (Speed / 200 * StepScale);
+        Position.X := Position.X + Sin(HeadingDegreesToRadians(Direction)) * (Speed / BaseMovementStepsPerTurn * StepScale);
+        Position.Y := Position.Y - Cos(HeadingDegreesToRadians(Direction)) * (Speed / BaseMovementStepsPerTurn * StepScale);
     end;
     Stage := 16;
     if RecordFilm then PrimaryFilm.SetObjectPosition(StepIndex, FilmObject, Position);

@@ -1895,7 +1895,7 @@ begin
       Star.MapDiameter := Star.ComputeMapDiameter;
     end;
     Stage := 47;
-    if (TerronToStarTurn and $40000000 <> 0) and (TerronShip <> nil) then begin
+    if (TerronToStarTurn and TerronTransformationFlag <> 0) and (TerronShip <> nil) then begin
       ReleaseSpaceObject(TerronShip.CurrentStar.Graphic);
       RetainSpaceObject(TerronShip.CurrentStar.Graphic, CreateSpaceObjectByName('Star', 'Star.TerronAfter', Classes.Point(0, 0)));
     end;
@@ -2298,7 +2298,7 @@ begin
       Stage := 1;
       if Random(50) = 0 then CheckPlatformModules;
       Stage := 13;
-      if ((((CurrentTurn + Integer(GenerationSeed)) mod GetTurnsBetweenLiberationGroups) = 0) and (CurrentTurn >= 300)) or
+      if ((((CurrentTurn + Integer(GenerationSeed)) mod GetTurnsBetweenLiberationGroups) = 0) and (CurrentTurn >= GalaxyWarmupTurns)) or
          (WarDeltaWin[0] < -5) or ((CountFactionStars(sfCoalition) < 5) and (LiberationGroups.Count = 0)) or
          (CountFactionStars(sfCoalition) = 1) then begin
         Stage := 14;
@@ -2344,7 +2344,7 @@ begin
       PlayerDialogueRequestCount := 0;
       Inc(ReservedMessageCounter);
       Inc(TurnsSinceLastShipMessage);
-      if CurrentTurn mod 365 = 0 then ComputeGlobalGoodsPriceBands;
+      if CurrentTurn mod TurnsPerYear = 0 then ComputeGlobalGoodsPriceBands;
       Stage := 11;
       if GetPlayer <> nil then GetPlayer.RebuildEquipmentCache;
       Stage := 12;
@@ -2367,7 +2367,7 @@ begin
           Text := '';
           if TechLevel > PreviousTechLevel then Text := LocalizedText('Artefacts.ArtAnalyzer.TechLevelUp');
           if TechLevel < PreviousTechLevel then Text := LocalizedText('Artefacts.ArtAnalyzer.TechLevelDown');
-          if Text <> '' then AddOrUpdatePlayerBubble(0, CurrentTurn, Text, '');
+          if Text <> '' then AddOrUpdatePlayerBubble(pmGalaxyNews, CurrentTurn, Text, '');
         end;
       Stage := 21; TryDispatchMilitaryBaseToEnemyStar;
       Stage := 22; RefreshRangerWealthStats;
@@ -2450,7 +2450,7 @@ begin
   end;
   if (GetPlayer <> nil) and
     (NextRandomIntRange(0, aConst.GalaxyDifficultyTuning[Self.DifficultyLevels[6]].RandomHoleSpawnRollMaximum, Self.RandomState) = 0) and
-    (Self.Holes.Count <= 2) and (Self.CurrentTurn > 300) then
+    (Self.Holes.Count <= 2) and (Self.CurrentTurn > GalaxyWarmupTurns) then
   begin
     Hole := THole.Create;
     Hole.InitializeGraphic('');
@@ -2511,7 +2511,7 @@ begin
     begin
       Self.DominatorResearch[2].Progress := 100;
       if Self.CoalitionDefeatedTurn = 0 then
-        AddOrUpdatePlayerBubble(3, Self.TerronSeriesResolvedTurn, ReplaceColoredToken(LocalizedColorText('FormRuinsRC.Win.AddNews'), '<Date>', FormatGameTurnDate(Self.TerronSeriesResolvedTurn), '<color=255,240,100>'), 'TerronWin');
+        AddOrUpdatePlayerBubble(pmQuestActive, Self.TerronSeriesResolvedTurn, ReplaceColoredToken(LocalizedColorText('FormRuinsRC.Win.AddNews'), '<Date>', FormatGameTurnDate(Self.TerronSeriesResolvedTurn), '<color=255,240,100>'), 'TerronWin');
     end;
   end;
   if Self.KellerSeriesResolvedTurn = 0 then
@@ -2531,7 +2531,7 @@ begin
     begin
       Self.DominatorResearch[1].Progress := 100;
       if Self.CoalitionDefeatedTurn = 0 then
-        AddOrUpdatePlayerBubble(3, Self.KellerSeriesResolvedTurn, ReplaceColoredToken(LocalizedColorText('FormRuinsRC.Win.AddNews'), '<Date>', FormatGameTurnDate(Self.KellerSeriesResolvedTurn), '<color=255,240,100>'), 'KellerWin');
+        AddOrUpdatePlayerBubble(pmQuestActive, Self.KellerSeriesResolvedTurn, ReplaceColoredToken(LocalizedColorText('FormRuinsRC.Win.AddNews'), '<Date>', FormatGameTurnDate(Self.KellerSeriesResolvedTurn), '<color=255,240,100>'), 'KellerWin');
     end;
   end;
   if Self.BlazerSeriesResolvedTurn = 0 then
@@ -2554,7 +2554,7 @@ begin
     begin
       Self.DominatorResearch[0].Progress := 100;
       if Self.CoalitionDefeatedTurn = 0 then
-        AddOrUpdatePlayerBubble(3, Self.BlazerSeriesResolvedTurn, ReplaceColoredToken(LocalizedColorText('FormRuinsRC.Win.AddNews'), '<Date>', FormatGameTurnDate(Self.BlazerSeriesResolvedTurn), '<color=255,240,100>'), 'BlazerWin');
+        AddOrUpdatePlayerBubble(pmQuestActive, Self.BlazerSeriesResolvedTurn, ReplaceColoredToken(LocalizedColorText('FormRuinsRC.Win.AddNews'), '<Date>', FormatGameTurnDate(Self.BlazerSeriesResolvedTurn), '<color=255,240,100>'), 'BlazerWin');
       if (Self.BlazerLandingPlanetId <> 0) and (aKling.BlazerShip <> nil) and TShip(aKling.BlazerShip).InNormalSpace then
       begin
         aKling.BlazerShip.EnemyShip := nil;
@@ -3284,14 +3284,14 @@ begin
       if RandomIntRange(0, 2) = 0 then
       begin
         Radius := RandomIntRange(100, 250);
-        Angle := Angle1 + RandomIntRange(-1, 1) * 3.1415926 / 180;
+        Angle := Angle1 + RandomIntRange(-1, 1) * GamePi / 180;
         SpaceBackgroundEntries[EntryIndex].Position.X := Center.X + Sin(Angle) * Radius;
         SpaceBackgroundEntries[EntryIndex].Position.Y := Center.Y - Cos(Angle) * Radius;
       end
       else if RandomIntRange(0, 2) <> 0 then
       begin
         Radius := RandomIntRange(100, 250);
-        Angle := Angle2 + RandomIntRange(-3, 3) * 3.1415926 / 180;
+        Angle := Angle2 + RandomIntRange(-3, 3) * GamePi / 180;
         SpaceBackgroundEntries[EntryIndex].Position.X := Center.X + Sin(Angle) * Radius;
         SpaceBackgroundEntries[EntryIndex].Position.Y := Center.Y - Cos(Angle) * Radius;
       end
@@ -3365,8 +3365,8 @@ var ExclusionCount: Integer; Exclusions: array[0..10] of Cardinal;
   // @nested $7A7BB8 NextStateXorMask
   function NextStateXorMask: Cardinal; // @addr 0x7A7BB8 @note "Park-Miller state at ParentFrame-4; returns the updated state minus one."
   begin
-    Seed := 16807 * (Seed mod 127773) - 2836 * (Seed div 127773);
-    if Seed <= 0 then Inc(Seed, $7FFFFFFF);
+    Seed := SeedRngMultiplier * (Seed mod SeedRngQuotient) - SeedRngRemainder * (Seed div SeedRngQuotient);
+    if Seed <= 0 then Inc(Seed, SeedRngModulus);
     Result := Seed - 1;
   end;
 
@@ -5147,8 +5147,8 @@ begin
       Inc(DropCount);
       Inc(Result, Goods.Cost);
     end;
-    AngleStep := 3.1415926;
-    if DropCount > 1 then AngleStep := 6.2831852 / DropCount;
+    AngleStep := GamePi;
+    if DropCount > 1 then AngleStep := GameTwoPi / DropCount;
     for I := 0 to DropCount - 1 do
     begin
       Entry := MovingDropItems[MovingDropItems.Count - 1 - I];
@@ -5213,7 +5213,7 @@ begin
     NearestPlanet.ChangeRelationToRanger(GetPlayer, -10);
   end;
   ReplaceTextToken(Text, '<Planet>', NearestPlanet.GetFullName(' '), '<color=255,240,100>');
-  AddOrUpdatePlayerBubble(0, Galaxy.CurrentTurn, Text, 'AsteroidKill');
+  AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn, Text, 'AsteroidKill');
 end;
 { @end $7AFA44 }
 
@@ -5411,7 +5411,7 @@ begin
               (((Ship as TKling).KlingType in [ktEquentor..ktUrgant]) and (I in [5, 6]) and (ShipTypeCounts[stKling] > 9))) and
              (GetPlayer <> nil) and Target.InHyperspace and (Target.OrderTarget is TStar) and
              ((Target.OrderTarget as TStar).ControlFaction = sfCoalition) and not IsStarProtectedByScript(Target.OrderTarget as TStar) and
-             ((Galaxy.CurrentTurn > 300) or (GetPlayer.CurrentStar <> Target.OrderTarget)) and
+             ((Galaxy.CurrentTurn > GalaxyWarmupTurns) or (GetPlayer.CurrentStar <> Target.OrderTarget)) and
              (Galaxy.CurrentTurn mod 15 = 0) then
             Ship.OrderJump(Target.OrderTarget as TStar, True)
           else if (Ship.TypeId = stPirate) and ((Ship as TPirate).PirateType = 0) and
@@ -5420,7 +5420,7 @@ begin
                   (Ship.ChanceToWin(Target) > 1) and (GetPlayer <> nil) and Target.InHyperspace and
                   (Target.OrderTarget is TStar) and ((Target.OrderTarget as TStar).ControlFaction = sfCoalition) and
                   ((Target.OrderTarget as TStar).Status.CustomFaction = '') and not IsStarProtectedByScript(Target.OrderTarget as TStar) and
-                  ((Galaxy.CurrentTurn > 300) or (GetPlayer.CurrentStar <> Target.OrderTarget)) and
+                  ((Galaxy.CurrentTurn > GalaxyWarmupTurns) or (GetPlayer.CurrentStar <> Target.OrderTarget)) and
                   (Galaxy.CurrentTurn mod 7 = 0) then
             Ship.OrderJump(Target.OrderTarget as TStar, True)
           else Ship.OrderNone(False);
@@ -5529,7 +5529,7 @@ begin
       if Node.Next <> nil then
       begin
         Entry.Ship.MovementPath.RemoveNodeRange(Node.Next, Entry.Ship.MovementPath.ActiveTail);
-        Entry.Ship.MovementPath.ResampleBezierRange(Entry.Ship.MovementPath.ActiveHead, Entry.Ship.MovementPath.ActiveTail, 200);
+        Entry.Ship.MovementPath.ResampleBezierRange(Entry.Ship.MovementPath.ActiveHead, Entry.Ship.MovementPath.ActiveTail, BaseMovementStepsPerTurn);
       end;
     end;
   end;
@@ -5853,9 +5853,9 @@ function FormatGameTurnDate(Turn: Integer): WideString;
 var
   MonthNumber, MonthName: WideString;
 begin
-  MonthNumber := FormatDateTime('mm', GameTurnToDateTime(Turn - 300));
+  MonthNumber := FormatDateTime('mm', GameTurnToDateTime(Turn - GalaxyWarmupTurns));
   MonthName := LocalizedText('Month.' + MonthNumber);
-  Result := FormatDateTime('d', GameTurnToDateTime(Turn - 300)) + ' ' + MonthName + ' ' + FormatDateTime('yyyy', GameTurnToDateTime(Turn - 300));
+  Result := FormatDateTime('d', GameTurnToDateTime(Turn - GalaxyWarmupTurns)) + ' ' + MonthName + ' ' + FormatDateTime('yyyy', GameTurnToDateTime(Turn - GalaxyWarmupTurns));
 end;
 { @end $7B22C4 }
 
@@ -5891,7 +5891,7 @@ begin
   if PlayerAutomaticControl or ((PendingPlayerFollowTarget <> nil) and not PlayerStar.InterruptLongTravel) then Result := True
   else
   begin
-    GetPlayer.BuildOrderMovementPath(200);
+    GetPlayer.BuildOrderMovementPath(BaseMovementStepsPerTurn);
     if not PlayerStar.PlayerCombatOccurred and not PlayerStar.InterruptLongTravel and
        (GetPlayer.GetMovementPathTurnCount > 0) and
        ((GetPlayer.Order <> soMove) or (PointDistanceSquared(GetPlayer.Position, GetPlayer.OrderDestination) > 19600)) then
@@ -8141,7 +8141,7 @@ end;
 function TGalaxy.TurnToDateTime(Turn: Integer): Double;
 begin
   if Turn = -1 then Turn := CurrentTurn;
-  Result := Turn + 511341.5 - 300.0;
+  Result := Turn + 511341.5 - GalaxyWarmupTurns;
 end;
 { @end $7BB330 }
 
@@ -8159,7 +8159,7 @@ end;
 { @routine $7BB524 TGalaxy_AddPlanetNewsWithPlayerBubble }
 procedure TGalaxy.AddPlanetNewsWithPlayerBubble(NewsType: Byte; Text: WideString);
 begin
-  if CurrentTurn > 300 then AddOrUpdatePlayerBubble(0, CurrentTurn, Text, '');
+  if CurrentTurn > GalaxyWarmupTurns then AddOrUpdatePlayerBubble(pmGalaxyNews, CurrentTurn, Text, '');
   AddPlanetNews(NewsType, Text);
 end;
 { @end $7BB524 }
@@ -9068,12 +9068,12 @@ var Deposit, Chance, Roll: Integer;
   Item: TItem;
   Text: WideString;
 begin
-  if (GetPlayer.DepositAmount <> 0) and (GetPlayer.DepositDayCount <> 0) and (GetPlayer.DepositDayCount mod 365 = 0) then begin
+  if (GetPlayer.DepositAmount <> 0) and (GetPlayer.DepositDayCount <> 0) and (GetPlayer.DepositDayCount mod TurnsPerYear = 0) then begin
     Station := TObject(FindStationByTypeAndIndex(SeededRandomIntRange(1, ShipTypeCounts[Ord(rstBusinessCenter)],
       Galaxy.GenerationSeed + Galaxy.CurrentTurn div 33), rstBusinessCenter)) as TRuins;
     if Station <> nil then begin
       Text := PickLocalizedTextVariant('GalaxyNews.BK.DepositPrizeLose', Station.Seed * (Galaxy.CurrentTurn div 10));
-      Chance := 30 + (GetPlayer.DepositDayCount div 365) * 10;
+      Chance := 30 + (GetPlayer.DepositDayCount div TurnsPerYear) * 10;
       Roll := SeededRandomIntRange(1, 100, Station.Seed + Galaxy.CurrentTurn div 7);
       if Roll < Chance then begin
         Deposit := GetPlayer.ComputeDepositAccruedValue;
@@ -9088,7 +9088,7 @@ begin
       end;
       ReplaceTextToken(Text, '<BKName>', Station.GetFullName(' '), '<color=255,240,100>');
       ReplaceTextToken(Text, '<Star>', Station.CurrentStar.Name, '<color=255,240,100>');
-      AddOrUpdatePlayerBubble(0, CurrentTurn, Text, '');
+      AddOrUpdatePlayerBubble(pmGalaxyNews, CurrentTurn, Text, '');
     end;
   end;
 end;
@@ -9118,7 +9118,7 @@ begin
       if GetPlayer.DebtDefaultCount = 1 then TryAddAchievementProgress('CREDITOR', 1);
       OldDebt := GetPlayer.DebtAmount;
       Penalty := RoundAndTruncateToTens(Min(GetPlayer.DebtAmount * 0.5 * GetPlayer.DebtDefaultCount, GetPlayer.Wealth div 8));
-      GetPlayer.DebtAmount := Min(100000000, GetPlayer.DebtAmount + Penalty);
+      GetPlayer.DebtAmount := Min(MaxMonetaryValue, GetPlayer.DebtAmount + Penalty);
       GetPlayer.DebtDueTurn := Galaxy.CurrentTurn + System.Round(RemapClamped(SeededRandomUnitFloat(Galaxy.CurrentTurn div 80), 0, 1, 0.7, 1.5) * 300);
       if GetPlayer.DebtDefaultCount < 3 then
         News := PickLocalizedTextVariant('GalaxyNews.BK.DebtInfo', (Galaxy.CurrentTurn div 10) * Self.GenerationSeed)
@@ -9131,7 +9131,7 @@ begin
       ReplaceTextToken(News, '<Penalty>', WideString(SysUtils.IntToStr(Penalty)), '<color=255,240,100>');
       ReplaceTextToken(News, '<NewMoney>', WideString(SysUtils.IntToStr(GetPlayer.DebtAmount)), '<color=255,240,100>');
       ReplaceTextToken(News, '<NewDate>', Galaxy.FormatTurnDate(GetPlayer.DebtDueTurn), '<color=255,240,100>');
-      AddOrUpdatePlayerBubble(0, Self.CurrentTurn, News, '');
+      AddOrUpdatePlayerBubble(pmGalaxyNews, Self.CurrentTurn, News, '');
     end;
   end
   else if (GetPlayer.DebtAmount > 0) or (GetPlayer.DepositAmount > 0) then
@@ -9152,7 +9152,7 @@ begin
     GetPlayer.DepositStartTurn := 0;
     GetPlayer.DepositDayCount := 0;
     GetPlayer.DepositInterestRate := 0;
-    AddOrUpdatePlayerBubble(0, Self.CurrentTurn, News, '');
+    AddOrUpdatePlayerBubble(pmGalaxyNews, Self.CurrentTurn, News, '');
   end;
 end;
 { @end $7BEC1C }
@@ -9168,8 +9168,8 @@ var Year, Month, Day: Word;
 begin
   if GetPlayer <> nil then
     if ShipTypeCounts[Ord(rstRangerCenter)] > 0 then begin
-      if Galaxy.CurrentTurn > 300 then begin
-        DecodeDate(GameTurnToDateTime(Galaxy.CurrentTurn - 300), Year, Month, Day);
+      if Galaxy.CurrentTurn > GalaxyWarmupTurns then begin
+        DecodeDate(GameTurnToDateTime(Galaxy.CurrentTurn - GalaxyWarmupTurns), Year, Month, Day);
         if (Day = 31) and (Month = 12) then begin
           Station := TObject(FindStationByTypeAndIndex(SeededRandomIntRange(1, ShipTypeCounts[Ord(rstRangerCenter)],
             Galaxy.GenerationSeed + Galaxy.CurrentTurn), rstRangerCenter)) as TRuins;
@@ -9195,7 +9195,7 @@ begin
             ReplaceTextToken(Text, '<Star>', Station.CurrentStar.Name, '<color=255,240,100>');
             ReplaceTextToken(Text, '<Year>', IntToStr(Year + 1), '<color=255,240,100>');
             ReplaceTextToken(Text, '<Item>', Item.GetDisplayName, '<color=255,240,100>');
-            AddOrUpdatePlayerBubble(0, CurrentTurn, Text, '');
+            AddOrUpdatePlayerBubble(pmGalaxyNews, CurrentTurn, Text, '');
           end;
         end;
       end;
@@ -9205,7 +9205,7 @@ begin
       Event := AddGalaxyEvent('PlayerNodesNullified');
       Event.AddData(GetPlayer.BaseNodes);
       GetPlayer.BaseNodes := 0;
-      AddOrUpdatePlayerBubble(0, CurrentTurn, Text, '');
+      AddOrUpdatePlayerBubble(pmGalaxyNews, CurrentTurn, Text, '');
     end;
 end;
 { @end $7BF428 }
@@ -9370,7 +9370,7 @@ var I, J, Count: Integer;
   Turn: Integer;
 begin
   Result := False;
-  if (FindMilitaryBaseInTransit <> nil) or (CurrentTurn < 300) or (CurrentTurn mod 133 <> 0) then Exit;
+  if (FindMilitaryBaseInTransit <> nil) or (CurrentTurn < GalaxyWarmupTurns) or (CurrentTurn mod 133 <> 0) then Exit;
   if SeededRandomUnitFloat(GenerationSeed * CurrentTurn + CountStarsInBattle) < 0.5 then Exit;
   Station := nil;
   for I := 0 to Galaxy.Stars.Count - 1 do begin
@@ -9494,10 +9494,10 @@ var
 begin
   if Self.CurrentTurn and 15 <> 0 then Exit;
   if Self.NextSpecialStationServiceTurn = 0 then
-    Self.NextSpecialStationServiceTurn := SeededRandomIntRange(0, 365, GetPlayer.Id xor Self.GenerationSeed) + 2125;
+    Self.NextSpecialStationServiceTurn := SeededRandomIntRange(0, TurnsPerYear, GetPlayer.Id xor Self.GenerationSeed) + 2125;
   if Self.CurrentTurn < Self.NextSpecialStationServiceTurn then Exit;
   Seed := GetPlayer.Id xor Self.GenerationSeed xor Galaxy.CurrentTurn;
-  Self.NextSpecialStationServiceTurn := NextRandomIntRange(0, 365, Seed) + (Self.NextSpecialStationServiceTurn + 365);
+  Self.NextSpecialStationServiceTurn := NextRandomIntRange(0, TurnsPerYear, Seed) + (Self.NextSpecialStationServiceTurn + TurnsPerYear);
   PirateActive := nil;
   PirateCandidate := nil;
   ScienceActive := nil;
@@ -9638,7 +9638,7 @@ begin
     Galaxy.PirateWinType := 5;
     TryUnlockAchievement('PIRATEWIN');
     Text := PickLocalizedTextVariant('GalaxyNews.Globals.CoalitionDefeated', Galaxy.CurrentTurn div 23);
-    AddOrUpdatePlayerBubble(0, CurrentTurn, Text, '').NotificationSoundKind := 1;
+    AddOrUpdatePlayerBubble(pmGalaxyNews, CurrentTurn, Text, '').NotificationSoundKind := 1;
     AddPlanetNews(35, Text);
   end;
 end;
@@ -10371,7 +10371,7 @@ begin
             '<color=255,240,100>', '<Star>', Name, '<Sector>', Constellation.GetName))
         else
           // Retained native branch, despite the outer zero test.
-          AddOrUpdatePlayerBubble(0, Galaxy.CurrentTurn, FormatText2(
+          AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn, FormatText2(
             PickLocalizedTextVariant('GalaxyNews.Globals.KlingTakeSystemFromPirateClanAlt', (Galaxy.CurrentTurn div 10) * GenerationSeed),
             '<color=255,240,100>', '<Star>', Name, '<Sector>', Constellation.GetName), '');
       RecordFactionDefeat(ControlFaction);
@@ -10573,8 +10573,8 @@ procedure TStar.RefreshMovementStepParameters;
 begin
   if (GetPlayer <> nil) and (GetPlayer.CurrentStar = Self) then
   begin
-    MovementStepCount := 200;
-    MovementStepScale := 1 / 200;
+    MovementStepCount := BaseMovementStepsPerTurn;
+    MovementStepScale := 1 / BaseMovementStepsPerTurn;
   end
   else
   begin
@@ -11587,7 +11587,7 @@ begin
                 CombatEvent^.Target := Weapon.Target;
                 CombatEvent^.Weapon := Weapon;
                 CombatEvent^.CombatGroup := 0;
-                if Self.MovementStepCount = 200 then
+                if Self.MovementStepCount = BaseMovementStepsPerTurn then
                   ShotEndMargin := 30
                 else
                   ShotEndMargin := 1;
@@ -11940,7 +11940,7 @@ begin
                           Distance := 1.0 / System.Sqrt(Ship.Position.X * Ship.Position.X + Ship.Position.Y * Ship.Position.Y);
                           Point.X := Ship.Position.X * Distance * 10000.0 + OwnerShip.Position.X;
                           Point.Y := Ship.Position.Y * Distance * 10000.0 + OwnerShip.Position.Y;
-                          OwnerShip.AppendTurningPath(Point, False, 200);
+                          OwnerShip.AppendTurningPath(Point, False, BaseMovementStepsPerTurn);
                         end;
                         OwnerShip.AppendHyperspaceTransitionPath(1.0);
                         if OwnerShip.MovementPath.ActiveTail <> nil then
@@ -12589,7 +12589,7 @@ begin
               end;
               WorkValue := 3.1415925;
               if CandidateCount > 1 then
-                WorkValue := 6.2831852 / CandidateCount;
+                WorkValue := GameTwoPi / CandidateCount;
               for CandidateIndex := 0 to (CandidateCount - 1) do
               begin
                 MovingDrop := Self.MovingDropItems[Self.MovingDropItems.Count - 1 - CandidateIndex];
@@ -13934,7 +13934,7 @@ begin
     end;
 
     Stage := 43;
-    if (Galaxy.TerronToStarTurn > 0) and (Galaxy.TerronToStarTurn < 1073741824) then
+    if (Galaxy.TerronToStarTurn > 0) and (Galaxy.TerronToStarTurn < TerronTransformationFlag) then
     begin
       if aKling.TerronShip <> nil then
       begin
@@ -13942,7 +13942,7 @@ begin
         begin
           if PointDistanceSquared(MakePointF(-100.0, -100.0), aKling.TerronShip.Position) < 25.0 then
           begin
-            Galaxy.TerronToStarTurn := Galaxy.CurrentTurn or 1073741824;
+            Galaxy.TerronToStarTurn := Galaxy.CurrentTurn or TerronTransformationFlag;
             PWideString(@Self.Graphic.GraphKey)^ := WideString('Star.TerronAfter');
             Self.Graphic.LoadTemplate(GR_Main.GameDataConfig.GetBlockByPath('SE.' + WideString(Self.Graphic.GraphKey)));
             if GetPlayer <> nil then
@@ -13987,7 +13987,7 @@ end;
 { @routine $7D0BF4 TGalaxy_ShowLocalizedWarning }
 procedure TGalaxy.ShowLocalizedWarning(TextKey: WideString);
 begin
-  AddOrUpdatePlayerBubble(5, 0, LocalizedColorText(TextKey), '');
+  AddOrUpdatePlayerBubble(pmQuestCancelled, 0, LocalizedColorText(TextKey), '');
 end;
 { @end $7D0BF4 }
 
@@ -14860,7 +14860,7 @@ begin
   end;
   { These unused calculations are present in the original eligibility check. }
   ReservedMode := 4;
-  ReservedLimit := 365;
+  ReservedLimit := TurnsPerYear;
   Inc(ReservedLimit, 107000);
   ReservedLimit := ReservedLimit shl 1;
   Result := (GetCheatPoints = 0) and (GR_Main.CCInterface.GetIntegrityError = 0) and

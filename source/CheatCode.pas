@@ -1136,7 +1136,7 @@ begin
     begin
       Player.CaptainHealth[I].Progress := 100;
       Player.CaptainHealth[I].AppliedTurn := Galaxy.CurrentTurn;
-      Player.CaptainHealth[I].ExpireTurn := Galaxy.CurrentTurn + 365;
+      Player.CaptainHealth[I].ExpireTurn := Galaxy.CurrentTurn + TurnsPerYear;
     end;
     ReportCheat(10, DecodeTextW('IALALENOERSASH')); // 'ILLNESS'
   end;
@@ -1156,7 +1156,7 @@ begin
     begin
       Player.CaptainHealth[I].Progress := 100;
       Player.CaptainHealth[I].AppliedTurn := Galaxy.CurrentTurn;
-      Player.CaptainHealth[I].ExpireTurn := Galaxy.CurrentTurn + 365;
+      Player.CaptainHealth[I].ExpireTurn := Galaxy.CurrentTurn + TurnsPerYear;
     end;
     ReportCheat(10, DecodeTextW('SATAISMAUILOAONOTS')); // 'STIMULANT'
   end;
@@ -1523,7 +1523,7 @@ end;
 procedure ShowCheatFeedback(Text: WideString);
 begin
   if Galaxy = nil then ShowMessageBoxGI(nil, Text, mbgOK)
-  else AddOrUpdatePlayerBubble(0, Galaxy.CurrentTurn, Text, '');
+  else AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn, Text, '');
 end;
 { @end $50B7B8 }
 

@@ -405,7 +405,7 @@ var
 begin
   InitializeDominator(Kind, Planet, Series);
   ControlPercent := Galaxy.GetFactionControlPercent(sfDominators);
-  Rating := Round(125 * Galaxy.GetEffectiveDifficultyLevel + RemapClamped(Galaxy.CurrentTurn, 300, 22200, 0, 3000));
+  Rating := Round(125 * Galaxy.GetEffectiveDifficultyLevel + RemapClamped(Galaxy.CurrentTurn, GalaxyWarmupTurns, 22200, 0, 3000));
   WarRating := -150 * Galaxy.WarDeltaWin[1];
   DistanceRating := 0;
   for I := 0 to Galaxy.Stars.Count - 1 do
@@ -429,7 +429,7 @@ begin
     else if Galaxy.DominatorModLevel = 3 then Tier := Max(Tier, 7);
   MinimumControl := 1;
   MaximumControl := DominatorGenerationTuning[Tier, 1];
-  MiddleControl := Round(RemapClamped(Galaxy.CurrentTurn, 300, 11250, MaximumControl div 4, 3 * MaximumControl div 4));
+  MiddleControl := Round(RemapClamped(Galaxy.CurrentTurn, GalaxyWarmupTurns, 11250, MaximumControl div 4, 3 * MaximumControl div 4));
   ChameleonActive := False;
   GraphDominator := Galaxy.GraphDominatorSurfacesEnabled;
   CreateAndEquipHull(Round(RandomInteger(DominatorShipDefinitions[Ord(KlingType)].MinimumHullSize,
@@ -582,7 +582,7 @@ begin
       if IsProgramActive(prgDisconnection) then Exit;
       AssignWeaponTargetsInStar;
       if IsProgramActive(prgInsanity) then begin MoveToRandomPatrolPoint; Exit; end;
-      if (DominatorSeries = dsTerron) and (TerronShip <> nil) and not HasIndependentScriptFaction and (Galaxy.TerronToStarTurn >= $40000000) then begin
+      if (DominatorSeries = dsTerron) and (TerronShip <> nil) and not HasIndependentScriptFaction and (Galaxy.TerronToStarTurn >= TerronTransformationFlag) then begin
         if CurrentStar <> TerronShip.CurrentStar then OrderJump(TerronShip.CurrentStar, False)
         else OrderLanding(TerronShip, False);
       end else begin
@@ -650,7 +650,7 @@ begin
       if not InNormalSpace then Exit;
       Stage := 2;
       AssignWeaponTargetsInStar;
-      if (DominatorSeries = dsTerron) and (TerronShip <> nil) and (Galaxy.TerronToStarTurn >= $40000000) then begin
+      if (DominatorSeries = dsTerron) and (TerronShip <> nil) and (Galaxy.TerronToStarTurn >= TerronTransformationFlag) then begin
         if CurrentStar <> TerronShip.CurrentStar then OrderJump(TerronShip.CurrentStar, False)
         else OrderLanding(TerronShip, False);
         Exit;
@@ -946,7 +946,7 @@ begin
     Star := TObject(GetPlayer.CurrentStar.StarDistances[Index].Star) as TStar;
     if (Star.Constellation.Id <> 20) and ((BlazerShip = nil) or (BlazerShip.CurrentStar <> Star)) and
       ((TerronShip = nil) or (TerronShip.CurrentStar <> Star)) and ((Star.ControlFaction <> sfDominators) or (Star.Battle <> 0)) then
-      if (Galaxy.CurrentTurn > 300) or (PointDistanceSquared(Star.Position, GetPlayer.CurrentStar.Position) >= Sqr((1 - Galaxy.CurrentTurn / 300) * 70 + 35)) then
+      if (Galaxy.CurrentTurn > GalaxyWarmupTurns) or (PointDistanceSquared(Star.Position, GetPlayer.CurrentStar.Position) >= Sqr((1 - Galaxy.CurrentTurn / GalaxyWarmupTurns) * 70 + 35)) then
         if ((Star.Battle = 0) or (Star.DominatorSeries <> dsKeller) or (Star.ShipTypeCounts[stKling] <= 6)) and not IsStarProtectedByScript(Star) then begin
           Score := 0;
           for J := 1 to Galaxy.Stars.Count - 1 do begin
@@ -957,7 +957,7 @@ begin
           if (Star.Battle <> 0) and (Star.DominatorSeries <> dsKeller) then Score := Round(2 * Score);
           Score := Round(Score * RemapClamped(Star.CountShipsByTypeMask(CoalitionShipMask), 1, 10, 2, 10));
           Score := Round(Score * NextRandomFloatRange(1, 3, RandomState));
-          if (GetPlayer.HomePlanet.CurrentStar = Star) and (Galaxy.CurrentTurn < Galaxy.InterpolateDifficulty(-1, 1.2, 1, 0.7, 0.5) * 800 + 300) then Score := MaxInt - 1;
+          if (GetPlayer.HomePlanet.CurrentStar = Star) and (Galaxy.CurrentTurn < Galaxy.InterpolateDifficulty(-1, 1.2, 1, 0.7, 0.5) * 800 + GalaxyWarmupTurns) then Score := MaxInt - 1;
           if Score < BestScore then begin BestScore := Score; BestStar := Star; end;
         end;
   end;
@@ -1006,7 +1006,7 @@ begin
         Galaxy.KellerMissionState := 1;
         if (GetPlayer <> nil) and (GetPlayer.CountActiveArtefacts(t_ArtefactAnalyzer) > 0) then begin
           Text := FormatText1(LocalizedColorText('Artefacts.ArtAnalyzer.KellerHole'), '<color=255,240,100>', '<Star>', Galaxy.KellerTargetStar.Name);
-          if Text <> '' then AddOrUpdatePlayerBubble(0, Galaxy.CurrentTurn, Text, '');
+          if Text <> '' then AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn, Text, '');
         end;
       end;
     end;
@@ -1269,7 +1269,7 @@ var TargetStar: TStar; TargetCount, NonDominatorCount, OtherSeriesCount, Action:
     if (Action = 6) and (Sent > 0) and (TargetStar.ControlFaction <> sfDominators) and (TargetStar.Status.CustomFaction = '') then
       if (GetPlayer <> nil) and (GetPlayer.CountActiveArtefacts(t_ArtefactAnalyzer) > 0) then begin
         Text := FormatText1(LocalizedText('Artefacts.ArtAnalyzer.AttackDomik'), '<color=255,240,100>', '<Star>', TargetStar.Name);
-        if Text <> '' then AddOrUpdatePlayerBubble(0, Galaxy.CurrentTurn, Text, '');
+        if Text <> '' then AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn, Text, '');
       end;
   end;
 begin
@@ -1312,8 +1312,8 @@ begin
             NearbyIndex := IncrementWrapped(NearbyIndex, 1, NearbyRange);
             Dec(Attempts);
             if (TargetStar.Constellation.Id <> 20) and (TargetStar <> Origin) and not IsStarProtectedByScript(TargetStar) then
-              if (Galaxy.CurrentTurn > 300) or ((GetPlayer.CurrentStar <> TargetStar) and
-                (PointDistanceSquared(TargetStar.Position, GetPlayer.CurrentStar.Position) >= Sqr((1 - Galaxy.CurrentTurn / 300) * 70 + 35))) then
+              if (Galaxy.CurrentTurn > GalaxyWarmupTurns) or ((GetPlayer.CurrentStar <> TargetStar) and
+                (PointDistanceSquared(TargetStar.Position, GetPlayer.CurrentStar.Position) >= Sqr((1 - Galaxy.CurrentTurn / GalaxyWarmupTurns) * 70 + 35))) then
                 if (BlazerShip = nil) or (Galaxy.BlazerLandingPlanetId = 0) or (BlazerShip.CurrentStar <> TargetStar) then begin
                   TargetCount := TargetStar.CountDominatorForces(Series, False, False, TargetStrength);
                   OtherSeriesCount := TargetStar.CountDominatorForces(Series, False, True, OtherSeriesStrength);
@@ -1588,7 +1588,7 @@ begin
     for I := 0 to CurrentStar.Asteroids.Count - 1 do begin
       Asteroid := CurrentStar.Asteroids[I];
       Distance := PointDistanceSquared(Position, Asteroid.Position);
-      if Distance <= 1000000 then
+      if Distance <= AsteroidTargetRangeSquared then
         for J := 1 to WeaponCount do begin
           Weapon := Weapons[J];
           // Native asteroid targeting can overwrite an existing assignment.
@@ -1613,7 +1613,7 @@ begin
   begin
     TPlayer(Attacker).ChameleonDetected[Ord(DominatorSeries)] := True;
     if TPlayer(Attacker).ChameleonActive and (TPlayer(Attacker).ChameleonSeries = DominatorSeries) then
-      AddOrUpdatePlayerBubble(0, Galaxy.CurrentTurn,
+      AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn,
         LocalizedText('ShipInfo.AddInfo.Chameleon.Detect'), '');
   end;
 end;

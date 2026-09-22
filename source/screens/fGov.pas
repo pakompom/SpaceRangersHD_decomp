@@ -943,7 +943,7 @@ begin
   Text := ReplaceAllWideString(Text, '<color=0,50,200>', '<color=255,240,100>');
   (Sender as TGraphButtonGI).SetDisabled(True);
   SoundManager.PlaySound('Sound.UserMsgAdd');
-  AddOrUpdatePlayerBubble(7, Galaxy.CurrentTurn, Text, '');
+  AddOrUpdatePlayerBubble(pmUserNote, Galaxy.CurrentTurn, Text, '');
   MainPanel.RebuildMessageButtons(False);
   BreakUiMessage;
 end;

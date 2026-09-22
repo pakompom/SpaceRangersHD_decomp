@@ -41,7 +41,7 @@ const
 
 implementation
 
-uses Classes, Math, SE_Process, SE_Asteroid, Globals, aMyFunction, EC_Str, EC_Mem, aConst, aPlayer, aShip, GR_Main;
+uses Classes, Math, SE_Process, SE_Asteroid, Globals, aMyFunction, EC_Str, EC_Mem, aConst, aPlayer, aShip, GR_Main, aGalaxyStruct;
 
 
 const
@@ -135,7 +135,7 @@ end;
 { @routine $7972B4 TAsteroid_AdvanceOrbitStep }
 procedure TAsteroid.AdvanceOrbitStep(StepIndex: Integer; RecordFilm: Boolean);
 begin
-  IntegrateMotion(200 / CurrentStar.MovementStepCount);
+  IntegrateMotion(BaseMovementStepsPerTurn / CurrentStar.MovementStepCount);
   if RecordFilm then PrimaryFilm.SetObjectPosition(StepIndex, FilmObject, Position);
 end;
 { @end $7972B4 }
@@ -253,7 +253,7 @@ begin
   Result := LocalizedText('Asteroid.Text');
   ReplaceTextToken(Result, '<Number>', IntToWideString(Id), '<color=255,240,100>');
   Speed := Sqrt(Sqr(Velocity.X) + Sqr(Velocity.Y));
-  Speed := Speed * 200 * 19968 * AsteroidWorldScale;
+  Speed := Speed * BaseMovementStepsPerTurn * 19968 * AsteroidWorldScale;
   ReplaceTextToken(Result, '<Speed>', IntToWideString(Round(Speed)), '<color=255,240,100>');
   ReplaceTextToken(Result, '<Count>', IntToWideString(MineralCount), '<color=255,240,100>');
 end;

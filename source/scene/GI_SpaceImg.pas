@@ -227,7 +227,7 @@ begin
     end;
     if (Image.OrbitRadius <> 0) and (Image.OrbitStepDegrees <> 0) then
     begin
-      Image.OrbitAngleRadians := (3.1415926 / 180) * Image.OrbitStepDegrees + Image.OrbitAngleRadians;
+      Image.OrbitAngleRadians := (GamePi / 180) * Image.OrbitStepDegrees + Image.OrbitAngleRadians;
       Image.X := Sin(Image.OrbitAngleRadians) * Image.OrbitRadius + Image.OrbitCenter.X;
       Image.Y := Image.OrbitCenter.Y - Cos(Image.OrbitAngleRadians) * Image.OrbitRadius;
     end;

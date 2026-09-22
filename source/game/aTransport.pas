@@ -700,7 +700,7 @@ begin
     for I := 0 to CurrentStar.Asteroids.Count - 1 do begin
       Asteroid := CurrentStar.Asteroids[I];
       Distance := PointDistanceSquared(Position, Asteroid.Position);
-      if Distance <= 1000000 then
+      if Distance <= AsteroidTargetRangeSquared then
         for J := 1 to WeaponCount do begin
           Weapon := Weapons[J];
           // Native asteroid targeting can overwrite an existing assignment.
@@ -817,7 +817,7 @@ var NextDemandTurn: Integer; LicenseFactor: Single;
       if GetPlayer.PirateLicenseTicks > 0 then begin
         GetPlayer.SetMoney(GetPlayer.Money + Round(DemandedAmount * 0.9));
         Inc(GetPlayer.PendingPirateLicenseCash, Round(DemandedAmount * 0.1));
-        if GetPlayer.PendingPirateLicenseCash > 100000000 then GetPlayer.PendingPirateLicenseCash := 100000000;
+        if GetPlayer.PendingPirateLicenseCash > MaxMonetaryValue then GetPlayer.PendingPirateLicenseCash := MaxMonetaryValue;
       end else GetPlayer.SetMoney(GetPlayer.Money + DemandedAmount);
     end else OtherShip.SetMoney(OtherShip.Money + DemandedAmount);
     SetMoney(Money - DemandedAmount);

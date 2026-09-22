@@ -35,7 +35,7 @@ var
 
 implementation
 
-uses Windows, MMSystem, SysUtils, Math, Globals, GlobalsV, GR_Main, aGalaxy, aPlayer, aShip;
+uses Windows, MMSystem, SysUtils, Math, Globals, GlobalsV, GR_Main, aGalaxy, aPlayer, aShip, aGalaxyStruct;
 
 { @routine $7E48D0 StartGalaxyTurnCalculation }
 procedure StartGalaxyTurnCalculation;
@@ -136,7 +136,7 @@ begin
         else if FilmSpeed = 1 then FrameMs := 12
         else FrameMs := 8;
         AdaptiveBeginCalcNextTurn := Math.Min(0.9, (AdaptiveBeginCalcNextTurn + 1 -
-          Math.Min(1, (LastGalaxyTurnDuration + 100) / (200 * FrameMs))) / 2);
+          Math.Min(1, (LastGalaxyTurnDuration + 100) / (BaseMovementStepsPerTurn * FrameMs))) / 2);
       end
       else Galaxy.NextDay;
       Galaxy.TransferShipsInTransit;
@@ -145,7 +145,7 @@ begin
       begin
         AppendLogLineThreadSafe(E.ClassName + ' ' + E.Message);
         AppendLogLineThreadSafe('ThreadCalc exception 1');
-        if Galaxy.CurrentTurn < 300 then
+        if Galaxy.CurrentTurn < GalaxyWarmupTurns then
           AppendLogLineThreadSafe('Galaxy create exception, seed = ' + IntToStr(Integer(Galaxy.GenerationSeed)));
         SetEvent(IdleEvent);
         raise;
@@ -163,7 +163,7 @@ begin
       begin
         AppendLogLineThreadSafe(E.ClassName + ' ' + E.Message);
         AppendLogLineThreadSafe('ThreadCalc exception 2');
-        if Galaxy.CurrentTurn < 300 then
+        if Galaxy.CurrentTurn < GalaxyWarmupTurns then
           AppendLogLineThreadSafe('Galaxy create exception, seed = ' + IntToStr(Integer(Galaxy.GenerationSeed)));
         SetEvent(IdleEvent);
         raise;
@@ -183,7 +183,7 @@ begin
       begin
         AppendLogLineThreadSafe(E.ClassName + ' ' + E.Message);
         AppendLogLineThreadSafe('ThreadCalc exception 3');
-        if Galaxy.CurrentTurn < 300 then
+        if Galaxy.CurrentTurn < GalaxyWarmupTurns then
           AppendLogLineThreadSafe('Galaxy create exception, seed = ' + IntToStr(Integer(Galaxy.GenerationSeed)));
         SetEvent(IdleEvent);
         raise;

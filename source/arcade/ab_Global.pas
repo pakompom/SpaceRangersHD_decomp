@@ -8,6 +8,8 @@ interface
 uses EC_Struct, SE_Process, EC_Buf, Types;
 
 const
+  ArcadeTickMs = 20;
+
   // BonusTicks order from TabShip.ApplyDamage ($5028E4), UpdateState ($5032E0)
   // and Advance ($50361C); shared with map bonus flags and pickup handling.
   abkRegeneration = 0;

@@ -74,7 +74,7 @@ var
 
 implementation
 
-uses Math, aMyFunction, Globals, GlobalsV, ab_Hit, ab_Ship, ab_ShipAI, ab_Zone, ab_StopLine;
+uses Math, aMyFunction, Globals, GlobalsV, ab_Hit, ab_Ship, ab_ShipAI, ab_Zone, ab_StopLine, EC_Buf;
 
 { @routine $54E33C TabObject_Create }
 constructor TabObject.Create;
@@ -378,7 +378,7 @@ end;
 { @routine $54F278 TabObject_RandomRange }
 function TabObject.RandomRange(BoundA, BoundB: Integer): Integer;
 begin
-  RandomState := 16807 * (RandomState mod 127773) - 2836 * (RandomState div 127773);
+  RandomState := SeedRngMultiplier * (RandomState mod SeedRngQuotient) - SeedRngRemainder * (RandomState div SeedRngQuotient);
   Result := Integer(RandomState) - 1;
   if Result < 0 then Result := -Result;
   if BoundA <= BoundB then Result := BoundA + Result mod (BoundB - BoundA + 1)

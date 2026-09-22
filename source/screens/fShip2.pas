@@ -5228,7 +5228,7 @@ begin
       if GiResourceVariant = 1 then Text := (SelectedHoldItem as TTreasureMap).PreviewTablePage1
       else Text := (SelectedHoldItem as TTreasureMap).PreviewTablePage2;
       Galaxy.CheckIntegrityChecksum1(520);
-      AddOrUpdatePlayerBubble(7,Galaxy.CurrentTurn,Text,(SelectedHoldItem as TTreasureMap).GetTargetPlanetName);
+      AddOrUpdatePlayerBubble(pmUserNote,Galaxy.CurrentTurn,Text,(SelectedHoldItem as TTreasureMap).GetTargetPlanetName);
       MainPanel.RebuildMessageButtons(False);
       ReturnSelectedHoldEntry;
       ReopenRequested := True;

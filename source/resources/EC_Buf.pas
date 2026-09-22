@@ -5,6 +5,14 @@ interface
 
 uses EC_File, EC_Struct;
 
+const
+  // Shared seed recurrence in DAT streams, achievements, scores and arcade objects.
+  // Callers retain their different sign/modulus handling.
+  SeedRngMultiplier = 16807;
+  SeedRngQuotient = 127773;
+  SeedRngRemainder = 2836;
+  SeedRngModulus = $7FFFFFFF;
+
 type
   // Shared disk header in score.dat and achievements.dat, after zlib expansion.
   // The XOR stream starts at Checksum; the checksum covers the following payload.
@@ -897,8 +905,8 @@ var
   // @nested $86D108 StepDatXorSeedState
   function StepDatXorSeedState: Integer; // @addr 0x86D108 @ida "int __cdecl $name(void *ParentFrame);" @note "Nested helper of TBufEC.ApplyDatXorCipher; requires its parent stack frame."
   begin
-    State := 16807 * (State mod 127773) - 2836 * (State div 127773);
-    if State <= 0 then State := State + $7FFFFFFF;
+    State := SeedRngMultiplier * (State mod SeedRngQuotient) - SeedRngRemainder * (State div SeedRngQuotient);
+    if State <= 0 then State := State + SeedRngModulus;
     Result := State - 1;
   end;
 

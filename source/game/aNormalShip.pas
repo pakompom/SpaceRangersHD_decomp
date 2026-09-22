@@ -985,7 +985,7 @@ begin
           '<color=255,240,100>', '<Star>', Star.Name, '<Sector>', Star.Constellation.GetName, '<Planet>', CeremonyPlanet.Name);
         Galaxy.AddPlanetNews(30, Text);
       end;
-      with AddOrUpdatePlayerBubble(0, Galaxy.CurrentTurn, Text, '') do
+      with AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn, Text, '') do
       begin
         if (GetPlayer.CurrentStar = Star) and GetPlayer.InNormalSpace then NotificationSoundKind := 1
         else NotificationSoundKind := 0;
@@ -1051,7 +1051,7 @@ begin
           '<color=255,240,100>', '<Star>', Star.Name, '<Sector>', Star.Constellation.GetName, '<Planet>', CeremonyPlanet.Name);
       if Galaxy.CoalitionDefeatedTurn = 0 then Galaxy.AddPlanetNews(31, Text);
     end;
-    with AddOrUpdatePlayerBubble(0, Galaxy.CurrentTurn, Text, '') do
+    with AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn, Text, '') do
       begin
         if (GetPlayer.CurrentStar = Star) and GetPlayer.InNormalSpace then NotificationSoundKind := 1
         else NotificationSoundKind := 0;
@@ -1087,7 +1087,7 @@ procedure TNormalShip.CheckKillCountAwards(Victim: TShip);
             ShipTypeName := ShipTypeNames[VictimType].Name;
             Text := PickLocalizedTextVariant('GalaxyNews.BadReward.Kill' + ShipTypeName, Seed + Cardinal(Galaxy.CurrentTurn div 10));
             ReplaceTextToken(Text, '<Reward>', GetAwardInfo(Byte(Award)).Name, '<color=255,240,100>');
-            AddOrUpdatePlayerBubble(0, Galaxy.CurrentTurn, Text, '');
+            AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn, Text, '');
           end;
         end;
         Break;
@@ -1227,7 +1227,7 @@ begin
   Inc(RankPoints, Min(Amount, Needed));
   if (Needed > 0) and (GetPlayer = Self) and GetPlayer.CanPromoteRank and
      (Galaxy.CoalitionDefeatedTurn = 0) then
-    AddOrUpdatePlayerBubble(0, Galaxy.CurrentTurn,
+    AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn,
       FormatText1(PickLocalizedTextVariant('GalaxyNews.WB.NewRank', Seed * (Galaxy.CurrentTurn div 10)),
         '<color=255,240,100>', '<Rank>', GetPlayer.GetNextRankName), '');
 end;

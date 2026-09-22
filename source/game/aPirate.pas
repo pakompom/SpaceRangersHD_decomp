@@ -954,7 +954,7 @@ var I: Integer; Ship: TShip;
     ReplaceTextToken(Text, '<Name>', GetName, '<color=255,240,100>');
     ReplaceTextToken(Text, '<FullName>', GetFullName(' '), '<color=255,240,100>');
     if (GetPlayer.CurrentStar = CurrentStar) and GetPlayer.InNormalSpace and (Galaxy.CoalitionDefeatedTurn = 0) then
-      AddOrUpdatePlayerBubble(0, Galaxy.CurrentTurn, Text, '');
+      AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn, Text, '');
   end;
 begin
   Result := False;
@@ -1054,7 +1054,7 @@ begin
       Asteroid := CurrentStar.Asteroids[I];
       if Asteroid.MineralCount > CargoFreeSpace then Continue;
       Distance := PointDistanceSquared(Position, Asteroid.Position);
-      if Distance <= 1000000 then
+      if Distance <= AsteroidTargetRangeSquared then
         for J := 1 to WeaponCount do begin
           Weapon := Weapons[J];
           // Native asteroid targeting can overwrite an existing assignment.
@@ -1132,7 +1132,7 @@ begin
             if (NextRandomIntRange(0, 30, RandomState) + 60 < RelationToShip(Ship)) and not Ship.AbductedByPirateClan then Continue;
             Chance := ChanceToWin(Ship);
             if GetPlayer = Ship then begin
-              if (Galaxy.CurrentTurn < 100 / GalaxyDifficultyTuning[Galaxy.DifficultyLevels[7]].GoodsEventDurationFactor + 300) or
+              if (Galaxy.CurrentTurn < 100 / GalaxyDifficultyTuning[Galaxy.DifficultyLevels[7]].GoodsEventDurationFactor + GalaxyWarmupTurns) or
                 (NextRandomIntRange(0, 100, RandomState) * GalaxyDifficultyTuning[Galaxy.DifficultyLevels[7]].GoodsEventDurationFactor < 40) then Continue;
               Chance := Chance * GalaxyDifficultyTuning[Galaxy.DifficultyLevels[7]].GoodsEventDurationFactor;
             end else if GetPlayer.QuestTargetDefendShip = Ship then Chance := Chance * 5;

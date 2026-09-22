@@ -60,7 +60,7 @@ type
 
 implementation
 
-uses EC_Mem, GR_Main, GR_GraphBuf, GR_DX, GlobalsV, Classes;
+uses EC_Mem, GR_Main, GR_GraphBuf, GR_DX, GlobalsV, Classes, aMyFunction;
 
 { @routine $4B39EC TSpaceCircleGI_Create }
 constructor TSpaceCircleGI.Create(Owner: TObjectGI);
@@ -148,12 +148,12 @@ begin
   if Radius > 0 then
   begin
     Spacing := 20;
-    Circumference := Radius * (2 * 3.1415926);
+    Circumference := Radius * (2 * GamePi);
     Count := Round(Circumference / Spacing);
     if Count < 10 then Count := 10;
     Segments := AllocEC(Count * SizeOf(TSpaceCircleSegmentGI));
     Angle := 0;
-    Step := (2 * 3.1415926) / Count;
+    Step := (2 * GamePi) / Count;
     Point := MakePointF(Sin(Angle) * Radius, Cos(Angle) * (-Radius));
     Segment := Segments;
     for I := 0 to Count - 1 do
@@ -202,7 +202,7 @@ var Segment: PSpaceCircleSegmentGI; I: Integer; Sine, Cosine, X, Y, Angle: Singl
 begin
   if Radius > 0 then
   begin
-    Angle := -2 / (Radius * (2 * 3.1415926)) * 3.1415926 * 2;
+    Angle := -2 / (Radius * (2 * GamePi)) * GamePi * 2;
     Sine := Sin(Angle);
     Cosine := Cos(Angle);
     Segment := Segments;

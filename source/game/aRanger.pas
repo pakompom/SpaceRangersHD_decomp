@@ -1084,7 +1084,7 @@ begin
   if ((CurrentStar.ShipTypeCounts[stKling] > 0) and (NextRandomUnitFloat(RandomState) < 0.2)) or
     ((CurrentStar.ShipTypeCounts[stKling] > 0) and (GetPlayer <> nil) and
       (GetPlayer.PlaceInRating < Galaxy.Rangers.Count div 3) and (NextRandomUnitFloat(RandomState) < 0.5)) or
-    ((Galaxy.CurrentTurn < 300) and ((NextRandomUnitFloat(RandomState) < 0.4) or
+    ((Galaxy.CurrentTurn < GalaxyWarmupTurns) and ((NextRandomUnitFloat(RandomState) < 0.4) or
       ((Integer(Seed) mod 5 = 0) and (NextRandomUnitFloat(RandomState) < 0.8)))) then begin
     Inc(TotalShipKillCount);
     Inc(DominatorKillCount);
@@ -1092,7 +1092,7 @@ begin
     AddRankPoints(NextRandomIntRange(DominatorShipDefinitions[Ord(ktShtip)].RankPoints, DominatorShipDefinitions[Ord(ktEquentor)].RankPoints, RandomState));
     GainExperience(NextRandomIntRange(250, 500, Galaxy.RandomState), 0);
     AddWarriorCareerActivity(4);
-    if (Galaxy.CurrentTurn < 300) and (((DominatorKillCount mod 13 = 0) and (NextRandomUnitFloat(RandomState) < 0.3)) or
+    if (Galaxy.CurrentTurn < GalaxyWarmupTurns) and (((DominatorKillCount mod 13 = 0) and (NextRandomUnitFloat(RandomState) < 0.3)) or
       (DominatorKillCount mod 20 = 0)) then begin
       Inc(LiberatedSystemCount);
       AddRankPoints(30);
@@ -1118,7 +1118,7 @@ begin
   if (NextRandomUnitFloat(RandomState) < 0.09) or
     ((GetPlayer <> nil) and (GetPlayer.PlaceInRating < Galaxy.Rangers.Count div 3) and
       ((GetPlayer.PlaceInRating < PlaceInRating) or (NextRandomUnitFloat(RandomState) < 0.4)) and (NextRandomUnitFloat(RandomState) < 0.3)) or
-    ((Galaxy.CurrentTurn < 300) and (NextRandomUnitFloat(RandomState) < 0.3)) then begin
+    ((Galaxy.CurrentTurn < GalaxyWarmupTurns) and (NextRandomUnitFloat(RandomState) < 0.3)) then begin
     case Round(RemapClamped(GetPlayer.PlaceInRating, 1, Galaxy.Rangers.Count, 0, 100)) of
       0..20: GainExperience(NextRandomIntRange(100, 1000, RandomState), 0);
       21..40: GainExperience(NextRandomIntRange(100, 500, RandomState), 0);
@@ -2640,7 +2640,7 @@ begin
       if Asteroid.MineralCount <= CargoFreeSpace then
       begin
         Distance := PointDistanceSquared(Position, Asteroid.Position);
-        if Distance <= 1000000 then
+        if Distance <= AsteroidTargetRangeSquared then
         begin
     for J := 1 to WeaponCount do
     begin
@@ -2830,7 +2830,7 @@ var NextDemandTurn: Integer; LicenseFactor: Single;
       if GetPlayer.PirateLicenseTicks > 0 then begin
         GetPlayer.SetMoney(GetPlayer.Money + Round(DemandedAmount * 0.9));
         Inc(GetPlayer.PendingPirateLicenseCash, Round(DemandedAmount * 0.1));
-        if GetPlayer.PendingPirateLicenseCash > 100000000 then GetPlayer.PendingPirateLicenseCash := 100000000;
+        if GetPlayer.PendingPirateLicenseCash > MaxMonetaryValue then GetPlayer.PendingPirateLicenseCash := MaxMonetaryValue;
       end else GetPlayer.SetMoney(GetPlayer.Money + DemandedAmount);
     end else OtherShip.SetMoney(OtherShip.Money + DemandedAmount);
     SetMoney(Money - DemandedAmount);
@@ -2960,7 +2960,7 @@ var Text: WideString; NextDemandTurn: Integer;
         ((OtherShip.TypeId <> stRanger) or (OtherShip.GetDominantCareer <> rcPirate)) then begin
         SetMoney(Money + Round(OfferedAmount * 0.9));
         Inc(GetPlayer.PendingPirateLicenseCash, Round(OfferedAmount * 0.1));
-        if GetPlayer.PendingPirateLicenseCash > 100000000 then GetPlayer.PendingPirateLicenseCash := 100000000;
+        if GetPlayer.PendingPirateLicenseCash > MaxMonetaryValue then GetPlayer.PendingPirateLicenseCash := MaxMonetaryValue;
       end else SetMoney(Money + OfferedAmount);
     end else SetMoney(Money + OfferedAmount);
     if (OwnerId = oiPirate) and (OtherShip is TRanger) then AddPirateRankPoints(2);
@@ -3458,7 +3458,7 @@ begin
         ReplaceTextToken(Text, '<Star>', Quest.Planet.CurrentStar.Name, '<color=255,240,100>');
         ReplaceTextToken(Text, '<Relation>', Quest.Planet.GetRelationLevelTextToShip(Self), '<color=255,240,100>');
         if Quest.QuestType = qtSendLetter then TryAddAchievementProgress('POSTMAN', 1);
-        AddOrUpdatePlayerBubble(0, Galaxy.CurrentTurn, Text, '');
+        AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn, Text, '');
         CheckQuestFailureAward(Quest, [qtSendLetter, qtKillShip, qtPlanetQuest]);
         ArchiveQuest(I);
       end
@@ -3488,7 +3488,7 @@ begin
         ReplaceTextToken(Text, '<Player>', GetPlayer.Name, '<color=255,240,100>');
         { Native code still dereferences Planet after the nil-planet text branches. }
         ReplaceTextToken(Text, '<Planet>', Quest.Planet.Name, '<color=255,240,100>');
-        AddOrUpdatePlayerBubble(0, Galaxy.CurrentTurn, Text, '');
+        AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn, Text, '');
         Quest.Successful := True;
         PublishQuestStatus(Quest, 0);
       end
@@ -3539,7 +3539,7 @@ var
           begin
             Text := PickLocalizedTextVariant('GalaxyNews.BadReward.FailQuest', Seed + Cardinal(Galaxy.CurrentTurn div 10));
             ReplaceTextToken(Text, '<Reward>', GetAwardInfo(Award).Name, '<color=255,240,100>');
-            AddOrUpdatePlayerBubble(0, Galaxy.CurrentTurn, Text, '');
+            AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn, Text, '');
           end;
         end;
         Break;
@@ -4482,7 +4482,7 @@ begin
   Text := Text + #13#10 + ' ' + #13#10 + Quest.Description;
   if Outcome = 0 then begin
     if Quest.Planet <> nil then begin
-      Message := AddOrUpdatePlayerBubble(3, Galaxy.CurrentTurn, Text, 'ZP_' + IntToStr(Cardinal(Quest.Planet.Id)) + '_' + IntToStr(Quest.QuestNumber));
+      Message := AddOrUpdatePlayerBubble(pmQuestActive, Galaxy.CurrentTurn, Text, 'ZP_' + IntToStr(Cardinal(Quest.Planet.Id)) + '_' + IntToStr(Quest.QuestNumber));
       if Quest.ObjectiveTarget <> nil then
         if Quest.ObjectiveTarget is TShip then Message.Targets[0].ShipId := TShip(Quest.ObjectiveTarget).Id
         else if Quest.ObjectiveTarget is TPlanet then Message.Targets[0].PlanetId := TPlanet(Quest.ObjectiveTarget).Id
@@ -4490,9 +4490,9 @@ begin
     end;
   end
   else if Outcome > 0 then begin
-    if Quest.Planet <> nil then AddOrUpdatePlayerBubble(4, Galaxy.CurrentTurn, Text, 'ZP_' + IntToStr(Cardinal(Quest.Planet.Id)) + '_' + IntToStr(Quest.QuestNumber));
+    if Quest.Planet <> nil then AddOrUpdatePlayerBubble(pmQuestSucceeded, Galaxy.CurrentTurn, Text, 'ZP_' + IntToStr(Cardinal(Quest.Planet.Id)) + '_' + IntToStr(Quest.QuestNumber));
   end
-  else if Quest.Planet <> nil then AddOrUpdatePlayerBubble(5, Galaxy.CurrentTurn, Text, 'ZP_' + IntToStr(Cardinal(Quest.Planet.Id)) + '_' + IntToStr(Quest.QuestNumber));
+  else if Quest.Planet <> nil then AddOrUpdatePlayerBubble(pmQuestCancelled, Galaxy.CurrentTurn, Text, 'ZP_' + IntToStr(Cardinal(Quest.Planet.Id)) + '_' + IntToStr(Quest.QuestNumber));
 end;
 { @end $73C6F8 }
 
@@ -4529,7 +4529,7 @@ begin
             ReplaceTextToken(Text, '<Relation>', Quest.Planet.GetRelationLevelTextToShip(Ranger), '<color=255,240,100>');
             ReplaceTextToken(Text, '<Ship>', Ship.GetFullName(' '), '<color=255,240,100>');
             ReplaceTextToken(Text, '<Star>', (Quest.ObjectiveTarget as TStar).Name, '<color=255,240,100>');
-            AddOrUpdatePlayerBubble(0, Galaxy.CurrentTurn, Text, '');
+            AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn, Text, '');
           end;
         { The original calls these on Self, even while iterating another ranger's quests. }
         PublishQuestStatus(Quest, -1);
@@ -4556,7 +4556,7 @@ begin
             ReplaceTextToken(Text, '<Relation>', Quest.Planet.GetRelationLevelTextToShip(Ranger), '<color=255,240,100>');
             ReplaceTextToken(Text, '<Ship>', Ship.GetFullName(' '), '<color=255,240,100>');
             ReplaceTextToken(Text, '<Star>', Ship.CurrentStar.Name, '<color=255,240,100>');
-            AddOrUpdatePlayerBubble(0, Galaxy.CurrentTurn, Text, '');
+            AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn, Text, '');
           end;
           PublishQuestStatus(Quest, -1);
           ArchiveQuest(J);
@@ -4579,7 +4579,7 @@ begin
           Text := PickLocalizedTextVariant('GalaxyNews.Quest.Successful.KillShip', Galaxy.GenerationSeed * Cardinal(Galaxy.CurrentTurn div 10));
           ReplaceTextToken(Text, '<Planet>', Quest.Planet.Name, '<color=255,240,100>');
           ReplaceTextToken(Text, '<Ship>', Ship.GetFullName(' '), '<color=255,240,100>');
-          AddOrUpdatePlayerBubble(0, Galaxy.CurrentTurn, Text, '');
+          AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn, Text, '');
         end;
         Quest.Successful := True;
         PublishQuestStatus(Quest, 0);

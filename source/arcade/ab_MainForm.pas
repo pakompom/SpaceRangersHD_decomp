@@ -587,7 +587,7 @@ begin
   end
   else EnterMapView;
   ArcadeTickCount := 0;
-  UpdateTimer := ScheduleCallbackTimer(20, 20, TimerTakt);
+  UpdateTimer := ScheduleCallbackTimer(ArcadeTickMs, ArcadeTickMs, TimerTakt);
   ScrollTimer := ScheduleCallbackTimer(ScrollTime, ScrollTime, ScrollMapTimer);
   TimerTakt(nil, 0);
   HideHelp;
@@ -2499,7 +2499,7 @@ begin
     if ArcadeViewMode = 0 then
     begin
       if not ArcadeAutopilotEnabled and not ArcadeEnemiesDefeated and not DisableAutoPilot and
-        ((ArcadeTickCount - ArcadeLastInputTick) * 20 > ChangeAutoPilot * 1000) then
+        ((ArcadeTickCount - ArcadeLastInputTick) * ArcadeTickMs > ChangeAutoPilot * 1000) then
       begin
         ArcadeAutopilotEnabled := True;
         UpdateAutopilotButtons;
@@ -4369,7 +4369,7 @@ end;
 function TfAB.RandomFloat(BoundA, BoundB: Double): Double;
 begin
   RandomSeed := RandomSeed div 7931 + (RandomSeed * 7981 + 567);
-  Result := SeededRandomIntRange(Trunc(BoundA * 1000 + 1), Trunc(BoundB * 1000 + 1), RandomSeed) / 1000;
+  Result := SeededRandomIntRange(Trunc(BoundA * RandomFloatResolution + 1), Trunc(BoundB * RandomFloatResolution + 1), RandomSeed) / RandomFloatResolution;
 end;
 { @end $54B774 }
 

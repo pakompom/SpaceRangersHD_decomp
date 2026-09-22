@@ -566,7 +566,7 @@ begin
     Stage := 17;
     CalculateGalaxyTurnAndWait;
     if ExitScreenLoop then Exit;
-    for I := 1 to 300 do
+    for I := 1 to GalaxyWarmupTurns do
     begin
       if I mod 20 = 0 then SysUtils.Sleep(1);
       CalculatePlayerStarTurnAndWait;

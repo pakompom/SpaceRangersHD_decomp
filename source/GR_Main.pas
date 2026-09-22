@@ -3481,7 +3481,7 @@ begin
   // Native uses two different approximations of pi for these tables.
   for Index := Low(CircleCos) to High(CircleCos) do
   begin
-    Angle := Index * (3.1415926 / 180);
+    Angle := Index * (GamePi / 180);
     CircleCos[Index] := Cos(Angle);
     CircleSin[Index] := Sin(Angle);
   end;

@@ -235,7 +235,7 @@ begin
   Difficulty := DifficultyPercent;
   if VictoryAchieved then
   begin
-    TotalScore := Round(Experience * Difficulty / 100 / Power(Max(7, (FinishedTurn - 300) / 365), 1.3));
+    TotalScore := Round(Experience * Difficulty / 100 / Power(Max(7, (FinishedTurn - GalaxyWarmupTurns) / TurnsPerYear), 1.3));
     DominatorsResolved := (TerronEndingState <> 0) and (KellerEndingState <> 0) and (BlazerEndingState <> 0);
     PirateResolved := (PirateRank >= 7) or (PirateEndingState = 3);
     PirateDefeat := PirateEndingState = 4;
@@ -1036,8 +1036,8 @@ begin
       for I := 8 to Size - 1 do
       begin
         Data^ := Data^ xor Byte(Seed - 1);
-        Seed := 16807 * (Seed mod 127773) - 2836 * (Seed div 127773);
-        if Seed <= 0 then Inc(Seed, MaxInt);
+        Seed := SeedRngMultiplier * (Seed mod SeedRngQuotient) - SeedRngRemainder * (Seed div SeedRngQuotient);
+        if Seed <= 0 then Inc(Seed, SeedRngModulus);
         Data := PByte(PAnsiChar(Data) + 1);
       end;
       Checksum := 0;
@@ -1115,8 +1115,8 @@ begin
   for I := 8 to Size - 1 do
   begin
     Data^ := Data^ xor Byte(Seed - 1);
-    Seed := 16807 * (Seed mod 127773) - 2836 * (Seed div 127773);
-    if Seed <= 0 then Inc(Seed, MaxInt);
+    Seed := SeedRngMultiplier * (Seed mod SeedRngQuotient) - SeedRngRemainder * (Seed div SeedRngQuotient);
+    if Seed <= 0 then Inc(Seed, SeedRngModulus);
     Data := PByte(PAnsiChar(Data) + 1);
   end;
   Buffer.CompressZlibPayloadInPlace(False);
@@ -1543,7 +1543,7 @@ begin
   (GetByName('IDate') as TLabelGI).SetText(FormatText1(LocalizedColorText('FormScore.DateWin'),
     '<color=255,222,0>', '<Date>', FormatGameTurnDate(Entry.FinishedTurn)));
   (GetByName('ITurn') as TLabelGI).SetText(FormatText1(LocalizedColorText('FormScore.TurnWin'),
-    '<color=255,222,0>', '<Date>', WideString(IntToStr(Max(0, Entry.FinishedTurn - 300)))));
+    '<color=255,222,0>', '<Date>', WideString(IntToStr(Max(0, Entry.FinishedTurn - GalaxyWarmupTurns)))));
   (GetByName('IRank') as TLabelGI).SetText(FormatText1(LocalizedColorText('FormScore.Rank'),
     '<color=255,240,100>', '<Rank>', LocalizedText('Rank.' + CoalitionRankNames[Entry.Rank] + '.Name')));
   (GetByName('IKillDominator') as TLabelGI).SetText(WideString(IntToStr(Entry.DominatorKillCount)));

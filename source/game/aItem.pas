@@ -1926,7 +1926,7 @@ begin
     Weight := NewWeight;
     HullPoints := Weight;
     Cost := RoundAndTruncateToTens(Cost / 100 * HullSeriesDefinitions[HullSeries].CostPercent);
-    if (Cost < 0) or (Cost > 100000000) then Cost := 100000000;
+    if (Cost < 0) or (Cost > MaxMonetaryValue) then Cost := MaxMonetaryValue;
   end;
 end;
 { @end $7F42C8 }
@@ -5342,7 +5342,7 @@ begin
   Result := True;
   Item.MicroModuleIndex := ModuleIndex + 1;
   Item.Weight := Round(Max(1, Item.Weight / 100 * MicroModuleTemplates[Item.MicroModuleIndex - 1].SizePercent));
-  Item.Cost := Min(100000000, Round(Max(1, Item.Cost / 100 * MicroModuleTemplates[Item.MicroModuleIndex - 1].CostPercent)));
+  Item.Cost := Min(MaxMonetaryValue, Round(Max(1, Item.Cost / 100 * MicroModuleTemplates[Item.MicroModuleIndex - 1].CostPercent)));
   case Item.ItemType of
     t_Hull:
       begin
@@ -5441,12 +5441,12 @@ begin
   end;
   Item.SpecialModuleIndex := ModuleIndex + 1;
   Item.Weight := Round(Max(1, Item.Weight / 100 * MicroModuleTemplates[ModuleIndex].SizePercent));
-  Item.Cost := Min(100000000, RoundAndTruncateToTens(Max(10, Item.Cost / 100 * MicroModuleTemplates[ModuleIndex].CostPercent)));
+  Item.Cost := Min(MaxMonetaryValue, RoundAndTruncateToTens(Max(10, Item.Cost / 100 * MicroModuleTemplates[ModuleIndex].CostPercent)));
   if Item.ItemType = t_Hull then
   begin
     (Item as THull).HullType := htSpecial;
     (Item as THull).HullPoints := Item.Weight;
-    if (Item.Cost < 0) or (Item.Cost > 100000000) then Item.Cost := 100000000;
+    if (Item.Cost < 0) or (Item.Cost > MaxMonetaryValue) then Item.Cost := MaxMonetaryValue;
   end;
   if Item.ItemType in [t_Weapon1..t_CustomWeapon] then
   begin
@@ -5469,7 +5469,7 @@ begin
   Item.Cost := Round(Max(1, Item.Cost * 100 / MicroModuleTemplates[Item.SpecialModuleIndex - 1].CostPercent));
   if Item.ItemType = t_Hull then begin
     (Item as THull).HullPoints := Min(Item.Weight, (Item as THull).HullPoints);
-    if (Item.Cost < 0) or (Item.Cost > 100000000) then Item.Cost := 100000000;
+    if (Item.Cost < 0) or (Item.Cost > MaxMonetaryValue) then Item.Cost := MaxMonetaryValue;
   end;
   if Item.ItemType in [t_Weapon1..t_CustomWeapon] then begin
     BonusKind := WeaponDamageClasses[ClassifyWeaponDamageFlags(TWeapon(Item).GetWeaponInfo.DamageFlags)].BonusKind;

@@ -2618,7 +2618,7 @@ end;
 procedure SF_NewsAdd(av: array of TVarEC; code: TCodeEC);
 begin
   if High(av) <> 1 then raise Exception.Create('Error.Script NewsAdd');
-  AddOrUpdatePlayerBubble(0, Galaxy.CurrentTurn, av[1].GetString, '');
+  AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn, av[1].GetString, '');
 end;
 { @end $60C5D0 }
 
@@ -2646,7 +2646,7 @@ begin
     av[0].SetInt(0)
   else
   begin
-    with AddOrUpdatePlayerBubble(1, Galaxy.CurrentTurn, av[1].GetString, '') do
+    with AddOrUpdatePlayerBubble(pmRadio, Galaxy.CurrentTurn, av[1].GetString, '') do
       Targets[0].ShipId := Ship.Id;
     av[0].SetInt(1);
   end;
@@ -8112,7 +8112,7 @@ begin
       if (GetPlayer = Ship) and (GetInnermostScreenLoop = StarMapScreen) and (StarMapScreen.Mode = smmOrders) then
       begin
         StarMapScreen.ClearPathOverlay(True);
-        GetPlayer.BuildOrderMovementPath(999999);
+        GetPlayer.BuildOrderMovementPath(FullPathNodeLimit);
         StarMapScreen.BuildShipPathOverlay(Ship, False, '');
       end;
     end;

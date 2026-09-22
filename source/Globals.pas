@@ -6,6 +6,20 @@ interface
 
 uses fMainForm, fCfgSettings, fGameEnd, fAbout, fIntroduction, fGameSettings, fGameSettings2, fLoadAB, fAchievements, fFilm, fRating2, fGameMenu, fGameLoad, fPlanet, fGov, fInfo, fScaner, fRewards, fGalaxy2, fGoodsShop2, EC_Expression, fTalk, ab_MainForm, fLoad, fJump, ThreadCalc, fJournal, fSelectFace, fLoadQuest, fPlanetQuest, fPlanetNO, aItem, aGalaxyStruct, aShip, fScore, fLoadRobot, fStarMap, aEFilm, aEFilmEnd, SE_Space, SE_Process, aPlanet, fShip2, fHangar, fRuinsTalk, fEquipmentShop, fSaveManager, GI_GraphButton, GI_MessageLoop, EC_Buf, EC_Struct, fFilmFile, SyncObjs, Classes, Types;
 
+const
+  // PlayerMessagePresentations order; keep the stored Kind byte and set widths.
+  pmGalaxyNews = 0;
+  pmRadio = 1;
+  pmShipPositive = 2;
+  pmQuestActive = 3;
+  pmQuestSucceeded = 4;
+  pmQuestCancelled = 5; // QuestCancel presentation is also used for generic warnings.
+  pmTip = 6;
+  pmUserNote = 7;
+  pmShipNegative = 8;
+  pmStorage = 9;
+  pmRadioPlayer = 10; // Radio message with the player among its ship targets.
+
 type
   TGreetingMask = set of 0..7; // @size $01 Field-specific names and bits are decoded by the loaders.
 
@@ -531,7 +545,7 @@ implementation
 // @unit-initialization $87784C
 // @unit-finalization $538C4C
 
-uses aPacket, aSaveLoad, aScript, aPath, Robot, aConst, aPlayer, GI_Main, PopUp, EC_CacheGAI, EC_Thread, EC_Cache, aGalaxy, aMyFunction, EC_BlockPar, GR_Main, EC_Str, GlobalsV, Math, SysUtils, Windows;
+uses aPacket, aSaveLoad, aScript, aPath, Robot, aConst, aPlayer, GI_Main, PopUp, EC_CacheGAI, EC_Thread, EC_Cache, aGalaxy, aMyFunction, EC_BlockPar, GR_Main, EC_Str, GlobalsV, Math, SysUtils, Windows, ab_Global;
 
 { @routine $526AC4 InitializeScriptHostRuntime }
 procedure InitializeScriptHostRuntime;
@@ -703,7 +717,7 @@ begin
   if UserSettingsConfig.CountParamsByPath('ViewPathLength') > 0 then
     ViewPathLength := ParseEnabledNameGI(UserSettingsConfig.GetParamByPathOrMarker('ViewPathLength'));
   if UserSettingsConfig.CountParamsByPath('TurnSaveStep') > 0 then
-    TurnSaveStep := Min(365, ExtractDigitsToIntW(UserSettingsConfig.GetParamByPathOrMarker('TurnSaveStep')));
+    TurnSaveStep := Min(TurnsPerYear, ExtractDigitsToIntW(UserSettingsConfig.GetParamByPathOrMarker('TurnSaveStep')));
   if UserSettingsConfig.CountParamsByPath('QuickSaveExtraSlots') > 0 then
     QuickSaveExtraSlots := Min(9, ExtractDigitsToIntW(UserSettingsConfig.GetParamByPathOrMarker('QuickSaveExtraSlots')));
   if UserSettingsConfig.CountParamsByPath('MaxPlayerNews') > 0 then
@@ -1201,7 +1215,7 @@ begin
     else
     begin
       Text := Section.GetParam(WideString(IntToStr(Index)));
-      ArcadeWeaponLoopTicks[Index] := ExtractDigitsToIntW(ExtractDelimitedPartW(Text, 0, ',')) div 20;
+      ArcadeWeaponLoopTicks[Index] := ExtractDigitsToIntW(ExtractDelimitedPartW(Text, 0, ',')) div ArcadeTickMs;
       ArcadeWeaponLoopSounds[Index] := ExtractDelimitedPartW(Text, 1, ',');
     end;
 end;
@@ -2033,13 +2047,13 @@ begin
     begin
       Entry := Next;
       Next := Next.Next;
-      if Entry.WasRead and (Entry.Kind in [6]) and (Galaxy.CurrentTurn - Entry.Turn >= 7) then
+      if Entry.WasRead and (Entry.Kind in [pmTip]) and (Galaxy.CurrentTurn - Entry.Turn >= 7) then
         RemovePersistentPlayerMessage(Entry, True)
       else if Galaxy.CurrentTurn - Entry.Turn >= PlayerMessagePresentations[Entry.Kind].LifetimeTurns then
         RemovePersistentPlayerMessage(Entry, True)
-      else if Entry.WasRead and (Entry.Kind in [0..2, 4, 5, 8]) then
+      else if Entry.WasRead and (Entry.Kind in [pmGalaxyNews..pmShipPositive, pmQuestSucceeded, pmQuestCancelled, pmShipNegative]) then
         RemovePersistentPlayerMessage(Entry, True)
-      else if not GetPlayer.InNormalSpace and (Entry.Kind = 1) then
+      else if not GetPlayer.InNormalSpace and (Entry.Kind = pmRadio) then
         RemovePersistentPlayerMessage(Entry, True);
     end;
   finally
@@ -2126,8 +2140,8 @@ begin
   if ShownPlayerTips shr Index and 1 = 0 then
   begin
     ShownPlayerTips := ShownPlayerTips or (1 shl Index);
-    if Index < 10 then AddOrUpdatePlayerBubble(6, Galaxy.CurrentTurn, LocalizedColorText('Tips.0' + SysUtils.IntToStr(Index)), '')
-    else AddOrUpdatePlayerBubble(6, Galaxy.CurrentTurn, LocalizedColorText('Tips.' + SysUtils.IntToStr(Index)), '');
+    if Index < 10 then AddOrUpdatePlayerBubble(pmTip, Galaxy.CurrentTurn, LocalizedColorText('Tips.0' + SysUtils.IntToStr(Index)), '')
+    else AddOrUpdatePlayerBubble(pmTip, Galaxy.CurrentTurn, LocalizedColorText('Tips.' + SysUtils.IntToStr(Index)), '');
     Result := True;
   end;
 end;

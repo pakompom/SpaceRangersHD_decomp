@@ -1351,20 +1351,20 @@ begin
         Dec(MedicalPolicyTicks);
         LastMedicalPolicyTicks := MedicalPolicyTicks;
         if MedicalPolicyTicks = 0 then
-          AddOrUpdatePlayerBubble(0, Galaxy.CurrentTurn, PickLocalizedTextVariant('GalaxyNews.MedPolicy.End', Galaxy.CurrentTurn div 10), '');
+          AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn, PickLocalizedTextVariant('GalaxyNews.MedPolicy.End', Galaxy.CurrentTurn div 10), '');
       end;
       if PendingPirateLicenseCash > 0 then
       begin
         GainExperience(Round(PendingPirateLicenseCash * CareerStatus[rcPirate] * 0.001), 3);
         Inc(PirateLicenseCash, PendingPirateLicenseCash);
         PendingPirateLicenseCash := 0;
-        if PirateLicenseCash > 100000000 then PirateLicenseCash := 100000000;
+        if PirateLicenseCash > MaxMonetaryValue then PirateLicenseCash := MaxMonetaryValue;
       end;
       if PirateLicenseTicks > 0 then
       begin
         Dec(PirateLicenseTicks);
         if PirateLicenseTicks = 0 then
-          AddOrUpdatePlayerBubble(0, Galaxy.CurrentTurn, PickLocalizedTextVariant('GalaxyNews.PirateLicense.End', Galaxy.CurrentTurn div 10), '')
+          AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn, PickLocalizedTextVariant('GalaxyNews.PirateLicense.End', Galaxy.CurrentTurn div 10), '')
         else if Galaxy.ShipTypeCounts[Ord(rstDominion)] <= 0 then
         begin
           Found := 0;
@@ -1382,7 +1382,7 @@ begin
           if Found = 0 then
           begin
             PirateLicenseTicks := 0;
-            AddOrUpdatePlayerBubble(0, Galaxy.CurrentTurn, PickLocalizedTextVariant('GalaxyNews.PirateLicense.DeadAllCB', Galaxy.CurrentTurn div 10), '');
+            AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn, PickLocalizedTextVariant('GalaxyNews.PirateLicense.DeadAllCB', Galaxy.CurrentTurn div 10), '');
           end;
         end;
       end;
@@ -1393,7 +1393,7 @@ begin
         else PirateLicenseCash := Round(PirateLicenseCash * 0.95);
       end;
       if Money < 0 then SetMoney(0)
-      else if Money > 100000000 then SetMoney(100000000);
+      else if Money > MaxMonetaryValue then SetMoney(MaxMonetaryValue);
       Stage := 3;
       if InNormalSpace then
         for I := 0 to CurrentStar.Ships.Count - 1 do
@@ -1428,7 +1428,7 @@ begin
           IncrementWrapped(I, FirstDisease, LastDisease);
           with CaptainHealthDefinitions[I] do
           begin
-            if (Galaxy.CurrentTurn < 300) or CaptainHealthDefinitions[I].Disabled then Continue;
+            if (Galaxy.CurrentTurn < GalaxyWarmupTurns) or CaptainHealthDefinitions[I].Disabled then Continue;
             if (CurrentPlanet <> nil) and not (0 in CaptainHealthDefinitions[I].Locations) then Continue;
             if (DockedTo <> nil) and not (1 in CaptainHealthDefinitions[I].Locations) then Continue;
             if InNormalSpace and not (2 in CaptainHealthDefinitions[I].Locations) and not (3 in CaptainHealthDefinitions[I].Locations) then Continue;
@@ -1441,7 +1441,7 @@ begin
               not (DockedTo.OwnerId in CaptainHealthDefinitions[I].AllowedLocationOwners) then Continue;
             if (RaceToOwner(PilotRace) in AllowedOwners) and (GetRangerRatingBand in AllowedRatingBands) and
               (Rank in AllowedRanks) and (GetDominantCareer in AllowedCareers) and
-              (CaptainHealth[I].Progress <= 0.0) and (CaptainHealth[I].ExpireTurn + 365 <= Galaxy.CurrentTurn) then
+              (CaptainHealth[I].Progress <= 0.0) and (CaptainHealth[I].ExpireTurn + TurnsPerYear <= Galaxy.CurrentTurn) then
             begin
               if IsHealthEffectActive(4) then ResistanceFactor := 0.1
               else ResistanceFactor := 1.0;
@@ -1483,7 +1483,7 @@ begin
               Inc(CaptainHealth[I].ApplicationCount);
               CaptainHealth[I].ExpireTurn := Galaxy.CurrentTurn + Round(RemapClamped(SeededRandomUnitFloat(Integer(Galaxy.GenerationSeed) + I + Galaxy.CurrentTurn), 0.0, 1.0, 0.9, 2.0) * CaptainHealthDefinitions[I].Duration);
               Text := LocalizedColorText(WideString('Illness.Illness.' + IntToStr(I - 1) + '.Start'));
-              AddOrUpdatePlayerBubble(0, Galaxy.CurrentTurn, FormatText2(Text, '<color=255,240,100>', '<Date>', Galaxy.FormatTurnDate(-1), '<Name>', CaptainHealthDefinitions[I].Name), '');
+              AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn, FormatText2(Text, '<color=255,240,100>', '<Date>', Galaxy.FormatTurnDate(-1), '<Name>', CaptainHealthDefinitions[I].Name), '');
               AchievementStats.CheckAllDiseasesAchievement;
               Inc(DiseaseContractionCount);
             end;
@@ -1493,7 +1493,7 @@ begin
             CaptainHealth[I].Progress := 0.0;
             StatusEffectSourceNames[I] := '';
             Text := LocalizedColorText(WideString('Illness.Illness.' + IntToStr(I - 1) + '.End'));
-            AddOrUpdatePlayerBubble(0, Galaxy.CurrentTurn, FormatText2(Text, '<color=255,240,100>', '<Date>', Galaxy.FormatTurnDate(-1), '<Name>', CaptainHealthDefinitions[I].Name), '');
+            AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn, FormatText2(Text, '<color=255,240,100>', '<Date>', Galaxy.FormatTurnDate(-1), '<Name>', CaptainHealthDefinitions[I].Name), '');
           end;
         end;
       Stage := 8;
@@ -1501,7 +1501,7 @@ begin
         if (CaptainHealth[I].Progress = 100.0) and (CaptainHealth[I].ExpireTurn <= Galaxy.CurrentTurn) then
         begin
           Text := LocalizedColorText(WideString('Illness.Stimulant.' + IntToStr(I - 12 - 1) + '.End'));
-          AddOrUpdatePlayerBubble(0, Galaxy.CurrentTurn, FormatText1(Text, '<color=255,240,100>', '<Date>', Galaxy.FormatTurnDate(-1)), '');
+          AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn, FormatText1(Text, '<color=255,240,100>', '<Date>', Galaxy.FormatTurnDate(-1)), '');
           CaptainHealth[I].Progress := 0.0;
         end;
       Stage := 9;
@@ -1509,7 +1509,7 @@ begin
         if (RadiationHealth[I].Progress <> 0.0) and (RadiationHealth[I].ExpireTurn <= Galaxy.CurrentTurn) then
         begin
           Text := LocalizedColorText(WideString('Illness.ExtraIllness.' + IntToStr(I) + '.End'));
-          AddOrUpdatePlayerBubble(0, Galaxy.CurrentTurn, FormatText1(Text, '<color=255,240,100>', '<Date>', Galaxy.FormatTurnDate(-1)), '');
+          AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn, FormatText1(Text, '<color=255,240,100>', '<Date>', Galaxy.FormatTurnDate(-1)), '');
           RadiationHealth[I].Progress := 0.0;
         end;
       Stage := 10;
@@ -1531,7 +1531,7 @@ begin
               CaptainHealth[I].ExpireTurn := Galaxy.CurrentTurn + Round(RemapClamped(SeededRandomUnitFloat(Integer(Galaxy.GenerationSeed) + I + Galaxy.CurrentTurn), 0.0, 1.0, 0.5, 3.0) * CaptainHealthDefinitions[I].Duration);
               Inc(CaptainHealth[I].ApplicationCount);
               Text := LocalizedColorText(WideString('Illness.Illness.' + IntToStr(I - 1) + '.Start'));
-              AddOrUpdatePlayerBubble(0, Galaxy.CurrentTurn, FormatText2(Text, '<color=255,240,100>', '<Date>', Galaxy.FormatTurnDate(-1), '<Name>', CaptainHealthDefinitions[I].Name), '');
+              AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn, FormatText2(Text, '<color=255,240,100>', '<Date>', Galaxy.FormatTurnDate(-1), '<Name>', CaptainHealthDefinitions[I].Name), '');
               Inc(DiseaseContractionCount);
               AchievementStats.CheckAllDiseasesAchievement;
             end;
@@ -1546,9 +1546,9 @@ begin
           TargetValue := NextRandomIntRange(Galaxy.ComputeScaledSmallMoney(oiHuman), Galaxy.ComputeScaledAverageMoney(oiHuman), RandomState);
           SetMoney(TargetValue + Money);
           SoundManager.PlaySound('Sound.Sell');
-          AddOrUpdatePlayerBubble(0, Galaxy.CurrentTurn, FormatText2(PickLocalizedTextVariant('GalaxyNews.IllNews.IllLuatan', Seed * Cardinal(Galaxy.CurrentTurn div 10)), '<color=255,240,100>', '<Date>', Galaxy.FormatTurnDate(-1), '<Money>', WideString(IntToStr(TargetValue))), '');
+          AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn, FormatText2(PickLocalizedTextVariant('GalaxyNews.IllNews.IllLuatan', Seed * Cardinal(Galaxy.CurrentTurn div 10)), '<color=255,240,100>', '<Date>', Galaxy.FormatTurnDate(-1), '<Money>', WideString(IntToStr(TargetValue))), '');
         end
-        else AddOrUpdatePlayerBubble(0, Galaxy.CurrentTurn, FormatText1(PickLocalizedTextVariant('GalaxyNews.IllNews.IllLuatanNo', Seed * Cardinal(Galaxy.CurrentTurn div 10)), '<color=255,240,100>', '<Date>', Galaxy.FormatTurnDate(-1)), '');
+        else AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn, FormatText1(PickLocalizedTextVariant('GalaxyNews.IllNews.IllLuatanNo', Seed * Cardinal(Galaxy.CurrentTurn div 10)), '<color=255,240,100>', '<Date>', Galaxy.FormatTurnDate(-1)), '');
       end;
       Stage := 12;
       if IsHealthEffectActive(11) and InNormalSpace and HasCargoGoods and
@@ -1557,7 +1557,7 @@ begin
         TargetValue := NextRandomIntRange(Galaxy.ComputeScaledMiniMoney(oiHuman), Galaxy.ComputeScaledBigMoney(oiHuman), RandomState);
         JettisonCargoGoodsTowardTargetValue(TargetValue);
         SoundManager.PlaySound('Sound.Sell');
-        AddOrUpdatePlayerBubble(0, Galaxy.CurrentTurn, FormatText1(PickLocalizedTextVariant('GalaxyNews.IllNews.IllSeciyanka', Seed * Cardinal(Galaxy.CurrentTurn div 10)), '<color=255,240,100>', '<Date>', Galaxy.FormatTurnDate(-1)), '');
+        AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn, FormatText1(PickLocalizedTextVariant('GalaxyNews.IllNews.IllSeciyanka', Seed * Cardinal(Galaxy.CurrentTurn div 10)), '<color=255,240,100>', '<Date>', Galaxy.FormatTurnDate(-1)), '');
       end;
       Stage := 13;
       RefreshDerivedStats(True);
@@ -1581,9 +1581,9 @@ begin
   if DepositAmount > 0 then
   begin
     Base := 0.01 * DepositInterestRate / 12 + 1;
-    Exponent := DepositDayCount / 365 * 12;
-    LimitRatio := 100000000 / DepositAmount;
-    if Ln(Base) * Exponent > Ln(LimitRatio) then Result := 100000000
+    Exponent := DepositDayCount / TurnsPerYear * 12;
+    LimitRatio := MaxMonetaryValue / DepositAmount;
+    if Ln(Base) * Exponent > Ln(LimitRatio) then Result := MaxMonetaryValue
     else Result := Round(Power(Base, Exponent) * DepositAmount);
   end;
 end;
@@ -1691,7 +1691,7 @@ begin
   if ((Victim as TKling).KlingType in [ktEquentor..ktSmersh, ktBertor]) and
     (DestroyedDominatorHullMass > Galaxy.ScaleIntByTechLevel(500, 3000) *
       GalaxyDifficultyTuning[Galaxy.DifficultyLevels[7]].GoodsEventDurationFactor) and
-    (Galaxy.CurrentTurn > 365 * GalaxyDifficultyTuning[Galaxy.DifficultyLevels[7]].GoodsEventDurationFactor + LastDominatorProgramRewardTurn) then
+    (Galaxy.CurrentTurn > TurnsPerYear * GalaxyDifficultyTuning[Galaxy.DifficultyLevels[7]].GoodsEventDurationFactor + LastDominatorProgramRewardTurn) then
   begin
     LastDominatorProgramRewardTurn := Galaxy.CurrentTurn;
     DestroyedDominatorHullMass := 0;
@@ -1699,7 +1699,7 @@ begin
     Count := GetProgramRewardCount(ProgramIndex);
     Inc(ProgramRewardStocks[ProgramIndex], Count);
     if Galaxy.CoalitionDefeatedTurn = 0 then
-      AddOrUpdatePlayerBubble(0, Galaxy.CurrentTurn,
+      AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn,
         FormatText2(PickLocalizedTextVariant('GalaxyNews.WB.NewProgramm', Seed * Cardinal(Galaxy.CurrentTurn div 10)),
           '<color=255,240,100>', '<Count>', IntToStr(Count), '<Programm>', GetProgramName(ProgramIndex)), '');
     Result := True;
@@ -1991,7 +1991,7 @@ begin
     end;
   end;
   if Found then
-  with AddOrUpdatePlayerBubble(0, Galaxy.CurrentTurn, Text, '') do
+  with AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn, Text, '') do
   begin
     if Planets[1] <> nil then Targets[0].PlanetId := Planets[1].Id;
     if Planets[2] <> nil then Targets[1].PlanetId := Planets[2].Id;
@@ -2399,7 +2399,7 @@ begin
       Text := WrapTextInColor(LocalizedText('FormShip.StorageInfo.Main'), '<color=0,255,0>') + #13#10;
       Text := Text + BuildDeployedSatelliteSummary(AddedLines);
       Text := Text + Heading;
-      AddOrUpdatePlayerBubble(9, Galaxy.CurrentTurn, Text, 'sys_storage1');
+      AddOrUpdatePlayerBubble(pmStorage, Galaxy.CurrentTurn, Text, 'sys_storage1');
     end
     else RemovePlayerBubblePages('sys_storage', 0);
   end
@@ -2419,7 +2419,7 @@ begin
           if Page = 1 then
             ReplaceTextToken(Text, 'onepage', ' (' + LocalizedText('FormShip.StorageInfo.Page') + ' ' +
               WrapTextInColor(IntToStr(Page), '<color=255,0,255>') + ')', '');
-          AddOrUpdatePlayerBubble(9, Galaxy.CurrentTurn, Text, 'sys_storage' + IntToStr(Page));
+          AddOrUpdatePlayerBubble(pmStorage, Galaxy.CurrentTurn, Text, 'sys_storage' + IntToStr(Page));
           Inc(Page);
           Text := WrapTextInColor(LocalizedText('FormShip.StorageInfo.Main') + ' (' + LocalizedText('FormShip.StorageInfo.Page') + ' ' +
               WrapTextInColor(IntToStr(Page), '<color=255,0,255>') + ')',
@@ -2467,7 +2467,7 @@ begin
         if Page = 1 then
           ReplaceTextToken(Text, 'onepage', ' (' + LocalizedText('FormShip.StorageInfo.Page') + ' ' +
               WrapTextInColor(IntToStr(Page), '<color=255,0,255>') + ')', '');
-        AddOrUpdatePlayerBubble(9, Galaxy.CurrentTurn, Text, 'sys_storage' + IntToStr(Page));
+        AddOrUpdatePlayerBubble(pmStorage, Galaxy.CurrentTurn, Text, 'sys_storage' + IntToStr(Page));
         Inc(Page);
         Text := WrapTextInColor(LocalizedText('FormShip.StorageInfo.Main') + ' (' + LocalizedText('FormShip.StorageInfo.Page') + ' ' +
               WrapTextInColor(IntToStr(Page), '<color=255,0,255>') + ')',
@@ -2483,7 +2483,7 @@ begin
         if Page = 1 then
           ReplaceTextToken(Text, 'onepage', ' (' + LocalizedText('FormShip.StorageInfo.Page') + ' ' +
               WrapTextInColor(IntToStr(Page), '<color=255,0,255>') + ')', '');
-        AddOrUpdatePlayerBubble(9, Galaxy.CurrentTurn, Text, 'sys_storage' + IntToStr(Page));
+        AddOrUpdatePlayerBubble(pmStorage, Galaxy.CurrentTurn, Text, 'sys_storage' + IntToStr(Page));
         Inc(Page);
         Text := WrapTextInColor(LocalizedText('FormShip.StorageInfo.Main') + ' (' + LocalizedText('FormShip.StorageInfo.Page') + ' ' +
               WrapTextInColor(IntToStr(Page), '<color=255,0,255>') + ')',
@@ -2492,7 +2492,7 @@ begin
       Text := Text + Heading;
     end;
     if Page = 1 then ReplaceTextToken(Text, 'onepage', '', '');
-    AddOrUpdatePlayerBubble(9, Galaxy.CurrentTurn, Text, 'sys_storage' + IntToStr(Page));
+    AddOrUpdatePlayerBubble(pmStorage, Galaxy.CurrentTurn, Text, 'sys_storage' + IntToStr(Page));
   end;
   RemovePlayerBubblePages('sys_storage', Page + 1);
   RemovePlayerBubbleByKey('sys_storage');
@@ -3037,7 +3037,7 @@ end;
 { @routine $591460 TPlayer_RefreshNewsAtLocation }
 procedure TPlayer.RefreshNewsAtLocation;
 begin
-  if (Galaxy.CurrentTurn > 300) and (IsOnPlanet or IsDockedToShip) then
+  if (Galaxy.CurrentTurn > GalaxyWarmupTurns) and (IsOnPlanet or IsDockedToShip) then
     if (CurrentPlanet = nil) or ((CurrentPlanet.OwnerId in [oiMaloc..oiGaal, oiPirate]) and
       (CurrentPlanet.GetRelationLevelToShip(Self) > rlBad)) then
     begin

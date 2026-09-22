@@ -952,7 +952,7 @@ begin
   Text := RemoveMatchingTextTagsW(Text, 'object', 'OBJECT');
   (GetByName('UserMsgAdd') as TGraphButtonGI).SetDisabled(True);
   SoundManager.PlaySound('Sound.UserMsgAdd');
-  AddOrUpdatePlayerBubble(7, Galaxy.CurrentTurn, Text, '');
+  AddOrUpdatePlayerBubble(pmUserNote, Galaxy.CurrentTurn, Text, '');
   if not GetPlayer.InHyperspace then ReturnToMap(0);
 end;
 { @end $6D40F8 }

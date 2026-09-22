@@ -264,7 +264,7 @@ begin
   ClearChoices;
   DaysElapsed := 0;
   if Quest.FormatVersion <= 1111111124 then ApplyLegacyPictureOverrides;
-  if GetPlayer = nil then CurrentDate := TrimWideString(Galaxy.FormatTurnDate(300))
+  if GetPlayer = nil then CurrentDate := TrimWideString(Galaxy.FormatTurnDate(GalaxyWarmupTurns))
   else CurrentDate := TrimWideString(Galaxy.FormatTurnDate(Galaxy.CurrentTurn));
   Quest.PlayerInterface := QuestPlayerInterface;
   ImportExternalParameters;
@@ -1492,7 +1492,7 @@ function TfPlanetQuest.ExpandTemplateText(Text: WideString): WideString;
 var
   Expanded, SourceLineBreak, ReplacementLineBreak, IndentedLineBreak: WideString;
 begin
-  if GetPlayer = nil then CurrentDate := TrimWideString(Galaxy.FormatTurnDate(DaysElapsed + 300))
+  if GetPlayer = nil then CurrentDate := TrimWideString(Galaxy.FormatTurnDate(DaysElapsed + GalaxyWarmupTurns))
   else CurrentDate := TrimWideString(Galaxy.FormatTurnDate(Galaxy.CurrentTurn));
   Expanded := ExpandExternalText(Text);
   SourceLineBreak := #13#10;
@@ -1579,7 +1579,7 @@ begin
                 News := PickLocalizedTextVariant('GalaxyNews.Quest.Successful.PlanetaryQuest', (Galaxy.CurrentTurn div 10) * Integer(Galaxy.GenerationSeed));
                 ReplaceTextToken(News, '<FromPlanet>', GovernmentQuest.Planet.Name, '<color=255,240,100>');
                 ReplaceTextToken(News, '<ToPlanet>', GetPlayer.CurrentPlanet.Name, '<color=255,240,100>');
-                AddOrUpdatePlayerBubble(0, Galaxy.CurrentTurn, News, '');
+                AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn, News, '');
               end;
               ItemName := LookupLocalizedTextByKey('PlanetQuest.ItemForPlanetQuest.' + IntToStr(GovernmentQuest.QuestNumber));
               if ItemName <> 'none' then
@@ -1652,7 +1652,7 @@ begin
               ReplaceTextToken(News, '<ToPlanet>', GetPlayer.CurrentPlanet.Name, '<color=255,240,100>');
               ReplaceTextToken(News, '<FromPlanet>', GovernmentQuest.Planet.Name, '<color=255,240,100>');
               ReplaceTextToken(News, '<Relation>', GovernmentQuest.Planet.GetRelationLevelTextToShip(GetPlayer), '<color=255,240,100>');
-              AddOrUpdatePlayerBubble(0, Galaxy.CurrentTurn, News, '');
+              AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn, News, '');
               GetPlayer.CurrentPlanet.TextQuestId := -1;
               GetPlayer.ArchiveQuest(I);
               Break;

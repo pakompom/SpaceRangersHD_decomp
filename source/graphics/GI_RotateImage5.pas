@@ -51,7 +51,7 @@ var
 
 implementation
 
-uses EC_Struct, SysUtils, Math, EC_Cache, EC_Str, GR_Main, GI_Main, GR_GraphBuf, EC_Mem;
+uses EC_Struct, SysUtils, Math, EC_Cache, EC_Str, GR_Main, GI_Main, GR_GraphBuf, EC_Mem, aMyFunction;
 
 { @routine $495504 TRotateImage5GI_Create }
 constructor TRotateImage5GI.Create(Owner: TObjectGI);
@@ -196,7 +196,7 @@ begin
     CenterY := ClientSize.Y / 2.0;
     for I := 0 to 255 do
     begin
-      Radians := I / 256.0 * 360.0 * 3.1415926 / 180.0;
+      Radians := I / 256.0 * 360.0 * GamePi / 180.0;
       C := Cos(Radians);
       S := Sin(Radians);
       TopLeftX[I] := Trunc(LeftX * C - TopY * S) + CenterX;

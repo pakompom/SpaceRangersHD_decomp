@@ -1276,7 +1276,7 @@ begin
   Text := ReplaceAllWideString(Text, '<color=0,50,200>', '<color=255,240,100>');
   (Sender as TGraphButtonGI).SetDisabled(True);
   SoundManager.PlaySound('Sound.UserMsgAdd');
-  AddOrUpdatePlayerBubble(7, Galaxy.CurrentTurn, Text, '');
+  AddOrUpdatePlayerBubble(pmUserNote, Galaxy.CurrentTurn, Text, '');
   MainPanel.RebuildMessageButtons(False);
   BreakUiMessage;
 end;
@@ -1415,9 +1415,9 @@ begin
   if (Galaxy.TerronSeriesResolvedTurn <> 0) or (Galaxy.KellerSeriesResolvedTurn <> 0) or (Galaxy.BlazerSeriesResolvedTurn <> 0) then
   begin
     MessageEntry := FindPlayerBubbleByKey('BlazerWin', False);
-    if (MessageEntry <> nil) and (MessageEntry.Kind = 3) then
+    if (MessageEntry <> nil) and (MessageEntry.Kind = pmQuestActive) then
     begin
-      MessageEntry.Kind := 4;
+      MessageEntry.Kind := pmQuestSucceeded;
       MessageEntry.WasRead := False;
       Result := True;
       if (BlazerShip = nil) and (Galaxy.BlazerSelfDestructTurn <> 0) then Variant := 1
@@ -1433,9 +1433,9 @@ begin
     else
     begin
       MessageEntry := FindPlayerBubbleByKey('KellerWin', False);
-      if (MessageEntry <> nil) and (MessageEntry.Kind = 3) then
+      if (MessageEntry <> nil) and (MessageEntry.Kind = pmQuestActive) then
       begin
-        MessageEntry.Kind := 4;
+        MessageEntry.Kind := pmQuestSucceeded;
         MessageEntry.WasRead := False;
         Result := True;
         if KellerShip = nil then Variant := 1 else Variant := 2;
@@ -1447,9 +1447,9 @@ begin
       else
       begin
         MessageEntry := FindPlayerBubbleByKey('TerronWin', False);
-        if (MessageEntry <> nil) and (MessageEntry.Kind = 3) then
+        if (MessageEntry <> nil) and (MessageEntry.Kind = pmQuestActive) then
         begin
-          MessageEntry.Kind := 4;
+          MessageEntry.Kind := pmQuestSucceeded;
           MessageEntry.WasRead := False;
           Result := True;
           if Galaxy.TerronToStarTurn <> 0 then Variant := 1
@@ -1617,7 +1617,7 @@ begin
                 DialogText := LocalizedColorText('FormRuins.SB.GreetingAfterScn')
               else DialogText := LocalizedColorText('FormRuins.SB.GreetingBeforeScn');
               DialogText := DialogText + #13#10 + LocalizedColorText('FormRuins.SB.GreetingAdd');
-              if Galaxy.CurrentTurn - 300 < 120 then DialogText := DialogText + #13#10 + LocalizedColorText('FormRuinsSB.History.SB');
+              if Galaxy.CurrentTurn - GalaxyWarmupTurns < 120 then DialogText := DialogText + #13#10 + LocalizedColorText('FormRuinsSB.History.SB');
               ReplaceTextToken(DialogText, '<SB>', GetPlayer.DockedTo.Name, '<color=255,240,100>');
             end;
           Ord(rstMilitaryBase):
@@ -2046,7 +2046,7 @@ begin
     Ship := TShip(GetPlayer.CurrentStar.Ships[I]);
     if (GetPlayer <> Ship) and (GetPlayer.DockedTo <> Ship) and
       (not (Ship is TRuins) or GetPlayer.CanSelectShipTarget(Ship)) and Ship.InNormalSpace and
-      (PointDistanceSquared(GetPlayer.Position, Ship.Position) <= 1000000) and (Ship.InterceptorPassesRemaining <= 0) then
+      (PointDistanceSquared(GetPlayer.Position, Ship.Position) <= InterceptorTargetRangeSquared) and (Ship.InterceptorPassesRemaining <= 0) then
     begin
       Text := LocalizedColorText('FormRuins.Bridge.BridgeInterceptorsTargetShip');
       ReplaceTextToken(Text, '<Ship>', Ship.GetFullName(' '), '<color=255,240,100>');
@@ -2236,7 +2236,7 @@ begin
             AddChoice('- ' + LocalizedColorText('FormRuins.SB.Scn.PlayerBuyTechKeller'), 2, BuyScienceBaseResearchProgram);
           if Galaxy.IsDominatorSeriesUnresolved(dsTerron) and Galaxy.IsDominatorResearchComplete([dsTerron]) and not GetPlayer.HasProgram(prgEnergotron) then
             AddChoice('- ' + LocalizedColorText('FormRuins.SB.Scn.PlayerBuyTechTerron'), 3, BuyScienceBaseResearchProgram);
-          if Galaxy.CurrentTurn - 300 < 120 then
+          if Galaxy.CurrentTurn - GalaxyWarmupTurns < 120 then
             AddChoice('- ' + LocalizedColorText('FormRuinsSB.History.PlayerOk'), 0, ShowScienceBaseHistoryDialog);
         end;
       Ord(rstBusinessCenter):
@@ -2798,7 +2798,7 @@ begin
   Factor := 1;
   for I := Galaxy.GalaxyEvents.Count - 1 downto 0 do
   begin
-    if TGalaxyEvent(Galaxy.GalaxyEvents[I]).Turn + 365 < Galaxy.CurrentTurn then Break;
+    if TGalaxyEvent(Galaxy.GalaxyEvents[I]).Turn + TurnsPerYear < Galaxy.CurrentTurn then Break;
     if TGalaxyEvent(Galaxy.GalaxyEvents[I]).EventType = 'PlayerChangesNationality' then Factor := Factor * 1.5;
   end;
   ReplaceTextToken(Text, '<MoneyMaloc>', IntToStr(Round(Galaxy.ComputeScaledBigMoney(oiMaloc) * Factor)), '<color=255,240,100>');
@@ -2839,7 +2839,7 @@ begin
   Factor := 1;
   for I := Galaxy.GalaxyEvents.Count - 1 downto 0 do
   begin
-    if TGalaxyEvent(Galaxy.GalaxyEvents[I]).Turn + 365 < Galaxy.CurrentTurn then Break;
+    if TGalaxyEvent(Galaxy.GalaxyEvents[I]).Turn + TurnsPerYear < Galaxy.CurrentTurn then Break;
     if TGalaxyEvent(Galaxy.GalaxyEvents[I]).EventType = 'PlayerChangesNationality' then Factor := Factor * 1.5;
   end;
   SelectFaceScreen.PlayerRace := GetPlayer.PilotRace;
@@ -2922,9 +2922,9 @@ begin
   StationServiceQuoteCost := Galaxy.ComputeScaledHugeMoney(oiHuman);
   for I := Galaxy.GalaxyEvents.Count - 1 downto 0 do
   begin
-    if TGalaxyEvent(Galaxy.GalaxyEvents[I]).Turn + 365 < Galaxy.CurrentTurn then Break;
+    if TGalaxyEvent(Galaxy.GalaxyEvents[I]).Turn + TurnsPerYear < Galaxy.CurrentTurn then Break;
     if TGalaxyEvent(Galaxy.GalaxyEvents[I]).EventType = 'PlayerChangesSide' then
-      StationServiceQuoteCost := Min(Int64(100000000), Round(StationServiceQuoteCost * 1.5));
+      StationServiceQuoteCost := Min(Int64(MaxMonetaryValue), Round(StationServiceQuoteCost * 1.5));
   end;
   ReplaceTextToken(DialogText, '<Cost>', IntToStr(StationServiceQuoteCost), '<color=255,240,100>');
   ClearChoices;
@@ -2950,9 +2950,9 @@ begin
   StationServiceQuoteCost := Galaxy.ComputeScaledHugeMoney(oiHuman);
   for I := Galaxy.GalaxyEvents.Count - 1 downto 0 do
   begin
-    if TGalaxyEvent(Galaxy.GalaxyEvents[I]).Turn + 365 < Galaxy.CurrentTurn then Break;
+    if TGalaxyEvent(Galaxy.GalaxyEvents[I]).Turn + TurnsPerYear < Galaxy.CurrentTurn then Break;
     if TGalaxyEvent(Galaxy.GalaxyEvents[I]).EventType = 'PlayerChangesSide' then
-      StationServiceQuoteCost := Min(Int64(100000000), Round(StationServiceQuoteCost * 1.5));
+      StationServiceQuoteCost := Min(Int64(MaxMonetaryValue), Round(StationServiceQuoteCost * 1.5));
   end;
   GetPlayer.SetMoney(GetPlayer.Money - StationServiceQuoteCost);
   SoundManager.PlaySound('Sound.Sell');
@@ -5420,7 +5420,7 @@ begin
     if Action = 1 then GetPlayer.SetMoney(GetPlayer.Money - NearbyTradeAdviceCost)
     else GetPlayer.SetMoney(GetPlayer.Money - DistantTradeAdviceCost);
     SoundManager.PlaySound('Sound.Sell');
-    AddOrUpdatePlayerBubble(7, Galaxy.CurrentTurn, Panel + #13#10 + Paths, '');
+    AddOrUpdatePlayerBubble(pmUserNote, Galaxy.CurrentTurn, Panel + #13#10 + Paths, '');
     MainPanel.RebuildMessageButtons(False);
   end;
   ReplaceTextToken(DialogText, '<BK>', GetPlayer.DockedTo.Name, '<color=255,240,100>');
@@ -6663,7 +6663,7 @@ begin
   if GetPlayer.PirateLicenseTicks = 0 then
     DialogText := LocalizedColorText('FormRuins.CB.PirateLicense.CBAnswer')
   else DialogText := LocalizedColorText('FormRuins.CB.PirateLicense.CBAnswerProlongate');
-  Cost := RoundAndTruncateToTens(RemapClamped(GetPlayer.PirateLicenseTicks, 0, 365, Galaxy.ComputeScaledAverageMoney(oiHuman), 0));
+  Cost := RoundAndTruncateToTens(RemapClamped(GetPlayer.PirateLicenseTicks, 0, TurnsPerYear, Galaxy.ComputeScaledAverageMoney(oiHuman), 0));
   ReplaceTextToken(DialogText, '<Money>', IntToStr(Cost), '<color=255,240,100>');
   ReplaceTextToken(DialogText, '<Discount>', IntToStr(Discount), '<color=255,240,100>');
   Cost := Round(Cost * (100 - Discount) / 100);
@@ -6692,7 +6692,7 @@ begin
     DialogText := LocalizedColorText('FormRuins.CB.PirateLicense.CBAfterOk')
   else DialogText := LocalizedColorText('FormRuins.CB.PirateLicense.CBAfterOkProlongate');
   GetPlayer.SetMoney(GetPlayer.Money - Action);
-  GetPlayer.PirateLicenseTicks := 365;
+  GetPlayer.PirateLicenseTicks := TurnsPerYear;
   SoundManager.PlaySound('Sound.Sell');
   M_Main(True);
 end;
@@ -6759,7 +6759,7 @@ var
   // @nested $5D696C GetDominionTravelQuoteCost
   function GetDominionTravelQuoteCost(Index: Integer): Integer; // @addr $5D696C @calls "0x5D6C4E 0x5D6C97"
   begin
-    Result := Min(100000000, Round(Galaxy.ComputeScaledHugeMoney(oiHuman) / DominionTravelQuotes[Index].DrawCount * PointDistanceSquared(GetPlayer.CurrentStar.Position, DominionTravelQuotes[Index].Star.Position) / 1600 * (100 - Discount) / 100));
+    Result := Min(MaxMonetaryValue, Round(Galaxy.ComputeScaledHugeMoney(oiHuman) / DominionTravelQuotes[Index].DrawCount * PointDistanceSquared(GetPlayer.CurrentStar.Position, DominionTravelQuotes[Index].Star.Position) / 1600 * (100 - Discount) / 100));
   end;
 begin
   Discount := GetPlayer.GetPirateServiceDiscount;
@@ -6917,7 +6917,7 @@ var
   Discount: Byte;
 begin
   Discount := GetPlayer.GetPirateServiceDiscount;
-  Result := Min(100000000, Round((PointDistanceSquared(GetPlayer.DockedTo.CurrentStar.Position, Star.Position) + 6400) * SeededRandomIntRange(Galaxy.ComputeScaledHugeMoney(oiHuman) div 2, Galaxy.ComputeScaledHugeMoney(oiHuman) * 2, Star.GenerationSeed + 1171 + GetPlayer.DockedTo.CurrentStar.GenerationSeed) / 6400 * (100 - Discount) / 100));
+  Result := Min(MaxMonetaryValue, Round((PointDistanceSquared(GetPlayer.DockedTo.CurrentStar.Position, Star.Position) + 6400) * SeededRandomIntRange(Galaxy.ComputeScaledHugeMoney(oiHuman) div 2, Galaxy.ComputeScaledHugeMoney(oiHuman) * 2, Star.GenerationSeed + 1171 + GetPlayer.DockedTo.CurrentStar.GenerationSeed) / 6400 * (100 - Discount) / 100));
 end;
 { @end $5D7D1C }
 

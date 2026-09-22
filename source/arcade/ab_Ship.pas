@@ -394,10 +394,10 @@ var
 begin
   if (Health > 0) and (WeaponCount > 0) and (BonusTicks[abkWeaponLock] <= 0) then
     if (Self <> PlayerArcadeShip) or (LastPrimaryWeapon = PrimaryWeapon) or
-      (WeaponSwitchDelayMs div 20 <= ArcadeTickCount - LastPrimaryFireTick) then
+      (WeaponSwitchDelayMs div ArcadeTickMs <= ArcadeTickCount - LastPrimaryFireTick) then
       if CanFireWeapon(PrimaryWeapon) then
       begin
-        if BonusTicks[abkInvisibility] > 0 then RevealTicks := RevealAfterFiringMs div 20;
+        if BonusTicks[abkInvisibility] > 0 then RevealTicks := RevealAfterFiringMs div ArcadeTickMs;
         LastPrimaryWeapon := PrimaryWeapon;
         LastPrimaryFireTick := ArcadeTickCount;
         Weapons[PrimaryWeapon].LastFireTick := ArcadeTickCount;
@@ -442,10 +442,10 @@ var
 begin
   if (Health > 0) and (WeaponCount > 0) and (BonusTicks[abkWeaponLock] <= 0) then
     if (Self <> PlayerArcadeShip) or (LastSecondaryWeapon = SecondaryWeapon) or
-      (WeaponSwitchDelayMs div 20 <= ArcadeTickCount - LastSecondaryFireTick) then
+      (WeaponSwitchDelayMs div ArcadeTickMs <= ArcadeTickCount - LastSecondaryFireTick) then
       if CanFireWeapon(SecondaryWeapon) then
       begin
-        if BonusTicks[abkInvisibility] > 0 then RevealTicks := RevealAfterFiringMs div 20;
+        if BonusTicks[abkInvisibility] > 0 then RevealTicks := RevealAfterFiringMs div ArcadeTickMs;
         LastSecondaryWeapon := SecondaryWeapon;
         LastSecondaryFireTick := ArcadeTickCount;
         Weapons[SecondaryWeapon].LastFireTick := ArcadeTickCount;

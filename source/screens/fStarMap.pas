@@ -1395,7 +1395,7 @@ begin
   begin
     Galaxy.CheckIntegrityChecksum(19);
     Ship.ClearMovementPath;
-    Ship.BuildOrderMovementPath(999999);
+    Ship.BuildOrderMovementPath(FullPathNodeLimit);
     Galaxy.PrimeIntegrityChecksum(20);
   end
   else if (Ship <> GetPlayer) and (Ship.Order = soMove) then
@@ -2355,7 +2355,7 @@ begin
   UpdateRectsEnabled := True;
   MapControls.Invalidate;
   UpdateRectsEnabled := False;
-  GetPlayer.BuildOrderMovementPath(999999);
+  GetPlayer.BuildOrderMovementPath(FullPathNodeLimit);
   CenterShipButton.DownCallback := CenterShipClicked;
   CenterShipButton.MouseEnterCallback := CenterShipMouseEnter;
   CenterShipButton.MouseLeaveCallback := CenterShipMouseLeave;
@@ -2683,7 +2683,7 @@ begin
     Exit;
   end;
   if not (TalkSelectionActive and (CursorObject is TStar) and (TerronShip <> nil) and
-    (GetPlayer.CurrentStar = TerronShip.CurrentStar) and (Galaxy.TerronToStarTurn >= $40000000)) then
+    (GetPlayer.CurrentStar = TerronShip.CurrentStar) and (Galaxy.TerronToStarTurn >= TerronTransformationFlag)) then
   begin
     if ((ScannerSelectionActive or TalkSelectionActive) and not (CursorObject is TShip)) or
        ((CursorObject is TShip) and
@@ -2736,7 +2736,7 @@ begin
     PendingPlayerFollowTarget := nil;
     Galaxy.CheckIntegrityChecksum(27);
     GetPlayer.OrderMove(Destination, False);
-    GetPlayer.BuildOrderMovementPath(999999);
+    GetPlayer.BuildOrderMovementPath(FullPathNodeLimit);
     if (GetPlayer.MovementPath <> nil) and (GetPlayer.MovementPath.ActiveHead <> nil) then
     begin
       Node := GetPlayer.MovementPath.ActiveHead;
@@ -2755,7 +2755,7 @@ begin
         if FollowingNode <> nil then
         begin
           GetPlayer.OrderMove(FollowingNode.Position, False);
-          GetPlayer.BuildOrderMovementPath(999999);
+          GetPlayer.BuildOrderMovementPath(FullPathNodeLimit);
         end;
       end;
     end
@@ -2786,7 +2786,7 @@ begin
     else
     begin
       GetPlayer.OrderMove(Destination, False);
-      GetPlayer.BuildOrderMovementPath(999999);
+      GetPlayer.BuildOrderMovementPath(FullPathNodeLimit);
     end;
     Galaxy.PrimeIntegrityChecksum(34);
     BuildShipPathOverlay(GetPlayer, False, '');
@@ -2801,12 +2801,12 @@ begin
     begin
       GetPlayer.OrderJumpHole(Hole, False);
       GetPlayer.OrderDestination := Destination;
-      GetPlayer.BuildOrderMovementPath(999999);
+      GetPlayer.BuildOrderMovementPath(FullPathNodeLimit);
     end
     else
     begin
       GetPlayer.OrderMove(Destination, False);
-      GetPlayer.BuildOrderMovementPath(999999);
+      GetPlayer.BuildOrderMovementPath(FullPathNodeLimit);
     end;
     Galaxy.PrimeIntegrityChecksum(36);
     BuildShipPathOverlay(GetPlayer, False, '');
@@ -2866,7 +2866,7 @@ begin
     else
     begin
       GetPlayer.OrderMove(Destination, False);
-      GetPlayer.BuildOrderMovementPath(999999);
+      GetPlayer.BuildOrderMovementPath(FullPathNodeLimit);
     end;
     Galaxy.PrimeIntegrityChecksum(38);
     BuildShipPathOverlay(GetPlayer, False, '');
@@ -2936,7 +2936,7 @@ begin
         Galaxy.CheckIntegrityChecksum(39);
         RunTalkDialogs;
         ClearPathOverlay(True);
-        GetPlayer.BuildOrderMovementPath(999999);
+        GetPlayer.BuildOrderMovementPath(FullPathNodeLimit);
         Galaxy.PrimeIntegrityChecksum(40);
         BuildShipPathOverlay(GetPlayer, False, '');
       end
@@ -3086,7 +3086,7 @@ begin
       ClearPathOverlay(True);
       Galaxy.CheckIntegrityChecksum(51);
       GetPlayer.OrderMove(Destination, False);
-      GetPlayer.BuildOrderMovementPath(999999);
+      GetPlayer.BuildOrderMovementPath(FullPathNodeLimit);
       Galaxy.PrimeIntegrityChecksum(52);
       BuildShipPathOverlay(GetPlayer, False, '');
     end;
@@ -3224,7 +3224,7 @@ begin
       PendingPlayerFollowTarget := nil;
       GetPlayer.OrderJumpHole(Hole, False);
       GetPlayer.OrderDestination := Destination;
-      GetPlayer.BuildOrderMovementPath(999999);
+      GetPlayer.BuildOrderMovementPath(FullPathNodeLimit);
       Galaxy.PrimeIntegrityChecksum(62);
     end
     else if (CursorObject <> nil) and
@@ -3303,7 +3303,7 @@ begin
       else
       begin
         GetPlayer.OrderMove(Destination, False);
-        GetPlayer.BuildOrderMovementPath(999999);
+        GetPlayer.BuildOrderMovementPath(FullPathNodeLimit);
       end;
       Galaxy.PrimeIntegrityChecksum(68);
     end
@@ -3328,7 +3328,7 @@ begin
     if Mode = smmOrders then
     begin
       Galaxy.CheckIntegrityChecksum(71);
-      GetPlayer.BuildOrderMovementPath(999999);
+      GetPlayer.BuildOrderMovementPath(FullPathNodeLimit);
       Galaxy.PrimeIntegrityChecksum(72);
       BuildShipPathOverlay(GetPlayer, False, '');
       if DeferredEndTurnTimer <> nil then
@@ -3429,7 +3429,7 @@ begin
               Galaxy.CheckIntegrityChecksum(73);
               RunTalkDialogs;
               ClearPathOverlay(True);
-              GetPlayer.BuildOrderMovementPath(999999);
+              GetPlayer.BuildOrderMovementPath(FullPathNodeLimit);
               Galaxy.PrimeIntegrityChecksum(74);
               BuildShipPathOverlay(GetPlayer, False, '');
               BreakUiMessage;
@@ -3497,7 +3497,7 @@ begin
        not (CursorObject as TRuins).NoTalk and
        (PointDistance(GetPlayer.Position, (CursorObject as TRuins).Position) <= GetPlayer.GetRadarRange)) then
     begin
-      AddOrUpdatePlayerBubble(7, Galaxy.CurrentTurn, GoodsShopScreen.BuildPriceText(CursorObject), GetPriceSnapshotKey(CursorObject));
+      AddOrUpdatePlayerBubble(pmUserNote, Galaxy.CurrentTurn, GoodsShopScreen.BuildPriceText(CursorObject), GetPriceSnapshotKey(CursorObject));
       SoundManager.PlaySound('Sound.UserMsgAdd');
       MainPanel.RebuildMessageButtons(False);
     end;
@@ -3650,7 +3650,7 @@ begin
         Galaxy.CheckIntegrityChecksum(81);
         GetPlayer.AfterburnerActive := True;
         GetPlayer.RefreshDerivedStats(True);
-        GetPlayer.BuildOrderMovementPath(999999);
+        GetPlayer.BuildOrderMovementPath(FullPathNodeLimit);
         if GetPlayer.ScriptShipBindings <> nil then
         begin
           Index := GetPlayer.ScriptShipBindings.Count - 1;
@@ -3676,7 +3676,7 @@ begin
         Galaxy.CheckIntegrityChecksum(83);
         GetPlayer.AfterburnerActive := False;
         GetPlayer.RefreshDerivedStats(True);
-        GetPlayer.BuildOrderMovementPath(999999);
+        GetPlayer.BuildOrderMovementPath(FullPathNodeLimit);
         if GetPlayer.ScriptShipBindings <> nil then
         begin
           Index := GetPlayer.ScriptShipBindings.Count - 1;
@@ -3774,8 +3774,8 @@ var
   Images: WideString;
 begin
   if (Obj is TStar) and (TerronShip <> nil) and (TerronShip.CurrentStar = Obj) and
-    (Galaxy.TerronToStarTurn >= $40000000) then Obj := TerronShip;
-  if (TerronShip <> nil) and (Obj = TerronShip) and (Galaxy.TerronToStarTurn >= $40000000) then
+    (Galaxy.TerronToStarTurn >= TerronTransformationFlag) then Obj := TerronShip;
+  if (TerronShip <> nil) and (Obj = TerronShip) and (Galaxy.TerronToStarTurn >= TerronTransformationFlag) then
     HitObjectPosition := Classes.Point(Round(TerronShip.CurrentStar.Graphic.Position.X) - GetMapCenter.X,
       Round(TerronShip.CurrentStar.Graphic.Position.Y) - GetMapCenter.Y);
   if (Obj <> nil) and (Obj is TAsteroid) then ShowAsteroidPath(Obj as TAsteroid)
@@ -4189,7 +4189,7 @@ begin
         begin
           SetActive(True);
           SourceHasPerPixelAlpha := True;
-          if (Obj = TerronShip) and (Galaxy.TerronToStarTurn >= $40000000) then
+          if (Obj = TerronShip) and (Galaxy.TerronToStarTurn >= TerronTransformationFlag) then
             LoadGiByPathIntoGraphBuf(ExtractDelimitedPartW(TStarSE(TerronShip.CurrentStar.Graphic).StaticImagePath, 1, ','), GraphBuf)
           else LoadGiByPathIntoGraphBuf(ExtractDelimitedPartW(((Obj as TShip).Graphic as TRuinsSE).StaticImagePath, 1, ','), GraphBuf);
 
@@ -4804,7 +4804,7 @@ begin
     if Planet.OwnerId in [oiMaloc..oiGaal, oiPirate] then
       if PointDistance(GetPlayer.Position, Planet.GetPosition) <= GetPlayer.GetRadarRange then
       begin
-        AddOrUpdatePlayerBubble(7, Galaxy.CurrentTurn, GoodsShopScreen.BuildPriceText(Planet), GetPriceSnapshotKey(Planet));
+        AddOrUpdatePlayerBubble(pmUserNote, Galaxy.CurrentTurn, GoodsShopScreen.BuildPriceText(Planet), GetPriceSnapshotKey(Planet));
         Added := True;
       end;
   end;
@@ -4815,7 +4815,7 @@ begin
       if (Ship as TRuins).CanDock(GetPlayer) and not Ship.NoTalk then
         if PointDistance(GetPlayer.Position, Ship.Position) <= GetPlayer.GetRadarRange then
         begin
-          AddOrUpdatePlayerBubble(7, Galaxy.CurrentTurn, GoodsShopScreen.BuildPriceText(Ship), GetPriceSnapshotKey(Ship));
+          AddOrUpdatePlayerBubble(pmUserNote, Galaxy.CurrentTurn, GoodsShopScreen.BuildPriceText(Ship), GetPriceSnapshotKey(Ship));
           Added := True;
         end;
   end;
@@ -5485,7 +5485,7 @@ begin
     if Obj is TShip then
     begin
       Point := (Obj as TShip).Position;
-      if (PointDistanceSquared(Point, GetPlayer.Position) <= 1000000) and ((Obj as TShip).InterceptorPassesRemaining = 0) then
+      if (PointDistanceSquared(Point, GetPlayer.Position) <= InterceptorTargetRangeSquared) and ((Obj as TShip).InterceptorPassesRemaining = 0) then
       begin
         if not IsCursorImageSelected('InterceptorsFull') then SetCursorByName('InterceptorsFull');
       end
@@ -5949,7 +5949,7 @@ begin
         begin
           if NextFilmCommand.Kind = efcBeginTrailingEffects then Break;
           if not ((NextFilmCommand.Kind = efcAttachObject) and
-            ((Galaxy.TerronToStarTurn and $40000000) <> 0) and
+            ((Galaxy.TerronToStarTurn and TerronTransformationFlag) <> 0) and
             (NextFilmCommand.Obj.GraphKey = 'Ruins.Terron')) then
           begin
             if NextFilmCommand.StepIndex > FilmStepIndex then Break;
@@ -6554,7 +6554,7 @@ begin
   Ship := nil;
   Missile := nil;
   if (Obj is TStarSE) and (TerronShip <> nil) and
-     (TerronShip.CurrentStar.Id = ObjectId) and (Galaxy.TerronToStarTurn >= $40000000) then
+     (TerronShip.CurrentStar.Id = ObjectId) and (Galaxy.TerronToStarTurn >= TerronTransformationFlag) then
   begin
     ShowObjectInfo(TerronShip);
     Exit;
@@ -7712,7 +7712,7 @@ procedure TfStarMap.UpdateTerronTransformation;
 var Obj: TObjectSE;
 begin
   if ((Galaxy.TerronToStarTurn and $20000000) = 0) and
-     ((Galaxy.TerronToStarTurn and $40000000) <> 0) and
+     ((Galaxy.TerronToStarTurn and TerronTransformationFlag) <> 0) and
      ((Galaxy.TerronToStarTurn and $0FFFFFFF) <= Galaxy.CurrentTurn) and
      (GetPlayer <> nil) and (GetPlayer.CurrentStar = TerronShip.CurrentStar) then
   begin
@@ -7748,7 +7748,7 @@ begin
         begin
           if not Assigned(TStarSE(Obj).Animation.CycleCompleteCallback) then
           begin
-            Galaxy.TerronToStarTurn := $40000000;
+            Galaxy.TerronToStarTurn := TerronTransformationFlag;
             TStarSE(Obj).Animation.CycleCompleteCallback := TerronTransformationStarted;
             Obj := SpaceProcess.Space.FirstObject;
             while Obj <> nil do

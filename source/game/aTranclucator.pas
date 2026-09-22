@@ -918,7 +918,7 @@ begin
       begin
         Asteroid := TAsteroid(CurrentStar.Asteroids[I]);
         Distance := PointDistanceSquared(Position, Asteroid.Position);
-        if Distance <= 1000000 then
+        if Distance <= AsteroidTargetRangeSquared then
           for J := 1 to WeaponCount do
           begin
             Weapon := Weapons[J];

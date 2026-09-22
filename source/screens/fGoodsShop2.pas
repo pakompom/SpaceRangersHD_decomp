@@ -930,7 +930,7 @@ begin
       Result := GetPlayer.GetCargoFreeSpace;
     Total := Result;
     Total := GetPlayer.ShopGoodsPurchasePrice(ShopGoodsOrder[Index], nil) * Total;
-    if (Result * GetPlayer.ShopGoodsPurchasePrice(ShopGoodsOrder[Index], nil) > GetPlayer.Money) or (Total > 100000000) then
+    if (Result * GetPlayer.ShopGoodsPurchasePrice(ShopGoodsOrder[Index], nil) > GetPlayer.Money) or (Total > MaxMonetaryValue) then
       Result := GetPlayer.Money div GetPlayer.ShopGoodsPurchasePrice(ShopGoodsOrder[Index], nil);
   end
   else
@@ -1035,7 +1035,7 @@ begin
   if GetPlayer.IsOnPlanet then Location := GetPlayer.CurrentPlanet
   else if GetPlayer.IsDockedToShip then Location := GetPlayer.DockedTo
   else if GetPlayer.InNormalSpace then Location := TalkShip else Location := nil;
-  AddOrUpdatePlayerBubble(7, Galaxy.CurrentTurn, BuildPriceText(Location), StarMapScreen.GetPriceSnapshotKey(Location));
+  AddOrUpdatePlayerBubble(pmUserNote, Galaxy.CurrentTurn, BuildPriceText(Location), StarMapScreen.GetPriceSnapshotKey(Location));
   MainPanel.RebuildMessageButtons(False);
   FinishModalTrade;
 end;

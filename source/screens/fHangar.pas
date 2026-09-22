@@ -1308,7 +1308,7 @@ begin
     begin
       SetActive(True);
       SourceHasPerPixelAlpha := True;
-      if (TerronShip = Ship) and (Galaxy.TerronToStarTurn >= $40000000) then
+      if (TerronShip = Ship) and (Galaxy.TerronToStarTurn >= TerronTransformationFlag) then
         LoadGiByPathIntoGraphBuf(ExtractDelimitedPartW(TStarSE(TerronShip.CurrentStar.Graphic).StaticImagePath,1,','),GraphBuf)
       else LoadGiByPathIntoGraphBuf(ExtractDelimitedPartW((Ship.Graphic as TRuinsSE).StaticImagePath,1,','),GraphBuf);
       if (ClientSize.X < GraphBuf.Width) or (ClientSize.Y < GraphBuf.Height) then

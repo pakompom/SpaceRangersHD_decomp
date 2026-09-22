@@ -5,6 +5,12 @@ interface
 
 uses EC_Struct, Classes, Types;
 
+const
+  // Preserve the native angle approximations and random endpoint quantization.
+  GamePi = 3.1415926;
+  GameTwoPi = 6.2831852;
+  RandomFloatResolution = 1000;
+
 type
   TPolarPoint = record // @size 0x10  Natural Double alignment is visible in TPlanet.PredictPosition locals.
     AngleDegrees: Double; // @offset 0x00  Clockwise from the negative Y axis.
@@ -154,28 +160,28 @@ end;
 { @routine $872338 RandomUnitFloat }
 function RandomUnitFloat: Single;
 begin
-  Result := RandomIntRange(1, 1000) / 1000;
+  Result := RandomIntRange(1, RandomFloatResolution) / RandomFloatResolution;
 end;
 { @end $872338 }
 
 { @routine $872368 SeededRandomUnitFloat }
 function SeededRandomUnitFloat(Seed: Cardinal): Single;
 begin
-  Result := SeededRandomIntRange(1, 1000, Seed) / 1000;
+  Result := SeededRandomIntRange(1, RandomFloatResolution, Seed) / RandomFloatResolution;
 end;
 { @end $872368 }
 
 { @routine $8723A0 RandomFloatRange }
 function RandomFloatRange(BoundA, BoundB: Double): Double;
 begin
-  Result := RandomIntRange(Trunc(BoundA * 1000 + 1), Trunc(BoundB * 1000 + 1)) / 1000;
+  Result := RandomIntRange(Trunc(BoundA * RandomFloatResolution + 1), Trunc(BoundB * RandomFloatResolution + 1)) / RandomFloatResolution;
 end;
 { @end $8723A0 }
 
 { @routine $8723F8 SeededRandomFloatRange }
 function SeededRandomFloatRange(Seed: Cardinal; BoundA, BoundB: Double): Double;
 begin
-  Result := SeededRandomIntRange(Trunc(BoundA * 1000 + 1), Trunc(BoundB * 1000 + 1), Seed) / 1000;
+  Result := SeededRandomIntRange(Trunc(BoundA * RandomFloatResolution + 1), Trunc(BoundB * RandomFloatResolution + 1), Seed) / RandomFloatResolution;
 end;
 { @end $8723F8 }
 
@@ -225,7 +231,7 @@ begin
     OldSeed := Seed;
     Seed := Seed * 7981 + 567 + Seed div 7931;
     if Seed = OldSeed then Seed := Seed * 6281 + 317 + Seed div 7311;
-    Result := SeededRandomIntRange(Trunc(BoundA * 1000 + 1), Trunc(BoundB * 1000 + 1), Seed) / 1000;
+    Result := SeededRandomIntRange(Trunc(BoundA * RandomFloatResolution + 1), Trunc(BoundB * RandomFloatResolution + 1), Seed) / RandomFloatResolution;
   end;
 end;
 { @end $8725C0 }
@@ -383,7 +389,7 @@ end;
 { @routine $872988 RadiansToHeadingDegrees }
 function RadiansToHeadingDegrees(Angle: Double): Double;
 begin
-  Result := Angle * (180 / 3.1415926);
+  Result := Angle * (180 / GamePi);
   if Result < 0 then Result := 360 + Result;
 end;
 { @end $872988 }
@@ -392,7 +398,7 @@ end;
 function HeadingDegreesToRadians(Angle: Double): Double;
 begin
   if Angle > 180 then Angle := Angle - 360;
-  Result := Angle * (3.1415926 / 180);
+  Result := Angle * (GamePi / 180);
 end;
 { @end $8729D4 }
 

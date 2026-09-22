@@ -305,7 +305,7 @@ begin
   CurrentStar.Ships.Add(Self);
   HomePlanet := nil;
   CurrentPlanet := nil;
-  if (Galaxy.CurrentTurn < 300) and (GetPlayer.CurrentStar.Constellation = Star.Constellation) then
+  if (Galaxy.CurrentTurn < GalaxyWarmupTurns) and (GetPlayer.CurrentStar.Constellation = Star.Constellation) then
     PilotRace := StationPilotRaces[TypeId, 0]
   else if NextRandomUnitFloat(RandomState) < 0.5 then PilotRace := StationPilotRaces[TypeId, 0]
   else PilotRace := StationPilotRaces[TypeId, 1];
@@ -1273,7 +1273,7 @@ begin
     begin
       Asteroid := TAsteroid(CurrentStar.Asteroids[I]);
       DistanceSquared := PointDistanceSquared(Position, Asteroid.Position);
-      if DistanceSquared <= 1000000 then
+      if DistanceSquared <= AsteroidTargetRangeSquared then
         for J := 1 to WeaponCount do
         begin
           Weapon := Weapons[J];
@@ -1356,7 +1356,7 @@ begin
   if (GetPlayer <> nil) and (GetPlayer.QuestTargetDefendShip = Candidate) and (NextRandomIntRange(1, 100, RandomState) > 70) then Exit;
   if GetPlayer = Candidate then
   begin
-    if Galaxy.CurrentTurn < 200 / GalaxyDifficultyTuning[Galaxy.DifficultyLevels[7]].GoodsEventDurationFactor + 300 then Exit;
+    if Galaxy.CurrentTurn < 200 / GalaxyDifficultyTuning[Galaxy.DifficultyLevels[7]].GoodsEventDurationFactor + GalaxyWarmupTurns then Exit;
     if NextRandomIntRange(0, 100, RandomState) * GalaxyDifficultyTuning[Galaxy.DifficultyLevels[7]].GoodsEventDurationFactor < 40 then Exit;
   end;
   if Candidate.TypeId = stTransport then Candidate.AbductedByPirateClan := True
@@ -1393,7 +1393,7 @@ begin
   if Abducted = 0 then Text := Text + LookupTalkText('Talk.PirateClan.RuinTalkAfterAbduct.Failure')
   else if Pirates = 0 then Text := Text + LookupTalkText('Talk.PirateClan.RuinTalkAfterAbduct.SuccessNoPirate')
   else Text := Text + LookupTalkText('Talk.PirateClan.RuinTalkAfterAbduct.Success');
-  AddOrUpdatePlayerBubble(1, Galaxy.CurrentTurn, Text, '').Targets[0].ShipId := Id;
+  AddOrUpdatePlayerBubble(pmRadio, Galaxy.CurrentTurn, Text, '').Targets[0].ShipId := Id;
 end;
 { @end $718A0C }
 
@@ -2144,7 +2144,7 @@ begin
   case TypeId of
     Ord(rstBusinessCenter):
       begin
-        Result.Cost := Min(Int64(100000000), Round(Result.Cost * 1.2));
+        Result.Cost := Min(Int64(MaxMonetaryValue), Round(Result.Cost * 1.2));
         Result.ConditionPercent := NextRandomIntRange(70, 100, RandomState);
       end;
     Ord(rstMedicalBase): Result.ConditionPercent := NextRandomIntRange(1, 100, RandomState);

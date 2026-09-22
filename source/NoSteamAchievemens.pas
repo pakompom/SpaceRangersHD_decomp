@@ -66,8 +66,8 @@ begin
       for Index := 8 to Size - 1 do
       begin
         Cursor^ := Cursor^ xor Byte(Seed - 1);
-        Seed := 16807 * (Seed mod 127773) - 2836 * (Seed div 127773);
-        if Seed <= 0 then Inc(Seed, $7FFFFFFF);
+        Seed := SeedRngMultiplier * (Seed mod SeedRngQuotient) - SeedRngRemainder * (Seed div SeedRngQuotient);
+        if Seed <= 0 then Inc(Seed, SeedRngModulus);
         Cursor := PByte(PAnsiChar(Cursor) + 1);
       end;
       Checksum := 0;
@@ -141,8 +141,8 @@ begin
   for Index := 8 to Size - 1 do
   begin
     Cursor^ := Cursor^ xor Byte(Seed - 1);
-    Seed := 16807 * (Seed mod 127773) - 2836 * (Seed div 127773);
-    if Seed <= 0 then Inc(Seed, $7FFFFFFF);
+    Seed := SeedRngMultiplier * (Seed mod SeedRngQuotient) - SeedRngRemainder * (Seed div SeedRngQuotient);
+    if Seed <= 0 then Inc(Seed, SeedRngModulus);
     Cursor := PByte(PAnsiChar(Cursor) + 1);
   end;
   Buffer.CompressZlibPayloadInPlace(False);

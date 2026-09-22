@@ -416,7 +416,7 @@ end;
 { @routine $593B60 TAchievementStats_CheckFirstPlaceRatingAchievement }
 procedure TAchievementStats.CheckFirstPlaceRatingAchievement;
 begin
-  if (GetPlayer <> nil) and (Galaxy <> nil) and (Galaxy.CurrentTurn >= 300) and
+  if (GetPlayer <> nil) and (Galaxy <> nil) and (Galaxy.CurrentTurn >= GalaxyWarmupTurns) and
      (GetPlayer.PlaceInRating = 1) then TryUnlockAchievement('RATING');
 end;
 { @end $593B60 }
@@ -447,7 +447,7 @@ var Elapsed: Integer;
 begin
   if Galaxy <> nil then
   begin
-    Elapsed := Galaxy.CurrentTurn - 300;
+    Elapsed := Galaxy.CurrentTurn - GalaxyWarmupTurns;
     if Elapsed / 365.0 < 7.0 then TryUnlockAchievement('SPRINTER');
   end;
 end;
@@ -568,7 +568,7 @@ procedure TAchievementStats.CheckMapBuilderAchievement;
 var I: Integer; Constellation: TConstellation; Year, Month, Day: Word;
 begin
   if (GetPlayer <> nil) and (Galaxy <> nil) then begin
-    DecodeDate(GameTurnToDateTime(Galaxy.CurrentTurn - 300), Year, Month, Day);
+    DecodeDate(GameTurnToDateTime(Galaxy.CurrentTurn - GalaxyWarmupTurns), Year, Month, Day);
     if Year > 3304 then Exit;
     if (Year = 3304) and ((Month > 1) or (Day > 1)) then Exit;
     for I := 0 to Galaxy.Constellations.Count - 1 do begin

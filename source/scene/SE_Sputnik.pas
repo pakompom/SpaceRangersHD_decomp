@@ -178,7 +178,7 @@ begin
   if DisplayRadius < MinDisplayRadius then DisplayRadius := MinDisplayRadius
   else if DisplayRadius > MaxDisplayRadius then DisplayRadius := MaxDisplayRadius;
   if Cardinal(GameScreenHeight) < 768 then DisplayRadius := Round(DisplayRadius * 800 / 1024);
-  LightAngle := Round(ArcTan2(-Position.X, Position.Y) * 180 / 3.1415926 * 256 / 360);
+  LightAngle := Round(ArcTan2(-Position.X, Position.Y) * 180 / GamePi * 256 / 360);
   Index := DisplayRadius - MinimumSatelliteTemplateRadius;
   Template := SatelliteRenderTemplates[Index];
   PlanetControl.SetImageFromTemplate(Template.MaskName, ImagePath, Template.Radius);

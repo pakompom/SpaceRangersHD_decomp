@@ -902,7 +902,7 @@ var Key: WideString;
 begin
   SoundManager.PlaySound('Sound.UserMsgAdd');
   if Sender.UserValue <> 0 then Key := 'GOODS ' + IntToStr(Cardinal(Sender.UserValue)) else Key := '';
-  AddOrUpdatePlayerBubble(7,Galaxy.CurrentTurn,Sender.HelpText,Key);
+  AddOrUpdatePlayerBubble(pmUserNote,Galaxy.CurrentTurn,Sender.HelpText,Key);
   MainPanel.RebuildMessageButtons(False);
   (Sender as TGraphButtonGI).SetDisabled(True);
   BreakUiMessage;

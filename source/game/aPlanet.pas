@@ -1982,7 +1982,7 @@ begin
   if CurrentStar.DominatorSeries = dsTerron then
   begin
     if (aKling.TerronShip = nil) or (aGalaxy.Galaxy.TerronGrowLockTurn <> 0) or
-      (aGalaxy.Galaxy.TerronToStarTurn >= 1073741824) then Exit;
+      (aGalaxy.Galaxy.TerronToStarTurn >= TerronTransformationFlag) then Exit;
   end
   else if CurrentStar.DominatorSeries = dsBlazer then
     if (aKling.BlazerShip = nil) or (aGalaxy.Galaxy.BlazerLandingPlanetId <> 0) or
@@ -2012,7 +2012,7 @@ begin
     dsBlazer: Chance := 40;
     dsTerron: Chance := 60;
   end;
-  ControlThreshold := System.Round(RemapClamped(aGalaxy.Galaxy.CurrentTurn, 300, 11250, 40, 80));
+  ControlThreshold := System.Round(RemapClamped(aGalaxy.Galaxy.CurrentTurn, GalaxyWarmupTurns, 11250, 40, 80));
   Chance := System.Round(RemapClamped(Control, 0, ControlThreshold, Chance * 0.5, 0) +
     RemapClamped(Control, ControlThreshold, 100, Chance * 0.5, 1));
   if CurrentStar.Battle <> 0 then Inc(Chance, 10);
@@ -2504,7 +2504,7 @@ var
         begin
           Text := FormatText1(LocalizedText('Artefacts.ArtAnalyzer.AttackPirates'),
             '<color=255,240,100>', '<Star>', TargetStar.Name);
-          if Text <> '' then AddOrUpdatePlayerBubble(0, aGalaxy.Galaxy.CurrentTurn, Text, '');
+          if Text <> '' then AddOrUpdatePlayerBubble(pmGalaxyNews, aGalaxy.Galaxy.CurrentTurn, Text, '');
         end;
         Exit;
       end;
@@ -2527,7 +2527,7 @@ var
       begin
         Text := FormatText1(LocalizedText('Artefacts.ArtAnalyzer.AttackPirates'),
           '<color=255,240,100>', '<Star>', TargetStar.Name);
-        if Text <> '' then AddOrUpdatePlayerBubble(0, aGalaxy.Galaxy.CurrentTurn, Text, '');
+        if Text <> '' then AddOrUpdatePlayerBubble(pmGalaxyNews, aGalaxy.Galaxy.CurrentTurn, Text, '');
       end;
   end;
 
@@ -2596,10 +2596,10 @@ begin
       NeighborIndex := IncrementWrapped(NeighborIndex, 1, NeighborLimit);
       Dec(Attempts);
       if (TargetStar.Constellation.Id = 20) or (TargetStar = SourceStar) or IsStarProtectedByScript(TargetStar) then Continue;
-      if aGalaxy.Galaxy.CurrentTurn <= 300 then
+      if aGalaxy.Galaxy.CurrentTurn <= GalaxyWarmupTurns then
       begin
         if GetPlayer.CurrentStar = TargetStar then Continue;
-        if Sqr((1 - aGalaxy.Galaxy.CurrentTurn / 300) * 70 + 30) >
+        if Sqr((1 - aGalaxy.Galaxy.CurrentTurn / GalaxyWarmupTurns) * 70 + 30) >
            PointDistanceSquared(TargetStar.Position, GetPlayer.CurrentStar.Position) then Continue;
       end;
       TargetPirates := TargetStar.CountPirateForces(False, TargetPirateStrength, True, True);
@@ -2660,10 +2660,10 @@ begin
     Star := aGalaxy.Galaxy.Stars[i];
     if (Star.ControlFaction <> sfCoalition) or (Star.Status.CustomFaction <> '') or
       (Star.Battle <> 0) or Star.NoComeKling or IsStarProtectedByScript(Star) then Continue;
-    if aGalaxy.Galaxy.CurrentTurn <= 300 then
+    if aGalaxy.Galaxy.CurrentTurn <= GalaxyWarmupTurns then
     begin
       if GetPlayer.CurrentStar = Star then Continue;
-      if Sqr((1 - aGalaxy.Galaxy.CurrentTurn / 300) * 70 + 25) >
+      if Sqr((1 - aGalaxy.Galaxy.CurrentTurn / GalaxyWarmupTurns) * 70 + 25) >
         PointDistanceSquared(Star.Position, GetPlayer.CurrentStar.Position) then Continue;
     end;
     PirateCount := 0;
@@ -2707,7 +2707,7 @@ begin
   if (GetPlayer <> nil) and (GetPlayer.CountActiveArtefacts(t_ArtefactAnalyzer) > 0) then
   begin
     MessageText := FormatText1(LocalizedText('Artefacts.ArtAnalyzer.AttackPirates'), '<color=255,240,100>', '<Star>', TargetStar.Name);
-    if MessageText <> '' then AddOrUpdatePlayerBubble(0, aGalaxy.Galaxy.CurrentTurn, MessageText, '');
+    if MessageText <> '' then AddOrUpdatePlayerBubble(pmGalaxyNews, aGalaxy.Galaxy.CurrentTurn, MessageText, '');
   end;
 end;
 { @end $78BF90 }
@@ -3746,7 +3746,7 @@ var
 begin
   Ranger := TRanger.Create;
   Inc(HomeRangerCount);
-  if aGalaxy.Galaxy.CurrentTurn < 300 then Budget := aGalaxy.Galaxy.MaxRangerWealth
+  if aGalaxy.Galaxy.CurrentTurn < GalaxyWarmupTurns then Budget := aGalaxy.Galaxy.MaxRangerWealth
   else Budget := Min(Int64(aGalaxy.Galaxy.AverageRangerCapital),
     System.Round(RemapClamped(NextRandomUnitFloat(RandomState), 0, 1, 0.4, 0.6) * aGalaxy.Galaxy.MaxRangerWealth));
   if Budget > 500000 then Budget := 500000;
@@ -3923,7 +3923,7 @@ begin
   if CurrentStar.ControlFaction <> sfDominators then
   begin
     if (Series = dsTerron) and (aKling.TerronShip <> nil) and
-      (aGalaxy.Galaxy.TerronToStarTurn >= $40000000) then Series := dsKeller;
+      (aGalaxy.Galaxy.TerronToStarTurn >= TerronTransformationFlag) then Series := dsKeller;
     if (Series = dsBlazer) and (aGalaxy.Galaxy.BlazerSelfDestructTurn <> 0) then Series := dsKeller;
   end;
   Ship.InitGenerated(Kind, Self, Series);

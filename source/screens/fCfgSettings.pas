@@ -331,7 +331,7 @@ begin
   ValueLabel := AddOptionLabel('MaxPlayerNews', LocalizedText('FormCfgSettings.MaxPlayerNews'), False);
   AddOptionSlider(ValueLabel, 0, 100, MaxPlayerNews, 1, FormatInteger);
   ValueLabel := AddOptionLabel('TurnSaveStep', LocalizedText('FormCfgSettings.TurnSaveStep'), False);
-  AddOptionSlider(ValueLabel, 0, 365, TurnSaveStep, 1, FormatTurnSaveStep);
+  AddOptionSlider(ValueLabel, 0, TurnsPerYear, TurnSaveStep, 1, FormatTurnSaveStep);
   ValueLabel := AddOptionLabel('QuickSaveExtraSlots', LocalizedText('FormCfgSettings.QuickSaveSlots'), False);
   AddOptionSlider(ValueLabel, 0, 9, QuickSaveExtraSlots, 1, FormatInteger);
   ValueLabel := AddOptionLabel('CountFilmSave', LocalizedText('FormCfgSettings.CountFilmSave'), False);

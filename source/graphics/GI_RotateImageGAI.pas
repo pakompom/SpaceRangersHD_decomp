@@ -43,7 +43,7 @@ type
 
 implementation
 
-uses EC_Struct, SysUtils, Math, EC_Cache, EC_Mem, GI_GAI, GI_Main, GR_Main, GR_GraphBuf, GR_gi;
+uses EC_Struct, SysUtils, Math, EC_Cache, EC_Mem, GI_GAI, GI_Main, GR_Main, GR_GraphBuf, GR_gi, aMyFunction;
 
 { @routine $497078 TRotateImageGaiGI_Create }
 constructor TRotateImageGaiGI.Create(Owner: TObjectGI);
@@ -287,8 +287,8 @@ begin
     CenterX := ClientSize.X / 2;
     CenterY := ClientSize.Y / 2;
     Degrees := Angle / 256 * 360;
-    C := Cos((3.1415926 / 180) * Degrees);
-    S := Sin((3.1415926 / 180) * Degrees);
+    C := Cos((GamePi / 180) * Degrees);
+    S := Sin((GamePi / 180) * Degrees);
     Vertices[0].X := LeftX * C - TopY * S + CenterX + HitTestBounds.Left;
     Vertices[0].Y := LeftX * S + TopY * C + CenterY + HitTestBounds.Top;
     Vertices[1].X := RightX * C - TopY * S + CenterX + HitTestBounds.Left;

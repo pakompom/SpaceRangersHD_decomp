@@ -5,6 +5,17 @@ interface
 uses Windows;
 
 const
+  // Shared simulation, economy and targeting limits recovered from their callers.
+  GalaxyWarmupTurns = 300;
+  TurnsPerYear = 365;
+  MaxMonetaryValue = 100000000;
+  BaseMovementStepsPerTurn = 200;
+  FullPathNodeLimit = 999999;
+  AsteroidTargetRangeSquared = 1000000;
+  InterceptorTargetRangeSquared = 1000000;
+  // TerronToStarTurn packs this transformation marker with a turn number.
+  TerronTransformationFlag = $40000000;
+
   // TShip.TypeId names from ShipTypeNames at $87D038 (initialized by the table
   // at $838040) and the subclass initializers.
   // These are distinct from the hull-generation codes returned by ShipToHullType.

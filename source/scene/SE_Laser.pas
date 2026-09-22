@@ -34,7 +34,7 @@ type
 
 implementation
 
-uses Math, GI_Main;
+uses Math, GI_Main, aMyFunction;
 { @routine $823CB4 TLaserSE_Destroy }
 destructor TLaserSE.Destroy;
 begin
@@ -88,7 +88,7 @@ begin
   Angle := ArcTan2(TargetPosition.X - Position.X, -(TargetPosition.Y - Position.Y));
   AngleSin := Sin(Angle);
   AngleCos := Cos(Angle);
-  ImageAngle := Round(Angle / 3.1415926 * 127) and $FF;
+  ImageAngle := Round(Angle / GamePi * 127) and $FF;
   Distance := SegmentSize / 2;
   BeamLength := Sqrt(Sqr(TargetPosition.X - Position.X) + Sqr(TargetPosition.Y - Position.Y));
   Segments := TList.Create;

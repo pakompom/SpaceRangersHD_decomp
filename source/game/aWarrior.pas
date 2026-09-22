@@ -913,7 +913,7 @@ begin
     for I := 0 to CurrentStar.Asteroids.Count - 1 do begin
       Asteroid := CurrentStar.Asteroids[I];
       Distance := PointDistanceSquared(Position, Asteroid.Position);
-      if Distance <= 1000000 then
+      if Distance <= AsteroidTargetRangeSquared then
         for J := 1 to WeaponCount do begin
           Weapon := Weapons[J];
           // Native asteroid targeting can overwrite an existing assignment.
@@ -1033,7 +1033,7 @@ begin
     for I := 0 to CurrentStar.Asteroids.Count - 1 do begin
       Asteroid := CurrentStar.Asteroids[I];
       Distance := PointDistanceSquared(Position, Asteroid.Position);
-      if Distance <= 1000000 then
+      if Distance <= AsteroidTargetRangeSquared then
         for J := 1 to WeaponCount do begin
           Weapon := Weapons[J];
           // Native asteroid targeting can overwrite an existing assignment.
