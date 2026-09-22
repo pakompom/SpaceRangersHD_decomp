@@ -5,6 +5,9 @@ interface
 
 uses Types, GR_GraphBuf, GI_Main, EC_CacheGI, EC_CacheGAI, EC_BlockPar, Classes, GI_MessageLoop;
 
+const
+  SingleFrameAnimationSpec = '[50,0-0]'; // Frame zero with a 50 ms delay.
+
 type
   TgaiGI = class(TObjectGI) // @size 0x17C
   public

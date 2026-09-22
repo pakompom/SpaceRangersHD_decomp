@@ -1626,7 +1626,7 @@ begin
     FileName := GetGameUserDirectory + DecodeTextW('PaliatyseoraFainta.Atoxita'); // 'PlayerFit.txt'
     Block := TBlockParEC.Create;
     Number := 1;
-    Block.AddParam(DecodeTextW('GraemlenVoenrusSimoun'), '2.1.2500'); // 'GameVersion'
+    Block.AddParam(DecodeTextW('GraemlenVoenrusSimoun'), GameVersionText); // 'GameVersion'
     Block.AddParam(GetPlayer.GetLocalizedTypeName, GetPlayer.GetName);
     for Index := 0 to GetPlayer.Inventory.Count - 1 do
     begin

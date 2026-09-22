@@ -5,6 +5,10 @@ interface
 
 uses Classes, EC_Buf, EC_Cache, GR_GraphBuf;
 
+const
+  // Cache paths pass the option after '?' to LoadFromConfigBuffer.
+  RgbaImagePathSuffix = '?RGBA';
+
 type
   TCBitmapControlEC = class;
   TCBitmapEC = class;

@@ -81,13 +81,13 @@ begin
     if Cardinal(GameScreenWidth) >= 1280 then
     begin
       SetPosition(Classes.Point(LocalPosition.X + ExtraScreenWidth, LocalPosition.Y + ExtraScreenHeight));
-      SetText(ReplaceAllWideString(LocalizedText('FormMain.Version'), '<Value>', '2.1.2500'));
+      SetText(ReplaceAllWideString(LocalizedText('FormMain.Version'), '<Value>', GameVersionText));
       LogoShift := 0;
     end
     else
     begin
       SetPosition(Classes.Point(LocalPosition.X + ExtraScreenWidth, LocalPosition.Y + ExtraScreenHeight - 7));
-      SetText(ReplaceAllWideString(LocalizedText('FormMain.Version2'), '<Value>', '2.1.2500'));
+      SetText(ReplaceAllWideString(LocalizedText('FormMain.Version2'), '<Value>', GameVersionText));
       LogoShift := 16;
     end;
   end;

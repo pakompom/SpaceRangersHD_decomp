@@ -81,7 +81,7 @@ const
 
 implementation
 
-uses Globals, GR_Main, GR_GraphBuf, Windows, SysUtils, Math, aPlayer, aItem, aMyFunction, aGalaxyStruct, aKling, aConst, EC_Str, GR_Music, GI_Main, GlobalsV, aPlanet, fStarMap, aGalaxyEvent, SE_Hole, GI_MessageBox, aScript, aRanger, aTransport, aPirate, aWarrior, aTranclucator, aVector, GI_Circle, EC_Mem, GI_Window, SE_Star, SE_Planet, SE_Ruins, SE_Ship2, aRuins;
+uses EC_CacheBitmap, Globals, GR_Main, GR_GraphBuf, Windows, SysUtils, Math, aPlayer, aItem, aMyFunction, aGalaxyStruct, aKling, aConst, EC_Str, GR_Music, GI_Main, GlobalsV, aPlanet, fStarMap, aGalaxyEvent, SE_Hole, GI_MessageBox, aScript, aRanger, aTransport, aPirate, aWarrior, aTranclucator, aVector, GI_Circle, EC_Mem, GI_Window, SE_Star, SE_Planet, SE_Ruins, SE_Ship2, aRuins;
 
 const
   GalaxySummaryWhiteColorTag = '<color=255,255,254>';
@@ -1361,7 +1361,7 @@ begin
           with TGraphBufGI.Create(Owner, False) do
           begin
             SourceHasPerPixelAlpha := True;
-            LoadBitmapPathAsRgba(ExtractDelimitedPartW(Value, J, ',') + '?RGBA');
+            LoadBitmapPathAsRgba(ExtractDelimitedPartW(Value, J, ',') + RgbaImagePathSuffix);
             SetPosition(Classes.Point(IconX, RowHeight * I + 1));
             SetSize(Classes.Point(RowHeight - 2, RowHeight - 2));
             if (ClientSize.X < GraphBuf.Width) or (ClientSize.Y < GraphBuf.Height) then
@@ -1394,7 +1394,7 @@ begin
         with TGraphBufGI.Create(Owner, False) do
         begin
           SourceHasPerPixelAlpha := True;
-          LoadBitmapPathAsRgba(ExtractDelimitedPartW(GetFactionEmblemPath((TObject(Objects[I]) as TPlanet).GetFactionResourceName), 1, ',') + '?RGBA');
+          LoadBitmapPathAsRgba(ExtractDelimitedPartW(GetFactionEmblemPath((TObject(Objects[I]) as TPlanet).GetFactionResourceName), 1, ',') + RgbaImagePathSuffix);
           SetPosition(Classes.Point(NameWidth + 5 + RowHeight + 5 + 1, RowHeight * I + 1));
           SetSize(Classes.Point(RowHeight - 2, RowHeight - 2));
           if Cardinal(GraphBuf.Width) >= Cardinal(GraphBuf.Height) then

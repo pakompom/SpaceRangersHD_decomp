@@ -102,7 +102,7 @@ var
   Image: TCBitmapEC;
   Radius: Double;
 begin
-  ImageCache.SetCacheKey(Path + '?RGBA');
+  ImageCache.SetCacheKey(Path + RgbaImagePathSuffix);
   Image := AcquireOrCreateBitmap(ImageCache);
   try
     RotationCache.SetCacheKey(IntToStr(ImageSize.X) + ',' + IntToStr(ImageSize.Y) + ',' +

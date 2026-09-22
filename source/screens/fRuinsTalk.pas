@@ -581,7 +581,7 @@ begin
     if Background.Active then
     begin
       Background.SetImagePath('GAI,' + GetPlayer.CurrentStar.GetBackgroundImagePath(Index));
-      Background.GaiImageControl.LoadFrameSequenceFromText('[50,0-0]');
+      Background.GaiImageControl.LoadFrameSequenceFromText(SingleFrameAnimationSpec);
       Background.SetImageKindX(ikxCenter);
       Background.SetImageKindY(ikyCenter);
     end;

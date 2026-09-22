@@ -195,7 +195,7 @@ begin
         begin
           Block := TBlockParEC.Create;
           Block.AddParam('CurrentMod',LoadedSaveModSet);
-          Block.SaveTextFile('Mods\ModCFG.txt',True,False);
+          Block.SaveTextFile(ModSelectionConfigPath,True,False);
           Block.Free;
           RequestedScreenId := screenNone;
           PostLoadScreenId := screenGameLoad;

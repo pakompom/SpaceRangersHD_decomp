@@ -66,7 +66,7 @@ var
 
 implementation
 
-uses Classes, EC_BlockPar, EC_Buf, EC_Cache, EC_CacheBuf, EC_File, EC_Str, GI_GraphBuf, GI_GraphButton, GI_Label, GI_Main, GI_Panel, GI_PanelScrollBar, GI_ScrollBar, GR_GraphBuf, GR_Main, Globals, GlobalsV, Math, SysUtils, TextQuest, Windows, aConst, aGalaxy, aMyFunction;
+uses EC_CacheBitmap, Classes, EC_BlockPar, EC_Buf, EC_Cache, EC_CacheBuf, EC_File, EC_Str, GI_GraphBuf, GI_GraphButton, GI_Label, GI_Main, GI_Panel, GI_PanelScrollBar, GI_ScrollBar, GR_GraphBuf, GR_Main, Globals, GlobalsV, Math, SysUtils, TextQuest, Windows, aConst, aGalaxy, aMyFunction;
 
 { @routine $5592F4 TfLoadQuest_Create }
 constructor TfLoadQuest.Create;
@@ -631,7 +631,7 @@ begin
       if Entries[SelectedIndex].Image <> '' then
       begin
         SetActive(True);
-        LoadBitmapPathAsRgba(Entries[SelectedIndex].Image + '?RGBA');
+        LoadBitmapPathAsRgba(Entries[SelectedIndex].Image + RgbaImagePathSuffix);
         if (ClientSize.X <> GraphBuf.Width) or (ClientSize.Y <> GraphBuf.Height) then
           GraphBuf.RescaleRgba(ClientSize.X, ClientSize.Y, 5);
         RowSkip := GraphBuf.PitchBytes - GraphBuf.Width * SizeOf(TColorRGBA);

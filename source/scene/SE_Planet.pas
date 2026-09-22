@@ -1121,8 +1121,8 @@ begin
     Planet.HitTestBounds := Classes.Rect(-1, -1, Diameter, Diameter);
     Control := TCBitmapControlEC.Create;
     GlobalCache.ResetControl(Control);
-    if SmallPreview then Control.SetCacheKey(ExtractDelimitedPartW(SatelliteTemplate.MaskName, 0, '?') + '?RGBA')
-    else Control.SetCacheKey(Template.MaskName + '?RGBA');
+    if SmallPreview then Control.SetCacheKey(ExtractDelimitedPartW(SatelliteTemplate.MaskName, 0, '?') + RgbaImagePathSuffix)
+    else Control.SetCacheKey(Template.MaskName + RgbaImagePathSuffix);
     AcquireOrCreateBitmap(Control);
     Planet.RenderSurfaceToBuffer(Buffer);
     Planet.Free;

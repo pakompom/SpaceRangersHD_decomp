@@ -879,7 +879,7 @@ begin
   List.Free;
   Block := TBlockParEC.Create;
   Block.AddParam('CurrentMod', Folders);
-  Block.SaveTextFile('Mods\ModCFG.txt', True, False);
+  Block.SaveTextFile(ModSelectionConfigPath, True, False);
   Block.Free;
   ReloadModsRequested := True;
   if ExitCode = 0 then RequestClose(2) else RequestClose(ExitCode);

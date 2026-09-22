@@ -6,6 +6,11 @@ interface
 
 uses GR_Music, DirectSound, EC_Thread, GR_Sound, EC_Data, EC_OKGF, EC_Buf, GR_GraphBufPal, Direct3D9, EC_Cache, EC_BlockPar, EC_Str, GR_GraphBuf, SyncObjs, Classes, Types;
 
+const
+  // Shared by version display, configuration migration and data compatibility checks.
+  GameVersionText = '2.1.2500';
+  ModSelectionConfigPath = 'Mods\ModCFG.txt';
+
 // Unit attribution of the cursor registry is inferred from its VMT and
 // implementation region; it is not an explicit class RTTI unit name.
 type
@@ -2373,10 +2378,10 @@ procedure LoadSelectedModInstallBlocks;
 var Index: Integer; ModNames, ModPath: WideString; Block: TBlockParEC;
 begin
   ModNames := '';
-  if FileExists('Mods\ModCFG.txt') then
+  if FileExists(ModSelectionConfigPath) then
   begin
     Block := TBlockParEC.Create;
-    Block.LoadFromTextFileWithEncodingProbe('Mods\ModCFG.txt', False);
+    Block.LoadFromTextFileWithEncodingProbe(ModSelectionConfigPath, False);
     if Block.CountParams('CurrentMod') > 0 then
       ModNames := TrimWideString(Block.GetParam('CurrentMod'));
     SelectedMods := ModNames;
@@ -2563,10 +2568,10 @@ var ModNames, ModPath: WideString; HasOverrides: Boolean; Block: TBlockParEC;
 begin
   MainDataConfig := TBlockParEC.Create;
   ModNames := '';
-  if not SkipModsOnReload and FileExists('Mods\ModCFG.txt') then
+  if not SkipModsOnReload and FileExists(ModSelectionConfigPath) then
   begin
     Block := TBlockParEC.Create;
-    Block.LoadFromTextFileWithEncodingProbe('Mods\ModCFG.txt', False);
+    Block.LoadFromTextFileWithEncodingProbe(ModSelectionConfigPath, False);
     if Block.CountParams('CurrentMod') > 0 then
       ModNames := TrimWideString(Block.GetParamByPath('CurrentMod'));
     Block.Free;
@@ -2755,7 +2760,7 @@ begin
     AppendLogTextThreadSafe('Creating cfg.txt ... ');
     CopyFileW('cfg.txt', PWideChar(Text), False);
     UserSettingsConfig.LoadFromTextFileWithEncodingProbe(PWideChar(Text), True);
-    UserSettingsConfig.AddParam('CurrentVersion', '2.1.2500');
+    UserSettingsConfig.AddParam('CurrentVersion', GameVersionText);
     UserSettingsConfig.AddParam('VideoMemSizeLimit', '256');
     if RunningUnderWine then
     begin
@@ -2771,20 +2776,20 @@ begin
     if UserSettingsConfig.CountParamsByPath('CurrentVersion') = 0 then
     begin
       AppendLogTextThreadSafe('Updating cfg.txt content ... ');
-      UserSettingsConfig.AddParam('CurrentVersion', '2.1.2500');
+      UserSettingsConfig.AddParam('CurrentVersion', GameVersionText);
       UserSettingsConfig.SetOrAddParam('HardwareRender', 'True');
       UserSettingsConfig.SetOrAddParam('MultiThread', 'False');
       UserSettingsConfig.SaveTextFile(PWideChar(Text), True, False);
       AppendLogLineThreadSafe('ok!');
     end
-    else if UserSettingsConfig.GetParamByPathOrMarker('CurrentVersion') <> '2.1.2500' then
+    else if UserSettingsConfig.GetParamByPathOrMarker('CurrentVersion') <> GameVersionText then
     begin
       AppendLogTextThreadSafe('Updating cfg.txt version ... ');
       if (UserSettingsConfig.GetParam('CurrentVersion') = '2.1.1800') and
         (UserSettingsConfig.CountParamsByPath('CountFilmSave') > 0) and
         (UserSettingsConfig.GetParamByPathOrMarker('CountFilmSave') = '30') then
         UserSettingsConfig.SetOrAddParam('CountFilmSave', '7');
-      UserSettingsConfig.SetOrAddParam('CurrentVersion', '2.1.2500');
+      UserSettingsConfig.SetOrAddParam('CurrentVersion', GameVersionText);
       UserSettingsConfig.SaveTextFile(PWideChar(Text), True, False);
       AppendLogLineThreadSafe('ok!');
     end;
@@ -2976,17 +2981,17 @@ begin
     Cursor.ImagePath := Block.GetBlockByIndex(Index).GetParam('Image');
     Cursor.HotSpot := GetPointGI(Block.GetBlockByIndex(Index).GetParam('Sme'));
   end;
-  if LanguageDataConfig.GetParamByPathOrMarker('BV.BV') <> '2.1.2500' then
+  if LanguageDataConfig.GetParamByPathOrMarker('BV.BV') <> GameVersionText then
   begin
     AppendLogLineThreadSafe('Build version mismatch with Lang.dat!');
     BuildVersionMismatch := True;
   end;
-  if MainDataConfig.GetParamByPathOrMarker('BV.BV') <> '2.1.2500' then
+  if MainDataConfig.GetParamByPathOrMarker('BV.BV') <> GameVersionText then
   begin
     AppendLogLineThreadSafe('Build version mismatch with Main.dat!');
     BuildVersionMismatch := True;
   end;
-  if CacheDataRoot.FindEntry('BV').ChildData.FindEntry('BV').SharedFileRef.FileRef.FileName <> '2.1.2500' then
+  if CacheDataRoot.FindEntry('BV').ChildData.FindEntry('BV').SharedFileRef.FileRef.FileName <> GameVersionText then
   begin
     AppendLogLineThreadSafe('Build version mismatch with CacheData.dat!');
     BuildVersionMismatch := True;

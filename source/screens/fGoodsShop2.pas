@@ -402,7 +402,7 @@ begin
     if Active then
     begin
       SetImagePath('GAI,' + GetPlayer.CurrentStar.GetBackgroundImagePath(I));
-      GaiImageControl.LoadFrameSequenceFromText('[50,0-0]');
+      GaiImageControl.LoadFrameSequenceFromText(SingleFrameAnimationSpec);
       SetImageKindX(ikxCenter);
       SetImageKindY(ikyCenter);
     end;

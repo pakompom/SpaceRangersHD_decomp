@@ -189,7 +189,7 @@ var
 
 implementation
 
-uses aKling, Windows, SysUtils, Math, GI_Tail, ab_Global, GlobalsV, GR_Main, GR_Music, GI_Main, ab_WorldImage, ab_Ship, aConst, aItem, aPlayer, aGalaxy,
+uses EC_CacheBitmap, aKling, Windows, SysUtils, Math, GI_Tail, ab_Global, GlobalsV, GR_Main, GR_Music, GI_Main, ab_WorldImage, ab_Ship, aConst, aItem, aPlayer, aGalaxy,
   EC_CacheBuf, GR_DX, GR_Rect, GI_MultiImage, ab_Polygon, ab_StopLine, ab_WorldLine, ab_Object, ab_ShipAI, ab_W, aSaveLoad, GI_MessageBox, EC_BlockPar, SE_Process, SE_Ship2, SE_Ruins, ab_Hit, aShip, abWall, Globals, fShip2, fTalk, fStarMap, ThreadCalc, aCalc, aGalaxyEvent, aTranclucator, EC_Str, GI_RotateImage5, GI_GraphBuf, aPlanet, aRuins, SE_Star, SE_Planet;
 
 
@@ -3989,9 +3989,9 @@ begin
           begin
             SourceHasPerPixelAlpha := True;
             if TObject(Objects[Index]) is TPlanet then
-              LoadBitmapPathAsRgba(ExtractDelimitedPartW(GetFactionEmblemPath(TPlanet(Objects[Index]).GetFactionResourceName), 1, ',') + '?RGBA')
+              LoadBitmapPathAsRgba(ExtractDelimitedPartW(GetFactionEmblemPath(TPlanet(Objects[Index]).GetFactionResourceName), 1, ',') + RgbaImagePathSuffix)
             else
-              LoadBitmapPathAsRgba(ExtractDelimitedPartW(GetFactionEmblemPath(TShip(Objects[Index]).GetFactionNameKey), 1, ',') + '?RGBA');
+              LoadBitmapPathAsRgba(ExtractDelimitedPartW(GetFactionEmblemPath(TShip(Objects[Index]).GetFactionNameKey), 1, ',') + RgbaImagePathSuffix);
             SetPosition(Classes.Point(Owner.ClientSize.X div 2 + 15 + 5 + RowHeight + 5 + 1, RowHeight * Index + 1));
             SetSize(Classes.Point(RowHeight - 2, RowHeight - 2));
             if Cardinal(GraphBuf.Width) >= Cardinal(GraphBuf.Height) then

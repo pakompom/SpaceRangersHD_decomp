@@ -243,7 +243,7 @@ var
 
 implementation
 
-uses Globals, GlobalsV, SE_Process, GR_Main, ThreadCalc, aCalc, aPlayer, EC_Str,
+uses EC_CacheBitmap, Globals, GlobalsV, SE_Process, GR_Main, ThreadCalc, aCalc, aPlayer, EC_Str,
   GI_GAI, aEFilmEnd, aMyFunction, fLoad, fFilmFile, Windows, Messages, GI_MultiImage, aGalaxyStruct, aScript, fShip2, SysUtils, GR_DX, GR_Rect, SE_Hole, aKling, GR_Gi, aRanger, fGalaxy2, fSaveManager, GI_MessageBox, aConst, aPlanet, aRuins, Robot, aSaveLoad, fLoadRobot, GI_StarFieldImg, Math, Achievements, EC_Mem, aMissile, SE_Missile, SE_Ship2, SE_Container, SE_Ruins, SE_Asteroid, SE_Planet, SE_Star, aEObjInfo, aPirate, aPath, fTalk, fGoodsShop2, aTranclucator, ab_MainForm;
 
 { @routine $6A49E0 TfStarMap_Create }
@@ -4529,7 +4529,7 @@ begin
               with TGraphBufGI.Create(Panel, False) do
               begin
                 SourceHasPerPixelAlpha := True;
-                LoadBitmapPathAsRgba(ExtractDelimitedPartW(Images, J, ',') + '?RGBA');
+                LoadBitmapPathAsRgba(ExtractDelimitedPartW(Images, J, ',') + RgbaImagePathSuffix);
                 SetPosition(Classes.Point(RowX, RowHeight * I + 1));
                 SetSize(Classes.Point(RowHeight - 2, RowHeight - 2));
                 if (ClientSize.X < GraphBuf.Width) or (ClientSize.Y < GraphBuf.Height) then
@@ -4564,7 +4564,7 @@ begin
           with TGraphBufGI.Create(Panel, False) do
           begin
             SourceHasPerPixelAlpha := True;
-            LoadBitmapPathAsRgba(ExtractDelimitedPartW(GetFactionEmblemPath((TObject(Objects[I]) as TPlanet).GetFactionResourceName), 1, ',') + '?RGBA');
+            LoadBitmapPathAsRgba(ExtractDelimitedPartW(GetFactionEmblemPath((TObject(Objects[I]) as TPlanet).GetFactionResourceName), 1, ',') + RgbaImagePathSuffix);
             SetPosition(Classes.Point(NameWidth + 5 + RowHeight + 5 + 1, RowHeight * I + 1));
             SetSize(Classes.Point(RowHeight - 2, RowHeight - 2));
             if (ClientSize.X < GraphBuf.Width) or (ClientSize.Y < GraphBuf.Height) then
@@ -7378,7 +7378,7 @@ begin
                         with TGraphBufGI.Create(Panel, False) do
                         begin
                           SourceHasPerPixelAlpha := True;
-                          LoadBitmapPathAsRgba(ExtractDelimitedPartW(Images, J, ',') + '?RGBA');
+                          LoadBitmapPathAsRgba(ExtractDelimitedPartW(Images, J, ',') + RgbaImagePathSuffix);
                           SetPosition(Classes.Point(RowX, RowHeight * I + 1));
                           SetSize(Classes.Point(RowHeight - 2, RowHeight - 2));
                           if (ClientSize.X < GraphBuf.Width) or (ClientSize.Y < GraphBuf.Height) then
@@ -7436,7 +7436,7 @@ begin
                       begin
                         SourceHasPerPixelAlpha := True;
                         LoadBitmapPathAsRgba(ExtractDelimitedPartW(GetFactionEmblemPath(PEPlanetInfo(Records[I])^.Faction), 1, ',')
-                        + '?RGBA');
+                        + RgbaImagePathSuffix);
                         SetPosition(Classes.Point(NameWidth + 5 + RowHeight + 5 + 1, RowHeight * I + 1));
                         SetSize(Classes.Point(RowHeight - 2, RowHeight - 2));
                         if (ClientSize.X < GraphBuf.Width) or (ClientSize.Y < GraphBuf.Height) then
