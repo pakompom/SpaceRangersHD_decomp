@@ -3531,7 +3531,7 @@ var
       if FailureCount < Threshold then Break;
       if FailureCount = Threshold then
       begin
-        Award := Integer(SelectAward(OwnerId, [atCowardice], [stKling..rstCustomStation])) and $FF;
+        Award := SelectAward(OwnerId, [atCowardice], [stKling..rstCustomStation]);
         if Award <> AwardNotFound then
         begin
           AddAward(Award);

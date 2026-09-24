@@ -6975,7 +6975,7 @@ begin
   if not (Item.ItemType in [t_Hull..t_CustomWeapon]) then
   begin
     if Item is TArtefact then
-      Result := 5000 / Max(1, Item.Weight) / Max(0.25, TEquipment(Item).GetFragilityFactor(EmptyDamageFlags))
+      Result := 5000 / Max(1, Item.Weight) / Max(0.25, TEquipment(Item).GetFragilityFactor([]))
     else
       Result := Item.Cost / Max(1, Item.Weight);
     Exit;
@@ -8799,7 +8799,7 @@ begin
   end;
   if CanUseEquipmentTech(Item) and (GetEffectiveSkillLevel(psTechnical) > 0) then
     DurabilityDamage := DurabilityDamage / (1 + GetEffectiveSkillLevel(psTechnical) * 0.2);
-  DurabilityDamage := DurabilityDamage * Item.GetFragilityFactor(EmptyDamageFlags);
+  DurabilityDamage := DurabilityDamage * Item.GetFragilityFactor([]);
   BeforeScript := Round(DurabilityDamage * 1000);
   case Kind of
     idkBattle: AfterScript := ScriptItemsAct(satOnReduceEqBattle, Item, nil, BeforeScript);

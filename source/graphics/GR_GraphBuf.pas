@@ -910,9 +910,8 @@ begin
   LockTexture(False);
   Columns := Rect.Right - Rect.Left; Rows := Rect.Bottom - Rect.Top;
   RowSkip := PitchBytes - Columns * SizeOf(TColorRGBA);
-  // Form the relative field address before adding Pixels to retain native load order.
-  Data := Pointer(Integer(@PColorRGBA(
-    Rect.Top * PitchBytes + Rect.Left * SizeOf(TColorRGBA)).A) + PAnsiChar(Pixels));
+  // Data addresses the alpha byte (offset 3) of the rectangle's first pixel.
+  Data := PAnsiChar(Pixels) + (Rect.Top * PitchBytes + Rect.Left * SizeOf(TColorRGBA) + 3);
   Table := Pointer(PAnsiChar(Ex_OKGF_MulTable256x256) + Integer(Alpha) shl 8);
   // Native precondition: Columns and Rows must be positive. Neither is checked
   // before writing; zero wraps on DEC and the loop writes beyond the rectangle.

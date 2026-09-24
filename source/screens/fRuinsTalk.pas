@@ -402,7 +402,6 @@ begin
 end;
 { @end $5A61A8 }
 
-// Native and rebuilt instructions agree; the matcher treats loop label $5DB078 as a separate relocation target.
 { @routine $5A63F4 TfRuinsTalk_InitializeLayout }
 procedure TfRuinsTalk.InitializeLayout;
 var

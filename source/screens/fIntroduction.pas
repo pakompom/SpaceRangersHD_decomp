@@ -46,6 +46,12 @@ uses aGalaxyStruct, Classes, Windows, SysUtils, EC_Str, EC_Struct, GI_Main, GI_I
   GI_Label, GI_GraphButton, GI_GraphBuf, GR_Main, GR_DX, GR_Music,
   Globals, GlobalsV, aMyFunction, aPlayer, fGameSettings2;
 
+// Stages 1..8 have ICW/MCW labels; Offset selects the displayed or the next stage.
+function HasGenerationStageLabel(Offset: Integer): Boolean; inline;
+begin
+  Result := (DisplayedGenerationStage + Offset >= 1) and (DisplayedGenerationStage + Offset <= 8);
+end;
+
 { @routine $6605BC TfIntroduction_InitializeLayout }
 procedure TfIntroduction.InitializeLayout;
 var I: Integer;
@@ -202,15 +208,15 @@ begin
     if DisplayedGenerationStage < NewGameGenerationStage then
     begin
       Inc(DisplayedGenerationStage);
-      if (DisplayedGenerationStage + 0 >= 1) and (DisplayedGenerationStage + 0 <= 8) then
+      if HasGenerationStageLabel(0) then
         GetByName(AnsiString('ICW') + IntToStr(DisplayedGenerationStage)).SetActive(True);
-      if (DisplayedGenerationStage + 0 >= 1) and (DisplayedGenerationStage + 0 <= 8) then
+      if HasGenerationStageLabel(0) then
         (GetByName(AnsiString('MCW') + IntToStr(DisplayedGenerationStage)) as TLabelGI).SetTextColor(IntroductionBlinkColorA);
     end;
   end;
   if ProgressPulsePhase < 0.5 then Amount := ProgressPulsePhase * 2
   else Amount := 1 - (ProgressPulsePhase - 0.5) * 2;
-  if (DisplayedGenerationStage + 1 >= 1) and (DisplayedGenerationStage + 1 <= 8) then
+  if HasGenerationStageLabel(1) then
         (GetByName(AnsiString('MCW') + IntToStr(DisplayedGenerationStage + 1)) as TLabelGI).SetTextColor(CurrentPixelFormat.InterpolateRgb(IntroductionBlinkColorA,IntroductionBlinkColorB,Amount));
   if (NewGameGenerationThread = nil) or (not NewGameGenerationThread.IsRunning and (DisplayedGenerationStage = 8)) then
   begin

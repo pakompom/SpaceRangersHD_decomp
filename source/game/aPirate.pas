@@ -1803,14 +1803,15 @@ begin
   if dkReduceEngine in Flags then SlowFactor := 1 + 2 * SlowFactor;
   DisruptionFactor := 0;
   if dkDecelerate in Flags then DisruptionFactor := DisruptionFactor + 1;
+  // Base + Base * boost, as in TRanger (base 2) and TShip (base 5); pirates use base 1.
   if (CountActiveArtefacts(t_ArtDecelerate) > 0) and (dkSplinter in Flags) then
-    DisruptionFactor := DisruptionFactor + CountActiveArtefacts(t_ArtDecelerate) * ((Ord(CanBoostArtefact(t_ArtDecelerate, Weapon, False)) * 1) + 1);
+    DisruptionFactor := DisruptionFactor + (1 + 1 * Ord(CanBoostArtefact(t_ArtDecelerate, Weapon, False))) * CountActiveArtefacts(t_ArtDecelerate);
   TotalDisruption := DisruptionFactor;
   for I := 1 to CountEquippedWeapons do begin
     if dkDecelerate in Weapons[I].GetDamageFlags then TotalDisruption := TotalDisruption + 1;
     if (CountActiveArtefacts(t_ArtDecelerate) > 0) and (dkSplinter in Weapons[I].GetDamageFlags) then
       // The native loop tests each equipped weapon but boosts the candidate.
-      TotalDisruption := TotalDisruption + CountActiveArtefacts(t_ArtDecelerate) * ((Ord(CanBoostArtefact(t_ArtDecelerate, Weapon, False)) * 1) + 1);
+      TotalDisruption := TotalDisruption + (1 + 1 * Ord(CanBoostArtefact(t_ArtDecelerate, Weapon, False))) * CountActiveArtefacts(t_ArtDecelerate);
   end;
   DisruptionFactor := DisruptionFactor / Max(TotalDisruption, 1) * RemapClamped(TotalDisruption, 1, 3, 1, 2);
   if SlowFactor > 0.01 then

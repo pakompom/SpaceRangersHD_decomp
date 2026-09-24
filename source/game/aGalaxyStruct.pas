@@ -480,10 +480,6 @@ const
   // Bit 20 fixes minimum damage at the maximum (TShip.GetWeaponMinDamage).
   DamageNoDeltaMask = 1 shl 20;
 
-  // Loading this four-byte set from the DCU keeps it distinct from float zero.
-  // The native aShip pools at $762814/$762814 and $7695DC/$7695DC are separate.
-  EmptyDamageFlags = [dkEnergy..dkDroidBlock] - [dkEnergy..dkDroidBlock];
-
 type
 
   TItemTypeMask = set of 0..79; // @size 10

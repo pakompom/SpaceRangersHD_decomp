@@ -345,7 +345,6 @@ begin
 end;
 { @end $65D2B0 }
 
-// Zero-byte pointer additions retain the native evaluation order of IndexOf.
 { @routine $65D318 TTranclucator_NextDayLogic }
 procedure TTranclucator.NextDayLogic;
 var Stage: Integer;

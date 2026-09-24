@@ -1076,10 +1076,10 @@ procedure TNormalShip.CheckKillCountAwards(Victim: TShip);
       if Count < Threshold then Break;
       if Count = Threshold then
       begin
-        Award := Integer(SelectAward(OwnerId, BadAwards, [VictimType])) and $FF;
+        Award := SelectAward(OwnerId, BadAwards, [VictimType]);
         if Award <> AwardNotFound then
         begin
-          AddAward(Byte(Award));
+          AddAward(Award);
           if GetPlayer = Self then
           begin
             ShipTypeName := ShipTypeNames[VictimType].Name;
