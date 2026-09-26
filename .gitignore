@@ -1,5 +1,5 @@
 /.local/
-/game/
+/game
 /target/
 .DS_Store
 __pycache__/

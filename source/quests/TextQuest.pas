@@ -627,11 +627,11 @@ begin
       end;
       if not Unlimited then
         if HasIncoming then
-      begin
-        if Location.Sequence = nil then Location.VisitLimit := Limit
-        else if (Location.VisitLimit = 0) or (Location.VisitLimit > Limit) then
-          Location.Sequence.SetTraversalLimit(Limit);
-      end;
+        begin
+          if Location.Sequence = nil then Location.VisitLimit := Limit
+          else if (Location.VisitLimit = 0) or (Location.VisitLimit > Limit) then
+            Location.Sequence.SetTraversalLimit(Limit);
+        end;
     end;
   end;
 end;

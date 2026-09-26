@@ -9,9 +9,9 @@ type
   TabShip = class(TabHit) // @size $2E0
   public
     Visual: TObjectSE; // @offset $D0
+    VisualDiameter: Integer; // @offset $D4
     OffscreenMarker: TObjectSE; // @offset $D8
     OffscreenLabel: TObjectGI; // @offset $DC
-    VisualDiameter: Integer; // @offset $D4
     Enemies: TList; // @offset $E0
     InitialEnemies: TList; // @offset $E4
     TrackedShips: TList; // @offset $E8
@@ -44,6 +44,7 @@ type
     HealthScalePercent: Integer; // @offset $2D4 Scripted encounter health multiplier.
     DamageScalePercent: Integer; // @offset $2D8 Scripted encounter weapon damage multiplier.
     HasFiredWeapon: Boolean; // @offset $2DC Set by firing; retained for the no-shots victory check.
+
     constructor Create; // @addr $501F14
     destructor Destroy; override; // @addr $50203C
     procedure CreateShipVisual(const GraphKey: WideString; Diameter: Integer); // @addr $5023E4

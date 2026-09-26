@@ -64,6 +64,22 @@ type
   PPixelWordsGR = ^TPixelWordsGR;
   TGraphBufGR = class(TObjectEx) // @size 0x2C
   public
+    Width: Integer; // @offset 0x04
+    Height: Integer; // @offset 0x08
+    PitchBytes: Integer; // @offset 0x0C
+    Pixels: Pointer; // @offset 0x10
+    // Zero owns software pixels; one borrows them.
+    StorageKind: Integer; // @offset $14
+    BitsPerPixel: Integer; // @offset 0x18
+    BytesPerPixel: Integer; // @offset 0x1C
+    UseTexture: Boolean; // @offset 0x20
+    UsesTextureStorage: Boolean; // @offset 0x21
+    // Skips the explicit nil assignment before resize/crop replaces Texture.
+    KeepTextureUntilReplacement: Boolean; // @offset $22 All retained writes clear this flag.
+    Texture: IDirect3DTexture9; // @offset 0x24
+    TextureLocked: Boolean; // @offset 0x28
+    TextureLockedReadOnly: Boolean; // @offset 0x29
+
     function GetPixel16(X, Y: Integer): Cardinal; // @addr $866370
     procedure SetPixel16(X, Y: Integer; Color: Cardinal); // @addr $8663BC
     function GetBrightness16(X, Y: Integer): Cardinal; // @addr $866408
@@ -112,21 +128,6 @@ type
     procedure ConvertBgraToRgb24; // @addr $86AAD8
     procedure DrawAntialiasedCircle16(Center: TPoint; Radius: Integer; Color: Cardinal; Clip: TRect); // @addr $86ACE4
     procedure DrawAntialiasedLine16(X1, Y1, X2, Y2: Integer; Color: Cardinal; Alpha: Integer; Clip: TRect); // @addr $86AFE4
-    Width: Integer; // @offset 0x04
-    Height: Integer; // @offset 0x08
-    PitchBytes: Integer; // @offset 0x0C
-    // Zero owns software pixels; one borrows them.
-    StorageKind: Integer; // @offset $14
-    Pixels: Pointer; // @offset 0x10
-    BitsPerPixel: Integer; // @offset 0x18
-    BytesPerPixel: Integer; // @offset 0x1C
-    UseTexture: Boolean; // @offset 0x20
-    UsesTextureStorage: Boolean; // @offset 0x21
-    // Skips the explicit nil assignment before resize/crop replaces Texture.
-    KeepTextureUntilReplacement: Boolean; // @offset $22 All retained writes clear this flag.
-    Texture: IDirect3DTexture9; // @offset 0x24
-    TextureLocked: Boolean; // @offset 0x28
-    TextureLockedReadOnly: Boolean; // @offset 0x29
 
     constructor Create(AUseTexture: Boolean); // @addr 0x865620
     destructor Destroy; override; // @addr 0x8656C4
@@ -1821,7 +1822,7 @@ begin
       Pixel := Pointer(PAnsiChar(GetPixels) + PitchBytes * Y);
       for X := 0 to Width - 1 do
       begin
-        PColorBGRA(Pixel).B := Table[PColorBGRA(Pixel).B];
+        PByte(@PColorBGRA(Pixel).B)^ := Table[PByte(@PColorBGRA(Pixel).B)^];
         PByte(@PColorBGRA(Pixel).G)^ := Table[PByte(@PColorBGRA(Pixel).G)^];
         PByte(@PColorBGRA(Pixel).R)^ := Table[PByte(@PColorBGRA(Pixel).R)^];
         Inc(Pixel, SizeOf(TColorRGBA));
@@ -1860,11 +1861,11 @@ begin
       Pixel := Pointer(PAnsiChar(GetPixels) + PitchBytes * Y);
       for X := 0 to Width - 1 do
       begin
-        B := PColorBGRA(Pixel).B;
+        B := PByte(@PColorBGRA(Pixel).B)^;
         G := PByte(@PColorBGRA(Pixel).G)^;
         R := PByte(@PColorBGRA(Pixel).R)^;
         C := Trunc(R * 0.299 + G * 0.587 + B * 0.114);
-        PColorBGRA(Pixel).B := C;
+        PByte(@PColorBGRA(Pixel).B)^ := C;
         PByte(@PColorBGRA(Pixel).G)^ := C;
         PByte(@PColorBGRA(Pixel).R)^ := C;
         Inc(Pixel, SizeOf(TColorRGBA));

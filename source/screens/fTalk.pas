@@ -27,6 +27,7 @@ type
   public
     MainPanel: TPanelGI; // @offset $D0
     DialogPanel: TPanelGI; // @offset $D4
+    DialogText: WideString; // @offset $D8
     PresentedTextLength: Integer; // @offset $DC
     TextPresentationTimer: PCallbackTimerGI; // @offset $E0
     ChoiceHeight: Integer; // @offset $E4
@@ -45,7 +46,10 @@ type
     SlideTimer: PCallbackTimerGI; // @offset $11C
     SlideProgress: Single; // @offset $120
     DialogPanelLeft: Integer; // @offset $124
+    ModalTransition: TTalkModalTransition; // @offset $128 Reopen dialogue or switch to goods trading after refreshing the star-map background.
+    ReturnedFromTrade: Boolean; // @offset $12C Set after the goods-trading modal returns; reset on opening dialogue, with no retained reader.
     SavedChoiceScroll: Integer; // @offset $130
+
     procedure ShowMoneyDemand(Action: Integer); // @addr $6D94E8
     procedure ShowTruceOffer(Action: Integer); // @addr $6D9BFC
     procedure ShowPartnerOffer(Action: Integer); // @addr $6DBFCC
@@ -146,9 +150,6 @@ type
     procedure UpdateSlidePosition; // @addr $6D44A0
     procedure MainPanelKeyDown(Sender: TObjectGI; Key: Cardinal); // @addr $6D45BC
     procedure ApplyMapSelection(Timer: PCallbackTimerGI; UserData: Integer); // @addr $6D3DF0
-    DialogText: WideString; // @offset $D8
-    ModalTransition: TTalkModalTransition; // @offset $128 Reopen dialogue or switch to goods trading after refreshing the star-map background.
-    ReturnedFromTrade: Boolean; // @offset $12C Set after the goods-trading modal returns; reset on opening dialogue, with no retained reader.
     procedure RememberChoiceScroll; // @addr $6D247C
     procedure EnableCloseButton; // @addr $6D24C8
     procedure CloseClicked(Sender: TObjectGI); // @addr $6D250C

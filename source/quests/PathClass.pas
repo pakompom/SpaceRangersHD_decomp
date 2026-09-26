@@ -159,7 +159,7 @@ begin
       ParameterChanges.Delete(i - 1)
     else if GetParameterChange(i).HasNoChange(Parameters) then
       if GetParameterChange(i).HasNoValueConstraint(Parameters) then
-      ParameterChanges.Delete(i - 1);
+        ParameterChanges.Delete(i - 1);
 end;
 { @end $4E59BC }
 

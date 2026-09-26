@@ -27,15 +27,30 @@ type
 
   TfRuinsTalk = class(TMessageLoopGIWithMainPanel) // @size 0x10C
   public
+    StationPanel: TfPanelRuins; // @offset $D4 Owned.
+    LoadPanel: TfPanelLoad; // @offset $D8 Owned.
+    DialogText: WideString; // @offset 0xDC
+    PresentedTextLength: Integer; // @offset $E0
+    TextPresentationTimer: PCallbackTimerGI; // @offset $E4
+    ChoiceHeight: Integer; // @offset $E8 Accumulated dialogue-choice row height.
+    NextPortraitCycleAlternate: Boolean; // @offset $EC
+    ShowArrivalVideo: Boolean; // @offset $ED Set after docked hyperspace travel; OnOpen tests this together with SkipVideo.
+    StationOwner: TOwnerId; // @offset $EE Copied from the docked ship on entry.
+    StationType: TStationType; // @offset $EF Copied from the docked ship on entry.
+    ScriptVideoStartedAt: Cardinal; // @offset $F0 timeGetTime timestamp used by the queued-video callback.
+    ScriptVideoTimer: PCallbackTimerGI; // @offset $F4
     ResearchItemVisited: array of Boolean; // @offset $F8
     ResearchItemIndexes: array of Integer; // @offset $FC Negative entries terminate the sorted sale list.
+    LargePortraitLayout: Boolean; // @offset $100 Viewport is at least 1280x960; permits HD portraits or the table layout.
+    PortraitTableVisible: Boolean; // @offset $101 Large layout with UseTablesForGov; shows the table and standard portrait animations.
+    StationTransientControl: TObjectGI; // @offset $104
+    SavedChoiceScroll: Integer; // @offset $108
+
     function SortResearchItems(Series: TDominatorSeries): Integer; // @addr $5A7FA0 Returns inventory count; unused sorted slots are -1.
     function IsResearchItemQuestLetter(Item: TItem): Boolean; // @addr $5A813C
     function CountResearchRemains(Series: TDominatorSeries; Count: Integer): Integer; // @addr $5A82A0
     function CountResearchEquipment(Count: Integer): Integer; // @addr $5A8354
     procedure BuildResearchItemChoices(Series: TDominatorSeries; var Text: WideString); // @addr $5A83EC
-    StationOwner: TOwnerId; // @offset $EE Copied from the docked ship on entry.
-    StationType: TStationType; // @offset $EF Copied from the docked ship on entry.
     procedure ContinueDominatorVictoryDialog(Action: Integer); // @addr $5AB3E4
     function ShowDominatorVictoryDialog: Boolean; // @addr $5AABA4
     procedure ShowMilitaryBaseRepairQuote(Action: Integer); // @addr $5BC9FC
@@ -49,10 +64,6 @@ type
     procedure ShowMilitaryBaseArrivalDialog(Action: Integer); // @addr $5BE484
     procedure RunInjectedDialog(Action: Integer); // @addr $5D1948
     procedure RunInjectedDialogKeepingScroll(Action: Integer); // @addr $5D1B14
-    PresentedTextLength: Integer; // @offset $E0
-    TextPresentationTimer: PCallbackTimerGI; // @offset $E4
-    LargePortraitLayout: Boolean; // @offset $100 Viewport is at least 1280x960; permits HD portraits or the table layout.
-    PortraitTableVisible: Boolean; // @offset $101 Large layout with UseTablesForGov; shows the table and standard portrait animations.
     procedure AdvanceTextPresentation(Timer: PCallbackTimerGI; UserData: Integer); // @addr $5A9758
     procedure PortraitCycleComplete(Sender: TObjectGI); // @addr $5A9BE0
     procedure SelectPortraitAnimation(Alternate: Boolean); // @addr $5A9C1C
@@ -63,18 +74,8 @@ type
     procedure ChoiceMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $5A9504
     procedure ChoiceMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $5A9584
     function CreateChoiceBullet(LabelControl: TLabelGI; Item: PFontObjectEC): TObjectGI; // @addr $5A9E90
-    StationTransientControl: TObjectGI; // @offset $104
-    SavedChoiceScroll: Integer; // @offset $108
-    NextPortraitCycleAlternate: Boolean; // @offset $EC
-    StationPanel: TfPanelRuins; // @offset $D4 Owned.
-    LoadPanel: TfPanelLoad; // @offset $D8 Owned.
     constructor Create; // @addr $5A60C0
     destructor Destroy; override; // @addr $5A612C
-    ChoiceHeight: Integer; // @offset $E8 Accumulated dialogue-choice row height.
-    DialogText: WideString; // @offset 0xDC
-    ShowArrivalVideo: Boolean; // @offset $ED Set after docked hyperspace travel; OnOpen tests this together with SkipVideo.
-    ScriptVideoStartedAt: Cardinal; // @offset $F0 timeGetTime timestamp used by the queued-video callback.
-    ScriptVideoTimer: PCallbackTimerGI; // @offset $F4
     procedure AdvanceScriptVideo(Timer: PCallbackTimerGI; UserData: Integer); // @addr $5AA424 Advances Film over the native 138-second interval.
 
     procedure OnClose; override; // @addr $5A7D4C

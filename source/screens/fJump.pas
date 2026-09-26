@@ -12,10 +12,10 @@ type
     LoadingStarted: Boolean; // @offset $D4
     NoPendingLoads: Boolean; // @offset $D5
     Progress: Single; // @offset $D8
-    RestoreOrdersOnArrival: Boolean; // @offset $E8
     LoadPanel: TfPanelLoad; // @offset 0xDC
     MovieStartTick: Cardinal; // @offset 0xE0
     MovieTimer: PCallbackTimerGI; // @offset 0xE4
+    RestoreOrdersOnArrival: Boolean; // @offset $E8
 
     constructor Create; // @addr 0x670A7C
     destructor Destroy; override; // @addr 0x670AD4

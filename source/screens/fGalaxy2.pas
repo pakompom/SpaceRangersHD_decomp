@@ -10,7 +10,6 @@ type
   public
     MapPanel: TPanelGI; // @offset 0xD4
     ViewMode: Byte; // @offset $D8 1 for modal HUD navigation, 2 for the star-map transition.
-    CapturePreviewOnOpen: Boolean; // @offset $134 Set by CaptureGalaxyPreview; consumed by OnOpen.
     HideBuffer: TGraphBufGI; // @offset 0xDC
     MapPixelBounds: TRect; // @offset 0xE0  Right and Bottom are treated as inclusive by projection.
     GalaxyOrigin: TPointF; // @offset 0xF0
@@ -26,6 +25,7 @@ type
     JumpDestinationLabel: TLabelGI; // @offset 0x120
     JumpAnimation: TgaiGI; // @offset 0x124
     JumpLightImages: array[0..2] of TImageGI; // @offset 0x128
+    CapturePreviewOnOpen: Boolean; // @offset $134 Set by CaptureGalaxyPreview; consumed by OnOpen.
     CreateMarkerButton: TGraphButtonGI; // @offset 0x138
     CreateMarkerImagePath: WideString; // @offset 0x13C
     CreateMarkerActiveImagePath: WideString; // @offset 0x140

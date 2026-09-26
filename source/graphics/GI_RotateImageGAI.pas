@@ -12,12 +12,19 @@ type
     RotationCache: TCRotateBufControlEC; // @offset $124
     RotatedImage: TGraphBufPalGR; // @offset $128
     RenderedAngle: Byte; // @offset $12C
+    Angle: Byte; // @offset $12D
+    Alpha: Byte; // @offset $12E
+    ImageDirty: Boolean; // @offset $12F
     RenderedFrameIndex: Integer; // @offset $130
+    FrameIndex: Integer; // @offset $134
+    FrameCount: Integer; // @offset $138
     FrameIndexTable: PInteger; // @offset $13C
     FrameDelayTable: PInteger; // @offset $140
+    AnimationIndex: Integer; // @offset $144
     ImageSize: TPoint; // @offset $148
     Vertices: array[0..3] of TScreenVertexGR; // @offset $150
     FrameTexture: IDirect3DTexture9; // @offset $1C0
+
     destructor Destroy; override; // @addr $49716C
     procedure Clear; override; // @addr $497200
     procedure ClearFrameSequence; // @addr $497750
@@ -27,12 +34,6 @@ type
     procedure LoadImageProperties(Block: TBlockParEC); // @addr $497884
     procedure Draw(ClipRect: TRect); override; // @addr $497BE4
     procedure QueueImageLoad(PendingLoads: TList); override; // @addr $498428
-    Angle: Byte; // @offset $12D
-    Alpha: Byte; // @offset $12E
-    ImageDirty: Boolean; // @offset $12F
-    FrameIndex: Integer; // @offset $134
-    FrameCount: Integer; // @offset $138
-    AnimationIndex: Integer; // @offset $144
     procedure SetAngle(Value: Byte); // @addr $497250
     procedure SetAlpha(Value: Byte); // @addr $497290
     procedure SetFrame(Value: Integer); // @addr $497710

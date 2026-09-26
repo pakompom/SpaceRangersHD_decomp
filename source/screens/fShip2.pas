@@ -24,11 +24,8 @@ type
 
   TfShip2 = class(TMessageLoopGIWithMainPanel) // @size 0x588
   public
-    function CanUseLocalStorage: Boolean; // @addr $6F5A10 Native Self/result stack ordering establishes this as a method.
-    function GetLocalStorageOwner: TObject; // @addr $6F5A70 Borrows the current planet or docked ship.
-    function SlotToTip(SlotName: WideString): TItemType; // @addr 0x6F7FBC @note "Matches the second underscore-delimited component against eight equipment slot names; raises on no match."
-    PlayServiceAnimations: Boolean; // @offset $D5 Restarts active hull/equipment repair animations on the next OnOpen.
     ReopenRequested: Boolean; // @offset $D4 Requests a background refresh and another ship-screen pass; OnOpen selects the script re-entry events.
+    PlayServiceAnimations: Boolean; // @offset $D5 Restarts active hull/equipment repair animations on the next OnOpen.
     ItemInfoWindow: TWindowGI; // @offset 0xD8
     ItemImage: TImageGI; // @offset 0xDC
     ItemNameLabel: TLabelGI; // @offset 0xE0
@@ -41,75 +38,90 @@ type
     FreeSkillPointsLabel: TLabelGI; // @offset 0xFC
     ExperienceLabel: TLabelGI; // @offset 0x100
     SkillImages: array[0..5] of TImageGI; // @offset 0x104
+    SkillImagesP: array[0..5] of TImageGI; // @offset $11C
+    SkillImagesN: array[0..5] of TImageGI; // @offset $134
     SkillPanels: array[0..5] of TPanelGI; // @offset 0x14C
     SkillImageRestTop: array[0..5] of Integer; // @offset 0x164
     SkillButtons: array[0..5] of TGraphButtonGI; // @offset 0x17C
     SkillValueLabels: array[0..5] of TLabelGI; // @offset 0x194
+    SkillProgressImages: array[0..5] of TImageGI; // @offset $1AC
+    SkillGainImages: array[0..5] of TImageGI; // @offset $1C4
     HoldSlotZones: array[0..5] of TZoneGI; // @offset 0x1DC
+    EquipmentSlotZones: array[0..7,0..4] of TZoneGI; // @offset $1F4 Five slots per equipment category.
+    EquipmentSlotAnimations: array[0..7,0..4] of TgaiGI; // @offset $294 Five slots per equipment category.
+    ArtefactSlotZones: array of TZoneGI; // @offset $334 Dynamically sized to the ship's artefact slot count.
     BackgroundBuffer: TGraphBufGI; // @offset 0x338
+    ExitButton: TGraphButtonGI; // @offset $33C
     RewardsBuffer: TGraphBufGI; // @offset 0x340
     RewardsWindow: TWindowGI; // @offset $344 Verified by InitializeLayout assigning RewardWnd.
+    HoldFirstIndex: Integer; // @offset $348
     SelectedHoldKind: TPlayerHoldKind; // @offset $34C Reset by the main menu's New handler.
     SelectedGoodsIndex: Byte; // @offset $350 Selected goods type.
     SelectedGoodsQuantity: Integer; // @offset $354 Selected goods quantity.
     SelectedGoodsCost: Integer; // @offset $358 Total purchase cost of the selected goods.
-    ItemImageCenter: TPoint; // @offset $398 Used by the shared item/arena hover panels.
-    ItemSizeLabelPosition: TPoint; // @offset $3A0 Offset from the information window's bottom.
-    ItemPriceLabelPosition: TPoint; // @offset $3A8 Offset from the information window's bottom.
-    ItemRaceImagePosition: TPoint; // @offset $3B0 Offset from the information window's bottom-right corner.
     SelectedHoldItem: TItem; // @offset $35C Selected equipment or artefact; nil for goods.
-
-    PreserveSpaceMusic: Boolean; // @offset $3BD Suppresses space-music changes in SelectMusic.
-    ShipStateChanged: Boolean; // @offset $3BC Accumulates changes across modal reopenings so callers refresh ship information and cargo controls.
-    PropertyHintRightEdge: Integer; // @offset $47C Captured RankWnd left edge; the scanner positions its property window immediately to its left.
-    ShipToInspect: TShip; // @offset $49C Native OnOpen selects this ship when non-nil.
-    ShipLoopSound: TSoundBufferControl; // @offset $48C
-    ScriptVideoStartedAt: Cardinal; // @offset $480
-    ScriptVideoTimer: PCallbackTimerGI; // @offset $484
-    RemoteHoldMode: Boolean; // @offset $4A4 ToggleRemoteHoldClicked switches between equipment/local cargo and the remote-hold panels.
-
-    SkillImagesP: array[0..5] of TImageGI; // @offset $11C
-    SkillImagesN: array[0..5] of TImageGI; // @offset $134
-    SkillProgressImages: array[0..5] of TImageGI; // @offset $1AC
-    SkillGainImages: array[0..5] of TImageGI; // @offset $1C4
-    ExitButton: TGraphButtonGI; // @offset $33C
+    SelectedHoldOrigin: Integer; // @offset $360 Zero is ship inventory; nonzero returns to local storage.
+    SelectedHoldSlot: Integer; // @offset $364 Original hold/storage index; negative values encode equipment slots as -slot-1.
+    SelectedHoldUsesDisplayOrder: Boolean; // @offset $368 Interpret SelectedHoldSlot as a persistent display order.
+    RightPanelSlideTimer: PCallbackTimerGI; // @offset $36C
+    RightPanelSlideStep: Integer; // @offset $370
     PanelSlideWidth: Integer; // @offset $374
     RightPanelRestLeft: Integer; // @offset $378
     DestrPanelSlideWidth: Integer; // @offset $37C
     DestrPanelRestLeft: Integer; // @offset $380
-    ShipImageCenter: TPoint; // @offset $390
-    GateLeftRestLeft: Integer; // @offset $3DC
-    GateRightRestLeft: Integer; // @offset $3E0
-    UseLeftRestLeft: Integer; // @offset $3EC
-    UseRightRestLeft: Integer; // @offset $3F0
-    StorageImages: array[0..20] of TImageGI; // @offset $410
-    StorageUpButton: TGraphButtonGI; // @offset $464
-    StoragePanelSlideHeight: Integer; // @offset $470
-    StoragePanelRestTop: Integer; // @offset $474
-    SavedCaptainFrame: Integer; // @offset $494
-    RemoteHoldVisible: Boolean; // @offset $498
-    RemoteHoldImages: array[0..54] of TImageGI; // @offset $4A8
-
-    HoldFirstIndex: Integer; // @offset $348
-    HoldScrollTimer: PCallbackTimerGI; // @offset $488
-    RemoteHoldFirstOrder: Integer; // @offset $584
-    StorageSlideTimer: PCallbackTimerGI; // @offset $468
-    GateSlideTimer: PCallbackTimerGI; // @offset $3D4
-    UseSlideTimer: PCallbackTimerGI; // @offset $3E4
-    StorageSlideOffset: Integer; // @offset $46C
-    StorageFirstSlot: Integer; // @offset $478
-    SavedShipExperience: Integer; // @offset $4A0
     NativeTimer384: PCallbackTimerGI; // @offset $384
     ItemInfoHideTimer: PCallbackTimerGI; // @offset $388
     PropertyInfoHideTimer: PCallbackTimerGI; // @offset $38C
+    ShipImageCenter: TPoint; // @offset $390
+    ItemImageCenter: TPoint; // @offset $398 Used by the shared item/arena hover panels.
+    ItemSizeLabelPosition: TPoint; // @offset $3A0 Offset from the information window's bottom.
+    ItemPriceLabelPosition: TPoint; // @offset $3A8 Offset from the information window's bottom.
+    ItemRaceImagePosition: TPoint; // @offset $3B0 Offset from the information window's bottom-right corner.
+    DisplayedItemKey: Integer; // @offset $3B8 Zero for no item, Good+1 for hold goods, or an item pointer for equipment/storage.
+    ShipStateChanged: Boolean; // @offset $3BC Accumulates changes across modal reopenings so callers refresh ship information and cargo controls.
+    PreserveSpaceMusic: Boolean; // @offset $3BD Suppresses space-music changes in SelectMusic.
+    SelectedReward: Integer; // @offset $3C0
+    MoneyWarningVisible: Boolean; // @offset $3C4
+    MoneyWarningTicks: Integer; // @offset $3C8
     MoneyWarningTimer: PCallbackTimerGI; // @offset $3CC
+    HoveredEquipmentAnimation: TgaiGI; // @offset $3D0
+    GateSlideTimer: PCallbackTimerGI; // @offset $3D4
+    GateSlideOffset: Integer; // @offset $3D8
+    GateLeftRestLeft: Integer; // @offset $3DC
+    GateRightRestLeft: Integer; // @offset $3E0
+    UseSlideTimer: PCallbackTimerGI; // @offset $3E4
+    UseSlideOffset: Integer; // @offset $3E8
+    UseLeftRestLeft: Integer; // @offset $3EC
+    UseRightRestLeft: Integer; // @offset $3F0
     UsePanelSlideTimer: PCallbackTimerGI; // @offset $3F4
+    UsePanelSlideOffset: Integer; // @offset $3F8
     SpecialSlot1Timer: PCallbackTimerGI; // @offset $404
     SpecialSlot2Timer: PCallbackTimerGI; // @offset $408
     SpecialSlot3Timer: PCallbackTimerGI; // @offset $40C
-    RightPanelSlideTimer: PCallbackTimerGI; // @offset $36C
-    GateSlideOffset: Integer; // @offset $3D8
-    UseSlideOffset: Integer; // @offset $3E8
+    StorageImages: array[0..20] of TImageGI; // @offset $410
+    StorageUpButton: TGraphButtonGI; // @offset $464
+    StorageSlideTimer: PCallbackTimerGI; // @offset $468
+    StorageSlideOffset: Integer; // @offset $46C
+    StoragePanelSlideHeight: Integer; // @offset $470
+    StoragePanelRestTop: Integer; // @offset $474
+    StorageFirstSlot: Integer; // @offset $478
+    PropertyHintRightEdge: Integer; // @offset $47C Captured RankWnd left edge; the scanner positions its property window immediately to its left.
+    ScriptVideoStartedAt: Cardinal; // @offset $480
+    ScriptVideoTimer: PCallbackTimerGI; // @offset $484
+    HoldScrollTimer: PCallbackTimerGI; // @offset $488
+    ShipLoopSound: TSoundBufferControl; // @offset $48C
+    HighlightRepairableEquipment: Boolean; // @offset $490
+    SavedCaptainFrame: Integer; // @offset $494
+    RemoteHoldVisible: Boolean; // @offset $498
+    ShipToInspect: TShip; // @offset $49C Native OnOpen selects this ship when non-nil.
+    SavedShipExperience: Integer; // @offset $4A0
+    RemoteHoldMode: Boolean; // @offset $4A4 ToggleRemoteHoldClicked switches between equipment/local cargo and the remote-hold panels.
+    RemoteHoldImages: array[0..54] of TImageGI; // @offset $4A8
+    RemoteHoldFirstOrder: Integer; // @offset $584
+
+    function CanUseLocalStorage: Boolean; // @addr $6F5A10 Native Self/result stack ordering establishes this as a method.
+    function GetLocalStorageOwner: TObject; // @addr $6F5A70 Borrows the current planet or docked ship.
+    function SlotToTip(SlotName: WideString): TItemType; // @addr 0x6F7FBC @note "Matches the second underscore-delimited component against eight equipment slot names; raises on no match."
     constructor Create; // @addr 0x6F1284
     destructor Destroy; override; // @addr 0x6F132C
     procedure ProcessWindowMessage(Message, WParam: Cardinal; LParam: Integer); override; // @addr 0x71179C
@@ -192,9 +204,6 @@ type
     procedure SlideRightPanelTimer(Timer: PCallbackTimerGI; UserData: Integer); // @addr $6F669C
     procedure RewardsMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $6F6854
     procedure UpdateInfoHint(First, Second: Integer); // @addr $6F7FA8 Native empty three-register method; argument purposes unresolved.
-    RightPanelSlideStep: Integer; // @offset $370
-    UsePanelSlideOffset: Integer; // @offset $3F8
-    SelectedReward: Integer; // @offset $3C0
     procedure ShipNameMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $6F6974
     procedure RefreshEquipmentConfigurationButtons; // @addr $701A5C
     procedure SlideUsePanelTimer(Timer: PCallbackTimerGI; UserData: Integer); // @addr $70DF90
@@ -210,24 +219,15 @@ type
     procedure OpenSpecialSlot3; // @addr $70E638
     procedure CloseSpecialSlot3; // @addr $70E710
     procedure AnimateSpecialSlot3(Timer: PCallbackTimerGI; UserData: Integer); // @addr $70E7B0
-    SelectedHoldOrigin: Integer; // @offset $360 Zero is ship inventory; nonzero returns to local storage.
-    SelectedHoldSlot: Integer; // @offset $364 Original hold/storage index; negative values encode equipment slots as -slot-1.
-    SelectedHoldUsesDisplayOrder: Boolean; // @offset $368 Interpret SelectedHoldSlot as a persistent display order.
     function IsCompatibleSlot(ItemType, SlotType: TItemType): Boolean; // @addr $6F808C
     procedure RefreshActionPanels(Kind: TPlayerHoldKind; Good: Byte; Quantity, Cost: Integer; Item: TItem; Origin: Integer); // @addr $6FBB30
-    EquipmentSlotZones: array[0..7,0..4] of TZoneGI; // @offset $1F4 Five slots per equipment category.
-    EquipmentSlotAnimations: array[0..7,0..4] of TgaiGI; // @offset $294 Five slots per equipment category.
     procedure RefreshEquipmentSlotControls; // @addr $6F80C8
     procedure ShowShipPropertyInfo(Sender: TObjectGI); // @addr $6F6AC8
     procedure TrainSkillClicked(Sender: TObjectGI); // @addr $6FCCA4
     procedure RepairAllClicked(Sender: TObjectGI); // @addr $708854
-    HighlightRepairableEquipment: Boolean; // @offset $490
     procedure RepairAllMouseEnter(Sender: TObjectGI); // @addr $7092BC
     procedure RepairAllMouseLeave(Sender: TObjectGI); // @addr $70932C
-    DisplayedItemKey: Integer; // @offset $3B8 Zero for no item, Good+1 for hold goods, or an item pointer for equipment/storage.
     procedure HideItemInfo(Timer: PCallbackTimerGI; UserData: Integer); // @addr $70A8F0
-    MoneyWarningVisible: Boolean; // @offset $3C4
-    MoneyWarningTicks: Integer; // @offset $3C8
     procedure HideShipPropertyInfo(Sender: TObjectGI); // @addr $6F7F70
     procedure ToggleAfterburner(Sender: TObjectGI); // @addr $709D28
     procedure ShowItemInfo; // @addr $709ED8
@@ -249,8 +249,6 @@ type
     procedure EquipmentSlotMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $6FCE0C
     procedure ArtefactSlotMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $6FDC50
     procedure UseOnArtefactSlot(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $6FDF68
-    ArtefactSlotZones: array of TZoneGI; // @offset $334 Dynamically sized to the ship's artefact slot count.
-    HoveredEquipmentAnimation: TgaiGI; // @offset $3D0
     procedure ShowEquipmentInfo(Item: TItem; FromStorage: Boolean); // @addr $70B1A0
     procedure ShowHoldGoodsInfo(Good: Byte); // @addr $70C680
     procedure ShowStoredGoodsInfo(Goods: TGoods); // @addr $70CF50
@@ -4128,7 +4126,7 @@ var
     else
     begin
       Slot := -1;
-      if SelectedHoldItem.ItemType in [t_FuelTanks..t_DefGenerator] then Slot := Ord(SelectedHoldItem.ItemType) - 42
+      if SelectedHoldItem.ItemType in [t_FuelTanks..t_DefGenerator] then Slot := Ord(SelectedHoldItem.ItemType) - Ord(t_Hull)
       else if SelectedHoldItem.ItemType in [t_IndustrialLaser..t_CustomWeapon] then Slot := 8;
       if Slot < 0 then Exit;
       if Slot >= 8 then

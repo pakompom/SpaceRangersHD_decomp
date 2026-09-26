@@ -187,6 +187,7 @@ type
     procedure LoadFromBuffer(Buffer: TBufEC; Galaxy: TGalaxy); // @addr 0x7D3FD8 @note "Creates the owned item; overwrites a previous Item without freeing it."
   end;
 
+  // Ship, planet and item values are Pointer in this unit because aShip, aPlanet and aItem use it.
   TGalaxy = class(TObjectEx) // @size 0x1DC
   public
     NextConstellationId: Cardinal; // @offset 0x04

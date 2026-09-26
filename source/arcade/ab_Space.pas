@@ -19,16 +19,17 @@ type
     Color2C: Cardinal; // @offset $2C
     Color30: Cardinal; // @offset $30
     Color34: Cardinal; // @offset $34
+    AppearanceIndex: Integer; // @offset $38 Six difficulty/visual variants, each with six palette entries.
     MapPath: WideString; // @offset $3C Arena resource path.
     BoundaryKind: Integer; // @offset $40 1 for the synthetic start/end nodes.
     PortalSlotCount: Integer; // @offset $44 Used by exit-index shuffling; initializer still under review.
-    AppearanceIndex: Integer; // @offset $38 Six difficulty/visual variants, each with six palette entries.
     Danger: Double; // @offset $48 Local encounter difficulty, used for danger text, visuals and rewards.
     ApproachDanger: Double; // @offset $50 Minimum accumulated predecessor danger, followed by graph pruning.
     RouteCost: Double; // @offset $58 Temporary reverse-search cost for the selected route.
     Objects: TList; // @offset $60 Owned objects associated with this space.
     ImageActive: Boolean; // @offset $64
     Image: TgaiGI; // @offset $68
+
     constructor Create; // @addr $54F6E8
     destructor Destroy; override; // @addr $54F774
     procedure UpdateVisuals; // @addr $54F7DC Empty native update hook.

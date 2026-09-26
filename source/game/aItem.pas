@@ -59,6 +59,7 @@ type
   end;
   PExtraSpecial = ^TExtraSpecial;
 
+  // Ship-valued parameters and fields are Pointer because aShip uses this unit.
   TItem = class;
   TEquipment = class;
   THull = class;

@@ -13,12 +13,13 @@ type
     Animation: TgaiGI; // @offset $54
     MapImage: TImageGI; // @offset $58
     SavedSequenceFrameIndex: Integer; // @offset $5C
+    State: Integer; // @offset $60
+    HitRadius: Integer; // @offset $64 Used by star-map film-object hit testing.
     GalaxyImagePath: WideString; // @offset $68
     GalaxyPriority: Integer; // @offset $6C
     NameTextPath: WideString; // @offset $70 Localization key read by TfStarMap.ShowFilmObjectInfo.
     InfoTextPath: WideString; // @offset $74 Localization key read by TfStarMap.ShowFilmObjectInfo.
-    State: Integer; // @offset $60
-    HitRadius: Integer; // @offset $64 Used by star-map film-object hit testing.
+
     procedure AttachToSpace(ASpace: TSpaceSE); override; // @addr $7ECCCC
     procedure DetachFromSpace; override; // @addr $7ECF38
     procedure SetPosition(APosition: TPointF); override; // @addr $7ECFD4

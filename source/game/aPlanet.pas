@@ -34,6 +34,7 @@ type
     procedure LoadFromBuffer(Buffer: TBufEC; Galaxy: TGalaxy); // @addr 0x77F944
   end;
 
+  // Ship-valued parameters and results are Pointer because aShip uses this unit.
   // VMT 0x77F804 confirms size. SaveToBuffer/LoadFromBuffer establish the
   // stored field widths; orbit doubles are serialized through Single precision.
   // The unaccessed +1C/+3C gaps align the following Double fields.
@@ -96,7 +97,7 @@ type
     constructor Create; // @addr 0x77FA30
     destructor Destroy; override; // @addr 0x77FB28
     procedure InitGenerated(Star: TStar; TotalPlanetCount, InhabitedCountOrSpecialMode: Integer); // @addr 0x77FCA8 @note "Fourth argument: 0 selects the Solar System, 1..3 limit inhabited planets, 10/11 select special systems. Caller inserts Self into the star's planet list."
-    procedure InitDominatorSpawnProxy(Star: TStar); // @addr 0x783378 @note "Only sets CurrentStar, OwnerId=5 and all invention levels to 8; used by the separate Dominator spawn planet."
+    procedure InitDominatorSpawnProxy(Star: TStar); // @addr 0x783378 @note "Only sets CurrentStar, OwnerId to oiDominator and all invention levels to 8; used by the separate Dominator spawn planet."
     procedure InitGeneratedUninhabited(Star: TStar); // @addr 0x7833B4 @note "Creates graphics, surface terrain, loot and initial market/research state; caller owns planet registration."
     procedure SaveToBuffer(Buffer: TBufEC); // @addr 0x785188
     procedure LoadFromBlock(Block: TBlockParEC); // @addr 0x78785C @note "Loads editable text fields, updates existing items/ships and processes creation requests. The first matching item name ends the search even when its type is disallowed or creation returns nil."
@@ -106,11 +107,11 @@ type
     procedure TryDispatchPirateAttacks; // @addr 0x78B9B4 @note "Uses Self's random state for galaxy-wide attacks; disabled by pirate ending 3."
     procedure TrySpawnPirateBaseRaid; // @addr 0x78BF90 @note "Targets a pirate base in a Coalition system; disabled by pirate endings 3 and 5."
     function BuyRanger(MoneyPercent: Integer): Pointer; // @addr 0x790A58
-    function SpawnTransport(Kind: Byte; MoneyPercent: Integer): Pointer; // @addr 0x790B90 @note "Kind 0 randomizes the subtype, 3 selects transport, 4 liner, and all others diplomat. Result is owned by CurrentStar.Ships."
+    function SpawnTransport(Kind: Byte; MoneyPercent: Integer): Pointer; // @addr 0x790B90 @note "Kind 0 randomizes the subtype; otherwise it holds a THullType: htTransport selects transport, htLiner liner, and all others diplomat. Result is owned by CurrentStar.Ships."
     function BuyWarrior(MoneyPercent: Integer): Pointer; // @addr 0x790DB4 @note "Creates a TPirate for Pirate Clan ownership, otherwise a TWarrior."
     function BuyPirate(MoneyPercent: Integer): Pointer; // @addr 0x790C90
     function SpawnTranclucator(BasicEquipment: Boolean): Pointer; // @addr 0x790D50 @note "Creates an unowned Tranclucator docked here and inserts it into CurrentStar.Ships."
-    function BuyFlagship(MoneyPercent: Integer): Pointer; // @addr 0x791124 @note "Generates a warrior with WarriorType=1 and scales its budget by Coalition control."
+    function BuyFlagship(MoneyPercent: Integer): Pointer; // @addr 0x791124 @note "Generates a wtFlagship warrior and scales its budget by Coalition control."
     function SpawnWeightedDominatorShip: Pointer; // @addr 0x7912D0 @note "Excludes boss type; suppresses Bertors when the constellation already has one of this series or Self is the spawn proxy."
     function SpawnDominatorShip(Kind: TKlingType): Pointer; // @addr 0x79146C
     function GenerateShipForScriptGroup(Group: Pointer): Pointer; // @addr 0x79150C @note "Uses group owner/type/equipment constraints; returns nil for a boss request. Temporarily changes planet ownership, star series and global technology."
@@ -133,14 +134,14 @@ type
     function GetNativeRaceName: WideString; // @addr 0x78FACC @note "Localized DisplayName for RaceToOwner(RaceId)."
     function GetFactionResourceName: WideString; // @addr 0x78FB00 @note "Faction/series/internal owner identifier used for resource selection."
     function CalculateBasePopulation: Integer; // @addr 0x78FC30 @note "Maps Radius 60..100 to population 100000..1000000 with clamping and rounding."
-    function CountPlanetsOfSameRace: Integer; // @addr 0x78FC78 @note "For OwnerId=6 counts all uninhabited planets; otherwise counts non-uninhabited planets with the same RaceId. Includes Self."
+    function CountPlanetsOfSameRace: Integer; // @addr 0x78FC78 @note "For oiUninhabited counts all uninhabited planets; otherwise counts non-uninhabited planets with the same RaceId. Includes Self."
     function FindUnchartedNeighborConstellation: TConstellation; // @addr 0x78FD04 @note "First adjacent invisible constellation, excluding ID 20; borrowed result or nil."
     function FindNearestPlanetByOwnerMask(OwnerMask: TOwnerMask): TPlanet; // @addr 0x78FD8C @note "Searches stars in CurrentStar's distance order, then each star's planet list; no planet-distance tie break."
     procedure NormalizeSurfaceLootEntries; // @addr 0x78FE3C @note "Sorts by SurfaceTileIndex and moves overlapping markers to free cells of the 14-by-7 display grid."
     function GetTotalSurfaceTileCount: Integer; // @addr 0x79021C
-    function GetUnexploredSurfaceTileCount: Integer; // @addr 0x79024C @note "Returns zero unless OwnerId=6."
+    function GetUnexploredSurfaceTileCount: Integer; // @addr 0x79024C @note "Returns zero unless OwnerId is oiUninhabited."
     function AddSurfaceLootEntry(Item: TItem): Boolean; // @addr 0x790294 @note "Takes item ownership, allocates a 12-byte entry and always returns true on completion. Requires positive surface area; resets exploration if fully explored."
-    function TryResetSurfaceLootAfterLongAbsence: Boolean; // @addr 0x7904B0 @note "Requires OwnerId=6, at least 720 days without a player visit and no deployed player probe here. Clears unavailable loot flags and resets exploration if any flag changed."
+    function TryResetSurfaceLootAfterLongAbsence: Boolean; // @addr 0x7904B0 @note "Requires oiUninhabited, at least 720 days without a player visit, at most 40% of surface tiles unexplored and no deployed player probe here. Clears unavailable flags on loot the player can access and resets exploration if any flag changed."
     procedure BoostInventionLevels(Count: Integer); // @addr 0x7905D4 @note "Increments the current track, clears its progress and selects the next track after every increment."
     procedure SelectCurrentInvention; // @addr 0x79061C @note "Chooses among tracks permitted by ResearchLevelPercent and the piMainTech track; raises if no choice is found."
     procedure AdvanceInventionProgress; // @addr 0x790788 @note "Uses the difficulty multiplier; completion requires progress strictly above 100. Levels cap at 8 and excess progress is discarded."
@@ -2841,9 +2842,6 @@ end;
 
 { @routine $78CB00 TPlanet_UpdateMarketState }
 procedure TPlanet.UpdateMarketState;
-{ The entire procedure is reconstructed Pascal, without assembler or byte patches.
-  Local order, Single intermediates, inlined Math overloads, set construction,
-  case ranges and expression grouping reproduce the native instruction stream. }
 var
   ItemType: Byte;
   TargetPrice, PriceStep, EconomyFactor: Single;
@@ -3775,8 +3773,8 @@ begin
   if Kind = 0 then Transport.InitGenerated(Self, Budget, ttTransport, True)
   else
   begin
-    if Kind = 3 then SubType := ttTransport
-    else if Kind = 4 then SubType := ttLiner
+    if Kind = Byte(htTransport) then SubType := ttTransport
+    else if Kind = Byte(htLiner) then SubType := ttLiner
     else SubType := ttDiplomat;
     Transport.InitGenerated(Self, Budget, SubType, False);
   end;

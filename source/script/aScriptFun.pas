@@ -4469,9 +4469,9 @@ begin
   begin
     if High(av) > 1 then
       case av[2].GetInt of
-        0: Kind := 3;
-        1: Kind := 4;
-        2: Kind := 5;
+        0: Kind := Byte(htTransport);
+        1: Kind := Byte(htLiner);
+        2: Kind := Byte(htDiplomat);
       else Kind := 0;
       end
     else Kind := 0;

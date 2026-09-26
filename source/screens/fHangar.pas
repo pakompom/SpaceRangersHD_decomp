@@ -20,12 +20,12 @@ type
     StationPanel: TfPanelRuins; // @offset 0xD8
     LoadPanel: TfPanelLoad; // @offset 0xDC
     ShipInfoWindow: TWindowGI; // @offset 0xE0
-    ShipSlots: array[0..8] of THangarShipSlot; // @offset 0xF8
     HoveredShip: TShip; // @offset $E4 Borrowed ship currently described by ShipInfoWindow.
     ShipInfoHideTimer: PCallbackTimerGI; // @offset $E8
     TakeOffPending: Boolean; // @offset $EC
     AmbientAnimationTimer: PCallbackTimerGI; // @offset $F0
     DockedShipsTimer: PCallbackTimerGI; // @offset $F4
+    ShipSlots: array[0..8] of THangarShipSlot; // @offset 0xF8
     SelectedShip: TShip; // @offset 0x1AC Borrowed inspected ship; forwarded to ShipScreen.ShipToInspect and used by CheatSkill.
 
     constructor Create; // @addr 0x669C7C

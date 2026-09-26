@@ -14,14 +14,13 @@ type
     FormattedTextLength: Integer; // @offset 0xE0
     DialogRefreshTimer: PCallbackTimerGI; // @offset 0xE4
     NextChoiceTop: Integer; // @offset 0xE8
+    AnimationRestartRequested: Boolean; // @offset $EC
     QuestOffer: TQuest; // @offset 0xF0
     QuestNegotiationLevel: Integer; // @offset 0x114  -1..1.
     QuestRewardStep: Integer; // @offset 0x118
     QuestDurationStep: Integer; // @offset 0x11C
-
     ScriptDialogNames: TStringsEC; // @offset $120 Script names with borrowed TScript data.
     ScriptDialogCursor: Integer; // @offset $124
-    AnimationRestartRequested: Boolean; // @offset $EC
     PlanetBattleMapId: Integer; // @offset $128
     PendingTransition: Integer; // @offset $12C 1=launch/exit to menu, 2=loss, 3=win, 4=cancel; launch is consumed on reopening.
     UseHdPortrait: Boolean; // @offset $130

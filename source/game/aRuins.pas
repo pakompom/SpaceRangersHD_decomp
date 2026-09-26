@@ -87,7 +87,7 @@ type
     function RelationToRanger(Ranger: Pointer): Byte; override; // @addr 0x7197B4 @slot 0x74 @note "Floors the stored relation at 50, except for the player when NoLanding is set."
     procedure ChangeRelationToRanger(Ranger: Pointer; Amount: Integer); override; // @addr 0x719830 @slot 0x78 @note "Positive changes receive the ranger's Charisma bonus; stored relation is clamped to 0..100."
     function RecomputeFearState: Boolean; override; // @addr 0x719CD0 @slot 0x84 @note "Returns false without changing InFear."
-    procedure RefreshCurrentStanding; override; // @addr 0x71AD30 @slot 0xC4 @note "Script state can force standing 9 or preserve the current value; type 13 has no default assignment."
+    procedure RefreshCurrentStanding; override; // @addr 0x71AD30 @slot 0xC4 @note "Script state can force ssCustom or preserve the current value; rstCustomStation has no default assignment."
 
     function TryStartAbductionCycle: Boolean; // @addr $71842C
     function EvaluateLocalForceBalance(Point: TPointF): Single; // @addr $718D1C

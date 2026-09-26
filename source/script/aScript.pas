@@ -190,7 +190,7 @@ type
     TargetValue2: TVarEC; // @offset 0x30  Second coordinate variable for spkCoordinates.
     function GetPoint: TPointF; // @addr 0x64FBA0
     function GetRandomPoint(Seed: Cardinal): TPointF; // @addr 0x65004C
-    function ShipInPlace(Ship: TShip): Boolean; // @addr 0x6501B4 @note "Kind 2 requires docking at the bound planet; other kinds require normal space."
+    function ShipInPlace(Ship: TShip): Boolean; // @addr 0x6501B4 @note "spkDockedPlanet requires docking at the bound planet; other kinds require normal space."
 
     constructor Create; // @addr 0x64FB28
     destructor Destroy; override; // @addr 0x64FB6C
@@ -547,7 +547,7 @@ function DecodeScriptEconomyMask(Value: Cardinal): TPlanetEconomies; // @addr 0x
 function DecodeScriptGovernmentMask(Value: Cardinal): TPlanetGovernments; // @addr 0x64EA64
 function DecodeScriptShipTypeMask(Value: Cardinal): TScriptShipTypeMask; // @addr 0x64EB40
 function DecodeScriptDominatorMask(Value: Cardinal; KlingType: TKlingType): TDominatorSeriesMask; // @addr 0x64ECA8
-function DecodeScriptItemOwner(Value: Integer): TOwnerId; // @addr 0x64F000 @note "Values outside 0..7 become owner 6."
+function DecodeScriptItemOwner(Value: Integer): TOwnerId; // @addr 0x64F000 @note "Values outside 0..7 become oiUninhabited."
 function DecodeScriptRelationLevel(Value: Integer): TRelationLevel; // @addr 0x64F074 @note "Values outside 0..4 become hostile."
 function ScriptShipMatchesType(Ship: TShip; ShipTypeMask: TScriptShipTypeMask; StationNames: WideString; DominatorMasks: array of TDominatorSeriesMask): Boolean; // @addr 0x64F0C4 @note "DominatorMasks requires eight entries indexed by TKlingType. StationNames is a comma-separated filter when ship-type bit 8 is set."
 function CollectScriptCandidateShips(Star: TStar): TList; // @addr 0x64F294 @note "Caller owns the list; ship references are borrowed."

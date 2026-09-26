@@ -687,7 +687,7 @@ type
     function CalculateSpeed: Integer; virtual; // @addr 0x77CA70 @slot 0x4C @calls "0x75FF76"
     function CountUnequippedDominatorEquipment: Integer; // @addr 0x769FE0 @note "Skips inventory index 0."
     function TrainSkill(Skill: TPilotSkill): Boolean; // @addr 0x77B8C4
-    procedure GainExperience(Amount: Integer; SourceKind: TExperienceSource); // @addr 0x77B558 @note "Source kind 0 bypasses diminishing returns."
+    procedure GainExperience(Amount: Integer; SourceKind: TExperienceSource); // @addr 0x77B558 @note "esUnscaled bypasses diminishing returns."
     procedure DepositCarriedNodes; // @addr 0x77B7B4 @note "Deposits every carried stack and awards experience."
   end;
 
@@ -12180,7 +12180,7 @@ function TShip.CanBoostArtefact(ArtefactType: TItemType; Item: TEquipment; Ignor
 var Equipment: TEquipment;
 
   // @nested $775CD4 IsArtefactBoostEquipment
-  function IsArtefactBoostEquipment(Item: TEquipment): Boolean; // @addr $775CD4 @note "Nested in CanBoostArtefact with unused caller-popped static link. OwnerId=6 and empty CustomFaction; nil returns false."
+  function IsArtefactBoostEquipment(Item: TEquipment): Boolean; // @addr $775CD4 @note "Nested in CanBoostArtefact with unused caller-popped static link. oiUninhabited owner and empty CustomFaction; nil returns false."
   begin
     Result := (Item <> nil) and (Item.OwnerId = oiUninhabited) and (Item.CustomFaction = '');
   end;

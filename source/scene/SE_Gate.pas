@@ -8,13 +8,9 @@ uses SE_Space, Types, Classes, EC_BlockPar, GI_MessageLoop, GI_RotateImageGAI, G
 type
   TGateSE = class(TObjectSE) // @size $74
   public
+    Angle: Byte; // @offset $4C
     State: Integer; // @offset $50
     StateStep: Integer; // @offset $54
-    procedure Open; // @addr $4D8B9C Changes idle state 0 to opening state 1.
-    procedure Close; // @addr $4D8BD8 Changes open state 2 to closing state 3.
-    procedure SetState(Value: Integer); // @addr $4D8C14 Resets StateStep and rebuilds attached graphics.
-    constructor Create(GraphKey: WideString; UnusedPosition: TPoint); // @addr $4D86B0
-    Angle: Byte; // @offset $4C
     LabelText: WideString; // @offset $58
     Image: TRotateImageGaiGI; // @offset $5C
     TextLabel: TLabelGI; // @offset $60
@@ -22,6 +18,11 @@ type
     TextGreen: Single; // @offset $68
     TextBlue: Single; // @offset $6C
     TickCount: Integer; // @offset $70
+
+    procedure Open; // @addr $4D8B9C Changes idle state 0 to opening state 1.
+    procedure Close; // @addr $4D8BD8 Changes open state 2 to closing state 3.
+    procedure SetState(Value: Integer); // @addr $4D8C14 Resets StateStep and rebuilds attached graphics.
+    constructor Create(GraphKey: WideString; UnusedPosition: TPoint); // @addr $4D86B0
     destructor Destroy; override; // @addr $4D8764
     procedure AttachToSpace(ASpace: TSpaceSE); override; // @addr $4D8798
     procedure DetachFromSpace; override; // @addr $4D8A3C
