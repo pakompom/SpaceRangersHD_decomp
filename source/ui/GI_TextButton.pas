@@ -1,6 +1,5 @@
 unit GI_TextButton;
 // Unit bracket (inferred): .text 0x0049C4F4..0x0049DC0D; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
-// Native class ownership follows reference/unit_ownership.json.
 
 
 interface

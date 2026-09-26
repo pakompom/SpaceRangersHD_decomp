@@ -513,7 +513,6 @@ begin
           LastIntersection := Intersection;
         end
         else
-          // Native $4DA8FC is this ANSI literal, not the former IDA nullsub_13.
           raise Exception.Create('Глюк! Линия пересекает полигон в трех точках');
       end;
     end;

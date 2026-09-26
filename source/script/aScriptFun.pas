@@ -657,8 +657,6 @@ procedure SF_MusicControls(av: array of TVarEC; code: TCodeEC); // @addr 0x62DC1
 procedure SF_BlinkingWarning(av: array of TVarEC; code: TCodeEC); // @addr 0x63EBF0
 procedure InitializeScriptBuiltinsAndConstants(Scope: TVarArrayEC); // @addr 0x641194
 
-// Nested helpers; ParentFrame is the compiler-supplied, caller-popped static link.
-
 implementation
 
 uses Classes, SysUtils, aMyFunction, aConst, aScript, aGalaxy, Globals,

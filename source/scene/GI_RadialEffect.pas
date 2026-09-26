@@ -62,9 +62,6 @@ var
     (X: 0.866025404; Y: 0.5), (X: 0.866025404; Y: -0.5),
     (X: 0; Y: -1), (X: -0.866025404; Y: -0.5)); // @addr $87BF40
 
-var
-  // Managed globals follow the verified native finalization order.
-
 implementation
 
 // @unit-initialization $877974

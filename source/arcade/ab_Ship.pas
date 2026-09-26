@@ -83,7 +83,7 @@ procedure ab_Ship_RepelOverlaps; // @addr $50476C
 var
   PlayerArcadeShip: TabShip = nil; // @addr $87AD00
   KellerArcadeShip: TabShip = nil; // @addr $87AD04
-  KellerAuxiliaryShip: TabShip = nil; // @addr $87AD08 Keeps Keller alive while present; exact visual role under review.
+  KellerAuxiliaryShip: TabShip = nil; // @addr $87AD08 Keeps Keller alive while non-nil.
 
 var
   ArcadePaused: Boolean; // @addr $88A414

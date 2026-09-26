@@ -175,19 +175,6 @@ type
     function HasHostileShipsInSystem: Boolean; // @addr 0x792DB0 @note "Tests normal-space ships in CurrentStar for RelationToShip < 10."
   end;
 
-// Nested in TPlanet.TryDispatchPirateAttacks. All four helpers receive its EBP
-// as a caller-popped static link, including calls between sibling helpers.
-// Captures relative to ParentFrame:
-//   -04 target star; -08 action; -0C target pirate count; -10 eligible source count;
-//   -14 source star; -18 target opposition count; -28 target pirate strength;
-//   -38 target opposition strength; -3C planet supplying RNG; -48 source pirate strength;
-//   -4C current ship; -50 dispatch limit; -54 ship index; -58 dispatched count.
-// All three captured strength values are ten-byte Extended, not Double.
-// Action 0 skips; 1 rebalances a Pirate system; 2 reinforces a threatened Pirate
-// system; 3 reinforces pirates in a foreign system; 4 starts a new attack.
-// Dispatch limit is count div 4 for action 1, otherwise count - count div 4.
-// Native loop tests dispatched <= limit, so it can send limit+1 eligible ships.
-
 var
   EconomicEventChance: Integer = 4; // @addr $87C7F8 Compared against an inclusive 0..100 roll for each economic event.
 
@@ -2439,6 +2426,15 @@ var
     Result := RemapClamped(Score, -10, 20, 0.8, 1.2);
   end;
 
+  // The dispatch helpers use caller-popped static links, including sibling calls.
+  // Captures relative to ParentFrame:
+  //   -04 target star; -08 action; -0C target pirate count; -10 eligible source count;
+  //   -14 source star; -18 target opposition count; -28 target pirate strength;
+  //   -38 target opposition strength; -3C planet supplying RNG; -48 source pirate strength;
+  //   -4C current ship; -50 dispatch limit; -54 ship index; -58 dispatched count.
+  // Captured strengths occupy ten-byte Extended slots.
+  // Action 0 skips; 1 rebalances a Pirate system; 2 reinforces a threatened Pirate
+  // system; 3 reinforces pirates in a foreign system; 4 starts a new attack.
   // @nested $78B3C0 SelectAction
   procedure SelectAction; // @addr 0x78B3C0 @ida "void __cdecl $name(void *ParentFrame);" @note "Writes the captured action. Can replace action 1 with 2; otherwise a failed condition preserves the prior action."
   begin
@@ -2517,6 +2513,7 @@ var
     if Action = 1 then DispatchLimit := Quarter else DispatchLimit := EligibleShips - Quarter;
     ShipIndex := 0;
     Dispatched := 0;
+    // The inclusive limit can send one extra eligible ship.
     while (ShipIndex < SourceStar.Ships.Count) and (Dispatched <= DispatchLimit) and (DispatchLimit > 0) do
     begin
       Ship := TShip(SourceStar.Ships[ShipIndex]);

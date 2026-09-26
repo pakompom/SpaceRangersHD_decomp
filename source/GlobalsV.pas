@@ -86,15 +86,6 @@ function GetRegisteredScreenLoop(ScreenId: TGameScreenId): TObject; // @addr 0x4
 function IsSpaceBackdropScreen(ScreenId: TGameScreenId): Boolean; // @addr 0x45E8F4
 function ScreenUsesCompositeLoadAssets(ScreenId: TGameScreenId): Boolean; // @addr 0x45E924
 
-
-var
-
-
-  // Module reference cells point to global storage, not directly to its objects.
-
-
-var
-  // Managed globals follow the verified native finalization order.
 var
   DumpLoadedConfig: Boolean = False; // @addr $87A7F0
   HalfGovAnim: Boolean = False; // @addr $87A7F4

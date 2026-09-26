@@ -248,8 +248,6 @@ begin
 end;
 { @end $6C7DEC }
 
-// Native reserves an unreferenced dword before its managed-string temporaries.
-// UnresolvedFrameBytes below preserves the matching frame and prologue push ECX.
 { @routine $6C84B0 TfGov_OnOpen }
 procedure TfGov.OnOpen;
 var

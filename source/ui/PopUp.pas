@@ -1,6 +1,5 @@
 unit PopUp;
 // Unit bracket (inferred): .text 0x004BA424..0x004BAD9F; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
-// Placement follows the reviewed PopUp association in reference/unit_ownership.json.
 // Native TfPopUpController VMT: $4BA470.
 
 interface

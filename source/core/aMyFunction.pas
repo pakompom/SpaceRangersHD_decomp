@@ -73,7 +73,6 @@ function SeededRandomFloatRange(Seed: Cardinal; BoundA, BoundB: Double): Double;
 function StepRandomSeed(Seed: Cardinal): Cardinal; // @addr 0x872454
 function AdvanceRandomSeed(var Seed: Cardinal): Cardinal; // @addr 0x872474
 function NextRandomIntRange(BoundA, BoundB: Integer; var Seed: Cardinal): Integer; // @addr 0x8724E8 @note "Chaotic mode leaves Seed unchanged."
-// Original source calls RndDoubleOut(BoundA, BoundB, FRndOut); see the market_match fixture evidence.
 function NextRandomFloatRange(BoundA, BoundB: Double; var Seed: Cardinal): Double; // @addr 0x8725C0 @ida "double __userpurge $name@<st0>(unsigned int *Seed@<eax>, double BoundA@<^8>, double BoundB@<^0>);" @note "Uses RandomFloatRange's endpoint quantization; chaotic mode leaves Seed unchanged."
 function NextRandomUnitFloat(var Seed: Cardinal): Double; // @addr 0x8726AC @note "Normally in [0,1). Chaotic mode leaves Seed unchanged and instead yields 0.001..1.001."
 function RemapClamped(Value, InMin, InMax, OutMin, OutMax: Double): Double; // @addr 0x87397C

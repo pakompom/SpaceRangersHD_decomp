@@ -96,8 +96,6 @@ type
   PStationEquipmentOfferQuotaTable = ^TStationEquipmentOfferQuotaTable;
 
   TWeaponRangeLevelFactors = array[1..8] of Single;
-  // These helpers copy a byte-aligned set parameter. The separately compiled
-  // aGalaxyStruct mask has the same bits but different DCU alignment.
   TItemTypeSelection = set of 0..79; // @size 10
   TScriptActionTypeNames = array[TScriptActionType] of WideString;
   TGoodsLegalityTable = array[TGoodsIndex, oiMaloc..oiGaal, TPlanetGovernment] of Boolean;
@@ -114,10 +112,6 @@ type
 
   TTransportTypeNameTable = array[0..2] of WideString;
   THullShipTypeMask = set of THullType; // @size $02 ht* hull-category bits, distinct from TShip.TypeId.
-
-var
-  // Native WideString defaults: initialization pairs $8381A4..$8382F8.
-  // Native WideString defaults: initialization pairs $83887C..$838A68.
 
 procedure IncrementWordSaturating(var Value: Word); // @addr $837B34
 function OwnerToSys(OwnerId: TOwnerId): WideString; // @addr $82E4EC
@@ -173,18 +167,12 @@ procedure ExpandLocalizedTextMarkupAndPrefixLines(var Text: WideString); // @add
 // starting at 1 (0 when the base lookup is empty). A missing suffix prevents reaching later ones.
 function PickLocalizedTextVariant(const Path: WideString; SeedOffset: Integer): WideString; // @addr 0x82FD44 @note "Selection uses (CurrentTurn + SeedOffset) div 10, except in chaotic mode. No variants produces an unavailable-text diagnostic."
 
-var
-  // Native managed-string initialization pairs at $838B94, $838B8C, $838B84.
-
 function RelationValueToLevel(Value: Byte): TRelationLevel; // @addr $82F30C Buckets 0..100; out-of-range values map to normal.
 
 function GetFactionEmblemPath(Faction: WideString): WideString; // @addr $82E458
 
 function FindMicroModuleTemplateByCustomTag(CustomTag: WideString): Integer; // @addr $82FF48 First matching template; -1 when absent.
 
-var
-
-// Managed declarations follow the verified native finalization order.
 var
   IntegrityDataBegin: Cardinal = 0; // @addr $87CD7C Four-byte zero boundary marker for the dormant native data checksum; original name unresolved.
 var

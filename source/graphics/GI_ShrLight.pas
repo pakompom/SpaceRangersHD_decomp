@@ -1,6 +1,5 @@
 unit GI_ShrLight;
 // Unit bracket (inferred): .text 0x004AFA00..0x004B00E2; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
-// Native class ownership follows reference/unit_ownership.json.
 
 interface
 

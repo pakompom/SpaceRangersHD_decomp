@@ -115,8 +115,6 @@ type
 
 function AcquireCachedFont(Control: TCacheControlEC): TCFontEC; // @addr 0x483C3C @note "Also clears the shared font's color stack, disables ARGB colors and enables color tags."
 
-// Nested helper of RenderTaggedTextToTexture; ParentFrame is compiler supplied.
-
 implementation
 
 uses EC_Mem, GR_DX, GR_Main, Math, SysUtils, Windows;

@@ -53,7 +53,7 @@ type
     BackgroundBuffer: TGraphBufGI; // @offset 0x338
     ExitButton: TGraphButtonGI; // @offset $33C
     RewardsBuffer: TGraphBufGI; // @offset 0x340
-    RewardsWindow: TWindowGI; // @offset $344 Verified by InitializeLayout assigning RewardWnd.
+    RewardsWindow: TWindowGI; // @offset $344
     HoldFirstIndex: Integer; // @offset $348
     SelectedHoldKind: TPlayerHoldKind; // @offset $34C Reset by the main menu's New handler.
     SelectedGoodsIndex: Byte; // @offset $350 Selected goods type.
@@ -139,42 +139,42 @@ type
     procedure LayoutItemInfo(Window: TWindowGI; Title, Text: TLabelGI; KeepMinimumHeight, WordWrap: Boolean; MinimumWidth: Integer); // @addr $70A9C4
     procedure LayoutObjectInfo(Window: TWindowGI; Title: TLabelGI; Left1, Right1, Left2, Right2, Left3, Right3, Left4, Right4, Left5, Right5, Left6, Right6, Left7, Right7, Left8, Right8: TLabelGI; Emblem: TObjectGI; KeepMinimumHeight: Boolean; MinimumWidth: Integer); // @addr $70AE84 Two-column planet/ship statistics, shared with live and recorded star-map panels.
     procedure CloseClicked(Sender: TObjectGI); // @addr $6F67F0 Checks integrity outside inspection mode, restores the return screen, closes and raises BreakUiMessage.
-    procedure EnterBridgeClicked(Sender: TObjectGI); // @addr $713C1C Verified callback assignment in InitializeLayout.
-    procedure HoldLeftReleased(Sender: TObjectGI); // @addr $7012EC Verified callback assignment in InitializeLayout.
-    procedure HoldLeftPressed(Sender: TObjectGI); // @addr $70127C Verified callback assignment in InitializeLayout.
-    procedure HoldRightReleased(Sender: TObjectGI); // @addr $701394 Verified callback assignment in InitializeLayout.
-    procedure HoldRightPressed(Sender: TObjectGI); // @addr $701324 Verified callback assignment in InitializeLayout.
+    procedure EnterBridgeClicked(Sender: TObjectGI); // @addr $713C1C
+    procedure HoldLeftReleased(Sender: TObjectGI); // @addr $7012EC
+    procedure HoldLeftPressed(Sender: TObjectGI); // @addr $70127C
+    procedure HoldRightReleased(Sender: TObjectGI); // @addr $701394
+    procedure HoldRightPressed(Sender: TObjectGI); // @addr $701324
     function ConfigureChameleon: Boolean; // @addr $701030
     procedure MainKeyDown(Sender: TObjectGI; Key: Cardinal); // @addr $701D58
-    procedure MainKeyUp(Sender: TObjectGI; Key: Cardinal); // @addr $702404 Verified callback assignment in InitializeLayout.
-    procedure MainLeftButtonUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $702784 Verified callback assignment in InitializeLayout.
-    procedure MainRightButtonDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $7030CC Verified callback assignment in InitializeLayout.
-    procedure GateMouseEnter(Sender: TObjectGI); // @addr $70D944 Verified callback assignment in InitializeLayout.
-    procedure GateMouseLeave(Sender: TObjectGI); // @addr $70D9A0 Verified callback assignment in InitializeLayout.
-    procedure GateMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $70DC0C Verified callback assignment in InitializeLayout.
-    procedure UseMouseEnter(Sender: TObjectGI); // @addr $70DC40 Verified callback assignment in InitializeLayout.
-    procedure UseMouseLeave(Sender: TObjectGI); // @addr $70DC70 Verified callback assignment in InitializeLayout.
+    procedure MainKeyUp(Sender: TObjectGI; Key: Cardinal); // @addr $702404
+    procedure MainLeftButtonUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $702784
+    procedure MainRightButtonDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $7030CC
+    procedure GateMouseEnter(Sender: TObjectGI); // @addr $70D944
+    procedure GateMouseLeave(Sender: TObjectGI); // @addr $70D9A0
+    procedure GateMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $70DC0C
+    procedure UseMouseEnter(Sender: TObjectGI); // @addr $70DC40
+    procedure UseMouseLeave(Sender: TObjectGI); // @addr $70DC70
     procedure DropSelectedInArcade; // @addr $705490 Transfers the selected cargo to arcade space, or destroys it in arcade view mode.
-    procedure UseMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $707618 Verified callback assignment in InitializeLayout.
-    procedure StorageUpClicked(Sender: TObjectGI); // @addr $70E9A4 Verified callback assignment in InitializeLayout.
-    procedure StorageDownClicked(Sender: TObjectGI); // @addr $70E900 Verified callback assignment in InitializeLayout.
-    procedure ToggleRemoteHoldClicked(Sender: TObjectGI); // @addr $711BEC Verified callback assignment in InitializeLayout.
-    procedure RemoteHoldItemMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $6FE338 Verified callback assignment in InitializeLayout.
-    procedure SortRemoteHoldClicked(Sender: TObjectGI); // @addr $7120C8 Verified callback assignment in InitializeLayout.
-    procedure RemoteHoldUpPressed(Sender: TObjectGI); // @addr $711DAC Verified callback assignment in InitializeLayout.
-    procedure RemoteHoldUpReleased(Sender: TObjectGI); // @addr $711E44 Verified callback assignment in InitializeLayout.
-    procedure RemoteHoldDownPressed(Sender: TObjectGI); // @addr $711E7C Verified callback assignment in InitializeLayout.
-    procedure RemoteHoldDownReleased(Sender: TObjectGI); // @addr $711F24 Verified callback assignment in InitializeLayout.
-    procedure StorageToShipClicked(Sender: TObjectGI); // @addr $7121D0 Verified callback assignment in InitializeLayout.
+    procedure UseMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $707618
+    procedure StorageUpClicked(Sender: TObjectGI); // @addr $70E9A4
+    procedure StorageDownClicked(Sender: TObjectGI); // @addr $70E900
+    procedure ToggleRemoteHoldClicked(Sender: TObjectGI); // @addr $711BEC
+    procedure RemoteHoldItemMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $6FE338
+    procedure SortRemoteHoldClicked(Sender: TObjectGI); // @addr $7120C8
+    procedure RemoteHoldUpPressed(Sender: TObjectGI); // @addr $711DAC
+    procedure RemoteHoldUpReleased(Sender: TObjectGI); // @addr $711E44
+    procedure RemoteHoldDownPressed(Sender: TObjectGI); // @addr $711E7C
+    procedure RemoteHoldDownReleased(Sender: TObjectGI); // @addr $711F24
+    procedure StorageToShipClicked(Sender: TObjectGI); // @addr $7121D0
     procedure SellStorageClicked(Sender: TObjectGI); // @addr $712294
-    procedure ShipToStorageClicked(Sender: TObjectGI); // @addr $7124F8 Verified callback assignment in InitializeLayout.
-    procedure SortStorageByTypeClicked(Sender: TObjectGI); // @addr $7125B8 Verified callback assignment in InitializeLayout.
-    procedure SortStorageBySizeClicked(Sender: TObjectGI); // @addr $7125DC Verified callback assignment in InitializeLayout.
-    procedure SortStorageByPriceClicked(Sender: TObjectGI); // @addr $712604 Verified callback assignment in InitializeLayout.
-    procedure LoadHoldRocketsClicked(Sender: TObjectGI); // @addr $71262C Verified callback assignment in InitializeLayout.
-    procedure SellHoldClicked(Sender: TObjectGI); // @addr $712654 Verified callback assignment in InitializeLayout.
-    procedure LoadEquippedRocketsClicked(Sender: TObjectGI); // @addr $71298C Verified callback assignment in InitializeLayout.
-    procedure EquipmentConfigurationClicked(Sender: TObjectGI); // @addr $701D30 Verified callback assignment in InitializeLayout.
+    procedure ShipToStorageClicked(Sender: TObjectGI); // @addr $7124F8
+    procedure SortStorageByTypeClicked(Sender: TObjectGI); // @addr $7125B8
+    procedure SortStorageBySizeClicked(Sender: TObjectGI); // @addr $7125DC
+    procedure SortStorageByPriceClicked(Sender: TObjectGI); // @addr $712604
+    procedure LoadHoldRocketsClicked(Sender: TObjectGI); // @addr $71262C
+    procedure SellHoldClicked(Sender: TObjectGI); // @addr $712654
+    procedure LoadEquippedRocketsClicked(Sender: TObjectGI); // @addr $71298C
+    procedure EquipmentConfigurationClicked(Sender: TObjectGI); // @addr $701D30
     procedure RefreshShipView; // @addr $6F86B0
     procedure ReturnSelectedHoldEntry; // @addr $7014B8
     procedure ScrollHoldTimer(Timer: PCallbackTimerGI; UserData: Integer); // @addr $7013CC

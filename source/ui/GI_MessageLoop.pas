@@ -53,10 +53,11 @@ type
     MouseBlocking: Boolean; // @offset 0x89
     MouseBlockingTest: Boolean; // @offset 0x8A
     ScrollUpdate: Boolean; // @offset $8B  Controls panel invalidation during scrolling; loaded from ScrollUpdate.
+    // Callers reuse these slots for indices, flags, coordinates and object pointers.
     UserValue: Integer; // @offset $8C  Per-frame delay in TAImageGI; embedded object ID in TLabelGI.
-    UserIndex: Integer; // @offset $90  Embedded object index in TLabelGI; other uses remain unresolved.
-    UserData: Integer; // @offset $94  Fixed-width quest parameter text stores Boolean-as-Integer here; other uses remain unresolved.
-    UserState: Integer; // @offset $98  One selects the disabled quest-choice inline image; other uses remain unresolved.
+    UserIndex: Integer; // @offset $90
+    UserData: Integer; // @offset $94
+    UserState: Integer; // @offset $98
     MouseMoveCallback: TObjectMouseEventGI; // @offset 0xA0
     LeftButtonDownCallback: TObjectMouseEventGI; // @offset 0xA8
     LeftButtonUpCallback: TObjectMouseEventGI; // @offset 0xB0
@@ -244,7 +245,7 @@ type
     CloseSoundName: WideString; // @offset 0xAC
     SoundSection: Integer; // @offset 0xB0
     SoundGroupList: TList; // @offset 0xB4
-    TransientControl: TObjectGI; // @offset $B8  Freed when Run/RunContinuous finishes; creation path not yet recovered.
+    TransientControl: TObjectGI; // @offset $B8 Freed when Run/RunContinuous finishes; only nil assignments in the recovered code.
     TransientData: TObject; // @offset $BC  Owned object freed before TransientControl; concrete class unresolved.
     IsOpen: Boolean; // @offset 0xC0
     SavedBackgroundControl: TObjectGI; // @offset 0xC4

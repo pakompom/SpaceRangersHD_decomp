@@ -12,7 +12,7 @@ type
     BackgroundScrollOffset: Integer; // @offset 0xD4
     LastMenuShipAnimation: Integer; // @offset 0xD8
     LastGaalShipAnimation: Integer; // @offset 0xDC
-    MenuTextState: WideString; // @offset $E0 Cleared on open; other use remains unresolved.
+    MenuTextState: WideString; // @offset $E0 Cleared on open; otherwise unused in the recovered code.
     PopupState: Integer; // @offset $EC Cleared when closing PanelAB.
     LoadPanel: TfPanelLoad; // @offset 0xF0
 

@@ -1,6 +1,5 @@
 unit ab_Space;
 // Unit bracket (inferred): .text 0x0054F680..0x005539D3; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
-// Native TabSpace VMT at $54F6CC; field recovery is incomplete.
 
 interface
 
@@ -15,14 +14,14 @@ type
     MapPosition: TPoint; // @offset $14
     IncomingCount: Integer; // @offset $20
     OutgoingCount: Integer; // @offset $24
-    Color28: Cardinal; // @offset $28 Map rendering color; precise role pending.
+    Color28: Cardinal; // @offset $28
     Color2C: Cardinal; // @offset $2C
     Color30: Cardinal; // @offset $30
     Color34: Cardinal; // @offset $34
     AppearanceIndex: Integer; // @offset $38 Six difficulty/visual variants, each with six palette entries.
     MapPath: WideString; // @offset $3C Arena resource path.
     BoundaryKind: Integer; // @offset $40 1 for the synthetic start/end nodes.
-    PortalSlotCount: Integer; // @offset $44 Used by exit-index shuffling; initializer still under review.
+    PortalSlotCount: Integer; // @offset $44 Used by exit-index shuffling.
     Danger: Double; // @offset $48 Local encounter difficulty, used for danger text, visuals and rewards.
     ApproachDanger: Double; // @offset $50 Minimum accumulated predecessor danger, followed by graph pruning.
     RouteCost: Double; // @offset $58 Temporary reverse-search cost for the selected route.
@@ -49,7 +48,7 @@ type
   end;
 
   PabSpaceLink = ^TabSpaceLink;
-  TabSpaceLink = record // @size $6C Allocation size verified at $552DA4; remaining fields unresolved.
+  TabSpaceLink = record // @size $6C Allocation size at $552DA4.
     Prev: PabSpaceLink; // @offset $00
     Next: PabSpaceLink; // @offset $04
     First: TabSpace; // @offset $08

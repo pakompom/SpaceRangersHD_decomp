@@ -30,7 +30,6 @@ var
 
 function IsCheatMessageBoxOpen: Boolean; // @addr $50B82C
 procedure HandleDebugKey(Key: Word); // @addr $50B8D0 @note "Ctrl+Shift key callback installed by Rangers. Ignores input during message boxes, disabled cheats and active calculation phases."
-// Nested in HandleDebugKey; the native parent frame is passed but not read.
 
 // Actions registered by the native unit initializer.
 procedure AddCheatPoints(Points: Integer); // @addr $506A14

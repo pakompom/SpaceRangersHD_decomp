@@ -237,7 +237,7 @@ var
   SharedScriptVariables: TVarArrayEC; // @addr $88A508 @note "Shared scope used by script compilation, execution and text-quest external parameters."
   GlobalScriptVariables: TVarArrayEC; // @addr $88A50C @note "Persistent script globals, initially GRunFrom and GRunStar."
   ScriptTemplateStartRequested: Boolean; // @addr $88A510 Set by script condition code; checked after running each inactive template.
-  LastLoadedPlayerName: WideString; // @addr $88A514 Assigned by TPlayer.LoadFromBuffer; broader UI-cache role unresolved.
+  LastLoadedPlayerName: WideString; // @addr $88A514 Player-name snapshot used by the end-game text.
 var
   ReloadScriptTemplates: Boolean = True; // @addr $87AE44 @note "Native initial value is True. Reset sets this flag; UI initialization reloads script and ship templates then clears it."
   ReloadModsRequested: Boolean = False; // @addr $87AE48

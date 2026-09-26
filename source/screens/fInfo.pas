@@ -96,11 +96,6 @@ function FindLowercaseInfoText(const Search, Text: WideString): Integer; // @add
 
 function ItemMatchesInfoSearch(Item: TItem; Search: WideString): Boolean; // @addr $597A00 Search terms must already be lowercase.
 
-const
-
-// The native finalizer at $5A5EB0 clears ReservedInfoText and the animation
-// name array. The descriptor at $5A5F00 initializes all twenty names above.
-
 implementation
 
 // @unit-initialization $8778B0
@@ -349,6 +344,7 @@ end;
 
 var
   ReservedInfoText: WideString = ''; // @addr $87B350 Retained empty managed variable, cleared before the names array.
+  // Native WideString initializer descriptor at $5A5F00.
   InfoNewsAnimationNames: array[0..19] of WideString =
     ('a','b','c','d','e','f','g','h','k','l','m','n','o','p','q','r','s','t','u','v'); // @addr $87B354
 var

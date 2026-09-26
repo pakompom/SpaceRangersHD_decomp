@@ -35,7 +35,7 @@ type
     procedure DefineProperties(Filer: TFiler); override; // @note "DCC32 MAP ImgList.TCustomImageList.DefineProperties. Source vcl/ImgList.pas:1108." @slot 0x4
     procedure ReadD2Stream(Stream: TStream); // @note "DCC32 MAP ImgList.TCustomImageList.ReadD2Stream. Source vcl/ImgList.pas:1124."
     procedure ReadD3Stream(Stream: TStream); // @note "DCC32 MAP ImgList.TCustomImageList.ReadD3Stream. Source vcl/ImgList.pas:1177."
-    procedure ReadData(Stream: TStream); virtual; // @addr $44E0B8 @slot $38 @note "Native VMT $44CD08. After reading, if not ThemeServices.ThemesEnabled, calls ImageList_SetImageCount(Handle, ImageList_GetImageCount(Handle)); Supplied by the selected Update 4 library; all 180 native instruction bytes and call identities verified."
+    procedure ReadData(Stream: TStream); virtual; // @addr $44E0B8 @slot $38 @note "Native VMT $44CD08. After reading, if not ThemeServices.ThemesEnabled, calls ImageList_SetImageCount(Handle, ImageList_GetImageCount(Handle))."
     procedure WriteData(Stream: TStream); virtual; // @note "DCC32 MAP ImgList.TCustomImageList.WriteData. Source vcl/ImgList.pas:1269." @slot 0x3C
     procedure EndUpdate; // @note "DCC32 MAP ImgList.TCustomImageList.EndUpdate. Source vcl/ImgList.pas:1379."
   end;

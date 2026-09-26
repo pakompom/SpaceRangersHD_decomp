@@ -110,8 +110,6 @@ type
     procedure AdvanceDays(Days: Integer); override; // @addr 0x5E4CDC
   end;
 
-// Nested helpers of TfPlanetQuest.SetQuestText; FontMode is zero for proportional text, one for fixed-width text.
-
 var
   QuestStyleCount: Integer = 0; // @addr 0x87B410
   ActiveGovernmentQuest: PQuest = nil; // @addr 0x87B414
@@ -754,6 +752,7 @@ var
   LowerText: WideString;
   StartIndex, TagIndex, TextLength: Integer;
 
+  // FontMode is zero for proportional text, one for fixed-width text.
   // @nested $5DED88 AddQuestTextParagraph
   procedure AddQuestTextParagraph(const Text: WideString; FontMode: Integer); // @addr 0x5DED88
   var

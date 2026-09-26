@@ -256,11 +256,6 @@ procedure Ex_OKGF_Rescale(Dest: Pointer; Width, Height, DestPitch: Integer; Sour
 procedure Ex_OKGR_F5_DrawRGBA(Dest: Pointer; Pitch: Integer; Source: Pointer); // @addr $4CB02C
 procedure Ex_OKGR_F6_DrawRGBA(Dest: Pointer; Pitch: Integer; Source: Pointer); // @addr $4CB0B8
 
-var
-  // 'libogg-0', 'libvorbis-0', 'libvorbisfile', 'matrixgame',
-  // 'okgf', 'steam_ach', 'steam_api', 'xvidcore', 'zlib'.
-  // Differences from the 1024x768 UI baseline; may be negative.
-
 function GiScalePixels(Value: Integer): Integer; // @addr 0x4D3CC0 @note "Identity function in this binary."
 function GiScalePixelsEx(Value, AlternateValue: Integer): Integer; // @addr 0x4D3CD8 @note "Returns Value; AlternateValue is unused in this binary."
 
@@ -291,8 +286,6 @@ procedure WriteTextFileThreadSafe(FileName, Text: AnsiString); // @addr $4D3F00
 
 function ComputeMachineFingerprintCRC: Cardinal; // @addr $4D51D4 CRC32 of the C: volume serial and ANSI processor name. Native code ignores volume-query failure.
 
-var
-  // Managed globals follow the verified native finalization order.
 var
   RuntimeActive: Boolean; // @addr $889EC4 @note "Message pump returns without sleeping when active; cleared during device loss."
   VSyncEnabled: Boolean; // @addr $889EC5
@@ -723,6 +716,7 @@ var
   GameDisplayModes: array of TDisplayModeGR; // @addr 0x88A204
   RobotDisplayModes: array of TDisplayModeGR; // @addr 0x88A208
 var
+  // Differences from the 1024x768 UI baseline; may be negative.
   ExtraScreenWidth: Integer; // @addr 0x88A20C
   ExtraScreenHeight: Integer; // @addr 0x88A210
   EncodedPlatformModuleNames: array[0..8] of AnsiString = (

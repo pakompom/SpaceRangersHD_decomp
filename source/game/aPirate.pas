@@ -1551,7 +1551,7 @@ end;
 function TPirate.RefusesFactionNegotiation(OtherShip: TShip): Boolean;
 begin
   Result := False;
-  // The final Pointer cast preserves native operand loading after typing OtherShip.
+  // The final Pointer cast preserves native operand loading.
   if (PirateType <> 0) and (OtherShip.CurrentStanding in [ssCoalitionMilitary, ssCoalitionActive]) and
     ((CurrentStar.ControlFaction <> sfPirates) or (CurrentStar.Status.CustomFaction <> '') or
     (MainPiratePlanet = nil) or (MainPiratePlanet.OwnerId <> oiPirate) or (TShip(Pointer(OtherShip)).CurrentStar = MainPiratePlanet.CurrentStar)) then Result := True;

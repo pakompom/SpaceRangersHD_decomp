@@ -1,6 +1,5 @@
 unit SE_Ship2;
 // Unit bracket (inferred): .text 0x00820440..0x0082387F; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
-// Native class and methods: $820440..$54CC0C.
 
 interface
 

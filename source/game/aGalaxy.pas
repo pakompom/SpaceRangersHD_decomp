@@ -714,14 +714,6 @@ function ShouldContinuePlayerTravel: Boolean; // @addr 0x7B247C @note "May prepa
 function EstimatePlayerTravelTurns: Single; // @addr 0x7B2624 @note "Uses distance divided by Speed + 1; zero for interrupted travel or unsupported orders."
 function GetLocalObjectLink(Obj: TObject; Suppress: Boolean): WideString; // @addr 0x7B27E0 @note "Object markup embeds the native pointer, not an ID. Ships/planets/loose items must be in the player's star. Suppress returns empty; otherwise supported objects require a player."
 
-// Nested in ComputeIntegrityChecksum; caller-popped static link and accumulator at -4.
-
-// Nested in CountForcesByOwnerGroups; caller-popped static link. Captures:
-// -04 current ship, -08 Extended strength output, -0C count, -0D Coalition flag;
-// +08 custom flag, +0C pirate flag, +10 Dominator flag.
-
-// Nested in XorProtectedState; ParentFrame is the caller-popped static link.
-
 type
   TModuleCrcStatus = (
     mcsUnchecked = 0,
@@ -3693,7 +3685,7 @@ end;
 { @routine $7A9008 TGalaxy_ComputeIntegrityChecksum }
 function TGalaxy.ComputeIntegrityChecksum(Mode: Integer): Cardinal;
 var
-  State: Cardinal;
+  State: Cardinal; // Native checksum accumulator at ParentFrame-4.
   I, J, K, L: Integer;
   Star: TStar;
   Planet: TPlanet;
@@ -3760,7 +3752,7 @@ var
   end;
 
   // @nested $7A8F4C AccumulateIntegrityItem
-  procedure AccumulateIntegrityItem(Item: TItem); // @addr 0x7A8F4C @note "Opaque interface avoids the aItem dependency cycle; the nested body uses TItem. Excludes the VMT and temporarily zeros Graphic plus cached action-code state; nil contributes nothing."
+  procedure AccumulateIntegrityItem(Item: TItem); // @addr 0x7A8F4C @note "Excludes the VMT and temporarily clears GraphObject plus cached action-code state; nil contributes nothing."
   var SavedGraphic: TObjectSE; SavedCode: Pointer; SavedInitialized: Boolean; Equipment: TEquipmentWithActCode;
   begin
     if Item <> nil then
@@ -10888,6 +10880,9 @@ var
   Count, I, J: Integer;
   Planet: TPlanet;
 
+  // Caller-popped static link. Captures: -04 current ship, -08 Extended
+  // strength output, -0C count, -0D Coalition flag; +08 custom flag,
+  // +0C pirate flag, +10 Dominator flag.
   // @nested $7C4CC4 AccumulateFactionForces
   procedure AccumulateFactionForces; cdecl; // @addr 0x7C4CC4 @ida "void __cdecl $name(void *ParentFrame);"
   begin

@@ -76,8 +76,6 @@ type
     procedure ShowOutcome; // @addr 0x4EC380
   end;
 
-// Nested helpers of TTextQuest.BuildLegacySequences; ParentFrame is compiler supplied.
-
 implementation
 
 uses CPDiapClass, CalcParseClass, Dialogs, EC_Str, MessageText, SequenceClass;

@@ -1,9 +1,6 @@
 unit aEFilmEnd;
 // Unit bracket (inferred): .text 0x006A15D4..0x006A1EFE; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
-// $6A1620 is the Pascal class-name string "TEFilmEnd", referenced by its VMT.
-// The former 12-byte IDA function there was metadata, not a tenth routine.
-
 interface
 
 uses EC_Struct, SE_Space, aEFilm;

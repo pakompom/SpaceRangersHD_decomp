@@ -32,7 +32,7 @@ var
   KellerFragments: array[0..3] of TabHit; // @addr $88A7A8 Native objects are TabShip instances.
   // Advance and KellerBreakupComplete iterate the four fragment slots, indices 0..3.
   KellerFragmentDistances: array[0..3] of Double; // @addr $88A7B8
-  KellerFragmentValuesAC: array[0..3] of Double; // @addr $88A7D8 Initialized by breakup; later use under review.
+  KellerFragmentValuesAC: array[0..3] of Double; // @addr $88A7D8 Only reset to zero; no reader in the recovered code.
   KellerBreakupTicks: Integer; // @addr $88A7F8
   KellerSplitActive: Boolean; // @addr $88A7FC
   KellerFinishRequested: Boolean; // @addr $88A7FD

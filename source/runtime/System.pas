@@ -69,7 +69,8 @@ function BeginThread(SecurityAttributes: Pointer; StackSize: Cardinal; ThreadFun
 procedure Randomize;
 procedure InitializeWideStringConstants(Table: Pointer); // @note "DCC32 unit initializer: count followed by destination/source pointer pairs."
 function RandomRange(Limit: Integer): Integer;
-// IDA signatures use double for x87 registers; native values remain Extended. See README.
+// IDA signatures use double for x87 registers; native values remain Extended.
+// See docs/declarations.md#calling-conventions.
 function RandomUnitExtended: Extended; // @note "Result is in [0,1); shares RandSeed with RandomRange."
 function Get8087CW: Word; // @addr 0x4034B0
 procedure Set8087CW(ControlWord: Word); // @addr 0x4034A0 @note "Also clears pending x87 exceptions."
@@ -98,12 +99,12 @@ procedure ReallocateMemory(var Block: Pointer; ByteCount: Integer); // @note "Ni
 procedure MoveBytes(Source, Dest: Pointer; ByteCount: Integer); // @note "Supports overlapping ranges; nonpositive counts do nothing."
 procedure FillBytes(Dest: Pointer; ByteCount: Integer; Value: Byte); // @note "Nonpositive counts do nothing."
 procedure _SetExpand(Source, Dest: Pointer; ByteRange: Word); // @addr 0x404068 @note "Expands a packed set to 32 bytes. EAX source, EDX destination; CL first source-byte index, CH exclusive end. RTL System.pas:7598 and native instructions agree."
-procedure _SetElem(Dest: Pointer; Element, ByteCount: Byte); // @addr 0x403FEC @note "DCC32 singleton-set helper. Clears ByteCount bytes, then sets Element when in range. RTL System.pas:7337; native EAX/DL/CL ABI verified."
+procedure _SetElem(Dest: Pointer; Element, ByteCount: Byte); // @addr 0x403FEC @note "DCC32 singleton-set helper. Clears ByteCount bytes, then sets Element when in range. RTL System.pas:7337; native EAX/DL/CL ABI."
 
 function AnsiStringToPAnsiChar(Value: AnsiString): PAnsiChar; // @addr 0x40592C @note "Nil maps to a static empty string."
 function RetainAnsiString(Value: AnsiString): AnsiString; // @ida "char *__usercall $name@<eax>(char *Value@<eax>);" @note "Compiler parameter-retention helper; EAX is the string value, not a var-parameter address. Returns it unchanged."
 function AnsiStringLength(Value: AnsiString): Integer;
-function StringOfChar(Value: AnsiChar; Count: Integer): AnsiString; // @addr $405C20 @note "Verified 42-byte RTL body: ClearAnsiString, AllocateAnsiStringBuffer, FillBytes; nonpositive Count returns empty."
+function StringOfChar(Value: AnsiChar; Count: Integer): AnsiString; // @addr $405C20 @note "Nonpositive Count returns an empty string."
 procedure SetAnsiStringFromArray(var Dest: AnsiString; Source: PAnsiChar; CharCount: Integer); // @note "Stops at NUL or CharCount, whichever comes first."
 procedure ClearAnsiString(var Value: AnsiString);
 procedure ClearAnsiStrings(Values: PAnsiString; Count: Integer); // @note "Count must be positive."
@@ -136,13 +137,13 @@ function AllocateWideStringBuffer(CharCount: Integer): PWideChar; // @note "Allo
 procedure AdoptWideStringBuffer(var Dest: WideString; Buffer: PWideChar); // @note "Takes ownership without copying; Buffer must not alias Dest's current value."
 procedure SetWideStringFromBuffer(var Dest: WideString; Source: PWideChar; CharCount: Integer);
 procedure SetWideStringFromPAnsiChar(var Dest: WideString; Source: PAnsiChar); // @addr $405E54
-procedure SetWideStringFromWideArray(var Dest: WideString; Source: PWideChar; MaxChars: Integer); // @note "Bounds the NUL scan by MaxChars, then tail-calls SetWideStringFromBuffer. Verified via fLoadRobot.RebuildEntries. RTL System.@WStrFromWArray."
+procedure SetWideStringFromWideArray(var Dest: WideString; Source: PWideChar; MaxChars: Integer); // @note "Bounds the NUL scan by MaxChars, then tail-calls SetWideStringFromBuffer. RTL System.@WStrFromWArray."
 procedure SetWideStringFromPWideChar(var Dest: WideString; Source: PWideChar);
 procedure SetWideStringFromChar(var Dest: WideString; Value: WideChar);
 function CopyWideString(Source: WideString; Index, Count: Integer): WideString; // @note "One-based Index is clamped to the source; negative Count produces an empty string."
 procedure DeleteWideString(var Value: WideString; Index, Count: Integer);
 procedure SetWideStringFromAnsiBuffer(var Dest: WideString; Source: PAnsiChar; CharCount: Integer); // @note "Converts through the RTL's current ANSI code page."
-procedure SetWideStringFromAnsiArray(var Dest: WideString; Source: PAnsiChar; Capacity: Integer); // @note "Scans up to Capacity bytes for NUL, then tail-calls SetWideStringFromAnsiBuffer. Verified against DCC32 @WStrFromArray at $405ECC."
+procedure SetWideStringFromAnsiArray(var Dest: WideString; Source: PAnsiChar; Capacity: Integer); // @note "Scans up to Capacity bytes for NUL, then tail-calls SetWideStringFromAnsiBuffer. RTL System.@WStrFromArray ($405ECC)."
 procedure ConvertAnsiStringToWideString(var Dest: WideString; Source: AnsiString);
 procedure AppendWideString(var Dest: WideString; Source: WideString);
 procedure ConcatWideStrings(var Dest: WideString; Left, Right: WideString);
@@ -452,7 +453,7 @@ procedure InitializeRecord(Data, TypeInfo: Pointer); // @addr $406258 @note "Sys
 procedure _FinalizeRecord(p: Pointer; typeInfo: Pointer); // @note "System.@FinalizeRecord: finalizes managed fields described by record RTTI; EAX retains the record address."
 procedure _Dispose(Data, TypeInfo: Pointer); // @addr $4067B4 @note "System.@Dispose: finalizes a managed record, then frees its allocation."
 
-procedure AddRefRecord(Data, TypeInfo: Pointer); // @addr $40646C @note "System.@AddRefRecord: retains each managed field in a copied record using RTTI and AddRefArray. Verified against the linked Delphi 2007 RTL (47-byte body)."
+procedure AddRefRecord(Data, TypeInfo: Pointer); // @addr $40646C @note "System.@AddRefRecord: retains each managed field in a copied record using RTTI and AddRefArray."
 
 procedure _CopyRecord; // @nameonly @note "DCC32 MAP System.@CopyRecord. Source rtl/sys/System.pas:15456. Prototype pending: compiler-helper ABI needs explicit analysis."
 

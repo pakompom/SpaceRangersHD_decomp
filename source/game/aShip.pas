@@ -224,7 +224,6 @@ type
     procedure AssignWeaponTargetsInStar; virtual; // @addr 0x74F064 @slot 0x20 @note "The base implementation clears all weapon targets."
 
     // Abstract entries in native TShip VMT 0x747C10 share the RTL stub at 0x40358C.
-    // Signatures come from verified concrete overrides and their callers.
     function GetName: WideString; virtual; abstract; // @slot 0x24
     function GetFullName(const Separator: WideString): WideString; virtual; abstract; // @slot 0x28 @calls "0x777ECB 0x777EFB 0x777F29"
     function GetGreetingShipCategory: TGreetingShipCategory; virtual; abstract; // @slot 0x30 Category bit in ship-greeting ShipType, ToShipType and ShipBadType filters.
@@ -731,8 +730,6 @@ function CalculateRoundedFuelCost(Amount: Integer; OwnerId: TOwnerId): Integer; 
 var
   KlingCheapDropValueFactors: array[TKlingType] of Double = (0.1, 0.85, 0.9, 1, 1.2, 1.5, 0.7, 4); // @addr $87C738 Indexed by KlingType.
   KlingValuableDropValueFactors: array[TKlingType] of Double = (0.1, 0.8, 0.9, 1, 2, 4, 0.7, 8); // @addr $87C778 Indexed by KlingType.
-
-// Nested LookupTalkText helper; the native caller removes its unused static link.
 
 const
   DominatorProgramDropCostFactors: array[TKlingType] of Double = (0.2, 1.6, 1.8, 2.0, 4.0, 8.0, 1.4, 16.0); // @addr $87C7B8 TKlingType order.
@@ -2019,13 +2016,11 @@ end;
 
 { @routine $74E3E8 TShip_NextDay }
 procedure TShip.NextDay;
-{ Entire routine is ordinary Pascal, including its exception handler.
-  Stage is the native diagnostic checkpoint, not reconstruction scaffolding. }
 var
   I: Integer;
   WearFactor: Single;
   Kling: TKling;
-  Stage: Integer;
+  Stage: Integer; // Diagnostic checkpoint included in the exception message.
 begin
   Stage := 0;
   try

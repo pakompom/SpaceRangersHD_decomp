@@ -91,7 +91,7 @@ type
     procedure DepartWithStation(Action: Integer); // @addr $5BE3E0
     procedure ClearChoices; // @addr $5A8CF8 Native diagnostic name: TfRuinsTalk.A_Start.
     procedure RestartTextPresentation; // @addr $5A96B8 Clears the dialogue panel state and restarts its ten-millisecond presentation timer.
-    procedure I_Start; // @addr 0x5AA9D8 Rebuilds the station dialogue root; receiver-only entry verified at native prologue and CheatNextRank.
+    procedure I_Start; // @addr 0x5AA9D8 Rebuilds the station dialogue root.
     procedure M_Main(KeepText: Boolean); // @addr 0x5AB408 Rebuilds choices; KeepText preserves the current greeting and skips rank rewards.
     procedure I_WarWithKlingAndPirates(Action: Integer); // @addr 0x5BB9A0
     procedure I_CBWarWithKlingAndCoalition(Action: Integer); // @addr 0x5D8EB0

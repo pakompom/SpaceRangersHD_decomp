@@ -1,6 +1,5 @@
 unit ab_W14;
 // Unit bracket (inferred): .text 0x004F955C..0x004F9A67; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
-// Native TabW14 projectile family: $4F95C4..$4F8F24.
 
 interface
 

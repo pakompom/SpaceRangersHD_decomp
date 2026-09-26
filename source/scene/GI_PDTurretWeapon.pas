@@ -1,5 +1,4 @@
 unit GI_PDTurretWeapon;
-// Native TPSPDWeaponGI and methods: $69A768..$698ADC.
 
 interface
 

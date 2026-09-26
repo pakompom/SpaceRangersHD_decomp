@@ -35,9 +35,6 @@ type
 
 function AcquireCachedGi(Control: TCacheControlEC): TCGiEC; // @addr 0x478998
 
-// Nested helpers of ApplyWideScreenLayoutFixups. ParentFrame is the compiler's
-// hidden, caller-popped stack argument, not an ordinary Delphi source parameter.
-
 implementation
 
 uses EC_Mem, EC_Str, GR_Main, Windows, Math;

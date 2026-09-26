@@ -68,8 +68,6 @@ function MultiplyMatrix4D(const Left, Right: TMatrix4D): TMatrix4D; // @addr 0x4
 function ProjectPointByMatrix(const Matrix: TMatrix4D; const Source: TVector3D): TVector3D; // @addr 0x4EDEAC @ida "void __usercall $name(const TMatrix4D *Matrix@<eax>, const TVector3D *Source@<edx>, TVector3D *Result@<ecx>);" @note "Includes perspective division; homogeneous W must be nonzero."
 function TryIntersectRayWithSphere(RayOrigin, RayPointOnRay, SphereCenter: TVector3D; SphereRadius: Double; var HitPoint: TVector3D): Boolean; // @addr 0x4EDF2C @note "Ray points must differ. Rejects tangency. May write HitPoint on false; true requires forward distance greater than 0.001."
 
-// Nested helpers of InvertMatrix4D. ParentFrame is a hidden, caller-popped argument.
-
 var
   ArcadeViewMode: Byte = 0; // @addr $87AB4C Shared camera/transition state; native TfAB accesses it through an external reference cell. Original unit unresolved.
   ArcadeSpaceProcess: TProcessSE = nil; // @addr $87AB50 Shared scene process; native TfAB accesses it through external reference $883D3C. Original unit unresolved.
