@@ -6,22 +6,22 @@ interface
 
 type PStartupWideString = ^WideString;
 
-function AllocateStartupWideString(Length: Integer): PStartupWideString; // @addr $59297C
-function FreeStartupWideString(var Text: PStartupWideString): Boolean; // @addr $5929EC Does not clear the disposed pointer.
+function AllocateStartupWideString(Length: Integer): PStartupWideString; // @addr $4D6020
+function FreeStartupWideString(var Text: PStartupWideString): Boolean; // @addr $4D6064 Does not clear the disposed pointer.
 
-function TruncateStartupWideString(var Text: PStartupWideString): PStartupWideString; // @addr $5929AC @note "Shrinks a caller-provided WideString to its first zero. Requires a valid pointer and a terminator within the buffer."
+function TruncateStartupWideString(var Text: PStartupWideString): PStartupWideString; // @addr $4D6044 @note "Shrinks a caller-provided WideString to its first zero. Requires a valid pointer and a terminator within the buffer."
 
 implementation
 
-{ @routine $59297C AllocateStartupWideString }
+{ @routine $4D6020 AllocateStartupWideString }
 function AllocateStartupWideString(Length: Integer): PStartupWideString;
 begin
   New(Result);
   SetLength(Result^, Length);
 end;
-{ @end $59297C }
+{ @end $4D6020 }
 
-{ @routine $5929AC TruncateStartupWideString }
+{ @routine $4D6044 TruncateStartupWideString }
 function TruncateStartupWideString(var Text: PStartupWideString): PStartupWideString;
 var Count: Integer;
 begin
@@ -30,18 +30,16 @@ begin
   SetLength(Text^, Count);
   Result := Text;
 end;
-{ @end $5929AC }
+{ @end $4D6044 }
 
-{ @routine $5929EC FreeStartupWideString }
+{ @routine $4D6064 FreeStartupWideString }
 function FreeStartupWideString(var Text: PStartupWideString): Boolean;
 begin
   Result := False;
-  if Text <> nil then
-  begin
-    Dispose(Text);
-    Result := True;
-  end;
+  if Text = nil then Exit;
+  Dispose(Text);
+  Result := True;
 end;
-{ @end $5929EC }
+{ @end $4D6064 }
 
 end.

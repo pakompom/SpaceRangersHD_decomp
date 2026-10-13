@@ -280,14 +280,20 @@ impl Parser<'_> {
                         "global"
                     };
                     let annotated = self.annotated;
-                    if bodies && depth == 0 && kind == "global" {
+                    if bodies && (depth == 0 && kind == "global" || kind == "constant") {
                         self.annotated = self.native_annotations;
                     }
-                    let meta =
-                        self.meta(&start, &["addr", "indirect", "indexrefs", "note"], false)?;
+                    let meta = self.meta(
+                        &start,
+                        &["addr", "unbound", "indirect", "indexrefs", "note"],
+                        false,
+                    )?;
                     self.annotated = annotated;
                     ensure!(
-                        !self.annotated || kind != "global" || meta.contains_key("addr"),
+                        !self.annotated
+                            || kind != "global"
+                            || meta.contains_key("addr")
+                            || meta.contains_key("unbound"),
                         "global {name} needs @addr"
                     );
                     let mut data = json!({"type":typ});

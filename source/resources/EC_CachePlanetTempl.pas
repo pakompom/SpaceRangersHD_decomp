@@ -1,5 +1,4 @@
 unit EC_CachePlanetTempl;
-// Unit bracket (inferred): .text 0x004A60A0..0x004A6420; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -11,9 +10,9 @@ type
 
   TCPlanetTemplControlEC = class(TCacheControlEC) // @size 0x18
   public
-    procedure QueueLoadIfMissing(PendingLoads: TList); override; // @addr 0x4A6180
-    function CreateData: TCacheDataEC; override; // @addr 0x4A6204
-    function AcquireData: TCacheDataEC; override; // @addr 0x4A6250
+    procedure QueueLoadIfMissing(PendingLoads: TList); override; // @addr 0x0048B1A8
+    function CreateData: TCacheDataEC; override; // @addr 0x0048B214
+    function AcquireData: TCacheDataEC; override; // @addr 0x0048B244
   end;
 
   TCPlanetTemplEC = class(TCacheDataEC) // @size 0x28
@@ -21,65 +20,63 @@ type
     TemplateData: Pointer; // @offset 0x20
     ImageHeight: Integer; // @offset 0x24
 
-    constructor Create; // @addr 0x4A626C
-    destructor Destroy; override; // @addr 0x4A62C0
-    procedure LoadFromConfigBuffer(SourceBuffer: TBufEC; const LoadOption: WideString); override; // @addr 0x4A6318
+    constructor Create; // @addr 0x0048B24C
+    destructor Destroy; override; // @addr 0x0048B28C
+    procedure LoadFromConfigBuffer(SourceBuffer: TBufEC; const LoadOption: WideString); override; // @addr 0x0048B2C8
   end;
 
-function AcquireOrCreatePlanetTemplate(Control: TCacheControlEC): TCPlanetTemplEC; // @addr 0x4A6224
+function AcquireOrCreatePlanetTemplate(Control: TCacheControlEC): TCPlanetTemplEC; // @addr 0x0048B224
 
 implementation
 
 uses EC_CachePalBitmap, EC_Struct, GR_Main, EC_Str, GR_GraphBuf, SysUtils;
 
-{ @routine $4A6180 TCPlanetTemplControlEC_QueueLoadIfMissing }
+{ @routine $48B1A8 TCPlanetTemplControlEC_QueueLoadIfMissing }
 procedure TCPlanetTemplControlEC.QueueLoadIfMissing(PendingLoads: TList);
 var Control: TCPlanetTemplControlEC;
 begin
   if RetainCount > 0 then Exit;
   if BoundData <> nil then Exit;
   if HasEmptyCacheKey then Exit;
-  if GlobalCache.FindDataByKeyAndClass(CacheKey, TCPlanetTemplEC) = nil then
-  begin
-    Control := TCPlanetTemplControlEC.Create;
-    GlobalCache.ResetControl(Control);
-    Control.SetCacheKey(CacheKey);
-    PendingLoads.Add(Control);
-  end;
+  if GlobalCache.FindDataByKeyAndClass(CacheKey, TCPlanetTemplEC) <> nil then Exit;
+  Control := TCPlanetTemplControlEC.Create;
+  GlobalCache.ResetControl(Control);
+  Control.SetCacheKey(CacheKey);
+  PendingLoads.Add(Control);
 end;
-{ @end $4A6180 }
+{ @end $48B1A8 }
 
-{ @routine $4A6204 TCPlanetTemplControlEC_CreateData }
+{ @routine $48B214 TCPlanetTemplControlEC_CreateData }
 function TCPlanetTemplControlEC.CreateData: TCacheDataEC;
 begin
   Result := TCPlanetTemplEC.Create;
 end;
-{ @end $4A6204 }
+{ @end $48B214 }
 
-{ @routine $4A6224 AcquireOrCreatePlanetTemplate }
+{ @routine $48B224 AcquireOrCreatePlanetTemplate }
 function AcquireOrCreatePlanetTemplate(Control: TCacheControlEC): TCPlanetTemplEC;
 begin
   Result := Control.AcquireDataFromConfig(TCPlanetTemplEC) as TCPlanetTemplEC;
 end;
-{ @end $4A6224 }
+{ @end $48B224 }
 
-{ @routine $4A6250 TCPlanetTemplControlEC_AcquireData }
+{ @routine $48B244 TCPlanetTemplControlEC_AcquireData }
 function TCPlanetTemplControlEC.AcquireData: TCacheDataEC;
 begin
   Result := AcquireOrCreatePlanetTemplate(Self);
 end;
-{ @end $4A6250 }
+{ @end $48B244 }
 
-{ @routine $4A626C TCPlanetTemplEC_Create }
+{ @routine $48B24C TCPlanetTemplEC_Create }
 constructor TCPlanetTemplEC.Create;
 begin
   inherited Create;
   TemplateData := nil;
   ImageHeight := 0;
 end;
-{ @end $4A626C }
+{ @end $48B24C }
 
-{ @routine $4A62C0 TCPlanetTemplEC_Destroy }
+{ @routine $48B28C TCPlanetTemplEC_Destroy }
 destructor TCPlanetTemplEC.Destroy;
 begin
   if TemplateData <> nil then
@@ -90,9 +87,9 @@ begin
   end;
   inherited Destroy;
 end;
-{ @end $4A62C0 }
+{ @end $48B28C }
 
-{ @routine $4A6318 TCPlanetTemplEC_LoadFromConfigBuffer }
+{ @routine $48B2C8 TCPlanetTemplEC_LoadFromConfigBuffer }
 procedure TCPlanetTemplEC.LoadFromConfigBuffer(SourceBuffer: TBufEC; const LoadOption: WideString);
 var Bitmap: TGraphBufGR; TextureWidth, TextureHeight: Integer;
 begin
@@ -106,6 +103,6 @@ begin
   ImageHeight := Bitmap.Height;
   Bitmap.Free;
 end;
-{ @end $4A6318 }
+{ @end $48B2C8 }
 
 end.

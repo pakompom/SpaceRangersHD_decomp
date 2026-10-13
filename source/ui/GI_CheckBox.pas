@@ -1,5 +1,4 @@
 unit GI_CheckBox;
-// Unit bracket (inferred): .text 0x004A9F58..0x004AA6BB; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -13,104 +12,104 @@ type
     Checked: Boolean; // @offset 0x128
     ChangedCallback: TObjectNotifyEventGI; // @offset $130
 
-    constructor Create(Owner: TObjectGI); // @addr 0x4AA078
-    destructor Destroy; override; // @addr 0x4AA15C
-    procedure Clear; override; // @addr 0x4AA1AC @note "Does not refresh child activation or call inherited Clear."
-    procedure SetConfigPath(const Path: WideString); override; // @addr 0x4AA1C0
-    procedure SetSize(Size: TPoint); override; // @addr 0x4AA1F0
-    procedure RefreshStateImages; // @addr 0x4AA2C4
-    procedure ProcessLeftButtonDown(KeyState: Cardinal; Point: TPoint); override; // @addr $4AA488
-    procedure LoadFromConfigPath(const Path: WideString); override; // @addr 0x4AA534
-    procedure LoadFromBlock(Block: TBlockParEC); override; // @addr 0x4AA610
+    constructor Create(Owner: TObjectGI); // @addr 0x004A840C
+    destructor Destroy; override; // @addr 0x004A84C4
+    procedure Clear; override; // @addr 0x004A8500 @note "Does not refresh child activation or call inherited Clear."
+    procedure SetConfigPath(const Path: WideString); override; // @addr 0x004A8508
+    procedure SetSize(Size: TPoint); override; // @addr 0x004A8528
+    procedure RefreshStateImages; // @addr 0x004A85D8
+    procedure ProcessLeftButtonDown(KeyState: Cardinal; Point: TPoint); override; // @addr $4A8750
+    procedure LoadFromConfigPath(const Path: WideString); override; // @addr 0x004A87D4
+    procedure LoadFromBlock(Block: TBlockParEC); override; // @addr 0x004A88A0
   end;
 
 implementation
 
 uses Classes, EC_Str, GI_Main;
 
-{ @routine $4AA078 TCheckBoxGI_Create }
+{ @routine $4A840C TCheckBoxGI_Create }
 constructor TCheckBoxGI.Create(Owner: TObjectGI);
 begin
   inherited Create(Owner);
   CheckedImage := TTransImageGI.Create(Self);
-  CheckedImage.SetImageKindX(ikxCenter);
-  CheckedImage.SetImageKindY(ikyCenter);
-  CheckedImage.SetActive(False);
+  CheckedImage.KindX := ikxCenter;
+  CheckedImage.KindY := ikyCenter;
+  CheckedImage.IsActive := False;
   UncheckedImage := TTransImageGI.Create(Self);
-  UncheckedImage.SetImageKindX(ikxCenter);
-  UncheckedImage.SetImageKindY(ikyCenter);
-  UncheckedImage.SetActive(True);
+  UncheckedImage.KindX := ikxCenter;
+  UncheckedImage.KindY := ikyCenter;
+  UncheckedImage.IsActive := True;
   Checked := False;
 end;
-{ @end $4AA078 }
+{ @end $4A840C }
 
-{ @routine $4AA15C TCheckBoxGI_Destroy }
+{ @routine $4A84C4 TCheckBoxGI_Destroy }
 destructor TCheckBoxGI.Destroy;
 begin
   CheckedImage.Free;
   UncheckedImage.Free;
   inherited Destroy;
 end;
-{ @end $4AA15C }
+{ @end $4A84C4 }
 
-{ @routine $4AA1AC TCheckBoxGI_Clear }
+{ @routine $4A8500 TCheckBoxGI_Clear }
 procedure TCheckBoxGI.Clear;
 begin
   Checked := False;
 end;
-{ @end $4AA1AC }
+{ @end $4A8500 }
 
-{ @routine $4AA1C0 TCheckBoxGI_SetConfigPath }
+{ @routine $4A8508 TCheckBoxGI_SetConfigPath }
 procedure TCheckBoxGI.SetConfigPath(const Path: WideString);
 begin
   inherited SetConfigPath(Path);
   RefreshStateImages;
   Invalidate;
 end;
-{ @end $4AA1C0 }
+{ @end $4A8508 }
 
-{ @routine $4AA1F0 TCheckBoxGI_SetSize }
+{ @routine $4A8528 TCheckBoxGI_SetSize }
 procedure TCheckBoxGI.SetSize(Size: TPoint);
 begin
   inherited SetSize(Size);
-  CheckedImage.SetPosition(Classes.Point(Size.X div 2 - CheckedImage.ClientSize.X div 2, Size.Y div 2 - CheckedImage.ClientSize.Y div 2));
-  UncheckedImage.SetPosition(Classes.Point(Size.X div 2 - UncheckedImage.ClientSize.X div 2, Size.Y div 2 - UncheckedImage.ClientSize.Y div 2));
+  CheckedImage.Pos := Classes.Point(Size.X div 2 - CheckedImage.ClientSize.X div 2, Size.Y div 2 - CheckedImage.ClientSize.Y div 2);
+  UncheckedImage.Pos := Classes.Point(Size.X div 2 - UncheckedImage.ClientSize.X div 2, Size.Y div 2 - UncheckedImage.ClientSize.Y div 2);
 end;
-{ @end $4AA1F0 }
+{ @end $4A8528 }
 
-{ @routine $4AA2C4 TCheckBoxGI_RefreshStateImages }
+{ @routine $4A85D8 TCheckBoxGI_RefreshStateImages }
 procedure TCheckBoxGI.RefreshStateImages;
 begin
   CheckedImage.SetImagePath(ConfigPath + '.IChecked');
-  CheckedImage.SetSize(CheckedImage.GetContentSize);
+  CheckedImage.ObjectSize := CheckedImage.GetContentSize;
   UncheckedImage.SetImagePath(ConfigPath + '.IUnchecked');
-  UncheckedImage.SetSize(UncheckedImage.GetContentSize);
-  CheckedImage.SetPosition(Classes.Point(ClientSize.X div 2 - CheckedImage.ClientSize.X div 2, ClientSize.Y div 2 - CheckedImage.ClientSize.Y div 2));
-  UncheckedImage.SetPosition(Classes.Point(ClientSize.X div 2 - UncheckedImage.ClientSize.X div 2, ClientSize.Y div 2 - UncheckedImage.ClientSize.Y div 2));
+  UncheckedImage.ObjectSize := UncheckedImage.GetContentSize;
+  CheckedImage.Pos := Classes.Point(ClientSize.X div 2 - CheckedImage.ClientSize.X div 2, ClientSize.Y div 2 - CheckedImage.ClientSize.Y div 2);
+  UncheckedImage.Pos := Classes.Point(ClientSize.X div 2 - UncheckedImage.ClientSize.X div 2, ClientSize.Y div 2 - UncheckedImage.ClientSize.Y div 2);
 end;
-{ @end $4AA2C4 }
+{ @end $4A85D8 }
 
-{ @routine $4AA488 TCheckBoxGI_ProcessLeftButtonDown }
+{ @routine $4A8750 TCheckBoxGI_ProcessLeftButtonDown }
 procedure TCheckBoxGI.ProcessLeftButtonDown(KeyState: Cardinal; Point: TPoint);
 begin
   inherited ProcessLeftButtonDown(KeyState, Point);
   if Checked = True then
   begin
     Checked := False;
-    CheckedImage.SetActive(False);
-    UncheckedImage.SetActive(True);
+    CheckedImage.IsActive := False;
+    UncheckedImage.IsActive := True;
   end
   else
   begin
     Checked := True;
-    CheckedImage.SetActive(True);
-    UncheckedImage.SetActive(False);
+    CheckedImage.IsActive := True;
+    UncheckedImage.IsActive := False;
   end;
   if Assigned(ChangedCallback) then ChangedCallback(Self);
 end;
-{ @end $4AA488 }
+{ @end $4A8750 }
 
-{ @routine $4AA534 TCheckBoxGI_LoadFromConfigPath }
+{ @routine $4A87D4 TCheckBoxGI_LoadFromConfigPath }
 procedure TCheckBoxGI.LoadFromConfigPath(const Path: WideString);
 var Block: TBlockParEC;
 begin
@@ -120,9 +119,9 @@ begin
     if TrimWideString(Block.GetParam('Checked')) = 'True' then Checked := True
     else Checked := False;
 end;
-{ @end $4AA534 }
+{ @end $4A87D4 }
 
-{ @routine $4AA610 TCheckBoxGI_LoadFromBlock }
+{ @routine $4A88A0 TCheckBoxGI_LoadFromBlock }
 procedure TCheckBoxGI.LoadFromBlock(Block: TBlockParEC);
 begin
   inherited LoadFromBlock(Block);
@@ -131,6 +130,6 @@ begin
     else Checked := False;
   RefreshStateImages;
 end;
-{ @end $4AA610 }
+{ @end $4A88A0 }
 
 end.

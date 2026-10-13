@@ -1,5 +1,4 @@
 unit fGameEnd;
-// Unit bracket (inferred): .text 0x005E4DE4..0x005E8117; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -8,23 +7,23 @@ uses GI_MessageLoop, Types;
 type
   TfGameEnd = class(TMessageLoopGI) // @size $E4
   public
-    TextScrollTimer: PCallbackTimerGI; // @offset $D0
+    TextScrollTimer: TCallbackTimerIdGI; // @offset $D0
     TextPanelTop: Integer; // @offset $D4
     TextPanelHeight: Integer; // @offset $D8
-    BackgroundTimer: PCallbackTimerGI; // @offset $DC
+    BackgroundTimer: TCallbackTimerIdGI; // @offset $DC
     BackgroundScrollOffset: Integer; // @offset $E0
 
-    procedure ScrollBackground(Timer: PCallbackTimerGI; UserData: Integer); // @addr $5E7C28
-    procedure ScrollEndingText(Timer: PCallbackTimerGI; UserData: Integer); // @addr $5E7CEC
-    procedure ContinueClicked(Sender: TObjectGI); // @addr $5E7DF4
-    procedure LoadClicked(Sender: TObjectGI); // @addr $5E7E98
-    procedure ShowControlHelp(Sender: TObjectGI; Show: Boolean); // @addr $5E7F08
-    procedure MainPanelKeyDown(Sender: TObjectGI; Key: Cardinal); // @addr $5E7FA0
+    procedure ScrollBackground(Timer: TCallbackTimerIdGI; UserData: Cardinal); // @addr $545AC0
+    procedure ScrollEndingText(Timer: TCallbackTimerIdGI; UserData: Cardinal); // @addr $545B5C
+    procedure ContinueClicked(Sender: TObjectGI); // @addr $545C48
+    procedure LoadClicked(Sender: TObjectGI); // @addr $545CE0
+    procedure ShowControlHelp(Sender: TObjectGI; Show: Boolean); // @addr $545D40
+    procedure MainPanelKeyDown(Sender: TObjectGI; Key: Cardinal); // @addr $545DC4
 
-    procedure OnOpen; override; // @addr $5E60E0
-    procedure OnClose; override; // @addr $5E7B8C
-    procedure SelectMusic; override; // @addr $5E8008
-    procedure InitializeLayout; override; // @addr $5E4E7C
+    procedure OnOpen; override; // @addr $54416C
+    procedure OnClose; override; // @addr $545A4C
+    procedure SelectMusic; override; // @addr $545E1C
+    procedure InitializeLayout; override; // @addr $5431F8
   end;
 
 implementation
@@ -34,7 +33,7 @@ uses aGalaxyStruct, Classes, Windows, SysUtils, EC_Str, EC_Struct, GI_Main, GI_F
   Globals, GlobalsV, aMyFunction, aPlayer, aGalaxy, aGalaxyEvent,
   fScore, fAbout, fSaveManager, ThreadCalc, SimpleSteamApi, Achievements;
 
-{ @routine $5E4E7C TfGameEnd_InitializeLayout }
+{ @routine $5431F8 TfGameEnd_InitializeLayout }
 procedure TfGameEnd.InitializeLayout;
 var Unused: Integer; Control: TObjectGI;
 begin
@@ -43,7 +42,7 @@ begin
   ViewportRect := Classes.Rect(ExtraScreenWidth div 2,ExtraScreenHeight div 2,ViewportRect.Left + ExtraScreenWidth div 2,ViewportRect.Top + ExtraScreenHeight div 2);
   with TFrameGI.Create(GetByName('MainPanel')) do
   begin
-    SetName('FrameLoad');
+    Name := 'FrameLoad';
     SetFillColor(0);
     SetFill(True);
     SetKind(fkRect);
@@ -117,9 +116,9 @@ begin
   (GetByName('Ok') as TGraphButtonGI).UpCallback := ContinueClicked;
   (GetByName('Load') as TGraphButtonGI).UpCallback := LoadClicked;
 end;
-{ @end $5E4E7C }
+{ @end $5431F8 }
 
-{ @routine $5E60E0 TfGameEnd_OnOpen }
+{ @routine $54416C TfGameEnd_OnOpen }
 procedure TfGameEnd.OnOpen;
 var
   Text, DeathCause: WideString;
@@ -158,22 +157,22 @@ begin
     end;
   if (GameEndReason > 4) or CustomWin then
   begin
-    (GetByName('ImageFon1') as TImageGI).SetImagePath('GI,Bm.FormIntro2.2bg');
-    (GetByName('ImageFon2') as TImageGI).SetImagePath('GI,Bm.FormIntro2.2bg');
+    (GetByName('ImageFon1') as TImageGI).ImageSourcePath := 'GI,Bm.FormIntro2.2bg';
+    (GetByName('ImageFon2') as TImageGI).ImageSourcePath := 'GI,Bm.FormIntro2.2bg';
   end
   else
   begin
-    (GetByName('ImageFon1') as TImageGI).SetImagePath('GI,Bm.FormEnd2.2bg');
-    (GetByName('ImageFon2') as TImageGI).SetImagePath('GI,Bm.FormEnd2.2bg');
+    (GetByName('ImageFon1') as TImageGI).ImageSourcePath := 'GI,Bm.FormEnd2.2bg';
+    (GetByName('ImageFon2') as TImageGI).ImageSourcePath := 'GI,Bm.FormEnd2.2bg';
   end;
   BackgroundScrollOffset := 0;
-  if BackgroundTimer <> nil then
+  if BackgroundTimer <> 0 then
   begin
     CancelCallbackTimer(BackgroundTimer);
-    BackgroundTimer := nil;
+    BackgroundTimer := 0;
   end;
   if AnimMainFon then BackgroundTimer := ScheduleCallbackTimer(40,40,ScrollBackground);
-  ScrollBackground(nil,0);
+  ScrollBackground(0,0);
   SelectMusic;
   if GetPlayer <> nil then
     ScoreScreen.RecordPlayerResult((GetPlayer <> nil) and (GameEndReason <> gerPlayerDeath) and not CustomLoss);
@@ -294,12 +293,14 @@ begin
   ReplaceTextToken(Text,'<Player>',LastLoadedPlayerName,TextHighlightColorTag);
   ReplaceTextToken(Text,'<Date>',FormatGameTurnDate(Galaxy.CurrentTurn),TextHighlightColorTag);
   if FindTextOffsetW(Text,'<Money>') >= 0 then
+  begin
     if LastMedicalPolicyTicks = 0 then ReplaceTextToken(Text,'<Money>','10.000',TextHighlightColorTag)
     else
     begin
       ReplaceTextToken(Text,'<Money>','20.000',TextHighlightColorTag);
       TryUnlockAchievement('INSURANCE');
     end;
+  end;
   ReplaceTextToken(Text,'<br>',#13#10,'');
   with GetByName('GBText') as TGraphBufGI do
   begin
@@ -310,34 +311,34 @@ begin
     SetSize(Classes.Point(ClientSize.X,GraphBuf.Height));
     SetPosition(Classes.Point(LocalPosition.X,TextPanelHeight));
   end;
-  if TextScrollTimer <> nil then
+  if TextScrollTimer <> 0 then
   begin
     CancelCallbackTimer(TextScrollTimer);
-    TextScrollTimer := nil;
+    TextScrollTimer := 0;
   end;
   TextScrollTimer := ScheduleCallbackTimer(20,20,ScrollEndingText);
 end;
-{ @end $5E60E0 }
+{ @end $54416C }
 
-{ @routine $5E7B8C TfGameEnd_OnClose }
+{ @routine $545A4C TfGameEnd_OnClose }
 procedure TfGameEnd.OnClose;
 begin
-  if TextScrollTimer <> nil then
+  if TextScrollTimer <> 0 then
   begin
     CancelCallbackTimer(TextScrollTimer);
-    TextScrollTimer := nil;
+    TextScrollTimer := 0;
   end;
   with GetByName('GBText') as TGraphBufGI do GraphBuf.Clear;
-  if BackgroundTimer <> nil then
+  if BackgroundTimer <> 0 then
   begin
     CancelCallbackTimer(BackgroundTimer);
-    BackgroundTimer := nil;
+    BackgroundTimer := 0;
   end;
 end;
-{ @end $5E7B8C }
+{ @end $545A4C }
 
-{ @routine $5E7C28 TfGameEnd_ScrollBackground }
-procedure TfGameEnd.ScrollBackground(Timer: PCallbackTimerGI; UserData: Integer);
+{ @routine $545AC0 TfGameEnd_ScrollBackground }
+procedure TfGameEnd.ScrollBackground(Timer: TCallbackTimerIdGI; UserData: Cardinal);
 var Offset: Integer;
 begin
   Inc(BackgroundScrollOffset);
@@ -348,10 +349,10 @@ begin
   end;
   with GetByName('ImageFon2') do SetPosition(Classes.Point(ClientSize.X - Offset,LocalPosition.Y));
 end;
-{ @end $5E7C28 }
+{ @end $545AC0 }
 
-{ @routine $5E7CEC TfGameEnd_ScrollEndingText }
-procedure TfGameEnd.ScrollEndingText(Timer: PCallbackTimerGI; UserData: Integer);
+{ @routine $545B5C TfGameEnd_ScrollEndingText }
+procedure TfGameEnd.ScrollEndingText(Timer: TCallbackTimerIdGI; UserData: Cardinal);
 var Limit: Single;
 begin
   with GetByName('GBText') as TGraphBufGI do
@@ -359,17 +360,16 @@ begin
     SetPosition(AddPoints(LocalPosition,Classes.Point(0,-1)));
     Limit := (TextPanelTop + TextPanelHeight) * 0.45 - ClientSize.Y * 0.5;
     if Limit < 0 then Limit := 2 * Limit;
-    if LocalPosition.Y < Limit then
-      if TextScrollTimer <> nil then
-      begin
-        CancelCallbackTimer(TextScrollTimer);
-        TextScrollTimer := nil;
-      end;
+    if (LocalPosition.Y < Limit) and (TextScrollTimer <> 0) then
+    begin
+      CancelCallbackTimer(TextScrollTimer);
+      TextScrollTimer := 0;
+    end;
   end;
 end;
-{ @end $5E7CEC }
+{ @end $545B5C }
 
-{ @routine $5E7DF4 TfGameEnd_ContinueClicked }
+{ @routine $545C48 TfGameEnd_ContinueClicked }
 procedure TfGameEnd.ContinueClicked(Sender: TObjectGI);
 begin
   if MemorySnapshotBuffer <> nil then MemorySnapshotBuffer.Free;
@@ -386,24 +386,24 @@ begin
   RequestClose(1);
   BreakUiMessage;
 end;
-{ @end $5E7DF4 }
+{ @end $545C48 }
 
-{ @routine $5E7E98 TfGameEnd_LoadClicked }
+{ @routine $545CE0 TfGameEnd_LoadClicked }
 procedure TfGameEnd.LoadClicked(Sender: TObjectGI);
 begin
   ShowControlHelp(nil,False);
-  SetCursorActive(False);
+  Self.ShowCursor := False;
   Present;
   CaptureScreenBackground(True,0);
-  SetCursorActive(True);
+  Self.ShowCursor := True;
   SaveManagerReturnScreenId := FormToId(Self);
   SaveManagerMode := smmLoad;
   RequestedScreenId := screenSaveManager;
   RequestClose(1);
 end;
-{ @end $5E7E98 }
+{ @end $545CE0 }
 
-{ @routine $5E7F08 TfGameEnd_ShowControlHelp }
+{ @routine $545D40 TfGameEnd_ShowControlHelp }
 procedure TfGameEnd.ShowControlHelp(Sender: TObjectGI; Show: Boolean);
 var LabelControl: TLabelGI;
 begin
@@ -412,18 +412,18 @@ begin
   LabelControl.SetActive(Show);
   if Sender <> nil then LabelControl.SetText(Sender.HelpText);
 end;
-{ @end $5E7F08 }
+{ @end $545D40 }
 
-{ @routine $5E7FA0 TfGameEnd_MainPanelKeyDown }
+{ @routine $545DC4 TfGameEnd_MainPanelKeyDown }
 procedure TfGameEnd.MainPanelKeyDown(Sender: TObjectGI; Key: Cardinal);
 begin
-  if not IsVirtualKeyDown(VK_CONTROL) and not IsVirtualKeyDown(VK_SHIFT) and not IsVirtualKeyDown(VK_MENU) then
-    if Key = VK_F3 then LoadClicked(nil)
-    else if (Key = VK_ESCAPE) or (Key = VK_RETURN) then ContinueClicked(nil);
+  if IsVirtualKeyDown(VK_CONTROL) or IsVirtualKeyDown(VK_SHIFT) or IsVirtualKeyDown(VK_MENU) then Exit;
+  if Key = VK_F3 then LoadClicked(nil)
+  else if (Key = VK_ESCAPE) or (Key = VK_RETURN) then ContinueClicked(nil);
 end;
-{ @end $5E7FA0 }
+{ @end $545DC4 }
 
-{ @routine $5E8008 TfGameEnd_SelectMusic }
+{ @routine $545E1C TfGameEnd_SelectMusic }
 procedure TfGameEnd.SelectMusic;
 var I: Integer; Event: TGalaxyEvent;
 begin
@@ -438,23 +438,23 @@ begin
     Exit;
   end;
   if GameEndReason = gerDefault then
-      for I := Galaxy.GalaxyEvents.Count - 1 downto 0 do
+    for I := Galaxy.GalaxyEvents.Count - 1 downto 0 do
+    begin
+      Event := Galaxy.GalaxyEvents[I];
+      if Galaxy.CurrentTurn > Event.Turn then Break;
+      if Event.EventType = 'CustomLose' then
       begin
-        Event := Galaxy.GalaxyEvents[I];
-        if Galaxy.CurrentTurn > Event.Turn then Break;
-        if Event.EventType = 'CustomLose' then
-        begin
-          MusicManager.PlayCategory('Loss');
-          Exit;
-        end;
-        if Event.EventType = 'CustomWin' then
-        begin
-          MusicManager.PlayCategory('Win');
-          Exit;
-        end;
+        MusicManager.PlayCategory('Loss');
+        Exit;
       end;
+      if Event.EventType = 'CustomWin' then
+      begin
+        MusicManager.PlayCategory('Win');
+        Exit;
+      end;
+    end;
   MusicManager.PlayCategory('Loss');
 end;
-{ @end $5E8008 }
+{ @end $545E1C }
 
 end.

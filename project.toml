@@ -5,14 +5,16 @@ cache = ".local"
 database = ".local/Rangers.i64"
 
 [target]
-build = "2026-08-11"
-sha256 = "f00343363043cbb9c2d10c1216e9f4c37b5eaa5e4d58f37a45284cae528fdc1d"
-size = 4999680
+build = "2026-10-06"
+sha256 = "e43a4b15503c705eebe2d8ce5778c2a2fb090db515a3fd86d319e5c5aa692ebf"
+size = 4533760
 
 [compiler]
+natural_alignment = true
+method_pointer_alignment = 8
 library_sources = []
 library = ".local/toolchains/lib"
 executable = ".local/toolchains/bin/DCC32.EXE"
 wine = "wine"
 # Source-parsed shared sets; rebuilding prevents DCU-dependent alignment changes.
-flags = ["-B", "-$O-", "-$R-", "-$Q-", "-$B-", "--codepage:65001,1251"]
+flags = ["-B", "-$O+", "-$R-", "-$Q-", "-$B-", "--codepage:65001,1251"]

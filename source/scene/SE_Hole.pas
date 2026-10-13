@@ -1,5 +1,4 @@
 unit SE_Hole;
-// Unit bracket (inferred): .text 0x007ECBE8..0x007ED5FC; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -20,23 +19,23 @@ type
     NameTextPath: WideString; // @offset $70 Localization key read by TfStarMap.ShowFilmObjectInfo.
     InfoTextPath: WideString; // @offset $74 Localization key read by TfStarMap.ShowFilmObjectInfo.
 
-    procedure AttachToSpace(ASpace: TSpaceSE); override; // @addr $7ECCCC
-    procedure DetachFromSpace; override; // @addr $7ECF38
-    procedure SetPosition(APosition: TPointF); override; // @addr $7ECFD4
-    procedure DrawMap; override; // @addr $7ED064
-    function HitTestCursor: Boolean; override; // @addr $7ED0E4
-    procedure LoadTemplate(Block: TBlockParEC); override; // @addr $7ED114
-    procedure ApplyConfig(Block: TBlockParEC); override; // @addr $7ED418
-    procedure AnimationCycleComplete(Sender: TObjectGI); // @addr $7ED434
-    procedure QueueImageLoad(PendingLoads: TList; Owner: TObjectGI); override; // @addr $7ED584
-    procedure SetState(Value: Integer); // @addr $7ECFA0 Preserves state 1 when asked to reset an attached effect to state 0.
+    procedure AttachToSpace(ASpace: TSpaceSE); override; // @addr $7277B4
+    procedure DetachFromSpace; override; // @addr $727994
+    procedure SetPosition(APosition: TPointF); override; // @addr $727A00
+    procedure DrawMap; override; // @addr $727A84
+    function HitTestCursor: Boolean; override; // @addr $727AF4
+    procedure LoadTemplate(Block: TBlockParEC); override; // @addr $727B10
+    procedure ApplyConfig(Block: TBlockParEC); override; // @addr $727DE0
+    procedure AnimationCycleComplete(Sender: TObjectGI); // @addr $727DE8
+    procedure QueueImageLoad(PendingLoads: TList; Owner: TObjectGI); override; // @addr $727ED0
+    procedure SetState(Value: Integer); // @addr $7279DC Preserves state 1 when asked to reset an attached effect to state 0.
   end;
 
 implementation
 
 uses Globals, GR_Main, GI_Main, EC_Str, SE_Process;
 
-{ @routine $7ECCCC THoleSE_AttachToSpace }
+{ @routine $7277B4 THoleSE_AttachToSpace }
 procedure THoleSE.AttachToSpace(ASpace: TSpaceSE);
 begin
   if IsAttachedToSpace then Exit;
@@ -48,11 +47,11 @@ begin
   if State = 1 then Animation.SetImagePath(ImagePath)
   else Animation.SetImagePath(ImagePath);
   Animation.CycleCompleteCallback := AnimationCycleComplete;
-  Animation.SetSize(Animation.GetContentSize);
-  Animation.SetOrigin(HalfPoint(Animation.ClientSize));
+  Animation.ObjectSize := Animation.GetContentSize;
+  Animation.Sme := HalfPoint(Animation.ClientSize);
   Animation.SetDepthByName(DepthExpression);
-  Animation.SetPosition(TruncatePointF(Position));
-  Animation.SetPositionModeW(True);
+  Animation.Pos := TruncatePointF(Position);
+  Animation.World := True;
   if State = 1 then Animation.SequenceIndex := 0
   else Animation.SequenceIndex := 1;
   Animation.UpdateAutoGeometry;
@@ -60,16 +59,16 @@ begin
   Animation.SetSequenceFrame(SavedSequenceFrameIndex);
   Animation.RestartPlayback;
   MapImage := TImageGI.Create(SpaceObjectUiLoop.ContentPanel);
-  MapImage.SetPositionModeW(True);
+  MapImage.World := True;
   MapImage.SetDepthByName(DepthExpression);
-  MapImage.SetPosition(TruncatePointF(MakePointF(Position.X * Space.MinimapScale, Position.Y * Space.MinimapScale)));
-  MapImage.SetImagePath(MapImagePath);
-  MapImage.SetSize(MapImage.GetContentSize);
-  MapImage.SetOrigin(HalfPoint(MapImage.GetContentSize));
+  MapImage.Pos := TruncatePointF(MakePointF(Position.X * Space.MinimapScale, Position.Y * Space.MinimapScale));
+  MapImage.ImageSourcePath := MapImagePath;
+  MapImage.ObjectSize := MapImage.GetContentSize;
+  MapImage.Sme := HalfPoint(MapImage.GetContentSize);
 end;
-{ @end $7ECCCC }
+{ @end $7277B4 }
 
-{ @routine $7ECF38 THoleSE_DetachFromSpace }
+{ @routine $727994 THoleSE_DetachFromSpace }
 procedure THoleSE.DetachFromSpace;
 begin
   if not IsAttachedToSpace then Exit;
@@ -86,46 +85,46 @@ begin
   end;
   inherited DetachFromSpace;
 end;
-{ @end $7ECF38 }
+{ @end $727994 }
 
-{ @routine $7ECFA0 THoleSE_SetState }
+{ @routine $7279DC THoleSE_SetState }
 procedure THoleSE.SetState(Value: Integer);
 begin
   if (State = 1) and (Value = 0) and IsAttachedToSpace then Exit;
   State := Value;
 end;
-{ @end $7ECFA0 }
+{ @end $7279DC }
 
-{ @routine $7ECFD4 THoleSE_SetPosition }
+{ @routine $727A00 THoleSE_SetPosition }
 procedure THoleSE.SetPosition(APosition: TPointF);
 begin
   inherited SetPosition(APosition);
   if IsAttachedToSpace then
   begin
-    Animation.SetPosition(TruncatePointF(APosition));
-    MapImage.SetPosition(TruncatePointF(MakePointF(APosition.X * Space.MinimapScale, APosition.Y * Space.MinimapScale)));
+    Animation.Pos := TruncatePointF(APosition);
+    MapImage.Pos := TruncatePointF(MakePointF(APosition.X * Space.MinimapScale, APosition.Y * Space.MinimapScale));
   end;
 end;
-{ @end $7ECFD4 }
+{ @end $727A00 }
 
-{ @routine $7ED064 THoleSE_DrawMap }
+{ @routine $727A84 THoleSE_DrawMap }
 procedure THoleSE.DrawMap;
 begin
   with Space.Process as TProcessSE do
     if PointDistanceSquared(Self.Position, RadarCenter) < Sqr(RadarRange) then
       MapImage.Draw(Classes.Rect(0, 0, RenderScratchBuffer.Width, RenderScratchBuffer.Height));
 end;
-{ @end $7ED064 }
+{ @end $727A84 }
 
-{ @routine $7ED0E4 THoleSE_HitTestCursor }
+{ @routine $727AF4 THoleSE_HitTestCursor }
 function THoleSE.HitTestCursor: Boolean;
 begin
   if not IsAttachedToSpace then Result := False
   else Result := Animation.HitTestCursor;
 end;
-{ @end $7ED0E4 }
+{ @end $727AF4 }
 
-{ @routine $7ED114 THoleSE_LoadTemplate }
+{ @routine $727B10 THoleSE_LoadTemplate }
 procedure THoleSE.LoadTemplate(Block: TBlockParEC);
 begin
   inherited LoadTemplate(Block);
@@ -142,23 +141,23 @@ begin
   if Block.CountParams('TextPath') > 0 then InfoTextPath := Block.GetParam('TextPath')
   else InfoTextPath := 'FormInfo.HoleText';
 end;
-{ @end $7ED114 }
+{ @end $727B10 }
 
-{ @routine $7ED418 THoleSE_ApplyConfig }
+{ @routine $727DE0 THoleSE_ApplyConfig }
 procedure THoleSE.ApplyConfig(Block: TBlockParEC);
 begin
   inherited ApplyConfig(Block);
 end;
-{ @end $7ED418 }
+{ @end $727DE0 }
 
-{ @routine $7ED434 THoleSE_AnimationCycleComplete }
+{ @routine $727DE8 THoleSE_AnimationCycleComplete }
 procedure THoleSE.AnimationCycleComplete(Sender: TObjectGI);
 begin
   if State = 1 then
   begin
     Animation.SetImagePath(ImagePath);
-    Animation.SetSize(Animation.GetContentSize);
-    Animation.SetOrigin(HalfPoint(Animation.ClientSize));
+    Animation.ObjectSize := Animation.GetContentSize;
+    Animation.Sme := HalfPoint(Animation.ClientSize);
     Animation.SequenceIndex := 1;
     Animation.UpdateAutoGeometry;
     Animation.SetSequenceFrame(0);
@@ -170,8 +169,8 @@ begin
     else
     begin
       Animation.SetImagePath(ImagePath);
-      Animation.SetSize(Animation.GetContentSize);
-      Animation.SetOrigin(HalfPoint(Animation.ClientSize));
+      Animation.ObjectSize := Animation.GetContentSize;
+      Animation.Sme := HalfPoint(Animation.ClientSize);
       Animation.SequenceIndex := 2;
       Animation.UpdateAutoGeometry;
       Animation.SetSequenceFrame(0);
@@ -179,9 +178,9 @@ begin
     end;
   end;
 end;
-{ @end $7ED434 }
+{ @end $727DE8 }
 
-{ @routine $7ED584 THoleSE_QueueImageLoad }
+{ @routine $727ED0 THoleSE_QueueImageLoad }
 procedure THoleSE.QueueImageLoad(PendingLoads: TList; Owner: TObjectGI);
 begin
   with TgaiGI.Create(Owner) do
@@ -197,6 +196,6 @@ begin
     Free;
   end;
 end;
-{ @end $7ED584 }
+{ @end $727ED0 }
 
 end.

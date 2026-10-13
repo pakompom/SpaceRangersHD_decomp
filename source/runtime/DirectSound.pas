@@ -1,5 +1,4 @@
 unit DirectSound;
-// Unit bracket (inferred): .text 0x0045F64C..0x0045F6C4; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -58,7 +57,7 @@ type
     ExtraSize: Word; // @offset 16
   end;
 
-  TDSBufferDesc = record // @size 0x24
+  TDSBufferDesc = packed record // @size 0x24
     Size: Cardinal; // @offset 0
     Flags: Cardinal; // @offset 4
     BufferBytes: Cardinal; // @offset 8
@@ -117,13 +116,13 @@ type
   TDSEnumCallback = function(Guid: Pointer; Description, Module: PAnsiChar; Context: Pointer): LongBool; stdcall;
 
 function DirectSoundEnumerateA(Callback: TDSEnumCallback; Context: Pointer): LongInt; stdcall;
-  external 'dsound.dll' name 'DirectSoundEnumerateA'; // @addr $45F700
+  external 'dsound.dll' name 'DirectSoundEnumerateA'; // @addr $4822DC
 
 type
   TDirectSoundEnumerate = function(Callback: TDSEnumCallback; Context: Pointer): LongInt; stdcall;
 var
-  DirectSoundCreate: TDirectSoundCreate; // @addr $889E0C
-  DirectSoundEnumerate: TDirectSoundEnumerate; // @addr $889E10
+  DirectSoundCreate: TDirectSoundCreate; // @addr $819E60
+  DirectSoundEnumerate: TDirectSoundEnumerate; // @addr $819E64
 
 implementation
 end.

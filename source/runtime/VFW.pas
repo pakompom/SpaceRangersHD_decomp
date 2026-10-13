@@ -1,5 +1,4 @@
 unit VFW;
-// Unit bracket (inferred): .text 0x004B6BD0..0x004B6C00; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -54,21 +53,21 @@ type
   end;
 
 procedure AVIFileInit; stdcall;
-  external 'AVIFIL32.DLL' name 'AVIFileInit'; // @addr $4B6C28
+  external 'AVIFIL32.DLL' name 'AVIFileInit'; // @addr $4834B0
 procedure AVIFileExit; stdcall;
-  external 'AVIFIL32.DLL' name 'AVIFileExit'; // @addr $4B6C30
+  external 'AVIFIL32.DLL' name 'AVIFileExit'; // @addr $4834B8
 function AVIFileOpenA(var FileHandle: IAVIFile; FileName: PAnsiChar; Mode: Cardinal; Handler: Pointer): Integer; stdcall;
-  external 'AVIFIL32.DLL' name 'AVIFileOpenA'; // @addr $4B6C38
+  external 'AVIFIL32.DLL' name 'AVIFileOpenA'; // @addr $4834C0
 function AVIFileGetStream(const FileHandle: IAVIFile; var Stream: IAVIStream; StreamType: Cardinal; Index: Integer): Integer; stdcall;
-  external 'AVIFIL32.DLL' name 'AVIFileGetStream'; // @addr $4B6C40
+  external 'AVIFIL32.DLL' name 'AVIFileGetStream'; // @addr $4834C8
 function AVIStreamInfoA(const Stream: IAVIStream; var Info: TAVIStreamInfoA; Size: Integer): Integer; stdcall;
-  external 'AVIFIL32.DLL' name 'AVIStreamInfoA'; // @addr $4B6C48
+  external 'AVIFIL32.DLL' name 'AVIStreamInfoA'; // @addr $4834D0
 function AVIStreamReadFormat(const Stream: IAVIStream; Position: Integer; Format: Pointer; var FormatSize: Integer): Integer; stdcall;
-  external 'AVIFIL32.DLL' name 'AVIStreamReadFormat'; // @addr $4B6C50
+  external 'AVIFIL32.DLL' name 'AVIStreamReadFormat'; // @addr $4834D8
 function AVIStreamRead(const Stream: IAVIStream; Start, Samples: Integer; Buffer: Pointer; BufferSize: Integer; BytesRead, SamplesRead: PCardinal): Integer; stdcall;
-  external 'AVIFIL32.DLL' name 'AVIStreamRead'; // @addr $4B6C58
+  external 'AVIFIL32.DLL' name 'AVIStreamRead'; // @addr $4834E0
 function AVIStreamLength(const Stream: IAVIStream): Integer; stdcall;
-  external 'AVIFIL32.DLL' name 'AVIStreamLength'; // @addr $4B6C60
+  external 'AVIFIL32.DLL' name 'AVIStreamLength'; // @addr $4834E8
 
 implementation
 end.

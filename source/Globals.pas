@@ -1,15 +1,15 @@
 unit Globals;
-// Unit bracket (inferred): .text 0x00526284..0x00538D85; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
-// Unit bracket (inferred): .itext 0x0087784C..0x0087785F; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
-uses fMainForm, fCfgSettings, fGameEnd, fAbout, fIntroduction, fGameSettings, fGameSettings2, fLoadAB, fAchievements, fFilm, fRating2, fGameMenu, fGameLoad, fPlanet, fGov, fInfo, fScaner, fRewards, fGalaxy2, fGoodsShop2, EC_Expression, fTalk, ab_MainForm, fLoad, fJump, ThreadCalc, fJournal, fSelectFace, fLoadQuest, fPlanetQuest, fPlanetNO, aItem, aGalaxyStruct, aShip, fScore, fLoadRobot, fStarMap, aEFilm, aEFilmEnd, SE_Space, SE_Process, aPlanet, fShip2, fHangar, fRuinsTalk, fEquipmentShop, fSaveManager, GI_GraphButton, GI_MessageLoop, EC_Buf, EC_Struct, fFilmFile, SyncObjs, Classes, Types;
+uses fMainForm, fCfgSettings, fGameEnd, fAbout, fIntroduction, fGameSettings, fGameSettings2, fLoadAB, fAchievements, fFilm, fRating2, fGameMenu, fGameLoad, fPlanet, fGov, fInfo, fScaner, fRewards, fGalaxy2, fGoodsShop2, EC_Expression, fTalk, ab_MainForm, fLoad, fJump, ThreadCalc, fJournal, fSelectFace, fLoadQuest, fPlanetQuest, fPlanetNO, aItem, aGalaxyStruct, aShip, fScore, fLoadRobot, fStarMap, aEFilm, aEFilmEnd, SE_Space, SE_Planet, SE_Process, aPlanet, fShip2, fHangar, fRuinsTalk, fEquipmentShop, fSaveManager, GI_GraphButton, GI_MessageLoop, EC_Buf, EC_Struct, fFilmFile, SyncObjs, Classes, Types;
 
 const
   PersistentMessageLifetimeTurns = 1000000; // Finite native lifetime for retained notices.
 
 type
+  TScriptVariableTypeNames = array[TVarKind] of WideString;
+
   // PlayerMessagePresentations order, also persisted in the message queue.
   TPlayerMessageKind = (
     pmGalaxyNews = 0,
@@ -42,8 +42,8 @@ type
     LastTurn: Integer; // @offset $14 Returned by SF_GLastTurnRun.
     ActiveScriptIndex: Integer; // @offset $18 -1 when no active galaxy script is bound.
     ConditionCode: TCodeEC; // @offset $1C
-    constructor Create; // @addr $52D7B0
-    destructor Destroy; override; // @addr $52D810
+    constructor Create; // @addr $7A5FE8
+    destructor Destroy; override; // @addr $7A6034
   end;
 
   TPlanetTempl = class(TObject) // @size $18
@@ -59,7 +59,7 @@ type
     Style: Integer; // @offset $00 First SE.Planet.Style value.
     StyleVariant: Integer; // @offset $04 Optional second SE.Planet.Style value.
     Radius: Integer; // @offset $08
-    SpaceObject: TObjectSE; // @offset $0C Retained until UI shutdown.
+    SpaceObject: TPlanetSE; // @offset $0C Retained until UI shutdown.
   end;
 
   TSputnikTempl = class(TObject) // @size $0C
@@ -70,12 +70,11 @@ type
 
   TPlayerMessageKindSet = set of TPlayerMessageKind; // @size $02 Native exclusion mask for persistent-message searches.
 
-  TPlayerMessageTarget = packed record // @size 0x08
+  TPlayerMessageTarget = record // @size 0x08
     ShipId: Cardinal; // @offset 0x00
     PlanetId: Cardinal; // @offset 0x04
   end;
 
-  // Native record RTTI at $5263EC.
   TMessagePlayerTypeGraph = record // @size $10
     NormalImage: WideString; // @offset $00
     ActiveImage: WideString; // @offset $04
@@ -97,7 +96,7 @@ var
     (NormalImage: 'UserN'; ActiveImage: 'UserA'; PressedImage: 'UserD'; LifetimeTurns: PersistentMessageLifetimeTurns),
     (NormalImage: 'ShipMinusN'; ActiveImage: 'ShipMinusA'; PressedImage: 'ShipMinusD'; LifetimeTurns: 5),
     (NormalImage: 'StorageN'; ActiveImage: 'StorageA'; PressedImage: 'StorageD'; LifetimeTurns: PersistentMessageLifetimeTurns),
-    (NormalImage: 'Ether2N'; ActiveImage: 'Ether2A'; PressedImage: 'Ether2D'; LifetimeTurns: 0)); // @addr $87AD94 Native image defaults and turn lifetimes.
+    (NormalImage: 'Ether2N'; ActiveImage: 'Ether2A'; PressedImage: 'Ether2D'; LifetimeTurns: 0)); // @addr $812DAC Native image defaults and turn lifetimes.
 
 type
   TMessagePlayer = class(TObjectEx) // @size 0x44
@@ -117,195 +116,194 @@ type
     // Targets are serialized as all three ship IDs, then all three planet IDs.
     // Prev, Next and Button are not serialized; both flags are persistent.
 
-    constructor Create; // @addr 0x52C9F4 @note "Does not link the object into the global message queue."
-    procedure SaveToBuffer(Buffer: TBufEC); // @addr 0x52CA48
-    procedure LoadFromBuffer(Buffer: TBufEC); // @addr 0x52CB28 @note "Leaves linkage and Button untouched. ImageNameOverride is present only from save version 109 onward."
-    function GetNormalImageName: WideString; // @addr 0x52CC64
-    function GetActiveImageName: WideString; // @addr 0x52CCB8
-    function GetPressedImageName: WideString; // @addr 0x52CD0C
+    constructor Create; // @addr 0x007A5458 @note "Does not link the object into the global message queue."
+    procedure SaveToBuffer(Buffer: TBufEC); // @addr 0x007A549C
+    procedure LoadFromBuffer(Buffer: TBufEC); // @addr 0x007A5540 @note "Leaves linkage and Button untouched. ImageNameOverride is present only from save version 109 onward."
+    function GetNormalImageName: WideString; // @addr 0x007A5644
+    function GetActiveImageName: WideString; // @addr 0x007A5688
+    function GetPressedImageName: WideString; // @addr 0x007A56CC
   end;
 
-function FindScriptTemplateIndex(const Name: WideString): Integer; // @addr $52D854 @note "Case-sensitive; returns -1 when absent. Requires the template list. Native callers include UI loading and script builtins."
+function FindScriptTemplateIndex(const Name: WideString): Integer; // @addr $7A6068 @note "Case-sensitive; returns -1 when absent. Requires the template list. Native callers include UI loading and script builtins."
 
-procedure CollectInactiveScriptTemplates(Dest: TList); // @addr $52D8BC @note "Clears Dest, borrows templates with ActiveScriptIndex < 0, then performs twice Count seeded swaps. Chaotic RNG mode ignores the seeds."
+procedure CollectInactiveScriptTemplates(Dest: TList); // @addr $7A60AC @note "Clears Dest, borrows templates with ActiveScriptIndex < 0, then performs twice Count seeded swaps. Chaotic RNG mode ignores the seeds."
 
-procedure RecreateSpaceProcess(const ConfigName: WideString); // @addr $52C8D0
-function ShowPlayerTipOnce(Index: Integer): Boolean; // @addr $52D9E8 @note "Sets the shown bit and enqueues localized Tips.00-style player text; returns whether a new tip was shown."
-function HasShownPlayerTip(Index: Integer): Boolean; // @addr $52DB38
+procedure RecreateSpaceProcess(const ConfigName: WideString); // @addr $7A538C
+function ShowPlayerTipOnce(Index: Integer): Boolean; // @addr $7A61A4 @note "Sets the shown bit and enqueues localized Tips.00-style player text; returns whether a new tip was shown."
+function HasShownPlayerTip(Index: Integer): Boolean; // @addr $7A62EC
 
-function SelectSpaceImageTemplateFromSeed(Kind: Integer; Seed: Cardinal): Integer; // @addr $52DB58 @note "Weighted selection restricted to Kind; returns 0 if no weight is available."
-function SelectSpaceImageTemplate(Kind: Integer): Integer; // @addr $52DC3C
-function FindPlanetSpaceTemplateIndex(Style, StyleVariant: Integer): Integer; // @addr $52E8E4 @note "Raises when no template matches the two SE.Planet.Style values."
-procedure HandleRuntimeExitCheck1; // @addr $52DC68 @note "Retained empty ExitScreenLoop test; assigned by Rangers.start to an otherwise unread hook."
-procedure HandleRuntimeExitCheck2; // @addr $52DC74 @note "Retained empty ExitScreenLoop test; assigned by Rangers.start to an otherwise unread hook."
+function SelectSpaceImageTemplateFromSeed(Kind: Integer; Seed: Cardinal): Integer; // @addr $7A62FC @note "Weighted selection restricted to Kind; returns 0 if no weight is available."
+function SelectSpaceImageTemplate(Kind: Integer): Integer; // @addr $7A6398
+function FindPlanetSpaceTemplateIndex(Style, StyleVariant: Integer): Integer; // @addr $7A6E68 @note "Raises when no template matches the two SE.Planet.Style values."
+procedure HandleRuntimeExitCheck1; // @addr $7A63B4 @note "Retained empty ExitScreenLoop test; assigned by Rangers.start to an otherwise unread hook."
+procedure HandleRuntimeExitCheck2; // @addr $7A63C0 @note "Retained empty ExitScreenLoop test; assigned by Rangers.start to an otherwise unread hook."
 
-procedure InitializeScriptHostRuntime; // @addr 0x526AC4
-procedure FinalizeScriptHostRuntime; // @addr 0x526C04
-function ParseRobotMapRaceMask(Text: WideString): TOwnerMask; // @addr $52DC80 @ida "unsigned __int8 __usercall $name@<al>(unsigned __int16 *Text@<eax>);"
-function FindRobotMapById(MapId: Integer): Integer; // @addr $52E88C Returns -1 for an unknown map.
-procedure InitializeRobotMapDefinitions; // @addr $52DED4
-procedure InitializeShipGreetingDefinitions; // @addr $52E9B4
-procedure InitializeGovernmentGreetingDefinitions; // @addr $534F34
-procedure InitializePlanetAdvertDefinitions; // @addr $538150
-procedure InitializeGlobalUiRuntime; // @addr 0x526F10
-procedure FinalizeGlobalUiRuntime; // @addr 0x52BED8
-procedure ResetScriptHostRuntimeState; // @addr 0x52C68C
-function FindMessageLoop(Name: WideString): TMessageLoopGI; // @addr 0x52BE1C @note "Case-sensitive; returns nil when absent."
-procedure RunMainScreenStateLoop; // @addr 0x52C908 @note "Consumes RequestedScreenId before each run; zero ends dispatch. StarMap, Film and arcade battle use RunContinuous."
+procedure InitializeScriptHostRuntime; // @addr 0x0079FD48
+procedure FinalizeScriptHostRuntime; // @addr 0x0079FE88
+function ParseRobotMapRaceMask(Text: WideString): TOwnerMask; // @addr $7A63CC @ida "unsigned __int8 __usercall $name@<al>(unsigned __int16 *Text@<eax>);"
+function FindRobotMapById(MapId: Integer): Integer; // @addr $7A6E34 Returns -1 for an unknown map.
+procedure InitializeRobotMapDefinitions; // @addr $7A65F4
+procedure InitializeShipGreetingDefinitions; // @addr $7A6F0C
+procedure InitializeGovernmentGreetingDefinitions; // @addr $7ACE8C
+procedure InitializePlanetAdvertDefinitions; // @addr $7AFDB4
+procedure InitializeGlobalUiRuntime; // @addr 0x007A0124
+procedure FinalizeGlobalUiRuntime; // @addr 0x007A4AF8
+procedure ResetScriptHostRuntimeState; // @addr 0x007A51AC
+function FindMessageLoop(Name: WideString): TMessageLoopGI; // @addr 0x007A4A64 @note "Case-sensitive; returns nil when absent."
+procedure RunMainScreenStateLoop; // @addr 0x007A53C0 @note "Consumes RequestedScreenId before each run; zero ends dispatch. StarMap, Film and arcade battle use RunContinuous."
 
-procedure SwapTurnFilms; // @addr $52C9D0 Exchanges the producer and playback films.
-function GetInnermostScreenLoop: TMessageLoopGI; // @addr $538C18 Follows ChildLoop from the current registered screen.
-function FindPlayerMessageExceptKinds(const Key: WideString; ExcludedKinds: TPlayerMessageKindSet; SkipLock: Boolean): TMessagePlayer; // @addr $52D3C8 @ida "TMessagePlayer *__usercall $name@<eax>(unsigned __int16 *Key@<eax>, unsigned __int16 ExcludedKinds@<dx>, bool SkipLock@<cl>);" Key is an optional substring; returned queue node is borrowed.
-function RemovePlayerMessagesExceptKinds(Key: WideString; ExcludedKinds: TPlayerMessageKindSet; SkipLock: Boolean): Boolean; // @addr $52CF90 @ida "bool __usercall $name@<al>(unsigned __int16 *Key@<eax>, unsigned __int16 ExcludedKinds@<dx>, bool SkipLock@<cl>);" Returns whether any queued message was removed.
-procedure ClearPersistentPlayerMessages; // @addr 0x52CD60
-function CountPersistentPlayerMessages: Integer; // @addr 0x52CDDC
-function IsPersistentPlayerMessageQueued(MessageEntry: TMessagePlayer; SkipLock: Boolean): Boolean; // @addr 0x52CE4C
-procedure RemovePersistentPlayerMessage(MessageEntry: TMessagePlayer; SkipLock: Boolean); // @addr 0x52CED8 @note "Requires a queued node; unlinks and frees it."
-function FindPlayerBubbleByText(const Text: WideString; SkipLock: Boolean): TMessagePlayer; // @addr 0x52D04C @note "Returns a borrowed queue node or nil."
-function FindPlayerBubbleByKey(const Key: WideString; SkipLock: Boolean): TMessagePlayer; // @addr 0x52D0E4 @note "Returns a borrowed queue node or nil."
-procedure RemovePlayerBubblePages(const Prefix: WideString; FirstPage: Integer); // @addr $52D260 @note "Removes matching prefix keys whose integer suffix is at least FirstPage; leaves unnumbered keys alone."
-procedure RemovePlayerBubbleByKey(const Key: WideString); // @addr 0x52D17C @note "Removes only the first exact match."
-function CreatePersistentPlayerMessage: TMessagePlayer; // @addr 0x52D484 @note "Appends a new node owned by the global message queue."
-function AddOrUpdatePlayerBubble(Kind: TPlayerMessageKind; Turn: Integer; const Text, Key: WideString): TMessagePlayer; // @addr 0x52D520 @note "Returns a borrowed queue node. An existing key updates kind/turn and nonempty text; otherwise an exact text match is returned unchanged."
-procedure PruneExpiredPersistentPlayerMessages; // @addr 0x52D698
-
-var
+procedure SwapTurnFilms; // @addr $7A5440 Exchanges the producer and playback films.
+function GetInnermostScreenLoop: TMessageLoopGI; // @addr $7B0708 Follows ChildLoop from the current registered screen.
+function FindPlayerMessageExceptKinds(const Key: WideString; ExcludedKinds: TPlayerMessageKindSet; SkipLock: Boolean): TMessagePlayer; // @addr $7A5C84 @ida "TMessagePlayer *__usercall $name@<eax>(unsigned __int16 *Key@<eax>, unsigned __int16 ExcludedKinds@<dx>, bool SkipLock@<cl>);" Key is an optional substring; returned queue node is borrowed.
+function RemovePlayerMessagesExceptKinds(Key: WideString; ExcludedKinds: TPlayerMessageKindSet; SkipLock: Boolean): Boolean; // @addr $7A58DC @ida "bool __usercall $name@<al>(unsigned __int16 *Key@<eax>, unsigned __int16 ExcludedKinds@<dx>, bool SkipLock@<cl>);" Returns whether any queued message was removed.
+procedure ClearPersistentPlayerMessages; // @addr 0x007A5710
+function CountPersistentPlayerMessages: Integer; // @addr 0x007A5778
+function IsPersistentPlayerMessageQueued(MessageEntry: TMessagePlayer; SkipLock: Boolean): Boolean; // @addr 0x007A57D0
+procedure RemovePersistentPlayerMessage(MessageEntry: TMessagePlayer; SkipLock: Boolean); // @addr 0x007A5848 @note "Requires a queued node; unlinks and frees it."
+function FindPlayerBubbleByText(const Text: WideString; SkipLock: Boolean): TMessagePlayer; // @addr 0x007A5998 @note "Returns a borrowed queue node or nil."
+function FindPlayerBubbleByKey(const Key: WideString; SkipLock: Boolean): TMessagePlayer; // @addr 0x007A5A20 @note "Returns a borrowed queue node or nil."
+procedure RemovePlayerBubblePages(const Prefix: WideString; FirstPage: Integer); // @addr $7A5B54 @note "Removes matching prefix keys whose integer suffix is at least FirstPage; leaves unnumbered keys alone."
+procedure RemovePlayerBubbleByKey(const Key: WideString); // @addr 0x007A5AA8 @note "Removes only the first exact match."
+function CreatePersistentPlayerMessage: TMessagePlayer; // @addr 0x007A5D2C @note "Appends a new node owned by the global message queue."
+function AddOrUpdatePlayerBubble(Kind: TPlayerMessageKind; Turn: Integer; const Text, Key: WideString): TMessagePlayer; // @addr 0x007A5DC0 @note "Returns a borrowed queue node. An existing key updates kind/turn and nonempty text; otherwise an exact text match is returned unchanged."
+procedure PruneExpiredPersistentPlayerMessages; // @addr 0x007A5EFC
 
 var
-  MainMenuScreen: TfMainForm; // @addr 0x88A428
-  NewGameScreen: TfGameSettings2; // @addr 0x88A42C
-  IntroductionScreen: TfIntroduction; // @addr 0x88A430
-  HangarScreen: TfHangar; // @addr $88A434
-  PlanetScreen: TfPlanet; // @addr $88A438
-  UninhabitedPlanetScreen: TfPlanetNO; // @addr $88A43C
-  PlanetQuestScreen: TfPlanetQuest; // @addr 0x88A440
-  RuinsTalkScreen: TfRuinsTalk; // @addr $88A444
-  ArcadeBattleScreen: TfAB; // @addr $88A448
-  EquipmentShopScreen: TfEquipmentShop; // @addr $88A44C
-  GoodsShopScreen: TfGoodsShop2; // @addr $88A450
-  GovernmentScreen: TfGov; // @addr $88A454
-  InfoScreen: TfInfo; // @addr $88A458
-  RangerRatingScreen: TfRating2; // @addr 0x88A45C
-  RewardsScreen: TfRewards; // @addr $88A460
-  ShipScreen: TfShip2; // @addr 0x88A464
-  TalkScreen: TfTalk; // @addr $88A468
-  ScannerScreen: TfScaner; // @addr $88A46C
-  StarMapScreen: TfStarMap; // @addr 0x88A470
-  FilmScreen: TfFilm; // @addr 0x88A474
-  GalaxyScreen: TfGalaxy2; // @addr $88A478
-  JumpScreen: TfJump; // @addr $88A47C
-  LoadScreen: TfLoad; // @addr $88A480
-  SaveManagerScreen: TfSaveManager; // @addr 0x88A484
-  GameLoadScreen: TfGameLoad; // @addr $88A488
-  GameMenuScreen: TfGameMenu; // @addr $88A48C
-  SettingsScreen: TfCfgSettings; // @addr 0x88A490
-  GameEndScreen: TfGameEnd; // @addr $88A494
-  AboutScreen: TfAbout; // @addr 0x88A498
-  ScoreScreen: TfScore; // @addr 0x88A49C
-  SelectFaceScreen: TfSelectFace; // @addr $88A4A0
-  SpaceObjectUiLoop: TMessageLoopGI; // @addr $88A4A4 Unregistered loop centered on the back buffer; hosts space-object controls.
-  JournalScreen: TfJournal; // @addr $88A4A8
-  LoadRobotScreen: TfLoadRobot; // @addr $88A4AC
-  LoadQuestScreen: TfLoadQuest; // @addr 0x88A4B0
-  LoadArcadeScreen: TfLoadAB; // @addr $88A4B4
-  AchievementsScreen: TfAchievements; // @addr $88A4B8 Native UI shutdown does not free this screen.
+
 var
-  SpaceViewPosition: TPointF; // @addr $88A4BC Map scroll offset and scene sound attenuation origin.
-  FilmCameraFollow: Boolean; // @addr $88A4C4
+  MainMenuScreen: TfMainForm; // @addr 0x0081CB64
+  NewGameScreen: TfGameSettings2; // @addr 0x0081CB68
+  IntroductionScreen: TfIntroduction; // @addr 0x0081CB6C
+  HangarScreen: TfHangar; // @addr $81CB70
+  PlanetScreen: TfPlanet; // @addr $81CB74
+  UninhabitedPlanetScreen: TfPlanetNO; // @addr $81CB78
+  PlanetQuestScreen: TfPlanetQuest; // @addr 0x0081CB7C
+  RuinsTalkScreen: TfRuinsTalk; // @addr $81CB80
+  ArcadeBattleScreen: TfAB; // @addr $81CB84
+  EquipmentShopScreen: TfEquipmentShop; // @addr $81CB88
+  GoodsShopScreen: TfGoodsShop2; // @addr $81CB8C
+  GovernmentScreen: TfGov; // @addr $81CB90
+  InfoScreen: TfInfo; // @addr $81CB94
+  RangerRatingScreen: TfRating2; // @addr 0x0081CB98
+  RewardsScreen: TfRewards; // @addr $81CB9C
+  ShipScreen: TfShip2; // @addr 0x0081CBA0
+  TalkScreen: TfTalk; // @addr $81CBA4
+  ScannerScreen: TfScaner; // @addr $81CBA8
+  StarMapScreen: TfStarMap; // @addr 0x0081CBAC
+  FilmScreen: TfFilm; // @addr 0x0081CBB0
+  GalaxyScreen: TfGalaxy2; // @addr $81CBB4
+  JumpScreen: TfJump; // @addr $81CBB8
+  LoadScreen: TfLoad; // @addr $81CBBC
+  SaveManagerScreen: TfSaveManager; // @addr 0x0081CBC0
+  GameLoadScreen: TfGameLoad; // @addr $81CBC4
+  GameMenuScreen: TfGameMenu; // @addr $81CBC8
+  SettingsScreen: TfCfgSettings; // @addr 0x0081CBCC
+  GameEndScreen: TfGameEnd; // @addr $81CBD0
+  AboutScreen: TfAbout; // @addr 0x0081CBD4
+  ScoreScreen: TfScore; // @addr 0x0081CBD8
+  SelectFaceScreen: TfSelectFace; // @addr $81CBDC
+  SpaceObjectUiLoop: TMessageLoopGI; // @addr $81CBE0 Unregistered loop centered on the back buffer; hosts space-object controls.
+  JournalScreen: TfJournal; // @addr $81CBE4
+  LoadRobotScreen: TfLoadRobot; // @addr $81CBE8
+  LoadQuestScreen: TfLoadQuest; // @addr 0x0081CBEC
+  LoadArcadeScreen: TfLoadAB; // @addr $81CBF0
+  AchievementsScreen: TfAchievements; // @addr $81CBF4 Native UI shutdown does not free this screen.
+var
+  SpaceViewPosition: TPointF; // @addr $81CBF8 Map scroll offset and scene sound attenuation origin.
+  FilmCameraFollow: Boolean; // @addr $81CC00
 var
 
-  TalkShip: TShip; // @addr 0x88A4C8
-  TalkPlanet: TPlanet; // @addr $88A4CC Planet dialogue target, assigned by TPlanet.RequestDialog.
-  TalkScripted: Boolean; // @addr $88A4D0 Set for the scripted Keller dialogue.
-  TalkType: TTalkKind; // @addr $88A4D1 tk* conversation ID set by TShip.ShowPlayerDialogue and exposed by SF_GetTalkType.
-  TalkAmount: Integer; // @addr $88A4D4 Negotiated amount; ShowPlayerDialogue overwrites it only for positive inputs.
-  TalkResponse: Byte; // @addr $88A4D8 Response selected by the conversation UI.
-  TalkText: WideString; // @addr $88A4DC Message supplied to the conversation UI.
+  TalkShip: TShip; // @addr 0x0081CC04
+  TalkPlanet: TPlanet; // @addr $81CC08 Planet dialogue target, assigned by TPlanet.RequestDialog.
+  TalkScripted: Boolean; // @addr $81CC0C Set for the scripted Keller dialogue.
+  TalkType: TTalkKind; // @addr $81CC0D tk* conversation ID set by TShip.ShowPlayerDialogue and exposed by SF_GetTalkType.
+  TalkAmount: Integer; // @addr $81CC10 Negotiated amount; ShowPlayerDialogue overwrites it only for positive inputs.
+  TalkResponse: Byte; // @addr $81CC14 Response selected by the conversation UI.
+  TalkText: WideString; // @addr $81CC18 Message supplied to the conversation UI.
 var
-  ScriptUseItem: TItem; // @addr $88A4E0 Item currently executing OnUse; native runner clears it after success.
-  ScriptItemContextStack: TList; // @addr $88A4E4
-  ScriptItemInfoContextStack: TList; // @addr $88A4E8
-  ScriptActionShipStack: TList; // @addr $88A4EC
-  ScriptActionObject1Stack: TList; // @addr $88A4F0
-  ScriptActionObject2Stack: TList; // @addr $88A4F4
-  ScriptActionParamStack: TList; // @addr $88A4F8
-  ScriptActionTypeStack: TList; // @addr $88A4FC
-  ScreenLoadMode: Byte; // @addr $88A500 @note "Startup sets 0, or 3 for a screen with composite loading assets."
-var
-
-  ScriptTemplates: TList; // @addr $88A504 @note "Owns native TScriptTemplUnit entries."
-  SharedScriptVariables: TVarArrayEC; // @addr $88A508 @note "Shared scope used by script compilation, execution and text-quest external parameters."
-  GlobalScriptVariables: TVarArrayEC; // @addr $88A50C @note "Persistent script globals, initially GRunFrom and GRunStar."
-  ScriptTemplateStartRequested: Boolean; // @addr $88A510 Set by script condition code; checked after running each inactive template.
-  LastLoadedPlayerName: WideString; // @addr $88A514 Player-name snapshot used by the end-game text.
-var
-  ReloadScriptTemplates: Boolean = True; // @addr $87AE44 @note "Native initial value is True. Reset sets this flag; UI initialization reloads script and ship templates then clears it."
-  ReloadModsRequested: Boolean = False; // @addr $87AE48
-  StandaloneQuestMode: Boolean = False; // @addr $87AE4C @note "The quest selector sets True; planet/government/script launches set False. Guards campaign quest checks and turn advancement."
-  ScannerTarget: TObject = nil; // @addr $87AE50 Borrowed target passed from the star map to the scanner screen.
-  ScriptDialogIndex: Integer = -1; // @addr $87AE54 Selected script dialogue; -1 while resolving a dialogue variable.
-var
-  AwardSubject: TObject = nil; // @addr $87AE58 Borrowed ship selected by inventory, scanner or ranger ranking for the medals screen.
-  PlayerStarDayPrepared: Boolean = False; // @addr 0x87AE5C
-var
-  PreviousFilmActivity: Cardinal = 0; // @addr $87AE60
-  FilmSoundEffectsEnabled: Boolean = True; // @addr $87AE64 Temporarily disabled while the film slider seeks through steps.
-  TurnCalculationThread: TThreadCalc = nil; // @addr $87AE68 @note "Owned here; ThreadCalc and Rangers access it through the imported reference cell."
-  DefaultArcadeLaserEffect: WideString = 'Laser.W1'; // @addr $87AE6C Native default; callers remain to be identified.
-  DefaultArcadeHitEffect: WideString = 'Anim.H1'; // @addr $87AE70 Native default; callers remain to be identified.
-  DefaultArcadeExplosionEffect: WideString = 'Anim.E1'; // @addr $87AE74 Native default; callers remain to be identified.
-var
-  FilmHistory: TFilmFile = nil; // @addr 0x87AE78
-  CacheLoader: TCacheLoader = nil; // @addr 0x87AE7C
-var
-  SaveManagerMode: TSaveManagerMode = smmLoad; // @addr 0x87AE80
-  TalkRequestEvent: Cardinal = 0; // @addr $87AE84 @note "Auto-reset event: ship/planet turn workers request a player conversation."
-  TalkCompletedEvent: Cardinal = 0; // @addr $87AE88 @note "Auto-reset event signaled when the star-map UI returns from conversation."
-  ScriptUiRequestEvent: Cardinal = 0; // @addr $87AE8C @note "Raised by the turn thread when requesting a UI-side conversation."
-  ScriptUiAbortEvent: Cardinal = 0; // @addr $87AE90 @note "Aborts a pending turn-thread conversation wait; the worker returns False."
-  PlanetRenderTemplates: TList = nil; // @addr $87AE94 Owns TPlanetTempl instances.
-var
-  MinimapFrameCounter: Integer = 0; // @addr $87AE98 Film/star-map draw cadence; reset by manual minimap scrolling.
-  Skip1C: Boolean = False; // @addr $87AE9C
-  SkipVideo: Boolean = False; // @addr $87AEA0
-  SkipIntro: Boolean = False; // @addr $87AEA4
-var
-  NewGameGenerationThread: TThreadCreateNewGame; // @addr 0x88A518
-  ShownPlayerTips: Cardinal; // @addr $88A51C Bit mask; native shifts use the low five bits of the tip index.
-var
-  StarMapWeaponPanelOpen: Boolean; // @addr $88A520 Toggled by TfStarMap.ToggleWeaponPanelClicked; reset on arcade exit.
+  ScriptUseItem: TItem; // @addr $81CC1C Item currently executing OnUse; native runner clears it after success.
+  ScriptItemContextStack: TList; // @addr $81CC20
+  ScriptItemInfoContextStack: TList; // @addr $81CC24
+  ScriptActionShipStack: TList; // @addr $81CC28
+  ScriptActionObject1Stack: TList; // @addr $81CC2C
+  ScriptActionObject2Stack: TList; // @addr $81CC30
+  ScriptActionParamStack: TList; // @addr $81CC34
+  ScriptActionTypeStack: TList; // @addr $81CC38
+  ScreenLoadMode: Byte; // @addr $81CC3C @note "Startup sets 0, or 3 for a screen with composite loading assets."
 var
 
-  PrimaryFilm: TEFilm; // @addr 0x88A524
-  SecondaryFilm: TEFilm; // @addr 0x88A528
+  ScriptTemplates: TList; // @addr $81CC40 @note "Owns native TScriptTemplUnit entries."
+  SharedScriptVariables: TVarArrayEC; // @addr $81CC44 @note "Shared scope used by script compilation, execution and text-quest external parameters."
+  GlobalScriptVariables: TVarArrayEC; // @addr $81CC48 @note "Persistent script globals, initially GRunFrom and GRunStar."
+  ScriptTemplateStartRequested: Boolean; // @addr $81CC4C Set by script condition code; checked after running each inactive template.
+  LastLoadedPlayerName: WideString; // @addr $81CC50 Player-name snapshot used by the end-game text.
 var
-  TrailingFilmEffects: TEFilmEnd; // @addr $88A52C Native shared trailing-effect owner.
+  ReloadScriptTemplates: Boolean = True; // @addr $812E5C @note "Native initial value is True. Reset sets this flag; UI initialization reloads script and ship templates then clears it."
+  ReloadModsRequested: Boolean = False; // @addr $812E60
+  StandaloneQuestMode: Boolean = False; // @addr $812E64 @note "The quest selector sets True; planet/government/script launches set False. Guards campaign quest checks and turn advancement."
+  ScannerTarget: TObject = nil; // @addr $812E68 Borrowed target passed from the star map to the scanner screen.
+  ScriptDialogIndex: Integer = -1; // @addr $812E6C Selected script dialogue; -1 while resolving a dialogue variable.
+var
+  AwardSubject: TObject = nil; // @addr $812E70 Borrowed ship selected by inventory, scanner or ranger ranking for the medals screen.
+  PlayerStarDayPrepared: Boolean = False; // @addr 0x00812E74
+var
+  PreviousFilmActivity: Cardinal = 0; // @addr $812E78
+  FilmSoundEffectsEnabled: Boolean = True; // @addr $812E7C Temporarily disabled while the film slider seeks through steps.
+  TurnCalculationThread: TThreadCalc = nil; // @addr $812E80 @note "Owned here; ThreadCalc and Rangers access it through the imported reference cell."
+  DefaultArcadeLaserEffect: WideString = 'Laser.W1'; // @addr $812E84 Native default; callers remain to be identified.
+  DefaultArcadeHitEffect: WideString = 'Anim.H1'; // @addr $812E88 Native default; callers remain to be identified.
+  DefaultArcadeExplosionEffect: WideString = 'Anim.E1'; // @addr $812E8C Native default; callers remain to be identified.
+var
+  FilmHistory: TFilmFile = nil; // @addr 0x00812E90
+  CacheLoader: TCacheLoader = nil; // @addr 0x00812E94
+var
+  SaveManagerMode: TSaveManagerMode = smmLoad; // @addr 0x00812E98
+  TalkRequestEvent: Cardinal = 0; // @addr $812E9C @note "Auto-reset event: ship/planet turn workers request a player conversation."
+  TalkCompletedEvent: Cardinal = 0; // @addr $812EA0 @note "Auto-reset event signaled when the star-map UI returns from conversation."
+  ScriptUiRequestEvent: Cardinal = 0; // @addr $812EA4 @note "Raised by the turn thread when requesting a UI-side conversation."
+  ScriptUiAbortEvent: Cardinal = 0; // @addr $812EA8 @note "Aborts a pending turn-thread conversation wait; the worker returns False."
+  PlanetRenderTemplates: TList = nil; // @addr $812EAC Owns TPlanetTempl instances.
+var
+  MinimapFrameCounter: Integer = 0; // @addr $812EB0 Film/star-map draw cadence; reset by manual minimap scrolling.
+  Skip1C: Boolean = False; // @addr $812EB4
+  SkipVideo: Boolean = False; // @addr $812EB8
+  SkipIntro: Boolean = False; // @addr $812EBC
+var
+  NewGameGenerationThread: TThreadCreateNewGame; // @addr 0x0081CC54
+  ShownPlayerTips: Cardinal; // @addr $81CC58 Bit mask; native shifts use the low five bits of the tip index.
+var
+  StarMapWeaponPanelOpen: Boolean; // @addr $81CC5C Toggled by TfStarMap.ToggleWeaponPanelClicked; reset on arcade exit.
 var
 
-  SpaceProcess: TProcessSE; // @addr $88A530
+  PrimaryFilm: TEFilm; // @addr 0x0081CC60
+  SecondaryFilm: TEFilm; // @addr 0x0081CC64
 var
-  ActiveLoadBuffer: TBufEC; // @addr 0x88A534 @note "Borrowed during LoadGameFromFile; exposed for progress reporting."
+  TrailingFilmEffects: TEFilmEnd; // @addr $81CC68 Native shared trailing-effect owner.
 var
 
-  PersistentPlayerMessageLock: TCriticalSection; // @addr $88A538
-  FirstPersistentPlayerMessage: TMessagePlayer; // @addr 0x88A53C
-  LastPersistentPlayerMessage: TMessagePlayer; // @addr 0x88A540
-  ArcadeExplosionSounds: array of WideString; // @addr $88A544 ABSound.Explosion values.
-  ArcadeItemSounds: array of WideString; // @addr $88A548 ABSound.Item values.
-  ArcadeHitSounds: array of WideString; // @addr $88A54C ABSound.Hit values.
-  ArcadeWeaponFirstSounds: array[0..17] of WideString; // @addr $88A550 ABSound.WeaponFirst.
-  ArcadeWeaponLoopSounds: array[0..17] of WideString; // @addr $88A598 ABSound.WeaponLoop entries, after the time value.
+  SpaceProcess: TProcessSE; // @addr $81CC6C
 var
-  ArcadeWeaponLoopTicks: array[0..17] of Integer; // @addr $88A5E0 First configured value divided by 20; -1 when absent.
-  RaceShipTemplates: array[TOwnerId, htRanger..htDiplomat] of TObjectSE; // @addr $88A628 @note "Retained SE.Ship templates indexed by owner and six ordinary hull kinds."
-  BlazerShipTemplates: array[TKlingType] of TObjectSE; // @addr $88A6E8
-  KellerShipTemplates: array[TKlingType] of TObjectSE; // @addr $88A708
-  TerronShipTemplates: array[TKlingType] of TObjectSE; // @addr $88A728
-  PirateClanShipTemplates: array[TOwnerId] of TObjectSE; // @addr $88A748
-  PlanetSpaceTemplates: array of TPlanetSpaceTemplate; // @addr $88A768
+  ActiveLoadBuffer: TBufEC; // @addr 0x0081CC70 @note "Borrowed during LoadGameFromFile; exposed for progress reporting."
+var
+
+  PersistentPlayerMessageLock: TCriticalSection; // @addr $81CC74
+  FirstPersistentPlayerMessage: TMessagePlayer; // @addr 0x0081CC78
+  LastPersistentPlayerMessage: TMessagePlayer; // @addr 0x0081CC7C
+  ArcadeExplosionSounds: array of WideString; // @addr $81CC80 ABSound.Explosion values.
+  ArcadeItemSounds: array of WideString; // @addr $81CC84 ABSound.Item values.
+  ArcadeHitSounds: array of WideString; // @addr $81CC88 ABSound.Hit values.
+  ArcadeWeaponFirstSounds: array[0..17] of WideString; // @addr $81CC8C ABSound.WeaponFirst.
+  ArcadeWeaponLoopSounds: array[0..17] of WideString; // @addr $81CCD4 ABSound.WeaponLoop entries, after the time value.
+var
+  ArcadeWeaponLoopTicks: array[0..17] of Integer; // @addr $81CD1C First configured value divided by 20; -1 when absent.
+  RaceShipTemplates: array[TOwnerId, htRanger..htDiplomat] of TObjectSE; // @addr $81CD64 @note "Retained SE.Ship templates indexed by owner and six ordinary hull kinds."
+  BlazerShipTemplates: array[TKlingType] of TObjectSE; // @addr $81CE24
+  KellerShipTemplates: array[TKlingType] of TObjectSE; // @addr $81CE44
+  TerronShipTemplates: array[TKlingType] of TObjectSE; // @addr $81CE64
+  PirateClanShipTemplates: array[TOwnerId] of TObjectSE; // @addr $81CE84
+  PlanetSpaceTemplates: array of TPlanetSpaceTemplate; // @addr $81CEA4
 
 type
-  // Native record RTTI at $526870.
   TRobotMap = record // @size $50
     Id: Integer; // @offset $00
     Name: WideString; // @offset $04
@@ -335,11 +333,10 @@ type
   end;
 
 var
-  UselessItemRemainsCount: Integer; // @addr $88A76C UselessItems.CntRemains.
-  RobotMapDefinitions: array of TRobotMap; // @addr $88A770
+  UselessItemRemainsCount: Integer; // @addr $81CEA8 UselessItems.CntRemains.
+  RobotMapDefinitions: array of TRobotMap; // @addr $81CEAC
 
 type
-  // Native record RTTI at $5268F4.
   TShipGreetingsInfo = record // @size $84
     Name: WideString; // @offset $00
     Priority: Integer; // @offset $04
@@ -443,7 +440,6 @@ type
   end;
 
   // Three-valued predicates preserve each rule's omitted-field default.
-  // Native record RTTI at $526924.
   TGovGreetingsInfo = record // @size $44
     Name: WideString; // @offset $00
     Priority: Integer; // @offset $04
@@ -495,7 +491,6 @@ type
     PlayerPirateRank: TGreetingMask; // @offset $41
   end;
 
-  // Native record RTTI at $52694C.
   TPlanetAdvtUnit = record // @size $14
     Name: WideString; // @offset $00
     Image1: WideString; // @offset $04
@@ -505,14 +500,12 @@ type
     Owner: TOwnerMask; // @offset $11
   end;
 
-  // Native RTTI at $5269A8 names TPlanetAdvtList: a weighted advert sequence.
-  // Field-only object preserves anonymous numbering; original record/object syntax is uncertain.
+  // Weighted planet advert sequence.
   TPlanetAdvtList = object // @size $08
     Weight: Integer; // @offset $00 Numeric PlanetAdvt.List parameter name; weighted selection in TPlanetSE.StartRandomSurfaceAnimation.
     Indices: array of Integer; // @offset $04
   end;
 
-  // Native record RTTI at $526A18.
   TPlanetAdvtGroup = record // @size $18
     Image1: WideString; // @offset $00
     Image2: WideString; // @offset $04
@@ -524,13 +517,13 @@ type
   PPlanetAdvertDefinition = ^TPlanetAdvtGroup;
 
 var
-  ShipGreetingDefinitions: array of TShipGreetingsInfo; // @addr $88A774
+  ShipGreetingDefinitions: array of TShipGreetingsInfo; // @addr $81CEB0
 var
-  ShipGreetingCount: Integer; // @addr $88A778
-  GovernmentGreetingDefinitions: array of TGovGreetingsInfo; // @addr $88A77C
+  ShipGreetingCount: Integer; // @addr $81CEB4
+  GovernmentGreetingDefinitions: array of TGovGreetingsInfo; // @addr $81CEB8
 var
-  GovernmentGreetingCount: Integer; // @addr $88A780
-  PlanetAdvertDefinitions: array of TPlanetAdvtGroup; // @addr $88A784
+  GovernmentGreetingCount: Integer; // @addr $81CEBC
+  PlanetAdvertDefinitions: array of TPlanetAdvtGroup; // @addr $81CEC0
 
 type
   TGovernmentGreetingDefinitions = array of TGovGreetingsInfo;
@@ -551,12 +544,12 @@ type
 
 implementation
 
-// @unit-initialization $87784C
-// @unit-finalization $538C4C
+// @unit-initialization $8079C8
+// @unit-finalization $7B0728
 
 uses aPacket, aSaveLoad, aScript, aPath, Robot, aConst, aPlayer, GI_Main, PopUp, EC_CacheGAI, EC_Thread, EC_Cache, aGalaxy, aMyFunction, EC_BlockPar, GR_Main, EC_Str, GlobalsV, Math, SysUtils, Windows, ab_Global;
 
-{ @routine $526AC4 InitializeScriptHostRuntime }
+{ @routine $79FD48 InitializeScriptHostRuntime }
 procedure InitializeScriptHostRuntime;
 begin
   PersistentPlayerMessageLock := TCriticalSection.Create;
@@ -569,7 +562,7 @@ begin
   ScriptUiRequestEvent := CreateEvent(nil, True, False, nil);
   ScriptUiAbortEvent := CreateEvent(nil, True, False, nil);
   TurnCalculationThread := TThreadCalc.Create;
-  TurnCalculationThread.SetPriority(2);
+  TurnCalculationThread.SetPriority(ThreadPriorityBelowNormal);
   ScriptTemplates := TList.Create;
   GlobalScriptVariables := TVarArrayEC.Create;
   SharedScriptVariables := TVarArrayEC.Create;
@@ -577,9 +570,9 @@ begin
   GlobalScriptVariables.Add('GRunStar', vkDword).SetInt(0);
   InitializeScriptEngine;
 end;
-{ @end $526AC4 }
+{ @end $79FD48 }
 
-{ @routine $526C04 FinalizeScriptHostRuntime }
+{ @routine $79FE88 FinalizeScriptHostRuntime }
 procedure FinalizeScriptHostRuntime;
 var
   Race: TOwnerId; Kind: THullType; KlingKind: TKlingType;
@@ -664,14 +657,14 @@ begin
     PersistentPlayerMessageLock := nil;
   end;
 end;
-{ @end $526C04 }
+{ @end $79FE88 }
 
 var
-  ScriptVariableTypeNames: array[0..10] of WideString = (
+  ScriptVariableTypeNames: TScriptVariableTypeNames = (
     'Unknown', 'Int', 'DW', 'Float', 'Str', 'ExternFun', 'LibraryFun',
-    'Fun', 'Class', 'Array', 'Ref'); // @addr $87AEA8 Native initialization descriptors at $538D8C..$538DDC.
+    'Fun', 'Class', 'Array', 'Ref'); // @addr $812EC0
 
-{ @routine $526F10 InitializeGlobalUiRuntime }
+{ @routine $7A0124 InitializeGlobalUiRuntime }
 procedure InitializeGlobalUiRuntime;
 var
   Race: TOwnerId;
@@ -783,13 +776,13 @@ begin
   if UserSettingsConfig.CountParamsByPath('StaticBackground') > 0 then
     StaticBackground := ParseEnabledNameGI(UserSettingsConfig.GetParamByPathOrMarker('StaticBackground'));
   if UserSettingsConfig.CountParamsByPath('ScrollTime') > 0 then
-    ScrollTime := StrToInt(AnsiString(UserSettingsConfig.GetParamByPathOrMarker('ScrollTime')));
+    ScrollTime := StrToInt(UserSettingsConfig.GetParamByPathOrMarker('ScrollTime'));
   if UserSettingsConfig.CountParamsByPath('ScrollStep') > 0 then
-    ScrollStep := StrToInt(AnsiString(UserSettingsConfig.GetParamByPathOrMarker('ScrollStep')));
+    ScrollStep := StrToInt(UserSettingsConfig.GetParamByPathOrMarker('ScrollStep'));
   if UserSettingsConfig.CountParamsByPath('ScrollSense') > 0 then
-    ScrollSense := StrToInt(AnsiString(UserSettingsConfig.GetParamByPathOrMarker('ScrollSense')));
+    ScrollSense := StrToInt(UserSettingsConfig.GetParamByPathOrMarker('ScrollSense'));
   if UserSettingsConfig.CountParamsByPath('FilmSpeed') > 0 then
-    FilmSpeed := StrToInt(AnsiString(UserSettingsConfig.GetParamByPathOrMarker('FilmSpeed')));
+    FilmSpeed := StrToInt(UserSettingsConfig.GetParamByPathOrMarker('FilmSpeed'));
   ScrollInteriorRect := Classes.Rect(ScrollSense, ScrollSense, GameScreenWidth - ScrollSense, GameScreenHeight - ScrollSense);
   if not IsInstallFeatureEnabled('AnimGov') then AnimGov := 0;
   if not IsInstallFeatureEnabled('AnimCaptain') then AnimCaptain := False;
@@ -799,13 +792,13 @@ begin
     SkipIntro := True;
   end;
   if UserSettingsConfig.CountParamsByPath('BGOCount') > 0 then
-    BGOCount := StrToInt(AnsiString(UserSettingsConfig.GetParamByPathOrMarker('BGOCount')));
+    BGOCount := StrToInt(UserSettingsConfig.GetParamByPathOrMarker('BGOCount'));
   if UserSettingsConfig.CountParamsByPath('BGOTime') > 0 then
-    BGOTime := StrToInt(AnsiString(UserSettingsConfig.GetParamByPathOrMarker('BGOTime')));
+    BGOTime := StrToInt(UserSettingsConfig.GetParamByPathOrMarker('BGOTime'));
   if UserSettingsConfig.CountParamsByPath('MaxFilmStepSkip') > 0 then
-    MaxFilmStepSkip := StrToInt(AnsiString(UserSettingsConfig.GetParamByPathOrMarker('MaxFilmStepSkip')));
+    MaxFilmStepSkip := StrToInt(UserSettingsConfig.GetParamByPathOrMarker('MaxFilmStepSkip'));
   if UserSettingsConfig.CountParamsByPath('CountFilmSave') > 0 then
-    FilmHistoryLimit := Max(1, StrToInt(AnsiString(UserSettingsConfig.GetParamByPathOrMarker('CountFilmSave'))));
+    FilmHistoryLimit := Max(1, StrToInt(UserSettingsConfig.GetParamByPathOrMarker('CountFilmSave')));
   if UserSettingsConfig.CountParamsByPath('SputnikShow') > 0 then
     SputnikShow := ParseEnabledNameGI(UserSettingsConfig.GetParamByPathOrMarker('SputnikShow'));
   if UserSettingsConfig.CountParamsByPath('SpaceImage') > 0 then
@@ -879,14 +872,14 @@ begin
   if ReloadScriptTemplates then
   begin
     Section := GameDataConfig.GetBlockByPath('Script');
-    Count := Section.GetParamCount;
+    Count := Section.ParamCount;
     for Index := 0 to Count - 1 do
     begin
-      if FindScriptTemplateIndex(Section.GetParamName(Index)) >= 0 then
+      if FindScriptTemplateIndex(Section.ParamNames[Index]) >= 0 then
         raise Exception.Create('Script name not unique');
       ScriptTemplate := TScriptTemplUnit.Create;
-      ScriptTemplate.Name := Section.GetParamName(Index);
-      Text := Section.GetParamValue(Index);
+      ScriptTemplate.Name := Section.ParamNames[Index];
+      Text := Section.ParamValues[Index];
       ScriptTemplate.ClassId := ExtractDigitsToIntW(ExtractDelimitedPartW(Text, 0, ','));
       ScriptTemplate.FileName := ExtractDelimitedPartW(Text, 1, ',');
       ScriptTemplates.Add(ScriptTemplate);
@@ -901,19 +894,19 @@ begin
         if Variable.RealVType <> Other.RealVType then
         begin
           WarningText := 'Warning! Mismatching global variables with same name <' + Variable.Name + '> found! Types are ' +
-            ScriptVariableTypeNames[Ord(Variable.RealVType)] + ' and ' +
-            ScriptVariableTypeNames[Ord(Other.RealVType)];
+            ScriptVariableTypeNames[Variable.RealVType] + ' and ' +
+            ScriptVariableTypeNames[Other.RealVType];
           if Variable.RealVType = vkEmpty then
           begin
-            WarningText := WarningText + ', ' + ScriptVariableTypeNames[Ord(Variable.RealVType)] + ' will be discarded';
+            WarningText := WarningText + ', ' + ScriptVariableTypeNames[Variable.RealVType] + ' will be discarded';
             GlobalScriptVariables.Remove(Variable);
           end
           else
           begin
-            WarningText := WarningText + ', ' + ScriptVariableTypeNames[Ord(Other.RealVType)] + ' will be discarded';
+            WarningText := WarningText + ', ' + ScriptVariableTypeNames[Other.RealVType] + ' will be discarded';
             GlobalScriptVariables.Remove(Other);
           end;
-          AppendLogLineThreadSafe(AnsiString(WarningText));
+          AppendLogLineThreadSafe(WarningText);
         end
         else
         begin
@@ -922,7 +915,7 @@ begin
           else
           begin
             WarningText := 'Warning! Mismatching global variables with same name <' + Variable.Name + '> found! Initial values are ' +
-              Variable.GetString + ' and ' + Other.GetString + '. Value ' + Variable.GetString + ' will be used';
+              Variable.AsString + ' and ' + Other.AsString + '. Value ' + Variable.AsString + ' will be used';
             GlobalScriptVariables.Remove(Other);
           end;
         end;
@@ -964,34 +957,32 @@ begin
         Inc(Index);
       end;
   end;
-  Count := GameDataConfig.GetBlockByPath('SE.Planet').GetBlockCount;
+  Count := GameDataConfig.GetBlockByPath('SE.Planet').BlockCount;
   for Index := 0 to Count - 1 do
   begin
-    Section := GameDataConfig.GetBlockByPath('SE.Planet').GetBlockByIndex(Index);
+    Section := GameDataConfig.GetBlockByPath('SE.Planet').Blocks[Index];
     if Section.CountParams('Image') <= 0 then Dec(Count);
   end;
   SetLength(PlanetSpaceTemplates, Count);
-  Count := GameDataConfig.GetBlockByPath('SE.Planet').GetBlockCount;
+  Count := GameDataConfig.GetBlockByPath('SE.Planet').BlockCount;
   TemplateIndex := 0;
   for Index := 0 to Count - 1 do
   begin
-    Section := GameDataConfig.GetBlockByPath('SE.Planet').GetBlockByIndex(Index);
-    if Section.CountParams('Image') > 0 then
+    Section := GameDataConfig.GetBlockByPath('SE.Planet').Blocks[Index];
+    if Section.CountParams('Image') <= 0 then Continue;
+    RetainSpaceObject(PlanetSpaceTemplates[TemplateIndex].SpaceObject,
+      CreateSpaceObjectByName('Planet', 'Planet.' + GameDataConfig.GetBlockByPath('SE.Planet').BlockNames[Index], Classes.Point(0, 0)));
+    PlanetSpaceTemplates[TemplateIndex].Radius := StrToInt(Section.Params['Radius']);
+    PlanetSpaceTemplates[TemplateIndex].Style := 0;
+    PlanetSpaceTemplates[TemplateIndex].StyleVariant := 0;
+    if Section.CountParams('Style') > 0 then
     begin
-      RetainSpaceObject(PlanetSpaceTemplates[TemplateIndex].SpaceObject,
-        CreateSpaceObjectByName('Planet', 'Planet.' + GameDataConfig.GetBlockByPath('SE.Planet').GetBlockNameByIndex(Index), Classes.Point(0, 0)));
-      PlanetSpaceTemplates[TemplateIndex].Radius := StrToInt(AnsiString(Section.GetParam('Radius')));
-      PlanetSpaceTemplates[TemplateIndex].Style := 0;
-      PlanetSpaceTemplates[TemplateIndex].StyleVariant := 0;
-      if Section.CountParams('Style') > 0 then
-      begin
-        Text := Section.GetParam('Style');
-        PlanetSpaceTemplates[TemplateIndex].Style := ExtractDigitsToIntW(ExtractDelimitedPartW(Text, 0, ','));
-        if CountDelimitedPartsW(Text, ',') >= 2 then
-          PlanetSpaceTemplates[TemplateIndex].StyleVariant := ExtractDigitsToIntW(ExtractDelimitedPartW(Text, 1, ','));
-      end;
-      Inc(TemplateIndex);
+      Text := Section.Params['Style'];
+      PlanetSpaceTemplates[TemplateIndex].Style := ExtractDigitsToIntW(ExtractDelimitedPartW(Text, 0, ','));
+      if CountDelimitedPartsW(Text, ',') >= 2 then
+        PlanetSpaceTemplates[TemplateIndex].StyleVariant := ExtractDigitsToIntW(ExtractDelimitedPartW(Text, 1, ','));
     end;
+    Inc(TemplateIndex);
   end;
   PopupController := TfPopUpController.Create;
   LoadScreen := TfLoad.Create;
@@ -1166,13 +1157,13 @@ begin
     Inc(Index);
   end;
   Section := GameDataConfig.GetBlock('SpaceImg');
-  Count := Section.GetParamCount;
+  Count := Section.ParamCount;
   SetLength(SpaceImageTemplates, Count);
   for Index := 0 to Count - 1 do
   begin
-    Text := Section.GetParamValue(Index);
+    Text := Section.ParamValues[Index];
     if CountDelimitedPartsW(Text, ',') < 2 then raise Exception.Create('Error in GlobalsInit');
-    SpaceImageTemplates[Index].Kind := ExtractDigitsToIntW(Section.GetParamName(Index));
+    SpaceImageTemplates[Index].Kind := ExtractDigitsToIntW(Section.ParamNames[Index]);
     SpaceImageTemplates[Index].Weight := ExtractDigitsToIntW(ExtractDelimitedPartW(Text, 0, ','));
     SpaceImageTemplates[Index].CacheControl := TCGaiControlEC.Create;
     SpaceImageTemplates[Index].CachedData := nil;
@@ -1180,15 +1171,15 @@ begin
     TCGaiControlEC(SpaceImageTemplates[Index].CacheControl).SetCacheKey(ExtractDelimitedPartW(Text, 1, ','));
   end;
   Section := GameDataConfig.GetBlock('StarFieldImg');
-  Count := Section.GetParamCount;
+  Count := Section.ParamCount;
   SetLength(StarFieldImageTemplates, Count);
   for Index := 0 to Count - 1 do
   begin
-    StarFieldImageTemplates[Index].Weight := ExtractDigitsToIntW(Section.GetParamName(Index));
+    StarFieldImageTemplates[Index].Weight := ExtractDigitsToIntW(Section.ParamNames[Index]);
     StarFieldImageTemplates[Index].CacheControl := TCGaiControlEC.Create;
     StarFieldImageTemplates[Index].CachedData := nil;
     GlobalCache.ResetControl(TCGaiControlEC(StarFieldImageTemplates[Index].CacheControl));
-    TCGaiControlEC(StarFieldImageTemplates[Index].CacheControl).SetCacheKey(Section.GetParamValue(Index));
+    TCGaiControlEC(StarFieldImageTemplates[Index].CacheControl).SetCacheKey(Section.ParamValues[Index]);
   end;
   ReloadScriptTemplates := False;
   InitializeGameplayConfig;
@@ -1196,58 +1187,58 @@ begin
   InitializeGovernmentGreetingDefinitions;
   InitializePlanetAdvertDefinitions;
   InitializeRobotMapDefinitions;
-  UselessItemRemainsCount := StrToInt(AnsiString(LookupLocalizedTextByKey('UselessItems.CntRemains')));
+  UselessItemRemainsCount := StrToInt(LookupLocalizedTextByKey('UselessItems.CntRemains'));
   Section := GameDataConfig.GetBlock('ABSound').GetBlock('Explosion');
-  Count := Section.GetParamCount;
+  Count := Section.ParamCount;
   SetLength(ArcadeExplosionSounds, Count);
-  for Index := 0 to Count - 1 do ArcadeExplosionSounds[Index] := Section.GetParamValue(Index);
+  for Index := 0 to Count - 1 do ArcadeExplosionSounds[Index] := Section.ParamValues[Index];
   Section := GameDataConfig.GetBlock('ABSound').GetBlock('Hit');
-  Count := Section.GetParamCount;
+  Count := Section.ParamCount;
   SetLength(ArcadeHitSounds, Count);
-  for Index := 0 to Count - 1 do ArcadeHitSounds[Index] := Section.GetParamValue(Index);
+  for Index := 0 to Count - 1 do ArcadeHitSounds[Index] := Section.ParamValues[Index];
   Section := GameDataConfig.GetBlock('ABSound').GetBlock('Item');
-  Count := Section.GetParamCount;
+  Count := Section.ParamCount;
   SetLength(ArcadeItemSounds, Count);
-  for Index := 0 to Count - 1 do ArcadeItemSounds[Index] := Section.GetParamValue(Index);
+  for Index := 0 to Count - 1 do ArcadeItemSounds[Index] := Section.ParamValues[Index];
   Section := GameDataConfig.GetBlock('ABSound').GetBlock('WeaponFirst');
-  for Index := 0 to 17 do
-    if Section.CountParams(WideString(IntToStr(Index))) <= 0 then
+  for Index := Low(ArcadeWeaponFirstSounds) to High(ArcadeWeaponFirstSounds) do
+    if Section.CountParams(IntToStr(Index)) <= 0 then
       ArcadeWeaponFirstSounds[Index] := ''
-    else ArcadeWeaponFirstSounds[Index] := Section.GetParam(WideString(IntToStr(Index)));
+    else ArcadeWeaponFirstSounds[Index] := Section.Params[IntToStr(Index)];
   Section := GameDataConfig.GetBlock('ABSound').GetBlock('WeaponLoop');
-  for Index := 0 to 17 do
-    if Section.CountParams(WideString(IntToStr(Index))) <= 0 then
+  for Index := Low(ArcadeWeaponLoopSounds) to High(ArcadeWeaponLoopSounds) do
+    if Section.CountParams(IntToStr(Index)) <= 0 then
     begin
       ArcadeWeaponLoopSounds[Index] := '';
       ArcadeWeaponLoopTicks[Index] := -1;
     end
     else
     begin
-      Text := Section.GetParam(WideString(IntToStr(Index)));
+      Text := Section.Params[IntToStr(Index)];
       ArcadeWeaponLoopTicks[Index] := ExtractDigitsToIntW(ExtractDelimitedPartW(Text, 0, ',')) div ArcadeTickMs;
       ArcadeWeaponLoopSounds[Index] := ExtractDelimitedPartW(Text, 1, ',');
     end;
 end;
-{ @end $526F10 }
+{ @end $7A0124 }
 
-{ @routine $52BE1C FindMessageLoop }
+{ @routine $7A4A64 FindMessageLoop }
 function FindMessageLoop(Name: WideString): TMessageLoopGI;
 var
   Index: TGameScreenId;
 begin
   Result := nil;
   for Index := Low(TGameScreenId) to High(TGameScreenId) do
-    if (TMessageLoopGI(RegisteredScreens[Index]) <> nil) and
-       (TObject(RegisteredScreens[Index]) is TMessageLoopGI) and
-       ((TObject(RegisteredScreens[Index]) as TMessageLoopGI).RegisteredLoopName = Name) then
+    if (RegisteredScreens[Index] <> nil) and
+       (RegisteredScreens[Index] is TMessageLoopGI) and
+       ((RegisteredScreens[Index] as TMessageLoopGI).RegisteredLoopName = Name) then
     begin
       Result := TMessageLoopGI(RegisteredScreens[Index]);
       Break;
     end;
 end;
-{ @end $52BE1C }
+{ @end $7A4A64 }
 
-{ @routine $52BED8 FinalizeGlobalUiRuntime }
+{ @routine $7A4AF8 FinalizeGlobalUiRuntime }
 procedure FinalizeGlobalUiRuntime;
 var
   Index, Count: Integer;
@@ -1261,17 +1252,17 @@ begin
   ArcadeItemSounds := nil;
   Count := High(SpaceImageTemplates) + 1;
   for Index := 0 to Count - 1 do
-    if TCGaiControlEC(SpaceImageTemplates[Index].CacheControl) <> nil then
+    if SpaceImageTemplates[Index].CacheControl <> nil then
     begin
-      TCGaiControlEC(SpaceImageTemplates[Index].CacheControl).Free;
+      SpaceImageTemplates[Index].CacheControl.Free;
       SpaceImageTemplates[Index].CacheControl := nil;
     end;
   SpaceImageTemplates := nil;
   Count := High(StarFieldImageTemplates) + 1;
   for Index := 0 to Count - 1 do
-    if TCGaiControlEC(StarFieldImageTemplates[Index].CacheControl) <> nil then
+    if StarFieldImageTemplates[Index].CacheControl <> nil then
     begin
-      TCGaiControlEC(StarFieldImageTemplates[Index].CacheControl).Free;
+      StarFieldImageTemplates[Index].CacheControl.Free;
       StarFieldImageTemplates[Index].CacheControl := nil;
     end;
   StarFieldImageTemplates := nil;
@@ -1557,9 +1548,9 @@ begin
     CacheLoader := nil;
   end;
 end;
-{ @end $52BED8 }
+{ @end $7A4AF8 }
 
-{ @routine $52C68C ResetScriptHostRuntimeState }
+{ @routine $7A51AC ResetScriptHostRuntimeState }
 procedure ResetScriptHostRuntimeState;
 var
   Race: TOwnerId; Kind: THullType; KlingKind: TKlingType;
@@ -1619,9 +1610,9 @@ begin
     end;
   ReloadScriptTemplates := True;
 end;
-{ @end $52C68C }
+{ @end $7A51AC }
 
-{ @routine $52C8D0 RecreateSpaceProcess }
+{ @routine $7A538C RecreateSpaceProcess }
 procedure RecreateSpaceProcess(const ConfigName: WideString);
 begin
   if SpaceProcess <> nil then
@@ -1631,14 +1622,14 @@ begin
   end;
   SpaceProcess := TProcessSE.Create(ConfigName);
 end;
-{ @end $52C8D0 }
+{ @end $7A538C }
 
-{ @routine $52C908 RunMainScreenStateLoop }
+{ @routine $7A53C0 RunMainScreenStateLoop }
 procedure RunMainScreenStateLoop;
 begin
   while True do
   begin
-    if ExitScreenLoop then Break;
+    if ExitScreenLoop then Exit;
     if (RequestedScreenId = screenStarMap) or
        (RequestedScreenId = screenFilm) or
        (RequestedScreenId = screenArcadeBattle) then
@@ -1660,9 +1651,9 @@ begin
     end;
   end;
 end;
-{ @end $52C908 }
+{ @end $7A53C0 }
 
-{ @routine $52C9D0 SwapTurnFilms }
+{ @routine $7A5440 SwapTurnFilms }
 procedure SwapTurnFilms;
 var
   Film: TEFilm;
@@ -1671,18 +1662,18 @@ begin
   PrimaryFilm := SecondaryFilm;
   SecondaryFilm := Film;
 end;
-{ @end $52C9D0 }
+{ @end $7A5440 }
 
-{ @routine $52C9F4 TMessagePlayer_Create }
+{ @routine $7A5458 TMessagePlayer_Create }
 constructor TMessagePlayer.Create;
 begin
   inherited Create;
   Button := nil;
   ImageNameOverride := '';
 end;
-{ @end $52C9F4 }
+{ @end $7A5458 }
 
-{ @routine $52CA48 TMessagePlayer_SaveToBuffer }
+{ @routine $7A549C TMessagePlayer_SaveToBuffer }
 procedure TMessagePlayer.SaveToBuffer(Buffer: TBufEC);
 begin
   Buffer.AddWideStringZ(Key);
@@ -1701,9 +1692,9 @@ begin
   Buffer.AddBoolean(NotificationSoundPlayed);
   Buffer.AddWideStringZ(ImageNameOverride);
 end;
-{ @end $52CA48 }
+{ @end $7A549C }
 
-{ @routine $52CB28 TMessagePlayer_LoadFromBuffer }
+{ @routine $7A5540 TMessagePlayer_LoadFromBuffer }
 procedure TMessagePlayer.LoadFromBuffer(Buffer: TBufEC);
 begin
   Key := Buffer.ReadWideString;
@@ -1722,33 +1713,33 @@ begin
   NotificationSoundPlayed := Buffer.GetBoolean;
   if LoadedSaveVersion >= 109 then ImageNameOverride := Buffer.ReadWideString;
 end;
-{ @end $52CB28 }
+{ @end $7A5540 }
 
-{ @routine $52CC64 TMessagePlayer_GetNormalImageName }
+{ @routine $7A5644 TMessagePlayer_GetNormalImageName }
 function TMessagePlayer.GetNormalImageName: WideString;
 begin
   if ImageNameOverride = '' then Result := PlayerMessagePresentations[Kind].NormalImage
   else Result := ImageNameOverride + 'N';
 end;
-{ @end $52CC64 }
+{ @end $7A5644 }
 
-{ @routine $52CCB8 TMessagePlayer_GetActiveImageName }
+{ @routine $7A5688 TMessagePlayer_GetActiveImageName }
 function TMessagePlayer.GetActiveImageName: WideString;
 begin
   if ImageNameOverride = '' then Result := PlayerMessagePresentations[Kind].ActiveImage
   else Result := ImageNameOverride + 'A';
 end;
-{ @end $52CCB8 }
+{ @end $7A5688 }
 
-{ @routine $52CD0C TMessagePlayer_GetPressedImageName }
+{ @routine $7A56CC TMessagePlayer_GetPressedImageName }
 function TMessagePlayer.GetPressedImageName: WideString;
 begin
   if ImageNameOverride = '' then Result := PlayerMessagePresentations[Kind].PressedImage
   else Result := ImageNameOverride + 'D';
 end;
-{ @end $52CD0C }
+{ @end $7A56CC }
 
-{ @routine $52CD60 ClearPersistentPlayerMessages }
+{ @routine $7A5710 ClearPersistentPlayerMessages }
 procedure ClearPersistentPlayerMessages;
 var Next, Entry: TMessagePlayer;
 begin
@@ -1767,9 +1758,9 @@ begin
     PersistentPlayerMessageLock.Leave;
   end;
 end;
-{ @end $52CD60 }
+{ @end $7A5710 }
 
-{ @routine $52CDDC CountPersistentPlayerMessages }
+{ @routine $7A5778 CountPersistentPlayerMessages }
 function CountPersistentPlayerMessages: Integer;
 var Entry: TMessagePlayer; Count: Integer;
 begin
@@ -1787,9 +1778,9 @@ begin
     PersistentPlayerMessageLock.Leave;
   end;
 end;
-{ @end $52CDDC }
+{ @end $7A5778 }
 
-{ @routine $52CE4C IsPersistentPlayerMessageQueued }
+{ @routine $7A57D0 IsPersistentPlayerMessageQueued }
 function IsPersistentPlayerMessageQueued(MessageEntry: TMessagePlayer; SkipLock: Boolean): Boolean;
 var Entry: TMessagePlayer;
 begin
@@ -1810,9 +1801,9 @@ begin
     if not SkipLock then PersistentPlayerMessageLock.Leave;
   end;
 end;
-{ @end $52CE4C }
+{ @end $7A57D0 }
 
-{ @routine $52CED8 RemovePersistentPlayerMessage }
+{ @routine $7A5848 RemovePersistentPlayerMessage }
 procedure RemovePersistentPlayerMessage(MessageEntry: TMessagePlayer; SkipLock: Boolean);
 begin
   if not SkipLock then PersistentPlayerMessageLock.Enter;
@@ -1826,9 +1817,9 @@ begin
     if not SkipLock then PersistentPlayerMessageLock.Leave;
   end;
 end;
-{ @end $52CED8 }
+{ @end $7A5848 }
 
-{ @routine $52CF90 RemovePlayerMessagesExceptKinds }
+{ @routine $7A58DC RemovePlayerMessagesExceptKinds }
 function RemovePlayerMessagesExceptKinds(Key: WideString; ExcludedKinds: TPlayerMessageKindSet; SkipLock: Boolean): Boolean;
 var
   MessageEntry: TMessagePlayer;
@@ -1848,9 +1839,9 @@ begin
     if not SkipLock then PersistentPlayerMessageLock.Leave;
   end;
 end;
-{ @end $52CF90 }
+{ @end $7A58DC }
 
-{ @routine $52D04C FindPlayerBubbleByText }
+{ @routine $7A5998 FindPlayerBubbleByText }
 function FindPlayerBubbleByText(const Text: WideString; SkipLock: Boolean): TMessagePlayer;
 var Entry: TMessagePlayer;
 begin
@@ -1871,9 +1862,9 @@ begin
     if not SkipLock then PersistentPlayerMessageLock.Leave;
   end;
 end;
-{ @end $52D04C }
+{ @end $7A5998 }
 
-{ @routine $52D0E4 FindPlayerBubbleByKey }
+{ @routine $7A5A20 FindPlayerBubbleByKey }
 function FindPlayerBubbleByKey(const Key: WideString; SkipLock: Boolean): TMessagePlayer;
 var Entry: TMessagePlayer;
 begin
@@ -1894,9 +1885,9 @@ begin
     if not SkipLock then PersistentPlayerMessageLock.Leave;
   end;
 end;
-{ @end $52D0E4 }
+{ @end $7A5A20 }
 
-{ @routine $52D17C RemovePlayerBubbleByKey }
+{ @routine $7A5AA8 RemovePlayerBubbleByKey }
 procedure RemovePlayerBubbleByKey(const Key: WideString);
 var Entry: TMessagePlayer;
 begin
@@ -1920,9 +1911,9 @@ begin
     PersistentPlayerMessageLock.Leave;
   end;
 end;
-{ @end $52D17C }
+{ @end $7A5AA8 }
 
-{ @routine $52D260 RemovePlayerBubblePages }
+{ @routine $7A5B54 RemovePlayerBubblePages }
 procedure RemovePlayerBubblePages(const Prefix: WideString; FirstPage: Integer);
 var Entry, Next: TMessagePlayer; PrefixLength: Integer; Suffix: WideString;
 begin
@@ -1952,9 +1943,9 @@ begin
     PersistentPlayerMessageLock.Leave;
   end;
 end;
-{ @end $52D260 }
+{ @end $7A5B54 }
 
-{ @routine $52D3C8 FindPlayerMessageExceptKinds }
+{ @routine $7A5C84 FindPlayerMessageExceptKinds }
 function FindPlayerMessageExceptKinds(const Key: WideString; ExcludedKinds: TPlayerMessageKindSet; SkipLock: Boolean): TMessagePlayer;
 var
   MessageEntry: TMessagePlayer;
@@ -1976,9 +1967,9 @@ begin
     if not SkipLock then PersistentPlayerMessageLock.Leave;
   end;
 end;
-{ @end $52D3C8 }
+{ @end $7A5C84 }
 
-{ @routine $52D484 CreatePersistentPlayerMessage }
+{ @routine $7A5D2C CreatePersistentPlayerMessage }
 function CreatePersistentPlayerMessage: TMessagePlayer;
 var Entry: TMessagePlayer;
 begin
@@ -1995,9 +1986,9 @@ begin
   end;
   Result := Entry;
 end;
-{ @end $52D484 }
+{ @end $7A5D2C }
 
-{ @routine $52D520 AddOrUpdatePlayerBubble }
+{ @routine $7A5DC0 AddOrUpdatePlayerBubble }
 function AddOrUpdatePlayerBubble(Kind: TPlayerMessageKind; Turn: Integer; const Text, Key: WideString): TMessagePlayer;
 var Entry: TMessagePlayer;
 begin
@@ -2043,9 +2034,9 @@ begin
     PersistentPlayerMessageLock.Leave;
   end;
 end;
-{ @end $52D520 }
+{ @end $7A5DC0 }
 
-{ @routine $52D698 PruneExpiredPersistentPlayerMessages }
+{ @routine $7A5EFC PruneExpiredPersistentPlayerMessages }
 procedure PruneExpiredPersistentPlayerMessages;
 var Next, Entry: TMessagePlayer;
 begin
@@ -2069,27 +2060,27 @@ begin
     PersistentPlayerMessageLock.Leave;
   end;
 end;
-{ @end $52D698 }
+{ @end $7A5EFC }
 
-{ @routine $52D7B0 TScriptTemplUnit_Create }
+{ @routine $7A5FE8 TScriptTemplUnit_Create }
 constructor TScriptTemplUnit.Create;
 begin
   inherited Create;
   ConditionCode := TCodeEC.Create;
   ActiveScriptIndex := -1;
 end;
-{ @end $52D7B0 }
+{ @end $7A5FE8 }
 
-{ @routine $52D810 TScriptTemplUnit_Destroy }
+{ @routine $7A6034 TScriptTemplUnit_Destroy }
 destructor TScriptTemplUnit.Destroy;
 begin
   ConditionCode.Free;
   ConditionCode := nil;
   inherited Destroy;
 end;
-{ @end $52D810 }
+{ @end $7A6034 }
 
-{ @routine $52D854 FindScriptTemplateIndex }
+{ @routine $7A6068 FindScriptTemplateIndex }
 function FindScriptTemplateIndex(const Name: WideString): Integer;
 var
   Item: TScriptTemplUnit;
@@ -2107,9 +2098,9 @@ begin
   end;
   Result := -1;
 end;
-{ @end $52D854 }
+{ @end $7A6068 }
 
-{ @routine $52D8BC CollectInactiveScriptTemplates }
+{ @routine $7A60AC CollectInactiveScriptTemplates }
 procedure CollectInactiveScriptTemplates(Dest: TList);
 var
   Item: TScriptTemplUnit;
@@ -2122,48 +2113,44 @@ begin
     Item := ScriptTemplates[Index];
     if Item.ActiveScriptIndex < 0 then Dest.Add(Item);
   end;
-  if Dest.Count >= 2 then
+  if Dest.Count < 2 then Exit;
+  Count := Dest.Count * 2;
+  for Index := 0 to Count - 1 do
   begin
-    Count := Dest.Count * 2;
-    for Index := 0 to Count - 1 do
+    First := SeededRandomIntRange(0, Dest.Count - 1,
+      Galaxy.GenerationSeed * Galaxy.CurrentTurn * Index);
+    Second := SeededRandomIntRange(0, Dest.Count - 1,
+      Galaxy.GenerationSeed * (Galaxy.CurrentTurn + Index));
+    if First <> Second then
     begin
-      First := SeededRandomIntRange(0, Dest.Count - 1,
-        Galaxy.GenerationSeed * Cardinal(Galaxy.CurrentTurn) * Cardinal(Index));
-      Second := SeededRandomIntRange(0, Dest.Count - 1,
-        Galaxy.GenerationSeed * Cardinal(Galaxy.CurrentTurn + Index));
-      if First <> Second then
-      begin
-        Item := Dest[First];
-        Dest[First] := Dest[Second];
-        Dest[Second] := Item;
-      end;
+      Item := Dest[First];
+      Dest[First] := Dest[Second];
+      Dest[Second] := Item;
     end;
   end;
 end;
-{ @end $52D8BC }
+{ @end $7A60AC }
 
-{ @routine $52D9E8 ShowPlayerTipOnce }
+{ @routine $7A61A4 ShowPlayerTipOnce }
 function ShowPlayerTipOnce(Index: Integer): Boolean;
 begin
   Result := False;
-  if ShownPlayerTips shr Index and 1 = 0 then
-  begin
-    ShownPlayerTips := ShownPlayerTips or (1 shl Index);
-    if Index < 10 then AddOrUpdatePlayerBubble(pmTip, Galaxy.CurrentTurn, LocalizedColorText('Tips.0' + SysUtils.IntToStr(Index)), '')
-    else AddOrUpdatePlayerBubble(pmTip, Galaxy.CurrentTurn, LocalizedColorText('Tips.' + SysUtils.IntToStr(Index)), '');
-    Result := True;
-  end;
+  if ShownPlayerTips shr Index and 1 <> 0 then Exit;
+  ShownPlayerTips := ShownPlayerTips or (1 shl Index);
+  if Index < 10 then AddOrUpdatePlayerBubble(pmTip, Galaxy.CurrentTurn, LocalizedColorText('Tips.0' + SysUtils.IntToStr(Index)), '')
+  else AddOrUpdatePlayerBubble(pmTip, Galaxy.CurrentTurn, LocalizedColorText('Tips.' + SysUtils.IntToStr(Index)), '');
+  Result := True;
 end;
-{ @end $52D9E8 }
+{ @end $7A61A4 }
 
-{ @routine $52DB38 HasShownPlayerTip }
+{ @routine $7A62EC HasShownPlayerTip }
 function HasShownPlayerTip(Index: Integer): Boolean;
 begin
   Result := ShownPlayerTips shr Index and 1 <> 0;
 end;
-{ @end $52DB38 }
+{ @end $7A62EC }
 
-{ @routine $52DB58 SelectSpaceImageTemplateFromSeed }
+{ @routine $7A62FC SelectSpaceImageTemplateFromSeed }
 function SelectSpaceImageTemplateFromSeed(Kind: Integer; Seed: Cardinal): Integer;
 var
   Index, Weight: Integer;
@@ -2190,55 +2177,53 @@ begin
     end;
   Result := 0;
 end;
-{ @end $52DB58 }
+{ @end $7A62FC }
 
-{ @routine $52DC3C SelectSpaceImageTemplate }
+{ @routine $7A6398 SelectSpaceImageTemplate }
 function SelectSpaceImageTemplate(Kind: Integer): Integer;
 begin
   Result := SelectSpaceImageTemplateFromSeed(Kind, RandomIntRange(0, 2000000000));
 end;
-{ @end $52DC3C }
+{ @end $7A6398 }
 
-{ @routine $52DC68 HandleRuntimeExitCheck1 }
+{ @routine $7A63B4 HandleRuntimeExitCheck1 }
 procedure HandleRuntimeExitCheck1;
 begin
   if ExitScreenLoop then;
 end;
-{ @end $52DC68 }
+{ @end $7A63B4 }
 
-{ @routine $52DC74 HandleRuntimeExitCheck2 }
+{ @routine $7A63C0 HandleRuntimeExitCheck2 }
 procedure HandleRuntimeExitCheck2;
 begin
   if ExitScreenLoop then;
 end;
-{ @end $52DC74 }
+{ @end $7A63C0 }
 
-{ @routine $52DC80 ParseRobotMapRaceMask }
+{ @routine $7A63CC ParseRobotMapRaceMask }
 function ParseRobotMapRaceMask(Text: WideString): TOwnerMask;
 var Names: AnsiString;
 begin
   Result := [];
-  if (Text <> '') and (Text <> 'Any') then
-  begin
-    Names := AnsiString(Text);
-    if Pos('Maloc', Names) > 0 then Include(Result, oiMaloc);
-    if Pos('Peleng', Names) > 0 then Include(Result, oiPeleng);
-    if Pos('People', Names) > 0 then Include(Result, oiHuman);
-    if Pos('Fei', Names) > 0 then Include(Result, oiFeyan);
-    if Pos('Gaal', Names) > 0 then Include(Result, oiGaal);
-  end;
+  if (Text = '') or (Text = 'Any') then Exit;
+  Names := AnsiString(Text);
+  if Pos('Maloc', Names) > 0 then Include(Result, oiMaloc);
+  if Pos('Peleng', Names) > 0 then Include(Result, oiPeleng);
+  if Pos('People', Names) > 0 then Include(Result, oiHuman);
+  if Pos('Fei', Names) > 0 then Include(Result, oiFeyan);
+  if Pos('Gaal', Names) > 0 then Include(Result, oiGaal);
 end;
-{ @end $52DC80 }
+{ @end $7A63CC }
 
-{ @routine $52DED4 InitializeRobotMapDefinitions }
+{ @routine $7A65F4 InitializeRobotMapDefinitions }
 procedure InitializeRobotMapDefinitions;
 var
   Block, Root: TBlockParEC;
   Previous, Index, Count: Integer;
   Text: WideString;
 
-  // @nested $52DDC8 ReadMapText
-  function ReadMapText(const Path: WideString): WideString; // @addr $52DDC8 @calls "0x52DFCB,0x52dff4,0x52e01d,0x52e043,0x52e084,0x52e0ad,0x52e168,0x52e191,0x52e1c5,0x52e1f9,0x52e2db,0x52e304,0x52e32d,0x52e356,0x52e37f,0x52e3a8,0x52e3d1,0x52e3fd,0x52e42c,0x52e45b,0x52e48a,0x52e4b9,0x52e4e8,0x52e517" @note "Nested in InitializeRobotMapDefinitions; joins repeated fields with CRLF."
+  // @nested $7A650C ReadMapText
+  function ReadMapText(const Path: WideString): WideString; // @addr $7A650C @calls "0x007A66CD,0x007A66F1,0x007A670E,0x007A6734,0x007A675D,0x007A677A,0x007A6805,0x007A6822,0x007A684A,0x007A6872,0x007A6936,0x007A695A,0x007A6977,0x007A6994,0x007A69B1,0x007A69CE,0x007A69EB,0x007A6A08,0x007A6A25,0x007A6A42,0x007A6A62,0x007A6A85,0x007A6AA8,0x007A6ACB" @note "Nested in InitializeRobotMapDefinitions; joins repeated fields with CRLF."
   var Part, PartCount: Integer;
   begin
     Result := '';
@@ -2246,21 +2231,21 @@ var
     for Part := 0 to PartCount - 1 do
     begin
       if Result <> '' then Result := Result + #13#10;
-      Result := Result + Block.GetParamByPath(Path + ':' + WideString(IntToStr(Part)));
+      Result := Result + Block.GetParamByPath(Path + ':' + IntToStr(Part));
     end;
   end;
 
 begin
   Root := LanguageDataConfig.GetBlock('RobotsMap');
-  Count := Root.GetBlockCount;
+  Count := Root.BlockCount;
   SetLength(RobotMapDefinitions, Count);
   for Index := 0 to Count - 1 do
   begin
-    RobotMapDefinitions[Index].Id := ExtractDigitsToIntW(Root.GetBlockNameByIndex(Index));
+    RobotMapDefinitions[Index].Id := ExtractDigitsToIntW(Root.BlockNames[Index]);
     for Previous := 0 to Index - 1 do
       if RobotMapDefinitions[Index].Id = RobotMapDefinitions[Previous].Id then
         RaiseWideMessage('RobotMap.Id');
-    Block := Root.GetBlockByIndex(Index);
+    Block := Root.Blocks[Index];
     RobotMapDefinitions[Index].Name := ReadMapText('Name');
     RobotMapDefinitions[Index].Map := ReadMapText('Map');
     Text := ReadMapText('Group');
@@ -2302,9 +2287,9 @@ begin
     RobotMapDefinitions[Index].FromAuthor := ReadMapText('FromAuthor');
   end;
 end;
-{ @end $52DED4 }
+{ @end $7A65F4 }
 
-{ @routine $52E88C FindRobotMapById }
+{ @routine $7A6E34 FindRobotMapById }
 function FindRobotMapById(MapId: Integer): Integer;
 var
   Index: Integer;
@@ -2317,9 +2302,9 @@ begin
     end;
   Result := -1;
 end;
-{ @end $52E88C }
+{ @end $7A6E34 }
 
-{ @routine $52E8E4 FindPlanetSpaceTemplateIndex }
+{ @routine $7A6E68 FindPlanetSpaceTemplateIndex }
 function FindPlanetSpaceTemplateIndex(Style, StyleVariant: Integer): Integer;
 var
   Index: Integer;
@@ -2334,44 +2319,44 @@ begin
   Result := -1;
   RaiseWideMessage('find planet');
 end;
-{ @end $52E8E4 }
+{ @end $7A6E68 }
 
-{ @routine $52E9B4 InitializeShipGreetingDefinitions }
+{ @routine $7A6F0C InitializeShipGreetingDefinitions }
 procedure InitializeShipGreetingDefinitions;
 var
   Block: TBlockParEC;
   Index, EntryIndex, Item, Count: Integer;
   Text: WideString;
 
-  // @nested $52E974 ReadShipGreetingField
+  // @nested $7A6ED4 ReadShipGreetingField
   function ReadShipGreetingField(const FieldName: WideString): WideString {
-    @addr $52E974
-    @calls "0x52eb43,0x52eb8e,0x52EBEB,0x52ec91,0x52edf2,0x52ef0b,0x52ef39,0x52EF67,0x52efbe,0x52f015,0x52f06c,0x52f0c3,0x52f25a,0x52f288,0x52f2df,0x52f336,0x52f38d,0x52f455,0x52f51d,0x52f5e5,0x52f6ab,0x52f771,0x52f88d,0x52f9a9,0x52fac5,0x52fbe1,0x52fcfd,0x52fe19,0x52ffb0,0x530147,0x530263,0x53037f,0x53049b,0x5305a0,0x5306e5,0x53082a,0x530881,0x5308d8,0x530971,0x530a0a,0x530a61,0x530b29,0x530bf1,0x530cb9,0x530d81,0x530e49,0x530e94,0x530fb0,0x5310f5,0x531211,0x53132d,0x531384,0x5313db,0x531432,0x5314f8,0x531614,0x53166b,0x531735,0x5317fd,0x5318c5,0x53198d,0x531a55,0x531b1d,0x531b4b,0x531c67,0x531dac,0x531ec8,0x531fe4,0x53203b,0x532092,0x5320e9,0x5321af,0x5322cb,0x532322,0x532379,0x5323d0,0x532427,0x53247e,0x5324d5,0x53259d,0x532665,0x53272d,0x5327f5,0x5328bd,0x5328e0,0x5329fc,0x532a53,0x532bc1,0x532bef,0x532c46,0x532c9d,0x532db9,0x532f50,0x53306c,0x5330ab,0x533180,0x5331d7,0x53329f,0x533367,0x5333c7"
+    @addr $7A6ED4
+
   };
   begin
-    if Block.CountParams(FieldName) > 0 then Result := Block.GetParam(FieldName)
+    if Block.CountParams(FieldName) > 0 then Result := Block.Params[FieldName]
     else Result := '';
   end;
 
 begin
   ShipGreetingCount := 0;
-  Count := StrToInt(AnsiString(LookupLocalizedTextByKey('ShipGreetings.CountShipGreetings')));
+  Count := StrToInt(LookupLocalizedTextByKey('ShipGreetings.CountShipGreetings'));
   for Index := 0 to Count - 1 do
-    if LanguageDataConfig.GetBlock('ShipGreetings').CountBlocks(WideString(IntToStr(Index))) > 0 then
+    if LanguageDataConfig.GetBlock('ShipGreetings').CountBlocks(IntToStr(Index)) > 0 then
       Inc(ShipGreetingCount);
   SetLength(ShipGreetingDefinitions, ShipGreetingCount);
   ShipGreetingCount := 0;
   for Index := 0 to Count - 1 do
-    if LanguageDataConfig.GetBlock('ShipGreetings').CountBlocks(WideString(IntToStr(Index))) <> 0 then
+    if LanguageDataConfig.GetBlock('ShipGreetings').CountBlocks(IntToStr(Index)) <> 0 then
     begin
       Inc(ShipGreetingCount);
       EntryIndex := ShipGreetingCount - 1;
       Block := LanguageDataConfig.GetBlockByPath(WideString('ShipGreetings.' + IntToStr(Index)));
       with ShipGreetingDefinitions[EntryIndex] do
       begin
-        Name := WideString(IntToStr(Index));
+        Name := IntToStr(Index);
         Text := ReadShipGreetingField('Priority');
-        if Text = '' then Priority := 10 else Priority := StrToInt(AnsiString(Text));
+        if Text = '' then Priority := 10 else Priority := StrToInt(Text);
         Text := ReadShipGreetingField('AutoTalk');
         if (Text = '') or (Text = 'No') then AutoTalk := gcNo
         else if Text = 'Any' then AutoTalk := gcAny
@@ -3084,41 +3069,41 @@ begin
       end;
     end;
 end;
-{ @end $52E9B4 }
+{ @end $7A6F0C }
 
-{ @routine $534F34 InitializeGovernmentGreetingDefinitions }
+{ @routine $7ACE8C InitializeGovernmentGreetingDefinitions }
 procedure InitializeGovernmentGreetingDefinitions;
 var
   Block: TBlockParEC;
   Index, EntryIndex, Item, Count: Integer;
   Text: WideString;
 
-  // @nested $534EC4 ReadGovernmentGreetingField
-  function ReadGovernmentGreetingField(FieldName: WideString): WideString; // @addr $534EC4 @calls "0x5350c2,0x53510d,0x535135,0x5351df,0x5352d7,0x53546b,0x535570,0x53559e,0x5355f5,0x535711,0x535768,0x5358AD,0x5359C9,0x535ae5,0x535BAB,0x535cc7,0x535D8F,0x535e57,0x535f1f,0x535fe7,0x5360af,0x536106,0x536151,0x5361a8,0x5361ff,0x53631b,0x536372,0x5364b7,0x5365d3,0x5366ef,0x5367b5,0x5368D1,0x536928,0x5369f0,0x536AB8,0x536B80,0x536C48,0x536d10,0x536d67,0x536DBE,0x536e15,0x536E6C,0x536f34,0x536ffc,0x537053,0x5370aa,0x537101"
+  // @nested $7ACE20 ReadGovernmentGreetingField
+  function ReadGovernmentGreetingField(FieldName: WideString): WideString; // @addr $7ACE20 @calls "0x007AD000,0x007AD045,0x007AD06A,0x007AD109,0x007AD1F0,0x007AD34C,0x007AD433,0x007AD45E,0x007AD4AC,0x007AD5B7,0x007AD605,0x007AD736,0x007AD841,0x007AD94C,0x007ADA07,0x007ADB12,0x007ADBC5,0x007ADC78,0x007ADD2B,0x007ADDDE,0x007ADE91,0x007ADEDF,0x007ADF25,0x007ADF73,0x007ADFC1,0x007AE0CC,0x007AE11A,0x007AE24B,0x007AE356,0x007AE461,0x007AE51C,0x007AE627,0x007AE675,0x007AE728,0x007AE7DB,0x007AE88E,0x007AE941,0x007AE9F4,0x007AEA42,0x007AEA90,0x007AEADE,0x007AEB2C,0x007AEBDF,0x007AEC92,0x007AECE0,0x007AED2E,0x007AED7C"
   begin
-    if Block.CountParams(FieldName) > 0 then Result := Block.GetParam(FieldName)
+    if Block.CountParams(FieldName) > 0 then Result := Block.Params[FieldName]
     else Result := '';
   end;
 
 begin
   GovernmentGreetingCount := 0;
-  Count := StrToInt(AnsiString(LookupLocalizedTextByKey('GovGreetings.CountGovGreetings')));
+  Count := StrToInt(LookupLocalizedTextByKey('GovGreetings.CountGovGreetings'));
   for Index := 0 to Count - 1 do
-    if LanguageDataConfig.GetBlock('GovGreetings').CountBlocks(WideString(IntToStr(Index))) > 0 then
+    if LanguageDataConfig.GetBlock('GovGreetings').CountBlocks(IntToStr(Index)) > 0 then
       Inc(GovernmentGreetingCount);
   SetLength(GovernmentGreetingDefinitions, GovernmentGreetingCount);
   GovernmentGreetingCount := 0;
   for Index := 0 to Count - 1 do
-    if LanguageDataConfig.GetBlock('GovGreetings').CountBlocks(WideString(IntToStr(Index))) <> 0 then
+    if LanguageDataConfig.GetBlock('GovGreetings').CountBlocks(IntToStr(Index)) <> 0 then
     begin
       Inc(GovernmentGreetingCount);
       EntryIndex := GovernmentGreetingCount - 1;
       Block := LanguageDataConfig.GetBlockByPath(WideString('GovGreetings.' + IntToStr(Index)));
       with GovernmentGreetingDefinitions[EntryIndex] do
       begin
-        Name := WideString(IntToStr(Index));
+        Name := IntToStr(Index);
         Text := ReadGovernmentGreetingField('Priority');
-        if Text = '' then Priority := 10 else Priority := StrToInt(AnsiString(Text));
+        if Text = '' then Priority := 10 else Priority := StrToInt(Text);
         Text := ReadGovernmentGreetingField('PlayerRace');
         PlayerRace := ParseRobotMapRaceMask(Text);
         Text := ReadGovernmentGreetingField('PlayerStatus');
@@ -3453,9 +3438,9 @@ begin
       end;
     end;
 end;
-{ @end $534F34 }
+{ @end $7ACE8C }
 
-{ @routine $538150 InitializePlanetAdvertDefinitions }
+{ @routine $7AFDB4 InitializePlanetAdvertDefinitions }
 procedure InitializePlanetAdvertDefinitions;
 var
   Root, GroupBlock, Block: TBlockParEC;
@@ -3463,72 +3448,70 @@ var
   Text, Name: WideString;
 begin
   Root := MainDataConfig.GetBlockByPath('Data\PlanetAdvt');
-  SetLength(PlanetAdvertDefinitions, Root.GetBlockCount);
+  SetLength(PlanetAdvertDefinitions, Root.BlockCount);
   for GroupIndex := 0 to High(PlanetAdvertDefinitions) do
   begin
-    GroupBlock := Root.GetBlockByIndex(GroupIndex);
+    GroupBlock := Root.Blocks[GroupIndex];
     PlanetAdvertDefinitions[GroupIndex].Position := GetPointGI(GroupBlock.GetParamByPathOrMarker('Info.Pos'));
     if GroupBlock.GetBlock('Info').CountParams('Image1') > 0 then
       PlanetAdvertDefinitions[GroupIndex].Image1 := GroupBlock.GetParamByPathOrMarker('Info.Image1');
     if GroupBlock.GetBlock('Info').CountParams('Image2') > 0 then
       PlanetAdvertDefinitions[GroupIndex].Image2 := GroupBlock.GetParamByPathOrMarker('Info.Image2');
-    Count := GroupBlock.GetBlockCount;
+    Count := GroupBlock.BlockCount;
     SetLength(PlanetAdvertDefinitions[GroupIndex].Adverts, Count - 2);
     AdvertIndex := 0;
     for BlockIndex := 0 to Count - 1 do
     begin
-      Text := GroupBlock.GetBlockNameByIndex(BlockIndex);
-      if (Text <> 'List') and (Text <> 'Info') then
+      Text := GroupBlock.BlockNames[BlockIndex];
+      if (Text = 'List') or (Text = 'Info') then Continue;
+      Block := GroupBlock.Blocks[BlockIndex];
+      PlanetAdvertDefinitions[GroupIndex].Adverts[AdvertIndex].Name := Text;
+      if Block.CountParams('Image1') > 0 then
+        PlanetAdvertDefinitions[GroupIndex].Adverts[AdvertIndex].Image1 := Block.Params['Image1'];
+      if Block.CountParams('Image2') > 0 then
+        PlanetAdvertDefinitions[GroupIndex].Adverts[AdvertIndex].Image2 := Block.Params['Image2'];
+      PlanetAdvertDefinitions[GroupIndex].Adverts[AdvertIndex].War := 0;
+      if Block.CountParams('War') > 0 then
       begin
-        Block := GroupBlock.GetBlockByIndex(BlockIndex);
-        PlanetAdvertDefinitions[GroupIndex].Adverts[AdvertIndex].Name := Text;
-        if Block.CountParams('Image1') > 0 then
-          PlanetAdvertDefinitions[GroupIndex].Adverts[AdvertIndex].Image1 := Block.GetParam('Image1');
-        if Block.CountParams('Image2') > 0 then
-          PlanetAdvertDefinitions[GroupIndex].Adverts[AdvertIndex].Image2 := Block.GetParam('Image2');
-        PlanetAdvertDefinitions[GroupIndex].Adverts[AdvertIndex].War := 0;
-        if Block.CountParams('War') > 0 then
-        begin
-          PlanetAdvertDefinitions[GroupIndex].Adverts[AdvertIndex].War := ExtractSignedDigitsToIntW(Block.GetParam('War'));
-          if PlanetAdvertDefinitions[GroupIndex].Adverts[AdvertIndex].War < -1 then
-            PlanetAdvertDefinitions[GroupIndex].Adverts[AdvertIndex].War := -1
-          else if PlanetAdvertDefinitions[GroupIndex].Adverts[AdvertIndex].War > 1 then
-            PlanetAdvertDefinitions[GroupIndex].Adverts[AdvertIndex].War := 1;
-        end;
-        PlanetAdvertDefinitions[GroupIndex].Adverts[AdvertIndex].Goods := UnspecifiedGoods;
-        if Block.CountParams('Goods') > 0 then
-        begin
-          Text := Block.GetParam('Goods');
-          if Text = 'Food' then PlanetAdvertDefinitions[GroupIndex].Adverts[AdvertIndex].Goods := 0
-          else if Text = 'Medicine' then PlanetAdvertDefinitions[GroupIndex].Adverts[AdvertIndex].Goods := 1
-          else if Text = 'Technics' then PlanetAdvertDefinitions[GroupIndex].Adverts[AdvertIndex].Goods := 2
-          else if Text = 'Luxury' then PlanetAdvertDefinitions[GroupIndex].Adverts[AdvertIndex].Goods := 3
-          else if Text = 'Minerals' then PlanetAdvertDefinitions[GroupIndex].Adverts[AdvertIndex].Goods := 4
-          else if Text = 'Alcohol' then PlanetAdvertDefinitions[GroupIndex].Adverts[AdvertIndex].Goods := 5
-          else if Text = 'Arms' then PlanetAdvertDefinitions[GroupIndex].Adverts[AdvertIndex].Goods := 6
-          else if Text = 'Narcotics' then PlanetAdvertDefinitions[GroupIndex].Adverts[AdvertIndex].Goods := 7
-          else PlanetAdvertDefinitions[GroupIndex].Adverts[AdvertIndex].Goods := UnspecifiedGoods;
-        end;
-        PlanetAdvertDefinitions[GroupIndex].Adverts[AdvertIndex].Owner := [];
-        if Block.CountParams('Owner') > 0 then
-        begin
-          Text := Block.GetParam('Owner');
-          if Pos('Maloc', AnsiString(Text)) > 0 then Include(PlanetAdvertDefinitions[GroupIndex].Adverts[AdvertIndex].Owner, oiMaloc);
-          if Pos('Peleng', AnsiString(Text)) > 0 then Include(PlanetAdvertDefinitions[GroupIndex].Adverts[AdvertIndex].Owner, oiPeleng);
-          if Pos('People', AnsiString(Text)) > 0 then Include(PlanetAdvertDefinitions[GroupIndex].Adverts[AdvertIndex].Owner, oiHuman);
-          if Pos('Fei', AnsiString(Text)) > 0 then Include(PlanetAdvertDefinitions[GroupIndex].Adverts[AdvertIndex].Owner, oiFeyan);
-          if Pos('Gaal', AnsiString(Text)) > 0 then Include(PlanetAdvertDefinitions[GroupIndex].Adverts[AdvertIndex].Owner, oiGaal);
-        end;
-        Inc(AdvertIndex);
-        if AdvertIndex >= Count - 1 then Break;
+        PlanetAdvertDefinitions[GroupIndex].Adverts[AdvertIndex].War := ExtractSignedDigitsToIntW(Block.Params['War']);
+        if PlanetAdvertDefinitions[GroupIndex].Adverts[AdvertIndex].War < -1 then
+          PlanetAdvertDefinitions[GroupIndex].Adverts[AdvertIndex].War := -1
+        else if PlanetAdvertDefinitions[GroupIndex].Adverts[AdvertIndex].War > 1 then
+          PlanetAdvertDefinitions[GroupIndex].Adverts[AdvertIndex].War := 1;
       end;
+      PlanetAdvertDefinitions[GroupIndex].Adverts[AdvertIndex].Goods := UnspecifiedGoods;
+      if Block.CountParams('Goods') > 0 then
+      begin
+        Text := Block.Params['Goods'];
+        if Text = 'Food' then PlanetAdvertDefinitions[GroupIndex].Adverts[AdvertIndex].Goods := 0
+        else if Text = 'Medicine' then PlanetAdvertDefinitions[GroupIndex].Adverts[AdvertIndex].Goods := 1
+        else if Text = 'Technics' then PlanetAdvertDefinitions[GroupIndex].Adverts[AdvertIndex].Goods := 2
+        else if Text = 'Luxury' then PlanetAdvertDefinitions[GroupIndex].Adverts[AdvertIndex].Goods := 3
+        else if Text = 'Minerals' then PlanetAdvertDefinitions[GroupIndex].Adverts[AdvertIndex].Goods := 4
+        else if Text = 'Alcohol' then PlanetAdvertDefinitions[GroupIndex].Adverts[AdvertIndex].Goods := 5
+        else if Text = 'Arms' then PlanetAdvertDefinitions[GroupIndex].Adverts[AdvertIndex].Goods := 6
+        else if Text = 'Narcotics' then PlanetAdvertDefinitions[GroupIndex].Adverts[AdvertIndex].Goods := 7
+        else PlanetAdvertDefinitions[GroupIndex].Adverts[AdvertIndex].Goods := UnspecifiedGoods;
+      end;
+      PlanetAdvertDefinitions[GroupIndex].Adverts[AdvertIndex].Owner := [];
+      if Block.CountParams('Owner') > 0 then
+      begin
+        Text := Block.Params['Owner'];
+        if Pos('Maloc', AnsiString(Text)) > 0 then Include(PlanetAdvertDefinitions[GroupIndex].Adverts[AdvertIndex].Owner, oiMaloc);
+        if Pos('Peleng', AnsiString(Text)) > 0 then Include(PlanetAdvertDefinitions[GroupIndex].Adverts[AdvertIndex].Owner, oiPeleng);
+        if Pos('People', AnsiString(Text)) > 0 then Include(PlanetAdvertDefinitions[GroupIndex].Adverts[AdvertIndex].Owner, oiHuman);
+        if Pos('Fei', AnsiString(Text)) > 0 then Include(PlanetAdvertDefinitions[GroupIndex].Adverts[AdvertIndex].Owner, oiFeyan);
+        if Pos('Gaal', AnsiString(Text)) > 0 then Include(PlanetAdvertDefinitions[GroupIndex].Adverts[AdvertIndex].Owner, oiGaal);
+      end;
+      Inc(AdvertIndex);
+      if AdvertIndex >= Count - 1 then Break;
     end;
     Block := GroupBlock.GetBlock('List');
-    SetLength(PlanetAdvertDefinitions[GroupIndex].Lists, Block.GetParamCount);
+    SetLength(PlanetAdvertDefinitions[GroupIndex].Lists, Block.ParamCount);
     for BlockIndex := 0 to High(PlanetAdvertDefinitions[GroupIndex].Lists) do
     begin
-      PlanetAdvertDefinitions[GroupIndex].Lists[BlockIndex].Weight := ExtractDigitsToIntW(Block.GetParamName(BlockIndex));
-      Text := Block.GetParamValue(BlockIndex);
+      PlanetAdvertDefinitions[GroupIndex].Lists[BlockIndex].Weight := ExtractDigitsToIntW(Block.ParamNames[BlockIndex]);
+      Text := Block.ParamValues[BlockIndex];
       Count := CountDelimitedPartsW(Text, ',');
       SetLength(PlanetAdvertDefinitions[GroupIndex].Lists[BlockIndex].Indices, Count);
       for AdvertIndex := 0 to Count - 1 do
@@ -3548,14 +3531,14 @@ begin
     end;
   end;
 end;
-{ @end $538150 }
+{ @end $7AFDB4 }
 
-{ @routine $538C18 GetInnermostScreenLoop }
+{ @routine $7B0708 GetInnermostScreenLoop }
 function GetInnermostScreenLoop: TMessageLoopGI;
 begin
   Result := TMessageLoopGI(RegisteredScreens[CurrentScreenId]);
   while Result.ChildLoop <> nil do Result := Result.ChildLoop;
 end;
-{ @end $538C18 }
+{ @end $7B0708 }
 
 end.

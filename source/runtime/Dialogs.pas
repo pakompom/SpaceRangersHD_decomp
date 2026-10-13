@@ -1,29 +1,27 @@
 unit Dialogs;
-// Unit bracket (inferred): .text 0x0042E5BC..0x004300E3; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
-// Unit bracket (inferred): .itext 0x008764B8..0x008764B8; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
 type
   TCommonDialog = class(TComponent) // @size 0x60
   public
-    constructor Create(AOwner: TComponent); override; // @note "DCC32 MAP Dialogs.TCommonDialog.Create. Source vcl/Dialogs.pas:1090." @slot 0x2C
-    destructor Destroy; // @note "DCC32 MAP Dialogs.TCommonDialog.Destroy. Source vcl/Dialogs.pas:1102."
-    function MessageHook(var Msg: TMessage): Boolean; virtual; // @note "DCC32 MAP Dialogs.TCommonDialog.MessageHook. Source vcl/Dialogs.pas:1131." @slot 0x34
-    procedure DefaultHandler(Message: Pointer); // @note "DCC32 MAP Dialogs.TCommonDialog.DefaultHandler. Source vcl/Dialogs.pas:1141."
-    procedure MainWndProc(var Message: TMessage); // @note "DCC32 MAP Dialogs.TCommonDialog.MainWndProc. Source vcl/Dialogs.pas:1149."
-    procedure WMInitDialog(var Message: TWMInitDialog); // @note "DCC32 MAP Dialogs.TCommonDialog.WMInitDialog. Source vcl/Dialogs.pas:1169."
-    procedure WMNCDestroy(var Message: TWMNCDestroy); // @note "DCC32 MAP Dialogs.TCommonDialog.WMNCDestroy. Source vcl/Dialogs.pas:1177."
-    function TaskModalDialog(DialogFunc: Pointer; DialogData: Pointer): LongBool; virtual; // @note "DCC32 MAP Dialogs.TCommonDialog.TaskModalDialog. Source vcl/Dialogs.pas:1183." @slot 0x38
-    procedure DoClose; // @note "DCC32 MAP Dialogs.TCommonDialog.DoClose. Source vcl/Dialogs.pas:1217."
-    procedure DoShow; // @note "DCC32 MAP Dialogs.TCommonDialog.DoShow. Source vcl/Dialogs.pas:1222."
+    constructor Create(AOwner: TComponent); override; // @slot 0x2C
+    destructor Destroy;
+    function MessageHook(var Msg: TMessage): Boolean; virtual; // @slot 0x34
+    procedure DefaultHandler(Message: Pointer);
+    procedure MainWndProc(var Message: TMessage);
+    procedure WMInitDialog(var Message: TWMInitDialog);
+    procedure WMNCDestroy(var Message: TWMNCDestroy);
+    function TaskModalDialog(DialogFunc: Pointer; DialogData: Pointer): LongBool; virtual; // @slot 0x38
+    procedure DoClose;
+    procedure DoShow;
   end;
 
-procedure ShowMessage(const Message: AnsiString); // @addr 0x42F7E0 @note "Calls the message-dialog implementation with default X/Y positions (-1, -1). Returns after the dialog closes."
+procedure ShowMessage(const Message: AnsiString); // @addr 0x0042F7E0 @note "Calls the message-dialog implementation with default X/Y positions (-1, -1). Returns after the dialog closes."
 
-procedure InitGlobals; // @note "DCC32 MAP Dialogs.InitGlobals. Source vcl/Dialogs.pas:4835."
+procedure InitGlobals;
 
-procedure FinalizeDialogs; // @nameonly @note "DCC32 MAP Dialogs.Finalization. Prototype pending: no unique source declaration."
+procedure FinalizeDialogs; // @nameonly
 
 implementation
 end.

@@ -68,17 +68,30 @@ impl Compiler {
                 } else {
                     let base = self.lookup(set.as_str().context("invalid set element")?)?;
                     ensure!(
-                        base.kind == "enum" && [1, 2, 4, 8].contains(&size),
-                        "sets require an enum and explicit scalar @size"
+                        base.kind == "enum",
+                        "{}: sets require an enum element",
+                        d.name
                     );
-                    array(&base.data, "members")
+                    let members: Vec<(String, i64)> = array(&base.data, "members")
                         .iter()
                         .map(|m| (m[0].as_str().unwrap().to_owned(), m[1].as_i64().unwrap()))
-                        .collect()
+                        .collect();
+                    let high = members.iter().map(|(_, v)| *v).max().unwrap_or(0);
+                    let storage = match high / 8 + 1 {
+                        3 => 4,
+                        n => n,
+                    };
+                    ensure!(
+                        high <= 255 && ([1, 2, 4, 8].contains(&size) || size == storage),
+                        "{}: enum sets require ordinals at most 255 and a scalar @size or the DCC32 storage of their enum",
+                        d.name
+                    );
+                    members
                 };
                 ensure!(
                     members.iter().all(|(_, v)| *v >= 0 && *v < size * 8),
-                    "enum ordinal exceeds set storage"
+                    "{}: enum ordinal exceeds set storage",
+                    d.name
                 );
                 let text = if [1, 2, 4, 8].contains(&size) {
                     let body = members
@@ -156,15 +169,56 @@ impl Compiler {
                     }
                 }
             }
+            let source_order = match d.meta.get("methodorder").and_then(Value::as_str) {
+                Some("virtual") => false,
+                Some("source") => true,
+                _ => self.source_member_order,
+            };
             for field in array(&d.data, "fields") {
+                let offset = integer(field, "offset")?;
                 ensure!(
-                    integer(field, "offset")? >= minimum,
+                    offset >= minimum,
                     "{}: field overlaps inherited prefix or VMT",
                     d.name
                 );
+                ensure!(
+                    !source_order
+                        || fields
+                            .last()
+                            .is_none_or(|f| f["offset"].as_i64() <= Some(offset)),
+                    "{}.{}: declare fields in offset order",
+                    d.name,
+                    string(field, "name")
+                );
+                for inherited in &mut fields {
+                    if inherited["name"] == field["name"] && inherited["offset"] != field["offset"]
+                    {
+                        inherited["name"] =
+                            json!(format!("{}_{}", parent, string(inherited, "name")));
+                    }
+                }
                 fields.push(field.clone());
             }
-            fields.sort_by_key(|f| f["offset"].as_i64().unwrap_or(-1));
+            if !source_order {
+                fields.sort_by_key(|f| f["offset"].as_i64().unwrap_or(-1));
+            }
+            let mut previous_slot = -1;
+            for method in methods(d)? {
+                // Overrides retain inherited slots wherever they are declared.
+                // Only newly introduced virtuals allocate slots in source order.
+                // virtual_slots() still checks each explicit override annotation.
+                if directive(&method, "override") {
+                    continue;
+                }
+                if let Some(slot) = method.meta.get("slot").and_then(Value::as_i64) {
+                    ensure!(
+                        !source_order || slot > previous_slot,
+                        "{}: declare virtual methods in slot order",
+                        method.name
+                    );
+                    previous_slot = slot;
+                }
+            }
             let names: BTreeSet<_> = fields
                 .iter()
                 .map(|f| string(f, "name").to_lowercase())
@@ -182,6 +236,7 @@ impl Compiler {
                 );
             }
             let (mut lines, mut end) = (Vec::new(), 0);
+            let mut overlays = false;
             for field in &fields {
                 let off = integer(field, "offset")?;
                 let name = string(field, "name");
@@ -189,12 +244,17 @@ impl Compiler {
                     !name.starts_with("_gap_"),
                     "field names starting _gap_ are reserved"
                 );
-                ensure!(off >= end, "{}.{name}: overlapping offset {off:#x}", d.name);
+                ensure!(
+                    off >= end || d.kind == "record" && field["variant"] == true,
+                    "{}.{name}: overlapping offset {off:#x}",
+                    d.name
+                );
+                overlays |= off < end;
                 if off > end {
                     lines.push(format!("unsigned __int8 _gap_{end:X}[{}];", off - end));
                 }
                 lines.push(format!("{};", self.ctype(&field["type"], name)?));
-                end = off + self.size(&field["type"])?;
+                end = end.max(off + self.size(&field["type"])?);
             }
             let size = if let Some(size) = d.meta.get("size").and_then(Value::as_i64) {
                 size
@@ -210,14 +270,33 @@ impl Compiler {
                 end.max(minimum)
             };
             ensure!(
-                size >= end && size >= minimum && size > 0,
+                size >= end
+                    && size >= minimum
+                    && (size > 0 || d.kind == "record" && fields.is_empty()),
                 "{}: @size does not contain fields/base",
                 d.name
             );
             if size > end {
                 lines.push(format!("unsigned __int8 _gap_{end:X}[{}];", size - end));
             }
-            json!({"size":size,"fields":fields,"decl":format!("#pragma pack(push, 1)\nstruct {} {{\n  {}\n}};\n#pragma pack(pop)",d.name,lines.join("\n  "))})
+            if overlays {
+                lines = vec!["union {".into()];
+                lines.push(format!("unsigned __int8 _storage[{size}];"));
+                for (index, field) in fields.iter().enumerate() {
+                    let offset = integer(field, "offset")?;
+                    let gap = if offset == 0 {
+                        String::new()
+                    } else {
+                        format!("unsigned __int8 _pad{index}[{offset}]; ")
+                    };
+                    lines.push(format!(
+                        "struct {{ {gap}{}; }};",
+                        self.ctype(&field["type"], string(field, "name"))?
+                    ));
+                }
+                lines.push("};".into());
+            }
+            json!({"size":size,"fields":fields,"overlays":overlays,"decl":format!("#pragma pack(push, 1)\nstruct {} {{\n  {}\n}};\n#pragma pack(pop)",d.name,lines.join("\n  "))})
         };
         let result = std::sync::Arc::new(result);
         self.active.remove(&d.name);

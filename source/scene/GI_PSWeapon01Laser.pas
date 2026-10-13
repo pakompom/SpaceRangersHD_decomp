@@ -20,9 +20,9 @@ type
   TBeamLaserPalettes = array of TBeamLaserPalette;
 
 var
-  BeamLaserPalettes: array of TBeamLaserPalette; // @addr $88AA80
-  BeamLaserWidths: array of Single; // @addr $88AA84
-  BeamLaserDurations: array of Integer; // @addr $88AA88
+  BeamLaserPalettes: array of TBeamLaserPalette; // @addr $81B61C
+  BeamLaserWidths: array of Single; // @addr $81B620
+  BeamLaserDurations: array of Integer; // @addr $81B624
 
 type
   TPSWeapon01Laser = class(TPSWeaponGI) // @size $164
@@ -35,31 +35,31 @@ type
     LengthScale: Double; // @offset $158
     PaletteIndex: Integer; // @offset $160
 
-    constructor Create(Owner: TObjectGI; APaletteIndex: Integer); // @addr $686ED8
-    destructor Destroy; override; // @addr $686F88
-    procedure SetPosition(Position: TPoint); override; // @addr $686FC4
-    procedure SetTargetPoint(Point: TPoint); override; // @addr $687008
-    procedure UpdateProjectionBounds; // @addr $68705C
-    procedure UpdateHitTestBounds; override; // @addr $687394
-    function GetLocalBounds: TRect; override; // @addr $6873F4
-    function AddParticle: PBeamLaserParticle; // @addr $687458
-    procedure RemoveParticle(Particle: PBeamLaserParticle); // @addr $6874D0
-    procedure ClearParticles; // @addr $687550
-    procedure InvalidateRect(Rect: TRect); override; // @addr $6875A4
-    procedure Advance(Timer: PCallbackTimerGI; UserData: Integer); override; // @addr $687670
-    procedure Draw(ClipRect: TRect); override; // @addr $687D6C
+    constructor Create(Owner: TObjectGI; APaletteIndex: Integer); // @addr $4FBC9C
+    destructor Destroy; override; // @addr $4FBD2C
+    procedure SetPosition(Position: TPoint); override; // @addr $4FBD58
+    procedure SetTargetPoint(Point: TPoint); override; // @addr $4FBD90
+    procedure UpdateProjectionBounds; // @addr $4FBDD0
+    procedure UpdateHitTestBounds; override; // @addr $4FC134
+    function GetLocalBounds: TRect; override; // @addr $4FC168
+    function AddParticle: PBeamLaserParticle; // @addr $4FC198
+    procedure RemoveParticle(Particle: PBeamLaserParticle); // @addr $4FC1D8
+    procedure ClearParticles; // @addr $4FC21C
+    procedure InvalidateRect(Rect: TRect); override; // @addr $4FC250
+    procedure Advance(Timer: TCallbackTimerIdGI; UserData: Cardinal); override; // @addr $4FC304
+    procedure Draw(ClipRect: TRect); override; // @addr $4FC92C
   end;
 
-procedure LoadBeamLaserPalettes; // @addr $687F84
+procedure LoadBeamLaserPalettes; // @addr $4FCAF0
 
 implementation
 
-// @unit-initialization $8778EC
-// @unit-finalization $6882E4
+// @unit-initialization $80688C
+// @unit-finalization $4FCDF8
 
 uses SysUtils, Math, EC_BlockPar, EC_Str, EC_Mem, GR_Main, GR_DX, aMyFunction, Globals;
 
-{ @routine $686ED8 TPSWeapon01Laser_Create }
+{ @routine $4FBC9C TPSWeapon01Laser_Create }
 constructor TPSWeapon01Laser.Create(Owner: TObjectGI; APaletteIndex: Integer);
 begin
   inherited Create(Owner);
@@ -70,17 +70,17 @@ begin
   UpdateProjectionBounds;
   PaletteIndex := APaletteIndex;
 end;
-{ @end $686ED8 }
+{ @end $4FBC9C }
 
-{ @routine $686F88 TPSWeapon01Laser_Destroy }
+{ @routine $4FBD2C TPSWeapon01Laser_Destroy }
 destructor TPSWeapon01Laser.Destroy;
 begin
   ClearParticles;
   inherited Destroy;
 end;
-{ @end $686F88 }
+{ @end $4FBD2C }
 
-{ @routine $686FC4 TPSWeapon01Laser_SetPosition }
+{ @routine $4FBD58 TPSWeapon01Laser_SetPosition }
 procedure TPSWeapon01Laser.SetPosition(Position: TPoint);
 begin
   if (LocalPosition.X <> Position.X) or (LocalPosition.Y <> Position.Y) then
@@ -89,9 +89,9 @@ begin
     UpdateProjectionBounds;
   end;
 end;
-{ @end $686FC4 }
+{ @end $4FBD58 }
 
-{ @routine $687008 TPSWeapon01Laser_SetTargetPoint }
+{ @routine $4FBD90 TPSWeapon01Laser_SetTargetPoint }
 procedure TPSWeapon01Laser.SetTargetPoint(Point: TPoint);
 begin
   if (TargetPoint.X <> Point.X) or (TargetPoint.Y <> Point.Y) then
@@ -100,9 +100,9 @@ begin
     UpdateProjectionBounds;
   end;
 end;
-{ @end $687008 }
+{ @end $4FBD90 }
 
-{ @routine $68705C TPSWeapon01Laser_UpdateProjectionBounds }
+{ @routine $4FBDD0 TPSWeapon01Laser_UpdateProjectionBounds }
 procedure TPSWeapon01Laser.UpdateProjectionBounds;
 var
   Angle, Sine, Cosine, Distance, A, B, C, D: Single;
@@ -128,9 +128,9 @@ begin
   ProjectionBounds.Top := Floor(Math.Min(Math.Min(Math.Min(A, B), C), D));
   ProjectionBounds.Bottom := Ceil(Math.Max(Math.Max(Math.Max(A, B), C), D));
 end;
-{ @end $68705C }
+{ @end $4FBDD0 }
 
-{ @routine $687394 TPSWeapon01Laser_UpdateHitTestBounds }
+{ @routine $4FC134 TPSWeapon01Laser_UpdateHitTestBounds }
 procedure TPSWeapon01Laser.UpdateHitTestBounds;
 begin
   HitTestBounds.Left := ProjectionBounds.Left + AbsolutePosition.X;
@@ -138,9 +138,9 @@ begin
   HitTestBounds.Right := ProjectionBounds.Right + AbsolutePosition.X;
   HitTestBounds.Bottom := ProjectionBounds.Bottom + AbsolutePosition.Y;
 end;
-{ @end $687394 }
+{ @end $4FC134 }
 
-{ @routine $6873F4 TPSWeapon01Laser_GetLocalBounds }
+{ @routine $4FC168 TPSWeapon01Laser_GetLocalBounds }
 function TPSWeapon01Laser.GetLocalBounds: TRect;
 begin
   Result.Left := ProjectionBounds.Left + LocalPosition.X;
@@ -148,9 +148,9 @@ begin
   Result.Right := ProjectionBounds.Right + LocalPosition.X;
   Result.Bottom := ProjectionBounds.Bottom + LocalPosition.Y;
 end;
-{ @end $6873F4 }
+{ @end $4FC168 }
 
-{ @routine $687458 TPSWeapon01Laser_AddParticle }
+{ @routine $4FC198 TPSWeapon01Laser_AddParticle }
 function TPSWeapon01Laser.AddParticle: PBeamLaserParticle;
 var
   Particle: PBeamLaserParticle;
@@ -163,9 +163,9 @@ begin
   if FirstParticle = nil then FirstParticle := Particle;
   Result := Particle;
 end;
-{ @end $687458 }
+{ @end $4FC198 }
 
-{ @routine $6874D0 TPSWeapon01Laser_RemoveParticle }
+{ @routine $4FC1D8 TPSWeapon01Laser_RemoveParticle }
 procedure TPSWeapon01Laser.RemoveParticle(Particle: PBeamLaserParticle);
 begin
   if Particle.Prev <> nil then Particle.Prev.Next := Particle.Next;
@@ -174,9 +174,9 @@ begin
   if FirstParticle = Particle then FirstParticle := Particle.Next;
   FreeEC(Particle);
 end;
-{ @end $6874D0 }
+{ @end $4FC1D8 }
 
-{ @routine $687550 TPSWeapon01Laser_ClearParticles }
+{ @routine $4FC21C TPSWeapon01Laser_ClearParticles }
 procedure TPSWeapon01Laser.ClearParticles;
 var
   Particle, Current: PBeamLaserParticle;
@@ -191,9 +191,9 @@ begin
   FirstParticle := nil;
   LastParticle := nil;
 end;
-{ @end $687550 }
+{ @end $4FC21C }
 
-{ @routine $6875A4 TPSWeapon01Laser_InvalidateRect }
+{ @routine $4FC250 TPSWeapon01Laser_InvalidateRect }
 procedure TPSWeapon01Laser.InvalidateRect(Rect: TRect);
 var
   Target: TPoint;
@@ -208,10 +208,10 @@ begin
   if IntersectRects(Intersection, Rect, GameScreenRect) then
     MessageLoop.QueueUpdateRect(Intersection);
 end;
-{ @end $6875A4 }
+{ @end $4FC250 }
 
-{ @routine $687670 TPSWeapon01Laser_Advance }
-procedure TPSWeapon01Laser.Advance(Timer: PCallbackTimerGI; UserData: Integer);
+{ @routine $4FC304 TPSWeapon01Laser_Advance }
+procedure TPSWeapon01Laser.Advance(Timer: TCallbackTimerIdGI; UserData: Cardinal);
 var
   I, Power, FadeThreshold: Integer;
   Distance, Angle: Single;
@@ -317,9 +317,9 @@ begin
   end;
   Dec(RemainingTicks);
 end;
-{ @end $687670 }
+{ @end $4FC304 }
 
-{ @routine $687D6C TPSWeapon01Laser_Draw }
+{ @routine $4FC92C TPSWeapon01Laser_Draw }
 procedure TPSWeapon01Laser.Draw(ClipRect: TRect);
 var
   Angle, Sine, Cosine, PX, PY: Single;
@@ -359,9 +359,9 @@ begin
     end;
   end;
 end;
-{ @end $687D6C }
+{ @end $4FC92C }
 
-{ @routine $687F84 LoadBeamLaserPalettes }
+{ @routine $4FCAF0 LoadBeamLaserPalettes }
 procedure LoadBeamLaserPalettes;
 var
   Block, PaletteBlock: TBlockParEC;
@@ -379,25 +379,23 @@ begin
   for Index := 0 to Count - 1 do
   begin
     Text := IntToStr(Index);
-    if Block.CountBlocks(Text) <> 0 then
-    begin
-      PaletteBlock := Block.GetBlockByPath(Text);
-      for ColorIndex := 0 to 2 do
-        if PaletteBlock.CountParams('Color' + IntToStr(ColorIndex)) > 0 then
-        begin
-          Text := PaletteBlock.GetParam('Color' + IntToStr(ColorIndex));
-          for PartIndex := 0 to 2 do
-            BeamLaserPalettes[Index][3 * ColorIndex + PartIndex] := ExtractDecimalToSingleW(ExtractDelimitedPartW(Text, PartIndex, ','));
-        end;
-      if PaletteBlock.CountParams('Width') > 0 then
-        BeamLaserWidths[Index] := ExtractDecimalToSingleW(PaletteBlock.GetParam('Width'))
-      else BeamLaserWidths[Index] := 2.0;
-      if PaletteBlock.CountParams('Time') > 0 then
-        BeamLaserDurations[Index] := ExtractDigitsToIntW(PaletteBlock.GetParam('Time'))
-      else BeamLaserDurations[Index] := 40;
-    end;
+    if Block.CountBlocks(Text) = 0 then Continue;
+    PaletteBlock := Block.GetBlockByPath(Text);
+    for ColorIndex := 0 to 2 do
+      if PaletteBlock.CountParams('Color' + IntToStr(ColorIndex)) > 0 then
+      begin
+        Text := PaletteBlock.GetParam('Color' + IntToStr(ColorIndex));
+        for PartIndex := 0 to 2 do
+          BeamLaserPalettes[Index][3 * ColorIndex + PartIndex] := ExtractDecimalToSingleW(ExtractDelimitedPartW(Text, PartIndex, ','));
+      end;
+    if PaletteBlock.CountParams('Width') > 0 then
+      BeamLaserWidths[Index] := ExtractDecimalToSingleW(PaletteBlock.GetParam('Width'))
+    else BeamLaserWidths[Index] := 2.0;
+    if PaletteBlock.CountParams('Time') > 0 then
+      BeamLaserDurations[Index] := ExtractDigitsToIntW(PaletteBlock.GetParam('Time'))
+    else BeamLaserDurations[Index] := 40;
   end;
 end;
-{ @end $687F84 }
+{ @end $4FCAF0 }
 
 end.

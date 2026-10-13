@@ -1,6 +1,4 @@
 unit aPath;
-// Unit bracket (inferred): .text 0x004DB4E0..0x004DC45B; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
-// Unit bracket (inferred): .itext 0x00876740..0x00876747; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -8,7 +6,7 @@ uses EC_Struct, SyncObjs;
 
 type
   PSPathNode = ^TSPathNode;
-  TSPathNode = packed record // @size 0x14
+  TSPathNode = record // @size 0x14
     Prev: PSPathNode; // @offset 0x00
     Next: PSPathNode; // @offset 0x04
     Position: TPointF; // @offset 0x08
@@ -23,84 +21,91 @@ type
     FreeTail: PSPathNode; // @offset 0x10
     NodeCount: Integer; // @offset 0x14  Active nodes only.
 
-    constructor Create; // @addr 0x4DB8AC
-    destructor Destroy; override; // @addr 0x4DB8F8
-    procedure AllocateNodeUnit; // @addr 0x4DB9C8 @note "Acquires 24 nodes from the shared pool; raises on allocation failure."
-    function PopFreeNode: PSPathNode; // @addr 0x4DBB34 @note "Increments NodeCount without linking into the active list. May allocate; payload is uninitialized."
-    procedure AppendNode; // @addr 0x4DBD30 @note "New node is ActiveTail; payload is uninitialized."
-    procedure AppendWaypoint(Position: TPointF; Heading: Single); // @addr 0x4DBD8C
-    function InsertNodeBefore(Node: PSPathNode): PSPathNode; // @addr 0x4DBE0C @note "Nil appends. Payload is uninitialized."
-    procedure RemoveNode(Node: PSPathNode); // @addr 0x4DBB90 @note "Node must belong to this path; it is recycled."
-    procedure RemoveNodeRange(FirstNode, LastNode: PSPathNode); // @addr 0x4DBC44 @note "Inclusive range must be ordered and belong to this path; nodes are recycled."
-    procedure Clear; // @addr 0x4DBD08 @note "Recycles active nodes into this path's free list."
-    function GetFollowingNode(Node: PSPathNode; SkipCount: Integer): PSPathNode; // @addr 0x4DBE8C @note "Starts at Node.Next; nonpositive SkipCount selects that immediate successor. Node must be non-nil."
-    function FindNearestFollowingNode(Node: PSPathNode; Position: TPointF): PSPathNode; // @addr 0x4DBED8 @note "Excludes Node itself, which must be non-nil. Ties keep the earlier node."
-    procedure ResampleBezierRange(FirstNode, LastNode: PSPathNode; SampleCount: Integer); // @addr $4DC030 @note "Uses the inclusive nodes as Bezier controls, unwraps headings, inserts samples and recycles the controls."
-    function GetLength: Single; // @addr 0x4DBF4C
-    function CountNodeRangeInclusive(FirstNode, LastNode: PSPathNode): Integer; // @addr 0x4DBFA8 @note "Returns zero for nil endpoints or when LastNode is not reachable from FirstNode."
+    constructor Create; // @addr 0x004D92B4
+    destructor Destroy; override; // @addr 0x004D92F0
+    procedure AllocateNodeUnit; // @addr 0x004D9390 @note "Acquires 24 nodes from the shared pool; raises on allocation failure."
+    function PopFreeNode: PSPathNode; // @addr 0x004D94C0 @note "Increments NodeCount without linking into the active list. May allocate; payload is uninitialized."
+    procedure AppendNode; // @addr 0x004D95B4 @note "New node is ActiveTail; payload is uninitialized."
+    procedure AppendWaypoint(Position: TPointF; Heading: Single); // @addr 0x004D95E0
+    function InsertNodeBefore(Node: PSPathNode): PSPathNode; // @addr 0x004D9634 @note "Nil appends. Payload is uninitialized."
+    procedure RemoveNode(Node: PSPathNode); // @addr 0x004D94E8 @note "Node must belong to this path; it is recycled."
+    procedure RemoveNodeRange(FirstNode, LastNode: PSPathNode); // @addr 0x004D953C @note "Inclusive range must be ordered and belong to this path; nodes are recycled."
+    procedure Clear; // @addr 0x004D95A4 @note "Recycles active nodes into this path's free list."
+    function GetFollowingNode(Node: PSPathNode; SkipCount: Integer): PSPathNode; // @addr 0x004D9670 @note "Starts at Node.Next; nonpositive SkipCount selects that immediate successor. Node must be non-nil."
+    function FindNearestFollowingNode(Node: PSPathNode; Position: TPointF): PSPathNode; // @addr 0x004D968C @note "Excludes Node itself, which must be non-nil. Ties keep the earlier node."
+    procedure ResampleBezierRange(FirstNode, LastNode: PSPathNode; SampleCount: Integer); // @addr $4D976C @note "Uses the inclusive nodes as Bezier controls, unwraps headings, inserts samples and recycles the controls."
+    function GetLength: Single; // @addr 0x004D96E4
+    function CountNodeRangeInclusive(FirstNode, LastNode: PSPathNode): Integer; // @addr 0x004D971C @note "Returns zero for nil endpoints or when LastNode is not reachable from FirstNode."
   end;
 
 var
-  PathNodeHeap: Cardinal = 0; // @addr $87AB38
-  PathPoolHead: PSPathNode = nil; // @addr $87AB3C
-  PathPoolTail: PSPathNode = nil; // @addr $87AB40
-  PathPoolLock: TCriticalSection = nil; // @addr $87AB44
-  PathGrowthBlockCount: Integer = -1; // @addr $87AB48
+  PathNodeHeap: Cardinal = 0; // @addr $80E774
+  PathPoolHead: PSPathNode = nil; // @addr $80E778
+  PathPoolTail: PSPathNode = nil; // @addr $80E77C
+  PathPoolLock: TCriticalSection = nil; // @addr $80E780
+  PathGrowthBlockCount: Integer = -1; // @addr $80E784
 
-procedure InitializePathNodePool; // @addr $4DB554
-procedure EnsurePathGrowthBlockSlot; // @addr $4DB67C
-procedure FreePathGrowthBlocks; // @addr $4DB6C4
-function ReservePathGrowthBlock: Boolean; // @addr $4DB744
-function GrowPathNodePool: Boolean; // @addr $4DB76C @note "Native growth increments the free count before allocation and never records the allocated block in PathGrowthBlocks."
-procedure FinalizePathNodePool; // @addr $4DB84C
+procedure InitializePathNodePool; // @addr $4D9018
+procedure EnsurePathGrowthBlockSlot; // @addr $4D910C
+procedure FreePathGrowthBlocks; // @addr $4D914C
+function ReservePathGrowthBlock: Boolean; // @addr $4D91A8
+function GrowPathNodePool: Boolean; // @addr $4D91C4 @note "Native growth increments the free count before allocation and never records the allocated block in PathGrowthBlocks."
+procedure FinalizePathNodePool; // @addr $4D9254
 
 implementation
 
-// @unit-initialization $876740
-// @unit-finalization $4DC41C
+// @unit-initialization $8067FC
+// @unit-finalization $4D9A9C
 
 uses EC_Mem, GR_Main, Math, SysUtils, Windows;
 
-var
-  PathInitialBlock: Pointer; // @addr $88A230
-  PathPoolFreeCount: Integer; // @addr $88A234
-  PathGrowthBlocks: array of Pointer; // @addr $88A238
+const
+  InitialPathNodeCapacity = 200000;
+  PathNodeGrowthCount = 100000;
+  NodesPerPathAllocation = 24;
 
-{ @routine $4DB554 InitializePathNodePool }
+var
+  PathInitialBlock: Pointer; // @addr $81AE08
+  PathPoolFreeCount: Integer; // @addr $81AE0C
+  PathGrowthBlocks: array of Pointer; // @addr $81AE10
+
+{ @routine $4D9018 InitializePathNodePool }
 procedure InitializePathNodePool;
 var Index: Integer; Node, Prev: PSPathNode;
 begin
   PathPoolLock := TCriticalSection.Create;
-  PathPoolFreeCount := 200000;
+  PathPoolFreeCount := InitialPathNodeCapacity;
   PathNodeHeap := HeapCreate(0, 16, 0);
   PathInitialBlock := HeapAlloc(PathNodeHeap, 0, PathPoolFreeCount * SizeOf(TSPathNode));
   if PathInitialBlock = nil then raise Exception.Create('Error: HeapAlloc');
   ZeroMemory(PathInitialBlock, PathPoolFreeCount * SizeOf(TSPathNode));
-  Node := PathInitialBlock; PathPoolHead := Node; Prev := nil;
+  Node := PathInitialBlock;
+  PathPoolHead := Node;
+  Prev := nil;
   for Index := 0 to PathPoolFreeCount - 1 do
   begin
     Node.Prev := Prev;
     Node.Next := AddPointerOffset(Node, SizeOf(TSPathNode));
-    Prev := Node; Node := AddPointerOffset(Node, SizeOf(TSPathNode));
+    Prev := Node;
+    Node := AddPointerOffset(Node, SizeOf(TSPathNode));
   end;
-  PathPoolTail := Prev; PathPoolTail.Next := nil;
+  PathPoolTail := Prev;
+  PathPoolTail.Next := nil;
 end;
-{ @end $4DB554 }
+{ @end $4D9018 }
 
-{ @routine $4DB67C EnsurePathGrowthBlockSlot }
+{ @routine $4D910C EnsurePathGrowthBlockSlot }
 procedure EnsurePathGrowthBlockSlot;
 var Count: Integer;
 begin
   Count := Length(PathGrowthBlocks);
-  if PathGrowthBlockCount >= Count then
-  begin
-    SetLength(PathGrowthBlocks, Count + 1);
-    PathGrowthBlocks[Count] := nil;
-  end;
+  if PathGrowthBlockCount < Count then Exit;
+  SetLength(PathGrowthBlocks, Count + 1);
+  PathGrowthBlocks[Count] := nil;
 end;
-{ @end $4DB67C }
+{ @end $4D910C }
 
-{ @routine $4DB6C4 FreePathGrowthBlocks }
+{ @routine $4D914C FreePathGrowthBlocks }
 procedure FreePathGrowthBlocks;
 var Index: Integer;
 begin
@@ -113,71 +118,78 @@ begin
   SetLength(PathGrowthBlocks, 0);
   PathGrowthBlockCount := 0;
 end;
-{ @end $4DB6C4 }
+{ @end $4D914C }
 
-{ @routine $4DB744 ReservePathGrowthBlock }
+{ @routine $4D91A8 ReservePathGrowthBlock }
 function ReservePathGrowthBlock: Boolean;
 begin
   Result := False;
-  if PathGrowEnabled then
-  begin
-    Inc(PathGrowthBlockCount); EnsurePathGrowthBlockSlot; Result := True;
-  end;
+  if not PathGrowEnabled then Exit;
+  Inc(PathGrowthBlockCount);
+  EnsurePathGrowthBlockSlot;
+  Result := True;
 end;
-{ @end $4DB744 }
+{ @end $4D91A8 }
 
-{ @routine $4DB76C GrowPathNodePool }
+{ @routine $4D91C4 GrowPathNodePool }
 function GrowPathNodePool: Boolean;
 var Index, Count, ByteCount: Integer; Node, Prev: PSPathNode; Block: Pointer;
 begin
   Result := False;
   if PathPoolTail = nil then Exit;
   if not ReservePathGrowthBlock then Exit;
-  Count := 100000;
+  Count := PathNodeGrowthCount;
   Inc(PathPoolFreeCount, Count);
   ByteCount := Count * SizeOf(TSPathNode);
   Block := HeapAlloc(PathNodeHeap, HEAP_ZERO_MEMORY, ByteCount);
   if Block = nil then Exit;
-  Node := Block; PathPoolTail.Next := Node; Prev := PathPoolTail;
+  Node := Block;
+  PathPoolTail.Next := Node;
+  Prev := PathPoolTail;
   for Index := 0 to Count - 1 do
   begin
     Node.Prev := Prev;
     Node.Next := AddPointerOffset(Node, SizeOf(TSPathNode));
-    Prev := Node; Node := AddPointerOffset(Node, SizeOf(TSPathNode));
+    Prev := Node;
+    Node := AddPointerOffset(Node, SizeOf(TSPathNode));
   end;
-  PathPoolTail := Prev; PathPoolTail.Next := nil;
+  PathPoolTail := Prev;
+  PathPoolTail.Next := nil;
   Result := True;
 end;
-{ @end $4DB76C }
+{ @end $4D91C4 }
 
-{ @routine $4DB84C FinalizePathNodePool }
+{ @routine $4D9254 FinalizePathNodePool }
 procedure FinalizePathNodePool;
 begin
   FreePathGrowthBlocks;
   if PathInitialBlock <> nil then
   begin
-    HeapFree(PathNodeHeap, 0, PathInitialBlock); PathInitialBlock := nil;
+    HeapFree(PathNodeHeap, 0, PathInitialBlock);
+    PathInitialBlock := nil;
   end;
   if PathNodeHeap <> 0 then
   begin
-    HeapDestroy(PathNodeHeap); PathNodeHeap := 0;
+    HeapDestroy(PathNodeHeap);
+    PathNodeHeap := 0;
   end;
   if PathPoolLock <> nil then
   begin
-    PathPoolLock.Free; PathPoolLock := nil;
+    PathPoolLock.Free;
+    PathPoolLock := nil;
   end;
 end;
-{ @end $4DB84C }
+{ @end $4D9254 }
 
-{ @routine $4DB8AC TSPath_Create }
+{ @routine $4D92B4 TSPath_Create }
 constructor TSPath.Create;
 begin
   inherited Create;
   AllocateNodeUnit;
 end;
-{ @end $4DB8AC }
+{ @end $4D92B4 }
 
-{ @routine $4DB8F8 TSPath_Destroy }
+{ @routine $4D92F0 TSPath_Destroy }
 destructor TSPath.Destroy;
 begin
   Clear;
@@ -185,19 +197,22 @@ begin
   Inc(PathPoolFreeCount, CountNodeRangeInclusive(FreeHead, FreeTail));
   if PathPoolTail <> nil then PathPoolTail.Next := FreeHead;
   FreeHead.Prev := PathPoolTail;
-  FreeTail.Next := nil; PathPoolTail := FreeTail;
+  FreeTail.Next := nil;
+  PathPoolTail := FreeTail;
   if PathPoolHead = nil then PathPoolHead := FreeHead;
   PathPoolLock.Leave;
-  FreeHead := nil; FreeTail := nil; NodeCount := 0;
+  FreeHead := nil;
+  FreeTail := nil;
+  NodeCount := 0;
   inherited Destroy;
 end;
-{ @end $4DB8F8 }
+{ @end $4D92F0 }
 
-{ @routine $4DB9C8 TSPath_AllocateNodeUnit }
+{ @routine $4D9390 TSPath_AllocateNodeUnit }
 procedure TSPath.AllocateNodeUnit;
 var Index: Integer; First, Last: PSPathNode; Count: Integer;
 begin
-  Count := 24;
+  Count := NodesPerPathAllocation;
   PathPoolLock.Enter;
   if Count >= PathPoolFreeCount then
     if not GrowPathNodePool then
@@ -205,29 +220,35 @@ begin
       PathPoolLock.Leave;
       raise Exception.Create('Error: Path.AllocUnit  UnitCount=' + IntToStr(Count));
     end;
-  First := PathPoolHead; Last := PathPoolHead;
+  First := PathPoolHead;
+  Last := PathPoolHead;
   for Index := 1 to Count - 1 do Last := Last.Next;
-  PathPoolHead := Last.Next; PathPoolHead.Prev := nil;
+  PathPoolHead := Last.Next;
+  PathPoolHead.Prev := nil;
   Dec(PathPoolFreeCount, Count);
   PathPoolLock.Leave;
   if FreeTail <> nil then FreeTail.Next := First;
-  First.Prev := FreeTail; Last.Next := nil; FreeTail := Last;
+  First.Prev := FreeTail;
+  Last.Next := nil;
+  FreeTail := Last;
   if FreeHead = nil then FreeHead := First;
 end;
-{ @end $4DB9C8 }
+{ @end $4D9390 }
 
-{ @routine $4DBB34 TSPath_PopFreeNode }
+{ @routine $4D94C0 TSPath_PopFreeNode }
 function TSPath.PopFreeNode: PSPathNode;
 var Node: PSPathNode;
 begin
   if (FreeHead = FreeTail) or (FreeHead = nil) then AllocateNodeUnit;
-  Node := FreeHead; Node.Next.Prev := nil;
-  FreeHead := Node.Next; Inc(NodeCount);
+  Node := FreeHead;
+  Node.Next.Prev := nil;
+  FreeHead := Node.Next;
+  Inc(NodeCount);
   Result := Node;
 end;
-{ @end $4DBB34 }
+{ @end $4D94C0 }
 
-{ @routine $4DBB90 TSPath_RemoveNode }
+{ @routine $4D94E8 TSPath_RemoveNode }
 procedure TSPath.RemoveNode(Node: PSPathNode);
 begin
   if Node.Prev <> nil then Node.Prev.Next := Node.Next;
@@ -235,13 +256,15 @@ begin
   if ActiveTail = Node then ActiveTail := Node.Prev;
   if ActiveHead = Node then ActiveHead := Node.Next;
   if FreeTail <> nil then FreeTail.Next := Node;
-  Node.Prev := FreeTail; Node.Next := nil; FreeTail := Node;
+  Node.Prev := FreeTail;
+  Node.Next := nil;
+  FreeTail := Node;
   if FreeHead = nil then FreeHead := Node;
   Dec(NodeCount);
 end;
-{ @end $4DBB90 }
+{ @end $4D94E8 }
 
-{ @routine $4DBC44 TSPath_RemoveNodeRange }
+{ @routine $4D953C TSPath_RemoveNodeRange }
 procedure TSPath.RemoveNodeRange(FirstNode, LastNode: PSPathNode);
 begin
   Dec(NodeCount, CountNodeRangeInclusive(FirstNode, LastNode));
@@ -250,80 +273,88 @@ begin
   if LastNode = ActiveTail then ActiveTail := FirstNode.Prev;
   if FirstNode = ActiveHead then ActiveHead := LastNode.Next;
   if FreeTail <> nil then FreeTail.Next := FirstNode;
-  FirstNode.Prev := FreeTail; LastNode.Next := nil; FreeTail := LastNode;
+  FirstNode.Prev := FreeTail;
+  LastNode.Next := nil;
+  FreeTail := LastNode;
   if FreeHead = nil then FreeHead := FirstNode;
 end;
-{ @end $4DBC44 }
+{ @end $4D953C }
 
-{ @routine $4DBD08 TSPath_Clear }
+{ @routine $4D95A4 TSPath_Clear }
 procedure TSPath.Clear;
 begin
   if ActiveHead <> nil then RemoveNodeRange(ActiveHead, ActiveTail);
 end;
-{ @end $4DBD08 }
+{ @end $4D95A4 }
 
-{ @routine $4DBD30 TSPath_AppendNode }
+{ @routine $4D95B4 TSPath_AppendNode }
 procedure TSPath.AppendNode;
 var Node: PSPathNode;
 begin
   Node := PopFreeNode;
   if ActiveTail <> nil then ActiveTail.Next := Node;
-  Node.Prev := ActiveTail; Node.Next := nil; ActiveTail := Node;
+  Node.Prev := ActiveTail;
+  Node.Next := nil;
+  ActiveTail := Node;
   if ActiveHead = nil then ActiveHead := Node;
 end;
-{ @end $4DBD30 }
+{ @end $4D95B4 }
 
-{ @routine $4DBD8C TSPath_AppendWaypoint }
+{ @routine $4D95E0 TSPath_AppendWaypoint }
 procedure TSPath.AppendWaypoint(Position: TPointF; Heading: Single);
 var Node: PSPathNode;
 begin
   Node := PopFreeNode;
   if ActiveTail <> nil then ActiveTail.Next := Node;
-  Node.Prev := ActiveTail; Node.Next := nil; ActiveTail := Node;
+  Node.Prev := ActiveTail;
+  Node.Next := nil;
+  ActiveTail := Node;
   if ActiveHead = nil then ActiveHead := Node;
-  Node.Position := Position; Node.Heading := Heading;
+  Node.Position := Position;
+  Node.Heading := Heading;
 end;
-{ @end $4DBD8C }
+{ @end $4D95E0 }
 
-{ @routine $4DBE0C TSPath_InsertNodeBefore }
+{ @routine $4D9634 TSPath_InsertNodeBefore }
 function TSPath.InsertNodeBefore(Node: PSPathNode): PSPathNode;
 var NewNode: PSPathNode;
 begin
   if Node = nil then
   begin
-    AppendNode; Result := ActiveTail;
-  end
-  else
-  begin
-    NewNode := PopFreeNode;
-    NewNode.Prev := Node.Prev;
-    NewNode.Next := Node;
-    if Node.Prev <> nil then Node.Prev.Next := NewNode;
-    Node.Prev := NewNode;
-    if Node = ActiveHead then ActiveHead := NewNode;
-    Result := NewNode;
+    AppendNode;
+    Result := ActiveTail;
+    Exit;
   end;
+  NewNode := PopFreeNode;
+  NewNode.Prev := Node.Prev;
+  NewNode.Next := Node;
+  if Node.Prev <> nil then Node.Prev.Next := NewNode;
+  Node.Prev := NewNode;
+  if Node = ActiveHead then ActiveHead := NewNode;
+  Result := NewNode;
 end;
-{ @end $4DBE0C }
+{ @end $4D9634 }
 
-{ @routine $4DBE8C TSPath_GetFollowingNode }
+{ @routine $4D9670 TSPath_GetFollowingNode }
 function TSPath.GetFollowingNode(Node: PSPathNode; SkipCount: Integer): PSPathNode;
 begin
   Node := Node.Next;
   while Node <> nil do
   begin
     if SkipCount <= 0 then begin Result := Node; Exit; end;
-    Dec(SkipCount); Node := Node.Next;
+    Dec(SkipCount);
+    Node := Node.Next;
   end;
   Result := nil;
 end;
-{ @end $4DBE8C }
+{ @end $4D9670 }
 
-{ @routine $4DBED8 TSPath_FindNearestFollowingNode }
+{ @routine $4D968C TSPath_FindNearestFollowingNode }
 function TSPath.FindNearestFollowingNode(Node: PSPathNode; Position: TPointF): PSPathNode;
 var BestDistance, Distance: Single;
 begin
-  Result := nil; BestDistance := 1.0e20;
+  Result := nil;
+  BestDistance := 1.0e20;
   Node := Node.Next;
   while Node <> nil do
   begin
@@ -332,9 +363,9 @@ begin
     Node := Node.Next;
   end;
 end;
-{ @end $4DBED8 }
+{ @end $4D968C }
 
-{ @routine $4DBF4C TSPath_GetLength }
+{ @routine $4D96E4 TSPath_GetLength }
 function TSPath.GetLength: Single;
 var Node: PSPathNode;
 begin
@@ -347,20 +378,36 @@ begin
     Node := Node.Next;
   end;
 end;
-{ @end $4DBF4C }
+{ @end $4D96E4 }
 
-{ @routine $4DBFA8 TSPath_CountNodeRangeInclusive }
+{ @routine $4D971C TSPath_CountNodeRangeInclusive }
 function TSPath.CountNodeRangeInclusive(FirstNode, LastNode: PSPathNode): Integer;
-var Count: Integer; Node: PSPathNode;
+var
+  Count: Integer;
+  Node: PSPathNode;
 begin
-  if (FirstNode = nil) or (LastNode = nil) then begin Result := 0; Exit; end;
-  Count := 1; Node := FirstNode;
-  while (Node <> nil) and (Node <> LastNode) do begin Inc(Count); Node := Node.Next; end;
-  if Node = nil then Result := 0 else Result := Count;
+  if (FirstNode = nil) or (LastNode = nil) then
+  begin
+    Result := 0;
+    Exit;
+  end;
+  Count := 1;
+  Node := FirstNode;
+  while (Node <> nil) and (Node <> LastNode) do
+  begin
+    Inc(Count);
+    Node := Node.Next;
+  end;
+  if Node = nil then
+  begin
+    Result := 0;
+    Exit;
+  end;
+  Result := Count;
 end;
-{ @end $4DBFA8 }
+{ @end $4D971C }
 
-{ @routine $4DC030 TSPath_ResampleBezierRange }
+{ @routine $4D976C TSPath_ResampleBezierRange }
 procedure TSPath.ResampleBezierRange(FirstNode, LastNode: PSPathNode; SampleCount: Integer);
 var
   Coefficients: array of Double;
@@ -375,7 +422,8 @@ begin
   if SampleCount < 2 then Exit;
   AfterNode := LastNode.Next;
   SetLength(Coefficients, Count);
-  Coefficients[0] := 1; Coefficients[Count - 1] := 1;
+  Coefficients[0] := 1;
+  Coefficients[Count - 1] := 1;
   for Index := 1 to (Count - 1) div 2 do
   begin
     Coefficients[Index] := (Count - Index) * Coefficients[Index - 1] / Index;
@@ -392,14 +440,20 @@ begin
   Node := FirstNode;
   while Node <> LastNode do
   begin
-    Heading := Heading + Node.Heading; Node.Heading := Heading; Node := Node.Next;
+    Heading := Heading + Node.Heading;
+    Node.Heading := Heading;
+    Node := Node.Next;
   end;
-  Heading := Heading + LastNode.Heading; LastNode.Heading := Heading;
+  Heading := Heading + LastNode.Heading;
+  LastNode.Heading := Heading;
   T := 0;
   for Sample := 0 to SampleCount - 1 do
   begin
-    X := 0; Y := 0; Angle := 0;
-    Node := FirstNode; Index := 0;
+    X := 0;
+    Y := 0;
+    Angle := 0;
+    Node := FirstNode;
+    Index := 0;
     TPower := 1;
     InvRemaining := 1 / (1 - T);
     RemainingPower := Power(1 - T, Count - 1 - Index);
@@ -419,15 +473,17 @@ begin
     Y := Y + Weight * Node.Position.Y;
     Angle := Angle + Weight * Node.Heading;
     NewNode := InsertNodeBefore(AfterNode);
-    NewNode.Position.X := X; NewNode.Position.Y := Y;
+    NewNode.Position.X := X;
+    NewNode.Position.Y := Y;
     NewNode.Heading := WrapHeadingDegrees(Angle);
     T := T + 1 / (SampleCount - 1);
   end;
   if AfterNode = nil then NewNode := ActiveTail else NewNode := AfterNode.Prev;
-  NewNode.Position := LastNode.Position; NewNode.Heading := LastNode.Heading;
+  NewNode.Position := LastNode.Position;
+  NewNode.Heading := LastNode.Heading;
   RemoveNodeRange(FirstNode, LastNode);
   Coefficients := nil;
 end;
-{ @end $4DC030 }
+{ @end $4D976C }
 
 end.

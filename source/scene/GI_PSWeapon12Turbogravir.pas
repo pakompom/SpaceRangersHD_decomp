@@ -24,8 +24,8 @@ type
   TTurbogravirPalettes = array of TTurbogravirPalette;
 
 var
-  TurbogravirPrimaryPalettes: array of TTurbogravirPalette; // @addr $88AEE4
-  TurbogravirSecondaryPalettes: array of TTurbogravirPalette; // @addr $88AEE8
+  TurbogravirPrimaryPalettes: array of TTurbogravirPalette; // @addr $81B1BC
+  TurbogravirSecondaryPalettes: array of TTurbogravirPalette; // @addr $81B1C0
 
 type
   TPSWeapon12Turbogravir = class(TPSWeaponGI) // @size $2B4
@@ -44,38 +44,38 @@ type
     OriginalLength: Double; // @offset $2A8
     PaletteIndex: Integer; // @offset $2B0
 
-    constructor Create(Owner: TObjectGI; APaletteIndex: Integer); // @addr $693778
-    destructor Destroy; override; // @addr $693858
-    procedure BuildWaveTables; // @addr $693894
-    procedure SetPosition(Position: TPoint); override; // @addr $69395C
-    procedure SetTargetPoint(Point: TPoint); override; // @addr $6939A0
-    procedure UpdateProjectionBounds; // @addr $6939F4
-    procedure UpdateHitTestBounds; override; // @addr $693D38
-    function GetLocalBounds: TRect; override; // @addr $693D98
-    function AddParticle: PTurbogravirParticle; // @addr $693DFC
-    procedure ClearParticles; // @addr $693E74
-    procedure Invalidate; override; // @addr $693EC8 @note "Native empty override."
-    procedure InvalidateRect(Rect: TRect); override; // @addr $693ED4
-    procedure Advance(Timer: PCallbackTimerGI; UserData: Integer); override; // @addr $693FA0
-    procedure Draw(ClipRect: TRect); override; // @addr $694874
+    constructor Create(Owner: TObjectGI; APaletteIndex: Integer); // @addr $4F0FC8
+    destructor Destroy; override; // @addr $4F1078
+    procedure BuildWaveTables; // @addr $4F10A4
+    procedure SetPosition(Position: TPoint); override; // @addr $4F1148
+    procedure SetTargetPoint(Point: TPoint); override; // @addr $4F1180
+    procedure UpdateProjectionBounds; // @addr $4F11C0
+    procedure UpdateHitTestBounds; override; // @addr $4F1538
+    function GetLocalBounds: TRect; override; // @addr $4F156C
+    function AddParticle: PTurbogravirParticle; // @addr $4F159C
+    procedure ClearParticles; // @addr $4F15DC
+    procedure Invalidate; override; // @addr $4F1610 @note "Native empty override."
+    procedure InvalidateRect(Rect: TRect); override; // @addr $4F1614
+    procedure Advance(Timer: TCallbackTimerIdGI; UserData: Cardinal); override; // @addr $4F16C8
+    procedure Draw(ClipRect: TRect); override; // @addr $4F1D18
   end;
 
   TPSBlueWhirlGI = class(TPSWeapon12Turbogravir) // @size $2B8
   public
     // $2B4..$2B7 is inherited alignment padding, not an additional field.
-    constructor Create(Owner: TObjectGI); // @addr $694B18
+    constructor Create(Owner: TObjectGI); // @addr $4F1F54
   end;
 
-procedure LoadTurbogravirPalettes; // @addr $694B70
+procedure LoadTurbogravirPalettes; // @addr $4F1F98
 
 implementation
 
-// @unit-initialization $87793C
-// @unit-finalization $694EFC
+// @unit-initialization $80683C
+// @unit-finalization $4F22C4
 
 uses SysUtils, Math, EC_BlockPar, EC_Str, EC_Mem, GR_Main, GR_DX, aMyFunction, Globals;
 
-{ @routine $693778 TPSWeapon12Turbogravir_Create }
+{ @routine $4F0FC8 TPSWeapon12Turbogravir_Create }
 constructor TPSWeapon12Turbogravir.Create(Owner: TObjectGI; APaletteIndex: Integer);
 begin
   inherited Create(Owner);
@@ -90,17 +90,17 @@ begin
   EnabledStrands := 3;
   PaletteIndex := APaletteIndex;
 end;
-{ @end $693778 }
+{ @end $4F0FC8 }
 
-{ @routine $693858 TPSWeapon12Turbogravir_Destroy }
+{ @routine $4F1078 TPSWeapon12Turbogravir_Destroy }
 destructor TPSWeapon12Turbogravir.Destroy;
 begin
   ClearParticles;
   inherited Destroy;
 end;
-{ @end $693858 }
+{ @end $4F1078 }
 
-{ @routine $693894 TPSWeapon12Turbogravir_BuildWaveTables }
+{ @routine $4F10A4 TPSWeapon12Turbogravir_BuildWaveTables }
 procedure TPSWeapon12Turbogravir.BuildWaveTables;
 var
   I: Integer;
@@ -113,9 +113,9 @@ begin
     AlphaTable[I] := Trunc((Cos(Angle) + 1.5) * 100.0);
   end;
 end;
-{ @end $693894 }
+{ @end $4F10A4 }
 
-{ @routine $69395C TPSWeapon12Turbogravir_SetPosition }
+{ @routine $4F1148 TPSWeapon12Turbogravir_SetPosition }
 procedure TPSWeapon12Turbogravir.SetPosition(Position: TPoint);
 begin
   if (LocalPosition.X <> Position.X) or (LocalPosition.Y <> Position.Y) then
@@ -124,9 +124,9 @@ begin
     UpdateProjectionBounds;
   end;
 end;
-{ @end $69395C }
+{ @end $4F1148 }
 
-{ @routine $6939A0 TPSWeapon12Turbogravir_SetTargetPoint }
+{ @routine $4F1180 TPSWeapon12Turbogravir_SetTargetPoint }
 procedure TPSWeapon12Turbogravir.SetTargetPoint(Point: TPoint);
 begin
   if (TargetPoint.X <> Point.X) or (TargetPoint.Y <> Point.Y) then
@@ -135,9 +135,9 @@ begin
     UpdateProjectionBounds;
   end;
 end;
-{ @end $6939A0 }
+{ @end $4F1180 }
 
-{ @routine $6939F4 TPSWeapon12Turbogravir_UpdateProjectionBounds }
+{ @routine $4F11C0 TPSWeapon12Turbogravir_UpdateProjectionBounds }
 procedure TPSWeapon12Turbogravir.UpdateProjectionBounds;
 var
   Angle, Sine, Cosine, Distance, A, B, C, D: Single;
@@ -163,9 +163,9 @@ begin
   ProjectionBounds.Top := Floor(Math.Min(Math.Min(Math.Min(A, B), C), D));
   ProjectionBounds.Bottom := Ceil(Math.Max(Math.Max(Math.Max(A, B), C), D));
 end;
-{ @end $6939F4 }
+{ @end $4F11C0 }
 
-{ @routine $693D38 TPSWeapon12Turbogravir_UpdateHitTestBounds }
+{ @routine $4F1538 TPSWeapon12Turbogravir_UpdateHitTestBounds }
 procedure TPSWeapon12Turbogravir.UpdateHitTestBounds;
 begin
   HitTestBounds.Left := ProjectionBounds.Left + AbsolutePosition.X;
@@ -173,9 +173,9 @@ begin
   HitTestBounds.Right := ProjectionBounds.Right + AbsolutePosition.X;
   HitTestBounds.Bottom := ProjectionBounds.Bottom + AbsolutePosition.Y;
 end;
-{ @end $693D38 }
+{ @end $4F1538 }
 
-{ @routine $693D98 TPSWeapon12Turbogravir_GetLocalBounds }
+{ @routine $4F156C TPSWeapon12Turbogravir_GetLocalBounds }
 function TPSWeapon12Turbogravir.GetLocalBounds: TRect;
 begin
   Result.Left := ProjectionBounds.Left + LocalPosition.X;
@@ -183,9 +183,9 @@ begin
   Result.Right := ProjectionBounds.Right + LocalPosition.X;
   Result.Bottom := ProjectionBounds.Bottom + LocalPosition.Y;
 end;
-{ @end $693D98 }
+{ @end $4F156C }
 
-{ @routine $693DFC TPSWeapon12Turbogravir_AddParticle }
+{ @routine $4F159C TPSWeapon12Turbogravir_AddParticle }
 function TPSWeapon12Turbogravir.AddParticle: PTurbogravirParticle;
 var
   Particle: PTurbogravirParticle;
@@ -198,9 +198,9 @@ begin
   if FirstParticle = nil then FirstParticle := Particle;
   Result := Particle;
 end;
-{ @end $693DFC }
+{ @end $4F159C }
 
-{ @routine $693E74 TPSWeapon12Turbogravir_ClearParticles }
+{ @routine $4F15DC TPSWeapon12Turbogravir_ClearParticles }
 procedure TPSWeapon12Turbogravir.ClearParticles;
 var
   Particle, Current: PTurbogravirParticle;
@@ -215,15 +215,15 @@ begin
   FirstParticle := nil;
   LastParticle := nil;
 end;
-{ @end $693E74 }
+{ @end $4F15DC }
 
-{ @routine $693EC8 TPSWeapon12Turbogravir_Invalidate }
+{ @routine $4F1610 TPSWeapon12Turbogravir_Invalidate }
 procedure TPSWeapon12Turbogravir.Invalidate;
 begin
 end;
-{ @end $693EC8 }
+{ @end $4F1610 }
 
-{ @routine $693ED4 TPSWeapon12Turbogravir_InvalidateRect }
+{ @routine $4F1614 TPSWeapon12Turbogravir_InvalidateRect }
 procedure TPSWeapon12Turbogravir.InvalidateRect(Rect: TRect);
 var
   Target: TPoint;
@@ -238,10 +238,10 @@ begin
   if IntersectRects(Intersection, Rect, GameScreenRect) then
     MessageLoop.QueueUpdateRect(Intersection);
 end;
-{ @end $693ED4 }
+{ @end $4F1614 }
 
-{ @routine $693FA0 TPSWeapon12Turbogravir_Advance }
-procedure TPSWeapon12Turbogravir.Advance(Timer: PCallbackTimerGI; UserData: Integer);
+{ @routine $4F16C8 TPSWeapon12Turbogravir_Advance }
+procedure TPSWeapon12Turbogravir.Advance(Timer: TCallbackTimerIdGI; UserData: Cardinal);
 var
   I, Distance: Integer;
   Current, Particle: PTurbogravirParticle;
@@ -390,9 +390,9 @@ begin
   end;
   Dec(RemainingTicks);
 end;
-{ @end $693FA0 }
+{ @end $4F16C8 }
 
-{ @routine $694874 TPSWeapon12Turbogravir_Draw }
+{ @routine $4F1D18 TPSWeapon12Turbogravir_Draw }
 procedure TPSWeapon12Turbogravir.Draw(ClipRect: TRect);
 var
   Angle, Sine, Cosine, PX, PY: Double;
@@ -442,17 +442,17 @@ begin
     end;
   end;
 end;
-{ @end $694874 }
+{ @end $4F1D18 }
 
-{ @routine $694B18 TPSBlueWhirlGI_Create }
+{ @routine $4F1F54 TPSBlueWhirlGI_Create }
 constructor TPSBlueWhirlGI.Create(Owner: TObjectGI);
 begin
   inherited Create(Owner, 0);
   EnabledStrands := 1;
 end;
-{ @end $694B18 }
+{ @end $4F1F54 }
 
-{ @routine $694B70 LoadTurbogravirPalettes }
+{ @routine $4F1F98 LoadTurbogravirPalettes }
 procedure LoadTurbogravirPalettes;
 var
   Block, PaletteBlock: TBlockParEC;
@@ -489,6 +489,6 @@ begin
     end;
   end;
 end;
-{ @end $694B70 }
+{ @end $4F1F98 }
 
 end.

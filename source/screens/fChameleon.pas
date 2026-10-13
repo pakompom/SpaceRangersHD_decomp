@@ -1,5 +1,4 @@
 unit fChameleon;
-// Native TfChameleon VMT $52253C and callers establish this unit's ownership.
 
 interface
 
@@ -13,25 +12,25 @@ type
     Charges: array[TDominatorSeries] of Integer; // @offset $D4
     Choice: Integer; // @offset $E0 One-based: disable, Blazer, Keller, Terron.
     ChoiceImages: array[1..4] of TImageGI; // @offset $E4 Disabled choices have nil entries.
-    procedure OnOpen; override; // @addr $52278C
-    procedure ProcessCallbackTimers; override; // @addr $523B80
-    procedure AddChoice(Index, X: Integer; Y: Integer; Text: WideString; Selected, Disabled: Boolean); // @addr $5231B0
-    procedure ChoiceMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $523544
-    procedure ChoiceMouseEnter(Sender: TObjectGI); // @addr $52376C
-    procedure ChoiceMouseLeave(Sender: TObjectGI); // @addr $5238A8
-    procedure MoveChoice(Delta: Integer); // @addr $523A20
-    procedure AcceptClicked(Sender: TObjectGI); // @addr $523AA4
-    procedure CancelClicked(Sender: TObjectGI); // @addr $523ADC
-    procedure MainKeyDown(Sender: TObjectGI; Key: Cardinal); // @addr $523B14
+    procedure OnOpen; override; // @addr $4FE090
+    procedure ProcessCallbackTimers; override; // @addr $4FF2D0
+    procedure AddChoice(Index, X: Integer; Y: Integer; Text: WideString; Selected, Disabled: Boolean); // @addr $4FEA08
+    procedure ChoiceMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $4FED68
+    procedure ChoiceMouseEnter(Sender: TObjectGI); // @addr $4FEF5C
+    procedure ChoiceMouseLeave(Sender: TObjectGI); // @addr $4FF090
+    procedure MoveChoice(Delta: Integer); // @addr $4FF200
+    procedure AcceptClicked(Sender: TObjectGI); // @addr $4FF260
+    procedure CancelClicked(Sender: TObjectGI); // @addr $4FF278
+    procedure MainKeyDown(Sender: TObjectGI; Key: Cardinal); // @addr $4FF290
   end;
 
-function ShowChameleonDialog(Parent: TMessageLoopGI; BlazerCharges, KellerCharges: Integer; TerronCharges: Integer; VisualType: TKlingType; Active: Boolean; var Choice: Integer): Cardinal; // @addr $523BB4
+function ShowChameleonDialog(Parent: TMessageLoopGI; BlazerCharges, KellerCharges: Integer; TerronCharges: Integer; VisualType: TKlingType; Active: Boolean; var Choice: Integer): Cardinal; // @addr $4FF2F8
 
 implementation
 
 uses aMyFunction, Windows, SysUtils, EC_Str, EC_Struct, GI_Window, GI_Label, GI_GraphButton, GI_Main, GR_Main, GR_Sound, Globals, GlobalsV, aConst;
 
-{ @routine $52278C TfChameleon_OnOpen }
+{ @routine $4FE090 TfChameleon_OnOpen }
 procedure TfChameleon.OnOpen;
 var
   Y, Index: Integer;
@@ -44,20 +43,20 @@ var
   Disabled, NeedSelection, HasSelection: Boolean;
   WorkRect: TRect;
 
-  // @nested $522588 ChameleonChargeUnavailable
-  function ChameleonChargeUnavailable(Count: Integer): Boolean; // @addr $522588 @calls "0x522D48" Nested OnOpen helper; does not access its parent frame.
+  // @nested $4FDEB0 ChameleonChargeUnavailable
+  function ChameleonChargeUnavailable(Count: Integer): Boolean; // @addr $4FDEB0 @calls "0x004FE5D6" Nested OnOpen helper; does not access its parent frame.
   begin
     if Count > 0 then Result := False else Result := True;
   end;
 
-  // @nested $5225A8 FormatChameleonChargeCount
-  function FormatChameleonChargeCount(Count: Integer): WideString; // @addr $5225A8 @calls "0x522D9D"
+  // @nested $4FDEBC FormatChameleonChargeCount
+  function FormatChameleonChargeCount(Count: Integer): WideString; // @addr $4FDEBC @calls "0x004FE621"
   begin
     Result := ' (' + FormatText1(LocalizedText('ShipInfo.AddInfo.Chameleon.Count'),'','<Count>',IntToStr(Count)) + ')';
   end;
 
-  // @nested $5226C4 ChameleonSeriesColor
-  function ChameleonSeriesColor(Series: TDominatorSeries): WideString; // @addr $5226C4 @calls "0x522D67"
+  // @nested $4FDFD4 ChameleonSeriesColor
+  function ChameleonSeriesColor(Series: TDominatorSeries): WideString; // @addr $4FDFD4 @calls "0x004FE5F2"
   begin
     Result := '';
     case Series of
@@ -146,9 +145,9 @@ begin
   ContentPanel.UpdateAbsolutePosition;
   ContentPanel.UpdateSubtreeHitBounds;
 end;
-{ @end $52278C }
+{ @end $4FE090 }
 
-{ @routine $5231B0 TfChameleon_AddChoice }
+{ @routine $4FEA08 TfChameleon_AddChoice }
 procedure TfChameleon.AddChoice(Index, X: Integer; Y: Integer; Text: WideString; Selected, Disabled: Boolean);
 var
   Image: TImageGI;
@@ -156,7 +155,7 @@ var
   Width: Integer;
 begin
   Image := TImageGI.Create(ContentPanel);
-  Image.SetName('ImgRadio');
+  Image.Name := 'ImgRadio';
   if Disabled then Image.SetImagePath('GI,Bm.FormOptions2.' + GiResourceSuffix + 'SwitchH')
   else if not Selected then Image.SetImagePath('GI,Bm.FormOptions2.' + GiResourceSuffix + 'SwitchN')
   else
@@ -195,9 +194,9 @@ begin
   end;
   Caption.UserValue := Integer(Image);
 end;
-{ @end $5231B0 }
+{ @end $4FEA08 }
 
-{ @routine $523544 TfChameleon_ChoiceMouseDown }
+{ @routine $4FED68 TfChameleon_ChoiceMouseDown }
 procedure TfChameleon.ChoiceMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint);
 var
   Child: TObjectGI;
@@ -210,42 +209,42 @@ begin
     begin
       if Child = Sender then
       begin
-        (Child as TImageGI).SetImagePath('GI,Bm.FormOptions2.' + GiResourceSuffix + 'SwitchD');
+        (Child as TImageGI).ImageSourcePath := 'GI,Bm.FormOptions2.' + GiResourceSuffix + 'SwitchD';
         Choice := (Child as TImageGI).UserValue;
       end
       else if (Child as TImageGI).UserValue <> 0 then
-        (Child as TImageGI).SetImagePath('GI,Bm.FormOptions2.' + GiResourceSuffix + 'SwitchN');
+        (Child as TImageGI).ImageSourcePath := 'GI,Bm.FormOptions2.' + GiResourceSuffix + 'SwitchN';
     end;
     Child := Child.NextSibling;
   end;
   if (Point.X <> -1000) or (Point.Y <> -1000) then SoundManager.PlaySound('Sound.ButtonClick');
 end;
-{ @end $523544 }
+{ @end $4FED68 }
 
-{ @routine $52376C TfChameleon_ChoiceMouseEnter }
+{ @routine $4FEF5C TfChameleon_ChoiceMouseEnter }
 procedure TfChameleon.ChoiceMouseEnter(Sender: TObjectGI);
 begin
   if not (Sender is TImageGI) then Sender := TObjectGI(Sender.UserValue);
   if (Sender as TImageGI).GetImagePath = 'GI,Bm.FormOptions2.' + GiResourceSuffix + 'SwitchN' then
-    (Sender as TImageGI).SetImagePath('GI,Bm.FormOptions2.' + GiResourceSuffix + 'SwitchA');
+    (Sender as TImageGI).ImageSourcePath := 'GI,Bm.FormOptions2.' + GiResourceSuffix + 'SwitchA';
 end;
-{ @end $52376C }
+{ @end $4FEF5C }
 
-{ @routine $5238A8 TfChameleon_ChoiceMouseLeave }
+{ @routine $4FF090 TfChameleon_ChoiceMouseLeave }
 procedure TfChameleon.ChoiceMouseLeave(Sender: TObjectGI);
 begin
   if not (Sender is TImageGI) then Sender := TObjectGI(Sender.UserValue);
   if (Sender as TImageGI).GetImagePath = 'GI,Bm.FormOptions2.' + GiResourceSuffix + 'SwitchA' then
-    (Sender as TImageGI).SetImagePath('GI,Bm.FormOptions2.' + GiResourceSuffix + 'SwitchN');
+    (Sender as TImageGI).ImageSourcePath := 'GI,Bm.FormOptions2.' + GiResourceSuffix + 'SwitchN';
 end;
-{ @end $5238A8 }
+{ @end $4FF090 }
 
-{ @routine $523A20 TfChameleon_MoveChoice }
+{ @routine $4FF200 TfChameleon_MoveChoice }
 procedure TfChameleon.MoveChoice(Delta: Integer);
 var
   Index: Integer;
-  // @nested $5239E4 Advance
-  procedure Advance; // @addr $5239E4 @calls "0x523A39,0x523A42"
+  // @nested $4FF1C4 Advance
+  procedure Advance; // @addr $4FF1C4 @calls "0x004FF216,0x004FF21F"
   begin
     Index := Index + Delta;
     if Index < 1 then Index := 4
@@ -257,23 +256,23 @@ begin
   while (ChoiceImages[Index] = nil) and (Index <> Choice) do Advance;
   if ChoiceImages[Index] <> nil then ChoiceMouseDown(ChoiceImages[Index],0,ChoiceImages[Index].LocalPosition);
 end;
-{ @end $523A20 }
+{ @end $4FF200 }
 
-{ @routine $523AA4 TfChameleon_AcceptClicked }
+{ @routine $4FF260 TfChameleon_AcceptClicked }
 procedure TfChameleon.AcceptClicked(Sender: TObjectGI);
 begin
   if ExitCode = 0 then RequestClose(1) else RequestClose(ExitCode);
 end;
-{ @end $523AA4 }
+{ @end $4FF260 }
 
-{ @routine $523ADC TfChameleon_CancelClicked }
+{ @routine $4FF278 TfChameleon_CancelClicked }
 procedure TfChameleon.CancelClicked(Sender: TObjectGI);
 begin
   if ExitCode = 0 then RequestClose(2) else RequestClose(ExitCode);
 end;
-{ @end $523ADC }
+{ @end $4FF278 }
 
-{ @routine $523B14 TfChameleon_MainKeyDown }
+{ @routine $4FF290 TfChameleon_MainKeyDown }
 procedure TfChameleon.MainKeyDown(Sender: TObjectGI; Key: Cardinal);
 begin
   if (Key = VK_ESCAPE) or (Key = Ord('N')) then CancelClicked(Sender)
@@ -281,17 +280,17 @@ begin
   else if Key = VK_UP then MoveChoice(-1)
   else if Key = VK_DOWN then MoveChoice(1);
 end;
-{ @end $523B14 }
+{ @end $4FF290 }
 
-{ @routine $523B80 TfChameleon_ProcessCallbackTimers }
+{ @routine $4FF2D0 TfChameleon_ProcessCallbackTimers }
 procedure TfChameleon.ProcessCallbackTimers;
 begin
   inherited ProcessCallbackTimers;
   if (ParentLoop.ExitCode <> 0) and (ExitCode = 0) then RequestClose(255);
 end;
-{ @end $523B80 }
+{ @end $4FF2D0 }
 
-{ @routine $523BB4 ShowChameleonDialog }
+{ @routine $4FF2F8 ShowChameleonDialog }
 function ShowChameleonDialog(Parent: TMessageLoopGI; BlazerCharges, KellerCharges: Integer; TerronCharges: Integer; VisualType: TKlingType; Active: Boolean; var Choice: Integer): Cardinal;
 var
   Dialog: TfChameleon;
@@ -299,7 +298,7 @@ var
 begin
   Parent.RootUiObject.OnModalSuspend;
   Parent.CaptureCursorState(@CursorState);
-  Parent.SetCursorActive(False);
+  Parent.ShowCursor := False;
   Parent.DrawQueuedUpdateRects;
   Dialog := TfChameleon.Create;
   Dialog.ParentLoop := Parent;
@@ -323,6 +322,6 @@ begin
   Parent.RootUiObject.OnModalResume;
   if Result = 254 then BreakUiMessage;
 end;
-{ @end $523BB4 }
+{ @end $4FF2F8 }
 
 end.

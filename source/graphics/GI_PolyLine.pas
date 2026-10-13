@@ -1,5 +1,4 @@
 unit GI_PolyLine;
-// Unit bracket (inferred): .text 0x004B565C..0x004B6BC9; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -36,40 +35,40 @@ type
     FirstSegment: PPolyLineSegmentGI; // @offset $120
     LastSegment: PPolyLineSegmentGI; // @offset $124
     AnimationPhase: Cardinal; // @offset $128
-    AnimationTimer: PCallbackTimerGI; // @offset $12C
+    AnimationTimer: TCallbackTimerIdGI; // @offset $12C
     FrameDrawing: Boolean; // @offset $130
     ShadowCircle: TCircleGI; // @offset $134 Borrowed light-mask control.
     AutoRebuildBounds: Boolean; // @offset $138
     NormalizeBounds: Boolean; // @offset $139
     SegmentHeap: Cardinal; // @offset $13C
 
-    constructor Create(Owner: TObjectGI); // @addr $4B5784
-    destructor Destroy; override; // @addr $4B588C
-    procedure Clear; override; // @addr $4B5900
-    function AllocateSegment: PPolyLineSegmentGI; // @addr $4B594C
-    procedure ClearSegments; // @addr $4B59F4
-    procedure RemoveSegment(Segment: PPolyLineSegmentGI); // @addr $4B5A20
-    procedure AllocatePixelBuffers(Segment: PPolyLineSegmentGI); // @addr $4B5AFC
-    procedure LoadFromConfigPath(const Path: WideString); override; // @addr $4B5B5C
-    procedure LoadFromBlock(Block: TBlockParEC); override; // @addr $4B5B94
-    procedure LoadPolyLineProperties(Block: TBlockParEC); // @addr $4B5BBC @note "Empty in native code."
-    procedure RebuildBounds; // @addr $4B5BCC
-    function AddParentLine(First, Last: TPoint; Color: Cardinal; UserData: Integer): PPolyLineSegmentGI; // @addr $4B5DA0
-    function AddLine(First, Last: TPoint; Color: Cardinal): PPolyLineSegmentGI; // @addr $4B5E74
-    function AddLocalLine(First, Last: TPoint; Color: Cardinal; UserData: Integer): PPolyLineSegmentGI; // @addr $4B5EB0
-    procedure UpdateSegmentLength(Segment: PPolyLineSegmentGI); // @addr $4B5F50
-    procedure RetireSegment(Segment: PPolyLineSegmentGI); // @addr $4B5FEC
-    procedure StartAnimation; // @addr $4B6060
-    procedure StopAnimation; // @addr $4B60C0
-    procedure AdvanceAnimation(Timer: PCallbackTimerGI; UserData: Integer); // @addr $4B60F8
-    procedure Invalidate; override; // @addr $4B613C
-    procedure ErasePreviousFrame; override; // @addr $4B6198
-    procedure PrepareFrameDraw; override; // @addr $4B622C
-    procedure DrawUpdateRects(ClipRect: TRect); override; // @addr $4B6420
-    procedure Draw(ClipRect: TRect); override; // @addr $4B64A0
-    procedure DrawSegment(Segment: PPolyLineSegmentGI; ClipRect: TRect); virtual; // @addr $4B6558 @slot $C8
-    procedure DrawFrameSegment(Segment: PPolyLineSegmentGI; ClipRect: TRect); virtual; // @addr $4B66A0 @slot $CC
-    procedure CommitFrameDraw; override; // @addr $4B6BC0 @note "Empty in native code."
+    constructor Create(Owner: TObjectGI); // @addr $485030
+    destructor Destroy; override; // @addr $485114
+    procedure Clear; override; // @addr $485168
+    function AllocateSegment: PPolyLineSegmentGI; // @addr $4851A8
+    procedure ClearSegments; // @addr $485204
+    procedure RemoveSegment(Segment: PPolyLineSegmentGI); // @addr $485220
+    procedure AllocatePixelBuffers(Segment: PPolyLineSegmentGI); // @addr $4852A4
+    procedure LoadFromConfigPath(const Path: WideString); override; // @addr $4852E8
+    procedure LoadFromBlock(Block: TBlockParEC); override; // @addr $485314
+    procedure LoadPolyLineProperties(Block: TBlockParEC); // @addr $485330 @note "Empty in native code."
+    procedure RebuildBounds; // @addr $485334
+    function AddParentLine(First, Last: TPoint; Color: Cardinal; UserData: Integer): PPolyLineSegmentGI; // @addr $4854AC
+    function AddLine(First, Last: TPoint; Color: Cardinal): PPolyLineSegmentGI; // @addr $48554C
+    function AddLocalLine(First, Last: TPoint; Color: Cardinal; UserData: Integer): PPolyLineSegmentGI; // @addr $48557C
+    procedure UpdateSegmentLength(Segment: PPolyLineSegmentGI); // @addr $4855F4
+    procedure RetireSegment(Segment: PPolyLineSegmentGI); // @addr $485650
+    procedure StartAnimation; // @addr $4856A0
+    procedure StopAnimation; // @addr $4856E4
+    procedure AdvanceAnimation(Timer: TCallbackTimerIdGI; UserData: Cardinal); // @addr $485708
+    procedure Invalidate; override; // @addr $485730
+    procedure ErasePreviousFrame; override; // @addr $485770
+    procedure PrepareFrameDraw; override; // @addr $4857D8
+    procedure DrawUpdateRects(ClipRect: TRect); override; // @addr $48593C
+    procedure Draw(ClipRect: TRect); override; // @addr $485994
+    procedure DrawSegment(Segment: PPolyLineSegmentGI; ClipRect: TRect); virtual; // @addr $485A18 @slot $C8
+    procedure DrawFrameSegment(Segment: PPolyLineSegmentGI; ClipRect: TRect); virtual; // @addr $485B20 @slot $CC
+    procedure CommitFrameDraw; override; // @addr $485F44 @note "Empty in native code."
   end;
 
 implementation
@@ -77,14 +76,14 @@ implementation
 uses EC_Mem, EC_Struct, GR_Main, GR_GraphBuf, GR_DX, GR_Rect, GlobalsV,
   Classes, SysUtils, aMyFunction;
 
-{ @routine $4B5784 TPolyLineGI_Create }
+{ @routine $485030 TPolyLineGI_Create }
 constructor TPolyLineGI.Create(Owner: TObjectGI);
 begin
   inherited Create(Owner);
   SegmentHeap := HeapCreate(1, $8000, 0);
   if SegmentHeap = 0 then raise Exception.Create('TPolyLineGI.HeapCreate');
   ClientSize := Classes.Point(1, 1);
-  AnimationTimer := nil;
+  AnimationTimer := 0;
   AnimationPhase := 0;
   FrameDrawing := False;
   ShadowCircle := nil;
@@ -92,9 +91,9 @@ begin
   NormalizeBounds := True;
   StartAnimation;
 end;
-{ @end $4B5784 }
+{ @end $485030 }
 
-{ @routine $4B588C TPolyLineGI_Destroy }
+{ @routine $485114 TPolyLineGI_Destroy }
 destructor TPolyLineGI.Destroy;
 begin
   ShadowCircle := nil;
@@ -107,9 +106,9 @@ begin
   end;
   inherited Destroy;
 end;
-{ @end $4B588C }
+{ @end $485114 }
 
-{ @routine $4B5900 TPolyLineGI_Clear }
+{ @routine $485168 TPolyLineGI_Clear }
 procedure TPolyLineGI.Clear;
 begin
   ShadowCircle := nil;
@@ -117,9 +116,9 @@ begin
   ClearSegments;
   inherited Clear;
 end;
-{ @end $4B5900 }
+{ @end $485168 }
 
-{ @routine $4B594C TPolyLineGI_AllocateSegment }
+{ @routine $4851A8 TPolyLineGI_AllocateSegment }
 function TPolyLineGI.AllocateSegment: PPolyLineSegmentGI;
 var Segment: PPolyLineSegmentGI;
 begin
@@ -136,48 +135,46 @@ begin
   Segment.Kind := 0;
   Result := Segment;
 end;
-{ @end $4B594C }
+{ @end $4851A8 }
 
-{ @routine $4B59F4 TPolyLineGI_ClearSegments }
+{ @routine $485204 TPolyLineGI_ClearSegments }
 procedure TPolyLineGI.ClearSegments;
 begin
   while FirstSegment <> nil do RemoveSegment(FirstSegment);
 end;
-{ @end $4B59F4 }
+{ @end $485204 }
 
-{ @routine $4B5A20 TPolyLineGI_RemoveSegment }
+{ @routine $485220 TPolyLineGI_RemoveSegment }
 procedure TPolyLineGI.RemoveSegment(Segment: PPolyLineSegmentGI);
 begin
   if Segment.Next <> nil then Segment.Next.Prev := Segment.Prev;
   if Segment.Prev <> nil then Segment.Prev.Next := Segment.Next;
   if LastSegment = Segment then LastSegment := Segment.Prev;
   if FirstSegment = Segment then FirstSegment := Segment.Next;
-  if SegmentHeap <> 0 then
+  if SegmentHeap = 0 then Exit;
+  if Segment.SavedPixels <> nil then
   begin
-    if Segment.SavedPixels <> nil then
-    begin
-      FreeFromHeapEC(SegmentHeap, Segment.SavedPixels);
-      Segment.SavedPixels := nil;
-    end;
-    if Segment.PreviousPixels <> nil then
-    begin
-      FreeFromHeapEC(SegmentHeap, Segment.PreviousPixels);
-      Segment.PreviousPixels := nil;
-    end;
-    FreeFromHeapEC(SegmentHeap, Segment);
+    FreeFromHeapEC(SegmentHeap, Segment.SavedPixels);
+    Segment.SavedPixels := nil;
   end;
+  if Segment.PreviousPixels <> nil then
+  begin
+    FreeFromHeapEC(SegmentHeap, Segment.PreviousPixels);
+    Segment.PreviousPixels := nil;
+  end;
+  FreeFromHeapEC(SegmentHeap, Segment);
 end;
-{ @end $4B5A20 }
+{ @end $485220 }
 
-{ @routine $4B5AFC TPolyLineGI_AllocatePixelBuffers }
+{ @routine $4852A4 TPolyLineGI_AllocatePixelBuffers }
 procedure TPolyLineGI.AllocatePixelBuffers(Segment: PPolyLineSegmentGI);
 begin
   if Segment.SavedPixels = nil then Segment.SavedPixels := AllocFromHeapEC(SegmentHeap, Segment.PixelCount * 2 + 10);
   if Segment.PreviousPixels = nil then Segment.PreviousPixels := AllocFromHeapEC(SegmentHeap, Segment.PixelCount * 2 + 10);
 end;
-{ @end $4B5AFC }
+{ @end $4852A4 }
 
-{ @routine $4B5B5C TPolyLineGI_LoadFromConfigPath }
+{ @routine $4852E8 TPolyLineGI_LoadFromConfigPath }
 procedure TPolyLineGI.LoadFromConfigPath(const Path: WideString);
 var Block: TBlockParEC;
 begin
@@ -185,62 +182,60 @@ begin
   Block := UiStyleConfig.GetBlockByPath(Path);
   LoadPolyLineProperties(Block);
 end;
-{ @end $4B5B5C }
+{ @end $4852E8 }
 
-{ @routine $4B5B94 TPolyLineGI_LoadFromBlock }
+{ @routine $485314 TPolyLineGI_LoadFromBlock }
 procedure TPolyLineGI.LoadFromBlock(Block: TBlockParEC);
 begin
   inherited LoadFromBlock(Block);
   LoadPolyLineProperties(Block);
 end;
-{ @end $4B5B94 }
+{ @end $485314 }
 
-{ @routine $4B5BBC TPolyLineGI_LoadPolyLineProperties }
+{ @routine $485330 TPolyLineGI_LoadPolyLineProperties }
 procedure TPolyLineGI.LoadPolyLineProperties(Block: TBlockParEC);
 begin
 
 end;
-{ @end $4B5BBC }
+{ @end $485330 }
 
-{ @routine $4B5BCC TPolyLineGI_RebuildBounds }
+{ @routine $485334 TPolyLineGI_RebuildBounds }
 procedure TPolyLineGI.RebuildBounds;
 var Segment: PPolyLineSegmentGI; Minimum, Size: TPoint;
 begin
-  if NormalizeBounds then
+  if not NormalizeBounds then Exit;
+  Segment := FirstSegment;
+  if Segment = nil then SetSize(Classes.Point(1, 1))
+  else
   begin
-    Segment := FirstSegment;
-    if Segment = nil then SetSize(Classes.Point(1, 1))
-    else
+    Minimum := Segment.First;
+    while Segment <> nil do
     begin
-      Minimum := Segment.First;
-      while Segment <> nil do
-      begin
-        if Minimum.X > Segment.First.X then Minimum.X := Segment.First.X;
-        if Minimum.Y > Segment.First.Y then Minimum.Y := Segment.First.Y;
-        if Minimum.X > Segment.Last.X then Minimum.X := Segment.Last.X;
-        if Minimum.Y > Segment.Last.Y then Minimum.Y := Segment.Last.Y;
-        Segment := Segment.Next;
-      end;
-      SetPosition(Classes.Point(LocalPosition.X + Minimum.X, LocalPosition.Y + Minimum.Y));
-      Size := Classes.Point(1, 1);
-      Segment := FirstSegment;
-      while Segment <> nil do
-      begin
-        Segment.First := Classes.Point(Segment.First.X - Minimum.X, Segment.First.Y - Minimum.Y);
-        Segment.Last := Classes.Point(Segment.Last.X - Minimum.X, Segment.Last.Y - Minimum.Y);
-        if Size.X <= Segment.First.X then Size.X := Segment.First.X + 1;
-        if Size.Y <= Segment.First.Y then Size.Y := Segment.First.Y + 1;
-        if Size.X <= Segment.Last.X then Size.X := Segment.Last.X + 1;
-        if Size.Y <= Segment.Last.Y then Size.Y := Segment.Last.Y + 1;
-        Segment := Segment.Next;
-      end;
-      SetSize(Size);
+      if Minimum.X > Segment.First.X then Minimum.X := Segment.First.X;
+      if Minimum.Y > Segment.First.Y then Minimum.Y := Segment.First.Y;
+      if Minimum.X > Segment.Last.X then Minimum.X := Segment.Last.X;
+      if Minimum.Y > Segment.Last.Y then Minimum.Y := Segment.Last.Y;
+      Segment := Segment.Next;
     end;
+    SetPosition(Classes.Point(LocalPosition.X + Minimum.X, LocalPosition.Y + Minimum.Y));
+    Size := Classes.Point(1, 1);
+    Segment := FirstSegment;
+    while Segment <> nil do
+    begin
+      Segment.First := Classes.Point(Segment.First.X - Minimum.X, Segment.First.Y - Minimum.Y);
+      Segment.Last := Classes.Point(Segment.Last.X - Minimum.X, Segment.Last.Y - Minimum.Y);
+      if Size.X <= Segment.First.X then Size.X := Segment.First.X + 1;
+      if Size.Y <= Segment.First.Y then Size.Y := Segment.First.Y + 1;
+      if Size.X <= Segment.Last.X then Size.X := Segment.Last.X + 1;
+      if Size.Y <= Segment.Last.Y then Size.Y := Segment.Last.Y + 1;
+      Segment := Segment.Next;
+    end;
+    SetSize(Size);
   end;
 end;
-{ @end $4B5BCC }
+{ @end $485334 }
 
-{ @routine $4B5DA0 TPolyLineGI_AddParentLine }
+{ @routine $4854AC TPolyLineGI_AddParentLine }
 function TPolyLineGI.AddParentLine(First, Last: TPoint; Color: Cardinal; UserData: Integer): PPolyLineSegmentGI;
 var Segment: PPolyLineSegmentGI;
 begin
@@ -255,16 +250,16 @@ begin
   if AutoRebuildBounds then RebuildBounds;
   Result := Segment;
 end;
-{ @end $4B5DA0 }
+{ @end $4854AC }
 
-{ @routine $4B5E74 TPolyLineGI_AddLine }
+{ @routine $48554C TPolyLineGI_AddLine }
 function TPolyLineGI.AddLine(First, Last: TPoint; Color: Cardinal): PPolyLineSegmentGI;
 begin
   Result := AddLocalLine(First, Last, Color, 0);
 end;
-{ @end $4B5E74 }
+{ @end $48554C }
 
-{ @routine $4B5EB0 TPolyLineGI_AddLocalLine }
+{ @routine $48557C TPolyLineGI_AddLocalLine }
 function TPolyLineGI.AddLocalLine(First, Last: TPoint; Color: Cardinal; UserData: Integer): PPolyLineSegmentGI;
 var Segment: PPolyLineSegmentGI;
 begin
@@ -279,9 +274,9 @@ begin
   if AutoRebuildBounds then RebuildBounds;
   Result := Segment;
 end;
-{ @end $4B5EB0 }
+{ @end $48557C }
 
-{ @routine $4B5F50 TPolyLineGI_UpdateSegmentLength }
+{ @routine $4855F4 TPolyLineGI_UpdateSegmentLength }
 procedure TPolyLineGI.UpdateSegmentLength(Segment: PPolyLineSegmentGI);
 var Count: Integer;
 begin
@@ -295,9 +290,9 @@ begin
   end
   else Segment.PixelCount := Count;
 end;
-{ @end $4B5F50 }
+{ @end $4855F4 }
 
-{ @routine $4B5FEC TPolyLineGI_RetireSegment }
+{ @routine $485650 TPolyLineGI_RetireSegment }
 procedure TPolyLineGI.RetireSegment(Segment: PPolyLineSegmentGI);
 var Buffer: Pointer;
 begin
@@ -309,41 +304,39 @@ begin
   end;
   RemoveSegment(Segment);
 end;
-{ @end $4B5FEC }
+{ @end $485650 }
 
-{ @routine $4B6060 TPolyLineGI_StartAnimation }
+{ @routine $4856A0 TPolyLineGI_StartAnimation }
 procedure TPolyLineGI.StartAnimation;
 begin
-  if AnimationTimer <> nil then
+  if AnimationTimer <> 0 then
   begin
     MessageLoop.CancelCallbackTimer(AnimationTimer);
-    AnimationTimer := nil;
+    AnimationTimer := 0;
   end;
   AnimationTimer := MessageLoop.ScheduleCallbackTimer(100, 100, AdvanceAnimation);
 end;
-{ @end $4B6060 }
+{ @end $4856A0 }
 
-{ @routine $4B60C0 TPolyLineGI_StopAnimation }
+{ @routine $4856E4 TPolyLineGI_StopAnimation }
 procedure TPolyLineGI.StopAnimation;
 begin
-  if AnimationTimer <> nil then
-  begin
-    MessageLoop.CancelCallbackTimer(AnimationTimer);
-    AnimationTimer := nil;
-  end;
+  if AnimationTimer = 0 then Exit;
+  MessageLoop.CancelCallbackTimer(AnimationTimer);
+  AnimationTimer := 0;
 end;
-{ @end $4B60C0 }
+{ @end $4856E4 }
 
-{ @routine $4B60F8 TPolyLineGI_AdvanceAnimation }
-procedure TPolyLineGI.AdvanceAnimation(Timer: PCallbackTimerGI; UserData: Integer);
+{ @routine $485708 TPolyLineGI_AdvanceAnimation }
+procedure TPolyLineGI.AdvanceAnimation(Timer: TCallbackTimerIdGI; UserData: Cardinal);
 begin
   Inc(AnimationPhase, 30);
   if AnimationPhase >= 360 then Dec(AnimationPhase, 360);
   Invalidate;
 end;
-{ @end $4B60F8 }
+{ @end $485708 }
 
-{ @routine $4B613C TPolyLineGI_Invalidate }
+{ @routine $485730 TPolyLineGI_Invalidate }
 procedure TPolyLineGI.Invalidate;
 begin
   if not FrameDrawing then
@@ -351,38 +344,34 @@ begin
     inherited Invalidate;
     Exit;
   end;
-  if ShadowCircle = nil then
-  begin
-    MessageLoop.UpdateRects.Clear;
-    MessageLoop.UpdateRectsEnabled := True;
-    MessageLoop.InvalidateViewport;
-    MessageLoop.UpdateRectsEnabled := False;
-  end;
+  if ShadowCircle <> nil then Exit;
+  MessageLoop.UpdateRects.Clear;
+  MessageLoop.UpdateRectsEnabled := True;
+  MessageLoop.InvalidateViewport;
+  MessageLoop.UpdateRectsEnabled := False;
 end;
-{ @end $4B613C }
+{ @end $485730 }
 
-{ @routine $4B6198 TPolyLineGI_ErasePreviousFrame }
+{ @routine $485770 TPolyLineGI_ErasePreviousFrame }
 procedure TPolyLineGI.ErasePreviousFrame;
 var Segment: PPolyLineSegmentGI;
 begin
   FrameDrawing := True;
-  if not SkipSavedPixelRestore then
+  if SkipSavedPixelRestore then Exit;
+  Segment := FirstSegment;
+  while Segment <> nil do
   begin
-    Segment := FirstSegment;
-    while Segment <> nil do
-    begin
-      AllocatePixelBuffers(Segment);
-      if Segment.PreviouslyVisible then
-        Ex_OKGR_Line_CopyFromBuf_WORD(Segment.PreviousPixels, ScreenRenderBuffer.GetPixels,
-          ScreenRenderBuffer.PitchBytes, Segment.PreviousFirst.X, Segment.PreviousFirst.Y,
-          Segment.PreviousLast.X, Segment.PreviousLast.Y);
-      Segment := Segment.Next;
-    end;
+    AllocatePixelBuffers(Segment);
+    if Segment.PreviouslyVisible then
+      Ex_OKGR_Line_CopyFromBuf_WORD(Segment.PreviousPixels, ScreenRenderBuffer.GetPixels,
+        ScreenRenderBuffer.PitchBytes, Segment.PreviousFirst.X, Segment.PreviousFirst.Y,
+        Segment.PreviousLast.X, Segment.PreviousLast.Y);
+    Segment := Segment.Next;
   end;
 end;
-{ @end $4B6198 }
+{ @end $485770 }
 
-{ @routine $4B622C TPolyLineGI_PrepareFrameDraw }
+{ @routine $4857D8 TPolyLineGI_PrepareFrameDraw }
 procedure TPolyLineGI.PrepareFrameDraw;
 var Segment: PPolyLineSegmentGI; Clip: TRect;
 begin
@@ -424,9 +413,9 @@ begin
     Segment := Segment.Next;
   end;
 end;
-{ @end $4B622C }
+{ @end $4857D8 }
 
-{ @routine $4B6420 TPolyLineGI_DrawUpdateRects }
+{ @routine $48593C TPolyLineGI_DrawUpdateRects }
 procedure TPolyLineGI.DrawUpdateRects(ClipRect: TRect);
 var Segment: PPolyLineSegmentGI; Clip: TRect;
 begin
@@ -439,9 +428,9 @@ begin
     Segment := Segment.Next;
   end;
 end;
-{ @end $4B6420 }
+{ @end $48593C }
 
-{ @routine $4B64A0 TPolyLineGI_Draw }
+{ @routine $485994 TPolyLineGI_Draw }
 procedure TPolyLineGI.Draw(ClipRect: TRect);
 var Segment: PPolyLineSegmentGI;
 begin
@@ -455,25 +444,25 @@ begin
     Segment := Segment.Next;
   end;
 end;
-{ @end $4B64A0 }
+{ @end $485994 }
 
-{ @routine $4B6558 TPolyLineGI_DrawSegment }
+{ @routine $485A18 TPolyLineGI_DrawSegment }
 procedure TPolyLineGI.DrawSegment(Segment: PPolyLineSegmentGI; ClipRect: TRect);
 begin
-    if HardwareRenderingEnabled then
-    begin
-      if Segment.Animated then DrawAnimatedLineDX(Segment.PixelFirst.X, Segment.PixelFirst.Y, Segment.PixelLast.X, Segment.PixelLast.Y, Color565ToArgb(Segment.Color), AnimationPhase, @ClipRect)
-      else DrawAnimatedLineDX(Segment.PixelFirst.X, Segment.PixelFirst.Y, Segment.PixelLast.X, Segment.PixelLast.Y, Color565ToArgb(Segment.Color), 0, @ClipRect);
-    end
-    else
-    begin
-      if Segment.Animated then ScreenRenderBuffer.DrawAnimatedLine16(Classes.Point(Segment.PixelFirst.X, Segment.PixelFirst.Y), Classes.Point(Segment.PixelLast.X, Segment.PixelLast.Y), Segment.Color, AnimationPhase, ClipRect)
-      else ScreenRenderBuffer.DrawAnimatedLine16(Classes.Point(Segment.PixelFirst.X, Segment.PixelFirst.Y), Classes.Point(Segment.PixelLast.X, Segment.PixelLast.Y), Segment.Color, 0, ClipRect);
-    end;
+  if HardwareRenderingEnabled then
+  begin
+    if Segment.Animated then DrawAnimatedLineDX(Segment.PixelFirst.X, Segment.PixelFirst.Y, Segment.PixelLast.X, Segment.PixelLast.Y, Color565ToArgb(Segment.Color), AnimationPhase, @ClipRect)
+    else DrawAnimatedLineDX(Segment.PixelFirst.X, Segment.PixelFirst.Y, Segment.PixelLast.X, Segment.PixelLast.Y, Color565ToArgb(Segment.Color), 0, @ClipRect);
+  end
+  else
+  begin
+    if Segment.Animated then ScreenRenderBuffer.DrawAnimatedLine16(Classes.Point(Segment.PixelFirst.X, Segment.PixelFirst.Y), Classes.Point(Segment.PixelLast.X, Segment.PixelLast.Y), Segment.Color, AnimationPhase, ClipRect)
+    else ScreenRenderBuffer.DrawAnimatedLine16(Classes.Point(Segment.PixelFirst.X, Segment.PixelFirst.Y), Classes.Point(Segment.PixelLast.X, Segment.PixelLast.Y), Segment.Color, 0, ClipRect);
+  end;
 end;
-{ @end $4B6558 }
+{ @end $485A18 }
 
-{ @routine $4B66A0 TPolyLineGI_DrawFrameSegment }
+{ @routine $485B20 TPolyLineGI_DrawFrameSegment }
 procedure TPolyLineGI.DrawFrameSegment(Segment: PPolyLineSegmentGI; ClipRect: TRect);
 var X, Y: Integer;
 begin
@@ -483,16 +472,16 @@ begin
   begin
     if Segment.Kind = 0 then
     begin
-    if HardwareRenderingEnabled then
-    begin
-      if Segment.Animated then DrawAnimatedLineDX(Segment.PixelFirst.X, Segment.PixelFirst.Y, Segment.PixelLast.X, Segment.PixelLast.Y, Color565ToArgb(Segment.Color), AnimationPhase, @ClipRect)
-      else DrawAnimatedLineDX(Segment.PixelFirst.X, Segment.PixelFirst.Y, Segment.PixelLast.X, Segment.PixelLast.Y, Color565ToArgb(Segment.Color), 0, @ClipRect);
-    end
-    else
-    begin
-      if Segment.Animated then ScreenRenderBuffer.DrawAnimatedLine16(Classes.Point(Segment.PixelFirst.X, Segment.PixelFirst.Y), Classes.Point(Segment.PixelLast.X, Segment.PixelLast.Y), Segment.Color, AnimationPhase, ClipRect)
-      else ScreenRenderBuffer.DrawAnimatedLine16(Classes.Point(Segment.PixelFirst.X, Segment.PixelFirst.Y), Classes.Point(Segment.PixelLast.X, Segment.PixelLast.Y), Segment.Color, 0, ClipRect);
-    end;
+      if HardwareRenderingEnabled then
+      begin
+        if Segment.Animated then DrawAnimatedLineDX(Segment.PixelFirst.X, Segment.PixelFirst.Y, Segment.PixelLast.X, Segment.PixelLast.Y, Color565ToArgb(Segment.Color), AnimationPhase, @ClipRect)
+        else DrawAnimatedLineDX(Segment.PixelFirst.X, Segment.PixelFirst.Y, Segment.PixelLast.X, Segment.PixelLast.Y, Color565ToArgb(Segment.Color), 0, @ClipRect);
+      end
+      else
+      begin
+        if Segment.Animated then ScreenRenderBuffer.DrawAnimatedLine16(Classes.Point(Segment.PixelFirst.X, Segment.PixelFirst.Y), Classes.Point(Segment.PixelLast.X, Segment.PixelLast.Y), Segment.Color, AnimationPhase, ClipRect)
+        else ScreenRenderBuffer.DrawAnimatedLine16(Classes.Point(Segment.PixelFirst.X, Segment.PixelFirst.Y), Classes.Point(Segment.PixelLast.X, Segment.PixelLast.Y), Segment.Color, 0, ClipRect);
+      end;
     end
     else if Segment.Kind = 1 then
     begin
@@ -513,7 +502,9 @@ begin
     end;
   end
   else
-    if (ShadowCircle.LightBuffer <> nil) and (ShadowCircle.LightBuffer.GetPixels <> nil) and Segment.Visible then
+    if ShadowCircle.LightBuffer <> nil then
+      if ShadowCircle.LightBuffer.GetPixels <> nil then
+        if Segment.Visible then
     begin
       if not SkipSavedPixelRestore then
       begin
@@ -529,13 +520,13 @@ begin
       end;
     end;
 end;
-{ @end $4B66A0 }
+{ @end $485B20 }
 
-{ @routine $4B6BC0 TPolyLineGI_CommitFrameDraw }
+{ @routine $485F44 TPolyLineGI_CommitFrameDraw }
 procedure TPolyLineGI.CommitFrameDraw;
 begin
 
 end;
-{ @end $4B6BC0 }
+{ @end $485F44 }
 
 end.

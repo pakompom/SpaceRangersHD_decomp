@@ -1,5 +1,4 @@
 unit GI_XviD;
-// Unit bracket (inferred): .text 0x004B6C68..0x004B7A9C; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -55,53 +54,53 @@ type
     FrameCount: Integer; // @offset $160
     FramesPerSecond: Double; // @offset $168
 
-    constructor Create(Owner: TObjectGI); // @addr $4B6DA0
-    destructor Destroy; override; // @addr $4B6DE8
-    procedure Clear; override; // @addr $4B6E24
-    function ImageOpen(const FileName: WideString; FillViewport: Boolean): Boolean; // @addr $4B6E40
-    procedure XvidClose; // @addr $4B75BC
-    procedure ImageClose; // @addr $4B76D4
-    procedure LoadFromConfigPath(const Path: WideString); override; // @addr $4B7744
-    procedure LoadFromBlock(Block: TBlockParEC); override; // @addr $4B7778
-    procedure ReadVideoConfig(Block: TBlockParEC); // @addr $4B77A0
-    function DecodeNextFrame: Boolean; // @addr $4B77B0
-    function SetPlaybackTime(TimeMs: Double): Boolean; // @addr $4B79C0
-    procedure SetFramePosition(Frame: Integer); // @addr $4B7A28
+    constructor Create(Owner: TObjectGI); // @addr $483628
+    destructor Destroy; override; // @addr $483660
+    procedure Clear; override; // @addr $48368C
+    function ImageOpen(const FileName: WideString; FillViewport: Boolean): Boolean; // @addr $4836A0
+    procedure XvidClose; // @addr $483DE8
+    procedure ImageClose; // @addr $483EE0
+    procedure LoadFromConfigPath(const Path: WideString); override; // @addr $483F30
+    procedure LoadFromBlock(Block: TBlockParEC); override; // @addr $483F5C
+    procedure ReadVideoConfig(Block: TBlockParEC); // @addr $483F78
+    function DecodeNextFrame: Boolean; // @addr $483F7C
+    function SetPlaybackTime(TimeMs: Double): Boolean; // @addr $484154
+    procedure SetFramePosition(Frame: Integer); // @addr $4841A0
   end;
 
 var
-  XvidLibrary: Cardinal = 0; // @addr $87A9F8
-  XvidGlobal: TXvidFunction = nil; // @addr $87A9FC
-  XvidDecore: TXvidFunction = nil; // @addr $87AA00
+  XvidLibrary: Cardinal = 0; // @addr $80B6F8
+  XvidGlobal: TXvidFunction = nil; // @addr $80B6FC
+  XvidDecore: TXvidFunction = nil; // @addr $80B700
 
 implementation
 
 uses Windows, SysUtils, Direct3D9, GR_DX, GR_Main, EC_Str, EC_Struct;
 
-{ @routine $4B6DA0 TxvidGI_Create }
+{ @routine $483628 TxvidGI_Create }
 constructor TxvidGI.Create(Owner: TObjectGI);
 begin
   inherited Create(Owner);
 end;
-{ @end $4B6DA0 }
+{ @end $483628 }
 
-{ @routine $4B6DE8 TxvidGI_Destroy }
+{ @routine $483660 TxvidGI_Destroy }
 destructor TxvidGI.Destroy;
 begin
   ImageClose;
   inherited Destroy;
 end;
-{ @end $4B6DE8 }
+{ @end $483660 }
 
-{ @routine $4B6E24 TxvidGI_Clear }
+{ @routine $48368C TxvidGI_Clear }
 procedure TxvidGI.Clear;
 begin
   ImageClose;
   inherited Clear;
 end;
-{ @end $4B6E24 }
+{ @end $48368C }
 
-{ @routine $4B6E40 TxvidGI_ImageOpen }
+{ @routine $4836A0 TxvidGI_ImageOpen }
 function TxvidGI.ImageOpen(const FileName: WideString; FillViewport: Boolean): Boolean;
 var
   ErrorCode, FormatSize, Status: Integer;
@@ -167,9 +166,9 @@ begin
     end;
   end;
 end;
-{ @end $4B6E40 }
+{ @end $4836A0 }
 
-{ @routine $4B75BC TxvidGI_XvidClose }
+{ @routine $483DE8 TxvidGI_XvidClose }
 procedure TxvidGI.XvidClose;
 var Status: Integer;
 begin
@@ -183,9 +182,9 @@ begin
   if AviFile <> nil then AviFile := nil;
   AVIFileExit;
 end;
-{ @end $4B75BC }
+{ @end $483DE8 }
 
-{ @routine $4B76D4 TxvidGI_ImageClose }
+{ @routine $483EE0 TxvidGI_ImageClose }
 procedure TxvidGI.ImageClose;
 begin
   XvidClose;
@@ -201,31 +200,31 @@ begin
   end;
   if OffscreenTexture <> nil then OffscreenTexture := nil;
 end;
-{ @end $4B76D4 }
+{ @end $483EE0 }
 
-{ @routine $4B7744 TxvidGI_LoadFromConfigPath }
+{ @routine $483F30 TxvidGI_LoadFromConfigPath }
 procedure TxvidGI.LoadFromConfigPath(const Path: WideString);
 begin
   inherited LoadFromConfigPath(Path);
   ReadVideoConfig(UiStyleConfig.GetBlockByPath(Path));
 end;
-{ @end $4B7744 }
+{ @end $483F30 }
 
-{ @routine $4B7778 TxvidGI_LoadFromBlock }
+{ @routine $483F5C TxvidGI_LoadFromBlock }
 procedure TxvidGI.LoadFromBlock(Block: TBlockParEC);
 begin
   inherited LoadFromBlock(Block);
   ReadVideoConfig(Block);
 end;
-{ @end $4B7778 }
+{ @end $483F5C }
 
-{ @routine $4B77A0 TxvidGI_ReadVideoConfig }
+{ @routine $483F78 TxvidGI_ReadVideoConfig }
 procedure TxvidGI.ReadVideoConfig(Block: TBlockParEC);
 begin
 end;
-{ @end $4B77A0 }
+{ @end $483F78 }
 
-{ @routine $4B77B0 TxvidGI_DecodeNextFrame }
+{ @routine $483F7C TxvidGI_DecodeNextFrame }
 function TxvidGI.DecodeNextFrame: Boolean;
 var
   BytesUsed, ErrorCode: Integer;
@@ -259,8 +258,8 @@ begin
     Frame.Output.Strides[0] := LockedRect.Pitch;
     BytesUsed := XvidDecore(DecoderHandle, 2, @Frame, @Stats);
     if BytesUsed < 0 then RaiseWideMessage('AVI decode');
-    Data := Pointer(PAnsiChar(Data) + BytesUsed);
-    Dec(BytesRead, BytesUsed);
+    Data := Pointer(Cardinal(Data) + Cardinal(BytesUsed));
+    BytesRead := BytesRead - Cardinal(BytesUsed);
   end;
   OffscreenTexture.UnlockRect(0);
   Inc(DecodedFrameCount);
@@ -268,9 +267,9 @@ begin
   OffscreenFrameUpdated := True;
   Result := DecodedFrameCount < FrameCount;
 end;
-{ @end $4B77B0 }
+{ @end $483F7C }
 
-{ @routine $4B79C0 TxvidGI_SetPlaybackTime }
+{ @routine $484154 TxvidGI_SetPlaybackTime }
 function TxvidGI.SetPlaybackTime(TimeMs: Double): Boolean;
 var Frame: Integer;
 begin
@@ -283,23 +282,21 @@ begin
   end;
   SetFramePosition(Frame);
 end;
-{ @end $4B79C0 }
+{ @end $484154 }
 
-{ @routine $4B7A28 TxvidGI_SetFramePosition }
+{ @routine $4841A0 TxvidGI_SetFramePosition }
 procedure TxvidGI.SetFramePosition(Frame: Integer);
 begin
-  if DecoderHandle <> nil then
-  begin
-    TargetFrame := Frame;
-    while TargetFrame > DecodedFrameCount do
-      if not DecodeNextFrame then
-      begin
-        XvidClose;
-        if Assigned(PlaybackFinished) then PlaybackFinished(Self);
-        Break;
-      end;
-  end;
+  if DecoderHandle = nil then Exit;
+  TargetFrame := Frame;
+  while TargetFrame > DecodedFrameCount do
+    if not DecodeNextFrame then
+    begin
+      XvidClose;
+      if Assigned(PlaybackFinished) then PlaybackFinished(Self);
+      Exit;
+    end;
 end;
-{ @end $4B7A28 }
+{ @end $4841A0 }
 
 end.

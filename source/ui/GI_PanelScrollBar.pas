@@ -1,5 +1,4 @@
 unit GI_PanelScrollBar;
-// Unit bracket (inferred): .text 0x00490764..0x004916BF; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -17,27 +16,27 @@ type
     ScrollbarsOutside: Boolean; // @offset 0x16A
     UnlimitedWorld: Boolean; // @offset 0x16B
 
-    constructor Create(Owner: TObjectGI); // @addr 0x490890
-    destructor Destroy; override; // @addr 0x490A78 @note "Frees both scrollbars, including when parented outside this panel."
-    procedure Clear; override; // @addr 0x490AF4
-    procedure SetVerticalScrollBarConfigPath(Path: WideString); // @addr 0x490B34
-    procedure SetHorizontalScrollbarEnabled(Value: Boolean); // @addr 0x490B88
-    function IsVerticalScrollbarEnabled: Boolean; // @addr $490BC0
-    procedure SetVerticalScrollbarEnabled(Value: Boolean); // @addr 0x490BE0
-    procedure SetScrollbarsOutside(Value: Boolean); // @addr 0x490C18 @note "The panel retains ownership of scrollbars parented outside it."
-    procedure SetUnlimitedWorldEnabled(Value: Boolean); // @addr 0x490D10
-    procedure SetSize(Size: TPoint); override; // @addr 0x490D48
-    procedure SetOrigin(Origin: TPoint); override; // @addr 0x490D74
-    procedure SetScrollOffset(Offset: TPoint); override; // @addr 0x490DA0
-    procedure SetDepth(NewDepth: Double); override; // @addr 0x490E04
-    procedure UpdateScrollbarPlacement; // @addr 0x490E54
-    procedure UpdateScrollRanges; // @addr 0x491130 @note "Only active PositionModeW children contribute; scrollbars are excluded."
-    procedure ScrollbarPositionChanged(Sender: TObjectGI); // @addr 0x49128C
-    procedure PanelScrollChanged(Sender: TObjectGI); // @addr 0x4912D0 @note "Clamps the panel back to scrollbar positions when UnlimitedWorld is false."
-    procedure ScrollbarDestroyed(Sender: TObjectGI); // @addr 0x491348
-    procedure LoadFromConfigPath(const Path: WideString); override; // @addr 0x49138C
-    procedure LoadFromBlock(Block: TBlockParEC); override; // @addr 0x4913C0
-    procedure LoadScrollbarPanelProperties(Block: TBlockParEC); // @addr 0x4913E8
+    constructor Create(Owner: TObjectGI); // @addr 0x004A4794
+    destructor Destroy; override; // @addr 0x004A491C @note "Frees both scrollbars, including when parented outside this panel."
+    procedure Clear; override; // @addr 0x004A4970
+    procedure SetVerticalScrollBarConfigPath(Path: WideString); // @addr 0x004A49A0
+    procedure SetHorizontalScrollbarEnabled(Value: Boolean); // @addr 0x004A49F0
+    function IsVerticalScrollbarEnabled: Boolean; // @addr $4A4A18
+    procedure SetVerticalScrollbarEnabled(Value: Boolean); // @addr 0x004A4A24
+    procedure SetScrollbarsOutside(Value: Boolean); // @addr 0x004A4A4C @note "The panel retains ownership of scrollbars parented outside it."
+    procedure SetUnlimitedWorldEnabled(Value: Boolean); // @addr 0x004A4B00
+    procedure SetSize(Size: TPoint); override; // @addr 0x004A4B20
+    procedure SetOrigin(Origin: TPoint); override; // @addr 0x004A4B48
+    procedure SetScrollOffset(Offset: TPoint); override; // @addr 0x004A4B70
+    procedure SetDepth(NewDepth: Double); override; // @addr 0x004A4BB4
+    procedure UpdateScrollbarPlacement; // @addr 0x004A4BF8
+    procedure UpdateScrollRanges; // @addr 0x004A4E04 @note "Only active PositionModeW children contribute; scrollbars are excluded."
+    procedure ScrollbarPositionChanged(Sender: TObjectGI); // @addr 0x004A4F18
+    procedure PanelScrollChanged(Sender: TObjectGI); // @addr 0x004A4F50 @note "Clamps the panel back to scrollbar positions when UnlimitedWorld is false."
+    procedure ScrollbarDestroyed(Sender: TObjectGI); // @addr 0x004A4FAC
+    procedure LoadFromConfigPath(const Path: WideString); override; // @addr 0x004A4FD0
+    procedure LoadFromBlock(Block: TBlockParEC); override; // @addr 0x004A4FFC
+    procedure LoadScrollbarPanelProperties(Block: TBlockParEC); // @addr 0x004A5018
   end;
 
 implementation
@@ -45,7 +44,7 @@ implementation
 uses Classes, EC_Str, EC_Struct, GI_Main, GR_Main;
 
 
-{ @routine $490890 TPanelScrollBarGI_Create }
+{ @routine $4A4794 TPanelScrollBarGI_Create }
 constructor TPanelScrollBarGI.Create(Owner: TObjectGI);
 begin
   inherited Create(Owner);
@@ -55,11 +54,11 @@ begin
   VerticalScrollBar.UserValue := -1;
   HorizontalScrollBar.DestroyNotify := ScrollbarDestroyed;
   VerticalScrollBar.DestroyNotify := ScrollbarDestroyed;
-  HorizontalScrollBar.SetActive(False);
-  HorizontalScrollBar.SetOrientation(1);
+  HorizontalScrollBar.IsActive := False;
+  HorizontalScrollBar.SetOrientation(soHorizontal);
   HorizontalScrollBar.SetKindCalcMode(1);
-  VerticalScrollBar.SetActive(False);
-  VerticalScrollBar.SetOrientation(2);
+  VerticalScrollBar.IsActive := False;
+  VerticalScrollBar.SetOrientation(soVertical);
   VerticalScrollBar.SetKindCalcMode(1);
   HorizontalScrollBar.SetDepth(-1E30);
   VerticalScrollBar.SetDepth(-1E30);
@@ -71,9 +70,9 @@ begin
   UnlimitedWorld := True;
   ScrollChangedCallback := PanelScrollChanged;
 end;
-{ @end $490890 }
+{ @end $4A4794 }
 
-{ @routine $490A78 TPanelScrollBarGI_Destroy }
+{ @routine $4A491C TPanelScrollBarGI_Destroy }
 destructor TPanelScrollBarGI.Destroy;
 begin
   if HorizontalScrollBar <> nil then
@@ -88,174 +87,168 @@ begin
   end;
   inherited Destroy;
 end;
-{ @end $490A78 }
+{ @end $4A491C }
 
-{ @routine $490AF4 TPanelScrollBarGI_Clear }
+{ @routine $4A4970 TPanelScrollBarGI_Clear }
 procedure TPanelScrollBarGI.Clear;
 begin
   inherited Clear;
   if (HorizontalScrollBar <> nil) and (VerticalScrollBar <> nil) then SetScrollbarsOutside(False);
   UnlimitedWorld := True;
 end;
-{ @end $490AF4 }
+{ @end $4A4970 }
 
-{ @routine $490B34 TPanelScrollBarGI_SetVerticalScrollBarConfigPath }
+{ @routine $4A49A0 TPanelScrollBarGI_SetVerticalScrollBarConfigPath }
 procedure TPanelScrollBarGI.SetVerticalScrollBarConfigPath(Path: WideString);
 begin
-  VerticalScrollBar.SetConfigPath(Path);
+  VerticalScrollBar.Style := Path;
 end;
-{ @end $490B34 }
+{ @end $4A49A0 }
 
-{ @routine $490B88 TPanelScrollBarGI_SetHorizontalScrollbarEnabled }
+{ @routine $4A49F0 TPanelScrollBarGI_SetHorizontalScrollbarEnabled }
 procedure TPanelScrollBarGI.SetHorizontalScrollbarEnabled(Value: Boolean);
 begin
-  HorizontalScrollBar.SetActive(Value);
+  HorizontalScrollBar.IsActive := Value;
   if Value = True then HorizontalScrollBar.UpdateSizeForOrientation;
 end;
-{ @end $490B88 }
+{ @end $4A49F0 }
 
-{ @routine $490BC0 TPanelScrollBarGI_IsVerticalScrollbarEnabled }
+{ @routine $4A4A18 TPanelScrollBarGI_IsVerticalScrollbarEnabled }
 function TPanelScrollBarGI.IsVerticalScrollbarEnabled: Boolean;
 begin
   Result := VerticalScrollBar.Active;
 end;
-{ @end $490BC0 }
+{ @end $4A4A18 }
 
-{ @routine $490BE0 TPanelScrollBarGI_SetVerticalScrollbarEnabled }
+{ @routine $4A4A24 TPanelScrollBarGI_SetVerticalScrollbarEnabled }
 procedure TPanelScrollBarGI.SetVerticalScrollbarEnabled(Value: Boolean);
 begin
-  VerticalScrollBar.SetActive(Value);
+  VerticalScrollBar.IsActive := Value;
   if Value = True then VerticalScrollBar.UpdateSizeForOrientation;
 end;
-{ @end $490BE0 }
+{ @end $4A4A24 }
 
-{ @routine $490C18 TPanelScrollBarGI_SetScrollbarsOutside }
+{ @routine $4A4A4C TPanelScrollBarGI_SetScrollbarsOutside }
 procedure TPanelScrollBarGI.SetScrollbarsOutside(Value: Boolean);
 begin
-  if Value <> ScrollbarsOutside then
+  if Value = ScrollbarsOutside then Exit;
+  ScrollbarsOutside := Value;
+  if not ScrollbarsOutside then
   begin
-    ScrollbarsOutside := Value;
-    if not ScrollbarsOutside then
-    begin
-      HorizontalScrollBar.Reparent(Self);
-      VerticalScrollBar.Reparent(Self);
-      HorizontalScrollBar.SetDepth(-1E30);
-      VerticalScrollBar.SetDepth(-1E30);
-    end
-    else
-    begin
-      HorizontalScrollBar.Reparent(Parent);
-      VerticalScrollBar.Reparent(Parent);
-      HorizontalScrollBar.SetDepth(Depth);
-      VerticalScrollBar.SetDepth(Depth);
-    end;
-    UpdateScrollbarPlacement;
-    Invalidate;
+    HorizontalScrollBar.Reparent(Self);
+    VerticalScrollBar.Reparent(Self);
+    HorizontalScrollBar.SetDepth(-1E30);
+    VerticalScrollBar.SetDepth(-1E30);
+  end
+  else
+  begin
+    HorizontalScrollBar.Reparent(Parent);
+    VerticalScrollBar.Reparent(Parent);
+    HorizontalScrollBar.SetDepth(Depth);
+    VerticalScrollBar.SetDepth(Depth);
   end;
+  UpdateScrollbarPlacement;
+  Invalidate;
 end;
-{ @end $490C18 }
+{ @end $4A4A4C }
 
-{ @routine $490D10 TPanelScrollBarGI_SetUnlimitedWorldEnabled }
+{ @routine $4A4B00 TPanelScrollBarGI_SetUnlimitedWorldEnabled }
 procedure TPanelScrollBarGI.SetUnlimitedWorldEnabled(Value: Boolean);
 begin
-  if Value <> UnlimitedWorld then
-  begin
-    UnlimitedWorld := Value;
-    Invalidate;
-  end;
+  if Value = UnlimitedWorld then Exit;
+  UnlimitedWorld := Value;
+  Invalidate;
 end;
-{ @end $490D10 }
+{ @end $4A4B00 }
 
-{ @routine $490D48 TPanelScrollBarGI_SetSize }
+{ @routine $4A4B20 TPanelScrollBarGI_SetSize }
 procedure TPanelScrollBarGI.SetSize(Size: TPoint);
 begin
   inherited SetSize(Size);
   UpdateScrollbarPlacement;
 end;
-{ @end $490D48 }
+{ @end $4A4B20 }
 
-{ @routine $490D74 TPanelScrollBarGI_SetOrigin }
+{ @routine $4A4B48 TPanelScrollBarGI_SetOrigin }
 procedure TPanelScrollBarGI.SetOrigin(Origin: TPoint);
 begin
   inherited SetOrigin(Origin);
   UpdateScrollbarPlacement;
 end;
-{ @end $490D74 }
+{ @end $4A4B48 }
 
-{ @routine $490DA0 TPanelScrollBarGI_SetScrollOffset }
+{ @routine $4A4B70 TPanelScrollBarGI_SetScrollOffset }
 procedure TPanelScrollBarGI.SetScrollOffset(Offset: TPoint);
 begin
   inherited SetScrollOffset(Offset);
   if HorizontalScrollBar <> nil then HorizontalScrollBar.SetPositionInternal(ScrollOffset.X);
   if VerticalScrollBar <> nil then VerticalScrollBar.SetPositionInternal(ScrollOffset.Y);
 end;
-{ @end $490DA0 }
+{ @end $4A4B70 }
 
-{ @routine $490E04 TPanelScrollBarGI_SetDepth }
+{ @routine $4A4BB4 TPanelScrollBarGI_SetDepth }
 procedure TPanelScrollBarGI.SetDepth(NewDepth: Double);
 begin
   inherited SetDepth(NewDepth);
-  if ScrollbarsOutside then
-  begin
-    HorizontalScrollBar.SetDepth(NewDepth);
-    VerticalScrollBar.SetDepth(NewDepth);
-  end;
+  if not ScrollbarsOutside then Exit;
+  HorizontalScrollBar.SetDepth(NewDepth);
+  VerticalScrollBar.SetDepth(NewDepth);
 end;
-{ @end $490E04 }
+{ @end $4A4BB4 }
 
-{ @routine $490E54 TPanelScrollBarGI_UpdateScrollbarPlacement }
+{ @routine $4A4BF8 TPanelScrollBarGI_UpdateScrollbarPlacement }
 procedure TPanelScrollBarGI.UpdateScrollbarPlacement;
 begin
   if not ScrollbarsOutside then
   begin
     if AutoHorizontalPlacement then
     begin
-      TObjectGI(HorizontalScrollBar).SetPosition(Classes.Point(0, ClientSize.Y - HorizontalScrollBar.ClientSize.Y));
-      HorizontalScrollBar.SetSize(Classes.Point(ClientSize.X - VerticalScrollBar.ClientSize.X, HorizontalScrollBar.ClientSize.Y));
+      HorizontalScrollBar.Pos := Classes.Point(0, ClientSize.Y - HorizontalScrollBar.ClientSize.Y);
+      HorizontalScrollBar.ObjectSize := Classes.Point(ClientSize.X - VerticalScrollBar.ClientSize.X, HorizontalScrollBar.ClientSize.Y);
     end
     else
     begin
-      TObjectGI(HorizontalScrollBar).SetPosition(HorizontalScrollBarRect.TopLeft);
-      HorizontalScrollBar.SetSize(SubtractPoints(HorizontalScrollBarRect.BottomRight, HorizontalScrollBarRect.TopLeft));
+      HorizontalScrollBar.Pos := HorizontalScrollBarRect.TopLeft;
+      HorizontalScrollBar.ObjectSize := SubtractPoints(HorizontalScrollBarRect.BottomRight, HorizontalScrollBarRect.TopLeft);
     end;
     if AutoVerticalPlacement then
     begin
-      TObjectGI(VerticalScrollBar).SetPosition(Classes.Point(ClientSize.X - VerticalScrollBar.ClientSize.X, 0));
-      VerticalScrollBar.SetSize(Classes.Point(VerticalScrollBar.ClientSize.X, ClientSize.Y - HorizontalScrollBar.ClientSize.Y));
+      VerticalScrollBar.Pos := Classes.Point(ClientSize.X - VerticalScrollBar.ClientSize.X, 0);
+      VerticalScrollBar.ObjectSize := Classes.Point(VerticalScrollBar.ClientSize.X, ClientSize.Y - HorizontalScrollBar.ClientSize.Y);
     end
     else
     begin
-      TObjectGI(VerticalScrollBar).SetPosition(VerticalScrollBarRect.TopLeft);
-      VerticalScrollBar.SetSize(SubtractPoints(VerticalScrollBarRect.BottomRight, VerticalScrollBarRect.TopLeft));
+      VerticalScrollBar.Pos := VerticalScrollBarRect.TopLeft;
+      VerticalScrollBar.ObjectSize := SubtractPoints(VerticalScrollBarRect.BottomRight, VerticalScrollBarRect.TopLeft);
     end;
   end
   else
   begin
     if AutoHorizontalPlacement then
     begin
-      TObjectGI(HorizontalScrollBar).SetPosition(Classes.Point(LocalPosition.X, LocalPosition.Y + ClientSize.Y));
-      HorizontalScrollBar.SetSize(Classes.Point(ClientSize.X, HorizontalScrollBar.ClientSize.Y));
+      HorizontalScrollBar.Pos := Classes.Point(LocalPosition.X, LocalPosition.Y + ClientSize.Y);
+      HorizontalScrollBar.ObjectSize := Classes.Point(ClientSize.X, HorizontalScrollBar.ClientSize.Y);
     end
     else
     begin
-      TObjectGI(HorizontalScrollBar).SetPosition(HorizontalScrollBarRect.TopLeft);
-      HorizontalScrollBar.SetSize(SubtractPoints(HorizontalScrollBarRect.BottomRight, HorizontalScrollBarRect.TopLeft));
+      HorizontalScrollBar.Pos := HorizontalScrollBarRect.TopLeft;
+      HorizontalScrollBar.ObjectSize := SubtractPoints(HorizontalScrollBarRect.BottomRight, HorizontalScrollBarRect.TopLeft);
     end;
     if AutoVerticalPlacement then
     begin
-      TObjectGI(VerticalScrollBar).SetPosition(Classes.Point(LocalPosition.X + ClientSize.X, LocalPosition.Y));
-      VerticalScrollBar.SetSize(Classes.Point(VerticalScrollBar.ClientSize.X, ClientSize.Y));
+      VerticalScrollBar.Pos := Classes.Point(LocalPosition.X + ClientSize.X, LocalPosition.Y);
+      VerticalScrollBar.ObjectSize := Classes.Point(VerticalScrollBar.ClientSize.X, ClientSize.Y);
     end
     else
     begin
-      TObjectGI(VerticalScrollBar).SetPosition(VerticalScrollBarRect.TopLeft);
-      VerticalScrollBar.SetSize(SubtractPoints(VerticalScrollBarRect.BottomRight, VerticalScrollBarRect.TopLeft));
+      VerticalScrollBar.Pos := VerticalScrollBarRect.TopLeft;
+      VerticalScrollBar.ObjectSize := SubtractPoints(VerticalScrollBarRect.BottomRight, VerticalScrollBarRect.TopLeft);
     end;
   end;
 end;
-{ @end $490E54 }
+{ @end $4A4BF8 }
 
-{ @routine $491130 TPanelScrollBarGI_UpdateScrollRanges }
+{ @routine $4A4E04 TPanelScrollBarGI_UpdateScrollRanges }
 procedure TPanelScrollBarGI.UpdateScrollRanges;
 var Child: TObjectGI; Bounds, ChildBounds: TRect;
 begin
@@ -291,53 +284,53 @@ begin
     VerticalScrollBar.SetPositionInternal(ScrollOffset.Y);
   end;
 end;
-{ @end $491130 }
+{ @end $4A4E04 }
 
-{ @routine $49128C TPanelScrollBarGI_ScrollbarPositionChanged }
+{ @routine $4A4F18 TPanelScrollBarGI_ScrollbarPositionChanged }
 procedure TPanelScrollBarGI.ScrollbarPositionChanged(Sender: TObjectGI);
 begin
   SetScrollOffset(Classes.Point(HorizontalScrollBar.Position, VerticalScrollBar.Position));
 end;
-{ @end $49128C }
+{ @end $4A4F18 }
 
-{ @routine $4912D0 TPanelScrollBarGI_PanelScrollChanged }
+{ @routine $4A4F50 TPanelScrollBarGI_PanelScrollChanged }
 procedure TPanelScrollBarGI.PanelScrollChanged(Sender: TObjectGI);
 begin
   HorizontalScrollBar.SetPositionInternal(ScrollOffset.X);
   VerticalScrollBar.SetPositionInternal(ScrollOffset.Y);
   if not UnlimitedWorld then SetScrollOffset(Classes.Point(HorizontalScrollBar.Position, VerticalScrollBar.Position));
 end;
-{ @end $4912D0 }
+{ @end $4A4F50 }
 
-{ @routine $491348 TPanelScrollBarGI_ScrollbarDestroyed }
+{ @routine $4A4FAC TPanelScrollBarGI_ScrollbarDestroyed }
 procedure TPanelScrollBarGI.ScrollbarDestroyed(Sender: TObjectGI);
 begin
   if HorizontalScrollBar = Sender then HorizontalScrollBar := nil;
   if VerticalScrollBar = Sender then VerticalScrollBar := nil;
 end;
-{ @end $491348 }
+{ @end $4A4FAC }
 
-{ @routine $49138C TPanelScrollBarGI_LoadFromConfigPath }
+{ @routine $4A4FD0 TPanelScrollBarGI_LoadFromConfigPath }
 procedure TPanelScrollBarGI.LoadFromConfigPath(const Path: WideString);
 begin
   inherited LoadFromConfigPath(Path);
   LoadScrollbarPanelProperties(UiStyleConfig.GetBlockByPath(Path));
 end;
-{ @end $49138C }
+{ @end $4A4FD0 }
 
-{ @routine $4913C0 TPanelScrollBarGI_LoadFromBlock }
+{ @routine $4A4FFC TPanelScrollBarGI_LoadFromBlock }
 procedure TPanelScrollBarGI.LoadFromBlock(Block: TBlockParEC);
 begin
   inherited LoadFromBlock(Block);
   LoadScrollbarPanelProperties(Block);
 end;
-{ @end $4913C0 }
+{ @end $4A4FFC }
 
-{ @routine $4913E8 TPanelScrollBarGI_LoadScrollbarPanelProperties }
+{ @routine $4A5018 TPanelScrollBarGI_LoadScrollbarPanelProperties }
 procedure TPanelScrollBarGI.LoadScrollbarPanelProperties(Block: TBlockParEC);
 begin
-  if Block.CountParams('StyleBarX') > 0 then HorizontalScrollBar.SetConfigPath(Block.GetParam('StyleBarX'));
-  if Block.CountParams('StyleBarY') > 0 then VerticalScrollBar.SetConfigPath(Block.GetParam('StyleBarY'));
+  if Block.CountParams('StyleBarX') > 0 then HorizontalScrollBar.Style := Block.GetParam('StyleBarX');
+  if Block.CountParams('StyleBarY') > 0 then VerticalScrollBar.Style := Block.GetParam('StyleBarY');
   if Block.CountParams('ActiveBarX') > 0 then
   begin
     if Block.GetParam('ActiveBarX') = 'True' then SetHorizontalScrollbarEnabled(True)
@@ -365,6 +358,6 @@ begin
   UpdateScrollbarPlacement;
   UpdateScrollRanges;
 end;
-{ @end $4913E8 }
+{ @end $4A5018 }
 
 end.

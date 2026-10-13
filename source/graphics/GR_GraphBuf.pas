@@ -1,5 +1,4 @@
 unit GR_GraphBuf;
-// Unit bracket (inferred): .text 0x008650D0..0x0086B5DF; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -27,14 +26,14 @@ type
     BytesPerPixel: Integer; // @offset 0x44
     TotalChannelBits: Cardinal; // @offset 0x48
 
-    function InterpolateRgb(First, Second: Cardinal; Amount: Single): Cardinal; // @addr $86548C
-    function UnpackRed(Color: Cardinal): Byte; // @addr $8655A4
-    function UnpackGreen(Color: Cardinal): Byte; // @addr $8655D4
-    function UnpackBlue(Color: Cardinal): Byte; // @addr $865604
-    procedure RebuildChannelMetrics; // @addr 0x865198 @note "Ignores disjoint bits after each mask's first contiguous run; BytesPerPixel is unchanged."
-    function PackRgbBytes(Red, Green, Blue: Byte): Cardinal; // @addr 0x865340
-    function PackRgb(Red, Green, Blue: Integer): Cardinal; // @addr 0x8653B0
-    function PackNormalizedRgb(Red, Green, Blue: Double): Cardinal; // @addr 0x865408 @note "Does not clamp inputs or include alpha."
+    function InterpolateRgb(First, Second: Cardinal; Amount: Single): Cardinal; // @addr $7B8EC0
+    function UnpackRed(Color: Cardinal): Byte; // @addr $7B8F94
+    function UnpackGreen(Color: Cardinal): Byte; // @addr $7B8FA8
+    function UnpackBlue(Color: Cardinal): Byte; // @addr $7B8FBC
+    procedure RebuildChannelMetrics; // @addr 0x007B8CA0 @note "Ignores disjoint bits after each mask's first contiguous run; BytesPerPixel is unchanged."
+    function PackRgbBytes(Red, Green, Blue: Byte): Cardinal; // @addr 0x007B8D9C
+    function PackRgb(Red, Green, Blue: Integer): Cardinal; // @addr 0x007B8DFC
+    function PackNormalizedRgb(Red, Green, Blue: Double): Cardinal; // @addr 0x007B8E50 @note "Does not clamp inputs or include alpha."
   end;
 
   TColorRGB = packed record // @size $03
@@ -60,12 +59,10 @@ type
     A: Byte; // @offset $03
   end;
   PColorBGRA = ^TColorBGRA;
-  TPixelWordsGR = array[0..0] of Word;
-  PPixelWordsGR = ^TPixelWordsGR;
   TGraphBufGR = class(TObjectEx) // @size 0x2C
   public
-    Width: Integer; // @offset 0x04
-    Height: Integer; // @offset 0x08
+    Width: Cardinal; // @offset 0x04
+    Height: Cardinal; // @offset 0x08
     PitchBytes: Integer; // @offset 0x0C
     Pixels: Pointer; // @offset 0x10
     // Zero owns software pixels; one borrows them.
@@ -80,87 +77,87 @@ type
     TextureLocked: Boolean; // @offset 0x28
     TextureLockedReadOnly: Boolean; // @offset 0x29
 
-    function GetPixel16(X, Y: Integer): Cardinal; // @addr $866370
-    procedure SetPixel16(X, Y: Integer; Color: Cardinal); // @addr $8663BC
-    function GetBrightness16(X, Y: Integer): Cardinal; // @addr $866408
-    function GetPixel32(X, Y: Integer): Cardinal; // @addr $86658C
-    procedure DrawHorizontalLine16(X, Y, Count: Integer; Color: Cardinal); // @addr $8665D8
-    procedure DrawVerticalLine16(X, Y, Count: Integer; Color: Cardinal); // @addr $86663C
-    procedure DrawHorizontalLine16Clipped(X, Y, Count: Integer; Color: Cardinal; Clip: TRect); // @addr $8666B0
-    procedure DrawVerticalLine16Clipped(X, Y, Count: Integer; Color: Cardinal; Clip: TRect); // @addr $866754
-    procedure ClearPixels; // @addr $8673C4
-    procedure FillPixels(Value: Byte); // @addr $8673F4
-    procedure FillRect32(Rect: TRect; Color: Cardinal); // @addr $86746C
-    procedure BlendPixel16(X, Y: Integer; Color: Cardinal; Alpha: Byte); // @addr $8664D8
-    procedure DrawAlphaLine16(X1, Y1, X2, Y2: Integer; Color: Word; Alpha: Byte; Clip: TRect); // @addr $866530
-    procedure DrawLine16(First, Last: TPoint; Color: Cardinal); // @addr $8667F8
-    procedure DrawAnimatedLine16(First, Last: TPoint; Color: Cardinal; Phase: Integer; Clip: TRect); // @addr $866890
-    procedure DrawShadowLine16(First, Last: TPoint; Color: Cardinal; Phase: Integer; Clip: TRect; ShadowPixels: Pointer; ShadowPitch: Integer); // @addr $8668F4
-    procedure DrawAlphaTrapezium16(X1, Y1, X2, Y2, X3, X4: Integer; Color: Word; Alpha: Byte; Clip: TRect); // @addr $866960
-    procedure DrawLine16Clipped(First, Last: TPoint; Color: Cardinal; Clip: TRect); // @addr $866A00
-    procedure FillPixels16(Color: Word); // @addr $86742C
-    procedure ScaleAlpha(Rect: TRect; Alpha: Byte); // @addr $8674FC @ida "void __userpurge $name(TGraphBufGR *Self@<eax>, TRect *Rect@<edx>, unsigned __int8 Alpha@<cl>);"
-    procedure FlipHorizontal16; // @addr $8675A8
-    procedure RotateLeft16; // @addr $867660
-    procedure Stretch16(Width, Height: Cardinal); // @addr $8677D0
-    procedure ConvertRgbTo565; // @addr $867880
-    procedure Convert565ToRgb; // @addr $8679C0
-    procedure ShiftLight16(Shift: Integer; Rect: TRect); // @addr $867A9C @ida "void __userpurge $name(TGraphBufGR *Self@<eax>, int Shift@<edx>, TRect *Rect@<ecx>);"
-    procedure DrawCircle16(Center: TPoint; Radius: Integer; OutlineColor, FillColor: Cardinal; Clip: TRect); // @addr $867B0C
-    procedure DrawCircle8(Center: TPoint; Radius: Integer; OutlineColor, FillColor: Cardinal; Clip: TRect); // @addr $867BAC
-    procedure ApplyOperations(const Operations: WideString); // @addr $867C48
-    procedure RescaleRgb(Width, Height: Integer); // @addr $867E08
-    procedure RescaleRgba(Width, Height, Filter: Integer); // @addr $867EEC
-    procedure RescaleBilinearRgba(Width, Height: Integer); // @addr $867FD4
-    procedure FillPolygon32(Points: array of TPoint; Color: Cardinal); // @addr $8682D8
-    function GetPixelCentroid: TPoint; // @addr $868600
-    procedure CopyRect32(Dest: TPoint; Source: TGraphBufGR; Rect: TRect); // @addr $8686C8
-    procedure BlendRect32(Dest: TPoint; Source: TGraphBufGR; Rect: TRect); // @addr $8687A0
-    procedure MakeShadow; // @addr $868928
-    procedure AdjustBrightness(Percent: Integer); // @addr $869CF0
-    procedure ConvertToGrayscale; // @addr $869F20
-    function GetTexture: IDirect3DTexture9; // @addr $86A214
-    procedure Crop(Rect: TRect); // @addr $869AA8
-    procedure DrawNinePatch(X, Y, Width, Height: Integer; Source: TGraphBufGR; SourceRect, Borders: TRect); // @addr $868EB8
-    procedure RescaleWithAspect(Width, Height: Cardinal; CropToAspect: Boolean; HorizontalAlign, VerticalAlign, Filter: Integer); // @addr $86918C
-    procedure RescaleRGBA_HW(Width, Height: Cardinal; CropToAspect: Boolean; HorizontalAlign, VerticalAlign: Integer); // @addr 0x8694F0 @note "Alignment values: 0=start, 1=center, 2=end."
-    procedure LoadFromScreen(UnusedOption: Byte); // @addr $86A450 @note "The byte-sized option is ignored in this build."
-    procedure ConvertBgraToRgb24; // @addr $86AAD8
-    procedure DrawAntialiasedCircle16(Center: TPoint; Radius: Integer; Color: Cardinal; Clip: TRect); // @addr $86ACE4
-    procedure DrawAntialiasedLine16(X1, Y1, X2, Y2: Integer; Color: Cardinal; Alpha: Integer; Clip: TRect); // @addr $86AFE4
+    function GetPixel16(X, Y: Integer): Cardinal; // @addr $7B9A68
+    procedure SetPixel16(X, Y: Integer; Color: Cardinal); // @addr $7B9A90
+    function GetBrightness16(X, Y: Integer): Cardinal; // @addr $7B9AC4
+    function GetPixel32(X, Y: Integer): Cardinal; // @addr $7B9BE4
+    procedure DrawHorizontalLine16(X, Y, Count: Integer; Color: Cardinal); // @addr $7B9C1C
+    procedure DrawVerticalLine16(X, Y, Count: Integer; Color: Cardinal); // @addr $7B9C7C
+    procedure DrawHorizontalLine16Clipped(X, Y, Count: Integer; Color: Cardinal; Clip: TRect); // @addr $7B9CE0
+    procedure DrawVerticalLine16Clipped(X, Y, Count: Integer; Color: Cardinal; Clip: TRect); // @addr $7B9D4C
+    procedure ClearPixels; // @addr $7BA80C
+    procedure FillPixels(Value: Byte); // @addr $7BA82C
+    procedure FillRect32(Rect: TRect; Color: Cardinal); // @addr $7BA878
+    procedure BlendPixel16(X, Y: Integer; Color: Cardinal; Alpha: Byte); // @addr $7B9B48
+    procedure DrawAlphaLine16(X1, Y1, X2, Y2: Integer; Color: Word; Alpha: Byte; Clip: TRect); // @addr $7B9B94
+    procedure DrawLine16(First, Last: TPoint; Color: Cardinal); // @addr $7B9DB8
+    procedure DrawAnimatedLine16(First, Last: TPoint; Color: Cardinal; Phase: Integer; Clip: TRect); // @addr $7B9E40
+    procedure DrawShadowLine16(First, Last: TPoint; Color: Cardinal; Phase: Integer; Clip: TRect; ShadowPixels: Pointer; ShadowPitch: Integer); // @addr $7B9E9C
+    procedure DrawAlphaTrapezium16(X1, Y1, X2, Y2, X3, X4: Integer; Color: Word; Alpha: Byte; Clip: TRect); // @addr $7B9F00
+    procedure DrawLine16Clipped(First, Last: TPoint; Color: Cardinal; Clip: TRect); // @addr $7B9F90
+    procedure FillPixels16(Color: Word); // @addr $7BA850
+    procedure ScaleAlpha(Rect: TRect; Alpha: Byte); // @addr $7BA900 @ida "void __userpurge $name(TGraphBufGR *Self@<eax>, TRect *Rect@<edx>, unsigned __int8 Alpha@<cl>);"
+    procedure FlipHorizontal16; // @addr $7BA9A0
+    procedure RotateLeft16; // @addr $7BAA24
+    procedure Stretch16(Width, Height: Cardinal); // @addr $7BAB84
+    procedure ConvertRgbTo565; // @addr $7BABF0
+    procedure Convert565ToRgb; // @addr $7BACEC
+    procedure ShiftLight16(Shift: Integer; Rect: TRect); // @addr $7BAD78 @ida "void __userpurge $name(TGraphBufGR *Self@<eax>, int Shift@<edx>, TRect *Rect@<ecx>);"
+    procedure DrawCircle16(Center: TPoint; Radius: Integer; OutlineColor, FillColor: Cardinal; Clip: TRect); // @addr $7BADD8
+    procedure DrawCircle8(Center: TPoint; Radius: Integer; OutlineColor, FillColor: Cardinal; Clip: TRect); // @addr $7BAE60
+    procedure ApplyOperations(const Operations: WideString); // @addr $7BAEE8
+    procedure RescaleRgb(Width, Height: Integer); // @addr $7BB098
+    procedure RescaleRgba(Width, Height, Filter: Integer); // @addr $7BB11C
+    procedure RescaleBilinearRgba(Width, Height: Integer); // @addr $7BB1B8
+    procedure FillPolygon32(Points: array of TPoint; Color: Cardinal); // @addr $7BB480
+    function GetPixelCentroid: TPoint; // @addr $7BB6F4
+    procedure CopyRect32(Dest: TPoint; Source: TGraphBufGR; Rect: TRect); // @addr $7BB7A8
+    procedure BlendRect32(Dest: TPoint; Source: TGraphBufGR; Rect: TRect); // @addr $7BB878
+    procedure MakeShadow; // @addr $7BB9F8
+    procedure AdjustBrightness(Percent: Integer); // @addr $7BCB40
+    procedure ConvertToGrayscale; // @addr $7BCCB0
+    function GetTexture: IDirect3DTexture9; // @addr $7BCF1C
+    procedure Crop(Rect: TRect); // @addr $7BC95C
+    procedure DrawNinePatch(X, Y, Width, Height: Integer; Source: TGraphBufGR; SourceRect, Borders: TRect); // @addr $7BBEE8
+    procedure RescaleWithAspect(Width, Height: Cardinal; CropToAspect: Boolean; HorizontalAlign, VerticalAlign, Filter: Integer); // @addr $7BC1A4
+    procedure RescaleRGBA_HW(Width, Height: Cardinal; CropToAspect: Boolean; HorizontalAlign, VerticalAlign: Integer); // @addr 0x007BC45C @note "Alignment values: 0=start, 1=center, 2=end."
+    procedure LoadFromScreen(UnusedOption: Byte); // @addr $7BD0E8 @note "The byte-sized option is ignored in this build."
+    procedure ConvertBgraToRgb24; // @addr $7BD704
+    procedure DrawAntialiasedCircle16(Center: TPoint; Radius: Integer; Color: Cardinal; Clip: TRect); // @addr $7BD8C8
+    procedure DrawAntialiasedLine16(X1, Y1, X2, Y2: Integer; Color: Cardinal; Alpha: Integer; Clip: TRect); // @addr $7BDB5C
 
-    constructor Create(AUseTexture: Boolean); // @addr 0x865620
-    destructor Destroy; override; // @addr 0x8656C4
-    procedure Clear; // @addr 0x865700
-    function GetPixels: Pointer; // @addr 0x86578C @note "Locks texture storage for writing if necessary."
-    procedure AllocateNativePitch(Width, Height, PitchBytes: Integer); // @addr $865924
-    procedure AttachPixels(Width, Height, PitchBytes: Integer; Data: Pointer); // @addr $865A28
-    procedure AllocateNative(Width, Height: Integer); // @addr 0x8657B0 @note "Records 16-bit pixels; software pitch uses CurrentPixelFormat.BytesPerPixel and four-byte alignment."
-    procedure AllocateRgbaTight(Width, Height: Integer); // @addr 0x865A98 @note "Software storage uses Width*4 pitch; texture storage uses the returned surface pitch."
-    procedure AllocateRgba(Width, Height, PitchBytes: Integer); // @addr 0x865B9C
-    procedure AllocateRgbTight(Width, Height: Integer); // @addr 0x865CA0
-    procedure AllocateRgb(Width, Height, PitchBytes: Integer); // @addr 0x865D04 @note "Always allocates software storage, even when UseTexture is enabled."
-    procedure AllocateGrayscale(Width, Height: Integer); // @addr 0x865D68 @note "Eight-bit software pixels with four-byte-aligned pitch."
+    constructor Create(AUseTexture: Boolean); // @addr 0x007B8FC8
+    destructor Destroy; override; // @addr 0x007B9044
+    procedure Clear; // @addr 0x007B9070
+    function GetPixels: Pointer; // @addr 0x007B90CC @note "Locks texture storage for writing if necessary."
+    procedure AllocateNativePitch(Width, Height, PitchBytes: Integer); // @addr $7B9204
+    procedure AttachPixels(Width, Height, PitchBytes: Integer; Data: Pointer); // @addr $7B92D0
+    procedure AllocateNative(Width, Height: Integer); // @addr 0x007B90E0 @note "Records 16-bit pixels; software pitch uses CurrentPixelFormat.BytesPerPixel and four-byte alignment."
+    procedure AllocateRgbaTight(Width, Height: Integer); // @addr 0x007B931C @note "Software storage uses Width*4 pitch; texture storage uses the returned surface pitch."
+    procedure AllocateRgba(Width, Height, PitchBytes: Integer); // @addr 0x007B93E8
+    procedure AllocateRgbTight(Width, Height: Integer); // @addr 0x007B94B4
+    procedure AllocateRgb(Width, Height, PitchBytes: Integer); // @addr 0x007B94F0 @note "Always allocates software storage, even when UseTexture is enabled."
+    procedure AllocateGrayscale(Width, Height: Integer); // @addr 0x007B9534 @note "Eight-bit software pixels with four-byte-aligned pitch."
     // Decode the entire file payload, ignoring Buffer.Position. Failures raise.
-    procedure LoadImage(Buffer: TBufEC); // @addr 0x865E34 @note "Uses CurrentPixelFormat masks and byte width."
-    procedure LoadImageRgba(Buffer: TBufEC); // @addr 0x8660AC @note "Produces BGRA byte order, with alpha in the high byte."
-    procedure LoadImageRgb(Buffer: TBufEC); // @addr 0x86619C @note "Produces RGB byte order."
-    procedure LoadImageGrayscale(Buffer: TBufEC); // @addr 0x866284
-    procedure SaveToBuffer(Buffer: TBufEC); // @addr 0x868998 @note "Replaces Buffer with width, height, pitch and raw pixels. Leaves Position at 12, before the pixel data."
-    procedure LoadFromBuffer(Buffer: TBufEC); // @addr 0x868A24 @note "Accepts zlib-packed or raw buffer data. Allocates software pixels and leaves Position immediately after the 12-byte image header."
-    procedure SavePng(FileName: WideString); // @addr 0x868B0C @note "Assumes four-byte BGRA pixels. Converts FileName to ANSI and ignores the writer's status."
-    procedure SaveBmp(FileName: WideString); // @addr 0x868BA0 @note "Assumes 32-bit BGRA pixels; alpha is excluded. Converts FileName to ANSI and ignores the writer's status."
-    procedure SaveJpeg(FileName: WideString; Quality: Integer); // @addr 0x868C44 @note "Writes an intermediate BMP to FileName, then replaces it with JPEG. Quality is truncated to one byte; exceptions after the BMP write are swallowed."
-    procedure DrawAntialiasedLine(FirstPoint, SecondPoint: TPoint; Color: Cardinal); // @addr 0x866DB0 @note "RGBA pixels; coverage replaces the color alpha. Blending preserves an existing pixel's alpha unless coverage is fully opaque."
-    procedure LockTexture(ReadOnly: Boolean); // @addr 0x86A9E8
-    procedure UnlockTexture; // @addr 0x86AA8C
+    procedure LoadImage(Buffer: TBufEC); // @addr 0x007B95C4 @note "Uses CurrentPixelFormat masks and byte width."
+    procedure LoadImageRgba(Buffer: TBufEC); // @addr 0x007B9818 @note "Produces BGRA byte order, with alpha in the high byte."
+    procedure LoadImageRgb(Buffer: TBufEC); // @addr 0x007B98E0 @note "Produces RGB byte order."
+    procedure LoadImageGrayscale(Buffer: TBufEC); // @addr 0x007B99A4
+    procedure SaveToBuffer(Buffer: TBufEC); // @addr 0x007BBA60 @note "Replaces Buffer with width, height, pitch and raw pixels. Leaves Position at 12, before the pixel data."
+    procedure LoadFromBuffer(Buffer: TBufEC); // @addr 0x007BBAC4 @note "Accepts zlib-packed or raw buffer data. Allocates software pixels and leaves Position immediately after the 12-byte image header."
+    procedure SavePng(FileName: WideString); // @addr 0x007BBB70 @note "Assumes four-byte BGRA pixels. Converts FileName to ANSI and ignores the writer's status."
+    procedure SaveBmp(FileName: WideString); // @addr 0x007BBBFC @note "Assumes 32-bit BGRA pixels; alpha is excluded. Converts FileName to ANSI and ignores the writer's status."
+    procedure SaveJpeg(FileName: WideString; Quality: Integer); // @addr 0x007BBC98 @note "Writes an intermediate BMP to FileName, then replaces it with JPEG. Quality is truncated to one byte; exceptions after the BMP write are swallowed."
+    procedure DrawAntialiasedLine(FirstPoint, SecondPoint: TPoint; Color: Cardinal); // @addr 0x007BA284 @note "RGBA pixels; coverage replaces the color alpha. Blending preserves an existing pixel's alpha unless coverage is fully opaque."
+    procedure LockTexture(ReadOnly: Boolean); // @addr 0x007BD65C
+    procedure UnlockTexture; // @addr 0x007BD6D8
   end;
 
 implementation
 
 uses EC_OKGF, EC_Mem, GR_DX, GR_Main, EC_Str, GlobalsV, Math, SysUtils, Classes, Windows, Graphics;
 
-{ @routine $865198 TPixelFormatGR_RebuildChannelMetrics }
+{ @routine $7B8CA0 TPixelFormatGR_RebuildChannelMetrics }
 procedure TPixelFormatGR.RebuildChannelMetrics;
 var Mask: Cardinal;
 begin
@@ -198,32 +195,32 @@ begin
   end;
   TotalChannelBits := RedBits + GreenBits + BlueBits + AlphaBits;
 end;
-{ @end $865198 }
+{ @end $7B8CA0 }
 
-{ @routine $865340 TPixelFormatGR_PackRgbBytes }
+{ @routine $7B8D9C TPixelFormatGR_PackRgbBytes }
 function TPixelFormatGR.PackRgbBytes(Red, Green, Blue: Byte): Cardinal;
 begin
   Result := PackNormalizedRgb(Red / 255, Green / 255, Blue / 255);
 end;
-{ @end $865340 }
+{ @end $7B8D9C }
 
-{ @routine $8653B0 TPixelFormatGR_PackRgb }
+{ @routine $7B8DFC TPixelFormatGR_PackRgb }
 function TPixelFormatGR.PackRgb(Red, Green, Blue: Integer): Cardinal;
 begin
   Result := PackNormalizedRgb(Red / 255, Green / 255, Blue / 255);
 end;
-{ @end $8653B0 }
+{ @end $7B8DFC }
 
-{ @routine $865408 TPixelFormatGR_PackNormalizedRgb }
+{ @routine $7B8E50 TPixelFormatGR_PackNormalizedRgb }
 function TPixelFormatGR.PackNormalizedRgb(Red, Green, Blue: Double): Cardinal;
 begin
   Result := (Cardinal(Trunc(Red * (RedLevels - 1))) shl RedShift) or
     (Cardinal(Trunc(Green * (GreenLevels - 1))) shl GreenShift) or
     (Cardinal(Trunc(Blue * (BlueLevels - 1))) shl BlueShift);
 end;
-{ @end $865408 }
+{ @end $7B8E50 }
 
-{ @routine $86548C TPixelFormatGR_InterpolateRgb }
+{ @routine $7B8EC0 TPixelFormatGR_InterpolateRgb }
 function TPixelFormatGR.InterpolateRgb(First, Second: Cardinal; Amount: Single): Cardinal;
 var R1, G1, B1, R2, G2, B2: Integer;
 begin
@@ -237,30 +234,30 @@ begin
     (Cardinal(Trunc(G1 + (G2 - G1) * Amount)) shl GreenShift) or
     (Cardinal(Trunc(B1 + (B2 - B1) * Amount)) shl BlueShift);
 end;
-{ @end $86548C }
+{ @end $7B8EC0 }
 
-{ @routine $8655A4 TPixelFormatGR_UnpackRed }
+{ @routine $7B8F94 TPixelFormatGR_UnpackRed }
 function TPixelFormatGR.UnpackRed(Color: Cardinal): Byte;
 begin
   if TotalChannelBits = 16 then Result := Color shr 8 else Result := Color shr 7;
 end;
-{ @end $8655A4 }
+{ @end $7B8F94 }
 
-{ @routine $8655D4 TPixelFormatGR_UnpackGreen }
+{ @routine $7B8FA8 TPixelFormatGR_UnpackGreen }
 function TPixelFormatGR.UnpackGreen(Color: Cardinal): Byte;
 begin
   if TotalChannelBits = 16 then Result := Color shr 3 else Result := Color shr 2;
 end;
-{ @end $8655D4 }
+{ @end $7B8FA8 }
 
-{ @routine $865604 TPixelFormatGR_UnpackBlue }
+{ @routine $7B8FBC TPixelFormatGR_UnpackBlue }
 function TPixelFormatGR.UnpackBlue(Color: Cardinal): Byte;
 begin
   Result := Byte(Color) shl 3;
 end;
-{ @end $865604 }
+{ @end $7B8FBC }
 
-{ @routine $865620 TGraphBufGR_Create }
+{ @routine $7B8FC8 TGraphBufGR_Create }
 constructor TGraphBufGR.Create(AUseTexture: Boolean);
 begin
   inherited Create;
@@ -269,17 +266,17 @@ begin
   UseTexture := AUseTexture; UsesTextureStorage := False; KeepTextureUntilReplacement := False;
   Texture := nil; TextureLocked := False; TextureLockedReadOnly := False;
 end;
-{ @end $865620 }
+{ @end $7B8FC8 }
 
-{ @routine $8656C4 TGraphBufGR_Destroy }
+{ @routine $7B9044 TGraphBufGR_Destroy }
 destructor TGraphBufGR.Destroy;
 begin
   Clear;
   inherited Destroy;
 end;
-{ @end $8656C4 }
+{ @end $7B9044 }
 
-{ @routine $865700 TGraphBufGR_Clear }
+{ @routine $7B9070 TGraphBufGR_Clear }
 procedure TGraphBufGR.Clear;
 begin
   UnlockTexture;
@@ -292,17 +289,17 @@ begin
   Width := 0; Height := 0; PitchBytes := 0; StorageKind := 0;
   BitsPerPixel := 0; BytesPerPixel := 0;
 end;
-{ @end $865700 }
+{ @end $7B9070 }
 
-{ @routine $86578C TGraphBufGR_GetPixels }
+{ @routine $7B90CC TGraphBufGR_GetPixels }
 function TGraphBufGR.GetPixels: Pointer;
 begin
   LockTexture(False);
   Result := Pixels;
 end;
-{ @end $86578C }
+{ @end $7B90CC }
 
-{ @routine $8657B0 TGraphBufGR_AllocateNative }
+{ @routine $7B90E0 TGraphBufGR_AllocateNative }
 procedure TGraphBufGR.AllocateNative(Width, Height: Integer);
 var Locked: TD3DLockedRect;
 begin
@@ -328,9 +325,9 @@ begin
   if (Self.PitchBytes and 3 <> 0) or (Cardinal(Pixels) and 3 <> 0) then raise Exception.Create('TGraphBufGR.CreateN');
   end;
 end;
-{ @end $8657B0 }
+{ @end $7B90E0 }
 
-{ @routine $865924 TGraphBufGR_AllocateNativePitch }
+{ @routine $7B9204 TGraphBufGR_AllocateNativePitch }
 procedure TGraphBufGR.AllocateNativePitch(Width, Height, PitchBytes: Integer);
 var Locked: TD3DLockedRect;
 begin
@@ -354,20 +351,20 @@ begin
   Pixels := AllocEC(Self.PitchBytes * Self.Height);
   end;
 end;
-{ @end $865924 }
+{ @end $7B9204 }
 
-{ @routine $865A28 TGraphBufGR_AttachPixels }
+{ @routine $7B92D0 TGraphBufGR_AttachPixels }
 procedure TGraphBufGR.AttachPixels(Width, Height, PitchBytes: Integer; Data: Pointer);
 begin
   Clear;
   Pixels := Data; Self.Width := Width; Self.Height := Height; Self.PitchBytes := PitchBytes;
   StorageKind := 1;
-  BytesPerPixel := Cardinal(Self.PitchBytes) div Cardinal(Self.Width);
+  BytesPerPixel := Cardinal(Self.PitchBytes) div Self.Width;
   BitsPerPixel := BytesPerPixel * 8;
 end;
-{ @end $865A28 }
+{ @end $7B92D0 }
 
-{ @routine $865A98 TGraphBufGR_AllocateRgbaTight }
+{ @routine $7B931C TGraphBufGR_AllocateRgbaTight }
 procedure TGraphBufGR.AllocateRgbaTight(Width, Height: Integer);
 var Locked: TD3DLockedRect;
 begin
@@ -391,9 +388,9 @@ begin
   Pixels := AllocEC(Self.PitchBytes * Self.Height);
   end;
 end;
-{ @end $865A98 }
+{ @end $7B931C }
 
-{ @routine $865B9C TGraphBufGR_AllocateRgba }
+{ @routine $7B93E8 TGraphBufGR_AllocateRgba }
 procedure TGraphBufGR.AllocateRgba(Width, Height, PitchBytes: Integer);
 var Locked: TD3DLockedRect;
 begin
@@ -417,9 +414,9 @@ begin
   Pixels := AllocEC(Self.PitchBytes * Self.Height);
   end;
 end;
-{ @end $865B9C }
+{ @end $7B93E8 }
 
-{ @routine $865CA0 TGraphBufGR_AllocateRgbTight }
+{ @routine $7B94B4 TGraphBufGR_AllocateRgbTight }
 procedure TGraphBufGR.AllocateRgbTight(Width, Height: Integer);
 begin
   Clear;
@@ -428,9 +425,9 @@ begin
   Self.PitchBytes := Width * 3;
   Pixels := AllocEC(Self.PitchBytes * Self.Height);
 end;
-{ @end $865CA0 }
+{ @end $7B94B4 }
 
-{ @routine $865D04 TGraphBufGR_AllocateRgb }
+{ @routine $7B94F0 TGraphBufGR_AllocateRgb }
 procedure TGraphBufGR.AllocateRgb(Width, Height, PitchBytes: Integer);
 begin
   Clear;
@@ -439,9 +436,9 @@ begin
   Self.PitchBytes := PitchBytes;
   Pixels := AllocEC(Self.PitchBytes * Self.Height);
 end;
-{ @end $865D04 }
+{ @end $7B94F0 }
 
-{ @routine $865D68 TGraphBufGR_AllocateGrayscale }
+{ @routine $7B9534 TGraphBufGR_AllocateGrayscale }
 procedure TGraphBufGR.AllocateGrayscale(Width, Height: Integer);
 begin
   Clear;
@@ -452,9 +449,9 @@ begin
   Pixels := AllocEC(Self.PitchBytes * Self.Height);
   if (Self.PitchBytes and 3 <> 0) or (Cardinal(Pixels) and 3 <> 0) then raise Exception.Create('TGraphBufGR.CreateBYTE');
 end;
-{ @end $865D68 }
+{ @end $7B9534 }
 
-{ @routine $865E34 TGraphBufGR_LoadImage }
+{ @routine $7B95C4 TGraphBufGR_LoadImage }
 procedure TGraphBufGR.LoadImage(Buffer: TBufEC);
 var Context: POkgfReadContext;
 begin
@@ -466,9 +463,9 @@ begin
     CurrentPixelFormat.GreenMask, CurrentPixelFormat.BlueMask, CurrentPixelFormat.AlphaMask, CurrentPixelFormat.BytesPerPixel));
   if Context = nil then raise Exception.Create('TGraphBufGR.LoadFromBuf. Error load file 2 (buf size=' + IntToWideString(Buffer.DataSize) + ')');
 end;
-{ @end $865E34 }
+{ @end $7B95C4 }
 
-{ @routine $8660AC TGraphBufGR_LoadImageRgba }
+{ @routine $7B9818 TGraphBufGR_LoadImageRgba }
 procedure TGraphBufGR.LoadImageRgba(Buffer: TBufEC);
 var Context: POkgfReadContext;
 begin
@@ -479,9 +476,9 @@ begin
   Context := Pointer(ReadImagePixels(Context, GetPixels, PitchBytes, $FF0000, $FF00, $FF, $FF000000, 4));
   if Context = nil then raise Exception.Create('TGraphBufGR.LoadFromBufRGBA. Error load file');
 end;
-{ @end $8660AC }
+{ @end $7B9818 }
 
-{ @routine $86619C TGraphBufGR_LoadImageRgb }
+{ @routine $7B98E0 TGraphBufGR_LoadImageRgb }
 procedure TGraphBufGR.LoadImageRgb(Buffer: TBufEC);
 var Context: POkgfReadContext;
 begin
@@ -492,9 +489,9 @@ begin
   Context := Pointer(ReadImagePixels(Context, GetPixels, PitchBytes, $FF, $FF00, $FF0000, 0, 3));
   if Context = nil then raise Exception.Create('TGraphBufGR.LoadFromBufRGB. Error load file');
 end;
-{ @end $86619C }
+{ @end $7B98E0 }
 
-{ @routine $866284 TGraphBufGR_LoadImageGrayscale }
+{ @routine $7B99A4 TGraphBufGR_LoadImageGrayscale }
 procedure TGraphBufGR.LoadImageGrayscale(Buffer: TBufEC);
 var Context: POkgfReadContext;
 begin
@@ -505,9 +502,9 @@ begin
   Context := Pointer(ReadImagePixels(Context, GetPixels, PitchBytes, $FF, 0, 0, 0, 1));
   if Context = nil then raise Exception.Create('TGraphBufGR.LoadFromBufGrayscale. Error load file');
 end;
-{ @end $866284 }
+{ @end $7B99A4 }
 
-{ @routine $866370 TGraphBufGR_GetPixel16 }
+{ @routine $7B9A68 TGraphBufGR_GetPixel16 }
 function TGraphBufGR.GetPixel16(X, Y: Integer): Cardinal;
 var
   Data: PByteArray; Pixel: PWord;
@@ -517,9 +514,9 @@ begin
   Pixel := @Data^[Y * PitchBytes + X * SizeOf(Word)];
   Result := Pixel^;
 end;
-{ @end $866370 }
+{ @end $7B9A68 }
 
-{ @routine $8663BC TGraphBufGR_SetPixel16 }
+{ @routine $7B9A90 TGraphBufGR_SetPixel16 }
 procedure TGraphBufGR.SetPixel16(X, Y: Integer; Color: Cardinal);
 var
   Data: PByteArray; Pixel: PWord;
@@ -529,9 +526,9 @@ begin
   Pixel := @Data^[Y * PitchBytes + X * SizeOf(Word)];
   Pixel^ := Color;
 end;
-{ @end $8663BC }
+{ @end $7B9A90 }
 
-{ @routine $866408 TGraphBufGR_GetBrightness16 }
+{ @routine $7B9AC4 TGraphBufGR_GetBrightness16 }
 function TGraphBufGR.GetBrightness16(X, Y: Integer): Cardinal;
 var
   Color: Cardinal;
@@ -539,7 +536,7 @@ var
 begin
   LockTexture(True);
   Result := 0;
-  if (X < 0) or (Y < 0) or (Width - 1 < X) or (Height - 1 < Y) then Exit;
+  if (X < 0) or (Y < 0) or (Integer(Width) - 1 < X) or (Integer(Height) - 1 < Y) then Exit;
   Data := Pixels;
   Pixel := @Data^[Y * PitchBytes + X * SizeOf(Word)];
   Color := Pixel^;
@@ -548,33 +545,33 @@ begin
   else
     Result := (Color and 31) + ((Color shr 5) and 31) + ((Color shr 10) and 31);
 end;
-{ @end $866408 }
+{ @end $7B9AC4 }
 
-{ @routine $8664D8 TGraphBufGR_BlendPixel16 }
+{ @routine $7B9B48 TGraphBufGR_BlendPixel16 }
 procedure TGraphBufGR.BlendPixel16(X, Y: Integer; Color: Cardinal; Alpha: Byte);
 begin
   LockTexture(False);
   GR_Main.BlendPixel16(AddPointerOffset(Pixels, Y * PitchBytes + X * SizeOf(Word)), Color, Alpha);
 end;
-{ @end $8664D8 }
+{ @end $7B9B48 }
 
-{ @routine $866530 TGraphBufGR_DrawAlphaLine16 }
+{ @routine $7B9B94 TGraphBufGR_DrawAlphaLine16 }
 procedure TGraphBufGR.DrawAlphaLine16(X1, Y1, X2, Y2: Integer; Color: Word; Alpha: Byte; Clip: TRect);
 begin
   LockTexture(False);
   Ex_OKGR_Line_DrawClip_Alpha_16(Pixels, PitchBytes, X1, Y1, X2, Y2, Color, Alpha, Clip);
 end;
-{ @end $866530 }
+{ @end $7B9B94 }
 
-{ @routine $86658C TGraphBufGR_GetPixel32 }
+{ @routine $7B9BE4 TGraphBufGR_GetPixel32 }
 function TGraphBufGR.GetPixel32(X, Y: Integer): Cardinal;
 begin
   LockTexture(True);
   Result := ReadDWordEC(AddPointerOffset(Pixels, Y * PitchBytes + X * SizeOf(TColorRGBA)));
 end;
-{ @end $86658C }
+{ @end $7B9BE4 }
 
-{ @routine $8665D8 TGraphBufGR_DrawHorizontalLine16 }
+{ @routine $7B9C1C TGraphBufGR_DrawHorizontalLine16 }
 procedure TGraphBufGR.DrawHorizontalLine16(X, Y, Count: Integer; Color: Cardinal);
 var Data: Pointer;
 begin
@@ -587,11 +584,8 @@ begin
   LockTexture(False);
   X := Y * PitchBytes + X * SizeOf(Word);
   Data := Pixels;
-  // Native bug: EDI is clobbered without saving/restoring it, violating
-  // Delphi's callee-save convention. The original function has no outer save.
-  // DCC32 18.5 O+ callers can retain a destination pointer in EDI; subsequent
-  // writes then use the end of this line instead. Recompiling this routine
-  // with O+ still leaves EDI unpreserved.
+  // EDI is clobbered without saving/restoring it, violating the callee-save convention.
+  // Callers retaining a destination pointer in EDI may write through the advanced pointer.
   asm
     MOV EDI, X
     MOV ECX, Count
@@ -601,9 +595,9 @@ begin
     REP STOSW
   end;
 end;
-{ @end $8665D8 }
+{ @end $7B9C1C }
 
-{ @routine $86663C TGraphBufGR_DrawVerticalLine16 }
+{ @routine $7B9C7C TGraphBufGR_DrawVerticalLine16 }
 procedure TGraphBufGR.DrawVerticalLine16(X, Y, Count: Integer; Color: Cardinal);
 var Data: Pointer; Step: Integer;
 begin
@@ -617,12 +611,8 @@ begin
   X := Y * PitchBytes + X * SizeOf(Word);
   Data := Pixels;
   Step := PitchBytes;
-  // Native bug: EDI and EBX are clobbered without saving/restoring them,
-  // violating Delphi's callee-save convention; there are no outer saves.
-  // DCC32 18.5 O+ callers can retain Self in EBX and a destination in EDI:
-  // after this call they may dereference PitchBytes as Self or write through
-  // the advanced pixel pointer. O+ recompilation adds an outer EBX save for
-  // Pascal's Self register in the probe, but still leaves EDI unpreserved.
+  // EDI is clobbered without saving/restoring it, violating the callee-save convention.
+  // Callers retaining a destination pointer in EDI may write through the advanced pointer.
   asm
     MOV EDI, X
     MOV ECX, Count
@@ -635,9 +625,9 @@ begin
     LOOP @@Next
   end;
 end;
-{ @end $86663C }
+{ @end $7B9C7C }
 
-{ @routine $8666B0 TGraphBufGR_DrawHorizontalLine16Clipped }
+{ @routine $7B9CE0 TGraphBufGR_DrawHorizontalLine16Clipped }
 procedure TGraphBufGR.DrawHorizontalLine16Clipped(X, Y, Count: Integer; Color: Cardinal; Clip: TRect);
 begin
   if Count = 0 then Exit;
@@ -647,9 +637,9 @@ begin
   if X + Count > Clip.Right then Dec(Count, X + Count - Clip.Right);
   DrawHorizontalLine16(X, Y, Count, Color);
 end;
-{ @end $8666B0 }
+{ @end $7B9CE0 }
 
-{ @routine $866754 TGraphBufGR_DrawVerticalLine16Clipped }
+{ @routine $7B9D4C TGraphBufGR_DrawVerticalLine16Clipped }
 procedure TGraphBufGR.DrawVerticalLine16Clipped(X, Y, Count: Integer; Color: Cardinal; Clip: TRect);
 begin
   if Count = 0 then Exit;
@@ -659,66 +649,79 @@ begin
   if Y + Count > Clip.Bottom then Dec(Count, Y + Count - Clip.Bottom);
   DrawVerticalLine16(X, Y, Count, Color);
 end;
-{ @end $866754 }
+{ @end $7B9D4C }
 
-{ @routine $8667F8 TGraphBufGR_DrawLine16 }
+{ @routine $7B9DB8 TGraphBufGR_DrawLine16 }
 procedure TGraphBufGR.DrawLine16(First, Last: TPoint; Color: Cardinal);
 begin
-  if First.Y = Last.Y then DrawHorizontalLine16(First.X, First.Y, Last.X - First.X + 1, Color)
-  else if First.X = Last.X then DrawVerticalLine16(First.X, First.Y, Last.Y - First.Y + 1, Color)
-  else
+  if First.Y = Last.Y then
   begin
-    LockTexture(False);
-    Ex_OKGR_Line_Draw_WORD(Pixels, PitchBytes, First.X, First.Y, Last.X, Last.Y, Color);
+    DrawHorizontalLine16(First.X, First.Y, Last.X - First.X + 1, Color);
+    Exit;
   end;
+  if First.X = Last.X then
+  begin
+    DrawVerticalLine16(First.X, First.Y, Last.Y - First.Y + 1, Color);
+    Exit;
+  end;
+  LockTexture(False);
+  Ex_OKGR_Line_Draw_WORD(Pixels, PitchBytes, First.X, First.Y, Last.X, Last.Y, Color);
 end;
-{ @end $8667F8 }
+{ @end $7B9DB8 }
 
-{ @routine $866890 TGraphBufGR_DrawAnimatedLine16 }
+{ @routine $7B9E40 TGraphBufGR_DrawAnimatedLine16 }
 procedure TGraphBufGR.DrawAnimatedLine16(First, Last: TPoint; Color: Cardinal; Phase: Integer; Clip: TRect);
 begin
   LockTexture(False);
   Ex_OKGR_AnimLine_Draw_16(Pixels, PitchBytes, First.X, First.Y, Last.X, Last.Y, Color, Phase, Clip);
 end;
-{ @end $866890 }
+{ @end $7B9E40 }
 
-{ @routine $8668F4 TGraphBufGR_DrawShadowLine16 }
+{ @routine $7B9E9C TGraphBufGR_DrawShadowLine16 }
 procedure TGraphBufGR.DrawShadowLine16(First, Last: TPoint; Color: Cardinal; Phase: Integer; Clip: TRect; ShadowPixels: Pointer; ShadowPitch: Integer);
 begin
   LockTexture(False);
   Ex_OKGR_AnimShadowLine_Draw_16(Pixels, PitchBytes, First.X, First.Y, Last.X, Last.Y, Color, Phase, Clip, ShadowPixels, ShadowPitch);
 end;
-{ @end $8668F4 }
+{ @end $7B9E9C }
 
-{ @routine $866960 TGraphBufGR_DrawAlphaTrapezium16 }
+{ @routine $7B9F00 TGraphBufGR_DrawAlphaTrapezium16 }
 procedure TGraphBufGR.DrawAlphaTrapezium16(X1, Y1, X2, Y2, X3, X4: Integer; Color: Word; Alpha: Byte; Clip: TRect);
 begin
   LockTexture(False);
   if Alpha = 64 then Ex_OKGR_Alpha64Trapezium_16(Pixels, PitchBytes, X1, Y1, X2, Y2, X3, X4, Color, Clip)
   else if Alpha = 128 then Ex_OKGR_Alpha128Trapezium_16(Pixels, PitchBytes, X1, Y1, X2, Y2, X3, X4, Color, Clip);
 end;
-{ @end $866960 }
+{ @end $7B9F00 }
 
-{ @routine $866A00 TGraphBufGR_DrawLine16Clipped }
+{ @routine $7B9F90 TGraphBufGR_DrawLine16Clipped }
 procedure TGraphBufGR.DrawLine16Clipped(First, Last: TPoint; Color: Cardinal; Clip: TRect);
 var InclusiveClip: TRect;
 begin
   if (First.X >= Clip.Left) and (First.Y >= Clip.Top) and (First.X < Clip.Right) and (First.Y < Clip.Bottom) and
     (Last.X >= Clip.Left) and (Last.Y >= Clip.Top) and (Last.X < Clip.Right) and (Last.Y < Clip.Bottom) then
-    DrawLine16(First, Last, Color)
-  else if First.Y = Last.Y then DrawHorizontalLine16Clipped(First.X, First.Y, Last.X - First.X + 1, Color, Clip)
-  else if First.X = Last.X then DrawVerticalLine16Clipped(First.X, First.Y, Last.Y - First.Y + 1, Color, Clip)
-  else
   begin
-    InclusiveClip.Left := Clip.Left; InclusiveClip.Top := Clip.Top;
-    InclusiveClip.Right := Clip.Right - 1; InclusiveClip.Bottom := Clip.Bottom - 1;
-    LockTexture(False);
-    Ex_OKGR_Line_DrawClip_WORD(Pixels, PitchBytes, First.X, First.Y, Last.X, Last.Y, Color, InclusiveClip);
+    DrawLine16(First, Last, Color);
+    Exit;
   end;
+  if First.Y = Last.Y then
+  begin
+    DrawHorizontalLine16Clipped(First.X, First.Y, Last.X - First.X + 1, Color, Clip);
+    Exit;
+  end;
+  if First.X = Last.X then
+  begin
+    DrawVerticalLine16Clipped(First.X, First.Y, Last.Y - First.Y + 1, Color, Clip);
+    Exit;
+  end;
+  InclusiveClip.Left := Clip.Left; InclusiveClip.Top := Clip.Top;
+  InclusiveClip.Right := Clip.Right - 1; InclusiveClip.Bottom := Clip.Bottom - 1;
+  LockTexture(False);
+  Ex_OKGR_Line_DrawClip_WORD(Pixels, PitchBytes, First.X, First.Y, Last.X, Last.Y, Color, InclusiveClip);
 end;
-{ @end $866A00 }
+{ @end $7B9F90 }
 
-{ @routine $866DB0 TGraphBufGR_DrawAntialiasedLine }
+{ @routine $7BA284 TGraphBufGR_DrawAntialiasedLine }
 procedure TGraphBufGR.DrawAntialiasedLine(FirstPoint, SecondPoint: TPoint; Color: Cardinal);
 var
   Slope, DX, DY, Gap, EndX, EndY, InterY, Coverage1, Coverage2: Double;
@@ -726,25 +729,25 @@ var
   Steep: Boolean;
   Temp, X1, Y1, X2, Y2: Double;
 
-  // @nested $866B20 LineFraction
-  function LineFraction(Value: Double): Double; // @addr $866B20 @calls "0x00867012 0x00867056 0x00867070 0x00867182 0x008671CB 0x008671E2 0x008672E3 0x008672FD"
+  // @nested $7BA098 LineFraction
+  function LineFraction(Value: Double): Double; // @addr $7BA098 @calls "0x007BA494,0x007BA4D1,0x007BA4E9,0x007BA5E7,0x007BA62D,0x007BA642,0x007BA735,0x007BA74D"
   begin
     Result := Value - Floor(Value);
   end;
 
-  // @nested $866B8C PlotLinePixel
-  procedure PlotLinePixel(X, Y: Integer; Color: Cardinal; Alpha: Integer); // @addr $866B8C @calls "0x008670A3 0x008670CA 0x008670F2 0x00867119 0x0086721E 0x00867251 0x00867287 0x008672BC 0x00867330 0x00867357 0x0086737F 0x008673A6"
+  // @nested $7BA0F4 PlotLinePixel
+  procedure PlotLinePixel(X, Y: Integer; Color: Cardinal; Alpha: Integer); // @addr $7BA0F4 @calls "0x007BA518,0x007BA53C,0x007BA561,0x007BA585,0x007BA67B,0x007BA6AC,0x007BA6E0,0x007BA713,0x007BA77D,0x007BA7A2,0x007BA7C8,0x007BA7ED"
   var Source, Dest: PColorRGBA; Denominator: Cardinal;
 
-    // @nested $866B4C BlendLineChannel
-    function BlendLineChannel(DestColor, DestAlpha, SourceColor, SourceAlpha, Denominator: Cardinal): Cardinal; // @addr $866B4C @calls "0x00866D3F 0x00866D6E 0x00866D9E"
+    // @nested $7BA0C4 BlendLineChannel
+    function BlendLineChannel(DestColor, DestAlpha, SourceColor, SourceAlpha, Denominator: Cardinal): Cardinal; // @addr $7BA0C4 @calls "0x007BA23F,0x007BA258,0x007BA272"
     begin
       Result := ((255 - SourceAlpha) * DestColor * DestAlpha + SourceAlpha * SourceColor * 255) div Denominator;
     end;
 
   begin
     if (Alpha = 0) or (X < 0) or (Y < 0) or
-      (Cardinal(Width) <= Cardinal(X)) or (Cardinal(Height) <= Cardinal(Y)) then Exit;
+      (Width <= Cardinal(X)) or (Height <= Cardinal(Y)) then Exit;
     Source := @Color;
     Source.A := Alpha;
     Dest := AddPointerOffset(Pixels, PitchBytes * Y + X * SizeOf(TColorRGBA));
@@ -835,33 +838,33 @@ begin
     PlotLinePixel(LastX, LastY + 1, Color, Ceil(Coverage2 * 255));
   end;
 end;
-{ @end $866DB0 }
+{ @end $7BA284 }
 
-{ @routine $8673C4 TGraphBufGR_ClearPixels }
+{ @routine $7BA80C TGraphBufGR_ClearPixels }
 procedure TGraphBufGR.ClearPixels;
 begin
   LockTexture(False);
-  FillChar(Pixels^, PitchBytes * Height, 0);
+  FillChar(Pixels^, PitchBytes * Integer(Height), 0);
 end;
-{ @end $8673C4 }
+{ @end $7BA80C }
 
-{ @routine $8673F4 TGraphBufGR_FillPixels }
+{ @routine $7BA82C TGraphBufGR_FillPixels }
 procedure TGraphBufGR.FillPixels(Value: Byte);
 begin
   LockTexture(False);
   FillMemory(Pixels, PitchBytes * Height, Value);
 end;
-{ @end $8673F4 }
+{ @end $7BA82C }
 
-{ @routine $86742C TGraphBufGR_FillPixels16 }
+{ @routine $7BA850 TGraphBufGR_FillPixels16 }
 procedure TGraphBufGR.FillPixels16(Color: Word);
 begin
   LockTexture(False);
   Ex_OKGR_Fill_WORD(Pixels, PitchBytes, Width, Height, Color);
 end;
-{ @end $86742C }
+{ @end $7BA850 }
 
-{ @routine $86746C TGraphBufGR_FillRect32 }
+{ @routine $7BA878 TGraphBufGR_FillRect32 }
 procedure TGraphBufGR.FillRect32(Rect: TRect; Color: Cardinal);
 var Data: Pointer; Rows, Columns, RowSkip: Integer;
 begin
@@ -869,7 +872,7 @@ begin
   Columns := Rect.Right - Rect.Left;
   Rows := Rect.Bottom - Rect.Top;
   RowSkip := PitchBytes - Columns * SizeOf(TColorRGBA);
-  Data := Pointer(Rect.Top * PitchBytes + Rect.Left * SizeOf(TColorRGBA) + PAnsiChar(Pixels));
+  Data := Rect.Top * PitchBytes + Rect.Left * SizeOf(TColorRGBA) + PAnsiChar(Pixels);
   // Native precondition: Columns and Rows must be positive. Neither is checked
   // before writing; zero wraps on DEC and the loop writes beyond the rectangle.
   asm
@@ -902,9 +905,9 @@ begin
     POP ESI
   end;
 end;
-{ @end $86746C }
+{ @end $7BA878 }
 
-{ @routine $8674FC TGraphBufGR_ScaleAlpha }
+{ @routine $7BA900 TGraphBufGR_ScaleAlpha }
 procedure TGraphBufGR.ScaleAlpha(Rect: TRect; Alpha: Byte);
 var Data: Pointer; Rows, Columns: Integer; Table: Pointer; RowSkip: Integer;
 begin
@@ -913,7 +916,7 @@ begin
   RowSkip := PitchBytes - Columns * SizeOf(TColorRGBA);
   // Data addresses the alpha byte (offset 3) of the rectangle's first pixel.
   Data := PAnsiChar(Pixels) + (Rect.Top * PitchBytes + Rect.Left * SizeOf(TColorRGBA) + 3);
-  Table := Pointer(PAnsiChar(Ex_OKGF_MulTable256x256) + Integer(Alpha) shl 8);
+  Table := PAnsiChar(Ex_OKGF_MulTable256x256) + Integer(Alpha) shl 8;
   // Native precondition: Columns and Rows must be positive. Neither is checked
   // before writing; zero wraps on DEC and the loop writes beyond the rectangle.
   asm
@@ -948,33 +951,33 @@ begin
     POP ESI
   end;
 end;
-{ @end $8674FC }
+{ @end $7BA900 }
 
-{ @routine $8675A8 TGraphBufGR_FlipHorizontal16 }
+{ @routine $7BA9A0 TGraphBufGR_FlipHorizontal16 }
 procedure TGraphBufGR.FlipHorizontal16;
-var LeftRow, RightRow, LeftPixel, RightPixel: PWord; Temp: Word; X, Y: Integer;
+var LeftRow, RightRow, LeftPixel, RightPixel: Pointer; Temp: Word; X, Y: Integer;
 begin
   LockTexture(False);
   LeftRow := Pixels;
-  RightRow := Pointer(PAnsiChar(Pixels) + (Width - 1) * SizeOf(Word));
+  RightRow := PAnsiChar(Pixels) + (Width - 1) * SizeOf(Word);
   for Y := 0 to Height - 1 do
   begin
     LeftPixel := LeftRow; RightPixel := RightRow;
     for X := 0 to (Width shr 1) - 1 do
     begin
-      Temp := RightPixel^; RightPixel^ := LeftPixel^; PPixelWordsGR(LeftPixel)^[0] := Temp;
-      Inc(LeftPixel); Dec(RightPixel);
+      Temp := PWord(RightPixel)^; PWord(RightPixel)^ := PWord(LeftPixel)^; PWord(LeftPixel)^ := Temp;
+      Inc(PByte(LeftPixel), SizeOf(Word)); Dec(PByte(RightPixel), SizeOf(Word));
     end;
     Inc(PByte(LeftRow), PitchBytes); Inc(PByte(RightRow), PitchBytes);
   end;
 end;
-{ @end $8675A8 }
+{ @end $7BA9A0 }
 
-{ @routine $867660 TGraphBufGR_RotateLeft16 }
+{ @routine $7BAA24 TGraphBufGR_RotateLeft16 }
 procedure TGraphBufGR.RotateLeft16;
 var X, Y: Integer; Source: Pointer; DestRows: Integer; Dest, NewPixels: Pointer; NewWidth, NewHeight, NewPitch: Integer;
 begin
-  if (StorageKind = 1) or (Cardinal(Width) < 1) or (Cardinal(Height) < 1) then Exit;
+  if (StorageKind = 1) or (Width < 1) or (Height < 1) then Exit;
   NewWidth := Height; NewHeight := Width; NewPitch := NewWidth * SizeOf(Word);
   NewPixels := AllocEC(NewHeight * NewPitch);
   Source := Pixels; Y := Height; DestRows := NewHeight;
@@ -1001,26 +1004,26 @@ begin
   FreeEC(Pixels);
   Pixels := NewPixels; Width := NewWidth; Height := NewHeight; PitchBytes := NewPitch;
 end;
-{ @end $867660 }
+{ @end $7BAA24 }
 
-{ @routine $8677D0 TGraphBufGR_Stretch16 }
+{ @routine $7BAB84 TGraphBufGR_Stretch16 }
 procedure TGraphBufGR.Stretch16(Width, Height: Cardinal);
 var Data: Pointer;
 begin
-  if (Width = Cardinal(Self.Width)) and (Height = Cardinal(Self.Height)) then Exit;
-  if (Cardinal(Self.Width) < 1) or (Cardinal(Self.Height) < 1) or (Width < 1) or (Height < 1) then Exit;
+  if (Width = Self.Width) and (Height = Self.Height) then Exit;
+  if (Self.Width < 1) or (Self.Height < 1) or (Width < 1) or (Height < 1) then Exit;
   Data := AllocEC(Width * Height * SizeOf(Word));
   Ex_OKGR_StretchGdi_WORD(Data, Width, Height, Pixels, Self.Width, Self.Height);
   FreeEC(Pixels);
   Pixels := Data; Self.Width := Width; Self.Height := Height; PitchBytes := Width * SizeOf(Word);
 end;
-{ @end $8677D0 }
+{ @end $7BAB84 }
 
-{ @routine $867880 TGraphBufGR_ConvertRgbTo565 }
+{ @routine $7BABF0 TGraphBufGR_ConvertRgbTo565 }
 procedure TGraphBufGR.ConvertRgbTo565;
 var Data: Pointer; NewPitch: Integer; NewTexture: IDirect3DTexture9; Locked: TD3DLockedRect;
 begin
-  if (Cardinal(Width) < 1) or (Cardinal(Height) < 1) then Exit;
+  if (Width < 1) or (Height < 1) then Exit;
   if UseTexture then
   begin
     NewTexture := GR_CreateTexture(Width, Height, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED);
@@ -1040,13 +1043,13 @@ begin
   else Pixels := Data;
   PitchBytes := NewPitch; BitsPerPixel := 16; BytesPerPixel := SizeOf(Word);
 end;
-{ @end $867880 }
+{ @end $7BABF0 }
 
-{ @routine $8679C0 TGraphBufGR_Convert565ToRgb }
+{ @routine $7BACEC TGraphBufGR_Convert565ToRgb }
 procedure TGraphBufGR.Convert565ToRgb;
 var Data: Pointer; NewPitch: Integer;
 begin
-  if (Cardinal(Width) < 1) or (Cardinal(Height) < 1) then Exit;
+  if (Width < 1) or (Height < 1) then Exit;
   LockTexture(True);
   NewPitch := Width * 3; Data := AllocEC(Height * NewPitch);
   Ex_OKGF_Convert565toRGB(Pixels, PitchBytes, Data, NewPitch, Width, Height);
@@ -1056,9 +1059,9 @@ begin
   else if (StorageKind = 0) and (Pixels <> nil) then FreeEC(Pixels);
   Pixels := Data; PitchBytes := NewPitch; BitsPerPixel := 24; BytesPerPixel := 3;
 end;
-{ @end $8679C0 }
+{ @end $7BACEC }
 
-{ @routine $867A9C TGraphBufGR_ShiftLight16 }
+{ @routine $7BAD78 TGraphBufGR_ShiftLight16 }
 procedure TGraphBufGR.ShiftLight16(Shift: Integer; Rect: TRect);
 begin
   LockTexture(False);
@@ -1066,9 +1069,9 @@ begin
   Ex_OKGR_ShrLight_16(AddPointerOffset(Pixels, Rect.Left * SizeOf(Word) + Rect.Top * PitchBytes), PitchBytes,
     Rect.Right - Rect.Left, Rect.Bottom - Rect.Top, Shift);
 end;
-{ @end $867A9C }
+{ @end $7BAD78 }
 
-{ @routine $867B0C TGraphBufGR_DrawCircle16 }
+{ @routine $7BADD8 TGraphBufGR_DrawCircle16 }
 procedure TGraphBufGR.DrawCircle16(Center: TPoint; Radius: Integer; OutlineColor, FillColor: Cardinal; Clip: TRect);
 var InclusiveClip: TRect;
 begin
@@ -1079,9 +1082,9 @@ begin
   if OutlineColor <> FillColor then
     Ex_OKGR_Circle_DrawClip_WORD(Pixels, PitchBytes, Center.X, Center.Y, Radius, OutlineColor, InclusiveClip);
 end;
-{ @end $867B0C }
+{ @end $7BADD8 }
 
-{ @routine $867BAC TGraphBufGR_DrawCircle8 }
+{ @routine $7BAE60 TGraphBufGR_DrawCircle8 }
 procedure TGraphBufGR.DrawCircle8(Center: TPoint; Radius: Integer; OutlineColor, FillColor: Cardinal; Clip: TRect);
 var InclusiveClip: TRect;
 begin
@@ -1092,9 +1095,9 @@ begin
   if OutlineColor <> FillColor then
     Ex_OKGR_Circle_DrawClip_BYTE(Pixels, PitchBytes, Center.X, Center.Y, Radius, OutlineColor, InclusiveClip);
 end;
-{ @end $867BAC }
+{ @end $7BAE60 }
 
-{ @routine $867C48 TGraphBufGR_ApplyOperations }
+{ @routine $7BAEE8 TGraphBufGR_ApplyOperations }
 procedure TGraphBufGR.ApplyOperations(const Operations: WideString);
 var Count, i: Integer; Part, Value: WideString;
 begin
@@ -1118,37 +1121,37 @@ begin
     end;
   end;
 end;
-{ @end $867C48 }
+{ @end $7BAEE8 }
 
-{ @routine $867E08 TGraphBufGR_RescaleRgb }
+{ @routine $7BB098 TGraphBufGR_RescaleRgb }
 procedure TGraphBufGR.RescaleRgb(Width, Height: Integer);
 var Data: Pointer;
 begin
-  if (Cardinal(Self.Width) < 1) or (Cardinal(Self.Height) < 1) or (Width < 1) or (Height < 1) then Exit;
-  if (Self.Width = Width) and (Self.Height = Height) then Exit;
+  if (Self.Width < 1) or (Self.Height < 1) or (Width < 1) or (Height < 1) then Exit;
+  if (Self.Width = Cardinal(Width)) and (Self.Height = Cardinal(Height)) then Exit;
   Data := AllocEC(Width * 3 * Height);
   Ex_OKGF_Rescale(Data, Width, Height, Width * 3, Pixels, Self.Width, Self.Height, PitchBytes, 3, 5);
   if StorageKind = 0 then FreeEC(Pixels);
   StorageKind := 0;
   Pixels := Data; Self.Width := Width; Self.Height := Height; PitchBytes := Width * 3;
 end;
-{ @end $867E08 }
+{ @end $7BB098 }
 
-{ @routine $867EEC TGraphBufGR_RescaleRgba }
+{ @routine $7BB11C TGraphBufGR_RescaleRgba }
 procedure TGraphBufGR.RescaleRgba(Width, Height, Filter: Integer);
 var Data: Pointer;
 begin
-  if (Cardinal(Self.Width) < 1) or (Cardinal(Self.Height) < 1) or (Width < 1) or (Height < 1) then Exit;
-  if (Self.Width = Width) and (Self.Height = Height) then Exit;
+  if (Self.Width < 1) or (Self.Height < 1) or (Width < 1) or (Height < 1) then Exit;
+  if (Self.Width = Cardinal(Width)) and (Self.Height = Cardinal(Height)) then Exit;
   Data := AllocEC(Width * SizeOf(TColorRGBA) * Height);
   Ex_OKGF_Rescale(Data, Width, Height, Width * SizeOf(TColorRGBA), Pixels, Self.Width, Self.Height, PitchBytes, 4, Filter);
   if StorageKind = 0 then FreeEC(Pixels);
   StorageKind := 0;
   Pixels := Data; Self.Width := Width; Self.Height := Height; PitchBytes := Width * SizeOf(TColorRGBA);
 end;
-{ @end $867EEC }
+{ @end $7BB11C }
 
-{ @routine $867FD4 TGraphBufGR_RescaleBilinearRgba }
+{ @routine $7BB1B8 TGraphBufGR_RescaleBilinearRgba }
 procedure TGraphBufGR.RescaleBilinearRgba(Width, Height: Integer);
 var
   X, Y, SourceX, YPosition, YStep, XStep, PixelX, FractionX: Integer;
@@ -1157,18 +1160,18 @@ var
   Dest: PColorRGBA;
   Data: Pointer;
 begin
-  if (Cardinal(Self.Width) < 1) or (Cardinal(Self.Height) < 1) or (Width < 1) or (Height < 1) then Exit;
-  if (Self.Width = Width) and (Self.Height = Height) then Exit;
+  if (Self.Width < 1) or (Self.Height < 1) or (Width < 1) or (Height < 1) then Exit;
+  if (Integer(Self.Width) = Width) and (Integer(Self.Height) = Height) then Exit;
   Data := AllocEC(Width * SizeOf(TColorRGBA) * Height);
   YPosition := 0;
-  XStep := ((Self.Width - 1) shl 16) div Width;
-  YStep := ((Self.Height - 1) shl 16) div Height;
+  XStep := ((Integer(Self.Width) - 1) shl 16) div Width;
+  YStep := ((Integer(Self.Height) - 1) shl 16) div Height;
   Dest := Data;
   for Y := 0 to Height - 1 do
   begin
     SourceX := YPosition shr 16;
     TopRow := AddPointerOffset(Pixels, PitchBytes * SourceX);
-    if Self.Height - 1 > SourceX then Inc(SourceX);
+    if Integer(Self.Height) - 1 > SourceX then Inc(SourceX);
     BottomRow := AddPointerOffset(Pixels, PitchBytes * SourceX);
     SourceX := 0;
     BottomWeight := (YPosition and $FFFF) + 1;
@@ -1198,9 +1201,9 @@ begin
   StorageKind := 0;
   Pixels := Data; Self.Width := Width; Self.Height := Height; PitchBytes := Width * SizeOf(TColorRGBA);
 end;
-{ @end $867FD4 }
+{ @end $7BB1B8 }
 
-{ @routine $8682D8 TGraphBufGR_FillPolygon32 }
+{ @routine $7BB480 TGraphBufGR_FillPolygon32 }
 procedure TGraphBufGR.FillPolygon32(Points: array of TPoint; Color: Cardinal);
 var
   i, Count, Y, NextY, LeftX, NextLeftX, RightX, NextRightX: Integer;
@@ -1219,7 +1222,8 @@ begin
   if Points[Top].Y = Points[Bottom].Y then Exit;
   LeftStart := Top; RightStart := Top; LeftEnd := Top; RightEnd := Top;
   LeftX := Points[Top].X; RightX := LeftX; Y := Points[Top].Y;
-  repeat
+  while True do
+  begin
     if Points[LeftEnd].Y = Y then
     begin
       while Points[LeftEnd].Y = Y do
@@ -1259,11 +1263,12 @@ begin
     else
       Ex_OKGR_FillTrapezium_DWORD(Pixels, PitchBytes, LeftX, RightX, Y, NextLeftX, NextRightX, NextY, Color, Clip);
     LeftX := NextLeftX; RightX := NextRightX; Y := NextY;
-  until Points[Bottom].Y = Y;
+  if Points[Bottom].Y = Y then Break;
+  end;
 end;
-{ @end $8682D8 }
+{ @end $7BB480 }
 
-{ @routine $868600 TGraphBufGR_GetPixelCentroid }
+{ @routine $7BB6F4 TGraphBufGR_GetPixelCentroid }
 function TGraphBufGR.GetPixelCentroid: TPoint;
 var X, Y, Count: Integer;
 begin
@@ -1277,17 +1282,17 @@ begin
   if Count < 1 then Result := Classes.Point(0, 0)
   else Result := Classes.Point(Result.X div Count, Result.Y div Count);
 end;
-{ @end $868600 }
+{ @end $7BB6F4 }
 
-{ @routine $8686C8 TGraphBufGR_CopyRect32 }
+{ @routine $7BB7A8 TGraphBufGR_CopyRect32 }
 procedure TGraphBufGR.CopyRect32(Dest: TPoint; Source: TGraphBufGR; Rect: TRect);
 var Src, Dst: Pointer; Columns: Integer; Rows, SrcSkip, DstSkip: Integer;
 begin
-  Src := Pointer(PAnsiChar(Source.GetPixels) + (Rect.Top * Source.PitchBytes + Rect.Left * SizeOf(TColorRGBA)));
+  Src := PAnsiChar(Source.GetPixels) + (Rect.Top * Source.PitchBytes + Rect.Left * SizeOf(TColorRGBA));
   Columns := Rect.Right - Rect.Left; Rows := Rect.Bottom - Rect.Top;
   if (Columns = 0) or (Rows = 0) then Exit;
   SrcSkip := Source.PitchBytes - Columns * SizeOf(TColorRGBA);
-  Dst := Pointer(PAnsiChar(GetPixels) + (Dest.Y * PitchBytes + Dest.X * SizeOf(TColorRGBA)));
+  Dst := PAnsiChar(GetPixels) + (Dest.Y * PitchBytes + Dest.X * SizeOf(TColorRGBA));
   DstSkip := PitchBytes - Columns * SizeOf(TColorRGBA);
   asm
     PUSH EAX
@@ -1321,16 +1326,16 @@ begin
     POP EAX
   end;
 end;
-{ @end $8686C8 }
+{ @end $7BB7A8 }
 
-{ @routine $8687A0 TGraphBufGR_BlendRect32 }
+{ @routine $7BB878 TGraphBufGR_BlendRect32 }
 procedure TGraphBufGR.BlendRect32(Dest: TPoint; Source: TGraphBufGR; Rect: TRect);
 var Src, Dst: Pointer; Columns: Integer; Table: Pointer; SrcSkip, DstSkip, Rows: Integer;
 begin
-  Src := Pointer(PAnsiChar(Source.GetPixels) + (Rect.Top * Source.PitchBytes + Rect.Left * SizeOf(TColorRGBA)));
+  Src := PAnsiChar(Source.GetPixels) + (Rect.Top * Source.PitchBytes + Rect.Left * SizeOf(TColorRGBA));
   Columns := Rect.Right - Rect.Left; Rows := Rect.Bottom - Rect.Top;
   SrcSkip := Source.PitchBytes - Columns * SizeOf(TColorRGBA);
-  Dst := Pointer(PAnsiChar(GetPixels) + (Dest.Y * PitchBytes + Dest.X * SizeOf(TColorRGBA)));
+  Dst := PAnsiChar(GetPixels) + (Dest.Y * PitchBytes + Dest.X * SizeOf(TColorRGBA));
   DstSkip := PitchBytes - Columns * SizeOf(TColorRGBA);
   Table := Ex_OKGF_MulTable256x256;
   // Native precondition: Columns and Rows must be positive. Neither is checked
@@ -1424,9 +1429,9 @@ begin
     POP EAX
   end;
 end;
-{ @end $8687A0 }
+{ @end $7BB878 }
 
-{ @routine $868928 TGraphBufGR_MakeShadow }
+{ @routine $7BB9F8 TGraphBufGR_MakeShadow }
 procedure TGraphBufGR.MakeShadow;
 var Data: Pointer; Columns, RowSkip, Rows: Integer;
 begin
@@ -1464,9 +1469,9 @@ begin
     POP EAX
   end;
 end;
-{ @end $868928 }
+{ @end $7BB9F8 }
 
-{ @routine $868998 TGraphBufGR_SaveToBuffer }
+{ @routine $7BBA60 TGraphBufGR_SaveToBuffer }
 procedure TGraphBufGR.SaveToBuffer(Buffer: TBufEC);
 var Size: Integer;
 begin
@@ -1476,9 +1481,9 @@ begin
   Buffer.SetSize(Buffer.DataSize + Size);
   CopyMemory(AddPointerOffset(Buffer.Data, Buffer.Position), GetPixels, Size);
 end;
-{ @end $868998 }
+{ @end $7BBA60 }
 
-{ @routine $868A24 TGraphBufGR_LoadFromBuffer }
+{ @routine $7BBAC4 TGraphBufGR_LoadFromBuffer }
 procedure TGraphBufGR.LoadFromBuffer(Buffer: TBufEC);
 var Size: Integer;
 begin
@@ -1489,28 +1494,28 @@ begin
   if Buffer.DataSize - Buffer.Position < Size then RaiseWideMessage('load bin');
   Pixels := AllocEC(Size);
   CopyMemory(GetPixels, AddPointerOffset(Buffer.Data, Buffer.Position), Size);
-  BytesPerPixel := Cardinal(PitchBytes) div Cardinal(Width);
+  BytesPerPixel := Cardinal(PitchBytes) div Width;
   BitsPerPixel := BytesPerPixel * 8;
 end;
-{ @end $868A24 }
+{ @end $7BBAC4 }
 
-{ @routine $868B0C TGraphBufGR_SavePng }
+{ @routine $7BBB70 TGraphBufGR_SavePng }
 procedure TGraphBufGR.SavePng(FileName: WideString);
 begin
   LockTexture(True);
   WritePngFile(PAnsiChar(AnsiString(FileName)), GetPixels, PitchBytes, Width, Height, 1, 1);
 end;
-{ @end $868B0C }
+{ @end $7BBB70 }
 
-{ @routine $868BA0 TGraphBufGR_SaveBmp }
+{ @routine $7BBBFC TGraphBufGR_SaveBmp }
 procedure TGraphBufGR.SaveBmp(FileName: WideString);
 begin
   LockTexture(True);
   WriteBmpFile(PAnsiChar(AnsiString(FileName)), GetPixels, PitchBytes, 32, $FF0000, $FF00, $FF, 0, Width, Height);
 end;
-{ @end $868BA0 }
+{ @end $7BBBFC }
 
-{ @routine $868C44 TGraphBufGR_SaveJpeg }
+{ @routine $7BBC98 TGraphBufGR_SaveJpeg }
 procedure TGraphBufGR.SaveJpeg(FileName: WideString; Quality: Integer);
 var Bitmap: TBitmap; Image: TJPEGImage;
 begin
@@ -1534,14 +1539,14 @@ begin
   except
   end;
 end;
-{ @end $868C44 }
+{ @end $7BBC98 }
 
-{ @routine $868EB8 TGraphBufGR_DrawNinePatch }
+{ @routine $7BBEE8 TGraphBufGR_DrawNinePatch }
 procedure TGraphBufGR.DrawNinePatch(X, Y, Width, Height: Integer; Source: TGraphBufGR; SourceRect, Borders: TRect);
 var TileRect: TRect;
 
-  // @nested $868D90 TilePatch
-  procedure TilePatch(X, Y, Width, Height: Integer; Rect: TRect); // @addr $868D90 @calls "0x869065 0x8690AB 0x8690EB 0x869131 0x86917D"
+  // @nested $7BBDE4 TilePatch
+  procedure TilePatch(X, Y, Width, Height: Integer; Rect: TRect); // @addr $7BBDE4 @calls "0x007BC086,0x007BC0C9,0x007BC106,0x007BC14A,0x007BC193"
   var TileX, TileY, TileWidth, TileHeight: Integer;
   begin
     TileWidth := Rect.Right - Rect.Left;
@@ -1589,9 +1594,9 @@ begin
   TileRect := Classes.Rect(SourceRect.Left + Borders.Left, SourceRect.Top + Borders.Top, SourceRect.Right - Borders.Right, SourceRect.Bottom - Borders.Bottom);
   TilePatch(X + Borders.Left, Y + Borders.Top, Width - Borders.Left - Borders.Right, Height - Borders.Top - Borders.Bottom, TileRect);
 end;
-{ @end $868EB8 }
+{ @end $7BBEE8 }
 
-{ @routine $86918C TGraphBufGR_RescaleWithAspect }
+{ @routine $7BC1A4 TGraphBufGR_RescaleWithAspect }
 procedure TGraphBufGR.RescaleWithAspect(Width, Height: Cardinal; CropToAspect: Boolean; HorizontalAlign, VerticalAlign, Filter: Integer);
 var
   Left, Top, CropWidth, CropHeight: Cardinal;
@@ -1600,25 +1605,25 @@ var
   NewTexture: IDirect3DTexture9;
   Locked: TD3DLockedRect;
 begin
-  if (Width = Cardinal(Self.Width)) and (Height = Cardinal(Self.Height)) then Exit;
+  if (Width = Self.Width) and (Height = Self.Height) then Exit;
   Left := 0; Top := 0;
   if CropToAspect then
   begin
     CropWidth := Self.Width;
-    CropHeight := Round((Height / Width) * Cardinal(Self.Width));
-    if CropHeight > Cardinal(Self.Height) then
+    CropHeight := Round((Height / Width) * Self.Width);
+    if CropHeight > Self.Height then
     begin
-      CropWidth := Round((Width / Height) * Cardinal(Self.Height));
+      CropWidth := Round((Width / Height) * Self.Height);
       CropHeight := Self.Height;
     end;
-    if HorizontalAlign = 1 then Left := (Cardinal(Self.Width) - CropWidth) shr 1
-    else if HorizontalAlign = 2 then Left := Cardinal(Self.Width) - CropWidth
+    if HorizontalAlign = 1 then Left := (Self.Width - CropWidth) shr 1
+    else if HorizontalAlign = 2 then Left := Self.Width - CropWidth
     else Left := 0;
-    if VerticalAlign = 1 then Top := (Cardinal(Self.Height) - CropHeight) shr 1
-    else if VerticalAlign = 2 then Top := Cardinal(Self.Height) - CropHeight
+    if VerticalAlign = 1 then Top := (Self.Height - CropHeight) shr 1
+    else if VerticalAlign = 2 then Top := Self.Height - CropHeight
     else Top := 0;
-    if ((Width = Cardinal(Self.Width)) and (Height < Cardinal(Self.Height))) or
-      ((Height = Cardinal(Self.Height)) and (Width < Cardinal(Self.Width))) then
+    if ((Width = Self.Width) and (Height < Self.Height)) or
+      ((Height = Self.Height) and (Width < Self.Width)) then
     begin
       Crop(Classes.Rect(Left, Top, Left + CropWidth, Top + CropHeight));
       Exit;
@@ -1663,9 +1668,9 @@ begin
   end;
   Self.Width := Width; Self.Height := Height; PitchBytes := DestPitch;
 end;
-{ @end $86918C }
+{ @end $7BC1A4 }
 
-{ @routine $8694F0 TGraphBufGR_RescaleRGBA_HW }
+{ @routine $7BC45C TGraphBufGR_RescaleRGBA_HW }
 procedure TGraphBufGR.RescaleRGBA_HW(Width, Height: Cardinal; CropToAspect: Boolean; HorizontalAlign, VerticalAlign: Integer);
 var
   Left, Top, CropWidth, CropHeight: Cardinal;
@@ -1675,25 +1680,25 @@ var
   Locked: TD3DLockedRect;
   SourceRect: TRect;
 begin
-  if (Width = Cardinal(Self.Width)) and (Height = Cardinal(Self.Height)) then Exit;
+  if (Width = Self.Width) and (Height = Self.Height) then Exit;
   if CropToAspect then
   begin
     CropWidth := Self.Width;
-    CropHeight := Round((Height / Width) * Cardinal(Self.Width));
-    if CropHeight > Cardinal(Self.Height) then
+    CropHeight := Round((Height / Width) * Self.Width);
+    if CropHeight > Self.Height then
     begin
-      CropWidth := Round((Width / Height) * Cardinal(Self.Height));
+      CropWidth := Round((Width / Height) * Self.Height);
       CropHeight := Self.Height;
     end;
-    if HorizontalAlign = 1 then Left := (Cardinal(Self.Width) - CropWidth) shr 1
-    else if HorizontalAlign = 2 then Left := Cardinal(Self.Width) - CropWidth
+    if HorizontalAlign = 1 then Left := (Self.Width - CropWidth) shr 1
+    else if HorizontalAlign = 2 then Left := Self.Width - CropWidth
     else Left := 0;
-    if VerticalAlign = 1 then Top := (Cardinal(Self.Height) - CropHeight) shr 1
-    else if VerticalAlign = 2 then Top := Cardinal(Self.Height) - CropHeight
+    if VerticalAlign = 1 then Top := (Self.Height - CropHeight) shr 1
+    else if VerticalAlign = 2 then Top := Self.Height - CropHeight
     else Top := 0;
     SourceRect := Classes.Rect(Left, Top, Left + CropWidth, Top + CropHeight);
-    if ((Width = Cardinal(Self.Width)) and (Height < Cardinal(Self.Height))) or
-      ((Height = Cardinal(Self.Height)) and (Width < Cardinal(Self.Width))) then
+    if ((Width = Self.Width) and (Height < Self.Height)) or
+      ((Height = Self.Height) and (Width < Self.Width)) then
     begin
       Crop(SourceRect);
       Exit;
@@ -1744,16 +1749,17 @@ begin
   end;
   Self.Width := Width; Self.Height := Height; PitchBytes := DestPitch;
 end;
-{ @end $8694F0 }
+{ @end $7BC45C }
 
-{ @routine $869AA8 TGraphBufGR_Crop }
+{ @routine $7BC95C TGraphBufGR_Crop }
 procedure TGraphBufGR.Crop(Rect: TRect);
 var Y, NewWidth, NewHeight: Integer; Source, Dest: Pointer; NewPitch: Integer;
   NewTexture: IDirect3DTexture9; Locked: TD3DLockedRect;
 begin
   NewWidth := Rect.Right - Rect.Left; NewHeight := Rect.Bottom - Rect.Top;
-  if (NewWidth <= 0) or (NewHeight <= 0) or (Rect.Left < 0) or (Rect.Left >= Width) or
-    (Rect.Right > Width) or (Rect.Top < 0) or (Rect.Top >= Height) or (Rect.Bottom > Height) then Exit;
+  if (NewWidth <= 0) or (NewHeight <= 0) then Exit;
+  if (Rect.Left < 0) or (Rect.Left >= Integer(Width)) or (Rect.Right > Integer(Width)) then Exit;
+  if (Rect.Top < 0) or (Rect.Top >= Integer(Height)) or (Rect.Bottom > Integer(Height)) then Exit;
   if UseTexture then
   begin
     if BitsPerPixel = 16 then NewTexture := GR_CreateTexture(NewWidth, NewHeight, D3DFMT_R5G6B5, D3DPOOL_MANAGED)
@@ -1788,11 +1794,11 @@ begin
   end;
   Width := NewWidth; Height := NewHeight; PitchBytes := NewPitch;
 end;
-{ @end $869AA8 }
+{ @end $7BC95C }
 
-{ @routine $869CF0 TGraphBufGR_AdjustBrightness }
+{ @routine $7BCB40 TGraphBufGR_AdjustBrightness }
 procedure TGraphBufGR.AdjustBrightness(Percent: Integer);
-var X, Y, C, B, G, R: Integer; Pixel: PByte; Table: array[0..255] of SmallInt;
+var X, Y, C, B, G, R: Integer; Pixel: PAnsiChar; Table: array[0..255] of SmallInt;
 begin
   for C := Low(Table) to High(Table) do
   begin
@@ -1803,7 +1809,7 @@ begin
   begin
     for Y := 0 to Height - 1 do
     begin
-      Pixel := Pointer(PAnsiChar(GetPixels) + PitchBytes * Y);
+      Pixel := PAnsiChar(GetPixels) + PitchBytes * Y;
       for X := 0 to Width - 1 do
       begin
         C := PWord(Pixel)^;
@@ -1819,29 +1825,29 @@ begin
   begin
     for Y := 0 to Height - 1 do
     begin
-      Pixel := Pointer(PAnsiChar(GetPixels) + PitchBytes * Y);
+      Pixel := PAnsiChar(GetPixels) + PitchBytes * Y;
       for X := 0 to Width - 1 do
       begin
-        PByte(@PColorBGRA(Pixel).B)^ := Table[PByte(@PColorBGRA(Pixel).B)^];
-        PByte(@PColorBGRA(Pixel).G)^ := Table[PByte(@PColorBGRA(Pixel).G)^];
-        PByte(@PColorBGRA(Pixel).R)^ := Table[PByte(@PColorBGRA(Pixel).R)^];
+        PByte(Pixel + 0)^ := Table[PByte(Pixel + 0)^];
+        PByte(Pixel + 1)^ := Table[PByte(Pixel + 1)^];
+        PByte(Pixel + 2)^ := Table[PByte(Pixel + 2)^];
         Inc(Pixel, SizeOf(TColorRGBA));
       end;
     end;
   end;
 end;
-{ @end $869CF0 }
+{ @end $7BCB40 }
 
-{ @routine $869F20 TGraphBufGR_ConvertToGrayscale }
+{ @routine $7BCCB0 TGraphBufGR_ConvertToGrayscale }
 procedure TGraphBufGR.ConvertToGrayscale;
-var X, Y: Integer; Pixel: PByte; C, R, G, B, RWeight, GWeight, BWeight: Cardinal;
+var X, Y: Integer; Pixel: PAnsiChar; C, R, G, B, RWeight, GWeight, BWeight: Cardinal;
 begin
   if BitsPerPixel = 16 then
   begin
     RWeight := 19595; GWeight := 38469; BWeight := 7471;
     for Y := 0 to Height - 1 do
     begin
-      Pixel := Pointer(PAnsiChar(GetPixels) + PitchBytes * Y);
+      Pixel := PAnsiChar(GetPixels) + PitchBytes * Y;
       for X := 0 to Width - 1 do
       begin
         C := PWord(Pixel)^;
@@ -1858,29 +1864,29 @@ begin
   begin
     for Y := 0 to Height - 1 do
     begin
-      Pixel := Pointer(PAnsiChar(GetPixels) + PitchBytes * Y);
+      Pixel := PAnsiChar(GetPixels) + PitchBytes * Y;
       for X := 0 to Width - 1 do
       begin
-        B := PByte(@PColorBGRA(Pixel).B)^;
-        G := PByte(@PColorBGRA(Pixel).G)^;
-        R := PByte(@PColorBGRA(Pixel).R)^;
+        B := PByte(Pixel + 0)^;
+        G := PByte(Pixel + 1)^;
+        R := PByte(Pixel + 2)^;
         C := Trunc(R * 0.299 + G * 0.587 + B * 0.114);
-        PByte(@PColorBGRA(Pixel).B)^ := C;
-        PByte(@PColorBGRA(Pixel).G)^ := C;
-        PByte(@PColorBGRA(Pixel).R)^ := C;
+        PByte(Pixel + 0)^ := C;
+        PByte(Pixel + 1)^ := C;
+        PByte(Pixel + 2)^ := C;
         Inc(Pixel, SizeOf(TColorRGBA));
       end;
     end;
   end;
 end;
-{ @end $869F20 }
+{ @end $7BCCB0 }
 
-{ @routine $86A214 TGraphBufGR_GetTexture }
+{ @routine $7BCF1C TGraphBufGR_GetTexture }
 function TGraphBufGR.GetTexture: IDirect3DTexture9;
 var Locked: TD3DLockedRect; Y: Cardinal; RowBytes: Integer;
 
-  // @nested $86A154 CopyRgbToOpaqueRgba
-  procedure CopyRgbToOpaqueRgba(Dest: Pointer; DestPitch: Integer; Source: Pointer; SourcePitch, Width, Height: Integer); // @addr $86A154 @calls "0x86A2BE"
+  // @nested $7BCE7C CopyRgbToOpaqueRgba
+  procedure CopyRgbToOpaqueRgba(Dest: Pointer; DestPitch: Integer; Source: Pointer; SourcePitch, Width, Height: Integer); // @addr $7BCE7C @calls "0x007BCFA8"
   var X, Y: Integer;
   begin
     Y := 0;
@@ -1890,7 +1896,7 @@ var Locked: TD3DLockedRect; Y: Cardinal; RowBytes: Integer;
       while X < Width do
       begin
         CopyMemory(AddPointerOffset(Dest, X * SizeOf(TColorRGBA)), AddPointerOffset(Source, X * SizeOf(TColorRGB)), SizeOf(TColorRGB));
-        PByte(AddPointerOffset(Dest, Integer(@PColorRGBA(X * SizeOf(TColorRGBA)).A)))^ := 255;
+        PByte(AddPointerOffset(Dest, X * SizeOf(TColorRGBA) + SizeOf(TColorRGB)))^ := 255;
         Inc(X);
       end;
       Dest := AddPointerOffset(Dest, DestPitch);
@@ -1916,7 +1922,7 @@ begin
       Texture.LockRect(0, Locked, nil, 0);
       RowBytes := Width * BytesPerPixel;
       Y := 0;
-      while Y < Cardinal(Height) do
+      while Y < Height do
       begin
         CopyMemory(AddPointerOffset(Locked.Bits, Locked.Pitch * Y), AddPointerOffset(Pixels, PitchBytes * Y), RowBytes);
         Inc(Y);
@@ -1927,9 +1933,9 @@ begin
   UnlockTexture;
   Result := Texture;
 end;
-{ @end $86A214 }
+{ @end $7BCF1C }
 
-{ @routine $86A450 TGraphBufGR_LoadFromScreen }
+{ @routine $7BD0E8 TGraphBufGR_LoadFromScreen }
 procedure TGraphBufGR.LoadFromScreen(UnusedOption: Byte);
 var
   Offscreen, RenderTarget: IDirect3DSurface9;
@@ -1938,13 +1944,13 @@ var
   ErrorCode: Integer;
   Desc: TD3DSurfaceDesc;
 
-  // @nested $86A400 SetRowAlpha
-  procedure SetRowAlpha(Pixels: Pointer; Count, Alpha: Integer); // @addr $86A400
+  // @nested $7BD0A8 SetRowAlpha
+  procedure SetRowAlpha(Pixels: Pointer; Count, Alpha: Integer); // @addr $7BD0A8
   var X: Integer;
   begin
     Alpha := Alpha and $FF;
     for X := 0 to Count - 1 do
-      PByte(AddPointerOffset(Pixels, Integer(@PColorRGBA(X * SizeOf(TColorRGBA)).A)))^ := Alpha;
+      PByte(AddPointerOffset(Pixels, X * SizeOf(TColorRGBA) + SizeOf(TColorRGB)))^ := Alpha;
   end;
 
 begin
@@ -1979,7 +1985,7 @@ begin
               if Pixels <> nil then
               begin
                 Offscreen.LockRect(Locked, nil, 0);
-                for Y := 0 to Cardinal(Height) - 1 do
+                for Y := 0 to Height - 1 do
                 begin
                   CopyMemory(AddPointerOffset(Pixels, PitchBytes * Y), AddPointerOffset(Locked.Bits, Locked.Pitch * Y), Width * SizeOf(TColorRGBA));
                   SetRowAlpha(AddPointerOffset(Pixels, PitchBytes * Y), Width, 255);
@@ -2013,65 +2019,61 @@ begin
     AllocateNative(GameScreenWidth, GameScreenHeight);
   end;
 end;
-{ @end $86A450 }
+{ @end $7BD0E8 }
 
-{ @routine $86A9E8 TGraphBufGR_LockTexture }
+{ @routine $7BD65C TGraphBufGR_LockTexture }
 procedure TGraphBufGR.LockTexture(ReadOnly: Boolean);
 var Locked: TD3DLockedRect;
 begin
   if TextureLockedReadOnly and not ReadOnly then UnlockTexture;
-  if not TextureLocked then
+  if TextureLocked then Exit;
+  if not UsesTextureStorage or (Texture = nil) then
   begin
-    if not UsesTextureStorage or (Texture = nil) then
-    begin
-      TextureLocked := False;
-      Exit;
-    end;
-    if ReadOnly then Texture.LockRect(0, Locked, nil, D3DLOCK_READONLY)
-    else Texture.LockRect(0, Locked, nil, 0);
-    Pixels := Locked.Bits; PitchBytes := Locked.Pitch;
-    TextureLockedReadOnly := ReadOnly; TextureLocked := True;
+    TextureLocked := False;
+    Exit;
   end;
+  if ReadOnly then Texture.LockRect(0, Locked, nil, D3DLOCK_READONLY)
+  else Texture.LockRect(0, Locked, nil, 0);
+  Pixels := Locked.Bits; PitchBytes := Locked.Pitch;
+  TextureLockedReadOnly := ReadOnly; TextureLocked := True;
 end;
-{ @end $86A9E8 }
+{ @end $7BD65C }
 
-{ @routine $86AA8C TGraphBufGR_UnlockTexture }
+{ @routine $7BD6D8 TGraphBufGR_UnlockTexture }
 procedure TGraphBufGR.UnlockTexture;
 begin
-  if TextureLocked then
+  if not TextureLocked then Exit;
+  TextureLocked := False; TextureLockedReadOnly := False;
+  if UsesTextureStorage and (Texture <> nil) then
   begin
-    TextureLocked := False; TextureLockedReadOnly := False;
-    if UsesTextureStorage and (Texture <> nil) then
-    begin
-      Pixels := nil;
-      Texture.UnlockRect(0);
-    end;
+    Pixels := nil;
+    Texture.UnlockRect(0);
   end;
 end;
-{ @end $86AA8C }
+{ @end $7BD6D8 }
 
-{ @routine $86AAD8 TGraphBufGR_ConvertBgraToRgb24 }
+{ @routine $7BD704 TGraphBufGR_ConvertBgraToRgb24 }
 procedure TGraphBufGR.ConvertBgraToRgb24;
 var NewPixels, Dest, Source: Pointer; NewPitch: Integer; X, Y: Cardinal;
 begin
-  if Cardinal(Width) < 1 then Exit;
-  if Cardinal(Height) < 1 then Exit;
+  if Width < 1 then Exit;
+  if Height < 1 then Exit;
   LockTexture(True);
   NewPitch := Width * SizeOf(TColorRGB);
   NewPixels := AllocEC(NewPitch * Height);
   Dest := NewPixels;
   Source := Pixels;
   Y := 0;
-  while Y < Cardinal(Height) do
+  while Y < Height do
   begin
     X := 0;
-    while X < Cardinal(Width) do
+    while X < Width do
     begin
       PColorRGB(AddPointerOffset(Dest, X * SizeOf(TColorRGB))).R :=
-        PByte(AddPointerOffset(Source, Integer(@PColorBGRA(X * SizeOf(TColorBGRA)).R)))^;
-      PByte(AddPointerOffset(Dest, Integer(@PColorRGB(X * SizeOf(TColorRGB)).G)))^ :=
-        PByte(AddPointerOffset(Source, Integer(@PColorBGRA(X * SizeOf(TColorBGRA)).G)))^;
-      PByte(AddPointerOffset(Dest, Integer(@PColorRGB(X * SizeOf(TColorRGB)).B)))^ :=
+        PByte(AddPointerOffset(Source, X * SizeOf(TColorBGRA) + 2))^;
+      PByte(AddPointerOffset(Dest, X * SizeOf(TColorRGB) + 1))^ :=
+        PByte(AddPointerOffset(Source, X * SizeOf(TColorBGRA) + 1))^;
+      PByte(AddPointerOffset(Dest, X * SizeOf(TColorRGB) + 2))^ :=
         PColorBGRA(AddPointerOffset(Source, X * SizeOf(TColorBGRA))).B;
       Inc(X);
     end;
@@ -2085,23 +2087,20 @@ begin
     Texture := nil;
     UsesTextureStorage := False;
   end
-  else if StorageKind = 0 then
-  begin
-    if Pixels <> nil then FreeEC(Pixels);
-  end;
+  else if (StorageKind = 0) and (Pixels <> nil) then FreeEC(Pixels);
   Pixels := NewPixels;
   PitchBytes := NewPitch;
   BitsPerPixel := 24;
   BytesPerPixel := 3;
 end;
-{ @end $86AAD8 }
+{ @end $7BD704 }
 
-{ @routine $86ACE4 TGraphBufGR_DrawAntialiasedCircle16 }
+{ @routine $7BD8C8 TGraphBufGR_DrawAntialiasedCircle16 }
 procedure TGraphBufGR.DrawAntialiasedCircle16(Center: TPoint; Radius: Integer; Color: Cardinal; Clip: TRect);
 var X, Y, SignX, SignY, Quadrant: Integer; PreviousCoverage, Coverage: Single; PreviousX: Integer;
 
-  // @nested $86AC88 PlotCirclePixel16
-  procedure PlotCirclePixel16(X, Y, Alpha: Integer); // @addr $86AC88 @calls "0x86ad6f 0x86ad8f 0x86ae87 0x86aeb8 0x86AEED 0x86AF19"
+  // @nested $7BD888 PlotCirclePixel16
+  procedure PlotCirclePixel16(X, Y, Alpha: Integer); // @addr $7BD888 @calls "0x007BD941,0x007BD95F,0x007BDA2F,0x007BDA5E,0x007BDA8F,0x007BDAB9"
   begin
     if (X >= Clip.Left) and (X < Clip.Right) and (Y >= Clip.Top) and (Y < Clip.Bottom) then
       BlendPixel16(X, Y, Color, Alpha);
@@ -2147,9 +2146,9 @@ begin
     PreviousX := X;
   end;
 end;
-{ @end $86ACE4 }
+{ @end $7BD8C8 }
 
-{ @routine $86AFE4 TGraphBufGR_DrawAntialiasedLine16 }
+{ @routine $7BDB5C TGraphBufGR_DrawAntialiasedLine16 }
 procedure TGraphBufGR.DrawAntialiasedLine16(X1, Y1, X2, Y2: Integer; Color: Cardinal; Alpha: Integer; Clip: TRect);
 var
   Slope, DX, DY, Gap, EndX, EndY, InterY, Coverage1, Coverage2: Double;
@@ -2157,14 +2156,14 @@ var
   Steep: Boolean;
   Temp, StartX, StartY, FinishX, FinishY: Double;
 
-  // @nested $86AF54 LineFraction16
-  function LineFraction16(Value: Double): Double; // @addr $86AF54 @calls "0x86b27a 0x86b2be 0x86B2D8 0x86B3D6 0x86b41f 0x86B436 0x86b523 0x86B53D"
+  // @nested $7BDAEC LineFraction16
+  function LineFraction16(Value: Double): Double; // @addr $7BDAEC @calls "0x007BDD6A,0x007BDDA7,0x007BDDBF,0x007BDED1,0x007BDF17,0x007BDF2C,0x007BE033,0x007BE04B"
   begin
     Result := Value - Floor(Value);
   end;
 
-  // @nested $86AF80 PlotLinePixel16
-  procedure PlotLinePixel16(X, Y, Alpha: Integer); // @addr $86AF80 @calls "0x86B306 0x86B328 0x86B34B 0x86B36D 0x86B46D 0x86b49b 0x86b4cc 0x86B4FC 0x86B56B 0x86b58d 0x86b5b0 0x86b5d2"
+  // @nested $7BDB18 PlotLinePixel16
+  procedure PlotLinePixel16(X, Y, Alpha: Integer); // @addr $7BDB18 @calls "0x007BDDF3,0x007BDE1C,0x007BDE46,0x007BDE6F,0x007BDF6A,0x007BDFA0,0x007BDFD9,0x007BE011,0x007BE080,0x007BE0AA,0x007BE0D5,0x007BE0FF"
   begin
     if (X >= Clip.Left) and (X < Clip.Right) and (Y >= Clip.Top) and (Y < Clip.Bottom) and (Alpha > 0) then
       BlendPixel16(X, Y, Color, Alpha);
@@ -2240,6 +2239,6 @@ begin
     PlotLinePixel16(LastX, LastY + 1, Ceil(Alpha * Coverage2));
   end;
 end;
-{ @end $86AFE4 }
+{ @end $7BDB5C }
 
 end.

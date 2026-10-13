@@ -1,5 +1,4 @@
 unit fAbout;
-// Unit bracket (inferred): .text 0x00594CF0..0x00595B3C; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -8,24 +7,24 @@ uses GI_MessageLoop, GI_Panel, Types;
 type
   TfAbout = class(TMessageLoopGI) // @size 0xE4
   public
-    ScrollTimer: PCallbackTimerGI; // @offset 0xD0
+    ScrollTimer: TCallbackTimerIdGI; // @offset 0xD0
     ViewportPanel: TPanelGI; // @offset 0xD4
     CreditsPanel: TPanelGI; // @offset 0xD8
     CreditsHeight: Integer; // @offset 0xDC
     FirstMusicSelection: Boolean; // @offset 0xE0
     ReturnToScores: Boolean; // @offset 0xE1
 
-    procedure InitializeLayout; override; // @addr 0x594D84
-    procedure OnOpen; override; // @addr 0x595488
-    procedure OnClose; override; // @addr 0x5956EC
-    procedure SelectMusic; override; // @addr 0x595AF8
-    procedure ClearCredits; // @addr 0x595720
-    procedure AddCreditLine(Text: WideString; Red, Green, Blue: Byte); // @addr 0x595744
-    procedure AddCreditSeparator; // @addr 0x595890
-    procedure AddCreditSpacing(Height: Integer); // @addr 0x5959D0
-    procedure ScrollCredits(Timer: PCallbackTimerGI; UserData: Integer); // @addr 0x5959EC
-    procedure CloseMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x595A6C
-    procedure CloseKeyDown(Sender: TObjectGI; Key: Cardinal); // @addr 0x595AB8
+    procedure InitializeLayout; override; // @addr 0x005BB138
+    procedure OnOpen; override; // @addr 0x005BB790
+    procedure OnClose; override; // @addr 0x005BB9B4
+    procedure SelectMusic; override; // @addr 0x005BBD08
+    procedure ClearCredits; // @addr 0x005BB9D4
+    procedure AddCreditLine(Text: WideString; Red, Green, Blue: Byte); // @addr 0x005BB9E8
+    procedure AddCreditSeparator; // @addr 0x005BBB18
+    procedure AddCreditSpacing(Height: Integer); // @addr 0x005BBC44
+    procedure ScrollCredits(Timer: TCallbackTimerIdGI; UserData: Cardinal); // @addr 0x005BBC4C
+    procedure CloseMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x005BBCA0
+    procedure CloseKeyDown(Sender: TObjectGI; Key: Cardinal); // @addr 0x005BBCE0
   end;
 
 implementation
@@ -33,7 +32,7 @@ implementation
 uses Classes, EC_BlockPar, EC_Str, EC_Thread, GI_Image, GI_Label, GR_Main,
   Globals, GlobalsV, aConst, GR_Music;
 
-{ @routine $594D84 TfAbout_InitializeLayout }
+{ @routine $5BB138 TfAbout_InitializeLayout }
 procedure TfAbout.InitializeLayout;
 var
   Shift: Integer;
@@ -52,28 +51,28 @@ begin
     with FindByNameRecursive('SubCaption') do SetPosition(Classes.Point(LocalPosition.X + ExtraScreenWidth div 2, LocalPosition.Y + ExtraScreenHeight));
     with FindByNameRecursive('LogoElemental') do
     begin
-      Shift := LocalPosition.X * GameScreenWidth div 1024 - LocalPosition.X;
+      Shift := LocalPosition.X * Integer(GameScreenWidth) div 1024 - LocalPosition.X;
       SetPosition(Classes.Point(LocalPosition.X + Shift, LocalPosition.Y + ExtraScreenHeight));
     end;
     with FindByNameRecursive('LabelElemental') do
       SetPosition(Classes.Point(LocalPosition.X + Shift, LocalPosition.Y + ExtraScreenHeight));
     with FindByNameRecursive('Logo1C') do
     begin
-      Shift := LocalPosition.X * GameScreenWidth div 1024 - LocalPosition.X;
+      Shift := LocalPosition.X * Integer(GameScreenWidth) div 1024 - LocalPosition.X;
       SetPosition(Classes.Point(LocalPosition.X + Shift, LocalPosition.Y + ExtraScreenHeight));
     end;
     with FindByNameRecursive('Label1C') do
       SetPosition(Classes.Point(LocalPosition.X + Shift, LocalPosition.Y + ExtraScreenHeight));
     with FindByNameRecursive('LogoKatauri') do
     begin
-      Shift := LocalPosition.X * GameScreenWidth div 1024 - LocalPosition.X;
+      Shift := LocalPosition.X * Integer(GameScreenWidth) div 1024 - LocalPosition.X;
       SetPosition(Classes.Point(LocalPosition.X + Shift, LocalPosition.Y + ExtraScreenHeight));
     end;
     with FindByNameRecursive('LabelKatauri') do
       SetPosition(Classes.Point(LocalPosition.X + Shift, LocalPosition.Y + ExtraScreenHeight));
     with FindByNameRecursive('LogoSnk') do
     begin
-      Shift := LocalPosition.X * GameScreenWidth div 1024 - LocalPosition.X;
+      Shift := LocalPosition.X * Integer(GameScreenWidth) div 1024 - LocalPosition.X;
       SetPosition(Classes.Point(LocalPosition.X + Shift, LocalPosition.Y + ExtraScreenHeight));
     end;
     with FindByNameRecursive('LabelSnk') do
@@ -94,9 +93,9 @@ begin
     RightButtonUpCallback := CloseMouseDown;
   end;
 end;
-{ @end $594D84 }
+{ @end $5BB138 }
 
-{ @routine $595488 TfAbout_OnOpen }
+{ @routine $5BB790 TfAbout_OnOpen }
 procedure TfAbout.OnOpen;
 var
   Block: TBlockParEC;
@@ -105,10 +104,10 @@ var
 begin
   FirstMusicSelection := True;
   MusicManager.RequestFadeOut;
-  if ScrollTimer <> nil then
+  if ScrollTimer <> 0 then
   begin
     CancelCallbackTimer(ScrollTimer);
-    ScrollTimer := nil;
+    ScrollTimer := 0;
   end;
   ScrollTimer := ScheduleCallbackTimer(20, 20, ScrollCredits);
   CreditsPanel.SetPosition(Classes.Point(0, ViewportPanel.ClientSize.Y));
@@ -132,28 +131,28 @@ begin
   end;
   CreditsPanel.SetSize(Classes.Point(CreditsPanel.ClientSize.X, CreditsHeight));
 end;
-{ @end $595488 }
+{ @end $5BB790 }
 
-{ @routine $5956EC TfAbout_OnClose }
+{ @routine $5BB9B4 TfAbout_OnClose }
 procedure TfAbout.OnClose;
 begin
-  if ScrollTimer <> nil then
+  if ScrollTimer <> 0 then
   begin
     CancelCallbackTimer(ScrollTimer);
-    ScrollTimer := nil;
+    ScrollTimer := 0;
   end;
 end;
-{ @end $5956EC }
+{ @end $5BB9B4 }
 
-{ @routine $595720 TfAbout_ClearCredits }
+{ @routine $5BB9D4 TfAbout_ClearCredits }
 procedure TfAbout.ClearCredits;
 begin
   CreditsHeight := 0;
   CreditsPanel.FreeOwnedChildren;
 end;
-{ @end $595720 }
+{ @end $5BB9D4 }
 
-{ @routine $595744 TfAbout_AddCreditLine }
+{ @routine $5BB9E8 TfAbout_AddCreditLine }
 procedure TfAbout.AddCreditLine(Text: WideString; Red, Green, Blue: Byte);
 var
   LabelControl: TLabelGI;
@@ -173,9 +172,9 @@ begin
   LabelControl.SetSize(Classes.Point(LabelControl.ClientSize.X, LabelControl.ClientSize.Y + 4));
   CreditsHeight := CreditsHeight + LabelControl.ClientSize.Y;
 end;
-{ @end $595744 }
+{ @end $5BB9E8 }
 
-{ @routine $595890 TfAbout_AddCreditSeparator }
+{ @routine $5BBB18 TfAbout_AddCreditSeparator }
 procedure TfAbout.AddCreditSeparator;
 var
   Image: TImageGI;
@@ -189,43 +188,43 @@ begin
   Image.SetImageKindY(ikyCenter);
   CreditsHeight := CreditsHeight + Image.ClientSize.Y;
 end;
-{ @end $595890 }
+{ @end $5BBB18 }
 
-{ @routine $5959D0 TfAbout_AddCreditSpacing }
+{ @routine $5BBC44 TfAbout_AddCreditSpacing }
 procedure TfAbout.AddCreditSpacing(Height: Integer);
 begin
   CreditsHeight := CreditsHeight + Height;
 end;
-{ @end $5959D0 }
+{ @end $5BBC44 }
 
-{ @routine $5959EC TfAbout_ScrollCredits }
-procedure TfAbout.ScrollCredits(Timer: PCallbackTimerGI; UserData: Integer);
+{ @routine $5BBC4C TfAbout_ScrollCredits }
+procedure TfAbout.ScrollCredits(Timer: TCallbackTimerIdGI; UserData: Cardinal);
 begin
   CreditsPanel.SetPosition(Classes.Point(0, CreditsPanel.LocalPosition.Y - 1));
   if -CreditsPanel.LocalPosition.Y >= CreditsPanel.ClientSize.Y then
     CreditsPanel.SetPosition(Classes.Point(0, ViewportPanel.ClientSize.Y));
 end;
-{ @end $5959EC }
+{ @end $5BBC4C }
 
-{ @routine $595A6C TfAbout_CloseMouseDown }
+{ @routine $5BBCA0 TfAbout_CloseMouseDown }
 procedure TfAbout.CloseMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint);
 begin
   if ReturnToScores then RequestedScreenId := screenScores
   else RequestedScreenId := screenMainMenu;
   RequestClose(1);
 end;
-{ @end $595A6C }
+{ @end $5BBCA0 }
 
-{ @routine $595AB8 TfAbout_CloseKeyDown }
+{ @routine $5BBCE0 TfAbout_CloseKeyDown }
 procedure TfAbout.CloseKeyDown(Sender: TObjectGI; Key: Cardinal);
 begin
   if ReturnToScores then RequestedScreenId := screenScores
   else RequestedScreenId := screenMainMenu;
   RequestClose(1);
 end;
-{ @end $595AB8 }
+{ @end $5BBCE0 }
 
-{ @routine $595AF8 TfAbout_SelectMusic }
+{ @routine $5BBD08 TfAbout_SelectMusic }
 procedure TfAbout.SelectMusic;
 begin
   if FirstMusicSelection then
@@ -235,6 +234,6 @@ begin
   end
   else MusicManager.PlayCategory('Base');
 end;
-{ @end $595AF8 }
+{ @end $5BBD08 }
 
 end.

@@ -1,5 +1,4 @@
 unit fGameMenu;
-// Unit bracket (inferred): .text 0x00602808..0x00603683; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -10,21 +9,21 @@ type
   public
 
 
-    procedure ResumeClicked(Sender: TObjectGI); // @addr $602CD0
-    procedure SaveClicked(Sender: TObjectGI); // @addr $602CFC
-    procedure LoadClicked(Sender: TObjectGI); // @addr $602DE8
-    procedure SettingsClicked(Sender: TObjectGI); // @addr $602E24
-    procedure HelpClicked(Sender: TObjectGI); // @addr $602E58
-    procedure ExitClicked(Sender: TObjectGI); // @addr $602F28
-    procedure AchievementsClicked(Sender: TObjectGI); // @addr $603054
-    procedure BackgroundMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $603088
-    procedure MainPanelKeyDown(Sender: TObjectGI; Key: Cardinal); // @addr $6032BC
+    procedure ResumeClicked(Sender: TObjectGI); // @addr $532F78
+    procedure SaveClicked(Sender: TObjectGI); // @addr $532F94
+    procedure LoadClicked(Sender: TObjectGI); // @addr $533074
+    procedure SettingsClicked(Sender: TObjectGI); // @addr $5330A4
+    procedure HelpClicked(Sender: TObjectGI); // @addr $5330CC
+    procedure ExitClicked(Sender: TObjectGI); // @addr $533190
+    procedure AchievementsClicked(Sender: TObjectGI); // @addr $5332B0
+    procedure BackgroundMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $5332D8
+    procedure MainPanelKeyDown(Sender: TObjectGI; Key: Cardinal); // @addr $5334FC
 
-    procedure OnOpen; override; // @addr 0x602C3C
-    procedure OnClose; override; // @addr 0x602CB0
-    procedure SelectMusic; override; // @addr 0x6033C4
-    procedure InitializeLayout; override; // @addr 0x6028A0
-    procedure ExecuteUiCode(Block: TBlockParEC; Key: Cardinal); override; // @addr 0x603378
+    procedure OnOpen; override; // @addr 0x00532EF8
+    procedure OnClose; override; // @addr 0x00532F60
+    procedure SelectMusic; override; // @addr 0x005335DC
+    procedure InitializeLayout; override; // @addr 0x00532BC0
+    procedure ExecuteUiCode(Block: TBlockParEC; Key: Cardinal); override; // @addr 0x0053359C
   end;
 
 implementation
@@ -33,7 +32,7 @@ uses aGalaxyStruct, Classes, Windows, ShellAPI, GR_Main, GR_Music, Globals, Glob
   GI_Main, GI_GraphBuf, GI_GraphButton, GI_Image, aConst, aMyFunction,
   aPlayer, aGalaxy, fLoad, fSaveManager, fStarMap;
 
-{ @routine $6028A0 TfGameMenu_InitializeLayout }
+{ @routine $532BC0 TfGameMenu_InitializeLayout }
 procedure TfGameMenu.InitializeLayout;
 begin
   inherited;
@@ -57,33 +56,33 @@ begin
   with GetByName('Close') as TGraphButtonGI do UpCallback := ResumeClicked;
   with GetByName('Achievements') as TGraphButtonGI do UpCallback := AchievementsClicked;
 end;
-{ @end $6028A0 }
+{ @end $532BC0 }
 
-{ @routine $602C3C TfGameMenu_OnOpen }
+{ @routine $532EF8 TfGameMenu_OnOpen }
 procedure TfGameMenu.OnOpen;
 begin
   if AuxRenderBuffer.GetPixels = nil then CaptureScreenBackground(True,0);
   (GetByName('BGBuf') as TGraphBufGI).BindExternalGraphBuf(AuxRenderBuffer);
   ContentPanel.KeyDownCallback := MainPanelKeyDown;
 end;
-{ @end $602C3C }
+{ @end $532EF8 }
 
-{ @routine $602CB0 TfGameMenu_OnClose }
+{ @routine $532F60 TfGameMenu_OnClose }
 procedure TfGameMenu.OnClose;
 begin
   if AuxRenderBuffer <> nil then AuxRenderBuffer.Clear;
 end;
-{ @end $602CB0 }
+{ @end $532F60 }
 
-{ @routine $602CD0 TfGameMenu_ResumeClicked }
+{ @routine $532F78 TfGameMenu_ResumeClicked }
 procedure TfGameMenu.ResumeClicked(Sender: TObjectGI);
 begin
   RequestedScreenId := GameMenuReturnScreenId;
   RequestClose(1);
 end;
-{ @end $602CD0 }
+{ @end $532F78 }
 
-{ @routine $602CFC TfGameMenu_SaveClicked }
+{ @routine $532F94 TfGameMenu_SaveClicked }
 procedure TfGameMenu.SaveClicked(Sender: TObjectGI);
 begin
   if Galaxy.IronWill then ShowMessageBoxGI(Self,LocalizedColorText('FormGameSet2.IronWillText'),mbgCancel or mbgUnused04)
@@ -95,9 +94,9 @@ begin
     RequestClose(1);
   end;
 end;
-{ @end $602CFC }
+{ @end $532F94 }
 
-{ @routine $602DE8 TfGameMenu_LoadClicked }
+{ @routine $533074 TfGameMenu_LoadClicked }
 procedure TfGameMenu.LoadClicked(Sender: TObjectGI);
 begin
   SaveManagerReturnScreenId := GameMenuReturnScreenId;
@@ -105,86 +104,83 @@ begin
   RequestedScreenId := screenSaveManager;
   RequestClose(1);
 end;
-{ @end $602DE8 }
+{ @end $533074 }
 
-{ @routine $602E24 TfGameMenu_SettingsClicked }
+{ @routine $5330A4 TfGameMenu_SettingsClicked }
 procedure TfGameMenu.SettingsClicked(Sender: TObjectGI);
 begin
   SettingsReturnScreenId := GameMenuReturnScreenId;
   RequestedScreenId := screenSettings;
   RequestClose(1);
 end;
-{ @end $602E24 }
+{ @end $5330A4 }
 
-{ @routine $602E58 TfGameMenu_HelpClicked }
+{ @routine $5330CC TfGameMenu_HelpClicked }
 procedure TfGameMenu.HelpClicked(Sender: TObjectGI);
 begin
   ShowWindow(MainWindowHandle,SW_MINIMIZE);
-  // Native $602EEC and $602F20 are the empty and 'open' PAnsiChar literals.
   ShellExecuteA(0,'open',PAnsiChar(AnsiString(LocalizedText('FormGameMenu.HelpFile'))),'','',SW_SHOWNORMAL);
 end;
-{ @end $602E58 }
+{ @end $5330CC }
 
-{ @routine $602F28 TfGameMenu_ExitClicked }
+{ @routine $533190 TfGameMenu_ExitClicked }
 procedure TfGameMenu.ExitClicked(Sender: TObjectGI);
 begin
-  if ShowMessageBoxGI(Self,LanguageDataConfig.GetParamByPathOrMarker('FormGameMenu.QExit'),mbgOK or mbgCancel or mbgQuestion) = mbgResultOK then
-  begin
-    if MemorySnapshotBuffer <> nil then MemorySnapshotBuffer.Free;
-    MemorySnapshotBuffer := nil;
-    MemorySnapshotActive := False;
-    if (Galaxy <> nil) and not Galaxy.Destroying then Galaxy.Free;
-    Galaxy := nil;
-    EvictRuinsAndGovernmentCaches;
-    EvictStarAndBackgroundCaches;
-    ReleaseAllTextureSurfaces;
-    ScreenLoadMode := 4;
-    PostLoadScreenId := screenMainMenu;
-    RequestedScreenId := screenLoad;
-    RequestClose(1);
-  end;
+  if ShowMessageBoxGI(Self,LanguageDataConfig.GetParamByPathOrMarker('FormGameMenu.QExit'),mbgOK or mbgCancel or mbgQuestion) <> mbgResultOK then Exit;
+  if MemorySnapshotBuffer <> nil then MemorySnapshotBuffer.Free;
+  MemorySnapshotBuffer := nil;
+  MemorySnapshotActive := False;
+  if (Galaxy <> nil) and not Galaxy.Destroying then Galaxy.Free;
+  Galaxy := nil;
+  EvictRuinsAndGovernmentCaches;
+  EvictStarAndBackgroundCaches;
+  ReleaseAllTextureSurfaces;
+  ScreenLoadMode := 4;
+  PostLoadScreenId := screenMainMenu;
+  RequestedScreenId := screenLoad;
+  RequestClose(1);
 end;
-{ @end $602F28 }
+{ @end $533190 }
 
-{ @routine $603054 TfGameMenu_AchievementsClicked }
+{ @routine $5332B0 TfGameMenu_AchievementsClicked }
 procedure TfGameMenu.AchievementsClicked(Sender: TObjectGI);
 begin
   AchievementsReturnScreenId := GameMenuReturnScreenId;
   RequestedScreenId := screenAchievements;
   RequestClose(1);
 end;
-{ @end $603054 }
+{ @end $5332B0 }
 
-{ @routine $603088 TfGameMenu_BackgroundMouseUp }
+{ @routine $5332D8 TfGameMenu_BackgroundMouseUp }
 procedure TfGameMenu.BackgroundMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint);
 begin
   if not (GetByName('ImageBG') as TImageGI).HitTestPixel(Point) then
     if not (GetByName('Resume') as TGraphButtonGI).ContainsPoint(Point) then
-    if not (GetByName('Save') as TGraphButtonGI).ContainsPoint(Point) then
-    if not (GetByName('Load') as TGraphButtonGI).ContainsPoint(Point) then
-    if not (GetByName('Settings') as TGraphButtonGI).ContainsPoint(Point) then
-    if not (GetByName('Help') as TGraphButtonGI).ContainsPoint(Point) then
-    if not (GetByName('Exit') as TGraphButtonGI).ContainsPoint(Point) then
-    if not (GetByName('Close') as TGraphButtonGI).ContainsPoint(Point) then
-    if not (GetByName('Achievements') as TGraphButtonGI).ContainsPoint(Point) then
-      ResumeClicked(nil);
+      if not (GetByName('Save') as TGraphButtonGI).ContainsPoint(Point) then
+        if not (GetByName('Load') as TGraphButtonGI).ContainsPoint(Point) then
+          if not (GetByName('Settings') as TGraphButtonGI).ContainsPoint(Point) then
+            if not (GetByName('Help') as TGraphButtonGI).ContainsPoint(Point) then
+              if not (GetByName('Exit') as TGraphButtonGI).ContainsPoint(Point) then
+                if not (GetByName('Close') as TGraphButtonGI).ContainsPoint(Point) then
+                  if not (GetByName('Achievements') as TGraphButtonGI).ContainsPoint(Point) then
+                    ResumeClicked(nil);
 end;
-{ @end $603088 }
+{ @end $5332D8 }
 
-{ @routine $6032BC TfGameMenu_MainPanelKeyDown }
+{ @routine $5334FC TfGameMenu_MainPanelKeyDown }
 procedure TfGameMenu.MainPanelKeyDown(Sender: TObjectGI; Key: Cardinal);
 begin
-  if not IsVirtualKeyDown(VK_CONTROL) and not IsVirtualKeyDown(VK_SHIFT) and not IsVirtualKeyDown(VK_MENU) then
-    if Key = VK_ESCAPE then ResumeClicked(nil)
-    else if (Key = Ord('S')) or (Key = VK_F2) then SaveClicked(nil)
-    else if (Key = Ord('L')) or (Key = VK_F3) then LoadClicked(nil)
-    else if Key = Ord('C') then SettingsClicked(nil)
-    else if Key = Ord('E') then ExitClicked(nil)
-    else if Key = Ord('H') then HelpClicked(nil);
+  if IsVirtualKeyDown(VK_CONTROL) or IsVirtualKeyDown(VK_SHIFT) or IsVirtualKeyDown(VK_MENU) then Exit;
+  if Key = VK_ESCAPE then ResumeClicked(nil)
+  else if (Key = Ord('S')) or (Key = VK_F2) then SaveClicked(nil)
+  else if (Key = Ord('L')) or (Key = VK_F3) then LoadClicked(nil)
+  else if Key = Ord('C') then SettingsClicked(nil)
+  else if Key = Ord('E') then ExitClicked(nil)
+  else if Key = Ord('H') then HelpClicked(nil);
 end;
-{ @end $6032BC }
+{ @end $5334FC }
 
-{ @routine $603378 TfGameMenu_ExecuteUiCode }
+{ @routine $53359C TfGameMenu_ExecuteUiCode }
 procedure TfGameMenu.ExecuteUiCode(Block: TBlockParEC; Key: Cardinal);
 begin
   if not ExitScreenLoop then
@@ -194,9 +190,9 @@ begin
     Galaxy.PrimeIntegrityChecksum(20013);
   end;
 end;
-{ @end $603378 }
+{ @end $53359C }
 
-{ @routine $6033C4 TfGameMenu_SelectMusic }
+{ @routine $5335DC TfGameMenu_SelectMusic }
 procedure TfGameMenu.SelectMusic;
 begin
   if GetPlayer = nil then MusicManager.PlayCategory('Base')
@@ -209,7 +205,7 @@ begin
       if GetPlayer.CurrentPlanet.OwnerId = oiPirate then
       begin
         if not GetPlayer.CurrentPlanet.IsMainPiratePlanet then MusicManager.PlayCategory('Nation.' + OwnerInfo[RaceToOwner(GetPlayer.CurrentPlanet.RaceId)].InternalName + 'Pirate')
-          else MusicManager.PlayCategory('Nation.PiratePlanetMain');
+        else MusicManager.PlayCategory('Nation.PiratePlanetMain');
       end
       else MusicManager.PlayCategory('Nation.' + OwnerInfo[GetPlayer.CurrentPlanet.OwnerId].InternalName);
     end;
@@ -242,6 +238,6 @@ begin
     else MusicManager.RequestFadeOut;
   end;
 end;
-{ @end $6033C4 }
+{ @end $5335DC }
 
 end.

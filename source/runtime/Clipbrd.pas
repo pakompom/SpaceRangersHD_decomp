@@ -1,5 +1,5 @@
 unit Clipbrd;
-// VCL binding. Native TClipboard VMT $430130 agrees with Delphi 2007.
+// Delphi 2007 VCL binding.
 interface
 uses Classes, Windows;
 type

@@ -1,5 +1,4 @@
 unit fPanelRuins;
-// Unit bracket (inferred): .text 0x007E3C14..0x007E44B4; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -10,20 +9,20 @@ type
   public
     Screen: TMessageLoopGI; // @offset 0x4
 
-    constructor Create; // @addr 0x7E3C70
-    destructor Destroy; override; // @addr 0x7E3CB4
-    procedure InitializeLayout(Screen: TMessageLoopGI); // @addr 0x7E3CE8
-    procedure OnOpen; // @addr $7E3EEC
-    procedure OnClose; // @addr $7E3F40 Native no-op lifecycle hook.
-    procedure TakeOffForStationTravel; // @addr $7E44B8
-    procedure ProcessKeyDown(Key: Integer); // @addr $7E46B8
-    procedure Show; // @addr 0x7E3F4C
-    procedure Hide; // @addr 0x7E3F8C
-    procedure ServicesClicked(Sender: TObjectGI); // @addr 0x7E3FCC
-    procedure EquipmentShopClicked(Sender: TObjectGI); // @addr 0x7E4040
-    procedure GoodsShopClicked(Sender: TObjectGI); // @addr 0x7E418C
-    procedure InformationClicked(Sender: TObjectGI); // @addr 0x7E42D8
-    procedure HangarClicked(Sender: TObjectGI); // @addr 0x7E4424
+    constructor Create; // @addr 0x0067D6E8
+    destructor Destroy; override; // @addr 0x0067D720
+    procedure InitializeLayout(Screen: TMessageLoopGI); // @addr 0x0067D748
+    procedure OnOpen; // @addr $67D914
+    procedure OnClose; // @addr $67D958 Native no-op lifecycle hook.
+    procedure TakeOffForStationTravel; // @addr $67DE38
+    procedure ProcessKeyDown(Key: Integer); // @addr $67E020
+    procedure Show; // @addr 0x0067D95C
+    procedure Hide; // @addr 0x0067D994
+    procedure ServicesClicked(Sender: TObjectGI); // @addr 0x0067D9CC
+    procedure EquipmentShopClicked(Sender: TObjectGI); // @addr 0x0067DA2C
+    procedure GoodsShopClicked(Sender: TObjectGI); // @addr 0x0067DB5C
+    procedure InformationClicked(Sender: TObjectGI); // @addr 0x0067DC8C
+    procedure HangarClicked(Sender: TObjectGI); // @addr 0x0067DDBC
   end;
 
 implementation
@@ -33,21 +32,21 @@ uses Classes, Windows, GR_Main, GR_Music, Globals, GlobalsV, GI_GraphButton, GI_
   fRuinsTalk, fPanelLoad, fSaveManager, fStarMap, ThreadCalc, aCalc;
 
 
-{ @routine $7E3C70 TfPanelRuins_Create }
+{ @routine $67D6E8 TfPanelRuins_Create }
 constructor TfPanelRuins.Create;
 begin
   inherited Create;
 end;
-{ @end $7E3C70 }
+{ @end $67D6E8 }
 
-{ @routine $7E3CB4 TfPanelRuins_Destroy }
+{ @routine $67D720 TfPanelRuins_Destroy }
 destructor TfPanelRuins.Destroy;
 begin
   inherited Destroy;
 end;
-{ @end $7E3CB4 }
+{ @end $67D720 }
 
-{ @routine $7E3CE8 TfPanelRuins_InitializeLayout }
+{ @routine $67D748 TfPanelRuins_InitializeLayout }
 procedure TfPanelRuins.InitializeLayout(Screen: TMessageLoopGI);
 begin
   Self.Screen := Screen;
@@ -61,36 +60,36 @@ begin
   (Self.Screen.GetByName('PR_Info') as TGraphButtonGI).UpCallback := InformationClicked;
   (Self.Screen.GetByName('PR_Hangar') as TGraphButtonGI).UpCallback := HangarClicked;
 end;
-{ @end $7E3CE8 }
+{ @end $67D748 }
 
-{ @routine $7E3EEC TfPanelRuins_OnOpen }
+{ @routine $67D914 TfPanelRuins_OnOpen }
 procedure TfPanelRuins.OnOpen;
 begin
   with Screen.GetByName('PanelRuins') do SetActive(GetPlayer.RuinsMode = 0);
 end;
-{ @end $7E3EEC }
+{ @end $67D914 }
 
-{ @routine $7E3F40 TfPanelRuins_OnClose }
+{ @routine $67D958 TfPanelRuins_OnClose }
 procedure TfPanelRuins.OnClose;
 begin
 end;
-{ @end $7E3F40 }
+{ @end $67D958 }
 
-{ @routine $7E3F4C TfPanelRuins_Show }
+{ @routine $67D95C TfPanelRuins_Show }
 procedure TfPanelRuins.Show;
 begin
   Screen.GetByName('PanelRuins').SetActive(True);
 end;
-{ @end $7E3F4C }
+{ @end $67D95C }
 
-{ @routine $7E3F8C TfPanelRuins_Hide }
+{ @routine $67D994 TfPanelRuins_Hide }
 procedure TfPanelRuins.Hide;
 begin
   Screen.GetByName('PanelRuins').SetActive(False);
 end;
-{ @end $7E3F8C }
+{ @end $67D994 }
 
-{ @routine $7E3FCC TfPanelRuins_ServicesClicked }
+{ @routine $67D9CC TfPanelRuins_ServicesClicked }
 procedure TfPanelRuins.ServicesClicked(Sender: TObjectGI);
 begin
   if Screen.ExitCode <> 0 then Exit;
@@ -100,9 +99,9 @@ begin
     RequestedScreenId := screenRuinsTalk;
     Screen.RequestClose(1);
 end;
-{ @end $7E3FCC }
+{ @end $67D9CC }
 
-{ @routine $7E4040 TfPanelRuins_EquipmentShopClicked }
+{ @routine $67DA2C TfPanelRuins_EquipmentShopClicked }
 procedure TfPanelRuins.EquipmentShopClicked(Sender: TObjectGI);
 begin
   if Screen.ExitCode <> 0 then Exit;
@@ -118,9 +117,9 @@ begin
     Screen.RequestClose(1);
   end;
 end;
-{ @end $7E4040 }
+{ @end $67DA2C }
 
-{ @routine $7E418C TfPanelRuins_GoodsShopClicked }
+{ @routine $67DB5C TfPanelRuins_GoodsShopClicked }
 procedure TfPanelRuins.GoodsShopClicked(Sender: TObjectGI);
 begin
   if Screen.ExitCode <> 0 then Exit;
@@ -136,9 +135,9 @@ begin
     Screen.RequestClose(1);
   end;
 end;
-{ @end $7E418C }
+{ @end $67DB5C }
 
-{ @routine $7E42D8 TfPanelRuins_InformationClicked }
+{ @routine $67DC8C TfPanelRuins_InformationClicked }
 procedure TfPanelRuins.InformationClicked(Sender: TObjectGI);
 begin
   if Screen.ExitCode <> 0 then Exit;
@@ -154,9 +153,9 @@ begin
     Screen.RequestClose(1);
   end;
 end;
-{ @end $7E42D8 }
+{ @end $67DC8C }
 
-{ @routine $7E4424 TfPanelRuins_HangarClicked }
+{ @routine $67DDBC TfPanelRuins_HangarClicked }
 procedure TfPanelRuins.HangarClicked(Sender: TObjectGI);
 begin
   if Screen.ExitCode <> 0 then Exit;
@@ -167,9 +166,9 @@ begin
     RequestedScreenId := screenHangar;
     Screen.RequestClose(1);
 end;
-{ @end $7E4424 }
+{ @end $67DDBC }
 
-{ @routine $7E44B8 TfPanelRuins_TakeOffForStationTravel }
+{ @routine $67DE38 TfPanelRuins_TakeOffForStationTravel }
 procedure TfPanelRuins.TakeOffForStationTravel;
 var Index: Integer;
 begin
@@ -206,9 +205,9 @@ begin
   end
   else Screen.RequestClose(1);
 end;
-{ @end $7E44B8 }
+{ @end $67DE38 }
 
-{ @routine $7E46B8 TfPanelRuins_ProcessKeyDown }
+{ @routine $67E020 TfPanelRuins_ProcessKeyDown }
 procedure TfPanelRuins.ProcessKeyDown(Key: Integer);
 begin
   if Screen.ExitCode <> 0 then Exit;
@@ -221,5 +220,5 @@ begin
   else if (Key = Ord('I')) and Screen.GetByName('PR_Info').Active then InformationClicked(nil)
   else if (Key = Ord('H')) and Screen.GetByName('PR_Hangar').Active then HangarClicked(nil);
 end;
-{ @end $7E46B8 }
+{ @end $67E020 }
 end.

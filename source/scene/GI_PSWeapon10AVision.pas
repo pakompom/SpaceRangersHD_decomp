@@ -24,8 +24,8 @@ type
   TAVisionAnimationPaths = array of TGAISet;
 
 var
-  AVisionPalettes: array of TAVisionPalette; // @addr $88AED0
-  AVisionAnimationPaths: array of TGAISet; // @addr $88AED4
+  AVisionPalettes: array of TAVisionPalette; // @addr $81B1D0
+  AVisionAnimationPaths: array of TGAISet; // @addr $81B1D4
 
 type
   TPSWeapon10AVision = class(TPSWeaponGI) // @size $14C
@@ -37,29 +37,29 @@ type
     OriginalLength: Single; // @offset $140
     Colors: TAVisionPalette; // @offset $144
 
-    constructor Create(Owner: TObjectGI; APaletteIndex: Integer); // @addr $691078
-    destructor Destroy; override; // @addr $691144
-    procedure Invalidate; override; // @addr $691180 @note "Native empty override."
-    procedure SetPosition(Position: TPoint); override; // @addr $69118C
-    procedure SetTargetPoint(Point: TPoint); override; // @addr $6911C8
-    procedure UpdateHitTestBounds; override; // @addr $691214
-    procedure ClearParticles; // @addr $691248
-    procedure GrowParticles; // @addr $691290
-    function AddParticle: PAVisionParticle; // @addr $6912C8
-    procedure Advance(Timer: PCallbackTimerGI; UserData: Integer); override; // @addr $691320
-    procedure Draw(ClipRect: TRect); override; // @addr $691724
+    constructor Create(Owner: TObjectGI; APaletteIndex: Integer); // @addr $4F390C
+    destructor Destroy; override; // @addr $4F39B0
+    procedure Invalidate; override; // @addr $4F39DC @note "Native empty override."
+    procedure SetPosition(Position: TPoint); override; // @addr $4F39E0
+    procedure SetTargetPoint(Point: TPoint); override; // @addr $4F3A0C
+    procedure UpdateHitTestBounds; override; // @addr $4F3A48
+    procedure ClearParticles; // @addr $4F3A6C
+    procedure GrowParticles; // @addr $4F3A98
+    function AddParticle: PAVisionParticle; // @addr $4F3ABC
+    procedure Advance(Timer: TCallbackTimerIdGI; UserData: Cardinal); override; // @addr $4F3AF4
+    procedure Draw(ClipRect: TRect); override; // @addr $4F3DDC
   end;
 
-procedure LoadAVisionPalettes; // @addr $6919C4
+procedure LoadAVisionPalettes; // @addr $4F4030
 
 implementation
 
-// @unit-initialization $87792C
-// @unit-finalization $691CE4
+// @unit-initialization $80684C
+// @unit-finalization $4F4308
 
 uses SysUtils, Math, EC_BlockPar, EC_Str, EC_Mem, GR_Main, GR_DX, aMyFunction, Globals;
 
-{ @routine $691078 TPSWeapon10AVision_Create }
+{ @routine $4F390C TPSWeapon10AVision_Create }
 constructor TPSWeapon10AVision.Create(Owner: TObjectGI; APaletteIndex: Integer);
 begin
   inherited Create(Owner);
@@ -71,39 +71,39 @@ begin
   Colors[2] := AVisionPalettes[APaletteIndex][2];
   Colors[3] := AVisionPalettes[APaletteIndex][3];
 end;
-{ @end $691078 }
+{ @end $4F390C }
 
-{ @routine $691144 TPSWeapon10AVision_Destroy }
+{ @routine $4F39B0 TPSWeapon10AVision_Destroy }
 destructor TPSWeapon10AVision.Destroy;
 begin
   ClearParticles;
   inherited Destroy;
 end;
-{ @end $691144 }
+{ @end $4F39B0 }
 
-{ @routine $691180 TPSWeapon10AVision_Invalidate }
+{ @routine $4F39DC TPSWeapon10AVision_Invalidate }
 procedure TPSWeapon10AVision.Invalidate;
 begin
 end;
-{ @end $691180 }
+{ @end $4F39DC }
 
-{ @routine $69118C TPSWeapon10AVision_SetPosition }
+{ @routine $4F39E0 TPSWeapon10AVision_SetPosition }
 procedure TPSWeapon10AVision.SetPosition(Position: TPoint);
 begin
   if (LocalPosition.X <> Position.X) or (LocalPosition.Y <> Position.Y) then
     inherited SetPosition(Position);
 end;
-{ @end $69118C }
+{ @end $4F39E0 }
 
-{ @routine $6911C8 TPSWeapon10AVision_SetTargetPoint }
+{ @routine $4F3A0C TPSWeapon10AVision_SetTargetPoint }
 procedure TPSWeapon10AVision.SetTargetPoint(Point: TPoint);
 begin
   if (TargetPoint.X <> Point.X) or (TargetPoint.Y <> Point.Y) then
     TargetPoint := Point;
 end;
-{ @end $6911C8 }
+{ @end $4F3A0C }
 
-{ @routine $691214 TPSWeapon10AVision_UpdateHitTestBounds }
+{ @routine $4F3A48 TPSWeapon10AVision_UpdateHitTestBounds }
 procedure TPSWeapon10AVision.UpdateHitTestBounds;
 begin
   HitTestBounds.Left := 0;
@@ -111,9 +111,9 @@ begin
   HitTestBounds.Right := GameScreenWidth;
   HitTestBounds.Bottom := GameScreenHeight;
 end;
-{ @end $691214 }
+{ @end $4F3A48 }
 
-{ @routine $691248 TPSWeapon10AVision_ClearParticles }
+{ @routine $4F3A6C TPSWeapon10AVision_ClearParticles }
 procedure TPSWeapon10AVision.ClearParticles;
 begin
   if Particles <> nil then
@@ -124,27 +124,27 @@ begin
   ParticleCount := 0;
   ParticleCapacity := 0;
 end;
-{ @end $691248 }
+{ @end $4F3A6C }
 
-{ @routine $691290 TPSWeapon10AVision_GrowParticles }
+{ @routine $4F3A98 TPSWeapon10AVision_GrowParticles }
 procedure TPSWeapon10AVision.GrowParticles;
 begin
   Inc(ParticleCapacity, 100);
   Particles := ReAllocREC(Particles, ParticleCapacity * SizeOf(TAVisionParticle));
 end;
-{ @end $691290 }
+{ @end $4F3A98 }
 
-{ @routine $6912C8 TPSWeapon10AVision_AddParticle }
+{ @routine $4F3ABC TPSWeapon10AVision_AddParticle }
 function TPSWeapon10AVision.AddParticle: PAVisionParticle;
 begin
   if ParticleCount >= ParticleCapacity then GrowParticles;
   Result := AddPointerOffset(Particles, ParticleCount * SizeOf(TAVisionParticle));
   Inc(ParticleCount);
 end;
-{ @end $6912C8 }
+{ @end $4F3ABC }
 
-{ @routine $691320 TPSWeapon10AVision_Advance }
-procedure TPSWeapon10AVision.Advance(Timer: PCallbackTimerGI; UserData: Integer);
+{ @routine $4F3AF4 TPSWeapon10AVision_Advance }
+procedure TPSWeapon10AVision.Advance(Timer: TCallbackTimerIdGI; UserData: Cardinal);
 var
   Particle: PAVisionParticle;
   Count, I: Integer;
@@ -238,9 +238,9 @@ begin
   end;
   Dec(RemainingTicks);
 end;
-{ @end $691320 }
+{ @end $4F3AF4 }
 
-{ @routine $691724 TPSWeapon10AVision_Draw }
+{ @routine $4F3DDC TPSWeapon10AVision_Draw }
 procedure TPSWeapon10AVision.Draw(ClipRect: TRect);
 var
   X, Y: Integer;
@@ -292,9 +292,9 @@ begin
     end;
   end;
 end;
-{ @end $691724 }
+{ @end $4F3DDC }
 
-{ @routine $6919C4 LoadAVisionPalettes }
+{ @routine $4F4030 LoadAVisionPalettes }
 procedure LoadAVisionPalettes;
 var
   Block, PaletteBlock: TBlockParEC;
@@ -311,23 +311,21 @@ begin
   for Index := 0 to Count - 1 do
   begin
     Text := IntToStr(Index);
-    if Block.CountBlocks(Text) <> 0 then
-    begin
-      PaletteBlock := Block.GetBlockByPath(Text);
-      for ColorIndex := 0 to 3 do
-        if PaletteBlock.CountParams('Color' + IntToStr(ColorIndex)) > 0 then
-        begin
-          Text := PaletteBlock.GetParam('Color' + IntToStr(ColorIndex));
-          AVisionPalettes[Index][ColorIndex] := CurrentPixelFormat.PackNormalizedRgb(
-            ExtractDecimalToSingleW(ExtractDelimitedPartW(Text, 0, ',')),
-            ExtractDecimalToSingleW(ExtractDelimitedPartW(Text, 1, ',')),
-            ExtractDecimalToSingleW(ExtractDelimitedPartW(Text, 2, ',')));
-        end;
-      if PaletteBlock.CountParams('GAI') > 0 then
-        AVisionAnimationPaths[Index][0] := PaletteBlock.GetParam('GAI');
-    end;
+    if Block.CountBlocks(Text) = 0 then Continue;
+    PaletteBlock := Block.GetBlockByPath(Text);
+    for ColorIndex := Low(TAVisionPalette) to High(TAVisionPalette) do
+      if PaletteBlock.CountParams('Color' + IntToStr(ColorIndex)) > 0 then
+      begin
+        Text := PaletteBlock.GetParam('Color' + IntToStr(ColorIndex));
+        AVisionPalettes[Index][ColorIndex] := CurrentPixelFormat.PackNormalizedRgb(
+          ExtractDecimalToSingleW(ExtractDelimitedPartW(Text, 0, ',')),
+          ExtractDecimalToSingleW(ExtractDelimitedPartW(Text, 1, ',')),
+          ExtractDecimalToSingleW(ExtractDelimitedPartW(Text, 2, ',')));
+      end;
+    if PaletteBlock.CountParams('GAI') > 0 then
+      AVisionAnimationPaths[Index][0] := PaletteBlock.GetParam('GAI');
   end;
 end;
-{ @end $6919C4 }
+{ @end $4F4030 }
 
 end.

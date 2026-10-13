@@ -1,5 +1,4 @@
 unit PathClass;
-// Unit bracket (inferred): .text 0x004E5640..0x004E6BED; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -27,36 +26,36 @@ type
     // No recovered routine accesses +0x3C..+0xE3.
     Sequence: TSequence; // @offset 0xE4
 
-    constructor Create; // @addr 0x4E5694
-    destructor Destroy; override; // @addr 0x4E5748 @note "Frees the sequence and containers without calling Reset."
-    procedure Reset; // @addr 0x4E57E0
-    function GetParameterChangeCount: Integer; // @addr 0x4E58E4
-    function GetParameterChange(Index: Integer): TParameterDelta; // @addr 0x4E5900 @note "Index is one-based."
-    procedure AddParameterChange(Change: TParameterDelta); // @addr 0x4E5928
-    function FindParameterChange(ParameterIndex: Integer): TParameterDelta; // @addr 0x4E5B90
-    procedure PruneParameterChanges(Parameters: TList); // @addr 0x4E59BC @note "Removed entries are not freed."
-    procedure ApplyParameterChanges(var Parameters: TList); // @addr 0x4E5948 @note "Evaluates every expression before applying any change."
-    function CheckAvailable(Parameters: TList): Boolean; // @addr 0x4E5A60 @note "Updates Available. Invalid condition expressions are ignored; parameter constraints still apply."
-    procedure LoadFromReader(Reader: TBufEC; Parameters: TList); // @addr 0x4E5BEC @note "Path format used by quest versions 1111111125 and later."
+    constructor Create; // @addr 0x004E2ED4
+    destructor Destroy; override; // @addr 0x004E2F64 @note "Frees the sequence and containers without calling Reset."
+    procedure Reset; // @addr 0x004E2FCC
+    function GetParameterChangeCount: Integer; // @addr 0x004E308C
+    function GetParameterChange(Index: Integer): TParameterDelta; // @addr 0x004E3094 @note "Index is one-based."
+    procedure AddParameterChange(Change: TParameterDelta); // @addr 0x004E30A8
+    function FindParameterChange(ParameterIndex: Integer): TParameterDelta; // @addr 0x004E329C
+    procedure PruneParameterChanges(Parameters: TList); // @addr 0x004E3110 @note "Removed entries are not freed."
+    procedure ApplyParameterChanges(var Parameters: TList); // @addr 0x004E30B4 @note "Evaluates every expression before applying any change."
+    function CheckAvailable(Parameters: TList): Boolean; // @addr 0x004E3190 @note "Updates Available. Invalid condition expressions are ignored; parameter constraints still apply."
+    procedure LoadFromReader(Reader: TBufEC; Parameters: TList); // @addr 0x004E32DC @note "Path format used by quest versions 1111111125 and later."
 
     // Legacy readers derive IsAutomatic from the trimmed caption.
-    procedure LoadLegacyV0FromReader(Reader: TBufEC); // @addr 0x4E6AC8 @note "Quest version 1111111111."
-    procedure LoadLegacyV1FromReader(Reader: TBufEC); // @addr 0x4E6994 @note "Quest versions 1111111112..1111111113."
-    procedure LoadLegacyV2FromReader(Reader: TBufEC); // @addr 0x4E6850 @note "Quest version 1111111114."
-    procedure LoadLegacyV3FromReader(Reader: TBufEC); // @addr 0x4E670C @note "Quest version 1111111115."
-    procedure LoadLegacyV4FromReader(Reader: TBufEC); // @addr 0x4E65AC @note "Quest version 1111111116."
-    procedure LoadLegacyV5FromReader(Reader: TBufEC); // @addr 0x4E644C @note "Quest versions 1111111117..1111111118."
-    procedure LoadLegacyV6FromReader(Reader: TBufEC); // @addr 0x4E62DC @note "Quest versions 1111111119..1111111121."
-    procedure LoadLegacyV7FromReader(Reader: TBufEC); // @addr 0x4E6160 @note "Quest version 1111111122."
-    procedure LoadLegacyV8FromReader(Reader: TBufEC); // @addr 0x4E5FE4 @note "Quest version 1111111123."
-    procedure LoadLegacyV9FromReader(Reader: TBufEC); // @addr 0x4E5E68 @note "Quest version 1111111124."
+    procedure LoadLegacyV0FromReader(Reader: TBufEC); // @addr 0x004E3EB8 @note "Quest version 1111111111."
+    procedure LoadLegacyV1FromReader(Reader: TBufEC); // @addr 0x004E3DB8 @note "Quest versions 1111111112..1111111113."
+    procedure LoadLegacyV2FromReader(Reader: TBufEC); // @addr 0x004E3CB0 @note "Quest version 1111111114."
+    procedure LoadLegacyV3FromReader(Reader: TBufEC); // @addr 0x004E3BA8 @note "Quest version 1111111115."
+    procedure LoadLegacyV4FromReader(Reader: TBufEC); // @addr 0x004E3A8C @note "Quest version 1111111116."
+    procedure LoadLegacyV5FromReader(Reader: TBufEC); // @addr 0x004E3970 @note "Quest versions 1111111117..1111111118."
+    procedure LoadLegacyV6FromReader(Reader: TBufEC); // @addr 0x004E3848 @note "Quest versions 1111111119..1111111121."
+    procedure LoadLegacyV7FromReader(Reader: TBufEC); // @addr 0x004E3718 @note "Quest version 1111111122."
+    procedure LoadLegacyV8FromReader(Reader: TBufEC); // @addr 0x004E35E8 @note "Quest version 1111111123."
+    procedure LoadLegacyV9FromReader(Reader: TBufEC); // @addr 0x004E34B8 @note "Quest version 1111111124."
   end;
 
 implementation
 
 uses CalcParseClass, EC_Str, ParameterClass;
 
-{ @routine $4E5694 TPath_Create }
+{ @routine $4E2ED4 TPath_Create }
 constructor TPath.Create;
 begin
   inherited Create;
@@ -70,9 +69,9 @@ begin
   ToLocationId := 0;
   FromLocationId := 0;
 end;
-{ @end $4E5694 }
+{ @end $4E2ED4 }
 
-{ @routine $4E5748 TPath_Destroy }
+{ @routine $4E2F64 TPath_Destroy }
 destructor TPath.Destroy;
 begin
   if Sequence <> nil then Sequence.Free;
@@ -87,9 +86,9 @@ begin
   ParameterChanges := nil;
   inherited Destroy;
 end;
-{ @end $4E5748 }
+{ @end $4E2F64 }
 
-{ @routine $4E57E0 TPath_Reset }
+{ @routine $4E2FCC TPath_Reset }
 procedure TPath.Reset;
 var
   i: Integer;
@@ -114,30 +113,30 @@ begin
   UnknownFlag := 0;
   AlwaysShow := False;
 end;
-{ @end $4E57E0 }
+{ @end $4E2FCC }
 
-{ @routine $4E58E4 TPath_GetParameterChangeCount }
+{ @routine $4E308C TPath_GetParameterChangeCount }
 function TPath.GetParameterChangeCount: Integer;
 begin
   Result := ParameterChanges.Count;
 end;
-{ @end $4E58E4 }
+{ @end $4E308C }
 
-{ @routine $4E5900 TPath_GetParameterChange }
+{ @routine $4E3094 TPath_GetParameterChange }
 function TPath.GetParameterChange(Index: Integer): TParameterDelta;
 begin
-  Result := TParameterDelta(ParameterChanges[Index - 1]);
+  Result := ParameterChanges[Index - 1];
 end;
-{ @end $4E5900 }
+{ @end $4E3094 }
 
-{ @routine $4E5928 TPath_AddParameterChange }
+{ @routine $4E30A8 TPath_AddParameterChange }
 procedure TPath.AddParameterChange(Change: TParameterDelta);
 begin
   ParameterChanges.Add(Change);
 end;
-{ @end $4E5928 }
+{ @end $4E30A8 }
 
-{ @routine $4E5948 TPath_ApplyParameterChanges }
+{ @routine $4E30B4 TPath_ApplyParameterChanges }
 procedure TPath.ApplyParameterChanges(var Parameters: TList);
 var
   i: Integer;
@@ -147,23 +146,28 @@ begin
   for i := 1 to GetParameterChangeCount do
     GetParameterChange(i).ApplyChange(Parameters);
 end;
-{ @end $4E5948 }
+{ @end $4E30B4 }
 
-{ @routine $4E59BC TPath_PruneParameterChanges }
+{ @routine $4E3110 TPath_PruneParameterChanges }
 procedure TPath.PruneParameterChanges(Parameters: TList);
 var
   i: Integer;
 begin
   for i := GetParameterChangeCount downto 1 do
+  begin
     if (GetParameterChange(i).ParameterIndex < 1) or (GetParameterChange(i).ParameterIndex > Parameters.Count) then
-      ParameterChanges.Delete(i - 1)
-    else if GetParameterChange(i).HasNoChange(Parameters) then
-      if GetParameterChange(i).HasNoValueConstraint(Parameters) then
-        ParameterChanges.Delete(i - 1);
+    begin
+      ParameterChanges.Delete(i - 1);
+      Continue;
+    end;
+    if not GetParameterChange(i).HasNoChange(Parameters) then Continue;
+    if not GetParameterChange(i).HasNoValueConstraint(Parameters) then Continue;
+    ParameterChanges.Delete(i - 1);
+  end;
 end;
-{ @end $4E59BC }
+{ @end $4E3110 }
 
-{ @routine $4E5A60 TPath_CheckAvailable }
+{ @routine $4E3190 TPath_CheckAvailable }
 function TPath.CheckAvailable(Parameters: TList): Boolean;
 var
   Calc: TCalcParse;
@@ -184,8 +188,8 @@ begin
       begin
         Calc.Destroy;
         Exit;
-      end
-      else Calc.Destroy;
+      end;
+      Calc.Destroy;
     end;
   end;
   for i := 1 to GetParameterChangeCount do
@@ -193,24 +197,24 @@ begin
   Available := True;
   Result := True;
 end;
-{ @end $4E5A60 }
+{ @end $4E3190 }
 
-{ @routine $4E5B90 TPath_FindParameterChange }
+{ @routine $4E329C TPath_FindParameterChange }
 function TPath.FindParameterChange(ParameterIndex: Integer): TParameterDelta;
 var
   i: Integer;
 begin
   for i := 1 to GetParameterChangeCount do
-    if GetParameterChange(i).ParameterIndex = ParameterIndex then
-    begin
-      Result := GetParameterChange(i);
-      Exit;
-    end;
+  begin
+    if GetParameterChange(i).ParameterIndex <> ParameterIndex then Continue;
+    Result := GetParameterChange(i);
+    Exit;
+  end;
   Result := nil;
 end;
-{ @end $4E5B90 }
+{ @end $4E329C }
 
-{ @routine $4E5BEC TPath_LoadFromReader }
+{ @routine $4E32DC TPath_LoadFromReader }
 procedure TPath.LoadFromReader(Reader: TBufEC; Parameters: TList);
 var
   i, ParameterIndex, Count: Integer;
@@ -235,7 +239,7 @@ begin
     begin
       Change := TParameterDelta.Create;
       Change.ParameterIndex := ParameterIndex;
-      Parameter := TParameter(Parameters[ParameterIndex - 1]);
+      Parameter := Parameters[ParameterIndex - 1];
       Change.MinValue := Parameter.MinValue;
       Change.MaxValue := Parameter.MaxValue;
       AddParameterChange(Change);
@@ -251,7 +255,7 @@ begin
     begin
       Change := TParameterDelta.Create;
       Change.ParameterIndex := ParameterIndex;
-      Parameter := TParameter(Parameters[ParameterIndex - 1]);
+      Parameter := Parameters[ParameterIndex - 1];
       Change.MinValue := Parameter.MinValue;
       Change.MaxValue := Parameter.MaxValue;
       AddParameterChange(Change);
@@ -266,9 +270,9 @@ begin
   Event.Music.LoadTextLinesFromReader(Reader);
   IsAutomatic := TrimWideString(Caption.Text) = '';
 end;
-{ @end $4E5BEC }
+{ @end $4E32DC }
 
-{ @routine $4E5E68 TPath_LoadLegacyV9FromReader }
+{ @routine $4E34B8 TPath_LoadLegacyV9FromReader }
 procedure TPath.LoadLegacyV9FromReader(Reader: TBufEC);
 var
   i: Integer;
@@ -295,9 +299,9 @@ begin
   Event.Text.LoadTextLinesFromReader(Reader);
   IsAutomatic := TrimWideString(Caption.Text) = '';
 end;
-{ @end $4E5E68 }
+{ @end $4E34B8 }
 
-{ @routine $4E5FE4 TPath_LoadLegacyV8FromReader }
+{ @routine $4E35E8 TPath_LoadLegacyV8FromReader }
 procedure TPath.LoadLegacyV8FromReader(Reader: TBufEC);
 var
   i: Integer;
@@ -324,9 +328,9 @@ begin
   Event.Text.LoadTextLinesFromReader(Reader);
   IsAutomatic := TrimWideString(Caption.Text) = '';
 end;
-{ @end $4E5FE4 }
+{ @end $4E35E8 }
 
-{ @routine $4E6160 TPath_LoadLegacyV7FromReader }
+{ @routine $4E3718 TPath_LoadLegacyV7FromReader }
 procedure TPath.LoadLegacyV7FromReader(Reader: TBufEC);
 var
   i: Integer;
@@ -353,9 +357,9 @@ begin
   Event.Text.LoadTextLinesFromReader(Reader);
   IsAutomatic := TrimWideString(Caption.Text) = '';
 end;
-{ @end $4E6160 }
+{ @end $4E3718 }
 
-{ @routine $4E62DC TPath_LoadLegacyV6FromReader }
+{ @routine $4E3848 TPath_LoadLegacyV6FromReader }
 procedure TPath.LoadLegacyV6FromReader(Reader: TBufEC);
 var
   i: Integer;
@@ -381,9 +385,9 @@ begin
   Event.Text.LoadTextLinesFromReader(Reader);
   IsAutomatic := TrimWideString(Caption.Text) = '';
 end;
-{ @end $4E62DC }
+{ @end $4E3848 }
 
-{ @routine $4E644C TPath_LoadLegacyV5FromReader }
+{ @routine $4E3970 TPath_LoadLegacyV5FromReader }
 procedure TPath.LoadLegacyV5FromReader(Reader: TBufEC);
 var
   i: Integer;
@@ -408,9 +412,9 @@ begin
   Event.Text.LoadTextLinesFromReader(Reader);
   IsAutomatic := TrimWideString(Caption.Text) = '';
 end;
-{ @end $4E644C }
+{ @end $4E3970 }
 
-{ @routine $4E65AC TPath_LoadLegacyV4FromReader }
+{ @routine $4E3A8C TPath_LoadLegacyV4FromReader }
 procedure TPath.LoadLegacyV4FromReader(Reader: TBufEC);
 var
   i: Integer;
@@ -435,9 +439,9 @@ begin
   Event.Text.LoadTextLinesFromReader(Reader);
   IsAutomatic := TrimWideString(Caption.Text) = '';
 end;
-{ @end $4E65AC }
+{ @end $4E3A8C }
 
-{ @routine $4E670C TPath_LoadLegacyV3FromReader }
+{ @routine $4E3BA8 TPath_LoadLegacyV3FromReader }
 procedure TPath.LoadLegacyV3FromReader(Reader: TBufEC);
 var
   i: Integer;
@@ -460,9 +464,9 @@ begin
   Event.Text.LoadTextLinesFromReader(Reader);
   IsAutomatic := TrimWideString(Caption.Text) = '';
 end;
-{ @end $4E670C }
+{ @end $4E3BA8 }
 
-{ @routine $4E6850 TPath_LoadLegacyV2FromReader }
+{ @routine $4E3CB0 TPath_LoadLegacyV2FromReader }
 procedure TPath.LoadLegacyV2FromReader(Reader: TBufEC);
 var
   i: Integer;
@@ -485,9 +489,9 @@ begin
   Event.Text.LoadTextLinesFromReader(Reader);
   IsAutomatic := TrimWideString(Caption.Text) = '';
 end;
-{ @end $4E6850 }
+{ @end $4E3CB0 }
 
-{ @routine $4E6994 TPath_LoadLegacyV1FromReader }
+{ @routine $4E3DB8 TPath_LoadLegacyV1FromReader }
 procedure TPath.LoadLegacyV1FromReader(Reader: TBufEC);
 var
   i: Integer;
@@ -509,9 +513,9 @@ begin
   Event.Text.LoadTextLinesFromReader(Reader);
   IsAutomatic := TrimWideString(Caption.Text) = '';
 end;
-{ @end $4E6994 }
+{ @end $4E3DB8 }
 
-{ @routine $4E6AC8 TPath_LoadLegacyV0FromReader }
+{ @routine $4E3EB8 TPath_LoadLegacyV0FromReader }
 procedure TPath.LoadLegacyV0FromReader(Reader: TBufEC);
 var
   i: Integer;
@@ -532,6 +536,6 @@ begin
   Event.Text.LoadTextLinesFromReader(Reader);
   IsAutomatic := TrimWideString(Caption.Text) = '';
 end;
-{ @end $4E6AC8 }
+{ @end $4E3EB8 }
 
 end.

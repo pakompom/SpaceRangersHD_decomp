@@ -1,5 +1,4 @@
 unit aKling;
-// Unit bracket (inferred): .text 0x005E8168..0x005EFCA8; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -14,85 +13,85 @@ type
     ActiveProgramId: TProgramIndex; // @offset 0x4D8
     AuraEffectShownThisTurn: Boolean; // @offset 0x4D9
 
-    procedure SaveToBuffer(Buffer: TBufEC); override; // @addr $005EA15C @slot $00
-    procedure LoadFromBuffer(Buffer: TBufEC; Galaxy: TGalaxy); override; // @addr $005EA1BC @slot $04
-    procedure ResolveLoadedReferences(Galaxy: TGalaxy); override; // @addr $005EA238 @slot $08
-    procedure AssignWeaponTargetsInStar; override; // @addr $005EEBD4 @slot $20
-    procedure RepairBrokenEquipmentAtLocation; override; // @addr $005EE51C @slot $60
-    procedure BuildReachablePlanetQueue; override; // @addr $005EC094 @slot $64
-    procedure SelectEnemyShipInStar; override; // @addr $005EF408 @slot $6C
-    procedure EngageEnemyShip; override; // @addr $005EF630 @slot $70
-    function RelationToRanger(Ranger: Pointer): Byte; override; // @addr $005EEADC @slot $74
-    procedure ChangeRelationToRanger(Ranger: Pointer; Amount: Integer); override; // @addr $005EEB04 @slot $78
-    procedure ReactToAttack(Attacker: TShip); override; // @addr $005EEB18 @slot $7C
-    function RelationToNonRanger(Ship: TShip): Byte; override; // @addr $005EEA78 @slot $80
-    function RecomputeFearState: Boolean; override; // @addr $005EEB6C @slot $84
-    function AcceptsRansomDemandFrom(Ship: TShip): Boolean; override; // @addr $005EEB80 @slot $88
-    function TrustsAttackRequester(Ship: TShip): Boolean; override; // @addr $005EEB98 @slot $8C
-    function AcceptsAppealFrom(Ship: TShip): Boolean; override; // @addr $005EEBB0 @slot $90
-    procedure UpdateAfterburnerState; override; // @addr $005EF6F4 @slot $9C
-    procedure ProcessCombatDialogue; override; // @addr $005EF758 @slot $A0
-    procedure ReactToExtortionDemand(Ranger: Pointer); override; // @addr $005EF764 @slot $A4
-    function BuildMoneyExtortionResponse(OtherShip: TShip; var Response: WideString; DemandedAmount: Integer): Boolean; override; // @addr $005EF774 @slot $A8
-    function BuildCargoExtortionResponse(OtherShip: TShip; var Response: WideString): Boolean; override; // @addr $005EF790 @slot $AC
-    function BuildTrucePaymentResponse(OtherShip: TShip; var Response: WideString; OfferedAmount: Integer): Boolean; override; // @addr $005EF7AC @slot $B0
-    function BuildAttackRequestResponse(Requester: TShip; var Response: WideString; Target: TShip): Boolean; override; // @addr $005EF7C8 @slot $B4
-    function AcceptPartnershipOffer(OtherShip: TShip; var Response: WideString; PaymentAmount: Integer): Boolean; override; // @addr $005EF7E4 @slot $B8
-    function BuildPartnershipOfferResponse(OtherShip: TShip; var Response: WideString; PaymentAmount: Integer): Boolean; override; // @addr $005EF834 @slot $BC
-    procedure RefreshCurrentStanding; override; // @addr $005EFC48 @slot $C4
-    destructor Destroy; override; // @addr $5E828C
-    function LandOnRandomFriendlyPlanet(OverrideScriptOrder: Boolean): Boolean; // @addr $5EC024
-    function RetreatToReinforcedStar: Boolean; // @addr $5EC180
-    function RetreatIfHullCritical: Boolean; // @addr $5EC358
-    procedure MoveToRandomPatrolPoint; // @addr $5EE370
-    procedure MoveNearKellerMissionHole; // @addr $5EE430
-    procedure SetInventoryDominatorOwner; // @addr $5EE884
-    procedure ImproveStandardEquipment; // @addr $5EE8E0
-    procedure RefreshCombatSkills; // @addr $5EF884
+    procedure SaveToBuffer(Buffer: TBufEC); override; // @addr $5B2F88 @slot $00
+    procedure LoadFromBuffer(Buffer: TBufEC; Galaxy: TGalaxy); override; // @addr $5B2FD4 @slot $04
+    procedure ResolveLoadedReferences(Galaxy: TGalaxy); override; // @addr $5B3030 @slot $08
+    procedure AssignWeaponTargetsInStar; override; // @addr $5B7284 @slot $20
+    procedure RepairBrokenEquipmentAtLocation; override; // @addr $5B6D94 @slot $60
+    procedure BuildReachablePlanetQueue; override; // @addr $5B4CD8 @slot $64
+    procedure SelectEnemyShipInStar; override; // @addr $5B7980 @slot $6C
+    procedure EngageEnemyShip; override; // @addr $5B7B38 @slot $70
+    function RelationToRanger(Ranger: Pointer): Byte; override; // @addr $5B721C @slot $74
+    procedure ChangeRelationToRanger(Ranger: Pointer; Amount: Integer); override; // @addr $5B722C @slot $78
+    procedure ReactToAttack(Attacker: TShip); override; // @addr $5B7230 @slot $7C
+    function RelationToNonRanger(Ship: TShip): Byte; override; // @addr $5B71D0 @slot $80
+    function RecomputeFearState: Boolean; override; // @addr $5B726C @slot $84
+    function AcceptsRansomDemandFrom(Ship: TShip): Boolean; override; // @addr $5B7270 @slot $88
+    function TrustsAttackRequester(Ship: TShip): Boolean; override; // @addr $5B7274 @slot $8C
+    function AcceptsAppealFrom(Ship: TShip): Boolean; override; // @addr $5B7278 @slot $90
+    procedure UpdateAfterburnerState; override; // @addr $5B7BC8 @slot $9C
+    procedure ProcessCombatDialogue; override; // @addr $5B7C20 @slot $A0
+    procedure ReactToExtortionDemand(Ranger: Pointer); override; // @addr $5B7C24 @slot $A4
+    function BuildMoneyExtortionResponse(OtherShip: TShip; var Response: WideString; DemandedAmount: Integer): Boolean; override; // @addr $5B7C28 @slot $A8
+    function BuildCargoExtortionResponse(OtherShip: TShip; var Response: WideString): Boolean; override; // @addr $5B7C34 @slot $AC
+    function BuildTrucePaymentResponse(OtherShip: TShip; var Response: WideString; OfferedAmount: Integer): Boolean; override; // @addr $5B7C38 @slot $B0
+    function BuildAttackRequestResponse(Requester: TShip; var Response: WideString; Target: TShip): Boolean; override; // @addr $5B7C44 @slot $B4
+    function AcceptPartnershipOffer(OtherShip: TShip; var Response: WideString; PaymentAmount: Integer): Boolean; override; // @addr $5B7C50 @slot $B8
+    function BuildPartnershipOfferResponse(OtherShip: TShip; var Response: WideString; PaymentAmount: Integer): Boolean; override; // @addr $5B7C94 @slot $BC
+    procedure RefreshCurrentStanding; override; // @addr $5B8014 @slot $C4
+    destructor Destroy; override; // @addr $5B13BC
+    function LandOnRandomFriendlyPlanet(OverrideScriptOrder: Boolean): Boolean; // @addr $5B4C8C
+    function RetreatToReinforcedStar: Boolean; // @addr $5B4D74
+    function RetreatIfHullCritical: Boolean; // @addr $5B4F0C
+    procedure MoveToRandomPatrolPoint; // @addr $5B6C0C
+    procedure MoveNearKellerMissionHole; // @addr $5B6CB8
+    procedure SetInventoryDominatorOwner; // @addr $5B7028
+    procedure ImproveStandardEquipment; // @addr $5B7064
+    procedure RefreshCombatSkills; // @addr $5B7CD8
 
-    procedure InitBlazer(Star: TStar); // @addr $5E831C
-    procedure InitKeller(Star: TStar); // @addr $5E87D8
-    procedure InitTerron(Star: TStar); // @addr $5E8C20
-    procedure InitializeDominator(Kind: TKlingType; Planet: TPlanet; Series: TDominatorSeries); // @addr $5E91DC
-    procedure InitGenerated(Kind: TKlingType; Planet: TPlanet; Series: TDominatorSeries); // @addr 0x5E978C @note "Initializes type/series and location through 0x5E91DC, then builds the generated loadout. Series occupies one four-byte stack slot."
+    procedure InitBlazer(Star: TStar); // @addr $5B1428
+    procedure InitKeller(Star: TStar); // @addr $5B1860
+    procedure InitTerron(Star: TStar); // @addr $5B1C50
+    procedure InitializeDominator(Kind: TKlingType; Planet: TPlanet; Series: TDominatorSeries); // @addr $5B218C
+    procedure InitGenerated(Kind: TKlingType; Planet: TPlanet; Series: TDominatorSeries); // @addr 0x005B2684 @note "Initializes type/series and location through 0x005B218C, then builds the generated loadout. Series occupies one four-byte stack slot."
 
-    function SelectBertorLeader: TShip; // @addr $5EBD14
-    function RelocateBertorWithinConstellation: Boolean; // @addr $5ED070
-    function SpawnEscortShips(Kind: TKlingType; DesiredCount: Integer): Integer; // @addr $5ED2E4
-    procedure CoordinateSeriesInvasions(Series: TDominatorSeries); // @addr $5EDEC0
-    function FindKellerAttackTarget: TStar; // @addr $5EC3B0
-    function FindKellerReinforcementTarget: TStar; // @addr $5EC6FC
-    procedure SelectKellerMission; // @addr $5EC8B4
-    procedure SelectKellerReinforcementMission; // @addr $5ECB34
-    procedure MiniBossNextDayLogic; // @addr 0x5EABD0
-    procedure BlazerNextDayLogic; // @addr 0x5EB140
-    procedure KellerNextDayLogic; // @addr 0x5EB568
-    procedure TerronNextDayLogic; // @addr 0x5EB9F0
-    procedure NextDay; override; // @addr 0x5EA254 @slot 0x18
-    procedure NextDayLogic; override; // @addr 0x5EA50C @slot 0x1C @calls "0x5EA36A 0x5EA38A"
-    function GetGreetingShipCategory: TGreetingShipCategory; override; // @addr $5EE7C8 @slot $30
-    function GetHomeStar: TStar; override; // @addr $5EE5A8 @slot $34
-    function GetStrengthScaledPirateStatus: TPercent; override; // @addr $5EE7F0 @slot $3C
-    function GetDominantCareer: TRangerCareer; override; // @addr 0x5EE7DC @slot 0x38 @note "Always rcWarrior."
-    function GetName: WideString; override; // @addr 0x5EE5C0 @slot 0x24
-    function GetFullName(const Separator: WideString): WideString; override; // @addr 0x5EE5E0 @slot 0x28
+    function SelectBertorLeader: TShip; // @addr $5B4A04
+    function RelocateBertorWithinConstellation: Boolean; // @addr $5B5AA0
+    function SpawnEscortShips(Kind: TKlingType; DesiredCount: Integer): Integer; // @addr $5B5CBC
+    procedure CoordinateSeriesInvasions(Series: TDominatorSeries); // @addr $5B67BC
+    function FindKellerAttackTarget: TStar; // @addr $5B4F54
+    function FindKellerReinforcementTarget: TStar; // @addr $5B5258
+    procedure SelectKellerMission; // @addr $5B53D8
+    procedure SelectKellerReinforcementMission; // @addr $5B55F8
+    procedure MiniBossNextDayLogic; // @addr 0x005B3954
+    procedure BlazerNextDayLogic; // @addr 0x005B3EB4
+    procedure KellerNextDayLogic; // @addr 0x005B42B4
+    procedure TerronNextDayLogic; // @addr 0x005B4700
+    procedure NextDay; override; // @addr 0x005B3038 @slot 0x18
+    procedure NextDayLogic; override; // @addr 0x005B32E0 @slot 0x1C
+    function GetGreetingShipCategory: TGreetingShipCategory; override; // @addr $5B6FD8 @slot $30
+    function GetHomeStar: TStar; override; // @addr $5B6E00 @slot $34
+    function GetStrengthScaledPirateStatus: TPercent; override; // @addr $5B6FE0 @slot $3C
+    function GetDominantCareer: TRangerCareer; override; // @addr 0x005B6FDC @slot 0x38 @note "Always rcWarrior."
+    function GetName: WideString; override; // @addr 0x005B6E04 @slot 0x24
+    function GetFullName(const Separator: WideString): WideString; override; // @addr 0x005B6E18 @slot 0x28
 
-    function IsProgramActive(ProgramId: TProgramIndex): Boolean; // @addr 0x5EE81C @note "Checks the stored active flag and ID; expiration is handled by the daily ship update."
-    function ShouldKamikaze: Boolean; // @addr 0x5EBF40 @note "Requires a live enemy in the same star and KlingType=ktKlig. Existing kamikaze mode bypasses the proximity/strength test."
-    procedure OpenKellerMissionHole; // @addr 0x5ECD28 @note "Advances mission state 2 to 3, creates the type-4 hole and sends Keller through it with generated reinforcements."
-    procedure DetectAttackingPlayer(Attacker: TShip); // @addr $5EF1F4 Marks this series as aware of the player's camouflage and reports a matching active disguise.
-    function HasNearbyBertorAura: Boolean; // @addr 0x5EFB34
+    function IsProgramActive(ProgramId: TProgramIndex): Boolean; // @addr 0x005B6FE8 @note "Checks the stored active flag and ID; expiration is handled by the daily ship update."
+    function ShouldKamikaze: Boolean; // @addr 0x005B4BE8 @note "Requires a live enemy in the same star and KlingType=ktKlig. Existing kamikaze mode bypasses the proximity/strength test."
+    procedure OpenKellerMissionHole; // @addr 0x005B5790 @note "Advances mission state 2 to 3, creates the type-4 hole and sends Keller through it with generated reinforcements."
+    procedure DetectAttackingPlayer(Attacker: TShip); // @addr $5B77C8 Marks this series as aware of the player's camouflage and reports a matching active disguise.
+    function HasNearbyBertorAura: Boolean; // @addr 0x005B7F2C
 
-    function GetDesiredCargoFreeSpace: Integer; override; // @addr 0x5EE804 @slot 0x40
-    procedure RefuelAtLocation; override; // @addr 0x5EE854 @slot 0x48 @note "Fills installed fuel tanks without charging Money."
-    function CalculateSpeed: Integer; override; // @addr 0x5EFAE8 @slot 0x4C @note "Bosses have a minimum calculated speed of 350."
-    function CanQueueReachablePlanet(Planet: TPlanet): Boolean; override; // @addr 0x5EC160 @slot 0x68 @note "AI ownership check only; does not test travel range."
-    function IsPlayerCamouflageEffective(Ship: TShip): Boolean; // @addr 0x5EF330 @note "Can mark the player's camouflage as detected by this Dominator series. Returns false for non-player ships."
+    function GetDesiredCargoFreeSpace: Integer; override; // @addr 0x005B6FE4 @slot 0x40
+    procedure RefuelAtLocation; override; // @addr 0x005B7000 @slot 0x48 @note "Fills installed fuel tanks without charging Money."
+    function CalculateSpeed: Integer; override; // @addr 0x005B7F08 @slot 0x4C @note "Bosses have a minimum calculated speed of 350."
+    function CanQueueReachablePlanet(Planet: TPlanet): Boolean; override; // @addr 0x005B4D6C @slot 0x68 @note "AI ownership check only; does not test travel range."
+    function IsPlayerCamouflageEffective(Ship: TShip): Boolean; // @addr 0x005B78DC @note "Can mark the player's camouflage as detected by this Dominator series. Returns false for non-player ships."
   end;
 
 var
-  DominatorEquipmentSizeIndices: array[TKlingType, 0..1] of Integer = ((1, 1), (1, 3), (2, 4), (3, 4), (3, 5), (4, 5), (1, 1), (4, 5)); // @addr $87B420 Maximum-size index followed by minimum-size index.
-  DominatorWeaponDistributionByTier: array[1..7] of Integer = (1, 1, 2, 2, 3, 3, 4); // @addr $87B460
+  DominatorEquipmentSizeIndices: array[TKlingType, 0..1] of Integer = ((1, 1), (1, 3), (2, 4), (3, 4), (3, 5), (4, 5), (1, 1), (4, 5)); // @addr $80EB14 Maximum-size index followed by minimum-size index.
+  DominatorWeaponDistributionByTier: array[1..7] of Integer = (1, 1, 2, 2, 3, 3, 4); // @addr $80EB54
   DominatorWeaponWeights: array[1..4, TKlingType, t_IndustrialLaser..t_TorpedoTube] of Integer = (
     ((0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 25, 25, 50),
      (0, 0, 0, 0, 0, 0, 0, 0, 0, 30, 5, 30, 5, 25, 5),
@@ -126,7 +125,7 @@ var
      (5, 0, 30, 0, 10, 0, 0, 0, 0, 5, 50, 0, 0, 0, 0),
      (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 25, 25, 50),
      (0, 0, 10, 0, 40, 0, 15, 30, 5, 0, 0, 0, 0, 0, 0))
-  ); // @addr $87B47C
+  ); // @addr $80EB70
   DominatorGenerationTuning: array[1..7, 1..19] of Integer = (
     (65, 1, 3, 1, 3, 1, 3, 1, 3, 1, 5, 1, 2, 5, 25, 5, 20, 0, 10),
     (75, 1, 5, 1, 5, 1, 5, 1, 5, 2, 6, 1, 3, 15, 50, 10, 40, 0, 20),
@@ -135,22 +134,22 @@ var
     (95, 4, 8, 4, 8, 4, 8, 4, 8, 6, 8, 3, 5, 50, 95, 50, 95, 40, 95),
     (95, 6, 8, 6, 8, 6, 8, 6, 8, 7, 8, 4, 5, 75, 95, 75, 95, 70, 95),
     (95, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 5, 5, 95, 95, 95, 95, 95, 95)
-  ); // @addr $87BBFC Control threshold and paired equipment/weapon generation bounds.
+  ); // @addr $80F2F0 Control threshold and paired equipment/weapon generation bounds.
 
 var
-  BlazerShip: TKling; // @addr $88A9F0
-  KellerShip: TKling; // @addr $88A9F4
-  TerronShip: TKling; // @addr $88A9F8
+  BlazerShip: TKling; // @addr $81B7D0
+  KellerShip: TKling; // @addr $81B7D4
+  TerronShip: TKling; // @addr $81B7D8
 var
-  PieceCreatorTargetStarId: Cardinal; // @addr $88A9FC @note "PIECECREATOR target selected during new-game generation and persisted with the galaxy."
+  PieceCreatorTargetStarId: Cardinal; // @addr $81B7DC @note "PIECECREATOR target selected during new-game generation and persisted with the galaxy."
 var
 
-  DominatorSpawnPlanet: TPlanet; // @addr $88AA00
+  DominatorSpawnPlanet: TPlanet; // @addr $81B7E0
 
 implementation
 
-// @unit-initialization $8778C4
-// @unit-finalization $5EFCAC
+// @unit-initialization $8068B0
+// @unit-finalization $5B805C
 
 uses SE_Hole, SysUtils, aAsteroid, aMissile, aScript, Classes, aRanger, aMyFunction, Globals, GlobalsV, EC_Str, Math, EC_Struct, aPlayer;
 
@@ -160,7 +159,7 @@ const
   DominatorZeroSpeedError =
     #$D0#$9A#$D0#$BB#$D0#$B8#$D0#$BD#$D0#$B3#$20#$D0#$B2#$D1#$8B#$D0#$BF#$D1#$83#$D1#$81#$D1#$82#$D0#$B8#$D0#$BB#$D1#$81#$D1#$8F#$20#$D1#$81#$D0#$BE#$20#$D1#$81#$D0#$BA#$D0#$BE#$D1#$80#$D0#$BE#$D1#$81#$D1#$82#$D1#$8C#$D1#$8E#$20#$30;
 
-{ @routine $5E828C TKling_Destroy }
+{ @routine $5B13BC TKling_Destroy }
 destructor TKling.Destroy;
 var I: Integer; Ranger: TRanger;
 begin
@@ -171,9 +170,9 @@ begin
     end;
   inherited;
 end;
-{ @end $5E828C }
+{ @end $5B13BC }
 
-{ @routine $5E831C TKling_InitBlazer }
+{ @routine $5B1428 TKling_InitBlazer }
 procedure TKling.InitBlazer(Star: TStar);
 begin
   TypeId := stKling;
@@ -216,9 +215,9 @@ begin
   RefreshCurrentStanding;
   if Speed = 0 then raise Exception.Create(DominatorZeroSpeedError);
 end;
-{ @end $5E831C }
+{ @end $5B1428 }
 
-{ @routine $5E87D8 TKling_InitKeller }
+{ @routine $5B1860 TKling_InitKeller }
 procedure TKling.InitKeller(Star: TStar);
 begin
   TypeId := stKling;
@@ -264,9 +263,9 @@ begin
   RefreshCurrentStanding;
   if Speed = 0 then raise Exception.Create(DominatorZeroSpeedError);
 end;
-{ @end $5E87D8 }
+{ @end $5B1860 }
 
-{ @routine $5E8C20 TKling_InitTerron }
+{ @routine $5B1C50 TKling_InitTerron }
 procedure TKling.InitTerron(Star: TStar);
 var I: Integer; Planet: TPlanet; Weapon: TWeapon;
 begin
@@ -326,9 +325,9 @@ begin
   RefreshCurrentStanding;
   if Speed = 0 then raise Exception.Create(DominatorZeroSpeedError);
 end;
-{ @end $5E8C20 }
+{ @end $5B1C50 }
 
-{ @routine $5E91DC TKling_InitializeDominator }
+{ @routine $5B218C TKling_InitializeDominator }
 procedure TKling.InitializeDominator(Kind: TKlingType; Planet: TPlanet; Series: TDominatorSeries);
 begin
   TypeId := stKling;
@@ -348,17 +347,17 @@ begin
   if (ModShipNameConfig <> nil) and (ModShipNameConfig.CountBlocks('Dominator') > 0) then
     Name := ModShipNameConfig.GetBlock('Dominator').GetParamValue(
       NextRandomIntRange(0, ModShipNameConfig.GetBlock('Dominator').GetParamCount - 1, RandomState)) +
-      ' ' + '-' + IntToStr(Cardinal(Id) mod 100 + 1) + '-';
+      ' ' + '-' + IntToStr(Id mod 100 + 1) + '-';
   if Length(GetName) = 0 then
     Name := LanguageDataConfig.GetBlock('ShipName').GetBlock('Kling').GetParamValue(
       NextRandomIntRange(0, LanguageDataConfig.GetBlock('ShipName').GetBlock('Kling').GetParamCount - 1, RandomState)) +
-      ' ' + '-' + IntToStr(Cardinal(Id) mod 100 + 1) + '-';
+      ' ' + '-' + IntToStr(Id mod 100 + 1) + '-';
   ActiveProgramAppliedTurn := 0;
   RefreshCombatSkills;
 end;
-{ @end $5E91DC }
+{ @end $5B218C }
 
-{ @routine $5E978C TKling_InitGenerated }
+{ @routine $5B2684 TKling_InitGenerated }
 procedure TKling.InitGenerated(Kind: TKlingType; Planet: TPlanet; Series: TDominatorSeries);
 var
   ControlPercent, MinimumControl, MiddleControl, Tier, MaximumControl: Integer;
@@ -367,25 +366,25 @@ var
   Equipment: TEquipment;
   WeaponType: TItemType;
   Chosen, Accepted: Boolean;
-  // @nested $5E9514 RandomInteger
-  function RandomInteger(BoundA, BoundB: Integer): Integer; // @addr $5E9514
+  // @nested $5B2478 RandomInteger
+  function RandomInteger(BoundA, BoundB: Integer): Integer; // @addr $5B2478
   begin
     Result := NextRandomIntRange(BoundA, BoundB, RandomState);
   end;
-  // @nested $5E9544 RandomEquipmentSize
-  function RandomEquipmentSize(BaseSize, MinimumSizeIndex, MaximumSizeIndex: Integer): Integer; // @addr $5E9544
+  // @nested $5B2490 RandomEquipmentSize
+  function RandomEquipmentSize(BaseSize, MinimumSizeIndex, MaximumSizeIndex: Integer): Integer; // @addr $5B2490
   begin
     Result := RandomInteger(Round(BaseSize * EquipmentSizeFactors[MinimumSizeIndex] * 0.9),
       Round(BaseSize * EquipmentSizeFactors[MaximumSizeIndex]));
   end;
-  // @nested $5E95A8 SizeForKind
-  function SizeForKind(BaseSize: Integer): Integer; // @addr $5E95A8
+  // @nested $5B24F0 SizeForKind
+  function SizeForKind(BaseSize: Integer): Integer; // @addr $5B24F0
   begin
     Result := RandomEquipmentSize(BaseSize, DominatorEquipmentSizeIndices[KlingType, 1],
       DominatorEquipmentSizeIndices[KlingType, 0]);
   end;
-  // @nested $5E95F0 RandomTuning
-  function RandomTuning(MinimumColumn, MaximumColumn: Integer): Integer; // @addr $5E95F0
+  // @nested $5B2520 RandomTuning
+  function RandomTuning(MinimumColumn, MaximumColumn: Integer): Integer; // @addr $5B2520
   var A, B: Integer;
   begin
     A := Round(RemapClamped(ControlPercent, MinimumControl, MiddleControl,
@@ -395,8 +394,8 @@ var
     A := Min(A, B);
     Result := RandomInteger(A, B);
   end;
-  // @nested $5E970C InterpolatedTuning
-  function InterpolatedTuning(MinimumColumn, MaximumColumn: Integer): Integer; // @addr $5E970C
+  // @nested $5B2614 InterpolatedTuning
+  function InterpolatedTuning(MinimumColumn, MaximumColumn: Integer): Integer; // @addr $5B2614
   begin
     Result := Round(RemapClamped(ControlPercent, MinimumControl, MaximumControl,
       DominatorGenerationTuning[Tier, MaximumColumn], DominatorGenerationTuning[Tier, MinimumColumn]));
@@ -406,11 +405,11 @@ begin
   InitializeDominator(Kind, Planet, Series);
   ControlPercent := Galaxy.GetFactionControlPercent(sfDominators);
   Rating := Round(125 * Galaxy.GetEffectiveDifficultyLevel + RemapClamped(Galaxy.CurrentTurn, GalaxyWarmupTurns, 22200, 0, 3000));
-  WarRating := -150 * Galaxy.WarDeltaWin[1];
+  WarRating := -150 * Galaxy.WarDeltaWin[sfDominators];
   DistanceRating := 0;
   for I := 0 to Galaxy.Stars.Count - 1 do
-    if (CurrentStar.StarDistances[I].Star.ControlFaction <> sfDominators) or
-      (CurrentStar.StarDistances[I].Star.Status.CustomFaction <> '') then begin
+    if (TStar(CurrentStar.StarDistances[I].Star).ControlFaction <> sfDominators) or
+      (TStar(CurrentStar.StarDistances[I].Star).Status.CustomFaction <> '') then begin
       DistanceRating := 40 * I;
       Break;
     end;
@@ -505,9 +504,9 @@ begin
   RefreshDerivedStats(True);
   RefreshCurrentStanding;
 end;
-{ @end $5E978C }
+{ @end $5B2684 }
 
-{ @routine $5EA15C TKling_SaveToBuffer }
+{ @routine $5B2F88 TKling_SaveToBuffer }
 procedure TKling.SaveToBuffer(Buffer: TBufEC);
 begin
   inherited;
@@ -516,9 +515,9 @@ begin
   Buffer.AddIntegerValue(ActiveProgramAppliedTurn);
   Buffer.AddAnsiChar(AnsiChar(ActiveProgramId));
 end;
-{ @end $5EA15C }
+{ @end $5B2F88 }
 
-{ @routine $5EA1BC TKling_LoadFromBuffer }
+{ @routine $5B2FD4 TKling_LoadFromBuffer }
 procedure TKling.LoadFromBuffer(Buffer: TBufEC; Galaxy: TGalaxy);
 begin
   inherited;
@@ -528,14 +527,14 @@ begin
   ActiveProgramId := TProgramIndex(Buffer.GetByte);
   if LoadedSaveVersion <= 147 then ClearRecentlyDroppedItems;
 end;
-{ @end $5EA1BC }
+{ @end $5B2FD4 }
 
-{ @routine $5EA238 TKling_ResolveLoadedReferences }
+{ @routine $5B3030 TKling_ResolveLoadedReferences }
 procedure TKling.ResolveLoadedReferences(Galaxy: TGalaxy);
 begin inherited; end;
-{ @end $5EA238 }
+{ @end $5B3030 }
 
-{ @routine $5EA254 TKling_NextDay }
+{ @routine $5B3038 TKling_NextDay }
 procedure TKling.NextDay;
 begin
   try
@@ -560,9 +559,9 @@ begin
     end;
   end;
 end;
-{ @end $5EA254 }
+{ @end $5B3038 }
 
-{ @routine $5EA50C TKling_NextDayLogic }
+{ @routine $5B32E0 TKling_NextDayLogic }
 procedure TKling.NextDayLogic;
 var Stage: Integer; Ship: TShip;
 
@@ -629,9 +628,9 @@ begin
     end;
   end;
 end;
-{ @end $5EA50C }
+{ @end $5B32E0 }
 
-{ @routine $5EABD0 TKling_MiniBossNextDayLogic }
+{ @routine $5B3954 TKling_MiniBossNextDayLogic }
 procedure TKling.MiniBossNextDayLogic;
 var Stage: Integer;
 begin
@@ -657,23 +656,21 @@ begin
       end else begin
         Stage := 3;
         if (OrderAbsolute and (OrderTarget is TShip)) or ((OrderTarget is TStar) and (EstimateOrderTravelTurns < 3)) then Exit;
-        begin
-          Stage := 4;
-          SelectEnemyShipInStar;
-          EngageEnemyShip;
-          if (Order = soNone) and HasHullDamageOrBrokenEquippedItems then LandOnRandomFriendlyPlanet(False);
-          if (Order = soNone) and (CurrentStar.Id = Galaxy.KellerResearchTargetStarId) and (KellerShip <> nil) and
-            (NextRandomIntRange(0, 99, RandomState) < 20) then LandOnRandomFriendlyPlanet(False);
-          if (Order = soNone) and (KellerShip <> nil) and (CurrentStar = KellerShip.CurrentStar) and KellerShip.InNormalSpace and
-            (NextRandomIntRange(0, 99, RandomState) < 20) then OrderMove(KellerShip.Position, False);
-          Stage := 5;
-          if (Order in [soNone..soMove]) and ((CurrentStar.Id <> Galaxy.KellerResearchTargetStarId) or (KellerShip = nil)) then
-            if (Galaxy.CurrentTurn + Integer(Seed)) mod (200 - 20 * Round(Galaxy.GetEffectiveDifficultyLevel / 8)) = 0 then RelocateBertorWithinConstellation;
-          if Order = soNone then MoveToRandomPatrolPoint;
-          Stage := 6;
-          if Order <> soJump then
-            if SpawnEscortShips(ktKlig, 5) > 0 then OrderNone(False);
-        end;
+        Stage := 4;
+        SelectEnemyShipInStar;
+        EngageEnemyShip;
+        if (Order = soNone) and HasHullDamageOrBrokenEquippedItems then LandOnRandomFriendlyPlanet(False);
+        if (Order = soNone) and (CurrentStar.Id = Galaxy.KellerResearchTargetStarId) and (KellerShip <> nil) and
+          (NextRandomIntRange(0, 99, RandomState) < 20) then LandOnRandomFriendlyPlanet(False);
+        if (Order = soNone) and (KellerShip <> nil) and (CurrentStar = KellerShip.CurrentStar) and KellerShip.InNormalSpace and
+          (NextRandomIntRange(0, 99, RandomState) < 20) then OrderMove(KellerShip.Position, False);
+        Stage := 5;
+        if (Order in [soNone..soMove]) and ((CurrentStar.Id <> Galaxy.KellerResearchTargetStarId) or (KellerShip = nil)) then
+          if (Galaxy.CurrentTurn + Integer(Seed)) mod (200 - 20 * Round(Galaxy.GetEffectiveDifficultyLevel / 8)) = 0 then RelocateBertorWithinConstellation;
+        if Order = soNone then MoveToRandomPatrolPoint;
+        Stage := 6;
+        if Order <> soJump then
+          if SpawnEscortShips(ktKlig, 5) > 0 then OrderNone(False);
       end;
     end;
   except
@@ -683,9 +680,9 @@ begin
     end;
   end;
 end;
-{ @end $5EABD0 }
+{ @end $5B3954 }
 
-{ @routine $5EB140 TKling_BlazerNextDayLogic }
+{ @routine $5B3EB4 TKling_BlazerNextDayLogic }
 procedure TKling.BlazerNextDayLogic;
 var Stage: Integer;
 begin
@@ -707,7 +704,7 @@ begin
       Stage := 3;
       if Galaxy.BlazerLandingPlanetId > 0 then begin
         Stage := 4;
-        OrderLanding(Galaxy.IdToPlanet(Galaxy.BlazerLandingPlanetId), False);
+        OrderLanding(TPlanet(Galaxy.IdToPlanet(Galaxy.BlazerLandingPlanetId)), False);
       end else begin
         Stage := 5;
         CoordinateSeriesInvasions(dsBlazer);
@@ -733,9 +730,9 @@ begin
     end;
   end;
 end;
-{ @end $5EB140 }
+{ @end $5B3EB4 }
 
-{ @routine $5EB568 TKling_KellerNextDayLogic }
+{ @routine $5B42B4 TKling_KellerNextDayLogic }
 procedure TKling.KellerNextDayLogic;
 var IntervalBonus: Integer; Hole: THole; Stage: Integer;
 begin
@@ -776,9 +773,9 @@ begin
     end;
   end;
 end;
-{ @end $5EB568 }
+{ @end $5B42B4 }
 
-{ @routine $5EB9F0 TKling_TerronNextDayLogic }
+{ @routine $5B4700 TKling_TerronNextDayLogic }
 procedure TKling.TerronNextDayLogic;
 var Stage: Integer;
 begin
@@ -805,9 +802,9 @@ begin
     end;
   end;
 end;
-{ @end $5EB9F0 }
+{ @end $5B4700 }
 
-{ @routine $5EBD14 TKling_SelectBertorLeader }
+{ @routine $5B4A04 TKling_SelectBertorLeader }
 function TKling.SelectBertorLeader: TShip;
 var Ship: TShip; I: Integer; Count: Cardinal; PlayerIsBertor: Boolean;
 begin
@@ -818,12 +815,11 @@ begin
   if PlayerIsBertor then begin Result := GetPlayer; Inc(Count); end;
   for I := 0 to CurrentStar.Ships.Count - 1 do begin
     Ship := CurrentStar.Ships[I];
-    if Ship.InNormalSpace and (Ship is TKling) and ((Ship as TKling).KlingType in [ktBertor]) and
-      ((Ship as TKling).DominatorSeries = DominatorSeries) then begin
-      if Ship = PartnerShip then begin Result := Ship; Exit; end;
-      if Count = 0 then Result := Ship else Result := nil;
-      Inc(Count);
-    end;
+    if not (Ship.InNormalSpace and (Ship is TKling) and ((Ship as TKling).KlingType in [ktBertor]) and
+      ((Ship as TKling).DominatorSeries = DominatorSeries)) then Continue;
+    if Ship = PartnerShip then begin Result := Ship; Exit; end;
+    if Count = 0 then Result := Ship else Result := nil;
+    Inc(Count);
   end;
   if Count > 1 then begin
     Count := (Seed + CurrentStar.GenerationSeed) mod Count;
@@ -833,17 +829,16 @@ begin
     end;
     for I := 0 to CurrentStar.Ships.Count - 1 do begin
       Ship := CurrentStar.Ships[I];
-      if Ship.InNormalSpace and (Ship is TKling) and ((Ship as TKling).KlingType in [ktBertor]) and
-        ((Ship as TKling).DominatorSeries = DominatorSeries) then begin
-        if Count = 0 then begin Result := Ship; Exit; end;
-        Dec(Count);
-      end;
+      if not (Ship.InNormalSpace and (Ship is TKling) and ((Ship as TKling).KlingType in [ktBertor]) and
+        ((Ship as TKling).DominatorSeries = DominatorSeries)) then Continue;
+      if Count = 0 then begin Result := Ship; Exit; end;
+      Dec(Count);
     end;
   end;
 end;
-{ @end $5EBD14 }
+{ @end $5B4A04 }
 
-{ @routine $5EBF40 TKling_ShouldKamikaze }
+{ @routine $5B4BE8 TKling_ShouldKamikaze }
 function TKling.ShouldKamikaze: Boolean;
 begin
   Result := False;
@@ -860,9 +855,9 @@ begin
   if PointDistance(Position, EnemyShip.Position) > Speed * 1.5 then Exit;
   if ChanceToWin(EnemyShip) <= 0.2 then Result := True;
 end;
-{ @end $5EBF40 }
+{ @end $5B4BE8 }
 
-{ @routine $5EC024 TKling_LandOnRandomFriendlyPlanet }
+{ @routine $5B4C8C TKling_LandOnRandomFriendlyPlanet }
 function TKling.LandOnRandomFriendlyPlanet(OverrideScriptOrder: Boolean): Boolean;
 begin
   BuildReachablePlanetQueue;
@@ -871,30 +866,31 @@ begin
     Result := True;
   end else Result := False;
 end;
-{ @end $5EC024 }
+{ @end $5B4C8C }
 
-{ @routine $5EC094 TKling_BuildReachablePlanetQueue }
+{ @routine $5B4CD8 TKling_BuildReachablePlanetQueue }
 procedure TKling.BuildReachablePlanetQueue;
 var I: Integer; Planet: TPlanet;
 begin
   ClearPlanetQueue;
   PlanetQueue := TList.Create;
-  if (Speed <> 0) and (CurrentStar.Status.CustomFaction = '') then
+  if (Speed <> 0) then
+    if (CurrentStar.Status.CustomFaction = '') then
     for I := 0 to CurrentStar.Planets.Count - 1 do begin
       Planet := CurrentStar.Planets[I];
       if (Planet.OwnerId = oiDominator) or ((Planet.CurrentStar.Id = Galaxy.KellerResearchTargetStarId) and (Planet.OwnerId <> oiUninhabited) and (KellerShip <> nil)) then PlanetQueue.Add(Planet);
     end;
 end;
-{ @end $5EC094 }
+{ @end $5B4CD8 }
 
-{ @routine $5EC160 TKling_CanQueueReachablePlanet }
+{ @routine $5B4D6C TKling_CanQueueReachablePlanet }
 function TKling.CanQueueReachablePlanet(Planet: TPlanet): Boolean;
 begin
   Result := Planet.OwnerId = oiDominator;
 end;
-{ @end $5EC160 }
+{ @end $5B4D6C }
 
-{ @routine $5EC180 TKling_RetreatToReinforcedStar }
+{ @routine $5B4D74 TKling_RetreatToReinforcedStar }
 function TKling.RetreatToReinforcedStar: Boolean;
 const DominatorShipMask = [stKling];
 var I: Integer; Star: TStar; Stars: TList;
@@ -920,9 +916,9 @@ begin
   end;
   Stars.Free;
 end;
-{ @end $5EC180 }
+{ @end $5B4D74 }
 
-{ @routine $5EC358 TKling_RetreatIfHullCritical }
+{ @routine $5B4F0C TKling_RetreatIfHullCritical }
 function TKling.RetreatIfHullCritical: Boolean;
 begin
   Result := False;
@@ -931,9 +927,9 @@ begin
     if (Order <> soJump) and not RetreatToReinforcedStar then Result := False;
   end;
 end;
-{ @end $5EC358 }
+{ @end $5B4F0C }
 
-{ @routine $5EC3B0 TKling_FindKellerAttackTarget }
+{ @routine $5B4F54 TKling_FindKellerAttackTarget }
 function TKling.FindKellerAttackTarget: TStar;
 const CoalitionShipMask = [stRanger..stTranclucator];
 var I, J, Score, BestScore, Index: Integer; BestStar, Star, Neighbor: TStar;
@@ -943,29 +939,30 @@ begin
   Index := SeededRandomIntRange(0, Galaxy.Stars.Count - 1, Cardinal(Galaxy.CurrentTurn) + Galaxy.GenerationSeed);
   for I := 0 to Galaxy.Stars.Count - 1 do begin
     IncrementWrapped(Index, 0, Galaxy.Stars.Count - 1);
-    Star := TObject(GetPlayer.CurrentStar.StarDistances[Index].Star) as TStar;
-    if (Star.Constellation.Id <> 20) and ((BlazerShip = nil) or (BlazerShip.CurrentStar <> Star)) and
-      ((TerronShip = nil) or (TerronShip.CurrentStar <> Star)) and ((Star.ControlFaction <> sfDominators) or (Star.Battle <> 0)) then
-      if (Galaxy.CurrentTurn > GalaxyWarmupTurns) or (PointDistanceSquared(Star.Position, GetPlayer.CurrentStar.Position) >= Sqr((1 - Galaxy.CurrentTurn / GalaxyWarmupTurns) * 70 + 35)) then
-        if ((Star.Battle = 0) or (Star.DominatorSeries <> dsKeller) or (Star.ShipTypeCounts[stKling] <= 6)) and not IsStarProtectedByScript(Star) then begin
-          Score := 0;
-          for J := 1 to Galaxy.Stars.Count - 1 do begin
-            Neighbor := TObject(Star.StarDistances[J].Star) as TStar;
-            if (Neighbor.ControlFaction = sfCoalition) and (Neighbor.Status.CustomFaction = '') then Inc(Score, Star.StarDistances[J].Distance)
-            else if Neighbor.Battle <> 0 then Inc(Score, 2 * Star.StarDistances[J].Distance);
-          end;
-          if (Star.Battle <> 0) and (Star.DominatorSeries <> dsKeller) then Score := Round(2 * Score);
-          Score := Round(Score * RemapClamped(Star.CountShipsByTypeMask(CoalitionShipMask), 1, 10, 2, 10));
-          Score := Round(Score * NextRandomFloatRange(1, 3, RandomState));
-          if (GetPlayer.HomePlanet.CurrentStar = Star) and (Galaxy.CurrentTurn < Galaxy.InterpolateDifficulty(-1, 1.2, 1, 0.7, 0.5) * 800 + GalaxyWarmupTurns) then Score := MaxInt - 1;
-          if Score < BestScore then begin BestScore := Score; BestStar := Star; end;
+    Star := GetPlayer.CurrentStar.StarDistances[Index].Star as TStar;
+    if (Star.Constellation.Id = 20) or ((BlazerShip <> nil) and (BlazerShip.CurrentStar = Star)) or
+      ((TerronShip <> nil) and (TerronShip.CurrentStar = Star)) or ((Star.ControlFaction = sfDominators) and (Star.Battle = 0)) then Continue;
+    if (Galaxy.CurrentTurn > GalaxyWarmupTurns) or (PointDistanceSquared(Star.Position, GetPlayer.CurrentStar.Position) >= Sqr((1 - Galaxy.CurrentTurn / GalaxyWarmupTurns) * 70 + 35)) then
+      if ((Star.Battle = 0) or (Star.DominatorSeries <> dsKeller) or (Star.ShipTypeCounts[stKling] <= 6)) and not IsStarProtectedByScript(Star) then begin
+        Score := 0;
+        for J := 1 to Galaxy.Stars.Count - 1 do begin
+          Neighbor := Star.StarDistances[J].Star as TStar;
+          if (Neighbor.ControlFaction = sfCoalition) and (Neighbor.Status.CustomFaction = '') then Inc(Score, Star.StarDistances[J].Distance)
+          else if Neighbor.Battle <> 0 then Inc(Score, 2 * Star.StarDistances[J].Distance);
         end;
+        if (Star.Battle <> 0) and (Star.DominatorSeries <> dsKeller) then Score := Round(2 * Score);
+        Score := Round(Score * RemapClamped(Star.CountShipsByTypeMask(CoalitionShipMask), 1, 10, 2, 10));
+        Score := Round(Score * NextRandomFloatRange(1, 3, RandomState));
+        if GetPlayer.HomePlanet.CurrentStar = Star then
+            if Galaxy.CurrentTurn < Galaxy.InterpolateDifficulty(-1, 1.2, 1, 0.7, 0.5) * 800 + GalaxyWarmupTurns then Score := MaxInt - 1;
+        if Score < BestScore then begin BestScore := Score; BestStar := Star; end;
+      end;
   end;
   Result := BestStar;
 end;
-{ @end $5EC3B0 }
+{ @end $5B4F54 }
 
-{ @routine $5EC6FC TKling_FindKellerReinforcementTarget }
+{ @routine $5B5258 TKling_FindKellerReinforcementTarget }
 function TKling.FindKellerReinforcementTarget: TStar;
 var I, J, Score, BestScore, Index: Integer; BestStar, Star: TStar; Ship: TShip;
 begin
@@ -975,63 +972,57 @@ begin
   for I := 0 to Galaxy.Stars.Count - 1 do begin
     IncrementWrapped(Index, 0, Galaxy.Stars.Count - 1);
     Star := Galaxy.Stars[Index];
-    if (Star.Constellation.Id <> 20) and ((BlazerShip = nil) or (BlazerShip.CurrentStar <> Star)) and
-      ((TerronShip = nil) or (TerronShip.CurrentStar <> Star)) and (Star.ControlFaction = sfDominators) and
-      ((Star.DominatorSeries <> dsKeller) or (Star.Status.CustomFaction <> '')) and not IsStarProtectedByScript(Star) then begin
-      Score := 0;
-      for J := 0 to Star.Ships.Count - 1 do begin
-        Ship := Star.Ships[J];
-        if not Ship.InHyperspace and (Ship is TKling) then
-          if (Ship as TKling).DominatorSeries = dsKeller then Dec(Score) else Inc(Score);
-      end;
-      if (Score >= 0) and (Score < BestScore) then begin BestScore := Score; BestStar := Star; end;
+    if (Star.Constellation.Id = 20) or ((BlazerShip <> nil) and (BlazerShip.CurrentStar = Star)) or
+      ((TerronShip <> nil) and (TerronShip.CurrentStar = Star)) or (Star.ControlFaction <> sfDominators) or
+      ((Star.DominatorSeries = dsKeller) and (Star.Status.CustomFaction = '')) or IsStarProtectedByScript(Star) then Continue;
+    Score := 0;
+    for J := 0 to Star.Ships.Count - 1 do begin
+      Ship := Star.Ships[J];
+      if not Ship.InHyperspace and (Ship is TKling) then
+        if (Ship as TKling).DominatorSeries = dsKeller then Dec(Score) else Inc(Score);
     end;
+    if (Score >= 0) and (Score < BestScore) then begin BestScore := Score; BestStar := Star; end;
   end;
   Result := BestStar;
 end;
-{ @end $5EC6FC }
+{ @end $5B5258 }
 
-{ @routine $5EC8B4 TKling_SelectKellerMission }
+{ @routine $5B53D8 TKling_SelectKellerMission }
 procedure TKling.SelectKellerMission;
 var Text: WideString;
 begin
-  if (Galaxy.KellerMissionState = 0) and (Galaxy.KellerLeaveTurn = 0) then
-    if (Galaxy.CurrentTurn mod (NextRandomIntRange(60, 80, RandomState) + Galaxy.ScaleIntByTechLevel(20, 0)) = 0) or
-      (Galaxy.CurrentTurn mod 230 = 0) or
-      ((Galaxy.CurrentTurn mod NextRandomIntRange(5, 10, RandomState) = 0) and (Galaxy.CountFactionStars(sfDominators) < 2)) or
-      (Galaxy.KellerResearchTargetStarId <> 0) then begin
-      if Galaxy.KellerResearchTargetStarId = 0 then Galaxy.KellerTargetStar := FindKellerAttackTarget
-      else Galaxy.KellerTargetStar := Galaxy.IdToStar(Galaxy.KellerResearchTargetStarId);
-      if Galaxy.KellerTargetStar <> nil then begin
-        Galaxy.KellerMissionState := 1;
-        if (GetPlayer <> nil) and (GetPlayer.CountActiveArtefacts(t_ArtefactAnalyzer) > 0) then begin
-          Text := FormatText1(LocalizedColorText('Artefacts.ArtAnalyzer.KellerHole'), TextHighlightColorTag, '<Star>', Galaxy.KellerTargetStar.Name);
-          if Text <> '' then AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn, Text, '');
-        end;
-      end;
-    end;
+  if (Galaxy.KellerMissionState <> 0) or (Galaxy.KellerLeaveTurn <> 0) then Exit;
+  if not ((Galaxy.CurrentTurn mod (NextRandomIntRange(60, 80, RandomState) + Galaxy.ScaleIntByTechLevel(20, 0)) = 0) or
+    (Galaxy.CurrentTurn mod 230 = 0) or
+    ((Galaxy.CurrentTurn mod NextRandomIntRange(5, 10, RandomState) = 0) and (Galaxy.CountFactionStars(sfDominators) < 2)) or
+    (Galaxy.KellerResearchTargetStarId <> 0)) then Exit;
+  if Galaxy.KellerResearchTargetStarId = 0 then Galaxy.KellerTargetStar := FindKellerAttackTarget
+  else Galaxy.KellerTargetStar := Galaxy.IdToStar(Galaxy.KellerResearchTargetStarId);
+  if Galaxy.KellerTargetStar = nil then Exit;
+  Galaxy.KellerMissionState := 1;
+  if (GetPlayer = nil) or (GetPlayer.CountActiveArtefacts(t_ArtefactAnalyzer) <= 0) then Exit;
+  Text := FormatText1(LocalizedColorText('Artefacts.ArtAnalyzer.KellerHole'), TextHighlightColorTag, '<Star>', Galaxy.KellerTargetStar.Name);
+  if Text <> '' then AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn, Text, '');
 end;
-{ @end $5EC8B4 }
+{ @end $5B53D8 }
 
-{ @routine $5ECB34 TKling_SelectKellerReinforcementMission }
+{ @routine $5B55F8 TKling_SelectKellerReinforcementMission }
 procedure TKling.SelectKellerReinforcementMission;
 begin
-  if (Galaxy.KellerMissionState = 0) and (Galaxy.KellerResearchTargetStarId = 0) and (Galaxy.KellerLeaveTurn = 0) and
-    (NextRandomIntRange(0, 1000, RandomState) + 1000 <= Galaxy.CurrentTurn) then
-    if NextRandomIntRange(0, 10000, RandomState) <
-      Galaxy.GetFactionControlPercent(sfDominators) * (100 - Galaxy.GetFactionControlPercent(sfDominators)) then
-      if NextRandomIntRange(0, 1000, RandomState) > RemapClamped(Galaxy.GetDominatorSeriesControlShare(dsKeller), 0.7, 1.2, 0, 1000) then begin
+  if (((Galaxy.KellerMissionState = 0) and (Galaxy.KellerResearchTargetStarId = 0) and (Galaxy.KellerLeaveTurn = 0) and
+    (NextRandomIntRange(0, 1000, RandomState) + 1000 <= Galaxy.CurrentTurn)) and (NextRandomIntRange(0, 10000, RandomState) <
+      Galaxy.GetFactionControlPercent(sfDominators) * (100 - Galaxy.GetFactionControlPercent(sfDominators)))) and (NextRandomIntRange(0, 1000, RandomState) > RemapClamped(Galaxy.GetDominatorSeriesControlShare(dsKeller), 0.7, 1.2, 0, 1000)) then begin
         Galaxy.KellerTargetStar := FindKellerReinforcementTarget;
         if Galaxy.KellerTargetStar <> nil then Galaxy.KellerMissionState := 1;
       end;
 end;
-{ @end $5ECB34 }
+{ @end $5B55F8 }
 
-{ @routine $5ECD28 TKling_OpenKellerMissionHole }
+{ @routine $5B5790 TKling_OpenKellerMissionHole }
 procedure TKling.OpenKellerMissionHole;
 var Ship: TKling; Hole: THole; Angle, Radius: Single; I, Count, Threshold, RandomMaximum: Integer; Series: TDominatorSeries;
-  // @nested $5ECC94 SpawnReinforcement
-  procedure SpawnReinforcement(OrderData: Integer); // @addr $5ECC94
+  // @nested $5B5718 SpawnReinforcement
+  procedure SpawnReinforcement(OrderData: Integer); // @addr $5B5718
   begin
     Ship := TObject(DominatorSpawnPlanet.SpawnWeightedDominatorShip) as TKling;
     Ship.Order := soJumpHole;
@@ -1083,9 +1074,9 @@ begin
     Hole.Star1.DominatorSeries := Series;
   end;
 end;
-{ @end $5ECD28 }
+{ @end $5B5790 }
 
-{ @routine $5ED070 TKling_RelocateBertorWithinConstellation }
+{ @routine $5B5AA0 TKling_RelocateBertorWithinConstellation }
 function TKling.RelocateBertorWithinConstellation: Boolean;
 var I: Integer; Star: TStar; Stars: TList; Constellation: TConstellation; EscortCount: Integer; Ship: TShip;
 begin
@@ -1100,7 +1091,9 @@ begin
       if not IsPlayerCamouflageEffective(Ship) then Exit;
     end else begin
       if TKling(Ship).DominatorSeries <> DominatorSeries then Exit;
-      if (TKling(Ship).KlingType in [ktEquantor..ktShtip]) and (Ship <> Self) then Inc(EscortCount);
+      if not (TKling(Ship).KlingType in [ktEquantor..ktShtip]) then Continue;
+      if Ship = Self then Continue;
+      Inc(EscortCount);
     end;
   end;
   if EscortCount < 2 then Exit;
@@ -1123,9 +1116,9 @@ begin
   end;
   Stars.Free;
 end;
-{ @end $5ED070 }
+{ @end $5B5AA0 }
 
-{ @routine $5ED2E4 TKling_SpawnEscortShips }
+{ @routine $5B5CBC TKling_SpawnEscortShips }
 function TKling.SpawnEscortShips(Kind: TKlingType; DesiredCount: Integer): Integer;
 var Series: TDominatorSeries; I, EscortCount, SpawnTimer: Integer; Ship: TShip;
 begin
@@ -1159,10 +1152,9 @@ begin
   CurrentStar.DominatorSeries := Series;
   CurrentStar.DaysSinceLastNpcShipSpawn := SpawnTimer;
 end;
-{ @end $5ED2E4 }
+{ @end $5B5CBC }
 
-// Native diagnostic literal pool precedes the invasion helpers. These stored
-// strings contain UTF-8 decoded as Windows-1251, then widened to UTF-16.
+// Diagnostic text contains UTF-8 decoded as Windows-1251, then widened to UTF-16.
 // Numeric escapes preserve the native code points; comments show the decoded Russian.
 var
   DominatorDebugMessages: array[0..6] of WideString = (
@@ -1179,42 +1171,42 @@ var
     // Decoded text: Надо расширять границы
     #1056#1116#1056#176#1056#1169#1056#1109#32#1057#1026#1056#176#1057#1027#1057#8364#1056#1105#1057#1026#1057#1039#1057#8218#1057#1034#32#1056#1110#1057#1026#1056#176#1056#1029#1056#1105#1057#8224#1057#8249,
     ''
-  ); // @addr $87BE10 Unused Terron AI diagnostics; preserves the native UTF-16 mojibake.
+  ); // @addr $80F504 Unused Terron AI diagnostics; preserves the native UTF-16 mojibake.
 
-{ @routine $5EDEC0 TKling_CoordinateSeriesInvasions }
+{ @routine $5B67BC TKling_CoordinateSeriesInvasions }
 procedure TKling.CoordinateSeriesInvasions(Series: TDominatorSeries);
 var TargetStar: TStar; TargetCount, NonDominatorCount, OtherSeriesCount, Action: Integer; Origin: TStar;
   NearbyRange, OriginCount: Integer; TargetStrength, NonDominatorStrength, OtherSeriesStrength, OriginStrength: Extended;
-  SendCount, SendIndex, Sent: Integer; Ship: TShip; ControlPercent: Byte; Chance, MinimumPopulation, I, Attempts, NearbyIndex: Integer;
-  Strength: Extended; BaseChance, ControlThreshold: Integer;
-  // @nested $5ED6CC NonDominatorDistanceIndex
-  function NonDominatorDistanceIndex(Star: TStar): Integer; // @addr $5ED6CC
+  SendCount, SendIndex, Sent: Integer; Ship: TShip; BaseChance: Integer; ControlPercent: Byte; Chance, MinimumPopulation, I, Attempts, NearbyIndex: Integer;
+  Strength: Extended; ControlThreshold: Integer;
+  // @nested $5B6028 NonDominatorDistanceIndex
+  function NonDominatorDistanceIndex(Star: TStar): Integer; // @addr $5B6028
   var I: Integer;
   begin
     Result := 1000;
     for I := 0 to Galaxy.Stars.Count - 1 do
-      if (Star.StarDistances[I].Star.ControlFaction <> sfDominators) and (Star.StarDistances[I].Star.Status.CustomFaction = '') then begin
+      if (TStar(Star.StarDistances[I].Star).ControlFaction <> sfDominators) and (TStar(Star.StarDistances[I].Star).Status.CustomFaction = '') then begin
         Result := I;
         Exit;
       end;
   end;
-  // @nested $5ED744 OtherSeriesDistanceIndex
-  function OtherSeriesDistanceIndex(Star: TStar): Integer; // @addr $5ED744
+  // @nested $5B6088 OtherSeriesDistanceIndex
+  function OtherSeriesDistanceIndex(Star: TStar): Integer; // @addr $5B6088
   var I: Integer; OtherStar: TStar;
   begin
     Result := 1000;
     for I := 0 to Galaxy.Stars.Count - 1 do begin
-      OtherStar := Star.StarDistances[I].Star;
+      OtherStar := TStar(Star.StarDistances[I].Star);
       if (OtherStar.ControlFaction <> sfDominators) or (Series <> OtherStar.DominatorSeries) or (OtherStar.Status.CustomFaction <> '') then begin
         Result := I;
         Exit;
       end;
     end;
   end;
-  // @nested $5ED7F4 ChooseAction
-  procedure ChooseAction; // @addr $5ED7F4
-    // @nested $5ED7C4 TargetIsNotTerron
-    function TargetIsNotTerron: Boolean; // @addr $5ED7C4
+  // @nested $5B6118 ChooseAction
+  procedure ChooseAction; // @addr $5B6118
+    // @nested $5B60F0 TargetIsNotTerron
+    function TargetIsNotTerron: Boolean; // @addr $5B60F0
     begin
       Result := True;
       if (TerronShip <> nil) and (TerronShip.CurrentStar = TargetStar) then Result := False;
@@ -1246,8 +1238,8 @@ var TargetStar: TStar; TargetCount, NonDominatorCount, OtherSeriesCount, Action:
         ((NonDominatorCount < OriginCount) or (NonDominatorStrength < OriginStrength)) then Action := 6;
     end;
   end;
-  // @nested $5EDBC4 SendShips
-  procedure SendShips; // @addr $5EDBC4
+  // @nested $5B64E8 SendShips
+  procedure SendShips; // @addr $5B64E8
   var Text: WideString;
   begin
     if Action = 2 then SendCount := OriginCount div 4
@@ -1259,12 +1251,17 @@ var TargetStar: TStar; TargetCount, NonDominatorCount, OtherSeriesCount, Action:
     while (SendIndex < Origin.Ships.Count) and (Sent <= SendCount) and (SendCount > 0) do begin
       Ship := Origin.Ships[SendIndex];
       Inc(SendIndex);
-      if (Ship is TKling) and ((Ship as TKling).DominatorSeries = Series) and not Ship.OrderAbsolute and
-        not Ship.IsOutsideStarSpace and (Ship <> BlazerShip) and (Ship <> KellerShip) and (Ship <> TerronShip) and
-        ((Ship as TKling).KlingType in [ktEquantor..ktShtip]) and ((Ship as TKling).ActiveProgramAppliedTurn <= 0) then begin
-        Ship.OrderJump(TargetStar, True);
-        Inc(Sent);
-      end;
+      if not (Ship is TKling) then Continue;
+      if (Ship as TKling).DominatorSeries <> Series then Continue;
+      if Ship.OrderAbsolute then Continue;
+      if Ship.IsOutsideStarSpace then Continue;
+      if Ship = BlazerShip then Continue;
+      if Ship = KellerShip then Continue;
+      if Ship = TerronShip then Continue;
+      if not ((Ship as TKling).KlingType in [ktEquantor..ktShtip]) then Continue;
+      if (Ship as TKling).ActiveProgramAppliedTurn > 0 then Continue;
+      Ship.OrderJump(TargetStar, True);
+      Inc(Sent);
     end;
     if (Action = 6) and (Sent > 0) and (TargetStar.ControlFaction <> sfDominators) and (TargetStar.Status.CustomFaction = '') then
       if (GetPlayer <> nil) and (GetPlayer.CountActiveArtefacts(t_ArtefactAnalyzer) > 0) then begin
@@ -1278,7 +1275,7 @@ begin
   BaseChance := Round(Galaxy.ScaleDifficultyExponentially(Galaxy.GetDominatorAggressionLevel, 10, 2));
   ControlThreshold := Round(5 * Galaxy.GetDominatorAggressionLevel / 8) + 80;
   Chance := Round(RemapClamped(ControlPercent, 1, ControlThreshold, BaseChance, 0));
-  Chance := Round(Chance * RemapClamped(Galaxy.WarDeltaWin[1], 0, 10, 1, 0.3));
+  Chance := Round(Chance * RemapClamped(Galaxy.WarDeltaWin[sfDominators], 0, 10, 1, 0.3));
   if Galaxy.CurrentTurn >= 666 then
     if Galaxy.DominatorModLevel = 1 then Chance := 400
     else if Galaxy.DominatorModLevel = 2 then Chance := 600
@@ -1298,38 +1295,41 @@ begin
   while I <= Galaxy.Stars.Count - 1 do begin
     Origin := Galaxy.Stars[I];
     Inc(I);
-    if (Origin.ControlFaction = sfDominators) and (Origin.Battle = 0) and (Origin.DominatorSeries = Series) and (Origin.Status.CustomFaction = '') then
-      if (NextRandomIntRange(1, 1000, Galaxy.RandomState) <= Chance) and
-        (Origin.CountForcesByOwnerGroups(Strength, True, False, True, True) <= 0) and
-        (Origin.CountDominatorForces(Series, False, True, Strength) <= 0) then begin
-        OriginCount := Origin.CountDominatorForces(Series, True, False, OriginStrength);
-        if OriginCount >= MinimumPopulation then begin
-          Action := 0;
-          Attempts := NearbyRange;
-          NearbyIndex := NextRandomIntRange(1, NearbyRange, Galaxy.RandomState);
-          while (Attempts > 0) and (Action = 0) do begin
-            TargetStar := TObject(Origin.StarDistances[NearbyIndex].Star) as TStar;
-            NearbyIndex := IncrementWrapped(NearbyIndex, 1, NearbyRange);
-            Dec(Attempts);
-            if (TargetStar.Constellation.Id <> 20) and (TargetStar <> Origin) and not IsStarProtectedByScript(TargetStar) then
-              if (Galaxy.CurrentTurn > GalaxyWarmupTurns) or ((GetPlayer.CurrentStar <> TargetStar) and
-                (PointDistanceSquared(TargetStar.Position, GetPlayer.CurrentStar.Position) >= Sqr((1 - Galaxy.CurrentTurn / GalaxyWarmupTurns) * 70 + 35))) then
-                if (BlazerShip = nil) or (Galaxy.BlazerLandingPlanetId = 0) or (BlazerShip.CurrentStar <> TargetStar) then begin
-                  TargetCount := TargetStar.CountDominatorForces(Series, False, False, TargetStrength);
-                  OtherSeriesCount := TargetStar.CountDominatorForces(Series, False, True, OtherSeriesStrength);
-                  NonDominatorCount := TargetStar.CountForcesByOwnerGroups(NonDominatorStrength, True, False, True, True);
-                  ChooseAction;
-                  if ((Action <> 6) and (Action <> 5) and (Action <> 3)) or (NextRandomIntRange(1, 60, RandomState) > TargetStar.PlayerPresenceLevel) then
-                    if Action <> 0 then SendShips;
-                end;
-          end;
-        end;
+    if Origin.ControlFaction <> sfDominators then Continue;
+    if Origin.Battle <> 0 then Continue;
+    if Origin.DominatorSeries <> Series then Continue;
+    if Origin.Status.CustomFaction <> '' then Continue;
+    if NextRandomIntRange(1, 1000, Galaxy.RandomState) > Chance then Continue;
+    if Origin.CountForcesByOwnerGroups(Strength, True, False, True, True) > 0 then Continue;
+    if Origin.CountDominatorForces(Series, False, True, Strength) > 0 then Continue;
+    OriginCount := Origin.CountDominatorForces(Series, True, False, OriginStrength);
+    if OriginCount < MinimumPopulation then Continue;
+    Action := 0;
+    Attempts := NearbyRange;
+    NearbyIndex := NextRandomIntRange(1, NearbyRange, Galaxy.RandomState);
+    while (Attempts > 0) and (Action = 0) do begin
+      TargetStar := Origin.StarDistances[NearbyIndex].Star as TStar;
+      NearbyIndex := IncrementWrapped(NearbyIndex, 1, NearbyRange);
+      Dec(Attempts);
+      if TargetStar.Constellation.Id = 20 then Continue;
+      if TargetStar = Origin then Continue;
+      if IsStarProtectedByScript(TargetStar) then Continue;
+      if not ((Galaxy.CurrentTurn > GalaxyWarmupTurns) or ((GetPlayer.CurrentStar <> TargetStar) and
+        (PointDistanceSquared(TargetStar.Position, GetPlayer.CurrentStar.Position) >= Sqr((1 - Galaxy.CurrentTurn / GalaxyWarmupTurns) * 70 + 35)))) then Continue;
+      if (BlazerShip = nil) or (Galaxy.BlazerLandingPlanetId = 0) or (BlazerShip.CurrentStar <> TargetStar) then begin
+        TargetCount := TargetStar.CountDominatorForces(Series, False, False, TargetStrength);
+        OtherSeriesCount := TargetStar.CountDominatorForces(Series, False, True, OtherSeriesStrength);
+        NonDominatorCount := TargetStar.CountForcesByOwnerGroups(NonDominatorStrength, True, False, True, True);
+        ChooseAction;
+        if ((Action <> 6) and (Action <> 5) and (Action <> 3)) or (NextRandomIntRange(1, 60, RandomState) > TargetStar.PlayerPresenceLevel) then
+          if Action <> 0 then SendShips;
       end;
+    end;
   end;
 end;
-{ @end $5EDEC0 }
+{ @end $5B67BC }
 
-{ @routine $5EE370 TKling_MoveToRandomPatrolPoint }
+{ @routine $5B6C0C TKling_MoveToRandomPatrolPoint }
 procedure TKling.MoveToRandomPatrolPoint;
 var Planet: TPlanet; Polar: TPolarPoint;
 begin
@@ -1340,9 +1340,9 @@ begin
     Polar.Radius := CurrentStar.ComputeMapDiameter / 2;
   OrderMove(PolarToPoint(Polar), False);
 end;
-{ @end $5EE370 }
+{ @end $5B6C0C }
 
-{ @routine $5EE430 TKling_MoveNearKellerMissionHole }
+{ @routine $5B6CB8 TKling_MoveNearKellerMissionHole }
 procedure TKling.MoveNearKellerMissionHole;
 var Destination: TPointF; Hole: THole; Angle, Radius: Single;
 begin
@@ -1356,9 +1356,9 @@ begin
     OrderMove(Destination, False);
   end;
 end;
-{ @end $5EE430 }
+{ @end $5B6CB8 }
 
-{ @routine $5EE51C TKling_RepairBrokenEquipmentAtLocation }
+{ @routine $5B6D94 TKling_RepairBrokenEquipmentAtLocation }
 procedure TKling.RepairBrokenEquipmentAtLocation;
 var I: Integer; Equipment: TEquipment;
 begin
@@ -1368,23 +1368,23 @@ begin
     if (Equipment.BrokenFlag <> 0) or (Equipment.ConditionPercent < 10) then Equipment.Repair;
   end;
 end;
-{ @end $5EE51C }
+{ @end $5B6D94 }
 
-{ @routine $5EE5A8 TKling_GetHomeStar }
+{ @routine $5B6E00 TKling_GetHomeStar }
 function TKling.GetHomeStar: TStar;
 begin
   Result := nil;
 end;
-{ @end $5EE5A8 }
+{ @end $5B6E00 }
 
-{ @routine $5EE5C0 TKling_GetName }
+{ @routine $5B6E04 TKling_GetName }
 function TKling.GetName: WideString;
 begin
   Result := Name;
 end;
-{ @end $5EE5C0 }
+{ @end $5B6E04 }
 
-{ @routine $5EE5E0 TKling_GetFullName }
+{ @routine $5B6E18 TKling_GetFullName }
 function TKling.GetFullName(const Separator: WideString): WideString;
 var
   Path, Text: WideString;
@@ -1399,51 +1399,51 @@ begin
   else if KlingType = ktBoss then Result := DominatorShipDefinitions[KlingType].DisplayNames[DominatorSeries]
   else Result := DominatorShipDefinitions[KlingType].DisplayNames[DominatorSeries] + Separator + Name;
 end;
-{ @end $5EE5E0 }
+{ @end $5B6E18 }
 
-{ @routine $5EE7C8 TKling_GetGreetingShipCategory }
+{ @routine $5B6FD8 TKling_GetGreetingShipCategory }
 function TKling.GetGreetingShipCategory: TGreetingShipCategory;
 begin
   Result := gscKling;
 end;
-{ @end $5EE7C8 }
+{ @end $5B6FD8 }
 
-{ @routine $5EE7DC TKling_GetDominantCareer }
+{ @routine $5B6FDC TKling_GetDominantCareer }
 function TKling.GetDominantCareer: TRangerCareer;
 begin
   Result := rcWarrior;
 end;
-{ @end $5EE7DC }
+{ @end $5B6FDC }
 
-{ @routine $5EE7F0 TKling_GetStrengthScaledPirateStatus }
+{ @routine $5B6FE0 TKling_GetStrengthScaledPirateStatus }
 function TKling.GetStrengthScaledPirateStatus: TPercent;
 begin
   Result := 100;
 end;
-{ @end $5EE7F0 }
+{ @end $5B6FE0 }
 
-{ @routine $5EE804 TKling_GetDesiredCargoFreeSpace }
+{ @routine $5B6FE4 TKling_GetDesiredCargoFreeSpace }
 function TKling.GetDesiredCargoFreeSpace: Integer;
 begin
   Result := 0;
 end;
-{ @end $5EE804 }
+{ @end $5B6FE4 }
 
-{ @routine $5EE81C TKling_IsProgramActive }
+{ @routine $5B6FE8 TKling_IsProgramActive }
 function TKling.IsProgramActive(ProgramId: TProgramIndex): Boolean;
 begin
   Result := (ActiveProgramAppliedTurn > 0) and (ProgramId = ActiveProgramId);
 end;
-{ @end $5EE81C }
+{ @end $5B6FE8 }
 
-{ @routine $5EE854 TKling_RefuelAtLocation }
+{ @routine $5B7000 TKling_RefuelAtLocation }
 procedure TKling.RefuelAtLocation;
 begin
   if GetFuelTanks <> nil then GetFuelTanks.Fuel := GetFuelTanks.Capacity;
 end;
-{ @end $5EE854 }
+{ @end $5B7000 }
 
-{ @routine $5EE884 TKling_SetInventoryDominatorOwner }
+{ @routine $5B7028 TKling_SetInventoryDominatorOwner }
 procedure TKling.SetInventoryDominatorOwner;
 var I: Integer; Equipment: TEquipment;
 begin
@@ -1453,9 +1453,9 @@ begin
     Equipment.DominatorSeries := DominatorSeries;
   end;
 end;
-{ @end $5EE884 }
+{ @end $5B7028 }
 
-{ @routine $5EE8E0 TKling_ImproveStandardEquipment }
+{ @routine $5B7064 TKling_ImproveStandardEquipment }
 procedure TKling.ImproveStandardEquipment;
 var I: Integer; Equipment: TEquipment;
 begin
@@ -1471,9 +1471,9 @@ begin
       end;
   end;
 end;
-{ @end $5EE8E0 }
+{ @end $5B7064 }
 
-{ @routine $5EEA78 TKling_RelationToNonRanger }
+{ @routine $5B71D0 TKling_RelationToNonRanger }
 function TKling.RelationToNonRanger(Ship: TShip): Byte;
 begin
   if Ship is TKling then
@@ -1481,50 +1481,50 @@ begin
   else Result := 0;
   if CurrentStanding = ssNeutral then Result := 100;
 end;
-{ @end $5EEA78 }
+{ @end $5B71D0 }
 
-{ @routine $5EEADC TKling_RelationToRanger }
+{ @routine $5B721C TKling_RelationToRanger }
 function TKling.RelationToRanger(Ranger: Pointer): Byte;
 begin
   Result := 0;
   if CurrentStanding = ssNeutral then Result := 100;
 end;
-{ @end $5EEADC }
+{ @end $5B721C }
 
-{ @routine $5EEB04 TKling_ChangeRelationToRanger }
+{ @routine $5B722C TKling_ChangeRelationToRanger }
 procedure TKling.ChangeRelationToRanger(Ranger: Pointer; Amount: Integer);
 begin end;
-{ @end $5EEB04 }
+{ @end $5B722C }
 
-{ @routine $5EEB18 TKling_ReactToAttack }
+{ @routine $5B7230 TKling_ReactToAttack }
 procedure TKling.ReactToAttack(Attacker: TShip);
 begin
   if Attacker.OwnerId <> oiDominator then EnemyShip := Attacker
   else if (Attacker as TKling).DominatorSeries <> DominatorSeries then EnemyShip := Attacker;
 end;
-{ @end $5EEB18 }
+{ @end $5B7230 }
 
-{ @routine $5EEB6C TKling_RecomputeFearState }
+{ @routine $5B726C TKling_RecomputeFearState }
 function TKling.RecomputeFearState: Boolean;
 begin Result := False; end;
-{ @end $5EEB6C }
+{ @end $5B726C }
 
-{ @routine $5EEB80 TKling_AcceptsRansomDemandFrom }
+{ @routine $5B7270 TKling_AcceptsRansomDemandFrom }
 function TKling.AcceptsRansomDemandFrom(Ship: TShip): Boolean;
 begin Result := False; end;
-{ @end $5EEB80 }
+{ @end $5B7270 }
 
-{ @routine $5EEB98 TKling_TrustsAttackRequester }
+{ @routine $5B7274 TKling_TrustsAttackRequester }
 function TKling.TrustsAttackRequester(Ship: TShip): Boolean;
 begin Result := False; end;
-{ @end $5EEB98 }
+{ @end $5B7274 }
 
-{ @routine $5EEBB0 TKling_AcceptsAppealFrom }
+{ @routine $5B7278 TKling_AcceptsAppealFrom }
 function TKling.AcceptsAppealFrom(Ship: TShip): Boolean;
 begin Result := Ship.OwnerId = OwnerId; end;
-{ @end $5EEBB0 }
+{ @end $5B7278 }
 
-{ @routine $5EEBD4 TKling_AssignWeaponTargetsInStar }
+{ @routine $5B7284 TKling_AssignWeaponTargetsInStar }
 procedure TKling.AssignWeaponTargetsInStar;
 var I, J, Assigned: Integer; Ship: TShip; Weapon: TWeapon; Item: TItem; Asteroid: TAsteroid; Distance: Single; Missile: TMissile;
 begin
@@ -1584,7 +1584,7 @@ begin
           end;
       end;
   end;
-  if GetPlayer.CurrentStar = CurrentStar then
+  if CurrentStar = GetPlayer.CurrentStar then
     for I := 0 to CurrentStar.Asteroids.Count - 1 do begin
       Asteroid := CurrentStar.Asteroids[I];
       Distance := PointDistanceSquared(Position, Asteroid.Position);
@@ -1602,37 +1602,37 @@ begin
         end;
     end;
 end;
-{ @end $5EEBD4 }
+{ @end $5B7284 }
 
-{ @routine $5EF1F4 TKling_DetectAttackingPlayer }
+{ @routine $5B77C8 TKling_DetectAttackingPlayer }
 procedure TKling.DetectAttackingPlayer(Attacker: TShip);
 begin
   if (GetPlayer = Attacker) and (Attacker.CurrentStar = CurrentStar) and
-    not TPlayer(Attacker).ChameleonDetected[DominatorSeries] and
+    not Attacker.ChameleonDetected[DominatorSeries] and
     (GetPlayer.ChameleonLogic[DominatorSeries] < 2) and not HasIndependentScriptFaction then
   begin
-    TPlayer(Attacker).ChameleonDetected[DominatorSeries] := True;
-    if TPlayer(Attacker).ChameleonActive and (TPlayer(Attacker).ChameleonSeries = DominatorSeries) then
+    Attacker.ChameleonDetected[DominatorSeries] := True;
+    if Attacker.ChameleonActive and (Attacker.ChameleonSeries = DominatorSeries) then
       AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn,
         LocalizedText('ShipInfo.AddInfo.Chameleon.Detect'), '');
   end;
 end;
-{ @end $5EF1F4 }
+{ @end $5B77C8 }
 
-{ @routine $5EF330 TKling_IsPlayerCamouflageEffective }
+{ @routine $5B78DC TKling_IsPlayerCamouflageEffective }
 function TKling.IsPlayerCamouflageEffective(Ship: TShip): Boolean;
 begin
   Result := False;
   if (GetPlayer <> nil) and (GetPlayer = Ship) and not HasIndependentScriptFaction and not Ship.IsOutsideStarSpace and
-    (not TPlayer(Ship).ChameleonDetected[DominatorSeries] or (GetPlayer.ChameleonLogic[DominatorSeries] >= 2)) then begin
-    if (not TPlayer(Ship).ChameleonActive or (TPlayer(Ship).ChameleonSeries <> DominatorSeries)) and (GetPlayer.ChameleonLogic[DominatorSeries] = 0) then
-      TPlayer(Ship).ChameleonDetected[DominatorSeries] := True
+    (not Ship.ChameleonDetected[DominatorSeries] or (GetPlayer.ChameleonLogic[DominatorSeries] >= 2)) then begin
+    if (not Ship.ChameleonActive or (Ship.ChameleonSeries <> DominatorSeries)) and (GetPlayer.ChameleonLogic[DominatorSeries] = 0) then
+      Ship.ChameleonDetected[DominatorSeries] := True
     else Result := True;
   end;
 end;
-{ @end $5EF330 }
+{ @end $5B78DC }
 
-{ @routine $5EF408 TKling_SelectEnemyShipInStar }
+{ @routine $5B7980 TKling_SelectEnemyShipInStar }
 procedure TKling.SelectEnemyShipInStar;
 var I: Integer; Ship: TShip; Distance, BestDistance: Double;
 begin
@@ -1659,9 +1659,9 @@ begin
       end;
     end;
 end;
-{ @end $5EF408 }
+{ @end $5B7980 }
 
-{ @routine $5EF630 TKling_EngageEnemyShip }
+{ @routine $5B7B38 TKling_EngageEnemyShip }
 procedure TKling.EngageEnemyShip;
 begin
   if Order = soFollowShip then OrderNone(False);
@@ -1670,71 +1670,71 @@ begin
       if ShouldKamikaze then OrderFollowShip(EnemyShip, fmKamikaze, False) else OrderFollowShip(EnemyShip, fmMinWeaponRange, False)
     else if EnemyShip.CurrentPlanet <> nil then OrderMove(EnemyShip.CurrentPlanet.GetPosition, False);
 end;
-{ @end $5EF630 }
+{ @end $5B7B38 }
 
-{ @routine $5EF6F4 TKling_UpdateAfterburnerState }
+{ @routine $5B7BC8 TKling_UpdateAfterburnerState }
 procedure TKling.UpdateAfterburnerState;
 begin
   AfterburnerActive := ShouldKamikaze and (GetSlotCount(sskAfterburner) > 0) and (GetEngine <> nil) and (GetEngine.ConditionPercent > 10);
   RefreshDerivedStats(True);
 end;
-{ @end $5EF6F4 }
+{ @end $5B7BC8 }
 
-{ @routine $5EF758 TKling_ProcessCombatDialogue }
+{ @routine $5B7C20 TKling_ProcessCombatDialogue }
 procedure TKling.ProcessCombatDialogue;
 begin end;
-{ @end $5EF758 }
+{ @end $5B7C20 }
 
-{ @routine $5EF764 TKling_ReactToExtortionDemand }
+{ @routine $5B7C24 TKling_ReactToExtortionDemand }
 procedure TKling.ReactToExtortionDemand(Ranger: Pointer);
 begin end;
-{ @end $5EF764 }
+{ @end $5B7C24 }
 
-{ @routine $5EF774 TKling_BuildMoneyExtortionResponse }
+{ @routine $5B7C28 TKling_BuildMoneyExtortionResponse }
 function TKling.BuildMoneyExtortionResponse(OtherShip: TShip; var Response: WideString; DemandedAmount: Integer): Boolean;
 begin
   Result := False;
 end;
-{ @end $5EF774 }
+{ @end $5B7C28 }
 
-{ @routine $5EF790 TKling_BuildCargoExtortionResponse }
+{ @routine $5B7C34 TKling_BuildCargoExtortionResponse }
 function TKling.BuildCargoExtortionResponse(OtherShip: TShip; var Response: WideString): Boolean;
 begin
   Result := False;
 end;
-{ @end $5EF790 }
+{ @end $5B7C34 }
 
-{ @routine $5EF7AC TKling_BuildTrucePaymentResponse }
+{ @routine $5B7C38 TKling_BuildTrucePaymentResponse }
 function TKling.BuildTrucePaymentResponse(OtherShip: TShip; var Response: WideString; OfferedAmount: Integer): Boolean;
 begin
   Result := False;
 end;
-{ @end $5EF7AC }
+{ @end $5B7C38 }
 
-{ @routine $5EF7C8 TKling_BuildAttackRequestResponse }
+{ @routine $5B7C44 TKling_BuildAttackRequestResponse }
 function TKling.BuildAttackRequestResponse(Requester: TShip; var Response: WideString; Target: TShip): Boolean;
 begin
   Result := False;
 end;
-{ @end $5EF7C8 }
+{ @end $5B7C44 }
 
-{ @routine $5EF7E4 TKling_AcceptPartnershipOffer }
+{ @routine $5B7C50 TKling_AcceptPartnershipOffer }
 function TKling.AcceptPartnershipOffer(OtherShip: TShip; var Response: WideString; PaymentAmount: Integer): Boolean;
 begin
   Result := False;
   Response := 'Not supporting';
 end;
-{ @end $5EF7E4 }
+{ @end $5B7C50 }
 
-{ @routine $5EF834 TKling_BuildPartnershipOfferResponse }
+{ @routine $5B7C94 TKling_BuildPartnershipOfferResponse }
 function TKling.BuildPartnershipOfferResponse(OtherShip: TShip; var Response: WideString; PaymentAmount: Integer): Boolean;
 begin
   Result := False;
   Response := 'Not supporting';
 end;
-{ @end $5EF834 }
+{ @end $5B7C94 }
 
-{ @routine $5EF884 TKling_RefreshCombatSkills }
+{ @routine $5B7CD8 TKling_RefreshCombatSkills }
 procedure TKling.RefreshCombatSkills;
 var Percent: Byte; Lower, Upper, Maximum, Minimum, Threshold, StartPercent, MidPercent: Integer;
 begin
@@ -1764,9 +1764,9 @@ begin
   end;
   TechKnowledge := 8;
 end;
-{ @end $5EF884 }
+{ @end $5B7CD8 }
 
-{ @routine $5EFAE8 TKling_CalculateSpeed }
+{ @routine $5B7F08 TKling_CalculateSpeed }
 function TKling.CalculateSpeed: Integer;
 var
   Speed: Integer;
@@ -1775,9 +1775,9 @@ begin
   if KlingType = ktBoss then Speed := Max(350, Speed);
   Result := Speed;
 end;
-{ @end $5EFAE8 }
+{ @end $5B7F08 }
 
-{ @routine $5EFB34 TKling_HasNearbyBertorAura }
+{ @routine $5B7F2C TKling_HasNearbyBertorAura }
 function TKling.HasNearbyBertorAura: Boolean;
 var
   I: Integer;
@@ -1800,9 +1800,9 @@ begin
     end;
   end;
 end;
-{ @end $5EFB34 }
+{ @end $5B7F2C }
 
-{ @routine $5EFC48 TKling_RefreshCurrentStanding }
+{ @routine $5B8014 TKling_RefreshCurrentStanding }
 procedure TKling.RefreshCurrentStanding;
 var StandingMode: TScriptStandingOverrideMode;
 begin
@@ -1812,6 +1812,6 @@ begin
     if (Self = BlazerShip) and (Galaxy.BlazerLandingPlanetId <> 0) then CurrentStanding := ssNeutral
     else CurrentStanding := ssDominator;
 end;
-{ @end $5EFC48 }
+{ @end $5B8014 }
 
 end.

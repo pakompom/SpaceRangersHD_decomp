@@ -38,6 +38,7 @@ pub fn parse(comment: &Token, source: &str, routine: bool) -> Result<Map<String,
         if !matches!(
             key,
             "addr"
+                | "unbound"
                 | "codeend"
                 | "indirect"
                 | "offset"
@@ -49,6 +50,7 @@ pub fn parse(comment: &Token, source: &str, routine: bool) -> Result<Map<String,
                 | "countedstack"
                 | "partial"
                 | "nameonly"
+                | "methodorder"
                 | "ida"
                 | "note"
         ) {
@@ -57,7 +59,7 @@ pub fn parse(comment: &Token, source: &str, routine: bool) -> Result<Map<String,
         if result.contains_key(key) {
             return Err(fail(format!("duplicate annotation @{key}")));
         }
-        if matches!(key, "partial" | "nameonly") {
+        if matches!(key, "partial" | "nameonly" | "unbound") {
             result.insert(key.into(), json!(true));
             continue;
         }
@@ -95,6 +97,12 @@ pub fn parse(comment: &Token, source: &str, routine: bool) -> Result<Map<String,
             }
             text[start..pos].into()
         };
+        if key == "methodorder" {
+            ensure!(
+                matches!(value.as_str(), "source" | "virtual"),
+                "{source}: @methodorder expects source or virtual"
+            );
+        }
         let value = if matches!(
             key,
             "addr" | "codeend" | "indirect" | "offset" | "size" | "slot" | "stackpop"

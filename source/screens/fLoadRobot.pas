@@ -1,5 +1,4 @@
 unit fLoadRobot;
-// Unit bracket (inferred): .text 0x0055CAA8..0x00560FD9; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -30,45 +29,45 @@ type
     KeyHistory: WideString; // @offset $F0
     Difficulty: Integer; // @offset $F4 Dif1/Dif2/Dif3 controls.
 
-    procedure CloseClick(Sender: TObjectGI); // @addr $55DA6C
-    procedure KeyDown(Sender: TObjectGI; Key: Cardinal); // @addr $55DAA0
-    function InsertEntry(Access: Integer): Integer; // @addr $55E198
-    procedure RebuildEntries; // @addr $55E280
-    procedure BuildEntryPanel(Panel: TObjectGI); // @addr $55E9E4
-    procedure SelectEntry(Index: Integer); // @addr $55F810
-    procedure UpdateEntryImage(Index: Integer); // @addr $55F958
-    procedure EntryMouseEnter(Sender: TObjectGI); // @addr $55FB8C
-    procedure EntryMouseLeave(Sender: TObjectGI); // @addr $55FBF8
-    procedure EntryMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $55FC58
-    procedure EntryDoubleClick(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $55FCD0
-    procedure CategoryClick(Sender: TObjectGI); // @addr $55FCFC
-    procedure DifficultyClick(Sender: TObjectGI); // @addr $55FE5C
-    procedure StartClick(Sender: TObjectGI); // @addr $55FF30
-    procedure UpdateSelectionDetails; // @addr $55FFB8
-    function GetUnlockedAccess: Integer; // @addr $560CBC
+    procedure CloseClick(Sender: TObjectGI); // @addr $5DD5E8
+    procedure KeyDown(Sender: TObjectGI; Key: Cardinal); // @addr $5DD610
+    function InsertEntry(Access: Integer): Integer; // @addr $5DDBD4
+    procedure RebuildEntries; // @addr $5DDC8C
+    procedure BuildEntryPanel(Panel: TObjectGI); // @addr $5DE2F0
+    procedure SelectEntry(Index: Integer); // @addr $5DF088
+    procedure UpdateEntryImage(Index: Integer); // @addr $5DF18C
+    procedure EntryMouseEnter(Sender: TObjectGI); // @addr $5DF390
+    procedure EntryMouseLeave(Sender: TObjectGI); // @addr $5DF3CC
+    procedure EntryMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $5DF408
+    procedure EntryDoubleClick(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $5DF478
+    procedure CategoryClick(Sender: TObjectGI); // @addr $5DF498
+    procedure DifficultyClick(Sender: TObjectGI); // @addr $5DF5D8
+    procedure StartClick(Sender: TObjectGI); // @addr $5DF690
+    procedure UpdateSelectionDetails; // @addr $5DF6F4
+    function GetUnlockedAccess: Integer; // @addr $5E0264
 
-    constructor Create; // @addr $55CBA8
-    destructor Destroy; override; // @addr $55CC24
-    procedure OnOpen; override; // @addr $55D180
-    procedure OnClose; override; // @addr $55DA2C
-    procedure SelectMusic; override; // @addr $560FD0
-    procedure ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer); override; // @addr $55E044
-    procedure InitializeLayout; override; // @addr $55CC7C
-    procedure SaveCompletionData; // @addr $560A00
-    procedure RecordCompletion(MapId, Score, Level: Integer); // @addr $560B74
-    procedure LoadCompletionData; // @addr $560858
-    function GetCompletionCounts: TPoint; // @addr $560E18 @note "X completed, Y eligible; groups greater than -1 are eligible."
-    function GetCompletionSummary: WideString; // @addr $560EF0 @note "Menu summary; displayed total includes groups 0..2."
+    constructor Create; // @addr $5DC890
+    destructor Destroy; override; // @addr $5DC8F4
+    procedure OnOpen; override; // @addr $5DCDAC
+    procedure OnClose; override; // @addr $5DD5B4
+    procedure SelectMusic; override; // @addr $5E051C
+    procedure ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer); override; // @addr $5DDAC0
+    procedure InitializeLayout; override; // @addr $5DC930
+    procedure SaveCompletionData; // @addr $5E0024
+    procedure RecordCompletion(MapId, Score, Level: Integer); // @addr $5E0170
+    procedure LoadCompletionData; // @addr $5DFEA4
+    function GetCompletionCounts: TPoint; // @addr $5E039C @note "X completed, Y eligible; groups greater than -1 are eligible."
+    function GetCompletionSummary: WideString; // @addr $5E044C @note "Menu summary; displayed total includes groups 0..2."
   end;
 
 var
-  RobotMapNameColor: Cardinal; // @addr $88A814
+  RobotMapNameColor: Cardinal; // @addr $81B800
 
 implementation
 
 uses Globals, GR_Main, EC_Buf, SysUtils, EC_File, Math, EC_Str, Classes, GI_Main, GI_Panel, GI_PanelScrollBar, GI_GraphButton, GlobalsV, Robot, GI_GraphBuf, aConst, aMyFunction, Windows, GI_Label;
 
-{ @routine $55CBA8 TfLoadRobot_Create }
+{ @routine $5DC890 TfLoadRobot_Create }
 constructor TfLoadRobot.Create;
 begin
   inherited Create;
@@ -77,9 +76,9 @@ begin
   Difficulty := 1;
   LoadPanel := TfPanelLoad.Create;
 end;
-{ @end $55CBA8 }
+{ @end $5DC890 }
 
-{ @routine $55CC24 TfLoadRobot_Destroy }
+{ @routine $5DC8F4 TfLoadRobot_Destroy }
 destructor TfLoadRobot.Destroy;
 begin
   if LoadPanel <> nil then
@@ -89,9 +88,9 @@ begin
   end;
   inherited Destroy;
 end;
-{ @end $55CC24 }
+{ @end $5DC8F4 }
 
-{ @routine $55CC7C TfLoadRobot_InitializeLayout }
+{ @routine $5DC930 TfLoadRobot_InitializeLayout }
 procedure TfLoadRobot.InitializeLayout;
 var Root, Panel: TObjectGI;
 begin
@@ -104,7 +103,7 @@ begin
   Root.FindByNameRecursive('BGBuf').SetSize(Classes.Point(GameScreenWidth, GameScreenHeight));
   Panel := Root.FindByNameRecursive('MainPanel');
   if ExtraScreenHeight < 0 then
-    Panel.SetPosition(Classes.Point(Panel.LocalPosition.X + ExtraScreenWidth div 2, (GameScreenHeight - Panel.ClientSize.Y) div 2))
+    Panel.SetPosition(Classes.Point(Panel.LocalPosition.X + ExtraScreenWidth div 2, (Integer(GameScreenHeight) - Panel.ClientSize.Y) div 2))
   else Panel.SetPosition(Classes.Point(Panel.LocalPosition.X + ExtraScreenWidth div 2, Panel.LocalPosition.Y + ExtraScreenHeight div 2));
   AppendLogLineThreadSafe('ok');
   GetByName('MainPanel').KeyDownCallback := KeyDown;
@@ -125,9 +124,9 @@ begin
   begin UpCallback := DifficultyClick; DownCallback := DifficultyClick; end;
   RobotMapNameColor := GetStyleColorGI('LoadRobot.MapsNameColor', 88, 229, 255);
 end;
-{ @end $55CC7C }
+{ @end $5DC930 }
 
-{ @routine $55D180 TfLoadRobot_OnOpen }
+{ @routine $5DCDAC TfLoadRobot_OnOpen }
 procedure TfLoadRobot.OnOpen;
 var StartText, WinText, LossText, TerronName: WideString;
 begin
@@ -171,61 +170,56 @@ begin
     PostMouseMoveMessage;
     if BattleResult <> 0 then
     begin
-      if Entries[SelectedIndex].MapIndex >= 0 then
+      if (Entries[SelectedIndex].MapIndex >= 0) and (BattleResult = 3) then
       begin
-        if BattleResult = 3 then
-        begin
-          LoadCompletionData;
-          if Difficulty = 1 then
-            RecordCompletion(RobotMapDefinitions[Entries[SelectedIndex].MapIndex].Id, -RobotBattleStatistics.SignedTimeMs div 1000, 2)
-          else RecordCompletion(RobotMapDefinitions[Entries[SelectedIndex].MapIndex].Id, -RobotBattleStatistics.SignedTimeMs div 1000, 1);
-          SaveCompletionData;
-        end;
+        LoadCompletionData;
+        if Difficulty = 1 then
+          RecordCompletion(RobotMapDefinitions[Entries[SelectedIndex].MapIndex].Id, -RobotBattleStatistics.SignedTimeMs div 1000, 2)
+        else RecordCompletion(RobotMapDefinitions[Entries[SelectedIndex].MapIndex].Id, -RobotBattleStatistics.SignedTimeMs div 1000, 1);
+        SaveCompletionData;
       end;
       BattleResult := 0;
       RequestedScreenId := screenLoadRobot;
       RequestClose(1);
     end;
-  end
-  else
-  begin
-    if BattleResult = 0 then
-    begin
-      if AuxRenderBuffer.GetPixels = nil then CaptureScreenBackground(True, 0);
-      (GetByName('BGBuf') as TGraphBufGI).BindExternalGraphBuf(AuxRenderBuffer);
-    end
-    else BattleResult := 0;
-    with GetByName('ButGroup0') as TGraphButtonGI do SetDown(Category = 0);
-    with GetByName('ButGroup1') as TGraphButtonGI do SetDown(Category = 1);
-    with GetByName('ButGroup2') as TGraphButtonGI do SetDown(Category = 2);
-    RebuildEntries;
-    (GetByName('Dif1') as TGraphButtonGI).SetDown(Difficulty = 1);
-    (GetByName('Dif2') as TGraphButtonGI).SetDown(Difficulty = 2);
-    (GetByName('Dif3') as TGraphButtonGI).SetDown(Difficulty = 3);
-    SelectEntry(0);
+    Exit;
   end;
+  if BattleResult = 0 then
+  begin
+    if AuxRenderBuffer.GetPixels = nil then CaptureScreenBackground(True, 0);
+    (GetByName('BGBuf') as TGraphBufGI).BindExternalGraphBuf(AuxRenderBuffer);
+  end
+  else BattleResult := 0;
+  with GetByName('ButGroup0') as TGraphButtonGI do SetDown(Category = 0);
+  with GetByName('ButGroup1') as TGraphButtonGI do SetDown(Category = 1);
+  with GetByName('ButGroup2') as TGraphButtonGI do SetDown(Category = 2);
+  RebuildEntries;
+  (GetByName('Dif1') as TGraphButtonGI).SetDown(Difficulty = 1);
+  (GetByName('Dif2') as TGraphButtonGI).SetDown(Difficulty = 2);
+  (GetByName('Dif3') as TGraphButtonGI).SetDown(Difficulty = 3);
+  SelectEntry(0);
 end;
-{ @end $55D180 }
+{ @end $5DCDAC }
 
-{ @routine $55DA2C TfLoadRobot_OnClose }
+{ @routine $5DD5B4 TfLoadRobot_OnClose }
 procedure TfLoadRobot.OnClose;
 begin
   if BattleResult = 0 then Entries := nil;
   LoadPanel.OnClose;
   inherited OnClose;
 end;
-{ @end $55DA2C }
+{ @end $5DD5B4 }
 
-{ @routine $55DA6C TfLoadRobot_CloseClick }
+{ @routine $5DD5E8 TfLoadRobot_CloseClick }
 procedure TfLoadRobot.CloseClick(Sender: TObjectGI);
 begin
   AuxRenderBuffer.Clear;
   RequestedScreenId := screenMainMenu;
   RequestClose(1);
 end;
-{ @end $55DA6C }
+{ @end $5DD5E8 }
 
-{ @routine $55DAA0 TfLoadRobot_KeyDown }
+{ @routine $5DD610 TfLoadRobot_KeyDown }
 procedure TfLoadRobot.KeyDown(Sender: TObjectGI; Key: Cardinal);
 var CheatKeys: Boolean;
     I, MapId: Integer;
@@ -237,7 +231,6 @@ begin
     CheatKeys := True;
   end;
   if CheatKeys then
-  begin
     if FindTextOffsetW(KeyHistory, 'WIN') >= 0 then
     begin
       KeyHistory := '';
@@ -255,7 +248,6 @@ begin
         end;
       end;
     end;
-  end;
   if Key = VK_ESCAPE then CloseClick(Sender)
   else if Key = Ord('R') then CloseClick(Sender)
   else if Key = VK_PRIOR then
@@ -289,7 +281,8 @@ begin
     EntryMouseLeave(nil);
     if SelectedIndex >= 0 then
     begin
-      if (SelectedIndex < High(Entries)) and (Entries[SelectedIndex + 1].Access <= UnlockedAccess) then SelectEntry(SelectedIndex + 1);
+      if SelectedIndex < High(Entries) then
+        if Entries[SelectedIndex + 1].Access <= UnlockedAccess then SelectEntry(SelectedIndex + 1);
     end
     else if (High(Entries) + 1 > 0) and (Entries[0].Access <= UnlockedAccess) then SelectEntry(0);
   end
@@ -302,9 +295,9 @@ begin
     else if Category = 2 then CategoryClick(GetByName('ButGroup0'));
   end;
 end;
-{ @end $55DAA0 }
+{ @end $5DD610 }
 
-{ @routine $55E044 TfLoadRobot_ProcessMouseWheel }
+{ @routine $5DDAC0 TfLoadRobot_ProcessMouseWheel }
 procedure TfLoadRobot.ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer);
 var Panel: TPanelScrollBarGI;
     Bounds: TRect;
@@ -327,9 +320,9 @@ begin
     PostMouseMoveMessage;
   end;
 end;
-{ @end $55E044 }
+{ @end $5DDAC0 }
 
-{ @routine $55E198 TfLoadRobot_InsertEntry }
+{ @routine $5DDBD4 TfLoadRobot_InsertEntry }
 function TfLoadRobot.InsertEntry(Access: Integer): Integer;
 var I, J: Integer;
 begin
@@ -340,9 +333,9 @@ begin
   Entries[I].Access := Access;
   Result := I;
 end;
-{ @end $55E198 }
+{ @end $5DDBD4 }
 
-{ @routine $55E280 TfLoadRobot_RebuildEntries }
+{ @routine $5DDC8C TfLoadRobot_RebuildEntries }
 procedure TfLoadRobot.RebuildEntries;
 var
   I, EntryIndex, Y: Integer;
@@ -388,7 +381,8 @@ begin
     FindHandle := Windows.FindFirstFileW(PWideChar(Path + 'Matrix\Map\*.cmap'), FindData);
     if FindHandle <> INVALID_HANDLE_VALUE then
     begin
-      repeat
+      while True do
+      begin
         if (FindData.dwFileAttributes and FILE_ATTRIBUTE_DIRECTORY) = 0 then
         begin
           Path := TrimWideString(LowerCaseWideString(WideString(FindData.cFileName)));
@@ -408,7 +402,8 @@ begin
             Entries[EntryIndex].Length := -1;
           end;
         end;
-      until not Windows.FindNextFileW(FindHandle, FindData);
+        if not Windows.FindNextFileW(FindHandle, FindData) then Break;
+      end;
       Windows.FindClose(FindHandle);
     end;
   end;
@@ -444,9 +439,9 @@ begin
   SelectEntry(SelectedIndex);
   Panel.Invalidate;
 end;
-{ @end $55E280 }
+{ @end $5DDC8C }
 
-{ @routine $55E9E4 TfLoadRobot_BuildEntryPanel }
+{ @routine $5DE2F0 TfLoadRobot_BuildEntryPanel }
 procedure TfLoadRobot.BuildEntryPanel(Panel: TObjectGI);
 var Index, MapIndex, RightEdge, MapId, Hours, Minutes, Seconds: Integer;
     TimeText: WideString;
@@ -478,8 +473,8 @@ begin
     begin
       SetDepth(9);
       if Entries[Index].Access <= UnlockedAccess then
-        SetImagePath('GI,Bm.FormLoadRobot.' + GiResourceSuffix + 'IconKeller')
-      else SetImagePath('GI,Bm.FormLoadRobot.' + GiResourceSuffix + 'IconKellerD');
+        ImageSourcePath := 'GI,Bm.FormLoadRobot.' + GiResourceSuffix + 'IconKeller'
+      else ImageSourcePath := 'GI,Bm.FormLoadRobot.' + GiResourceSuffix + 'IconKellerD';
       SetSize(GetContentSize);
       SetPosition(Classes.Point(RightEdge - ClientSize.X, Panel.ClientSize.Y div 2 - ClientSize.Y div 2));
       SetActive(True);
@@ -490,8 +485,8 @@ begin
     begin
       SetDepth(9);
       if Entries[Index].Access <= UnlockedAccess then
-        SetImagePath('GI,Bm.FormLoadRobot.' + GiResourceSuffix + 'IconTerron')
-      else SetImagePath('GI,Bm.FormLoadRobot.' + GiResourceSuffix + 'IconTerronD');
+        ImageSourcePath := 'GI,Bm.FormLoadRobot.' + GiResourceSuffix + 'IconTerron'
+      else ImageSourcePath := 'GI,Bm.FormLoadRobot.' + GiResourceSuffix + 'IconTerronD';
       SetSize(GetContentSize);
       SetPosition(Classes.Point(RightEdge - ClientSize.X, Panel.ClientSize.Y div 2 - ClientSize.Y div 2));
       SetActive(True);
@@ -502,8 +497,8 @@ begin
     begin
       SetDepth(9);
       if Entries[Index].Access <= UnlockedAccess then
-        SetImagePath('GI,Bm.FormLoadRobot.' + GiResourceSuffix + 'IconBlazer')
-      else SetImagePath('GI,Bm.FormLoadRobot.' + GiResourceSuffix + 'IconBlazerD');
+        ImageSourcePath := 'GI,Bm.FormLoadRobot.' + GiResourceSuffix + 'IconBlazer'
+      else ImageSourcePath := 'GI,Bm.FormLoadRobot.' + GiResourceSuffix + 'IconBlazerD';
       SetSize(GetContentSize);
       SetPosition(Classes.Point(RightEdge - ClientSize.X, Panel.ClientSize.Y div 2 - ClientSize.Y div 2));
       SetActive(True);
@@ -521,8 +516,8 @@ begin
         begin
           SetPosition(Classes.Point(0, 0));
           SetDepth(9);
-          if MapIndex = 1 then SetImagePath('GI,Bm.FormRewards.' + GiResourceSuffix + '_06')
-          else SetImagePath('GI,Bm.FormRewards.' + GiResourceSuffix + '_13');
+          if MapIndex = 1 then ImageSourcePath := 'GI,Bm.FormRewards.' + GiResourceSuffix + '_06'
+          else ImageSourcePath := 'GI,Bm.FormRewards.' + GiResourceSuffix + '_13';
           SetSize(GetContentSize);
           SetPosition(Classes.Point(Panel.ClientSize.X - ClientSize.X - GiScalePixels(10), Panel.ClientSize.Y div 2 - ClientSize.Y div 2));
           SetActive(True);
@@ -545,7 +540,7 @@ begin
     SetFontName(NormalFontName);
     SetTextAlignX(taxLeft);
     SetTextAlignY(tayCenterEx);
-    SetText(Entries[Index].Name);
+    Text := Entries[Index].Name;
     if Entries[Index].Access <= UnlockedAccess then SetTextColor(RobotMapNameColor)
     else SetTextColor(CurrentPixelFormat.PackRgbBytes(112, 112, 112));
   end;
@@ -554,50 +549,52 @@ begin
     if GiResourceVariant = 1 then
     begin
       SetPosition(Classes.Point(252, 0));
-      SetSize(Classes.Point(109, Panel.ClientSize.Y));
+      ObjectSize := Classes.Point(109, Panel.ClientSize.Y);
     end
     else
     begin
       SetPosition(Classes.Point(323, 0));
-      SetSize(Classes.Point(140, Panel.ClientSize.Y));
+      ObjectSize := Classes.Point(140, Panel.ClientSize.Y);
     end;
     SetDepth(7);
     SetFontName(NormalFontName);
     SetTextAlignX(taxRight);
     SetTextAlignY(tayCenterEx);
-    MapIndex := Entries[Index].MapIndex;
-    repeat
+    while True do
+    begin
+      MapIndex := Entries[Index].MapIndex;
       if (MapIndex >= 0) and (MapIndex <= High(RobotMapDefinitions)) then
       begin
         MapId := RobotMapDefinitions[MapIndex].Id;
         if (MapId >= 0) and (MapId < (High(CompletionData) + 1) div 2) and
-           (CompletionData[MapId * 2 + 1] <> 0) then
+          (CompletionData[MapId * 2 + 1] <> 0) then
         begin
           RightEdge := CompletionData[MapId * 2];
           Hours := RightEdge div 3600;
           Minutes := (RightEdge - Hours * 3600) div 60;
           Seconds := RightEdge - Hours * 3600 - Minutes * 60;
           if Hours < 10 then TimeText := TimeText + '0';
-          TimeText := TimeText + WideString(IntToStr(Hours)) + ':';
+          TimeText := TimeText + IntToStr(Hours) + ':';
           if Minutes < 10 then TimeText := TimeText + '0';
-          TimeText := TimeText + WideString(IntToStr(Minutes)) + ':';
+          TimeText := TimeText + IntToStr(Minutes) + ':';
           if Seconds < 10 then TimeText := TimeText + '0';
-          TimeText := TimeText + WideString(IntToStr(Seconds));
+          TimeText := TimeText + IntToStr(Seconds);
           TimeText := ReplaceAllWideString(LocalizedText('FormLoadRobot.Time'), '<Val>', TimeText);
-          SetText(TimeText);
+          Text := TimeText;
           Break;
         end;
       end;
-      if Entries[Index].Length < 0 then SetText('')
-      else SetText(LocalizedText(WideString('FormLoadRobot.Length' + IntToStr(Entries[Index].Length))));
-    until True;
+      if Entries[Index].Length < 0 then Text := ''
+      else Text := LocalizedText(WideString('FormLoadRobot.Length' + IntToStr(Entries[Index].Length)));
+      Break;
+    end;
     if Entries[Index].Access <= UnlockedAccess then SetTextColor(RobotMapNameColor)
     else SetTextColor(CurrentPixelFormat.PackRgbBytes(112, 112, 112));
   end;
 end;
-{ @end $55E9E4 }
+{ @end $5DE2F0 }
 
-{ @routine $55F810 TfLoadRobot_SelectEntry }
+{ @routine $5DF088 TfLoadRobot_SelectEntry }
 procedure TfLoadRobot.SelectEntry(Index: Integer);
 var Previous: Integer;
     Panel: TPanelScrollBarGI;
@@ -622,9 +619,9 @@ begin
   end;
   UpdateSelectionDetails;
 end;
-{ @end $55F810 }
+{ @end $5DF088 }
 
-{ @routine $55F958 TfLoadRobot_UpdateEntryImage }
+{ @routine $5DF18C TfLoadRobot_UpdateEntryImage }
 procedure TfLoadRobot.UpdateEntryImage(Index: Integer);
 var Image: TImageGI;
 begin
@@ -640,9 +637,9 @@ begin
   else
     Image.SetImagePath('GI,Bm.FormLoadRobot.' + GiResourceSuffix + 'SlotNormal2');
 end;
-{ @end $55F958 }
+{ @end $5DF18C }
 
-{ @routine $55FB8C TfLoadRobot_EntryMouseEnter }
+{ @routine $5DF390 TfLoadRobot_EntryMouseEnter }
 procedure TfLoadRobot.EntryMouseEnter(Sender: TObjectGI);
 var Previous: Integer;
 begin
@@ -653,9 +650,9 @@ begin
   UpdateEntryImage(Previous);
   UpdateEntryImage(HoveredIndex);
 end;
-{ @end $55FB8C }
+{ @end $5DF390 }
 
-{ @routine $55FBF8 TfLoadRobot_EntryMouseLeave }
+{ @routine $5DF3CC TfLoadRobot_EntryMouseLeave }
 procedure TfLoadRobot.EntryMouseLeave(Sender: TObjectGI);
 var Previous: Integer;
 begin
@@ -666,25 +663,25 @@ begin
   UpdateEntryImage(Previous);
   UpdateEntryImage(HoveredIndex);
 end;
-{ @end $55FBF8 }
+{ @end $5DF3CC }
 
-{ @routine $55FC58 TfLoadRobot_EntryMouseDown }
+{ @routine $5DF408 TfLoadRobot_EntryMouseDown }
 procedure TfLoadRobot.EntryMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint);
 begin
   if BattleResult <> 0 then Exit;
   SoundManager.PlaySound('Sound.ButtonClick');
   SelectEntry(Sender.UserValue);
 end;
-{ @end $55FC58 }
+{ @end $5DF408 }
 
-{ @routine $55FCD0 TfLoadRobot_EntryDoubleClick }
+{ @routine $5DF478 TfLoadRobot_EntryDoubleClick }
 procedure TfLoadRobot.EntryDoubleClick(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint);
 begin
   StartClick(nil);
 end;
-{ @end $55FCD0 }
+{ @end $5DF478 }
 
-{ @routine $55FCFC TfLoadRobot_CategoryClick }
+{ @routine $5DF498 TfLoadRobot_CategoryClick }
 procedure TfLoadRobot.CategoryClick(Sender: TObjectGI);
 var NewCategory: Integer;
     Panel: TPanelScrollBarGI;
@@ -701,9 +698,9 @@ begin
   RebuildEntries;
   SelectEntry(0);
 end;
-{ @end $55FCFC }
+{ @end $5DF498 }
 
-{ @routine $55FE5C TfLoadRobot_DifficultyClick }
+{ @routine $5DF5D8 TfLoadRobot_DifficultyClick }
 procedure TfLoadRobot.DifficultyClick(Sender: TObjectGI);
 var NewDifficulty: Integer;
 begin
@@ -713,9 +710,9 @@ begin
   (GetByName('Dif3') as TGraphButtonGI).SetDown(NewDifficulty = 3);
   if Difficulty <> NewDifficulty then Difficulty := NewDifficulty;
 end;
-{ @end $55FE5C }
+{ @end $5DF5D8 }
 
-{ @routine $55FF30 TfLoadRobot_StartClick }
+{ @routine $5DF690 TfLoadRobot_StartClick }
 procedure TfLoadRobot.StartClick(Sender: TObjectGI);
 begin
   if BattleResult <> 0 then Exit;
@@ -726,11 +723,11 @@ begin
   LoadPanel.RefreshBackgroundImages;
   LoadPanel.StartClosingShutters;
 end;
-{ @end $55FF30 }
+{ @end $5DF690 }
 
-{ @routine $55FFB8 TfLoadRobot_UpdateSelectionDetails }
+{ @routine $5DF6F4 TfLoadRobot_UpdateSelectionDetails }
 procedure TfLoadRobot.UpdateSelectionDetails;
-var Text, MapName, Extension: WideString;
+var CaptionText, MapName, Extension: WideString;
     F: TFileEC;
     Success: Boolean;
     Buffer: TBufEC;
@@ -740,52 +737,55 @@ begin
   with GetByName('ImageMap') as TGraphBufGI do
   begin
     SetActive(False);
-    if (SelectedIndex >= 0) and (SelectedIndex <= High(Entries)) then
-    begin
-      if CountDelimitedPartsW(Entries[SelectedIndex].FileName, '\/') = 1 then
-        Text := 'Matrix\Map\' + ExtractFileNameNoExtW(Entries[SelectedIndex].FileName) + '.jpg'
-      else
+    if SelectedIndex >= 0 then
+      if SelectedIndex <= High(Entries) then
       begin
-        MapName := Entries[SelectedIndex].FileName;
-        Extension := ExtractDelimitedPartW(MapName, CountDelimitedPartsW(MapName, '.') - 1, '.');
-        Text := ReplaceAllWideString(Entries[SelectedIndex].FileName, Extension, 'jpg');
+        if CountDelimitedPartsW(Entries[SelectedIndex].FileName, '\/') = 1 then
+          CaptionText := 'Matrix\Map\' + ExtractFileNameNoExtW(Entries[SelectedIndex].FileName) + '.jpg'
+        else
+        begin
+          MapName := Entries[SelectedIndex].FileName;
+          Extension := ExtractDelimitedPartW(MapName, CountDelimitedPartsW(MapName, '.') - 1, '.');
+          CaptionText := ReplaceAllWideString(Entries[SelectedIndex].FileName, Extension, 'jpg');
+        end;
+        F := TFileEC.Create;
+        F.SetFileName(CaptionText);
+        Success := F.TryAcquireReadHandle(False);
+        if Success then
+        begin
+          Buffer := TBufEC.Create;
+          Buffer.SetSize(F.GetSize);
+          F.ReadBuffer(Buffer.Data, Buffer.DataSize);
+          SetActive(True);
+          GraphBuf.LoadImageRgb(Buffer);
+          SourceHasPerPixelAlpha := False;
+          if (ClientSize.X <> Integer(GraphBuf.Width)) or (ClientSize.Y <> Integer(GraphBuf.Height)) then
+            GraphBuf.RescaleRgb(ClientSize.X, ClientSize.Y);
+          GraphBuf.ConvertRgbTo565;
+          Invalidate;
+          Buffer.Free;
+        end;
+        F.Free;
       end;
-      F := TFileEC.Create;
-      F.SetFileName(Text);
-      Success := F.TryAcquireReadHandle(False);
-      if Success then
-      begin
-        Buffer := TBufEC.Create;
-        Buffer.SetSize(F.GetSize);
-        F.ReadBuffer(Buffer.Data, Buffer.DataSize);
-        SetActive(True);
-        GraphBuf.LoadImageRgb(Buffer);
-        SourceHasPerPixelAlpha := False;
-        if (ClientSize.X <> GraphBuf.Width) or (ClientSize.Y <> GraphBuf.Height) then
-          GraphBuf.RescaleRgb(ClientSize.X, ClientSize.Y);
-        GraphBuf.ConvertRgbTo565;
-        Invalidate;
-        Buffer.Free;
-      end;
-      F.Free;
-    end;
   end;
   with GetByName('MessageText') as TLabelGI do
   begin
     SetActive(False);
-    if (SelectedIndex >= 0) and (SelectedIndex <= High(Entries)) and
-       (Entries[SelectedIndex].MapIndex >= 0) and (Entries[SelectedIndex].MapIndex <= High(RobotMapDefinitions)) then
-    begin
-      SetActive(True);
-      Text := RobotMapDefinitions[Entries[SelectedIndex].MapIndex].GovTextStart;
-      ReplaceTextToken(Text, '<Star>', LocalizedText('FormLoadRobot.PStar'), BrightBlueColorTag);
-      ReplaceTextToken(Text, '<Planet>', LocalizedText('FormLoadRobot.PPlanet'), BrightBlueColorTag);
-      ReplaceTextToken(Text, '<Player>', LocalizedText('FormLoadRobot.PPlayer'), BrightBlueColorTag);
-      ReplaceTextToken(Text, '<Money>', WideString(IntToStr(1000)), BrightBlueColorTag);
-      SetText(Text);
-      Text := RobotMapDefinitions[Entries[SelectedIndex].MapIndex].FromAuthor;
-      if Text <> '' then SetText(GetText + #13#10 + ' ' + #13#10 + Text);
-    end;
+    if SelectedIndex >= 0 then
+      if SelectedIndex <= High(Entries) then
+        if Entries[SelectedIndex].MapIndex >= 0 then
+          if Entries[SelectedIndex].MapIndex <= High(RobotMapDefinitions) then
+          begin
+            SetActive(True);
+            CaptionText := RobotMapDefinitions[Entries[SelectedIndex].MapIndex].GovTextStart;
+            ReplaceTextToken(CaptionText, '<Star>', LocalizedText('FormLoadRobot.PStar'), BrightBlueColorTag);
+            ReplaceTextToken(CaptionText, '<Planet>', LocalizedText('FormLoadRobot.PPlanet'), BrightBlueColorTag);
+            ReplaceTextToken(CaptionText, '<Player>', LocalizedText('FormLoadRobot.PPlayer'), BrightBlueColorTag);
+            ReplaceTextToken(CaptionText, '<Money>', IntToStr(1000), BrightBlueColorTag);
+            Text := CaptionText;
+            CaptionText := RobotMapDefinitions[Entries[SelectedIndex].MapIndex].FromAuthor;
+            if CaptionText <> '' then Text := Text + #13#10 + ' ' + #13#10 + CaptionText;
+          end;
   end;
   with GetByName('MessageWindow') as TPanelScrollBarGI do
   begin
@@ -801,22 +801,24 @@ begin
   with GetByName('Dif2') as TGraphButtonGI do
   begin
     SetDisabled(False);
-    if (SelectedIndex >= 0) and (SelectedIndex <= High(Entries)) and
-       (Entries[SelectedIndex].MapIndex >= 0) and (Entries[SelectedIndex].MapIndex <= High(RobotMapDefinitions)) then
-    begin
-      if RobotMapDefinitions[Entries[SelectedIndex].MapIndex].ReinforcementsDisabled then
-      begin
-        if Down then
-        begin SetDown(False); Success := True; end;
-        SetDisabled(True);
-      end;
-    end;
+    if SelectedIndex >= 0 then
+      if SelectedIndex <= High(Entries) then
+        if Entries[SelectedIndex].MapIndex >= 0 then
+          if Entries[SelectedIndex].MapIndex <= High(RobotMapDefinitions) then
+          begin
+            if RobotMapDefinitions[Entries[SelectedIndex].MapIndex].ReinforcementsDisabled then
+            begin
+              if Down then
+              begin SetDown(False); Success := True; end;
+              SetDisabled(True);
+            end;
+          end;
   end;
   if Success then (GetByName('Dif1') as TGraphButtonGI).SetDown(True);
 end;
-{ @end $55FFB8 }
+{ @end $5DF6F4 }
 
-{ @routine $560858 TfLoadRobot_LoadCompletionData }
+{ @routine $5DFEA4 TfLoadRobot_LoadCompletionData }
 procedure TfLoadRobot.LoadCompletionData;
 var
   Buffer: TBufEC;
@@ -825,24 +827,22 @@ var
 begin
   CompletionData := nil;
   FileName := GetGameUserDirectory + 'robotcomplate.dat';
-  if SysUtils.FileExists(AnsiString(FileName)) then
-  begin
-    try
-      Buffer := TBufEC.Create;
-      Buffer.LoadFromWideFilePath(PWideChar(FileName));
-      if Buffer.ComputeCrc32Range(4, Buffer.DataSize) <> Buffer.GetUInt32 then Abort;
-      Count := Buffer.GetInt32;
-      SetLength(CompletionData, Count);
-      for I := 0 to Count - 1 do CompletionData[I] := Buffer.GetInt32;
-      Buffer.Free;
-    except
-      CompletionData := nil;
-    end;
+  if not SysUtils.FileExists(AnsiString(FileName)) then Exit;
+  try
+    Buffer := TBufEC.Create;
+    Buffer.LoadFromWideFilePath(PWideChar(FileName));
+    if Buffer.ComputeCrc32Range(4, Buffer.DataSize) <> Buffer.GetUInt32 then Abort;
+    Count := Buffer.GetInt32;
+    SetLength(CompletionData, Count);
+    for I := 0 to Count - 1 do CompletionData[I] := Buffer.GetInt32;
+    Buffer.Free;
+  except
+    CompletionData := nil;
   end;
 end;
-{ @end $560858 }
+{ @end $5DFEA4 }
 
-{ @routine $560A00 TfLoadRobot_SaveCompletionData }
+{ @routine $5E0024 TfLoadRobot_SaveCompletionData }
 procedure TfLoadRobot.SaveCompletionData;
 var
   Buffer: TBufEC;
@@ -863,9 +863,9 @@ begin
   F.Free;
   Buffer.Free;
 end;
-{ @end $560A00 }
+{ @end $5E0024 }
 
-{ @routine $560B74 TfLoadRobot_RecordCompletion }
+{ @routine $5E0170 TfLoadRobot_RecordCompletion }
 procedure TfLoadRobot.RecordCompletion(MapId, Score, Level: Integer);
 var
   Count, Index: Integer;
@@ -876,15 +876,15 @@ begin
     SetLength(CompletionData, 2 * (MapId + 1));
     for Index := 2 * Count to High(CompletionData) do CompletionData[Index] := 0;
   end;
-  if CompletionData[2 * MapId + 1] > Level then Exit;
+  if CompletionData[2 * MapId + 1] > Level then Exit else
   if (CompletionData[2 * MapId] = 0) or (CompletionData[2 * MapId + 1] < Level) then
     CompletionData[2 * MapId] := Score
   else CompletionData[2 * MapId] := Min(CompletionData[2 * MapId], Score);
   CompletionData[2 * MapId + 1] := Level;
 end;
-{ @end $560B74 }
+{ @end $5E0170 }
 
-{ @routine $560CBC TfLoadRobot_GetUnlockedAccess }
+{ @routine $5E0264 TfLoadRobot_GetUnlockedAccess }
 function TfLoadRobot.GetUnlockedAccess: Integer;
 var I, MapIndex, Access, Count, Completed, MapId: Integer;
 begin
@@ -913,9 +913,9 @@ begin
   end;
   if Result = 0 then Result := 1;
 end;
-{ @end $560CBC }
+{ @end $5E0264 }
 
-{ @routine $560E18 TfLoadRobot_GetCompletionCounts }
+{ @routine $5E039C TfLoadRobot_GetCompletionCounts }
 function TfLoadRobot.GetCompletionCounts: TPoint;
 var I, CompletionIndex: Integer;
 begin
@@ -931,9 +931,9 @@ begin
         if CompletionData[CompletionIndex * 2 + 1] <> 0 then Inc(Result.X);
   end;
 end;
-{ @end $560E18 }
+{ @end $5E039C }
 
-{ @routine $560EF0 TfLoadRobot_GetCompletionSummary }
+{ @routine $5E044C TfLoadRobot_GetCompletionSummary }
 function TfLoadRobot.GetCompletionSummary: WideString;
 var Counts: TPoint;
     I, Total: Integer;
@@ -944,12 +944,12 @@ begin
     if RobotMapDefinitions[I].Group in [0, 1, 2] then Inc(Total);
   Result := IntToStr(Counts.X) + '/' + IntToStr(Total);
 end;
-{ @end $560EF0 }
+{ @end $5E044C }
 
-{ @routine $560FD0 TfLoadRobot_SelectMusic }
+{ @routine $5E051C TfLoadRobot_SelectMusic }
 procedure TfLoadRobot.SelectMusic;
 begin
 end;
-{ @end $560FD0 }
+{ @end $5E051C }
 
 end.

@@ -1,5 +1,4 @@
 unit aMissile;
-// Unit bracket (inferred): .text 0x004EFF88..0x004F347C; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -20,7 +19,7 @@ type
   public
     Graphic: TObjectSE; // @offset 0x04
     Id: Cardinal; // @offset 0x08
-    WeaponId: Integer; // @offset 0x0C Matches TItem.Id.
+    WeaponId: Cardinal; // @offset 0x0C Matches TItem.Id.
     ItemType: TItemType; // @offset 0x10
     TechLevel: Byte; // @offset 0x11
     MinDamage: Integer; // @offset 0x14
@@ -48,44 +47,44 @@ type
     LastTargetDistance: Single; // @offset $6C Squared distance used to detect overshooting, not a random seed.
     OvershootTicks: Integer; // @offset $70
 
-    destructor Destroy; override; // @addr $4F00DC
-    procedure SaveToBuffer(Buffer: TBufEC); virtual; // @addr $4F063C @slot $00
-    procedure LoadFromBuffer(Buffer: TBufEC; World: TGalaxy); virtual; // @addr $4F0AB8 @slot $04
-    procedure ResolveLoadedReferences(World: TGalaxy); // @addr $4F0F68
-    procedure InitializeUnownedShot(Star: TStar; Target: TObject; X, Y: Integer; Direction: Single; MinDamage, MaxDamage: Integer; MaximumSpeed: Single; ItemType: TItemType; ModuleIndex, SpecialIndex: Integer); // @addr $4F04E8
-    function CanBeHit(Attacker: TShip; UnusedWeapon: TWeapon): Boolean; // @addr $4F3204
-    procedure RetargetTorpedo; // @addr $4F285C
-    function TryReturnToOwner(StepIndex: Integer; RecordFilm: Boolean; PreviousPosition: TPointF; Ship: TShip): Boolean; // @addr $4F2620
-    procedure ClearReferencesTo(Obj: TObject); // @addr 0x4F329C
-    constructor Create; // @addr 0x4F005C
-    procedure InitializeShot(Star: TStar; OwnerShip: TShip; Weapon: TWeapon; Target: TObject; ShotIndex: Integer); // @addr 0x4F0164 @note "Registers the missile in Star, copies weapon data and initializes position, heading and speed."
-    procedure PrepareTurnMovement(StepIndex: Integer; RecordFilm, PlayShotSound: Boolean); // @addr 0x4F121C
-    function GetDisplayName: WideString; // @addr $4F2A0C
-    function GetInfoText: WideString; // @addr $4F2B04
-    function GetGraphObject: TObjectSE; // @addr $4F110C Lazily creates and initializes the retained missile scene object.
-    function GetGraphSuffix: WideString; virtual; // @addr $4F3340 @slot $08
-    function GetWeaponInfo: PWeaponInfo; virtual; // @addr 0x4F3434 @slot 0x0C
-    function GetShotVisual: Integer; // @addr 0x4F32E8 @note "Special micromodule override unless -1, otherwise the weapon-info default."
-    function StepDay(StepIndex: Integer; RecordFilm: Boolean): TObject; // @addr 0x4F1780 @note "Returns a hit ship, item or asteroid, or nil when no object was hit."
+    destructor Destroy; override; // @addr $5CD74C
+    procedure SaveToBuffer(Buffer: TBufEC); virtual; // @addr $5CDBCC @slot $00
+    procedure LoadFromBuffer(Buffer: TBufEC; World: TGalaxy); virtual; // @addr $5CDF58 @slot $04
+    procedure ResolveLoadedReferences(World: TGalaxy); // @addr $5CE300
+    procedure InitializeUnownedShot(Star: TStar; Target: TObject; X, Y: Integer; Direction: Single; MinDamage, MaxDamage: Integer; MaximumSpeed: Single; ItemType: TItemType; ModuleIndex, SpecialIndex: Integer); // @addr $5CDAB0
+    function CanBeHit(Attacker: TShip; UnusedWeapon: TWeapon): Boolean; // @addr $5D00F8
+    procedure RetargetTorpedo; // @addr $5CF818
+    function TryReturnToOwner(StepIndex: Integer; RecordFilm: Boolean; PreviousPosition: TPointF; Ship: TShip): Boolean; // @addr $5CF634
+    procedure ClearReferencesTo(Obj: TObject); // @addr 0x005D0178
+    constructor Create; // @addr 0x005CD6E4
+    procedure InitializeShot(Star: TStar; OwnerShip: TShip; Weapon: TWeapon; Target: TObject; ShotIndex: Integer); // @addr 0x005CD7AC @note "Registers the missile in Star, copies weapon data and initializes position, heading and speed."
+    procedure PrepareTurnMovement(StepIndex: Integer; RecordFilm, PlayShotSound: Boolean); // @addr 0x005CE528
+    function GetDisplayName: WideString; // @addr $5CF97C
+    function GetInfoText: WideString; // @addr $5CFA64
+    function GetGraphObject: TObjectSE; // @addr $5CE438 Lazily creates and initializes the retained missile scene object.
+    function GetGraphSuffix: WideString; virtual; // @addr $5D01D4 @slot $08
+    function GetWeaponInfo: PWeaponInfo; virtual; // @addr 0x005D02A4 @slot 0x0C
+    function GetShotVisual: Integer; // @addr 0x005D0198 @note "Special micromodule override unless -1, otherwise the weapon-info default."
+    function StepDay(StepIndex: Integer; RecordFilm: Boolean): TObject; // @addr 0x005CE9CC @note "Returns a hit ship, item or asteroid, or nil when no object was hit."
   end;
 
   TCustomMissile = class(TMissile) // @size 0x78
   public
     WeaponInfo: PWeaponInfo; // @offset 0x74  Borrowed custom weapon definition.
 
-    procedure SaveToBuffer(Buffer: TBufEC); override; // @addr $4F0A30
-    procedure LoadFromBuffer(Buffer: TBufEC; World: TGalaxy); override; // @addr $4F0EF8
-    function GetGraphSuffix: WideString; override; // @addr $4F33D8
-    procedure InitializeUnownedShot(Star: TStar; Target: TObject; X, Y: Integer; Direction: Single; MinDamage, MaxDamage: Integer; MaximumSpeed: Single; WeaponName: WideString; ModuleIndex, SpecialIndex: Integer); // @addr $4F05A8
-    function GetWeaponInfo: PWeaponInfo; override; // @addr 0x4F3464 @slot 0x0C
-    procedure InitializeShot(Star: TStar; OwnerShip: TShip; Weapon: TWeapon; Target: TObject; ShotIndex: Integer); // @addr 0x4F04A8 @note "Caches Weapon.GetWeaponInfo before the base initializer."
+    procedure SaveToBuffer(Buffer: TBufEC); override; // @addr $5CDEF8
+    procedure LoadFromBuffer(Buffer: TBufEC; World: TGalaxy); override; // @addr $5CE29C
+    function GetGraphSuffix: WideString; override; // @addr $5D025C
+    procedure InitializeUnownedShot(Star: TStar; Target: TObject; X, Y: Integer; Direction: Single; MinDamage, MaxDamage: Integer; MaximumSpeed: Single; WeaponName: WideString; ModuleIndex, SpecialIndex: Integer); // @addr $5CDB40
+    function GetWeaponInfo: PWeaponInfo; override; // @addr 0x005D02C0 @slot 0x0C
+    procedure InitializeShot(Star: TStar; OwnerShip: TShip; Weapon: TWeapon; Target: TObject; ShotIndex: Integer); // @addr 0x005CDA78 @note "Caches Weapon.GetWeaponInfo before the base initializer."
   end;
 
 implementation
 
 uses Classes, GR_Main, SE_Weapon, EC_BlockPar, Math, Globals, GlobalsV, SysUtils, aMyFunction, aAsteroid, aPlayer, aKling;
 
-{ @routine $4F005C TMissile_Create }
+{ @routine $5CD6E4 TMissile_Create }
 constructor TMissile.Create;
 begin
   inherited Create;
@@ -98,9 +97,9 @@ begin
   PreviousTarget := nil;
   LastTargetDistance := 1E20;
 end;
-{ @end $4F005C }
+{ @end $5CD6E4 }
 
-{ @routine $4F00DC TMissile_Destroy }
+{ @routine $5CD74C TMissile_Destroy }
 destructor TMissile.Destroy;
 var
   Index: Integer;
@@ -114,9 +113,9 @@ begin
   end;
   inherited Destroy;
 end;
-{ @end $4F00DC }
+{ @end $5CD74C }
 
-{ @routine $4F0164 TMissile_InitializeShot }
+{ @routine $5CD7AC TMissile_InitializeShot }
 procedure TMissile.InitializeShot(Star: TStar; OwnerShip: TShip; Weapon: TWeapon; Target: TObject; ShotIndex: Integer);
 var
   DY, DX: Single;
@@ -156,17 +155,17 @@ begin
   end;
   MaximumSpeed := Max(GetWeaponInfo.MissileMinSpeed div 10, RemapClamped(TechLevel, 1, 8, GetWeaponInfo.MissileMinSpeed, GetWeaponInfo.MissileMaxSpeed) + SpeedBonus);
 end;
-{ @end $4F0164 }
+{ @end $5CD7AC }
 
-{ @routine $4F04A8 TCustomMissile_InitializeShot }
+{ @routine $5CDA78 TCustomMissile_InitializeShot }
 procedure TCustomMissile.InitializeShot(Star: TStar; OwnerShip: TShip; Weapon: TWeapon; Target: TObject; ShotIndex: Integer);
 begin
   WeaponInfo := Weapon.GetWeaponInfo;
   inherited InitializeShot(Star, OwnerShip, Weapon, Target, ShotIndex);
 end;
-{ @end $4F04A8 }
+{ @end $5CDA78 }
 
-{ @routine $4F04E8 TMissile_InitializeUnownedShot }
+{ @routine $5CDAB0 TMissile_InitializeUnownedShot }
 procedure TMissile.InitializeUnownedShot(Star: TStar; Target: TObject; X, Y: Integer; Direction: Single; MinDamage, MaxDamage: Integer; MaximumSpeed: Single; ItemType: TItemType; ModuleIndex, SpecialIndex: Integer);
 begin
   Star.Missiles.Add(Self);
@@ -185,17 +184,17 @@ begin
   TechLevel := 1;
   ShotIndex := 0;
 end;
-{ @end $4F04E8 }
+{ @end $5CDAB0 }
 
-{ @routine $4F05A8 TCustomMissile_InitializeUnownedShot }
+{ @routine $5CDB40 TCustomMissile_InitializeUnownedShot }
 procedure TCustomMissile.InitializeUnownedShot(Star: TStar; Target: TObject; X, Y: Integer; Direction: Single; MinDamage, MaxDamage: Integer; MaximumSpeed: Single; WeaponName: WideString; ModuleIndex, SpecialIndex: Integer);
 begin
   WeaponInfo := Galaxy.RequireCustomWeaponInfo(WeaponName);
   inherited InitializeUnownedShot(Star, Target, X, Y, Direction, MinDamage, MaxDamage, MaximumSpeed, WeaponInfo.ItemType, ModuleIndex, SpecialIndex);
 end;
-{ @end $4F05A8 }
+{ @end $5CDB40 }
 
-{ @routine $4F063C TMissile_SaveToBuffer }
+{ @routine $5CDBCC TMissile_SaveToBuffer }
 procedure TMissile.SaveToBuffer(Buffer: TBufEC);
 begin
   Buffer.AddDWord(Id);
@@ -267,32 +266,32 @@ begin
   Buffer.AddSingle(LastTargetPosition.Y);
   Buffer.AddSingle(LastTargetDistance);
 end;
-{ @end $4F063C }
+{ @end $5CDBCC }
 
-{ @routine $4F0A30 TCustomMissile_SaveToBuffer }
+{ @routine $5CDEF8 TCustomMissile_SaveToBuffer }
 procedure TCustomMissile.SaveToBuffer(Buffer: TBufEC);
 begin
   Buffer.AddWideStringZ(WeaponInfo.ConfigName);
   inherited SaveToBuffer(Buffer);
 end;
-{ @end $4F0A30 }
+{ @end $5CDEF8 }
 
-{ @routine $4F0AB8 TMissile_LoadFromBuffer }
+{ @routine $5CDF58 TMissile_LoadFromBuffer }
 procedure TMissile.LoadFromBuffer(Buffer: TBufEC; World: TGalaxy);
 var
   ModuleNumber: Integer;
-// @nested $4F0A5C FindLegacyMissileMicroModuleIndex
-function FindLegacyMissileMicroModuleIndex(ConfigNumber: Integer): Integer; // @addr $4F0A5C @note "Nested legacy lookup; caller pops the unused static link."
+// @nested $5CDF18 FindLegacyMissileMicroModuleIndex
+function FindLegacyMissileMicroModuleIndex(ConfigNumber: Integer): Integer; // @addr $5CDF18 @note "Nested legacy lookup; caller pops the unused static link."
 var
   I: Integer;
 begin
   Result := 0;
   for I := 0 to High(MicroModuleTemplates) do
-    if MicroModuleTemplates[I].ConfigNumber = ConfigNumber then
-    begin
-      Result := I + 1;
-      Exit;
-    end;
+  begin
+    if MicroModuleTemplates[I].ConfigNumber <> ConfigNumber then Continue;
+    Result := I + 1;
+    Exit;
+  end;
 end;
 begin
   Id := Buffer.GetUInt32;
@@ -324,12 +323,12 @@ begin
       if MicroModuleIndex > 0 then
       begin
         ModuleNumber := Buffer.GetInt32;
-        if ((High(MicroModuleTemplates) + 1) < MicroModuleIndex) or (MicroModuleTemplates[MicroModuleIndex - 1].ConfigNumber <> ModuleNumber) then MicroModuleIndex := FindLegacyMissileMicroModuleIndex(ModuleNumber);
+        if (MicroModuleIndex > High(MicroModuleTemplates) + 1) or (MicroModuleTemplates[MicroModuleIndex - 1].ConfigNumber <> ModuleNumber) then MicroModuleIndex := FindLegacyMissileMicroModuleIndex(ModuleNumber);
       end;
       if SpecialModuleIndex > 0 then
       begin
         ModuleNumber := Buffer.GetInt32;
-        if ((High(MicroModuleTemplates) + 1) < SpecialModuleIndex) or (MicroModuleTemplates[SpecialModuleIndex - 1].ConfigNumber <> ModuleNumber) then SpecialModuleIndex := FindLegacyMissileMicroModuleIndex(ModuleNumber);
+        if (SpecialModuleIndex > High(MicroModuleTemplates) + 1) or (MicroModuleTemplates[SpecialModuleIndex - 1].ConfigNumber <> ModuleNumber) then SpecialModuleIndex := FindLegacyMissileMicroModuleIndex(ModuleNumber);
       end;
     end;
   end
@@ -373,33 +372,33 @@ begin
   LastTargetPosition.Y := Buffer.GetSingle;
   LastTargetDistance := Buffer.GetSingle;
 end;
-{ @end $4F0AB8 }
+{ @end $5CDF58 }
 
-{ @routine $4F0EF8 TCustomMissile_LoadFromBuffer }
+{ @routine $5CE29C TCustomMissile_LoadFromBuffer }
 procedure TCustomMissile.LoadFromBuffer(Buffer: TBufEC; World: TGalaxy);
 begin
   WeaponInfo := World.RequireCustomWeaponInfo(Buffer.ReadWideString);
   inherited LoadFromBuffer(Buffer, World);
 end;
-{ @end $4F0EF8 }
+{ @end $5CE29C }
 
-{ @routine $4F0F68 TMissile_ResolveLoadedReferences }
+{ @routine $5CE300 TMissile_ResolveLoadedReferences }
 procedure TMissile.ResolveLoadedReferences(World: TGalaxy);
 begin
   CurrentStar := TObject(World.IdToStar(Cardinal(CurrentStar))) as TStar;
-  OwnerShip := TObject(World.IdToShip(Cardinal(OwnerShip), True)) as TShip;
-  if SavedTargetKind = mtkShip then Target := TObject(World.IdToShip(Cardinal(Target), True)) as TShip
+  OwnerShip := World.IdToShip(Cardinal(OwnerShip), True) as TShip;
+  if SavedTargetKind = mtkShip then Target := World.IdToShip(Cardinal(Target), True) as TShip
   else if SavedTargetKind = mtkItem then Target := TObject(World.IdToItem(Cardinal(Target), True)) as TItem
   else if SavedTargetKind = mtkAsteroid then Target := TObject(World.IdToAsteroid(Cardinal(Target))) as TAsteroid
   else if SavedTargetKind = mtkMissile then Target := TObject(World.IdToMissile(Cardinal(Target))) as TMissile;
-  if SavedPreviousTargetKind = mtkShip then PreviousTarget := TObject(World.IdToShip(Cardinal(PreviousTarget), True)) as TShip
+  if SavedPreviousTargetKind = mtkShip then PreviousTarget := World.IdToShip(Cardinal(PreviousTarget), True) as TShip
   else if SavedPreviousTargetKind = mtkItem then PreviousTarget := TObject(World.IdToItem(Cardinal(PreviousTarget), True)) as TItem
   else if SavedPreviousTargetKind = mtkAsteroid then PreviousTarget := TObject(World.IdToAsteroid(Cardinal(PreviousTarget))) as TAsteroid
   else if SavedPreviousTargetKind = mtkMissile then PreviousTarget := TObject(World.IdToMissile(Cardinal(PreviousTarget))) as TMissile;
 end;
-{ @end $4F0F68 }
+{ @end $5CE300 }
 
-{ @routine $4F110C TMissile_GetGraphObject }
+{ @routine $5CE438 TMissile_GetGraphObject }
 function TMissile.GetGraphObject: TObjectSE;
 begin
   if Graphic = nil then
@@ -411,9 +410,9 @@ begin
   end;
   Result := Graphic;
 end;
-{ @end $4F110C }
+{ @end $5CE438 }
 
-{ @routine $4F121C TMissile_PrepareTurnMovement }
+{ @routine $5CE528 TMissile_PrepareTurnMovement }
 procedure TMissile.PrepareTurnMovement(StepIndex: Integer; RecordFilm, PlayShotSound: Boolean);
 var
   PathLength, TurnFraction: Single;
@@ -468,9 +467,9 @@ begin
   end;
   OvershootTicks := -1;
 end;
-{ @end $4F121C }
+{ @end $5CE528 }
 
-{ @routine $4F1780 TMissile_StepDay }
+{ @routine $5CE9CC TMissile_StepDay }
 function TMissile.StepDay(StepIndex: Integer; RecordFilm: Boolean): TObject;
 var
   StepScale, TargetHeading, Delta, Separation: Double;
@@ -596,91 +595,108 @@ begin
         Position.X := Position.X + Sin(HeadingDegreesToRadians(Direction)) * (Speed / BaseMovementStepsPerTurn * StepScale);
         Position.Y := Position.Y - Cos(HeadingDegreesToRadians(Direction)) * (Speed / BaseMovementStepsPerTurn * StepScale);
     end;
-    Stage := 16;
-    if RecordFilm then PrimaryFilm.SetObjectPosition(StepIndex, FilmObject, Position);
-    Stage := 17;
-    for I := 0 to CurrentStar.Missiles.Count - 1 do
-    begin
-      Stage := 18;
-      OtherMissile := TMissile(CurrentStar.Missiles[I]);
-      if (OtherMissile <> Self) and ((Target = OtherMissile) or (OtherMissile.Target = Self)) and
-        SegmentIntersectsCircle(PreviousPosition, Position, OtherMissile.Position, 10) then
+    repeat
+      Stage := 16;
+      if RecordFilm then PrimaryFilm.SetObjectPosition(StepIndex, FilmObject, Position);
+      Stage := 17;
+      for I := 0 to CurrentStar.Missiles.Count - 1 do
       begin
-        Stage := 19;
-        if RecordFilm then
+        Stage := 18;
+        OtherMissile := CurrentStar.Missiles[I];
+        if (OtherMissile <> Self) and ((Target = OtherMissile) or (OtherMissile.Target = Self)) and
+          SegmentIntersectsCircle(PreviousPosition, Position, OtherMissile.Position, 10) then
         begin
-        Effect := TWeaponSE.Create('Weapon.Asteroid', Classes.Point(0, 0), 0, -1);
-        EffectFilm := PrimaryFilm.AddObject(0, Effect);
-        PrimaryFilm.SetObjectPosition(StepIndex, EffectFilm, Position);
-        PrimaryFilm.SetWeaponHit(StepIndex, EffectFilm, 0, 0, False, True);
-        PrimaryFilm.AttachObject(StepIndex, EffectFilm);
-        PrimaryFilm.DetachObject(StepIndex, FilmObject);
-        ReleaseSpaceObject(Graphic);
-          PrimaryFilm.DetachObject(StepIndex, OtherMissile.FilmObject);
-          ReleaseSpaceObject(OtherMissile.Graphic);
+          Stage := 19;
+          if RecordFilm then
+          begin
+            Effect := TWeaponSE.Create('Weapon.Asteroid', Classes.Point(0, 0), 0, -1);
+            EffectFilm := PrimaryFilm.AddObject(0, Effect);
+            PrimaryFilm.SetObjectPosition(StepIndex, EffectFilm, Position);
+            PrimaryFilm.SetWeaponHit(StepIndex, EffectFilm, 0, 0, False, True);
+            PrimaryFilm.AttachObject(StepIndex, EffectFilm);
+            PrimaryFilm.DetachObject(StepIndex, FilmObject);
+            ReleaseSpaceObject(Graphic);
+            PrimaryFilm.DetachObject(StepIndex, OtherMissile.FilmObject);
+            ReleaseSpaceObject(OtherMissile.Graphic);
+          end;
+          OtherMissile.DestroyQueued := True;
+          DestroyQueued := True;
+          Exit;
         end;
-        OtherMissile.DestroyQueued := True;
-        DestroyQueued := True;
-        Exit;
       end;
-    end;
-    Stage := 20;
-    for I := 0 to CurrentStar.Items.Count - 1 do
-    begin
-      Stage := 21;
-      Item := TItem(CurrentStar.Items[I]);
-      Stage := 22;
-      if ((GetWeaponInfo.ShotType <> wstTorpedo) or (Target = Item)) and
-        SegmentIntersectsCircle(PreviousPosition, Position, Item.Position, 10) then
+      Stage := 20;
+      for I := 0 to CurrentStar.Items.Count - 1 do
       begin
+        Stage := 21;
+        Item := CurrentStar.Items[I];
+        Stage := 22;
+        if not (((GetWeaponInfo.ShotType <> wstTorpedo) or (Target = Item)) and
+          SegmentIntersectsCircle(PreviousPosition, Position, Item.Position, 10)) then Continue;
         Stage := 23;
         J := CurrentStar.MovingDropItems.Count - 1;
-        while J >= 0 do
-        begin
-          Drop := CurrentStar.MovingDropItems[J];
-          if Drop.Payload = Item then Break;
-          Dec(J);
-        end;
+        if J >= 0 then
+          while True do
+          begin
+            Drop := CurrentStar.MovingDropItems[J];
+            if Drop.Payload = Item then Break;
+            Dec(J);
+            if J < 0 then Break;
+          end;
         if J < 0 then
         begin
           Result := Item;
           Exit;
         end;
       end;
-    end;
-    Stage := 24;
-    for I := 0 to CurrentStar.Ships.Count - 1 do
-    begin
-      Stage := 25;
-      Ship := TShip(CurrentStar.Ships[I]);
-      if not Ship.IsHullDestroyed and Ship.InNormalSpace then
+      Stage := 24;
+      for I := 0 to CurrentStar.Ships.Count - 1 do
       begin
-        if TryReturnToOwner(StepIndex, RecordFilm, PreviousPosition, Ship) then Exit;
-        if (OwnerShip <> Ship) and ((Target = Ship) or (OwnerShip = nil) or (OwnerShip.GetRelationLevelToShip(Ship) = rlHostile)) then
+        Stage := 25;
+        Ship := CurrentStar.Ships[I];
+        if not Ship.IsHullDestroyed and Ship.InNormalSpace then
         begin
-          Stage := 26;
-          if SegmentIntersectsCircle(PreviousPosition, Position, Ship.Position, 20) then
+          if TryReturnToOwner(StepIndex, RecordFilm, PreviousPosition, Ship) then Exit;
+          if (OwnerShip <> Ship) and ((Target = Ship) or (OwnerShip = nil) or (OwnerShip.GetRelationLevelToShip(Ship) = rlHostile)) then
           begin
-            Result := Ship;
-            Exit;
+            Stage := 26;
+            if SegmentIntersectsCircle(PreviousPosition, Position, Ship.Position, 20) then
+            begin
+              Result := Ship;
+              Exit;
+            end;
           end;
         end;
       end;
-    end;
-    Stage := 27;
-    for I := 0 to CurrentStar.Asteroids.Count - 1 do
-    begin
-      Asteroid := TAsteroid(CurrentStar.Asteroids[I]);
-      Stage := 28;
-      if SegmentIntersectsCircle(PreviousPosition, Position, Asteroid.Position, 10) then
+      Stage := 27;
+      for I := 0 to CurrentStar.Asteroids.Count - 1 do
       begin
-        Result := Asteroid;
+        Asteroid := CurrentStar.Asteroids[I];
+        Stage := 28;
+        if SegmentIntersectsCircle(PreviousPosition, Position, Asteroid.Position, 10) then
+        begin
+          Result := Asteroid;
+          Exit;
+        end;
+      end;
+      Stage := 29;
+      if SegmentIntersectsCircle(PreviousPosition, Position, MakePointF(0, 0), CurrentStar.Radius * 0.7) then
+      begin
+        if RecordFilm then
+        begin
+          Effect := TWeaponSE.Create('Weapon.Asteroid', Classes.Point(0, 0), 0, -1);
+          EffectFilm := PrimaryFilm.AddObject(0, Effect);
+          PrimaryFilm.SetObjectPosition(StepIndex, EffectFilm, Position);
+          PrimaryFilm.SetWeaponHit(StepIndex, EffectFilm, 0, 0, False, True);
+          PrimaryFilm.AttachObject(StepIndex, EffectFilm);
+          PrimaryFilm.DetachObject(StepIndex, FilmObject);
+          ReleaseSpaceObject(Graphic);
+        end;
+        DestroyQueued := True;
         Exit;
       end;
-    end;
-    Stage := 29;
-    if SegmentIntersectsCircle(PreviousPosition, Position, MakePointF(0, 0), CurrentStar.Radius * 0.7) then
-    begin
+      Stage := 30;
+      if FlightTicks <= 1000 then Continue;
+      if (Target <> nil) and (FlightTicks * 0.005 * MaximumSpeed < GetWeaponInfo.MissileRange) then Continue;
       if RecordFilm then
       begin
         Effect := TWeaponSE.Create('Weapon.Asteroid', Classes.Point(0, 0), 0, -1);
@@ -693,25 +709,7 @@ begin
       end;
       DestroyQueued := True;
       Exit;
-    end;
-    begin
-      Stage := 30;
-      if (FlightTicks > 1000) and ((Target = nil) or not (FlightTicks * 0.005 * MaximumSpeed < GetWeaponInfo.MissileRange)) then
-      begin
-        if RecordFilm then
-        begin
-        Effect := TWeaponSE.Create('Weapon.Asteroid', Classes.Point(0, 0), 0, -1);
-        EffectFilm := PrimaryFilm.AddObject(0, Effect);
-        PrimaryFilm.SetObjectPosition(StepIndex, EffectFilm, Position);
-        PrimaryFilm.SetWeaponHit(StepIndex, EffectFilm, 0, 0, False, True);
-        PrimaryFilm.AttachObject(StepIndex, EffectFilm);
-        PrimaryFilm.DetachObject(StepIndex, FilmObject);
-        ReleaseSpaceObject(Graphic);
-        end;
-        DestroyQueued := True;
-        Exit;
-      end;
-    end;
+    until True;
   except
     on E: Exception do
     begin
@@ -720,9 +718,9 @@ begin
     end;
   end;
 end;
-{ @end $4F1780 }
+{ @end $5CE9CC }
 
-{ @routine $4F2620 TMissile_TryReturnToOwner }
+{ @routine $5CF634 TMissile_TryReturnToOwner }
 function TMissile.TryReturnToOwner(StepIndex: Integer; RecordFilm: Boolean; PreviousPosition: TPointF; Ship: TShip): Boolean;
 var
   I: Integer;
@@ -733,8 +731,9 @@ var
   EffectFilm: TEFilmObj;
 begin
   Result := False;
-  if (GetWeaponInfo.ShotType = wstTorpedo) and (OwnerShip <> nil) and (Ship = OwnerShip) and (Target = OwnerShip) and
-    SegmentIntersectsCircle(PreviousPosition, Position, Ship.Position, 20) then
+  if GetWeaponInfo.ShotType = wstTorpedo then
+    if (OwnerShip <> nil) and (OwnerShip = Ship) and (OwnerShip = Target) then
+      if SegmentIntersectsCircle(PreviousPosition, Position, Ship.Position, 20) then
   begin
     FoundWeapon := False;
     for I := 1 to Ship.WeaponCount do
@@ -771,28 +770,33 @@ begin
     Result := True;
   end;
 end;
-{ @end $4F2620 }
+{ @end $5CF634 }
 
-{ @routine $4F285C TMissile_RetargetTorpedo }
+{ @routine $5CF818 TMissile_RetargetTorpedo }
 procedure TMissile.RetargetTorpedo;
 var
   BestDistance, Distance: Single;
   I: Integer;
   Ship, BestShip: TShip;
 begin
-  if (GetWeaponInfo.ShotType = wstTorpedo) and (OwnerShip <> nil) and ((Target = nil) or (Target = OwnerShip)) then
+  if (GetWeaponInfo.ShotType = wstTorpedo) then
+    if (OwnerShip <> nil) then
+    if ((Target = nil) or (Target = OwnerShip)) then
   begin
     BestDistance := 1E30;
     BestShip := nil;
     for I := 0 to CurrentStar.Ships.Count - 1 do
     begin
-      Ship := TShip(CurrentStar.Ships[I]);
-      if not Ship.IsOutsideStarSpace and (Ship <> PreviousTarget) and (Ship.GetRelationLevelToShip(OwnerShip) <= rlHostile) and
-        (not (OwnerShip is TKling) or not (OwnerShip as TKling).IsPlayerCamouflageEffective(Ship)) and
-        (not (Ship is TKling) or not (Ship as TKling).IsPlayerCamouflageEffective(OwnerShip)) then
+      Ship := CurrentStar.Ships[I];
+      if not Ship.IsOutsideStarSpace then
+        if (Ship <> PreviousTarget) then
+        if (Ship.GetRelationLevelToShip(OwnerShip) <= rlHostile) then
+        if (not (OwnerShip is TKling) or not (OwnerShip as TKling).IsPlayerCamouflageEffective(Ship)) then
+        if (not (Ship is TKling) or not (Ship as TKling).IsPlayerCamouflageEffective(OwnerShip)) then
       begin
         Distance := PointDistance(Ship.Position, Position);
-        if (Distance <= 700) and (Distance < BestDistance) then
+        if (Distance <= 700) then
+          if (Distance < BestDistance) then
         begin
           BestDistance := Distance;
           BestShip := Ship;
@@ -804,18 +808,18 @@ begin
     else Target := nil;
   end;
 end;
-{ @end $4F285C }
+{ @end $5CF818 }
 
-{ @routine $4F2A0C TMissile_GetDisplayName }
+{ @routine $5CF97C TMissile_GetDisplayName }
 function TMissile.GetDisplayName: WideString;
 begin
   Result := LocalizedText('Items.Weapon.Missile.' + GetGraphSuffix + '.Name');
   if SpecialModuleIndex <> 0 then
     Result := Result + ' ' + MicroModuleTemplates[SpecialModuleIndex - 1].Name;
 end;
-{ @end $4F2A0C }
+{ @end $5CF97C }
 
-{ @routine $4F2B04 TMissile_GetInfoText }
+{ @routine $5CFA64 TMissile_GetInfoText }
 function TMissile.GetInfoText: WideString;
 var
   SpeedText, DamageText: WideString;
@@ -862,9 +866,9 @@ begin
         TextHighlightColorTag, '<Damage>', DamageText) + #13#10;
     end;
 end;
-{ @end $4F2B04 }
+{ @end $5CFA64 }
 
-{ @routine $4F3204 TMissile_CanBeHit }
+{ @routine $5D00F8 TMissile_CanBeHit }
 function TMissile.CanBeHit(Attacker: TShip; UnusedWeapon: TWeapon): Boolean;
 var
   Roll: Integer;
@@ -881,56 +885,56 @@ begin
   end;
   Result := Roll <= GetWeaponInfo.MissileChanceToBeHit;
 end;
-{ @end $4F3204 }
+{ @end $5D00F8 }
 
-{ @routine $4F329C TMissile_ClearReferencesTo }
+{ @routine $5D0178 TMissile_ClearReferencesTo }
 procedure TMissile.ClearReferencesTo(Obj: TObject);
 begin
   if OwnerShip = Obj then OwnerShip := nil;
   if Target = Obj then Target := nil;
   if PreviousTarget = Obj then PreviousTarget := nil;
 end;
-{ @end $4F329C }
+{ @end $5D0178 }
 
-{ @routine $4F32E8 TMissile_GetShotVisual }
+{ @routine $5D0198 TMissile_GetShotVisual }
 function TMissile.GetShotVisual: Integer;
 begin
   if (SpecialModuleIndex = 0) or (MicroModuleTemplates[SpecialModuleIndex - 1].ShotVisual = -1) then
     Result := GetWeaponInfo.DefaultPalette
   else Result := MicroModuleTemplates[SpecialModuleIndex - 1].ShotVisual;
 end;
-{ @end $4F32E8 }
+{ @end $5D0198 }
 
-{ @routine $4F3340 TMissile_GetGraphSuffix }
+{ @routine $5D01D4 TMissile_GetGraphSuffix }
 function TMissile.GetGraphSuffix: WideString;
 begin
   Result := '';
   if SpecialModuleIndex <> 0 then Result := MicroModuleTemplates[SpecialModuleIndex - 1].MissileGraph;
   if Result = '' then Result := IntToStr(Ord(ItemType) - Ord(t_IndustrialLaser) + 1);
 end;
-{ @end $4F3340 }
+{ @end $5D01D4 }
 
-{ @routine $4F33D8 TCustomMissile_GetGraphSuffix }
+{ @routine $5D025C TCustomMissile_GetGraphSuffix }
 function TCustomMissile.GetGraphSuffix: WideString;
 begin
   Result := '';
   if SpecialModuleIndex <> 0 then Result := MicroModuleTemplates[SpecialModuleIndex - 1].MissileGraph;
   if Result = '' then Result := WeaponInfo.ConfigName;
 end;
-{ @end $4F33D8 }
+{ @end $5D025C }
 
-{ @routine $4F3434 TMissile_GetWeaponInfo }
+{ @routine $5D02A4 TMissile_GetWeaponInfo }
 function TMissile.GetWeaponInfo: PWeaponInfo;
 begin
   Result := @WeaponInfos[ItemType];
 end;
-{ @end $4F3434 }
+{ @end $5D02A4 }
 
-{ @routine $4F3464 TCustomMissile_GetWeaponInfo }
+{ @routine $5D02C0 TCustomMissile_GetWeaponInfo }
 function TCustomMissile.GetWeaponInfo: PWeaponInfo;
 begin
   Result := WeaponInfo;
 end;
-{ @end $4F3464 }
+{ @end $5D02C0 }
 
 end.

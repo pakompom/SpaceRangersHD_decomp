@@ -1,5 +1,4 @@
 unit GI_Grid;
-// Unit bracket (inferred): .text 0x004ABA08..0x004AE974; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -39,40 +38,40 @@ type
     // Rows points into a Delphi dynamic array. ColumnWidths uses the EC heap.
     // Each cell is a TLabelGI child with column/row packed into the dword at +0x8C.
 
-    constructor Create(Owner: TObjectGI); // @addr 0x4ABB60
-    destructor Destroy; override; // @addr 0x4ABC90
-    procedure Clear; override; // @addr 0x4ABCC8
-    procedure LayoutCell(Child: TObjectGI); // @addr 0x4ABDB8
-    procedure LayoutCells; // @addr 0x4ABF28
-    procedure UpdateGridExtent; // @addr 0x4ABF64
-    procedure RebuildGridLines; // @addr 0x4AC078 @note "Type 0 hides lines, 1 draws both axes, 2 horizontal separators, 3 vertical separators; nonzero types include the outer border."
-    procedure UpdateRowAutoHeight(RowIndex: Integer); // @addr 0x4AC528
-    procedure UpdateActiveCellVisibility; // @addr 0x4AC5CC
-    procedure SetColumnCount(Value: Integer); // @addr 0x4AC710 @note "New columns default to 100 pixels."
-    procedure SetRowCount(Value: Integer); // @addr 0x4AC880 @note "New rows default to 15 pixels."
-    procedure SetGridType(Value: TGridTypeGI); // @addr 0x4ACA24
-    function GetColumnWidth(ColumnIndex: Integer): Integer; // @addr 0x4ACA6C
-    procedure SetColumnWidth(ColumnIndex, Width: Integer); // @addr 0x4ACB9C
-    function GetRowHeight(RowIndex: Integer): Integer; // @addr 0x4ACC00
-    procedure SetRowHeight(RowIndex, Height: Integer); // @addr 0x4ACD20 @note "Also updates AutoHeightMinimum when the row's AutoHeight flag is set."
-    procedure SetRowAutoHeightEnabled(RowIndex: Integer; Enabled: Boolean); // @addr 0x4ACDE0 @note "Does not validate RowIndex."
-    function GetCell(CellX, CellY: Integer): TLabelGI; // @addr 0x4ACE2C @note "Raises for out-of-range coordinates or a missing cell label."
-    procedure SetRowSelectEnabled(Value: Boolean); // @addr 0x4AD048
-    procedure SetColSelectEnabled(Value: Boolean); // @addr 0x4AD080
-    procedure SetBackgroundImagePath(Path: WideString); // @addr 0x4AD0B8
-    procedure SetActiveCellImagePath(Path: WideString); // @addr 0x4AD190
-    procedure SetActiveCellImageHalfAlpha(Value: Boolean); // @addr 0x4AD2B0
-    procedure SetActiveCell(Cell: TPoint); // @addr 0x4AD2E0 @note "Invalid coordinates become (-1,-1); valid cells are scrolled into view."
-    procedure SelectCell(Cell: TPoint); // @addr 0x4AD690 @note "Selection can be vetoed by the callback."
-    procedure CellClick(Sender: TObjectGI; MouseState: Cardinal; Point: TPoint); // @addr 0x4AD724
-    procedure LoadFromConfigPath(const Path: WideString); override; // @addr 0x4AD984
-    procedure LoadFromBlock(Block: TBlockParEC); override; // @addr 0x4AD9BC
-    procedure ProcessLeftButtonDown(KeyState: Cardinal; Point: TPoint); override; // @addr $4AD840
-    procedure OnFocusGained; override; // @addr $4AD890
-    procedure OnFocusLost; override; // @addr $4AD8A4
-    procedure ProcessKeyDown(Key: Integer); override; // @addr $4AD8B8
-    procedure Draw(ClipRect: TRect); override; // @addr $4AE950
-    procedure LoadGridProperties(Block: TBlockParEC); // @addr 0x4AD9E4
+    constructor Create(Owner: TObjectGI); // @addr 0x004A5540
+    destructor Destroy; override; // @addr 0x004A5644
+    procedure Clear; override; // @addr 0x004A5670
+    procedure LayoutCell(Child: TObjectGI); // @addr 0x004A5730
+    procedure LayoutCells; // @addr 0x004A587C
+    procedure UpdateGridExtent; // @addr 0x004A58A0
+    procedure RebuildGridLines; // @addr 0x004A5970 @note "Type 0 hides lines, 1 draws both axes, 2 horizontal separators, 3 vertical separators; nonzero types include the outer border."
+    procedure UpdateRowAutoHeight(RowIndex: Integer); // @addr 0x004A5DA8
+    procedure UpdateActiveCellVisibility; // @addr 0x004A5E2C
+    procedure SetColumnCount(Value: Integer); // @addr 0x004A5EF8 @note "New columns default to 100 pixels."
+    procedure SetRowCount(Value: Integer); // @addr 0x004A6008 @note "New rows default to 15 pixels."
+    procedure SetGridType(Value: TGridTypeGI); // @addr 0x004A6130
+    function GetColumnWidth(ColumnIndex: Integer): Integer; // @addr 0x004A615C
+    procedure SetColumnWidth(ColumnIndex, Width: Integer); // @addr 0x004A6278
+    function GetRowHeight(RowIndex: Integer): Integer; // @addr 0x004A62CC
+    procedure SetRowHeight(RowIndex, Height: Integer); // @addr 0x004A63D4 @note "Also updates AutoHeightMinimum when the row's AutoHeight flag is set."
+    procedure SetRowAutoHeightEnabled(RowIndex: Integer; Enabled: Boolean); // @addr 0x004A6460 @note "Does not validate RowIndex."
+    function GetCell(CellX, CellY: Integer): TLabelGI; // @addr 0x004A6484 @note "Raises for out-of-range coordinates or a missing cell label."
+    procedure SetRowSelectEnabled(Value: Boolean); // @addr 0x004A6678
+    procedure SetColSelectEnabled(Value: Boolean); // @addr 0x004A6698
+    procedure SetBackgroundImagePath(Path: WideString); // @addr 0x004A66B8
+    procedure SetActiveCellImagePath(Path: WideString); // @addr 0x004A6770
+    procedure SetActiveCellImageHalfAlpha(Value: Boolean); // @addr 0x004A6860
+    procedure SetActiveCell(Cell: TPoint); // @addr 0x004A6874 @note "Invalid coordinates become (-1,-1); valid cells are scrolled into view."
+    procedure SelectCell(Cell: TPoint); // @addr 0x004A6B44 @note "Selection can be vetoed by the callback."
+    procedure CellClick(Sender: TObjectGI; MouseState: Cardinal; Point: TPoint); // @addr 0x004A6BBC
+    procedure LoadFromConfigPath(const Path: WideString); override; // @addr 0x004A6D8C
+    procedure LoadFromBlock(Block: TBlockParEC); override; // @addr 0x004A6DB8
+    procedure ProcessLeftButtonDown(KeyState: Cardinal; Point: TPoint); override; // @addr $4A6CA4
+    procedure OnFocusGained; override; // @addr $4A6CE4
+    procedure OnFocusLost; override; // @addr $4A6CEC
+    procedure ProcessKeyDown(Key: Integer); override; // @addr $4A6CF4
+    procedure Draw(ClipRect: TRect); override; // @addr $4A7C8C
+    procedure LoadGridProperties(Block: TBlockParEC); // @addr 0x004A6DD4
   end;
 
 implementation
@@ -85,7 +84,7 @@ const
   GridCellRowShift = 16;
   GridDecorationTag = -1;
 
-{ @routine $4ABB60 TGridGI_Create }
+{ @routine $4A5540 TGridGI_Create }
 constructor TGridGI.Create(Owner: TObjectGI);
 begin
   inherited Create(Owner);
@@ -93,7 +92,7 @@ begin
   GridType := gtCell;
   GridColor := CurrentPixelFormat.PackRgbBytes(255, 255, 255);
   ActiveCellFrame := TFrameGI.Create(Self);
-  ActiveCellFrame.SetPositionModeW(True);
+  ActiveCellFrame.World := True;
   ActiveCellFrame.SetKind(fkRect);
   ActiveCellFrame.SetDepth(-3);
   ActiveCellFrame.SetColor(CurrentPixelFormat.PackRgbBytes(255, 0, 0));
@@ -102,17 +101,17 @@ begin
   SetScrollbarsOutside(True);
   SetUnlimitedWorldEnabled(False);
 end;
-{ @end $4ABB60 }
+{ @end $4A5540 }
 
-{ @routine $4ABC90 TGridGI_Destroy }
+{ @routine $4A5644 TGridGI_Destroy }
 destructor TGridGI.Destroy;
 begin
   Clear;
   inherited Destroy;
 end;
-{ @end $4ABC90 }
+{ @end $4A5644 }
 
-{ @routine $4ABCC8 TGridGI_Clear }
+{ @routine $4A5670 TGridGI_Clear }
 procedure TGridGI.Clear;
 begin
   if ControlName = 'DebugGrid' then SetColumnCount(0);
@@ -128,38 +127,36 @@ begin
   ActiveCell.X := -1;
   ActiveCell.Y := -1;
 end;
-{ @end $4ABCC8 }
+{ @end $4A5670 }
 
-{ @routine $4ABDB8 TGridGI_LayoutCell }
+{ @routine $4A5730 TGridGI_LayoutCell }
 procedure TGridGI.LayoutCell(Child: TObjectGI);
 var X, Y, I: Integer;
 begin
-  if Child is TLabelGI then
+  if not (Child is TLabelGI) then Exit;
+  Child.ObjectSize := Classes.Point(GetColumnWidth(Child.UserValue and GridCellCoordinateMask) + 1, GetRowHeight(Child.UserValue shr GridCellRowShift) + 1);
+  X := 0;
+  Y := 0;
+  for I := 0 to (Child.UserValue and GridCellCoordinateMask) - 1 do Inc(X, GetColumnWidth(I));
+  for I := 0 to (Child.UserValue shr GridCellRowShift) - 1 do Inc(Y, GetRowHeight(I));
+  Child.Pos := Classes.Point(X, Y);
+  if not Child.PositionModeW then
   begin
-    Child.SetSize(Classes.Point(GetColumnWidth(Child.UserValue and GridCellCoordinateMask) + 1, GetRowHeight(Child.UserValue shr GridCellRowShift) + 1));
-    X := 0;
-    Y := 0;
-    for I := 0 to (Child.UserValue and GridCellCoordinateMask) - 1 do X := X + GetColumnWidth(I);
-    for I := 0 to (Child.UserValue shr GridCellRowShift) - 1 do Y := Y + GetRowHeight(I);
-    Child.SetPosition(Classes.Point(X, Y));
-    if not Child.PositionModeW then
+    Child.World := True;
+    Child.SetDepth(-1);
+    with Child as TLabelGI do
     begin
-      Child.SetPositionModeW(True);
-      Child.SetDepth(-1);
-      with Child as TLabelGI do
-      begin
-        SetFontName(Self.FontName);
-        SetTextAlignX(taxLeft);
-        SetTextAlignY(tayTop);
-        LeftButtonDownCallback := CellClick;
-        SetTextColor(Self.TextColor);
-      end;
+      SetFontName(Self.FontName);
+      SetTextAlignX(taxLeft);
+      SetTextAlignY(tayTop);
+      LeftButtonDownCallback := CellClick;
+      SetTextColor(Self.TextColor);
     end;
   end;
 end;
-{ @end $4ABDB8 }
+{ @end $4A5730 }
 
-{ @routine $4ABF28 TGridGI_LayoutCells }
+{ @routine $4A587C TGridGI_LayoutCells }
 procedure TGridGI.LayoutCells;
 var Child, Current: TObjectGI;
 begin
@@ -171,25 +168,25 @@ begin
     LayoutCell(Current);
   end;
 end;
-{ @end $4ABF28 }
+{ @end $4A587C }
 
-{ @routine $4ABF64 TGridGI_UpdateGridExtent }
+{ @routine $4A58A0 TGridGI_UpdateGridExtent }
 procedure TGridGI.UpdateGridExtent;
 var X, Y, I: Integer;
 begin
   X := 0;
   Y := 0;
-  for I := 0 to ColumnCount - 1 do X := X + GetColumnWidth(I);
-  for I := 0 to RowCount - 1 do Y := Y + GetRowHeight(I);
-  if BackgroundImage <> nil then BackgroundImage.SetSize(Classes.Point(X, Y));
+  for I := 0 to ColumnCount - 1 do Inc(X, GetColumnWidth(I));
+  for I := 0 to RowCount - 1 do Inc(Y, GetRowHeight(I));
+  if BackgroundImage <> nil then BackgroundImage.ObjectSize := Classes.Point(X, Y);
   if (ActiveCell.X < 0) or (ActiveCell.X >= ColumnCount) or (ActiveCell.Y < 0) or (ActiveCell.Y >= RowCount) then
     ActiveCell := Classes.Point(-1, -1);
   RebuildGridLines;
   UpdateScrollRanges;
 end;
-{ @end $4ABF64 }
+{ @end $4A58A0 }
 
-{ @routine $4AC078 TGridGI_RebuildGridLines }
+{ @routine $4A5970 TGridGI_RebuildGridLines }
 procedure TGridGI.RebuildGridLines;
 var Child, Current: TObjectGI; X, Y, I, Position: Integer; Line: TLineGI;
 begin
@@ -203,21 +200,21 @@ begin
   if (GridType = gtHide) or (ColumnCount < 1) or (RowCount < 1) then Exit;
   X := 0;
   Y := 0;
-  for I := 0 to ColumnCount - 1 do X := X + GetColumnWidth(I);
-  for I := 0 to RowCount - 1 do Y := Y + GetRowHeight(I);
+  for I := 0 to ColumnCount - 1 do Inc(X, GetColumnWidth(I));
+  for I := 0 to RowCount - 1 do Inc(Y, GetRowHeight(I));
   if ((GridType = gtCell) or (GridType = gtRow)) and (RowCount >= 2) then
   begin
     Position := GetRowHeight(0);
     for I := 1 to RowCount - 1 do
     begin
       Line := TLineGI.Create(Self);
-      Line.SetPosition(Classes.Point(0, Position));
-      Line.SetSize(Classes.Point(X + 1, 1));
-      Line.SetPositionModeW(True);
+      Line.Pos := Classes.Point(0, Position);
+      Line.ObjectSize := Classes.Point(X + 1, 1);
+      Line.World := True;
       Line.SetColor(GridColor);
       Line.SetDepth(-2);
       Line.UserValue := GridDecorationTag;
-      Position := Position + GetRowHeight(I);
+      Inc(Position, GetRowHeight(I));
     end;
   end;
   if ((GridType = gtCell) or (GridType = gtCol)) and (ColumnCount >= 2) then
@@ -226,47 +223,47 @@ begin
     for I := 1 to ColumnCount - 1 do
     begin
       Line := TLineGI.Create(Self);
-      Line.SetPosition(Classes.Point(Position, 0));
-      Line.SetSize(Classes.Point(1, Y + 1));
-      Line.SetPositionModeW(True);
+      Line.Pos := Classes.Point(Position, 0);
+      Line.ObjectSize := Classes.Point(1, Y + 1);
+      Line.World := True;
       Line.SetColor(GridColor);
       Line.SetDepth(-2);
       Line.UserValue := GridDecorationTag;
-      Position := Position + GetColumnWidth(I);
+      Inc(Position, GetColumnWidth(I));
     end;
   end;
   Line := TLineGI.Create(Self);
-  Line.SetPosition(Classes.Point(0, 0));
-  Line.SetSize(Classes.Point(X + 1, 1));
-  Line.SetPositionModeW(True);
+  Line.Pos := Classes.Point(0, 0);
+  Line.ObjectSize := Classes.Point(X + 1, 1);
+  Line.World := True;
   Line.SetColor(GridColor);
   Line.SetDepth(-2);
   Line.UserValue := GridDecorationTag;
   Line := TLineGI.Create(Self);
-  Line.SetPosition(Classes.Point(0, Y));
-  Line.SetSize(Classes.Point(X + 1, 1));
-  Line.SetPositionModeW(True);
+  Line.Pos := Classes.Point(0, Y);
+  Line.ObjectSize := Classes.Point(X + 1, 1);
+  Line.World := True;
   Line.SetColor(GridColor);
   Line.SetDepth(-2);
   Line.UserValue := GridDecorationTag;
   Line := TLineGI.Create(Self);
-  Line.SetPosition(Classes.Point(0, 0));
-  Line.SetSize(Classes.Point(1, Y + 1));
-  Line.SetPositionModeW(True);
+  Line.Pos := Classes.Point(0, 0);
+  Line.ObjectSize := Classes.Point(1, Y + 1);
+  Line.World := True;
   Line.SetColor(GridColor);
   Line.SetDepth(-2);
   Line.UserValue := GridDecorationTag;
   Line := TLineGI.Create(Self);
-  Line.SetPosition(Classes.Point(X, 0));
-  Line.SetSize(Classes.Point(1, Y + 1));
-  Line.SetPositionModeW(True);
+  Line.Pos := Classes.Point(X, 0);
+  Line.ObjectSize := Classes.Point(1, Y + 1);
+  Line.World := True;
   Line.SetColor(GridColor);
   Line.SetDepth(-2);
   Line.UserValue := GridDecorationTag;
 end;
-{ @end $4AC078 }
+{ @end $4A5970 }
 
-{ @routine $4AC528 TGridGI_UpdateRowAutoHeight }
+{ @routine $4A5DA8 TGridGI_UpdateRowAutoHeight }
 procedure TGridGI.UpdateRowAutoHeight(RowIndex: Integer);
 var Child: TObjectGI; Height, CellHeight: Integer;
 begin
@@ -283,9 +280,9 @@ begin
   end;
   SetRowHeight(RowIndex, Height);
 end;
-{ @end $4AC528 }
+{ @end $4A5DA8 }
 
-{ @routine $4AC5CC TGridGI_UpdateActiveCellVisibility }
+{ @routine $4A5E2C TGridGI_UpdateActiveCellVisibility }
 procedure TGridGI.UpdateActiveCellVisibility;
 var Rect: TRect;
 begin
@@ -297,17 +294,17 @@ begin
   ScrollRectIntoView(Rect);
   if (ActiveCell.X < 0) or (ActiveCell.Y < 0) then
   begin
-    if ActiveCellFrame <> nil then ActiveCellFrame.SetActive(False);
-    if ActiveCellImage <> nil then ActiveCellImage.SetActive(False);
+    if ActiveCellFrame <> nil then ActiveCellFrame.IsActive := False;
+    if ActiveCellImage <> nil then ActiveCellImage.IsActive := False;
   end else
   begin
-    if ActiveCellFrame <> nil then ActiveCellFrame.SetActive(True);
-    if ActiveCellImage <> nil then ActiveCellImage.SetActive(True);
+    if ActiveCellFrame <> nil then ActiveCellFrame.IsActive := True;
+    if ActiveCellImage <> nil then ActiveCellImage.IsActive := True;
   end;
 end;
-{ @end $4AC5CC }
+{ @end $4A5E2C }
 
-{ @routine $4AC710 TGridGI_SetColumnCount }
+{ @routine $4A5EF8 TGridGI_SetColumnCount }
 procedure TGridGI.SetColumnCount(Value: Integer);
 var Child, Current: TObjectGI; X, Y, OldCount: Integer;
 begin
@@ -341,9 +338,9 @@ begin
   UpdateGridExtent;
   Invalidate;
 end;
-{ @end $4AC710 }
+{ @end $4A5EF8 }
 
-{ @routine $4AC880 TGridGI_SetRowCount }
+{ @routine $4A6008 TGridGI_SetRowCount }
 procedure TGridGI.SetRowCount(Value: Integer);
 var Child, Current: TObjectGI; X, Y, OldCount: Integer;
 begin
@@ -380,82 +377,74 @@ begin
   UpdateGridExtent;
   Invalidate;
 end;
-{ @end $4AC880 }
+{ @end $4A6008 }
 
-{ @routine $4ACA24 TGridGI_SetGridType }
+{ @routine $4A6130 TGridGI_SetGridType }
 procedure TGridGI.SetGridType(Value: TGridTypeGI);
 begin
-  if Value <> GridType then
-  begin
-    GridType := Value;
-    LayoutCells;
-    UpdateGridExtent;
-    Invalidate;
-  end;
+  if Value = GridType then Exit;
+  GridType := Value;
+  LayoutCells;
+  UpdateGridExtent;
+  Invalidate;
 end;
-{ @end $4ACA24 }
+{ @end $4A6130 }
 
-{ @routine $4ACA6C TGridGI_GetColumnWidth }
+{ @routine $4A615C TGridGI_GetColumnWidth }
 function TGridGI.GetColumnWidth(ColumnIndex: Integer): Integer;
 begin
   if (ColumnIndex < 0) or (ColumnIndex >= ColumnCount) then
     raise Exception.Create('TGridGI.GetSizeX. (' + IntToStr(ColumnIndex) + '<0) or (' + IntToStr(ColumnIndex) + '>0' + IntToStr(ColumnCount) + ')');
   Result := ReadIntegerEC(AddPointerOffset(ColumnWidths, ColumnIndex * SizeOf(Integer)));
 end;
-{ @end $4ACA6C }
+{ @end $4A615C }
 
-{ @routine $4ACB9C TGridGI_SetColumnWidth }
+{ @routine $4A6278 TGridGI_SetColumnWidth }
 procedure TGridGI.SetColumnWidth(ColumnIndex, Width: Integer);
 begin
-  if GetColumnWidth(ColumnIndex) <> Width then
-  begin
-    WriteInt32EC(AddPointerOffset(ColumnWidths, ColumnIndex * SizeOf(Integer)), Width);
-    LayoutCells;
-    UpdateGridExtent;
-    Invalidate;
-  end;
+  if GetColumnWidth(ColumnIndex) = Width then Exit;
+  WriteInt32EC(AddPointerOffset(ColumnWidths, ColumnIndex * SizeOf(Integer)), Width);
+  LayoutCells;
+  UpdateGridExtent;
+  Invalidate;
 end;
-{ @end $4ACB9C }
+{ @end $4A6278 }
 
-{ @routine $4ACC00 TGridGI_GetRowHeight }
+{ @routine $4A62CC TGridGI_GetRowHeight }
 function TGridGI.GetRowHeight(RowIndex: Integer): Integer;
 begin
   if (RowIndex < 0) or (RowIndex >= RowCount) then
     raise Exception.Create('TGridGI.GetSizeX. (' + IntToStr(RowIndex) + '<0) or (' + IntToStr(RowIndex) + '>=' + IntToStr(RowCount) + ')');
   Result := Rows[RowIndex].Height;
 end;
-{ @end $4ACC00 }
+{ @end $4A62CC }
 
-{ @routine $4ACD20 TGridGI_SetRowHeight }
+{ @routine $4A63D4 TGridGI_SetRowHeight }
 procedure TGridGI.SetRowHeight(RowIndex, Height: Integer);
 var Cell: TPoint;
 begin
-  if GetRowHeight(RowIndex) <> Height then
-  begin
-    Rows[RowIndex].Height := Height;
-    if Rows[RowIndex].AutoHeight then Rows[RowIndex].AutoHeightMinimum := Rows[RowIndex].Height;
-    LayoutCells;
-    UpdateGridExtent;
-    Cell := ActiveCell;
-    ActiveCell.X := -2;
-    SetActiveCell(Cell);
-    Invalidate;
-  end;
+  if GetRowHeight(RowIndex) = Height then Exit;
+  Rows[RowIndex].Height := Height;
+  if Rows[RowIndex].AutoHeight then Rows[RowIndex].AutoHeightMinimum := Rows[RowIndex].Height;
+  LayoutCells;
+  UpdateGridExtent;
+  Cell := ActiveCell;
+  ActiveCell.X := -2;
+  SetActiveCell(Cell);
+  Invalidate;
 end;
-{ @end $4ACD20 }
+{ @end $4A63D4 }
 
-{ @routine $4ACDE0 TGridGI_SetRowAutoHeightEnabled }
+{ @routine $4A6460 TGridGI_SetRowAutoHeightEnabled }
 procedure TGridGI.SetRowAutoHeightEnabled(RowIndex: Integer; Enabled: Boolean);
 begin
-  if Rows[RowIndex].AutoHeight <> Enabled then
-  begin
-    Rows[RowIndex].AutoHeight := Enabled;
-    UpdateRowAutoHeight(RowIndex);
-  end;
+  if Rows[RowIndex].AutoHeight = Enabled then Exit;
+  Rows[RowIndex].AutoHeight := Enabled;
+  UpdateRowAutoHeight(RowIndex);
 end;
-{ @end $4ACDE0 }
+{ @end $4A6460 }
 
-{ @routine $4ACE2C TGridGI_GetCell }
+{ @routine $4A6484 TGridGI_GetCell }
 function TGridGI.GetCell(CellX, CellY: Integer): TLabelGI;
 var Child: TObjectGI;
 begin
@@ -473,31 +462,27 @@ begin
   end;
   raise Exception.Create('TGridGI.GetCell. Cell=' + IntToStr(CellX) + ',' + IntToStr(CellY) + '  Count=' + IntToStr(ColumnCount) + ',' + IntToStr(RowCount));
 end;
-{ @end $4ACE2C }
+{ @end $4A6484 }
 
-{ @routine $4AD048 TGridGI_SetRowSelectEnabled }
+{ @routine $4A6678 TGridGI_SetRowSelectEnabled }
 procedure TGridGI.SetRowSelectEnabled(Value: Boolean);
 begin
-  if RowSelect <> Value then
-  begin
-    RowSelect := Value;
-    Invalidate;
-  end;
+  if RowSelect = Value then Exit;
+  RowSelect := Value;
+  Invalidate;
 end;
-{ @end $4AD048 }
+{ @end $4A6678 }
 
-{ @routine $4AD080 TGridGI_SetColSelectEnabled }
+{ @routine $4A6698 TGridGI_SetColSelectEnabled }
 procedure TGridGI.SetColSelectEnabled(Value: Boolean);
 begin
-  if ColSelect <> Value then
-  begin
-    ColSelect := Value;
-    Invalidate;
-  end;
+  if ColSelect = Value then Exit;
+  ColSelect := Value;
+  Invalidate;
 end;
-{ @end $4AD080 }
+{ @end $4A6698 }
 
-{ @routine $4AD0B8 TGridGI_SetBackgroundImagePath }
+{ @routine $4A66B8 TGridGI_SetBackgroundImagePath }
 procedure TGridGI.SetBackgroundImagePath(Path: WideString);
 var Image: TImageGI;
 begin
@@ -509,16 +494,16 @@ begin
   Image := TImageGI.Create(Self);
   Image.UserValue := GridDecorationTag;
   Image.SetDepth(2);
-  Image.SetImagePath(Path);
-  Image.SetImageKindX(ikxLeftFill);
-  Image.SetImageKindY(ikyTopFill);
-  Image.SetPositionModeW(True);
+  Image.ImageSourcePath := Path;
+  Image.KindX := ikxLeftFill;
+  Image.KindY := ikyTopFill;
+  Image.World := True;
   BackgroundImage := Image;
   UpdateGridExtent;
 end;
-{ @end $4AD0B8 }
+{ @end $4A66B8 }
 
-{ @routine $4AD190 TGridGI_SetActiveCellImagePath }
+{ @routine $4A6770 TGridGI_SetActiveCellImagePath }
 procedure TGridGI.SetActiveCellImagePath(Path: WideString);
 begin
   if Path = '' then
@@ -531,26 +516,26 @@ begin
   end else
   begin
     if ActiveCellImage = nil then ActiveCellImage := TImageGI.Create(Self);
-    ActiveCellImage.SetImagePath(Path);
-    ActiveCellImage.SetImageKindX(ikxLeftFill);
-    ActiveCellImage.SetImageKindY(ikyTopFill);
+    ActiveCellImage.ImageSourcePath := Path;
+    ActiveCellImage.KindX := ikxLeftFill;
+    ActiveCellImage.KindY := ikyTopFill;
     ActiveCellImage.UserValue := GridDecorationTag;
     ActiveCellImage.SetDepth(1);
-    ActiveCellImage.SetPositionModeW(True);
+    ActiveCellImage.World := True;
   end;
   UpdateGridExtent;
   Invalidate;
 end;
-{ @end $4AD190 }
+{ @end $4A6770 }
 
-{ @routine $4AD2B0 TGridGI_SetActiveCellImageHalfAlpha }
+{ @routine $4A6860 TGridGI_SetActiveCellImageHalfAlpha }
 procedure TGridGI.SetActiveCellImageHalfAlpha(Value: Boolean);
 begin
-  if ActiveCellImage <> nil then ActiveCellImage.SetHalfAlpha(Value);
+  if ActiveCellImage <> nil then ActiveCellImage.HalfAlpha := Value;
 end;
-{ @end $4AD2B0 }
+{ @end $4A6860 }
 
-{ @routine $4AD2E0 TGridGI_SetActiveCell }
+{ @routine $4A6874 TGridGI_SetActiveCell }
 procedure TGridGI.SetActiveCell(Cell: TPoint);
 var LabelControl: TLabelGI;
 begin
@@ -563,47 +548,47 @@ begin
       if not RowSelect and not ColSelect then
       begin
         LabelControl := GetCell(ActiveCell.X, ActiveCell.Y);
-        ActiveCellImage.SetPosition(LabelControl.LocalPosition);
-        ActiveCellImage.SetSize(LabelControl.ClientSize);
+        ActiveCellImage.Pos := LabelControl.LocalPosition;
+        ActiveCellImage.ObjectSize := LabelControl.ClientSize;
       end else if RowSelect then
       begin
         LabelControl := GetCell(0, ActiveCell.Y);
-        ActiveCellImage.SetPosition(LabelControl.LocalPosition);
+        ActiveCellImage.Pos := LabelControl.LocalPosition;
         LabelControl := GetCell(ColumnCount - 1, ActiveCell.Y);
-        ActiveCellImage.SetSize(Classes.Point(LabelControl.LocalPosition.X + LabelControl.ClientSize.X, LabelControl.ClientSize.Y));
+        ActiveCellImage.ObjectSize := Classes.Point(LabelControl.LocalPosition.X + LabelControl.ClientSize.X, LabelControl.ClientSize.Y);
       end else if ColSelect then
       begin
         LabelControl := GetCell(ActiveCell.X, 0);
-        ActiveCellImage.SetPosition(LabelControl.LocalPosition);
+        ActiveCellImage.Pos := LabelControl.LocalPosition;
         LabelControl := GetCell(ActiveCell.X, RowCount - 1);
-        ActiveCellImage.SetSize(Classes.Point(LabelControl.ClientSize.X, LabelControl.LocalPosition.Y + LabelControl.ClientSize.Y));
+        ActiveCellImage.ObjectSize := Classes.Point(LabelControl.ClientSize.X, LabelControl.LocalPosition.Y + LabelControl.ClientSize.Y);
       end;
     end;
       if not RowSelect and not ColSelect then
       begin
         LabelControl := GetCell(ActiveCell.X, ActiveCell.Y);
-        ActiveCellFrame.SetPosition(LabelControl.LocalPosition);
-        ActiveCellFrame.SetSize(LabelControl.ClientSize);
+        ActiveCellFrame.Pos := LabelControl.LocalPosition;
+        ActiveCellFrame.ObjectSize := LabelControl.ClientSize;
       end else if RowSelect then
       begin
         LabelControl := GetCell(0, ActiveCell.Y);
-        ActiveCellFrame.SetPosition(LabelControl.LocalPosition);
+        ActiveCellFrame.Pos := LabelControl.LocalPosition;
         LabelControl := GetCell(ColumnCount - 1, ActiveCell.Y);
-        ActiveCellFrame.SetSize(Classes.Point(LabelControl.LocalPosition.X + LabelControl.ClientSize.X, LabelControl.ClientSize.Y));
+        ActiveCellFrame.ObjectSize := Classes.Point(LabelControl.LocalPosition.X + LabelControl.ClientSize.X, LabelControl.ClientSize.Y);
       end else if ColSelect then
       begin
         LabelControl := GetCell(ActiveCell.X, 0);
-        ActiveCellFrame.SetPosition(LabelControl.LocalPosition);
+        ActiveCellFrame.Pos := LabelControl.LocalPosition;
         LabelControl := GetCell(ActiveCell.X, RowCount - 1);
-        ActiveCellFrame.SetSize(Classes.Point(LabelControl.ClientSize.X, LabelControl.LocalPosition.Y + LabelControl.ClientSize.Y));
+        ActiveCellFrame.ObjectSize := Classes.Point(LabelControl.ClientSize.X, LabelControl.LocalPosition.Y + LabelControl.ClientSize.Y);
       end;
   end else ActiveCell := Classes.Point(-1, -1);
   UpdateActiveCellVisibility;
   Invalidate;
 end;
-{ @end $4AD2E0 }
+{ @end $4A6874 }
 
-{ @routine $4AD690 TGridGI_SelectCell }
+{ @routine $4A6B44 TGridGI_SelectCell }
 procedure TGridGI.SelectCell(Cell: TPoint);
 begin
   if (Cell.X < 0) or (Cell.X >= ColumnCount) or (Cell.Y < 0) or (Cell.Y >= RowCount) then Exit;
@@ -612,49 +597,52 @@ begin
   SetActiveCell(Cell);
   if Assigned(SelectionChangedCallback) then SelectionChangedCallback(Self);
 end;
-{ @end $4AD690 }
+{ @end $4A6B44 }
 
-{ @routine $4AD724 TGridGI_CellClick }
+{ @routine $4A6BBC TGridGI_CellClick }
 procedure TGridGI.CellClick(Sender: TObjectGI; MouseState: Cardinal; Point: TPoint);
 var Cell: TPoint; Repeated: Boolean;
 begin
   Cell := Classes.Point(Sender.UserValue and GridCellCoordinateMask, Sender.UserValue shr GridCellRowShift);
-  if Assigned(CanSelectCellCallback) then
-    if not CanSelectCellCallback(Self, Cell) then Exit;
-  if ((ActiveCell.Y = Cell.Y) and RowSelect) or ((ActiveCell.X = Cell.X) and ColSelect) or ((ActiveCell.X = Cell.X) and (ActiveCell.Y = Cell.Y)) then Repeated := True else Repeated := False;
-  SetActiveCell(Cell);
-  if Repeated then
+  // Native $4914CF..$4914F2 enters the callback block when there is no veto
+  // callback, or when the callback accepts the candidate cell.
+  if (not Assigned(CanSelectCellCallback)) or CanSelectCellCallback(Self, Cell) then
   begin
-    if Assigned(RepeatedCellClickCallback) then RepeatedCellClickCallback(Self);
-  end else
-    if Assigned(SelectionChangedCallback) then SelectionChangedCallback(Self);
+    if ((ActiveCell.Y = Cell.Y) and RowSelect) or ((ActiveCell.X = Cell.X) and ColSelect) or ((ActiveCell.X = Cell.X) and (ActiveCell.Y = Cell.Y)) then Repeated := True else Repeated := False;
+    SetActiveCell(Cell);
+    if Repeated then
+    begin
+      if Assigned(RepeatedCellClickCallback) then RepeatedCellClickCallback(Self);
+    end else
+      if Assigned(SelectionChangedCallback) then SelectionChangedCallback(Self);
+  end;
 end;
-{ @end $4AD724 }
+{ @end $4A6BBC }
 
-{ @routine $4AD840 TGridGI_ProcessLeftButtonDown }
+{ @routine $4A6CA4 TGridGI_ProcessLeftButtonDown }
 procedure TGridGI.ProcessLeftButtonDown(KeyState: Cardinal; Point: TPoint);
 begin
   if IsOccludedAtPoint(Point) then Exit;
   inherited ProcessLeftButtonDown(KeyState, Point);
   if Active = True then MessageLoop.SetFocusedControl(Self);
 end;
-{ @end $4AD840 }
+{ @end $4A6CA4 }
 
-{ @routine $4AD890 TGridGI_OnFocusGained }
+{ @routine $4A6CE4 TGridGI_OnFocusGained }
 procedure TGridGI.OnFocusGained;
 begin
   inherited OnFocusGained;
 end;
-{ @end $4AD890 }
+{ @end $4A6CE4 }
 
-{ @routine $4AD8A4 TGridGI_OnFocusLost }
+{ @routine $4A6CEC TGridGI_OnFocusLost }
 procedure TGridGI.OnFocusLost;
 begin
   inherited OnFocusLost;
 end;
-{ @end $4AD8A4 }
+{ @end $4A6CEC }
 
-{ @routine $4AD8B8 TGridGI_ProcessKeyDown }
+{ @routine $4A6CF4 TGridGI_ProcessKeyDown }
 procedure TGridGI.ProcessKeyDown(Key: Integer);
 begin
   if Key = VK_LEFT then SelectCell(Classes.Point(ActiveCell.X - 1, ActiveCell.Y))
@@ -662,9 +650,9 @@ begin
   else if Key = VK_UP then SelectCell(Classes.Point(ActiveCell.X, ActiveCell.Y - 1))
   else if Key = VK_DOWN then SelectCell(Classes.Point(ActiveCell.X, ActiveCell.Y + 1));
 end;
-{ @end $4AD8B8 }
+{ @end $4A6CF4 }
 
-{ @routine $4AD984 TGridGI_LoadFromConfigPath }
+{ @routine $4A6D8C TGridGI_LoadFromConfigPath }
 procedure TGridGI.LoadFromConfigPath(const Path: WideString);
 var Block: TBlockParEC;
 begin
@@ -672,17 +660,17 @@ begin
   Block := UiStyleConfig.GetBlockByPath(Path);
   LoadGridProperties(Block);
 end;
-{ @end $4AD984 }
+{ @end $4A6D8C }
 
-{ @routine $4AD9BC TGridGI_LoadFromBlock }
+{ @routine $4A6DB8 TGridGI_LoadFromBlock }
 procedure TGridGI.LoadFromBlock(Block: TBlockParEC);
 begin
   inherited LoadFromBlock(Block);
   LoadGridProperties(Block);
 end;
-{ @end $4AD9BC }
+{ @end $4A6DB8 }
 
-{ @routine $4AD9E4 TGridGI_LoadGridProperties }
+{ @routine $4A6DD4 TGridGI_LoadGridProperties }
 procedure TGridGI.LoadGridProperties(Block: TBlockParEC);
 var
   Text: WideString;
@@ -795,13 +783,13 @@ begin
   end;
   if Block.CountParams('ActiveCellImageHalfAlpha') > 0 then SetActiveCellImageHalfAlpha(ParseEnabledNameGI(Block.GetParam('ActiveCellImageHalfAlpha')));
 end;
-{ @end $4AD9E4 }
+{ @end $4A6DD4 }
 
-{ @routine $4AE950 TGridGI_Draw }
+{ @routine $4A7C8C TGridGI_Draw }
 procedure TGridGI.Draw(ClipRect: TRect);
 begin
   inherited Draw(ClipRect);
 end;
-{ @end $4AE950 }
+{ @end $4A7C8C }
 
 end.

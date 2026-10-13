@@ -12,30 +12,29 @@ type
     WorldImage: PabWorldImage; // @offset $D4
     DirectionFrameCount: Integer; // @offset $D8
     StopPoint: PabStopPoint; // @offset $DC
-    constructor Create; // @addr $501618
-    destructor Destroy; override; // @addr $50169C
-    procedure BindZone(Value: PabZone); // @addr $5016F4
-    procedure AttachVisual; // @addr $5018B4 @note "Empty in this native version; called after arena wall setup."
-    procedure QueueImageLoad(PendingLoads: TList; Owner: TObjectGI); override; // @addr $5018C0
-    procedure ApplyDamage(Amount: Integer; Source: TabObject; Disrupt: Boolean); override; // @addr $5018D4
-    procedure UpdateState; override; // @addr $5019F0
-    procedure Advance; override; // @addr $501A04
-    procedure UpdateVisuals; override; // @addr $501A94
+    constructor Create; // @addr $556CB0
+    destructor Destroy; override; // @addr $556D18
+    procedure BindZone(Value: PabZone); // @addr $556D54
+    procedure AttachVisual; // @addr $556EDC @note "Empty in this native version; called after arena wall setup."
+    procedure QueueImageLoad(PendingLoads: TList; Owner: TObjectGI); override; // @addr $556EE0
+    procedure ApplyDamage(Amount: Integer; Source: TabObject; Disrupt: Boolean); override; // @addr $556EE4
+    procedure UpdateState; override; // @addr $556FBC
+    procedure Advance; override; // @addr $556FC4
+    procedure UpdateVisuals; override; // @addr $557038
   end;
 
-function ab_Wall_FindZone(Zone: PabZone): TabWall; // @addr $501BE4
-procedure ab_Wall_BuildBarrierImages; // @addr $501CB4
+function ab_Wall_FindZone(Zone: PabZone): TabWall; // @addr $557164
+procedure ab_Wall_BuildBarrierImages; // @addr $5571FC
 
 var
-  BarrierColor: Cardinal = $30FFAC00; // @addr $87ACF4
-  // Native index local starts at zero and increments at $501E6A to the bound 2.
-  BarrierHaloColors: array[0..1] of Cardinal = ($40FFDB00, $20FFAC00); // @addr $87ACF8 @indexrefs "$501E3F,$501E4F"
+  BarrierColor: Cardinal = $30FFAC00; // @addr $80E9A0
+  BarrierHaloColors: array[0..1] of Cardinal = ($40FFDB00, $20FFAC00); // @addr $80E9A4
 
 implementation
 
 uses Math, EC_Str, EC_Struct, GI_Tail, ab_Global, GR_Main;
 
-{ @routine $501618 TabWall_Create }
+{ @routine $556CB0 TabWall_Create }
 constructor TabWall.Create;
 begin
   inherited Create;
@@ -45,9 +44,9 @@ begin
   MaxHealth := 200;
   WallCollisionEnabled := True;
 end;
-{ @end $501618 }
+{ @end $556CB0 }
 
-{ @routine $50169C TabWall_Destroy }
+{ @routine $556D18 TabWall_Destroy }
 destructor TabWall.Destroy;
 begin
   if WorldImage <> nil then
@@ -57,9 +56,9 @@ begin
   end;
   inherited Destroy;
 end;
-{ @end $50169C }
+{ @end $556D18 }
 
-{ @routine $5016F4 TabWall_BindZone }
+{ @routine $556D54 TabWall_BindZone }
 procedure TabWall.BindZone(Value: PabZone);
 begin
   Zone := Value;
@@ -79,69 +78,67 @@ begin
   CollisionRadius := 11;
   ZoneRadius := Value.Radius;
 end;
-{ @end $5016F4 }
+{ @end $556D54 }
 
-{ @routine $5018B4 TabWall_AttachVisual }
+{ @routine $556EDC TabWall_AttachVisual }
 procedure TabWall.AttachVisual;
 begin
 end;
-{ @end $5018B4 }
+{ @end $556EDC }
 
-{ @routine $5018C0 TabWall_QueueImageLoad }
+{ @routine $556EE0 TabWall_QueueImageLoad }
 procedure TabWall.QueueImageLoad(PendingLoads: TList; Owner: TObjectGI);
 begin
 end;
-{ @end $5018C0 }
+{ @end $556EE0 }
 
-{ @routine $5018D4 TabWall_ApplyDamage }
+{ @routine $556EE4 TabWall_ApplyDamage }
 procedure TabWall.ApplyDamage(Amount: Integer; Source: TabObject; Disrupt: Boolean);
 var
   Line, Next, Auxiliary: PabStopLine;
   Changed: Boolean;
 begin
-  if Health > 0 then
+  if Health <= 0 then Exit;
+  inherited ApplyDamage(Amount, Source, Disrupt);
+  if (Health <= 0) and (StopPoint <> nil) then
   begin
-    inherited ApplyDamage(Amount, Source, Disrupt);
-    if (Health <= 0) and (StopPoint <> nil) then
+    Changed := False;
+    Line := FirstStopLine;
+    while Line <> nil do
     begin
-      Changed := False;
-      Line := FirstStopLine;
-      while Line <> nil do
+      // The first endpoint bypasses the Collidable test in the native code.
+      if (StopPoint = Line.First) or ((StopPoint = Line.Last) and Line.Collidable) then
       begin
-        // The first endpoint bypasses the Collidable test in the native code.
-        if (StopPoint = Line.First) or ((StopPoint = Line.Last) and Line.Collidable) then
+        Line.Collidable := False;
+        Changed := True;
+        Next := FirstStopLine;
+        while Next <> nil do
         begin
-          Line.Collidable := False;
-          Changed := True;
-          Next := FirstStopLine;
-          while Next <> nil do
-          begin
-            Auxiliary := Next;
-            Next := Next.Next;
-            if Auxiliary.UserValue = Integer(Line) then ab_StopLine_Delete(Auxiliary);
-          end;
+          Auxiliary := Next;
+          Next := Next.Next;
+          if Auxiliary.BarrierLine = Line then ab_StopLine_Delete(Auxiliary);
         end;
-        Line := Line.Next;
       end;
-      if Changed then ab_StopLine_BuildCollisionList;
+      Line := Line.Next;
     end;
-    if Health <= 0 then
-    begin
-      Zone.DamagePerTick := 0;
-      Zone.GravityStrength := 0;
-    end;
+    if Changed then ab_StopLine_BuildCollisionList;
+  end;
+  if Health <= 0 then
+  begin
+    Zone.DamagePerTick := 0;
+    Zone.GravityStrength := 0;
   end;
 end;
-{ @end $5018D4 }
+{ @end $556EE4 }
 
-{ @routine $5019F0 TabWall_UpdateState }
+{ @routine $556FBC TabWall_UpdateState }
 procedure TabWall.UpdateState;
 begin
   inherited UpdateState;
 end;
-{ @end $5019F0 }
+{ @end $556FBC }
 
-{ @routine $501A04 TabWall_Advance }
+{ @routine $556FC4 TabWall_Advance }
 procedure TabWall.Advance;
 begin
   if Health = 0 then
@@ -157,9 +154,9 @@ begin
   else if WorldImage <> nil then
     ab_WorldImage_SetPosition(WorldImage, GetWorldPosition);
 end;
-{ @end $501A04 }
+{ @end $556FC4 }
 
-{ @routine $501A94 TabWall_UpdateVisuals }
+{ @routine $557038 TabWall_UpdateVisuals }
 procedure TabWall.UpdateVisuals;
 var
   Frame: Integer;
@@ -167,21 +164,19 @@ var
   Position: TVector3D;
 begin
   inherited UpdateVisuals;
-  if (WorldImage <> nil) and (WorldImage.Image.GaiImageControl <> nil) then
-  begin
-    Position := GetWorldPosition;
-    Position := ProjectPointByMatrix(SphereProjectionMatrix, Position);
-    Value := RadiansToHeadingDegrees(ArcTan2(Position.X, -Position.Y));
-    Frame := Round(Value / 360 * DirectionFrameCount);
-    if Frame >= DirectionFrameCount then Frame := 0;
-    Value := Sqrt(Sqr(Position.X) + Sqr(Position.Y)) / SphereProjectedRadius;
-    Inc(Frame, Round((WorldImage.Image.GaiImageControl.SequenceFrameCount / DirectionFrameCount - 1) * Value) * DirectionFrameCount);
-    WorldImage.Image.GaiImageControl.SetSequenceFrame(Frame);
-  end;
+  if (WorldImage = nil) or (WorldImage.Image.GaiImageControl = nil) then Exit;
+  Position := GetWorldPosition;
+  Position := ProjectPointByMatrix(SphereProjectionMatrix, Position);
+  Value := RadiansToHeadingDegrees(ArcTan2(Position.X, -Position.Y));
+  Frame := Round(Value / 360 * DirectionFrameCount);
+  if Frame >= DirectionFrameCount then Frame := 0;
+  Value := Sqrt(Sqr(Position.X) + Sqr(Position.Y)) / SphereProjectedRadius;
+  Inc(Frame, Round((WorldImage.Image.GaiImageControl.SequenceFrameCount / DirectionFrameCount - 1) * Value) * DirectionFrameCount);
+  WorldImage.Image.GaiImageControl.SetSequenceFrame(Frame);
 end;
-{ @end $501A94 }
+{ @end $557038 }
 
-{ @routine $501BE4 ab_Wall_FindZone }
+{ @routine $557164 ab_Wall_FindZone }
 function ab_Wall_FindZone(Zone: PabZone): TabWall;
 var
   Obj: TabObject;
@@ -198,17 +193,17 @@ begin
   end;
   Result := nil;
 end;
-{ @end $501BE4 }
+{ @end $557164 }
 
-{ @routine $501CB4 ab_Wall_BuildBarrierImages }
+{ @routine $5571FC ab_Wall_BuildBarrierImages }
 procedure ab_Wall_BuildBarrierImages;
 var
   Line, ImageLine: PabStopLine;
   First, Last: PabStopPoint;
   Index: Integer;
 
-  // @nested $501C4C FindStopPoint
-  function FindStopPoint(Point: PabStopPoint): TabWall; // @addr $501C4C @calls "0x501ce2,0x501CF7"
+  // @nested $5571B0 FindStopPoint
+  function FindStopPoint(Point: PabStopPoint): TabWall; // @addr $5571B0 @calls "0x0055722A,0x0055723D"
   var
     Obj: TabObject;
   begin
@@ -232,7 +227,7 @@ begin
     if Line.Collidable and (FindStopPoint(Line.First) <> nil) and (FindStopPoint(Line.Last) <> nil) then
     begin
       ImageLine := ab_StopLine_Add;
-      ImageLine.UserValue := Integer(Line);
+      ImageLine.BarrierLine := Line;
       ImageLine.First := Line.First;
       ImageLine.Last := Line.Last;
       ImageLine.FirstColor := @BarrierColor;
@@ -254,7 +249,7 @@ begin
         Last.Kind := 1;
         ab_StopPoint_UpdatePosition(Last);
         ImageLine := ab_StopLine_Add;
-        ImageLine.UserValue := Integer(Line);
+        ImageLine.BarrierLine := Line;
         ImageLine.First := First;
         ImageLine.Last := Last;
         ImageLine.FirstColor := @BarrierHaloColors[Index];
@@ -266,6 +261,6 @@ begin
     Line := Line.Next;
   end;
 end;
-{ @end $501CB4 }
+{ @end $5571FC }
 
 end.

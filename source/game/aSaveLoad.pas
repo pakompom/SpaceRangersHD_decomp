@@ -1,5 +1,4 @@
 unit aSaveLoad;
-// Unit bracket (inferred): .text 0x00523D18..0x00526281; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -15,8 +14,8 @@ type
     GameStateBuffer: TBufEC; // @offset 0x3C
     FilmBuffer: TBufEC; // @offset 0x40
 
-    procedure Execute; override; // @addr 0x523D84 @note "Owns and frees all five buffers. Writes Save.tmp before replacing the destination; shares SaveLoadLock with the loader."
-    procedure QueueSave(AFileName: WideString; Header, Preview, SecondaryPreview, GameState, Films: TBufEC); // @addr 0x524440 @note "Waits for the preceding job, then takes ownership of all five buffers."
+    procedure Execute; override; // @addr 0x005E51C4 @note "Owns and frees all five buffers. Writes Save.tmp before replacing the destination; shares SaveLoadLock with the loader."
+    procedure QueueSave(AFileName: WideString; Header, Preview, SecondaryPreview, GameState, Films: TBufEC); // @addr 0x005E5840 @note "Waits for the preceding job, then takes ownership of all five buffers."
   end;
 
   // Immediately precedes the encrypted game-state payload, after both previews.
@@ -30,20 +29,20 @@ type
 // description, turn, money, pilot name, race/emblem name, EZ.
 // Each preview has a four-byte byte count. The trailing film block runs to EOF.
 
-function SaveGameToFile(FileName, Description: WideString): Boolean; // @addr 0x5244E4 @note "Queues the write; true does not mean the background writer has finished."
-function LoadGameFromFile(FileName: WideString): Boolean; // @addr 0x524D3C @note "Replaces the current galaxy."
-procedure LoadGameFromSaveBuffer(Buffer: TBufEC); // @addr 0x524C58 @note "Requires an existing galaxy object and a decoded buffer positioned at the player-hold section."
-procedure SaveGameToMemorySnapshot; // @addr 0x525558 @note "Requires a live galaxy/player and no outstanding snapshot. Obfuscates and detaches the live galaxy until restoration; does not increment the persistent save count."
-procedure RestoreGameFromMemorySnapshot; // @addr 0x5258B4 @note "Consumes the snapshot, destroys the detached galaxy and rebuilds it. Preserves the persistent load count and restores UI references by object ID."
-procedure InitializeSaveWriter; // @addr 0x526238
-procedure FinalizeSaveWriter; // @addr 0x52624C @note "Waits for a pending write before freeing the worker."
+function SaveGameToFile(FileName, Description: WideString): Boolean; // @addr 0x005E58CC @note "Queues the write; true does not mean the background writer has finished."
+function LoadGameFromFile(FileName: WideString): Boolean; // @addr 0x005E60AC @note "Replaces the current galaxy."
+procedure LoadGameFromSaveBuffer(Buffer: TBufEC); // @addr 0x005E5FF8 @note "Requires an existing galaxy object and a decoded buffer positioned at the player-hold section."
+procedure SaveGameToMemorySnapshot; // @addr 0x005E68A4 @note "Requires a live galaxy/player and no outstanding snapshot. Obfuscates and detaches the live galaxy until restoration; does not increment the persistent save count."
+procedure RestoreGameFromMemorySnapshot; // @addr 0x005E6B9C @note "Consumes the snapshot, destroys the detached galaxy and rebuilds it. Preserves the persistent load count and restores UI references by object ID."
+procedure InitializeSaveWriter; // @addr 0x005E7458
+procedure FinalizeSaveWriter; // @addr 0x005E746C @note "Waits for a pending write before freeing the worker."
 
 var
-  MemorySnapshotBuffer: TBufEC = nil; // @addr 0x87AD88
-  SaveLoadLock: TCriticalSection = nil; // @addr 0x87AD8C
-  SaveWriter: TSaver = nil; // @addr 0x87AD90
-  MemorySnapshotXorSeed: Integer; // @addr 0x88A420
-  MemorySnapshotGalaxyToken: Cardinal; // @addr 0x88A424 @note "Detached galaxy address plus 0x17557455, modulo 2^32."
+  MemorySnapshotBuffer: TBufEC = nil; // @addr 0x0080F614
+  SaveLoadLock: TCriticalSection = nil; // @addr 0x0080F618
+  SaveWriter: TSaver = nil; // @addr 0x0080F61C
+  MemorySnapshotXorSeed: Integer; // @addr 0x0081B80C
+  MemorySnapshotGalaxyToken: Cardinal; // @addr 0x0081B810 @note "Detached galaxy address plus 0x17557455, modulo 2^32."
 
 implementation
 
@@ -55,7 +54,7 @@ uses aGalaxyStruct, aKling, Windows, SysUtils, EC_File, EC_Str, EC_BlockPar, aGa
   fRewards, fChameleon, fTalk, ab_MainForm, fLoad, fGameLoad, fHangar,
   fPlanet, fPlanetNO, fPlanetQuest, fGoodsShop2, fRuinsTalk, fInfo, fJump;
 
-{ @routine $523D84 TSaver_Execute }
+{ @routine $5E51C4 TSaver_Execute }
 procedure TSaver.Execute;
 var
   F: TFileEC;
@@ -133,9 +132,9 @@ begin
   FilmBuffer := nil;
   SaveLoadLock.Leave;
 end;
-{ @end $523D84 }
+{ @end $5E51C4 }
 
-{ @routine $524440 TSaver_QueueSave }
+{ @routine $5E5840 TSaver_QueueSave }
 procedure TSaver.QueueSave(AFileName: WideString; Header, Preview, SecondaryPreview, GameState, Films: TBufEC);
 begin
   if IsRunning then WaitForIdle(INFINITE);
@@ -147,9 +146,9 @@ begin
   FilmBuffer := Films;
   Start;
 end;
-{ @end $524440 }
+{ @end $5E5840 }
 
-{ @routine $5244E4 SaveGameToFile }
+{ @routine $5E58CC SaveGameToFile }
 function SaveGameToFile(FileName, Description: WideString): Boolean;
 var Header, Preview, SecondaryPreview, GameState, Films, FilmEntry: TBufEC;
   Size, I, Count: Integer; Message: TMessagePlayer; Entry: TPlayerHoldUnit;
@@ -244,9 +243,9 @@ begin
     if Result = True then FreeSavePreviewBuffers;
   end;
 end;
-{ @end $5244E4 }
+{ @end $5E58CC }
 
-{ @routine $524C58 LoadGameFromSaveBuffer }
+{ @routine $5E5FF8 LoadGameFromSaveBuffer }
 procedure LoadGameFromSaveBuffer(Buffer: TBufEC);
 var I, Count: Integer; Entry: TPlayerHoldUnit; LoadingGalaxy: TGalaxy;
 begin
@@ -269,9 +268,9 @@ begin
   end;
   Galaxy.RunConfigOnLoadHandlers;
 end;
-{ @end $524C58 }
+{ @end $5E5FF8 }
 
-{ @routine $524D3C LoadGameFromFile }
+{ @routine $5E60AC LoadGameFromFile }
 function LoadGameFromFile(FileName: WideString): Boolean;
 var
   F: TFileEC;
@@ -393,9 +392,9 @@ begin
   if F <> nil then F.Free;
   SaveLoadLock.Leave;
 end;
-{ @end $524D3C }
+{ @end $5E60AC }
 
-{ @routine $525558 SaveGameToMemorySnapshot }
+{ @routine $5E68A4 SaveGameToMemorySnapshot }
 procedure SaveGameToMemorySnapshot;
 var I, Count: Integer; Message: TMessagePlayer; Entry: TPlayerHoldUnit; Loop: TMessageLoopGI;
 begin
@@ -404,7 +403,7 @@ begin
   if (CurrentScreenId <> screenPlanetQuest) and
     ((CurrentScreenId <> screenGovernment) or (GovernmentScreen.PendingTransition = 0)) and
     ((CurrentScreenId <> screenStarMap) or (StarMapScreen.PlanetBattleState = 0)) then
-    (TObject(RegisteredScreens[CurrentScreenId]) as TMessageLoopGI).OnClose;
+    (RegisteredScreens[CurrentScreenId] as TMessageLoopGI).OnClose;
   for I := MessageLoopStack.Count - 1 downto 0 do begin
     Loop := MessageLoopStack[I];
     if Loop is TfShip2 then (Loop as TfShip2).ReturnSelectedHoldEntry;
@@ -449,9 +448,9 @@ begin
   TerronShip := nil;
   MemorySnapshotActive := True;
 end;
-{ @end $525558 }
+{ @end $5E68A4 }
 
-{ @routine $5258B4 RestoreGameFromMemorySnapshot }
+{ @routine $5E6B9C RestoreGameFromMemorySnapshot }
 procedure RestoreGameFromMemorySnapshot;
 var ReopenScreen: Boolean; I, Count: Integer; Entry: TPlayerHoldUnit; Message: TMessagePlayer; Loop: TMessageLoopGI;
 begin
@@ -485,9 +484,9 @@ begin
   end;
   Galaxy.LoadFromBuffer(MemorySnapshotBuffer);
   Dec(Galaxy.LoadCount);
-  TalkShip := Galaxy.IdToShip(MemorySnapshotBuffer.GetUInt32, True);
-  TalkPlanet := Galaxy.IdToPlanet(MemorySnapshotBuffer.GetUInt32);
-  ShipScreen.ShipToInspect := Galaxy.IdToShip(MemorySnapshotBuffer.GetUInt32, True);
+  TalkShip := TShip(Galaxy.IdToShip(MemorySnapshotBuffer.GetUInt32, True));
+  TalkPlanet := TPlanet(Galaxy.IdToPlanet(MemorySnapshotBuffer.GetUInt32));
+  ShipScreen.ShipToInspect := TShip(Galaxy.IdToShip(MemorySnapshotBuffer.GetUInt32, True));
   for I := MessageLoopStack.Count - 1 downto 0 do begin
     Loop := MessageLoopStack[I];
     if Loop is TMessageBoxGI then Loop.RequestClose(254)
@@ -581,7 +580,7 @@ begin
   end;
   if (GetPlayer.IsOnPlanet and (GetPlayer.CurrentPlanet.OwnerId <> oiUninhabited)) or
     (GetPlayer.IsDockedToShip and (GetPlayer.DockedTo is TRuins)) then BuildTemporaryShopSlotGrid;
-  if ReopenScreen then (TObject(RegisteredScreens[CurrentScreenId]) as TMessageLoopGI).OnOpen;
+  if ReopenScreen then (RegisteredScreens[CurrentScreenId] as TMessageLoopGI).OnOpen;
   Galaxy.ClearIntegrityStatus;
   Galaxy.PrimeIntegrityChecksum(1);
   MemorySnapshotBuffer.Free;
@@ -589,14 +588,14 @@ begin
   MemorySnapshotActive := False;
   Galaxy.RunConfigOnLoadHandlers;
 end;
-{ @end $5258B4 }
+{ @end $5E6B9C }
 
-{ @routine $526238 InitializeSaveWriter }
+{ @routine $5E7458 InitializeSaveWriter }
 procedure InitializeSaveWriter;
 begin SaveWriter := TSaver.Create; end;
-{ @end $526238 }
+{ @end $5E7458 }
 
-{ @routine $52624C FinalizeSaveWriter }
+{ @routine $5E746C FinalizeSaveWriter }
 procedure FinalizeSaveWriter;
 begin
   if SaveWriter <> nil then begin
@@ -605,6 +604,6 @@ begin
     SaveWriter := nil;
   end;
 end;
-{ @end $52624C }
+{ @end $5E746C }
 
 end.

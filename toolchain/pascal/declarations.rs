@@ -542,6 +542,9 @@ impl Parser<'_> {
                 break;
             }
         }
+        for field in &mut fields {
+            field["variant"] = json!(true);
+        }
         Ok(fields)
     }
     fn aggregate(&mut self, start: Token, name: String, terminator: bool) -> Result<Decl> {
@@ -582,7 +585,12 @@ impl Parser<'_> {
             }
         }
         let head_end = self.last().end;
-        let mut meta = self.meta(&start, &["size", "partial"], false)?;
+        let annotations: &[&str] = if kind == "class" {
+            &["size", "partial", "methodorder"]
+        } else {
+            &["size", "partial"]
+        };
+        let mut meta = self.meta(&start, annotations, false)?;
         let (mut fields, mut methods, mut properties) = (Vec::new(), Vec::new(), Vec::new());
         let opaque = self.peek(";")?;
         let mut closing = None;
@@ -591,7 +599,8 @@ impl Parser<'_> {
                 if matches!(
                     self.value()?.as_str(),
                     "public" | "private" | "protected" | "published"
-                ) {
+                ) && ![":", ","].contains(&self.ahead(1)?.value.as_str())
+                {
                     self.take()?;
                     continue;
                 }
@@ -613,6 +622,7 @@ impl Parser<'_> {
                     fields.extend(self.variant_fields()?);
                     continue;
                 }
+                let member_start = self.current()?.start;
                 if self.accept("property")? {
                     let property_name = self.ident()?;
                     let indices = self.parameters(false, "[", "]")?;
@@ -621,7 +631,7 @@ impl Parser<'_> {
                     } else {
                         Value::Null
                     };
-                    let mut property = json!({"name":property_name,"params":indices,"type":typ});
+                    let mut property = json!({"name":property_name,"params":indices,"type":typ,"source_position":member_start});
                     while matches!(
                         self.value()?.as_str(),
                         "read"
@@ -645,6 +655,7 @@ impl Parser<'_> {
                     self.expect(";")?;
                     if self.accept("default")? {
                         self.expect(";")?;
+                        property["default_indexed"] = json!(true);
                     }
                     properties.push(property);
                     continue;
@@ -664,7 +675,13 @@ impl Parser<'_> {
                     kind != "interface",
                     "interfaces cannot contain instance fields"
                 );
-                fields.extend(self.record_fields(&name)?);
+                let mut members = self.record_fields(&name)?;
+                if kind == "class" {
+                    for field in &mut members {
+                        field["source_position"] = json!(member_start);
+                    }
+                }
+                fields.extend(members);
             }
             closing = Some(self.current()?.start);
             self.expect("end")?;
@@ -673,7 +690,7 @@ impl Parser<'_> {
             self.hints()?;
             self.expect(";")?;
         }
-        for (key, value) in self.meta(&start, &["size", "partial"], false)? {
+        for (key, value) in self.meta(&start, annotations, false)? {
             ensure!(!meta.contains_key(&key), "duplicate aggregate annotation");
             meta.insert(key, value);
         }

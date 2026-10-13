@@ -1,6 +1,4 @@
 unit ab_W15;
-// Unit bracket (inferred): .text 0x004F9A6C..0x004FA119; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
-// Native TabW15 projectile family: $4F9AD4..$4FA11A.
 
 interface
 
@@ -15,22 +13,22 @@ type
     TurnSpeed: Single; // @offset $BC
     TurnBias: Single; // @offset $C0
     ExpireTick: Integer; // @offset $C4
-    constructor Create; // @addr $4F9AD4
-    destructor Destroy; override; // @addr $4F9BC8
-    procedure Launch(Owner: TabObject; Amount: Integer; Angle: Single); // @addr $4F9C24
-    procedure Explode; // @addr $4F9D40
-    procedure Advance; override; // @addr $4F9DFC
-    procedure UpdateVisuals; override; // @addr $4FA108
+    constructor Create; // @addr $54F314
+    destructor Destroy; override; // @addr $54F3DC
+    procedure Launch(Owner: TabObject; Amount: Integer; Angle: Single); // @addr $54F420
+    procedure Explode; // @addr $54F510
+    procedure Advance; override; // @addr $54F5C0
+    procedure UpdateVisuals; override; // @addr $54F83C
   end;
 
 var
-  W15ProjectileCount: Integer = 0; // @addr $87ACF0
+  W15ProjectileCount: Integer = 0; // @addr $80E998
 
 implementation
 
 uses GlobalsV, ab_Ship, aMyFunction;
 
-{ @routine $4F9AD4 TabW15_Create }
+{ @routine $54F314 TabW15_Create }
 constructor TabW15.Create;
 var
   Obj: TabObject;
@@ -57,9 +55,9 @@ begin
     end;
   end;
 end;
-{ @end $4F9AD4 }
+{ @end $54F314 }
 
-{ @routine $4F9BC8 TabW15_Destroy }
+{ @routine $54F3DC TabW15_Destroy }
 destructor TabW15.Destroy;
 begin
   if Image <> nil then
@@ -70,9 +68,9 @@ begin
   Dec(W15ProjectileCount);
   inherited Destroy;
 end;
-{ @end $4F9BC8 }
+{ @end $54F3DC }
 
-{ @routine $4F9C24 TabW15_Launch }
+{ @routine $54F420 TabW15_Launch }
 procedure TabW15.Launch(Owner: TabObject; Amount: Integer; Angle: Single);
 begin
   SourceObject := Owner;
@@ -84,9 +82,9 @@ begin
   Image := ab_WorldImage_Create(MakeVector3D(0, 0, 0), 'GAI,Bm.AB.w15_f', 'GAI,Bm.AB.w15_s', False);
   ab_WorldImage_SetDepth(Image, HitFrontDepth, HitBackDepth);
 end;
-{ @end $4F9C24 }
+{ @end $54F420 }
 
-{ @routine $4F9D40 TabW15_Explode }
+{ @routine $54F510 TabW15_Explode }
 procedure TabW15.Explode;
 begin
   Phase := 2;
@@ -94,9 +92,9 @@ begin
   ab_WorldImage_SetDepth(Image, HitFrontDepth, HitBackDepth);
   ab_WorldImage_SetLooping(Image, False);
 end;
-{ @end $4F9D40 }
+{ @end $54F510 }
 
-{ @routine $4F9DFC TabW15_Advance }
+{ @routine $54F5C0 TabW15_Advance }
 procedure TabW15.Advance;
 var
   Collision: TabObject;
@@ -145,13 +143,13 @@ begin
   end
   else if Phase = 2 then DeletionPending := Image.Finished;
 end;
-{ @end $4F9DFC }
+{ @end $54F5C0 }
 
-{ @routine $4FA108 TabW15_UpdateVisuals }
+{ @routine $54F83C TabW15_UpdateVisuals }
 procedure TabW15.UpdateVisuals;
 begin
   inherited UpdateVisuals;
 end;
-{ @end $4FA108 }
+{ @end $54F83C }
 
 end.

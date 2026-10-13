@@ -20,7 +20,7 @@ type
   TECutterPalettes = array of TECutterPalette;
 
 var
-  ECutterPalettes: array of TECutterPalette; // @addr $88AEBC
+  ECutterPalettes: array of TECutterPalette; // @addr $81B1E8
 
 type
   TPSWeapon08ECutter = class(TPSWeaponGI) // @size $150
@@ -31,29 +31,29 @@ type
     OriginalLength: Single; // @offset $13C
     Colors: TECutterPalette; // @offset $140
 
-    constructor Create(Owner: TObjectGI; APaletteIndex: Integer); // @addr $68E904
-    destructor Destroy; override; // @addr $68EA38
-    procedure Invalidate; override; // @addr $68EA74 @note "Native empty override."
-    procedure SetPosition(Position: TPoint); override; // @addr $68EA80
-    procedure SetTargetPoint(Point: TPoint); override; // @addr $68EABC
-    procedure UpdateHitTestBounds; override; // @addr $68EB08
-    procedure ClearParticles; // @addr $68EB3C
-    procedure GrowParticles; // @addr $68EB84
-    function AddParticle: PECutterParticle; // @addr $68EBBC
-    procedure Advance(Timer: PCallbackTimerGI; UserData: Integer); override; // @addr $68EC14
-    procedure Draw(ClipRect: TRect); override; // @addr $68EEA0
+    constructor Create(Owner: TObjectGI; APaletteIndex: Integer); // @addr $4F5B94
+    destructor Destroy; override; // @addr $4F5C80
+    procedure Invalidate; override; // @addr $4F5CAC @note "Native empty override."
+    procedure SetPosition(Position: TPoint); override; // @addr $4F5CB0
+    procedure SetTargetPoint(Point: TPoint); override; // @addr $4F5CDC
+    procedure UpdateHitTestBounds; override; // @addr $4F5D18
+    procedure ClearParticles; // @addr $4F5D3C
+    procedure GrowParticles; // @addr $4F5D68
+    function AddParticle: PECutterParticle; // @addr $4F5D8C
+    procedure Advance(Timer: TCallbackTimerIdGI; UserData: Cardinal); override; // @addr $4F5DC4
+    procedure Draw(ClipRect: TRect); override; // @addr $4F5FD0
   end;
 
-procedure LoadECutterPalettes; // @addr $68F120
+procedure LoadECutterPalettes; // @addr $4F6208
 
 implementation
 
-// @unit-initialization $87791C
-// @unit-finalization $68F3E4
+// @unit-initialization $80685C
+// @unit-finalization $4F6490
 
 uses SysUtils, Math, EC_BlockPar, EC_Str, EC_Mem, GR_Main, GR_DX, aMyFunction, Globals;
 
-{ @routine $68E904 TPSWeapon08ECutter_Create }
+{ @routine $4F5B94 TPSWeapon08ECutter_Create }
 constructor TPSWeapon08ECutter.Create(Owner: TObjectGI; APaletteIndex: Integer);
 begin
   inherited Create(Owner);
@@ -68,39 +68,39 @@ begin
   Colors[6] := ECutterPalettes[APaletteIndex][6];
   Colors[7] := ECutterPalettes[APaletteIndex][7];
 end;
-{ @end $68E904 }
+{ @end $4F5B94 }
 
-{ @routine $68EA38 TPSWeapon08ECutter_Destroy }
+{ @routine $4F5C80 TPSWeapon08ECutter_Destroy }
 destructor TPSWeapon08ECutter.Destroy;
 begin
   ClearParticles;
   inherited Destroy;
 end;
-{ @end $68EA38 }
+{ @end $4F5C80 }
 
-{ @routine $68EA74 TPSWeapon08ECutter_Invalidate }
+{ @routine $4F5CAC TPSWeapon08ECutter_Invalidate }
 procedure TPSWeapon08ECutter.Invalidate;
 begin
 end;
-{ @end $68EA74 }
+{ @end $4F5CAC }
 
-{ @routine $68EA80 TPSWeapon08ECutter_SetPosition }
+{ @routine $4F5CB0 TPSWeapon08ECutter_SetPosition }
 procedure TPSWeapon08ECutter.SetPosition(Position: TPoint);
 begin
   if (LocalPosition.X <> Position.X) or (LocalPosition.Y <> Position.Y) then
     inherited SetPosition(Position);
 end;
-{ @end $68EA80 }
+{ @end $4F5CB0 }
 
-{ @routine $68EABC TPSWeapon08ECutter_SetTargetPoint }
+{ @routine $4F5CDC TPSWeapon08ECutter_SetTargetPoint }
 procedure TPSWeapon08ECutter.SetTargetPoint(Point: TPoint);
 begin
   if (TargetPoint.X <> Point.X) or (TargetPoint.Y <> Point.Y) then
     TargetPoint := Point;
 end;
-{ @end $68EABC }
+{ @end $4F5CDC }
 
-{ @routine $68EB08 TPSWeapon08ECutter_UpdateHitTestBounds }
+{ @routine $4F5D18 TPSWeapon08ECutter_UpdateHitTestBounds }
 procedure TPSWeapon08ECutter.UpdateHitTestBounds;
 begin
   HitTestBounds.Left := 0;
@@ -108,9 +108,9 @@ begin
   HitTestBounds.Right := GameScreenWidth;
   HitTestBounds.Bottom := GameScreenHeight;
 end;
-{ @end $68EB08 }
+{ @end $4F5D18 }
 
-{ @routine $68EB3C TPSWeapon08ECutter_ClearParticles }
+{ @routine $4F5D3C TPSWeapon08ECutter_ClearParticles }
 procedure TPSWeapon08ECutter.ClearParticles;
 begin
   if Particles <> nil then
@@ -121,27 +121,27 @@ begin
   ParticleCount := 0;
   ParticleCapacity := 0;
 end;
-{ @end $68EB3C }
+{ @end $4F5D3C }
 
-{ @routine $68EB84 TPSWeapon08ECutter_GrowParticles }
+{ @routine $4F5D68 TPSWeapon08ECutter_GrowParticles }
 procedure TPSWeapon08ECutter.GrowParticles;
 begin
   Inc(ParticleCapacity, 100);
   Particles := ReAllocREC(Particles, ParticleCapacity * SizeOf(TECutterParticle));
 end;
-{ @end $68EB84 }
+{ @end $4F5D68 }
 
-{ @routine $68EBBC TPSWeapon08ECutter_AddParticle }
+{ @routine $4F5D8C TPSWeapon08ECutter_AddParticle }
 function TPSWeapon08ECutter.AddParticle: PECutterParticle;
 begin
   if ParticleCount >= ParticleCapacity then GrowParticles;
   Result := AddPointerOffset(Particles, ParticleCount * SizeOf(TECutterParticle));
   Inc(ParticleCount);
 end;
-{ @end $68EBBC }
+{ @end $4F5D8C }
 
-{ @routine $68EC14 TPSWeapon08ECutter_Advance }
-procedure TPSWeapon08ECutter.Advance(Timer: PCallbackTimerGI; UserData: Integer);
+{ @routine $4F5DC4 TPSWeapon08ECutter_Advance }
+procedure TPSWeapon08ECutter.Advance(Timer: TCallbackTimerIdGI; UserData: Cardinal);
 var
   Particle: PECutterParticle;
   J, I, K: Integer;
@@ -189,9 +189,9 @@ begin
   end;
   if RemainingTicks > 0 then Dec(RemainingTicks);
 end;
-{ @end $68EC14 }
+{ @end $4F5DC4 }
 
-{ @routine $68EEA0 TPSWeapon08ECutter_Draw }
+{ @routine $4F5FD0 TPSWeapon08ECutter_Draw }
 procedure TPSWeapon08ECutter.Draw(ClipRect: TRect);
 var
   X, Y: Integer;
@@ -242,9 +242,9 @@ begin
     end;
   end;
 end;
-{ @end $68EEA0 }
+{ @end $4F5FD0 }
 
-{ @routine $68F120 LoadECutterPalettes }
+{ @routine $4F6208 LoadECutterPalettes }
 procedure LoadECutterPalettes;
 var
   Block, PaletteBlock: TBlockParEC;
@@ -260,21 +260,19 @@ begin
   for Index := 0 to Count - 1 do
   begin
     Text := IntToStr(Index);
-    if Block.CountBlocks(Text) <> 0 then
-    begin
-      PaletteBlock := Block.GetBlockByPath(Text);
-      for ColorIndex := 0 to 7 do
-        if PaletteBlock.CountParams('Color' + IntToStr(ColorIndex)) > 0 then
-        begin
-          Text := PaletteBlock.GetParam('Color' + IntToStr(ColorIndex));
-          ECutterPalettes[Index][ColorIndex] := CurrentPixelFormat.PackNormalizedRgb(
-            ExtractDecimalToSingleW(ExtractDelimitedPartW(Text, 0, ',')),
-            ExtractDecimalToSingleW(ExtractDelimitedPartW(Text, 1, ',')),
-            ExtractDecimalToSingleW(ExtractDelimitedPartW(Text, 2, ',')));
-        end;
-    end;
+    if Block.CountBlocks(Text) = 0 then Continue;
+    PaletteBlock := Block.GetBlockByPath(Text);
+    for ColorIndex := Low(TECutterPalette) to High(TECutterPalette) do
+      if PaletteBlock.CountParams('Color' + IntToStr(ColorIndex)) > 0 then
+      begin
+        Text := PaletteBlock.GetParam('Color' + IntToStr(ColorIndex));
+        ECutterPalettes[Index][ColorIndex] := CurrentPixelFormat.PackNormalizedRgb(
+          ExtractDecimalToSingleW(ExtractDelimitedPartW(Text, 0, ',')),
+          ExtractDecimalToSingleW(ExtractDelimitedPartW(Text, 1, ',')),
+          ExtractDecimalToSingleW(ExtractDelimitedPartW(Text, 2, ',')));
+      end;
   end;
 end;
-{ @end $68F120 }
+{ @end $4F6208 }
 
 end.

@@ -1,11 +1,28 @@
 unit GI_ScrollBar;
-// Unit bracket (inferred): .text 0x0048C7D8..0x004904C4; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
 uses EC_BlockPar, GI_Image, GI_Label, GI_MessageLoop, GI_Panel, Types;
 
+const
+  // Zero selects an individual value; every nonzero mode accounts for PageSize.
+  scmValue = 0;
+
+  srNoHit = 0;
+  srDecreaseArrow = 1;
+  srIncreaseArrow = 2;
+  srPageBefore = 3;
+  srPageAfter = 4;
+  srThumb = 5;
+
+  sbImageNormal = 0;
+  sbImageActive = 1;
+  sbImageDown = 2;
+
 type
+  TScrollBarRegion = type Cardinal;
+  TScrollBarOrientation = (soHorizontal = 1, soVertical); // @size $04
+
   TScrollBarGI = class(TPanelGI) // @size 0x1D8
   public
     Minimum: Integer; // @offset 0x140
@@ -14,7 +31,7 @@ type
     LargeChange: Integer; // @offset 0x14C
     SmallChange: Integer; // @offset 0x150
     PageSize: Integer; // @offset 0x154
-    Orientation: Integer; // @offset 0x158
+    Orientation: TScrollBarOrientation; // @offset 0x158
     CalculationMode: Integer; // @offset 0x15C
     // Each image triple is normal, active, down. Up/Down also mean left/right horizontally.
     UpImages: array[0..2] of TImageGI; // @offset 0x160
@@ -24,147 +41,147 @@ type
     ThumbBottomImages: array[0..2] of TImageGI; // @offset 0x190
     AfterThumbBarImages: array[0..2] of TImageGI; // @offset 0x19C
     DownImages: array[0..2] of TImageGI; // @offset 0x1A8
-    RepeatTimer: PCallbackTimerGI; // @offset 0x1B4
-    PressedRegion: Integer; // @offset 0x1B8
-    HoveredRegion: Integer; // @offset 0x1BC
+    RepeatTimer: TCallbackTimerIdGI; // @offset 0x1B4
+    PressedRegion: TScrollBarRegion; // @offset 0x1B8
+    HoveredRegion: TScrollBarRegion; // @offset 0x1BC
     DragStartPosition: Integer; // @offset 0x1C0
     MinimumLabel: TLabelGI; // @offset 0x1C4
     MaximumLabel: TLabelGI; // @offset 0x1C8
     PositionLabel: TLabelGI; // @offset 0x1CC
     PositionChangedCallback: TObjectNotifyEventGI; // @offset $1D0
 
-    constructor Create(Owner: TObjectGI); // @addr 0x48C900
-    destructor Destroy; override; // @addr 0x48CD4C
-    procedure Clear; override; // @addr 0x48CEA4 @note "Resets the range to 0..99 and clears callbacks; does not call inherited Clear."
-    function GetHitRegion(Point: TPoint): Integer; // @addr 0x48D238 @note "Returns 0 outside, 1/2 arrows, 3/4 page regions, or 5 thumb; only tests the scrolling axis."
-    procedure SetRange(MinValue, MaxValue: Integer); // @addr 0x48D3EC
-    procedure SetPositionInternal(NewPosition: Integer); // @addr 0x48D590 @note "Does not invoke PositionChangedCallback."
-    procedure SetPosition(NewPosition: Integer); reintroduce; // @addr 0x48D764 @note "Notifies only while Active and only when the clamped position changes."
-    procedure SetSmallChange(Value: Integer); // @addr 0x48D958
-    procedure SetLargeChange(Value: Integer); // @addr 0x48D9A0 @note "A value equal to SmallChange is ignored even if LargeChange differs."
-    procedure SetPageSize(Value: Integer); // @addr 0x48D9E8 @note "Caps at Maximum-Minimum+1; no lower bound check."
-    procedure SetOrientation(Value: Integer); // @addr 0x48DA68 @note "Value 1 is horizontal; other values use vertical layout."
-    procedure SetKindCalcMode(Value: Integer); // @addr 0x48DAB0
-    procedure SetConfigPath(const Path: WideString); override; // @addr 0x48DAF8
-    procedure SetSize(Size: TPoint); override; // @addr 0x48DB30
-    procedure UpdateLayout; // @addr 0x48DB90
-    procedure UpdateSizeForOrientation; // @addr 0x48EDD4 @note "Uses the up-arrow image for scrollbar thickness."
-    procedure StartAutoRepeat(DelayMs, RepeatMs: Integer); // @addr 0x48F65C
-    procedure StopAutoRepeat; // @addr 0x48F69C
-    procedure AutoRepeat(Timer: PCallbackTimerGI; UserData: Integer); // @addr 0x48F6D4
-    procedure SetUpPosition(Point: TPoint); // @addr $48CF40
-    procedure SetBeforeThumbBarPosition(Point: TPoint); // @addr $48CF8C
-    procedure SetThumbTopPosition(Point: TPoint); // @addr $48CFD8
-    procedure SetThumbCenterPosition(Point: TPoint); // @addr $48D024
-    procedure SetThumbBottomPosition(Point: TPoint); // @addr $48D070
-    procedure SetAfterThumbBarPosition(Point: TPoint); // @addr $48D0BC
-    procedure SetDownPosition(Point: TPoint); // @addr $48D108
-    procedure SetBeforeThumbBarSize(Size: TPoint); // @addr $48D154
-    procedure SetThumbCenterSize(Size: TPoint); // @addr $48D1A0
-    procedure SetAfterThumbBarSize(Size: TPoint); // @addr $48D1EC
-    procedure SetActive(Enabled: Boolean); override; // @addr $48DB64
-    procedure ProcessMouseMove(KeyState: Cardinal; Point: TPoint); override; // @addr $48EE3C
-    procedure ProcessLeftButtonDown(KeyState: Cardinal; Point: TPoint); override; // @addr $48F1B0
-    procedure ProcessLeftButtonUp(KeyState: Cardinal; Point: TPoint); override; // @addr $48F5C8
-    procedure ProcessLeftButtonDoubleClick(KeyState: Cardinal; Point: TPoint); override; // @addr $48F640
-    procedure OnMouseEnter; override; // @addr $48F154
-    procedure OnMouseLeave; override; // @addr $48F168
-    procedure LoadFromConfigPath(const Path: WideString); override; // @addr 0x48F788
-    procedure LoadFromBlock(Block: TBlockParEC); override; // @addr 0x48F7BC
-    procedure LoadScrollBarProperties(Block: TBlockParEC); // @addr 0x48F7E4
+    constructor Create(Owner: TObjectGI); // @addr 0x004A1470
+    destructor Destroy; override; // @addr 0x004A17DC
+    procedure Clear; override; // @addr 0x004A18E8 @note "Resets the range to 0..99 and clears callbacks; does not call inherited Clear."
+    function GetHitRegion(Point: TPoint): TScrollBarRegion; // @addr 0x004A1BB4 @note "Returns 0 outside, 1/2 arrows, 3/4 page regions, or 5 thumb; only tests the scrolling axis."
+    procedure SetRange(MinValue, MaxValue: Integer); // @addr 0x004A1CC8
+    procedure SetPositionInternal(NewPosition: Integer); // @addr 0x004A1E08 @note "Does not invoke PositionChangedCallback."
+    procedure SetPosition(NewPosition: Integer); reintroduce; // @addr 0x004A1F54 @note "Notifies only while Active and only when the clamped position changes."
+    procedure SetSmallChange(Value: Integer); // @addr 0x004A20B8
+    procedure SetLargeChange(Value: Integer); // @addr 0x004A20E4 @note "A value equal to SmallChange is ignored even if LargeChange differs."
+    procedure SetPageSize(Value: Integer); // @addr 0x004A2110 @note "Caps at Maximum-Minimum+1; no lower bound check."
+    procedure SetOrientation(Value: TScrollBarOrientation); // @addr 0x004A2154 @note "Any value other than soHorizontal uses vertical layout."
+    procedure SetKindCalcMode(Value: Integer); // @addr 0x004A2180
+    procedure SetConfigPath(const Path: WideString); override; // @addr 0x004A21AC
+    procedure SetSize(Size: TPoint); override; // @addr 0x004A21D0
+    procedure UpdateLayout; // @addr 0x004A221C
+    procedure UpdateSizeForOrientation; // @addr 0x004A3140 @note "Uses the up-arrow image for scrollbar thickness."
+    procedure StartAutoRepeat(DelayMs, RepeatMs: Integer); // @addr 0x004A37B0
+    procedure StopAutoRepeat; // @addr 0x004A37E0
+    procedure AutoRepeat(Timer: TCallbackTimerIdGI; UserData: Cardinal); // @addr 0x004A3804
+    procedure SetUpPosition(Point: TPoint); // @addr $4A195C
+    procedure SetBeforeThumbBarPosition(Point: TPoint); // @addr $4A1998
+    procedure SetThumbTopPosition(Point: TPoint); // @addr $4A19D4
+    procedure SetThumbCenterPosition(Point: TPoint); // @addr $4A1A10
+    procedure SetThumbBottomPosition(Point: TPoint); // @addr $4A1A4C
+    procedure SetAfterThumbBarPosition(Point: TPoint); // @addr $4A1A88
+    procedure SetDownPosition(Point: TPoint); // @addr $4A1AC4
+    procedure SetBeforeThumbBarSize(Size: TPoint); // @addr $4A1B00
+    procedure SetThumbCenterSize(Size: TPoint); // @addr $4A1B3C
+    procedure SetAfterThumbBarSize(Size: TPoint); // @addr $4A1B78
+    procedure SetActive(Enabled: Boolean); override; // @addr $4A21FC
+    procedure ProcessMouseMove(KeyState: Cardinal; Point: TPoint); override; // @addr $4A3190
+    procedure ProcessLeftButtonDown(KeyState: Cardinal; Point: TPoint); override; // @addr $4A3438
+    procedure ProcessLeftButtonUp(KeyState: Cardinal; Point: TPoint); override; // @addr $4A3754
+    procedure ProcessLeftButtonDoubleClick(KeyState: Cardinal; Point: TPoint); override; // @addr $4A37AC
+    procedure OnMouseEnter; override; // @addr $4A33FC
+    procedure OnMouseLeave; override; // @addr $4A3404
+    procedure LoadFromConfigPath(const Path: WideString); override; // @addr 0x004A3868
+    procedure LoadFromBlock(Block: TBlockParEC); override; // @addr 0x004A3894
+    procedure LoadScrollBarProperties(Block: TBlockParEC); // @addr 0x004A38B0
   end;
 
 implementation
 
 uses Classes, GI_Main, GR_Main, SysUtils;
 
-{ @routine $48C900 TScrollBarGI_Create }
+{ @routine $4A1470 TScrollBarGI_Create }
 constructor TScrollBarGI.Create(Owner: TObjectGI);
 begin
   inherited Create(Owner);
-  RepeatTimer := nil;
-  UpImages[0] := TImageGI.Create(Self);
-  UpImages[0].SetDepth(1);
-  UpImages[1] := TImageGI.Create(Self);
-  UpImages[1].SetDepth(1);
-  UpImages[2] := TImageGI.Create(Self);
-  UpImages[2].SetDepth(1);
-  BeforeThumbBarImages[0] := TImageGI.Create(Self);
-  BeforeThumbBarImages[0].SetDepth(1);
-  BeforeThumbBarImages[1] := TImageGI.Create(Self);
-  BeforeThumbBarImages[1].SetDepth(1);
-  BeforeThumbBarImages[2] := TImageGI.Create(Self);
-  BeforeThumbBarImages[2].SetDepth(1);
-  ThumbTopImages[0] := TImageGI.Create(Self);
-  ThumbTopImages[0].SetDepth(0);
-  ThumbTopImages[1] := TImageGI.Create(Self);
-  ThumbTopImages[1].SetDepth(0);
-  ThumbTopImages[2] := TImageGI.Create(Self);
-  ThumbTopImages[2].SetDepth(0);
-  ThumbCenterImages[0] := TImageGI.Create(Self);
-  ThumbCenterImages[0].SetDepth(0);
-  ThumbCenterImages[1] := TImageGI.Create(Self);
-  ThumbCenterImages[1].SetDepth(0);
-  ThumbCenterImages[2] := TImageGI.Create(Self);
-  ThumbCenterImages[2].SetDepth(0);
-  ThumbBottomImages[0] := TImageGI.Create(Self);
-  ThumbBottomImages[0].SetDepth(0);
-  ThumbBottomImages[1] := TImageGI.Create(Self);
-  ThumbBottomImages[1].SetDepth(0);
-  ThumbBottomImages[2] := TImageGI.Create(Self);
-  ThumbBottomImages[2].SetDepth(0);
-  AfterThumbBarImages[0] := TImageGI.Create(Self);
-  AfterThumbBarImages[0].SetDepth(1);
-  AfterThumbBarImages[1] := TImageGI.Create(Self);
-  AfterThumbBarImages[1].SetDepth(1);
-  AfterThumbBarImages[2] := TImageGI.Create(Self);
-  AfterThumbBarImages[2].SetDepth(1);
-  DownImages[0] := TImageGI.Create(Self);
-  DownImages[0].SetDepth(1);
-  DownImages[1] := TImageGI.Create(Self);
-  DownImages[1].SetDepth(1);
-  DownImages[2] := TImageGI.Create(Self);
-  DownImages[2].SetDepth(1);
+  RepeatTimer := 0;
+  UpImages[sbImageNormal] := TImageGI.Create(Self);
+  UpImages[sbImageNormal].SetDepth(1);
+  UpImages[sbImageActive] := TImageGI.Create(Self);
+  UpImages[sbImageActive].SetDepth(1);
+  UpImages[sbImageDown] := TImageGI.Create(Self);
+  UpImages[sbImageDown].SetDepth(1);
+  BeforeThumbBarImages[sbImageNormal] := TImageGI.Create(Self);
+  BeforeThumbBarImages[sbImageNormal].SetDepth(1);
+  BeforeThumbBarImages[sbImageActive] := TImageGI.Create(Self);
+  BeforeThumbBarImages[sbImageActive].SetDepth(1);
+  BeforeThumbBarImages[sbImageDown] := TImageGI.Create(Self);
+  BeforeThumbBarImages[sbImageDown].SetDepth(1);
+  ThumbTopImages[sbImageNormal] := TImageGI.Create(Self);
+  ThumbTopImages[sbImageNormal].SetDepth(0);
+  ThumbTopImages[sbImageActive] := TImageGI.Create(Self);
+  ThumbTopImages[sbImageActive].SetDepth(0);
+  ThumbTopImages[sbImageDown] := TImageGI.Create(Self);
+  ThumbTopImages[sbImageDown].SetDepth(0);
+  ThumbCenterImages[sbImageNormal] := TImageGI.Create(Self);
+  ThumbCenterImages[sbImageNormal].SetDepth(0);
+  ThumbCenterImages[sbImageActive] := TImageGI.Create(Self);
+  ThumbCenterImages[sbImageActive].SetDepth(0);
+  ThumbCenterImages[sbImageDown] := TImageGI.Create(Self);
+  ThumbCenterImages[sbImageDown].SetDepth(0);
+  ThumbBottomImages[sbImageNormal] := TImageGI.Create(Self);
+  ThumbBottomImages[sbImageNormal].SetDepth(0);
+  ThumbBottomImages[sbImageActive] := TImageGI.Create(Self);
+  ThumbBottomImages[sbImageActive].SetDepth(0);
+  ThumbBottomImages[sbImageDown] := TImageGI.Create(Self);
+  ThumbBottomImages[sbImageDown].SetDepth(0);
+  AfterThumbBarImages[sbImageNormal] := TImageGI.Create(Self);
+  AfterThumbBarImages[sbImageNormal].SetDepth(1);
+  AfterThumbBarImages[sbImageActive] := TImageGI.Create(Self);
+  AfterThumbBarImages[sbImageActive].SetDepth(1);
+  AfterThumbBarImages[sbImageDown] := TImageGI.Create(Self);
+  AfterThumbBarImages[sbImageDown].SetDepth(1);
+  DownImages[sbImageNormal] := TImageGI.Create(Self);
+  DownImages[sbImageNormal].SetDepth(1);
+  DownImages[sbImageActive] := TImageGI.Create(Self);
+  DownImages[sbImageActive].SetDepth(1);
+  DownImages[sbImageDown] := TImageGI.Create(Self);
+  DownImages[sbImageDown].SetDepth(1);
   Minimum := 0;
   Maximum := 99;
   Position := 0;
   LargeChange := 1;
   SmallChange := 1;
   PageSize := 1;
-  Orientation := 2;
-  CalculationMode := 0;
+  Orientation := soVertical;
+  CalculationMode := scmValue;
 end;
-{ @end $48C900 }
+{ @end $4A1470 }
 
-{ @routine $48CD4C TScrollBarGI_Destroy }
+{ @routine $4A17DC TScrollBarGI_Destroy }
 destructor TScrollBarGI.Destroy;
 begin
-  UpImages[0].Free;
-  UpImages[1].Free;
-  UpImages[2].Free;
-  BeforeThumbBarImages[0].Free;
-  BeforeThumbBarImages[1].Free;
-  BeforeThumbBarImages[2].Free;
-  ThumbTopImages[0].Free;
-  ThumbTopImages[1].Free;
-  ThumbTopImages[2].Free;
-  ThumbCenterImages[0].Free;
-  ThumbCenterImages[1].Free;
-  ThumbCenterImages[2].Free;
-  ThumbBottomImages[0].Free;
-  ThumbBottomImages[1].Free;
-  ThumbBottomImages[2].Free;
-  AfterThumbBarImages[0].Free;
-  AfterThumbBarImages[1].Free;
-  AfterThumbBarImages[2].Free;
-  DownImages[0].Free;
-  DownImages[1].Free;
-  DownImages[2].Free;
+  UpImages[sbImageNormal].Free;
+  UpImages[sbImageActive].Free;
+  UpImages[sbImageDown].Free;
+  BeforeThumbBarImages[sbImageNormal].Free;
+  BeforeThumbBarImages[sbImageActive].Free;
+  BeforeThumbBarImages[sbImageDown].Free;
+  ThumbTopImages[sbImageNormal].Free;
+  ThumbTopImages[sbImageActive].Free;
+  ThumbTopImages[sbImageDown].Free;
+  ThumbCenterImages[sbImageNormal].Free;
+  ThumbCenterImages[sbImageActive].Free;
+  ThumbCenterImages[sbImageDown].Free;
+  ThumbBottomImages[sbImageNormal].Free;
+  ThumbBottomImages[sbImageActive].Free;
+  ThumbBottomImages[sbImageDown].Free;
+  AfterThumbBarImages[sbImageNormal].Free;
+  AfterThumbBarImages[sbImageActive].Free;
+  AfterThumbBarImages[sbImageDown].Free;
+  DownImages[sbImageNormal].Free;
+  DownImages[sbImageActive].Free;
+  DownImages[sbImageDown].Free;
   inherited Destroy;
 end;
-{ @end $48CD4C }
+{ @end $4A17DC }
 
-{ @routine $48CEA4 TScrollBarGI_Clear }
+{ @routine $4A18E8 TScrollBarGI_Clear }
 procedure TScrollBarGI.Clear;
 begin
   Minimum := 0;
@@ -173,146 +190,146 @@ begin
   LargeChange := 1;
   SmallChange := 1;
   PageSize := 1;
-  Orientation := 2;
-  CalculationMode := 0;
-  PressedRegion := 0;
-  HoveredRegion := 0;
+  Orientation := soVertical;
+  CalculationMode := scmValue;
+  PressedRegion := srNoHit;
+  HoveredRegion := srNoHit;
   StopAutoRepeat;
   PositionChangedCallback := nil;
 end;
-{ @end $48CEA4 }
+{ @end $4A18E8 }
 
-{ @routine $48CF40 TScrollBarGI_SetUpPosition }
+{ @routine $4A195C TScrollBarGI_SetUpPosition }
 procedure TScrollBarGI.SetUpPosition(Point: TPoint);
 begin
-  UpImages[0].SetPosition(Point);
-  UpImages[1].SetPosition(Point);
-  UpImages[2].SetPosition(Point);
+  UpImages[sbImageNormal].Pos := Point;
+  UpImages[sbImageActive].Pos := Point;
+  UpImages[sbImageDown].Pos := Point;
 end;
-{ @end $48CF40 }
+{ @end $4A195C }
 
-{ @routine $48CF8C TScrollBarGI_SetBeforeThumbBarPosition }
+{ @routine $4A1998 TScrollBarGI_SetBeforeThumbBarPosition }
 procedure TScrollBarGI.SetBeforeThumbBarPosition(Point: TPoint);
 begin
-  BeforeThumbBarImages[0].SetPosition(Point);
-  BeforeThumbBarImages[1].SetPosition(Point);
-  BeforeThumbBarImages[2].SetPosition(Point);
+  BeforeThumbBarImages[sbImageNormal].Pos := Point;
+  BeforeThumbBarImages[sbImageActive].Pos := Point;
+  BeforeThumbBarImages[sbImageDown].Pos := Point;
 end;
-{ @end $48CF8C }
+{ @end $4A1998 }
 
-{ @routine $48CFD8 TScrollBarGI_SetThumbTopPosition }
+{ @routine $4A19D4 TScrollBarGI_SetThumbTopPosition }
 procedure TScrollBarGI.SetThumbTopPosition(Point: TPoint);
 begin
-  ThumbTopImages[0].SetPosition(Point);
-  ThumbTopImages[1].SetPosition(Point);
-  ThumbTopImages[2].SetPosition(Point);
+  ThumbTopImages[sbImageNormal].Pos := Point;
+  ThumbTopImages[sbImageActive].Pos := Point;
+  ThumbTopImages[sbImageDown].Pos := Point;
 end;
-{ @end $48CFD8 }
+{ @end $4A19D4 }
 
-{ @routine $48D024 TScrollBarGI_SetThumbCenterPosition }
+{ @routine $4A1A10 TScrollBarGI_SetThumbCenterPosition }
 procedure TScrollBarGI.SetThumbCenterPosition(Point: TPoint);
 begin
-  ThumbCenterImages[0].SetPosition(Point);
-  ThumbCenterImages[1].SetPosition(Point);
-  ThumbCenterImages[2].SetPosition(Point);
+  ThumbCenterImages[sbImageNormal].Pos := Point;
+  ThumbCenterImages[sbImageActive].Pos := Point;
+  ThumbCenterImages[sbImageDown].Pos := Point;
 end;
-{ @end $48D024 }
+{ @end $4A1A10 }
 
-{ @routine $48D070 TScrollBarGI_SetThumbBottomPosition }
+{ @routine $4A1A4C TScrollBarGI_SetThumbBottomPosition }
 procedure TScrollBarGI.SetThumbBottomPosition(Point: TPoint);
 begin
-  ThumbBottomImages[0].SetPosition(Point);
-  ThumbBottomImages[1].SetPosition(Point);
-  ThumbBottomImages[2].SetPosition(Point);
+  ThumbBottomImages[sbImageNormal].Pos := Point;
+  ThumbBottomImages[sbImageActive].Pos := Point;
+  ThumbBottomImages[sbImageDown].Pos := Point;
 end;
-{ @end $48D070 }
+{ @end $4A1A4C }
 
-{ @routine $48D0BC TScrollBarGI_SetAfterThumbBarPosition }
+{ @routine $4A1A88 TScrollBarGI_SetAfterThumbBarPosition }
 procedure TScrollBarGI.SetAfterThumbBarPosition(Point: TPoint);
 begin
-  AfterThumbBarImages[0].SetPosition(Point);
-  AfterThumbBarImages[1].SetPosition(Point);
-  AfterThumbBarImages[2].SetPosition(Point);
+  AfterThumbBarImages[sbImageNormal].Pos := Point;
+  AfterThumbBarImages[sbImageActive].Pos := Point;
+  AfterThumbBarImages[sbImageDown].Pos := Point;
 end;
-{ @end $48D0BC }
+{ @end $4A1A88 }
 
-{ @routine $48D108 TScrollBarGI_SetDownPosition }
+{ @routine $4A1AC4 TScrollBarGI_SetDownPosition }
 procedure TScrollBarGI.SetDownPosition(Point: TPoint);
 begin
-  DownImages[0].SetPosition(Point);
-  DownImages[1].SetPosition(Point);
-  DownImages[2].SetPosition(Point);
+  DownImages[sbImageNormal].Pos := Point;
+  DownImages[sbImageActive].Pos := Point;
+  DownImages[sbImageDown].Pos := Point;
 end;
-{ @end $48D108 }
+{ @end $4A1AC4 }
 
-{ @routine $48D154 TScrollBarGI_SetBeforeThumbBarSize }
+{ @routine $4A1B00 TScrollBarGI_SetBeforeThumbBarSize }
 procedure TScrollBarGI.SetBeforeThumbBarSize(Size: TPoint);
 begin
-  BeforeThumbBarImages[0].SetSize(Size);
-  BeforeThumbBarImages[1].SetSize(Size);
-  BeforeThumbBarImages[2].SetSize(Size);
+  BeforeThumbBarImages[sbImageNormal].ObjectSize := Size;
+  BeforeThumbBarImages[sbImageActive].ObjectSize := Size;
+  BeforeThumbBarImages[sbImageDown].ObjectSize := Size;
 end;
-{ @end $48D154 }
+{ @end $4A1B00 }
 
-{ @routine $48D1A0 TScrollBarGI_SetThumbCenterSize }
+{ @routine $4A1B3C TScrollBarGI_SetThumbCenterSize }
 procedure TScrollBarGI.SetThumbCenterSize(Size: TPoint);
 begin
-  ThumbCenterImages[0].SetSize(Size);
-  ThumbCenterImages[1].SetSize(Size);
-  ThumbCenterImages[2].SetSize(Size);
+  ThumbCenterImages[sbImageNormal].ObjectSize := Size;
+  ThumbCenterImages[sbImageActive].ObjectSize := Size;
+  ThumbCenterImages[sbImageDown].ObjectSize := Size;
 end;
-{ @end $48D1A0 }
+{ @end $4A1B3C }
 
-{ @routine $48D1EC TScrollBarGI_SetAfterThumbBarSize }
+{ @routine $4A1B78 TScrollBarGI_SetAfterThumbBarSize }
 procedure TScrollBarGI.SetAfterThumbBarSize(Size: TPoint);
 begin
-  AfterThumbBarImages[0].SetSize(Size);
-  AfterThumbBarImages[1].SetSize(Size);
-  AfterThumbBarImages[2].SetSize(Size);
+  AfterThumbBarImages[sbImageNormal].ObjectSize := Size;
+  AfterThumbBarImages[sbImageActive].ObjectSize := Size;
+  AfterThumbBarImages[sbImageDown].ObjectSize := Size;
 end;
-{ @end $48D1EC }
+{ @end $4A1B78 }
 
-{ @routine $48D238 TScrollBarGI_GetHitRegion }
-function TScrollBarGI.GetHitRegion(Point: TPoint): Integer;
+{ @routine $4A1BB4 TScrollBarGI_GetHitRegion }
+function TScrollBarGI.GetHitRegion(Point: TPoint): TScrollBarRegion;
 var
   UpEnd, ThumbStart, ThumbEnd, DownStart: Integer;
 begin
-  if Orientation = 1 then
+  if Orientation = soHorizontal then
   begin
-    UpEnd := UpImages[0].ClientSize.X;
-    ThumbStart := ThumbTopImages[0].LocalPosition.X;
-    ThumbEnd := ThumbBottomImages[0].LocalPosition.X + ThumbBottomImages[0].ClientSize.X;
-    DownStart := ClientSize.X - DownImages[0].ClientSize.X;
-    if Point.X < 0 then Result := 0
-    else if Point.X <= UpEnd then Result := 1
-    else if Point.X <= ThumbStart then Result := 3
-    else if Point.X <= ThumbEnd then Result := 5
-    else if Point.X <= DownStart then Result := 4
-    else if Point.X <= ClientSize.X then Result := 2
-    else Result := 0;
+    UpEnd := UpImages[sbImageNormal].ClientSize.X;
+    ThumbStart := ThumbTopImages[sbImageNormal].LocalPosition.X;
+    ThumbEnd := ThumbBottomImages[sbImageNormal].LocalPosition.X + ThumbBottomImages[sbImageNormal].ClientSize.X;
+    DownStart := ClientSize.X - DownImages[sbImageNormal].ClientSize.X;
+    if Point.X < 0 then Result := srNoHit
+    else if Point.X <= UpEnd then Result := srDecreaseArrow
+    else if Point.X <= ThumbStart then Result := srPageBefore
+    else if Point.X <= ThumbEnd then Result := srThumb
+    else if Point.X <= DownStart then Result := srPageAfter
+    else if Point.X <= ClientSize.X then Result := srIncreaseArrow
+    else Result := srNoHit;
   end
   else
   begin
-    UpEnd := UpImages[0].ClientSize.Y;
-    ThumbStart := ThumbTopImages[0].LocalPosition.Y;
-    ThumbEnd := ThumbBottomImages[0].LocalPosition.Y + ThumbBottomImages[0].ClientSize.Y;
-    DownStart := ClientSize.Y - DownImages[0].ClientSize.Y;
-    if Point.Y < 0 then Result := 0
-    else if Point.Y <= UpEnd then Result := 1
-    else if Point.Y <= ThumbStart then Result := 3
-    else if Point.Y <= ThumbEnd then Result := 5
-    else if Point.Y <= DownStart then Result := 4
-    else if Point.Y <= ClientSize.Y then Result := 2
-    else Result := 0;
+    UpEnd := UpImages[sbImageNormal].ClientSize.Y;
+    ThumbStart := ThumbTopImages[sbImageNormal].LocalPosition.Y;
+    ThumbEnd := ThumbBottomImages[sbImageNormal].LocalPosition.Y + ThumbBottomImages[sbImageNormal].ClientSize.Y;
+    DownStart := ClientSize.Y - DownImages[sbImageNormal].ClientSize.Y;
+    if Point.Y < 0 then Result := srNoHit
+    else if Point.Y <= UpEnd then Result := srDecreaseArrow
+    else if Point.Y <= ThumbStart then Result := srPageBefore
+    else if Point.Y <= ThumbEnd then Result := srThumb
+    else if Point.Y <= DownStart then Result := srPageAfter
+    else if Point.Y <= ClientSize.Y then Result := srIncreaseArrow
+    else Result := srNoHit;
   end;
 end;
-{ @end $48D238 }
+{ @end $4A1BB4 }
 
-{ @routine $48D3EC TScrollBarGI_SetRange }
+{ @routine $4A1CC8 TScrollBarGI_SetRange }
 procedure TScrollBarGI.SetRange(MinValue, MaxValue: Integer);
 begin
-  if MinimumLabel <> nil then MinimumLabel.SetText(IntToStr(MinValue));
-  if MaximumLabel <> nil then MaximumLabel.SetText(IntToStr(MaxValue));
+  if MinimumLabel <> nil then MinimumLabel.Text := IntToStr(MinValue);
+  if MaximumLabel <> nil then MaximumLabel.Text := IntToStr(MaxValue);
   if (Maximum <> MaxValue) or (Minimum <> MinValue) then
   begin
     if MinValue > MaxValue then MinValue := MaxValue;
@@ -328,148 +345,134 @@ begin
     end;
   end;
 end;
-{ @end $48D3EC }
+{ @end $4A1CC8 }
 
-{ @routine $48D590 TScrollBarGI_SetPositionInternal }
+{ @routine $4A1E08 TScrollBarGI_SetPositionInternal }
 procedure TScrollBarGI.SetPositionInternal(NewPosition: Integer);
 var
   OldPosition: Integer;
 begin
   OldPosition := Position;
-  if PositionLabel <> nil then PositionLabel.SetText(IntToStr(NewPosition));
-  if Position <> NewPosition then
+  if PositionLabel <> nil then PositionLabel.Text := IntToStr(NewPosition);
+  if Position = NewPosition then Exit;
+  Position := NewPosition;
+  if Position < Minimum then Position := Minimum;
+  if CalculationMode = scmValue then
   begin
-    Position := NewPosition;
+    if Position > Maximum then Position := Maximum;
+  end
+  else
+  begin
+    if Maximum - PageSize + 1 < Position then Position := Maximum - PageSize + 1;
     if Position < Minimum then Position := Minimum;
-    if CalculationMode = 0 then
-    begin
-      if Position > Maximum then Position := Maximum;
-    end
-    else
-    begin
-      if Maximum - PageSize + 1 < Position then Position := Maximum - PageSize + 1;
-      if Position < Minimum then Position := Minimum;
-    end;
-    if PositionLabel <> nil then PositionLabel.SetText(IntToStr(Position));
-    if OldPosition <> Position then
-      if Active = True then
-      begin
-        UpdateLayout;
-        Invalidate;
-      end;
   end;
+  if PositionLabel <> nil then PositionLabel.Text := IntToStr(Position);
+  if OldPosition <> Position then
+    if Active = True then
+    begin
+      UpdateLayout;
+      Invalidate;
+    end;
 end;
-{ @end $48D590 }
+{ @end $4A1E08 }
 
-{ @routine $48D764 TScrollBarGI_SetPosition }
+{ @routine $4A1F54 TScrollBarGI_SetPosition }
 procedure TScrollBarGI.SetPosition(NewPosition: Integer);
 var
   OldPosition: Integer;
 begin
   OldPosition := Position;
-  if PositionLabel <> nil then PositionLabel.SetText(IntToStr(NewPosition));
-  if Position <> NewPosition then
+  if PositionLabel <> nil then PositionLabel.Text := IntToStr(NewPosition);
+  if Position = NewPosition then Exit;
+  Position := NewPosition;
+  if Position < Minimum then Position := Minimum;
+  if CalculationMode = scmValue then
   begin
-    Position := NewPosition;
+    if Position > Maximum then Position := Maximum;
+  end
+  else
+  begin
+    if Maximum - PageSize + 1 < Position then Position := Maximum - PageSize + 1;
     if Position < Minimum then Position := Minimum;
-    if CalculationMode = 0 then
-    begin
-      if Position > Maximum then Position := Maximum;
-    end
-    else
-    begin
-      if Maximum - PageSize + 1 < Position then Position := Maximum - PageSize + 1;
-      if Position < Minimum then Position := Minimum;
-    end;
-    if PositionLabel <> nil then PositionLabel.SetText(IntToStr(Position));
-    if OldPosition <> Position then
-      if Active = True then
-      begin
-        UpdateLayout;
-        Invalidate;
-        if Assigned(PositionChangedCallback) then PositionChangedCallback(Self);
-      end;
   end;
+  if PositionLabel <> nil then PositionLabel.Text := IntToStr(Position);
+  if OldPosition <> Position then
+    if Active = True then
+    begin
+      UpdateLayout;
+      Invalidate;
+      if Assigned(PositionChangedCallback) then PositionChangedCallback(Self);
+    end;
 end;
-{ @end $48D764 }
+{ @end $4A1F54 }
 
-{ @routine $48D958 TScrollBarGI_SetSmallChange }
+{ @routine $4A20B8 TScrollBarGI_SetSmallChange }
 procedure TScrollBarGI.SetSmallChange(Value: Integer);
 begin
-  if SmallChange <> Value then
+  if SmallChange = Value then Exit;
+  SmallChange := Value;
+  if Active = True then
   begin
-    SmallChange := Value;
-    if Active = True then
-    begin
-      UpdateLayout;
-      Invalidate;
-    end;
+    UpdateLayout;
+    Invalidate;
   end;
 end;
-{ @end $48D958 }
+{ @end $4A20B8 }
 
-{ @routine $48D9A0 TScrollBarGI_SetLargeChange }
+{ @routine $4A20E4 TScrollBarGI_SetLargeChange }
 procedure TScrollBarGI.SetLargeChange(Value: Integer);
 begin
-  if SmallChange <> Value then
+  if SmallChange = Value then Exit;
+  LargeChange := Value;
+  if Active = True then
   begin
-    LargeChange := Value;
-    if Active = True then
-    begin
-      UpdateLayout;
-      Invalidate;
-    end;
+    UpdateLayout;
+    Invalidate;
   end;
 end;
-{ @end $48D9A0 }
+{ @end $4A20E4 }
 
-{ @routine $48D9E8 TScrollBarGI_SetPageSize }
+{ @routine $4A2110 TScrollBarGI_SetPageSize }
 procedure TScrollBarGI.SetPageSize(Value: Integer);
 begin
-  if PageSize <> Value then
+  if PageSize = Value then Exit;
+  PageSize := Value;
+  if PageSize > Maximum - Minimum + 1 then PageSize := Maximum - Minimum + 1;
+  if Active = True then
   begin
-    PageSize := Value;
-    if PageSize > Maximum - Minimum + 1 then PageSize := Maximum - Minimum + 1;
-    if Active = True then
-    begin
-      UpdateLayout;
-      Invalidate;
-    end;
+    UpdateLayout;
+    Invalidate;
   end;
 end;
-{ @end $48D9E8 }
+{ @end $4A2110 }
 
-{ @routine $48DA68 TScrollBarGI_SetOrientation }
-procedure TScrollBarGI.SetOrientation(Value: Integer);
+{ @routine $4A2154 TScrollBarGI_SetOrientation }
+procedure TScrollBarGI.SetOrientation(Value: TScrollBarOrientation);
 begin
-  if Orientation <> Value then
+  if Orientation = Value then Exit;
+  Orientation := Value;
+  if Active = True then
   begin
-    Orientation := Value;
-    if Active = True then
-    begin
-      UpdateLayout;
-      Invalidate;
-    end;
+    UpdateLayout;
+    Invalidate;
   end;
 end;
-{ @end $48DA68 }
+{ @end $4A2154 }
 
-{ @routine $48DAB0 TScrollBarGI_SetKindCalcMode }
+{ @routine $4A2180 TScrollBarGI_SetKindCalcMode }
 procedure TScrollBarGI.SetKindCalcMode(Value: Integer);
 begin
-  if CalculationMode <> Value then
+  if CalculationMode = Value then Exit;
+  CalculationMode := Value;
+  if Active = True then
   begin
-    CalculationMode := Value;
-    if Active = True then
-    begin
-      UpdateLayout;
-      Invalidate;
-    end;
+    UpdateLayout;
+    Invalidate;
   end;
 end;
-{ @end $48DAB0 }
+{ @end $4A2180 }
 
-{ @routine $48DAF8 TScrollBarGI_SetConfigPath }
+{ @routine $4A21AC TScrollBarGI_SetConfigPath }
 procedure TScrollBarGI.SetConfigPath(const Path: WideString);
 begin
   inherited SetConfigPath(Path);
@@ -479,399 +482,483 @@ begin
     Invalidate;
   end;
 end;
-{ @end $48DAF8 }
+{ @end $4A21AC }
 
-{ @routine $48DB30 TScrollBarGI_SetSize }
+{ @routine $4A21D0 TScrollBarGI_SetSize }
 procedure TScrollBarGI.SetSize(Size: TPoint);
 begin
   inherited SetSize(Size);
   if Active = True then UpdateLayout;
 end;
-{ @end $48DB30 }
+{ @end $4A21D0 }
 
-{ @routine $48DB64 TScrollBarGI_SetActive }
+{ @routine $4A21FC TScrollBarGI_SetActive }
 procedure TScrollBarGI.SetActive(Enabled: Boolean);
 begin
   inherited SetActive(Enabled);
   if Enabled = True then UpdateLayout;
 end;
-{ @end $48DB64 }
+{ @end $4A21FC }
 
-{ @routine $48DB90 TScrollBarGI_UpdateLayout }
+{ @routine $4A221C TScrollBarGI_UpdateLayout }
 procedure TScrollBarGI.UpdateLayout;
 var
   X, Y, TrackLength, BeforeLength, ThumbLength, AfterLength, MinimumThumbLength: Integer;
 begin
-  if Active then
+  if not Active then Exit;
+  if Orientation = soHorizontal then
   begin
-    if (Orientation = 1) then
+    Y := ClientSize.Y div 2;
+    if UpImages[sbImageNormal].ClientSize.X + DownImages[sbImageNormal].ClientSize.X +
+      ThumbTopImages[sbImageNormal].ClientSize.X + ThumbBottomImages[sbImageNormal].ClientSize.X >= ClientSize.X then
     begin
-      Y := (ClientSize.Y div 2);
-      if ((((UpImages[0].ClientSize.X + DownImages[0].ClientSize.X) + ThumbTopImages[0].ClientSize.X) + ThumbBottomImages[0].ClientSize.X) >= ClientSize.X) then
-      begin
-        X := 0;
-        SetUpPosition(Classes.Point(X, (Y - (UpImages[0].ClientSize.Y div 2))));
-        Inc(X, UpImages[0].ClientSize.X);
-        SetThumbTopPosition(Classes.Point(X, (Y - (ThumbTopImages[0].ClientSize.Y div 2))));
-        SetBeforeThumbBarPosition(Classes.Point(X, (Y - (BeforeThumbBarImages[0].ClientSize.Y div 2))));
-        SetBeforeThumbBarSize(Classes.Point(BeforeThumbBarImages[0].ClientSize.X, BeforeThumbBarImages[0].ClientSize.Y));
-        Inc(X, ThumbTopImages[0].ClientSize.X);
-        ThumbCenterImages[0].SetActive(False);
-        ThumbCenterImages[1].SetActive(False);
-        ThumbCenterImages[2].SetActive(False);
-        SetThumbBottomPosition(Classes.Point(X, (Y - (ThumbBottomImages[0].ClientSize.Y div 2))));
-        SetAfterThumbBarPosition(Classes.Point(X, (Y - (AfterThumbBarImages[0].ClientSize.Y div 2))));
-        SetAfterThumbBarSize(Classes.Point(AfterThumbBarImages[0].ClientSize.X, AfterThumbBarImages[0].ClientSize.Y));
-        Inc(X, ThumbBottomImages[0].ClientSize.X);
-        SetDownPosition(Classes.Point(X, (Y - (DownImages[0].ClientSize.Y div 2))));
-      end
-      else
-      begin
-        TrackLength := ((ClientSize.X - UpImages[0].ClientSize.X) - DownImages[0].ClientSize.X);
-        if ((Maximum - Minimum + 1) = 0) then
-        begin
-          ThumbLength := TrackLength;
-        end
-        else
-        begin
-          ThumbLength := Integer(Trunc(((PageSize / ((Maximum - Minimum) + 1)) * TrackLength)));
-          if (ThumbLength > TrackLength) then
-          begin
-            ThumbLength := TrackLength;
-          end;
-        end;
-        MinimumThumbLength := 0;
-        if ((ThumbTopImages[0].ClientSize.X + ThumbBottomImages[0].ClientSize.X) >= ThumbLength) then
-        begin
-          ThumbLength := (ThumbTopImages[0].ClientSize.X + ThumbBottomImages[0].ClientSize.X);
-          MinimumThumbLength := ThumbLength;
-        end;
-        if CalculationMode = 0 then
-        begin
-          if MinimumThumbLength = 0 then
-          begin
-            if Maximum - Minimum + 1 = 0 then BeforeLength := 0
-            else BeforeLength := Integer(Trunc((Position - Minimum) / (Maximum - Minimum + 1) * TrackLength));
-          end
-          else
-          begin
-            if Maximum - Minimum = 0 then BeforeLength := 0
-            else BeforeLength := Integer(Trunc((Position - Minimum) / (Maximum - Minimum) * (TrackLength - MinimumThumbLength)));
-          end;
-        end
-        else
-        begin
-          if Maximum - Minimum + 1 = 0 then BeforeLength := 0
-          else BeforeLength := Integer(Trunc((Position - Minimum) / (Maximum - Minimum + 1) * TrackLength));
-          if BeforeLength + ThumbLength > TrackLength then BeforeLength := TrackLength - ThumbLength;
-        end;
-        AfterLength := ((TrackLength - BeforeLength) - ThumbLength);
-        if ((ThumbTopImages[0].ClientSize.X + ThumbBottomImages[0].ClientSize.X) >= ThumbLength) then
-        begin
-          ThumbCenterImages[0].SetActive(False);
-          ThumbCenterImages[1].SetActive(False);
-          ThumbCenterImages[2].SetActive(False);
-          SetThumbCenterSize(Classes.Point(0, ThumbCenterImages[0].ClientSize.Y));
-        end
-        else
-        begin
-          ThumbCenterImages[0].SetActive(not (((PressedRegion = 0) and (HoveredRegion = 5)) or (PressedRegion = 5)));
-          ThumbCenterImages[1].SetActive((PressedRegion = 0) and (HoveredRegion = 5));
-          ThumbCenterImages[2].SetActive(PressedRegion = 5);
-          SetThumbCenterPosition(Classes.Point(((UpImages[0].ClientSize.X + ThumbTopImages[0].ClientSize.X) + BeforeLength), (Y - (ThumbCenterImages[0].ClientSize.Y div 2))));
-          SetThumbCenterSize(Classes.Point((ThumbLength - (ThumbTopImages[0].ClientSize.X + ThumbBottomImages[0].ClientSize.X)), ThumbCenterImages[0].ClientSize.Y));
-        end;
-        SetUpPosition(Classes.Point(0, (Y - (UpImages[0].ClientSize.Y div 2))));
-        SetDownPosition(Classes.Point((ClientSize.X - DownImages[0].ClientSize.X), (Y - (DownImages[0].ClientSize.Y div 2))));
-        SetThumbTopPosition(Classes.Point((UpImages[0].ClientSize.X + BeforeLength), (Y - (ThumbTopImages[0].ClientSize.Y div 2))));
-        SetThumbBottomPosition(Classes.Point((((BeforeLength + ThumbLength) - ThumbBottomImages[0].ClientSize.X) + UpImages[0].ClientSize.X), (Y - (ThumbBottomImages[0].ClientSize.Y div 2))));
-        SetBeforeThumbBarPosition(Classes.Point(UpImages[0].ClientSize.X, (Y - (BeforeThumbBarImages[0].ClientSize.Y div 2))));
-        SetBeforeThumbBarSize(Classes.Point((ThumbTopImages[0].ClientSize.X + BeforeLength), BeforeThumbBarImages[0].ClientSize.Y));
-        SetAfterThumbBarPosition(Classes.Point((((BeforeLength + ThumbLength) - ThumbBottomImages[0].ClientSize.X) + DownImages[0].ClientSize.X), (Y - (AfterThumbBarImages[0].ClientSize.Y div 2))));
-        SetAfterThumbBarSize(Classes.Point((ThumbBottomImages[0].ClientSize.X + AfterLength), AfterThumbBarImages[0].ClientSize.Y));
-      end;
+      X := 0;
+      SetUpPosition(Classes.Point(X, Y - UpImages[sbImageNormal].ClientSize.Y div 2));
+      Inc(X, UpImages[sbImageNormal].ClientSize.X);
+      SetThumbTopPosition(Classes.Point(X, Y - ThumbTopImages[sbImageNormal].ClientSize.Y div 2));
+      SetBeforeThumbBarPosition(Classes.Point(X, Y - BeforeThumbBarImages[sbImageNormal].ClientSize.Y div 2));
+      SetBeforeThumbBarSize(Classes.Point(
+        BeforeThumbBarImages[sbImageNormal].ClientSize.X,
+        BeforeThumbBarImages[sbImageNormal].ClientSize.Y));
+      Inc(X, ThumbTopImages[sbImageNormal].ClientSize.X);
+      ThumbCenterImages[sbImageNormal].IsActive := False;
+      ThumbCenterImages[sbImageActive].IsActive := False;
+      ThumbCenterImages[sbImageDown].IsActive := False;
+      SetThumbBottomPosition(Classes.Point(X, Y - ThumbBottomImages[sbImageNormal].ClientSize.Y div 2));
+      SetAfterThumbBarPosition(Classes.Point(X, Y - AfterThumbBarImages[sbImageNormal].ClientSize.Y div 2));
+      SetAfterThumbBarSize(Classes.Point(AfterThumbBarImages[sbImageNormal].ClientSize.X, AfterThumbBarImages[sbImageNormal].ClientSize.Y));
+      Inc(X, ThumbBottomImages[sbImageNormal].ClientSize.X);
+      SetDownPosition(Classes.Point(X, Y - DownImages[sbImageNormal].ClientSize.Y div 2));
     end
     else
     begin
-      X := (ClientSize.X div 2);
-      if ((((UpImages[0].ClientSize.Y + DownImages[0].ClientSize.Y) + ThumbTopImages[0].ClientSize.Y) + ThumbBottomImages[0].ClientSize.Y) >= ClientSize.Y) then
+      TrackLength := ClientSize.X - UpImages[sbImageNormal].ClientSize.X - DownImages[sbImageNormal].ClientSize.X;
+      if Maximum - Minimum + 1 = 0 then
       begin
-        Y := 0;
-        SetUpPosition(Classes.Point((X - (UpImages[0].ClientSize.X div 2)), Y));
-        Inc(Y, UpImages[0].ClientSize.Y);
-        SetThumbTopPosition(Classes.Point((X - (ThumbTopImages[0].ClientSize.X div 2)), Y));
-        SetBeforeThumbBarPosition(Classes.Point((X - (BeforeThumbBarImages[0].ClientSize.X div 2)), Y));
-        SetBeforeThumbBarSize(Classes.Point(BeforeThumbBarImages[0].ClientSize.X, BeforeThumbBarImages[0].ClientSize.Y));
-        Inc(Y, ThumbTopImages[0].ClientSize.Y);
-        ThumbCenterImages[0].SetActive(False);
-        ThumbCenterImages[1].SetActive(False);
-        ThumbCenterImages[2].SetActive(False);
-        SetThumbBottomPosition(Classes.Point((X - (ThumbBottomImages[0].ClientSize.X div 2)), Y));
-        SetAfterThumbBarPosition(Classes.Point((X - (AfterThumbBarImages[0].ClientSize.X div 2)), Y));
-        SetAfterThumbBarSize(Classes.Point(AfterThumbBarImages[0].ClientSize.X, AfterThumbBarImages[0].ClientSize.Y));
-        Inc(Y, ThumbBottomImages[0].ClientSize.Y);
-        SetDownPosition(Classes.Point((X - (DownImages[0].ClientSize.X div 2)), Y));
+        ThumbLength := TrackLength;
       end
       else
       begin
-        TrackLength := ((ClientSize.Y - UpImages[0].ClientSize.Y) - DownImages[0].ClientSize.Y);
-        if ((Maximum - Minimum + 1) = 0) then
+        ThumbLength := Trunc(PageSize / (Maximum - Minimum + 1) * TrackLength);
+        if ThumbLength > TrackLength then
         begin
           ThumbLength := TrackLength;
-        end
-        else
-        begin
-          ThumbLength := Integer(Trunc(((PageSize / ((Maximum - Minimum) + 1)) * TrackLength)));
-          if (ThumbLength > TrackLength) then
-          begin
-            ThumbLength := TrackLength;
-          end;
         end;
-        MinimumThumbLength := 0;
-        if ((ThumbTopImages[0].ClientSize.Y + ThumbBottomImages[0].ClientSize.Y) >= ThumbLength) then
-        begin
-          ThumbLength := (ThumbTopImages[0].ClientSize.Y + ThumbBottomImages[0].ClientSize.Y);
-          MinimumThumbLength := ThumbLength;
-        end;
-        if CalculationMode = 0 then
-        begin
-          if MinimumThumbLength = 0 then
-          begin
-            if Maximum - Minimum + 1 = 0 then BeforeLength := 0
-            else BeforeLength := Integer(Trunc((Position - Minimum) / (Maximum - Minimum + 1) * TrackLength));
-          end
-          else
-          begin
-            if Maximum - Minimum = 0 then BeforeLength := 0
-            else BeforeLength := Integer(Trunc((Position - Minimum) / (Maximum - Minimum) * (TrackLength - MinimumThumbLength)));
-          end;
-        end
-        else
+      end;
+      MinimumThumbLength := 0;
+      if ThumbTopImages[sbImageNormal].ClientSize.X + ThumbBottomImages[sbImageNormal].ClientSize.X >= ThumbLength then
+      begin
+        ThumbLength := ThumbTopImages[sbImageNormal].ClientSize.X + ThumbBottomImages[sbImageNormal].ClientSize.X;
+        MinimumThumbLength := ThumbLength;
+      end;
+      if CalculationMode = scmValue then
+      begin
+        if MinimumThumbLength = 0 then
         begin
           if Maximum - Minimum + 1 = 0 then BeforeLength := 0
-          else BeforeLength := Integer(Trunc((Position - Minimum) / (Maximum - Minimum + 1) * TrackLength));
-          if BeforeLength + ThumbLength > TrackLength then BeforeLength := TrackLength - ThumbLength;
-        end;
-        AfterLength := ((TrackLength - BeforeLength) - ThumbLength);
-        if ((ThumbTopImages[0].ClientSize.Y + ThumbBottomImages[0].ClientSize.Y) >= ThumbLength) then
-        begin
-          ThumbCenterImages[0].SetActive(False);
-          ThumbCenterImages[1].SetActive(False);
-          ThumbCenterImages[2].SetActive(False);
-          SetThumbCenterSize(Classes.Point(ThumbCenterImages[0].ClientSize.X, 0));
+          else BeforeLength := Trunc((Position - Minimum) / (Maximum - Minimum + 1) * TrackLength);
         end
         else
         begin
-          ThumbCenterImages[0].SetActive(not (((PressedRegion = 0) and (HoveredRegion = 5)) or (PressedRegion = 5)));
-          ThumbCenterImages[1].SetActive((PressedRegion = 0) and (HoveredRegion = 5));
-          ThumbCenterImages[2].SetActive(PressedRegion = 5);
-          SetThumbCenterPosition(Classes.Point((X - (ThumbCenterImages[0].ClientSize.X div 2)), ((UpImages[0].ClientSize.Y + ThumbTopImages[0].ClientSize.Y) + BeforeLength)));
-          SetThumbCenterSize(Classes.Point(ThumbCenterImages[0].ClientSize.X, (ThumbLength - (ThumbTopImages[0].ClientSize.Y + ThumbBottomImages[0].ClientSize.Y))));
+          if Maximum - Minimum = 0 then BeforeLength := 0
+          else BeforeLength := Trunc((Position - Minimum) / (Maximum - Minimum) * (TrackLength - MinimumThumbLength));
         end;
-        SetUpPosition(Classes.Point((X - (UpImages[0].ClientSize.X div 2)), 0));
-        SetDownPosition(Classes.Point((X - (DownImages[0].ClientSize.X div 2)), (ClientSize.Y - DownImages[0].ClientSize.Y)));
-        SetThumbTopPosition(Classes.Point((X - (ThumbTopImages[0].ClientSize.X div 2)), (UpImages[0].ClientSize.Y + BeforeLength)));
-        SetThumbBottomPosition(Classes.Point((X - (ThumbBottomImages[0].ClientSize.X div 2)), (((BeforeLength + ThumbLength) - ThumbBottomImages[0].ClientSize.Y) + UpImages[0].ClientSize.Y)));
-        SetBeforeThumbBarPosition(Classes.Point((X - (BeforeThumbBarImages[0].ClientSize.X div 2)), UpImages[0].ClientSize.Y));
-        SetBeforeThumbBarSize(Classes.Point(BeforeThumbBarImages[0].ClientSize.X, (ThumbTopImages[0].ClientSize.Y + BeforeLength)));
-        SetAfterThumbBarPosition(Classes.Point((X - (AfterThumbBarImages[0].ClientSize.X div 2)), (((BeforeLength + ThumbLength) - ThumbBottomImages[0].ClientSize.Y) + DownImages[0].ClientSize.Y)));
-        SetAfterThumbBarSize(Classes.Point(AfterThumbBarImages[0].ClientSize.X, (ThumbBottomImages[0].ClientSize.Y + AfterLength)));
+      end
+      else
+      begin
+        if Maximum - Minimum + 1 = 0 then BeforeLength := 0
+        else BeforeLength := Trunc((Position - Minimum) / (Maximum - Minimum + 1) * TrackLength);
+        if BeforeLength + ThumbLength > TrackLength then BeforeLength := TrackLength - ThumbLength;
       end;
+      AfterLength := TrackLength - BeforeLength - ThumbLength;
+      if ThumbTopImages[sbImageNormal].ClientSize.X + ThumbBottomImages[sbImageNormal].ClientSize.X >= ThumbLength then
+      begin
+        ThumbCenterImages[sbImageNormal].IsActive := False;
+        ThumbCenterImages[sbImageActive].IsActive := False;
+        ThumbCenterImages[sbImageDown].IsActive := False;
+        SetThumbCenterSize(Classes.Point(0, ThumbCenterImages[sbImageNormal].ClientSize.Y));
+      end
+      else
+      begin
+        ThumbCenterImages[sbImageNormal].IsActive := not (((PressedRegion = srNoHit) and (HoveredRegion = srThumb)) or (PressedRegion = srThumb));
+        ThumbCenterImages[sbImageActive].IsActive := (PressedRegion = srNoHit) and (HoveredRegion = srThumb);
+        ThumbCenterImages[sbImageDown].IsActive := PressedRegion = srThumb;
+        SetThumbCenterPosition(Classes.Point(
+          UpImages[sbImageNormal].ClientSize.X + ThumbTopImages[sbImageNormal].ClientSize.X + BeforeLength,
+          Y - ThumbCenterImages[sbImageNormal].ClientSize.Y div 2));
+        SetThumbCenterSize(Classes.Point(
+          ThumbLength - (ThumbTopImages[sbImageNormal].ClientSize.X + ThumbBottomImages[sbImageNormal].ClientSize.X),
+          ThumbCenterImages[sbImageNormal].ClientSize.Y));
+      end;
+      SetUpPosition(Classes.Point(0, Y - UpImages[sbImageNormal].ClientSize.Y div 2));
+      SetDownPosition(Classes.Point(
+        ClientSize.X - DownImages[sbImageNormal].ClientSize.X,
+        Y - DownImages[sbImageNormal].ClientSize.Y div 2));
+      SetThumbTopPosition(Classes.Point(
+        UpImages[sbImageNormal].ClientSize.X + BeforeLength,
+        Y - ThumbTopImages[sbImageNormal].ClientSize.Y div 2));
+      SetThumbBottomPosition(Classes.Point(
+        BeforeLength + ThumbLength - ThumbBottomImages[sbImageNormal].ClientSize.X + UpImages[sbImageNormal].ClientSize.X,
+        Y - ThumbBottomImages[sbImageNormal].ClientSize.Y div 2));
+      SetBeforeThumbBarPosition(Classes.Point(
+        UpImages[sbImageNormal].ClientSize.X,
+        Y - BeforeThumbBarImages[sbImageNormal].ClientSize.Y div 2));
+      SetBeforeThumbBarSize(Classes.Point(
+        ThumbTopImages[sbImageNormal].ClientSize.X + BeforeLength,
+        BeforeThumbBarImages[sbImageNormal].ClientSize.Y));
+      SetAfterThumbBarPosition(Classes.Point(
+        BeforeLength + ThumbLength - ThumbBottomImages[sbImageNormal].ClientSize.X + DownImages[sbImageNormal].ClientSize.X,
+        Y - AfterThumbBarImages[sbImageNormal].ClientSize.Y div 2));
+      SetAfterThumbBarSize(Classes.Point(
+        ThumbBottomImages[sbImageNormal].ClientSize.X + AfterLength,
+        AfterThumbBarImages[sbImageNormal].ClientSize.Y));
     end;
-    UpImages[0].SetActive(not (((PressedRegion = 0) and (HoveredRegion = 1)) or (PressedRegion = 1)));
-    UpImages[1].SetActive((PressedRegion = 0) and (HoveredRegion = 1));
-    UpImages[2].SetActive(PressedRegion = 1);
-    BeforeThumbBarImages[0].SetActive(not (((PressedRegion = 0) and (HoveredRegion = 3)) or (PressedRegion = 3)));
-    BeforeThumbBarImages[1].SetActive((PressedRegion = 0) and (HoveredRegion = 3));
-    BeforeThumbBarImages[2].SetActive(PressedRegion = 3);
-    ThumbTopImages[0].SetActive(not (((PressedRegion = 0) and (HoveredRegion = 5)) or (PressedRegion = 5)));
-    ThumbTopImages[1].SetActive((PressedRegion = 0) and (HoveredRegion = 5));
-    ThumbTopImages[2].SetActive(PressedRegion = 5);
-    ThumbBottomImages[0].SetActive(not (((PressedRegion = 0) and (HoveredRegion = 5)) or (PressedRegion = 5)));
-    ThumbBottomImages[1].SetActive((PressedRegion = 0) and (HoveredRegion = 5));
-    ThumbBottomImages[2].SetActive(PressedRegion = 5);
-    AfterThumbBarImages[0].SetActive(not (((PressedRegion = 0) and (HoveredRegion = 4)) or (PressedRegion = 4)));
-    AfterThumbBarImages[1].SetActive((PressedRegion = 0) and (HoveredRegion = 4));
-    AfterThumbBarImages[2].SetActive(PressedRegion = 4);
-    DownImages[0].SetActive(not (((PressedRegion = 0) and (HoveredRegion = 2)) or (PressedRegion = 2)));
-    DownImages[1].SetActive((PressedRegion = 0) and (HoveredRegion = 2));
-    DownImages[2].SetActive(PressedRegion = 2);
+  end
+  else
+  begin
+    X := ClientSize.X div 2;
+    if UpImages[sbImageNormal].ClientSize.Y + DownImages[sbImageNormal].ClientSize.Y +
+      ThumbTopImages[sbImageNormal].ClientSize.Y + ThumbBottomImages[sbImageNormal].ClientSize.Y >= ClientSize.Y then
+    begin
+      Y := 0;
+      SetUpPosition(Classes.Point(X - UpImages[sbImageNormal].ClientSize.X div 2, Y));
+      Inc(Y, UpImages[sbImageNormal].ClientSize.Y);
+      SetThumbTopPosition(Classes.Point(X - ThumbTopImages[sbImageNormal].ClientSize.X div 2, Y));
+      SetBeforeThumbBarPosition(Classes.Point(X - BeforeThumbBarImages[sbImageNormal].ClientSize.X div 2, Y));
+      SetBeforeThumbBarSize(Classes.Point(
+        BeforeThumbBarImages[sbImageNormal].ClientSize.X,
+        BeforeThumbBarImages[sbImageNormal].ClientSize.Y));
+      Inc(Y, ThumbTopImages[sbImageNormal].ClientSize.Y);
+      ThumbCenterImages[sbImageNormal].IsActive := False;
+      ThumbCenterImages[sbImageActive].IsActive := False;
+      ThumbCenterImages[sbImageDown].IsActive := False;
+      SetThumbBottomPosition(Classes.Point(X - ThumbBottomImages[sbImageNormal].ClientSize.X div 2, Y));
+      SetAfterThumbBarPosition(Classes.Point(X - AfterThumbBarImages[sbImageNormal].ClientSize.X div 2, Y));
+      SetAfterThumbBarSize(Classes.Point(AfterThumbBarImages[sbImageNormal].ClientSize.X, AfterThumbBarImages[sbImageNormal].ClientSize.Y));
+      Inc(Y, ThumbBottomImages[sbImageNormal].ClientSize.Y);
+      SetDownPosition(Classes.Point(X - DownImages[sbImageNormal].ClientSize.X div 2, Y));
+    end
+    else
+    begin
+      TrackLength := ClientSize.Y - UpImages[sbImageNormal].ClientSize.Y - DownImages[sbImageNormal].ClientSize.Y;
+      if Maximum - Minimum + 1 = 0 then
+      begin
+        ThumbLength := TrackLength;
+      end
+      else
+      begin
+        ThumbLength := Trunc(PageSize / (Maximum - Minimum + 1) * TrackLength);
+        if ThumbLength > TrackLength then
+        begin
+          ThumbLength := TrackLength;
+        end;
+      end;
+      MinimumThumbLength := 0;
+      if ThumbTopImages[sbImageNormal].ClientSize.Y + ThumbBottomImages[sbImageNormal].ClientSize.Y >= ThumbLength then
+      begin
+        ThumbLength := ThumbTopImages[sbImageNormal].ClientSize.Y + ThumbBottomImages[sbImageNormal].ClientSize.Y;
+        MinimumThumbLength := ThumbLength;
+      end;
+      if CalculationMode = scmValue then
+      begin
+        if MinimumThumbLength = 0 then
+        begin
+          if Maximum - Minimum + 1 = 0 then BeforeLength := 0
+          else BeforeLength := Trunc((Position - Minimum) / (Maximum - Minimum + 1) * TrackLength);
+        end
+        else
+        begin
+          if Maximum - Minimum = 0 then BeforeLength := 0
+          else BeforeLength := Trunc((Position - Minimum) / (Maximum - Minimum) * (TrackLength - MinimumThumbLength));
+        end;
+      end
+      else
+      begin
+        if Maximum - Minimum + 1 = 0 then BeforeLength := 0
+        else BeforeLength := Trunc((Position - Minimum) / (Maximum - Minimum + 1) * TrackLength);
+        if BeforeLength + ThumbLength > TrackLength then BeforeLength := TrackLength - ThumbLength;
+      end;
+      AfterLength := TrackLength - BeforeLength - ThumbLength;
+      if ThumbTopImages[sbImageNormal].ClientSize.Y + ThumbBottomImages[sbImageNormal].ClientSize.Y >= ThumbLength then
+      begin
+        ThumbCenterImages[sbImageNormal].IsActive := False;
+        ThumbCenterImages[sbImageActive].IsActive := False;
+        ThumbCenterImages[sbImageDown].IsActive := False;
+        SetThumbCenterSize(Classes.Point(ThumbCenterImages[sbImageNormal].ClientSize.X, 0));
+      end
+      else
+      begin
+        ThumbCenterImages[sbImageNormal].IsActive := not (((PressedRegion = srNoHit) and (HoveredRegion = srThumb)) or (PressedRegion = srThumb));
+        ThumbCenterImages[sbImageActive].IsActive := (PressedRegion = srNoHit) and (HoveredRegion = srThumb);
+        ThumbCenterImages[sbImageDown].IsActive := PressedRegion = srThumb;
+        SetThumbCenterPosition(Classes.Point(
+          X - ThumbCenterImages[sbImageNormal].ClientSize.X div 2,
+          UpImages[sbImageNormal].ClientSize.Y + ThumbTopImages[sbImageNormal].ClientSize.Y + BeforeLength));
+        SetThumbCenterSize(Classes.Point(
+          ThumbCenterImages[sbImageNormal].ClientSize.X,
+          ThumbLength - (ThumbTopImages[sbImageNormal].ClientSize.Y + ThumbBottomImages[sbImageNormal].ClientSize.Y)));
+      end;
+      SetUpPosition(Classes.Point(X - UpImages[sbImageNormal].ClientSize.X div 2, 0));
+      SetDownPosition(Classes.Point(
+        X - DownImages[sbImageNormal].ClientSize.X div 2,
+        ClientSize.Y - DownImages[sbImageNormal].ClientSize.Y));
+      SetThumbTopPosition(Classes.Point(
+        X - ThumbTopImages[sbImageNormal].ClientSize.X div 2,
+        UpImages[sbImageNormal].ClientSize.Y + BeforeLength));
+      SetThumbBottomPosition(Classes.Point(
+        X - ThumbBottomImages[sbImageNormal].ClientSize.X div 2,
+        BeforeLength + ThumbLength - ThumbBottomImages[sbImageNormal].ClientSize.Y + UpImages[sbImageNormal].ClientSize.Y));
+      SetBeforeThumbBarPosition(Classes.Point(
+        X - BeforeThumbBarImages[sbImageNormal].ClientSize.X div 2,
+        UpImages[sbImageNormal].ClientSize.Y));
+      SetBeforeThumbBarSize(Classes.Point(
+        BeforeThumbBarImages[sbImageNormal].ClientSize.X,
+        ThumbTopImages[sbImageNormal].ClientSize.Y + BeforeLength));
+      SetAfterThumbBarPosition(Classes.Point(
+        X - AfterThumbBarImages[sbImageNormal].ClientSize.X div 2,
+        BeforeLength + ThumbLength - ThumbBottomImages[sbImageNormal].ClientSize.Y + DownImages[sbImageNormal].ClientSize.Y));
+      SetAfterThumbBarSize(Classes.Point(
+        AfterThumbBarImages[sbImageNormal].ClientSize.X,
+        ThumbBottomImages[sbImageNormal].ClientSize.Y + AfterLength));
+    end;
   end;
+  UpImages[sbImageNormal].IsActive := not (((PressedRegion = srNoHit) and (HoveredRegion = srDecreaseArrow)) or (PressedRegion = srDecreaseArrow));
+  UpImages[sbImageActive].IsActive := (PressedRegion = srNoHit) and (HoveredRegion = srDecreaseArrow);
+  UpImages[sbImageDown].IsActive := PressedRegion = srDecreaseArrow;
+  BeforeThumbBarImages[sbImageNormal].IsActive := not (((PressedRegion = srNoHit) and (HoveredRegion = srPageBefore)) or (PressedRegion = srPageBefore));
+  BeforeThumbBarImages[sbImageActive].IsActive := (PressedRegion = srNoHit) and (HoveredRegion = srPageBefore);
+  BeforeThumbBarImages[sbImageDown].IsActive := PressedRegion = srPageBefore;
+  ThumbTopImages[sbImageNormal].IsActive := not (((PressedRegion = srNoHit) and (HoveredRegion = srThumb)) or (PressedRegion = srThumb));
+  ThumbTopImages[sbImageActive].IsActive := (PressedRegion = srNoHit) and (HoveredRegion = srThumb);
+  ThumbTopImages[sbImageDown].IsActive := PressedRegion = srThumb;
+  ThumbBottomImages[sbImageNormal].IsActive := not (((PressedRegion = srNoHit) and (HoveredRegion = srThumb)) or (PressedRegion = srThumb));
+  ThumbBottomImages[sbImageActive].IsActive := (PressedRegion = srNoHit) and (HoveredRegion = srThumb);
+  ThumbBottomImages[sbImageDown].IsActive := PressedRegion = srThumb;
+  AfterThumbBarImages[sbImageNormal].IsActive := not (((PressedRegion = srNoHit) and (HoveredRegion = srPageAfter)) or (PressedRegion = srPageAfter));
+  AfterThumbBarImages[sbImageActive].IsActive := (PressedRegion = srNoHit) and (HoveredRegion = srPageAfter);
+  AfterThumbBarImages[sbImageDown].IsActive := PressedRegion = srPageAfter;
+  DownImages[sbImageNormal].IsActive := not (((PressedRegion = srNoHit) and (HoveredRegion = srIncreaseArrow)) or (PressedRegion = srIncreaseArrow));
+  DownImages[sbImageActive].IsActive := (PressedRegion = srNoHit) and (HoveredRegion = srIncreaseArrow);
+  DownImages[sbImageDown].IsActive := PressedRegion = srIncreaseArrow;
 end;
-{ @end $48DB90 }
+{ @end $4A221C }
 
-{ @routine $48EDD4 TScrollBarGI_UpdateSizeForOrientation }
+{ @routine $4A3140 TScrollBarGI_UpdateSizeForOrientation }
 procedure TScrollBarGI.UpdateSizeForOrientation;
 begin
-  if Orientation = 1 then
-    SetSize(Classes.Point(ClientSize.X, UpImages[0].ClientSize.Y))
+  if Orientation = soHorizontal then
+    ObjectSize := Classes.Point(ClientSize.X, UpImages[sbImageNormal].ClientSize.Y)
   else
-    SetSize(Classes.Point(UpImages[0].ClientSize.X, ClientSize.Y));
+    ObjectSize := Classes.Point(UpImages[sbImageNormal].ClientSize.X, ClientSize.Y);
 end;
-{ @end $48EDD4 }
+{ @end $4A3140 }
 
-{ @routine $48EE3C TScrollBarGI_ProcessMouseMove }
+{ @routine $4A3190 TScrollBarGI_ProcessMouseMove }
 procedure TScrollBarGI.ProcessMouseMove(KeyState: Cardinal; Point: TPoint);
 begin
   inherited ProcessMouseMove(KeyState, Point);
-  if PressedRegion = 5 then
+  if PressedRegion = srThumb then
   begin
-    if Orientation = 1 then
+    if Orientation = soHorizontal then
     begin
       if Maximum - Minimum = 0 then SetPosition(Minimum)
-      else if CalculationMode = 0 then
-        SetPosition(Integer(Trunc((Maximum - Minimum) / (ClientSize.X - UpImages[0].ClientSize.X - DownImages[0].ClientSize.X - ThumbCenterImages[0].ClientSize.X - ThumbTopImages[0].ClientSize.X - ThumbBottomImages[0].ClientSize.X) * (Point.X - HitTestBounds.Left - UpImages[0].ClientSize.X))) + DragStartPosition)
+      else if CalculationMode = scmValue then
+        SetPosition(Integer(Trunc((Maximum - Minimum) / (ClientSize.X
+          - UpImages[sbImageNormal].ClientSize.X
+          - DownImages[sbImageNormal].ClientSize.X
+          - ThumbCenterImages[sbImageNormal].ClientSize.X
+          - ThumbTopImages[sbImageNormal].ClientSize.X
+          - ThumbBottomImages[sbImageNormal].ClientSize.X)
+          * (Point.X - HitTestBounds.Left
+          - UpImages[sbImageNormal].ClientSize.X))) + DragStartPosition)
       else
-        SetPosition(Integer(Trunc((Maximum - Minimum) / (ClientSize.X - UpImages[0].ClientSize.X - DownImages[0].ClientSize.X) * (Point.X - HitTestBounds.Left - UpImages[0].ClientSize.X))) + DragStartPosition);
+        SetPosition(Integer(Trunc((Maximum - Minimum) / (ClientSize.X
+          - UpImages[sbImageNormal].ClientSize.X
+          - DownImages[sbImageNormal].ClientSize.X)
+          * (Point.X - HitTestBounds.Left
+          - UpImages[sbImageNormal].ClientSize.X))) + DragStartPosition);
     end
     else
     begin
       if Maximum - Minimum = 0 then SetPosition(Minimum)
-      else if CalculationMode = 0 then
-        SetPosition(Integer(Trunc((Maximum - Minimum) / (ClientSize.Y - UpImages[0].ClientSize.Y - DownImages[0].ClientSize.Y - ThumbCenterImages[0].ClientSize.Y - ThumbTopImages[0].ClientSize.Y - ThumbBottomImages[0].ClientSize.Y) * (Point.Y - HitTestBounds.Top - UpImages[0].ClientSize.Y))) + DragStartPosition)
+      else if CalculationMode = scmValue then
+        SetPosition(Integer(Trunc((Maximum - Minimum) / (ClientSize.Y
+          - UpImages[sbImageNormal].ClientSize.Y
+          - DownImages[sbImageNormal].ClientSize.Y
+          - ThumbCenterImages[sbImageNormal].ClientSize.Y
+          - ThumbTopImages[sbImageNormal].ClientSize.Y
+          - ThumbBottomImages[sbImageNormal].ClientSize.Y)
+          * (Point.Y - HitTestBounds.Top
+          - UpImages[sbImageNormal].ClientSize.Y))) + DragStartPosition)
       else
-        SetPosition(Integer(Trunc((Maximum - Minimum) / (ClientSize.Y - UpImages[0].ClientSize.Y - DownImages[0].ClientSize.Y) * (Point.Y - HitTestBounds.Top - UpImages[0].ClientSize.Y))) + DragStartPosition);
+        SetPosition(Integer(Trunc((Maximum - Minimum) / (ClientSize.Y
+          - UpImages[sbImageNormal].ClientSize.Y
+          - DownImages[sbImageNormal].ClientSize.Y)
+          * (Point.Y - HitTestBounds.Top
+          - UpImages[sbImageNormal].ClientSize.Y))) + DragStartPosition);
     end;
   end;
   HoveredRegion := GetHitRegion(ToLocalPoint(Point));
   UpdateLayout;
   Invalidate;
 end;
-{ @end $48EE3C }
+{ @end $4A3190 }
 
-{ @routine $48F154 TScrollBarGI_OnMouseEnter }
+{ @routine $4A33FC TScrollBarGI_OnMouseEnter }
 procedure TScrollBarGI.OnMouseEnter;
 begin
   inherited OnMouseEnter;
 end;
-{ @end $48F154 }
+{ @end $4A33FC }
 
-{ @routine $48F168 TScrollBarGI_OnMouseLeave }
+{ @routine $4A3404 TScrollBarGI_OnMouseLeave }
 procedure TScrollBarGI.OnMouseLeave;
 begin
   inherited OnMouseLeave;
-  if PressedRegion = 0 then HoveredRegion := 0;
+  if PressedRegion = srNoHit then HoveredRegion := srNoHit;
   if Active = True then
   begin
     UpdateLayout;
     Invalidate;
   end;
 end;
-{ @end $48F168 }
+{ @end $4A3404 }
 
-{ @routine $48F1B0 TScrollBarGI_ProcessLeftButtonDown }
+{ @routine $4A3438 TScrollBarGI_ProcessLeftButtonDown }
 procedure TScrollBarGI.ProcessLeftButtonDown(KeyState: Cardinal; Point: TPoint);
 begin
   inherited ProcessLeftButtonDown(KeyState, Point);
   if Active then MessageLoop.SetFocusedControl(Self);
   HoveredRegion := GetHitRegion(ToLocalPoint(Point));
   PressedRegion := HoveredRegion;
-  if PressedRegion = 1 then
+  if PressedRegion = srDecreaseArrow then
   begin
     SetPosition(Position - SmallChange);
     StartAutoRepeat(500, 50);
   end
-  else if PressedRegion = 2 then
+  else if PressedRegion = srIncreaseArrow then
   begin
     SetPosition(Position + SmallChange);
     StartAutoRepeat(500, 50);
   end
-  else if PressedRegion = 3 then
+  else if PressedRegion = srPageBefore then
   begin
     SetPosition(Position - LargeChange);
     StartAutoRepeat(500, 50);
   end
-  else if PressedRegion = 4 then
+  else if PressedRegion = srPageAfter then
   begin
     SetPosition(Position + LargeChange);
     StartAutoRepeat(500, 50);
   end
-  else if PressedRegion = 5 then
+  else if PressedRegion = srThumb then
   begin
     StopAutoRepeat;
     if Maximum - Minimum = 0 then DragStartPosition := Minimum
-    else if Orientation = 1 then
+    else if Orientation = soHorizontal then
     begin
-      if CalculationMode = 0 then
-        DragStartPosition := Position - Integer(Trunc((Maximum - Minimum) / (ClientSize.X - UpImages[0].ClientSize.X - DownImages[0].ClientSize.X - ThumbCenterImages[0].ClientSize.X - ThumbTopImages[0].ClientSize.X - ThumbBottomImages[0].ClientSize.X) * (Point.X - HitTestBounds.Left - UpImages[0].ClientSize.X)))
+      if CalculationMode = scmValue then
+        DragStartPosition := Position - Integer(Trunc((Maximum - Minimum) / (ClientSize.X
+          - UpImages[sbImageNormal].ClientSize.X
+          - DownImages[sbImageNormal].ClientSize.X
+          - ThumbCenterImages[sbImageNormal].ClientSize.X
+          - ThumbTopImages[sbImageNormal].ClientSize.X
+          - ThumbBottomImages[sbImageNormal].ClientSize.X)
+          * (Point.X - HitTestBounds.Left
+          - UpImages[sbImageNormal].ClientSize.X)))
       else
-        DragStartPosition := Position - Integer(Trunc((Maximum - Minimum) / (ClientSize.X - UpImages[0].ClientSize.X - DownImages[0].ClientSize.X) * (Point.X - HitTestBounds.Left - UpImages[0].ClientSize.X)));
+        DragStartPosition := Position - Integer(Trunc((Maximum - Minimum) / (ClientSize.X
+          - UpImages[sbImageNormal].ClientSize.X
+          - DownImages[sbImageNormal].ClientSize.X)
+          * (Point.X - HitTestBounds.Left
+          - UpImages[sbImageNormal].ClientSize.X)));
     end
     else
     begin
-      if CalculationMode = 0 then
-        DragStartPosition := Position - Integer(Trunc((Maximum - Minimum) / (ClientSize.Y - UpImages[0].ClientSize.Y - DownImages[0].ClientSize.Y - ThumbCenterImages[0].ClientSize.Y - ThumbTopImages[0].ClientSize.Y - ThumbBottomImages[0].ClientSize.Y) * (Point.Y - HitTestBounds.Top - UpImages[0].ClientSize.Y)))
+      if CalculationMode = scmValue then
+        DragStartPosition := Position - Integer(Trunc((Maximum - Minimum) / (ClientSize.Y
+          - UpImages[sbImageNormal].ClientSize.Y
+          - DownImages[sbImageNormal].ClientSize.Y
+          - ThumbCenterImages[sbImageNormal].ClientSize.Y
+          - ThumbTopImages[sbImageNormal].ClientSize.Y
+          - ThumbBottomImages[sbImageNormal].ClientSize.Y)
+          * (Point.Y - HitTestBounds.Top
+          - UpImages[sbImageNormal].ClientSize.Y)))
       else
-        DragStartPosition := Position - Integer(Trunc((Maximum - Minimum) / (ClientSize.Y - UpImages[0].ClientSize.Y - DownImages[0].ClientSize.Y) * (Point.Y - HitTestBounds.Top - UpImages[0].ClientSize.Y)));
+        DragStartPosition := Position - Integer(Trunc((Maximum - Minimum) / (ClientSize.Y
+          - UpImages[sbImageNormal].ClientSize.Y
+          - DownImages[sbImageNormal].ClientSize.Y)
+          * (Point.Y - HitTestBounds.Top
+          - UpImages[sbImageNormal].ClientSize.Y)));
     end;
   end;
   UpdateLayout;
   Invalidate;
 end;
-{ @end $48F1B0 }
+{ @end $4A3438 }
 
-{ @routine $48F5C8 TScrollBarGI_ProcessLeftButtonUp }
+{ @routine $4A3754 TScrollBarGI_ProcessLeftButtonUp }
 procedure TScrollBarGI.ProcessLeftButtonUp(KeyState: Cardinal; Point: TPoint);
 begin
   inherited ProcessLeftButtonUp(KeyState, Point);
-  PressedRegion := 0;
-  if not HitTestCursor then HoveredRegion := 0;
+  PressedRegion := srNoHit;
+  if not HitTestCursor then HoveredRegion := srNoHit;
   if MessageLoop.FocusedControl = Self then MessageLoop.SetFocusedControl(nil);
   UpdateLayout;
   StopAutoRepeat;
 end;
-{ @end $48F5C8 }
+{ @end $4A3754 }
 
-{ @routine $48F640 TScrollBarGI_ProcessLeftButtonDoubleClick }
+{ @routine $4A37AC TScrollBarGI_ProcessLeftButtonDoubleClick }
 procedure TScrollBarGI.ProcessLeftButtonDoubleClick(KeyState: Cardinal; Point: TPoint);
 begin
 
 end;
-{ @end $48F640 }
+{ @end $4A37AC }
 
-{ @routine $48F65C TScrollBarGI_StartAutoRepeat }
+{ @routine $4A37B0 TScrollBarGI_StartAutoRepeat }
 procedure TScrollBarGI.StartAutoRepeat(DelayMs, RepeatMs: Integer);
 begin
   StopAutoRepeat;
   RepeatTimer := MessageLoop.ScheduleCallbackTimer(DelayMs, RepeatMs, AutoRepeat);
 end;
-{ @end $48F65C }
+{ @end $4A37B0 }
 
-{ @routine $48F69C TScrollBarGI_StopAutoRepeat }
+{ @routine $4A37E0 TScrollBarGI_StopAutoRepeat }
 procedure TScrollBarGI.StopAutoRepeat;
 begin
-  if RepeatTimer <> nil then MessageLoop.CancelCallbackTimer(RepeatTimer);
-  RepeatTimer := nil;
+  if RepeatTimer <> 0 then MessageLoop.CancelCallbackTimer(RepeatTimer);
+  RepeatTimer := 0;
 end;
-{ @end $48F69C }
+{ @end $4A37E0 }
 
-{ @routine $48F6D4 TScrollBarGI_AutoRepeat }
-procedure TScrollBarGI.AutoRepeat(Timer: PCallbackTimerGI; UserData: Integer);
+{ @routine $4A3804 TScrollBarGI_AutoRepeat }
+procedure TScrollBarGI.AutoRepeat(Timer: TCallbackTimerIdGI; UserData: Cardinal);
 begin
-  if PressedRegion = 1 then SetPosition(Position - SmallChange)
-  else if PressedRegion = 2 then SetPosition(Position + SmallChange)
-  else if PressedRegion = 3 then SetPosition(Position - LargeChange)
-  else if PressedRegion = 4 then SetPosition(Position + LargeChange);
+  if PressedRegion = srDecreaseArrow then SetPosition(Position - SmallChange)
+  else if PressedRegion = srIncreaseArrow then SetPosition(Position + SmallChange)
+  else if PressedRegion = srPageBefore then SetPosition(Position - LargeChange)
+  else if PressedRegion = srPageAfter then SetPosition(Position + LargeChange);
 end;
-{ @end $48F6D4 }
+{ @end $4A3804 }
 
-{ @routine $48F788 TScrollBarGI_LoadFromConfigPath }
+{ @routine $4A3868 TScrollBarGI_LoadFromConfigPath }
 procedure TScrollBarGI.LoadFromConfigPath(const Path: WideString);
 begin
   inherited LoadFromConfigPath(Path);
   LoadScrollBarProperties(UiStyleConfig.GetBlockByPath(Path));
 end;
-{ @end $48F788 }
+{ @end $4A3868 }
 
-{ @routine $48F7BC TScrollBarGI_LoadFromBlock }
+{ @routine $4A3894 TScrollBarGI_LoadFromBlock }
 procedure TScrollBarGI.LoadFromBlock(Block: TBlockParEC);
 begin
   inherited LoadFromBlock(Block);
   LoadScrollBarProperties(Block);
 end;
-{ @end $48F7BC }
+{ @end $4A3894 }
 
-{ @routine $48F7E4 TScrollBarGI_LoadScrollBarProperties }
+{ @routine $4A38B0 TScrollBarGI_LoadScrollBarProperties }
 procedure TScrollBarGI.LoadScrollBarProperties(Block: TBlockParEC);
 begin
   if Block.CountParams('Min') > 0 then Minimum := StrToInt(Block.GetParam('Min'));
@@ -881,94 +968,97 @@ begin
   if Block.CountParams('SmallChange') > 0 then SmallChange := StrToInt(Block.GetParam('SmallChange'));
   if Block.CountParams('Position') > 0 then Position := StrToInt(Block.GetParam('Position'));
   if Block.CountParams('Kind') > 0 then
-    if Block.GetParam('Kind') = 'x' then Orientation := 1 else Orientation := 2;
+  begin
+    if Block.GetParam('Kind') = 'x' then Orientation := soHorizontal
+    else Orientation := soVertical;
+  end;
   if Block.CountParams('KindCalc') > 0 then CalculationMode := StrToInt(Block.GetParam('KindCalc'));
-  if Block.CountParams('ImageUpN') > 0 then UpImages[0].SetImagePath(Block.GetParam('ImageUpN'));
-  if Block.CountParams('ImageUpA') > 0 then UpImages[1].SetImagePath(Block.GetParam('ImageUpA'));
-  if Block.CountParams('ImageUpD') > 0 then UpImages[2].SetImagePath(Block.GetParam('ImageUpD'));
-  if Block.CountParams('ImageBarN') > 0 then BeforeThumbBarImages[0].SetImagePath(Block.GetParam('ImageBarN'));
-  if Block.CountParams('ImageBarA') > 0 then BeforeThumbBarImages[1].SetImagePath(Block.GetParam('ImageBarA'));
-  if Block.CountParams('ImageBarD') > 0 then BeforeThumbBarImages[2].SetImagePath(Block.GetParam('ImageBarD'));
-  if Block.CountParams('ImageTopN') > 0 then ThumbTopImages[0].SetImagePath(Block.GetParam('ImageTopN'));
-  if Block.CountParams('ImageTopA') > 0 then ThumbTopImages[1].SetImagePath(Block.GetParam('ImageTopA'));
-  if Block.CountParams('ImageTopD') > 0 then ThumbTopImages[2].SetImagePath(Block.GetParam('ImageTopD'));
-  if Block.CountParams('ImageCenterN') > 0 then ThumbCenterImages[0].SetImagePath(Block.GetParam('ImageCenterN'));
-  if Block.CountParams('ImageCenterA') > 0 then ThumbCenterImages[1].SetImagePath(Block.GetParam('ImageCenterA'));
-  if Block.CountParams('ImageCenterD') > 0 then ThumbCenterImages[2].SetImagePath(Block.GetParam('ImageCenterD'));
-  if Block.CountParams('ImageBottomN') > 0 then ThumbBottomImages[0].SetImagePath(Block.GetParam('ImageBottomN'));
-  if Block.CountParams('ImageBottomA') > 0 then ThumbBottomImages[1].SetImagePath(Block.GetParam('ImageBottomA'));
-  if Block.CountParams('ImageBottomD') > 0 then ThumbBottomImages[2].SetImagePath(Block.GetParam('ImageBottomD'));
-  if Block.CountParams('ImageBarN') > 0 then AfterThumbBarImages[0].SetImagePath(Block.GetParam('ImageBarN'));
-  if Block.CountParams('ImageBarA') > 0 then AfterThumbBarImages[1].SetImagePath(Block.GetParam('ImageBarA'));
-  if Block.CountParams('ImageBarD') > 0 then AfterThumbBarImages[2].SetImagePath(Block.GetParam('ImageBarD'));
-  if Block.CountParams('ImageDownN') > 0 then DownImages[0].SetImagePath(Block.GetParam('ImageDownN'));
-  if Block.CountParams('ImageDownA') > 0 then DownImages[1].SetImagePath(Block.GetParam('ImageDownA'));
-  if Block.CountParams('ImageDownD') > 0 then DownImages[2].SetImagePath(Block.GetParam('ImageDownD'));
-  UpImages[0].SetSize(UpImages[0].GetContentSize);
-  UpImages[0].SetImageKindX(ikxCenter);
-  UpImages[0].SetImageKindY(ikyCenter);
-  UpImages[1].SetSize(UpImages[1].GetContentSize);
-  UpImages[1].SetImageKindX(ikxCenter);
-  UpImages[1].SetImageKindY(ikyCenter);
-  UpImages[2].SetSize(UpImages[2].GetContentSize);
-  UpImages[2].SetImageKindX(ikxCenter);
-  UpImages[2].SetImageKindY(ikyCenter);
-  BeforeThumbBarImages[0].SetSize(BeforeThumbBarImages[0].GetContentSize);
-  BeforeThumbBarImages[0].SetImageKindX(ikxLeftFill);
-  BeforeThumbBarImages[0].SetImageKindY(ikyTopFill);
-  BeforeThumbBarImages[1].SetSize(BeforeThumbBarImages[1].GetContentSize);
-  BeforeThumbBarImages[1].SetImageKindX(ikxLeftFill);
-  BeforeThumbBarImages[1].SetImageKindY(ikyTopFill);
-  BeforeThumbBarImages[2].SetSize(BeforeThumbBarImages[2].GetContentSize);
-  BeforeThumbBarImages[2].SetImageKindX(ikxLeftFill);
-  BeforeThumbBarImages[2].SetImageKindY(ikyTopFill);
-  ThumbTopImages[0].SetSize(ThumbTopImages[0].GetContentSize);
-  ThumbTopImages[0].SetImageKindX(ikxCenter);
-  ThumbTopImages[0].SetImageKindY(ikyCenter);
-  ThumbTopImages[1].SetSize(ThumbTopImages[1].GetContentSize);
-  ThumbTopImages[1].SetImageKindX(ikxCenter);
-  ThumbTopImages[1].SetImageKindY(ikyCenter);
-  ThumbTopImages[2].SetSize(ThumbTopImages[2].GetContentSize);
-  ThumbTopImages[2].SetImageKindX(ikxCenter);
-  ThumbTopImages[2].SetImageKindY(ikyCenter);
-  ThumbCenterImages[0].SetSize(ThumbCenterImages[0].GetContentSize);
-  ThumbCenterImages[0].SetImageKindX(ikxLeftFill);
-  ThumbCenterImages[0].SetImageKindY(ikyTopFill);
-  ThumbCenterImages[1].SetSize(ThumbCenterImages[1].GetContentSize);
-  ThumbCenterImages[1].SetImageKindX(ikxLeftFill);
-  ThumbCenterImages[1].SetImageKindY(ikyTopFill);
-  ThumbCenterImages[2].SetSize(ThumbCenterImages[2].GetContentSize);
-  ThumbCenterImages[2].SetImageKindX(ikxLeftFill);
-  ThumbCenterImages[2].SetImageKindY(ikyTopFill);
-  ThumbBottomImages[0].SetSize(ThumbBottomImages[0].GetContentSize);
-  ThumbBottomImages[0].SetImageKindX(ikxCenter);
-  ThumbBottomImages[0].SetImageKindY(ikyCenter);
-  ThumbBottomImages[1].SetSize(ThumbBottomImages[1].GetContentSize);
-  ThumbBottomImages[1].SetImageKindX(ikxCenter);
-  ThumbBottomImages[1].SetImageKindY(ikyCenter);
-  ThumbBottomImages[2].SetSize(ThumbBottomImages[2].GetContentSize);
-  ThumbBottomImages[2].SetImageKindX(ikxCenter);
-  ThumbBottomImages[2].SetImageKindY(ikyCenter);
-  AfterThumbBarImages[0].SetSize(AfterThumbBarImages[0].GetContentSize);
-  AfterThumbBarImages[0].SetImageKindX(ikxRightFill);
-  AfterThumbBarImages[0].SetImageKindY(ikyBottomFill);
-  AfterThumbBarImages[1].SetSize(AfterThumbBarImages[1].GetContentSize);
-  AfterThumbBarImages[1].SetImageKindX(ikxRightFill);
-  AfterThumbBarImages[1].SetImageKindY(ikyBottomFill);
-  AfterThumbBarImages[2].SetSize(AfterThumbBarImages[2].GetContentSize);
-  AfterThumbBarImages[2].SetImageKindX(ikxRightFill);
-  AfterThumbBarImages[2].SetImageKindY(ikyBottomFill);
-  DownImages[0].SetSize(DownImages[0].GetContentSize);
-  DownImages[0].SetImageKindX(ikxCenter);
-  DownImages[0].SetImageKindY(ikyCenter);
-  DownImages[1].SetSize(DownImages[1].GetContentSize);
-  DownImages[1].SetImageKindX(ikxCenter);
-  DownImages[1].SetImageKindY(ikyCenter);
-  DownImages[2].SetSize(DownImages[2].GetContentSize);
-  DownImages[2].SetImageKindX(ikxCenter);
-  DownImages[2].SetImageKindY(ikyCenter);
+  if Block.CountParams('ImageUpN') > 0 then UpImages[sbImageNormal].ImageSourcePath := Block.GetParam('ImageUpN');
+  if Block.CountParams('ImageUpA') > 0 then UpImages[sbImageActive].ImageSourcePath := Block.GetParam('ImageUpA');
+  if Block.CountParams('ImageUpD') > 0 then UpImages[sbImageDown].ImageSourcePath := Block.GetParam('ImageUpD');
+  if Block.CountParams('ImageBarN') > 0 then BeforeThumbBarImages[sbImageNormal].ImageSourcePath := Block.GetParam('ImageBarN');
+  if Block.CountParams('ImageBarA') > 0 then BeforeThumbBarImages[sbImageActive].ImageSourcePath := Block.GetParam('ImageBarA');
+  if Block.CountParams('ImageBarD') > 0 then BeforeThumbBarImages[sbImageDown].ImageSourcePath := Block.GetParam('ImageBarD');
+  if Block.CountParams('ImageTopN') > 0 then ThumbTopImages[sbImageNormal].ImageSourcePath := Block.GetParam('ImageTopN');
+  if Block.CountParams('ImageTopA') > 0 then ThumbTopImages[sbImageActive].ImageSourcePath := Block.GetParam('ImageTopA');
+  if Block.CountParams('ImageTopD') > 0 then ThumbTopImages[sbImageDown].ImageSourcePath := Block.GetParam('ImageTopD');
+  if Block.CountParams('ImageCenterN') > 0 then ThumbCenterImages[sbImageNormal].ImageSourcePath := Block.GetParam('ImageCenterN');
+  if Block.CountParams('ImageCenterA') > 0 then ThumbCenterImages[sbImageActive].ImageSourcePath := Block.GetParam('ImageCenterA');
+  if Block.CountParams('ImageCenterD') > 0 then ThumbCenterImages[sbImageDown].ImageSourcePath := Block.GetParam('ImageCenterD');
+  if Block.CountParams('ImageBottomN') > 0 then ThumbBottomImages[sbImageNormal].ImageSourcePath := Block.GetParam('ImageBottomN');
+  if Block.CountParams('ImageBottomA') > 0 then ThumbBottomImages[sbImageActive].ImageSourcePath := Block.GetParam('ImageBottomA');
+  if Block.CountParams('ImageBottomD') > 0 then ThumbBottomImages[sbImageDown].ImageSourcePath := Block.GetParam('ImageBottomD');
+  if Block.CountParams('ImageBarN') > 0 then AfterThumbBarImages[sbImageNormal].ImageSourcePath := Block.GetParam('ImageBarN');
+  if Block.CountParams('ImageBarA') > 0 then AfterThumbBarImages[sbImageActive].ImageSourcePath := Block.GetParam('ImageBarA');
+  if Block.CountParams('ImageBarD') > 0 then AfterThumbBarImages[sbImageDown].ImageSourcePath := Block.GetParam('ImageBarD');
+  if Block.CountParams('ImageDownN') > 0 then DownImages[sbImageNormal].ImageSourcePath := Block.GetParam('ImageDownN');
+  if Block.CountParams('ImageDownA') > 0 then DownImages[sbImageActive].ImageSourcePath := Block.GetParam('ImageDownA');
+  if Block.CountParams('ImageDownD') > 0 then DownImages[sbImageDown].ImageSourcePath := Block.GetParam('ImageDownD');
+  UpImages[sbImageNormal].ObjectSize := UpImages[sbImageNormal].GetContentSize;
+  UpImages[sbImageNormal].KindX := ikxCenter;
+  UpImages[sbImageNormal].KindY := ikyCenter;
+  UpImages[sbImageActive].ObjectSize := UpImages[sbImageActive].GetContentSize;
+  UpImages[sbImageActive].KindX := ikxCenter;
+  UpImages[sbImageActive].KindY := ikyCenter;
+  UpImages[sbImageDown].ObjectSize := UpImages[sbImageDown].GetContentSize;
+  UpImages[sbImageDown].KindX := ikxCenter;
+  UpImages[sbImageDown].KindY := ikyCenter;
+  BeforeThumbBarImages[sbImageNormal].ObjectSize := BeforeThumbBarImages[sbImageNormal].GetContentSize;
+  BeforeThumbBarImages[sbImageNormal].KindX := ikxLeftFill;
+  BeforeThumbBarImages[sbImageNormal].KindY := ikyTopFill;
+  BeforeThumbBarImages[sbImageActive].ObjectSize := BeforeThumbBarImages[sbImageActive].GetContentSize;
+  BeforeThumbBarImages[sbImageActive].KindX := ikxLeftFill;
+  BeforeThumbBarImages[sbImageActive].KindY := ikyTopFill;
+  BeforeThumbBarImages[sbImageDown].ObjectSize := BeforeThumbBarImages[sbImageDown].GetContentSize;
+  BeforeThumbBarImages[sbImageDown].KindX := ikxLeftFill;
+  BeforeThumbBarImages[sbImageDown].KindY := ikyTopFill;
+  ThumbTopImages[sbImageNormal].ObjectSize := ThumbTopImages[sbImageNormal].GetContentSize;
+  ThumbTopImages[sbImageNormal].KindX := ikxCenter;
+  ThumbTopImages[sbImageNormal].KindY := ikyCenter;
+  ThumbTopImages[sbImageActive].ObjectSize := ThumbTopImages[sbImageActive].GetContentSize;
+  ThumbTopImages[sbImageActive].KindX := ikxCenter;
+  ThumbTopImages[sbImageActive].KindY := ikyCenter;
+  ThumbTopImages[sbImageDown].ObjectSize := ThumbTopImages[sbImageDown].GetContentSize;
+  ThumbTopImages[sbImageDown].KindX := ikxCenter;
+  ThumbTopImages[sbImageDown].KindY := ikyCenter;
+  ThumbCenterImages[sbImageNormal].ObjectSize := ThumbCenterImages[sbImageNormal].GetContentSize;
+  ThumbCenterImages[sbImageNormal].KindX := ikxLeftFill;
+  ThumbCenterImages[sbImageNormal].KindY := ikyTopFill;
+  ThumbCenterImages[sbImageActive].ObjectSize := ThumbCenterImages[sbImageActive].GetContentSize;
+  ThumbCenterImages[sbImageActive].KindX := ikxLeftFill;
+  ThumbCenterImages[sbImageActive].KindY := ikyTopFill;
+  ThumbCenterImages[sbImageDown].ObjectSize := ThumbCenterImages[sbImageDown].GetContentSize;
+  ThumbCenterImages[sbImageDown].KindX := ikxLeftFill;
+  ThumbCenterImages[sbImageDown].KindY := ikyTopFill;
+  ThumbBottomImages[sbImageNormal].ObjectSize := ThumbBottomImages[sbImageNormal].GetContentSize;
+  ThumbBottomImages[sbImageNormal].KindX := ikxCenter;
+  ThumbBottomImages[sbImageNormal].KindY := ikyCenter;
+  ThumbBottomImages[sbImageActive].ObjectSize := ThumbBottomImages[sbImageActive].GetContentSize;
+  ThumbBottomImages[sbImageActive].KindX := ikxCenter;
+  ThumbBottomImages[sbImageActive].KindY := ikyCenter;
+  ThumbBottomImages[sbImageDown].ObjectSize := ThumbBottomImages[sbImageDown].GetContentSize;
+  ThumbBottomImages[sbImageDown].KindX := ikxCenter;
+  ThumbBottomImages[sbImageDown].KindY := ikyCenter;
+  AfterThumbBarImages[sbImageNormal].ObjectSize := AfterThumbBarImages[sbImageNormal].GetContentSize;
+  AfterThumbBarImages[sbImageNormal].KindX := ikxRightFill;
+  AfterThumbBarImages[sbImageNormal].KindY := ikyBottomFill;
+  AfterThumbBarImages[sbImageActive].ObjectSize := AfterThumbBarImages[sbImageActive].GetContentSize;
+  AfterThumbBarImages[sbImageActive].KindX := ikxRightFill;
+  AfterThumbBarImages[sbImageActive].KindY := ikyBottomFill;
+  AfterThumbBarImages[sbImageDown].ObjectSize := AfterThumbBarImages[sbImageDown].GetContentSize;
+  AfterThumbBarImages[sbImageDown].KindX := ikxRightFill;
+  AfterThumbBarImages[sbImageDown].KindY := ikyBottomFill;
+  DownImages[sbImageNormal].ObjectSize := DownImages[sbImageNormal].GetContentSize;
+  DownImages[sbImageNormal].KindX := ikxCenter;
+  DownImages[sbImageNormal].KindY := ikyCenter;
+  DownImages[sbImageActive].ObjectSize := DownImages[sbImageActive].GetContentSize;
+  DownImages[sbImageActive].KindX := ikxCenter;
+  DownImages[sbImageActive].KindY := ikyCenter;
+  DownImages[sbImageDown].ObjectSize := DownImages[sbImageDown].GetContentSize;
+  DownImages[sbImageDown].KindX := ikxCenter;
+  DownImages[sbImageDown].KindY := ikyCenter;
   UpdateLayout;
 end;
-{ @end $48F7E4 }
+{ @end $4A38B0 }
 
 end.

@@ -1,5 +1,4 @@
 unit fPlanetNO;
-// Unit bracket (inferred): .text 0x007E516C..0x007ECB8B; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -12,7 +11,7 @@ type
   end;
   TProbeTrajectory = array[0..255] of TProbeTrajectoryPoint;
 
-  TfPlanetNO = class(TMessageLoopGIWithMainPanel) // @size 0x7958
+  TfPlanetNO = class(TMessageLoopGIWithMainPanel) // @size 0x7958 @methodorder source
   public
     LoadPanel: TfPanelLoad; // @offset 0xD4
     TrajectoryPointCounts: array[0..5] of Integer; // @offset 0xD8
@@ -28,11 +27,11 @@ type
     ItemInfoSizeLabel: TLabelGI; // @offset 0x7924
     ItemInfoCostLabel: TLabelGI; // @offset 0x7928
     ItemInfoRaceIcon: TImageGI; // @offset 0x792C
-    ItemInfoHideTimer: PCallbackTimerGI; // @offset 0x7930
+    ItemInfoHideTimer: TCallbackTimerIdGI; // @offset 0x7930
     HoveredItem: TItem; // @offset 0x7934  Borrowed.
     SatellitePanelNeedsLayout: Boolean; // @offset 0x7938
-    SatelliteMovementTimer: PCallbackTimerGI; // @offset 0x793C
-    ProbeSignalTimer: PCallbackTimerGI; // @offset 0x7940
+    SatelliteMovementTimer: TCallbackTimerIdGI; // @offset 0x793C
+    ProbeSignalTimer: TCallbackTimerIdGI; // @offset 0x7940
     ProbeSignalSound: TSoundBufferControl; // @offset 0x7944  Owned looping sound controller; fades when the deployed-probe count changes.
     ProbeSignalCount: Integer; // @offset 0x7948
     HeldSatellite: TSatellite; // @offset 0x794C  Temporarily removed from the inventory/deployed list.
@@ -40,54 +39,54 @@ type
     HoveringSurfaceLoot: Boolean; // @offset 0x7954
     NewSurfaceLootDiscovered: Boolean; // @offset 0x7955
 
-    constructor Create; // @addr 0x7E5204
-    destructor Destroy; override; // @addr 0x7E525C
-    procedure InitializeLayout; override; // @addr 0x7E52B4
-    procedure OnOpen; override; // @addr 0x7E5BDC
-    procedure OnClose; override; // @addr 0x7E5D60
-    procedure TakeoffClicked(Sender: TObjectGI); // @addr 0x7E5DF8
-    procedure RefreshPlanetInfo; // @addr 0x7E646C
-    procedure RefreshTextQuestPrompt; // @addr 0x7E688C
-    procedure StartTextQuest(Sender: TObjectGI); // @addr 0x7E62EC
-    procedure EndTurnClicked(Sender: TObjectGI); // @addr 0x7E7080
-    procedure ShipClicked(Sender: TObjectGI); // @addr 0x7E7178
-    procedure GalaxyClicked(Sender: TObjectGI); // @addr 0x7E7204
-    procedure QuestClicked(Sender: TObjectGI); // @addr 0x7E725C
-    procedure ToggleResearchPanel(Sender: TObjectGI); // @addr 0x7E72B4
-    procedure OpenResearchPanel; // @addr 0x7E730C
-    procedure CloseResearchPanel; // @addr 0x7E7674 @note "Returns a held probe to its origin list before destroying research controls."
-    procedure BuildTrajectory(TrajectoryIndex: Integer); // @addr 0x7E77C8 @note "Requires index 0..5 and an empty point count. Builds at most 256 points from connected image markers."
-    function GetRandomTrajectoryPoint(TrajectoryIndex: Integer): TPoint; // @addr 0x7E8014 @note "Requires a nonempty trajectory."
-    function ProjectPointOntoTrajectory(TrajectoryIndex: Integer; Point: TPoint): TPoint; // @addr 0x7E808C @note "Requires a trajectory spanning a positive X range. Result is untouched if no segment matches."
-    function AdvanceTrajectoryPoint(TrajectoryIndex: Integer; Point: TPoint): TPoint; // @addr 0x7E8304 @note "Advances four pixels along the projected segment; Result is untouched if no segment matches."
-    function FindTrajectoryAtCursor: Integer; // @addr 0x7E85AC @note "Returns -1 on a miss; searches only the current planet's available probe orbits."
-    function IsCursorOverTrajectory(TrajectoryIndex: Integer): Boolean; // @addr 0x7E8604
-    procedure ResearchMapMouseMove(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x7E86F0
-    procedure ResearchMapMouseLeave(Sender: TObjectGI); // @addr 0x7E8C48
-    procedure RefreshResearchPanel; // @addr 0x7E8E74
-    procedure ScrollSatellitePageLeft(Sender: TObjectGI); // @addr 0x7EA8D4
-    procedure ScrollSatellitePageRight(Sender: TObjectGI); // @addr 0x7EA908
-    procedure ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer); override; // @addr 0x7EA948
-    procedure MainPanelMouseMove(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x7EA988
-    procedure SatelliteInventoryMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x7EAA54
-    procedure ResearchMapMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x7EAC98 @note "Collects accessible surface loot or exchanges the held probe with the selected orbit."
-    procedure MainPanelRightButtonDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x7EB1FC
-    procedure UpdateActionCursor(ForceHand: Boolean); override; // @addr 0x7EB234
-    procedure ReturnHeldSatellite; // @addr 0x7EB408
-    function FindDeployedSatellite(TrajectoryIndex: Integer): TSatellite; // @addr 0x7EB4EC @note "Borrowed probe on the current planet, or nil; -1 always returns nil."
-    function CountDeployedSatellites: Integer; // @addr 0x7EB568
-    procedure AdvanceSatelliteMarkers(Timer: PCallbackTimerGI; UserData: Integer); // @addr 0x7EB5C8
-    procedure UpdateProbeSignalSound(Timer: PCallbackTimerGI; UserData: Integer); // @addr 0x7EB680
-    procedure UpdateItemInfoPopup(Item: TItem); // @addr 0x7EB900 @note "Borrows Item; nil schedules a delayed hide."
-    procedure ShowGoodsInfoPopup(Item: TGoods); // @addr 0x7EC2F8
-    procedure HideItemInfoPopup(Timer: PCallbackTimerGI; UserData: Integer); // @addr 0x7EC784
-    procedure MainPanelKeyDown(Sender: TObjectGI; Key: Cardinal); // @addr 0x7EC7EC
-    procedure ExecuteUiCode(Block: TBlockParEC; Key: Cardinal); override; // @addr 0x7EC9E4
-    procedure SelectMusic; override; // @addr 0x7ECA58
+    constructor Create; // @addr 0x00505B44
+    destructor Destroy; override; // @addr 0x00505B8C
+    procedure InitializeLayout; override; // @addr 0x00505BC8
+    procedure OnOpen; override; // @addr 0x00506428
+    procedure OnClose; override; // @addr 0x00506590
+    procedure TakeoffClicked(Sender: TObjectGI); // @addr 0x00506614
+    procedure RefreshPlanetInfo; // @addr 0x00506C50
+    procedure RefreshTextQuestPrompt; // @addr 0x00507004
+    procedure StartTextQuest(Sender: TObjectGI); // @addr 0x00506AE0
+    procedure EndTurnClicked(Sender: TObjectGI); // @addr 0x0050777C
+    procedure ShipClicked(Sender: TObjectGI); // @addr 0x00507854
+    procedure GalaxyClicked(Sender: TObjectGI); // @addr 0x005078C8
+    procedure QuestClicked(Sender: TObjectGI); // @addr 0x0050790C
+    procedure ToggleResearchPanel(Sender: TObjectGI); // @addr 0x00507950
+    procedure OpenResearchPanel; // @addr 0x00507998
+    procedure CloseResearchPanel; // @addr 0x00507C98 @note "Returns a held probe to its origin list before destroying research controls."
+    procedure BuildTrajectory(TrajectoryIndex: Integer); // @addr 0x00507DB0 @note "Requires index 0..5 and an empty point count. Builds at most 256 points from connected image markers."
+    function GetRandomTrajectoryPoint(TrajectoryIndex: Integer): TPoint; // @addr 0x005084D8 @note "Requires a nonempty trajectory."
+    function ProjectPointOntoTrajectory(TrajectoryIndex: Integer; Point: TPoint): TPoint; // @addr 0x00508534 @note "Requires a trajectory spanning a positive X range. Result is untouched if no segment matches."
+    function AdvanceTrajectoryPoint(TrajectoryIndex: Integer; Point: TPoint): TPoint; // @addr 0x00508724 @note "Advances four pixels along the projected segment; Result is untouched if no segment matches."
+    function FindTrajectoryAtCursor: Integer; // @addr 0x00508940 @note "Returns -1 on a miss; searches only the current planet's available probe orbits."
+    function IsCursorOverTrajectory(TrajectoryIndex: Integer): Boolean; // @addr 0x00508978
+    procedure ResearchMapMouseMove(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x00508A4C
+    procedure ResearchMapMouseLeave(Sender: TObjectGI); // @addr 0x00508F14
+    procedure RefreshResearchPanel; // @addr 0x0050911C
+    procedure ScrollSatellitePageLeft(Sender: TObjectGI); // @addr 0x0050A964
+    procedure ScrollSatellitePageRight(Sender: TObjectGI); // @addr 0x0050A980
+    procedure ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer); override; // @addr 0x0050A9B0
+    procedure MainPanelMouseMove(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x0050A9D4
+    procedure SatelliteInventoryMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x0050AA6C
+    procedure ResearchMapMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x0050AC68 @note "Collects accessible surface loot or exchanges the held probe with the selected orbit."
+    procedure MainPanelRightButtonDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x0050B13C
+    procedure UpdateActionCursor(ForceHand: Boolean); override; // @addr 0x0050B164
+    procedure ReturnHeldSatellite; // @addr 0x0050B318
+    function FindDeployedSatellite(TrajectoryIndex: Integer): TSatellite; // @addr 0x0050B3DC @note "Borrowed probe on the current planet, or nil; -1 always returns nil."
+    function CountDeployedSatellites: Integer; // @addr 0x0050B434
+    procedure AdvanceSatelliteMarkers(Timer: TCallbackTimerIdGI; UserData: Cardinal); // @addr 0x0050B47C
+    procedure UpdateProbeSignalSound(Timer: TCallbackTimerIdGI; UserData: Cardinal); // @addr 0x0050B508
+    procedure UpdateItemInfoPopup(Item: TItem); // @addr 0x0050B718 @note "Borrows Item; nil schedules a delayed hide."
+    procedure ShowGoodsInfoPopup(Item: TGoods); // @addr 0x0050BF84
+    procedure HideItemInfoPopup(Timer: TCallbackTimerIdGI; UserData: Cardinal); // @addr 0x0050C3E0
+    procedure MainPanelKeyDown(Sender: TObjectGI; Key: Cardinal); // @addr 0x0050C428
+    procedure ExecuteUiCode(Block: TBlockParEC; Key: Cardinal); override; // @addr 0x0050C5DC
+    procedure SelectMusic; override; // @addr 0x0050C640
   end;
 
 const
-  ProbeTrajectoryHitRadiusSquared: Single = 400.0; // @addr $87CD28
+  ProbeTrajectoryHitRadiusSquared: Single = 400.0; // @addr $80E960
 
 implementation
 
@@ -103,15 +102,15 @@ type
     Visited: PByte;
   end;
 
-{ @routine $7E5204 TfPlanetNO_Create }
+{ @routine $505B44 TfPlanetNO_Create }
 constructor TfPlanetNO.Create;
 begin
   inherited Create;
   LoadPanel := TfPanelLoad.Create;
 end;
-{ @end $7E5204 }
+{ @end $505B44 }
 
-{ @routine $7E525C TfPlanetNO_Destroy }
+{ @routine $505B8C TfPlanetNO_Destroy }
 destructor TfPlanetNO.Destroy;
 begin
   if LoadPanel <> nil then
@@ -121,9 +120,9 @@ begin
   end;
   inherited Destroy;
 end;
-{ @end $7E525C }
+{ @end $505B8C }
 
-{ @routine $7E52B4 TfPlanetNO_InitializeLayout }
+{ @routine $505BC8 TfPlanetNO_InitializeLayout }
 procedure TfPlanetNO.InitializeLayout;
 var I: Integer; LargeBackground: Boolean;
 begin
@@ -148,7 +147,7 @@ begin
     with FindByNameRecursive('CockpitImage') as TImageGI do
     begin
       SetPosition(Classes.Point(LocalPosition.X + ExtraScreenWidth div 2,LocalPosition.Y + ExtraScreenHeight div 2));
-      SetImagePath(GetImagePath);
+      ImageSourcePath := GetImagePath;
       SetActive(not LargeBackground);
     end;
     with FindByNameRecursive('PanelResearch') do
@@ -195,9 +194,9 @@ begin
   ItemInfoCostLabel := GetByName('InfoPrice') as TLabelGI;
   ItemInfoRaceIcon := GetByName('EmRace') as TImageGI;
 end;
-{ @end $7E52B4 }
+{ @end $505BC8 }
 
-{ @routine $7E5BDC TfPlanetNO_OnOpen }
+{ @routine $506428 TfPlanetNO_OnOpen }
 procedure TfPlanetNO.OnOpen;
 begin
   SelectMusic;
@@ -215,9 +214,9 @@ begin
   if GetPlayer <> nil then GetPlayer.ScriptItemsAct(satOnEnteringForm,nil,nil,0);
   Galaxy.PrimeIntegrityChecksum(111);
 end;
-{ @end $7E5BDC }
+{ @end $506428 }
 
-{ @routine $7E5D60 TfPlanetNO_OnClose }
+{ @routine $506590 TfPlanetNO_OnClose }
 procedure TfPlanetNO.OnClose;
 begin
   if RequestedScreenId <> screenLoad then Galaxy.CheckIntegrityChecksum(112);
@@ -229,9 +228,9 @@ begin
   MainPanel.RefreshMoneyAndCargo;
   MainPanel.RebuildMessageButtons(False);
 end;
-{ @end $7E5D60 }
+{ @end $506590 }
 
-{ @routine $7E5DF8 TfPlanetNO_TakeoffClicked }
+{ @routine $506614 TfPlanetNO_TakeoffClicked }
 procedure TfPlanetNO.TakeoffClicked(Sender: TObjectGI);
 var I: Integer;
 begin
@@ -256,7 +255,7 @@ begin
   end;
   if GetPlayer.HasSatelliteOnPlanet(GetPlayer.CurrentPlanet) and
     (ShowMessageBoxGI(Self,FormatText1(LanguageDataConfig.GetParamByPathOrMarker('FormPlanetNO.SatelliteInPlanet'),
-      TextHighlightColorTag,'<Name>',GetPlayer.CurrentPlanet.Name),mbgOK or mbgCancel) <> mbgResultOK) then Exit;
+    TextHighlightColorTag,'<Name>',GetPlayer.CurrentPlanet.Name),mbgOK or mbgCancel) <> mbgResultOK) then Exit;
   Galaxy.CheckIntegrityChecksum(113);
   CloseResearchPanel;
   ReturnHeldSatellite;
@@ -274,6 +273,7 @@ begin
   else Galaxy.DisableDominatorSurfaces;
   CalculatePlayerStarTurnAndWait;
   if not ExitScreenLoop then
+  begin
     if GetPlayer = nil then
     begin
       RequestedScreenId := screenGameEnd;
@@ -291,10 +291,11 @@ begin
       LoadPanel.RefreshBackgroundImages;
       LoadPanel.StartClosingShutters;
     end;
+  end;
 end;
-{ @end $7E5DF8 }
+{ @end $506614 }
 
-{ @routine $7E62EC TfPlanetNO_StartTextQuest }
+{ @routine $506AE0 TfPlanetNO_StartTextQuest }
 procedure TfPlanetNO.StartTextQuest(Sender: TObjectGI);
 begin
   if LoadPanel.IsAnimatingShutters then Exit;
@@ -310,18 +311,18 @@ begin
   RequestedScreenId := screenPlanetQuest;
   RequestClose(1);
 end;
-{ @end $7E62EC }
+{ @end $506AE0 }
 
-{ @routine $7E646C TfPlanetNO_RefreshPlanetInfo }
+{ @routine $506C50 TfPlanetNO_RefreshPlanetInfo }
 procedure TfPlanetNO.RefreshPlanetInfo;
 var Window: TWindowGI;
 begin
   Window := GetByName('PanelInfo') as TWindowGI;
   with GetByName('PanelInfo_Name') as TLabelGI do
-    SetText(ReplaceColoredToken(LocalizedText('Planet.Civil.Info.TextNamePlanet'),'<Planet>',GetPlayer.CurrentPlanet.Name,InfoNameColorTag));
+    Text := ReplaceColoredToken(LocalizedText('Planet.Civil.Info.TextNamePlanet'),'<Planet>',GetPlayer.CurrentPlanet.Name,InfoNameColorTag);
   with GetByName('PanelInfo_Text') as TLabelGI do
   begin
-    SetText(GetPlayer.CurrentPlanet.GetInfoText(False));
+    Text := GetPlayer.CurrentPlanet.GetInfoText(False);
     Window.SetSize(Classes.Point(ClientSize.X + Window.WorkSubRect.Left + Window.WorkSubRect.Right,ClientSize.Y + Window.WorkSubRect.Top + Window.WorkSubRect.Bottom));
     Window.UpdateAutoGeometry;
     Window.SetActive(True);
@@ -331,9 +332,9 @@ begin
   begin
     SourceHasPerPixelAlpha := True;
     GetPlayer.CurrentPlanet.Graphic.RenderToBuffer(Self,GraphBuf,False);
-    if Cardinal(GraphBuf.Width) >= Cardinal(GraphBuf.Height) then
-      GraphBuf.RescaleRgba(ClientSize.X,Round(ClientSize.X / Cardinal(GraphBuf.Width) * Cardinal(GraphBuf.Height)),5)
-    else GraphBuf.RescaleRgba(Round(ClientSize.Y / Cardinal(GraphBuf.Height) * Cardinal(GraphBuf.Width)),ClientSize.Y,5);
+    if GraphBuf.Width >= GraphBuf.Height then
+      GraphBuf.RescaleRgba(ClientSize.X,Round(ClientSize.X / GraphBuf.Width * GraphBuf.Height),5)
+    else GraphBuf.RescaleRgba(Round(ClientSize.Y / GraphBuf.Height * GraphBuf.Width),ClientSize.Y,5);
     SetImageKindX(ikxCenter);
     SetImageKindY(ikyCenter);
   end;
@@ -342,54 +343,56 @@ begin
     SetSize(Classes.Point(Window.ClientSize.X - LocalPosition.X - Window.WorkSubRect.Right,ClientSize.Y));
   Window.SetPosition(Classes.Point(GameScreenWidth - 10 - Window.ClientSize.X,10));
 end;
-{ @end $7E646C }
+{ @end $506C50 }
 
-{ @routine $7E688C TfPlanetNO_RefreshTextQuestPrompt }
+{ @routine $507004 TfPlanetNO_RefreshTextQuestPrompt }
 procedure TfPlanetNO.RefreshTextQuestPrompt;
 var
   Window: TWindowGI;
   QuestId, I: Integer;
   Quest: PQuest;
-  Text: WideString;
+  CaptionText: WideString;
 begin
   QuestId := -1;
   Window := GetByName('QuestInfo') as TWindowGI;
   Quest := nil;
   Window.SetActive(False);
-  if (GetPlayer.CurrentPlanet.TextQuestId > -1) and (GetPlayer.Quests.Count > 0) then
-    for I := 0 to GetPlayer.Quests.Count - 1 do
-    begin
-      Quest := PQuest(GetPlayer.Quests[I]);
-      if (Quest.QuestType = qtPlanetQuest) and (Quest.ObjectiveTarget is TPlanet) and
-        (GetPlayer.CurrentPlanet = (Quest.ObjectiveTarget as TPlanet)) and
-        (LanguageDataConfig.GetBlockByPath('PlanetQuest.PlanetQuest').CountParams(IntToStr(Quest.QuestNumber)) > 0) then
+  if GetPlayer.CurrentPlanet.TextQuestId > -1 then
+    if GetPlayer.Quests.Count > 0 then
+      for I := 0 to GetPlayer.Quests.Count - 1 do
       begin
-        QuestId := Quest.QuestNumber;
-        if (Quest.QuestNumber < FirstLicensedQuestId) or
-          ((LanguageDataConfig.GetBlock('PlanetQuest').CountBlocks('PlanetQuestLic') > 0) and
-           (LanguageDataConfig.GetBlock('PlanetQuest').GetBlock('PlanetQuestLic').GetParamOrMarker(IntToStr(Quest.QuestNumber)) = PlanetQuestScreen.GetQuestContentHash(Quest.QuestNumber))) then
-          Window.FindByNameRecursive('QuestInfo_Run').UserValue := 0
-        else Window.FindByNameRecursive('QuestInfo_Run').UserValue := 1;
-        Window.SetActive(True);
-        Break;
+        Quest := GetPlayer.Quests[I];
+        if Quest.QuestType = qtPlanetQuest then
+          if Quest.ObjectiveTarget is TPlanet then
+            if GetPlayer.CurrentPlanet = (Quest.ObjectiveTarget as TPlanet) then
+              if LanguageDataConfig.GetBlockByPath('PlanetQuest.PlanetQuest').CountParams(IntToStr(Quest.QuestNumber)) > 0 then
+              begin
+                QuestId := Quest.QuestNumber;
+                if (Quest.QuestNumber < FirstLicensedQuestId) or
+                  ((LanguageDataConfig.GetBlock('PlanetQuest').CountBlocks('PlanetQuestLic') > 0) and
+                  (LanguageDataConfig.GetBlock('PlanetQuest').GetBlock('PlanetQuestLic').GetParamOrMarker(IntToStr(Quest.QuestNumber)) = PlanetQuestScreen.GetQuestContentHash(Quest.QuestNumber))) then
+                  Window.FindByNameRecursive('QuestInfo_Run').UserValue := 0
+                else Window.FindByNameRecursive('QuestInfo_Run').UserValue := 1;
+                Window.SetActive(True);
+                Break;
+              end;
       end;
-    end;
   if Window.Active then
   begin
     with GetByName('QuestInfo_Name') as TLabelGI do
-      SetText(LocalizedText('PlanetQuest.StartText.QuestCaption'));
+      Text := LocalizedText('PlanetQuest.StartText.QuestCaption');
     with GetByName('QuestInfo_Text') as TLabelGI do
     begin
-      Text := LocalizedColorText('PlanetQuest.StartText.' + IntToStr(QuestId));
-      if Text = WideString('') then Text := LocalizedColorText('PlanetQuest.StartText.QuestExtern');
+      CaptionText := LocalizedColorText('PlanetQuest.StartText.' + IntToStr(QuestId));
+      if CaptionText = '' then CaptionText := LocalizedColorText('PlanetQuest.StartText.QuestExtern');
       if Quest <> nil then
       begin
-        ReplaceTextToken(Text,'<CurPlanet>',(Quest.ObjectiveTarget as TPlanet).Name,TextHighlightColorTag);
-        ReplaceTextToken(Text,'<CurStar>',(Quest.ObjectiveTarget as TPlanet).CurrentStar.Name,TextHighlightColorTag);
-        ReplaceTextToken(Text,'<FromPlanet>',Quest.Planet.Name,TextHighlightColorTag);
-        ReplaceTextToken(Text,'<FromStar>',Quest.Planet.CurrentStar.Name,TextHighlightColorTag);
+        ReplaceTextToken(CaptionText,'<CurPlanet>',(Quest.ObjectiveTarget as TPlanet).Name,TextHighlightColorTag);
+        ReplaceTextToken(CaptionText,'<CurStar>',(Quest.ObjectiveTarget as TPlanet).CurrentStar.Name,TextHighlightColorTag);
+        ReplaceTextToken(CaptionText,'<FromPlanet>',Quest.Planet.Name,TextHighlightColorTag);
+        ReplaceTextToken(CaptionText,'<FromStar>',Quest.Planet.CurrentStar.Name,TextHighlightColorTag);
       end;
-      SetText(Text);
+      Text := CaptionText;
       Window.SetSize(Classes.Point(ClientSize.X + Window.WorkSubRect.Left + Window.WorkSubRect.Right,ClientSize.Y + Window.WorkSubRect.Top + Window.WorkSubRect.Bottom));
       Window.UpdateAutoGeometry;
       Window.SetActive(True);
@@ -408,9 +411,9 @@ begin
     Window.SetPosition(Classes.Point(GameScreenWidth - 10 - Window.ClientSize.X,GameScreenHeight - GiScalePixels(90) - Window.ClientSize.Y));
   end;
 end;
-{ @end $7E688C }
+{ @end $507004 }
 
-{ @routine $7E7080 TfPlanetNO_EndTurnClicked }
+{ @routine $50777C TfPlanetNO_EndTurnClicked }
 procedure TfPlanetNO.EndTurnClicked(Sender: TObjectGI);
 begin
   if LoadPanel.IsAnimatingShutters then Exit;
@@ -418,7 +421,7 @@ begin
   if ResearchPanelVisible then
   begin
     ReturnHeldSatellite;
-    HideItemInfoPopup(nil,0);
+    HideItemInfoPopup(0,0);
   end;
   MainPanel.EndTurnClicked(Sender);
   RefreshPlanetInfo;
@@ -431,15 +434,15 @@ begin
     if NewSurfaceLootDiscovered then SoundManager.PlaySound('Sound.ProbeExplore');
   end;
 end;
-{ @end $7E7080 }
+{ @end $50777C }
 
-{ @routine $7E7178 TfPlanetNO_ShipClicked }
+{ @routine $507854 TfPlanetNO_ShipClicked }
 procedure TfPlanetNO.ShipClicked(Sender: TObjectGI);
 begin
   if ResearchPanelVisible then
   begin
     ReturnHeldSatellite;
-    HideItemInfoPopup(nil,0);
+    HideItemInfoPopup(0,0);
   end;
   MainPanel.ShipClicked(Sender);
   if (ExitCode = 0) and ResearchPanelVisible then
@@ -450,42 +453,42 @@ begin
     RefreshResearchPanel;
   end;
 end;
-{ @end $7E7178 }
+{ @end $507854 }
 
-{ @routine $7E7204 TfPlanetNO_GalaxyClicked }
+{ @routine $5078C8 TfPlanetNO_GalaxyClicked }
 procedure TfPlanetNO.GalaxyClicked(Sender: TObjectGI);
 begin
   if ResearchPanelVisible then
   begin
     ReturnHeldSatellite;
-    HideItemInfoPopup(nil,0);
+    HideItemInfoPopup(0,0);
   end;
   MainPanel.GalaxyClicked(Sender);
   if ResearchPanelVisible then RefreshResearchPanel;
 end;
-{ @end $7E7204 }
+{ @end $5078C8 }
 
-{ @routine $7E725C TfPlanetNO_QuestClicked }
+{ @routine $50790C TfPlanetNO_QuestClicked }
 procedure TfPlanetNO.QuestClicked(Sender: TObjectGI);
 begin
   if ResearchPanelVisible then
   begin
     ReturnHeldSatellite;
-    HideItemInfoPopup(nil,0);
+    HideItemInfoPopup(0,0);
   end;
   MainPanel.QuestClicked(Sender);
   if ResearchPanelVisible then RefreshResearchPanel;
 end;
-{ @end $7E725C }
+{ @end $50790C }
 
-{ @routine $7E72B4 TfPlanetNO_ToggleResearchPanel }
+{ @routine $507950 TfPlanetNO_ToggleResearchPanel }
 procedure TfPlanetNO.ToggleResearchPanel(Sender: TObjectGI);
 begin
   if GetByName('PanelResearch').Active then CloseResearchPanel else OpenResearchPanel;
 end;
-{ @end $7E72B4 }
+{ @end $507950 }
 
-{ @routine $7E730C TfPlanetNO_OpenResearchPanel }
+{ @routine $507998 TfPlanetNO_OpenResearchPanel }
 procedure TfPlanetNO.OpenResearchPanel;
 var I, Parts: Integer;
 begin
@@ -508,20 +511,20 @@ begin
     Parts := CountDelimitedPartsW(GetPlayer.CurrentPlanet.Graphic.ImagePath,'.');
     LoadBitmapPathAsRgb('Bm.PUMaps.' + ExtractDelimitedPartW(GetPlayer.CurrentPlanet.Graphic.ImagePath,Parts - 1,'.') + '?RGB');
     if GiResourceVariant = 1 then
-      GraphBuf.RescaleRgb(Round(Cardinal(GraphBuf.Width) * 800 / 1024),Round(Cardinal(GraphBuf.Height) * 800 / 1024));
+      GraphBuf.RescaleRgb(Round(GraphBuf.Width * 800 / 1024),Round(GraphBuf.Height * 800 / 1024));
     GraphBuf.ConvertRgbTo565;
   end;
-  if SatelliteMovementTimer <> nil then
+  if SatelliteMovementTimer <> 0 then
   begin
     CancelCallbackTimer(SatelliteMovementTimer);
-    SatelliteMovementTimer := nil;
+    SatelliteMovementTimer := 0;
   end;
   SatelliteMovementTimer := ScheduleCallbackTimer(30,30,AdvanceSatelliteMarkers);
   ProbeSignalCount := 0;
-  if ProbeSignalTimer <> nil then
+  if ProbeSignalTimer <> 0 then
   begin
     CancelCallbackTimer(ProbeSignalTimer);
-    ProbeSignalTimer := nil;
+    ProbeSignalTimer := 0;
   end;
   ProbeSignalTimer := ScheduleCallbackTimer(20,20,UpdateProbeSignalSound);
   with GetByName('Scan') as TgaiGI do
@@ -531,9 +534,9 @@ begin
     UpdateAutoGeometry;
   end;
 end;
-{ @end $7E730C }
+{ @end $507998 }
 
-{ @routine $7E7674 TfPlanetNO_CloseResearchPanel }
+{ @routine $507C98 TfPlanetNO_CloseResearchPanel }
 procedure TfPlanetNO.CloseResearchPanel;
 begin
   if ProbeSignalSound <> nil then
@@ -541,15 +544,15 @@ begin
     ProbeSignalSound.Free;
     ProbeSignalSound := nil;
   end;
-  if SatelliteMovementTimer <> nil then
+  if SatelliteMovementTimer <> 0 then
   begin
     CancelCallbackTimer(SatelliteMovementTimer);
-    SatelliteMovementTimer := nil;
+    SatelliteMovementTimer := 0;
   end;
-  if ProbeSignalTimer <> nil then
+  if ProbeSignalTimer <> 0 then
   begin
     CancelCallbackTimer(ProbeSignalTimer);
-    ProbeSignalTimer := nil;
+    ProbeSignalTimer := 0;
   end;
   ReturnHeldSatellite;
   GetByName('PanelResearch').SetActive(False);
@@ -558,12 +561,12 @@ begin
   GetByName('PanelItems').FreeOwnedChildren;
   HoveredItem := nil;
   HoveringSurfaceLoot := False;
-  HideItemInfoPopup(nil,0);
+  HideItemInfoPopup(0,0);
   ResearchPanelVisible := False;
 end;
-{ @end $7E7674 }
+{ @end $507C98 }
 
-{ @routine $7E77C8 TfPlanetNO_BuildTrajectory }
+{ @routine $507DB0 TfPlanetNO_BuildTrajectory }
 procedure TfPlanetNO.BuildTrajectory(TrajectoryIndex: Integer);
 var
   Buffer: TGraphBufGR;
@@ -614,7 +617,7 @@ begin
               0:
                 begin
                   Inc(NeighborX);
-                  if Buffer.Width <= NeighborX then Continue;
+                  if Integer(Buffer.Width) <= NeighborX then Continue;
                   NeighborVisited := PByte(Cardinal(NeighborVisited) + 1);
                   NeighborPixel := PCardinal(Cardinal(NeighborPixel) + 4);
                 end;
@@ -628,15 +631,15 @@ begin
               2:
                 begin
                   Inc(NeighborY);
-                  if Buffer.Height <= NeighborY then Continue;
-                  NeighborVisited := PByte(Cardinal(NeighborVisited) + Cardinal(Buffer.Width));
+                  if Integer(Buffer.Height) <= NeighborY then Continue;
+                  NeighborVisited := PByte(Cardinal(NeighborVisited) + Buffer.Width);
                   NeighborPixel := PCardinal(Cardinal(NeighborPixel) + Cardinal(Buffer.PitchBytes));
                 end;
               3:
                 begin
                   Dec(NeighborY);
                   if NeighborY < 0 then Continue;
-                  NeighborVisited := PByte(Cardinal(NeighborVisited) - Cardinal(Buffer.Width));
+                  NeighborVisited := PByte(Cardinal(NeighborVisited) - Buffer.Width);
                   NeighborPixel := PCardinal(Cardinal(NeighborPixel) - Cardinal(Buffer.PitchBytes));
                 end;
             end;
@@ -665,7 +668,7 @@ begin
       Pixel := PCardinal(Cardinal(Pixel) + 4);
       CursorVisited := PByte(Cardinal(CursorVisited) + 1);
     end;
-    Pixel := PCardinal(Cardinal(Pixel) + Cardinal(Buffer.PitchBytes - 4 * Buffer.Width));
+    Pixel := PCardinal(Cardinal(Pixel) + Cardinal(Buffer.PitchBytes - 4 * Integer(Buffer.Width)));
   end;
   for I := 0 to TrajectoryPointCounts[TrajectoryIndex] - 2 do
     for J := I + 1 to TrajectoryPointCounts[TrajectoryIndex] - 1 do
@@ -687,9 +690,9 @@ begin
   FreeEC(Visited);
   Buffer.Free;
 end;
-{ @end $7E77C8 }
+{ @end $507DB0 }
 
-{ @routine $7E8014 TfPlanetNO_GetRandomTrajectoryPoint }
+{ @routine $5084D8 TfPlanetNO_GetRandomTrajectoryPoint }
 function TfPlanetNO.GetRandomTrajectoryPoint(TrajectoryIndex: Integer): TPoint;
 var I: Integer;
 begin
@@ -697,9 +700,9 @@ begin
   Result.X := Round(Trajectories[TrajectoryIndex][I].Position.X);
   Result.Y := Round(Trajectories[TrajectoryIndex][I].Position.Y);
 end;
-{ @end $7E8014 }
+{ @end $5084D8 }
 
-{ @routine $7E808C TfPlanetNO_ProjectPointOntoTrajectory }
+{ @routine $508534 TfPlanetNO_ProjectPointOntoTrajectory }
 function TfPlanetNO.ProjectPointOntoTrajectory(TrajectoryIndex: Integer; Point: TPoint): TPoint;
 var I: Integer; X, Distance, DeltaX, DeltaY: Single;
 begin
@@ -719,9 +722,9 @@ begin
       Exit;
     end;
 end;
-{ @end $7E808C }
+{ @end $508534 }
 
-{ @routine $7E8304 TfPlanetNO_AdvanceTrajectoryPoint }
+{ @routine $508724 TfPlanetNO_AdvanceTrajectoryPoint }
 function TfPlanetNO.AdvanceTrajectoryPoint(TrajectoryIndex: Integer; Point: TPoint): TPoint;
 var I: Integer; X, Distance, DeltaX, DeltaY: Single;
 begin
@@ -743,9 +746,9 @@ begin
       Exit;
     end;
 end;
-{ @end $7E8304 }
+{ @end $508724 }
 
-{ @routine $7E85AC TfPlanetNO_FindTrajectoryAtCursor }
+{ @routine $508940 TfPlanetNO_FindTrajectoryAtCursor }
 function TfPlanetNO.FindTrajectoryAtCursor: Integer;
 var I: Integer;
 begin
@@ -757,9 +760,9 @@ begin
     end;
   Result := -1;
 end;
-{ @end $7E85AC }
+{ @end $508940 }
 
-{ @routine $7E8604 TfPlanetNO_IsCursorOverTrajectory }
+{ @routine $508978 TfPlanetNO_IsCursorOverTrajectory }
 function TfPlanetNO.IsCursorOverTrajectory(TrajectoryIndex: Integer): Boolean;
 var I: Integer; Point: TPoint; X, Y: Single;
 begin
@@ -774,9 +777,9 @@ begin
     end;
   Result := False;
 end;
-{ @end $7E8604 }
+{ @end $508978 }
 
-{ @routine $7E86F0 TfPlanetNO_ResearchMapMouseMove }
+{ @routine $508A4C TfPlanetNO_ResearchMapMouseMove }
 procedure TfPlanetNO.ResearchMapMouseMove(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint);
 var
   I: Integer;
@@ -793,8 +796,8 @@ begin
       Entry := GetPlayer.CurrentPlanet.SurfaceLootEntries[I];
       if (Entry.GridX = Cell.X) and (Entry.GridY = Cell.Y) and
         (((Entry.TerrainKind = ptWater) and (GetPlayer.CurrentPlanet.WaterExplored >= Entry.SurfaceTileIndex)) or
-         ((Entry.TerrainKind = ptLand) and (GetPlayer.CurrentPlanet.LandExplored >= Entry.SurfaceTileIndex)) or
-         ((Entry.TerrainKind = ptHill) and (GetPlayer.CurrentPlanet.HillExplored >= Entry.SurfaceTileIndex))) and not Entry.Unavailable then
+        ((Entry.TerrainKind = ptLand) and (GetPlayer.CurrentPlanet.LandExplored >= Entry.SurfaceTileIndex)) or
+        ((Entry.TerrainKind = ptHill) and (GetPlayer.CurrentPlanet.HillExplored >= Entry.SurfaceTileIndex))) and not Entry.Unavailable then
       begin
         UpdateItemInfoPopup(Entry.Item);
         HoveringSurfaceLoot := True;
@@ -804,7 +807,7 @@ begin
           with GetByName('W' + IntToStr(SelectedTrajectoryIndex)) as TImageGI do
             if (FindDeployedSatellite(SelectedTrajectoryIndex) <> nil) and
               ((FindDeployedSatellite(SelectedTrajectoryIndex).BrokenFlag <> 0) or
-               (GetPlayer.GetSatelliteExplorationTurns(FindDeployedSatellite(SelectedTrajectoryIndex)) = 0)) then
+              (GetPlayer.GetSatelliteExplorationTurns(FindDeployedSatellite(SelectedTrajectoryIndex)) = 0)) then
               SetImagePath('GI,Bm.FormUnknown2.' + GiResourceSuffix + 'W' + IntToStr(SelectedTrajectoryIndex + 1) + 'B')
             else SetImagePath('GI,Bm.FormUnknown2.' + GiResourceSuffix + 'W' + IntToStr(SelectedTrajectoryIndex + 1));
           SelectedTrajectoryIndex := -1;
@@ -815,24 +818,22 @@ begin
   end;
   HoveringSurfaceLoot := False;
   if SelectedTrajectoryIndex < 0 then UpdateItemInfoPopup(nil);
-  if (SelectedTrajectoryIndex < 0) or not IsCursorOverTrajectory(SelectedTrajectoryIndex) then
+  if (SelectedTrajectoryIndex >= 0) and IsCursorOverTrajectory(SelectedTrajectoryIndex) then Exit;
+  I := FindTrajectoryAtCursor;
+  if I <> SelectedTrajectoryIndex then
   begin
-    I := FindTrajectoryAtCursor;
-    if I <> SelectedTrajectoryIndex then
-    begin
-      ResearchMapMouseLeave(Sender);
-      SelectedTrajectoryIndex := I;
-      if SelectedTrajectoryIndex >= 0 then
-        with GetByName('W' + IntToStr(SelectedTrajectoryIndex)) as TImageGI do
-          SetImagePath('GI,Bm.FormUnknown2.' + GiResourceSuffix + 'W' + IntToStr(SelectedTrajectoryIndex + 1) + 'A');
-      UpdateItemInfoPopup(FindDeployedSatellite(SelectedTrajectoryIndex));
-      UpdateActionCursor(False);
-    end;
+    ResearchMapMouseLeave(Sender);
+    SelectedTrajectoryIndex := I;
+    if SelectedTrajectoryIndex >= 0 then
+      with GetByName('W' + IntToStr(SelectedTrajectoryIndex)) as TImageGI do
+        SetImagePath('GI,Bm.FormUnknown2.' + GiResourceSuffix + 'W' + IntToStr(SelectedTrajectoryIndex + 1) + 'A');
+    UpdateItemInfoPopup(FindDeployedSatellite(SelectedTrajectoryIndex));
+    UpdateActionCursor(False);
   end;
 end;
-{ @end $7E86F0 }
+{ @end $508A4C }
 
-{ @routine $7E8C48 TfPlanetNO_ResearchMapMouseLeave }
+{ @routine $508F14 TfPlanetNO_ResearchMapMouseLeave }
 procedure TfPlanetNO.ResearchMapMouseLeave(Sender: TObjectGI);
 begin
   if SelectedTrajectoryIndex >= 0 then
@@ -848,9 +849,9 @@ begin
   UpdateItemInfoPopup(nil);
   UpdateActionCursor(False);
 end;
-{ @end $7E8C48 }
+{ @end $508F14 }
 
-{ @routine $7E8E74 TfPlanetNO_RefreshResearchPanel }
+{ @routine $50911C TfPlanetNO_RefreshResearchPanel }
 procedure TfPlanetNO.RefreshResearchPanel;
 var
   I: Integer;
@@ -868,18 +869,20 @@ begin
     SetActive(CountDeployedSatellites > 0);
     if Active then RestartPlayback;
   end;
-  (GetByName('Caption') as TLabelGI).SetText(ReplaceColoredToken(LocalizedColorText('FormPlanetNO.Caption'),'<Name>',GetPlayer.CurrentPlanet.Name,''));
+  (GetByName('Caption') as TLabelGI).Text := ReplaceColoredToken(LocalizedColorText('FormPlanetNO.Caption'),'<Name>',GetPlayer.CurrentPlanet.Name,'');
   for I := 0 to 5 do
     with GetByName('W' + IntToStr(I)) as TImageGI do
     begin
       SetActive(GetPlayer.CurrentPlanet.ProbeOrbitCount > I);
       if Active then
+      begin
         if SelectedTrajectoryIndex = I then
-          SetImagePath('GI,Bm.FormUnknown2.' + GiResourceSuffix + 'W' + IntToStr(I + 1) + 'A')
+          ImageSourcePath := 'GI,Bm.FormUnknown2.' + GiResourceSuffix + 'W' + IntToStr(I + 1) + 'A'
         else if (FindDeployedSatellite(I) <> nil) and
           ((FindDeployedSatellite(I).BrokenFlag <> 0) or (GetPlayer.GetSatelliteExplorationTurns(FindDeployedSatellite(I)) = 0)) then
-          SetImagePath('GI,Bm.FormUnknown2.' + GiResourceSuffix + 'W' + IntToStr(I + 1) + 'B')
-        else SetImagePath('GI,Bm.FormUnknown2.' + GiResourceSuffix + 'W' + IntToStr(I + 1));
+          ImageSourcePath := 'GI,Bm.FormUnknown2.' + GiResourceSuffix + 'W' + IntToStr(I + 1) + 'B'
+        else ImageSourcePath := 'GI,Bm.FormUnknown2.' + GiResourceSuffix + 'W' + IntToStr(I + 1);
+      end;
     end;
   Galaxy.CheckIntegrityChecksum(119);
   Panel := GetByName('PanelItems') as TPanelGI;
@@ -901,13 +904,13 @@ begin
       Entry := GetPlayer.CurrentPlanet.SurfaceLootEntries[I];
       Undiscovered := False;
       if ((((Entry.TerrainKind = ptWater) and (GetPlayer.CurrentPlanet.WaterExplored >= Entry.SurfaceTileIndex)) or
-           ((Entry.TerrainKind = ptLand) and (GetPlayer.CurrentPlanet.LandExplored >= Entry.SurfaceTileIndex)) or
-           ((Entry.TerrainKind = ptHill) and (GetPlayer.CurrentPlanet.HillExplored >= Entry.SurfaceTileIndex))) and not Entry.Unavailable) or
-         ((GetPlayer.CountActiveArtefacts(t_ArtefactAnalyzer) > 0) and (Entry.Item is TEquipmentWithActCode) and TEquipmentWithActCode(Entry.Item).DisplayAsArtefact) then
+        ((Entry.TerrainKind = ptLand) and (GetPlayer.CurrentPlanet.LandExplored >= Entry.SurfaceTileIndex)) or
+        ((Entry.TerrainKind = ptHill) and (GetPlayer.CurrentPlanet.HillExplored >= Entry.SurfaceTileIndex))) and not Entry.Unavailable) or
+        ((GetPlayer.CountActiveArtefacts(t_ArtefactAnalyzer) > 0) and ((Entry.Item is TEquipmentWithActCode) and TEquipmentWithActCode(Entry.Item).DisplayAsArtefact)) then
       begin
         if not (((Entry.TerrainKind = ptWater) and (GetPlayer.CurrentPlanet.WaterExplored >= Entry.SurfaceTileIndex)) or
-                ((Entry.TerrainKind = ptLand) and (GetPlayer.CurrentPlanet.LandExplored >= Entry.SurfaceTileIndex)) or
-                ((Entry.TerrainKind = ptHill) and (GetPlayer.CurrentPlanet.HillExplored >= Entry.SurfaceTileIndex))) then Undiscovered := True;
+          ((Entry.TerrainKind = ptLand) and (GetPlayer.CurrentPlanet.LandExplored >= Entry.SurfaceTileIndex)) or
+          ((Entry.TerrainKind = ptHill) and (GetPlayer.CurrentPlanet.HillExplored >= Entry.SurfaceTileIndex))) then Undiscovered := True;
         Child := TImageGI(Panel.FirstChild);
         while Child <> nil do
         begin
@@ -921,26 +924,26 @@ begin
             UserValue := Integer(Entry);
             if not Undiscovered then
             begin
-              if Entry.Item is TGoods then SetImagePath('GI,' + Entry.Item.GetBitmapResourceName)
-              else SetImagePath('GI,' + Entry.Item.GetBitmapResourceName + 's');
+              if Entry.Item is TGoods then ImageSourcePath := 'GI,' + Entry.Item.GetBitmapResourceName
+              else ImageSourcePath := 'GI,' + Entry.Item.GetBitmapResourceName + 's';
             end
-            else SetImagePath('GI,' + Entry.Item.GetBitmapResourceName + 'ab');
+            else ImageSourcePath := 'GI,' + Entry.Item.GetBitmapResourceName + 'ab';
             SetSize(GetContentSize);
             SetOrigin(HalfPoint(ClientSize));
             SetPosition(Classes.Point(Entry.GridX * GiScalePixelsEx(36,28) + GiScalePixelsEx(36,28) div 2,
               Entry.GridY * GiScalePixelsEx(36,28) + GiScalePixelsEx(36,28) div 2));
           end;
         end
-        else if not (Entry.Item is TGoods) then
-          if (Child.GetImagePath <> 'GI,' + Entry.Item.GetBitmapResourceName + 's') and not Undiscovered then
-          begin
-            Child.SetImagePath('GI,' + Entry.Item.GetBitmapResourceName + 's');
-            Child.SetSize(Child.GetContentSize);
-            Child.SetOrigin(HalfPoint(Child.ClientSize));
-            Child.SetPosition(Classes.Point(Entry.GridX * GiScalePixelsEx(36,28) + GiScalePixelsEx(36,28) div 2,
-              Entry.GridY * GiScalePixelsEx(36,28) + GiScalePixelsEx(36,28) div 2));
-            NewSurfaceLootDiscovered := True;
-          end;
+        else if not (Entry.Item is TGoods) and
+          (Child.GetImagePath <> 'GI,' + Entry.Item.GetBitmapResourceName + 's') and not Undiscovered then
+        begin
+          Child.SetImagePath('GI,' + Entry.Item.GetBitmapResourceName + 's');
+          Child.SetSize(Child.GetContentSize);
+          Child.SetOrigin(HalfPoint(Child.ClientSize));
+          Child.SetPosition(Classes.Point(Entry.GridX * GiScalePixelsEx(36,28) + GiScalePixelsEx(36,28) div 2,
+            Entry.GridY * GiScalePixelsEx(36,28) + GiScalePixelsEx(36,28) div 2));
+          NewSurfaceLootDiscovered := True;
+        end;
       end;
     end;
   Galaxy.PrimeIntegrityChecksum(120);
@@ -959,43 +962,41 @@ begin
   end;
   for I := 0 to GetPlayer.Satellites.Count - 1 do
   begin
-    Satellite := TSatellite(GetPlayer.Satellites[I]);
-    if GetPlayer.CurrentPlanet = Satellite.TargetPlanet then
+    Satellite := GetPlayer.Satellites[I];
+    if GetPlayer.CurrentPlanet <> Satellite.TargetPlanet then Continue;
+    Child := TImageGI(Panel.FirstChild);
+    while Child <> nil do
     begin
-      Child := TImageGI(Panel.FirstChild);
-      while Child <> nil do
+      if Pointer(Child.UserValue) = Satellite then Break;
+      Child := TImageGI(Child.NextSibling);
+    end;
+    if Child = nil then
+    begin
+      if not AnimItem then
       begin
-        if Pointer(Child.UserValue) = Satellite then Break;
-        Child := TImageGI(Child.NextSibling);
-      end;
-      if Child = nil then
+        with TImageGI.Create(Panel) do
+        begin
+          UserValue := Integer(Satellite);
+          ImageSourcePath := 'GI,' + Satellite.GetBitmapResourceName + 's';
+          SetSize(GetContentSize);
+          SetOrigin(HalfPoint(ClientSize));
+          if SatellitePanelNeedsLayout then SetPosition(GetRandomTrajectoryPoint(Satellite.TrajectoryIndex))
+          else SetPosition(ProjectPointOntoTrajectory(Satellite.TrajectoryIndex,Panel.ToLocalPoint(GetCursorPoint)));
+        end;
+      end
+      else
       begin
-        if not AnimItem then
+        with TgaiGI.Create(Panel) do
         begin
-          with TImageGI.Create(Panel) do
-          begin
-            UserValue := Integer(Satellite);
-            SetImagePath('GI,' + Satellite.GetBitmapResourceName + 's');
-            SetSize(GetContentSize);
-            SetOrigin(HalfPoint(ClientSize));
-            if SatellitePanelNeedsLayout then SetPosition(GetRandomTrajectoryPoint(Satellite.TrajectoryIndex))
-            else SetPosition(ProjectPointOntoTrajectory(Satellite.TrajectoryIndex,Panel.ToLocalPoint(GetCursorPoint)));
-          end;
-        end
-        else
-        begin
-          with TgaiGI.Create(Panel) do
-          begin
-            UserValue := Integer(Satellite);
-            SetImagePath(Satellite.GetBitmapResourceName + 'a');
-            SequenceIndex := 0;
-            UpdateAutoGeometry;
-            SetSize(GetContentSize);
-            SetOrigin(HalfPoint(ClientSize));
-            RestartPlayback;
-            if SatellitePanelNeedsLayout then SetPosition(GetRandomTrajectoryPoint(Satellite.TrajectoryIndex))
-            else SetPosition(ProjectPointOntoTrajectory(Satellite.TrajectoryIndex,Panel.ToLocalPoint(GetCursorPoint)));
-          end;
+          UserValue := Integer(Satellite);
+          SetImagePath(Satellite.GetBitmapResourceName + 'a');
+          SequenceIndex := 0;
+          UpdateAutoGeometry;
+          SetSize(GetContentSize);
+          SetOrigin(HalfPoint(ClientSize));
+          RestartPlayback;
+          if SatellitePanelNeedsLayout then SetPosition(GetRandomTrajectoryPoint(Satellite.TrajectoryIndex))
+          else SetPosition(ProjectPointOntoTrajectory(Satellite.TrajectoryIndex,Panel.ToLocalPoint(GetCursorPoint)));
         end;
       end;
     end;
@@ -1018,24 +1019,23 @@ begin
   end;
   (GetByName('ButLeft') as TGraphButtonGI).SetDisabled(SatelliteInventoryPageStart <= 0);
   (GetByName('ButRight') as TGraphButtonGI).SetDisabled(GetPlayer.GetSatelliteTrajectoryIndexLimit < SatelliteInventoryPageStart + 6);
-  (GetByName('WaterSpace') as TLabelGI).SetText(ReplaceColoredToken(LocalizedColorText('FormPlanetNO.Space'),'<val>',IntToStr(GetPlayer.CurrentPlanet.WaterTiles),DialogHighlightColorTag));
-  (GetByName('LandSpace') as TLabelGI).SetText(ReplaceColoredToken(LocalizedColorText('FormPlanetNO.Space'),'<val>',IntToStr(GetPlayer.CurrentPlanet.LandTiles),DialogHighlightColorTag));
-  (GetByName('HillSpace') as TLabelGI).SetText(ReplaceColoredToken(LocalizedColorText('FormPlanetNO.Space'),'<val>',IntToStr(GetPlayer.CurrentPlanet.HillTiles),DialogHighlightColorTag));
-  (GetByName('WaterComplate') as TLabelGI).SetText(ReplaceColoredToken(LocalizedColorText('FormPlanetNO.Complate'),'<val>',IntToStr(GetPlayer.CurrentPlanet.WaterExplored),DialogHighlightColorTag));
-  (GetByName('LandComplate') as TLabelGI).SetText(ReplaceColoredToken(LocalizedColorText('FormPlanetNO.Complate'),'<val>',IntToStr(GetPlayer.CurrentPlanet.LandExplored),DialogHighlightColorTag));
-  (GetByName('HillComplate') as TLabelGI).SetText(ReplaceColoredToken(LocalizedColorText('FormPlanetNO.Complate'),'<val>',IntToStr(GetPlayer.CurrentPlanet.HillExplored),DialogHighlightColorTag));
+  (GetByName('WaterSpace') as TLabelGI).Text := ReplaceColoredToken(LocalizedColorText('FormPlanetNO.Space'),'<val>',IntToStr(GetPlayer.CurrentPlanet.WaterTiles),DialogHighlightColorTag);
+  (GetByName('LandSpace') as TLabelGI).Text := ReplaceColoredToken(LocalizedColorText('FormPlanetNO.Space'),'<val>',IntToStr(GetPlayer.CurrentPlanet.LandTiles),DialogHighlightColorTag);
+  (GetByName('HillSpace') as TLabelGI).Text := ReplaceColoredToken(LocalizedColorText('FormPlanetNO.Space'),'<val>',IntToStr(GetPlayer.CurrentPlanet.HillTiles),DialogHighlightColorTag);
+  (GetByName('WaterComplate') as TLabelGI).Text := ReplaceColoredToken(LocalizedColorText('FormPlanetNO.Complate'),'<val>',IntToStr(GetPlayer.CurrentPlanet.WaterExplored),DialogHighlightColorTag);
+  (GetByName('LandComplate') as TLabelGI).Text := ReplaceColoredToken(LocalizedColorText('FormPlanetNO.Complate'),'<val>',IntToStr(GetPlayer.CurrentPlanet.LandExplored),DialogHighlightColorTag);
+  (GetByName('HillComplate') as TLabelGI).Text := ReplaceColoredToken(LocalizedColorText('FormPlanetNO.Complate'),'<val>',IntToStr(GetPlayer.CurrentPlanet.HillExplored),DialogHighlightColorTag);
   WaterRate := 0;
   LandRate := 0;
   HillRate := 0;
   for I := 0 to GetPlayer.Satellites.Count - 1 do
   begin
-    Satellite := TSatellite(GetPlayer.Satellites[I]);
-    if (GetPlayer.CurrentPlanet = Satellite.TargetPlanet) and (Satellite.BrokenFlag = 0) then
-    begin
-      WaterRate := Min(GetPlayer.CurrentPlanet.WaterTiles - GetPlayer.CurrentPlanet.WaterExplored,WaterRate + Satellite.WaterExplorationRate);
-      LandRate := Min(GetPlayer.CurrentPlanet.LandTiles - GetPlayer.CurrentPlanet.LandExplored,LandRate + Satellite.LandExplorationRate);
-      HillRate := Min(GetPlayer.CurrentPlanet.HillTiles - GetPlayer.CurrentPlanet.HillExplored,HillRate + Satellite.HillExplorationRate);
-    end;
+    Satellite := GetPlayer.Satellites[I];
+    if GetPlayer.CurrentPlanet <> Satellite.TargetPlanet then Continue;
+    if Satellite.BrokenFlag <> 0 then Continue;
+    WaterRate := Min(GetPlayer.CurrentPlanet.WaterTiles - GetPlayer.CurrentPlanet.WaterExplored,WaterRate + Satellite.WaterExplorationRate);
+    LandRate := Min(GetPlayer.CurrentPlanet.LandTiles - GetPlayer.CurrentPlanet.LandExplored,LandRate + Satellite.LandExplorationRate);
+    HillRate := Min(GetPlayer.CurrentPlanet.HillTiles - GetPlayer.CurrentPlanet.HillExplored,HillRate + Satellite.HillExplorationRate);
   end;
   with GetByName('WaterTimeLeft') as TLabelGI do
   begin
@@ -1043,7 +1043,7 @@ begin
     if Active then
     begin
       WaterRate := Min(999,Ceil((GetPlayer.CurrentPlanet.WaterTiles - GetPlayer.CurrentPlanet.WaterExplored) / WaterRate));
-      SetText(ReplaceColoredToken(LocalizedColorText('FormPlanetNO.TimeLeft'),'<val>',IntToStr(WaterRate),DialogHighlightColorTag));
+      Text := ReplaceColoredToken(LocalizedColorText('FormPlanetNO.TimeLeft'),'<val>',IntToStr(WaterRate),DialogHighlightColorTag);
     end;
   end;
   with GetByName('LandTimeLeft') as TLabelGI do
@@ -1052,7 +1052,7 @@ begin
     if Active then
     begin
       LandRate := Min(999,Ceil((GetPlayer.CurrentPlanet.LandTiles - GetPlayer.CurrentPlanet.LandExplored) / LandRate));
-      SetText(ReplaceColoredToken(LocalizedColorText('FormPlanetNO.TimeLeft'),'<val>',IntToStr(LandRate),DialogHighlightColorTag));
+      Text := ReplaceColoredToken(LocalizedColorText('FormPlanetNO.TimeLeft'),'<val>',IntToStr(LandRate),DialogHighlightColorTag);
     end;
   end;
   with GetByName('HillTimeLeft') as TLabelGI do
@@ -1061,16 +1061,16 @@ begin
     if Active then
     begin
       HillRate := Min(999,Ceil((GetPlayer.CurrentPlanet.HillTiles - GetPlayer.CurrentPlanet.HillExplored) / HillRate));
-      SetText(ReplaceColoredToken(LocalizedColorText('FormPlanetNO.TimeLeft'),'<val>',IntToStr(HillRate),DialogHighlightColorTag));
+      Text := ReplaceColoredToken(LocalizedColorText('FormPlanetNO.TimeLeft'),'<val>',IntToStr(HillRate),DialogHighlightColorTag);
     end;
   end;
   GetByName('Light1').SetActive(GetPlayer.CurrentPlanet.WaterExplored >= GetPlayer.CurrentPlanet.WaterTiles);
   GetByName('Light2').SetActive(GetPlayer.CurrentPlanet.LandExplored >= GetPlayer.CurrentPlanet.LandTiles);
   GetByName('Light3').SetActive(GetPlayer.CurrentPlanet.HillExplored >= GetPlayer.CurrentPlanet.HillTiles);
 end;
-{ @end $7E8E74 }
+{ @end $50911C }
 
-{ @routine $7EA8D4 TfPlanetNO_ScrollSatellitePageLeft }
+{ @routine $50A964 TfPlanetNO_ScrollSatellitePageLeft }
 procedure TfPlanetNO.ScrollSatellitePageLeft(Sender: TObjectGI);
 begin
   if SatelliteInventoryPageStart > 0 then
@@ -1080,9 +1080,9 @@ begin
     PostMouseMoveMessage;
   end;
 end;
-{ @end $7EA8D4 }
+{ @end $50A964 }
 
-{ @routine $7EA908 TfPlanetNO_ScrollSatellitePageRight }
+{ @routine $50A980 TfPlanetNO_ScrollSatellitePageRight }
 procedure TfPlanetNO.ScrollSatellitePageRight(Sender: TObjectGI);
 begin
   if SatelliteInventoryPageStart + 6 <= GetPlayer.GetSatelliteTrajectoryIndexLimit then
@@ -1092,43 +1092,41 @@ begin
     PostMouseMoveMessage;
   end;
 end;
-{ @end $7EA908 }
+{ @end $50A980 }
 
-{ @routine $7EA948 TfPlanetNO_ProcessMouseWheel }
+{ @routine $50A9B0 TfPlanetNO_ProcessMouseWheel }
 procedure TfPlanetNO.ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer);
 begin
   if Delta = WHEEL_DELTA then ScrollSatellitePageLeft(nil)
   else if Delta = -WHEEL_DELTA then ScrollSatellitePageRight(nil);
 end;
-{ @end $7EA948 }
+{ @end $50A9B0 }
 
-{ @routine $7EA988 TfPlanetNO_MainPanelMouseMove }
+{ @routine $50A9D4 TfPlanetNO_MainPanelMouseMove }
 procedure TfPlanetNO.MainPanelMouseMove(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint);
 var I: Integer; Item: TItem; HideInfo, ForceHand: Boolean;
 begin
-  if ResearchPanelVisible and (SelectedTrajectoryIndex < 0) and not HoveringSurfaceLoot then
-  begin
-    HideInfo := True;
-    ForceHand := False;
-    for I := 0 to 5 do
-      if SatelliteInventorySlots[I].ContainsPoint(Point) then
+  if not (ResearchPanelVisible and (SelectedTrajectoryIndex < 0) and not HoveringSurfaceLoot) then Exit;
+  HideInfo := True;
+  ForceHand := False;
+  for I := 0 to 5 do
+    if SatelliteInventorySlots[I].ContainsPoint(Point) then
+    begin
+      Item := GetPlayer.FindSatelliteByTrajectoryIndex(SatelliteInventoryPageStart + I);
+      if Item <> nil then
       begin
-        Item := GetPlayer.FindSatelliteByTrajectoryIndex(SatelliteInventoryPageStart + I);
-        if Item <> nil then
-        begin
-          HideInfo := False;
-          ForceHand := True;
-          UpdateItemInfoPopup(Item);
-        end;
-        Break;
+        HideInfo := False;
+        ForceHand := True;
+        UpdateItemInfoPopup(Item);
       end;
-    if HideInfo then UpdateItemInfoPopup(nil);
-    UpdateActionCursor(ForceHand);
-  end;
+      Break;
+    end;
+  if HideInfo then UpdateItemInfoPopup(nil);
+  UpdateActionCursor(ForceHand);
 end;
-{ @end $7EA988 }
+{ @end $50A9D4 }
 
-{ @routine $7EAA54 TfPlanetNO_SatelliteInventoryMouseDown }
+{ @routine $50AA6C TfPlanetNO_SatelliteInventoryMouseDown }
 procedure TfPlanetNO.SatelliteInventoryMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint);
 var Item: TSatellite;
 begin
@@ -1165,9 +1163,9 @@ begin
   MainPanel.RefreshMoneyAndCargo;
   MainPanel.RebuildMessageButtons(False);
 end;
-{ @end $7EAA54 }
+{ @end $50AA6C }
 
-{ @routine $7EAC98 TfPlanetNO_ResearchMapMouseDown }
+{ @routine $50AC68 TfPlanetNO_ResearchMapMouseDown }
 procedure TfPlanetNO.ResearchMapMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint);
 var
   I: Integer;
@@ -1180,8 +1178,8 @@ begin
     begin
       Entry := GetPlayer.CurrentPlanet.SurfaceLootEntries[I];
       if ((Entry.TerrainKind = ptWater) and (GetPlayer.CurrentPlanet.WaterExplored >= Entry.SurfaceTileIndex)) or
-         ((Entry.TerrainKind = ptLand) and (GetPlayer.CurrentPlanet.LandExplored >= Entry.SurfaceTileIndex)) or
-         ((Entry.TerrainKind = ptHill) and (GetPlayer.CurrentPlanet.HillExplored >= Entry.SurfaceTileIndex)) then
+        ((Entry.TerrainKind = ptLand) and (GetPlayer.CurrentPlanet.LandExplored >= Entry.SurfaceTileIndex)) or
+        ((Entry.TerrainKind = ptHill) and (GetPlayer.CurrentPlanet.HillExplored >= Entry.SurfaceTileIndex)) then
         if not Entry.Unavailable then
         begin
           Cell := GetByName('PanelItems').ToLocalPoint(Point);
@@ -1197,7 +1195,7 @@ begin
             SoundManager.PlaySound('Sound.PlanetGet');
             Galaxy.CheckIntegrityChecksum(123);
             if Entry.Item is TArtefactTranclucator then
-              (TObject((Entry.Item as TArtefactTranclucator).Ship) as TTranclucator).OwnerShip := GetPlayer;
+              ((Entry.Item as TArtefactTranclucator).Ship as TTranclucator).OwnerShip := GetPlayer;
             if Entry.Item is TGoods then
             begin
               Inc(GetPlayer.CargoGoods[Ord(Entry.Item.ItemType)].Count,(Entry.Item as TGoods).Quantity);
@@ -1253,16 +1251,16 @@ begin
     MainPanel.RebuildMessageButtons(False);
   end;
 end;
-{ @end $7EAC98 }
+{ @end $50AC68 }
 
-{ @routine $7EB1FC TfPlanetNO_MainPanelRightButtonDown }
+{ @routine $50B13C TfPlanetNO_MainPanelRightButtonDown }
 procedure TfPlanetNO.MainPanelRightButtonDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint);
 begin
   if ResearchPanelVisible then ReturnHeldSatellite;
 end;
-{ @end $7EB1FC }
+{ @end $50B13C }
 
-{ @routine $7EB234 TfPlanetNO_UpdateActionCursor }
+{ @routine $50B164 TfPlanetNO_UpdateActionCursor }
 procedure TfPlanetNO.UpdateActionCursor(ForceHand: Boolean);
 begin
   if HeldSatellite <> nil then
@@ -1282,9 +1280,9 @@ begin
   else if not IsCursorImageSelected('Main') then SetCursorByName('Main');
   GetByName('Glow').SetActive(HeldSatellite <> nil);
 end;
-{ @end $7EB234 }
+{ @end $50B164 }
 
-{ @routine $7EB408 TfPlanetNO_ReturnHeldSatellite }
+{ @routine $50B318 TfPlanetNO_ReturnHeldSatellite }
 procedure TfPlanetNO.ReturnHeldSatellite;
 begin
   if HeldSatellite = nil then Exit;
@@ -1310,9 +1308,9 @@ begin
   end;
   Galaxy.PrimeIntegrityChecksum(128);
 end;
-{ @end $7EB408 }
+{ @end $50B318 }
 
-{ @routine $7EB4EC TfPlanetNO_FindDeployedSatellite }
+{ @routine $50B3DC TfPlanetNO_FindDeployedSatellite }
 function TfPlanetNO.FindDeployedSatellite(TrajectoryIndex: Integer): TSatellite;
 var I: Integer;
 begin
@@ -1323,14 +1321,14 @@ begin
   end;
   for I := 0 to GetPlayer.Satellites.Count - 1 do
   begin
-    Result := TSatellite(GetPlayer.Satellites[I]);
+    Result := GetPlayer.Satellites[I];
     if (GetPlayer.CurrentPlanet = Result.TargetPlanet) and (Result.TrajectoryIndex = TrajectoryIndex) then Exit;
   end;
   Result := nil;
 end;
-{ @end $7EB4EC }
+{ @end $50B3DC }
 
-{ @routine $7EB568 TfPlanetNO_CountDeployedSatellites }
+{ @routine $50B434 TfPlanetNO_CountDeployedSatellites }
 function TfPlanetNO.CountDeployedSatellites: Integer;
 var I: Integer;
 begin
@@ -1338,10 +1336,10 @@ begin
   for I := 0 to GetPlayer.Satellites.Count - 1 do
     if TSatellite(GetPlayer.Satellites[I]).TargetPlanet = GetPlayer.CurrentPlanet then Inc(Result);
 end;
-{ @end $7EB568 }
+{ @end $50B434 }
 
-{ @routine $7EB5C8 TfPlanetNO_AdvanceSatelliteMarkers }
-procedure TfPlanetNO.AdvanceSatelliteMarkers(Timer: PCallbackTimerGI; UserData: Integer);
+{ @routine $50B47C TfPlanetNO_AdvanceSatelliteMarkers }
+procedure TfPlanetNO.AdvanceSatelliteMarkers(Timer: TCallbackTimerIdGI; UserData: Cardinal);
 var Panel: TPanelGI; Control: TObjectGI; Satellite: TSatellite;
 begin
   Panel := GetByName('PanelSatellite') as TPanelGI;
@@ -1354,22 +1352,23 @@ begin
     Control := Control.NextSibling;
   end;
 end;
-{ @end $7EB5C8 }
+{ @end $50B47C }
 
-{ @routine $7EB680 TfPlanetNO_UpdateProbeSignalSound }
-procedure TfPlanetNO.UpdateProbeSignalSound(Timer: PCallbackTimerGI; UserData: Integer);
+{ @routine $50B508 TfPlanetNO_UpdateProbeSignalSound }
+procedure TfPlanetNO.UpdateProbeSignalSound(Timer: TCallbackTimerIdGI; UserData: Cardinal);
 var Count: Integer;
 begin
   Count := CountDeployedSatellites;
-  if (ProbeSignalCount <> Count) and (ProbeSignalSound <> nil) then
-  begin
-    ProbeSignalSound.SetVolume(Max(0,ProbeSignalSound.Volume - 0.02));
-    if ProbeSignalSound.Volume <= 0 then
+  if ProbeSignalCount <> Count then
+    if ProbeSignalSound <> nil then
     begin
-      ProbeSignalSound.Free;
-      ProbeSignalSound := nil;
+      ProbeSignalSound.SetVolume(Max(0,ProbeSignalSound.Volume - 0.02));
+      if ProbeSignalSound.Volume <= 0 then
+      begin
+        ProbeSignalSound.Free;
+        ProbeSignalSound := nil;
+      end;
     end;
-  end;
   if ProbeSignalSound = nil then ProbeSignalCount := Count;
   if (ProbeSignalSound = nil) and (ProbeSignalCount > 0) then
   begin
@@ -1380,44 +1379,46 @@ begin
   if (ProbeSignalCount > 0) and (ProbeSignalCount = Count) and (ProbeSignalSound <> nil) and (ProbeSignalSound.Volume < 1) then
     ProbeSignalSound.SetVolume(Min(1,ProbeSignalSound.Volume + 0.02));
 end;
-{ @end $7EB680 }
+{ @end $50B508 }
 
-{ @routine $7EB900 TfPlanetNO_UpdateItemInfoPopup }
+{ @routine $50B718 TfPlanetNO_UpdateItemInfoPopup }
 procedure TfPlanetNO.UpdateItemInfoPopup(Item: TItem);
 const
-  DurableTypes = [0..79] - [0..7, 9, 23..25, 35..38, 42, 69..72, 74..79];
+  DurableTypes = [Low(TItemType)..High(TItemType)] - [t_Food..t_Narcotics, t_Artefact2, t_ArtefactTransmitter..t_ArtefactTranclucator, t_ArtBlackHole..t_ArtArtefactor, t_Hull, t_Protoplasm..t_Cistern, t_TreasureMap..t_UselessCountableItem];
+label
+  LayoutInfo, ShowEquipment, ScheduleHide;
 var
   Equipment: TEquipment;
-  BarWidth, CapWidth, MinimumWidth: Integer;
   Reserved7C, Reserved80, Reserved84: Integer; // Unused native stack locals.
+  BarWidth, CapWidth, MinimumWidth: Integer;
 begin
   if Item = HoveredItem then Exit;
   HoveredItem := Item;
   if Item = nil then
   begin
-    if ItemInfoHideTimer <> nil then
-    begin
-      CancelCallbackTimer(ItemInfoHideTimer);
-      ItemInfoHideTimer := nil;
-    end;
+    if ItemInfoHideTimer = 0 then goto ScheduleHide;
+    CancelCallbackTimer(ItemInfoHideTimer);
+    ItemInfoHideTimer := 0;
+  ScheduleHide:
     ItemInfoHideTimer := ScheduleCallbackTimer(300,99999,HideItemInfoPopup);
     Exit;
   end;
-  if ItemInfoHideTimer <> nil then
+  if ItemInfoHideTimer <> 0 then
   begin
     CancelCallbackTimer(ItemInfoHideTimer);
-    ItemInfoHideTimer := nil;
+    ItemInfoHideTimer := 0;
   end;
   if Item is TGoods then
   begin
     ShowGoodsInfoPopup(Item as TGoods);
     Exit;
   end;
-  if (Galaxy <> nil) and not Galaxy.Destroying and (GetPlayer <> nil) then
-  begin
-    if Item.ScriptItem <> nil then TScriptItem(Item.ScriptItem).RunActionCode(satOnShowingItemInfo,nil,GetPlayer.CurrentPlanet,nil,0);
-    if Item is TEquipmentWithActCode then RunItemConfigActionCode(Item, satOnShowingItemInfo,nil,GetPlayer.CurrentPlanet,nil,0);
-  end;
+  if Galaxy = nil then goto ShowEquipment;
+  if Galaxy.Destroying then goto ShowEquipment;
+  if GetPlayer = nil then goto ShowEquipment;
+  if Item.ScriptItem <> nil then TScriptItem(Item.ScriptItem).RunActionCode(satOnShowingItemInfo,nil,GetPlayer.CurrentPlanet,nil,0);
+  if Item is TEquipmentWithActCode then RunItemConfigActionCode(Item, satOnShowingItemInfo,nil,GetPlayer.CurrentPlanet,nil,0);
+ShowEquipment:
   Equipment := Item as TEquipment;
   ItemInfoWindow.SetActive(True);
   with ItemInfoImage do
@@ -1437,69 +1438,68 @@ begin
     SetImageKindX(ikxCenter);
     SetImageKindY(ikyCenter);
   end;
-  if not (Byte(Equipment.ItemType) in DurableTypes) and (Equipment.ItemType <> t_Hull) then
+  if not (Equipment.ItemType in DurableTypes) and (Equipment.ItemType <> t_Hull) then
   begin
     with GetByName('InfoDurable') as TImageGI do Parent.Parent.SetActive(False);
     MinimumWidth := 0;
-  end
-  else
-  begin
-    if Equipment is THull then BarWidth := Round(Sqrt(Equipment.Weight / HullBaseSize / Max(0.1,Equipment.GetFragilityFactor([]))) * 64)
-    else BarWidth := Round(64 / Max(0.1,Equipment.GetFragilityFactor([])));
-    BarWidth := Min(192,Max(32,BarWidth));
-    with GetByName('InfoDurableLeft') as TImageGI do
-    begin
-      CapWidth := GetContentSize.X;
-      MinimumWidth := 2 * CapWidth + BarWidth + LocalPosition.X + Parent.LocalPosition.X + 2 * Parent.Parent.LocalPosition.X;
-    end;
-    with GetByName('InfoDurable') as TImageGI do
-    begin
-      Parent.Parent.SetActive(True);
-      Parent.Parent.SetSize(Classes.Point(2 * CapWidth + BarWidth,Parent.Parent.ClientSize.Y));
-      Parent.SetSize(Classes.Point(BarWidth + 2,Parent.Parent.ClientSize.Y));
-      if Equipment.ItemType = t_Hull then
-        SetPosition(Classes.Point(Round((Equipment as THull).HullPoints / (Equipment as THull).Weight * BarWidth) - (GetContentSize.X - 5),LocalPosition.Y))
-      else SetPosition(Classes.Point(Round(BarWidth * (Equipment.ConditionPercent / 100)) - (GetContentSize.X - 5),LocalPosition.Y));
-    end;
-    with GetByName('InfoDurableRight') as TImageGI do
-    begin
-      SetPosition(Classes.Point(BarWidth + CapWidth - GetContentSize.X,LocalPosition.Y));
-      Parent.SetPosition(Classes.Point(CapWidth,Parent.LocalPosition.Y));
-      Parent.SetSize(Classes.Point(BarWidth + CapWidth,Parent.ClientSize.Y));
-    end;
-    with GetByName('InfoDurableBack') as TImageGI do
-    begin
-      SetPosition(Classes.Point(BarWidth + 1 - GetContentSize.X,LocalPosition.Y));
-      Parent.SetSize(Classes.Point(BarWidth + CapWidth,Parent.ClientSize.Y));
-    end;
+    goto LayoutInfo;
   end;
+  if Equipment is THull then BarWidth := Round(Sqrt(Equipment.Weight / HullBaseSize / Max(0.1,Equipment.GetFragilityFactor([]))) * 64)
+  else BarWidth := Round(64 / Max(0.1,Equipment.GetFragilityFactor([])));
+  BarWidth := Min(192,Max(32,BarWidth));
+  with GetByName('InfoDurableLeft') as TImageGI do
+  begin
+    CapWidth := GetContentSize.X;
+    MinimumWidth := 2 * CapWidth + BarWidth + LocalPosition.X + Parent.LocalPosition.X + 2 * Parent.Parent.LocalPosition.X;
+  end;
+  with GetByName('InfoDurable') as TImageGI do
+  begin
+    Parent.Parent.SetActive(True);
+    Parent.Parent.SetSize(Classes.Point(2 * CapWidth + BarWidth,Parent.Parent.ClientSize.Y));
+    Parent.SetSize(Classes.Point(BarWidth + 2,Parent.Parent.ClientSize.Y));
+    if Equipment.ItemType = t_Hull then
+      SetPosition(Classes.Point(Round((Equipment as THull).HullPoints / (Equipment as THull).Weight * BarWidth) - (GetContentSize.X - 5),LocalPosition.Y))
+    else SetPosition(Classes.Point(Round(BarWidth * (Equipment.ConditionPercent / 100)) - (GetContentSize.X - 5),LocalPosition.Y));
+  end;
+  with GetByName('InfoDurableRight') as TImageGI do
+  begin
+    SetPosition(Classes.Point(BarWidth + CapWidth - GetContentSize.X,LocalPosition.Y));
+    Parent.SetPosition(Classes.Point(CapWidth,Parent.LocalPosition.Y));
+    Parent.SetSize(Classes.Point(BarWidth + CapWidth,Parent.ClientSize.Y));
+  end;
+  with GetByName('InfoDurableBack') as TImageGI do
+  begin
+    SetPosition(Classes.Point(BarWidth + 1 - GetContentSize.X,LocalPosition.Y));
+    Parent.SetSize(Classes.Point(BarWidth + CapWidth,Parent.ClientSize.Y));
+  end;
+LayoutInfo:
   ShipScreen.LayoutItemInfo(ItemInfoWindow,ItemInfoNameLabel,ItemInfoTextLabel,True,True,MinimumWidth);
   ItemInfoSizeLabel.SetPosition(Classes.Point(ShipScreen.ItemSizeLabelPosition.X,ItemInfoWindow.ClientSize.Y + ShipScreen.ItemSizeLabelPosition.Y));
   ItemInfoCostLabel.SetPosition(Classes.Point(ShipScreen.ItemPriceLabelPosition.X,ItemInfoWindow.ClientSize.Y + ShipScreen.ItemPriceLabelPosition.Y));
   ItemInfoRaceIcon.SetPosition(Classes.Point(ItemInfoWindow.ClientSize.X + ShipScreen.ItemRaceImagePosition.X,ItemInfoWindow.ClientSize.Y + ShipScreen.ItemRaceImagePosition.Y));
 end;
-{ @end $7EB900 }
+{ @end $50B718 }
 
-{ @routine $7EC2F8 TfPlanetNO_ShowGoodsInfoPopup }
+{ @routine $50BF84 TfPlanetNO_ShowGoodsInfoPopup }
 procedure TfPlanetNO.ShowGoodsInfoPopup(Item: TGoods);
 begin
   GetByName('PII').SetActive(True);
   with GetByName('InfoImage') as TImageGI do
   begin
-    SetImagePath('GI,' + GetItemTypeBitmapPath(Item.ItemType));
-    SetImageKindX(ikxCenter);
-    SetImageKindY(ikyCenter);
+    ImageSourcePath := 'GI,' + GetItemTypeBitmapPath(Item.ItemType);
+    KindX := ikxCenter;
+    KindY := ikyCenter;
     SetPosition(SubtractPoints(ShipScreen.ItemImageCenter,GetVisualCenter));
   end;
-  (GetByName('InfoName') as TLabelGI).SetText(WrapTextInColor(GoodsMarket[Ord(Item.ItemType)].DisplayName,InfoNameColorTag));
-  (GetByName('InfoText') as TLabelGI).SetText(LocalizedText('Items.Goods.Text.' + IntToStr(Ord(Item.ItemType) + 1)));
-  (GetByName('InfoSize') as TLabelGI).SetText(IntToStr(Item.Quantity));
-  (GetByName('InfoPrice') as TLabelGI).SetText(IntToStr(Item.Cost));
+  (GetByName('InfoName') as TLabelGI).Text := WrapTextInColor(GoodsMarket[Ord(Item.ItemType)].DisplayName,InfoNameColorTag);
+  (GetByName('InfoText') as TLabelGI).Text := LocalizedText('Items.Goods.Text.' + IntToStr(Ord(Item.ItemType) + 1));
+  (GetByName('InfoSize') as TLabelGI).Text := IntToStr(Item.Quantity);
+  (GetByName('InfoPrice') as TLabelGI).Text := IntToStr(Item.Cost);
   with GetByName('EmRace') as TImageGI do
   begin
-    SetImagePath(GetFactionEmblemPath(OwnerInfo[RaceToOwner(GetPlayer.PilotRace)].InternalName));
-    SetImageKindX(ikxCenter);
-    SetImageKindY(ikyCenter);
+    ImageSourcePath := GetFactionEmblemPath(OwnerInfo[RaceToOwner(GetPlayer.PilotRace)].InternalName);
+    KindX := ikxCenter;
+    KindY := ikyCenter;
   end;
   GetByName('InfoDurable').Parent.Parent.SetActive(False);
   ShipScreen.LayoutItemInfo(ItemInfoWindow,ItemInfoNameLabel,ItemInfoTextLabel,True,True,0);
@@ -1507,22 +1507,22 @@ begin
   ItemInfoCostLabel.SetPosition(Classes.Point(ShipScreen.ItemPriceLabelPosition.X,ItemInfoWindow.ClientSize.Y + ShipScreen.ItemPriceLabelPosition.Y));
   ItemInfoRaceIcon.SetPosition(Classes.Point(ItemInfoWindow.ClientSize.X + ShipScreen.ItemRaceImagePosition.X,ItemInfoWindow.ClientSize.Y + ShipScreen.ItemRaceImagePosition.Y));
 end;
-{ @end $7EC2F8 }
+{ @end $50BF84 }
 
-{ @routine $7EC784 TfPlanetNO_HideItemInfoPopup }
-procedure TfPlanetNO.HideItemInfoPopup(Timer: PCallbackTimerGI; UserData: Integer);
+{ @routine $50C3E0 TfPlanetNO_HideItemInfoPopup }
+procedure TfPlanetNO.HideItemInfoPopup(Timer: TCallbackTimerIdGI; UserData: Cardinal);
 begin
   HoveredItem := nil;
-  if ItemInfoHideTimer <> nil then
+  if ItemInfoHideTimer <> 0 then
   begin
     CancelCallbackTimer(ItemInfoHideTimer);
-    ItemInfoHideTimer := nil;
+    ItemInfoHideTimer := 0;
   end;
   GetByName('PII').SetActive(False);
 end;
-{ @end $7EC784 }
+{ @end $50C3E0 }
 
-{ @routine $7EC7EC TfPlanetNO_MainPanelKeyDown }
+{ @routine $50C428 TfPlanetNO_MainPanelKeyDown }
 procedure TfPlanetNO.MainPanelKeyDown(Sender: TObjectGI; Key: Cardinal);
 var QuestButton: TObjectGI;
 begin
@@ -1559,9 +1559,9 @@ begin
   end
   else MainPanel.ProcessKeyDown(Key);
 end;
-{ @end $7EC7EC }
+{ @end $50C428 }
 
-{ @routine $7EC9E4 TfPlanetNO_ExecuteUiCode }
+{ @routine $50C5DC TfPlanetNO_ExecuteUiCode }
 procedure TfPlanetNO.ExecuteUiCode(Block: TBlockParEC; Key: Cardinal);
 begin
   if not MainPanel.NavigationLocked and not ExitScreenLoop and
@@ -1572,9 +1572,9 @@ begin
     Galaxy.PrimeIntegrityChecksum(20003);
   end;
 end;
-{ @end $7EC9E4 }
+{ @end $50C5DC }
 
-{ @routine $7ECA58 TfPlanetNO_SelectMusic }
+{ @routine $50C640 TfPlanetNO_SelectMusic }
 procedure TfPlanetNO.SelectMusic;
 begin
   if (ActiveLoadPanel <> nil) and (ActiveLoadPanel.GetShutterDirection = -1) then Exit;
@@ -1584,6 +1584,7 @@ begin
     Exit;
   end;
   if GetPlayer.CurrentPlanet <> nil then
+  begin
     if GetPlayer.CurrentPlanet.OwnerId = oiPirate then
     begin
       if not GetPlayer.CurrentPlanet.IsMainPiratePlanet then
@@ -1591,7 +1592,8 @@ begin
       else MusicManager.PlayCategory('Nation.PiratePlanetMain');
     end
     else MusicManager.PlayCategory('Nation.' + OwnerInfo[GetPlayer.CurrentPlanet.OwnerId].InternalName);
+  end;
 end;
-{ @end $7ECA58 }
+{ @end $50C640 }
 
 end.

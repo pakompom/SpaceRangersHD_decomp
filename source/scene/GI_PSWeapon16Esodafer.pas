@@ -20,7 +20,7 @@ type
   TEsodaferPalettes = array of TEsodaferPalette;
 
 var
-  EsodaferPalettes: array of TEsodaferPalette; // @addr $88AF00
+  EsodaferPalettes: array of TEsodaferPalette; // @addr $81B1A4
 
 type
   TPSWeapon16Esodafer = class(TPSWeaponGI) // @size $168
@@ -33,31 +33,31 @@ type
     OriginalLength: Double; // @offset $158
     LengthScale: Double; // @offset $160
 
-    constructor Create(Owner: TObjectGI; APaletteIndex: Integer); // @addr $696018
-    destructor Destroy; override; // @addr $6960E8
-    procedure SetColors(Primary, Secondary, Tertiary: Word); // @addr $696124
-    procedure SetPosition(Position: TPoint); override; // @addr $696168
-    procedure SetTargetPoint(Point: TPoint); override; // @addr $6961AC
-    procedure UpdateProjectionBounds; // @addr $696200
-    procedure UpdateHitTestBounds; override; // @addr $69654C
-    function GetLocalBounds: TRect; override; // @addr $6965AC
-    function AddParticle: PEsodaferParticle; // @addr $696610
-    procedure ClearParticles; // @addr $696688
-    procedure InvalidateRect(Rect: TRect); override; // @addr $6966DC
-    procedure Advance(Timer: PCallbackTimerGI; UserData: Integer); override; // @addr $6967F8
-    procedure Draw(ClipRect: TRect); override; // @addr $697178
+    constructor Create(Owner: TObjectGI; APaletteIndex: Integer); // @addr $4EEBC4
+    destructor Destroy; override; // @addr $4EEC74
+    procedure SetColors(Primary, Secondary, Tertiary: Word); // @addr $4EECA0
+    procedure SetPosition(Position: TPoint); override; // @addr $4EECC0
+    procedure SetTargetPoint(Point: TPoint); override; // @addr $4EECF8
+    procedure UpdateProjectionBounds; // @addr $4EED38
+    procedure UpdateHitTestBounds; override; // @addr $4EF0B0
+    function GetLocalBounds: TRect; override; // @addr $4EF0E4
+    function AddParticle: PEsodaferParticle; // @addr $4EF114
+    procedure ClearParticles; // @addr $4EF154
+    procedure InvalidateRect(Rect: TRect); override; // @addr $4EF188
+    procedure Advance(Timer: TCallbackTimerIdGI; UserData: Cardinal); override; // @addr $4EF26C
+    procedure Draw(ClipRect: TRect); override; // @addr $4EFAFC
   end;
 
-procedure LoadEsodaferPalettes; // @addr $6973AC
+procedure LoadEsodaferPalettes; // @addr $4EFCD4
 
 implementation
 
-// @unit-initialization $877954
-// @unit-finalization $697674
+// @unit-initialization $806824
+// @unit-finalization $4EFF5C
 
 uses SysUtils, Math, EC_BlockPar, EC_Str, EC_Mem, GR_Main, GR_DX, aMyFunction, Globals;
 
-{ @routine $696018 TPSWeapon16Esodafer_Create }
+{ @routine $4EEBC4 TPSWeapon16Esodafer_Create }
 constructor TPSWeapon16Esodafer.Create(Owner: TObjectGI; APaletteIndex: Integer);
 begin
   inherited Create(Owner);
@@ -68,26 +68,26 @@ begin
   UpdateProjectionBounds;
   SetColors(EsodaferPalettes[APaletteIndex][0], EsodaferPalettes[APaletteIndex][1], EsodaferPalettes[APaletteIndex][2]);
 end;
-{ @end $696018 }
+{ @end $4EEBC4 }
 
-{ @routine $6960E8 TPSWeapon16Esodafer_Destroy }
+{ @routine $4EEC74 TPSWeapon16Esodafer_Destroy }
 destructor TPSWeapon16Esodafer.Destroy;
 begin
   ClearParticles;
   inherited Destroy;
 end;
-{ @end $6960E8 }
+{ @end $4EEC74 }
 
-{ @routine $696124 TPSWeapon16Esodafer_SetColors }
+{ @routine $4EECA0 TPSWeapon16Esodafer_SetColors }
 procedure TPSWeapon16Esodafer.SetColors(Primary, Secondary, Tertiary: Word);
 begin
   Colors[0] := Primary;
   Colors[1] := Secondary;
   Colors[2] := Tertiary;
 end;
-{ @end $696124 }
+{ @end $4EECA0 }
 
-{ @routine $696168 TPSWeapon16Esodafer_SetPosition }
+{ @routine $4EECC0 TPSWeapon16Esodafer_SetPosition }
 procedure TPSWeapon16Esodafer.SetPosition(Position: TPoint);
 begin
   if (LocalPosition.X <> Position.X) or (LocalPosition.Y <> Position.Y) then
@@ -96,9 +96,9 @@ begin
     UpdateProjectionBounds;
   end;
 end;
-{ @end $696168 }
+{ @end $4EECC0 }
 
-{ @routine $6961AC TPSWeapon16Esodafer_SetTargetPoint }
+{ @routine $4EECF8 TPSWeapon16Esodafer_SetTargetPoint }
 procedure TPSWeapon16Esodafer.SetTargetPoint(Point: TPoint);
 begin
   if (TargetPoint.X <> Point.X) or (TargetPoint.Y <> Point.Y) then
@@ -107,9 +107,9 @@ begin
     UpdateProjectionBounds;
   end;
 end;
-{ @end $6961AC }
+{ @end $4EECF8 }
 
-{ @routine $696200 TPSWeapon16Esodafer_UpdateProjectionBounds }
+{ @routine $4EED38 TPSWeapon16Esodafer_UpdateProjectionBounds }
 procedure TPSWeapon16Esodafer.UpdateProjectionBounds;
 var
   Sine, Cosine, Distance, A, B, C, D: Single;
@@ -132,9 +132,9 @@ begin
   ProjectionBounds.Top := Floor(Math.Min(Math.Min(Math.Min(A, B), C), D));
   ProjectionBounds.Bottom := Ceil(Math.Max(Math.Max(Math.Max(A, B), C), D));
 end;
-{ @end $696200 }
+{ @end $4EED38 }
 
-{ @routine $69654C TPSWeapon16Esodafer_UpdateHitTestBounds }
+{ @routine $4EF0B0 TPSWeapon16Esodafer_UpdateHitTestBounds }
 procedure TPSWeapon16Esodafer.UpdateHitTestBounds;
 begin
   HitTestBounds.Left := ProjectionBounds.Left + AbsolutePosition.X;
@@ -142,9 +142,9 @@ begin
   HitTestBounds.Right := ProjectionBounds.Right + AbsolutePosition.X;
   HitTestBounds.Bottom := ProjectionBounds.Bottom + AbsolutePosition.Y;
 end;
-{ @end $69654C }
+{ @end $4EF0B0 }
 
-{ @routine $6965AC TPSWeapon16Esodafer_GetLocalBounds }
+{ @routine $4EF0E4 TPSWeapon16Esodafer_GetLocalBounds }
 function TPSWeapon16Esodafer.GetLocalBounds: TRect;
 begin
   Result.Left := ProjectionBounds.Left + LocalPosition.X;
@@ -152,9 +152,9 @@ begin
   Result.Right := ProjectionBounds.Right + LocalPosition.X;
   Result.Bottom := ProjectionBounds.Bottom + LocalPosition.Y;
 end;
-{ @end $6965AC }
+{ @end $4EF0E4 }
 
-{ @routine $696610 TPSWeapon16Esodafer_AddParticle }
+{ @routine $4EF114 TPSWeapon16Esodafer_AddParticle }
 function TPSWeapon16Esodafer.AddParticle: PEsodaferParticle;
 var
   Particle: PEsodaferParticle;
@@ -167,9 +167,9 @@ begin
   if FirstParticle = nil then FirstParticle := Particle;
   Result := Particle;
 end;
-{ @end $696610 }
+{ @end $4EF114 }
 
-{ @routine $696688 TPSWeapon16Esodafer_ClearParticles }
+{ @routine $4EF154 TPSWeapon16Esodafer_ClearParticles }
 procedure TPSWeapon16Esodafer.ClearParticles;
 var
   Particle, Current: PEsodaferParticle;
@@ -184,9 +184,9 @@ begin
   FirstParticle := nil;
   LastParticle := nil;
 end;
-{ @end $696688 }
+{ @end $4EF154 }
 
-{ @routine $6966DC TPSWeapon16Esodafer_InvalidateRect }
+{ @routine $4EF188 TPSWeapon16Esodafer_InvalidateRect }
 procedure TPSWeapon16Esodafer.InvalidateRect(Rect: TRect);
 var
   Target: TPoint;
@@ -201,17 +201,17 @@ begin
   if IntersectRects(Intersection, Rect, GameScreenRect) then
     MessageLoop.QueueUpdateRect(Intersection);
 end;
-{ @end $6966DC }
+{ @end $4EF188 }
 
-{ @routine $6967F8 TPSWeapon16Esodafer_Advance }
-procedure TPSWeapon16Esodafer.Advance(Timer: PCallbackTimerGI; UserData: Integer);
+{ @routine $4EF26C TPSWeapon16Esodafer_Advance }
+procedure TPSWeapon16Esodafer.Advance(Timer: TCallbackTimerIdGI; UserData: Cardinal);
 var
   I: Integer;
   Distance, Angle, Speed: Single;
   Particle, Current, Spark: PEsodaferParticle;
 
-  // @nested $6967A8 AcquireEsodaferParticle
-  function AcquireEsodaferParticle: PEsodaferParticle; // @addr $6967A8 @calls "0x696C50, 0x696DB8"
+  // @nested $4EF23C AcquireEsodaferParticle
+  function AcquireEsodaferParticle: PEsodaferParticle; // @addr $4EF23C @calls "0x004EF66C,0x004EF7A8"
   var
     Candidate: PEsodaferParticle;
   begin
@@ -331,9 +331,9 @@ begin
   end;
   Dec(RemainingTicks);
 end;
-{ @end $6967F8 }
+{ @end $4EF26C }
 
-{ @routine $697178 TPSWeapon16Esodafer_Draw }
+{ @routine $4EFAFC TPSWeapon16Esodafer_Draw }
 procedure TPSWeapon16Esodafer.Draw(ClipRect: TRect);
 var
   Angle, Sine, Cosine, PX, PY: Single;
@@ -379,9 +379,9 @@ begin
     end;
   end;
 end;
-{ @end $697178 }
+{ @end $4EFAFC }
 
-{ @routine $6973AC LoadEsodaferPalettes }
+{ @routine $4EFCD4 LoadEsodaferPalettes }
 procedure LoadEsodaferPalettes;
 var
   Block, PaletteBlock: TBlockParEC;
@@ -397,21 +397,19 @@ begin
   for Index := 0 to Count - 1 do
   begin
     Text := IntToStr(Index);
-    if Block.CountBlocks(Text) <> 0 then
-    begin
-      PaletteBlock := Block.GetBlockByPath(Text);
-      for ColorIndex := 0 to 2 do
-        if PaletteBlock.CountParams('Color' + IntToStr(ColorIndex)) > 0 then
-        begin
-          Text := PaletteBlock.GetParam('Color' + IntToStr(ColorIndex));
-          EsodaferPalettes[Index][ColorIndex] := CurrentPixelFormat.PackNormalizedRgb(
-            ExtractDecimalToSingleW(ExtractDelimitedPartW(Text, 0, ',')),
-            ExtractDecimalToSingleW(ExtractDelimitedPartW(Text, 1, ',')),
-            ExtractDecimalToSingleW(ExtractDelimitedPartW(Text, 2, ',')));
-        end;
-    end;
+    if Block.CountBlocks(Text) = 0 then Continue;
+    PaletteBlock := Block.GetBlockByPath(Text);
+    for ColorIndex := Low(TEsodaferPalette) to High(TEsodaferPalette) do
+      if PaletteBlock.CountParams('Color' + IntToStr(ColorIndex)) > 0 then
+      begin
+        Text := PaletteBlock.GetParam('Color' + IntToStr(ColorIndex));
+        EsodaferPalettes[Index][ColorIndex] := CurrentPixelFormat.PackNormalizedRgb(
+          ExtractDecimalToSingleW(ExtractDelimitedPartW(Text, 0, ',')),
+          ExtractDecimalToSingleW(ExtractDelimitedPartW(Text, 1, ',')),
+          ExtractDecimalToSingleW(ExtractDelimitedPartW(Text, 2, ',')));
+      end;
   end;
 end;
-{ @end $6973AC }
+{ @end $4EFCD4 }
 
 end.

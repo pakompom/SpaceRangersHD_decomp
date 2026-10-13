@@ -1,6 +1,4 @@
 unit ab_W04;
-// Unit bracket (inferred): .text 0x004F4DE4..0x004F55CD; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
-// Native TabW04 projectile family: $4F4E4C..$4F55CE.
 
 interface
 
@@ -14,19 +12,19 @@ type
     Phase: Integer; // @offset $B8  0 parent, 1 parent explosion, 2 child coasting, 3 child tracking, 4 child explosion.
     ExpireTick: Integer; // @offset $BC
     AimTick: Integer; // @offset $C0
-    constructor Create; // @addr $4F4E4C
-    destructor Destroy; override; // @addr $4F4ED0
-    procedure Launch(Owner: TabObject; Amount: Integer; Offset: Single); // @addr $4F4F28
-    procedure LaunchChild(Parent: TabW04; Angle: Single); // @addr $4F5074
-    procedure Advance; override; // @addr $4F51EC
-    procedure UpdateVisuals; override; // @addr $4F55BC
+    constructor Create; // @addr $55321C
+    destructor Destroy; override; // @addr $553288
+    procedure Launch(Owner: TabObject; Amount: Integer; Offset: Single); // @addr $5532C4
+    procedure LaunchChild(Parent: TabW04; Angle: Single); // @addr $5533E0
+    procedure Advance; override; // @addr $553528
+    procedure UpdateVisuals; override; // @addr $553868
   end;
 
 implementation
 
 uses ab_Ship, GlobalsV;
 
-{ @routine $4F4E4C TabW04_Create }
+{ @routine $55321C TabW04_Create }
 constructor TabW04.Create;
 begin
   inherited Create;
@@ -36,9 +34,9 @@ begin
   CollisionRadius := 1;
   Collidable := False;
 end;
-{ @end $4F4E4C }
+{ @end $55321C }
 
-{ @routine $4F4ED0 TabW04_Destroy }
+{ @routine $553288 TabW04_Destroy }
 destructor TabW04.Destroy;
 begin
   if Image <> nil then
@@ -48,9 +46,9 @@ begin
   end;
   inherited Destroy;
 end;
-{ @end $4F4ED0 }
+{ @end $553288 }
 
-{ @routine $4F4F28 TabW04_Launch }
+{ @routine $5532C4 TabW04_Launch }
 procedure TabW04.Launch(Owner: TabObject; Amount: Integer; Offset: Single);
 begin
   SourceObject := Owner;
@@ -63,9 +61,9 @@ begin
   ab_WorldImage_SetFrameMode(Image, afmRandomStart);
   ab_WorldImage_SetDepth(Image, HitFrontDepth, HitBackDepth);
 end;
-{ @end $4F4F28 }
+{ @end $5532C4 }
 
-{ @routine $4F5074 TabW04_LaunchChild }
+{ @routine $5533E0 TabW04_LaunchChild }
 procedure TabW04.LaunchChild(Parent: TabW04; Angle: Single);
 begin
   SourceObject := Parent.SourceObject;
@@ -81,9 +79,9 @@ begin
   ab_WorldImage_SetFrameMode(Image, afmRandomStart);
   ab_WorldImage_SetDepth(Image, HitFrontDepth, HitBackDepth);
 end;
-{ @end $4F5074 }
+{ @end $5533E0 }
 
-{ @routine $4F51EC TabW04_Advance }
+{ @routine $553528 TabW04_Advance }
 procedure TabW04.Advance;
 var
   Collision: TabObject;
@@ -143,13 +141,13 @@ begin
   end
   else if (Phase = 1) or (Phase = 4) then DeletionPending := Image.Finished;
 end;
-{ @end $4F51EC }
+{ @end $553528 }
 
-{ @routine $4F55BC TabW04_UpdateVisuals }
+{ @routine $553868 TabW04_UpdateVisuals }
 procedure TabW04.UpdateVisuals;
 begin
   inherited UpdateVisuals;
 end;
-{ @end $4F55BC }
+{ @end $553868 }
 
 end.

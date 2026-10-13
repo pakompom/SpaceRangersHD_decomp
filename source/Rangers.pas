@@ -2,8 +2,8 @@ unit Rangers;
 // Declaration companion for the program in Rangers.dpr; no linked Delphi unit.
 interface
 uses SysUtils;
-procedure start; // @addr $877ABC @ida "void __noreturn __usercall $name();"
+procedure start; // @addr $807A08 @ida "void __noreturn __usercall $name();"
 var
-  StartupException: Exception; // @addr $88D4D0 Compiler-created on-exception variable in Rangers.dpr; not separate storage.
+  StartupException: Exception; // @unbound Compiler-created on-exception variable in Rangers.dpr; no separately linked storage.
 implementation
 end.

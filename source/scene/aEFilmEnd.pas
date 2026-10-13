@@ -1,5 +1,4 @@
 unit aEFilmEnd;
-// Unit bracket (inferred): .text 0x006A15D4..0x006A1EFE; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -7,7 +6,7 @@ uses EC_Struct, SE_Space, aEFilm;
 
 type
   PEFilmEndEntry = ^TEFilmEndEntry;
-  TEFilmEndEntry = packed record // @size 0x14
+  TEFilmEndEntry = record // @size 0x14
     Prev: PEFilmEndEntry; // @offset 0x00
     Next: PEFilmEndEntry; // @offset 0x04
     SceneObject: TObjectSE; // @offset 0x08
@@ -20,39 +19,44 @@ type
     FirstEntry: PEFilmEndEntry; // @offset 0x04
     LastEntry: PEFilmEndEntry; // @offset 0x08
 
-    constructor Create; // @addr 0x6A162C
-    destructor Destroy; override; // @addr 0x6A1670
-    procedure RemoveLinkedWeaponEffects; // @addr $6A1E94 Removes weapon entries whose Projectile is nonzero.
-    procedure Clear; // @addr 0x6A16AC
-    function AppendEntry: PEFilmEndEntry; // @addr 0x6A16D0
-    procedure RemoveEntry(Entry: PEFilmEndEntry); // @addr 0x6A1750 @note "Detaches and releases all three retained scene references, then frees Entry."
-    procedure TakeTrailingEffects(Film: TEFilm); // @addr 0x6A1820 @note "Transfers selected scene references from Film. Requires its 0x18 command marker."
-    procedure AdvanceEffects; // @addr 0x6A19F8
-    procedure ReleaseObjectReferences(Obj: TObjectSE); // @addr 0x6A1E08 @note "Clears matching references without unlinking entries."
+    constructor Create; // @addr 0x00785CF8
+    destructor Destroy; override; // @addr 0x00785D30
+    procedure RemoveLinkedWeaponEffects; // @addr $7863D0 Removes weapon entries whose Projectile is nonzero.
+    procedure Clear; // @addr 0x00785D5C
+    function AppendEntry: PEFilmEndEntry; // @addr 0x00785D74
+    procedure RemoveEntry(Entry: PEFilmEndEntry); // @addr 0x00785DB4 @note "Detaches and releases all three retained scene references, then frees Entry."
+    procedure TakeTrailingEffects(Film: TEFilm); // @addr 0x00785E28 @note "Transfers selected scene references from Film. Requires its 0x18 command marker."
+    procedure AdvanceEffects; // @addr 0x00785F8C
+    procedure ReleaseObjectReferences(Obj: TObjectSE); // @addr 0x0078637C @note "Clears matching references without unlinking entries."
   end;
-
 
 implementation
 
 uses SysUtils, EC_Mem, GR_Main, SE_GAIEffect, SE_Hole, SE_Weapon;
 
-
-{ @routine $6A162C TEFilmEnd_Create }
+{ @routine $785CF8 TEFilmEnd_Create }
 constructor TEFilmEnd.Create;
-begin inherited Create end;
-{ @end $6A162C }
+begin
+  inherited Create;
+end;
+{ @end $785CF8 }
 
-{ @routine $6A1670 TEFilmEnd_Destroy }
+{ @routine $785D30 TEFilmEnd_Destroy }
 destructor TEFilmEnd.Destroy;
-begin Clear; inherited Destroy end;
-{ @end $6A1670 }
+begin
+  Clear;
+  inherited Destroy;
+end;
+{ @end $785D30 }
 
-{ @routine $6A16AC TEFilmEnd_Clear }
+{ @routine $785D5C TEFilmEnd_Clear }
 procedure TEFilmEnd.Clear;
-begin while FirstEntry <> nil do RemoveEntry(LastEntry) end;
-{ @end $6A16AC }
+begin
+  while FirstEntry <> nil do RemoveEntry(LastEntry);
+end;
+{ @end $785D5C }
 
-{ @routine $6A16D0 TEFilmEnd_AppendEntry }
+{ @routine $785D74 TEFilmEnd_AppendEntry }
 function TEFilmEnd.AppendEntry: PEFilmEndEntry;
 var Entry: PEFilmEndEntry;
 begin
@@ -67,9 +71,9 @@ begin
   Entry.RelatedObject2 := nil;
   Result := Entry;
 end;
-{ @end $6A16D0 }
+{ @end $785D74 }
 
-{ @routine $6A1750 TEFilmEnd_RemoveEntry }
+{ @routine $785DB4 TEFilmEnd_RemoveEntry }
 procedure TEFilmEnd.RemoveEntry(Entry: PEFilmEndEntry);
 begin
   if Entry.Prev <> nil then Entry.Prev.Next := Entry.Next;
@@ -77,16 +81,25 @@ begin
   if LastEntry = Entry then LastEntry := Entry.Prev;
   if FirstEntry = Entry then FirstEntry := Entry.Next;
   if Entry.SceneObject <> nil then
-  begin Entry.SceneObject.DetachFromSpace; ReleaseSpaceObject(Entry.SceneObject) end;
+  begin
+    Entry.SceneObject.DetachFromSpace;
+    ReleaseSpaceObject(Entry.SceneObject);
+  end;
   if Entry.RelatedObject1 <> nil then
-  begin Entry.RelatedObject1.DetachFromSpace; ReleaseSpaceObject(Entry.RelatedObject1) end;
+  begin
+    Entry.RelatedObject1.DetachFromSpace;
+    ReleaseSpaceObject(Entry.RelatedObject1);
+  end;
   if Entry.RelatedObject2 <> nil then
-  begin Entry.RelatedObject2.DetachFromSpace; ReleaseSpaceObject(Entry.RelatedObject2) end;
+  begin
+    Entry.RelatedObject2.DetachFromSpace;
+    ReleaseSpaceObject(Entry.RelatedObject2);
+  end;
   FreeEC(Entry);
 end;
-{ @end $6A1750 }
+{ @end $785DB4 }
 
-{ @routine $6A1820 TEFilmEnd_TakeTrailingEffects }
+{ @routine $785E28 TEFilmEnd_TakeTrailingEffects }
 procedure TEFilmEnd.TakeTrailingEffects(Film: TEFilm);
 var
   Command, FirstTrailing: PEFilmCommand;
@@ -150,9 +163,9 @@ begin
     Obj := Obj.Next;
   end;
 end;
-{ @end $6A1820 }
+{ @end $785E28 }
 
-{ @routine $6A19F8 TEFilmEnd_AdvanceEffects }
+{ @routine $785F8C TEFilmEnd_AdvanceEffects }
 procedure TEFilmEnd.AdvanceEffects;
 var NextEntry, Entry: PEFilmEndEntry;
 begin
@@ -195,9 +208,9 @@ begin
     end;
   end;
 end;
-{ @end $6A19F8 }
+{ @end $785F8C }
 
-{ @routine $6A1E08 TEFilmEnd_ReleaseObjectReferences }
+{ @routine $78637C TEFilmEnd_ReleaseObjectReferences }
 procedure TEFilmEnd.ReleaseObjectReferences(Obj: TObjectSE);
 var Entry: PEFilmEndEntry;
 begin
@@ -213,9 +226,9 @@ begin
     Entry := Entry.Next;
   end;
 end;
-{ @end $6A1E08 }
+{ @end $78637C }
 
-{ @routine $6A1E94 TEFilmEnd_RemoveLinkedWeaponEffects }
+{ @routine $7863D0 TEFilmEnd_RemoveLinkedWeaponEffects }
 procedure TEFilmEnd.RemoveLinkedWeaponEffects;
 var
   NextEntry, Entry: PEFilmEndEntry;
@@ -229,6 +242,6 @@ begin
       if (Entry.SceneObject as TWeaponSE).Projectile <> nil then RemoveEntry(Entry);
   end;
 end;
-{ @end $6A1E94 }
+{ @end $7863D0 }
 
 end.

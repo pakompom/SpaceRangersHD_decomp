@@ -1,5 +1,4 @@
 unit GI_SpaceImg;
-// Unit bracket (inferred): .text 0x004B4770..0x004B5658; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -32,27 +31,27 @@ type
     Images: PSpaceImageGI; // @offset $124
     ViewDirty: Boolean; // @offset $128
     ViewPosition: TPointF; // @offset $12C
-    AnimationTimer: PCallbackTimerGI; // @offset $134
+    AnimationTimer: TCallbackTimerIdGI; // @offset $134
 
-    constructor Create(Owner: TObjectGI); // @addr $4B4890
-    destructor Destroy; override; // @addr $4B48E4
-    procedure ClearImages; // @addr $4B4948
-    function AllocateImage(Depth: Single): PSpaceImageGI; // @addr $4B4984 @note "Inserts in descending depth order; reallocates and invalidates earlier pointers."
-    function AddImage(TemplateIndex: Integer; X, Y, Depth: Single): PSpaceImageGI; // @addr $4B4A8C @codeend $4B4C4F
-    function NearestImageDistance(X, Y: Single): Single; // @addr $4B4C58
-    procedure UpdateImageOrbitAndFrame(Image: PSpaceImageGI); // @addr $4B4CFC
-    procedure ProjectImages; // @addr $4B4E74
-    function GetImage(Index: Integer): PSpaceImageGI; // @addr $4B4F28
-    procedure AnimateImages(Timer: PCallbackTimerGI; UserData: Integer); // @addr $4B4F58
-    procedure SetViewPosition(Position: TPointF); // @addr $4B5110
-    procedure Invalidate; override; // @addr $4B518C
-    procedure OnActivate; override; // @addr $4B5220
-    procedure OnDeactivate; override; // @addr $4B5288
-    procedure LoadFromConfigPath(const Path: WideString); override; // @addr $4B52C8
-    procedure LoadFromBlock(Block: TBlockParEC); override; // @addr $4B52FC
-    procedure LoadSpaceImageProperties(Block: TBlockParEC); // @addr $4B5324 @note "Empty in native code."
-    procedure UpdateAutoGeometry; override; // @addr $4B5334 @note "Empty in native code."
-    procedure Draw(ClipRect: TRect); override; // @addr $4B5340
+    constructor Create(Owner: TObjectGI); // @addr $48828C
+    destructor Destroy; override; // @addr $4882C8
+    procedure ClearImages; // @addr $488310
+    function AllocateImage(Depth: Single): PSpaceImageGI; // @addr $488334 @note "Inserts in descending depth order; reallocates and invalidates earlier pointers."
+    function AddImage(TemplateIndex: Integer; X, Y, Depth: Single): PSpaceImageGI; // @addr $4883F4 @codeend $4885AB
+    function NearestImageDistance(X, Y: Single): Single; // @addr $4885B4
+    procedure UpdateImageOrbitAndFrame(Image: PSpaceImageGI); // @addr $488638
+    procedure ProjectImages; // @addr $4887AC
+    function GetImage(Index: Integer): PSpaceImageGI; // @addr $488818
+    procedure AnimateImages(Timer: TCallbackTimerIdGI; UserData: Cardinal); // @addr $488830
+    procedure SetViewPosition(Position: TPointF); // @addr $4889D8
+    procedure Invalidate; override; // @addr $488A44
+    procedure OnActivate; override; // @addr $488AAC
+    procedure OnDeactivate; override; // @addr $488AF4
+    procedure LoadFromConfigPath(const Path: WideString); override; // @addr $488B1C
+    procedure LoadFromBlock(Block: TBlockParEC); override; // @addr $488B48
+    procedure LoadSpaceImageProperties(Block: TBlockParEC); // @addr $488B64 @note "Empty in native code."
+    procedure UpdateAutoGeometry; override; // @addr $488B68 @note "Empty in native code."
+    procedure Draw(ClipRect: TRect); override; // @addr $488B6C
   end;
 
 implementation
@@ -60,28 +59,28 @@ implementation
 uses EC_Mem, EC_CacheGAI, GlobalsV, GR_Main, GR_Gi, GR_DX, Windows,
   Direct3D9, aMyFunction, Math;
 
-{ @routine $4B4890 TSpaceImgGI_Create }
+{ @routine $48828C TSpaceImgGI_Create }
 constructor TSpaceImgGI.Create(Owner: TObjectGI);
 begin
   inherited Create(Owner);
   ViewDirty := True;
 end;
-{ @end $4B4890 }
+{ @end $48828C }
 
-{ @routine $4B48E4 TSpaceImgGI_Destroy }
+{ @routine $4882C8 TSpaceImgGI_Destroy }
 destructor TSpaceImgGI.Destroy;
 begin
-  if AnimationTimer <> nil then
+  if AnimationTimer <> 0 then
   begin
     MessageLoop.CancelCallbackTimer(AnimationTimer);
-    AnimationTimer := nil;
+    AnimationTimer := 0;
   end;
   ClearImages;
   inherited Destroy;
 end;
-{ @end $4B48E4 }
+{ @end $4882C8 }
 
-{ @routine $4B4948 TSpaceImgGI_ClearImages }
+{ @routine $488310 TSpaceImgGI_ClearImages }
 procedure TSpaceImgGI.ClearImages;
 begin
   if Images <> nil then
@@ -91,9 +90,9 @@ begin
   end;
   ImageCount := 0;
 end;
-{ @end $4B4948 }
+{ @end $488310 }
 
-{ @routine $4B4984 TSpaceImgGI_AllocateImage }
+{ @routine $488334 TSpaceImgGI_AllocateImage }
 function TSpaceImgGI.AllocateImage(Depth: Single): PSpaceImageGI;
 var Image: PSpaceImageGI; I, J: Integer;
 begin
@@ -116,9 +115,9 @@ begin
   end;
   Result := AddPointerOffset(Images, I * SizeOf(TSpaceImageGI));
 end;
-{ @end $4B4984 }
+{ @end $488334 }
 
-{ @routine $4B4A8C TSpaceImgGI_AddImage }
+{ @routine $4883F4 TSpaceImgGI_AddImage }
 function TSpaceImgGI.AddImage(TemplateIndex: Integer; X, Y, Depth: Single): PSpaceImageGI;
 var Image: PSpaceImageGI; Data: TCGaiEC;
 begin
@@ -146,9 +145,9 @@ begin
   ViewDirty := True;
   Result := Image;
 end;
-{ @end $4B4A8C }
+{ @end $4883F4 }
 
-{ @routine $4B4C58 TSpaceImgGI_NearestImageDistance }
+{ @routine $4885B4 TSpaceImgGI_NearestImageDistance }
 function TSpaceImgGI.NearestImageDistance(X, Y: Single): Single;
 var I: Integer; Image: PSpaceImageGI; DistanceSquared: Single;
 begin
@@ -162,9 +161,9 @@ begin
   end;
   Result := Sqrt(Result);
 end;
-{ @end $4B4C58 }
+{ @end $4885B4 }
 
-{ @routine $4B4CFC TSpaceImgGI_UpdateImageOrbitAndFrame }
+{ @routine $488638 TSpaceImgGI_UpdateImageOrbitAndFrame }
 procedure TSpaceImgGI.UpdateImageOrbitAndFrame(Image: PSpaceImageGI);
 var Data: TCGaiEC;
 begin
@@ -181,9 +180,9 @@ begin
     TCGaiControlEC(SpaceImageTemplates[Image.TemplateIndex].CacheControl).Release;
   end;
 end;
-{ @end $4B4CFC }
+{ @end $488638 }
 
-{ @routine $4B4E74 TSpaceImgGI_ProjectImages }
+{ @routine $4887AC TSpaceImgGI_ProjectImages }
 procedure TSpaceImgGI.ProjectImages;
 var I: Integer; Image: PSpaceImageGI;
 begin
@@ -197,17 +196,17 @@ begin
   end;
   ViewDirty := False;
 end;
-{ @end $4B4E74 }
+{ @end $4887AC }
 
-{ @routine $4B4F28 TSpaceImgGI_GetImage }
+{ @routine $488818 TSpaceImgGI_GetImage }
 function TSpaceImgGI.GetImage(Index: Integer): PSpaceImageGI;
 begin
   Result := AddPointerOffset(Images, Index * SizeOf(TSpaceImageGI));
 end;
-{ @end $4B4F28 }
+{ @end $488818 }
 
-{ @routine $4B4F58 TSpaceImgGI_AnimateImages }
-procedure TSpaceImgGI.AnimateImages(Timer: PCallbackTimerGI; UserData: Integer);
+{ @routine $488830 TSpaceImgGI_AnimateImages }
+procedure TSpaceImgGI.AnimateImages(Timer: TCallbackTimerIdGI; UserData: Cardinal);
 var Image: PSpaceImageGI; I: Integer; Data: TCGaiEC;
 begin
   Image := Images;
@@ -235,9 +234,9 @@ begin
   end;
   ProjectImages;
 end;
-{ @end $4B4F58 }
+{ @end $488830 }
 
-{ @routine $4B5110 TSpaceImgGI_SetViewPosition }
+{ @routine $4889D8 TSpaceImgGI_SetViewPosition }
 procedure TSpaceImgGI.SetViewPosition(Position: TPointF);
 begin
   if (ViewPosition.X <> Position.X) or (ViewPosition.Y <> Position.Y) then
@@ -249,9 +248,9 @@ begin
     Invalidate;
   end;
 end;
-{ @end $4B5110 }
+{ @end $4889D8 }
 
-{ @routine $4B518C TSpaceImgGI_Invalidate }
+{ @routine $488A44 TSpaceImgGI_Invalidate }
 procedure TSpaceImgGI.Invalidate;
 var Image: PSpaceImageGI; I: Integer; Bounds: TRect;
 begin
@@ -266,62 +265,62 @@ begin
     Image := AddPointerOffset(Image, SizeOf(TSpaceImageGI));
   end;
 end;
-{ @end $4B518C }
+{ @end $488A44 }
 
-{ @routine $4B5220 TSpaceImgGI_OnActivate }
+{ @routine $488AAC TSpaceImgGI_OnActivate }
 procedure TSpaceImgGI.OnActivate;
 begin
   inherited OnActivate;
-  if AnimationTimer <> nil then
+  if AnimationTimer <> 0 then
   begin
     MessageLoop.CancelCallbackTimer(AnimationTimer);
-    AnimationTimer := nil;
+    AnimationTimer := 0;
   end;
   AnimationTimer := MessageLoop.ScheduleCallbackTimer(10, 10, AnimateImages);
 end;
-{ @end $4B5220 }
+{ @end $488AAC }
 
-{ @routine $4B5288 TSpaceImgGI_OnDeactivate }
+{ @routine $488AF4 TSpaceImgGI_OnDeactivate }
 procedure TSpaceImgGI.OnDeactivate;
 begin
-  if AnimationTimer <> nil then
+  if AnimationTimer <> 0 then
   begin
     MessageLoop.CancelCallbackTimer(AnimationTimer);
-    AnimationTimer := nil;
+    AnimationTimer := 0;
   end;
   inherited OnDeactivate;
 end;
-{ @end $4B5288 }
+{ @end $488AF4 }
 
-{ @routine $4B52C8 TSpaceImgGI_LoadFromConfigPath }
+{ @routine $488B1C TSpaceImgGI_LoadFromConfigPath }
 procedure TSpaceImgGI.LoadFromConfigPath(const Path: WideString);
 begin
   inherited LoadFromConfigPath(Path);
   LoadSpaceImageProperties(UiStyleConfig.GetBlockByPath(Path));
 end;
-{ @end $4B52C8 }
+{ @end $488B1C }
 
-{ @routine $4B52FC TSpaceImgGI_LoadFromBlock }
+{ @routine $488B48 TSpaceImgGI_LoadFromBlock }
 procedure TSpaceImgGI.LoadFromBlock(Block: TBlockParEC);
 begin
   inherited LoadFromBlock(Block);
   LoadSpaceImageProperties(Block);
 end;
-{ @end $4B52FC }
+{ @end $488B48 }
 
-{ @routine $4B5324 TSpaceImgGI_LoadSpaceImageProperties }
+{ @routine $488B64 TSpaceImgGI_LoadSpaceImageProperties }
 procedure TSpaceImgGI.LoadSpaceImageProperties(Block: TBlockParEC);
 begin
 end;
-{ @end $4B5324 }
+{ @end $488B64 }
 
-{ @routine $4B5334 TSpaceImgGI_UpdateAutoGeometry }
+{ @routine $488B68 TSpaceImgGI_UpdateAutoGeometry }
 procedure TSpaceImgGI.UpdateAutoGeometry;
 begin
 end;
-{ @end $4B5334 }
+{ @end $488B68 }
 
-{ @routine $4B5340 TSpaceImgGI_Draw }
+{ @routine $488B6C TSpaceImgGI_Draw }
 procedure TSpaceImgGI.Draw(ClipRect: TRect);
 var Image: PSpaceImageGI; I: Integer; Data: TCGaiEC; Frame: TgiGR;
     Origin: TPoint; Bounds, Intersection: TRect;
@@ -364,6 +363,6 @@ begin
       end;
   end;
 end;
-{ @end $4B5340 }
+{ @end $488B6C }
 
 end.

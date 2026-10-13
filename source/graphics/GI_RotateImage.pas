@@ -1,5 +1,4 @@
 unit GI_RotateImage;
-// Unit bracket (inferred): .text 0x0049399C..0x00494311; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -12,24 +11,24 @@ type
     RotationCache: TCRotateBufControlEC; // @offset 0x124
     Angle: Byte; // @offset 0x128
 
-    constructor Create(Owner: TObjectGI); // @addr 0x493AC0
-    destructor Destroy; override; // @addr 0x493B5C
-    procedure Clear; override; // @addr 0x493BC0 @note "Preserves both cache keys."
-    procedure SetAngle(Value: Byte); // @addr 0x493BDC @note "A full turn has 256 steps."
-    procedure UpdateHitTestBounds; override; // @addr 0x493C44 @note "Leaves bounds unchanged when the rotation cache key is empty."
-    function GetLocalBounds: TRect; override; // @addr 0x493CDC @note "Leaves Result unwritten when the rotation cache key is empty."
-    procedure SetImage(Path: WideString; ImageSize: TPoint); // @addr 0x493D74 @note "Uses the current Origin as the rotation pivot."
-    procedure LoadFromConfigPath(const Path: WideString); override; // @addr 0x493F00
-    procedure LoadFromBlock(Block: TBlockParEC); override; // @addr 0x494048
-    procedure Draw(ClipRect: TRect); override; // @addr 0x494170
-    procedure QueueImageLoad(PendingLoads: TList); override; // @addr 0x4942E0
+    constructor Create(Owner: TObjectGI); // @addr 0x004BAE18
+    destructor Destroy; override; // @addr 0x004BAE9C
+    procedure Clear; override; // @addr 0x004BAEE8 @note "Preserves both cache keys."
+    procedure SetAngle(Value: Byte); // @addr 0x004BAEF8 @note "A full turn has 256 steps."
+    procedure UpdateHitTestBounds; override; // @addr 0x004BAF40 @note "Leaves bounds unchanged when the rotation cache key is empty."
+    function GetLocalBounds: TRect; override; // @addr 0x004BAFD0 @note "Leaves Result unwritten when the rotation cache key is empty."
+    procedure SetImage(Path: WideString; ImageSize: TPoint); // @addr 0x004BB058 @note "Uses the current Origin as the rotation pivot."
+    procedure LoadFromConfigPath(const Path: WideString); override; // @addr 0x004BB1E0
+    procedure LoadFromBlock(Block: TBlockParEC); override; // @addr 0x004BB310
+    procedure Draw(ClipRect: TRect); override; // @addr 0x004BB420
+    procedure QueueImageLoad(PendingLoads: TList); override; // @addr 0x004BB580
   end;
 
 implementation
 
 uses SysUtils, GR_Main, GI_Main, GlobalsV;
 
-{ @routine $493AC0 TRotateImageGI_Create }
+{ @routine $4BAE18 TRotateImageGI_Create }
 constructor TRotateImageGI.Create(Owner: TObjectGI);
 begin
   inherited Create(Owner);
@@ -38,9 +37,9 @@ begin
   RotationCache := TCRotateBufControlEC.Create;
   GlobalCache.ResetControl(RotationCache);
 end;
-{ @end $493AC0 }
+{ @end $4BAE18 }
 
-{ @routine $493B5C TRotateImageGI_Destroy }
+{ @routine $4BAE9C TRotateImageGI_Destroy }
 destructor TRotateImageGI.Destroy;
 begin
   ImageCache.Free;
@@ -49,17 +48,17 @@ begin
   RotationCache := nil;
   inherited Destroy;
 end;
-{ @end $493B5C }
+{ @end $4BAE9C }
 
-{ @routine $493BC0 TRotateImageGI_Clear }
+{ @routine $4BAEE8 TRotateImageGI_Clear }
 procedure TRotateImageGI.Clear;
 begin
   Angle := 0;
   inherited Clear;
 end;
-{ @end $493BC0 }
+{ @end $4BAEE8 }
 
-{ @routine $493BDC TRotateImageGI_SetAngle }
+{ @routine $4BAEF8 TRotateImageGI_SetAngle }
 procedure TRotateImageGI.SetAngle(Value: Byte);
 begin
   if Value = Angle then Exit;
@@ -73,9 +72,9 @@ begin
     Invalidate;
   end;
 end;
-{ @end $493BDC }
+{ @end $4BAEF8 }
 
-{ @routine $493C44 TRotateImageGI_UpdateHitTestBounds }
+{ @routine $4BAF40 TRotateImageGI_UpdateHitTestBounds }
 procedure TRotateImageGI.UpdateHitTestBounds;
 var Rotation: TCRotateBufEC;
 begin
@@ -89,9 +88,9 @@ begin
     RotationCache.Release;
   end;
 end;
-{ @end $493C44 }
+{ @end $4BAF40 }
 
-{ @routine $493CDC TRotateImageGI_GetLocalBounds }
+{ @routine $4BAFD0 TRotateImageGI_GetLocalBounds }
 function TRotateImageGI.GetLocalBounds: TRect;
 var Rotation: TCRotateBufEC;
 begin
@@ -105,25 +104,25 @@ begin
     RotationCache.Release;
   end;
 end;
-{ @end $493CDC }
+{ @end $4BAFD0 }
 
-{ @routine $493D74 TRotateImageGI_SetImage }
+{ @routine $4BB058 TRotateImageGI_SetImage }
 procedure TRotateImageGI.SetImage(Path: WideString; ImageSize: TPoint);
 var Bitmap: TCBitmapEC;
 begin
   ImageCache.SetCacheKey(Path);
   Bitmap := AcquireOrCreateBitmap(ImageCache);
   try
-    RotationCache.SetCacheKey(IntToStr(ImageSize.X) + ',' + IntToStr(ImageSize.Y) + ',' + IntToStr(Cardinal(Bitmap.Bitmap.Width)) + ',' +
-      IntToStr(Cardinal(Bitmap.Bitmap.Height)) + ',' + IntToStr(OriginPoint.X) + ',' + IntToStr(OriginPoint.Y));
+    RotationCache.SetCacheKey(IntToStr(ImageSize.X) + ',' + IntToStr(ImageSize.Y) + ',' + IntToStr(Bitmap.Bitmap.Width) + ',' +
+      IntToStr(Bitmap.Bitmap.Height) + ',' + IntToStr(OriginPoint.X) + ',' + IntToStr(OriginPoint.Y));
     SetSize(ImageSize);
   finally
     ImageCache.Release;
   end;
 end;
-{ @end $493D74 }
+{ @end $4BB058 }
 
-{ @routine $493F00 TRotateImageGI_LoadFromConfigPath }
+{ @routine $4BB1E0 TRotateImageGI_LoadFromConfigPath }
 procedure TRotateImageGI.LoadFromConfigPath(const Path: WideString);
 var Block: TBlockParEC;
 begin
@@ -133,9 +132,9 @@ begin
     SetImage(Block.GetParam('Image'), GetPointGI(Block.GetParam('Size')));
   if Block.CountParams('Angle') > 0 then Angle := StrToInt(Block.GetParam('Angle'));
 end;
-{ @end $493F00 }
+{ @end $4BB1E0 }
 
-{ @routine $494048 TRotateImageGI_LoadFromBlock }
+{ @routine $4BB310 TRotateImageGI_LoadFromBlock }
 procedure TRotateImageGI.LoadFromBlock(Block: TBlockParEC);
 begin
   inherited LoadFromBlock(Block);
@@ -144,16 +143,16 @@ begin
   SetImage(Block.GetParam('Image'), GetPointGI(Block.GetParam('Size')));
   if Block.CountParams('Angle') > 0 then Angle := StrToInt(Block.GetParam('Angle'));
 end;
-{ @end $494048 }
+{ @end $4BB310 }
 
-{ @routine $494170 TRotateImageGI_Draw }
+{ @routine $4BB420 TRotateImageGI_Draw }
 procedure TRotateImageGI.Draw(ClipRect: TRect);
 var Bitmap: TCBitmapEC; Rotation: TCRotateBufEC; Rect: TRect;
 begin
   if HitTestBounds.Left + ClientSize.X < 0 then Exit;
-  if HitTestBounds.Left - ClientSize.X div 2 > GameScreenWidth then Exit;
+  if HitTestBounds.Left - ClientSize.X div 2 > Integer(GameScreenWidth) then Exit;
   if HitTestBounds.Top + ClientSize.Y < 0 then Exit;
-  if HitTestBounds.Top - ClientSize.Y div 2 > GameScreenHeight then Exit;
+  if HitTestBounds.Top - ClientSize.Y div 2 > Integer(GameScreenHeight) then Exit;
   Bitmap := nil;
   Rotation := nil;
   try
@@ -170,14 +169,14 @@ begin
     if Rotation <> nil then RotationCache.Release;
   end;
 end;
-{ @end $494170 }
+{ @end $4BB420 }
 
-{ @routine $4942E0 TRotateImageGI_QueueImageLoad }
+{ @routine $4BB580 TRotateImageGI_QueueImageLoad }
 procedure TRotateImageGI.QueueImageLoad(PendingLoads: TList);
 begin
   ImageCache.QueueLoadIfMissing(PendingLoads);
   RotationCache.QueueLoadIfMissing(PendingLoads);
 end;
-{ @end $4942E0 }
+{ @end $4BB580 }
 
 end.

@@ -30,87 +30,101 @@ type
     AreaValid: Boolean; // @offset $24
     Bounds: TRectF; // @offset $28
     Flag39: Boolean; // @offset $39  Cleared on geometry changes; other meaning unresolved.
-    constructor Create; // @addr 0x4D9E9C
-    constructor CreateTriangle(A, B, C: TPointF); // @addr $4D9F5C
-    destructor Destroy; override; // @addr $4DA048
-    procedure Clear; // @addr $4DA094
-    procedure SetRectangle(Rect: TRect); // @addr $4DA14C
-    procedure TakePoints(NewPoints: TList); // @addr $4DA2B0 @note "Takes ownership of the list and its PPointF entries."
-    procedure SetTriangle(A, B, C: TPointF); // @addr $4DA2F4
-    procedure RecalculateBounds; // @addr $4DA3C0
-    procedure InsertAfter(Polygon: TPolygon2D); // @addr $4DA558
-    procedure SplitChainByLine(A, B, C: Single); // @addr $4DA59C
-    procedure SplitChainByPoints(First, Last: TPointF); // @addr $4DA92C
-    function ExtractFollowingGroup(Id: Integer): TPolygon2D; // @addr $4DA974
-    function ContainsPoint(Point: TPointF): Boolean; // @addr $4DAA3C
-    function ChainContainsPoint(Point: TPointF): Boolean; // @addr $4DAB34
-    function FindContainingPolygon(Point: TPointF): TPolygon2D; // @addr $4DAB84
-    function AssignGroupAtPoint(Point: TPointF; Id: Integer): Boolean; // @addr $4DABD0
-    function ExtractBoundaryEdges: TList; // @addr $4DAC2C
-    function MergeUnsharedEdges(First, Second: TList): TList; // @addr $4DAC88 @note "Consumes both lists and frees their edge records."
-    function ExtractEdges: TList; // @addr $4DAEC8 @note "Caller owns the list and its PPolygonEdge entries."
-    procedure ResetChainGroups; // @addr $4DAF94
-    function GetChainItem(Index: Integer): TPolygon2D; // @addr $4DB004
-    function GetArea: Single; // @addr $4DB044 @note "The first uncached call fills CachedArea but returns zero; later calls return the cache."
-    function GetChainArea: Single; // @addr $4DB1D4
-    function IntersectsPolygon(Polygon: TPolygon2D): Boolean; // @addr $4DB214
-    function IntersectsEdge(Edge: PPolygonEdge): Boolean; // @addr $4DB2AC
-    function IntersectsSegment(First, Last: TPointF): Boolean; // @addr $4DB378
-    function ChainSelfIntersects: Boolean; // @addr $4DB3C0
-    function IntersectsChain(Polygon: TPolygon2D): Boolean; // @addr $4DB42C
-    procedure Append(Polygon: TPolygon2D); // @addr 0x4DA504 @note "Appends at the tail and sets Polygon.Previous; requires nonnil Polygon."
-    function CountChain: Integer; // @addr 0x4DAFD0 @note "Includes Self; nil returns zero."
+    constructor Create; // @addr 0x007CE940
+    constructor CreateTriangle(A, B, C: TPointF); // @addr $7CE9E0
+    destructor Destroy; override; // @addr $7CEAAC
+    procedure Clear; // @addr $7CEAE0
+    procedure SetRectangle(Rect: TRect); // @addr $7CEB6C
+    procedure TakePoints(NewPoints: TList); // @addr $7CEC94 @note "Takes ownership of the list and its PPointF entries."
+    procedure SetTriangle(A, B, C: TPointF); // @addr $7CECC0
+    procedure RecalculateBounds; // @addr $7CED60
+    procedure InsertAfter(Polygon: TPolygon2D); // @addr $7CEE54
+    procedure SplitChainByLine(A, B, C: Single); // @addr $7CEE6C
+    procedure SplitChainByPoints(First, Last: TPointF); // @addr $7CF174
+    function ExtractFollowingGroup(Id: Integer): TPolygon2D; // @addr $7CF1C0
+    function ContainsPoint(Point: TPointF): Boolean; // @addr $7CF22C
+    function ChainContainsPoint(Point: TPointF): Boolean; // @addr $7CF2F4
+    function FindContainingPolygon(Point: TPointF): TPolygon2D; // @addr $7CF328
+    function AssignGroupAtPoint(Point: TPointF; Id: Integer): Boolean; // @addr $7CF358
+    function ExtractBoundaryEdges: TList; // @addr $7CF390
+    function MergeUnsharedEdges(First, Second: TList): TList; // @addr $7CF3D0 @note "Consumes both lists and frees their edge records."
+    function ExtractEdges: TList; // @addr $7CF5E0 @note "Caller owns the list and its PPolygonEdge entries."
+    procedure ResetChainGroups; // @addr $7CF678
+    function GetChainItem(Index: Integer): TPolygon2D; // @addr $7CF6A8
+    function GetArea: Single; // @addr $7CF6BC @note "The first uncached call fills CachedArea but returns zero; later calls return the cache."
+    function GetChainArea: Single; // @addr $7CF838
+    function IntersectsPolygon(Polygon: TPolygon2D): Boolean; // @addr $7CF860
+    function IntersectsEdge(Edge: PPolygonEdge): Boolean; // @addr $7CF8D0
+    function IntersectsSegment(First, Last: TPointF): Boolean; // @addr $7CF96C
+    function ChainSelfIntersects: Boolean; // @addr $7CF9B0
+    function IntersectsChain(Polygon: TPolygon2D): Boolean; // @addr $7CF9EC
+    procedure Append(Polygon: TPolygon2D); // @addr 0x007CEE38 @note "Appends at the tail and sets Polygon.Previous; requires nonnil Polygon."
+    function CountChain: Integer; // @addr 0x007CF694 @note "Includes Self; nil returns zero."
   end;
 
-function PerpendicularVector(Point: TPointF): TPointF; // @addr $4D94E8
-function DotProductF(Left, Right: TPointF): Single; // @addr $4D9514
-function VectorLengthF(Point: TPointF): Single; // @addr $4D9548
-function IsRightOfDirectedLine(Point, Origin, Direction: TPointF): Boolean; // @addr $4D957C
-function IsLeftOfDirectedLine(Point, Origin, Direction: TPointF): Boolean; // @addr $4D95F4
-function MakeVectorF(X, Y: Single): TPointF; // @addr $4D966C @ida "void __userpurge $name(TPointF *Result@<eax>, float X@<^4>, float Y@<^0>);"
-function VectorBetweenPoints(First, Last: TPointF): TPointF; // @addr $4D968C
-procedure GetLineEquation(First, Last: TPointF; var A, B, C: Single); // @addr $4D96C4
-function IntersectLinesF(First1, Last1, First2, Last2: TPointF): TPointF; // @addr $4D9780
-function IntersectSegmentWithLine(First, Last: TPointF; A, B, C: Single; var Intersection: TPointF): Boolean; // @addr $4D9874 @ida "bool __userpurge $name@<al>(TPointF *First@<eax>, TPointF *Last@<edx>, TPointF *Intersection@<ecx>, float A@<^8>, float B@<^4>, float C@<^0>);"
-function IntersectSegmentWithDirectedLine(First, Last, LineFirst, LineLast: TPointF; var Intersection: TPointF): Boolean; // @addr $4D999C
-function IntersectSegmentsF(First1, Last1, First2, Last2: TPointF; var Intersection: TPointF): Boolean; // @addr $4D9A2C
-function MakeRectF(Left, Top, Right, Bottom: Single): TRectF; // @addr $4D9A98 @ida "void __userpurge $name(TRectF *Result@<eax>, float Left@<^12>, float Top@<^8>, float Right@<^4>, float Bottom@<^0>);"
-function RectFromPointsF(First, Last: TPointF): TRectF; // @addr $4D9AC8
-function PointsNearlyEqualF(First, Last: TPointF): Boolean; // @addr $4D9B0C
-function SegmentsNearlyEqualF(First1, Last1, First2, Last2: TPointF): Boolean; // @addr $4D9B70
-function ScalarsNearlyEqualF(First, Last: Single): Boolean; // @addr $4D9BE8
-function PointDistanceF(First, Last: TPointF): Single; // @addr $4D9C20
-function PointSegmentDistanceF(First, Last, Point: TPointF): Single; // @addr $4D9C5C
-function ClassifyPointToSegment(First, Last, Point: TPointF): Integer; // @addr $4D9D20
+function PerpendicularVector(Point: TPointF): TPointF; // @addr $7CDFEC
+function DotProductF(Left, Right: TPointF): Single; // @addr $7CE00C
+function VectorLengthF(Point: TPointF): Single; // @addr $7CE040
+function IsRightOfDirectedLine(Point, Origin, Direction: TPointF): Boolean; // @addr $7CE070
+function IsLeftOfDirectedLine(Point, Origin, Direction: TPointF): Boolean; // @addr $7CE0E8
+function MakeVectorF(X, Y: Single): TPointF; // @addr $7CE160 @ida "void __userpurge $name(TPointF *Result@<eax>, float X@<^4>, float Y@<^0>);"
+function VectorBetweenPoints(First, Last: TPointF): TPointF; // @addr $7CE174
+procedure GetLineEquation(First, Last: TPointF; var A, B, C: Single); // @addr $7CE1A4
+function IntersectLinesF(First1, Last1, First2, Last2: TPointF): TPointF; // @addr $7CE244
+function IntersectSegmentWithLine(First, Last: TPointF; A, B, C: Single; var Intersection: TPointF): Boolean; // @addr $7CE330 @ida "bool __userpurge $name@<al>(TPointF *First@<eax>, TPointF *Last@<edx>, TPointF *Intersection@<ecx>, float A@<^8>, float B@<^4>, float C@<^0>);"
+function IntersectSegmentWithDirectedLine(First, Last, LineFirst, LineLast: TPointF; var Intersection: TPointF): Boolean; // @addr $7CE450
+function IntersectSegmentsF(First1, Last1, First2, Last2: TPointF; var Intersection: TPointF): Boolean; // @addr $7CE4DC
+function MakeRectF(Left, Top, Right, Bottom: Single): TRectF; // @addr $7CE544 @ida "void __userpurge $name(TRectF *Result@<eax>, float Left@<^12>, float Top@<^8>, float Right@<^4>, float Bottom@<^0>);"
+function RectFromPointsF(First, Last: TPointF): TRectF; // @addr $7CE564
+function PointsNearlyEqualF(First, Last: TPointF): Boolean; // @addr $7CE598
+function SegmentsNearlyEqualF(First1, Last1, First2, Last2: TPointF): Boolean; // @addr $7CE5F4
+function ScalarsNearlyEqualF(First, Last: Single): Boolean; // @addr $7CE664
+function PointDistanceF(First, Last: TPointF): Single; // @addr $7CE694
+function PointSegmentDistanceF(First, Last, Point: TPointF): Single; // @addr $7CE6D0
+
+const
+  PointRelationLeft = 1;
+  PointRelationRight = 2;
+  PointRelationBeforeFirst = 3;
+  PointRelationAfterLast = 4;
+  PointRelationInterior = 5;
+  PointRelationFirstEndpoint = 6;
+  PointRelationLastEndpoint = 7;
+
+function ClassifyPointToSegment(First, Last, Point: TPointF): Integer; // @addr $7CE7B0
 
 implementation
 
 uses SysUtils;
 
+const
+  PointEqualityTolerance = 0.1;
+  LineCoefficientTolerance = 0.0001;
+  NoIntersectionCoordinate = 1e20;
 
-{ @routine $4D94E8 PerpendicularVector }
+{ @routine $7CDFEC PerpendicularVector }
 function PerpendicularVector(Point: TPointF): TPointF;
 begin
   Result.X := -Point.Y;
   Result.Y := Point.X;
 end;
-{ @end $4D94E8 }
+{ @end $7CDFEC }
 
-{ @routine $4D9514 DotProductF }
+{ @routine $7CE00C DotProductF }
 function DotProductF(Left, Right: TPointF): Single;
 begin
   Result := Left.X * Right.X + Left.Y * Right.Y;
 end;
-{ @end $4D9514 }
+{ @end $7CE00C }
 
-{ @routine $4D9548 VectorLengthF }
+{ @routine $7CE040 VectorLengthF }
 function VectorLengthF(Point: TPointF): Single;
 begin
   Result := Sqrt(DotProductF(Point, Point));
 end;
-{ @end $4D9548 }
+{ @end $7CE040 }
 
-{ @routine $4D957C IsRightOfDirectedLine }
+{ @routine $7CE070 IsRightOfDirectedLine }
 function IsRightOfDirectedLine(Point, Origin, Direction: TPointF): Boolean;
 var Normal, Offset: TPointF;
 begin
@@ -119,9 +133,9 @@ begin
   if DotProductF(Offset, Normal) < 0 then Result := True
   else Result := False;
 end;
-{ @end $4D957C }
+{ @end $7CE070 }
 
-{ @routine $4D95F4 IsLeftOfDirectedLine }
+{ @routine $7CE0E8 IsLeftOfDirectedLine }
 function IsLeftOfDirectedLine(Point, Origin, Direction: TPointF): Boolean;
 var Normal, Offset: TPointF;
 begin
@@ -130,25 +144,25 @@ begin
   if DotProductF(Offset, Normal) > 0 then Result := True
   else Result := False;
 end;
-{ @end $4D95F4 }
+{ @end $7CE0E8 }
 
-{ @routine $4D966C MakeVectorF }
+{ @routine $7CE160 MakeVectorF }
 function MakeVectorF(X, Y: Single): TPointF;
 begin
   Result.X := X;
   Result.Y := Y;
 end;
-{ @end $4D966C }
+{ @end $7CE160 }
 
-{ @routine $4D968C VectorBetweenPoints }
+{ @routine $7CE174 VectorBetweenPoints }
 function VectorBetweenPoints(First, Last: TPointF): TPointF;
 begin
   Result.X := Last.X - First.X;
   Result.Y := Last.Y - First.Y;
 end;
-{ @end $4D968C }
+{ @end $7CE174 }
 
-{ @routine $4D96C4 GetLineEquation }
+{ @routine $7CE1A4 GetLineEquation }
 procedure GetLineEquation(First, Last: TPointF; var A, B, C: Single);
 begin
   if Abs(First.X - Last.X) < Abs(First.Y - Last.Y) then
@@ -164,28 +178,28 @@ begin
     C := -A * First.X - B * First.Y;
   end;
 end;
-{ @end $4D96C4 }
+{ @end $7CE1A4 }
 
-{ @routine $4D9780 IntersectLinesF }
+{ @routine $7CE244 IntersectLinesF }
 function IntersectLinesF(First1, Last1, First2, Last2: TPointF): TPointF;
 var A1, B1, C1, A2, B2, C2: Single;
 begin
   GetLineEquation(First1, Last1, A1, B1, C1);
   GetLineEquation(First2, Last2, A2, B2, C2);
-  if A2 * B1 - A1 * B2 = 0 then Result.X := 1e20
+  if A2 * B1 - A1 * B2 = 0 then Result.X := NoIntersectionCoordinate
   else Result.X := (B2 * C1 - B1 * C2) / (A2 * B1 - A1 * B2);
-  if A1 * B2 - A2 * B1 = 0 then Result.Y := 1e20
+  if A1 * B2 - A2 * B1 = 0 then Result.Y := NoIntersectionCoordinate
   else Result.Y := (A2 * C1 - A1 * C2) / (A1 * B2 - A2 * B1);
 end;
-{ @end $4D9780 }
+{ @end $7CE244 }
 
-{ @routine $4D9874 IntersectSegmentWithLine }
+{ @routine $7CE330 IntersectSegmentWithLine }
 function IntersectSegmentWithLine(First, Last: TPointF; A, B, C: Single; var Intersection: TPointF): Boolean;
 var LineA, LineB, LineC: Single; Point: TPointF;
 begin
   GetLineEquation(First, Last, LineA, LineB, LineC);
   Result := False;
-  if (Abs(LineA - A) < 0.0001) and (Abs(LineB - B) < 0.0001) then Exit;
+  if (Abs(LineA - A) < LineCoefficientTolerance) and (Abs(LineB - B) < LineCoefficientTolerance) then Exit;
   Point.X := (B * LineC - LineB * C) / (A * LineB - LineA * B);
   Point.Y := (A * LineC - LineA * C) / (LineA * B - A * LineB);
   if (DotProductF(VectorBetweenPoints(Point, First), VectorBetweenPoints(Point, Last)) < 0)
@@ -195,9 +209,9 @@ begin
     Intersection := Point;
   end;
 end;
-{ @end $4D9874 }
+{ @end $7CE330 }
 
-{ @routine $4D999C IntersectSegmentWithDirectedLine }
+{ @routine $7CE450 IntersectSegmentWithDirectedLine }
 function IntersectSegmentWithDirectedLine(First, Last, LineFirst, LineLast: TPointF; var Intersection: TPointF): Boolean;
 var Direction: TPointF;
 begin
@@ -209,18 +223,18 @@ begin
   end
   else Result := False;
 end;
-{ @end $4D999C }
+{ @end $7CE450 }
 
-{ @routine $4D9A2C IntersectSegmentsF }
+{ @routine $7CE4DC IntersectSegmentsF }
 function IntersectSegmentsF(First1, Last1, First2, Last2: TPointF; var Intersection: TPointF): Boolean;
 begin
   Result := True;
   if not IntersectSegmentWithDirectedLine(First1, Last1, First2, Last2, Intersection)
     or not IntersectSegmentWithDirectedLine(First2, Last2, First1, Last1, Intersection) then Result := False;
 end;
-{ @end $4D9A2C }
+{ @end $7CE4DC }
 
-{ @routine $4D9A98 MakeRectF }
+{ @routine $7CE544 MakeRectF }
 function MakeRectF(Left, Top, Right, Bottom: Single): TRectF;
 begin
   Result.Left := Left;
@@ -228,9 +242,9 @@ begin
   Result.Right := Right;
   Result.Bottom := Bottom;
 end;
-{ @end $4D9A98 }
+{ @end $7CE544 }
 
-{ @routine $4D9AC8 RectFromPointsF }
+{ @routine $7CE564 RectFromPointsF }
 function RectFromPointsF(First, Last: TPointF): TRectF;
 begin
   Result.Left := First.X;
@@ -238,41 +252,41 @@ begin
   Result.Right := Last.X;
   Result.Bottom := Last.Y;
 end;
-{ @end $4D9AC8 }
+{ @end $7CE564 }
 
-{ @routine $4D9B0C PointsNearlyEqualF }
+{ @routine $7CE598 PointsNearlyEqualF }
 function PointsNearlyEqualF(First, Last: TPointF): Boolean;
 begin
-  if (Abs(First.X - Last.X) < 0.1) and (Abs(First.Y - Last.Y) < 0.1) then Result := True
+  if (Abs(First.X - Last.X) < PointEqualityTolerance) and (Abs(First.Y - Last.Y) < PointEqualityTolerance) then Result := True
   else Result := False;
 end;
-{ @end $4D9B0C }
+{ @end $7CE598 }
 
-{ @routine $4D9B70 SegmentsNearlyEqualF }
+{ @routine $7CE5F4 SegmentsNearlyEqualF }
 function SegmentsNearlyEqualF(First1, Last1, First2, Last2: TPointF): Boolean;
 begin
   if (PointsNearlyEqualF(First1, First2) and PointsNearlyEqualF(Last1, Last2))
     or (PointsNearlyEqualF(First1, Last2) and PointsNearlyEqualF(Last1, First2)) then Result := True
   else Result := False;
 end;
-{ @end $4D9B70 }
+{ @end $7CE5F4 }
 
-{ @routine $4D9BE8 ScalarsNearlyEqualF }
+{ @routine $7CE664 ScalarsNearlyEqualF }
 function ScalarsNearlyEqualF(First, Last: Single): Boolean;
 begin
-  if Abs(First - Last) < 0.1 then Result := True
+  if Abs(First - Last) < PointEqualityTolerance then Result := True
   else Result := False;
 end;
-{ @end $4D9BE8 }
+{ @end $7CE664 }
 
-{ @routine $4D9C20 PointDistanceF }
+{ @routine $7CE694 PointDistanceF }
 function PointDistanceF(First, Last: TPointF): Single;
 begin
   Result := VectorLengthF(VectorBetweenPoints(First, Last));
 end;
-{ @end $4D9C20 }
+{ @end $7CE694 }
 
-{ @routine $4D9C5C PointSegmentDistanceF }
+{ @routine $7CE6D0 PointSegmentDistanceF }
 function PointSegmentDistanceF(First, Last, Point: TPointF): Single;
 var Normal, Intersection: TPointF; FirstDistance, LastDistance: Single;
 begin
@@ -287,26 +301,26 @@ begin
     else Result := FirstDistance;
   end;
 end;
-{ @end $4D9C5C }
+{ @end $7CE6D0 }
 
-{ @routine $4D9D20 ClassifyPointToSegment }
+{ @routine $7CE7B0 ClassifyPointToSegment }
 function ClassifyPointToSegment(First, Last, Point: TPointF): Integer;
 var Direction, Offset: TPointF; Cross: Single;
 begin
   Direction := MakePointF(Last.X - First.X, Last.Y - First.Y);
   Offset := MakePointF(Point.X - First.X, Point.Y - First.Y);
   Cross := Direction.X * Offset.Y - Direction.Y * Offset.X;
-  if Cross > 0 then Result := 1
-  else if Cross < 0 then Result := 2
-  else if (Direction.X * Offset.X < 0) or (Direction.Y * Offset.Y < 0) then Result := 3
-  else if Sqrt(Direction.X * Direction.X + Direction.Y * Direction.Y) < Sqrt(Offset.X * Offset.X + Offset.Y * Offset.Y) then Result := 4
-  else if (First.X = Point.X) and (First.Y = Point.Y) then Result := 6
-  else if (Last.X = Point.X) and (Last.Y = Point.Y) then Result := 7
-  else Result := 5;
+  if Cross > 0 then Result := PointRelationLeft
+  else if Cross < 0 then Result := PointRelationRight
+  else if (Direction.X * Offset.X < 0) or (Direction.Y * Offset.Y < 0) then Result := PointRelationBeforeFirst
+  else if Sqrt(Direction.X * Direction.X + Direction.Y * Direction.Y) < Sqrt(Offset.X * Offset.X + Offset.Y * Offset.Y) then Result := PointRelationAfterLast
+  else if (First.X = Point.X) and (First.Y = Point.Y) then Result := PointRelationFirstEndpoint
+  else if (Last.X = Point.X) and (Last.Y = Point.Y) then Result := PointRelationLastEndpoint
+  else Result := PointRelationInterior;
 end;
-{ @end $4D9D20 }
+{ @end $7CE7B0 }
 
-{ @routine $4D9E9C TPolygon2D_Create }
+{ @routine $7CE940 TPolygon2D_Create }
 constructor TPolygon2D.Create;
 begin
   Next := nil;
@@ -320,9 +334,9 @@ begin
   Extent := MakePointF(0, 0);
   Bounds := MakeRectF(0, 0, 0, 0);
 end;
-{ @end $4D9E9C }
+{ @end $7CE940 }
 
-{ @routine $4D9F5C TPolygon2D_CreateTriangle }
+{ @routine $7CE9E0 TPolygon2D_CreateTriangle }
 constructor TPolygon2D.CreateTriangle(A, B, C: TPointF);
 begin
   Next := nil;
@@ -337,18 +351,18 @@ begin
   Bounds := MakeRectF(0, 0, 0, 0);
   SetTriangle(A, B, C);
 end;
-{ @end $4D9F5C }
+{ @end $7CE9E0 }
 
-{ @routine $4DA048 TPolygon2D_Destroy }
+{ @routine $7CEAAC TPolygon2D_Destroy }
 destructor TPolygon2D.Destroy;
 begin
   Clear;
   Points.Free;
   if Next <> nil then Next.Free;
 end;
-{ @end $4DA048 }
+{ @end $7CEAAC }
 
-{ @routine $4DA094 TPolygon2D_Clear }
+{ @routine $7CEAE0 TPolygon2D_Clear }
 procedure TPolygon2D.Clear;
 var Index: Integer; Point: PPointF;
 begin
@@ -365,9 +379,9 @@ begin
   AreaValid := False;
   Flag39 := False;
 end;
-{ @end $4DA094 }
+{ @end $7CEAE0 }
 
-{ @routine $4DA14C TPolygon2D_SetRectangle }
+{ @routine $7CEB6C TPolygon2D_SetRectangle }
 procedure TPolygon2D.SetRectangle(Rect: TRect);
 var Point: PPointF;
 begin
@@ -393,9 +407,9 @@ begin
   AreaValid := False;
   Flag39 := False;
 end;
-{ @end $4DA14C }
+{ @end $7CEB6C }
 
-{ @routine $4DA2B0 TPolygon2D_TakePoints }
+{ @routine $7CEC94 TPolygon2D_TakePoints }
 procedure TPolygon2D.TakePoints(NewPoints: TList);
 begin
   Clear;
@@ -405,9 +419,9 @@ begin
   Flag39 := False;
   RecalculateBounds;
 end;
-{ @end $4DA2B0 }
+{ @end $7CEC94 }
 
-{ @routine $4DA2F4 TPolygon2D_SetTriangle }
+{ @routine $7CECC0 TPolygon2D_SetTriangle }
 procedure TPolygon2D.SetTriangle(A, B, C: TPointF);
 var Point: PPointF;
 begin
@@ -428,9 +442,9 @@ begin
   Flag39 := False;
   RecalculateBounds;
 end;
-{ @end $4DA2F4 }
+{ @end $7CECC0 }
 
-{ @routine $4DA3C0 TPolygon2D_RecalculateBounds }
+{ @routine $7CED60 TPolygon2D_RecalculateBounds }
 procedure TPolygon2D.RecalculateBounds;
 var Index: Integer; Point: PPointF;
 begin
@@ -448,9 +462,9 @@ begin
   Extent := MakePointF(Bounds.Right - Bounds.Left, Bounds.Bottom - Bounds.Top);
   GetArea;
 end;
-{ @end $4DA3C0 }
+{ @end $7CED60 }
 
-{ @routine $4DA504 TPolygon2D_Append }
+{ @routine $7CEE38 TPolygon2D_Append }
 procedure TPolygon2D.Append(Polygon: TPolygon2D);
 var Tail: TPolygon2D;
 begin
@@ -458,17 +472,15 @@ begin
   begin
     Next := Polygon;
     Polygon.Previous := Self;
-  end
-  else
-  begin
-    Tail := Self;
-    while Tail.Next <> nil do Tail := Tail.Next;
-    Tail.Append(Polygon);
+    Exit;
   end;
+  Tail := Self;
+  while Tail.Next <> nil do Tail := Tail.Next;
+  Tail.Append(Polygon);
 end;
-{ @end $4DA504 }
+{ @end $7CEE38 }
 
-{ @routine $4DA558 TPolygon2D_InsertAfter }
+{ @routine $7CEE54 TPolygon2D_InsertAfter }
 procedure TPolygon2D.InsertAfter(Polygon: TPolygon2D);
 begin
   Polygon.Previous := Self;
@@ -476,9 +488,9 @@ begin
   if Next <> nil then Next.Previous := Polygon;
   Next := Polygon;
 end;
-{ @end $4DA558 }
+{ @end $7CEE54 }
 
-{ @routine $4DA59C TPolygon2D_SplitChainByLine }
+{ @routine $7CEE6C TPolygon2D_SplitChainByLine }
 procedure TPolygon2D.SplitChainByLine(A, B, C: Single);
 var
   Index: Integer;
@@ -575,18 +587,18 @@ begin
     else Current := Current.Next;
   end;
 end;
-{ @end $4DA59C }
+{ @end $7CEE6C }
 
-{ @routine $4DA92C TPolygon2D_SplitChainByPoints }
+{ @routine $7CF174 TPolygon2D_SplitChainByPoints }
 procedure TPolygon2D.SplitChainByPoints(First, Last: TPointF);
 var A, B, C: Single;
 begin
   GetLineEquation(First, Last, A, B, C);
   SplitChainByLine(A, B, C);
 end;
-{ @end $4DA92C }
+{ @end $7CF174 }
 
-{ @routine $4DA974 TPolygon2D_ExtractFollowingGroup }
+{ @routine $7CF1C0 TPolygon2D_ExtractFollowingGroup }
 function TPolygon2D.ExtractFollowingGroup(Id: Integer): TPolygon2D;
 var Head, Current, Removed: TPolygon2D;
 begin
@@ -611,29 +623,27 @@ begin
   end;
   Result := Head;
 end;
-{ @end $4DA974 }
+{ @end $7CF1C0 }
 
-{ @routine $4DAA3C TPolygon2D_ContainsPoint }
+{ @routine $7CF22C TPolygon2D_ContainsPoint }
 function TPolygon2D.ContainsPoint(Point: TPointF): Boolean;
 var Index: Integer; First, Last: PPointF;
 begin
   Result := False;
-  if (Point.X >= Bounds.Left) and (Point.X <= Bounds.Right)
-    and (Point.Y >= Bounds.Top) and (Point.Y <= Bounds.Bottom) then
+  if not ((Point.X >= Bounds.Left) and (Point.X <= Bounds.Right)
+    and (Point.Y >= Bounds.Top) and (Point.Y <= Bounds.Bottom)) then Exit;
+  for Index := 0 to Points.Count - 1 do
   begin
-    for Index := 0 to Points.Count - 1 do
-    begin
-      First := Points[Index];
-      if Index = Points.Count - 1 then Last := Points[0]
-      else Last := Points[Index + 1];
-      if IsRightOfDirectedLine(Point, First^, VectorBetweenPoints(First^, Last^)) then Exit;
-    end;
-    Result := True;
+    First := Points[Index];
+    if Index = Points.Count - 1 then Last := Points[0]
+    else Last := Points[Index + 1];
+    if IsRightOfDirectedLine(Point, First^, VectorBetweenPoints(First^, Last^)) then Exit;
   end;
+  Result := True;
 end;
-{ @end $4DAA3C }
+{ @end $7CF22C }
 
-{ @routine $4DAB34 TPolygon2D_ChainContainsPoint }
+{ @routine $7CF2F4 TPolygon2D_ChainContainsPoint }
 function TPolygon2D.ChainContainsPoint(Point: TPointF): Boolean;
 var Polygon: TPolygon2D;
 begin
@@ -646,9 +656,9 @@ begin
   end;
   Result := False;
 end;
-{ @end $4DAB34 }
+{ @end $7CF2F4 }
 
-{ @routine $4DAB84 TPolygon2D_FindContainingPolygon }
+{ @routine $7CF328 TPolygon2D_FindContainingPolygon }
 function TPolygon2D.FindContainingPolygon(Point: TPointF): TPolygon2D;
 var Polygon: TPolygon2D;
 begin
@@ -660,27 +670,25 @@ begin
   end;
   Result := Polygon;
 end;
-{ @end $4DAB84 }
+{ @end $7CF328 }
 
-{ @routine $4DABD0 TPolygon2D_AssignGroupAtPoint }
+{ @routine $7CF358 TPolygon2D_AssignGroupAtPoint }
 function TPolygon2D.AssignGroupAtPoint(Point: TPointF; Id: Integer): Boolean;
 var Polygon: TPolygon2D;
 begin
   Result := False;
   Polygon := FindContainingPolygon(Point);
-  if Polygon <> nil then
+  if Polygon = nil then Exit;
+  if Polygon.GroupId = Id then Result := True;
+  if Polygon.GroupId = -1 then
   begin
-    if Polygon.GroupId = Id then Result := True;
-    if Polygon.GroupId = -1 then
-    begin
-      Result := True;
-      Polygon.GroupId := Id;
-    end;
+    Result := True;
+    Polygon.GroupId := Id;
   end;
 end;
-{ @end $4DABD0 }
+{ @end $7CF358 }
 
-{ @routine $4DAC2C TPolygon2D_ExtractBoundaryEdges }
+{ @routine $7CF390 TPolygon2D_ExtractBoundaryEdges }
 function TPolygon2D.ExtractBoundaryEdges: TList;
 var Edges, Boundary: TList; Polygon: TPolygon2D;
 begin
@@ -694,9 +702,9 @@ begin
   end;
   Result := Boundary;
 end;
-{ @end $4DAC2C }
+{ @end $7CF390 }
 
-{ @routine $4DAC88 TPolygon2D_MergeUnsharedEdges }
+{ @routine $7CF3D0 TPolygon2D_MergeUnsharedEdges }
 function TPolygon2D.MergeUnsharedEdges(First, Second: TList): TList;
 var Index, OtherIndex: Integer; Source, Edge: PPolygonEdge; Edges: TList; Found: Boolean;
 begin
@@ -757,9 +765,9 @@ begin
   Second.Free;
   Result := Edges;
 end;
-{ @end $4DAC88 }
+{ @end $7CF3D0 }
 
-{ @routine $4DAEC8 TPolygon2D_ExtractEdges }
+{ @routine $7CF5E0 TPolygon2D_ExtractEdges }
 function TPolygon2D.ExtractEdges: TList;
 var Edges: TList; Edge: PPolygonEdge; First, Last: PPointF; Index: Integer;
 begin
@@ -776,9 +784,9 @@ begin
   end;
   Result := Edges;
 end;
-{ @end $4DAEC8 }
+{ @end $7CF5E0 }
 
-{ @routine $4DAF94 TPolygon2D_ResetChainGroups }
+{ @routine $7CF678 TPolygon2D_ResetChainGroups }
 procedure TPolygon2D.ResetChainGroups;
 var Polygon: TPolygon2D;
 begin
@@ -790,9 +798,9 @@ begin
     Polygon := Polygon.Next;
   end;
 end;
-{ @end $4DAF94 }
+{ @end $7CF678 }
 
-{ @routine $4DAFD0 TPolygon2D_CountChain }
+{ @routine $7CF694 TPolygon2D_CountChain }
 function TPolygon2D.CountChain: Integer;
 var Polygon: TPolygon2D;
 begin
@@ -804,9 +812,9 @@ begin
     Polygon := Polygon.Next;
   end;
 end;
-{ @end $4DAFD0 }
+{ @end $7CF694 }
 
-{ @routine $4DB004 TPolygon2D_GetChainItem }
+{ @routine $7CF6A8 TPolygon2D_GetChainItem }
 function TPolygon2D.GetChainItem(Index: Integer): TPolygon2D;
 var Polygon: TPolygon2D;
 begin
@@ -819,39 +827,41 @@ begin
   end;
   Result := Polygon;
 end;
-{ @end $4DB004 }
+{ @end $7CF6A8 }
 
-{ @routine $4DB044 TPolygon2D_GetArea }
+{ @routine $7CF6BC TPolygon2D_GetArea }
 function TPolygon2D.GetArea: Single;
 var Index: Integer; TriangleFirst, Middle, Last: PPointF; A, B, C, Height, Square: Single;
 begin
-  if AreaValid then begin Result := CachedArea; Exit; end;
+  if AreaValid then
+  begin
+    Result := CachedArea;
+    Exit;
+  end;
   Result := 0;
   CachedArea := 0;
-  if Points.Count >= 3 then
+  if Points.Count < 3 then Exit;
+  TriangleFirst := Points[0];
+  for Index := 1 to Points.Count - 2 do
   begin
-    TriangleFirst := Points[0];
-    for Index := 1 to Points.Count - 2 do
-    begin
-      Middle := Points[Index];
-      Last := Points[Index + 1];
-      A := PointDistanceF(TriangleFirst^, Middle^);
-      B := PointDistanceF(TriangleFirst^, Last^);
-      C := PointDistanceF(Middle^, Last^);
-      if A = 0 then A := 1;
-      Square := A * A + B * B - C * C;
-      if Square < 0 then Square := 0.01;
-      Square := B * B - Sqr(Square) / (4 * A * A);
-      if Square < 0 then Square := 0.01;
-      Height := Sqrt(Square);
-      CachedArea := 0.5 * Height * A + CachedArea;
-    end;
-    AreaValid := True;
+    Middle := Points[Index];
+    Last := Points[Index + 1];
+    A := PointDistanceF(TriangleFirst^, Middle^);
+    B := PointDistanceF(TriangleFirst^, Last^);
+    C := PointDistanceF(Middle^, Last^);
+    if A = 0 then A := 1;
+    Square := A * A + B * B - C * C;
+    if Square < 0 then Square := 0.01;
+    Square := B * B - Sqr(Square) / (4 * A * A);
+    if Square < 0 then Square := 0.01;
+    Height := Sqrt(Square);
+    CachedArea := 0.5 * Height * A + CachedArea;
   end;
+  AreaValid := True;
 end;
-{ @end $4DB044 }
+{ @end $7CF6BC }
 
-{ @routine $4DB1D4 TPolygon2D_GetChainArea }
+{ @routine $7CF838 TPolygon2D_GetChainArea }
 function TPolygon2D.GetChainArea: Single;
 var Polygon: TPolygon2D;
 begin
@@ -863,9 +873,9 @@ begin
     Polygon := Polygon.Next;
   end;
 end;
-{ @end $4DB1D4 }
+{ @end $7CF838 }
 
-{ @routine $4DB214 TPolygon2D_IntersectsPolygon }
+{ @routine $7CF860 TPolygon2D_IntersectsPolygon }
 function TPolygon2D.IntersectsPolygon(Polygon: TPolygon2D): Boolean;
 var Index: Integer; First, Last: PPointF;
 begin
@@ -882,9 +892,9 @@ begin
   end;
   Result := False;
 end;
-{ @end $4DB214 }
+{ @end $7CF860 }
 
-{ @routine $4DB2AC TPolygon2D_IntersectsEdge }
+{ @routine $7CF8D0 TPolygon2D_IntersectsEdge }
 function TPolygon2D.IntersectsEdge(Edge: PPolygonEdge): Boolean;
 var Index: Integer; First, Last: PPointF; Intersection: TPointF;
 begin
@@ -902,9 +912,9 @@ begin
   end;
   Result := False;
 end;
-{ @end $4DB2AC }
+{ @end $7CF8D0 }
 
-{ @routine $4DB378 TPolygon2D_IntersectsSegment }
+{ @routine $7CF96C TPolygon2D_IntersectsSegment }
 function TPolygon2D.IntersectsSegment(First, Last: TPointF): Boolean;
 var Edge: TPolygonEdge;
 begin
@@ -912,9 +922,9 @@ begin
   Edge.Last := Last;
   Result := IntersectsEdge(@Edge);
 end;
-{ @end $4DB378 }
+{ @end $7CF96C }
 
-{ @routine $4DB3C0 TPolygon2D_ChainSelfIntersects }
+{ @routine $7CF9B0 TPolygon2D_ChainSelfIntersects }
 function TPolygon2D.ChainSelfIntersects: Boolean;
 var First, Last: TPolygon2D;
 begin
@@ -935,9 +945,9 @@ begin
   end;
   Result := False;
 end;
-{ @end $4DB3C0 }
+{ @end $7CF9B0 }
 
-{ @routine $4DB42C TPolygon2D_IntersectsChain }
+{ @routine $7CF9EC TPolygon2D_IntersectsChain }
 function TPolygon2D.IntersectsChain(Polygon: TPolygon2D): Boolean;
 var First, Last: TPolygon2D;
 begin
@@ -958,6 +968,6 @@ begin
   end;
   Result := False;
 end;
-{ @end $4DB42C }
+{ @end $7CF9EC }
 
 end.

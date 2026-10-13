@@ -1,5 +1,4 @@
 unit ParViewStringClass;
-// Unit bracket (inferred): .text 0x004DCE78..0x004DD021; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -12,38 +11,38 @@ type
     MaxValue: Integer; // @offset 0x08
     Text: TTextField; // @offset 0x0C
 
-    constructor Create(Value: WideString); // @addr 0x4DCF08
-    destructor Destroy; override; // @addr 0x4DCFA4
-    procedure LoadFromReader(Reader: TBufEC); // @addr 0x4DCFE8
+    constructor Create(Value: WideString); // @addr 0x004DB780
+    destructor Destroy; override; // @addr 0x004DB810
+    procedure LoadFromReader(Reader: TBufEC); // @addr 0x004DB844
   end;
 
 implementation
 
-{ @routine $4DCF08 TParViewString_Create }
+{ @routine $4DB780 TParViewString_Create }
 constructor TParViewString.Create(Value: WideString);
 begin
   inherited Create;
   Text := TTextField.Create;
   Text.Text := Value;
 end;
-{ @end $4DCF08 }
+{ @end $4DB780 }
 
-{ @routine $4DCFA4 TParViewString_Destroy }
+{ @routine $4DB810 TParViewString_Destroy }
 destructor TParViewString.Destroy;
 begin
   Text.Free;
   Text := nil;
   inherited Destroy;
 end;
-{ @end $4DCFA4 }
+{ @end $4DB810 }
 
-{ @routine $4DCFE8 TParViewString_LoadFromReader }
+{ @routine $4DB844 TParViewString_LoadFromReader }
 procedure TParViewString.LoadFromReader(Reader: TBufEC);
 begin
   MinValue := Reader.GetInt32;
   MaxValue := Reader.GetInt32;
   Text.LoadTextLinesFromReader(Reader);
 end;
-{ @end $4DCFE8 }
+{ @end $4DB844 }
 
 end.

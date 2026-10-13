@@ -1,5 +1,4 @@
 unit GI_Main;
-// Unit bracket (inferred): .text 0x004B7AFC..0x004B9469; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 // Configuration helper placement in GI_Main is inferred; no explicit unit RTTI was recovered here.
 
@@ -18,28 +17,28 @@ type
   TTextAlignXGI = (taxLeft=0, taxCenter=1, taxRight=2, taxAuto=3); // @size 0x01
   TTextAlignYGI = (tayTop=0, tayCenter=1, tayCenterEx=2, tayBottom=3, tayAuto=4); // @size 0x01
 
-procedure BreakUiMessage; // @addr $4B944C @note "Sets the shared exception-log-copy suppression flag and raises EBreakMessageGI. Placement in GI_Main is inferred."
+procedure BreakUiMessage; // @addr $4BE3AC @note "Sets the shared exception-log-copy suppression flag and raises EBreakMessageGI."
 
-function CreateControlByName(Name: WideString; Owner: TObjectGI): TObjectGI; // @addr $4B7AFC @note "Exact type-name lookup; returns nil for unknown names. Placement in GI_Main is inferred from its configuration-helper region."
+function CreateControlByName(Name: WideString; Owner: TObjectGI): TObjectGI; // @addr $4BCB40 @note "Exact type-name lookup; returns nil for unknown names."
 
-function ParseImageKindXName(Name: WideString): TImageKindXGI; // @addr 0x4B8614 @note "Exact spelling required; unknown names raise."
-function ParseImageKindYName(Name: WideString): TImageKindYGI; // @addr 0x4B87D8 @note "Exact spelling required; unknown names raise."
-function ParseTextAlignXName(Name: WideString): TTextAlignXGI; // @addr 0x4B899C
-function ParseTextAlignYName(Name: WideString): TTextAlignYGI; // @addr 0x4B8AF4
-function ParseEnabledNameGI(Name: WideString): Boolean; // @addr 0x4B8C7C @note "True only for Yes, yes, True, true, TRUE or 1."
-function GetColorGI(ColorText: WideString): Cardinal; // @addr 0x4B8D74 @note "At least three comma-separated components are required; only their low bytes are used."
-function GetPointGI(PointText: WideString): TPoint; // @addr 0x4B8F04
+function ParseImageKindXName(Name: WideString): TImageKindXGI; // @addr 0x004BD5F8 @note "Exact spelling required; unknown names raise."
+function ParseImageKindYName(Name: WideString): TImageKindYGI; // @addr 0x004BD7A8 @note "Exact spelling required; unknown names raise."
+function ParseTextAlignXName(Name: WideString): TTextAlignXGI; // @addr 0x004BD958
+function ParseTextAlignYName(Name: WideString): TTextAlignYGI; // @addr 0x004BDAA4
+function ParseEnabledNameGI(Name: WideString): Boolean; // @addr 0x004BDC1C @note "True only for Yes, yes, True, true, TRUE or 1."
+function GetColorGI(ColorText: WideString): Cardinal; // @addr 0x004BDD10 @note "At least three comma-separated components are required; only their low bytes are used."
+function GetPointGI(PointText: WideString): TPoint; // @addr 0x004BDEA0
 
-function ParseAutoGeometryFlagsGI(Values: WideString): Integer; // @addr $4B933C @note "Comma-separated pos and size names, trimmed and case-insensitive; unknown names are ignored. Placement in GI_Main is inferred."
+function ParseAutoGeometryFlagsGI(Values: WideString): Integer; // @addr $4BE2C8 @note "Comma-separated pos and size names, trimmed and case-insensitive; unknown names are ignored."
 
-function GetFloatPointGI(PointText: WideString): TPointF; // @addr $4B9048
-function GetRectGI(RectText: WideString): TRect; // @addr $4B9174
+function GetFloatPointGI(PointText: WideString): TPointF; // @addr $4BDFE4
+function GetRectGI(RectText: WideString): TRect; // @addr $4BE10C
 
 implementation
 
 uses BreakMessageGIException, GR_GraphBuf, GI_XviD, GI_PolyLine, GI_SpaceImg, GI_SpaceCircle, GI_StarFieldImg, EC_CachePalBitmap, EC_CacheRotateBuf, EC_CachePlanetTempl, EC_CacheLightPal, EC_CacheTBitmap, EC_CacheBitmap, GI_StarFieldM, GI_StarField, GI_GraphBuf, GI_ShrLight, GI_Frame, GI_Circle, GI_Line, GI_Grid, GI_RadioGroup, GI_CheckBox, GI_Planet, GI_PlanetButton, GI_StatusBar, GI_CountBar, GI_ScrollBar, GI_Edit, GI_Label, GI_Zone, GI_GraphButton, GI_TextButton, GI_SimpleButton, GI_Door, GI_MultiImage, GI_GAIFile, GI_GAI, GI_GI, GI_AImage, GI_InfiniteImage, GI_Image, GI_RotateImageGAI, GI_RotateImage5, GI_RotateImage2, GI_RotateImage, GI_SBPath, GI_AlphaImage, GI_TransImage, GI_SimpleImage, GI_Window, GI_PanelScrollBar, GI_Panel, GR_Main, EC_Str, Classes;
 
-{ @routine $4B7AFC CreateControlByName }
+{ @routine $4BCB40 CreateControlByName }
 function CreateControlByName(Name: WideString; Owner: TObjectGI): TObjectGI;
 begin
   if Name = 'Panel' then Result := TPanelGI.Create(Owner)
@@ -89,9 +88,9 @@ begin
   else if Name = 'XviD' then Result := TxvidGI.Create(Owner)
   else Result := nil;
 end;
-{ @end $4B7AFC }
+{ @end $4BCB40 }
 
-{ @routine $4B8614 ParseImageKindXName }
+{ @routine $4BD5F8 ParseImageKindXName }
 function ParseImageKindXName(Name: WideString): TImageKindXGI;
 begin
   if Name = 'LeftFill' then Result := ikxLeftFill
@@ -102,9 +101,9 @@ begin
   else if Name = 'Right' then Result := ikxRight
   else raise Exception.Create('GetITDXbyNameGI. name=' + Name);
 end;
-{ @end $4B8614 }
+{ @end $4BD5F8 }
 
-{ @routine $4B87D8 ParseImageKindYName }
+{ @routine $4BD7A8 ParseImageKindYName }
 function ParseImageKindYName(Name: WideString): TImageKindYGI;
 begin
   if Name = 'TopFill' then Result := ikyTopFill
@@ -115,9 +114,9 @@ begin
   else if Name = 'Bottom' then Result := ikyBottom
   else raise Exception.Create('GetITDYbyNameGI. name=' + Name);
 end;
-{ @end $4B87D8 }
+{ @end $4BD7A8 }
 
-{ @routine $4B899C ParseTextAlignXName }
+{ @routine $4BD958 ParseTextAlignXName }
 function ParseTextAlignXName(Name: WideString): TTextAlignXGI;
 begin
   if Name = 'Left' then Result := taxLeft
@@ -126,9 +125,9 @@ begin
   else if Name = 'Auto' then Result := taxAuto
   else raise Exception.Create('GetTTAXbyNameGI. name=' + Name);
 end;
-{ @end $4B899C }
+{ @end $4BD958 }
 
-{ @routine $4B8AF4 ParseTextAlignYName }
+{ @routine $4BDAA4 ParseTextAlignYName }
 function ParseTextAlignYName(Name: WideString): TTextAlignYGI;
 begin
   if Name = 'Top' then Result := tayTop
@@ -138,9 +137,9 @@ begin
   else if Name = 'Auto' then Result := tayAuto
   else raise Exception.Create('GetTTAYbyNameGI. name=' + Name);
 end;
-{ @end $4B8AF4 }
+{ @end $4BDAA4 }
 
-{ @routine $4B8C7C ParseEnabledNameGI }
+{ @routine $4BDC1C ParseEnabledNameGI }
 function ParseEnabledNameGI(Name: WideString): Boolean;
 begin
   if (Name = 'Yes') or (Name = 'yes') or (Name = 'True') or
@@ -148,9 +147,9 @@ begin
     Result := True
   else Result := False;
 end;
-{ @end $4B8C7C }
+{ @end $4BDC1C }
 
-{ @routine $4B8D74 GetColorGI }
+{ @routine $4BDD10 GetColorGI }
 function GetColorGI(ColorText: WideString): Cardinal;
 begin
   if CountDelimitedPartsW(ColorText, ',') < 3 then
@@ -160,9 +159,9 @@ begin
     StrToInt(ExtractDelimitedPartW(ColorText, 1, ',')),
     StrToInt(ExtractDelimitedPartW(ColorText, 2, ',')));
 end;
-{ @end $4B8D74 }
+{ @end $4BDD10 }
 
-{ @routine $4B8F04 GetPointGI }
+{ @routine $4BDEA0 GetPointGI }
 function GetPointGI(PointText: WideString): TPoint;
 begin
   if CountDelimitedPartsW(PointText, ',') < 2 then
@@ -170,9 +169,9 @@ begin
   Result := Classes.Point(StrToInt(ExtractDelimitedPartW(PointText, 0, ',')),
     StrToInt(ExtractDelimitedPartW(PointText, 1, ',')));
 end;
-{ @end $4B8F04 }
+{ @end $4BDEA0 }
 
-{ @routine $4B9048 GetFloatPointGI }
+{ @routine $4BDFE4 GetFloatPointGI }
 function GetFloatPointGI(PointText: WideString): TPointF;
 begin
   if CountDelimitedPartsW(PointText, ',') < 2 then
@@ -180,9 +179,9 @@ begin
   Result := MakePointF(ExtractDecimalToSingleW(ExtractDelimitedPartW(PointText, 0, ',')),
     ExtractDecimalToSingleW(ExtractDelimitedPartW(PointText, 1, ',')));
 end;
-{ @end $4B9048 }
+{ @end $4BDFE4 }
 
-{ @routine $4B9174 GetRectGI }
+{ @routine $4BE10C GetRectGI }
 function GetRectGI(RectText: WideString): TRect;
 begin
   if CountDelimitedPartsW(RectText, ',') < 4 then
@@ -192,9 +191,9 @@ begin
   Result.Right := StrToInt(ExtractDelimitedPartW(RectText, 2, ','));
   Result.Bottom := StrToInt(ExtractDelimitedPartW(RectText, 3, ','));
 end;
-{ @end $4B9174 }
+{ @end $4BE10C }
 
-{ @routine $4B933C ParseAutoGeometryFlagsGI }
+{ @routine $4BE2C8 ParseAutoGeometryFlagsGI }
 function ParseAutoGeometryFlagsGI(Values: WideString): Integer;
 var Index, Count, Flags: Integer; Part: WideString;
 begin
@@ -208,14 +207,14 @@ begin
   end;
   Result := Flags;
 end;
-{ @end $4B933C }
+{ @end $4BE2C8 }
 
-{ @routine $4B944C BreakUiMessage }
+{ @routine $4BE3AC BreakUiMessage }
 procedure BreakUiMessage;
 begin
   SuppressExceptionLogCopy := True;
   raise EBreakMessageGI.Create('No error');
 end;
-{ @end $4B944C }
+{ @end $4BE3AC }
 
 end.

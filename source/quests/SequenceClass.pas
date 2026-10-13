@@ -1,5 +1,4 @@
 unit SequenceClass;
-// Unit bracket (inferred): .text 0x004E866C..0x004E8A25; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -14,20 +13,20 @@ type
     Locations: TList; // @offset 0x0C // Owns the list, not its TLocation entries.
     Paths: TList; // @offset 0x10 // Owns the list, not its TPath entries.
 
-    constructor Create; // @addr 0x4E86C4
-    destructor Destroy; override; // @addr 0x4E8738 @note "Clears member Sequence links without freeing the members."
-    procedure SetTraversalLimit(Value: Integer); // @addr 0x4E881C @note "Also updates every member's visit or traversal limit."
-    procedure RecomputeTraversalLimit; // @addr 0x4E88B4 @note "Propagates the minimum positive member limit, or zero if none."
-    procedure AddLocation(Location: Pointer); // @addr 0x4E8994
-    procedure AddPath(Path: Pointer); // @addr 0x4E89C4
-    procedure PrependPath(Path: Pointer); // @addr 0x4E89F4
+    constructor Create; // @addr 0x004E2C74
+    destructor Destroy; override; // @addr 0x004E2CD0 @note "Clears member Sequence links without freeing the members."
+    procedure SetTraversalLimit(Value: Integer); // @addr 0x004E2D68 @note "Also updates every member's visit or traversal limit."
+    procedure RecomputeTraversalLimit; // @addr 0x004E2DB8 @note "Propagates the minimum positive member limit, or zero if none."
+    procedure AddLocation(Location: Pointer); // @addr 0x004E2E38
+    procedure AddPath(Path: Pointer); // @addr 0x004E2E4C
+    procedure PrependPath(Path: Pointer); // @addr 0x004E2E64
   end;
 
 implementation
 
 uses LocationClass, PathClass;
 
-{ @routine $4E86C4 TSequence_Create }
+{ @routine $4E2C74 TSequence_Create }
 constructor TSequence.Create;
 begin
   inherited Create;
@@ -36,9 +35,9 @@ begin
   TraversalLimit := 0;
   UnknownFlag := 0;
 end;
-{ @end $4E86C4 }
+{ @end $4E2C74 }
 
-{ @routine $4E8738 TSequence_Destroy }
+{ @routine $4E2CD0 TSequence_Destroy }
 destructor TSequence.Destroy;
 var
   i: Integer;
@@ -47,12 +46,12 @@ var
 begin
   for i := 0 to Locations.Count - 1 do
   begin
-    Location := TLocation(Locations[i]);
+    Location := Locations[i];
     Location.Sequence := nil;
   end;
   for i := 0 to Paths.Count - 1 do
   begin
-    Path := TPath(Paths[i]);
+    Path := Paths[i];
     Path.Sequence := nil;
   end;
   Locations.Clear;
@@ -63,9 +62,9 @@ begin
   Paths := nil;
   inherited Destroy;
 end;
-{ @end $4E8738 }
+{ @end $4E2CD0 }
 
-{ @routine $4E881C TSequence_SetTraversalLimit }
+{ @routine $4E2D68 TSequence_SetTraversalLimit }
 procedure TSequence.SetTraversalLimit(Value: Integer);
 var
   i: Integer;
@@ -75,18 +74,18 @@ begin
   TraversalLimit := Value;
   for i := 0 to Locations.Count - 1 do
   begin
-    Location := TLocation(Locations[i]);
+    Location := Locations[i];
     Location.VisitLimit := TraversalLimit;
   end;
   for i := 0 to Paths.Count - 1 do
   begin
-    Path := TPath(Paths[i]);
+    Path := Paths[i];
     Path.TraversalLimit := TraversalLimit;
   end;
 end;
-{ @end $4E881C }
+{ @end $4E2D68 }
 
-{ @routine $4E88B4 TSequence_RecomputeTraversalLimit }
+{ @routine $4E2DB8 TSequence_RecomputeTraversalLimit }
 procedure TSequence.RecomputeTraversalLimit;
 var
   i: Integer;
@@ -96,21 +95,21 @@ begin
   TraversalLimit := 0;
   for i := 0 to Locations.Count - 1 do
   begin
-    Location := TLocation(Locations[i]);
-    if Location.VisitLimit > 0 then
-      if (TraversalLimit = 0) or (Location.VisitLimit < TraversalLimit) then TraversalLimit := Location.VisitLimit;
+    Location := Locations[i];
+    if Location.VisitLimit <= 0 then Continue;
+    if (TraversalLimit = 0) or (Location.VisitLimit < TraversalLimit) then TraversalLimit := Location.VisitLimit;
   end;
   for i := 0 to Paths.Count - 1 do
   begin
-    Path := TPath(Paths[i]);
-    if Path.TraversalLimit > 0 then
-      if (TraversalLimit = 0) or (Path.TraversalLimit < TraversalLimit) then TraversalLimit := Path.TraversalLimit;
+    Path := Paths[i];
+    if Path.TraversalLimit <= 0 then Continue;
+    if (TraversalLimit = 0) or (Path.TraversalLimit < TraversalLimit) then TraversalLimit := Path.TraversalLimit;
   end;
   SetTraversalLimit(TraversalLimit);
 end;
-{ @end $4E88B4 }
+{ @end $4E2DB8 }
 
-{ @routine $4E8994 TSequence_AddLocation }
+{ @routine $4E2E38 TSequence_AddLocation }
 procedure TSequence.AddLocation(Location: Pointer);
 var
   Member: TLocation;
@@ -119,9 +118,9 @@ begin
   Locations.Add(Location);
   Member.Sequence := Self;
 end;
-{ @end $4E8994 }
+{ @end $4E2E38 }
 
-{ @routine $4E89C4 TSequence_AddPath }
+{ @routine $4E2E4C TSequence_AddPath }
 procedure TSequence.AddPath(Path: Pointer);
 var
   Member: TPath;
@@ -130,9 +129,9 @@ begin
   Paths.Add(Path);
   Member.Sequence := Self;
 end;
-{ @end $4E89C4 }
+{ @end $4E2E4C }
 
-{ @routine $4E89F4 TSequence_PrependPath }
+{ @routine $4E2E64 TSequence_PrependPath }
 procedure TSequence.PrependPath(Path: Pointer);
 var
   Member: TPath;
@@ -141,6 +140,6 @@ begin
   Paths.Insert(0, Path);
   Member.Sequence := Self;
 end;
-{ @end $4E89F4 }
+{ @end $4E2E64 }
 
 end.

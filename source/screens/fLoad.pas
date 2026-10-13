@@ -1,5 +1,4 @@
 unit fLoad;
-// Unit bracket (inferred): .text 0x00667FDC..0x00669BBC; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -11,18 +10,18 @@ type
     PendingLoads: TList; // @offset 0x2C  Owns the list and its load-request entries.
     TotalLoadCount: Integer; // @offset 0x30
     CompletedLoadCount: Integer; // @offset 0x34
-    procedure Execute; override; // @addr 0x668A74
-    procedure SetPendingLoads(Loads: TList; StartImmediately: Boolean); // @addr 0x668B58 @note "Takes ownership; waits for the previous run before replacing the list."
+    procedure Execute; override; // @addr 0x005E8DE0
+    procedure SetPendingLoads(Loads: TList; StartImmediately: Boolean); // @addr 0x005E8E94 @note "Takes ownership; waits for the previous run before replacing the list."
   end;
 
   TfLoad = class(TMessageLoopGI) // @size 0x108
   public
-    ProgressTimer: PCallbackTimerGI; // @offset 0xD0
+    ProgressTimer: TCallbackTimerIdGI; // @offset 0xD0
     LoadProgress: Single; // @offset 0xD4
     DisplayedProgress: Single; // @offset 0xD8
     LoadingFinished: Boolean; // @offset 0xDC
     IntroSkipRequest: Integer; // @offset $E0  1 skips this item; 2 skips the remaining intro.
-    IntroTimer: PCallbackTimerGI; // @offset $E4
+    IntroTimer: TCallbackTimerIdGI; // @offset $E4
     IntroStartedAt: Cardinal; // @offset $E8
     IntroConfig: TBlockParEC; // @offset $EC
     IntroItemIndex: Integer; // @offset $F0
@@ -32,36 +31,36 @@ type
     LoadPanel: TfPanelLoad; // @offset 0x100
     BackgroundStyle: Integer; // @offset $104
 
-    constructor Create; // @addr 0x668BBC
-    destructor Destroy; override; // @addr 0x668C14
-    procedure InitializeLayout; override; // @addr 0x668C6C
-    procedure OnOpen; override; // @addr 0x668DF4
-    procedure OnClose; override; // @addr 0x66902C
-    procedure UpdateLoadingProgress(Timer: PCallbackTimerGI; UserData: Integer); // @addr 0x6692DC
-    procedure IntroMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $66942C
-    procedure IntroKeyDown(Sender: TObjectGI; Key: Cardinal); // @addr $66945C
-    procedure StartIntroItem(Index: Integer); // @addr $669494
-    procedure UpdateIntro(Timer: PCallbackTimerGI; UserData: Integer); // @addr $669A08
+    constructor Create; // @addr 0x005E8EDC
+    destructor Destroy; override; // @addr 0x005E8F24
+    procedure InitializeLayout; override; // @addr 0x005E8F60
+    procedure OnOpen; override; // @addr 0x005E90E0
+    procedure OnClose; override; // @addr 0x005E92BC
+    procedure UpdateLoadingProgress(Timer: TCallbackTimerIdGI; UserData: Cardinal); // @addr 0x005E9540
+    procedure IntroMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $5E9654
+    procedure IntroKeyDown(Sender: TObjectGI; Key: Cardinal); // @addr $5E9678
+    procedure StartIntroItem(Index: Integer); // @addr $5E9694
+    procedure UpdateIntro(Timer: TCallbackTimerIdGI; UserData: Cardinal); // @addr $5E9BC0
   end;
 
-procedure QueueCommonLoadingAssets(PendingLoads: TList; Owner: TObjectGI); // @addr $6680D0
-procedure QueueSpaceLoadingAssets(PendingLoads: TList; Owner: TObjectGI); // @addr $6685A4
-procedure QueueHyperspaceLoadingAssets(PendingLoads: TList; Owner: TObjectGI); // @addr $66879C
-procedure QueueArcadeLoadingAssets(PendingLoads: TList; Owner: TObjectGI); // @addr $6687C8
-procedure RemoveDuplicateCacheLoads(PendingLoads: TList); // @addr $668804
-procedure QueueConfiguredLoadingAssets(PendingLoads: TList; Path: WideString); // @addr $6688C8
-procedure LoadPendingAssets(PendingLoads: TList); // @addr $668A14
+procedure QueueCommonLoadingAssets(PendingLoads: TList; Owner: TObjectGI); // @addr $5E8548
+procedure QueueSpaceLoadingAssets(PendingLoads: TList; Owner: TObjectGI); // @addr $5E89C0
+procedure QueueHyperspaceLoadingAssets(PendingLoads: TList; Owner: TObjectGI); // @addr $5E8B98
+procedure QueueArcadeLoadingAssets(PendingLoads: TList; Owner: TObjectGI); // @addr $5E8BB4
+procedure RemoveDuplicateCacheLoads(PendingLoads: TList); // @addr $5E8BE0
+procedure QueueConfiguredLoadingAssets(PendingLoads: TList; Path: WideString); // @addr $5E8C80
+procedure LoadPendingAssets(PendingLoads: TList); // @addr $5E8D9C
 
 var
-  IntroFinished: Boolean = False; // @addr $87BEC8
-  IntroPlaying: Boolean; // @addr $88AA68
+  IntroFinished: Boolean = False; // @addr $80F650
+  IntroPlaying: Boolean; // @addr $81B834
 
 implementation
 
 uses Windows, SysUtils, Math, MMSystem, EC_Cache, EC_Str, GR_Main, Globals,
   GlobalsV, GI_GAI, GI_XviD, ab_Object, aGalaxy, SE_Gate;
 
-{ @routine $6680D0 QueueCommonLoadingAssets }
+{ @routine $5E8548 QueueCommonLoadingAssets }
 procedure QueueCommonLoadingAssets(PendingLoads: TList; Owner: TObjectGI);
 begin
   if ScreenLoadMode <> 4 then
@@ -75,7 +74,7 @@ begin
     GlobalCache.QueueNamedLoadIfMissing(PendingLoads, 'GAI', 'Bm.FormMain3.2ShipA2');
     GlobalCache.QueueNamedLoadIfMissing(PendingLoads, 'GAI', 'Bm.FormMain3.2ShipA3');
   end;
-  if Cardinal(GameScreenWidth) >= 1600 then
+  if GameScreenWidth >= 1600 then
   begin
     if AnimMenuShip then
     begin
@@ -94,9 +93,9 @@ begin
   GlobalCache.QueueNamedLoadIfMissing(PendingLoads, 'GI', 'Bm.FormMain3.2BG');
   if ScreenLoadMode = 4 then begin end;
 end;
-{ @end $6680D0 }
+{ @end $5E8548 }
 
-{ @routine $6685A4 QueueSpaceLoadingAssets }
+{ @routine $5E89C0 QueueSpaceLoadingAssets }
 procedure QueueSpaceLoadingAssets(PendingLoads: TList; Owner: TObjectGI);
 var
   Template: TSputnikTempl;
@@ -117,32 +116,32 @@ begin
   Gate.QueueImageLoad(PendingLoads, Owner);
   Gate.Free;
   for I := 0 to High(SpaceImageTemplates) do
-    if TCGaiControlEC(SpaceImageTemplates[I].CacheControl) <> nil then TCGaiControlEC(SpaceImageTemplates[I].CacheControl).QueueLoadIfMissing(PendingLoads);
+    if SpaceImageTemplates[I].CacheControl <> nil then TCGaiControlEC(SpaceImageTemplates[I].CacheControl).QueueLoadIfMissing(PendingLoads);
   GlobalCache.QueueNamedLoadIfMissing(PendingLoads, 'GAI', PlayerStar.GetBackgroundImagePath(I));
   QueueConfiguredLoadingAssets(PendingLoads, 'Space');
   if SoundEnabled then QueueConfiguredLoadingAssets(PendingLoads, 'SpaceSound');
   RemoveDuplicateCacheLoads(PendingLoads);
 end;
-{ @end $6685A4 }
+{ @end $5E89C0 }
 
-{ @routine $66879C QueueHyperspaceLoadingAssets }
+{ @routine $5E8B98 QueueHyperspaceLoadingAssets }
 procedure QueueHyperspaceLoadingAssets(PendingLoads: TList; Owner: TObjectGI);
 begin
   PlayerStar.QueueHyperspaceShipImageLoads(PendingLoads, Owner);
   RemoveDuplicateCacheLoads(PendingLoads);
 end;
-{ @end $66879C }
+{ @end $5E8B98 }
 
-{ @routine $6687C8 QueueArcadeLoadingAssets }
+{ @routine $5E8BB4 QueueArcadeLoadingAssets }
 procedure QueueArcadeLoadingAssets(PendingLoads: TList; Owner: TObjectGI);
 begin
   ab_Object_QueueImageLoads(PendingLoads, Owner);
   QueueConfiguredLoadingAssets(PendingLoads, 'AB');
   RemoveDuplicateCacheLoads(PendingLoads);
 end;
-{ @end $6687C8 }
+{ @end $5E8BB4 }
 
-{ @routine $668804 RemoveDuplicateCacheLoads }
+{ @routine $5E8BE0 RemoveDuplicateCacheLoads }
 procedure RemoveDuplicateCacheLoads(PendingLoads: TList);
 var
   I, J: Integer;
@@ -151,11 +150,11 @@ begin
   I := 0;
   while PendingLoads.Count - 1 > I do
   begin
-    First := TCacheControlEC(PendingLoads[I]);
+    First := PendingLoads[I];
     J := I + 1;
     while PendingLoads.Count > J do
     begin
-      Second := TCacheControlEC(PendingLoads[J]);
+      Second := PendingLoads[J];
       if (First.ClassName = Second.ClassName) and (First.CacheKey = Second.CacheKey) then
       begin
         Second.Free;
@@ -166,9 +165,9 @@ begin
     Inc(I);
   end;
 end;
-{ @end $668804 }
+{ @end $5E8BE0 }
 
-{ @routine $6688C8 QueueConfiguredLoadingAssets }
+{ @routine $5E8C80 QueueConfiguredLoadingAssets }
 procedure QueueConfiguredLoadingAssets(PendingLoads: TList; Path: WideString);
 var
   I, Count: Integer;
@@ -183,9 +182,9 @@ begin
     GlobalCache.QueueNamedLoadIfMissing(PendingLoads,
       Block.GetParamName(I), Block.GetParamValue(I));
 end;
-{ @end $6688C8 }
+{ @end $5E8C80 }
 
-{ @routine $668A14 LoadPendingAssets }
+{ @routine $5E8D9C LoadPendingAssets }
 procedure LoadPendingAssets(PendingLoads: TList);
 var
   I, Count: Integer;
@@ -194,64 +193,62 @@ begin
   Count := PendingLoads.Count;
   for I := 0 to Count - 1 do
   begin
-    Control := TCacheControlEC(PendingLoads[I]);
+    Control := PendingLoads[I];
     Control.AcquireData;
     Control.Release;
     Control.Free;
   end;
   PendingLoads.Clear;
 end;
-{ @end $668A14 }
+{ @end $5E8D9C }
 
-{ @routine $668A74 TCacheLoader_Execute }
+{ @routine $5E8DE0 TCacheLoader_Execute }
 procedure TCacheLoader.Execute;
 var
   I, Count: Integer;
   Control: TCacheControlEC;
 begin
-  if PendingLoads <> nil then
+  if PendingLoads = nil then Exit;
+  Count := PendingLoads.Count;
+  for I := 0 to Count - 1 do
   begin
-    Count := PendingLoads.Count;
-    for I := 0 to Count - 1 do
+    while (Flag18 or ((Galaxy <> nil) and Galaxy.Destroying)) and
+      not ExitScreenLoop and not IsStopRequested do SysUtils.Sleep(100);
+    Control := PendingLoads[I];
+    if not ExitScreenLoop and not IsStopRequested then
     begin
-      while (Flag18 or ((Galaxy <> nil) and Galaxy.Destroying)) and
-        not ExitScreenLoop and not IsStopRequested do SysUtils.Sleep(100);
-      Control := TCacheControlEC(PendingLoads[I]);
-      if not ExitScreenLoop and not IsStopRequested then
-      begin
-        Control.AcquireData;
-        Control.Release;
-      end;
-      Control.Free;
-      Inc(CompletedLoadCount);
+      Control.AcquireData;
+      Control.Release;
     end;
-    PendingLoads.Free;
-    PendingLoads := nil;
+    Control.Free;
+    Inc(CompletedLoadCount);
   end;
+  PendingLoads.Free;
+  PendingLoads := nil;
 end;
-{ @end $668A74 }
+{ @end $5E8DE0 }
 
-{ @routine $668B58 TCacheLoader_SetPendingLoads }
+{ @routine $5E8E94 TCacheLoader_SetPendingLoads }
 procedure TCacheLoader.SetPendingLoads(Loads: TList; StartImmediately: Boolean);
 begin
   if IsRunning then WaitForIdle(INFINITE);
   PendingLoads := Loads;
   CompletedLoadCount := 0;
   TotalLoadCount := PendingLoads.Count;
-  SetPriority(1);
+  SetPriority(ThreadPriorityLowest);
   if StartImmediately then Start;
 end;
-{ @end $668B58 }
+{ @end $5E8E94 }
 
-{ @routine $668BBC TfLoad_Create }
+{ @routine $5E8EDC TfLoad_Create }
 constructor TfLoad.Create;
 begin
   inherited Create;
   LoadPanel := TfPanelLoad.Create;
 end;
-{ @end $668BBC }
+{ @end $5E8EDC }
 
-{ @routine $668C14 TfLoad_Destroy }
+{ @routine $5E8F24 TfLoad_Destroy }
 destructor TfLoad.Destroy;
 begin
   if LoadPanel <> nil then
@@ -261,9 +258,9 @@ begin
   end;
   inherited Destroy;
 end;
-{ @end $668C14 }
+{ @end $5E8F24 }
 
-{ @routine $668C6C TfLoad_InitializeLayout }
+{ @routine $5E8F60 TfLoad_InitializeLayout }
 procedure TfLoad.InitializeLayout;
 var Root: TObjectGI;
 begin
@@ -279,9 +276,9 @@ begin
   AppendLogLineThreadSafe('ok');
   LoadPanel.InitializeLayout(Self);
 end;
-{ @end $668C6C }
+{ @end $5E8F60 }
 
-{ @routine $668DF4 TfLoad_OnOpen }
+{ @routine $5E90E0 TfLoad_OnOpen }
 procedure TfLoad.OnOpen;
 var Loads: TList;
 begin
@@ -295,7 +292,7 @@ begin
   LoadProgress := 0;
   DisplayedProgress := 0;
   LoadingFinished := False;
-  SetCursorActive(False);
+  Self.ShowCursor := False;
   Loads := TList.Create;
   if (ScreenLoadMode = 0) or (ScreenLoadMode = 4) then
     QueueCommonLoadingAssets(Loads, RootUiObject)
@@ -327,29 +324,29 @@ begin
     IntroPlaying := True;
     CacheLoader.Start;
     IntroSkipRequest := 0;
-    IntroTimer := nil;
+    IntroTimer := 0;
     IntroConfig := MainDataConfig.GetBlock('Intro');
     StartIntroItem(1);
   end;
   CheckPlatformModules;
 end;
-{ @end $668DF4 }
+{ @end $5E90E0 }
 
-{ @routine $66902C TfLoad_OnClose }
+{ @routine $5E92BC TfLoad_OnClose }
 procedure TfLoad.OnClose;
 begin
   with GetByName('Film') as TxvidGI do ImageClose;
   LoadPanel.OnClose;
   if CacheLoader.IsRunning then CacheLoader.WaitForIdle(INFINITE);
-  if ProgressTimer <> nil then
+  if ProgressTimer <> 0 then
   begin
     CancelCallbackTimer(ProgressTimer);
-    ProgressTimer := nil;
+    ProgressTimer := 0;
   end;
-  if IntroTimer <> nil then
+  if IntroTimer <> 0 then
   begin
     CancelCallbackTimer(IntroTimer);
-    IntroTimer := nil;
+    IntroTimer := 0;
   end;
   if (ScreenLoadMode = 0) or (ScreenLoadMode = 3) then
   begin
@@ -395,10 +392,10 @@ begin
   RequestedScreenId := PostLoadScreenId;
   PostLoadScreenId := screenNone;
 end;
-{ @end $66902C }
+{ @end $5E92BC }
 
-{ @routine $6692DC TfLoad_UpdateLoadingProgress }
-procedure TfLoad.UpdateLoadingProgress(Timer: PCallbackTimerGI; UserData: Integer);
+{ @routine $5E9540 TfLoad_UpdateLoadingProgress }
+procedure TfLoad.UpdateLoadingProgress(Timer: TCallbackTimerIdGI; UserData: Cardinal);
 begin
   if not LoadingFinished then
   begin
@@ -424,16 +421,16 @@ begin
     RequestClose(1);
   end;
 end;
-{ @end $6692DC }
+{ @end $5E9540 }
 
-{ @routine $66942C TfLoad_IntroMouseDown }
+{ @routine $5E9654 TfLoad_IntroMouseDown }
 procedure TfLoad.IntroMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint);
 begin
   IntroSkipRequest := 1;
 end;
-{ @end $66942C }
+{ @end $5E9654 }
 
-{ @routine $66945C TfLoad_IntroKeyDown }
+{ @routine $5E9678 TfLoad_IntroKeyDown }
 procedure TfLoad.IntroKeyDown(Sender: TObjectGI; Key: Cardinal);
 begin
   if Key <> 0 then
@@ -442,9 +439,9 @@ begin
     if Key = VK_ESCAPE then Inc(IntroSkipRequest);
   end;
 end;
-{ @end $66945C }
+{ @end $5E9678 }
 
-{ @routine $669494 TfLoad_StartIntroItem }
+{ @routine $5E9694 TfLoad_StartIntroItem }
 procedure TfLoad.StartIntroItem(Index: Integer);
 var
   Block: TBlockParEC;
@@ -491,7 +488,7 @@ begin
         begin
           SetSize(Classes.Point(ExtractDigitsToIntW(ExtractDelimitedPartW(ImagePath, 0, ',')),
             ExtractDigitsToIntW(ExtractDelimitedPartW(ImagePath, 1, ','))));
-          SetPosition(Classes.Point((GameScreenWidth - ClientSize.X) div 2, (GameScreenHeight - ClientSize.Y) div 2));
+          SetPosition(Classes.Point((Integer(GameScreenWidth) - ClientSize.X) div 2, (Integer(GameScreenHeight) - ClientSize.Y) div 2));
           if Block.CountParams('Sme') > 0 then
           begin
             ImagePath := Block.GetParam('Sme');
@@ -518,28 +515,28 @@ begin
       while not MusicManager.IsPlaying do SysUtils.Sleep(1);
     end;
   IntroStartedAt := timeGetTime;
-  if IntroTimer <> nil then
+  if IntroTimer <> 0 then
   begin
     CancelCallbackTimer(IntroTimer);
-    IntroTimer := nil;
+    IntroTimer := 0;
   end;
   IntroSkipRequest := 0;
   IntroTimer := ScheduleCallbackTimer(5, 5, UpdateIntro);
 end;
-{ @end $669494 }
+{ @end $5E9694 }
 
-{ @routine $669A08 TfLoad_UpdateIntro }
-procedure TfLoad.UpdateIntro(Timer: PCallbackTimerGI; UserData: Integer);
+{ @routine $5E9BC0 TfLoad_UpdateIntro }
+procedure TfLoad.UpdateIntro(Timer: TCallbackTimerIdGI; UserData: Cardinal);
 var Fraction: Double;
 begin
   Fraction := (timeGetTime - IntroStartedAt) / IntroDurationMs;
   if Fraction > 1 then Fraction := 1;
   if (Fraction >= 1) or (IntroSkipRequest > 0) then
   begin
-    if IntroTimer <> nil then
+    if IntroTimer <> 0 then
     begin
       CancelCallbackTimer(IntroTimer);
-      IntroTimer := nil;
+      IntroTimer := 0;
     end;
     if MusicEnabled then
     begin
@@ -562,6 +559,6 @@ begin
       SetFramePosition(Round((SequenceFrameCount - 1) * Fraction), True);
   end;
 end;
-{ @end $669A08 }
+{ @end $5E9BC0 }
 
 end.

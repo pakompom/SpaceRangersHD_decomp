@@ -47,13 +47,14 @@ On headless Linux, use `xvfb-run -a ./decomp verify`.
 For per-function diagnostics, place the original at `game/Rangers.exe` and run
 `./decomp match --all`. Narrow the selection with a source path or routine name,
 for example `./decomp match source/quests`. Matching uses a separate build that
-exports routines for inspection. Two startup metadata references remain
-unresolved in that build; use `verify` to check the final executable.
+exports routines for inspection. Use `verify` to check the final executable,
+including linker metadata and padding.
 
 The compiler worker starts automatically. Run `./decomp worker stop` after
 changing compiler inputs or Wine so the next command starts a new worker.
 Use separate checkouts and `.local/` directories for the two branches.
-The current build uses `-B` to preserve shared-set alignment; the older build
+The October build uses `O+`, natural field alignment, eight-byte method-pointer
+alignment, and `-B` to rebuild shared declarations. The older release branch
 precompiles `aGalaxyStruct` to reproduce its DCU alignment.
 
 ## Progress reports
@@ -106,13 +107,15 @@ placement follows 256 identifier-hash buckets and reverse creation order within
 each bucket, so recovered names affect the layout. The reference hook preserves
 the buckets for later fixup lookup and changes cell offsets and write destinations;
 the compiler still resolves every target and emits the relocations. Disabling
-this hook on the 2026-08-11 target produces the same cells and targets in a
+this hook on the August target produces the same cells and targets in a
 different order, with corresponding changes to their address operands.
 
 Two field-only `object` declarations reproduce the anonymous-type numbering;
 their original spelling and placement remain uncertain. This compiler reproduces
 the binary layout; the original build environment and some source spellings
-remain unknown. Arithmetic identities in some bodies preserve argument-load order.
+remain unknown. Some control-flow scopes and arithmetic identities are retained
+because simpler spellings produce different optimized code. These are source
+reconstruction constraints, not additional game changes.
 
 Matching changes belong in the recovered Pascal or compiler metadata layer;
 avoid replacing Pascal with assembly or patching executable bytes to force a match.

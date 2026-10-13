@@ -1,5 +1,4 @@
 unit SE_Ship2;
-// Unit bracket (inferred): .text 0x00820440..0x0082387F; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -17,9 +16,9 @@ type
     FrameCount: Integer; // @offset $10
     Frames: array of Word; // @offset $14
     Delays: array of Word; // @offset $18
-    destructor Destroy; override; // @addr $8205E4
-    procedure Clear; // @addr $820620
-    procedure Load(Specification: WideString); // @addr $820670
+    destructor Destroy; override; // @addr $65B96C
+    procedure Clear; // @addr $65B998
+    procedure Load(Specification: WideString); // @addr $65B9D4
   end;
 
   TShip2SE = class(TObjectSE) // @size $1B8
@@ -55,8 +54,8 @@ type
     DefaultAnimation: TShip2AnimSE; // @offset $184
     DefaultReducedAnimation: TShip2AnimSE; // @offset $188
     CurrentFrameIndex: Integer; // @offset $18C
-    AnimationTimer: PCallbackTimerGI; // @offset $190
-    StateTimer: PCallbackTimerGI; // @offset $194
+    AnimationTimer: TCallbackTimerIdGI; // @offset $190
+    StateTimer: TCallbackTimerIdGI; // @offset $194
     TotalAnimationWeight: Integer; // @offset $198
     TotalReducedAnimationWeight: Integer; // @offset $19C
     TailMode: Integer; // @offset $1A0
@@ -65,47 +64,47 @@ type
     LargeSize: Integer; // @offset $1AC
     TargetSizeScale: Single; // @offset $1B0
     AngleOverride: Integer; // @offset $1B4
-    constructor CreateEmpty; // @addr $820904
-    constructor Create(const GraphKey: WideString; UnusedPosition: TPoint); // @addr $82095C
-    destructor Destroy; override; // @addr $820A68
-    procedure CopyTo(Destination: TObjectSE); override; // @addr $820B14
-    procedure CopyDataFromMirrorImage(Destination: TObjectSE); // @addr $820D7C @note "Despite the diagnostic name, copies Self into Destination, which must be TShip2SE."
-    procedure AttachToSpace(ASpace: TSpaceSE); override; // @addr $82108C @note "Native diagnostic name: TShip2SE.Connect."
-    procedure DetachFromSpace; override; // @addr $821A4C
-    procedure SetTailMode(Value: Integer); // @addr $821B1C
-    function GetImagePath: WideString; // @addr $821D60
-    procedure SetSize(Value: TPoint); override; // @addr $821DA0
-    procedure SetPosition(APosition: TPointF); override; // @addr $821E04
-    procedure SetTailDepth(Value: Single); // @addr $821F04
-    procedure SetDepth(Value: Single); override; // @addr $821F5C
-    function GetDepth: Single; override; // @addr $821F80
-    function GetAngle: Byte; override; // @addr $821FA0
-    procedure SetAngle(Value: Byte); override; // @addr $821FBC
-    procedure OffsetTailsAlongHeading(Distance: Single); // @addr $8220A0
-    procedure OffsetTails(Delta: TPointF); // @addr $822170
-    procedure SetTailsEmitting(Value: Boolean); // @addr $8221C0
-    function GetAlpha: Byte; override; // @addr $822208
-    procedure SetAlpha(Value: Byte); override; // @addr $822224
-    function GetOrbitCenter: TPointF; override; // @addr $8222E0
-    function ScaleImagePoint(Point: TPointF): TPointF; // @addr $822318
-    function ImagePointToWorld(Point: TPointF): TPointF; // @addr $822360
-    function GetTargetPoint(Heading: Byte; Seed: Integer): TPointF; // @addr $822420
-    function GetWeaponPortPoint(Heading: Byte; Seed: Cardinal): TPointF; // @addr $822530
-    function HitTestCursor: Boolean; override; // @addr $822620
-    function AddAnimation: TShip2AnimSE; // @addr $82266C
-    procedure DeleteAnimation(Animation: TShip2AnimSE); // @addr $8226E8
-    function AddReducedAnimation: TShip2AnimSE; // @addr $82276C
-    procedure DeleteReducedAnimation(Animation: TShip2AnimSE); // @addr $8227E8
-    procedure StartAnimationTimer; // @addr $82286C
-    procedure StopAnimationTimer; // @addr $8228C8
-    procedure StartStateTimer; // @addr $822900
-    procedure StopStateTimer; // @addr $822954
-    procedure AdvanceAnimation(Timer: PCallbackTimerGI; UserData: Integer); // @addr $82298C
-    procedure SelectNextAnimation(Timer: PCallbackTimerGI; UserData: Integer); // @addr $822BB0
-    procedure DrawMap; override; // @addr $822CAC
-    procedure LoadTemplate(Block: TBlockParEC); override; // @addr $822D60
-    procedure ApplyConfig(Block: TBlockParEC); override; // @addr $823748
-    procedure QueueImageLoad(PendingLoads: TList; Owner: TObjectGI); override; // @addr $8237EC
+    constructor CreateEmpty; // @addr $65BC2C
+    constructor Create(const GraphKey: WideString; UnusedPosition: TPoint); // @addr $65BC70
+    destructor Destroy; override; // @addr $65BD64
+    procedure CopyTo(Destination: TObjectSE); override; // @addr $65BDE8
+    procedure CopyDataFromMirrorImage(Destination: TObjectSE); // @addr $65BF8C @note "Despite the diagnostic name, copies Self into Destination, which must be TShip2SE."
+    procedure AttachToSpace(ASpace: TSpaceSE); override; // @addr $65C1BC @note "Native diagnostic name: TShip2SE.Connect."
+    procedure DetachFromSpace; override; // @addr $65CB08
+    procedure SetTailMode(Value: Integer); // @addr $65CB98
+    function GetImagePath: WideString; // @addr $65CD78
+    procedure SetSize(Value: TPoint); override; // @addr $65CDA8
+    procedure SetPosition(APosition: TPointF); override; // @addr $65CDF0
+    procedure SetTailDepth(Value: Single); // @addr $65CED4
+    procedure SetDepth(Value: Single); override; // @addr $65CF10
+    function GetDepth: Single; override; // @addr $65CF2C
+    function GetAngle: Byte; override; // @addr $65CF40
+    procedure SetAngle(Value: Byte); override; // @addr $65CF48
+    procedure OffsetTailsAlongHeading(Distance: Single); // @addr $65CFF8
+    procedure OffsetTails(Delta: TPointF); // @addr $65D0AC
+    procedure SetTailsEmitting(Value: Boolean); // @addr $65D0E0
+    function GetAlpha: Byte; override; // @addr $65D108
+    procedure SetAlpha(Value: Byte); override; // @addr $65D110
+    function GetOrbitCenter: TPointF; override; // @addr $65D178
+    function ScaleImagePoint(Point: TPointF): TPointF; // @addr $65D18C
+    function ImagePointToWorld(Point: TPointF): TPointF; // @addr $65D1B8
+    function GetTargetPoint(Heading: Byte; Seed: Integer): TPointF; // @addr $65D274
+    function GetWeaponPortPoint(Heading: Byte; Seed: Cardinal): TPointF; // @addr $65D36C
+    function HitTestCursor: Boolean; override; // @addr $65D444
+    function AddAnimation: TShip2AnimSE; // @addr $65D478
+    procedure DeleteAnimation(Animation: TShip2AnimSE); // @addr $65D4BC
+    function AddReducedAnimation: TShip2AnimSE; // @addr $65D504
+    procedure DeleteReducedAnimation(Animation: TShip2AnimSE); // @addr $65D548
+    procedure StartAnimationTimer; // @addr $65D590
+    procedure StopAnimationTimer; // @addr $65D5D0
+    procedure StartStateTimer; // @addr $65D5F4
+    procedure StopStateTimer; // @addr $65D630
+    procedure AdvanceAnimation(Timer: TCallbackTimerIdGI; UserData: Cardinal); // @addr $65D654
+    procedure SelectNextAnimation(Timer: TCallbackTimerIdGI; UserData: Cardinal); // @addr $65D810
+    procedure DrawMap; override; // @addr $65D89C
+    procedure LoadTemplate(Block: TBlockParEC); override; // @addr $65D938
+    procedure ApplyConfig(Block: TBlockParEC); override; // @addr $65E228
+    procedure QueueImageLoad(PendingLoads: TList; Owner: TObjectGI); override; // @addr $65E2C4
   end;
 
 implementation
@@ -113,15 +112,15 @@ implementation
 uses Math, SysUtils, aMyFunction, aPlayer, EC_Str, GI_Main, Globals, GlobalsV,
   GR_Main, SE_Process;
 
-{ @routine $8205E4 TShip2AnimSE_Destroy }
+{ @routine $65B96C TShip2AnimSE_Destroy }
 destructor TShip2AnimSE.Destroy;
 begin
   Clear;
   inherited Destroy;
 end;
-{ @end $8205E4 }
+{ @end $65B96C }
 
-{ @routine $820620 TShip2AnimSE_Clear }
+{ @routine $65B998 TShip2AnimSE_Clear }
 procedure TShip2AnimSE.Clear;
 begin
   if Frames <> nil then Frames := nil;
@@ -129,9 +128,9 @@ begin
   Weight := 1;
   FrameCount := 0;
 end;
-{ @end $820620 }
+{ @end $65B998 }
 
-{ @routine $820670 TShip2AnimSE_Load }
+{ @routine $65B9D4 TShip2AnimSE_Load }
 procedure TShip2AnimSE.Load(Specification: WideString);
 var
   Index, RangeCount, FrameOffset, Count, Delay, First, Last: Integer;
@@ -161,18 +160,18 @@ begin
     end;
   end;
 end;
-{ @end $820670 }
+{ @end $65B9D4 }
 
-{ @routine $820904 TShip2SE_CreateEmpty }
+{ @routine $65BC2C TShip2SE_CreateEmpty }
 constructor TShip2SE.CreateEmpty;
 begin
   inherited CreateEmpty;
   AlphaLimit := 255;
   AngleOverride := -1;
 end;
-{ @end $820904 }
+{ @end $65BC2C }
 
-{ @routine $82095C TShip2SE_Create }
+{ @routine $65BC70 TShip2SE_Create }
 constructor TShip2SE.Create(const GraphKey: WideString; UnusedPosition: TPoint);
 begin
   AngleOverride := -1;
@@ -187,9 +186,9 @@ begin
     AlphaLimit := 255;
   end;
 end;
-{ @end $82095C }
+{ @end $65BC70 }
 
-{ @routine $820A68 TShip2SE_Destroy }
+{ @routine $65BD64 TShip2SE_Destroy }
 destructor TShip2SE.Destroy;
 begin
   StopStateTimer;
@@ -204,9 +203,9 @@ begin
   SharedAnimations := False;
   inherited Destroy;
 end;
-{ @end $820A68 }
+{ @end $65BD64 }
 
-{ @routine $820B14 TShip2SE_CopyTo }
+{ @routine $65BDE8 TShip2SE_CopyTo }
 procedure TShip2SE.CopyTo(Destination: TObjectSE);
 var
   Ship: TShip2SE;
@@ -243,9 +242,9 @@ begin
   Ship.LargeSize := LargeSize;
   Ship.TargetSizeScale := TargetSizeScale;
 end;
-{ @end $820B14 }
+{ @end $65BDE8 }
 
-{ @routine $820D7C TShip2SE_CopyDataFromMirrorImage }
+{ @routine $65BF8C TShip2SE_CopyDataFromMirrorImage }
 procedure TShip2SE.CopyDataFromMirrorImage(Destination: TObjectSE);
 var
   Ship: TShip2SE;
@@ -293,9 +292,9 @@ begin
   Ship.LargeSize := LargeSize;
   Ship.TargetSizeScale := TargetSizeScale;
 end;
-{ @end $820D7C }
+{ @end $65BF8C }
 
-{ @routine $82108C TShip2SE_AttachToSpace }
+{ @routine $65C1BC TShip2SE_AttachToSpace }
 procedure TShip2SE.AttachToSpace(ASpace: TSpaceSE);
 var
   Index, Stage: Integer;
@@ -312,20 +311,20 @@ begin
     Stage := 3;
     if Space.MapPanel <> nil then Space.MapPanel.AttachOwnedChild(Image);
     Stage := 4;
-    Image.SetPositionModeW(True);
+    Image.World := True;
     Image.SetDepthByName(DepthExpression);
-    Image.SetPosition(Classes.Point(Trunc(Position.X), Trunc(Position.Y)));
+    Image.Pos := Classes.Point(Trunc(Position.X), Trunc(Position.Y));
     if AngleOverride >= 0 then Image.SetAngle(AngleOverride) else Image.SetAngle(Angle);
     Image.SetAlpha(Math.Min(Alpha, AlphaLimit) shr ASpace.AlphaShift);
     Stage := 5;
     MinimapImage := TAlphaImageGI.Create(SpaceObjectUiLoop.ContentPanel);
     Stage := 6;
-    MinimapImage.SetPositionModeW(True);
+    MinimapImage.World := True;
     MinimapImage.SetDepthByName(DepthExpression);
-    MinimapImage.SetPosition(TruncatePointF(MakePointF(Position.X * Space.MinimapScale, Position.Y * Space.MinimapScale)));
+    MinimapImage.Pos := TruncatePointF(MakePointF(Position.X * Space.MinimapScale, Position.Y * Space.MinimapScale));
     MinimapImage.SetImagePath(MinimapImagePath);
-    MinimapImage.SetSize(MinimapImage.GetContentSize);
-    MinimapImage.SetOrigin(HalfPoint(MinimapImage.GetContentSize));
+    MinimapImage.ObjectSize := MinimapImage.GetContentSize;
+    MinimapImage.Sme := HalfPoint(MinimapImage.GetContentSize);
     Stage := 7;
     if AnimShipFull then CurrentAnimation := FirstAnimation
     else CurrentAnimation := FirstReducedAnimation;
@@ -342,10 +341,10 @@ begin
         begin
           Tails[Index] := TTailGI.Create(Space.MapPanel);
           if TailEmitIntervalMs > 0 then Tails[Index].EmitIntervalMs := TailEmitIntervalMs;
-          Tails[Index].SetSize(Classes.Point(1000000, 1000000));
-          Tails[Index].SetOrigin(HalfPoint(Tails[Index].ClientSize));
+          Tails[Index].ObjectSize := Classes.Point(1000000, 1000000);
+          Tails[Index].Sme := HalfPoint(Tails[Index].ClientSize);
           Tails[Index].SetDepthByName('Tail');
-          Tails[Index].SetPositionModeW(True);
+          Tails[Index].World := True;
           Tails[Index].SetImagePath('Bm.Tail.' + TailPrefix + '0' + IntToStr(TailMode - 1));
           Tails[Index].SetEmitting((Alpha = 255) and (Space.AlphaShift = 0));
         end;
@@ -368,9 +367,9 @@ begin
     end;
   end;
 end;
-{ @end $82108C }
+{ @end $65C1BC }
 
-{ @routine $821A4C TShip2SE_DetachFromSpace }
+{ @routine $65CB08 TShip2SE_DetachFromSpace }
 procedure TShip2SE.DetachFromSpace;
 var
   Index: Integer;
@@ -381,7 +380,7 @@ begin
     StopAnimationTimer;
     CurrentAnimation := nil;
     NextAnimation := nil;
-    Image.SetActive(False);
+    Image.IsActive := False;
     Image.Free;
     Image := nil;
     MinimapImage.Free;
@@ -395,9 +394,9 @@ begin
     inherited DetachFromSpace;
   end;
 end;
-{ @end $821A4C }
+{ @end $65CB08 }
 
-{ @routine $821B1C TShip2SE_SetTailMode }
+{ @routine $65CB98 TShip2SE_SetTailMode }
 procedure TShip2SE.SetTailMode(Value: Integer);
 var
   Index: Integer;
@@ -406,7 +405,7 @@ begin
   for Index := Low(Tails) to High(Tails) do
     if Tails[Index] <> nil then
     begin
-      Tails[Index].SetActive(Value > 0);
+      Tails[Index].IsActive := Value > 0;
       if Value > 0 then
       begin
         if TailMode = 1 then
@@ -425,16 +424,16 @@ begin
       end;
     end;
 end;
-{ @end $821B1C }
+{ @end $65CB98 }
 
-{ @routine $821D60 TShip2SE_GetImagePath }
+{ @routine $65CD78 TShip2SE_GetImagePath }
 function TShip2SE.GetImagePath: WideString;
 begin
   if AnimShipFull then Result := ImagePath else Result := ReducedImagePath;
 end;
-{ @end $821D60 }
+{ @end $65CD78 }
 
-{ @routine $821DA0 TShip2SE_SetSize }
+{ @routine $65CDA8 TShip2SE_SetSize }
 procedure TShip2SE.SetSize(Value: TPoint);
 begin
   if (Size.X <> Value.X) or (Size.Y <> Value.Y) then
@@ -444,9 +443,9 @@ begin
     ImageScale.Y := Size.Y / ImageSize.Y;
   end;
 end;
-{ @end $821DA0 }
+{ @end $65CDA8 }
 
-{ @routine $821E04 TShip2SE_SetPosition }
+{ @routine $65CDF0 TShip2SE_SetPosition }
 procedure TShip2SE.SetPosition(APosition: TPointF);
 var
   PixelPosition: TPoint;
@@ -456,15 +455,15 @@ begin
   if IsAttachedToSpace then
   begin
     PixelPosition := Classes.Point(Trunc(APosition.X), Trunc(APosition.Y));
-    Image.SetPosition(PixelPosition);
-    MinimapImage.SetPosition(TruncatePointF(MakePointF(APosition.X * Space.MinimapScale, APosition.Y * Space.MinimapScale)));
+    Image.Pos := PixelPosition;
+    MinimapImage.Pos := TruncatePointF(MakePointF(APosition.X * Space.MinimapScale, APosition.Y * Space.MinimapScale));
     for Index := Low(Tails) to High(Tails) do
       if Tails[Index] <> nil then Tails[Index].EmitterPosition := ImagePointToWorld(TailOrigins[Index]);
   end;
 end;
-{ @end $821E04 }
+{ @end $65CDF0 }
 
-{ @routine $821F04 TShip2SE_SetTailDepth }
+{ @routine $65CED4 TShip2SE_SetTailDepth }
 procedure TShip2SE.SetTailDepth(Value: Single);
 var
   Index: Integer;
@@ -476,30 +475,30 @@ begin
       Tails[Index].SetDepth(Value);
     end;
 end;
-{ @end $821F04 }
+{ @end $65CED4 }
 
-{ @routine $821F5C TShip2SE_SetDepth }
+{ @routine $65CF10 TShip2SE_SetDepth }
 procedure TShip2SE.SetDepth(Value: Single);
 begin
   Image.SetDepth(Value);
 end;
-{ @end $821F5C }
+{ @end $65CF10 }
 
-{ @routine $821F80 TShip2SE_GetDepth }
+{ @routine $65CF2C TShip2SE_GetDepth }
 function TShip2SE.GetDepth: Single;
 begin
   Result := Image.Depth;
 end;
-{ @end $821F80 }
+{ @end $65CF2C }
 
-{ @routine $821FA0 TShip2SE_GetAngle }
+{ @routine $65CF40 TShip2SE_GetAngle }
 function TShip2SE.GetAngle: Byte;
 begin
   Result := Angle;
 end;
-{ @end $821FA0 }
+{ @end $65CF40 }
 
-{ @routine $821FBC TShip2SE_SetAngle }
+{ @routine $65CF48 TShip2SE_SetAngle }
 procedure TShip2SE.SetAngle(Value: Byte);
 var
   Index: Integer;
@@ -519,9 +518,9 @@ begin
       end;
   end;
 end;
-{ @end $821FBC }
+{ @end $65CF48 }
 
-{ @routine $8220A0 TShip2SE_OffsetTailsAlongHeading }
+{ @routine $65CFF8 TShip2SE_OffsetTailsAlongHeading }
 procedure TShip2SE.OffsetTailsAlongHeading(Distance: Single);
 var
   Radians: Single;
@@ -537,9 +536,9 @@ begin
       if Tails[Index] <> nil then Tails[Index].OffsetSegments(Delta);
   end;
 end;
-{ @end $8220A0 }
+{ @end $65CFF8 }
 
-{ @routine $822170 TShip2SE_OffsetTails }
+{ @routine $65D0AC TShip2SE_OffsetTails }
 procedure TShip2SE.OffsetTails(Delta: TPointF);
 var
   Index: Integer;
@@ -547,9 +546,9 @@ begin
   for Index := Low(Tails) to High(Tails) do
     if Tails[Index] <> nil then Tails[Index].OffsetSegments(Delta);
 end;
-{ @end $822170 }
+{ @end $65D0AC }
 
-{ @routine $8221C0 TShip2SE_SetTailsEmitting }
+{ @routine $65D0E0 TShip2SE_SetTailsEmitting }
 procedure TShip2SE.SetTailsEmitting(Value: Boolean);
 var
   Index: Integer;
@@ -557,16 +556,16 @@ begin
   for Index := Low(Tails) to High(Tails) do
     if Tails[Index] <> nil then Tails[Index].SetEmitting(Value);
 end;
-{ @end $8221C0 }
+{ @end $65D0E0 }
 
-{ @routine $822208 TShip2SE_GetAlpha }
+{ @routine $65D108 TShip2SE_GetAlpha }
 function TShip2SE.GetAlpha: Byte;
 begin
   Result := Alpha;
 end;
-{ @end $822208 }
+{ @end $65D108 }
 
-{ @routine $822224 TShip2SE_SetAlpha }
+{ @routine $65D110 TShip2SE_SetAlpha }
 procedure TShip2SE.SetAlpha(Value: Byte);
 var
   Index: Integer;
@@ -579,25 +578,25 @@ begin
       if Tails[Index] <> nil then Tails[Index].SetEmitting((Alpha = 255) and (Space.AlphaShift = 0));
   end;
 end;
-{ @end $822224 }
+{ @end $65D110 }
 
-{ @routine $8222E0 TShip2SE_GetOrbitCenter }
+{ @routine $65D178 TShip2SE_GetOrbitCenter }
 function TShip2SE.GetOrbitCenter: TPointF;
 begin
   Result.X := ImageOrigin.X * ImageScale.X;
   Result.Y := ImageOrigin.Y * ImageScale.Y;
 end;
-{ @end $8222E0 }
+{ @end $65D178 }
 
-{ @routine $822318 TShip2SE_ScaleImagePoint }
+{ @routine $65D18C TShip2SE_ScaleImagePoint }
 function TShip2SE.ScaleImagePoint(Point: TPointF): TPointF;
 begin
   Result.X := (Point.X - ImageOrigin.X) * ImageScale.X;
   Result.Y := (Point.Y - ImageOrigin.Y) * ImageScale.Y;
 end;
-{ @end $822318 }
+{ @end $65D18C }
 
-{ @routine $822360 TShip2SE_ImagePointToWorld }
+{ @routine $65D1B8 TShip2SE_ImagePointToWorld }
 function TShip2SE.ImagePointToWorld(Point: TPointF): TPointF;
 var
   Radians, Sine, Cosine: Double;
@@ -609,9 +608,9 @@ begin
   Result.X := Point.X * Cosine - Point.Y * Sine + Position.X;
   Result.Y := Point.X * Sine + Point.Y * Cosine + Position.Y;
 end;
-{ @end $822360 }
+{ @end $65D1B8 }
 
-{ @routine $822420 TShip2SE_GetTargetPoint }
+{ @routine $65D274 TShip2SE_GetTargetPoint }
 function TShip2SE.GetTargetPoint(Heading: Byte; Seed: Integer): TPointF;
 var
   Radians, Sine, Cosine: Double;
@@ -626,9 +625,9 @@ begin
   Result.X := Point.X * Cosine - Point.Y * Sine + Position.X;
   Result.Y := Point.X * Sine + Point.Y * Cosine + Position.Y;
 end;
-{ @end $822420 }
+{ @end $65D274 }
 
-{ @routine $822530 TShip2SE_GetWeaponPortPoint }
+{ @routine $65D36C TShip2SE_GetWeaponPortPoint }
 function TShip2SE.GetWeaponPortPoint(Heading: Byte; Seed: Cardinal): TPointF;
 var
   Radians, Sine, Cosine: Double;
@@ -646,17 +645,17 @@ begin
   Result.X := Point.X * Cosine - Point.Y * Sine + Position.X;
   Result.Y := Point.X * Sine + Point.Y * Cosine + Position.Y;
 end;
-{ @end $822530 }
+{ @end $65D36C }
 
-{ @routine $822620 TShip2SE_HitTestCursor }
+{ @routine $65D444 TShip2SE_HitTestCursor }
 function TShip2SE.HitTestCursor: Boolean;
 begin
   if not IsAttachedToSpace then Result := False
   else Result := Image.HitTestPixel(Image.MessageLoop.GetCursorPoint);
 end;
-{ @end $822620 }
+{ @end $65D444 }
 
-{ @routine $82266C TShip2SE_AddAnimation }
+{ @routine $65D478 TShip2SE_AddAnimation }
 function TShip2SE.AddAnimation: TShip2AnimSE;
 var
   Animation: TShip2AnimSE;
@@ -669,9 +668,9 @@ begin
   if FirstAnimation = nil then FirstAnimation := Animation;
   Result := Animation;
 end;
-{ @end $82266C }
+{ @end $65D478 }
 
-{ @routine $8226E8 TShip2SE_DeleteAnimation }
+{ @routine $65D4BC TShip2SE_DeleteAnimation }
 procedure TShip2SE.DeleteAnimation(Animation: TShip2AnimSE);
 begin
   if Animation.Prev <> nil then Animation.Prev.Next := Animation.Next;
@@ -680,9 +679,9 @@ begin
   if FirstAnimation = Animation then FirstAnimation := Animation.Next;
   Animation.Free;
 end;
-{ @end $8226E8 }
+{ @end $65D4BC }
 
-{ @routine $82276C TShip2SE_AddReducedAnimation }
+{ @routine $65D504 TShip2SE_AddReducedAnimation }
 function TShip2SE.AddReducedAnimation: TShip2AnimSE;
 var
   Animation: TShip2AnimSE;
@@ -695,9 +694,9 @@ begin
   if FirstReducedAnimation = nil then FirstReducedAnimation := Animation;
   Result := Animation;
 end;
-{ @end $82276C }
+{ @end $65D504 }
 
-{ @routine $8227E8 TShip2SE_DeleteReducedAnimation }
+{ @routine $65D548 TShip2SE_DeleteReducedAnimation }
 procedure TShip2SE.DeleteReducedAnimation(Animation: TShip2AnimSE);
 begin
   if Animation.Prev <> nil then Animation.Prev.Next := Animation.Next;
@@ -706,9 +705,9 @@ begin
   if FirstReducedAnimation = Animation then FirstReducedAnimation := Animation.Next;
   Animation.Free;
 end;
-{ @end $8227E8 }
+{ @end $65D548 }
 
-{ @routine $82286C TShip2SE_StartAnimationTimer }
+{ @routine $65D590 TShip2SE_StartAnimationTimer }
 procedure TShip2SE.StartAnimationTimer;
 var
   Delay: Integer;
@@ -717,45 +716,45 @@ begin
   Delay := CurrentAnimation.Delays[CurrentFrameIndex];
   AnimationTimer := Space.Screen.ScheduleCallbackTimer(Delay, Delay, AdvanceAnimation);
 end;
-{ @end $82286C }
+{ @end $65D590 }
 
-{ @routine $8228C8 TShip2SE_StopAnimationTimer }
+{ @routine $65D5D0 TShip2SE_StopAnimationTimer }
 procedure TShip2SE.StopAnimationTimer;
 begin
-  if AnimationTimer <> nil then
+  if AnimationTimer <> 0 then
   begin
     Space.Screen.CancelCallbackTimer(AnimationTimer);
-    AnimationTimer := nil;
+    AnimationTimer := 0;
   end;
 end;
-{ @end $8228C8 }
+{ @end $65D5D0 }
 
-{ @routine $822900 TShip2SE_StartStateTimer }
+{ @routine $65D5F4 TShip2SE_StartStateTimer }
 procedure TShip2SE.StartStateTimer;
 begin
   StopStateTimer;
-  SelectNextAnimation(nil, 0);
+  SelectNextAnimation(0, 0);
   StateTimer := Space.Screen.ScheduleCallbackTimer(StateIntervalMs, StateIntervalMs, SelectNextAnimation);
 end;
-{ @end $822900 }
+{ @end $65D5F4 }
 
-{ @routine $822954 TShip2SE_StopStateTimer }
+{ @routine $65D630 TShip2SE_StopStateTimer }
 procedure TShip2SE.StopStateTimer;
 begin
-  if StateTimer <> nil then
+  if StateTimer <> 0 then
   begin
     Space.Screen.CancelCallbackTimer(StateTimer);
-    StateTimer := nil;
+    StateTimer := 0;
   end;
 end;
-{ @end $822954 }
+{ @end $65D630 }
 
-{ @routine $82298C TShip2SE_AdvanceAnimation }
-procedure TShip2SE.AdvanceAnimation(Timer: PCallbackTimerGI; UserData: Integer);
+{ @routine $65D654 TShip2SE_AdvanceAnimation }
+procedure TShip2SE.AdvanceAnimation(Timer: TCallbackTimerIdGI; UserData: Cardinal);
 begin
   with Image.HitTestBounds do
-    if (Cardinal(GameScreenWidth) * -0.1 > Right) or (Cardinal(GameScreenWidth) * 1.1 < Left) or
-       (Cardinal(GameScreenHeight) * -0.1 > Bottom) or (Cardinal(GameScreenHeight) * 1.1 < Top) then
+    if (GameScreenWidth * -0.1 > Right) or (GameScreenWidth * 1.1 < Left) or
+       (GameScreenHeight * -0.1 > Bottom) or (GameScreenHeight * 1.1 < Top) then
     begin
       SetTailsEmitting(False);
       Exit;
@@ -784,10 +783,10 @@ begin
   Image.SetFrameIndex(CurrentAnimation.Frames[CurrentFrameIndex]);
   StartAnimationTimer;
 end;
-{ @end $82298C }
+{ @end $65D654 }
 
-{ @routine $822BB0 TShip2SE_SelectNextAnimation }
-procedure TShip2SE.SelectNextAnimation(Timer: PCallbackTimerGI; UserData: Integer);
+{ @routine $65D810 TShip2SE_SelectNextAnimation }
+procedure TShip2SE.SelectNextAnimation(Timer: TCallbackTimerIdGI; UserData: Cardinal);
 var
   Weight: Integer;
   Animation: TShip2AnimSE;
@@ -802,7 +801,7 @@ begin
       if Weight < Animation.Weight then
       begin
         NextAnimation := Animation;
-        Break;
+        Exit;
       end;
       Dec(Weight, Animation.Weight);
       Animation := Animation.Next;
@@ -818,16 +817,16 @@ begin
       if Weight < Animation.Weight then
       begin
         NextAnimation := Animation;
-        Break;
+        Exit;
       end;
       Dec(Weight, Animation.Weight);
       Animation := Animation.Next;
     end;
   end;
 end;
-{ @end $822BB0 }
+{ @end $65D810 }
 
-{ @routine $822CAC TShip2SE_DrawMap }
+{ @routine $65D89C TShip2SE_DrawMap }
 procedure TShip2SE.DrawMap;
 var
   CurrentProcess: TProcessSE;
@@ -838,9 +837,9 @@ begin
      ((GetPlayer <> nil) and (GetPlayer.Graphic = Self)) then
     MinimapImage.Draw(Classes.Rect(0, 0, RenderScratchBuffer.Width, RenderScratchBuffer.Height));
 end;
-{ @end $822CAC }
+{ @end $65D89C }
 
-{ @routine $822D60 TShip2SE_LoadTemplate }
+{ @routine $65D938 TShip2SE_LoadTemplate }
 procedure TShip2SE.LoadTemplate(Block: TBlockParEC);
 var
   AnimBlock: TBlockParEC;
@@ -914,19 +913,19 @@ begin
   else LargeSize := 0;
   if Block.CountParams('TargetSizeK') > 0 then TargetSizeScale := ExtractDecimalToSingleW(Block.GetParam('TargetSizeK'))
   else TargetSizeScale := 0.3;
-  SetSize(Classes.Point(64, 64));
+  ObjectSize := Classes.Point(64, 64);
 end;
-{ @end $822D60 }
+{ @end $65D938 }
 
-{ @routine $823748 TShip2SE_ApplyConfig }
+{ @routine $65E228 TShip2SE_ApplyConfig }
 procedure TShip2SE.ApplyConfig(Block: TBlockParEC);
 begin
   inherited ApplyConfig(Block);
   if Block.CountParams('Angle') > 0 then SetAngle(StrToInt(Block.GetParam('Angle')));
 end;
-{ @end $823748 }
+{ @end $65E228 }
 
-{ @routine $8237EC TShip2SE_QueueImageLoad }
+{ @routine $65E2C4 TShip2SE_QueueImageLoad }
 procedure TShip2SE.QueueImageLoad(PendingLoads: TList; Owner: TObjectGI);
 var
   MainImage: TRotateImage5GI;
@@ -941,6 +940,6 @@ begin
   MapImage.QueueImageLoad(PendingLoads);
   MapImage.Free;
 end;
-{ @end $8237EC }
+{ @end $65E2C4 }
 
 end.

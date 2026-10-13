@@ -1,5 +1,4 @@
 unit GI_Frame;
-// Unit bracket (inferred): .text 0x004AB1D4..0x004ABA02; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -15,24 +14,24 @@ type
     Fill: Boolean; // @offset 0x12C
     FillAlpha: Byte; // @offset 0x12D
 
-    constructor Create(Owner: TObjectGI); // @addr 0x4AB2F4
-    destructor Destroy; override; // @addr 0x4AB35C
-    procedure Clear; override; // @addr 0x4AB390 @note "Preserves fill and color fields."
-    procedure SetKind(Value: TFrameKindGI); // @addr 0x4AB3AC
-    procedure SetColor(Value: Cardinal); // @addr 0x4AB3E4
-    procedure SetFillColor(Value: Cardinal); // @addr 0x4AB41C
-    procedure SetFill(Value: Boolean); // @addr 0x4AB454
-    procedure LoadFromConfigPath(const Path: WideString); override; // @addr 0x4AB48C
-    procedure LoadFromBlock(Block: TBlockParEC); override; // @addr 0x4AB4C0
-    procedure LoadFrameProperties(Block: TBlockParEC); // @addr 0x4AB4E8
-    procedure Draw(ClipRect: TRect); override; // @addr 0x4AB694 @note "Fill is independent of Kind. FillAlpha values other than 255 all produce alpha 64."
+    constructor Create(Owner: TObjectGI); // @addr 0x00491B50
+    destructor Destroy; override; // @addr 0x00491B9C
+    procedure Clear; override; // @addr 0x00491BC4 @note "Preserves fill and color fields."
+    procedure SetKind(Value: TFrameKindGI); // @addr 0x00491BD4
+    procedure SetColor(Value: Cardinal); // @addr 0x00491BF4
+    procedure SetFillColor(Value: Cardinal); // @addr 0x00491C14
+    procedure SetFill(Value: Boolean); // @addr 0x00491C34
+    procedure LoadFromConfigPath(const Path: WideString); override; // @addr 0x00491C54
+    procedure LoadFromBlock(Block: TBlockParEC); override; // @addr 0x00491C80
+    procedure LoadFrameProperties(Block: TBlockParEC); // @addr 0x00491C9C
+    procedure Draw(ClipRect: TRect); override; // @addr 0x00491E38 @note "Fill is independent of Kind. FillAlpha values other than 255 all produce alpha 64."
   end;
 
 implementation
 
 uses Classes, EC_Mem, GI_Main, GR_DX, GR_Main;
 
-{ @routine $4AB2F4 TFrameGI_Create }
+{ @routine $491B50 TFrameGI_Create }
 constructor TFrameGI.Create(Owner: TObjectGI);
 begin
   inherited Create(Owner);
@@ -40,84 +39,76 @@ begin
   Fill := False;
   FillAlpha := 255;
 end;
-{ @end $4AB2F4 }
+{ @end $491B50 }
 
-{ @routine $4AB35C TFrameGI_Destroy }
+{ @routine $491B9C TFrameGI_Destroy }
 destructor TFrameGI.Destroy;
 begin
   inherited Destroy;
 end;
-{ @end $4AB35C }
+{ @end $491B9C }
 
-{ @routine $4AB390 TFrameGI_Clear }
+{ @routine $491BC4 TFrameGI_Clear }
 procedure TFrameGI.Clear;
 begin
   Kind := fkHide;
   inherited Clear;
 end;
-{ @end $4AB390 }
+{ @end $491BC4 }
 
-{ @routine $4AB3AC TFrameGI_SetKind }
+{ @routine $491BD4 TFrameGI_SetKind }
 procedure TFrameGI.SetKind(Value: TFrameKindGI);
 begin
-  if Kind <> Value then
-  begin
-    Kind := Value;
-    Invalidate;
-  end;
+  if Kind = Value then Exit;
+  Kind := Value;
+  Invalidate;
 end;
-{ @end $4AB3AC }
+{ @end $491BD4 }
 
-{ @routine $4AB3E4 TFrameGI_SetColor }
+{ @routine $491BF4 TFrameGI_SetColor }
 procedure TFrameGI.SetColor(Value: Cardinal);
 begin
-  if Color <> Value then
-  begin
-    Color := Value;
-    Invalidate;
-  end;
+  if Color = Value then Exit;
+  Color := Value;
+  Invalidate;
 end;
-{ @end $4AB3E4 }
+{ @end $491BF4 }
 
-{ @routine $4AB41C TFrameGI_SetFillColor }
+{ @routine $491C14 TFrameGI_SetFillColor }
 procedure TFrameGI.SetFillColor(Value: Cardinal);
 begin
-  if FillColor <> Value then
-  begin
-    FillColor := Value;
-    Invalidate;
-  end;
+  if FillColor = Value then Exit;
+  FillColor := Value;
+  Invalidate;
 end;
-{ @end $4AB41C }
+{ @end $491C14 }
 
-{ @routine $4AB454 TFrameGI_SetFill }
+{ @routine $491C34 TFrameGI_SetFill }
 procedure TFrameGI.SetFill(Value: Boolean);
 begin
-  if Fill <> Value then
-  begin
-    Fill := Value;
-    Invalidate;
-  end;
+  if Fill = Value then Exit;
+  Fill := Value;
+  Invalidate;
 end;
-{ @end $4AB454 }
+{ @end $491C34 }
 
-{ @routine $4AB48C TFrameGI_LoadFromConfigPath }
+{ @routine $491C54 TFrameGI_LoadFromConfigPath }
 procedure TFrameGI.LoadFromConfigPath(const Path: WideString);
 begin
   inherited LoadFromConfigPath(Path);
   LoadFrameProperties(UiStyleConfig.GetBlockByPath(Path));
 end;
-{ @end $4AB48C }
+{ @end $491C54 }
 
-{ @routine $4AB4C0 TFrameGI_LoadFromBlock }
+{ @routine $491C80 TFrameGI_LoadFromBlock }
 procedure TFrameGI.LoadFromBlock(Block: TBlockParEC);
 begin
   inherited LoadFromBlock(Block);
   LoadFrameProperties(Block);
 end;
-{ @end $4AB4C0 }
+{ @end $491C80 }
 
-{ @routine $4AB4E8 TFrameGI_LoadFrameProperties }
+{ @routine $491C9C TFrameGI_LoadFrameProperties }
 procedure TFrameGI.LoadFrameProperties(Block: TBlockParEC);
 begin
   if Block.CountParams('Kind') > 0 then
@@ -129,9 +120,9 @@ begin
   if Block.CountParams('ColorFill') > 0 then SetFillColor(GetColorGI(Block.GetParam('ColorFill')));
   if Block.CountParams('Fill') > 0 then SetFill(ParseEnabledNameGI(Block.GetParam('Fill')));
 end;
-{ @end $4AB4E8 }
+{ @end $491C9C }
 
-{ @routine $4AB694 TFrameGI_Draw }
+{ @routine $491E38 TFrameGI_Draw }
 procedure TFrameGI.Draw(ClipRect: TRect);
 begin
   if Fill then
@@ -184,6 +175,6 @@ begin
     end;
   end;
 end;
-{ @end $4AB694 }
+{ @end $491E38 }
 
 end.

@@ -1,5 +1,4 @@
 unit SE_Angel;
-// Unit bracket (inferred): .text 0x00826608..0x008278F5; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -40,32 +39,32 @@ type
     TargetDelay: Integer; // @offset $B4
     MoveState: Byte; // @offset $B8 0=wander, 1=seek target, 2=turn before seeking.
 
-    procedure AttachToSpace(ASpace: TSpaceSE); override; // @addr $8266D4
-    procedure DetachFromSpace; override; // @addr $826774
-    procedure SetPosition(APosition: TPointF); override; // @addr $8267B4
-    procedure SetVelocityFromAngle(Angle: Single); // @addr $82683C
-    procedure StartMotionTimer; // @addr $826898
-    procedure StopMotionTimer; // @addr $8268D4
-    function GetFrameCount(Entry: PAngelEntry): Integer; // @addr $826900
-    procedure ToggleFrameVariants; // @addr $826944
-    procedure AdvanceMotionTimer(Timer: PSpaceTimerSE; UserData: Integer); // @addr $826990
-    procedure AppendEntry; // @addr $8269B0
-    procedure RemoveEntry(Entry: PAngelEntry); // @addr $826BB8
-    procedure AdvanceEntry(Entry: PAngelEntry); // @addr $826C34
-    procedure Wander; // @addr $826E64
-    procedure SeekTarget; // @addr $82709C
-    procedure UpdateHeading; // @addr $82733C
-    procedure AdvanceSteps(Count: Integer); // @addr $8273B4
-    procedure LoadTemplate(Block: TBlockParEC); override; // @addr $827498
-    procedure ApplyConfig(Block: TBlockParEC); override; // @addr $82789C
-    procedure QueueImageLoad(PendingLoads: TList; Owner: TObjectGI); override; // @addr $8278B8
+    procedure AttachToSpace(ASpace: TSpaceSE); override; // @addr $77E638
+    procedure DetachFromSpace; override; // @addr $77E6B0
+    procedure SetPosition(APosition: TPointF); override; // @addr $77E6E4
+    procedure SetVelocityFromAngle(Angle: Single); // @addr $77E750
+    procedure StartMotionTimer; // @addr $77E79C
+    procedure StopMotionTimer; // @addr $77E7C4
+    function GetFrameCount(Entry: PAngelEntry): Integer; // @addr $77E7E0
+    procedure ToggleFrameVariants; // @addr $77E800
+    procedure AdvanceMotionTimer(Timer: PSpaceTimerSE; UserData: Integer); // @addr $77E824
+    procedure AppendEntry; // @addr $77E830
+    procedure RemoveEntry(Entry: PAngelEntry); // @addr $77E9BC
+    procedure AdvanceEntry(Entry: PAngelEntry); // @addr $77EA00
+    procedure Wander; // @addr $77EBE8
+    procedure SeekTarget; // @addr $77ED90
+    procedure UpdateHeading; // @addr $77EFDC
+    procedure AdvanceSteps(Count: Integer); // @addr $77F044
+    procedure LoadTemplate(Block: TBlockParEC); override; // @addr $77F0F0
+    procedure ApplyConfig(Block: TBlockParEC); override; // @addr $77F4A8
+    procedure QueueImageLoad(PendingLoads: TList; Owner: TObjectGI); override; // @addr $77F4B0
   end;
 
 implementation
 
 uses Math, EC_Str, GI_Main, GI_RotateImage5, aMyFunction, SE_Ship2;
 
-{ @routine $8266D4 TAngelSE_AttachToSpace }
+{ @routine $77E638 TAngelSE_AttachToSpace }
 procedure TAngelSE.AttachToSpace(ASpace: TSpaceSE);
 var Index: Integer;
 begin
@@ -79,9 +78,9 @@ begin
   TargetDelay := 500;
   StartMotionTimer;
 end;
-{ @end $8266D4 }
+{ @end $77E638 }
 
-{ @routine $826774 TAngelSE_DetachFromSpace }
+{ @routine $77E6B0 TAngelSE_DetachFromSpace }
 procedure TAngelSE.DetachFromSpace;
 begin
   if not IsAttachedToSpace then Exit;
@@ -89,9 +88,9 @@ begin
   while FirstEntry <> nil do RemoveEntry(FirstEntry);
   inherited DetachFromSpace;
 end;
-{ @end $826774 }
+{ @end $77E6B0 }
 
-{ @routine $8267B4 TAngelSE_SetPosition }
+{ @routine $77E6E4 TAngelSE_SetPosition }
 procedure TAngelSE.SetPosition(APosition: TPointF);
 var Entry: PAngelEntry;
 begin
@@ -102,31 +101,31 @@ begin
     while Entry <> nil do
     begin
       if Entry.Animation <> nil then
-        Entry.Animation.SetPosition(TruncatePointF(RotateAndTranslatePoint(Entry.Position, APosition, MoveAngle)));
+        Entry.Animation.Pos := TruncatePointF(RotateAndTranslatePoint(Entry.Position, APosition, MoveAngle));
       Entry := Entry.Next;
     end;
   end;
 end;
-{ @end $8267B4 }
+{ @end $77E6E4 }
 
-{ @routine $82683C TAngelSE_SetVelocityFromAngle }
+{ @routine $77E750 TAngelSE_SetVelocityFromAngle }
 procedure TAngelSE.SetVelocityFromAngle(Angle: Single);
 begin
   Velocity.X := Sin(Angle) * Speed;
   Velocity.Y := Cos(Angle) * Speed;
   AdvanceSteps(0);
 end;
-{ @end $82683C }
+{ @end $77E750 }
 
-{ @routine $826898 TAngelSE_StartMotionTimer }
+{ @routine $77E79C TAngelSE_StartMotionTimer }
 procedure TAngelSE.StartMotionTimer;
 begin
   StopMotionTimer;
   MoveTimer := Space.CreateTimer(TimerInterval, TimerInterval, AdvanceMotionTimer, 0);
 end;
-{ @end $826898 }
+{ @end $77E79C }
 
-{ @routine $8268D4 TAngelSE_StopMotionTimer }
+{ @routine $77E7C4 TAngelSE_StopMotionTimer }
 procedure TAngelSE.StopMotionTimer;
 begin
   if MoveTimer <> nil then
@@ -135,18 +134,23 @@ begin
     MoveTimer := nil;
   end;
 end;
-{ @end $8268D4 }
+{ @end $77E7C4 }
 
-{ @routine $826900 TAngelSE_GetFrameCount }
+{ @routine $77E7E0 TAngelSE_GetFrameCount }
 function TAngelSE.GetFrameCount(Entry: PAngelEntry): Integer;
+var Animation: TgaiGI;
 begin
   Result := 0;
   if Entry = nil then Entry := FirstEntry;
-  if (Entry <> nil) and (Entry.Animation <> nil) then Result := Entry.Animation.GetMainImageFrameCount;
+  if Entry <> nil then
+  begin
+    Animation := Entry.Animation;
+    if Animation <> nil then Result := Animation.GetMainImageFrameCount;
+  end;
 end;
-{ @end $826900 }
+{ @end $77E7E0 }
 
-{ @routine $826944 TAngelSE_ToggleFrameVariants }
+{ @routine $77E800 TAngelSE_ToggleFrameVariants }
 procedure TAngelSE.ToggleFrameVariants;
 var Entry: PAngelEntry;
 begin
@@ -159,16 +163,16 @@ begin
     Entry := Entry.Next;
   end;
 end;
-{ @end $826944 }
+{ @end $77E800 }
 
-{ @routine $826990 TAngelSE_AdvanceMotionTimer }
+{ @routine $77E824 TAngelSE_AdvanceMotionTimer }
 procedure TAngelSE.AdvanceMotionTimer(Timer: PSpaceTimerSE; UserData: Integer);
 begin
   AdvanceSteps(1);
 end;
-{ @end $826990 }
+{ @end $77E824 }
 
-{ @routine $8269B0 TAngelSE_AppendEntry }
+{ @routine $77E830 TAngelSE_AppendEntry }
 procedure TAngelSE.AppendEntry;
 var Entry: PAngelEntry;
 begin
@@ -185,20 +189,20 @@ begin
   Entry.Animation.SetImagePath(ImagePaths[Random(ImageCount)]);
   Entry.Animation.SequenceIndex := 0;
   Entry.Animation.UpdateAutoGeometry;
-  Entry.Animation.SetSize(Entry.Animation.GetContentSize);
-  Entry.Animation.SetOrigin(HalfPoint(Entry.Animation.ClientSize));
+  Entry.Animation.ObjectSize := Entry.Animation.GetContentSize;
+  Entry.Animation.Sme := HalfPoint(Entry.Animation.ClientSize);
   Entry.Animation.SetDepthByName(DepthExpression);
-  Entry.Animation.SetPosition(Classes.Point(Trunc(Entry.Position.X + Position.X), Trunc(Entry.Position.Y + Position.Y)));
-  Entry.Animation.SetPositionModeW(True);
+  Entry.Animation.Pos := Classes.Point(Trunc(Entry.Position.X + Position.X), Trunc(Entry.Position.Y + Position.Y));
+  Entry.Animation.World := True;
   Entry.Animation.SetSequenceFrame(0);
   Entry.Animation.RestartPlayback;
   Entry.FrameIndex := 0;
   Entry.MovingUp := False;
   Entry.FrameVariant := 0;
 end;
-{ @end $8269B0 }
+{ @end $77E830 }
 
-{ @routine $826BB8 TAngelSE_RemoveEntry }
+{ @routine $77E9BC TAngelSE_RemoveEntry }
 procedure TAngelSE.RemoveEntry(Entry: PAngelEntry);
 begin
   if Entry <> nil then
@@ -210,9 +214,9 @@ begin
     Dispose(Entry);
   end;
 end;
-{ @end $826BB8 }
+{ @end $77E9BC }
 
-{ @routine $826C34 TAngelSE_AdvanceEntry }
+{ @routine $77EA00 TAngelSE_AdvanceEntry }
 procedure TAngelSE.AdvanceEntry(Entry: PAngelEntry);
 var Movement: TPointF;
 begin
@@ -230,9 +234,9 @@ begin
   if Abs(Movement.X) < 0.1 then Entry.Angle := ArcTan2(Movement.Y, 0.1)
   else Entry.Angle := ArcTan2(Movement.Y, Movement.X);
 end;
-{ @end $826C34 }
+{ @end $77EA00 }
 
-{ @routine $826E64 TAngelSE_Wander }
+{ @routine $77EBE8 TAngelSE_Wander }
 procedure TAngelSE.Wander;
 var
   Obj: TObjectSE;
@@ -256,38 +260,39 @@ begin
     if MoveAngle < -Pi then MoveAngle := MoveAngle + 2 * Pi;
   end;
   if TargetDelay > 0 then Dec(TargetDelay);
-  if (TargetDelay = 0) and (MoveState = 0) and (Space <> nil) then
-  begin
-    Obj := Space.FirstObject;
-    Count := 0;
-    while Obj <> nil do
+  if (TargetDelay = 0) and (MoveState = 0) then
+    if Space <> nil then
     begin
-      if Obj is TShip2SE then Inc(Count);
-      Obj := Obj.Next;
-    end;
-    Index := Random(Count);
-    Obj := Space.FirstObject;
-    while Obj <> nil do
-    begin
-      if Obj is TShip2SE then
+      Obj := Space.FirstObject;
+      Count := 0;
+      while Obj <> nil do
       begin
-        if Index = 0 then
-        begin
-          Target := Obj.Position;
-          MoveState := 1;
-          Break;
-        end;
-        Dec(Index);
+        if Obj is TShip2SE then Inc(Count);
+        Obj := Obj.Next;
       end;
-      Obj := Obj.Next;
+      Index := Random(Count);
+      Obj := Space.FirstObject;
+      while Obj <> nil do
+      begin
+        if Obj is TShip2SE then
+        begin
+          if Index = 0 then
+          begin
+            Target := Obj.Position;
+            MoveState := 1;
+            Break;
+          end;
+          Dec(Index);
+        end;
+        Obj := Obj.Next;
+      end;
     end;
-  end;
   if TurnTicks = 0 then
     if MoveState = 2 then MoveState := 1;
 end;
-{ @end $826E64 }
+{ @end $77EBE8 }
 
-{ @routine $82709C TAngelSE_SeekTarget }
+{ @routine $77ED90 TAngelSE_SeekTarget }
 procedure TAngelSE.SeekTarget;
 var
   Delta: TPointF;
@@ -319,9 +324,9 @@ begin
     MoveState := 2;
   end;
 end;
-{ @end $82709C }
+{ @end $77ED90 }
 
-{ @routine $82733C TAngelSE_UpdateHeading }
+{ @routine $77EFDC TAngelSE_UpdateHeading }
 procedure TAngelSE.UpdateHeading;
 begin
   case MoveState of
@@ -332,9 +337,9 @@ begin
   end;
   Velocity := PointFromRadiusAngle(Speed, MoveAngle);
 end;
-{ @end $82733C }
+{ @end $77EFDC }
 
-{ @routine $8273B4 TAngelSE_AdvanceSteps }
+{ @routine $77F044 TAngelSE_AdvanceSteps }
 procedure TAngelSE.AdvanceSteps(Count: Integer);
 var Entry: PAngelEntry;
 begin
@@ -351,13 +356,13 @@ begin
     end;
     ToggleFrameVariants;
     Position := MakePointF(Position.X + Velocity.X, Position.Y + Velocity.Y);
-    if FirstEntry <> nil then SetPosition(Position);
+    if FirstEntry <> nil then Pos := Position;
     Dec(Count);
   end;
 end;
-{ @end $8273B4 }
+{ @end $77F044 }
 
-{ @routine $827498 TAngelSE_LoadTemplate }
+{ @routine $77F0F0 TAngelSE_LoadTemplate }
 procedure TAngelSE.LoadTemplate(Block: TBlockParEC);
 var
   IntRange: TPoint;
@@ -401,16 +406,16 @@ begin
   end;
   SetVelocityFromAngle(MoveAngle);
 end;
-{ @end $827498 }
+{ @end $77F0F0 }
 
-{ @routine $82789C TAngelSE_ApplyConfig }
+{ @routine $77F4A8 TAngelSE_ApplyConfig }
 procedure TAngelSE.ApplyConfig(Block: TBlockParEC);
 begin
   inherited ApplyConfig(Block);
 end;
-{ @end $82789C }
+{ @end $77F4A8 }
 
-{ @routine $8278B8 TAngelSE_QueueImageLoad }
+{ @routine $77F4B0 TAngelSE_QueueImageLoad }
 procedure TAngelSE.QueueImageLoad(PendingLoads: TList; Owner: TObjectGI);
 var Control: TRotateImage5GI;
 begin
@@ -418,6 +423,6 @@ begin
   Control.QueueImagePath(PendingLoads, ImagePath);
   Control.Free;
 end;
-{ @end $8278B8 }
+{ @end $77F4B0 }
 
 end.

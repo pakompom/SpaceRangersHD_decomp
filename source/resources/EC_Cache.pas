@@ -1,5 +1,4 @@
 unit EC_Cache;
-// Unit bracket (inferred): .text 0x0083E084..0x0083F756; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -17,21 +16,21 @@ type
     CacheKey: WideString; // @offset 0x10
     RetainCount: Integer; // @offset 0x14
 
-    constructor Create; // @addr 0x83E1D8
-    destructor Destroy; override; // @addr 0x83E21C
-    procedure Reset; virtual; // @addr 0x83E254 @slot 0x00 @note "Drops all retains and the data binding."
-    procedure SetCacheKey(const NewKey: WideString); virtual; // @addr 0x83E2B0 @slot 0x04 @calls "0x47C62A 0x47D9F6" @note "Drops existing retains and the data binding; may apply configured key substitutions."
-    function HasEmptyCacheKey: Boolean; // @addr 0x83E380
-    procedure QueueLoadIfMissing(PendingLoads: TList); virtual; // @addr 0x83E3A8 @slot 0x08 @calls "0x4744F2 0x47690E 0x48C15A 0x483186"
-    function CreateData: TCacheDataEC; virtual; // @addr 0x83E3B8 @slot 0x0C @note "Base implementation returns nil."
-    function AcquireData: TCacheDataEC; virtual; // @addr 0x83E974 @slot 0x10 @note "Base implementation returns nil."
-    procedure Release; virtual; // @addr 0x83E98C @slot 0x14 @calls "0x47C668 0x47DA87" @note "Saturates at zero; the data remains bound."
+    constructor Create; // @addr 0x004D2F34
+    destructor Destroy; override; // @addr 0x004D2F6C
+    procedure Reset; virtual; // @addr 0x004D2F98 @slot 0x00 @note "Drops all retains and the data binding."
+    procedure SetCacheKey(const NewKey: WideString); virtual; // @addr 0x004D2FE0 @slot 0x04 @note "Drops existing retains and the data binding; may apply configured key substitutions."
+    function HasEmptyCacheKey: Boolean; // @addr 0x004D3094
+    procedure QueueLoadIfMissing(PendingLoads: TList); virtual; // @addr 0x004D30AC @slot 0x08
+    function CreateData: TCacheDataEC; virtual; // @addr 0x004D30B0 @slot 0x0C @note "Base implementation returns nil."
+    function AcquireData: TCacheDataEC; virtual; // @addr 0x004D3634 @slot 0x10 @note "Base implementation returns nil."
+    procedure Release; virtual; // @addr 0x004D3638 @slot 0x14 @note "Saturates at zero; the data remains bound."
 
     // Acquisitions may block on pending loads and evict other cache entries.
     // Nested acquisitions reuse BoundData; the class argument selects existing entries.
-    function AcquireDataFromConfig(CacheDataClass: TCacheDataClass): TCacheDataEC; // @addr 0x83E3D0
-    function AcquireDataFromDirectKey(CacheDataClass: TCacheDataClass): TCacheDataEC; // @addr 0x83E6F4
-    procedure EvictData(CacheDataClass: TCacheDataClass); // @addr 0x83E9B0 @note "Only checks this control's RetainCount; frees the shared entry and detaches all its controls."
+    function AcquireDataFromConfig(CacheDataClass: TCacheDataClass): TCacheDataEC; // @addr 0x004D30B4
+    function AcquireDataFromDirectKey(CacheDataClass: TCacheDataClass): TCacheDataEC; // @addr 0x004D33C0
+    procedure EvictData(CacheDataClass: TCacheDataClass); // @addr 0x004D3648 @note "Only checks this control's RetainCount; frees the shared entry and detaches all its controls."
   end;
 
   TCacheDataEC = class(TObjectEx) // @size 0x20
@@ -45,13 +44,13 @@ type
     // Win32 event handle; zero after loading has completed.
     LoadCompleteEvent: Cardinal; // @offset 0x1C
 
-    constructor Create; // @addr 0x83EA44
-    destructor Destroy; override; // @addr 0x83EA88 @note "Detaches all controls without freeing them."
-    procedure AppendControl(Control: TCacheControlEC); // @addr 0x83EAD4 @note "Caller must set Control.BoundData."
-    procedure UnlinkControl(Control: TCacheControlEC); // @addr 0x83EB28 @note "Clears BoundData but preserves RetainCount."
+    constructor Create; // @addr 0x004D36B8
+    destructor Destroy; override; // @addr 0x004D36F0 @note "Detaches all controls without freeing them."
+    procedure AppendControl(Control: TCacheControlEC); // @addr 0x004D3728 @note "Caller must set Control.BoundData."
+    procedure UnlinkControl(Control: TCacheControlEC); // @addr 0x004D374C @note "Clears BoundData but preserves RetainCount."
     // Base load hooks are empty in the native implementation.
-    procedure LoadFromConfigBuffer(SourceBuffer: TBufEC; const LoadOption: WideString); virtual; // @addr 0x83EBB0 @slot 0x00
-    procedure LoadFromKey(const Key: WideString); virtual; // @addr 0x83EBC4 @slot 0x04
+    procedure LoadFromConfigBuffer(SourceBuffer: TBufEC; const LoadOption: WideString); virtual; // @addr 0x004D3790 @slot 0x00
+    procedure LoadFromKey(const Key: WideString); virtual; // @addr 0x004D3794 @slot 0x04
   end;
 
   TCacheEC = class(TObjectEx) // @size 0x1C
@@ -63,46 +62,46 @@ type
     ResidentBytes: Integer; // @offset 0x14
     ResidentByteLimit: Integer; // @offset 0x18
 
-    constructor Create; // @addr 0x83EBD4
-    destructor Destroy; override; // @addr 0x83EC28
-    procedure Clear; // @addr 0x83EC6C @note "Invalidates all entries, including retained ones."
-    procedure SetDataRoot(Root: TDataEC); // @addr 0x83EC98 @note "Root is borrowed; invalidates existing cached entries."
-    procedure ResetControl(Control: TCacheControlEC); // @addr 0x83ECBC
+    constructor Create; // @addr 0x004D3798
+    destructor Destroy; override; // @addr 0x004D37DC
+    procedure Clear; // @addr 0x004D3810 @note "Invalidates all entries, including retained ones."
+    procedure SetDataRoot(Root: TDataEC); // @addr 0x004D382C @note "Root is borrowed; invalidates existing cached entries."
+    procedure ResetControl(Control: TCacheControlEC); // @addr 0x004D3840
     // List and lookup helpers below do not acquire CacheLock.
-    procedure AddDataToLruHead(Data: TCacheDataEC); // @addr 0x83ECD4
-    procedure RemoveAndFreeData(Data: TCacheDataEC); // @addr 0x83ED28 @note "Does not adjust ResidentBytes. Accepts nil."
-    function FindDataByKeyAndClass(const Key: WideString; CacheDataClass: TCacheDataClass): TCacheDataEC; // @addr 0x83EDA4 @note "Case-sensitive key and exact class match; returns nil when absent."
-    procedure TouchData(Data: TCacheDataEC); // @addr 0x83EE04
-    function OpenDataBuffer(const Path: WideString): TBufEC; // @addr 0x83EE88 @note "Caller owns the returned buffer."
-    procedure TrimToBudget(BudgetBytes: Integer); // @addr 0x83EEC4 @note "Retained entries can prevent reaching the budget."
-    procedure QueueNamedLoadIfMissing(PendingLoads: TList; const CacheKind, Key: WideString); // @addr 0x83EF88 @note "PendingLoads owns added controls; duplicate pending entries are possible."
+    procedure AddDataToLruHead(Data: TCacheDataEC); // @addr 0x004D3848
+    procedure RemoveAndFreeData(Data: TCacheDataEC); // @addr 0x004D386C @note "Does not adjust ResidentBytes. Accepts nil."
+    function FindDataByKeyAndClass(const Key: WideString; CacheDataClass: TCacheDataClass): TCacheDataEC; // @addr 0x004D38AC @note "Case-sensitive key and exact class match; returns nil when absent."
+    procedure TouchData(Data: TCacheDataEC); // @addr 0x004D38E8
+    function OpenDataBuffer(const Path: WideString): TBufEC; // @addr 0x004D3928 @note "Caller owns the returned buffer."
+    procedure TrimToBudget(BudgetBytes: Integer); // @addr 0x004D3950 @note "Retained entries can prevent reaching the budget."
+    procedure QueueNamedLoadIfMissing(PendingLoads: TList; const CacheKind, Key: WideString); // @addr 0x004D39DC @note "PendingLoads owns added controls; duplicate pending entries are possible."
   end;
 
-procedure EvictMainMenuShipCachesWhenAddressSpaceHigh; // @addr 0x83F294 @note "The threshold is 0x30000000 bytes of used virtual address space."
-procedure EvictRuinsAndGovernmentCaches; // @addr $83F564
-procedure EvictStarAndBackgroundCaches; // @addr $83F5E4
-procedure EvictBlockChildrenFromCache(BlockPath: WideString; CacheDataClass: TCacheDataClass); // @addr 0x83F630 @note "Requires an exact cache-data class match."
+procedure EvictMainMenuShipCachesWhenAddressSpaceHigh; // @addr 0x004D3CAC @note "The threshold is 0x30000000 bytes of used virtual address space."
+procedure EvictRuinsAndGovernmentCaches; // @addr $4D3F58
+procedure EvictStarAndBackgroundCaches; // @addr $4D3FD8
+procedure EvictBlockChildrenFromCache(BlockPath: WideString; CacheDataClass: TCacheDataClass); // @addr 0x004D4024 @note "Requires an exact cache-data class match."
 
 implementation
 
 uses EC_CacheSound, EC_CacheBitmap, EC_CacheTBitmap, EC_CacheAlphaBitmap, EC_CacheGAI, EC_CacheGI, EC_CachePlanetTempl, GR_DX, GR_Main, EC_Str, GlobalsV, SysUtils, Windows;
 
-{ @routine $83E1D8 TCacheControlEC_Create }
+{ @routine $4D2F34 TCacheControlEC_Create }
 constructor TCacheControlEC.Create;
 begin
   inherited Create;
 end;
-{ @end $83E1D8 }
+{ @end $4D2F34 }
 
-{ @routine $83E21C TCacheControlEC_Destroy }
+{ @routine $4D2F6C TCacheControlEC_Destroy }
 destructor TCacheControlEC.Destroy;
 begin
   Reset;
   inherited Destroy;
 end;
-{ @end $83E21C }
+{ @end $4D2F6C }
 
-{ @routine $83E254 TCacheControlEC_Reset }
+{ @routine $4D2F98 TCacheControlEC_Reset }
 procedure TCacheControlEC.Reset;
 begin
   RetainCount := 0;
@@ -115,24 +114,22 @@ begin
   end;
   CacheKey := '';
 end;
-{ @end $83E254 }
+{ @end $4D2F98 }
 
-{ @routine $83E2B0 TCacheControlEC_SetCacheKey }
+{ @routine $4D2FE0 TCacheControlEC_SetCacheKey }
 procedure TCacheControlEC.SetCacheKey(const NewKey: WideString);
 begin
   Reset;
   CacheKey := NewKey;
-  if FontSmoothingEnabled then
-  begin
-    if NewKey = SmallFontName then CacheKey := SmoothSmallFontName
-    else if NewKey = SmallBoldFontName then CacheKey := SmoothSmallBoldFontName
-    else if NewKey = NormalFontName then CacheKey := SmoothNormalFontName
-    else if NewKey = NormalBoldFontName then CacheKey := SmoothNormalBoldFontName;
-  end;
+  if not FontSmoothingEnabled then Exit;
+  if NewKey = SmallFontName then CacheKey := SmoothSmallFontName
+  else if NewKey = SmallBoldFontName then CacheKey := SmoothSmallBoldFontName
+  else if NewKey = NormalFontName then CacheKey := SmoothNormalFontName
+  else if NewKey = NormalBoldFontName then CacheKey := SmoothNormalBoldFontName;
 end;
-{ @end $83E2B0 }
+{ @end $4D2FE0 }
 
-{ @routine $83E380 TCacheControlEC_HasEmptyCacheKey }
+{ @routine $4D3094 TCacheControlEC_HasEmptyCacheKey }
 function TCacheControlEC.HasEmptyCacheKey: Boolean;
 begin
   if Length(CacheKey) < 1 then
@@ -140,22 +137,22 @@ begin
   else
     Result := False;
 end;
-{ @end $83E380 }
+{ @end $4D3094 }
 
-{ @routine $83E3A8 TCacheControlEC_QueueLoadIfMissing }
+{ @routine $4D30AC TCacheControlEC_QueueLoadIfMissing }
 procedure TCacheControlEC.QueueLoadIfMissing(PendingLoads: TList);
 begin
 end;
-{ @end $83E3A8 }
+{ @end $4D30AC }
 
-{ @routine $83E3B8 TCacheControlEC_CreateData }
+{ @routine $4D30B0 TCacheControlEC_CreateData }
 function TCacheControlEC.CreateData: TCacheDataEC;
 begin
   Result := nil;
 end;
-{ @end $83E3B8 }
+{ @end $4D30B0 }
 
-{ @routine $83E3D0 TCacheControlEC_AcquireDataFromConfig }
+{ @routine $4D30B4 TCacheControlEC_AcquireDataFromConfig }
 function TCacheControlEC.AcquireDataFromConfig(CacheDataClass: TCacheDataClass): TCacheDataEC;
 var
   Data: TCacheDataEC;
@@ -228,9 +225,9 @@ begin
   Result := BoundData;
   GlobalCache.TrimToBudget(GlobalCache.ResidentByteLimit);
 end;
-{ @end $83E3D0 }
+{ @end $4D30B4 }
 
-{ @routine $83E6F4 TCacheControlEC_AcquireDataFromDirectKey }
+{ @routine $4D33C0 TCacheControlEC_AcquireDataFromDirectKey }
 function TCacheControlEC.AcquireDataFromDirectKey(CacheDataClass: TCacheDataClass): TCacheDataEC;
 var
   Data: TCacheDataEC;
@@ -287,16 +284,16 @@ begin
   Result := BoundData;
   GlobalCache.TrimToBudget(GlobalCache.ResidentByteLimit);
 end;
-{ @end $83E6F4 }
+{ @end $4D33C0 }
 
-{ @routine $83E974 TCacheControlEC_AcquireData }
+{ @routine $4D3634 TCacheControlEC_AcquireData }
 function TCacheControlEC.AcquireData: TCacheDataEC;
 begin
   Result := nil;
 end;
-{ @end $83E974 }
+{ @end $4D3634 }
 
-{ @routine $83E98C TCacheControlEC_Release }
+{ @routine $4D3638 TCacheControlEC_Release }
 procedure TCacheControlEC.Release;
 begin
   if RetainCount > 0 then
@@ -304,9 +301,9 @@ begin
   else
     RetainCount := 0;
 end;
-{ @end $83E98C }
+{ @end $4D3638 }
 
-{ @routine $83E9B0 TCacheControlEC_EvictData }
+{ @routine $4D3648 TCacheControlEC_EvictData }
 procedure TCacheControlEC.EvictData(CacheDataClass: TCacheDataClass);
 begin
   if RetainCount > 0 then Exit;
@@ -321,25 +318,25 @@ begin
   end;
   GlobalCache.CacheLock.Leave;
 end;
-{ @end $83E9B0 }
+{ @end $4D3648 }
 
-{ @routine $83EA44 TCacheDataEC_Create }
+{ @routine $4D36B8 TCacheDataEC_Create }
 constructor TCacheDataEC.Create;
 begin
   inherited Create;
 end;
-{ @end $83EA44 }
+{ @end $4D36B8 }
 
-{ @routine $83EA88 TCacheDataEC_Destroy }
+{ @routine $4D36F0 TCacheDataEC_Destroy }
 destructor TCacheDataEC.Destroy;
 begin
   while FirstBoundControl <> nil do
     UnlinkControl(LastBoundControl);
   inherited Destroy;
 end;
-{ @end $83EA88 }
+{ @end $4D36F0 }
 
-{ @routine $83EAD4 TCacheDataEC_AppendControl }
+{ @routine $4D3728 TCacheDataEC_AppendControl }
 procedure TCacheDataEC.AppendControl(Control: TCacheControlEC);
 begin
   if (LastBoundControl <> nil) then
@@ -354,9 +351,9 @@ begin
     FirstBoundControl := Control;
   end;
 end;
-{ @end $83EAD4 }
+{ @end $4D3728 }
 
-{ @routine $83EB28 TCacheDataEC_UnlinkControl }
+{ @routine $4D374C TCacheDataEC_UnlinkControl }
 procedure TCacheDataEC.UnlinkControl(Control: TCacheControlEC);
 begin
   if (Control.PrevBoundControl <> nil) then
@@ -379,38 +376,38 @@ begin
   Control.NextBoundControl := nil;
   Control.BoundData := nil;
 end;
-{ @end $83EB28 }
+{ @end $4D374C }
 
-{ @routine $83EBB0 TCacheDataEC_LoadFromConfigBuffer }
+{ @routine $4D3790 TCacheDataEC_LoadFromConfigBuffer }
 procedure TCacheDataEC.LoadFromConfigBuffer(SourceBuffer: TBufEC; const LoadOption: WideString);
 begin
 end;
-{ @end $83EBB0 }
+{ @end $4D3790 }
 
-{ @routine $83EBC4 TCacheDataEC_LoadFromKey }
+{ @routine $4D3794 TCacheDataEC_LoadFromKey }
 procedure TCacheDataEC.LoadFromKey(const Key: WideString);
 begin
 end;
-{ @end $83EBC4 }
+{ @end $4D3794 }
 
-{ @routine $83EBD4 TCacheEC_Create }
+{ @routine $4D3798 TCacheEC_Create }
 constructor TCacheEC.Create;
 begin
   inherited Create;
   CacheLock := TCriticalSection.Create;
 end;
-{ @end $83EBD4 }
+{ @end $4D3798 }
 
-{ @routine $83EC28 TCacheEC_Destroy }
+{ @routine $4D37DC TCacheEC_Destroy }
 destructor TCacheEC.Destroy;
 begin
   Clear;
   CacheLock.Free;
   inherited Destroy;
 end;
-{ @end $83EC28 }
+{ @end $4D37DC }
 
-{ @routine $83EC6C TCacheEC_Clear }
+{ @routine $4D3810 TCacheEC_Clear }
 procedure TCacheEC.Clear;
 begin
   while (MostRecentData <> nil) do
@@ -419,24 +416,24 @@ begin
   end;
   ResidentBytes := 0;
 end;
-{ @end $83EC6C }
+{ @end $4D3810 }
 
-{ @routine $83EC98 TCacheEC_SetDataRoot }
+{ @routine $4D382C TCacheEC_SetDataRoot }
 procedure TCacheEC.SetDataRoot(Root: TDataEC);
 begin
   Clear;
   DataRoot := Root;
 end;
-{ @end $83EC98 }
+{ @end $4D382C }
 
-{ @routine $83ECBC TCacheEC_ResetControl }
+{ @routine $4D3840 TCacheEC_ResetControl }
 procedure TCacheEC.ResetControl(Control: TCacheControlEC);
 begin
   Control.Reset;
 end;
-{ @end $83ECBC }
+{ @end $4D3840 }
 
-{ @routine $83ECD4 TCacheEC_AddDataToLruHead }
+{ @routine $4D3848 TCacheEC_AddDataToLruHead }
 procedure TCacheEC.AddDataToLruHead(Data: TCacheDataEC);
 begin
   if (MostRecentData <> nil) then
@@ -451,35 +448,33 @@ begin
     LeastRecentData := Data;
   end;
 end;
-{ @end $83ECD4 }
+{ @end $4D3848 }
 
-{ @routine $83ED28 TCacheEC_RemoveAndFreeData }
+{ @routine $4D386C TCacheEC_RemoveAndFreeData }
 procedure TCacheEC.RemoveAndFreeData(Data: TCacheDataEC);
 begin
-  if (Data <> nil) then
+  if Data = nil then Exit;
+  if (Data.PrevData <> nil) then
   begin
-    if (Data.PrevData <> nil) then
-    begin
-      Data.PrevData.NextData := Data.NextData;
-    end;
-    if (Data.NextData <> nil) then
-    begin
-      Data.NextData.PrevData := Data.PrevData;
-    end;
-    if (LeastRecentData = Data) then
-    begin
-      LeastRecentData := Data.PrevData;
-    end;
-    if (MostRecentData = Data) then
-    begin
-      MostRecentData := Data.NextData;
-    end;
-    Data.Free;
+    Data.PrevData.NextData := Data.NextData;
   end;
+  if (Data.NextData <> nil) then
+  begin
+    Data.NextData.PrevData := Data.PrevData;
+  end;
+  if (LeastRecentData = Data) then
+  begin
+    LeastRecentData := Data.PrevData;
+  end;
+  if (MostRecentData = Data) then
+  begin
+    MostRecentData := Data.NextData;
+  end;
+  Data.Free;
 end;
-{ @end $83ED28 }
+{ @end $4D386C }
 
-{ @routine $83EDA4 TCacheEC_FindDataByKeyAndClass }
+{ @routine $4D38AC TCacheEC_FindDataByKeyAndClass }
 function TCacheEC.FindDataByKeyAndClass(const Key: WideString; CacheDataClass: TCacheDataClass): TCacheDataEC;
 var
   Data: TCacheDataEC;
@@ -487,8 +482,7 @@ begin
   Data := MostRecentData;
   while Data <> nil do
   begin
-    if Data.ClassType = CacheDataClass then
-      if Data.CacheKey = Key then
+    if (Data.ClassType = CacheDataClass) and (Data.CacheKey = Key) then
       begin
         Result := Data;
         Exit;
@@ -497,35 +491,33 @@ begin
   end;
   Result := nil;
 end;
-{ @end $83EDA4 }
+{ @end $4D38AC }
 
-{ @routine $83EE04 TCacheEC_TouchData }
+{ @routine $4D38E8 TCacheEC_TouchData }
 procedure TCacheEC.TouchData(Data: TCacheDataEC);
 begin
-  if (Data <> MostRecentData) then
+  if Data = MostRecentData then Exit;
+  if (Data.PrevData <> nil) then
   begin
-    if (Data.PrevData <> nil) then
-    begin
-      Data.PrevData.NextData := Data.NextData;
-    end;
-    if (Data.NextData <> nil) then
-    begin
-      Data.NextData.PrevData := Data.PrevData;
-    end;
-    if (LeastRecentData = Data) then
-    begin
-      LeastRecentData := Data.PrevData;
-    end;
-    if (MostRecentData = Data) then
-    begin
-      MostRecentData := Data.NextData;
-    end;
-    AddDataToLruHead(Data);
+    Data.PrevData.NextData := Data.NextData;
   end;
+  if (Data.NextData <> nil) then
+  begin
+    Data.NextData.PrevData := Data.PrevData;
+  end;
+  if (LeastRecentData = Data) then
+  begin
+    LeastRecentData := Data.PrevData;
+  end;
+  if (MostRecentData = Data) then
+  begin
+    MostRecentData := Data.NextData;
+  end;
+  AddDataToLruHead(Data);
 end;
-{ @end $83EE04 }
+{ @end $4D38E8 }
 
-{ @routine $83EE88 TCacheEC_OpenDataBuffer }
+{ @routine $4D3928 TCacheEC_OpenDataBuffer }
 function TCacheEC.OpenDataBuffer(const Path: WideString): TBufEC;
 var
   Buffer: TBufEC;
@@ -534,9 +526,9 @@ begin
   DataRoot.ReadBufferByPath(Path, Buffer);
   Result := Buffer;
 end;
-{ @end $83EE88 }
+{ @end $4D3928 }
 
-{ @routine $83EEC4 TCacheEC_TrimToBudget }
+{ @routine $4D3950 TCacheEC_TrimToBudget }
 procedure TCacheEC.TrimToBudget(BudgetBytes: Integer);
 var
   Data, Removed: TCacheDataEC;
@@ -571,9 +563,9 @@ begin
   end;
   CacheLock.Leave;
 end;
-{ @end $83EEC4 }
+{ @end $4D3950 }
 
-{ @routine $83EF88 TCacheEC_QueueNamedLoadIfMissing }
+{ @routine $4D39DC TCacheEC_QueueNamedLoadIfMissing }
 procedure TCacheEC.QueueNamedLoadIfMissing(PendingLoads: TList; const CacheKind: WideString; const Key: WideString);
 var
   AlphaBitmap: TCAlphaBitmapControlEC;
@@ -655,9 +647,9 @@ begin
     end;
   end;
 end;
-{ @end $83EF88 }
+{ @end $4D39DC }
 
-{ @routine $83F294 EvictMainMenuShipCachesWhenAddressSpaceHigh }
+{ @routine $4D3CAC EvictMainMenuShipCachesWhenAddressSpaceHigh }
 procedure EvictMainMenuShipCachesWhenAddressSpaceHigh;
 var
   i: Integer;
@@ -666,55 +658,53 @@ var
 begin
   Status.Length := SizeOf(Status);
   GlobalMemoryStatusEx(Status);
-  if (Status.TotalVirtual - Status.AvailVirtual) >= $30000000 then
+  if Status.TotalVirtual - Status.AvailVirtual < $30000000 then Exit;
+  Control := TCacheControlEC.Create;
+  GlobalCache.ResetControl(Control);
+  for i := 1 to 3 do
   begin
-    Control := TCacheControlEC.Create;
-    GlobalCache.ResetControl(Control);
-    for i := 1 to 3 do
-    begin
-      Control.SetCacheKey('Bm.FormMain3.2ShipA' + IntToStr(i));
-      Control.EvictData(TCGaiEC);
-    end;
-    for i := 1 to 3 do
-    begin
-      Control.SetCacheKey('Bm.FormMain3.2Ship' + IntToStr(i));
-      Control.EvictData(TCGiEC);
-    end;
-    for i := 1 to 3 do
-    begin
-      Control.SetCacheKey('Bm.FormMain3.AnimGaalShip0' + IntToStr(i) + 'A');
-      Control.EvictData(TCGaiEC);
-    end;
-    for i := 1 to 3 do
-    begin
-      Control.SetCacheKey('Bm.FormMain3.AnimGaalShip0' + IntToStr(i));
-      Control.EvictData(TCGiEC);
-    end;
-    Control.SetCacheKey('Bm.FormMain3.2BG');
-    Control.EvictData(TCGiEC);
-    Control.Free;
+    Control.SetCacheKey('Bm.FormMain3.2ShipA' + IntToStr(i));
+    Control.EvictData(TCGaiEC);
   end;
+  for i := 1 to 3 do
+  begin
+    Control.SetCacheKey('Bm.FormMain3.2Ship' + IntToStr(i));
+    Control.EvictData(TCGiEC);
+  end;
+  for i := 1 to 3 do
+  begin
+    Control.SetCacheKey('Bm.FormMain3.AnimGaalShip0' + IntToStr(i) + 'A');
+    Control.EvictData(TCGaiEC);
+  end;
+  for i := 1 to 3 do
+  begin
+    Control.SetCacheKey('Bm.FormMain3.AnimGaalShip0' + IntToStr(i));
+    Control.EvictData(TCGiEC);
+  end;
+  Control.SetCacheKey('Bm.FormMain3.2BG');
+  Control.EvictData(TCGiEC);
+  Control.Free;
 end;
-{ @end $83F294 }
+{ @end $4D3CAC }
 
-{ @routine $83F564 EvictRuinsAndGovernmentCaches }
+{ @routine $4D3F58 EvictRuinsAndGovernmentCaches }
 procedure EvictRuinsAndGovernmentCaches;
 begin
   EvictBlockChildrenFromCache('Bm.FormRuins', TCGaiEC);
   EvictBlockChildrenFromCache('Bm.GovHD', TCGaiEC);
   EvictBlockChildrenFromCache('Bm.Gov', TCGaiEC);
 end;
-{ @end $83F564 }
+{ @end $4D3F58 }
 
-{ @routine $83F5E4 EvictStarAndBackgroundCaches }
+{ @routine $4D3FD8 EvictStarAndBackgroundCaches }
 procedure EvictStarAndBackgroundCaches;
 begin
   EvictBlockChildrenFromCache('Bm.Star', TCGaiEC);
   EvictBlockChildrenFromCache('Bm.BGO', TCGaiEC);
 end;
-{ @end $83F5E4 }
+{ @end $4D3FD8 }
 
-{ @routine $83F630 EvictBlockChildrenFromCache }
+{ @routine $4D4024 EvictBlockChildrenFromCache }
 procedure EvictBlockChildrenFromCache(BlockPath: WideString; CacheDataClass: TCacheDataClass);
 var
   i: Integer;
@@ -733,6 +723,6 @@ begin
   end;
   Control.Free;
 end;
-{ @end $83F630 }
+{ @end $4D4024 }
 
 end.

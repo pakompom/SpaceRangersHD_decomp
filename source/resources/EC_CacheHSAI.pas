@@ -1,5 +1,4 @@
 unit EC_CacheHSAI;
-// Unit bracket (inferred): .text 0x00494EA4..0x004953B3; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -29,9 +28,9 @@ type
 
   TCHSAIControlEC = class(TCacheControlEC) // @size 0x18
   public
-    procedure QueueLoadIfMissing(PendingLoads: TList); override; // @addr 0x494F78
-    function CreateData: TCacheDataEC; override; // @addr 0x494FFC
-    function AcquireData: TCacheDataEC; override; // @addr 0x495048
+    procedure QueueLoadIfMissing(PendingLoads: TList); override; // @addr 0x004B8600
+    function CreateData: TCacheDataEC; override; // @addr 0x004B866C
+    function AcquireData: TCacheDataEC; override; // @addr 0x004B869C
   end;
 
   TCHSAIEC = class(TCacheDataEC) // @size 0x34
@@ -42,69 +41,67 @@ type
     Height: Integer; // @offset 0x2C
     FrameSurfaceCache: TTextureGR; // @offset 0x30
 
-    constructor Create; // @addr 0x495064
-    destructor Destroy; override; // @addr 0x4950B0
-    function GetFrameCount: Cardinal; // @addr 0x49511C
-    function GetFrameIndexPlane(FrameIndex: Cardinal): Pointer; // @addr 0x495138 @note "Returns nil when FrameIndex is outside the header count."
-    function GetFramePalette(FrameIndex: Cardinal): PColorRGBA; // @addr 0x495184 @note "Returns nil for an invalid frame or absent palette."
-    function GetOrCreateFrameSurface(FrameIndex: Cardinal): IDirect3DTexture9; // @addr 0x4951F8 @note "Requires a valid frame and palette; uses Width rather than PitchBytes as the source pitch."
-    function GetSourcePitchBytes: Integer; // @addr 0x495308
-    procedure LoadFromConfigBuffer(SourceBuffer: TBufEC; const LoadOption: WideString); override; // @addr 0x495324 @note "Only the minimum 0x34-byte header size is validated. Ignores LoadOption."
+    constructor Create; // @addr 0x004B86A4
+    destructor Destroy; override; // @addr 0x004B86E0
+    function GetFrameCount: Cardinal; // @addr 0x004B8728
+    function GetFrameIndexPlane(FrameIndex: Integer): Pointer; // @addr 0x004B8730 @note "Returns nil when FrameIndex is outside the header count."
+    function GetFramePalette(FrameIndex: Integer): PColorRGBA; // @addr 0x004B875C @note "Returns nil for an invalid frame or absent palette."
+    function GetOrCreateFrameSurface(FrameIndex: Cardinal): IDirect3DTexture9; // @addr 0x004B879C @note "Requires a valid frame and palette; uses Width rather than PitchBytes as the source pitch."
+    function GetSourcePitchBytes: Integer; // @addr 0x004B8884
+    procedure LoadFromConfigBuffer(SourceBuffer: TBufEC; const LoadOption: WideString); override; // @addr 0x004B888C @note "Only the minimum 0x34-byte header size is validated. Ignores LoadOption."
   end;
 
-function AcquireCachedHSAI(Control: TCacheControlEC): TCHSAIEC; // @addr 0x49501C
+function AcquireCachedHSAI(Control: TCacheControlEC): TCHSAIEC; // @addr 0x004B867C
 
 implementation
 
 uses SysUtils, EC_Mem, GR_Main, Windows;
 
-{ @routine $494F78 TCHSAIControlEC_QueueLoadIfMissing }
+{ @routine $4B8600 TCHSAIControlEC_QueueLoadIfMissing }
 procedure TCHSAIControlEC.QueueLoadIfMissing(PendingLoads: TList);
 var Control: TCHSAIControlEC;
 begin
   if RetainCount > 0 then Exit;
   if BoundData <> nil then Exit;
   if HasEmptyCacheKey then Exit;
-  if GlobalCache.FindDataByKeyAndClass(CacheKey, TCHSAIEC) = nil then
-  begin
-    Control := TCHSAIControlEC.Create;
-    GlobalCache.ResetControl(Control);
-    Control.SetCacheKey(CacheKey);
-    PendingLoads.Add(Control);
-  end;
+  if GlobalCache.FindDataByKeyAndClass(CacheKey, TCHSAIEC) <> nil then Exit;
+  Control := TCHSAIControlEC.Create;
+  GlobalCache.ResetControl(Control);
+  Control.SetCacheKey(CacheKey);
+  PendingLoads.Add(Control);
 end;
-{ @end $494F78 }
+{ @end $4B8600 }
 
-{ @routine $494FFC TCHSAIControlEC_CreateData }
+{ @routine $4B866C TCHSAIControlEC_CreateData }
 function TCHSAIControlEC.CreateData: TCacheDataEC;
 begin
   Result := TCHSAIEC.Create;
 end;
-{ @end $494FFC }
+{ @end $4B866C }
 
-{ @routine $49501C AcquireCachedHSAI }
+{ @routine $4B867C AcquireCachedHSAI }
 function AcquireCachedHSAI(Control: TCacheControlEC): TCHSAIEC;
 begin
   Result := Control.AcquireDataFromConfig(TCHSAIEC) as TCHSAIEC;
 end;
-{ @end $49501C }
+{ @end $4B867C }
 
-{ @routine $495048 TCHSAIControlEC_AcquireData }
+{ @routine $4B869C TCHSAIControlEC_AcquireData }
 function TCHSAIControlEC.AcquireData: TCacheDataEC;
 begin
   Result := AcquireCachedHSAI(Self);
 end;
-{ @end $495048 }
+{ @end $4B869C }
 
-{ @routine $495064 TCHSAIEC_Create }
+{ @routine $4B86A4 TCHSAIEC_Create }
 constructor TCHSAIEC.Create;
 begin
   FrameSurfaceCache := nil;
   inherited Create;
 end;
-{ @end $495064 }
+{ @end $4B86A4 }
 
-{ @routine $4950B0 TCHSAIEC_Destroy }
+{ @routine $4B86E0 TCHSAIEC_Destroy }
 destructor TCHSAIEC.Destroy;
 begin
   if BlobData <> nil then
@@ -119,33 +116,33 @@ begin
   end;
   inherited Destroy;
 end;
-{ @end $4950B0 }
+{ @end $4B86E0 }
 
-{ @routine $49511C TCHSAIEC_GetFrameCount }
+{ @routine $4B8728 TCHSAIEC_GetFrameCount }
 function TCHSAIEC.GetFrameCount: Cardinal;
 begin
   Result := Header.FrameCount;
 end;
-{ @end $49511C }
+{ @end $4B8728 }
 
-{ @routine $495138 TCHSAIEC_GetFrameIndexPlane }
-function TCHSAIEC.GetFrameIndexPlane(FrameIndex: Cardinal): Pointer;
+{ @routine $4B8730 TCHSAIEC_GetFrameIndexPlane }
+function TCHSAIEC.GetFrameIndexPlane(FrameIndex: Integer): Pointer;
 begin
-  if FrameIndex >= Header.FrameCount then Result := nil
-  else Result := AddPointerOffset(BlobData, SizeOf(THSAIHeaderEC) + FrameIndex * Header.FrameStride);
+  if Header.FrameCount <= Cardinal(FrameIndex) then Result := nil
+  else Result := AddPointerOffset(BlobData, SizeOf(THSAIHeaderEC) + Cardinal(FrameIndex) * Header.FrameStride);
 end;
-{ @end $495138 }
+{ @end $4B8730 }
 
-{ @routine $495184 TCHSAIEC_GetFramePalette }
-function TCHSAIEC.GetFramePalette(FrameIndex: Cardinal): PColorRGBA;
+{ @routine $4B875C TCHSAIEC_GetFramePalette }
+function TCHSAIEC.GetFramePalette(FrameIndex: Integer): PColorRGBA;
 begin
-  if FrameIndex >= Header.FrameCount then Result := nil
+  if Header.FrameCount <= Cardinal(FrameIndex) then Result := nil
   else if Header.PaletteBytes = 0 then Result := nil
-  else Result := AddPointerOffset(BlobData, SizeOf(THSAIHeaderEC) + FrameIndex * Header.FrameStride + Header.PitchBytes * Header.Height);
+  else Result := AddPointerOffset(BlobData, SizeOf(THSAIHeaderEC) + Cardinal(FrameIndex) * Header.FrameStride + Header.PitchBytes * Header.Height);
 end;
-{ @end $495184 }
+{ @end $4B875C }
 
-{ @routine $4951F8 TCHSAIEC_GetOrCreateFrameSurface }
+{ @routine $4B879C TCHSAIEC_GetOrCreateFrameSurface }
 function TCHSAIEC.GetOrCreateFrameSurface(FrameIndex: Cardinal): IDirect3DTexture9;
 var Texture: IDirect3DTexture9; Locked: TD3DLockedRect;
 begin
@@ -167,16 +164,16 @@ begin
   end;
   Result := Texture;
 end;
-{ @end $4951F8 }
+{ @end $4B879C }
 
-{ @routine $495308 TCHSAIEC_GetSourcePitchBytes }
+{ @routine $4B8884 TCHSAIEC_GetSourcePitchBytes }
 function TCHSAIEC.GetSourcePitchBytes: Integer;
 begin
   Result := Header.PitchBytes;
 end;
-{ @end $495308 }
+{ @end $4B8884 }
 
-{ @routine $495324 TCHSAIEC_LoadFromConfigBuffer }
+{ @routine $4B888C TCHSAIEC_LoadFromConfigBuffer }
 procedure TCHSAIEC.LoadFromConfigBuffer(SourceBuffer: TBufEC; const LoadOption: WideString);
 begin
   if SourceBuffer.DataSize < SizeOf(THSAIHeaderEC) then raise Exception.Create('Error Load HSAI');
@@ -187,6 +184,6 @@ begin
   Width := Header.Width;
   Height := Header.Height;
 end;
-{ @end $495324 }
+{ @end $4B888C }
 
 end.

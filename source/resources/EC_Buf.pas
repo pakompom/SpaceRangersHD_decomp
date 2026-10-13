@@ -1,5 +1,4 @@
 unit EC_Buf;
-// Unit bracket (inferred): .text 0x0086BA78..0x0086D517; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -24,115 +23,130 @@ type
   end;
   PEncodedTableHeaderEC = ^TEncodedTableHeaderEC;
 
-  TBufEC = class(TObjectEx) // @size 0x14
+  TBufEC = class(TObjectEx) // @size 0x14 @methodorder virtual
   public
     DataSize: Integer; // @offset 0x04
     Capacity: Integer; // @offset 0x08
     Position: Integer; // @offset 0x0C
     Data: Pointer; // @offset 0x10
 
-    constructor Create; // @addr 0x86BACC
-    destructor Destroy; override; // @addr 0x86BB10
-    procedure Clear; // @addr 0x86BB4C
-    function IsAtEnd: Boolean; // @addr 0x86BBF4
-    procedure SetSize(NewSize: Integer); // @addr 0x86BB8C @note "Nonpositive sizes clear the buffer; shrinking clamps Position."
-    procedure SetPosition(NewPosition: Integer); // @addr 0x86BC1C
-    procedure EnsureWriteCapacity(AddedBytes: Integer); // @addr 0x86BCD0 @note "AddedBytes must be positive. Extends DataSize without advancing Position."
-    procedure EnsureWriteCapacityAtOffset(Offset, AddedBytes: Integer); // @addr 0x86BDF8 @note "AddedBytes must be positive; Offset must be in 0..DataSize. Position is unchanged."
-    procedure EnsureReadable(Bytes: Integer); // @addr 0x86BF5C
-    procedure EnsureReadableAtOffset(Offset, Bytes: Integer); // @addr 0x86C00C @note "Rejects nonpositive counts and ranges ending past DataSize; does not reject negative Offset."
+    constructor Create; // @addr 0x007B77FC
+    destructor Destroy; override; // @addr 0x007B7834
+    procedure Clear; // @addr 0x007B7860
+    function IsAtEnd: Boolean; // @addr 0x007B78C4
+    procedure SetSize(NewSize: Integer); // @addr 0x007B7888 @note "Nonpositive sizes clear the buffer; shrinking clamps Position."
+    procedure SetPosition(NewPosition: Integer); // @addr 0x007B78D4
+    procedure EnsureWriteCapacity(AddedBytes: Integer); // @addr 0x007B7970 @note "AddedBytes must be positive. Extends DataSize without advancing Position."
+    procedure EnsureWriteCapacityAtOffset(Offset, AddedBytes: Integer); // @addr 0x007B7A50 @note "AddedBytes must be positive; Offset must be in 0..DataSize. Position is unchanged."
+    procedure EnsureReadable(Bytes: Integer); // @addr 0x007B7B64
+    procedure EnsureReadableAtOffset(Offset, Bytes: Integer); // @addr 0x007B7C00 @note "Rejects nonpositive counts and ranges ending past DataSize; does not reject negative Offset."
 
-    procedure SetByteAt(Offset: Integer; Value: Byte); // @addr 0x86C0E8
-    procedure SetInt32At(Offset: Integer; Value: Integer); // @addr 0x86C124
-    function GetByteAt(Offset: Integer): Byte; // @addr 0x86C6B8
-    function GetUInt32At(Offset: Integer): Cardinal; // @addr 0x86C6F0
-    function GetInt32At(Offset: Integer): Integer; // @addr 0x86C728
+    procedure SetByteAt(Offset: Integer; Value: Byte); // @addr 0x007B7CC8
+    procedure SetInt32At(Offset: Integer; Value: Integer); // @addr 0x007B7CF4
+    function GetByteAt(Offset: Integer): Byte; // @addr 0x007B80F8
+    function GetUInt32At(Offset: Integer): Cardinal; // @addr 0x007B811C
+    function GetInt32At(Offset: Integer): Integer; // @addr 0x007B8140
 
     // Sequential operations use Position, including writes into existing data.
-    procedure AddBytes(Source: Pointer; ByteCount: Integer); // @addr 0x86C160
-    procedure AddByte(Value: Byte); // @addr 0x86C360
-    procedure AddWord(Value: Word); // @addr 0x86C3A8
-    procedure AddInt32(Value: Integer); // @addr 0x86C3F4
-    procedure AddInteger(Value: Integer); // @addr 0x86C43C
-    procedure AddDWord(Value: Cardinal); // @addr 0x86C518
-    procedure AddIntegerValue(Value: Integer); // @addr 0x86C560
-    procedure AddSingle(Value: Single); // @addr 0x86C5A8
-    procedure AddDouble(Value: Double); // @addr 0x86C5EC @ida "void __userpurge $name(TBufEC *Self@<eax>, double Value);"
-    procedure AddBoolean(Value: Boolean); // @addr 0x86C634
-    procedure AddBuffer(Value: TBufEC); // @addr 0x86C67C @note "Writes a four-byte size followed by the entire source payload, ignoring its Position."
+    procedure AddBytes(Source: Pointer; ByteCount: Integer); // @addr 0x007B7D20
+    procedure AddByte(Value: Byte); // @addr 0x007B7E88
+    procedure AddWord(Value: Word); // @addr 0x007B7EBC
+    procedure AddInt32(Value: Integer); // @addr 0x007B7EF0
+    procedure AddInteger(Value: Integer); // @addr 0x007B7F24
+    procedure AddDWord(Value: Cardinal); // @addr 0x007B7FC0
+    procedure AddIntegerValue(Value: Integer); // @addr 0x007B7FF4
+    procedure AddSingle(Value: Single); // @addr 0x007B8028
+    procedure AddDouble(Value: Double); // @addr 0x007B8060 @ida "void __userpurge $name(TBufEC *Self@<eax>, double Value);"
+    procedure AddBoolean(Value: Boolean); // @addr 0x007B809C
+    procedure AddBuffer(Value: TBufEC); // @addr 0x007B80D0 @note "Writes a four-byte size followed by the entire source payload, ignoring its Position."
 
-    procedure AddAnsiStringZ(const Value: AnsiString); // @addr 0x86C1A8
-    procedure AddWideStringZ(const Value: WideString); // @addr 0x86C21C
-    procedure AddAnsiStringRaw(const Value: AnsiString); // @addr 0x86C288
-    procedure AddWideStringRaw(const Value: WideString); // @addr 0x86C2FC
-    procedure AddAnsiChar(Value: AnsiChar); // @addr 0x86C484
-    procedure AddWideChar(Value: WideChar); // @addr 0x86C4CC
+    procedure AddAnsiStringZ(const Value: AnsiString); // @addr 0x007B7D54
+    procedure AddWideStringZ(const Value: WideString); // @addr 0x007B7DA4
+    procedure AddAnsiStringRaw(const Value: AnsiString); // @addr 0x007B7DF4
+    procedure AddWideStringRaw(const Value: WideString); // @addr 0x007B7E40
+    procedure AddAnsiChar(Value: AnsiChar); // @addr 0x007B7F58
+    procedure AddWideChar(Value: WideChar); // @addr 0x007B7F8C
 
-    function ReadBytes(Dest: Pointer; ByteCount: Integer): Pointer; // @addr 0x86C760 @note "Returns Dest; requires a positive ByteCount."
-    // Several scalar readers contain native inline assembly after the bounds check.
-    function GetByte: Byte; // @addr 0x86C838
-    function GetWideChar: WideChar; // @addr 0x86C870
-    function GetWord: Word; // @addr 0x86C8AC
-    function GetUInt32: Cardinal; // @addr 0x86C8E8
-    function GetInt32: Integer; // @addr 0x86C920
-    function GetSingle: Single; // @addr 0x86C958 @note "Replaces NaN with zero."
-    function GetDouble: Double; // @addr 0x86C9E4 @note "Replaces NaN with zero."
-    function GetBoolean: Boolean; // @addr 0x86CA78
-    procedure ReadLengthPrefixedBuffer(Dest: TBufEC); // @addr 0x86CAB0 @note "Dest.Position is preserved unless it exceeds the new size."
+    function ReadBytes(Dest: Pointer; ByteCount: Integer): Pointer; // @addr 0x007B8164 @note "Returns Dest; requires a positive ByteCount."
+    function GetByte: Byte; // @addr 0x007B81F4
+    function GetWideChar: WideChar; // @addr 0x007B8230
+    function GetWord: Word; // @addr 0x007B8254
+    function GetUInt32: Cardinal; // @addr 0x007B8294
+    function GetInt32: Integer; // @addr 0x007B82D0
+    function GetSingle: Single; // @addr 0x007B830C @note "Replaces NaN with zero."
+    function GetDouble: Double; // @addr 0x007B8398 @note "Replaces NaN with zero."
+    function GetBoolean: Boolean; // @addr 0x007B8424
+    procedure ReadLengthPrefixedBuffer(Dest: TBufEC); // @addr 0x007B8460 @note "Dest.Position is preserved unless it exceeds the new size."
 
     // Lengths count characters, stop at the buffer end, and leave Position unchanged.
-    function GetWideStringLength: Integer; // @addr 0x86CAF0
-    function GetWideStringLengthAt(Offset: Integer): Integer; // @addr 0x86CB14
-    function GetAnsiTextLineLength: Integer; // @addr 0x86CB74
-    function GetAnsiTextLineLengthAt(Offset: Integer): Integer; // @addr 0x86CB98
-    function GetWideTextLineLength: Integer; // @addr 0x86CC08
-    function GetWideTextLineLengthAt(Offset: Integer): Integer; // @addr 0x86CC2C
+    function GetWideStringLength: Integer; // @addr 0x007B8490
+    function GetWideStringLengthAt(Offset: Integer): Integer; // @addr 0x007B849C
+    function GetAnsiTextLineLength: Integer; // @addr 0x007B84DC
+    function GetAnsiTextLineLengthAt(Offset: Integer): Integer; // @addr 0x007B84E8
+    function GetWideTextLineLength: Integer; // @addr 0x007B8534
+    function GetWideTextLineLengthAt(Offset: Integer): Integer; // @addr 0x007B8540
 
     // Dest must have room for the text and a terminating zero; returns Dest.
     // Line readers stop at NUL, CR or LF and consume up to two such characters.
-    function ReadAnsiTextLineToBuffer(Dest: PAnsiChar): PAnsiChar; // @addr 0x86CCA0
-    function ReadWideTextLineToBuffer(Dest: PWideChar): PWideChar; // @addr 0x86CDE0
-    function ReadWideStringToBuffer(Dest: PWideChar): PWideChar; // @addr 0x86C7B4 @note "Consumes the terminating zero; an empty scan advances Position by two even at the buffer end."
-    function ReadAnsiTextLine: AnsiString; // @addr 0x86CD74
-    function ReadWideTextLine: WideString; // @addr 0x86CEC8
-    function ReadWideString: WideString; // @addr 0x86CF34
+    function ReadAnsiTextLineToBuffer(Dest: PAnsiChar): PAnsiChar; // @addr 0x007B8594
+    function ReadWideTextLineToBuffer(Dest: PWideChar): PWideChar; // @addr 0x007B8664
+    function ReadWideStringToBuffer(Dest: PWideChar): PWideChar; // @addr 0x007B819C @note "Consumes the terminating zero; an empty scan advances Position by two even at the buffer end."
+    function ReadAnsiTextLine: AnsiString; // @addr 0x007B8610
+    function ReadWideTextLine: WideString; // @addr 0x007B86FC
+    function ReadWideString: WideString; // @addr 0x007B8750
 
     // Successful transforms replace the entire payload and reset Position to zero.
     // False leaves the buffer intact, including when DataSize is less than eight.
-    function CompressZlibPayloadInPlace(FastMode: Boolean): Boolean; // @addr 0x86CFAC @note "FastMode is ignored in this binary."
-    function ExpandZlibPayloadInPlace: Boolean; // @addr 0x86D050
-    procedure ApplyDatXorCipher(Seed: Integer); // @addr 0x86D164 @note "Leaves Position unchanged."
-    function ComputeCrc32: Cardinal; // @addr 0x86D1B4
-    function ComputeCrc32Range(StartOffset, EndOffset: Integer): Cardinal; // @addr 0x86D1D8 @note "EndOffset is exclusive; offsets are not validated."
-    procedure UpdateEmbeddedCrc32(StartOffset, EndOffset, CrcOffset: Integer); // @addr 0x86D208 @note "CrcOffset reserves eight bytes inside the half-open range. Stores the range CRC followed by a correction word preserving the previous prefix CRC through that slot."
+    function CompressZlibPayloadInPlace(FastMode: Boolean): Boolean; // @addr 0x007B87B8 @note "FastMode is ignored in this binary."
+    function ExpandZlibPayloadInPlace: Boolean; // @addr 0x007B8818
+    procedure ApplyDatXorCipher(Seed: Integer); // @addr 0x007B88DC @note "Leaves Position unchanged."
+    function ComputeCrc32: Cardinal; // @addr 0x007B8904
+    function ComputeCrc32Range(StartOffset, EndOffset: Integer): Cardinal; // @addr 0x007B8910 @note "EndOffset is exclusive; offsets are not validated."
+    procedure UpdateEmbeddedCrc32(StartOffset, EndOffset, CrcOffset: Integer); // @addr 0x007B8920 @note "CrcOffset reserves eight bytes inside the half-open range. Stores the range CRC followed by a correction word preserving the previous prefix CRC through that slot."
 
     // Loaders replace the payload and leave Position at zero.
-    procedure LoadFromFileChunk(SourceFile: TFileEC; ByteCount: Integer); // @addr 0x86D2F0 @note "Consumes from the current file position; balances its own handle acquisition."
-    procedure LoadFromFile(SourceFile: TFileEC); // @addr 0x86D3C0 @note "Reads only the remaining file bytes; balances its own handle acquisition."
-    procedure LoadFromWideFilePath(FileName: PWideChar); // @addr 0x86D44C
-    procedure SaveToFile(DestFile: TFileEC); // @addr 0x86D4F4 @note "Writes the entire payload at the open file's current position, ignoring the buffer's Position."
+    procedure LoadFromFileChunk(SourceFile: TFileEC; ByteCount: Integer); // @addr 0x007B89E8 @note "Consumes from the current file position; balances its own handle acquisition."
+    procedure LoadFromFile(SourceFile: TFileEC); // @addr 0x007B8A98 @note "Reads only the remaining file bytes; balances its own handle acquisition."
+    procedure LoadFromWideFilePath(FileName: PWideChar); // @addr 0x007B8B20
+    procedure SaveToFile(DestFile: TFileEC); // @addr 0x007B8BC8 @note "Writes the entire payload at the open file's current position, ignoring the buffer's Position."
   end;
 
 implementation
 
 uses CrcUnit, EC_Mem, GR_Main, Math, SysUtils, Windows;
 
+type
+  TBufferByteArray = array[0..$7FFFFFFE] of Byte;
+  PBufferByteArray = ^TBufferByteArray;
+
+  TEmbeddedCrc32EC = packed record // @size $08
+    RangeCrc: Cardinal; // @offset $00
+    Correction: Cardinal; // @offset $04
+  end;
+  PEmbeddedCrc32EC = ^TEmbeddedCrc32EC;
+
 const
   BufferGrowthSlack = 256;
+  MaxFileReadChunkSize = 256 * 1024;
   CarriageReturnCode = 13;
   LineFeedCode = 10;
 
-{ @routine $86BACC TBufEC_Create }
+{ @routine $7B77FC TBufEC_Create }
 constructor TBufEC.Create;
-begin inherited Create end;
-{ @end $86BACC }
+begin
+  inherited Create;
+end;
+{ @end $7B77FC }
 
-{ @routine $86BB10 TBufEC_Destroy }
+{ @routine $7B7834 TBufEC_Destroy }
 destructor TBufEC.Destroy;
-begin Clear; inherited Destroy end;
-{ @end $86BB10 }
+begin
+  Clear;
+  inherited Destroy;
+end;
+{ @end $7B7834 }
 
-{ @routine $86BB4C TBufEC_Clear }
+{ @routine $7B7860 TBufEC_Clear }
 procedure TBufEC.Clear;
 begin
   if Data <> nil then
@@ -144,9 +158,9 @@ begin
   Capacity := 0;
   Position := 0;
 end;
-{ @end $86BB4C }
+{ @end $7B7860 }
 
-{ @routine $86BB8C TBufEC_SetSize }
+{ @routine $7B7888 TBufEC_SetSize }
 procedure TBufEC.SetSize(NewSize: Integer);
 begin
   if NewSize < 1 then Clear
@@ -158,99 +172,95 @@ begin
     if Position > DataSize then Position := DataSize;
   end;
 end;
-{ @end $86BB8C }
+{ @end $7B7888 }
 
-{ @routine $86BBF4 TBufEC_IsAtEnd }
+{ @routine $7B78C4 TBufEC_IsAtEnd }
 function TBufEC.IsAtEnd: Boolean;
 begin
   if Position >= DataSize then Result := True else Result := False;
 end;
-{ @end $86BBF4 }
+{ @end $7B78C4 }
 
-{ @routine $86BC1C TBufEC_SetPosition }
+{ @routine $7B78D4 TBufEC_SetPosition }
 procedure TBufEC.SetPosition(NewPosition: Integer);
 begin
   if (NewPosition < 0) or (NewPosition > DataSize) then
     raise Exception.Create('TBufEC.PointerSet. zn=' + SysUtils.IntToStr(NewPosition));
   Position := NewPosition;
 end;
-{ @end $86BC1C }
+{ @end $7B78D4 }
 
-{ @routine $86BCD0 TBufEC_EnsureWriteCapacity }
+{ @routine $7B7970 TBufEC_EnsureWriteCapacity }
 procedure TBufEC.EnsureWriteCapacity(AddedBytes: Integer);
 begin
   if AddedBytes < 1 then raise Exception.Create('TBufEC.TestAddLenBuf. addlen=' + SysUtils.IntToStr(AddedBytes));
-  if Position + AddedBytes > DataSize then
+  if Position + AddedBytes <= DataSize then Exit;
+  DataSize := Position + AddedBytes;
+  if DataSize > Capacity then
   begin
-    DataSize := Position + AddedBytes;
-    if DataSize > Capacity then
-    begin
-      Capacity := Max(Capacity * 2, DataSize + BufferGrowthSlack);
-      Data := ReAllocREC(Data, Capacity);
-    end;
+    Capacity := Max(2 * Capacity, DataSize + BufferGrowthSlack);
+    Data := ReAllocREC(Data, Capacity);
   end;
 end;
-{ @end $86BCD0 }
+{ @end $7B7970 }
 
-{ @routine $86BDF8 TBufEC_EnsureWriteCapacityAtOffset }
+{ @routine $7B7A50 TBufEC_EnsureWriteCapacityAtOffset }
 procedure TBufEC.EnsureWriteCapacityAtOffset(Offset, AddedBytes: Integer);
 begin
   if (AddedBytes < 1) or (Offset < 0) or (Offset > DataSize) then
     raise Exception.Create('TBufEC.TestAddLenBuf. sme=' + SysUtils.IntToStr(Offset) + ' addlen=' + SysUtils.IntToStr(AddedBytes));
-  if Offset + AddedBytes > DataSize then
+  if Offset + AddedBytes <= DataSize then Exit;
+  DataSize := Offset + AddedBytes;
+  if DataSize > Capacity then
   begin
-    DataSize := Offset + AddedBytes;
-    if DataSize > Capacity then
-    begin
-      Capacity := Max(Capacity * 2, DataSize + BufferGrowthSlack);
-      Data := ReAllocREC(Data, Capacity);
-    end;
+    Capacity := Max(2 * Capacity, DataSize + BufferGrowthSlack);
+    Data := ReAllocREC(Data, Capacity);
   end;
 end;
-{ @end $86BDF8 }
+{ @end $7B7A50 }
 
-{ @routine $86BF5C TBufEC_EnsureReadable }
+{ @routine $7B7B64 TBufEC_EnsureReadable }
 procedure TBufEC.EnsureReadable(Bytes: Integer);
 begin
   if (Bytes < 1) or (Position + Bytes > DataSize) then
     raise Exception.Create('TBufEC.TestGet. len=' + SysUtils.IntToStr(Bytes));
 end;
-{ @end $86BF5C }
+{ @end $7B7B64 }
 
-{ @routine $86C00C TBufEC_EnsureReadableAtOffset }
+{ @routine $7B7C00 TBufEC_EnsureReadableAtOffset }
 procedure TBufEC.EnsureReadableAtOffset(Offset, Bytes: Integer);
 begin
   if (Bytes < 1) or (Offset + Bytes > DataSize) then
     raise Exception.Create('TBufEC.TestGet. sme=' + SysUtils.IntToStr(Offset) + ' len=' + SysUtils.IntToStr(Bytes));
 end;
-{ @end $86C00C }
+{ @end $7B7C00 }
 
-{ @routine $86C0E8 TBufEC_SetByteAt }
+{ @routine $7B7CC8 TBufEC_SetByteAt }
 procedure TBufEC.SetByteAt(Offset: Integer; Value: Byte);
 begin
   EnsureWriteCapacityAtOffset(Offset, SizeOf(Value));
-  WriteByteEC(PAnsiChar(Data) + Offset, Value);
+  WriteByteEC(@PBufferByteArray(Data)^[Offset], Value);
 end;
-{ @end $86C0E8 }
+{ @end $7B7CC8 }
 
-{ @routine $86C124 TBufEC_SetInt32At }
+{ @routine $7B7CF4 TBufEC_SetInt32At }
 procedure TBufEC.SetInt32At(Offset: Integer; Value: Integer);
 begin
   EnsureWriteCapacityAtOffset(Offset, SizeOf(Value));
-  WriteIntegerEC(PAnsiChar(Data) + Offset, Value);
+  WriteIntegerEC(@PBufferByteArray(Data)^[Offset], Value);
 end;
-{ @end $86C124 }
+{ @end $7B7CF4 }
 
-{ @routine $86C160 TBufEC_AddBytes }
+{ @routine $7B7D20 TBufEC_AddBytes }
 procedure TBufEC.AddBytes(Source: Pointer; ByteCount: Integer);
 begin
   EnsureWriteCapacity(ByteCount);
   Windows.CopyMemory(AddPointerOffset(Data, Position), Source, ByteCount);
   Inc(Position, ByteCount);
 end;
-{ @end $86C160 }
+{ @end $7B7D20 }
 
-{ @routine $86C1A8 TBufEC_AddAnsiStringZ }
+{ @routine $7B7D54 TBufEC_AddAnsiStringZ }
 procedure TBufEC.AddAnsiStringZ(const Value: AnsiString);
 var
   ByteCount: Integer;
@@ -260,9 +270,9 @@ begin
   Windows.CopyMemory(AddPointerOffset(Data, Position), PAnsiChar(Value), ByteCount + 1);
   Position := Position + ByteCount + 1;
 end;
-{ @end $86C1A8 }
+{ @end $7B7D54 }
 
-{ @routine $86C21C TBufEC_AddWideStringZ }
+{ @routine $7B7DA4 TBufEC_AddWideStringZ }
 procedure TBufEC.AddWideStringZ(const Value: WideString);
 var
   ByteCount: Integer;
@@ -272,9 +282,9 @@ begin
   Windows.CopyMemory(AddPointerOffset(Data, Position), PWideChar(Value), ByteCount + SizeOf(WideChar));
   Position := Position + ByteCount + SizeOf(WideChar);
 end;
-{ @end $86C21C }
+{ @end $7B7DA4 }
 
-{ @routine $86C288 TBufEC_AddAnsiStringRaw }
+{ @routine $7B7DF4 TBufEC_AddAnsiStringRaw }
 procedure TBufEC.AddAnsiStringRaw(const Value: AnsiString);
 var
   ByteCount: Integer;
@@ -287,9 +297,9 @@ begin
     Inc(Position, ByteCount);
   end;
 end;
-{ @end $86C288 }
+{ @end $7B7DF4 }
 
-{ @routine $86C2FC TBufEC_AddWideStringRaw }
+{ @routine $7B7E40 TBufEC_AddWideStringRaw }
 procedure TBufEC.AddWideStringRaw(const Value: WideString);
 var
   ByteCount: Integer;
@@ -302,140 +312,140 @@ begin
     Inc(Position, ByteCount);
   end;
 end;
-{ @end $86C2FC }
+{ @end $7B7E40 }
 
-{ @routine $86C360 TBufEC_AddByte }
+{ @routine $7B7E88 TBufEC_AddByte }
 procedure TBufEC.AddByte(Value: Byte);
 begin
   EnsureWriteCapacity(SizeOf(Value));
   WriteByteEC(AddPointerOffset(Data, Position), Value);
   Inc(Position, SizeOf(Value));
 end;
-{ @end $86C360 }
+{ @end $7B7E88 }
 
-{ @routine $86C3A8 TBufEC_AddWord }
+{ @routine $7B7EBC TBufEC_AddWord }
 procedure TBufEC.AddWord(Value: Word);
 begin
   EnsureWriteCapacity(SizeOf(Value));
   WriteWordEC(AddPointerOffset(Data, Position), Value);
   Inc(Position, SizeOf(Value));
 end;
-{ @end $86C3A8 }
+{ @end $7B7EBC }
 
-{ @routine $86C3F4 TBufEC_AddInt32 }
+{ @routine $7B7EF0 TBufEC_AddInt32 }
 procedure TBufEC.AddInt32(Value: Integer);
 begin
   EnsureWriteCapacity(SizeOf(Value));
   WriteIntegerEC(AddPointerOffset(Data, Position), Value);
   Inc(Position, SizeOf(Value));
 end;
-{ @end $86C3F4 }
+{ @end $7B7EF0 }
 
-{ @routine $86C43C TBufEC_AddInteger }
+{ @routine $7B7F24 TBufEC_AddInteger }
 procedure TBufEC.AddInteger(Value: Integer);
 begin
   EnsureWriteCapacity(SizeOf(Value));
   WriteInt32EC(AddPointerOffset(Data, Position), Value);
   Inc(Position, SizeOf(Value));
 end;
-{ @end $86C43C }
+{ @end $7B7F24 }
 
-{ @routine $86C484 TBufEC_AddAnsiChar }
+{ @routine $7B7F58 TBufEC_AddAnsiChar }
 procedure TBufEC.AddAnsiChar(Value: AnsiChar);
 begin
   EnsureWriteCapacity(SizeOf(Value));
-  WriteByteEC(AddPointerOffset(Data, Position), Byte(Value));
+  WriteByteEC(AddPointerOffset(Data, Position), Ord(Value));
   Inc(Position, SizeOf(Value));
 end;
-{ @end $86C484 }
+{ @end $7B7F58 }
 
-{ @routine $86C4CC TBufEC_AddWideChar }
+{ @routine $7B7F8C TBufEC_AddWideChar }
 procedure TBufEC.AddWideChar(Value: WideChar);
 begin
   EnsureWriteCapacity(SizeOf(Value));
-  WriteWordEC(AddPointerOffset(Data, Position), Word(Value));
+  WriteWordEC(AddPointerOffset(Data, Position), Ord(Value));
   Inc(Position, SizeOf(Value));
 end;
-{ @end $86C4CC }
+{ @end $7B7F8C }
 
-{ @routine $86C518 TBufEC_AddDWord }
+{ @routine $7B7FC0 TBufEC_AddDWord }
 procedure TBufEC.AddDWord(Value: Cardinal);
 begin
   EnsureWriteCapacity(SizeOf(Value));
-  WriteIntegerEC(AddPointerOffset(Data, Position), Integer(Value));
+  WriteIntegerEC(AddPointerOffset(Data, Position), Value);
   Inc(Position, SizeOf(Value));
 end;
-{ @end $86C518 }
+{ @end $7B7FC0 }
 
-{ @routine $86C560 TBufEC_AddIntegerValue }
+{ @routine $7B7FF4 TBufEC_AddIntegerValue }
 procedure TBufEC.AddIntegerValue(Value: Integer);
 begin
   EnsureWriteCapacity(SizeOf(Value));
   WriteInt32EC(AddPointerOffset(Data, Position), Value);
   Inc(Position, SizeOf(Value));
 end;
-{ @end $86C560 }
+{ @end $7B7FF4 }
 
-{ @routine $86C5A8 TBufEC_AddSingle }
+{ @routine $7B8028 TBufEC_AddSingle }
 procedure TBufEC.AddSingle(Value: Single);
 begin
   EnsureWriteCapacity(SizeOf(Value));
   WriteSingleEC(AddPointerOffset(Data, Position), Value);
   Inc(Position, SizeOf(Value));
 end;
-{ @end $86C5A8 }
+{ @end $7B8028 }
 
-{ @routine $86C5EC TBufEC_AddDouble }
+{ @routine $7B8060 TBufEC_AddDouble }
 procedure TBufEC.AddDouble(Value: Double);
 begin
   EnsureWriteCapacity(SizeOf(Value));
   WriteDoubleEC(AddPointerOffset(Data, Position), Value);
   Inc(Position, SizeOf(Value));
 end;
-{ @end $86C5EC }
+{ @end $7B8060 }
 
-{ @routine $86C634 TBufEC_AddBoolean }
+{ @routine $7B809C TBufEC_AddBoolean }
 procedure TBufEC.AddBoolean(Value: Boolean);
 begin
   EnsureWriteCapacity(SizeOf(Value));
-  WriteByteEC(AddPointerOffset(Data, Position), Byte(Value));
+  WriteByteEC(AddPointerOffset(Data, Position), Ord(Value));
   Inc(Position, SizeOf(Value));
 end;
-{ @end $86C634 }
+{ @end $7B809C }
 
-{ @routine $86C67C TBufEC_AddBuffer }
+{ @routine $7B80D0 TBufEC_AddBuffer }
 procedure TBufEC.AddBuffer(Value: TBufEC);
 begin
   AddDWord(Value.DataSize);
   if Value.DataSize > 0 then AddBytes(Value.Data, Value.DataSize);
 end;
-{ @end $86C67C }
+{ @end $7B80D0 }
 
-{ @routine $86C6B8 TBufEC_GetByteAt }
+{ @routine $7B80F8 TBufEC_GetByteAt }
 function TBufEC.GetByteAt(Offset: Integer): Byte;
 begin
   EnsureReadableAtOffset(Offset, SizeOf(Result));
-  Result := ReadByteEC(PAnsiChar(Data) + Offset);
+  Result := ReadByteEC(@PBufferByteArray(Data)^[Offset]);
 end;
-{ @end $86C6B8 }
+{ @end $7B80F8 }
 
-{ @routine $86C6F0 TBufEC_GetUInt32At }
+{ @routine $7B811C TBufEC_GetUInt32At }
 function TBufEC.GetUInt32At(Offset: Integer): Cardinal;
 begin
   EnsureReadableAtOffset(Offset, SizeOf(Result));
-  Result := ReadDWordEC(PAnsiChar(Data) + Offset);
+  Result := ReadDWordEC(@PBufferByteArray(Data)^[Offset]);
 end;
-{ @end $86C6F0 }
+{ @end $7B811C }
 
-{ @routine $86C728 TBufEC_GetInt32At }
+{ @routine $7B8140 TBufEC_GetInt32At }
 function TBufEC.GetInt32At(Offset: Integer): Integer;
 begin
   EnsureReadableAtOffset(Offset, SizeOf(Result));
-  Result := ReadIntegerEC(PAnsiChar(Data) + Offset);
+  Result := ReadIntegerEC(@PBufferByteArray(Data)^[Offset]);
 end;
-{ @end $86C728 }
+{ @end $7B8140 }
 
-{ @routine $86C760 TBufEC_ReadBytes }
+{ @routine $7B8164 TBufEC_ReadBytes }
 function TBufEC.ReadBytes(Dest: Pointer; ByteCount: Integer): Pointer;
 begin
   EnsureReadable(ByteCount);
@@ -443,9 +453,9 @@ begin
   Inc(Position, ByteCount);
   Result := Dest;
 end;
-{ @end $86C760 }
+{ @end $7B8164 }
 
-{ @routine $86C7B4 TBufEC_ReadWideStringToBuffer }
+{ @routine $7B819C TBufEC_ReadWideStringToBuffer }
 function TBufEC.ReadWideStringToBuffer(Dest: PWideChar): PWideChar;
 var
   Count: Integer;
@@ -464,9 +474,9 @@ begin
   end;
   Result := Dest;
 end;
-{ @end $86C7B4 }
+{ @end $7B819C }
 
-{ @routine $86C838 TBufEC_GetByte }
+{ @routine $7B81F4 TBufEC_GetByte }
 function TBufEC.GetByte: Byte;
 begin
   EnsureReadable(SizeOf(Result));
@@ -485,18 +495,18 @@ begin
     POP EAX
   end;
 end;
-{ @end $86C838 }
+{ @end $7B81F4 }
 
-{ @routine $86C870 TBufEC_GetWideChar }
+{ @routine $7B8230 TBufEC_GetWideChar }
 function TBufEC.GetWideChar: WideChar;
 begin
   EnsureReadable(SizeOf(Result));
   Result := ReadWideCharEC(PAnsiChar(Data) + Position);
-  Inc(Position, 2);
+  Inc(Position, SizeOf(Result));
 end;
-{ @end $86C870 }
+{ @end $7B8230 }
 
-{ @routine $86C8AC TBufEC_GetWord }
+{ @routine $7B8254 TBufEC_GetWord }
 function TBufEC.GetWord: Word;
 begin
   EnsureReadable(SizeOf(Result));
@@ -515,9 +525,9 @@ begin
     POP EAX
   end;
 end;
-{ @end $86C8AC }
+{ @end $7B8254 }
 
-{ @routine $86C8E8 TBufEC_GetUInt32 }
+{ @routine $7B8294 TBufEC_GetUInt32 }
 function TBufEC.GetUInt32: Cardinal;
 begin
   EnsureReadable(SizeOf(Result));
@@ -536,9 +546,9 @@ begin
     POP EAX
   end;
 end;
-{ @end $86C8E8 }
+{ @end $7B8294 }
 
-{ @routine $86C920 TBufEC_GetInt32 }
+{ @routine $7B82D0 TBufEC_GetInt32 }
 function TBufEC.GetInt32: Integer;
 begin
   EnsureReadable(SizeOf(Result));
@@ -557,9 +567,9 @@ begin
     POP EAX
   end;
 end;
-{ @end $86C920 }
+{ @end $7B82D0 }
 
-{ @routine $86C958 TBufEC_GetSingle }
+{ @routine $7B830C TBufEC_GetSingle }
 function TBufEC.GetSingle: Single;
 begin
   EnsureReadable(SizeOf(Result));
@@ -577,15 +587,13 @@ begin
     POP EBX
     POP EAX
   end;
-  if IsNan(Result) then
-  begin
-    Result := 0;
-    AppendLogLineThreadSafe('Warning! NaN encountered, replaced with zero.');
-  end;
+  if not IsNan(Result) then Exit;
+  Result := 0;
+  AppendLogLineThreadSafe('Warning! NaN encountered, replaced with zero.');
 end;
-{ @end $86C958 }
+{ @end $7B830C }
 
-{ @routine $86C9E4 TBufEC_GetDouble }
+{ @routine $7B8398 TBufEC_GetDouble }
 function TBufEC.GetDouble: Double;
 begin
   EnsureReadable(SizeOf(Result));
@@ -597,9 +605,9 @@ begin
   end;
   Inc(Position, SizeOf(Result));
 end;
-{ @end $86C9E4 }
+{ @end $7B8398 }
 
-{ @routine $86CA78 TBufEC_GetBoolean }
+{ @routine $7B8424 TBufEC_GetBoolean }
 function TBufEC.GetBoolean: Boolean;
 begin
   EnsureReadable(SizeOf(Result));
@@ -618,9 +626,9 @@ begin
     POP EAX
   end;
 end;
-{ @end $86CA78 }
+{ @end $7B8424 }
 
-{ @routine $86CAB0 TBufEC_ReadLengthPrefixedBuffer }
+{ @routine $7B8460 TBufEC_ReadLengthPrefixedBuffer }
 procedure TBufEC.ReadLengthPrefixedBuffer(Dest: TBufEC);
 var
   ByteCount: Integer;
@@ -629,14 +637,16 @@ begin
   Dest.SetSize(ByteCount);
   if ByteCount > 0 then ReadBytes(Dest.Data, ByteCount);
 end;
-{ @end $86CAB0 }
+{ @end $7B8460 }
 
-{ @routine $86CAF0 TBufEC_GetWideStringLength }
+{ @routine $7B8490 TBufEC_GetWideStringLength }
 function TBufEC.GetWideStringLength: Integer;
-begin Result := GetWideStringLengthAt(Position) end;
-{ @end $86CAF0 }
+begin
+  Result := GetWideStringLengthAt(Position);
+end;
+{ @end $7B8490 }
 
-{ @routine $86CB14 TBufEC_GetWideStringLengthAt }
+{ @routine $7B849C TBufEC_GetWideStringLengthAt }
 function TBufEC.GetWideStringLengthAt(Offset: Integer): Integer;
 var
   Count, Cursor: Integer;
@@ -656,14 +666,16 @@ begin
   end;
   Result := Count;
 end;
-{ @end $86CB14 }
+{ @end $7B849C }
 
-{ @routine $86CB74 TBufEC_GetAnsiTextLineLength }
+{ @routine $7B84DC TBufEC_GetAnsiTextLineLength }
 function TBufEC.GetAnsiTextLineLength: Integer;
-begin Result := GetAnsiTextLineLengthAt(Position) end;
-{ @end $86CB74 }
+begin
+  Result := GetAnsiTextLineLengthAt(Position);
+end;
+{ @end $7B84DC }
 
-{ @routine $86CB98 TBufEC_GetAnsiTextLineLengthAt }
+{ @routine $7B84E8 TBufEC_GetAnsiTextLineLengthAt }
 function TBufEC.GetAnsiTextLineLengthAt(Offset: Integer): Integer;
 var
   Count, Cursor: Integer;
@@ -684,14 +696,16 @@ begin
   end;
   Result := Count;
 end;
-{ @end $86CB98 }
+{ @end $7B84E8 }
 
-{ @routine $86CC08 TBufEC_GetWideTextLineLength }
+{ @routine $7B8534 TBufEC_GetWideTextLineLength }
 function TBufEC.GetWideTextLineLength: Integer;
-begin Result := GetWideTextLineLengthAt(Position) end;
-{ @end $86CC08 }
+begin
+  Result := GetWideTextLineLengthAt(Position);
+end;
+{ @end $7B8534 }
 
-{ @routine $86CC2C TBufEC_GetWideTextLineLengthAt }
+{ @routine $7B8540 TBufEC_GetWideTextLineLengthAt }
 function TBufEC.GetWideTextLineLengthAt(Offset: Integer): Integer;
 var
   Count, Cursor: Integer;
@@ -712,9 +726,9 @@ begin
   end;
   Result := Count;
 end;
-{ @end $86CC2C }
+{ @end $7B8540 }
 
-{ @routine $86CCA0 TBufEC_ReadAnsiTextLineToBuffer }
+{ @routine $7B8594 TBufEC_ReadAnsiTextLineToBuffer }
 function TBufEC.ReadAnsiTextLineToBuffer(Dest: PAnsiChar): PAnsiChar;
 var
   Count: Integer;
@@ -740,9 +754,9 @@ begin
   end;
   Result := Dest;
 end;
-{ @end $86CCA0 }
+{ @end $7B8594 }
 
-{ @routine $86CD74 TBufEC_ReadAnsiTextLine }
+{ @routine $7B8610 TBufEC_ReadAnsiTextLine }
 function TBufEC.ReadAnsiTextLine: AnsiString;
 var
   Count: Integer;
@@ -760,9 +774,9 @@ begin
     Result := '';
   end;
 end;
-{ @end $86CD74 }
+{ @end $7B8610 }
 
-{ @routine $86CDE0 TBufEC_ReadWideTextLineToBuffer }
+{ @routine $7B8664 TBufEC_ReadWideTextLineToBuffer }
 function TBufEC.ReadWideTextLineToBuffer(Dest: PWideChar): PWideChar;
 var
   Count: Integer;
@@ -788,9 +802,9 @@ begin
   end;
   Result := Dest;
 end;
-{ @end $86CDE0 }
+{ @end $7B8664 }
 
-{ @routine $86CEC8 TBufEC_ReadWideTextLine }
+{ @routine $7B86FC TBufEC_ReadWideTextLine }
 function TBufEC.ReadWideTextLine: WideString;
 var
   Count: Integer;
@@ -808,9 +822,9 @@ begin
     Result := '';
   end;
 end;
-{ @end $86CEC8 }
+{ @end $7B86FC }
 
-{ @routine $86CF34 TBufEC_ReadWideString }
+{ @routine $7B8750 TBufEC_ReadWideString }
 function TBufEC.ReadWideString: WideString;
 var
   Count: Integer;
@@ -830,9 +844,9 @@ begin
     Result := '';
   end;
 end;
-{ @end $86CF34 }
+{ @end $7B8750 }
 
-{ @routine $86CFAC TBufEC_CompressZlibPayloadInPlace }
+{ @routine $7B87B8 TBufEC_CompressZlibPayloadInPlace }
 function TBufEC.CompressZlibPayloadInPlace(FastMode: Boolean): Boolean;
 var
   Mode, ByteCount: Integer;
@@ -860,9 +874,9 @@ begin
   Position := 0;
   Result := True;
 end;
-{ @end $86CFAC }
+{ @end $7B87B8 }
 
-{ @routine $86D050 TBufEC_ExpandZlibPayloadInPlace }
+{ @routine $7B8818 TBufEC_ExpandZlibPayloadInPlace }
 function TBufEC.ExpandZlibPayloadInPlace: Boolean;
 var
   ByteCount: Integer;
@@ -894,16 +908,16 @@ begin
   Position := 0;
   Result := True;
 end;
-{ @end $86D050 }
+{ @end $7B8818 }
 
-{ @routine $86D164 TBufEC_ApplyDatXorCipher }
+{ @routine $7B88DC TBufEC_ApplyDatXorCipher }
 procedure TBufEC.ApplyDatXorCipher(Seed: Integer);
 var
   State, i: Integer;
   Cursor: PByte;
 
-  // @nested $86D108 StepDatXorSeedState
-  function StepDatXorSeedState: Integer; // @addr 0x86D108 @ida "int __cdecl $name(void *ParentFrame);" @note "Nested helper of TBufEC.ApplyDatXorCipher; requires its parent stack frame."
+  // @nested $7B8888 StepDatXorSeedState
+  function StepDatXorSeedState: Integer; // @addr 0x007B8888 @ida "int __cdecl $name(void *ParentFrame);" @note "Nested helper of TBufEC.ApplyDatXorCipher; requires its parent stack frame."
   begin
     State := SeedRngMultiplier * (State mod SeedRngQuotient) - SeedRngRemainder * (State div SeedRngQuotient);
     if State <= 0 then State := State + SeedRngModulus;
@@ -919,75 +933,68 @@ begin
     Cursor := PByte(PAnsiChar(Cursor) + 1);
   end;
 end;
-{ @end $86D164 }
+{ @end $7B88DC }
 
-{ @routine $86D1B4 TBufEC_ComputeCrc32 }
+{ @routine $7B8904 TBufEC_ComputeCrc32 }
 function TBufEC.ComputeCrc32: Cardinal;
-begin Result := CrcUnit.ComputeCrc32(Data, DataSize) end;
-{ @end $86D1B4 }
+begin
+  Result := CrcUnit.ComputeCrc32(Data, DataSize);
+end;
+{ @end $7B8904 }
 
-{ @routine $86D1D8 TBufEC_ComputeCrc32Range }
+{ @routine $7B8910 TBufEC_ComputeCrc32Range }
 function TBufEC.ComputeCrc32Range(StartOffset, EndOffset: Integer): Cardinal;
-begin Result := CrcUnit.ComputeCrc32(Pointer(PAnsiChar(Data) + StartOffset), EndOffset - StartOffset) end;
-{ @end $86D1D8 }
+begin
+  Result := CrcUnit.ComputeCrc32(PAnsiChar(Data) + StartOffset, EndOffset - StartOffset);
+end;
+{ @end $7B8910 }
 
-{ @routine $86D208 TBufEC_UpdateEmbeddedCrc32 }
+{ @routine $7B8920 TBufEC_UpdateEmbeddedCrc32 }
 procedure TBufEC.UpdateEmbeddedCrc32(StartOffset, EndOffset, CrcOffset: Integer);
 var
   WholeCrc, PreviousPrefixCrc, NewPrefixCrc: Cardinal;
 begin
   if CrcOffset < StartOffset then raise Exception.Create('CRC update error');
-  if CrcOffset + 8 > EndOffset then raise Exception.Create('CRC update error');
-  WholeCrc := ExtendCrc32(0, Pointer(PAnsiChar(Data) + StartOffset), EndOffset - StartOffset);
-  PreviousPrefixCrc := ExtendCrc32(0, Pointer(PAnsiChar(Data) + StartOffset), CrcOffset - StartOffset + 8);
-  PCardinal(PAnsiChar(Data) + CrcOffset)^ := WholeCrc;
-  NewPrefixCrc := ExtendCrc32(0, Pointer(PAnsiChar(Data) + StartOffset), CrcOffset - StartOffset + 4);
-  WriteCrc32Correction(NewPrefixCrc, PreviousPrefixCrc, Pointer(CrcOffset + 4 + PAnsiChar(Data)));
+  if CrcOffset + SizeOf(TEmbeddedCrc32EC) > EndOffset then raise Exception.Create('CRC update error');
+  WholeCrc := ExtendCrc32(0, PAnsiChar(Data) + StartOffset, EndOffset - StartOffset);
+  PreviousPrefixCrc := ExtendCrc32(0, PAnsiChar(Data) + StartOffset, CrcOffset - StartOffset + SizeOf(TEmbeddedCrc32EC));
+  PEmbeddedCrc32EC(PAnsiChar(Data) + CrcOffset).RangeCrc := WholeCrc;
+  NewPrefixCrc := ExtendCrc32(0, PAnsiChar(Data) + StartOffset, CrcOffset - StartOffset + SizeOf(WholeCrc));
+  WriteCrc32Correction(NewPrefixCrc, PreviousPrefixCrc, CrcOffset + SizeOf(WholeCrc) + PAnsiChar(Data));
 end;
-{ @end $86D208 }
+{ @end $7B8920 }
 
-{ @routine $86D2F0 TBufEC_LoadFromFileChunk }
+{ @routine $7B89E8 TBufEC_LoadFromFileChunk }
 procedure TBufEC.LoadFromFileChunk(SourceFile: TFileEC; ByteCount: Integer);
 var
   ChunkSize: Integer;
   Cursor: Pointer;
-  NextChunkSize: Integer;
 begin
-  Self.Clear;
+  Clear;
   SourceFile.AcquireReadWriteHandle;
   try
-    Self.SetSize(ByteCount);
-    Cursor := Self.Data;
-    if (ByteCount > 0) then
+    SetSize(ByteCount);
+    Cursor := Data;
+    if ByteCount > 0 then
     begin
-      repeat
-        if (ByteCount > 262144) then
-        begin
-          NextChunkSize := 262144;
-        end
-        else
-        begin
-          NextChunkSize := ByteCount;
-        end;
-        ChunkSize := NextChunkSize;
+      while True do
+      begin
+        ChunkSize := Min(MaxFileReadChunkSize, ByteCount);
         SourceFile.ReadBuffer(Cursor, ChunkSize);
         Cursor := AddPointerOffset(Cursor, ChunkSize);
-        ByteCount := (ByteCount - ChunkSize);
-        if (ByteCount > 0) then
-        begin
-          SysUtils.Sleep(1);
-        end;
-      until ByteCount <= 0;
+        Dec(ByteCount, ChunkSize);
+        if ByteCount > 0 then SysUtils.Sleep(1);
+        if ByteCount <= 0 then Break;
+      end;
     end;
   except
-    Self.Clear;
+    Clear;
   end;
   SourceFile.ReleaseHandle;
-  Exit;
 end;
-{ @end $86D2F0 }
+{ @end $7B89E8 }
 
-{ @routine $86D3C0 TBufEC_LoadFromFile }
+{ @routine $7B8A98 TBufEC_LoadFromFile }
 procedure TBufEC.LoadFromFile(SourceFile: TFileEC);
 var
   ByteCount: Integer;
@@ -1003,9 +1010,9 @@ begin
   end;
   SourceFile.ReleaseHandle;
 end;
-{ @end $86D3C0 }
+{ @end $7B8A98 }
 
-{ @routine $86D44C TBufEC_LoadFromWideFilePath }
+{ @routine $7B8B20 TBufEC_LoadFromWideFilePath }
 procedure TBufEC.LoadFromWideFilePath(FileName: PWideChar);
 var
   SourceFile: TFileEC;
@@ -1019,11 +1026,13 @@ begin
     SourceFile.Free;
   end;
 end;
-{ @end $86D44C }
+{ @end $7B8B20 }
 
-{ @routine $86D4F4 TBufEC_SaveToFile }
+{ @routine $7B8BC8 TBufEC_SaveToFile }
 procedure TBufEC.SaveToFile(DestFile: TFileEC);
-begin DestFile.WriteBuffer(Data, DataSize) end;
-{ @end $86D4F4 }
+begin
+  DestFile.WriteBuffer(Data, DataSize);
+end;
+{ @end $7B8BC8 }
 
 end.

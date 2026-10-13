@@ -42,32 +42,33 @@ const
 
 type
   // Diseases (1..12) and stimulants (13..24); radiation is stored separately.
-  TCaptainHealthEffect = (
-    heBlindness = 1,
-    heChekumash = 2,
-    heHolyFanaticism = 3,
-    heComplexImmunocide = 4,
-    heMysteriousLuatanza = 5,
-    heDrugAddiction = 6,
-    heWhirlwindConcussion = 7,
-    hePulledMuscle = 8,
-    heGrandMalosausus = 9,
-    heBitterPelenosia = 10,
-    heAkaSezyanka = 11,
-    heNewMolizone = 12,
-    heMaloqSizha = 13,
-    heOneEyedKhamas = 14,
-    heStardust = 15,
-    heSuperTechnician = 16,
-    heGaalianAlacrity = 17,
-    heBloodDjogar = 18,
-    heRagobamWhisper = 19,
-    heShakhmandooLeader = 20,
-    hePsychotropicCache = 21,
-    heBusinessMark = 22,
-    heDoubleplex = 23,
-    heAbsoluteStatus = 24
-  ); // @size $04
+  TCaptainHealthEffect = Integer;
+const
+  heBlindness = 1;
+  heChekumash = 2;
+  heHolyFanaticism = 3;
+  heComplexImmunocide = 4;
+  heMysteriousLuatanza = 5;
+  heDrugAddiction = 6;
+  heWhirlwindConcussion = 7;
+  hePulledMuscle = 8;
+  heGrandMalosausus = 9;
+  heBitterPelenosia = 10;
+  heAkaSezyanka = 11;
+  heNewMolizone = 12;
+  heMaloqSizha = 13;
+  heOneEyedKhamas = 14;
+  heStardust = 15;
+  heSuperTechnician = 16;
+  heGaalianAlacrity = 17;
+  heBloodDjogar = 18;
+  heRagobamWhisper = 19;
+  heShakhmandooLeader = 20;
+  hePsychotropicCache = 21;
+  heBusinessMark = 22;
+  heDoubleplex = 23;
+  heAbsoluteStatus = 24;
+type
   TCaptainDisease = heBlindness..heNewMolizone;
   TCaptainStimulant = heMaloqSizha..heAbsoluteStatus;
 
@@ -105,7 +106,7 @@ type
     htFlagship = 10
   ); // @size $01
 
-  // ScriptActionTypeNames ($87D350), action masks and ship/item dispatch.
+  // ScriptActionTypeNames ($810790), action masks and ship/item dispatch.
   TScriptActionType = (
     satOnStep = 0,
     satOnWeaponShot = 1,
@@ -171,8 +172,8 @@ type
     satOnDeath = 61
   ); // @size $01
 
-  // CurrentStanding categories: GetControlPresence ($7C2538),
-  // ResetControlFaction ($7C3B8C), and subclass RefreshCurrentStanding methods.
+  // CurrentStanding categories: GetControlPresence ($7F1538),
+  // ResetControlFaction ($7F2918), and subclass RefreshCurrentStanding methods.
   TShipStanding = (
     ssDominator = 0,
     ssUnaligned = 1,
@@ -186,7 +187,7 @@ type
     ssCustom = 9
   ); // @size $01
 
-  // Award categories from SysToReward ($82EA40); distinct from individual award IDs.
+  // Award categories from SysToReward ($78FE18); distinct from individual award IDs.
   TAwardKind = (
     atLiberation = 0,
     atAccomplishment = 1,
@@ -196,10 +197,10 @@ type
     atPlanetBattle = 5
   ); // @size $01
 
-  // GetScriptStandingOverrideMode ($77E854) and its callers use a 32-bit ordinal.
+  // GetScriptStandingOverrideMode ($6F2B00) and its callers use a 32-bit ordinal.
   TScriptStandingOverrideMode = (ssmNormal = 0, ssmCustomFaction = 1, ssmFixed = 2); // @size $04
 
-  // InitializeShipGreetingDefinitions ($52E9B4) and TShip virtual slot $30.
+  // InitializeShipGreetingDefinitions ($7A6F0C) and TShip virtual slot $30.
   // Transport subtypes and pirate allegiance have distinct greeting categories.
   TGreetingShipCategory = (
     gscTransport = 0,
@@ -212,8 +213,8 @@ type
     gscPirateClan = 7
   ); // @size $01
 
-  // CoalitionProjectNames ($87F584), investment dispatch ($5C6FBC/$5CA654),
-  // and the military-base war operation ($5BD528) share these cooldown indices.
+  // CoalitionProjectNames ($8129C4), investment dispatch ($576ACC/$579DC4),
+  // and the military-base war operation ($56D664) share these cooldown indices.
   TCoalitionProject = (
     cpCreateRangerCenter = 0,
     cpCreatePirateBase = 1,
@@ -229,7 +230,7 @@ type
     cpWarOperation = 11
   ); // @size $01
 
-  // ShowPlayerDialogue ($777284), TfTalk.BuildBuiltinChoices ($6D5048),
+  // ShowPlayerDialogue ($6EC0F0), TfTalk.BuildBuiltinChoices ($5ED6DC),
   // and the script Talk* constants share these conversation categories.
   TTalkKind = (
     tkMoneyDemand = 0,
@@ -259,7 +260,7 @@ type
     psLeadership = 5
   ); // @size 0x1
 
-  // ProgramNames ($87F5E4; initializer descriptors $838044..$8380A0),
+  // ProgramNames,
   // ranger inventory, Dominator effects and script prog* IDs.
   TProgramIndex = (
     prgKellerCall = 0,
@@ -291,6 +292,13 @@ type
 
   // Shared scalar configuration identifiers. Managed configuration records live in aConst.
 
+  TTransportType = (ttTransport = 0, ttLiner = 1, ttDiplomat = 2); // @size 0x1
+
+  TCombatStatusEffectType = (
+    cseShock = 0, cseAcid = 1, cseMagnetic = 2, cseWeaponBlock = 3,
+    cseDroidBlock = 4, cseBWBuff = 5, cseBWRepairDebuff = 6
+  ); // @size 0x1
+
   TWeaponShotType = (
     wstNormal = 0,
     wstChain = 1,
@@ -302,7 +310,7 @@ type
     wstRocket = 7
   ); // @size 0x1
 
-  TShipTypeMask = set of TShipType; // @size $02 Shared ship/station type bits. DCU alignment is visible in CheatRndbase.
+  TShipTypeMask = set of TShipType; // @size $02 Shared ship/station type bits.
 
   TWeaponAvailability = (
     waFree = 0,
@@ -333,7 +341,7 @@ type
   TRangerCareer = (rcTrader = 0, rcPirate = 1, rcWarrior = 2); // @size 0x1
   TRangerCareerSet = set of TRangerCareer; // @size 0x1
 
-  // PlanetInventionInfo ($87F4DC) and EquipmentInventionIndices ($87F57C).
+  // PlanetInventionInfo ($81291C) and EquipmentInventionIndices ($8129BC).
   // Research-track IDs are distinct from item types and numeric technology levels.
   // Weapon tracks use English Items.Weapon.Name names; later weapons can share a track.
   TPlanetInvention = (
@@ -434,7 +442,6 @@ type
   PGoodsTextOrder = ^TGoodsTextOrder;
   TDominatorSeriesNameTable = array[TDominatorSeries] of WideString;
   PDominatorSeriesNameTable = ^TDominatorSeriesNameTable;
-  // Native record RTTI at $82A354.
 
   TEngineLevelStats = record // @size $04
     Speed: Word; // @offset $00
@@ -450,33 +457,33 @@ type
   end;
   TCargoHookLevelStatsTable = array[1..8] of TCargoHookLevelStats;
 
-  // The script singleton constructor proves an enum spanning three bytes.
-  // Four-byte masks use bits 0..20; the exact enum upper bound within 19..23 is unresolved.
-  // Bits 3..18 have semantic aliases below; their original enum spellings are not recovered.
-  // Bit 19 blocks the repair droid in TShip.ApplyDamage.
-  TDamageKind = (dkEnergy = 0, dkSplinter = 1, dkMissile = 2, dkDroidBlock = 19); // @size 1
+  // Four-byte damage masks use bits 0..20, including the separate NoDelta flag.
+  // The original upper enum bound within 19..23 is unresolved; this domain ends at 19.
+  TDamageKind = (
+    dkEnergy = 0,
+    dkSplinter = 1,
+    dkMissile = 2,
+    dkDecelerate = 3,
+    dkDestruct = 4,
+    dkDrain = 5,
+    dkShock = 6,
+    dkAcid = 7,
+    dkMagnetic = 8,
+    dkDecelerateA = 9,
+    dkDecelerateAEx = 10,
+    dkUndefendable = 11,
+    dkNonLethal = 12,
+    dkScanBonus = 13,
+    dkBonusToDamaged = 14,
+    dkMoreDrop = 15,
+    dkDropCargo = 16,
+    dkReduceEngine = 17,
+    dkBlockWeapon = 18,
+    dkDroidBlock = 19
+  ); // @size 1
   TDamageFlagSet = set of TDamageKind; // @size 4 Named sets are rounded to four bytes by DCC32.
 
 const
-  // Semantic aliases follow WeaponDamageFlagNames at $87F350 and the native
-  // TShip.ApplyDamage handlers. They do not claim original enum RTTI names.
-  // Keep the enum bounds and four-byte set ABI above unchanged.
-  dkDecelerate = TDamageKind(3);
-  dkDestruct = TDamageKind(4);
-  dkDrain = TDamageKind(5);
-  dkShock = TDamageKind(6);
-  dkAcid = TDamageKind(7);
-  dkMagnetic = TDamageKind(8);
-  dkDecelerateA = TDamageKind(9);
-  dkDecelerateAEx = TDamageKind(10);
-  dkUndefendable = TDamageKind(11);
-  dkNonLethal = TDamageKind(12);
-  dkScanBonus = TDamageKind(13);
-  dkBonusToDamaged = TDamageKind(14);
-  dkMoreDrop = TDamageKind(15);
-  dkDropCargo = TDamageKind(16);
-  dkReduceEngine = TDamageKind(17);
-  dkBlockWeapon = TDamageKind(18);
   // Bit 20 fixes minimum damage at the maximum (TShip.GetWeaponMinDamage).
   DamageNoDeltaMask = 1 shl 20;
 
@@ -484,7 +491,14 @@ type
 
   TItemTypeMask = set of 0..79; // @size 10
 
-  // OwnerToSys ($82E4EC) and RaceToSys ($82DED4) establish these IDs.
+  TItemLootPool = (
+    ilpArcadeBattle = 0,
+    ilpTreasure = 1,
+    ilpReward = 2,
+    ilpAnyAvailable = 3
+  ); // @size 0x1
+
+  // OwnerToSys ($78F974) and RaceToSys ($78F3C8) establish these IDs.
   // RaceId and PilotRace use the same Coalition values 0..4.
   TOwnerId = (oiMaloc = 0, oiPeleng = 1, oiHuman = 2, oiFeyan = 3,
     oiGaal = 4, oiDominator = 5, oiUninhabited = 6, oiPirate = 7); // @size $01 OwnerInfo and native planet/ship owner numbering.
@@ -499,7 +513,7 @@ type
     GoodsFactors: array[TGoodsIndex] of TPlanetGoodsFactors; // @offset 0x08
     GovernmentRollThresholds: array[TPlanetGovernment] of Byte; // @offset 0x88  Cumulative thresholds indexed by TPlanetGovernment.
     RevolutionChance: Single; // @offset 0x90
-    FriendlyRelationScale: Single; // @offset $94 Scales transport-to-transport relations ($720764) and partner-gift gains ($6DD9D8/$6E1A8C).
+    FriendlyRelationScale: Single; // @offset $94 Scales transport-to-transport relations ($5AD400) and partner-gift gains ($5F59A8/$5F96C4).
     PirateRelationFactor: Single; // @offset 0x98  Multiplies owner-table relations for pirates at Coalition planets.
     UnknownFactor9C: Single; // @offset $9C Native race factor; gameplay meaning unresolved.
     PirateRelationCeiling: Byte; // @offset 0xA0  Upper bound before the fixed minimum relation of 30.
@@ -507,9 +521,7 @@ type
   TPlanetRaceMarketTable = array[oiMaloc..oiGaal] of TPlanetRaceMarketInfo;
   PPlanetRaceMarketTable = ^TPlanetRaceMarketTable;
 
-  // Native record RTTI at $82CB64.
 
-  // Native record RTTI at $82A25C.
 
   TByteMask = set of 0..7; // @size $01
   TOwnerMask = set of TOwnerId; // @size $01
@@ -518,9 +530,15 @@ type
   TDominatorSeriesMask = set of TDominatorSeries; // @size $01
 
   TPlanetOwnerMasks = packed record // @size 0x03
-    Coalition: TOwnerMask; // @offset 0x00 Coalition owner IDs 0..4.
-    Dominators: TOwnerMask; // @offset 0x01 Dominator owner ID 5.
-    PirateClan: TOwnerMask; // @offset 0x02 Pirate Clan owner ID 7.
+    case Boolean of
+      False: (
+        Coalition: TOwnerMask; // @offset 0x00 Coalition owner IDs 0..4.
+        Dominators: TOwnerMask; // @offset 0x01 Dominator owner ID 5.
+        PirateClan: TOwnerMask; // @offset 0x02 Pirate Clan owner ID 7.
+      );
+      True: (
+        ByFaction: array[TStarFaction] of TOwnerMask; // @offset 0x00
+      );
   end;
   PPlanetOwnerMasks = ^TPlanetOwnerMasks;
   TOwnerRelationRow = array[TOwnerId] of Byte;
@@ -546,7 +564,6 @@ type
     rlGood = 3, rlExcellent = 4); // @size 0x1
   TRelationLevels = set of TRelationLevel; // @size $01
 
-  // Native record RTTI at $82BDE0.
 
   TGalaxyDifficultyTuning = record // @size 0x38
     GoodsEventDurationFactor: Single; // @offset 0x00  Also scales fuel prices.
@@ -582,7 +599,7 @@ type
     FactionStrengthCacheTurn: Integer; // @offset $18
   end;
 
-  // GalaxyNews producers and CountPlanetNewsByType ($7BB6E8) share these IDs.
+  // GalaxyNews producers and CountPlanetNewsByType ($7EB698) share these IDs.
   // Distinct from pm* player-message presentation kinds.
   TGalaxyNewsKind = (
     gnScript = 0,
@@ -633,7 +650,6 @@ type
     gnMilitaryBaseOperation = 45
   ); // @size $01
 
-  // Native record RTTI at $4DB4BC.
   TPlanetNews = record // @size 0x10
     Id: Cardinal; // @offset 0x00
     Turn: Integer; // @offset 0x04

@@ -1,6 +1,4 @@
 unit Robot;
-// Unit bracket (inferred): .text 0x0083C12C..0x0083D9AF; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
-// Unit bracket (inferred): .itext 0x008779D4..0x008779DB; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -86,61 +84,58 @@ type
   TGetRobotInterface = function: PRobotInterfacePrefix; stdcall;
 
 var
-  RobotInterface: PRobotInterfacePrefix = nil; // @addr $87F6B0 Borrowed DLL dispatch table; nil until successful initialization.
-  // Native compiler-generated initialization $8779D4 decrements the unit counter
-  // at $88C3A8; finalization $83D970 increments it and clears this array at zero.
-  // The managed global below supplies that DCC32 lifetime code automatically.
+  RobotInterface: PRobotInterfacePrefix = nil; // @addr $812F10 Borrowed DLL dispatch table; nil until successful initialization.
 var
-  RobotCallbacks: TRobotCallbacks; // @addr $88C34C
-  RobotBattleStatistics: TPlanetBattleStatistics; // @addr $88C38C Player-side SRobotGameState returned by MatrixGame.Run.
-  SupportedMultiSamples: array of Integer; // @addr $88C3A4
+  RobotCallbacks: TRobotCallbacks; // @addr $81CED8
+  RobotBattleStatistics: TPlanetBattleStatistics; // @addr $81CF18 Player-side SRobotGameState returned by MatrixGame.Run.
+  SupportedMultiSamples: array of Integer; // @addr $81CF30
   RobotSettings: TRobotDisplaySettingsPrefix = (Direct3D: nil; Device: nil;
     ShowStencilShadows: True; ShowProjShadows: True; SelectEx: False;
     LandTexturesGloss: True; ObjTexturesGloss: True; SoftwareCursor: False;
     Sky: 2; RobotShadow: 1; ColorDepth: 32; ScreenWidth: 1024; ScreenHeight: 768;
     RefreshRate: 0; Brightness: 0.5; Contrast: 0.5; FSAASamples: 0;
-    Anisotropy: 0; MaxDistance: 0; VSync: False); // @addr $87F6B4
-  RobotSound: Boolean = True; // @addr $87F6EC
-  RobotMusic: Boolean = True; // @addr $87F6F0
-  RobotVSync: Boolean = False; // @addr $87F6F4
-  RobotFSAASamples: Integer = 0; // @addr $87F6F8
-  RobotAnisotropy: Integer = 0; // @addr $87F6FC
-  RobotMaxDistance: Integer = 0; // @addr $87F700
-  SupportedMultiSampleCount: Integer = 0; // @addr $87F704
+    Anisotropy: 0; MaxDistance: 0; VSync: False); // @addr $812F14
+  RobotSound: Boolean = True; // @addr $812F4C
+  RobotMusic: Boolean = True; // @addr $812F50
+  RobotVSync: Boolean = False; // @addr $812F54
+  RobotFSAASamples: Integer = 0; // @addr $812F58
+  RobotAnisotropy: Integer = 0; // @addr $812F5C
+  RobotMaxDistance: Integer = 0; // @addr $812F60
+  SupportedMultiSampleCount: Integer = 0; // @addr $812F64
 var
-  MaximumAnisotropy: Cardinal = 0; // @addr $87F708
-  RobotModule: Cardinal = 0; // @addr $87F70C
+  MaximumAnisotropy: Cardinal = 0; // @addr $812F68
+  RobotModule: Cardinal = 0; // @addr $812F6C
 
-function GetRobotMultiSampleIndex: Integer; // @addr $83C148
+function GetRobotMultiSampleIndex: Integer; // @addr $7BE13C
 
-procedure InitializeRobotRuntime; // @addr 0x83C194
-procedure FinalizeRobotRuntime; // @addr 0x83C468
-function FRun(const MapName, StartText, WinText, LossText, TerronName: WideString): Integer; // @addr $83D0CC Native diagnostic name: GIRobot.FRun.
+procedure InitializeRobotRuntime; // @addr 0x007BE164
+procedure FinalizeRobotRuntime; // @addr 0x007BE400
+function FRun(const MapName, StartText, WinText, LossText, TerronName: WideString): Integer; // @addr $7BEF64 Native diagnostic name: GIRobot.FRun.
 
-procedure RobotPlaySound(Name: PWideChar); stdcall; // @addr $83C49C
-function RobotCreateSound(Name: PWideChar; Group, Looping: Integer): TSoundBufferControl; stdcall; // @addr $83C4EC
-procedure RobotFreeSound(Sound: TSoundBufferControl); stdcall; // @addr $83C56C
-procedure RobotStartSound(Sound: TSoundBufferControl); stdcall; // @addr $83C584
-function RobotIsSoundPlaying(Sound: TSoundBufferControl): Integer; stdcall; // @addr $83C5A4
-procedure RobotSetSoundVolume(Sound: TSoundBufferControl; Value: Single); stdcall; // @addr $83C5CC
-procedure RobotSetSoundPan(Sound: TSoundBufferControl; Value: Single); stdcall; // @addr $83C5E4
-function RobotGetSoundVolume(Sound: TSoundBufferControl): Single; stdcall; // @addr $83C5FC
-function RobotGetSoundPan(Sound: TSoundBufferControl): Single; stdcall; // @addr $83C620
+procedure RobotPlaySound(Name: PWideChar); stdcall; // @addr $7BE434
+function RobotCreateSound(Name: PWideChar; Group, Looping: Integer): TSoundBufferControl; stdcall; // @addr $7BE484
+procedure RobotFreeSound(Sound: TSoundBufferControl); stdcall; // @addr $7BE4F4
+procedure RobotStartSound(Sound: TSoundBufferControl); stdcall; // @addr $7BE508
+function RobotIsSoundPlaying(Sound: TSoundBufferControl): Integer; stdcall; // @addr $7BE524
+procedure RobotSetSoundVolume(Sound: TSoundBufferControl; Value: Single); stdcall; // @addr $7BE540
+procedure RobotSetSoundPan(Sound: TSoundBufferControl; Value: Single); stdcall; // @addr $7BE558
+function RobotGetSoundVolume(Sound: TSoundBufferControl): Single; stdcall; // @addr $7BE570
+function RobotGetSoundPan(Sound: TSoundBufferControl): Single; stdcall; // @addr $7BE590
 procedure RobotRenderText(Text, FontName: PWideChar; Color: Cardinal;
   Width, Height, AlignX, AlignY, Wrap, OffsetX, OffsetY: Integer;
-  Clip: PRect; Image: PRobotTextImage); stdcall; // @addr $83C8C0
-procedure RobotFreeText(Image: PRobotTextImage); stdcall; // @addr $83CF1C
-procedure RobotSetProgress(Fraction: Single); stdcall; // @addr $83CF44
-function RobotGetMusicVolume: Single; stdcall; // @addr $83CFF4
-procedure RobotSetMusicVolume(Value: Single); stdcall; // @addr $83D008
-procedure RobotPlayMusic; stdcall; // @addr $83D070
-procedure RobotReleaseTextures; stdcall; // @addr $83D0C4
+  Clip: PRect; Image: PRobotTextImage); stdcall; // @addr $7BE7E4
+procedure RobotFreeText(Image: PRobotTextImage); stdcall; // @addr $7BEDD4
+procedure RobotSetProgress(Fraction: Single); stdcall; // @addr $7BEDFC
+function RobotGetMusicVolume: Single; stdcall; // @addr $7BEEA4
+procedure RobotSetMusicVolume(Value: Single); stdcall; // @addr $7BEEB4
+procedure RobotPlayMusic; stdcall; // @addr $7BEF08
+procedure RobotReleaseTextures; stdcall; // @addr $7BEF5C
 
 implementation
 
 uses GR_Main, GlobalsV, EC_Mem, EC_Str, GR_Music, GR_DX, fPanelLoad, SysUtils, Classes, EC_Cache, EC_CacheFont, GI_MessageLoop, EC_HsFile, aGalaxy;
 
-{ @routine $83C148 GetRobotMultiSampleIndex }
+{ @routine $7BE13C GetRobotMultiSampleIndex }
 function GetRobotMultiSampleIndex: Integer;
 var I: Integer;
 begin
@@ -152,9 +147,9 @@ begin
     end;
   Result := 0;
 end;
-{ @end $83C148 }
+{ @end $7BE13C }
 
-{ @routine $83C194 InitializeRobotRuntime }
+{ @routine $7BE164 InitializeRobotRuntime }
 procedure InitializeRobotRuntime;
 var GetInterface: TGetRobotInterface;
     OverrideName: WideString;
@@ -208,9 +203,9 @@ begin
     end;
   end;
 end;
-{ @end $83C194 }
+{ @end $7BE164 }
 
-{ @routine $83C468 FinalizeRobotRuntime }
+{ @routine $7BE400 FinalizeRobotRuntime }
 procedure FinalizeRobotRuntime;
 begin
   if RobotInterface <> nil then
@@ -224,16 +219,16 @@ begin
     end;
   end;
 end;
-{ @end $83C468 }
+{ @end $7BE400 }
 
-{ @routine $83C49C RobotPlaySound }
+{ @routine $7BE434 RobotPlaySound }
 procedure RobotPlaySound(Name: PWideChar); stdcall;
 begin
   SoundManager.PlaySound(WideString(Name));
 end;
-{ @end $83C49C }
+{ @end $7BE434 }
 
-{ @routine $83C4EC RobotCreateSound }
+{ @routine $7BE484 RobotCreateSound }
 function RobotCreateSound(Name: PWideChar; Group, Looping: Integer): TSoundBufferControl; stdcall;
 var Sound: TSoundBufferControl;
 begin
@@ -241,64 +236,64 @@ begin
   if RobotSound then Sound.Configure(WideString(Name), Group, Looping <> 0);
   Result := Sound;
 end;
-{ @end $83C4EC }
+{ @end $7BE484 }
 
-{ @routine $83C56C RobotFreeSound }
+{ @routine $7BE4F4 RobotFreeSound }
 procedure RobotFreeSound(Sound: TSoundBufferControl); stdcall;
 begin
   if Sound <> nil then Sound.Free;
 end;
-{ @end $83C56C }
+{ @end $7BE4F4 }
 
-{ @routine $83C584 RobotStartSound }
+{ @routine $7BE508 RobotStartSound }
 procedure RobotStartSound(Sound: TSoundBufferControl); stdcall;
 begin
   if Sound <> nil then if RobotSound then Sound.Play;
 end;
-{ @end $83C584 }
+{ @end $7BE508 }
 
-{ @routine $83C5A4 RobotIsSoundPlaying }
+{ @routine $7BE524 RobotIsSoundPlaying }
 function RobotIsSoundPlaying(Sound: TSoundBufferControl): Integer; stdcall;
 begin
   Result := 0;
   if Sound <> nil then Result := Integer(Sound.IsPlaying);
 end;
-{ @end $83C5A4 }
+{ @end $7BE524 }
 
-{ @routine $83C5CC RobotSetSoundVolume }
+{ @routine $7BE540 RobotSetSoundVolume }
 procedure RobotSetSoundVolume(Sound: TSoundBufferControl; Value: Single); stdcall;
 begin
   if Sound <> nil then Sound.SetVolume(Value);
 end;
-{ @end $83C5CC }
+{ @end $7BE540 }
 
-{ @routine $83C5E4 RobotSetSoundPan }
+{ @routine $7BE558 RobotSetSoundPan }
 procedure RobotSetSoundPan(Sound: TSoundBufferControl; Value: Single); stdcall;
 begin
   if Sound <> nil then Sound.SetPan(Value);
 end;
-{ @end $83C5E4 }
+{ @end $7BE558 }
 
-{ @routine $83C5FC RobotGetSoundVolume }
+{ @routine $7BE570 RobotGetSoundVolume }
 function RobotGetSoundVolume(Sound: TSoundBufferControl): Single; stdcall;
 begin
   if Sound = nil then Result := 0 else Result := Sound.Volume;
 end;
-{ @end $83C5FC }
+{ @end $7BE570 }
 
-{ @routine $83C620 RobotGetSoundPan }
+{ @routine $7BE590 RobotGetSoundPan }
 function RobotGetSoundPan(Sound: TSoundBufferControl): Single; stdcall;
 begin
   if Sound = nil then Result := 0 else Result := Sound.Pan;
 end;
-{ @end $83C620 }
+{ @end $7BE590 }
 
 function CenterSpan(SpanStart, SpanEnd, ContentStart, ContentEnd: Integer): Integer; inline;
 begin
   Result := SpanStart + (SpanEnd - SpanStart) div 2 - (ContentEnd - ContentStart) div 2;
 end;
 
-{ @routine $83C8C0 RobotRenderText }
+{ @routine $7BE7E4 RobotRenderText }
 procedure RobotRenderText(Text, FontName: PWideChar; Color: Cardinal;
   Width, Height, AlignX, AlignY, Wrap, OffsetX, OffsetY: Integer;
   Clip: PRect; Image: PRobotTextImage); stdcall;
@@ -313,8 +308,8 @@ var
   ImageSize: TPoint;
   DrawClip, Bounds, SourceClip: TRect;
 
-  // @nested $83C644 MeasureRobotTextSize
-  function MeasureRobotTextSize: TPoint; // @addr $83C644 @calls "0x83C9AB"
+  // @nested $7BE5B0 MeasureRobotTextSize
+  function MeasureRobotTextSize: TPoint; // @addr $7BE5B0 @calls "0x007BE8D6"
   var
     Y: Integer;
     First: Boolean;
@@ -469,17 +464,17 @@ begin
     if WrappedLines <> nil then WrappedLines.Free;
   end;
 end;
-{ @end $83C8C0 }
+{ @end $7BE7E4 }
 
-{ @routine $83CF1C RobotFreeText }
+{ @routine $7BEDD4 RobotFreeText }
 procedure RobotFreeText(Image: PRobotTextImage); stdcall;
 begin
   if Image.Buffer <> nil then Image.Buffer.Free;
   FillChar(Image^, SizeOf(TRobotTextImage), 0);
 end;
-{ @end $83CF1C }
+{ @end $7BEDD4 }
 
-{ @routine $83CF44 RobotSetProgress }
+{ @routine $7BEDFC RobotSetProgress }
 procedure RobotSetProgress(Fraction: Single); stdcall;
 var Panel: TfPanelLoad;
 begin
@@ -498,16 +493,16 @@ begin
       Panel.Hide;
     end;
 end;
-{ @end $83CF44 }
+{ @end $7BEDFC }
 
-{ @routine $83CFF4 RobotGetMusicVolume }
+{ @routine $7BEEA4 RobotGetMusicVolume }
 function RobotGetMusicVolume: Single; stdcall;
 begin
   Result := MusicVolumeScale;
 end;
-{ @end $83CFF4 }
+{ @end $7BEEA4 }
 
-{ @routine $83D008 RobotSetMusicVolume }
+{ @routine $7BEEB4 RobotSetMusicVolume }
 procedure RobotSetMusicVolume(Value: Single); stdcall;
 var Buffer: TSoundBuffer;
 begin
@@ -522,9 +517,9 @@ begin
     end;
   end;
 end;
-{ @end $83D008 }
+{ @end $7BEEB4 }
 
-{ @routine $83D070 RobotPlayMusic }
+{ @routine $7BEF08 RobotPlayMusic }
 procedure RobotPlayMusic; stdcall;
 begin
   if MusicEnabled and RobotMusic and not MusicManager.HasSelectedMusic then
@@ -533,16 +528,16 @@ begin
     MusicManager.PlayCategory('Robot');
   end;
 end;
-{ @end $83D070 }
+{ @end $7BEF08 }
 
-{ @routine $83D0C4 RobotReleaseTextures }
+{ @routine $7BEF5C RobotReleaseTextures }
 procedure RobotReleaseTextures; stdcall;
 begin
   ReleaseAllTextureSurfaces;
 end;
-{ @end $83D0C4 }
+{ @end $7BEF5C }
 
-{ @routine $83D0CC FRun }
+{ @routine $7BEF64 FRun }
 function FRun(const MapName, StartText, WinText, LossText, TerronName: WideString): Integer;
 var
   SavedDirectory, RobotDirectory: AnsiString;
@@ -678,6 +673,6 @@ begin
   if MusicEnabled and MusicManager.HasSelectedMusic then MusicManager.RequestFadeOut;
   if Failed then raise Exception.Create('Error in GIRobot.FRun');
 end;
-{ @end $83D0CC }
+{ @end $7BEF64 }
 
 end.

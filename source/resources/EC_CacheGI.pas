@@ -1,5 +1,4 @@
 unit EC_CacheGI;
-// Unit bracket (inferred): .text 0x004787EC..0x0047AE16; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -11,9 +10,9 @@ type
 
   TCGiControlEC = class(TCacheControlEC) // @size 0x18
   public
-    procedure QueueLoadIfMissing(PendingLoads: TList); override; // @addr 0x4788F4
-    function CreateData: TCacheDataEC; override; // @addr 0x478978
-    function AcquireData: TCacheDataEC; override; // @addr 0x4789C4
+    procedure QueueLoadIfMissing(PendingLoads: TList); override; // @addr 0x0048DBD8
+    function CreateData: TCacheDataEC; override; // @addr 0x0048DC44
+    function AcquireData: TCacheDataEC; override; // @addr 0x0048DC74
   end;
 
   TCGiEC = class(TCacheDataEC) // @size 0x34
@@ -25,68 +24,66 @@ type
     TileCount: Integer; // @offset 0x30
     // TileCount is zero for a single surface.
 
-    constructor Create; // @addr 0x4789E0
-    destructor Destroy; override; // @addr 0x478A4C
-    function GetTileOrigin(TileIndex: Integer): TPoint; // @addr 0x478AD0
-    function GetOrCreateSurface(SurfaceIndex: Integer): IDirect3DTexture9; // @addr 0x478B24 @note "Caches the last requested surface at index zero; non-square tile grids use an incorrect stride."
-    procedure LoadFromConfigBuffer(SourceBuffer: TBufEC; const LoadOption: WideString); override; // @addr 0x478ECC @note "May modify SourceBuffer for resource-specific layout fixups. Ignores LoadOption."
-    procedure ApplyWideScreenLayoutFixups(SourceBuffer: TBufEC; const ResourceKey: WideString); // @addr 0x479144 @note "Modifies SourceBuffer in place."
+    constructor Create; // @addr 0x0048DC7C
+    destructor Destroy; override; // @addr 0x0048DCD0
+    function GetTileOrigin(TileIndex: Integer): TPoint; // @addr 0x0048DD30
+    function GetOrCreateSurface(SurfaceIndex: Integer): IDirect3DTexture9; // @addr 0x0048DD54 @note "Caches the last requested surface at index zero; non-square tile grids use an incorrect stride."
+    procedure LoadFromConfigBuffer(SourceBuffer: TBufEC; const LoadOption: WideString); override; // @addr 0x0048E0A4 @note "May modify SourceBuffer for resource-specific layout fixups. Ignores LoadOption."
+    procedure ApplyWideScreenLayoutFixups(SourceBuffer: TBufEC; const ResourceKey: WideString); // @addr 0x0048E2D0 @note "Modifies SourceBuffer in place."
   end;
 
-function AcquireCachedGi(Control: TCacheControlEC): TCGiEC; // @addr 0x478998
+function AcquireCachedGi(Control: TCacheControlEC): TCGiEC; // @addr 0x0048DC54
 
 implementation
 
 uses EC_Mem, EC_Str, GR_Main, Windows, Math;
 
-{ @routine $4788F4 TCGiControlEC_QueueLoadIfMissing }
+{ @routine $48DBD8 TCGiControlEC_QueueLoadIfMissing }
 procedure TCGiControlEC.QueueLoadIfMissing(PendingLoads: TList);
 var Control: TCGiControlEC;
 begin
   if RetainCount > 0 then Exit;
   if BoundData <> nil then Exit;
   if HasEmptyCacheKey then Exit;
-  if GlobalCache.FindDataByKeyAndClass(CacheKey, TCGiEC) = nil then
-  begin
-    Control := TCGiControlEC.Create;
-    GlobalCache.ResetControl(Control);
-    Control.SetCacheKey(CacheKey);
-    PendingLoads.Add(Control);
-  end;
+  if GlobalCache.FindDataByKeyAndClass(CacheKey, TCGiEC) <> nil then Exit;
+  Control := TCGiControlEC.Create;
+  GlobalCache.ResetControl(Control);
+  Control.SetCacheKey(CacheKey);
+  PendingLoads.Add(Control);
 end;
-{ @end $4788F4 }
+{ @end $48DBD8 }
 
-{ @routine $478978 TCGiControlEC_CreateData }
+{ @routine $48DC44 TCGiControlEC_CreateData }
 function TCGiControlEC.CreateData: TCacheDataEC;
 begin
   Result := TCGiEC.Create;
 end;
-{ @end $478978 }
+{ @end $48DC44 }
 
-{ @routine $478998 AcquireCachedGi }
+{ @routine $48DC54 AcquireCachedGi }
 function AcquireCachedGi(Control: TCacheControlEC): TCGiEC;
 begin
   Result := Control.AcquireDataFromConfig(TCGiEC) as TCGiEC;
 end;
-{ @end $478998 }
+{ @end $48DC54 }
 
-{ @routine $4789C4 TCGiControlEC_AcquireData }
+{ @routine $48DC74 TCGiControlEC_AcquireData }
 function TCGiControlEC.AcquireData: TCacheDataEC;
 begin
   Result := AcquireCachedGi(Self);
 end;
-{ @end $4789C4 }
+{ @end $48DC74 }
 
-{ @routine $4789E0 TCGiEC_Create }
+{ @routine $48DC7C TCGiEC_Create }
 constructor TCGiEC.Create;
 begin
   inherited Create;
   Image := TgiGR.Create;
   SurfaceCache := nil; UsesTiledSurfaces := False; TileCount := 0;
 end;
-{ @end $4789E0 }
+{ @end $48DC7C }
 
-{ @routine $478A4C TCGiEC_Destroy }
+{ @routine $48DCD0 TCGiEC_Destroy }
 destructor TCGiEC.Destroy;
 begin
   Image.Free;
@@ -97,22 +94,22 @@ begin
   end;
   inherited Destroy;
 end;
-{ @end $478A4C }
+{ @end $48DCD0 }
 
-{ @routine $478AD0 TCGiEC_GetTileOrigin }
+{ @routine $48DD30 TCGiEC_GetTileOrigin }
 function TCGiEC.GetTileOrigin(TileIndex: Integer): TPoint;
 begin
   Result := TileOrigins[TileIndex];
 end;
-{ @end $478AD0 }
+{ @end $48DD30 }
 
-{ @routine $478B24 TCGiEC_GetOrCreateSurface }
+{ @routine $48DD54 TCGiEC_GetOrCreateSurface }
 function TCGiEC.GetOrCreateSurface(SurfaceIndex: Integer): IDirect3DTexture9;
 var Texture: IDirect3DTexture9; ImageSize: TPoint; Locked: TD3DLockedRect;
   TileIndex, Columns, Rows, TileWidth, TileHeight, Column, Row: Integer; Origin: TPoint;
 
-  // @nested $478B00 GiTileDivideRoundUp
-  function GiTileDivideRoundUp(Value, Divisor: Integer): Integer; // @addr 0x478B00 @calls "0x00478BE7 0x00478BFD"
+  // @nested $48DD44 GiTileDivideRoundUp
+  function GiTileDivideRoundUp(Value, Divisor: Integer): Integer; // @addr 0x0048DD44 @calls "0x0048DE03,0x0048DE17"
   begin
     Result := (Divisor - 1 + Value) div Divisor;
   end;
@@ -187,19 +184,20 @@ begin
   end;
   Result := Texture;
 end;
-{ @end $478B24 }
+{ @end $48DD54 }
 
-{ @routine $478ECC TCGiEC_LoadFromConfigBuffer }
+{ @routine $48E0A4 TCGiEC_LoadFromConfigBuffer }
 procedure TCGiEC.LoadFromConfigBuffer(SourceBuffer: TBufEC; const LoadOption: WideString);
 begin
   ApplyWideScreenLayoutFixups(SourceBuffer, CacheKey);
   Image.LoadRawGiFromBuffer(SourceBuffer);
   ResidentBytes := Image.DataSize;
 end;
-{ @end $478ECC }
+{ @end $48E0A4 }
 
-{ @routine $479144 TCGiEC_ApplyWideScreenLayoutFixups }
+{ @routine $48E2D0 TCGiEC_ApplyWideScreenLayoutFixups }
 procedure TCGiEC.ApplyWideScreenLayoutFixups(SourceBuffer: TBufEC; const ResourceKey: WideString);
+label RescaleMatchedImage;
 var
   WorkingImage: TgiGR;
   Quiet: Boolean;
@@ -210,8 +208,8 @@ var
   Delta, Remainder, ExtraHeight: Integer;
   PreserveAlpha: Boolean;
 
-  // @nested $478F10 RenderGiBufferToGraphBuf
-  procedure RenderGiBufferToGraphBuf(SourceBuffer: TBufEC; DestGraphBuf: TGraphBufGR); // @addr 0x478F10 @calls "0x004791E8 0x00479309 0x0047952D 0x00479727 0x004798A2 0x00479A24 0x00479D07 0x00479E70 0x0047A074 0x0047A24C 0x0047A33B 0x0047A494 0x0047A58C 0x0047A794 0x0047A9BB 0x0047AD3F"
+  // @nested $48E0CC RenderGiBufferToGraphBuf
+  procedure RenderGiBufferToGraphBuf(SourceBuffer: TBufEC; DestGraphBuf: TGraphBufGR); // @addr 0x0048E0CC @calls "0x0048E374,0x0048E46A,0x0048E64A,0x0048E7E2,0x0048E915,0x0048EA47,0x0048ECCA,0x0048EE11,0x0048EFCA,0x0048F15A,0x0048F22D,0x0048F35A,0x0048F436,0x0048F602,0x0048F7E0,0x0048FB24"
   begin
     WorkingImage := TgiGR.Create;
     WorkingImage.LoadRawGiFromBuffer(SourceBuffer);
@@ -221,8 +219,8 @@ var
     WorkingImage.Free;
   end;
 
-  // @nested $478F94 StoreGraphBufAsRawGiBuffer
-  procedure StoreGraphBufAsRawGiBuffer(DestBuffer: TBufEC; SourceGraphBuf: TGraphBufGR; StorageMode: Integer); // @addr 0x478F94 @calls "0x0047A2D9 0x0047A440 0x0047A524 0x0047ADC3"
+  // @nested $48E13C StoreGraphBufAsRawGiBuffer
+  procedure StoreGraphBufAsRawGiBuffer(DestBuffer: TBufEC; SourceGraphBuf: TGraphBufGR; StorageMode: Integer); // @addr 0x0048E13C @calls "0x0048F1D5,0x0048F30B,0x0048F3D8,0x0048FB8A"
   begin
     WorkingImage := TgiGR.Create;
     WorkingImage.CreateFromGraphBuf(SourceGraphBuf, StorageMode);
@@ -232,8 +230,8 @@ var
     WorkingImage.Free;
   end;
 
-  // @nested $479004 StoreGraphBufAsGiBuffer
-  procedure StoreGraphBufAsGiBuffer(DestBuffer: TBufEC; SourceGraphBuf: TGraphBufGR; TopLeft: TPoint); // @addr 0x479004 @calls "0x004792A1 0x004794A3 0x0047969D 0x00479818 0x00479990 0x00479C46 0x00479DAB 0x00479FE6 0x0047A1E9 0x0047A6CE 0x0047A8C5 0x0047A9FB 0x0047ADAF"
+  // @nested $48E1A4 StoreGraphBufAsGiBuffer
+  procedure StoreGraphBufAsGiBuffer(DestBuffer: TBufEC; SourceGraphBuf: TGraphBufGR; TopLeft: TPoint); // @addr 0x0048E1A4 @calls "0x0048E40C,0x0048E5D1,0x0048E769,0x0048E89C,0x0048E9C8,0x0048EC21,0x0048ED52,0x0048EF46,0x0048F0FD,0x0048F54A,0x0048F6F5,0x0048F818,0x0048FB77"
   begin
     WorkingImage := TgiGR.Create;
     WorkingImage.CreateFormat2FromGraphBuf(SourceGraphBuf, TopLeft);
@@ -243,14 +241,14 @@ var
     WorkingImage.Free;
   end;
 
-  // @nested $47907C LogWideScreenGiRescaleStart
-  procedure LogWideScreenGiRescaleStart; // @addr 0x47907C @calls "0x004791CA 0x004792EB 0x0047950F 0x00479709 0x00479884 0x00479A06 0x00479CE9 0x00479E52 0x0047A056 0x0047A22E 0x0047A31D 0x0047A476 0x0047A56E 0x0047A776 0x0047A99D 0x0047AD21"
+  // @nested $48E208 LogWideScreenGiRescaleStart
+  procedure LogWideScreenGiRescaleStart; // @addr 0x0048E208 @calls "0x0048E358,0x0048E44E,0x0048E62E,0x0048E7C6,0x0048E8F9,0x0048EA2B,0x0048ECAE,0x0048EDF5,0x0048EFAE,0x0048F13E,0x0048F211,0x0048F33E,0x0048F41A,0x0048F5E6,0x0048F7C4,0x0048FB08"
   begin
     if not Quiet then AppendLogTextThreadSafe('Rescaling ' + ResourceKey + '... ');
   end;
 
-  // @nested $479120 LogWideScreenGiRescaleDone
-  procedure LogWideScreenGiRescaleDone; // @addr 0x479120 @calls "0x004792B8 0x004794BA 0x004796B4 0x0047982F 0x004799A7 0x00479C5D 0x00479DC2 0x00479FFD 0x0047A200 0x0047A2F0 0x0047A457 0x0047A53B 0x0047A6E5 0x0047A8DC 0x0047AA12 0x0047ADDA"
+  // @nested $48E2AC LogWideScreenGiRescaleDone
+  procedure LogWideScreenGiRescaleDone; // @addr 0x0048E2AC @calls "0x0048E421,0x0048E5E6,0x0048E77E,0x0048E8B1,0x0048E9DD,0x0048EC36,0x0048ED67,0x0048EF5B,0x0048F112,0x0048F1EA,0x0048F320,0x0048F3ED,0x0048F55F,0x0048F70A,0x0048F82D,0x0048FB9F"
   begin
     if not Quiet then AppendLogLineThreadSafe('ok');
   end;
@@ -269,20 +267,21 @@ begin
       Classes.Rect(0, 0, SourceGraph.Width, SourceGraph.Height), Classes.Rect(430, 0, 593, 0));
     SourceGraph.Clear;
     SourceGraph.Free;
-    StoreGraphBufAsGiBuffer(SourceBuffer, DestGraph, Classes.Point(0, GameScreenHeight - DestGraph.Height - 1));
+    StoreGraphBufAsGiBuffer(SourceBuffer, DestGraph, Classes.Point(0, GameScreenHeight - Integer(DestGraph.Height) - 1));
     DestGraph.Clear;
     DestGraph.Free;
     LogWideScreenGiRescaleDone;
-  end
-  else if ((ExtraScreenWidth > 0) or (ExtraHeight > 0)) and (ResourceKey = 'Bm.FormMain2.2AnimMain') then
+    Exit;
+  end;
+  if ((ExtraScreenWidth > 0) or (ExtraHeight > 0)) and (ResourceKey = 'Bm.FormMain2.2AnimMain') then
   begin
     LogWideScreenGiRescaleStart;
     SourceGraph := TGraphBufGR.Create(False);
     RenderGiBufferToGraphBuf(SourceBuffer, SourceGraph);
     DestGraph := TGraphBufGR.Create(False);
-    DestGraph.AllocateRgbaTight(GameScreenWidth, Max(Cardinal(GameScreenHeight), 768));
+    DestGraph.AllocateRgbaTight(GameScreenWidth, Max(GameScreenHeight, 768));
     Delta := (ExtraScreenWidth div 2 div 3) * 3;
-    if Cardinal(GameScreenWidth) >= 1600 then Delta := Delta - 249;
+    if GameScreenWidth >= 1600 then Delta := Delta - 249;
     Remainder := ExtraHeight mod 3;
     if Remainder <> 0 then Remainder := 3 - Remainder;
     DestGraph.DrawNinePatch(0, 0, Delta, 0, SourceGraph,
@@ -295,8 +294,9 @@ begin
     DestGraph.Clear;
     DestGraph.Free;
     LogWideScreenGiRescaleDone;
-  end
-  else if (ExtraHeight > 0) and (ResourceKey = 'Bm.FormGov2.' + GiResourceSuffix + 'TWin') then
+    Exit;
+  end;
+  if (ExtraHeight > 0) and (ResourceKey = 'Bm.FormGov2.' + GiResourceSuffix + 'TWin') then
   begin
     LogWideScreenGiRescaleStart;
     SourceGraph := TGraphBufGR.Create(False);
@@ -317,8 +317,9 @@ begin
     DestGraph.Clear;
     DestGraph.Free;
     LogWideScreenGiRescaleDone;
-  end
-  else if (ExtraHeight > 0) and (ResourceKey = 'Bm.FormGov2.' + GiResourceSuffix + 'TWinB') then
+    Exit;
+  end;
+  if (ExtraHeight > 0) and (ResourceKey = 'Bm.FormGov2.' + GiResourceSuffix + 'TWinB') then
   begin
     LogWideScreenGiRescaleStart;
     SourceGraph := TGraphBufGR.Create(False);
@@ -334,8 +335,9 @@ begin
     DestGraph.Clear;
     DestGraph.Free;
     LogWideScreenGiRescaleDone;
-  end
-  else if (ExtraHeight > 0) and (ResourceKey = 'Bm.FormInfo3.' + GiResourceSuffix + 'BG') then
+    Exit;
+  end;
+  if (ExtraHeight > 0) and (ResourceKey = 'Bm.FormInfo3.' + GiResourceSuffix + 'BG') then
   begin
     LogWideScreenGiRescaleStart;
     SourceGraph := TGraphBufGR.Create(False);
@@ -352,8 +354,9 @@ begin
     DestGraph.Clear;
     DestGraph.Free;
     LogWideScreenGiRescaleDone;
-  end
-  else if (ExtraScreenWidth > 0) and (ResourceKey = 'Bm.FormShop2.2bg') then
+    Exit;
+  end;
+  if (ExtraScreenWidth > 0) and (ResourceKey = 'Bm.FormShop2.2bg') then
   begin
     Delta := (ExtraScreenWidth div 198) * 198;
     if Delta > 198 then Delta := 198;
@@ -381,8 +384,9 @@ begin
       DestGraph.Free;
       LogWideScreenGiRescaleDone;
     end;
-  end
-  else if (ExtraScreenWidth > 0) and
+    Exit;
+  end;
+  if (ExtraScreenWidth > 0) and
     ((ResourceKey = 'Bm.FormShop2.2Fei') or (ResourceKey = 'Bm.FormShop2.2Gaal') or
      (ResourceKey = 'Bm.FormShop2.2Peleng') or (ResourceKey = 'Bm.FormShop2.2People')) then
   begin
@@ -404,8 +408,9 @@ begin
       DestGraph.Free;
       LogWideScreenGiRescaleDone;
     end;
-  end
-  else if (ExtraHeight > 0) and
+    Exit;
+  end;
+  if (ExtraHeight > 0) and
     ((ResourceKey = 'Bm.FormOptions2.' + GiResourceSuffix + 'Left') or
      (ResourceKey = 'Bm.FormOptions2.' + GiResourceSuffix + 'Right')) then
   begin
@@ -426,8 +431,9 @@ begin
     DestGraph.Clear;
     DestGraph.Free;
     LogWideScreenGiRescaleDone;
-  end
-  else if (ExtraScreenWidth > 0) and (ResourceKey = 'Bm.FormGameSet2.' + GiResourceSuffix + 'Footer') then
+    Exit;
+  end;
+  if (ExtraScreenWidth > 0) and (ResourceKey = 'Bm.FormGameSet2.' + GiResourceSuffix + 'Footer') then
   begin
     LogWideScreenGiRescaleStart;
     SourceGraph := TGraphBufGR.Create(False);
@@ -446,8 +452,9 @@ begin
     DestGraph.Clear;
     DestGraph.Free;
     LogWideScreenGiRescaleDone;
-  end
-  else if (ResourceKey = 'Bm.FormIntro2.PanelTop') or (ResourceKey = 'Bm.FormEnd2.PanelTop') then
+    Exit;
+  end;
+  if (ResourceKey = 'Bm.FormIntro2.PanelTop') or (ResourceKey = 'Bm.FormEnd2.PanelTop') then
   begin
     LogWideScreenGiRescaleStart;
     SourceGraph := TGraphBufGR.Create(False);
@@ -462,8 +469,9 @@ begin
     DestGraph.Clear;
     DestGraph.Free;
     LogWideScreenGiRescaleDone;
-  end
-  else if (ExtraScreenWidth > 0) and (ResourceKey = 'Bm.FormIntro2.PanelBottom') then
+    Exit;
+  end;
+  if (ExtraScreenWidth > 0) and (ResourceKey = 'Bm.FormIntro2.PanelBottom') then
   begin
     LogWideScreenGiRescaleStart;
     SourceGraph := TGraphBufGR.Create(False);
@@ -480,8 +488,9 @@ begin
     DestGraph.Clear;
     DestGraph.Free;
     LogWideScreenGiRescaleDone;
-  end
-  else if ResourceKey = 'Bm.FormEnd2.PanelBottom' then
+    Exit;
+  end;
+  if ResourceKey = 'Bm.FormEnd2.PanelBottom' then
   begin
     LogWideScreenGiRescaleStart;
     SourceGraph := TGraphBufGR.Create(False);
@@ -496,8 +505,9 @@ begin
     DestGraph.Clear;
     DestGraph.Free;
     LogWideScreenGiRescaleDone;
-  end
-  else if ((ExtraScreenWidth > 0) or (ExtraHeight > 0)) and (ResourceKey = 'Bm.FormPQuest2.2Panel') then
+    Exit;
+  end;
+  if ((ExtraScreenWidth > 0) or (ExtraHeight > 0)) and (ResourceKey = 'Bm.FormPQuest2.2Panel') then
   begin
     LogWideScreenGiRescaleStart;
     SourceGraph := TGraphBufGR.Create(False);
@@ -516,8 +526,9 @@ begin
     DestGraph.Clear;
     DestGraph.Free;
     LogWideScreenGiRescaleDone;
-  end
-  else if ((ExtraScreenWidth > 0) or (ExtraHeight > 0)) and
+    Exit;
+  end;
+  if ((ExtraScreenWidth > 0) or (ExtraHeight > 0)) and
     (((FindTextOffsetW(ResourceKey, 'Bm.FormPQuest2.2S') = 0) and
       IsIntegerTextW(CopyWideStringUnchecked(ResourceKey, 18, Length(ResourceKey) - 17))) or
      ((FindTextOffsetW(ResourceKey, 'Bm.FormPQuest2.') = 0) and
@@ -540,8 +551,9 @@ begin
     DestGraph.Clear;
     DestGraph.Free;
     LogWideScreenGiRescaleDone;
-  end
-  else if (ResourceKey = 'Bm.FormRuins.' + GiResourceSuffix + 'WBbg') or
+    Exit;
+  end;
+  if (ResourceKey = 'Bm.FormRuins.' + GiResourceSuffix + 'WBbg') or
     (ResourceKey = 'Bm.FormRuins.' + GiResourceSuffix + 'CBbg') or
     (ResourceKey = 'Bm.FormRuins.' + GiResourceSuffix + 'DestroyerBridgebg') then
   begin
@@ -553,74 +565,72 @@ begin
     SourceGraph.Clear;
     SourceGraph.Free;
     LogWideScreenGiRescaleDone;
-  end
-  else
-  begin
-    VerticalAlign := 1;
-    PreserveAlpha := FindTextOffsetW(ResourceKey, 'Alpha') > 0;
-    repeat
-      if (ResourceKey = 'Bm.FormAbout2.Bg') or (ResourceKey = 'Bm.FormGameSet2.2bg') or
-         (ResourceKey = 'Bm.FormOptions2.2Bg') or (ResourceKey = 'Bm.FormScore2.2bg') or
-         (FindTextOffsetW(ResourceKey, 'Bm.City.') = 0) or
-         ((FindTextOffsetW(ResourceKey, 'Bm.Gov.') = 0) and
-          ((FindTextOffsetW(ResourceKey, 'MalocBG') > 0) or
-           (FindTextOffsetW(ResourceKey, 'MalocPirateBG') > 0) or
-           (FindTextOffsetW(ResourceKey, 'PelengBG') > 0) or
-           (FindTextOffsetW(ResourceKey, 'PelengPirateBG') > 0) or
-           (FindTextOffsetW(ResourceKey, 'PeopleBG') > 0) or
-           (FindTextOffsetW(ResourceKey, 'PeoplePirateBG') > 0) or
-           (FindTextOffsetW(ResourceKey, 'FeiBG') > 0) or
-           (FindTextOffsetW(ResourceKey, 'FeiPirateBG') > 0) or
-           (FindTextOffsetW(ResourceKey, 'GaalBG') > 0) or
-           (FindTextOffsetW(ResourceKey, 'GaalPirateBG') > 0) or
-           (FindTextOffsetW(ResourceKey, 'PirateBG') > 0))) then Break;
-      if FindTextOffsetW(ResourceKey, 'Bm.FormRuins.') = 0 then
-      begin
-        if FindTextOffsetW(ResourceKey, 'BKbg') > 0 then
-        begin
-          VerticalAlign := 2;
-          Break;
-        end
-        else if (FindTextOffsetW(ResourceKey, 'MCbg') > 0) or
-           (FindTextOffsetW(ResourceKey, 'PBbg') > 0) or
-           (FindTextOffsetW(ResourceKey, 'RCbg') > 0) or
-           (FindTextOffsetW(ResourceKey, 'SBbg') > 0) or
-           (FindTextOffsetW(ResourceKey, 'WBbg2') > 0) or
-           ((FindTextOffsetW(ResourceKey, 'bg') > 0) and
-            (FindTextOffsetW(ResourceKey, 'table') <= 0)) then Break;
-      end;
-      if FindTextOffsetW(ResourceKey, 'Bm.PlanetBG') = 0 then
-      begin
-        if SourceBuffer.DataSize < SizeOf(TgiHeaderGR) then Exit;
-        HeaderBytes := AllocEC(SizeOf(TgiHeaderGR));
-        CopyMemory(HeaderBytes, SourceBuffer.Data, SizeOf(TgiHeaderGR));
-        Header := HeaderBytes;
-        ImageWidth := Header.Bounds.Right - Header.Bounds.Left;
-        ImageHeight := Header.Bounds.Bottom - Header.Bounds.Top;
-        FreeEC(HeaderBytes);
-        if (ImageWidth > 1024) or (ImageHeight > 768) then Break;
-      end;
-      if FindTextOffsetW(ResourceKey, 'Bm.FormLoad2.Shutter') <> 0 then Exit;
-      PreserveAlpha := True;
-      Quiet := True;
-    until True;
-    LogWideScreenGiRescaleStart;
-    SourceGraph := TGraphBufGR.Create(False);
-    RenderGiBufferToGraphBuf(SourceBuffer, SourceGraph);
-    Delta := SourceGraph.Width;
-    Remainder := SourceGraph.Height;
-    SourceGraph.RescaleRGBA_HW(GameScreenWidth, GameScreenHeight, True, 1, VerticalAlign);
-    if (Delta <> SourceGraph.Width) or (Remainder <> SourceGraph.Height) then
-    begin
-      if PreserveAlpha then
-        StoreGraphBufAsGiBuffer(SourceBuffer, SourceGraph, Classes.Point(0, 0))
-      else StoreGraphBufAsRawGiBuffer(SourceBuffer, SourceGraph, 1);
-    end;
-    SourceGraph.Clear;
-    SourceGraph.Free;
-    LogWideScreenGiRescaleDone;
+    Exit;
   end;
+  VerticalAlign := 1;
+  PreserveAlpha := FindTextOffsetW(ResourceKey, 'Alpha') > 0;
+  if (ResourceKey = 'Bm.FormAbout2.Bg') or (ResourceKey = 'Bm.FormGameSet2.2bg') or
+     (ResourceKey = 'Bm.FormOptions2.2Bg') or (ResourceKey = 'Bm.FormScore2.2bg') or
+     (FindTextOffsetW(ResourceKey, 'Bm.City.') = 0) or
+     ((FindTextOffsetW(ResourceKey, 'Bm.Gov.') = 0) and
+      ((FindTextOffsetW(ResourceKey, 'MalocBG') > 0) or
+       (FindTextOffsetW(ResourceKey, 'MalocPirateBG') > 0) or
+       (FindTextOffsetW(ResourceKey, 'PelengBG') > 0) or
+       (FindTextOffsetW(ResourceKey, 'PelengPirateBG') > 0) or
+       (FindTextOffsetW(ResourceKey, 'PeopleBG') > 0) or
+       (FindTextOffsetW(ResourceKey, 'PeoplePirateBG') > 0) or
+       (FindTextOffsetW(ResourceKey, 'FeiBG') > 0) or
+       (FindTextOffsetW(ResourceKey, 'FeiPirateBG') > 0) or
+       (FindTextOffsetW(ResourceKey, 'GaalBG') > 0) or
+       (FindTextOffsetW(ResourceKey, 'GaalPirateBG') > 0) or
+       (FindTextOffsetW(ResourceKey, 'PirateBG') > 0))) then goto RescaleMatchedImage;
+  if FindTextOffsetW(ResourceKey, 'Bm.FormRuins.') = 0 then
+  begin
+    if FindTextOffsetW(ResourceKey, 'BKbg') > 0 then
+    begin
+      VerticalAlign := 2;
+      goto RescaleMatchedImage;
+    end
+    else if (FindTextOffsetW(ResourceKey, 'MCbg') > 0) or
+       (FindTextOffsetW(ResourceKey, 'PBbg') > 0) or
+       (FindTextOffsetW(ResourceKey, 'RCbg') > 0) or
+       (FindTextOffsetW(ResourceKey, 'SBbg') > 0) or
+       (FindTextOffsetW(ResourceKey, 'WBbg2') > 0) or
+       ((FindTextOffsetW(ResourceKey, 'bg') > 0) and
+        (FindTextOffsetW(ResourceKey, 'table') <= 0)) then goto RescaleMatchedImage;
+  end;
+  if FindTextOffsetW(ResourceKey, 'Bm.PlanetBG') = 0 then
+  begin
+    if SourceBuffer.DataSize < SizeOf(TgiHeaderGR) then Exit;
+    HeaderBytes := AllocEC(SizeOf(TgiHeaderGR));
+    CopyMemory(HeaderBytes, SourceBuffer.Data, SizeOf(TgiHeaderGR));
+    Header := HeaderBytes;
+    ImageWidth := Header.Bounds.Right - Header.Bounds.Left;
+    ImageHeight := Header.Bounds.Bottom - Header.Bounds.Top;
+    FreeEC(HeaderBytes);
+    if (ImageWidth > 1024) or (ImageHeight > 768) then goto RescaleMatchedImage;
+  end;
+  if FindTextOffsetW(ResourceKey, 'Bm.FormLoad2.Shutter') <> 0 then Exit;
+  PreserveAlpha := True;
+  Quiet := True;
+RescaleMatchedImage:
+  LogWideScreenGiRescaleStart;
+  SourceGraph := TGraphBufGR.Create(False);
+  RenderGiBufferToGraphBuf(SourceBuffer, SourceGraph);
+  // Reuse the layout temporaries for the width and height before rescaling.
+  Delta := SourceGraph.Width;
+  Remainder := SourceGraph.Height;
+  SourceGraph.RescaleRGBA_HW(GameScreenWidth, GameScreenHeight, True, 1, VerticalAlign);
+  if (Delta <> Integer(SourceGraph.Width)) or (Remainder <> Integer(SourceGraph.Height)) then
+  begin
+    if PreserveAlpha then
+      StoreGraphBufAsGiBuffer(SourceBuffer, SourceGraph, Classes.Point(0, 0))
+    else StoreGraphBufAsRawGiBuffer(SourceBuffer, SourceGraph, 1);
+  end;
+  SourceGraph.Clear;
+  SourceGraph.Free;
+  LogWideScreenGiRescaleDone;
 end;
-{ @end $479144 }
+{ @end $48E2D0 }
 
 end.

@@ -1,5 +1,4 @@
 unit GI_Circle;
-// Unit bracket (inferred): .text 0x004AE978..0x004AF9FF; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -19,31 +18,31 @@ type
     LightBufferDirty: Boolean; // @offset 0x13A
     LightBuffer: TGraphBufGR; // @offset 0x13C
 
-    constructor Create(Owner: TObjectGI); // @addr 0x4AEA98
-    destructor Destroy; override; // @addr 0x4AEB74
-    procedure Clear; override; // @addr 0x4AEBA8
-    procedure SetKind(Value: TCircleKindGI); // @addr 0x4AEC74
-    procedure SetColor(Value: Cardinal); // @addr 0x4AED1C
-    procedure SetFillColor(Value: Cardinal); // @addr 0x4AED54
-    procedure SetCenter(Value: TPoint); // @addr 0x4AED8C
-    procedure SetRadius(Value: Integer); // @addr 0x4AEDEC
-    procedure SetShrLightInner(Value: Byte); // @addr 0x4AEE2C
-    procedure SetShrLightOuter(Value: Byte); // @addr 0x4AEE6C
-    procedure SetSize(Size: TPoint); override; // @addr 0x4AEEAC
-    procedure SetActive(Enabled: Boolean); override; // @addr 0x4AEEDC
-    procedure OnActivate; override; // @addr 0x4AEF34
-    procedure OnDeactivate; override; // @addr 0x4AEF50
-    procedure LoadFromConfigPath(const Path: WideString); override; // @addr 0x4AEF7C
-    procedure LoadFromBlock(Block: TBlockParEC); override; // @addr 0x4AEFB4
-    procedure LoadShapeProperties(Block: TBlockParEC); // @addr 0x4AEFDC
-    procedure Draw(ClipRect: TRect); override; // @addr 0x4AF368 @note "MulLight is unimplemented."
+    constructor Create(Owner: TObjectGI); // @addr 0x00484310
+    destructor Destroy; override; // @addr 0x004843C8
+    procedure Clear; override; // @addr 0x004843F0
+    procedure SetKind(Value: TCircleKindGI); // @addr 0x00484494
+    procedure SetColor(Value: Cardinal); // @addr 0x00484500
+    procedure SetFillColor(Value: Cardinal); // @addr 0x00484520
+    procedure SetCenter(Value: TPoint); // @addr 0x00484540
+    procedure SetRadius(Value: Integer); // @addr 0x0048458C
+    procedure SetShrLightInner(Value: Byte); // @addr 0x004845B0
+    procedure SetShrLightOuter(Value: Byte); // @addr 0x004845D4
+    procedure SetSize(Size: TPoint); override; // @addr 0x004845F8
+    procedure SetActive(Enabled: Boolean); override; // @addr 0x00484620
+    procedure OnActivate; override; // @addr 0x00484658
+    procedure OnDeactivate; override; // @addr 0x0048466C
+    procedure LoadFromConfigPath(const Path: WideString); override; // @addr 0x00484688
+    procedure LoadFromBlock(Block: TBlockParEC); override; // @addr 0x004846B4
+    procedure LoadShapeProperties(Block: TBlockParEC); // @addr 0x004846D0
+    procedure Draw(ClipRect: TRect); override; // @addr 0x00484A44 @note "MulLight is unimplemented."
   end;
 
 implementation
 
 uses GR_Main, GR_DX, GI_Main, EC_Mem, Classes, SysUtils, Math;
 
-{ @routine $4AEA98 TCircleGI_Create }
+{ @routine $484310 TCircleGI_Create }
 constructor TCircleGI.Create(Owner: TObjectGI);
 begin
   inherited Create(Owner);
@@ -56,16 +55,16 @@ begin
   ShrLightOuter := 0;
   LightBufferDirty := True;
 end;
-{ @end $4AEA98 }
+{ @end $484310 }
 
-{ @routine $4AEB74 TCircleGI_Destroy }
+{ @routine $4843C8 TCircleGI_Destroy }
 destructor TCircleGI.Destroy;
 begin
   inherited Destroy;
 end;
-{ @end $4AEB74 }
+{ @end $4843C8 }
 
-{ @routine $4AEBA8 TCircleGI_Clear }
+{ @routine $4843F0 TCircleGI_Clear }
 procedure TCircleGI.Clear;
 begin
   Kind := ckSimple;
@@ -83,134 +82,119 @@ begin
   end;
   inherited Clear;
 end;
-{ @end $4AEBA8 }
+{ @end $4843F0 }
 
-{ @routine $4AEC74 TCircleGI_SetKind }
+{ @routine $484494 TCircleGI_SetKind }
 procedure TCircleGI.SetKind(Value: TCircleKindGI);
 begin
-  if Value <> Kind then
+  if Value = Kind then Exit;
+  Kind := Value;
+  if (Kind = ckShrLight) or (Kind = ckMulLight) then
   begin
-    Kind := Value;
-    if (Kind = ckShrLight) or (Kind = ckMulLight) then
+    if LightBuffer = nil then LightBuffer := TGraphBufGR.Create(False);
+  end
+  else
+    if LightBuffer <> nil then
     begin
-      if LightBuffer = nil then LightBuffer := TGraphBufGR.Create(False);
-    end
-    else
-      if LightBuffer <> nil then
-      begin
-        LightBuffer.Free;
-        LightBuffer := nil;
-      end;
-    LightBufferDirty := True;
-    Invalidate;
-  end;
+      LightBuffer.Free;
+      LightBuffer := nil;
+    end;
+  LightBufferDirty := True;
+  Invalidate;
 end;
-{ @end $4AEC74 }
+{ @end $484494 }
 
-{ @routine $4AED1C TCircleGI_SetColor }
+{ @routine $484500 TCircleGI_SetColor }
 procedure TCircleGI.SetColor(Value: Cardinal);
 begin
-  if Color <> Value then
-  begin
-    Color := Value;
-    Invalidate;
-  end;
+  if Color = Value then Exit;
+  Color := Value;
+  Invalidate;
 end;
-{ @end $4AED1C }
+{ @end $484500 }
 
-{ @routine $4AED54 TCircleGI_SetFillColor }
+{ @routine $484520 TCircleGI_SetFillColor }
 procedure TCircleGI.SetFillColor(Value: Cardinal);
 begin
-  if FillColor <> Value then
-  begin
-    FillColor := Value;
-    Invalidate;
-  end;
+  if FillColor = Value then Exit;
+  FillColor := Value;
+  Invalidate;
 end;
-{ @end $4AED54 }
+{ @end $484520 }
 
-{ @routine $4AED8C TCircleGI_SetCenter }
+{ @routine $484540 TCircleGI_SetCenter }
 procedure TCircleGI.SetCenter(Value: TPoint);
 begin
-  if (Center.X <> Value.X) or (Center.Y <> Value.Y) then
-  begin
-    Center := Value;
-    LightBufferDirty := True;
-    Invalidate;
-  end;
+  if (Center.X = Value.X) and (Center.Y = Value.Y) then Exit;
+  Center := Value;
+  LightBufferDirty := True;
+  Invalidate;
 end;
-{ @end $4AED8C }
+{ @end $484540 }
 
-{ @routine $4AEDEC TCircleGI_SetRadius }
+{ @routine $48458C TCircleGI_SetRadius }
 procedure TCircleGI.SetRadius(Value: Integer);
 begin
-  if Radius <> Value then
-  begin
-    Radius := Value;
-    LightBufferDirty := True;
-    Invalidate;
-  end;
+  if Radius = Value then Exit;
+  Radius := Value;
+  LightBufferDirty := True;
+  Invalidate;
 end;
-{ @end $4AEDEC }
+{ @end $48458C }
 
-{ @routine $4AEE2C TCircleGI_SetShrLightInner }
+{ @routine $4845B0 TCircleGI_SetShrLightInner }
 procedure TCircleGI.SetShrLightInner(Value: Byte);
 begin
-  if ShrLightInner <> Value then
-  begin
-    ShrLightInner := Value;
-    LightBufferDirty := True;
-    Invalidate;
-  end;
+  if ShrLightInner = Value then Exit;
+  ShrLightInner := Value;
+  LightBufferDirty := True;
+  Invalidate;
 end;
-{ @end $4AEE2C }
+{ @end $4845B0 }
 
-{ @routine $4AEE6C TCircleGI_SetShrLightOuter }
+{ @routine $4845D4 TCircleGI_SetShrLightOuter }
 procedure TCircleGI.SetShrLightOuter(Value: Byte);
 begin
-  if ShrLightOuter <> Value then
-  begin
-    ShrLightOuter := Value;
-    LightBufferDirty := True;
-    Invalidate;
-  end;
+  if ShrLightOuter = Value then Exit;
+  ShrLightOuter := Value;
+  LightBufferDirty := True;
+  Invalidate;
 end;
-{ @end $4AEE6C }
+{ @end $4845D4 }
 
-{ @routine $4AEEAC TCircleGI_SetSize }
+{ @routine $4845F8 TCircleGI_SetSize }
 procedure TCircleGI.SetSize(Size: TPoint);
 begin
   inherited SetSize(Size);
   LightBufferDirty := True;
 end;
-{ @end $4AEEAC }
+{ @end $4845F8 }
 
-{ @routine $4AEEDC TCircleGI_SetActive }
+{ @routine $484620 TCircleGI_SetActive }
 procedure TCircleGI.SetActive(Enabled: Boolean);
 begin
   inherited SetActive(Enabled);
-  if (not Active) and ((Kind = ckShrLight) or (Kind = ckMulLight)) then
-    if LightBuffer <> nil then LightBuffer.Clear;
+  if (not Active) and ((Kind = ckShrLight) or (Kind = ckMulLight)) and (LightBuffer <> nil) then LightBuffer.Clear;
 end;
-{ @end $4AEEDC }
+{ @end $484620 }
 
-{ @routine $4AEF34 TCircleGI_OnActivate }
+{ @routine $484658 TCircleGI_OnActivate }
 procedure TCircleGI.OnActivate;
 begin
   inherited OnActivate;
   LightBufferDirty := True;
 end;
-{ @end $4AEF34 }
+{ @end $484658 }
 
-{ @routine $4AEF50 TCircleGI_OnDeactivate }
+{ @routine $48466C TCircleGI_OnDeactivate }
 procedure TCircleGI.OnDeactivate;
 begin
   inherited OnDeactivate;
   if LightBuffer <> nil then LightBuffer.Clear;
 end;
-{ @end $4AEF50 }
+{ @end $48466C }
 
-{ @routine $4AEF7C TCircleGI_LoadFromConfigPath }
+{ @routine $484688 TCircleGI_LoadFromConfigPath }
 procedure TCircleGI.LoadFromConfigPath(const Path: WideString);
 var Block: TBlockParEC;
 begin
@@ -218,17 +202,17 @@ begin
   Block := UiStyleConfig.GetBlockByPath(Path);
   LoadShapeProperties(Block);
 end;
-{ @end $4AEF7C }
+{ @end $484688 }
 
-{ @routine $4AEFB4 TCircleGI_LoadFromBlock }
+{ @routine $4846B4 TCircleGI_LoadFromBlock }
 procedure TCircleGI.LoadFromBlock(Block: TBlockParEC);
 begin
   inherited LoadFromBlock(Block);
   LoadShapeProperties(Block);
 end;
-{ @end $4AEFB4 }
+{ @end $4846B4 }
 
-{ @routine $4AEFDC TCircleGI_LoadShapeProperties }
+{ @routine $4846D0 TCircleGI_LoadShapeProperties }
 procedure TCircleGI.LoadShapeProperties(Block: TBlockParEC);
 var Text: WideString;
 begin
@@ -248,9 +232,9 @@ begin
   if Block.CountParams('ShrLightInner') > 0 then SetShrLightInner(StrToInt(Block.GetParam('ShrLightInner')));
   if Block.CountParams('ShrLightOuter') > 0 then SetShrLightOuter(StrToInt(Block.GetParam('ShrLightOuter')));
 end;
-{ @end $4AEFDC }
+{ @end $4846D0 }
 
-{ @routine $4AF368 TCircleGI_Draw }
+{ @routine $484A44 TCircleGI_Draw }
 procedure TCircleGI.Draw(ClipRect: TRect);
 var R, X, Y, Width, Height: Integer; Bounds: TRect;
 begin
@@ -348,6 +332,6 @@ begin
     if HardwareRenderingEnabled then begin end;
   end;
 end;
-{ @end $4AF368 }
+{ @end $484A44 }
 
 end.

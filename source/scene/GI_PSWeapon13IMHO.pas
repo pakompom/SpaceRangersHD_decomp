@@ -20,7 +20,7 @@ type
   TIMHOPalettes = array of TIMHOPalette;
 
 var
-  IMHOPalettes: array of TIMHOPalette; // @addr $88AEF0
+  IMHOPalettes: array of TIMHOPalette; // @addr $81B1B4
 
 type
   TPSWeapon13IMHO = class(TPSWeaponGI) // @size $150
@@ -31,29 +31,29 @@ type
     OriginalLength: Single; // @offset $13C
     Colors: TIMHOPalette; // @offset $140
 
-    constructor Create(Owner: TObjectGI; APaletteIndex: Integer); // @addr $6950A8
-    destructor Destroy; override; // @addr $6951DC
-    procedure Invalidate; override; // @addr $695218 @note "Native empty override."
-    procedure SetPosition(Position: TPoint); override; // @addr $695224
-    procedure SetTargetPoint(Point: TPoint); override; // @addr $695260
-    procedure UpdateHitTestBounds; override; // @addr $6952AC
-    procedure ClearParticles; // @addr $6952E0
-    procedure GrowParticles; // @addr $695328
-    function AddParticle: PIMHOParticle; // @addr $695360
-    procedure Advance(Timer: PCallbackTimerGI; UserData: Integer); override; // @addr $6953B8
-    procedure Draw(ClipRect: TRect); override; // @addr $6956D8
+    constructor Create(Owner: TObjectGI; APaletteIndex: Integer); // @addr $4F02F0
+    destructor Destroy; override; // @addr $4F03DC
+    procedure Invalidate; override; // @addr $4F0408 @note "Native empty override."
+    procedure SetPosition(Position: TPoint); override; // @addr $4F040C
+    procedure SetTargetPoint(Point: TPoint); override; // @addr $4F0438
+    procedure UpdateHitTestBounds; override; // @addr $4F0474
+    procedure ClearParticles; // @addr $4F0498
+    procedure GrowParticles; // @addr $4F04C4
+    function AddParticle: PIMHOParticle; // @addr $4F04E8
+    procedure Advance(Timer: TCallbackTimerIdGI; UserData: Cardinal); override; // @addr $4F0520
+    procedure Draw(ClipRect: TRect); override; // @addr $4F07DC
   end;
 
-procedure LoadIMHOPalettes; // @addr $69597C
+procedure LoadIMHOPalettes; // @addr $4F0A30
 
 implementation
 
-// @unit-initialization $877944
-// @unit-finalization $695C40
+// @unit-initialization $806834
+// @unit-finalization $4F0CB8
 
 uses SysUtils, Math, EC_BlockPar, EC_Str, EC_Mem, GR_Main, GR_DX, aMyFunction, Globals;
 
-{ @routine $6950A8 TPSWeapon13IMHO_Create }
+{ @routine $4F02F0 TPSWeapon13IMHO_Create }
 constructor TPSWeapon13IMHO.Create(Owner: TObjectGI; APaletteIndex: Integer);
 begin
   inherited Create(Owner);
@@ -68,39 +68,39 @@ begin
   Colors[6] := IMHOPalettes[APaletteIndex][6];
   Colors[7] := IMHOPalettes[APaletteIndex][7];
 end;
-{ @end $6950A8 }
+{ @end $4F02F0 }
 
-{ @routine $6951DC TPSWeapon13IMHO_Destroy }
+{ @routine $4F03DC TPSWeapon13IMHO_Destroy }
 destructor TPSWeapon13IMHO.Destroy;
 begin
   ClearParticles;
   inherited Destroy;
 end;
-{ @end $6951DC }
+{ @end $4F03DC }
 
-{ @routine $695218 TPSWeapon13IMHO_Invalidate }
+{ @routine $4F0408 TPSWeapon13IMHO_Invalidate }
 procedure TPSWeapon13IMHO.Invalidate;
 begin
 end;
-{ @end $695218 }
+{ @end $4F0408 }
 
-{ @routine $695224 TPSWeapon13IMHO_SetPosition }
+{ @routine $4F040C TPSWeapon13IMHO_SetPosition }
 procedure TPSWeapon13IMHO.SetPosition(Position: TPoint);
 begin
   if (LocalPosition.X <> Position.X) or (LocalPosition.Y <> Position.Y) then
     inherited SetPosition(Position);
 end;
-{ @end $695224 }
+{ @end $4F040C }
 
-{ @routine $695260 TPSWeapon13IMHO_SetTargetPoint }
+{ @routine $4F0438 TPSWeapon13IMHO_SetTargetPoint }
 procedure TPSWeapon13IMHO.SetTargetPoint(Point: TPoint);
 begin
   if (TargetPoint.X <> Point.X) or (TargetPoint.Y <> Point.Y) then
     TargetPoint := Point;
 end;
-{ @end $695260 }
+{ @end $4F0438 }
 
-{ @routine $6952AC TPSWeapon13IMHO_UpdateHitTestBounds }
+{ @routine $4F0474 TPSWeapon13IMHO_UpdateHitTestBounds }
 procedure TPSWeapon13IMHO.UpdateHitTestBounds;
 begin
   HitTestBounds.Left := 0;
@@ -108,9 +108,9 @@ begin
   HitTestBounds.Right := GameScreenWidth;
   HitTestBounds.Bottom := GameScreenHeight;
 end;
-{ @end $6952AC }
+{ @end $4F0474 }
 
-{ @routine $6952E0 TPSWeapon13IMHO_ClearParticles }
+{ @routine $4F0498 TPSWeapon13IMHO_ClearParticles }
 procedure TPSWeapon13IMHO.ClearParticles;
 begin
   if Particles <> nil then
@@ -121,27 +121,27 @@ begin
   ParticleCount := 0;
   ParticleCapacity := 0;
 end;
-{ @end $6952E0 }
+{ @end $4F0498 }
 
-{ @routine $695328 TPSWeapon13IMHO_GrowParticles }
+{ @routine $4F04C4 TPSWeapon13IMHO_GrowParticles }
 procedure TPSWeapon13IMHO.GrowParticles;
 begin
   Inc(ParticleCapacity, 100);
   Particles := ReAllocREC(Particles, ParticleCapacity * SizeOf(TIMHOParticle));
 end;
-{ @end $695328 }
+{ @end $4F04C4 }
 
-{ @routine $695360 TPSWeapon13IMHO_AddParticle }
+{ @routine $4F04E8 TPSWeapon13IMHO_AddParticle }
 function TPSWeapon13IMHO.AddParticle: PIMHOParticle;
 begin
   if ParticleCount >= ParticleCapacity then GrowParticles;
   Result := AddPointerOffset(Particles, ParticleCount * SizeOf(TIMHOParticle));
   Inc(ParticleCount);
 end;
-{ @end $695360 }
+{ @end $4F04E8 }
 
-{ @routine $6953B8 TPSWeapon13IMHO_Advance }
-procedure TPSWeapon13IMHO.Advance(Timer: PCallbackTimerGI; UserData: Integer);
+{ @routine $4F0520 TPSWeapon13IMHO_Advance }
+procedure TPSWeapon13IMHO.Advance(Timer: TCallbackTimerIdGI; UserData: Cardinal);
 var
   Particle: PIMHOParticle;
   J, I, K, L, M: Integer;
@@ -199,9 +199,9 @@ begin
   end;
   if RemainingTicks > 0 then Dec(RemainingTicks);
 end;
-{ @end $6953B8 }
+{ @end $4F0520 }
 
-{ @routine $6956D8 TPSWeapon13IMHO_Draw }
+{ @routine $4F07DC TPSWeapon13IMHO_Draw }
 procedure TPSWeapon13IMHO.Draw(ClipRect: TRect);
 var
   X, Y: Integer;
@@ -209,7 +209,7 @@ var
   Particle: PIMHOParticle;
   Count: Integer;
 begin
-  if OriginalLength = 0 then Advance(nil, 0);
+  if OriginalLength = 0 then Advance(0, 0);
   Scale := Sqrt(Sqr(LocalPosition.X - TargetPoint.X) + Sqr(LocalPosition.Y - TargetPoint.Y)) / OriginalLength;
   PY := -(TargetPoint.Y - LocalPosition.Y);
   if PY = 0 then PY := 1;
@@ -253,9 +253,9 @@ begin
     end;
   end;
 end;
-{ @end $6956D8 }
+{ @end $4F07DC }
 
-{ @routine $69597C LoadIMHOPalettes }
+{ @routine $4F0A30 LoadIMHOPalettes }
 procedure LoadIMHOPalettes;
 var
   Block, PaletteBlock: TBlockParEC;
@@ -271,21 +271,19 @@ begin
   for Index := 0 to Count - 1 do
   begin
     Text := IntToStr(Index);
-    if Block.CountBlocks(Text) <> 0 then
-    begin
-      PaletteBlock := Block.GetBlockByPath(Text);
-      for ColorIndex := 0 to 7 do
-        if PaletteBlock.CountParams('Color' + IntToStr(ColorIndex)) > 0 then
-        begin
-          Text := PaletteBlock.GetParam('Color' + IntToStr(ColorIndex));
-          IMHOPalettes[Index][ColorIndex] := CurrentPixelFormat.PackNormalizedRgb(
-            ExtractDecimalToSingleW(ExtractDelimitedPartW(Text, 0, ',')),
-            ExtractDecimalToSingleW(ExtractDelimitedPartW(Text, 1, ',')),
-            ExtractDecimalToSingleW(ExtractDelimitedPartW(Text, 2, ',')));
-        end;
-    end;
+    if Block.CountBlocks(Text) = 0 then Continue;
+    PaletteBlock := Block.GetBlockByPath(Text);
+    for ColorIndex := Low(TIMHOPalette) to High(TIMHOPalette) do
+      if PaletteBlock.CountParams('Color' + IntToStr(ColorIndex)) > 0 then
+      begin
+        Text := PaletteBlock.GetParam('Color' + IntToStr(ColorIndex));
+        IMHOPalettes[Index][ColorIndex] := CurrentPixelFormat.PackNormalizedRgb(
+          ExtractDecimalToSingleW(ExtractDelimitedPartW(Text, 0, ',')),
+          ExtractDecimalToSingleW(ExtractDelimitedPartW(Text, 1, ',')),
+          ExtractDecimalToSingleW(ExtractDelimitedPartW(Text, 2, ',')));
+      end;
   end;
 end;
-{ @end $69597C }
+{ @end $4F0A30 }
 
 end.

@@ -1,5 +1,4 @@
 unit fRewards;
-// Unit bracket (inferred): .text 0x00595B60..0x00597756; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -14,29 +13,29 @@ type
     HoveredAwardId: Integer; // @offset $DC -1 when no medal is under the pointer.
     ReadOnly: Boolean; // @offset $E0
 
-    procedure CloseClicked(Sender: TObjectGI); // @addr $596088
-    function CanEditAwards: Boolean; // @addr $5960C8
-    function GetAwardImagePath(AwardId: Integer): WideString; // @addr $596100
-    procedure PlatformMouseEnter(Sender: TObjectGI); // @addr $596230
-    procedure AwardMouseEnter(Sender: TObjectGI); // @addr $5964B8
-    procedure AwardMouseLeave(Sender: TObjectGI); // @addr $5964E8
-    procedure ClearHighlight(Sender: TObjectGI); // @addr $596510
-    procedure AwardMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $5966EC
-    procedure IncreaseVisibleCount(Sender: TObjectGI); // @addr $596948
-    procedure DecreaseVisibleCount(Sender: TObjectGI); // @addr $596994
-    procedure RefreshVisibleCount; // @addr $5969D0
-    procedure BuildAwardControls; // @addr $596AFC
-    procedure MainPanelKeyDown(Sender: TObjectGI; Key: Cardinal); // @addr $5970F8
-    procedure OnOpen; override; // @addr 0x595DFC
-    procedure OnClose; override; // @addr 0x596068
-    procedure ProcessCallbackTimers; override; // @addr 0x5970B8
-    procedure SelectMusic; override; // @addr 0x597260
-    procedure ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer); override; // @addr 0x597694
-    procedure InitializeLayout; override; // @addr 0x595BF8
-    procedure UpdateActionCursor(CanTake: Boolean); override; // @addr 0x596FD8
+    procedure CloseClicked(Sender: TObjectGI); // @addr $5D0770
+    function CanEditAwards: Boolean; // @addr $5D07A0
+    function GetAwardImagePath(AwardId: Integer): WideString; // @addr $5D07C4
+    procedure PlatformMouseEnter(Sender: TObjectGI); // @addr $5D08E8
+    procedure AwardMouseEnter(Sender: TObjectGI); // @addr $5D0B44
+    procedure AwardMouseLeave(Sender: TObjectGI); // @addr $5D0B58
+    procedure ClearHighlight(Sender: TObjectGI); // @addr $5D0B6C
+    procedure AwardMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $5D0D18
+    procedure IncreaseVisibleCount(Sender: TObjectGI); // @addr $5D0F14
+    procedure DecreaseVisibleCount(Sender: TObjectGI); // @addr $5D0F3C
+    procedure RefreshVisibleCount; // @addr $5D0F58
+    procedure BuildAwardControls; // @addr $5D1070
+    procedure MainPanelKeyDown(Sender: TObjectGI; Key: Cardinal); // @addr $5D157C
+    procedure OnOpen; override; // @addr 0x005D0548
+    procedure OnClose; override; // @addr 0x005D0758
+    procedure ProcessCallbackTimers; override; // @addr 0x005D1550
+    procedure SelectMusic; override; // @addr 0x005D1684
+    procedure ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer); override; // @addr 0x005D1AA0
+    procedure InitializeLayout; override; // @addr 0x005D035C
+    procedure UpdateActionCursor(CanTake: Boolean); override; // @addr 0x005D1484
   end;
 
-function RunRewards(ParentLoop: TMessageLoopGI; ReadOnly: Boolean): Boolean; // @addr $597594
+function RunRewards(ParentLoop: TMessageLoopGI; ReadOnly: Boolean): Boolean; // @addr $5D19BC
 
 implementation
 
@@ -45,7 +44,7 @@ uses aGalaxyStruct, Classes, SysUtils, Math, Windows, EC_Struct, GI_Panel, GI_Sc
   Globals, GlobalsV, aPlayer, aNormalShip, aConst, aPlanet, aMyFunction, fStarMap;
 
 
-{ @routine $595BF8 TfRewards_InitializeLayout }
+{ @routine $5D035C TfRewards_InitializeLayout }
 procedure TfRewards.InitializeLayout;
 begin
   inherited InitializeLayout;
@@ -63,9 +62,9 @@ begin
   (GetByName('ButExit') as TGraphButtonGI).UpCallback := CloseClicked;
   AwardsPanel := GetByName('PTable') as TPanelScrollBarGI;
 end;
-{ @end $595BF8 }
+{ @end $5D035C }
 
-{ @routine $595DFC TfRewards_OnOpen }
+{ @routine $5D0548 TfRewards_OnOpen }
 procedure TfRewards.OnOpen;
 begin
   inherited OnOpen;
@@ -99,41 +98,41 @@ begin
   UpdateActionCursor(False);
   RefreshVisibleCount;
 end;
-{ @end $595DFC }
+{ @end $5D0548 }
 
-{ @routine $596068 TfRewards_OnClose }
+{ @routine $5D0758 TfRewards_OnClose }
 procedure TfRewards.OnClose;
 begin
   AwardsPanel.FreeOwnedChildren;
   inherited OnClose;
 end;
-{ @end $596068 }
+{ @end $5D0758 }
 
-{ @routine $596088 TfRewards_CloseClicked }
+{ @routine $5D0770 TfRewards_CloseClicked }
 procedure TfRewards.CloseClicked(Sender: TObjectGI);
 begin
   if GetPlayer = Ship then RequestedScreenId := screenShip
   else RequestedScreenId := screenScanner;
   RequestClose(1);
 end;
-{ @end $596088 }
+{ @end $5D0770 }
 
-{ @routine $5960C8 TfRewards_CanEditAwards }
+{ @routine $5D07A0 TfRewards_CanEditAwards }
 function TfRewards.CanEditAwards: Boolean;
 begin
   Result := not ReadOnly and (GetPlayer = Ship);
 end;
-{ @end $5960C8 }
+{ @end $5D07A0 }
 
-{ @routine $596100 TfRewards_GetAwardImagePath }
+{ @routine $5D07C4 TfRewards_GetAwardImagePath }
 function TfRewards.GetAwardImagePath(AwardId: Integer): WideString;
 begin
   if AwardId < 10 then Result := 'GI,Bm.FormRewards.' + GiResourceSuffix + '_0' + IntToStr(AwardId)
   else Result := 'GI,Bm.FormRewards.' + GiResourceSuffix + '_' + IntToStr(AwardId);
 end;
-{ @end $596100 }
+{ @end $5D07C4 }
 
-{ @routine $596230 TfRewards_PlatformMouseEnter }
+{ @routine $5D08E8 TfRewards_PlatformMouseEnter }
 procedure TfRewards.PlatformMouseEnter(Sender: TObjectGI);
 var
   Obj: TObjectGI;
@@ -143,63 +142,67 @@ begin
   Platform := TImageGI(Sender.UserValue);
   AwardId := Sender.UserIndex;
   with GetByName('InfoZag') as TLabelGI do
-    if AwardId <> 255 then SetText((Ship as TNormalShip).GetAwardInfo(AwardId).Name) else SetText('');
+    if AwardId <> 255 then Text := (Ship as TNormalShip).GetAwardInfo(AwardId).Name else Text := '';
   with GetByName('Info') as TLabelGI do
-    if AwardId <> 255 then SetText((Ship as TNormalShip).GetAwardInfo(AwardId).Text) else SetText('');
+    if AwardId <> 255 then Text := (Ship as TNormalShip).GetAwardInfo(AwardId).Text else Text := '';
   Obj := AwardsPanel.FirstChild;
   while Obj <> nil do
   begin
-    if (Obj is TImageGI) and (TImageGI(Obj).GetImagePath = 'GI,Bm.FormRewards.' + GiResourceSuffix + 'PlatformA') then
-      TImageGI(Obj).SetImagePath('GI,Bm.FormRewards.' + GiResourceSuffix + 'PlatformN');
+    if Obj is TImageGI then
+      with TImageGI(Obj) do
+        if GetImagePath = 'GI,Bm.FormRewards.' + GiResourceSuffix + 'PlatformA' then
+          SetImagePath('GI,Bm.FormRewards.' + GiResourceSuffix + 'PlatformN');
     Obj := Obj.NextSibling;
   end;
   Platform.SetImagePath('GI,Bm.FormRewards.' + GiResourceSuffix + 'PlatformA');
   UpdateActionCursor(False);
 end;
-{ @end $596230 }
+{ @end $5D08E8 }
 
-{ @routine $5964B8 TfRewards_AwardMouseEnter }
+{ @routine $5D0B44 TfRewards_AwardMouseEnter }
 procedure TfRewards.AwardMouseEnter(Sender: TObjectGI);
 begin
   HoveredAwardId := Sender.UserIndex;
   PlatformMouseEnter(Sender);
 end;
-{ @end $5964B8 }
+{ @end $5D0B44 }
 
-{ @routine $5964E8 TfRewards_AwardMouseLeave }
+{ @routine $5D0B58 TfRewards_AwardMouseLeave }
 procedure TfRewards.AwardMouseLeave(Sender: TObjectGI);
 begin
   HoveredAwardId := -1;
   UpdateActionCursor(False);
 end;
-{ @end $5964E8 }
+{ @end $5D0B58 }
 
-{ @routine $596510 TfRewards_ClearHighlight }
+{ @routine $5D0B6C TfRewards_ClearHighlight }
 procedure TfRewards.ClearHighlight(Sender: TObjectGI);
 var Obj: TObjectGI;
 begin
   HoveredAwardId := -1;
-  with GetByName('InfoZag') as TLabelGI do SetText('');
-  with GetByName('Info') as TLabelGI do SetText('');
+  with GetByName('InfoZag') as TLabelGI do Text := '';
+  with GetByName('Info') as TLabelGI do Text := '';
   Obj := AwardsPanel.FirstChild;
   while Obj <> nil do
   begin
-    if (Obj is TImageGI) and (TImageGI(Obj).GetImagePath = 'GI,Bm.FormRewards.' + GiResourceSuffix + 'PlatformA') then
-      TImageGI(Obj).SetImagePath('GI,Bm.FormRewards.' + GiResourceSuffix + 'PlatformN');
+    if Obj is TImageGI then
+      with TImageGI(Obj) do
+        if GetImagePath = 'GI,Bm.FormRewards.' + GiResourceSuffix + 'PlatformA' then
+          SetImagePath('GI,Bm.FormRewards.' + GiResourceSuffix + 'PlatformN');
     Obj := Obj.NextSibling;
   end;
   UpdateActionCursor(False);
 end;
-{ @end $596510 }
+{ @end $5D0B6C }
 
-{ @routine $5966EC TfRewards_AwardMouseDown }
+{ @routine $5D0D18 TfRewards_AwardMouseDown }
 procedure TfRewards.AwardMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint);
 var Temp: Integer;
 begin
   if DraggedAward = nil then
   begin
     DraggedAward := Sender;
-    (Sender as TImageGI).SetImagePath('');
+    (Sender as TImageGI).ImageSourcePath := '';
     SoundManager.PlaySound('Sound.SlotGet');
   end
   else
@@ -213,12 +216,12 @@ begin
     TObjectGI(DraggedAward.UserValue).UserIndex := Temp;
     with Sender as TImageGI do
     begin
-      SetImagePath(GetAwardImagePath(Sender.UserIndex));
+      ImageSourcePath := GetAwardImagePath(Sender.UserIndex);
       SetSize(GetContentSize);
     end;
     with DraggedAward as TImageGI do
     begin
-      SetImagePath(GetAwardImagePath(DraggedAward.UserIndex));
+      ImageSourcePath := GetAwardImagePath(DraggedAward.UserIndex);
       SetSize(GetContentSize);
     end;
     DraggedAward := nil;
@@ -227,34 +230,34 @@ begin
   end;
   UpdateActionCursor(False);
 end;
-{ @end $5966EC }
+{ @end $5D0D18 }
 
-{ @routine $596948 TfRewards_IncreaseVisibleCount }
+{ @routine $5D0F14 TfRewards_IncreaseVisibleCount }
 procedure TfRewards.IncreaseVisibleCount(Sender: TObjectGI);
 begin
   if Ship.AwardVisibleCount < Ship.AwardIds.Count then Inc(Ship.AwardVisibleCount);
   RefreshVisibleCount;
 end;
-{ @end $596948 }
+{ @end $5D0F14 }
 
-{ @routine $596994 TfRewards_DecreaseVisibleCount }
+{ @routine $5D0F3C TfRewards_DecreaseVisibleCount }
 procedure TfRewards.DecreaseVisibleCount(Sender: TObjectGI);
 begin
   if Ship.AwardVisibleCount > 0 then Dec(Ship.AwardVisibleCount);
   RefreshVisibleCount;
 end;
-{ @end $596994 }
+{ @end $5D0F3C }
 
-{ @routine $5969D0 TfRewards_RefreshVisibleCount }
+{ @routine $5D0F58 TfRewards_RefreshVisibleCount }
 procedure TfRewards.RefreshVisibleCount;
 begin
-  (GetByName('RewardCount') as TLabelGI).SetText(IntToStr(Ship.AwardVisibleCount));
+  (GetByName('RewardCount') as TLabelGI).Text := IntToStr(Ship.AwardVisibleCount);
   (GetByName('Sub') as TGraphButtonGI).SetDisabled(Ship.AwardVisibleCount <= 1);
   (GetByName('Add') as TGraphButtonGI).SetDisabled(Ship.AwardVisibleCount >= Ship.AwardIds.Count);
 end;
-{ @end $5969D0 }
+{ @end $5D0F58 }
 
-{ @routine $596AFC TfRewards_BuildAwardControls }
+{ @routine $5D1070 TfRewards_BuildAwardControls }
 procedure TfRewards.BuildAwardControls;
 var
   I, Count, X, Y: Integer;
@@ -300,7 +303,7 @@ begin
       AwardId := Byte(Ship.AwardIds[I]);
       with TImageGI.Create(AwardsPanel) do
       begin
-        SetImagePath(GetAwardImagePath(AwardId));
+        ImageSourcePath := GetAwardImagePath(AwardId);
         SetSize(GetContentSize);
         SetOrigin(Classes.Point(ClientSize.X div 2, ClientSize.Y));
         SetPositionModeW(True);
@@ -319,9 +322,9 @@ begin
   AwardsPanel.UpdateScrollRanges;
   AwardsPanel.SetVerticalScrollbarEnabled(Count > 10);
 end;
-{ @end $596AFC }
+{ @end $5D1070 }
 
-{ @routine $596FD8 TfRewards_UpdateActionCursor }
+{ @routine $5D1484 TfRewards_UpdateActionCursor }
 procedure TfRewards.UpdateActionCursor(CanTake: Boolean);
 begin
   if DraggedAward = nil then
@@ -331,17 +334,17 @@ begin
   end
   else SetCursorImage(GetAwardImagePath(DraggedAward.UserIndex), Classes.Point(16, 16));
 end;
-{ @end $596FD8 }
+{ @end $5D1484 }
 
-{ @routine $5970B8 TfRewards_ProcessCallbackTimers }
+{ @routine $5D1550 TfRewards_ProcessCallbackTimers }
 procedure TfRewards.ProcessCallbackTimers;
 begin
   inherited ProcessCallbackTimers;
   if (ParentLoop <> nil) and (ParentLoop.ExitCode <> 0) and (ExitCode = 0) then RequestClose(2);
 end;
-{ @end $5970B8 }
+{ @end $5D1550 }
 
-{ @routine $5970F8 TfRewards_MainPanelKeyDown }
+{ @routine $5D157C TfRewards_MainPanelKeyDown }
 procedure TfRewards.MainPanelKeyDown(Sender: TObjectGI; Key: Cardinal);
 begin
   if not IsVirtualKeyDown(VK_CONTROL) and not IsVirtualKeyDown(VK_SHIFT) and not IsVirtualKeyDown(VK_MENU) then
@@ -356,9 +359,9 @@ begin
     end;
   end;
 end;
-{ @end $5970F8 }
+{ @end $5D157C }
 
-{ @routine $597260 TfRewards_SelectMusic }
+{ @routine $5D1684 TfRewards_SelectMusic }
 procedure TfRewards.SelectMusic;
 begin
   if GetPlayer = nil then MusicManager.PlayCategory('Base')
@@ -366,21 +369,21 @@ begin
   begin
     if not MusicInPlanetEnabled then MusicManager.RequestFadeOut
     else
-      if GetPlayer.CurrentPlanet.OwnerId = oiPirate then
-      begin
-        if not GetPlayer.CurrentPlanet.IsMainPiratePlanet then
-          MusicManager.PlayCategory('Nation.' + OwnerInfo[RaceToOwner(GetPlayer.CurrentPlanet.RaceId)].InternalName + 'Pirate')
-        else MusicManager.PlayCategory('Nation.PiratePlanetMain');
-      end
-      else MusicManager.PlayCategory('Nation.' + OwnerInfo[GetPlayer.CurrentPlanet.OwnerId].InternalName);
+    if GetPlayer.CurrentPlanet.OwnerId = oiPirate then
+    begin
+      if not GetPlayer.CurrentPlanet.IsMainPiratePlanet then
+        MusicManager.PlayCategory('Nation.' + OwnerInfo[RaceToOwner(GetPlayer.CurrentPlanet.RaceId)].InternalName + 'Pirate')
+      else MusicManager.PlayCategory('Nation.PiratePlanetMain');
+    end
+    else MusicManager.PlayCategory('Nation.' + OwnerInfo[GetPlayer.CurrentPlanet.OwnerId].InternalName);
   end
   else if GetPlayer.IsDockedToShip then
   begin
     if not MusicInPlanetEnabled then MusicManager.RequestFadeOut
     else
-      if GetPlayer.DockedTo.TypeId in [rstPirateBase, rstDominion] then
-        MusicManager.PlayCategory('Nation.' + OwnerInfo[RaceToOwner(GetPlayer.DockedTo.PilotRace)].InternalName + 'Pirate')
-      else MusicManager.PlayCategory('Nation.' + OwnerInfo[RaceToOwner(GetPlayer.DockedTo.PilotRace)].InternalName);
+    if GetPlayer.DockedTo.TypeId in [rstPirateBase, rstDominion] then
+      MusicManager.PlayCategory('Nation.' + OwnerInfo[RaceToOwner(GetPlayer.DockedTo.PilotRace)].InternalName + 'Pirate')
+    else MusicManager.PlayCategory('Nation.' + OwnerInfo[RaceToOwner(GetPlayer.DockedTo.PilotRace)].InternalName);
   end
   else if GetPlayer.InNormalSpace then
   begin
@@ -400,17 +403,16 @@ begin
     else MusicManager.RequestFadeOut;
   end;
 end;
-{ @end $597260 }
+{ @end $5D1684 }
 
-{ @routine $597594 RunRewards }
+{ @routine $5D19BC RunRewards }
 function RunRewards(ParentLoop: TMessageLoopGI; ReadOnly: Boolean): Boolean;
 var
-  CursorAlignment: array[0..1] of Byte; // Native cursor record starts at EBP-$20; the shared packed layout otherwise lands two bytes higher.
   State: TCursorStateGI;
 begin
   ParentLoop.RootUiObject.OnModalSuspend;
   ParentLoop.CaptureCursorState(@State);
-  ParentLoop.SetCursorActive(False);
+  ParentLoop.ShowCursor := False;
   ParentLoop.DrawQueuedUpdateRects;
   RewardsScreen.ParentLoop := ParentLoop;
   ParentLoop.ChildLoop := RewardsScreen;
@@ -424,9 +426,9 @@ begin
   ParentLoop.RootUiObject.OnModalResume;
   ParentLoop.Present;
 end;
-{ @end $597594 }
+{ @end $5D19BC }
 
-{ @routine $597694 TfRewards_ProcessMouseWheel }
+{ @routine $5D1AA0 TfRewards_ProcessMouseWheel }
 procedure TfRewards.ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer);
 begin
   if Delta = WHEEL_DELTA then
@@ -436,6 +438,6 @@ begin
     with GetByName('PTable') as TPanelScrollBarGI do
       VerticalScrollBar.SetPosition(VerticalScrollBar.Position + VerticalScrollBar.SmallChange * 5);
 end;
-{ @end $597694 }
+{ @end $5D1AA0 }
 
 end.

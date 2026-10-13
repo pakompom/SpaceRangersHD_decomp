@@ -1,5 +1,4 @@
 unit aWarrior;
-// Unit bracket (inferred): .text 0x005175C8..0x00520E39; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -13,76 +12,76 @@ type
   public
     WarriorType: TWarriorType; // @offset 0x510  wtRegular / wtFlagship; exposed as Script.ShipSubType.
 
-    procedure SaveToBuffer(Buffer: TBufEC); override; // @addr $00518304 @slot $00
-    procedure LoadFromBuffer(Buffer: TBufEC; Galaxy: TGalaxy); override; // @addr $00518330 @slot $04
-    function AdjustItemEvaluation(Item: TItem; PriceMode: Byte; Effectiveness: Single): Single; override; // @addr $0051F580 @slot $50
-    function EvaluateStatBonus(BonusKind: TEquipmentBonusKind; Value: Integer): Single; override; // @addr $0051FB14 @slot $54
-    function EvaluateWeaponDamage(Weapon: TWeapon; IncludeAdditiveBonuses: Boolean; BaseDamage: Single): Single; override; // @addr $00520788 @slot $58
-    procedure RepairBrokenEquipmentAtLocation; override; // @addr $00519C7C @slot $60
-    procedure BuildReachablePlanetQueue; override; // @addr $00519B50 @slot $64
-    procedure SelectEnemyShipInStar; override; // @addr $0051C208 @slot $6C
-    procedure EngageEnemyShip; override; // @addr $0051C750 @slot $70
-    function RelationToRanger(Ranger: Pointer): Byte; override; // @addr $0051A33C @slot $74
-    procedure ChangeRelationToRanger(Ranger: Pointer; Amount: Integer); override; // @addr $0051A384 @slot $78
-    procedure ReactToAttack(Attacker: TShip); override; // @addr $0051A4E8 @slot $7C
-    function RelationToNonRanger(Ship: TShip): Byte; override; // @addr $0051A22C @slot $80
-    function RecomputeFearState: Boolean; override; // @addr $0051A5C0 @slot $84
-    function AcceptsRansomDemandFrom(Ship: TShip): Boolean; override; // @addr $0051A72C @slot $88
-    function TrustsAttackRequester(Ship: TShip): Boolean; override; // @addr $0051A7C8 @slot $8C
-    function AcceptsAppealFrom(Ship: TShip): Boolean; override; // @addr $0051A7EC @slot $90
-    function AcceptPickupItem(Item: TItem): Boolean; override; // @addr $00520CE8 @slot $94
-    function AcceptPickupDistance(Item: TItem; Distance: Double): Boolean; override; // @addr $00520D64 @slot $98
-    procedure ProcessCombatDialogue; override; // @addr $0051E2F8 @slot $A0
-    procedure ReactToExtortionDemand(Ranger: Pointer); override; // @addr $0051E304 @slot $A4
-    function BuildMoneyExtortionResponse(OtherShip: TShip; var Response: WideString; DemandedAmount: Integer): Boolean; override; // @addr $0051E370 @slot $A8
-    function BuildCargoExtortionResponse(OtherShip: TShip; var Response: WideString): Boolean; override; // @addr $0051E48C @slot $AC
-    function BuildTrucePaymentResponse(OtherShip: TShip; var Response: WideString; OfferedAmount: Integer): Boolean; override; // @addr $0051E7CC @slot $B0
-    function BuildAttackRequestResponse(Requester: TShip; var Response: WideString; Target: TShip): Boolean; override; // @addr $0051EC5C @slot $B4
-    function AcceptPartnershipOffer(OtherShip: TShip; var Response: WideString; PaymentAmount: Integer): Boolean; override; // @addr $0051F300 @slot $B8
-    function BuildPartnershipOfferResponse(OtherShip: TShip; var Response: WideString; PaymentAmount: Integer): Boolean; override; // @addr $0051F350 @slot $BC
-    function RefusesFactionNegotiation(OtherShip: TShip): Boolean; override; // @addr $0051F524 @slot $C0
-    procedure RefreshCurrentStanding; override; // @addr $00520E00 @slot $C4
-    destructor Destroy; override; // @addr $5176F0
-    function FindNearestFriendlyFlagship: TShip; // @addr $51C124
-    function NavigateToHomePlanet: Boolean; // @addr $519A4C
-    procedure ProcessUnseenProgression; // @addr $51A094
-    procedure MoveToRandomPlanetOrbit; // @addr $51F3A0
-    procedure ConsumeNodes(Amount: Integer); // @addr $51F450
+    procedure SaveToBuffer(Buffer: TBufEC); override; // @addr $5A36EC @slot $00
+    procedure LoadFromBuffer(Buffer: TBufEC; Galaxy: TGalaxy); override; // @addr $5A370C @slot $04
+    function AdjustItemEvaluation(Item: TItem; PriceMode: Byte; Effectiveness: Single): Single; override; // @addr $5A9EEC @slot $50
+    function EvaluateStatBonus(BonusKind: TEquipmentBonusKind; Value: Integer): Single; override; // @addr $5AA410 @slot $54
+    function EvaluateWeaponDamage(Weapon: TWeapon; IncludeAdditiveBonuses: Boolean; BaseDamage: Single): Single; override; // @addr $5AAEE4 @slot $58
+    procedure RepairBrokenEquipmentAtLocation; override; // @addr $5A4E74 @slot $60
+    procedure BuildReachablePlanetQueue; override; // @addr $5A4D94 @slot $64
+    procedure SelectEnemyShipInStar; override; // @addr $5A6FE4 @slot $6C
+    procedure EngageEnemyShip; override; // @addr $5A7470 @slot $70
+    function RelationToRanger(Ranger: Pointer): Byte; override; // @addr $5A5418 @slot $74
+    procedure ChangeRelationToRanger(Ranger: Pointer; Amount: Integer); override; // @addr $5A5450 @slot $78
+    procedure ReactToAttack(Attacker: TShip); override; // @addr $5A557C @slot $7C
+    function RelationToNonRanger(Ship: TShip): Byte; override; // @addr $5A530C @slot $80
+    function RecomputeFearState: Boolean; override; // @addr $5A5610 @slot $84
+    function AcceptsRansomDemandFrom(Ship: TShip): Boolean; override; // @addr $5A574C @slot $88
+    function TrustsAttackRequester(Ship: TShip): Boolean; override; // @addr $5A57D8 @slot $8C
+    function AcceptsAppealFrom(Ship: TShip): Boolean; override; // @addr $5A57F0 @slot $90
+    function AcceptPickupItem(Item: TItem): Boolean; override; // @addr $5AB42C @slot $94
+    function AcceptPickupDistance(Item: TItem; Distance: Double): Boolean; override; // @addr $5AB48C @slot $98
+    procedure ProcessCombatDialogue; override; // @addr $5A8DCC @slot $A0
+    procedure ReactToExtortionDemand(Ranger: Pointer); override; // @addr $5A8DD0 @slot $A4
+    function BuildMoneyExtortionResponse(OtherShip: TShip; var Response: WideString; DemandedAmount: Integer): Boolean; override; // @addr $5A8E2C @slot $A8
+    function BuildCargoExtortionResponse(OtherShip: TShip; var Response: WideString): Boolean; override; // @addr $5A8F2C @slot $AC
+    function BuildTrucePaymentResponse(OtherShip: TShip; var Response: WideString; OfferedAmount: Integer): Boolean; override; // @addr $5A9218 @slot $B0
+    function BuildAttackRequestResponse(Requester: TShip; var Response: WideString; Target: TShip): Boolean; override; // @addr $5A9690 @slot $B4
+    function AcceptPartnershipOffer(OtherShip: TShip; var Response: WideString; PaymentAmount: Integer): Boolean; override; // @addr $5A9D00 @slot $B8
+    function BuildPartnershipOfferResponse(OtherShip: TShip; var Response: WideString; PaymentAmount: Integer): Boolean; override; // @addr $5A9D44 @slot $BC
+    function RefusesFactionNegotiation(OtherShip: TShip): Boolean; override; // @addr $5A9EA8 @slot $C0
+    procedure RefreshCurrentStanding; override; // @addr $5AB518 @slot $C4
+    destructor Destroy; override; // @addr $5A2BEC
+    function FindNearestFriendlyFlagship: TShip; // @addr $5A6F18
+    function NavigateToHomePlanet: Boolean; // @addr $5A4CD4
+    procedure ProcessUnseenProgression; // @addr $5A51B0
+    procedure MoveToRandomPlanetOrbit; // @addr $5A9D88
+    procedure ConsumeNodes(Amount: Integer); // @addr $5A9E18
 
-    procedure InitGenerated(Planet: TPlanet; InitialMoney: Integer; Kind: TWarriorType); // @addr 0x517804 @note "Sets location, money and WarriorType; registers the ship with its star and home garrison."
+    procedure InitGenerated(Planet: TPlanet; InitialMoney: Integer; Kind: TWarriorType); // @addr 0x005A2CC4 @note "Sets location, money and WarriorType; registers the ship with its star and home garrison."
 
-    procedure NextDay; override; // @addr 0x51837C @slot 0x18
-    procedure NextDayLogic; override; // @addr 0x5185F0 @slot 0x1C @calls "0x51846C"
-    procedure ManeuverFlagship; // @addr $51D714
-    procedure NextDayFlagshipLogic; // @addr 0x519250 @note "Flagship branch; its diagnostic retains TWarrior.NextDayLogic."
-    procedure AssignWeaponTargetsInStar; override; // @addr 0x51A888 @slot 0x20 @note "Native diagnostic name: TWarrior.ArmsToTarget."
-    procedure AssignFlagshipWeaponTargets; // @addr 0x51B778 @note "Flagship branch; shares the TWarrior.ArmsToTarget diagnostic."
-    function GetTypeNameKey: WideString; override; // @addr $519FDC @slot $2C
-    function GetGreetingShipCategory: TGreetingShipCategory; override; // @addr $51A010 @slot $30
-    function GetHomeStar: TStar; override; // @addr $519D58 @slot $34
-    function GetStrengthScaledPirateStatus: TPercent; override; // @addr $51A038 @slot $3C
-    function GetDominantCareer: TRangerCareer; override; // @addr 0x51A024 @slot 0x38 @note "Always rcWarrior."
-    function GetName: WideString; override; // @addr 0x519D74 @slot 0x24
-    function GetFullName(const Separator: WideString): WideString; override; // @addr 0x519D94 @slot 0x28
+    procedure NextDay; override; // @addr 0x005A3744 @slot 0x18
+    procedure NextDayLogic; override; // @addr 0x005A3994 @slot 0x1C
+    procedure ManeuverFlagship; // @addr $5A827C
+    procedure NextDayFlagshipLogic; // @addr 0x005A451C @note "Flagship branch; its diagnostic retains TWarrior.NextDayLogic."
+    procedure AssignWeaponTargetsInStar; override; // @addr 0x005A5880 @slot 0x20 @note "Native diagnostic name: TWarrior.ArmsToTarget."
+    procedure AssignFlagshipWeaponTargets; // @addr 0x005A6624 @note "Flagship branch; shares the TWarrior.ArmsToTarget diagnostic."
+    function GetTypeNameKey: WideString; override; // @addr $5A5150 @slot $2C
+    function GetGreetingShipCategory: TGreetingShipCategory; override; // @addr $5A5178 @slot $30
+    function GetHomeStar: TStar; override; // @addr $5A4F14 @slot $34
+    function GetStrengthScaledPirateStatus: TPercent; override; // @addr $5A5180 @slot $3C
+    function GetDominantCareer: TRangerCareer; override; // @addr 0x005A517C @slot 0x38 @note "Always rcWarrior."
+    function GetName: WideString; override; // @addr 0x005A4F1C @slot 0x24
+    function GetFullName(const Separator: WideString): WideString; override; // @addr 0x005A4F30 @slot 0x28
 
-    procedure ReassignFlagshipHomePlanet; // @addr $51DD8C Scores Coalition systems and same-race garrisons; moves the flagship between home rosters without changing its current position.
-    procedure MoveToRandomPatrolPoint; // @addr 0x519C1C
-    function IsHomePatrolTurn: Boolean; // @addr 0x51F408 @note "Requires the home system and (Id + CurrentTurn) mod 100 < 25."
-    function GetDesiredCargoFreeSpace: Integer; override; // @addr 0x51A04C @slot 0x40
-    procedure RefuelAtLocation; override; // @addr 0x51A064 @slot 0x48 @note "Fills installed fuel tanks without charging Money."
-    function CanQueueReachablePlanet(Planet: TPlanet): Boolean; override; // @addr 0x519BEC @slot 0x68 @note "AI ownership check only; does not test travel range."
+    procedure ReassignFlagshipHomePlanet; // @addr $5A8868 Scores Coalition systems and same-race garrisons; moves the flagship between home rosters without changing its current position.
+    procedure MoveToRandomPatrolPoint; // @addr 0x005A4E18
+    function IsHomePatrolTurn: Boolean; // @addr 0x005A9DE4 @note "Requires the home system and (Id + CurrentTurn) mod 100 < 25."
+    function GetDesiredCargoFreeSpace: Integer; override; // @addr 0x005A5184 @slot 0x40
+    procedure RefuelAtLocation; override; // @addr 0x005A5188 @slot 0x48 @note "Fills installed fuel tanks without charging Money."
+    function CanQueueReachablePlanet(Planet: TPlanet): Boolean; override; // @addr 0x005A4E04 @slot 0x68 @note "AI ownership check only; does not test travel range."
   end;
 
 const
-  WarriorSkillBonusWeights: array[bonSkill1..bonSkill6] of Integer = (100, 100, 80, 10, 10, 10); // @addr $87AD50
+  WarriorSkillBonusWeights: array[bonSkill1..bonSkill6] of Integer = (100, 100, 80, 10, 10, 10); // @addr $80EAA4
   // EvaluateStatBonus dispatches bonus kinds 13..20 to these slot cases.
-  WarriorSlotBonusWeights: array[bonSlotRadar..bonSlotForsage] of Integer = (80, 80, 200, 0, 200, 150, 0, 10); // @addr $87AD68 @indexrefs "$52000A,$52004A,$52008A,$5200BB,$520117,$520157,$520188,$5201B7,$5201F5,$520226,$520255,$520293,$5202EF,$520339,$5203D0,$520406,$520436"
+  WarriorSlotBonusWeights: array[bonSlotRadar..bonSlotForsage] of Integer = (80, 80, 200, 0, 200, 150, 0, 10); // @addr $80EABC @indexrefs "0x005AA8AF,0x005AA8E9,0x005AA920,0x005AA94C,0x005AA99E,0x005AA9D5,0x005AAA01,0x005AAA2B,0x005AAA60,0x005AAA8C,0x005AAAB6,0x005AAAEB,0x005AAB30,0x005AAB5E,0x005AABCF,0x005AAC00,0x005AAC2B"
 
 implementation
 
 uses aKling, aAsteroid, aMissile, aScript, aEFilm, SE_Weapon, SE_Space, aPirate, EC_Struct, Classes, Math, Windows, SysUtils, aRanger, aTranclucator, aRuins, GR_Main, Globals, GlobalsV, EC_Str, aItem, aGalaxy, aShip, aConst, aMyFunction;
 
-{ @routine $5176F0 TWarrior_Destroy }
+{ @routine $5A2BEC TWarrior_Destroy }
 destructor TWarrior.Destroy;
 var Index: Integer;
 begin
@@ -90,13 +89,13 @@ begin
   if Index >= 0 then HomePlanet.Warriors.Delete(Index);
   inherited;
 end;
-{ @end $5176F0 }
+{ @end $5A2BEC }
 
-{ @routine $517804 TWarrior_InitGenerated }
+{ @routine $5A2CC4 TWarrior_InitGenerated }
 procedure TWarrior.InitGenerated(Planet: TPlanet; InitialMoney: Integer; Kind: TWarriorType);
 var FirstNameIndex, LastNameIndex: Integer; Ranger: TRanger; TechLevel: Byte; Config: TBlockParEC; Weapon: TWeapon;
-  // @nested $517754 SelectTechLevel
-  function SelectTechLevel(Minimum, Maximum: Integer): Integer; // @addr $517754 @note "Nested helper with caller-popped static link."
+  // @nested $5A2C34 SelectTechLevel
+  function SelectTechLevel(Minimum, Maximum: Integer): Integer; // @addr $5A2C34 @note "Nested helper with caller-popped static link."
   begin
     Result := Round(RemapClamped(Galaxy.TechLevel, 1, 8, Minimum, Maximum));
     Result := Max(Min(Result + NextRandomIntRange(-2, 2, RandomState), Maximum), Minimum);
@@ -122,7 +121,7 @@ begin
     end;
     LastNameIndex := 0;
     FirstNameIndex := Config.GetParamCount - 1;
-    Name := Config.GetParamValue(NextRandomIntRange(LastNameIndex, FirstNameIndex, RandomState)) + ' ' + '-' + IntToStr(Cardinal(Id) mod 100 + 1) + '-';
+    Name := Config.GetParamValue(NextRandomIntRange(LastNameIndex, FirstNameIndex, RandomState)) + ' ' + '-' + IntToStr(Id mod 100 + 1) + '-';
   end;
   if Length(GetName) = 0 then begin
     Config := LanguageDataConfig.GetBlock('ShipName').GetBlock('Warrior');
@@ -133,7 +132,7 @@ begin
     end;
     LastNameIndex := 0;
     FirstNameIndex := Config.GetParamCount - 1;
-    Name := Config.GetParamValue(NextRandomIntRange(LastNameIndex, FirstNameIndex, RandomState)) + ' ' + '-' + IntToStr(Cardinal(Id) mod 100 + 1) + '-';
+    Name := Config.GetParamValue(NextRandomIntRange(LastNameIndex, FirstNameIndex, RandomState)) + ' ' + '-' + IntToStr(Id mod 100 + 1) + '-';
   end;
   if GetPlayer <> nil then begin
     Rank := NextRandomIntRange(0, Min(5, GetPlayer.Rank + 2), RandomState);
@@ -198,26 +197,26 @@ begin
     BuyEquipmentAtLocation(True);
   end;
 end;
-{ @end $517804 }
+{ @end $5A2CC4 }
 
-{ @routine $518304 TWarrior_SaveToBuffer }
+{ @routine $5A36EC TWarrior_SaveToBuffer }
 procedure TWarrior.SaveToBuffer(Buffer: TBufEC);
 begin
   inherited;
   Buffer.AddAnsiChar(AnsiChar(WarriorType));
 end;
-{ @end $518304 }
+{ @end $5A36EC }
 
-{ @routine $518330 TWarrior_LoadFromBuffer }
+{ @routine $5A370C TWarrior_LoadFromBuffer }
 procedure TWarrior.LoadFromBuffer(Buffer: TBufEC; Galaxy: TGalaxy);
 begin
   inherited;
   if LoadedSaveVersion >= 130 then WarriorType := TWarriorType(Buffer.GetByte)
   else WarriorType := wtRegular;
 end;
-{ @end $518330 }
+{ @end $5A370C }
 
-{ @routine $51837C TWarrior_NextDay }
+{ @routine $5A3744 TWarrior_NextDay }
 procedure TWarrior.NextDay;
 begin
   inherited NextDay;
@@ -238,9 +237,9 @@ begin
     end;
   end;
 end;
-{ @end $51837C }
+{ @end $5A3744 }
 
-{ @routine $5185F0 TWarrior_NextDayLogic }
+{ @routine $5A3994 TWarrior_NextDayLogic }
 procedure TWarrior.NextDayLogic;
 const FriendlyStationMask = [ssCoalitionMilitary, ssCoalitionActive];
 var Planet: TPlanet; Station: TShip; Stage: Integer;
@@ -248,30 +247,29 @@ begin
   Stage := 0;
   if WarriorType = wtFlagship then NextDayFlagshipLogic
   else try
-    if CurrentPlanet <> nil then begin
-      Stage := 1;
-      if CurrentPlanet.OwnerId in PlanetOwnerMasks.Coalition then begin
-        Stage := 2;
-        RepairBrokenEquipmentAtLocation;
-        AutoEquipInventory;
-        OptimizeInventory;
-        RefuelAtLocation;
-        ReloadWeaponAmmo;
-        ProcessUnseenProgression;
-        TrainSkillsAutomatically;
-        if RepairHullAtLocation then Exit;
-        Stage := 3;
-        if LiberationGroup <> nil then ProcessLiberationGroupRoute;
-        if (CurrentPlanet <> HomePlanet) or (LiberationGroup <> nil) or IsHomePatrolTurn then OrderTakeoff;
-      end else OrderTakeoff;
-      Stage := 4;
-    end else if DockedTo <> nil then begin
-      Stage := 5;
-      if not (DockedTo.TypeId in [rstRangerCenter..rstCustomStation]) then begin
-        if DockedTo.InNormalSpace then OrderTakeoff else OrderNone(False);
-        Exit;
-      end;
-      begin
+      if CurrentPlanet <> nil then begin
+        Stage := 1;
+        if CurrentPlanet.OwnerId in PlanetOwnerMasks.Coalition then begin
+          Stage := 2;
+          RepairBrokenEquipmentAtLocation;
+          AutoEquipInventory;
+          OptimizeInventory;
+          RefuelAtLocation;
+          ReloadWeaponAmmo;
+          ProcessUnseenProgression;
+          TrainSkillsAutomatically;
+          if RepairHullAtLocation then Exit;
+          Stage := 3;
+          if LiberationGroup <> nil then ProcessLiberationGroupRoute;
+          if (CurrentPlanet <> HomePlanet) or (LiberationGroup <> nil) or IsHomePatrolTurn then OrderTakeoff;
+        end else OrderTakeoff;
+        Stage := 4;
+      end else if DockedTo <> nil then begin
+        Stage := 5;
+        if not (DockedTo.TypeId in [rstRangerCenter..rstCustomStation]) then begin
+          if DockedTo.InNormalSpace then OrderTakeoff else OrderNone(False);
+          Exit;
+        end;
         SynchronizeDockedLocation;
         RepairBrokenEquipmentAtLocation;
         AutoEquipInventory;
@@ -288,113 +286,109 @@ begin
         if (DockedTo.TypeId = rstMilitaryBase) and (TRuins(DockedTo).FlyToStar <> nil) and (TRuins(DockedTo).FlyToStar <> DockedTo.CurrentStar) then Exit;
         if DockedTo.InNormalSpace then OrderTakeoff;
         Stage := 7;
-      end;
-    end else if InNormalSpace then begin
-      Stage := 8;
-      RecomputeFearState;
-      AssignWeaponTargetsInStar;
-      AfterburnerActive := False;
-      Stage := 9;
-      if InFear then begin
-        Stage := 10;
-        if (Order = soLand) or (Order = soJump) then UpdateAfterburnerState;
-        if Order <> soLand then begin
-          Stage := 11;
-          BuildReachablePlanetQueue;
-          Planet := SelectNearestQueuedPlanet;
-          if (Planet <> nil) and (Planet.CurrentStar = CurrentStar) then begin
-            Stage := 12;
-            OrderLanding(Planet, True);
-            UpdateAfterburnerState;
-          end else begin
-            Stage := 13;
-            Station := FindNearestDockableStation(FriendlyStationMask);
-            if Station <> nil then begin
-              Stage := 14;
-              OrderLanding(Station, True);
+      end else if InNormalSpace then begin
+        Stage := 8;
+        RecomputeFearState;
+        AssignWeaponTargetsInStar;
+        AfterburnerActive := False;
+        Stage := 9;
+        if InFear then begin
+          Stage := 10;
+          if (Order = soLand) or (Order = soJump) then UpdateAfterburnerState;
+          if Order <> soLand then begin
+            Stage := 11;
+            BuildReachablePlanetQueue;
+            Planet := SelectNearestQueuedPlanet;
+            if (Planet <> nil) and (Planet.CurrentStar = CurrentStar) then begin
+              Stage := 12;
+              OrderLanding(Planet, True);
               UpdateAfterburnerState;
-            end else if LiberationGroup = nil then begin
-              Stage := 15;
-              SelectEnemyShipInStar;
-              EngageEnemyShip;
-              if Order = soNone then MoveToRandomPatrolPoint;
+            end else begin
+              Stage := 13;
+              Station := FindNearestDockableStation(FriendlyStationMask);
+              if Station <> nil then begin
+                Stage := 14;
+                OrderLanding(Station, True);
+                UpdateAfterburnerState;
+              end else if LiberationGroup = nil then begin
+                Stage := 15;
+                SelectEnemyShipInStar;
+                EngageEnemyShip;
+                if Order = soNone then MoveToRandomPatrolPoint;
+              end;
             end;
           end;
+          Stage := 16;
+        end else begin
+          Stage := 17;
+          if LiberationGroup = nil then begin
+            Stage := 18;
+            SelectEnemyShipInStar;
+            EngageEnemyShip;
+            Stage := 19;
+            if Order = soNone then
+              if IsHomePatrolTurn then MoveToRandomPlanetOrbit
+              else if not NavigateToHomePlanet then MoveToRandomPatrolPoint;
+            Stage := 20;
+          end;
         end;
-        Stage := 16;
-      end else begin
-        Stage := 17;
-        if LiberationGroup = nil then begin
-          Stage := 18;
-          SelectEnemyShipInStar;
-          EngageEnemyShip;
-          Stage := 19;
-          if Order = soNone then
-            if IsHomePatrolTurn then MoveToRandomPlanetOrbit
-            else if not NavigateToHomePlanet then MoveToRandomPatrolPoint;
-          Stage := 20;
+        if LiberationGroup <> nil then begin
+          Stage := 21;
+          AfterburnerActive := False;
+          RefreshDerivedStats(True);
+          ProcessLiberationGroupRoute;
+          Stage := 22;
+          if LiberationGroup = nil then begin
+            Stage := 23;
+            SelectEnemyShipInStar;
+            EngageEnemyShip;
+            if (Order = soNone) and not NavigateToHomePlanet then MoveToRandomPatrolPoint;
+          end;
         end;
       end;
-      if LiberationGroup <> nil then begin
-        Stage := 21;
-        AfterburnerActive := False;
-        RefreshDerivedStats(True);
-        ProcessLiberationGroupRoute;
-        Stage := 22;
-        if LiberationGroup = nil then begin
-          Stage := 23;
-          SelectEnemyShipInStar;
-          EngageEnemyShip;
-          if (Order = soNone) and not NavigateToHomePlanet then MoveToRandomPatrolPoint;
-        end;
+    except
+      on E: Exception do begin
+        AppendLogLineThreadSafe(E.ClassName + ' ' + E.Message);
+        raise Exception.Create('Error in procedure TWarrior.NextDayLogic ' + GetFullName(' ') + ' label = ' + IntToStr(Stage));
       end;
     end;
-  except
-    on E: Exception do begin
-      AppendLogLineThreadSafe(E.ClassName + ' ' + E.Message);
-      raise Exception.Create('Error in procedure TWarrior.NextDayLogic ' + GetFullName(' ') + ' label = ' + IntToStr(Stage));
-    end;
-  end;
 end;
-{ @end $5185F0 }
+{ @end $5A3994 }
 
-{ @routine $519250 TWarrior_NextDayFlagshipLogic }
+{ @routine $5A451C TWarrior_NextDayFlagshipLogic }
 procedure TWarrior.NextDayFlagshipLogic;
 const FriendlyStationMask = [ssCoalitionMilitary, ssCoalitionActive]; AnyStationMask = [];
 var Planet: TPlanet; Station, Ship: TShip; Stations: TList; I, Stage: Integer;
-  // @nested $518C80 RepairHullWithNodes
-  procedure RepairHullWithNodes; // @addr $518C80
+  // @nested $5A3FE4 RepairHullWithNodes
+  procedure RepairHullWithNodes; // @addr $5A3FE4
   var Needed, Available, Restored: Integer; Fraction: Single; Entry: PEFilmEndEntry; Effect: TWeaponSE;
   begin
-    if (PilotRace in [oiMaloc, oiPeleng]) and InFear then begin
-      Available := GetCarriedNodeCount;
-      if Available > 0 then begin
-        Needed := Ceil((GetHull.Weight - GetHull.HullPoints) *
-          (GetCombatStatusStrength(cseBWRepairDebuff) * 0.002 + 1) / 10 / 2 * RemapClamped(Galaxy.TechLevel, 2, 8, 5, 1));
-        if Needed > 0 then begin
-          Available := Min(Needed, Available);
-          ConsumeNodes(Available);
-          Fraction := Available / Needed;
-          Restored := Ceil(RemapClamped(Fraction, 0, 1, 0.01, GetHull.Weight - GetHull.HullPoints));
-          Inc(GetHull.HullPoints, Restored);
-          AddCombatStatusStrength(cseBWRepairDebuff, Restored / 2, nil);
-          RefreshDerivedStats(True);
-          if (GetPlayer.CurrentStar = CurrentStar) and GetPlayer.InNormalSpace then begin
-            Effect := TWeaponSE.Create('Weapon.NoGraph', Classes.Point(0, 0), 0, -1);
-            Effect.SetEndpoints(nil, Graphic);
-            Effect.SetHit(OwnerToFilmColor(OwnerId), -Restored, False, True);
-            if TrailingFilmEffects = nil then TrailingFilmEffects := TEFilmEnd.Create;
-            Entry := TrailingFilmEffects.AppendEntry;
-            RetainSpaceObject(Entry.SceneObject, Effect);
-            RetainSpaceObject(Entry.RelatedObject1, nil);
-            Entry.SceneObject.AttachToSpace(SpaceProcess.Space);
-          end;
-        end;
-      end;
+    if not (PilotRace in [oiMaloc, oiPeleng]) or not InFear then Exit;
+    Available := GetCarriedNodeCount;
+    if Available <= 0 then Exit;
+    Needed := Ceil((GetHull.Weight - GetHull.HullPoints) *
+      (GetCombatStatusStrength(cseBWRepairDebuff) * 0.002 + 1) / 10 / 2 * RemapClamped(Galaxy.TechLevel, 2, 8, 5, 1));
+    if Needed <= 0 then Exit;
+    Available := Min(Needed, Available);
+    ConsumeNodes(Available);
+    Fraction := Available / Needed;
+    Restored := Ceil(RemapClamped(Fraction, 0, 1, 0.01, GetHull.Weight - GetHull.HullPoints));
+    Inc(GetHull.HullPoints, Restored);
+    AddCombatStatusStrength(cseBWRepairDebuff, Restored / 2, nil);
+    RefreshDerivedStats(True);
+    if (GetPlayer.CurrentStar = CurrentStar) and GetPlayer.InNormalSpace then begin
+      Effect := TWeaponSE.Create('Weapon.NoGraph', Classes.Point(0, 0), 0, -1);
+      Effect.SetEndpoints(nil, Graphic);
+      Effect.SetHit(OwnerToFilmColor(OwnerId), -Restored, False, True);
+      if TrailingFilmEffects = nil then TrailingFilmEffects := TEFilmEnd.Create;
+      Entry := TrailingFilmEffects.AppendEntry;
+      RetainSpaceObject(Entry.SceneObject, Effect);
+      RetainSpaceObject(Entry.RelatedObject1, nil);
+      Entry.SceneObject.AttachToSpace(SpaceProcess.Space);
     end;
   end;
-  // @nested $518F6C RepairEquipmentWithNodes
-  procedure RepairEquipmentWithNodes; // @addr $518F6C
+  // @nested $5A427C RepairEquipmentWithNodes
+  procedure RepairEquipmentWithNodes; // @addr $5A427C
   var I: Integer; Equipment: TEquipment; NeedsRepair: Boolean; TotalCost, Available, Threshold: Integer; Fraction: Single;
   begin
     if PilotRace in [oiFeyan, oiGaal] then begin
@@ -453,25 +447,23 @@ begin
       Stage := 4;
     end else if DockedTo <> nil then begin
       Stage := 5;
-      begin
-        SynchronizeDockedLocation;
-        DepositCarriedNodes;
-        RepairBrokenEquipmentAtLocation;
-        AutoEquipInventory;
-        OptimizeInventory;
-        RefuelAtLocation;
-        ReloadWeaponAmmo;
-        ProcessUnseenProgression;
-        TrainSkillsAutomatically;
-        if RepairHullAtLocation then Exit;
-        BuyEquipmentAtLocation(False);
-        RestoreEssentialEquipment;
-        Stage := 6;
-        if LiberationGroup <> nil then ProcessLiberationGroupRoute;
-        if Galaxy.FindMilitaryBaseInTransit = DockedTo then Exit;
-        if DockedTo.InNormalSpace then OrderTakeoff;
-        Stage := 7;
-      end;
+      SynchronizeDockedLocation;
+      DepositCarriedNodes;
+      RepairBrokenEquipmentAtLocation;
+      AutoEquipInventory;
+      OptimizeInventory;
+      RefuelAtLocation;
+      ReloadWeaponAmmo;
+      ProcessUnseenProgression;
+      TrainSkillsAutomatically;
+      if RepairHullAtLocation then Exit;
+      BuyEquipmentAtLocation(False);
+      RestoreEssentialEquipment;
+      Stage := 6;
+      if LiberationGroup <> nil then ProcessLiberationGroupRoute;
+      if DockedTo = Galaxy.FindMilitaryBaseInTransit then Exit;
+      if DockedTo.InNormalSpace then OrderTakeoff;
+      Stage := 7;
     end else if InNormalSpace then begin
       Stage := 8;
       RecomputeFearState;
@@ -563,9 +555,9 @@ begin
     end;
   end;
 end;
-{ @end $519250 }
+{ @end $5A451C }
 
-{ @routine $519A4C TWarrior_NavigateToHomePlanet }
+{ @routine $5A4CD4 TWarrior_NavigateToHomePlanet }
 function TWarrior.NavigateToHomePlanet: Boolean;
 begin
   if HomePlanet.CurrentStar = CurrentStar then begin OrderLanding(HomePlanet, False); Result := True; end
@@ -580,30 +572,31 @@ begin
     end else Result := False;
   end;
 end;
-{ @end $519A4C }
+{ @end $5A4CD4 }
 
-{ @routine $519B50 TWarrior_BuildReachablePlanetQueue }
+{ @routine $5A4D94 TWarrior_BuildReachablePlanetQueue }
 procedure TWarrior.BuildReachablePlanetQueue;
 var I: Integer; Planet: TPlanet;
 begin
   ClearPlanetQueue;
   PlanetQueue := TList.Create;
-  if (Speed <> 0) and (CurrentStar.Status.CustomFaction = '') then
+  if (Speed <> 0) then
+    if (CurrentStar.Status.CustomFaction = '') then
     for I := 0 to CurrentStar.Planets.Count - 1 do begin
       Planet := CurrentStar.Planets[I];
       if Planet.IsCoalitionOwned then PlanetQueue.Add(Planet);
     end;
 end;
-{ @end $519B50 }
+{ @end $5A4D94 }
 
-{ @routine $519BEC TWarrior_CanQueueReachablePlanet }
+{ @routine $5A4E04 TWarrior_CanQueueReachablePlanet }
 function TWarrior.CanQueueReachablePlanet(Planet: TPlanet): Boolean;
 begin
   Result := (Planet.OwnerId <> oiDominator) and (Planet.OwnerId <> oiPirate);
 end;
-{ @end $519BEC }
+{ @end $5A4E04 }
 
-{ @routine $519C1C TWarrior_MoveToRandomPatrolPoint }
+{ @routine $5A4E18 TWarrior_MoveToRandomPatrolPoint }
 procedure TWarrior.MoveToRandomPatrolPoint;
 var Destination: TPointF;
 begin
@@ -611,9 +604,9 @@ begin
   Destination.Y := NextRandomIntRange(-2000, 2000, RandomState);
   OrderMove(Destination, False);
 end;
-{ @end $519C1C }
+{ @end $5A4E18 }
 
-{ @routine $519C7C TWarrior_RepairBrokenEquipmentAtLocation }
+{ @routine $5A4E74 TWarrior_RepairBrokenEquipmentAtLocation }
 procedure TWarrior.RepairBrokenEquipmentAtLocation;
 var I: Integer; Equipment: TEquipment; Artefact: TArtefact;
 begin
@@ -628,23 +621,23 @@ begin
         if Artefact.EquippedFlag <> 0 then Artefact.Repair;
     end;
 end;
-{ @end $519C7C }
+{ @end $5A4E74 }
 
-{ @routine $519D58 TWarrior_GetHomeStar }
+{ @routine $5A4F14 TWarrior_GetHomeStar }
 function TWarrior.GetHomeStar: TStar;
 begin
   Result := HomePlanet.CurrentStar;
 end;
-{ @end $519D58 }
+{ @end $5A4F14 }
 
-{ @routine $519D74 TWarrior_GetName }
+{ @routine $5A4F1C TWarrior_GetName }
 function TWarrior.GetName: WideString;
 begin
   Result := Name;
 end;
-{ @end $519D74 }
+{ @end $5A4F1C }
 
-{ @routine $519D94 TWarrior_GetFullName }
+{ @routine $5A4F30 TWarrior_GetFullName }
 function TWarrior.GetFullName(const Separator: WideString): WideString;
 var
   Path, Text: WideString;
@@ -663,51 +656,51 @@ begin
     if Text <> '' then Result := Text + Separator + Name else Result := Name;
   end;
 end;
-{ @end $519D94 }
+{ @end $5A4F30 }
 
-{ @routine $519FDC TWarrior_GetTypeNameKey }
+{ @routine $5A5150 TWarrior_GetTypeNameKey }
 function TWarrior.GetTypeNameKey: WideString;
 begin
   Result := 'Warrior';
 end;
-{ @end $519FDC }
+{ @end $5A5150 }
 
-{ @routine $51A010 TWarrior_GetGreetingShipCategory }
+{ @routine $5A5178 TWarrior_GetGreetingShipCategory }
 function TWarrior.GetGreetingShipCategory: TGreetingShipCategory;
 begin
   Result := gscWarrior;
 end;
-{ @end $51A010 }
+{ @end $5A5178 }
 
-{ @routine $51A024 TWarrior_GetDominantCareer }
+{ @routine $5A517C TWarrior_GetDominantCareer }
 function TWarrior.GetDominantCareer: TRangerCareer;
 begin
   Result := rcWarrior;
 end;
-{ @end $51A024 }
+{ @end $5A517C }
 
-{ @routine $51A038 TWarrior_GetStrengthScaledPirateStatus }
+{ @routine $5A5180 TWarrior_GetStrengthScaledPirateStatus }
 function TWarrior.GetStrengthScaledPirateStatus: TPercent;
 begin
   Result := 0;
 end;
-{ @end $51A038 }
+{ @end $5A5180 }
 
-{ @routine $51A04C TWarrior_GetDesiredCargoFreeSpace }
+{ @routine $5A5184 TWarrior_GetDesiredCargoFreeSpace }
 function TWarrior.GetDesiredCargoFreeSpace: Integer;
 begin
   Result := 0;
 end;
-{ @end $51A04C }
+{ @end $5A5184 }
 
-{ @routine $51A064 TWarrior_RefuelAtLocation }
+{ @routine $5A5188 TWarrior_RefuelAtLocation }
 procedure TWarrior.RefuelAtLocation;
 begin
   if GetFuelTanks <> nil then GetFuelTanks.Fuel := GetFuelTanks.Capacity;
 end;
-{ @end $51A064 }
+{ @end $5A5188 }
 
-{ @routine $51A094 TWarrior_ProcessUnseenProgression }
+{ @routine $5A51B0 TWarrior_ProcessUnseenProgression }
 procedure TWarrior.ProcessUnseenProgression;
 var Award: Byte;
 begin
@@ -723,23 +716,23 @@ begin
     end;
   end;
 end;
-{ @end $51A094 }
+{ @end $5A51B0 }
 
-{ @routine $51A22C TWarrior_RelationToNonRanger }
+{ @routine $5A530C TWarrior_RelationToNonRanger }
 function TWarrior.RelationToNonRanger(Ship: TShip): Byte;
 begin
-  if Ship.TypeId = stPirate then Result := Round(Max(10, Min(20, OwnerRelations[RaceToOwner(PilotRace), Ship.OwnerId] *
-    (0.5 * PlanetRaceMarket[PilotRace].PirateRelationFactor))))
+  if Ship.TypeId = stPirate then Result := Round(Max(10, Min(20, (0.5 * PlanetRaceMarket[PilotRace].PirateRelationFactor) *
+    OwnerRelations[RaceToOwner(PilotRace), Ship.OwnerId])))
   else if Ship.TypeId in [stKling, stTranclucator] then Result := 50 else Result := 100;
 end;
-{ @end $51A22C }
+{ @end $5A530C }
 
-{ @routine $51A33C TWarrior_RelationToRanger }
+{ @routine $5A5418 TWarrior_RelationToRanger }
 function TWarrior.RelationToRanger(Ranger: Pointer): Byte;
 begin Result := Byte(HomePlanet.RangerRelations[Galaxy.Rangers.IndexOf(TObject(Ranger) as TRanger)]); end;
-{ @end $51A33C }
+{ @end $5A5418 }
 
-{ @routine $51A384 TWarrior_ChangeRelationToRanger }
+{ @routine $5A5450 TWarrior_ChangeRelationToRanger }
 procedure TWarrior.ChangeRelationToRanger(Ranger: Pointer; Amount: Integer);
 var Relation: Byte; Value, Index: Integer;
 begin
@@ -756,9 +749,9 @@ begin
     if (Byte(HomePlanet.RangerRelations[Index]) <> Relation) and not GR_Main.CCInterface.GetTamperDetected then GR_Main.CCInterface.SetTamperDetected(True);
   end;
 end;
-{ @end $51A384 }
+{ @end $5A5450 }
 
-{ @routine $51A4E8 TWarrior_ReactToAttack }
+{ @routine $5A557C TWarrior_ReactToAttack }
 procedure TWarrior.ReactToAttack(Attacker: TShip);
 begin
   EnemyShip := Attacker;
@@ -769,9 +762,9 @@ begin
       HomePlanet.ChangeRelationToRanger(TTranclucator(Attacker).OwnerShip, -3);
   end;
 end;
-{ @end $51A4E8 }
+{ @end $5A557C }
 
-{ @routine $51A5C0 TWarrior_RecomputeFearState }
+{ @routine $5A5610 TWarrior_RecomputeFearState }
 function TWarrior.RecomputeFearState: Boolean;
 begin
   if HasNoUsableWeapons and (EnemyShip <> nil) and (EnemyShip.CurrentStar = CurrentStar) then begin Result := True; InFear := True; end
@@ -782,31 +775,34 @@ begin
     InFear := Result;
   end;
 end;
-{ @end $51A5C0 }
+{ @end $5A5610 }
 
-{ @routine $51A72C TWarrior_AcceptsRansomDemandFrom }
+{ @routine $5A574C TWarrior_AcceptsRansomDemandFrom }
 function TWarrior.AcceptsRansomDemandFrom(Ship: TShip): Boolean;
 begin
   Result := (GetHull.Weight * 0.5 * OwnerInfo[OwnerId].FearThresholdScale > GetHull.HullPoints) and
   (ChanceToWin(Ship) - OwnerInfo[OwnerId].FearThresholdScale / 2 < 0);
 end;
-{ @end $51A72C }
+{ @end $5A574C }
 
-{ @routine $51A7C8 TWarrior_TrustsAttackRequester }
+{ @routine $5A57D8 TWarrior_TrustsAttackRequester }
 function TWarrior.TrustsAttackRequester(Ship: TShip): Boolean;
 begin Result := RelationToShip(Ship) >= RelationNormalMin; end;
-{ @end $51A7C8 }
+{ @end $5A57D8 }
 
-{ @routine $51A7EC TWarrior_AcceptsAppealFrom }
+{ @routine $5A57F0 TWarrior_AcceptsAppealFrom }
 function TWarrior.AcceptsAppealFrom(Ship: TShip): Boolean;
 begin
   Result := RelationToShip(Ship) +
     RemapClamped(Ship.Strength, 0.9 * Strength, Strength * 3, 0, 100) > 160;
 end;
-{ @end $51A7EC }
+{ @end $5A57F0 }
 
-{ @routine $51A888 TWarrior_AssignWeaponTargetsInStar }
+{ @routine $5A5880 TWarrior_AssignWeaponTargetsInStar }
 procedure TWarrior.AssignWeaponTargetsInStar;
+const
+  MissileShotTypes = [wstTorpedo..wstRocket];
+  AreaOrMissileShotTypes = [wstAreaDamage..wstRocket];
 var I, J, Assigned: Integer; Ship: TShip; Weapon: TWeapon; Distance: Single; Item: TItem; Asteroid: TAsteroid; Missile: TMissile;
   SameRacePlanet: Boolean; Stage: Integer; IgnoreRanger: Boolean;
 begin
@@ -823,13 +819,11 @@ begin
         Distance := PointDistance(Position, Ship.Position);
         for J := 1 to WeaponCount do begin
           Weapon := Weapons[J];
-          if (not (Weapon.GetWeaponInfo.ShotType in [wstTorpedo..wstRocket]) or (Weapon.Ammo <> 0)) and
-            (Weapon.Target = nil) and IsEquipmentUsable(Weapon) then
-            if GetWeaponRange(Weapon) >= Distance then begin
-              Weapon.Target := Ship;
-              Inc(Assigned);
-              if Assigned = WeaponCount then Exit;
-            end;
+          if ((Weapon.GetWeaponInfo.ShotType in MissileShotTypes) and (Weapon.Ammo = 0)) or (Weapon.Target <> nil) or
+            not IsEquipmentUsable(Weapon) or not (GetWeaponRange(Weapon) >= Distance) then Continue;
+          Weapon.Target := Ship;
+          Inc(Assigned);
+          if Assigned = WeaponCount then Exit;
         end;
       end;
     end;
@@ -850,13 +844,11 @@ begin
     if IgnoreRanger then ClearWeaponTargets(EnemyShip)
     else for J := 1 to WeaponCount do begin
       Weapon := Weapons[J];
-      if (not (Weapon.GetWeaponInfo.ShotType in [wstTorpedo..wstRocket]) or (Weapon.Ammo <> 0)) and
-        (Weapon.Target = nil) and IsEquipmentUsable(Weapon) then
-        if PointDistanceSquared(Position, EnemyShip.Position) <= Sqr(GetWeaponRange(Weapon)) then begin
-          Weapon.Target := EnemyShip;
-          Inc(Assigned);
-          if Assigned = WeaponCount then Exit;
-        end;
+      if ((Weapon.GetWeaponInfo.ShotType in MissileShotTypes) and (Weapon.Ammo = 0)) or (Weapon.Target <> nil) or
+        not IsEquipmentUsable(Weapon) or not (PointDistanceSquared(Position, EnemyShip.Position) <= Sqr(GetWeaponRange(Weapon))) then Continue;
+      Weapon.Target := EnemyShip;
+      Inc(Assigned);
+      if Assigned = WeaponCount then Exit;
     end;
   end;
   Stage := 3;
@@ -874,17 +866,14 @@ begin
             for J := 1 to WeaponCount do begin
               Stage := 36;
               Weapon := Weapons[J];
-              if not (Weapon.GetWeaponInfo.ShotType in [wstTorpedo..wstRocket]) or (Weapon.Ammo <> 0) then begin
-                Stage := 37;
-                if IsEquipmentUsable(Weapon) then
-                  if PointDistanceSquared(Position, Ship.Position) <= Sqr(GetWeaponRange(Weapon)) then begin
-                    Stage := 38;
-                    // Native hostile-ship pass can replace an earlier assignment.
-                    Weapon.Target := Ship;
-                    Inc(Assigned);
-                    if Assigned = WeaponCount then Exit;
-                  end;
-              end;
+              if (Weapon.GetWeaponInfo.ShotType in MissileShotTypes) and (Weapon.Ammo = 0) then Continue;
+              Stage := 37;
+              if not (IsEquipmentUsable(Weapon) and (PointDistanceSquared(Position, Ship.Position) <= Sqr(GetWeaponRange(Weapon)))) then Continue;
+              Stage := 38;
+              // Native hostile-ship pass can replace an earlier assignment.
+              Weapon.Target := Ship;
+              Inc(Assigned);
+              if Assigned = WeaponCount then Exit;
             end;
           end;
         end;
@@ -897,65 +886,60 @@ begin
     if (Missile.Target = Self) and (Missile.OwnerShip <> Self) then
       for J := 1 to WeaponCount do begin
         Weapon := Weapons[J];
-        if not (Weapon.GetWeaponInfo^.ShotType in [wstTorpedo..wstRocket]) and (Weapon.Target = nil) and IsEquipmentUsable(Weapon) then
-          if PointDistanceSquared(Position, Missile.Position) <= Sqr(GetWeaponRange(Weapon)) then begin
-            Weapon.Target := Missile;
-            Inc(Assigned);
-            if Assigned = WeaponCount then Exit;
-            Break;
-          end;
+        if (Weapon.GetWeaponInfo^.ShotType in MissileShotTypes) or (Weapon.Target <> nil) or
+          not IsEquipmentUsable(Weapon) or not (PointDistanceSquared(Position, Missile.Position) <= Sqr(GetWeaponRange(Weapon))) then Continue;
+        Weapon.Target := Missile;
+        Inc(Assigned);
+        if Assigned = WeaponCount then Exit;
+        Break;
       end;
   end;
   Stage := 5;
-  if GetPlayer.CurrentStar = CurrentStar then
+  if CurrentStar = GetPlayer.CurrentStar then
     for I := 0 to CurrentStar.Asteroids.Count - 1 do begin
       Asteroid := CurrentStar.Asteroids[I];
       Distance := PointDistanceSquared(Position, Asteroid.Position);
-      if Distance <= AsteroidTargetRangeSquared then
-        for J := 1 to WeaponCount do begin
-          Weapon := Weapons[J];
-          // Native asteroid targeting can overwrite an existing assignment.
-          if not (Weapon.GetWeaponInfo^.ShotType in [wstAreaDamage..wstRocket]) and IsEquipmentUsable(Weapon) then
-            if Sqr(GetWeaponRange(Weapon)) >= Distance then begin
-              Weapon.Target := Asteroid;
-              Inc(Assigned);
-              if Assigned = WeaponCount then Exit;
-              Break;
-            end;
-        end;
+      if not (Distance <= AsteroidTargetRangeSquared) then Continue;
+      for J := 1 to WeaponCount do begin
+        Weapon := Weapons[J];
+        // Native asteroid targeting can overwrite an existing assignment.
+        if (Weapon.GetWeaponInfo^.ShotType in AreaOrMissileShotTypes) or
+          not IsEquipmentUsable(Weapon) or not (Sqr(GetWeaponRange(Weapon)) >= Distance) then Continue;
+        Weapon.Target := Asteroid;
+        Inc(Assigned);
+        if Assigned = WeaponCount then Exit;
+        Break;
+      end;
     end;
   Stage := 6;
-  if Galaxy.GetAIJunkToleranceLevel * 1.5 < CurrentStar.Items.Count then
+  if CurrentStar.Items.Count > Galaxy.GetAIJunkToleranceLevel * 1.5 then
     for I := 0 to CurrentStar.Items.Count - 1 do begin
       Item := CurrentStar.Items[I];
-      if ((Item.ItemType = t_Minerals) or (Item.OwnerId = oiDominator)) and
-        ((Item.ScriptItem = nil) or (TScriptItem(Item.ScriptItem).Name = '')) then
-        if (GetPlayer.CurrentStar <> CurrentStar) or (GetRelationLevelToShip(GetPlayer) <= rlBad) or
-          (PointDistance(GetPlayer.Position, Item.Position) >= 800) or
-          ((NextRandomUnitFloat(RandomState) <= 0.1) and (PointDistance(GetPlayer.Position, Item.Position) >= 200)) then
-          if CanSafelyDetonateItem(Item) then
-            for J := 1 to WeaponCount do begin
-              Weapon := Weapons[J];
-              if not (Weapon.GetWeaponInfo^.ShotType in [wstTorpedo..wstRocket]) and (Weapon.Target = nil) and IsEquipmentUsable(Weapon) then
-                if PointDistanceSquared(Position, Item.Position) <= Sqr(GetWeaponRange(Weapon)) then begin
-                  Weapon.Target := Item;
-                  Inc(Assigned);
-                  if Assigned = WeaponCount then Exit;
-                  Break;
-                end;
-            end;
+      if ((Item.ItemType <> t_Minerals) and (Item.OwnerId <> oiDominator)) or
+        ((Item.ScriptItem <> nil) and (TScriptItem(Item.ScriptItem).Name <> '')) then Continue;
+      if not ((GetPlayer.CurrentStar <> CurrentStar) or (GetRelationLevelToShip(GetPlayer) <= rlBad) or
+        (PointDistance(GetPlayer.Position, Item.Position) >= 800) or
+        ((NextRandomUnitFloat(RandomState) <= 0.1) and (PointDistance(GetPlayer.Position, Item.Position) >= 200))) then Continue;
+      if not CanSafelyDetonateItem(Item) then Continue;
+      for J := 1 to WeaponCount do begin
+        Weapon := Weapons[J];
+        if (Weapon.GetWeaponInfo^.ShotType in MissileShotTypes) or (Weapon.Target <> nil) or
+          not IsEquipmentUsable(Weapon) or not (PointDistanceSquared(Position, Item.Position) <= Sqr(GetWeaponRange(Weapon))) then Continue;
+        Weapon.Target := Item;
+        Inc(Assigned);
+        if Assigned = WeaponCount then Exit;
+        Break;
+      end;
     end;
   Stage := 7;
   if (GetPlayer <> nil) and (GetPlayer.CurrentStar = CurrentStar) and GetPlayer.InNormalSpace and IsPlayerChameleonEffectiveAgainstSelf then
     for J := 1 to WeaponCount do begin
       Weapon := Weapons[J];
-      if (not (Weapon.GetWeaponInfo.ShotType in [wstTorpedo..wstRocket]) or (Weapon.Ammo <> 0)) and
-        (Weapon.Target = nil) and IsEquipmentUsable(Weapon) then
-        if PointDistanceSquared(Position, GetPlayer.Position) <= Sqr(GetWeaponRange(Weapon)) then begin
-          Weapon.Target := GetPlayer;
-          Inc(Assigned);
-          if Assigned = WeaponCount then Exit;
-        end;
+      if ((Weapon.GetWeaponInfo.ShotType in MissileShotTypes) and (Weapon.Ammo = 0)) or (Weapon.Target <> nil) or
+        not IsEquipmentUsable(Weapon) or not (PointDistanceSquared(Position, GetPlayer.Position) <= Sqr(GetWeaponRange(Weapon))) then Continue;
+      Weapon.Target := GetPlayer;
+      Inc(Assigned);
+      if Assigned = WeaponCount then Exit;
     end;
   except
     on E: Exception do begin
@@ -964,30 +948,32 @@ begin
     end;
   end;
 end;
-{ @end $51A888 }
+{ @end $5A5880 }
 
-{ @routine $51B778 TWarrior_AssignFlagshipWeaponTargets }
+{ @routine $5A6624 TWarrior_AssignFlagshipWeaponTargets }
 procedure TWarrior.AssignFlagshipWeaponTargets;
+const
+  MissileShotTypes = [wstTorpedo..wstRocket];
+  AreaOrMissileShotTypes = [wstAreaDamage..wstRocket];
 var Scores: array[1..5] of Single; Assigned, I, J: Integer; Ship: TShip; Weapon: TWeapon; Distance: Single;
   Item: TItem; Asteroid: TAsteroid; Missile: TMissile; SameRacePlanet: Boolean; Stage: Integer; IgnoreRanger: Boolean;
-  // @nested $51B618 ScoreTarget
-  procedure ScoreTarget(Ship: TShip); // @addr $51B618
+  // @nested $5A64E4 ScoreTarget
+  procedure ScoreTarget(Ship: TShip); // @addr $5A64E4
   var J, Range: Integer; Score, Distance: Single; Weapon: TWeapon;
   begin
     Score := 0;
     for J := 1 to WeaponCount do begin
       Weapon := Weapons[J];
-      if IsEquipmentUsable(Weapon) and (not (Weapon.GetWeaponInfo.ShotType in [wstTorpedo..wstRocket]) or (Weapon.Ammo > 0)) then begin
-        Range := GetWeaponRange(Weapon);
-        Distance := PointDistance(Position, Ship.Position);
-        if Range >= Distance then begin
-          if Score = 0 then Score := Ship.CalculateAttackStrength / Ship.CalculateDefenseStrength * RemapClamped(Distance, 0, Range, 1.5, 1);
-          if (Score > Scores[J]) or (Weapon.Target = nil) then begin
-            if Weapon.Target = nil then Inc(Assigned);
-            Scores[J] := Score;
-            Weapon.Target := Ship;
-          end;
-        end;
+      if not IsEquipmentUsable(Weapon) then Continue;
+      if (Weapon.GetWeaponInfo.ShotType in MissileShotTypes) and (Weapon.Ammo <= 0) then Continue;
+      Range := GetWeaponRange(Weapon);
+      Distance := PointDistance(Position, Ship.Position);
+      if not (Range >= Distance) then Continue;
+      if Score = 0 then Score := Ship.CalculateAttackStrength / Ship.CalculateDefenseStrength * RemapClamped(Distance, 0, Range, 1.5, 1);
+      if (Score > Scores[J]) or (Weapon.Target = nil) then begin
+        if Weapon.Target = nil then Inc(Assigned);
+        Scores[J] := Score;
+        Weapon.Target := Ship;
       end;
     end;
   end;
@@ -1017,65 +1003,60 @@ begin
     if (Missile.Target = Self) and (Missile.OwnerShip <> Self) then
       for J := 1 to WeaponCount do begin
         Weapon := Weapons[J];
-        if not (Weapon.GetWeaponInfo^.ShotType in [wstTorpedo..wstRocket]) and (Weapon.Target = nil) and IsEquipmentUsable(Weapon) then
-          if PointDistanceSquared(Position, Missile.Position) <= Sqr(GetWeaponRange(Weapon)) then begin
-            Weapon.Target := Missile;
-            Inc(Assigned);
-            if Assigned = WeaponCount then Exit;
-            Break;
-          end;
+        if (Weapon.GetWeaponInfo^.ShotType in MissileShotTypes) or (Weapon.Target <> nil) or
+          not IsEquipmentUsable(Weapon) or not (PointDistanceSquared(Position, Missile.Position) <= Sqr(GetWeaponRange(Weapon))) then Continue;
+        Weapon.Target := Missile;
+        Inc(Assigned);
+        if Assigned = WeaponCount then Exit;
+        Break;
       end;
   end;
   Stage := 5;
-  if GetPlayer.CurrentStar = CurrentStar then
+  if CurrentStar = GetPlayer.CurrentStar then
     for I := 0 to CurrentStar.Asteroids.Count - 1 do begin
       Asteroid := CurrentStar.Asteroids[I];
       Distance := PointDistanceSquared(Position, Asteroid.Position);
-      if Distance <= AsteroidTargetRangeSquared then
-        for J := 1 to WeaponCount do begin
-          Weapon := Weapons[J];
-          // Native asteroid targeting can overwrite an existing assignment.
-          if not (Weapon.GetWeaponInfo^.ShotType in [wstAreaDamage..wstRocket]) and IsEquipmentUsable(Weapon) then
-            if Sqr(GetWeaponRange(Weapon)) >= Distance then begin
-              Weapon.Target := Asteroid;
-              Inc(Assigned);
-              if Assigned = WeaponCount then Exit;
-              Break;
-            end;
-        end;
+      if not (Distance <= AsteroidTargetRangeSquared) then Continue;
+      for J := 1 to WeaponCount do begin
+        Weapon := Weapons[J];
+        // Native asteroid targeting can overwrite an existing assignment.
+        if (Weapon.GetWeaponInfo^.ShotType in AreaOrMissileShotTypes) or
+          not IsEquipmentUsable(Weapon) or not (Sqr(GetWeaponRange(Weapon)) >= Distance) then Continue;
+        Weapon.Target := Asteroid;
+        Inc(Assigned);
+        if Assigned = WeaponCount then Exit;
+        Break;
+      end;
     end;
   Stage := 6;
-  if Galaxy.GetAIJunkToleranceLevel * 1.5 < CurrentStar.Items.Count then
+  if CurrentStar.Items.Count > Galaxy.GetAIJunkToleranceLevel * 1.5 then
     for I := 0 to CurrentStar.Items.Count - 1 do begin
       Item := CurrentStar.Items[I];
-      if ((Item.ItemType = t_Minerals) or (Item.OwnerId = oiDominator)) and
-        ((Item.ScriptItem = nil) or (TScriptItem(Item.ScriptItem).Name = '')) and not AcceptPickupItem(Item) then
-        if (GetPlayer.CurrentStar <> CurrentStar) or (GetRelationLevelToShip(GetPlayer) <= rlBad) or
-          (PointDistance(GetPlayer.Position, Item.Position) >= 800) or
-          ((NextRandomUnitFloat(RandomState) <= 0.1) and (PointDistance(GetPlayer.Position, Item.Position) >= 200)) then
-          if CanSafelyDetonateItem(Item) then
-            for J := 1 to WeaponCount do begin
-              Weapon := Weapons[J];
-              if not (Weapon.GetWeaponInfo^.ShotType in [wstTorpedo..wstRocket]) and (Weapon.Target = nil) and IsEquipmentUsable(Weapon) then
-                if PointDistanceSquared(Position, Item.Position) <= Sqr(GetWeaponRange(Weapon)) then begin
-                  Weapon.Target := Item;
-                  Inc(Assigned);
-                  if Assigned = WeaponCount then Exit;
-                  Break;
-                end;
-            end;
+      if ((Item.ItemType <> t_Minerals) and (Item.OwnerId <> oiDominator)) or
+        ((Item.ScriptItem <> nil) and (TScriptItem(Item.ScriptItem).Name <> '')) or AcceptPickupItem(Item) then Continue;
+      if not ((GetPlayer.CurrentStar <> CurrentStar) or (GetRelationLevelToShip(GetPlayer) <= rlBad) or
+        (PointDistance(GetPlayer.Position, Item.Position) >= 800) or
+        ((NextRandomUnitFloat(RandomState) <= 0.1) and (PointDistance(GetPlayer.Position, Item.Position) >= 200))) then Continue;
+      if not CanSafelyDetonateItem(Item) then Continue;
+      for J := 1 to WeaponCount do begin
+        Weapon := Weapons[J];
+        if (Weapon.GetWeaponInfo^.ShotType in MissileShotTypes) or (Weapon.Target <> nil) or
+          not IsEquipmentUsable(Weapon) or not (PointDistanceSquared(Position, Item.Position) <= Sqr(GetWeaponRange(Weapon))) then Continue;
+        Weapon.Target := Item;
+        Inc(Assigned);
+        if Assigned = WeaponCount then Exit;
+        Break;
+      end;
     end;
   Stage := 7;
   if (GetPlayer <> nil) and (GetPlayer.CurrentStar = CurrentStar) and GetPlayer.InNormalSpace and IsPlayerChameleonEffectiveAgainstSelf then
     for J := 1 to WeaponCount do begin
       Weapon := Weapons[J];
-      if (not (Weapon.GetWeaponInfo.ShotType in [wstTorpedo..wstRocket]) or (Weapon.Ammo <> 0)) and
-        (Weapon.Target = nil) and IsEquipmentUsable(Weapon) then
-        if PointDistanceSquared(Position, GetPlayer.Position) <= Sqr(GetWeaponRange(Weapon)) then begin
-          Weapon.Target := GetPlayer;
-          Inc(Assigned);
-          if Assigned = WeaponCount then Exit;
-        end;
+      if ((Weapon.GetWeaponInfo.ShotType in MissileShotTypes) and (Weapon.Ammo = 0)) or (Weapon.Target <> nil) or
+        not IsEquipmentUsable(Weapon) or not (PointDistanceSquared(Position, GetPlayer.Position) <= Sqr(GetWeaponRange(Weapon))) then Continue;
+      Weapon.Target := GetPlayer;
+      Inc(Assigned);
+      if Assigned = WeaponCount then Exit;
     end;
   except
     on E: Exception do begin
@@ -1084,9 +1065,9 @@ begin
     end;
   end;
 end;
-{ @end $51B778 }
+{ @end $5A6624 }
 
-{ @routine $51C124 TWarrior_FindNearestFriendlyFlagship }
+{ @routine $5A6F18 TWarrior_FindNearestFriendlyFlagship }
 function TWarrior.FindNearestFriendlyFlagship: TShip;
 var BestDistance, Distance: Double; Ship: TShip; I: Integer;
 begin
@@ -1101,9 +1082,9 @@ begin
       end;
   end;
 end;
-{ @end $51C124 }
+{ @end $5A6F18 }
 
-{ @routine $51C208 TWarrior_SelectEnemyShipInStar }
+{ @routine $5A6FE4 TWarrior_SelectEnemyShipInStar }
 procedure TWarrior.SelectEnemyShipInStar;
 var I: Integer; Ship, BestShip: TShip; Chance, BestChance, Distance, TravelTime, BestDistance: Double; InFlagshipRange: Boolean;
   Range, MinRange, MaxRange: Integer; Score, BestScore, OwnAttack: Double; Weapon: TWeapon;
@@ -1120,26 +1101,24 @@ begin
     MaxRange := -1;
     for I := 1 to WeaponCount do begin
       Weapon := Weapons[I];
-      if IsEquipmentUsable(Weapon) and (not (Weapon.GetWeaponInfo.ShotType in [wstTorpedo..wstRocket]) or (Weapon.Ammo > 0)) then begin
-        Range := GetWeaponRange(Weapon);
-        if (Range < MinRange) or (MinRange < 0) then MinRange := Range;
-        if (Range > MaxRange) or (MaxRange < 0) then MaxRange := Range;
-      end;
+      if not (IsEquipmentUsable(Weapon) and (not (Weapon.GetWeaponInfo.ShotType in [wstTorpedo..wstRocket]) or (Weapon.Ammo > 0))) then Continue;
+      Range := GetWeaponRange(Weapon);
+      if (Range < MinRange) or (MinRange < 0) then MinRange := Range;
+      if (Range > MaxRange) or (MaxRange < 0) then MaxRange := Range;
     end;
     OwnAttack := CalculateAttackStrength;
     for I := 0 to CurrentStar.Ships.Count - 1 do begin
       Ship := CurrentStar.Ships[I];
-      if Ship.InNormalSpace and (RelationToShip(Ship) < RelationBadMin) and (TruceShip <> Ship) then begin
-        Score := Ship.CalculateAttackStrength * Max(1.0, OwnAttack / Ship.CalculateDefenseStrength);
-        Distance := PointDistance(Position, Ship.Position);
-        if MaxRange > Distance then Score := Score * RemapClamped(Distance, MinRange, MaxRange, 1.5, 1)
-        else Score := Score * Distance / (Speed + 1) * RemapClamped((Speed + 1) / (Ship.Speed + 1), 0.5, 2, 0.25, 1);
-        if Ship is TKling then begin
-          if (Ship as TKling).KlingType = ktBertor then Score := Score * 5;
-          if (Ship as TKling).KlingType = ktKlig then Score := Score * 0.25;
-        end;
-        if Score > BestScore then begin BestScore := Score; BestShip := Ship; end;
+      if not (Ship.InNormalSpace and (RelationToShip(Ship) < RelationBadMin) and (TruceShip <> Ship)) then Continue;
+      Score := Ship.CalculateAttackStrength * Max(1.0, OwnAttack / Ship.CalculateDefenseStrength);
+      Distance := PointDistance(Position, Ship.Position);
+      if MaxRange > Distance then Score := Score * RemapClamped(Distance, MinRange, MaxRange, 1.5, 1)
+      else Score := Score * Distance / (Speed + 1) * RemapClamped((Speed + 1) / (Ship.Speed + 1), 0.5, 2, 0.25, 1);
+      if Ship is TKling then begin
+        if (Ship as TKling).KlingType = ktBertor then Score := Score * 5;
+        if (Ship as TKling).KlingType = ktKlig then Score := Score * 0.25;
       end;
+      if Score > BestScore then begin BestScore := Score; BestShip := Ship; end;
     end;
     if BestShip <> nil then EnemyShip := BestShip;
   end else if (EnemyShip = nil) or (EnemyShip.CurrentStar <> CurrentStar) or (EnemyShip.ConsecutiveDockedDays > 3) then
@@ -1148,26 +1127,25 @@ begin
       BestDistance := 1;
       for I := 0 to CurrentStar.Ships.Count - 1 do begin
         Ship := CurrentStar.Ships[I];
-        if Ship.InNormalSpace and (RelationToShip(Ship) < RelationBadMin) and (TruceShip <> Ship) then begin
-          if Ship.CurrentStanding in [ssDominator, ssPirateMilitary] then begin
+        if not (Ship.InNormalSpace and (RelationToShip(Ship) < RelationBadMin) and (TruceShip <> Ship)) then Continue;
+        if Ship.CurrentStanding in [ssDominator, ssPirateMilitary] then begin
+          EnemyShip := Ship;
+          if ChanceToWin(Ship) > 1 then Exit;
+        end else if (LiberationGroup = nil) or ((GetPlayer = Ship) and (Ship.CurrentStanding = ssPirateActive)) then begin
+          Chance := ChanceToWin(Ship);
+          TravelTime := PointDistance(Position, Ship.Position) / (Speed + 1) + 0.1;
+          if Chance / TravelTime > BestChance / BestDistance then begin
             EnemyShip := Ship;
-            if ChanceToWin(Ship) > 1 then Exit;
-          end else if (LiberationGroup = nil) or ((GetPlayer = Ship) and (Ship.CurrentStanding = ssPirateActive)) then begin
-            Chance := ChanceToWin(Ship);
-            TravelTime := PointDistance(Position, Ship.Position) / (Speed + 1) + 0.1;
-            if Chance / TravelTime > BestChance / BestDistance then begin
-              EnemyShip := Ship;
-              BestChance := Chance;
-              BestDistance := TravelTime;
-            end;
+            BestChance := Chance;
+            BestDistance := TravelTime;
           end;
         end;
       end;
     end;
 end;
-{ @end $51C208 }
+{ @end $5A6FE4 }
 
-{ @routine $51C750 TWarrior_EngageEnemyShip }
+{ @routine $5A7470 TWarrior_EngageEnemyShip }
 procedure TWarrior.EngageEnemyShip;
 var Ship: TShip; RetreatToFlagship: Boolean;
 begin
@@ -1182,31 +1160,32 @@ begin
       if ChanceToWin(EnemyShip) < 0.8 then RequestAlliesAttackShip(EnemyShip);
     end else if ChanceToWin(EnemyShip) > 0.5 then begin
       if EnemyShip.CurrentPlanet <> nil then begin
-        if (EnemyShip is TRanger) and (Cardinal((EnemyShip as TRanger).PrisonTermRemaining) > 0) then begin
+        if (EnemyShip is TRanger) and ((EnemyShip as TRanger).PrisonTermRemaining > 0) then begin
           EnemyShip := nil;
           OrderNone(False);
           Exit;
         end;
-        if (EnemyShip is TPirate) and (Cardinal((EnemyShip as TPirate).PrisonTermRemaining) > 0) then begin
+        Ship := EnemyShip;
+        if (Ship is TPirate) and ((Ship as TPirate).PrisonTermRemaining > 0) then begin
           EnemyShip := nil;
           OrderNone(False);
           Exit;
         end;
-        OrderMove(EnemyShip.CurrentPlanet.GetPosition, False);
+        OrderMove(Ship.CurrentPlanet.GetPosition, False);
       end else if EnemyShip.DockedTo <> nil then OrderMove(EnemyShip.DockedTo.Position, False);
     end;
   end;
 end;
-{ @end $51C750 }
+{ @end $5A7470 }
 
-{ @routine $51D714 TWarrior_ManeuverFlagship }
+{ @routine $5A827C TWarrior_ManeuverFlagship }
 procedure TWarrior.ManeuverFlagship;
 var Enemies: TList; SupportWeight: Single; OwnMinRange, OwnMaxRange: Integer; OwnAttack: Single; Allies: TList;
   EnemiesInRange: Integer; AttackWeight, OwnDefense, FearWeight: Single; I: Integer; Ship: TShip;
   Candidate, Destination: TPointF; BestShip: TShip; BestShipScore, BestPositionScore, Score: Single;
   RandomDistance, Angle, AllyAreaScore, EnemyAreaScore: Integer; AllyRepair, EnemyRepair: Single;
-  // @nested $51C9D4 GetWeaponRangeBounds
-  procedure GetWeaponRangeBounds(Ship: TShip; var Minimum, Maximum: Integer); // @addr $51C9D4
+  // @nested $5A7668 GetWeaponRangeBounds
+  procedure GetWeaponRangeBounds(Ship: TShip; var Minimum, Maximum: Integer); // @addr $5A7668
   var I, Range: Integer; Weapon: TWeapon;
   begin
     Minimum := -1;
@@ -1214,15 +1193,15 @@ var Enemies: TList; SupportWeight: Single; OwnMinRange, OwnMaxRange: Integer; Ow
     for I := 1 to Ship.WeaponCount do begin
       Weapon := Ship.Weapons[I];
       // Native uses the flagship's usability check for other ships' weapons.
-      if IsEquipmentUsable(Weapon) and (not (Weapon.GetWeaponInfo.ShotType in [wstTorpedo..wstRocket]) or (Weapon.Ammo > 0)) then begin
-        Range := Ship.GetWeaponRange(Weapon);
-        if (Minimum > Range) or (Minimum < 0) then Minimum := Range;
-        if (Maximum < Range) or (Maximum < 0) then Maximum := Range;
-      end;
+      if not IsEquipmentUsable(Weapon) then Continue;
+      if (Weapon.GetWeaponInfo.ShotType in [wstTorpedo..wstRocket]) and (Weapon.Ammo <= 0) then Continue;
+      Range := Ship.GetWeaponRange(Weapon);
+      if (Minimum > Range) or (Minimum < 0) then Minimum := Range;
+      if (Maximum < Range) or (Maximum < 0) then Maximum := Range;
     end;
   end;
-  // @nested $51CAA0 AreaWeaponScore
-  function AreaWeaponScore(Ship: TShip): Integer; // @addr $51CAA0
+  // @nested $5A7700 AreaWeaponScore
+  function AreaWeaponScore(Ship: TShip): Integer; // @addr $5A7700
   var I: Integer; Weapon: TWeapon;
   begin
     Result := 0;
@@ -1241,14 +1220,17 @@ var Enemies: TList; SupportWeight: Single; OwnMinRange, OwnMaxRange: Integer; Ow
         ktKlig: Inc(Result, 3);
       end;
   end;
-  // @nested $51CB78 ProjectOutsideStar
-  function ProjectOutsideStar(Point: TPointF): TPointF; // @addr $51CB78
-  var SquaredDistance: Single; Attempts: Integer; Radius: Single;
+  // @nested $5A77CC ProjectOutsideStar
+  function ProjectOutsideStar(Point: TPointF): TPointF; // @addr $5A77CC
+  var
+    RadialValue: Single; // Squared distance, then the outward projection scale.
+    Attempts: Integer;
+    Radius: Single;
   begin
-    SquaredDistance := Sqr(Point.X) + Sqr(Point.Y);
+    RadialValue := Sqr(Point.X) + Sqr(Point.Y);
     Radius := CurrentStar.SafeRadius;
     Attempts := 0;
-    if SquaredDistance < 0.1 then begin
+    if RadialValue < 0.1 then begin
       while True do begin
         Result.X := NextRandomIntRange(Round(-1.3 * Radius), Round(1.3 * Radius), RandomState);
         Result.Y := NextRandomIntRange(Round(-1.3 * Radius), Round(1.3 * Radius), RandomState);
@@ -1256,14 +1238,14 @@ var Enemies: TList; SupportWeight: Single; OwnMinRange, OwnMaxRange: Integer; Ow
         Inc(Attempts);
         if Attempts > 100 then Exit;
       end;
-    end else if Sqr(Radius) >= SquaredDistance then begin
-      SquaredDistance := (Radius + 1) / Sqrt(SquaredDistance);
-      Result.X := Point.X * SquaredDistance;
-      Result.Y := Point.Y * SquaredDistance;
+    end else if Sqr(Radius) >= RadialValue then begin
+      RadialValue := (Radius + 1) / Sqrt(RadialValue);
+      Result.X := Point.X * RadialValue;
+      Result.Y := Point.Y * RadialValue;
     end else Result := Point;
   end;
-  // @nested $51CCFC EvaluatePosition
-  function EvaluatePosition(Point: TPointF): Single; // @addr $51CCFC
+  // @nested $5A7938 EvaluatePosition
+  function EvaluatePosition(Point: TPointF): Single; // @addr $5A7938
   var Ship: TShip; AttackPotential, SupportPotential, IncomingStrength, NodeValue, Benefit, Risk, Threat, BestEnemyPotential: Single;
     Distance, HookRange: Single; Minimum, Maximum: Integer; ShipDistance, Attack: Single; I: Integer; Item: TItem;
   begin
@@ -1304,12 +1286,13 @@ var Enemies: TList; SupportWeight: Single; OwnMinRange, OwnMaxRange: Integer; Ow
     if GetCargoHook <> nil then
       for I := 0 to CurrentStar.Items.Count - 1 do begin
         Item := CurrentStar.Items[I];
-        if (Item is TProtoplasm) and CanCargoHookHandleItem(Item, Self) and not IsItemInPickupRange(Item) then begin
-          Distance := Sqrt(Sqr(Point.X - Item.Position.X) + Sqr(Point.Y - Item.Position.Y));
-          HookRange := GetCargoHookRange;
-          if Distance <= HookRange then NodeValue := NodeValue + Min((Item as TProtoplasm).StackCount, CargoFreeSpace)
-          else NodeValue := NodeValue + Min((Item as TProtoplasm).StackCount, CargoFreeSpace) * RemapClamped(Distance, GetCargoHookRange, 2 * GetCargoHookRange, 0.5, 0);
-        end;
+        if not (Item is TProtoplasm) then Continue;
+        if not CanCargoHookHandleItem(Item, Self) then Continue;
+        if IsItemInPickupRange(Item) then Continue;
+        Distance := Sqrt(Sqr(Point.X - Item.Position.X) + Sqr(Point.Y - Item.Position.Y));
+        HookRange := GetCargoHookRange;
+        if Distance <= HookRange then NodeValue := NodeValue + Min((Item as TProtoplasm).StackCount, CargoFreeSpace)
+        else NodeValue := NodeValue + Min((Item as TProtoplasm).StackCount, CargoFreeSpace) * RemapClamped(Distance, GetCargoHookRange, 2 * GetCargoHookRange, 0.5, 0);
       end;
     if PilotRace <> oiFeyan then NodeValue := NodeValue * 2;
     if EnemiesInRange > 0 then begin
@@ -1324,8 +1307,8 @@ var Enemies: TList; SupportWeight: Single; OwnMinRange, OwnMaxRange: Integer; Ow
     if Distance > CurrentStar.MapDiameter * 1.2 then Benefit := CurrentStar.MapDiameter * Benefit * 1.2 / Distance;
     Result := Benefit - Risk;
   end;
-  // @nested $51D5A0 BoostWithNodes
-  procedure BoostWithNodes; // @addr $51D5A0
+  // @nested $5A8124 BoostWithNodes
+  procedure BoostWithNodes; // @addr $5A8124
   var Factor: Single;
   begin
     if (PilotRace in [oiMaloc, oiHuman, oiGaal]) and (EnemiesInRange > 0) then begin
@@ -1411,9 +1394,9 @@ begin
     if GetRelationLevelToShip(BestShip) > rlHostile then OrderFollowShip(BestShip, fmFollowNear, False) else OrderFollowShip(BestShip, fmMinWeaponRange, False)
   else OrderMove(Destination, False);
 end;
-{ @end $51D714 }
+{ @end $5A827C }
 
-{ @routine $51DD8C TWarrior_ReassignFlagshipHomePlanet }
+{ @routine $5A8868 TWarrior_ReassignFlagshipHomePlanet }
 procedure TWarrior.ReassignFlagshipHomePlanet;
 var Score, BestScore: Single; Planet, BestPlanet: TPlanet; Star, NearbyStar, BestStar: TStar;
   I, J, K: Integer; FlagshipFactor, GarrisonStrength, NearbyThreat: Single; Ship: TShip; Warrior: TWarrior;
@@ -1434,22 +1417,21 @@ begin
       end;
       for J := 0 to Star.Planets.Count - 1 do begin
         Planet := Star.Planets[J];
-        if Planet.OwnerId in PlanetOwnerMasks.Coalition then begin
-          if Planet.RaceId = PilotRace then Inc(RacePlanetCount);
-          for K := 0 to Planet.Warriors.Count - 1 do begin
-            Warrior := Planet.Warriors[K];
-            if Warrior = Self then Continue;
-            GarrisonStrength := GarrisonStrength + RemapClamped(Warrior.Strength, 0.1 * Strength, 10 * Strength, 0.3, 3);
-            if Warrior.WarriorType = wtFlagship then
-              if Warrior.PilotRace = PilotRace then FlagshipFactor := FlagshipFactor * 0.05
-              else FlagshipFactor := FlagshipFactor * 0.2;
-          end;
+        if not (Planet.OwnerId in PlanetOwnerMasks.Coalition) then Continue;
+        if Planet.RaceId = PilotRace then Inc(RacePlanetCount);
+        for K := 0 to Planet.Warriors.Count - 1 do begin
+          Warrior := Planet.Warriors[K];
+          if Warrior = Self then Continue;
+          GarrisonStrength := GarrisonStrength + RemapClamped(Warrior.Strength, 0.1 * Strength, 10 * Strength, 0.3, 3);
+          if Warrior.WarriorType = wtFlagship then
+            if Warrior.PilotRace = PilotRace then FlagshipFactor := FlagshipFactor * 0.05
+            else FlagshipFactor := FlagshipFactor * 0.2;
         end;
       end;
       if (GarrisonStrength <> 0) and (RacePlanetCount <> 0) then begin
         NearbyThreat := 0;
         for J := 1 to Galaxy.Stars.Count div 5 do begin
-          NearbyStar := TObject(Star.StarDistances[J].Star) as TStar;
+          NearbyStar := Star.StarDistances[J].Star as TStar;
           if NearbyStar.ConstellationGraphIndex <> 20 then
             if NearbyStar.Status.CustomFaction <> '' then NearbyThreat := NearbyThreat + 5 / (J + 5)
             else case NearbyStar.ControlFaction of
@@ -1469,38 +1451,38 @@ begin
     BestPlanet := nil;
     for I := 0 to BestStar.Planets.Count - 1 do begin
       Planet := BestStar.Planets[I];
-      if (Planet.OwnerId in PlanetOwnerMasks.Coalition) and (Planet.RaceId = PilotRace) then begin
-        WarriorCount := 0;
-        FlagshipFactor := 1;
-        for K := 0 to Planet.Warriors.Count - 1 do begin
-          Warrior := Planet.Warriors[K];
-          if Warrior <> Self then begin
-            Inc(WarriorCount);
-            if Warrior.WarriorType = wtFlagship then FlagshipFactor := FlagshipFactor * 0.1;
-          end;
+      if not (Planet.OwnerId in PlanetOwnerMasks.Coalition) or (Planet.RaceId <> PilotRace) then Continue;
+      WarriorCount := 0;
+      FlagshipFactor := 1;
+      for K := 0 to Planet.Warriors.Count - 1 do begin
+        Warrior := Planet.Warriors[K];
+        if Warrior <> Self then begin
+          Inc(WarriorCount);
+          if Warrior.WarriorType = wtFlagship then FlagshipFactor := FlagshipFactor * 0.1;
         end;
-        Score := WarriorCount * FlagshipFactor;
-        if HomePlanet = Planet then Score := Score * 1.3;
-        if (Score > BestScore) or (BestPlanet = nil) then begin BestScore := Score; BestPlanet := Planet; end;
       end;
+      Score := WarriorCount * FlagshipFactor;
+      if HomePlanet = Planet then Score := Score * 1.3;
+      if (Score > BestScore) or (BestPlanet = nil) then begin BestScore := Score; BestPlanet := Planet; end;
     end;
-    if (BestPlanet <> nil) and (BestPlanet <> HomePlanet) then begin
-      I := HomePlanet.Warriors.IndexOf(Self);
-      if I >= 0 then HomePlanet.Warriors.Delete(I);
-      I := BestPlanet.Warriors.IndexOf(Self);
-      if I < 0 then BestPlanet.Warriors.Add(Self);
-      HomePlanet := BestPlanet;
-    end;
+    if BestPlanet <> nil then
+      if HomePlanet <> BestPlanet then begin
+        I := HomePlanet.Warriors.IndexOf(Self);
+        if I >= 0 then HomePlanet.Warriors.Delete(I);
+        I := BestPlanet.Warriors.IndexOf(Self);
+        if I < 0 then BestPlanet.Warriors.Add(Self);
+        HomePlanet := BestPlanet;
+      end;
   end;
 end;
-{ @end $51DD8C }
+{ @end $5A8868 }
 
-{ @routine $51E2F8 TWarrior_ProcessCombatDialogue }
+{ @routine $5A8DCC TWarrior_ProcessCombatDialogue }
 procedure TWarrior.ProcessCombatDialogue;
 begin end;
-{ @end $51E2F8 }
+{ @end $5A8DCC }
 
-{ @routine $51E304 TWarrior_ReactToExtortionDemand }
+{ @routine $5A8DD0 TWarrior_ReactToExtortionDemand }
 procedure TWarrior.ReactToExtortionDemand(Ranger: Pointer);
 begin
   if (GetPlayer = Ranger) or (NextRandomUnitFloat(RandomState) < 0.05) then begin
@@ -1508,9 +1490,9 @@ begin
     (TObject(Ranger) as TRanger).AddPirateCareerActivity(4);
   end;
 end;
-{ @end $51E304 }
+{ @end $5A8DD0 }
 
-{ @routine $51E370 TWarrior_BuildMoneyExtortionResponse }
+{ @routine $5A8E2C TWarrior_BuildMoneyExtortionResponse }
 function TWarrior.BuildMoneyExtortionResponse(OtherShip: TShip; var Response: WideString; DemandedAmount: Integer): Boolean;
 begin
   Result := False;
@@ -1518,9 +1500,9 @@ begin
   if (GetPlayer <> OtherShip) and ((EnemyShip = nil) or (EnemyShip.CurrentStar <> CurrentStar)) then EnemyShip := OtherShip;
   Response := LookupVisibleTalkText('Talk.Money.' + GetTypeNameKey + 'No', OtherShip);
 end;
-{ @end $51E370 }
+{ @end $5A8E2C }
 
-{ @routine $51E48C TWarrior_BuildCargoExtortionResponse }
+{ @routine $5A8F2C TWarrior_BuildCargoExtortionResponse }
 function TWarrior.BuildCargoExtortionResponse(OtherShip: TShip; var Response: WideString): Boolean;
 begin
   Result := False;
@@ -1528,13 +1510,13 @@ begin
   if (GetPlayer <> OtherShip) and ((EnemyShip = nil) or (EnemyShip.CurrentStar <> CurrentStar)) then EnemyShip := OtherShip;
   Response := LookupVisibleTalkText('Talk.Goods.' + GetTypeNameKey + 'No', OtherShip);
 end;
-{ @end $51E48C }
+{ @end $5A8F2C }
 
-{ @routine $51E7CC TWarrior_BuildTrucePaymentResponse }
+{ @routine $5A9218 TWarrior_BuildTrucePaymentResponse }
 function TWarrior.BuildTrucePaymentResponse(OtherShip: TShip; var Response: WideString; OfferedAmount: Integer): Boolean;
 var NextDemandTurn: Integer;
-  // @nested $51E5A4 AcceptPayment
-  procedure AcceptPayment; // @addr $51E5A4 @note "Nested helper with caller-popped static link."
+  // @nested $5A9028 AcceptPayment
+  procedure AcceptPayment; // @addr $5A9028 @note "Nested helper with caller-popped static link."
   var I, J: Integer; Ship: TShip; Planet: TPlanet; Weapon: TWeapon;
   begin
     OtherShip.SetMoney(OtherShip.Money - OfferedAmount);
@@ -1567,30 +1549,46 @@ var NextDemandTurn: Integer;
 begin
   Result := False;
   NextDemandTurn := LastPlayerExtortionTurn + 30;
-  if RefusesFactionNegotiation(OtherShip) then begin Response := LookupVisibleTalkText('Talk.Refuse.Warrior', OtherShip); Result := False; end
-  else if OtherShip.TruceShip = Self then Response := LookupVisibleTalkText('Talk.Truce.WeAlreadyHavePact', OtherShip)
-  else if (GetPlayer = OtherShip) and PlayerExtortionPactActive then Response := LookupVisibleTalkText('Talk.Truce.WeAlreadyHavePact', OtherShip)
-  else if (GetPlayer = OtherShip) and (Galaxy.CurrentTurn < NextDemandTurn) then Response := LookupVisibleTalkText('Talk.Truce.WeAlreadyHavePact', OtherShip)
-  else if (OtherShip is TNormalShip) and (OtherShip.OwnerId = oiPirate) and (OtherShip.CurrentStar.ControlFaction = sfCoalition) and
+  if RefusesFactionNegotiation(OtherShip) then begin
+    Response := LookupVisibleTalkText('Talk.Refuse.Warrior', OtherShip); Result := False;
+    Exit;
+  end;
+  if OtherShip.TruceShip = Self then begin
+    Response := LookupVisibleTalkText('Talk.Truce.WeAlreadyHavePact', OtherShip);
+    Exit;
+  end;
+  if (GetPlayer = OtherShip) and PlayerExtortionPactActive then begin
+    Response := LookupVisibleTalkText('Talk.Truce.WeAlreadyHavePact', OtherShip);
+    Exit;
+  end;
+  if (GetPlayer = OtherShip) and (Galaxy.CurrentTurn < NextDemandTurn) then begin
+    Response := LookupVisibleTalkText('Talk.Truce.WeAlreadyHavePact', OtherShip);
+    Exit;
+  end;
+  if (OtherShip is TNormalShip) and (OtherShip.OwnerId = oiPirate) and (OtherShip.CurrentStar.ControlFaction = sfCoalition) and
     (TNormalShip(OtherShip).CurrentSystemKills.Normal > 0) then begin
     if 2 * Wealth * (1 / 15) < OfferedAmount then begin
       Response := LookupVisibleTalkText('Talk.Truce.' + GetTypeNameKey + 'Ok', OtherShip);
       AcceptPayment;
       Result := True;
     end else Response := LookupVisibleTalkText('Talk.Truce.' + GetTypeNameKey + 'No', OtherShip);
-  end else if Wealth * (1 / 15) < OfferedAmount then begin
+    Exit;
+  end;
+  if Wealth * (1 / 15) < OfferedAmount then begin
     Response := LookupVisibleTalkText('Talk.Truce.' + GetTypeNameKey + 'Ok', OtherShip);
     AcceptPayment;
     Result := True;
-  end else Response := LookupVisibleTalkText('Talk.Truce.' + GetTypeNameKey + 'No', OtherShip);
+    Exit;
+  end;
+  Response := LookupVisibleTalkText('Talk.Truce.' + GetTypeNameKey + 'No', OtherShip)
 end;
-{ @end $51E7CC }
+{ @end $5A9218 }
 
-{ @routine $51EC5C TWarrior_BuildAttackRequestResponse }
+{ @routine $5A9690 TWarrior_BuildAttackRequestResponse }
 function TWarrior.BuildAttackRequestResponse(Requester: TShip; var Response: WideString; Target: TShip): Boolean;
 var I, HostileCount: Integer; Ship: TShip;
-  // @nested $51EB84 AcceptRequest
-  procedure AcceptRequest; // @addr $51EB84 @note "Nested helper with caller-popped static link."
+  // @nested $5A95B8 AcceptRequest
+  procedure AcceptRequest; // @addr $5A95B8 @note "Nested helper with caller-popped static link."
   begin
     Response := LookupVisibleTalkText('Talk.Attack.' + GetTypeNameKey + 'Ok', Requester);
     SetJointAttackTarget(Requester, Target);
@@ -1607,10 +1605,9 @@ begin
   if WarriorType = wtFlagship then
     for I := 0 to CurrentStar.Ships.Count - 1 do begin
       Ship := CurrentStar.Ships[I];
-      if (Ship <> Self) and Ship.InNormalSpace then begin
-        if GetRelationLevelToShip(Ship) <= rlHostile then Inc(HostileCount);
-        if HostileCount > 1 then Break;
-      end;
+      if (Ship = Self) or not Ship.InNormalSpace then Continue;
+      if GetRelationLevelToShip(Ship) <= rlHostile then Inc(HostileCount);
+      if HostileCount > 1 then Break;
     end;
   if (OrderTarget = Target) and (GetRelationLevelToShip(Target) = rlHostile) and (HostileCount <= 1) then AcceptRequest
   else if (LiberationGroup <> nil) and (Requester.LiberationGroup <> LiberationGroup) then Response := LookupVisibleTalkText('Talk.Attack.' + GetTypeNameKey + 'HaveBusiness', Requester)
@@ -1626,19 +1623,19 @@ begin
   else if HostileCount > 0 then Response := LookupVisibleTalkText('Talk.Attack.' + GetTypeNameKey + 'HaveBusiness', Requester)
   else AcceptRequest;
 end;
-{ @end $51EC5C }
+{ @end $5A9690 }
 
-{ @routine $51F300 TWarrior_AcceptPartnershipOffer }
+{ @routine $5A9D00 TWarrior_AcceptPartnershipOffer }
 function TWarrior.AcceptPartnershipOffer(OtherShip: TShip; var Response: WideString; PaymentAmount: Integer): Boolean;
 begin Result := False; Response := 'Not supporting'; end;
-{ @end $51F300 }
+{ @end $5A9D00 }
 
-{ @routine $51F350 TWarrior_BuildPartnershipOfferResponse }
+{ @routine $5A9D44 TWarrior_BuildPartnershipOfferResponse }
 function TWarrior.BuildPartnershipOfferResponse(OtherShip: TShip; var Response: WideString; PaymentAmount: Integer): Boolean;
 begin Result := False; Response := 'Not supporting'; end;
-{ @end $51F350 }
+{ @end $5A9D44 }
 
-{ @routine $51F3A0 TWarrior_MoveToRandomPlanetOrbit }
+{ @routine $5A9D88 TWarrior_MoveToRandomPlanetOrbit }
 procedure TWarrior.MoveToRandomPlanetOrbit;
 var Planet: TPlanet; Polar: TPolarPoint;
 begin
@@ -1647,16 +1644,16 @@ begin
   Polar.AngleDegrees := NextRandomIntRange(0, 359, RandomState);
   OrderMove(PolarToPoint(Polar), False);
 end;
-{ @end $51F3A0 }
+{ @end $5A9D88 }
 
-{ @routine $51F408 TWarrior_IsHomePatrolTurn }
+{ @routine $5A9DE4 TWarrior_IsHomePatrolTurn }
 function TWarrior.IsHomePatrolTurn: Boolean;
 begin
-  Result := (GetHomeStar = CurrentStar) and ((Id + Galaxy.CurrentTurn) mod 100 < 25);
+  Result := (GetHomeStar = CurrentStar) and ((Integer(Id) + Galaxy.CurrentTurn) mod 100 < 25);
 end;
-{ @end $51F408 }
+{ @end $5A9DE4 }
 
-{ @routine $51F450 TWarrior_ConsumeNodes }
+{ @routine $5A9E18 TWarrior_ConsumeNodes }
 procedure TWarrior.ConsumeNodes(Amount: Integer);
 var I, RemainingWeight: Integer; Item: TItem;
 begin
@@ -1678,9 +1675,9 @@ begin
     if Amount = 0 then Break;
   end;
 end;
-{ @end $51F450 }
+{ @end $5A9E18 }
 
-{ @routine $51F524 TWarrior_RefusesFactionNegotiation }
+{ @routine $5A9EA8 TWarrior_RefusesFactionNegotiation }
 function TWarrior.RefusesFactionNegotiation(OtherShip: TShip): Boolean;
 begin
   Result := False;
@@ -1688,9 +1685,9 @@ begin
   if ((CurrentStar.ControlFaction <> sfCoalition) or (CurrentStar.Status.CustomFaction <> '')) and
     (OtherShip.CurrentStanding in [ssPirateActive, ssPirateMilitary]) then begin Result := True; Exit; end;
 end;
-{ @end $51F524 }
+{ @end $5A9EA8 }
 
-{ @routine $51F580 TWarrior_AdjustItemEvaluation }
+{ @routine $5A9EEC TWarrior_AdjustItemEvaluation }
 function TWarrior.AdjustItemEvaluation(Item: TItem; PriceMode: Byte; Effectiveness: Single): Single;
 const
   NoFlags = [];
@@ -1732,12 +1729,12 @@ begin
     Result := Effectiveness * EffectivenessScale * (1 + (2 - TEquipment(Item).GetFragilityFactor(NoFlags)) * FragilityScale) -
       Item.Weight * WeightPenalty - Price * MoneyPenalty
   else
-    Result := (Item.Weight * HullValueScale / Max(0.01, TEquipment(Item).GetFragilityFactor(NoFlags)) + Effectiveness) * EffectivenessScale +
+    Result := (HullValueScale * Item.Weight / Max(0.01, TEquipment(Item).GetFragilityFactor(NoFlags)) + Effectiveness) * EffectivenessScale +
       Item.Weight * WeightPenalty - Price * 0.25 * MoneyPenalty;
 end;
-{ @end $51F580 }
+{ @end $5A9EEC }
 
-{ @routine $51FB14 TWarrior_EvaluateStatBonus }
+{ @routine $5AA410 TWarrior_EvaluateStatBonus }
 function TWarrior.EvaluateStatBonus(BonusKind: TEquipmentBonusKind; Value: Integer): Single;
 const
   ScannerFlags = [dkScanBonus..dkDroidBlock];
@@ -1791,22 +1788,22 @@ begin
     bonSkill1..bonSkill6:
       begin
         if Value > 0 then
-          Result := Min(6 - GetEffectiveSkillLevel(EquipmentBonusSkills[Ord(BonusKind) - Ord(bonSkill1)]), Value) * WarriorSkillBonusWeights[BonusKind];
-        if (Value > 0) and (Value + GetEffectiveSkillLevel(EquipmentBonusSkills[Ord(BonusKind) - Ord(bonSkill1)]) > 6) then
-          Result := Result + (WarriorSkillBonusWeights[BonusKind] * 0.05) * (Value + GetEffectiveSkillLevel(EquipmentBonusSkills[Ord(BonusKind) - Ord(bonSkill1)]) - 6);
+          Result := Min(6 - GetEffectiveSkillLevel(EquipmentBonusSkills[BonusKind]), Value) * WarriorSkillBonusWeights[BonusKind];
+        if (Value > 0) and (Value + GetEffectiveSkillLevel(EquipmentBonusSkills[BonusKind]) > 6) then
+          Result := Result + (WarriorSkillBonusWeights[BonusKind] * 0.05) * (Value + GetEffectiveSkillLevel(EquipmentBonusSkills[BonusKind]) - 6);
         if Value < 0 then
-          Result := Min(GetEffectiveSkillLevel(EquipmentBonusSkills[Ord(BonusKind) - Ord(bonSkill1)]), -Value) * -WarriorSkillBonusWeights[BonusKind];
-        if (Value < 0) and (Value + GetEffectiveSkillLevel(EquipmentBonusSkills[Ord(BonusKind) - Ord(bonSkill1)]) < 0) then
-          Result := Result + (WarriorSkillBonusWeights[BonusKind] * 0.03) * (Value + GetEffectiveSkillLevel(EquipmentBonusSkills[Ord(BonusKind) - Ord(bonSkill1)]));
+          Result := Min(GetEffectiveSkillLevel(EquipmentBonusSkills[BonusKind]), -Value) * -WarriorSkillBonusWeights[BonusKind];
+        if (Value < 0) and (Value + GetEffectiveSkillLevel(EquipmentBonusSkills[BonusKind]) < 0) then
+          Result := Result + (WarriorSkillBonusWeights[BonusKind] * 0.03) * (Value + GetEffectiveSkillLevel(EquipmentBonusSkills[BonusKind]));
       end;
   else Result := 0;
   end;
-  if BonusKind in [bonSkill1..bonSkill6] then Result := Result * 0.01 * (100 + SeededRandomIntRange(-30, 30, Seed + 131 * Ord(BonusKind))) * RaceSkillEvaluationFactors[PilotRace, EquipmentBonusSkills[Ord(BonusKind) - Ord(bonSkill1)]]
+  if BonusKind in [bonSkill1..bonSkill6] then Result := Result * 0.01 * (100 + SeededRandomIntRange(-30, 30, Seed + 131 * Ord(BonusKind))) * RaceSkillEvaluationFactors[PilotRace, EquipmentBonusSkills[BonusKind]]
   else Result := Result * 0.01 * (100 + SeededRandomIntRange(-10, 10, Seed + 131 * Ord(BonusKind)));
 end;
-{ @end $51FB14 }
+{ @end $5AA410 }
 
-{ @routine $520788 TWarrior_EvaluateWeaponDamage }
+{ @routine $5AAEE4 TWarrior_EvaluateWeaponDamage }
 function TWarrior.EvaluateWeaponDamage(Weapon: TWeapon; IncludeAdditiveBonuses: Boolean; BaseDamage: Single): Single;
 const
   ScannerFlags = [dkScanBonus..dkDroidBlock];
@@ -1856,9 +1853,9 @@ begin
   Result := Result * Weapon.GetAttackCount;
   Result := Result * 0.01 * (100 + SeededRandomIntRange(-20, 20, Seed + Weapon.GetWeaponInfo.TypeHash));
 end;
-{ @end $520788 }
+{ @end $5AAEE4 }
 
-{ @routine $520CE8 TWarrior_AcceptPickupItem }
+{ @routine $5AB42C TWarrior_AcceptPickupItem }
 function TWarrior.AcceptPickupItem(Item: TItem): Boolean;
 begin
   Result := False;
@@ -1868,18 +1865,18 @@ begin
       if (Item as TUselessItem).IsDominatorRemains then begin Result := True; Exit; end;
   end;
 end;
-{ @end $520CE8 }
+{ @end $5AB42C }
 
-{ @routine $520D64 TWarrior_AcceptPickupDistance }
+{ @routine $5AB48C TWarrior_AcceptPickupDistance }
 function TWarrior.AcceptPickupDistance(Item: TItem; Distance: Double): Boolean;
 begin
   if Speed < 1 then begin Result := False; Exit; end;
   Result := (30 * Speed >= Distance) or
     (Item.Cost >= RemapClamped(Distance / Speed, 1, 10, 0.01, 0.05) * Wealth);
 end;
-{ @end $520D64 }
+{ @end $5AB48C }
 
-{ @routine $520E00 TWarrior_RefreshCurrentStanding }
+{ @routine $5AB518 TWarrior_RefreshCurrentStanding }
 procedure TWarrior.RefreshCurrentStanding;
 var StandingMode: TScriptStandingOverrideMode;
 begin
@@ -1887,6 +1884,6 @@ begin
   if StandingMode = ssmCustomFaction then CurrentStanding := ssCustom
   else if StandingMode <> ssmFixed then CurrentStanding := ssCoalitionMilitary;
 end;
-{ @end $520E00 }
+{ @end $5AB518 }
 
 end.

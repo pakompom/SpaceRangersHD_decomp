@@ -1,29 +1,31 @@
 unit GI_AlphaImage;
-// Unit bracket (inferred): .text 0x00475A3C..0x00476914; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
 uses Classes, EC_BlockPar, EC_CacheAlphaBitmap, GI_Main, GI_MessageLoop, Types;
 
 type
-  TAlphaImageGI = class(TObjectGI) // @size 0x128
+  TAlphaImageGI = class(TObjectGI) // @size 0x128 @methodorder source
   public
     ImageCache: TCAlphaBitmapControlEC; // @offset 0x120
     ImageKindX: TImageKindXGI; // @offset 0x124
     ImageKindY: TImageKindYGI; // @offset 0x125
 
-    constructor Create(Owner: TObjectGI); // @addr 0x475B60
-    destructor Destroy; override; // @addr 0x475BE8
-    procedure Clear; override; // @addr 0x475C34
-    procedure SetImagePath(const ImagePath: WideString); // @addr 0x475C5C
-    function GetContentSize: TPoint; // @addr 0x475CA0
-    procedure SetImageKindX(Value: TImageKindXGI); // @addr 0x475D04
-    procedure SetImageKindY(Value: TImageKindYGI); // @addr 0x475D3C
-    function HitTestPixel(Point: TPoint): Boolean; // @addr 0x475D74 @note "Black pixels do not count as hits."
-    procedure LoadFromConfigPath(const Path: WideString); override; // @addr 0x476048
-    procedure LoadFromBlock(Block: TBlockParEC); override; // @addr 0x476318
-    procedure Draw(ClipRect: TRect); override; // @addr 0x4765C4
-    procedure QueueImageLoad(PendingLoads: TList); override; // @addr 0x4768F4
+    constructor Create(Owner: TObjectGI); // @addr 0x00494F14
+    destructor Destroy; override; // @addr 0x00494F84
+    procedure Clear; override; // @addr 0x00494FBC
+    procedure SetImagePath(const ImagePath: WideString); // @addr 0x00494FD0
+    property Image: WideString write SetImagePath;
+    function GetContentSize: TPoint; // @addr 0x00495004
+    procedure SetImageKindX(Value: TImageKindXGI); // @addr 0x0049505C
+    property KindX: TImageKindXGI read ImageKindX write SetImageKindX;
+    procedure SetImageKindY(Value: TImageKindYGI); // @addr 0x0049507C
+    property KindY: TImageKindYGI read ImageKindY write SetImageKindY;
+    function HitTestPixel(Point: TPoint): Boolean; // @addr 0x0049509C @note "Black pixels do not count as hits."
+    procedure LoadFromConfigPath(const Path: WideString); override; // @addr 0x004952E8
+    procedure LoadFromBlock(Block: TBlockParEC); override; // @addr 0x004955B4
+    procedure Draw(ClipRect: TRect); override; // @addr 0x0049585C
+    procedure QueueImageLoad(PendingLoads: TList); override; // @addr 0x00495AF0
   end;
 
 implementation
@@ -31,7 +33,7 @@ implementation
 uses EC_Str, EC_Mem, GlobalsV, GR_Main, GR_DX, SysUtils;
 
 
-{ @routine $475B60 TAlphaImageGI_Create }
+{ @routine $494F14 TAlphaImageGI_Create }
 constructor TAlphaImageGI.Create(Owner: TObjectGI);
 begin
   inherited Create(Owner);
@@ -40,38 +42,36 @@ begin
   ImageKindX := ikxCenter;
   ImageKindY := ikyCenter;
 end;
-{ @end $475B60 }
+{ @end $494F14 }
 
-{ @routine $475BE8 TAlphaImageGI_Destroy }
+{ @routine $494F84 TAlphaImageGI_Destroy }
 destructor TAlphaImageGI.Destroy;
 begin
   ImageCache.Free;
   ImageCache := nil;
   inherited Destroy;
 end;
-{ @end $475BE8 }
+{ @end $494F84 }
 
-{ @routine $475C34 TAlphaImageGI_Clear }
+{ @routine $494FBC TAlphaImageGI_Clear }
 procedure TAlphaImageGI.Clear;
 begin
   ImageKindX := ikxCenter;
   ImageKindY := ikyCenter;
   inherited Clear;
 end;
-{ @end $475C34 }
+{ @end $494FBC }
 
-{ @routine $475C5C TAlphaImageGI_SetImagePath }
+{ @routine $494FD0 TAlphaImageGI_SetImagePath }
 procedure TAlphaImageGI.SetImagePath(const ImagePath: WideString);
 begin
-  if ImageCache.CacheKey <> ImagePath then
-  begin
-    Invalidate;
-    ImageCache.SetCacheKey(ImagePath);
-  end;
+  if ImageCache.CacheKey = ImagePath then Exit;
+  Invalidate;
+  ImageCache.SetCacheKey(ImagePath);
 end;
-{ @end $475C5C }
+{ @end $494FD0 }
 
-{ @routine $475CA0 TAlphaImageGI_GetContentSize }
+{ @routine $495004 TAlphaImageGI_GetContentSize }
 function TAlphaImageGI.GetContentSize: TPoint;
 var Bitmap: TCAlphaBitmapEC;
 begin
@@ -82,31 +82,27 @@ begin
     ImageCache.Release;
   end;
 end;
-{ @end $475CA0 }
+{ @end $495004 }
 
-{ @routine $475D04 TAlphaImageGI_SetImageKindX }
+{ @routine $49505C TAlphaImageGI_SetImageKindX }
 procedure TAlphaImageGI.SetImageKindX(Value: TImageKindXGI);
 begin
-  if ImageKindX <> Value then
-  begin
-    ImageKindX := Value;
-    Invalidate;
-  end;
+  if ImageKindX = Value then Exit;
+  ImageKindX := Value;
+  Invalidate;
 end;
-{ @end $475D04 }
+{ @end $49505C }
 
-{ @routine $475D3C TAlphaImageGI_SetImageKindY }
+{ @routine $49507C TAlphaImageGI_SetImageKindY }
 procedure TAlphaImageGI.SetImageKindY(Value: TImageKindYGI);
 begin
-  if ImageKindY <> Value then
-  begin
-    ImageKindY := Value;
-    Invalidate;
-  end;
+  if ImageKindY = Value then Exit;
+  ImageKindY := Value;
+  Invalidate;
 end;
-{ @end $475D3C }
+{ @end $49507C }
 
-{ @routine $475D74 TAlphaImageGI_HitTestPixel }
+{ @routine $49509C TAlphaImageGI_HitTestPixel }
 function TAlphaImageGI.HitTestPixel(Point: TPoint): Boolean;
 var Bitmap: TCAlphaBitmapEC; Width, Height, Left, Right, X, Top, Bottom, Y: Integer; Pixel: Cardinal; Pixels: Pointer; Clip: TRect;
 begin
@@ -191,9 +187,9 @@ begin
   end;
   Result := Pixel <> 0;
 end;
-{ @end $475D74 }
+{ @end $49509C }
 
-{ @routine $476048 TAlphaImageGI_LoadFromConfigPath }
+{ @routine $4952E8 TAlphaImageGI_LoadFromConfigPath }
 procedure TAlphaImageGI.LoadFromConfigPath(const Path: WideString);
 var Block: TBlockParEC; Bitmap: TCAlphaBitmapEC; Text: WideString;
 begin
@@ -214,14 +210,14 @@ begin
     Text := Block.GetParam('Size');
     SetSize(Classes.Point(StrToInt(ExtractDelimitedPartW(Text, 0, ',')), StrToInt(ExtractDelimitedPartW(Text, 1, ','))));
   end;
-  if Block.CountParams('KindX') > 0 then SetImageKindX(ParseImageKindXName(Block.GetParam('KindX')));
-  if Block.CountParams('KindY') > 0 then SetImageKindY(ParseImageKindYName(Block.GetParam('KindY')));
-  if Block.CountParams('AlignX') > 0 then SetImageKindX(ParseImageKindXName(Block.GetParam('AlignX')));
-  if Block.CountParams('AlignY') > 0 then SetImageKindY(ParseImageKindYName(Block.GetParam('AlignY')));
+  if Block.CountParams('KindX') > 0 then KindX := ParseImageKindXName(Block.GetParam('KindX'));
+  if Block.CountParams('KindY') > 0 then KindY := ParseImageKindYName(Block.GetParam('KindY'));
+  if Block.CountParams('AlignX') > 0 then KindX := ParseImageKindXName(Block.GetParam('AlignX'));
+  if Block.CountParams('AlignY') > 0 then KindY := ParseImageKindYName(Block.GetParam('AlignY'));
 end;
-{ @end $476048 }
+{ @end $4952E8 }
 
-{ @routine $476318 TAlphaImageGI_LoadFromBlock }
+{ @routine $4955B4 TAlphaImageGI_LoadFromBlock }
 procedure TAlphaImageGI.LoadFromBlock(Block: TBlockParEC);
 var Bitmap: TCAlphaBitmapEC; Text: WideString;
 begin
@@ -238,14 +234,14 @@ begin
     Text := Block.GetParam('Size');
     SetSize(Classes.Point(StrToInt(ExtractDelimitedPartW(Text, 0, ',')), StrToInt(ExtractDelimitedPartW(Text, 1, ','))));
   end;
-  if Block.CountParams('KindX') > 0 then SetImageKindX(ParseImageKindXName(Block.GetParam('KindX')));
-  if Block.CountParams('KindY') > 0 then SetImageKindY(ParseImageKindYName(Block.GetParam('KindY')));
-  if Block.CountParams('AlignX') > 0 then SetImageKindX(ParseImageKindXName(Block.GetParam('AlignX')));
-  if Block.CountParams('AlignY') > 0 then SetImageKindY(ParseImageKindYName(Block.GetParam('AlignY')));
+  if Block.CountParams('KindX') > 0 then KindX := ParseImageKindXName(Block.GetParam('KindX'));
+  if Block.CountParams('KindY') > 0 then KindY := ParseImageKindYName(Block.GetParam('KindY'));
+  if Block.CountParams('AlignX') > 0 then KindX := ParseImageKindXName(Block.GetParam('AlignX'));
+  if Block.CountParams('AlignY') > 0 then KindY := ParseImageKindYName(Block.GetParam('AlignY'));
 end;
-{ @end $476318 }
+{ @end $4955B4 }
 
-{ @routine $4765C4 TAlphaImageGI_Draw }
+{ @routine $49585C TAlphaImageGI_Draw }
 procedure TAlphaImageGI.Draw(ClipRect: TRect);
 var Bitmap: TCAlphaBitmapEC; Width, Height, Left, Right, X, Top, Bottom, Y: Integer;
 begin
@@ -339,13 +335,13 @@ begin
     ImageCache.Release;
   end;
 end;
-{ @end $4765C4 }
+{ @end $49585C }
 
-{ @routine $4768F4 TAlphaImageGI_QueueImageLoad }
+{ @routine $495AF0 TAlphaImageGI_QueueImageLoad }
 procedure TAlphaImageGI.QueueImageLoad(PendingLoads: TList);
 begin
   ImageCache.QueueLoadIfMissing(PendingLoads);
 end;
-{ @end $4768F4 }
+{ @end $495AF0 }
 
 end.

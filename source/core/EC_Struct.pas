@@ -1,5 +1,4 @@
 unit EC_Struct;
-// Unit bracket (inferred): .text 0x0045EC80..0x0045F024; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -20,26 +19,26 @@ type
 
   TObjectEx = class // @size 0x04
   public
-    constructor Create; // @addr 0x45EFB0
-    destructor Destroy; override; // @addr 0x45EFF4
+    constructor Create; // @addr 0x0045EDDC
+    destructor Destroy; override; // @addr 0x0045EE14
   end;
 
-function MakeVector3D(X, Y, Z: Double): TVector3D; // @addr 0x45ED20 @ida "void __userpurge $name(TVector3D *Result@<eax>, double X@<^16>, double Y@<^8>, double Z@<^0>);"
-function MakePointF(X, Y: Single): TPointF; // @addr 0x45ED00 @ida "void __userpurge $name(TPointF *Result@<eax>, float X@<^4>, float Y@<^0>);"
-function TruncatePointF(Point: TPointF): TPoint; // @addr 0x45ED58 @note "Truncates each coordinate toward zero."
-function RoundPointF(Point: TPointF): TPoint; // @addr $45ED8C
-function PointToPointF(Point: TPoint): TPointF; // @addr 0x45EDC0
-function HalfPoint(Point: TPoint): TPoint; // @addr 0x45EDEC @note "Integer division rounds toward zero."
-function AddPoints(Left, Right: TPoint): TPoint; // @addr 0x45EE24
-function SubtractPoints(Left, Right: TPoint): TPoint; // @addr 0x45EE5C
-function HalfPointF(Point: TPointF): TPointF; // @addr $45EE94
-function AddPointsF(Left, Right: TPointF): TPointF; // @addr $45EED0
-function SubtractPointsF(Left, Right: TPointF): TPointF; // @addr $45EF08
+function MakeVector3D(X, Y, Z: Double): TVector3D; // @addr 0x0045EBAC @ida "void __userpurge $name(TVector3D *Result@<eax>, double X@<^16>, double Y@<^8>, double Z@<^0>);"
+function MakePointF(X, Y: Single): TPointF; // @addr 0x0045EB98 @ida "void __userpurge $name(TPointF *Result@<eax>, float X@<^4>, float Y@<^0>);"
+function TruncatePointF(Point: TPointF): TPoint; // @addr 0x0045EBD8 @note "Truncates each coordinate toward zero."
+function RoundPointF(Point: TPointF): TPoint; // @addr $45EC04
+function PointToPointF(Point: TPoint): TPointF; // @addr 0x0045EC30
+function HalfPoint(Point: TPoint): TPoint; // @addr 0x0045EC50 @note "Integer division rounds toward zero."
+function AddPoints(Left, Right: TPoint): TPoint; // @addr 0x0045EC7C
+function SubtractPoints(Left, Right: TPoint): TPoint; // @addr 0x0045ECAC
+function HalfPointF(Point: TPointF): TPointF; // @addr $45ECDC
+function AddPointsF(Left, Right: TPointF): TPointF; // @addr $45ED0C
+function SubtractPointsF(Left, Right: TPointF): TPointF; // @addr $45ED3C
 function SquaredDistanceToPoint(const Point: TPoint; X, Y: Integer): Integer; inline;
-function IntersectRects(out Intersection: TRect; const First, Second: TRect): Boolean; // @addr 0x45EF40 @ida "bool __usercall $name@<al>(TRect *Intersection@<eax>, const TRect *First@<edx>, const TRect *Second@<ecx>);" @note "Returns false without writing Intersection when the rectangles do not overlap."
+function IntersectRects(out Intersection: TRect; const First, Second: TRect): Boolean; // @addr 0x0045ED6C @ida "bool __usercall $name@<al>(TRect *Intersection@<eax>, const TRect *First@<edx>, const TRect *Second@<ecx>);" @note "Returns false without writing Intersection when the rectangles do not overlap."
 
 var
-  StartupCleanupObject: TObject; // @addr $889E08 @note "Freed on both startup shutdown paths; concrete class unresolved."
+  StartupCleanupObject: TObject; // @addr $819E04 @note "Freed on both startup shutdown paths; concrete class unresolved."
 
 implementation
 
@@ -48,99 +47,98 @@ begin
   Result := Sqr(Point.X - X) + Sqr(Point.Y - Y);
 end;
 
-{ @routine $45ED00 MakePointF }
+{ @routine $45EB98 MakePointF }
 function MakePointF(X, Y: Single): TPointF;
 begin
   Result.X := X;
   Result.Y := Y;
 end;
-{ @end $45ED00 }
+{ @end $45EB98 }
 
-{ @routine $45ED20 MakeVector3D }
+{ @routine $45EBAC MakeVector3D }
 function MakeVector3D(X, Y, Z: Double): TVector3D;
 begin
   Result.X := X;
   Result.Y := Y;
   Result.Z := Z;
 end;
-{ @end $45ED20 }
+{ @end $45EBAC }
 
-{ @routine $45ED58 TruncatePointF }
+{ @routine $45EBD8 TruncatePointF }
 function TruncatePointF(Point: TPointF): TPoint;
 begin
   Result.X := Trunc(Point.X);
   Result.Y := Trunc(Point.Y);
 end;
-{ @end $45ED58 }
+{ @end $45EBD8 }
 
-{ @routine $45ED8C RoundPointF }
+{ @routine $45EC04 RoundPointF }
 function RoundPointF(Point: TPointF): TPoint;
 begin
   Result.X := Round(Point.X);
   Result.Y := Round(Point.Y);
 end;
-{ @end $45ED8C }
+{ @end $45EC04 }
 
-{ @routine $45EDC0 PointToPointF }
+{ @routine $45EC30 PointToPointF }
 function PointToPointF(Point: TPoint): TPointF;
 begin
   Result.X := Point.X;
   Result.Y := Point.Y;
 end;
-{ @end $45EDC0 }
+{ @end $45EC30 }
 
-{ @routine $45EDEC HalfPoint }
+{ @routine $45EC50 HalfPoint }
 function HalfPoint(Point: TPoint): TPoint;
 begin
   Result.X := Point.X div 2;
   Result.Y := Point.Y div 2;
 end;
-{ @end $45EDEC }
+{ @end $45EC50 }
 
-{ @routine $45EE24 AddPoints }
+{ @routine $45EC7C AddPoints }
 function AddPoints(Left, Right: TPoint): TPoint;
 begin
   Result.X := Left.X + Right.X;
   Result.Y := Left.Y + Right.Y;
 end;
-{ @end $45EE24 }
+{ @end $45EC7C }
 
-{ @routine $45EE5C SubtractPoints }
+{ @routine $45ECAC SubtractPoints }
 function SubtractPoints(Left, Right: TPoint): TPoint;
 begin
   Result.X := Left.X - Right.X;
   Result.Y := Left.Y - Right.Y;
 end;
-{ @end $45EE5C }
+{ @end $45ECAC }
 
-{ @routine $45EE94 HalfPointF }
+{ @routine $45ECDC HalfPointF }
 function HalfPointF(Point: TPointF): TPointF;
 begin
   Result.X := Point.X / 2;
   Result.Y := Point.Y / 2;
 end;
-{ @end $45EE94 }
+{ @end $45ECDC }
 
-{ @routine $45EED0 AddPointsF }
+{ @routine $45ED0C AddPointsF }
 function AddPointsF(Left, Right: TPointF): TPointF;
 begin
   Result.X := Left.X + Right.X;
   Result.Y := Left.Y + Right.Y;
 end;
-{ @end $45EED0 }
+{ @end $45ED0C }
 
-{ @routine $45EF08 SubtractPointsF }
+{ @routine $45ED3C SubtractPointsF }
 function SubtractPointsF(Left, Right: TPointF): TPointF;
 begin
   Result.X := Left.X - Right.X;
   Result.Y := Left.Y - Right.Y;
 end;
-{ @end $45EF08 }
+{ @end $45ED3C }
 
-{ @routine $45EF40 IntersectRects }
+{ @routine $45ED6C IntersectRects }
 function IntersectRects(out Intersection: TRect; const First, Second: TRect): Boolean;
-// The native routine is handwritten assembly. Preserve its register saves and
-// leave Intersection untouched on failure, including when it aliases an input.
+// Leave Intersection untouched on failure, including when it aliases an input.
 asm
   PUSH ESI
   PUSH EDI
@@ -200,20 +198,20 @@ asm
   POP EDI
   POP ESI
 end;
-{ @end $45EF40 }
+{ @end $45ED6C }
 
-{ @routine $45EFB0 TObjectEx_Create }
+{ @routine $45EDDC TObjectEx_Create }
 constructor TObjectEx.Create;
 begin
   inherited Create;
 end;
-{ @end $45EFB0 }
+{ @end $45EDDC }
 
-{ @routine $45EFF4 TObjectEx_Destroy }
+{ @routine $45EE14 TObjectEx_Destroy }
 destructor TObjectEx.Destroy;
 begin
   inherited Destroy;
 end;
-{ @end $45EFF4 }
+{ @end $45EE14 }
 
 end.

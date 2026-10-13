@@ -1,5 +1,4 @@
 unit GR_GraphBufPal;
-// Unit bracket (inferred): .text 0x0086B5EC..0x0086BA76; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -16,39 +15,39 @@ type
     PaletteCount: Integer; // @offset 0x18
     Palette: PColorRGBA; // @offset 0x1C
 
-    constructor Create; // @addr 0x86B648
-    destructor Destroy; override; // @addr 0x86B68C
-    procedure Clear; // @addr 0x86B6C8
-    procedure AllocateTight(AWidth, AHeight, APaletteCount: Integer); // @addr 0x86B72C @note "Discards existing pixels and palette; uses one byte per pixel with no row padding."
-    procedure AllocateBuffer(AWidth, AHeight, APaletteCount, APitchBytes: Integer); // @addr 0x86B798 @note "Discards existing pixels and palette; rounds pitch up to a multiple of four."
-    function GetPaletteColor(Index: Integer): Cardinal; // @addr 0x86B86C @note "Index is unchecked."
-    function GetPixelIndex(X, Y: Integer): Byte; // @addr 0x86B8F4 @note "Coordinates are unchecked."
-    procedure LoadImage(Buffer: TBufEC); // @addr 0x86B928 @note "Decodes the entire payload, ignoring Position; retains the codec's one- or two-byte indexed pixel width. Failures raise."
-    procedure SetPalette(Source: PColorRGBA; Count: Integer); // @addr $86B89C
-    procedure ClearPixels; // @addr $86BA28
-    procedure FillPixels(Value: Byte); // @addr 0x86BA4C @note "Includes row padding."
+    constructor Create; // @addr 0x007B1698
+    destructor Destroy; override; // @addr 0x007B16D0
+    procedure Clear; // @addr 0x007B16FC
+    procedure AllocateTight(AWidth, AHeight, APaletteCount: Integer); // @addr 0x007B1738 @note "Discards existing pixels and palette; uses one byte per pixel with no row padding."
+    procedure AllocateBuffer(AWidth, AHeight, APaletteCount, APitchBytes: Integer); // @addr 0x007B1784 @note "Discards existing pixels and palette; rounds pitch up to a multiple of four."
+    function GetPaletteColor(Index: Integer): TColorRGBA; // @addr 0x007B1828 @note "Index is unchecked."
+    function GetPixelIndex(X, Y: Integer): Byte; // @addr 0x007B188C @note "Coordinates are unchecked."
+    procedure LoadImage(Buffer: TBufEC); // @addr 0x007B189C @note "Decodes the entire payload, ignoring Position; retains the codec's one- or two-byte indexed pixel width. Failures raise."
+    procedure SetPalette(Source: PColorRGBA; Count: Integer); // @addr $7B1850
+    procedure ClearPixels; // @addr $7B1964
+    procedure FillPixels(Value: Byte); // @addr 0x007B1978 @note "Includes row padding."
   end;
 
 implementation
 
 uses EC_Mem, GR_Main, SysUtils, Windows;
 
-{ @routine $86B648 TGraphBufPalGR_Create }
+{ @routine $7B1698 TGraphBufPalGR_Create }
 constructor TGraphBufPalGR.Create;
 begin
   inherited Create;
 end;
-{ @end $86B648 }
+{ @end $7B1698 }
 
-{ @routine $86B68C TGraphBufPalGR_Destroy }
+{ @routine $7B16D0 TGraphBufPalGR_Destroy }
 destructor TGraphBufPalGR.Destroy;
 begin
   Clear;
   inherited Destroy;
 end;
-{ @end $86B68C }
+{ @end $7B16D0 }
 
-{ @routine $86B6C8 TGraphBufPalGR_Clear }
+{ @routine $7B16FC TGraphBufPalGR_Clear }
 procedure TGraphBufPalGR.Clear;
 begin
   if Pixels <> nil then begin FreeEC(Pixels); Pixels := nil; end;
@@ -56,9 +55,9 @@ begin
   if Palette <> nil then begin FreeEC(Palette); Palette := nil; end;
   PaletteCount := 0;
 end;
-{ @end $86B6C8 }
+{ @end $7B16FC }
 
-{ @routine $86B72C TGraphBufPalGR_AllocateTight }
+{ @routine $7B1738 TGraphBufPalGR_AllocateTight }
 procedure TGraphBufPalGR.AllocateTight(AWidth, AHeight, APaletteCount: Integer);
 begin
   Clear;
@@ -67,9 +66,9 @@ begin
   Pixels := AllocEC(PitchBytes * Height);
   Palette := AllocEC(APaletteCount * SizeOf(Palette^));
 end;
-{ @end $86B72C }
+{ @end $7B1738 }
 
-{ @routine $86B798 TGraphBufPalGR_AllocateBuffer }
+{ @routine $7B1784 TGraphBufPalGR_AllocateBuffer }
 procedure TGraphBufPalGR.AllocateBuffer(AWidth, AHeight, APaletteCount, APitchBytes: Integer);
 begin
   Clear;
@@ -81,16 +80,16 @@ begin
   if (PitchBytes and 3 <> 0) or (Cardinal(Pixels) and 3 <> 0) then
     raise Exception.Create('TGraphBufPalGR.CreateN');
 end;
-{ @end $86B798 }
+{ @end $7B1784 }
 
-{ @routine $86B86C TGraphBufPalGR_GetPaletteColor }
-function TGraphBufPalGR.GetPaletteColor(Index: Integer): Cardinal;
+{ @routine $7B1828 TGraphBufPalGR_GetPaletteColor }
+function TGraphBufPalGR.GetPaletteColor(Index: Integer): TColorRGBA;
 begin
-  Result := PCardinal(AddPointerOffset(Palette, Index * SizeOf(Palette^)))^;
+  Result := PColorRGBA(AddPointerOffset(Palette, Index * SizeOf(TColorRGBA)))^;
 end;
-{ @end $86B86C }
+{ @end $7B1828 }
 
-{ @routine $86B89C TGraphBufPalGR_SetPalette }
+{ @routine $7B1850 TGraphBufPalGR_SetPalette }
 procedure TGraphBufPalGR.SetPalette(Source: PColorRGBA; Count: Integer);
 begin
   if PaletteCount <> Count then
@@ -100,18 +99,18 @@ begin
   end;
   CopyMemory(Palette, Source, Count * SizeOf(Source^));
 end;
-{ @end $86B89C }
+{ @end $7B1850 }
 
-{ @routine $86B8F4 TGraphBufPalGR_GetPixelIndex }
+{ @routine $7B188C TGraphBufPalGR_GetPixelIndex }
 function TGraphBufPalGR.GetPixelIndex(X, Y: Integer): Byte;
 var Data: PByteArray;
 begin
   Data := Pixels;
   Result := Data^[Y * PitchBytes + X];
 end;
-{ @end $86B8F4 }
+{ @end $7B188C }
 
-{ @routine $86B928 TGraphBufPalGR_LoadImage }
+{ @routine $7B189C TGraphBufPalGR_LoadImage }
 procedure TGraphBufPalGR.LoadImage(Buffer: TBufEC);
 var Context: POkgfReadContext;
 begin
@@ -122,20 +121,20 @@ begin
   Context := Pointer(ReadIndexedImagePixels(Context, Pixels, PitchBytes, Palette));
   if Context = nil then raise Exception.Create('TGraphBufPalGR.LoadFromFile. Error load file');
 end;
-{ @end $86B928 }
+{ @end $7B189C }
 
-{ @routine $86BA28 TGraphBufPalGR_ClearPixels }
+{ @routine $7B1964 TGraphBufPalGR_ClearPixels }
 procedure TGraphBufPalGR.ClearPixels;
 begin
   FillChar(Pixels^, PitchBytes * Height, 0);
 end;
-{ @end $86BA28 }
+{ @end $7B1964 }
 
-{ @routine $86BA4C TGraphBufPalGR_FillPixels }
+{ @routine $7B1978 TGraphBufPalGR_FillPixels }
 procedure TGraphBufPalGR.FillPixels(Value: Byte);
 begin
   FillMemory(Pixels, PitchBytes * Height, Value);
 end;
-{ @end $86BA4C }
+{ @end $7B1978 }
 
 end.

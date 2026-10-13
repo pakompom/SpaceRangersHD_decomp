@@ -1,5 +1,4 @@
 unit EC_HsFile;
-// Unit bracket (inferred): .text 0x004C2224..0x004C54FB; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -36,16 +35,16 @@ type
     ChangedFlag: Boolean; // @offset 0x20
     InitializedEmptyFlag: Boolean; // @offset 0x21
 
-    constructor Create(FolderName: AnsiString); // @addr 0x4C3E0C
-    constructor CreateChild(FolderName: AnsiString; Parent: THsFolderEC); // @addr 0x4C3EE8 @ida "THsFolderEC *__userpurge $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, char *FolderName@<ecx>, THsFolderEC *Parent);"
-    destructor Destroy; override; // @addr 0x4C3FC8
-    function GetEntry(Index: Cardinal): PPackEntryEC; // @addr 0x4C3FF4 @note "Returns nil for an out-of-range index."
-    function FindEntry(EntryName: AnsiString): PPackEntryEC; // @addr 0x4C4034 @note "Uppercases EntryName and skips entries with nonzero Flags."
-    procedure InitializeEmpty; // @addr 0x4C40FC @note "Requires an unloaded folder."
-    function Load(FileHandle, SubtreeOffset: Cardinal): Boolean; // @addr 0x4C4144 @note "Returns false when already loaded; flagged child folders are skipped."
-    procedure Unload; // @addr 0x4C4380 @note "Marks this folder and its parent changed."
-    function ResolveEntryByPath(EntryPath: AnsiString): PPackEntryEC; // @addr 0x4C4444 @note "Accepts slash and backslash separators; returns nil when absent."
-    procedure UpdateParentEntry; // @addr 0x4C4528 @note "Invalidates the parent's stored target offset."
+    constructor Create(FolderName: AnsiString); // @addr 0x007B5CD4
+    constructor CreateChild(FolderName: AnsiString; Parent: THsFolderEC); // @addr 0x007B5D90 @ida "THsFolderEC *__userpurge $name@<eax>(void *SelfOrClass@<eax>, unsigned __int8 Allocate@<dl>, char *FolderName@<ecx>, THsFolderEC *Parent);"
+    destructor Destroy; override; // @addr 0x007B5E50
+    function GetEntry(Index: Cardinal): PPackEntryEC; // @addr 0x007B5E70 @note "Returns nil for an out-of-range index."
+    function FindEntry(EntryName: AnsiString): PPackEntryEC; // @addr 0x007B5E8C @note "Uppercases EntryName and skips entries with nonzero Flags."
+    procedure InitializeEmpty; // @addr 0x007B5F44 @note "Requires an unloaded folder."
+    function Load(FileHandle, SubtreeOffset: Cardinal): Boolean; // @addr 0x007B5F6C @note "Returns false when already loaded; flagged child folders are skipped."
+    procedure Unload; // @addr 0x007B6130 @note "Marks this folder and its parent changed."
+    function ResolveEntryByPath(EntryPath: AnsiString): PPackEntryEC; // @addr 0x007B61AC @note "Accepts slash and backslash separators; returns nil when absent."
+    procedure UpdateParentEntry; // @addr 0x007B6268 @note "Invalidates the parent's stored target offset."
   end;
 
   THashSlotEC = packed record // @size 0x34
@@ -83,23 +82,23 @@ type
     RootSubtreeOffset: Cardinal; // @offset 0x1FC
     CollectionIndex: Integer; // @offset 0x20C
 
-    constructor Create; // @addr 0x4C25AC
-    destructor Destroy; override; // @addr 0x4C2650
-    procedure SetPackagePath(NewPackagePath: AnsiString); // @addr 0x4C2684 @note "Does not close an open package."
-    procedure CloseAllOpenEntrySlots; // @addr 0x4C26D8
-    function Open: Boolean; // @addr 0x4C2724 @note "Opens the package read/write; loose-file mode creates an empty root folder."
-    function Close: Boolean; // @addr 0x4C2990 @note "Invalidates all open slots; returns false when already closed."
-    function CloseForDestroy: Boolean; // @addr 0x4C2A14
-    function FindFreeOpenSlotIndex: Integer; // @addr 0x4C2A98 @note "Returns -1 when all sixteen slots are occupied."
-    function OpenEntryByPath(EntryPath: AnsiString; DesiredAccess: Cardinal): Integer; // @addr 0x4C2ADC @note "Returns a slot or -1; DesiredAccess applies only to loose files."
-    function CreateLooseFile(FilePath: WideString): Integer; // @addr 0x4C2FA4 @note "Creates or truncates a loose file for read/write access; returns a slot or -1."
-    function CloseEntrySlot(SlotIndex: Cardinal): Boolean; // @addr 0x4C30F0
-    function GetChainedBlockStoredSizeAtIndex(FirstBlockOffset, BlockIndex: Cardinal): Cardinal; // @addr 0x4C3378 @note "Leaves PackageHandle at the selected payload; I/O errors are unchecked."
-    function ReadEntrySlot(SlotIndex: Cardinal; Buffer: Pointer; ByteCount: Cardinal): Boolean; // @addr 0x4C33E0 @note "Compressed reads do not enforce logical EOF or report decompressor and short-block failures."
-    function WriteEntrySlot(SlotIndex: Cardinal; Buffer: Pointer; ByteCount: Cardinal): Boolean; // @addr 0x4C3710 @note "Rejects compressed entries."
-    function SeekEntrySlot(SlotIndex, Offset: Cardinal; Origin: Integer): Boolean; // @addr 0x4C3948 @note "Origin 1 adds to the current position, 2 subtracts from size, otherwise Offset is absolute. Only compressed entries reject positions beyond DataSize."
-    function GetEntrySlotPosition(SlotIndex: Cardinal): Cardinal; // @addr 0x4C3BD8 @note "Returns 0xFFFFFFFF for an unavailable slot or SlotIndex=0xFFFFFFFF."
-    function GetEntrySlotSize(SlotIndex: Cardinal): Cardinal; // @addr 0x4C3CFC @note "Returns 0xFFFFFFFF for an unavailable slot or SlotIndex=0xFFFFFFFF."
+    constructor Create; // @addr 0x007B4ACC
+    destructor Destroy; override; // @addr 0x007B4B40
+    procedure SetPackagePath(NewPackagePath: AnsiString); // @addr 0x007B4B68 @note "Does not close an open package."
+    procedure CloseAllOpenEntrySlots; // @addr 0x007B4BB4
+    function Open: Boolean; // @addr 0x007B4BE4 @note "Opens the package read/write; loose-file mode creates an empty root folder."
+    function Close: Boolean; // @addr 0x007B4E04 @note "Invalidates all open slots; returns false when already closed."
+    function CloseForDestroy: Boolean; // @addr 0x007B4E5C
+    function FindFreeOpenSlotIndex: Integer; // @addr 0x007B4EB4 @note "Returns -1 when all sixteen slots are occupied."
+    function OpenEntryByPath(EntryPath: AnsiString; DesiredAccess: Cardinal): Integer; // @addr 0x007B4ED4 @note "Returns a slot or -1; DesiredAccess applies only to loose files."
+    function CreateLooseFile(FilePath: WideString): Integer; // @addr 0x007B521C @note "Creates or truncates a loose file for read/write access; returns a slot or -1."
+    function CloseEntrySlot(SlotIndex: Cardinal): Boolean; // @addr 0x007B52E8
+    function GetChainedBlockStoredSizeAtIndex(FirstBlockOffset, BlockIndex: Cardinal): Cardinal; // @addr 0x007B54AC @note "Leaves PackageHandle at the selected payload; I/O errors are unchecked."
+    function ReadEntrySlot(SlotIndex: Cardinal; Buffer: Pointer; ByteCount: Cardinal): Boolean; // @addr 0x007B54F8 @note "Compressed reads do not enforce logical EOF or report decompressor and short-block failures."
+    function WriteEntrySlot(SlotIndex: Cardinal; Buffer: Pointer; ByteCount: Cardinal): Boolean; // @addr 0x007B5788 @note "Rejects compressed entries."
+    function SeekEntrySlot(SlotIndex, Offset: Cardinal; Origin: Integer): Boolean; // @addr 0x007B5940 @note "Origin 1 adds to the current position, 2 subtracts from size, otherwise Offset is absolute. Only compressed entries reject positions beyond DataSize."
+    function GetEntrySlotPosition(SlotIndex: Cardinal): Cardinal; // @addr 0x007B5B00 @note "Returns 0xFFFFFFFF for an unavailable slot or SlotIndex=0xFFFFFFFF."
+    function GetEntrySlotSize(SlotIndex: Cardinal): Cardinal; // @addr 0x007B5BEC @note "Returns 0xFFFFFFFF for an unavailable slot or SlotIndex=0xFFFFFFFF."
   end;
   TPackFileArray = array[0..127] of TPackFileEC;
 
@@ -114,16 +113,16 @@ type
     ReservedText: AnsiString; // @offset $18 Native THashEC cleanup owns this otherwise unused field.
     Slots: THashSlotArray; // @offset 0x1C
 
-    constructor Create; // @addr 0x4C50D4
-    destructor Destroy; override; // @addr 0x4C5118
-    function InitializeEmptyTable(BucketCount: Integer): Boolean; // @addr 0x4C5404 @note "Ignores BucketCount; the table has 1024 buckets. Always returns true."
-    function ReleaseTable: Boolean; // @addr 0x4C5464 @note "Returns true without changing the table."
-    function ComputeLookupBucketAndFullHash(var Key: AnsiString; out FullHash: Cardinal): Integer; // @addr 0x4C5144 @note "Key is not modified; only its trailing 32 bytes contribute to the hash."
-    function FindOrInsertKeySlot(Key: AnsiString): Integer; // @addr 0x4C51E0 @note "Returns -1 on failure. Native probing can reach slot 1024; promoted hits return the pre-swap index."
-    procedure SetSlotMappedValue(SlotIndex, Value: Integer); // @addr 0x4C53E0
-    function GetSlotMappedValue(SlotIndex: Integer): Integer; // @addr 0x4C5478
-    procedure MaybeResetStatistics; // @addr 0x4C549C
-    procedure NoteStaleMappedValue; // @addr 0x4C54EC
+    constructor Create; // @addr 0x007B6A0C
+    destructor Destroy; override; // @addr 0x007B6A44
+    function InitializeEmptyTable(BucketCount: Integer): Boolean; // @addr 0x007B6C34 @note "Ignores BucketCount; the table has 1024 buckets. Always returns true."
+    function ReleaseTable: Boolean; // @addr 0x007B6C68 @note "Returns true without changing the table."
+    function ComputeLookupBucketAndFullHash(var Key: AnsiString; out FullHash: Cardinal): Integer; // @addr 0x007B6A64 @note "Key is not modified; only its trailing 32 bytes contribute to the hash."
+    function FindOrInsertKeySlot(Key: AnsiString): Integer; // @addr 0x007B6AB0 @note "Returns -1 on failure. Native probing can reach slot 1024; promoted hits return the pre-swap index."
+    procedure SetSlotMappedValue(SlotIndex, Value: Integer); // @addr 0x007B6C2C
+    function GetSlotMappedValue(SlotIndex: Integer): Integer; // @addr 0x007B6C6C
+    procedure MaybeResetStatistics; // @addr 0x007B6C74
+    procedure NoteStaleMappedValue; // @addr 0x007B6CAC
   end;
 
   TPackCollectionEC = class(TObject) // @size 0x214
@@ -134,37 +133,37 @@ type
     UseFastNameIndex: Boolean; // @offset 0x10
     PackByIndex: TPackFileArray; // @offset 0x14
 
-    constructor Create; // @addr 0x4C4674
-    destructor Destroy; override; // @addr 0x4C46E8 @note "Unlinks packs without freeing them."
-    procedure Clear(FreePacks: Boolean); // @addr 0x4C4718 @note "Frees the name hash even when FreePacks is false."
+    constructor Create; // @addr 0x007B6384
+    destructor Destroy; override; // @addr 0x007B63CC @note "Unlinks packs without freeing them."
+    procedure Clear(FreePacks: Boolean); // @addr 0x007B63F0 @note "Frees the name hash even when FreePacks is false."
     // List mutations rebuild PackByIndex and CollectionIndex without clearing the name hash.
     // The fixed array's 128-package capacity is not checked.
-    procedure AddPackToFront(Pack: TPackFileEC); // @addr 0x4C4780
-    procedure AddPackToBack(Pack: TPackFileEC); // @addr 0x4C4888
-    procedure RemovePack(Pack: TPackFileEC; FreePack: Boolean); // @addr 0x4C4990 @note "When retained, Pack keeps its old links and CollectionIndex."
-    function OpenAllPackages: Boolean; // @addr 0x4C4A6C @note "A false result rolls back previously opened packages."
-    function CloseAllPackages: Boolean; // @addr 0x4C4B1C @note "Returns true regardless of individual close results."
-    function GetPackByIndex(PackIndex: Integer): TPackFileEC; // @addr 0x4C4B74 @note "Returns nil when out of range."
-    function OpenEntryByPathAcrossPackages(EntryPath: AnsiString; DesiredAccess: Cardinal; FirstPackageOnly: Boolean): Integer; // @addr 0x4C4BB4 @note "Returns package index * 16 + slot, or -1."
-    function CreateLooseFile(FilePath: WideString): Integer; // @addr 0x4C4D4C @note "Uses the first package; truncates existing files. Returns a handle or -1."
-    function CloseEntryHandle(Handle: Integer): Boolean; // @addr 0x4C4DC0
-    function ReadEntryHandle(Handle: Integer; var Buffer; ByteCount: Cardinal): Boolean; // @addr 0x4C4E0C
-    function WriteEntryHandle(Handle: Integer; var Buffer; ByteCount: Cardinal): Boolean; // @addr 0x4C4E64
-    function SeekEntryHandle(Handle: Integer; Offset: Cardinal; Origin: Integer): Boolean; // @addr 0x4C4EBC
-    function GetEntryHandlePosition(Handle: Integer): Cardinal; // @addr 0x4C4F14 @note "Returns 0xFFFFFFFF for an invalid handle."
-    function GetEntryHandleSize(Handle: Integer): Cardinal; // @addr 0x4C4F64 @note "Returns 0xFFFFFFFF for an invalid handle."
+    procedure AddPackToFront(Pack: TPackFileEC); // @addr 0x007B6430
+    procedure AddPackToBack(Pack: TPackFileEC); // @addr 0x007B64A8
+    procedure RemovePack(Pack: TPackFileEC; FreePack: Boolean); // @addr 0x007B6520 @note "When retained, Pack keeps its old links and CollectionIndex."
+    function OpenAllPackages: Boolean; // @addr 0x007B6590 @note "A false result rolls back previously opened packages."
+    function CloseAllPackages: Boolean; // @addr 0x007B6608 @note "Returns true regardless of individual close results."
+    function GetPackByIndex(PackIndex: Integer): TPackFileEC; // @addr 0x007B6638 @note "Returns nil when out of range."
+    function OpenEntryByPathAcrossPackages(EntryPath: AnsiString; DesiredAccess: Cardinal; FirstPackageOnly: Boolean): Integer; // @addr 0x007B664C @note "Returns package index * 16 + slot, or -1."
+    function CreateLooseFile(FilePath: WideString): Integer; // @addr 0x007B67B4 @note "Uses the first package; truncates existing files. Returns a handle or -1."
+    function CloseEntryHandle(Handle: Integer): Boolean; // @addr 0x007B6814
+    function ReadEntryHandle(Handle: Integer; var Buffer; ByteCount: Cardinal): Boolean; // @addr 0x007B6844
+    function WriteEntryHandle(Handle: Integer; var Buffer; ByteCount: Cardinal): Boolean; // @addr 0x007B6888
+    function SeekEntryHandle(Handle: Integer; Offset: Cardinal; Origin: Integer): Boolean; // @addr 0x007B68CC
+    function GetEntryHandlePosition(Handle: Integer): Cardinal; // @addr 0x007B6910 @note "Returns 0xFFFFFFFF for an invalid handle."
+    function GetEntryHandleSize(Handle: Integer): Cardinal; // @addr 0x007B6940 @note "Returns 0xFFFFFFFF for an invalid handle."
   end;
 
 var
-  PackageCollection: TPackCollectionEC; // @addr 0x889E6C
-  PackageFileLock: TCriticalSection; // @addr 0x889E70
-  LooseFileRoot: AnsiString; // @addr 0x889E74
+  PackageCollection: TPackCollectionEC; // @addr 0x0081CEC8
+  PackageFileLock: TCriticalSection; // @addr 0x0081CECC
+  LooseFileRoot: AnsiString; // @addr 0x0081CED0
 
-function MatchLookupKeySuffix(var Key: AnsiString; SuffixBytes: Pointer; SuffixLength: Integer): Boolean; // @addr 0x4C4FB4 @note "Ignores SuffixLength; compares up to 32 trailing key bytes without checking stored length. Key is not modified."
-procedure CopyLookupKeySuffix(DestSuffixBytes: Pointer; SuffixLength: Integer; var Key: AnsiString); // @addr 0x4C504C @note "Ignores SuffixLength; copies up to 32 trailing key bytes without terminator or padding. Key is not modified."
-function AnsiBeforeFirstDelimiter(Text, Delimiters: AnsiString): AnsiString; // @addr 0x4C23E8 @note "Returns Text when no delimiter occurs."
-function AnsiAfterFirstDelimiter(Text, Delimiters: AnsiString): AnsiString; // @addr 0x4C24BC @note "Returns an empty string when no delimiter occurs."
-function OffsetPackPointer(Data: Pointer; ByteOffset: Cardinal): Pointer; // @addr $4C23CC
+function MatchLookupKeySuffix(var Key: AnsiString; SuffixBytes: PAnsiChar; SuffixLength: Integer): Boolean; // @addr 0x007B6970 @note "Ignores SuffixLength; compares up to 32 trailing key bytes without checking stored length. Key is not modified."
+procedure CopyLookupKeySuffix(DestSuffixBytes: PAnsiChar; SuffixLength: Integer; var Key: AnsiString); // @addr 0x007B69C8 @note "Ignores SuffixLength; copies up to 32 trailing key bytes without terminator or padding. Key is not modified."
+function AnsiBeforeFirstDelimiter(Text, Delimiters: AnsiString): AnsiString; // @addr 0x007B492C @note "Returns Text when no delimiter occurs."
+function AnsiAfterFirstDelimiter(Text, Delimiters: AnsiString): AnsiString; // @addr 0x007B49F4 @note "Returns an empty string when no delimiter occurs."
+function OffsetPackPointer(Data: Pointer; ByteOffset: Cardinal): Pointer; // @addr $7B4928
 
 implementation
 
@@ -179,14 +178,14 @@ const
   PackCompressedBufferSize = 72112;
   PackSlotRangeError = 'Номер файла не может быть более ';
 
-{ @routine $4C23CC OffsetPackPointer }
+{ @routine $7B4928 OffsetPackPointer }
 function OffsetPackPointer(Data: Pointer; ByteOffset: Cardinal): Pointer;
 begin
-  Result := Pointer(PAnsiChar(Data) + ByteOffset);
+  Result := PAnsiChar(Data) + Integer(ByteOffset);
 end;
-{ @end $4C23CC }
+{ @end $7B4928 }
 
-{ @routine $4C23E8 AnsiBeforeFirstDelimiter }
+{ @routine $7B492C AnsiBeforeFirstDelimiter }
 function AnsiBeforeFirstDelimiter(Text, Delimiters: AnsiString): AnsiString;
 var i, j: Integer;
 begin
@@ -203,9 +202,9 @@ begin
   end;
   Result := Text;
 end;
-{ @end $4C23E8 }
+{ @end $7B492C }
 
-{ @routine $4C24BC AnsiAfterFirstDelimiter }
+{ @routine $7B49F4 AnsiAfterFirstDelimiter }
 function AnsiAfterFirstDelimiter(Text, Delimiters: AnsiString): AnsiString;
 var i, j: Integer;
 begin
@@ -222,9 +221,9 @@ begin
   end;
   Result := '';
 end;
-{ @end $4C24BC }
+{ @end $7B49F4 }
 
-{ @routine $4C25AC TPackFileEC_Create }
+{ @routine $7B4ACC TPackFileEC_Create }
 constructor TPackFileEC.Create;
 var i: Integer;
 begin
@@ -238,24 +237,24 @@ begin
   CollectionIndex := -1;
   for i := Low(OpenSlots) to High(OpenSlots) do OpenSlots[i].IsAvailable := True;
 end;
-{ @end $4C25AC }
+{ @end $7B4ACC }
 
-{ @routine $4C2650 TPackFileEC_Destroy }
+{ @routine $7B4B40 TPackFileEC_Destroy }
 destructor TPackFileEC.Destroy;
 begin
   CloseAllOpenEntrySlots;
   CloseForDestroy;
 end;
-{ @end $4C2650 }
+{ @end $7B4B40 }
 
-{ @routine $4C2684 TPackFileEC_SetPackagePath }
+{ @routine $7B4B68 TPackFileEC_SetPackagePath }
 procedure TPackFileEC.SetPackagePath(NewPackagePath: AnsiString);
 begin
   PackagePath := NewPackagePath;
 end;
-{ @end $4C2684 }
+{ @end $7B4B68 }
 
-{ @routine $4C26D8 TPackFileEC_CloseAllOpenEntrySlots }
+{ @routine $7B4BB4 TPackFileEC_CloseAllOpenEntrySlots }
 procedure TPackFileEC.CloseAllOpenEntrySlots;
 var i: Integer;
 begin
@@ -266,9 +265,9 @@ begin
       OpenSlots[i].IsAvailable := True;
     end;
 end;
-{ @end $4C26D8 }
+{ @end $7B4BB4 }
 
-{ @routine $4C2724 TPackFileEC_Open }
+{ @routine $7B4BE4 TPackFileEC_Open }
 function TPackFileEC.Open: Boolean;
 var BytesRead: Cardinal;
 begin
@@ -311,9 +310,9 @@ begin
 
   Result := True;
 end;
-{ @end $4C2724 }
+{ @end $7B4BE4 }
 
-{ @routine $4C2990 TPackFileEC_Close }
+{ @routine $7B4E04 TPackFileEC_Close }
 function TPackFileEC.Close: Boolean;
 var Success: Boolean;
 begin
@@ -330,9 +329,9 @@ begin
   PackageHandle := INVALID_HANDLE_VALUE;
   if Success then Result := True;
 end;
-{ @end $4C2990 }
+{ @end $7B4E04 }
 
-{ @routine $4C2A14 TPackFileEC_CloseForDestroy }
+{ @routine $7B4E5C TPackFileEC_CloseForDestroy }
 function TPackFileEC.CloseForDestroy: Boolean;
 var Success: Boolean;
 begin
@@ -349,9 +348,9 @@ begin
   PackageHandle := INVALID_HANDLE_VALUE;
   if Success then Result := True;
 end;
-{ @end $4C2A14 }
+{ @end $7B4E5C }
 
-{ @routine $4C2A98 TPackFileEC_FindFreeOpenSlotIndex }
+{ @routine $7B4EB4 TPackFileEC_FindFreeOpenSlotIndex }
 function TPackFileEC.FindFreeOpenSlotIndex: Integer;
 var i: Integer;
 begin
@@ -359,9 +358,9 @@ begin
     if OpenSlots[i].IsAvailable then begin Result := i; Exit end;
   Result := -1;
 end;
-{ @end $4C2A98 }
+{ @end $7B4EB4 }
 
-{ @routine $4C2ADC TPackFileEC_OpenEntryByPath }
+{ @routine $7B4ED4 TPackFileEC_OpenEntryByPath }
 function TPackFileEC.OpenEntryByPath(EntryPath: AnsiString; DesiredAccess: Cardinal): Integer;
 var Slot: Integer; Entry: PPackEntryEC; Position: Cardinal;
 begin
@@ -416,9 +415,9 @@ begin
   if Position = $FFFFFFFF then raise Exception.Create('Сбой в пакетном файле :' + PackagePath + ':' + EntryPath);
   Result := Slot;
 end;
-{ @end $4C2ADC }
+{ @end $7B4ED4 }
 
-{ @routine $4C2FA4 TPackFileEC_CreateLooseFile }
+{ @routine $7B521C TPackFileEC_CreateLooseFile }
 function TPackFileEC.CreateLooseFile(FilePath: WideString): Integer;
 var Slot: Integer;
 begin
@@ -438,9 +437,9 @@ begin
   OpenSlots[Slot].IsAvailable := False;
   Result := Slot;
 end;
-{ @end $4C2FA4 }
+{ @end $7B521C }
 
-{ @routine $4C30F0 TPackFileEC_CloseEntrySlot }
+{ @routine $7B52E8 TPackFileEC_CloseEntrySlot }
 function TPackFileEC.CloseEntrySlot(SlotIndex: Cardinal): Boolean;
 begin
   Result := False;
@@ -459,24 +458,22 @@ begin
       OpenSlots[SlotIndex].DecompressedBlockBuffer := nil;
     end;
     OpenSlots[SlotIndex].IsAvailable := True;
-  end
-  else
-  begin
-    if not Boolean(Windows.CloseHandle(OpenSlots[SlotIndex].FileHandle)) then
-      raise Exception.Create('Ошибка закрытия файла : ' + SysUtils.IntToStr(SlotIndex));
-    if OpenSlots[SlotIndex].UsesChainedBlocks then
-    begin
-      FreeMem(OpenSlots[SlotIndex].CompressedBlockBuffer);
-      OpenSlots[SlotIndex].CompressedBlockBuffer := nil;
-      FreeMem(OpenSlots[SlotIndex].DecompressedBlockBuffer);
-      OpenSlots[SlotIndex].DecompressedBlockBuffer := nil;
-    end;
-    OpenSlots[SlotIndex].IsAvailable := True;
+    Exit;
   end;
+  if not Boolean(Windows.CloseHandle(OpenSlots[SlotIndex].FileHandle)) then
+    raise Exception.Create('Ошибка закрытия файла : ' + SysUtils.IntToStr(SlotIndex));
+  if OpenSlots[SlotIndex].UsesChainedBlocks then
+  begin
+    FreeMem(OpenSlots[SlotIndex].CompressedBlockBuffer);
+    OpenSlots[SlotIndex].CompressedBlockBuffer := nil;
+    FreeMem(OpenSlots[SlotIndex].DecompressedBlockBuffer);
+    OpenSlots[SlotIndex].DecompressedBlockBuffer := nil;
+  end;
+  OpenSlots[SlotIndex].IsAvailable := True;
 end;
-{ @end $4C30F0 }
+{ @end $7B52E8 }
 
-{ @routine $4C3378 TPackFileEC_GetChainedBlockStoredSizeAtIndex }
+{ @routine $7B54AC TPackFileEC_GetChainedBlockStoredSizeAtIndex }
 function TPackFileEC.GetChainedBlockStoredSizeAtIndex(FirstBlockOffset, BlockIndex: Cardinal): Cardinal;
 var BytesRead, StoredSize, Offset: Cardinal;
 begin
@@ -491,9 +488,9 @@ begin
   end;
   Result := StoredSize;
 end;
-{ @end $4C3378 }
+{ @end $7B54AC }
 
-{ @routine $4C33E0 TPackFileEC_ReadEntrySlot }
+{ @routine $7B54F8 TPackFileEC_ReadEntrySlot }
 function TPackFileEC.ReadEntrySlot(SlotIndex: Cardinal; Buffer: Pointer; ByteCount: Cardinal): Boolean;
 var BytesRead, BlockIndex, BlockOffset, ChunkSize, StoredSize, RelativeOffset: Cardinal;
     Decoded, Dest: Pointer;
@@ -539,9 +536,9 @@ begin
     Inc(OpenSlots[SlotIndex].CurrentDataOffset, BytesRead);
   end;
 end;
-{ @end $4C33E0 }
+{ @end $7B54F8 }
 
-{ @routine $4C3710 TPackFileEC_WriteEntrySlot }
+{ @routine $7B5788 TPackFileEC_WriteEntrySlot }
 function TPackFileEC.WriteEntrySlot(SlotIndex: Cardinal; Buffer: Pointer; ByteCount: Cardinal): Boolean;
 var BytesWritten, Size: Cardinal;
 begin
@@ -558,9 +555,9 @@ begin
   Size := OpenSlots[SlotIndex].CurrentDataOffset - OpenSlots[SlotIndex].DataStartOffset;
   if Size > OpenSlots[SlotIndex].DataSize then OpenSlots[SlotIndex].DataSize := Size;
 end;
-{ @end $4C3710 }
+{ @end $7B5788 }
 
-{ @routine $4C3948 TPackFileEC_SeekEntrySlot }
+{ @routine $7B5940 TPackFileEC_SeekEntrySlot }
 function TPackFileEC.SeekEntrySlot(SlotIndex, Offset: Cardinal; Origin: Integer): Boolean;
 var Position, BlockIndex: Cardinal;
 begin
@@ -575,7 +572,7 @@ begin
   begin
     if Offset > OpenSlots[SlotIndex].DataSize then Exit;
     BlockIndex := Offset shr PackCompressionBlockShift;
-    if OpenSlots[SlotIndex].CurrentBlockIndex <> Integer(BlockIndex) then OpenSlots[SlotIndex].CurrentBlockIndex := -1;
+    if BlockIndex <> Cardinal(OpenSlots[SlotIndex].CurrentBlockIndex) then OpenSlots[SlotIndex].CurrentBlockIndex := -1;
     OpenSlots[SlotIndex].CurrentDataOffset := OpenSlots[SlotIndex].DataStartOffset + Offset;
   end
   else
@@ -586,9 +583,9 @@ begin
   end;
   Result := True;
 end;
-{ @end $4C3948 }
+{ @end $7B5940 }
 
-{ @routine $4C3BD8 TPackFileEC_GetEntrySlotPosition }
+{ @routine $7B5B00 TPackFileEC_GetEntrySlotPosition }
 function TPackFileEC.GetEntrySlotPosition(SlotIndex: Cardinal): Cardinal;
 begin
   Result := $FFFFFFFF;
@@ -598,9 +595,9 @@ begin
   if OpenSlots[SlotIndex].IsAvailable then Exit;
   Result := OpenSlots[SlotIndex].CurrentDataOffset - OpenSlots[SlotIndex].DataStartOffset;
 end;
-{ @end $4C3BD8 }
+{ @end $7B5B00 }
 
-{ @routine $4C3CFC TPackFileEC_GetEntrySlotSize }
+{ @routine $7B5BEC TPackFileEC_GetEntrySlotSize }
 function TPackFileEC.GetEntrySlotSize(SlotIndex: Cardinal): Cardinal;
 begin
   Result := $FFFFFFFF;
@@ -610,9 +607,9 @@ begin
   if OpenSlots[SlotIndex].IsAvailable then Exit;
   Result := OpenSlots[SlotIndex].DataSize;
 end;
-{ @end $4C3CFC }
+{ @end $7B5BEC }
 
-{ @routine $4C3E0C THsFolderEC_Create }
+{ @routine $7B5CD4 THsFolderEC_Create }
 constructor THsFolderEC.Create(FolderName: AnsiString);
 begin
   EntryBuffer := nil;
@@ -625,9 +622,9 @@ begin
   ChangedFlag := False;
   InitializedEmptyFlag := False;
 end;
-{ @end $4C3E0C }
+{ @end $7B5CD4 }
 
-{ @routine $4C3EE8 THsFolderEC_CreateChild }
+{ @routine $7B5D90 THsFolderEC_CreateChild }
 constructor THsFolderEC.CreateChild(FolderName: AnsiString; Parent: THsFolderEC);
 begin
   EntryBuffer := nil;
@@ -640,24 +637,24 @@ begin
   ChangedFlag := False;
   InitializedEmptyFlag := False;
 end;
-{ @end $4C3EE8 }
+{ @end $7B5D90 }
 
-{ @routine $4C3FC8 THsFolderEC_Destroy }
+{ @routine $7B5E50 THsFolderEC_Destroy }
 destructor THsFolderEC.Destroy;
 begin
   Unload;
 end;
-{ @end $4C3FC8 }
+{ @end $7B5E50 }
 
-{ @routine $4C3FF4 THsFolderEC_GetEntry }
+{ @routine $7B5E70 THsFolderEC_GetEntry }
 function THsFolderEC.GetEntry(Index: Cardinal): PPackEntryEC;
 begin
   if Index < EntryCount then Result := OffsetPackPointer(EntryBuffer, EntryRecordSize * Index)
   else Result := nil;
 end;
-{ @end $4C3FF4 }
+{ @end $7B5E70 }
 
-{ @routine $4C4034 THsFolderEC_FindEntry }
+{ @routine $7B5E8C THsFolderEC_FindEntry }
 function THsFolderEC.FindEntry(EntryName: AnsiString): PPackEntryEC;
 var i: Integer; Entry: PPackEntryEC;
 begin
@@ -674,9 +671,9 @@ begin
       end;
   end;
 end;
-{ @end $4C4034 }
+{ @end $7B5E8C }
 
-{ @routine $4C40FC THsFolderEC_InitializeEmpty }
+{ @routine $7B5F44 THsFolderEC_InitializeEmpty }
 procedure THsFolderEC.InitializeEmpty;
 begin
   EntryCount := 0;
@@ -686,9 +683,9 @@ begin
   InitializedEmptyFlag := True;
   UpdateParentEntry;
 end;
-{ @end $4C40FC }
+{ @end $7B5F44 }
 
-{ @routine $4C4144 THsFolderEC_Load }
+{ @routine $7B5F6C THsFolderEC_Load }
 function THsFolderEC.Load(FileHandle, SubtreeOffset: Cardinal): Boolean;
 var BytesRead: Cardinal; Success: Boolean; i: Integer; Entry: PPackEntryEC; Folder: THsFolderEC;
 begin
@@ -726,35 +723,32 @@ begin
   end;
   Result := True;
 end;
-{ @end $4C4144 }
+{ @end $7B5F6C }
 
-{ @routine $4C4380 THsFolderEC_Unload }
+{ @routine $7B6130 THsFolderEC_Unload }
 procedure THsFolderEC.Unload;
-var i: Integer; Entry: PPackEntryEC; Folder: THsFolderEC;
+var i: Integer; Entry: PPackEntryEC;
 begin
-  if EntryBuffer <> nil then
+  if EntryBuffer = nil then Exit;
+  for i := 0 to EntryCount - 1 do
   begin
-    for i := 0 to EntryCount - 1 do
+    Entry := GetEntry(i);
+    if (Entry.Kind = 3) and (Entry.Flags = 0) then
     begin
-      Entry := GetEntry(i);
-      if (Entry.Kind = 3) and (Entry.Flags = 0) then
-      begin
-        Folder := Entry.ChildFolder;
-        if Folder <> nil then Folder.Free;
-        Entry.ChildFolder := nil;
-      end;
+      if Entry.ChildFolder <> nil then Entry.ChildFolder.Free;
+      Entry.ChildFolder := nil;
     end;
-    FreeMem(EntryBuffer);
-    EntryBuffer := nil;
-    EntryCount := 0;
-    HeaderSize := EntryCount * EntryRecordSize + 12;
-    ChangedFlag := True;
-    UpdateParentEntry;
   end;
+  FreeMem(EntryBuffer);
+  EntryBuffer := nil;
+  EntryCount := 0;
+  HeaderSize := EntryCount * EntryRecordSize + 12;
+  ChangedFlag := True;
+  UpdateParentEntry;
 end;
-{ @end $4C4380 }
+{ @end $7B6130 }
 
-{ @routine $4C4444 THsFolderEC_ResolveEntryByPath }
+{ @routine $7B61AC THsFolderEC_ResolveEntryByPath }
 function THsFolderEC.ResolveEntryByPath(EntryPath: AnsiString): PPackEntryEC;
 var Head, Tail: AnsiString; Entry: PPackEntryEC; Folder: THsFolderEC;
 begin
@@ -776,25 +770,23 @@ begin
     else if Tail = '' then Result := Entry;
   end;
 end;
-{ @end $4C4444 }
+{ @end $7B61AC }
 
-{ @routine $4C4528 THsFolderEC_UpdateParentEntry }
+{ @routine $7B6268 THsFolderEC_UpdateParentEntry }
 procedure THsFolderEC.UpdateParentEntry;
 var Entry: PPackEntryEC;
 begin
-  if Parent <> nil then
-  begin
-    Entry := Parent.FindEntry(OriginalName);
-    if Entry = nil then raise Exception.Create('Сбой в файловой системе пакетного файла - Folder: ' + UpperName);
-    if Entry.Kind <> 3 then raise Exception.Create('Конфликт имен файл/директория: ' + UpperName);
-    Entry.StoredSize := HeaderSize;
-    Entry.TargetOffset := 0;
-    Parent.ChangedFlag := True;
-  end;
+  if Parent = nil then Exit;
+  Entry := Parent.FindEntry(OriginalName);
+  if Entry = nil then raise Exception.Create('Сбой в файловой системе пакетного файла - Folder: ' + UpperName);
+  if Entry.Kind <> 3 then raise Exception.Create('Конфликт имен файл/директория: ' + UpperName);
+  Entry.StoredSize := HeaderSize;
+  Entry.TargetOffset := 0;
+  Parent.ChangedFlag := True;
 end;
-{ @end $4C4528 }
+{ @end $7B6268 }
 
-{ @routine $4C4674 TPackCollectionEC_Create }
+{ @routine $7B6384 TPackCollectionEC_Create }
 constructor TPackCollectionEC.Create;
 var i: Integer;
 begin
@@ -804,16 +796,16 @@ begin
   FirstPack := nil;
   for i := Low(PackByIndex) to High(PackByIndex) do PackByIndex[i] := nil;
 end;
-{ @end $4C4674 }
+{ @end $7B6384 }
 
-{ @routine $4C46E8 TPackCollectionEC_Destroy }
+{ @routine $7B63CC TPackCollectionEC_Destroy }
 destructor TPackCollectionEC.Destroy;
 begin
   Clear(False);
 end;
-{ @end $4C46E8 }
+{ @end $7B63CC }
 
-{ @routine $4C4718 TPackCollectionEC_Clear }
+{ @routine $7B63F0 TPackCollectionEC_Clear }
 procedure TPackCollectionEC.Clear(FreePacks: Boolean);
 var i: Integer;
 begin
@@ -825,9 +817,9 @@ begin
   end;
   while FirstPack <> nil do RemovePack(FirstPack, FreePacks);
 end;
-{ @end $4C4718 }
+{ @end $7B63F0 }
 
-{ @routine $4C4780 TPackCollectionEC_AddPackToFront }
+{ @routine $7B6430 TPackCollectionEC_AddPackToFront }
 procedure TPackCollectionEC.AddPackToFront(Pack: TPackFileEC);
 var Item: TPackFileEC; Count, i: Integer;
 begin
@@ -865,9 +857,9 @@ begin
     end;
   end;
 end;
-{ @end $4C4780 }
+{ @end $7B6430 }
 
-{ @routine $4C4888 TPackCollectionEC_AddPackToBack }
+{ @routine $7B64A8 TPackCollectionEC_AddPackToBack }
 procedure TPackCollectionEC.AddPackToBack(Pack: TPackFileEC);
 var Item: TPackFileEC; Count, i: Integer;
 begin
@@ -905,9 +897,9 @@ begin
     end;
   end;
 end;
-{ @end $4C4888 }
+{ @end $7B64A8 }
 
-{ @routine $4C4990 TPackCollectionEC_RemovePack }
+{ @routine $7B6520 TPackCollectionEC_RemovePack }
 procedure TPackCollectionEC.RemovePack(Pack: TPackFileEC; FreePack: Boolean);
 var Item: TPackFileEC; Count, i: Integer;
 begin
@@ -927,9 +919,9 @@ begin
     Item := Item.NextPack;
   end;
 end;
-{ @end $4C4990 }
+{ @end $7B6520 }
 
-{ @routine $4C4A6C TPackCollectionEC_OpenAllPackages }
+{ @routine $7B6590 TPackCollectionEC_OpenAllPackages }
 function TPackCollectionEC.OpenAllPackages: Boolean;
 var Pack: TPackFileEC;
 begin
@@ -958,9 +950,9 @@ begin
   end;
   Result := True;
 end;
-{ @end $4C4A6C }
+{ @end $7B6590 }
 
-{ @routine $4C4B1C TPackCollectionEC_CloseAllPackages }
+{ @routine $7B6608 TPackCollectionEC_CloseAllPackages }
 function TPackCollectionEC.CloseAllPackages: Boolean;
 var Pack: TPackFileEC;
 begin
@@ -977,9 +969,9 @@ begin
   end;
   Result := True;
 end;
-{ @end $4C4B1C }
+{ @end $7B6608 }
 
-{ @routine $4C4B74 TPackCollectionEC_GetPackByIndex }
+{ @routine $7B6638 TPackCollectionEC_GetPackByIndex }
 function TPackCollectionEC.GetPackByIndex(PackIndex: Integer): TPackFileEC;
 var Pack: TPackFileEC;
 begin
@@ -992,9 +984,9 @@ begin
   end;
   Result := Pack;
 end;
-{ @end $4C4B74 }
+{ @end $7B6638 }
 
-{ @routine $4C4BB4 TPackCollectionEC_OpenEntryByPathAcrossPackages }
+{ @routine $7B664C TPackCollectionEC_OpenEntryByPathAcrossPackages }
 function TPackCollectionEC.OpenEntryByPathAcrossPackages(EntryPath: AnsiString; DesiredAccess: Cardinal; FirstPackageOnly: Boolean): Integer;
 var Pack: TPackFileEC; Slot, Index, HashSlot, MappedIndex: Integer;
 begin
@@ -1044,22 +1036,20 @@ begin
   end;
   if Slot <> -1 then Result := Index * PackOpenSlotCount + Slot;
 end;
-{ @end $4C4BB4 }
+{ @end $7B664C }
 
-{ @routine $4C4D4C TPackCollectionEC_CreateLooseFile }
+{ @routine $7B67B4 TPackCollectionEC_CreateLooseFile }
 function TPackCollectionEC.CreateLooseFile(FilePath: WideString): Integer;
 var Slot: Integer;
 begin
   Result := -1;
-  if FirstPack <> nil then
-  begin
-    Slot := FirstPack.CreateLooseFile(FilePath);
-    if Slot <> -1 then Result := Slot;
-  end;
+  if FirstPack = nil then Exit;
+  Slot := FirstPack.CreateLooseFile(FilePath);
+  if Slot <> -1 then Result := Slot;
 end;
-{ @end $4C4D4C }
+{ @end $7B67B4 }
 
-{ @routine $4C4DC0 TPackCollectionEC_CloseEntryHandle }
+{ @routine $7B6814 TPackCollectionEC_CloseEntryHandle }
 function TPackCollectionEC.CloseEntryHandle(Handle: Integer): Boolean;
 var Pack: TPackFileEC; Index: Integer;
 begin
@@ -1068,9 +1058,9 @@ begin
   Pack := GetPackByIndex(Index);
   if Pack <> nil then Result := Pack.CloseEntrySlot(Handle - Index * PackOpenSlotCount);
 end;
-{ @end $4C4DC0 }
+{ @end $7B6814 }
 
-{ @routine $4C4E0C TPackCollectionEC_ReadEntryHandle }
+{ @routine $7B6844 TPackCollectionEC_ReadEntryHandle }
 function TPackCollectionEC.ReadEntryHandle(Handle: Integer; var Buffer; ByteCount: Cardinal): Boolean;
 var Pack: TPackFileEC; Index: Integer;
 begin
@@ -1079,9 +1069,9 @@ begin
   Pack := GetPackByIndex(Index);
   if Pack <> nil then Result := Pack.ReadEntrySlot(Handle - Index * PackOpenSlotCount, @Buffer, ByteCount);
 end;
-{ @end $4C4E0C }
+{ @end $7B6844 }
 
-{ @routine $4C4E64 TPackCollectionEC_WriteEntryHandle }
+{ @routine $7B6888 TPackCollectionEC_WriteEntryHandle }
 function TPackCollectionEC.WriteEntryHandle(Handle: Integer; var Buffer; ByteCount: Cardinal): Boolean;
 var Pack: TPackFileEC; Index: Integer;
 begin
@@ -1090,9 +1080,9 @@ begin
   Pack := GetPackByIndex(Index);
   if Pack <> nil then Result := Pack.WriteEntrySlot(Handle - Index * PackOpenSlotCount, @Buffer, ByteCount);
 end;
-{ @end $4C4E64 }
+{ @end $7B6888 }
 
-{ @routine $4C4EBC TPackCollectionEC_SeekEntryHandle }
+{ @routine $7B68CC TPackCollectionEC_SeekEntryHandle }
 function TPackCollectionEC.SeekEntryHandle(Handle: Integer; Offset: Cardinal; Origin: Integer): Boolean;
 var Pack: TPackFileEC; Index: Integer;
 begin
@@ -1101,9 +1091,9 @@ begin
   Pack := GetPackByIndex(Index);
   if Pack <> nil then Result := Pack.SeekEntrySlot(Handle - Index * PackOpenSlotCount, Offset, Origin);
 end;
-{ @end $4C4EBC }
+{ @end $7B68CC }
 
-{ @routine $4C4F14 TPackCollectionEC_GetEntryHandlePosition }
+{ @routine $7B6910 TPackCollectionEC_GetEntryHandlePosition }
 function TPackCollectionEC.GetEntryHandlePosition(Handle: Integer): Cardinal;
 var Pack: TPackFileEC; Index: Integer;
 begin
@@ -1112,9 +1102,9 @@ begin
   Pack := GetPackByIndex(Index);
   if Pack <> nil then Result := Pack.GetEntrySlotPosition(Handle - Index * PackOpenSlotCount);
 end;
-{ @end $4C4F14 }
+{ @end $7B6910 }
 
-{ @routine $4C4F64 TPackCollectionEC_GetEntryHandleSize }
+{ @routine $7B6940 TPackCollectionEC_GetEntryHandleSize }
 function TPackCollectionEC.GetEntryHandleSize(Handle: Integer): Cardinal;
 var Pack: TPackFileEC; Index: Integer;
 begin
@@ -1123,10 +1113,10 @@ begin
   Pack := GetPackByIndex(Index);
   if Pack <> nil then Result := Pack.GetEntrySlotSize(Handle - Index * PackOpenSlotCount);
 end;
-{ @end $4C4F64 }
+{ @end $7B6940 }
 
-{ @routine $4C4FB4 MatchLookupKeySuffix }
-function MatchLookupKeySuffix(var Key: AnsiString; SuffixBytes: Pointer; SuffixLength: Integer): Boolean;
+{ @routine $7B6970 MatchLookupKeySuffix }
+function MatchLookupKeySuffix(var Key: AnsiString; SuffixBytes: PAnsiChar; SuffixLength: Integer): Boolean;
 var i, j, First, KeyLength: Integer;
 begin
   KeyLength := Length(Key);
@@ -1135,14 +1125,14 @@ begin
   Result := True;
   for i := First to KeyLength do
   begin
-    if Key[i] <> PAnsiChar(SuffixBytes)[j] then begin Result := False; Break end;
+    if Key[i] <> SuffixBytes[j] then begin Result := False; Break end;
     Inc(j);
   end;
 end;
-{ @end $4C4FB4 }
+{ @end $7B6970 }
 
-{ @routine $4C504C CopyLookupKeySuffix }
-procedure CopyLookupKeySuffix(DestSuffixBytes: Pointer; SuffixLength: Integer; var Key: AnsiString);
+{ @routine $7B69C8 CopyLookupKeySuffix }
+procedure CopyLookupKeySuffix(DestSuffixBytes: PAnsiChar; SuffixLength: Integer; var Key: AnsiString);
 var i, j, First, KeyLength: Integer;
 begin
   KeyLength := Length(Key);
@@ -1150,27 +1140,27 @@ begin
   j := 0;
   for i := First to KeyLength do
   begin
-    PAnsiChar(DestSuffixBytes)[j] := Key[i];
+    DestSuffixBytes[j] := Key[i];
     Inc(j);
   end;
 end;
-{ @end $4C504C }
+{ @end $7B69C8 }
 
-{ @routine $4C50D4 THashEC_Create }
+{ @routine $7B6A0C THashEC_Create }
 constructor THashEC.Create;
 begin
   InitializeEmptyTable(Length(Slots));
 end;
-{ @end $4C50D4 }
+{ @end $7B6A0C }
 
-{ @routine $4C5118 THashEC_Destroy }
+{ @routine $7B6A44 THashEC_Destroy }
 destructor THashEC.Destroy;
 begin
   ReleaseTable;
 end;
-{ @end $4C5118 }
+{ @end $7B6A44 }
 
-{ @routine $4C5144 THashEC_ComputeLookupBucketAndFullHash }
+{ @routine $7B6A64 THashEC_ComputeLookupBucketAndFullHash }
 function THashEC.ComputeLookupBucketAndFullHash(var Key: AnsiString; out FullHash: Cardinal): Integer;
 var Hash: Cardinal; i, First, KeyLength: Integer;
 begin
@@ -1181,9 +1171,9 @@ begin
   FullHash := Hash;
   Result := Hash and High(Slots);
 end;
-{ @end $4C5144 }
+{ @end $7B6A64 }
 
-{ @routine $4C51E0 THashEC_FindOrInsertKeySlot }
+{ @routine $7B6AB0 THashEC_FindOrInsertKeySlot }
 function THashEC.FindOrInsertKeySlot(Key: AnsiString): Integer;
 var Bucket, Hash, i: Cardinal; Found: Integer; Temp: THashSlotEC;
 begin
@@ -1233,16 +1223,16 @@ begin
   end;
   Result := Found;
 end;
-{ @end $4C51E0 }
+{ @end $7B6AB0 }
 
-{ @routine $4C53E0 THashEC_SetSlotMappedValue }
+{ @routine $7B6C2C THashEC_SetSlotMappedValue }
 procedure THashEC.SetSlotMappedValue(SlotIndex, Value: Integer);
 begin
   Slots[SlotIndex].MappedValue := Value;
 end;
-{ @end $4C53E0 }
+{ @end $7B6C2C }
 
-{ @routine $4C5404 THashEC_InitializeEmptyTable }
+{ @routine $7B6C34 THashEC_InitializeEmptyTable }
 function THashEC.InitializeEmptyTable(BucketCount: Integer): Boolean;
 var i: Integer;
 begin
@@ -1254,23 +1244,23 @@ begin
   for i := Low(Slots) to High(Slots) do Slots[i].MappedValue := -1;
   Result := True;
 end;
-{ @end $4C5404 }
+{ @end $7B6C34 }
 
-{ @routine $4C5464 THashEC_ReleaseTable }
+{ @routine $7B6C68 THashEC_ReleaseTable }
 function THashEC.ReleaseTable: Boolean;
 begin
   Result := True;
 end;
-{ @end $4C5464 }
+{ @end $7B6C68 }
 
-{ @routine $4C5478 THashEC_GetSlotMappedValue }
+{ @routine $7B6C6C THashEC_GetSlotMappedValue }
 function THashEC.GetSlotMappedValue(SlotIndex: Integer): Integer;
 begin
   Result := Slots[SlotIndex].MappedValue;
 end;
-{ @end $4C5478 }
+{ @end $7B6C6C }
 
-{ @routine $4C549C THashEC_MaybeResetStatistics }
+{ @routine $7B6C74 THashEC_MaybeResetStatistics }
 procedure THashEC.MaybeResetStatistics;
 begin
   if (OperationCount mod 100 = 0) and (OperationCount <> 0) then
@@ -1282,13 +1272,13 @@ begin
     MissCount := 0;
   end;
 end;
-{ @end $4C549C }
+{ @end $7B6C74 }
 
-{ @routine $4C54EC THashEC_NoteStaleMappedValue }
+{ @routine $7B6CAC THashEC_NoteStaleMappedValue }
 procedure THashEC.NoteStaleMappedValue;
 begin
   Inc(StaleValueCount);
 end;
-{ @end $4C54EC }
+{ @end $7B6CAC }
 
 end.

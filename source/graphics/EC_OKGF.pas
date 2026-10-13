@@ -22,7 +22,7 @@ type
   end;
   POkgfReadContext = ^TOkgfReadContext;
 
-function OKGF_ZLib_UnCompress2(Dest: Pointer; DestCapacity: Integer; Source: Pointer; SourceSize: Integer): Integer; stdcall; external 'ZLib.dll' name 'OKGF_ZLib_UnCompress2'; // @addr $4C221C @note "Accepts a ZL02 header followed by a zlib stream. Returns the decompressed byte count or zero on invalid input/decompression failure. Native DLL export uses four stack arguments and RET 16."
+function OKGF_ZLib_UnCompress2(Dest: Pointer; DestCapacity: Integer; Source: Pointer; SourceSize: Integer): Integer; stdcall; external 'ZLib.dll' name 'OKGF_ZLib_UnCompress2'; // @addr $4829CC @note "Accepts a ZL02 header followed by a zlib stream. Returns the decompressed byte count or zero on invalid input/decompression failure. Native DLL export uses four stack arguments and RET 16."
 
 implementation
 

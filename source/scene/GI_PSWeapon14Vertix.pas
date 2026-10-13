@@ -7,19 +7,19 @@ type
   TGAISet = array[0..0] of WideString;
   TWeapon14AnimationPaths = array of TGAISet;
 
-procedure LoadWeapon14AnimationPaths; // @addr $695CC8
+procedure LoadWeapon14AnimationPaths; // @addr $4EFFE4
 
 var
-  Weapon14AnimationPaths: array of TGAISet; // @addr $88AEF8
+  Weapon14AnimationPaths: array of TGAISet; // @addr $81B1AC
 
 implementation
 
-// @unit-initialization $87794C
-// @unit-finalization $695E74
+// @unit-initialization $80682C
+// @unit-finalization $4F0154
 
 uses SysUtils, Math, EC_BlockPar, EC_Str, Globals;
 
-{ @routine $695CC8 LoadWeapon14AnimationPaths }
+{ @routine $4EFFE4 LoadWeapon14AnimationPaths }
 procedure LoadWeapon14AnimationPaths;
 var
   Block, PaletteBlock: TBlockParEC;
@@ -35,14 +35,12 @@ begin
   for Index := 0 to Count - 1 do
   begin
     Text := IntToStr(Index);
-    if Block.CountBlocks(Text) <> 0 then
-    begin
-      PaletteBlock := Block.GetBlockByPath(Text);
-      if PaletteBlock.CountParams('GAI') > 0 then
-        Weapon14AnimationPaths[Index][0] := PaletteBlock.GetParam('GAI');
-    end;
+    if Block.CountBlocks(Text) = 0 then Continue;
+    PaletteBlock := Block.GetBlockByPath(Text);
+    if PaletteBlock.CountParams('GAI') > 0 then
+      Weapon14AnimationPaths[Index][0] := PaletteBlock.GetParam('GAI');
   end;
 end;
-{ @end $695CC8 }
+{ @end $4EFFE4 }
 
 end.

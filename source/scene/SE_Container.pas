@@ -1,6 +1,4 @@
 unit SE_Container;
-// Unit bracket (inferred): .text 0x008109E4..0x00811040; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
-// Native class and methods: $7E5140..$811041.
 
 interface
 
@@ -13,32 +11,32 @@ type
     MinimapImagePath: WideString; // @offset $50
     Animation: TgaiGI; // @offset $54
     MinimapImage: TAlphaImageGI; // @offset $58
-    procedure CopyTo(Destination: TObjectSE); override; // @addr $810AB4
-    procedure AttachToSpace(ASpace: TSpaceSE); override; // @addr $810B08
-    procedure DetachFromSpace; override; // @addr $810D24
-    procedure SetPosition(APosition: TPointF); override; // @addr $810D7C
-    procedure SetDepth(Value: Single); override; // @addr $810E0C
-    function GetDepth: Single; override; // @addr $810E30
-    function HitTestCursor: Boolean; override; // @addr $810E50
-    procedure DrawMap; override; // @addr $810E80
-    procedure LoadTemplate(Block: TBlockParEC); override; // @addr $810F00
-    procedure QueueImageLoad(PendingLoads: TList; Owner: TObjectGI); override; // @addr $810FC8
+    procedure CopyTo(Destination: TObjectSE); override; // @addr $6F41DC
+    procedure AttachToSpace(ASpace: TSpaceSE); override; // @addr $6F4224
+    procedure DetachFromSpace; override; // @addr $6F43C8
+    procedure SetPosition(APosition: TPointF); override; // @addr $6F4404
+    procedure SetDepth(Value: Single); override; // @addr $6F4488
+    function GetDepth: Single; override; // @addr $6F44A4
+    function HitTestCursor: Boolean; override; // @addr $6F44B4
+    procedure DrawMap; override; // @addr $6F44D0
+    procedure LoadTemplate(Block: TBlockParEC); override; // @addr $6F4540
+    procedure QueueImageLoad(PendingLoads: TList; Owner: TObjectGI); override; // @addr $6F4600
   end;
 
 implementation
 
 uses aMyFunction, Globals, GR_Main, SE_Process;
 
-{ @routine $810AB4 TContainerSE_CopyTo }
+{ @routine $6F41DC TContainerSE_CopyTo }
 procedure TContainerSE.CopyTo(Destination: TObjectSE);
 begin
   inherited CopyTo(Destination);
   (Destination as TContainerSE).ImagePath := ImagePath;
   (Destination as TContainerSE).MinimapImagePath := MinimapImagePath;
 end;
-{ @end $810AB4 }
+{ @end $6F41DC }
 
-{ @routine $810B08 TContainerSE_AttachToSpace }
+{ @routine $6F4224 TContainerSE_AttachToSpace }
 procedure TContainerSE.AttachToSpace(ASpace: TSpaceSE);
 begin
   if not IsAttachedToSpace then
@@ -50,25 +48,25 @@ begin
     Animation.SetImagePath(ImagePath);
     Animation.SequenceIndex := 0;
     Animation.UpdateAutoGeometry;
-    Animation.SetPositionModeW(True);
+    Animation.World := True;
     Animation.SetDepthByName(DepthExpression);
-    Animation.SetPosition(TruncatePointF(Position));
-    Animation.SetSize(Animation.GetContentSize);
-    Animation.SetOrigin(HalfPoint(Animation.ClientSize));
+    Animation.Pos := TruncatePointF(Position);
+    Animation.ObjectSize := Animation.GetContentSize;
+    Animation.Sme := HalfPoint(Animation.ClientSize);
     Animation.SetSequenceFrame(RandomIntRange(0, Animation.SequenceFrameCount - 1));
     Animation.RestartPlayback;
     MinimapImage := TAlphaImageGI.Create(SpaceObjectUiLoop.ContentPanel);
-    MinimapImage.SetPositionModeW(True);
+    MinimapImage.World := True;
     MinimapImage.SetDepthByName(DepthExpression);
-    MinimapImage.SetPosition(TruncatePointF(MakePointF(Position.X * Space.MinimapScale, Position.Y * Space.MinimapScale)));
+    MinimapImage.Pos := TruncatePointF(MakePointF(Position.X * Space.MinimapScale, Position.Y * Space.MinimapScale));
     MinimapImage.SetImagePath(MinimapImagePath);
-    MinimapImage.SetSize(MinimapImage.GetContentSize);
-    MinimapImage.SetOrigin(HalfPoint(MinimapImage.ClientSize));
+    MinimapImage.ObjectSize := MinimapImage.GetContentSize;
+    MinimapImage.Sme := HalfPoint(MinimapImage.ClientSize);
   end;
 end;
-{ @end $810B08 }
+{ @end $6F4224 }
 
-{ @routine $810D24 TContainerSE_DetachFromSpace }
+{ @routine $6F43C8 TContainerSE_DetachFromSpace }
 procedure TContainerSE.DetachFromSpace;
 begin
   if IsAttachedToSpace then
@@ -86,43 +84,43 @@ begin
     inherited DetachFromSpace;
   end;
 end;
-{ @end $810D24 }
+{ @end $6F43C8 }
 
-{ @routine $810D7C TContainerSE_SetPosition }
+{ @routine $6F4404 TContainerSE_SetPosition }
 procedure TContainerSE.SetPosition(APosition: TPointF);
 begin
   inherited SetPosition(APosition);
   if IsAttachedToSpace then
   begin
-    Animation.SetPosition(TruncatePointF(APosition));
-    MinimapImage.SetPosition(TruncatePointF(MakePointF(APosition.X * Space.MinimapScale, APosition.Y * Space.MinimapScale)));
+    Animation.Pos := TruncatePointF(APosition);
+    MinimapImage.Pos := TruncatePointF(MakePointF(APosition.X * Space.MinimapScale, APosition.Y * Space.MinimapScale));
   end;
 end;
-{ @end $810D7C }
+{ @end $6F4404 }
 
-{ @routine $810E0C TContainerSE_SetDepth }
+{ @routine $6F4488 TContainerSE_SetDepth }
 procedure TContainerSE.SetDepth(Value: Single);
 begin
   Animation.SetDepth(Value);
 end;
-{ @end $810E0C }
+{ @end $6F4488 }
 
-{ @routine $810E30 TContainerSE_GetDepth }
+{ @routine $6F44A4 TContainerSE_GetDepth }
 function TContainerSE.GetDepth: Single;
 begin
   Result := Animation.Depth;
 end;
-{ @end $810E30 }
+{ @end $6F44A4 }
 
-{ @routine $810E50 TContainerSE_HitTestCursor }
+{ @routine $6F44B4 TContainerSE_HitTestCursor }
 function TContainerSE.HitTestCursor: Boolean;
 begin
   if not IsAttachedToSpace then Result := False
   else Result := Animation.HitTestCursor;
 end;
-{ @end $810E50 }
+{ @end $6F44B4 }
 
-{ @routine $810E80 TContainerSE_DrawMap }
+{ @routine $6F44D0 TContainerSE_DrawMap }
 procedure TContainerSE.DrawMap;
 var
   CurrentProcess: TProcessSE;
@@ -131,18 +129,18 @@ begin
   if PointDistanceSquared(Position, CurrentProcess.RadarCenter) < Sqr(CurrentProcess.RadarRange) then
     MinimapImage.Draw(Classes.Rect(0, 0, RenderScratchBuffer.Width, RenderScratchBuffer.Height));
 end;
-{ @end $810E80 }
+{ @end $6F44D0 }
 
-{ @routine $810F00 TContainerSE_LoadTemplate }
+{ @routine $6F4540 TContainerSE_LoadTemplate }
 procedure TContainerSE.LoadTemplate(Block: TBlockParEC);
 begin
   inherited LoadTemplate(Block);
   ImagePath := Block.GetParam(GiResourceSuffix + 'Image');
   MinimapImagePath := Block.GetParam('ImageMap');
 end;
-{ @end $810F00 }
+{ @end $6F4540 }
 
-{ @routine $810FC8 TContainerSE_QueueImageLoad }
+{ @routine $6F4600 TContainerSE_QueueImageLoad }
 procedure TContainerSE.QueueImageLoad(PendingLoads: TList; Owner: TObjectGI);
 var
   Image: TgaiGI;
@@ -157,6 +155,6 @@ begin
   MapImage.QueueImageLoad(PendingLoads);
   MapImage.Free;
 end;
-{ @end $810FC8 }
+{ @end $6F4600 }
 
 end.

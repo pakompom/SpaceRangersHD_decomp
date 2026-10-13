@@ -1,5 +1,4 @@
 unit CPVarClass;
-// Unit bracket (inferred): .text 0x004DF774..0x004DFC92; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -20,32 +19,32 @@ type
     IntValue: Integer; // @offset 0x14
     ValueKind: TCPValueKind; // @offset 0x18
 
-    constructor Create; // @addr 0x4DF7CC
-    destructor Destroy; override; // @addr 0x4DF828
-    procedure Reset; // @addr 0x4DF874 @note "Resets to integer zero; retains the range object."
-    procedure Assign(Source: TCPVariant; FreeSource: Boolean); // @addr 0x4DF8A8 @note "Deep-copies the range."
-    function TryLoadFromText(Text: WideString): Boolean; // @addr 0x4DF90C @note "Comma decimals use Single precision; uppercase E is ignored. Ranges require h, not '..'. Failure preserves the value; empty text becomes zero."
-    function HasNumericChars(var Text: WideString; TextLength: Integer): Boolean; // @addr 0x4DFAA8 @note "Permits digits, comma and uppercase E; not a syntax check."
-    function HasIntegerChars(var Text: WideString; TextLength: Integer): Boolean; // @addr 0x4DFB20 @note "Permits digits and uppercase E; not a syntax check."
+    constructor Create; // @addr 0x004DC4A8
+    destructor Destroy; override; // @addr 0x004DC4F4
+    procedure Reset; // @addr 0x004DC530 @note "Resets to integer zero; retains the range object."
+    procedure Assign(Source: TCPVariant; FreeSource: Boolean); // @addr 0x004DC554 @note "Deep-copies the range."
+    function TryLoadFromText(Text: WideString): Boolean; // @addr 0x004DC598 @note "Comma decimals use Single precision; uppercase E is ignored. Ranges require h, not '..'. Failure preserves the value; empty text becomes zero."
+    function HasNumericChars(var Text: WideString; TextLength: Integer): Boolean; // @addr 0x004DC6F0 @note "Permits digits, comma and uppercase E; not a syntax check."
+    function HasIntegerChars(var Text: WideString; TextLength: Integer): Boolean; // @addr 0x004DC72C @note "Permits digits and uppercase E; not a syntax check."
     // Numeric conversions resample ranges; unknown tags return zero.
-    function AsExtended: Extended; // @addr 0x4DFB88
-    function AsInteger: Integer; // @addr 0x4DFBFC @note "Float conversion clamps at +/-2000000000; within bounds, uses System.Round(value + 1E-11)."
+    function AsExtended: Extended; // @addr 0x004DC764
+    function AsInteger: Integer; // @addr 0x004DC7C8 @note "Float conversion clamps at +/-2000000000; within bounds, uses System.Round(value + 1E-11)."
   end;
 
 implementation
 
 uses EC_Str;
 
-{ @routine $4DF7CC TCPVariant_Create }
+{ @routine $4DC4A8 TCPVariant_Create }
 constructor TCPVariant.Create;
 begin
   inherited Create;
   Range := TCPDiapazone.Create;
   Reset;
 end;
-{ @end $4DF7CC }
+{ @end $4DC4A8 }
 
-{ @routine $4DF828 TCPVariant_Destroy }
+{ @routine $4DC4F4 TCPVariant_Destroy }
 destructor TCPVariant.Destroy;
 begin
   Reset;
@@ -53,9 +52,9 @@ begin
   Range := nil;
   inherited Destroy;
 end;
-{ @end $4DF828 }
+{ @end $4DC4F4 }
 
-{ @routine $4DF874 TCPVariant_Reset }
+{ @routine $4DC530 TCPVariant_Reset }
 procedure TCPVariant.Reset;
 begin
   FloatValue := 0;
@@ -63,9 +62,9 @@ begin
   Range.Clear;
   ValueKind := cpvkInteger;
 end;
-{ @end $4DF874 }
+{ @end $4DC530 }
 
-{ @routine $4DF8A8 TCPVariant_Assign }
+{ @routine $4DC554 TCPVariant_Assign }
 procedure TCPVariant.Assign(Source: TCPVariant; FreeSource: Boolean);
 begin
   Range.Assign(Source.Range);
@@ -74,9 +73,9 @@ begin
   ValueKind := Source.ValueKind;
   if FreeSource then Source.Free;
 end;
-{ @end $4DF8A8 }
+{ @end $4DC554 }
 
-{ @routine $4DF90C TCPVariant_TryLoadFromText }
+{ @routine $4DC598 TCPVariant_TryLoadFromText }
 function TCPVariant.TryLoadFromText(Text: WideString): Boolean;
 var
   i, Count: Integer;
@@ -117,9 +116,9 @@ begin
     Result := True;
   end;
 end;
-{ @end $4DF90C }
+{ @end $4DC598 }
 
-{ @routine $4DFAA8 TCPVariant_HasNumericChars }
+{ @routine $4DC6F0 TCPVariant_HasNumericChars }
 function TCPVariant.HasNumericChars(var Text: WideString; TextLength: Integer): Boolean;
 var
   i: Integer;
@@ -129,9 +128,9 @@ begin
     if ((Text[i] < '0') or (Text[i] > '9')) and (Text[i] <> ',') and (Text[i] <> 'E') then Exit;
   Result := True;
 end;
-{ @end $4DFAA8 }
+{ @end $4DC6F0 }
 
-{ @routine $4DFB20 TCPVariant_HasIntegerChars }
+{ @routine $4DC72C TCPVariant_HasIntegerChars }
 function TCPVariant.HasIntegerChars(var Text: WideString; TextLength: Integer): Boolean;
 var
   i: Integer;
@@ -141,9 +140,9 @@ begin
     if ((Text[i] < '0') or (Text[i] > '9')) and (Text[i] <> 'E') then Exit;
   Result := True;
 end;
-{ @end $4DFB20 }
+{ @end $4DC72C }
 
-{ @routine $4DFB88 TCPVariant_AsExtended }
+{ @routine $4DC764 TCPVariant_AsExtended }
 function TCPVariant.AsExtended: Extended;
 begin
   Result := 0;
@@ -151,9 +150,9 @@ begin
   else if ValueKind = cpvkFloat then Result := FloatValue
   else if ValueKind = cpvkInteger then Result := IntValue;
 end;
-{ @end $4DFB88 }
+{ @end $4DC764 }
 
-{ @routine $4DFBFC TCPVariant_AsInteger }
+{ @routine $4DC7C8 TCPVariant_AsInteger }
 function TCPVariant.AsInteger: Integer;
 begin
   Result := 0;
@@ -166,6 +165,6 @@ begin
   end
   else if ValueKind = cpvkInteger then Result := IntValue;
 end;
-{ @end $4DFBFC }
+{ @end $4DC7C8 }
 
 end.

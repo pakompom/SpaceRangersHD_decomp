@@ -15,42 +15,41 @@ type
     Items: TList; // @offset $E4 Borrowed PWideString entries.
     OffsetX: Integer; // @offset $E8
     OffsetY: Integer; // @offset $EC
-    constructor Create; override; // @addr $504A90
-    destructor Destroy; override; // @addr $504AD4
-    procedure OnOpen; override; // @addr $504B08
-    procedure OnClose; override; // @addr $5053DC
-    procedure PopulateChoices; // @addr $5053E8
-    procedure AcceptClicked(Sender: TObjectGI); // @addr $505618
-    procedure CancelClicked(Sender: TObjectGI); // @addr $50566C
-    procedure ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer); override; // @addr $50568C
-    procedure ChoiceMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $505700
-    procedure ChoiceDoubleClick(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $5057A4
-    procedure ProcessCallbackTimers; override; // @addr $5057D0
+    constructor Create; override; // @addr $50362C
+    destructor Destroy; override; // @addr $503664
+    procedure OnOpen; override; // @addr $50368C
+    procedure OnClose; override; // @addr $503E9C
+    procedure PopulateChoices; // @addr $503EA0
+    procedure AcceptClicked(Sender: TObjectGI); // @addr $50409C
+    procedure CancelClicked(Sender: TObjectGI); // @addr $5040CC
+    procedure ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer); override; // @addr $5040D8
+    procedure ChoiceMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $50411C
+    procedure ChoiceDoubleClick(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $5041A4
+    procedure ProcessCallbackTimers; override; // @addr $5041C4
   end;
 
-// Native TfListBox VMT $504A34 confirms the inferred unit ownership.
-function ShowListDialog(Parent: TMessageLoopGI; var SelectedIndex: Integer; Caption: WideString; Items: TList; OffsetX, OffsetY: Integer): Cardinal; // @addr $505804 @note "Borrows a list of PWideString choices; copies the selection back and clears the dialog's borrowed list before freeing it."
+function ShowListDialog(Parent: TMessageLoopGI; var SelectedIndex: Integer; Caption: WideString; Items: TList; OffsetX, OffsetY: Integer): Cardinal; // @addr $5041EC @note "Borrows a list of PWideString choices; copies the selection back and clears the dialog's borrowed list before freeing it."
 
 implementation
 
 uses Windows, GI_Window, GI_Frame, GI_Label, GI_Panel, GI_Main, GR_Main, Globals, GlobalsV;
 
 
-{ @routine $504A90 TfListBox_Create }
+{ @routine $50362C TfListBox_Create }
 constructor TfListBox.Create;
 begin
   inherited;
 end;
-{ @end $504A90 }
+{ @end $50362C }
 
-{ @routine $504AD4 TfListBox_Destroy }
+{ @routine $503664 TfListBox_Destroy }
 destructor TfListBox.Destroy;
 begin
   inherited;
 end;
-{ @end $504AD4 }
+{ @end $503664 }
 
-{ @routine $504B08 TfListBox_OnOpen }
+{ @routine $50368C TfListBox_OnOpen }
 procedure TfListBox.OnOpen;
 var
   Window: TWindowGI;
@@ -141,16 +140,16 @@ begin
   ContentPanel.UpdateAbsolutePosition;
   ContentPanel.UpdateSubtreeHitBounds;
 end;
-{ @end $504B08 }
+{ @end $50368C }
 
-{ @routine $5053DC TfListBox_OnClose }
+{ @routine $503E9C TfListBox_OnClose }
 procedure TfListBox.OnClose;
 begin
 
 end;
-{ @end $5053DC }
+{ @end $503E9C }
 
-{ @routine $5053E8 TfListBox_PopulateChoices }
+{ @routine $503EA0 TfListBox_PopulateChoices }
 procedure TfListBox.PopulateChoices;
 var
   I, Count, Y: Integer;
@@ -189,9 +188,9 @@ begin
     VerticalScrollBar.SetPageSize(ClientSize.Y);
   end;
 end;
-{ @end $5053E8 }
+{ @end $503EA0 }
 
-{ @routine $505618 TfListBox_AcceptClicked }
+{ @routine $50409C TfListBox_AcceptClicked }
 procedure TfListBox.AcceptClicked(Sender: TObjectGI);
 begin
   if SelectedControl <> nil then
@@ -201,25 +200,25 @@ begin
       RequestClose(1);
     end;
 end;
-{ @end $505618 }
+{ @end $50409C }
 
-{ @routine $50566C TfListBox_CancelClicked }
+{ @routine $5040CC TfListBox_CancelClicked }
 procedure TfListBox.CancelClicked(Sender: TObjectGI);
 begin
   RequestClose(2);
 end;
-{ @end $50566C }
+{ @end $5040CC }
 
-{ @routine $50568C TfListBox_ProcessMouseWheel }
+{ @routine $5040D8 TfListBox_ProcessMouseWheel }
 procedure TfListBox.ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer);
 begin
   with ScrollPanel.VerticalScrollBar do
     if Delta = WHEEL_DELTA then SetPosition(Position - SmallChange)
     else if Delta = -WHEEL_DELTA then SetPosition(Position + SmallChange);
 end;
-{ @end $50568C }
+{ @end $5040D8 }
 
-{ @routine $505700 TfListBox_ChoiceMouseDown }
+{ @routine $50411C TfListBox_ChoiceMouseDown }
 procedure TfListBox.ChoiceMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint);
 begin
   if SelectedControl <> nil then
@@ -230,25 +229,25 @@ begin
   SelectedControl := Sender;
   (SelectedControl as TLabelGI).SetTextColor(CurrentPixelFormat.PackRgbBytes(150,150,0));
 end;
-{ @end $505700 }
+{ @end $50411C }
 
-{ @routine $5057A4 TfListBox_ChoiceDoubleClick }
+{ @routine $5041A4 TfListBox_ChoiceDoubleClick }
 procedure TfListBox.ChoiceDoubleClick(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint);
 begin
   AcceptClicked(nil);
 end;
-{ @end $5057A4 }
+{ @end $5041A4 }
 
-{ @routine $5057D0 TfListBox_ProcessCallbackTimers }
+{ @routine $5041C4 TfListBox_ProcessCallbackTimers }
 procedure TfListBox.ProcessCallbackTimers;
 begin
   inherited;
   if ParentLoop.ExitCode <> 0 then
     if ExitCode = 0 then RequestClose(255);
 end;
-{ @end $5057D0 }
+{ @end $5041C4 }
 
-{ @routine $505804 ShowListDialog }
+{ @routine $5041EC ShowListDialog }
 function ShowListDialog(Parent: TMessageLoopGI; var SelectedIndex: Integer; Caption: WideString; Items: TList; OffsetX, OffsetY: Integer): Cardinal;
 var
   Dialog: TfListBox;
@@ -256,7 +255,7 @@ var
 begin
   Parent.RootUiObject.OnModalSuspend;
   Parent.CaptureCursorState(@State);
-  Parent.SetCursorActive(False);
+  Parent.ShowCursor := False;
   Parent.DrawQueuedUpdateRects;
   CaptureScreenBackground(False,0);
   Dialog := TfListBox.Create;
@@ -282,6 +281,6 @@ begin
   Parent.RootUiObject.OnModalResume;
   if Result = 254 then BreakUiMessage;
 end;
-{ @end $505804 }
+{ @end $5041EC }
 
 end.

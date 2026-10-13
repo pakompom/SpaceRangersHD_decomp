@@ -1,22 +1,10 @@
 unit EC_CacheSound;
-// Unit bracket (inferred): .text 0x0083DCE0..0x0083E064; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
-uses Classes, EC_Buf, EC_Cache;
+uses Classes, DirectSound, EC_Buf, EC_Cache;
 
 type
-  TWaveFormatEx = packed record // @size 0x12
-    FormatTag: Word; // @offset 0x00
-    Channels: Word; // @offset 0x02
-    SamplesPerSecond: Cardinal; // @offset 0x04
-    AverageBytesPerSecond: Cardinal; // @offset 0x08
-    BlockAlign: Word; // @offset 0x0C
-    BitsPerSample: Word; // @offset 0x0E
-    ExtraSize: Word; // @offset 0x10
-  end;
-  PWaveFormatEx = ^TWaveFormatEx;
-
   TWaveFileHeader = packed record // @size 0x2C
     // Fixed PCM header view. LoadFromConfigBuffer scans for data if it is not at $24.
     RiffId: Cardinal; // @offset 0x00 'RIFF'.
@@ -39,23 +27,24 @@ type
 
   TCSoundControlEC = class(TCacheControlEC) // @size 0x18
   public
-    procedure QueueLoadIfMissing(PendingLoads: TList); override; // @addr 0x83DDB8 @slot 0x08
-    function CreateData: TCacheDataEC; override; // @addr 0x83DE3C @slot 0x0C
-    function AcquireData: TCacheDataEC; override; // @addr 0x83DE88 @slot 0x10
+    procedure QueueLoadIfMissing(PendingLoads: TList); override; // @addr 0x004C6850 @slot 0x08
+    function CreateData: TCacheDataEC; override; // @addr 0x004C68BC @slot 0x0C
+    function AcquireData: TCacheDataEC; override; // @addr 0x004C68EC @slot 0x10
   end;
 
   TCSoundEC = class(TCacheDataEC) // @size 0x3C
   public
-    Format: TWaveFormatEx; // @offset 0x20
+    // Playback copies the aligned 20-byte format, including its two-byte tail.
+    Format: TSoundWaveFormat; // @offset 0x20
     SampleData: Pointer; // @offset 0x34
     SampleDataSize: Cardinal; // @offset 0x38
 
-    constructor Create; // @addr 0x83DEA4
-    destructor Destroy; override; // @addr 0x83DEE8
-    procedure LoadFromConfigBuffer(SourceBuffer: TBufEC; const LoadOption: WideString); override; // @addr 0x83DF38 @slot 0x00 @note "Reads 44 bytes from the current position. Forces PCM without validating RIFF, WAVE or fmt identifiers. If data is absent at header offset 36, scans the whole buffer byte by byte for it. Ignores LoadOption."
+    constructor Create; // @addr 0x004C68F4
+    destructor Destroy; override; // @addr 0x004C692C
+    procedure LoadFromConfigBuffer(SourceBuffer: TBufEC; const LoadOption: WideString); override; // @addr 0x004C6964 @slot 0x00 @note "Reads 44 bytes from the current position. Forces PCM without validating RIFF, WAVE or fmt identifiers. If data is absent at header offset 36, scans the whole buffer byte by byte for it. Ignores LoadOption."
   end;
 
-function AcquireCachedSound(Control: TCacheControlEC): TCSoundEC; // @addr 0x83DE5C
+function AcquireCachedSound(Control: TCacheControlEC): TCSoundEC; // @addr 0x004C68CC
 
 implementation
 
@@ -65,7 +54,7 @@ const
   WaveDataChunkId = $61746164; // little-endian 'data'
   WaveChunkHeaderSize = 2 * SizeOf(Cardinal);
 
-{ @routine $83DDB8 TCSoundControlEC_QueueLoadIfMissing }
+{ @routine $4C6850 TCSoundControlEC_QueueLoadIfMissing }
 procedure TCSoundControlEC.QueueLoadIfMissing(PendingLoads: TList);
 var
   Control: TCSoundControlEC;
@@ -73,45 +62,43 @@ begin
   if RetainCount > 0 then Exit;
   if BoundData <> nil then Exit;
   if HasEmptyCacheKey then Exit;
-  if GlobalCache.FindDataByKeyAndClass(CacheKey, TCSoundEC) = nil then
-  begin
-    Control := TCSoundControlEC.Create;
-    GlobalCache.ResetControl(Control);
-    Control.SetCacheKey(CacheKey);
-    PendingLoads.Add(Control);
-  end;
+  if GlobalCache.FindDataByKeyAndClass(CacheKey, TCSoundEC) <> nil then Exit;
+  Control := TCSoundControlEC.Create;
+  GlobalCache.ResetControl(Control);
+  Control.SetCacheKey(CacheKey);
+  PendingLoads.Add(Control);
 end;
-{ @end $83DDB8 }
+{ @end $4C6850 }
 
-{ @routine $83DE3C TCSoundControlEC_CreateData }
+{ @routine $4C68BC TCSoundControlEC_CreateData }
 function TCSoundControlEC.CreateData: TCacheDataEC;
 begin
   Result := TCSoundEC.Create;
 end;
-{ @end $83DE3C }
+{ @end $4C68BC }
 
-{ @routine $83DE5C AcquireCachedSound }
+{ @routine $4C68CC AcquireCachedSound }
 function AcquireCachedSound(Control: TCacheControlEC): TCSoundEC;
 begin
   Result := Control.AcquireDataFromConfig(TCSoundEC) as TCSoundEC;
 end;
-{ @end $83DE5C }
+{ @end $4C68CC }
 
-{ @routine $83DE88 TCSoundControlEC_AcquireData }
+{ @routine $4C68EC TCSoundControlEC_AcquireData }
 function TCSoundControlEC.AcquireData: TCacheDataEC;
 begin
   Result := AcquireCachedSound(Self);
 end;
-{ @end $83DE88 }
+{ @end $4C68EC }
 
-{ @routine $83DEA4 TCSoundEC_Create }
+{ @routine $4C68F4 TCSoundEC_Create }
 constructor TCSoundEC.Create;
 begin
   inherited Create;
 end;
-{ @end $83DEA4 }
+{ @end $4C68F4 }
 
-{ @routine $83DEE8 TCSoundEC_Destroy }
+{ @routine $4C692C TCSoundEC_Destroy }
 destructor TCSoundEC.Destroy;
 begin
   if SampleData <> nil then
@@ -121,9 +108,9 @@ begin
   end;
   inherited Destroy;
 end;
-{ @end $83DEE8 }
+{ @end $4C692C }
 
-{ @routine $83DF38 TCSoundEC_LoadFromConfigBuffer }
+{ @routine $4C6964 TCSoundEC_LoadFromConfigBuffer }
 procedure TCSoundEC.LoadFromConfigBuffer(SourceBuffer: TBufEC; const LoadOption: WideString);
 var
   Offset: Integer;
@@ -159,6 +146,6 @@ begin
   SampleData := AllocEC(SampleDataSize);
   SourceBuffer.ReadBytes(SampleData, SampleDataSize);
 end;
-{ @end $83DF38 }
+{ @end $4C6964 }
 
 end.

@@ -1,5 +1,4 @@
 unit fGoodsShop2;
-// Unit bracket (inferred): .text 0x007D4AA8..0x007DC847; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -29,56 +28,56 @@ type
 
     MoneyWarningActive: Boolean; // @offset $178
     MoneyWarningTicks: Integer; // @offset $17C
-    MoneyWarningTimer: PCallbackTimerGI; // @offset $180
+    MoneyWarningTimer: TCallbackTimerIdGI; // @offset $180
     CargoWarningActive: Boolean; // @offset $184
     CargoWarningTicks: Integer; // @offset $188
-    CargoWarningTimer: PCallbackTimerGI; // @offset $18C
+    CargoWarningTimer: TCallbackTimerIdGI; // @offset $18C
     AmbientSound: TSoundBufferControl; // @offset $190
 
-    procedure GoodsMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $7D8840
-    procedure GoodsRightMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $7D965C
-    procedure GoodsMouseMove(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $7D96A8
-    procedure GoodsMouseEnter(Sender: TObjectGI); // @addr $7DA088
-    procedure GoodsMouseLeave(Sender: TObjectGI); // @addr $7DA0A4
-    function GetMaximumTradeCount(Index: Integer; IgnoreCargoSpace: Boolean): Integer; // @addr $7DA0C0
-    function GetAvailableGoodsCount(Index: Integer): Integer; // @addr $7DA24C
-    procedure SavePricesClicked(Sender: TObjectGI); // @addr $7DB224
-    procedure EndTurnClicked(Sender: TObjectGI); // @addr $7DB388
-    procedure GalaxyClicked(Sender: TObjectGI); // @addr $7DB660
-    procedure QuestClicked(Sender: TObjectGI); // @addr $7DB6A4
-    procedure MenuClicked(Sender: TObjectGI); // @addr $7DB6E8
-    procedure ShipClicked(Sender: TObjectGI); // @addr $7DB72C
-    procedure FinishModalTrade; // @addr $7DB8AC
-    procedure CaptureMerchantBackground(Sender: TObjectGI); // @addr $7DB8DC
-    procedure MerchantAnimationComplete(Sender: TObjectGI); // @addr $7DBA1C
-    procedure CloseClicked(Sender: TObjectGI); // @addr $7DBD18
-    procedure RefreshMoneyWarning; // @addr $7DBD44
-    procedure FlashMoneyWarning; // @addr $7DBE94
-    procedure MoneyWarningTick(Timer: PCallbackTimerGI; UserData: Integer); // @addr $7DBF0C
-    procedure RefreshCargoWarning; // @addr $7DBF70
-    procedure FlashCargoWarning; // @addr $7DC0BC
-    procedure CargoWarningTick(Timer: PCallbackTimerGI; UserData: Integer); // @addr $7DC134
-    procedure MainPanelKeyDown(Sender: TObjectGI; Key: Cardinal); // @addr $7DC198
-    procedure ShowControlHelp(Sender: TObjectGI; Visible: Boolean); // @addr $7DC358
-    procedure ShowHelpText(Value: WideString; Visible: Boolean); // @addr $7DC400
+    procedure GoodsMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $510050
+    procedure GoodsRightMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $510CF4
+    procedure GoodsMouseMove(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $510D34
+    procedure GoodsMouseEnter(Sender: TObjectGI); // @addr $51165C
+    procedure GoodsMouseLeave(Sender: TObjectGI); // @addr $511664
+    function GetMaximumTradeCount(Index: Integer; IgnoreCargoSpace: Boolean): Integer; // @addr $51166C
+    function GetAvailableGoodsCount(Index: Integer): Integer; // @addr $5117CC
+    procedure SavePricesClicked(Sender: TObjectGI); // @addr $512730
+    procedure EndTurnClicked(Sender: TObjectGI); // @addr $512878
+    procedure GalaxyClicked(Sender: TObjectGI); // @addr $512B2C
+    procedure QuestClicked(Sender: TObjectGI); // @addr $512B60
+    procedure MenuClicked(Sender: TObjectGI); // @addr $512B94
+    procedure ShipClicked(Sender: TObjectGI); // @addr $512BC8
+    procedure FinishModalTrade; // @addr $512D1C
+    procedure CaptureMerchantBackground(Sender: TObjectGI); // @addr $512D3C
+    procedure MerchantAnimationComplete(Sender: TObjectGI); // @addr $512E54
+    procedure CloseClicked(Sender: TObjectGI); // @addr $513110
+    procedure RefreshMoneyWarning; // @addr $513128
+    procedure FlashMoneyWarning; // @addr $513260
+    procedure MoneyWarningTick(Timer: TCallbackTimerIdGI; UserData: Cardinal); // @addr $5132B8
+    procedure RefreshCargoWarning; // @addr $5132F8
+    procedure FlashCargoWarning; // @addr $513430
+    procedure CargoWarningTick(Timer: TCallbackTimerIdGI; UserData: Cardinal); // @addr $513488
+    procedure MainPanelKeyDown(Sender: TObjectGI; Key: Cardinal); // @addr $5134C8
+    procedure ShowControlHelp(Sender: TObjectGI; Visible: Boolean); // @addr $513650
+    procedure ShowHelpText(Value: WideString; Visible: Boolean); // @addr $5136DC
 
-    constructor Create; // @addr 0x7D4B44
-    destructor Destroy; override; // @addr 0x7D4C14
-    procedure OnOpen; override; // @addr 0x7D5474
-    procedure RefreshGoodsDisplay; // @addr $7D725C Rebuilds cargo/market controls and prices for the current trading context.
-    procedure OnClose; override; // @addr 0x7D70D0
-    procedure ProcessCallbackTimers; override; // @addr 0x7DC4C0
-    procedure SelectMusic; override; // @addr 0x7DC574
-    procedure InitializeLayout; override; // @addr 0x7D4CC4
-    procedure UpdateActionCursor(CanTake: Boolean); override; // @addr 0x7D9E14
-    procedure ExecuteUiCode(Block: TBlockParEC; Key: Cardinal); override; // @addr 0x7DC500
-    function BuildPriceText(Location: TObject): WideString; // @addr $7DA2A0
+    constructor Create; // @addr 0x0050C86C
+    destructor Destroy; override; // @addr 0x0050C924
+    procedure OnOpen; override; // @addr 0x0050D0C4
+    procedure RefreshGoodsDisplay; // @addr $50EB70 Rebuilds cargo/market controls and prices for the current trading context.
+    procedure OnClose; override; // @addr 0x0050EA18
+    procedure ProcessCallbackTimers; override; // @addr 0x00513790
+    procedure SelectMusic; override; // @addr 0x00513820
+    procedure InitializeLayout; override; // @addr 0x0050C99C
+    procedure UpdateActionCursor(CanTake: Boolean); override; // @addr 0x0051141C
+    procedure ExecuteUiCode(Block: TBlockParEC; Key: Cardinal); override; // @addr 0x005137BC
+    function BuildPriceText(Location: TObject): WideString; // @addr $511804
   end;
 
-function RunGoodsShop(ParentLoop: TMessageLoopGI): Boolean; // @addr $7DC7DC Native modal wrapper used while talking to another ship.
+function RunGoodsShop(ParentLoop: TMessageLoopGI): Boolean; // @addr $513A8C Native modal wrapper used while talking to another ship.
 
 const
-  ShopGoodsOrder: TGoodsTextOrder = (0, 1, 5, 4, 3, 2, 6, 7); // @addr $87CCFC Native unit-local copy of the goods presentation order.
+  ShopGoodsOrder: TGoodsTextOrder = (0, 1, 5, 4, 3, 2, 6, 7); // @addr $80E964 Native unit-local copy of the goods presentation order.
 
 
 implementation
@@ -86,9 +85,9 @@ implementation
 uses GI_Panel, SE_Ruins, aRanger, GI_MessageBox, fCount2, EC_Str, EC_Mem, GI_GAI, fRuinsTalk, Classes, Math, Windows, GI_Main, GI_Image, GI_GraphButton, GI_GraphBuf, GI_Label, GR_GraphBuf, GR_Music, fStarMap, fShip2, Globals, GlobalsV, GR_Main, SysUtils, aGalaxy, aConst, aMyFunction, aPlanet, aPlayer, aRuins, aShip;
 
 var
-  OutOfStockColor: WideString; // @addr $88B100 Native style-derived out-of-stock price markup.
+  OutOfStockColor: WideString; // @addr $81B630 Native style-derived out-of-stock price markup.
 
-{ @routine $7D4B44 TfGoodsShop2_Create }
+{ @routine $50C86C TfGoodsShop2_Create }
 constructor TfGoodsShop2.Create;
 begin
   inherited Create;
@@ -98,9 +97,9 @@ begin
   AmbientSound := TSoundBufferControl.Create;
   AmbientSound.Configure('Sound.GoodsLoop', 0, True);
 end;
-{ @end $7D4B44 }
+{ @end $50C86C }
 
-{ @routine $7D4C14 TfGoodsShop2_Destroy }
+{ @routine $50C924 TfGoodsShop2_Destroy }
 destructor TfGoodsShop2.Destroy;
 begin
   if PlanetPanel <> nil then begin PlanetPanel.Free; PlanetPanel := nil; end;
@@ -109,9 +108,9 @@ begin
   AmbientSound.Free;
   inherited Destroy;
 end;
-{ @end $7D4C14 }
+{ @end $50C924 }
 
-{ @routine $7D4CC4 TfGoodsShop2_InitializeLayout }
+{ @routine $50C99C TfGoodsShop2_InitializeLayout }
 procedure TfGoodsShop2.InitializeLayout;
 begin
   inherited InitializeLayout;
@@ -151,9 +150,9 @@ begin
   FaceCaptionHeight := (GetByName('CharFace') as TLabelGI).LocalPosition.Y + (GetByName('CharFace') as TLabelGI).ClientSize.Y - (GetByName('NameFace') as TLabelGI).LocalPosition.Y;
   OutOfStockColor := GetStyleColorTagGI('GoodsShop.GoodsColorOutOfStock', 127, 127, 127);
 end;
-{ @end $7D4CC4 }
+{ @end $50C99C }
 
-{ @routine $7D5474 TfGoodsShop2_OnOpen }
+{ @routine $50D0C4 TfGoodsShop2_OnOpen }
 procedure TfGoodsShop2.OnOpen;
 var
   I: Integer;
@@ -198,10 +197,10 @@ begin
   GetByName('CloseLine').SetActive(False);
   if GetPlayer.IsOnPlanet then
   begin
-    (GetByName('NameFace') as TLabelGI).SetText(GetPlayer.CurrentPlanet.GetFullName(#13#10));
-    if GetPlayer.CurrentPlanet.IsMainPiratePlanet then (GetByName('CharFace') as TLabelGI).SetText('')
-    else (GetByName('CharFace') as TLabelGI).SetText(PlanetEconomyInfo[GetPlayer.CurrentPlanet.Economy].ShortDisplayName + #13#10 + PlanetGovernmentMarket[GetPlayer.CurrentPlanet.Government].DisplayName);
-    (GetByName('ImageFace') as TImageGI).SetImagePath('GI,Bm.FormGoods2.' + GiResourceSuffix + 'PlanetL');
+    (GetByName('NameFace') as TLabelGI).Text := GetPlayer.CurrentPlanet.GetFullName(#13#10);
+    if GetPlayer.CurrentPlanet.IsMainPiratePlanet then (GetByName('CharFace') as TLabelGI).Text := ''
+    else (GetByName('CharFace') as TLabelGI).Text := PlanetEconomyInfo[GetPlayer.CurrentPlanet.Economy].ShortDisplayName + #13#10 + PlanetGovernmentMarket[GetPlayer.CurrentPlanet.Government].DisplayName;
+    (GetByName('ImageFace') as TImageGI).ImageSourcePath := 'GI,Bm.FormGoods2.' + GiResourceSuffix + 'PlanetL';
     with GetByName('GraphBufFace') as TGraphBufGI do
     begin
       SetActive(True);
@@ -212,11 +211,11 @@ begin
   end
   else if GetPlayer.IsDockedToShip then
   begin
-    (GetByName('NameFace') as TLabelGI).SetText(GetPlayer.DockedTo.GetFullName(#13#10));
-    (GetByName('CharFace') as TLabelGI).SetText('');
+    (GetByName('NameFace') as TLabelGI).Text := GetPlayer.DockedTo.GetFullName(#13#10);
+    (GetByName('CharFace') as TLabelGI).Text := '';
     GetByName('CloseLine').SetActive(True);
     (GetByName('NameFace') as TLabelGI).SetSize(Classes.Point((GetByName('NameFace') as TLabelGI).ClientSize.X, FaceCaptionHeight));
-    (GetByName('ImageFace') as TImageGI).SetImagePath('GI,Bm.FormGoods2.' + GiResourceSuffix + 'AllL');
+    (GetByName('ImageFace') as TImageGI).ImageSourcePath := 'GI,Bm.FormGoods2.' + GiResourceSuffix + 'AllL';
     with GetByName('GraphBufFace') as TGraphBufGI do
     begin
       SetActive(True);
@@ -224,26 +223,26 @@ begin
       if GetPlayer.DockedTo.Graphic is TRuinsSE then
         LoadGiByPathIntoGraphBuf(ExtractDelimitedPartW((GetPlayer.DockedTo.Graphic as TRuinsSE).StaticImagePath, 1, ','), GraphBuf)
       else LoadGiByPathIntoGraphBuf(ExtractDelimitedPartW(GetPlayer.DockedTo.GetShipPortraitImagePath, 1, ','), GraphBuf);
-      if Cardinal(GraphBuf.Width) >= Cardinal(GraphBuf.Height) then
-        GraphBuf.RescaleRgba(ClientSize.X, Round(ClientSize.X / Cardinal(GraphBuf.Width) * Cardinal(GraphBuf.Height)), 5)
-      else GraphBuf.RescaleRgba(Round(ClientSize.Y / Cardinal(GraphBuf.Height) * Cardinal(GraphBuf.Width)), ClientSize.Y, 5);
+      if GraphBuf.Width >= GraphBuf.Height then
+        GraphBuf.RescaleRgba(ClientSize.X, Round(ClientSize.X / GraphBuf.Width * GraphBuf.Height), 5)
+      else GraphBuf.RescaleRgba(Round(ClientSize.Y / GraphBuf.Height * GraphBuf.Width), ClientSize.Y, 5);
     end;
   end
   else if GetPlayer.InNormalSpace then
   begin
     if TalkShip is TRanger then
     begin
-      (GetByName('NameFace') as TLabelGI).SetText(TalkShip.GetFullName(#13#10));
-      (GetByName('CharFace') as TLabelGI).SetText((TalkShip as TRanger).GetCharacterName);
+      (GetByName('NameFace') as TLabelGI).Text := TalkShip.GetFullName(#13#10);
+      (GetByName('CharFace') as TLabelGI).Text := (TalkShip as TRanger).GetCharacterName;
     end
     else
     begin
-      (GetByName('NameFace') as TLabelGI).SetText(TalkShip.GetFullName(#13#10));
-      (GetByName('CharFace') as TLabelGI).SetText('');
+      (GetByName('NameFace') as TLabelGI).Text := TalkShip.GetFullName(#13#10);
+      (GetByName('CharFace') as TLabelGI).Text := '';
       GetByName('CloseLine').SetActive(True);
       (GetByName('NameFace') as TLabelGI).SetSize(Classes.Point((GetByName('NameFace') as TLabelGI).ClientSize.X, FaceCaptionHeight));
     end;
-    (GetByName('ImageFace') as TImageGI).SetImagePath('GI,Bm.FormGoods2.' + GiResourceSuffix + 'AllL');
+    (GetByName('ImageFace') as TImageGI).ImageSourcePath := 'GI,Bm.FormGoods2.' + GiResourceSuffix + 'AllL';
     with GetByName('GraphBufFace') as TGraphBufGI do
     begin
       SetActive(True);
@@ -251,9 +250,9 @@ begin
       if TalkShip.Graphic is TRuinsSE then
         LoadGiByPathIntoGraphBuf(ExtractDelimitedPartW((TalkShip.Graphic as TRuinsSE).StaticImagePath, 1, ','), GraphBuf)
       else LoadGiByPathIntoGraphBuf(ExtractDelimitedPartW(TalkShip.GetShipPortraitImagePath, 1, ','), GraphBuf);
-      if Cardinal(GraphBuf.Width) >= Cardinal(GraphBuf.Height) then
-        GraphBuf.RescaleRgba(ClientSize.X, Round(ClientSize.X / Cardinal(GraphBuf.Width) * Cardinal(GraphBuf.Height)), 5)
-      else GraphBuf.RescaleRgba(Round(ClientSize.Y / Cardinal(GraphBuf.Height) * Cardinal(GraphBuf.Width)), ClientSize.Y, 5);
+      if GraphBuf.Width >= GraphBuf.Height then
+        GraphBuf.RescaleRgba(ClientSize.X, Round(ClientSize.X / GraphBuf.Width * GraphBuf.Height), 5)
+      else GraphBuf.RescaleRgba(Round(ClientSize.Y / GraphBuf.Height * GraphBuf.Width), ClientSize.Y, 5);
     end;
   end;
   if ReopenRequested then
@@ -271,10 +270,10 @@ begin
     begin
       with GetByName('FaceI') as TImageGI do
       begin
-        SetImagePath('GI,Bm.Captain.' + GiResourceSuffix + 'ShopBot1i');
+        ImageSourcePath := 'GI,Bm.Captain.' + GiResourceSuffix + 'ShopBot1i';
         SetHardwareMirrorHorizontal(HardwareRenderingEnabled);
-        SetImageKindX(ikxCenter);
-        SetImageKindY(ikyCenter);
+        KindX := ikxCenter;
+        KindY := ikyCenter;
         SetActive(True);
       end;
       with GetByName('FaceA') as TgaiGI do
@@ -297,10 +296,10 @@ begin
     begin
       with GetByName('FaceI') as TImageGI do
       begin
-        SetImagePath('GI,Bm.Captain.' + GiResourceSuffix + 'ShopBot1i');
+        ImageSourcePath := 'GI,Bm.Captain.' + GiResourceSuffix + 'ShopBot1i';
         SetHardwareMirrorHorizontal(HardwareRenderingEnabled);
-        SetImageKindX(ikxCenter);
-        SetImageKindY(ikyCenter);
+        KindX := ikxCenter;
+        KindY := ikyCenter;
         SetActive(True);
       end;
       with GetByName('FaceA') as TgaiGI do
@@ -321,36 +320,36 @@ begin
     end
     else if GetPlayer.InNormalSpace then
     begin
-    with GetByName('FaceI') as TImageGI do
-    begin
-      SetImagePath('GI,' + TalkShip.GetCaptainPortraitResourceBase + 'i');
-      SetHardwareMirrorHorizontal(HardwareRenderingEnabled);
-      SetImageKindX(ikxCenter);
-      SetImageKindY(ikyCenter);
-      SetActive(True);
-    end;
-    with GetByName('FaceA') as TgaiGI do
-    begin
-      FirstFrameOnly := not AnimCaptain;
-      SetImagePath(TalkShip.GetCaptainPortraitResourceBase + 'a');
-      SetHardwareMirrorHorizontal(HardwareRenderingEnabled);
-      SequenceIndex := 0;
-      UpdateAutoGeometry;
-      SetSequenceFrame(RandomIntRange(0, SequenceFrameCount - 1));
-      SetImageKindX(ikxCenter);
-      SetImageKindY(ikyCenter);
-      SetActive(True);
-      RestartPlayback;
-      CycleCompleteCallback := nil;
-    end;
+      with GetByName('FaceI') as TImageGI do
+      begin
+        ImageSourcePath := 'GI,' + TalkShip.GetCaptainPortraitResourceBase + 'i';
+        SetHardwareMirrorHorizontal(HardwareRenderingEnabled);
+        KindX := ikxCenter;
+        KindY := ikyCenter;
+        SetActive(True);
+      end;
+      with GetByName('FaceA') as TgaiGI do
+      begin
+        FirstFrameOnly := not AnimCaptain;
+        SetImagePath(TalkShip.GetCaptainPortraitResourceBase + 'a');
+        SetHardwareMirrorHorizontal(HardwareRenderingEnabled);
+        SequenceIndex := 0;
+        UpdateAutoGeometry;
+        SetSequenceFrame(RandomIntRange(0, SequenceFrameCount - 1));
+        SetImageKindX(ikxCenter);
+        SetImageKindY(ikyCenter);
+        SetActive(True);
+        RestartPlayback;
+        CycleCompleteCallback := nil;
+      end;
     end;
     with GetByName('FaceA') as TgaiGI do FrameAdvancedCallback := CaptureMerchantBackground;
     GetByName('FaceGB').SetActive(False);
     with GetByName('CaptainI') as TImageGI do
     begin
-      SetImagePath('GI,' + GetPlayer.GetCaptainPortraitResourceBase + 'i');
-      SetImageKindX(ikxCenter);
-      SetImageKindY(ikyCenter);
+      ImageSourcePath := 'GI,' + GetPlayer.GetCaptainPortraitResourceBase + 'i';
+      KindX := ikxCenter;
+      KindY := ikyCenter;
       SetActive(True);
     end;
     with GetByName('CaptainA') as TgaiGI do
@@ -364,21 +363,21 @@ begin
       SetActive(True);
       RestartPlayback;
     end;
-    (GetByName('NameCaptain') as TLabelGI).SetText(GetPlayer.GetFullName(#13#10));
-    (GetByName('CharCaptain') as TLabelGI).SetText(GetPlayer.GetCharacterName);
+    (GetByName('NameCaptain') as TLabelGI).Text := GetPlayer.GetFullName(#13#10);
+    (GetByName('CharCaptain') as TLabelGI).Text := GetPlayer.GetCharacterName;
   end;
-  (GetByName('ImageCaptain') as TImageGI).SetImagePath('GI,Bm.FormGoods2.' + GiResourceSuffix + 'AllR');
-    with GetByName('GraphBufCaptain') as TGraphBufGI do
-    begin
-      SetActive(True);
-      SourceHasPerPixelAlpha := True;
-      if GetPlayer.Graphic is TRuinsSE then
-        LoadGiByPathIntoGraphBuf(ExtractDelimitedPartW((GetPlayer.Graphic as TRuinsSE).StaticImagePath, 1, ','), GraphBuf)
-      else LoadGiByPathIntoGraphBuf(ExtractDelimitedPartW(GetPlayer.GetShipPortraitImagePath, 1, ','), GraphBuf);
-      if Cardinal(GraphBuf.Width) >= Cardinal(GraphBuf.Height) then
-        GraphBuf.RescaleRgba(ClientSize.X, Round(ClientSize.X / Cardinal(GraphBuf.Width) * Cardinal(GraphBuf.Height)), 5)
-      else GraphBuf.RescaleRgba(Round(ClientSize.Y / Cardinal(GraphBuf.Height) * Cardinal(GraphBuf.Width)), ClientSize.Y, 5);
-    end;
+  (GetByName('ImageCaptain') as TImageGI).ImageSourcePath := 'GI,Bm.FormGoods2.' + GiResourceSuffix + 'AllR';
+  with GetByName('GraphBufCaptain') as TGraphBufGI do
+  begin
+    SetActive(True);
+    SourceHasPerPixelAlpha := True;
+    if GetPlayer.Graphic is TRuinsSE then
+      LoadGiByPathIntoGraphBuf(ExtractDelimitedPartW((GetPlayer.Graphic as TRuinsSE).StaticImagePath, 1, ','), GraphBuf)
+    else LoadGiByPathIntoGraphBuf(ExtractDelimitedPartW(GetPlayer.GetShipPortraitImagePath, 1, ','), GraphBuf);
+    if GraphBuf.Width >= GraphBuf.Height then
+      GraphBuf.RescaleRgba(ClientSize.X, Round(ClientSize.X / GraphBuf.Width * GraphBuf.Height), 5)
+    else GraphBuf.RescaleRgba(Round(ClientSize.Y / GraphBuf.Height * GraphBuf.Width), ClientSize.Y, 5);
+  end;
   if GetPlayer.IsOnPlanet then
   begin
     PlanetPanel.OnOpen;
@@ -401,17 +400,17 @@ begin
     SetActive(GetPlayer.IsDockedToShip and (GetPlayer.DockedTo.TypeId = rstMilitaryBase));
     if Active then
     begin
-      SetImagePath('GAI,' + GetPlayer.CurrentStar.GetBackgroundImagePath(I));
+      ImageSourcePath := 'GAI,' + GetPlayer.CurrentStar.GetBackgroundImagePath(I);
       GaiImageControl.LoadFrameSequenceFromText(SingleFrameAnimationSpec);
-      SetImageKindX(ikxCenter);
-      SetImageKindY(ikyCenter);
+      KindX := ikxCenter;
+      KindY := ikyCenter;
     end;
   end;
   with GetByName('BGCity') as TImageGI do
     if GetPlayer.IsOnPlanet then
     begin
       SetActive(True);
-      (FindByNameRecursive('BGCity') as TImageGI).SetImagePath(GetPlayer.CurrentPlanet.GetGovernmentBackgroundGraph);
+      (FindByNameRecursive('BGCity') as TImageGI).ImageSourcePath := GetPlayer.CurrentPlanet.GetGovernmentBackgroundGraph;
     end
     else if GetPlayer.IsDockedToShip then
     begin
@@ -446,24 +445,24 @@ begin
   if GetPlayer <> nil then GetPlayer.ScriptItemsAct(satOnEnteringForm, nil, nil, 0);
   if not GetPlayer.InNormalSpace then Galaxy.PrimeIntegrityChecksum(134);
 end;
-{ @end $7D5474 }
+{ @end $50D0C4 }
 
-{ @routine $7D70D0 TfGoodsShop2_OnClose }
+{ @routine $50EA18 TfGoodsShop2_OnClose }
 procedure TfGoodsShop2.OnClose;
 begin
   if GetPlayer <> nil then
     if not GetPlayer.InNormalSpace then Galaxy.CheckIntegrityChecksum(135);
   if GetPlayer <> nil then GetPlayer.ScriptItemsAct(satOnLeavingForm, nil, nil, 0);
   LoadPanel.OnClose;
-  if MoneyWarningTimer <> nil then
+  if MoneyWarningTimer <> 0 then
   begin
     CancelCallbackTimer(MoneyWarningTimer);
-    MoneyWarningTimer := nil;
+    MoneyWarningTimer := 0;
   end;
-  if CargoWarningTimer <> nil then
+  if CargoWarningTimer <> 0 then
   begin
     CancelCallbackTimer(CargoWarningTimer);
-    CargoWarningTimer := nil;
+    CargoWarningTimer := 0;
   end;
   if GetPlayer <> nil then
     if GetPlayer.IsOnPlanet or GetPlayer.IsDockedToShip then MainPanel.OnClose;
@@ -473,9 +472,9 @@ begin
     if GetPlayer.IsDockedToShip then StationPanel.OnClose;
   if not ReopenRequested then AmbientSound.SetVolume(0);
 end;
-{ @end $7D70D0 }
+{ @end $50EA18 }
 
-{ @routine $7D725C TfGoodsShop2_RefreshGoodsDisplay }
+{ @routine $50EB70 TfGoodsShop2_RefreshGoodsDisplay }
 procedure TfGoodsShop2.RefreshGoodsDisplay;
 var
   Good: Byte;
@@ -580,9 +579,9 @@ begin
     if GetPlayer.GetLocationGoodsEntry(Good).Count < 0 then RaiseWideMessage('Player.ShopGoods(it).Cnt<0')
     else if GetPlayer.GetLocationGoodsEntry(Good).Count = 0 then Color := OutOfStockColor;
     { Native writes this sell-price label once with the market color, then again with the cargo color below. }
-    (GetByName('TovPrice' + IntToStr(I + 10)) as TLabelGI).SetText(WrapTextInColor(IntToStr(GetPlayer.ShopGoodsSellPrice(Good, nil)), Color));
-    (GetByName('TovCnt' + IntToStr(I)) as TLabelGI).SetText(WrapTextInColor(IntToStr(GetPlayer.GetLocationGoodsEntry(Good).Count), Color));
-    (GetByName('TovPrice' + IntToStr(I)) as TLabelGI).SetText(WrapTextInColor(IntToStr(GetPlayer.ShopGoodsPurchasePrice(Good, nil)), Color));
+    (GetByName('TovPrice' + IntToStr(I + 10)) as TLabelGI).Text := WrapTextInColor(IntToStr(GetPlayer.ShopGoodsSellPrice(Good, nil)), Color);
+    (GetByName('TovCnt' + IntToStr(I)) as TLabelGI).Text := WrapTextInColor(IntToStr(GetPlayer.GetLocationGoodsEntry(Good).Count), Color);
+    (GetByName('TovPrice' + IntToStr(I)) as TLabelGI).Text := WrapTextInColor(IntToStr(GetPlayer.ShopGoodsPurchasePrice(Good, nil)), Color);
     Panel := GetByName('TovImgCnt' + IntToStr(I + 10)) as TPanelGI;
     Panel.FreeOwnedChildren;
     IconCount := Round(GetPlayer.CargoGoods[Good].Count / GoodsMarket[Good].BaseStock * 6);
@@ -601,8 +600,8 @@ begin
     Color := '';
     if GetPlayer.CargoGoods[Good].Count < 0 then RaiseWideMessage('Player.FGoods[it].Cnt<0')
     else if GetPlayer.CargoGoods[Good].Count = 0 then Color := OutOfStockColor;
-    (GetByName('TovCnt' + IntToStr(I + 10)) as TLabelGI).SetText(WrapTextInColor(IntToStr(GetPlayer.CargoGoods[Good].Count), Color));
-    (GetByName('TovPrice' + IntToStr(I + 10)) as TLabelGI).SetText(WrapTextInColor(IntToStr(GetPlayer.ShopGoodsSellPrice(Good, nil)), Color));
+    (GetByName('TovCnt' + IntToStr(I + 10)) as TLabelGI).Text := WrapTextInColor(IntToStr(GetPlayer.CargoGoods[Good].Count), Color);
+    (GetByName('TovPrice' + IntToStr(I + 10)) as TLabelGI).Text := WrapTextInColor(IntToStr(GetPlayer.ShopGoodsSellPrice(Good, nil)), Color);
   end;
   if GetPlayer.IsOnPlanet then Location := GetPlayer.CurrentPlanet
   else if GetPlayer.IsDockedToShip then Location := GetPlayer.DockedTo
@@ -612,10 +611,12 @@ begin
     if GetPlayer.InNormalSpace then SetDisabled(True)
     else SetDisabled(FindPlayerBubbleByText(BuildPriceText(Location), False) <> nil);
 end;
-{ @end $7D725C }
+{ @end $50EB70 }
 
-{ @routine $7D8840 TfGoodsShop2_GoodsMouseUp }
+{ @routine $510050 TfGoodsShop2_GoodsMouseUp }
 procedure TfGoodsShop2.GoodsMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint);
+label
+  TradeFinished;
 var
   I, Index, Count, Price, Maximum, TotalLimit, Available, Limit: Integer;
   OverMarket, OverCargo: Boolean;
@@ -678,8 +679,9 @@ begin
         begin
           if PartnerCargoLimit <= 0 then ShowMessageBoxGI(Self, TalkShip.LookupTalkText('Talk.Trade.NoSpace'), mbgCancel or mbgError)
           else ShowMessageBoxGI(Self, TalkShip.LookupTalkText('Talk.Trade.NoMoney'), mbgOK or mbgError);
-        end
-        else if DraggedGoodsIndex < 10 then
+          goto TradeFinished;
+        end;
+        if DraggedGoodsIndex < 10 then
           if GetPlayer.GetLocationGoodsEntry(ShopGoodsOrder[DraggedGoodsIndex]).Count > 0 then
           begin
             if GetPlayer.GetCargoFreeSpace <= 0 then FlashCargoWarning;
@@ -748,7 +750,7 @@ begin
               RefreshGoodsDisplay;
               FinishModalTrade;
               BreakUiMessage;
-            Exit;
+              Exit;
             end;
           if not GetPlayer.InNormalSpace then Galaxy.CheckIntegrityChecksum(136);
           if GetPlayer.InNormalSpace then
@@ -787,6 +789,7 @@ begin
         end;
       end;
     end;
+  TradeFinished:
     DraggedGoodsIndex := -1;
     UpdateActionCursor(False);
     RefreshGoodsDisplay;
@@ -794,9 +797,9 @@ begin
   end;
   BreakUiMessage;
 end;
-{ @end $7D8840 }
+{ @end $510050 }
 
-{ @routine $7D965C TfGoodsShop2_GoodsRightMouseDown }
+{ @routine $510CF4 TfGoodsShop2_GoodsRightMouseDown }
 procedure TfGoodsShop2.GoodsRightMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint);
 begin
   if DraggedGoodsIndex >= 0 then
@@ -806,9 +809,9 @@ begin
     RefreshGoodsDisplay;
   end;
 end;
-{ @end $7D965C }
+{ @end $510CF4 }
 
-{ @routine $7D96A8 TfGoodsShop2_GoodsMouseMove }
+{ @routine $510D34 TfGoodsShop2_GoodsMouseMove }
 procedure TfGoodsShop2.GoodsMouseMove(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint);
 var
   Index, Count, Price: Integer;
@@ -871,9 +874,9 @@ begin
   end;
   if (HoveredControl = nil) or (HoveredControl.HelpText = '') then ShowHelpText(Text, Text <> '');
 end;
-{ @end $7D96A8 }
+{ @end $510D34 }
 
-{ @routine $7D9E14 TfGoodsShop2_UpdateActionCursor }
+{ @routine $51141C TfGoodsShop2_UpdateActionCursor }
 procedure TfGoodsShop2.UpdateActionCursor(CanTake: Boolean);
 var
   Found: Boolean;
@@ -888,13 +891,11 @@ begin
     for Index := 0 to 7 do
     begin
       with GetByName('Tov' + IntToStr(Index)) as TGraphButtonGI do
-        if ContainsPoint(GetCursorPoint) then
-          if GetPlayer.GetLocationGoodsEntry(ShopGoodsOrder[Index]).Count > 0 then
-          begin Found := True; Break; end;
+        if (ContainsPoint(GetCursorPoint)) and (GetPlayer.GetLocationGoodsEntry(ShopGoodsOrder[Index]).Count > 0) then
+        begin Found := True; Break; end;
       with GetByName('Tov' + IntToStr(Index + 10)) as TGraphButtonGI do
-        if ContainsPoint(GetCursorPoint) then
-          if GetPlayer.CargoGoods[ShopGoodsOrder[Index]].Count > 0 then
-          begin Found := True; Break; end;
+        if (ContainsPoint(GetCursorPoint)) and (GetPlayer.CargoGoods[ShopGoodsOrder[Index]].Count > 0) then
+        begin Found := True; Break; end;
     end;
     if Found then
     begin
@@ -903,23 +904,23 @@ begin
     else if not IsCursorImageSelected('Main') then SetCursorByName('Main');
   end;
 end;
-{ @end $7D9E14 }
+{ @end $51141C }
 
-{ @routine $7DA088 TfGoodsShop2_GoodsMouseEnter }
+{ @routine $51165C TfGoodsShop2_GoodsMouseEnter }
 procedure TfGoodsShop2.GoodsMouseEnter(Sender: TObjectGI);
 begin
   UpdateActionCursor(False);
 end;
-{ @end $7DA088 }
+{ @end $51165C }
 
-{ @routine $7DA0A4 TfGoodsShop2_GoodsMouseLeave }
+{ @routine $511664 TfGoodsShop2_GoodsMouseLeave }
 procedure TfGoodsShop2.GoodsMouseLeave(Sender: TObjectGI);
 begin
   UpdateActionCursor(False);
 end;
-{ @end $7DA0A4 }
+{ @end $511664 }
 
-{ @routine $7DA0C0 TfGoodsShop2_GetMaximumTradeCount }
+{ @routine $51166C TfGoodsShop2_GetMaximumTradeCount }
 function TfGoodsShop2.GetMaximumTradeCount(Index: Integer; IgnoreCargoSpace: Boolean): Integer;
 var Total: Double;
 begin
@@ -944,17 +945,17 @@ begin
     end;
   end;
 end;
-{ @end $7DA0C0 }
+{ @end $51166C }
 
-{ @routine $7DA24C TfGoodsShop2_GetAvailableGoodsCount }
+{ @routine $5117CC TfGoodsShop2_GetAvailableGoodsCount }
 function TfGoodsShop2.GetAvailableGoodsCount(Index: Integer): Integer;
 begin
   if (Index >= 0) and (Index < 10) then Result := GetPlayer.GetLocationGoodsEntry(ShopGoodsOrder[Index]).Count
   else Result := GetPlayer.CargoGoods[ShopGoodsOrder[Index - 10]].Count;
 end;
-{ @end $7DA24C }
+{ @end $5117CC }
 
-{ @routine $7DA2A0 TfGoodsShop2_BuildPriceText }
+{ @routine $511804 TfGoodsShop2_BuildPriceText }
 function TfGoodsShop2.BuildPriceText(Location: TObject): WideString;
 var
   RowNumber, SeparatorLength, Stock: Integer;
@@ -1023,9 +1024,9 @@ begin
   end;
   Result := Text;
 end;
-{ @end $7DA2A0 }
+{ @end $511804 }
 
-{ @routine $7DB224 TfGoodsShop2_SavePricesClicked }
+{ @routine $512730 TfGoodsShop2_SavePricesClicked }
 procedure TfGoodsShop2.SavePricesClicked(Sender: TObjectGI);
 var
   Location: TObject;
@@ -1039,9 +1040,9 @@ begin
   MainPanel.RebuildMessageButtons(False);
   FinishModalTrade;
 end;
-{ @end $7DB224 }
+{ @end $512730 }
 
-{ @routine $7DB388 TfGoodsShop2_EndTurnClicked }
+{ @routine $512878 TfGoodsShop2_EndTurnClicked }
 procedure TfGoodsShop2.EndTurnClicked(Sender: TObjectGI);
 begin
   if GetPlayer = nil then Exit;
@@ -1091,36 +1092,36 @@ begin
     end;
   end;
 end;
-{ @end $7DB388 }
+{ @end $512878 }
 
-{ @routine $7DB660 TfGoodsShop2_GalaxyClicked }
+{ @routine $512B2C TfGoodsShop2_GalaxyClicked }
 procedure TfGoodsShop2.GalaxyClicked(Sender: TObjectGI);
 begin
   AmbientSound.SetVolume(0);
   MainPanel.GalaxyClicked(Sender);
   AmbientSound.SetVolume(1);
 end;
-{ @end $7DB660 }
+{ @end $512B2C }
 
-{ @routine $7DB6A4 TfGoodsShop2_QuestClicked }
+{ @routine $512B60 TfGoodsShop2_QuestClicked }
 procedure TfGoodsShop2.QuestClicked(Sender: TObjectGI);
 begin
   AmbientSound.SetVolume(0);
   MainPanel.QuestClicked(Sender);
   AmbientSound.SetVolume(1);
 end;
-{ @end $7DB6A4 }
+{ @end $512B60 }
 
-{ @routine $7DB6E8 TfGoodsShop2_MenuClicked }
+{ @routine $512B94 TfGoodsShop2_MenuClicked }
 procedure TfGoodsShop2.MenuClicked(Sender: TObjectGI);
 begin
   AmbientSound.SetVolume(0);
   MainPanel.MenuClicked(Sender);
   AmbientSound.SetVolume(1);
 end;
-{ @end $7DB6E8 }
+{ @end $512B94 }
 
-{ @routine $7DB72C TfGoodsShop2_ShipClicked }
+{ @routine $512BC8 TfGoodsShop2_ShipClicked }
 procedure TfGoodsShop2.ShipClicked(Sender: TObjectGI);
 begin
   if ExitCode <> 0 then Exit;
@@ -1131,10 +1132,10 @@ begin
     RefreshGoodsDisplay;
   end;
   AmbientSound.SetVolume(0);
-  SetCursorActive(False);
+  Self.ShowCursor := False;
   Present;
   CaptureScreenBackground(True, 0);
-  SetCursorActive(True);
+  Self.ShowCursor := True;
   ShipScreen.PlayTransitionSounds := True;
   if not GetPlayer.InNormalSpace then Galaxy.CheckIntegrityChecksum(142);
   while True do
@@ -1144,10 +1145,10 @@ begin
     MainPanel.RebuildMessageButtons(False);
     RefreshGoodsDisplay;
     if not ShipScreen.ReopenRequested then Break;
-    SetCursorActive(False);
+    Self.ShowCursor := False;
     DrawQueuedUpdateRects;
     CaptureScreenBackground(True, 0);
-    SetCursorActive(True);
+    Self.ShowCursor := True;
   end;
   if not GetPlayer.InNormalSpace then Galaxy.PrimeIntegrityChecksum(143);
   AmbientSound.SetVolume(1);
@@ -1158,9 +1159,9 @@ begin
       RequestClose(1);
     end;
 end;
-{ @end $7DB72C }
+{ @end $512BC8 }
 
-{ @routine $7DB8AC TfGoodsShop2_FinishModalTrade }
+{ @routine $512D1C TfGoodsShop2_FinishModalTrade }
 procedure TfGoodsShop2.FinishModalTrade;
 begin
   if ParentLoop <> nil then
@@ -1170,9 +1171,9 @@ begin
     BreakUiMessage;
   end;
 end;
-{ @end $7DB8AC }
+{ @end $512D1C }
 
-{ @routine $7DB8DC TfGoodsShop2_CaptureMerchantBackground }
+{ @routine $512D3C TfGoodsShop2_CaptureMerchantBackground }
 procedure TfGoodsShop2.CaptureMerchantBackground(Sender: TObjectGI);
 var Position: TPoint;
 begin
@@ -1180,9 +1181,9 @@ begin
     with GetByName('FaceGB') as TGraphBufGI do
     begin
       SetActive(False);
-      if not ShowSystemMouse then SetCursorActive(False);
+      if not ShowSystemMouse then Self.ShowCursor := False;
       DrawQueuedUpdateRects;
-      if not ShowSystemMouse then SetCursorActive(True);
+      if not ShowSystemMouse then Self.ShowCursor := True;
       Position := ToAbsolutePoint(Classes.Point(0, 0));
       GraphBuf.AllocateNative(ClientSize.X, ClientSize.Y);
       Ex_OKGR_Copy_XY_XY_WORD(GraphBuf.GetPixels, GraphBuf.PitchBytes, 0, 0,
@@ -1192,9 +1193,9 @@ begin
       SetActive(True);
     end;
 end;
-{ @end $7DB8DC }
+{ @end $512D3C }
 
-{ @routine $7DBA1C TfGoodsShop2_MerchantAnimationComplete }
+{ @routine $512E54 TfGoodsShop2_MerchantAnimationComplete }
 procedure TfGoodsShop2.MerchantAnimationComplete(Sender: TObjectGI);
 var Sequence: Integer;
 begin
@@ -1207,36 +1208,34 @@ begin
     else Sequence := 1;
   end
   else Sequence := 1;
-  if Sender.UserValue <> Sequence then
+  if Sender.UserValue = Sequence then Exit;
+  Sender.UserValue := Sequence;
+  with GetByName('FaceI') as TImageGI do
   begin
-    Sender.UserValue := Sequence;
-    with GetByName('FaceI') as TImageGI do
-    begin
-      SetImagePath('GI,Bm.Captain.' + GiResourceSuffix + 'ShopBot' + IntToStr(Cardinal(Sender.UserValue)) + 'i');
-      SetHardwareMirrorHorizontal(HardwareRenderingEnabled);
-      SetImageKindX(ikxCenter);
-      SetImageKindY(ikyCenter);
-      SetActive(True);
-    end;
-    with GetByName('FaceA') as TgaiGI do
-    begin
-      FirstFrameOnly := not AnimCaptain;
-      SetImagePath('Bm.Captain.' + GiResourceSuffix + 'ShopBot' + IntToStr(Cardinal(Sender.UserValue)) + 'a');
-      SetHardwareMirrorHorizontal(HardwareRenderingEnabled);
-      SequenceIndex := 0;
-      UpdateAutoGeometry;
-      SetSequenceFrame(0);
-      SetImageKindX(ikxCenter);
-      SetImageKindY(ikyCenter);
-      SetActive(True);
-      RestartPlayback;
-      CycleCompleteCallback := MerchantAnimationComplete;
-    end;
+    ImageSourcePath := 'GI,Bm.Captain.' + GiResourceSuffix + 'ShopBot' + IntToStr(Cardinal(Sender.UserValue)) + 'i';
+    SetHardwareMirrorHorizontal(HardwareRenderingEnabled);
+    KindX := ikxCenter;
+    KindY := ikyCenter;
+    SetActive(True);
+  end;
+  with GetByName('FaceA') as TgaiGI do
+  begin
+    FirstFrameOnly := not AnimCaptain;
+    SetImagePath('Bm.Captain.' + GiResourceSuffix + 'ShopBot' + IntToStr(Cardinal(Sender.UserValue)) + 'a');
+    SetHardwareMirrorHorizontal(HardwareRenderingEnabled);
+    SequenceIndex := 0;
+    UpdateAutoGeometry;
+    SetSequenceFrame(0);
+    SetImageKindX(ikxCenter);
+    SetImageKindY(ikyCenter);
+    SetActive(True);
+    RestartPlayback;
+    CycleCompleteCallback := MerchantAnimationComplete;
   end;
 end;
-{ @end $7DBA1C }
+{ @end $512E54 }
 
-{ @routine $7DBD18 TfGoodsShop2_CloseClicked }
+{ @routine $513110 TfGoodsShop2_CloseClicked }
 procedure TfGoodsShop2.CloseClicked(Sender: TObjectGI);
 begin
   if ParentLoop <> nil then
@@ -1245,9 +1244,9 @@ begin
     BreakUiMessage;
   end;
 end;
-{ @end $7DBD18 }
+{ @end $513110 }
 
-{ @routine $7DBD44 TfGoodsShop2_RefreshMoneyWarning }
+{ @routine $513128 TfGoodsShop2_RefreshMoneyWarning }
 procedure TfGoodsShop2.RefreshMoneyWarning;
 begin
   if MoneyWarningActive and not Odd(MoneyWarningTicks) then
@@ -1256,7 +1255,7 @@ begin
     with GetByName('ADD_Money') as TLabelGI do
     begin
       SetTextColor(CurrentPixelFormat.PackRgbBytes(255, 128, 61));
-      SetText(IntToStr(GetPlayer.Money));
+      Text := IntToStr(GetPlayer.Money);
       SetActive(True);
     end;
   end
@@ -1266,41 +1265,41 @@ begin
     GetByName('ADD_Money').SetActive(False);
   end;
 end;
-{ @end $7DBD44 }
+{ @end $513128 }
 
-{ @routine $7DBE94 TfGoodsShop2_FlashMoneyWarning }
+{ @routine $513260 TfGoodsShop2_FlashMoneyWarning }
 procedure TfGoodsShop2.FlashMoneyWarning;
 begin
-  if MoneyWarningTimer <> nil then
+  if MoneyWarningTimer <> 0 then
   begin
     CancelCallbackTimer(MoneyWarningTimer);
-    MoneyWarningTimer := nil;
+    MoneyWarningTimer := 0;
   end;
   MoneyWarningTimer := ScheduleCallbackTimer(100, 100, MoneyWarningTick);
   MoneyWarningActive := True;
   MoneyWarningTicks := 6;
   RefreshMoneyWarning;
 end;
-{ @end $7DBE94 }
+{ @end $513260 }
 
-{ @routine $7DBF0C TfGoodsShop2_MoneyWarningTick }
-procedure TfGoodsShop2.MoneyWarningTick(Timer: PCallbackTimerGI; UserData: Integer);
+{ @routine $5132B8 TfGoodsShop2_MoneyWarningTick }
+procedure TfGoodsShop2.MoneyWarningTick(Timer: TCallbackTimerIdGI; UserData: Cardinal);
 begin
   Dec(MoneyWarningTicks);
   if MoneyWarningTicks <= 0 then
   begin
-    if MoneyWarningTimer <> nil then
+    if MoneyWarningTimer <> 0 then
     begin
       CancelCallbackTimer(MoneyWarningTimer);
-      MoneyWarningTimer := nil;
+      MoneyWarningTimer := 0;
     end;
     MoneyWarningActive := False;
   end;
   RefreshMoneyWarning;
 end;
-{ @end $7DBF0C }
+{ @end $5132B8 }
 
-{ @routine $7DBF70 TfGoodsShop2_RefreshCargoWarning }
+{ @routine $5132F8 TfGoodsShop2_RefreshCargoWarning }
 procedure TfGoodsShop2.RefreshCargoWarning;
 begin
   if CargoWarningActive and not Odd(CargoWarningTicks) then
@@ -1309,7 +1308,7 @@ begin
     with GetByName('ADD_Space') as TLabelGI do
     begin
       SetTextColor(CurrentPixelFormat.PackRgbBytes(255, 128, 61));
-      SetText(IntToStr(GetPlayer.GetCargoFreeSpace));
+      Text := IntToStr(GetPlayer.GetCargoFreeSpace);
       SetActive(True);
     end;
   end
@@ -1319,41 +1318,41 @@ begin
     GetByName('ADD_Space').SetActive(False);
   end;
 end;
-{ @end $7DBF70 }
+{ @end $5132F8 }
 
-{ @routine $7DC0BC TfGoodsShop2_FlashCargoWarning }
+{ @routine $513430 TfGoodsShop2_FlashCargoWarning }
 procedure TfGoodsShop2.FlashCargoWarning;
 begin
-  if CargoWarningTimer <> nil then
+  if CargoWarningTimer <> 0 then
   begin
     CancelCallbackTimer(CargoWarningTimer);
-    CargoWarningTimer := nil;
+    CargoWarningTimer := 0;
   end;
   CargoWarningTimer := ScheduleCallbackTimer(100, 100, CargoWarningTick);
   CargoWarningActive := True;
   CargoWarningTicks := 6;
   RefreshCargoWarning;
 end;
-{ @end $7DC0BC }
+{ @end $513430 }
 
-{ @routine $7DC134 TfGoodsShop2_CargoWarningTick }
-procedure TfGoodsShop2.CargoWarningTick(Timer: PCallbackTimerGI; UserData: Integer);
+{ @routine $513488 TfGoodsShop2_CargoWarningTick }
+procedure TfGoodsShop2.CargoWarningTick(Timer: TCallbackTimerIdGI; UserData: Cardinal);
 begin
   Dec(CargoWarningTicks);
   if CargoWarningTicks <= 0 then
   begin
-    if CargoWarningTimer <> nil then
+    if CargoWarningTimer <> 0 then
     begin
       CancelCallbackTimer(CargoWarningTimer);
-      CargoWarningTimer := nil;
+      CargoWarningTimer := 0;
     end;
     CargoWarningActive := False;
   end;
   RefreshCargoWarning;
 end;
-{ @end $7DC134 }
+{ @end $513488 }
 
-{ @routine $7DC198 TfGoodsShop2_MainPanelKeyDown }
+{ @routine $5134C8 TfGoodsShop2_MainPanelKeyDown }
 procedure TfGoodsShop2.MainPanelKeyDown(Sender: TObjectGI; Key: Cardinal);
 begin
   if IsVirtualKeyDown(VK_CONTROL) or IsVirtualKeyDown(VK_SHIFT) or IsVirtualKeyDown(VK_MENU) then Exit;
@@ -1378,9 +1377,9 @@ begin
     if (Key = Ord('M')) or (Key = Ord('R')) or (Key = VK_ESCAPE) or (Key = VK_F2) or (Key = VK_F3) then AmbientSound.SetVolume(1);
   end;
 end;
-{ @end $7DC198 }
+{ @end $5134C8 }
 
-{ @routine $7DC358 TfGoodsShop2_ShowControlHelp }
+{ @routine $513650 TfGoodsShop2_ShowControlHelp }
 procedure TfGoodsShop2.ShowControlHelp(Sender: TObjectGI; Visible: Boolean);
 begin
   if (GetPlayer <> nil) and GetPlayer.InNormalSpace then
@@ -1388,34 +1387,34 @@ begin
     begin
       if (Sender = nil) or (Sender.HelpText = '') then Visible := False;
       SetActive(Visible);
-      if Visible then SetText(Sender.HelpText);
+      if Visible then Text := Sender.HelpText;
     end
   else MainPanel.ShowControlHelp(Sender, Visible);
 end;
-{ @end $7DC358 }
+{ @end $513650 }
 
-{ @routine $7DC400 TfGoodsShop2_ShowHelpText }
+{ @routine $5136DC TfGoodsShop2_ShowHelpText }
 procedure TfGoodsShop2.ShowHelpText(Value: WideString; Visible: Boolean);
 begin
   if (GetPlayer <> nil) and GetPlayer.InNormalSpace then
     with GetByName('GS_Help') as TLabelGI do
     begin
       SetActive(Visible);
-      if Visible then SetText(Value);
+      if Visible then Text := Value;
     end
   else MainPanel.ShowHelpText(Value, Visible);
 end;
-{ @end $7DC400 }
+{ @end $5136DC }
 
-{ @routine $7DC4C0 TfGoodsShop2_ProcessCallbackTimers }
+{ @routine $513790 TfGoodsShop2_ProcessCallbackTimers }
 procedure TfGoodsShop2.ProcessCallbackTimers;
 begin
   inherited ProcessCallbackTimers;
   if (ParentLoop <> nil) and (ParentLoop.ExitCode <> 0) and (ExitCode = 0) then RequestClose(2);
 end;
-{ @end $7DC4C0 }
+{ @end $513790 }
 
-{ @routine $7DC500 TfGoodsShop2_ExecuteUiCode }
+{ @routine $5137BC TfGoodsShop2_ExecuteUiCode }
 procedure TfGoodsShop2.ExecuteUiCode(Block: TBlockParEC; Key: Cardinal);
 begin
   if MainPanel.NavigationLocked then Exit;
@@ -1427,9 +1426,9 @@ begin
     Galaxy.PrimeIntegrityChecksum(20006);
   end;
 end;
-{ @end $7DC500 }
+{ @end $5137BC }
 
-{ @routine $7DC574 TfGoodsShop2_SelectMusic }
+{ @routine $513820 TfGoodsShop2_SelectMusic }
 procedure TfGoodsShop2.SelectMusic;
 begin
   if (ActiveLoadPanel <> nil) and (ActiveLoadPanel.GetShutterDirection = -1) then Exit;
@@ -1456,9 +1455,9 @@ begin
     else MusicManager.PlayCategory('Nation.' + OwnerInfo[RaceToOwner(GetPlayer.DockedTo.PilotRace)].InternalName);
   end;
 end;
-{ @end $7DC574 }
+{ @end $513820 }
 
-{ @routine $7DC7DC RunGoodsShop }
+{ @routine $513A8C RunGoodsShop }
 function RunGoodsShop(ParentLoop: TMessageLoopGI): Boolean;
 begin
   ParentLoop.RootUiObject.OnModalSuspend;
@@ -1469,5 +1468,5 @@ begin
   ParentLoop.ChildLoop := nil;
   ParentLoop.RootUiObject.OnModalResume;
 end;
-{ @end $7DC7DC }
+{ @end $513A8C }
 end.

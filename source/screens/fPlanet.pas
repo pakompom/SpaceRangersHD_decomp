@@ -1,5 +1,4 @@
 unit fPlanet;
-// Unit bracket (inferred): .text 0x00811044..0x008128EC; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -11,18 +10,18 @@ type
     PlanetPanel: TfPanelPlanet; // @offset 0xD4
     LoadPanel: TfPanelLoad; // @offset 0xD8
 
-    constructor Create; // @addr 0x8110DC
-    destructor Destroy; override; // @addr 0x811148
-    procedure RefreshTextQuestPrompt; // @addr 0x811DF4
-    procedure RefreshPlanetInfo; // @addr 0x8117A8
-    procedure EndTurnClicked(Sender: TObjectGI); // @addr 0x8125E8
-    procedure MainPanelKeyDown(Sender: TObjectGI; Key: Cardinal); // @addr 0x812660
-    procedure StartTextQuest(Sender: TObjectGI); // @addr 0x811C8C
-    procedure OnOpen; override; // @addr 0x8113E8
-    procedure OnClose; override; // @addr 0x811748
-    procedure SelectMusic; override; // @addr 0x8127C8
-    procedure InitializeLayout; override; // @addr 0x8111C4
-    procedure ExecuteUiCode(Block: TBlockParEC; Key: Cardinal); override; // @addr 0x812754
+    constructor Create; // @addr 0x00504410
+    destructor Destroy; override; // @addr 0x0050446C
+    procedure RefreshTextQuestPrompt; // @addr 0x0050501C
+    procedure RefreshPlanetInfo; // @addr 0x00504A4C
+    procedure EndTurnClicked(Sender: TObjectGI); // @addr 0x00505794
+    procedure MainPanelKeyDown(Sender: TObjectGI; Key: Cardinal); // @addr 0x005057F8
+    procedure StartTextQuest(Sender: TObjectGI); // @addr 0x00504EC4
+    procedure OnOpen; override; // @addr 0x005046C0
+    procedure OnClose; override; // @addr 0x005049F8
+    procedure SelectMusic; override; // @addr 0x0050592C
+    procedure InitializeLayout; override; // @addr 0x005044C0
+    procedure ExecuteUiCode(Block: TBlockParEC; Key: Cardinal); override; // @addr 0x005058C8
   end;
 
 implementation
@@ -33,16 +32,16 @@ uses Classes, SysUtils, Windows, Types, GR_Main, Globals, GlobalsV, GI_Main,
   aPlanet, aPlayer, aRanger, aSaveLoad, aScript, fEquipmentShop, fGalaxy2,
   fSaveManager, fShip2, fPlanetQuest, ThreadCalc;
 
-{ @routine $8110DC TfPlanet_Create }
+{ @routine $504410 TfPlanet_Create }
 constructor TfPlanet.Create;
 begin
   inherited Create;
   PlanetPanel := TfPanelPlanet.Create;
   LoadPanel := TfPanelLoad.Create;
 end;
-{ @end $8110DC }
+{ @end $504410 }
 
-{ @routine $811148 TfPlanet_Destroy }
+{ @routine $50446C TfPlanet_Destroy }
 destructor TfPlanet.Destroy;
 begin
   if PlanetPanel <> nil then
@@ -57,9 +56,9 @@ begin
   end;
   inherited Destroy;
 end;
-{ @end $811148 }
+{ @end $50446C }
 
-{ @routine $8111C4 TfPlanet_InitializeLayout }
+{ @routine $5044C0 TfPlanet_InitializeLayout }
 procedure TfPlanet.InitializeLayout;
 var
   Panel, Info, Quest: TObjectGI;
@@ -82,9 +81,9 @@ begin
   AppendLogLineThreadSafe('ok');
   (GetByName('PM_EndTurn') as TGraphButtonGI).UpCallback := EndTurnClicked;
 end;
-{ @end $8111C4 }
+{ @end $5044C0 }
 
-{ @routine $8113E8 TfPlanet_OnOpen }
+{ @routine $5046C0 TfPlanet_OnOpen }
 procedure TfPlanet.OnOpen;
 var
   Event: TGalaxyEvent;
@@ -105,7 +104,7 @@ begin
   end;
   Galaxy.ReleaseItemGraphics;
   GetByName('MainPanel').KeyDownCallback := MainPanelKeyDown;
-  (GetByName('BGCity') as TImageGI).SetImagePath(GetPlayer.CurrentPlanet.GetGovernmentBackgroundGraph);
+  (GetByName('BGCity') as TImageGI).ImageSourcePath := GetPlayer.CurrentPlanet.GetGovernmentBackgroundGraph;
   RefreshPlanetInfo;
   RefreshTextQuestPrompt;
   if (GetPlayer = nil) or ((GetPlayer.CurrentPlanet <> nil) and
@@ -148,9 +147,9 @@ begin
   if GetPlayer <> nil then GetPlayer.ScriptItemsAct(satOnEnteringForm, nil, nil, 0);
   Galaxy.PrimeIntegrityChecksum(94);
 end;
-{ @end $8113E8 }
+{ @end $5046C0 }
 
-{ @routine $811748 TfPlanet_OnClose }
+{ @routine $5049F8 TfPlanet_OnClose }
 procedure TfPlanet.OnClose;
 begin
   Galaxy.CheckIntegrityChecksum(95);
@@ -159,9 +158,9 @@ begin
   PlanetPanel.OnClose;
   LoadPanel.OnClose;
 end;
-{ @end $811748 }
+{ @end $5049F8 }
 
-{ @routine $8117A8 TfPlanet_RefreshPlanetInfo }
+{ @routine $504A4C TfPlanet_RefreshPlanetInfo }
 procedure TfPlanet.RefreshPlanetInfo;
 var
   Window: TWindowGI;
@@ -169,14 +168,14 @@ begin
   Window := GetByName('PanelInfo') as TWindowGI;
   with GetByName('PanelInfo_Name') as TLabelGI do
     if GetPlayer.CurrentPlanet.IsMainPiratePlanet then
-      SetText(GetPlayer.CurrentPlanet.Name)
+      Text := GetPlayer.CurrentPlanet.Name
     else
-      SetText(ReplaceColoredToken(
+      Text := ReplaceColoredToken(
         LocalizedText('Planet.Civil.Info.TextNamePlanet'),
-        '<Planet>', GetPlayer.CurrentPlanet.Name, InfoNameColorTag));
+        '<Planet>', GetPlayer.CurrentPlanet.Name, InfoNameColorTag);
   with GetByName('PanelInfo_Text') as TLabelGI do
   begin
-    SetText(GetPlayer.CurrentPlanet.GetCivilInfoText);
+    Text := GetPlayer.CurrentPlanet.GetCivilInfoText;
     Window.SetSize(Classes.Point(ClientSize.X + Window.WorkSubRect.Left + Window.WorkSubRect.Right,
       ClientSize.Y + Window.WorkSubRect.Top + Window.WorkSubRect.Bottom));
     Window.UpdateAutoGeometry;
@@ -188,10 +187,10 @@ begin
   begin
     SourceHasPerPixelAlpha := True;
     GetPlayer.CurrentPlanet.Graphic.RenderToBuffer(Self, GraphBuf, False);
-    if Cardinal(GraphBuf.Width) >= Cardinal(GraphBuf.Height) then
-      GraphBuf.RescaleRgba(ClientSize.X, Round(ClientSize.X / Cardinal(GraphBuf.Width) * Cardinal(GraphBuf.Height)), 5)
+    if GraphBuf.Width >= GraphBuf.Height then
+      GraphBuf.RescaleRgba(ClientSize.X, Round(ClientSize.X / GraphBuf.Width * GraphBuf.Height), 5)
     else
-      GraphBuf.RescaleRgba(Round(ClientSize.Y / Cardinal(GraphBuf.Height) * Cardinal(GraphBuf.Width)), ClientSize.Y, 5);
+      GraphBuf.RescaleRgba(Round(ClientSize.Y / GraphBuf.Height * GraphBuf.Width), ClientSize.Y, 5);
     SetImageKindX(ikxCenter);
     SetImageKindY(ikyCenter);
   end;
@@ -199,22 +198,23 @@ begin
     GetByName('PanelInfo_Text') as TLabelGI, True, False, 0);
   with GetByName('PanelInfo_Race') as TImageGI do
   begin
-    SetImagePath(GetFactionEmblemPath(GetPlayer.CurrentPlanet.GetFactionResourceName));
-    SetImageKindX(ikxCenter);
-    SetImageKindY(ikyCenter);
+    ImageSourcePath := GetFactionEmblemPath(GetPlayer.CurrentPlanet.GetFactionResourceName);
+    KindX := ikxCenter;
+    KindY := ikyCenter;
     SetPosition(Classes.Point(Window.ClientSize.X + ShipScreen.ItemRaceImagePosition.X,
       Window.ClientSize.Y + ShipScreen.ItemRaceImagePosition.Y));
   end;
   with GetByName('PanelInfo_Text') as TLabelGI do SetTextAlignX(taxLeft);
 end;
-{ @end $8117A8 }
+{ @end $504A4C }
 
-{ @routine $811C8C TfPlanet_StartTextQuest }
+{ @routine $504EC4 TfPlanet_StartTextQuest }
 procedure TfPlanet.StartTextQuest(Sender: TObjectGI);
 begin
-  if (Sender.UserValue <> 0) and (ShowMessageBoxGI(Self,
-    LocalizedText('FormGov.QuestCertificate.NotCertificateAttention'),
-    mbgOK or mbgCancel or mbgQuestion) <> mbgResultOK) then Exit;
+  if Sender.UserValue <> 0 then
+    if ShowMessageBoxGI(Self,
+      LocalizedText('FormGov.QuestCertificate.NotCertificateAttention'),
+      mbgOK or mbgCancel or mbgQuestion) <> mbgResultOK then Exit;
   Galaxy.CheckIntegrityChecksum(162);
   CaptureSavePreview;
   CaptureGalaxyPreview(Self);
@@ -225,15 +225,15 @@ begin
   RequestedScreenId := screenPlanetQuest;
   RequestClose(1);
 end;
-{ @end $811C8C }
+{ @end $504EC4 }
 
-{ @routine $811DF4 TfPlanet_RefreshTextQuestPrompt }
+{ @routine $50501C TfPlanet_RefreshTextQuestPrompt }
 procedure TfPlanet.RefreshTextQuestPrompt;
 var
   Window: TWindowGI;
   QuestNumber, I: Integer;
   Quest: PQuest;
-  Text: WideString;
+  CaptionText: WideString;
 begin
   QuestNumber := -1;
   Window := GetByName('QuestInfo') as TWindowGI;
@@ -242,16 +242,16 @@ begin
   if (GetPlayer.CurrentPlanet.TextQuestId > -1) and (GetPlayer.Quests.Count > 0) then
     for I := 0 to GetPlayer.Quests.Count - 1 do
     begin
-      Quest := PQuest(GetPlayer.Quests[I]);
+      Quest := GetPlayer.Quests[I];
       if (Quest.QuestType = qtPlanetQuest) and (Quest.ObjectiveTarget is TPlanet) and
-         (GetPlayer.CurrentPlanet = (Quest.ObjectiveTarget as TPlanet)) and
-         (LanguageDataConfig.GetBlockByPath('PlanetQuest.PlanetQuest').CountParams(IntToStr(Quest.QuestNumber)) > 0) then
+        (GetPlayer.CurrentPlanet = (Quest.ObjectiveTarget as TPlanet)) and
+        (LanguageDataConfig.GetBlockByPath('PlanetQuest.PlanetQuest').CountParams(IntToStr(Quest.QuestNumber)) > 0) then
       begin
         QuestNumber := Quest.QuestNumber;
         if (Quest.QuestNumber < FirstLicensedQuestId) or
           ((LanguageDataConfig.GetBlock('PlanetQuest').CountBlocks('PlanetQuestLic') > 0) and
-           (LanguageDataConfig.GetBlock('PlanetQuest').GetBlock('PlanetQuestLic').GetParamOrMarker(IntToStr(Quest.QuestNumber)) =
-            PlanetQuestScreen.GetQuestContentHash(Quest.QuestNumber))) then
+          (LanguageDataConfig.GetBlock('PlanetQuest').GetBlock('PlanetQuestLic').GetParamOrMarker(IntToStr(Quest.QuestNumber)) =
+          PlanetQuestScreen.GetQuestContentHash(Quest.QuestNumber))) then
           Window.FindByNameRecursive('QuestInfo_Run').UserValue := 0
         else
           Window.FindByNameRecursive('QuestInfo_Run').UserValue := 1;
@@ -261,19 +261,19 @@ begin
     end;
   if not Window.Active then Exit;
   with GetByName('QuestInfo_Name') as TLabelGI do
-    SetText(LocalizedText('PlanetQuest.StartText.QuestCaption'));
+    Text := LocalizedText('PlanetQuest.StartText.QuestCaption');
   with GetByName('QuestInfo_Text') as TLabelGI do
   begin
-    Text := LocalizedColorText('PlanetQuest.StartText.' + IntToStr(QuestNumber));
-    if Text = '' then Text := LocalizedColorText('PlanetQuest.StartText.QuestExtern');
+    CaptionText := LocalizedColorText('PlanetQuest.StartText.' + IntToStr(QuestNumber));
+    if CaptionText = '' then CaptionText := LocalizedColorText('PlanetQuest.StartText.QuestExtern');
     if Quest <> nil then
     begin
-      ReplaceTextToken(Text, '<CurPlanet>', (Quest.ObjectiveTarget as TPlanet).Name, TextHighlightColorTag);
-      ReplaceTextToken(Text, '<CurStar>', (Quest.ObjectiveTarget as TPlanet).CurrentStar.Name, TextHighlightColorTag);
-      ReplaceTextToken(Text, '<FromPlanet>', Quest.Planet.Name, TextHighlightColorTag);
-      ReplaceTextToken(Text, '<FromStar>', Quest.Planet.CurrentStar.Name, TextHighlightColorTag);
+      ReplaceTextToken(CaptionText, '<CurPlanet>', (Quest.ObjectiveTarget as TPlanet).Name, TextHighlightColorTag);
+      ReplaceTextToken(CaptionText, '<CurStar>', (Quest.ObjectiveTarget as TPlanet).CurrentStar.Name, TextHighlightColorTag);
+      ReplaceTextToken(CaptionText, '<FromPlanet>', Quest.Planet.Name, TextHighlightColorTag);
+      ReplaceTextToken(CaptionText, '<FromStar>', Quest.Planet.CurrentStar.Name, TextHighlightColorTag);
     end;
-    SetText(Text);
+    Text := CaptionText;
     Window.SetSize(Classes.Point(ClientSize.X + Window.WorkSubRect.Left + Window.WorkSubRect.Right,
       ClientSize.Y + Window.WorkSubRect.Top + Window.WorkSubRect.Bottom));
     Window.UpdateAutoGeometry;
@@ -295,9 +295,9 @@ begin
   Window.SetPosition(Classes.Point(GameScreenWidth - 10 - Window.ClientSize.X,
     GameScreenHeight - GiScalePixels(90) - Window.ClientSize.Y));
 end;
-{ @end $811DF4 }
+{ @end $50501C }
 
-{ @routine $8125E8 TfPlanet_EndTurnClicked }
+{ @routine $505794 TfPlanet_EndTurnClicked }
 procedure TfPlanet.EndTurnClicked(Sender: TObjectGI);
 begin
   Galaxy.CheckIntegrityChecksum(96);
@@ -312,9 +312,9 @@ begin
     Galaxy.PrimeIntegrityChecksum(97);
   end;
 end;
-{ @end $8125E8 }
+{ @end $505794 }
 
-{ @routine $812660 TfPlanet_MainPanelKeyDown }
+{ @routine $5057F8 TfPlanet_MainPanelKeyDown }
 procedure TfPlanet.MainPanelKeyDown(Sender: TObjectGI; Key: Cardinal);
 var
   Button: TObjectGI;
@@ -336,9 +336,9 @@ begin
     PlanetPanel.ProcessKeyDown(Key);
   end;
 end;
-{ @end $812660 }
+{ @end $5057F8 }
 
-{ @routine $812754 TfPlanet_ExecuteUiCode }
+{ @routine $5058C8 TfPlanet_ExecuteUiCode }
 procedure TfPlanet.ExecuteUiCode(Block: TBlockParEC; Key: Cardinal);
 begin
   if MainPanel.NavigationLocked then Exit;
@@ -350,9 +350,9 @@ begin
     Galaxy.PrimeIntegrityChecksum(20002);
   end;
 end;
-{ @end $812754 }
+{ @end $5058C8 }
 
-{ @routine $8127C8 TfPlanet_SelectMusic }
+{ @routine $50592C TfPlanet_SelectMusic }
 procedure TfPlanet.SelectMusic;
 begin
   if (ActiveLoadPanel <> nil) and (ActiveLoadPanel.GetShutterDirection = -1) then Exit;
@@ -371,7 +371,6 @@ begin
   else
     MusicManager.PlayCategory('Nation.' + OwnerInfo[GetPlayer.CurrentPlanet.OwnerId].InternalName);
 end;
-{ @end $8127C8 }
+{ @end $50592C }
 
 end.
-

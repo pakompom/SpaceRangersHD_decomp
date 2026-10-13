@@ -1,7 +1,6 @@
 unit CrcUnit;
-// Unit bracket (inferred): .text 0x00798CE4..0x00798F2E; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
-// This contiguous family shares the CRC table at $87C8A0. The incremental
+// This contiguous family shares the CRC table at $80A9C0. The incremental
 // entry points are used by galaxy integrity checks; the correction helpers are
 // called by TBufEC.UpdateEmbeddedCrc32. The original exported names are unknown.
 
@@ -10,17 +9,17 @@ interface
 type
   TCrc32Table = array[0..255] of Cardinal; // @size $400
 
-function ComputeCrc32(BufferPtr: Pointer; ByteCount: Integer): Cardinal; // @addr 0x798CE4
-function InitCrc32: Cardinal; // @addr $798D28
-function UpdateCrc32(State: Cardinal; BufferPtr: Pointer; ByteCount: Integer): Cardinal; // @addr $798D3C
-function FinishCrc32(State: Cardinal): Cardinal; // @addr $798D80
-function InvertCrc32(State: Cardinal): Cardinal; // @addr $798D98
-function UpdateCrc32Bytes(State: Cardinal; BufferPtr: Pointer; ByteCount: Integer): Cardinal; // @addr $798D9C @note "Assembly loop requires nonnegative ByteCount; consumes bytes with LODSB."
-function ExtendCrc32(Crc: Cardinal; BufferPtr: Pointer; ByteCount: Integer): Cardinal; // @addr $798DBC
-procedure WriteCrc32Correction(CurrentCrc, TargetCrc: Cardinal; Dest: Pointer); // @addr $798E58 @note "Writes four bytes whose appended CRC transforms CurrentCrc into TargetCrc."
+function ComputeCrc32(BufferPtr: Pointer; ByteCount: Integer): Cardinal; // @addr 0x0045EF5C
+function InitCrc32: Cardinal; // @addr $45EFA0
+function UpdateCrc32(State: Cardinal; BufferPtr: Pointer; ByteCount: Integer): Cardinal; // @addr $45EFA4
+function FinishCrc32(State: Cardinal): Cardinal; // @addr $45EFE8
+function InvertCrc32(State: Cardinal): Cardinal; // @addr $45EFEC
+function UpdateCrc32Bytes(State: Cardinal; BufferPtr: Pointer; ByteCount: Integer): Cardinal; // @addr $45EFF0 @note "Assembly loop requires nonnegative ByteCount; consumes bytes with LODSB."
+function ExtendCrc32(Crc: Cardinal; BufferPtr: Pointer; ByteCount: Integer): Cardinal; // @addr $45F010
+procedure WriteCrc32Correction(CurrentCrc, TargetCrc: Cardinal; Dest: Pointer); // @addr $45F078 @note "Writes four bytes whose appended CRC transforms CurrentCrc into TargetCrc."
 
 const
-  // Reflected CRC-32 polynomial $EDB88320; native table at $87C8A0.
+  // Reflected CRC-32 polynomial $EDB88320.
   Crc32Table: TCrc32Table = (
     $00000000, $77073096, $EE0E612C, $990951BA, $076DC419, $706AF48F, $E963A535, $9E6495A3,
     $0EDB8832, $79DCB8A4, $E0D5E91E, $97D2D988, $09B64C2B, $7EB17CBD, $E7B82D07, $90BF1D91,
@@ -54,13 +53,14 @@ const
     $AED16A4A, $D9D65ADC, $40DF0B66, $37D83BF0, $A9BCAE53, $DEBB9EC5, $47B2CF7F, $30B5FFE9,
     $BDBDF21C, $CABAC28A, $53B39330, $24B4A3A6, $BAD03605, $CDD70693, $54DE5729, $23D967BF,
     $B3667A2E, $C4614AB8, $5D681B02, $2A6F2B94, $B40BBE37, $C30C8EA1, $5A05DF1B, $2D02EF8D
-  ); // @addr $87C8A0
+  ); // @addr $80A9C0
 
 implementation
 
-{ @routine $798CE4 ComputeCrc32 }
+{ @routine $45EF5C ComputeCrc32 }
 function ComputeCrc32(BufferPtr: Pointer; ByteCount: Integer): Cardinal;
 begin
+  // Preserve all 32 bits of the registers across this assembly routine.
   asm
     PUSHAD
     MOV EAX, $FFFFFFFF
@@ -84,18 +84,19 @@ begin
     POPAD
   end;
 end;
-{ @end $798CE4 }
+{ @end $45EF5C }
 
-{ @routine $798D28 InitCrc32 }
+{ @routine $45EFA0 InitCrc32 }
 function InitCrc32: Cardinal;
 begin
   Result := $FFFFFFFF;
 end;
-{ @end $798D28 }
+{ @end $45EFA0 }
 
-{ @routine $798D3C UpdateCrc32 }
+{ @routine $45EFA4 UpdateCrc32 }
 function UpdateCrc32(State: Cardinal; BufferPtr: Pointer; ByteCount: Integer): Cardinal;
 begin
+  // Preserve all 32 bits of the registers across this assembly routine.
   asm
     PUSHAD
     MOV EAX, State
@@ -118,23 +119,23 @@ begin
     POPAD
   end;
 end;
-{ @end $798D3C }
+{ @end $45EFA4 }
 
-{ @routine $798D80 FinishCrc32 }
+{ @routine $45EFE8 FinishCrc32 }
 function FinishCrc32(State: Cardinal): Cardinal;
 begin
   Result := not State;
 end;
-{ @end $798D80 }
+{ @end $45EFE8 }
 
-{ @routine $798D98 InvertCrc32 }
+{ @routine $45EFEC InvertCrc32 }
 function InvertCrc32(State: Cardinal): Cardinal;
 asm
   NOT EAX
 end;
-{ @end $798D98 }
+{ @end $45EFEC }
 
-{ @routine $798D9C UpdateCrc32Bytes }
+{ @routine $45EFF0 UpdateCrc32Bytes }
 function UpdateCrc32Bytes(State: Cardinal; BufferPtr: Pointer; ByteCount: Integer): Cardinal;
 asm
   TEST ECX, ECX
@@ -153,26 +154,26 @@ asm
   POP ESI
 @@Done:
 end;
-{ @end $798D9C }
+{ @end $45EFF0 }
 
-{ @routine $798DBC ExtendCrc32 }
+{ @routine $45F010 ExtendCrc32 }
 function ExtendCrc32(Crc: Cardinal; BufferPtr: Pointer; ByteCount: Integer): Cardinal;
 begin
   Crc := InvertCrc32(Crc);
   Crc := UpdateCrc32Bytes(Crc, BufferPtr, ByteCount);
   Result := InvertCrc32(Crc);
 end;
-{ @end $798DBC }
+{ @end $45F010 }
 
-{ @routine $798E58 WriteCrc32Correction }
+{ @routine $45F078 WriteCrc32Correction }
 procedure WriteCrc32Correction(CurrentCrc, TargetCrc: Cardinal; Dest: Pointer);
 var
   State: Cardinal;
   B3, B2, B1, B0: Cardinal;
   Cursor: PAnsiChar;
 
-  // @nested $798DFC ReverseCrc32Byte
-  function ReverseCrc32Byte(var State: Cardinal): Cardinal; // @addr $798DFC @note "Nested in WriteCrc32Correction; unused static link is caller-popped."
+  // @nested $45F02C ReverseCrc32Byte
+  function ReverseCrc32Byte(var State: Cardinal): Cardinal; // @addr $45F02C @note "Nested in WriteCrc32Correction; unused static link is caller-popped."
   var
     i: Integer;
     Difference, Original: Cardinal;
@@ -211,6 +212,6 @@ begin
   Inc(Cursor);
   Cursor^ := Chr(B0 xor State);
 end;
-{ @end $798E58 }
+{ @end $45F078 }
 
 end.

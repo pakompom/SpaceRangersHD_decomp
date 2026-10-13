@@ -1,5 +1,4 @@
 unit ab_W;
-// Shared arcade weapon records and dispatch: $4FBA2C..$4FD5CF.
 // Inferred ownership; original unit boundary remains unresolved.
 
 interface
@@ -22,10 +21,10 @@ type
     Range: Double; // @offset $28
   end;
 
-procedure ab_Weapon_InitializeFromInfo(Weapon: PabWeapon; Info: PWeaponInfo); // @addr $4FBA2C
-procedure ab_Weapon_Initialize(Weapon: PabWeapon; ItemType: Byte); // @addr $4FBA4C
-procedure ab_Weapon_Fire(Weapon: PabWeapon; Owner: TabObject; DamageScale: Single); // @addr $4FC1C4
-procedure ab_Weapon_QueueImageLoad(Weapon: PabWeapon; PendingLoads: TList; Owner: TObjectGI); // @addr $4FCAE4
+procedure ab_Weapon_InitializeFromInfo(Weapon: PabWeapon; Info: PWeaponInfo); // @addr $554868
+procedure ab_Weapon_Initialize(Weapon: PabWeapon; ItemType: Byte); // @addr $554874
+procedure ab_Weapon_Fire(Weapon: PabWeapon; Owner: TabObject; DamageScale: Single); // @addr $554DC0
+procedure ab_Weapon_QueueImageLoad(Weapon: PabWeapon; PendingLoads: TList; Owner: TObjectGI); // @addr $555588
 
 implementation
 
@@ -33,14 +32,14 @@ uses Globals, GR_Main, GI_Tail, ab_Global,
   ab_W01, ab_W02, ab_W03, ab_W04, ab_W05, ab_W06, ab_W07, ab_W08, ab_W09, ab_W10, ab_W11, ab_W12, ab_W13, ab_W14, ab_W15, ab_W16, ab_W17, ab_W18;
 
 
-{ @routine $4FBA2C ab_Weapon_InitializeFromInfo }
+{ @routine $554868 ab_Weapon_InitializeFromInfo }
 procedure ab_Weapon_InitializeFromInfo(Weapon: PabWeapon; Info: PWeaponInfo);
 begin
   ab_Weapon_Initialize(Weapon, Info.ArcadeWeaponType);
 end;
-{ @end $4FBA2C }
+{ @end $554868 }
 
-{ @routine $4FBA4C ab_Weapon_Initialize }
+{ @routine $554874 ab_Weapon_Initialize }
 procedure ab_Weapon_Initialize(Weapon: PabWeapon; ItemType: Byte);
 begin
   Weapon.ItemType := ItemType;
@@ -261,9 +260,9 @@ begin
     Weapon.Range := 150;
   end;
 end;
-{ @end $4FBA4C }
+{ @end $554874 }
 
-{ @routine $4FC1C4 ab_Weapon_Fire }
+{ @routine $554DC0 ab_Weapon_Fire }
 procedure ab_Weapon_Fire(Weapon: PabWeapon; Owner: TabObject; DamageScale: Single);
 var
   W01: TabW01;
@@ -287,8 +286,8 @@ var
   Angle: Single;
   Index: Integer;
 
-  // @nested $4FC168 ConfigureObjectSound
-  procedure ConfigureObjectSound(Obj: TabObject; Kind: Integer); // @addr $4FC168 @calls "0x4fc25f,0x4fc2af,0x4fc2ff,0x4fc34f,0x4fc3ac,0x4FC3F8,0x4fc444,0x4fc48d,0x4FC4D9,0x4FC525,0x4fc571,0x4FC5C1,0x4FC611,0x4fc665,0x4FC6B3,0x4FC703,0x4fc753,0x4fc7ad,0x4FC7F9,0x4fc851,0x4fc89b,0x4FC8E5,0x4fc948,0x4fc9bf,0x4FCA29,0x4fca77,0x4FCAC4"
+  // @nested $554D7C ConfigureObjectSound
+  procedure ConfigureObjectSound(Obj: TabObject; Kind: Integer); // @addr $554D7C @calls "0x00554E4B,0x00554E8D,0x00554ECF,0x00554F11,0x00554F60,0x00554FA2,0x00554FE4,0x00555023,0x00555065,0x005550A7,0x005550E9,0x0055512B,0x0055516D,0x005551B3,0x005551F3,0x00555235,0x00555277,0x005552C3,0x00555305,0x0055534F,0x0055538F,0x005553CF,0x00555424,0x0055548D,0x005554E9,0x00555526,0x00555565"
   begin
     if ArcadeWeaponLoopTicks[Kind] >= 0 then
     begin
@@ -477,9 +476,9 @@ begin
     ConfigureObjectSound(W18, 3);
   end;
 end;
-{ @end $4FC1C4 }
+{ @end $554DC0 }
 
-{ @routine $4FCAE4 ab_Weapon_QueueImageLoad }
+{ @routine $555588 ab_Weapon_QueueImageLoad }
 procedure ab_Weapon_QueueImageLoad(Weapon: PabWeapon; PendingLoads: TList; Owner: TObjectGI);
 begin
   case Weapon.Kind of
@@ -643,6 +642,6 @@ begin
       end;
   end;
 end;
-{ @end $4FCAE4 }
+{ @end $555588 }
 
 end.

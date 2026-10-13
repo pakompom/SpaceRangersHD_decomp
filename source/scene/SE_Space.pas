@@ -1,5 +1,4 @@
 unit SE_Space;
-// Unit bracket (inferred): .text 0x00838C6C..0x0083AB4F; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -10,7 +9,7 @@ type
   TSpaceSE = class;
   TSpaceScrollEventSE = procedure of object;
 
-  TObjectSE = class(TObjectEx) // @size 0x4C
+  TObjectSE = class(TObjectEx) // @size 0x4C @methodorder source
   public
     Prev: TObjectSE; // @offset 0x04
     Next: TObjectSE; // @offset 0x08
@@ -29,35 +28,50 @@ type
     NextSoundTime: Cardinal; // @offset $44
     RefCount: Integer; // @offset 0x48
 
-    constructor CreateEmpty; // @addr 0x838D98
-    procedure CopyTo(Destination: TObjectSE); virtual; // @addr 0x839034 @slot 0x00 @note "Copies graph key, size, position and depth expression only."
-    constructor Create(const AGraphKey: WideString; UnusedPosition: TPoint); // @addr 0x838DDC @note "UnusedPosition is copied but does not initialize Position."
-    destructor Destroy; override; // @addr 0x838EC8
-    procedure AttachToSpace(ASpace: TSpaceSE); virtual; // @addr 0x83908C @slot 0x04
-    procedure DetachFromSpace; virtual; // @addr 0x8390EC @slot 0x08
-    function IsAttachedToSpace: Boolean; // @addr 0x839134
-    procedure SetPosition(APosition: TPointF); virtual; // @addr 0x839158 @slot 0x0C
-    procedure SetDepth(Value: Single); virtual; // @addr $839180 @slot $10
-    function GetDepth: Single; virtual; // @addr $83918C @slot $14
-    procedure SetOrbitCenter(Center: TPointF); virtual; // @addr $8391A4 @slot $18
-    function GetOrbitCenter: TPointF; virtual; // @addr $8391BC @slot $1C @note "Subclasses interpret this point differently: Sputnik returns the orbit center, Ship2 returns scaled dimensions."
-    function GetAlpha: Byte; virtual; // @addr $8391D8 @slot $20
-    procedure SetAlpha(Value: Byte); virtual; // @addr $8391EC @slot $24
-    procedure SetAngle(Value: Byte); virtual; // @addr $839210 @slot $2C
-    procedure SetText(const Value: WideString); virtual; // @addr $839238 @slot $34
-    function BuildStateBuffer: TBufEC; virtual; // @addr $839248 @slot $38
-    procedure LoadStateBuffer(Buffer: TBufEC); virtual; // @addr $839260 @slot $3C
-    procedure Advance; virtual; // @addr $839270 @slot $40
-    procedure SetSize(Value: TPoint); virtual; // @addr $8394B4 @slot $44
-    procedure ConfigureLoopSound(const Name: WideString); // @addr $8394FC
-    procedure ConfigureRandomSound(const Name: WideString); // @addr $8396B8
-    function GetAngle: Byte; virtual; // @addr 0x8391FC @slot 0x28 @note "Base returns zero; TGateSE returns its stored angle."
-    function GetText: WideString; virtual; // @addr 0x839220 @slot 0x30 @note "Base returns empty; TGateSE overrides it with the label text."
-    function HitTestCursor: Boolean; virtual; // @addr 0x8394DC @slot 0x48
-    procedure DrawMap; virtual; // @addr 0x8394F0 @slot 0x4C
-    procedure LoadTemplate(Block: TBlockParEC); virtual; // @addr 0x839730 @slot 0x50
-    procedure ApplyConfig(Block: TBlockParEC); virtual; // @addr 0x839848 @slot 0x54
-    procedure QueueImageLoad(PendingLoads: TList; Owner: TObjectGI); virtual; // @addr 0x83992C @slot 0x58
+    constructor CreateEmpty; // @addr 0x0078654C
+    constructor Create(const AGraphKey: WideString; UnusedPosition: TPoint); // @addr 0x00786584 @note "UnusedPosition is copied but does not initialize Position."
+    destructor Destroy; override; // @addr 0x00786664
+    procedure CopyTo(Destination: TObjectSE); virtual; // @addr 0x00786774 @slot 0x00 @note "Copies graph key, size, position and depth expression only."
+    property ObjPrev: TObjectSE read Prev write Prev;
+    property ObjNext: TObjectSE read Next write Next;
+    property PObjPrev: TObjectSE read ProcessPrev write ProcessPrev;
+    property PObjNext: TObjectSE read ProcessNext write ProcessNext;
+    property SpaceOwner: TSpaceSE read Space;
+    procedure AttachToSpace(ASpace: TSpaceSE); virtual; // @addr 0x007867AC @slot 0x04
+    procedure DetachFromSpace; virtual; // @addr 0x007867F0 @slot 0x08
+    function IsAttachedToSpace: Boolean; // @addr 0x00786820
+    property TypeO: WideString read GraphKey;
+    procedure SetPosition(APosition: TPointF); virtual; // @addr 0x0078682C @slot 0x0C
+    property Pos: TPointF read Position write SetPosition;
+    procedure SetDepth(Value: Single); virtual; // @addr $78684C @slot $10
+    function GetDepth: Single; virtual; // @addr $786854 @slot $14
+    property DepthValue: Single read GetDepth write SetDepth;
+    procedure SetOrbitCenter(Center: TPointF); virtual; // @addr $786860 @slot $18
+    function GetOrbitCenter: TPointF; virtual; // @addr $786864 @slot $1C @note "Subclasses interpret this point differently: Sputnik returns the orbit center, Ship2 returns scaled dimensions."
+    property OrbitCenter: TPointF read GetOrbitCenter write SetOrbitCenter;
+    function GetAlpha: Byte; virtual; // @addr $786874 @slot $20
+    procedure SetAlpha(Value: Byte); virtual; // @addr $786878 @slot $24
+    property Alpha: Byte read GetAlpha write SetAlpha;
+    function GetAngle: Byte; virtual; // @addr 0x0078687C @slot 0x28 @note "Base returns zero; TGateSE returns its stored angle."
+    procedure SetAngle(Value: Byte); virtual; // @addr $786880 @slot $2C
+    property Angle: Byte read GetAngle write SetAngle;
+    function GetText: WideString; virtual; // @addr 0x00786884 @slot 0x30 @note "Base returns empty; TGateSE overrides it with the label text."
+    procedure SetText(const Value: WideString); virtual; // @addr $786890 @slot $34
+    property Text: WideString read GetText write SetText;
+    function BuildStateBuffer: TBufEC; virtual; // @addr $786894 @slot $38
+    procedure LoadStateBuffer(Buffer: TBufEC); virtual; // @addr $786898 @slot $3C
+    procedure Advance; virtual; // @addr $78689C @slot $40
+    procedure SetSize(Value: TPoint); virtual; // @addr $786A8C @slot $44
+    property ObjectSize: TPoint read Size write SetSize;
+    function HitTestCursor: Boolean; virtual; // @addr 0x00786AAC @slot 0x48
+    procedure DrawMap; virtual; // @addr 0x00786AB0 @slot 0x4C
+    procedure ConfigureLoopSound(const Name: WideString); // @addr $786AB4
+    property LoopSoundName: WideString write ConfigureLoopSound;
+    procedure ConfigureRandomSound(const Name: WideString); // @addr $786C34
+    property RandomSoundName: WideString write ConfigureRandomSound;
+    procedure LoadTemplate(Block: TBlockParEC); virtual; // @addr 0x00786C84 @slot 0x50
+    procedure ApplyConfig(Block: TBlockParEC); virtual; // @addr 0x00786D8C @slot 0x54
+    procedure QueueImageLoad(PendingLoads: TList; Owner: TObjectGI); virtual; // @addr 0x00786E68 @slot 0x58
   end;
 
   PSpaceTimerSE = ^TSpaceTimerSE;
@@ -97,101 +111,101 @@ type
     PathPointCount: Integer; // @offset 0x64
     AlphaShift: Integer; // @offset $68 Ship2 alpha is shifted by this amount.
 
-    constructor Create(AMapPanel: TPanelGI; AScreen: TMessageLoopGI); // @addr 0x839940
-    destructor Destroy; override; // @addr 0x839CD4 @note "Requires all timers to have been removed."
-    procedure LinkObject(Obj: TObjectSE); // @addr 0x839DCC @note "Only changes list links; does not retain Obj or set Obj.Space."
-    procedure UnlinkObject(Obj: TObjectSE); // @addr 0x839E20 @note "Does not release Obj or clear its links."
-    procedure DeleteTimer(Timer: PSpaceTimerSE); // @addr 0x839F44 @note "Raises if Timer is NextTimerToProcess."
-    function CreateTimer(DelayMs, RepeatMs: Integer; Callback: TSpaceTimerEventSE; UserData: Integer): PSpaceTimerSE; // @addr 0x839E90 @note "Converts milliseconds to ticks by rounding division by 18. Callback receives Context, Timer, UserData in Delphi registers. Zero delay still waits for AdvanceTimers."
-    procedure AdvanceTimers; // @addr 0x83A00C
-    procedure AdvanceObjects; // @addr 0x83A080
-    procedure ClearPath; // @addr 0x83A0B4
-    procedure SetPath(Points: PPointF; Count: Integer); // @addr 0x83A0E4 @note "Copies Count points. A nonpositive count clears the path."
-    procedure CreateMinimapViewport; // @addr $83A5EC
-    procedure FreeMinimapViewport; // @addr $83A6F8
-    procedure MinimapMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $83A88C
-    procedure MinimapMouseEnter(Sender: TObjectGI); // @addr $83A9D0
-    procedure MinimapMouseMove(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $83A9E8
-    procedure DrawMinimap; // @addr 0x83A134
-    function ContainsMapPoint(Point: TPointF): Boolean; // @addr $83AAF4
-    procedure MapScrollChanged(Sender: TObjectGI); // @addr 0x83A720
+    constructor Create(AMapPanel: TPanelGI; AScreen: TMessageLoopGI); // @addr 0x00786E6C
+    destructor Destroy; override; // @addr 0x007871A8 @note "Requires all timers to have been removed."
+    procedure LinkObject(Obj: TObjectSE); // @addr 0x00787268 @note "Only changes list links; does not retain Obj or set Obj.Space."
+    procedure UnlinkObject(Obj: TObjectSE); // @addr 0x0078728C @note "Does not release Obj or clear its links."
+    procedure DeleteTimer(Timer: PSpaceTimerSE); // @addr 0x00787344 @note "Raises if Timer is NextTimerToProcess."
+    function CreateTimer(DelayMs, RepeatMs: Integer; Callback: TSpaceTimerEventSE; UserData: Integer): PSpaceTimerSE; // @addr 0x007872C0 @note "Converts milliseconds to ticks by rounding division by 18. Callback receives Context, Timer, UserData in Delphi registers. Zero delay still waits for AdvanceTimers."
+    procedure AdvanceTimers; // @addr 0x007873C8
+    procedure AdvanceObjects; // @addr 0x00787408
+    procedure ClearPath; // @addr 0x00787420
+    procedure SetPath(Points: PPointF; Count: Integer); // @addr 0x0078743C @note "Copies Count points. A nonpositive count clears the path."
+    procedure CreateMinimapViewport; // @addr $7878B4
+    procedure FreeMinimapViewport; // @addr $78798C
+    procedure MinimapMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $787ABC
+    procedure MinimapMouseEnter(Sender: TObjectGI); // @addr $787BD8
+    procedure MinimapMouseMove(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $787BE0
+    procedure DrawMinimap; // @addr 0x00787480
+    function ContainsMapPoint(Point: TPointF): Boolean; // @addr $787CD0
+    procedure MapScrollChanged(Sender: TObjectGI); // @addr 0x007879A4
   end;
 
-procedure RetainSpaceObject(var Dest: TObjectSE; Source: TObjectSE); // @addr 0x838FD4 @note "Overwrites Dest without releasing its previous reference."
-procedure ReleaseSpaceObject(var Obj: TObjectSE); // @addr 0x838FF8 @note "Clears Obj; frees its previous value when the decremented reference count is nonpositive."
+// Untyped reference slots accept fields declared with concrete scene subclasses.
+procedure RetainSpaceObject(var Dest; Source: TObjectSE); // @addr 0x0078674C @note "Overwrites Dest without releasing its previous reference."
+procedure ReleaseSpaceObject(var Obj); // @addr 0x00786758 @note "Clears Obj; frees its previous value when the decremented reference count is nonpositive."
 
 implementation
 
 uses Windows, SysUtils, MMSystem, EC_Str, GR_Main, Globals, GlobalsV, aMyFunction,
   SE_Process, SE_Weapon, aEFilm, aEFilmEnd, EC_Mem, GI_Main, GR_GraphBuf, SE_Star, SE_Planet, GI_GraphButton, fStarMap, fFilm;
 
-{ @routine $838D98 TObjectSE_CreateEmpty }
+{ @routine $78654C TObjectSE_CreateEmpty }
 constructor TObjectSE.CreateEmpty;
 begin
   inherited Create;
 end;
-{ @end $838D98 }
+{ @end $78654C }
 
-{ @routine $838DDC TObjectSE_Create }
+{ @routine $786584 TObjectSE_Create }
 constructor TObjectSE.Create(const AGraphKey: WideString; UnusedPosition: TPoint);
 begin
   inherited Create;
   GraphKey := AGraphKey;
   LoadTemplate(GameDataConfig.GetBlockByPath('SE.' + ExtractDelimitedPartW(AGraphKey, 0, ',')));
 end;
-{ @end $838DDC }
+{ @end $786584 }
 
-{ @routine $838EC8 TObjectSE_Destroy }
+{ @routine $786664 TObjectSE_Destroy }
 destructor TObjectSE.Destroy;
 var
   Obj: TObjectSE;
 begin
   DetachFromSpace;
-  if GetCurrentThreadId = MainRuntimeThreadId then
-    if SpaceProcess <> nil then
-      if SpaceProcess.Space <> nil then
-      begin
-        Obj := TSpaceSE(SpaceProcess.Space).FirstObject;
-        while Obj <> nil do
-        begin
-          if Obj is TWeaponSE then
-            if Obj.IsAttachedToSpace then
-              if (TWeaponSE(Obj).SourceObject = Self) or (TWeaponSE(Obj).TargetObject = Self) then
-                Obj.DetachFromSpace;
-          Obj := Obj.Next;
-        end;
-      end;
+  if (GetCurrentThreadId = MainRuntimeThreadId) and
+    (SpaceProcess <> nil) and (SpaceProcess.Space <> nil) then
+  begin
+    Obj := TSpaceSE(SpaceProcess.Space).FirstObject;
+    while Obj <> nil do
+    begin
+      if Obj is TWeaponSE then
+        if Obj.IsAttachedToSpace then
+          if (TWeaponSE(Obj).SourceObject = Self) or (TWeaponSE(Obj).TargetObject = Self) then
+            Obj.DetachFromSpace;
+      Obj := Obj.Next;
+    end;
+  end;
   if PrimaryFilm <> nil then PrimaryFilm.ReleaseObjectReferences(Self);
   if SecondaryFilm <> nil then SecondaryFilm.ReleaseObjectReferences(Self);
   if TrailingFilmEffects <> nil then TrailingFilmEffects.ReleaseObjectReferences(Self);
   inherited Destroy;
 end;
-{ @end $838EC8 }
+{ @end $786664 }
 
-{ @routine $838FD4 RetainSpaceObject }
-procedure RetainSpaceObject(var Dest: TObjectSE; Source: TObjectSE);
+{ @routine $78674C RetainSpaceObject }
+procedure RetainSpaceObject(var Dest; Source: TObjectSE);
 begin
-  Dest := Source;
+  TObjectSE(Dest) := Source;
   if Source <> nil then Inc(Source.RefCount);
 end;
-{ @end $838FD4 }
+{ @end $78674C }
 
-{ @routine $838FF8 ReleaseSpaceObject }
-procedure ReleaseSpaceObject(var Obj: TObjectSE);
+{ @routine $786758 ReleaseSpaceObject }
+procedure ReleaseSpaceObject(var Obj);
 var
   Previous: TObjectSE;
 begin
-  Previous := Obj;
-  Obj := nil;
+  Previous := TObjectSE(Obj);
+  TObjectSE(Obj) := nil;
   if Previous <> nil then
   begin
     Dec(Previous.RefCount);
     if Previous.RefCount <= 0 then Previous.Free;
   end;
 end;
-{ @end $838FF8 }
+{ @end $786758 }
 
-{ @routine $839034 TObjectSE_CopyTo }
+{ @routine $786774 TObjectSE_CopyTo }
 procedure TObjectSE.CopyTo(Destination: TObjectSE);
 begin
   Destination.GraphKey := GraphKey;
@@ -199,9 +213,9 @@ begin
   Destination.Position := Position;
   Destination.DepthExpression := DepthExpression;
 end;
-{ @end $839034 }
+{ @end $786774 }
 
-{ @routine $83908C TObjectSE_AttachToSpace }
+{ @routine $7867AC TObjectSE_AttachToSpace }
 procedure TObjectSE.AttachToSpace(ASpace: TSpaceSE);
 begin
   ASpace.LinkObject(Self);
@@ -212,9 +226,9 @@ begin
     LoopSound.Configure(SoundLoopPath, SoundGroup, True);
   end;
 end;
-{ @end $83908C }
+{ @end $7867AC }
 
-{ @routine $8390EC TObjectSE_DetachFromSpace }
+{ @routine $7867F0 TObjectSE_DetachFromSpace }
 procedure TObjectSE.DetachFromSpace;
 begin
   if LoopSound <> nil then
@@ -228,118 +242,118 @@ begin
     Space := nil;
   end;
 end;
-{ @end $8390EC }
+{ @end $7867F0 }
 
-{ @routine $839134 TObjectSE_IsAttachedToSpace }
+{ @routine $786820 TObjectSE_IsAttachedToSpace }
 function TObjectSE.IsAttachedToSpace: Boolean;
 begin
   if Space = nil then Result := False else Result := True;
 end;
-{ @end $839134 }
+{ @end $786820 }
 
-{ @routine $839158 TObjectSE_SetPosition }
+{ @routine $78682C TObjectSE_SetPosition }
 procedure TObjectSE.SetPosition(APosition: TPointF);
 begin
   Position := APosition;
 end;
-{ @end $839158 }
+{ @end $78682C }
 
-{ @routine $839180 TObjectSE_SetDepth }
+{ @routine $78684C TObjectSE_SetDepth }
 procedure TObjectSE.SetDepth(Value: Single);
 begin
 
 end;
-{ @end $839180 }
+{ @end $78684C }
 
-{ @routine $83918C TObjectSE_GetDepth }
+{ @routine $786854 TObjectSE_GetDepth }
 function TObjectSE.GetDepth: Single;
 begin
   Result := 0;
 end;
-{ @end $83918C }
+{ @end $786854 }
 
-{ @routine $8391A4 TObjectSE_SetOrbitCenter }
+{ @routine $786860 TObjectSE_SetOrbitCenter }
 procedure TObjectSE.SetOrbitCenter(Center: TPointF);
 begin
 
 end;
-{ @end $8391A4 }
+{ @end $786860 }
 
-{ @routine $8391BC TObjectSE_GetOrbitCenter }
+{ @routine $786864 TObjectSE_GetOrbitCenter }
 function TObjectSE.GetOrbitCenter: TPointF;
 begin
   Result := MakePointF(0, 0);
 end;
-{ @end $8391BC }
+{ @end $786864 }
 
-{ @routine $8391D8 TObjectSE_GetAlpha }
+{ @routine $786874 TObjectSE_GetAlpha }
 function TObjectSE.GetAlpha: Byte;
 begin
   Result := 0;
 end;
-{ @end $8391D8 }
+{ @end $786874 }
 
-{ @routine $8391EC TObjectSE_SetAlpha }
+{ @routine $786878 TObjectSE_SetAlpha }
 procedure TObjectSE.SetAlpha(Value: Byte);
 begin
 
 end;
-{ @end $8391EC }
+{ @end $786878 }
 
-{ @routine $8391FC TObjectSE_GetAngle }
+{ @routine $78687C TObjectSE_GetAngle }
 function TObjectSE.GetAngle: Byte;
 begin
   Result := 0;
 end;
-{ @end $8391FC }
+{ @end $78687C }
 
-{ @routine $839210 TObjectSE_SetAngle }
+{ @routine $786880 TObjectSE_SetAngle }
 procedure TObjectSE.SetAngle(Value: Byte);
 begin
 
 end;
-{ @end $839210 }
+{ @end $786880 }
 
-{ @routine $839220 TObjectSE_GetText }
+{ @routine $786884 TObjectSE_GetText }
 function TObjectSE.GetText: WideString;
 begin
   Result := '';
 end;
-{ @end $839220 }
+{ @end $786884 }
 
-{ @routine $839238 TObjectSE_SetText }
+{ @routine $786890 TObjectSE_SetText }
 procedure TObjectSE.SetText(const Value: WideString);
 begin
 
 end;
-{ @end $839238 }
+{ @end $786890 }
 
-{ @routine $839248 TObjectSE_BuildStateBuffer }
+{ @routine $786894 TObjectSE_BuildStateBuffer }
 function TObjectSE.BuildStateBuffer: TBufEC;
 begin
   Result := nil;
 end;
-{ @end $839248 }
+{ @end $786894 }
 
-{ @routine $839260 TObjectSE_LoadStateBuffer }
+{ @routine $786898 TObjectSE_LoadStateBuffer }
 procedure TObjectSE.LoadStateBuffer(Buffer: TBufEC);
 begin
 
 end;
-{ @end $839260 }
+{ @end $786898 }
 
-{ @routine $839270 TObjectSE_Advance }
+{ @routine $78689C TObjectSE_Advance }
 procedure TObjectSE.Advance;
 var
   Distance: Single;
   Now: Cardinal;
-  Delay: Integer;
+  NextTime: Integer;
 begin
   if IsAttachedToSpace then
   begin
     if LoopSound <> nil then
     begin
-      Distance := PointDistance(Position, SpaceViewPosition) / (Cardinal(GameScreenHeight) / 2);
+      Distance := PointDistance(Position, SpaceViewPosition) / (GameScreenHeight / 2);
       if Distance > 1 then LoopSound.SetVolume(0)
       else LoopSound.SetVolume((1 - Distance) * 0.5 + 0.5);
     end;
@@ -348,11 +362,11 @@ begin
         if RandomSoundGroup >= 0 then
         begin
           Now := timeGetTime;
-          if NextSoundTime < Now then
+          if Now > NextSoundTime then
           begin
-            Delay := RandomIntRange(RandomSound.Groups[RandomSoundGroup].NextTimeMin,
-              RandomSound.Groups[RandomSoundGroup].NextTimeMax);
-            NextSoundTime := Now + Delay;
+            NextTime := RandomIntRange(RandomSound.Groups[RandomSoundGroup].NextTimeMin,
+              RandomSound.Groups[RandomSoundGroup].NextTimeMax) + Integer(Now);
+            NextSoundTime := NextTime;
             if Space.ContainsMapPoint(Position) then
               SoundManager.PlayEffect(RandomSound.SelectSound(RandomSoundGroup),
                 RandomSound.Groups[RandomSoundGroup].Group, 1, 0);
@@ -363,30 +377,30 @@ begin
     end;
   end;
 end;
-{ @end $839270 }
+{ @end $78689C }
 
-{ @routine $8394B4 TObjectSE_SetSize }
+{ @routine $786A8C TObjectSE_SetSize }
 procedure TObjectSE.SetSize(Value: TPoint);
 begin
   Size := Value;
 end;
-{ @end $8394B4 }
+{ @end $786A8C }
 
-{ @routine $8394DC TObjectSE_HitTestCursor }
+{ @routine $786AAC TObjectSE_HitTestCursor }
 function TObjectSE.HitTestCursor: Boolean;
 begin
   Result := False;
 end;
-{ @end $8394DC }
+{ @end $786AAC }
 
-{ @routine $8394F0 TObjectSE_DrawMap }
+{ @routine $786AB0 TObjectSE_DrawMap }
 procedure TObjectSE.DrawMap;
 begin
 
 end;
-{ @end $8394F0 }
+{ @end $786AB0 }
 
-{ @routine $8394FC TObjectSE_ConfigureLoopSound }
+{ @routine $786AB4 TObjectSE_ConfigureLoopSound }
 procedure TObjectSE.ConfigureLoopSound(const Name: WideString);
 var
   Block: TBlockParEC;
@@ -414,9 +428,9 @@ begin
   SoundLoopPath := '';
   SoundGroup := 0;
 end;
-{ @end $8394FC }
+{ @end $786AB4 }
 
-{ @routine $8396B8 TObjectSE_ConfigureRandomSound }
+{ @routine $786C34 TObjectSE_ConfigureRandomSound }
 procedure TObjectSE.ConfigureRandomSound(const Name: WideString);
 begin
   RandomSound := FindRandomSound(Name, RandomSoundGroup);
@@ -424,18 +438,18 @@ begin
     NextSoundTime := timeGetTime + RandomIntRange(RandomSound.Groups[RandomSoundGroup].NextTimeMin,
       RandomSound.Groups[RandomSoundGroup].NextTimeMax);
 end;
-{ @end $8396B8 }
+{ @end $786C34 }
 
-{ @routine $839730 TObjectSE_LoadTemplate }
+{ @routine $786C84 TObjectSE_LoadTemplate }
 procedure TObjectSE.LoadTemplate(Block: TBlockParEC);
 begin
   if Block.CountParams('PosZ') > 0 then DepthExpression := Block.GetParam('PosZ');
   if Block.CountParams('SoundLoop') > 0 then SoundLoopPath := Block.GetParam('SoundLoop');
   if Block.CountParams('SoundGroup') > 0 then SoundGroup := ExtractDigitsToIntW(Block.GetParam('SoundGroup'));
 end;
-{ @end $839730 }
+{ @end $786C84 }
 
-{ @routine $839848 TObjectSE_ApplyConfig }
+{ @routine $786D8C TObjectSE_ApplyConfig }
 procedure TObjectSE.ApplyConfig(Block: TBlockParEC);
 var
   Text: WideString;
@@ -443,20 +457,20 @@ begin
   if Block.CountParams('Pos') > 0 then
   begin
     Text := Block.GetParam('Pos');
-    SetPosition(MakePointF(ExtractDecimalToSingleW(ExtractDelimitedPartW(Text, 0, ',')),
-      ExtractDecimalToSingleW(ExtractDelimitedPartW(Text, 1, ','))));
+    Pos := MakePointF(ExtractDecimalToSingleW(ExtractDelimitedPartW(Text, 0, ',')),
+      ExtractDecimalToSingleW(ExtractDelimitedPartW(Text, 1, ',')));
   end;
 end;
-{ @end $839848 }
+{ @end $786D8C }
 
-{ @routine $83992C TObjectSE_QueueImageLoad }
+{ @routine $786E68 TObjectSE_QueueImageLoad }
 procedure TObjectSE.QueueImageLoad(PendingLoads: TList; Owner: TObjectGI);
 begin
 
 end;
-{ @end $83992C }
+{ @end $786E68 }
 
-{ @routine $839940 TSpaceSE_Create }
+{ @routine $786E6C TSpaceSE_Create }
 constructor TSpaceSE.Create(AMapPanel: TPanelGI; AScreen: TMessageLoopGI);
 begin
   inherited Create;
@@ -468,9 +482,9 @@ begin
   with MinimapRangeShade do
   begin
     SetKind(ckShrLight);
-    SetPosition(Classes.Point(RenderScratchBuffer.Width shr 1, RenderScratchBuffer.Height shr 1));
-    SetOrigin(Classes.Point(RenderScratchBuffer.Width shr 1, RenderScratchBuffer.Height shr 1));
-    SetSize(Classes.Point(RenderScratchBuffer.Width, RenderScratchBuffer.Height));
+    Pos := Classes.Point(RenderScratchBuffer.Width shr 1, RenderScratchBuffer.Height shr 1);
+    Sme := Classes.Point(RenderScratchBuffer.Width shr 1, RenderScratchBuffer.Height shr 1);
+    ObjectSize := Classes.Point(RenderScratchBuffer.Width, RenderScratchBuffer.Height);
     SetShrLightInner(0);
     SetShrLightOuter(1);
   end;
@@ -478,15 +492,15 @@ begin
   with MinimapRangeCircle do
   begin
     SetKind(ckCircle);
-    SetPosition(Classes.Point(RenderScratchBuffer.Width shr 1, RenderScratchBuffer.Height shr 1));
-    SetOrigin(Classes.Point(RenderScratchBuffer.Width shr 1, RenderScratchBuffer.Height shr 1));
-    SetSize(Classes.Point(RenderScratchBuffer.Width, RenderScratchBuffer.Height));
+    Pos := Classes.Point(RenderScratchBuffer.Width shr 1, RenderScratchBuffer.Height shr 1);
+    Sme := Classes.Point(RenderScratchBuffer.Width shr 1, RenderScratchBuffer.Height shr 1);
+    ObjectSize := Classes.Point(RenderScratchBuffer.Width, RenderScratchBuffer.Height);
   end;
   MinimapBackground := TgiGI.Create(SpaceObjectUiLoop.ContentPanel);
   with MinimapBackground do
   begin
     SetImagePath('Bm.PanelSpace2.' + GiResourceSuffix + 'RadarT');
-    SetSize(Classes.Point(RenderScratchBuffer.Width, RenderScratchBuffer.Height));
+    ObjectSize := Classes.Point(RenderScratchBuffer.Width, RenderScratchBuffer.Height);
   end;
   StarField := TStarFieldGI(Screen.FindControlByPath('StarField'));
   StarFieldM := TStarFieldMGI(Screen.FindControlByPath('StarFieldM'));
@@ -494,9 +508,9 @@ begin
   StarFieldImages := TStarFieldImgGI(Screen.FindControlByPath('StarFieldImg'));
   AlphaShift := 0;
 end;
-{ @end $839940 }
+{ @end $786E6C }
 
-{ @routine $839CD4 TSpaceSE_Destroy }
+{ @routine $7871A8 TSpaceSE_Destroy }
 destructor TSpaceSE.Destroy;
 begin
   ClearPath;
@@ -515,9 +529,9 @@ begin
   if FirstTimer <> nil then raise Exception.Create('destructor TSpaceSE.Destroy;');
   inherited Destroy;
 end;
-{ @end $839CD4 }
+{ @end $7871A8 }
 
-{ @routine $839DCC TSpaceSE_LinkObject }
+{ @routine $787268 TSpaceSE_LinkObject }
 procedure TSpaceSE.LinkObject(Obj: TObjectSE);
 begin
   if LastObject <> nil then LastObject.Next := Obj;
@@ -526,9 +540,9 @@ begin
   LastObject := Obj;
   if FirstObject = nil then FirstObject := Obj;
 end;
-{ @end $839DCC }
+{ @end $787268 }
 
-{ @routine $839E20 TSpaceSE_UnlinkObject }
+{ @routine $78728C TSpaceSE_UnlinkObject }
 procedure TSpaceSE.UnlinkObject(Obj: TObjectSE);
 begin
   if Obj.Prev <> nil then Obj.Prev.Next := Obj.Next;
@@ -536,9 +550,9 @@ begin
   if LastObject = Obj then LastObject := Obj.Prev;
   if FirstObject = Obj then FirstObject := Obj.Next;
 end;
-{ @end $839E20 }
+{ @end $78728C }
 
-{ @routine $839E90 TSpaceSE_CreateTimer }
+{ @routine $7872C0 TSpaceSE_CreateTimer }
 function TSpaceSE.CreateTimer(DelayMs, RepeatMs: Integer; Callback: TSpaceTimerEventSE; UserData: Integer): PSpaceTimerSE;
 var
   Timer: PSpaceTimerSE;
@@ -555,9 +569,9 @@ begin
   Timer.UserData := UserData;
   Result := Timer;
 end;
-{ @end $839E90 }
+{ @end $7872C0 }
 
-{ @routine $839F44 TSpaceSE_DeleteTimer }
+{ @routine $787344 TSpaceSE_DeleteTimer }
 procedure TSpaceSE.DeleteTimer(Timer: PSpaceTimerSE);
 var
   Entry: PSpaceTimerSE;
@@ -570,9 +584,9 @@ begin
   if FirstTimer = Entry then FirstTimer := Entry.Next;
   FreeEC(Entry);
 end;
-{ @end $839F44 }
+{ @end $787344 }
 
-{ @routine $83A00C TSpaceSE_AdvanceTimers }
+{ @routine $7873C8 TSpaceSE_AdvanceTimers }
 procedure TSpaceSE.AdvanceTimers;
 var
   Timer: PSpaceTimerSE;
@@ -591,9 +605,9 @@ begin
   end;
   NextTimerToProcess := nil;
 end;
-{ @end $83A00C }
+{ @end $7873C8 }
 
-{ @routine $83A080 TSpaceSE_AdvanceObjects }
+{ @routine $787408 TSpaceSE_AdvanceObjects }
 procedure TSpaceSE.AdvanceObjects;
 var
   Obj: TObjectSE;
@@ -605,9 +619,9 @@ begin
     Obj := Obj.Next;
   end;
 end;
-{ @end $83A080 }
+{ @end $787408 }
 
-{ @routine $83A0B4 TSpaceSE_ClearPath }
+{ @routine $787420 TSpaceSE_ClearPath }
 procedure TSpaceSE.ClearPath;
 begin
   if PathPoints <> nil then
@@ -617,9 +631,9 @@ begin
   end;
   PathPointCount := 0;
 end;
-{ @end $83A0B4 }
+{ @end $787420 }
 
-{ @routine $83A0E4 TSpaceSE_SetPath }
+{ @routine $78743C TSpaceSE_SetPath }
 procedure TSpaceSE.SetPath(Points: PPointF; Count: Integer);
 begin
   ClearPath;
@@ -628,9 +642,9 @@ begin
   PathPoints := AllocEC(Count * SizeOf(TPointF));
   CopyMemory(PathPoints, Points, Count * SizeOf(TPointF));
 end;
-{ @end $83A0E4 }
+{ @end $78743C }
 
-{ @routine $83A134 TSpaceSE_DrawMinimap }
+{ @routine $787480 TSpaceSE_DrawMinimap }
 procedure TSpaceSE.DrawMinimap;
 var
   Obj: TObjectSE;
@@ -673,17 +687,17 @@ begin
   begin
     CenterX := RenderScratchBuffer.Width shr 1;
     CenterY := RenderScratchBuffer.Height shr 1;
-    Coordinate := Pointer(PathPoints);
+    Coordinate := @PathPoints.X;
     X1 := CenterX + Round(Coordinate^ * MinimapScale);
-    Coordinate := Pointer(PAnsiChar(Coordinate) + SizeOf(Single));
+    Inc(Coordinate);
     Y1 := CenterY + Round(Coordinate^ * MinimapScale);
-    Coordinate := Pointer(PAnsiChar(Coordinate) + SizeOf(Single));
+    Inc(Coordinate);
     for Index := 1 to PathPointCount - 1 do
     begin
       X2 := CenterX + Round(Coordinate^ * MinimapScale);
-      Coordinate := Pointer(PAnsiChar(Coordinate) + SizeOf(Single));
+      Inc(Coordinate);
       Y2 := CenterY + Round(Coordinate^ * MinimapScale);
-      Coordinate := Pointer(PAnsiChar(Coordinate) + SizeOf(Single));
+      Inc(Coordinate);
       if not Odd(Index div 199) then Color := CurrentPixelFormat.PackRgbBytes($C3, $31, 0)
       else Color := CurrentPixelFormat.PackRgbBytes($8F, $C1, 0);
       Ex_OKGR_Line_DrawClip_WORD(RenderScratchBuffer.GetPixels, RenderScratchBuffer.PitchBytes,
@@ -710,9 +724,9 @@ begin
   HardwareRenderingEnabled := SavedHardware;
   ScreenRenderBuffer := SavedBuffer;
 end;
-{ @end $83A134 }
+{ @end $787480 }
 
-{ @routine $83A5EC TSpaceSE_CreateMinimapViewport }
+{ @routine $7878B4 TSpaceSE_CreateMinimapViewport }
 procedure TSpaceSE.CreateMinimapViewport;
 var
   Width, Height: Integer;
@@ -724,14 +738,14 @@ begin
   MinimapViewportFrame.SetColor(CurrentPixelFormat.PackRgbBytes(255, 255, 255));
   Width := Round(MapPanel.ClientSize.X * MinimapScale);
   Height := Round(MapPanel.ClientSize.Y * MinimapScale);
-  MinimapViewportFrame.SetSize(Classes.Point(Width, Height));
-  MinimapViewportFrame.SetOrigin(Classes.Point(Width div 2, Height div 2));
+  MinimapViewportFrame.ObjectSize := Classes.Point(Width, Height);
+  MinimapViewportFrame.Sme := Classes.Point(Width div 2, Height div 2);
   MapPanel.ScrollChangedCallback := MapScrollChanged;
   MapScrollChanged(nil);
 end;
-{ @end $83A5EC }
+{ @end $7878B4 }
 
-{ @routine $83A6F8 TSpaceSE_FreeMinimapViewport }
+{ @routine $78798C TSpaceSE_FreeMinimapViewport }
 procedure TSpaceSE.FreeMinimapViewport;
 begin
   if MinimapViewportFrame <> nil then
@@ -740,28 +754,28 @@ begin
     MinimapViewportFrame := nil;
   end;
 end;
-{ @end $83A6F8 }
+{ @end $78798C }
 
-{ @routine $83A720 TSpaceSE_MapScrollChanged }
+{ @routine $7879A4 TSpaceSE_MapScrollChanged }
 procedure TSpaceSE.MapScrollChanged(Sender: TObjectGI);
 begin
   if Sender = MapPanel then FilmCameraFollow := False;
   if MinimapViewportFrame <> nil then
-    MinimapViewportFrame.SetPosition(Classes.Point(Round(MapPanel.ScrollOffset.X * MinimapScale),
-      Round(MapPanel.ScrollOffset.Y * MinimapScale)));
+    MinimapViewportFrame.Pos := Classes.Point(Round(MapPanel.ScrollOffset.X * MinimapScale),
+      Round(MapPanel.ScrollOffset.Y * MinimapScale));
   if StarField <> nil then StarField.SetViewPosition(PointToPointF(MapPanel.ScrollOffset));
-  if Wind >= 1 then
-    if StarFieldM <> nil then StarFieldM.SetViewPosition(PointToPointF(MapPanel.ScrollOffset));
+  if (Wind >= 1) and (StarFieldM <> nil) then
+    StarFieldM.SetViewPosition(PointToPointF(MapPanel.ScrollOffset));
   if SpaceImages <> nil then SpaceImages.SetViewPosition(PointToPointF(MapPanel.ScrollOffset));
-  if Wind >= 2 then
-    if StarFieldImages <> nil then StarFieldImages.SetViewPosition(PointToPointF(MapPanel.ScrollOffset));
+  if (Wind >= 2) and (StarFieldImages <> nil) then
+    StarFieldImages.SetViewPosition(PointToPointF(MapPanel.ScrollOffset));
   if Assigned(ScrollChangedCallback) then ScrollChangedCallback;
   (Process as TProcessSE).UpdateViewRect;
   SpaceViewPosition := PointToPointF(MapPanel.ScrollOffset);
 end;
-{ @end $83A720 }
+{ @end $7879A4 }
 
-{ @routine $83A88C TSpaceSE_MinimapMouseDown }
+{ @routine $787ABC TSpaceSE_MinimapMouseDown }
 procedure TSpaceSE.MinimapMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint);
 var
   Local: TPoint;
@@ -788,42 +802,40 @@ begin
   MapScrollChanged(nil);
   MinimapFrameCounter := 0;
 end;
-{ @end $83A88C }
+{ @end $787ABC }
 
-{ @routine $83A9D0 TSpaceSE_MinimapMouseEnter }
+{ @routine $787BD8 TSpaceSE_MinimapMouseEnter }
 procedure TSpaceSE.MinimapMouseEnter(Sender: TObjectGI);
 begin
   MinimapDragging := False;
 end;
-{ @end $83A9D0 }
+{ @end $787BD8 }
 
-{ @routine $83A9E8 TSpaceSE_MinimapMouseMove }
+{ @routine $787BE0 TSpaceSE_MinimapMouseMove }
 procedure TSpaceSE.MinimapMouseMove(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint);
 var
   Local: TPoint;
 begin
-  if MinimapDragging then
-    if (Integer(KeyState and MK_LBUTTON) = MK_LBUTTON) or ((KeyState and MK_RBUTTON) = MK_RBUTTON) then
-    begin
-      if Sender.IsOccludedAtPoint(Point) then Exit;
-      if Screen = StarMapScreen then
-        if StarMapScreen.CenterShipButton.HitTest(Point) then Exit;
-      if Screen = FilmScreen then
-        if FilmScreen.CenterShipButton.HitTest(Point) then Exit;
-      Local := Sender.ToLocalPoint(Point);
-      MapPanel.SetScrollOffset(Classes.Point(Round(Local.X / MinimapScale), Round(Local.Y / MinimapScale)));
-      MapScrollChanged(nil);
-      MinimapFrameCounter := 0;
-    end;
+  if not MinimapDragging then Exit;
+  if (Integer(KeyState and MK_LBUTTON) <> MK_LBUTTON) and ((KeyState and MK_RBUTTON) <> MK_RBUTTON) then Exit;
+  if Sender.IsOccludedAtPoint(Point) then Exit;
+  if StarMapScreen = Screen then
+    if StarMapScreen.CenterShipButton.HitTest(Point) then Exit;
+  if FilmScreen = Screen then
+    if FilmScreen.CenterShipButton.HitTest(Point) then Exit;
+  Local := Sender.ToLocalPoint(Point);
+  MapPanel.SetScrollOffset(Classes.Point(Round(Local.X / MinimapScale), Round(Local.Y / MinimapScale)));
+  MapScrollChanged(nil);
+  MinimapFrameCounter := 0;
 end;
-{ @end $83A9E8 }
+{ @end $787BE0 }
 
-{ @routine $83AAF4 TSpaceSE_ContainsMapPoint }
+{ @routine $787CD0 TSpaceSE_ContainsMapPoint }
 function TSpaceSE.ContainsMapPoint(Point: TPointF): Boolean;
 begin
   if MapPanel = nil then Result := False
   else Result := MapPanel.ContainsPoint(MapPanel.ToAbsolutePoint(TruncatePointF(Point)));
 end;
-{ @end $83AAF4 }
+{ @end $787CD0 }
 
 end.

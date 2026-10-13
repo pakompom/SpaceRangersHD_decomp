@@ -1,5 +1,4 @@
 unit GI_StatusBar;
-// Unit bracket (inferred): .text 0x004A50A8..0x004A5A2C; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -15,23 +14,23 @@ type
     CenterImage: TImageGI; // @offset 0x15C
     RightImage: TImageGI; // @offset 0x160
 
-    constructor Create(Owner: TObjectGI); // @addr 0x4A51D0
-    destructor Destroy; override; // @addr 0x4A5324
-    procedure Clear; override; // @addr 0x4A5380 @note "Preserves Value; resets the range to 0..100."
-    procedure SetRange(MinValue, MaxValue: Double); // @addr 0x4A53B8 @note "If MinValue exceeds MaxValue, lowers MinValue to MaxValue. Does not clamp the stored Value."
-    procedure SetValue(NewValue: Double); // @addr 0x4A5440
-    procedure SetSize(Size: TPoint); override; // @addr 0x4A54D4
-    procedure UpdateImageLayout; // @addr 0x4A550C
-    procedure LoadFromConfigPath(const Path: WideString); override; // @addr 0x4A584C
-    procedure LoadFromBlock(Block: TBlockParEC); override; // @addr 0x4A5880
-    procedure LoadStatusProperties(Block: TBlockParEC); // @addr 0x4A58A8
+    constructor Create(Owner: TObjectGI); // @addr 0x004ABFB4
+    destructor Destroy; override; // @addr 0x004AC0CC
+    procedure Clear; override; // @addr 0x004AC114 @note "Preserves Value; resets the range to 0..100."
+    procedure SetRange(MinValue, MaxValue: Double); // @addr 0x004AC13C @note "If MinValue exceeds MaxValue, lowers MinValue to MaxValue. Does not clamp the stored Value."
+    procedure SetValue(NewValue: Double); // @addr 0x004AC1B4
+    procedure SetSize(Size: TPoint); override; // @addr 0x004AC234
+    procedure UpdateImageLayout; // @addr 0x004AC264
+    procedure LoadFromConfigPath(const Path: WideString); override; // @addr 0x004AC4F4
+    procedure LoadFromBlock(Block: TBlockParEC); override; // @addr 0x004AC520
+    procedure LoadStatusProperties(Block: TBlockParEC); // @addr 0x004AC53C
   end;
 
 implementation
 
 uses Classes, EC_Str, GI_Main;
 
-{ @routine $4A51D0 TStatusBarGI_Create }
+{ @routine $4ABFB4 TStatusBarGI_Create }
 constructor TStatusBarGI.Create(Owner: TObjectGI);
 begin
   inherited Create(Owner);
@@ -39,20 +38,20 @@ begin
   CenterImage := TImageGI.Create(Self);
   RightImage := TImageGI.Create(Self);
   LeftImage.SetDepth(1);
-  LeftImage.SetImageKindX(ikxLeft);
-  LeftImage.SetImageKindY(ikyCenter);
+  LeftImage.KindX := ikxLeft;
+  LeftImage.KindY := ikyCenter;
   CenterImage.SetDepth(1);
-  CenterImage.SetImageKindX(ikxLeftFill);
-  CenterImage.SetImageKindY(ikyCenter);
+  CenterImage.KindX := ikxLeftFill;
+  CenterImage.KindY := ikyCenter;
   RightImage.SetDepth(1);
-  RightImage.SetImageKindX(ikxLeft);
-  RightImage.SetImageKindY(ikyCenter);
+  RightImage.KindX := ikxLeft;
+  RightImage.KindY := ikyCenter;
   Minimum := 0;
   Maximum := 100;
 end;
-{ @end $4A51D0 }
+{ @end $4ABFB4 }
 
-{ @routine $4A5324 TStatusBarGI_Destroy }
+{ @routine $4AC0CC TStatusBarGI_Destroy }
 destructor TStatusBarGI.Destroy;
 begin
   LeftImage.Free;
@@ -60,18 +59,18 @@ begin
   RightImage.Free;
   inherited Destroy;
 end;
-{ @end $4A5324 }
+{ @end $4AC0CC }
 
-{ @routine $4A5380 TStatusBarGI_Clear }
+{ @routine $4AC114 TStatusBarGI_Clear }
 procedure TStatusBarGI.Clear;
 begin
   Minimum := 0;
   Maximum := 100;
   inherited Clear;
 end;
-{ @end $4A5380 }
+{ @end $4AC114 }
 
-{ @routine $4A53B8 TStatusBarGI_SetRange }
+{ @routine $4AC13C TStatusBarGI_SetRange }
 procedure TStatusBarGI.SetRange(MinValue, MaxValue: Double);
 begin
   if MinValue > MaxValue then MinValue := MaxValue;
@@ -83,9 +82,9 @@ begin
     Invalidate;
   end;
 end;
-{ @end $4A53B8 }
+{ @end $4AC13C }
 
-{ @routine $4A5440 TStatusBarGI_SetValue }
+{ @routine $4AC1B4 TStatusBarGI_SetValue }
 procedure TStatusBarGI.SetValue(NewValue: Double);
 begin
   if NewValue < Minimum then NewValue := Minimum;
@@ -97,18 +96,18 @@ begin
     Invalidate;
   end;
 end;
-{ @end $4A5440 }
+{ @end $4AC1B4 }
 
-{ @routine $4A54D4 TStatusBarGI_SetSize }
+{ @routine $4AC234 TStatusBarGI_SetSize }
 procedure TStatusBarGI.SetSize(Size: TPoint);
 begin
   inherited SetSize(Size);
   UpdateImageLayout;
   Invalidate;
 end;
-{ @end $4A54D4 }
+{ @end $4AC234 }
 
-{ @routine $4A550C TStatusBarGI_UpdateImageLayout }
+{ @routine $4AC264 TStatusBarGI_UpdateImageLayout }
 procedure TStatusBarGI.UpdateImageLayout;
 var Width: Integer;
 begin
@@ -116,59 +115,59 @@ begin
   else Width := Round((Value - Minimum) / (Maximum - Minimum) * ClientSize.X);
   if Minimum = Value then
   begin
-    LeftImage.SetSize(Classes.Point(0, ClientSize.Y));
-    CenterImage.SetSize(Classes.Point(0, ClientSize.Y));
-    RightImage.SetSize(Classes.Point(0, ClientSize.Y));
+    LeftImage.ObjectSize := Classes.Point(0, ClientSize.Y);
+    CenterImage.ObjectSize := Classes.Point(0, ClientSize.Y);
+    RightImage.ObjectSize := Classes.Point(0, ClientSize.Y);
   end
   else if LeftImage.GetContentSize.X + RightImage.GetContentSize.X >= Width then
   begin
-    LeftImage.SetSize(Classes.Point(LeftImage.GetContentSize.X, ClientSize.Y));
-    CenterImage.SetSize(Classes.Point(0, ClientSize.Y));
-    RightImage.SetSize(Classes.Point(RightImage.GetContentSize.X, ClientSize.Y));
-    LeftImage.SetPosition(Classes.Point(0, 0));
-    CenterImage.SetPosition(Classes.Point(LeftImage.ClientSize.X, 0));
-    RightImage.SetPosition(Classes.Point(LeftImage.ClientSize.X, 0));
+    LeftImage.ObjectSize := Classes.Point(LeftImage.GetContentSize.X, ClientSize.Y);
+    CenterImage.ObjectSize := Classes.Point(0, ClientSize.Y);
+    RightImage.ObjectSize := Classes.Point(RightImage.GetContentSize.X, ClientSize.Y);
+    LeftImage.Pos := Classes.Point(0, 0);
+    CenterImage.Pos := Classes.Point(LeftImage.ClientSize.X, 0);
+    RightImage.Pos := Classes.Point(LeftImage.ClientSize.X, 0);
   end
   else
   begin
-    LeftImage.SetSize(Classes.Point(LeftImage.GetContentSize.X, ClientSize.Y));
-    CenterImage.SetSize(Classes.Point(Width - LeftImage.ClientSize.X - RightImage.ClientSize.X, ClientSize.Y));
-    RightImage.SetSize(Classes.Point(RightImage.GetContentSize.X, ClientSize.Y));
-    LeftImage.SetPosition(Classes.Point(0, 0));
-    CenterImage.SetPosition(Classes.Point(LeftImage.ClientSize.X, 0));
-    RightImage.SetPosition(Classes.Point(LeftImage.ClientSize.X + CenterImage.ClientSize.X, 0));
-    CenterImage.SetImageKindX(ikxLeftFill);
+    LeftImage.ObjectSize := Classes.Point(LeftImage.GetContentSize.X, ClientSize.Y);
+    CenterImage.ObjectSize := Classes.Point(Width - LeftImage.ClientSize.X - RightImage.ClientSize.X, ClientSize.Y);
+    RightImage.ObjectSize := Classes.Point(RightImage.GetContentSize.X, ClientSize.Y);
+    LeftImage.Pos := Classes.Point(0, 0);
+    CenterImage.Pos := Classes.Point(LeftImage.ClientSize.X, 0);
+    RightImage.Pos := Classes.Point(LeftImage.ClientSize.X + CenterImage.ClientSize.X, 0);
+    CenterImage.KindX := ikxLeftFill;
   end;
 end;
-{ @end $4A550C }
+{ @end $4AC264 }
 
-{ @routine $4A584C TStatusBarGI_LoadFromConfigPath }
+{ @routine $4AC4F4 TStatusBarGI_LoadFromConfigPath }
 procedure TStatusBarGI.LoadFromConfigPath(const Path: WideString);
 begin
   inherited LoadFromConfigPath(Path);
   LoadStatusProperties(UiStyleConfig.GetBlockByPath(Path));
 end;
-{ @end $4A584C }
+{ @end $4AC4F4 }
 
-{ @routine $4A5880 TStatusBarGI_LoadFromBlock }
+{ @routine $4AC520 TStatusBarGI_LoadFromBlock }
 procedure TStatusBarGI.LoadFromBlock(Block: TBlockParEC);
 begin
   inherited LoadFromBlock(Block);
   LoadStatusProperties(Block);
 end;
-{ @end $4A5880 }
+{ @end $4AC520 }
 
-{ @routine $4A58A8 TStatusBarGI_LoadStatusProperties }
+{ @routine $4AC53C TStatusBarGI_LoadStatusProperties }
 procedure TStatusBarGI.LoadStatusProperties(Block: TBlockParEC);
 begin
-  if Block.CountParams('ImageLeft') > 0 then LeftImage.SetImagePath(Block.GetParam('ImageLeft'));
-  if Block.CountParams('ImageMiddle') > 0 then CenterImage.SetImagePath(Block.GetParam('ImageMiddle'));
-  if Block.CountParams('ImageRight') > 0 then RightImage.SetImagePath(Block.GetParam('ImageRight'));
+  if Block.CountParams('ImageLeft') > 0 then LeftImage.ImageSourcePath := Block.GetParam('ImageLeft');
+  if Block.CountParams('ImageMiddle') > 0 then CenterImage.ImageSourcePath := Block.GetParam('ImageMiddle');
+  if Block.CountParams('ImageRight') > 0 then RightImage.ImageSourcePath := Block.GetParam('ImageRight');
   if (Block.CountParams('Min') > 0) and (Block.CountParams('Max') > 0) then
     SetRange(ExtractDecimalToSingleW(Block.GetParam('Min')), ExtractDecimalToSingleW(Block.GetParam('Max')));
   if Block.CountParams('Cur') > 0 then SetValue(ExtractDecimalToSingleW(Block.GetParam('Cur')));
   UpdateImageLayout;
 end;
-{ @end $4A58A8 }
+{ @end $4AC53C }
 
 end.

@@ -1,5 +1,4 @@
 unit ab_W14;
-// Unit bracket (inferred): .text 0x004F955C..0x004F9A67; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -12,18 +11,18 @@ type
     Image: PabWorldImage; // @offset $B4
     Phase: Integer; // @offset $B8
     ExpireTick: Integer; // @offset $BC
-    constructor Create; // @addr $4F95C4
-    destructor Destroy; override; // @addr $4F9648
-    procedure Launch(Owner: TabObject; Amount: Integer; Angle: Single); // @addr $4F96A0
-    procedure Advance; override; // @addr $4F97BC
-    procedure UpdateVisuals; override; // @addr $4F99A8
+    constructor Create; // @addr $54F8AC
+    destructor Destroy; override; // @addr $54F918
+    procedure Launch(Owner: TabObject; Amount: Integer; Angle: Single); // @addr $54F954
+    procedure Advance; override; // @addr $54FA44
+    procedure UpdateVisuals; override; // @addr $54FBDC
   end;
 
 implementation
 
 uses GlobalsV, ab_Ship;
 
-{ @routine $4F95C4 TabW14_Create }
+{ @routine $54F8AC TabW14_Create }
 constructor TabW14.Create;
 begin
   inherited Create;
@@ -33,9 +32,9 @@ begin
   CollisionRadius := 5;
   Collidable := True;
 end;
-{ @end $4F95C4 }
+{ @end $54F8AC }
 
-{ @routine $4F9648 TabW14_Destroy }
+{ @routine $54F918 TabW14_Destroy }
 destructor TabW14.Destroy;
 begin
   if Image <> nil then
@@ -45,9 +44,9 @@ begin
   end;
   inherited Destroy;
 end;
-{ @end $4F9648 }
+{ @end $54F918 }
 
-{ @routine $4F96A0 TabW14_Launch }
+{ @routine $54F954 TabW14_Launch }
 procedure TabW14.Launch(Owner: TabObject; Amount: Integer; Angle: Single);
 begin
   SourceObject := Owner;
@@ -59,9 +58,9 @@ begin
   Image := ab_WorldImage_Create(MakeVector3D(0, 0, 0), 'GAI,Bm.AB.w14_f', 'GAI,Bm.AB.w14_s', True);
   ab_WorldImage_SetDepth(Image, HitFrontDepth, HitBackDepth);
 end;
-{ @end $4F96A0 }
+{ @end $54F954 }
 
-{ @routine $4F97BC TabW14_Advance }
+{ @routine $54FA44 TabW14_Advance }
 procedure TabW14.Advance;
 var
   Collision: TabObject;
@@ -88,9 +87,9 @@ begin
   end
   else if Phase = 1 then DeletionPending := Image.Finished;
 end;
-{ @end $4F97BC }
+{ @end $54FA44 }
 
-{ @routine $4F99A8 TabW14_UpdateVisuals }
+{ @routine $54FBDC TabW14_UpdateVisuals }
 procedure TabW14.UpdateVisuals;
 var
   Frame: Integer;
@@ -106,6 +105,6 @@ begin
     Image.Image.GaiImageControl.SetSequenceFrame(Frame);
   end;
 end;
-{ @end $4F99A8 }
+{ @end $54FBDC }
 
 end.

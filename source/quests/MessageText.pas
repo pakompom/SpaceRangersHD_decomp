@@ -1,5 +1,4 @@
 unit MessageText;
-// Unit bracket (inferred): .text 0x004C5DD8..0x004C6041; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -8,29 +7,29 @@ uses EC_BlockPar;
 type
   TQuestMessages = class(TObject) // @size 0x08
   public
-    constructor Create; // @addr $4C5E34
-    destructor Destroy; override; // @addr $4C5E88
+    constructor Create; // @addr $482340
+    destructor Destroy; override; // @addr $482384
     Entries: TBlockParEC; // @offset 0x04
-    function GetTextOrKey(Key: WideString): WideString; // @addr $4C5FCC @note "Looks up a direct parameter; returns Key when absent."
-    function GetText(Path: WideString): WideString; // @addr 0x4C5ED8 @note "Returns Path when an intermediate block is missing; a missing final string parameter raises."
+    function GetTextOrKey(Key: WideString): WideString; // @addr $482498 @note "Looks up a direct parameter; returns Key when absent."
+    function GetText(Path: WideString): WideString; // @addr 0x004823BC @note "Returns Path when an intermediate block is missing; a missing final string parameter raises."
   end;
 
 var
-  QuestMessages: TQuestMessages; // @addr $889EC0
+  QuestMessages: TQuestMessages; // @addr $819E68
 
 implementation
 
 uses EC_Str;
 
-{ @routine $4C5E34 TQuestMessages_Create }
+{ @routine $482340 TQuestMessages_Create }
 constructor TQuestMessages.Create;
 begin
   inherited Create;
   Entries := TBlockParEC.Create;
 end;
-{ @end $4C5E34 }
+{ @end $482340 }
 
-{ @routine $4C5E88 TQuestMessages_Destroy }
+{ @routine $482384 TQuestMessages_Destroy }
 destructor TQuestMessages.Destroy;
 begin
   if Entries <> nil then
@@ -40,9 +39,9 @@ begin
   end;
   inherited Destroy;
 end;
-{ @end $4C5E88 }
+{ @end $482384 }
 
-{ @routine $4C5ED8 TQuestMessages_GetText }
+{ @routine $4823BC TQuestMessages_GetText }
 function TQuestMessages.GetText(Path: WideString): WideString;
 var
   i, PartCount: Integer;
@@ -61,9 +60,9 @@ begin
   Name := ExtractDelimitedPartW(Path, PartCount - 1, '.');
   Result := Block.GetParam(Name);
 end;
-{ @end $4C5ED8 }
+{ @end $4823BC }
 
-{ @routine $4C5FCC TQuestMessages_GetTextOrKey }
+{ @routine $482498 TQuestMessages_GetTextOrKey }
 function TQuestMessages.GetTextOrKey(Key: WideString): WideString;
 begin
   if Entries.CountParams(Key) > 0 then
@@ -71,6 +70,6 @@ begin
   else
     Result := Key;
 end;
-{ @end $4C5FCC }
+{ @end $482498 }
 
 end.

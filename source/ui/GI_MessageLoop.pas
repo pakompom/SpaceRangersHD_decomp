@@ -1,12 +1,13 @@
 unit GI_MessageLoop;
-// Unit bracket (inferred): .text 0x004BAEA4..0x004C221A; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
 uses GR_Rect, Classes, EC_BlockPar, EC_Str, EC_Struct, Types;
 
 type
-  TDialogChoiceEventGI = procedure(Value: Integer) of object;
+  TNamedControlEventGI = (nceButtonDown = 1, nceButtonUp, nceMouseMove, nceTextChanged); // @size $04
+
+  TDialogChoiceEventGI = procedure(Value: Cardinal) of object;
   TObjectNotifyEventGI = procedure(Sender: TObjectGI) of object;
   TObjectMouseEventGI = procedure(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint) of object;
   TObjectHelpEventGI = procedure(Sender: TObjectGI; Visible: Boolean) of object;
@@ -16,14 +17,14 @@ type
   TFormSoundGroup = class;
   TMessageLoopGI = class;
 
-  TCursorStateGI = record // @size 0x18 // Native RTTI at $4BAE84 includes three trailing padding bytes.
+  TCursorStateGI = record // @size 0x18 Includes three trailing padding bytes.
     ImagePath: WideString; // @offset 0x00
     Active: Boolean; // @offset 0x04
     HotSpot: TPoint; // @offset 0x05
     Position: TPoint; // @offset 0x0D
   end;
 
-  TObjectGI = class(TObjectEx) // @size 0x120
+  TObjectGI = class(TObjectEx) // @size 0x120 @methodorder source
   public
     FirstChild: TObjectGI; // @offset 0x04
     LastChild: TObjectGI; // @offset 0x08
@@ -43,7 +44,7 @@ type
     AutoOffsetEnabled: Boolean; // @offset $48
     AutoOffsetScale: TPointF; // @offset $4C
     ScrollOffset: TPoint; // @offset $54  Copied as one point by panel scrolling.
-    SkipOwnQueuedDraw: Integer; // @offset $5C  Nonzero skips this object's queued draw, after visiting children ($4BCC06).
+    SkipOwnQueuedDraw: Integer; // @offset $5C Nonzero skips this object's queued draw, after visiting children.
     HitTestBounds: TRect; // @offset 0x60
     AbsolutePosition: TPoint; // @offset 0x70
     ControlName: WideString; // @offset 0x78
@@ -53,11 +54,10 @@ type
     MouseBlocking: Boolean; // @offset 0x89
     MouseBlockingTest: Boolean; // @offset 0x8A
     ScrollUpdate: Boolean; // @offset $8B  Controls panel invalidation during scrolling; loaded from ScrollUpdate.
-    // Callers reuse these slots for indices, flags, coordinates and object pointers.
     UserValue: Integer; // @offset $8C  Per-frame delay in TAImageGI; embedded object ID in TLabelGI.
-    UserIndex: Integer; // @offset $90
-    UserData: Integer; // @offset $94
-    UserState: Integer; // @offset $98
+    UserIndex: Cardinal; // @offset $90
+    UserData: Cardinal; // @offset $94
+    UserState: Cardinal; // @offset $98
     MouseMoveCallback: TObjectMouseEventGI; // @offset 0xA0
     LeftButtonDownCallback: TObjectMouseEventGI; // @offset 0xA8
     LeftButtonUpCallback: TObjectMouseEventGI; // @offset 0xB0
@@ -76,88 +76,120 @@ type
     OnMouseEnterCode: TBlockParEC; // @offset 0x114
     OnMouseLeaveCode: TBlockParEC; // @offset 0x118
     OnRightButtonDownCode: TBlockParEC; // @offset 0x11C
-    // Callback pairs contain a Delphi method's code and instance pointers.
-    // Mouse move and button callbacks receive Context/EAX, Sender/EDX, key state/ECX and Point on stack;
-    // key callbacks receive Context/EAX, Sender/EDX and virtual key/ECX.
-    // Code blocks are borrowed from the UI configuration.
-    // PositionModeW is the fourth Pos component ('w'); selects the parent's coordinate mode.
-    // Notify callbacks receive Context in EAX and this object in EDX.
-
-    constructor Create(Owner: TObjectGI); // @addr 0x4BB218
-    destructor Destroy; override; // @addr 0x4BB2DC
-    procedure Clear; virtual; // @addr 0x4BB3C4 @slot 0x00 @note "Does not free children."
-    procedure FreeOwnedChildren; // @addr 0x4BB3A0
-    procedure AttachOwnedChild(Child: TObjectGI); // @addr 0x4BB448 @note "Takes ownership; caller must detach an existing parent. Descendants' MessageLoop values are unchanged."
-    procedure InsertOwnedChildBefore(BeforeChild, Child: TObjectGI); // @addr 0x4BB4B4
-    procedure InsertOwnedChildByDepth(Child: TObjectGI; NewDepth: Double); // @addr 0x4BB538 @note "Inserts in descending Depth order."
-    procedure FreeOwnedChild(Child: TObjectGI); // @addr 0x4BB5A8
-    procedure UnlinkOwnedChild(Child: TObjectGI); // @addr 0x4BB5CC @note "Leaves sibling pointers and MessageLoop unchanged."
-    procedure Reparent(NewParent: TObjectGI); // @addr 0x4BB644 @note "Preserves Depth."
-    procedure SetMouseViewUpdates(Enabled: Boolean); // @addr 0x4BB678
-    procedure UpdateAbsolutePosition; // @addr 0x4BB6AC @note "Updates this control and recurses through active children."
-    function GetChildAbsolutePosition(LocalPosition: TPoint; ModeW: Boolean): TPoint; virtual; // @addr 0x4BB738 @slot 0x04 @calls "0x4BB6D7" @note "Base implementation ignores ModeW."
-    procedure UpdateHitTestBounds; virtual; // @addr 0x4BB774 @slot 0x08 @calls "0x4BB7EA"
-    procedure UpdateSubtreeHitBounds; // @addr 0x4BB7DC @note "Updates this control's hit-test rectangle and recurses through active children."
-    procedure SetPosition(Position: TPoint); virtual; // @addr 0x4BB944 @slot 0x0C
-    procedure SetDepth(NewDepth: Double); virtual; // @addr 0x4BB9C4 @slot 0x10 @note "Does nothing without Parent." @calls "0x56934C 0x5698B8 0x56A597 0x56A607 0x56A7AD 0x56A81D 0x56A8E0 0x56A9E7 0x56ABD4 0x56AD77 0x56AE5A 0x57F808 0x57F8F8 0x57F96C"
-    procedure SetDepthByName(const Name: WideString); virtual; // @addr $4BBA7C @slot $14
-    procedure SetSize(Size: TPoint); virtual; // @addr 0x4BBB0C @slot 0x18
-    procedure SetOrigin(Origin: TPoint); virtual; // @addr 0x4BBB8C @slot 0x1C
-    procedure SetPositionModeW(Enabled: Boolean); // @addr 0x4BBC0C
-    procedure SetConfigPath(const Path: WideString); virtual; // @addr 0x4BBC6C @slot 0x20 @note "Virtual loading sees the previous ConfigPath."
-    function GetLocalBounds: TRect; virtual; // @addr 0x4BBC98 @slot 0x24
-    procedure SetName(const Name: WideString); // @addr 0x4BBCFC
-    procedure SetActive(Enabled: Boolean); virtual; // @addr 0x4BBD1C @slot 0x28
-    procedure SetHitTestDisabled(Disabled: Boolean); virtual; // @addr 0x4BBD88 @slot 0x2C
-    procedure QueueImageLoad(PendingLoads: TList); virtual; // @addr 0x4BBE90 @slot 0x30
-    procedure ProcessMouseMove(KeyState: Cardinal; Point: TPoint); virtual; // @addr 0x4BBEA0 @slot 0x38
-    procedure ProcessLeftButtonDown(KeyState: Cardinal; Point: TPoint); virtual; // @addr 0x4BC228 @slot 0x54
-    procedure ProcessLeftButtonUp(KeyState: Cardinal; Point: TPoint); virtual; // @addr 0x4BC2B0 @slot 0x58
-    procedure ProcessRightButtonDown(KeyState: Cardinal; Point: TPoint); virtual; // @addr 0x4BC338 @slot 0x5C
-    procedure ProcessRightButtonUp(KeyState: Cardinal; Point: TPoint); virtual; // @addr 0x4BC3E4 @slot 0x60
-    procedure ProcessLeftButtonDoubleClick(KeyState: Cardinal; Point: TPoint); virtual; // @addr 0x4BC46C @slot 0x64
-    procedure ProcessRightButtonDoubleClick(KeyState: Cardinal; Point: TPoint); virtual; // @addr 0x4BC4F4 @slot 0x68
-    procedure OnMouseEnter; virtual; // @addr 0x4BBF9C @slot 0x3C
-    procedure OnMouseLeave; virtual; // @addr 0x4BC030 @slot 0x40
-    procedure BroadcastKeyDown(Key: Cardinal); virtual; // @addr 0x4BC57C @slot 0x6C
-    procedure BroadcastKeyUp(Key: Cardinal); virtual; // @addr 0x4BC5FC @slot 0x70
-    procedure DispatchNamedEvent(EventKind, Param1, Param2: Integer); // @addr 0x4BC830
-    procedure SetHelpCallbackRecursive(Callback: TObjectHelpEventGI); // @addr $4BB820
-    procedure OnHoverGained; virtual; // @addr $4BC65C @slot $74 @calls "0x4C1073"
-    procedure OnHoverLost; virtual; // @addr $4BC668 @slot $78 @calls "0x4C1056"
-    procedure OnFocusGained; virtual; // @addr 0x4BC674 @slot 0x7C @calls "0x4C1018"
-    procedure OnFocusLost; virtual; // @addr 0x4BC680 @slot 0x80 @calls "0x4C0FF8"
-    procedure ProcessKeyDown(Key: Integer); virtual; // @addr 0x4BC68C @slot 0x84
-    procedure ProcessCharacter(Character: WideChar); virtual; // @addr 0x4BC69C @slot 0x88
-    procedure OnCaretBlink; virtual; // @addr $4BC6B0 @slot $8C @note "Called on the focused control when CaretBlinkOn changes."
-    procedure OnModalResume; virtual; // @addr $4BC15C @slot $48 @note "Called on the parent UI after closing a modal child and restoring the cursor; propagates to active children."
-    procedure OnModalSuspend; virtual; // @addr $4BC1EC @slot $50 @note "Called on the parent UI before opening a modal child and capturing the cursor; propagates to active children."
-    procedure NativeHookB0; virtual; // @addr $4BCF00 @slot $B0 @note "Purpose unresolved; the base hook visits active children."
-    procedure NativeHookBC(Rect: TRect); virtual; // @addr $4BCF9C @slot $BC @note "Empty base hook; purpose unresolved."
-    procedure OnActivate; virtual; // @addr 0x4BC0FC @slot 0x44
-    procedure OnDeactivate; virtual; // @addr 0x4BC198 @slot 0x4C
-    procedure PrepareRegionDraw(ClipRect: TRect); virtual; // @addr $4BCF80 @slot $B8 @note "Empty base hook called before queued drawing for RegionDrawControl."
-    procedure CommitFrameDraw; virtual; // @addr $4BCE80 @slot $A8 @note "After a successful frame; derived controls retain state needed to erase their previous drawing."
-    procedure ErasePreviousFrame; virtual; // @addr $4BCEC0 @slot $AC @note "Before queued drawing; derived controls restore their saved background pixels."
-    procedure PrepareFrameDraw; virtual; // @addr $4BCF40 @slot $B4 @note "Before DrawUpdateRects; derived controls capture backgrounds or prepare geometry."
-    procedure InvalidateChildren(IncludePanels: Boolean); // @addr $4BC954
-    function InvalidateScrollOverlap(Rect: TRect; Delta: TPoint; StartControl: TObjectGI): TObjectGI; // @addr $4BC9BC @note "Walks active panel subtrees until StartControl, then invalidates affected controls by moving them out and back. Rect is passed through but unused."
-    procedure Draw(ClipRect: TRect); virtual; // @addr 0x4BCABC @slot 0xA0 @note "Suppressed while PendingRedraw is set."
-    procedure DrawUpdateRects(ClipRect: TRect); virtual; // @addr 0x4BCB30 @slot 0xA4
-    procedure LoadFromConfigPath(const Path: WideString); virtual; // @addr 0x4BCFB8 @slot 0x34
-    procedure LoadFromBlock(Block: TBlockParEC); virtual; // @addr 0x4BD69C @slot 0xC0
-    function OffsetChildRect(Rect: TRect; ModeW: Boolean): TRect; // @addr $4BB88C @note "Adds LocalPosition and subtracts ScrollOffset when ModeW is set."
-    procedure InvalidateRect(Rect: TRect); virtual; // @addr $4BC874 @slot $98
-    procedure Invalidate; virtual; // @addr 0x4BC910 @slot 0x9C
-    procedure ReloadFromBlock; // @addr $4BDE7C
-    procedure UpdateAutoGeometry; virtual; // @addr 0x4BDEA0 @slot 0xC4
-    function FindDeepestChildAtPoint(Point: TPoint): TObjectGI; // @addr 0x4BBDF4 @note "Returns Self when no child contains Point."
-    function IsOccludedAtPoint(Point: TPoint): Boolean; // @addr 0x4BBE54
-    function ContainsPoint(Point: TPoint): Boolean; // @addr 0x4BC6BC @note "Requires Active and enabled hit testing; right and bottom edges are exclusive."
-    function ToLocalPoint(Point: TPoint): TPoint; virtual; // @addr 0x4BC7C0 @slot 0x90
-    function ToAbsolutePoint(Point: TPoint): TPoint; virtual; // @addr 0x4BC7F8 @slot 0x94
-    function HitTestCursor: Boolean; // @addr 0x4BC728
-    function FindByNameRecursive(const Name: WideString): TObjectGI; // @addr 0x4BC754 @note "Case-sensitive; includes Self. Duplicate names resolve in child-list order."
+    constructor Create(Owner: TObjectGI); // @addr 0x004C0A6C
+    destructor Destroy; override; // @addr 0x004C0B00
+    procedure FreeOwnedChildren; // @addr 0x004C0B84
+    procedure Clear; virtual; // @addr 0x004C0B9C @slot 0x00 @note "Does not free children."
+    property ML: TMessageLoopGI read MessageLoop;
+    procedure AttachOwnedChild(Child: TObjectGI); // @addr 0x004C0BF0 @note "Takes ownership; caller must detach an existing parent. Descendants' MessageLoop values are unchanged."
+    procedure InsertOwnedChildBefore(BeforeChild, Child: TObjectGI); // @addr 0x004C0C1C
+    procedure InsertOwnedChildByDepth(Child: TObjectGI; NewDepth: Double); // @addr 0x004C0C54 @note "Inserts in descending Depth order."
+    procedure FreeOwnedChild(Child: TObjectGI); // @addr 0x004C0CA8
+    procedure UnlinkOwnedChild(Child: TObjectGI); // @addr 0x004C0CBC @note "Leaves sibling pointers and MessageLoop unchanged."
+    property Obj_First: TObjectGI read FirstChild;
+    property Obj_Last: TObjectGI read LastChild;
+    property Obj_Next: TObjectGI read NextSibling;
+    property Obj_Prev: TObjectGI read PrevSibling;
+    property Obj_Parent: TObjectGI read Parent;
+    procedure Reparent(NewParent: TObjectGI); // @addr 0x004C0CF4 @note "Preserves Depth."
+    procedure SetMouseViewUpdates(Enabled: Boolean); // @addr 0x004C0D18
+    property MVUpdate: Boolean write SetMouseViewUpdates;
+    procedure UpdateAbsolutePosition; // @addr 0x004C0D34 @note "Updates this control and recurses through active children."
+    function GetChildAbsolutePosition(LocalPosition: TPoint; ModeW: Boolean): TPoint; virtual; // @addr 0x004C0D8C @slot 0x04 @note "Base implementation ignores ModeW."
+    procedure UpdateHitTestBounds; virtual; // @addr 0x004C0DB8 @slot 0x08
+    procedure UpdateSubtreeHitBounds; // @addr 0x004C0DF8 @note "Updates this control's hit-test rectangle and recurses through active children."
+    function OffsetChildRect(Rect: TRect; ModeW: Boolean): TRect; // @addr $4C0E70 @note "Adds LocalPosition and subtracts ScrollOffset when ModeW is set."
+    procedure SetPosition(Position: TPoint); virtual; // @addr 0x004C0EE4 @slot 0x0C
+    property Pos: TPoint read LocalPosition write SetPosition;
+    procedure SetDepth(NewDepth: Double); virtual; // @addr 0x004C0F50 @slot 0x10 @note "Does nothing without Parent."
+    property PosZd: Double read Depth write SetDepth;
+    procedure SetDepthByName(const Name: WideString); virtual; // @addr $4C0FC0 @slot $14
+    property PosZ: WideString write SetDepthByName;
+    procedure SetSize(Size: TPoint); virtual; // @addr 0x004C1048 @slot 0x18
+    property ObjectSize: TPoint read ClientSize write SetSize;
+    procedure SetOrigin(Origin: TPoint); virtual; // @addr 0x004C10B4 @slot 0x1C
+    property Sme: TPoint read OriginPoint write SetOrigin;
+    procedure SetPositionModeW(Enabled: Boolean); // @addr 0x004C1120
+    property World: Boolean read PositionModeW write SetPositionModeW;
+    procedure SetConfigPath(const Path: WideString); virtual; // @addr 0x004C1160 @slot 0x20 @note "Virtual loading sees the previous ConfigPath."
+    property Style: WideString read ConfigPath write SetConfigPath;
+    function GetLocalBounds: TRect; virtual; // @addr 0x004C117C @slot 0x24
+    procedure SetName(const Name: WideString); // @addr 0x004C11A8
+    property Name: WideString read ControlName write SetName;
+    property BlocksMouse: Boolean read MouseBlocking write MouseBlocking;
+    property TestMouseBlocking: Boolean read MouseBlockingTest write MouseBlockingTest;
+    property DataUser: Integer read UserValue write UserValue;
+    property DataUser2: Cardinal read UserIndex write UserIndex;
+    property DataUser3: Cardinal read UserData write UserData;
+    property DataUser4: Cardinal read UserState write UserState;
+    function FindByNameRecursive(const Name: WideString): TObjectGI; // @addr 0x004C1894 @note "Case-sensitive; includes Self. Duplicate names resolve in child-list order."
+    procedure SetActive(Enabled: Boolean); virtual; // @addr 0x004C11BC @slot 0x28
+    property IsActive: Boolean read Active write SetActive;
+    procedure SetHitTestDisabled(Disabled: Boolean); virtual; // @addr 0x004C1208 @slot 0x2C
+    property DisableHitTest: Boolean read HitTestDisabled write SetHitTestDisabled;
+    procedure QueueImageLoad(PendingLoads: TList); virtual; // @addr 0x004C12C8 @slot 0x30
+    procedure LoadFromConfigPath(const Path: WideString); virtual; // @addr 0x004C1F3C @slot 0x34
+    property HintText: WideString read HelpText write HelpText;
+    property OnHint: TObjectHelpEventGI read HelpCallback write HelpCallback;
+    function FindDeepestChildAtPoint(Point: TPoint): TObjectGI; // @addr 0x004C1254 @note "Returns Self when no child contains Point."
+    function IsOccludedAtPoint(Point: TPoint): Boolean; // @addr 0x004C1298
+    procedure ProcessMouseMove(KeyState: Cardinal; Point: TPoint); virtual; // @addr 0x004C12CC @slot 0x38
+    procedure OnMouseEnter; virtual; // @addr 0x004C1384 @slot 0x3C
+    procedure OnMouseLeave; virtual; // @addr 0x004C13EC @slot 0x40
+    procedure DispatchNamedEvent(EventKind: TNamedControlEventGI; Param1, Param2: Integer); // @addr 0x004C1920
+    procedure InvalidateChildren(IncludePanels: Boolean); // @addr $4C1A18
+    function InvalidateScrollOverlap(Rect: TRect; Delta: TPoint; StartControl: TObjectGI): TObjectGI; // @addr $4C1A60 @note "Walks active panel subtrees until StartControl, then invalidates affected controls by moving them out and back. Rect is passed through but unused."
+    procedure OnActivate; virtual; // @addr 0x004C147C @slot 0x44
+    procedure OnModalResume; virtual; // @addr $4C14B4 @slot $48 @note "Called on the parent UI after closing a modal child and restoring the cursor; propagates to active children."
+    procedure OnDeactivate; virtual; // @addr 0x004C14D4 @slot 0x4C
+    procedure OnModalSuspend; virtual; // @addr $4C1508 @slot $50 @note "Called on the parent UI before opening a modal child and capturing the cursor; propagates to active children."
+    procedure ProcessLeftButtonDown(KeyState: Cardinal; Point: TPoint); virtual; // @addr 0x004C1528 @slot 0x54
+    procedure ProcessLeftButtonUp(KeyState: Cardinal; Point: TPoint); virtual; // @addr 0x004C1588 @slot 0x58
+    procedure ProcessRightButtonDown(KeyState: Cardinal; Point: TPoint); virtual; // @addr 0x004C15E8 @slot 0x5C
+    procedure ProcessRightButtonUp(KeyState: Cardinal; Point: TPoint); virtual; // @addr 0x004C1660 @slot 0x60
+    procedure ProcessLeftButtonDoubleClick(KeyState: Cardinal; Point: TPoint); virtual; // @addr 0x004C16C0 @slot 0x64
+    procedure ProcessRightButtonDoubleClick(KeyState: Cardinal; Point: TPoint); virtual; // @addr 0x004C1720 @slot 0x68
+    procedure BroadcastKeyDown(Key: Cardinal); virtual; // @addr 0x004C1780 @slot 0x6C
+    procedure BroadcastKeyUp(Key: Cardinal); virtual; // @addr 0x004C17D4 @slot 0x70
+    procedure OnHoverGained; virtual; // @addr $4C1810 @slot $74
+    procedure OnHoverLost; virtual; // @addr $4C1814 @slot $78
+    procedure OnFocusGained; virtual; // @addr 0x004C1818 @slot 0x7C
+    procedure OnFocusLost; virtual; // @addr 0x004C181C @slot 0x80
+    procedure ProcessKeyDown(Key: Integer); virtual; // @addr 0x004C1820 @slot 0x84
+    procedure ProcessCharacter(Character: WideChar); virtual; // @addr 0x004C1824 @slot 0x88
+    procedure OnCaretBlink; virtual; // @addr $4C1828 @slot $8C @note "Called on the focused control when CaretBlinkOn changes."
+    property FunMouseMove: TObjectMouseEventGI read MouseMoveCallback write MouseMoveCallback;
+    property FunMouseLDown: TObjectMouseEventGI read LeftButtonDownCallback write LeftButtonDownCallback;
+    property FunMouseLUp: TObjectMouseEventGI read LeftButtonUpCallback write LeftButtonUpCallback;
+    property FunMouseRDown: TObjectMouseEventGI read RightButtonDownCallback write RightButtonDownCallback;
+    property FunMouseRUp: TObjectMouseEventGI read RightButtonUpCallback write RightButtonUpCallback;
+    property FunMouseLDbl: TObjectMouseEventGI read LeftButtonDoubleClickCallback write LeftButtonDoubleClickCallback;
+    property FunMouseRDbl: TObjectMouseEventGI read RightButtonDoubleClickCallback write RightButtonDoubleClickCallback;
+    property FunMouseEnter: TObjectNotifyEventGI read MouseEnterCallback write MouseEnterCallback;
+    property FunMouseLeave: TObjectNotifyEventGI read MouseLeaveCallback write MouseLeaveCallback;
+    property FunActivate: TObjectNotifyEventGI read ActivateCallback write ActivateCallback;
+    property FunDeActivate: TObjectNotifyEventGI read DeactivateCallback write DeactivateCallback;
+    property FunObjDestroy: TObjectNotifyEventGI read DestroyNotify write DestroyNotify;
+    property FunKeyDown: TObjectKeyEventGI read KeyDownCallback write KeyDownCallback;
+    property FunKeyUp: TObjectKeyEventGI read KeyUpCallback write KeyUpCallback;
+    function ContainsPoint(Point: TPoint): Boolean; // @addr 0x004C182C @note "Requires Active and enabled hit testing; right and bottom edges are exclusive."
+    function HitTestCursor: Boolean; // @addr 0x004C1874
+    function ToLocalPoint(Point: TPoint): TPoint; virtual; // @addr 0x004C18D8 @slot 0x90
+    function ToAbsolutePoint(Point: TPoint): TPoint; virtual; // @addr 0x004C18FC @slot 0x94
+    procedure InvalidateRect(Rect: TRect); virtual; // @addr $4C1954 @slot $98
+    procedure Invalidate; virtual; // @addr 0x004C19E0 @slot 0x9C
+    procedure Draw(ClipRect: TRect); virtual; // @addr 0x004C1B20 @slot 0xA0 @note "Suppressed while PendingRedraw is set."
+    procedure DrawUpdateRects(ClipRect: TRect); virtual; // @addr 0x004C1B78 @slot 0xA4
+    procedure CommitFrameDraw; virtual; // @addr $4C1EA4 @slot $A8 @note "After a successful frame; derived controls retain state needed to erase their previous drawing."
+    procedure ErasePreviousFrame; virtual; // @addr $4C1EC8 @slot $AC @note "Before queued drawing; derived controls restore their saved background pixels."
+    procedure NativeHookB0; virtual; // @addr $4C1EEC @slot $B0 @note "Purpose unresolved; the base hook visits active children."
+    procedure PrepareFrameDraw; virtual; // @addr $4C1F10 @slot $B4 @note "Before DrawUpdateRects; derived controls capture backgrounds or prepare geometry."
+    procedure PrepareRegionDraw(ClipRect: TRect); virtual; // @addr $4C1F34 @slot $B8 @note "Empty base hook called before queued drawing for RegionDrawControl."
+    procedure ReloadFromBlock; // @addr $4C2D60
+    procedure NativeHookBC(Rect: TRect); virtual; // @addr $4C1F38 @slot $BC @note "Empty base hook; purpose unresolved."
+    procedure LoadFromBlock(Block: TBlockParEC); virtual; // @addr 0x004C25B8 @slot 0xC0
+    procedure UpdateAutoGeometry; virtual; // @addr 0x004C2D7C @slot 0xC4
+    procedure SetHelpCallbackRecursive(Callback: TObjectHelpEventGI); // @addr $4C0E20
   end;
 
   PCursorStateGI = ^TCursorStateGI;
@@ -171,21 +203,22 @@ type
     Sounds: TStringsEC; // @offset 0x18
     // Each string is a sound name; its Data slot stores an integer weight.
 
-    constructor Create; // @addr 0x4BDF20
-    destructor Destroy; override; // @addr 0x4BDF74
-    procedure Clear; // @addr 0x4BDFC0 @note "Preserves timing fields and TotalWeight."
-    procedure LoadFromBlock(Block: TBlockParEC); // @addr 0x4BDFE0 @note "Numeric parameter names are weights; their values are sound names."
-    procedure ScheduleNextPlayback; // @addr 0x4BE1D4
-    procedure PlayIfDue; // @addr 0x4BE200
+    constructor Create; // @addr 0x004C2DD0
+    destructor Destroy; override; // @addr 0x004C2E14
+    procedure Clear; // @addr 0x004C2E50 @note "Preserves timing fields and TotalWeight."
+    procedure LoadFromBlock(Block: TBlockParEC); // @addr 0x004C2E64 @note "Numeric parameter names are weights; their values are sound names."
+    procedure ScheduleNextPlayback; // @addr 0x004C3030
+    procedure PlayIfDue; // @addr 0x004C3050
   end;
 
+  TCallbackTimerIdGI = Cardinal;
   PCallbackTimerGI = ^TCallbackTimerGI;
-  TCallbackTimerEventGI = procedure(Timer: PCallbackTimerGI; UserData: Integer) of object;
+  TCallbackTimerEventGI = procedure(Timer: TCallbackTimerIdGI; UserData: Cardinal) of object;
   TCallbackTimerGI = record // @size 0x20
     // Callback ABI: Context in EAX, this timer in EDX, UserData in ECX.
     Callback: TCallbackTimerEventGI; // @offset 0x00
-    UserData: Integer; // @offset 0x08
-    RepeatMs: Integer; // @offset 0x0C
+    UserData: Cardinal; // @offset 0x08
+    RepeatMs: Cardinal; // @offset 0x0C
     DueTick: Cardinal; // @offset 0x10
     Prev: PCallbackTimerGI; // @offset 0x14
     Next: PCallbackTimerGI; // @offset 0x18
@@ -200,7 +233,7 @@ type
   end;
   TSavedLinesGI = array of TSavedLineGI;
 
-  TMessageLoopGI = class(TObjectEx) // @size 0xD0
+  TMessageLoopGI = class(TObjectEx) // @size 0xD0 @methodorder source
   public
     RegisteredLoopName: WideString; // @offset 0x04
     ParentLoop: TMessageLoopGI; // @offset 0x08
@@ -252,107 +285,119 @@ type
     DeferredCodeBlocks: TList; // @offset 0xC8
     RefreshMouseAfterCode: Boolean; // @offset 0xCC
 
-    constructor Create; // @addr 0x4BE2BC
-    destructor Destroy; override; // @addr 0x4BE37C
-    function Run: Integer; virtual; // @addr 0x4BE77C @slot 0x00 @calls "0x52C9AE"
-    procedure ProcessWindowMessage(Message, WParam: Cardinal; LParam: Integer); virtual; // @addr 0x4BFB78 @slot 0x04 @note "Dispatches mouse/keyboard messages, deferred UI code and layout-inspector keys. Button coordinates are unsigned words; move and wheel coordinates are signed."
-    function RunContinuous: Integer; virtual; // @addr 0x4BEFD4 @slot 0x08 @calls "0x52C95E"
-    procedure AdvanceTimerTick; virtual; // @addr 0x4BF7D0 @slot 0x0C
-    procedure DrawFrame; virtual; // @addr 0x4BFA70 @slot 0x10
-    procedure Present; virtual; // @addr 0x4BFA98 @slot 0x14
-    procedure ProcessNamedControlEvent(ControlName: WideString; EventKind, Param1, Param2: Integer); virtual; // @addr 0x4C107C @slot 0x18
-    procedure OnOpen; virtual; // @addr 0x4C10C4 @slot 0x1C
-    procedure OnClose; virtual; // @addr 0x4C10D8 @slot 0x20
-    procedure SelectMusic; virtual; // @addr 0x4C11C0 @slot 0x28
-    procedure ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer); virtual; // @addr 0x4C1B7C @slot 0x2C
-    procedure InitializeLayout; virtual; // @addr 0x4C2164 @slot 0x30
-    procedure UpdateActionCursor(CanTake: Boolean); virtual; // @addr 0x4C217C @slot 0x34
-    function GetActionParentLoop: TMessageLoopGI; virtual; // @addr 0x4C218C @slot 0x38 @note "Base returns nil."
-    procedure ExecuteUiCode(Block: TBlockParEC; Key: Cardinal); virtual; // @addr 0x4C2208 @slot 0x3C @note "Key is zero for deferred mouse actions; key-down handlers pass the virtual key."
-    procedure QueueUiCode(Block: TBlockParEC; RefreshMouse: Boolean); // @addr 0x4C21A4 @note "Borrows Block until event completion or Run exits."
-    procedure RefreshMouseDispatch; // @addr 0x4C21D8
-    procedure SetHelpCallback(Callback: TObjectHelpEventGI); // @addr $4C0E18
-    procedure InitializeFromConfig(ConfigRoot: TBlockParEC; const ScreenName: WideString; UnusedFlag: Boolean); // @addr 0x4C1E58
-    procedure FreeSavedPixels16; // @addr $4C1828
-    procedure RestoreSavedPixels16; // @addr $4C1864 @note "Contains a native handwritten PUSHAD/POPAD loop at $4C189D..$4C18B9."
-    procedure FreeSecondaryPixelBuffer; // @addr $4C18CC
-    procedure ResetSecondaryPixelCount; // @addr $4C1914
-    procedure FreeSavedLines; // @addr $4C1938 @note "Frees every allocated array slot, including slots beyond SavedLineCount."
-    procedure AddSavedLine(First, Last: TPoint; Pixels: Pointer); // @addr $4C19B4 @note "Takes the pixel allocation; records the process heap."
-    procedure RestoreSavedLines; // @addr $4C1AA0 @note "Restores SavedLineCount lines unless SkipSavedPixelRestore is set; retains the count."
-    procedure ResetSavedLineCount; // @addr $4C1B64
-    procedure InvalidateMouseViewControls; // @addr $4BE604
-    procedure ClearTransientControl; // @addr $4C1B9C
-    procedure InvalidateTransientControl; // @addr $4C1C08 @note "Temporarily enables queued invalidation; an exception leaves it enabled."
-    procedure ResetRuntime; // @addr 0x4BE400 @note "Frees the root tree and cancels callback timers."
-    procedure QueueUpdateRect(Rect: TRect); // @addr 0x4BE4C4 @note "Clips to GameScreenRect; does nothing when update rectangles are disabled."
-    procedure InvalidateViewport; // @addr 0x4BE50C
-    function FindMouseViewUpdateControl(Control: TObjectGI): Integer; // @addr 0x4BE544
-    procedure AddMouseViewUpdateControl(Control: TObjectGI); // @addr 0x4BE5A0 @note "Duplicates are ignored."
-    procedure RemoveMouseViewUpdateControl(Control: TObjectGI); // @addr 0x4BE5D0
-    procedure DrawQueuedControlRects; // @addr $4BE6CC @note "Sets PendingRedraw and traverses queued drawing through the root tree."
-    procedure CommitFrameDraw; // @addr $4BE734
-    procedure ErasePreviousFrame; // @addr $4BE74C
-    procedure PrepareFrameDraw; // @addr $4BE764
-    procedure FinishQueuedDraw; // @addr $4BE720 @note "Clears RegionDrawPending."
-    procedure SetSystemCursorPosition(Point: TPoint); // @addr $4C1710 @note "Uses screen coordinates."
-    function ConsumeTimerTickChange: Boolean; // @addr $4C1738 @note "Returns true once for each changed TimerTick."
-    procedure DrawQueuedUpdateRects; // @addr 0x4BE654 @note "Leaves queued rectangles in place."
-    procedure CaptureScreenshot; // @addr $4C0B88 @note "Uses the first free Shot000..Shot999 name; silently skips when all names are occupied."
-    procedure RequestClose(ResultCode: Integer); // @addr 0x4C0DFC
-    function GetByName(const Name: WideString): TObjectGI; // @addr 0x4C0E38 @note "Search is limited to ContentPanel; raises when absent."
-    function FindControlByPath(const Path: WideString): TObjectGI; // @addr 0x4C0F10 @note "Each component may match a descendant, not just a direct child. Returns nil when absent."
-    procedure SetFocusedControl(Control: TObjectGI); // @addr 0x4C0FD0
-    procedure SetHoveredControl(Control: TObjectGI); // @addr 0x4C1020
-    procedure ProcessCallbackTimers; virtual; // @slot 0x24 @addr 0x4C10EC @note "May wait for a timer or Windows message; zero RepeatMs still repeats."
-    function ScheduleCallbackTimer(DelayMs, RepeatMs: Integer; Callback: TCallbackTimerEventGI; UserData: Integer = 0): PCallbackTimerGI; // @addr 0x4C11CC @note "Computes DueTick from the stored TimerTick, not a new clock sample."
-    procedure CancelCallbackTimer(Timer: PCallbackTimerGI); // @addr 0x4C1278
-    procedure UpdateCallbackTimer(Timer: PCallbackTimerGI; DelayMs, RepeatMs: Integer); // @addr 0x4C1310
-    procedure ReinsertCallbackTimer(Timer: PCallbackTimerGI); // @addr 0x4C136C @note "Equal deadlines run in reverse insertion order; clock wraparound is not handled."
-    procedure RefreshTimerTick; // @addr 0x4C14DC
-    procedure SetCursorImage(const ImagePath: WideString; HotSpot: TPoint); // @addr 0x4C14F4 @note "Does nothing when custom cursors are disabled."
-    procedure SetCursorByName(const Name: WideString); // @addr 0x4C1550
-    function IsCursorImageSelected(const RegisteredName: WideString): Boolean; // @addr 0x4C158C @note "Ignores cursor activity; registered names with the same image path compare equal."
-    function IsCursorActive: Boolean; // @addr 0x4C15C0
-    procedure SetCursorActive(Enabled: Boolean); // @addr 0x4C15DC
-    procedure CaptureCursorState(State: PCursorStateGI); // @addr 0x4C1608 @note "Writes caller-owned state; its WideString must be initialized. Pointer form is required by native record-copy evaluation order."
-    procedure RestoreCursorState(State: PCursorStateGI); // @addr 0x4C1660 @note "Reads caller-owned state through a pointer; ignored when custom cursors are disabled."
-    procedure UpdateCursorPosition; // @addr 0x4C16AC @note "Moves the image cursor to the system mouse position, converted to client coordinates in windowed mode."
-    function GetCursorPoint: TPoint; // @addr 0x4C16EC @note "Returns CursorControl's local position."
-    function QueryPointOcclusionState(Point: TPoint; IgnoreControl, StartControl: TObjectGI): Integer; // @addr 0x4C176C @note "Starts at RootUiObject when StartControl is nil; returns 1 for a blocker, -1 for IgnoreControl, or 0 for no hit."
-    procedure InitializeDefaults; // @addr 0x4C1C4C
+    constructor Create; // @addr 0x004C30F0
+    destructor Destroy; override; // @addr 0x004C3188
+    procedure ResetRuntime; // @addr 0x004C31EC @note "Frees the root tree and cancels callback timers."
+    property RU: TArrayRectGR read UpdateRects;
+    procedure QueueUpdateRect(Rect: TRect); // @addr 0x004C326C @note "Clips to GameScreenRect; does nothing when update rectangles are disabled."
+    procedure InvalidateViewport; // @addr 0x004C32AC
+    function FindMouseViewUpdateControl(Control: TObjectGI): Integer; // @addr 0x004C32E0
+    procedure AddMouseViewUpdateControl(Control: TObjectGI); // @addr 0x004C3318 @note "Duplicates are ignored."
+    procedure RemoveMouseViewUpdateControl(Control: TObjectGI); // @addr 0x004C3338
+    procedure InvalidateMouseViewControls; // @addr $4C3354
+    property MV: Boolean read RegionDrawPending write RegionDrawPending;
+    property Border: TRect read ViewportRect write ViewportRect;
+    procedure DrawQueuedUpdateRects; // @addr 0x004C338C @note "Leaves queued rectangles in place."
+    procedure DrawQueuedControlRects; // @addr $4C33D4 @note "Sets PendingRedraw and traverses queued drawing through the root tree."
+    procedure FinishQueuedDraw; // @addr $4C341C @note "Clears RegionDrawPending."
+    procedure CommitFrameDraw; // @addr $4C3424
+    procedure ErasePreviousFrame; // @addr $4C3430
+    procedure PrepareFrameDraw; // @addr $4C343C
+    function Run: Integer; virtual; // @addr 0x004C3448 @slot 0x00
+    procedure ProcessWindowMessage(Message, WParam: Cardinal; LParam: Integer); virtual; // @addr 0x004C4774 @slot 0x04 @note "Dispatches mouse/keyboard messages, deferred UI code and layout-inspector keys. Button coordinates are unsigned words; move and wheel coordinates are signed."
+    function RunContinuous: Integer; virtual; // @addr 0x004C3C60 @slot 0x08
+    procedure AdvanceTimerTick; virtual; // @addr 0x004C4410 @slot 0x0C
+    procedure DrawFrame; virtual; // @addr 0x004C4684 @slot 0x10
+    procedure Present; virtual; // @addr 0x004C46A0 @slot 0x14
+    procedure CaptureScreenshot; // @addr $4C56BC @note "Uses the first free Shot000..Shot999 name; silently skips when all names are occupied."
+    procedure RequestClose(ResultCode: Integer); // @addr 0x004C5924
+    procedure SetHelpCallback(Callback: TObjectHelpEventGI); // @addr $4C5928
+    function GetByName(const Name: WideString): TObjectGI; // @addr 0x004C5940 @note "Search is limited to ContentPanel; raises when absent."
+    function FindControlByPath(const Path: WideString): TObjectGI; // @addr 0x004C5A08 @note "Each component may match a descendant, not just a direct child. Returns nil when absent."
+    procedure SetFocusedControl(Control: TObjectGI); // @addr 0x004C5AAC
+    property fTextCursor: Boolean read CaretBlinkOn write CaretBlinkOn;
+    procedure SetHoveredControl(Control: TObjectGI); // @addr 0x004C5AD8
+    procedure ProcessNamedControlEvent(ControlName: WideString; EventKind: TNamedControlEventGI; Param1, Param2: Integer); virtual; // @addr 0x004C5B0C @slot 0x18
+    procedure OnOpen; virtual; // @addr 0x004C5B38 @slot 0x1C
+    procedure OnClose; virtual; // @addr 0x004C5B40 @slot 0x20
+    procedure ProcessCallbackTimers; virtual; // @slot 0x24 @addr 0x004C5B48 @note "May wait for a timer or Windows message; zero RepeatMs still repeats."
+    procedure SelectMusic; virtual; // @addr 0x004C5BD8 @slot 0x28
+    procedure ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer); virtual; // @addr 0x004C620C @slot 0x2C
+    procedure InitializeLayout; virtual; // @addr 0x004C6718 @slot 0x30
+    procedure UpdateActionCursor(CanTake: Boolean); virtual; // @addr 0x004C6724 @slot 0x34
+    function GetActionParentLoop: TMessageLoopGI; virtual; // @addr 0x004C6728 @slot 0x38 @note "Base returns nil."
+    function ScheduleCallbackTimer(DelayMs, RepeatMs: Cardinal; Callback: TCallbackTimerEventGI; UserData: Cardinal = 0): TCallbackTimerIdGI; // @addr 0x004C5BDC @note "Computes DueTick from the stored TimerTick, not a new clock sample."
+    procedure CancelCallbackTimer(Timer: TCallbackTimerIdGI); // @addr 0x004C5C4C
+    procedure UpdateCallbackTimer(Timer: TCallbackTimerIdGI; DelayMs, RepeatMs: Cardinal); // @addr 0x004C5C94
+    procedure ReinsertCallbackTimer(Timer: TCallbackTimerIdGI); // @addr 0x004C5CBC @note "Equal deadlines run in reverse insertion order; clock wraparound is not handled."
+    property MT_Current: Cardinal read TimerTick;
+    procedure RefreshTimerTick; // @addr 0x004C5D68
+    property MainObj: TObjectGI read ContentPanel;
+    property SysObj: TObjectGI read RootUiObject;
+    property BackgroundObj: TObjectGI read BackgroundPanel;
+    property ForegroundObj: TObjectGI read OverlayPanel;
+    property CurObj: TObjectGI read CursorControl;
+    property PriObj: TObjectGI read RegionDrawControl write RegionDrawControl;
+    procedure SetCursorImage(const ImagePath: WideString; HotSpot: TPoint); // @addr 0x004C5D78 @note "Does nothing when custom cursors are disabled."
+    procedure SetCursorByName(const Name: WideString); // @addr 0x004C5DC4
+    function IsCursorImageSelected(const RegisteredName: WideString): Boolean; // @addr 0x004C5DE8 @note "Ignores cursor activity; registered names with the same image path compare equal."
+    function IsCursorActive: Boolean; // @addr 0x004C5E08
+    procedure SetCursorActive(Enabled: Boolean); // @addr 0x004C5E10
+    property ShowCursor: Boolean read IsCursorActive write SetCursorActive;
+    procedure CaptureCursorState(State: PCursorStateGI); // @addr 0x004C5E24 @note "Writes caller-owned state; its WideString must be initialized. Pointer form is required by native record-copy evaluation order."
+    procedure RestoreCursorState(State: PCursorStateGI); // @addr 0x004C5E60 @note "Reads caller-owned state through a pointer; ignored when custom cursors are disabled."
+    procedure UpdateCursorPosition; // @addr 0x004C5E98 @note "Moves the image cursor to the system mouse position, converted to client coordinates in windowed mode."
+    function GetCursorPoint: TPoint; // @addr 0x004C5ECC @note "Returns CursorControl's local position."
+    procedure SetSystemCursorPosition(Point: TPoint); // @addr $4C5EDC @note "Uses screen coordinates."
+    function ConsumeTimerTickChange: Boolean; // @addr $4C5EFC @note "Returns true once for each changed TimerTick."
+    function QueryPointOcclusionState(Point: TPoint; IgnoreControl, StartControl: TObjectGI): Integer; // @addr 0x004C5F10 @note "Starts at RootUiObject when StartControl is nil; returns 1 for a blocker, -1 for IgnoreControl, or 0 for no hit."
+    procedure FreeSavedPixels16; // @addr $4C5F9C
+    procedure RestoreSavedPixels16; // @addr $4C5FC4
+    procedure FreeSecondaryPixelBuffer; // @addr $4C6020
+    procedure ResetSecondaryPixelCount; // @addr $4C604C
+    procedure FreeSavedLines; // @addr $4C6060 @note "Frees every allocated array slot, including slots beyond SavedLineCount."
+    procedure AddSavedLine(First, Last: TPoint; Pixels: Pointer); // @addr $4C60B8 @note "Takes the pixel allocation; records the process heap."
+    procedure RestoreSavedLines; // @addr $4C6180 @note "Restores SavedLineCount lines unless SkipSavedPixelRestore is set; retains the count."
+    procedure ResetSavedLineCount; // @addr $4C6200
+    procedure ClearTransientControl; // @addr $4C6214
+    procedure InvalidateTransientControl; // @addr $4C625C @note "Temporarily enables queued invalidation; an exception leaves it enabled."
+    procedure InitializeDefaults; // @addr 0x004C6288
+    procedure InitializeFromConfig(ConfigRoot: TBlockParEC; const ScreenName: WideString; UnusedFlag: Boolean); // @addr 0x004C6440
+    procedure QueueUiCode(Block: TBlockParEC; RefreshMouse: Boolean); // @addr 0x004C672C @note "Borrows Block until event completion or Run exits."
+    procedure RefreshMouseDispatch; // @addr 0x004C674C
+    procedure ExecuteUiCode(Block: TBlockParEC; Key: Cardinal); virtual; // @addr 0x004C6774 @slot 0x3C @note "Key is zero for deferred mouse actions; key-down handlers pass the virtual key."
   end;
 
-procedure PushMessageLoop(Loop: TMessageLoopGI); // @addr $4BB164
-procedure PopMessageLoop(Loop: TMessageLoopGI); // @addr $4BB198
+procedure PushMessageLoop(Loop: TMessageLoopGI); // @addr $4C09D4
+procedure PopMessageLoop(Loop: TMessageLoopGI); // @addr $4C0A00
 
 var
-  MessageLoopStack: TList = nil; // @addr $87AA08
-  IgnoreWarpMouseMove: Boolean = False; // @addr $87AA0C  Consumes the mouse move generated by viewport cursor recentering.
-  LastMousePosition: TPoint; // @addr $889E64  Written by ProcessWindowMessage and reused by RefreshMouseDispatch.
+  MessageLoopStack: TList = nil; // @addr $80B710
+  IgnoreWarpMouseMove: Boolean = False; // @addr $80B714  Consumes the mouse move generated by viewport cursor recentering.
+  LastMousePosition: TPoint; // @addr $819EB0  Written by ProcessWindowMessage and reused by RefreshMouseDispatch.
 
 implementation
 
 uses PopUp, BreakMessageGIException, EC_Mem, MMSystem, Windows, Messages, GI_Cursor, GI_Label, GI_Main, GI_Panel, GI_GraphBuf, GlobalsV, Globals, GR_Main, GR_GraphBuf, SysUtils, aMyFunction, GR_Sound, GR_Music;
 
-{ @routine $4BB164 PushMessageLoop }
+{ @routine $4C09D4 PushMessageLoop }
 procedure PushMessageLoop(Loop: TMessageLoopGI);
 begin
   if MessageLoopStack = nil then MessageLoopStack := TList.Create;
   MessageLoopStack.Add(Loop);
 end;
-{ @end $4BB164 }
+{ @end $4C09D4 }
 
-{ @routine $4BB198 PopMessageLoop }
+{ @routine $4C0A00 PopMessageLoop }
 procedure PopMessageLoop(Loop: TMessageLoopGI);
 begin
   if (MessageLoopStack = nil) or (MessageLoopStack.Count < 1) then RaiseWideMessage('ML 1');
   if MessageLoopStack[MessageLoopStack.Count - 1] <> Loop then RaiseWideMessage('ML 2');
   MessageLoopStack.Delete(MessageLoopStack.Count - 1);
 end;
-{ @end $4BB198 }
+{ @end $4C0A00 }
 
-{ @routine $4BB218 TObjectGI_Create }
+{ @routine $4C0A6C TObjectGI_Create }
 constructor TObjectGI.Create(Owner: TObjectGI);
 begin
   inherited Create;
@@ -370,9 +415,9 @@ begin
   OnMouseLeaveCode := nil;
   OnRightButtonDownCode := nil;
 end;
-{ @end $4BB218 }
+{ @end $4C0A6C }
 
-{ @routine $4BB2DC TObjectGI_Destroy }
+{ @routine $4C0B00 TObjectGI_Destroy }
 destructor TObjectGI.Destroy;
 begin
   if MessageLoop <> nil then
@@ -387,16 +432,16 @@ begin
   if Assigned(DestroyNotify) then DestroyNotify(Self);
   inherited Destroy;
 end;
-{ @end $4BB2DC }
+{ @end $4C0B00 }
 
-{ @routine $4BB3A0 TObjectGI_FreeOwnedChildren }
+{ @routine $4C0B84 TObjectGI_FreeOwnedChildren }
 procedure TObjectGI.FreeOwnedChildren;
 begin
   while LastChild <> nil do FreeOwnedChild(FirstChild);
 end;
-{ @end $4BB3A0 }
+{ @end $4C0B84 }
 
-{ @routine $4BB3C4 TObjectGI_Clear }
+{ @routine $4C0B9C TObjectGI_Clear }
 procedure TObjectGI.Clear;
 begin
   LocalPosition.X := 0;
@@ -414,9 +459,9 @@ begin
   MouseBlockingTest := True;
   ScrollUpdate := False;
 end;
-{ @end $4BB3C4 }
+{ @end $4C0B9C }
 
-{ @routine $4BB448 TObjectGI_AttachOwnedChild }
+{ @routine $4C0BF0 TObjectGI_AttachOwnedChild }
 procedure TObjectGI.AttachOwnedChild(Child: TObjectGI);
 begin
   if LastChild <> nil then LastChild.NextSibling := Child;
@@ -427,9 +472,9 @@ begin
   Child.Parent := Self;
   Child.MessageLoop := MessageLoop;
 end;
-{ @end $4BB448 }
+{ @end $4C0BF0 }
 
-{ @routine $4BB4B4 TObjectGI_InsertOwnedChildBefore }
+{ @routine $4C0C1C TObjectGI_InsertOwnedChildBefore }
 procedure TObjectGI.InsertOwnedChildBefore(BeforeChild, Child: TObjectGI);
 begin
   if BeforeChild <> nil then
@@ -444,9 +489,9 @@ begin
   end
   else AttachOwnedChild(Child);
 end;
-{ @end $4BB4B4 }
+{ @end $4C0C1C }
 
-{ @routine $4BB538 TObjectGI_InsertOwnedChildByDepth }
+{ @routine $4C0C54 TObjectGI_InsertOwnedChildByDepth }
 procedure TObjectGI.InsertOwnedChildByDepth(Child: TObjectGI; NewDepth: Double);
 var BeforeChild: TObjectGI;
 begin
@@ -463,17 +508,17 @@ begin
   end;
   if BeforeChild = nil then AttachOwnedChild(Child);
 end;
-{ @end $4BB538 }
+{ @end $4C0C54 }
 
-{ @routine $4BB5A8 TObjectGI_FreeOwnedChild }
+{ @routine $4C0CA8 TObjectGI_FreeOwnedChild }
 procedure TObjectGI.FreeOwnedChild(Child: TObjectGI);
 begin
   UnlinkOwnedChild(Child);
   Child.Free;
 end;
-{ @end $4BB5A8 }
+{ @end $4C0CA8 }
 
-{ @routine $4BB5CC TObjectGI_UnlinkOwnedChild }
+{ @routine $4C0CBC TObjectGI_UnlinkOwnedChild }
 procedure TObjectGI.UnlinkOwnedChild(Child: TObjectGI);
 begin
   if Child.PrevSibling <> nil then Child.PrevSibling.NextSibling := Child.NextSibling;
@@ -482,25 +527,25 @@ begin
   if FirstChild = Child then FirstChild := Child.NextSibling;
   Child.Parent := nil;
 end;
-{ @end $4BB5CC }
+{ @end $4C0CBC }
 
-{ @routine $4BB644 TObjectGI_Reparent }
+{ @routine $4C0CF4 TObjectGI_Reparent }
 procedure TObjectGI.Reparent(NewParent: TObjectGI);
 begin
   Parent.UnlinkOwnedChild(Self);
   NewParent.InsertOwnedChildByDepth(Self, Depth);
 end;
-{ @end $4BB644 }
+{ @end $4C0CF4 }
 
-{ @routine $4BB678 TObjectGI_SetMouseViewUpdates }
+{ @routine $4C0D18 TObjectGI_SetMouseViewUpdates }
 procedure TObjectGI.SetMouseViewUpdates(Enabled: Boolean);
 begin
   if Enabled = True then MessageLoop.AddMouseViewUpdateControl(Self)
   else MessageLoop.RemoveMouseViewUpdateControl(Self);
 end;
-{ @end $4BB678 }
+{ @end $4C0D18 }
 
-{ @routine $4BB6AC TObjectGI_UpdateAbsolutePosition }
+{ @routine $4C0D34 TObjectGI_UpdateAbsolutePosition }
 procedure TObjectGI.UpdateAbsolutePosition;
 var Child: TObjectGI;
 begin
@@ -518,25 +563,25 @@ begin
     Child := Child.NextSibling;
   end;
 end;
-{ @end $4BB6AC }
+{ @end $4C0D34 }
 
-{ @routine $4BB738 TObjectGI_GetChildAbsolutePosition }
+{ @routine $4C0D8C TObjectGI_GetChildAbsolutePosition }
 function TObjectGI.GetChildAbsolutePosition(LocalPosition: TPoint; ModeW: Boolean): TPoint;
 begin
   Result.X := AbsolutePosition.X + LocalPosition.X;
   Result.Y := AbsolutePosition.Y + LocalPosition.Y;
 end;
-{ @end $4BB738 }
+{ @end $4C0D8C }
 
-{ @routine $4BB774 TObjectGI_UpdateHitTestBounds }
+{ @routine $4C0DB8 TObjectGI_UpdateHitTestBounds }
 procedure TObjectGI.UpdateHitTestBounds;
 begin
   HitTestBounds := Classes.Rect(AbsolutePosition.X - OriginPoint.X, AbsolutePosition.Y - OriginPoint.Y,
     AbsolutePosition.X - OriginPoint.X + ClientSize.X, AbsolutePosition.Y - OriginPoint.Y + ClientSize.Y);
 end;
-{ @end $4BB774 }
+{ @end $4C0DB8 }
 
-{ @routine $4BB7DC TObjectGI_UpdateSubtreeHitBounds }
+{ @routine $4C0DF8 TObjectGI_UpdateSubtreeHitBounds }
 procedure TObjectGI.UpdateSubtreeHitBounds;
 var Child: TObjectGI;
 begin
@@ -548,9 +593,9 @@ begin
     Child := Child.NextSibling;
   end;
 end;
-{ @end $4BB7DC }
+{ @end $4C0DF8 }
 
-{ @routine $4BB820 TObjectGI_SetHelpCallbackRecursive }
+{ @routine $4C0E20 TObjectGI_SetHelpCallbackRecursive }
 procedure TObjectGI.SetHelpCallbackRecursive(Callback: TObjectHelpEventGI);
 var Child: TObjectGI;
 begin
@@ -562,9 +607,9 @@ begin
     Child := Child.NextSibling;
   end;
 end;
-{ @end $4BB820 }
+{ @end $4C0E20 }
 
-{ @routine $4BB88C TObjectGI_OffsetChildRect }
+{ @routine $4C0E70 TObjectGI_OffsetChildRect }
 function TObjectGI.OffsetChildRect(Rect: TRect; ModeW: Boolean): TRect;
 begin
   if not ModeW then
@@ -582,9 +627,9 @@ begin
     Result.Bottom := LocalPosition.Y + Rect.Bottom - ScrollOffset.Y;
   end;
 end;
-{ @end $4BB88C }
+{ @end $4C0E70 }
 
-{ @routine $4BB944 TObjectGI_SetPosition }
+{ @routine $4C0EE4 TObjectGI_SetPosition }
 procedure TObjectGI.SetPosition(Position: TPoint);
 begin
   if (LocalPosition.X = Position.X) and (LocalPosition.Y = Position.Y) then Exit;
@@ -598,9 +643,9 @@ begin
     Invalidate;
   end;
 end;
-{ @end $4BB944 }
+{ @end $4C0EE4 }
 
-{ @routine $4BB9C4 TObjectGI_SetDepth }
+{ @routine $4C0F50 TObjectGI_SetDepth }
 procedure TObjectGI.SetDepth(NewDepth: Double);
 begin
   if Depth = NewDepth then Exit;
@@ -612,9 +657,9 @@ begin
   Parent.InsertOwnedChildByDepth(Self, NewDepth);
   Invalidate;
 end;
-{ @end $4BB9C4 }
+{ @end $4C0F50 }
 
-{ @routine $4BBA7C TObjectGI_SetDepthByName }
+{ @routine $4C0FC0 TObjectGI_SetDepthByName }
 procedure TObjectGI.SetDepthByName(const Name: WideString);
 var Value: WideString;
 begin
@@ -622,9 +667,9 @@ begin
   if Value <> '' then SetDepth(ExtractDecimalToSingleW(Value))
   else SetDepth(ExtractDecimalToSingleW(Name));
 end;
-{ @end $4BBA7C }
+{ @end $4C0FC0 }
 
-{ @routine $4BBB0C TObjectGI_SetSize }
+{ @routine $4C1048 TObjectGI_SetSize }
 procedure TObjectGI.SetSize(Size: TPoint);
 begin
   if (ClientSize.X = Size.X) and (ClientSize.Y = Size.Y) then Exit;
@@ -638,9 +683,9 @@ begin
     Invalidate;
   end;
 end;
-{ @end $4BBB0C }
+{ @end $4C1048 }
 
-{ @routine $4BBB8C TObjectGI_SetOrigin }
+{ @routine $4C10B4 TObjectGI_SetOrigin }
 procedure TObjectGI.SetOrigin(Origin: TPoint);
 begin
   if (OriginPoint.X = Origin.X) and (OriginPoint.Y = Origin.Y) then Exit;
@@ -654,9 +699,9 @@ begin
     Invalidate;
   end;
 end;
-{ @end $4BBB8C }
+{ @end $4C10B4 }
 
-{ @routine $4BBC0C TObjectGI_SetPositionModeW }
+{ @routine $4C1120 TObjectGI_SetPositionModeW }
 procedure TObjectGI.SetPositionModeW(Enabled: Boolean);
 begin
   if PositionModeW = Enabled then Exit;
@@ -670,17 +715,17 @@ begin
     Invalidate;
   end;
 end;
-{ @end $4BBC0C }
+{ @end $4C1120 }
 
-{ @routine $4BBC6C TObjectGI_SetConfigPath }
+{ @routine $4C1160 TObjectGI_SetConfigPath }
 procedure TObjectGI.SetConfigPath(const Path: WideString);
 begin
   LoadFromConfigPath(Path);
   ConfigPath := Path;
 end;
-{ @end $4BBC6C }
+{ @end $4C1160 }
 
-{ @routine $4BBC98 TObjectGI_GetLocalBounds }
+{ @routine $4C117C TObjectGI_GetLocalBounds }
 function TObjectGI.GetLocalBounds: TRect;
 begin
   Result.Left := LocalPosition.X - OriginPoint.X;
@@ -688,16 +733,16 @@ begin
   Result.Right := LocalPosition.X - OriginPoint.X + ClientSize.X;
   Result.Bottom := LocalPosition.Y - OriginPoint.Y + ClientSize.Y;
 end;
-{ @end $4BBC98 }
+{ @end $4C117C }
 
-{ @routine $4BBCFC TObjectGI_SetName }
+{ @routine $4C11A8 TObjectGI_SetName }
 procedure TObjectGI.SetName(const Name: WideString);
 begin
   ControlName := Name;
 end;
-{ @end $4BBCFC }
+{ @end $4C11A8 }
 
-{ @routine $4BBD1C TObjectGI_SetActive }
+{ @routine $4C11BC TObjectGI_SetActive }
 procedure TObjectGI.SetActive(Enabled: Boolean);
 begin
   if Active = Enabled then Exit;
@@ -716,9 +761,9 @@ begin
     OnDeactivate;
   end;
 end;
-{ @end $4BBD1C }
+{ @end $4C11BC }
 
-{ @routine $4BBD88 TObjectGI_SetHitTestDisabled }
+{ @routine $4C1208 TObjectGI_SetHitTestDisabled }
 procedure TObjectGI.SetHitTestDisabled(Disabled: Boolean);
 begin
   if HitTestDisabled = Disabled then Exit;
@@ -737,9 +782,9 @@ begin
     OnDeactivate;
   end;
 end;
-{ @end $4BBD88 }
+{ @end $4C1208 }
 
-{ @routine $4BBDF4 TObjectGI_FindDeepestChildAtPoint }
+{ @routine $4C1254 TObjectGI_FindDeepestChildAtPoint }
 function TObjectGI.FindDeepestChildAtPoint(Point: TPoint): TObjectGI;
 var Child: TObjectGI;
 begin
@@ -755,23 +800,23 @@ begin
   end;
   Result := Self;
 end;
-{ @end $4BBDF4 }
+{ @end $4C1254 }
 
-{ @routine $4BBE54 TObjectGI_IsOccludedAtPoint }
+{ @routine $4C1298 TObjectGI_IsOccludedAtPoint }
 function TObjectGI.IsOccludedAtPoint(Point: TPoint): Boolean;
 begin
   if MessageLoop.QueryPointOcclusionState(Point, Self, nil) = 1 then Result := True
   else Result := False;
 end;
-{ @end $4BBE54 }
+{ @end $4C1298 }
 
-{ @routine $4BBE90 TObjectGI_QueueImageLoad }
+{ @routine $4C12C8 TObjectGI_QueueImageLoad }
 procedure TObjectGI.QueueImageLoad(PendingLoads: TList);
 begin
 end;
-{ @end $4BBE90 }
+{ @end $4C12C8 }
 
-{ @routine $4BBEA0 TObjectGI_ProcessMouseMove }
+{ @routine $4C12CC TObjectGI_ProcessMouseMove }
 procedure TObjectGI.ProcessMouseMove(KeyState: Cardinal; Point: TPoint);
 var Child: TObjectGI;
 begin
@@ -790,25 +835,24 @@ begin
     begin
       if Child.MouseInside = False then Child.OnMouseEnter;
       Child.ProcessMouseMove(KeyState, Point);
-      DispatchNamedEvent(3, Point.X, Point.Y);
+      DispatchNamedEvent(nceMouseMove, Point.X, Point.Y);
     end;
     Child := Child.NextSibling;
   end;
 end;
-{ @end $4BBEA0 }
+{ @end $4C12CC }
 
-{ @routine $4BBF9C TObjectGI_OnMouseEnter }
+{ @routine $4C1384 TObjectGI_OnMouseEnter }
 procedure TObjectGI.OnMouseEnter;
 begin
   if Assigned(MouseEnterCallback) then MouseEnterCallback(Self);
   if OnMouseEnterCode <> nil then MessageLoop.QueueUiCode(OnMouseEnterCode, False);
   MouseInside := True;
-  if HelpText <> '' then
-    if MessageLoop.HelpLabel <> nil then (MessageLoop.HelpLabel as TLabelGI).SetText(HelpText);
+  if (HelpText <> '') and (MessageLoop.HelpLabel <> nil) then (MessageLoop.HelpLabel as TLabelGI).Text := HelpText;
 end;
-{ @end $4BBF9C }
+{ @end $4C1384 }
 
-{ @routine $4BC030 TObjectGI_OnMouseLeave }
+{ @routine $4C13EC TObjectGI_OnMouseLeave }
 procedure TObjectGI.OnMouseLeave;
 var Child: TObjectGI;
 begin
@@ -821,12 +865,11 @@ begin
     if (Child.Active = True) and (Child.MouseInside = True) then Child.OnMouseLeave;
     Child := Child.NextSibling;
   end;
-  if HelpText <> '' then
-    if MessageLoop.HelpLabel <> nil then (MessageLoop.HelpLabel as TLabelGI).SetText('');
+  if (HelpText <> '') and (MessageLoop.HelpLabel <> nil) then (MessageLoop.HelpLabel as TLabelGI).Text := '';
 end;
-{ @end $4BC030 }
+{ @end $4C13EC }
 
-{ @routine $4BC0FC TObjectGI_OnActivate }
+{ @routine $4C147C TObjectGI_OnActivate }
 procedure TObjectGI.OnActivate;
 var Child: TObjectGI;
 begin
@@ -838,9 +881,9 @@ begin
     Child := Child.NextSibling;
   end;
 end;
-{ @end $4BC0FC }
+{ @end $4C147C }
 
-{ @routine $4BC15C TObjectGI_OnModalResume }
+{ @routine $4C14B4 TObjectGI_OnModalResume }
 procedure TObjectGI.OnModalResume;
 var Child: TObjectGI;
 begin
@@ -851,9 +894,9 @@ begin
     Child := Child.NextSibling;
   end;
 end;
-{ @end $4BC15C }
+{ @end $4C14B4 }
 
-{ @routine $4BC198 TObjectGI_OnDeactivate }
+{ @routine $4C14D4 TObjectGI_OnDeactivate }
 procedure TObjectGI.OnDeactivate;
 var Child: TObjectGI;
 begin
@@ -865,9 +908,9 @@ begin
     Child := Child.NextSibling;
   end;
 end;
-{ @end $4BC198 }
+{ @end $4C14D4 }
 
-{ @routine $4BC1EC TObjectGI_OnModalSuspend }
+{ @routine $4C1508 TObjectGI_OnModalSuspend }
 procedure TObjectGI.OnModalSuspend;
 var Child: TObjectGI;
 begin
@@ -878,9 +921,9 @@ begin
     Child := Child.NextSibling;
   end;
 end;
-{ @end $4BC1EC }
+{ @end $4C1508 }
 
-{ @routine $4BC228 TObjectGI_ProcessLeftButtonDown }
+{ @routine $4C1528 TObjectGI_ProcessLeftButtonDown }
 procedure TObjectGI.ProcessLeftButtonDown(KeyState: Cardinal; Point: TPoint);
 var Child: TObjectGI;
 begin
@@ -892,9 +935,9 @@ begin
     Child := Child.NextSibling;
   end;
 end;
-{ @end $4BC228 }
+{ @end $4C1528 }
 
-{ @routine $4BC2B0 TObjectGI_ProcessLeftButtonUp }
+{ @routine $4C1588 TObjectGI_ProcessLeftButtonUp }
 procedure TObjectGI.ProcessLeftButtonUp(KeyState: Cardinal; Point: TPoint);
 var Child: TObjectGI;
 begin
@@ -906,9 +949,9 @@ begin
     Child := Child.NextSibling;
   end;
 end;
-{ @end $4BC2B0 }
+{ @end $4C1588 }
 
-{ @routine $4BC338 TObjectGI_ProcessRightButtonDown }
+{ @routine $4C15E8 TObjectGI_ProcessRightButtonDown }
 procedure TObjectGI.ProcessRightButtonDown(KeyState: Cardinal; Point: TPoint);
 var Child: TObjectGI;
 begin
@@ -921,9 +964,9 @@ begin
   end;
   if OnRightButtonDownCode <> nil then MessageLoop.QueueUiCode(OnRightButtonDownCode, False);
 end;
-{ @end $4BC338 }
+{ @end $4C15E8 }
 
-{ @routine $4BC3E4 TObjectGI_ProcessRightButtonUp }
+{ @routine $4C1660 TObjectGI_ProcessRightButtonUp }
 procedure TObjectGI.ProcessRightButtonUp(KeyState: Cardinal; Point: TPoint);
 var Child: TObjectGI;
 begin
@@ -935,9 +978,9 @@ begin
     Child := Child.NextSibling;
   end;
 end;
-{ @end $4BC3E4 }
+{ @end $4C1660 }
 
-{ @routine $4BC46C TObjectGI_ProcessLeftButtonDoubleClick }
+{ @routine $4C16C0 TObjectGI_ProcessLeftButtonDoubleClick }
 procedure TObjectGI.ProcessLeftButtonDoubleClick(KeyState: Cardinal; Point: TPoint);
 var Child: TObjectGI;
 begin
@@ -949,9 +992,9 @@ begin
     Child := Child.NextSibling;
   end;
 end;
-{ @end $4BC46C }
+{ @end $4C16C0 }
 
-{ @routine $4BC4F4 TObjectGI_ProcessRightButtonDoubleClick }
+{ @routine $4C1720 TObjectGI_ProcessRightButtonDoubleClick }
 procedure TObjectGI.ProcessRightButtonDoubleClick(KeyState: Cardinal; Point: TPoint);
 var Child: TObjectGI;
 begin
@@ -963,9 +1006,9 @@ begin
     Child := Child.NextSibling;
   end;
 end;
-{ @end $4BC4F4 }
+{ @end $4C1720 }
 
-{ @routine $4BC57C TObjectGI_BroadcastKeyDown }
+{ @routine $4C1780 TObjectGI_BroadcastKeyDown }
 procedure TObjectGI.BroadcastKeyDown(Key: Cardinal);
 var Child: TObjectGI;
 begin
@@ -978,9 +1021,9 @@ begin
     Child := Child.NextSibling;
   end;
 end;
-{ @end $4BC57C }
+{ @end $4C1780 }
 
-{ @routine $4BC5FC TObjectGI_BroadcastKeyUp }
+{ @routine $4C17D4 TObjectGI_BroadcastKeyUp }
 procedure TObjectGI.BroadcastKeyUp(Key: Cardinal);
 var Child: TObjectGI;
 begin
@@ -992,51 +1035,51 @@ begin
     Child := Child.NextSibling;
   end;
 end;
-{ @end $4BC5FC }
+{ @end $4C17D4 }
 
-{ @routine $4BC65C TObjectGI_OnHoverGained }
+{ @routine $4C1810 TObjectGI_OnHoverGained }
 procedure TObjectGI.OnHoverGained;
 begin
 end;
-{ @end $4BC65C }
+{ @end $4C1810 }
 
-{ @routine $4BC668 TObjectGI_OnHoverLost }
+{ @routine $4C1814 TObjectGI_OnHoverLost }
 procedure TObjectGI.OnHoverLost;
 begin
 end;
-{ @end $4BC668 }
+{ @end $4C1814 }
 
-{ @routine $4BC674 TObjectGI_OnFocusGained }
+{ @routine $4C1818 TObjectGI_OnFocusGained }
 procedure TObjectGI.OnFocusGained;
 begin
 end;
-{ @end $4BC674 }
+{ @end $4C1818 }
 
-{ @routine $4BC680 TObjectGI_OnFocusLost }
+{ @routine $4C181C TObjectGI_OnFocusLost }
 procedure TObjectGI.OnFocusLost;
 begin
 end;
-{ @end $4BC680 }
+{ @end $4C181C }
 
-{ @routine $4BC68C TObjectGI_ProcessKeyDown }
+{ @routine $4C1820 TObjectGI_ProcessKeyDown }
 procedure TObjectGI.ProcessKeyDown(Key: Integer);
 begin
 end;
-{ @end $4BC68C }
+{ @end $4C1820 }
 
-{ @routine $4BC69C TObjectGI_ProcessCharacter }
+{ @routine $4C1824 TObjectGI_ProcessCharacter }
 procedure TObjectGI.ProcessCharacter(Character: WideChar);
 begin
 end;
-{ @end $4BC69C }
+{ @end $4C1824 }
 
-{ @routine $4BC6B0 TObjectGI_OnCaretBlink }
+{ @routine $4C1828 TObjectGI_OnCaretBlink }
 procedure TObjectGI.OnCaretBlink;
 begin
 end;
-{ @end $4BC6B0 }
+{ @end $4C1828 }
 
-{ @routine $4BC6BC TObjectGI_ContainsPoint }
+{ @routine $4C182C TObjectGI_ContainsPoint }
 function TObjectGI.ContainsPoint(Point: TPoint): Boolean;
 begin
   if (Active = False) or (HitTestDisabled = True) then
@@ -1048,16 +1091,16 @@ begin
     (Point.X < HitTestBounds.Right) and (Point.Y < HitTestBounds.Bottom) then Result := True
   else Result := False;
 end;
-{ @end $4BC6BC }
+{ @end $4C182C }
 
-{ @routine $4BC728 TObjectGI_HitTestCursor }
+{ @routine $4C1874 TObjectGI_HitTestCursor }
 function TObjectGI.HitTestCursor: Boolean;
 begin
   Result := ContainsPoint(MessageLoop.GetCursorPoint);
 end;
-{ @end $4BC728 }
+{ @end $4C1874 }
 
-{ @routine $4BC754 TObjectGI_FindByNameRecursive }
+{ @routine $4C1894 TObjectGI_FindByNameRecursive }
 function TObjectGI.FindByNameRecursive(const Name: WideString): TObjectGI;
 var Child, Found: TObjectGI;
 begin
@@ -1079,32 +1122,32 @@ begin
   end;
   Result := nil;
 end;
-{ @end $4BC754 }
+{ @end $4C1894 }
 
-{ @routine $4BC7C0 TObjectGI_ToLocalPoint }
+{ @routine $4C18D8 TObjectGI_ToLocalPoint }
 function TObjectGI.ToLocalPoint(Point: TPoint): TPoint;
 begin
   Result.X := Point.X - AbsolutePosition.X;
   Result.Y := Point.Y - AbsolutePosition.Y;
 end;
-{ @end $4BC7C0 }
+{ @end $4C18D8 }
 
-{ @routine $4BC7F8 TObjectGI_ToAbsolutePoint }
+{ @routine $4C18FC TObjectGI_ToAbsolutePoint }
 function TObjectGI.ToAbsolutePoint(Point: TPoint): TPoint;
 begin
   Result.X := Point.X + AbsolutePosition.X;
   Result.Y := Point.Y + AbsolutePosition.Y;
 end;
-{ @end $4BC7F8 }
+{ @end $4C18FC }
 
-{ @routine $4BC830 TObjectGI_DispatchNamedEvent }
-procedure TObjectGI.DispatchNamedEvent(EventKind, Param1, Param2: Integer);
+{ @routine $4C1920 TObjectGI_DispatchNamedEvent }
+procedure TObjectGI.DispatchNamedEvent(EventKind: TNamedControlEventGI; Param1, Param2: Integer);
 begin
   if Length(ControlName) > 0 then MessageLoop.ProcessNamedControlEvent(ControlName, EventKind, Param1, Param2);
 end;
-{ @end $4BC830 }
+{ @end $4C1920 }
 
-{ @routine $4BC874 TObjectGI_InvalidateRect }
+{ @routine $4C1954 TObjectGI_InvalidateRect }
 procedure TObjectGI.InvalidateRect(Rect: TRect);
 var Intersection, First, Second: TRect;
 begin
@@ -1117,17 +1160,17 @@ begin
     if IntersectRects(Intersection, First, Second) then Parent.InvalidateRect(Intersection);
   end;
 end;
-{ @end $4BC874 }
+{ @end $4C1954 }
 
-{ @routine $4BC910 TObjectGI_Invalidate }
+{ @routine $4C19E0 TObjectGI_Invalidate }
 procedure TObjectGI.Invalidate;
 begin
   if MessageLoop.UpdateRectsEnabled and (Parent <> nil) and (Active = True) then
     InvalidateRect(GetLocalBounds);
 end;
-{ @end $4BC910 }
+{ @end $4C19E0 }
 
-{ @routine $4BC954 TObjectGI_InvalidateChildren }
+{ @routine $4C1A18 TObjectGI_InvalidateChildren }
 procedure TObjectGI.InvalidateChildren(IncludePanels: Boolean);
 var Child: TObjectGI;
 begin
@@ -1142,9 +1185,9 @@ begin
     Child := Child.NextSibling;
   end;
 end;
-{ @end $4BC954 }
+{ @end $4C1A18 }
 
-{ @routine $4BC9BC TObjectGI_InvalidateScrollOverlap }
+{ @routine $4C1A60 TObjectGI_InvalidateScrollOverlap }
 function TObjectGI.InvalidateScrollOverlap(Rect: TRect; Delta: TPoint; StartControl: TObjectGI): TObjectGI;
 var Child: TObjectGI;
 begin
@@ -1160,14 +1203,14 @@ begin
   end
   else if (StartControl = nil) and (not PositionModeW or ScrollUpdate) then
   begin
-    SetPosition(Classes.Point(LocalPosition.X + Delta.X, LocalPosition.Y + Delta.Y));
-    SetPosition(Classes.Point(LocalPosition.X - Delta.X, LocalPosition.Y - Delta.Y));
+    Pos := Classes.Point(LocalPosition.X + Delta.X, LocalPosition.Y + Delta.Y);
+    Pos := Classes.Point(LocalPosition.X - Delta.X, LocalPosition.Y - Delta.Y);
   end;
   Result := StartControl;
 end;
-{ @end $4BC9BC }
+{ @end $4C1A60 }
 
-{ @routine $4BCABC TObjectGI_Draw }
+{ @routine $4C1B20 TObjectGI_Draw }
 procedure TObjectGI.Draw(ClipRect: TRect);
 var Child: TObjectGI; Intersection: TRect;
 begin
@@ -1180,9 +1223,9 @@ begin
     Child := Child.NextSibling;
   end;
 end;
-{ @end $4BCABC }
+{ @end $4C1B20 }
 
-{ @routine $4BCB30 TObjectGI_DrawUpdateRects }
+{ @routine $4C1B78 TObjectGI_DrawUpdateRects }
 procedure TObjectGI.DrawUpdateRects(ClipRect: TRect);
 var
   RectNode: TRectGR;
@@ -1229,9 +1272,9 @@ begin
     end;
   end;
 end;
-{ @end $4BCB30 }
+{ @end $4C1B78 }
 
-{ @routine $4BCE80 TObjectGI_CommitFrameDraw }
+{ @routine $4C1EA4 TObjectGI_CommitFrameDraw }
 procedure TObjectGI.CommitFrameDraw;
 var Child: TObjectGI;
 begin
@@ -1242,9 +1285,9 @@ begin
     Child := Child.NextSibling;
   end;
 end;
-{ @end $4BCE80 }
+{ @end $4C1EA4 }
 
-{ @routine $4BCEC0 TObjectGI_ErasePreviousFrame }
+{ @routine $4C1EC8 TObjectGI_ErasePreviousFrame }
 procedure TObjectGI.ErasePreviousFrame;
 var Child: TObjectGI;
 begin
@@ -1255,9 +1298,9 @@ begin
     Child := Child.NextSibling;
   end;
 end;
-{ @end $4BCEC0 }
+{ @end $4C1EC8 }
 
-{ @routine $4BCF00 TObjectGI_NativeHookB0 }
+{ @routine $4C1EEC TObjectGI_NativeHookB0 }
 procedure TObjectGI.NativeHookB0;
 var Child: TObjectGI;
 begin
@@ -1268,9 +1311,9 @@ begin
     Child := Child.NextSibling;
   end;
 end;
-{ @end $4BCF00 }
+{ @end $4C1EEC }
 
-{ @routine $4BCF40 TObjectGI_PrepareFrameDraw }
+{ @routine $4C1F10 TObjectGI_PrepareFrameDraw }
 procedure TObjectGI.PrepareFrameDraw;
 var Child: TObjectGI;
 begin
@@ -1281,21 +1324,21 @@ begin
     Child := Child.NextSibling;
   end;
 end;
-{ @end $4BCF40 }
+{ @end $4C1F10 }
 
-{ @routine $4BCF80 TObjectGI_PrepareRegionDraw }
+{ @routine $4C1F34 TObjectGI_PrepareRegionDraw }
 procedure TObjectGI.PrepareRegionDraw(ClipRect: TRect);
 begin
 end;
-{ @end $4BCF80 }
+{ @end $4C1F34 }
 
-{ @routine $4BCF9C TObjectGI_NativeHookBC }
+{ @routine $4C1F38 TObjectGI_NativeHookBC }
 procedure TObjectGI.NativeHookBC(Rect: TRect);
 begin
 end;
-{ @end $4BCF9C }
+{ @end $4C1F38 }
 
-{ @routine $4BCFB8 TObjectGI_LoadFromConfigPath }
+{ @routine $4C1F3C TObjectGI_LoadFromConfigPath }
 procedure TObjectGI.LoadFromConfigPath(const Path: WideString);
 var Block: TBlockParEC; Text: WideString; Count: Integer;
 begin
@@ -1334,14 +1377,14 @@ begin
   if Block.CountParams('MouseBlockingTest') > 0 then MouseBlockingTest := ParseEnabledNameGI(TrimWideString(Block.GetParam('MouseBlockingTest')));
   if Block.CountParams('MVUpdate') > 0 then SetMouseViewUpdates(ParseEnabledNameGI(TrimWideString(Block.GetParam('MVUpdate'))));
 end;
-{ @end $4BCFB8 }
+{ @end $4C1F3C }
 
-{ @routine $4BD69C TObjectGI_LoadFromBlock }
+{ @routine $4C25B8 TObjectGI_LoadFromBlock }
 procedure TObjectGI.LoadFromBlock(Block: TBlockParEC);
 var Count: Integer; Text: WideString;
 
-  // @nested $4BD50C LoadConfiguredChildren
-  procedure LoadConfiguredChildren(Block: TBlockParEC); // @addr $4BD50C @calls "0x4BD6CA 0x4BD5F8" @note "Nested helper of TObjectGI.LoadFromBlock; creates recognized controls and descends through other blocks."
+  // @nested $4C2448 LoadConfiguredChildren
+  procedure LoadConfiguredChildren(Block: TBlockParEC); // @addr $4C2448 @calls "0x004C2510,0x004C25E6" @note "Nested helper of TObjectGI.LoadFromBlock; creates recognized controls and descends through other blocks."
   var Index, Count: Integer; Child: TObjectGI;
   begin
     Count := Block.GetBlockCount;
@@ -1362,7 +1405,7 @@ begin
   SourceBlock := Block;
   Depth := -1;
   SetDepth(0);
-  if Block.CountParams('Style') > 0 then SetConfigPath(Block.GetParam('Style'));
+  if Block.CountParams('Style') > 0 then Style := Block.GetParam('Style');
   if Block.CountParams('Pos') > 0 then
   begin
     Text := Block.GetParam('Pos');
@@ -1377,8 +1420,8 @@ begin
       if TrimWideString(ExtractDelimitedPartW(Text, 3, ',')) = 'w' then PositionModeW := True;
   end;
   if Block.CountParams('PosZ') > 0 then SetDepthByName(Block.GetParam('PosZ'));
-  if Block.CountParams('Size') > 0 then SetSize(GetPointGI(Block.GetParam('Size')));
-  if Block.CountParams('Sme') > 0 then SetOrigin(GetPointGI(Block.GetParam('Sme')));
+  if Block.CountParams('Size') > 0 then ObjectSize := GetPointGI(Block.GetParam('Size'));
+  if Block.CountParams('Sme') > 0 then Sme := GetPointGI(Block.GetParam('Sme'));
   ControlName := '';
   if Block.CountParams('Name') > 0 then ControlName := TrimWideString(Block.GetParam('Name'));
   if Block.CountParams('Help') > 0 then HelpText := LookupLocalizedTextByKey(TrimWideString(Block.GetParam('Help')));
@@ -1397,17 +1440,17 @@ begin
   if Block.CountBlocks('OnMouseLeaveCode') > 0 then OnMouseLeaveCode := Block.GetBlock('OnMouseLeaveCode');
   if Block.CountBlocks('OnMouseRightClick') > 0 then OnRightButtonDownCode := Block.GetBlock('OnMouseRightClick');
 end;
-{ @end $4BD69C }
+{ @end $4C25B8 }
 
-{ @routine $4BDE7C TObjectGI_ReloadFromBlock }
+{ @routine $4C2D60 TObjectGI_ReloadFromBlock }
 procedure TObjectGI.ReloadFromBlock;
 begin
   FreeOwnedChildren;
   LoadFromBlock(SourceBlock);
 end;
-{ @end $4BDE7C }
+{ @end $4C2D60 }
 
-{ @routine $4BDEA0 TObjectGI_UpdateAutoGeometry }
+{ @routine $4C2D7C TObjectGI_UpdateAutoGeometry }
 procedure TObjectGI.UpdateAutoGeometry;
 var Child: TObjectGI;
 begin
@@ -1423,17 +1466,17 @@ begin
     Child := Child.NextSibling;
   end;
 end;
-{ @end $4BDEA0 }
+{ @end $4C2D7C }
 
-{ @routine $4BDF20 TFormSoundGroup_Create }
+{ @routine $4C2DD0 TFormSoundGroup_Create }
 constructor TFormSoundGroup.Create;
 begin
   inherited Create;
   Sounds := TStringsEC.Create;
 end;
-{ @end $4BDF20 }
+{ @end $4C2DD0 }
 
-{ @routine $4BDF74 TFormSoundGroup_Destroy }
+{ @routine $4C2E14 TFormSoundGroup_Destroy }
 destructor TFormSoundGroup.Destroy;
 begin
   Clear;
@@ -1441,17 +1484,17 @@ begin
   Sounds := nil;
   inherited Destroy;
 end;
-{ @end $4BDF74 }
+{ @end $4C2E14 }
 
-{ @routine $4BDFC0 TFormSoundGroup_Clear }
+{ @routine $4C2E50 TFormSoundGroup_Clear }
 procedure TFormSoundGroup.Clear;
 begin
   Sounds.Clear;
   Section := 0;
 end;
-{ @end $4BDFC0 }
+{ @end $4C2E50 }
 
-{ @routine $4BDFE0 TFormSoundGroup_LoadFromBlock }
+{ @routine $4C2E64 TFormSoundGroup_LoadFromBlock }
 procedure TFormSoundGroup.LoadFromBlock(Block: TBlockParEC);
 var Text: WideString; Index, Count: Integer;
 begin
@@ -1465,24 +1508,22 @@ begin
   for Index := 0 to Count - 1 do
   begin
     Text := Block.GetParamName(Index);
-    if IsIntegerTextW(Text) then
-    begin
-      Sounds.Add(Block.GetParamValue(Index));
-      Sounds.SetDataAt(Sounds.GetCount - 1, Pointer(ExtractDigitsToIntW(Text)));
-      TotalWeight := TotalWeight + ExtractDigitsToIntW(Text);
-    end;
+    if not IsIntegerTextW(Text) then Continue;
+    Sounds.Add(Block.GetParamValue(Index));
+    Sounds.Data[Sounds.Count - 1] := Pointer(ExtractDigitsToIntW(Text));
+    Inc(TotalWeight, ExtractDigitsToIntW(Text));
   end;
 end;
-{ @end $4BDFE0 }
+{ @end $4C2E64 }
 
-{ @routine $4BE1D4 TFormSoundGroup_ScheduleNextPlayback }
+{ @routine $4C3030 TFormSoundGroup_ScheduleNextPlayback }
 procedure TFormSoundGroup.ScheduleNextPlayback;
 begin
   NextPlayTick := Cardinal(RandomIntRange(MinDelayMs, MaxDelayMs)) + timeGetTime;
 end;
-{ @end $4BE1D4 }
+{ @end $4C3030 }
 
-{ @routine $4BE200 TFormSoundGroup_PlayIfDue }
+{ @routine $4C3050 TFormSoundGroup_PlayIfDue }
 procedure TFormSoundGroup.PlayIfDue;
 var Weight: Integer;
 begin
@@ -1493,16 +1534,16 @@ begin
     Sounds.First;
     while not Sounds.IsAtEnd do
     begin
-      Weight := Weight - Integer(Sounds.GetCurrentData);
+      Dec(Weight, Integer(Sounds.CurrentData));
       if Weight < 0 then Break;
       Sounds.Next;
     end;
-    SoundManager.PlaySound(Sounds.GetCurrentText);
+    SoundManager.PlaySound(Sounds.CurrentText);
   end;
 end;
-{ @end $4BE200 }
+{ @end $4C3050 }
 
-{ @routine $4BE2BC TMessageLoopGI_Create }
+{ @routine $4C30F0 TMessageLoopGI_Create }
 constructor TMessageLoopGI.Create;
 begin
   inherited Create;
@@ -1516,9 +1557,9 @@ begin
   DeferredCodeBlocks := TList.Create;
   RefreshMouseAfterCode := False;
 end;
-{ @end $4BE2BC }
+{ @end $4C30F0 }
 
-{ @routine $4BE37C TMessageLoopGI_Destroy }
+{ @routine $4C3188 TMessageLoopGI_Destroy }
 destructor TMessageLoopGI.Destroy;
 begin
   ResetRuntime;
@@ -1530,9 +1571,9 @@ begin
   DeferredCodeBlocks := nil;
   inherited Destroy;
 end;
-{ @end $4BE37C }
+{ @end $4C3188 }
 
-{ @routine $4BE400 TMessageLoopGI_ResetRuntime }
+{ @routine $4C31EC TMessageLoopGI_ResetRuntime }
 procedure TMessageLoopGI.ResetRuntime;
 var Index: Integer; Item: TObject;
 begin
@@ -1555,27 +1596,27 @@ begin
   CursorControl := nil;
   FocusedControl := nil;
   HoveredControl := nil;
-  while FirstTimer <> nil do CancelCallbackTimer(LastTimer);
+  while FirstTimer <> nil do CancelCallbackTimer(Cardinal(LastTimer));
 end;
-{ @end $4BE400 }
+{ @end $4C31EC }
 
-{ @routine $4BE4C4 TMessageLoopGI_QueueUpdateRect }
+{ @routine $4C326C TMessageLoopGI_QueueUpdateRect }
 procedure TMessageLoopGI.QueueUpdateRect(Rect: TRect);
 var Intersection: TRect;
 begin
   if UpdateRectsEnabled then
     if IntersectRects(Intersection, Rect, GameScreenRect) then UpdateRects.AddRect(Intersection);
 end;
-{ @end $4BE4C4 }
+{ @end $4C326C }
 
-{ @routine $4BE50C TMessageLoopGI_InvalidateViewport }
+{ @routine $4C32AC TMessageLoopGI_InvalidateViewport }
 procedure TMessageLoopGI.InvalidateViewport;
 begin
   QueueUpdateRect(Classes.Rect(0, 0, GameScreenWidth, GameScreenHeight));
 end;
-{ @end $4BE50C }
+{ @end $4C32AC }
 
-{ @routine $4BE544 TMessageLoopGI_FindMouseViewUpdateControl }
+{ @routine $4C32E0 TMessageLoopGI_FindMouseViewUpdateControl }
 function TMessageLoopGI.FindMouseViewUpdateControl(Control: TObjectGI): Integer;
 var Index, Count: Integer;
 begin
@@ -1588,25 +1629,25 @@ begin
     end;
   Result := -1;
 end;
-{ @end $4BE544 }
+{ @end $4C32E0 }
 
-{ @routine $4BE5A0 TMessageLoopGI_AddMouseViewUpdateControl }
+{ @routine $4C3318 TMessageLoopGI_AddMouseViewUpdateControl }
 procedure TMessageLoopGI.AddMouseViewUpdateControl(Control: TObjectGI);
 begin
   if FindMouseViewUpdateControl(Control) < 0 then MouseViewUpdateControls.Add(Control);
 end;
-{ @end $4BE5A0 }
+{ @end $4C3318 }
 
-{ @routine $4BE5D0 TMessageLoopGI_RemoveMouseViewUpdateControl }
+{ @routine $4C3338 TMessageLoopGI_RemoveMouseViewUpdateControl }
 procedure TMessageLoopGI.RemoveMouseViewUpdateControl(Control: TObjectGI);
 var Index: Integer;
 begin
   Index := FindMouseViewUpdateControl(Control);
   if Index >= 0 then MouseViewUpdateControls.Delete(Index);
 end;
-{ @end $4BE5D0 }
+{ @end $4C3338 }
 
-{ @routine $4BE604 TMessageLoopGI_InvalidateMouseViewControls }
+{ @routine $4C3354 TMessageLoopGI_InvalidateMouseViewControls }
 procedure TMessageLoopGI.InvalidateMouseViewControls;
 var Count, Index: Integer; Control: TObjectGI;
 begin
@@ -1617,9 +1658,9 @@ begin
     Control.Invalidate;
   end;
 end;
-{ @end $4BE604 }
+{ @end $4C3354 }
 
-{ @routine $4BE654 TMessageLoopGI_DrawQueuedUpdateRects }
+{ @routine $4C338C TMessageLoopGI_DrawQueuedUpdateRects }
 procedure TMessageLoopGI.DrawQueuedUpdateRects;
 var RectNode: TRectGR;
 begin
@@ -1633,48 +1674,46 @@ begin
     RectNode := RectNode.Next;
   end;
 end;
-{ @end $4BE654 }
+{ @end $4C338C }
 
-{ @routine $4BE6CC TMessageLoopGI_DrawQueuedControlRects }
+{ @routine $4C33D4 TMessageLoopGI_DrawQueuedControlRects }
 procedure TMessageLoopGI.DrawQueuedControlRects;
 begin
-  if UpdateRects.FirstRect <> nil then
-  begin
-    PendingRedraw := True;
-    RootUiObject.DrawUpdateRects(Classes.Rect(0, 0, GameScreenWidth, GameScreenHeight));
-  end;
+  if UpdateRects.FirstRect = nil then Exit;
+  PendingRedraw := True;
+  RootUiObject.DrawUpdateRects(Classes.Rect(0, 0, GameScreenWidth, GameScreenHeight));
 end;
-{ @end $4BE6CC }
+{ @end $4C33D4 }
 
-{ @routine $4BE720 TMessageLoopGI_FinishQueuedDraw }
+{ @routine $4C341C TMessageLoopGI_FinishQueuedDraw }
 procedure TMessageLoopGI.FinishQueuedDraw;
 begin
   RegionDrawPending := False;
 end;
-{ @end $4BE720 }
+{ @end $4C341C }
 
-{ @routine $4BE734 TMessageLoopGI_CommitFrameDraw }
+{ @routine $4C3424 TMessageLoopGI_CommitFrameDraw }
 procedure TMessageLoopGI.CommitFrameDraw;
 begin
   RootUiObject.CommitFrameDraw;
 end;
-{ @end $4BE734 }
+{ @end $4C3424 }
 
-{ @routine $4BE74C TMessageLoopGI_ErasePreviousFrame }
+{ @routine $4C3430 TMessageLoopGI_ErasePreviousFrame }
 procedure TMessageLoopGI.ErasePreviousFrame;
 begin
   RootUiObject.ErasePreviousFrame;
 end;
-{ @end $4BE74C }
+{ @end $4C3430 }
 
-{ @routine $4BE764 TMessageLoopGI_PrepareFrameDraw }
+{ @routine $4C343C TMessageLoopGI_PrepareFrameDraw }
 procedure TMessageLoopGI.PrepareFrameDraw;
 begin
   RootUiObject.PrepareFrameDraw;
 end;
-{ @end $4BE764 }
+{ @end $4C343C }
 
-{ @routine $4BE77C TMessageLoopGI_Run }
+{ @routine $4C3448 TMessageLoopGI_Run }
 function TMessageLoopGI.Run: Integer;
 var
   LastCaretTick, Tick: Cardinal;
@@ -1698,7 +1737,7 @@ begin
     Stage := 3;
     GetCursorPos(Point);
     if Direct3DPresentParameters.Windowed then ScreenToClient(MainWindowHandle, Point);
-    CursorControl.SetPosition(Point);
+    CursorControl.Pos := Point;
     if CustomCursorEnabled then SetCursorActive(True);
     TimerTick := timeGetTime;
     Stage := 4;
@@ -1711,8 +1750,8 @@ begin
     CaretBlinkOn := False;
     Stage := 6;
     RootUiObject.OnActivate;
-    if (ViewportRect.Right - ViewportRect.Left < GameScreenWidth) or
-      (ViewportRect.Bottom - ViewportRect.Top < GameScreenHeight) then
+    if (ViewportRect.Right - ViewportRect.Left < Integer(GameScreenWidth)) or
+      (ViewportRect.Bottom - ViewportRect.Top < Integer(GameScreenHeight)) then
     begin
       Stage := 7;
       if SavedBackgroundControl = nil then
@@ -1720,7 +1759,7 @@ begin
       Stage := 8;
       Background := SavedBackgroundControl as TGraphBufGI;
       Background.SetDepth(1E30);
-      Background.SetSize(Classes.Point(GameScreenWidth, GameScreenHeight));
+      Background.ObjectSize := Classes.Point(GameScreenWidth, GameScreenHeight);
       Background.AllocateBuffer(GameScreenWidth, GameScreenHeight, False);
       Background.CopyScreenRectToBuffer(Classes.Rect(0, 0, GameScreenWidth, GameScreenHeight),
         Classes.Rect(0, 0, GameScreenWidth, GameScreenHeight));
@@ -1833,9 +1872,9 @@ begin
     end;
   end;
 end;
-{ @end $4BE77C }
+{ @end $4C3448 }
 
-{ @routine $4BEFD4 TMessageLoopGI_RunContinuous }
+{ @routine $4C3C60 TMessageLoopGI_RunContinuous }
 function TMessageLoopGI.RunContinuous: Integer;
 var
   Point: TPoint;
@@ -1862,7 +1901,7 @@ begin
     GetCursorPos(Point);
     if Direct3DPresentParameters.Windowed then ScreenToClient(MainWindowHandle, Point);
     Stage := 5;
-    CursorControl.SetPosition(Point);
+    CursorControl.Pos := Point;
     if CustomCursorEnabled then SetCursorActive(True);
     TimerTick := timeGetTime;
     Stage := 6;
@@ -1927,7 +1966,7 @@ begin
           FramesPerSecond := FrameCount * 2;
           LastFpsTick := timeGetTime;
           FrameCount := 0;
-          if ShowFrameRate then (GetByName('FPS') as TLabelGI).SetText('FPS: ' + IntToStr(FramesPerSecond));
+          if ShowFrameRate then (GetByName('FPS') as TLabelGI).Text := 'FPS: ' + IntToStr(FramesPerSecond);
         end;
         for Index := 0 to FrameTime + CarryTicks - 1 do
         begin
@@ -1986,9 +2025,9 @@ begin
     end;
   end;
 end;
-{ @end $4BEFD4 }
+{ @end $4C3C60 }
 
-{ @routine $4BF7D0 TMessageLoopGI_AdvanceTimerTick }
+{ @routine $4C4410 TMessageLoopGI_AdvanceTimerTick }
 procedure TMessageLoopGI.AdvanceTimerTick;
 var Timer: PCallbackTimerGI; Stage: Integer;
 begin
@@ -2004,11 +2043,11 @@ begin
       Stage := 3;
       Timer := NextTimerToProcess;
       NextTimerToProcess := NextTimerToProcess.Next;
-      Timer.DueTick := TimerTick + Cardinal(Timer.RepeatMs);
+      Timer.DueTick := TimerTick + Timer.RepeatMs;
       Stage := 4;
-      ReinsertCallbackTimer(Timer);
+      ReinsertCallbackTimer(Cardinal(Timer));
       Stage := 5;
-      Timer.Callback(Timer, Timer.UserData);
+      Timer.Callback(Cardinal(Timer), Timer.UserData);
       Stage := 6;
     end;
     NextTimerToProcess := nil;
@@ -2020,20 +2059,18 @@ begin
     end;
   end;
 end;
-{ @end $4BF7D0 }
+{ @end $4C4410 }
 
-{ @routine $4BFA70 TMessageLoopGI_DrawFrame }
+{ @routine $4C4684 TMessageLoopGI_DrawFrame }
 procedure TMessageLoopGI.DrawFrame;
 begin
-  if UpdateRects.FirstRect <> nil then
-  begin
-    DrawQueuedUpdateRects;
-    FinishQueuedDraw;
-  end;
+  if UpdateRects.FirstRect = nil then Exit;
+  DrawQueuedUpdateRects;
+  FinishQueuedDraw;
 end;
-{ @end $4BFA70 }
+{ @end $4C4684 }
 
-{ @routine $4BFA98 TMessageLoopGI_Present }
+{ @routine $4C46A0 TMessageLoopGI_Present }
 procedure TMessageLoopGI.Present;
 begin
   StartupIntegrityMarker := 0;
@@ -2055,28 +2092,27 @@ begin
     EndFramePresentation;
   end;
 end;
-{ @end $4BFA98 }
+{ @end $4C46A0 }
 
-{ @routine $4BFB78 TMessageLoopGI_ProcessWindowMessage }
+{ @routine $4C4774 TMessageLoopGI_ProcessWindowMessage }
 procedure TMessageLoopGI.ProcessWindowMessage(Message, WParam: Cardinal; LParam: Integer);
 var
   Point: TPoint;
   MoveStep: Integer;
   BreakAfterDoubleClick: Boolean;
+  // Twelve unreferenced bytes before Stage; original types and grouping are unknown.
+  UnknownLocal0, UnknownLocal1, UnknownLocal2: array[0..3] of Byte;
   Stage, Index: Integer;
   NewOffset: TPoint;
-  // Native reserves twelve unreferenced bytes at EBP-$4C..EBP-$41.
-  // DCC32 O- allocates unused locals after live ones; original types are unknown.
-  UnusedLocals: array[0..11] of Byte;
 
-  // @nested $4BFB04 ConvertMousePointToViewport
-  procedure ConvertMousePointToViewport; // @addr $4BFB04 @calls "0x4BFD6E 0x4BFED2 0x4BFF1C 0x4BFF7B 0x4BFFFF 0x4C0183 0x4C01E6 0x4C02A9" @note "Nested ProcessWindowMessage helper; scales or offsets its captured mouse point."
+  // @nested $4C4700 ConvertMousePointToViewport
+  procedure ConvertMousePointToViewport; // @addr $4C4700 @calls "0x004C4962,0x004C4AAD,0x004C4AF4,0x004C4B50,0x004C4BCE,0x004C4D40,0x004C4DA0,0x004C4E5A" @note "Nested ProcessWindowMessage helper; scales or offsets its captured mouse point."
   begin
     if AlternateViewportEnabled then
       if ScaleViewportToWindow then
       begin
-        Point.X := Point.X * GameScreenWidth div PresentationWidth;
-        Point.Y := Point.Y * GameScreenHeight div PresentationHeight;
+        Point.X := Point.X * Integer(GameScreenWidth) div PresentationWidth;
+        Point.Y := Point.Y * Integer(GameScreenHeight) div PresentationHeight;
       end
       else
       begin
@@ -2108,8 +2144,8 @@ begin
         NewOffset.Y := ViewportOffset.Y + ((PresentationHeight shr 1) - Point.Y);
         if NewOffset.X > 0 then NewOffset.X := 0;
         if NewOffset.Y > 0 then NewOffset.Y := 0;
-        if GameScreenWidth + NewOffset.X < PresentationWidth then NewOffset.X := -(GameScreenWidth - PresentationWidth);
-        if GameScreenHeight + NewOffset.Y < PresentationHeight then NewOffset.Y := -(GameScreenHeight - PresentationHeight);
+        if Integer(GameScreenWidth + Cardinal(NewOffset.X)) < PresentationWidth then NewOffset.X := -(Integer(GameScreenWidth) - PresentationWidth);
+        if Integer(GameScreenHeight + Cardinal(NewOffset.Y)) < PresentationHeight then NewOffset.Y := -(Integer(GameScreenHeight) - PresentationHeight);
         if ViewportOffset.X <> NewOffset.X then Point.X := PresentationWidth shr 1;
         if ViewportOffset.Y <> NewOffset.Y then Point.Y := PresentationHeight shr 1;
         Stage := 2;
@@ -2124,7 +2160,7 @@ begin
       end;
       Stage := 3;
       ConvertMousePointToViewport;
-      if CursorControl.Active = True then (CursorControl as TCursorGI).SetPosition(Point);
+      if CursorControl.Active = True then (CursorControl as TCursorGI).Pos := Point;
       Stage := 4;
       if FocusedControl <> nil then FocusedControl.ProcessMouseMove(WParam, Point);
       Stage := 5;
@@ -2205,8 +2241,8 @@ begin
           DebugControl := ContentPanel.FindDeepestChildAtPoint(Point)
         else DebugControl := DebugControl.Parent;
         Stage := 20;
-        (StatusLabel as TLabelGI).SetText(DebugControl.ControlName + ' (' + DebugControl.ClassName + ') Pos=' +
-          IntToStr(DebugControl.LocalPosition.X) + ',' + IntToStr(DebugControl.LocalPosition.Y));
+        (StatusLabel as TLabelGI).Text := DebugControl.ControlName + ' (' + DebugControl.ClassName + ') Pos=' +
+          IntToStr(DebugControl.LocalPosition.X) + ',' + IntToStr(DebugControl.LocalPosition.Y);
       end;
     end
     else if Message = WM_RBUTTONUP then
@@ -2284,25 +2320,25 @@ begin
       if WParam = VK_F9 then CaptureScreenshot;
       Stage := 35;
       if (WParam = Ord('M')) and IsVirtualKeyDown(VK_CONTROL) and IsVirtualKeyDown(VK_SHIFT) and IsVirtualKeyDown(VK_MENU) then
-        StatusLabel.SetActive(not StatusLabel.Active);
+        StatusLabel.IsActive := not StatusLabel.Active;
       Stage := 36;
       if StatusLabel.Active and (DebugControl <> nil) then
       begin
         Stage := 37;
         if GetAsyncKeyState(VK_CONTROL) and $8000 = $8000 then MoveStep := 10 else MoveStep := 1;
         Stage := 38;
-        if WParam = VK_UP then DebugControl.SetPosition(Classes.Point(DebugControl.LocalPosition.X, DebugControl.LocalPosition.Y - MoveStep))
-        else if WParam = VK_DOWN then DebugControl.SetPosition(Classes.Point(DebugControl.LocalPosition.X, DebugControl.LocalPosition.Y + MoveStep))
-        else if WParam = VK_LEFT then DebugControl.SetPosition(Classes.Point(DebugControl.LocalPosition.X - MoveStep, DebugControl.LocalPosition.Y))
-        else if WParam = VK_RIGHT then DebugControl.SetPosition(Classes.Point(DebugControl.LocalPosition.X + MoveStep, DebugControl.LocalPosition.Y));
+        if WParam = VK_UP then DebugControl.Pos := Classes.Point(DebugControl.LocalPosition.X, DebugControl.LocalPosition.Y - MoveStep)
+        else if WParam = VK_DOWN then DebugControl.Pos := Classes.Point(DebugControl.LocalPosition.X, DebugControl.LocalPosition.Y + MoveStep)
+        else if WParam = VK_LEFT then DebugControl.Pos := Classes.Point(DebugControl.LocalPosition.X - MoveStep, DebugControl.LocalPosition.Y)
+        else if WParam = VK_RIGHT then DebugControl.Pos := Classes.Point(DebugControl.LocalPosition.X + MoveStep, DebugControl.LocalPosition.Y);
         Stage := 39;
-        (StatusLabel as TLabelGI).SetText(DebugControl.ControlName + ' (' + DebugControl.ClassName + ') Pos=' +
-          IntToStr(DebugControl.LocalPosition.X) + ',' + IntToStr(DebugControl.LocalPosition.Y));
+        (StatusLabel as TLabelGI).Text := DebugControl.ControlName + ' (' + DebugControl.ClassName + ') Pos=' +
+          IntToStr(DebugControl.LocalPosition.X) + ',' + IntToStr(DebugControl.LocalPosition.Y);
       end
       else if StatusLabel.Active and (DebugControl = nil) then
       begin
         Stage := 40;
-        (StatusLabel as TLabelGI).SetText('Not object');
+        (StatusLabel as TLabelGI).Text := 'Not object';
       end;
     end
     else if (Message = WM_KEYUP) or ((Message = WM_SYSKEYUP) and
@@ -2336,9 +2372,9 @@ begin
     end;
   end;
 end;
-{ @end $4BFB78 }
+{ @end $4C4774 }
 
-{ @routine $4C0B88 TMessageLoopGI_CaptureScreenshot }
+{ @routine $4C56BC TMessageLoopGI_CaptureScreenshot }
 procedure TMessageLoopGI.CaptureScreenshot;
 var
   Digits: AnsiString;
@@ -2346,8 +2382,8 @@ var
   Extension, BaseName, FileName: AnsiString;
   Buffer: TGraphBufGR;
 
-  // @nested $4C0A14 FindFreeScreenshotName
-  function FindFreeScreenshotName: Boolean; // @addr $4C0A14 @calls "0x4C0C40" @note "Nested CaptureScreenshot helper; updates the captured filename strings."
+  // @nested $4C5564 FindFreeScreenshotName
+  function FindFreeScreenshotName: Boolean; // @addr $4C5564 @calls "0x004C5766" @note "Nested CaptureScreenshot helper; updates the captured filename strings."
   var Index: Integer;
   begin
     Result := False;
@@ -2394,31 +2430,31 @@ begin
     end;
   end;
 end;
-{ @end $4C0B88 }
+{ @end $4C56BC }
 
-{ @routine $4C0DFC TMessageLoopGI_RequestClose }
+{ @routine $4C5924 TMessageLoopGI_RequestClose }
 procedure TMessageLoopGI.RequestClose(ResultCode: Integer);
 begin
   ExitCode := ResultCode;
 end;
-{ @end $4C0DFC }
+{ @end $4C5924 }
 
-{ @routine $4C0E18 TMessageLoopGI_SetHelpCallback }
+{ @routine $4C5928 TMessageLoopGI_SetHelpCallback }
 procedure TMessageLoopGI.SetHelpCallback(Callback: TObjectHelpEventGI);
 begin
   ContentPanel.SetHelpCallbackRecursive(Callback);
 end;
-{ @end $4C0E18 }
+{ @end $4C5928 }
 
-{ @routine $4C0E38 TMessageLoopGI_GetByName }
+{ @routine $4C5940 TMessageLoopGI_GetByName }
 function TMessageLoopGI.GetByName(const Name: WideString): TObjectGI;
 begin
   Result := ContentPanel.FindByNameRecursive(Name);
   if Result = nil then raise Exception.Create('TMessageLoopGI.GetByName. Name=' + Name);
 end;
-{ @end $4C0E38 }
+{ @end $4C5940 }
 
-{ @routine $4C0F10 TMessageLoopGI_FindControlByPath }
+{ @routine $4C5A08 TMessageLoopGI_FindControlByPath }
 function TMessageLoopGI.FindControlByPath(const Path: WideString): TObjectGI;
 var Index, Count: Integer;
 begin
@@ -2434,9 +2470,9 @@ begin
     end;
   end;
 end;
-{ @end $4C0F10 }
+{ @end $4C5A08 }
 
-{ @routine $4C0FD0 TMessageLoopGI_SetFocusedControl }
+{ @routine $4C5AAC TMessageLoopGI_SetFocusedControl }
 procedure TMessageLoopGI.SetFocusedControl(Control: TObjectGI);
 begin
   if FocusedControl = Control then Exit;
@@ -2444,9 +2480,9 @@ begin
   FocusedControl := Control;
   if FocusedControl <> nil then FocusedControl.OnFocusGained;
 end;
-{ @end $4C0FD0 }
+{ @end $4C5AAC }
 
-{ @routine $4C1020 TMessageLoopGI_SetHoveredControl }
+{ @routine $4C5AD8 TMessageLoopGI_SetHoveredControl }
 procedure TMessageLoopGI.SetHoveredControl(Control: TObjectGI);
 var Previous: TObjectGI;
 begin
@@ -2460,29 +2496,29 @@ begin
   HoveredControl := Control;
   if HoveredControl <> nil then HoveredControl.OnHoverGained;
 end;
-{ @end $4C1020 }
+{ @end $4C5AD8 }
 
-{ @routine $4C107C TMessageLoopGI_ProcessNamedControlEvent }
-procedure TMessageLoopGI.ProcessNamedControlEvent(ControlName: WideString; EventKind, Param1, Param2: Integer);
+{ @routine $4C5B0C TMessageLoopGI_ProcessNamedControlEvent }
+procedure TMessageLoopGI.ProcessNamedControlEvent(ControlName: WideString; EventKind: TNamedControlEventGI; Param1, Param2: Integer);
 begin
 end;
-{ @end $4C107C }
+{ @end $4C5B0C }
 
-{ @routine $4C10C4 TMessageLoopGI_OnOpen }
+{ @routine $4C5B38 TMessageLoopGI_OnOpen }
 procedure TMessageLoopGI.OnOpen;
 begin
   IsOpen := True;
 end;
-{ @end $4C10C4 }
+{ @end $4C5B38 }
 
-{ @routine $4C10D8 TMessageLoopGI_OnClose }
+{ @routine $4C5B40 TMessageLoopGI_OnClose }
 procedure TMessageLoopGI.OnClose;
 begin
   IsOpen := False;
 end;
-{ @end $4C10D8 }
+{ @end $4C5B40 }
 
-{ @routine $4C10EC TMessageLoopGI_ProcessCallbackTimers }
+{ @routine $4C5B48 TMessageLoopGI_ProcessCallbackTimers }
 procedure TMessageLoopGI.ProcessCallbackTimers;
 var
   NowTick: Cardinal;
@@ -2507,23 +2543,23 @@ begin
     if NextTimerToProcess.DueTick > NowTick then Break;
     Timer := NextTimerToProcess;
     NextTimerToProcess := NextTimerToProcess.Next;
-    Timer.DueTick := NowTick + Cardinal(Timer.RepeatMs);
-    ReinsertCallbackTimer(Timer);
-    Timer.Callback(Timer, Timer.UserData);
+    Timer.DueTick := NowTick + Timer.RepeatMs;
+    ReinsertCallbackTimer(Cardinal(Timer));
+    Timer.Callback(Cardinal(Timer), Timer.UserData);
   end;
   NextTimerToProcess := nil;
   TimerTick := NowTick;
 end;
-{ @end $4C10EC }
+{ @end $4C5B48 }
 
-{ @routine $4C11C0 TMessageLoopGI_SelectMusic }
+{ @routine $4C5BD8 TMessageLoopGI_SelectMusic }
 procedure TMessageLoopGI.SelectMusic;
 begin
 end;
-{ @end $4C11C0 }
+{ @end $4C5BD8 }
 
-{ @routine $4C11CC TMessageLoopGI_ScheduleCallbackTimer }
-function TMessageLoopGI.ScheduleCallbackTimer(DelayMs, RepeatMs: Integer; Callback: TCallbackTimerEventGI; UserData: Integer): PCallbackTimerGI;
+{ @routine $4C5BDC TMessageLoopGI_ScheduleCallbackTimer }
+function TMessageLoopGI.ScheduleCallbackTimer(DelayMs, RepeatMs: Cardinal; Callback: TCallbackTimerEventGI; UserData: Cardinal): TCallbackTimerIdGI;
 var Timer: PCallbackTimerGI;
 begin
   Timer := AllocEC(SizeOf(TCallbackTimerGI));
@@ -2532,20 +2568,20 @@ begin
   Timer.Next := nil;
   LastTimer := Timer;
   if FirstTimer = nil then FirstTimer := Timer;
-  Timer.DueTick := TimerTick + Cardinal(DelayMs);
+  Timer.DueTick := TimerTick + DelayMs;
   Timer.RepeatMs := RepeatMs;
   Timer.UserData := UserData;
   Timer.Callback := Callback;
-  ReinsertCallbackTimer(Timer);
-  Result := Timer;
+  ReinsertCallbackTimer(Cardinal(Timer));
+  Result := Cardinal(Timer);
 end;
-{ @end $4C11CC }
+{ @end $4C5BDC }
 
-{ @routine $4C1278 TMessageLoopGI_CancelCallbackTimer }
-procedure TMessageLoopGI.CancelCallbackTimer(Timer: PCallbackTimerGI);
+{ @routine $4C5C4C TMessageLoopGI_CancelCallbackTimer }
+procedure TMessageLoopGI.CancelCallbackTimer(Timer: TCallbackTimerIdGI);
 var Current: PCallbackTimerGI;
 begin
-  Current := Timer;
+  Current := PCallbackTimerGI(Timer);
   if NextTimerToProcess = Current then NextTimerToProcess := NextTimerToProcess.Next;
   if Current.Prev <> nil then Current.Prev.Next := Current.Next;
   if Current.Next <> nil then Current.Next.Prev := Current.Prev;
@@ -2553,25 +2589,25 @@ begin
   if FirstTimer = Current then FirstTimer := Current.Next;
   FreeEC(Current);
 end;
-{ @end $4C1278 }
+{ @end $4C5C4C }
 
-{ @routine $4C1310 TMessageLoopGI_UpdateCallbackTimer }
-procedure TMessageLoopGI.UpdateCallbackTimer(Timer: PCallbackTimerGI; DelayMs, RepeatMs: Integer);
+{ @routine $4C5C94 TMessageLoopGI_UpdateCallbackTimer }
+procedure TMessageLoopGI.UpdateCallbackTimer(Timer: TCallbackTimerIdGI; DelayMs, RepeatMs: Cardinal);
 var Current: PCallbackTimerGI;
 begin
-  Current := Timer;
-  if (TimerTick + Cardinal(DelayMs) = Current.DueTick) and (Current.RepeatMs = RepeatMs) then Exit;
-  Current.DueTick := TimerTick + Cardinal(DelayMs);
+  Current := PCallbackTimerGI(Timer);
+  if (TimerTick + DelayMs = Current.DueTick) and (Current.RepeatMs = RepeatMs) then Exit;
+  Current.DueTick := TimerTick + DelayMs;
   Current.RepeatMs := RepeatMs;
-  ReinsertCallbackTimer(Current);
+  ReinsertCallbackTimer(Cardinal(Current));
 end;
-{ @end $4C1310 }
+{ @end $4C5C94 }
 
-{ @routine $4C136C TMessageLoopGI_ReinsertCallbackTimer }
-procedure TMessageLoopGI.ReinsertCallbackTimer(Timer: PCallbackTimerGI);
+{ @routine $4C5CBC TMessageLoopGI_ReinsertCallbackTimer }
+procedure TMessageLoopGI.ReinsertCallbackTimer(Timer: TCallbackTimerIdGI);
 var Current, Before: PCallbackTimerGI;
 begin
-  Current := Timer;
+  Current := PCallbackTimerGI(Timer);
   if Current.Prev <> nil then Current.Prev.Next := Current.Next;
   if Current.Next <> nil then Current.Next.Prev := Current.Prev;
   if LastTimer = Current then LastTimer := Current.Prev;
@@ -2600,72 +2636,66 @@ begin
     FirstTimer := Current;
     Exit;
   end;
-  begin
-    Before := LastTimer.Prev;
-    while Current.DueTick <= Before.DueTick do Before := Before.Prev;
-    Current.Prev := Before;
-    Current.Next := Before.Next;
-    Before.Next.Prev := Current;
-    Before.Next := Current;
-  end;
+  Before := LastTimer.Prev;
+  while Current.DueTick <= Before.DueTick do Before := Before.Prev;
+  Current.Prev := Before;
+  Current.Next := Before.Next;
+  Before.Next.Prev := Current;
+  Before.Next := Current;
 end;
-{ @end $4C136C }
+{ @end $4C5CBC }
 
-{ @routine $4C14DC TMessageLoopGI_RefreshTimerTick }
+{ @routine $4C5D68 TMessageLoopGI_RefreshTimerTick }
 procedure TMessageLoopGI.RefreshTimerTick;
 begin
   TimerTick := timeGetTime;
 end;
-{ @end $4C14DC }
+{ @end $4C5D68 }
 
-{ @routine $4C14F4 TMessageLoopGI_SetCursorImage }
+{ @routine $4C5D78 TMessageLoopGI_SetCursorImage }
 procedure TMessageLoopGI.SetCursorImage(const ImagePath: WideString; HotSpot: TPoint);
 begin
-  if CustomCursorEnabled then
-  begin
-    (CursorControl as TCursorGI).SetImagePath(ImagePath);
-    CursorControl.SetOrigin(HotSpot);
-    CursorImagePath := ImagePath;
-  end;
+  if not CustomCursorEnabled then Exit;
+  (CursorControl as TCursorGI).SetImagePath(ImagePath);
+  CursorControl.Sme := HotSpot;
+  CursorImagePath := ImagePath;
 end;
-{ @end $4C14F4 }
+{ @end $4C5D78 }
 
-{ @routine $4C1550 TMessageLoopGI_SetCursorByName }
+{ @routine $4C5DC4 TMessageLoopGI_SetCursorByName }
 procedure TMessageLoopGI.SetCursorByName(const Name: WideString);
 var Cursor: TCursorUnit;
 begin
-  if CustomCursorEnabled then
-  begin
-    Cursor := FindCursorByName(Name);
-    SetCursorImage(Cursor.ImagePath, Cursor.HotSpot);
-  end;
+  if not CustomCursorEnabled then Exit;
+  Cursor := FindCursorByName(Name);
+  SetCursorImage(Cursor.ImagePath, Cursor.HotSpot);
 end;
-{ @end $4C1550 }
+{ @end $4C5DC4 }
 
-{ @routine $4C158C TMessageLoopGI_IsCursorImageSelected }
+{ @routine $4C5DE8 TMessageLoopGI_IsCursorImageSelected }
 function TMessageLoopGI.IsCursorImageSelected(const RegisteredName: WideString): Boolean;
 var Cursor: TCursorUnit;
 begin
   Cursor := FindCursorByName(RegisteredName);
   Result := Cursor.ImagePath = CursorImagePath;
 end;
-{ @end $4C158C }
+{ @end $4C5DE8 }
 
-{ @routine $4C15C0 TMessageLoopGI_IsCursorActive }
+{ @routine $4C5E08 TMessageLoopGI_IsCursorActive }
 function TMessageLoopGI.IsCursorActive: Boolean;
 begin
   Result := CursorControl.Active;
 end;
-{ @end $4C15C0 }
+{ @end $4C5E08 }
 
-{ @routine $4C15DC TMessageLoopGI_SetCursorActive }
+{ @routine $4C5E10 TMessageLoopGI_SetCursorActive }
 procedure TMessageLoopGI.SetCursorActive(Enabled: Boolean);
 begin
-  if CursorControl.Active <> Enabled then CursorControl.SetActive(Enabled);
+  if CursorControl.Active <> Enabled then CursorControl.IsActive := Enabled;
 end;
-{ @end $4C15DC }
+{ @end $4C5E10 }
 
-{ @routine $4C1608 TMessageLoopGI_CaptureCursorState }
+{ @routine $4C5E24 TMessageLoopGI_CaptureCursorState }
 procedure TMessageLoopGI.CaptureCursorState(State: PCursorStateGI);
 begin
   State^.ImagePath := CursorImagePath;
@@ -2673,45 +2703,43 @@ begin
   State^.HotSpot := CursorControl.OriginPoint;
   State^.Position := CursorControl.LocalPosition;
 end;
-{ @end $4C1608 }
+{ @end $4C5E24 }
 
-{ @routine $4C1660 TMessageLoopGI_RestoreCursorState }
+{ @routine $4C5E60 TMessageLoopGI_RestoreCursorState }
 procedure TMessageLoopGI.RestoreCursorState(State: PCursorStateGI);
 begin
-  if CustomCursorEnabled then
-  begin
-    SetCursorImage(State^.ImagePath, State^.HotSpot);
-    SetCursorActive(State^.Active);
-    CursorControl.SetPosition(State^.Position);
-  end;
+  if not CustomCursorEnabled then Exit;
+  SetCursorImage(State^.ImagePath, State^.HotSpot);
+  SetCursorActive(State^.Active);
+  CursorControl.Pos := State^.Position;
 end;
-{ @end $4C1660 }
+{ @end $4C5E60 }
 
-{ @routine $4C16AC TMessageLoopGI_UpdateCursorPosition }
+{ @routine $4C5E98 TMessageLoopGI_UpdateCursorPosition }
 procedure TMessageLoopGI.UpdateCursorPosition;
 var Point: TPoint;
 begin
   GetCursorPos(Point);
   if Direct3DPresentParameters.Windowed then ScreenToClient(MainWindowHandle, Point);
-  CursorControl.SetPosition(Point);
+  CursorControl.Pos := Point;
 end;
-{ @end $4C16AC }
+{ @end $4C5E98 }
 
-{ @routine $4C16EC TMessageLoopGI_GetCursorPoint }
+{ @routine $4C5ECC TMessageLoopGI_GetCursorPoint }
 function TMessageLoopGI.GetCursorPoint: TPoint;
 begin
   Result := CursorControl.LocalPosition;
 end;
-{ @end $4C16EC }
+{ @end $4C5ECC }
 
-{ @routine $4C1710 TMessageLoopGI_SetSystemCursorPosition }
+{ @routine $4C5EDC TMessageLoopGI_SetSystemCursorPosition }
 procedure TMessageLoopGI.SetSystemCursorPosition(Point: TPoint);
 begin
   SetCursorPos(Point.X, Point.Y);
 end;
-{ @end $4C1710 }
+{ @end $4C5EDC }
 
-{ @routine $4C1738 TMessageLoopGI_ConsumeTimerTickChange }
+{ @routine $4C5EFC TMessageLoopGI_ConsumeTimerTickChange }
 function TMessageLoopGI.ConsumeTimerTickChange: Boolean;
 begin
   if LastObservedTimerTick = TimerTick then
@@ -2722,9 +2750,9 @@ begin
   LastObservedTimerTick := TimerTick;
   Result := True;
 end;
-{ @end $4C1738 }
+{ @end $4C5EFC }
 
-{ @routine $4C176C TMessageLoopGI_QueryPointOcclusionState }
+{ @routine $4C5F10 TMessageLoopGI_QueryPointOcclusionState }
 function TMessageLoopGI.QueryPointOcclusionState(Point: TPoint; IgnoreControl, StartControl: TObjectGI): Integer;
 var Child: TObjectGI;
 begin
@@ -2747,9 +2775,9 @@ begin
   if StartControl = IgnoreControl then Result := -1
   else Result := 0;
 end;
-{ @end $4C176C }
+{ @end $4C5F10 }
 
-{ @routine $4C1828 TMessageLoopGI_FreeSavedPixels16 }
+{ @routine $4C5F9C TMessageLoopGI_FreeSavedPixels16 }
 procedure TMessageLoopGI.FreeSavedPixels16;
 begin
   if SavedPixels16 <> nil then
@@ -2760,9 +2788,9 @@ begin
   SavedPixelCount16 := 0;
   SavedPixelCapacity16 := 0;
 end;
-{ @end $4C1828 }
+{ @end $4C5F9C }
 
-{ @routine $4C1864 TMessageLoopGI_RestoreSavedPixels16 }
+{ @routine $4C5FC4 TMessageLoopGI_RestoreSavedPixels16 }
 procedure TMessageLoopGI.RestoreSavedPixels16;
 var Entries, Pixels: Pointer; Count: Integer;
 begin
@@ -2770,7 +2798,6 @@ begin
   Pixels := ScreenRenderBuffer.GetPixels;
   Count := SavedPixelCount16;
   Entries := SavedPixels16;
-  // Native handwritten block: PUSHAD/POPAD and the compact eight-byte-entry loop.
   asm
     pushad
     mov edi, Entries
@@ -2788,9 +2815,9 @@ begin
   end;
   SavedPixelCount16 := 0;
 end;
-{ @end $4C1864 }
+{ @end $4C5FC4 }
 
-{ @routine $4C18CC TMessageLoopGI_FreeSecondaryPixelBuffer }
+{ @routine $4C6020 TMessageLoopGI_FreeSecondaryPixelBuffer }
 procedure TMessageLoopGI.FreeSecondaryPixelBuffer;
 begin
   if SecondaryPixelBuffer <> nil then
@@ -2801,17 +2828,17 @@ begin
   SecondaryPixelCount := 0;
   SecondaryPixelCapacity := 0;
 end;
-{ @end $4C18CC }
+{ @end $4C6020 }
 
-{ @routine $4C1914 TMessageLoopGI_ResetSecondaryPixelCount }
+{ @routine $4C604C TMessageLoopGI_ResetSecondaryPixelCount }
 procedure TMessageLoopGI.ResetSecondaryPixelCount;
 begin
   if SecondaryPixelCount < 1 then Exit;
   SecondaryPixelCount := 0;
 end;
-{ @end $4C1914 }
+{ @end $4C604C }
 
-{ @routine $4C1938 TMessageLoopGI_FreeSavedLines }
+{ @routine $4C6060 TMessageLoopGI_FreeSavedLines }
 procedure TMessageLoopGI.FreeSavedLines;
 var Index: Integer;
 begin
@@ -2820,21 +2847,21 @@ begin
   SavedLines := nil;
   SavedLineCount := 0;
 end;
-{ @end $4C1938 }
+{ @end $4C6060 }
 
-{ @routine $4C19B4 TMessageLoopGI_AddSavedLine }
+{ @routine $4C60B8 TMessageLoopGI_AddSavedLine }
 procedure TMessageLoopGI.AddSavedLine(First, Last: TPoint; Pixels: Pointer);
 begin
-  if High(SavedLines) + 1 = SavedLineCount then SetLength(SavedLines, SavedLineCount + 100);
+  if SavedLineCount = High(SavedLines) + 1 then SetLength(SavedLines, SavedLineCount + 100);
   SavedLines[SavedLineCount].First := First;
   SavedLines[SavedLineCount].Last := Last;
   SavedLines[SavedLineCount].Pixels := Pixels;
   SavedLines[SavedLineCount].Heap := GetProcessHeap;
   Inc(SavedLineCount);
 end;
-{ @end $4C19B4 }
+{ @end $4C60B8 }
 
-{ @routine $4C1AA0 TMessageLoopGI_RestoreSavedLines }
+{ @routine $4C6180 TMessageLoopGI_RestoreSavedLines }
 procedure TMessageLoopGI.RestoreSavedLines;
 var Index: Integer;
 begin
@@ -2845,22 +2872,22 @@ begin
         SavedLines[Index].First.X, SavedLines[Index].First.Y,
         SavedLines[Index].Last.X, SavedLines[Index].Last.Y);
 end;
-{ @end $4C1AA0 }
+{ @end $4C6180 }
 
-{ @routine $4C1B64 TMessageLoopGI_ResetSavedLineCount }
+{ @routine $4C6200 TMessageLoopGI_ResetSavedLineCount }
 procedure TMessageLoopGI.ResetSavedLineCount;
 begin
   SavedLineCount := 0;
 end;
-{ @end $4C1B64 }
+{ @end $4C6200 }
 
-{ @routine $4C1B7C TMessageLoopGI_ProcessMouseWheel }
+{ @routine $4C620C TMessageLoopGI_ProcessMouseWheel }
 procedure TMessageLoopGI.ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer);
 begin
 end;
-{ @end $4C1B7C }
+{ @end $4C620C }
 
-{ @routine $4C1B9C TMessageLoopGI_ClearTransientControl }
+{ @routine $4C6214 TMessageLoopGI_ClearTransientControl }
 procedure TMessageLoopGI.ClearTransientControl;
 begin
   InvalidateTransientControl;
@@ -2871,58 +2898,56 @@ begin
   end;
   if TransientControl <> nil then
   begin
-    TransientControl.SetActive(False);
+    TransientControl.IsActive := False;
     TransientControl.Free;
     TransientControl := nil;
   end;
 end;
-{ @end $4C1B9C }
+{ @end $4C6214 }
 
-{ @routine $4C1C08 TMessageLoopGI_InvalidateTransientControl }
+{ @routine $4C625C TMessageLoopGI_InvalidateTransientControl }
 procedure TMessageLoopGI.InvalidateTransientControl;
 var WasEnabled: Boolean;
 begin
-  if TransientControl <> nil then
-  begin
-    WasEnabled := UpdateRectsEnabled;
-    UpdateRectsEnabled := True;
-    TransientControl.Invalidate;
-    UpdateRectsEnabled := WasEnabled;
-  end;
+  if TransientControl = nil then Exit;
+  WasEnabled := UpdateRectsEnabled;
+  UpdateRectsEnabled := True;
+  TransientControl.Invalidate;
+  UpdateRectsEnabled := WasEnabled;
 end;
-{ @end $4C1C08 }
+{ @end $4C625C }
 
-{ @routine $4C1C4C TMessageLoopGI_InitializeDefaults }
+{ @routine $4C6288 TMessageLoopGI_InitializeDefaults }
 procedure TMessageLoopGI.InitializeDefaults;
 var LabelControl: TLabelGI;
 begin
   RootUiObject := CreateControlByName('Panel', nil);
   RootUiObject.MessageLoop := Self;
-  RootUiObject.SetPosition(Classes.Point(0, 0));
-  RootUiObject.SetSize(Classes.Point(GameScreenWidth, GameScreenHeight));
+  RootUiObject.Pos := Classes.Point(0, 0);
+  RootUiObject.ObjectSize := Classes.Point(GameScreenWidth, GameScreenHeight);
   BackgroundPanel := CreateControlByName('Panel', RootUiObject);
-  BackgroundPanel.SetSize(Classes.Point(GameScreenWidth, GameScreenHeight));
+  BackgroundPanel.ObjectSize := Classes.Point(GameScreenWidth, GameScreenHeight);
   BackgroundPanel.SetDepth(1);
   ContentPanel := CreateControlByName('Panel', RootUiObject);
   ContentPanel.SetDepth(0);
   OverlayPanel := CreateControlByName('Panel', RootUiObject);
-  OverlayPanel.SetSize(Classes.Point(GameScreenWidth, GameScreenHeight));
+  OverlayPanel.ObjectSize := Classes.Point(GameScreenWidth, GameScreenHeight);
   OverlayPanel.SetDepth(-1);
   StatusLabel := TLabelGI.Create(OverlayPanel);
   LabelControl := StatusLabel as TLabelGI;
-  LabelControl.SetActive(False);
+  LabelControl.IsActive := False;
   LabelControl.SetFontName(NormalFontName);
   LabelControl.SetDepth(-1E29);
-  LabelControl.SetPosition(Classes.Point(5, 5));
-  LabelControl.SetSize(Classes.Point(400, 20));
+  LabelControl.Pos := Classes.Point(5, 5);
+  LabelControl.ObjectSize := Classes.Point(400, 20);
   LabelControl.SetTextAlignX(taxLeft);
   LabelControl.SetTextAlignY(tayCenterEx);
   CursorControl := TCursorGI.Create(OverlayPanel);
   CursorControl.SetDepth(-1E30);
 end;
-{ @end $4C1C4C }
+{ @end $4C6288 }
 
-{ @routine $4C1E58 TMessageLoopGI_InitializeFromConfig }
+{ @routine $4C6440 TMessageLoopGI_InitializeFromConfig }
 procedure TMessageLoopGI.InitializeFromConfig(ConfigRoot: TBlockParEC; const ScreenName: WideString; UnusedFlag: Boolean);
 var
   ScreenBlock, SoundBlock: TBlockParEC;
@@ -2957,50 +2982,50 @@ begin
   RootUiObject.UpdateSubtreeHitBounds;
   QueueUpdateRect(ViewportRect);
 end;
-{ @end $4C1E58 }
+{ @end $4C6440 }
 
-{ @routine $4C2164 TMessageLoopGI_InitializeLayout }
+{ @routine $4C6718 TMessageLoopGI_InitializeLayout }
 procedure TMessageLoopGI.InitializeLayout;
 begin
   RootUiObject.UpdateAutoGeometry;
 end;
-{ @end $4C2164 }
+{ @end $4C6718 }
 
-{ @routine $4C217C TMessageLoopGI_UpdateActionCursor }
+{ @routine $4C6724 TMessageLoopGI_UpdateActionCursor }
 procedure TMessageLoopGI.UpdateActionCursor(CanTake: Boolean);
 begin
 end;
-{ @end $4C217C }
+{ @end $4C6724 }
 
-{ @routine $4C218C TMessageLoopGI_GetActionParentLoop }
+{ @routine $4C6728 TMessageLoopGI_GetActionParentLoop }
 function TMessageLoopGI.GetActionParentLoop: TMessageLoopGI;
 begin
   Result := nil;
 end;
-{ @end $4C218C }
+{ @end $4C6728 }
 
-{ @routine $4C21A4 TMessageLoopGI_QueueUiCode }
+{ @routine $4C672C TMessageLoopGI_QueueUiCode }
 procedure TMessageLoopGI.QueueUiCode(Block: TBlockParEC; RefreshMouse: Boolean);
 begin
   DeferredCodeBlocks.Add(Block);
   if RefreshMouse then RefreshMouseAfterCode := True;
 end;
-{ @end $4C21A4 }
+{ @end $4C672C }
 
-{ @routine $4C21D8 TMessageLoopGI_RefreshMouseDispatch }
+{ @routine $4C674C TMessageLoopGI_RefreshMouseDispatch }
 procedure TMessageLoopGI.RefreshMouseDispatch;
 var Point: TPoint;
 begin
   Point.X := LastMousePosition.X;
   Point.Y := LastMousePosition.Y;
-  RootUiObject.ProcessMouseMove(0, Point);
+  TPanelGI(RootUiObject).ProcessMouseMove(0, Point);
 end;
-{ @end $4C21D8 }
+{ @end $4C674C }
 
-{ @routine $4C2208 TMessageLoopGI_ExecuteUiCode }
+{ @routine $4C6774 TMessageLoopGI_ExecuteUiCode }
 procedure TMessageLoopGI.ExecuteUiCode(Block: TBlockParEC; Key: Cardinal);
 begin
 end;
-{ @end $4C2208 }
+{ @end $4C6774 }
 
 end.

@@ -21,7 +21,7 @@ type
   TFragCannonPalettes = array of TFragCannonPalette;
 
 var
-  FragCannonPalettes: array of TFragCannonPalette; // @addr $88AA90
+  FragCannonPalettes: array of TFragCannonPalette; // @addr $81B414
 
 type
   TPSWeapon02FragCannon = class(TPSWeaponGI) // @size $150
@@ -33,46 +33,46 @@ type
     SecondaryColor: Word; // @offset $13E
     ProjectionBounds: TRect; // @offset $140
 
-    constructor Create(Owner: TObjectGI; APaletteIndex: Integer); // @addr $6884D4
-    destructor Destroy; override; // @addr $688580
-    procedure SetPosition(Position: TPoint); override; // @addr $6885BC
-    procedure SetTargetPoint(Point: TPoint); override; // @addr $688600
-    procedure UpdateProjectionBounds; // @addr $688654
-    procedure UpdateHitTestBounds; override; // @addr $688998
-    function GetLocalBounds: TRect; override; // @addr $688A04
-    function AddParticle: PFragCannonParticle; // @addr $688A68
-    procedure ClearParticles; // @addr $688AE0
-    procedure Invalidate; override; // @addr $688C00 @note "Native empty override."
-    procedure InvalidateRect(Rect: TRect); override; // @addr $688B34
-    procedure Advance(Timer: PCallbackTimerGI; UserData: Integer); override; // @addr $688C0C
-    procedure Draw(ClipRect: TRect); override; // @addr $68942C
+    constructor Create(Owner: TObjectGI; APaletteIndex: Integer); // @addr $4FA8D8
+    destructor Destroy; override; // @addr $4FA960
+    procedure SetPosition(Position: TPoint); override; // @addr $4FA98C
+    procedure SetTargetPoint(Point: TPoint); override; // @addr $4FA9C4
+    procedure UpdateProjectionBounds; // @addr $4FAA04
+    procedure UpdateHitTestBounds; override; // @addr $4FAD7C
+    function GetLocalBounds: TRect; override; // @addr $4FADBC
+    function AddParticle: PFragCannonParticle; // @addr $4FADEC
+    procedure ClearParticles; // @addr $4FAE2C
+    procedure Invalidate; override; // @addr $4FAF14 @note "Native empty override."
+    procedure InvalidateRect(Rect: TRect); override; // @addr $4FAE60
+    procedure Advance(Timer: TCallbackTimerIdGI; UserData: Cardinal); override; // @addr $4FAF18
+    procedure Draw(ClipRect: TRect); override; // @addr $4FB5F0
   end;
 
-function NextFragCannonRandom: Integer; // @addr $6884AC
-procedure LoadFragCannonPalettes; // @addr $6896A0
+function NextFragCannonRandom: Integer; // @addr $4FA8BC
+procedure LoadFragCannonPalettes; // @addr $4FB804
 
 var
-  FragCannonRandomIndex: Integer = 0; // @addr $87BF38
+  FragCannonRandomIndex: Integer = 0; // @addr $80E95C
 
 implementation
 
-// @unit-initialization $8778F4
-// @unit-finalization $689988
+// @unit-initialization $806884
+// @unit-finalization $4FBAA4
 
 uses SysUtils, Math, EC_BlockPar, EC_Str, EC_Mem, GR_Main, GR_DX, aMyFunction, Globals;
 
 var
-  FragCannonRandomValues: array[0..127] of Integer; // @addr $88AA98
+  FragCannonRandomValues: array[0..127] of Integer; // @addr $81B41C
 
-{ @routine $6884AC NextFragCannonRandom }
+{ @routine $4FA8BC NextFragCannonRandom }
 function NextFragCannonRandom: Integer;
 begin
-  FragCannonRandomIndex := (FragCannonRandomIndex + 1) and $7F;
+  FragCannonRandomIndex := (FragCannonRandomIndex + 1) and High(FragCannonRandomValues);
   Result := FragCannonRandomValues[FragCannonRandomIndex];
 end;
-{ @end $6884AC }
+{ @end $4FA8BC }
 
-{ @routine $6884D4 TPSWeapon02FragCannon_Create }
+{ @routine $4FA8D8 TPSWeapon02FragCannon_Create }
 constructor TPSWeapon02FragCannon.Create(Owner: TObjectGI; APaletteIndex: Integer);
 begin
   inherited Create(Owner);
@@ -83,17 +83,17 @@ begin
   PrimaryColor := FragCannonPalettes[APaletteIndex][0];
   SecondaryColor := FragCannonPalettes[APaletteIndex][1];
 end;
-{ @end $6884D4 }
+{ @end $4FA8D8 }
 
-{ @routine $688580 TPSWeapon02FragCannon_Destroy }
+{ @routine $4FA960 TPSWeapon02FragCannon_Destroy }
 destructor TPSWeapon02FragCannon.Destroy;
 begin
   ClearParticles;
   inherited Destroy;
 end;
-{ @end $688580 }
+{ @end $4FA960 }
 
-{ @routine $6885BC TPSWeapon02FragCannon_SetPosition }
+{ @routine $4FA98C TPSWeapon02FragCannon_SetPosition }
 procedure TPSWeapon02FragCannon.SetPosition(Position: TPoint);
 begin
   if (LocalPosition.X <> Position.X) or (LocalPosition.Y <> Position.Y) then
@@ -102,9 +102,9 @@ begin
     UpdateProjectionBounds;
   end;
 end;
-{ @end $6885BC }
+{ @end $4FA98C }
 
-{ @routine $688600 TPSWeapon02FragCannon_SetTargetPoint }
+{ @routine $4FA9C4 TPSWeapon02FragCannon_SetTargetPoint }
 procedure TPSWeapon02FragCannon.SetTargetPoint(Point: TPoint);
 begin
   if (TargetPoint.X <> Point.X) or (TargetPoint.Y <> Point.Y) then
@@ -113,9 +113,9 @@ begin
     UpdateProjectionBounds;
   end;
 end;
-{ @end $688600 }
+{ @end $4FA9C4 }
 
-{ @routine $688654 TPSWeapon02FragCannon_UpdateProjectionBounds }
+{ @routine $4FAA04 TPSWeapon02FragCannon_UpdateProjectionBounds }
 procedure TPSWeapon02FragCannon.UpdateProjectionBounds;
 var
   Angle, Sine, Cosine, Distance, A, B, C, D: Single;
@@ -141,9 +141,9 @@ begin
   ProjectionBounds.Top := Floor(Math.Min(Math.Min(Math.Min(A, B), C), D));
   ProjectionBounds.Bottom := Ceil(Math.Max(Math.Max(Math.Max(A, B), C), D));
 end;
-{ @end $688654 }
+{ @end $4FAA04 }
 
-{ @routine $688998 TPSWeapon02FragCannon_UpdateHitTestBounds }
+{ @routine $4FAD7C TPSWeapon02FragCannon_UpdateHitTestBounds }
 procedure TPSWeapon02FragCannon.UpdateHitTestBounds;
 begin
   HitTestBounds.Left := ProjectionBounds.Left + AbsolutePosition.X - 32;
@@ -151,9 +151,9 @@ begin
   HitTestBounds.Right := ProjectionBounds.Right + AbsolutePosition.X + 32;
   HitTestBounds.Bottom := ProjectionBounds.Bottom + AbsolutePosition.Y + 32;
 end;
-{ @end $688998 }
+{ @end $4FAD7C }
 
-{ @routine $688A04 TPSWeapon02FragCannon_GetLocalBounds }
+{ @routine $4FADBC TPSWeapon02FragCannon_GetLocalBounds }
 function TPSWeapon02FragCannon.GetLocalBounds: TRect;
 begin
   Result.Left := ProjectionBounds.Left + LocalPosition.X;
@@ -161,9 +161,9 @@ begin
   Result.Right := ProjectionBounds.Right + LocalPosition.X;
   Result.Bottom := ProjectionBounds.Bottom + LocalPosition.Y;
 end;
-{ @end $688A04 }
+{ @end $4FADBC }
 
-{ @routine $688A68 TPSWeapon02FragCannon_AddParticle }
+{ @routine $4FADEC TPSWeapon02FragCannon_AddParticle }
 function TPSWeapon02FragCannon.AddParticle: PFragCannonParticle;
 var
   Particle: PFragCannonParticle;
@@ -176,9 +176,9 @@ begin
   if FirstParticle = nil then FirstParticle := Particle;
   Result := Particle;
 end;
-{ @end $688A68 }
+{ @end $4FADEC }
 
-{ @routine $688AE0 TPSWeapon02FragCannon_ClearParticles }
+{ @routine $4FAE2C TPSWeapon02FragCannon_ClearParticles }
 procedure TPSWeapon02FragCannon.ClearParticles;
 var
   Particle, Current: PFragCannonParticle;
@@ -193,9 +193,9 @@ begin
   FirstParticle := nil;
   LastParticle := nil;
 end;
-{ @end $688AE0 }
+{ @end $4FAE2C }
 
-{ @routine $688B34 TPSWeapon02FragCannon_InvalidateRect }
+{ @routine $4FAE60 TPSWeapon02FragCannon_InvalidateRect }
 procedure TPSWeapon02FragCannon.InvalidateRect(Rect: TRect);
 var
   Target: TPoint;
@@ -210,16 +210,16 @@ begin
   if IntersectRects(Intersection, Rect, GameScreenRect) then
     MessageLoop.QueueUpdateRect(Intersection);
 end;
-{ @end $688B34 }
+{ @end $4FAE60 }
 
-{ @routine $688C00 TPSWeapon02FragCannon_Invalidate }
+{ @routine $4FAF14 TPSWeapon02FragCannon_Invalidate }
 procedure TPSWeapon02FragCannon.Invalidate;
 begin
 end;
-{ @end $688C00 }
+{ @end $4FAF14 }
 
-{ @routine $688C0C TPSWeapon02FragCannon_Advance }
-procedure TPSWeapon02FragCannon.Advance(Timer: PCallbackTimerGI; UserData: Integer);
+{ @routine $4FAF18 TPSWeapon02FragCannon_Advance }
+procedure TPSWeapon02FragCannon.Advance(Timer: TCallbackTimerIdGI; UserData: Cardinal);
 var
   Y: Single;
   I, Power, J: Integer;
@@ -374,9 +374,9 @@ begin
   end;
   Dec(RemainingTicks);
 end;
-{ @end $688C0C }
+{ @end $4FAF18 }
 
-{ @routine $68942C TPSWeapon02FragCannon_Draw }
+{ @routine $4FB5F0 TPSWeapon02FragCannon_Draw }
 procedure TPSWeapon02FragCannon.Draw(ClipRect: TRect);
 var
   Angle, Sine, Cosine, PX, PY: Single;
@@ -426,9 +426,9 @@ begin
     end;
   end;
 end;
-{ @end $68942C }
+{ @end $4FB5F0 }
 
-{ @routine $6896A0 LoadFragCannonPalettes }
+{ @routine $4FB804 LoadFragCannonPalettes }
 procedure LoadFragCannonPalettes;
 var
   Block, PaletteBlock: TBlockParEC;
@@ -445,21 +445,19 @@ begin
   for Index := 0 to Count - 1 do
   begin
     Text := IntToStr(Index);
-    if Block.CountBlocks(Text) <> 0 then
-    begin
-      PaletteBlock := Block.GetBlockByPath(Text);
-      for ColorIndex := 0 to 1 do
-        if PaletteBlock.CountParams('Color' + IntToStr(ColorIndex)) > 0 then
-        begin
-          Text := PaletteBlock.GetParam('Color' + IntToStr(ColorIndex));
-          FragCannonPalettes[Index][ColorIndex] := CurrentPixelFormat.PackNormalizedRgb(
-            ExtractDecimalToSingleW(ExtractDelimitedPartW(Text, 0, ',')),
-            ExtractDecimalToSingleW(ExtractDelimitedPartW(Text, 1, ',')),
-            ExtractDecimalToSingleW(ExtractDelimitedPartW(Text, 2, ',')));
-        end;
-    end;
+    if Block.CountBlocks(Text) = 0 then Continue;
+    PaletteBlock := Block.GetBlockByPath(Text);
+    for ColorIndex := Low(TFragCannonPalette) to High(TFragCannonPalette) do
+      if PaletteBlock.CountParams('Color' + IntToStr(ColorIndex)) > 0 then
+      begin
+        Text := PaletteBlock.GetParam('Color' + IntToStr(ColorIndex));
+        FragCannonPalettes[Index][ColorIndex] := CurrentPixelFormat.PackNormalizedRgb(
+          ExtractDecimalToSingleW(ExtractDelimitedPartW(Text, 0, ',')),
+          ExtractDecimalToSingleW(ExtractDelimitedPartW(Text, 1, ',')),
+          ExtractDecimalToSingleW(ExtractDelimitedPartW(Text, 2, ',')));
+      end;
   end;
 end;
-{ @end $6896A0 }
+{ @end $4FB804 }
 
 end.

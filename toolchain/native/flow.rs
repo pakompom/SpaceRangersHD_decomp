@@ -75,6 +75,168 @@ fn one(decoder: &Decoder, image: &Image, address: u32) -> Result<Option<Instruct
         .next())
 }
 
+/// DCC32 keeps the body after an unconditional source Exit even in an
+/// optimized, frameless routine. Prove the entry jump skips to the matching
+/// callee-save epilogue; a decodable gap or an arbitrary forward jump alone
+/// does not establish dormant Pascal ownership.
+fn frameless_entry_exit(start: u32, skip: &Instruction, seen: &BTreeMap<u32, Instruction>) -> bool {
+    if !skip.is(X86_INS_JMP) {
+        return false;
+    }
+    let Some(mut epilogue) = imm(skip).filter(|target| *target > skip.end()) else {
+        return false;
+    };
+    let mut saved = Vec::new();
+    let mut assigned = BTreeSet::new();
+    let mut cursor = start;
+    while cursor < skip.address {
+        let Some(ins) = seen.get(&cursor) else {
+            return false;
+        };
+        if ins.is(X86_INS_PUSH) && assigned.is_empty() {
+            let Some(Reg(register)) = ins.operands.first().map(|op| &op.op_type) else {
+                return false;
+            };
+            if ![X86_REG_EBX, X86_REG_ESI, X86_REG_EDI].contains(&(register.0 as u32))
+                || saved.contains(register)
+            {
+                return false;
+            }
+            saved.push(*register);
+        } else if ins.is(X86_INS_MOV) && ins.operands.len() == 2 {
+            let (Reg(destination), Reg(source)) =
+                (&ins.operands[0].op_type, &ins.operands[1].op_type)
+            else {
+                return false;
+            };
+            if !saved.contains(destination)
+                || ![X86_REG_EAX, X86_REG_EDX, X86_REG_ECX].contains(&(source.0 as u32))
+                || !assigned.insert(destination.0)
+            {
+                return false;
+            }
+        } else {
+            return false;
+        }
+        cursor = ins.end();
+    }
+    if cursor != skip.address || saved.is_empty() || assigned.is_empty() {
+        return false;
+    }
+    for register in saved.iter().rev() {
+        let Some(ins) = seen.get(&epilogue) else {
+            return false;
+        };
+        if !ins.is(X86_INS_POP)
+            || !ins
+                .operands
+                .first()
+                .is_some_and(|op| reg(op, register.0 as u32))
+        {
+            return false;
+        }
+        epilogue = ins.end();
+    }
+    seen.get(&epilogue)
+        .is_some_and(|ins| ins.ret && ins.bytes == [0xc3])
+}
+
+/// A frameless Delphi routine can keep disabled statements after an Exit in
+/// the middle of its body. Its callee-save prologue and fixed local allocation
+/// must agree exactly with the skipped-to restore sequence before ownership of
+/// that dormant island can be considered.
+fn frameless_local_frame_exit(
+    start: u32,
+    skip: &Instruction,
+    seen: &BTreeMap<u32, Instruction>,
+) -> bool {
+    if !skip.is(X86_INS_JMP) {
+        return false;
+    }
+    let Some(mut epilogue) = imm(skip).filter(|target| *target > skip.end()) else {
+        return false;
+    };
+    let mut saved = Vec::new();
+    let mut cursor = start;
+    while let Some(ins) = seen.get(&cursor) {
+        if !ins.is(X86_INS_PUSH) {
+            break;
+        }
+        let Some(Reg(register)) = ins.operands.first().map(|op| &op.op_type) else {
+            return false;
+        };
+        if ![X86_REG_EBX, X86_REG_ESI, X86_REG_EDI].contains(&(register.0 as u32))
+            || saved.contains(register)
+        {
+            return false;
+        }
+        saved.push(*register);
+        cursor = ins.end();
+    }
+    let Some(allocation) = seen.get(&cursor) else {
+        return false;
+    };
+    if saved.is_empty()
+        || allocation.operands.len() != 2
+        || !reg(&allocation.operands[0], X86_REG_ESP)
+    {
+        return false;
+    }
+    let Imm(value) = allocation.operands[1].op_type else {
+        return false;
+    };
+    let value = value as i32 as i64;
+    let locals = if allocation.is(X86_INS_ADD) {
+        -value
+    } else if allocation.is(X86_INS_SUB) {
+        value
+    } else {
+        return false;
+    };
+    if !(4..=4096).contains(&locals) || locals % 4 != 0 || allocation.end() > skip.address {
+        return false;
+    }
+    let mut remaining = locals;
+    while remaining > 0 {
+        let Some(ins) = seen.get(&epilogue) else {
+            return false;
+        };
+        if ins.is(X86_INS_ADD)
+            && ins.operands.len() == 2
+            && reg(&ins.operands[0], X86_REG_ESP)
+            && matches!(ins.operands[1].op_type, Imm(n) if n == remaining)
+        {
+            remaining = 0;
+        } else if ins.is(X86_INS_POP)
+            && ins
+                .operands
+                .first()
+                .is_some_and(|op| reg(op, X86_REG_ECX) || reg(op, X86_REG_EDX))
+        {
+            remaining -= 4;
+        } else {
+            return false;
+        }
+        epilogue = ins.end();
+    }
+    for register in saved.iter().rev() {
+        let Some(ins) = seen.get(&epilogue) else {
+            return false;
+        };
+        if !ins.is(X86_INS_POP)
+            || !ins
+                .operands
+                .first()
+                .is_some_and(|op| reg(op, register.0 as u32))
+        {
+            return false;
+        }
+        epilogue = ins.end();
+    }
+    seen.get(&epilogue)
+        .is_some_and(|ins| ins.ret && ins.bytes == [0xc3])
+}
+
 fn loop_test_targets(seen: &BTreeMap<u32, Instruction>, mut test: u32, target: u32) -> bool {
     // Follow one already decoded condition block, including calls used by the test.
     for _ in 0..128 {
@@ -108,9 +270,11 @@ fn case_dispatch(
     let load = previous.get(&jump.address).copied();
     let low = low_byte(targets.index());
     let indexed = load.is_some_and(|i| {
-        i.is(X86_INS_MOV)
-            && i.operands.len() == 2
-            && low.is_some_and(|r| reg(&i.operands[0], r))
+        i.operands.len() == 2
+            && ((i.is(X86_INS_MOV) && low.is_some_and(|r| reg(&i.operands[0], r)))
+                || (i.is(X86_INS_MOVZX)
+                    && reg(&i.operands[0], targets.index().0 as u32)
+                    && i.operands[0].size == 4))
             && matches!(i.operands[1].op_type, Mem(_))
             && i.operands[1].size == 1
     });
@@ -130,7 +294,7 @@ fn case_dispatch(
     let Imm(maximum @ 0..=255) = bound.operands[1].op_type else {
         return None;
     };
-    if targets.base().0 != 0 || low.is_none() || targets.scale() != 4 || targets.segment().0 != 0 {
+    if targets.base().0 != 0 || targets.scale() != 4 || targets.segment().0 != 0 {
         return None;
     }
     let count = maximum as usize + 1;
@@ -496,6 +660,45 @@ pub fn decode(
                                 ));
                             } else {
                                 tables.insert(following, raw.to_vec());
+                                // An empty typed handler plus an else block
+                                // leaves a dormant skip directly after the
+                                // table. Prove its target is the typed handler's
+                                // DoneExcept and a sibling handler starts
+                                // exactly after the skip. A typed sibling needs
+                                // a relocated class pointer, while a catch-all
+                                // needs a nonrelocated nil class pointer.
+                                let end = following + length as u32;
+                                if let Some(skip) = one(decoder, image, end)?
+                                    .filter(|i| i.is(X86_INS_JMP) && contains(i.end() - 1))
+                                    && let Some(target) = imm(&skip)
+                                    && let Some(cleanup) =
+                                        one(decoder, image, target)?.filter(|i| i.is(X86_INS_CALL))
+                                    && imm(&cleanup)
+                                        .is_some_and(|a| symbols.name(a).contains("doneexcept"))
+                                    && raw[4..].as_chunks::<8>().0.iter().enumerate().any(
+                                        |(index, row)| {
+                                            u32::from_le_bytes(row[..4].try_into().unwrap()) != 0
+                                                && handlers[index] == target
+                                                && image.relocated(following + 4 + index as u32 * 8)
+                                        },
+                                    )
+                                    && raw[4..].as_chunks::<8>().0.iter().enumerate().any(
+                                        |(index, row)| {
+                                            handlers[index] == skip.end()
+                                                && if row[..4] == [0; 4] {
+                                                    !image.has_relocation(
+                                                        following + 4 + index as u32 * 8,
+                                                        4,
+                                                    )
+                                                } else {
+                                                    image
+                                                        .relocated(following + 4 + index as u32 * 8)
+                                                }
+                                        },
+                                    )
+                                {
+                                    pending.push(end);
+                                }
                                 pending.extend(handlers);
                             }
                         }
@@ -630,7 +833,9 @@ pub fn decode(
                         .is_some_and(|a| seen.contains_key(&a) && start < a && a <= before.address)
                     && skip_target == Some(i.end())
             });
-        if framed
+        if (framed
+            || frameless_entry_exit(start, before, &seen)
+            || frameless_local_frame_exit(start, before, &seen))
             && before.is(X86_INS_JMP)
             && (skip_target == Some(hi) || skips_loop_test)
             && !island
@@ -689,32 +894,226 @@ mod tests {
             .collect()
     }
     #[test]
-    fn relocated_case_table_and_missing_evidence() -> Result<()> {
+    fn compact_movzx_case_table_requires_matching_guard_and_relocations() -> Result<()> {
         let decoder = Decoder::new()?;
-        let mut code = bytes("83f802771fff2485");
-        for address in [0x100cu32, 0x1018, 0x101e, 0x1024] {
-            code.extend(address.to_le_bytes());
-        }
-        code.extend(bytes("b80b000000c3b816000000c3b821000000c3"));
-        for relocated in [true, false] {
-            let image = Image::fixture(
-                0x1000,
-                code.clone(),
-                if relocated {
-                    vec![0x1008, 0x100c, 0x1010, 0x1014]
-                } else {
-                    vec![]
-                },
-            );
+        // CMP EDX,3 / JA default / MOVZX EDX,byte[EDX+indices] /
+        // JMP [EDX*4+targets], followed immediately by four byte indices and
+        // two relocated DWORD targets. This is DCC32 O+'s compact switch.
+        let raw = bytes(
+            "83fa0377260fb69213100000ff249517100000000100011f10000025100000b801000000c3b802000000c3b803000000c3",
+        );
+        for invalid in 0..5 {
+            let mut code = raw.clone();
+            let mut relocations = vec![0x1008, 0x100f, 0x1017, 0x101b];
+            match invalid {
+                1 => code[7] = 0x8a, // MOVZX ECX disagrees with indexed EDX
+                2 => {
+                    relocations.pop();
+                } // every target needs relocation
+                3 => code[6] = 0xbe, // signed extension cannot bound the index
+                4 => code[15] += 1,  // table must adjoin the complete byte map
+                _ => {}
+            }
+            let image = Image::fixture(0x1000, code, relocations);
             let result = decode(
                 &image,
                 &decoder,
                 0x1000,
-                &[(0x1000, 0x102a)],
+                &[(0x1000, 0x1031)],
                 &Symbols::default(),
             )?;
-            assert_eq!(result.cases.len(), usize::from(relocated));
-            assert_eq!(result.issues.is_empty(), relocated);
+            assert_eq!(result.cases.len(), if invalid == 0 { 2 } else { 0 });
+            assert_eq!(result.issues.is_empty(), invalid == 0);
+            if invalid == 0 {
+                assert_eq!(result.instructions.iter().filter(|ins| ins.ret).count(), 3);
+            }
+        }
+        Ok(())
+    }
+    #[test]
+    fn frameless_exit_requires_matching_register_save_epilogue() -> Result<()> {
+        let decoder = Decoder::new()?;
+        // PUSH EBX/ESI; preserve Self/Sender; Exit; disabled conditional body;
+        // POP ESI/EBX; RET. Both sides of the body's condition join the epilogue.
+        let code = bytes("53568bf28bd8eb0b85f674028bceb8010000005e5bc3");
+        for invalid in 0..7 {
+            let mut candidate = code.clone();
+            match invalid {
+                1 => candidate[20] = 0x5e, // duplicate POP fails to restore EBX
+                2 => candidate[3] = 0xfa,  // MOV EDI,EDX writes an unsaved register
+                3 => candidate[1] = 0x53,  // duplicate PUSH is not a callee-save set
+                4 => candidate[21] = 0x90, // no proven return after the restores
+                5 => candidate[11] = 0x7f, // dormant branch escapes the routine
+                6 => candidate[2] = 0x03,  // arithmetic is not parameter preservation
+                _ => {}
+            }
+            let end = 0x1000 + candidate.len() as u32;
+            let image = Image::fixture(0x1000, candidate, vec![]);
+            let result = decode(
+                &image,
+                &decoder,
+                0x1000,
+                &[(0x1000, end)],
+                &Symbols::default(),
+            )?;
+            assert_eq!(
+                result.instructions.iter().any(|i| i.address == 0x1008),
+                invalid == 0,
+                "invalid variant {invalid}"
+            );
+        }
+        Ok(())
+    }
+    #[test]
+    fn frameless_exit_also_accepts_a_near_entry_skip() -> Result<()> {
+        let code = bytes("53568bd8e905000000b82a0000005e5bc3");
+        let end = 0x1000 + code.len() as u32;
+        let image = Image::fixture(0x1000, code, vec![]);
+        let result = decode(
+            &image,
+            &Decoder::new()?,
+            0x1000,
+            &[(0x1000, end)],
+            &Symbols::default(),
+        )?;
+        assert!(result.issues.is_empty());
+        assert!(result.instructions.iter().any(|i| i.address == 0x1009));
+        Ok(())
+    }
+    #[test]
+    fn frameless_mid_body_exit_requires_the_complete_local_frame_restore() -> Result<()> {
+        // Fixed two-DWORD local allocation, conditional work, then an Exit
+        // before dormant MOV EAX,42. The epilogue drops the two locals and
+        // restores exactly the entry's callee-save registers.
+        let raw = bytes("535683c4f88b042485c0750bc6042400eb05b82a000000595a5e5bc3");
+        for invalid in 0..6 {
+            let mut code = raw.clone();
+            match invalid {
+                1 => code[26] = 0x5e, // wrong callee-save restore
+                2 => code[4] = 0xf4,  // twelve local bytes cannot unwind as eight
+                3 => code[24] = 0x5e, // locals must not consume a saved-register POP
+                4 => code[27] = 0x90, // no final RET
+                5 => code[18..23].copy_from_slice(&[0xe9, 0, 1, 0, 0]), // island branch escapes
+                _ => {}
+            }
+            let image = Image::fixture(0x1000, code, vec![]);
+            let result = decode(
+                &image,
+                &Decoder::new()?,
+                0x1000,
+                &[(0x1000, 0x101c)],
+                &Symbols::default(),
+            )?;
+            assert_eq!(
+                result.instructions.iter().any(|ins| ins.address == 0x1012),
+                invalid == 0,
+                "invalid variant {invalid}"
+            );
+        }
+        Ok(())
+    }
+    #[test]
+    fn empty_typed_handler_retains_only_its_proven_post_table_skip() -> Result<()> {
+        let decoder = Decoder::new()?;
+        let code = bytes(
+            "558bec33c055681f10000064ff306489209033c05a5959648910e92f000000e9dc0f0000020000000040000044100000000000003a100000eb0ae8c13f0000e90a000000e8b71f0000e9000000005dc3",
+        );
+        for invalid in 0..4 {
+            let mut candidate = code.clone();
+            let mut relocations = vec![0x1007, 0x1028, 0x102c, 0x1034];
+            match invalid {
+                1 => candidate[57] = 0, // skip must reach typed cleanup
+                2 => {
+                    relocations.remove(1);
+                } // typed class needs relocation
+                3 => candidate[48] = 1, // sibling must be nil catch-all
+                _ => {}
+            }
+            let image = Image::fixture(0x1000, candidate, relocations);
+            let symbols = Symbols {
+                names: BTreeMap::from([
+                    (0x2000, "System.@HandleOnException".into()),
+                    (0x3000, "System.@DoneExcept".into()),
+                ]),
+                ..Symbols::default()
+            };
+            let result = decode(&image, &decoder, 0x1000, &[(0x1000, 0x1050)], &symbols)?;
+            assert_eq!(
+                result.instructions.iter().any(|i| i.address == 0x1038),
+                invalid == 0
+            );
+            assert_eq!(result.tables[&0x1024].len(), 20);
+        }
+        Ok(())
+    }
+    #[test]
+    fn empty_typed_handler_can_precede_another_relocated_typed_handler() -> Result<()> {
+        let mut code = bytes(
+            "558bec33c055681f10000064ff306489209033c05a5959648910e92f000000e9dc0f0000020000000040000044100000000000003a100000eb0ae8c13f0000e90a000000e8b71f0000e9000000005dc3",
+        );
+        code[48..52].copy_from_slice(&0x5000u32.to_le_bytes());
+        for relocated_sibling in [true, false] {
+            let mut relocations = vec![0x1007, 0x1028, 0x102c, 0x1034];
+            if relocated_sibling {
+                relocations.push(0x1030);
+                relocations.sort_unstable();
+            }
+            let image = Image::fixture(0x1000, code.clone(), relocations);
+            let symbols = Symbols {
+                names: BTreeMap::from([
+                    (0x2000, "System.@HandleOnException".into()),
+                    (0x3000, "System.@DoneExcept".into()),
+                ]),
+                ..Symbols::default()
+            };
+            let result = decode(
+                &image,
+                &Decoder::new()?,
+                0x1000,
+                &[(0x1000, 0x1050)],
+                &symbols,
+            )?;
+            assert_eq!(
+                result.instructions.iter().any(|ins| ins.address == 0x1038),
+                relocated_sibling
+            );
+        }
+        Ok(())
+    }
+    #[test]
+    fn relocated_case_table_and_missing_evidence() -> Result<()> {
+        let decoder = Decoder::new()?;
+        // CMP register,2 / JA default / JMP [register*4+table].
+        // ESI is used by SR1 SF_ShipGoods; unlike EAX it has no x86 byte view.
+        for (compare, sib) in [(0xf8, 0x85), (0xfd, 0xad), (0xfe, 0xb5), (0xff, 0xbd)] {
+            for (relocated, matching_guard) in [(true, true), (false, true), (true, false)] {
+                let mut code = bytes("83f802771fff2485");
+                code[1] = if matching_guard { compare } else { 0xfa }; // EDX
+                code[7] = sib;
+                for address in [0x100cu32, 0x1018, 0x101e, 0x1024] {
+                    code.extend(address.to_le_bytes());
+                }
+                code.extend(bytes("b80b000000c3b816000000c3b821000000c3"));
+                let image = Image::fixture(
+                    0x1000,
+                    code.clone(),
+                    if relocated {
+                        vec![0x1008, 0x100c, 0x1010, 0x1014]
+                    } else {
+                        vec![]
+                    },
+                );
+                let result = decode(
+                    &image,
+                    &decoder,
+                    0x1000,
+                    &[(0x1000, 0x102a)],
+                    &Symbols::default(),
+                )?;
+                let proven = relocated && matching_guard;
+                assert_eq!(result.cases.len(), usize::from(proven));
+                assert_eq!(result.issues.is_empty(), proven);
+            }
         }
         Ok(())
     }

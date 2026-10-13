@@ -1,9 +1,8 @@
 unit aAsteroid;
-// Unit bracket (inferred): .text 0x00796E9C..0x00797C46; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
-uses EC_Buf, EC_Struct, SE_Space, aEFilm, aGalaxy;
+uses EC_Buf, EC_Struct, SE_Space, SE_Asteroid, aEFilm, aGalaxy;
 
 type
   TAsteroid = class(TObjectEx) // @size 0x3C
@@ -17,41 +16,39 @@ type
     GravityForceFactor: Single; // @offset 0x28  G * Mass * 2e30.
     InverseMass: Single; // @offset 0x2C
     MineralCount: Integer; // @offset 0x30
-    GraphObject: TObjectSE; // @offset 0x34  Retained reference; scripts can replace its concrete class.
+    GraphObject: TAsteroidSE; // @offset 0x34  Retained reference initialized by the Asteroid scene factory.
     FilmObject: TEFilmObj; // @offset 0x38  Borrowed from the film.
 
-    constructor Create; // @addr 0x796EF4
-    destructor Destroy; override; // @addr 0x796F5C
-    procedure Init(Star: TStar; const GraphKey: WideString); // @addr 0x796FA4 @note "Requires an unassigned GraphObject."
-    procedure SaveToBuffer(Buffer: TBufEC); // @addr 0x79700C
-    procedure LoadFromBuffer(Buffer: TBufEC; Galaxy: TGalaxy); // @addr 0x797090 @note "Caller sets CurrentStar. Requires an unassigned GraphObject."
-    procedure RespawnIfOutsideSystem; // @addr 0x797200
-    procedure PrepareTurnMovement(StartStepIndex: Integer; RecordFilm: Boolean); // @addr 0x797248
-    procedure AdvanceOrbitStep(StepIndex: Integer; RecordFilm: Boolean); // @addr 0x7972B4
-    procedure Respawn; // @addr 0x797310 @note "Keeps the ID and visual. May spawn another asteroid under the galaxy's special mode."
-    procedure SpawnSiblingAsteroidInCurrentStar; // @addr 0x7975EC @note "The new asteroid belongs to CurrentStar.Asteroids; it does not copy this asteroid's visual or motion."
-    procedure IntegrateMotion(TimeScale: Single); // @addr 0x797818
-    procedure WritePredictedPositions(Positions: PPointF; Count: Integer); // @addr 0x797988 @note "Writes Count future positions at TimeScale=1, excluding the current position, then restores the live motion state. Caller supplies Count * 8 bytes."
-    function GetDisplayName: WideString; // @addr 0x797A64
-    function GetInfoText: WideString; // @addr 0x797B38
+    constructor Create; // @addr 0x00727F8C
+    destructor Destroy; override; // @addr 0x00727FE4
+    procedure Init(Star: TStar; const GraphKey: WideString); // @addr 0x00728018 @note "Requires an unassigned GraphObject."
+    procedure SaveToBuffer(Buffer: TBufEC); // @addr 0x0072806C
+    procedure LoadFromBuffer(Buffer: TBufEC; Galaxy: TGalaxy); // @addr 0x007280C8 @note "Caller sets CurrentStar. Requires an unassigned GraphObject."
+    procedure RespawnIfOutsideSystem; // @addr 0x007281F8
+    procedure PrepareTurnMovement(StartStepIndex: Integer; RecordFilm: Boolean); // @addr 0x00728228
+    procedure AdvanceOrbitStep(StepIndex: Integer; RecordFilm: Boolean); // @addr 0x00728278
+    procedure Respawn; // @addr 0x007282C0 @note "Keeps the ID and visual. May spawn another asteroid under the galaxy's special mode."
+    procedure SpawnSiblingAsteroidInCurrentStar; // @addr 0x0072855C @note "The new asteroid belongs to CurrentStar.Asteroids; it does not copy this asteroid's visual or motion."
+    procedure IntegrateMotion(TimeScale: Single); // @addr 0x00728760
+    procedure WritePredictedPositions(Positions: PPointF; Count: Integer); // @addr 0x00728898 @note "Writes Count future positions at TimeScale=1, excluding the current position, then restores the live motion state. Caller supplies Count * 8 bytes."
+    function GetDisplayName: WideString; // @addr 0x00728944
+    function GetInfoText: WideString; // @addr 0x00728A10
   end;
 
 const
-  AsteroidGravitationalConstant: Single = 6.672041391597716e-11; // @addr $87C89C
+  AsteroidGravitationalConstant: Single = 6.672041391597716e-11; // @addr $810054
 
 implementation
 
-uses Classes, Math, SE_Process, SE_Asteroid, Globals, aMyFunction, EC_Str, EC_Mem, aConst, aPlayer, aShip, GR_Main, aGalaxyStruct;
+uses Classes, Math, SE_Process, Globals, aMyFunction, EC_Str, EC_Mem, aConst, aPlayer, aShip, GR_Main, aGalaxyStruct;
 
 
 const
-  // Preserve native Extended constants. DCC32's decimal conversion rounds plain
-  // 2e30 and 6e-9 one mantissa bit above the constants in this binary.
   AsteroidCentralMass = 2e30 - 137438953472.0;
   AsteroidWorldScale = 5.9999999999999999993e-9;
   AsteroidInverseScaleSquared = 27777777777777777.78;
 
-{ @routine $796EF4 TAsteroid_Create }
+{ @routine $727F8C TAsteroid_Create }
 constructor TAsteroid.Create;
 begin
   inherited Create;
@@ -61,26 +58,26 @@ begin
     Inc(Galaxy.NextAsteroidId);
   end;
 end;
-{ @end $796EF4 }
+{ @end $727F8C }
 
-{ @routine $796F5C TAsteroid_Destroy }
+{ @routine $727FE4 TAsteroid_Destroy }
 destructor TAsteroid.Destroy;
 begin
   if GraphObject <> nil then ReleaseSpaceObject(GraphObject);
   inherited Destroy;
 end;
-{ @end $796F5C }
+{ @end $727FE4 }
 
-{ @routine $796FA4 TAsteroid_Init }
+{ @routine $728018 TAsteroid_Init }
 procedure TAsteroid.Init(Star: TStar; const GraphKey: WideString);
 begin
   CurrentStar := Star;
   RetainSpaceObject(GraphObject, CreateSpaceObjectByName('Asteroid', GraphKey, Classes.Point(0, 0)));
   Respawn;
 end;
-{ @end $796FA4 }
+{ @end $728018 }
 
-{ @routine $79700C TAsteroid_SaveToBuffer }
+{ @routine $72806C TAsteroid_SaveToBuffer }
 procedure TAsteroid.SaveToBuffer(Buffer: TBufEC);
 begin
   Buffer.AddDWord(Id);
@@ -92,9 +89,9 @@ begin
   Buffer.AddSingle(Mass);
   Buffer.AddIntegerValue(MineralCount);
 end;
-{ @end $79700C }
+{ @end $72806C }
 
-{ @routine $797090 TAsteroid_LoadFromBuffer }
+{ @routine $7280C8 TAsteroid_LoadFromBuffer }
 procedure TAsteroid.LoadFromBuffer(Buffer: TBufEC; Galaxy: TGalaxy);
 begin
   Id := Buffer.GetUInt32;
@@ -111,16 +108,16 @@ begin
   Position.X := PhysicsPosition.X * AsteroidWorldScale;
   Position.Y := PhysicsPosition.Y * AsteroidWorldScale;
 end;
-{ @end $797090 }
+{ @end $7280C8 }
 
-{ @routine $797200 TAsteroid_RespawnIfOutsideSystem }
+{ @routine $7281F8 TAsteroid_RespawnIfOutsideSystem }
 procedure TAsteroid.RespawnIfOutsideSystem;
 begin
   if Position.X * Position.X + Position.Y * Position.Y > Sqr(CurrentStar.MapDiameter) then Respawn;
 end;
-{ @end $797200 }
+{ @end $7281F8 }
 
-{ @routine $797248 TAsteroid_PrepareTurnMovement }
+{ @routine $728228 TAsteroid_PrepareTurnMovement }
 procedure TAsteroid.PrepareTurnMovement(StartStepIndex: Integer; RecordFilm: Boolean);
 begin
   if RecordFilm then
@@ -130,17 +127,17 @@ begin
     PrimaryFilm.AttachObject(StartStepIndex, FilmObject);
   end;
 end;
-{ @end $797248 }
+{ @end $728228 }
 
-{ @routine $7972B4 TAsteroid_AdvanceOrbitStep }
+{ @routine $728278 TAsteroid_AdvanceOrbitStep }
 procedure TAsteroid.AdvanceOrbitStep(StepIndex: Integer; RecordFilm: Boolean);
 begin
   IntegrateMotion(BaseMovementStepsPerTurn / CurrentStar.MovementStepCount);
   if RecordFilm then PrimaryFilm.SetObjectPosition(StepIndex, FilmObject, Position);
 end;
-{ @end $7972B4 }
+{ @end $728278 }
 
-{ @routine $797310 TAsteroid_Respawn }
+{ @routine $7282C0 TAsteroid_Respawn }
 procedure TAsteroid.Respawn;
 var
   Angle, Radius, Speed, Reserved: Single; // Native reserves one additional scalar slot.
@@ -169,9 +166,9 @@ begin
         if (Galaxy.GodModEnabled = 2) and (NextRandomIntRange(0, 100, CurrentStar.RandomState) > 50) then
           SpawnSiblingAsteroidInCurrentStar;
 end;
-{ @end $797310 }
+{ @end $7282C0 }
 
-{ @routine $7975EC TAsteroid_SpawnSiblingAsteroidInCurrentStar }
+{ @routine $72855C TAsteroid_SpawnSiblingAsteroidInCurrentStar }
 procedure TAsteroid.SpawnSiblingAsteroidInCurrentStar;
 var
   Asteroid: TAsteroid;
@@ -189,9 +186,9 @@ begin
   else Asteroid.Init(CurrentStar, 'Asteroid.' + Text + IntToWideString(Variant));
   CurrentStar.Asteroids.Add(Asteroid);
 end;
-{ @end $7975EC }
+{ @end $72855C }
 
-{ @routine $797818 TAsteroid_IntegrateMotion }
+{ @routine $728760 TAsteroid_IntegrateMotion }
 procedure TAsteroid.IntegrateMotion(TimeScale: Single);
 var
   ForceY, ForceX, DeltaY, DeltaX, AccelY, AccelX, InverseDistance, Force, DistanceSquared: Single;
@@ -213,9 +210,9 @@ begin
   Position.X := PhysicsPosition.X * AsteroidWorldScale;
   Position.Y := PhysicsPosition.Y * AsteroidWorldScale;
 end;
-{ @end $797818 }
+{ @end $728760 }
 
-{ @routine $797988 TAsteroid_WritePredictedPositions }
+{ @routine $728898 TAsteroid_WritePredictedPositions }
 procedure TAsteroid.WritePredictedPositions(Positions: PPointF; Count: Integer);
 var
   SavedPosition, SavedPhysicsPosition, SavedVelocity: TPointF;
@@ -236,17 +233,17 @@ begin
   PhysicsPosition := SavedPhysicsPosition;
   Velocity := SavedVelocity;
 end;
-{ @end $797988 }
+{ @end $728898 }
 
-{ @routine $797A64 TAsteroid_GetDisplayName }
+{ @routine $728944 TAsteroid_GetDisplayName }
 function TAsteroid.GetDisplayName: WideString;
 begin
   Result := LocalizedText('Asteroid.Name');
   ReplaceTextToken(Result, '<Number>', IntToWideString(Id), TextHighlightColorTag);
 end;
-{ @end $797A64 }
+{ @end $728944 }
 
-{ @routine $797B38 TAsteroid_GetInfoText }
+{ @routine $728A10 TAsteroid_GetInfoText }
 function TAsteroid.GetInfoText: WideString;
 var Speed: Single;
 begin
@@ -257,6 +254,6 @@ begin
   ReplaceTextToken(Result, '<Speed>', IntToWideString(Round(Speed)), TextHighlightColorTag);
   ReplaceTextToken(Result, '<Count>', IntToWideString(MineralCount), TextHighlightColorTag);
 end;
-{ @end $797B38 }
+{ @end $728A10 }
 
 end.

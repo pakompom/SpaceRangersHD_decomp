@@ -1,5 +1,4 @@
 unit EC_FileStream;
-// Unit bracket (inferred): .text 0x0045F028..0x0045F644; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -19,18 +18,18 @@ type
     FileSize: Integer; // @offset $4C
     EndOfFile: Boolean; // @offset $50
     BufferLock: TCriticalSection; // @offset $54
-    constructor Create(BufferBytes: Integer; const FileName: WideString); // @addr $45F088
-    destructor Destroy; override; // @addr $45F184
-    procedure SwapBuffers; // @addr $45F254
-    function Read(Destination: Pointer; ByteCount: Integer): Integer; // @addr $45F3B0
-    procedure Execute; override; // @addr $45F2A8
+    constructor Create(BufferBytes: Integer; const FileName: WideString); // @addr $481E60
+    destructor Destroy; override; // @addr $481F24
+    procedure SwapBuffers; // @addr $481FB4
+    function Read(Destination: Pointer; ByteCount: Integer): Integer; // @addr $482088
+    procedure Execute; override; // @addr $481FD4
   end;
 
 implementation
 
 uses SysUtils, EC_Mem, Windows;
 
-{ @routine $45F088 TFileStreamEC_Create }
+{ @routine $481E60 TFileStreamEC_Create }
 constructor TFileStreamEC.Create(BufferBytes: Integer; const FileName: WideString);
 begin
   inherited Create;
@@ -47,9 +46,9 @@ begin
   SetPriority(ThreadPriorityLowest);
   Start;
 end;
-{ @end $45F088 }
+{ @end $481E60 }
 
-{ @routine $45F184 TFileStreamEC_Destroy }
+{ @routine $481F24 TFileStreamEC_Destroy }
 destructor TFileStreamEC.Destroy;
 begin
   RequestStop;
@@ -78,9 +77,9 @@ begin
   end;
   inherited Destroy;
 end;
-{ @end $45F184 }
+{ @end $481F24 }
 
-{ @routine $45F254 TFileStreamEC_SwapBuffers }
+{ @routine $481FB4 TFileStreamEC_SwapBuffers }
 procedure TFileStreamEC.SwapBuffers;
 var
   Buffer: Pointer;
@@ -94,9 +93,9 @@ begin
   FillAvailable := Available;
   ReadPosition := 0;
 end;
-{ @end $45F254 }
+{ @end $481FB4 }
 
-{ @routine $45F2A8 TFileStreamEC_Execute }
+{ @routine $481FD4 TFileStreamEC_Execute }
 procedure TFileStreamEC.Execute;
 var
   ByteCount: Integer;
@@ -128,9 +127,9 @@ begin
     SysUtils.Sleep(0);
   end;
 end;
-{ @end $45F2A8 }
+{ @end $481FD4 }
 
-{ @routine $45F3B0 TFileStreamEC_Read }
+{ @routine $482088 TFileStreamEC_Read }
 function TFileStreamEC.Read(Destination: Pointer; ByteCount: Integer): Integer;
 var
   Chunk, Total: Integer;
@@ -201,6 +200,6 @@ begin
   if not EndOfFile then Start;
   Result := Total;
 end;
-{ @end $45F3B0 }
+{ @end $482088 }
 
 end.

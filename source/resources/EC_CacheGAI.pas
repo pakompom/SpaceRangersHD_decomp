@@ -1,5 +1,4 @@
 unit EC_CacheGAI;
-// Unit bracket (inferred): .text 0x0047C680..0x0047D494; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -11,9 +10,9 @@ type
 
   TCGaiControlEC = class(TCacheControlEC) // @size 0x18
   public
-    procedure QueueLoadIfMissing(PendingLoads: TList); override; // @addr 0x47C788
-    function CreateData: TCacheDataEC; override; // @addr 0x47C80C
-    function AcquireData: TCacheDataEC; override; // @addr 0x47C858
+    procedure QueueLoadIfMissing(PendingLoads: TList); override; // @addr 0x004876AC
+    function CreateData: TCacheDataEC; override; // @addr 0x00487718
+    function AcquireData: TCacheDataEC; override; // @addr 0x00487748
   end;
 
   TCGaiEC = class(TCacheDataEC) // @size 0x3C
@@ -27,87 +26,89 @@ type
     CachedFrameOrigins: array of TPoint; // @offset 0x38
     // CachedFrameOrigins has Header.FrameCount entries.
 
-    constructor Create; // @addr 0x47C874
-    destructor Destroy; override; // @addr 0x47C8D0
-    function GetFrameCount: Integer; // @addr 0x47C960
-    function HasPlaybackFlags: Boolean; // @addr 0x47C97C
-    function GetBoundsRect: TRect; // @addr 0x47C99C
-    function GetCanvasSize: TPoint; // @addr 0x47C9C4
-    function GetOrCreateFrameSurface(FrameIndex: Integer): IDirect3DTexture9; // @addr 0x47C9F0
-    function GetFrameOrigin(FrameIndex: Integer): TPoint; // @addr 0x47CB80 @note "Requires a valid index and a prior GetOrCreateFrameSurface call."
-    function LoadFrameGi(FrameIndex: Integer): TgiGR; // @addr 0x47CBB0 @note "Returns borrowed, reused DecodedFrameGi storage, or nil."
-    function IsFrameCompressed(FrameIndex: Integer): Boolean; // @addr 0x47CCF0 @note "Does not validate FrameIndex."
-    function GetSequenceCount: Integer; // @addr 0x47CD54 @note "Returns zero when no sequence table exists. Other sequence accessors require a valid table and indexes."
-    function GetSequenceFrameCount(SequenceIndex: Integer): Integer; // @addr 0x47CD84
-    procedure FillSequenceFrameIndexTable(SequenceIndex: Integer; DestTable: Pointer; EntryStride: Integer); // @addr 0x47CDD4
-    procedure FillSequenceFrameDelayTable(SequenceIndex: Integer; DestTable: Pointer; EntryStride: Integer); // @addr 0x47CE94
-    function GetSequenceFrameIndex(SequenceIndex, FrameInSequence: Integer): Integer; // @addr 0x47CF54
-    function GetSequenceFrameDelay(SequenceIndex, FrameInSequence: Integer): Integer; // @addr 0x47CFB4
-    procedure LoadFromConfigBuffer(SourceBuffer: TBufEC; const LoadOption: WideString); override; // @addr 0x47D018 @note "NoConvertPF disables palette conversion. Only the minimum header size is validated; frame and sequence offsets are trusted."
-    procedure ApplyAB2BackgroundFixup(SourceBuffer: TBufEC; const ResourceKey: WideString); // @addr 0x47D288 @note "Only affects the single-frame Bm.FormAB2.2bg resource; replaces SourceBuffer with RGB565 GI data."
+    constructor Create; // @addr 0x00487750
+    destructor Destroy; override; // @addr 0x0048779C
+    function GetFrameCount: Integer; // @addr 0x00487804
+    function HasPlaybackFlags: Boolean; // @addr 0x0048780C
+    function GetBoundsRect: TRect; // @addr 0x00487818
+    function GetCanvasSize: TPoint; // @addr 0x0048782C
+    function GetOrCreateFrameSurface(FrameIndex: Integer): IDirect3DTexture9; // @addr 0x00487848
+    function GetFrameOrigin(FrameIndex: Integer): TPoint; // @addr 0x004879AC @note "Requires a valid index and a prior GetOrCreateFrameSurface call."
+    function LoadFrameGi(FrameIndex: Integer): TgiGR; // @addr 0x004879C0 @note "Returns borrowed, reused DecodedFrameGi storage, or nil."
+    function IsFrameCompressed(FrameIndex: Integer): Boolean; // @addr 0x00487AC0 @note "Does not validate FrameIndex."
+    function GetSequenceCount: Integer; // @addr 0x00487B10 @note "Returns zero when no sequence table exists. Other sequence accessors require a valid table and indexes."
+    function GetSequenceFrameCount(SequenceIndex: Integer): Integer; // @addr 0x00487B24
+    procedure FillSequenceFrameIndexTable(SequenceIndex: Integer; DestTable: Pointer; EntryStride: Integer); // @addr 0x00487B64
+    procedure FillSequenceFrameDelayTable(SequenceIndex: Integer; DestTable: Pointer; EntryStride: Integer); // @addr 0x00487BF8
+    function GetSequenceFrameIndex(SequenceIndex, FrameInSequence: Integer): Integer; // @addr 0x00487C8C
+    function GetSequenceFrameDelay(SequenceIndex, FrameInSequence: Integer): Integer; // @addr 0x00487CDC
+    procedure LoadFromConfigBuffer(SourceBuffer: TBufEC; const LoadOption: WideString); override; // @addr 0x00487D30 @note "NoConvertPF disables palette conversion. Only the minimum header size is validated; frame and sequence offsets are trusted."
+    procedure ApplyAB2BackgroundFixup(SourceBuffer: TBufEC; const ResourceKey: WideString); // @addr 0x00487F78 @note "Only affects the single-frame Bm.FormAB2.2bg resource; replaces SourceBuffer with RGB565 GI data."
   end;
 
-function AcquireCachedGai(Control: TCacheControlEC): TCGaiEC; // @addr 0x47C82C
+function AcquireCachedGai(Control: TCacheControlEC): TCGaiEC; // @addr 0x00487728
 
 implementation
 
 uses EC_Mem, EC_Str, EC_Struct, GR_Main, GR_GraphBuf, Windows;
 
-// Native directory indexing adds the two header dwords separately.
+const
+  GaiFrameDataSizeOffset = SizeOf(Integer); // TGaiFrameEntry.DataSize follows DataOffset.
+  GaiSequenceFrameDelayOffset = SizeOf(Integer); // TGaiSequenceFrameEntry.FrameDelay follows SourceFrameIndex.
+
+// The directory follows SequenceCount and one unresolved header dword.
 function ReadGaiSequenceOffset(const Table: PGaiSequenceTableHeader; const Index: Integer): Cardinal; inline;
 begin
   Result := ReadDWordEC(AddPointerOffset(Table,
     Index * SizeOf(TGaiSequenceDirectoryEntry) + 4 + 4));
 end;
 
-{ @routine $47C788 TCGaiControlEC_QueueLoadIfMissing }
+{ @routine $4876AC TCGaiControlEC_QueueLoadIfMissing }
 procedure TCGaiControlEC.QueueLoadIfMissing(PendingLoads: TList);
 var Control: TCGaiControlEC;
 begin
   if RetainCount > 0 then Exit;
   if BoundData <> nil then Exit;
   if HasEmptyCacheKey then Exit;
-  if GlobalCache.FindDataByKeyAndClass(CacheKey, TCGaiEC) = nil then
-  begin
-    Control := TCGaiControlEC.Create;
-    GlobalCache.ResetControl(Control);
-    Control.SetCacheKey(CacheKey);
-    PendingLoads.Add(Control);
-  end;
+  if GlobalCache.FindDataByKeyAndClass(CacheKey, TCGaiEC) <> nil then Exit;
+  Control := TCGaiControlEC.Create;
+  GlobalCache.ResetControl(Control);
+  Control.SetCacheKey(CacheKey);
+  PendingLoads.Add(Control);
 end;
-{ @end $47C788 }
+{ @end $4876AC }
 
-{ @routine $47C80C TCGaiControlEC_CreateData }
+{ @routine $487718 TCGaiControlEC_CreateData }
 function TCGaiControlEC.CreateData: TCacheDataEC;
 begin
   Result := TCGaiEC.Create;
 end;
-{ @end $47C80C }
+{ @end $487718 }
 
-{ @routine $47C82C AcquireCachedGai }
+{ @routine $487728 AcquireCachedGai }
 function AcquireCachedGai(Control: TCacheControlEC): TCGaiEC;
 begin
   Result := Control.AcquireDataFromConfig(TCGaiEC) as TCGaiEC;
 end;
-{ @end $47C82C }
+{ @end $487728 }
 
-{ @routine $47C858 TCGaiControlEC_AcquireData }
+{ @routine $487748 TCGaiControlEC_AcquireData }
 function TCGaiControlEC.AcquireData: TCacheDataEC;
 begin
   Result := AcquireCachedGai(Self);
 end;
-{ @end $47C858 }
+{ @end $487748 }
 
-{ @routine $47C874 TCGaiEC_Create }
+{ @routine $487750 TCGaiEC_Create }
 constructor TCGaiEC.Create;
 begin
   inherited Create;
   DecodedFrameGi := TgiGR.Create;
   FrameSurfaceCache := nil;
 end;
-{ @end $47C874 }
+{ @end $487750 }
 
-{ @routine $47C8D0 TCGaiEC_Destroy }
+{ @routine $48779C TCGaiEC_Destroy }
 destructor TCGaiEC.Destroy;
 begin
   if RawGaiData <> nil then
@@ -122,37 +123,37 @@ begin
   end;
   inherited Destroy;
 end;
-{ @end $47C8D0 }
+{ @end $48779C }
 
-{ @routine $47C960 TCGaiEC_GetFrameCount }
+{ @routine $487804 TCGaiEC_GetFrameCount }
 function TCGaiEC.GetFrameCount: Integer;
 begin
   Result := Header.FrameCount;
 end;
-{ @end $47C960 }
+{ @end $487804 }
 
-{ @routine $47C97C TCGaiEC_HasPlaybackFlags }
+{ @routine $48780C TCGaiEC_HasPlaybackFlags }
 function TCGaiEC.HasPlaybackFlags: Boolean;
 begin
   Result := Header.Flags <> 0;
 end;
-{ @end $47C97C }
+{ @end $48780C }
 
-{ @routine $47C99C TCGaiEC_GetBoundsRect }
+{ @routine $487818 TCGaiEC_GetBoundsRect }
 function TCGaiEC.GetBoundsRect: TRect;
 begin
   Result := Header.Bounds;
 end;
-{ @end $47C99C }
+{ @end $487818 }
 
-{ @routine $47C9C4 TCGaiEC_GetCanvasSize }
+{ @routine $48782C TCGaiEC_GetCanvasSize }
 function TCGaiEC.GetCanvasSize: TPoint;
 begin
   Result := SubtractPoints(Header.Bounds.BottomRight, Header.Bounds.TopLeft);
 end;
-{ @end $47C9C4 }
+{ @end $48782C }
 
-{ @routine $47C9F0 TCGaiEC_GetOrCreateFrameSurface }
+{ @routine $487848 TCGaiEC_GetOrCreateFrameSurface }
 function TCGaiEC.GetOrCreateFrameSurface(FrameIndex: Integer): IDirect3DTexture9;
 var Texture: IDirect3DTexture9; Locked: TD3DLockedRect; FrameSize, Origin: TPoint; Frame: TgiGR;
 begin
@@ -189,16 +190,16 @@ begin
   end;
   Result := Texture;
 end;
-{ @end $47C9F0 }
+{ @end $487848 }
 
-{ @routine $47CB80 TCGaiEC_GetFrameOrigin }
+{ @routine $4879AC TCGaiEC_GetFrameOrigin }
 function TCGaiEC.GetFrameOrigin(FrameIndex: Integer): TPoint;
 begin
   Result := CachedFrameOrigins[FrameIndex];
 end;
-{ @end $47CB80 }
+{ @end $4879AC }
 
-{ @routine $47CBB0 TCGaiEC_LoadFrameGi }
+{ @routine $4879C0 TCGaiEC_LoadFrameGi }
 function TCGaiEC.LoadFrameGi(FrameIndex: Integer): TgiGR;
 var Offset: Integer;
 begin
@@ -214,17 +215,17 @@ begin
   begin
     DecodedFrameGi.LoadCompressedGiBytes(AddPointerOffset(RawGaiData, Offset),
       ReadDWordEC(AddPointerOffset(RawGaiData,
-        Integer(@PGaiFrameEntry(FrameIndex * SizeOf(TGaiFrameEntry) + SizeOf(TGaiHeader)).DataSize))));
+        FrameIndex * SizeOf(TGaiFrameEntry) + SizeOf(TGaiHeader) + GaiFrameDataSizeOffset)));
     if not SkipPalettedColorCacheBuild then DecodedFrameGi.BuildPalettedFormat4ColorCache;
   end
   else DecodedFrameGi.LoadRawGiBytes(AddPointerOffset(RawGaiData, Offset),
     ReadDWordEC(AddPointerOffset(RawGaiData,
-      Integer(@PGaiFrameEntry(FrameIndex * SizeOf(TGaiFrameEntry) + SizeOf(TGaiHeader)).DataSize))));
+      FrameIndex * SizeOf(TGaiFrameEntry) + SizeOf(TGaiHeader) + GaiFrameDataSizeOffset)));
   if not DecodedFrameGi.IsEmpty then Result := DecodedFrameGi;
 end;
-{ @end $47CBB0 }
+{ @end $4879C0 }
 
-{ @routine $47CCF0 TCGaiEC_IsFrameCompressed }
+{ @routine $487AC0 TCGaiEC_IsFrameCompressed }
 function TCGaiEC.IsFrameCompressed(FrameIndex: Integer): Boolean;
 var Offset: Integer;
 begin
@@ -232,24 +233,24 @@ begin
   if Offset = 0 then Result := False
   else Result := ReadWordEC(AddPointerOffset(RawGaiData, Offset)) = $4C5A;
 end;
-{ @end $47CCF0 }
+{ @end $487AC0 }
 
-{ @routine $47CD54 TCGaiEC_GetSequenceCount }
+{ @routine $487B10 TCGaiEC_GetSequenceCount }
 function TCGaiEC.GetSequenceCount: Integer;
 begin
   if SequenceTableData = nil then Result := 0
   else Result := ReadDWordEC(@SequenceTableData.SequenceCount);
 end;
-{ @end $47CD54 }
+{ @end $487B10 }
 
-{ @routine $47CD84 TCGaiEC_GetSequenceFrameCount }
+{ @routine $487B24 TCGaiEC_GetSequenceFrameCount }
 function TCGaiEC.GetSequenceFrameCount(SequenceIndex: Integer): Integer;
 begin
   Result := ReadDWordEC(AddPointerOffset(SequenceTableData, ReadGaiSequenceOffset(SequenceTableData, SequenceIndex)));
 end;
-{ @end $47CD84 }
+{ @end $487B24 }
 
-{ @routine $47CDD4 TCGaiEC_FillSequenceFrameIndexTable }
+{ @routine $487B64 TCGaiEC_FillSequenceFrameIndexTable }
 procedure TCGaiEC.FillSequenceFrameIndexTable(SequenceIndex: Integer; DestTable: Pointer; EntryStride: Integer);
 var Source: Pointer; Index, Count: Integer;
 begin
@@ -263,9 +264,9 @@ begin
     Source := AddPointerOffset(Source, SizeOf(TGaiSequenceFrameEntry));
   end;
 end;
-{ @end $47CDD4 }
+{ @end $487B64 }
 
-{ @routine $47CE94 TCGaiEC_FillSequenceFrameDelayTable }
+{ @routine $487BF8 TCGaiEC_FillSequenceFrameDelayTable }
 procedure TCGaiEC.FillSequenceFrameDelayTable(SequenceIndex: Integer; DestTable: Pointer; EntryStride: Integer);
 var Source: Pointer; Index, Count: Integer;
 begin
@@ -279,29 +280,28 @@ begin
     Source := AddPointerOffset(Source, SizeOf(TGaiSequenceFrameEntry));
   end;
 end;
-{ @end $47CE94 }
+{ @end $487BF8 }
 
-{ @routine $47CF54 TCGaiEC_GetSequenceFrameIndex }
+{ @routine $487C8C TCGaiEC_GetSequenceFrameIndex }
 function TCGaiEC.GetSequenceFrameIndex(SequenceIndex, FrameInSequence: Integer): Integer;
 begin
+  // SourceFrameIndex is the first field after the block's FrameCount.
   Result := ReadDWordEC(AddPointerOffset(SequenceTableData,
     ReadGaiSequenceOffset(SequenceTableData, SequenceIndex) +
-    Integer(@PGaiSequenceFrameEntry(
-      FrameInSequence * SizeOf(TGaiSequenceFrameEntry) + SizeOf(TGaiSequenceDataBlock)).SourceFrameIndex)));
+    (FrameInSequence * SizeOf(TGaiSequenceFrameEntry) + SizeOf(TGaiSequenceDataBlock))));
 end;
-{ @end $47CF54 }
+{ @end $487C8C }
 
-{ @routine $47CFB4 TCGaiEC_GetSequenceFrameDelay }
+{ @routine $487CDC TCGaiEC_GetSequenceFrameDelay }
 function TCGaiEC.GetSequenceFrameDelay(SequenceIndex, FrameInSequence: Integer): Integer;
 begin
   Result := ReadDWordEC(AddPointerOffset(SequenceTableData,
     ReadGaiSequenceOffset(SequenceTableData, SequenceIndex) +
-    Integer(@PGaiSequenceFrameEntry(
-      FrameInSequence * SizeOf(TGaiSequenceFrameEntry) + SizeOf(TGaiSequenceDataBlock)).FrameDelay)));
+    (FrameInSequence * SizeOf(TGaiSequenceFrameEntry) + SizeOf(TGaiSequenceDataBlock) + GaiSequenceFrameDelayOffset)));
 end;
-{ @end $47CFB4 }
+{ @end $487CDC }
 
-{ @routine $47D018 TCGaiEC_LoadFromConfigBuffer }
+{ @routine $487D30 TCGaiEC_LoadFromConfigBuffer }
 procedure TCGaiEC.LoadFromConfigBuffer(SourceBuffer: TBufEC; const LoadOption: WideString);
 var FrameIndex: Integer; Frame: TgiGR;
 begin
@@ -329,20 +329,20 @@ begin
     end;
   SetLength(CachedFrameOrigins, Header.FrameCount);
 end;
-{ @end $47D018 }
+{ @end $487D30 }
 
-{ @routine $47D288 TCGaiEC_ApplyAB2BackgroundFixup }
+{ @routine $487F78 TCGaiEC_ApplyAB2BackgroundFixup }
 procedure TCGaiEC.ApplyAB2BackgroundFixup(SourceBuffer: TBufEC; const ResourceKey: WideString);
 var Image: TgiGR; GraphBuf: TGraphBufGR; ByteCount, Offset: Integer; OldHeader: TGaiHeader;
 
-  // @nested $47D1D0 LogGaiRescaleStart
-  procedure LogGaiRescaleStart; // @addr $47D1D0 @calls "0x0047D2AF"
+  // @nested $487EC4 LogGaiRescaleStart
+  procedure LogGaiRescaleStart; // @addr $487EC4 @calls "0x00487F9E"
   begin
     AppendLogTextThreadSafe('Rescaling ' + ResourceKey + '... ');
   end;
 
-  // @nested $47D26C LogGaiRescaleDone
-  procedure LogGaiRescaleDone; // @addr $47D26C @calls "0x0047D48B"
+  // @nested $487F60 LogGaiRescaleDone
+  procedure LogGaiRescaleDone; // @addr $487F60 @calls "0x0048813C"
   begin
     AppendLogLineThreadSafe('ok');
   end;
@@ -379,6 +379,6 @@ begin
     LogGaiRescaleDone;
   end;
 end;
-{ @end $47D288 }
+{ @end $487F78 }
 
 end.

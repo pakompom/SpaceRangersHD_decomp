@@ -1,5 +1,4 @@
 unit aEObjInfo;
-// Unit bracket (inferred): .text 0x006A2054..0x006A489F; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -9,7 +8,6 @@ type
   PEPlanetInfo = ^TEOTPlanet;
   TEObjInfo = class;
 
-  // Native record RTTI at $6A1F00.
   TEOTCustomStarInfo = record // @size $10
     Name: WideString; // @offset $00
     ImagePath: WideString; // @offset $04
@@ -19,7 +17,6 @@ type
   TEPlanetInfos = array of TEOTPlanet;
 
   PEShipInfo = ^TEOTShip;
-  // Native record RTTI at $6A1F38.
   TEOTPlanet = record // @size $28
     Id: Cardinal; // @offset $00
     Name: WideString; // @offset $04
@@ -38,7 +35,6 @@ type
   TEShipInfos = array of TEOTShip;
 
   PEItemInfo = ^TEOTItem;
-  // Native record RTTI at $6A1F68.
   TEOTShip = record // @size $50
     Id: Cardinal; // @offset $00
     Name: WideString; // @offset $04
@@ -65,7 +61,6 @@ type
   TEItemInfos = array of TEOTItem;
 
   PEAsteroidInfo = ^TEOTAsteroid;
-  // Native record RTTI at $6A1FC0.
   TEOTItem = record // @size $38
     Id: Cardinal; // @offset $00
     Name: WideString; // @offset $04
@@ -83,7 +78,6 @@ type
   TEAsteroidInfos = array of TEOTAsteroid;
 
   PEMissileInfo = ^TEOTMissile;
-  // Native record RTTI at $6A1FF8.
   TEOTAsteroid = record // @size $0C
     Id: Cardinal; // @offset $00
     Name: WideString; // @offset $04
@@ -92,7 +86,6 @@ type
   TEMissileInfos = array of TEOTMissile;
 
   PECustomSystemInfo = ^TEOTCustomStarInfo;
-  // Native record RTTI at $6A2024.
   TEOTMissile = record // @size $0C
     Id: Cardinal; // @offset $00
     Name: WideString; // @offset $04
@@ -111,39 +104,39 @@ type
     Missiles: array of TEOTMissile; // @offset $1C
     CustomSystemInfos: array of TEOTCustomStarInfo; // @offset $20
 
-    constructor Create; // @addr $6A21C0
-    destructor Destroy; override; // @addr $6A2204
-    procedure Clear; // @addr $6A2240
-    procedure LoadFromStar(Star: TStar); // @addr $6A22C4
-    function FindPlanet(ObjectId: Cardinal): PEPlanetInfo; // @addr $6A3624 Borrowed pointer into the snapshot array.
-    function FindShip(ObjectId: Cardinal): PEShipInfo; // @addr $6A3688 Borrowed pointer into the snapshot array.
-    function FindItem(ObjectId: Cardinal): PEItemInfo; // @addr $6A36F0 Borrowed pointer into the snapshot array.
-    function FindAsteroid(ObjectId: Cardinal): PEAsteroidInfo; // @addr $6A375C Borrowed pointer into the snapshot array.
-    function FindMissile(ObjectId: Cardinal): PEMissileInfo; // @addr $6A37C0 Borrowed pointer into the snapshot array.
-    procedure SaveToBuffer(Buffer: TBufEC); // @addr $6A3824 Appends the current snapshot; doubles are serialized as singles.
-    procedure LoadFromBuffer(Buffer: TBufEC; Version: Integer); // @addr $6A3F44 Legacy versions omit scanner, repair, faction or custom-system fields.
+    constructor Create; // @addr $5016B8
+    destructor Destroy; override; // @addr $5016F0
+    procedure Clear; // @addr $50171C
+    procedure LoadFromStar(Star: TStar); // @addr $501784
+    function FindPlanet(ObjectId: Cardinal): PEPlanetInfo; // @addr $502844 Borrowed pointer into the snapshot array.
+    function FindShip(ObjectId: Cardinal): PEShipInfo; // @addr $50287C Borrowed pointer into the snapshot array.
+    function FindItem(ObjectId: Cardinal): PEItemInfo; // @addr $5028B8 Borrowed pointer into the snapshot array.
+    function FindAsteroid(ObjectId: Cardinal): PEAsteroidInfo; // @addr $5028F4 Borrowed pointer into the snapshot array.
+    function FindMissile(ObjectId: Cardinal): PEMissileInfo; // @addr $50292C Borrowed pointer into the snapshot array.
+    procedure SaveToBuffer(Buffer: TBufEC); // @addr $502964 Appends the current snapshot; doubles are serialized as singles.
+    procedure LoadFromBuffer(Buffer: TBufEC; Version: Integer); // @addr $502DD8 Legacy versions omit scanner, repair, faction or custom-system fields.
   end;
 
 implementation
 
 uses Classes, SysUtils, aPlanet, aShip, aItem, aAsteroid, aMissile, aPlayer, aConst, aMyFunction, aKling, aRanger, aRuins, GR_Main;
 
-{ @routine $6A21C0 TEObjInfo_Create }
+{ @routine $5016B8 TEObjInfo_Create }
 constructor TEObjInfo.Create;
 begin
   inherited Create;
 end;
-{ @end $6A21C0 }
+{ @end $5016B8 }
 
-{ @routine $6A2204 TEObjInfo_Destroy }
+{ @routine $5016F0 TEObjInfo_Destroy }
 destructor TEObjInfo.Destroy;
 begin
   Clear;
   inherited Destroy;
 end;
-{ @end $6A2204 }
+{ @end $5016F0 }
 
-{ @routine $6A2240 TEObjInfo_Clear }
+{ @routine $50171C TEObjInfo_Clear }
 procedure TEObjInfo.Clear;
 begin
   StarName := '';
@@ -155,13 +148,12 @@ begin
   Missiles := nil;
   CustomSystemInfos := nil;
 end;
-{ @end $6A2240 }
+{ @end $50171C }
 
-{ @routine $6A22C4 TEObjInfo_LoadFromStar }
+{ @routine $501784 TEObjInfo_LoadFromStar }
 procedure TEObjInfo.LoadFromStar(Star: TStar);
 const
-  NoDamageFlags = [dkEnergy..dkDroidBlock] - [dkEnergy..dkDroidBlock];
-  WearableItemTypes = [0..79] - [0..7,9,23..25,35..38,42,69..72,74..79];
+  WearableItemTypes = [Low(TItemType)..High(TItemType)] - [t_Food..t_Narcotics, t_Artefact2, t_ArtefactTransmitter..t_ArtefactTranclucator, t_ArtBlackHole..t_ArtArtefactor, t_Hull, t_Protoplasm..t_Cistern, t_TreasureMap..t_UselessCountableItem];
 var
   Index, StatusCount: Integer;
   Planet: TPlanet;
@@ -209,12 +201,13 @@ begin
       begin
         Stage := 21;
         Ships[Index].FullName := WrapTextInColor(Ship.GetFullName(' '), InfoNameColorTag);
-        if (Ship <> nil) and (GetPlayer = Ship.PartnerShip) then
-          Ships[Index].FullName := Ships[Index].FullName + #13#10 + WrapTextInColor(LookupLocalizedTextByKey('FormInfo.Partner'), TextHighlightColorTag);
-        if (Ship is TKling) and ((Ship as TKling).ActiveProgramAppliedTurn > 0) and
-          ((Ship as TKling).ActiveProgramId in [prgShipwreck..prgDisconnection]) then
-          Ships[Index].FullName := Ships[Index].FullName + #13#10 + WrapTextInColor(
-            LocalizedText('Programms.' + ProgramNames[(Ship as TKling).ActiveProgramId] + '.AddToShipInfo'), RedColorTag);
+        if (Ship <> nil) then
+          if (GetPlayer = Ship.PartnerShip) then
+            Ships[Index].FullName := Ships[Index].FullName + #13#10 + WrapTextInColor(LookupLocalizedTextByKey('FormInfo.Partner'), TextHighlightColorTag);
+        if (Ship is TKling) then
+          if ((Ship as TKling).ActiveProgramAppliedTurn > 0) and ((Ship as TKling).ActiveProgramId in [prgShipwreck..prgDisconnection]) then
+            Ships[Index].FullName := Ships[Index].FullName + #13#10 + WrapTextInColor(
+              LocalizedText('Programms.' + ProgramNames[(Ship as TKling).ActiveProgramId] + '.AddToShipInfo'), RedColorTag);
       end
       else
       begin
@@ -229,7 +222,7 @@ begin
       Ships[Index].Speed := Ship.CalculateSpeed;
       Ships[Index].HullCapacity := Ship.GetHull.Weight;
       Ships[Index].HullPoints := Ship.GetHull.HullPoints;
-      Ships[Index].HullFragility := Ship.GetHull.GetFragilityFactor(NoDamageFlags);
+      Ships[Index].HullFragility := Ship.GetHull.GetFragilityFactor([]);
       if GetPlayer.CanResolveObjectWithScanner(Ship) or (GetPlayer = Ship) then Ships[Index].ScannerResolved := True
       else Ships[Index].ScannerResolved := False;
       Stage := 24;
@@ -253,14 +246,12 @@ begin
       Stage := 26;
       Relation := Ship.GetRelationLevelToShip(GetPlayer);
       Ships[Index].Relation := Relation;
-      if Relation <> rlHostile then
-        if Ship is TRuins then
-          if Ship.RangerRelations <> nil then
-            if Ship.RangerRelations.Count > 0 then
-            begin
-              Relation := RelationValueToLevel(Byte(Ship.RangerRelations[Galaxy.Rangers.IndexOf(GetPlayer)]));
-              if Relation <> rlHostile then Ships[Index].Relation := Relation;
-            end;
+      if (Relation <> rlHostile) and (Ship is TRuins) and
+        (Ship.RangerRelations <> nil) and (Ship.RangerRelations.Count > 0) then
+      begin
+        Relation := RelationValueToLevel(Byte(Ship.RangerRelations[Galaxy.Rangers.IndexOf(GetPlayer)]));
+        if Relation <> rlHostile then Ships[Index].Relation := Relation;
+      end;
       Stage := 27;
       if (GetPlayer <> Ship) and not (Ship is TRuins) and (GetPlayer.CountActiveArtefacts(t_ArtefactAnalyzer) > 0) and
         GetPlayer.CanResolveObjectWithScanner(Ship) then
@@ -285,10 +276,10 @@ begin
       Items[Index].ItemType := Item.ItemType;
       Items[Index].Weight := Item.Weight;
       Items[Index].Cost := Item.Cost;
-      if Byte(Item.ItemType) in WearableItemTypes then
+      if Item.ItemType in WearableItemTypes then
       begin
         Items[Index].ConditionPercent := (Item as TEquipment).ConditionPercent;
-        Items[Index].Fragility := (Item as TEquipment).GetFragilityFactor(NoDamageFlags);
+        Items[Index].Fragility := (Item as TEquipment).GetFragilityFactor([]);
       end
       else
       begin
@@ -299,8 +290,8 @@ begin
       begin
         Stage := 31;
         Items[Index].ImagePath := 'GI,' + GetItemTypeBitmapPath(Item.ItemType);
-        Items[Index].Name := WrapTextInColor(GoodsMarket[Byte(Item.ItemType)].DisplayName, InfoNameColorTag);
-        Items[Index].InfoText := LocalizedText('Items.Goods.Text.' + IntToStr(Byte(Item.ItemType) + 1));
+        Items[Index].Name := WrapTextInColor(GoodsMarket[Ord(Item.ItemType)].DisplayName, InfoNameColorTag);
+        Items[Index].InfoText := LocalizedText('Items.Goods.Text.' + IntToStr(Ord(Item.ItemType) + 1));
         Items[Index].OwnerId := oiUninhabited;
       end
       else
@@ -340,7 +331,7 @@ begin
     SetLength(CustomSystemInfos, Star.CustomSystemInfos.Count);
     for Index := 0 to Star.CustomSystemInfos.Count - 1 do
     begin
-      CustomInfo := TCustomSystemInfo(Star.CustomSystemInfos[Index]);
+      CustomInfo := Star.CustomSystemInfos[Index];
       CustomSystemInfos[Index].Name := CustomInfo.Name;
       CustomSystemInfos[Index].ImagePath := CustomInfo.Icon;
       CustomSystemInfos[Index].Text := CustomInfo.Info;
@@ -354,9 +345,9 @@ begin
     end;
   end;
 end;
-{ @end $6A22C4 }
+{ @end $501784 }
 
-{ @routine $6A3624 TEObjInfo_FindPlanet }
+{ @routine $502844 TEObjInfo_FindPlanet }
 function TEObjInfo.FindPlanet(ObjectId: Cardinal): PEPlanetInfo;
 var
   Index: Integer;
@@ -369,9 +360,9 @@ begin
     end;
   Result := nil;
 end;
-{ @end $6A3624 }
+{ @end $502844 }
 
-{ @routine $6A3688 TEObjInfo_FindShip }
+{ @routine $50287C TEObjInfo_FindShip }
 function TEObjInfo.FindShip(ObjectId: Cardinal): PEShipInfo;
 var
   Index: Integer;
@@ -384,9 +375,9 @@ begin
     end;
   Result := nil;
 end;
-{ @end $6A3688 }
+{ @end $50287C }
 
-{ @routine $6A36F0 TEObjInfo_FindItem }
+{ @routine $5028B8 TEObjInfo_FindItem }
 function TEObjInfo.FindItem(ObjectId: Cardinal): PEItemInfo;
 var
   Index: Integer;
@@ -399,9 +390,9 @@ begin
     end;
   Result := nil;
 end;
-{ @end $6A36F0 }
+{ @end $5028B8 }
 
-{ @routine $6A375C TEObjInfo_FindAsteroid }
+{ @routine $5028F4 TEObjInfo_FindAsteroid }
 function TEObjInfo.FindAsteroid(ObjectId: Cardinal): PEAsteroidInfo;
 var
   Index: Integer;
@@ -414,9 +405,9 @@ begin
     end;
   Result := nil;
 end;
-{ @end $6A375C }
+{ @end $5028F4 }
 
-{ @routine $6A37C0 TEObjInfo_FindMissile }
+{ @routine $50292C TEObjInfo_FindMissile }
 function TEObjInfo.FindMissile(ObjectId: Cardinal): PEMissileInfo;
 var
   Index: Integer;
@@ -429,9 +420,9 @@ begin
     end;
   Result := nil;
 end;
-{ @end $6A37C0 }
+{ @end $50292C }
 
-{ @routine $6A3824 TEObjInfo_SaveToBuffer }
+{ @routine $502964 TEObjInfo_SaveToBuffer }
 procedure TEObjInfo.SaveToBuffer(Buffer: TBufEC);
 var
   Index: Integer;
@@ -518,9 +509,9 @@ begin
     Buffer.AddIntegerValue(CustomSystemInfos[Index].Distance);
   end;
 end;
-{ @end $6A3824 }
+{ @end $502964 }
 
-{ @routine $6A3F44 TEObjInfo_LoadFromBuffer }
+{ @routine $502DD8 TEObjInfo_LoadFromBuffer }
 procedure TEObjInfo.LoadFromBuffer(Buffer: TBufEC; Version: Integer);
 var
   Count, Index: Integer;
@@ -625,6 +616,6 @@ begin
   end
   else CustomSystemInfos := nil;
 end;
-{ @end $6A3F44 }
+{ @end $502DD8 }
 
 end.

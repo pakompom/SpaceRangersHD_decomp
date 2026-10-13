@@ -1,6 +1,4 @@
 unit Windows;
-// Unit bracket (inferred): .text 0x00407C6C..0x00408AD3; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
-// Unit bracket (inferred): .itext 0x00876098..0x00876098; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -22,8 +20,8 @@ type
   end;
 
 procedure FillMemory(Dest: Pointer; ByteCount: Cardinal; Value: Byte);
-procedure MoveMemory(Dest, Source: Pointer; ByteCount: Cardinal); // @addr 0x4088BC
-procedure CopyMemory(Dest, Source: Pointer; ByteCount: Cardinal); // @addr 0x4088C4 @note "This implementation also supports overlapping ranges."
+procedure MoveMemory(Dest, Source: Pointer; ByteCount: Cardinal); // @addr 0x004088BC
+procedure CopyMemory(Dest, Source: Pointer; ByteCount: Cardinal); // @addr 0x004088C4 @note "This implementation also supports overlapping ranges."
 
 type
   TLargeInteger = Int64;
@@ -85,9 +83,9 @@ type
 
   TWinMsg = TMsg;
 
-function HwndMSWheel(var puiMsh_MsgMouseWheel, puiMsh_Msg3DSupport, puiMsh_MsgScrollLines: Cardinal; var pf3DSupport: LongBool; var piScrollLines: Integer): Cardinal; // @note "DCC32 MAP Windows.HwndMSWheel. Source rtl/win/Windows.pas:31956."
+function HwndMSWheel(var puiMsh_MsgMouseWheel, puiMsh_Msg3DSupport, puiMsh_MsgScrollLines: Cardinal; var pf3DSupport: LongBool; var piScrollLines: Integer): Cardinal;
 
-procedure FinalizeWindows; // @nameonly @note "DCC32 MAP Windows.Finalization. Prototype pending: no unique source declaration."
+procedure FinalizeWindows; // @nameonly
 
 function CreateWindowExPreservingFpuW(ExStyle: Cardinal; ClassName, WindowName: PWideChar; Style: Cardinal; X, Y, Width, Height: Integer; Parent, Menu, Instance: Cardinal; Param: Pointer): Cardinal; // @addr $408940
 

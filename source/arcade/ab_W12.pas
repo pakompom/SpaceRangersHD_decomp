@@ -1,6 +1,4 @@
 unit ab_W12;
-// Unit bracket (inferred): .text 0x004F88A8..0x004F8ED2; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
-// Native TabW12 projectile family: $4F8910..$4F8ED4.
 
 interface
 
@@ -16,18 +14,18 @@ type
     OrbitAngle: Single; // @offset $C0
     OrbitRadius: Single; // @offset $C4
     TrailImages: TList; // @offset $C8
-    constructor Create; // @addr $4F8910
-    destructor Destroy; override; // @addr $4F89A8
-    procedure Launch(Owner: TabObject; Amount: Integer; Angle: Single); // @addr $4F8A60
-    procedure Advance; override; // @addr $4F8B74
-    procedure UpdateVisuals; override; // @addr $4F8DC8
+    constructor Create; // @addr $550214
+    destructor Destroy; override; // @addr $55028C
+    procedure Launch(Owner: TabObject; Amount: Integer; Angle: Single); // @addr $55030C
+    procedure Advance; override; // @addr $5503F4
+    procedure UpdateVisuals; override; // @addr $5505DC
   end;
 
 implementation
 
 uses GlobalsV;
 
-{ @routine $4F8910 TabW12_Create }
+{ @routine $550214 TabW12_Create }
 constructor TabW12.Create;
 begin
   inherited Create;
@@ -38,9 +36,9 @@ begin
   Collidable := False;
   TrailImages := TList.Create;
 end;
-{ @end $4F8910 }
+{ @end $550214 }
 
-{ @routine $4F89A8 TabW12_Destroy }
+{ @routine $55028C TabW12_Destroy }
 destructor TabW12.Destroy;
 var
   Index: Integer;
@@ -58,9 +56,9 @@ begin
   end;
   inherited Destroy;
 end;
-{ @end $4F89A8 }
+{ @end $55028C }
 
-{ @routine $4F8A60 TabW12_Launch }
+{ @routine $55030C TabW12_Launch }
 procedure TabW12.Launch(Owner: TabObject; Amount: Integer; Angle: Single);
 begin
   SourceObject := Owner;
@@ -73,9 +71,9 @@ begin
   Image := ab_WorldImage_Create(MakeVector3D(0, 0, 0), 'GAI,Bm.AB.w12_f', 'GAI,Bm.AB.w12_s', False);
   ab_WorldImage_SetDepth(Image, HitFrontDepth, HitBackDepth);
 end;
-{ @end $4F8A60 }
+{ @end $55030C }
 
-{ @routine $4F8B74 TabW12_Advance }
+{ @routine $5503F4 TabW12_Advance }
 procedure TabW12.Advance;
 var
   Collision: TabObject;
@@ -106,9 +104,9 @@ begin
   end
   else if Exploding then DeletionPending := Image.Finished;
 end;
-{ @end $4F8B74 }
+{ @end $5503F4 }
 
-{ @routine $4F8DC8 TabW12_UpdateVisuals }
+{ @routine $5505DC TabW12_UpdateVisuals }
 procedure TabW12.UpdateVisuals;
 var
   Entry: PabWorldImage;
@@ -139,6 +137,6 @@ begin
     end;
   end;
 end;
-{ @end $4F8DC8 }
+{ @end $5505DC }
 
 end.

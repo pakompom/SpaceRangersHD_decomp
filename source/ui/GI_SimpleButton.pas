@@ -1,5 +1,4 @@
 unit GI_SimpleButton;
-// Unit bracket (inferred): .text 0x0049BE3C..0x0049C4F1; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 
 interface
@@ -12,24 +11,24 @@ type
     CurrentImage: TCBitmapControlEC; // @offset $120
     NormalImage: TCBitmapControlEC; // @offset $124
     ActiveImage: TCBitmapControlEC; // @offset $128
-    constructor Create(Owner: TObjectGI); // @addr $49BF60
-    destructor Destroy; override; // @addr $49BFFC
-    procedure Clear; override; // @addr $49C060
-    procedure OnMouseEnter; override; // @addr $49C074
-    procedure OnMouseLeave; override; // @addr $49C0A4
-    procedure ProcessLeftButtonDown(KeyState: Cardinal; Point: TPoint); override; // @addr $49C0D4
-    procedure ProcessLeftButtonUp(KeyState: Cardinal; Point: TPoint); override; // @addr $49C114
-    procedure LoadFromConfigPath(const Path: WideString); override; // @addr $49C154
-    procedure LoadFromBlock(Block: TBlockParEC); override; // @addr $49C2B8
-    procedure Draw(ClipRect: TRect); override; // @addr $49C3F8
-    procedure QueueImageLoad(PendingLoads: TList); override; // @addr $49C4C0
+    constructor Create(Owner: TObjectGI); // @addr $4B3E8C
+    destructor Destroy; override; // @addr $4B3F10
+    procedure Clear; override; // @addr $4B3F5C
+    procedure OnMouseEnter; override; // @addr $4B3F64
+    procedure OnMouseLeave; override; // @addr $4B3F88
+    procedure ProcessLeftButtonDown(KeyState: Cardinal; Point: TPoint); override; // @addr $4B3FAC
+    procedure ProcessLeftButtonUp(KeyState: Cardinal; Point: TPoint); override; // @addr $4B3FE0
+    procedure LoadFromConfigPath(const Path: WideString); override; // @addr $4B4014
+    procedure LoadFromBlock(Block: TBlockParEC); override; // @addr $4B416C
+    procedure Draw(ClipRect: TRect); override; // @addr $4B42A4
+    procedure QueueImageLoad(PendingLoads: TList); override; // @addr $4B4360
   end;
 
 implementation
 
 uses GR_Main, GI_Main;
 
-{ @routine $49BF60 TSimpleButtonGI_Create }
+{ @routine $4B3E8C TSimpleButtonGI_Create }
 constructor TSimpleButtonGI.Create(Owner: TObjectGI);
 begin
   inherited Create(Owner);
@@ -38,9 +37,9 @@ begin
   ActiveImage := TCBitmapControlEC.Create;
   GlobalCache.ResetControl(ActiveImage);
 end;
-{ @end $49BF60 }
+{ @end $4B3E8C }
 
-{ @routine $49BFFC TSimpleButtonGI_Destroy }
+{ @routine $4B3F10 TSimpleButtonGI_Destroy }
 destructor TSimpleButtonGI.Destroy;
 begin
   NormalImage.Free;
@@ -49,50 +48,50 @@ begin
   ActiveImage := nil;
   inherited Destroy;
 end;
-{ @end $49BFFC }
+{ @end $4B3F10 }
 
-{ @routine $49C060 TSimpleButtonGI_Clear }
+{ @routine $4B3F5C TSimpleButtonGI_Clear }
 procedure TSimpleButtonGI.Clear;
 begin
   inherited Clear;
 end;
-{ @end $49C060 }
+{ @end $4B3F5C }
 
-{ @routine $49C074 TSimpleButtonGI_OnMouseEnter }
+{ @routine $4B3F64 TSimpleButtonGI_OnMouseEnter }
 procedure TSimpleButtonGI.OnMouseEnter;
 begin
   inherited OnMouseEnter;
   CurrentImage := ActiveImage;
   Invalidate;
 end;
-{ @end $49C074 }
+{ @end $4B3F64 }
 
-{ @routine $49C0A4 TSimpleButtonGI_OnMouseLeave }
+{ @routine $4B3F88 TSimpleButtonGI_OnMouseLeave }
 procedure TSimpleButtonGI.OnMouseLeave;
 begin
   inherited OnMouseLeave;
   CurrentImage := NormalImage;
   Invalidate;
 end;
-{ @end $49C0A4 }
+{ @end $4B3F88 }
 
-{ @routine $49C0D4 TSimpleButtonGI_ProcessLeftButtonDown }
+{ @routine $4B3FAC TSimpleButtonGI_ProcessLeftButtonDown }
 procedure TSimpleButtonGI.ProcessLeftButtonDown(KeyState: Cardinal; Point: TPoint);
 begin
   inherited ProcessLeftButtonDown(KeyState, Point);
-  DispatchNamedEvent(1, Point.X, Point.Y);
+  DispatchNamedEvent(nceButtonDown, Point.X, Point.Y);
 end;
-{ @end $49C0D4 }
+{ @end $4B3FAC }
 
-{ @routine $49C114 TSimpleButtonGI_ProcessLeftButtonUp }
+{ @routine $4B3FE0 TSimpleButtonGI_ProcessLeftButtonUp }
 procedure TSimpleButtonGI.ProcessLeftButtonUp(KeyState: Cardinal; Point: TPoint);
 begin
   inherited ProcessLeftButtonUp(KeyState, Point);
-  DispatchNamedEvent(2, Point.X, Point.Y);
+  DispatchNamedEvent(nceButtonUp, Point.X, Point.Y);
 end;
-{ @end $49C114 }
+{ @end $4B3FE0 }
 
-{ @routine $49C154 TSimpleButtonGI_LoadFromConfigPath }
+{ @routine $4B4014 TSimpleButtonGI_LoadFromConfigPath }
 procedure TSimpleButtonGI.LoadFromConfigPath(const Path: WideString);
 var Block: TBlockParEC; Bitmap: TCBitmapEC;
 begin
@@ -103,7 +102,7 @@ begin
     NormalImage.SetCacheKey(Block.GetParam('Image'));
     Bitmap := AcquireOrCreateBitmap(NormalImage);
     try
-      SetSize(Classes.Point(Bitmap.Bitmap.Width, Bitmap.Bitmap.Height));
+      ObjectSize := Classes.Point(Bitmap.Bitmap.Width, Bitmap.Bitmap.Height);
     finally
       NormalImage.Release;
     end;
@@ -111,9 +110,9 @@ begin
   if Block.CountParams('ImageActive') > 0 then
     ActiveImage.SetCacheKey(Block.GetParam('ImageActive'));
 end;
-{ @end $49C154 }
+{ @end $4B4014 }
 
-{ @routine $49C2B8 TSimpleButtonGI_LoadFromBlock }
+{ @routine $4B416C TSimpleButtonGI_LoadFromBlock }
 procedure TSimpleButtonGI.LoadFromBlock(Block: TBlockParEC);
 var Bitmap: TCBitmapEC;
 begin
@@ -121,39 +120,37 @@ begin
     NormalImage.SetCacheKey(Block.GetParam('Image'));
     Bitmap := AcquireOrCreateBitmap(NormalImage);
     try
-      SetSize(Classes.Point(Bitmap.Bitmap.Width, Bitmap.Bitmap.Height));
+      ObjectSize := Classes.Point(Bitmap.Bitmap.Width, Bitmap.Bitmap.Height);
     finally
       NormalImage.Release;
     end;
     ActiveImage.SetCacheKey(Block.GetParam('ImageActive'));
   CurrentImage := NormalImage;
 end;
-{ @end $49C2B8 }
+{ @end $4B416C }
 
-{ @routine $49C3F8 TSimpleButtonGI_Draw }
+{ @routine $4B42A4 TSimpleButtonGI_Draw }
 procedure TSimpleButtonGI.Draw(ClipRect: TRect);
 var Bitmap: TCBitmapEC;
 begin
-  if CurrentImage <> nil then
-  begin
-    Bitmap := AcquireOrCreateBitmap(CurrentImage);
-    try
-      Ex_OKGR_Copy_XY_XY_WORD(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes, ClipRect.Left, ClipRect.Top,
-        Bitmap.Bitmap.GetPixels, Bitmap.Bitmap.PitchBytes, ClipRect.Left - HitTestBounds.Left, ClipRect.Top - HitTestBounds.Top,
-        ClipRect.Right - ClipRect.Left, ClipRect.Bottom - ClipRect.Top);
-    finally
-      CurrentImage.Release;
-    end;
+  if CurrentImage = nil then Exit;
+  Bitmap := AcquireOrCreateBitmap(CurrentImage);
+  try
+    Ex_OKGR_Copy_XY_XY_WORD(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes, ClipRect.Left, ClipRect.Top,
+      Bitmap.Bitmap.GetPixels, Bitmap.Bitmap.PitchBytes, ClipRect.Left - HitTestBounds.Left, ClipRect.Top - HitTestBounds.Top,
+      ClipRect.Right - ClipRect.Left, ClipRect.Bottom - ClipRect.Top);
+  finally
+    CurrentImage.Release;
   end;
 end;
-{ @end $49C3F8 }
+{ @end $4B42A4 }
 
-{ @routine $49C4C0 TSimpleButtonGI_QueueImageLoad }
+{ @routine $4B4360 TSimpleButtonGI_QueueImageLoad }
 procedure TSimpleButtonGI.QueueImageLoad(PendingLoads: TList);
 begin
   NormalImage.QueueLoadIfMissing(PendingLoads);
   ActiveImage.QueueLoadIfMissing(PendingLoads);
 end;
-{ @end $49C4C0 }
+{ @end $4B4360 }
 
 end.

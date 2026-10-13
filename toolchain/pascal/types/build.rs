@@ -133,6 +133,9 @@ impl Compiler {
         ordered.extend(vmts.clone());
         let (mut functions, mut globals, mut virtual_calls) = (Vec::new(), Vec::new(), Vec::new());
         for d in self.decls.clone() {
+            if d.meta.contains_key("unbound") {
+                continue;
+            }
             let mut common = Value::Object(d.meta.clone());
             common["name"] = json!(d.name);
             common["source"] = json!(d.source);

@@ -1,6 +1,4 @@
 unit System;
-// Unit bracket (inferred): .text 0x004010EC..0x00407AF0; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
-// Unit bracket (inferred): .itext 0x00876000..0x00876000; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -36,32 +34,32 @@ type
   TObject = class // @size 0x04
   public
     constructor Create;
-    destructor Destroy; virtual; // @addr 0x40459C
-    procedure Free; // @addr 0x4045AC @note "Accepts nil."
-    class function NewInstance: TObject; virtual; // @addr 0x404544
+    destructor Destroy; virtual; // @addr 0x0040459C
+    procedure Free; // @addr 0x004045AC @note "Accepts nil."
+    class function NewInstance: TObject; virtual; // @addr 0x00404544
     class function InitInstance(Instance: Pointer): TObject; // @note "Instance must point to caller-provided storage."
     function ClassType: TClass;
-    class function InstanceSize: Integer; // @addr 0x404574
-    class function InheritsFrom(Ancestor: TClass): Boolean; // @addr 0x4047D8 @note "Includes equality with the class itself."
+    class function InstanceSize: Integer; // @addr 0x00404574
+    class function InheritsFrom(Ancestor: TClass): Boolean; // @addr 0x004047D8 @note "Includes equality with the class itself."
     procedure CleanupInstance;
-    procedure FreeInstance; virtual; // @addr 0x404560
-    procedure AfterConstruction; virtual; // @addr 0x404800 @ida "void __usercall __spoils<> $name(TObject *Self@<eax>);" @note "Empty base implementation."
-    procedure BeforeDestruction; virtual; // @addr 0x404804 @ida "void __usercall __spoils<> $name(TObject *Self@<eax>);" @note "Empty base implementation."
+    procedure FreeInstance; virtual; // @addr 0x00404560
+    procedure AfterConstruction; virtual; // @addr 0x00404800 @ida "void __usercall __spoils<> $name(TObject *Self@<eax>);" @note "Empty base implementation."
+    procedure BeforeDestruction; virtual; // @addr 0x00404804 @ida "void __usercall __spoils<> $name(TObject *Self@<eax>);" @note "Empty base implementation."
   public
-    procedure ClassName; // @nameonly @note "DCC32 MAP System.TObject.ClassName. Source rtl/sys/System.pas:8714. Prototype pending: source type not found: ShortString."
-    class function ClassNameIs(const Name: AnsiString): Boolean; // @note "DCC32 MAP System.TObject.ClassNameIs. Source rtl/sys/System.pas:8736."
-    function GetInterface(const IID: TGUID; Obj: Pointer): Boolean; // @note "DCC32 MAP System.TObject.GetInterface. Source rtl/sys/System.pas:8992."
-    class function GetInterfaceEntry(const IID: TGUID): PInterfaceEntry; // @note "DCC32 MAP System.TObject.GetInterfaceEntry. Source rtl/sys/System.pas:9011."
-    procedure Dispatch(Message: Pointer); // @nameonly @note "DCC32 MAP System.TObject.Dispatch. Source rtl/sys/System.pas:9274. Prototype pending: RET mismatch: expected 0, native []."
-    procedure MethodAddress; // @nameonly @note "DCC32 MAP System.TObject.MethodAddress. Source rtl/sys/System.pas:9298. Prototype pending: source type not found: ShortString."
-    procedure FieldAddress; // @nameonly @note "DCC32 MAP System.TObject.FieldAddress. Source rtl/sys/System.pas:9404. Prototype pending: source type not found: ShortString."
+    procedure ClassName; // @nameonly
+    class function ClassNameIs(const Name: AnsiString): Boolean;
+    function GetInterface(const IID: TGUID; Obj: Pointer): Boolean;
+    class function GetInterfaceEntry(const IID: TGUID): PInterfaceEntry;
+    procedure Dispatch(Message: Pointer); // @nameonly
+    procedure MethodAddress; // @nameonly
+    procedure FieldAddress; // @nameonly
   end;
 
 var
-  RandSeed: Dword; // @addr 0x879008
-  Default8087CW: Word; // @addr $879024
-  IsMultiThread: Boolean; // @addr $885049
-  SystemThreadFuncProc: TSystemThreadFuncProc; // @addr $879038
+  RandSeed: Dword; // @addr 0x00809008
+  Default8087CW: Word; // @addr $809024
+  IsMultiThread: Boolean; // @addr $815049
+  SystemThreadFuncProc: TSystemThreadFuncProc; // @addr $809038
 
 procedure InitializeFpu; // @note "Resets x87 state and loads Default8087CW."
 function ThreadWrapper(Parameter: Pointer): Integer; stdcall;
@@ -72,16 +70,16 @@ function RandomRange(Limit: Integer): Integer;
 // IDA signatures use double for x87 registers; native values remain Extended.
 // See docs/declarations.md#calling-conventions.
 function RandomUnitExtended: Extended; // @note "Result is in [0,1); shares RandSeed with RandomRange."
-function Get8087CW: Word; // @addr 0x4034B0
-procedure Set8087CW(ControlWord: Word); // @addr 0x4034A0 @note "Also clears pending x87 exceptions."
+function Get8087CW: Word; // @addr 0x004034B0
+procedure Set8087CW(ControlWord: Word); // @addr 0x004034A0 @note "Also clears pending x87 exceptions."
 function Frac(Value: Extended): Extended;
 function Exp(Value: Extended): Extended;
-function Cos(Value: Extended): Extended; // @addr 0x403508
-function Sin(Value: Extended): Extended; // @addr 0x403518
+function Cos(Value: Extended): Extended; // @addr 0x00403508
+function Sin(Value: Extended): Extended; // @addr 0x00403518
 function Ln(Value: Extended): Extended;
-function ArcTan(Value: Extended): Extended; // @addr 0x40353C
-function Sqrt(Value: Extended): Extended; // @addr 0x40354C
-function Round(Value: Extended): Int64; // @addr 0x40355C @ida "__int64 __usercall $name@<edx:eax>(double Value@<st0>);" @note "Uses the current x87 rounding mode, normally nearest with ties to even."
+function ArcTan(Value: Extended): Extended; // @addr 0x0040353C
+function Sqrt(Value: Extended): Extended; // @addr 0x0040354C
+function Round(Value: Extended): Int64; // @addr 0x0040355C @ida "__int64 __usercall $name@<edx:eax>(double Value@<st0>);" @note "Uses the current x87 rounding mode, normally nearest with ties to even."
 function Trunc(Value: Extended): Int64; // @ida "__int64 __usercall $name@<edx:eax>(double Value@<st0>);" @note "Independent of the current x87 rounding mode; preserves it."
 
 function IsInstanceOf(Instance: TObject; TargetClass: TClass): Boolean; // @note "Compiler is helper; nil returns False."
@@ -98,10 +96,10 @@ function FreeMemory(Block: Pointer): Integer; // @note "Nil is a no-op; returns 
 procedure ReallocateMemory(var Block: Pointer; ByteCount: Integer); // @note "Nil allocates; zero size frees and clears the pointer."
 procedure MoveBytes(Source, Dest: Pointer; ByteCount: Integer); // @note "Supports overlapping ranges; nonpositive counts do nothing."
 procedure FillBytes(Dest: Pointer; ByteCount: Integer; Value: Byte); // @note "Nonpositive counts do nothing."
-procedure _SetExpand(Source, Dest: Pointer; ByteRange: Word); // @addr 0x404068 @note "Expands a packed set to 32 bytes. EAX source, EDX destination; CL first source-byte index, CH exclusive end. RTL System.pas:7598 and native instructions agree."
-procedure _SetElem(Dest: Pointer; Element, ByteCount: Byte); // @addr 0x403FEC @note "DCC32 singleton-set helper. Clears ByteCount bytes, then sets Element when in range. RTL System.pas:7337; native EAX/DL/CL ABI."
+procedure _SetExpand(Source, Dest: Pointer; ByteRange: Word); // @addr 0x00404068 @note "Expands a packed set to 32 bytes. EAX source, EDX destination; CL first source-byte index, CH exclusive end. RTL System.pas:7598 and native instructions agree."
+procedure _SetElem(Dest: Pointer; Element, ByteCount: Byte); // @addr 0x00403FEC @note "DCC32 singleton-set helper. Clears ByteCount bytes, then sets Element when in range. RTL System.pas:7337; native EAX/DL/CL ABI."
 
-function AnsiStringToPAnsiChar(Value: AnsiString): PAnsiChar; // @addr 0x40592C @note "Nil maps to a static empty string."
+function AnsiStringToPAnsiChar(Value: AnsiString): PAnsiChar; // @addr 0x0040592C @note "Nil maps to a static empty string."
 function RetainAnsiString(Value: AnsiString): AnsiString; // @ida "char *__usercall $name@<eax>(char *Value@<eax>);" @note "Compiler parameter-retention helper; EAX is the string value, not a var-parameter address. Returns it unchanged."
 function AnsiStringLength(Value: AnsiString): Integer;
 function StringOfChar(Value: AnsiChar; Count: Integer): AnsiString; // @addr $405C20 @note "Nonpositive Count returns an empty string."
@@ -119,13 +117,13 @@ function WideCharToString(Source: PWideChar): AnsiString;
 procedure ConvertShortStringToAnsiString(var Dest: AnsiString; Source: Pointer); // @note "EDX addresses a length-prefixed ShortString; tail-calls SetAnsiStringFromBuffer. RTL System.pas:12743 and native instructions agree."
 procedure ConvertShortStringToWideString(var Dest: WideString; Source: Pointer); // @note "EDX addresses a length-prefixed ShortString; tail-calls SetWideStringFromAnsiBuffer. RTL System.pas:14257."
 procedure ConvertWideStringToAnsiString(var Dest: AnsiString; Source: WideString);
-procedure AppendAnsiString(var Dest: AnsiString; Source: AnsiString); // @addr 0x405768
+procedure AppendAnsiString(var Dest: AnsiString; Source: AnsiString); // @addr 0x00405768
 procedure ConcatAnsiStrings(var Dest: AnsiString; Left, Right: AnsiString);
 procedure ConcatManyAnsiStrings(var Dest: AnsiString; Count: Integer); // @ida "void __usercall $name(char **Dest@<eax>, int Count@<edx>, ...);" @countedstack "Count:AnsiString" @note "Compiler helper for at least two strings. Count additional AnsiStrings are pushed left to right and removed by the callee. Sources may alias Dest."
 procedure SetAnsiStringLength(var Value: AnsiString; CharCount: Integer); // @note "Preserves the existing prefix; nonpositive lengths clear the string."
 function AnsiStringPos(Needle, Haystack: AnsiString): Integer; // @note "Case-sensitive, one-based index; zero for no match or an empty needle."
 
-function WideStringToPWideChar(Value: WideString): PWideChar; // @addr 0x405F10 @note "Nil maps to a static empty string."
+function WideStringToPWideChar(Value: WideString): PWideChar; // @addr 0x00405F10 @note "Nil maps to a static empty string."
 function WideStringLength(Value: WideString): Integer;
 function WideStringPos(Needle, Haystack: WideString): Integer; // @note "Case-sensitive, one-based index; zero for no match or an empty needle."
 procedure CloneWideStringParameter(var Value: WideString); // @note "Does not free the original borrowed BSTR; raises on allocation failure."
@@ -219,107 +217,107 @@ type
 
   PLongint = ^Longint;
 
-function GetCmdShow: Integer; // @note "DCC32 MAP System.GetCmdShow. Source rtl/sys/System.pas:2483."
+function GetCmdShow: Integer;
 
-procedure Move12; // @nameonly @note "DCC32 MAP System.Move12. Prototype pending: no unique source declaration."
+procedure Move12; // @nameonly
 
-procedure Move20; // @nameonly @note "DCC32 MAP System.Move20. Prototype pending: no unique source declaration."
+procedure Move20; // @nameonly
 
-procedure Move28; // @nameonly @note "DCC32 MAP System.Move28. Prototype pending: no unique source declaration."
+procedure Move28; // @nameonly
 
-procedure Move36; // @nameonly @note "DCC32 MAP System.Move36. Prototype pending: no unique source declaration."
+procedure Move36; // @nameonly
 
-procedure Move44; // @nameonly @note "DCC32 MAP System.Move44. Prototype pending: no unique source declaration."
+procedure Move44; // @nameonly
 
-procedure Move52; // @nameonly @note "DCC32 MAP System.Move52. Prototype pending: no unique source declaration."
+procedure Move52; // @nameonly
 
-procedure Move60; // @nameonly @note "DCC32 MAP System.Move60. Prototype pending: no unique source declaration."
+procedure Move60; // @nameonly
 
-procedure Move68; // @nameonly @note "DCC32 MAP System.Move68. Prototype pending: no unique source declaration."
+procedure Move68; // @nameonly
 
-procedure MoveX16L4; // @nameonly @note "DCC32 MAP System.MoveX16L4. Prototype pending: no unique source declaration."
+procedure MoveX16L4; // @nameonly
 
-procedure MoveX8L4; // @nameonly @note "DCC32 MAP System.MoveX8L4. Prototype pending: no unique source declaration."
+procedure MoveX8L4; // @nameonly
 
-procedure InsertMediumBlockIntoBin; // @nameonly @note "DCC32 MAP System.InsertMediumBlockIntoBin. Prototype pending: no unique source declaration."
+procedure InsertMediumBlockIntoBin; // @nameonly
 
-procedure AllocNewSequentialFeedMediumPool; // @nameonly @note "DCC32 MAP System.AllocNewSequentialFeedMediumPool. Prototype pending: no unique source declaration."
+procedure AllocNewSequentialFeedMediumPool; // @nameonly
 
-procedure LockLargeBlocks; // @nameonly @note "DCC32 MAP System.LockLargeBlocks. Prototype pending: no unique source declaration."
+procedure LockLargeBlocks; // @nameonly
 
-procedure AllocateLargeBlock; // @nameonly @note "DCC32 MAP System.AllocateLargeBlock. Prototype pending: no unique source declaration."
+procedure AllocateLargeBlock; // @nameonly
 
-procedure FreeLargeBlock; // @nameonly @note "DCC32 MAP System.FreeLargeBlock. Prototype pending: no unique source declaration."
+procedure FreeLargeBlock; // @nameonly
 
-procedure ReallocateLargeBlock; // @nameonly @note "DCC32 MAP System.ReallocateLargeBlock. Prototype pending: no unique source declaration."
+procedure ReallocateLargeBlock; // @nameonly
 
-function SysGetMem(Size: Integer): Pointer; // @note "DCC32 MAP System.SysGetMem. Source rtl/sys/System.pas:2510."
+function SysGetMem(Size: Integer): Pointer;
 
-function SysFreeMem(P: Pointer): Integer; // @note "DCC32 MAP System.SysFreeMem. Source rtl/sys/System.pas:2515."
+function SysFreeMem(P: Pointer): Integer;
 
-function SysReallocMem(P: Pointer; Size: Integer): Pointer; // @note "DCC32 MAP System.SysReallocMem. Source rtl/sys/System.pas:2521."
+function SysReallocMem(P: Pointer; Size: Integer): Pointer;
 
-procedure SysAllocMem; // @nameonly @note "DCC32 MAP System.SysAllocMem. Prototype pending: no unique source declaration."
+procedure SysAllocMem; // @nameonly
 
-procedure NextMediumBlock; // @nameonly @note "DCC32 MAP System.NextMediumBlock. Prototype pending: no unique source declaration."
+procedure NextMediumBlock; // @nameonly
 
-procedure GetFirstMediumBlockInPool; // @nameonly @note "DCC32 MAP System.GetFirstMediumBlockInPool. Prototype pending: no unique source declaration."
+procedure GetFirstMediumBlockInPool; // @nameonly
 
-procedure GetFirstAndLastSmallBlockInPool; // @nameonly @note "DCC32 MAP System.GetFirstAndLastSmallBlockInPool. Prototype pending: no unique source declaration."
+procedure GetFirstAndLastSmallBlockInPool; // @nameonly
 
-procedure CardinalToStrBuf; // @nameonly @note "DCC32 MAP System.CardinalToStrBuf. Prototype pending: no unique source declaration."
+procedure CardinalToStrBuf; // @nameonly
 
-procedure AppendStringToBuffer; // @nameonly @note "DCC32 MAP System.AppendStringToBuffer. Prototype pending: no unique source declaration."
+procedure AppendStringToBuffer; // @nameonly
 
-procedure IsValidVMTAddress; // @nameonly @note "DCC32 MAP System.IsValidVMTAddress. Prototype pending: no unique source declaration."
+procedure IsValidVMTAddress; // @nameonly
 
-procedure InternalIsValidClass; // @nameonly @note "DCC32 MAP System.InternalIsValidClass. Prototype pending: no unique source declaration."
+procedure InternalIsValidClass; // @nameonly
 
-procedure GetObjectClass; // @nameonly @note "DCC32 MAP System.GetObjectClass. Prototype pending: no unique source declaration."
+procedure GetObjectClass; // @nameonly
 
-procedure LockExpectedMemoryLeaksList; // @nameonly @note "DCC32 MAP System.LockExpectedMemoryLeaksList. Prototype pending: no unique source declaration."
+procedure LockExpectedMemoryLeaksList; // @nameonly
 
-procedure SysRegisterExpectedMemoryLeak; // @nameonly @note "DCC32 MAP System.SysRegisterExpectedMemoryLeak. Prototype pending: no unique source declaration."
+procedure SysRegisterExpectedMemoryLeak; // @nameonly
 
-procedure SysUnregisterExpectedMemoryLeak; // @nameonly @note "DCC32 MAP System.SysUnregisterExpectedMemoryLeak. Prototype pending: no unique source declaration."
+procedure SysUnregisterExpectedMemoryLeak; // @nameonly
 
-procedure CheckSmallBlockPoolForLeaks; // @nameonly @note "DCC32 MAP System.CheckSmallBlockPoolForLeaks. Prototype pending: no unique source declaration."
+procedure CheckSmallBlockPoolForLeaks; // @nameonly
 
-procedure ScanForMemoryLeaks; // @nameonly @note "DCC32 MAP System.ScanForMemoryLeaks. Prototype pending: no unique source declaration."
+procedure ScanForMemoryLeaks; // @nameonly
 
-procedure BuildBlockTypeLookupTable; // @nameonly @note "DCC32 MAP System.BuildBlockTypeLookupTable. Prototype pending: no unique source declaration."
+procedure BuildBlockTypeLookupTable; // @nameonly
 
-procedure InitializeMemoryManager; // @nameonly @note "DCC32 MAP System.InitializeMemoryManager. Prototype pending: no unique source declaration."
+procedure InitializeMemoryManager; // @nameonly
 
-procedure FreeAllMemory; // @nameonly @note "DCC32 MAP System.FreeAllMemory. Prototype pending: no unique source declaration."
+procedure FreeAllMemory; // @nameonly
 
-procedure FinalizeMemoryManager; // @nameonly @note "DCC32 MAP System.FinalizeMemoryManager. Prototype pending: no unique source declaration."
+procedure FinalizeMemoryManager; // @nameonly
 
-function AllocMem(Size: Cardinal): Pointer; // @note "DCC32 MAP System.AllocMem. Source rtl/sys/System.pas:2536."
+function AllocMem(Size: Cardinal): Pointer;
 
-procedure ExceptObject; // @nameonly @note "DCC32 MAP System.ExceptObject. Prototype pending: no unique source declaration."
+procedure ExceptObject; // @nameonly
 
-procedure ExceptAddr; // @nameonly @note "DCC32 MAP System.ExceptAddr. Prototype pending: no unique source declaration."
+procedure ExceptAddr; // @nameonly
 
-procedure AcquireExceptionObject; // @nameonly @note "DCC32 MAP System.AcquireExceptionObject. Prototype pending: no unique source declaration."
+procedure AcquireExceptionObject; // @nameonly
 
-procedure ErrorAt(ErrorCode: Byte; ErrorAddr: Pointer); // @nameonly @note "DCC32 MAP System.ErrorAt. Source rtl/sys/System.pas:3248. Prototype pending: RET mismatch: expected 0, native []."
+procedure ErrorAt(ErrorCode: Byte; ErrorAddr: Pointer); // @nameonly
 
-procedure __IOTest; // @nameonly @note "DCC32 MAP System.@_IOTest. Source rtl/sys/System.pas:3306. Prototype pending: compiler-helper ABI needs explicit analysis."
+procedure __IOTest; // @nameonly
 
-procedure _Copy; // @nameonly @note "DCC32 MAP System.@Copy. Source rtl/sys/System.pas:3349. Prototype pending: compiler-helper ABI needs explicit analysis."
+procedure _Copy; // @nameonly
 
-procedure _LGetDir(D: Byte; var S: AnsiString); // @nameonly @note "DCC32 MAP System.@LGetDir. Source rtl/sys/System.pas:3455. Prototype pending: compiler-helper ABI needs explicit analysis."
+procedure _LGetDir(D: Byte; var S: AnsiString); // @nameonly
 
-function IOResult: Integer; // @note "DCC32 MAP System.IOResult. Source rtl/sys/System.pas:3575."
+function IOResult: Integer;
 
-function GetParamStr(P: PAnsiChar; var Param: AnsiString): PAnsiChar; // @note "DCC32 MAP System.GetParamStr. Source rtl/sys/System.pas:3744."
+function GetParamStr(P: PAnsiChar; var Param: AnsiString): PAnsiChar;
 
-function ParamCount: Integer; // @note "DCC32 MAP System.ParamCount. Source rtl/sys/System.pas:3817."
+function ParamCount: Integer;
 
-function ParamStr(Index: Integer): AnsiString; // @note "DCC32 MAP System.ParamStr. Source rtl/sys/System.pas:3843."
+function ParamStr(Index: Integer): AnsiString;
 
-function OpenText(var t: TTextRec; Mode: Word): Integer; // @note "DCC32 MAP System.OpenText. Source rtl/sys/System.pas:4241."
+function OpenText(var t: TTextRec; Mode: Word): Integer;
 function AssignTextFile(var t: TTextRec; const FileName: AnsiString): Integer; // @addr $40387C
 function ResetTextFile(var t: TTextRec): Integer; // @addr $403600 @note "Compiler Reset(TextFile), RTL System._ResetText."
 function EndOfTextFile(var t: TTextRec): Boolean; // @addr $403AE8 @note "Compiler Eof(TextFile); respects Ctrl-Z when enabled in the text flags."
@@ -334,120 +332,120 @@ function WritePaddedAnsiText(var t: TTextRec; const Text: AnsiString; Width: Int
 function WriteWideText(var t: TTextRec; const Text: WideString): Pointer; // @addr $405C74 @note "Compiler Write(TextFile, WideString), System.@Write0WString."
 function WritePaddedWideText(var t: TTextRec; const Text: WideString; Width: Integer): Pointer; // @addr $405C7C @note "Compiler padded WideString text output, System.@WriteWString."
 
-function TextIn(var t: TTextRec): Integer; // @note "DCC32 MAP System.TextIn. Source rtl/sys/System.pas:4271."
+function TextIn(var t: TTextRec): Integer;
 
-function TextOut(var t: TTextRec): Integer; // @note "DCC32 MAP System.TextOut. Source rtl/sys/System.pas:4304."
+function TextOut(var t: TTextRec): Integer;
 
-function TextClose(var t: TTextRec): Integer; // @note "DCC32 MAP System.TextClose. Source rtl/sys/System.pas:4337."
+function TextClose(var t: TTextRec): Integer;
 
-procedure TextOpen; // @nameonly @note "DCC32 MAP System.TextOpen. Prototype pending: no unique source declaration."
+procedure TextOpen; // @nameonly
 
-procedure InternalFlush; // @nameonly @note "DCC32 MAP System.InternalFlush. Source rtl/sys/System.pas:4812. Prototype pending: unsupported source type TTextIOFunc: function (var F: TTextRec): Integer."
+procedure InternalFlush; // @nameonly
 
 function _Close(var t: TTextRec): Integer; // @addr $403944 @note "Compiler CloseFile; EAX addresses the file record and returns the RTL status. Native registers agree with System.pas:4906."
 
 procedure PStrCpy(Dest, Source: Pointer); // @addr $4039CC DCC32 System.@PStrCpy; copies Source[0]+1 bytes, including the short-string length byte.
 procedure PStrNCat(Dest, Source: Pointer; MaximumLength: Byte); // @addr $40399C DCC32 System.@PStrNCat; appends a length-prefixed short string with CL as the capacity.
 
-procedure PStrNCpy; // @nameonly @note "DCC32 MAP System.@PStrNCpy. Source rtl/sys/System.pas:5038. Prototype pending: source type not found: ShortString."
+procedure PStrNCpy; // @nameonly
 
-procedure _PStrCmp; // @nameonly @note "DCC32 MAP System.@PStrCmp. Source rtl/sys/System.pas:5046. Prototype pending: compiler-helper ABI needs explicit analysis."
+procedure _PStrCmp; // @nameonly
 
-procedure _AStrCmp; // @nameonly @note "DCC32 MAP System.@AStrCmp. Source rtl/sys/System.pas:5133. Prototype pending: compiler-helper ABI needs explicit analysis."
+procedure _AStrCmp; // @nameonly
 
-function _ValLong(const s: AnsiString; var code: Integer): Longint; // @nameonly @note "DCC32 MAP System.@ValLong. Source rtl/sys/System.pas:6622. Prototype pending: compiler-helper ABI needs explicit analysis."
+function _ValLong(const s: AnsiString; var code: Integer): Longint; // @nameonly
 
-function TryOpenForOutput(var t: TTextRec): Boolean; // @note "DCC32 MAP System.TryOpenForOutput. Source rtl/sys/System.pas:6896."
+function TryOpenForOutput(var t: TTextRec): Boolean;
 
-function _WriteBytes(var t: TTextRec; b: Pointer; cnt: Longint): Pointer; // @nameonly @note "DCC32 MAP System.@WriteBytes. Source rtl/sys/System.pas:6909. Prototype pending: compiler-helper ABI needs explicit analysis."
+function _WriteBytes(var t: TTextRec; b: Pointer; cnt: Longint): Pointer; // @nameonly
 
-function _WriteSpaces(var t: TTextRec; cnt: Longint): Pointer; // @nameonly @note "DCC32 MAP System.@WriteSpaces. Source rtl/sys/System.pas:7011. Prototype pending: compiler-helper ABI needs explicit analysis."
+function _WriteSpaces(var t: TTextRec; cnt: Longint): Pointer; // @nameonly
 
-function _WriteLn(var t: TTextRec): Pointer; // @nameonly @note "DCC32 MAP System.@WriteLn. Source rtl/sys/System.pas:7256. Prototype pending: compiler-helper ABI needs explicit analysis."
+function _WriteLn(var t: TTextRec): Pointer; // @nameonly
 
-procedure _CLenToPasStr; // @nameonly @note "DCC32 MAP System.@_CLenToPasStr. Source rtl/sys/System.pas:7279. Prototype pending: source type not found: ShortString."
+procedure _CLenToPasStr; // @nameonly
 
-procedure _Pow10; // @nameonly @note "DCC32 MAP System.@Pow10. Source rtl/sys/System.pas:8273. Prototype pending: compiler-helper ABI needs explicit analysis."
+procedure _Pow10; // @nameonly
 
-function _isNECWindows: Boolean; // @nameonly @note "DCC32 MAP System.@isNECWindows. Source rtl/sys/System.pas:8644. Prototype pending: compiler-helper ABI needs explicit analysis."
+function _isNECWindows: Boolean; // @nameonly
 
-procedure _FpuMaskInit; // @nameonly @note "DCC32 MAP System.@FpuMaskInit. Source rtl/sys/System.pas:8661. Prototype pending: compiler-helper ABI needs explicit analysis."
+procedure _FpuMaskInit; // @nameonly
 
-function InvokeImplGetter(Self: TObject; ImplGetter: Cardinal): IInterface; // @nameonly @note "DCC32 MAP System.InvokeImplGetter. Source rtl/sys/System.pas:8947. Prototype pending: RET mismatch: expected 0, native []."
+function InvokeImplGetter(Self: TObject; ImplGetter: Cardinal): IInterface; // @nameonly
 
-procedure GetDynaMethod; // @note "DCC32 MAP System.GetDynaMethod. Source rtl/sys/System.pas:9117."
+procedure GetDynaMethod;
 
-procedure NotifyReRaise; // @note "DCC32 MAP System.NotifyReRaise. Source rtl/sys/System.pas:9642."
+procedure NotifyReRaise;
 
-procedure NotifyNonDelphiException; // @note "DCC32 MAP System.NotifyNonDelphiException. Source rtl/sys/System.pas:9669."
+procedure NotifyNonDelphiException;
 
-procedure CheckJmp; // @note "DCC32 MAP System.CheckJmp. Source rtl/sys/System.pas:9751."
+procedure CheckJmp;
 
-procedure NotifyExceptFinally; // @note "DCC32 MAP System.NotifyExceptFinally. Source rtl/sys/System.pas:9773."
+procedure NotifyExceptFinally;
 
-procedure NotifyTerminate; // @note "DCC32 MAP System.NotifyTerminate. Source rtl/sys/System.pas:9810."
+procedure NotifyTerminate;
 
-procedure NotifyUnhandled; // @note "DCC32 MAP System.NotifyUnhandled. Source rtl/sys/System.pas:9827."
+procedure NotifyUnhandled;
 
-procedure _HandleAnyException; // @nameonly @note "DCC32 MAP System.@HandleAnyException. Source rtl/sys/System.pas:9918. Prototype pending: compiler-helper ABI needs explicit analysis."
+procedure _HandleAnyException; // @nameonly
 
-procedure _HandleOnException; // @addr 0x404BB8 @nameonly @note "DCC32 typed-exception dispatch through an inline class/handler table; shared runtime code, not part of each caller's body."
+procedure _HandleOnException; // @addr 0x00404BB8 @nameonly @note "DCC32 typed-exception dispatch through an inline class/handler table; shared runtime code, not part of each caller's body."
 
-procedure _HandleFinally; // @nameonly @note "DCC32 MAP System.@HandleFinally. Source rtl/sys/System.pas:10451. Prototype pending: compiler-helper ABI needs explicit analysis."
+procedure _HandleFinally; // @nameonly
 
-procedure HandleFinallyInternal; // @nameonly @note "DCC32 MAP System.@HandleFinallyInternal. Prototype pending: no unique source declaration."
+procedure HandleFinallyInternal; // @nameonly
 
 procedure _RaiseAgain; // @ida "void __noreturn __usercall $name(void);" @note "Reraises the active exception; consumes the runtime exception frame."
 
-procedure _DoneExcept; // @nameonly @note "DCC32 MAP System.@DoneExcept. Source rtl/sys/System.pas:10985. Prototype pending: compiler-helper ABI needs explicit analysis."
+procedure _DoneExcept; // @nameonly
 
 procedure _TryFinallyExit(PreviousFrame, Handler, SavedFrame: Pointer); stdcall; // @addr $404ECC @note "Compiler helper: unlinks the current exception frame, calls Handler+5, and removes the three frame words. The arguments are the existing SEH frame, not newly pushed source arguments."
 
-procedure MapToRunError(P: PExceptionRecord); // @nameonly @note "DCC32 MAP System.MapToRunError. Source rtl/sys/System.pas:11060. Prototype pending: RET mismatch: expected 4, native []."
+procedure MapToRunError(P: PExceptionRecord); // @nameonly
 
-procedure _ExceptionHandler; // @nameonly @note "DCC32 MAP System.@ExceptionHandler. Source rtl/sys/System.pas:11099. Prototype pending: compiler-helper ABI needs explicit analysis."
+procedure _ExceptionHandler; // @nameonly
 
-procedure SetExceptionHandler; // @note "DCC32 MAP System.SetExceptionHandler. Source rtl/sys/System.pas:11163."
+procedure SetExceptionHandler;
 
-procedure UnsetExceptionHandler; // @note "DCC32 MAP System.UnsetExceptionHandler. Source rtl/sys/System.pas:11186."
+procedure UnsetExceptionHandler;
 
-procedure FinalizeUnits; // @note "DCC32 MAP System.FinalizeUnits. Source rtl/sys/System.pas:11231."
+procedure FinalizeUnits;
 
-procedure InitUnits; // @note "DCC32 MAP System.InitUnits. Source rtl/sys/System.pas:11371."
+procedure InitUnits;
 
-procedure StartExe; // @nameonly @note "DCC32 MAP System.@StartExe. Prototype pending: no unique source declaration."
+procedure StartExe; // @nameonly
 
-procedure _InitResStringImports; // @nameonly @note "DCC32 MAP System.@InitResStringImports. Source rtl/sys/System.pas:11648. Prototype pending: compiler-helper ABI needs explicit analysis."
+procedure _InitResStringImports; // @nameonly
 
-procedure _InitImports; // @nameonly @note "DCC32 MAP System.@InitImports. Source rtl/sys/System.pas:11685. Prototype pending: compiler-helper ABI needs explicit analysis."
+procedure _InitImports; // @nameonly
 
-procedure MakeErrorMessage; // @note "DCC32 MAP System.MakeErrorMessage. Source rtl/sys/System.pas:11771."
+procedure MakeErrorMessage;
 
-procedure ExitDll; // @nameonly @note "DCC32 MAP System.ExitDll. Source rtl/sys/System.pas:11796. Prototype pending: RET mismatch: expected 0, native [12]."
+procedure ExitDll; // @nameonly
 
-procedure WriteErrorMessage; // @note "DCC32 MAP System.WriteErrorMessage. Source rtl/sys/System.pas:11843."
+procedure WriteErrorMessage;
 
 procedure _Halt0; // @ida "void __noreturn __usercall $name();" @note "Compiler program termination: finalizes units and exits the process. RTL System._Halt0, no parameters."
 
 procedure AssignAnsiStringAlias(var Dest: AnsiString; Source: AnsiString); // @note "DCC32 System.@LStrLAsg: retains Source, replaces Dest and releases its previous storage."
 
-procedure CharFromWChar; // @nameonly @note "DCC32 MAP System.CharFromWChar. Prototype pending: no unique source declaration."
+procedure CharFromWChar; // @nameonly
 
-procedure WCharFromChar; // @nameonly @note "DCC32 MAP System.WCharFromChar. Prototype pending: no unique source declaration."
+procedure WCharFromChar; // @nameonly
 
-procedure _LStrToString; // @nameonly @note "DCC32 MAP System.@LStrToString. Source rtl/sys/System.pas:12802. Prototype pending: compiler-helper ABI needs explicit analysis."
+procedure _LStrToString; // @nameonly
 
 function CompareAnsiStrings(Left, Right: AnsiString): TStringComparisonFlags; // @ida "TStringComparisonFlags __usercall $name@<zf:cf>(char *Left@<eax>, char *Right@<edx>);" @note "System.@LStrCmp returns unsigned byte-string ordering in ZF and CF; nil equals empty."
 
-function InternalUniqueString(str: Pointer): Pointer; // @note "DCC32 MAP System.InternalUniqueString. Source rtl/sys/System.pas:13242."
+function InternalUniqueString(str: Pointer): Pointer;
 
-procedure _LStrCopy; // @nameonly @note "DCC32 MAP System.@LStrCopy. Source rtl/sys/System.pas:13309. Prototype pending: compiler-helper ABI needs explicit analysis."
+procedure _LStrCopy; // @nameonly
 
-procedure _LStrDelete; // @nameonly @note "DCC32 MAP System.@LStrDelete. Source rtl/sys/System.pas:13366. Prototype pending: compiler-helper ABI needs explicit analysis."
+procedure _LStrDelete; // @nameonly
 
-procedure _LStrInsert; // @nameonly @note "DCC32 MAP System.@LStrInsert. Source rtl/sys/System.pas:13427. Prototype pending: compiler-helper ABI needs explicit analysis."
+procedure _LStrInsert; // @nameonly
 
-procedure _InitializeArray(p: Pointer; typeInfo: Pointer; elemCount: Cardinal); // @nameonly @note "DCC32 MAP System.@InitializeArray. Source rtl/sys/System.pas:14857. Prototype pending: compiler-helper ABI needs explicit analysis."
+procedure _InitializeArray(p: Pointer; typeInfo: Pointer; elemCount: Cardinal); // @nameonly
 
 procedure InitializeRecord(Data, TypeInfo: Pointer); // @addr $406258 @note "System.@InitializeRecord: visits managed fields described by record RTTI."
 procedure _FinalizeRecord(p: Pointer; typeInfo: Pointer); // @note "System.@FinalizeRecord: finalizes managed fields described by record RTTI; EAX retains the record address."
@@ -455,11 +453,11 @@ procedure _Dispose(Data, TypeInfo: Pointer); // @addr $4067B4 @note "System.@Dis
 
 procedure AddRefRecord(Data, TypeInfo: Pointer); // @addr $40646C @note "System.@AddRefRecord: retains each managed field in a copied record using RTTI and AddRefArray."
 
-procedure _CopyRecord; // @nameonly @note "DCC32 MAP System.@CopyRecord. Source rtl/sys/System.pas:15456. Prototype pending: compiler-helper ABI needs explicit analysis."
+procedure _CopyRecord; // @nameonly
 
-procedure _CopyArray; // @nameonly @note "DCC32 MAP System.@CopyArray. Source rtl/sys/System.pas:15613. Prototype pending: compiler-helper ABI needs explicit analysis."
+procedure _CopyArray; // @nameonly
 
-procedure __llmul; // @nameonly @note "DCC32 MAP System.@_llmul. Source rtl/sys/System.pas:15890. Prototype pending: compiler-helper ABI needs explicit analysis."
+procedure __llmul; // @nameonly
 function ShiftLeftInt64(Value: Int64; Count: Integer): Int64; // @ida "__int64 __usercall $name@<edx:eax>(__int64 Value@<edx:eax>, int Count@<ecx>);"
 function ShiftRightInt64(Value: Int64; Count: Integer): Int64; // @ida "__int64 __usercall $name@<edx:eax>(__int64 Value@<edx:eax>, int Count@<ecx>);"
 function DivideInt64(Dividend, Divisor: Int64): Int64; // @ida "__int64 __userpurge $name@<edx:eax>(__int64 Dividend@<edx:eax>, __int64 Divisor@<^0>);"
@@ -467,56 +465,56 @@ function Int64Remainder(Dividend, Divisor: Int64): Int64; // @ida "__int64 __use
 
 function __lludiv(Dividend, Divisor: UInt64): UInt64; // @addr $406894 @ida "unsigned __int64 __userpurge $name@<edx:eax>(unsigned __int64 Dividend@<edx:eax>, unsigned __int64 Divisor@<^0>);" @note "Unsigned 64-bit division; numerator in EDX:EAX, divisor on stack, RET 8."
 
-function _ValInt64(const s: AnsiString; var code: Integer): Int64; // @nameonly @note "DCC32 MAP System.@ValInt64. Source rtl/sys/System.pas:16701. Prototype pending: compiler-helper ABI needs explicit analysis."
+function _ValInt64(const s: AnsiString; var code: Integer): Int64; // @nameonly
 
-procedure _DynArrayCopyRange(a: Pointer; typeInfo: Pointer; index, count: Integer; var Result: Pointer); // @nameonly @note "DCC32 MAP System.@DynArrayCopyRange. Source rtl/sys/System.pas:16918. Prototype pending: compiler-helper ABI needs explicit analysis."
+procedure _DynArrayCopyRange(a: Pointer; typeInfo: Pointer; index, count: Integer; var Result: Pointer); // @nameonly
 
-procedure _DynArrayAsg; // @nameonly @note "DCC32 MAP System.@DynArrayAsg. Source rtl/sys/System.pas:17025. Prototype pending: compiler-helper ABI needs explicit analysis."
+procedure _DynArrayAsg; // @nameonly
 
-function FindHInstance(Address: Pointer): Cardinal; // @note "DCC32 MAP System.FindHInstance. Source rtl/sys/System.pas:17280."
+function FindHInstance(Address: Pointer): Cardinal;
 
-function DelayLoadResourceModule(Module: PLibModule): Cardinal; // @note "DCC32 MAP System.DelayLoadResourceModule. Source rtl/sys/System.pas:17458."
+function DelayLoadResourceModule(Module: PLibModule): Cardinal;
 
-function FindResourceHInstance(Instance: Cardinal): Cardinal; // @note "DCC32 MAP System.FindResourceHInstance. Source rtl/sys/System.pas:17472."
+function FindResourceHInstance(Instance: Cardinal): Cardinal;
 
-function FindBS(Current: PAnsiChar): PAnsiChar; // @nameonly @note "DCC32 MAP System.FindBS. Source rtl/sys/System.pas:17563. Prototype pending: nested routine has a parent-frame parameter."
+function FindBS(Current: PAnsiChar): PAnsiChar; // @nameonly
 
-function ToLongPath(AFileName: PAnsiChar; BufSize: Integer): PAnsiChar; // @nameonly @note "DCC32 MAP System.ToLongPath. Source rtl/sys/System.pas:17570. Prototype pending: nested routine has a parent-frame parameter."
+function ToLongPath(AFileName: PAnsiChar; BufSize: Integer): PAnsiChar; // @nameonly
 
-function LoadResourceModule(ModuleName: PAnsiChar; CheckOwner: Boolean): Cardinal; // @note "DCC32 MAP System.LoadResourceModule. Source rtl/sys/System.pas:17491."
+function LoadResourceModule(ModuleName: PAnsiChar; CheckOwner: Boolean): Cardinal;
 
-procedure RemoveModuleUnloadProc; // @nameonly @note "DCC32 MAP System.RemoveModuleUnloadProc. Prototype pending: no unique source declaration."
+procedure RemoveModuleUnloadProc; // @nameonly
 
-procedure NotifyModuleUnload(HInstance: Cardinal); // @note "DCC32 MAP System.NotifyModuleUnload. Source rtl/sys/System.pas:17752."
+procedure NotifyModuleUnload(HInstance: Cardinal);
 
-procedure UnregisterModule(LibModule: PLibModule); // @note "DCC32 MAP System.UnregisterModule. Source rtl/sys/System.pas:17777."
+procedure UnregisterModule(LibModule: PLibModule);
 
-procedure _IntfCast(var Dest: IInterface; const Source: IInterface; const IID: TGUID); // @nameonly @note "DCC32 MAP System.@IntfCast. Source rtl/sys/System.pas:17892. Prototype pending: compiler-helper ABI needs explicit analysis."
+procedure _IntfCast(var Dest: IInterface; const Source: IInterface; const IID: TGUID); // @nameonly
 
-procedure UnicodeToUtf8; // @nameonly @note "DCC32 MAP System.UnicodeToUtf8. Prototype pending: no unique source declaration."
+procedure UnicodeToUtf8; // @nameonly
 
-procedure Utf8ToUnicode; // @nameonly @note "DCC32 MAP System.Utf8ToUnicode. Prototype pending: no unique source declaration."
+procedure Utf8ToUnicode; // @nameonly
 
-function UTF8Encode(const WS: WideString): AnsiString; // @note "DCC32 MAP System.UTF8Encode. Source rtl/sys/System.pas:18265."
+function UTF8Encode(const WS: WideString): AnsiString;
 
-function UTF8Decode(const S: AnsiString): WideString; // @note "DCC32 MAP System.UTF8Decode. Source rtl/sys/System.pas:18282."
+function UTF8Decode(const S: AnsiString): WideString;
 
-function AnsiToUtf8(const S: AnsiString): AnsiString; // @note "DCC32 MAP System.AnsiToUtf8. Source rtl/sys/System.pas:18299."
+function AnsiToUtf8(const S: AnsiString): AnsiString;
 
-procedure LoadResString; // @nameonly @note "DCC32 MAP System.LoadResString. Prototype pending: no unique source declaration."
+procedure LoadResString; // @nameonly
 
-procedure FinalizeSystem; // @nameonly @note "DCC32 MAP System.Finalization. Prototype pending: no unique source declaration."
+procedure FinalizeSystem; // @nameonly
 
-procedure SetRange; // @addr 0x404010 @nameonly @note "DCC32 set-range helper: AL lower bound, DL upper bound, AH storage bytes, ECX destination. Compiler intrinsic, not an ordinary Pascal-call ABI."
+procedure SetRange; // @addr 0x00404010 @nameonly @note "DCC32 set-range helper: AL lower bound, DL upper bound, AH storage bytes, ECX destination. Compiler intrinsic, not an ordinary Pascal-call ABI."
 
 procedure SetAnsiStringFromWideChar(var Dest: AnsiString; Source: WideChar);
 procedure SetAnsiStringFromChar(var Dest: AnsiString; Source: Char);
 procedure SetWideStringFromAnsiChar(var Dest: WideString; Source: AnsiChar);
 
 var
-  RaiseExceptionProc: Pointer; // @addr $885014 RTL hook, called with the Windows RaiseException stdcall ABI.
-  HInstance: Cardinal; // @addr $8877F4
-  DefaultTextLineBreakStyle: Byte; // @addr $879034 @note "RTL TTextLineBreakStyle ordinal: LF=0, CRLF=1."
+  RaiseExceptionProc: Pointer; // @addr $815014 RTL hook, called with the Windows RaiseException stdcall ABI.
+  HInstance: Cardinal; // @addr $8177F4
+  DefaultTextLineBreakStyle: Byte; // @addr $809034 @note "RTL TTextLineBreakStyle ordinal: LF=0, CRLF=1."
 
 implementation
 end.

@@ -9,48 +9,48 @@ type
   TRaiseExceptionCallback = procedure(Code, Flags, ArgumentCount: Cardinal; Arguments: Pointer); stdcall;
 
 
-function ExceptionLogTimestamp: AnsiString; // @addr $57ABC0
-procedure ReportUnhandledException(E: Exception; var Handled: Boolean); // @addr $57AC44
-procedure RaiseExceptionWithLogging(Code, Flags, ArgumentCount: Cardinal; Arguments: Pointer); stdcall; // @addr $57AEE4
+function ExceptionLogTimestamp: AnsiString; // @addr $5E74F0
+procedure ReportUnhandledException(E: Exception; var Handled: Boolean); // @addr $5E7574
+procedure RaiseExceptionWithLogging(Code, Flags, ArgumentCount: Cardinal; Arguments: Pointer); stdcall; // @addr $5E7804
 
-function HexDigit(Value: Byte): WideChar; // @addr $57AB54
-function ByteToHexText(Value: Byte): WideString; // @addr $57AB78
+function HexDigit(Value: Byte): WideChar; // @addr $5E74A4
+function ByteToHexText(Value: Byte): WideString; // @addr $5E74B4
 
 const
-  ExportHexDigits: array[0..15] of WideChar = ('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'); // @addr $87B024
+  ExportHexDigits: array[0..15] of WideChar = ('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'); // @addr $80F620
 var
-  ReportingException: Boolean = False; // @addr $87B044
-  PreviousRaiseException: TRaiseExceptionCallback = nil; // @addr $87B048
+  ReportingException: Boolean = False; // @addr $80F640
+  PreviousRaiseException: TRaiseExceptionCallback = nil; // @addr $80F644
 
 implementation
 
-// @unit-initialization $877884
-// @unit-finalization $57AFBC
+// @unit-initialization $8068D8
+// @unit-finalization $5E78C4
 
 uses Windows, GR_Main, BlockParException, BreakMessageGIException;
 
-{ @routine $57AB54 HexDigit }
+{ @routine $5E74A4 HexDigit }
 function HexDigit(Value: Byte): WideChar;
 begin
   Result := ExportHexDigits[Value and $F];
 end;
-{ @end $57AB54 }
+{ @end $5E74A4 }
 
 function HexDigitAt(Value: Byte; Index: Integer): WideChar; inline;
 begin
   Result := HexDigit(Value shr (Index * 4));
 end;
 
-{ @routine $57AB78 ByteToHexText }
+{ @routine $5E74B4 ByteToHexText }
 function ByteToHexText(Value: Byte): WideString;
 begin
   SetLength(Result, 2);
   Result[1] := HexDigitAt(Value, 1);
   Result[2] := HexDigitAt(Value, 0);
 end;
-{ @end $57AB78 }
+{ @end $5E74B4 }
 
-{ @routine $57ABC0 ExceptionLogTimestamp }
+{ @routine $5E74F0 ExceptionLogTimestamp }
 function ExceptionLogTimestamp: AnsiString;
 var Time: TDateTime; Text: AnsiString;
 begin
@@ -58,9 +58,9 @@ begin
   DateTimeToString(Text, 'yyyy.mm.dd hh.nn.ss.zzz', Time);
   Result := Text;
 end;
-{ @end $57ABC0 }
+{ @end $5E74F0 }
 
-{ @routine $57AC44 ReportUnhandledException }
+{ @routine $5E7574 ReportUnhandledException }
 procedure ReportUnhandledException(E: Exception; var Handled: Boolean);
 var TargetName, SourceName: WideString;
 begin
@@ -72,20 +72,20 @@ begin
     Handled := False;
     if SuppressExceptionLogCopy then SuppressExceptionLogCopy := False
     else begin
-      CreateDir(AnsiString(GetGameUserDirectory + 'Errors'));
-      TargetName := GetGameUserDirectory + 'Errors\' + WideString(ExceptionLogTimestamp) + '.log';
+      CreateDir(GetGameUserDirectory + 'Errors');
+      TargetName := GetGameUserDirectory + 'Errors\' + ExceptionLogTimestamp + '.log';
       SourceName := GetGameUserDirectory + '########.log';
       CopyFileW(PWideChar(SourceName), PWideChar(TargetName), False);
     end;
   end;
 end;
-{ @end $57AC44 }
+{ @end $5E7574 }
 
-{ @routine $57AEE4 RaiseExceptionWithLogging }
+{ @routine $5E7804 RaiseExceptionWithLogging }
 procedure RaiseExceptionWithLogging(Code, Flags, ArgumentCount: Cardinal; Arguments: Pointer); stdcall;
 var Handled: Boolean;
 begin
-  if Assigned(PreviousRaiseException) then begin
+  if not Assigned(PreviousRaiseException) then Exit;
     if ReportingException then PreviousRaiseException(Code, Flags, ArgumentCount, Arguments)
     else begin
       ReportingException := True;
@@ -103,11 +103,9 @@ begin
         ReportingException := False;
       end;
     end;
-  end;
 end;
-{ @end $57AEE4 }
+{ @end $5E7804 }
 
-// Native initializer $877884 saves and replaces the RTL raise hook.
 initialization
   PreviousRaiseException := TRaiseExceptionCallback(System.RaiseExceptionProc);
   System.RaiseExceptionProc := @RaiseExceptionWithLogging;

@@ -1,5 +1,4 @@
 unit fCfgSettings;
-// Unit bracket (inferred): .text 0x005F21BC..0x00602807; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -20,58 +19,58 @@ type
     ModeLeftPosition: TPoint; // @offset 0x114
     ModeRightPosition: TPoint; // @offset 0x11C
     GroupButtonTops: array[0..3] of Integer; // @offset 0x124
-    ModeLeaveTimer: PCallbackTimerGI; // @offset 0x134
+    ModeLeaveTimer: TCallbackTimerIdGI; // @offset 0x134
     RobotAvailability: Integer; // @offset 0x138
     HasInstalledPackages: Boolean; // @offset 0x13C
 
-    procedure InitializeLayout; override; // @addr 0x5F2344
-    procedure OnOpen; override; // @addr 0x5F2E88
-    procedure OnClose; override; // @addr 0x5F8E1C
-    procedure SelectMusic; override; // @addr 0x602480
-    procedure ExecuteUiCode(Block: TBlockParEC; Key: Cardinal); override; // @addr 0x6027B4
-    procedure ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer); override; // @addr 0x5FF368
-    procedure MainPanelMouseMove(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x5F8E6C
-    procedure ShowControlHelp(Sender: TObjectGI; Show: Boolean); // @addr 0x5F9048
-    procedure GroupClicked(Sender: TObjectGI); // @addr 0x5F90BC
-    procedure RefreshVisibleGroup; // @addr 0x5F9220
-    function AddOptionLabel(OptionName, Caption: WideString; UnusedFlag: Boolean): TLabelGI; // @addr 0x5F9420
-    procedure AddOptionChoice(Value: Integer; Caption: WideString; Selected, Disabled: Boolean); // @addr 0x5F9724
-    procedure OptionChoiceMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x5F9BEC
-    procedure OptionChoiceMouseEnter(Sender: TObjectGI); // @addr 0x5F9DD4
-    procedure OptionChoiceMouseLeave(Sender: TObjectGI); // @addr 0x5F9F10
-    procedure AddOptionSlider(ValueLabel: TLabelGI; Minimum, Maximum, Position, UnusedStep: Integer; Callback: TOptionSliderEvent); // @addr 0x5FA04C @note "Invokes Callback immediately with the new slider."
-    function HasOptionValue(OptionName: WideString): Boolean; // @addr 0x5FA7C4 @note "Searches only the active group."
-    function GetOptionValue(OptionName: WideString): Integer; // @addr 0x5FA924 @note "Searches only the active group; raises when no selected choice or slider exists."
-    procedure SetOptionValue(OptionName: WideString; Value: Integer); // @addr 0x5FAAE0 @note "Searches only the active group; missing options are ignored."
-    procedure FormatResolution(Sender: TCountBarGI); // @addr 0x5FABE8
-    procedure FormatRobotResolution(Sender: TCountBarGI); // @addr 0x5FADDC
-    procedure FormatRobotFsaaSamples(Sender: TCountBarGI); // @addr 0x5FAFD0
-    procedure PreviewBrightness(Sender: TCountBarGI); // @addr 0x5FB0D0 @note "Changes display gamma before settings are applied."
-    procedure PreviewContrast(Sender: TCountBarGI); // @addr 0x5FB264 @note "Changes display gamma before settings are applied."
-    procedure FormatInteger(Sender: TCountBarGI); // @addr 0x5FB3F8
-    procedure FormatTurnSaveStep(Sender: TCountBarGI); // @addr 0x5FB4E8
-    procedure FormatForsageDeactivatePercent(Sender: TCountBarGI); // @addr 0x5FB7C4
-    procedure HighPresetClicked(Sender: TObjectGI); // @addr 0x5FBA20
-    procedure MediumPresetClicked(Sender: TObjectGI); // @addr 0x5FC364
-    procedure LowPresetClicked(Sender: TObjectGI); // @addr 0x5FCC7C
-    procedure AutoPresetClicked(Sender: TObjectGI); // @addr 0x5FD560
-    procedure CancelClicked(Sender: TObjectGI); // @addr 0x5FE294
-    procedure ModeMouseEnter(Sender: TObjectGI); // @addr 0x5FF048
-    procedure ModeMouseLeave(Sender: TObjectGI); // @addr 0x5FF0F0
-    procedure RefreshModeUi; // @addr 0x5FE2C0
-    procedure ModeLeaveTimerTick(Timer: PCallbackTimerGI; UserData: Integer); // @addr 0x5FF158
-    procedure ModeMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x5FF1FC
-    procedure ModeMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x5FF28C
-    procedure MainPanelKeyDown(Sender: TObjectGI; Key: Cardinal); // @addr 0x5FF330
-    procedure ApplyClicked(Sender: TObjectGI); // @addr 0x5FF420 @note "Persists CFG.TXT; changes requiring rebuilt resources request another runtime session."
-    function CreateWarningImage(Owner: TLabelGI; Item: PFontObjectEC): TObjectGI; // @addr 0x60238C @note "Embedded-item data is ignored."
+    procedure InitializeLayout; override; // @addr 0x00533AC0
+    procedure OnOpen; override; // @addr 0x00534404
+    procedure OnClose; override; // @addr 0x0053A190
+    procedure SelectMusic; override; // @addr 0x00542DE0
+    procedure ExecuteUiCode(Block: TBlockParEC; Key: Cardinal); override; // @addr 0x00543118
+    procedure ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer); override; // @addr 0x0053FF1C
+    procedure MainPanelMouseMove(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x0053A1CC
+    procedure ShowControlHelp(Sender: TObjectGI; Show: Boolean); // @addr 0x0053A374
+    procedure GroupClicked(Sender: TObjectGI); // @addr 0x0053A3D8
+    procedure RefreshVisibleGroup; // @addr 0x0053A510
+    function AddOptionLabel(OptionName, Caption: WideString; UnusedFlag: Boolean): TLabelGI; // @addr 0x0053A6B4
+    procedure AddOptionChoice(Value: Integer; Caption: WideString; Selected, Disabled: Boolean); // @addr 0x0053A93C
+    procedure OptionChoiceMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x0053AD80
+    procedure OptionChoiceMouseEnter(Sender: TObjectGI); // @addr 0x0053AF38
+    procedure OptionChoiceMouseLeave(Sender: TObjectGI); // @addr 0x0053B06C
+    procedure AddOptionSlider(ValueLabel: TLabelGI; Minimum, Maximum, Position, UnusedStep: Integer; Callback: TOptionSliderEvent); // @addr 0x0053B1A0 @note "Invokes Callback immediately with the new slider."
+    function HasOptionValue(OptionName: WideString): Boolean; // @addr 0x0053B868 @note "Searches only the active group."
+    function GetOptionValue(OptionName: WideString): Integer; // @addr 0x0053B99C @note "Searches only the active group; raises when no selected choice or slider exists."
+    procedure SetOptionValue(OptionName: WideString; Value: Integer); // @addr 0x0053BB20 @note "Searches only the active group; missing options are ignored."
+    procedure FormatResolution(Sender: TCountBarGI); // @addr 0x0053BC08
+    procedure FormatRobotResolution(Sender: TCountBarGI); // @addr 0x0053BDD4
+    procedure FormatRobotFsaaSamples(Sender: TCountBarGI); // @addr 0x0053BFA0
+    procedure PreviewBrightness(Sender: TCountBarGI); // @addr 0x0053C080 @note "Changes display gamma before settings are applied."
+    procedure PreviewContrast(Sender: TCountBarGI); // @addr 0x0053C1FC @note "Changes display gamma before settings are applied."
+    procedure FormatInteger(Sender: TCountBarGI); // @addr 0x0053C378
+    procedure FormatTurnSaveStep(Sender: TCountBarGI); // @addr 0x0053C450
+    procedure FormatForsageDeactivatePercent(Sender: TCountBarGI); // @addr 0x0053C70C
+    procedure HighPresetClicked(Sender: TObjectGI); // @addr 0x0053C944
+    procedure MediumPresetClicked(Sender: TObjectGI); // @addr 0x0053D238
+    procedure LowPresetClicked(Sender: TObjectGI); // @addr 0x0053DB00
+    procedure AutoPresetClicked(Sender: TObjectGI); // @addr 0x0053E394
+    procedure CancelClicked(Sender: TObjectGI); // @addr 0x0053F044
+    procedure ModeMouseEnter(Sender: TObjectGI); // @addr 0x0053FCB0
+    procedure ModeMouseLeave(Sender: TObjectGI); // @addr 0x0053FD38
+    procedure RefreshModeUi; // @addr 0x0053F060
+    procedure ModeLeaveTimerTick(Timer: TCallbackTimerIdGI; UserData: Cardinal); // @addr 0x0053FD80
+    procedure ModeMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x0053FE00
+    procedure ModeMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x0053FE80
+    procedure MainPanelKeyDown(Sender: TObjectGI; Key: Cardinal); // @addr 0x0053FF00
+    procedure ApplyClicked(Sender: TObjectGI); // @addr 0x0053FFA0 @note "Persists CFG.TXT; changes requiring rebuilt resources request another runtime session."
+    function CreateWarningImage(Owner: TLabelGI; Item: PFontObjectEC): TObjectGI; // @addr 0x00542D00 @note "Embedded-item data is ignored."
   end;
 
-function EstimateCpuClockMHz: Double; // @addr 0x5F2268 @note "Uses the low 32 bits of a timestamp-counter delta across a 200 ms sleep; temporarily raises process/thread priority."
+function EstimateCpuClockMHz: Double; // @addr 0x005339E4 @note "Uses the low 32 bits of a timestamp-counter delta across a 200 ms sleep; temporarily raises process/thread priority."
 
 var
-  SettingsModeColorNormal: Cardinal; // @addr $88AA08
-  SettingsModeColorHighlighted: Cardinal; // @addr $88AA0C
+  SettingsModeColorNormal: Cardinal; // @addr $81B64C
+  SettingsModeColorHighlighted: Cardinal; // @addr $81B650
 
 implementation
 
@@ -79,7 +78,7 @@ uses aGalaxyStruct, Windows, Classes, SysUtils, Math, GR_Main, GlobalsV, Globals
   aGalaxy, aPlayer, aPlanet, aShip, aItem, aConst, aMyFunction, aScript,
   GI_GraphButton, GI_PanelScrollBar, GI_MessageBox, EC_Struct, GI_Main, Robot, EC_File, GR_DX, GR_Sound, fStarMap;
 
-{ @routine $5F2268 EstimateCpuClockMHz }
+{ @routine $5339E4 EstimateCpuClockMHz }
 function EstimateCpuClockMHz: Double;
 var
   CounterLow, CounterHigh: Cardinal;
@@ -92,7 +91,6 @@ begin
   SetThreadPriority(GetCurrentThread, THREAD_PRIORITY_TIME_CRITICAL);
   try
     SysUtils.Sleep(10);
-    // The native source contains these timestamp-counter assembly blocks.
     asm
       rdtsc
       mov CounterLow, eax
@@ -113,9 +111,9 @@ begin
   SetThreadPriority(GetCurrentThread, ThreadPriority);
   SetPriorityClass(GetCurrentProcess, ProcessPriority);
 end;
-{ @end $5F2268 }
+{ @end $5339E4 }
 
-{ @routine $5F2344 TfCfgSettings_InitializeLayout }
+{ @routine $533AC0 TfCfgSettings_InitializeLayout }
 procedure TfCfgSettings.InitializeLayout;
 begin
   inherited InitializeLayout;
@@ -224,9 +222,9 @@ begin
   SettingsModeColorNormal := GetStyleColorGI('Settings.ModeColorNormal', 0, 44, 70);
   SettingsModeColorHighlighted := GetStyleColorGI('Settings.ModeColorHighlighted', 0, 255, 255);
 end;
-{ @end $5F2344 }
+{ @end $533AC0 }
 
-{ @routine $5F2E88 TfCfgSettings_OnOpen }
+{ @routine $534404 TfCfgSettings_OnOpen }
 procedure TfCfgSettings.OnOpen;
 var
   Panel: TPanelScrollBarGI;
@@ -601,27 +599,28 @@ begin
   RefreshModeUi;
   if Galaxy <> nil then Galaxy.PrimeIntegrityChecksum(131);
 end;
-{ @end $5F2E88 }
+{ @end $534404 }
 
-{ @routine $5F8E1C TfCfgSettings_OnClose }
+{ @routine $53A190 TfCfgSettings_OnClose }
 procedure TfCfgSettings.OnClose;
 begin
   if Galaxy <> nil then Galaxy.CheckIntegrityChecksum(132);
-  if ModeLeaveTimer <> nil then
+  if ModeLeaveTimer <> 0 then
   begin
     CancelCallbackTimer(ModeLeaveTimer);
-    ModeLeaveTimer := nil;
+    ModeLeaveTimer := 0;
   end;
 end;
-{ @end $5F8E1C }
+{ @end $53A190 }
 
-{ @routine $5F8E6C TfCfgSettings_MainPanelMouseMove }
+{ @routine $53A1CC TfCfgSettings_MainPanelMouseMove }
 procedure TfCfgSettings.MainPanelMouseMove(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint);
 var Button: TGraphButtonGI; Show: Boolean;
 begin
   Button := nil;
   Show := False;
-  repeat
+  while True do
+  begin
     Button := GetByName('ButAUp') as TGraphButtonGI;
     Show := Button.HitTest(Point);
     if Show then Break;
@@ -640,24 +639,25 @@ begin
     Button := GetByName('Ok') as TGraphButtonGI;
     Show := Button.HitTest(Point);
     if Show then Break;
-  until True;
+    Break;
+  end;
   ShowControlHelp(Button, Show);
 end;
-{ @end $5F8E6C }
+{ @end $53A1CC }
 
-{ @routine $5F9048 TfCfgSettings_ShowControlHelp }
+{ @routine $53A374 TfCfgSettings_ShowControlHelp }
 procedure TfCfgSettings.ShowControlHelp(Sender: TObjectGI; Show: Boolean);
 begin
   with GetByName('LabelHelp') as TLabelGI do
   begin
     if Sender.HelpText = '' then Show := False;
     SetActive(Show);
-    SetText(Sender.HelpText);
+    Text := Sender.HelpText;
   end;
 end;
-{ @end $5F9048 }
+{ @end $53A374 }
 
-{ @routine $5F90BC TfCfgSettings_GroupClicked }
+{ @routine $53A3D8 TfCfgSettings_GroupClicked }
 procedure TfCfgSettings.GroupClicked(Sender: TObjectGI);
 var Group: Integer;
 begin
@@ -674,9 +674,9 @@ begin
     RefreshModeUi;
   end;
 end;
-{ @end $5F90BC }
+{ @end $53A3D8 }
 
-{ @routine $5F9220 TfCfgSettings_RefreshVisibleGroup }
+{ @routine $53A510 TfCfgSettings_RefreshVisibleGroup }
 procedure TfCfgSettings.RefreshVisibleGroup;
 var I: Integer;
 begin
@@ -692,9 +692,9 @@ begin
     SetVerticalScrollbarEnabled(GroupNextY[ActiveGroupIndex] > ClientSize.Y);
   end;
 end;
-{ @end $5F9220 }
+{ @end $53A510 }
 
-{ @routine $5F9420 TfCfgSettings_AddOptionLabel }
+{ @routine $53A6B4 TfCfgSettings_AddOptionLabel }
 function TfCfgSettings.AddOptionLabel(OptionName, Caption: WideString; UnusedFlag: Boolean): TLabelGI;
 begin
   CurrentOptionName := OptionName;
@@ -704,7 +704,7 @@ begin
     GroupNextY[BuildGroupIndex] := GroupNextY[BuildGroupIndex];
     with TImageGI.Create(GroupPanels[BuildGroupIndex]) do
     begin
-      SetImagePath('GI,Bm.FormOptions2.' + GiResourceSuffix + 'Line');
+      ImageSourcePath := 'GI,Bm.FormOptions2.' + GiResourceSuffix + 'Line';
       SetPosition(Classes.Point(0, GroupNextY[BuildGroupIndex]));
       SetSize(Classes.Point(GroupPanels[BuildGroupIndex].ClientSize.X, GetContentSize.Y + 2));
       Inc(GroupNextY[BuildGroupIndex], ClientSize.Y);
@@ -724,9 +724,9 @@ begin
   Result.SetSize(Classes.Point(Result.ClientSize.X, Result.ClientSize.Y + 1));
   Inc(GroupNextY[BuildGroupIndex], 2);
 end;
-{ @end $5F9420 }
+{ @end $53A6B4 }
 
-{ @routine $5F9724 TfCfgSettings_AddOptionChoice }
+{ @routine $53A93C TfCfgSettings_AddOptionChoice }
 procedure TfCfgSettings.AddOptionChoice(Value: Integer; Caption: WideString; Selected, Disabled: Boolean);
 var Image: TImageGI; ValueLabel: TLabelGI; RightMargin: Integer;
 begin
@@ -761,16 +761,16 @@ begin
     Image.MouseEnterCallback := OptionChoiceMouseEnter;
     Image.MouseLeaveCallback := OptionChoiceMouseLeave;
   end;
-  if not Disabled or (CurrentOptionName = 'Lang') then Image.SetName(CurrentOptionName);
+  if not Disabled or (CurrentOptionName = 'Lang') then Image.Name := CurrentOptionName;
   Image.UserValue := Value;
   ValueLabel.SetSize(Classes.Point(ValueLabel.ClientSize.X - Image.ClientSize.X - 10, Max(ValueLabel.ClientSize.Y, Image.ClientSize.Y)));
   Image.SetPosition(Classes.Point(Image.LocalPosition.X, Image.LocalPosition.Y + (Max(ValueLabel.ClientSize.Y, Image.ClientSize.Y) - ValueLabel.ClientSize.Y) div 2));
   GroupNextY[BuildGroupIndex] := GroupNextY[BuildGroupIndex] + ValueLabel.ClientSize.Y + GiScalePixels(5);
   ValueLabel.UserValue := Integer(Image);
 end;
-{ @end $5F9724 }
+{ @end $53A93C }
 
-{ @routine $5F9BEC TfCfgSettings_OptionChoiceMouseDown }
+{ @routine $53AD80 TfCfgSettings_OptionChoiceMouseDown }
 procedure TfCfgSettings.OptionChoiceMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint);
 var Control: TObjectGI;
 begin
@@ -779,34 +779,36 @@ begin
   while Control <> nil do
   begin
     if Control.ControlName = Sender.ControlName then
+    begin
       if Control = Sender then
-        (Control as TImageGI).SetImagePath('GI,Bm.FormOptions2.' + GiResourceSuffix + 'SwitchD')
-      else (Control as TImageGI).SetImagePath('GI,Bm.FormOptions2.' + GiResourceSuffix + 'SwitchN');
+        (Control as TImageGI).ImageSourcePath := 'GI,Bm.FormOptions2.' + GiResourceSuffix + 'SwitchD'
+      else (Control as TImageGI).ImageSourcePath := 'GI,Bm.FormOptions2.' + GiResourceSuffix + 'SwitchN';
+    end;
     Control := Control.NextSibling;
   end;
   if (Point.X <> -1000) or (Point.Y <> -1000) then SoundManager.PlaySound('Sound.ButtonClick');
 end;
-{ @end $5F9BEC }
+{ @end $53AD80 }
 
-{ @routine $5F9DD4 TfCfgSettings_OptionChoiceMouseEnter }
+{ @routine $53AF38 TfCfgSettings_OptionChoiceMouseEnter }
 procedure TfCfgSettings.OptionChoiceMouseEnter(Sender: TObjectGI);
 begin
   if not (Sender is TImageGI) then Sender := TObjectGI(Sender.UserValue);
   if (Sender as TImageGI).GetImagePath = 'GI,Bm.FormOptions2.' + GiResourceSuffix + 'SwitchN' then
-    (Sender as TImageGI).SetImagePath('GI,Bm.FormOptions2.' + GiResourceSuffix + 'SwitchA');
+    (Sender as TImageGI).ImageSourcePath := 'GI,Bm.FormOptions2.' + GiResourceSuffix + 'SwitchA';
 end;
-{ @end $5F9DD4 }
+{ @end $53AF38 }
 
-{ @routine $5F9F10 TfCfgSettings_OptionChoiceMouseLeave }
+{ @routine $53B06C TfCfgSettings_OptionChoiceMouseLeave }
 procedure TfCfgSettings.OptionChoiceMouseLeave(Sender: TObjectGI);
 begin
   if not (Sender is TImageGI) then Sender := TObjectGI(Sender.UserValue);
   if (Sender as TImageGI).GetImagePath = 'GI,Bm.FormOptions2.' + GiResourceSuffix + 'SwitchA' then
-    (Sender as TImageGI).SetImagePath('GI,Bm.FormOptions2.' + GiResourceSuffix + 'SwitchN');
+    (Sender as TImageGI).ImageSourcePath := 'GI,Bm.FormOptions2.' + GiResourceSuffix + 'SwitchN';
 end;
-{ @end $5F9F10 }
+{ @end $53B06C }
 
-{ @routine $5FA04C TfCfgSettings_AddOptionSlider }
+{ @routine $53B1A0 TfCfgSettings_AddOptionSlider }
 procedure TfCfgSettings.AddOptionSlider(ValueLabel: TLabelGI; Minimum, Maximum, Position, UnusedStep: Integer; Callback: TOptionSliderEvent);
 var Slider: TCountBarGI;
 begin
@@ -815,7 +817,7 @@ begin
   Slider.SetPositionModeW(False);
   if GiResourceVariant = 2 then Slider.SetSize(Classes.Point(199, 20))
   else Slider.SetSize(Classes.Point(156, 20));
-  TObjectGI(Slider).SetPosition(Classes.Point(GroupPanels[BuildGroupIndex].ClientSize.X - Slider.ClientSize.X, GroupNextY[BuildGroupIndex]));
+  Slider.Pos := Classes.Point(GroupPanels[BuildGroupIndex].ClientSize.X - Slider.ClientSize.X, GroupNextY[BuildGroupIndex]);
   Slider.DecreaseButton.SetKind(gbkDisable);
   Slider.DecreaseButton.SetImageNormalPath('GI,Bm.FormOptions2.' + GiResourceSuffix + 'TrackLeftN');
   Slider.DecreaseButton.SetImageNormalActivePath('GI,Bm.FormOptions2.' + GiResourceSuffix + 'TrackLeftA');
@@ -844,14 +846,14 @@ begin
   Slider.UpdateLayout;
   Slider.SetRange(Minimum, Maximum);
   Slider.SetPositionInternal(Position);
-  Slider.SetName(CurrentOptionName);
+  Slider.Name := CurrentOptionName;
   Slider.UserIndex := Integer(ValueLabel);
   GroupNextY[BuildGroupIndex] := GroupNextY[BuildGroupIndex] + Slider.ClientSize.Y + GiScalePixels(6);
   Callback(Slider);
 end;
-{ @end $5FA04C }
+{ @end $53B1A0 }
 
-{ @routine $5FA7C4 TfCfgSettings_HasOptionValue }
+{ @routine $53B868 TfCfgSettings_HasOptionValue }
 function TfCfgSettings.HasOptionValue(OptionName: WideString): Boolean;
 var Control: TObjectGI;
 begin
@@ -859,6 +861,7 @@ begin
   while Control <> nil do
   begin
     if Control.ControlName = OptionName then
+    begin
       if Control is TImageGI then
       begin
         if (Control as TImageGI).GetImagePath = 'GI,Bm.FormOptions2.' + GiResourceSuffix + 'SwitchD' then
@@ -872,13 +875,14 @@ begin
         Result := True;
         Exit;
       end;
+    end;
     Control := Control.NextSibling;
   end;
   Result := False;
 end;
-{ @end $5FA7C4 }
+{ @end $53B868 }
 
-{ @routine $5FA924 TfCfgSettings_GetOptionValue }
+{ @routine $53B99C TfCfgSettings_GetOptionValue }
 function TfCfgSettings.GetOptionValue(OptionName: WideString): Integer;
 var Control: TObjectGI;
 begin
@@ -887,6 +891,7 @@ begin
   while Control <> nil do
   begin
     if Control.ControlName = OptionName then
+    begin
       if Control is TImageGI then
       begin
         if (Control as TImageGI).GetImagePath = 'GI,Bm.FormOptions2.' + GiResourceSuffix + 'SwitchD' then
@@ -900,13 +905,14 @@ begin
         Result := (Control as TCountBarGI).Position;
         Exit;
       end;
+    end;
     Control := Control.NextSibling;
   end;
   RaiseWideMessage('UnitGet Type=' + OptionName);
 end;
-{ @end $5FA924 }
+{ @end $53B99C }
 
-{ @routine $5FAAE0 TfCfgSettings_SetOptionValue }
+{ @routine $53BB20 TfCfgSettings_SetOptionValue }
 procedure TfCfgSettings.SetOptionValue(OptionName: WideString; Value: Integer);
 var Control: TObjectGI;
 begin
@@ -929,9 +935,9 @@ begin
     Control := Control.NextSibling;
   end;
 end;
-{ @end $5FAAE0 }
+{ @end $53BB20 }
 
-{ @routine $5FABE8 TfCfgSettings_FormatResolution }
+{ @routine $53BC08 TfCfgSettings_FormatResolution }
 procedure TfCfgSettings.FormatResolution(Sender: TCountBarGI);
 var Index: Integer; ValueLabel: TLabelGI;
 begin
@@ -944,9 +950,9 @@ begin
     else ValueLabel.SetText(ValueLabel.HelpText + TextHighlightColorTag + ' ' + WideString(IntToStr(GameDisplayModes[Index].Width)) + 'x' + WideString(IntToStr(GameDisplayModes[Index].Height)) + EndColorTag);
   end;
 end;
-{ @end $5FABE8 }
+{ @end $53BC08 }
 
-{ @routine $5FADDC TfCfgSettings_FormatRobotResolution }
+{ @routine $53BDD4 TfCfgSettings_FormatRobotResolution }
 procedure TfCfgSettings.FormatRobotResolution(Sender: TCountBarGI);
 var Index: Integer; ValueLabel: TLabelGI;
 begin
@@ -959,9 +965,9 @@ begin
     else ValueLabel.SetText(ValueLabel.HelpText + TextHighlightColorTag + ' ' + WideString(IntToStr(RobotDisplayModes[Index].Width)) + 'x' + WideString(IntToStr(RobotDisplayModes[Index].Height)) + EndColorTag);
   end;
 end;
-{ @end $5FADDC }
+{ @end $53BDD4 }
 
-{ @routine $5FAFD0 TfCfgSettings_FormatRobotFsaaSamples }
+{ @routine $53BFA0 TfCfgSettings_FormatRobotFsaaSamples }
 procedure TfCfgSettings.FormatRobotFsaaSamples(Sender: TCountBarGI);
 var Index: Integer; ValueLabel: TLabelGI;
 begin
@@ -969,12 +975,12 @@ begin
   begin
     ValueLabel := TLabelGI(Sender.UserIndex);
     Index := Sender.Position;
-    ValueLabel.SetText(ReplaceColoredToken(ValueLabel.HelpText, '<Value>', WideString(IntToStr(SupportedMultiSamples[Index])), TextHighlightColorTag));
+    ValueLabel.SetText(ReplaceColoredToken(ValueLabel.HelpText, '<Value>', IntToStr(SupportedMultiSamples[Index]), TextHighlightColorTag));
   end;
 end;
-{ @end $5FAFD0 }
+{ @end $53BFA0 }
 
-{ @routine $5FB0D0 TfCfgSettings_PreviewBrightness }
+{ @routine $53C080 TfCfgSettings_PreviewBrightness }
 procedure TfCfgSettings.PreviewBrightness(Sender: TCountBarGI);
 var ValueLabel: TLabelGI;
 begin
@@ -985,12 +991,12 @@ begin
   if Sender.UserIndex <> 0 then
   begin
     ValueLabel := TLabelGI(Sender.UserIndex);
-    ValueLabel.SetText(ReplaceColoredToken(ValueLabel.HelpText, '<Value>', WideString(IntToStr(Sender.Position)), TextHighlightColorTag));
+    ValueLabel.SetText(ReplaceColoredToken(ValueLabel.HelpText, '<Value>', IntToStr(Sender.Position), TextHighlightColorTag));
   end;
 end;
-{ @end $5FB0D0 }
+{ @end $53C080 }
 
-{ @routine $5FB264 TfCfgSettings_PreviewContrast }
+{ @routine $53C1FC TfCfgSettings_PreviewContrast }
 procedure TfCfgSettings.PreviewContrast(Sender: TCountBarGI);
 var ValueLabel: TLabelGI;
 begin
@@ -1001,24 +1007,24 @@ begin
   if Sender.UserIndex <> 0 then
   begin
     ValueLabel := TLabelGI(Sender.UserIndex);
-    ValueLabel.SetText(ReplaceColoredToken(ValueLabel.HelpText, '<Value>', WideString(IntToStr(Sender.Position)), TextHighlightColorTag));
+    ValueLabel.SetText(ReplaceColoredToken(ValueLabel.HelpText, '<Value>', IntToStr(Sender.Position), TextHighlightColorTag));
   end;
 end;
-{ @end $5FB264 }
+{ @end $53C1FC }
 
-{ @routine $5FB3F8 TfCfgSettings_FormatInteger }
+{ @routine $53C378 TfCfgSettings_FormatInteger }
 procedure TfCfgSettings.FormatInteger(Sender: TCountBarGI);
 var ValueLabel: TLabelGI;
 begin
   if Sender.UserIndex <> 0 then
   begin
     ValueLabel := TLabelGI(Sender.UserIndex);
-    ValueLabel.SetText(ReplaceColoredToken(ValueLabel.HelpText, '<Value>', WideString(IntToStr(Sender.Position)), TextHighlightColorTag));
+    ValueLabel.SetText(ReplaceColoredToken(ValueLabel.HelpText, '<Value>', IntToStr(Sender.Position), TextHighlightColorTag));
   end;
 end;
-{ @end $5FB3F8 }
+{ @end $53C378 }
 
-{ @routine $5FB4E8 TfCfgSettings_FormatTurnSaveStep }
+{ @routine $53C450 TfCfgSettings_FormatTurnSaveStep }
 procedure TfCfgSettings.FormatTurnSaveStep(Sender: TCountBarGI);
 var Value: Integer; Text: WideString; ValueLabel: TLabelGI;
 begin
@@ -1029,14 +1035,14 @@ begin
     if Value = 0 then Text := LocalizedText('FormCfgSettings.TurnSaveStepNever')
     else if Value = 1 then Text := LocalizedText('FormCfgSettings.TurnSaveStep1')
     else if (Value >= 2) and (Value <= 4) then
-      Text := ReplaceColoredToken(LocalizedText('FormCfgSettings.TurnSaveStep2'), '<Value>', WideString(IntToStr(Value)), TextHighlightColorTag)
-    else Text := ReplaceColoredToken(LocalizedText('FormCfgSettings.TurnSaveStep3'), '<Value>', WideString(IntToStr(Value)), TextHighlightColorTag);
+      Text := ReplaceColoredToken(LocalizedText('FormCfgSettings.TurnSaveStep2'), '<Value>', IntToStr(Value), TextHighlightColorTag)
+    else Text := ReplaceColoredToken(LocalizedText('FormCfgSettings.TurnSaveStep3'), '<Value>', IntToStr(Value), TextHighlightColorTag);
     ValueLabel.SetText(ReplaceColoredToken(ValueLabel.HelpText, '<Text>', Text, TextHighlightColorTag));
   end;
 end;
-{ @end $5FB4E8 }
+{ @end $53C450 }
 
-{ @routine $5FB7C4 TfCfgSettings_FormatForsageDeactivatePercent }
+{ @routine $53C70C TfCfgSettings_FormatForsageDeactivatePercent }
 procedure TfCfgSettings.FormatForsageDeactivatePercent(Sender: TCountBarGI);
 var Value: Integer; Text: WideString; ValueLabel: TLabelGI;
 begin
@@ -1046,14 +1052,14 @@ begin
     Value := Sender.Position;
     if Value <= 0 then Text := LocalizedText('FormCfgSettings.ForsageTurnOffNever')
     else if Value < 100 then
-      Text := ReplaceColoredToken(LocalizedText('FormCfgSettings.ForsageTurnOffStep'), '<Value>', WideString(IntToStr(100 - Value)), TextHighlightColorTag)
+      Text := ReplaceColoredToken(LocalizedText('FormCfgSettings.ForsageTurnOffStep'), '<Value>', IntToStr(100 - Value), TextHighlightColorTag)
     else Text := LocalizedText('FormCfgSettings.ForsageTurnOffAlways');
     ValueLabel.SetText(ReplaceColoredToken(ValueLabel.HelpText, '<Text>', Text, TextHighlightColorTag));
   end;
 end;
-{ @end $5FB7C4 }
+{ @end $53C70C }
 
-{ @routine $5FBA20 TfCfgSettings_HighPresetClicked }
+{ @routine $53C944 TfCfgSettings_HighPresetClicked }
 procedure TfCfgSettings.HighPresetClicked(Sender: TObjectGI);
 var SavedGroup: Integer;
 begin
@@ -1111,9 +1117,9 @@ begin
   ActiveGroupIndex := SavedGroup;
   ShowMessageBoxGI(Self, LookupLocalizedTextByKey('FormCfgSettings.AutoMax'), mbgOK or mbgUnused04);
 end;
-{ @end $5FBA20 }
+{ @end $53C944 }
 
-{ @routine $5FC364 TfCfgSettings_MediumPresetClicked }
+{ @routine $53D238 TfCfgSettings_MediumPresetClicked }
 procedure TfCfgSettings.MediumPresetClicked(Sender: TObjectGI);
 var SavedGroup: Integer;
 begin
@@ -1171,9 +1177,9 @@ begin
   ActiveGroupIndex := SavedGroup;
   ShowMessageBoxGI(Self, LookupLocalizedTextByKey('FormCfgSettings.AutoMiddle'), mbgOK or mbgUnused04);
 end;
-{ @end $5FC364 }
+{ @end $53D238 }
 
-{ @routine $5FCC7C TfCfgSettings_LowPresetClicked }
+{ @routine $53DB00 TfCfgSettings_LowPresetClicked }
 procedure TfCfgSettings.LowPresetClicked(Sender: TObjectGI);
 var SavedGroup: Integer;
 begin
@@ -1231,9 +1237,9 @@ begin
   ActiveGroupIndex := SavedGroup;
   ShowMessageBoxGI(Self, LookupLocalizedTextByKey('FormCfgSettings.AutoMin'), mbgOK or mbgUnused04);
 end;
-{ @end $5FCC7C }
+{ @end $53DB00 }
 
-{ @routine $5FD560 TfCfgSettings_AutoPresetClicked }
+{ @routine $53E394 TfCfgSettings_AutoPresetClicked }
 procedure TfCfgSettings.AutoPresetClicked(Sender: TObjectGI);
 var SavedGroup, ClockMHz, MemoryMB: Integer; ModernWindows: Boolean;
   Memory: TMemoryStatus;
@@ -1253,11 +1259,11 @@ begin
   SetOptionValue('CountFilmSave', 30);
   SetOptionValue('ScrollSpeed', 20);
   SetOptionValue('ScrollSense', 1);
-  if (ClockMHz < 1000) then
+  if ClockMHz < 1000 then
   begin
     SetOptionValue('FilmSpeed', 0);
   end
-  else if (ClockMHz < 2000) then
+  else if ClockMHz < 2000 then
   begin
     SetOptionValue('FilmSpeed', 1);
   end
@@ -1275,11 +1281,11 @@ begin
   SetOptionValue('AnimCaptain', Ord(ClockMHz >= 500));
   SetOptionValue('AnimShip', 1);
   SetOptionValue('AnimItem', Ord(ClockMHz >= 300));
-  if ((ClockMHz < 700) or (MemoryMB < 200)) then
+  if (ClockMHz < 700) or (MemoryMB < 200) then
   begin
     SetOptionValue('AnimGov', 0);
   end
-  else if ((ClockMHz < 1500) or ((MemoryMB < 300) and (ClockMHz < 2400))) then
+  else if (ClockMHz < 1500) or ((MemoryMB < 300) and (ClockMHz < 2400)) then
   begin
     SetOptionValue('AnimGov', 1);
   end
@@ -1287,7 +1293,7 @@ begin
   begin
     SetOptionValue('AnimGov', 2);
   end;
-  if ((ClockMHz < 1500) or ((MemoryMB < 300) and (ClockMHz < 2400))) then
+  if (ClockMHz < 1500) or ((MemoryMB < 300) and (ClockMHz < 2400)) then
   begin
     SetOptionValue('AnimMenuShip', 0);
   end
@@ -1298,11 +1304,11 @@ begin
   SetOptionValue('SoftwareCursor', Ord(ModernWindows));
   SetOptionValue('AnimHangar', Ord((ClockMHz >= 2000) or ((ClockMHz >= 1400) and (MemoryMB > 500))));
   SetOptionValue('AnimStar', Ord(ClockMHz >= 500));
-  if (ClockMHz < 500) then
+  if ClockMHz < 500 then
   begin
     SetOptionValue('SpaceImage', 0);
   end
-  else if (ClockMHz < 1900) then
+  else if ClockMHz < 1900 then
   begin
     SetOptionValue('SpaceImage', 1);
   end
@@ -1312,11 +1318,11 @@ begin
   end;
   SetOptionValue('SputnikShow', Ord(ClockMHz >= 500));
   SetOptionValue('CircleAction', 0);
-  if (ClockMHz < 500) then
+  if ClockMHz < 500 then
   begin
     SetOptionValue('Tail', 0);
   end
-  else if (ClockMHz < 1000) then
+  else if ClockMHz < 1000 then
   begin
     SetOptionValue('Tail', 1);
   end
@@ -1324,11 +1330,11 @@ begin
   begin
     SetOptionValue('Tail', 2);
   end;
-  if (ClockMHz < 500) then
+  if ClockMHz < 500 then
   begin
     SetOptionValue('Comet', 0);
   end
-  else if (ClockMHz < 1000) then
+  else if ClockMHz < 1000 then
   begin
     SetOptionValue('Comet', 1);
   end
@@ -1336,11 +1342,11 @@ begin
   begin
     SetOptionValue('Comet', 2);
   end;
-  if (ClockMHz < 500) then
+  if ClockMHz < 500 then
   begin
     SetOptionValue('Wind', 0);
   end
-  else if (ClockMHz < 1000) then
+  else if ClockMHz < 1000 then
   begin
     SetOptionValue('Wind', 1);
   end
@@ -1367,11 +1373,11 @@ begin
   SetOptionValue('RobotRobotShadow', Ord(ClockMHz >= 2400));
   SetOptionValue('RobotLandTexturesGloss', Ord(ClockMHz >= 2000));
   SetOptionValue('RobotObjTexturesGloss', Ord(ClockMHz >= 2000));
-  if (ClockMHz >= 2000) then
+  if ClockMHz >= 2000 then
   begin
     SetOptionValue('RobotSky', 2);
   end
-  else if (ClockMHz >= 1000) then
+  else if ClockMHz >= 1000 then
   begin
     SetOptionValue('RobotSky', 1);
   end
@@ -1388,27 +1394,27 @@ begin
   ActiveGroupIndex := SavedGroup;
   ShowMessageBoxGI(Self, LookupLocalizedTextByKey('FormCfgSettings.Auto'), mbgOK or mbgUnused04);
 end;
-{ @end $5FD560 }
+{ @end $53E394 }
 
-{ @routine $5FE294 TfCfgSettings_CancelClicked }
+{ @routine $53F044 TfCfgSettings_CancelClicked }
 procedure TfCfgSettings.CancelClicked(Sender: TObjectGI);
 begin
   RequestedScreenId := SettingsReturnScreenId;
   RequestClose(1);
 end;
-{ @end $5FE294 }
+{ @end $53F044 }
 
-{ @routine $5FE2C0 TfCfgSettings_RefreshModeUi }
+{ @routine $53F060 TfCfgSettings_RefreshModeUi }
 procedure TfCfgSettings.RefreshModeUi;
 begin
   if SettingsMode = 0 then
   begin
     with GetByName('WarningMod') as TLabelGI do
     begin
-      SetText('');
-      if ActiveGroupIndex = 3 then SetText(LocalizedText('FormCfgSettings.WarningMod'));
+      Text := '';
+      if ActiveGroupIndex = 3 then Text := LocalizedText('FormCfgSettings.WarningMod');
     end;
-    with GetByName('Warning') as TLabelGI do SetText('');
+    with GetByName('Warning') as TLabelGI do Text := '';
     with GetByName('ButGroup0') as TGraphButtonGI do
     begin
       SetActive(True);
@@ -1459,15 +1465,15 @@ begin
   end
   else
   begin
-    with GetByName('WarningMod') as TLabelGI do SetText('');
+    with GetByName('WarningMod') as TLabelGI do Text := '';
     with GetByName('Warning') as TLabelGI do
     begin
-      SetText('');
+      Text := '';
       CreateEmbeddedControl := CreateWarningImage;
-      if RobotAvailability = 1 then SetText(WideString('<Object=0,' + IntToStr(GiScalePixels(26)) + ',' + IntToStr(GiScalePixelsEx(24, 18)) + ',0>') + LocalizedText('FormCfgSettings.WarningNoDX9'))
-      else if RobotAvailability = 2 then SetText(WideString('<Object=0,' + IntToStr(GiScalePixels(26)) + ',' + IntToStr(GiScalePixelsEx(24, 18)) + ',0>') + LocalizedText('FormCfgSettings.WarningDriverOld'))
-      else if RobotAvailability = 3 then SetText(WideString('<Object=0,' + IntToStr(GiScalePixels(26)) + ',' + IntToStr(GiScalePixelsEx(24, 18)) + ',0>') + LocalizedText('FormCfgSettings.WarningVideoUnsupported'))
-      else if RobotAvailability = 4 then SetText(WideString('<Object=0,' + IntToStr(GiScalePixels(26)) + ',' + IntToStr(GiScalePixelsEx(24, 18)) + ',0>') + LocalizedText('FormCfgSettings.WarningNoInstall'));
+      if RobotAvailability = 1 then Text := WideString('<Object=0,' + IntToStr(GiScalePixels(26)) + ',' + IntToStr(GiScalePixelsEx(24, 18)) + ',0>') + LocalizedText('FormCfgSettings.WarningNoDX9')
+      else if RobotAvailability = 2 then Text := WideString('<Object=0,' + IntToStr(GiScalePixels(26)) + ',' + IntToStr(GiScalePixelsEx(24, 18)) + ',0>') + LocalizedText('FormCfgSettings.WarningDriverOld')
+      else if RobotAvailability = 3 then Text := WideString('<Object=0,' + IntToStr(GiScalePixels(26)) + ',' + IntToStr(GiScalePixelsEx(24, 18)) + ',0>') + LocalizedText('FormCfgSettings.WarningVideoUnsupported')
+      else if RobotAvailability = 4 then Text := WideString('<Object=0,' + IntToStr(GiScalePixels(26)) + ',' + IntToStr(GiScalePixelsEx(24, 18)) + ',0>') + LocalizedText('FormCfgSettings.WarningNoInstall');
     end;
     with GetByName('ButGroup0') as TGraphButtonGI do SetActive(False);
     with GetByName('ButGroup1') as TGraphButtonGI do SetPosition(Classes.Point(LocalPosition.X, GroupButtonTops[0]));
@@ -1504,15 +1510,15 @@ begin
     GetByName('ModeLeftPanel').SetPosition(ModeLeftPosition);
   end;
 end;
-{ @end $5FE2C0 }
+{ @end $53F060 }
 
-{ @routine $5FF048 TfCfgSettings_ModeMouseEnter }
+{ @routine $53FCB0 TfCfgSettings_ModeMouseEnter }
 procedure TfCfgSettings.ModeMouseEnter(Sender: TObjectGI);
 begin
-  if ModeLeaveTimer <> nil then
+  if ModeLeaveTimer <> 0 then
   begin
     CancelCallbackTimer(ModeLeaveTimer);
-    ModeLeaveTimer := nil;
+    ModeLeaveTimer := 0;
   end;
   if Sender.UserValue = SettingsMode then
   begin
@@ -1521,38 +1527,38 @@ begin
   end;
   RefreshModeUi;
 end;
-{ @end $5FF048 }
+{ @end $53FCB0 }
 
-{ @routine $5FF0F0 TfCfgSettings_ModeMouseLeave }
+{ @routine $53FD38 TfCfgSettings_ModeMouseLeave }
 procedure TfCfgSettings.ModeMouseLeave(Sender: TObjectGI);
 begin
-  if ModeLeaveTimer <> nil then
+  if ModeLeaveTimer <> 0 then
   begin
     CancelCallbackTimer(ModeLeaveTimer);
-    ModeLeaveTimer := nil;
+    ModeLeaveTimer := 0;
   end;
   ModeLeaveTimer := ScheduleCallbackTimer(20, 20, ModeLeaveTimerTick, Sender.UserValue);
 end;
-{ @end $5FF0F0 }
+{ @end $53FD38 }
 
-{ @routine $5FF158 TfCfgSettings_ModeLeaveTimerTick }
-procedure TfCfgSettings.ModeLeaveTimerTick(Timer: PCallbackTimerGI; UserData: Integer);
+{ @routine $53FD80 TfCfgSettings_ModeLeaveTimerTick }
+procedure TfCfgSettings.ModeLeaveTimerTick(Timer: TCallbackTimerIdGI; UserData: Cardinal);
 begin
-  if ModeLeaveTimer <> nil then
+  if ModeLeaveTimer <> 0 then
   begin
     CancelCallbackTimer(ModeLeaveTimer);
-    ModeLeaveTimer := nil;
+    ModeLeaveTimer := 0;
   end;
-  if UserData = SettingsMode then
+  if Integer(UserData) = SettingsMode then
   begin
     if ModeButtonState <> 0 then SoundManager.PlaySound('Sound.ButtonLeave');
     ModeButtonState := 0;
   end;
   RefreshModeUi;
 end;
-{ @end $5FF158 }
+{ @end $53FD80 }
 
-{ @routine $5FF1FC TfCfgSettings_ModeMouseDown }
+{ @routine $53FE00 TfCfgSettings_ModeMouseDown }
 procedure TfCfgSettings.ModeMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint);
 begin
   if Sender.UserValue = SettingsMode then
@@ -1562,9 +1568,9 @@ begin
   end;
   RefreshModeUi;
 end;
-{ @end $5FF1FC }
+{ @end $53FE00 }
 
-{ @routine $5FF28C TfCfgSettings_ModeMouseUp }
+{ @routine $53FE80 TfCfgSettings_ModeMouseUp }
 procedure TfCfgSettings.ModeMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint);
 begin
   if Sender.UserValue = SettingsMode then
@@ -1584,26 +1590,26 @@ begin
     RefreshVisibleGroup;
   end;
 end;
-{ @end $5FF28C }
+{ @end $53FE80 }
 
-{ @routine $5FF330 TfCfgSettings_MainPanelKeyDown }
+{ @routine $53FF00 TfCfgSettings_MainPanelKeyDown }
 procedure TfCfgSettings.MainPanelKeyDown(Sender: TObjectGI; Key: Cardinal);
 begin
   if Key = VK_ESCAPE then CancelClicked(nil)
   else if Key = VK_RETURN then ApplyClicked(nil);
 end;
-{ @end $5FF330 }
+{ @end $53FF00 }
 
-{ @routine $5FF368 TfCfgSettings_ProcessMouseWheel }
+{ @routine $53FF1C TfCfgSettings_ProcessMouseWheel }
 procedure TfCfgSettings.ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer);
 begin
   with GetByName('PanelSet') as TPanelScrollBarGI do
     if Delta = WHEEL_DELTA then VerticalScrollBar.SetPosition(VerticalScrollBar.Position - VerticalScrollBar.SmallChange)
     else if Delta = -WHEEL_DELTA then VerticalScrollBar.SetPosition(VerticalScrollBar.Position + VerticalScrollBar.SmallChange);
 end;
-{ @end $5FF368 }
+{ @end $53FF1C }
 
-{ @routine $5FF420 TfCfgSettings_ApplyClicked }
+{ @routine $53FFA0 TfCfgSettings_ApplyClicked }
 {$I-}
 procedure TfCfgSettings.ApplyClicked(Sender: TObjectGI);
 var
@@ -1617,40 +1623,41 @@ begin
   RestartNeeded := False;
   ResetNeeded := False;
   ActiveGroupIndex := 0;
-  if not SteamInitialized and (RequestedLanguage = '') then
-  begin
-    Language := ExtractDelimitedPartW(AvailableLanguageCodes, GetOptionValue('Lang'), ',');
-    if SelectedLanguage <> Language then
+  if not SteamInitialized then
+    if RequestedLanguage = '' then
     begin
-      SelectedLanguage := Language;
-      Text := GetGameUserDirectory + 'Lang.txt';
-      AssignFile(LanguageFile, AnsiString(Text));
-      Rewrite(LanguageFile);
-      Write(LanguageFile, 'Lang=');
-      Writeln(LanguageFile, SelectedLanguage);
-      CloseFile(LanguageFile);
-      RestartNeeded := True;
-      if LanguageInstallConfig <> nil then
+      Language := ExtractDelimitedPartW(AvailableLanguageCodes, GetOptionValue('Lang'), ',');
+      if SelectedLanguage <> Language then
       begin
-        LanguageInstallConfig.Free;
-        LanguageInstallConfig := nil;
+        SelectedLanguage := Language;
+        Text := GetGameUserDirectory + 'Lang.txt';
+        AssignFile(LanguageFile, AnsiString(Text));
+        Rewrite(LanguageFile);
+        Write(LanguageFile, 'Lang=');
+        Writeln(LanguageFile, SelectedLanguage);
+        CloseFile(LanguageFile);
+        RestartNeeded := True;
+        if LanguageInstallConfig <> nil then
+        begin
+          LanguageInstallConfig.Free;
+          LanguageInstallConfig := nil;
+        end;
+        if not FileExists(AnsiString('install_' + SelectedLanguage + '.txt')) then
+          raise Exception.Create(AnsiString('Not installed language: ' + SelectedLanguage))
+        else
+        begin
+          LanguageInstallConfig := TBlockParEC.Create;
+          LanguageInstallConfig.LoadFromTextFileWithEncodingProbe(PWideChar('install_' + SelectedLanguage + '.txt'), False);
+        end;
+        ReloadModsRequested := True;
       end;
-      if not FileExists(AnsiString('install_' + SelectedLanguage + '.txt')) then
-        raise Exception.Create(AnsiString('Not installed language: ' + SelectedLanguage))
-      else
-      begin
-        LanguageInstallConfig := TBlockParEC.Create;
-        LanguageInstallConfig.LoadFromTextFileWithEncodingProbe(PWideChar('install_' + SelectedLanguage + '.txt'), False);
-      end;
-      ReloadModsRequested := True;
     end;
-  end;
   MultiThreadEnabled := Boolean(GetOptionValue('MultiThread'));
   UserSettingsConfig.SetOrAddParam('MultiThread', BoolToWideString(MultiThreadEnabled));
   DefaultOrder := GetOptionValue('DefaultOrder');
-  UserSettingsConfig.SetOrAddParam('DefaultOrder', WideString(IntToStr(DefaultOrder)));
+  UserSettingsConfig.SetOrAddParam('DefaultOrder', IntToStr(DefaultOrder));
   RightClickOnShip := GetOptionValue('RightClickOnShip');
-  UserSettingsConfig.SetOrAddParam('RightClickOnShip', WideString(IntToStr(RightClickOnShip)));
+  UserSettingsConfig.SetOrAddParam('RightClickOnShip', IntToStr(RightClickOnShip));
   ViewFollowShip := Boolean(GetOptionValue('ViewFollowShip'));
   UserSettingsConfig.SetOrAddParam('ViewFollowShip', BoolToWideString(ViewFollowShip));
   ViewPathLength := Boolean(GetOptionValue('ViewPathLength'));
@@ -1660,27 +1667,27 @@ begin
   ClickAutoCloseForm := Boolean(GetOptionValue('ClickAutoCloseForm'));
   UserSettingsConfig.SetOrAddParam('ClickAutoCloseForm', BoolToWideString(ClickAutoCloseForm));
   TurnSaveStep := GetOptionValue('TurnSaveStep');
-  UserSettingsConfig.SetOrAddParam('TurnSaveStep', WideString(IntToStr(TurnSaveStep)));
+  UserSettingsConfig.SetOrAddParam('TurnSaveStep', IntToStr(TurnSaveStep));
   QuickSaveExtraSlots := GetOptionValue('QuickSaveExtraSlots');
-  UserSettingsConfig.SetOrAddParam('QuickSaveExtraSlots', WideString(IntToStr(QuickSaveExtraSlots)));
+  UserSettingsConfig.SetOrAddParam('QuickSaveExtraSlots', IntToStr(QuickSaveExtraSlots));
   FilmHistoryLimit := GetOptionValue('CountFilmSave');
-  UserSettingsConfig.SetOrAddParam('CountFilmSave', WideString(IntToStr(FilmHistoryLimit)));
+  UserSettingsConfig.SetOrAddParam('CountFilmSave', IntToStr(FilmHistoryLimit));
   ScrollStep := GetOptionValue('ScrollSpeed');
-  UserSettingsConfig.SetOrAddParam('ScrollStep', WideString(IntToStr(ScrollStep)));
+  UserSettingsConfig.SetOrAddParam('ScrollStep', IntToStr(ScrollStep));
   MaxPlayerNews := GetOptionValue('MaxPlayerNews');
-  UserSettingsConfig.SetOrAddParam('MaxPlayerNews', WideString(IntToStr(MaxPlayerNews)));
+  UserSettingsConfig.SetOrAddParam('MaxPlayerNews', IntToStr(MaxPlayerNews));
   MaxSearchResult := GetOptionValue('MaxSearchResult');
-  UserSettingsConfig.SetOrAddParam('MaxSearchResult', WideString(IntToStr(MaxSearchResult)));
+  UserSettingsConfig.SetOrAddParam('MaxSearchResult', IntToStr(MaxSearchResult));
   AfterburnerStopCondition := GetOptionValue('ForsageDeactivatePercent');
-  UserSettingsConfig.SetOrAddParam('ForsageDeactivatePercent', WideString(IntToStr(AfterburnerStopCondition)));
+  UserSettingsConfig.SetOrAddParam('ForsageDeactivatePercent', IntToStr(AfterburnerStopCondition));
   FilmSpeed := GetOptionValue('FilmSpeed');
-  UserSettingsConfig.SetOrAddParam('FilmSpeed', WideString(IntToStr(FilmSpeed)));
+  UserSettingsConfig.SetOrAddParam('FilmSpeed', IntToStr(FilmSpeed));
   ChangeAutoPilot := GetOptionValue('ChangeAutoPilot');
-  UserSettingsConfig.SetOrAddParam('ChangeAutoPilot', WideString(IntToStr(ChangeAutoPilot)));
+  UserSettingsConfig.SetOrAddParam('ChangeAutoPilot', IntToStr(ChangeAutoPilot));
   DisableAutoPilot := Boolean(GetOptionValue('DisableAutoPilot'));
   UserSettingsConfig.SetOrAddParam('DisableAutoPilot', BoolToWideString(DisableAutoPilot));
   BeginCalcNextTurn := GetOptionValue('BeginCalcNextTurn') / 100.0;
-  UserSettingsConfig.SetOrAddParam('BeginCalcNextTurn', WideString(IntToStr(Round(BeginCalcNextTurn * 100.0))));
+  UserSettingsConfig.SetOrAddParam('BeginCalcNextTurn', IntToStr(Round(BeginCalcNextTurn * 100.0)));
 
   ActiveGroupIndex := 1;
   Index := GetOptionValue('Resolution');
@@ -1689,11 +1696,11 @@ begin
     if GameDisplayModes[Index].Width = 0 then
     begin
       if (GameDisplayModes[SelectedGameDisplayMode].Width <> DesktopDisplayMode.Width) or
-         (GameDisplayModes[SelectedGameDisplayMode].Height <> DesktopDisplayMode.Height) then
+        (GameDisplayModes[SelectedGameDisplayMode].Height <> DesktopDisplayMode.Height) then
         RestartNeeded := True;
     end
     else if (GameDisplayModes[Index].Width <> GameDisplayModes[SelectedGameDisplayMode].Width) or
-            (GameDisplayModes[Index].Height <> GameDisplayModes[SelectedGameDisplayMode].Height) then
+      (GameDisplayModes[Index].Height <> GameDisplayModes[SelectedGameDisplayMode].Height) then
       RestartNeeded := True;
     SelectedGameDisplayMode := Index;
   end;
@@ -1721,20 +1728,22 @@ begin
     WindowedModeRequested := Boolean(GetOptionValue('Window'));
     UserSettingsConfig.SetOrAddParam('Window', BoolToWideString(WindowedModeRequested));
   end;
-  if AlternateViewportEnabled and (Boolean(GetOptionValue('RenderMode')) <> ScaleViewportToWindow) then
-  begin
-    RestartNeeded := True;
-    ScaleViewportToWindow := Boolean(GetOptionValue('RenderMode'));
-    UserSettingsConfig.SetOrAddParam('RenderModeScale', BoolToWideString(ScaleViewportToWindow));
-  end;
-  if not AlternateViewportEnabled and (Boolean(GetOptionValue('HardwareRender')) <> HardwareRenderingRequested) then
-  begin
-    HardwareRenderingRequested := not HardwareRenderingRequested;
-    UserSettingsConfig.SetOrAddParam('HardwareRender', BoolToWideString(HardwareRenderingRequested));
-    HardwareRenderingEnabled := HardwareRenderingRequested and
-      (not RunningUnderWine or ((UserSettingsConfig.CountParams('AllowHardwareRenderUnderWine') <> 0) and
+  if AlternateViewportEnabled then
+    if Boolean(GetOptionValue('RenderMode')) <> ScaleViewportToWindow then
+    begin
+      RestartNeeded := True;
+      ScaleViewportToWindow := Boolean(GetOptionValue('RenderMode'));
+      UserSettingsConfig.SetOrAddParam('RenderModeScale', BoolToWideString(ScaleViewportToWindow));
+    end;
+  if not AlternateViewportEnabled then
+    if Boolean(GetOptionValue('HardwareRender')) <> HardwareRenderingRequested then
+    begin
+      HardwareRenderingRequested := not HardwareRenderingRequested;
+      UserSettingsConfig.SetOrAddParam('HardwareRender', BoolToWideString(HardwareRenderingRequested));
+      HardwareRenderingEnabled := HardwareRenderingRequested and
+        (not RunningUnderWine or ((UserSettingsConfig.CountParams('AllowHardwareRenderUnderWine') <> 0) and
         ParseEnabledNameGI(TrimWideString(UserSettingsConfig.GetParamByPathOrMarker('AllowHardwareRenderUnderWine')))));
-  end;
+    end;
   ShowSystemMouse := Boolean(GetOptionValue('SoftwareCursor'));
   UserSettingsConfig.SetOrAddParam('ShowSystemMouse', BoolToWideString(ShowSystemMouse));
   SkipIntro := not Boolean(GetOptionValue('Intro'));
@@ -1752,7 +1761,7 @@ begin
   AnimMenuShip := Boolean(GetOptionValue('AnimMenuShip'));
   UserSettingsConfig.SetOrAddParam('AnimMenuShip', BoolToWideString(AnimMenuShip));
   AnimGov := GetOptionValue('AnimGov');
-  UserSettingsConfig.SetOrAddParam('AnimGov', WideString(IntToStr(AnimGov)));
+  UserSettingsConfig.SetOrAddParam('AnimGov', IntToStr(AnimGov));
   AnimHangar := Boolean(GetOptionValue('AnimHangar'));
   UserSettingsConfig.SetOrAddParam('AnimHangar', BoolToWideString(AnimHangar));
   AnimStar := Boolean(GetOptionValue('AnimStar'));
@@ -1760,20 +1769,21 @@ begin
   if GetOptionValue('SpaceImage') <> SpaceImage then
   begin
     SpaceImage := GetOptionValue('SpaceImage');
-    if (Galaxy <> nil) and (SpaceImage > 0) then
-      Galaxy.GenerateSpaceBackground(PlayerStar.BackgroundImage);
-    UserSettingsConfig.SetOrAddParam('SpaceImage', WideString(IntToStr(SpaceImage)));
+    if Galaxy <> nil then
+      if SpaceImage > 0 then
+        Galaxy.GenerateSpaceBackground(PlayerStar.BackgroundImage);
+    UserSettingsConfig.SetOrAddParam('SpaceImage', IntToStr(SpaceImage));
   end;
   SputnikShow := Boolean(GetOptionValue('SputnikShow'));
   UserSettingsConfig.SetOrAddParam('SputnikShow', BoolToWideString(SputnikShow));
   CircleAction := Boolean(GetOptionValue('CircleAction'));
   UserSettingsConfig.SetOrAddParam('CircleAction', BoolToWideString(CircleAction));
   ShipTail := GetOptionValue('Tail');
-  UserSettingsConfig.SetOrAddParam('ShipTail', WideString(IntToStr(ShipTail)));
+  UserSettingsConfig.SetOrAddParam('ShipTail', IntToStr(ShipTail));
   Comet := GetOptionValue('Comet');
-  UserSettingsConfig.SetOrAddParam('Comet', WideString(IntToStr(Comet)));
+  UserSettingsConfig.SetOrAddParam('Comet', IntToStr(Comet));
   Wind := GetOptionValue('Wind');
-  UserSettingsConfig.SetOrAddParam('Wind', WideString(IntToStr(Wind)));
+  UserSettingsConfig.SetOrAddParam('Wind', IntToStr(Wind));
   BackgroundShade := Boolean(GetOptionValue('BackgroundShade'));
   UserSettingsConfig.SetOrAddParam('BackgroundShade', BoolToWideString(BackgroundShade));
   BackgroundGrayscale := Boolean(GetOptionValue('BackgroundGrayscale'));
@@ -1789,7 +1799,7 @@ begin
   ShowFrameRate := Boolean(GetOptionValue('ShowFPS'));
   UserSettingsConfig.SetOrAddParam('ShowFPS', BoolToWideString(ShowFrameRate));
   GalaxyMapFontChoice := TGalaxyMapFontChoice(GetOptionValue('FontGalaxy'));
-  UserSettingsConfig.SetOrAddParam('FontGalaxy', WideString(IntToStr(Integer(GalaxyMapFontChoice))));
+  UserSettingsConfig.SetOrAddParam('FontGalaxy', IntToStr(Integer(GalaxyMapFontChoice)));
   DynamicTipsPos := Boolean(GetOptionValue('DynamicTipsPos'));
   UserSettingsConfig.SetOrAddParam('DynamicTipsPos', BoolToWideString(DynamicTipsPos));
   if Boolean(GetOptionValue('UseTablesForGov')) <> UseTablesForGov then
@@ -1801,13 +1811,13 @@ begin
   FontSmoothingEnabled := Boolean(GetOptionValue('FontSmooth'));
   UserSettingsConfig.SetOrAddParam('FontSmooth', BoolToWideString(FontSmoothingEnabled));
   FontDialog := GetOptionValue('FontDialog');
-  UserSettingsConfig.SetOrAddParam('FontDialog', WideString(IntToStr(FontDialog)));
+  UserSettingsConfig.SetOrAddParam('FontDialog', IntToStr(FontDialog));
   FontQuest := GetOptionValue('FontQuest');
-  UserSettingsConfig.SetOrAddParam('FontQuest', WideString(IntToStr(FontQuest)));
+  UserSettingsConfig.SetOrAddParam('FontQuest', IntToStr(FontQuest));
   ScreenshotFormat := GetOptionValue('ScreenShotType');
-  UserSettingsConfig.SetOrAddParam('ScreenShotType', WideString(IntToStr(ScreenshotFormat)));
+  UserSettingsConfig.SetOrAddParam('ScreenShotType', IntToStr(ScreenshotFormat));
   ScreenshotJpegQuality := GetOptionValue('ScreenShotQuality');
-  UserSettingsConfig.SetOrAddParam('ScreenShotQuality', WideString(IntToStr(ScreenshotJpegQuality)));
+  UserSettingsConfig.SetOrAddParam('ScreenShotQuality', IntToStr(ScreenshotJpegQuality));
 
   ActiveGroupIndex := 2;
   if Boolean(GetOptionValue('Sound')) <> SoundEnabled then
@@ -1818,7 +1828,7 @@ begin
   SoundInSpaceEnabled := Boolean(GetOptionValue('SoundInSpace'));
   UserSettingsConfig.SetOrAddParam('SoundInSpace', BoolToWideString(SoundInSpaceEnabled));
   SoundVolume := GetOptionValue('SoundVolume') / 100.0;
-  UserSettingsConfig.SetOrAddParam('SoundVolume', WideString(IntToStr(GetOptionValue('SoundVolume'))));
+  UserSettingsConfig.SetOrAddParam('SoundVolume', IntToStr(GetOptionValue('SoundVolume')));
   if Boolean(GetOptionValue('Music')) <> MusicEnabled then
   begin
     UserSettingsConfig.SetOrAddParam('Music', BoolToWideString(not MusicEnabled));
@@ -1827,7 +1837,7 @@ begin
   MusicInSpaceEnabled := Boolean(GetOptionValue('MusicInSpace'));
   UserSettingsConfig.SetOrAddParam('MusicInSpace', BoolToWideString(MusicInSpaceEnabled));
   MusicVolume := GetOptionValue('MusicVolume') / 100.0;
-  UserSettingsConfig.SetOrAddParam('MusicVolume', WideString(IntToStr(GetOptionValue('MusicVolume'))));
+  UserSettingsConfig.SetOrAddParam('MusicVolume', IntToStr(GetOptionValue('MusicVolume')));
   MusicInHyperEnabled := Boolean(GetOptionValue('MusicInHyper'));
   UserSettingsConfig.SetOrAddParam('MusicInHyper', BoolToWideString(MusicInHyperEnabled));
   MusicInPlanetEnabled := Boolean(GetOptionValue('MusicInPlanet'));
@@ -1841,15 +1851,15 @@ begin
   if SupportedMultiSampleCount > 1 then
   begin
     RobotFSAASamples := SupportedMultiSamples[GetOptionValue('RobotFSAASamples')];
-    UserSettingsConfig.SetOrAddParam('RobotFSAASamples', WideString(IntToStr(RobotFSAASamples)));
+    UserSettingsConfig.SetOrAddParam('RobotFSAASamples', IntToStr(RobotFSAASamples));
   end;
   if Integer(MaximumAnisotropy) > 0 then
   begin
     RobotAnisotropy := GetOptionValue('RobotAnisotropy');
-    UserSettingsConfig.SetOrAddParam('RobotAnisotropy', WideString(IntToStr(RobotAnisotropy)));
+    UserSettingsConfig.SetOrAddParam('RobotAnisotropy', IntToStr(RobotAnisotropy));
   end;
   RobotMaxDistance := GetOptionValue('RobotMaxDistance');
-  UserSettingsConfig.SetOrAddParam('RobotMaxDistance', WideString(IntToStr(RobotMaxDistance)));
+  UserSettingsConfig.SetOrAddParam('RobotMaxDistance', IntToStr(RobotMaxDistance));
   RobotBrightness := (GetOptionValue('RobotBrightness') - 50) / 50.0;
   RobotContrast := (GetOptionValue('RobotContrast') - 50) / 50.0;
   UserSettingsConfig.SetOrAddParam('RobotBrightness', WideString(Format('%.2f', [RobotBrightness])));
@@ -1859,7 +1869,7 @@ begin
   RobotSettings.ShowProjShadows := Boolean(GetOptionValue('RobotShowProjShadows'));
   UserSettingsConfig.SetOrAddParam('RobotShowProjShadows', BoolToWideString(RobotSettings.ShowProjShadows));
   RobotSettings.RobotShadow := Byte(GetOptionValue('RobotRobotShadow'));
-  UserSettingsConfig.SetOrAddParam('RobotRobotShadow', WideString(IntToStr(RobotSettings.RobotShadow)));
+  UserSettingsConfig.SetOrAddParam('RobotRobotShadow', IntToStr(RobotSettings.RobotShadow));
   RobotSettings.SelectEx := Boolean(GetOptionValue('RobotSelectEx'));
   UserSettingsConfig.SetOrAddParam('RobotSelectEx', BoolToWideString(RobotSettings.SelectEx));
   RobotSettings.LandTexturesGloss := Boolean(GetOptionValue('RobotLandTexturesGloss'));
@@ -1869,17 +1879,17 @@ begin
   RobotSettings.SoftwareCursor := Boolean(GetOptionValue('RobotSoftwareCursor'));
   UserSettingsConfig.SetOrAddParam('RobotSoftwareCursor', BoolToWideString(RobotSettings.SoftwareCursor));
   RobotSettings.Sky := Byte(GetOptionValue('RobotSky'));
-  UserSettingsConfig.SetOrAddParam('RobotSky', WideString(IntToStr(RobotSettings.Sky)));
+  UserSettingsConfig.SetOrAddParam('RobotSky', IntToStr(RobotSettings.Sky));
 
   ActiveGroupIndex := 5;
   RobotMusic := Boolean(GetOptionValue('RobotMusic'));
   UserSettingsConfig.SetOrAddParam('RobotMusic', BoolToWideString(RobotMusic));
   RobotMusicVolume := GetOptionValue('RobotMusicVolume') / 100.0;
-  UserSettingsConfig.SetOrAddParam('RobotMusicVolume', WideString(IntToStr(GetOptionValue('RobotMusicVolume'))));
+  UserSettingsConfig.SetOrAddParam('RobotMusicVolume', IntToStr(GetOptionValue('RobotMusicVolume')));
   RobotSound := Boolean(GetOptionValue('RobotSound'));
   UserSettingsConfig.SetOrAddParam('RobotSound', BoolToWideString(RobotSound));
   RobotSoundVolume := GetOptionValue('RobotSoundVolume') / 100.0;
-  UserSettingsConfig.SetOrAddParam('RobotSoundVolume', WideString(IntToStr(GetOptionValue('RobotSoundVolume'))));
+  UserSettingsConfig.SetOrAddParam('RobotSoundVolume', IntToStr(GetOptionValue('RobotSoundVolume')));
 
   ActiveGroupIndex := 3;
   Text := GetGameUserDirectory + 'cfg.txt';
@@ -1898,10 +1908,11 @@ begin
     end;
   end;
   if ShowSystemMouse then
-    while ShowCursor(True) < 0 do
+    while Windows.ShowCursor(True) < 0 do
   else
-    while ShowCursor(False) >= 0 do;
-  if ResetNeeded and not RestartNeeded then GR_DXReset;
+    while Windows.ShowCursor(False) >= 0 do;
+  if ResetNeeded then
+    if not RestartNeeded then GR_DXReset;
   if not RestartNeeded then
     RequestedScreenId := SettingsReturnScreenId
   else
@@ -1913,22 +1924,22 @@ begin
   RequestClose(1);
 end;
 {$I+}
-{ @end $5FF420 }
+{ @end $53FFA0 }
 
-{ @routine $60238C TfCfgSettings_CreateWarningImage }
+{ @routine $542D00 TfCfgSettings_CreateWarningImage }
 function TfCfgSettings.CreateWarningImage(Owner: TLabelGI; Item: PFontObjectEC): TObjectGI;
 begin
   Result := TImageGI.Create(Owner);
   with Result as TImageGI do
   begin
-    SetImagePath('GI,Bm.FormOptions2.' + GiResourceSuffix + 'Warning');
-    SetImageKindX(ikxLeft);
-    SetImageKindY(ikyTop);
+    ImageSourcePath := 'GI,Bm.FormOptions2.' + GiResourceSuffix + 'Warning';
+    KindX := ikxLeft;
+    KindY := ikyTop;
   end;
 end;
-{ @end $60238C }
+{ @end $542D00 }
 
-{ @routine $602480 TfCfgSettings_SelectMusic }
+{ @routine $542DE0 TfCfgSettings_SelectMusic }
 procedure TfCfgSettings.SelectMusic;
 begin
   if GetPlayer = nil then MusicManager.PlayCategory('Base')
@@ -1936,21 +1947,21 @@ begin
   begin
     if not MusicInPlanetEnabled then MusicManager.RequestFadeOut
     else
-      if GetPlayer.CurrentPlanet.OwnerId = oiPirate then
-      begin
-        if not GetPlayer.CurrentPlanet.IsMainPiratePlanet then
-          MusicManager.PlayCategory('Nation.' + OwnerInfo[RaceToOwner(GetPlayer.CurrentPlanet.RaceId)].InternalName + 'Pirate')
-        else MusicManager.PlayCategory('Nation.PiratePlanetMain');
-      end
-      else MusicManager.PlayCategory('Nation.' + OwnerInfo[GetPlayer.CurrentPlanet.OwnerId].InternalName);
+    if GetPlayer.CurrentPlanet.OwnerId = oiPirate then
+    begin
+      if not GetPlayer.CurrentPlanet.IsMainPiratePlanet then
+        MusicManager.PlayCategory('Nation.' + OwnerInfo[RaceToOwner(GetPlayer.CurrentPlanet.RaceId)].InternalName + 'Pirate')
+      else MusicManager.PlayCategory('Nation.PiratePlanetMain');
+    end
+    else MusicManager.PlayCategory('Nation.' + OwnerInfo[GetPlayer.CurrentPlanet.OwnerId].InternalName);
   end
   else if GetPlayer.IsDockedToShip then
   begin
     if not MusicInPlanetEnabled then MusicManager.RequestFadeOut
     else
-      if GetPlayer.DockedTo.TypeId in [rstPirateBase, rstDominion] then
-        MusicManager.PlayCategory('Nation.' + OwnerInfo[RaceToOwner(GetPlayer.DockedTo.PilotRace)].InternalName + 'Pirate')
-      else MusicManager.PlayCategory('Nation.' + OwnerInfo[RaceToOwner(GetPlayer.DockedTo.PilotRace)].InternalName);
+    if GetPlayer.DockedTo.TypeId in [rstPirateBase, rstDominion] then
+      MusicManager.PlayCategory('Nation.' + OwnerInfo[RaceToOwner(GetPlayer.DockedTo.PilotRace)].InternalName + 'Pirate')
+    else MusicManager.PlayCategory('Nation.' + OwnerInfo[RaceToOwner(GetPlayer.DockedTo.PilotRace)].InternalName);
   end
   else if GetPlayer.InNormalSpace then
   begin
@@ -1970,16 +1981,16 @@ begin
     else MusicManager.RequestFadeOut;
   end;
 end;
-{ @end $602480 }
+{ @end $542DE0 }
 
-{ @routine $6027B4 TfCfgSettings_ExecuteUiCode }
+{ @routine $543118 TfCfgSettings_ExecuteUiCode }
 procedure TfCfgSettings.ExecuteUiCode(Block: TBlockParEC; Key: Cardinal);
 begin
   if Galaxy <> nil then Galaxy.CheckIntegrityChecksum(10000);
   ExecuteGameplayUiCode(Block, Key);
   if Galaxy <> nil then Galaxy.PrimeIntegrityChecksum(20000);
 end;
-{ @end $6027B4 }
+{ @end $543118 }
 
 
 end.

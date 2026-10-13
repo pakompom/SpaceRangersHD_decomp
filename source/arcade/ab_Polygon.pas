@@ -1,8 +1,4 @@
 unit ab_Polygon;
-// Unit bracket (inferred): .text 0x0053A7F8..0x0053B54F; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
-// Unit bracket (inferred): .itext 0x00877860..0x00877867; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
-// Native anonymous RTTI and initialization-table evidence identify this unit.
-// Ordinary routines occupy $53A8F4..$53B4FE; $53B500 is compiler finalization.
 
 interface
 
@@ -21,46 +17,44 @@ type
     MapValue30: Integer; // @offset $30  Serialized value; meaning not yet established.
   end;
   PabPolygonGroup = ^TabOptGroup;
-  // Native record RTTI at $53A818.
   TabOptGroup = record // @size $68
     Polygons: array of PabPolygon; // @offset $00
     Corners: array[0..3] of TVector3D; // @offset $08
   end;
   PabPolygonCell = ^TabOptUnit;
-  // Native record RTTI at $53A884.
   TabOptUnit = record // @size $08
     Points: array of PabStopPoint; // @offset $00
     Groups: array of PabPolygonGroup; // @offset $04
   end;
 
-procedure ab_Polygon_Clear; // @addr $53A8F4
-function ab_Polygon_Count: Integer; // @addr $53A924
-procedure ab_Polygon_ClearVisibility; // @addr $53A958
-procedure ab_Polygon_LoadVisibility(Buffer: TBufEC); // @addr $53AA34
-procedure ab_Polygon_SelectVisibilityCell; // @addr $53AE84
-procedure ab_Polygon_ProjectVisiblePoints; // @addr $53AF30
-procedure ab_Polygon_QueueUpdateRects; // @addr $53AFE4
-procedure ab_Polygon_Draw; // @addr $53B264
-procedure ab_Polygon_Load(Buffer: TBufEC); // @addr $53B400
+procedure ab_Polygon_Clear; // @addr $5E79F4
+function ab_Polygon_Count: Integer; // @addr $5E7A24
+procedure ab_Polygon_ClearVisibility; // @addr $5E7A3C
+procedure ab_Polygon_LoadVisibility(Buffer: TBufEC); // @addr $5E7AF4
+procedure ab_Polygon_SelectVisibilityCell; // @addr $5E7E58
+procedure ab_Polygon_ProjectVisiblePoints; // @addr $5E7EF0
+procedure ab_Polygon_QueueUpdateRects; // @addr $5E7F7C
+procedure ab_Polygon_Draw; // @addr $5E820C
+procedure ab_Polygon_Load(Buffer: TBufEC); // @addr $5E8350
 
 var
-  FirstPolygon: PabPolygon = nil; // @addr $87AED4
-  LastPolygon: PabPolygon = nil; // @addr $87AED8
-  PolygonStorage: PabPolygon; // @addr $88A78C
-  PolygonGroups: array of TabOptGroup; // @addr $88A790
-  PolygonCells: array of TabOptUnit; // @addr $88A794
-  LongitudeCellCount: Integer; // @addr $88A798
-  PolarCellCount: Integer; // @addr $88A79C
-  CurrentPolygonCell: PabPolygonCell; // @addr $88A7A0
+  FirstPolygon: PabPolygon = nil; // @addr $80F648
+  LastPolygon: PabPolygon = nil; // @addr $80F64C
+  PolygonStorage: PabPolygon; // @addr $81B818
+  PolygonGroups: array of TabOptGroup; // @addr $81B81C
+  PolygonCells: array of TabOptUnit; // @addr $81B820
+  LongitudeCellCount: Integer; // @addr $81B824
+  PolarCellCount: Integer; // @addr $81B828
+  CurrentPolygonCell: PabPolygonCell; // @addr $81B82C
 
 implementation
 
-// @unit-initialization $877860
-// @unit-finalization $53B500
+// @unit-initialization $8068FC
+// @unit-finalization $5E8404
 
 uses Classes, EC_Mem, GI_Tail, ab_Global, GR_Main, GR_DX, Globals, GlobalsV;
 
-{ @routine $53A8F4 ab_Polygon_Clear }
+{ @routine $5E79F4 ab_Polygon_Clear }
 procedure ab_Polygon_Clear;
 begin
   ab_Polygon_ClearVisibility;
@@ -72,9 +66,9 @@ begin
   FirstPolygon := nil;
   LastPolygon := nil;
 end;
-{ @end $53A8F4 }
+{ @end $5E79F4 }
 
-{ @routine $53A924 ab_Polygon_Count }
+{ @routine $5E7A24 ab_Polygon_Count }
 function ab_Polygon_Count: Integer;
 var
   Polygon: PabPolygon;
@@ -87,9 +81,9 @@ begin
     Polygon := Polygon.Next;
   end;
 end;
-{ @end $53A924 }
+{ @end $5E7A24 }
 
-{ @routine $53A958 ab_Polygon_ClearVisibility }
+{ @routine $5E7A3C ab_Polygon_ClearVisibility }
 procedure ab_Polygon_ClearVisibility;
 var
   Index: Integer;
@@ -104,15 +98,15 @@ begin
   PolygonCells := nil;
   CurrentPolygonCell := nil;
 end;
-{ @end $53A958 }
+{ @end $5E7A3C }
 
-{ @routine $53AA34 ab_Polygon_LoadVisibility }
+{ @routine $5E7AF4 ab_Polygon_LoadVisibility }
 procedure ab_Polygon_LoadVisibility(Buffer: TBufEC);
 var
   Index, ItemIndex, Count: Integer;
   Polygons: array of PabPolygon;
   Polygon: PabPolygon;
-  Cursor: Pointer;
+  Cursor: PAnsiChar;
   PointIndex: Integer;
   Group: PabPolygonGroup;
 begin
@@ -136,36 +130,36 @@ begin
     Group := @PolygonGroups[Index];
     Count := Buffer.GetWord;
     SetLength(Group.Polygons, Count);
-    Cursor := Pointer(PAnsiChar(Buffer.Data) + Buffer.Position);
+    Cursor := PAnsiChar(Buffer.Data) + Buffer.Position;
     for ItemIndex := 0 to High(Group.Polygons) do
     begin
       Group.Polygons[ItemIndex] := Polygons[PWord(Cursor)^];
-      Cursor := Pointer(PAnsiChar(Cursor) + 2);
+      Inc(Cursor, SizeOf(Word));
     end;
-    Buffer.SetPosition(Buffer.Position + Count * 2);
-    Cursor := Pointer(PAnsiChar(Buffer.Data) + Buffer.Position);
+    Buffer.SetPosition(Buffer.Position + Count * SizeOf(Word));
+    Cursor := PAnsiChar(Buffer.Data) + Buffer.Position;
     Group.Corners[0].X := PSingle(Cursor)^;
-    Cursor := Pointer(PAnsiChar(Cursor) + 4);
+    Inc(Cursor, SizeOf(Single));
     Group.Corners[0].Y := PSingle(Cursor)^;
-    Cursor := Pointer(PAnsiChar(Cursor) + 4);
+    Inc(Cursor, SizeOf(Single));
     Group.Corners[0].Z := PSingle(Cursor)^;
-    Cursor := Pointer(PAnsiChar(Cursor) + 4);
+    Inc(Cursor, SizeOf(Single));
     Group.Corners[1].X := PSingle(Cursor)^;
-    Cursor := Pointer(PAnsiChar(Cursor) + 4);
+    Inc(Cursor, SizeOf(Single));
     Group.Corners[1].Y := PSingle(Cursor)^;
-    Cursor := Pointer(PAnsiChar(Cursor) + 4);
+    Inc(Cursor, SizeOf(Single));
     Group.Corners[1].Z := PSingle(Cursor)^;
-    Cursor := Pointer(PAnsiChar(Cursor) + 4);
+    Inc(Cursor, SizeOf(Single));
     Group.Corners[2].X := PSingle(Cursor)^;
-    Cursor := Pointer(PAnsiChar(Cursor) + 4);
+    Inc(Cursor, SizeOf(Single));
     Group.Corners[2].Y := PSingle(Cursor)^;
-    Cursor := Pointer(PAnsiChar(Cursor) + 4);
+    Inc(Cursor, SizeOf(Single));
     Group.Corners[2].Z := PSingle(Cursor)^;
-    Cursor := Pointer(PAnsiChar(Cursor) + 4);
+    Inc(Cursor, SizeOf(Single));
     Group.Corners[3].X := PSingle(Cursor)^;
-    Cursor := Pointer(PAnsiChar(Cursor) + 4);
+    Inc(Cursor, SizeOf(Single));
     Group.Corners[3].Y := PSingle(Cursor)^;
-    Cursor := Pointer(PAnsiChar(Cursor) + 4);
+    Inc(Cursor, SizeOf(Single));
     Group.Corners[3].Z := PSingle(Cursor)^;
     Buffer.SetPosition(Buffer.Position + 48);
   end;
@@ -174,30 +168,30 @@ begin
     CurrentPolygonCell := @PolygonCells[Index];
     Count := Buffer.GetWord;
     SetLength(CurrentPolygonCell.Points, Count);
-    Cursor := Pointer(PAnsiChar(Buffer.Data) + Buffer.Position);
+    Cursor := PAnsiChar(Buffer.Data) + Buffer.Position;
     for ItemIndex := 0 to Count - 1 do
     begin
       PointIndex := PWord(Cursor)^;
       CurrentPolygonCell.Points[ItemIndex] := StopPointIndex[PointIndex];
-      Cursor := Pointer(PAnsiChar(Cursor) + 2);
+      Inc(Cursor, SizeOf(Word));
     end;
-    Buffer.SetPosition(Buffer.Position + Count * 2);
+    Buffer.SetPosition(Buffer.Position + Count * SizeOf(Word));
     Count := Buffer.GetWord;
     SetLength(CurrentPolygonCell.Groups, Count);
-    Cursor := Pointer(PAnsiChar(Buffer.Data) + Buffer.Position);
+    Cursor := PAnsiChar(Buffer.Data) + Buffer.Position;
     for ItemIndex := 0 to Count - 1 do
     begin
       CurrentPolygonCell.Groups[ItemIndex] := @PolygonGroups[PWord(Cursor)^];
-      Cursor := Pointer(PAnsiChar(Cursor) + 2);
+      Inc(Cursor, SizeOf(Word));
     end;
-    Buffer.SetPosition(Buffer.Position + Count * 2);
+    Buffer.SetPosition(Buffer.Position + Count * SizeOf(Word));
   end;
   Polygons := nil;
   CurrentPolygonCell := nil;
 end;
-{ @end $53AA34 }
+{ @end $5E7AF4 }
 
-{ @routine $53AE84 ab_Polygon_SelectVisibilityCell }
+{ @routine $5E7E58 ab_Polygon_SelectVisibilityCell }
 procedure ab_Polygon_SelectVisibilityCell;
 var
   LongitudeIndex, PolarIndex: Integer;
@@ -208,9 +202,9 @@ begin
   if PolarIndex >= PolarCellCount then RaiseWideMessage('ab_OptCur');
   CurrentPolygonCell := @PolygonCells[LongitudeIndex * PolarCellCount + PolarIndex];
 end;
-{ @end $53AE84 }
+{ @end $5E7E58 }
 
-{ @routine $53AF30 ab_Polygon_ProjectVisiblePoints }
+{ @routine $5E7EF0 ab_Polygon_ProjectVisiblePoints }
 procedure ab_Polygon_ProjectVisiblePoints;
 var
   Index, Count: Integer;
@@ -229,9 +223,9 @@ begin
     Point.ScreenY := ArcadeBattleScreen.WorldCenterY + Round(Projected.Y);
   end;
 end;
-{ @end $53AF30 }
+{ @end $5E7EF0 }
 
-{ @routine $53AFE4 ab_Polygon_QueueUpdateRects }
+{ @routine $5E7F7C ab_Polygon_QueueUpdateRects }
 procedure ab_Polygon_QueueUpdateRects;
 var
   Index, Count: Integer;
@@ -271,9 +265,9 @@ begin
     ArcadeBattleScreen.QueueUpdateRect(Classes.Rect(CenterX + Round(MinX), CenterY + Round(MinY), CenterX + Round(MaxX) + 1, CenterY + Round(MaxY) + 1));
   end;
 end;
-{ @end $53AFE4 }
+{ @end $5E7F7C }
 
-{ @routine $53B264 ab_Polygon_Draw }
+{ @routine $5E820C ab_Polygon_Draw }
 procedure ab_Polygon_Draw;
 var
   GroupIndex, GroupCount, PolygonIndex, PolygonCount: Integer;
@@ -302,9 +296,9 @@ begin
     end;
   end;
 end;
-{ @end $53B264 }
+{ @end $5E820C }
 
-{ @routine $53B400 ab_Polygon_Load }
+{ @routine $5E8350 ab_Polygon_Load }
 procedure ab_Polygon_Load(Buffer: TBufEC);
 var
   Index, Count, Vertex: Integer;
@@ -323,14 +317,14 @@ begin
     LastPolygon := Polygon;
     if FirstPolygon = nil then FirstPolygon := Polygon;
     Polygon.MapValue30 := Buffer.GetInt32;
-    for Vertex := 0 to 2 do
+    for Vertex := Low(Polygon.Vertices) to High(Polygon.Vertices) do
     begin
       Polygon.Vertices[Vertex].Point := StopPointIndex[Buffer.GetInt32];
-      Polygon.Vertices[Vertex].Color := Pointer(PAnsiChar(ArcadeMapColorBuffer.Data) + Buffer.GetInt32);
+      Polygon.Vertices[Vertex].Color := PCardinal(PAnsiChar(ArcadeMapColorBuffer.Data) + Buffer.GetInt32);
     end;
-    Polygon := Pointer(PAnsiChar(Polygon) + SizeOf(TabPolygon));
+    Inc(Polygon);
   end;
 end;
-{ @end $53B400 }
+{ @end $5E8350 }
 
 end.

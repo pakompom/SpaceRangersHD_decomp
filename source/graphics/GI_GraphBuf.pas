@@ -1,5 +1,4 @@
 unit GI_GraphBuf;
-// Unit bracket (inferred): .text 0x0047D4BC..0x0047EABA; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -15,26 +14,26 @@ type
     SourceHasPerPixelAlpha: Boolean; // @offset 0x127
     UsesExternalGraphBuf: Boolean; // @offset 0x128
 
-    constructor Create(Owner: TObjectGI; UseTexture: Boolean); // @addr 0x47D5DC
-    destructor Destroy; override; // @addr 0x47D668 @note "Frees GraphBuf only when it is owned."
-    procedure SetImageKindX(Value: TImageKindXGI); // @addr 0x47D6C0
-    procedure SetImageKindY(Value: TImageKindYGI); // @addr 0x47D6F8
-    procedure Clear; override; // @addr 0x47D730 @note "Detaches borrowed buffers without freeing them."
-    procedure SetHalfAlpha(Value: Boolean); // @addr 0x47D79C
-    procedure AllocateBuffer(Width, Height: Integer; UseTexture: Boolean); // @addr 0x47D7D4 @note "Does not modify a previously borrowed buffer; the resulting buffer is owned."
-    procedure ClearOwnedBuffer; // @addr 0x47D838
-    procedure CopyScreenRectToBuffer(ScreenRect, BufferRect: TRect); // @addr 0x47D85C @note "Requires equal nonempty extents, in-bounds rectangles and a buffer without per-pixel alpha."
-    procedure LoadBitmapPathAsRgba(const BitmapPath: WideString); // @addr 0x47D9C4
-    procedure LoadBitmapPathAsRgb(const BitmapPath: WideString); // @addr 0x47DAA8
-    function HitTestPixel(Point: TPoint): Boolean; // @addr 0x47DB8C @note "Black pixels do not count as hits."
-    function GetVisualCenter: TPoint; // @addr 0x47DEFC @note "Uses nonzero pixels. CenterFill is unsupported and can leave bounds changed and temporary storage leaked."
-    procedure LoadFromConfigPath(const Path: WideString); override; // @addr 0x47E2F0
-    procedure LoadFromBlock(Block: TBlockParEC); override; // @addr 0x47E324
-    procedure LoadImageProperties(Block: TBlockParEC); // @addr 0x47E34C
-    procedure LoadScaledBitmapPathAsRgba(const BitmapPath: WideString); // @addr 0x47E464 @note "Fits the image inside the control size while preserving its aspect ratio."
-    procedure LoadScaledGiPath(const GiPath: WideString); // @addr 0x47E550
-    procedure Draw(ClipRect: TRect); override; // @addr 0x47E6BC
-    procedure BindExternalGraphBuf(Buffer: TGraphBufGR); // @addr 0x47EA64 @note "Buffer is borrowed; alpha flags are unchanged."
+    constructor Create(Owner: TObjectGI; UseTexture: Boolean); // @addr 0x004903BC
+    destructor Destroy; override; // @addr 0x0049042C @note "Frees GraphBuf only when it is owned."
+    procedure SetImageKindX(Value: TImageKindXGI); // @addr 0x00490470
+    procedure SetImageKindY(Value: TImageKindYGI); // @addr 0x00490490
+    procedure Clear; override; // @addr 0x004904B0 @note "Detaches borrowed buffers without freeing them."
+    procedure SetHalfAlpha(Value: Boolean); // @addr 0x004904F8
+    procedure AllocateBuffer(Width, Height: Integer; UseTexture: Boolean); // @addr 0x00490518 @note "Does not modify a previously borrowed buffer; the resulting buffer is owned."
+    procedure ClearOwnedBuffer; // @addr 0x00490568
+    procedure CopyScreenRectToBuffer(ScreenRect, BufferRect: TRect); // @addr 0x00490580 @note "Requires equal nonempty extents, in-bounds rectangles and a buffer without per-pixel alpha."
+    procedure LoadBitmapPathAsRgba(const BitmapPath: WideString); // @addr 0x004906DC
+    procedure LoadBitmapPathAsRgb(const BitmapPath: WideString); // @addr 0x004907A8
+    function HitTestPixel(Point: TPoint): Boolean; // @addr 0x00490874 @note "Black pixels do not count as hits."
+    function GetVisualCenter: TPoint; // @addr 0x00490B20 @note "Uses nonzero pixels. CenterFill is unsupported and can leave bounds changed and temporary storage leaked."
+    procedure LoadFromConfigPath(const Path: WideString); override; // @addr 0x00490E2C
+    procedure LoadFromBlock(Block: TBlockParEC); override; // @addr 0x00490E58
+    procedure LoadImageProperties(Block: TBlockParEC); // @addr 0x00490E74
+    procedure LoadScaledBitmapPathAsRgba(const BitmapPath: WideString); // @addr 0x00490F84 @note "Fits the image inside the control size while preserving its aspect ratio."
+    procedure LoadScaledGiPath(const GiPath: WideString); // @addr 0x00491038
+    procedure Draw(ClipRect: TRect); override; // @addr 0x00491174
+    procedure BindExternalGraphBuf(Buffer: TGraphBufGR); // @addr 0x00491414 @note "Buffer is borrowed; alpha flags are unchanged."
   end;
 
 implementation
@@ -42,7 +41,7 @@ implementation
 uses EC_Cache, EC_CacheBitmap, EC_CacheGI, EC_Mem, GlobalsV, GR_Main, GR_DX, Classes, Windows;
 
 
-{ @routine $47D5DC TGraphBufGI_Create }
+{ @routine $4903BC TGraphBufGI_Create }
 constructor TGraphBufGI.Create(Owner: TObjectGI; UseTexture: Boolean);
 begin
   inherited Create(Owner);
@@ -52,40 +51,36 @@ begin
   HalfAlpha := False;
   UsesExternalGraphBuf := False;
 end;
-{ @end $47D5DC }
+{ @end $4903BC }
 
-{ @routine $47D668 TGraphBufGI_Destroy }
+{ @routine $49042C TGraphBufGI_Destroy }
 destructor TGraphBufGI.Destroy;
 begin
   if not UsesExternalGraphBuf then GraphBuf.Free;
   GraphBuf := nil;
   inherited Destroy;
 end;
-{ @end $47D668 }
+{ @end $49042C }
 
-{ @routine $47D6C0 TGraphBufGI_SetImageKindX }
+{ @routine $490470 TGraphBufGI_SetImageKindX }
 procedure TGraphBufGI.SetImageKindX(Value: TImageKindXGI);
 begin
-  if ImageKindX <> Value then
-  begin
-    ImageKindX := Value;
-    Invalidate;
-  end;
+  if ImageKindX = Value then Exit;
+  ImageKindX := Value;
+  Invalidate;
 end;
-{ @end $47D6C0 }
+{ @end $490470 }
 
-{ @routine $47D6F8 TGraphBufGI_SetImageKindY }
+{ @routine $490490 TGraphBufGI_SetImageKindY }
 procedure TGraphBufGI.SetImageKindY(Value: TImageKindYGI);
 begin
-  if ImageKindY <> Value then
-  begin
-    ImageKindY := Value;
-    Invalidate;
-  end;
+  if ImageKindY = Value then Exit;
+  ImageKindY := Value;
+  Invalidate;
 end;
-{ @end $47D6F8 }
+{ @end $490490 }
 
-{ @routine $47D730 TGraphBufGI_Clear }
+{ @routine $4904B0 TGraphBufGI_Clear }
 procedure TGraphBufGI.Clear;
 begin
   ImageKindX := ikxCenter;
@@ -99,20 +94,18 @@ begin
   if GraphBuf <> nil then GraphBuf.Clear;
   inherited Clear;
 end;
-{ @end $47D730 }
+{ @end $4904B0 }
 
-{ @routine $47D79C TGraphBufGI_SetHalfAlpha }
+{ @routine $4904F8 TGraphBufGI_SetHalfAlpha }
 procedure TGraphBufGI.SetHalfAlpha(Value: Boolean);
 begin
-  if HalfAlpha <> Value then
-  begin
-    HalfAlpha := Value;
-    Invalidate;
-  end;
+  if HalfAlpha = Value then Exit;
+  HalfAlpha := Value;
+  Invalidate;
 end;
-{ @end $47D79C }
+{ @end $4904F8 }
 
-{ @routine $47D7D4 TGraphBufGI_AllocateBuffer }
+{ @routine $490518 TGraphBufGI_AllocateBuffer }
 procedure TGraphBufGI.AllocateBuffer(Width, Height: Integer; UseTexture: Boolean);
 begin
   if UsesExternalGraphBuf then GraphBuf := TGraphBufGR.Create(UseTexture);
@@ -120,40 +113,34 @@ begin
   SourceHasPerPixelAlpha := False;
   UsesExternalGraphBuf := False;
 end;
-{ @end $47D7D4 }
+{ @end $490518 }
 
-{ @routine $47D838 TGraphBufGI_ClearOwnedBuffer }
+{ @routine $490568 TGraphBufGI_ClearOwnedBuffer }
 procedure TGraphBufGI.ClearOwnedBuffer;
 begin
   if not UsesExternalGraphBuf then GraphBuf.Clear;
 end;
-{ @end $47D838 }
+{ @end $490568 }
 
-{ @routine $47D85C TGraphBufGI_CopyScreenRectToBuffer }
+{ @routine $490580 TGraphBufGI_CopyScreenRectToBuffer }
 procedure TGraphBufGI.CopyScreenRectToBuffer(ScreenRect, BufferRect: TRect);
 begin
-  if SourceHasPerPixelAlpha then Exit;
-  if GraphBuf.GetPixels = nil then Exit;
-  if ScreenRect.Right - ScreenRect.Left <> BufferRect.Right - BufferRect.Left then Exit;
-  if ScreenRect.Bottom - ScreenRect.Top <> BufferRect.Bottom - BufferRect.Top then Exit;
-  if ScreenRect.Right = ScreenRect.Left then Exit;
-  if ScreenRect.Bottom = ScreenRect.Top then Exit;
-  if ScreenRect.Left < 0 then Exit;
-  if ScreenRect.Top < 0 then Exit;
-  if GameScreenWidth < ScreenRect.Right then Exit;
-  if GameScreenHeight < ScreenRect.Bottom then Exit;
-  if BufferRect.Left < 0 then Exit;
-  if BufferRect.Top < 0 then Exit;
-  if GraphBuf.Width < BufferRect.Right then Exit;
-  if GraphBuf.Height < BufferRect.Bottom then Exit;
+  if SourceHasPerPixelAlpha or (GraphBuf.GetPixels = nil) or
+    (ScreenRect.Right - ScreenRect.Left <> BufferRect.Right - BufferRect.Left) or
+    (ScreenRect.Bottom - ScreenRect.Top <> BufferRect.Bottom - BufferRect.Top) or
+    (ScreenRect.Right = ScreenRect.Left) or (ScreenRect.Bottom = ScreenRect.Top) or
+    (ScreenRect.Left < 0) or (ScreenRect.Top < 0) or
+    (Integer(GameScreenWidth) < ScreenRect.Right) or (Integer(GameScreenHeight) < ScreenRect.Bottom) then Exit;
+  if (BufferRect.Left < 0) or (BufferRect.Top < 0) or
+    (Integer(GraphBuf.Width) < BufferRect.Right) or (Integer(GraphBuf.Height) < BufferRect.Bottom) then Exit;
   if HardwareRenderingEnabled then GraphBuf.LoadFromScreen(0)
   else Ex_OKGR_Copy_XY_XY_WORD(GraphBuf.GetPixels, GraphBuf.PitchBytes,
     BufferRect.Left, BufferRect.Top, ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes,
     ScreenRect.Left, ScreenRect.Top, BufferRect.Right - BufferRect.Left, BufferRect.Bottom - BufferRect.Top);
 end;
-{ @end $47D85C }
+{ @end $490580 }
 
-{ @routine $47D9C4 TGraphBufGI_LoadBitmapPathAsRgba }
+{ @routine $4906DC TGraphBufGI_LoadBitmapPathAsRgba }
 procedure TGraphBufGI.LoadBitmapPathAsRgba(const BitmapPath: WideString);
 var Control: TCacheControlEC; Bitmap: TCBitmapEC;
 begin
@@ -170,9 +157,9 @@ begin
   Control.Free;
   SourceHasPerPixelAlpha := True;
 end;
-{ @end $47D9C4 }
+{ @end $4906DC }
 
-{ @routine $47DAA8 TGraphBufGI_LoadBitmapPathAsRgb }
+{ @routine $4907A8 TGraphBufGI_LoadBitmapPathAsRgb }
 procedure TGraphBufGI.LoadBitmapPathAsRgb(const BitmapPath: WideString);
 var Control: TCacheControlEC; Bitmap: TCBitmapEC;
 begin
@@ -189,9 +176,9 @@ begin
   Control.Free;
   SourceHasPerPixelAlpha := False;
 end;
-{ @end $47DAA8 }
+{ @end $4907A8 }
 
-{ @routine $47DB8C TGraphBufGI_HitTestPixel }
+{ @routine $490874 TGraphBufGI_HitTestPixel }
 function TGraphBufGI.HitTestPixel(Point: TPoint): Boolean;
 var Width, Height, Left, Right, X, Top, Bottom, Y: Integer; Pixel: Cardinal; Pixels: Pointer; Buffer: TGraphBufGR; Clip: TRect;
 begin
@@ -292,9 +279,9 @@ begin
   Buffer.Free;
   Result := Pixel <> 0;
 end;
-{ @end $47DB8C }
+{ @end $490874 }
 
-{ @routine $47DEFC TGraphBufGI_GetVisualCenter }
+{ @routine $490B20 TGraphBufGI_GetVisualCenter }
 function TGraphBufGI.GetVisualCenter: TPoint;
 var Buffer: TGraphBufGR; Width, Height, Left, Right, X, Top, Bottom, Y, Count: Integer; SavedBounds, Clip: TRect;
 begin
@@ -407,44 +394,44 @@ begin
   if Count < 1 then Result := Classes.Point(0, 0)
   else Result := Classes.Point(Result.X div Count, Result.Y div Count);
 end;
-{ @end $47DEFC }
+{ @end $490B20 }
 
-{ @routine $47E2F0 TGraphBufGI_LoadFromConfigPath }
+{ @routine $490E2C TGraphBufGI_LoadFromConfigPath }
 procedure TGraphBufGI.LoadFromConfigPath(const Path: WideString);
 begin
   inherited LoadFromConfigPath(Path);
   LoadImageProperties(UiStyleConfig.GetBlockByPath(Path));
 end;
-{ @end $47E2F0 }
+{ @end $490E2C }
 
-{ @routine $47E324 TGraphBufGI_LoadFromBlock }
+{ @routine $490E58 TGraphBufGI_LoadFromBlock }
 procedure TGraphBufGI.LoadFromBlock(Block: TBlockParEC);
 begin
   inherited LoadFromBlock(Block);
   LoadImageProperties(Block);
 end;
-{ @end $47E324 }
+{ @end $490E58 }
 
-{ @routine $47E34C TGraphBufGI_LoadImageProperties }
+{ @routine $490E74 TGraphBufGI_LoadImageProperties }
 procedure TGraphBufGI.LoadImageProperties(Block: TBlockParEC);
 begin
   if Block.CountParams('HalfAlpha') > 0 then SetHalfAlpha(ParseEnabledNameGI(Block.GetParam('HalfAlpha')));
   if Block.CountParams('CacheRGBA') > 0 then LoadScaledBitmapPathAsRgba(Block.GetParam('CacheRGBA'))
   else if Block.CountParams('CacheGI') > 0 then LoadScaledGiPath(Block.GetParam('CacheGI'));
 end;
-{ @end $47E34C }
+{ @end $490E74 }
 
-{ @routine $47E464 TGraphBufGI_LoadScaledBitmapPathAsRgba }
+{ @routine $490F84 TGraphBufGI_LoadScaledBitmapPathAsRgba }
 procedure TGraphBufGI.LoadScaledBitmapPathAsRgba(const BitmapPath: WideString);
 begin
   LoadBitmapPathAsRgba(BitmapPath);
-  if GraphBuf.Width * ClientSize.Y >= GraphBuf.Height * ClientSize.X then
-    GraphBuf.RescaleBilinearRgba(ClientSize.X, Round(ClientSize.X / Cardinal(GraphBuf.Width) * Cardinal(GraphBuf.Height)))
-  else GraphBuf.RescaleBilinearRgba(Round(ClientSize.Y / Cardinal(GraphBuf.Height) * Cardinal(GraphBuf.Width)), ClientSize.Y);
+  if Integer(GraphBuf.Width) * ClientSize.Y >= Integer(GraphBuf.Height) * ClientSize.X then
+    GraphBuf.RescaleBilinearRgba(ClientSize.X, Round(ClientSize.X / GraphBuf.Width * GraphBuf.Height))
+  else GraphBuf.RescaleBilinearRgba(Round(ClientSize.Y / GraphBuf.Height * GraphBuf.Width), ClientSize.Y);
 end;
-{ @end $47E464 }
+{ @end $490F84 }
 
-{ @routine $47E550 TGraphBufGI_LoadScaledGiPath }
+{ @routine $491038 TGraphBufGI_LoadScaledGiPath }
 procedure TGraphBufGI.LoadScaledGiPath(const GiPath: WideString);
 var Control: TCacheControlEC; Image: TCGiEC;
 begin
@@ -459,13 +446,13 @@ begin
     Control.Release;
   end;
   Control.Free;
-  if GraphBuf.Width * ClientSize.Y >= GraphBuf.Height * ClientSize.X then
-    GraphBuf.RescaleRgba(ClientSize.X, Round(ClientSize.X / Cardinal(GraphBuf.Width) * Cardinal(GraphBuf.Height)), 5)
-  else GraphBuf.RescaleRgba(Round(ClientSize.Y / Cardinal(GraphBuf.Height) * Cardinal(GraphBuf.Width)), ClientSize.Y, 5);
+  if Integer(GraphBuf.Width) * ClientSize.Y >= Integer(GraphBuf.Height) * ClientSize.X then
+    GraphBuf.RescaleRgba(ClientSize.X, Round(ClientSize.X / GraphBuf.Width * GraphBuf.Height), 5)
+  else GraphBuf.RescaleRgba(Round(ClientSize.Y / GraphBuf.Height * GraphBuf.Width), ClientSize.Y, 5);
 end;
-{ @end $47E550 }
+{ @end $491038 }
 
-{ @routine $47E6BC TGraphBufGI_Draw }
+{ @routine $491174 TGraphBufGI_Draw }
 procedure TGraphBufGI.Draw(ClipRect: TRect);
 var Width, Height, Left, Right, X, Top, Bottom, Y: Integer;
 begin
@@ -570,9 +557,9 @@ begin
   end;
 
 end;
-{ @end $47E6BC }
+{ @end $491174 }
 
-{ @routine $47EA64 TGraphBufGI_BindExternalGraphBuf }
+{ @routine $491414 TGraphBufGI_BindExternalGraphBuf }
 procedure TGraphBufGI.BindExternalGraphBuf(Buffer: TGraphBufGR);
 begin
   if (GraphBuf <> nil) and not UsesExternalGraphBuf then
@@ -583,6 +570,6 @@ begin
   GraphBuf := Buffer;
   UsesExternalGraphBuf := True;
 end;
-{ @end $47EA64 }
+{ @end $491414 }
 
 end.

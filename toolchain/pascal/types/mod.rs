@@ -32,6 +32,7 @@ pub fn builtin(name: &str) -> Option<(&'static str, i64)> {
 }
 
 pub struct Compiler {
+    pub source_member_order: bool,
     pub decls: Vec<Decl>,
     pub types: BTreeMap<String, std::sync::Arc<Decl>>,
     pub type_order: Vec<String>,
@@ -132,6 +133,7 @@ impl Compiler {
                 if !yes(&d.data, "interface_method")
                     && !directive(d, "abstract")
                     && !d.is_inline_helper()
+                    && !d.meta.contains_key("unbound")
                     && (d.kind != "constant" || d.meta.contains_key("addr"))
                 {
                     let addr = d
@@ -178,6 +180,7 @@ impl Compiler {
         }
         Ok(Self {
             decls,
+            source_member_order: false,
             types,
             type_order: order,
             names,
@@ -224,7 +227,7 @@ impl Compiler {
         }
         Ok(names)
     }
-    pub fn enum_range(&self, bounds: &Value) -> Result<(String, i64, i64)> {
+    pub fn ordinal_range(&self, bounds: &Value) -> Result<(Option<String>, i64, i64)> {
         let resolve_alias = |name: &str| -> Result<String> {
             let mut name = name.to_owned();
             let mut seen = BTreeSet::new();
@@ -235,7 +238,7 @@ impl Compiler {
             }) {
                 ensure!(
                     seen.insert(name.to_lowercase()),
-                    "cyclic enum constant alias: {name}"
+                    "cyclic ordinal constant alias: {name}"
                 );
                 name = string(&d.data, "initializer").trim().to_owned();
             }
@@ -243,6 +246,24 @@ impl Compiler {
         };
         let lower = resolve_alias(string(bounds, "lower"))?;
         let upper = resolve_alias(string(bounds, "upper"))?;
+        // Named ranges can resolve to ordinary integer constants, not only
+        // enum members. Keep their source spelling and storage bounds without
+        // introducing an enum dependency into the generated declarations.
+        let integer_constant = |text: &str| -> Option<i64> {
+            let mut parser =
+                crate::pascal::parser::Parser::new(text, "ordinal bound", false, None).ok()?;
+            let expression = parser.expression(0).ok()?;
+            if parser.current().ok()?.kind != crate::pascal::lexer::Kind::Eof {
+                return None;
+            }
+            crate::pascal::parser::constant(&expression, &BTreeMap::new(), &BTreeSet::new())
+                .ok()?
+                .as_i64()
+        };
+        if let (Some(lo), Some(hi)) = (integer_constant(&lower), integer_constant(&upper)) {
+            ensure!(lo <= hi, "empty/reversed array range: {lower}..{upper}");
+            return Ok((None, lo, hi));
+        }
         let mut found = None;
         for d in self.types.values().filter(|d| d.kind == "enum") {
             let members = array(&d.data, "members");
@@ -261,14 +282,14 @@ impl Compiler {
                 })?;
                 ensure!(lo <= hi, "empty/reversed array range: {lower}..{upper}");
                 ensure!(found.is_none(), "ambiguous enum array bound: {lower}");
-                found = Some((d.name.clone(), lo, hi));
+                found = Some((Some(d.name.clone()), lo, hi));
             }
         }
         found.with_context(|| format!("unknown enum array bound: {lower}"))
     }
     fn ordinal_bounds(&self, typ: &Value, seen: &mut BTreeSet<String>) -> Result<(i64, i64)> {
         if let Some(bounds) = typ.get("enum_range") {
-            let (_, lower, upper) = self.enum_range(bounds)?;
+            let (_, lower, upper) = self.ordinal_range(bounds)?;
             return Ok((lower, upper));
         }
         if let Some(bounds) = typ.get("subrange") {
@@ -329,7 +350,7 @@ impl Compiler {
     }
     pub fn size(&mut self, typ: &Value) -> Result<i64> {
         if let Some(bounds) = typ.get("enum_range") {
-            let (_, lower, upper) = self.enum_range(bounds)?;
+            let (_, lower, upper) = self.ordinal_range(bounds)?;
             return Ok(subrange_storage(&json!({"lower":lower,"upper":upper}))?.1);
         }
         if let Some(bounds) = typ.get("subrange") {
@@ -394,7 +415,7 @@ impl Compiler {
     }
     pub fn ctype(&mut self, typ: &Value, name: &str) -> Result<String> {
         if let Some(bounds) = typ.get("enum_range") {
-            let (_, lower, upper) = self.enum_range(bounds)?;
+            let (_, lower, upper) = self.ordinal_range(bounds)?;
             return self.ctype(&json!({"subrange":{"lower":lower,"upper":upper}}), name);
         }
         if let Some(bounds) = typ.get("subrange") {
@@ -649,6 +670,39 @@ mod tests {
         )
     }
     #[test]
+    fn enum_sets_preserve_dcc32_storage_and_reject_invalid_widths() -> Result<()> {
+        let mut c = compiler(
+            "unit X; interface type TKind = (kFirst=0, kLast=75); // @size 1\n\
+             TKinds = set of TKind; // @size 10\n\
+             TSmall = (sFirst=0, sLast=9); // @size 1\n\
+             TSmalls = set of TSmall; // @size 2\nimplementation end.",
+        )?;
+        let kinds = c.lookup("TKinds")?;
+        let layout = c.layout(&kinds)?;
+        assert_eq!(layout["size"], 10);
+        assert_eq!(layout["decl"], "typedef unsigned __int8 TKinds[10];");
+        assert_eq!(
+            crate::pascal::render::spelling(&kinds.data["type"])?,
+            "set of TKind"
+        );
+        let smalls = c.lookup("TSmalls")?;
+        assert!(
+            c.layout(&smalls)?["decl"]
+                .as_str()
+                .unwrap()
+                .starts_with("enum __bitmask TSmalls : unsigned __int16")
+        );
+        for (last, size) in [(75, 9), (75, 11), (300, 38)] {
+            let mut bad = compiler(&format!(
+                "unit X; interface type TKind = (kFirst=0, kLast={last}); // @size 2\n\
+                 TKinds = set of TKind; // @size {size}\nimplementation end."
+            ))?;
+            let kinds = bad.lookup("TKinds")?;
+            assert!(bad.layout(&kinds).is_err());
+        }
+        Ok(())
+    }
+    #[test]
     fn numeric_subranges_keep_bounds_storage_and_register_abi() -> Result<()> {
         let mut c = compiler(
             "unit X; interface type TPercent = 0..100; TByte = 0..255; TWord = 0..256; TSigned = -128..127; TSmall = -129..127; TCardinal = 0..$FFFFFFFF; TWide = -1..$FFFFFFFF;\nfunction Percent(A: TPercent; B: TSigned; C: TWord): TPercent; // @addr $1000\nimplementation end.",
@@ -749,7 +803,10 @@ mod tests {
             ("kFirst", "oLast"),
             ("Missing", "kLast"),
         ] {
-            assert!(c.enum_range(&json!({"lower":lower,"upper":upper})).is_err());
+            assert!(
+                c.ordinal_range(&json!({"lower":lower,"upper":upper}))
+                    .is_err()
+            );
         }
         c.build()?;
         Ok(())
@@ -824,8 +881,101 @@ mod tests {
             ("CycleA", "Last"),
             ("Stored", "Last"),
         ] {
-            assert!(c.enum_range(&json!({"lower":lower,"upper":upper})).is_err());
+            assert!(
+                c.ordinal_range(&json!({"lower":lower,"upper":upper}))
+                    .is_err()
+            );
         }
+        Ok(())
+    }
+    #[test]
+    fn source_member_order_keeps_override_slots_without_ordering_overrides() -> Result<()> {
+        let text = "unit X; interface type\n\
+            TBase = class // @size 4\n\
+              procedure First; virtual; // @slot $00 @addr $1000\n\
+              procedure Second; virtual; // @slot $04 @addr $1010\n\
+            end;\n\
+            TChild = class(TBase) // @size 4\n\
+              procedure Added; virtual; // @slot $08 @addr $2000\n\
+              procedure First; override; // @slot $00 @addr $2010\n\
+              procedure Last; virtual; // @slot $0C @addr $2020\n\
+              procedure Second; override; // @slot $04 @addr $2030\n\
+            end; implementation end.";
+        let mut c = compiler(text)?;
+        c.source_member_order = true;
+        let child = c.lookup("TChild")?;
+        assert_eq!(c.layout(&child)?["size"], 4);
+        let slots = c.virtual_slots(&child)?;
+        for (slot, name) in [
+            (0, "TChild_First"),
+            (4, "TChild_Second"),
+            (8, "TChild_Added"),
+            (12, "TChild_Last"),
+        ] {
+            assert_eq!(slots[&slot].name, name);
+        }
+
+        let mut bad_slot = compiler(&text.replace(
+            "procedure First; override; // @slot $00",
+            "procedure First; override; // @slot $04",
+        ))?;
+        bad_slot.source_member_order = true;
+        let child = bad_slot.lookup("TChild")?;
+        assert!(bad_slot.layout(&child).is_err());
+
+        let mut bad_order = compiler(
+            &text
+                .replace(
+                    "Added; virtual; // @slot $08",
+                    "Added; virtual; // @slot $0C",
+                )
+                .replace("Last; virtual; // @slot $0C", "Last; virtual; // @slot $08"),
+        )?;
+        bad_order.source_member_order = true;
+        let child = bad_order.lookup("TChild")?;
+        assert!(bad_order.layout(&child).is_err());
+        Ok(())
+    }
+    #[test]
+    fn integer_constant_bounds_preserve_spelling_storage_and_managed_arrays() -> Result<()> {
+        let mut c = compiler(
+            "unit X; interface const First = 1; Last = $18; AliasFirst = FIRST;\n\
+             Negative = -2; Positive = +2; Fraction = 1.5; Stored: Integer = 1;\n\
+             type TKind = (kFirst, kLast); // @size 1\n\
+             THealth = AliasFirst..Last; TNames = array[AliasFirst..Last] of WideString;\n\
+             TSigned = Negative..Positive; implementation end.",
+        )?;
+        let names = c.lookup("TNames")?;
+        assert_eq!(c.array_bounds(&names.data["type"])?, (1, 24));
+        assert_eq!(c.size(&json!("TNames"))?, 24 * 4);
+        assert_eq!(
+            c.managed_storage(&json!("TNames"))?.last().unwrap().0,
+            23 * 4
+        );
+        assert_eq!(
+            crate::pascal::render::spelling(&names.data["type"])?,
+            "array[AliasFirst..Last] of WideString"
+        );
+        assert_eq!(c.size(&json!("THealth"))?, 1);
+        let signed = c.lookup("TSigned")?;
+        assert_eq!(c.layout(&signed)?["decl"], "typedef __int8 TSigned;");
+        assert_eq!(
+            c.ordinal_range(&json!({"lower":"AliasFirst","upper":"Last"}))?,
+            (None, 1, 24)
+        );
+        for (lower, upper) in [
+            ("Last", "First"),
+            ("First", "kLast"),
+            ("kFirst", "Last"),
+            ("First", "Fraction"),
+            ("Stored", "Last"),
+        ] {
+            assert!(
+                c.ordinal_range(&json!({"lower":lower,"upper":upper}))
+                    .is_err()
+            );
+        }
+        c.build()?;
         Ok(())
     }
     #[test]

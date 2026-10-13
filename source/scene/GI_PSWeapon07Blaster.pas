@@ -22,7 +22,7 @@ type
   TBlasterPalettes = array of TBlasterPalette;
 
 var
-  BlasterPalettes: array of TBlasterPalette; // @addr $88ACB4
+  BlasterPalettes: array of TBlasterPalette; // @addr $81B1F0
 
 type
   TPSWeapon07Blaster = class(TPSWeaponGI) // @size $150
@@ -34,46 +34,46 @@ type
     SecondaryColor: Word; // @offset $13E
     ProjectionBounds: TRect; // @offset $140
 
-    constructor Create(Owner: TObjectGI; APaletteIndex: Integer); // @addr $68D2B8
-    destructor Destroy; override; // @addr $68D364
-    procedure SetPosition(Position: TPoint); override; // @addr $68D3A0
-    procedure SetTargetPoint(Point: TPoint); override; // @addr $68D3E4
-    procedure UpdateProjectionBounds; // @addr $68D438
-    procedure UpdateHitTestBounds; override; // @addr $68D77C
-    function GetLocalBounds: TRect; override; // @addr $68D7E8
-    function AddParticle: PBlasterParticle; // @addr $68D84C
-    procedure ClearParticles; // @addr $68D8C4
-    procedure Invalidate; override; // @addr $68D9E4 @note "Native empty override."
-    procedure InvalidateRect(Rect: TRect); override; // @addr $68D918
-    procedure Advance(Timer: PCallbackTimerGI; UserData: Integer); override; // @addr $68D9F0
-    procedure Draw(ClipRect: TRect); override; // @addr $68E204
+    constructor Create(Owner: TObjectGI; APaletteIndex: Integer); // @addr $4F6650
+    destructor Destroy; override; // @addr $4F66D8
+    procedure SetPosition(Position: TPoint); override; // @addr $4F6704
+    procedure SetTargetPoint(Point: TPoint); override; // @addr $4F673C
+    procedure UpdateProjectionBounds; // @addr $4F677C
+    procedure UpdateHitTestBounds; override; // @addr $4F6AF4
+    function GetLocalBounds: TRect; override; // @addr $4F6B34
+    function AddParticle: PBlasterParticle; // @addr $4F6B64
+    procedure ClearParticles; // @addr $4F6BA4
+    procedure Invalidate; override; // @addr $4F6C8C @note "Native empty override."
+    procedure InvalidateRect(Rect: TRect); override; // @addr $4F6BD8
+    procedure Advance(Timer: TCallbackTimerIdGI; UserData: Cardinal); override; // @addr $4F6C90
+    procedure Draw(ClipRect: TRect); override; // @addr $4F7330
   end;
 
-function NextBlasterRandom: Integer; // @addr $68D290
-procedure LoadBlasterPalettes; // @addr $68E478
+function NextBlasterRandom: Integer; // @addr $4F6634
+procedure LoadBlasterPalettes; // @addr $4F7544
 
 var
-  BlasterRandomIndex: Integer = 0; // @addr $87BF3C
+  BlasterRandomIndex: Integer = 0; // @addr $80E958
 
 implementation
 
-// @unit-initialization $877914
-// @unit-finalization $68E760
+// @unit-initialization $806864
+// @unit-finalization $4F77E4
 
 uses SysUtils, Math, EC_BlockPar, EC_Str, EC_Mem, GR_Main, GR_DX, aMyFunction, Globals;
 
 var
-  BlasterRandomValues: array[0..127] of Integer; // @addr $88ACBC
+  BlasterRandomValues: array[0..127] of Integer; // @addr $81B1F8
 
-{ @routine $68D290 NextBlasterRandom }
+{ @routine $4F6634 NextBlasterRandom }
 function NextBlasterRandom: Integer;
 begin
-  BlasterRandomIndex := (BlasterRandomIndex + 1) and $7F;
+  BlasterRandomIndex := (BlasterRandomIndex + 1) and High(BlasterRandomValues);
   Result := BlasterRandomValues[BlasterRandomIndex];
 end;
-{ @end $68D290 }
+{ @end $4F6634 }
 
-{ @routine $68D2B8 TPSWeapon07Blaster_Create }
+{ @routine $4F6650 TPSWeapon07Blaster_Create }
 constructor TPSWeapon07Blaster.Create(Owner: TObjectGI; APaletteIndex: Integer);
 begin
   inherited Create(Owner);
@@ -84,17 +84,17 @@ begin
   PrimaryColor := BlasterPalettes[APaletteIndex][0];
   SecondaryColor := BlasterPalettes[APaletteIndex][1];
 end;
-{ @end $68D2B8 }
+{ @end $4F6650 }
 
-{ @routine $68D364 TPSWeapon07Blaster_Destroy }
+{ @routine $4F66D8 TPSWeapon07Blaster_Destroy }
 destructor TPSWeapon07Blaster.Destroy;
 begin
   ClearParticles;
   inherited Destroy;
 end;
-{ @end $68D364 }
+{ @end $4F66D8 }
 
-{ @routine $68D3A0 TPSWeapon07Blaster_SetPosition }
+{ @routine $4F6704 TPSWeapon07Blaster_SetPosition }
 procedure TPSWeapon07Blaster.SetPosition(Position: TPoint);
 begin
   if (LocalPosition.X <> Position.X) or (LocalPosition.Y <> Position.Y) then
@@ -103,9 +103,9 @@ begin
     UpdateProjectionBounds;
   end;
 end;
-{ @end $68D3A0 }
+{ @end $4F6704 }
 
-{ @routine $68D3E4 TPSWeapon07Blaster_SetTargetPoint }
+{ @routine $4F673C TPSWeapon07Blaster_SetTargetPoint }
 procedure TPSWeapon07Blaster.SetTargetPoint(Point: TPoint);
 begin
   if (TargetPoint.X <> Point.X) or (TargetPoint.Y <> Point.Y) then
@@ -114,9 +114,9 @@ begin
     UpdateProjectionBounds;
   end;
 end;
-{ @end $68D3E4 }
+{ @end $4F673C }
 
-{ @routine $68D438 TPSWeapon07Blaster_UpdateProjectionBounds }
+{ @routine $4F677C TPSWeapon07Blaster_UpdateProjectionBounds }
 procedure TPSWeapon07Blaster.UpdateProjectionBounds;
 var
   Angle, Sine, Cosine, Distance, A, B, C, D: Single;
@@ -142,9 +142,9 @@ begin
   ProjectionBounds.Top := Floor(Math.Min(Math.Min(Math.Min(A, B), C), D));
   ProjectionBounds.Bottom := Ceil(Math.Max(Math.Max(Math.Max(A, B), C), D));
 end;
-{ @end $68D438 }
+{ @end $4F677C }
 
-{ @routine $68D77C TPSWeapon07Blaster_UpdateHitTestBounds }
+{ @routine $4F6AF4 TPSWeapon07Blaster_UpdateHitTestBounds }
 procedure TPSWeapon07Blaster.UpdateHitTestBounds;
 begin
   HitTestBounds.Left := ProjectionBounds.Left + AbsolutePosition.X - 32;
@@ -152,9 +152,9 @@ begin
   HitTestBounds.Right := ProjectionBounds.Right + AbsolutePosition.X + 32;
   HitTestBounds.Bottom := ProjectionBounds.Bottom + AbsolutePosition.Y + 32;
 end;
-{ @end $68D77C }
+{ @end $4F6AF4 }
 
-{ @routine $68D7E8 TPSWeapon07Blaster_GetLocalBounds }
+{ @routine $4F6B34 TPSWeapon07Blaster_GetLocalBounds }
 function TPSWeapon07Blaster.GetLocalBounds: TRect;
 begin
   Result.Left := ProjectionBounds.Left + LocalPosition.X;
@@ -162,9 +162,9 @@ begin
   Result.Right := ProjectionBounds.Right + LocalPosition.X;
   Result.Bottom := ProjectionBounds.Bottom + LocalPosition.Y;
 end;
-{ @end $68D7E8 }
+{ @end $4F6B34 }
 
-{ @routine $68D84C TPSWeapon07Blaster_AddParticle }
+{ @routine $4F6B64 TPSWeapon07Blaster_AddParticle }
 function TPSWeapon07Blaster.AddParticle: PBlasterParticle;
 var
   Particle: PBlasterParticle;
@@ -177,9 +177,9 @@ begin
   if FirstParticle = nil then FirstParticle := Particle;
   Result := Particle;
 end;
-{ @end $68D84C }
+{ @end $4F6B64 }
 
-{ @routine $68D8C4 TPSWeapon07Blaster_ClearParticles }
+{ @routine $4F6BA4 TPSWeapon07Blaster_ClearParticles }
 procedure TPSWeapon07Blaster.ClearParticles;
 var
   Particle, Current: PBlasterParticle;
@@ -194,9 +194,9 @@ begin
   FirstParticle := nil;
   LastParticle := nil;
 end;
-{ @end $68D8C4 }
+{ @end $4F6BA4 }
 
-{ @routine $68D918 TPSWeapon07Blaster_InvalidateRect }
+{ @routine $4F6BD8 TPSWeapon07Blaster_InvalidateRect }
 procedure TPSWeapon07Blaster.InvalidateRect(Rect: TRect);
 var
   Target: TPoint;
@@ -211,16 +211,16 @@ begin
   if IntersectRects(Intersection, Rect, GameScreenRect) then
     MessageLoop.QueueUpdateRect(Intersection);
 end;
-{ @end $68D918 }
+{ @end $4F6BD8 }
 
-{ @routine $68D9E4 TPSWeapon07Blaster_Invalidate }
+{ @routine $4F6C8C TPSWeapon07Blaster_Invalidate }
 procedure TPSWeapon07Blaster.Invalidate;
 begin
 end;
-{ @end $68D9E4 }
+{ @end $4F6C8C }
 
-{ @routine $68D9F0 TPSWeapon07Blaster_Advance }
-procedure TPSWeapon07Blaster.Advance(Timer: PCallbackTimerGI; UserData: Integer);
+{ @routine $4F6C90 TPSWeapon07Blaster_Advance }
+procedure TPSWeapon07Blaster.Advance(Timer: TCallbackTimerIdGI; UserData: Cardinal);
 var
   Y: Single;
   I, J: Integer;
@@ -367,9 +367,9 @@ begin
   end;
   Dec(RemainingTicks);
 end;
-{ @end $68D9F0 }
+{ @end $4F6C90 }
 
-{ @routine $68E204 TPSWeapon07Blaster_Draw }
+{ @routine $4F7330 TPSWeapon07Blaster_Draw }
 procedure TPSWeapon07Blaster.Draw(ClipRect: TRect);
 var
   Angle, Sine, Cosine, PX, PY: Double;
@@ -419,9 +419,9 @@ begin
     end;
   end;
 end;
-{ @end $68E204 }
+{ @end $4F7330 }
 
-{ @routine $68E478 LoadBlasterPalettes }
+{ @routine $4F7544 LoadBlasterPalettes }
 procedure LoadBlasterPalettes;
 var
   Block, PaletteBlock: TBlockParEC;
@@ -438,21 +438,19 @@ begin
   for Index := 0 to Count - 1 do
   begin
     Text := IntToStr(Index);
-    if Block.CountBlocks(Text) <> 0 then
-    begin
-      PaletteBlock := Block.GetBlockByPath(Text);
-      for ColorIndex := 0 to 1 do
-        if PaletteBlock.CountParams('Color' + IntToStr(ColorIndex)) > 0 then
-        begin
-          Text := PaletteBlock.GetParam('Color' + IntToStr(ColorIndex));
-          BlasterPalettes[Index][ColorIndex] := CurrentPixelFormat.PackNormalizedRgb(
-            ExtractDecimalToSingleW(ExtractDelimitedPartW(Text, 0, ',')),
-            ExtractDecimalToSingleW(ExtractDelimitedPartW(Text, 1, ',')),
-            ExtractDecimalToSingleW(ExtractDelimitedPartW(Text, 2, ',')));
-        end;
-    end;
+    if Block.CountBlocks(Text) = 0 then Continue;
+    PaletteBlock := Block.GetBlockByPath(Text);
+    for ColorIndex := Low(TBlasterPalette) to High(TBlasterPalette) do
+      if PaletteBlock.CountParams('Color' + IntToStr(ColorIndex)) > 0 then
+      begin
+        Text := PaletteBlock.GetParam('Color' + IntToStr(ColorIndex));
+        BlasterPalettes[Index][ColorIndex] := CurrentPixelFormat.PackNormalizedRgb(
+          ExtractDecimalToSingleW(ExtractDelimitedPartW(Text, 0, ',')),
+          ExtractDecimalToSingleW(ExtractDelimitedPartW(Text, 1, ',')),
+          ExtractDecimalToSingleW(ExtractDelimitedPartW(Text, 2, ',')));
+      end;
   end;
 end;
-{ @end $68E478 }
+{ @end $4F7544 }
 
 end.

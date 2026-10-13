@@ -1,5 +1,4 @@
 unit GI_Panel;
-// Unit bracket (inferred): .text 0x004728CC..0x00473744; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -18,24 +17,24 @@ type
     ScrollChangedCallback: TObjectNotifyEventGI; // @offset $130
     ScrollAxis: TPanelScrollAxisGI; // @offset 0x138
 
-    constructor Create(Owner: TObjectGI); // @addr 0x472A14
-    destructor Destroy; override; // @addr 0x472A7C
-    procedure Clear; override; // @addr 0x472AB0
-    function GetChildAbsolutePosition(LocalPosition: TPoint; ModeW: Boolean): TPoint; override; // @addr 0x472AFC @note "Only ModeW children are affected by scrolling."
-    function ToLocalPoint(Point: TPoint): TPoint; override; // @addr 0x472B68
-    function ToAbsolutePoint(Point: TPoint): TPoint; override; // @addr 0x472BAC
-    procedure SetDragScrollingEnabled(Value: Boolean); // @addr 0x472BF0
-    procedure SetScrollOffset(Offset: TPoint); virtual; // @addr 0x472C38 @slot 0xC8 @calls "0x6A4C15 0x6A4CB1"
-    function GetVisibleContentRect: TRect; // @addr 0x472F8C
-    procedure ScrollRectIntoView(Rect: TRect); // @addr 0x472FE4
-    procedure ProcessMouseMove(KeyState: Cardinal; Point: TPoint); override; // @addr $473104
-    procedure ProcessRightButtonDown(KeyState: Cardinal; Point: TPoint); override; // @addr $4732E8
-    procedure ProcessRightButtonUp(KeyState: Cardinal; Point: TPoint); override; // @addr $473394
-    procedure OnActivate; override; // @addr 0x4730E8
-    procedure OnMouseEnter; override; // @addr 0x473268
-    procedure OnMouseLeave; override; // @addr 0x473284
-    procedure LoadFromConfigPath(const Path: WideString); override; // @addr 0x473410
-    procedure LoadFromBlock(Block: TBlockParEC); override; // @addr 0x473584
+    constructor Create(Owner: TObjectGI); // @addr 0x004BE528
+    destructor Destroy; override; // @addr 0x004BE574
+    procedure Clear; override; // @addr 0x004BE59C
+    function GetChildAbsolutePosition(LocalPosition: TPoint; ModeW: Boolean): TPoint; override; // @addr 0x004BE5D0 @note "Only ModeW children are affected by scrolling."
+    function ToLocalPoint(Point: TPoint): TPoint; override; // @addr 0x004BE618
+    function ToAbsolutePoint(Point: TPoint): TPoint; override; // @addr 0x004BE644
+    procedure SetDragScrollingEnabled(Value: Boolean); // @addr 0x004BE670
+    procedure SetScrollOffset(Offset: TPoint); virtual; // @addr 0x004BE69C @slot 0xC8
+    function GetVisibleContentRect: TRect; // @addr 0x004BE974
+    procedure ScrollRectIntoView(Rect: TRect); // @addr 0x004BE998
+    procedure ProcessMouseMove(KeyState: Cardinal; Point: TPoint); override; // @addr $4BEA9C
+    procedure ProcessRightButtonDown(KeyState: Cardinal; Point: TPoint); override; // @addr $4BEC18
+    procedure ProcessRightButtonUp(KeyState: Cardinal; Point: TPoint); override; // @addr $4BECA8
+    procedure OnActivate; override; // @addr 0x004BEA88
+    procedure OnMouseEnter; override; // @addr 0x004BEBAC
+    procedure OnMouseLeave; override; // @addr 0x004BEBC0
+    procedure LoadFromConfigPath(const Path: WideString); override; // @addr 0x004BED10
+    procedure LoadFromBlock(Block: TBlockParEC); override; // @addr 0x004BEE70
   end;
 
 implementation
@@ -43,7 +42,7 @@ implementation
 uses Classes, EC_Str, GI_Main, GR_Main, SysUtils;
 
 
-{ @routine $472A14 TPanelGI_Create }
+{ @routine $4BE528 TPanelGI_Create }
 constructor TPanelGI.Create(Owner: TObjectGI);
 begin
   inherited Create(Owner);
@@ -51,16 +50,16 @@ begin
   DragScrollingEnabled := False;
   ScrollType := pstAll;
 end;
-{ @end $472A14 }
+{ @end $4BE528 }
 
-{ @routine $472A7C TPanelGI_Destroy }
+{ @routine $4BE574 TPanelGI_Destroy }
 destructor TPanelGI.Destroy;
 begin
   inherited Destroy;
 end;
-{ @end $472A7C }
+{ @end $4BE574 }
 
-{ @routine $472AB0 TPanelGI_Clear }
+{ @routine $4BE59C TPanelGI_Clear }
 procedure TPanelGI.Clear;
 begin
   inherited Clear;
@@ -71,9 +70,9 @@ begin
   ScrollType := pstAll;
   ScrollAxis := psaBoth;
 end;
-{ @end $472AB0 }
+{ @end $4BE59C }
 
-{ @routine $472AFC TPanelGI_GetChildAbsolutePosition }
+{ @routine $4BE5D0 TPanelGI_GetChildAbsolutePosition }
 function TPanelGI.GetChildAbsolutePosition(LocalPosition: TPoint; ModeW: Boolean): TPoint;
 begin
   if not ModeW then
@@ -87,38 +86,36 @@ begin
     Result.Y := AbsolutePosition.Y + LocalPosition.Y - ScrollOffset.Y;
   end;
 end;
-{ @end $472AFC }
+{ @end $4BE5D0 }
 
-{ @routine $472B68 TPanelGI_ToLocalPoint }
+{ @routine $4BE618 TPanelGI_ToLocalPoint }
 function TPanelGI.ToLocalPoint(Point: TPoint): TPoint;
 begin
   Result.X := Point.X - AbsolutePosition.X + ScrollOffset.X;
   Result.Y := Point.Y - AbsolutePosition.Y + ScrollOffset.Y;
 end;
-{ @end $472B68 }
+{ @end $4BE618 }
 
-{ @routine $472BAC TPanelGI_ToAbsolutePoint }
+{ @routine $4BE644 TPanelGI_ToAbsolutePoint }
 function TPanelGI.ToAbsolutePoint(Point: TPoint): TPoint;
 begin
   Result.X := Point.X + AbsolutePosition.X - ScrollOffset.X;
   Result.Y := Point.Y + AbsolutePosition.Y - ScrollOffset.Y;
 end;
-{ @end $472BAC }
+{ @end $4BE644 }
 
-{ @routine $472BF0 TPanelGI_SetDragScrollingEnabled }
+{ @routine $4BE670 TPanelGI_SetDragScrollingEnabled }
 procedure TPanelGI.SetDragScrollingEnabled(Value: Boolean);
 begin
-  if Value <> DragScrollingEnabled then
-  begin
-    DragScrollingEnabled := Value;
-    UpdateAbsolutePosition;
-    UpdateSubtreeHitBounds;
-    Invalidate;
-  end;
+  if Value = DragScrollingEnabled then Exit;
+  DragScrollingEnabled := Value;
+  UpdateAbsolutePosition;
+  UpdateSubtreeHitBounds;
+  Invalidate;
 end;
-{ @end $472BF0 }
+{ @end $4BE670 }
 
-{ @routine $472C38 TPanelGI_SetScrollOffset }
+{ @routine $4BE69C TPanelGI_SetScrollOffset }
 procedure TPanelGI.SetScrollOffset(Offset: TPoint);
 var Child: TObjectGI; Delta: TPoint; DestRect, SourceRect: TRect;
 begin
@@ -204,9 +201,9 @@ begin
       SourceRect.Right - SourceRect.Left, SourceRect.Bottom - SourceRect.Top);
   end;
 end;
-{ @end $472C38 }
+{ @end $4BE69C }
 
-{ @routine $472F8C TPanelGI_GetVisibleContentRect }
+{ @routine $4BE974 TPanelGI_GetVisibleContentRect }
 function TPanelGI.GetVisibleContentRect: TRect;
 begin
   Result.Left := ScrollOffset.X - OriginPoint.X;
@@ -214,9 +211,9 @@ begin
   Result.Right := Result.Left + ClientSize.X;
   Result.Bottom := Result.Top + ClientSize.Y;
 end;
-{ @end $472F8C }
+{ @end $4BE974 }
 
-{ @routine $472FE4 TPanelGI_ScrollRectIntoView }
+{ @routine $4BE998 TPanelGI_ScrollRectIntoView }
 procedure TPanelGI.ScrollRectIntoView(Rect: TRect);
 var Offset: TPoint; Visible: TRect;
 begin
@@ -249,54 +246,52 @@ begin
     SetScrollOffset(Offset);
   end;
 end;
-{ @end $472FE4 }
+{ @end $4BE998 }
 
-{ @routine $4730E8 TPanelGI_OnActivate }
+{ @routine $4BEA88 TPanelGI_OnActivate }
 procedure TPanelGI.OnActivate;
 begin
   inherited OnActivate;
   Dragging := False;
 end;
-{ @end $4730E8 }
+{ @end $4BEA88 }
 
-{ @routine $473104 TPanelGI_ProcessMouseMove }
+{ @routine $4BEA9C TPanelGI_ProcessMouseMove }
 procedure TPanelGI.ProcessMouseMove(KeyState: Cardinal; Point: TPoint);
 var X, Y: Integer;
 begin
   inherited ProcessMouseMove(KeyState, Point);
-  if Dragging = True then
-    if (Point.X <> LastDragPoint.X) or (Point.Y <> LastDragPoint.Y) then
-    begin
-      if MessageLoop.IsCursorImageSelected('Main') then MessageLoop.SetCursorByName('Scroll');
-      if (ScrollAxis = psaHorizontal) or (ScrollAxis = psaBoth) then X := ScrollOffset.X + LastDragPoint.X - Point.X
-      else X := ScrollOffset.X;
-      if (ScrollAxis = psaVertical) or (ScrollAxis = psaBoth) then Y := ScrollOffset.Y + LastDragPoint.Y - Point.Y
-      else Y := ScrollOffset.Y;
-      SetScrollOffset(Classes.Point(X, Y));
-      LastDragPoint := Point;
-      if Assigned(ScrollChangedCallback) then ScrollChangedCallback(Self);
-    end;
+  if Dragging <> True then Exit;
+  if (Point.X = LastDragPoint.X) and (Point.Y = LastDragPoint.Y) then Exit;
+  if MessageLoop.IsCursorImageSelected('Main') then MessageLoop.SetCursorByName('Scroll');
+  if (ScrollAxis = psaHorizontal) or (ScrollAxis = psaBoth) then X := ScrollOffset.X + LastDragPoint.X - Point.X
+  else X := ScrollOffset.X;
+  if (ScrollAxis = psaVertical) or (ScrollAxis = psaBoth) then Y := ScrollOffset.Y + LastDragPoint.Y - Point.Y
+  else Y := ScrollOffset.Y;
+  SetScrollOffset(Classes.Point(X, Y));
+  LastDragPoint := Point;
+  if Assigned(ScrollChangedCallback) then ScrollChangedCallback(Self);
 end;
-{ @end $473104 }
+{ @end $4BEA9C }
 
-{ @routine $473268 TPanelGI_OnMouseEnter }
+{ @routine $4BEBAC TPanelGI_OnMouseEnter }
 procedure TPanelGI.OnMouseEnter;
 begin
   inherited OnMouseEnter;
   Dragging := False;
 end;
-{ @end $473268 }
+{ @end $4BEBAC }
 
-{ @routine $473284 TPanelGI_OnMouseLeave }
+{ @routine $4BEBC0 TPanelGI_OnMouseLeave }
 procedure TPanelGI.OnMouseLeave;
 begin
   inherited OnMouseLeave;
   Dragging := False;
   if MessageLoop.IsCursorImageSelected('Scroll') then MessageLoop.SetCursorByName('Main');
 end;
-{ @end $473284 }
+{ @end $4BEBC0 }
 
-{ @routine $4732E8 TPanelGI_ProcessRightButtonDown }
+{ @routine $4BEC18 TPanelGI_ProcessRightButtonDown }
 procedure TPanelGI.ProcessRightButtonDown(KeyState: Cardinal; Point: TPoint);
 begin
   inherited ProcessRightButtonDown(KeyState, Point);
@@ -307,18 +302,18 @@ begin
     if MessageLoop.IsCursorImageSelected('Main') then MessageLoop.SetCursorByName('Scroll');
   end;
 end;
-{ @end $4732E8 }
+{ @end $4BEC18 }
 
-{ @routine $473394 TPanelGI_ProcessRightButtonUp }
+{ @routine $4BECA8 TPanelGI_ProcessRightButtonUp }
 procedure TPanelGI.ProcessRightButtonUp(KeyState: Cardinal; Point: TPoint);
 begin
   inherited ProcessRightButtonUp(KeyState, Point);
   Dragging := False;
   if MessageLoop.IsCursorImageSelected('Scroll') then MessageLoop.SetCursorByName('Main');
 end;
-{ @end $473394 }
+{ @end $4BECA8 }
 
-{ @routine $473410 TPanelGI_LoadFromConfigPath }
+{ @routine $4BED10 TPanelGI_LoadFromConfigPath }
 procedure TPanelGI.LoadFromConfigPath(const Path: WideString);
 var Block: TBlockParEC; Text: WideString;
 begin
@@ -332,9 +327,9 @@ begin
   end;
   if Block.CountParams('MoveWorld') > 0 then DragScrollingEnabled := ParseEnabledNameGI(Block.GetParam('MoveWorld'));
 end;
-{ @end $473410 }
+{ @end $4BED10 }
 
-{ @routine $473584 TPanelGI_LoadFromBlock }
+{ @routine $4BEE70 TPanelGI_LoadFromBlock }
 procedure TPanelGI.LoadFromBlock(Block: TBlockParEC);
 var Text: WideString;
 begin
@@ -356,6 +351,6 @@ begin
     else if Text = 'View' then ScrollType := pstView;
   end;
 end;
-{ @end $473584 }
+{ @end $4BEE70 }
 
 end.

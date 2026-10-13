@@ -1,5 +1,4 @@
 unit VorbisFile;
-// Unit bracket (inferred): .text 0x0084E5D8..0x0084ECA1; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -23,8 +22,8 @@ type
     Lock: PCriticalSection; // @offset $2D8
     Bitstream: Integer; // @offset $2DC
     ExternalLibrary: Boolean; // @offset $2E0
-    constructor Create(var SharedLock: TCriticalSection; UseExternalLibrary: Boolean); // @addr $84E658
-    destructor Destroy; override; // @addr $84E6FC @note "Decrements the shared use count without unloading or clearing the decoder."
+    constructor Create(var SharedLock: TCriticalSection; UseExternalLibrary: Boolean); // @addr $4C6AD4
+    destructor Destroy; override; // @addr $4C6B64 @note "Decrements the shared use count without unloading or clearing the decoder."
 
   end;
   // libvorbisfile C ABI: https://github.com/xiph/vorbis/blob/master/include/vorbis/vorbisfile.h
@@ -53,42 +52,42 @@ type
   TVorbisRead = function(State, Buffer: Pointer; Length, BigEndian, WordSize, SignedSamples: Integer; var Bitstream: Integer): Integer; cdecl;
 
 var
-  VorbisLoaded: Boolean = False; // @addr $882728
-  VorbisClear: TVorbisFileStatus; // @addr $88C3B0
-  VorbisFOpen: TVorbisFOpen; // @addr $88C3B4
-  VorbisOpenCallbacks: TVorbisOpenCallbacks; // @addr $88C3B8
-  VorbisTestCallbacks: TVorbisOpenCallbacks; // @addr $88C3BC
-  VorbisTestOpen: TVorbisFileStatus; // @addr $88C3C0
-  VorbisBitrate: TVorbisLinkStatus; // @addr $88C3C4
-  VorbisBitrateInstant: TVorbisFileStatus; // @addr $88C3C8
-  VorbisStreams: TVorbisFileStatus; // @addr $88C3CC
-  VorbisSeekable: TVorbisFileStatus; // @addr $88C3D0
-  VorbisSerialNumber: TVorbisLinkStatus; // @addr $88C3D4
-  VorbisRawTotal: TVorbisLinkCount; // @addr $88C3D8
-  VorbisPcmTotal: TVorbisLinkCount; // @addr $88C3DC
-  VorbisTimeTotal: TVorbisLinkTime; // @addr $88C3E0
-  VorbisRawSeek: TVorbisSeekOffset; // @addr $88C3E4
-  VorbisPcmSeek: TVorbisSeekOffset; // @addr $88C3E8
-  VorbisPcmSeekPage: TVorbisSeekOffset; // @addr $88C3EC
-  VorbisTimeSeek: TVorbisSeekTime; // @addr $88C3F0
-  VorbisTimeSeekPage: TVorbisSeekTime; // @addr $88C3F4
-  VorbisRawTell: TVorbisTellOffset; // @addr $88C3F8
-  VorbisPcmTell: TVorbisTellOffset; // @addr $88C3FC
-  VorbisTimeTell: TVorbisTellTime; // @addr $88C400
-  VorbisInfo: TVorbisLinkInfo; // @addr $88C404
-  VorbisComment: TVorbisLinkInfo; // @addr $88C408
-  VorbisReadFloat: TVorbisReadFloat; // @addr $88C40C
-  VorbisRead: TVorbisRead; // @addr $88C410
+  VorbisLoaded: Boolean = False; // @addr $80B718
+  VorbisClear: TVorbisFileStatus; // @addr $819EB8
+  VorbisFOpen: TVorbisFOpen; // @addr $819EBC
+  VorbisOpenCallbacks: TVorbisOpenCallbacks; // @addr $819EC0
+  VorbisTestCallbacks: TVorbisOpenCallbacks; // @addr $819EC4
+  VorbisTestOpen: TVorbisFileStatus; // @addr $819EC8
+  VorbisBitrate: TVorbisLinkStatus; // @addr $819ECC
+  VorbisBitrateInstant: TVorbisFileStatus; // @addr $819ED0
+  VorbisStreams: TVorbisFileStatus; // @addr $819ED4
+  VorbisSeekable: TVorbisFileStatus; // @addr $819ED8
+  VorbisSerialNumber: TVorbisLinkStatus; // @addr $819EDC
+  VorbisRawTotal: TVorbisLinkCount; // @addr $819EE0
+  VorbisPcmTotal: TVorbisLinkCount; // @addr $819EE4
+  VorbisTimeTotal: TVorbisLinkTime; // @addr $819EE8
+  VorbisRawSeek: TVorbisSeekOffset; // @addr $819EEC
+  VorbisPcmSeek: TVorbisSeekOffset; // @addr $819EF0
+  VorbisPcmSeekPage: TVorbisSeekOffset; // @addr $819EF4
+  VorbisTimeSeek: TVorbisSeekTime; // @addr $819EF8
+  VorbisTimeSeekPage: TVorbisSeekTime; // @addr $819EFC
+  VorbisRawTell: TVorbisTellOffset; // @addr $819F00
+  VorbisPcmTell: TVorbisTellOffset; // @addr $819F04
+  VorbisTimeTell: TVorbisTellTime; // @addr $819F08
+  VorbisInfo: TVorbisLinkInfo; // @addr $819F0C
+  VorbisComment: TVorbisLinkInfo; // @addr $819F10
+  VorbisReadFloat: TVorbisReadFloat; // @addr $819F14
+  VorbisRead: TVorbisRead; // @addr $819F18
 
-  VorbisUseCount: Integer; // @addr $88C414
-  VorbisCallbacks: TVorbisCallbacks; // @addr $88C418
-  VorbisLibrary: Cardinal; // @addr $88C428
+  VorbisUseCount: Integer; // @addr $819F1C
+  VorbisCallbacks: TVorbisCallbacks; // @addr $819F20
+  VorbisLibrary: Cardinal; // @addr $819F30
 
-procedure LoadVorbisLibrary; // @addr $84E99C
-function ReadVorbisSource(Buffer: Pointer; Size, Count: Cardinal; Source: Pointer): Cardinal; cdecl; // @addr $84E630 @note "Returns bytes read, rather than fread's element count."
-function OpenVorbisStream(Decoder: TOggWorker; var Format: TSoundWaveFormat; var Stream: TFileStreamEC): Integer; stdcall; // @addr $84E768 @note "Always advertises stereo 44100-Hz signed 16-bit PCM; raises if ov_open_callbacks fails."
+procedure LoadVorbisLibrary; // @addr $4C6DB4
+function ReadVorbisSource(Buffer: Pointer; Size, Count: Cardinal; Source: Pointer): Cardinal; cdecl; // @addr $4C6ABC @note "Returns bytes read, rather than fread's element count."
+function OpenVorbisStream(Decoder: TOggWorker; var Format: TSoundWaveFormat; var Stream: TFileStreamEC): Integer; stdcall; // @addr $4C6BBC @note "Always advertises stereo 44100-Hz signed 16-bit PCM; raises if ov_open_callbacks fails."
 
-function ReadVorbisSamples(Decoder: TOggWorker; Buffer: Pointer; var ByteCount: Integer): Integer; stdcall; // @addr $84E880
+function ReadVorbisSamples(Decoder: TOggWorker; Buffer: Pointer; var ByteCount: Integer): Integer; stdcall; // @addr $4C6CB4
 
 implementation
 
@@ -103,16 +102,16 @@ const
   VorbisSignedSamples = 1;
   VorbisScratchBytes = 4096;
 
-{ @routine $84E630 ReadVorbisSource }
+{ @routine $4C6ABC ReadVorbisSource }
 function ReadVorbisSource(Buffer: Pointer; Size, Count: Cardinal; Source: Pointer): Cardinal; cdecl;
 var Stream: TFileStreamEC;
 begin
   Stream := Source;
   Result := Stream.Read(Buffer, Size * Count);
 end;
-{ @end $84E630 }
+{ @end $4C6ABC }
 
-{ @routine $84E658 TOggWorker_Create }
+{ @routine $4C6AD4 TOggWorker_Create }
 constructor TOggWorker.Create(var SharedLock: TCriticalSection; UseExternalLibrary: Boolean);
 begin
   inherited Create;
@@ -126,9 +125,9 @@ begin
   end;
   ExternalLibrary := UseExternalLibrary;
 end;
-{ @end $84E658 }
+{ @end $4C6AD4 }
 
-{ @routine $84E6FC TOggWorker_Destroy }
+{ @routine $4C6B64 TOggWorker_Destroy }
 destructor TOggWorker.Destroy;
 begin
   if not ExternalLibrary then
@@ -141,9 +140,9 @@ begin
   end;
   inherited Destroy;
 end;
-{ @end $84E6FC }
+{ @end $4C6B64 }
 
-{ @routine $84E768 OpenVorbisStream }
+{ @routine $4C6BBC OpenVorbisStream }
 function OpenVorbisStream(Decoder: TOggWorker; var Format: TSoundWaveFormat; var Stream: TFileStreamEC): Integer; stdcall;
 begin
   Format.FormatTag := WAVE_FORMAT_PCM;
@@ -160,9 +159,9 @@ begin
   if Result <> 0 then raise Exception.Create('Error open audiofile.')
   else Result := 1;
 end;
-{ @end $84E768 }
+{ @end $4C6BBC }
 
-{ @routine $84E880 ReadVorbisSamples }
+{ @routine $4C6CB4 ReadVorbisSamples }
 function ReadVorbisSamples(Decoder: TOggWorker; Buffer: Pointer; var ByteCount: Integer): Integer; stdcall;
 var Total, Count, Remaining: Integer;
     Temp: array of AnsiChar;
@@ -175,23 +174,23 @@ begin
   Decoder.Lock^.Enter;
   while not Done do
   begin
-    Count := VorbisRead(@Decoder.VorbisState, Pointer(Temp), Remaining, VorbisLittleEndian, VorbisOutputSampleBytes, VorbisSignedSamples, Decoder.Bitstream);
-    if Count = OV_EBADLINK then Break;
-    if Count = OV_HOLE then Break;
-    if Count = OV_EINVAL then Break;
-    if Count = 0 then Break;
-    CopyMemory(AddPointerOffset(Buffer, Total), @Temp[0], Count);
-    Inc(Total, Count);
-    Dec(Remaining, Count);
+    Count := VorbisRead(@Decoder.VorbisState, @Temp[0], Remaining, VorbisLittleEndian, VorbisOutputSampleBytes, VorbisSignedSamples, Decoder.Bitstream);
+    if (Count <> OV_EBADLINK) and (Count <> OV_HOLE) and (Count <> OV_EINVAL) and (Count <> 0) then
+    begin
+      CopyMemory(AddPointerOffset(Buffer, Total), @Temp[0], Count);
+      Inc(Total, Count);
+      Dec(Remaining, Count);
+    end
+    else Break;
     if Remaining = 0 then Break;
   end;
   Decoder.Lock^.Leave;
   ByteCount := Total;
   Result := Total;
 end;
-{ @end $84E880 }
+{ @end $4C6CB4 }
 
-{ @routine $84E99C LoadVorbisLibrary }
+{ @routine $4C6DB4 LoadVorbisLibrary }
 procedure LoadVorbisLibrary;
 begin
   AppendLogTextThreadSafe('Loading libvorbisfile.dll....');
@@ -235,6 +234,6 @@ begin
   VorbisCallbacks.Read := ReadVorbisSource;
   VorbisCallbacks.Seek := nil; VorbisCallbacks.Tell := nil; VorbisCallbacks.Close := nil;
 end;
-{ @end $84E99C }
+{ @end $4C6DB4 }
 
 end.

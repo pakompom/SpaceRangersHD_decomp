@@ -1,5 +1,4 @@
 unit GI_Label;
-// Unit bracket (inferred): .text 0x00488920..0x0048C7D7; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -9,7 +8,7 @@ type
   TLabelGI = class;
   TCreateLabelControlEventGI = function(Sender: TLabelGI; Item: PFontObjectEC): TObjectGI of object;
 
-  TLabelGI = class(TObjectGI) // @size 0x16C
+  TLabelGI = class(TObjectGI) // @size 0x16C @methodorder source
   public
     FontCache: TCFontControlEC; // @offset 0x120
     EmbeddedImage: TImageGI; // @offset 0x124
@@ -31,55 +30,57 @@ type
     CreateEmbeddedControl: TCreateLabelControlEventGI; // @offset $160
     TextTexture: TTextureGR; // @offset 0x168
 
-    constructor Create(Owner: TObjectGI); // @addr 0x488A40
-    destructor Destroy; override; // @addr 0x488B74
-    procedure Clear; override; // @addr 0x488BFC
-    procedure SetFontName(const FontName: WideString); // @addr 0x488CEC
-    procedure SetTextBorderWidth(Value: Integer); // @addr 0x488D40
-    procedure SetTextBorderColor(Value: Cardinal); // @addr 0x488D90
-    procedure SetShadowOffset(Value: Integer); // @addr 0x488DE0
-    procedure SetShadowColor(Value: Cardinal); // @addr 0x488E38
-    procedure SetText(const Text: WideString); // @addr 0x488E70
-    procedure LoadTextLinesFromBlockParam(Block: TBlockParEC; const ParamName: WideString); // @addr 0x488F20
-    function GetText: WideString; // @addr 0x489114
-    procedure SetTextAlignX(Value: TTextAlignXGI); // @addr 0x489138
-    procedure SetTextAlignY(Value: TTextAlignYGI); // @addr 0x489198
-    procedure SetWordWrapEnabled(Value: Boolean); // @addr 0x4891F8
-    procedure SetAutoHeightPadding(Value: Integer); // @addr 0x489258
-    procedure SetEmbeddedImagePath(const ImagePath: WideString); // @addr 0x4892B8 @note "An empty path frees the embedded child."
-    procedure SetEmbeddedImageKindX(Value: TImageKindXGI); // @addr 0x489378
-    procedure SetEmbeddedImageKindY(Value: TImageKindYGI); // @addr 0x4893A8
-    procedure SetEmbeddedImageHalfAlpha(Value: Boolean); // @addr 0x4893D8
-    procedure SetTextColor(Value: Cardinal); // @addr 0x489408
-    procedure SetBorderLightColor(Value: Cardinal); // @addr 0x48945C
-    procedure SetBorderDarkColor(Value: Cardinal); // @addr 0x489494
-    function MeasureContentSize(TopAdjustment: PInteger): TPoint; // @addr 0x4894CC @note "TopAdjustment is optional; includes text outline/shadow padding."
-    function GetLineHeight: Integer; // @addr 0x489848
-    function GetRenderedLineCount: Integer; // @addr 0x4898B0 @note "Includes word wrapping when enabled."
-    procedure UpdateHitTestBounds; override; // @addr 0x4899EC @note "May resize the control to fit its text."
-    procedure SetSize(Size: TPoint); override; // @addr 0x489BC4
-    procedure UpdateEmbeddedControls(Font: TCFontEC); // @addr 0x489C04 @note "Missing embedded controls are requested through the creation callback."
-    procedure RemoveUnusedEmbeddedControls(Font: TCFontEC); // @addr 0x489D6C
-    procedure LoadFromConfigPath(const Path: WideString); override; // @addr 0x489EF8
-    procedure LoadFromBlock(Block: TBlockParEC); override; // @addr 0x48A30C
-    procedure Draw(ClipRect: TRect); override; // @addr 0x48A8D0
-    procedure OnMouseEnter; override; // @addr $489DF0
-    procedure OnMouseLeave; override; // @addr $489E50
-    procedure ProcessLeftButtonDown(KeyState: Cardinal; Point: TPoint); override; // @addr $489EA0
-    procedure ProcessLeftButtonUp(KeyState: Cardinal; Point: TPoint); override; // @addr $489ECC
-    procedure QueueImageLoad(PendingLoads: TList); override; // @addr 0x48C140
+    constructor Create(Owner: TObjectGI); // @addr 0x0049DDD4
+    destructor Destroy; override; // @addr 0x0049DED4
+    procedure Clear; override; // @addr 0x0049DF38
+    procedure SetFontName(const FontName: WideString); // @addr 0x0049DFE8
+    procedure SetTextBorderWidth(Value: Integer); // @addr 0x0049E024
+    procedure SetTextBorderColor(Value: Cardinal); // @addr 0x0049E050
+    procedure SetShadowOffset(Value: Integer); // @addr 0x0049E07C
+    procedure SetShadowColor(Value: Cardinal); // @addr 0x0049E0B0
+    procedure SetText(const Text: WideString); // @addr 0x0049E0D0
+    procedure LoadTextLinesFromBlockParam(Block: TBlockParEC; const ParamName: WideString); // @addr 0x0049E164
+    function GetText: WideString; // @addr 0x0049E320
+    procedure SetTextAlignX(Value: TTextAlignXGI); // @addr 0x0049E338
+    procedure SetTextAlignY(Value: TTextAlignYGI); // @addr 0x0049E374
+    procedure SetWordWrapEnabled(Value: Boolean); // @addr 0x0049E3B0
+    procedure SetAutoHeightPadding(Value: Integer); // @addr 0x0049E3EC
+    procedure SetEmbeddedImagePath(const ImagePath: WideString); // @addr 0x0049E428 @note "An empty path frees the embedded child."
+    procedure SetEmbeddedImageKindX(Value: TImageKindXGI); // @addr 0x0049E4B8
+    procedure SetEmbeddedImageKindY(Value: TImageKindYGI); // @addr 0x0049E4CC
+    procedure SetEmbeddedImageHalfAlpha(Value: Boolean); // @addr 0x0049E4E0
+    procedure SetTextColor(Value: Cardinal); // @addr 0x0049E4F4
+    procedure SetBorderLightColor(Value: Cardinal); // @addr 0x0049E524
+    procedure SetBorderDarkColor(Value: Cardinal); // @addr 0x0049E544
+    function MeasureContentSize(TopAdjustment: PInteger): TPoint; // @addr 0x0049E564 @note "TopAdjustment is optional; includes text outline/shadow padding."
+    function GetLineHeight: Integer; // @addr 0x0049E870
+    function GetRenderedLineCount: Integer; // @addr 0x0049E8D4 @note "Includes word wrapping when enabled."
+    procedure UpdateHitTestBounds; override; // @addr 0x0049EA08 @note "May resize the control to fit its text."
+    procedure SetSize(Size: TPoint); override; // @addr 0x0049EB54
+    procedure UpdateEmbeddedControls(Font: TCFontEC); // @addr 0x0049EB88 @note "Missing embedded controls are requested through the creation callback."
+    procedure RemoveUnusedEmbeddedControls(Font: TCFontEC); // @addr 0x0049ECB4
+    procedure LoadFromConfigPath(const Path: WideString); override; // @addr 0x0049EDB0
+    procedure LoadFromBlock(Block: TBlockParEC); override; // @addr 0x0049F198
+    procedure Draw(ClipRect: TRect); override; // @addr 0x0049F71C
+    procedure OnMouseEnter; override; // @addr $49ED04
+    procedure OnMouseLeave; override; // @addr $49ED48
+    procedure ProcessLeftButtonDown(KeyState: Cardinal; Point: TPoint); override; // @addr $49ED80
+    procedure ProcessLeftButtonUp(KeyState: Cardinal; Point: TPoint); override; // @addr $49ED98
+    procedure QueueImageLoad(PendingLoads: TList); override; // @addr 0x004A0D60
+
+    property Text: WideString read GetText write SetText;
   end;
 
-function MeasureLabelTextBounds(const Text, FontName: WideString): TRect; // @addr $48C164 Includes the native right/bottom padding.
-function MeasureWrappedLabelBounds(Width: Integer; TextLines: TStringsEC; Font: TCFontEC): TRect; // @addr $48C230
-procedure DrawWrappedLabelLines(Buffer: TGraphBufGR; Width, X, Y: Integer; TextLines: TStringsEC; Font: TCFontEC); // @addr $48C3DC
-procedure RenderLabelTextToBuffer(Buffer: TGraphBufGR; Width, BorderWidth, ShadowOffset: Integer; const Text, FontName: WideString; TextColor, BorderColor, ShadowColor: Cardinal); // @addr $48C574
+function MeasureLabelTextBounds(const Text, FontName: WideString): TRect; // @addr $4A0D6C Includes the native right/bottom padding.
+function MeasureWrappedLabelBounds(Width: Integer; TextLines: TStringsEC; Font: TCFontEC): TRect; // @addr $4A0E38
+procedure DrawWrappedLabelLines(Buffer: TGraphBufGR; Width, X, Y: Integer; TextLines: TStringsEC; Font: TCFontEC); // @addr $4A0FC0
+procedure RenderLabelTextToBuffer(Buffer: TGraphBufGR; Width, BorderWidth, ShadowOffset: Integer; const Text, FontName: WideString; TextColor, BorderColor, ShadowColor: Cardinal); // @addr $4A113C
 
 implementation
 
 uses EC_Cache, GR_Main, Math, Windows, SysUtils, GlobalsV, Direct3D9;
 
-{ @routine $488A40 TLabelGI_Create }
+{ @routine $49DDD4 TLabelGI_Create }
 constructor TLabelGI.Create(Owner: TObjectGI);
 begin
   inherited Create(Owner);
@@ -98,9 +99,9 @@ begin
   AutoHeightPadding := 4;
   TextTexture := nil;
 end;
-{ @end $488A40 }
+{ @end $49DDD4 }
 
-{ @routine $488B74 TLabelGI_Destroy }
+{ @routine $49DED4 TLabelGI_Destroy }
 destructor TLabelGI.Destroy;
 begin
   FontCache.Free;
@@ -114,9 +115,9 @@ begin
   end;
   inherited Destroy;
 end;
-{ @end $488B74 }
+{ @end $49DED4 }
 
-{ @routine $488BFC TLabelGI_Clear }
+{ @routine $49DF38 TLabelGI_Clear }
 procedure TLabelGI.Clear;
 begin
   inherited Clear;
@@ -138,9 +139,9 @@ begin
     TextTexture := nil;
   end;
 end;
-{ @end $488BFC }
+{ @end $49DF38 }
 
-{ @routine $488CEC TLabelGI_SetFontName }
+{ @routine $49DFE8 TLabelGI_SetFontName }
 procedure TLabelGI.SetFontName(const FontName: WideString);
 begin
   Invalidate;
@@ -148,71 +149,61 @@ begin
   Invalidate;
   if TextTexture <> nil then TextTexture.ReleaseSurfaces;
 end;
-{ @end $488CEC }
+{ @end $49DFE8 }
 
-{ @routine $488D40 TLabelGI_SetTextBorderWidth }
+{ @routine $49E024 TLabelGI_SetTextBorderWidth }
 procedure TLabelGI.SetTextBorderWidth(Value: Integer);
 begin
-  if Value <> TextBorderWidth then
-  begin
-    TextBorderWidth := Value;
-    Invalidate;
-    if TextTexture <> nil then TextTexture.ReleaseSurfaces;
-  end;
+  if Value = TextBorderWidth then Exit;
+  TextBorderWidth := Value;
+  Invalidate;
+  if TextTexture <> nil then TextTexture.ReleaseSurfaces;
 end;
-{ @end $488D40 }
+{ @end $49E024 }
 
-{ @routine $488D90 TLabelGI_SetTextBorderColor }
+{ @routine $49E050 TLabelGI_SetTextBorderColor }
 procedure TLabelGI.SetTextBorderColor(Value: Cardinal);
 begin
-  if Value <> TextBorderColor then
-  begin
-    TextBorderColor := Value;
-    Invalidate;
-    if TextTexture <> nil then TextTexture.ReleaseSurfaces;
-  end;
+  if Value = TextBorderColor then Exit;
+  TextBorderColor := Value;
+  Invalidate;
+  if TextTexture <> nil then TextTexture.ReleaseSurfaces;
 end;
-{ @end $488D90 }
+{ @end $49E050 }
 
-{ @routine $488DE0 TLabelGI_SetShadowOffset }
+{ @routine $49E07C TLabelGI_SetShadowOffset }
 procedure TLabelGI.SetShadowOffset(Value: Integer);
 begin
-  if Value <> TextShadowOffset then
-  begin
-    TextShadowOffset := Value;
-    Invalidate;
-    if TextTexture <> nil then TextTexture.SetSurface(nil, 1);
-  end;
+  if Value = TextShadowOffset then Exit;
+  TextShadowOffset := Value;
+  Invalidate;
+  if TextTexture <> nil then TextTexture.SetSurface(nil, 1);
 end;
-{ @end $488DE0 }
+{ @end $49E07C }
 
-{ @routine $488E38 TLabelGI_SetShadowColor }
+{ @routine $49E0B0 TLabelGI_SetShadowColor }
 procedure TLabelGI.SetShadowColor(Value: Cardinal);
 begin
-  if Value <> TextShadowColor then
-  begin
-    TextShadowColor := Value;
-    Invalidate;
-  end;
+  if Value = TextShadowColor then Exit;
+  TextShadowColor := Value;
+  Invalidate;
 end;
-{ @end $488E38 }
+{ @end $49E0B0 }
 
-{ @routine $488E70 TLabelGI_SetText }
+{ @routine $49E0D0 TLabelGI_SetText }
 procedure TLabelGI.SetText(const Text: WideString);
 begin
-  if TextLines.GetText <> Text then
-  begin
-    Invalidate;
-    TextLines.SetText(Text);
-    UpdateAbsolutePosition;
-    UpdateSubtreeHitBounds;
-    Invalidate;
-    if TextTexture <> nil then TextTexture.ReleaseSurfaces;
-  end;
+  if TextLines.Text = Text then Exit;
+  Invalidate;
+  TextLines.Text := Text;
+  UpdateAbsolutePosition;
+  UpdateSubtreeHitBounds;
+  Invalidate;
+  if TextTexture <> nil then TextTexture.ReleaseSurfaces;
 end;
-{ @end $488E70 }
+{ @end $49E0D0 }
 
-{ @routine $488F20 TLabelGI_LoadTextLinesFromBlockParam }
+{ @routine $49E164 TLabelGI_LoadTextLinesFromBlockParam }
 procedure TLabelGI.LoadTextLinesFromBlockParam(Block: TBlockParEC; const ParamName: WideString);
 var Index, Count: Integer; Key: WideString;
 begin
@@ -222,7 +213,7 @@ begin
     TextLines.Add(Block.GetParamByPath(ParamName + ':' + IntToStr(Index)));
   if Count > 0 then
   begin
-    Key := TrimWideString(TextLines.GetText);
+    Key := TrimWideString(TextLines.Text);
     Count := LanguageDataConfig.CountParamsByPath(Key);
     if Count > 0 then
     begin
@@ -236,72 +227,64 @@ begin
   Invalidate;
   if TextTexture <> nil then TextTexture.ReleaseSurfaces;
 end;
-{ @end $488F20 }
+{ @end $49E164 }
 
-{ @routine $489114 TLabelGI_GetText }
+{ @routine $49E320 TLabelGI_GetText }
 function TLabelGI.GetText: WideString;
 begin
-  Result := TextLines.GetText;
+  Result := TextLines.Text;
 end;
-{ @end $489114 }
+{ @end $49E320 }
 
-{ @routine $489138 TLabelGI_SetTextAlignX }
+{ @routine $49E338 TLabelGI_SetTextAlignX }
 procedure TLabelGI.SetTextAlignX(Value: TTextAlignXGI);
 begin
-  if TextAlignX <> Value then
-  begin
-    TextAlignX := Value;
-    UpdateAbsolutePosition;
-    UpdateSubtreeHitBounds;
-    Invalidate;
-    if TextTexture <> nil then TextTexture.ReleaseSurfaces;
-  end;
+  if TextAlignX = Value then Exit;
+  TextAlignX := Value;
+  UpdateAbsolutePosition;
+  UpdateSubtreeHitBounds;
+  Invalidate;
+  if TextTexture <> nil then TextTexture.ReleaseSurfaces;
 end;
-{ @end $489138 }
+{ @end $49E338 }
 
-{ @routine $489198 TLabelGI_SetTextAlignY }
+{ @routine $49E374 TLabelGI_SetTextAlignY }
 procedure TLabelGI.SetTextAlignY(Value: TTextAlignYGI);
 begin
-  if TextAlignY <> Value then
-  begin
-    TextAlignY := Value;
-    UpdateAbsolutePosition;
-    UpdateSubtreeHitBounds;
-    Invalidate;
-    if TextTexture <> nil then TextTexture.ReleaseSurfaces;
-  end;
+  if TextAlignY = Value then Exit;
+  TextAlignY := Value;
+  UpdateAbsolutePosition;
+  UpdateSubtreeHitBounds;
+  Invalidate;
+  if TextTexture <> nil then TextTexture.ReleaseSurfaces;
 end;
-{ @end $489198 }
+{ @end $49E374 }
 
-{ @routine $4891F8 TLabelGI_SetWordWrapEnabled }
+{ @routine $49E3B0 TLabelGI_SetWordWrapEnabled }
 procedure TLabelGI.SetWordWrapEnabled(Value: Boolean);
 begin
-  if WordWrapEnabled <> Value then
-  begin
-    WordWrapEnabled := Value;
-    UpdateAbsolutePosition;
-    UpdateSubtreeHitBounds;
-    Invalidate;
-    if TextTexture <> nil then TextTexture.ReleaseSurfaces;
-  end;
+  if WordWrapEnabled = Value then Exit;
+  WordWrapEnabled := Value;
+  UpdateAbsolutePosition;
+  UpdateSubtreeHitBounds;
+  Invalidate;
+  if TextTexture <> nil then TextTexture.ReleaseSurfaces;
 end;
-{ @end $4891F8 }
+{ @end $49E3B0 }
 
-{ @routine $489258 TLabelGI_SetAutoHeightPadding }
+{ @routine $49E3EC TLabelGI_SetAutoHeightPadding }
 procedure TLabelGI.SetAutoHeightPadding(Value: Integer);
 begin
-  if AutoHeightPadding <> Value then
-  begin
-    AutoHeightPadding := Value;
-    UpdateAbsolutePosition;
-    UpdateSubtreeHitBounds;
-    Invalidate;
-    if TextTexture <> nil then TextTexture.ReleaseSurfaces;
-  end;
+  if AutoHeightPadding = Value then Exit;
+  AutoHeightPadding := Value;
+  UpdateAbsolutePosition;
+  UpdateSubtreeHitBounds;
+  Invalidate;
+  if TextTexture <> nil then TextTexture.ReleaseSurfaces;
 end;
-{ @end $489258 }
+{ @end $49E3EC }
 
-{ @routine $4892B8 TLabelGI_SetEmbeddedImagePath }
+{ @routine $49E428 TLabelGI_SetEmbeddedImagePath }
 procedure TLabelGI.SetEmbeddedImagePath(const ImagePath: WideString);
 begin
   Invalidate;
@@ -316,70 +299,64 @@ begin
   else
   begin
     if EmbeddedImage = nil then EmbeddedImage := TImageGI.Create(Self);
-    EmbeddedImage.SetImagePath(ImagePath);
-    EmbeddedImage.SetImageKindX(ikxLeftFill);
-    EmbeddedImage.SetImageKindY(ikyTopFill);
-    EmbeddedImage.SetSize(ClientSize);
+    EmbeddedImage.ImageSourcePath := ImagePath;
+    EmbeddedImage.KindX := ikxLeftFill;
+    EmbeddedImage.KindY := ikyTopFill;
+    EmbeddedImage.ObjectSize := ClientSize;
   end;
 end;
-{ @end $4892B8 }
+{ @end $49E428 }
 
-{ @routine $489378 TLabelGI_SetEmbeddedImageKindX }
+{ @routine $49E4B8 TLabelGI_SetEmbeddedImageKindX }
 procedure TLabelGI.SetEmbeddedImageKindX(Value: TImageKindXGI);
 begin
-  if EmbeddedImage <> nil then EmbeddedImage.SetImageKindX(Value);
+  if EmbeddedImage <> nil then EmbeddedImage.KindX := Value;
 end;
-{ @end $489378 }
+{ @end $49E4B8 }
 
-{ @routine $4893A8 TLabelGI_SetEmbeddedImageKindY }
+{ @routine $49E4CC TLabelGI_SetEmbeddedImageKindY }
 procedure TLabelGI.SetEmbeddedImageKindY(Value: TImageKindYGI);
 begin
-  if EmbeddedImage <> nil then EmbeddedImage.SetImageKindY(Value);
+  if EmbeddedImage <> nil then EmbeddedImage.KindY := Value;
 end;
-{ @end $4893A8 }
+{ @end $49E4CC }
 
-{ @routine $4893D8 TLabelGI_SetEmbeddedImageHalfAlpha }
+{ @routine $49E4E0 TLabelGI_SetEmbeddedImageHalfAlpha }
 procedure TLabelGI.SetEmbeddedImageHalfAlpha(Value: Boolean);
 begin
-  if EmbeddedImage <> nil then EmbeddedImage.SetHalfAlpha(Value);
+  if EmbeddedImage <> nil then EmbeddedImage.HalfAlpha := Value;
 end;
-{ @end $4893D8 }
+{ @end $49E4E0 }
 
-{ @routine $489408 TLabelGI_SetTextColor }
+{ @routine $49E4F4 TLabelGI_SetTextColor }
 procedure TLabelGI.SetTextColor(Value: Cardinal);
 begin
-  if TextColor <> Value then
-  begin
-    TextColor := Value;
-    Invalidate;
-    if TextTexture <> nil then TextTexture.SetSurface(nil, 0);
-  end;
+  if TextColor = Value then Exit;
+  TextColor := Value;
+  Invalidate;
+  if TextTexture <> nil then TextTexture.SetSurface(nil, 0);
 end;
-{ @end $489408 }
+{ @end $49E4F4 }
 
-{ @routine $48945C TLabelGI_SetBorderLightColor }
+{ @routine $49E524 TLabelGI_SetBorderLightColor }
 procedure TLabelGI.SetBorderLightColor(Value: Cardinal);
 begin
-  if BorderLightColor <> Value then
-  begin
-    BorderLightColor := Value;
-    Invalidate;
-  end;
+  if BorderLightColor = Value then Exit;
+  BorderLightColor := Value;
+  Invalidate;
 end;
-{ @end $48945C }
+{ @end $49E524 }
 
-{ @routine $489494 TLabelGI_SetBorderDarkColor }
+{ @routine $49E544 TLabelGI_SetBorderDarkColor }
 procedure TLabelGI.SetBorderDarkColor(Value: Cardinal);
 begin
-  if BorderDarkColor <> Value then
-  begin
-    BorderDarkColor := Value;
-    Invalidate;
-  end;
+  if BorderDarkColor = Value then Exit;
+  BorderDarkColor := Value;
+  Invalidate;
 end;
-{ @end $489494 }
+{ @end $49E544 }
 
-{ @routine $4894CC TLabelGI_MeasureContentSize }
+{ @routine $49E564 TLabelGI_MeasureContentSize }
 function TLabelGI.MeasureContentSize(TopAdjustment: PInteger): TPoint;
 var Font: TCFontEC; Y: Integer; Lines: TStringsEC; FirstLine: Boolean; Padding: Integer; Bounds, LineBounds: TRect;
 begin
@@ -400,13 +377,13 @@ begin
       begin
         if not TextLines.IsAtEnd then
         begin
-          Bounds := Font.MeasureTaggedTextBounds(TextLines.GetCurrentText, 0, Y, TopAdjustment);
+          Bounds := Font.MeasureTaggedTextBounds(TextLines.CurrentText, 0, Y, TopAdjustment);
           Inc(Y, Font.GetLineHeight);
           TextLines.Next;
         end;
         while not TextLines.IsAtEnd do
         begin
-          LineBounds := Font.MeasureTaggedTextBounds(TextLines.GetCurrentText, 0, Y, nil);
+          LineBounds := Font.MeasureTaggedTextBounds(TextLines.CurrentText, 0, Y, nil);
           UnionRect(Bounds, Bounds, LineBounds);
           Inc(Y, Font.GetLineHeight);
           TextLines.Next;
@@ -418,20 +395,20 @@ begin
         FirstLine := True;
         while not TextLines.IsAtEnd do
         begin
-          Font.WrapTaggedTextIntoLines(Lines, TextLines.GetCurrentText, ClientSize.X - 4);
+          Font.WrapTaggedTextIntoLines(Lines, TextLines.CurrentText, ClientSize.X - 4);
           if not Lines.IsEmpty then
           begin
             Lines.First;
             if FirstLine then
             begin
-              Bounds := Font.MeasureTaggedTextBounds(Lines.GetCurrentText, 0, Y, TopAdjustment);
+              Bounds := Font.MeasureTaggedTextBounds(Lines.CurrentText, 0, Y, TopAdjustment);
               FirstLine := False;
               Inc(Y, Font.GetLineHeight);
               Lines.Next;
             end;
             while not Lines.IsAtEnd do
             begin
-              LineBounds := Font.MeasureTaggedTextBounds(Lines.GetCurrentText, 0, Y, nil);
+              LineBounds := Font.MeasureTaggedTextBounds(Lines.CurrentText, 0, Y, nil);
               UnionRect(Bounds, Bounds, LineBounds);
               Inc(Y, Font.GetLineHeight);
               Lines.Next;
@@ -450,9 +427,9 @@ begin
   Result := Classes.Point(Bounds.Right - Bounds.Left + TextBorderWidth + Max(TextBorderWidth, TextShadowOffset),
     Padding + Bounds.Bottom - Bounds.Top + TextBorderWidth + Max(TextBorderWidth, TextShadowOffset));
 end;
-{ @end $4894CC }
+{ @end $49E564 }
 
-{ @routine $489848 TLabelGI_GetLineHeight }
+{ @routine $49E870 TLabelGI_GetLineHeight }
 function TLabelGI.GetLineHeight: Integer;
 var Font: TCFontEC;
 begin
@@ -464,9 +441,9 @@ begin
     FontCache.Release;
   end;
 end;
-{ @end $489848 }
+{ @end $49E870 }
 
-{ @routine $4898B0 TLabelGI_GetRenderedLineCount }
+{ @routine $49E8D4 TLabelGI_GetRenderedLineCount }
 function TLabelGI.GetRenderedLineCount: Integer;
 var Font: TCFontEC; Lines: TStringsEC;
 begin
@@ -476,15 +453,15 @@ begin
   begin
     try
       Font := AcquireCachedFont(FontCache);
-      if not WordWrapEnabled then Result := TextLines.GetCount
+      if not WordWrapEnabled then Result := TextLines.Count
       else
       begin
         Lines := TStringsEC.Create;
         TextLines.First;
         while not TextLines.IsAtEnd do
         begin
-          Font.WrapTaggedTextIntoLines(Lines, TextLines.GetCurrentText, ClientSize.X - 4);
-          Inc(Result, Lines.GetCount);
+          Font.WrapTaggedTextIntoLines(Lines, TextLines.CurrentText, ClientSize.X - 4);
+          Inc(Result, Lines.Count);
           TextLines.Next;
         end;
         Lines.Free;
@@ -494,9 +471,9 @@ begin
     end;
   end;
 end;
-{ @end $4898B0 }
+{ @end $49E8D4 }
 
-{ @routine $4899EC TLabelGI_UpdateHitTestBounds }
+{ @routine $49EA08 TLabelGI_UpdateHitTestBounds }
 procedure TLabelGI.UpdateHitTestBounds;
 var Size: TPoint; TopAdjustment: Integer;
 begin
@@ -520,17 +497,17 @@ begin
   end;
   inherited UpdateHitTestBounds;
 end;
-{ @end $4899EC }
+{ @end $49EA08 }
 
-{ @routine $489BC4 TLabelGI_SetSize }
+{ @routine $49EB54 TLabelGI_SetSize }
 procedure TLabelGI.SetSize(Size: TPoint);
 begin
   inherited SetSize(Size);
-  if EmbeddedImage <> nil then EmbeddedImage.SetSize(Size);
+  if EmbeddedImage <> nil then EmbeddedImage.ObjectSize := Size;
 end;
-{ @end $489BC4 }
+{ @end $49EB54 }
 
-{ @routine $489C04 TLabelGI_UpdateEmbeddedControls }
+{ @routine $49EB88 TLabelGI_UpdateEmbeddedControls }
 procedure TLabelGI.UpdateEmbeddedControls(Font: TCFontEC);
 var Index: Integer; Child: TObjectGI; Item: PFontObjectEC; Position: TPoint;
 begin
@@ -542,10 +519,10 @@ begin
     Child := FirstChild;
     while Child <> nil do
     begin
-      if (Child.UserValue = Item.ObjectId) and (Child.UserIndex = Index) then
+      if (Child.UserValue = Item.ObjectId) and (Child.UserIndex = Cardinal(Index)) then
       begin
-        Child.SetPosition(Position);
-        Child.SetSize(Classes.Point(Item.Width, Item.Height));
+        Child.Pos := Position;
+        Child.ObjectSize := Classes.Point(Item.Width, Item.Height);
         Break;
       end;
       Child := Child.NextSibling;
@@ -557,15 +534,15 @@ begin
       begin
         Child.UserValue := Item.ObjectId;
         Child.UserIndex := Index;
-        Child.SetPosition(Position);
-        Child.SetSize(Classes.Point(Item.Width, Item.Height));
+        Child.Pos := Position;
+        Child.ObjectSize := Classes.Point(Item.Width, Item.Height);
       end;
     end;
   end;
 end;
-{ @end $489C04 }
+{ @end $49EB88 }
 
-{ @routine $489D6C TLabelGI_RemoveUnusedEmbeddedControls }
+{ @routine $49ECB4 TLabelGI_RemoveUnusedEmbeddedControls }
 procedure TLabelGI.RemoveUnusedEmbeddedControls(Font: TCFontEC);
 var Index: Integer; Child, Previous: TObjectGI;
 begin
@@ -575,7 +552,7 @@ begin
     Index := 0;
     while Index < Font.ObjectCount do
     begin
-      if (Child.UserIndex = Index) and (Child.UserValue = Font.GetEmbeddedObject(Index).ObjectId) then Break;
+      if (Child.UserIndex = Cardinal(Index)) and (Child.UserValue = Font.GetEmbeddedObject(Index).ObjectId) then Break;
       Inc(Index);
     end;
     Previous := Child;
@@ -583,9 +560,9 @@ begin
     if Index >= Font.ObjectCount then Previous.Free;
   end;
 end;
-{ @end $489D6C }
+{ @end $49ECB4 }
 
-{ @routine $489DF0 TLabelGI_OnMouseEnter }
+{ @routine $49ED04 TLabelGI_OnMouseEnter }
 procedure TLabelGI.OnMouseEnter;
 begin
   inherited OnMouseEnter;
@@ -595,9 +572,9 @@ begin
     if Assigned(HelpCallback) then HelpCallback(Self, True);
   end;
 end;
-{ @end $489DF0 }
+{ @end $49ED04 }
 
-{ @routine $489E50 TLabelGI_OnMouseLeave }
+{ @routine $49ED48 TLabelGI_OnMouseLeave }
 procedure TLabelGI.OnMouseLeave;
 begin
   if MessageLoop.HoveredControl = Self then
@@ -607,23 +584,23 @@ begin
   end;
   inherited OnMouseLeave;
 end;
-{ @end $489E50 }
+{ @end $49ED48 }
 
-{ @routine $489EA0 TLabelGI_ProcessLeftButtonDown }
+{ @routine $49ED80 TLabelGI_ProcessLeftButtonDown }
 procedure TLabelGI.ProcessLeftButtonDown(KeyState: Cardinal; Point: TPoint);
 begin
   inherited ProcessLeftButtonDown(KeyState, Point);
 end;
-{ @end $489EA0 }
+{ @end $49ED80 }
 
-{ @routine $489ECC TLabelGI_ProcessLeftButtonUp }
+{ @routine $49ED98 TLabelGI_ProcessLeftButtonUp }
 procedure TLabelGI.ProcessLeftButtonUp(KeyState: Cardinal; Point: TPoint);
 begin
   inherited ProcessLeftButtonUp(KeyState, Point);
 end;
-{ @end $489ECC }
+{ @end $49ED98 }
 
-{ @routine $489EF8 TLabelGI_LoadFromConfigPath }
+{ @routine $49EDB0 TLabelGI_LoadFromConfigPath }
 procedure TLabelGI.LoadFromConfigPath(const Path: WideString);
 var Block: TBlockParEC; Alignment: WideString;
 begin
@@ -658,9 +635,9 @@ begin
     SetTextAlignX(ParseTextAlignXName(Alignment));
   end;
 end;
-{ @end $489EF8 }
+{ @end $49EDB0 }
 
-{ @routine $48A30C TLabelGI_LoadFromBlock }
+{ @routine $49F198 TLabelGI_LoadFromBlock }
 procedure TLabelGI.LoadFromBlock(Block: TBlockParEC);
 var Alignment: WideString;
 begin
@@ -698,14 +675,14 @@ begin
   if Block.CountParams('TextBorder') > 0 then SetTextBorderWidth(ExtractDigitsToIntW(Block.GetParam('TextBorder')));
   if Block.CountParams('TextShadow') > 0 then SetShadowOffset(ExtractDigitsToIntW(Block.GetParam('TextShadow')));
 end;
-{ @end $48A30C }
+{ @end $49F198 }
 
-{ @routine $48A8D0 TLabelGI_Draw }
+{ @routine $49F71C TLabelGI_Draw }
 procedure TLabelGI.Draw(ClipRect: TRect);
 var Font: TCFontEC; Y: Integer; Lines: TStringsEC; Color: Cardinal; Texture: IDirect3DTexture9; Bounds: TRect;
 
-  // @nested $48A85C SwitchLabelDrawFont
-  procedure SwitchLabelDrawFont(FontName: WideString); // @addr 0x48A85C @calls "0x48A943,0x48A971,0x48A99F,0x48A9D1,0x48A9FF,0x48AA2A,0x48AA55,0x48AA80" @note "Nested Draw helper; caller removes the parent-frame argument."
+  // @nested $49F6B0 SwitchLabelDrawFont
+  procedure SwitchLabelDrawFont(FontName: WideString); // @addr 0x0049F6B0 @calls "0x0049F78C,0x0049F7BA,0x0049F7E8,0x0049F81A,0x0049F83F,0x0049F86A,0x0049F895,0x0049F8C0" @note "Nested Draw helper; caller removes the parent-frame argument."
   begin
     FontCache.SetCacheKey(FontName);
     if TextTexture <> nil then TextTexture.ReleaseSurfaces;
@@ -740,7 +717,7 @@ begin
         begin
           Font.ColorTagsEnabled := False;
           Font.DefaultColor := $FFFFFFFF;
-          Font.RenderTaggedTextToTexture(TextLines.GetText, ClientSize.X, ClientSize.Y, Ord(TextAlignX), Ord(TextAlignY), WordWrapEnabled, nil, Texture);
+          Font.RenderTaggedTextToTexture(TextLines.Text, ClientSize.X, ClientSize.Y, Ord(TextAlignX), Ord(TextAlignY), WordWrapEnabled, nil, Texture);
           TextTexture.SetSurface(Texture, 1);
         end;
         if TextShadowOffset > 0 then
@@ -759,7 +736,7 @@ begin
         begin
           Font.ColorTagsEnabled := True;
           Font.DefaultColor := Color565ToArgb(TextColor);
-          Font.RenderTaggedTextToTexture(TextLines.GetText, ClientSize.X, ClientSize.Y, Ord(TextAlignX), Ord(TextAlignY), WordWrapEnabled, nil, Texture);
+          Font.RenderTaggedTextToTexture(TextLines.Text, ClientSize.X, ClientSize.Y, Ord(TextAlignX), Ord(TextAlignY), WordWrapEnabled, nil, Texture);
           UpdateEmbeddedControls(Font);
           RemoveUnusedEmbeddedControls(Font);
           TextTexture.SetSurface(Texture, 0);
@@ -780,7 +757,7 @@ begin
         if not WordWrapEnabled then
         begin
           if TextAlignY = tayCenterEx then
-            Y := HitTestBounds.Top + ClientSize.Y div 2 - (Font.GetLineHeight * (TextLines.GetCount - 1) + Font.GetCenteringHeight) div 2 + Font.GetCenteringHeight
+            Y := HitTestBounds.Top + ClientSize.Y div 2 - (Font.GetLineHeight * (TextLines.Count - 1) + Font.GetCenteringHeight) div 2 + Font.GetCenteringHeight
           else Y := TextTop + Font.AboveBaseline - 2;
           TextLines.First;
           while not TextLines.IsAtEnd do
@@ -789,19 +766,19 @@ begin
             if TextShadowOffset > 0 then
             begin
               Font.DefaultColor := TextShadowColor;
-              Font.DrawTaggedText16(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes, TextLeft + TextShadowOffset, Y + TextShadowOffset, TextLines.GetCurrentText, ClipRect);
+              Font.DrawTaggedText16(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes, TextLeft + TextShadowOffset, Y + TextShadowOffset, TextLines.CurrentText, ClipRect);
             end;
             if TextBorderWidth > 0 then
             begin
               Font.DefaultColor := TextBorderColor;
-              Font.DrawTaggedText16(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes, TextLeft - TextBorderWidth, Y - TextBorderWidth, TextLines.GetCurrentText, ClipRect);
-              Font.DrawTaggedText16(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes, TextLeft + TextBorderWidth, Y - TextBorderWidth, TextLines.GetCurrentText, ClipRect);
-              Font.DrawTaggedText16(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes, TextLeft - TextBorderWidth, Y + TextBorderWidth, TextLines.GetCurrentText, ClipRect);
-              Font.DrawTaggedText16(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes, TextLeft + TextBorderWidth, Y + TextBorderWidth, TextLines.GetCurrentText, ClipRect);
+              Font.DrawTaggedText16(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes, TextLeft - TextBorderWidth, Y - TextBorderWidth, TextLines.CurrentText, ClipRect);
+              Font.DrawTaggedText16(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes, TextLeft + TextBorderWidth, Y - TextBorderWidth, TextLines.CurrentText, ClipRect);
+              Font.DrawTaggedText16(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes, TextLeft - TextBorderWidth, Y + TextBorderWidth, TextLines.CurrentText, ClipRect);
+              Font.DrawTaggedText16(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes, TextLeft + TextBorderWidth, Y + TextBorderWidth, TextLines.CurrentText, ClipRect);
             end;
             Font.ColorTagsEnabled := True;
             Font.DefaultColor := TextColor;
-            Font.DrawTaggedText16(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes, TextLeft, Y, TextLines.GetCurrentText, ClipRect);
+            Font.DrawTaggedText16(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes, TextLeft, Y, TextLines.CurrentText, ClipRect);
             Inc(Y, Font.GetLineHeight);
             TextLines.Next;
           end;
@@ -813,7 +790,7 @@ begin
           TextLines.First;
           while not TextLines.IsAtEnd do
           begin
-            Font.WrapTaggedTextIntoLines(Lines, TextLines.GetCurrentText, ClientSize.X - 4);
+            Font.WrapTaggedTextIntoLines(Lines, TextLines.CurrentText, ClientSize.X - 4);
             Lines.First;
             while not Lines.IsAtEnd do
             begin
@@ -823,61 +800,61 @@ begin
                 if TextShadowOffset > 0 then
                 begin
                   Font.DefaultColor := TextShadowColor;
-                  Font.DrawTaggedText16(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes, TextLeft + TextShadowOffset, Y + TextShadowOffset, Lines.GetCurrentText, ClipRect);
+                  Font.DrawTaggedText16(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes, TextLeft + TextShadowOffset, Y + TextShadowOffset, Lines.CurrentText, ClipRect);
                 end;
                 if TextBorderWidth > 0 then
                 begin
                   Font.DefaultColor := TextBorderColor;
-                  Font.DrawTaggedText16(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes, TextLeft - TextBorderWidth, Y - TextBorderWidth, Lines.GetCurrentText, ClipRect);
-                  Font.DrawTaggedText16(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes, TextLeft + TextBorderWidth, Y - TextBorderWidth, Lines.GetCurrentText, ClipRect);
-                  Font.DrawTaggedText16(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes, TextLeft - TextBorderWidth, Y + TextBorderWidth, Lines.GetCurrentText, ClipRect);
-                  Font.DrawTaggedText16(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes, TextLeft + TextBorderWidth, Y + TextBorderWidth, Lines.GetCurrentText, ClipRect);
+                  Font.DrawTaggedText16(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes, TextLeft - TextBorderWidth, Y - TextBorderWidth, Lines.CurrentText, ClipRect);
+                  Font.DrawTaggedText16(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes, TextLeft + TextBorderWidth, Y - TextBorderWidth, Lines.CurrentText, ClipRect);
+                  Font.DrawTaggedText16(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes, TextLeft - TextBorderWidth, Y + TextBorderWidth, Lines.CurrentText, ClipRect);
+                  Font.DrawTaggedText16(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes, TextLeft + TextBorderWidth, Y + TextBorderWidth, Lines.CurrentText, ClipRect);
                 end;
                 Font.ColorTagsEnabled := True;
                 Font.DefaultColor := TextColor;
-                Font.DrawTaggedText16(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes, TextLeft, Y, Lines.GetCurrentText, ClipRect);
+                Font.DrawTaggedText16(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes, TextLeft, Y, Lines.CurrentText, ClipRect);
               end
               else if TextAlignX = taxRight then
               begin
                 Font.ColorTagsEnabled := False;
-                Bounds := Font.MeasureTaggedTextBounds(Lines.GetCurrentText, 0, 0, nil);
+                Bounds := Font.MeasureTaggedTextBounds(Lines.CurrentText, 0, 0, nil);
                 if TextShadowOffset > 0 then
                 begin
                   Font.DefaultColor := TextShadowColor;
-                  Font.DrawTaggedText16(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes, HitTestBounds.Right - (Bounds.Right - Bounds.Left) - 2 + TextShadowOffset, Y + TextShadowOffset, Lines.GetCurrentText, ClipRect);
+                  Font.DrawTaggedText16(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes, HitTestBounds.Right - (Bounds.Right - Bounds.Left) - 2 + TextShadowOffset, Y + TextShadowOffset, Lines.CurrentText, ClipRect);
                 end;
                 if TextBorderWidth > 0 then
                 begin
                   Font.DefaultColor := TextBorderColor;
-                  Font.DrawTaggedText16(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes, HitTestBounds.Right - (Bounds.Right - Bounds.Left) - 2 - TextBorderWidth, Y - TextBorderWidth, Lines.GetCurrentText, ClipRect);
-                  Font.DrawTaggedText16(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes, HitTestBounds.Right - (Bounds.Right - Bounds.Left) - 2 + TextBorderWidth, Y - TextBorderWidth, Lines.GetCurrentText, ClipRect);
-                  Font.DrawTaggedText16(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes, HitTestBounds.Right - (Bounds.Right - Bounds.Left) - 2 - TextBorderWidth, Y + TextBorderWidth, Lines.GetCurrentText, ClipRect);
-                  Font.DrawTaggedText16(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes, HitTestBounds.Right - (Bounds.Right - Bounds.Left) - 2 + TextBorderWidth, Y + TextBorderWidth, Lines.GetCurrentText, ClipRect);
+                  Font.DrawTaggedText16(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes, HitTestBounds.Right - (Bounds.Right - Bounds.Left) - 2 - TextBorderWidth, Y - TextBorderWidth, Lines.CurrentText, ClipRect);
+                  Font.DrawTaggedText16(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes, HitTestBounds.Right - (Bounds.Right - Bounds.Left) - 2 + TextBorderWidth, Y - TextBorderWidth, Lines.CurrentText, ClipRect);
+                  Font.DrawTaggedText16(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes, HitTestBounds.Right - (Bounds.Right - Bounds.Left) - 2 - TextBorderWidth, Y + TextBorderWidth, Lines.CurrentText, ClipRect);
+                  Font.DrawTaggedText16(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes, HitTestBounds.Right - (Bounds.Right - Bounds.Left) - 2 + TextBorderWidth, Y + TextBorderWidth, Lines.CurrentText, ClipRect);
                 end;
                 Font.ColorTagsEnabled := True;
                 Font.DefaultColor := TextColor;
-                Font.DrawTaggedText16(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes, HitTestBounds.Right - (Bounds.Right - Bounds.Left) - 2, Y, Lines.GetCurrentText, ClipRect);
+                Font.DrawTaggedText16(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes, HitTestBounds.Right - (Bounds.Right - Bounds.Left) - 2, Y, Lines.CurrentText, ClipRect);
               end
               else if TextAlignX = taxCenter then
               begin
                 Font.ColorTagsEnabled := False;
-                Bounds := Font.MeasureTaggedTextBounds(Lines.GetCurrentText, 0, 0, nil);
+                Bounds := Font.MeasureTaggedTextBounds(Lines.CurrentText, 0, 0, nil);
                 if TextShadowOffset > 0 then
                 begin
                   Font.DefaultColor := TextShadowColor;
-                  Font.DrawTaggedText16(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes, (HitTestBounds.Right - HitTestBounds.Left) div 2 + HitTestBounds.Left - (Bounds.Right - Bounds.Left) div 2 + TextShadowOffset, Y + TextShadowOffset, Lines.GetCurrentText, ClipRect);
+                  Font.DrawTaggedText16(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes, (HitTestBounds.Right - HitTestBounds.Left) div 2 + HitTestBounds.Left - (Bounds.Right - Bounds.Left) div 2 + TextShadowOffset, Y + TextShadowOffset, Lines.CurrentText, ClipRect);
                 end;
                 if TextBorderWidth > 0 then
                 begin
                   Font.DefaultColor := TextBorderColor;
-                  Font.DrawTaggedText16(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes, (HitTestBounds.Right - HitTestBounds.Left) div 2 + HitTestBounds.Left - (Bounds.Right - Bounds.Left) div 2 - TextBorderWidth, Y - TextBorderWidth, Lines.GetCurrentText, ClipRect);
-                  Font.DrawTaggedText16(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes, (HitTestBounds.Right - HitTestBounds.Left) div 2 + HitTestBounds.Left - (Bounds.Right - Bounds.Left) div 2 + TextBorderWidth, Y - TextBorderWidth, Lines.GetCurrentText, ClipRect);
-                  Font.DrawTaggedText16(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes, (HitTestBounds.Right - HitTestBounds.Left) div 2 + HitTestBounds.Left - (Bounds.Right - Bounds.Left) div 2 - TextBorderWidth, Y + TextBorderWidth, Lines.GetCurrentText, ClipRect);
-                  Font.DrawTaggedText16(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes, (HitTestBounds.Right - HitTestBounds.Left) div 2 + HitTestBounds.Left - (Bounds.Right - Bounds.Left) div 2 + TextBorderWidth, Y + TextBorderWidth, Lines.GetCurrentText, ClipRect);
+                  Font.DrawTaggedText16(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes, (HitTestBounds.Right - HitTestBounds.Left) div 2 + HitTestBounds.Left - (Bounds.Right - Bounds.Left) div 2 - TextBorderWidth, Y - TextBorderWidth, Lines.CurrentText, ClipRect);
+                  Font.DrawTaggedText16(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes, (HitTestBounds.Right - HitTestBounds.Left) div 2 + HitTestBounds.Left - (Bounds.Right - Bounds.Left) div 2 + TextBorderWidth, Y - TextBorderWidth, Lines.CurrentText, ClipRect);
+                  Font.DrawTaggedText16(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes, (HitTestBounds.Right - HitTestBounds.Left) div 2 + HitTestBounds.Left - (Bounds.Right - Bounds.Left) div 2 - TextBorderWidth, Y + TextBorderWidth, Lines.CurrentText, ClipRect);
+                  Font.DrawTaggedText16(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes, (HitTestBounds.Right - HitTestBounds.Left) div 2 + HitTestBounds.Left - (Bounds.Right - Bounds.Left) div 2 + TextBorderWidth, Y + TextBorderWidth, Lines.CurrentText, ClipRect);
                 end;
                 Font.ColorTagsEnabled := True;
                 Font.DefaultColor := TextColor;
-                Font.DrawTaggedText16(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes, (HitTestBounds.Right - HitTestBounds.Left) div 2 + HitTestBounds.Left - (Bounds.Right - Bounds.Left) div 2, Y, Lines.GetCurrentText, ClipRect);
+                Font.DrawTaggedText16(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes, (HitTestBounds.Right - HitTestBounds.Left) div 2 + HitTestBounds.Left - (Bounds.Right - Bounds.Left) div 2, Y, Lines.CurrentText, ClipRect);
               end
               else if (TextAlignX = taxAuto) and (not Lines.IsAtLast) then
               begin
@@ -885,19 +862,19 @@ begin
                 if TextShadowOffset > 0 then
                 begin
                   Font.DefaultColor := TextShadowColor;
-                  Font.DrawJustifiedTaggedText16(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes, TextLeft + TextShadowOffset, Y + TextShadowOffset, Lines.GetCurrentText, ClientSize.X - 4, ClipRect);
+                  Font.DrawJustifiedTaggedText16(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes, TextLeft + TextShadowOffset, Y + TextShadowOffset, Lines.CurrentText, ClientSize.X - 4, ClipRect);
                 end;
                 if TextBorderWidth > 0 then
                 begin
                   Font.DefaultColor := TextBorderColor;
-                  Font.DrawJustifiedTaggedText16(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes, TextLeft - TextBorderWidth, Y - TextBorderWidth, Lines.GetCurrentText, ClientSize.X - 4, ClipRect);
-                  Font.DrawJustifiedTaggedText16(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes, TextLeft + TextBorderWidth, Y - TextBorderWidth, Lines.GetCurrentText, ClientSize.X - 4, ClipRect);
-                  Font.DrawJustifiedTaggedText16(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes, TextLeft - TextBorderWidth, Y + TextBorderWidth, Lines.GetCurrentText, ClientSize.X - 4, ClipRect);
-                  Font.DrawJustifiedTaggedText16(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes, TextLeft + TextBorderWidth, Y + TextBorderWidth, Lines.GetCurrentText, ClientSize.X - 4, ClipRect);
+                  Font.DrawJustifiedTaggedText16(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes, TextLeft - TextBorderWidth, Y - TextBorderWidth, Lines.CurrentText, ClientSize.X - 4, ClipRect);
+                  Font.DrawJustifiedTaggedText16(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes, TextLeft + TextBorderWidth, Y - TextBorderWidth, Lines.CurrentText, ClientSize.X - 4, ClipRect);
+                  Font.DrawJustifiedTaggedText16(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes, TextLeft - TextBorderWidth, Y + TextBorderWidth, Lines.CurrentText, ClientSize.X - 4, ClipRect);
+                  Font.DrawJustifiedTaggedText16(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes, TextLeft + TextBorderWidth, Y + TextBorderWidth, Lines.CurrentText, ClientSize.X - 4, ClipRect);
                 end;
                 Font.ColorTagsEnabled := True;
                 Font.DefaultColor := TextColor;
-                Font.DrawJustifiedTaggedText16(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes, TextLeft, Y, Lines.GetCurrentText, ClientSize.X - 4, ClipRect);
+                Font.DrawJustifiedTaggedText16(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes, TextLeft, Y, Lines.CurrentText, ClientSize.X - 4, ClipRect);
               end
               else
               begin
@@ -905,19 +882,19 @@ begin
                 if TextShadowOffset > 0 then
                 begin
                   Font.DefaultColor := TextShadowColor;
-                  Font.DrawTaggedText16(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes, TextLeft + TextShadowOffset, Y + TextShadowOffset, Lines.GetCurrentText, ClipRect);
+                  Font.DrawTaggedText16(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes, TextLeft + TextShadowOffset, Y + TextShadowOffset, Lines.CurrentText, ClipRect);
                 end;
                 if TextBorderWidth > 0 then
                 begin
                   Font.DefaultColor := TextBorderColor;
-                  Font.DrawTaggedText16(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes, TextLeft - TextBorderWidth, Y - TextBorderWidth, Lines.GetCurrentText, ClipRect);
-                  Font.DrawTaggedText16(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes, TextLeft + TextBorderWidth, Y - TextBorderWidth, Lines.GetCurrentText, ClipRect);
-                  Font.DrawTaggedText16(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes, TextLeft - TextBorderWidth, Y + TextBorderWidth, Lines.GetCurrentText, ClipRect);
-                  Font.DrawTaggedText16(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes, TextLeft + TextBorderWidth, Y + TextBorderWidth, Lines.GetCurrentText, ClipRect);
+                  Font.DrawTaggedText16(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes, TextLeft - TextBorderWidth, Y - TextBorderWidth, Lines.CurrentText, ClipRect);
+                  Font.DrawTaggedText16(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes, TextLeft + TextBorderWidth, Y - TextBorderWidth, Lines.CurrentText, ClipRect);
+                  Font.DrawTaggedText16(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes, TextLeft - TextBorderWidth, Y + TextBorderWidth, Lines.CurrentText, ClipRect);
+                  Font.DrawTaggedText16(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes, TextLeft + TextBorderWidth, Y + TextBorderWidth, Lines.CurrentText, ClipRect);
                 end;
                 Font.ColorTagsEnabled := True;
                 Font.DefaultColor := TextColor;
-                Font.DrawTaggedText16(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes, TextLeft, Y, Lines.GetCurrentText, ClipRect);
+                Font.DrawTaggedText16(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes, TextLeft, Y, Lines.CurrentText, ClipRect);
               end;
               Inc(Y, Font.GetLineHeight);
               Lines.Next;
@@ -942,16 +919,16 @@ begin
   end;
   inherited Draw(ClipRect);
 end;
-{ @end $48A8D0 }
+{ @end $49F71C }
 
-{ @routine $48C140 TLabelGI_QueueImageLoad }
+{ @routine $4A0D60 TLabelGI_QueueImageLoad }
 procedure TLabelGI.QueueImageLoad(PendingLoads: TList);
 begin
   FontCache.QueueLoadIfMissing(PendingLoads);
 end;
-{ @end $48C140 }
+{ @end $4A0D60 }
 
-{ @routine $48C164 MeasureLabelTextBounds }
+{ @routine $4A0D6C MeasureLabelTextBounds }
 function MeasureLabelTextBounds(const Text, FontName: WideString): TRect;
 var
   Control: TCFontControlEC;
@@ -975,9 +952,9 @@ begin
   Inc(Result.Bottom, 2);
   Inc(Result.Right, 4);
 end;
-{ @end $48C164 }
+{ @end $4A0D6C }
 
-{ @routine $48C230 MeasureWrappedLabelBounds }
+{ @routine $4A0E38 MeasureWrappedLabelBounds }
 function MeasureWrappedLabelBounds(Width: Integer; TextLines: TStringsEC; Font: TCFontEC): TRect;
 var
   Lines: TStringsEC;
@@ -996,14 +973,14 @@ begin
   while not TextLines.IsAtEnd do
   begin
     Font.ResetTextMeasureState;
-    Font.WrapTaggedTextIntoLines(Lines, TextLines.GetCurrentText, Width - 4);
+    Font.WrapTaggedTextIntoLines(Lines, TextLines.CurrentText, Width - 4);
     if not Lines.IsEmpty then
     begin
       Lines.First;
       if FirstLine then
       begin
         Font.ResetTextMeasureState;
-        Bounds := Font.MeasureTaggedTextBounds(Lines.GetCurrentText, 0, Y, nil);
+        Bounds := Font.MeasureTaggedTextBounds(Lines.CurrentText, 0, Y, nil);
         FirstLine := False;
         Inc(Y, Font.GetLineHeight);
         Lines.Next;
@@ -1011,7 +988,7 @@ begin
       while not Lines.IsAtEnd do
       begin
         Font.ResetTextMeasureState;
-        LineBounds := Font.MeasureTaggedTextBounds(Lines.GetCurrentText, 0, Y, nil);
+        LineBounds := Font.MeasureTaggedTextBounds(Lines.CurrentText, 0, Y, nil);
         UnionRect(Bounds, Bounds, LineBounds);
         Inc(Y, Font.GetLineHeight);
         Lines.Next;
@@ -1024,9 +1001,9 @@ begin
   Inc(Bounds.Right, 4);
   Result := Bounds;
 end;
-{ @end $48C230 }
+{ @end $4A0E38 }
 
-{ @routine $48C3DC DrawWrappedLabelLines }
+{ @routine $4A0FC0 DrawWrappedLabelLines }
 procedure DrawWrappedLabelLines(Buffer: TGraphBufGR; Width, X, Y: Integer; TextLines: TStringsEC; Font: TCFontEC);
 var
   Lines: TStringsEC;
@@ -1040,15 +1017,15 @@ begin
   while not TextLines.IsAtEnd do
   begin
     Font.ResetTextMeasureState;
-    Font.WrapTaggedTextIntoLines(Lines, TextLines.GetCurrentText, Width - 4);
+    Font.WrapTaggedTextIntoLines(Lines, TextLines.CurrentText, Width - 4);
     Lines.First;
     while not Lines.IsAtEnd do
     begin
       Font.ResetTextMeasureState;
       if not Lines.IsAtLast then
-        Font.DrawJustifiedTaggedText32(Buffer.GetPixels, Buffer.PitchBytes, X, CurrentY, Lines.GetCurrentText, Width - 4, ClipRect)
+        Font.DrawJustifiedTaggedText32(Buffer.GetPixels, Buffer.PitchBytes, X, CurrentY, Lines.CurrentText, Width - 4, ClipRect)
       else
-        Font.DrawTaggedText32(Buffer.GetPixels, Buffer.PitchBytes, X, CurrentY, Lines.GetCurrentText, ClipRect);
+        Font.DrawTaggedText32(Buffer.GetPixels, Buffer.PitchBytes, X, CurrentY, Lines.CurrentText, ClipRect);
       Inc(CurrentY, Font.GetLineHeight);
       Lines.Next;
     end;
@@ -1056,9 +1033,9 @@ begin
   end;
   Lines.Free;
 end;
-{ @end $48C3DC }
+{ @end $4A0FC0 }
 
-{ @routine $48C574 RenderLabelTextToBuffer }
+{ @routine $4A113C RenderLabelTextToBuffer }
 procedure RenderLabelTextToBuffer(Buffer: TGraphBufGR; Width, BorderWidth, ShadowOffset: Integer; const Text, FontName: WideString; TextColor, BorderColor, ShadowColor: Cardinal);
 var
   Control: TCFontControlEC;
@@ -1071,7 +1048,7 @@ begin
   Lines := nil;
   try
     Lines := TStringsEC.Create;
-    Lines.SetText(Text);
+    Lines.Text := Text;
     Control := TCFontControlEC.Create;
     GlobalCache.ResetControl(Control);
     Control.SetCacheKey(FontName);
@@ -1113,6 +1090,6 @@ begin
     if Lines <> nil then Lines.Free;
   end;
 end;
-{ @end $48C574 }
+{ @end $4A113C }
 
 end.

@@ -80,6 +80,28 @@ impl Document {
         visit(&self.tree, "", &mut declarations);
         declarations
     }
+    /// Addressed local constants remain inside their Pascal routine; expose only
+    /// their static storage to declaration validation and reference matching.
+    pub fn local_data_declarations(&self) -> Vec<Decl> {
+        fn visit(node: &Node, in_routine: bool, declarations: &mut Vec<Decl>) {
+            let in_routine = in_routine || node.kind == "routine";
+            if in_routine
+                && let Some(d) = &node.declaration
+                && d.kind == "constant"
+                && d.meta.contains_key("addr")
+            {
+                let mut d = d.clone();
+                d.data["source_local"] = Value::Bool(true);
+                declarations.push(d);
+            }
+            for child in &node.children {
+                visit(child, in_routine, declarations);
+            }
+        }
+        let mut declarations = Vec::new();
+        visit(&self.tree, false, &mut declarations);
+        declarations
+    }
     pub fn facts(&self, implementation: bool) -> Result<Facts> {
         ensure!(
             implementation == (self.tree.kind == "unit"),
@@ -635,5 +657,24 @@ mod tests {
         assert!(!names.contains("st"));
         assert!(names.contains("value"));
         assert!(names.contains("helper"));
+    }
+    #[test]
+    fn local_typed_constants_keep_addresses() {
+        let document = Document::parse(
+            "Probe.pas".into(),
+            "unit Probe;\ninterface\nprocedure F; // @addr $401000\nimplementation\n\
+             procedure F;\nconst\n  Table: array[0..1] of Integer = (\n    1,\n    2); // @addr $402000\n\
+             begin\nend;\nend."
+                .into(),
+            "Probe.pas",
+            &crate::project::library::Library::default(),
+        )
+        .unwrap();
+        let locals = document.local_data_declarations();
+        assert_eq!(locals.len(), 1);
+        assert_eq!(
+            locals[0].meta.get("addr"),
+            Some(&serde_json::json!(0x402000))
+        );
     }
 }

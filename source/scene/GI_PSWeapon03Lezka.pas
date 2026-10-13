@@ -22,8 +22,8 @@ type
   TLezkaPalettes = array of TLezkaPalette;
 
 var
-  LezkaPrimaryPalettes: array of TLezkaPalette; // @addr $88AC98
-  LezkaSecondaryPalettes: array of TLezkaPalette; // @addr $88AC9C
+  LezkaPrimaryPalettes: array of TLezkaPalette; // @addr $81B408
+  LezkaSecondaryPalettes: array of TLezkaPalette; // @addr $81B40C
 
 type
   TPSWeapon03Lezka = class(TPSWeaponGI) // @size $164
@@ -36,32 +36,32 @@ type
     OriginalLength: Double; // @offset $158
     PaletteIndex: Integer; // @offset $160
 
-    constructor Create(Owner: TObjectGI; APaletteIndex: Integer); // @addr $689B54
-    destructor Destroy; override; // @addr $689C08
-    procedure SetPosition(Position: TPoint); override; // @addr $689C44
-    procedure SetTargetPoint(Point: TPoint); override; // @addr $689C88
-    procedure SetActive(Enabled: Boolean); override; // @addr $689CDC
-    procedure UpdateProjectionBounds; // @addr $689D04
-    procedure UpdateHitTestBounds; override; // @addr $68A050
-    function GetLocalBounds: TRect; override; // @addr $68A0B0
-    function AddParticle: PLezkaParticle; // @addr $68A114
-    procedure ClearParticles; // @addr $68A18C
-    procedure Invalidate; override; // @addr $68A2AC @note "Native empty override."
-    procedure InvalidateRect(Rect: TRect); override; // @addr $68A1E0
-    procedure Advance(Timer: PCallbackTimerGI; UserData: Integer); override; // @addr $68A2B8
-    procedure Draw(ClipRect: TRect); override; // @addr $68A840
+    constructor Create(Owner: TObjectGI; APaletteIndex: Integer); // @addr $4F96F4
+    destructor Destroy; override; // @addr $4F9784
+    procedure SetPosition(Position: TPoint); override; // @addr $4F97B0
+    procedure SetTargetPoint(Point: TPoint); override; // @addr $4F97E8
+    procedure SetActive(Enabled: Boolean); override; // @addr $4F9828
+    procedure UpdateProjectionBounds; // @addr $4F9834
+    procedure UpdateHitTestBounds; override; // @addr $4F9BB4
+    function GetLocalBounds: TRect; override; // @addr $4F9BE8
+    function AddParticle: PLezkaParticle; // @addr $4F9C18
+    procedure ClearParticles; // @addr $4F9C58
+    procedure Invalidate; override; // @addr $4F9D40 @note "Native empty override."
+    procedure InvalidateRect(Rect: TRect); override; // @addr $4F9C8C
+    procedure Advance(Timer: TCallbackTimerIdGI; UserData: Cardinal); override; // @addr $4F9D44
+    procedure Draw(ClipRect: TRect); override; // @addr $4FA1CC
   end;
 
-procedure LoadLezkaPalettes; // @addr $68AAAC
+procedure LoadLezkaPalettes; // @addr $4FA3D8
 
 implementation
 
-// @unit-initialization $8778FC
-// @unit-finalization $68AE38
+// @unit-initialization $80687C
+// @unit-finalization $4FA704
 
 uses SysUtils, Math, EC_BlockPar, EC_Str, EC_Mem, GR_Main, GR_DX, aMyFunction, Globals;
 
-{ @routine $689B54 TPSWeapon03Lezka_Create }
+{ @routine $4F96F4 TPSWeapon03Lezka_Create }
 constructor TPSWeapon03Lezka.Create(Owner: TObjectGI; APaletteIndex: Integer);
 begin
   inherited Create(Owner);
@@ -73,17 +73,17 @@ begin
   UpdateProjectionBounds;
   PaletteIndex := APaletteIndex;
 end;
-{ @end $689B54 }
+{ @end $4F96F4 }
 
-{ @routine $689C08 TPSWeapon03Lezka_Destroy }
+{ @routine $4F9784 TPSWeapon03Lezka_Destroy }
 destructor TPSWeapon03Lezka.Destroy;
 begin
   ClearParticles;
   inherited Destroy;
 end;
-{ @end $689C08 }
+{ @end $4F9784 }
 
-{ @routine $689C44 TPSWeapon03Lezka_SetPosition }
+{ @routine $4F97B0 TPSWeapon03Lezka_SetPosition }
 procedure TPSWeapon03Lezka.SetPosition(Position: TPoint);
 begin
   if (LocalPosition.X <> Position.X) or (LocalPosition.Y <> Position.Y) then
@@ -92,9 +92,9 @@ begin
     UpdateProjectionBounds;
   end;
 end;
-{ @end $689C44 }
+{ @end $4F97B0 }
 
-{ @routine $689C88 TPSWeapon03Lezka_SetTargetPoint }
+{ @routine $4F97E8 TPSWeapon03Lezka_SetTargetPoint }
 procedure TPSWeapon03Lezka.SetTargetPoint(Point: TPoint);
 begin
   if (TargetPoint.X <> Point.X) or (TargetPoint.Y <> Point.Y) then
@@ -103,16 +103,16 @@ begin
     UpdateProjectionBounds;
   end;
 end;
-{ @end $689C88 }
+{ @end $4F97E8 }
 
-{ @routine $689CDC TPSWeapon03Lezka_SetActive }
+{ @routine $4F9828 TPSWeapon03Lezka_SetActive }
 procedure TPSWeapon03Lezka.SetActive(Enabled: Boolean);
 begin
   if Active <> Enabled then inherited SetActive(Enabled);
 end;
-{ @end $689CDC }
+{ @end $4F9828 }
 
-{ @routine $689D04 TPSWeapon03Lezka_UpdateProjectionBounds }
+{ @routine $4F9834 TPSWeapon03Lezka_UpdateProjectionBounds }
 procedure TPSWeapon03Lezka.UpdateProjectionBounds;
 var
   Angle, Sine, Cosine, Distance, A, B, C, D: Single;
@@ -138,9 +138,9 @@ begin
   ProjectionBounds.Top := Floor(Math.Min(Math.Min(Math.Min(A, B), C), D));
   ProjectionBounds.Bottom := Ceil(Math.Max(Math.Max(Math.Max(A, B), C), D));
 end;
-{ @end $689D04 }
+{ @end $4F9834 }
 
-{ @routine $68A050 TPSWeapon03Lezka_UpdateHitTestBounds }
+{ @routine $4F9BB4 TPSWeapon03Lezka_UpdateHitTestBounds }
 procedure TPSWeapon03Lezka.UpdateHitTestBounds;
 begin
   HitTestBounds.Left := ProjectionBounds.Left + AbsolutePosition.X;
@@ -148,9 +148,9 @@ begin
   HitTestBounds.Right := ProjectionBounds.Right + AbsolutePosition.X;
   HitTestBounds.Bottom := ProjectionBounds.Bottom + AbsolutePosition.Y;
 end;
-{ @end $68A050 }
+{ @end $4F9BB4 }
 
-{ @routine $68A0B0 TPSWeapon03Lezka_GetLocalBounds }
+{ @routine $4F9BE8 TPSWeapon03Lezka_GetLocalBounds }
 function TPSWeapon03Lezka.GetLocalBounds: TRect;
 begin
   Result.Left := ProjectionBounds.Left + LocalPosition.X;
@@ -158,9 +158,9 @@ begin
   Result.Right := ProjectionBounds.Right + LocalPosition.X;
   Result.Bottom := ProjectionBounds.Bottom + LocalPosition.Y;
 end;
-{ @end $68A0B0 }
+{ @end $4F9BE8 }
 
-{ @routine $68A114 TPSWeapon03Lezka_AddParticle }
+{ @routine $4F9C18 TPSWeapon03Lezka_AddParticle }
 function TPSWeapon03Lezka.AddParticle: PLezkaParticle;
 var
   Particle: PLezkaParticle;
@@ -173,9 +173,9 @@ begin
   if FirstParticle = nil then FirstParticle := Particle;
   Result := Particle;
 end;
-{ @end $68A114 }
+{ @end $4F9C18 }
 
-{ @routine $68A18C TPSWeapon03Lezka_ClearParticles }
+{ @routine $4F9C58 TPSWeapon03Lezka_ClearParticles }
 procedure TPSWeapon03Lezka.ClearParticles;
 var
   Particle, Current: PLezkaParticle;
@@ -190,9 +190,9 @@ begin
   FirstParticle := nil;
   LastParticle := nil;
 end;
-{ @end $68A18C }
+{ @end $4F9C58 }
 
-{ @routine $68A1E0 TPSWeapon03Lezka_InvalidateRect }
+{ @routine $4F9C8C TPSWeapon03Lezka_InvalidateRect }
 procedure TPSWeapon03Lezka.InvalidateRect(Rect: TRect);
 var
   Target: TPoint;
@@ -207,16 +207,16 @@ begin
   if IntersectRects(Intersection, Rect, GameScreenRect) then
     MessageLoop.QueueUpdateRect(Intersection);
 end;
-{ @end $68A1E0 }
+{ @end $4F9C8C }
 
-{ @routine $68A2AC TPSWeapon03Lezka_Invalidate }
+{ @routine $4F9D40 TPSWeapon03Lezka_Invalidate }
 procedure TPSWeapon03Lezka.Invalidate;
 begin
 end;
-{ @end $68A2AC }
+{ @end $4F9D40 }
 
-{ @routine $68A2B8 TPSWeapon03Lezka_Advance }
-procedure TPSWeapon03Lezka.Advance(Timer: PCallbackTimerGI; UserData: Integer);
+{ @routine $4F9D44 TPSWeapon03Lezka_Advance }
+procedure TPSWeapon03Lezka.Advance(Timer: TCallbackTimerIdGI; UserData: Cardinal);
 var
   Y: Integer;
   Distance, Phase: Single;
@@ -301,9 +301,9 @@ begin
   end;
   Dec(RemainingTicks);
 end;
-{ @end $68A2B8 }
+{ @end $4F9D44 }
 
-{ @routine $68A840 TPSWeapon03Lezka_Draw }
+{ @routine $4FA1CC TPSWeapon03Lezka_Draw }
 procedure TPSWeapon03Lezka.Draw(ClipRect: TRect);
 var
   Angle, Sine, Cosine, PX, PY: Single;
@@ -347,9 +347,9 @@ begin
     end;
   end;
 end;
-{ @end $68A840 }
+{ @end $4FA1CC }
 
-{ @routine $68AAAC LoadLezkaPalettes }
+{ @routine $4FA3D8 LoadLezkaPalettes }
 procedure LoadLezkaPalettes;
 var
   Block, PaletteBlock: TBlockParEC;
@@ -386,6 +386,6 @@ begin
     end;
   end;
 end;
-{ @end $68AAAC }
+{ @end $4FA3D8 }
 
 end.

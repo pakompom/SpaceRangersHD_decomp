@@ -1,5 +1,4 @@
 unit SE_Missile;
-// Unit bracket (inferred): .text 0x004EF47C..0x004EFF86; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -13,32 +12,32 @@ type
     Image: TRotateImage5GI; // @offset $54
     AnimationTimer: PSpaceTimerSE; // @offset $58
 
-    destructor Destroy; override; // @addr $4EF530
-    procedure AttachToSpace(ASpace: TSpaceSE); override; // @addr $4EF564 @slot $04 @note "Native diagnostic name: TMissileSE.Connect."
-    procedure DetachFromSpace; override; // @addr $4EFB68
-    procedure SetPosition(APosition: TPointF); override; // @addr $4EFBC8
-    function GetAngle: Byte; override; // @addr $4EFC20
-    procedure SetAngle(Value: Byte); override; // @addr $4EFC3C
-    function HitTestCursor: Boolean; override; // @addr $4EFC74
-    procedure AdvanceAnimationTimer(Timer: PSpaceTimerSE; UserData: Integer); // @addr $4EFCB8
-    procedure DrawMap; override; // @addr $4EFDD4
-    procedure LoadTemplate(Block: TBlockParEC); override; // @addr $4EFEC0
-    procedure ApplyConfig(Block: TBlockParEC); override; // @addr $4EFF64 @note "Native empty override."
-    procedure QueueImageLoad(PendingLoads: TList; Owner: TObjectGI); override; // @addr $4EFF74 @note "Native empty override."
+    destructor Destroy; override; // @addr $5CCCB0
+    procedure AttachToSpace(ASpace: TSpaceSE); override; // @addr $5CCCD8 @slot $04 @note "Native diagnostic name: TMissileSE.Connect."
+    procedure DetachFromSpace; override; // @addr $5CD2C8
+    procedure SetPosition(APosition: TPointF); override; // @addr $5CD30C
+    function GetAngle: Byte; override; // @addr $5CD360
+    procedure SetAngle(Value: Byte); override; // @addr $5CD368
+    function HitTestCursor: Boolean; override; // @addr $5CD388
+    procedure AdvanceAnimationTimer(Timer: PSpaceTimerSE; UserData: Integer); // @addr $5CD3BC
+    procedure DrawMap; override; // @addr $5CD4B4
+    procedure LoadTemplate(Block: TBlockParEC); override; // @addr $5CD574
+    procedure ApplyConfig(Block: TBlockParEC); override; // @addr $5CD608 @note "Native empty override."
+    procedure QueueImageLoad(PendingLoads: TList; Owner: TObjectGI); override; // @addr $5CD60C @note "Native empty override."
   end;
 
 implementation
 
 uses SysUtils, Types, EC_Str, Globals, GR_Main, SE_Process;
 
-{ @routine $4EF530 TMissileSE_Destroy }
+{ @routine $5CCCB0 TMissileSE_Destroy }
 destructor TMissileSE.Destroy;
 begin
   inherited Destroy;
 end;
-{ @end $4EF530 }
+{ @end $5CCCB0 }
 
-{ @routine $4EF564 TMissileSE_AttachToSpace }
+{ @routine $5CCCD8 TMissileSE_AttachToSpace }
 procedure TMissileSE.AttachToSpace(ASpace: TSpaceSE);
 var
   Stage: Integer;
@@ -52,9 +51,9 @@ begin
     Stage := 2;
     if Space.MapPanel <> nil then Space.MapPanel.AttachOwnedChild(Image);
     Stage := 3;
-    Image.SetPositionModeW(True);
+    Image.World := True;
     Image.SetDepthByName(DepthExpression);
-    Image.SetPosition(Classes.Point(Trunc(Position.X), Trunc(Position.Y)));
+    Image.Pos := Classes.Point(Trunc(Position.X), Trunc(Position.Y));
     Image.SetAngle(Angle);
     Image.SetAlpha(255);
     Stage := 4;
@@ -80,9 +79,9 @@ begin
     end;
   end;
 end;
-{ @end $4EF564 }
+{ @end $5CCCD8 }
 
-{ @routine $4EFB68 TMissileSE_DetachFromSpace }
+{ @routine $5CD2C8 TMissileSE_DetachFromSpace }
 procedure TMissileSE.DetachFromSpace;
 begin
   if not IsAttachedToSpace then Exit;
@@ -91,63 +90,64 @@ begin
     Space.DeleteTimer(AnimationTimer);
     AnimationTimer := nil;
   end;
-  Image.SetActive(False);
+  Image.IsActive := False;
   Image.Free;
   Image := nil;
   inherited DetachFromSpace;
 end;
-{ @end $4EFB68 }
+{ @end $5CD2C8 }
 
-{ @routine $4EFBC8 TMissileSE_SetPosition }
+{ @routine $5CD30C TMissileSE_SetPosition }
 procedure TMissileSE.SetPosition(APosition: TPointF);
 begin
   inherited SetPosition(APosition);
   if IsAttachedToSpace then
-    Image.SetPosition(Classes.Point(Trunc(APosition.X), Trunc(APosition.Y)));
+    Image.Pos := Classes.Point(Trunc(APosition.X), Trunc(APosition.Y));
 end;
-{ @end $4EFBC8 }
+{ @end $5CD30C }
 
-{ @routine $4EFC20 TMissileSE_GetAngle }
+{ @routine $5CD360 TMissileSE_GetAngle }
 function TMissileSE.GetAngle: Byte;
 begin
   Result := Angle;
 end;
-{ @end $4EFC20 }
+{ @end $5CD360 }
 
-{ @routine $4EFC3C TMissileSE_SetAngle }
+{ @routine $5CD368 TMissileSE_SetAngle }
 procedure TMissileSE.SetAngle(Value: Byte);
 begin
   Angle := Value;
   if IsAttachedToSpace then Image.SetAngle(Angle);
 end;
-{ @end $4EFC3C }
+{ @end $5CD368 }
 
-{ @routine $4EFC74 TMissileSE_HitTestCursor }
+{ @routine $5CD388 TMissileSE_HitTestCursor }
 function TMissileSE.HitTestCursor: Boolean;
 begin
   if not IsAttachedToSpace then Result := False
   else Result := Image.HitTestPixel(Image.MessageLoop.GetCursorPoint);
 end;
-{ @end $4EFC74 }
+{ @end $5CD388 }
 
-{ @routine $4EFCB8 TMissileSE_AdvanceAnimationTimer }
+{ @routine $5CD3BC TMissileSE_AdvanceAnimationTimer }
 procedure TMissileSE.AdvanceAnimationTimer(Timer: PSpaceTimerSE; UserData: Integer);
 var
   Bounds: PRect;
 begin
   Bounds := @Image.HitTestBounds;
-  if (Cardinal(GameScreenWidth) * -0.1 <= Bounds.Right) and
-     (Cardinal(GameScreenWidth) * 1.1 >= Bounds.Left) and
-     (Cardinal(GameScreenHeight) * -0.1 <= Bounds.Bottom) and
-     (Cardinal(GameScreenHeight) * 1.1 >= Bounds.Top) then
+  if (GameScreenWidth * -0.1 <= Bounds.Right) and
+     (GameScreenWidth * 1.1 >= Bounds.Left) and
+     (GameScreenHeight * -0.1 <= Bounds.Bottom) and
+     (GameScreenHeight * 1.1 >= Bounds.Top) then
   begin
     Image.SetFrameIndex(Image.FrameIndex + 1);
-    if Integer(Image.GetFrameCount) <= Integer(Image.FrameIndex) then Image.SetFrameIndex(0);
+    with Image do
+      if Integer(GetFrameCount) <= Integer(FrameIndex) then Self.Image.SetFrameIndex(0);
   end;
 end;
-{ @end $4EFCB8 }
+{ @end $5CD3BC }
 
-{ @routine $4EFDD4 TMissileSE_DrawMap }
+{ @routine $5CD4B4 TMissileSE_DrawMap }
 procedure TMissileSE.DrawMap;
 var
   CurrentProcess: TProcessSE;
@@ -158,14 +158,14 @@ begin
     begin
       X := Round(Position.X * Space.MinimapScale) + (RenderScratchBuffer.Width shr 1);
       Y := Round(Position.Y * Space.MinimapScale) + (RenderScratchBuffer.Height shr 1);
-      if (X >= 0) and (RenderScratchBuffer.Width > X) and
-         (Y >= 0) and (RenderScratchBuffer.Height > Y) then
+      if (X >= 0) and (Integer(RenderScratchBuffer.Width) > X) and
+         (Y >= 0) and (Integer(RenderScratchBuffer.Height) > Y) then
         RenderScratchBuffer.SetPixel16(X, Y, CurrentPixelFormat.PackRgbBytes(0, 255, 0));
     end;
 end;
-{ @end $4EFDD4 }
+{ @end $5CD4B4 }
 
-{ @routine $4EFEC0 TMissileSE_LoadTemplate }
+{ @routine $5CD574 TMissileSE_LoadTemplate }
 procedure TMissileSE.LoadTemplate(Block: TBlockParEC);
 begin
   inherited LoadTemplate(Block);
@@ -174,18 +174,18 @@ begin
     ImageScale := ExtractDecimalToSingleW(Block.GetParam('Scale'))
   else ImageScale := 1.0;
 end;
-{ @end $4EFEC0 }
+{ @end $5CD574 }
 
-{ @routine $4EFF64 TMissileSE_ApplyConfig }
+{ @routine $5CD608 TMissileSE_ApplyConfig }
 procedure TMissileSE.ApplyConfig(Block: TBlockParEC);
 begin
 end;
-{ @end $4EFF64 }
+{ @end $5CD608 }
 
-{ @routine $4EFF74 TMissileSE_QueueImageLoad }
+{ @routine $5CD60C TMissileSE_QueueImageLoad }
 procedure TMissileSE.QueueImageLoad(PendingLoads: TList; Owner: TObjectGI);
 begin
 end;
-{ @end $4EFF74 }
+{ @end $5CD60C }
 
 end.

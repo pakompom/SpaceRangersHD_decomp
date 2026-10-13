@@ -74,7 +74,10 @@ errors.
 Use `@size` for a complete byte size and `@partial` for a known prefix. A partial
 IDA structure ends at its last known field. `record` and `packed record` retain
 Delphi alignment in generated source; identical field offsets can still produce
-different alignment for local variables.
+different alignment for local variables. The October configuration lets Delphi
+supply natural alignment gaps; annotations still validate the resulting offsets.
+Variant-record arms may overlap and share storage, while fields within an arm
+must not overlap.
 
 Field-only old-style `object` types are also supported, without inheritance,
 methods or properties. They use record storage and ABI in the annotation model;
@@ -113,6 +116,10 @@ or a named ordinal index (`array[TRangerCareer] of Byte`), enum subranges
   TItems = set of 0..79; // @size 0xA
 ```
 
+Enum `@size` annotations affect compilation: sizes 1, 2 and 4 emit `{$Z1}`,
+`{$Z2}` and `{$Z4}` respectively. A four-byte enum must retain its annotation
+even if its values would fit in one byte.
+
 Sets use enum ordinals or a zero-based integer range as bit positions. Ranges
 support up to 256 bits and must fit the declared storage, including DCC32's
 rounding of three-byte sets to four bytes. IDA uses bitmask enums for sizes 1, 2,
@@ -150,8 +157,7 @@ Value and const parameters use eight inline stack bytes without consuming an
 argument register; var/out parameters pass a pointer. Register callbacks pass
 value records larger than four bytes by reference while retaining the Pascal
 value declaration. Callbacks share the routine ABI rules, including hidden
-results. Non-register method pointers and variant-record layouts need further
-native layout support.
+results. Non-register method pointers need further native ABI support.
 
 Class references such as `TItemClass = class of TItem;` require a declared class,
 which may be opaque. They use the four-byte pointer ABI and appear as `void *`
@@ -267,6 +273,12 @@ constructor Create; // @addr 0x400300
 destructor Destroy; override; // @addr 0x400400
 ```
 
+Class declarations marked `@methodorder source` preserve the written order of
+fields, methods and properties in generated Pascal. This order affects optimized
+receiver reuse; virtual methods still keep their declared VMT slots. Unmarked
+classes retain the default virtual-slot ordering. Indexed properties, including
+`default` properties, call their declared accessors.
+
 ## Call-site ABI overrides
 
 For a call with incorrectly inferred arguments, add `@calls "0x487B6E 0x482E32"`
@@ -314,14 +326,20 @@ Use ordinary references such as `aGalaxy.Galaxy` from other units. Unit-private
 globals can appear in the implementation section with the same annotation; they
 retain that placement in generated source. Routine stack locals need no `@addr`.
 
+Use `@unbound` for a source global with no independent native storage identity,
+such as optimized program startup declarations. It remains in generated Pascal
+and is omitted from native-address binding.
+
 Globals define native data layout and types. The importer combines complete data
 items into the declared aggregate, replacing interior labels. The range must
 exclude code. An unchanged aggregate previously imported by the tool can be resized.
 
 Typed constants can carry `@addr`. Keep their initializer in the owning unit's
 interface, for example `const Table: TLookupTable = (...); // @addr $880CFC`.
-They compile as Delphi constants and import as typed storage. Matching checks the
-entire declared constant, including elements beyond an indexed load's width.
+They compile as Delphi constants and import as typed storage. Routine-local
+typed constants may also carry `@addr`; they retain their Pascal scope while
+exposing static storage to the matcher. Matching checks the entire declared
+constant, including elements beyond an indexed load's width.
 AnsiString fields are checked through relocated static literals, including lengths
 and terminators; WideString fields use native initializer descriptors. Other
 pointer-bearing constant storage is unresolved.

@@ -217,6 +217,27 @@ pub fn compare(
             unit_entries::bind_initializers(entry, address, &mut symbols, &decoder)?;
         } else {
             symbols.bind(address, body.address, None)?;
+            if body.program {
+                let native_symbols = linked
+                    .iter()
+                    .filter_map(|symbol| {
+                        symbols.linked.get(&symbol.address).map(|&target| Symbol {
+                            address: target,
+                            name: symbol.name.clone(),
+                            section: symbol.section,
+                        })
+                    })
+                    .collect::<Vec<_>>();
+                let original = unit_entries::startup_table(&native, &native_symbols, &decoder)?;
+                let compiled = unit_entries::startup_table(&rebuilt, &linked, &decoder)?;
+                // This binds the role of the compiler-generated table argument.
+                // Unit order, counts and contents remain separate layout checks.
+                symbols.bind(
+                    compiled.address,
+                    original.address,
+                    Some("Program.UnitStartupInfo"),
+                )?;
+            }
         }
         candidates.push((owner, address));
     }

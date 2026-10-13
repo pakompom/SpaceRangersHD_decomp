@@ -1,5 +1,4 @@
 unit GI_Door;
-// Unit bracket (inferred): .text 0x0049B774..0x0049BD25; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 
 interface
@@ -7,45 +6,45 @@ interface
 uses EC_BlockPar, GI_GAI, GI_MessageLoop, Types;
 
 type
-  TDoorGI = class(TObjectGI) // @size $138
+  TDoorGI = class(TObjectGI) // @size $138 @methodorder virtual
   public
     Image: TgaiGI; // @offset $120
     FrameStep: Integer; // @offset $124
-    StepTimer: PCallbackTimerGI; // @offset $128
+    StepTimer: TCallbackTimerIdGI; // @offset $128
     StepTime: Integer; // @offset $12C
     ClickCallback: TObjectNotifyEventGI; // @offset $130
-    constructor Create(Owner: TObjectGI); // @addr $49B890
-    destructor Destroy; override; // @addr $49B8F0
-    procedure Clear; override; // @addr $49B944
-    procedure SetStepTime(Value: Integer); // @addr $49B950
-    procedure SetSize(Size: TPoint); override; // @addr $49B990
-    procedure StartStepTimer; // @addr $49B9C4
-    procedure StopStepTimer; // @addr $49BA14
-    procedure StepFrame(Timer: PCallbackTimerGI; UserData: Integer); // @addr $49BA4C
-    procedure OnActivate; override; // @addr $49BB00
-    procedure OnDeactivate; override; // @addr $49BB2C
-    procedure OnMouseEnter; override; // @addr $49BB58
-    procedure OnMouseLeave; override; // @addr $49BBA0
-    procedure ProcessMouseMove(KeyState: Cardinal; Point: TPoint); override; // @addr $49BBE8
-    procedure ProcessLeftButtonUp(KeyState: Cardinal; Point: TPoint); override; // @addr $49BC64
-    procedure LoadFromConfigPath(const Path: WideString); override; // @addr $49BCCC
-    procedure LoadFromBlock(Block: TBlockParEC); override; // @addr $49BD00
-    procedure LoadDoorProperties(Block: TBlockParEC); // @addr $49BD28
+    constructor Create(Owner: TObjectGI); // @addr $4B44A0
+    destructor Destroy; override; // @addr $4B44EC
+    procedure Clear; override; // @addr $4B452C
+    procedure SetStepTime(Value: Integer); // @addr $4B4530
+    procedure SetSize(Size: TPoint); override; // @addr $4B4550
+    procedure StartStepTimer; // @addr $4B457C
+    procedure StopStepTimer; // @addr $4B45B4
+    procedure StepFrame(Timer: TCallbackTimerIdGI; UserData: Cardinal); // @addr $4B45D8
+    procedure OnActivate; override; // @addr $4B463C
+    procedure OnDeactivate; override; // @addr $4B465C
+    procedure OnMouseEnter; override; // @addr $4B467C
+    procedure OnMouseLeave; override; // @addr $4B46B8
+    procedure ProcessMouseMove(KeyState: Cardinal; Point: TPoint); override; // @addr $4B46F4
+    procedure ProcessLeftButtonUp(KeyState: Cardinal; Point: TPoint); override; // @addr $4B4758
+    procedure LoadFromConfigPath(const Path: WideString); override; // @addr $4B47AC
+    procedure LoadFromBlock(Block: TBlockParEC); override; // @addr $4B47D8
+    procedure LoadDoorProperties(Block: TBlockParEC); // @addr $4B47F4
   end;
 
 implementation
 
 uses SysUtils, GI_Main;
 
-{ @routine $49B890 TDoorGI_Create }
+{ @routine $4B44A0 TDoorGI_Create }
 constructor TDoorGI.Create(Owner: TObjectGI);
 begin
   inherited Create(Owner);
   Image := TgaiGI.Create(Self);
 end;
-{ @end $49B890 }
+{ @end $4B44A0 }
 
-{ @routine $49B8F0 TDoorGI_Destroy }
+{ @routine $4B44EC TDoorGI_Destroy }
 destructor TDoorGI.Destroy;
 begin
   StopStepTimer;
@@ -53,57 +52,51 @@ begin
   Image := nil;
   inherited Destroy;
 end;
-{ @end $49B8F0 }
+{ @end $4B44EC }
 
-{ @routine $49B944 TDoorGI_Clear }
+{ @routine $4B452C TDoorGI_Clear }
 procedure TDoorGI.Clear;
 begin
 end;
-{ @end $49B944 }
+{ @end $4B452C }
 
-{ @routine $49B950 TDoorGI_SetStepTime }
+{ @routine $4B4530 TDoorGI_SetStepTime }
 procedure TDoorGI.SetStepTime(Value: Integer);
 begin
-  if StepTime <> Value then
-  begin
-    StepTime := Value;
-    if FrameStep <> 0 then StartStepTimer;
-  end;
+  if StepTime = Value then Exit;
+  StepTime := Value;
+  if FrameStep <> 0 then StartStepTimer;
 end;
-{ @end $49B950 }
+{ @end $4B4530 }
 
-{ @routine $49B990 TDoorGI_SetSize }
+{ @routine $4B4550 TDoorGI_SetSize }
 procedure TDoorGI.SetSize(Size: TPoint);
 begin
   inherited SetSize(Size);
-  Image.SetSize(Size);
+  Image.ObjectSize := Size;
 end;
-{ @end $49B990 }
+{ @end $4B4550 }
 
-{ @routine $49B9C4 TDoorGI_StartStepTimer }
+{ @routine $4B457C TDoorGI_StartStepTimer }
 procedure TDoorGI.StartStepTimer;
 begin
-  if FrameStep <> 0 then
-  begin
-    StopStepTimer;
-    StepTimer := MessageLoop.ScheduleCallbackTimer(StepTime, StepTime, StepFrame);
-  end;
+  if FrameStep = 0 then Exit;
+  StopStepTimer;
+  StepTimer := MessageLoop.ScheduleCallbackTimer(StepTime, StepTime, StepFrame);
 end;
-{ @end $49B9C4 }
+{ @end $4B457C }
 
-{ @routine $49BA14 TDoorGI_StopStepTimer }
+{ @routine $4B45B4 TDoorGI_StopStepTimer }
 procedure TDoorGI.StopStepTimer;
 begin
-  if StepTimer <> nil then
-  begin
-    MessageLoop.CancelCallbackTimer(StepTimer);
-    StepTimer := nil;
-  end;
+  if StepTimer = 0 then Exit;
+  MessageLoop.CancelCallbackTimer(StepTimer);
+  StepTimer := 0;
 end;
-{ @end $49BA14 }
+{ @end $4B45B4 }
 
-{ @routine $49BA4C TDoorGI_StepFrame }
-procedure TDoorGI.StepFrame(Timer: PCallbackTimerGI; UserData: Integer);
+{ @routine $4B45D8 TDoorGI_StepFrame }
+procedure TDoorGI.StepFrame(Timer: TCallbackTimerIdGI; UserData: Cardinal);
 var Frame: Integer;
 begin
   Frame := Image.SequenceFrame + FrameStep;
@@ -119,92 +112,88 @@ begin
     FrameStep := 0;
   end else Image.SetSequenceFrame(Frame);
 end;
-{ @end $49BA4C }
+{ @end $4B45D8 }
 
-{ @routine $49BB00 TDoorGI_OnActivate }
+{ @routine $4B463C TDoorGI_OnActivate }
 procedure TDoorGI.OnActivate;
 begin
   inherited OnActivate;
   Image.SetSequenceFrame(0);
   StopStepTimer;
 end;
-{ @end $49BB00 }
+{ @end $4B463C }
 
-{ @routine $49BB2C TDoorGI_OnDeactivate }
+{ @routine $4B465C TDoorGI_OnDeactivate }
 procedure TDoorGI.OnDeactivate;
 begin
   inherited OnDeactivate;
   Image.SetSequenceFrame(0);
   StopStepTimer;
 end;
-{ @end $49BB2C }
+{ @end $4B465C }
 
-{ @routine $49BB58 TDoorGI_OnMouseEnter }
+{ @routine $4B467C TDoorGI_OnMouseEnter }
 procedure TDoorGI.OnMouseEnter;
 begin
   inherited OnMouseEnter;
-  if not IsOccludedAtPoint(MessageLoop.GetCursorPoint) then
-  begin
-    FrameStep := 1;
-    StartStepTimer;
-  end;
+  if IsOccludedAtPoint(MessageLoop.GetCursorPoint) then Exit;
+  FrameStep := 1;
+  StartStepTimer;
 end;
-{ @end $49BB58 }
+{ @end $4B467C }
 
-{ @routine $49BBA0 TDoorGI_OnMouseLeave }
+{ @routine $4B46B8 TDoorGI_OnMouseLeave }
 procedure TDoorGI.OnMouseLeave;
 begin
   inherited OnMouseLeave;
-  if not IsOccludedAtPoint(MessageLoop.GetCursorPoint) then
-  begin
-    FrameStep := -1;
-    StartStepTimer;
-  end;
+  if IsOccludedAtPoint(MessageLoop.GetCursorPoint) then Exit;
+  FrameStep := -1;
+  StartStepTimer;
 end;
-{ @end $49BBA0 }
+{ @end $4B46B8 }
 
-{ @routine $49BBE8 TDoorGI_ProcessMouseMove }
+{ @routine $4B46F4 TDoorGI_ProcessMouseMove }
 procedure TDoorGI.ProcessMouseMove(KeyState: Cardinal; Point: TPoint);
 begin
   inherited ProcessMouseMove(KeyState, Point);
   if IsOccludedAtPoint(Point) then
   begin
     FrameStep := -1;
-    if StepTimer = nil then StartStepTimer;
+    if StepTimer = 0 then StartStepTimer;
   end else
   begin
     FrameStep := 1;
-    if StepTimer = nil then StartStepTimer;
+    if StepTimer = 0 then StartStepTimer;
   end;
 end;
-{ @end $49BBE8 }
+{ @end $4B46F4 }
 
-{ @routine $49BC64 TDoorGI_ProcessLeftButtonUp }
+{ @routine $4B4758 TDoorGI_ProcessLeftButtonUp }
 procedure TDoorGI.ProcessLeftButtonUp(KeyState: Cardinal; Point: TPoint);
 begin
   inherited ProcessLeftButtonUp(KeyState, Point);
-  if not IsOccludedAtPoint(MessageLoop.GetCursorPoint) then
-    if Assigned(ClickCallback) then ClickCallback(Self);
+  if IsOccludedAtPoint(MessageLoop.GetCursorPoint) then Exit;
+  if Assigned(ClickCallback) then ClickCallback(Self);
 end;
-{ @end $49BC64 }
+{ @end $4B4758 }
 
-{ @routine $49BCCC TDoorGI_LoadFromConfigPath }
+{ @routine $4B47AC TDoorGI_LoadFromConfigPath }
 procedure TDoorGI.LoadFromConfigPath(const Path: WideString);
 begin
   inherited LoadFromConfigPath(Path);
   LoadDoorProperties(UiStyleConfig.GetBlockByPath(Path));
 end;
-{ @end $49BCCC }
+{ @end $4B47AC }
 
-{ @routine $49BD00 TDoorGI_LoadFromBlock }
+{ @routine $4B47D8 TDoorGI_LoadFromBlock }
 procedure TDoorGI.LoadFromBlock(Block: TBlockParEC);
 begin
   inherited LoadFromBlock(Block);
   LoadDoorProperties(Block);
 end;
-{ @end $49BD00 }
+{ @end $4B47D8 }
 
-{ @routine $49BD28 TDoorGI_LoadDoorProperties }
+{ @routine $4B47F4 TDoorGI_LoadDoorProperties }
 procedure TDoorGI.LoadDoorProperties(Block: TBlockParEC);
 begin
   FrameStep := 0;
@@ -216,6 +205,6 @@ begin
     Image.UpdateAutoGeometry;
   end;
 end;
-{ @end $49BD28 }
+{ @end $4B47F4 }
 
 end.

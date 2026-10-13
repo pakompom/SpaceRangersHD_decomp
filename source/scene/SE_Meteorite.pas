@@ -1,5 +1,4 @@
 unit SE_Meteorite;
-// Unit bracket (inferred): .text 0x008278F8..0x00828156; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -15,38 +14,38 @@ type
     Animation: TgaiGI; // @offset $5C
     MoveTimer: PSpaceTimerSE; // @offset $60
 
-    constructor Create(GraphKey: WideString; UnusedPosition: TPoint); // @addr $8279C0
-    destructor Destroy; override; // @addr $827A4C
-    procedure AttachToSpace(ASpace: TSpaceSE); override; // @addr $827A80
-    procedure DetachFromSpace; override; // @addr $827BD0
-    procedure SetPosition(APosition: TPointF); override; // @addr $827C2C
-    function IsNearView(Point: TPointF): Boolean; // @addr $827C74
-    procedure PlaceRandomly; // @addr $827D14
-    procedure RestartOutsideView; // @addr $827D8C
-    procedure AdvanceMotion(Timer: PSpaceTimerSE; UserData: Integer); // @addr $827F10
-    procedure LoadTemplate(Block: TBlockParEC); override; // @addr $828000
-    procedure ApplyConfig(Block: TBlockParEC); override; // @addr $82813C
+    constructor Create(GraphKey: WideString; UnusedPosition: TPoint); // @addr $77DE90
+    destructor Destroy; override; // @addr $77DF18
+    procedure AttachToSpace(ASpace: TSpaceSE); override; // @addr $77DF40
+    procedure DetachFromSpace; override; // @addr $77E040
+    procedure SetPosition(APosition: TPointF); override; // @addr $77E080
+    function IsNearView(Point: TPointF): Boolean; // @addr $77E0C4
+    procedure PlaceRandomly; // @addr $77E164
+    procedure RestartOutsideView; // @addr $77E1DC
+    procedure AdvanceMotion(Timer: PSpaceTimerSE; UserData: Integer); // @addr $77E368
+    procedure LoadTemplate(Block: TBlockParEC); override; // @addr $77E42C
+    procedure ApplyConfig(Block: TBlockParEC); override; // @addr $77E550
   end;
 
 implementation
 
 uses Math, GlobalsV, GR_Main, GI_Main, EC_Str, aMyFunction, SE_Process;
 
-{ @routine $8279C0 TMeteoriteSE_Create }
+{ @routine $77DE90 TMeteoriteSE_Create }
 constructor TMeteoriteSE.Create(GraphKey: WideString; UnusedPosition: TPoint);
 begin
   inherited Create(GraphKey, UnusedPosition);
 end;
-{ @end $8279C0 }
+{ @end $77DE90 }
 
-{ @routine $827A4C TMeteoriteSE_Destroy }
+{ @routine $77DF18 TMeteoriteSE_Destroy }
 destructor TMeteoriteSE.Destroy;
 begin
   inherited Destroy;
 end;
-{ @end $827A4C }
+{ @end $77DF18 }
 
-{ @routine $827A80 TMeteoriteSE_AttachToSpace }
+{ @routine $77DF40 TMeteoriteSE_AttachToSpace }
 procedure TMeteoriteSE.AttachToSpace(ASpace: TSpaceSE);
 begin
   if IsAttachedToSpace then Exit;
@@ -55,20 +54,20 @@ begin
   inherited AttachToSpace(ASpace);
   Animation := TgaiGI.Create(Space.MapPanel);
   Animation.SetImagePath(ImagePath);
-  Animation.SetSize(Animation.GetContentSize);
-  Animation.SetOrigin(HalfPoint(Animation.ClientSize));
+  Animation.ObjectSize := Animation.GetContentSize;
+  Animation.Sme := HalfPoint(Animation.ClientSize);
   Animation.SetDepthByName(DepthExpression);
-  Animation.SetPosition(TruncatePointF(Position));
-  Animation.SetPositionModeW(True);
+  Animation.Pos := TruncatePointF(Position);
+  Animation.World := True;
   Animation.SequenceIndex := 0;
   Animation.UpdateAutoGeometry;
   Animation.RestartPlayback;
   PlaceRandomly;
   MoveTimer := Space.CreateTimer(TimerInterval, TimerInterval, AdvanceMotion, 0);
 end;
-{ @end $827A80 }
+{ @end $77DF40 }
 
-{ @routine $827BD0 TMeteoriteSE_DetachFromSpace }
+{ @routine $77E040 TMeteoriteSE_DetachFromSpace }
 procedure TMeteoriteSE.DetachFromSpace;
 begin
   if not IsAttachedToSpace then Exit;
@@ -84,79 +83,78 @@ begin
   end;
   inherited DetachFromSpace;
 end;
-{ @end $827BD0 }
+{ @end $77E040 }
 
-{ @routine $827C2C TMeteoriteSE_SetPosition }
+{ @routine $77E080 TMeteoriteSE_SetPosition }
 procedure TMeteoriteSE.SetPosition(APosition: TPointF);
 begin
   inherited SetPosition(APosition);
-  if IsAttachedToSpace then Animation.SetPosition(TruncatePointF(APosition));
+  if IsAttachedToSpace then Animation.Pos := TruncatePointF(APosition);
 end;
-{ @end $827C2C }
+{ @end $77E080 }
 
-{ @routine $827C74 TMeteoriteSE_IsNearView }
+{ @routine $77E0C4 TMeteoriteSE_IsNearView }
 function TMeteoriteSE.IsNearView(Point: TPointF): Boolean;
-var Height, Width: Single;
+var Width, Height: Single;
 begin
-  Width := Cardinal(GameScreenWidth);
-  Height := Cardinal(GameScreenHeight);
+  Width := GameScreenWidth;
+  Height := GameScreenHeight;
   Result := (SpaceViewPosition.X - Width < Point.X) and
     (SpaceViewPosition.X + Width > Point.X) and
     (SpaceViewPosition.Y - Height < Point.Y) and
     (SpaceViewPosition.Y + Height > Point.Y);
 end;
-{ @end $827C74 }
+{ @end $77E0C4 }
 
-{ @routine $827D14 TMeteoriteSE_PlaceRandomly }
+{ @routine $77E164 TMeteoriteSE_PlaceRandomly }
 procedure TMeteoriteSE.PlaceRandomly;
 var
   Radius: Single;
   Bound: Integer;
 begin
-  if Space <> nil then
-  begin
-    Radius := TProcessSE(Space.Process).SystemRadius;
-    Bound := Round(Radius);
-    SetPosition(MakePointF(RandomIntRange(-Bound, Bound), RandomIntRange(-Bound, Bound)));
-  end;
+  if Space = nil then Exit;
+  Radius := TProcessSE(Space.Process).SystemRadius;
+  Bound := Round(Radius);
+  Pos := MakePointF(RandomIntRange(-Bound, Bound), RandomIntRange(-Bound, Bound));
 end;
-{ @end $827D14 }
+{ @end $77E164 }
 
-{ @routine $827D8C TMeteoriteSE_RestartOutsideView }
+{ @routine $77E1DC TMeteoriteSE_RestartOutsideView }
 procedure TMeteoriteSE.RestartOutsideView;
 var
   Radius: Single;
   Bound: Integer;
   StartPoint, EndPoint, Intersection: TPointF;
 begin
-  if Space <> nil then
+  if Space = nil then Exit;
+  Radius := TProcessSE(Space.Process).SystemRadius;
+  while True do
   begin
-    Radius := TProcessSE(Space.Process).SystemRadius;
-    repeat
-      Bound := Round(Radius);
-      EndPoint := MakePointF(RandomIntRange(-Bound, Bound), RandomIntRange(-Bound, Bound));
-      StartPoint := MakePointF(EndPoint.X + Sin(Pi + Angle) * (Radius * 4),
-        EndPoint.Y - Cos(Pi + Angle) * (Radius * 4));
-    until SegmentIntersectsRectEdges(StartPoint, EndPoint,
-      MakePointF(-Radius * 1.2, -Radius * 1.2), MakePointF(1.2 * Radius, 1.2 * Radius), Intersection) and
-      not IsNearView(Intersection);
-    SetPosition(Intersection);
+    Bound := Round(Radius);
+    EndPoint := MakePointF(RandomIntRange(-Bound, Bound), RandomIntRange(-Bound, Bound));
+    StartPoint := MakePointF(EndPoint.X + Sin(Pi + Angle) * (Radius * 4),
+      EndPoint.Y - Cos(Pi + Angle) * (Radius * 4));
+    if not SegmentIntersectsRectEdges(StartPoint, EndPoint,
+      MakePointF(-Radius * 1.2, -Radius * 1.2), MakePointF(1.2 * Radius, 1.2 * Radius), Intersection) then Continue;
+    if IsNearView(Intersection) then Continue;
+    Break;
   end;
+  Pos := Intersection;
 end;
-{ @end $827D8C }
+{ @end $77E1DC }
 
-{ @routine $827F10 TMeteoriteSE_AdvanceMotion }
+{ @routine $77E368 TMeteoriteSE_AdvanceMotion }
 procedure TMeteoriteSE.AdvanceMotion(Timer: PSpaceTimerSE; UserData: Integer);
 var Limit: Single;
 begin
-  SetPosition(MakePointF(Position.X + Sin(Angle) * Speed, Position.Y - Cos(Angle) * Speed));
+  Pos := MakePointF(Position.X + Sin(Angle) * Speed, Position.Y - Cos(Angle) * Speed);
   Limit := TProcessSE(Space.Process).SystemRadius * 1.3;
   if ((-Limit > Position.X) or (Position.X > Limit) or (-Limit > Position.Y) or (Position.Y > Limit)) and
     not IsNearView(Position) then RestartOutsideView;
 end;
-{ @end $827F10 }
+{ @end $77E368 }
 
-{ @routine $828000 TMeteoriteSE_LoadTemplate }
+{ @routine $77E42C TMeteoriteSE_LoadTemplate }
 procedure TMeteoriteSE.LoadTemplate(Block: TBlockParEC);
 var Range: TPointF;
 begin
@@ -167,13 +165,13 @@ begin
   Speed := RandomFloatRange(Range.X, Range.Y);
   Angle := HeadingDegreesToRadians(ExtractDecimalToSingleW(Block.GetParam('Angle')));
 end;
-{ @end $828000 }
+{ @end $77E42C }
 
-{ @routine $82813C TMeteoriteSE_ApplyConfig }
+{ @routine $77E550 TMeteoriteSE_ApplyConfig }
 procedure TMeteoriteSE.ApplyConfig(Block: TBlockParEC);
 begin
   inherited ApplyConfig(Block);
 end;
-{ @end $82813C }
+{ @end $77E550 }
 
 end.

@@ -1,31 +1,34 @@
 unit GI_SimpleImage;
-// Unit bracket (inferred): .text 0x004737EC..0x004744F8; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
 uses Classes, EC_BlockPar, EC_CacheBitmap, GI_Main, GI_MessageLoop, Types;
 
 type
-  TSimpleImageGI = class(TObjectGI) // @size 0x128
+  TSimpleImageGI = class(TObjectGI) // @size 0x128 @methodorder source
   public
     ImageCache: TCBitmapControlEC; // @offset 0x120
     ImageKindX: TImageKindXGI; // @offset 0x124
     ImageKindY: TImageKindYGI; // @offset 0x125
-    HalfAlpha: Boolean; // @offset 0x126
+    HalfAlphaValue: Boolean; // @offset 0x126
     SourceRGBA: Boolean; // @offset 0x127
 
-    constructor Create(Owner: TObjectGI); // @addr 0x473910
-    destructor Destroy; override; // @addr 0x4739A0
-    procedure Clear; override; // @addr 0x4739EC @note "Preserves the cache control and its key."
-    procedure SetImagePath(const ImagePath: WideString); // @addr 0x473A28 @note "The RGBA key suffix enables SourceRGBA; keys shorter than four characters preserve the previous flag."
-    function GetContentSize: TPoint; // @addr 0x473ADC
-    procedure SetImageKindX(Value: TImageKindXGI); // @addr 0x473B48
-    procedure SetImageKindY(Value: TImageKindYGI); // @addr 0x473B80
-    procedure SetHalfAlpha(Value: Boolean); // @addr 0x473BB8
-    procedure LoadFromConfigPath(const Path: WideString); override; // @addr 0x473BF0 @note "Image is optional."
-    procedure LoadFromBlock(Block: TBlockParEC); override; // @addr 0x473E98 @note "Requires Image; does not update SourceRGBA from the key suffix."
-    procedure Draw(ClipRect: TRect); override; // @addr 0x474118 @note "CenterFill is unimplemented on both axes."
-    procedure QueueImageLoad(PendingLoads: TList); override; // @addr 0x4744D8
+    constructor Create(Owner: TObjectGI); // @addr 0x00492578
+    destructor Destroy; override; // @addr 0x004925F0
+    procedure Clear; override; // @addr 0x00492628 @note "Preserves the cache control and its key."
+    procedure SetImagePath(const ImagePath: WideString); // @addr 0x0049264C @note "The RGBA key suffix enables SourceRGBA; keys shorter than four characters preserve the previous flag."
+    property Image: WideString write SetImagePath;
+    function GetContentSize: TPoint; // @addr 0x004926F0
+    procedure SetImageKindX(Value: TImageKindXGI); // @addr 0x00492754
+    property KindX: TImageKindXGI read ImageKindX write SetImageKindX;
+    procedure SetImageKindY(Value: TImageKindYGI); // @addr 0x00492774
+    property KindY: TImageKindYGI read ImageKindY write SetImageKindY;
+    procedure SetHalfAlpha(Value: Boolean); // @addr 0x00492794
+    property HalfAlpha: Boolean read HalfAlphaValue write SetHalfAlpha;
+    procedure LoadFromConfigPath(const Path: WideString); override; // @addr 0x004927B4 @note "Image is optional."
+    procedure LoadFromBlock(Block: TBlockParEC); override; // @addr 0x00492A54 @note "Requires Image; does not update SourceRGBA from the key suffix."
+    procedure Draw(ClipRect: TRect); override; // @addr 0x00492CD4 @note "CenterFill is unimplemented on both axes."
+    procedure QueueImageLoad(PendingLoads: TList); override; // @addr 0x00492FD4
   end;
 
 implementation
@@ -33,7 +36,7 @@ implementation
 uses EC_Str, EC_Mem, GlobalsV, GR_Main, GR_DX, SysUtils;
 
 
-{ @routine $473910 TSimpleImageGI_Create }
+{ @routine $492578 TSimpleImageGI_Create }
 constructor TSimpleImageGI.Create(Owner: TObjectGI);
 begin
   inherited Create(Owner);
@@ -41,40 +44,40 @@ begin
   GlobalCache.ResetControl(ImageCache);
   ImageKindX := ikxCenter;
   ImageKindY := ikyCenter;
-  HalfAlpha := False;
+  HalfAlphaValue := False;
 end;
-{ @end $473910 }
+{ @end $492578 }
 
-{ @routine $4739A0 TSimpleImageGI_Destroy }
+{ @routine $4925F0 TSimpleImageGI_Destroy }
 destructor TSimpleImageGI.Destroy;
 begin
   ImageCache.Free;
   ImageCache := nil;
   inherited Destroy;
 end;
-{ @end $4739A0 }
+{ @end $4925F0 }
 
-{ @routine $4739EC TSimpleImageGI_Clear }
+{ @routine $492628 TSimpleImageGI_Clear }
 procedure TSimpleImageGI.Clear;
 begin
   ImageKindX := ikxCenter;
   ImageKindY := ikyCenter;
-  HalfAlpha := False;
+  HalfAlphaValue := False;
   SourceRGBA := False;
   inherited Clear;
 end;
-{ @end $4739EC }
+{ @end $492628 }
 
-{ @routine $473A28 TSimpleImageGI_SetImagePath }
+{ @routine $49264C TSimpleImageGI_SetImagePath }
 procedure TSimpleImageGI.SetImagePath(const ImagePath: WideString);
 begin
   Invalidate;
   ImageCache.SetCacheKey(ImagePath);
   if Length(ImagePath) >= 4 then SourceRGBA := Copy(ImagePath, Length(ImagePath) - 4 + 1, 4) = 'RGBA';
 end;
-{ @end $473A28 }
+{ @end $49264C }
 
-{ @routine $473ADC TSimpleImageGI_GetContentSize }
+{ @routine $4926F0 TSimpleImageGI_GetContentSize }
 function TSimpleImageGI.GetContentSize: TPoint;
 var Bitmap: TCBitmapEC;
 begin
@@ -85,42 +88,36 @@ begin
     ImageCache.Release;
   end;
 end;
-{ @end $473ADC }
+{ @end $4926F0 }
 
-{ @routine $473B48 TSimpleImageGI_SetImageKindX }
+{ @routine $492754 TSimpleImageGI_SetImageKindX }
 procedure TSimpleImageGI.SetImageKindX(Value: TImageKindXGI);
 begin
-  if ImageKindX <> Value then
-  begin
-    ImageKindX := Value;
-    Invalidate;
-  end;
+  if ImageKindX = Value then Exit;
+  ImageKindX := Value;
+  Invalidate;
 end;
-{ @end $473B48 }
+{ @end $492754 }
 
-{ @routine $473B80 TSimpleImageGI_SetImageKindY }
+{ @routine $492774 TSimpleImageGI_SetImageKindY }
 procedure TSimpleImageGI.SetImageKindY(Value: TImageKindYGI);
 begin
-  if ImageKindY <> Value then
-  begin
-    ImageKindY := Value;
-    Invalidate;
-  end;
+  if ImageKindY = Value then Exit;
+  ImageKindY := Value;
+  Invalidate;
 end;
-{ @end $473B80 }
+{ @end $492774 }
 
-{ @routine $473BB8 TSimpleImageGI_SetHalfAlpha }
+{ @routine $492794 TSimpleImageGI_SetHalfAlpha }
 procedure TSimpleImageGI.SetHalfAlpha(Value: Boolean);
 begin
-  if HalfAlpha <> Value then
-  begin
-    HalfAlpha := Value;
-    Invalidate;
-  end;
+  if HalfAlphaValue = Value then Exit;
+  HalfAlphaValue := Value;
+  Invalidate;
 end;
-{ @end $473BB8 }
+{ @end $492794 }
 
-{ @routine $473BF0 TSimpleImageGI_LoadFromConfigPath }
+{ @routine $4927B4 TSimpleImageGI_LoadFromConfigPath }
 procedure TSimpleImageGI.LoadFromConfigPath(const Path: WideString);
 var Block: TBlockParEC; Bitmap: TCBitmapEC; Text: WideString;
 begin
@@ -141,13 +138,13 @@ begin
     Text := Block.GetParam('Size');
     SetSize(Classes.Point(StrToInt(ExtractDelimitedPartW(Text, 0, ',')), StrToInt(ExtractDelimitedPartW(Text, 1, ','))));
   end;
-  if Block.CountParams('KindX') > 0 then SetImageKindX(ParseImageKindXName(Block.GetParam('KindX')));
-  if Block.CountParams('KindY') > 0 then SetImageKindY(ParseImageKindYName(Block.GetParam('KindY')));
-  if Block.CountParams('HalfAlpha') > 0 then SetHalfAlpha(ParseEnabledNameGI(Block.GetParam('HalfAlpha')));
+  if Block.CountParams('KindX') > 0 then KindX := ParseImageKindXName(Block.GetParam('KindX'));
+  if Block.CountParams('KindY') > 0 then KindY := ParseImageKindYName(Block.GetParam('KindY'));
+  if Block.CountParams('HalfAlpha') > 0 then HalfAlpha := ParseEnabledNameGI(Block.GetParam('HalfAlpha'));
 end;
-{ @end $473BF0 }
+{ @end $4927B4 }
 
-{ @routine $473E98 TSimpleImageGI_LoadFromBlock }
+{ @routine $492A54 TSimpleImageGI_LoadFromBlock }
 procedure TSimpleImageGI.LoadFromBlock(Block: TBlockParEC);
 var Bitmap: TCBitmapEC; Text: WideString;
 begin
@@ -164,13 +161,13 @@ begin
     Text := Block.GetParam('Size');
     SetSize(Classes.Point(StrToInt(ExtractDelimitedPartW(Text, 0, ',')), StrToInt(ExtractDelimitedPartW(Text, 1, ','))));
   end;
-  if Block.CountParams('KindX') > 0 then SetImageKindX(ParseImageKindXName(Block.GetParam('KindX')));
-  if Block.CountParams('KindY') > 0 then SetImageKindY(ParseImageKindYName(Block.GetParam('KindY')));
-  if Block.CountParams('HalfAlpha') > 0 then SetHalfAlpha(ParseEnabledNameGI(Block.GetParam('HalfAlpha')));
+  if Block.CountParams('KindX') > 0 then KindX := ParseImageKindXName(Block.GetParam('KindX'));
+  if Block.CountParams('KindY') > 0 then KindY := ParseImageKindYName(Block.GetParam('KindY'));
+  if Block.CountParams('HalfAlpha') > 0 then HalfAlpha := ParseEnabledNameGI(Block.GetParam('HalfAlpha'));
 end;
-{ @end $473E98 }
+{ @end $492A54 }
 
-{ @routine $474118 TSimpleImageGI_Draw }
+{ @routine $492CD4 TSimpleImageGI_Draw }
 procedure TSimpleImageGI.Draw(ClipRect: TRect);
 var Bitmap: TCBitmapEC; Width, Height, Left, Right, X, Top, Bottom, Y: Integer;
 begin
@@ -268,7 +265,7 @@ begin
     X := Left;
     while (X < Right) do
     begin
-      CopyGraphBuffer16Clipped(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes, X, Y, Bitmap.Bitmap, ClipRect, HalfAlpha, False);
+      CopyGraphBuffer16Clipped(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes, X, Y, Bitmap.Bitmap, ClipRect, HalfAlphaValue, False);
       Inc(X, Width);
     end;
     Inc(Y, Height);
@@ -278,13 +275,13 @@ begin
     ImageCache.Release;
   end;
 end;
-{ @end $474118 }
+{ @end $492CD4 }
 
-{ @routine $4744D8 TSimpleImageGI_QueueImageLoad }
+{ @routine $492FD4 TSimpleImageGI_QueueImageLoad }
 procedure TSimpleImageGI.QueueImageLoad(PendingLoads: TList);
 begin
   ImageCache.QueueLoadIfMissing(PendingLoads);
 end;
-{ @end $4744D8 }
+{ @end $492FD4 }
 
 end.

@@ -15,8 +15,8 @@ import os
 import pefile
 
 # Original PE UTC timestamp and its local DOS representation in resource headers.
-PE_TIMESTAMP = 1786444892
-DOS_TIMESTAMP = 0x5D0B6D30
+PE_TIMESTAMP = 1791310743
+DOS_TIMESTAMP = 0x5D46AA61
 
 
 def align(value, alignment):

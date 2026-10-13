@@ -1,5 +1,4 @@
 unit GI_GAI;
-// Unit bracket (inferred): .text 0x0047FE50..0x00483241; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -9,14 +8,30 @@ const
   SingleFrameAnimationSpec = '[50,0-0]'; // Frame zero with a 50 ms delay.
 
 type
-  TgaiGI = class(TObjectGI) // @size 0x17C
+  TgaiGI = class(TObjectGI) // @size 0x17C @methodorder source
+  public
+    procedure Clear; override; // @addr 0x0049644C @note "Preserves animation state."
+    procedure SetSize(Size: TPoint); override; // @addr 0x00496928
+    procedure SetActive(Value: Boolean); override; // @addr 0x004971DC
+    procedure LoadFromConfigPath(const Path: WideString); override; // @addr 0x00497294
+    procedure OnDeactivate; override; // @addr 0x00497254
+    procedure LoadFromBlock(Block: TBlockParEC); override; // @addr 0x004972C0
+    procedure UpdateAutoGeometry; override; // @addr 0x00497764 @note "Also rebuilds frame tables when SequenceIndex is nonnegative."
   public
     MainImageCache: TCGaiControlEC; // @offset 0x120
     FirstFrameImageCache: TCGiControlEC; // @offset 0x124
-    AutoFrameTimer: PCallbackTimerGI; // @offset 0x128
+    AutoFrameTimer: TCallbackTimerIdGI; // @offset 0x128
     ImageKindX: TImageKindXGI; // @offset 0x12C
     ImageKindY: TImageKindYGI; // @offset 0x12D
     Alpha: Byte; // @offset 0x12E
+
+    constructor Create(Owner: TObjectGI); // @addr 0x004962CC
+    destructor Destroy; override; // @addr 0x004963C0
+    procedure SetImagePath(const ImagePath: WideString); // @addr 0x00496454 @note "Resets sequence position even when the key is unchanged."
+    function GetImagePath: WideString; // @addr 0x004964A8
+    procedure SetFirstFrameImagePath(const ImagePath: WideString); // @addr 0x004964C4
+    function GetFirstFrameImagePath: WideString; // @addr $496544
+    procedure QueueImageLoad(PendingLoads: TList); override; // @addr 0x00498DC4
     // Playback position is within the selected sequence, not the source image.
     SequenceFrame: Integer; // @offset 0x130
     SequenceFrameCount: Integer; // @offset 0x134
@@ -37,58 +52,43 @@ type
     AutoUpdateFlags: Cardinal; // @offset 0x174
     HardwareMirrorHorizontal: Boolean; // @offset $178  Passed to hardware texture drawing only.
 
-    procedure SetHardwareMirrorHorizontal(Value: Boolean); // @addr $4821E0
-
-    constructor Create(Owner: TObjectGI); // @addr 0x47FF80
-    destructor Destroy; override; // @addr 0x48009C
-    procedure Clear; override; // @addr 0x480164 @note "Preserves animation state."
-    procedure SetImagePath(const ImagePath: WideString); // @addr 0x480178 @note "Resets sequence position even when the key is unchanged."
-    function GetImagePath: WideString; // @addr 0x4801EC
-    function GetFirstFrameImagePath: WideString; // @addr $4802B8
-    procedure SetFirstFrameImagePath(const ImagePath: WideString); // @addr 0x480210
-    procedure SetSequenceFrame(FrameInSequence: Integer); // @addr 0x4802F4 @note "Does not validate the index."
-    procedure SetFramePosition(FrameInSequence: Integer; ForwardOnly: Boolean); // @addr 0x480340 @note "Accepted out-of-range positions become zero."
-    function GetMainImageFrameCount: Integer; // @addr 0x4803B8 @note "Returns zero in FirstFrameOnly mode."
-    procedure StopAutoPlayback; // @addr 0x480428
-    procedure RestartPlayback; // @addr 0x480468 @note "Does not reset frame position; single-frame sequences remain timer-free."
-    function GetContentSize: TPoint; // @addr 0x480524
-    function GetContentOrigin: TPoint; // @addr 0x48061C
-    procedure SetImageKindX(Value: TImageKindXGI); // @addr 0x480730
-    procedure SetImageKindY(Value: TImageKindYGI); // @addr 0x480768
-    procedure SetAlpha(Value: Byte); // @addr 0x4807A0
-    procedure SetSize(Size: TPoint); override; // @addr 0x4807D8
-    procedure ClearFrameSequence; // @addr 0x4807FC
-    procedure LoadFrameSequenceFromText(const FrameSpec: WideString); // @addr 0x480870 @note "Accepts ascending and descending ranges; changes the playback timer unless stopped."
-    function GetSequenceCount: Integer; // @addr 0x480B08
-    function GetSequenceFrameSourceIndex(FrameInSequence: Integer): Integer; // @addr 0x480B78 @note "Does not validate the index."
-    procedure SetFrameDelay(FrameInSequence, DelayMs: Integer); // @addr 0x480BB0 @note "Does not validate the index."
-    function GetFrameDelay(FrameInSequence: Integer): Integer; // @addr 0x480BEC @note "Does not validate the index."
-    function HitTestPixel(Point: TPoint): Boolean; // @addr 0x480C24 @note "Black pixels do not count as hits; composed playback may require an existing composition buffer."
-    procedure SetActive(Value: Boolean); override; // @addr 0x4811F8
-    procedure OnDeactivate; override; // @addr 0x4812AC
-    procedure LoadFromConfigPath(const Path: WideString); override; // @addr 0x481310
-    procedure LoadFromBlock(Block: TBlockParEC); override; // @addr 0x481344
-    procedure LoadAnimationProperties(Block: TBlockParEC); // @addr 0x48136C
-    procedure UpdateAutoGeometry; override; // @addr 0x481840 @note "Also rebuilds frame tables when SequenceIndex is nonnegative."
-    procedure SetOneCycleDuration(DurationMs: Integer); // @addr 0x481A68 @note "Enables StopAfterOneCycle; frame delays are rounded to milliseconds with a minimum of one."
-    procedure AdvanceAutoFrame(Timer: PCallbackTimerGI; UserData: Integer); // @addr 0x481AF8
-    procedure Invalidate; override; // @addr 0x481C84
-    procedure Draw(ClipRect: TRect); override; // @addr 0x4821FC
-    procedure PrimeImageCaches; // @addr 0x4830DC @note "Skips the main GAI in FirstFrameOnly mode."
-    procedure QueueImageLoad(PendingLoads: TList); override; // @addr 0x48316C
+    procedure Invalidate; override; // @addr 0x00497B14
+    procedure SetHardwareMirrorHorizontal(Value: Boolean); // @addr $498004
+    procedure Draw(ClipRect: TRect); override; // @addr 0x0049800C
+    procedure SetSequenceFrame(FrameInSequence: Integer); // @addr 0x0049656C @note "Does not validate the index."
+    procedure SetFramePosition(FrameInSequence: Integer; ForwardOnly: Boolean); // @addr 0x00496598 @note "Accepted out-of-range positions become zero."
+    function GetMainImageFrameCount: Integer; // @addr 0x004965DC @note "Returns zero in FirstFrameOnly mode."
+    procedure StopAutoPlayback; // @addr 0x00496648
+    procedure RestartPlayback; // @addr 0x00496670 @note "Does not reset frame position; single-frame sequences remain timer-free."
+    function GetContentSize: TPoint; // @addr 0x004966F8
+    function GetContentOrigin: TPoint; // @addr 0x004967E0
+    procedure SetImageKindX(Value: TImageKindXGI); // @addr 0x004968E0
+    procedure SetImageKindY(Value: TImageKindYGI); // @addr 0x004968F8
+    procedure SetAlpha(Value: Byte); // @addr 0x00496910
+    procedure ClearFrameSequence; // @addr 0x00496940
+    procedure LoadFrameSequenceFromText(const FrameSpec: WideString); // @addr 0x00496994 @note "Accepts ascending and descending ranges; changes the playback timer unless stopped."
+    function GetSequenceCount: Integer; // @addr 0x00496BD0
+    function GetSequenceFrameSourceIndex(FrameInSequence: Integer): Integer; // @addr 0x00496C3C @note "Does not validate the index."
+    procedure SetFrameDelay(FrameInSequence, DelayMs: Integer); // @addr 0x00496C64 @note "Does not validate the index."
+    function GetFrameDelay(FrameInSequence: Integer): Integer; // @addr 0x00496C94 @note "Does not validate the index."
+    function HitTestPixel(Point: TPoint): Boolean; // @addr 0x00496CBC @note "Black pixels do not count as hits; composed playback may require an existing composition buffer."
+    procedure LoadAnimationProperties(Block: TBlockParEC); // @addr 0x004972DC
+    procedure SetOneCycleDuration(DurationMs: Integer); // @addr 0x00497980 @note "Enables StopAfterOneCycle; frame delays are rounded to milliseconds with a minimum of one."
+    procedure AdvanceAutoFrame(Timer: TCallbackTimerIdGI; UserData: Cardinal); // @addr 0x004979F8
+    procedure PrimeImageCaches; // @addr 0x00498D64 @note "Skips the main GAI in FirstFrameOnly mode."
   end;
 
 var
-  GaiFrameHeap: Cardinal = 0; // @addr 0x87A9F0
+  GaiFrameHeap: Cardinal = 0; // @addr 0x0080B704
 
-procedure LoadGaiFrameToGraphBuf(const Path: WideString; GraphBuf: TGraphBufGR; Seed: Cardinal); // @addr $483190
+procedure LoadGaiFrameToGraphBuf(const Path: WideString; GraphBuf: TGraphBufGR; Seed: Cardinal); // @addr $498DD0
 
 implementation
 
 uses GR_Sound, EC_Struct, Direct3D9, GR_DX, GR_gi, GR_Main, EC_Cache, EC_Str, EC_Mem, SysUtils, Windows, aMyFunction, GlobalsV;
 
 
-{ @routine $47FF80 TgaiGI_Create }
+{ @routine $4962CC TgaiGI_Create }
 constructor TgaiGI.Create(Owner: TObjectGI);
 begin
   inherited Create(Owner);
@@ -108,9 +108,9 @@ begin
   TransparentColor := 0;
   SkipImageUpdateRect := False;
 end;
-{ @end $47FF80 }
+{ @end $4962CC }
 
-{ @routine $48009C TgaiGI_Destroy }
+{ @routine $4963C0 TgaiGI_Destroy }
 destructor TgaiGI.Destroy;
 begin
   if CachedPlaybackGraphBuf <> nil then
@@ -118,10 +118,10 @@ begin
     CachedPlaybackGraphBuf.Free;
     CachedPlaybackGraphBuf := nil;
   end;
-  if AutoFrameTimer <> nil then
+  if AutoFrameTimer <> 0 then
   begin
     MessageLoop.CancelCallbackTimer(AutoFrameTimer);
-    AutoFrameTimer := nil;
+    AutoFrameTimer := 0;
   end;
   MainImageCache.Free;
   MainImageCache := nil;
@@ -133,16 +133,16 @@ begin
   ClearFrameSequence;
   inherited Destroy;
 end;
-{ @end $48009C }
+{ @end $4963C0 }
 
-{ @routine $480164 TgaiGI_Clear }
+{ @routine $49644C TgaiGI_Clear }
 procedure TgaiGI.Clear;
 begin
   inherited Clear;
 end;
-{ @end $480164 }
+{ @end $49644C }
 
-{ @routine $480178 TgaiGI_SetImagePath }
+{ @routine $496454 TgaiGI_SetImagePath }
 procedure TgaiGI.SetImagePath(const ImagePath: WideString);
 begin
   SequenceFrame := 0;
@@ -151,22 +151,20 @@ begin
     CachedPlaybackGraphBuf.Free;
     CachedPlaybackGraphBuf := nil;
   end;
-  if MainImageCache.CacheKey <> ImagePath then
-  begin
-    Invalidate;
-    MainImageCache.SetCacheKey(ImagePath);
-  end;
+  if MainImageCache.CacheKey = ImagePath then Exit;
+  Invalidate;
+  MainImageCache.SetCacheKey(ImagePath);
 end;
-{ @end $480178 }
+{ @end $496454 }
 
-{ @routine $4801EC TgaiGI_GetImagePath }
+{ @routine $4964A8 TgaiGI_GetImagePath }
 function TgaiGI.GetImagePath: WideString;
 begin
   Result := MainImageCache.CacheKey;
 end;
-{ @end $4801EC }
+{ @end $4964A8 }
 
-{ @routine $480210 TgaiGI_SetFirstFrameImagePath }
+{ @routine $4964C4 TgaiGI_SetFirstFrameImagePath }
 procedure TgaiGI.SetFirstFrameImagePath(const ImagePath: WideString);
 begin
   SequenceFrame := 0;
@@ -180,23 +178,21 @@ begin
     FirstFrameImageCache := TCGiControlEC.Create;
     GlobalCache.ResetControl(FirstFrameImageCache);
   end;
-  if FirstFrameImageCache.CacheKey <> ImagePath then
-  begin
-    Invalidate;
-    FirstFrameImageCache.SetCacheKey(ImagePath);
-  end;
+  if FirstFrameImageCache.CacheKey = ImagePath then Exit;
+  Invalidate;
+  FirstFrameImageCache.SetCacheKey(ImagePath);
 end;
-{ @end $480210 }
+{ @end $4964C4 }
 
-{ @routine $4802B8 TgaiGI_GetFirstFrameImagePath }
+{ @routine $496544 TgaiGI_GetFirstFrameImagePath }
 function TgaiGI.GetFirstFrameImagePath: WideString;
 begin
   if FirstFrameImageCache = nil then Result := ''
   else Result := FirstFrameImageCache.CacheKey;
 end;
-{ @end $4802B8 }
+{ @end $496544 }
 
-{ @routine $4802F4 TgaiGI_SetSequenceFrame }
+{ @routine $49656C TgaiGI_SetSequenceFrame }
 procedure TgaiGI.SetSequenceFrame(FrameInSequence: Integer);
 begin
   SequenceFrame := FrameInSequence;
@@ -207,9 +203,9 @@ begin
   end;
   Invalidate;
 end;
-{ @end $4802F4 }
+{ @end $49656C }
 
-{ @routine $480340 TgaiGI_SetFramePosition }
+{ @routine $496598 TgaiGI_SetFramePosition }
 procedure TgaiGI.SetFramePosition(FrameInSequence: Integer; ForwardOnly: Boolean);
 begin
   if SequenceFrame = FrameInSequence then Exit;
@@ -219,9 +215,9 @@ begin
     SequenceFrame := 0;
   Invalidate;
 end;
-{ @end $480340 }
+{ @end $496598 }
 
-{ @routine $4803B8 TgaiGI_GetMainImageFrameCount }
+{ @routine $4965DC TgaiGI_GetMainImageFrameCount }
 function TgaiGI.GetMainImageFrameCount: Integer;
 var Image: TCGaiEC;
 begin
@@ -237,29 +233,27 @@ begin
     MainImageCache.Release;
   end;
 end;
-{ @end $4803B8 }
+{ @end $4965DC }
 
-{ @routine $480428 TgaiGI_StopAutoPlayback }
+{ @routine $496648 TgaiGI_StopAutoPlayback }
 procedure TgaiGI.StopAutoPlayback;
 begin
   StopPlaybackRequested := True;
-  if AutoFrameTimer <> nil then
-  begin
-    MessageLoop.CancelCallbackTimer(AutoFrameTimer);
-    AutoFrameTimer := nil;
-  end;
+  if AutoFrameTimer = 0 then Exit;
+  MessageLoop.CancelCallbackTimer(AutoFrameTimer);
+  AutoFrameTimer := 0;
 end;
-{ @end $480428 }
+{ @end $496648 }
 
-{ @routine $480468 TgaiGI_RestartPlayback }
+{ @routine $496670 TgaiGI_RestartPlayback }
 procedure TgaiGI.RestartPlayback;
 var Delay: Integer;
 begin
   StopPlaybackRequested := False;
-  if AutoFrameTimer <> nil then
+  if AutoFrameTimer <> 0 then
   begin
     MessageLoop.CancelCallbackTimer(AutoFrameTimer);
-    AutoFrameTimer := nil;
+    AutoFrameTimer := 0;
   end;
   if SequenceFrameCount > 1 then
   begin
@@ -268,9 +262,9 @@ begin
   end;
   if (StartSoundName <> '') and (SequenceFrame = 0) then SoundManager.PlaySound(StartSoundName);
 end;
-{ @end $480468 }
+{ @end $496670 }
 
-{ @routine $480524 TgaiGI_GetContentSize }
+{ @routine $4966F8 TgaiGI_GetContentSize }
 function TgaiGI.GetContentSize: TPoint;
 var Image: TCGaiEC; First: TCGiEC;
 begin
@@ -299,9 +293,9 @@ begin
   end
   else Result := Classes.Point(0, 0);
 end;
-{ @end $480524 }
+{ @end $4966F8 }
 
-{ @routine $48061C TgaiGI_GetContentOrigin }
+{ @routine $4967E0 TgaiGI_GetContentOrigin }
 function TgaiGI.GetContentOrigin: TPoint;
 var Image: TCGaiEC; First: TCGiEC;
 begin
@@ -330,49 +324,43 @@ begin
   end
   else Result := Classes.Point(0, 0);
 end;
-{ @end $48061C }
+{ @end $4967E0 }
 
-{ @routine $480730 TgaiGI_SetImageKindX }
+{ @routine $4968E0 TgaiGI_SetImageKindX }
 procedure TgaiGI.SetImageKindX(Value: TImageKindXGI);
 begin
-  if ImageKindX <> Value then
-  begin
-    ImageKindX := Value;
-    Invalidate;
-  end;
+  if ImageKindX = Value then Exit;
+  ImageKindX := Value;
+  Invalidate;
 end;
-{ @end $480730 }
+{ @end $4968E0 }
 
-{ @routine $480768 TgaiGI_SetImageKindY }
+{ @routine $4968F8 TgaiGI_SetImageKindY }
 procedure TgaiGI.SetImageKindY(Value: TImageKindYGI);
 begin
-  if ImageKindY <> Value then
-  begin
-    ImageKindY := Value;
-    Invalidate;
-  end;
+  if ImageKindY = Value then Exit;
+  ImageKindY := Value;
+  Invalidate;
 end;
-{ @end $480768 }
+{ @end $4968F8 }
 
-{ @routine $4807A0 TgaiGI_SetAlpha }
+{ @routine $496910 TgaiGI_SetAlpha }
 procedure TgaiGI.SetAlpha(Value: Byte);
 begin
-  if Alpha <> Value then
-  begin
-    Alpha := Value;
-    Invalidate;
-  end;
+  if Alpha = Value then Exit;
+  Alpha := Value;
+  Invalidate;
 end;
-{ @end $4807A0 }
+{ @end $496910 }
 
-{ @routine $4807D8 TgaiGI_SetSize }
+{ @routine $496928 TgaiGI_SetSize }
 procedure TgaiGI.SetSize(Size: TPoint);
 begin
   inherited SetSize(Size);
 end;
-{ @end $4807D8 }
+{ @end $496928 }
 
-{ @routine $4807FC TgaiGI_ClearFrameSequence }
+{ @routine $496940 TgaiGI_ClearFrameSequence }
 procedure TgaiGI.ClearFrameSequence;
 begin
   if SequenceFrameIndexTable <> nil then
@@ -388,9 +376,9 @@ begin
   SequenceFrame := 0;
   SequenceFrameCount := 0;
 end;
-{ @end $4807FC }
+{ @end $496940 }
 
-{ @routine $480870 TgaiGI_LoadFrameSequenceFromText }
+{ @routine $496994 TgaiGI_LoadFrameSequenceFromText }
 procedure TgaiGI.LoadFrameSequenceFromText(const FrameSpec: WideString);
 var Part: WideString; Index, Count, Offset, RangeCount, Delay, First, Last, TimerDelay: Integer;
 begin
@@ -416,17 +404,17 @@ begin
   if not StopPlaybackRequested then
   begin
     TimerDelay := GetFrameDelay(SequenceFrame);
-  if AutoFrameTimer <> nil then
+  if AutoFrameTimer <> 0 then
   begin
     MessageLoop.CancelCallbackTimer(AutoFrameTimer);
-    AutoFrameTimer := nil;
+    AutoFrameTimer := 0;
   end;
     AutoFrameTimer := MessageLoop.ScheduleCallbackTimer(TimerDelay, TimerDelay, AdvanceAutoFrame);
   end;
 end;
-{ @end $480870 }
+{ @end $496994 }
 
-{ @routine $480B08 TgaiGI_GetSequenceCount }
+{ @routine $496BD0 TgaiGI_GetSequenceCount }
 function TgaiGI.GetSequenceCount: Integer;
 var Image: TCGaiEC;
 begin
@@ -442,36 +430,37 @@ begin
     MainImageCache.Release;
   end;
 end;
-{ @end $480B08 }
+{ @end $496BD0 }
 
-{ @routine $480B78 TgaiGI_GetSequenceFrameSourceIndex }
+{ @routine $496C3C TgaiGI_GetSequenceFrameSourceIndex }
 function TgaiGI.GetSequenceFrameSourceIndex(FrameInSequence: Integer): Integer;
 begin
   Result := ReadIntegerEC(AddPointerOffset(SequenceFrameIndexTable, FrameInSequence * SizeOf(Integer)));
 end;
-{ @end $480B78 }
+{ @end $496C3C }
 
-{ @routine $480BB0 TgaiGI_SetFrameDelay }
+{ @routine $496C64 TgaiGI_SetFrameDelay }
 procedure TgaiGI.SetFrameDelay(FrameInSequence, DelayMs: Integer);
 begin
   WriteInt32EC(AddPointerOffset(SequenceFrameDelayTable, FrameInSequence * SizeOf(Integer)), DelayMs);
 end;
-{ @end $480BB0 }
+{ @end $496C64 }
 
-{ @routine $480BEC TgaiGI_GetFrameDelay }
+{ @routine $496C94 TgaiGI_GetFrameDelay }
 function TgaiGI.GetFrameDelay(FrameInSequence: Integer): Integer;
 begin
   Result := ReadIntegerEC(AddPointerOffset(SequenceFrameDelayTable, FrameInSequence * SizeOf(Integer)));
 end;
-{ @end $480BEC }
+{ @end $496C94 }
 
-{ @routine $480C24 TgaiGI_HitTestPixel }
+{ @routine $496CBC TgaiGI_HitTestPixel }
 function TgaiGI.HitTestPixel(Point: TPoint): Boolean;
 var Image: TCGaiEC; First: TCGiEC; Width, Height, Left, Right, X, Top, Bottom, Y: Integer; Pixel: Cardinal; Pixels: Pointer; Buffer: TGraphBufGR; Frame: TgiGR; Clip, Bounds, FirstBounds: TRect;
 begin
   Result := False;
   Pixel := 0;
-  Clip.TopLeft := Point;
+  Clip.Left := Point.X;
+  Clip.Top := Point.Y;
   Clip.Right := Point.X + 1;
   Clip.Bottom := Point.Y + 1;
   Image := nil;
@@ -505,97 +494,92 @@ begin
       Width := 0;
       Height := 0;
     end;
-  if ImageKindX = ikxLeftFill then
-  begin
-    Left := HitTestBounds.Left;
-    Right := HitTestBounds.Right;
-  end
-  else if ImageKindX = ikxRightFill then
-  begin
-    Right := HitTestBounds.Right;
-    Left := Right;
-    while Left > Clip.Left do Dec(Left, Width);
-  end
-  else if ImageKindX = ikxLeft then
-  begin
-    Left := HitTestBounds.Left;
-    Right := Left + Width;
-  end
-  else if ImageKindX = ikxRight then
-  begin
-    Right := HitTestBounds.Right;
-    Left := Right - Width;
-  end
-  else if ImageKindX = ikxCenter then
-  begin
-    Left := (HitTestBounds.Right - HitTestBounds.Left) div 2 + HitTestBounds.Left - Width div 2;
-    Right := Left + Width;
-  end
-  else begin Exit; end;
-  if ImageKindY = ikyTopFill then
-  begin
-    Top := HitTestBounds.Top;
-    Bottom := HitTestBounds.Bottom;
-  end
-  else if ImageKindY = ikyBottomFill then
-  begin
-    Bottom := HitTestBounds.Bottom;
-    Top := Bottom;
-    while Top > Clip.Top do Dec(Top, Height);
-  end
-  else if ImageKindY = ikyTop then
-  begin
-    Top := HitTestBounds.Top;
-    Bottom := Top + Height;
-  end
-  else if ImageKindY = ikyBottom then
-  begin
-    Bottom := HitTestBounds.Bottom;
-    Top := Bottom - Height;
-  end
-  else if ImageKindY = ikyCenter then
-  begin
-    Top := (HitTestBounds.Bottom - HitTestBounds.Top) div 2 + HitTestBounds.Top - Height div 2;
-    Bottom := Top + Height;
-  end
-  else begin Exit; end;
+    if ImageKindX = ikxLeftFill then
+    begin
+      Left := HitTestBounds.Left;
+      Right := HitTestBounds.Right;
+    end
+    else if ImageKindX = ikxRightFill then
+    begin
+      Right := HitTestBounds.Right;
+      Left := Right;
+      while Left > Clip.Left do Dec(Left, Width);
+    end
+    else if ImageKindX = ikxLeft then
+    begin
+      Left := HitTestBounds.Left;
+      Right := Left + Width;
+    end
+    else if ImageKindX = ikxRight then
+    begin
+      Right := HitTestBounds.Right;
+      Left := Right - Width;
+    end
+    else if ImageKindX = ikxCenter then
+    begin
+      Left := (HitTestBounds.Right - HitTestBounds.Left) div 2 + HitTestBounds.Left - Width div 2;
+      Right := Left + Width;
+    end
+    else begin Exit; end;
+    if ImageKindY = ikyTopFill then
+    begin
+      Top := HitTestBounds.Top;
+      Bottom := HitTestBounds.Bottom;
+    end
+    else if ImageKindY = ikyBottomFill then
+    begin
+      Bottom := HitTestBounds.Bottom;
+      Top := Bottom;
+      while Top > Clip.Top do Dec(Top, Height);
+    end
+    else if ImageKindY = ikyTop then
+    begin
+      Top := HitTestBounds.Top;
+      Bottom := Top + Height;
+    end
+    else if ImageKindY = ikyBottom then
+    begin
+      Bottom := HitTestBounds.Bottom;
+      Top := Bottom - Height;
+    end
+    else if ImageKindY = ikyCenter then
+    begin
+      Top := (HitTestBounds.Bottom - HitTestBounds.Top) div 2 + HitTestBounds.Top - Height div 2;
+      Bottom := Top + Height;
+    end
+    else begin Exit; end;
     Pixels := AddPointerOffset(@Pixel, -(ScreenRenderBuffer.PitchBytes * Point.Y + Point.X * SizeOf(Word)));
     Buffer := TGraphBufGR.Create(False);
     Buffer.AttachPixels(1, 1, ScreenRenderBuffer.PitchBytes, Pixels);
     if Image <> nil then Bounds := Image.GetBoundsRect;
     if (Image <> nil) and (not Image.HasPlaybackFlags) then
     begin
-    Y := Top;
-    while Y < Bottom do
-    begin
-      X := Left;
-      while X < Right do
+      Y := Top;
+      while Y < Bottom do
       begin
-        Frame := Image.LoadFrameGi(GetSequenceFrameSourceIndex(SequenceFrame));
-        Frame.DrawToGraphBuf(Buffer, X + Frame.GetBoundsRect.Left - Bounds.Left, Y + Frame.GetBoundsRect.Top - Bounds.Top, Clip, 0, 255);
-        Inc(X, Width);
-      end;
-      Inc(Y, Height);
-    end;
-    end
-    else if FirstFrameImageCache <> nil then
-    begin
-      if CachedPlaybackGraphBuf <> nil then
-      begin
-        if (CachedPlaybackGraphBuf.Width = Width) and (CachedPlaybackGraphBuf.Height = Height) then
+        X := Left;
+        while X < Right do
         begin
-    Y := Top;
-    while Y < Bottom do
-    begin
-      X := Left;
-      while X < Right do
-      begin
-        DrawAlphaGraphBuffer16Clipped(Buffer.GetPixels, Buffer.PitchBytes, X, Y, CachedPlaybackGraphBuf, Clip);
-        Inc(X, Width);
-      end;
-      Inc(Y, Height);
-    end;
+          Frame := Image.LoadFrameGi(GetSequenceFrameSourceIndex(SequenceFrame));
+          Frame.DrawToGraphBuf(Buffer, X + Frame.GetBoundsRect.Left - Bounds.Left, Y + Frame.GetBoundsRect.Top - Bounds.Top, Clip, 0, 255);
+          Inc(X, Width);
         end;
+        Inc(Y, Height);
+      end;
+    end
+    else if (FirstFrameImageCache <> nil) and (CachedPlaybackGraphBuf <> nil) and
+      (Integer(CachedPlaybackGraphBuf.Width) = Width) and (Integer(CachedPlaybackGraphBuf.Height) = Height) then
+    begin
+      Y := Top;
+      while Y < Bottom do
+      begin
+        X := Left;
+        while X < Right do
+        begin
+          DrawAlphaGraphBuffer16Clipped(Buffer.GetPixels, Buffer.PitchBytes, X, Y, CachedPlaybackGraphBuf, Clip);
+          Inc(X, Width);
+        end;
+        Inc(Y, Height);
       end;
     end;
     Buffer.Free;
@@ -605,46 +589,44 @@ begin
   end;
   Result := Pixel <> 0;
 end;
-{ @end $480C24 }
+{ @end $496CBC }
 
-{ @routine $4811F8 TgaiGI_SetActive }
+{ @routine $4971DC TgaiGI_SetActive }
 procedure TgaiGI.SetActive(Value: Boolean);
 begin
-  if Active <> Value then
+  if Active = Value then Exit;
+  inherited SetActive(Value);
+  if not Value then
   begin
-    inherited SetActive(Value);
-    if not Value then
+    if AutoFrameTimer <> 0 then
     begin
-  if AutoFrameTimer <> nil then
-  begin
-    MessageLoop.CancelCallbackTimer(AutoFrameTimer);
-    AutoFrameTimer := nil;
-  end;
-  if CachedPlaybackGraphBuf <> nil then
-  begin
-    CachedPlaybackGraphBuf.Free;
-    CachedPlaybackGraphBuf := nil;
-  end;
-      Active := True;
-      inherited Invalidate;
-      Active := False;
-    end
-    else
-    begin
-      if not StopPlaybackRequested then RestartPlayback;
-      inherited Invalidate;
+      MessageLoop.CancelCallbackTimer(AutoFrameTimer);
+      AutoFrameTimer := 0;
     end;
+    if CachedPlaybackGraphBuf <> nil then
+    begin
+      CachedPlaybackGraphBuf.Free;
+      CachedPlaybackGraphBuf := nil;
+    end;
+    Active := True;
+    inherited Invalidate;
+    Active := False;
+  end
+  else
+  begin
+    if not StopPlaybackRequested then RestartPlayback;
+    inherited Invalidate;
   end;
 end;
-{ @end $4811F8 }
+{ @end $4971DC }
 
-{ @routine $4812AC TgaiGI_OnDeactivate }
+{ @routine $497254 TgaiGI_OnDeactivate }
 procedure TgaiGI.OnDeactivate;
 begin
-  if AutoFrameTimer <> nil then
+  if AutoFrameTimer <> 0 then
   begin
     MessageLoop.CancelCallbackTimer(AutoFrameTimer);
-    AutoFrameTimer := nil;
+    AutoFrameTimer := 0;
   end;
   if CachedPlaybackGraphBuf <> nil then
   begin
@@ -653,25 +635,25 @@ begin
   end;
   inherited OnDeactivate;
 end;
-{ @end $4812AC }
+{ @end $497254 }
 
-{ @routine $481310 TgaiGI_LoadFromConfigPath }
+{ @routine $497294 TgaiGI_LoadFromConfigPath }
 procedure TgaiGI.LoadFromConfigPath(const Path: WideString);
 begin
   inherited LoadFromConfigPath(Path);
   LoadAnimationProperties(UiStyleConfig.GetBlockByPath(Path));
 end;
-{ @end $481310 }
+{ @end $497294 }
 
-{ @routine $481344 TgaiGI_LoadFromBlock }
+{ @routine $4972C0 TgaiGI_LoadFromBlock }
 procedure TgaiGI.LoadFromBlock(Block: TBlockParEC);
 begin
   inherited LoadFromBlock(Block);
   LoadAnimationProperties(Block);
 end;
-{ @end $481344 }
+{ @end $4972C0 }
 
-{ @routine $48136C TgaiGI_LoadAnimationProperties }
+{ @routine $4972DC TgaiGI_LoadAnimationProperties }
 procedure TgaiGI.LoadAnimationProperties(Block: TBlockParEC);
 begin
   if Block.CountParams('Image') > 0 then MainImageCache.SetCacheKey(Block.GetParam('Image'));
@@ -691,66 +673,62 @@ begin
   if Block.CountParams('SoundStart') > 0 then
   begin
     StartSoundName := Block.GetParam('SoundStart');
-  if AutoFrameTimer <> nil then
+  if AutoFrameTimer <> 0 then
   begin
     MessageLoop.CancelCallbackTimer(AutoFrameTimer);
-    AutoFrameTimer := nil;
+    AutoFrameTimer := 0;
   end;
   end;
 end;
-{ @end $48136C }
+{ @end $4972DC }
 
-{ @routine $481840 TgaiGI_UpdateAutoGeometry }
+{ @routine $497764 TgaiGI_UpdateAutoGeometry }
 procedure TgaiGI.UpdateAutoGeometry;
 var Image: TCGaiEC;
 begin
   inherited UpdateAutoGeometry;
   if (AutoUpdateFlags and agfPosition) = agfPosition then SetPosition(Parent.ToLocalPoint(GetContentOrigin));
   if (AutoUpdateFlags and agfSize) = agfSize then SetSize(GetContentSize);
-  if SequenceIndex >= 0 then
+  if SequenceIndex < 0 then Exit;
+  ClearFrameSequence;
+  if (not FirstFrameOnly) and (MainImageCache <> nil) and (MainImageCache.CacheKey <> '') then
   begin
-    ClearFrameSequence;
-    if (not FirstFrameOnly) and (MainImageCache <> nil) and (MainImageCache.CacheKey <> '') then
-    begin
-      Image := AcquireCachedGai(MainImageCache);
-      try
-        if (SequenceIndex < 0) or (SequenceIndex >= Image.GetSequenceCount) then
-        begin
-          MainImageCache.Release;
-          SequenceFrameCount := 0;
-          AppendLogLineThreadSafe('TgaiGI.AfterLoad. Anim not found.');
-          Exit;
-        end;
-        SequenceFrameCount := Image.GetSequenceFrameCount(SequenceIndex);
-        SequenceFrameIndexTable := ReAllocFromHeapREC(GaiFrameHeap, SequenceFrameIndexTable, SequenceFrameCount * SizeOf(Integer));
-        SequenceFrameDelayTable := ReAllocFromHeapREC(GaiFrameHeap, SequenceFrameDelayTable, SequenceFrameCount * SizeOf(Integer));
-        Image.FillSequenceFrameIndexTable(SequenceIndex, SequenceFrameIndexTable, SizeOf(Integer));
-        Image.FillSequenceFrameDelayTable(SequenceIndex, SequenceFrameDelayTable, SizeOf(Integer));
-      finally
+    Image := AcquireCachedGai(MainImageCache);
+    try
+      if (SequenceIndex < 0) or (SequenceIndex >= Image.GetSequenceCount) then
+      begin
         MainImageCache.Release;
+        SequenceFrameCount := 0;
+        AppendLogLineThreadSafe('TgaiGI.AfterLoad. Anim not found.');
+        Exit;
       end;
+      SequenceFrameCount := Image.GetSequenceFrameCount(SequenceIndex);
+      SequenceFrameIndexTable := ReAllocFromHeapREC(GaiFrameHeap, SequenceFrameIndexTable, SequenceFrameCount * SizeOf(Integer));
+      SequenceFrameDelayTable := ReAllocFromHeapREC(GaiFrameHeap, SequenceFrameDelayTable, SequenceFrameCount * SizeOf(Integer));
+      Image.FillSequenceFrameIndexTable(SequenceIndex, SequenceFrameIndexTable, SizeOf(Integer));
+      Image.FillSequenceFrameDelayTable(SequenceIndex, SequenceFrameDelayTable, SizeOf(Integer));
+    finally
+      MainImageCache.Release;
     end;
   end;
 end;
-{ @end $481840 }
+{ @end $497764 }
 
-{ @routine $481A68 TgaiGI_SetOneCycleDuration }
+{ @routine $497980 TgaiGI_SetOneCycleDuration }
 procedure TgaiGI.SetOneCycleDuration(DurationMs: Integer);
 var Index, Delay: Integer;
 begin
   StopAfterOneCycle := True;
-  if SequenceFrameDelayTable <> nil then
-  begin
-    Delay := Round(DurationMs / SequenceFrameCount);
-    if Delay < 1 then Delay := 1;
-    for Index := 0 to SequenceFrameCount - 1 do
-      WriteInt32EC(AddPointerOffset(SequenceFrameDelayTable, Index * SizeOf(Integer)), Delay);
-  end;
+  if SequenceFrameDelayTable = nil then Exit;
+  Delay := Round(DurationMs / SequenceFrameCount);
+  if Delay < 1 then Delay := 1;
+  for Index := 0 to SequenceFrameCount - 1 do
+    WriteInt32EC(AddPointerOffset(SequenceFrameDelayTable, Index * SizeOf(Integer)), Delay);
 end;
-{ @end $481A68 }
+{ @end $497980 }
 
-{ @routine $481AF8 TgaiGI_AdvanceAutoFrame }
-procedure TgaiGI.AdvanceAutoFrame(Timer: PCallbackTimerGI; UserData: Integer);
+{ @routine $4979F8 TgaiGI_AdvanceAutoFrame }
+procedure TgaiGI.AdvanceAutoFrame(Timer: TCallbackTimerIdGI; UserData: Cardinal);
 var Wrapped: Boolean; Delay: Integer;
 begin
   Wrapped := False;
@@ -764,13 +742,13 @@ begin
   end;
   if StopPlaybackRequested then
   begin
-  if AutoFrameTimer <> nil then
+  if AutoFrameTimer <> 0 then
   begin
     MessageLoop.CancelCallbackTimer(AutoFrameTimer);
-    AutoFrameTimer := nil;
+    AutoFrameTimer := 0;
   end;
   end
-  else if AutoFrameTimer = nil then
+  else if AutoFrameTimer = 0 then
   begin
     Delay := GetFrameDelay(SequenceFrame);
     AutoFrameTimer := MessageLoop.ScheduleCallbackTimer(Delay, Delay, AdvanceAutoFrame);
@@ -781,19 +759,17 @@ begin
     MessageLoop.UpdateCallbackTimer(AutoFrameTimer, Delay, Delay);
   end;
   Invalidate;
-  if Wrapped then
+  if not Wrapped then Exit;
+  if StopAfterOneCycle then
   begin
-    if StopAfterOneCycle then
-    begin
-      StopAutoPlayback;
-      SetActive(False);
-    end;
-    if Assigned(CycleCompleteCallback) then CycleCompleteCallback(Self);
+    StopAutoPlayback;
+    SetActive(False);
   end;
+  if Assigned(CycleCompleteCallback) then CycleCompleteCallback(Self);
 end;
-{ @end $481AF8 }
+{ @end $4979F8 }
 
-{ @routine $481C84 TgaiGI_Invalidate }
+{ @routine $497B14 TgaiGI_Invalidate }
 procedure TgaiGI.Invalidate;
 var Image: TCGaiEC; First: TCGiEC; Width, Height, Left, Right, X, Top, Bottom, Y, FrameIndex, RectIndex, RectCount: Integer; Frame: TgiGR; Bounds, FirstBounds, Rect, Clip, FrameBounds: TRect;
 begin
@@ -916,23 +892,23 @@ begin
   end
   else inherited Invalidate;
 end;
-{ @end $481C84 }
+{ @end $497B14 }
 
-{ @routine $4821E0 TgaiGI_SetHardwareMirrorHorizontal }
+{ @routine $498004 TgaiGI_SetHardwareMirrorHorizontal }
 procedure TgaiGI.SetHardwareMirrorHorizontal(Value: Boolean);
 begin
   HardwareMirrorHorizontal := Value;
 end;
-{ @end $4821E0 }
+{ @end $498004 }
 
-{ @routine $4821FC TgaiGI_Draw }
+{ @routine $49800C TgaiGI_Draw }
 procedure TgaiGI.Draw(ClipRect: TRect);
 var Image: TCGaiEC; First: TCGiEC; Width, Height, Left, Right, X, Top, Bottom, Y, FrameIndex, FrameCount: Integer;
   Frame: TgiGR; Texture: IDirect3DTexture9; FrameOrigin: TPoint; Bounds, FirstBounds: TRect;
 begin
   if SequenceFrame < 0 then Exit;
   if (SequenceFrame >= SequenceFrameCount) and (not FirstFrameOnly) then Exit;
-  if (AutoFrameTimer = nil) and (not StopPlaybackRequested) then RestartPlayback;
+  if (AutoFrameTimer = 0) and (not StopPlaybackRequested) then RestartPlayback;
   if (MainImageCache.CacheKey = '') and
     ((FirstFrameImageCache = nil) or (FirstFrameImageCache.CacheKey = '') or (not FirstFrameOnly)) then Exit;
   Image := nil;
@@ -1104,7 +1080,7 @@ begin
     begin
       if FirstFrameImageCache <> nil then
       begin
-        if (CachedPlaybackGraphBuf = nil) or (CachedPlaybackGraphBuf.Width <> Width) or (CachedPlaybackGraphBuf.Height <> Height) then
+        if (CachedPlaybackGraphBuf = nil) or (Integer(CachedPlaybackGraphBuf.Width) <> Width) or (Integer(CachedPlaybackGraphBuf.Height) <> Height) then
         begin
           LastCachedFrameIndex := -1;
           if CachedPlaybackGraphBuf = nil then CachedPlaybackGraphBuf := TGraphBufGR.Create(True);
@@ -1161,7 +1137,7 @@ begin
       end
       else if Image <> nil then
       begin
-        if (CachedPlaybackGraphBuf = nil) or (CachedPlaybackGraphBuf.Width <> Width) or (CachedPlaybackGraphBuf.Height <> Height) then
+        if (CachedPlaybackGraphBuf = nil) or (Integer(CachedPlaybackGraphBuf.Width) <> Width) or (Integer(CachedPlaybackGraphBuf.Height) <> Height) then
         begin
           LastCachedFrameIndex := -1;
           if CachedPlaybackGraphBuf = nil then CachedPlaybackGraphBuf := TGraphBufGR.Create(True);
@@ -1223,9 +1199,9 @@ begin
     if First <> nil then FirstFrameImageCache.Release;
   end;
 end;
-{ @end $4821FC }
+{ @end $49800C }
 
-{ @routine $4830DC TgaiGI_PrimeImageCaches }
+{ @routine $498D64 TgaiGI_PrimeImageCaches }
 procedure TgaiGI.PrimeImageCaches;
 begin
   if (MainImageCache <> nil) and (not FirstFrameOnly) and (MainImageCache.CacheKey <> '') then
@@ -1239,16 +1215,16 @@ begin
     FirstFrameImageCache.Release;
   end;
 end;
-{ @end $4830DC }
+{ @end $498D64 }
 
-{ @routine $48316C TgaiGI_QueueImageLoad }
+{ @routine $498DC4 TgaiGI_QueueImageLoad }
 procedure TgaiGI.QueueImageLoad(PendingLoads: TList);
 begin
   MainImageCache.QueueLoadIfMissing(PendingLoads);
 end;
-{ @end $48316C }
+{ @end $498DC4 }
 
-{ @routine $483190 LoadGaiFrameToGraphBuf }
+{ @routine $498DD0 LoadGaiFrameToGraphBuf }
 procedure LoadGaiFrameToGraphBuf(const Path: WideString; GraphBuf: TGraphBufGR; Seed: Cardinal);
 var
   Control: TCacheControlEC;
@@ -1268,6 +1244,6 @@ begin
   end;
   Control.Free;
 end;
-{ @end $483190 }
+{ @end $498DD0 }
 
 end.

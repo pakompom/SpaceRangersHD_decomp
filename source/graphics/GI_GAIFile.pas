@@ -1,5 +1,4 @@
 unit GI_GAIFile;
-// Unit bracket (inferred): .text 0x004989A4..0x0049A538; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 
 interface
@@ -11,7 +10,7 @@ type
   TGAIFileThreadGI = class(TThreadEC) // @size $30
   public
     Owner: TGAIFileGI; // @offset $2C
-    procedure Execute; override; // @addr $498B28
+    procedure Execute; override; // @addr $4B5868
   end;
 
   TGAIFileGI = class(TObjectGI) // @size $1A8
@@ -24,7 +23,7 @@ type
     FrameLock: TCriticalSection; // @offset $160
     PreloadCount: Integer; // @offset $164
     FrameImage: TgiGR; // @offset $168
-    FrameTimer: PCallbackTimerGI; // @offset $16C
+    FrameTimer: TCallbackTimerIdGI; // @offset $16C
     ImageKindX: TImageKindXGI; // @offset $170
     ImageKindY: TImageKindYGI; // @offset $171
     CurrentFrame: Integer; // @offset $174
@@ -38,29 +37,29 @@ type
     CycleCompleteCallback: TObjectNotifyEventGI; // @offset $198
     Stopped: Boolean; // @offset $1A0
     AutoUpdateFlags: Cardinal; // @offset $1A4
-    constructor Create(Owner: TObjectGI); // @addr $498D88
-    destructor Destroy; override; // @addr $498E78
-    procedure Clear; override; // @addr $498FE0
-    procedure OpenImage; // @addr $498FFC
-    procedure CloseImage; // @addr $4990A8
-    function GetFrameData(FrameIndex: Integer): Pointer; // @addr $4991B8
-    procedure TrimFrameCache; // @addr $499358
-    function GetFrameCount: Integer; // @addr $499498
-    function GetContentSize: TPoint; // @addr $499520
-    function GetContentOrigin: TPoint; // @addr $4995BC
-    procedure SetImageKindX(Value: TImageKindXGI); // @addr $499658
-    procedure SetImageKindY(Value: TImageKindYGI); // @addr $499690
-    procedure SetSize(Size: TPoint); override; // @addr $4996C8
-    procedure SetFrameSequence(Sequence: WideString); // @addr $4996EC
-    function GetSequenceFrame(Index: Integer): Integer; // @addr $4999E4
-    function GetFrameDelay(Index: Integer): Integer; // @addr $499A1C
-    procedure OnDeactivate; override; // @addr $499A54
-    procedure LoadFromConfigPath(const Path: WideString); override; // @addr $499A94
-    procedure LoadFromBlock(Block: TBlockParEC); override; // @addr $499AC8
-    procedure LoadImageProperties(Block: TBlockParEC); // @addr $499AF0
-    procedure UpdateAutoGeometry; override; // @addr $499DE0
-    procedure AdvanceFrame(Timer: PCallbackTimerGI; UserData: Integer); // @addr $499E54
-    procedure Draw(ClipRect: TRect); override; // @addr $499F58
+    constructor Create(Owner: TObjectGI); // @addr $4B5A78
+    destructor Destroy; override; // @addr $4B5B34
+    procedure Clear; override; // @addr $4B5C20
+    procedure OpenImage; // @addr $4B5C34
+    procedure CloseImage; // @addr $4B5CC0
+    function GetFrameData(FrameIndex: Integer): Pointer; // @addr $4B5D78
+    procedure TrimFrameCache; // @addr $4B5EC8
+    function GetFrameCount: Integer; // @addr $4B5FC0
+    function GetContentSize: TPoint; // @addr $4B6030
+    function GetContentOrigin: TPoint; // @addr $4B60B8
+    procedure SetImageKindX(Value: TImageKindXGI); // @addr $4B6140
+    procedure SetImageKindY(Value: TImageKindYGI); // @addr $4B6160
+    procedure SetSize(Size: TPoint); override; // @addr $4B6180
+    procedure SetFrameSequence(Sequence: WideString); // @addr $4B6198
+    function GetSequenceFrame(Index: Integer): Integer; // @addr $4B641C
+    function GetFrameDelay(Index: Integer): Integer; // @addr $4B6444
+    procedure OnDeactivate; override; // @addr $4B646C
+    procedure LoadFromConfigPath(const Path: WideString); override; // @addr $4B6498
+    procedure LoadFromBlock(Block: TBlockParEC); override; // @addr $4B64C4
+    procedure LoadImageProperties(Block: TBlockParEC); // @addr $4B64E0
+    procedure UpdateAutoGeometry; override; // @addr $4B67AC
+    procedure AdvanceFrame(Timer: TCallbackTimerIdGI; UserData: Cardinal); // @addr $4B680C
+    procedure Draw(ClipRect: TRect); override; // @addr $4B68C4
   end;
 
 implementation
@@ -69,11 +68,12 @@ uses Windows, Classes, EC_Mem, EC_Str, GR_Main, EC_Struct;
 
 function ReadGaiFrameSize(const Directory: Pointer; const Index: Integer): Cardinal; inline;
 begin
+  // Each directory entry stores DataOffset before DataSize.
   Result := ReadDWordEC(AddPointerOffset(Directory,
-    Integer(@PGaiFrameEntry(Index * SizeOf(TGaiFrameEntry)).DataSize)));
+    Index * SizeOf(TGaiFrameEntry) + SizeOf(Cardinal)));
 end;
 
-{ @routine $498B28 TGAIFileThreadGI_Execute }
+{ @routine $4B5868 TGAIFileThreadGI_Execute }
 procedure TGAIFileThreadGI.Execute;
 var Index, Count, SourceFrame: Integer; Data: Pointer;
 begin
@@ -111,9 +111,9 @@ begin
     Owner.FrameLock.Leave;
   end;
 end;
-{ @end $498B28 }
+{ @end $4B5868 }
 
-{ @routine $498D88 TGAIFileGI_Create }
+{ @routine $4B5A78 TGAIFileGI_Create }
 constructor TGAIFileGI.Create(Owner: TObjectGI);
 begin
   inherited Create(Owner);
@@ -122,16 +122,16 @@ begin
   ImageFile := TFileEC.Create;
   LoaderThread := TGAIFileThreadGI.Create;
   LoaderThread.Owner := Self;
-  LoaderThread.SetPriority(1);
+  LoaderThread.SetPriority(ThreadPriorityLowest);
   ImageKindX := ikxCenter;
   ImageKindY := ikyCenter;
   Stopped := False;
   PreloadCount := 10;
   TransparentColor := 0;
 end;
-{ @end $498D88 }
+{ @end $4B5A78 }
 
-{ @routine $498E78 TGAIFileGI_Destroy }
+{ @routine $4B5B34 TGAIFileGI_Destroy }
 destructor TGAIFileGI.Destroy;
 begin
   CloseImage;
@@ -140,10 +140,10 @@ begin
     LoaderThread.Free;
     LoaderThread := nil;
   end;
-  if FrameTimer <> nil then
+  if FrameTimer <> 0 then
   begin
     MessageLoop.CancelCallbackTimer(FrameTimer);
-    FrameTimer := nil;
+    FrameTimer := 0;
   end;
   if SequenceFrames <> nil then
   begin
@@ -177,17 +177,17 @@ begin
   end;
   inherited Destroy;
 end;
-{ @end $498E78 }
+{ @end $4B5B34 }
 
-{ @routine $498FE0 TGAIFileGI_Clear }
+{ @routine $4B5C20 TGAIFileGI_Clear }
 procedure TGAIFileGI.Clear;
 begin
   CloseImage;
   inherited Clear;
 end;
-{ @end $498FE0 }
+{ @end $4B5C20 }
 
-{ @routine $498FFC TGAIFileGI_OpenImage }
+{ @routine $4B5C34 TGAIFileGI_OpenImage }
 procedure TGAIFileGI.OpenImage;
 begin
   CloseImage;
@@ -198,9 +198,9 @@ begin
   FrameBuffers := AllocClearEC(Header.FrameCount * SizeOf(Pointer));
   LoaderThread.Start;
 end;
-{ @end $498FFC }
+{ @end $4B5C34 }
 
-{ @routine $4990A8 TGAIFileGI_CloseImage }
+{ @routine $4B5CC0 TGAIFileGI_CloseImage }
 procedure TGAIFileGI.CloseImage;
 var Data: Pointer; I: Integer;
 begin
@@ -215,20 +215,18 @@ begin
     FreeEC(FrameDirectory);
     FrameDirectory := nil;
   end;
-  if FrameBuffers <> nil then
+  if FrameBuffers = nil then Exit;
+  for I := 0 to Header.FrameCount - 1 do
   begin
-    for I := 0 to Header.FrameCount - 1 do
-    begin
-      Data := Pointer(ReadDWordEC(AddPointerOffset(FrameBuffers, I * SizeOf(Pointer))));
-      if Data <> nil then FreeEC(Data);
-    end;
-    FreeEC(FrameBuffers);
-    FrameBuffers := nil;
+    Data := Pointer(ReadDWordEC(AddPointerOffset(FrameBuffers, I * SizeOf(Pointer))));
+    if Data <> nil then FreeEC(Data);
   end;
+  FreeEC(FrameBuffers);
+  FrameBuffers := nil;
 end;
-{ @end $4990A8 }
+{ @end $4B5CC0 }
 
-{ @routine $4991B8 TGAIFileGI_GetFrameData }
+{ @routine $4B5D78 TGAIFileGI_GetFrameData }
 function TGAIFileGI.GetFrameData(FrameIndex: Integer): Pointer;
 var Data: Pointer;
 begin
@@ -261,9 +259,9 @@ begin
   end;
   Result := Data;
 end;
-{ @end $4991B8 }
+{ @end $4B5D78 }
 
-{ @routine $499358 TGAIFileGI_TrimFrameCache }
+{ @routine $4B5EC8 TGAIFileGI_TrimFrameCache }
 procedure TGAIFileGI.TrimFrameCache;
 var I, J, Index: Integer; Data: Pointer;
 begin
@@ -298,9 +296,9 @@ begin
     LoaderThread.Start;
   end;
 end;
-{ @end $499358 }
+{ @end $4B5EC8 }
 
-{ @routine $499498 TGAIFileGI_GetFrameCount }
+{ @routine $4B5FC0 TGAIFileGI_GetFrameCount }
 function TGAIFileGI.GetFrameCount: Integer;
 begin
   if ImageFile.GetFileName = '' then Result := 0
@@ -310,9 +308,9 @@ begin
     Result := Header.FrameCount;
   end;
 end;
-{ @end $499498 }
+{ @end $4B5FC0 }
 
-{ @routine $499520 TGAIFileGI_GetContentSize }
+{ @routine $4B6030 TGAIFileGI_GetContentSize }
 function TGAIFileGI.GetContentSize: TPoint;
 begin
   if ImageFile.GetFileName = '' then Result := Classes.Point(0, 0)
@@ -322,9 +320,9 @@ begin
     Result := SubtractPoints(Header.Bounds.BottomRight, Header.Bounds.TopLeft);
   end;
 end;
-{ @end $499520 }
+{ @end $4B6030 }
 
-{ @routine $4995BC TGAIFileGI_GetContentOrigin }
+{ @routine $4B60B8 TGAIFileGI_GetContentOrigin }
 function TGAIFileGI.GetContentOrigin: TPoint;
 begin
   if ImageFile.GetFileName = '' then Result := Classes.Point(0, 0)
@@ -334,38 +332,34 @@ begin
     Result := Header.Bounds.TopLeft;
   end;
 end;
-{ @end $4995BC }
+{ @end $4B60B8 }
 
-{ @routine $499658 TGAIFileGI_SetImageKindX }
+{ @routine $4B6140 TGAIFileGI_SetImageKindX }
 procedure TGAIFileGI.SetImageKindX(Value: TImageKindXGI);
 begin
-  if ImageKindX <> Value then
-  begin
-    ImageKindX := Value;
-    Invalidate;
-  end;
+  if ImageKindX = Value then Exit;
+  ImageKindX := Value;
+  Invalidate;
 end;
-{ @end $499658 }
+{ @end $4B6140 }
 
-{ @routine $499690 TGAIFileGI_SetImageKindY }
+{ @routine $4B6160 TGAIFileGI_SetImageKindY }
 procedure TGAIFileGI.SetImageKindY(Value: TImageKindYGI);
 begin
-  if ImageKindY <> Value then
-  begin
-    ImageKindY := Value;
-    Invalidate;
-  end;
+  if ImageKindY = Value then Exit;
+  ImageKindY := Value;
+  Invalidate;
 end;
-{ @end $499690 }
+{ @end $4B6160 }
 
-{ @routine $4996C8 TGAIFileGI_SetSize }
+{ @routine $4B6180 TGAIFileGI_SetSize }
 procedure TGAIFileGI.SetSize(Size: TPoint);
 begin
   inherited SetSize(Size);
 end;
-{ @end $4996C8 }
+{ @end $4B6180 }
 
-{ @routine $4996EC TGAIFileGI_SetFrameSequence }
+{ @routine $4B6198 TGAIFileGI_SetFrameSequence }
 procedure TGAIFileGI.SetFrameSequence(Sequence: WideString);
 var Text: WideString; I, Count, J, FrameCount, Delay, First, Last: Integer;
 begin
@@ -406,52 +400,50 @@ begin
   end;
   if not Stopped then FrameTimer := MessageLoop.ScheduleCallbackTimer(GetFrameDelay(CurrentFrame), $FFFFFF, AdvanceFrame);
 end;
-{ @end $4996EC }
+{ @end $4B6198 }
 
-{ @routine $4999E4 TGAIFileGI_GetSequenceFrame }
+{ @routine $4B641C TGAIFileGI_GetSequenceFrame }
 function TGAIFileGI.GetSequenceFrame(Index: Integer): Integer;
 begin
   Result := ReadIntegerEC(AddPointerOffset(SequenceFrames, Index * SizeOf(Integer)));
 end;
-{ @end $4999E4 }
+{ @end $4B641C }
 
-{ @routine $499A1C TGAIFileGI_GetFrameDelay }
+{ @routine $4B6444 TGAIFileGI_GetFrameDelay }
 function TGAIFileGI.GetFrameDelay(Index: Integer): Integer;
 begin
   Result := ReadIntegerEC(AddPointerOffset(FrameDelays, Index * SizeOf(Integer)));
 end;
-{ @end $499A1C }
+{ @end $4B6444 }
 
-{ @routine $499A54 TGAIFileGI_OnDeactivate }
+{ @routine $4B646C TGAIFileGI_OnDeactivate }
 procedure TGAIFileGI.OnDeactivate;
 begin
   inherited OnDeactivate;
   CloseImage;
-  if PlaybackBuffer <> nil then
-  begin
-    PlaybackBuffer.Free;
-    PlaybackBuffer := nil;
-  end;
+  if PlaybackBuffer = nil then Exit;
+  PlaybackBuffer.Free;
+  PlaybackBuffer := nil;
 end;
-{ @end $499A54 }
+{ @end $4B646C }
 
-{ @routine $499A94 TGAIFileGI_LoadFromConfigPath }
+{ @routine $4B6498 TGAIFileGI_LoadFromConfigPath }
 procedure TGAIFileGI.LoadFromConfigPath(const Path: WideString);
 begin
   inherited LoadFromConfigPath(Path);
   LoadImageProperties(UiStyleConfig.GetBlockByPath(Path));
 end;
-{ @end $499A94 }
+{ @end $4B6498 }
 
-{ @routine $499AC8 TGAIFileGI_LoadFromBlock }
+{ @routine $4B64C4 TGAIFileGI_LoadFromBlock }
 procedure TGAIFileGI.LoadFromBlock(Block: TBlockParEC);
 begin
   inherited LoadFromBlock(Block);
   LoadImageProperties(Block);
 end;
-{ @end $499AC8 }
+{ @end $4B64C4 }
 
-{ @routine $499AF0 TGAIFileGI_LoadImageProperties }
+{ @routine $4B64E0 TGAIFileGI_LoadImageProperties }
 procedure TGAIFileGI.LoadImageProperties(Block: TBlockParEC);
 begin
   if Block.CountParams('Image') > 0 then ImageFile.SetFileName(Block.GetParam('Image'));
@@ -465,18 +457,18 @@ begin
   if Block.CountParams('Auto') > 0 then AutoUpdateFlags := ParseAutoGeometryFlagsGI(Block.GetParam('Auto'));
   if Block.CountParams('TransColor') > 0 then TransparentColor := GetColorGI(Block.GetParam('TransColor'));
 end;
-{ @end $499AF0 }
+{ @end $4B64E0 }
 
-{ @routine $499DE0 TGAIFileGI_UpdateAutoGeometry }
+{ @routine $4B67AC TGAIFileGI_UpdateAutoGeometry }
 procedure TGAIFileGI.UpdateAutoGeometry;
 begin
   if AutoUpdateFlags and agfPosition = agfPosition then SetPosition(Parent.ToLocalPoint(GetContentOrigin));
   if AutoUpdateFlags and agfSize = agfSize then SetSize(GetContentSize);
 end;
-{ @end $499DE0 }
+{ @end $4B67AC }
 
-{ @routine $499E54 TGAIFileGI_AdvanceFrame }
-procedure TGAIFileGI.AdvanceFrame(Timer: PCallbackTimerGI; UserData: Integer);
+{ @routine $4B680C TGAIFileGI_AdvanceFrame }
+procedure TGAIFileGI.AdvanceFrame(Timer: TCallbackTimerIdGI; UserData: Cardinal);
 begin
   FrameLock.Enter;
   Inc(CurrentFrame);
@@ -486,17 +478,17 @@ begin
     FrameLock.Leave;
     if Assigned(CycleCompleteCallback) then CycleCompleteCallback(Self);
   end else FrameLock.Leave;
-  if FrameTimer <> nil then
+  if FrameTimer <> 0 then
   begin
     MessageLoop.CancelCallbackTimer(FrameTimer);
-    FrameTimer := nil;
+    FrameTimer := 0;
   end;
   if not Stopped then FrameTimer := MessageLoop.ScheduleCallbackTimer(GetFrameDelay(CurrentFrame), $FFFFFF, AdvanceFrame);
   Invalidate;
 end;
-{ @end $499E54 }
+{ @end $4B680C }
 
-{ @routine $499F58 TGAIFileGI_Draw }
+{ @routine $4B68C4 TGAIFileGI_Draw }
 procedure TGAIFileGI.Draw(ClipRect: TRect);
 var Data: Pointer; Width, Height, StartX, EndX, X, StartY, EndY, Y, Frame, SourceFrame: Integer; Bounds: TRect;
 begin
@@ -580,7 +572,7 @@ begin
     end;
   end else if UsePlaybackBuffer then
   begin
-    if (PlaybackBuffer = nil) or (PlaybackBuffer.Width <> Width) or (PlaybackBuffer.Height <> Height) then
+    if (PlaybackBuffer = nil) or (Integer(PlaybackBuffer.Width) <> Width) or (Integer(PlaybackBuffer.Height) <> Height) then
     begin
       LastBufferedFrame := -1;
       if PlaybackBuffer = nil then PlaybackBuffer := TGraphBufGR.Create(False);
@@ -616,6 +608,6 @@ begin
     end;
   end;
 end;
-{ @end $499F58 }
+{ @end $4B68C4 }
 
 end.

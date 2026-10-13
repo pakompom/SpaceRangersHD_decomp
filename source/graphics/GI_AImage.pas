@@ -1,34 +1,36 @@
 unit GI_AImage;
-// Unit bracket (inferred): .text 0x00483244..0x00483A8A; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
 uses Classes, EC_BlockPar, GI_Main, GI_MessageLoop, Types;
 
 type
-  TAImageGI = class(TObjectGI) // @size 0x12C
+  TAImageGI = class(TObjectGI) // @size 0x12C @methodorder source
   public
-    FrameTimer: PCallbackTimerGI; // @offset 0x120
+    FrameTimer: TCallbackTimerIdGI; // @offset 0x120
     ImageKindX: TImageKindXGI; // @offset 0x124
     ImageKindY: TImageKindYGI; // @offset 0x125
-    HalfAlpha: Boolean; // @offset 0x126
+    HalfAlphaValue: Boolean; // @offset 0x126
     CurrentFrame: TObjectGI; // @offset 0x128
 
-    constructor Create(Owner: TObjectGI); // @addr 0x483364
-    destructor Destroy; override; // @addr 0x4833B8
-    procedure Clear; override; // @addr 0x4833EC @note "Does not call inherited Clear."
-    function GetContentSize: TPoint; // @addr 0x483438 @note "Returns the componentwise maximum size over child frames."
-    procedure SetImageKindX(Value: TImageKindXGI); // @addr 0x4834E0
-    procedure SetImageKindY(Value: TImageKindYGI); // @addr 0x483534
-    procedure SetHalfAlpha(Value: Boolean); // @addr 0x483588
-    procedure SetSize(Size: TPoint); override; // @addr 0x4835DC
-    procedure AdvanceFrame(Timer: PCallbackTimerGI; UserData: Integer); // @addr 0x483628
-    function HitTest(Point: TPoint): Boolean; // @addr 0x483724 @note "Uses rectangular child bounds, regardless of transparent pixels."
-    procedure OnActivate; override; // @addr 0x483768
-    procedure LoadFromConfigPath(const Path: WideString); override; // @addr 0x48378C
-    procedure LoadFromBlock(Block: TBlockParEC); override; // @addr 0x4837C0
-    procedure LoadAnimationProperties(Block: TBlockParEC); // @addr 0x4837E8 @note "Numeric parameter names supply frame delays; values select child images."
-    procedure QueueImageLoad(PendingLoads: TList); override; // @addr 0x483A3C
+    constructor Create(Owner: TObjectGI); // @addr 0x00495C1C
+    destructor Destroy; override; // @addr 0x00495C58
+    procedure Clear; override; // @addr 0x00495C80 @note "Does not call inherited Clear."
+    function GetContentSize: TPoint; // @addr 0x00495CB0 @note "Returns the componentwise maximum size over child frames."
+    procedure SetImageKindX(Value: TImageKindXGI); // @addr 0x00495D34
+    property KindX: TImageKindXGI read ImageKindX write SetImageKindX;
+    procedure SetImageKindY(Value: TImageKindYGI); // @addr 0x00495D6C
+    property KindY: TImageKindYGI read ImageKindY write SetImageKindY;
+    procedure SetHalfAlpha(Value: Boolean); // @addr 0x00495DA4
+    property HalfAlpha: Boolean read HalfAlphaValue write SetHalfAlpha;
+    procedure SetSize(Size: TPoint); override; // @addr 0x00495DDC
+    procedure AdvanceFrame(Timer: TCallbackTimerIdGI; UserData: Cardinal); // @addr 0x00495E18
+    function HitTest(Point: TPoint): Boolean; // @addr 0x00495ECC @note "Uses rectangular child bounds, regardless of transparent pixels."
+    procedure OnActivate; override; // @addr 0x00495EF4
+    procedure LoadFromConfigPath(const Path: WideString); override; // @addr 0x00495F0C
+    procedure LoadFromBlock(Block: TBlockParEC); override; // @addr 0x00495F38
+    procedure LoadAnimationProperties(Block: TBlockParEC); // @addr 0x00495F54 @note "Numeric parameter names supply frame delays; values select child images."
+    procedure QueueImageLoad(PendingLoads: TList); override; // @addr 0x00496160
   end;
 
 implementation
@@ -36,35 +38,35 @@ implementation
 uses GI_Image, EC_Str, SysUtils, GlobalsV;
 
 
-{ @routine $483364 TAImageGI_Create }
+{ @routine $495C1C TAImageGI_Create }
 constructor TAImageGI.Create(Owner: TObjectGI);
 begin
   inherited Create(Owner);
-  HalfAlpha := False;
+  HalfAlphaValue := False;
 end;
-{ @end $483364 }
+{ @end $495C1C }
 
-{ @routine $4833B8 TAImageGI_Destroy }
+{ @routine $495C58 TAImageGI_Destroy }
 destructor TAImageGI.Destroy;
 begin
   inherited Destroy;
 end;
-{ @end $4833B8 }
+{ @end $495C58 }
 
-{ @routine $4833EC TAImageGI_Clear }
+{ @routine $495C80 TAImageGI_Clear }
 procedure TAImageGI.Clear;
 begin
-  HalfAlpha := False;
-  if FrameTimer <> nil then
+  HalfAlphaValue := False;
+  if FrameTimer <> 0 then
   begin
     MessageLoop.CancelCallbackTimer(FrameTimer);
-    FrameTimer := nil;
+    FrameTimer := 0;
   end;
   CurrentFrame := nil;
 end;
-{ @end $4833EC }
+{ @end $495C80 }
 
-{ @routine $483438 TAImageGI_GetContentSize }
+{ @routine $495CB0 TAImageGI_GetContentSize }
 function TAImageGI.GetContentSize: TPoint;
 var Frame: TImageGI; Size: TPoint;
 begin
@@ -83,51 +85,45 @@ begin
     Frame := Frame.NextSibling as TImageGI;
   end;
 end;
-{ @end $483438 }
+{ @end $495CB0 }
 
-{ @routine $4834E0 TAImageGI_SetImageKindX }
+{ @routine $495D34 TAImageGI_SetImageKindX }
 procedure TAImageGI.SetImageKindX(Value: TImageKindXGI);
 begin
-  if ImageKindX <> Value then
-  begin
-    ImageKindX := Value;
-    if CurrentFrame <> nil then (CurrentFrame as TImageGI).SetImageKindX(Value);
-  end;
+  if ImageKindX = Value then Exit;
+  ImageKindX := Value;
+  if CurrentFrame <> nil then (CurrentFrame as TImageGI).SetImageKindX(Value);
 end;
-{ @end $4834E0 }
+{ @end $495D34 }
 
-{ @routine $483534 TAImageGI_SetImageKindY }
+{ @routine $495D6C TAImageGI_SetImageKindY }
 procedure TAImageGI.SetImageKindY(Value: TImageKindYGI);
 begin
-  if ImageKindY <> Value then
-  begin
-    ImageKindY := Value;
-    if CurrentFrame <> nil then (CurrentFrame as TImageGI).SetImageKindY(Value);
-  end;
+  if ImageKindY = Value then Exit;
+  ImageKindY := Value;
+  if CurrentFrame <> nil then (CurrentFrame as TImageGI).SetImageKindY(Value);
 end;
-{ @end $483534 }
+{ @end $495D6C }
 
-{ @routine $483588 TAImageGI_SetHalfAlpha }
+{ @routine $495DA4 TAImageGI_SetHalfAlpha }
 procedure TAImageGI.SetHalfAlpha(Value: Boolean);
 begin
-  if HalfAlpha <> Value then
-  begin
-    HalfAlpha := Value;
-    if CurrentFrame <> nil then (CurrentFrame as TImageGI).SetHalfAlpha(Value);
-  end;
+  if HalfAlphaValue = Value then Exit;
+  HalfAlphaValue := Value;
+  if CurrentFrame <> nil then (CurrentFrame as TImageGI).SetHalfAlpha(Value);
 end;
-{ @end $483588 }
+{ @end $495DA4 }
 
-{ @routine $4835DC TAImageGI_SetSize }
+{ @routine $495DDC TAImageGI_SetSize }
 procedure TAImageGI.SetSize(Size: TPoint);
 begin
   inherited SetSize(Size);
   if CurrentFrame <> nil then (CurrentFrame as TImageGI).SetSize(Size);
 end;
-{ @end $4835DC }
+{ @end $495DDC }
 
-{ @routine $483628 TAImageGI_AdvanceFrame }
-procedure TAImageGI.AdvanceFrame(Timer: PCallbackTimerGI; UserData: Integer);
+{ @routine $495E18 TAImageGI_AdvanceFrame }
+procedure TAImageGI.AdvanceFrame(Timer: TCallbackTimerIdGI; UserData: Cardinal);
 var Previous: TObjectGI; Next: TImageGI;
 begin
   Previous := TObjectGI(UserData);
@@ -141,44 +137,44 @@ begin
   Next.SetSize(ClientSize);
   Next.SetImageKindX(ImageKindX);
   Next.SetImageKindY(ImageKindY);
-  Next.SetHalfAlpha(HalfAlpha);
+  Next.SetHalfAlpha(HalfAlphaValue);
   CurrentFrame := Next;
 end;
-{ @end $483628 }
+{ @end $495E18 }
 
-{ @routine $483724 TAImageGI_HitTest }
+{ @routine $495ECC TAImageGI_HitTest }
 function TAImageGI.HitTest(Point: TPoint): Boolean;
 begin
   if CurrentFrame = nil then Result := False
   else Result := CurrentFrame.ContainsPoint(Point);
 end;
-{ @end $483724 }
+{ @end $495ECC }
 
-{ @routine $483768 TAImageGI_OnActivate }
+{ @routine $495EF4 TAImageGI_OnActivate }
 procedure TAImageGI.OnActivate;
 begin
   inherited OnActivate;
-  AdvanceFrame(nil, Integer(FirstChild));
+  AdvanceFrame(0, Integer(FirstChild));
 end;
-{ @end $483768 }
+{ @end $495EF4 }
 
-{ @routine $48378C TAImageGI_LoadFromConfigPath }
+{ @routine $495F0C TAImageGI_LoadFromConfigPath }
 procedure TAImageGI.LoadFromConfigPath(const Path: WideString);
 begin
   inherited LoadFromConfigPath(Path);
   LoadAnimationProperties(UiStyleConfig.GetBlockByPath(Path));
 end;
-{ @end $48378C }
+{ @end $495F0C }
 
-{ @routine $4837C0 TAImageGI_LoadFromBlock }
+{ @routine $495F38 TAImageGI_LoadFromBlock }
 procedure TAImageGI.LoadFromBlock(Block: TBlockParEC);
 begin
   inherited LoadFromBlock(Block);
   LoadAnimationProperties(Block);
 end;
-{ @end $4837C0 }
+{ @end $495F38 }
 
-{ @routine $4837E8 TAImageGI_LoadAnimationProperties }
+{ @routine $495F54 TAImageGI_LoadAnimationProperties }
 procedure TAImageGI.LoadAnimationProperties(Block: TBlockParEC);
 var Count, Index: Integer; HaveFrame: Boolean; Frame, First: TImageGI;
 begin
@@ -191,30 +187,30 @@ begin
       Frame := TImageGI.Create(Self);
       Frame.UserValue := StrToInt(Block.GetParamName(Index));
       Frame.SetDepth(Count + 1 - Index);
-      Frame.SetImagePath(Block.GetParamValue(Index));
+      Frame.ImageSourcePath := Block.GetParamValue(Index);
       if HaveFrame then Frame.SetActive(False);
       HaveFrame := True;
     end;
   CurrentFrame := nil;
-  if FrameTimer <> nil then
+  if FrameTimer <> 0 then
   begin
     MessageLoop.CancelCallbackTimer(FrameTimer);
-    FrameTimer := nil;
+    FrameTimer := 0;
   end;
   First := FirstChild as TImageGI;
   if First <> nil then
   begin
     FrameTimer := MessageLoop.ScheduleCallbackTimer(First.UserValue, $FFFFFF, AdvanceFrame, Integer(First));
     First.SetSize(ClientSize);
-    First.SetImageKindX(ImageKindX);
-    First.SetImageKindY(ImageKindY);
+    First.KindX := ImageKindX;
+    First.KindY := ImageKindY;
     CurrentFrame := First;
   end;
-  if Block.CountParams('HalfAlpha') > 0 then SetHalfAlpha(ParseEnabledNameGI(Block.GetParam('HalfAlpha')));
+  if Block.CountParams('HalfAlpha') > 0 then HalfAlpha := ParseEnabledNameGI(Block.GetParam('HalfAlpha'));
 end;
-{ @end $4837E8 }
+{ @end $495F54 }
 
-{ @routine $483A3C TAImageGI_QueueImageLoad }
+{ @routine $496160 TAImageGI_QueueImageLoad }
 procedure TAImageGI.QueueImageLoad(PendingLoads: TList);
 var Frame: TImageGI;
 begin
@@ -225,6 +221,6 @@ begin
     Frame := Frame.NextSibling as TImageGI;
   end;
 end;
-{ @end $483A3C }
+{ @end $496160 }
 
 end.

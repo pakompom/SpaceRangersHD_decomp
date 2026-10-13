@@ -1,12 +1,11 @@
 unit SE_Process;
-// Unit bracket (inferred): .text 0x00828158..0x00829899; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
 uses Classes, EC_BlockPar, EC_Struct, GI_MessageLoop, GI_Panel, SE_Space, Types;
 
 type
-  TProcessSE = class(TObject) // @size 0x50
+  TProcessSE = class(TObject) // @size 0x50 @methodorder source
   public
     Space: TSpaceSE; // @offset 0x04
     FirstObject: TObjectSE; // @offset 0x08
@@ -21,25 +20,25 @@ type
     ActionColor: Cardinal; // @offset 0x48
     SystemRadius: Integer; // @offset $4C
 
-    constructor Create(const ConfigName: WideString); // @addr 0x8281C0
-    destructor Destroy; override; // @addr 0x828280
-    procedure AddObject(Obj: TObjectSE); // @addr 0x828330 @note "Retains Obj and links it into the process list; does not attach it to Space."
-    procedure RemoveObject(Obj: TObjectSE); // @addr 0x82838C @note "Unlinks and releases Obj."
-    procedure OpenSpace(MapPanel: TPanelGI; Screen: TMessageLoopGI); virtual; // @addr 0x828404 @slot 0x00
-    procedure BindMinimap(Control: TObjectGI); virtual; // @addr 0x82847C @slot 0x04
-    procedure CloseSpace; virtual; // @addr 0x828530 @slot 0x08
-    function IsSpaceOpen: Boolean; // @addr 0x82856C
-    procedure PopulateAmbientObjects(Radius, BackgroundImage: Integer; Seed: Cardinal); // @addr $828590
-    procedure StartBackgroundEffects; // @addr $828CF0
-    procedure StopBackgroundEffects; // @addr $828D74
-    procedure AdvanceBackgroundEffects(Timer: PSpaceTimerSE; UserData: Integer); // @addr $828DF4
-    function SelectBackgroundAnimation: WideString; // @addr $828F90
-    procedure UpdateViewRect; // @addr $828F50
-    procedure LoadFromBlock(Block: TBlockParEC); virtual; // @addr 0x8290AC @slot 0x0C
+    constructor Create(const ConfigName: WideString); // @addr 0x00781B90
+    destructor Destroy; override; // @addr 0x00781C40
+    function IsSpaceOpen: Boolean; // @addr 0x00781E3C
+    procedure PopulateAmbientObjects(Radius, BackgroundImage: Integer; Seed: Cardinal); // @addr $781E48
+    procedure StartBackgroundEffects; // @addr $7824D0
+    procedure StopBackgroundEffects; // @addr $782544
+    procedure AdvanceBackgroundEffects(Timer: PSpaceTimerSE; UserData: Integer); // @addr $7825A0
+    function SelectBackgroundAnimation: WideString; // @addr $7826F8
+    procedure UpdateViewRect; // @addr $7826C8
+    procedure AddObject(Obj: TObjectSE); // @addr 0x00781CC4 @note "Retains Obj and links it into the process list; does not attach it to Space."
+    procedure RemoveObject(Obj: TObjectSE); // @addr 0x00781CF8 @note "Unlinks and releases Obj."
+    procedure OpenSpace(MapPanel: TPanelGI; Screen: TMessageLoopGI); virtual; // @addr 0x00781D50 @slot 0x00
+    procedure BindMinimap(Control: TObjectGI); virtual; // @addr 0x00781DA0 @slot 0x04
+    procedure CloseSpace; virtual; // @addr 0x00781E10 @slot 0x08
+    procedure LoadFromBlock(Block: TBlockParEC); virtual; // @addr 0x007827E8 @slot 0x0C
   end;
 
-function CreateSpaceObjectByName(const ClassName, GraphKey: WideString; UnusedPosition: TPoint): TObjectSE; // @addr 0x8291F0 @note "Film-tag factory; copies the eight-byte point and forwards it to the selected constructor. Returns nil for an unknown case-sensitive tag."
-function ClassSEtoName(Obj: TObjectSE): WideString; // @addr 0x829640 @note "Returns the film type tag; raises for an unsupported scene class."
+function CreateSpaceObjectByName(const ClassName, GraphKey: WideString; UnusedPosition: TPoint): TObjectSE; // @addr 0x00782914 @note "Film-tag factory; copies the eight-byte point and forwards it to the selected constructor. Returns nil for an unknown case-sensitive tag."
+function ClassSEtoName(Obj: TObjectSE): WideString; // @addr 0x00782CD0 @note "Returns the film type tag; raises for an unsupported scene class."
 
 implementation
 
@@ -47,16 +46,16 @@ uses Windows, SysUtils, Math, GR_Main, GlobalsV, Globals, aGalaxy, aMyFunction, 
   SE_Comet, SE_Angel, SE_Meteorite, SE_Star, SE_StarsField, SE_Planet, SE_Sputnik, SE_Asteroid, SE_Hole, SE_Ruins,
   SE_Ship2, SE_Container, SE_Laser, SE_Anim, SE_BGObj, SE_Weapon, SE_GAIEffect, SE_Gate, SE_Missile;
 
-{ @routine $8281C0 TProcessSE_Create }
+{ @routine $781B90 TProcessSE_Create }
 constructor TProcessSE.Create(const ConfigName: WideString);
 begin
   inherited Create;
   LoadFromBlock(GameDataConfig.GetBlockByPath('SE.' + ConfigName));
   RetainedObjects := TList.Create;
 end;
-{ @end $8281C0 }
+{ @end $781B90 }
 
-{ @routine $828280 TProcessSE_Destroy }
+{ @routine $781C40 TProcessSE_Destroy }
 destructor TProcessSE.Destroy;
 var
   Obj: TObjectSE;
@@ -80,9 +79,9 @@ begin
   end;
   inherited Destroy;
 end;
-{ @end $828280 }
+{ @end $781C40 }
 
-{ @routine $828330 TProcessSE_AddObject }
+{ @routine $781CC4 TProcessSE_AddObject }
 procedure TProcessSE.AddObject(Obj: TObjectSE);
 begin
   if LastObject <> nil then LastObject.ProcessNext := Obj;
@@ -91,9 +90,9 @@ begin
   RetainSpaceObject(LastObject, Obj);
   if FirstObject = nil then FirstObject := Obj;
 end;
-{ @end $828330 }
+{ @end $781CC4 }
 
-{ @routine $82838C TProcessSE_RemoveObject }
+{ @routine $781CF8 TProcessSE_RemoveObject }
 procedure TProcessSE.RemoveObject(Obj: TObjectSE);
 begin
   if Obj.ProcessPrev <> nil then Obj.ProcessPrev.ProcessNext := Obj.ProcessNext;
@@ -102,9 +101,9 @@ begin
   if FirstObject = Obj then FirstObject := Obj.ProcessNext;
   ReleaseSpaceObject(Obj);
 end;
-{ @end $82838C }
+{ @end $781CF8 }
 
-{ @routine $828404 TProcessSE_OpenSpace }
+{ @routine $781D50 TProcessSE_OpenSpace }
 procedure TProcessSE.OpenSpace(MapPanel: TPanelGI; Screen: TMessageLoopGI);
 var
   Obj: TObjectSE;
@@ -122,9 +121,9 @@ begin
     StartBackgroundEffects;
   end;
 end;
-{ @end $828404 }
+{ @end $781D50 }
 
-{ @routine $82847C TProcessSE_BindMinimap }
+{ @routine $781DA0 TProcessSE_BindMinimap }
 procedure TProcessSE.BindMinimap(Control: TObjectGI);
 begin
   if IsSpaceOpen then
@@ -137,9 +136,9 @@ begin
     Space.CreateMinimapViewport;
   end;
 end;
-{ @end $82847C }
+{ @end $781DA0 }
 
-{ @routine $828530 TProcessSE_CloseSpace }
+{ @routine $781E10 TProcessSE_CloseSpace }
 procedure TProcessSE.CloseSpace;
 begin
   if IsSpaceOpen then
@@ -150,16 +149,16 @@ begin
     Space := nil;
   end;
 end;
-{ @end $828530 }
+{ @end $781E10 }
 
-{ @routine $82856C TProcessSE_IsSpaceOpen }
+{ @routine $781E3C TProcessSE_IsSpaceOpen }
 function TProcessSE.IsSpaceOpen: Boolean;
 begin
   if Space = nil then Result := False else Result := True;
 end;
-{ @end $82856C }
+{ @end $781E3C }
 
-{ @routine $828590 TProcessSE_PopulateAmbientObjects }
+{ @routine $781E48 TProcessSE_PopulateAmbientObjects }
 procedure TProcessSE.PopulateAmbientObjects(Radius, BackgroundImage: Integer; Seed: Cardinal);
 var
   Block: TBlockParEC;
@@ -197,8 +196,8 @@ begin
   Block := GameDataConfig.GetBlockByPath('SE.Anim.BGO_HS.Objects');
   if Comet > 0 then
   begin
-    if BackgroundImage < 10 then Text := GameDataConfig.GetBlockByPath('StyleComet').GetParam(WideString('0' + IntToStr(BackgroundImage)))
-    else Text := GameDataConfig.GetBlockByPath('StyleComet').GetParam(WideString(IntToStr(BackgroundImage)));
+    if BackgroundImage < 10 then Text := GameDataConfig.GetBlockByPath('StyleComet').GetParam('0' + IntToStr(BackgroundImage))
+    else Text := GameDataConfig.GetBlockByPath('StyleComet').GetParam(IntToStr(BackgroundImage));
     Index := NextRandomIntRange(0, CountDelimitedPartsW(Text, ',') div 2 - 1, Seed) * 2;
     VariantCount := ExtractDigitsToIntW(ExtractDelimitedPartW(Text, Index + 1, ','));
     Text := ExtractDelimitedPartW(Text, Index, ',');
@@ -238,9 +237,9 @@ begin
     AddObject(MeteoriteObj);
   end;
 end;
-{ @end $828590 }
+{ @end $781E48 }
 
-{ @routine $828CF0 TProcessSE_StartBackgroundEffects }
+{ @routine $7824D0 TProcessSE_StartBackgroundEffects }
 procedure TProcessSE.StartBackgroundEffects;
 begin
   StopBackgroundEffects;
@@ -251,9 +250,9 @@ begin
     BackgroundTimer := Space.CreateTimer(BGOTime, BGOTime, AdvanceBackgroundEffects, 0);
   end;
 end;
-{ @end $828CF0 }
+{ @end $7824D0 }
 
-{ @routine $828D74 TProcessSE_StopBackgroundEffects }
+{ @routine $782544 TProcessSE_StopBackgroundEffects }
 procedure TProcessSE.StopBackgroundEffects;
 var
   Obj: TObjectSE;
@@ -274,9 +273,9 @@ begin
     end;
   end;
 end;
-{ @end $828D74 }
+{ @end $782544 }
 
-{ @routine $828DF4 TProcessSE_AdvanceBackgroundEffects }
+{ @routine $7825A0 TProcessSE_AdvanceBackgroundEffects }
 procedure TProcessSE.AdvanceBackgroundEffects(Timer: PSpaceTimerSE; UserData: Integer);
 var
   Index: Integer;
@@ -300,22 +299,22 @@ begin
       RetainSpaceObject(Obj, TAnimSE.Create(SelectBackgroundAnimation, Classes.Point(0, 0)));
       Position.X := RandomIntRange(ViewRect.Left, ViewRect.Right);
       Position.Y := RandomIntRange(ViewRect.Top, ViewRect.Bottom);
-      Obj.SetPosition(Position);
+      Obj.Pos := Position;
       Obj.AttachToSpace(Space);
       RetainedObjects.Add(Obj);
     end;
 end;
-{ @end $828DF4 }
+{ @end $7825A0 }
 
-{ @routine $828F50 TProcessSE_UpdateViewRect }
+{ @routine $7826C8 TProcessSE_UpdateViewRect }
 procedure TProcessSE.UpdateViewRect;
 begin
   PreviousViewRect := ViewRect;
-  ViewRect := TSpaceSE(Space).MapPanel.GetVisibleContentRect;
+  ViewRect := Space.MapPanel.GetVisibleContentRect;
 end;
-{ @end $828F50 }
+{ @end $7826C8 }
 
-{ @routine $828F90 TProcessSE_SelectBackgroundAnimation }
+{ @routine $7826F8 TProcessSE_SelectBackgroundAnimation }
 function TProcessSE.SelectBackgroundAnimation: WideString;
 var
   Block: TBlockParEC;
@@ -335,9 +334,9 @@ begin
   end;
   Result := Block.GetParamValue(Index);
 end;
-{ @end $828F90 }
+{ @end $7826F8 }
 
-{ @routine $8290AC TProcessSE_LoadFromBlock }
+{ @routine $7827E8 TProcessSE_LoadFromBlock }
 procedure TProcessSE.LoadFromBlock(Block: TBlockParEC);
 var
   Obj: TObjectSE;
@@ -358,9 +357,9 @@ begin
     end;
   end;
 end;
-{ @end $8290AC }
+{ @end $7827E8 }
 
-{ @routine $8291F0 CreateSpaceObjectByName }
+{ @routine $782914 CreateSpaceObjectByName }
 function CreateSpaceObjectByName(const ClassName, GraphKey: WideString; UnusedPosition: TPoint): TObjectSE;
 begin
   if ClassName = 'Star' then Result := TStarSE.Create(GraphKey, UnusedPosition)
@@ -382,9 +381,9 @@ begin
   else if ClassName = 'Missile' then Result := TMissileSE.Create(GraphKey, UnusedPosition)
   else Result := nil;
 end;
-{ @end $8291F0 }
+{ @end $782914 }
 
-{ @routine $829640 ClassSEtoName }
+{ @routine $782CD0 ClassSEtoName }
 function ClassSEtoName(Obj: TObjectSE): WideString;
 begin
   if Obj is TStarSE then Result := 'Star'
@@ -405,6 +404,6 @@ begin
   else if Obj is TMissileSE then Result := 'Missile'
   else raise Exception.Create('Error in ClassSEtoName');
 end;
-{ @end $829640 }
+{ @end $782CD0 }
 
 end.

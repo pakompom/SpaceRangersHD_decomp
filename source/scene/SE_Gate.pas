@@ -1,15 +1,16 @@
 unit SE_Gate;
-// Unit bracket (inferred): .text 0x004D8534..0x004D948E; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
 uses SE_Space, Types, Classes, EC_BlockPar, GI_MessageLoop, GI_RotateImageGAI, GI_Label;
 
 type
-  TGateSE = class(TObjectSE) // @size $74
+  TGateState = (gsClosed, gsOpening, gsOpen, gsClosing); // @size $04
+
+  TGateSE = class(TObjectSE) // @size $74 @methodorder source
   public
-    Angle: Byte; // @offset $4C
-    State: Integer; // @offset $50
+    FAngle: Byte; // @offset $4C
+    State: TGateState; // @offset $50
     StateStep: Integer; // @offset $54
     LabelText: WideString; // @offset $58
     Image: TRotateImageGaiGI; // @offset $5C
@@ -19,69 +20,69 @@ type
     TextBlue: Single; // @offset $6C
     TickCount: Integer; // @offset $70
 
-    procedure Open; // @addr $4D8B9C Changes idle state 0 to opening state 1.
-    procedure Close; // @addr $4D8BD8 Changes open state 2 to closing state 3.
-    procedure SetState(Value: Integer); // @addr $4D8C14 Resets StateStep and rebuilds attached graphics.
-    constructor Create(GraphKey: WideString; UnusedPosition: TPoint); // @addr $4D86B0
-    destructor Destroy; override; // @addr $4D8764
-    procedure AttachToSpace(ASpace: TSpaceSE); override; // @addr $4D8798
-    procedure DetachFromSpace; override; // @addr $4D8A3C
-    procedure SetSize(Value: TPoint); override; // @addr $4D8AA4
-    function GetAngle: Byte; override; // @addr $4D8AE0
-    procedure SetAngle(Value: Byte); override; // @addr $4D8AFC
-    function GetText: WideString; override; // @addr $4D8B38
-    procedure SetText(const Value: WideString); override; // @addr $4D8B58
-    procedure RebuildStateGraphics; // @addr $4D8C4C
-    procedure AdvanceAnimation(UnusedTimer: Pointer; UnusedData: Integer); // @addr $4D8ED0 Both native callers pass nil, 0; timer payload is unused.
-    procedure Advance; override; // @addr $4D8FD4
-    procedure LoadTemplate(Block: TBlockParEC); override; // @addr $4D900C
-    procedure ApplyConfig(Block: TBlockParEC); override; // @addr $4D9028
-    procedure QueueImageLoad(PendingLoads: TList; Owner: TObjectGI); override; // @addr $4D9044
+    constructor Create(GraphKey: WideString; UnusedPosition: TPoint); // @addr $4D855C
+    destructor Destroy; override; // @addr $4D8600
+    procedure AttachToSpace(ASpace: TSpaceSE); override; // @addr $4D8628
+    procedure DetachFromSpace; override; // @addr $4D8848
+    procedure SetSize(Value: TPoint); override; // @addr $4D8894
+    procedure Advance; override; // @addr $4D8C04
+    procedure LoadTemplate(Block: TBlockParEC); override; // @addr $4D8C30
+    procedure ApplyConfig(Block: TBlockParEC); override; // @addr $4D8C38
+    procedure QueueImageLoad(PendingLoads: TList; Owner: TObjectGI); override; // @addr $4D8C40
+    procedure Open; // @addr $4D8930 Starts opening a closed gate.
+    procedure Close; // @addr $4D895C Starts closing an open gate.
+    procedure SetState(Value: TGateState); // @addr $4D8988 Resets StateStep and rebuilds attached graphics.
+    procedure RebuildStateGraphics; // @addr $4D89A8
+    procedure AdvanceAnimation(UnusedTimer: Pointer; UnusedData: Integer); // @addr $4D8B68 Both native callers pass nil, 0; timer payload is unused.
+    function GetAngle: Byte; override; // @addr $4D88C0
+    procedure SetAngle(Value: Byte); override; // @addr $4D88C8
+    function GetText: WideString; override; // @addr $4D88EC
+    procedure SetText(const Value: WideString); override; // @addr $4D8900
   end;
   TGateEffectSE = class(TObjectSE) // @size $5C
   public
-    constructor Create(GraphKey: WideString; UnusedPosition: TPoint); // @addr $4D9058
-    Angle: Byte; // @offset $4C
+    constructor Create(GraphKey: WideString; UnusedPosition: TPoint); // @addr $4D8C44
+    FAngle: Byte; // @offset $4C
     StateStep: Integer; // @offset $50
     Image: TRotateImageGaiGI; // @offset $54
     TickCount: Integer; // @offset $58
-    destructor Destroy; override; // @addr $4D90E4
-    procedure AttachToSpace(ASpace: TSpaceSE); override; // @addr $4D9118
-    procedure DetachFromSpace; override; // @addr $4D9298
-    procedure SetSize(Value: TPoint); override; // @addr $4D92E0
-    function GetAngle: Byte; override; // @addr $4D931C
-    procedure SetAngle(Value: Byte); override; // @addr $4D9338
-    procedure RebuildStateGraphics; // @addr $4D9374
-    procedure AdvanceAnimation(UnusedTimer: Pointer; UnusedData: Integer); // @addr $4D93B8 Both native callers pass nil, 0; timer payload is unused.
-    procedure Advance; override; // @addr $4D940C
-    procedure LoadTemplate(Block: TBlockParEC); override; // @addr $4D9444
-    procedure ApplyConfig(Block: TBlockParEC); override; // @addr $4D9460
-    procedure QueueImageLoad(PendingLoads: TList; Owner: TObjectGI); override; // @addr $4D947C
+    destructor Destroy; override; // @addr $4D8CCC
+    procedure AttachToSpace(ASpace: TSpaceSE); override; // @addr $4D8CF4
+    procedure DetachFromSpace; override; // @addr $4D8E2C
+    procedure SetSize(Value: TPoint); override; // @addr $4D8E60
+    function GetAngle: Byte; override; // @addr $4D8E8C
+    procedure SetAngle(Value: Byte); override; // @addr $4D8E94
+    procedure RebuildStateGraphics; // @addr $4D8EB8
+    procedure AdvanceAnimation(UnusedTimer: Pointer; UnusedData: Integer); // @addr $4D8EEC Both native callers pass nil, 0; timer payload is unused.
+    procedure Advance; override; // @addr $4D8F24
+    procedure LoadTemplate(Block: TBlockParEC); override; // @addr $4D8F50
+    procedure ApplyConfig(Block: TBlockParEC); override; // @addr $4D8F58
+    procedure QueueImageLoad(PendingLoads: TList; Owner: TObjectGI); override; // @addr $4D8F60
   end;
 
 implementation
 
 uses Math, GR_Main, GR_GraphBuf, GlobalsV;
 
-{ @routine $4D86B0 TGateSE_Create }
+{ @routine $4D855C TGateSE_Create }
 constructor TGateSE.Create(GraphKey: WideString; UnusedPosition: TPoint);
 begin
   inherited Create(GraphKey, UnusedPosition);
-  State := 0;
+  State := gsClosed;
   TextRed := 1;
   TextGreen := 1;
   TextBlue := 1;
 end;
-{ @end $4D86B0 }
+{ @end $4D855C }
 
-{ @routine $4D8764 TGateSE_Destroy }
+{ @routine $4D8600 TGateSE_Destroy }
 destructor TGateSE.Destroy;
 begin
   inherited Destroy;
 end;
-{ @end $4D8764 }
+{ @end $4D8600 }
 
-{ @routine $4D8798 TGateSE_AttachToSpace }
+{ @routine $4D8628 TGateSE_AttachToSpace }
 procedure TGateSE.AttachToSpace(ASpace: TSpaceSE);
 var
   ImageSize: Integer;
@@ -92,197 +93,203 @@ begin
   inherited AttachToSpace(ASpace);
   TickCount := 0;
   Image := TRotateImageGaiGI.Create(Space.MapPanel);
-  Image.SetPositionModeW(True);
+  Image.World := True;
   Image.SetDepthByName(DepthExpression);
-  Image.SetPosition(Classes.Point(Round(Position.X), Round(Position.Y)));
-  Image.SetAngle(Angle + 128);
+  Image.Pos := Classes.Point(Round(Position.X), Round(Position.Y));
+  Image.SetAngle(FAngle + 128);
   Image.SetAlpha(255);
   ImageSize := GiScalePixels(Min(200, Size.X));
   Image.SetImage('Bm.Gate2.00?NoConvertPF', Classes.Point(ImageSize, ImageSize), Classes.Point(ImageSize div 2, ImageSize div 2));
   TextLabel := TLabelGI.Create(Space.MapPanel);
-  TextLabel.SetActive(False);
+  TextLabel.IsActive := False;
   TextLabel.SetFontName(NormalFontName);
-  TextLabel.SetPositionModeW(True);
+  TextLabel.World := True;
   TextLabel.SetDepthByName(DepthExpression);
-  TextLabel.SetSize(Classes.Point(150, 20));
-  TextLabel.SetPosition(Classes.Point(Round(Position.X - TextLabel.ClientSize.X / 2), Round(Position.Y + 50 + ImageSize div 2 - 40)));
-  TextLabel.SetText(LabelText);
+  TextLabel.ObjectSize := Classes.Point(150, 20);
+  TextLabel.Pos := Classes.Point(Round(Position.X - TextLabel.ClientSize.X / 2), Round(Position.Y + 50 + ImageSize div 2 - 40));
+  TextLabel.Text := LabelText;
   TextLabel.SetWordWrapEnabled(False);
   TextLabel.SetTextAlignX(taxCenter);
   TextLabel.SetTextAlignY(tayAuto);
   RebuildStateGraphics;
 end;
-{ @end $4D8798 }
+{ @end $4D8628 }
 
-{ @routine $4D8A3C TGateSE_DetachFromSpace }
+{ @routine $4D8848 TGateSE_DetachFromSpace }
 procedure TGateSE.DetachFromSpace;
 begin
   if IsAttachedToSpace then
   begin
-    Image.SetActive(False);
+    Image.IsActive := False;
     Image.Free;
     Image := nil;
     if TextLabel <> nil then
     begin
-      TextLabel.SetActive(False);
+      TextLabel.IsActive := False;
       TextLabel.Free;
       TextLabel := nil;
     end;
     inherited DetachFromSpace;
   end;
 end;
-{ @end $4D8A3C }
+{ @end $4D8848 }
 
-{ @routine $4D8AA4 TGateSE_SetSize }
+{ @routine $4D8894 TGateSE_SetSize }
 procedure TGateSE.SetSize(Value: TPoint);
 begin
   if (Size.X <> Value.X) or (Size.Y <> Value.Y) then inherited SetSize(Value);
 end;
-{ @end $4D8AA4 }
+{ @end $4D8894 }
 
-{ @routine $4D8AE0 TGateSE_GetAngle }
+{ @routine $4D88C0 TGateSE_GetAngle }
 function TGateSE.GetAngle: Byte;
 begin
-  Result := Angle;
+  Result := FAngle;
 end;
-{ @end $4D8AE0 }
+{ @end $4D88C0 }
 
-{ @routine $4D8AFC TGateSE_SetAngle }
+{ @routine $4D88C8 TGateSE_SetAngle }
 procedure TGateSE.SetAngle(Value: Byte);
 begin
-  Angle := Value;
-  if IsAttachedToSpace then Image.SetAngle(Angle + 128);
+  FAngle := Value;
+  if IsAttachedToSpace then Image.SetAngle(FAngle + 128);
 end;
-{ @end $4D8AFC }
+{ @end $4D88C8 }
 
-{ @routine $4D8B38 TGateSE_GetText }
+{ @routine $4D88EC TGateSE_GetText }
 function TGateSE.GetText: WideString;
 begin
   Result := LabelText;
 end;
-{ @end $4D8B38 }
+{ @end $4D88EC }
 
-{ @routine $4D8B58 TGateSE_SetText }
+{ @routine $4D8900 TGateSE_SetText }
 procedure TGateSE.SetText(const Value: WideString);
 begin
   LabelText := Value;
   if IsAttachedToSpace then
-    if TextLabel <> nil then TextLabel.SetText(LabelText);
+    if TextLabel <> nil then TextLabel.Text := LabelText;
 end;
-{ @end $4D8B58 }
+{ @end $4D8900 }
 
-{ @routine $4D8B9C TGateSE_Open }
+{ @routine $4D8930 TGateSE_Open }
 procedure TGateSE.Open;
 begin
-  if State = 0 then
+  if State = gsClosed then
   begin
-    State := 1;
+    State := gsOpening;
     StateStep := 0;
     if IsAttachedToSpace then RebuildStateGraphics;
   end;
 end;
-{ @end $4D8B9C }
+{ @end $4D8930 }
 
-{ @routine $4D8BD8 TGateSE_Close }
+{ @routine $4D895C TGateSE_Close }
 procedure TGateSE.Close;
 begin
-  if State = 2 then
+  if State = gsOpen then
   begin
-    State := 3;
+    State := gsClosing;
     StateStep := 0;
     if IsAttachedToSpace then RebuildStateGraphics;
   end;
 end;
-{ @end $4D8BD8 }
+{ @end $4D895C }
 
-{ @routine $4D8C14 TGateSE_SetState }
-procedure TGateSE.SetState(Value: Integer);
+{ @routine $4D8988 TGateSE_SetState }
+procedure TGateSE.SetState(Value: TGateState);
 begin
   State := Value;
   StateStep := 0;
   if IsAttachedToSpace then RebuildStateGraphics;
 end;
-{ @end $4D8C14 }
+{ @end $4D8988 }
 
-{ @routine $4D8C4C TGateSE_RebuildStateGraphics }
+{ @routine $4D89A8 TGateSE_RebuildStateGraphics }
 procedure TGateSE.RebuildStateGraphics;
 begin
-  if State = 0 then
+  if State = gsClosed then
   begin
-    Image.SetActive(False);
-    if TextLabel <> nil then TextLabel.SetActive(False);
+    Image.IsActive := False;
+    if TextLabel <> nil then
+      with TextLabel do IsActive := False;
   end
-  else if State = 1 then
+  else if State = gsOpening then
   begin
     Image.AnimationIndex := 0;
     Image.UpdateAutoGeometry;
     if (StateStep >= 0) and (Image.FrameCount > StateStep) then
     begin
-      Image.SetActive(True);
+      Image.IsActive := True;
       Image.SetFrame(StateStep);
-      if TextLabel <> nil then TextLabel.SetActive(False);
+      if TextLabel <> nil then
+        with TextLabel do IsActive := False;
     end
     else
     begin
-      Image.SetActive(False);
-      if TextLabel <> nil then TextLabel.SetActive(False);
+      Image.IsActive := False;
+      if TextLabel <> nil then
+        with TextLabel do IsActive := False;
     end;
   end
-  else if State = 2 then
+  else if State = gsOpen then
   begin
     Image.AnimationIndex := 1;
     Image.UpdateAutoGeometry;
     if (StateStep >= 0) and (Image.FrameCount > StateStep) then
     begin
-      Image.SetActive(True);
+      Image.IsActive := True;
       Image.SetFrame(StateStep);
-      if TextLabel <> nil then
-      begin
+      repeat
+        if TextLabel = nil then Break;
         TextLabel.SetTextColor(CurrentPixelFormat.PackNormalizedRgb(TextRed, TextGreen, TextBlue));
-        TextLabel.SetActive(True);
-      end;
+        TextLabel.IsActive := True;
+      until True;
     end
     else
     begin
-      Image.SetActive(False);
-      if TextLabel <> nil then TextLabel.SetActive(False);
+      Image.IsActive := False;
+      if TextLabel <> nil then
+        with TextLabel do IsActive := False;
     end;
   end
-  else if State = 3 then
+  else if State = gsClosing then
   begin
     Image.AnimationIndex := 2;
     Image.UpdateAutoGeometry;
     if (StateStep >= 0) and (Image.FrameCount > StateStep) then
     begin
-      Image.SetActive(True);
+      Image.IsActive := True;
       Image.SetFrame(StateStep);
-      if TextLabel <> nil then TextLabel.SetActive(False);
+      if TextLabel <> nil then
+        with TextLabel do IsActive := False;
     end
     else
     begin
-      Image.SetActive(False);
-      if TextLabel <> nil then TextLabel.SetActive(False);
+      Image.IsActive := False;
+      if TextLabel <> nil then
+        with TextLabel do IsActive := False;
     end;
   end;
 end;
-{ @end $4D8C4C }
+{ @end $4D89A8 }
 
-{ @routine $4D8ED0 TGateSE_AdvanceAnimation }
+{ @routine $4D8B68 TGateSE_AdvanceAnimation }
 procedure TGateSE.AdvanceAnimation(UnusedTimer: Pointer; UnusedData: Integer);
 begin
   Inc(StateStep);
-  if State = 0 then Exit
-  else if State = 1 then
+  if State = gsClosed then Exit
+  else if State = gsOpening then
   begin
     if Image.FrameCount <= StateStep then
     begin
-      State := 2;
+      State := gsOpen;
       StateStep := 0;
       RebuildStateGraphics;
     end
     else Image.SetFrame(StateStep);
   end
-  else if State = 2 then
+  else if State = gsOpen then
   begin
     if Image.FrameCount <= StateStep then
     begin
@@ -291,64 +298,64 @@ begin
     end
     else Image.SetFrame(StateStep);
   end
-  else if State = 3 then
+  else if State = gsClosing then
   begin
     if Image.FrameCount <= StateStep then
     begin
-      State := 0;
+      State := gsClosed;
       StateStep := 0;
       RebuildStateGraphics;
     end
     else Image.SetFrame(StateStep);
   end;
 end;
-{ @end $4D8ED0 }
+{ @end $4D8B68 }
 
-{ @routine $4D8FD4 TGateSE_Advance }
+{ @routine $4D8C04 TGateSE_Advance }
 procedure TGateSE.Advance;
 begin
   inherited Advance;
   Inc(TickCount);
   if TickCount mod 5 = 0 then AdvanceAnimation(nil, 0);
 end;
-{ @end $4D8FD4 }
+{ @end $4D8C04 }
 
-{ @routine $4D900C TGateSE_LoadTemplate }
+{ @routine $4D8C30 TGateSE_LoadTemplate }
 procedure TGateSE.LoadTemplate(Block: TBlockParEC);
 begin
   inherited LoadTemplate(Block);
 end;
-{ @end $4D900C }
+{ @end $4D8C30 }
 
-{ @routine $4D9028 TGateSE_ApplyConfig }
+{ @routine $4D8C38 TGateSE_ApplyConfig }
 procedure TGateSE.ApplyConfig(Block: TBlockParEC);
 begin
   inherited ApplyConfig(Block);
 end;
-{ @end $4D9028 }
+{ @end $4D8C38 }
 
-{ @routine $4D9044 TGateSE_QueueImageLoad }
+{ @routine $4D8C40 TGateSE_QueueImageLoad }
 procedure TGateSE.QueueImageLoad(PendingLoads: TList; Owner: TObjectGI);
 begin
 
 end;
-{ @end $4D9044 }
+{ @end $4D8C40 }
 
-{ @routine $4D9058 TGateEffectSE_Create }
+{ @routine $4D8C44 TGateEffectSE_Create }
 constructor TGateEffectSE.Create(GraphKey: WideString; UnusedPosition: TPoint);
 begin
   inherited Create(GraphKey, UnusedPosition);
 end;
-{ @end $4D9058 }
+{ @end $4D8C44 }
 
-{ @routine $4D90E4 TGateEffectSE_Destroy }
+{ @routine $4D8CCC TGateEffectSE_Destroy }
 destructor TGateEffectSE.Destroy;
 begin
   inherited Destroy;
 end;
-{ @end $4D90E4 }
+{ @end $4D8CCC }
 
-{ @routine $4D9118 TGateEffectSE_AttachToSpace }
+{ @routine $4D8CF4 TGateEffectSE_AttachToSpace }
 procedure TGateEffectSE.AttachToSpace(ASpace: TSpaceSE);
 var
   ImageSize: Integer;
@@ -357,65 +364,65 @@ begin
   inherited AttachToSpace(ASpace);
   TickCount := 0;
   Image := TRotateImageGaiGI.Create(Space.MapPanel);
-  Image.SetPositionModeW(True);
+  Image.World := True;
   Image.SetDepthByName(DepthExpression);
-  Image.SetPosition(Classes.Point(Round(Position.X), Round(Position.Y)));
-  Image.SetAngle(Angle + 128);
+  Image.Pos := Classes.Point(Round(Position.X), Round(Position.Y));
+  Image.SetAngle(FAngle + 128);
   Image.SetAlpha(255);
-  Image.SetActive(True);
+  Image.IsActive := True;
   ImageSize := GiScalePixels(Min(200, Size.X));
   Image.SetImage('Bm.Gate2.GateEffect?NoConvertPF', Classes.Point(ImageSize, ImageSize), Classes.Point(ImageSize div 2, ImageSize div 2));
   RebuildStateGraphics;
 end;
-{ @end $4D9118 }
+{ @end $4D8CF4 }
 
-{ @routine $4D9298 TGateEffectSE_DetachFromSpace }
+{ @routine $4D8E2C TGateEffectSE_DetachFromSpace }
 procedure TGateEffectSE.DetachFromSpace;
 begin
   if IsAttachedToSpace then
   begin
-    Image.SetActive(False);
+    Image.IsActive := False;
     Image.Free;
     Image := nil;
     StateStep := 0;
     inherited DetachFromSpace;
   end;
 end;
-{ @end $4D9298 }
+{ @end $4D8E2C }
 
-{ @routine $4D92E0 TGateEffectSE_SetSize }
+{ @routine $4D8E60 TGateEffectSE_SetSize }
 procedure TGateEffectSE.SetSize(Value: TPoint);
 begin
   if (Size.X <> Value.X) or (Size.Y <> Value.Y) then inherited SetSize(Value);
 end;
-{ @end $4D92E0 }
+{ @end $4D8E60 }
 
-{ @routine $4D931C TGateEffectSE_GetAngle }
+{ @routine $4D8E8C TGateEffectSE_GetAngle }
 function TGateEffectSE.GetAngle: Byte;
 begin
-  Result := Angle;
+  Result := FAngle;
 end;
-{ @end $4D931C }
+{ @end $4D8E8C }
 
-{ @routine $4D9338 TGateEffectSE_SetAngle }
+{ @routine $4D8E94 TGateEffectSE_SetAngle }
 procedure TGateEffectSE.SetAngle(Value: Byte);
 begin
-  Angle := Value;
-  if IsAttachedToSpace then Image.SetAngle(Angle + 128);
+  FAngle := Value;
+  if IsAttachedToSpace then Image.SetAngle(FAngle + 128);
 end;
-{ @end $4D9338 }
+{ @end $4D8E94 }
 
-{ @routine $4D9374 TGateEffectSE_RebuildStateGraphics }
+{ @routine $4D8EB8 TGateEffectSE_RebuildStateGraphics }
 procedure TGateEffectSE.RebuildStateGraphics;
 begin
   Image.AnimationIndex := 0;
   Image.UpdateAutoGeometry;
-  Image.SetActive(True);
+  Image.IsActive := True;
   Image.SetFrame(StateStep);
 end;
-{ @end $4D9374 }
+{ @end $4D8EB8 }
 
-{ @routine $4D93B8 TGateEffectSE_AdvanceAnimation }
+{ @routine $4D8EEC TGateEffectSE_AdvanceAnimation }
 procedure TGateEffectSE.AdvanceAnimation(UnusedTimer: Pointer; UnusedData: Integer);
 begin
   if IsAttachedToSpace then
@@ -429,36 +436,36 @@ begin
     else RebuildStateGraphics;
   end;
 end;
-{ @end $4D93B8 }
+{ @end $4D8EEC }
 
-{ @routine $4D940C TGateEffectSE_Advance }
+{ @routine $4D8F24 TGateEffectSE_Advance }
 procedure TGateEffectSE.Advance;
 begin
   inherited Advance;
   Inc(TickCount);
   if TickCount mod 5 = 0 then AdvanceAnimation(nil, 0);
 end;
-{ @end $4D940C }
+{ @end $4D8F24 }
 
-{ @routine $4D9444 TGateEffectSE_LoadTemplate }
+{ @routine $4D8F50 TGateEffectSE_LoadTemplate }
 procedure TGateEffectSE.LoadTemplate(Block: TBlockParEC);
 begin
   inherited LoadTemplate(Block);
 end;
-{ @end $4D9444 }
+{ @end $4D8F50 }
 
-{ @routine $4D9460 TGateEffectSE_ApplyConfig }
+{ @routine $4D8F58 TGateEffectSE_ApplyConfig }
 procedure TGateEffectSE.ApplyConfig(Block: TBlockParEC);
 begin
   inherited ApplyConfig(Block);
 end;
-{ @end $4D9460 }
+{ @end $4D8F58 }
 
-{ @routine $4D947C TGateEffectSE_QueueImageLoad }
+{ @routine $4D8F60 TGateEffectSE_QueueImageLoad }
 procedure TGateEffectSE.QueueImageLoad(PendingLoads: TList; Owner: TObjectGI);
 begin
 
 end;
-{ @end $4D947C }
+{ @end $4D8F60 }
 
 end.

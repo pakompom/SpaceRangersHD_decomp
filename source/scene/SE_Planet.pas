@@ -1,5 +1,4 @@
 unit SE_Planet;
-// Unit bracket (inferred): .text 0x0081BA68..0x0082043B; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -7,13 +6,13 @@ uses Classes, EC_BlockPar, EC_Struct, GI_AlphaImage, GI_GAI, GI_Image, GI_Messag
 
 type
   PPlanetMapOrbitPoint = ^TPlanetMapOrbitPoint;
-  TPlanetMapOrbitPoint = packed record // @size 0x0C
+  TPlanetMapOrbitPoint = record // @size 0x0C
     Position: TPoint; // @offset 0x00
     PixelOffset: Integer; // @offset 0x08  Byte offset in the minimap's 16-bit pixel buffer.
   end;
 
   PPlanetCollisionCircle = ^TPlanetCollisionCircle;
-  TPlanetCollisionCircle = packed record // @size 0x18
+  TPlanetCollisionCircle = record // @size 0x18
     Next: PPlanetCollisionCircle; // @offset 0x00
     Prev: PPlanetCollisionCircle; // @offset 0x04
     Position: TPointF; // @offset 0x08
@@ -33,7 +32,6 @@ type
     MinimapImageOrigin: TPoint; // @offset 0x6C
     OrbitalVelocity: Double; // @offset 0x78
     Radius: Integer; // @offset 0x80
-    // Native VMT cleanup lists the three image strings individually.
     Cloud1ImagePath: WideString; // @offset $84
     Cloud1RelativeRotationSpeed: Single; // @offset $88
     Cloud1MapStep: Integer; // @offset $8C
@@ -79,62 +77,62 @@ type
     RuinsAnimationFrame: Integer; // @offset 0x130
     IsRuins: Boolean; // @offset 0x134  GraphKey starts with Ruins.
 
-    constructor Create; // @addr 0x81BB6C
-    constructor CreateFromGraph(const AGraphKey: WideString; UnusedPosition: TPoint); // @addr 0x81BBB0
-    procedure CopyTo(Destination: TObjectSE); override; // @addr 0x81BC38 @slot 0x00 @note "Destination must be a TPlanetSE. Copies configuration, not attached controls/timers."
-    procedure AttachToSpace(ASpace: TSpaceSE); override; // @addr 0x81BEA8
-    procedure DetachFromSpace; override; // @addr 0x81CE20
-    procedure RebuildRings; // @addr 0x81D0B8
-    procedure RebuildSurfaceAnimation; // @addr 0x81D698
-    procedure StartRandomSurfaceAnimation; // @addr 0x81D858 @note "Requires an allocated image control and a mask with positive total animation weight."
-    procedure SetMinimapOwner(Owner: Byte); // @addr 0x81DADC
-    procedure SetPosition(APosition: TPointF); override; // @addr 0x81DC80
-    procedure SetSurfaceMapOffset(Value: Integer); // @addr 0x81DF1C
-    procedure SetCloud1MapOffset(Value: Integer); // @addr 0x81DF64
-    procedure SetCloud2MapOffset(Value: Integer); // @addr 0x81DFB0
-    procedure SetCloud3MapOffset(Value: Integer); // @addr 0x81DFFC
-    procedure SetLightAngle(Value: Byte); // @addr 0x81E048
-    procedure SetRotationTimerInterval(Value: Cardinal); // @addr 0x81E090
-    procedure SetSurfaceMapStep(Value: Integer); // @addr 0x81E5E0
-    procedure SetRingKind(Kind: Byte); // @addr 0x81E5FC @note "Does nothing for ruins; rebuilds rings when attached to space."
-    procedure SetSurfaceAnimationMask(Mask: Integer); // @addr 0x81E638 @note "Does nothing for ruins; rebuilds the animation when attached to space."
-    procedure UpdateLightAngleFromStar; // @addr 0x81E674
-    procedure SurfaceAnimationFinished(Sender: TObjectGI); // @addr 0x81E744
-    procedure AdvanceRotationTimer(Timer: PSpaceTimerSE; UserData: Integer); // @addr 0x81E8DC
-    procedure AdvanceCloudTimer(Timer: PSpaceTimerSE; UserData: Integer); // @addr 0x81E910 @note "UserData selects cloud 1..3."
-    function HitTestCursor: Boolean; override; // @addr 0x81EA10
-    procedure DrawMap; override; // @addr 0x81EAC4
-    procedure RenderToBuffer(Screen: TMessageLoopGI; Buffer: TGraphBufGR; SmallPreview: Boolean); // @addr 0x81F6B0 @note "SmallPreview affects detached normal planets only. Attached planets reuse their current surface renderer; ruins use their static image."
-    procedure LoadTemplate(Block: TBlockParEC); override; // @addr 0x81F9DC
-    procedure ApplyConfig(Block: TBlockParEC); override; // @addr 0x81FFA4
-    procedure QueueImageLoad(PendingLoads: TList; Owner: TObjectGI); override; // @addr 0x82019C
+    constructor Create; // @addr 0x00691920
+    constructor CreateFromGraph(const AGraphKey: WideString; UnusedPosition: TPoint); // @addr 0x00691958
+    procedure CopyTo(Destination: TObjectSE); override; // @addr 0x006919D4 @slot 0x00 @note "Destination must be a TPlanetSE. Copies configuration, not attached controls/timers."
+    procedure AttachToSpace(ASpace: TSpaceSE); override; // @addr 0x00691B84
+    procedure DetachFromSpace; override; // @addr 0x006927E4
+    procedure RebuildRings; // @addr 0x0069299C
+    procedure RebuildSurfaceAnimation; // @addr 0x00692EC0
+    procedure StartRandomSurfaceAnimation; // @addr 0x00693038 @note "Requires an allocated image control and a mask with positive total animation weight."
+    procedure SetMinimapOwner(Owner: Byte); // @addr 0x00693224
+    procedure SetPosition(APosition: TPointF); override; // @addr 0x0069337C
+    procedure SetSurfaceMapOffset(Value: Integer); // @addr 0x0069358C
+    procedure SetCloud1MapOffset(Value: Integer); // @addr 0x006935B8
+    procedure SetCloud2MapOffset(Value: Integer); // @addr 0x006935E8
+    procedure SetCloud3MapOffset(Value: Integer); // @addr 0x00693618
+    procedure SetLightAngle(Value: Byte); // @addr 0x00693648
+    procedure SetRotationTimerInterval(Value: Cardinal); // @addr 0x00693674
+    procedure SetSurfaceMapStep(Value: Integer); // @addr 0x00693B4C
+    procedure SetRingKind(Kind: Byte); // @addr 0x00693B50 @note "Does nothing for ruins; rebuilds rings when attached to space."
+    procedure SetSurfaceAnimationMask(Mask: Integer); // @addr 0x00693B78 @note "Does nothing for ruins; rebuilds the animation when attached to space."
+    procedure UpdateLightAngleFromStar; // @addr 0x00693BA0
+    procedure SurfaceAnimationFinished(Sender: TObjectGI); // @addr 0x00693C40
+    procedure AdvanceRotationTimer(Timer: PSpaceTimerSE; UserData: Integer); // @addr 0x00693D68
+    procedure AdvanceCloudTimer(Timer: PSpaceTimerSE; UserData: Integer); // @addr 0x00693D80 @note "UserData selects cloud 1..3."
+    function HitTestCursor: Boolean; override; // @addr 0x00693E24
+    procedure DrawMap; override; // @addr 0x00693E94
+    procedure RenderToBuffer(Screen: TMessageLoopGI; Buffer: TGraphBufGR; SmallPreview: Boolean); // @addr 0x00694908 @note "SmallPreview affects detached normal planets only. Attached planets reuse their current surface renderer; ruins use their static image."
+    procedure LoadTemplate(Block: TBlockParEC); override; // @addr 0x00694BEC
+    procedure ApplyConfig(Block: TBlockParEC); override; // @addr 0x00695158
+    procedure QueueImageLoad(PendingLoads: TList; Owner: TObjectGI); override; // @addr 0x00695340
   end;
 
-function AllocatePlanetCollisionCircle: PPlanetCollisionCircle; // @addr 0x820394 @note "Links a new entry at the head; only links are initialized."
-procedure FreePlanetCollisionCircle(Entry: PPlanetCollisionCircle); // @addr 0x8203E4
+function AllocatePlanetCollisionCircle: PPlanetCollisionCircle; // @addr 0x006954F4 @note "Links a new entry at the head; only links are initialized."
+procedure FreePlanetCollisionCircle(Entry: PPlanetCollisionCircle); // @addr 0x0069551C
 
 var
-  FirstPlanetCollisionCircle: PPlanetCollisionCircle = nil; // @addr 0x87CD78
+  FirstPlanetCollisionCircle: PPlanetCollisionCircle = nil; // @addr 0x0080F804
 
 implementation
 
 uses SysUtils, Math, EC_Str, SE_Star, GlobalsV, Globals, GR_Main, GI_Main, aConst, aMyFunction, EC_Mem, EC_Cache, EC_CacheBitmap, Windows, SE_Process;
-{ @routine $81BB6C TPlanetSE_Create }
+{ @routine $691920 TPlanetSE_Create }
 constructor TPlanetSE.Create;
 begin
   inherited CreateEmpty;
 end;
-{ @end $81BB6C }
+{ @end $691920 }
 
-{ @routine $81BBB0 TPlanetSE_CreateFromGraph }
+{ @routine $691958 TPlanetSE_CreateFromGraph }
 constructor TPlanetSE.CreateFromGraph(const AGraphKey: WideString; UnusedPosition: TPoint);
 begin
   IsRuins := FindTextOffsetW(AGraphKey, 'Ruins') = 0;
   inherited Create(AGraphKey, UnusedPosition);
 end;
-{ @end $81BBB0 }
+{ @end $691958 }
 
-{ @routine $81BC38 TPlanetSE_CopyTo }
+{ @routine $6919D4 TPlanetSE_CopyTo }
 procedure TPlanetSE.CopyTo(Destination: TObjectSE);
 begin
   inherited CopyTo(Destination);
@@ -174,9 +172,9 @@ begin
     RuinsAnimationFrame := Self.RuinsAnimationFrame;
   end;
 end;
-{ @end $81BC38 }
+{ @end $6919D4 }
 
-{ @routine $81BEA8 TPlanetSE_AttachToSpace }
+{ @routine $691B84 TPlanetSE_AttachToSpace }
 procedure TPlanetSE.AttachToSpace(ASpace: TSpaceSE);
 var
   Template: TPlanetTempl;
@@ -192,11 +190,11 @@ begin
     begin
       RuinsAnimationControl := TgaiGI.Create(Space.MapPanel);
       RuinsAnimationControl.SetImagePath(RuinsAnimationPath);
-      RuinsAnimationControl.SetSize(RuinsAnimationControl.GetContentSize);
-      RuinsAnimationControl.SetOrigin(HalfPoint(RuinsAnimationControl.ClientSize));
+      RuinsAnimationControl.ObjectSize := RuinsAnimationControl.GetContentSize;
+      RuinsAnimationControl.Sme := HalfPoint(RuinsAnimationControl.ClientSize);
       RuinsAnimationControl.SetDepthByName(DepthExpression);
-      RuinsAnimationControl.SetPosition(TruncatePointF(Position));
-      RuinsAnimationControl.SetPositionModeW(True);
+      RuinsAnimationControl.Pos := TruncatePointF(Position);
+      RuinsAnimationControl.World := True;
       RuinsAnimationControl.SequenceIndex := 0;
       RuinsAnimationControl.UpdateAutoGeometry;
       RuinsAnimationControl.SetSequenceFrame(RuinsAnimationFrame);
@@ -207,22 +205,22 @@ begin
     else
     begin
       RuinsImageControl := TImageGI.Create(Space.MapPanel);
-      RuinsImageControl.SetImagePath(RuinsImagePath);
-      RuinsImageControl.SetSize(RuinsImageControl.GetContentSize);
-      RuinsImageControl.SetOrigin(HalfPoint(RuinsImageControl.ClientSize));
+      RuinsImageControl.ImageSourcePath := RuinsImagePath;
+      RuinsImageControl.ObjectSize := RuinsImageControl.GetContentSize;
+      RuinsImageControl.Sme := HalfPoint(RuinsImageControl.ClientSize);
       RuinsImageControl.SetDepthByName(DepthExpression);
-      RuinsImageControl.SetPosition(TruncatePointF(Position));
-      RuinsImageControl.SetPositionModeW(True);
+      RuinsImageControl.Pos := TruncatePointF(Position);
+      RuinsImageControl.World := True;
       RuinsImageControl.SetAlpha(255);
       Size := RuinsImageControl.ClientSize;
     end;
     RuinsMinimapControl := TImageGI.Create(SpaceObjectUiLoop.ContentPanel);
-    RuinsMinimapControl.SetPositionModeW(True);
+    RuinsMinimapControl.World := True;
     RuinsMinimapControl.SetDepthByName(DepthExpression);
-    RuinsMinimapControl.SetPosition(TruncatePointF(MakePointF(Position.X * Space.MinimapScale, Position.Y * Space.MinimapScale)));
-    RuinsMinimapControl.SetImagePath(RuinsMinimapPath);
-    RuinsMinimapControl.SetSize(RuinsMinimapControl.GetContentSize);
-    RuinsMinimapControl.SetOrigin(HalfPoint(RuinsMinimapControl.ClientSize));
+    RuinsMinimapControl.Pos := TruncatePointF(MakePointF(Position.X * Space.MinimapScale, Position.Y * Space.MinimapScale));
+    RuinsMinimapControl.ImageSourcePath := RuinsMinimapPath;
+    RuinsMinimapControl.ObjectSize := RuinsMinimapControl.GetContentSize;
+    RuinsMinimapControl.Sme := HalfPoint(RuinsMinimapControl.ClientSize);
   end
   else
   begin
@@ -235,11 +233,11 @@ begin
     end;
     if Template = nil then raise Exception.Create('Error in TPlanetSE.Connect');
     PlanetControl := TPlanetGI.Create(Space.MapPanel);
-    PlanetControl.SetPositionModeW(True);
+    PlanetControl.World := True;
     PlanetControl.SetDepthByName(DepthExpression);
-    PlanetControl.SetPosition(Classes.Point(Trunc(Position.X), Trunc(Position.Y)));
+    PlanetControl.Pos := Classes.Point(Trunc(Position.X), Trunc(Position.Y));
     PlanetControl.SetSurfaceMapOffset(SurfaceMapOffset);
-    PlanetControl.SetOrigin(ImageOrigin);
+    PlanetControl.Sme := ImageOrigin;
     PlanetControl.SetImageWithRadius(Template.MaskName, ImagePath, Template.LightName, Radius);
     if PlanetClouds then
     begin
@@ -255,13 +253,13 @@ begin
     begin
       PlanetControl.SetAtmosphere('Bm.Atm.' + GiResourceSuffix + 'atm' + IntToStr(Radius * 2),
         'Bm.Atm.' + GiResourceSuffix + 'mask' + IntToStr(Radius * 2), AtmosphereColor);
-      PlanetControl.SetOrigin(HalfPoint(PlanetControl.ClientSize));
+      PlanetControl.Sme := HalfPoint(PlanetControl.ClientSize);
     end;
     MinimapControl := TAlphaImageGI.Create(SpaceObjectUiLoop.ContentPanel);
-    MinimapControl.SetPositionModeW(True);
+    MinimapControl.World := True;
     MinimapControl.SetDepthByName(DepthExpression);
-    MinimapControl.SetPosition(TruncatePointF(MakePointF(Position.X * Space.MinimapScale, Position.Y * Space.MinimapScale)));
-    MinimapControl.SetOrigin(MinimapImageOrigin);
+    MinimapControl.Pos := TruncatePointF(MakePointF(Position.X * Space.MinimapScale, Position.Y * Space.MinimapScale));
+    MinimapControl.Sme := MinimapImageOrigin;
     if MinimapOwner <= 7 then
       MinimapControl.SetImagePath('Bm.Planet.M.' + OwnerInfo[TOwnerId(MinimapOwner)].InternalName)
     else
@@ -270,7 +268,7 @@ begin
       if OwnerIndex <= 9 then MinimapControl.SetImagePath('Bm.Planet.M.0' + IntToWideString(OwnerIndex))
       else MinimapControl.SetImagePath('Bm.Planet.M.' + IntToWideString(OwnerIndex));
     end;
-    MinimapControl.SetSize(MinimapControl.GetContentSize);
+    MinimapControl.ObjectSize := MinimapControl.GetContentSize;
     UpdateLightAngleFromStar;
     CollisionCircle := AllocatePlanetCollisionCircle;
     CollisionCircle.Position.X := Position.X;
@@ -327,9 +325,9 @@ begin
     Size := Classes.Point((Radius + 5) * 2, (Radius + 5) * 2);
   end;
 end;
-{ @end $81BEA8 }
+{ @end $691B84 }
 
-{ @routine $81CE20 TPlanetSE_DetachFromSpace }
+{ @routine $6927E4 TPlanetSE_DetachFromSpace }
 procedure TPlanetSE.DetachFromSpace;
 begin
   if not IsAttachedToSpace then Exit;
@@ -343,7 +341,7 @@ begin
     end;
     if RuinsImageControl <> nil then
     begin
-      RuinsImageControl.SetActive(False);
+      RuinsImageControl.IsActive := False;
       RuinsImageControl.Free;
       RuinsImageControl := nil;
     end;
@@ -412,9 +410,9 @@ begin
   end;
   inherited DetachFromSpace;
 end;
-{ @end $81CE20 }
+{ @end $6927E4 }
 
-{ @routine $81D0B8 TPlanetSE_RebuildRings }
+{ @routine $69299C TPlanetSE_RebuildRings }
 procedure TPlanetSE.RebuildRings;
 var
   Path: WideString;
@@ -445,17 +443,17 @@ begin
     else if Radius = 60 then Path := Path + '4'
     else RaiseWideMessage('TPlanetSE.CreateRing');
     RingControl1 := TImageGI.Create(Space.MapPanel);
-    RingControl1.SetPositionModeW(True);
+    RingControl1.World := True;
     RingControl1.SetDepth(PlanetControl.Depth - 0.01);
-    RingControl1.SetImagePath(Path + '_1');
-    RingControl1.SetSize(RingControl1.GetContentSize);
-    RingControl1.SetPosition(PlanetControl.LocalPosition);
+    RingControl1.ImageSourcePath := Path + '_1';
+    RingControl1.ObjectSize := RingControl1.GetContentSize;
+    RingControl1.Pos := PlanetControl.LocalPosition;
     RingControl2 := TImageGI.Create(Space.MapPanel);
-    RingControl2.SetPositionModeW(True);
+    RingControl2.World := True;
     RingControl2.SetDepth(PlanetControl.Depth + 0.01);
-    RingControl2.SetImagePath(Path + '_2');
-    RingControl2.SetSize(RingControl2.GetContentSize);
-    RingControl2.SetPosition(PlanetControl.LocalPosition);
+    RingControl2.ImageSourcePath := Path + '_2';
+    RingControl2.ObjectSize := RingControl2.GetContentSize;
+    RingControl2.Pos := PlanetControl.LocalPosition;
     FirstBounds.TopLeft := RingControl1.GetContentOrigin;
     FirstBounds.BottomRight := AddPoints(FirstBounds.TopLeft, RingControl1.ClientSize);
     SecondBounds.TopLeft := RingControl2.GetContentOrigin;
@@ -469,13 +467,13 @@ begin
     else if RingKind = 22 then Inc(Offset.Y, GiScalePixels(15));
     if RingKind = 21 then Dec(Offset.X, GiScalePixels(8))
     else if RingKind = 22 then Dec(Offset.X, GiScalePixels(5));
-    RingControl1.SetOrigin(SubtractPoints(SubtractPoints(Center, FirstBounds.TopLeft), Offset));
-    RingControl2.SetOrigin(SubtractPoints(SubtractPoints(Center, SecondBounds.TopLeft), Offset));
+    RingControl1.Sme := SubtractPoints(SubtractPoints(Center, FirstBounds.TopLeft), Offset);
+    RingControl2.Sme := SubtractPoints(SubtractPoints(Center, SecondBounds.TopLeft), Offset);
   end;
 end;
-{ @end $81D0B8 }
+{ @end $69299C }
 
-{ @routine $81D698 TPlanetSE_RebuildSurfaceAnimation }
+{ @routine $692EC0 TPlanetSE_RebuildSurfaceAnimation }
 procedure TPlanetSE.RebuildSurfaceAnimation;
 var
   Scale: Single;
@@ -499,14 +497,14 @@ begin
     SurfaceAnimationOffset.Y := GiScalePixels(Round(PlanetAdvertDefinitions[SurfaceAnimationMask shr 24].Position.Y * Scale));
     SurfaceAnimationFrame := 0;
     SurfaceImageControl := TImageGI.Create(Space.MapPanel);
-    SurfaceImageControl.SetPositionModeW(True);
+    SurfaceImageControl.World := True;
     SurfaceImageControl.SetDepth(PlanetControl.Depth - 0.02);
     StartRandomSurfaceAnimation;
   end;
 end;
-{ @end $81D698 }
+{ @end $692EC0 }
 
-{ @routine $81D858 TPlanetSE_StartRandomSurfaceAnimation }
+{ @routine $693038 TPlanetSE_StartRandomSurfaceAnimation }
 procedure TPlanetSE.StartRandomSurfaceAnimation;
 var
   Index, Attempts, TotalWeight, Choice: Integer;
@@ -537,17 +535,17 @@ begin
     end;
   end;
   SurfaceAnimationFrame := 0;
-    if GiResourceVariant = 1 then SurfaceImageControl.SetImagePath(PlanetAdvertDefinitions[SurfaceAnimationMask shr 24].Adverts[PlanetAdvertDefinitions[SurfaceAnimationMask shr 24].Lists[SurfaceAnimationIndex].Indices[SurfaceAnimationFrame]].Image1)
-    else SurfaceImageControl.SetImagePath(PlanetAdvertDefinitions[SurfaceAnimationMask shr 24].Adverts[PlanetAdvertDefinitions[SurfaceAnimationMask shr 24].Lists[SurfaceAnimationIndex].Indices[SurfaceAnimationFrame]].Image2);
-  SurfaceImageControl.SetSize(SurfaceImageControl.GetContentSize);
-  SurfaceImageControl.SetOrigin(HalfPoint(SurfaceImageControl.ClientSize));
-  SurfaceImageControl.SetPosition(AddPoints(PlanetControl.LocalPosition, SurfaceAnimationOffset));
+    if GiResourceVariant = 1 then SurfaceImageControl.ImageSourcePath := PlanetAdvertDefinitions[SurfaceAnimationMask shr 24].Adverts[PlanetAdvertDefinitions[SurfaceAnimationMask shr 24].Lists[SurfaceAnimationIndex].Indices[SurfaceAnimationFrame]].Image1
+    else SurfaceImageControl.ImageSourcePath := PlanetAdvertDefinitions[SurfaceAnimationMask shr 24].Adverts[PlanetAdvertDefinitions[SurfaceAnimationMask shr 24].Lists[SurfaceAnimationIndex].Indices[SurfaceAnimationFrame]].Image2;
+  SurfaceImageControl.ObjectSize := SurfaceImageControl.GetContentSize;
+  SurfaceImageControl.Sme := HalfPoint(SurfaceImageControl.ClientSize);
+  SurfaceImageControl.Pos := AddPoints(PlanetControl.LocalPosition, SurfaceAnimationOffset);
   if SurfaceImageControl.GaiImageControl <> nil then SurfaceImageControl.GaiImageControl.CycleCompleteCallback := SurfaceAnimationFinished;
   SurfaceImageControl.RestartPlayback;
 end;
-{ @end $81D858 }
+{ @end $693038 }
 
-{ @routine $81DADC TPlanetSE_SetMinimapOwner }
+{ @routine $693224 TPlanetSE_SetMinimapOwner }
 procedure TPlanetSE.SetMinimapOwner(Owner: Byte);
 var
   Index: Integer;
@@ -565,12 +563,12 @@ begin
       if Index <= 9 then MinimapControl.SetImagePath('Bm.Planet.M.0' + IntToWideString(Index))
       else MinimapControl.SetImagePath('Bm.Planet.M.' + IntToWideString(Index));
     end;
-    MinimapControl.SetSize(MinimapControl.GetContentSize);
+    MinimapControl.ObjectSize := MinimapControl.GetContentSize;
   end;
 end;
-{ @end $81DADC }
+{ @end $693224 }
 
-{ @routine $81DC80 TPlanetSE_SetPosition }
+{ @routine $69337C TPlanetSE_SetPosition }
 procedure TPlanetSE.SetPosition(APosition: TPointF);
 begin
   inherited SetPosition(APosition);
@@ -578,9 +576,9 @@ begin
   begin
     if IsAttachedToSpace then
     begin
-      if RuinsImageControl <> nil then RuinsImageControl.SetPosition(TruncatePointF(APosition));
-      if RuinsAnimationControl <> nil then RuinsAnimationControl.SetPosition(TruncatePointF(APosition));
-      RuinsMinimapControl.SetPosition(TruncatePointF(MakePointF(APosition.X * Space.MinimapScale, APosition.Y * Space.MinimapScale)));
+      if RuinsImageControl <> nil then RuinsImageControl.Pos := TruncatePointF(APosition);
+      if RuinsAnimationControl <> nil then RuinsAnimationControl.Pos := TruncatePointF(APosition);
+      RuinsMinimapControl.Pos := TruncatePointF(MakePointF(APosition.X * Space.MinimapScale, APosition.Y * Space.MinimapScale));
     end;
   end
   else
@@ -595,59 +593,59 @@ begin
     UpdateLightAngleFromStar;
     if IsAttachedToSpace then
     begin
-      PlanetControl.SetPosition(Classes.Point(Round(APosition.X), Round(APosition.Y)));
-      MinimapControl.SetPosition(TruncatePointF(MakePointF(APosition.X * Space.MinimapScale, APosition.Y * Space.MinimapScale)));
-      if RingControl1 <> nil then RingControl1.SetPosition(PlanetControl.LocalPosition);
-      if RingControl2 <> nil then RingControl2.SetPosition(PlanetControl.LocalPosition);
-      if LegacySurfaceControl <> nil then LegacySurfaceControl.SetPosition(AddPoints(PlanetControl.LocalPosition, SurfaceAnimationOffset));
-      if SurfaceImageControl <> nil then SurfaceImageControl.SetPosition(AddPoints(PlanetControl.LocalPosition, SurfaceAnimationOffset));
+      PlanetControl.Pos := Classes.Point(Round(APosition.X), Round(APosition.Y));
+      MinimapControl.Pos := TruncatePointF(MakePointF(APosition.X * Space.MinimapScale, APosition.Y * Space.MinimapScale));
+      if RingControl1 <> nil then RingControl1.Pos := PlanetControl.LocalPosition;
+      if RingControl2 <> nil then RingControl2.Pos := PlanetControl.LocalPosition;
+      if LegacySurfaceControl <> nil then LegacySurfaceControl.Pos := AddPoints(PlanetControl.LocalPosition, SurfaceAnimationOffset);
+      if SurfaceImageControl <> nil then SurfaceImageControl.Pos := AddPoints(PlanetControl.LocalPosition, SurfaceAnimationOffset);
     end;
   end;
 end;
-{ @end $81DC80 }
+{ @end $69337C }
 
-{ @routine $81DF1C TPlanetSE_SetSurfaceMapOffset }
+{ @routine $69358C TPlanetSE_SetSurfaceMapOffset }
 procedure TPlanetSE.SetSurfaceMapOffset(Value: Integer);
 begin
   SurfaceMapOffset := Value;
   if (not IsRuins) and IsAttachedToSpace then PlanetControl.SetSurfaceMapOffset(SurfaceMapOffset);
 end;
-{ @end $81DF1C }
+{ @end $69358C }
 
-{ @routine $81DF64 TPlanetSE_SetCloud1MapOffset }
+{ @routine $6935B8 TPlanetSE_SetCloud1MapOffset }
 procedure TPlanetSE.SetCloud1MapOffset(Value: Integer);
 begin
   Cloud1MapOffset := Value;
   if (not IsRuins) and IsAttachedToSpace then PlanetControl.SetCloud1MapOffset(Cloud1MapOffset);
 end;
-{ @end $81DF64 }
+{ @end $6935B8 }
 
-{ @routine $81DFB0 TPlanetSE_SetCloud2MapOffset }
+{ @routine $6935E8 TPlanetSE_SetCloud2MapOffset }
 procedure TPlanetSE.SetCloud2MapOffset(Value: Integer);
 begin
   Cloud2MapOffset := Value;
   if (not IsRuins) and IsAttachedToSpace then PlanetControl.SetCloud2MapOffset(Cloud2MapOffset);
 end;
-{ @end $81DFB0 }
+{ @end $6935E8 }
 
-{ @routine $81DFFC TPlanetSE_SetCloud3MapOffset }
+{ @routine $693618 TPlanetSE_SetCloud3MapOffset }
 procedure TPlanetSE.SetCloud3MapOffset(Value: Integer);
 begin
   Cloud3MapOffset := Value;
   if (not IsRuins) and IsAttachedToSpace then PlanetControl.SetCloud3MapOffset(Cloud3MapOffset);
 end;
-{ @end $81DFFC }
+{ @end $693618 }
 
-{ @routine $81E048 TPlanetSE_SetLightAngle }
+{ @routine $693648 TPlanetSE_SetLightAngle }
 procedure TPlanetSE.SetLightAngle(Value: Byte);
 begin
   if IsRuins then Exit;
   LightAngle := Value;
   if IsAttachedToSpace then PlanetControl.SetLightAngle(LightAngle);
 end;
-{ @end $81E048 }
+{ @end $693648 }
 
-{ @routine $81E090 TPlanetSE_SetRotationTimerInterval }
+{ @routine $693674 TPlanetSE_SetRotationTimerInterval }
 procedure TPlanetSE.SetRotationTimerInterval(Value: Cardinal);
 var
   Interval: Integer;
@@ -724,34 +722,34 @@ begin
     end;
   end;
 end;
-{ @end $81E090 }
+{ @end $693674 }
 
-{ @routine $81E5E0 TPlanetSE_SetSurfaceMapStep }
+{ @routine $693B4C TPlanetSE_SetSurfaceMapStep }
 procedure TPlanetSE.SetSurfaceMapStep(Value: Integer);
 begin
   SurfaceMapStep := Value;
 end;
-{ @end $81E5E0 }
+{ @end $693B4C }
 
-{ @routine $81E5FC TPlanetSE_SetRingKind }
+{ @routine $693B50 TPlanetSE_SetRingKind }
 procedure TPlanetSE.SetRingKind(Kind: Byte);
 begin
   if IsRuins then Exit;
   RingKind := Kind;
   if IsAttachedToSpace then RebuildRings;
 end;
-{ @end $81E5FC }
+{ @end $693B50 }
 
-{ @routine $81E638 TPlanetSE_SetSurfaceAnimationMask }
+{ @routine $693B78 TPlanetSE_SetSurfaceAnimationMask }
 procedure TPlanetSE.SetSurfaceAnimationMask(Mask: Integer);
 begin
   if IsRuins then Exit;
   SurfaceAnimationMask := Mask;
   if IsAttachedToSpace then RebuildSurfaceAnimation;
 end;
-{ @end $81E638 }
+{ @end $693B78 }
 
-{ @routine $81E674 TPlanetSE_UpdateLightAngleFromStar }
+{ @routine $693BA0 TPlanetSE_UpdateLightAngleFromStar }
 procedure TPlanetSE.UpdateLightAngleFromStar;
 var
   Obj: TObjectSE;
@@ -770,35 +768,36 @@ begin
     end;
   end;
 end;
-{ @end $81E674 }
+{ @end $693BA0 }
 
-{ @routine $81E744 TPlanetSE_SurfaceAnimationFinished }
+{ @routine $693C40 TPlanetSE_SurfaceAnimationFinished }
 procedure TPlanetSE.SurfaceAnimationFinished(Sender: TObjectGI);
 begin
   if IsRuins then Exit;
   Inc(SurfaceAnimationFrame);
-  if High(PlanetAdvertDefinitions[SurfaceAnimationMask shr 24].Lists[SurfaceAnimationIndex].Indices) < SurfaceAnimationFrame then StartRandomSurfaceAnimation
-  else
+  if High(PlanetAdvertDefinitions[SurfaceAnimationMask shr 24].Lists[SurfaceAnimationIndex].Indices) < SurfaceAnimationFrame then
   begin
-    { Native retains this empty diagnostic branch. }
-    if SurfaceAnimationFrame = 2 then
-      if SurfaceAnimationFrame = 2 then begin end;
-    if GiResourceVariant = 1 then SurfaceImageControl.SetImagePath(PlanetAdvertDefinitions[SurfaceAnimationMask shr 24].Adverts[PlanetAdvertDefinitions[SurfaceAnimationMask shr 24].Lists[SurfaceAnimationIndex].Indices[SurfaceAnimationFrame]].Image1)
-    else SurfaceImageControl.SetImagePath(PlanetAdvertDefinitions[SurfaceAnimationMask shr 24].Adverts[PlanetAdvertDefinitions[SurfaceAnimationMask shr 24].Lists[SurfaceAnimationIndex].Indices[SurfaceAnimationFrame]].Image2);
-    if SurfaceImageControl.GaiImageControl <> nil then SurfaceImageControl.GaiImageControl.CycleCompleteCallback := SurfaceAnimationFinished;
-    SurfaceImageControl.RestartPlayback;
+    StartRandomSurfaceAnimation;
+    Exit;
   end;
+  { Native retains this empty diagnostic branch. }
+  if SurfaceAnimationFrame = 2 then
+    if SurfaceAnimationFrame = 2 then begin end;
+  if GiResourceVariant = 1 then SurfaceImageControl.ImageSourcePath := PlanetAdvertDefinitions[SurfaceAnimationMask shr 24].Adverts[PlanetAdvertDefinitions[SurfaceAnimationMask shr 24].Lists[SurfaceAnimationIndex].Indices[SurfaceAnimationFrame]].Image1
+  else SurfaceImageControl.ImageSourcePath := PlanetAdvertDefinitions[SurfaceAnimationMask shr 24].Adverts[PlanetAdvertDefinitions[SurfaceAnimationMask shr 24].Lists[SurfaceAnimationIndex].Indices[SurfaceAnimationFrame]].Image2;
+  if SurfaceImageControl.GaiImageControl <> nil then SurfaceImageControl.GaiImageControl.CycleCompleteCallback := SurfaceAnimationFinished;
+  SurfaceImageControl.RestartPlayback;
 end;
-{ @end $81E744 }
+{ @end $693C40 }
 
-{ @routine $81E8DC TPlanetSE_AdvanceRotationTimer }
+{ @routine $693D68 TPlanetSE_AdvanceRotationTimer }
 procedure TPlanetSE.AdvanceRotationTimer(Timer: PSpaceTimerSE; UserData: Integer);
 begin
   if not IsRuins then SetSurfaceMapOffset(SurfaceMapOffset + SurfaceMapStep);
 end;
-{ @end $81E8DC }
+{ @end $693D68 }
 
-{ @routine $81E910 TPlanetSE_AdvanceCloudTimer }
+{ @routine $693D80 TPlanetSE_AdvanceCloudTimer }
 procedure TPlanetSE.AdvanceCloudTimer(Timer: PSpaceTimerSE; UserData: Integer);
 begin
   if IsRuins then Exit;
@@ -815,9 +814,9 @@ begin
     else if UserData = 3 then SetCloud3MapOffset(Cloud3MapOffset - Cloud3MapStep);
   end;
 end;
-{ @end $81E910 }
+{ @end $693D80 }
 
-{ @routine $81EA10 TPlanetSE_HitTestCursor }
+{ @routine $693E24 TPlanetSE_HitTestCursor }
 function TPlanetSE.HitTestCursor: Boolean;
 begin
   if not IsAttachedToSpace then
@@ -835,9 +834,9 @@ begin
   end
   else Result := PlanetControl.HitTestCursor;
 end;
-{ @end $81EA10 }
+{ @end $693E24 }
 
-{ @routine $81EAC4 TPlanetSE_DrawMap }
+{ @routine $693E94 TPlanetSE_DrawMap }
 procedure TPlanetSE.DrawMap;
 var
   Capacity, Index, X, Y, CenterX, CenterY: Integer;
@@ -1077,9 +1076,9 @@ begin
     end;
   end;
 end;
-{ @end $81EAC4 }
+{ @end $693E94 }
 
-{ @routine $81F6B0 TPlanetSE_RenderToBuffer }
+{ @routine $694908 TPlanetSE_RenderToBuffer }
 procedure TPlanetSE.RenderToBuffer(Screen: TMessageLoopGI; Buffer: TGraphBufGR; SmallPreview: Boolean);
 var
   Template: TPlanetTempl;
@@ -1130,9 +1129,9 @@ begin
     Control.Free;
   end;
 end;
-{ @end $81F6B0 }
+{ @end $694908 }
 
-{ @routine $81F9DC TPlanetSE_LoadTemplate }
+{ @routine $694BEC TPlanetSE_LoadTemplate }
 procedure TPlanetSE.LoadTemplate(Block: TBlockParEC);
 var
   Text: WideString;
@@ -1174,9 +1173,9 @@ begin
     if Block.CountParams('AtmColor') > 0 then
     begin
       Text := Block.GetParam('AtmColor');
-      AtmosphereColor := Byte(ExtractDigitsToIntW(ExtractDelimitedPartW(Text, 0, ',')));
-      AtmosphereColor := AtmosphereColor or (Byte(ExtractDigitsToIntW(ExtractDelimitedPartW(Text, 1, ','))) shl 8);
-      AtmosphereColor := AtmosphereColor or (Byte(ExtractDigitsToIntW(ExtractDelimitedPartW(Text, 2, ','))) shl 16);
+      AtmosphereColor := (ExtractDigitsToIntW(ExtractDelimitedPartW(Text, 0, ',')) and $FF);
+      AtmosphereColor := AtmosphereColor or ((ExtractDigitsToIntW(ExtractDelimitedPartW(Text, 1, ',')) and $FF) shl 8);
+      AtmosphereColor := AtmosphereColor or ((ExtractDigitsToIntW(ExtractDelimitedPartW(Text, 2, ',')) and $FF) shl 16);
     end;
     if Block.CountParams('Space') > 0 then
     begin
@@ -1189,9 +1188,9 @@ begin
     if Block.CountParams('Quest') > 0 then QuestEnabled := ParseEnabledNameGI(Block.GetParam('Quest'));
   end;
 end;
-{ @end $81F9DC }
+{ @end $694BEC }
 
-{ @routine $81FFA4 TPlanetSE_ApplyConfig }
+{ @routine $695158 TPlanetSE_ApplyConfig }
 procedure TPlanetSE.ApplyConfig(Block: TBlockParEC);
 begin
   inherited ApplyConfig(Block);
@@ -1201,9 +1200,9 @@ begin
   if Block.CountParams('SpeedRotate') > 0 then SetRotationTimerInterval(StrToInt(Block.GetParam('SpeedRotate')));
   if Block.CountParams('StepRotate') > 0 then SetSurfaceMapStep(StrToInt(Block.GetParam('StepRotate')));
 end;
-{ @end $81FFA4 }
+{ @end $695158 }
 
-{ @routine $82019C TPlanetSE_QueueImageLoad }
+{ @routine $695340 TPlanetSE_QueueImageLoad }
 procedure TPlanetSE.QueueImageLoad(PendingLoads: TList; Owner: TObjectGI);
 var
   Template: TPlanetTempl;
@@ -1223,12 +1222,12 @@ begin
     else
     begin
       Image := TImageGI.Create(Owner);
-      Image.SetImagePath(RuinsImagePath);
+      Image.ImageSourcePath := RuinsImagePath;
       Image.QueueImageLoad(PendingLoads);
       Image.Free;
     end;
     MapImage := TImageGI.Create(Owner);
-    MapImage.SetImagePath(RuinsMinimapPath);
+    MapImage.ImageSourcePath := RuinsMinimapPath;
     MapImage.QueueImageLoad(PendingLoads);
     MapImage.Free;
   end
@@ -1256,9 +1255,9 @@ begin
     end;
   end;
 end;
-{ @end $82019C }
+{ @end $695340 }
 
-{ @routine $820394 AllocatePlanetCollisionCircle }
+{ @routine $6954F4 AllocatePlanetCollisionCircle }
 function AllocatePlanetCollisionCircle: PPlanetCollisionCircle;
 var
   Entry: PPlanetCollisionCircle;
@@ -1270,9 +1269,9 @@ begin
   FirstPlanetCollisionCircle := Entry;
   Result := Entry;
 end;
-{ @end $820394 }
+{ @end $6954F4 }
 
-{ @routine $8203E4 FreePlanetCollisionCircle }
+{ @routine $69551C FreePlanetCollisionCircle }
 procedure FreePlanetCollisionCircle(Entry: PPlanetCollisionCircle);
 begin
   if Entry.Next <> nil then Entry.Next.Prev := Entry.Prev;
@@ -1280,6 +1279,6 @@ begin
   if Entry = FirstPlanetCollisionCircle then FirstPlanetCollisionCircle := Entry.Next;
   Dispose(Entry);
 end;
-{ @end $8203E4 }
+{ @end $69551C }
 
 end.

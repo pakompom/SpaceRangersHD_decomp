@@ -30,6 +30,55 @@ fn methods(d: &Decl) -> Result<Vec<Decl>> {
         .collect()
 }
 
+fn source_member_order(d: &Decl, settings: &Value) -> bool {
+    d.kind == "class"
+        && match d.meta.get("methodorder").and_then(Value::as_str) {
+            Some("source") => true,
+            Some("virtual") => false,
+            _ => settings["compiler"]["source_method_order"] == true,
+        }
+}
+
+// Members keep their declaration position, including unused properties:
+// DCC32 consumes their member ordinals when calculating register constraints.
+// Checked declarations already list fields by offset and virtuals by slot.
+struct SourceMember {
+    position: usize,
+    field: bool,
+    names: Vec<String>,
+    accessors: Vec<String>,
+    lines: Vec<String>,
+}
+
+fn order_source_members(mut members: Vec<SourceMember>) -> Result<Vec<String>> {
+    members.sort_by_key(|m| m.position);
+    let names: BTreeSet<_> = members
+        .iter()
+        .flat_map(|m| m.names.iter().cloned())
+        .collect();
+    let mut emitted = BTreeSet::new();
+    let mut lines = Vec::new();
+    let mut fields_allowed = true;
+    for member in members {
+        ensure!(
+            member
+                .accessors
+                .iter()
+                .all(|a| !names.contains(a) || emitted.contains(a)),
+            "property {} precedes its accessor",
+            member.names.join(", ")
+        );
+        if member.field && !fields_allowed {
+            // Delphi needs a new field section after a method or property.
+            lines.push("public".into());
+        }
+        fields_allowed = member.field;
+        emitted.extend(member.names);
+        lines.extend(member.lines);
+    }
+    Ok(lines)
+}
+
 pub struct Emitter<'a> {
     pub project: &'a mut Project,
     pub bodies: Vec<Body>,
@@ -86,7 +135,10 @@ impl<'a> Emitter<'a> {
         }
         for d in project.compiler.types.values() {
             for p in array(&d.data, "properties") {
-                if words.contains(&string(p, "name").to_lowercase()) {
+                if source_member_order(d, &project.settings)
+                    || yes(p, "default_indexed")
+                    || words.contains(&string(p, "name").to_lowercase())
+                {
                     for access in ["read", "write"] {
                         if let Some(name) = p.get(access).and_then(Value::as_str) {
                             words.insert(name.to_lowercase());
@@ -119,7 +171,7 @@ impl<'a> Emitter<'a> {
             .compiler
             .decls
             .iter()
-            .filter(|d| d.kind == "constant")
+            .filter(|d| d.kind == "constant" && d.data["source_local"] != true)
             .cloned()
             .collect();
         let mut member_bodies: BTreeMap<String, IndexMap<String, Decl>> = BTreeMap::new();
@@ -132,6 +184,7 @@ impl<'a> Emitter<'a> {
                 .clone()
                 .context("missing implementation signature")?;
             let interface = project.routine(&format!("{:x}", body.address))?;
+            d.data["directives"] = interface.data["directives"].clone();
             let defaults: BTreeMap<_, _> = array(&interface.data, "params")
                 .iter()
                 .filter_map(|p| {
@@ -184,10 +237,29 @@ impl<'a> Emitter<'a> {
                 return self.alignment(inner);
             }
             if typ.get("callable").is_some() {
-                return self.project.compiler.size(typ);
+                // Delphi 7 aligns method pointers to eight bytes under $A8;
+                // newer compilers can use four. Preserve the selected compiler's
+                // natural padding, which also affects class member ordinals.
+                if typ["callable"]["of_object"] == true {
+                    let alignment = self.project.settings["compiler"]["method_pointer_alignment"]
+                        .as_i64()
+                        .unwrap_or(8);
+                    ensure!(
+                        matches!(alignment, 4 | 8),
+                        "method pointer alignment must be 4 or 8"
+                    );
+                    return Ok(alignment);
+                }
+                return Ok(4);
             }
             if typ.get("set").is_some() {
-                return Ok(1);
+                return Ok(
+                    if self.project.settings["compiler"]["natural_alignment"] != false {
+                        1
+                    } else {
+                        self.project.compiler.size(typ)?.min(8)
+                    },
+                );
             }
             if typ.get("subrange").is_some() || typ.get("enum_range").is_some() {
                 return Ok(self.project.compiler.size(typ)?.min(8));
@@ -200,6 +272,15 @@ impl<'a> Emitter<'a> {
         }
         let d = self.project.compiler.lookup(name)?;
         if d.kind == "alias" {
+            if d.data["type"].get("set").is_some() {
+                return if d.data["type"]["set"].is_object()
+                    || self.project.settings["compiler"]["natural_alignment"] != false
+                {
+                    Ok(1)
+                } else {
+                    Ok(self.project.compiler.size(typ)?.min(8))
+                };
+            }
             return self.alignment(&d.data["type"]);
         }
         if d.kind == "record" {
@@ -221,8 +302,10 @@ impl<'a> Emitter<'a> {
     pub fn typ(&mut self, spec: &Value) -> Result<String> {
         if spec.is_object() {
             if let Some(bounds) = spec.get("enum_range") {
-                let (name, _, _) = self.project.compiler.enum_range(bounds)?;
-                self.typ(&json!(name))?;
+                let (name, _, _) = self.project.compiler.ordinal_range(bounds)?;
+                if let Some(name) = name {
+                    self.typ(&json!(name))?;
+                }
                 return crate::pascal::render::spelling(spec);
             }
             if spec.get("subrange").is_some() {
@@ -386,9 +469,19 @@ impl<'a> Emitter<'a> {
                     [1, 2, 4].contains(&width),
                     "Unsupported Pascal enum width: {name}"
                 );
+                let implicit = array(&d.data, "members")
+                    .iter()
+                    .enumerate()
+                    .all(|(index, member)| member[1].as_u64() == Some(index as u64));
                 let members = array(&d.data, "members")
                     .iter()
-                    .map(|m| format!("{} = {}", m[0].as_str().unwrap(), m[1]))
+                    .map(|m| {
+                        if implicit {
+                            m[0].as_str().unwrap().to_owned()
+                        } else {
+                            format!("{} = {}", m[0].as_str().unwrap(), m[1])
+                        }
+                    })
                     .collect::<Vec<_>>()
                     .join(",\n  ");
                 format!("{{$Z{width}}}\n{name} = ({members});")
@@ -405,6 +498,7 @@ impl<'a> Emitter<'a> {
     fn aggregate(&mut self, d: &Decl) -> Result<String> {
         let name = &d.name;
         let key = name.to_lowercase();
+        let natural_alignment = self.project.settings["compiler"]["natural_alignment"] != false;
         if d.kind == "class" {
             self.classes.insert(name.clone());
         }
@@ -466,6 +560,30 @@ impl<'a> Emitter<'a> {
                 format!("{name} = packed record Opaque: Byte; end;")
             });
         };
+        if d.kind == "record" && layout["overlays"] == true {
+            let mut lines = vec![
+                format!("{name} = packed record case Integer of"),
+                format!("0: (Storage: array[0..{}] of Byte);", size - 1),
+            ];
+            for (index, field) in array(&layout, "fields").iter().enumerate() {
+                let off = integer(field, "offset")?;
+                let gap = if off == 0 {
+                    String::new()
+                } else {
+                    format!("Pad{index}: array[0..{}] of Byte; ", off - 1)
+                };
+                lines.push(format!(
+                    "{}: ({gap}{}: {});",
+                    index + 1,
+                    string(field, "name"),
+                    self.typ(&field["type"])?
+                ));
+            }
+            lines.push("end;".into());
+            return Ok(lines.join("\n"));
+        }
+        let source_order = source_member_order(d, &self.project.settings);
+        let mut field_members = Vec::new();
         let (mut lines, mut offset) = (Vec::new(), base_size);
         if !parent.is_empty() {
             let pd = self.project.compiler.lookup(&parent)?;
@@ -482,6 +600,7 @@ impl<'a> Emitter<'a> {
             if off < base_size {
                 continue;
             }
+            let field_start = lines.len();
             let alignment = if packed {
                 1
             } else {
@@ -489,11 +608,12 @@ impl<'a> Emitter<'a> {
             };
             let aligned = (offset + alignment - 1) & -alignment;
             ensure!(
-                aligned <= off,
+                !natural_alignment || aligned <= off,
                 "{name}.{}: field precedes its Delphi alignment",
                 string(field, "name")
             );
-            if off > aligned {
+            let padding_start = if natural_alignment { aligned } else { offset };
+            if off > padding_start {
                 lines.push(format!(
                     "Gap{offset:X}: array[0..{}] of Byte;",
                     off - offset - 1
@@ -505,10 +625,19 @@ impl<'a> Emitter<'a> {
                 self.typ(&field["type"])?
             ));
             offset = off + self.project.compiler.size(&field["type"])?;
+            field_members.push(SourceMember {
+                position: field["source_position"].as_u64().map_or(0, |p| p as usize),
+                field: true,
+                names: vec![string(field, "name").to_lowercase()],
+                accessors: Vec::new(),
+                lines: lines[field_start..].to_vec(),
+            });
         }
         // Classes round their VMT instance size to four bytes; records round to
         // their largest field alignment. Packed records and value objects do not.
-        let alignment = if d.kind == "class" {
+        let alignment = if !natural_alignment {
+            1
+        } else if d.kind == "class" {
             4
         } else if packed || yes(&d.data, "value_object") {
             1
@@ -520,12 +649,28 @@ impl<'a> Emitter<'a> {
             aligned <= size,
             "{name}: size precedes its Delphi alignment"
         );
-        if size > aligned {
+        let padding_start = if natural_alignment { aligned } else { offset };
+        if size > padding_start {
             lines.push(format!(
                 "Gap{offset:X}: array[0..{}] of Byte;",
                 size - offset - 1
             ));
         }
+        if size > padding_start {
+            let gap = lines.last().unwrap().clone();
+            if let Some(last) = field_members.last_mut() {
+                last.lines.push(gap);
+            } else {
+                field_members.push(SourceMember {
+                    position: 0,
+                    field: true,
+                    names: Vec::new(),
+                    accessors: Vec::new(),
+                    lines: vec![gap],
+                });
+            }
+        }
+        let method_start = lines.len();
         let mut implemented = BTreeSet::new();
         if d.kind == "class" {
             let mut slot_end = self
@@ -580,7 +725,7 @@ impl<'a> Emitter<'a> {
                 if self.body_names.contains(&method.name.to_lowercase())
                     || !self.words.contains(&method_name.to_lowercase())
                     || virtuals.values().any(|m| m.name == method.name)
-                    || !method.meta.contains_key("addr")
+                    || (!method.meta.contains_key("addr") && !method.meta.contains_key("unbound"))
                     || method.meta.contains_key("nameonly")
                     || yes(&method.data, "class_method")
                     || !matches!(
@@ -593,8 +738,18 @@ impl<'a> Emitter<'a> {
                 lines.push(format!(
                     "{}{}",
                     self.heading(&method, false, true)?,
-                    if kind == "destructor" {
+                    if kind == "destructor"
+                        && array(&method.data, "directives")
+                            .iter()
+                            .any(|d| d == "override")
+                    {
                         " override;"
+                    } else if kind == "destructor"
+                        && array(&method.data, "directives")
+                            .iter()
+                            .any(|d| d == "virtual")
+                    {
+                        " virtual;"
                     } else {
                         ""
                     }
@@ -613,16 +768,72 @@ impl<'a> Emitter<'a> {
             lines.push(format!(
                 "{}{}",
                 self.heading(&d, false, true)?,
-                if string(&d.data, "routine_kind") == "destructor" {
+                if string(&d.data, "routine_kind") == "destructor"
+                    && array(&d.data, "directives").iter().any(|v| v == "override")
+                {
                     " override;"
+                } else if string(&d.data, "routine_kind") == "destructor"
+                    && array(&d.data, "directives").iter().any(|v| v == "virtual")
+                {
+                    " virtual;"
                 } else {
                     ""
                 }
             ));
         }
-        for p in array(&d.data, "properties") {
-            if self.words.contains(&string(p, "name").to_lowercase()) {
-                lines.push(self.property(p)?);
+        if source_order {
+            let own = methods(d)?;
+            for line in lines.drain(method_start..) {
+                let mut words = line.split_whitespace();
+                if words.next() == Some("class") {
+                    words.next();
+                }
+                let name = words
+                    .next()
+                    .unwrap_or("")
+                    .split(['(', ':', ';'])
+                    .next()
+                    .unwrap_or("");
+                let declaration = own
+                    .iter()
+                    .find(|m| string(&m.data, "method_name").eq_ignore_ascii_case(name));
+                field_members.push(SourceMember {
+                    position: declaration.map_or(usize::MAX, |m| m.start),
+                    field: false,
+                    names: vec![name.to_lowercase()],
+                    accessors: Vec::new(),
+                    lines: vec![line],
+                });
+            }
+            for p in array(&d.data, "properties") {
+                field_members.push(SourceMember {
+                    position: p["source_position"]
+                        .as_u64()
+                        .map_or(usize::MAX, |p| p as usize),
+                    field: false,
+                    names: vec![string(p, "name").to_lowercase()],
+                    accessors: ["read", "write"]
+                        .iter()
+                        .filter_map(|a| p.get(*a).and_then(Value::as_str))
+                        .map(|a| {
+                            a.split(['.', '['])
+                                .next()
+                                .unwrap_or(a)
+                                .trim()
+                                .to_lowercase()
+                        })
+                        .collect(),
+                    lines: vec![self.property(p)?],
+                });
+            }
+            lines = order_source_members(field_members)?;
+        } else {
+            for p in array(&d.data, "properties") {
+                if yes(p, "default_indexed")
+                    || self.words.contains(&string(p, "name").to_lowercase())
+                {
+                    lines.push(self.property(p)?);
+                }
             }
         }
         let kind = if d.kind == "class" {
@@ -639,8 +850,14 @@ impl<'a> Emitter<'a> {
     fn property(&mut self, p: &Value) -> Result<String> {
         let mut indices = Vec::new();
         for param in array(p, "params") {
+            let mode = string(param, "mode");
             indices.push(format!(
-                "{}: {}",
+                "{}{}: {}",
+                if mode == "value" {
+                    String::new()
+                } else {
+                    format!("{mode} ")
+                },
                 string(param, "name"),
                 self.typ(&param["type"])?
             ));
@@ -661,6 +878,9 @@ impl<'a> Emitter<'a> {
             }
         }
         head.push(';');
+        if yes(p, "default_indexed") {
+            head.push_str(" default;");
+        }
         Ok(head)
     }
     fn interface(&mut self, d: &Decl) -> Result<String> {
@@ -743,6 +963,16 @@ impl<'a> Emitter<'a> {
                                     .map(|p| p["type"].clone()),
                             );
                             specs.push(method.data["result"].clone());
+                        }
+                    }
+                    for property in array(&d.data, "properties") {
+                        if source_member_order(d, &e.project.settings)
+                            || yes(property, "default_indexed")
+                        {
+                            specs.push(property["type"].clone());
+                            specs.extend(
+                                array(property, "params").iter().map(|p| p["type"].clone()),
+                            );
                         }
                     }
                 } else if d.kind == "alias" {

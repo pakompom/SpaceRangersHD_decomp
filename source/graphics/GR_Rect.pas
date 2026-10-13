@@ -1,5 +1,4 @@
 unit GR_Rect;
-// Unit bracket (inferred): .text 0x00472098..0x004728CA; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -12,8 +11,8 @@ type
     Next: TRectGR; // @offset 0x08
     Bounds: TRect; // @offset 0x0C
 
-    constructor Create; // @addr 0x472148
-    destructor Destroy; override; // @addr 0x47218C
+    constructor Create; // @addr 0x00482E04
+    destructor Destroy; override; // @addr 0x00482E3C
   end;
 
   TArrayRectGR = class(TObjectEx) // @size 0x0C
@@ -21,50 +20,50 @@ type
     FirstRect: TRectGR; // @offset 0x04
     LastRect: TRectGR; // @offset 0x08
 
-    constructor Create; // @addr 0x4721C0
-    destructor Destroy; override; // @addr 0x472204
-    procedure Clear; // @addr 0x472240
-    function AllocateRectNode: TRectGR; // @addr 0x47228C
-    procedure RemoveRectNode(RectNode: TRectGR); // @addr 0x4722F8
-    procedure AddRect(Rect: TRect); // @addr 0x472370 @note "Maintains nonoverlapping coverage."
-    procedure InsertRectFragment(Left, Top, Right, Bottom: Integer); // @addr 0x472464
-    procedure AddScreenClippedRect(Rect: TRect; UnusedPoint1, UnusedPoint2: TPoint); // @addr 0x472880
+    constructor Create; // @addr 0x00482E64
+    destructor Destroy; override; // @addr 0x00482E9C
+    procedure Clear; // @addr 0x00482EC8
+    function AllocateRectNode: TRectGR; // @addr 0x00482EF4
+    procedure RemoveRectNode(RectNode: TRectGR); // @addr 0x00482F28
+    procedure AddRect(Rect: TRect); // @addr 0x00482F64 @note "Maintains nonoverlapping coverage."
+    procedure InsertRectFragment(Left, Top, Right, Bottom: Integer); // @addr 0x0048300C
+    procedure AddScreenClippedRect(Rect: TRect; UnusedPoint1, UnusedPoint2: TPoint); // @addr 0x004833B4
   end;
 
 implementation
 
 uses GR_Main;
 
-{ @routine $472148 TRectGR_Create }
+{ @routine $482E04 TRectGR_Create }
 constructor TRectGR.Create;
 begin
   inherited Create;
 end;
-{ @end $472148 }
+{ @end $482E04 }
 
-{ @routine $47218C TRectGR_Destroy }
+{ @routine $482E3C TRectGR_Destroy }
 destructor TRectGR.Destroy;
 begin
   inherited Destroy;
 end;
-{ @end $47218C }
+{ @end $482E3C }
 
-{ @routine $4721C0 TArrayRectGR_Create }
+{ @routine $482E64 TArrayRectGR_Create }
 constructor TArrayRectGR.Create;
 begin
   inherited Create;
 end;
-{ @end $4721C0 }
+{ @end $482E64 }
 
-{ @routine $472204 TArrayRectGR_Destroy }
+{ @routine $482E9C TArrayRectGR_Destroy }
 destructor TArrayRectGR.Destroy;
 begin
   Clear;
   inherited Destroy;
 end;
-{ @end $472204 }
+{ @end $482E9C }
 
-{ @routine $472240 TArrayRectGR_Clear }
+{ @routine $482EC8 TArrayRectGR_Clear }
 procedure TArrayRectGR.Clear;
 var
   Node, Removed: TRectGR;
@@ -79,9 +78,9 @@ begin
   FirstRect := nil;
   LastRect := nil;
 end;
-{ @end $472240 }
+{ @end $482EC8 }
 
-{ @routine $47228C TArrayRectGR_AllocateRectNode }
+{ @routine $482EF4 TArrayRectGR_AllocateRectNode }
 function TArrayRectGR.AllocateRectNode: TRectGR;
 var
   Node: TRectGR;
@@ -96,9 +95,9 @@ begin
     FirstRect := Node;
   Result := Node;
 end;
-{ @end $47228C }
+{ @end $482EF4 }
 
-{ @routine $4722F8 TArrayRectGR_RemoveRectNode }
+{ @routine $482F28 TArrayRectGR_RemoveRectNode }
 procedure TArrayRectGR.RemoveRectNode(RectNode: TRectGR);
 begin
   if RectNode.Prev <> nil then
@@ -111,9 +110,9 @@ begin
     FirstRect := RectNode.Next;
   RectNode.Free;
 end;
-{ @end $4722F8 }
+{ @end $482F28 }
 
-{ @routine $472370 TArrayRectGR_AddRect }
+{ @routine $482F64 TArrayRectGR_AddRect }
 procedure TArrayRectGR.AddRect(Rect: TRect);
 var
   Node, Removed: TRectGR;
@@ -143,9 +142,9 @@ begin
   end;
   InsertRectFragment(Rect.Left, Rect.Top, Rect.Right, Rect.Bottom);
 end;
-{ @end $472370 }
+{ @end $482F64 }
 
-{ @routine $472464 TArrayRectGR_InsertRectFragment }
+{ @routine $48300C TArrayRectGR_InsertRectFragment }
 procedure TArrayRectGR.InsertRectFragment(Left, Top, Right, Bottom: Integer);
 var
   Node: TRectGR;
@@ -252,9 +251,9 @@ begin
     InsertRectFragment(ExistingRight, Top, Right, ExistingBottom);
   end;
 end;
-{ @end $472464 }
+{ @end $48300C }
 
-{ @routine $472880 TArrayRectGR_AddScreenClippedRect }
+{ @routine $4833B4 TArrayRectGR_AddScreenClippedRect }
 procedure TArrayRectGR.AddScreenClippedRect(Rect: TRect; UnusedPoint1, UnusedPoint2: TPoint);
 var
   Clipped: TRect;
@@ -262,6 +261,6 @@ begin
   if IntersectRects(Clipped, Rect, GameScreenRect) then
     AddRect(Clipped);
 end;
-{ @end $472880 }
+{ @end $4833B4 }
 
 end.

@@ -1,7 +1,4 @@
 unit ab_StopLine;
-// Unit bracket (inferred): .text 0x00554FD8..0x0055667B; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
-// Unit bracket (inferred): .itext 0x00877868..0x0087786F; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
-// Native stop-point/line region: $554FD8..$55667B, including compiler-managed finalization.
 
 interface
 
@@ -30,7 +27,7 @@ type
     Prev: PabStopLine; // @offset $00
     Next: PabStopLine; // @offset $04
     NextCollision: PabStopLine; // @offset $08
-    UserValue: Integer; // @offset $0C
+    BarrierLine: PabStopLine; // @offset $0C Non-owning collision line for a barrier visual.
     First: PabStopPoint; // @offset $10
     Last: PabStopPoint; // @offset $14
     FirstColor: PCardinal; // @offset $18
@@ -41,62 +38,62 @@ type
     Segments: array[0..1] of PPolyLineSegmentGI; // @offset $28
   end;
 
-procedure ab_StopPoint_Clear; // @addr $554FF8
-function ab_StopPoint_Add: PabStopPoint; // @addr $555030 @note "Allocates and links a node owned by the world list."
-procedure ab_StopPoint_Delete(Point: PabStopPoint); // @addr $555104
-procedure ab_StopPoint_UpdatePosition(Point: PabStopPoint); // @addr $5551F4 @note "Nil updates every point."
-procedure ab_StopPoint_ClearImages; // @addr $5552CC
-procedure ab_StopPoint_ClearSegments(Point: PabStopPoint); // @addr $55530C
-procedure ab_StopPoint_BuildIndex; // @addr $55535C
-procedure ab_StopPoint_ClearIndex; // @addr $5553C4
-function ab_StopPoint_Count: Integer; // @addr $5553D8
-procedure ab_StopLine_Clear; // @addr $55540C
-function ab_StopLine_Add: PabStopLine; // @addr $555440 @note "Allocates and links a node owned by the world list."
-procedure ab_StopLine_Delete(Line: PabStopLine); // @addr $55551C
-procedure ab_StopLine_AddLatitude(PolarAngle, Step: Double); // @addr $5555C8
-procedure ab_StopLine_UpdateWorldLines; // @addr $5556AC
-procedure ab_StopLine_UpdateColors; // @addr $555790
-procedure ab_StopLine_ClearSegments(Line: PabStopLine); // @addr $5557E0
-procedure ab_StopLine_PrepareCollision(Line: PabStopLine); // @addr $555830 @note "Empty in this native version."
-procedure ab_StopLine_BuildCollisionList; // @addr $55583C
-function ab_StopLine_ReflectMovement(Source, Target: TSphericalBearingState; var HeadingDelta, Speed, UnusedResult: Double): Boolean; // @addr $555A04
-procedure ab_StopLine_GetDistances(Source: TSphericalBearingState; var ForwardDistance, BackwardDistance: Double); // @addr $556064
-function ab_StopLine_IsBlocked(SourceLongitude, SourcePolarAngle, TargetLongitude, TargetPolarAngle: Double): Boolean; // @addr $556480
-procedure ab_StopLine_Load(Buffer: TBufEC); // @addr $5564F8
+procedure ab_StopPoint_Clear; // @addr $661B14
+function ab_StopPoint_Add: PabStopPoint; // @addr $661B4C @note "Allocates and links a node owned by the world list."
+procedure ab_StopPoint_Delete(Point: PabStopPoint); // @addr $661BFC
+procedure ab_StopPoint_UpdatePosition(Point: PabStopPoint); // @addr $661C9C @note "Nil updates every point."
+procedure ab_StopPoint_ClearImages; // @addr $661D4C
+procedure ab_StopPoint_ClearSegments(Point: PabStopPoint); // @addr $661D78
+procedure ab_StopPoint_BuildIndex; // @addr $661DAC
+procedure ab_StopPoint_ClearIndex; // @addr $661DF0
+function ab_StopPoint_Count: Integer; // @addr $661E04
+procedure ab_StopLine_Clear; // @addr $661E1C
+function ab_StopLine_Add: PabStopLine; // @addr $661E50 @note "Allocates and links a node owned by the world list."
+procedure ab_StopLine_Delete(Line: PabStopLine); // @addr $661F00
+procedure ab_StopLine_AddLatitude(PolarAngle, Step: Double); // @addr $661F78
+procedure ab_StopLine_UpdateWorldLines; // @addr $662038
+procedure ab_StopLine_UpdateColors; // @addr $6620D4
+procedure ab_StopLine_ClearSegments(Line: PabStopLine); // @addr $6620FC
+procedure ab_StopLine_PrepareCollision(Line: PabStopLine); // @addr $662130 @note "Empty in this native version."
+procedure ab_StopLine_BuildCollisionList; // @addr $662134
+function ab_StopLine_ReflectMovement(Source, Target: TSphericalBearingState; var HeadingDelta, Speed, BearingAdjustment: Double): Boolean; // @addr $6622BC
+procedure ab_StopLine_GetDistances(Source: TSphericalBearingState; var ForwardDistance, BackwardDistance: Double); // @addr $6628A8
+function ab_StopLine_IsBlocked(SourceLongitude, SourcePolarAngle, TargetLongitude, TargetPolarAngle: Double): Boolean; // @addr $662C74
+procedure ab_StopLine_Load(Buffer: TBufEC); // @addr $662CE8
 
 var
-  StopPointHeap: Cardinal = 0; // @addr $87AF30
-  FirstStopPoint: PabStopPoint = nil; // @addr $87AF34
-  LastStopPoint: PabStopPoint = nil; // @addr $87AF38
-  SelectedStopPoint: PabStopPoint = nil; // @addr $87AF3C
-  StopLineHeap: Cardinal = 0; // @addr $87AF40
-  FirstStopLine: PabStopLine = nil; // @addr $87AF44
-  LastStopLine: PabStopLine = nil; // @addr $87AF48
-  SelectedStopLine: PabStopLine = nil; // @addr $87AF4C
-  FirstCollisionLine: PabStopLine = nil; // @addr $87AF50
-  StopPointIndex: array of PabStopPoint; // @addr $88A804
+  StopPointHeap: Cardinal = 0; // @addr $80F76C
+  FirstStopPoint: PabStopPoint = nil; // @addr $80F770
+  LastStopPoint: PabStopPoint = nil; // @addr $80F774
+  SelectedStopPoint: PabStopPoint = nil; // @addr $80F778
+  StopLineHeap: Cardinal = 0; // @addr $80F77C
+  FirstStopLine: PabStopLine = nil; // @addr $80F780
+  LastStopLine: PabStopLine = nil; // @addr $80F784
+  SelectedStopLine: PabStopLine = nil; // @addr $80F788
+  FirstCollisionLine: PabStopLine = nil; // @addr $80F78C
+  StopPointIndex: array of PabStopPoint; // @addr $81B8D8
 
 implementation
 
-// @unit-initialization $877868
-// @unit-finalization $55663C
+// @unit-initialization $806904
+// @unit-finalization $662DC8
 
 uses Windows, SysUtils, Math, EC_Mem, Globals, GlobalsV;
 
-{ @routine $554FF8 ab_StopPoint_Clear }
+{ @routine $661B14 ab_StopPoint_Clear }
 procedure ab_StopPoint_Clear;
 begin
   ab_StopPoint_ClearIndex;
-  while not (FirstStopPoint = nil) do ab_StopPoint_Delete(LastStopPoint);
+  while FirstStopPoint <> nil do ab_StopPoint_Delete(LastStopPoint);
   if StopPointHeap <> 0 then
   begin
     HeapDestroy(StopPointHeap);
     StopPointHeap := 0;
   end;
 end;
-{ @end $554FF8 }
+{ @end $661B14 }
 
-{ @routine $555030 ab_StopPoint_Add }
+{ @routine $661B4C ab_StopPoint_Add }
 function ab_StopPoint_Add: PabStopPoint;
 var
   Entry: PabStopPoint;
@@ -115,9 +112,9 @@ begin
   if FirstStopPoint = nil then FirstStopPoint := Entry;
   Result := Entry;
 end;
-{ @end $555030 }
+{ @end $661B4C }
 
-{ @routine $555104 ab_StopPoint_Delete }
+{ @routine $661BFC ab_StopPoint_Delete }
 procedure ab_StopPoint_Delete(Point: PabStopPoint);
 var
   Line, NextLine: PabStopLine;
@@ -142,9 +139,9 @@ begin
   if SelectedStopPoint = Point then SelectedStopPoint := nil;
   if StopPointHeap <> 0 then FreeFromHeapEC(StopPointHeap, Point);
 end;
-{ @end $555104 }
+{ @end $661BFC }
 
-{ @routine $5551F4 ab_StopPoint_UpdatePosition }
+{ @routine $661C9C ab_StopPoint_UpdatePosition }
 procedure ab_StopPoint_UpdatePosition(Point: PabStopPoint);
 begin
   if Point = nil then
@@ -158,9 +155,9 @@ begin
   end
   else Point.Position := SphericalToVector3D(HeadingDegreesToRadians(Point.Longitude), HeadingDegreesToRadians(Point.PolarAngle), Point.Radius);
 end;
-{ @end $5551F4 }
+{ @end $661C9C }
 
-{ @routine $5552CC ab_StopPoint_ClearImages }
+{ @routine $661D4C ab_StopPoint_ClearImages }
 procedure ab_StopPoint_ClearImages;
 var
   Point: PabStopPoint;
@@ -176,9 +173,9 @@ begin
     Point := Point.Next;
   end;
 end;
-{ @end $5552CC }
+{ @end $661D4C }
 
-{ @routine $55530C ab_StopPoint_ClearSegments }
+{ @routine $661D78 ab_StopPoint_ClearSegments }
 procedure ab_StopPoint_ClearSegments(Point: PabStopPoint);
 var
   Index: Integer;
@@ -190,9 +187,9 @@ begin
       Point.Segments[Index] := nil;
     end;
 end;
-{ @end $55530C }
+{ @end $661D78 }
 
-{ @routine $55535C ab_StopPoint_BuildIndex }
+{ @routine $661DAC ab_StopPoint_BuildIndex }
 procedure ab_StopPoint_BuildIndex;
 var
   Index, Count: Integer;
@@ -210,16 +207,16 @@ begin
     Point := Point.Next;
   end;
 end;
-{ @end $55535C }
+{ @end $661DAC }
 
-{ @routine $5553C4 ab_StopPoint_ClearIndex }
+{ @routine $661DF0 ab_StopPoint_ClearIndex }
 procedure ab_StopPoint_ClearIndex;
 begin
   StopPointIndex := nil;
 end;
-{ @end $5553C4 }
+{ @end $661DF0 }
 
-{ @routine $5553D8 ab_StopPoint_Count }
+{ @routine $661E04 ab_StopPoint_Count }
 function ab_StopPoint_Count: Integer;
 var
   Point: PabStopPoint;
@@ -232,21 +229,21 @@ begin
     Point := Point.Next;
   end;
 end;
-{ @end $5553D8 }
+{ @end $661E04 }
 
-{ @routine $55540C ab_StopLine_Clear }
+{ @routine $661E1C ab_StopLine_Clear }
 procedure ab_StopLine_Clear;
 begin
-  while not (FirstStopLine = nil) do ab_StopLine_Delete(LastStopLine);
+  while FirstStopLine <> nil do ab_StopLine_Delete(LastStopLine);
   if StopLineHeap <> 0 then
   begin
     HeapDestroy(StopLineHeap);
     StopLineHeap := 0;
   end;
 end;
-{ @end $55540C }
+{ @end $661E1C }
 
-{ @routine $555440 ab_StopLine_Add }
+{ @routine $661E50 ab_StopLine_Add }
 function ab_StopLine_Add: PabStopLine;
 var
   Entry: PabStopLine;
@@ -264,12 +261,12 @@ begin
   if FirstStopLine = nil then FirstStopLine := Entry;
   Entry.Collidable := True;
   Entry.Visible := True;
-  Entry.UserValue := 0;
+  Entry.BarrierLine := nil;
   Result := Entry;
 end;
-{ @end $555440 }
+{ @end $661E50 }
 
-{ @routine $55551C ab_StopLine_Delete }
+{ @routine $661F00 ab_StopLine_Delete }
 procedure ab_StopLine_Delete(Line: PabStopLine);
 begin
   if Line.Prev <> nil then Line.Prev.Next := Line.Next;
@@ -285,9 +282,9 @@ begin
   if SelectedStopLine = Line then SelectedStopLine := nil;
   if StopLineHeap <> 0 then FreeFromHeapEC(StopLineHeap, Line);
 end;
-{ @end $55551C }
+{ @end $661F00 }
 
-{ @routine $5555C8 ab_StopLine_AddLatitude }
+{ @routine $661F78 ab_StopLine_AddLatitude }
 procedure ab_StopLine_AddLatitude(PolarAngle, Step: Double);
 var
   Longitude: Double;
@@ -318,9 +315,9 @@ begin
   Line.First := Previous;
   Line.Last := First;
 end;
-{ @end $5555C8 }
+{ @end $661F78 }
 
-{ @routine $5556AC ab_StopLine_UpdateWorldLines }
+{ @routine $662038 ab_StopLine_UpdateWorldLines }
 procedure ab_StopLine_UpdateWorldLines;
 var
   Line: PabStopLine;
@@ -346,9 +343,9 @@ begin
     Line := Line.Next;
   end;
 end;
-{ @end $5556AC }
+{ @end $662038 }
 
-{ @routine $555790 ab_StopLine_UpdateColors }
+{ @routine $6620D4 ab_StopLine_UpdateColors }
 procedure ab_StopLine_UpdateColors;
 var
   Line: PabStopLine;
@@ -364,9 +361,9 @@ begin
     Line := Line.Next;
   end;
 end;
-{ @end $555790 }
+{ @end $6620D4 }
 
-{ @routine $5557E0 ab_StopLine_ClearSegments }
+{ @routine $6620FC ab_StopLine_ClearSegments }
 procedure ab_StopLine_ClearSegments(Line: PabStopLine);
 var
   Index: Integer;
@@ -378,15 +375,15 @@ begin
       Line.Segments[Index] := nil;
     end;
 end;
-{ @end $5557E0 }
+{ @end $6620FC }
 
-{ @routine $555830 ab_StopLine_PrepareCollision }
+{ @routine $662130 ab_StopLine_PrepareCollision }
 procedure ab_StopLine_PrepareCollision(Line: PabStopLine);
 begin
 end;
-{ @end $555830 }
+{ @end $662130 }
 
-{ @routine $55583C ab_StopLine_BuildCollisionList }
+{ @routine $662134 ab_StopLine_BuildCollisionList }
 procedure ab_StopLine_BuildCollisionList;
 var
   Line, Previous: PabStopLine;
@@ -407,10 +404,10 @@ begin
     Line := Line.Next;
   end;
 end;
-{ @end $55583C }
+{ @end $662134 }
 
-{ @routine $555A04 ab_StopLine_ReflectMovement }
-function ab_StopLine_ReflectMovement(Source, Target: TSphericalBearingState; var HeadingDelta, Speed, UnusedResult: Double): Boolean;
+{ @routine $6622BC ab_StopLine_ReflectMovement }
+function ab_StopLine_ReflectMovement(Source, Target: TSphericalBearingState; var HeadingDelta, Speed, BearingAdjustment: Double): Boolean;
 var
   InverseLengthSquared, LineLength: Single;
   Line: PabStopLine;
@@ -419,8 +416,8 @@ var
   Matrix: TMatrix4D;
   Normal, A, B, Direction, Movement: TVector3D;
 
-  // @nested $5558A8 IntersectCollisionParameters
-  function IntersectCollisionParameters(A, B, C, D: TVector3D; var FirstT, SecondT: Double): Boolean; // @addr $5558A8 @calls "0x555d81"
+  // @nested $662178 IntersectCollisionParameters
+  function IntersectCollisionParameters(A, B, C, D: TVector3D; var FirstT, SecondT: Double): Boolean; // @addr $662178 @calls "0x00662607"
   begin
     FirstT := (B.X - A.X) * (D.Y - C.Y) - (B.Y - A.Y) * (D.X - C.X);
     if FirstT = 0 then
@@ -434,8 +431,8 @@ var
     Result := True;
   end;
 
-  // @nested $555998 CollisionLineDistance
-  function CollisionLineDistance(A, B, Point: TVector3D): Double; // @addr $555998 @calls "0x555cf2"
+  // @nested $662250 CollisionLineDistance
+  function CollisionLineDistance(A, B, Point: TVector3D): Double; // @addr $662250 @calls "0x0066258D"
   var
     Cross: Double;
   begin
@@ -445,78 +442,77 @@ var
 
 begin
   Result := False;
-  if FirstStopLine <> nil then
+  // Native empty-list return leaves the caller's bearing adjustment untouched.
+  if FirstStopLine = nil then Exit;
+  BearingAdjustment := 0;
+  A := SphericalToVector3D(HeadingDegreesToRadians(Source.LongitudeDegrees), HeadingDegreesToRadians(Source.PolarAngleDegrees), SphereCameraDistance);
+  B := MakeVector3D(0, 0, 0);
+  Direction := SphericalToVector3D(HeadingDegreesToRadians(Source.LongitudeDegrees), HeadingDegreesToRadians(WrapHeadingDegrees(Source.PolarAngleDegrees + 90)), SphereCameraDistance);
+  Matrix := BuildLookAtMatrix(A, B, Direction);
+  Movement := SphericalToVector3D(HeadingDegreesToRadians(Target.LongitudeDegrees), HeadingDegreesToRadians(Target.PolarAngleDegrees), SphereRadius);
+  Movement := ProjectPointByMatrix(Matrix, Movement);
+  OriginalHeading := RadiansToHeadingDegrees(Math.ArcTan2(Movement.X, -Movement.Y));
+  A := MakeVector3D(0, 0, 0);
+  A := ProjectPointByMatrix(Matrix, A);
+  CenterDepth := A.Z;
+  Line := FirstCollisionLine;
+  while Line <> nil do
   begin
-    UnusedResult := 0;
-    A := SphericalToVector3D(HeadingDegreesToRadians(Source.LongitudeDegrees), HeadingDegreesToRadians(Source.PolarAngleDegrees), SphereCameraDistance);
-    B := MakeVector3D(0, 0, 0);
-    Direction := SphericalToVector3D(HeadingDegreesToRadians(Source.LongitudeDegrees), HeadingDegreesToRadians(WrapHeadingDegrees(Source.PolarAngleDegrees + 90)), SphereCameraDistance);
-    Matrix := BuildLookAtMatrix(A, B, Direction);
-    Movement := SphericalToVector3D(HeadingDegreesToRadians(Target.LongitudeDegrees), HeadingDegreesToRadians(Target.PolarAngleDegrees), SphereRadius);
-    Movement := ProjectPointByMatrix(Matrix, Movement);
-    OriginalHeading := RadiansToHeadingDegrees(Math.ArcTan2(Movement.X, -Movement.Y));
-    A := MakeVector3D(0, 0, 0);
-    A := ProjectPointByMatrix(Matrix, A);
-    CenterDepth := A.Z;
-    Line := FirstCollisionLine;
-    while Line <> nil do
+    A := ProjectPointByMatrix(Matrix, Line.First.Position);
+    B := ProjectPointByMatrix(Matrix, Line.Last.Position);
+    if not ((A.Z < CenterDepth) and (B.Z < CenterDepth)) then
     begin
-      A := ProjectPointByMatrix(Matrix, Line.First.Position);
-      B := ProjectPointByMatrix(Matrix, Line.Last.Position);
-      if not ((A.Z < CenterDepth) and (B.Z < CenterDepth)) then
-      begin
-        Line := Line.NextCollision;
-        Continue;
-      end;
-      Direction.X := B.X - A.X;
-      Direction.Y := B.Y - A.Y;
-      LengthSquared := Sqr(Direction.X) + Sqr(Direction.Y);
-      LineLength := Sqrt(LengthSquared);
-      InverseLengthSquared := 1 / LengthSquared;
-      Distance := Abs(CollisionLineDistance(A, B, MakeVector3D(0, 0, 0)));
-      if not (Distance <= 11) then
-      begin
-        Line := Line.NextCollision;
-        Continue;
-      end;
-      Factor := 1 / LineLength;
-      Direction.X := Direction.X * Factor;
-      Direction.Y := Direction.Y * Factor;
-      if not IntersectCollisionParameters(A, B, MakeVector3D(0, 0, 0), Movement, FirstT, SecondT) then
-      begin
-        Line := Line.NextCollision;
-        Continue;
-      end;
-      if not ((FirstT >= -0.0001) and (FirstT <= 1.0001)) then
-      begin
-        Line := Line.NextCollision;
-        Continue;
-      end;
-      if not (SecondT >= 0) then
-      begin
-        Line := Line.NextCollision;
-        Continue;
-      end;
-      Normal.X := -Direction.Y;
-      Normal.Y := Direction.X;
-      Factor := -Movement.X * Normal.X + -Movement.Y * Normal.Y;
-      Movement.X := (Normal.X * Factor * 2 + Movement.X) * 0.8;
-      Movement.Y := (Normal.Y * Factor * 2 + Movement.Y) * 0.8;
-      Result := True;
-      Break;
-      // The native compiler retained this unreachable list advance after Break.
       Line := Line.NextCollision;
+      Continue;
     end;
-    if Result then
+    Direction.X := B.X - A.X;
+    Direction.Y := B.Y - A.Y;
+    LengthSquared := Sqr(Direction.X) + Sqr(Direction.Y);
+    LineLength := Sqrt(LengthSquared);
+    InverseLengthSquared := 1 / LengthSquared;
+    Distance := Abs(CollisionLineDistance(A, B, MakeVector3D(0, 0, 0)));
+    if not (Distance <= 11) then
     begin
-      HeadingDelta := HeadingDifferenceDegrees(OriginalHeading, RadiansToHeadingDegrees(Math.ArcTan2(Movement.X, -Movement.Y)));
-      Speed := Sqrt(Sqr(Movement.X) + Sqr(Movement.Y));
+      Line := Line.NextCollision;
+      Continue;
     end;
+    Factor := 1 / LineLength;
+    Direction.X := Direction.X * Factor;
+    Direction.Y := Direction.Y * Factor;
+    if not IntersectCollisionParameters(A, B, MakeVector3D(0, 0, 0), Movement, FirstT, SecondT) then
+    begin
+      Line := Line.NextCollision;
+      Continue;
+    end;
+    if not ((FirstT >= -0.0001) and (FirstT <= 1.0001)) then
+    begin
+      Line := Line.NextCollision;
+      Continue;
+    end;
+    if not (SecondT >= 0) then
+    begin
+      Line := Line.NextCollision;
+      Continue;
+    end;
+    Normal.X := -Direction.Y;
+    Normal.Y := Direction.X;
+    Factor := -Movement.X * Normal.X + -Movement.Y * Normal.Y;
+    Movement.X := (Normal.X * Factor * 2 + Movement.X) * 0.8;
+    Movement.Y := (Normal.Y * Factor * 2 + Movement.Y) * 0.8;
+    Result := True;
+    Break;
+    // Unreachable list advance after Break.
+    Line := Line.NextCollision;
+  end;
+  if Result then
+  begin
+    HeadingDelta := HeadingDifferenceDegrees(OriginalHeading, RadiansToHeadingDegrees(Math.ArcTan2(Movement.X, -Movement.Y)));
+    Speed := Sqrt(Sqr(Movement.X) + Sqr(Movement.Y));
   end;
 end;
-{ @end $555A04 }
+{ @end $6622BC }
 
-{ @routine $556064 ab_StopLine_GetDistances }
+{ @routine $6628A8 ab_StopLine_GetDistances }
 procedure ab_StopLine_GetDistances(Source: TSphericalBearingState; var ForwardDistance, BackwardDistance: Double);
 var
   CenterDepth: Double;
@@ -524,8 +520,8 @@ var
   Matrix, View, Rotation: TMatrix4D;
   A, B, Hit: TVector3D;
 
-  // @nested $555F4C IntersectCollisionLines
-  function IntersectCollisionLines(A, B, C, D: TVector3D; var Hit: TVector3D): Boolean; // @addr $555F4C @calls "0x556302"
+  // @nested $6627A8 IntersectCollisionLines
+  function IntersectCollisionLines(A, B, C, D: TVector3D; var Hit: TVector3D): Boolean; // @addr $6627A8 @calls "0x00662B1D"
   var
     DX1, DY1, DX2, DY2, Denominator: Double;
   begin
@@ -548,61 +544,63 @@ var
 begin
   ForwardDistance := 1e20;
   BackwardDistance := 1e20;
-  if FirstStopLine <> nil then
+  if FirstStopLine = nil then Exit;
+  A := SphericalToVector3D(HeadingDegreesToRadians(Source.LongitudeDegrees), HeadingDegreesToRadians(Source.PolarAngleDegrees), SphereCameraDistance);
+  B := MakeVector3D(0, 0, 0);
+  Hit := SphericalToVector3D(HeadingDegreesToRadians(Source.LongitudeDegrees), HeadingDegreesToRadians(Source.PolarAngleDegrees + 90), SphereCameraDistance);
+  View := BuildLookAtMatrix(A, B, Hit);
+  Rotation := BuildZAxisRotationMatrix(HeadingDegreesToRadians(Source.BearingDegrees));
+  Matrix := MultiplyMatrix4D(Rotation, View);
+  A := MakeVector3D(0, 0, 0);
+  A := ProjectPointByMatrix(Matrix, A);
+  CenterDepth := A.Z;
+  Line := FirstCollisionLine;
+  while Line <> nil do
   begin
-    A := SphericalToVector3D(HeadingDegreesToRadians(Source.LongitudeDegrees), HeadingDegreesToRadians(Source.PolarAngleDegrees), SphereCameraDistance);
-    B := MakeVector3D(0, 0, 0);
-    Hit := SphericalToVector3D(HeadingDegreesToRadians(Source.LongitudeDegrees), HeadingDegreesToRadians(Source.PolarAngleDegrees + 90), SphereCameraDistance);
-    View := BuildLookAtMatrix(A, B, Hit);
-    Rotation := BuildZAxisRotationMatrix(HeadingDegreesToRadians(Source.BearingDegrees));
-    Matrix := MultiplyMatrix4D(Rotation, View);
-    A := MakeVector3D(0, 0, 0);
-    A := ProjectPointByMatrix(Matrix, A);
-    CenterDepth := A.Z;
-    Line := FirstCollisionLine;
-    while Line <> nil do
+    A := ProjectPointByMatrix(Matrix, Line.First.Position);
+    B := ProjectPointByMatrix(Matrix, Line.Last.Position);
+    if not ((A.Z < CenterDepth) and (B.Z < CenterDepth)) then
     begin
-      A := ProjectPointByMatrix(Matrix, Line.First.Position);
-      B := ProjectPointByMatrix(Matrix, Line.Last.Position);
-      if not ((A.Z < CenterDepth) and (B.Z < CenterDepth)) then
-      begin
-        Line := Line.NextCollision;
-        Continue;
-      end;
-      if not (((A.X >= 0) or (B.X >= 0)) and ((A.X <= 0) or (B.X <= 0))) then
-      begin
-        Line := Line.NextCollision;
-        Continue;
-      end;
-      if not IntersectCollisionLines(A, B, MakeVector3D(0, 0, 0), MakeVector3D(0, 1, 0), Hit) then
-      begin
-        Line := Line.NextCollision;
-        Continue;
-      end;
-      if (Hit.Y <= 0) and (-Hit.Y < ForwardDistance) then ForwardDistance := -Hit.Y;
-      if (Hit.Y >= 0) and (BackwardDistance > Hit.Y) then BackwardDistance := Hit.Y;
       Line := Line.NextCollision;
+      Continue;
     end;
-    if (ForwardDistance < 1e15) and (ForwardDistance <> 0) then
-      ForwardDistance := RadiansToHeadingDegrees(Math.ArcSin(ForwardDistance / SphereRadius)) * (Pi * SphereRadius / 180);
-    if (BackwardDistance < 1e15) and (BackwardDistance <> 0) then
-      BackwardDistance := RadiansToHeadingDegrees(Math.ArcSin(BackwardDistance / SphereRadius)) * (Pi * SphereRadius / 180);
+    if not (((A.X >= 0) or (B.X >= 0)) and ((A.X <= 0) or (B.X <= 0))) then
+    begin
+      Line := Line.NextCollision;
+      Continue;
+    end;
+    if not IntersectCollisionLines(A, B, MakeVector3D(0, 0, 0), MakeVector3D(0, 1, 0), Hit) then
+    begin
+      Line := Line.NextCollision;
+      Continue;
+    end;
+    if (Hit.Y <= 0) then
+      if (-Hit.Y < ForwardDistance) then ForwardDistance := -Hit.Y;
+    if (Hit.Y >= 0) then
+      if (BackwardDistance > Hit.Y) then BackwardDistance := Hit.Y;
+    Line := Line.NextCollision;
   end;
+  if (ForwardDistance < 1e15) then
+    if (ForwardDistance <> 0) then
+    ForwardDistance := RadiansToHeadingDegrees(Math.ArcSin(ForwardDistance / SphereRadius)) * (Pi * SphereRadius / 180);
+  if (BackwardDistance < 1e15) then
+    if (BackwardDistance <> 0) then
+    BackwardDistance := RadiansToHeadingDegrees(Math.ArcSin(BackwardDistance / SphereRadius)) * (Pi * SphereRadius / 180);
 end;
-{ @end $556064 }
+{ @end $6628A8 }
 
-{ @routine $556480 ab_StopLine_IsBlocked }
+{ @routine $662C74 ab_StopLine_IsBlocked }
 function ab_StopLine_IsBlocked(SourceLongitude, SourcePolarAngle, TargetLongitude, TargetPolarAngle: Double): Boolean;
 var
   BearingDelta, Distance, ForwardDistance, BackwardDistance: Double;
 begin
-  ComputeSphericalBearingAndDistance(BearingDelta, Distance, SourceLongitude, SourcePolarAngle, 0, TargetLongitude, TargetPolarAngle, SphereRadius);
+  ComputeSphericalBearingAndDistance(SourceLongitude, SourcePolarAngle, 0, TargetLongitude, TargetPolarAngle, SphereRadius, BearingDelta, Distance);
   ab_StopLine_GetDistances(MakeSphericalBearingState(SourceLongitude, SourcePolarAngle, BearingDelta), ForwardDistance, BackwardDistance);
   Result := ForwardDistance < Distance;
 end;
-{ @end $556480 }
+{ @end $662C74 }
 
-{ @routine $5564F8 ab_StopLine_Load }
+{ @routine $662CE8 ab_StopLine_Load }
 procedure ab_StopLine_Load(Buffer: TBufEC);
 var
   Index, Count, FirstIndex, LastIndex: Integer;
@@ -638,6 +636,6 @@ begin
     end;
   end;
 end;
-{ @end $5564F8 }
+{ @end $662CE8 }
 
 end.

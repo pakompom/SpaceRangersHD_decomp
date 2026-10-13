@@ -1,346 +1,37 @@
 {
-  "input_sha256": "f00343363043cbb9c2d10c1216e9f4c37b5eaa5e4d58f37a45284cae528fdc1d",
-  "method": "Half-open VA intervals, used only to classify otherwise unresolved code by subsystem. Native routines and metadata support the family; interpolation inside each interval is an inference, not proof of the original Pascal unit or complete implementation understanding. Rebased on 2026-09-15 using the byte-identical old/new MAP contribution boundaries and native address correspondences; old cross-unit evidence spans are split after physical reordering.",
+  "input_sha256": "e43a4b15503c705eebe2d8ce5778c2a2fb090db515a3fd86d319e5c5aa692ebf",
+  "method": "Half-open VA intervals for verified non-code exclusions in the 6 October 2026 executable. Exclusion bytes and their GUID or relocated constant-table uses were checked against this target. Residual subsystem ranges are omitted: the older August inferred intervals have not been transferred, so otherwise unresolved code remains unclassified.",
   "not_code": [
     {
       "low": "0x41EA08",
       "high": "0x41EA18",
       "bytes": "24227b1aae1e1343bad63c32f8f77085",
-      "reason": "16-byte interface GUID passed in EDX at 0x41E9AF to QueryInterface wrapper 0x40F78C. IDA incorrectly starts a function on it; the real prologue follows at 0x41EA18."
+      "reason": "16-byte interface GUID passed in EDX at 0x41E9AF to QueryInterface wrapper 0x40F78C. The real function prologue follows at 0x41EA18."
     },
     {
       "low": "0x408c88",
       "high": "0x408c90",
-      "bytes": "c2ff0000f4778800",
-      "reason": "False function entry within the repeated 8-byte constant table beginning at 0x408C60: 16-bit code/padding followed by the relocated 0x8877F4 data pointer. No code xrefs; RET/RETF decoding is accidental."
+      "bytes": "c2ff0000f4778100",
+      "reason": "Data entry within the repeated 8-byte constant table beginning at 0x408C60: 16-bit code/padding followed by the HIGHLOW-relocated 0x8177F4 data pointer. RET/RETF decoding is accidental."
     },
     {
       "low": "0x408c90",
       "high": "0x408c98",
-      "bytes": "c3ff0000f4778800",
-      "reason": "False function entry within the repeated 8-byte constant table beginning at 0x408C60: 16-bit code/padding followed by the relocated 0x8877F4 data pointer. No code xrefs; RET/RETF decoding is accidental."
+      "bytes": "c3ff0000f4778100",
+      "reason": "Data entry within the repeated 8-byte constant table beginning at 0x408C60: 16-bit code/padding followed by the HIGHLOW-relocated 0x8177F4 data pointer. RET/RETF decoding is accidental."
     },
     {
       "low": "0x408cc8",
       "high": "0x408cd0",
-      "bytes": "caff0000f4778800",
-      "reason": "False function entry within the repeated 8-byte constant table beginning at 0x408C60: 16-bit code/padding followed by the relocated 0x8877F4 data pointer. No code xrefs; RET/RETF decoding is accidental."
+      "bytes": "caff0000f4778100",
+      "reason": "Data entry within the repeated 8-byte constant table beginning at 0x408C60: 16-bit code/padding followed by the HIGHLOW-relocated 0x8177F4 data pointer. RET/RETF decoding is accidental."
     },
     {
       "low": "0x408cd0",
       "high": "0x408cd8",
-      "bytes": "cbff0000f4778800",
-      "reason": "False function entry within the repeated 8-byte constant table beginning at 0x408C60: 16-bit code/padding followed by the relocated 0x8877F4 data pointer. No code xrefs; RET/RETF decoding is accidental."
+      "bytes": "cbff0000f4778100",
+      "reason": "Data entry within the repeated 8-byte constant table beginning at 0x408C60: 16-bit code/padding followed by the HIGHLOW-relocated 0x8177F4 data pointer. RET/RETF decoding is accidental."
     }
   ],
-  "ranges": [
-    {
-      "low": "0x41E239",
-      "high": "0x41F3EE",
-      "bucket": "vcl",
-      "label": "Help and VCL support",
-      "evidence": "THelpManager and THelpViewerNode VMTs; interface dispatch in 0x41ED54; GUID query at 0x41E9AF. Original RTL/VCL packaging of HelpIntfs is grouped with desktop framework support here. Coverage interval restricted to the helpintfs contribution after the August 2026 unit reorder; descriptive evidence may refer to other contributions in the same family."
-    },
-    {
-      "low": "0x41F3F0",
-      "high": "0x41FB62",
-      "bucket": "vcl",
-      "label": "Help and VCL support",
-      "evidence": "THelpManager and THelpViewerNode VMTs; interface dispatch in 0x41ED54; GUID query at 0x41E9AF. Original RTL/VCL packaging of HelpIntfs is grouped with desktop framework support here. Coverage interval restricted to the multimon contribution after the August 2026 unit reorder; descriptive evidence may refer to other contributions in the same family."
-    },
-    {
-      "low": "0x41FB64",
-      "high": "0x41FCF8",
-      "bucket": "vcl",
-      "label": "Help and VCL support",
-      "evidence": "THelpManager and THelpViewerNode VMTs; interface dispatch in 0x41ED54; GUID query at 0x41E9AF. Original RTL/VCL packaging of HelpIntfs is grouped with desktop framework support here. Coverage interval restricted to the commctrl contribution after the August 2026 unit reorder; descriptive evidence may refer to other contributions in the same family."
-    },
-    {
-      "low": "0x41FCF8",
-      "high": "0x41FF58",
-      "bucket": "vcl",
-      "label": "Help and VCL support",
-      "evidence": "THelpManager and THelpViewerNode VMTs; interface dispatch in 0x41ED54; GUID query at 0x41E9AF. Original RTL/VCL packaging of HelpIntfs is grouped with desktop framework support here. Coverage interval restricted to the consts contribution after the August 2026 unit reorder; descriptive evidence may refer to other contributions in the same family."
-    },
-    {
-      "low": "0x41FF58",
-      "high": "0x420038",
-      "bucket": "vcl",
-      "label": "Help and VCL support",
-      "evidence": "THelpManager and THelpViewerNode VMTs; interface dispatch in 0x41ED54; GUID query at 0x41E9AF. Original RTL/VCL packaging of HelpIntfs is grouped with desktop framework support here. Coverage interval restricted to the graphics contribution after the August 2026 unit reorder; descriptive evidence may refer to other contributions in the same family."
-    },
-    {
-      "low": "0x42EBC5",
-      "high": "0x4300E4",
-      "bucket": "vcl",
-      "label": "Dialog implementation",
-      "evidence": "TMessageForm at 0x42EAAC inherits Forms.TForm. Dialog creation/control setup at 0x42F0D4 and 0x42FAFC; final helper ends at 0x4300E4. Coverage interval restricted to the dialogs contribution after the August 2026 unit reorder; descriptive evidence may refer to other contributions in the same family."
-    },
-    {
-      "low": "0x44C05D",
-      "high": "0x44C0C8",
-      "bucket": "vcl",
-      "label": "Theme services",
-      "evidence": "TThemeServices VMT at 0x44C114; theme part/state mapping at 0x44C690 and non-client control painting at 0x44CA1C.  Coverage interval restricted to the controls contribution after the August 2026 unit reorder; descriptive evidence may refer to other contributions in the same family."
-    },
-    {
-      "low": "0x44C0C8",
-      "high": "0x44CC3E",
-      "bucket": "vcl",
-      "label": "Theme services",
-      "evidence": "TThemeServices VMT at 0x44C114; theme part/state mapping at 0x44C690 and non-client control painting at 0x44CA1C.  Coverage interval restricted to the themes contribution after the August 2026 unit reorder; descriptive evidence may refer to other contributions in the same family."
-    },
-    {
-      "low": "0x4D5028",
-      "high": "0x4D5177",
-      "bucket": "utilities",
-      "label": "User-directory helper",
-      "evidence": "Maintained GetGameUserDirectory; native SHGetSpecialFolderLocation and SpaceRangersHD path construction. Logical Globals header placement does not establish original unit ownership. Coverage interval restricted to the gr_main contribution after the August 2026 unit reorder; descriptive evidence may refer to other contributions in the same family."
-    },
-    {
-      "low": "0x4D9490",
-      "high": "0x4DB496",
-      "bucket": "media",
-      "label": "Polygon and geometry helpers",
-      "evidence": "TPolygon2D VMT at 0x4D94DC; coordinate/polygon operations at 0x86AFE4, 0x4DA59C and 0x4DAC88. Native family classification, not an asserted GR_RectEx/aVector source boundary. Coverage interval restricted to the avector contribution after the August 2026 unit reorder; descriptive evidence may refer to other contributions in the same family."
-    },
-    {
-      "low": "0x4DC734",
-      "high": "0x4DC77E",
-      "bucket": "campaign",
-      "label": "Turn-calculation UI wrappers",
-      "evidence": "Seven maintained wrappers call the separate native ThreadCalc implementation; their original source unit remains unresolved. Coverage interval restricted to the acalc contribution after the August 2026 unit reorder; descriptive evidence may refer to other contributions in the same family."
-    },
-    {
-      "low": "0x4F4300",
-      "high": "0x4F432C",
-      "bucket": "arcade",
-      "label": "Arcade weapon support",
-      "evidence": "0x4FC1C4 updates weapon effects; 0x4FCAE4 queues per-weapon graphics resources. Both are contiguous with the anchored ab_W01 implementation; trailing literal pools are excluded from byte counts. Coverage interval restricted to the ab_w01 contribution after the August 2026 unit reorder; descriptive evidence may refer to other contributions in the same family."
-    },
-    {
-      "low": "0x4FBA2C",
-      "high": "0x4FE24C",
-      "bucket": "arcade",
-      "label": "Arcade weapon support",
-      "evidence": "0x4FC1C4 updates weapon effects; 0x4FCAE4 queues per-weapon graphics resources. Both are contiguous with the anchored ab_W01 implementation; trailing literal pools are excluded from byte counts. Coverage interval restricted to the ab_w contribution after the August 2026 unit reorder; descriptive evidence may refer to other contributions in the same family."
-    },
-    {
-      "low": "0x4FF8AB",
-      "high": "0x5015B0",
-      "bucket": "arcade",
-      "label": "Arcade ship AI",
-      "evidence": "0x4FF9A4 selects targets by bearing and distance; 0x500800 drives arcade movement and obstacle checks through ab_Ship/ab_WorldLine helpers. Final routine ends at 0x5015A2. Coverage interval restricted to the ab_shipai contribution after the August 2026 unit reorder; descriptive evidence may refer to other contributions in the same family."
-    },
-    {
-      "low": "0x506858",
-      "high": "0x50CB04",
-      "bucket": "utilities",
-      "label": "Cheats and game-state diagnostics",
-      "evidence": "TCheatList VMT at 0x5068C8, weapon/artifact commands and final Events/ShipInfos diagnostic output. Multiple logical facilities are grouped as game infrastructure. Coverage interval restricted to the cheatcode contribution after the August 2026 unit reorder; descriptive evidence may refer to other contributions in the same family."
-    },
-    {
-      "low": "0x52D854",
-      "high": "0x538F04",
-      "bucket": "utilities",
-      "label": "Game text, startup and diagnostics",
-      "evidence": "Game-specific Tips, race/occupation and ShipGreetings text in 0x52DED4, 0x52E9B4 and 0x534F34. Final 0x86E158 records virtual/physical memory usage through the game logger. Exact Globals/helper-unit boundaries remain unresolved. Coverage interval restricted to the globals contribution after the August 2026 unit reorder; descriptive evidence may refer to other contributions in the same family."
-    },
-    {
-      "low": "0x538F04",
-      "high": "0x538F30",
-      "bucket": "utilities",
-      "label": "Achievement integration",
-      "evidence": "AchievementInfo metadata and TAchievementStats VMT; 0x5930B4 queries Galaxy/GetPlayer statistics for ASTEROID, PIRATE and PRISONBAIL. Coverage interval restricted to the fachievements contribution after the August 2026 unit reorder; descriptive evidence may refer to other contributions in the same family."
-    },
-    {
-      "low": "0x53B550",
-      "high": "0x54BE60",
-      "bucket": "arcade",
-      "label": "Arcade main loop and screen",
-      "evidence": "TfAB VMT at 0x53B59C inherits TMessageLoopGI. Diagnostics explicitly name ab_MainForm and TfAB.TimerTakt; own final virtual method at 0x54BE0C selects arcade music. Coverage interval restricted to the ab_mainform contribution after the August 2026 unit reorder; descriptive evidence may refer to other contributions in the same family."
-    },
-    {
-      "low": "0x54C3C0",
-      "high": "0x54CC0A",
-      "bucket": "arcade",
-      "label": "Arcade main loop and screen",
-      "evidence": "TfAB VMT at 0x53B59C inherits TMessageLoopGI. Diagnostics explicitly name ab_MainForm and TfAB.TimerTakt; own final virtual method at 0x54BE0C selects arcade music. Coverage interval restricted to the ab_item contribution after the August 2026 unit reorder; descriptive evidence may refer to other contributions in the same family."
-    },
-    {
-      "low": "0x54F7C8",
-      "high": "0x5539D4",
-      "bucket": "arcade",
-      "label": "Arcade space generation and drawing",
-      "evidence": "Ship.HS.*, Ship.X.* and Ship.Keller.K assets in 0x54FB50/0x5508B0; final 0x553548 draws linked space objects. Coverage interval restricted to the ab_space contribution after the August 2026 unit reorder; descriptive evidence may refer to other contributions in the same family."
-    },
-    {
-      "low": "0x5539D4",
-      "high": "0x5539D8",
-      "bucket": "arcade",
-      "label": "Arcade world geometry",
-      "evidence": "Native diagnostics explicitly name ab_StopPoint_Add, ab_StopLine_Add, ab_WorldLine_Add and ab_WorldImage_Add. This interval includes multiple source units; no single unit label is asserted. Coverage interval restricted to the ab_zone contribution after the August 2026 unit reorder; descriptive evidence may refer to other contributions in the same family."
-    },
-    {
-      "low": "0x5539D9",
-      "high": "0x554FD4",
-      "bucket": "arcade",
-      "label": "Arcade zones",
-      "evidence": "0x553D00 renders zone geometry; 0x55454C reads zone coordinates/type through TBufEC.  Coverage interval restricted to the ab_zone contribution after the August 2026 unit reorder; descriptive evidence may refer to other contributions in the same family."
-    },
-    {
-      "low": "0x554FD9",
-      "high": "0x55667C",
-      "bucket": "arcade",
-      "label": "Arcade world geometry",
-      "evidence": "Native diagnostics explicitly name ab_StopPoint_Add, ab_StopLine_Add, ab_WorldLine_Add and ab_WorldImage_Add. This interval includes multiple source units; no single unit label is asserted. Coverage interval restricted to the ab_stopline contribution after the August 2026 unit reorder; descriptive evidence may refer to other contributions in the same family."
-    },
-    {
-      "low": "0x55667C",
-      "high": "0x556EA8",
-      "bucket": "arcade",
-      "label": "Arcade world geometry",
-      "evidence": "Native diagnostics explicitly name ab_StopPoint_Add, ab_StopLine_Add, ab_WorldLine_Add and ab_WorldImage_Add. This interval includes multiple source units; no single unit label is asserted. Coverage interval restricted to the ab_worldimage contribution after the August 2026 unit reorder; descriptive evidence may refer to other contributions in the same family."
-    },
-    {
-      "low": "0x556EA8",
-      "high": "0x5573CC",
-      "bucket": "arcade",
-      "label": "Arcade world geometry",
-      "evidence": "Native diagnostics explicitly name ab_StopPoint_Add, ab_StopLine_Add, ab_WorldLine_Add and ab_WorldImage_Add. This interval includes multiple source units; no single unit label is asserted. Coverage interval restricted to the ab_worldline contribution after the August 2026 unit reorder; descriptive evidence may refer to other contributions in the same family."
-    },
-    {
-      "low": "0x57B604",
-      "high": "0x57B608",
-      "bucket": "utilities",
-      "label": "Cheats and game-state diagnostics",
-      "evidence": "TCheatList VMT at 0x5068C8, weapon/artifact commands and final Events/ShipInfos diagnostic output. Multiple logical facilities are grouped as game infrastructure. Coverage interval restricted to the fscore contribution after the August 2026 unit reorder; descriptive evidence may refer to other contributions in the same family."
-    },
-    {
-      "low": "0x592A1C",
-      "high": "0x594CED",
-      "bucket": "utilities",
-      "label": "Achievement integration",
-      "evidence": "AchievementInfo metadata and TAchievementStats VMT; 0x5930B4 queries Galaxy/GetPlayer statistics for ASTEROID, PIRATE and PRISONBAIL. Coverage interval restricted to the achievements contribution after the August 2026 unit reorder; descriptive evidence may refer to other contributions in the same family."
-    },
-    {
-      "low": "0x5EFFDB",
-      "high": "0x5F21BA",
-      "bucket": "utilities",
-      "label": "Mod discovery and installation",
-      "evidence": "0x5F07E8 and 0x5F1734 process install.txt, CFG/Main.dat, CFG/CacheData.dat and ModuleInfo.txt. Classified as mod infrastructure without claiming an exact original unit split. Coverage interval restricted to the amodsinfo contribution after the August 2026 unit reorder; descriptive evidence may refer to other contributions in the same family."
-    },
-    {
-      "low": "0x65AB96",
-      "high": "0x65C5FC",
-      "bucket": "scripting",
-      "label": "Script action execution",
-      "evidence": "0x65AF44, 0x65B30C and 0x65B880 dispatch item/ship actcode and reference explicit script action error messages. Coverage interval restricted to the ascript contribution after the August 2026 unit reorder; descriptive evidence may refer to other contributions in the same family."
-    },
-    {
-      "low": "0x67B5E0",
-      "high": "0x67B5E4",
-      "bucket": "utilities",
-      "label": "Mod discovery and installation",
-      "evidence": "0x5F07E8 and 0x5F1734 process install.txt, CFG/Main.dat, CFG/CacheData.dat and ModuleInfo.txt. Classified as mod infrastructure without claiming an exact original unit split. Coverage interval restricted to the fmods contribution after the August 2026 unit reorder; descriptive evidence may refer to other contributions in the same family."
-    },
-    {
-      "low": "0x6A223D",
-      "high": "0x6A48B0",
-      "bucket": "media",
-      "label": "Film object information and serialization",
-      "evidence": "0x6A22C4 references Error in procedure TEObjInfo.LoadFromStar; 0x6A3F44 reads serialized object data through TBufEC. Coverage interval restricted to the aeobjinfo contribution after the August 2026 unit reorder; descriptive evidence may refer to other contributions in the same family."
-    },
-    {
-      "low": "0x6D4809",
-      "high": "0x6E69D0",
-      "bucket": "frontend",
-      "label": "Ship dialogue actions",
-      "evidence": "Talk.Tranclucator.Options.*, ShipDismissAct and quest-letter actions. Final helper 0x6E6944 builds a dialogue choice using TMessageLoopGI, CurrentScript.CurrentAnswer and callback 0x6E6900. Coverage interval restricted to the ftalk contribution after the August 2026 unit reorder; descriptive evidence may refer to other contributions in the same family."
-    },
-    {
-      "low": "0x798F35",
-      "high": "0x79BEE0",
-      "bucket": "bigint",
-      "label": "FGInt and RSA",
-      "evidence": "Explicit FGInt dynamic-array RTTI at 0x798F34; routines manipulate that array type and implement large-integer arithmetic. Final block encoder 0x79BEE0 calls the same arithmetic family. FGInt versus FGIntRSA internal boundary remains unresolved. Coverage interval restricted to the fgint contribution after the August 2026 unit reorder; descriptive evidence may refer to other contributions in the same family."
-    },
-    {
-      "low": "0x79BEE0",
-      "high": "0x79C19C",
-      "bucket": "bigint",
-      "label": "FGInt and RSA",
-      "evidence": "Explicit FGInt dynamic-array RTTI at 0x798F34; routines manipulate that array type and implement large-integer arithmetic. Final block encoder 0x79BEE0 calls the same arithmetic family. FGInt versus FGIntRSA internal boundary remains unresolved. Coverage interval restricted to the fgintrsa contribution after the August 2026 unit reorder; descriptive evidence may refer to other contributions in the same family."
-    },
-    {
-      "low": "0x7E3B53",
-      "high": "0x7E3C14",
-      "bucket": "utilities",
-      "label": "Cheats and game-state diagnostics",
-      "evidence": "TCheatList VMT at 0x5068C8, weapon/artifact commands and final Events/ShipInfos diagnostic output. Multiple logical facilities are grouped as game infrastructure. Coverage interval restricted to the fequipmentshop contribution after the August 2026 unit reorder; descriptive evidence may refer to other contributions in the same family."
-    },
-    {
-      "low": "0x80D2D1",
-      "high": "0x8109E1",
-      "bucket": "media",
-      "label": "Film object engine and persistence",
-      "evidence": "Native TEFilm.ObjAlloc, ObjToNom, NomToObj and RunOrder diagnostics. Final 0x80FFB8 loads a TEFilm from TBufEC. Coverage interval restricted to the aefilm contribution after the August 2026 unit reorder; descriptive evidence may refer to other contributions in the same family."
-    },
-    {
-      "low": "0x849E70",
-      "high": "0x84B2C0",
-      "bucket": "media",
-      "label": "Music playback",
-      "evidence": "TMusicUnit and TMusicControl VMTs; TMusicControl inherits TThreadEC and its own methods include 0x84A9F4/0x84AB70. Calls at 0x84AD54/0x84AEB4 are used by TfAB's music selection. Coverage interval restricted to the gr_music contribution after the August 2026 unit reorder; descriptive evidence may refer to other contributions in the same family."
-    },
-    {
-      "low": "0x84B2C0",
-      "high": "0x84E5D5",
-      "bucket": "media",
-      "label": "Sound buffers and playback",
-      "evidence": "TSoundBufferControl, TSoundBuffer and TSoundControl VMTs; native wave format/DirectSound buffer setup and Initializing sound diagnostics. Coverage interval restricted to the gr_sound contribution after the August 2026 unit reorder; descriptive evidence may refer to other contributions in the same family."
-    },
-    {
-      "low": "0x84E861",
-      "high": "0x84EEA8",
-      "bucket": "vorbis_binding",
-      "label": "Vorbis DLL binding and read adapter",
-      "evidence": "0x84E880 calls ov_read into a dynamic byte buffer; 0x84E99C loads libvorbisfile.dll and resolves ov_* exports. This is binding/adapter code, not the decoder implementation. Coverage interval restricted to the vorbisfile contribution after the August 2026 unit reorder; descriptive evidence may refer to other contributions in the same family."
-    },
-    {
-      "low": "0x850116",
-      "high": "0x851D50",
-      "bucket": "media",
-      "label": "DirectX drawing helpers",
-      "evidence": "0x8503C4, 0x8509AC, 0x851530 and 0x851950 implement the drawing family called from arcade/scene renderers, adjacent to TTextureGR implementations. Coverage interval restricted to the gr_dx contribution after the August 2026 unit reorder; descriptive evidence may refer to other contributions in the same family."
-    },
-    {
-      "low": "0x85337C",
-      "high": "0x8650D0",
-      "bucket": "jpeg",
-      "label": "JPEG codec and unit cleanup",
-      "evidence": "0x8533BC checks codec version 62 and decompressor size 464; DCT at 0x8640C4, Huffman construction at 0x864D90, compressor setup at 0x86504C. Final routine 0x865090 unregisters TJPEGImage. Coverage interval restricted to the jpeg contribution after the August 2026 unit reorder; descriptive evidence may refer to other contributions in the same family."
-    },
-    {
-      "low": "0x86AAD5",
-      "high": "0x86B5EC",
-      "bucket": "media",
-      "label": "Polygon and geometry helpers",
-      "evidence": "TPolygon2D VMT at 0x4D94DC; coordinate/polygon operations at 0x86AFE4, 0x4DA59C and 0x4DAC88. Native family classification, not an asserted GR_RectEx/aVector source boundary. Coverage interval restricted to the gr_graphbuf contribution after the August 2026 unit reorder; descriptive evidence may refer to other contributions in the same family."
-    },
-    {
-      "low": "0x86E0F0",
-      "high": "0x86E598",
-      "bucket": "utilities",
-      "label": "Game text, startup and diagnostics",
-      "evidence": "Game-specific Tips, race/occupation and ShipGreetings text in 0x52DED4, 0x52E9B4 and 0x534F34. Final 0x86E158 records virtual/physical memory usage through the game logger. Exact Globals/helper-unit boundaries remain unresolved. Coverage interval restricted to the se_garbage contribution after the August 2026 unit reorder; descriptive evidence may refer to other contributions in the same family."
-    },
-    {
-      "low": "0x8710C0",
-      "high": "0x8720FB",
-      "bucket": "utilities",
-      "label": "Wide-string helpers",
-      "evidence": "0x8711E8 transforms wide strings; final 0x872078 copies a specified UTF-16 substring through SetWideStringLength and CopyMemory. Exact EC_Str/WStringUtils boundary is not asserted. Coverage interval restricted to the ec_str contribution after the August 2026 unit reorder; descriptive evidence may refer to other contributions in the same family."
-    }
-  ]
+  "ranges": []
 }

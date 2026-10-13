@@ -1,5 +1,4 @@
 unit ab_WorldLine;
-// Unit bracket (inferred): .text 0x00556EA8..0x005573CB; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 // Grouped by native diagnostic prefix; original source-unit boundaries remain unresolved.
 
 interface
@@ -22,35 +21,35 @@ type
     ShowBehindSphere: Boolean; // @offset $50
   end;
 
-procedure ab_WorldLine_Clear; // @addr $556EA8
-function ab_WorldLine_Add: PabWorldLine; // @addr $556EDC @note "Allocates and links a node owned by the world list."
-procedure ab_WorldLine_Delete(Line: PabWorldLine); // @addr $556FA0
-function ab_WorldLine_Create(First, Last: TVector3D; Kind: Integer; FrontColor, BackColor: Cardinal; ShowBehindSphere: Boolean): PabWorldLine; // @addr $557040
-procedure ab_WorldLine_Set(Line: PabWorldLine; First, Last: TVector3D; Kind: Integer; FrontColor, BackColor: Cardinal; ShowBehindSphere: Boolean); // @addr $5570C4
-procedure ab_WorldLine_Update; // @addr $557168
+procedure ab_WorldLine_Clear; // @addr $662E08
+function ab_WorldLine_Add: PabWorldLine; // @addr $662E3C @note "Allocates and links a node owned by the world list."
+procedure ab_WorldLine_Delete(Line: PabWorldLine); // @addr $662EE0
+function ab_WorldLine_Create(First, Last: TVector3D; Kind: Integer; FrontColor, BackColor: Cardinal; ShowBehindSphere: Boolean): PabWorldLine; // @addr $662F50
+procedure ab_WorldLine_Set(Line: PabWorldLine; First, Last: TVector3D; Kind: Integer; FrontColor, BackColor: Cardinal; ShowBehindSphere: Boolean); // @addr $662FB8
+procedure ab_WorldLine_Update; // @addr $66303C
 
 var
-  WorldLineHeap: Cardinal = 0; // @addr $87AF60
-  FirstWorldLine: PabWorldLine = nil; // @addr $87AF64
-  LastWorldLine: PabWorldLine = nil; // @addr $87AF68
+  WorldLineHeap: Cardinal = 0; // @addr $80F790
+  FirstWorldLine: PabWorldLine = nil; // @addr $80F794
+  LastWorldLine: PabWorldLine = nil; // @addr $80F798
 
 implementation
 
 uses Windows, Classes, SysUtils, EC_Mem, GI_Tail, ab_Global, Globals;
 
-{ @routine $556EA8 ab_WorldLine_Clear }
+{ @routine $662E08 ab_WorldLine_Clear }
 procedure ab_WorldLine_Clear;
 begin
-  while not (FirstWorldLine = nil) do ab_WorldLine_Delete(LastWorldLine);
+  while FirstWorldLine <> nil do ab_WorldLine_Delete(LastWorldLine);
   if WorldLineHeap <> 0 then
   begin
     HeapDestroy(WorldLineHeap);
     WorldLineHeap := 0;
   end;
 end;
-{ @end $556EA8 }
+{ @end $662E08 }
 
-{ @routine $556EDC ab_WorldLine_Add }
+{ @routine $662E3C ab_WorldLine_Add }
 function ab_WorldLine_Add: PabWorldLine;
 var
   Line: PabWorldLine;
@@ -68,9 +67,9 @@ begin
   if FirstWorldLine = nil then FirstWorldLine := Line;
   Result := Line;
 end;
-{ @end $556EDC }
+{ @end $662E3C }
 
-{ @routine $556FA0 ab_WorldLine_Delete }
+{ @routine $662EE0 ab_WorldLine_Delete }
 procedure ab_WorldLine_Delete(Line: PabWorldLine);
 begin
   if Line.Prev <> nil then Line.Prev.Next := Line.Next;
@@ -84,9 +83,9 @@ begin
   end;
   if WorldLineHeap <> 0 then FreeFromHeapEC(WorldLineHeap, Line);
 end;
-{ @end $556FA0 }
+{ @end $662EE0 }
 
-{ @routine $557040 ab_WorldLine_Create }
+{ @routine $662F50 ab_WorldLine_Create }
 function ab_WorldLine_Create(First, Last: TVector3D; Kind: Integer; FrontColor, BackColor: Cardinal; ShowBehindSphere: Boolean): PabWorldLine;
 var
   Line: PabWorldLine;
@@ -100,9 +99,9 @@ begin
   Line.ShowBehindSphere := ShowBehindSphere;
   Result := Line;
 end;
-{ @end $557040 }
+{ @end $662F50 }
 
-{ @routine $5570C4 ab_WorldLine_Set }
+{ @routine $662FB8 ab_WorldLine_Set }
 procedure ab_WorldLine_Set(Line: PabWorldLine; First, Last: TVector3D; Kind: Integer; FrontColor, BackColor: Cardinal; ShowBehindSphere: Boolean);
 begin
   Line.First := First;
@@ -120,9 +119,9 @@ begin
   end;
   Line.ShowBehindSphere := ShowBehindSphere;
 end;
-{ @end $5570C4 }
+{ @end $662FB8 }
 
-{ @routine $557168 ab_WorldLine_Update }
+{ @routine $66303C ab_WorldLine_Update }
 procedure ab_WorldLine_Update;
 var
   Line: PabWorldLine;
@@ -182,6 +181,6 @@ begin
     Line := Line.Next;
   end;
 end;
-{ @end $557168 }
+{ @end $66303C }
 
 end.

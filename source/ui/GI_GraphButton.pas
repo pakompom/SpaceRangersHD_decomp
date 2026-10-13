@@ -1,5 +1,4 @@
 unit GI_GraphButton;
-// Unit bracket (inferred): .text 0x0049DC10..0x004A107C; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -46,46 +45,46 @@ type
     UpOnlyDown: Boolean; // @offset 0x1EC
     OnPressCode: TBlockParEC; // @offset 0x1F0
 
-    constructor Create(Owner: TObjectGI); // @addr 0x49DD88
-    destructor Destroy; override; // @addr 0x49DE84
-    procedure Clear; override; // @addr 0x49DEB8
-    procedure SetCaptionFontName(const FontName: WideString); // @addr 0x49DFFC
-    procedure SetCaption(const Text: WideString); // @addr 0x49E0BC
-    procedure SetCaptionColor(Value: Cardinal); // @addr 0x49E17C @note "Applies to every button state."
-    procedure SetCaptionShadowOffset(Value: Integer); // @addr 0x49E284
-    procedure SetImageNormalPath(const Path: WideString); // @addr 0x49E344
-    procedure SetImageNormalActivePath(const Path: WideString); // @addr 0x49E3F0
-    procedure SetImageDownPath(const Path: WideString); // @addr 0x49E49C
-    procedure SetImageDownActivePath(const Path: WideString); // @addr 0x49E548
-    procedure SetImageDisabledPath(const Path: WideString); // @addr 0x49E5F4
-    procedure SetImageDisabledActivePath(const Path: WideString); // @addr 0x49E6A0
-    procedure SetImageHitPath(const Path: WideString); // @addr 0x49E74C
-    procedure SetKind(Value: TGraphButtonKindGI); // @addr 0x49E7CC
-    function HitTest(Point: TPoint): Boolean; // @addr 0x49E800 @note "Graph mode accepts a hit on any state image, including inactive states."
-    procedure SetDown(Value: Boolean); // @addr 0x49E96C
-    procedure SetDisabled(Value: Boolean); // @addr 0x49E9A0
-    function IsHovered: Boolean; // @addr 0x49E9D4
-    procedure SetHovered(Value: Boolean); // @addr 0x49E9F4 @note "Does not change keyboard focus."
-    function GetMaxStateImageSize: TPoint; // @addr 0x49EA38 @note "Native code compares an uninitialized temporary size when the first state image is absent."
-    procedure UpdateStateVisuals; // @addr 0x49ED44
-    procedure UpdateStateImagePlacement; // @addr 0x49F28C
-    procedure SetSize(Size: TPoint); override; // @addr 0x49F3CC
-    procedure SetOrigin(Origin: TPoint); override; // @addr 0x49F3F8
-    procedure OnActivate; override; // @addr 0x49F424
-    procedure OnDeactivate; override; // @addr 0x49F478
-    procedure OnMouseEnter; override; // @addr $49F4D0
-    procedure OnMouseLeave; override; // @addr $49F4E4
-    procedure ProcessMouseMove(KeyState: Cardinal; Point: TPoint); override; // @addr $49F514
-    procedure OnHoverGained; override; // @addr $49F594
-    procedure OnHoverLost; override; // @addr $49F5FC
-    procedure ProcessLeftButtonDown(KeyState: Cardinal; Point: TPoint); override; // @addr $49F710
-    procedure ProcessLeftButtonUp(KeyState: Cardinal; Point: TPoint); override; // @addr $49F8E4
-    procedure ProcessLeftButtonDoubleClick(KeyState: Cardinal; Point: TPoint); override; // @addr $49FA14
-    procedure UpdateAutoGeometry; override; // @addr $4A0CD4
-    procedure ExecuteOnPressCode; // @addr 0x49F6B4
-    procedure LoadFromConfigPath(const Path: WideString); override; // @addr 0x49FA40
-    procedure LoadFromBlock(Block: TBlockParEC); override; // @addr 0x49FA74
-    procedure LoadButtonProperties(Block: TBlockParEC); // @addr 0x49FA9C @note "Configured state-image positions are absolute; stored positions are relative to this control."
+    constructor Create(Owner: TObjectGI); // @addr 0x004AC898
+    destructor Destroy; override; // @addr 0x004AC954
+    procedure Clear; override; // @addr 0x004AC97C
+    procedure SetCaptionFontName(const FontName: WideString); // @addr 0x004ACA48
+    procedure SetCaption(const Text: WideString); // @addr 0x004ACADC
+    procedure SetCaptionColor(Value: Cardinal); // @addr 0x004ACB70 @note "Applies to every button state."
+    procedure SetCaptionShadowOffset(Value: Integer); // @addr 0x004ACC28
+    procedure SetImageNormalPath(const Path: WideString); // @addr 0x004ACCBC
+    procedure SetImageNormalActivePath(const Path: WideString); // @addr 0x004ACD3C
+    procedure SetImageDownPath(const Path: WideString); // @addr 0x004ACDBC
+    procedure SetImageDownActivePath(const Path: WideString); // @addr 0x004ACE3C
+    procedure SetImageDisabledPath(const Path: WideString); // @addr 0x004ACEBC
+    procedure SetImageDisabledActivePath(const Path: WideString); // @addr 0x004ACF3C
+    procedure SetImageHitPath(const Path: WideString); // @addr 0x004ACFBC
+    procedure SetKind(Value: TGraphButtonKindGI); // @addr 0x004AD020
+    function HitTest(Point: TPoint): Boolean; // @addr 0x004AD034 @note "Graph mode accepts a hit on any state image, including inactive states."
+    procedure SetDown(Value: Boolean); // @addr 0x004AD118
+    procedure SetDisabled(Value: Boolean); // @addr 0x004AD12C
+    function IsHovered: Boolean; // @addr 0x004AD140
+    procedure SetHovered(Value: Boolean); // @addr 0x004AD14C @note "Does not change keyboard focus."
+    function GetMaxStateImageSize: TPoint; // @addr 0x004AD170 @note "Native code compares an uninitialized temporary size when the first state image is absent."
+    procedure UpdateStateVisuals; // @addr 0x004AD2D0
+    procedure UpdateStateImagePlacement; // @addr 0x004AD624
+    procedure SetSize(Size: TPoint); override; // @addr 0x004AD6F0
+    procedure SetOrigin(Origin: TPoint); override; // @addr 0x004AD718
+    procedure OnActivate; override; // @addr 0x004AD740
+    procedure OnDeactivate; override; // @addr 0x004AD77C
+    procedure OnMouseEnter; override; // @addr $4AD7B4
+    procedure OnMouseLeave; override; // @addr $4AD7BC
+    procedure ProcessMouseMove(KeyState: Cardinal; Point: TPoint); override; // @addr $4AD7D8
+    procedure OnHoverGained; override; // @addr $4AD838
+    procedure OnHoverLost; override; // @addr $4AD888
+    procedure ProcessLeftButtonDown(KeyState: Cardinal; Point: TPoint); override; // @addr $4AD950
+    procedure ProcessLeftButtonUp(KeyState: Cardinal; Point: TPoint); override; // @addr $4ADABC
+    procedure ProcessLeftButtonDoubleClick(KeyState: Cardinal; Point: TPoint); override; // @addr $4ADB98
+    procedure UpdateAutoGeometry; override; // @addr $4AED00
+    procedure ExecuteOnPressCode; // @addr 0x004AD910
+    procedure LoadFromConfigPath(const Path: WideString); override; // @addr 0x004ADBB0
+    procedure LoadFromBlock(Block: TBlockParEC); override; // @addr 0x004ADBDC
+    procedure LoadButtonProperties(Block: TBlockParEC); // @addr 0x004ADBF8 @note "Configured state-image positions are absolute; stored positions are relative to this control."
   end;
 
 implementation
@@ -93,7 +92,7 @@ implementation
 uses Classes, EC_Str, EC_Struct, GR_Main, GR_Sound, Math, Windows;
 
 
-{ @routine $49DD88 TGraphButtonGI_Create }
+{ @routine $4AC898 TGraphButtonGI_Create }
 constructor TGraphButtonGI.Create(Owner: TObjectGI);
 begin
   inherited Create(Owner);
@@ -110,16 +109,16 @@ begin
   CaptionAlignY := tayCenterEx;
   OnPressCode := nil;
 end;
-{ @end $49DD88 }
+{ @end $4AC898 }
 
-{ @routine $49DE84 TGraphButtonGI_Destroy }
+{ @routine $4AC954 TGraphButtonGI_Destroy }
 destructor TGraphButtonGI.Destroy;
 begin
   inherited Destroy;
 end;
-{ @end $49DE84 }
+{ @end $4AC954 }
 
-{ @routine $49DEB8 TGraphButtonGI_Clear }
+{ @routine $4AC97C TGraphButtonGI_Clear }
 procedure TGraphButtonGI.Clear;
 begin
   Kind := gbkNormal;
@@ -165,41 +164,41 @@ begin
   end;
   inherited Clear;
 end;
-{ @end $49DEB8 }
+{ @end $4AC97C }
 
-{ @routine $49DFFC TGraphButtonGI_SetCaptionFontName }
+{ @routine $4ACA48 TGraphButtonGI_SetCaptionFontName }
 procedure TGraphButtonGI.SetCaptionFontName(const FontName: WideString);
 begin
   if CaptionLabel = nil then
   begin
     CaptionLabel := TLabelGI.Create(Self);
-    CaptionLabel.SetPosition(Classes.Point(0, 0));
-    CaptionLabel.SetSize(ClientSize);
+    CaptionLabel.Pos := Classes.Point(0, 0);
+    CaptionLabel.ObjectSize := ClientSize;
     CaptionLabel.SetDepth(-9999);
     CaptionLabel.SetTextAlignX(CaptionAlignX);
     CaptionLabel.SetTextAlignY(CaptionAlignY);
   end;
   CaptionLabel.SetFontName(FontName);
 end;
-{ @end $49DFFC }
+{ @end $4ACA48 }
 
-{ @routine $49E0BC TGraphButtonGI_SetCaption }
+{ @routine $4ACADC TGraphButtonGI_SetCaption }
 procedure TGraphButtonGI.SetCaption(const Text: WideString);
 begin
   if CaptionLabel = nil then
   begin
     CaptionLabel := TLabelGI.Create(Self);
-    CaptionLabel.SetPosition(Classes.Point(0, 0));
-    CaptionLabel.SetSize(ClientSize);
+    CaptionLabel.Pos := Classes.Point(0, 0);
+    CaptionLabel.ObjectSize := ClientSize;
     CaptionLabel.SetDepth(-9999);
     CaptionLabel.SetTextAlignX(CaptionAlignX);
     CaptionLabel.SetTextAlignY(CaptionAlignY);
   end;
-  CaptionLabel.SetText(Text);
+  CaptionLabel.Text := Text;
 end;
-{ @end $49E0BC }
+{ @end $4ACADC }
 
-{ @routine $49E17C TGraphButtonGI_SetCaptionColor }
+{ @routine $4ACB70 TGraphButtonGI_SetCaptionColor }
 procedure TGraphButtonGI.SetCaptionColor(Value: Cardinal);
 begin
   CaptionColors[0] := Value;
@@ -211,126 +210,124 @@ begin
   if CaptionLabel = nil then
   begin
     CaptionLabel := TLabelGI.Create(Self);
-    CaptionLabel.SetPosition(Classes.Point(0, 0));
-    CaptionLabel.SetSize(ClientSize);
+    CaptionLabel.Pos := Classes.Point(0, 0);
+    CaptionLabel.ObjectSize := ClientSize;
     CaptionLabel.SetDepth(-9999);
     CaptionLabel.SetTextAlignX(CaptionAlignX);
     CaptionLabel.SetTextAlignY(CaptionAlignY);
   end;
   CaptionLabel.SetTextColor(Value);
 end;
-{ @end $49E17C }
+{ @end $4ACB70 }
 
-{ @routine $49E284 TGraphButtonGI_SetCaptionShadowOffset }
+{ @routine $4ACC28 TGraphButtonGI_SetCaptionShadowOffset }
 procedure TGraphButtonGI.SetCaptionShadowOffset(Value: Integer);
 begin
   if CaptionLabel = nil then
   begin
     CaptionLabel := TLabelGI.Create(Self);
-    CaptionLabel.SetPosition(Classes.Point(0, 0));
-    CaptionLabel.SetSize(ClientSize);
+    CaptionLabel.Pos := Classes.Point(0, 0);
+    CaptionLabel.ObjectSize := ClientSize;
     CaptionLabel.SetDepth(-9999);
     CaptionLabel.SetTextAlignX(CaptionAlignX);
     CaptionLabel.SetTextAlignY(CaptionAlignY);
   end;
   CaptionLabel.SetShadowOffset(Value);
 end;
-{ @end $49E284 }
+{ @end $4ACC28 }
 
-{ @routine $49E344 TGraphButtonGI_SetImageNormalPath }
+{ @routine $4ACCBC TGraphButtonGI_SetImageNormalPath }
 procedure TGraphButtonGI.SetImageNormalPath(const Path: WideString);
 begin
   if ImageNormal = nil then ImageNormal := TImageGI.Create(Self);
   ImageNormal.SetDepth(1);
   ImageNormal.AutoUpdateFlags := ImageAutoUpdateFlags;
-  ImageNormal.SetImagePath(Path);
-  ImageNormal.SetSize(ImageNormal.GetContentSize);
-  ImageNormal.SetPosition(NormalOffset);
+  ImageNormal.ImageSourcePath := Path;
+  ImageNormal.ObjectSize := ImageNormal.GetContentSize;
+  ImageNormal.Pos := NormalOffset;
 end;
-{ @end $49E344 }
+{ @end $4ACCBC }
 
-{ @routine $49E3F0 TGraphButtonGI_SetImageNormalActivePath }
+{ @routine $4ACD3C TGraphButtonGI_SetImageNormalActivePath }
 procedure TGraphButtonGI.SetImageNormalActivePath(const Path: WideString);
 begin
   if ImageNormalActive = nil then ImageNormalActive := TImageGI.Create(Self);
   ImageNormalActive.SetDepth(1);
   ImageNormalActive.AutoUpdateFlags := ImageAutoUpdateFlags;
-  ImageNormalActive.SetImagePath(Path);
-  ImageNormalActive.SetSize(ImageNormalActive.GetContentSize);
-  ImageNormalActive.SetPosition(NormalActiveOffset);
+  ImageNormalActive.ImageSourcePath := Path;
+  ImageNormalActive.ObjectSize := ImageNormalActive.GetContentSize;
+  ImageNormalActive.Pos := NormalActiveOffset;
 end;
-{ @end $49E3F0 }
+{ @end $4ACD3C }
 
-{ @routine $49E49C TGraphButtonGI_SetImageDownPath }
+{ @routine $4ACDBC TGraphButtonGI_SetImageDownPath }
 procedure TGraphButtonGI.SetImageDownPath(const Path: WideString);
 begin
   if ImageDown = nil then ImageDown := TImageGI.Create(Self);
   ImageDown.SetDepth(1);
   ImageDown.AutoUpdateFlags := ImageAutoUpdateFlags;
-  ImageDown.SetImagePath(Path);
-  ImageDown.SetSize(ImageDown.GetContentSize);
-  ImageDown.SetPosition(DownOffset);
+  ImageDown.ImageSourcePath := Path;
+  ImageDown.ObjectSize := ImageDown.GetContentSize;
+  ImageDown.Pos := DownOffset;
 end;
-{ @end $49E49C }
+{ @end $4ACDBC }
 
-{ @routine $49E548 TGraphButtonGI_SetImageDownActivePath }
+{ @routine $4ACE3C TGraphButtonGI_SetImageDownActivePath }
 procedure TGraphButtonGI.SetImageDownActivePath(const Path: WideString);
 begin
   if ImageDownActive = nil then ImageDownActive := TImageGI.Create(Self);
   ImageDownActive.SetDepth(1);
   ImageDownActive.AutoUpdateFlags := ImageAutoUpdateFlags;
-  ImageDownActive.SetImagePath(Path);
-  ImageDownActive.SetSize(ImageDownActive.GetContentSize);
-  ImageDownActive.SetPosition(DownActiveOffset);
+  ImageDownActive.ImageSourcePath := Path;
+  ImageDownActive.ObjectSize := ImageDownActive.GetContentSize;
+  ImageDownActive.Pos := DownActiveOffset;
 end;
-{ @end $49E548 }
+{ @end $4ACE3C }
 
-{ @routine $49E5F4 TGraphButtonGI_SetImageDisabledPath }
+{ @routine $4ACEBC TGraphButtonGI_SetImageDisabledPath }
 procedure TGraphButtonGI.SetImageDisabledPath(const Path: WideString);
 begin
   if ImageDisabled = nil then ImageDisabled := TImageGI.Create(Self);
   ImageDisabled.SetDepth(1);
   ImageDisabled.AutoUpdateFlags := ImageAutoUpdateFlags;
-  ImageDisabled.SetImagePath(Path);
-  ImageDisabled.SetSize(ImageDisabled.GetContentSize);
-  ImageDisabled.SetPosition(DisabledOffset);
+  ImageDisabled.ImageSourcePath := Path;
+  ImageDisabled.ObjectSize := ImageDisabled.GetContentSize;
+  ImageDisabled.Pos := DisabledOffset;
 end;
-{ @end $49E5F4 }
+{ @end $4ACEBC }
 
-{ @routine $49E6A0 TGraphButtonGI_SetImageDisabledActivePath }
+{ @routine $4ACF3C TGraphButtonGI_SetImageDisabledActivePath }
 procedure TGraphButtonGI.SetImageDisabledActivePath(const Path: WideString);
 begin
   if ImageDisabledActive = nil then ImageDisabledActive := TImageGI.Create(Self);
   ImageDisabledActive.SetDepth(1);
   ImageDisabledActive.AutoUpdateFlags := ImageAutoUpdateFlags;
-  ImageDisabledActive.SetImagePath(Path);
-  ImageDisabledActive.SetSize(ImageDisabledActive.GetContentSize);
-  ImageDisabledActive.SetPosition(DisabledActiveOffset);
+  ImageDisabledActive.ImageSourcePath := Path;
+  ImageDisabledActive.ObjectSize := ImageDisabledActive.GetContentSize;
+  ImageDisabledActive.Pos := DisabledActiveOffset;
 end;
-{ @end $49E6A0 }
+{ @end $4ACF3C }
 
-{ @routine $49E74C TGraphButtonGI_SetImageHitPath }
+{ @routine $4ACFBC TGraphButtonGI_SetImageHitPath }
 procedure TGraphButtonGI.SetImageHitPath(const Path: WideString);
 begin
   if ImageHit = nil then ImageHit := TImageGI.Create(Self);
-  ImageHit.SetImagePath(Path);
-  ImageHit.SetSize(ImageHit.GetContentSize);
-  ImageHit.SetPosition(HitOffset);
+  ImageHit.ImageSourcePath := Path;
+  ImageHit.ObjectSize := ImageHit.GetContentSize;
+  ImageHit.Pos := HitOffset;
 end;
-{ @end $49E74C }
+{ @end $4ACFBC }
 
-{ @routine $49E7CC TGraphButtonGI_SetKind }
+{ @routine $4AD020 TGraphButtonGI_SetKind }
 procedure TGraphButtonGI.SetKind(Value: TGraphButtonKindGI);
 begin
-  if Kind <> Value then
-  begin
-    Kind := Value;
-    UpdateStateVisuals;
-  end;
+  if Kind = Value then Exit;
+  Kind := Value;
+  UpdateStateVisuals;
 end;
-{ @end $49E7CC }
+{ @end $4AD020 }
 
-{ @routine $49E800 TGraphButtonGI_HitTest }
+{ @routine $4AD034 TGraphButtonGI_HitTest }
 function TGraphButtonGI.HitTest(Point: TPoint): Boolean;
 begin
   Result := False;
@@ -355,46 +352,42 @@ begin
     if ImageHit <> nil then Result := ImageHit.HitTestPixel(Point);
   end;
 end;
-{ @end $49E800 }
+{ @end $4AD034 }
 
-{ @routine $49E96C TGraphButtonGI_SetDown }
+{ @routine $4AD118 TGraphButtonGI_SetDown }
 procedure TGraphButtonGI.SetDown(Value: Boolean);
 begin
-  if Down <> Value then
-  begin
-    Down := Value;
-    UpdateStateVisuals;
-  end;
+  if Down = Value then Exit;
+  Down := Value;
+  UpdateStateVisuals;
 end;
-{ @end $49E96C }
+{ @end $4AD118 }
 
-{ @routine $49E9A0 TGraphButtonGI_SetDisabled }
+{ @routine $4AD12C TGraphButtonGI_SetDisabled }
 procedure TGraphButtonGI.SetDisabled(Value: Boolean);
 begin
-  if Disabled <> Value then
-  begin
-    Disabled := Value;
-    UpdateStateVisuals;
-  end;
+  if Disabled = Value then Exit;
+  Disabled := Value;
+  UpdateStateVisuals;
 end;
-{ @end $49E9A0 }
+{ @end $4AD12C }
 
-{ @routine $49E9D4 TGraphButtonGI_IsHovered }
+{ @routine $4AD140 TGraphButtonGI_IsHovered }
 function TGraphButtonGI.IsHovered: Boolean;
 begin
   Result := MessageLoop.HoveredControl = Self;
 end;
-{ @end $49E9D4 }
+{ @end $4AD140 }
 
-{ @routine $49E9F4 TGraphButtonGI_SetHovered }
+{ @routine $4AD14C TGraphButtonGI_SetHovered }
 procedure TGraphButtonGI.SetHovered(Value: Boolean);
 begin
   if Value then MessageLoop.SetHoveredControl(Self)
   else if MessageLoop.HoveredControl = Self then MessageLoop.SetHoveredControl(nil);
 end;
-{ @end $49E9F4 }
+{ @end $4AD14C }
 
-{ @routine $49EA38 TGraphButtonGI_GetMaxStateImageSize }
+{ @routine $4AD170 TGraphButtonGI_GetMaxStateImageSize }
 function TGraphButtonGI.GetMaxStateImageSize: TPoint;
 var Size: TPoint;
 begin
@@ -423,26 +416,26 @@ begin
   Result.X := Max(Result.X, Size.X);
   Result.Y := Max(Result.Y, Size.Y);
 end;
-{ @end $49EA38 }
+{ @end $4AD170 }
 
-{ @routine $49ED44 TGraphButtonGI_UpdateStateVisuals }
+{ @routine $4AD2D0 TGraphButtonGI_UpdateStateVisuals }
 procedure TGraphButtonGI.UpdateStateVisuals;
 begin
-  if ImageNormal <> nil then ImageNormal.SetActive(False);
-  if ImageNormalActive <> nil then ImageNormalActive.SetActive(False);
-  if ImageDown <> nil then ImageDown.SetActive(False);
-  if ImageDownActive <> nil then ImageDownActive.SetActive(False);
-  if ImageDisabled <> nil then ImageDisabled.SetActive(False);
-  if ImageDisabledActive <> nil then ImageDisabledActive.SetActive(False);
-  if ImageHit <> nil then ImageHit.SetActive(False);
+  if ImageNormal <> nil then ImageNormal.IsActive := False;
+  if ImageNormalActive <> nil then ImageNormalActive.IsActive := False;
+  if ImageDown <> nil then ImageDown.IsActive := False;
+  if ImageDownActive <> nil then ImageDownActive.IsActive := False;
+  if ImageDisabled <> nil then ImageDisabled.IsActive := False;
+  if ImageDisabledActive <> nil then ImageDisabledActive.IsActive := False;
+  if ImageHit <> nil then ImageHit.IsActive := False;
   if Disabled and ((Kind = gbkDisable) or (Kind = gbkFixDisable)) then
   begin
     if MessageLoop.HoveredControl = Self then
     begin
-      if ImageDisabledActive <> nil then ImageDisabledActive.SetActive(True)
-      else if ImageDisabled <> nil then ImageDisabled.SetActive(True);
+      if ImageDisabledActive <> nil then ImageDisabledActive.IsActive := True
+      else if ImageDisabled <> nil then ImageDisabled.IsActive := True;
     end
-    else if ImageDisabled <> nil then ImageDisabled.SetActive(True);
+    else if ImageDisabled <> nil then ImageDisabled.IsActive := True;
   end
   else
   begin
@@ -450,25 +443,25 @@ begin
     begin
       if MessageLoop.HoveredControl = Self then
       begin
-        if ImageDownActive <> nil then ImageDownActive.SetActive(True)
-        else if ImageDown <> nil then ImageDown.SetActive(True);
+        if ImageDownActive <> nil then ImageDownActive.IsActive := True
+        else if ImageDown <> nil then ImageDown.IsActive := True;
       end
-      else if ImageDown <> nil then ImageDown.SetActive(True);
+      else if ImageDown <> nil then ImageDown.IsActive := True;
     end
     else
     begin
       if MessageLoop.HoveredControl = Self then
       begin
-        if ImageNormalActive <> nil then ImageNormalActive.SetActive(True)
-        else if ImageNormal <> nil then ImageNormal.SetActive(True);
+        if ImageNormalActive <> nil then ImageNormalActive.IsActive := True
+        else if ImageNormal <> nil then ImageNormal.IsActive := True;
       end
-      else if ImageNormal <> nil then ImageNormal.SetActive(True);
+      else if ImageNormal <> nil then ImageNormal.IsActive := True;
     end;
   end;
   if CaptionLabel <> nil then
   begin
-    if not Down then CaptionLabel.SetPosition(CaptionOffsets.TopLeft)
-    else CaptionLabel.SetPosition(CaptionOffsets.BottomRight);
+    if not Down then CaptionLabel.Pos := CaptionOffsets.TopLeft
+    else CaptionLabel.Pos := CaptionOffsets.BottomRight;
     if Disabled and ((Kind = gbkDisable) or (Kind = gbkFixDisable)) then
     begin
       if MessageLoop.HoveredControl = Self then
@@ -527,43 +520,43 @@ begin
   Invalidate;
   if Assigned(StateChangedCallback) then StateChangedCallback(Self);
 end;
-{ @end $49ED44 }
+{ @end $4AD2D0 }
 
-{ @routine $49F28C TGraphButtonGI_UpdateStateImagePlacement }
+{ @routine $4AD624 TGraphButtonGI_UpdateStateImagePlacement }
 procedure TGraphButtonGI.UpdateStateImagePlacement;
 begin
-  if ImageNormal <> nil then ImageNormal.SetPosition(NormalOffset);
-  if ImageNormalActive <> nil then ImageNormalActive.SetPosition(NormalActiveOffset);
-  if ImageDown <> nil then ImageDown.SetPosition(DownOffset);
-  if ImageDownActive <> nil then ImageDownActive.SetPosition(DownActiveOffset);
-  if ImageDisabled <> nil then ImageDisabled.SetPosition(DisabledOffset);
-  if ImageDisabledActive <> nil then ImageDisabledActive.SetPosition(DisabledActiveOffset);
-  if ImageHit <> nil then ImageHit.SetPosition(HitOffset);
+  if ImageNormal <> nil then ImageNormal.Pos := NormalOffset;
+  if ImageNormalActive <> nil then ImageNormalActive.Pos := NormalActiveOffset;
+  if ImageDown <> nil then ImageDown.Pos := DownOffset;
+  if ImageDownActive <> nil then ImageDownActive.Pos := DownActiveOffset;
+  if ImageDisabled <> nil then ImageDisabled.Pos := DisabledOffset;
+  if ImageDisabledActive <> nil then ImageDisabledActive.Pos := DisabledActiveOffset;
+  if ImageHit <> nil then ImageHit.Pos := HitOffset;
   if CaptionLabel <> nil then
   begin
-    CaptionLabel.SetPosition(Classes.Point(0, 0));
-    CaptionLabel.SetSize(ClientSize);
+    CaptionLabel.Pos := Classes.Point(0, 0);
+    CaptionLabel.ObjectSize := ClientSize;
   end;
 end;
-{ @end $49F28C }
+{ @end $4AD624 }
 
-{ @routine $49F3CC TGraphButtonGI_SetSize }
+{ @routine $4AD6F0 TGraphButtonGI_SetSize }
 procedure TGraphButtonGI.SetSize(Size: TPoint);
 begin
   inherited SetSize(Size);
   UpdateStateImagePlacement;
 end;
-{ @end $49F3CC }
+{ @end $4AD6F0 }
 
-{ @routine $49F3F8 TGraphButtonGI_SetOrigin }
+{ @routine $4AD718 TGraphButtonGI_SetOrigin }
 procedure TGraphButtonGI.SetOrigin(Origin: TPoint);
 begin
   inherited SetOrigin(Origin);
   UpdateStateImagePlacement;
 end;
-{ @end $49F3F8 }
+{ @end $4AD718 }
 
-{ @routine $49F424 TGraphButtonGI_OnActivate }
+{ @routine $4AD740 TGraphButtonGI_OnActivate }
 procedure TGraphButtonGI.OnActivate;
 begin
   inherited OnActivate;
@@ -571,9 +564,9 @@ begin
   if (Kind = gbkNormal) or (Kind = gbkDisable) then Down := False;
   UpdateStateVisuals;
 end;
-{ @end $49F424 }
+{ @end $4AD740 }
 
-{ @routine $49F478 TGraphButtonGI_OnDeactivate }
+{ @routine $4AD77C TGraphButtonGI_OnDeactivate }
 procedure TGraphButtonGI.OnDeactivate;
 begin
   inherited OnDeactivate;
@@ -581,24 +574,24 @@ begin
   if (Kind = gbkNormal) or (Kind = gbkDisable) then Down := False;
   UpdateStateVisuals;
 end;
-{ @end $49F478 }
+{ @end $4AD77C }
 
-{ @routine $49F4D0 TGraphButtonGI_OnMouseEnter }
+{ @routine $4AD7B4 TGraphButtonGI_OnMouseEnter }
 procedure TGraphButtonGI.OnMouseEnter;
 begin
   inherited OnMouseEnter;
 end;
-{ @end $49F4D0 }
+{ @end $4AD7B4 }
 
-{ @routine $49F4E4 TGraphButtonGI_OnMouseLeave }
+{ @routine $4AD7BC TGraphButtonGI_OnMouseLeave }
 procedure TGraphButtonGI.OnMouseLeave;
 begin
   inherited OnMouseLeave;
   if MessageLoop.HoveredControl = Self then MessageLoop.SetHoveredControl(nil);
 end;
-{ @end $49F4E4 }
+{ @end $4AD7BC }
 
-{ @routine $49F514 TGraphButtonGI_ProcessMouseMove }
+{ @routine $4AD7D8 TGraphButtonGI_ProcessMouseMove }
 procedure TGraphButtonGI.ProcessMouseMove(KeyState: Cardinal; Point: TPoint);
 begin
   if MouseBlockingTest and IsOccludedAtPoint(AbsolutePosition) then Exit;
@@ -608,18 +601,18 @@ begin
   end
   else if MessageLoop.HoveredControl = Self then MessageLoop.SetHoveredControl(nil);
 end;
-{ @end $49F514 }
+{ @end $4AD7D8 }
 
-{ @routine $49F594 TGraphButtonGI_OnHoverGained }
+{ @routine $4AD838 TGraphButtonGI_OnHoverGained }
 procedure TGraphButtonGI.OnHoverGained;
 begin
   if (EnterSound <> '') and not Disabled then SoundManager.PlaySound(EnterSound);
   if Assigned(HelpCallback) then HelpCallback(Self, True);
   UpdateStateVisuals;
 end;
-{ @end $49F594 }
+{ @end $4AD838 }
 
-{ @routine $49F5FC TGraphButtonGI_OnHoverLost }
+{ @routine $4AD888 TGraphButtonGI_OnHoverLost }
 procedure TGraphButtonGI.OnHoverLost;
 begin
   if (Kind = gbkNormal) or (Kind = gbkDisable) then
@@ -634,9 +627,9 @@ begin
   if Assigned(HelpCallback) then HelpCallback(Self, False);
   UpdateStateVisuals;
 end;
-{ @end $49F5FC }
+{ @end $4AD888 }
 
-{ @routine $49F6B4 TGraphButtonGI_ExecuteOnPressCode }
+{ @routine $4AD910 TGraphButtonGI_ExecuteOnPressCode }
 procedure TGraphButtonGI.ExecuteOnPressCode;
 begin
   if OnPressCode <> nil then
@@ -646,9 +639,9 @@ begin
   end
   else MessageLoop.RefreshMouseDispatch;
 end;
-{ @end $49F6B4 }
+{ @end $4AD910 }
 
-{ @routine $49F710 TGraphButtonGI_ProcessLeftButtonDown }
+{ @routine $4AD950 TGraphButtonGI_ProcessLeftButtonDown }
 procedure TGraphButtonGI.ProcessLeftButtonDown(KeyState: Cardinal; Point: TPoint);
 begin
   inherited ProcessLeftButtonDown(KeyState, Point);
@@ -692,9 +685,9 @@ begin
   end;
   UpdateStateVisuals;
 end;
-{ @end $49F710 }
+{ @end $4AD950 }
 
-{ @routine $49F8E4 TGraphButtonGI_ProcessLeftButtonUp }
+{ @routine $4ADABC TGraphButtonGI_ProcessLeftButtonUp }
 procedure TGraphButtonGI.ProcessLeftButtonUp(KeyState: Cardinal; Point: TPoint);
 var WasDown: Boolean;
 begin
@@ -716,32 +709,32 @@ begin
     UpdateStateVisuals;
   end;
 end;
-{ @end $49F8E4 }
+{ @end $4ADABC }
 
-{ @routine $49FA14 TGraphButtonGI_ProcessLeftButtonDoubleClick }
+{ @routine $4ADB98 TGraphButtonGI_ProcessLeftButtonDoubleClick }
 procedure TGraphButtonGI.ProcessLeftButtonDoubleClick(KeyState: Cardinal; Point: TPoint);
 begin
   inherited ProcessLeftButtonDoubleClick(KeyState, Point);
 end;
-{ @end $49FA14 }
+{ @end $4ADB98 }
 
-{ @routine $49FA40 TGraphButtonGI_LoadFromConfigPath }
+{ @routine $4ADBB0 TGraphButtonGI_LoadFromConfigPath }
 procedure TGraphButtonGI.LoadFromConfigPath(const Path: WideString);
 begin
   inherited LoadFromConfigPath(Path);
   LoadButtonProperties(UiStyleConfig.GetBlockByPath(Path));
 end;
-{ @end $49FA40 }
+{ @end $4ADBB0 }
 
-{ @routine $49FA74 TGraphButtonGI_LoadFromBlock }
+{ @routine $4ADBDC TGraphButtonGI_LoadFromBlock }
 procedure TGraphButtonGI.LoadFromBlock(Block: TBlockParEC);
 begin
   inherited LoadFromBlock(Block);
   LoadButtonProperties(Block);
 end;
-{ @end $49FA74 }
+{ @end $4ADBDC }
 
-{ @routine $49FA9C TGraphButtonGI_LoadButtonProperties }
+{ @routine $4ADBF8 TGraphButtonGI_LoadButtonProperties }
 procedure TGraphButtonGI.LoadButtonProperties(Block: TBlockParEC);
 var Text: WideString;
 begin
@@ -831,9 +824,9 @@ begin
   if Block.CountBlocks('OnPressCode') > 0 then OnPressCode := Block.GetBlock('OnPressCode');
   UpdateStateImagePlacement;
 end;
-{ @end $49FA9C }
+{ @end $4ADBF8 }
 
-{ @routine $4A0CD4 TGraphButtonGI_UpdateAutoGeometry }
+{ @routine $4AED00 TGraphButtonGI_UpdateAutoGeometry }
 procedure TGraphButtonGI.UpdateAutoGeometry;
 var Bounds, ImageBounds: TRect;
 begin
@@ -891,11 +884,11 @@ begin
       if Bounds.Right - Bounds.Left < 1 then Bounds := ImageBounds
       else Windows.UnionRect(Bounds, Bounds, ImageBounds);
     end;
-    if (ImageAutoUpdateFlags and agfPosition) = agfPosition then SetPosition(Parent.ToLocalPoint(Bounds.TopLeft));
-    if (ImageAutoUpdateFlags and agfSize) = agfSize then SetSize(SubtractPoints(Bounds.BottomRight, Bounds.TopLeft));
+    if (ImageAutoUpdateFlags and agfPosition) = agfPosition then Pos := Parent.ToLocalPoint(Bounds.TopLeft);
+    if (ImageAutoUpdateFlags and agfSize) = agfSize then ObjectSize := SubtractPoints(Bounds.BottomRight, Bounds.TopLeft);
   end;
   inherited UpdateAutoGeometry;
 end;
-{ @end $4A0CD4 }
+{ @end $4AED00 }
 
 end.

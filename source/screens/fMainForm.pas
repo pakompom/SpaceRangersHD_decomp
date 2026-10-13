@@ -1,5 +1,4 @@
 unit fMainForm;
-// Unit bracket (inferred): .text 0x006814D0..0x006843C5; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -8,7 +7,7 @@ uses EC_BlockPar, GI_MessageLoop, Types, fPanelLoad;
 type
   TfMainForm = class(TMessageLoopGI) // @size 0xF4
   public
-    BackgroundTimer: PCallbackTimerGI; // @offset 0xD0
+    BackgroundTimer: TCallbackTimerIdGI; // @offset 0xD0
     BackgroundScrollOffset: Integer; // @offset 0xD4
     LastMenuShipAnimation: Integer; // @offset 0xD8
     LastGaalShipAnimation: Integer; // @offset 0xDC
@@ -16,45 +15,45 @@ type
     PopupState: Integer; // @offset $EC Cleared when closing PanelAB.
     LoadPanel: TfPanelLoad; // @offset 0xF0
 
-    constructor Create; // @addr 0x68157C
-    destructor Destroy; override; // @addr 0x6815D4
-    procedure InitializeLayout; override; // @addr 0x68162C
-    procedure OnOpen; override; // @addr 0x682B18
-    procedure OnClose; override; // @addr 0x68384C
-    procedure SelectMusic; override; // @addr 0x68437C
-    procedure ExecuteUiCode(Block: TBlockParEC; Key: Cardinal); override; // @addr 0x6843A8
-    procedure QuitClicked(Sender: TObjectGI); // @addr 0x683864
-    procedure NewGameClicked(Sender: TObjectGI); // @addr 0x683910
-    procedure AchievementsClicked(Sender: TObjectGI); // @addr 0x683954
-    procedure LoadGameClicked(Sender: TObjectGI); // @addr 0x6839B0
-    procedure SettingsClicked(Sender: TObjectGI); // @addr 0x683A14
-    procedure ScoresClicked(Sender: TObjectGI); // @addr 0x683A70
-    procedure AboutClicked(Sender: TObjectGI); // @addr 0x683A98
-    procedure RobotBattleClicked(Sender: TObjectGI); // @addr 0x68423C
-    procedure TextQuestClicked(Sender: TObjectGI); // @addr 0x684288
-    procedure ArcadeBattleClicked(Sender: TObjectGI); // @addr 0x6842D4
-    procedure ModsClicked(Sender: TObjectGI); // @addr 0x684320
-    procedure MenuShipAnimationFinished(Sender: TObjectGI); // @addr 0x683D80
-    procedure GaalShipAnimationFinished(Sender: TObjectGI); // @addr 0x683F68
-    procedure MainPanelKeyDown(Sender: TObjectGI; Key: Cardinal); // @addr 0x683ACC
-    procedure MainPanelMouseMove(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x683D54
-    procedure ScrollBackground(Timer: PCallbackTimerGI; UserData: Integer); // @addr 0x684120
-    procedure ClosePopup; // @addr 0x6841DC
+    constructor Create; // @addr 0x0052E98C
+    destructor Destroy; override; // @addr 0x0052E9D4
+    procedure InitializeLayout; override; // @addr 0x0052EA10
+    procedure OnOpen; override; // @addr 0x0052FBEC
+    procedure OnClose; override; // @addr 0x0053085C
+    procedure SelectMusic; override; // @addr 0x00531224
+    procedure ExecuteUiCode(Block: TBlockParEC; Key: Cardinal); override; // @addr 0x00531248
+    procedure QuitClicked(Sender: TObjectGI); // @addr 0x00530868
+    procedure NewGameClicked(Sender: TObjectGI); // @addr 0x0053090C
+    procedure AchievementsClicked(Sender: TObjectGI); // @addr 0x00530940
+    procedure LoadGameClicked(Sender: TObjectGI); // @addr 0x0053098C
+    procedure SettingsClicked(Sender: TObjectGI); // @addr 0x005309E0
+    procedure ScoresClicked(Sender: TObjectGI); // @addr 0x00530A2C
+    procedure AboutClicked(Sender: TObjectGI); // @addr 0x00530A40
+    procedure RobotBattleClicked(Sender: TObjectGI); // @addr 0x00531124
+    procedure TextQuestClicked(Sender: TObjectGI); // @addr 0x00531160
+    procedure ArcadeBattleClicked(Sender: TObjectGI); // @addr 0x0053119C
+    procedure ModsClicked(Sender: TObjectGI); // @addr 0x005311D8
+    procedure MenuShipAnimationFinished(Sender: TObjectGI); // @addr 0x00530CDC
+    procedure GaalShipAnimationFinished(Sender: TObjectGI); // @addr 0x00530EA4
+    procedure MainPanelKeyDown(Sender: TObjectGI; Key: Cardinal); // @addr 0x00530A64
+    procedure MainPanelMouseMove(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x00530CBC
+    procedure ScrollBackground(Timer: TCallbackTimerIdGI; UserData: Cardinal); // @addr 0x00531038
+    procedure ClosePopup; // @addr 0x005310D4
   end;
 
 implementation
 
 uses Classes, Windows, SysUtils, GR_Main, Globals, GlobalsV, GI_GraphButton, GI_GAI, GI_MessageBox, GI_Label, GI_Image, EC_Str, aMyFunction, aScript, aConst, fShip2, fSaveManager, fMods, Robot;
 
-{ @routine $68157C TfMainForm_Create }
+{ @routine $52E98C TfMainForm_Create }
 constructor TfMainForm.Create;
 begin
   inherited Create;
   LoadPanel := TfPanelLoad.Create;
 end;
-{ @end $68157C }
+{ @end $52E98C }
 
-{ @routine $6815D4 TfMainForm_Destroy }
+{ @routine $52E9D4 TfMainForm_Destroy }
 destructor TfMainForm.Destroy;
 begin
   if LoadPanel <> nil then
@@ -64,9 +63,9 @@ begin
   end;
   inherited Destroy;
 end;
-{ @end $6815D4 }
+{ @end $52E9D4 }
 
-{ @routine $68162C TfMainForm_InitializeLayout }
+{ @routine $52EA10 TfMainForm_InitializeLayout }
 procedure TfMainForm.InitializeLayout;
 var
   OffsetX, OffsetY, LogoShift: Integer;
@@ -78,16 +77,16 @@ begin
   AppendLogTextThreadSafe('fMainForm... ');
   with GetByName('LVersion') as TLabelGI do
   begin
-    if Cardinal(GameScreenWidth) >= 1280 then
+    if GameScreenWidth >= 1280 then
     begin
       SetPosition(Classes.Point(LocalPosition.X + ExtraScreenWidth, LocalPosition.Y + ExtraScreenHeight));
-      SetText(ReplaceAllWideString(LocalizedText('FormMain.Version'), '<Value>', GameVersionText));
+      Text := ReplaceAllWideString(LocalizedText('FormMain.Version'), '<Value>', GameVersionText);
       LogoShift := 0;
     end
     else
     begin
       SetPosition(Classes.Point(LocalPosition.X + ExtraScreenWidth, LocalPosition.Y + ExtraScreenHeight - 7));
-      SetText(ReplaceAllWideString(LocalizedText('FormMain.Version2'), '<Value>', GameVersionText));
+      Text := ReplaceAllWideString(LocalizedText('FormMain.Version2'), '<Value>', GameVersionText);
       LogoShift := 16;
     end;
   end;
@@ -100,10 +99,10 @@ begin
     ViewportRect := Classes.Rect(0, 0, GameScreenWidth, GameScreenHeight);
     OffsetX := 0;
     OffsetY := 0;
-    if Cardinal(GameScreenWidth) >= 1600 then
+    if GameScreenWidth >= 1600 then
     begin
       OffsetX := -250;
-      if (Cardinal(GameScreenHeight) >= 900) and (Cardinal(GameScreenHeight) < 1040) then OffsetY := (1040 - GameScreenHeight) shr 1;
+      if (GameScreenHeight >= 900) and (GameScreenHeight < 1040) then OffsetY := (1040 - Integer(GameScreenHeight)) shr 1;
     end;
     with GetByName('MainPanel') do
     begin
@@ -146,10 +145,10 @@ begin
         begin
           with CaptionControl as TgaiGI do
           begin
-            if (Cardinal(GameScreenWidth) >= 1600) and (Cardinal(GameScreenHeight) >= 900) then
+            if (GameScreenWidth >= 1600) and (GameScreenHeight >= 900) then
             begin
               SetSize(Classes.Point(843, 218));
-              SetPosition(Classes.Point((GameScreenWidth - ClientSize.X) div 2, 57));
+              SetPosition(Classes.Point((Integer(GameScreenWidth) - ClientSize.X) div 2, 57));
               SetImagePath('Bm.FormMain3.CaptionLarge');
             end
             else SetPosition(Classes.Point(LocalPosition.X + ExtraScreenWidth div 2 + 50, LocalPosition.Y));
@@ -159,30 +158,30 @@ begin
         begin
           with CaptionControl as TImageGI do
           begin
-            if (Cardinal(GameScreenWidth) >= 1600) and (Cardinal(GameScreenHeight) >= 900) then
+            if (GameScreenWidth >= 1600) and (GameScreenHeight >= 900) then
             begin
               SetSize(Classes.Point(843, 218));
-              SetPosition(Classes.Point((GameScreenWidth - ClientSize.X) div 2, 57));
+              SetPosition(Classes.Point((Integer(GameScreenWidth) - ClientSize.X) div 2, 57));
               Extension := ExtractFileExtNoDotW(Trim(LowerCase(AnsiString(CacheDataRoot.FindEntry('Bm').ChildData.FindEntry('FormMain3').ChildData.FindEntry('CaptionLarge').SharedFileRef.FileRef.FileName))));
-              if Extension = 'gai' then SetImagePath('GAI,Bm.FormMain3.CaptionLarge')
-              else SetImagePath('GI,Bm.FormMain3.CaptionLarge');
+              if Extension = 'gai' then ImageSourcePath := 'GAI,Bm.FormMain3.CaptionLarge'
+              else ImageSourcePath := 'GI,Bm.FormMain3.CaptionLarge';
             end
             else SetPosition(Classes.Point(LocalPosition.X + ExtraScreenWidth div 2 + 50, LocalPosition.Y));
           end;
         end;
         with FindByNameRecursive('CaptionBlur') as TImageGI do
         begin
-          if (Cardinal(GameScreenWidth) >= 1600) and (Cardinal(GameScreenHeight) >= 900) then
-            SetPosition(Classes.Point((GameScreenWidth - ClientSize.X) div 2 - 7, -29))
+          if (GameScreenWidth >= 1600) and (GameScreenHeight >= 900) then
+            SetPosition(Classes.Point((Integer(GameScreenWidth) - ClientSize.X) div 2 - 7, -29))
           else SetPosition(Classes.Point(LocalPosition.X + ExtraScreenWidth div 2 + 50, LocalPosition.Y));
         end;
         with FindByNameRecursive('SubName') as TImageGI do
         begin
-          if (Cardinal(GameScreenWidth) >= 1600) and (Cardinal(GameScreenHeight) >= 900) then
+          if (GameScreenWidth >= 1600) and (GameScreenHeight >= 900) then
           begin
-            SetImagePath('GI,Bm.FormMain3.SubLarge');
+            ImageSourcePath := 'GI,Bm.FormMain3.SubLarge';
             SetSize(Classes.Point(932, 76));
-            SetPosition(Classes.Point((GameScreenWidth - ClientSize.X) div 2 - 54, 320));
+            SetPosition(Classes.Point((Integer(GameScreenWidth) - ClientSize.X) div 2 - 54, 320));
           end
           else SetPosition(Classes.Point(LocalPosition.X + ExtraScreenWidth div 2 + 50, LocalPosition.Y));
         end;
@@ -200,9 +199,9 @@ begin
   with GetByName('LoadAB') as TGraphButtonGI do UpCallback := ArcadeBattleClicked;
   with GetByName('Mods') as TGraphButtonGI do UpCallback := ModsClicked;
 end;
-{ @end $68162C }
+{ @end $52EA10 }
 
-{ @routine $682B18 TfMainForm_OnOpen }
+{ @routine $52FBEC TfMainForm_OnOpen }
 procedure TfMainForm.OnOpen;
 var I: Integer;
 begin
@@ -235,13 +234,13 @@ begin
   SelectMusic;
   GetByName('MainPanel').KeyDownCallback := MainPanelKeyDown;
   BackgroundScrollOffset := 0;
-  if BackgroundTimer <> nil then
+  if BackgroundTimer <> 0 then
   begin
     CancelCallbackTimer(BackgroundTimer);
-    BackgroundTimer := nil;
+    BackgroundTimer := 0;
   end;
   if AnimMainFon then BackgroundTimer := ScheduleCallbackTimer(40, 40, ScrollBackground);
-  ScrollBackground(nil, 0);
+  ScrollBackground(0, 0);
   if GetByName('Logo1C') is TgaiGI then
     with GetByName('Logo1C') as TgaiGI do
     begin
@@ -284,7 +283,7 @@ begin
     end;
     SetActive(True);
   end;
-  if Cardinal(GameScreenWidth) >= 1600 then
+  if GameScreenWidth >= 1600 then
   begin
     if FindControlByPath('AnimGaalShip') <> nil then
       with GetByName('AnimGaalShip') as TgaiGI do
@@ -315,13 +314,13 @@ begin
       end;
   end
   else if FindControlByPath('AnimGaalShip') <> nil then GetByName('AnimGaalShip').SetActive(False);
-  with GetByName('LoadRobotCnt') as TLabelGI do SetText(LoadRobotScreen.GetCompletionSummary);
-  with GetByName('LoadQuestCnt') as TLabelGI do SetText(LoadQuestScreen.GetCompletionSummary);
-  with GetByName('LoadABCnt') as TLabelGI do SetText(LoadArcadeScreen.GetCatalogSummary);
+  with GetByName('LoadRobotCnt') as TLabelGI do Text := LoadRobotScreen.GetCompletionSummary;
+  with GetByName('LoadQuestCnt') as TLabelGI do Text := LoadQuestScreen.GetCompletionSummary;
+  with GetByName('LoadABCnt') as TLabelGI do Text := LoadArcadeScreen.GetCatalogSummary;
   with GetByName('ModsCnt') as TLabelGI do
   begin
-    if SkipModsOnReload then SetText(RedColorTag + IntToWideString(CountDelimitedPartsW(SelectedMods, ',')) + EndColorTag)
-    else SetText(IntToWideString(CountDelimitedPartsW(SelectedMods, ',')));
+    if SkipModsOnReload then Text := RedColorTag + IntToWideString(CountDelimitedPartsW(SelectedMods, ',')) + EndColorTag
+    else Text := IntToWideString(CountDelimitedPartsW(SelectedMods, ','));
   end;
   if ShowWineWarning then
   begin
@@ -334,16 +333,16 @@ begin
     ShowMessageBoxGI(Self, LocalizedColorText('Warning.XonarDetected'), mbgCancel or mbgUnused04);
   end;
 end;
-{ @end $682B18 }
+{ @end $52FBEC }
 
-{ @routine $68384C TfMainForm_OnClose }
+{ @routine $53085C TfMainForm_OnClose }
 procedure TfMainForm.OnClose;
 begin
   LoadPanel.OnClose;
 end;
-{ @end $68384C }
+{ @end $53085C }
 
-{ @routine $683864 TfMainForm_QuitClicked }
+{ @routine $530868 TfMainForm_QuitClicked }
 procedure TfMainForm.QuitClicked(Sender: TObjectGI);
 begin
   if ShowMessageBoxGI(Self, LanguageDataConfig.GetParamByPathOrMarker('FormMain.MsgExit'), mbgOK or mbgCancel or mbgQuestion) = mbgResultOK then
@@ -352,9 +351,9 @@ begin
     RequestClose(1);
   end;
 end;
-{ @end $683864 }
+{ @end $530868 }
 
-{ @routine $683910 TfMainForm_NewGameClicked }
+{ @routine $53090C TfMainForm_NewGameClicked }
 procedure TfMainForm.NewGameClicked(Sender: TObjectGI);
 begin
   ShipScreen.SelectedHoldKind := phkEmpty;
@@ -362,66 +361,66 @@ begin
   RequestedScreenId := screenNewGame;
   RequestClose(1);
 end;
-{ @end $683910 }
+{ @end $53090C }
 
-{ @routine $683954 TfMainForm_AchievementsClicked }
+{ @routine $530940 TfMainForm_AchievementsClicked }
 procedure TfMainForm.AchievementsClicked(Sender: TObjectGI);
 begin
-  SetCursorActive(False);
+  Self.ShowCursor := False;
   Present;
   CaptureScreenBackground(True, 0);
-  SetCursorActive(True);
+  Self.ShowCursor := True;
   AchievementsReturnScreenId := FormToId(Self);
   RequestedScreenId := screenAchievements;
   RequestClose(1);
 end;
-{ @end $683954 }
+{ @end $530940 }
 
-{ @routine $6839B0 TfMainForm_LoadGameClicked }
+{ @routine $53098C TfMainForm_LoadGameClicked }
 procedure TfMainForm.LoadGameClicked(Sender: TObjectGI);
 begin
-  SetCursorActive(False);
+  Self.ShowCursor := False;
   Present;
   CaptureScreenBackground(True, 0);
-  SetCursorActive(True);
+  Self.ShowCursor := True;
   SaveManagerReturnScreenId := FormToId(Self);
   SaveManagerMode := smmLoad;
   RequestedScreenId := screenSaveManager;
   RequestClose(1);
 end;
-{ @end $6839B0 }
+{ @end $53098C }
 
-{ @routine $683A14 TfMainForm_SettingsClicked }
+{ @routine $5309E0 TfMainForm_SettingsClicked }
 procedure TfMainForm.SettingsClicked(Sender: TObjectGI);
 begin
-  SetCursorActive(False);
+  Self.ShowCursor := False;
   Present;
   CaptureScreenBackground(True, 0);
-  SetCursorActive(True);
+  Self.ShowCursor := True;
   SettingsReturnScreenId := FormToId(Self);
   RequestedScreenId := screenSettings;
   RequestClose(1);
 end;
-{ @end $683A14 }
+{ @end $5309E0 }
 
-{ @routine $683A70 TfMainForm_ScoresClicked }
+{ @routine $530A2C TfMainForm_ScoresClicked }
 procedure TfMainForm.ScoresClicked(Sender: TObjectGI);
 begin
   RequestedScreenId := screenScores;
   RequestClose(1);
 end;
-{ @end $683A70 }
+{ @end $530A2C }
 
-{ @routine $683A98 TfMainForm_AboutClicked }
+{ @routine $530A40 TfMainForm_AboutClicked }
 procedure TfMainForm.AboutClicked(Sender: TObjectGI);
 begin
   AboutScreen.ReturnToScores := False;
   RequestedScreenId := screenAbout;
   RequestClose(1);
 end;
-{ @end $683A98 }
+{ @end $530A40 }
 
-{ @routine $683ACC TfMainForm_MainPanelKeyDown }
+{ @routine $530A64 TfMainForm_MainPanelKeyDown }
 procedure TfMainForm.MainPanelKeyDown(Sender: TObjectGI; Key: Cardinal);
 begin
   if IsVirtualKeyDown(VK_CONTROL) or IsVirtualKeyDown(VK_SHIFT) or IsVirtualKeyDown(VK_MENU) then Exit;
@@ -429,20 +428,27 @@ begin
   begin
     TGraphButtonGI(GetByName('LoadQuest')).ExecuteOnPressCode;
     TextQuestClicked(nil);
-  end
-  else if (Key = Ord('R')) and IsInstallFeatureEnabled('Robot') and
+    Exit;
+  end;
+  if (Key = Ord('R')) and IsInstallFeatureEnabled('Robot') and
     (RobotInterface <> nil) and (RobotInterface.Support = 0) and (FindControlByPath('PanelRL') = nil) then
   begin
     TGraphButtonGI(GetByName('LoadRobot')).ExecuteOnPressCode;
     RobotBattleClicked(nil);
-  end
-  else if (Key = Ord('A')) or (Key = Ord('F')) then
+    Exit;
+  end;
+  if (Key = Ord('A')) or (Key = Ord('F')) then
   begin
     TGraphButtonGI(GetByName('LoadAB')).ExecuteOnPressCode;
     ArcadeBattleClicked(nil);
-  end
-  else if Key = Ord('M') then ModsClicked(nil)
-  else if (Key = VK_F3) or (Key = Ord('L')) then
+    Exit;
+  end;
+  if Key = Ord('M') then
+  begin
+    ModsClicked(nil);
+    Exit;
+  end;
+  if (Key = VK_F3) or (Key = Ord('L')) then
   begin
     TGraphButtonGI(GetByName('Load')).ExecuteOnPressCode;
     SaveManagerReturnScreenId := FormToId(Self);
@@ -466,16 +472,16 @@ begin
     SettingsClicked(nil);
   end;
 end;
-{ @end $683ACC }
+{ @end $530A64 }
 
-{ @routine $683D54 TfMainForm_MainPanelMouseMove }
+{ @routine $530CBC TfMainForm_MainPanelMouseMove }
 procedure TfMainForm.MainPanelMouseMove(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint);
 begin
   RefreshTimerTick;
 end;
-{ @end $683D54 }
+{ @end $530CBC }
 
-{ @routine $683D80 TfMainForm_MenuShipAnimationFinished }
+{ @routine $530CDC TfMainForm_MenuShipAnimationFinished }
 procedure TfMainForm.MenuShipAnimationFinished(Sender: TObjectGI);
 var Index: Integer;
 begin
@@ -497,9 +503,9 @@ begin
     RestartPlayback;
   end;
 end;
-{ @end $683D80 }
+{ @end $530CDC }
 
-{ @routine $683F68 TfMainForm_GaalShipAnimationFinished }
+{ @routine $530EA4 TfMainForm_GaalShipAnimationFinished }
 procedure TfMainForm.GaalShipAnimationFinished(Sender: TObjectGI);
 var Index: Integer;
 begin
@@ -521,10 +527,10 @@ begin
     RestartPlayback;
   end;
 end;
-{ @end $683F68 }
+{ @end $530EA4 }
 
-{ @routine $684120 TfMainForm_ScrollBackground }
-procedure TfMainForm.ScrollBackground(Timer: PCallbackTimerGI; UserData: Integer);
+{ @routine $531038 TfMainForm_ScrollBackground }
+procedure TfMainForm.ScrollBackground(Timer: TCallbackTimerIdGI; UserData: Cardinal);
 var Offset: Integer;
 begin
   Inc(BackgroundScrollOffset);
@@ -535,9 +541,9 @@ begin
   end;
   with GetByName('ImageFon2') do SetPosition(Classes.Point(ClientSize.X - Offset, 0));
 end;
-{ @end $684120 }
+{ @end $531038 }
 
-{ @routine $6841DC TfMainForm_ClosePopup }
+{ @routine $5310D4 TfMainForm_ClosePopup }
 procedure TfMainForm.ClosePopup;
 var Control: TObjectGI;
 begin
@@ -549,50 +555,50 @@ begin
     Control.Free;
   end;
 end;
-{ @end $6841DC }
+{ @end $5310D4 }
 
-{ @routine $68423C TfMainForm_RobotBattleClicked }
+{ @routine $531124 TfMainForm_RobotBattleClicked }
 procedure TfMainForm.RobotBattleClicked(Sender: TObjectGI);
 begin
-  SetCursorActive(False);
+  Self.ShowCursor := False;
   Present;
   CaptureScreenBackground(True, 0);
-  SetCursorActive(True);
+  Self.ShowCursor := True;
   RequestedScreenId := screenLoadRobot;
   RequestClose(1);
 end;
-{ @end $68423C }
+{ @end $531124 }
 
-{ @routine $684288 TfMainForm_TextQuestClicked }
+{ @routine $531160 TfMainForm_TextQuestClicked }
 procedure TfMainForm.TextQuestClicked(Sender: TObjectGI);
 begin
-  SetCursorActive(False);
+  Self.ShowCursor := False;
   Present;
   CaptureScreenBackground(True, 0);
-  SetCursorActive(True);
+  Self.ShowCursor := True;
   RequestedScreenId := screenLoadQuest;
   RequestClose(1);
 end;
-{ @end $684288 }
+{ @end $531160 }
 
-{ @routine $6842D4 TfMainForm_ArcadeBattleClicked }
+{ @routine $53119C TfMainForm_ArcadeBattleClicked }
 procedure TfMainForm.ArcadeBattleClicked(Sender: TObjectGI);
 begin
-  SetCursorActive(False);
+  Self.ShowCursor := False;
   Present;
   CaptureScreenBackground(True, 0);
-  SetCursorActive(True);
+  Self.ShowCursor := True;
   RequestedScreenId := screenLoadArcade;
   RequestClose(1);
 end;
-{ @end $6842D4 }
+{ @end $53119C }
 
-{ @routine $684320 TfMainForm_ModsClicked }
+{ @routine $5311D8 TfMainForm_ModsClicked }
 procedure TfMainForm.ModsClicked(Sender: TObjectGI);
 begin
-  SetCursorActive(False);
+  Self.ShowCursor := False;
   Present;
-  SetCursorActive(True);
+  Self.ShowCursor := True;
   ShowModsManager(Self);
   if ReloadModsRequested then
   begin
@@ -601,20 +607,20 @@ begin
     RequestClose(1);
   end;
 end;
-{ @end $684320 }
+{ @end $5311D8 }
 
-{ @routine $68437C TfMainForm_SelectMusic }
+{ @routine $531224 TfMainForm_SelectMusic }
 procedure TfMainForm.SelectMusic;
 begin
   MusicManager.PlayCategory('Base');
 end;
-{ @end $68437C }
+{ @end $531224 }
 
-{ @routine $6843A8 TfMainForm_ExecuteUiCode }
+{ @routine $531248 TfMainForm_ExecuteUiCode }
 procedure TfMainForm.ExecuteUiCode(Block: TBlockParEC; Key: Cardinal);
 begin
   ExecuteGameplayUiCode(Block, Key);
 end;
-{ @end $6843A8 }
+{ @end $531248 }
 
 end.

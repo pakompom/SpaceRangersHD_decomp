@@ -1,5 +1,4 @@
 unit GI_SpaceCircle;
-// Unit bracket (inferred): .text 0x004B38C8..0x004B476D; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -32,46 +31,46 @@ type
     GeometryDirty: Boolean; // @offset $140
     DrawnSegmentCount: Integer; // @offset $144
     DeactivateAfterFrame: Boolean; // @offset $148
-    AnimationTimer: PCallbackTimerGI; // @offset $14C
+    AnimationTimer: TCallbackTimerIdGI; // @offset $14C
     SavedPixels: Pointer; // @offset $150
 
-    constructor Create(Owner: TObjectGI); // @addr $4B39EC
-    destructor Destroy; override; // @addr $4B3A60
-    procedure SetRadius(Value: Integer); // @addr $4B3AC8
-    procedure SetCenter(Value: TPoint); // @addr $4B3B10
-    procedure ClearSegments; // @addr $4B3B74
-    procedure ClearPreviousLines; // @addr $4B3BB0
-    procedure RebuildSegments; // @addr $4B3BEC
-    procedure ProjectAndClipSegments; // @addr $4B3E80
-    procedure RotateSegments(Timer: PCallbackTimerGI; UserData: Integer); // @addr $4B3F78
-    procedure SetActive(Enabled: Boolean); override; // @addr $4B4128 @note "Deactivation is deferred until CommitFrameDraw."
-    procedure OnActivate; override; // @addr $4B41A8
-    procedure OnDeactivate; override; // @addr $4B41D8
-    procedure LoadFromConfigPath(const Path: WideString); override; // @addr $4B424C
-    procedure LoadFromBlock(Block: TBlockParEC); override; // @addr $4B4280
-    procedure LoadSpaceCircleProperties(Block: TBlockParEC); // @addr $4B42A8 @note "Empty in native code."
-    procedure Invalidate; override; // @addr $4B42B8 @note "Empty in native code."
-    procedure ErasePreviousFrame; override; // @addr $4B42C4
-    procedure PrepareFrameDraw; override; // @addr $4B445C
-    procedure DrawUpdateRects(ClipRect: TRect); override; // @addr $4B45C4
-    procedure Draw(ClipRect: TRect); override; // @addr $4B460C
-    procedure CommitFrameDraw; override; // @addr $4B473C
+    constructor Create(Owner: TObjectGI); // @addr $488F30
+    destructor Destroy; override; // @addr $488F8C
+    procedure SetRadius(Value: Integer); // @addr $488FD8
+    procedure SetCenter(Value: TPoint); // @addr $489000
+    procedure ClearSegments; // @addr $489054
+    procedure ClearPreviousLines; // @addr $489078
+    procedure RebuildSegments; // @addr $48909C
+    procedure ProjectAndClipSegments; // @addr $489308
+    procedure RotateSegments(Timer: TCallbackTimerIdGI; UserData: Cardinal); // @addr $4893C4
+    procedure SetActive(Enabled: Boolean); override; // @addr $489530 @note "Deactivation is deferred until CommitFrameDraw."
+    procedure OnActivate; override; // @addr $489580
+    procedure OnDeactivate; override; // @addr $4895A0
+    procedure LoadFromConfigPath(const Path: WideString); override; // @addr $4895F0
+    procedure LoadFromBlock(Block: TBlockParEC); override; // @addr $48961C
+    procedure LoadSpaceCircleProperties(Block: TBlockParEC); // @addr $489638 @note "Empty in native code."
+    procedure Invalidate; override; // @addr $48963C @note "Empty in native code."
+    procedure ErasePreviousFrame; override; // @addr $489640
+    procedure PrepareFrameDraw; override; // @addr $48975C
+    procedure DrawUpdateRects(ClipRect: TRect); override; // @addr $489860
+    procedure Draw(ClipRect: TRect); override; // @addr $489898
+    procedure CommitFrameDraw; override; // @addr $48995C
   end;
 
 implementation
 
 uses EC_Mem, GR_Main, GR_GraphBuf, GR_DX, GlobalsV, Classes, aMyFunction;
 
-{ @routine $4B39EC TSpaceCircleGI_Create }
+{ @routine $488F30 TSpaceCircleGI_Create }
 constructor TSpaceCircleGI.Create(Owner: TObjectGI);
 begin
   inherited Create(Owner);
   Color := CurrentPixelFormat.PackRgbBytes(255, 255, 255);
   Radius := 100;
 end;
-{ @end $4B39EC }
+{ @end $488F30 }
 
-{ @routine $4B3A60 TSpaceCircleGI_Destroy }
+{ @routine $488F8C TSpaceCircleGI_Destroy }
 destructor TSpaceCircleGI.Destroy;
 begin
   ClearSegments;
@@ -83,9 +82,9 @@ begin
   end;
   inherited Destroy;
 end;
-{ @end $4B3A60 }
+{ @end $488F8C }
 
-{ @routine $4B3AC8 TSpaceCircleGI_SetRadius }
+{ @routine $488FD8 TSpaceCircleGI_SetRadius }
 procedure TSpaceCircleGI.SetRadius(Value: Integer);
 begin
   if Radius <> Value then
@@ -98,9 +97,9 @@ begin
     end;
   end;
 end;
-{ @end $4B3AC8 }
+{ @end $488FD8 }
 
-{ @routine $4B3B10 TSpaceCircleGI_SetCenter }
+{ @routine $489000 TSpaceCircleGI_SetCenter }
 procedure TSpaceCircleGI.SetCenter(Value: TPoint);
 begin
   if (Center.X <> Value.X) or (Center.Y <> Value.Y) then
@@ -113,9 +112,9 @@ begin
     end;
   end;
 end;
-{ @end $4B3B10 }
+{ @end $489000 }
 
-{ @routine $4B3B74 TSpaceCircleGI_ClearSegments }
+{ @routine $489054 TSpaceCircleGI_ClearSegments }
 procedure TSpaceCircleGI.ClearSegments;
 begin
   if Segments <> nil then
@@ -125,9 +124,9 @@ begin
   end;
   SegmentCount := 0;
 end;
-{ @end $4B3B74 }
+{ @end $489054 }
 
-{ @routine $4B3BB0 TSpaceCircleGI_ClearPreviousLines }
+{ @routine $489078 TSpaceCircleGI_ClearPreviousLines }
 procedure TSpaceCircleGI.ClearPreviousLines;
 begin
   if PreviousLines <> nil then
@@ -137,47 +136,45 @@ begin
   end;
   PreviousLineCount := 0;
 end;
-{ @end $4B3BB0 }
+{ @end $489078 }
 
-{ @routine $4B3BEC TSpaceCircleGI_RebuildSegments }
+{ @routine $48909C TSpaceCircleGI_RebuildSegments }
 procedure TSpaceCircleGI.RebuildSegments;
 var Spacing, Circumference, Angle, Step, Length: Single;
     I, Count: Integer; Segment: PSpaceCircleSegmentGI; Point, Delta: TPointF;
 begin
   ClearSegments;
-  if Radius > 0 then
+  if not (Radius > 0) then Exit;
+  Spacing := 20;
+  Circumference := Radius * (2 * GamePi);
+  Count := Round(Circumference / Spacing);
+  if Count < 10 then Count := 10;
+  Segments := AllocEC(Count * SizeOf(TSpaceCircleSegmentGI));
+  Angle := 0;
+  Step := (2 * GamePi) / Count;
+  Point := MakePointF(Sin(Angle) * Radius, Cos(Angle) * (-Radius));
+  Segment := Segments;
+  for I := 0 to Count - 1 do
   begin
-    Spacing := 20;
-    Circumference := Radius * (2 * GamePi);
-    Count := Round(Circumference / Spacing);
-    if Count < 10 then Count := 10;
-    Segments := AllocEC(Count * SizeOf(TSpaceCircleSegmentGI));
-    Angle := 0;
-    Step := (2 * GamePi) / Count;
+    Segment.First := AddPointsF(Point, PointToPointF(Center));
+    Angle := Angle + Step;
     Point := MakePointF(Sin(Angle) * Radius, Cos(Angle) * (-Radius));
-    Segment := Segments;
-    for I := 0 to Count - 1 do
-    begin
-      Segment.First := AddPointsF(Point, PointToPointF(Center));
-      Angle := Angle + Step;
-      Point := MakePointF(Sin(Angle) * Radius, Cos(Angle) * (-Radius));
-      Segment.Last := AddPointsF(Point, PointToPointF(Center));
-      Delta := SubtractPointsF(Segment.Last, Segment.First);
-      Length := Sqrt(Delta.X * Delta.X + Delta.Y * Delta.Y);
-      Delta.X := Delta.X / Length;
-      Delta.Y := Delta.Y / Length;
-      Segment.Last.X := Delta.X * Length * 0.75 + Segment.First.X;
-      Segment.Last.Y := Delta.Y * Length * 0.75 + Segment.First.Y;
-      Segment.First.X := Delta.X * Length * 0.25 + Segment.First.X;
-      Segment.First.Y := Delta.Y * Length * 0.25 + Segment.First.Y;
-      Segment := AddPointerOffset(Segment, SizeOf(TSpaceCircleSegmentGI));
-    end;
-    SegmentCount := Count;
+    Segment.Last := AddPointsF(Point, PointToPointF(Center));
+    Delta := SubtractPointsF(Segment.Last, Segment.First);
+    Length := Sqrt(Delta.X * Delta.X + Delta.Y * Delta.Y);
+    Delta.X := Delta.X / Length;
+    Delta.Y := Delta.Y / Length;
+    Segment.Last.X := Delta.X * Length * 0.75 + Segment.First.X;
+    Segment.Last.Y := Delta.Y * Length * 0.75 + Segment.First.Y;
+    Segment.First.X := Delta.X * Length * 0.25 + Segment.First.X;
+    Segment.First.Y := Delta.Y * Length * 0.25 + Segment.First.Y;
+    Segment := AddPointerOffset(Segment, SizeOf(TSpaceCircleSegmentGI));
   end;
+  SegmentCount := Count;
 end;
-{ @end $4B3BEC }
+{ @end $48909C }
 
-{ @routine $4B3E80 TSpaceCircleGI_ProjectAndClipSegments }
+{ @routine $489308 TSpaceCircleGI_ProjectAndClipSegments }
 procedure TSpaceCircleGI.ProjectAndClipSegments;
 var Segment: PSpaceCircleSegmentGI; I: Integer; Clip: TRect;
 begin
@@ -194,10 +191,10 @@ begin
     Segment := AddPointerOffset(Segment, SizeOf(TSpaceCircleSegmentGI));
   end;
 end;
-{ @end $4B3E80 }
+{ @end $489308 }
 
-{ @routine $4B3F78 TSpaceCircleGI_RotateSegments }
-procedure TSpaceCircleGI.RotateSegments(Timer: PCallbackTimerGI; UserData: Integer);
+{ @routine $4893C4 TSpaceCircleGI_RotateSegments }
+procedure TSpaceCircleGI.RotateSegments(Timer: TCallbackTimerIdGI; UserData: Cardinal);
 var Segment: PSpaceCircleSegmentGI; I: Integer; Sine, Cosine, X, Y, Angle: Single;
 begin
   if Radius > 0 then
@@ -221,9 +218,9 @@ begin
     GeometryDirty := True;
   end;
 end;
-{ @end $4B3F78 }
+{ @end $4893C4 }
 
-{ @routine $4B4128 TSpaceCircleGI_SetActive }
+{ @routine $489530 TSpaceCircleGI_SetActive }
 procedure TSpaceCircleGI.SetActive(Enabled: Boolean);
 begin
   if Active <> Enabled then
@@ -235,18 +232,18 @@ begin
     end
     else
     begin
-      if AnimationTimer <> nil then
+      if AnimationTimer <> 0 then
       begin
         MessageLoop.CancelCallbackTimer(AnimationTimer);
-        AnimationTimer := nil;
+        AnimationTimer := 0;
       end;
       DeactivateAfterFrame := True;
       ClearSegments;
     end;
 end;
-{ @end $4B4128 }
+{ @end $489530 }
 
-{ @routine $4B41A8 TSpaceCircleGI_OnActivate }
+{ @routine $489580 TSpaceCircleGI_OnActivate }
 procedure TSpaceCircleGI.OnActivate;
 begin
   inherited OnActivate;
@@ -256,16 +253,16 @@ begin
     GeometryDirty := True;
   end;
 end;
-{ @end $4B41A8 }
+{ @end $489580 }
 
-{ @routine $4B41D8 TSpaceCircleGI_OnDeactivate }
+{ @routine $4895A0 TSpaceCircleGI_OnDeactivate }
 procedure TSpaceCircleGI.OnDeactivate;
 begin
   inherited OnDeactivate;
-  if AnimationTimer <> nil then
+  if AnimationTimer <> 0 then
   begin
     MessageLoop.CancelCallbackTimer(AnimationTimer);
-    AnimationTimer := nil;
+    AnimationTimer := 0;
   end;
   ClearSegments;
   ClearPreviousLines;
@@ -275,37 +272,37 @@ begin
     SavedPixels := nil;
   end;
 end;
-{ @end $4B41D8 }
+{ @end $4895A0 }
 
-{ @routine $4B424C TSpaceCircleGI_LoadFromConfigPath }
+{ @routine $4895F0 TSpaceCircleGI_LoadFromConfigPath }
 procedure TSpaceCircleGI.LoadFromConfigPath(const Path: WideString);
 begin
   inherited LoadFromConfigPath(Path);
   LoadSpaceCircleProperties(UiStyleConfig.GetBlockByPath(Path));
 end;
-{ @end $4B424C }
+{ @end $4895F0 }
 
-{ @routine $4B4280 TSpaceCircleGI_LoadFromBlock }
+{ @routine $48961C TSpaceCircleGI_LoadFromBlock }
 procedure TSpaceCircleGI.LoadFromBlock(Block: TBlockParEC);
 begin
   inherited LoadFromBlock(Block);
   LoadSpaceCircleProperties(Block);
 end;
-{ @end $4B4280 }
+{ @end $48961C }
 
-{ @routine $4B42A8 TSpaceCircleGI_LoadSpaceCircleProperties }
+{ @routine $489638 TSpaceCircleGI_LoadSpaceCircleProperties }
 procedure TSpaceCircleGI.LoadSpaceCircleProperties(Block: TBlockParEC);
 begin
 end;
-{ @end $4B42A8 }
+{ @end $489638 }
 
-{ @routine $4B42B8 TSpaceCircleGI_Invalidate }
+{ @routine $48963C TSpaceCircleGI_Invalidate }
 procedure TSpaceCircleGI.Invalidate;
 begin
 end;
-{ @end $4B42B8 }
+{ @end $48963C }
 
-{ @routine $4B42C4 TSpaceCircleGI_ErasePreviousFrame }
+{ @routine $489640 TSpaceCircleGI_ErasePreviousFrame }
 procedure TSpaceCircleGI.ErasePreviousFrame;
 var Line: PSpaceCircleSavedLineGI; I: Integer; Buffer: Pointer; Count: Integer;
 begin
@@ -313,10 +310,11 @@ begin
   begin
     ProjectAndClipSegments;
     GeometryDirty := False;
-    if AnimationTimer = nil then
+    if AnimationTimer = 0 then
       AnimationTimer := MessageLoop.ScheduleCallbackTimer(50, 50, RotateSegments);
   end;
-  if (not HardwareRenderingEnabled) and (not SkipSavedPixelRestore) then
+  if (not HardwareRenderingEnabled) then
+    if (not SkipSavedPixelRestore) then
     if not BGImage then
     begin
       Line := PreviousLines;
@@ -342,9 +340,9 @@ begin
       end;
     end;
 end;
-{ @end $4B42C4 }
+{ @end $489640 }
 
-{ @routine $4B445C TSpaceCircleGI_PrepareFrameDraw }
+{ @routine $48975C TSpaceCircleGI_PrepareFrameDraw }
 procedure TSpaceCircleGI.PrepareFrameDraw;
 var Segment: PSpaceCircleSegmentGI; Copied: Integer; Count, Capacity, I: Integer;
 begin
@@ -381,16 +379,16 @@ begin
       end;
     end;
 end;
-{ @end $4B445C }
+{ @end $48975C }
 
-{ @routine $4B45C4 TSpaceCircleGI_DrawUpdateRects }
+{ @routine $489860 TSpaceCircleGI_DrawUpdateRects }
 procedure TSpaceCircleGI.DrawUpdateRects(ClipRect: TRect);
 begin
   Draw(Classes.Rect(0, 0, GameScreenWidth, GameScreenHeight));
 end;
-{ @end $4B45C4 }
+{ @end $489860 }
 
-{ @routine $4B460C TSpaceCircleGI_Draw }
+{ @routine $489898 TSpaceCircleGI_Draw }
 procedure TSpaceCircleGI.Draw(ClipRect: TRect);
 var Segment: PSpaceCircleSegmentGI; I: Integer;
 begin
@@ -425,9 +423,9 @@ begin
     end;
   end;
 end;
-{ @end $4B460C }
+{ @end $489898 }
 
-{ @routine $4B473C TSpaceCircleGI_CommitFrameDraw }
+{ @routine $48995C TSpaceCircleGI_CommitFrameDraw }
 procedure TSpaceCircleGI.CommitFrameDraw;
 begin
   // Native code retains this empty renderer test before deferred deactivation.
@@ -438,6 +436,6 @@ begin
     DeactivateAfterFrame := False;
   end;
 end;
-{ @end $4B473C }
+{ @end $48995C }
 
 end.

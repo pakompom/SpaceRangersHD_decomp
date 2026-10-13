@@ -1,5 +1,4 @@
 unit GI_Planet;
-// Unit bracket (inferred): .text 0x004A6468..0x004A99EB; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -41,35 +40,35 @@ type
     TextureSize: TPoint; // @offset 0x19C
     AtmosphereTextureSize: TPoint; // @offset 0x1A4
 
-    constructor Create(Owner: TObjectGI); // @addr 0x4A6588
-    destructor Destroy; override; // @addr 0x4A6854
-    procedure Clear; override; // @addr 0x4A6A08 @note "Preserves image caches, atmosphere storage and texture cache."
-    procedure SetImage(const MaskPath, ImagePath, LightMapPath: WideString); // @addr 0x4A6A70 @note "Image width must be a power of two from 16 through 2048; height must not exceed half the width. The light map must cover that height on both axes."
-    procedure SetCloud1Image(const Path: WideString); // @addr 0x4A7194 @note "Requires the same dimensions as the surface map."
-    procedure SetCloud2Image(const Path: WideString); // @addr 0x4A7268 @note "Requires the same dimensions as the surface map."
-    procedure SetCloud3Image(const Path: WideString); // @addr 0x4A733C @note "Requires the same dimensions as the surface map."
-    procedure SetImageWithRadius(const MaskPath, ImagePath, LightMapPath: WideString; Radius: Integer); // @addr 0x4A7410 @note "Uses a diameter of 2*Radius+1. Applies the surface-map dimension checks but omits the light-map size check."
-    procedure SetImageFromTemplate(const TemplateKey, ImagePath: WideString; Radius: Integer); // @addr 0x4A7AB8 @note "Uses a diameter of 2*Radius. Reuses an existing surface image and light buffers; ImagePath is used only when the surface cache key is empty."
-    procedure SetAtmosphere(ImagePath, MaskPath: WideString; Color: Cardinal); // @addr 0x4A7ED0 @note "Appends ?Gray to both paths; Color is 0x00BBGGRR. Zero suppresses atmosphere drawing."
-    procedure BuildAtmospherePalette; // @addr 0x4A8140 @note "Requires space for 256 colors. RGB channels and the alpha ramp are truncated to multiples of eight."
-    procedure RebuildAtmosphereImage; // @addr 0x4A81C0
-    procedure SetSurfaceMapOffset(Value: Integer); // @addr 0x4A847C
-    procedure SetCloud1MapOffset(Value: Integer); // @addr 0x4A84B4
-    procedure SetCloud2MapOffset(Value: Integer); // @addr 0x4A84EC
-    procedure SetCloud3MapOffset(Value: Integer); // @addr 0x4A8524
-    procedure SetLightAngle(Value: Byte); // @addr 0x4A855C @note "A full turn has 256 steps; requires initialized light buffers when the angle changes."
-    procedure LoadFromConfigPath(const Path: WideString); override; // @addr 0x4A8618
-    procedure LoadFromBlock(Block: TBlockParEC); override; // @addr 0x4A87FC
-    procedure Draw(ClipRect: TRect); override; // @addr 0x4A899C @note "The native routine does not release its third cloud layer's cache acquisitions."
-    procedure RenderSurfaceToBuffer(Buffer: TGraphBufGR); // @addr 0x4A97EC @note "Resizes and clears Buffer; excludes clouds and atmosphere."
-    procedure QueueImageLoad(PendingLoads: TList); override; // @addr 0x4A9998 @note "Queues the template, surface, surface palette and light rotation only."
+    constructor Create(Owner: TObjectGI); // @addr 0x004A8A80
+    destructor Destroy; override; // @addr 0x004A8C84
+    procedure Clear; override; // @addr 0x004A8DCC @note "Preserves image caches, atmosphere storage and texture cache."
+    procedure SetImage(const MaskPath, ImagePath, LightMapPath: WideString); // @addr 0x004A8E10 @note "Image width must be a power of two from 16 through 2048; height must not exceed half the width. The light map must cover that height on both axes."
+    procedure SetCloud1Image(const Path: WideString); // @addr 0x004A9454 @note "Requires the same dimensions as the surface map."
+    procedure SetCloud2Image(const Path: WideString); // @addr 0x004A9518 @note "Requires the same dimensions as the surface map."
+    procedure SetCloud3Image(const Path: WideString); // @addr 0x004A95DC @note "Requires the same dimensions as the surface map."
+    procedure SetImageWithRadius(const MaskPath, ImagePath, LightMapPath: WideString; Radius: Integer); // @addr 0x004A96A0 @note "Uses a diameter of 2*Radius+1. Applies the surface-map dimension checks but omits the light-map size check."
+    procedure SetImageFromTemplate(const TemplateKey, ImagePath: WideString; Radius: Integer); // @addr 0x004A9C88 @note "Uses a diameter of 2*Radius. Reuses an existing surface image and light buffers; ImagePath is used only when the surface cache key is empty."
+    procedure SetAtmosphere(ImagePath, MaskPath: WideString; Color: Cardinal); // @addr 0x004AA040 @note "Appends ?Gray to both paths; Color is 0x00BBGGRR. Zero suppresses atmosphere drawing."
+    procedure BuildAtmospherePalette; // @addr 0x004AA2A8 @note "Requires space for 256 colors. RGB channels and the alpha ramp are truncated to multiples of eight."
+    procedure RebuildAtmosphereImage; // @addr 0x004AA300
+    procedure SetSurfaceMapOffset(Value: Integer); // @addr 0x004AA58C
+    procedure SetCloud1MapOffset(Value: Integer); // @addr 0x004AA5AC
+    procedure SetCloud2MapOffset(Value: Integer); // @addr 0x004AA5CC
+    procedure SetCloud3MapOffset(Value: Integer); // @addr 0x004AA5EC
+    procedure SetLightAngle(Value: Byte); // @addr 0x004AA60C @note "A full turn has 256 steps; requires initialized light buffers when the angle changes."
+    procedure LoadFromConfigPath(const Path: WideString); override; // @addr 0x004AA6B8
+    procedure LoadFromBlock(Block: TBlockParEC); override; // @addr 0x004AA888
+    procedure Draw(ClipRect: TRect); override; // @addr 0x004AAA18 @note "The native routine does not release its third cloud layer's cache acquisitions."
+    procedure RenderSurfaceToBuffer(Buffer: TGraphBufGR); // @addr 0x004AB7FC @note "Resizes and clears Buffer; excludes clouds and atmosphere."
+    procedure QueueImageLoad(PendingLoads: TList); override; // @addr 0x004AB984 @note "Queues the template, surface, surface palette and light rotation only."
   end;
 
 implementation
 
 uses SysUtils, EC_Cache, EC_Mem, GR_Main, GI_Main, GlobalsV, Direct3D9;
 
-{ @routine $4A6588 TPlanetGI_Create }
+{ @routine $4A8A80 TPlanetGI_Create }
 constructor TPlanetGI.Create(Owner: TObjectGI);
 begin
   inherited Create(Owner);
@@ -106,9 +105,9 @@ begin
   RenderedMapOffsets[3] := RenderedMapOffsets[0];
   TextureCache := nil;
 end;
-{ @end $4A6588 }
+{ @end $4A8A80 }
 
-{ @routine $4A6854 TPlanetGI_Destroy }
+{ @routine $4A8C84 TPlanetGI_Destroy }
 destructor TPlanetGI.Destroy;
 begin
   TemplateCache.Free;
@@ -146,9 +145,9 @@ begin
   end;
   inherited Destroy;
 end;
-{ @end $4A6854 }
+{ @end $4A8C84 }
 
-{ @routine $4A6A08 TPlanetGI_Clear }
+{ @routine $4A8DCC TPlanetGI_Clear }
 procedure TPlanetGI.Clear;
 begin
   if SourceLightBuffer <> nil then
@@ -164,9 +163,9 @@ begin
   LightAngle := 0;
   inherited Clear;
 end;
-{ @end $4A6A08 }
+{ @end $4A8DCC }
 
-{ @routine $4A6A70 TPlanetGI_SetImage }
+{ @routine $4A8E10 TPlanetGI_SetImage }
 procedure TPlanetGI.SetImage(const MaskPath, ImagePath, LightMapPath: WideString);
 var
   Image: TCPalBitmapEC;
@@ -198,7 +197,7 @@ begin
        (Image.Bitmap.Width <> 1024) and (Image.Bitmap.Width <> 2048) then
       raise Exception.Create('TPlanetGI.SetImage. Error create template planet. LenX<>16 or 32 or 64 or 128 or 256 or 512 or 1024 or 2048');
     MapWidthMask := Image.Bitmap.Width - 1;
-    SetSize(Classes.Point(Image.Bitmap.Height + 1, Image.Bitmap.Height + 1));
+    ObjectSize := Classes.Point(Image.Bitmap.Height + 1, Image.Bitmap.Height + 1);
     TemplateCache.SetCacheKey(MaskPath + '?' + IntToStr(Cardinal(Image.Bitmap.Width)) + ',' + IntToStr(Cardinal(Image.Bitmap.Height)));
     LightControl := TCPalBitmapControlEC.Create;
     GlobalCache.ResetControl(LightControl);
@@ -233,9 +232,9 @@ begin
   LightAngle := 1;
   SetLightAngle(0);
 end;
-{ @end $4A6A70 }
+{ @end $4A8E10 }
 
-{ @routine $4A7194 TPlanetGI_SetCloud1Image }
+{ @routine $4A9454 TPlanetGI_SetCloud1Image }
 procedure TPlanetGI.SetCloud1Image(const Path: WideString);
 var
   Image: TCPalBitmapEC;
@@ -250,9 +249,9 @@ begin
     Cloud1ImageCache.Release;
   end;
 end;
-{ @end $4A7194 }
+{ @end $4A9454 }
 
-{ @routine $4A7268 TPlanetGI_SetCloud2Image }
+{ @routine $4A9518 TPlanetGI_SetCloud2Image }
 procedure TPlanetGI.SetCloud2Image(const Path: WideString);
 var
   Image: TCPalBitmapEC;
@@ -267,9 +266,9 @@ begin
     Cloud2ImageCache.Release;
   end;
 end;
-{ @end $4A7268 }
+{ @end $4A9518 }
 
-{ @routine $4A733C TPlanetGI_SetCloud3Image }
+{ @routine $4A95DC TPlanetGI_SetCloud3Image }
 procedure TPlanetGI.SetCloud3Image(const Path: WideString);
 var
   Image: TCPalBitmapEC;
@@ -284,9 +283,9 @@ begin
     Cloud3ImageCache.Release;
   end;
 end;
-{ @end $4A733C }
+{ @end $4A95DC }
 
-{ @routine $4A7410 TPlanetGI_SetImageWithRadius }
+{ @routine $4A96A0 TPlanetGI_SetImageWithRadius }
 procedure TPlanetGI.SetImageWithRadius(const MaskPath, ImagePath, LightMapPath: WideString; Radius: Integer);
 var
   Image: TCPalBitmapEC;
@@ -318,7 +317,7 @@ begin
        (Image.Bitmap.Width <> 1024) and (Image.Bitmap.Width <> 2048) then
       raise Exception.Create('TPlanetGI.SetImage. Error create template planet. LenX<>16 or 32 or 64 or 128 or 256 or 512 or 1024 or 2048');
     MapWidthMask := Image.Bitmap.Width - 1;
-    SetSize(Classes.Point(Radius * 2 + 1, Radius * 2 + 1));
+    ObjectSize := Classes.Point(Radius * 2 + 1, Radius * 2 + 1);
     TemplateCache.SetCacheKey(MaskPath + '?' + IntToStr(Cardinal(Image.Bitmap.Width)) + ',' + IntToStr(Cardinal(Image.Bitmap.Height)));
     LightControl := TCPalBitmapControlEC.Create;
     GlobalCache.ResetControl(LightControl);
@@ -351,9 +350,9 @@ begin
   LightAngle := 1;
   SetLightAngle(0);
 end;
-{ @end $4A7410 }
+{ @end $4A96A0 }
 
-{ @routine $4A7AB8 TPlanetGI_SetImageFromTemplate }
+{ @routine $4A9C88 TPlanetGI_SetImageFromTemplate }
 procedure TPlanetGI.SetImageFromTemplate(const TemplateKey, ImagePath: WideString; Radius: Integer);
 var
   LightControl: TCPalBitmapControlEC;
@@ -366,7 +365,7 @@ begin
     SurfacePaletteCache.SetCacheKey(ImagePath);
   end;
   TemplateCache.SetCacheKey(TemplateKey);
-  SetSize(Classes.Point(Radius * 2, Radius * 2));
+  ObjectSize := Classes.Point(Radius * 2, Radius * 2);
   if SourceLightBuffer = nil then
   begin
     MapWidthMask := SatelliteTemplateParameter1 - 1;
@@ -399,9 +398,9 @@ begin
     SetLightAngle(0);
   end;
 end;
-{ @end $4A7AB8 }
+{ @end $4A9C88 }
 
-{ @routine $4A7ED0 TPlanetGI_SetAtmosphere }
+{ @routine $4AA040 TPlanetGI_SetAtmosphere }
 procedure TPlanetGI.SetAtmosphere(ImagePath, MaskPath: WideString; Color: Cardinal);
 var
   Image, Mask: TCBitmapEC;
@@ -414,10 +413,10 @@ begin
   try
     Image := AcquireOrCreateBitmap(AtmosphereImageCache);
     Mask := AcquireOrCreateBitmap(AtmosphereMaskCache);
-    AtmosphereRotationCache.SetCacheKey(IntToStr(Cardinal(Mask.Bitmap.Width)) + ',' + IntToStr(Cardinal(Mask.Bitmap.Height)) + ',' +
-      IntToStr(Cardinal(Mask.Bitmap.Width)) + ',' + IntToStr(Cardinal(Mask.Bitmap.Height)) + ',' +
+    AtmosphereRotationCache.SetCacheKey(IntToStr(Mask.Bitmap.Width) + ',' + IntToStr(Mask.Bitmap.Height) + ',' +
+      IntToStr(Mask.Bitmap.Width) + ',' + IntToStr(Mask.Bitmap.Height) + ',' +
       IntToStr(Cardinal(Mask.Bitmap.Width shr 1)) + ',' + IntToStr(Cardinal(Mask.Bitmap.Height shr 1)));
-    SetSize(Classes.Point(Image.Bitmap.Width, Image.Bitmap.Height));
+    ObjectSize := Classes.Point(Image.Bitmap.Width, Image.Bitmap.Height);
     AtmosphereDirty := True;
     AtmospherePaletteDirty := True;
   finally
@@ -425,9 +424,9 @@ begin
     if Mask <> nil then AtmosphereMaskCache.Release;
   end;
 end;
-{ @end $4A7ED0 }
+{ @end $4AA040 }
 
-{ @routine $4A8140 TPlanetGI_BuildAtmospherePalette }
+{ @routine $4AA2A8 TPlanetGI_BuildAtmospherePalette }
 procedure TPlanetGI.BuildAtmospherePalette;
 var
   Index: Integer;
@@ -440,17 +439,17 @@ begin
     Color.G := ((AtmosphereColor shr 8) and $FF) and $F8;
     Color.B := ((AtmosphereColor shr 16) and $FF) and $F8;
     Color.A := Index and $F8;
-    Color := PColorRGBA(PAnsiChar(Color) + SizeOf(TColorRGBA));
+    Inc(Color);
   end;
 end;
-{ @end $4A8140 }
+{ @end $4AA2A8 }
 
-{ @routine $4A81C0 TPlanetGI_RebuildAtmosphereImage }
+{ @routine $4AA300 TPlanetGI_RebuildAtmosphereImage }
 procedure TPlanetGI.RebuildAtmosphereImage;
 var
-  ImagePixels, MaskPixels, DestPixels: Pointer;
+  ImagePixels, MaskPixels, DestPixels: PByte;
   Width: Integer;
-  MulTable: Pointer;
+  MulTable: PByte;
   ImageSkip, MaskSkip, DestSkip, Height: Integer;
   Image, Mask: TCBitmapEC;
   RotatedMask: TGraphBufGR;
@@ -465,7 +464,7 @@ begin
     Mask := AcquireOrCreateBitmap(AtmosphereMaskCache);
     Rotation := AcquireOrCreateRotateBuf(AtmosphereRotationCache);
     RotatedMask := TGraphBufGR.Create(False);
-    if (AtmosphereBuffer.Width <> Image.Bitmap.Width) or (AtmosphereBuffer.Height <> Image.Bitmap.Height) then
+    if (AtmosphereBuffer.Width <> Integer(Image.Bitmap.Width)) or (AtmosphereBuffer.Height <> Integer(Image.Bitmap.Height)) then
     begin
       AtmosphereBuffer.AllocateTight(Image.Bitmap.Width, Image.Bitmap.Height, 256);
       AtmospherePaletteDirty := True;
@@ -478,18 +477,17 @@ begin
     RotatedMask.AllocateGrayscale(Mask.Bitmap.Width + (Mask.Bitmap.Width shr 1), Mask.Bitmap.Height + (Mask.Bitmap.Height shr 1));
     RotatedMask.ClearPixels;
     Ex_OKGR_RotateBuf_Draw_BYTE(RotatedMask.GetPixels, RotatedMask.PitchBytes,
-      Mask.Bitmap.GetPixels, Mask.Bitmap.PitchBytes, RotatedMask.Width shr 1, RotatedMask.Height shr 1, LightAngle, Rotation.Buffer);
+      Mask.Bitmap.GetPixels, Mask.Bitmap.PitchBytes, Integer(RotatedMask.Width) shr 1, Integer(RotatedMask.Height) shr 1, LightAngle, Rotation.Buffer);
     Width := Image.Bitmap.Width;
     Height := Image.Bitmap.Height;
     ImagePixels := Image.Bitmap.GetPixels;
-    MaskPixels := Pointer(PAnsiChar(RotatedMask.GetPixels) + ((RotatedMask.Width shr 1) - (Width shr 1)) +
-      ((RotatedMask.Height shr 1) - (Height shr 1)) * RotatedMask.PitchBytes);
+    MaskPixels := Pointer(PAnsiChar(RotatedMask.GetPixels) + ((Integer(RotatedMask.Width) shr 1) - (Width shr 1)) +
+      ((Integer(RotatedMask.Height) shr 1) - (Height shr 1)) * RotatedMask.PitchBytes);
     DestPixels := AtmosphereBuffer.Pixels;
     ImageSkip := Image.Bitmap.PitchBytes - Width;
     MaskSkip := RotatedMask.PitchBytes - Width;
     DestSkip := AtmosphereBuffer.PitchBytes - Width;
     MulTable := Ex_OKGF_MulTable256x256;
-    { This register-based pixel loop is handwritten assembly in the native routine. }
     asm
       push esi
       push edi
@@ -534,53 +532,45 @@ begin
     if RotatedMask <> nil then RotatedMask.Free;
   end;
 end;
-{ @end $4A81C0 }
+{ @end $4AA300 }
 
-{ @routine $4A847C TPlanetGI_SetSurfaceMapOffset }
+{ @routine $4AA58C TPlanetGI_SetSurfaceMapOffset }
 procedure TPlanetGI.SetSurfaceMapOffset(Value: Integer);
 begin
-  if SurfaceMapOffset <> Value then
-  begin
-    SurfaceMapOffset := Value;
-    Invalidate;
-  end;
+  if SurfaceMapOffset = Value then Exit;
+  SurfaceMapOffset := Value;
+  Invalidate;
 end;
-{ @end $4A847C }
+{ @end $4AA58C }
 
-{ @routine $4A84B4 TPlanetGI_SetCloud1MapOffset }
+{ @routine $4AA5AC TPlanetGI_SetCloud1MapOffset }
 procedure TPlanetGI.SetCloud1MapOffset(Value: Integer);
 begin
-  if Cloud1MapOffset <> Value then
-  begin
-    Cloud1MapOffset := Value;
-    Invalidate;
-  end;
+  if Cloud1MapOffset = Value then Exit;
+  Cloud1MapOffset := Value;
+  Invalidate;
 end;
-{ @end $4A84B4 }
+{ @end $4AA5AC }
 
-{ @routine $4A84EC TPlanetGI_SetCloud2MapOffset }
+{ @routine $4AA5CC TPlanetGI_SetCloud2MapOffset }
 procedure TPlanetGI.SetCloud2MapOffset(Value: Integer);
 begin
-  if Cloud2MapOffset <> Value then
-  begin
-    Cloud2MapOffset := Value;
-    Invalidate;
-  end;
+  if Cloud2MapOffset = Value then Exit;
+  Cloud2MapOffset := Value;
+  Invalidate;
 end;
-{ @end $4A84EC }
+{ @end $4AA5CC }
 
-{ @routine $4A8524 TPlanetGI_SetCloud3MapOffset }
+{ @routine $4AA5EC TPlanetGI_SetCloud3MapOffset }
 procedure TPlanetGI.SetCloud3MapOffset(Value: Integer);
 begin
-  if Cloud3MapOffset <> Value then
-  begin
-    Cloud3MapOffset := Value;
-    Invalidate;
-  end;
+  if Cloud3MapOffset = Value then Exit;
+  Cloud3MapOffset := Value;
+  Invalidate;
 end;
-{ @end $4A8524 }
+{ @end $4AA5EC }
 
-{ @routine $4A855C TPlanetGI_SetLightAngle }
+{ @routine $4AA60C TPlanetGI_SetLightAngle }
 procedure TPlanetGI.SetLightAngle(Value: Byte);
 var
   Rotation: TCRotateBufEC;
@@ -599,9 +589,9 @@ begin
     Invalidate;
   end;
 end;
-{ @end $4A855C }
+{ @end $4AA60C }
 
-{ @routine $4A8618 TPlanetGI_LoadFromConfigPath }
+{ @routine $4AA6B8 TPlanetGI_LoadFromConfigPath }
 procedure TPlanetGI.LoadFromConfigPath(const Path: WideString);
 var
   Block: TBlockParEC;
@@ -613,9 +603,9 @@ begin
   if Block.CountParams('SmeMap') > 0 then SurfaceMapOffset := StrToInt(Block.GetParam('SmeMap'));
   if Block.CountParams('AngleLight') > 0 then LightAngle := StrToInt(Block.GetParam('AngleLight'));
 end;
-{ @end $4A8618 }
+{ @end $4AA6B8 }
 
-{ @routine $4A87FC TPlanetGI_LoadFromBlock }
+{ @routine $4AA888 TPlanetGI_LoadFromBlock }
 procedure TPlanetGI.LoadFromBlock(Block: TBlockParEC);
 begin
   inherited LoadFromBlock(Block);
@@ -623,9 +613,9 @@ begin
   if Block.CountParams('SmeMap') > 0 then SurfaceMapOffset := StrToInt(Block.GetParam('SmeMap'));
   if Block.CountParams('AngleLight') > 0 then LightAngle := StrToInt(Block.GetParam('AngleLight'));
 end;
-{ @end $4A87FC }
+{ @end $4AA888 }
 
-{ @routine $4A899C TPlanetGI_Draw }
+{ @routine $4AAA18 TPlanetGI_Draw }
 procedure TPlanetGI.Draw(ClipRect: TRect);
 var
   Image, Cloud1, Cloud2, Cloud3: TCPalBitmapEC;
@@ -636,7 +626,7 @@ var
   Index: Integer;
   Texture: IDirect3DTexture9;
   // Native frame retains eight unused bytes; their original types are unknown.
-  UnusedLocals: array[0..7] of Byte;
+  UnusedLocals: array[0..1] of Cardinal;
 begin
   HasCloud1 := Cloud1ImageCache.CacheKey <> '';
   HasCloud2 := Cloud2ImageCache.CacheKey <> '';
@@ -826,9 +816,9 @@ begin
     { Native code omits the third cloud layer's two releases. }
   end;
 end;
-{ @end $4A899C }
+{ @end $4AAA18 }
 
-{ @routine $4A97EC TPlanetGI_RenderSurfaceToBuffer }
+{ @routine $4AB7FC TPlanetGI_RenderSurfaceToBuffer }
 procedure TPlanetGI.RenderSurfaceToBuffer(Buffer: TGraphBufGR);
 var
   Image: TCPalBitmapEC;
@@ -858,9 +848,9 @@ begin
     if Palette <> nil then SurfacePaletteCache.Release;
   end;
 end;
-{ @end $4A97EC }
+{ @end $4AB7FC }
 
-{ @routine $4A9998 TPlanetGI_QueueImageLoad }
+{ @routine $4AB984 TPlanetGI_QueueImageLoad }
 procedure TPlanetGI.QueueImageLoad(PendingLoads: TList);
 begin
   TemplateCache.QueueLoadIfMissing(PendingLoads);
@@ -868,6 +858,6 @@ begin
   SurfacePaletteCache.QueueLoadIfMissing(PendingLoads);
   LightRotationCache.QueueLoadIfMissing(PendingLoads);
 end;
-{ @end $4A9998 }
+{ @end $4AB984 }
 
 end.

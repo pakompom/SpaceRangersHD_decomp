@@ -1,5 +1,4 @@
 unit aTranclucator;
-// Unit bracket (inferred): .text 0x0065C5FC..0x0065FF2D; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -24,78 +23,76 @@ type
     CollectionPermissions: array[TTranclucatorCollectionKind] of Boolean; // @offset $4E0 Script.SeekPermitNone through SeekPermitNode.
     StoragePermissions: array[TTranclucatorStorageKind] of Boolean; // @offset $4E7 Planet and station storage switches.
 
-    procedure StoreUnequippedCargoAt(Location: TObject); // @addr $65DC90
-    function UnloadCargoForPlayerOwner: Boolean; // @addr $65DE1C
-    function TryLandForStorage: Boolean; // @addr $65DEE4
-    function ConvertToStoredArtefact: Boolean; // @addr $65E0D0
-    procedure UpdateFreeFlightOrder; // @addr $65E300
-    procedure EquipEssentialInventory; // @addr $65E748
-    procedure Init(AOwnerShip: TShip; Faction: TOwnerId; BasicEquipment: Boolean); // @addr $65CA28
-    procedure SaveToBuffer(Buffer: TBufEC); override; // @addr $65CEC0 @slot 0x00
-    procedure LoadFromBuffer(Buffer: TBufEC; Galaxy: TGalaxy); override; // @addr $65D088 @slot 0x04
-    procedure ResolveLoadedReferences(Galaxy: TGalaxy); override; // @addr $65D24C @slot 0x08
-    procedure ClearObjectReferences; override; // @addr $65D290 @slot 0x0C
-    function GetGreetingShipCategory: TGreetingShipCategory; override; // @addr $65D94C @slot 0x30
-    function GetHomeStar: TStar; override; // @addr $65D974 @slot 0x34
-    function GetStrengthScaledPirateStatus: TPercent; override; // @addr $65D98C @slot 0x3C
-    procedure RepairBrokenEquipmentAtLocation; override; // @addr $65DA40 @slot 0x60
-    procedure BuildReachablePlanetQueue; override; // @addr $65E468 @slot 0x64
-    procedure SelectEnemyShipInStar; override; // @addr $65EE68 @slot 0x6C
-    procedure EngageEnemyShip; override; // @addr $65EE80 @slot 0x70
-    function RelationToNonRanger(Ship: TShip): Byte; override; // @addr $65EE8C @slot 0x80
-    function RelationToRanger(Ranger: Pointer): Byte; override; // @addr $65EEB8 @slot 0x74
-    procedure ChangeRelationToRanger(Ranger: Pointer; Amount: Integer); override; // @addr $65EED0 @slot 0x78
-    procedure ReactToAttack(Attacker: TShip); override; // @addr $65EEE4 @slot 0x7C
-    function RecomputeFearState: Boolean; override; // @addr $65EF40 @slot 0x84
-    function AcceptsRansomDemandFrom(Ship: TShip): Boolean; override; // @addr $65EF54 @slot 0x88
-    function TrustsAttackRequester(Ship: TShip): Boolean; override; // @addr $65EF6C @slot 0x8C
-    function AcceptsAppealFrom(Ship: TShip): Boolean; override; // @addr $65EF90 @slot 0x90
-    procedure ProcessCombatDialogue; override; // @addr $65EFB4 @slot 0xA0
-    procedure ReactToExtortionDemand(Ranger: Pointer); override; // @addr $65EFC0 @slot 0xA4
-    function BuildMoneyExtortionResponse(OtherShip: TShip; var Response: WideString; DemandedAmount: Integer): Boolean; override; // @addr $65EFD0 @slot 0xA8
-    function BuildCargoExtortionResponse(OtherShip: TShip; var Response: WideString): Boolean; override; // @addr $65F028 @slot 0xAC
-    function BuildTrucePaymentResponse(OtherShip: TShip; var Response: WideString; OfferedAmount: Integer): Boolean; override; // @addr $65F07C @slot 0xB0
-    function BuildAttackRequestResponse(Requester: TShip; var Response: WideString; Target: TShip): Boolean; override; // @addr $65F0D4 @slot 0xB4
-    function AcceptPartnershipOffer(OtherShip: TShip; var Response: WideString; PaymentAmount: Integer): Boolean; override; // @addr $65F1A0 @slot 0xB8
-    function BuildPartnershipOfferResponse(OtherShip: TShip; var Response: WideString; PaymentAmount: Integer): Boolean; override; // @addr $65F1F0 @slot 0xBC
-    procedure RefreshCurrentStanding; override; // @addr $65F240 @slot 0xC4
-    procedure AssignWeaponTargetsInStar; override; // @addr $65E8A0 @slot 0x20
-    function EvaluateStatBonus(BonusKind: TEquipmentBonusKind; Value: Integer): Single; override; // @addr $65F378 @slot 0x54
+    procedure StoreUnequippedCargoAt(Location: TObject); // @addr $5B9468
+    function UnloadCargoForPlayerOwner: Boolean; // @addr $5B9598
+    function TryLandForStorage: Boolean; // @addr $5B962C
+    function ConvertToStoredArtefact: Boolean; // @addr $5B97DC
+    procedure UpdateFreeFlightOrder; // @addr $5B998C
+    procedure EquipEssentialInventory; // @addr $5B9CE4
+    procedure Init(AOwnerShip: TShip; Faction: TOwnerId; BasicEquipment: Boolean); // @addr $5B8424
+    procedure SaveToBuffer(Buffer: TBufEC); override; // @addr $5B887C @slot 0x00
+    procedure LoadFromBuffer(Buffer: TBufEC; Galaxy: TGalaxy); override; // @addr $5B89E8 @slot 0x04
+    procedure ResolveLoadedReferences(Galaxy: TGalaxy); override; // @addr $5B8B7C @slot 0x08
+    procedure ClearObjectReferences; override; // @addr $5B8BB0 @slot 0x0C
+    function GetGreetingShipCategory: TGreetingShipCategory; override; // @addr $5B9218 @slot 0x30
+    function GetHomeStar: TStar; override; // @addr $5B9220 @slot 0x34
+    function GetStrengthScaledPirateStatus: TPercent; override; // @addr $5B9224 @slot 0x3C
+    procedure RepairBrokenEquipmentAtLocation; override; // @addr $5B928C @slot 0x60
+    procedure BuildReachablePlanetQueue; override; // @addr $5B9A6C @slot 0x64
+    procedure SelectEnemyShipInStar; override; // @addr $5BA2CC @slot 0x6C
+    procedure EngageEnemyShip; override; // @addr $5BA2D8 @slot 0x70
+    function RelationToNonRanger(Ship: TShip): Byte; override; // @addr $5BA2DC @slot 0x80
+    function RelationToRanger(Ranger: Pointer): Byte; override; // @addr $5BA2F0 @slot 0x74
+    procedure ChangeRelationToRanger(Ranger: Pointer; Amount: Integer); override; // @addr $5BA2F4 @slot 0x78
+    procedure ReactToAttack(Attacker: TShip); override; // @addr $5BA2F8 @slot 0x7C
+    function RecomputeFearState: Boolean; override; // @addr $5BA334 @slot 0x84
+    function AcceptsRansomDemandFrom(Ship: TShip): Boolean; override; // @addr $5BA338 @slot 0x88
+    function TrustsAttackRequester(Ship: TShip): Boolean; override; // @addr $5BA33C @slot 0x8C
+    function AcceptsAppealFrom(Ship: TShip): Boolean; override; // @addr $5BA348 @slot 0x90
+    procedure ProcessCombatDialogue; override; // @addr $5BA354 @slot 0xA0
+    procedure ReactToExtortionDemand(Ranger: Pointer); override; // @addr $5BA358 @slot 0xA4
+    function BuildMoneyExtortionResponse(OtherShip: TShip; var Response: WideString; DemandedAmount: Integer): Boolean; override; // @addr $5BA35C @slot 0xA8
+    function BuildCargoExtortionResponse(OtherShip: TShip; var Response: WideString): Boolean; override; // @addr $5BA3A8 @slot 0xAC
+    function BuildTrucePaymentResponse(OtherShip: TShip; var Response: WideString; OfferedAmount: Integer): Boolean; override; // @addr $5BA3EC @slot 0xB0
+    function BuildAttackRequestResponse(Requester: TShip; var Response: WideString; Target: TShip): Boolean; override; // @addr $5BA438 @slot 0xB4
+    function AcceptPartnershipOffer(OtherShip: TShip; var Response: WideString; PaymentAmount: Integer): Boolean; override; // @addr $5BA4FC @slot 0xB8
+    function BuildPartnershipOfferResponse(OtherShip: TShip; var Response: WideString; PaymentAmount: Integer): Boolean; override; // @addr $5BA540 @slot 0xBC
+    procedure RefreshCurrentStanding; override; // @addr $5BA584 @slot 0xC4
+    procedure AssignWeaponTargetsInStar; override; // @addr $5B9E14 @slot 0x20
+    function EvaluateStatBonus(BonusKind: TEquipmentBonusKind; Value: Integer): Single; override; // @addr $5BA66C @slot 0x54
 
-    function GetDominantCareer: TRangerCareer; override; // @addr 0x65D960 @slot 0x38 @note "Always rcWarrior."
-    function GetName: WideString; override; // @addr 0x65D70C @slot 0x24
-    function GetFullName(const Separator: WideString): WideString; override; // @addr 0x65D738 @slot 0x28 @calls "0x65D726"
+    function GetDominantCareer: TRangerCareer; override; // @addr 0x005B921C @slot 0x38 @note "Always rcWarrior."
+    function GetName: WideString; override; // @addr 0x005B9004 @slot 0x24
+    function GetFullName(const Separator: WideString): WideString; override; // @addr 0x005B9024 @slot 0x28
 
-    procedure NextDayLogic; override; // @addr 0x65D318 @slot 0x1C @calls "0x65D2F0"
-    function TryCollectPreferredFloatingLoot(MaxTravelDays: Integer): Boolean; // @addr 0x65E48C @note "Returns whether a move order is active; nearby pickups can be queued even when the result is false."
+    procedure NextDayLogic; override; // @addr 0x005B8C14 @slot 0x1C
+    function TryCollectPreferredFloatingLoot(MaxTravelDays: Integer): Boolean; // @addr 0x005B9A74 @note "Returns whether a move order is active; nearby pickups can be queued even when the result is false."
 
-    procedure NextDay; override; // @addr 0x65D2B0 @slot 0x18
-    constructor Create; // @addr 0x65C738
-    destructor Destroy; override; // @addr 0x65C7A8
-    procedure ClearCollectionPermissions; // @addr 0x65C7DC
-    procedure SetCollectionPermission(Kind: TTranclucatorCollectionKind; Enabled: Boolean); // @addr 0x65C808
-    function GetCollectionPermission(Kind: TTranclucatorCollectionKind): Boolean; // @addr 0x65C830
-    procedure ResetStoragePermissions; // @addr 0x65C858 @note "Enables planets and disables stations."
-    procedure SetStoragePermission(Kind: TTranclucatorStorageKind; Enabled: Boolean); // @addr 0x65C894
-    function GetStoragePermission(Kind: TTranclucatorStorageKind): Boolean; // @addr 0x65C8CC @note "Unknown kinds return false."
-    procedure TransferUnequippedCargo(Destination: TShip); // @addr 0x65DB34 @note "Moves unequipped inventory and artefacts plus all goods; refreshes Self and the destination player's storage bubbles."
-    function CanFollowOwnerInCurrentStar: Boolean; // @addr 0x65D9B8 @note "Checks FollowOwner, owner presence, shared star and owner hyperspace state; does not require docking."
-    function GetDesiredCargoFreeSpace: Integer; override; // @addr 0x65D9A0 @slot 0x40
-    procedure RefuelAtLocation; override; // @addr 0x65DA10 @slot 0x48 @note "Fills installed fuel tanks without charging Money."
-    function CanQueueReachablePlanet(Planet: TPlanet): Boolean; override; // @addr 0x65E474 @slot 0x68
+    procedure NextDay; override; // @addr 0x005B8BC0 @slot 0x18
+    constructor Create; // @addr 0x005B8214
+    destructor Destroy; override; // @addr 0x005B8270
+    procedure ClearCollectionPermissions; // @addr 0x005B8298
+    procedure SetCollectionPermission(Kind: TTranclucatorCollectionKind; Enabled: Boolean); // @addr 0x005B82AC
+    function GetCollectionPermission(Kind: TTranclucatorCollectionKind): Boolean; // @addr 0x005B82B8
+    procedure ResetStoragePermissions; // @addr 0x005B82C4 @note "Enables planets and disables stations."
+    procedure SetStoragePermission(Kind: TTranclucatorStorageKind; Enabled: Boolean); // @addr 0x005B82E4
+    function GetStoragePermission(Kind: TTranclucatorStorageKind): Boolean; // @addr 0x005B82FC @note "Unknown kinds return false."
+    procedure TransferUnequippedCargo(Destination: TShip); // @addr 0x005B935C @note "Moves unequipped inventory and artefacts plus all goods; refreshes Self and the destination player's storage bubbles."
+    function CanFollowOwnerInCurrentStar: Boolean; // @addr 0x005B922C @note "Checks FollowOwner, owner presence, shared star and owner hyperspace state; does not require docking."
+    function GetDesiredCargoFreeSpace: Integer; override; // @addr 0x005B9228 @slot 0x40
+    procedure RefuelAtLocation; override; // @addr 0x005B9264 @slot 0x48 @note "Fills installed fuel tanks without charging Money."
+    function CanQueueReachablePlanet(Planet: TPlanet): Boolean; override; // @addr 0x005B9A70 @slot 0x68
   end;
 
 var
-  TranclucatorSkillBonusWeights: array[bonSkill1..bonSkill6] of Integer = (100, 100, 80, 80, 60, 60); // @addr $87BE78
-  // The $65F3AE dispatch table confines these reads to BonusKind=13..20.
-  // Each reloads the unchanged byte at EBP-5; $87BE10 is the base biased by -13*4.
-  TranclucatorSlotBonusWeights: array[bonSlotRadar..bonSlotForsage] of Integer = (100, 100, 200, 100, 200, 75, 10, 30); // @addr $87BE90 @indexrefs "$65F731,$65F771,$65F7B1,$65F7E2,$65F83E,$65F87E,$65F8AF,$65F8DE,$65F91C,$65F94D,$65F97C,$65F9BA,$65F9EB,$65FA1A,$65FA58,$65FAB4,$65FAFE,$65FB95,$65FC0F,$65FC6B,$65FD07,$65FD37"
+  TranclucatorSkillBonusWeights: array[bonSkill1..bonSkill6] of Integer = (100, 100, 80, 80, 60, 60); // @addr $80F520
+  TranclucatorSlotBonusWeights: array[bonSlotRadar..bonSlotForsage] of Integer = (100, 100, 200, 100, 200, 75, 10, 30); // @addr $80F538 @indexrefs "0x005BAA01,0x005BAA3B,0x005BAA72,0x005BAA9E,0x005BAAF0,0x005BAB27,0x005BAB53,0x005BAB7D,0x005BABB2,0x005BABDE,0x005BAC08,0x005BAC3D,0x005BAC69,0x005BAC93,0x005BACC8,0x005BAD0D,0x005BAD3B,0x005BADAC,0x005BADFF,0x005BAE2D,0x005BAE90,0x005BAEBB"
 
 implementation
 
 uses Classes, SysUtils, Math, GR_Main, GlobalsV, aConst, aMyFunction, aItem, aPlayer, aRuins, aScript, aAsteroid;
 
-{ @routine $65C738 TTranclucator_Create }
+{ @routine $5B8214 TTranclucator_Create }
 constructor TTranclucator.Create;
 begin
   inherited Create;
@@ -105,48 +102,48 @@ begin
   StoreOnLanding := False;
   ArtefactSize := 0;
 end;
-{ @end $65C738 }
+{ @end $5B8214 }
 
-{ @routine $65C7A8 TTranclucator_Destroy }
+{ @routine $5B8270 TTranclucator_Destroy }
 destructor TTranclucator.Destroy;
 begin
   inherited Destroy;
 end;
-{ @end $65C7A8 }
+{ @end $5B8270 }
 
-{ @routine $65C7DC TTranclucator_ClearCollectionPermissions }
+{ @routine $5B8298 TTranclucator_ClearCollectionPermissions }
 procedure TTranclucator.ClearCollectionPermissions;
 var Kind: TTranclucatorCollectionKind;
 begin
   for Kind := Low(TTranclucatorCollectionKind) to High(TTranclucatorCollectionKind) do
     CollectionPermissions[Kind] := False;
 end;
-{ @end $65C7DC }
+{ @end $5B8298 }
 
-{ @routine $65C808 TTranclucator_SetCollectionPermission }
+{ @routine $5B82AC TTranclucator_SetCollectionPermission }
 procedure TTranclucator.SetCollectionPermission(Kind: TTranclucatorCollectionKind; Enabled: Boolean);
 begin
   CollectionPermissions[Kind] := Enabled;
 end;
-{ @end $65C808 }
+{ @end $5B82AC }
 
-{ @routine $65C830 TTranclucator_GetCollectionPermission }
+{ @routine $5B82B8 TTranclucator_GetCollectionPermission }
 function TTranclucator.GetCollectionPermission(Kind: TTranclucatorCollectionKind): Boolean;
 begin
   Result := CollectionPermissions[Kind];
 end;
-{ @end $65C830 }
+{ @end $5B82B8 }
 
-{ @routine $65C858 TTranclucator_ResetStoragePermissions }
+{ @routine $5B82C4 TTranclucator_ResetStoragePermissions }
 procedure TTranclucator.ResetStoragePermissions;
 var Kind: TTranclucatorStorageKind;
 begin
   for Kind := Low(TTranclucatorStorageKind) to High(TTranclucatorStorageKind) do StoragePermissions[Kind] := False;
   SetStoragePermission(tskPlanet, True);
 end;
-{ @end $65C858 }
+{ @end $5B82C4 }
 
-{ @routine $65C894 TTranclucator_SetStoragePermission }
+{ @routine $5B82E4 TTranclucator_SetStoragePermission }
 procedure TTranclucator.SetStoragePermission(Kind: TTranclucatorStorageKind; Enabled: Boolean);
 begin
   case Kind of
@@ -154,9 +151,9 @@ begin
     tskStation: StoragePermissions[tskStation] := Enabled;
   end;
 end;
-{ @end $65C894 }
+{ @end $5B82E4 }
 
-{ @routine $65C8CC TTranclucator_GetStoragePermission }
+{ @routine $5B82FC TTranclucator_GetStoragePermission }
 function TTranclucator.GetStoragePermission(Kind: TTranclucatorStorageKind): Boolean;
 begin
   Result := False;
@@ -165,28 +162,28 @@ begin
     tskStation: Result := StoragePermissions[tskStation];
   end;
 end;
-{ @end $65C8CC }
+{ @end $5B82FC }
 
-{ @routine $65CA28 TTranclucator_Init }
+{ @routine $5B8424 TTranclucator_Init }
 procedure TTranclucator.Init(AOwnerShip: TShip; Faction: TOwnerId; BasicEquipment: Boolean);
 var
   WeaponType: TItemType;
   MaximumHullSize: Integer;
 
-  // @nested $65C908 RandomHullLevel
-  function RandomHullLevel: Integer; // @addr $65C908 @calls "0x65CC45"
+  // @nested $5B831C RandomHullLevel
+  function RandomHullLevel: Integer; // @addr $5B831C @calls "0x005B8617"
   begin
     Result := NextRandomIntRange(1, Round(RemapClamped(Galaxy.TechLevel, 3, 8, 1, 8)), RandomState);
   end;
 
-  // @nested $65C974 RandomEquipmentLevel
-  function RandomEquipmentLevel: Integer; // @addr $65C974 @calls "0x65CC5E 0x65CC9C 0x65CCC4 0x65CCEC"
+  // @nested $5B837C RandomEquipmentLevel
+  function RandomEquipmentLevel: Integer; // @addr $5B837C @calls "0x005B862F,0x005B866B,0x005B8692,0x005B86B9"
   begin
     Result := NextRandomIntRange(1, Round(RemapClamped(Galaxy.TechLevel, 3, 8, 1, 4)), RandomState);
   end;
 
-  // @nested $65C9E0 RandomEquipmentSize
-  function RandomEquipmentSize(BaseSize: Integer): Integer; // @addr $65C9E0 @calls "0x65CB63 0x65CBB2 0x65CC6D 0x65CCAB 0x65CCD3 0x65CCFB 0x65CD49"
+  // @nested $5B83DC RandomEquipmentSize
+  function RandomEquipmentSize(BaseSize: Integer): Integer; // @addr $5B83DC @calls "0x005B853E,0x005B8589,0x005B863E,0x005B867A,0x005B86A1,0x005B86C8,0x005B8712"
   begin
     Result := NextRandomIntRange(Round(BaseSize * EquipmentSizeFactors[3]),
       Round(BaseSize * EquipmentSizeFactors[4]), RandomState);
@@ -242,9 +239,9 @@ begin
   RefreshDerivedStats(True);
   RefreshCurrentStanding;
 end;
-{ @end $65CA28 }
+{ @end $5B8424 }
 
-{ @routine $65CEC0 TTranclucator_SaveToBuffer }
+{ @routine $5B887C TTranclucator_SaveToBuffer }
 procedure TTranclucator.SaveToBuffer(Buffer: TBufEC);
 var Kind: TTranclucatorCollectionKind;
     StorageKind: TTranclucatorStorageKind;
@@ -266,17 +263,17 @@ begin
   for StorageKind := Low(TTranclucatorStorageKind) to High(TTranclucatorStorageKind) do Buffer.AddBoolean(StoragePermissions[StorageKind]);
   Buffer.AddBoolean(StoreOnLanding);
 end;
-{ @end $65CEC0 }
+{ @end $5B887C }
 
-{ @routine $65D088 TTranclucator_LoadFromBuffer }
+{ @routine $5B89E8 TTranclucator_LoadFromBuffer }
 procedure TTranclucator.LoadFromBuffer(Buffer: TBufEC; Galaxy: TGalaxy);
 var
   I, OldItemCount: Integer;
   Kind: TTranclucatorCollectionKind;
   StorageKind: TTranclucatorStorageKind;
 
-  // @nested $65CFE0 ReadOldPermission
-  procedure ReadOldPermission(ItemType: TItemType); // @addr $65CFE0 @calls "0x65D1E3"
+  // @nested $5B8958 ReadOldPermission
+  procedure ReadOldPermission(ItemType: TItemType); // @addr $5B8958 @calls "0x005B8B21"
   var Enabled: Boolean;
   begin
     Enabled := Buffer.GetBoolean;
@@ -298,7 +295,8 @@ begin
   AutoArrange := Buffer.GetBoolean;
   ArtefactSize := Buffer.GetInt32;
   if LoadedSaveVersion < 129 then Buffer.GetByte;
-  if (LoadedSaveVersion >= 86) and Buffer.GetBoolean then ArtefactSystemName := Buffer.ReadWideString;
+  if (LoadedSaveVersion >= 86) then
+    if Buffer.GetBoolean then ArtefactSystemName := Buffer.ReadWideString;
   if LoadedSaveVersion >= 131 then
     for Kind := Low(TTranclucatorCollectionKind) to High(TTranclucatorCollectionKind) do
       CollectionPermissions[Kind] := Buffer.GetBoolean
@@ -313,25 +311,25 @@ begin
   for StorageKind := Low(TTranclucatorStorageKind) to High(TTranclucatorStorageKind) do StoragePermissions[StorageKind] := Buffer.GetBoolean;
   StoreOnLanding := Buffer.GetBoolean;
 end;
-{ @end $65D088 }
+{ @end $5B89E8 }
 
-{ @routine $65D24C TTranclucator_ResolveLoadedReferences }
+{ @routine $5B8B7C TTranclucator_ResolveLoadedReferences }
 procedure TTranclucator.ResolveLoadedReferences(Galaxy: TGalaxy);
 begin
-  OwnerShip := TObject(Galaxy.IdToShip(Integer(OwnerShip), True)) as TShip;
+  OwnerShip := Galaxy.IdToShip(Integer(OwnerShip), True) as TShip;
   inherited ResolveLoadedReferences(Galaxy);
 end;
-{ @end $65D24C }
+{ @end $5B8B7C }
 
-{ @routine $65D290 TTranclucator_ClearObjectReferences }
+{ @routine $5B8BB0 TTranclucator_ClearObjectReferences }
 procedure TTranclucator.ClearObjectReferences;
 begin
   OwnerShip := nil;
   inherited ClearObjectReferences;
 end;
-{ @end $65D290 }
+{ @end $5B8BB0 }
 
-{ @routine $65D2B0 TTranclucator_NextDay }
+{ @routine $5B8BC0 TTranclucator_NextDay }
 procedure TTranclucator.NextDay;
 begin
   inherited NextDay;
@@ -343,9 +341,9 @@ begin
   NextDayLogic;
   if (ScriptShip <> nil) and not HasScriptControl then ScriptNextDay;
 end;
-{ @end $65D2B0 }
+{ @end $5B8BC0 }
 
-{ @routine $65D318 TTranclucator_NextDayLogic }
+{ @routine $5B8C14 TTranclucator_NextDayLogic }
 procedure TTranclucator.NextDayLogic;
 var Stage: Integer;
 begin
@@ -412,21 +410,21 @@ begin
     end;
   end;
 end;
-{ @end $65D318 }
+{ @end $5B8C14 }
 
-{ @routine $65D70C TTranclucator_GetName }
+{ @routine $5B9004 TTranclucator_GetName }
 function TTranclucator.GetName: WideString;
 begin
   Result := GetFullName(' ');
 end;
-{ @end $65D70C }
+{ @end $5B9004 }
 
-{ @routine $65D738 TTranclucator_GetFullName }
+{ @routine $5B9024 TTranclucator_GetFullName }
 function TTranclucator.GetFullName(const Separator: WideString): WideString;
 var Path, DisplayName, TypeName: WideString;
 begin
   if Name <> '' then DisplayName := Name
-  else DisplayName := LookupLocalizedTextByKey('Artefacts.ArtTranclucator.Name') + '-' + WideString(IntToStr(Cardinal(Id)));
+  else DisplayName := LookupLocalizedTextByKey('Artefacts.ArtTranclucator.Name') + '-' + WideString(IntToStr(Id));
   if TypeNameOverrideKey = '' then Result := DisplayName
   else
   begin
@@ -437,58 +435,58 @@ begin
     else Result := Name;
   end;
 end;
-{ @end $65D738 }
+{ @end $5B9024 }
 
-{ @routine $65D94C TTranclucator_GetGreetingShipCategory }
+{ @routine $5B9218 TTranclucator_GetGreetingShipCategory }
 function TTranclucator.GetGreetingShipCategory: TGreetingShipCategory;
 begin
   Result := gscTransport; // Native default category, also used for transports.
 end;
-{ @end $65D94C }
+{ @end $5B9218 }
 
-{ @routine $65D960 TTranclucator_GetDominantCareer }
+{ @routine $5B921C TTranclucator_GetDominantCareer }
 function TTranclucator.GetDominantCareer: TRangerCareer;
 begin
   Result := rcWarrior;
 end;
-{ @end $65D960 }
+{ @end $5B921C }
 
-{ @routine $65D974 TTranclucator_GetHomeStar }
+{ @routine $5B9220 TTranclucator_GetHomeStar }
 function TTranclucator.GetHomeStar: TStar;
 begin
   Result := nil;
 end;
-{ @end $65D974 }
+{ @end $5B9220 }
 
-{ @routine $65D98C TTranclucator_GetStrengthScaledPirateStatus }
+{ @routine $5B9224 TTranclucator_GetStrengthScaledPirateStatus }
 function TTranclucator.GetStrengthScaledPirateStatus: TPercent;
 begin
   Result := 100;
 end;
-{ @end $65D98C }
+{ @end $5B9224 }
 
-{ @routine $65D9A0 TTranclucator_GetDesiredCargoFreeSpace }
+{ @routine $5B9228 TTranclucator_GetDesiredCargoFreeSpace }
 function TTranclucator.GetDesiredCargoFreeSpace: Integer;
 begin
   Result := 0;
 end;
-{ @end $65D9A0 }
+{ @end $5B9228 }
 
-{ @routine $65D9B8 TTranclucator_CanFollowOwnerInCurrentStar }
+{ @routine $5B922C TTranclucator_CanFollowOwnerInCurrentStar }
 function TTranclucator.CanFollowOwnerInCurrentStar: Boolean;
 begin
   Result := FollowOwner and (OwnerShip <> nil) and (OwnerShip.CurrentStar = CurrentStar) and not OwnerShip.InHyperspace;
 end;
-{ @end $65D9B8 }
+{ @end $5B922C }
 
-{ @routine $65DA10 TTranclucator_RefuelAtLocation }
+{ @routine $5B9264 TTranclucator_RefuelAtLocation }
 procedure TTranclucator.RefuelAtLocation;
 begin
   if GetFuelTanks <> nil then GetFuelTanks.Fuel := GetFuelTanks.Capacity;
 end;
-{ @end $65DA10 }
+{ @end $5B9264 }
 
-{ @routine $65DA40 TTranclucator_RepairBrokenEquipmentAtLocation }
+{ @routine $5B928C TTranclucator_RepairBrokenEquipmentAtLocation }
 procedure TTranclucator.RepairBrokenEquipmentAtLocation;
 begin
   if (GetEngine <> nil) and ((GetEngine.BrokenFlag <> 0) or (GetEngine.ConditionPercent < 1)) then
@@ -502,9 +500,9 @@ begin
     GetFuelTanks.BrokenFlag := 0;
   end;
 end;
-{ @end $65DA40 }
+{ @end $5B928C }
 
-{ @routine $65DB34 TTranclucator_TransferUnequippedCargo }
+{ @routine $5B935C TTranclucator_TransferUnequippedCargo }
 procedure TTranclucator.TransferUnequippedCargo(Destination: TShip);
 var
   I: Integer;
@@ -512,8 +510,8 @@ var
   Artefact: TArtefact;
   Good: Byte;
 
-  // @nested $65DAF0 AddGoods
-  procedure AddGoods(Good: Byte; Quantity, Cost: Integer); // @addr $65DAF0 @note "Nested helper; caller-popped static link, destination at ParentFrame-4."
+  // @nested $5B9330 AddGoods
+  procedure AddGoods(Good: Byte; Quantity, Cost: Integer); // @addr $5B9330 @note "Nested helper; caller-popped static link, destination at ParentFrame-4."
   begin
     if Quantity > 0 then
     begin
@@ -525,14 +523,14 @@ var
 begin
   for I := Inventory.Count - 1 downto 0 do
   begin
-    Item := TEquipment(Inventory[I]);
+    Item := Inventory[I];
     if Item.EquippedFlag <> 0 then Continue;
     Inventory.Delete(Inventory.IndexOf(Item));
     Destination.Inventory.Add(Item);
   end;
   for I := Artefacts.Count - 1 downto 0 do
   begin
-    Artefact := TArtefact(Artefacts[I]);
+    Artefact := Artefacts[I];
     if Artefact.EquippedFlag <> 0 then Continue;
     Artefacts.Delete(Artefacts.IndexOf(Artefact));
     Destination.Artefacts.Add(Artefact);
@@ -549,9 +547,9 @@ begin
   RefreshDerivedStats(True);
   if GetPlayer = Destination then GetPlayer.RefreshStorageBubbles;
 end;
-{ @end $65DB34 }
+{ @end $5B935C }
 
-{ @routine $65DC90 TTranclucator_StoreUnequippedCargoAt }
+{ @routine $5B9468 TTranclucator_StoreUnequippedCargoAt }
 procedure TTranclucator.StoreUnequippedCargoAt(Location: TObject);
 var Good: Byte;
     I: Integer;
@@ -562,14 +560,14 @@ begin
   begin
     for I := Inventory.Count - 1 downto 0 do
     begin
-      Item := TEquipment(Inventory[I]);
+      Item := Inventory[I];
       if Item.EquippedFlag <> 0 then Continue;
       GetPlayer.AddItemToPlayerStorage(Item, Location, -1);
       Inventory.Delete(Inventory.IndexOf(Item));
     end;
     for I := Artefacts.Count - 1 downto 0 do
     begin
-      Artefact := TArtefact(Artefacts[I]);
+      Artefact := Artefacts[I];
       if Artefact.EquippedFlag <> 0 then Continue;
       GetPlayer.AddItemToPlayerStorage(Artefact, Location, -1);
       Artefacts.Delete(Artefacts.IndexOf(Artefact));
@@ -587,9 +585,9 @@ begin
     GetPlayer.RefreshStorageBubbles;
   end;
 end;
-{ @end $65DC90 }
+{ @end $5B9468 }
 
-{ @routine $65DE1C TTranclucator_UnloadCargoForPlayerOwner }
+{ @routine $5B9598 TTranclucator_UnloadCargoForPlayerOwner }
 function TTranclucator.UnloadCargoForPlayerOwner: Boolean;
 begin
   Result := False;
@@ -610,9 +608,9 @@ begin
     end;
   end;
 end;
-{ @end $65DE1C }
+{ @end $5B9598 }
 
-{ @routine $65DEE4 TTranclucator_TryLandForStorage }
+{ @routine $5B962C TTranclucator_TryLandForStorage }
 function TTranclucator.TryLandForStorage: Boolean;
 var I: Integer;
     Location: TObject;
@@ -621,48 +619,45 @@ var I: Integer;
     Distance, BestDistance: Double;
 begin
   Result := False;
-  if (OwnerShip <> nil) and (GetPlayer <> nil) and (GetPlayer = OwnerShip) and HasLooseNonScriptItemsOrGoods then
-  begin
-    BestDistance := 10000;
-    Location := nil;
-    if GetStoragePermission(tskPlanet) then
-      for I := 0 to CurrentStar.Planets.Count - 1 do
-      begin
-        Planet := TPlanet(CurrentStar.Planets[I]);
-        if (Planet.OwnerId in [oiMaloc..oiGaal, oiPirate]) and (Planet.GetRelationLevelToShip(GetPlayer) >= rlNormal) then
-        begin
-          Distance := PointDistance(Position, Planet.GetPosition);
-          if BestDistance >= Distance then
-          begin
-            Location := Planet;
-            BestDistance := Distance;
-          end;
-        end;
-      end;
-    if GetStoragePermission(tskStation) then
-      for I := 0 to CurrentStar.Ships.Count - 1 do
-      begin
-        Ship := TShip(CurrentStar.Ships[I]);
-        if (Ship is TRuins) and (Ship.GetRelationLevelToShip(GetPlayer) >= rlNormal) and Ship.CanDock(Self) then
-        begin
-          Distance := PointDistance(Position, Ship.Position);
-          if BestDistance >= Distance then
-          begin
-            Location := Ship;
-            BestDistance := Distance;
-          end;
-        end;
-      end;
-    if Location <> nil then
+  if OwnerShip = nil then Exit;
+  if GetPlayer = nil then Exit;
+  if GetPlayer <> OwnerShip then Exit;
+  if not HasLooseNonScriptItemsOrGoods then Exit;
+  BestDistance := 10000;
+  Location := nil;
+  if GetStoragePermission(tskPlanet) then
+    for I := 0 to CurrentStar.Planets.Count - 1 do
     begin
-      OrderLanding(Location, True);
-      Result := True;
+      Planet := CurrentStar.Planets[I];
+      if not (Planet.OwnerId in [oiMaloc..oiGaal, oiPirate]) or (Planet.GetRelationLevelToShip(GetPlayer) < rlNormal) then Continue;
+      Distance := PointDistance(Position, Planet.GetPosition);
+      if BestDistance >= Distance then
+      begin
+        Location := Planet;
+        BestDistance := Distance;
+      end;
     end;
+  if GetStoragePermission(tskStation) then
+    for I := 0 to CurrentStar.Ships.Count - 1 do
+    begin
+      Ship := CurrentStar.Ships[I];
+      if not (Ship is TRuins) or (Ship.GetRelationLevelToShip(GetPlayer) < rlNormal) or not Ship.CanDock(Self) then Continue;
+      Distance := PointDistance(Position, Ship.Position);
+      if BestDistance >= Distance then
+      begin
+        Location := Ship;
+        BestDistance := Distance;
+      end;
+    end;
+  if Location <> nil then
+  begin
+    OrderLanding(Location, True);
+    Result := True;
   end;
 end;
-{ @end $65DEE4 }
+{ @end $5B962C }
 
-{ @routine $65E0D0 TTranclucator_ConvertToStoredArtefact }
+{ @routine $5B97DC TTranclucator_ConvertToStoredArtefact }
 function TTranclucator.ConvertToStoredArtefact: Boolean;
 var I, Index: Integer;
     Location: TObject;
@@ -704,40 +699,41 @@ begin
     Result := True;
   end;
 end;
-{ @end $65E0D0 }
+{ @end $5B97DC }
 
-{ @routine $65E300 TTranclucator_UpdateFreeFlightOrder }
+{ @routine $5B998C TTranclucator_UpdateFreeFlightOrder }
 procedure TTranclucator.UpdateFreeFlightOrder;
 begin
   if (EnemyShip <> nil) and (EnemyShip.CurrentStar = CurrentStar) and EnemyShip.InNormalSpace then
     OrderFollowShip(EnemyShip, fmMinWeaponRange, False)
   else if (OwnerShip <> nil) and (OwnerShip.CurrentStar = CurrentStar) and OwnerShip.InNormalSpace then
   begin
-    if (OwnerShip.Order = soFollowShip) and (OwnerShip.EnemyShip = OwnerShip.OrderTarget) and (OwnerShip.EnemyShip <> Self) then
-      OrderFollowShip(OwnerShip.EnemyShip, fmMinWeaponRange, False)
-    else OrderFollowShip(OwnerShip, fmFollowNear, False);
+    with OwnerShip do
+      if (Order = soFollowShip) and (EnemyShip = OrderTarget) and (EnemyShip <> Self) then
+        Self.OrderFollowShip(EnemyShip, fmMinWeaponRange, False)
+      else Self.OrderFollowShip(Self.OwnerShip, fmFollowNear, False);
   end
   else if (OwnerShip <> nil) and (OwnerShip.CurrentStar = CurrentStar) and (OwnerShip.CurrentPlanet <> nil) then
     OrderMove(OwnerShip.CurrentPlanet.GetPosition, False)
   else OrderRandomFreeFlightMove;
 end;
-{ @end $65E300 }
+{ @end $5B998C }
 
-{ @routine $65E468 TTranclucator_BuildReachablePlanetQueue }
+{ @routine $5B9A6C TTranclucator_BuildReachablePlanetQueue }
 procedure TTranclucator.BuildReachablePlanetQueue;
 begin
 
 end;
-{ @end $65E468 }
+{ @end $5B9A6C }
 
-{ @routine $65E474 TTranclucator_CanQueueReachablePlanet }
+{ @routine $5B9A70 TTranclucator_CanQueueReachablePlanet }
 function TTranclucator.CanQueueReachablePlanet(Planet: TPlanet): Boolean;
 begin
   Result := False;
 end;
-{ @end $65E474 }
+{ @end $5B9A70 }
 
-{ @routine $65E48C TTranclucator_TryCollectPreferredFloatingLoot }
+{ @routine $5B9A74 TTranclucator_TryCollectPreferredFloatingLoot }
 function TTranclucator.TryCollectPreferredFloatingLoot(MaxTravelDays: Integer): Boolean;
 var I: Integer;
     Item, TargetItem: TItem;
@@ -752,7 +748,7 @@ begin
     BestDistance := 10000;
     for I := 0 to CurrentStar.Items.Count - 1 do
     begin
-      Item := TItem(CurrentStar.Items[I]);
+      Item := CurrentStar.Items[I];
       if (CalculateCargoHookPower(GetCargoHook) >= Item.Weight) and
         ((Item.ScriptItem = nil) or (TScriptItem(Item.ScriptItem).Name = '')) and
         not (Item is TArtefactTranclucator) then
@@ -803,25 +799,25 @@ begin
     if Order = soMove then Result := True;
   end;
 end;
-{ @end $65E48C }
+{ @end $5B9A74 }
 
-{ @routine $65E748 TTranclucator_EquipEssentialInventory }
+{ @routine $5B9CE4 TTranclucator_EquipEssentialInventory }
 procedure TTranclucator.EquipEssentialInventory;
 var I: Integer;
     Item: TItem;
 begin
   for I := 1 to Inventory.Count - 1 do
   begin
-    Item := TItem(Inventory[I]);
-    case Byte(Item.ItemType) of
-      Ord(t_FuelTanks):
+    Item := Inventory[I];
+    case Item.ItemType of
+      t_FuelTanks:
         if GetFuelTanks = nil then EquipItem(Item as TFuelTanks)
         else if GetFuelTanks.Weight > Item.Weight then
         begin
           UnequipSlot(GetFuelTanks.ItemType, 0);
           EquipItem(Item as TFuelTanks);
         end;
-      Ord(t_Engine):
+      t_Engine:
         if GetEngine = nil then EquipItem(Item as TEngine)
         else if CalculateItemEffectiveness(Item) > CalculateItemEffectiveness(GetEngine) then
         begin
@@ -832,9 +828,9 @@ begin
   end;
   RefreshDerivedStats(True);
 end;
-{ @end $65E748 }
+{ @end $5B9CE4 }
 
-{ @routine $65E8A0 TTranclucator_AssignWeaponTargetsInStar }
+{ @routine $5B9E14 TTranclucator_AssignWeaponTargetsInStar }
 procedure TTranclucator.AssignWeaponTargetsInStar;
 var I, J, AssignedCount: Integer;
     Ship: TShip;
@@ -879,7 +875,7 @@ begin
     if CurrentStar.Battle <> 0 then
       for I := 0 to CurrentStar.Ships.Count - 1 do
       begin
-        Ship := TShip(CurrentStar.Ships[I]);
+        Ship := CurrentStar.Ships[I];
         if (Ship.OwnerId = oiDominator) and Ship.InNormalSpace then
         begin
           Distance := PointDistance(Position, Ship.Position);
@@ -897,10 +893,13 @@ begin
       end;
     for I := 0 to CurrentStar.Ships.Count - 1 do
     begin
-      Ship := TShip(CurrentStar.Ships[I]);
-      if Ship.InNormalSpace and (Ship <> Self) and (Ship <> OwnerShip) and
-        ((RelationToShip(Ship) < RelationBadMin) or (Ship = EnemyShip) or (Ship.EnemyShip = Self)) then
-        for J := 1 to WeaponCount do
+      Ship := CurrentStar.Ships[I];
+      if not Ship.InNormalSpace then Continue;
+      if Ship = Self then Continue;
+      if Ship = OwnerShip then Continue;
+      if RelationToShip(Ship) >= RelationBadMin then
+        if (Ship <> EnemyShip) and (Ship.EnemyShip <> Self) then Continue;
+      for J := 1 to WeaponCount do
         begin
           Weapon := Weapons[J];
           if (Weapon.Target = nil) and IsEquipmentUsable(Weapon) and
@@ -912,10 +911,10 @@ begin
           end;
         end;
     end;
-    if GetPlayer.CurrentStar = CurrentStar then
+    if CurrentStar = GetPlayer.CurrentStar then
       for I := 0 to CurrentStar.Asteroids.Count - 1 do
       begin
-        Asteroid := TAsteroid(CurrentStar.Asteroids[I]);
+        Asteroid := CurrentStar.Asteroids[I];
         Distance := PointDistanceSquared(Position, Asteroid.Position);
         if Distance <= AsteroidTargetRangeSquared then
           for J := 1 to WeaponCount do
@@ -933,118 +932,121 @@ begin
       end;
   end;
 end;
-{ @end $65E8A0 }
+{ @end $5B9E14 }
 
-{ @routine $65EE68 TTranclucator_SelectEnemyShipInStar }
+{ @routine $5BA2CC TTranclucator_SelectEnemyShipInStar }
 procedure TTranclucator.SelectEnemyShipInStar;
 begin
   EnemyShip := nil;
 end;
-{ @end $65EE68 }
+{ @end $5BA2CC }
 
-{ @routine $65EE80 TTranclucator_EngageEnemyShip }
+{ @routine $5BA2D8 TTranclucator_EngageEnemyShip }
 procedure TTranclucator.EngageEnemyShip;
 begin
 
 end;
-{ @end $65EE80 }
+{ @end $5BA2D8 }
 
-{ @routine $65EE8C TTranclucator_RelationToNonRanger }
+{ @routine $5BA2DC TTranclucator_RelationToNonRanger }
 function TTranclucator.RelationToNonRanger(Ship: TShip): Byte;
 begin
   if Ship.TypeId in [stKling, stTranclucator] then Result := 50 else Result := 100;
 end;
-{ @end $65EE8C }
+{ @end $5BA2DC }
 
-{ @routine $65EEB8 TTranclucator_RelationToRanger }
+{ @routine $5BA2F0 TTranclucator_RelationToRanger }
 function TTranclucator.RelationToRanger(Ranger: Pointer): Byte;
 begin
   Result := 100;
 end;
-{ @end $65EEB8 }
+{ @end $5BA2F0 }
 
-{ @routine $65EED0 TTranclucator_ChangeRelationToRanger }
+{ @routine $5BA2F4 TTranclucator_ChangeRelationToRanger }
 procedure TTranclucator.ChangeRelationToRanger(Ranger: Pointer; Amount: Integer);
 begin
 
 end;
-{ @end $65EED0 }
+{ @end $5BA2F4 }
 
-{ @routine $65EEE4 TTranclucator_ReactToAttack }
+{ @routine $5BA2F8 TTranclucator_ReactToAttack }
 procedure TTranclucator.ReactToAttack(Attacker: TShip);
 begin
-  if (OwnerShip = nil) or ((OwnerShip <> Attacker) and
-    (not (Attacker is TTranclucator) or (TTranclucator(Attacker).OwnerShip <> OwnerShip))) then EnemyShip := Attacker;
+  if OwnerShip <> nil then begin
+    if OwnerShip = Attacker then Exit;
+    if (Attacker is TTranclucator) and (TTranclucator(Attacker).OwnerShip = OwnerShip) then Exit;
+  end;
+  EnemyShip := Attacker;
 end;
-{ @end $65EEE4 }
+{ @end $5BA2F8 }
 
-{ @routine $65EF40 TTranclucator_RecomputeFearState }
+{ @routine $5BA334 TTranclucator_RecomputeFearState }
 function TTranclucator.RecomputeFearState: Boolean;
 begin
   Result := False;
 end;
-{ @end $65EF40 }
+{ @end $5BA334 }
 
-{ @routine $65EF54 TTranclucator_AcceptsRansomDemandFrom }
+{ @routine $5BA338 TTranclucator_AcceptsRansomDemandFrom }
 function TTranclucator.AcceptsRansomDemandFrom(Ship: TShip): Boolean;
 begin
   Result := False;
 end;
-{ @end $65EF54 }
+{ @end $5BA338 }
 
-{ @routine $65EF6C TTranclucator_TrustsAttackRequester }
+{ @routine $5BA33C TTranclucator_TrustsAttackRequester }
 function TTranclucator.TrustsAttackRequester(Ship: TShip): Boolean;
 begin
   Result := Ship = OwnerShip;
 end;
-{ @end $65EF6C }
+{ @end $5BA33C }
 
-{ @routine $65EF90 TTranclucator_AcceptsAppealFrom }
+{ @routine $5BA348 TTranclucator_AcceptsAppealFrom }
 function TTranclucator.AcceptsAppealFrom(Ship: TShip): Boolean;
 begin
   Result := Ship = OwnerShip;
 end;
-{ @end $65EF90 }
+{ @end $5BA348 }
 
-{ @routine $65EFB4 TTranclucator_ProcessCombatDialogue }
+{ @routine $5BA354 TTranclucator_ProcessCombatDialogue }
 procedure TTranclucator.ProcessCombatDialogue;
 begin
 
 end;
-{ @end $65EFB4 }
+{ @end $5BA354 }
 
-{ @routine $65EFC0 TTranclucator_ReactToExtortionDemand }
+{ @routine $5BA358 TTranclucator_ReactToExtortionDemand }
 procedure TTranclucator.ReactToExtortionDemand(Ranger: Pointer);
 begin
 
 end;
-{ @end $65EFC0 }
+{ @end $5BA358 }
 
-{ @routine $65EFD0 TTranclucator_BuildMoneyExtortionResponse }
+{ @routine $5BA35C TTranclucator_BuildMoneyExtortionResponse }
 function TTranclucator.BuildMoneyExtortionResponse(OtherShip: TShip; var Response: WideString; DemandedAmount: Integer): Boolean;
 begin
   Result := False;
   Response := 'Talk not supporting';
 end;
-{ @end $65EFD0 }
+{ @end $5BA35C }
 
-{ @routine $65F028 TTranclucator_BuildCargoExtortionResponse }
+{ @routine $5BA3A8 TTranclucator_BuildCargoExtortionResponse }
 function TTranclucator.BuildCargoExtortionResponse(OtherShip: TShip; var Response: WideString): Boolean;
 begin
   Result := False;
   Response := 'Talk not supporting';
 end;
-{ @end $65F028 }
+{ @end $5BA3A8 }
 
-{ @routine $65F07C TTranclucator_BuildTrucePaymentResponse }
+{ @routine $5BA3EC TTranclucator_BuildTrucePaymentResponse }
 function TTranclucator.BuildTrucePaymentResponse(OtherShip: TShip; var Response: WideString; OfferedAmount: Integer): Boolean;
 begin
   Result := False;
   Response := 'Talk not supporting';
 end;
-{ @end $65F07C }
+{ @end $5BA3EC }
 
-{ @routine $65F0D4 TTranclucator_BuildAttackRequestResponse }
+{ @routine $5BA438 TTranclucator_BuildAttackRequestResponse }
 function TTranclucator.BuildAttackRequestResponse(Requester: TShip; var Response: WideString; Target: TShip): Boolean;
 begin
   Result := True;
@@ -1053,53 +1055,61 @@ begin
   FollowOwner := False;
   SeekItems := False;
 end;
-{ @end $65F0D4 }
+{ @end $5BA438 }
 
-{ @routine $65F1A0 TTranclucator_AcceptPartnershipOffer }
+{ @routine $5BA4FC TTranclucator_AcceptPartnershipOffer }
 function TTranclucator.AcceptPartnershipOffer(OtherShip: TShip; var Response: WideString; PaymentAmount: Integer): Boolean;
 begin
   Result := False;
   Response := 'Not supporting';
 end;
-{ @end $65F1A0 }
+{ @end $5BA4FC }
 
-{ @routine $65F1F0 TTranclucator_BuildPartnershipOfferResponse }
+{ @routine $5BA540 TTranclucator_BuildPartnershipOfferResponse }
 function TTranclucator.BuildPartnershipOfferResponse(OtherShip: TShip; var Response: WideString; PaymentAmount: Integer): Boolean;
 begin
   Result := False;
   Response := 'Not supporting';
 end;
-{ @end $65F1F0 }
+{ @end $5BA540 }
 
-{ @routine $65F240 TTranclucator_RefreshCurrentStanding }
+{ @routine $5BA584 TTranclucator_RefreshCurrentStanding }
 procedure TTranclucator.RefreshCurrentStanding;
 var StandingMode: TScriptStandingOverrideMode;
 begin
   StandingMode := GetScriptStandingOverrideMode;
-  if StandingMode = ssmCustomFaction then CurrentStanding := ssCustom
-  else if StandingMode <> ssmFixed then
+  if StandingMode = ssmCustomFaction then
   begin
-    if OwnerShip = nil then CurrentStanding := ssUnaligned
-    else
-    begin
-      OwnerShip.RefreshCurrentStanding;
-      if (OwnerShip.CurrentStar = CurrentStar) or (OwnerShip.CurrentStanding in [ssCoalitionMilitary, ssPirateMilitary]) then
-        CurrentStanding := OwnerShip.CurrentStanding
-      else if OwnerShip.CurrentStanding in [ssCoalitionActive, ssCoalitionPassive] then
-      begin
-        if CurrentStar.ControlFaction in [sfCoalition, sfDominators] then CurrentStanding := ssCoalitionActive else CurrentStanding := ssNeutral;
-      end
-      else if OwnerShip.CurrentStanding in [ssPiratePassive, ssPirateActive] then
-      begin
-        if CurrentStar.ControlFaction in [sfDominators, sfPirates] then CurrentStanding := ssPirateActive else CurrentStanding := ssNeutral;
-      end
-      else CurrentStanding := OwnerShip.CurrentStanding;
-    end;
+    CurrentStanding := ssCustom;
+    Exit;
   end;
+  if StandingMode = ssmFixed then Exit;
+  if OwnerShip = nil then
+  begin
+    CurrentStanding := ssUnaligned;
+    Exit;
+  end;
+  OwnerShip.RefreshCurrentStanding;
+  if (OwnerShip.CurrentStar = CurrentStar) or (OwnerShip.CurrentStanding in [ssCoalitionMilitary, ssPirateMilitary]) then
+  begin
+    CurrentStanding := OwnerShip.CurrentStanding;
+    Exit;
+  end;
+  if OwnerShip.CurrentStanding in [ssCoalitionActive, ssCoalitionPassive] then
+  begin
+    if CurrentStar.ControlFaction in [sfCoalition, sfDominators] then CurrentStanding := ssCoalitionActive else CurrentStanding := ssNeutral;
+    Exit;
+  end;
+  if OwnerShip.CurrentStanding in [ssPiratePassive, ssPirateActive] then
+  begin
+    if CurrentStar.ControlFaction in [sfDominators, sfPirates] then CurrentStanding := ssPirateActive else CurrentStanding := ssNeutral;
+    Exit;
+  end;
+  CurrentStanding := OwnerShip.CurrentStanding;
 end;
-{ @end $65F240 }
+{ @end $5BA584 }
 
-{ @routine $65F378 TTranclucator_EvaluateStatBonus }
+{ @routine $5BA66C TTranclucator_EvaluateStatBonus }
 function TTranclucator.EvaluateStatBonus(BonusKind: TEquipmentBonusKind; Value: Integer): Single;
 const ScannableDamageFlags = [dkScanBonus..dkDroidBlock];
 begin
@@ -1179,18 +1189,18 @@ begin
     bonSkill1..bonSkill6:
       begin
         if Value > 0 then
-          Result := Math.Min(6 - GetEffectiveSkillLevel(EquipmentBonusSkills[Ord(BonusKind) - Ord(bonSkill1)]), Value) * TranclucatorSkillBonusWeights[BonusKind];
-        if (Value > 0) and (Value + GetEffectiveSkillLevel(EquipmentBonusSkills[Ord(BonusKind) - Ord(bonSkill1)]) > 6) then
-          Result := (Value + GetEffectiveSkillLevel(EquipmentBonusSkills[Ord(BonusKind) - Ord(bonSkill1)]) - 6) * (TranclucatorSkillBonusWeights[BonusKind] * 0.05) + Result;
+          Result := Math.Min(6 - GetEffectiveSkillLevel(EquipmentBonusSkills[BonusKind]), Value) * TranclucatorSkillBonusWeights[BonusKind];
+        if (Value > 0) and (Value + GetEffectiveSkillLevel(EquipmentBonusSkills[BonusKind]) > 6) then
+          Result := (Value + GetEffectiveSkillLevel(EquipmentBonusSkills[BonusKind]) - 6) * (TranclucatorSkillBonusWeights[BonusKind] * 0.05) + Result;
         if Value < 0 then
-          Result := Math.Min(GetEffectiveSkillLevel(EquipmentBonusSkills[Ord(BonusKind) - Ord(bonSkill1)]), -Value) * -TranclucatorSkillBonusWeights[BonusKind];
-        if (Value < 0) and (Value + GetEffectiveSkillLevel(EquipmentBonusSkills[Ord(BonusKind) - Ord(bonSkill1)]) < 0) then
-          Result := (Value + GetEffectiveSkillLevel(EquipmentBonusSkills[Ord(BonusKind) - Ord(bonSkill1)])) * (TranclucatorSkillBonusWeights[BonusKind] * 0.03) + Result;
+          Result := Math.Min(GetEffectiveSkillLevel(EquipmentBonusSkills[BonusKind]), -Value) * -TranclucatorSkillBonusWeights[BonusKind];
+        if (Value < 0) and (Value + GetEffectiveSkillLevel(EquipmentBonusSkills[BonusKind]) < 0) then
+          Result := (Value + GetEffectiveSkillLevel(EquipmentBonusSkills[BonusKind])) * (TranclucatorSkillBonusWeights[BonusKind] * 0.03) + Result;
       end;
   else
     Result := 0;
   end;
 end;
-{ @end $65F378 }
+{ @end $5BA66C }
 
 end.

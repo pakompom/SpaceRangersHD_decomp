@@ -1,12 +1,14 @@
 unit ThreadCalc;
-// Unit bracket (inferred): .text 0x007E4874..0x007E50BF; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
 uses EC_Thread;
 
 type
-  TTurnCalculationJob = (tcjGalaxy = 1, tcjPlayerStar = 2, tcjPreparePlayerStar = 3); // @size 0x4
+  TTurnCalculationJob = (
+    tcjGalaxy = 1, tcjPlayerStar = 2, tcjPreparePlayerStar = 3,
+    tcjUnknown5 = 5 // Native hover guards exclude this job; its operation is not identified.
+  ); // @size 0x4
   TTurnCalculationPhase = (
     tcpIdle = 0, // Zero-initialized phase; accepted by the native debug-key callback.
     tcpGalaxyRunning = 1, tcpGalaxyFinished = 2,
@@ -18,65 +20,65 @@ type
   TThreadCalc = class(TThreadEC) // @size 0x30
   public
     Job: TTurnCalculationJob; // @offset 0x2C
-    procedure Execute; override; // @addr 0x7E4BC4
+    procedure Execute; override; // @addr 0x006F3B88
   end;
 
-procedure StartGalaxyTurnCalculation; // @addr 0x7E48D0
-procedure StartPlayerStarTurnCalculation; // @addr 0x7E48EC
-procedure StartPlayerStarPreparation; // @addr 0x7E4908
-function IsTurnCalculationRunning: Boolean; // @addr 0x7E4924
-procedure WaitForTurnCalculation; // @addr 0x7E4950 @note "Requires an initialized calculation thread."
-procedure ProcessPlayerStarTurn; // @addr 0x7E4970
+procedure StartGalaxyTurnCalculation; // @addr 0x006F38B0
+procedure StartPlayerStarTurnCalculation; // @addr 0x006F38CC
+procedure StartPlayerStarPreparation; // @addr 0x006F38E8
+function IsTurnCalculationRunning: Boolean; // @addr 0x006F3904
+procedure WaitForTurnCalculation; // @addr 0x006F3920 @note "Requires an initialized calculation thread."
+procedure ProcessPlayerStarTurn; // @addr 0x006F3940
 
 
 var
-  AdaptiveBeginCalcNextTurn: Single = 0.5; // @addr $87CD24 Smoothed film-progress threshold derived from measured galaxy-turn duration.
-  LastGalaxyTurnDuration: Integer; // @addr $88B108 Measured milliseconds; native smoothing uses signed arithmetic.
+  AdaptiveBeginCalcNextTurn: Single = 0.5; // @addr $80FF54 Smoothed film-progress threshold derived from measured galaxy-turn duration.
+  LastGalaxyTurnDuration: Integer; // @addr $81B8F8 Measured milliseconds; native smoothing uses signed arithmetic.
 
 implementation
 
 uses Windows, MMSystem, SysUtils, Math, Globals, GlobalsV, GR_Main, aGalaxy, aPlayer, aShip, aGalaxyStruct;
 
-{ @routine $7E48D0 StartGalaxyTurnCalculation }
+{ @routine $6F38B0 StartGalaxyTurnCalculation }
 procedure StartGalaxyTurnCalculation;
 begin
   TurnCalculationThread.Job := tcjGalaxy;
   TurnCalculationThread.Start;
 end;
-{ @end $7E48D0 }
+{ @end $6F38B0 }
 
-{ @routine $7E48EC StartPlayerStarTurnCalculation }
+{ @routine $6F38CC StartPlayerStarTurnCalculation }
 procedure StartPlayerStarTurnCalculation;
 begin
   TurnCalculationThread.Job := tcjPlayerStar;
   TurnCalculationThread.Start;
 end;
-{ @end $7E48EC }
+{ @end $6F38CC }
 
-{ @routine $7E4908 StartPlayerStarPreparation }
+{ @routine $6F38E8 StartPlayerStarPreparation }
 procedure StartPlayerStarPreparation;
 begin
   TurnCalculationThread.Job := tcjPreparePlayerStar;
   TurnCalculationThread.Start;
 end;
-{ @end $7E4908 }
+{ @end $6F38E8 }
 
-{ @routine $7E4924 IsTurnCalculationRunning }
+{ @routine $6F3904 IsTurnCalculationRunning }
 function IsTurnCalculationRunning: Boolean;
 begin
   if TurnCalculationThread = nil then Result := False
   else Result := TurnCalculationThread.IsRunning;
 end;
-{ @end $7E4924 }
+{ @end $6F3904 }
 
-{ @routine $7E4950 WaitForTurnCalculation }
+{ @routine $6F3920 WaitForTurnCalculation }
 procedure WaitForTurnCalculation;
 begin
   if TurnCalculationThread.IsRunning then TurnCalculationThread.WaitForIdle(INFINITE);
 end;
-{ @end $7E4950 }
+{ @end $6F3920 }
 
-{ @routine $7E4970 ProcessPlayerStarTurn }
+{ @routine $6F3940 ProcessPlayerStarTurn }
 procedure ProcessPlayerStarTurn;
 var RecordFilm: Boolean;
     Stage: Integer;
@@ -106,9 +108,9 @@ begin
     end;
   end;
 end;
-{ @end $7E4970 }
+{ @end $6F3940 }
 
-{ @routine $7E4BC4 TThreadCalc_Execute }
+{ @routine $6F3B88 TThreadCalc_Execute }
 procedure TThreadCalc.Execute;
 var ControlWord: Word;
     StartTick, EndTick: Cardinal;
@@ -192,6 +194,6 @@ begin
     TurnCalculationPhase := tcpPlayerStarPrepared;
   end;
 end;
-{ @end $7E4BC4 }
+{ @end $6F3B88 }
 
 end.

@@ -1,5 +1,4 @@
 unit fFilm;
-// Unit bracket (inferred): .text 0x006843C8..0x00686CF0; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -8,12 +7,12 @@ uses EC_Struct, EC_Thread, GI_GraphBuf, GI_GraphButton, GI_Label, GI_MessageLoop
 type
   TfFilmLoader = class(TThreadEC) // @size 0x2C
   public
-    procedure Execute; override; // @addr 0x6844BC @note "Loads FilmScreen.PreloadHistoryIndex into PreloadedFilm and supplies its separately stored Turn."
+    procedure Execute; override; // @addr 0x00524EA0 @note "Loads FilmScreen.PreloadHistoryIndex into PreloadedFilm and supplies its separately stored Turn."
   end;
 
   TfFilm = class(TMessageLoopGI) // @size 0x130
   public
-    PanTimer: PCallbackTimerGI; // @offset 0xD0
+    PanTimer: TCallbackTimerIdGI; // @offset 0xD0
     PanLeft: Boolean; // @offset 0xD4
     PanRight: Boolean; // @offset 0xD5
     PanUp: Boolean; // @offset 0xD6
@@ -35,41 +34,41 @@ type
     PreloadHistoryIndex: Integer; // @offset 0x110
     CameraTarget: TPointF; // @offset 0x114
     FrameIntervalMs: Integer; // @offset 0x11C
-    PlaybackTimer: PCallbackTimerGI; // @offset 0x120
-    EffectsTimer: PCallbackTimerGI; // @offset 0x124
+    PlaybackTimer: TCallbackTimerIdGI; // @offset 0x120
+    EffectsTimer: TCallbackTimerIdGI; // @offset 0x124
     StepIndex: Integer; // @offset 0x128
     NextCommand: PEFilmCommand; // @offset 0x12C
 
-    procedure InitializeLayout; override; // @addr 0x684528
-    procedure OnOpen; override; // @addr 0x684C3C
-    procedure OnClose; override; // @addr 0x684FD4
-    function GetViewOffset: TPoint; // @addr 0x685160
-    procedure SetViewOffset(Offset: TPoint); // @addr 0x6851CC @note "Disables automatic camera following."
-    procedure FollowViewOffset(Offset: TPoint); // @addr 0x685264 @note "Ignored while automatic camera following is disabled."
-    procedure PanView(Timer: PCallbackTimerGI; UserData: Integer); // @addr 0x685300
-    procedure KeyDown(Sender: TObjectGI; Key: Cardinal); // @addr 0x685438
-    procedure KeyUp(Sender: TObjectGI; Key: Cardinal); // @addr 0x6854FC
-    procedure CopyLiveVisualStateToFilm; // @addr 0x685558
-    procedure CopyFilmVisualStateToLive; // @addr 0x6858B8
-    procedure ExitClicked(Sender: TObjectGI); // @addr 0x685C18
-    procedure CenterShipClicked(Sender: TObjectGI); // @addr 0x685C48
-    procedure SelectHistoryEntry(Index: Integer; InitialLoad: Boolean); // @addr 0x685C74 @note "Waits for the loader, swaps film buffers, resets the command cursor, then preloads the following entry. Requires a valid index and nonempty command stream."
-    procedure CreateFilmSceneObjects(Film: TEFilm); // @addr 0x6860CC
-    procedure ReleaseFilmSceneObjects(Film: TEFilm; ReleaseTrailingReferences: Boolean); // @addr 0x686130
-    procedure ReuseSceneObjectsForPreloadedFilm; // @addr 0x686278
-    procedure AdvancePausedEffects(Timer: PCallbackTimerGI; UserData: Integer); // @addr 0x686490
-    procedure SetFrameInterval(IntervalMs: Integer; UpdateSlider: Boolean); // @addr 0x6864FC
-    procedure SpeedSliderChanged(Sender: TObjectGI); // @addr 0x6865D8
-    procedure FrameSliderChanged(Sender: TObjectGI); // @addr 0x686634 @note "Backward seeking reloads the recording and executes commands forward to the requested step."
-    procedure PlayStopClicked(Sender: TObjectGI); // @addr 0x6866CC
-    procedure TurnSliderChanged(Sender: TObjectGI); // @addr 0x686730
-    procedure StartPlayback; // @addr 0x686780
-    procedure PausePlayback; // @addr 0x68681C @note "Trailing effects continue on a separate timer."
-    procedure AdvancePlayback(Timer: PCallbackTimerGI; UserData: Integer); // @addr 0x6868F0 @note "Automatically advances to the following retained recording when this one ends."
-    procedure AdvanceOneStep; // @addr 0x68695C @note "Requires NextCommand <> nil."
-    procedure InvalidateAnimatedControls; // @addr 0x686ACC
-    procedure DrawFrame; override; // @addr 0x686B04
-    procedure SelectMusic; override; // @addr 0x686C64
+    procedure InitializeLayout; override; // @addr 0x00524F04
+    procedure OnOpen; override; // @addr 0x005255A8
+    procedure OnClose; override; // @addr 0x005258C4
+    function GetViewOffset: TPoint; // @addr 0x00525A0C
+    procedure SetViewOffset(Offset: TPoint); // @addr 0x00525A64 @note "Disables automatic camera following."
+    procedure FollowViewOffset(Offset: TPoint); // @addr 0x00525AEC @note "Ignored while automatic camera following is disabled."
+    procedure PanView(Timer: TCallbackTimerIdGI; UserData: Cardinal); // @addr 0x00525B74
+    procedure KeyDown(Sender: TObjectGI; Key: Cardinal); // @addr 0x00525C98
+    procedure KeyUp(Sender: TObjectGI; Key: Cardinal); // @addr 0x00525D38
+    procedure CopyLiveVisualStateToFilm; // @addr 0x00525D70
+    procedure CopyFilmVisualStateToLive; // @addr 0x0052604C
+    procedure ExitClicked(Sender: TObjectGI); // @addr 0x00526328
+    procedure CenterShipClicked(Sender: TObjectGI); // @addr 0x00526348
+    procedure SelectHistoryEntry(Index: Integer; InitialLoad: Boolean); // @addr 0x00526368 @note "Waits for the loader, swaps film buffers, resets the command cursor, then preloads the following entry. Requires a valid index and nonempty command stream."
+    procedure CreateFilmSceneObjects(Film: TEFilm); // @addr 0x00526718
+    procedure ReleaseFilmSceneObjects(Film: TEFilm; ReleaseTrailingReferences: Boolean); // @addr 0x00526758
+    procedure ReuseSceneObjectsForPreloadedFilm; // @addr 0x0052684C
+    procedure AdvancePausedEffects(Timer: TCallbackTimerIdGI; UserData: Cardinal); // @addr 0x005269D0
+    procedure SetFrameInterval(IntervalMs: Integer; UpdateSlider: Boolean); // @addr 0x00526A28
+    procedure SpeedSliderChanged(Sender: TObjectGI); // @addr 0x00526AD0
+    procedure FrameSliderChanged(Sender: TObjectGI); // @addr 0x00526B1C @note "Backward seeking reloads the recording and executes commands forward to the requested step."
+    procedure PlayStopClicked(Sender: TObjectGI); // @addr 0x00526B84
+    procedure TurnSliderChanged(Sender: TObjectGI); // @addr 0x00526BD4
+    procedure StartPlayback; // @addr 0x00526C10
+    procedure PausePlayback; // @addr 0x00526C7C @note "Trailing effects continue on a separate timer."
+    procedure AdvancePlayback(Timer: TCallbackTimerIdGI; UserData: Cardinal); // @addr 0x00526D14 @note "Automatically advances to the following retained recording when this one ends."
+    procedure AdvanceOneStep; // @addr 0x00526D64 @note "Requires NextCommand <> nil."
+    procedure InvalidateAnimatedControls; // @addr 0x00526E88
+    procedure DrawFrame; override; // @addr 0x00526EB0
+    procedure SelectMusic; override; // @addr 0x00526FE0
   end;
 
 implementation
@@ -80,15 +79,15 @@ uses SysUtils, Math, Windows, fFilmFile, Globals, GlobalsV, GR_Main,
   aGalaxy, aPlanet, aAsteroid, GI_StarField, GI_StarFieldImg, GI_SpaceImg,
   GR_Rect, GR_GraphBuf, Classes, fStarMap;
 
-{ @routine $6844BC TfFilmLoader_Execute }
+{ @routine $524EA0 TfFilmLoader_Execute }
 procedure TfFilmLoader.Execute;
 begin
   FilmHistory.LoadFilm(FilmHistory.GetEntry(FilmScreen.PreloadHistoryIndex), FilmScreen.PreloadedFilm);
   FilmScreen.PreloadedFilm.Turn := FilmHistory.GetEntry(FilmScreen.PreloadHistoryIndex).Turn;
 end;
-{ @end $6844BC }
+{ @end $524EA0 }
 
-{ @routine $684528 TfFilm_InitializeLayout }
+{ @routine $524F04 TfFilm_InitializeLayout }
 procedure TfFilm.InitializeLayout;
 var
   Main, Map, Center, Shade, ShadeNext, Fps, FilmPanel, SpaceImages, Stars, StarImages, StarM: TObjectGI;
@@ -98,34 +97,34 @@ begin
   AppendLogTextThreadSafe('fFilm... ');
   ViewportRect := Classes.Rect(0, 0, GameScreenWidth, GameScreenHeight);
   Main := GetByName('MainPanel');
-  Main.Parent.SetSize(Classes.Point(GameScreenWidth, GameScreenHeight));
-  Main.SetPosition(Classes.Point(GameScreenWidth shr 1, GameScreenHeight shr 1));
-  Main.SetOrigin(Classes.Point(GameScreenWidth shr 1, GameScreenHeight shr 1));
-  Main.SetSize(Classes.Point(GameScreenWidth, GameScreenHeight));
+  Main.Parent.ObjectSize := Classes.Point(GameScreenWidth, GameScreenHeight);
+  Main.Pos := Classes.Point(GameScreenWidth shr 1, GameScreenHeight shr 1);
+  Main.Sme := Classes.Point(GameScreenWidth shr 1, GameScreenHeight shr 1);
+  Main.ObjectSize := Classes.Point(GameScreenWidth, GameScreenHeight);
   Map := Main.FindByNameRecursive('MapPanel');
-  Map.SetPosition(Classes.Point(Map.LocalPosition.X + ExtraScreenWidth div 2, Map.LocalPosition.Y - ExtraScreenHeight div 2));
+  Map.Pos := Classes.Point(Map.LocalPosition.X + ExtraScreenWidth div 2, Map.LocalPosition.Y - ExtraScreenHeight div 2);
   Center := Main.FindByNameRecursive('CenterShip');
-  Center.SetPosition(Classes.Point(Center.LocalPosition.X + ExtraScreenWidth div 2, Center.LocalPosition.Y - ExtraScreenHeight div 2));
+  Center.Pos := Classes.Point(Center.LocalPosition.X + ExtraScreenWidth div 2, Center.LocalPosition.Y - ExtraScreenHeight div 2);
   Shade := Main.FindByNameRecursive('MapPanelA');
-  Shade.SetPosition(Classes.Point(Shade.LocalPosition.X + ExtraScreenWidth div 2, Shade.LocalPosition.Y - ExtraScreenHeight div 2));
+  Shade.Pos := Classes.Point(Shade.LocalPosition.X + ExtraScreenWidth div 2, Shade.LocalPosition.Y - ExtraScreenHeight div 2);
   ShadeNext := Shade.NextSibling;
-  ShadeNext.SetPosition(Classes.Point(ShadeNext.LocalPosition.X + ExtraScreenWidth div 2, ShadeNext.LocalPosition.Y - ExtraScreenHeight div 2));
+  ShadeNext.Pos := Classes.Point(ShadeNext.LocalPosition.X + ExtraScreenWidth div 2, ShadeNext.LocalPosition.Y - ExtraScreenHeight div 2);
   Fps := Main.FindByNameRecursive('FPS');
-  Fps.SetPosition(Classes.Point(Fps.LocalPosition.X, Fps.LocalPosition.Y - ExtraScreenHeight div 2));
+  Fps.Pos := Classes.Point(Fps.LocalPosition.X, Fps.LocalPosition.Y - ExtraScreenHeight div 2);
   FilmPanel := Main.FindByNameRecursive('PanelFilm');
-  FilmPanel.SetPosition(Classes.Point(FilmPanel.LocalPosition.X, FilmPanel.LocalPosition.Y + ExtraScreenHeight div 2));
+  FilmPanel.Pos := Classes.Point(FilmPanel.LocalPosition.X, FilmPanel.LocalPosition.Y + ExtraScreenHeight div 2);
   SpaceImages := Main.FindByNameRecursive('SpaceImg');
-  SpaceImages.SetOrigin(Classes.Point(GameScreenWidth shr 1, GameScreenHeight shr 1));
-  SpaceImages.SetSize(Classes.Point(GameScreenWidth, GameScreenHeight));
+  SpaceImages.Sme := Classes.Point(GameScreenWidth shr 1, GameScreenHeight shr 1);
+  SpaceImages.ObjectSize := Classes.Point(GameScreenWidth, GameScreenHeight);
   Stars := Main.FindByNameRecursive('StarField');
-  Stars.SetOrigin(Classes.Point(GameScreenWidth shr 1, GameScreenHeight shr 1));
-  Stars.SetSize(Classes.Point(GameScreenWidth, GameScreenHeight));
+  Stars.Sme := Classes.Point(GameScreenWidth shr 1, GameScreenHeight shr 1);
+  Stars.ObjectSize := Classes.Point(GameScreenWidth, GameScreenHeight);
   StarImages := Main.FindByNameRecursive('StarFieldImg');
-  StarImages.SetOrigin(Classes.Point(GameScreenWidth shr 1, GameScreenHeight shr 1));
-  StarImages.SetSize(Classes.Point(GameScreenWidth, GameScreenHeight));
+  StarImages.Sme := Classes.Point(GameScreenWidth shr 1, GameScreenHeight shr 1);
+  StarImages.ObjectSize := Classes.Point(GameScreenWidth, GameScreenHeight);
   StarM := Main.FindByNameRecursive('StarFieldM');
-  StarM.SetOrigin(Classes.Point(GameScreenWidth shr 1, GameScreenHeight shr 1));
-  StarM.SetSize(Classes.Point(GameScreenWidth, GameScreenHeight));
+  StarM.Sme := Classes.Point(GameScreenWidth shr 1, GameScreenHeight shr 1);
+  StarM.ObjectSize := Classes.Point(GameScreenWidth, GameScreenHeight);
   AppendLogLineThreadSafe('ok');
   CenterShipButton := GetByName('CenterShip') as TGraphButtonGI;
   CenterShipButton.DownCallback := CenterShipClicked;
@@ -141,18 +140,18 @@ begin
   Graph := MapPanel as TGraphBufGI;
   Graph.BindExternalGraphBuf(RenderScratchBuffer);
 end;
-{ @end $684528 }
+{ @end $524F04 }
 
-{ @routine $684C3C TfFilm_OnOpen }
+{ @routine $5255A8 TfFilm_OnOpen }
 procedure TfFilm.OnOpen;
 var Stars: TStarFieldImgGI;
 begin
-  GetByName('FPS').SetActive(ShowFrameRate);
+  GetByName('FPS').IsActive := ShowFrameRate;
   Stars := GetByName('StarFieldImg') as TStarFieldImgGI;
-  Stars.SetActive(Wind >= 2);
+  Stars.IsActive := Wind >= 2;
   if Stars.StarCount <= 0 then Stars.SeedStars;
   Stars.CopyStarsFrom(StarMapScreen.GetByName('StarFieldImg') as TStarFieldImgGI);
-  FindControlByPath('StarFieldM').SetActive(Wind >= 1);
+  FindControlByPath('StarFieldM').IsActive := Wind >= 1;
   UpdateRectsEnabled := False;
   SetViewOffset(TruncatePointF(SpaceViewPosition));
   UpdateRectsEnabled := True;
@@ -163,7 +162,7 @@ begin
     Loader := nil;
   end;
   Loader := TfFilmLoader.Create;
-  Loader.SetPriority(1);
+  Loader.SetPriority(ThreadPriorityLowest);
   PanTimer := ScheduleCallbackTimer(ScrollTime, ScrollTime, PanView);
   ContentPanel.KeyDownCallback := KeyDown;
   ContentPanel.KeyUpCallback := KeyUp;
@@ -178,16 +177,16 @@ begin
   StopButton.UpCallback := PlayStopClicked;
   TurnSlider.SetRange(0, FilmHistory.GetCount - 1);
   TurnSlider.PositionChangedCallback := TurnSliderChanged;
-  GetByName('MapPanelA').SetActive((GetPlayer <> nil) and GetPlayer.IsHealthEffectActive(heBlindness));
+  GetByName('MapPanelA').IsActive := (GetPlayer <> nil) and GetPlayer.IsHealthEffectActive(heBlindness);
   SelectHistoryEntry(FilmHistory.GetCount - 1, True);
   CopyLiveVisualStateToFilm;
   AdvanceOneStep;
   StartPlayback;
   Galaxy.PrimeIntegrityChecksum(133);
 end;
-{ @end $684C3C }
+{ @end $5255A8 }
 
-{ @routine $684FD4 TfFilm_OnClose }
+{ @routine $5258C4 TfFilm_OnClose }
 procedure TfFilm.OnClose;
 begin
   Galaxy.CheckIntegrityChecksum(134);
@@ -214,24 +213,24 @@ begin
     PreloadedFilm.Free;
     PreloadedFilm := nil;
   end;
-  if PanTimer <> nil then
+  if PanTimer <> 0 then
   begin
     CancelCallbackTimer(PanTimer);
-    PanTimer := nil;
+    PanTimer := 0;
   end;
   SpaceProcess.CloseSpace;
 end;
-{ @end $684FD4 }
+{ @end $5258C4 }
 
-{ @routine $685160 TfFilm_GetViewOffset }
+{ @routine $525A0C TfFilm_GetViewOffset }
 function TfFilm.GetViewOffset: TPoint;
 begin
   if SpacePanel = nil then SpacePanel := GetByName('MainPanel') as TPanelGI;
   Result := SpacePanel.ScrollOffset;
 end;
-{ @end $685160 }
+{ @end $525A0C }
 
-{ @routine $6851CC TfFilm_SetViewOffset }
+{ @routine $525A64 TfFilm_SetViewOffset }
 procedure TfFilm.SetViewOffset(Offset: TPoint);
 begin
   if SpacePanel = nil then SpacePanel := GetByName('MainPanel') as TPanelGI;
@@ -239,9 +238,9 @@ begin
   if SpaceProcess.Space <> nil then SpaceProcess.Space.MapScrollChanged(nil);
   FilmCameraFollow := False;
 end;
-{ @end $6851CC }
+{ @end $525A64 }
 
-{ @routine $685264 TfFilm_FollowViewOffset }
+{ @routine $525AEC TfFilm_FollowViewOffset }
 procedure TfFilm.FollowViewOffset(Offset: TPoint);
 begin
   if FilmCameraFollow then
@@ -251,10 +250,10 @@ begin
     if SpaceProcess.Space <> nil then SpaceProcess.Space.MapScrollChanged(nil);
   end;
 end;
-{ @end $685264 }
+{ @end $525AEC }
 
-{ @routine $685300 TfFilm_PanView }
-procedure TfFilm.PanView(Timer: PCallbackTimerGI; UserData: Integer);
+{ @routine $525B74 TfFilm_PanView }
+procedure TfFilm.PanView(Timer: TCallbackTimerIdGI; UserData: Cardinal);
 var
   Offset, OldOffset: TPoint;
   X, Y: SmallInt;
@@ -268,14 +267,14 @@ begin
   X := GetCursorPoint.X;
   Y := GetCursorPoint.Y;
   if X < ScrollSense then Dec(Offset.X, ScrollStep);
-  if X > GameScreenWidth - ScrollSense - 1 then Inc(Offset.X, ScrollStep);
+  if X > Integer(GameScreenWidth) - ScrollSense - 1 then Inc(Offset.X, ScrollStep);
   if Y < ScrollSense then Dec(Offset.Y, ScrollStep);
-  if Y > GameScreenHeight - ScrollSense - 1 then Inc(Offset.Y, ScrollStep);
+  if Y > Integer(GameScreenHeight) - ScrollSense - 1 then Inc(Offset.Y, ScrollStep);
   if (OldOffset.X <> Offset.X) or (OldOffset.Y <> Offset.Y) then SetViewOffset(Offset);
 end;
-{ @end $685300 }
+{ @end $525B74 }
 
-{ @routine $685438 TfFilm_KeyDown }
+{ @routine $525C98 TfFilm_KeyDown }
 procedure TfFilm.KeyDown(Sender: TObjectGI; Key: Cardinal);
 begin
   if not IsVirtualKeyDown(VK_CONTROL) and not IsVirtualKeyDown(VK_SHIFT) and not IsVirtualKeyDown(VK_MENU) then
@@ -287,9 +286,9 @@ begin
     else if Key = VK_SPACE then PlayStopClicked(nil)
     else if Key = VK_ESCAPE then ExitClicked(nil);
 end;
-{ @end $685438 }
+{ @end $525C98 }
 
-{ @routine $6854FC TfFilm_KeyUp }
+{ @routine $525D38 TfFilm_KeyUp }
 procedure TfFilm.KeyUp(Sender: TObjectGI; Key: Cardinal);
 begin
   if Key = VK_LEFT then PanLeft := False
@@ -297,9 +296,9 @@ begin
   else if Key = VK_UP then PanUp := False
   else if Key = VK_DOWN then PanDown := False;
 end;
-{ @end $6854FC }
+{ @end $525D38 }
 
-{ @routine $685558 TfFilm_CopyLiveVisualStateToFilm }
+{ @routine $525D70 TfFilm_CopyLiveVisualStateToFilm }
 procedure TfFilm.CopyLiveVisualStateToFilm;
 var
   Index, Count, SatelliteIndex, SatelliteCount: Integer;
@@ -314,7 +313,7 @@ begin
   Count := PlayerStar.Planets.Count;
   for Index := 0 to Count - 1 do
   begin
-    Planet := TPlanet(PlayerStar.Planets[Index]);
+    Planet := PlayerStar.Planets[Index];
     Obj := CurrentFilm.FindObject(ClassSEtoName(Planet.Graphic), Planet.Graphic.GraphKey, Planet.Id);
     if (Obj <> nil) and (Obj.SceneObject <> nil) then
     begin
@@ -326,7 +325,7 @@ begin
     SatelliteCount := Planet.Satellites.Count;
     for SatelliteIndex := 0 to SatelliteCount - 1 do
     begin
-      Satellite := TSputnik(Planet.Satellites[SatelliteIndex]);
+      Satellite := Planet.Satellites[SatelliteIndex];
       Obj := CurrentFilm.FindObject(ClassSEtoName(Satellite.Graphic), Satellite.Graphic.GraphKey, Satellite.Id);
       if (Obj <> nil) and (Obj.SceneObject <> nil) then
       begin
@@ -338,15 +337,15 @@ begin
   Count := PlayerStar.Asteroids.Count;
   for Index := 0 to Count - 1 do
   begin
-    Asteroid := TAsteroid(PlayerStar.Asteroids[Index]);
+    Asteroid := PlayerStar.Asteroids[Index];
     Obj := CurrentFilm.FindObject(ClassSEtoName(Asteroid.GraphObject), Asteroid.GraphObject.GraphKey, Asteroid.Id);
     if (Obj <> nil) and (Obj.SceneObject <> nil) then
       (Obj.SceneObject as TAsteroidSE).SetSequenceFrameIndex(TAsteroidSE(Asteroid.GraphObject).GetSequenceFrameIndex);
   end;
 end;
-{ @end $685558 }
+{ @end $525D70 }
 
-{ @routine $6858B8 TfFilm_CopyFilmVisualStateToLive }
+{ @routine $52604C TfFilm_CopyFilmVisualStateToLive }
 procedure TfFilm.CopyFilmVisualStateToLive;
 var
   Index, Count, SatelliteIndex, SatelliteCount: Integer;
@@ -361,7 +360,7 @@ begin
   Count := PlayerStar.Planets.Count;
   for Index := 0 to Count - 1 do
   begin
-    Planet := TPlanet(PlayerStar.Planets[Index]);
+    Planet := PlayerStar.Planets[Index];
     Obj := CurrentFilm.FindObject(ClassSEtoName(Planet.Graphic), Planet.Graphic.GraphKey, Planet.Id);
     if (Obj <> nil) and (Obj.SceneObject <> nil) then
     begin
@@ -373,7 +372,7 @@ begin
     SatelliteCount := Planet.Satellites.Count;
     for SatelliteIndex := 0 to SatelliteCount - 1 do
     begin
-      Satellite := TSputnik(Planet.Satellites[SatelliteIndex]);
+      Satellite := Planet.Satellites[SatelliteIndex];
       Obj := CurrentFilm.FindObject(ClassSEtoName(Satellite.Graphic), Satellite.Graphic.GraphKey, Satellite.Id);
       if (Obj <> nil) and (Obj.SceneObject <> nil) then
       begin
@@ -385,31 +384,31 @@ begin
   Count := PlayerStar.Asteroids.Count;
   for Index := 0 to Count - 1 do
   begin
-    Asteroid := TAsteroid(PlayerStar.Asteroids[Index]);
+    Asteroid := PlayerStar.Asteroids[Index];
     Obj := CurrentFilm.FindObject(ClassSEtoName(Asteroid.GraphObject), Asteroid.GraphObject.GraphKey, Asteroid.Id);
     if (Obj <> nil) and (Obj.SceneObject <> nil) then
       TAsteroidSE(Asteroid.GraphObject).SetSequenceFrameIndex((Obj.SceneObject as TAsteroidSE).GetSequenceFrameIndex);
   end;
 end;
-{ @end $6858B8 }
+{ @end $52604C }
 
-{ @routine $685C18 TfFilm_ExitClicked }
+{ @routine $526328 TfFilm_ExitClicked }
 procedure TfFilm.ExitClicked(Sender: TObjectGI);
 begin
   CopyFilmVisualStateToLive;
   RequestedScreenId := screenStarMap;
   RequestClose(1);
 end;
-{ @end $685C18 }
+{ @end $526328 }
 
-{ @routine $685C48 TfFilm_CenterShipClicked }
+{ @routine $526348 TfFilm_CenterShipClicked }
 procedure TfFilm.CenterShipClicked(Sender: TObjectGI);
 begin
   SetViewOffset(TruncatePointF(CameraTarget));
 end;
-{ @end $685C48 }
+{ @end $526348 }
 
-{ @routine $685C74 TfFilm_SelectHistoryEntry }
+{ @routine $526368 TfFilm_SelectHistoryEntry }
 procedure TfFilm.SelectHistoryEntry(Index: Integer; InitialLoad: Boolean);
 var SwapFilm: TEFilm;
 begin
@@ -440,7 +439,7 @@ begin
   InvalidateViewport;
   PreloadedFilm.StarGenerationSeed := 0;
   TurnSlider.SetPositionInternal(Index);
-  DateLabel.SetText(Galaxy.FormatTurnDate(CurrentFilm.Turn));
+  DateLabel.Text := Galaxy.FormatTurnDate(CurrentFilm.Turn);
   if GetPlayer <> nil then
   begin
     SpaceProcess.RadarCenter := MakePointF(0, 0);
@@ -461,13 +460,13 @@ begin
   NextCommand := CurrentFilm.FirstCommand;
   FrameSlider.SetRange(1, CurrentFilm.LastCommand.StepIndex);
   PreloadHistoryIndex := Index + 1;
-  if FilmHistory.GetCount <= PreloadHistoryIndex then PreloadHistoryIndex := FilmHistory.GetCount - 1;
+  if PreloadHistoryIndex >= FilmHistory.GetCount then PreloadHistoryIndex := FilmHistory.GetCount - 1;
   Loader.Start;
   MinimapFrameCounter := 0;
 end;
-{ @end $685C74 }
+{ @end $526368 }
 
-{ @routine $6860CC TfFilm_CreateFilmSceneObjects }
+{ @routine $526718 TfFilm_CreateFilmSceneObjects }
 procedure TfFilm.CreateFilmSceneObjects(Film: TEFilm);
 var Obj: TEFilmObj;
 begin
@@ -479,9 +478,9 @@ begin
     Obj := Obj.Next;
   end;
 end;
-{ @end $6860CC }
+{ @end $526718 }
 
-{ @routine $686130 TfFilm_ReleaseFilmSceneObjects }
+{ @routine $526758 TfFilm_ReleaseFilmSceneObjects }
 procedure TfFilm.ReleaseFilmSceneObjects(Film: TEFilm; ReleaseTrailingReferences: Boolean);
 var
   Obj: TEFilmObj;
@@ -503,14 +502,12 @@ begin
             NextEntry := NextEntry.Next;
             if Entry.RelatedObject1 = Obj.SceneObject then ReleaseSpaceObject(Entry.RelatedObject1);
             if Entry.RelatedObject2 = Obj.SceneObject then ReleaseSpaceObject(Entry.RelatedObject2);
-            if (Entry.SceneObject is TWeaponSE) and
-              (((Entry.SceneObject as TWeaponSE).SourceObject = Obj.SceneObject) or
-               ((Entry.SceneObject as TWeaponSE).TargetObject = Obj.SceneObject)) then
-            begin
-              ReleaseSpaceObject(Entry.RelatedObject1);
-              ReleaseSpaceObject(Entry.RelatedObject2);
-              TrailingFilmEffects.RemoveEntry(Entry);
-            end;
+            if not (Entry.SceneObject is TWeaponSE) then Continue;
+            if ((Entry.SceneObject as TWeaponSE).SourceObject <> Obj.SceneObject) and
+              ((Entry.SceneObject as TWeaponSE).TargetObject <> Obj.SceneObject) then Continue;
+            ReleaseSpaceObject(Entry.RelatedObject1);
+            ReleaseSpaceObject(Entry.RelatedObject2);
+            TrailingFilmEffects.RemoveEntry(Entry);
           end;
         end;
       ReleaseSpaceObject(Obj.SceneObject);
@@ -518,9 +515,9 @@ begin
     Obj := Obj.Next;
   end;
 end;
-{ @end $686130 }
+{ @end $526758 }
 
-{ @routine $686278 TfFilm_ReuseSceneObjectsForPreloadedFilm }
+{ @routine $52684C TfFilm_ReuseSceneObjectsForPreloadedFilm }
 procedure TfFilm.ReuseSceneObjectsForPreloadedFilm;
 var NewObj, OldObj: TEFilmObj;
 begin
@@ -530,19 +527,18 @@ begin
     if NewObj.SceneObject = nil then
     begin
       OldObj := CurrentFilm.FindObject(NewObj.KindName, NewObj.GraphKey, NewObj.ObjectId);
-      if OldObj <> nil then
-        if OldObj.SceneObject <> nil then
+      if (OldObj <> nil) and (OldObj.SceneObject <> nil) then
+      begin
+        RetainSpaceObject(NewObj.SceneObject, OldObj.SceneObject);
+        if (not (OldObj.SceneObject is TShip2SE) and (OldObj.SceneObject.GraphKey <> 'Ruins.WB')) or
+          (CurrentHistoryIndex <> PreloadHistoryIndex - 1) then NewObj.SceneObject.DetachFromSpace;
+        ReleaseSpaceObject(OldObj.SceneObject);
+        if NewObj.SceneObject is TWeaponSE then
         begin
-          RetainSpaceObject(NewObj.SceneObject, OldObj.SceneObject);
-          if (not (OldObj.SceneObject is TShip2SE) and (OldObj.SceneObject.GraphKey <> 'Ruins.WB')) or
-            (CurrentHistoryIndex <> PreloadHistoryIndex - 1) then NewObj.SceneObject.DetachFromSpace;
-          ReleaseSpaceObject(OldObj.SceneObject);
-          if NewObj.SceneObject is TWeaponSE then
-          begin
-            ReleaseSpaceObject((NewObj.SceneObject as TWeaponSE).SourceObject);
-            ReleaseSpaceObject((NewObj.SceneObject as TWeaponSE).TargetObject);
-          end;
+          ReleaseSpaceObject((NewObj.SceneObject as TWeaponSE).SourceObject);
+          ReleaseSpaceObject((NewObj.SceneObject as TWeaponSE).TargetObject);
         end;
+      end;
     end;
     NewObj := NewObj.Next;
   end;
@@ -565,10 +561,10 @@ begin
     end;
   end;
 end;
-{ @end $686278 }
+{ @end $52684C }
 
-{ @routine $686490 TfFilm_AdvancePausedEffects }
-procedure TfFilm.AdvancePausedEffects(Timer: PCallbackTimerGI; UserData: Integer);
+{ @routine $5269D0 TfFilm_AdvancePausedEffects }
+procedure TfFilm.AdvancePausedEffects(Timer: TCallbackTimerIdGI; UserData: Cardinal);
 begin
   if TrailingFilmEffects <> nil then
   begin
@@ -582,9 +578,9 @@ begin
   SpaceProcess.Space.AdvanceTimers;
   SpaceProcess.Space.AdvanceObjects;
 end;
-{ @end $686490 }
+{ @end $5269D0 }
 
-{ @routine $6864FC TfFilm_SetFrameInterval }
+{ @routine $526A28 TfFilm_SetFrameInterval }
 procedure TfFilm.SetFrameInterval(IntervalMs: Integer; UpdateSlider: Boolean);
 begin
   FrameIntervalMs := IntervalMs;
@@ -595,25 +591,25 @@ begin
   end
   else
   begin
-    if EffectsTimer <> nil then
+    if EffectsTimer <> 0 then
     begin
       CancelCallbackTimer(EffectsTimer);
-      EffectsTimer := nil;
+      EffectsTimer := 0;
     end;
     EffectsTimer := ScheduleCallbackTimer(FrameIntervalMs, FrameIntervalMs, AdvancePausedEffects);
   end;
   if UpdateSlider then SpeedSlider.SetPositionInternal(100 - Round((5 - FrameIntervalMs) / -95.0 * 100.0));
 end;
-{ @end $6864FC }
+{ @end $526A28 }
 
-{ @routine $6865D8 TfFilm_SpeedSliderChanged }
+{ @routine $526AD0 TfFilm_SpeedSliderChanged }
 procedure TfFilm.SpeedSliderChanged(Sender: TObjectGI);
 begin
   SetFrameInterval(Round((100 - SpeedSlider.Position) / 100.0 * 95.0 + 5.0), False);
 end;
-{ @end $6865D8 }
+{ @end $526AD0 }
 
-{ @routine $686634 TfFilm_FrameSliderChanged }
+{ @routine $526B1C TfFilm_FrameSliderChanged }
 procedure TfFilm.FrameSliderChanged(Sender: TObjectGI);
 var
   Position: Integer;
@@ -632,9 +628,9 @@ begin
     FilmSoundEffectsEnabled := True;
   end;
 end;
-{ @end $686634 }
+{ @end $526B1C }
 
-{ @routine $6866CC TfFilm_PlayStopClicked }
+{ @routine $526B84 TfFilm_PlayStopClicked }
 procedure TfFilm.PlayStopClicked(Sender: TObjectGI);
 begin
   if Playing then PausePlayback
@@ -649,9 +645,9 @@ begin
     StartPlayback;
   end;
 end;
-{ @end $6866CC }
+{ @end $526B84 }
 
-{ @routine $686730 TfFilm_TurnSliderChanged }
+{ @routine $526BD4 TfFilm_TurnSliderChanged }
 procedure TfFilm.TurnSliderChanged(Sender: TObjectGI);
 begin
   if Playing then PausePlayback;
@@ -659,52 +655,52 @@ begin
   SelectHistoryEntry(TurnSlider.Position, False);
   AdvanceOneStep;
 end;
-{ @end $686730 }
+{ @end $526BD4 }
 
-{ @routine $686780 TfFilm_StartPlayback }
+{ @routine $526C10 TfFilm_StartPlayback }
 procedure TfFilm.StartPlayback;
 begin
   if not Playing then
   begin
-    if EffectsTimer <> nil then
+    if EffectsTimer <> 0 then
     begin
       CancelCallbackTimer(EffectsTimer);
-      EffectsTimer := nil;
+      EffectsTimer := 0;
     end;
     PlaybackTimer := ScheduleCallbackTimer(FrameIntervalMs, FrameIntervalMs, AdvancePlayback);
-    PlayButton.SetActive(False);
-    StopButton.SetActive(True);
+    PlayButton.IsActive := False;
+    StopButton.IsActive := True;
     Playing := True;
   end;
 end;
-{ @end $686780 }
+{ @end $526C10 }
 
-{ @routine $68681C TfFilm_PausePlayback }
+{ @routine $526C7C TfFilm_PausePlayback }
 procedure TfFilm.PausePlayback;
 begin
   if Playing then
   begin
-    if PlaybackTimer <> nil then
+    if PlaybackTimer <> 0 then
     begin
       CancelCallbackTimer(PlaybackTimer);
-      PlaybackTimer := nil;
+      PlaybackTimer := 0;
     end;
     SpacePanel.SetDragScrollingEnabled(True);
-    if EffectsTimer <> nil then
+    if EffectsTimer <> 0 then
     begin
       CancelCallbackTimer(EffectsTimer);
-      EffectsTimer := nil;
+      EffectsTimer := 0;
     end;
     EffectsTimer := ScheduleCallbackTimer(FrameIntervalMs, FrameIntervalMs, AdvancePausedEffects);
-    PlayButton.SetActive(True);
-    StopButton.SetActive(False);
+    PlayButton.IsActive := True;
+    StopButton.IsActive := False;
     Playing := False;
   end;
 end;
-{ @end $68681C }
+{ @end $526C7C }
 
-{ @routine $6868F0 TfFilm_AdvancePlayback }
-procedure TfFilm.AdvancePlayback(Timer: PCallbackTimerGI; UserData: Integer);
+{ @routine $526D14 TfFilm_AdvancePlayback }
+procedure TfFilm.AdvancePlayback(Timer: TCallbackTimerIdGI; UserData: Cardinal);
 begin
   AdvanceOneStep;
   if NextCommand = nil then
@@ -718,9 +714,9 @@ begin
     end;
   end;
 end;
-{ @end $6868F0 }
+{ @end $526D14 }
 
-{ @routine $68695C TfFilm_AdvanceOneStep }
+{ @routine $526D64 TfFilm_AdvanceOneStep }
 procedure TfFilm.AdvanceOneStep;
 begin
   if TrailingFilmEffects <> nil then
@@ -759,9 +755,9 @@ begin
     end;
   end;
 end;
-{ @end $68695C }
+{ @end $526D64 }
 
-{ @routine $686ACC TfFilm_InvalidateAnimatedControls }
+{ @routine $526E88 TfFilm_InvalidateAnimatedControls }
 procedure TfFilm.InvalidateAnimatedControls;
 begin
   UpdateRectsEnabled := True;
@@ -769,9 +765,9 @@ begin
   CursorControl.Invalidate;
   UpdateRectsEnabled := False;
 end;
-{ @end $686ACC }
+{ @end $526E88 }
 
-{ @routine $686B04 TfFilm_DrawFrame }
+{ @routine $526EB0 TfFilm_DrawFrame }
 procedure TfFilm.DrawFrame;
 var
   RectNode: TRectGR;
@@ -815,9 +811,9 @@ begin
     InvalidateAnimatedControls;
   end;
 end;
-{ @end $686B04 }
+{ @end $526EB0 }
 
-{ @routine $686C64 TfFilm_SelectMusic }
+{ @routine $526FE0 TfFilm_SelectMusic }
 procedure TfFilm.SelectMusic;
 begin
   if MusicInSpaceEnabled then
@@ -835,6 +831,6 @@ begin
   end
   else MusicManager.RequestFadeOut;
 end;
-{ @end $686C64 }
+{ @end $526FE0 }
 
 end.

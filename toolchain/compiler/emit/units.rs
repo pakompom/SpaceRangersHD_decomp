@@ -2,6 +2,32 @@ use super::*;
 use serde::Serialize;
 use std::{fs, path::PathBuf};
 
+fn unit_directives(settings: &Value) -> String {
+    let mut switches = [('O', '-'), ('R', '-'), ('Q', '-'), ('B', '-'), ('X', '+')];
+    let mut alignment = "{$A8}".to_string();
+    for flag in array(&settings["compiler"], "flags") {
+        let Some(flag) = flag.as_str() else { continue };
+        let flag = flag.to_ascii_uppercase();
+        // Delphi 5 accepts A+/A- but predates numbered alignment directives.
+        // Honor an explicit compiler flag instead of injecting unsupported A8.
+        if ["-$A+", "-$A-", "-$A1", "-$A2", "-$A4", "-$A8"].contains(&flag.as_str()) {
+            alignment = format!("{{{}}}", &flag[1..]);
+        }
+        for (name, value) in &mut switches {
+            if flag == format!("-${name}+") {
+                *value = '+';
+            } else if flag == format!("-${name}-") {
+                *value = '-';
+            }
+        }
+    }
+    switches
+        .iter()
+        .map(|(name, value)| format!("{{${name}{value}}}"))
+        .collect::<String>()
+        + &alignment
+}
+
 #[derive(Default, Clone)]
 struct Unit {
     name: String,
@@ -233,7 +259,14 @@ impl Emitter<'_> {
             }
             let name = d.name.to_lowercase();
             if d.kind == "global"
-                && (self.unqualified.contains(&name) || d.data.get("initializer").is_some())
+                && (self.unqualified.contains(&name)
+                    || d.data.get("initializer").is_some()
+                    || retain_all
+                        && !owner(&d).eq_ignore_ascii_case("Rangers")
+                        && d.meta
+                            .get("addr")
+                            .and_then(Value::as_u64)
+                            .is_some_and(|a| a != 0))
             {
                 let own = owner(&d);
                 symbol_units.insert(name, own.clone());
@@ -360,7 +393,10 @@ impl Emitter<'_> {
                     }
                 }
             }
-            unit.implementation.push(code);
+            unit.implementation.push(format!(
+                "{}\n{code}",
+                unit_directives(&self.project.settings)
+            ));
             let external_names = source.external_names(&self.project.compiler)?;
             for word in &external_names {
                 if let Some(own) = symbol_units.get(word) {
@@ -571,7 +607,7 @@ impl Emitter<'_> {
                 .collect::<BTreeSet<_>>();
             let mut text = vec![
                 format!("unit {};", unit.name),
-                "{$O-}{$R-}{$Q-}{$B-}{$A8}".into(),
+                unit_directives(&self.project.settings),
                 "interface".into(),
             ];
             if !interface_uses.is_empty() {
@@ -778,5 +814,29 @@ impl Emitter<'_> {
                 unimplemented,
             },
         })
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn generated_unit_respects_project_optimization() {
+        assert_eq!(
+            unit_directives(&json!({"compiler":{"flags":["-$A+"]}})),
+            "{$O-}{$R-}{$Q-}{$B-}{$X+}{$A+}"
+        );
+        assert_eq!(
+            unit_directives(&json!({})),
+            "{$O-}{$R-}{$Q-}{$B-}{$X+}{$A8}"
+        );
+        assert_eq!(
+            unit_directives(&json!({"compiler":{"flags":["-B", "-$O-", "-$O+"]}})),
+            "{$O+}{$R-}{$Q-}{$B-}{$X+}{$A8}"
+        );
+        assert_eq!(
+            unit_directives(&json!({"compiler":{"flags":["-$O+", "-$O-"]}})),
+            "{$O-}{$R-}{$Q-}{$B-}{$X+}{$A8}"
+        );
     }
 }

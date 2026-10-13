@@ -1,5 +1,4 @@
 unit GI_SBPath;
-// Unit bracket (inferred): .text 0x00492768..0x00492F4D; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 
 interface
@@ -19,31 +18,31 @@ type
     ThumbImage: TImageGI; // @offset $138
     HitRadius: Integer; // @offset $13C
     ChangeCallback: TObjectNotifyEventGI; // @offset $140
-    constructor Create(Owner: TObjectGI); // @addr $4928B8
-    destructor Destroy; override; // @addr $492950
-    procedure Clear; override; // @addr $492984
-    procedure SetImagePath(Path: WideString); // @addr $4929C4
-    procedure SetPositionValue(Value: Integer); // @addr $492A7C
-    procedure UpdateThumbPosition; // @addr $492B14
-    function PositionFromPointIndex(Index: Integer): Integer; // @addr $492BC4
-    function FindClosestPoint(Point: TPoint; var DistanceSquared: Integer): Integer; // @addr $492C34
-    procedure OnActivate; override; // @addr $492CDC
-    procedure OnDeactivate; override; // @addr $492CF8
-    procedure OnMouseEnter; override; // @addr $492D14
-    procedure OnMouseLeave; override; // @addr $492D28
-    procedure ProcessLeftButtonDown(KeyState: Cardinal; Point: TPoint); override; // @addr $492D3C
-    procedure ProcessMouseMove(KeyState: Cardinal; Point: TPoint); override; // @addr $492E30
-    procedure ProcessLeftButtonUp(KeyState: Cardinal; Point: TPoint); override; // @addr $492DFC
-    procedure LoadFromConfigPath(const Path: WideString); override; // @addr $492EF4
-    procedure LoadFromBlock(Block: TBlockParEC); override; // @addr $492F28
-    procedure LoadPathProperties(Block: TBlockParEC); // @addr $492F50
+    constructor Create(Owner: TObjectGI); // @addr $4BB6F8
+    destructor Destroy; override; // @addr $4BB76C
+    procedure Clear; override; // @addr $4BB794
+    procedure SetImagePath(Path: WideString); // @addr $4BB7C4
+    procedure SetPositionValue(Value: Integer); // @addr $4BB860
+    procedure UpdateThumbPosition; // @addr $4BB8B0
+    function PositionFromPointIndex(Index: Integer): Integer; // @addr $4BB938
+    function FindClosestPoint(Point: TPoint; var DistanceSquared: Integer): Integer; // @addr $4BB998
+    procedure OnActivate; override; // @addr $4BBA1C
+    procedure OnDeactivate; override; // @addr $4BBA30
+    procedure OnMouseEnter; override; // @addr $4BBA44
+    procedure OnMouseLeave; override; // @addr $4BBA4C
+    procedure ProcessLeftButtonDown(KeyState: Cardinal; Point: TPoint); override; // @addr $4BBA54
+    procedure ProcessMouseMove(KeyState: Cardinal; Point: TPoint); override; // @addr $4BBB14
+    procedure ProcessLeftButtonUp(KeyState: Cardinal; Point: TPoint); override; // @addr $4BBAEC
+    procedure LoadFromConfigPath(const Path: WideString); override; // @addr $4BBBAC
+    procedure LoadFromBlock(Block: TBlockParEC); override; // @addr $4BBBD8
+    procedure LoadPathProperties(Block: TBlockParEC); // @addr $4BBBF4
   end;
 
 implementation
 
 uses Classes, SysUtils, GI_Main;
 
-{ @routine $4928B8 TSBPathGI_Create }
+{ @routine $4BB6F8 TSBPathGI_Create }
 constructor TSBPathGI.Create(Owner: TObjectGI);
 begin
   inherited Create(Owner);
@@ -54,16 +53,16 @@ begin
   HitRadius := 40;
   UpdateThumbPosition;
 end;
-{ @end $4928B8 }
+{ @end $4BB6F8 }
 
-{ @routine $492950 TSBPathGI_Destroy }
+{ @routine $4BB76C TSBPathGI_Destroy }
 destructor TSBPathGI.Destroy;
 begin
   inherited Destroy;
 end;
-{ @end $492950 }
+{ @end $4BB76C }
 
-{ @routine $492984 TSBPathGI_Clear }
+{ @routine $4BB794 TSBPathGI_Clear }
 procedure TSBPathGI.Clear;
 begin
   PointCount := 0;
@@ -71,18 +70,18 @@ begin
   ThumbImage.Clear;
   inherited Clear;
 end;
-{ @end $492984 }
+{ @end $4BB794 }
 
-{ @routine $4929C4 TSBPathGI_SetImagePath }
+{ @routine $4BB7C4 TSBPathGI_SetImagePath }
 procedure TSBPathGI.SetImagePath(Path: WideString);
 begin
-  ThumbImage.SetImagePath(Path);
-  ThumbImage.SetSize(ThumbImage.GetContentSize);
-  ThumbImage.SetOrigin(Classes.Point(ThumbImage.ClientSize.X div 2, ThumbImage.ClientSize.Y div 2));
+  ThumbImage.ImageSourcePath := Path;
+  ThumbImage.ObjectSize := ThumbImage.GetContentSize;
+  ThumbImage.Sme := Classes.Point(ThumbImage.ClientSize.X div 2, ThumbImage.ClientSize.Y div 2);
 end;
-{ @end $4929C4 }
+{ @end $4BB7C4 }
 
-{ @routine $492A7C TSBPathGI_SetPositionValue }
+{ @routine $4BB860 TSBPathGI_SetPositionValue }
 procedure TSBPathGI.SetPositionValue(Value: Integer);
 begin
   if Position = Value then Exit;
@@ -93,26 +92,26 @@ begin
   UpdateThumbPosition;
   if Assigned(ChangeCallback) then ChangeCallback(Self);
 end;
-{ @end $492A7C }
+{ @end $4BB860 }
 
-{ @routine $492B14 TSBPathGI_UpdateThumbPosition }
+{ @routine $4BB8B0 TSBPathGI_UpdateThumbPosition }
 procedure TSBPathGI.UpdateThumbPosition;
 begin
   if PointCount < 1 then Exit;
-  if Maximum - Minimum < 1 then ThumbImage.SetPosition(Points[0])
-  else ThumbImage.SetPosition(Points[Round((Position - Minimum) / (Maximum - Minimum) * (PointCount - 1))]);
+  if Maximum - Minimum < 1 then ThumbImage.Pos := Points[0]
+  else ThumbImage.Pos := Points[Round((Position - Minimum) / (Maximum - Minimum) * (PointCount - 1))];
 end;
-{ @end $492B14 }
+{ @end $4BB8B0 }
 
-{ @routine $492BC4 TSBPathGI_PositionFromPointIndex }
+{ @routine $4BB938 TSBPathGI_PositionFromPointIndex }
 function TSBPathGI.PositionFromPointIndex(Index: Integer): Integer;
 begin
   if PointCount < 2 then Result := Minimum
   else Result := Round(Index / (PointCount - 1) * (Maximum - Minimum) + Minimum);
 end;
-{ @end $492BC4 }
+{ @end $4BB938 }
 
-{ @routine $492C34 TSBPathGI_FindClosestPoint }
+{ @routine $4BB998 TSBPathGI_FindClosestPoint }
 function TSBPathGI.FindClosestPoint(Point: TPoint; var DistanceSquared: Integer): Integer;
 var BestDistance, BestIndex, Distance, I: Integer;
 begin
@@ -130,39 +129,39 @@ begin
   DistanceSquared := BestDistance;
   Result := BestIndex;
 end;
-{ @end $492C34 }
+{ @end $4BB998 }
 
-{ @routine $492CDC TSBPathGI_OnActivate }
+{ @routine $4BBA1C TSBPathGI_OnActivate }
 procedure TSBPathGI.OnActivate;
 begin
   inherited OnActivate;
   Dragging := False;
 end;
-{ @end $492CDC }
+{ @end $4BBA1C }
 
-{ @routine $492CF8 TSBPathGI_OnDeactivate }
+{ @routine $4BBA30 TSBPathGI_OnDeactivate }
 procedure TSBPathGI.OnDeactivate;
 begin
   inherited OnDeactivate;
   Dragging := False;
 end;
-{ @end $492CF8 }
+{ @end $4BBA30 }
 
-{ @routine $492D14 TSBPathGI_OnMouseEnter }
+{ @routine $4BBA44 TSBPathGI_OnMouseEnter }
 procedure TSBPathGI.OnMouseEnter;
 begin
   inherited OnMouseEnter;
 end;
-{ @end $492D14 }
+{ @end $4BBA44 }
 
-{ @routine $492D28 TSBPathGI_OnMouseLeave }
+{ @routine $4BBA4C TSBPathGI_OnMouseLeave }
 procedure TSBPathGI.OnMouseLeave;
 begin
   inherited OnMouseLeave;
 end;
-{ @end $492D28 }
+{ @end $4BBA4C }
 
-{ @routine $492D3C TSBPathGI_ProcessLeftButtonDown }
+{ @routine $4BBA54 TSBPathGI_ProcessLeftButtonDown }
 procedure TSBPathGI.ProcessLeftButtonDown(KeyState: Cardinal; Point: TPoint);
 var Index, Distance: Integer;
 begin
@@ -177,17 +176,17 @@ begin
     if Assigned(ChangeCallback) then ChangeCallback(Self);
   end else Dragging := False;
 end;
-{ @end $492D3C }
+{ @end $4BBA54 }
 
-{ @routine $492DFC TSBPathGI_ProcessLeftButtonUp }
+{ @routine $4BBAEC TSBPathGI_ProcessLeftButtonUp }
 procedure TSBPathGI.ProcessLeftButtonUp(KeyState: Cardinal; Point: TPoint);
 begin
   inherited ProcessLeftButtonUp(KeyState, Point);
   Dragging := False;
 end;
-{ @end $492DFC }
+{ @end $4BBAEC }
 
-{ @routine $492E30 TSBPathGI_ProcessMouseMove }
+{ @routine $4BBB14 TSBPathGI_ProcessMouseMove }
 procedure TSBPathGI.ProcessMouseMove(KeyState: Cardinal; Point: TPoint);
 var Index, Distance: Integer;
 begin
@@ -202,25 +201,25 @@ begin
     if Assigned(ChangeCallback) then ChangeCallback(Self);
   end else Dragging := False;
 end;
-{ @end $492E30 }
+{ @end $4BBB14 }
 
-{ @routine $492EF4 TSBPathGI_LoadFromConfigPath }
+{ @routine $4BBBAC TSBPathGI_LoadFromConfigPath }
 procedure TSBPathGI.LoadFromConfigPath(const Path: WideString);
 begin
   inherited LoadFromConfigPath(Path);
   LoadPathProperties(UiStyleConfig.GetBlockByPath(Path));
 end;
-{ @end $492EF4 }
+{ @end $4BBBAC }
 
-{ @routine $492F28 TSBPathGI_LoadFromBlock }
+{ @routine $4BBBD8 TSBPathGI_LoadFromBlock }
 procedure TSBPathGI.LoadFromBlock(Block: TBlockParEC);
 begin
   inherited LoadFromBlock(Block);
   LoadPathProperties(Block);
 end;
-{ @end $492F28 }
+{ @end $4BBBD8 }
 
-{ @routine $492F50 TSBPathGI_LoadPathProperties }
+{ @routine $4BBBF4 TSBPathGI_LoadPathProperties }
 procedure TSBPathGI.LoadPathProperties(Block: TBlockParEC);
 var Path: TBlockParEC; I: Integer;
 begin
@@ -240,6 +239,6 @@ begin
   if Block.CountParams('RadiusHit') > 0 then HitRadius := StrToInt(Block.GetParam('RadiusHit'));
   UpdateThumbPosition;
 end;
-{ @end $492F50 }
+{ @end $4BBBF4 }
 
 end.

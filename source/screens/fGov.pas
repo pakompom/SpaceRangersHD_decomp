@@ -1,5 +1,4 @@
 unit fGov;
-// Unit bracket (inferred): .text 0x006C77EC..0x006D0EDE; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -12,7 +11,7 @@ type
     LoadPanel: TfPanelLoad; // @offset 0xD8
     DialogText: WideString; // @offset 0xDC
     FormattedTextLength: Integer; // @offset 0xE0
-    DialogRefreshTimer: PCallbackTimerGI; // @offset 0xE4
+    DialogRefreshTimer: TCallbackTimerIdGI; // @offset 0xE4
     NextChoiceTop: Integer; // @offset 0xE8
     AnimationRestartRequested: Boolean; // @offset $EC
     QuestOffer: TQuest; // @offset 0xF0
@@ -28,94 +27,94 @@ type
     PortraitPanel: TObjectGI; // @offset $134
     SavedChoiceScroll: Integer; // @offset $138
 
-    constructor Create; // @addr 0x6C7898
-    destructor Destroy; override; // @addr 0x6C7918
-    procedure InitializeLayout; override; // @addr $6C7DEC
-    procedure OnOpen; override; // @addr 0x6C84B0 @note "Native diagnostic name: TfGov.BeforeRun."
-    procedure AddChoice(Text: WideString; Value: Integer; Callback: TDialogChoiceEventGI); // @addr $6CA804
-    procedure ClearDialogChoices; // @addr 0x6CA788
-    procedure BuildGovernmentChoices(SkipScriptResponseText: Boolean); // @addr 0x6CC178 @note "DL flag: true suppresses selecting/appending response text from the script-choice list; script execution and choice construction still run. Callers pass 0 or 1."
-    procedure BuildQuestOfferChoices; // @addr 0x6CCED0
-    procedure RequestQuest(Action: Integer); // @addr 0x6CDE90
-    procedure MakeQuestEasier(Action: Integer); // @addr 0x6CE5B4
-    procedure MakeQuestHarder(Action: Integer); // @addr 0x6CE8AC
-    procedure AcceptQuest(Action: Integer); // @addr 0x6CEBA4
-    procedure RejectQuest(Action: Integer); // @addr 0x6CEE18
-    procedure PermanentlyDeclineQuest(Action: Integer); // @addr 0x6CEF08
-    procedure AddScriptTakeoffChoice(Caption: WideString); // @addr $6CCC78
-    procedure AddScriptPlanetChoice(Caption: WideString); // @addr $6CCCDC
-    procedure AddScriptGoodsChoice(Caption: WideString); // @addr $6CCD40
-    procedure AddScriptShopChoice(Caption: WideString); // @addr $6CCDA4
-    procedure AddScriptHangarChoice(Caption: WideString); // @addr $6CCE08
-    procedure AddScriptRestartChoice(Caption: WideString); // @addr $6D0DE4
-    procedure AddScriptNewsExitChoice(Caption: WideString); // @addr $6CCE6C
-    procedure ContinueScriptDialog; // @addr $6CCB44
-    procedure RunScriptAnswerKeepingScroll(Answer: Integer); // @addr $6CD1CC
-    procedure RunScriptAnswer(Answer: Integer); // @addr $6CD158
-    procedure OnClose; override; // @addr $6CA2CC
-    procedure EndTurnClicked(Sender: TObjectGI); // @addr $6CA358
-    procedure ShipClicked(Sender: TObjectGI); // @addr $6CA410
-    procedure RequestAnimationRestart; // @addr $6CA488
-    procedure PortraitAnimationComplete(Sender: TObjectGI); // @addr $6CA49C
-    procedure UpdatePortraitAnimation(Talking: Boolean); // @addr $6CA4D8
-    procedure RememberChoiceScroll; // @addr $6CA73C
-    procedure ChoiceMouseEnter(Sender: TObjectGI); // @addr $6CADD0
-    procedure ChoiceMouseLeave(Sender: TObjectGI); // @addr $6CADF0
-    procedure ChoiceMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $6CAE10
-    procedure ChoiceMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $6CAE90
-    procedure RestartTextPresentation(RestartAnimation: Boolean); // @addr $6CAFB0
-    procedure AdvanceTextPresentation(Timer: PCallbackTimerGI; UserData: Integer); // @addr $6CB05C
-    procedure ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer); override; // @addr $6CB4D0
-    function CreateDialogObject(LabelControl: TLabelGI; Item: PFontObjectEC): TObjectGI; // @addr $6CB5C8
-    procedure AddMessageClicked(Sender: TObjectGI); // @addr $6CB8DC
-    procedure StartScriptMessage(Action: Integer); // @addr $6CD120
-    procedure RunInjectedAnswerKeepingScroll(Answer: Integer); // @addr $6D0D8C
-    procedure RunScriptTakeoffAnswer(Answer: Integer); // @addr $6CD1F0
-    procedure RunScriptPlanetAnswer(Answer: Integer); // @addr $6CD2AC
-    procedure RunScriptGoodsAnswer(Answer: Integer); // @addr $6CD2E0
-    procedure RunScriptShopAnswer(Answer: Integer); // @addr $6CD314
-    procedure RunScriptHangarAnswer(Answer: Integer); // @addr $6CD348
-    procedure RunScriptNewsExitAnswer(Answer: Integer); // @addr $6CD37C
-    procedure RunScriptRestartAnswer(Answer: Integer); // @addr $6D0DB0
-    procedure ReturnToPlanet(Action: Integer); // @addr $6D0B78
-    procedure ExitGovernment(Action: Integer); // @addr $6D0BA0
-    procedure ExecuteUiCode(Block: TBlockParEC; Key: Cardinal); override; // @addr $6D0E6C
-    procedure MainPanelKeyDown(Sender: TObjectGI; Key: Cardinal); // @addr $6CB6AC
-    procedure SelectMusic; override; // @addr $6CBA4C
-    procedure DeclinePlanetBattle(Action: Integer); // @addr $6CF050
-    procedure ConfirmDeclineAllPlanetBattles(Action: Integer); // @addr $6CF1E4
-    procedure DeclineAllPlanetBattles(Action: Integer); // @addr $6CF39C
-    procedure CancelDeclineAllPlanetBattles(Action: Integer); // @addr $6CF474
-    procedure CancelPrisonBail(Action: Integer); // @addr $6D0AC4
-    procedure ShowPlanetBattleSupport(Action: Integer); // @addr $6CF53C
-    procedure StartPlanetBattleWithoutSupport(Action: Integer); // @addr $6CF898
-    procedure StartPlanetBattleWithReinforcements(Action: Integer); // @addr $6CF978
-    procedure StartPlanetBattleWithBombardment(Action: Integer); // @addr $6CFA58
-    procedure DeclineBattleAndLeave(Action: Integer); // @addr $6CFB38
-    procedure ChoosePrisonInsteadOfBattle(Action: Integer); // @addr $6CFC68
-    procedure EnterPrison(Action: Integer); // @addr $6CD3B0
-    procedure ShowMapOffer(Action: Integer); // @addr $6CFF78
-    procedure BuyMap(Action: Integer); // @addr $6D022C
-    procedure DeclineMapOffer(Action: Integer); // @addr $6D03CC
-    procedure ShowPrisonBail(Action: Integer); // @addr $6D0494
-    procedure PayPrisonBail(Action: Integer); // @addr $6D0924
-    procedure ContinueAfterPrison(Action: Integer); // @addr $6CD5C4
-    procedure ShowBribeOffer(Action: Integer); // @addr $6CD704
-    procedure PayBribe(Action: Integer); // @addr $6CDADC
-    procedure DeclineBribe(Action: Integer); // @addr $6CDDC4
-    procedure AddBuiltinGovernmentChoices; // @addr $6CC898
-    procedure RefreshGovernmentDialog; // @addr $6CBBD0
-    procedure RunInjectedAnswer(Answer: Integer); // @addr $6D0BC8
+    constructor Create; // @addr 0x0051C26C
+    destructor Destroy; override; // @addr 0x0051C2D8
+    procedure InitializeLayout; override; // @addr $51C744
+    procedure OnOpen; override; // @addr 0x0051CD1C @note "Native diagnostic name: TfGov.BeforeRun."
+    procedure AddChoice(CaptionText: WideString; Value: Cardinal; Callback: TDialogChoiceEventGI); // @addr $51EE88
+    procedure ClearDialogChoices; // @addr 0x0051EE30
+    procedure BuildGovernmentChoices(SkipScriptResponseText: Boolean); // @addr 0x00520580 @note "DL flag: true suppresses selecting/appending response text from the script-choice list; script execution and choice construction still run. Callers pass 0 or 1."
+    procedure BuildQuestOfferChoices; // @addr 0x005211B8
+    procedure RequestQuest(Action: Cardinal); // @addr 0x0052209C
+    procedure MakeQuestEasier(Action: Cardinal); // @addr 0x00522760
+    procedure MakeQuestHarder(Action: Cardinal); // @addr 0x00522A18
+    procedure AcceptQuest(Action: Cardinal); // @addr 0x00522CD0
+    procedure RejectQuest(Action: Cardinal); // @addr 0x00522F24
+    procedure PermanentlyDeclineQuest(Action: Cardinal); // @addr 0x00523004
+    procedure AddScriptTakeoffChoice(Caption: WideString); // @addr $520F90
+    procedure AddScriptPlanetChoice(Caption: WideString); // @addr $520FEC
+    procedure AddScriptGoodsChoice(Caption: WideString); // @addr $521048
+    procedure AddScriptShopChoice(Caption: WideString); // @addr $5210A4
+    procedure AddScriptHangarChoice(Caption: WideString); // @addr $521100
+    procedure AddScriptRestartChoice(Caption: WideString); // @addr $524CC4
+    procedure AddScriptNewsExitChoice(Caption: WideString); // @addr $52115C
+    procedure ContinueScriptDialog; // @addr $520E8C
+    procedure RunScriptAnswerKeepingScroll(Answer: Cardinal); // @addr $521478
+    procedure RunScriptAnswer(Answer: Cardinal); // @addr $521414
+    procedure OnClose; override; // @addr $51EA28
+    procedure EndTurnClicked(Sender: TObjectGI); // @addr $51EAA4
+    procedure ShipClicked(Sender: TObjectGI); // @addr $51EB44
+    procedure RequestAnimationRestart; // @addr $51EBA4
+    procedure PortraitAnimationComplete(Sender: TObjectGI); // @addr $51EBAC
+    procedure UpdatePortraitAnimation(Talking: Boolean); // @addr $51EBD8
+    procedure RememberChoiceScroll; // @addr $51EDEC
+    procedure ChoiceMouseEnter(Sender: TObjectGI); // @addr $51F3E0
+    procedure ChoiceMouseLeave(Sender: TObjectGI); // @addr $51F3EC
+    procedure ChoiceMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $51F3F8
+    procedure ChoiceMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $51F458
+    procedure RestartTextPresentation(RestartAnimation: Boolean); // @addr $51F548
+    procedure AdvanceTextPresentation(Timer: TCallbackTimerIdGI; UserData: Cardinal); // @addr $51F5CC
+    procedure ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer); override; // @addr $51F9B4
+    function CreateDialogObject(LabelControl: TLabelGI; Item: PFontObjectEC): TObjectGI; // @addr $51FA7C
+    procedure AddMessageClicked(Sender: TObjectGI); // @addr $51FD0C
+    procedure StartScriptMessage(Action: Cardinal); // @addr $5213EC
+    procedure RunInjectedAnswerKeepingScroll(Answer: Cardinal); // @addr $524C7C
+    procedure RunScriptTakeoffAnswer(Answer: Cardinal); // @addr $521494
+    procedure RunScriptPlanetAnswer(Answer: Cardinal); // @addr $521544
+    procedure RunScriptGoodsAnswer(Answer: Cardinal); // @addr $52156C
+    procedure RunScriptShopAnswer(Answer: Cardinal); // @addr $521594
+    procedure RunScriptHangarAnswer(Answer: Cardinal); // @addr $5215BC
+    procedure RunScriptNewsExitAnswer(Answer: Cardinal); // @addr $5215E4
+    procedure RunScriptRestartAnswer(Answer: Cardinal); // @addr $524C98
+    procedure ReturnToPlanet(Action: Cardinal); // @addr $524AC0
+    procedure ExitGovernment(Action: Cardinal); // @addr $524AD4
+    procedure ExecuteUiCode(Block: TBlockParEC; Key: Cardinal); override; // @addr $524D48
+    procedure MainPanelKeyDown(Sender: TObjectGI; Key: Cardinal); // @addr $51FB4C
+    procedure SelectMusic; override; // @addr $51FE70
+    procedure DeclinePlanetBattle(Action: Cardinal); // @addr $523124
+    procedure ConfirmDeclineAllPlanetBattles(Action: Cardinal); // @addr $523284
+    procedure DeclineAllPlanetBattles(Action: Cardinal); // @addr $523430
+    procedure CancelDeclineAllPlanetBattles(Action: Cardinal); // @addr $5234FC
+    procedure CancelPrisonBail(Action: Cardinal); // @addr $524A18
+    procedure ShowPlanetBattleSupport(Action: Cardinal); // @addr $5235B8
+    procedure StartPlanetBattleWithoutSupport(Action: Cardinal); // @addr $523900
+    procedure StartPlanetBattleWithReinforcements(Action: Cardinal); // @addr $5239C8
+    procedure StartPlanetBattleWithBombardment(Action: Cardinal); // @addr $523A90
+    procedure DeclineBattleAndLeave(Action: Cardinal); // @addr $523B58
+    procedure ChoosePrisonInsteadOfBattle(Action: Cardinal); // @addr $523C78
+    procedure EnterPrison(Action: Cardinal); // @addr $52160C
+    procedure ShowMapOffer(Action: Cardinal); // @addr $523F74
+    procedure BuyMap(Action: Cardinal); // @addr $5241F0
+    procedure DeclineMapOffer(Action: Cardinal); // @addr $524370
+    procedure ShowPrisonBail(Action: Cardinal); // @addr $52442C
+    procedure PayPrisonBail(Action: Cardinal); // @addr $524898
+    procedure ContinueAfterPrison(Action: Cardinal); // @addr $521804
+    procedure ShowBribeOffer(Action: Cardinal); // @addr $521938
+    procedure PayBribe(Action: Cardinal); // @addr $521CFC
+    procedure DeclineBribe(Action: Cardinal); // @addr $521FDC
+    procedure AddBuiltinGovernmentChoices; // @addr $520BF4
+    procedure RefreshGovernmentDialog; // @addr $51FFF0
+    procedure RunInjectedAnswer(Answer: Cardinal); // @addr $524AE8
   end;
 
 var
-  GovernmentBattleDifficulty: Integer; // @addr $88B0C4 Native battle launch selector, 1..3.
+  GovernmentBattleDifficulty: Integer; // @addr $81B634 Native battle launch selector, 1..3.
 
 implementation
 
 uses Classes, SysUtils, Math, Windows, Globals, GlobalsV, GR_Main, GI_Main, GI_Panel, GI_Image, GI_GAI, GI_PanelScrollBar, GI_ScrollBar, GI_GraphButton, aGalaxy, aGalaxyStruct, aConst, aShip, aPlayer, aPlanet, aScript, aMyFunction, aSaveLoad, fSaveManager, fHangar, fShip2, fTalk, ThreadCalc, aCalc, aItem, Achievements, aPirate, aNormalShip, Robot, fPlanetQuest;
 
-{ @routine $6C7898 TfGov_Create }
+{ @routine $51C26C TfGov_Create }
 constructor TfGov.Create;
 begin
   inherited Create;
@@ -123,9 +122,9 @@ begin
   ScriptDialogNames := TStringsEC.Create;
   LoadPanel := TfPanelLoad.Create;
 end;
-{ @end $6C7898 }
+{ @end $51C26C }
 
-{ @routine $6C7918 TfGov_Destroy }
+{ @routine $51C2D8 TfGov_Destroy }
 destructor TfGov.Destroy;
 begin
   if LoadPanel <> nil then begin LoadPanel.Free; LoadPanel := nil; end;
@@ -133,28 +132,28 @@ begin
   if ScriptDialogNames <> nil then begin ScriptDialogNames.Free; ScriptDialogNames := nil; end;
   inherited Destroy;
 end;
-{ @end $6C7918 }
+{ @end $51C2D8 }
 
-{ @routine $6C7DEC TfGov_InitializeLayout }
+{ @routine $51C744 TfGov_InitializeLayout }
 procedure TfGov.InitializeLayout;
 var HalfWidth, ChoiceGrowth: Integer; Owner: TOwnerId;
-  // @nested $6C79B8 LayoutPortrait
-  procedure LayoutPortrait(Name: WideString; Screen: TMessageLoopGI); // @addr $6C79B8 @calls "0x6C7F28" @note "Nested in TfGov.InitializeLayout; captures half-width and Self."
+  // @nested $51C344 LayoutPortrait
+  procedure LayoutPortrait(Name: WideString; Screen: TMessageLoopGI); // @addr $51C344 @calls "0x0051C875" @note "Nested in TfGov.InitializeLayout; captures half-width and Self."
   var I, PortraitX, PortraitY, TableY, Bottom, DeltaX, DeltaY: Integer; Panel: TObjectGI;
   begin
     Panel := Screen.FindControlByPath(Name);
     if Panel <> nil then
     begin
       Panel.SetSize(Point(GameScreenWidth, GameScreenHeight));
-      PortraitY := Cardinal(GameScreenHeight) div 10;
+      PortraitY := GameScreenHeight div 10;
       TableY := PortraitY + (Panel.FindByNameRecursive('Gov_Anim0').ClientSize.Y div 10) * 6;
       Bottom := TableY + (Panel.FindByNameRecursive('Table').ClientSize.Y div 10) * 9;
       DeltaX := Panel.FindByNameRecursive('Gov_Anim0').LocalPosition.X - Panel.FindByNameRecursive('Gov_Anim1').LocalPosition.X;
       DeltaY := Panel.FindByNameRecursive('Gov_Anim0').ClientSize.Y - Panel.FindByNameRecursive('Gov_Anim1').ClientSize.Y;
-      if GameScreenHeight > Bottom then
+      if Integer(GameScreenHeight) > Bottom then
       begin
-        PortraitY := PortraitY + GameScreenHeight - Bottom;
-        TableY := TableY + GameScreenHeight - Bottom;
+        PortraitY := PortraitY + Integer(GameScreenHeight) - Bottom;
+        TableY := TableY + Integer(GameScreenHeight) - Bottom;
       end;
       with Panel.FindByNameRecursive('Table') do
       begin
@@ -189,10 +188,10 @@ begin
   with GetByName('MainPanel') do
   begin
     SetSize(Point(GameScreenWidth, GameScreenHeight));
-    HalfWidth := Cardinal(GameScreenWidth) div 2;
+    HalfWidth := GameScreenWidth div 2;
     UseHdPortrait := False;
     UseClassicPortrait := False;
-    if (Cardinal(GameScreenWidth) >= 1280) and (Cardinal(GameScreenHeight) >= 960) then
+    if (GameScreenWidth >= 1280) and (GameScreenHeight >= 960) then
     begin
       UseHdPortrait := True;
       UseClassicPortrait := UseTablesForGov;
@@ -223,7 +222,7 @@ begin
       begin
         SetPosition(Point(LocalPosition.X, LocalPosition.Y + HalfWidth));
         SetSize(Point(ClientSize.X, ClientSize.Y + ChoiceGrowth));
-        TObjectGI(VerticalScrollBar).SetPosition(Point(VerticalScrollBar.LocalPosition.X, VerticalScrollBar.LocalPosition.Y + HalfWidth));
+        VerticalScrollBar.Pos := Point(VerticalScrollBar.LocalPosition.X, VerticalScrollBar.LocalPosition.Y + HalfWidth);
         VerticalScrollBar.SetSize(Point(VerticalScrollBar.ClientSize.X, VerticalScrollBar.ClientSize.Y + ChoiceGrowth));
         with NextSibling do
         begin
@@ -246,20 +245,21 @@ begin
   with GetByName('UserMsgAdd') as TGraphButtonGI do UpCallback := AddMessageClicked;
   with GetByName('ButFormClose') as TGraphButtonGI do UpCallback := PlanetPanel.PlanetClicked;
 end;
-{ @end $6C7DEC }
+{ @end $51C744 }
 
-{ @routine $6C84B0 TfGov_OnOpen }
+{ @routine $51CD1C TfGov_OnOpen }
 procedure TfGov.OnOpen;
 var
   Owner: TOwnerId;
-  MapIndex, Money, ExperienceAwarded: Integer;
+  MapIndex, Money: Integer;
+  // Native unused storage precedes the address-taken experience award.
+  UnresolvedFrameBytes: array[0..3] of Byte;
+  ExperienceAwarded: Integer;
   Text, WinText, LossText, TerronName: WideString;
   Event: TGalaxyEvent;
   Stage: Integer;
   Failed: Boolean;
   Portrait: TObjectGI;
-  // Four native frame bytes precede compiler temporaries; no access identifies their type.
-  UnresolvedFrameBytes: array[0..3] of Byte;
 begin
   Stage := 0;
   try
@@ -324,11 +324,11 @@ begin
           PrimeImageCaches;
         end;
         if AnimGov = 2 then
-        with FindByNameRecursive('GovHD_Anim1') as TgaiGI do
-        begin
-          FirstFrameOnly := AnimGov = 0;
-          PrimeImageCaches;
-        end;
+          with FindByNameRecursive('GovHD_Anim1') as TgaiGI do
+          begin
+            FirstFrameOnly := AnimGov = 0;
+            PrimeImageCaches;
+          end;
       end
       else
       begin
@@ -338,18 +338,18 @@ begin
           PrimeImageCaches;
         end;
         if AnimGov = 2 then
-        with FindByNameRecursive('Gov_Anim1') as TgaiGI do
-        begin
-          FirstFrameOnly := AnimGov = 0;
-          PrimeImageCaches;
-        end;
+          with FindByNameRecursive('Gov_Anim1') as TgaiGI do
+          begin
+            FirstFrameOnly := AnimGov = 0;
+            PrimeImageCaches;
+          end;
       end;
     end;
     Stage := 5;
     Stage := 6;
     with GetByName('TalkText') as TLabelGI do
     begin
-      SetText('');
+      Text := '';
       if FontDialog = 0 then SetFontName(NormalFontName)
       else if FontDialog = 1 then SetFontName(SmoothBigFontName)
       else if FontDialog = 2 then SetFontName(SmoothHugeFontName)
@@ -424,8 +424,8 @@ begin
       RequestedScreenId := screenGovernment;
       RequestClose(1);
       Exit;
-    end;
-    if PendingTransition = 2 then
+    end
+    else if PendingTransition = 2 then
     begin
       Stage := 13;
       MapIndex := FindRobotMapById(PlanetBattleMapId);
@@ -444,7 +444,7 @@ begin
       ReplaceTextToken(DialogText, '<Star>', GetPlayer.CurrentStar.Name, TextHighlightColorTag);
       ReplaceTextToken(DialogText, '<Planet>', GetPlayer.CurrentPlanet.Name, TextHighlightColorTag);
       ReplaceTextToken(DialogText, '<Player>', GetPlayer.Name, TextHighlightColorTag);
-      ReplaceTextToken(DialogText, '<Money>', WideString(IntToStr(Money)), TextHighlightColorTag);
+      ReplaceTextToken(DialogText, '<Money>', IntToStr(Money), TextHighlightColorTag);
       Stage := 15;
       BuildGovernmentChoices(True);
       Stage := 16;
@@ -486,7 +486,7 @@ begin
       ReplaceTextToken(DialogText, '<Star>', GetPlayer.CurrentStar.Name, TextHighlightColorTag);
       ReplaceTextToken(DialogText, '<Planet>', GetPlayer.CurrentPlanet.Name, TextHighlightColorTag);
       ReplaceTextToken(DialogText, '<Player>', GetPlayer.Name, TextHighlightColorTag);
-      ReplaceTextToken(DialogText, '<Money>', WideString(IntToStr(Money)), TextHighlightColorTag);
+      ReplaceTextToken(DialogText, '<Money>', IntToStr(Money), TextHighlightColorTag);
       DialogText := DialogText + GetPlayer.GrantPlanetQuestReward(GovernmentBattleDifficulty, ExperienceAwarded);
       Event := AddGalaxyEvent('PlayerFinishesPlanetaryBattle');
       Event.AddData(PlanetBattleMapId);
@@ -564,9 +564,9 @@ begin
     end;
   end;
 end;
-{ @end $6C84B0 }
+{ @end $51CD1C }
 
-{ @routine $6CA2CC TfGov_OnClose }
+{ @routine $51EA28 TfGov_OnClose }
 procedure TfGov.OnClose;
 begin
   if Galaxy <> nil then Galaxy.CheckIntegrityChecksum(171);
@@ -578,31 +578,29 @@ begin
   PlanetPanel.OnClose;
   ScriptDialogNames.Clear;
 end;
-{ @end $6CA2CC }
+{ @end $51EA28 }
 
-{ @routine $6CA358 TfGov_EndTurnClicked }
+{ @routine $51EAA4 TfGov_EndTurnClicked }
 procedure TfGov.EndTurnClicked(Sender: TObjectGI);
 begin
-  if (GetPlayer.CurrentPlanet.GetRelationLevelToShip(GetPlayer) > rlHostile) and (GetPlayer.PendingDockDialogue <= 1) then
+  if (GetPlayer.CurrentPlanet.GetRelationLevelToShip(GetPlayer) <= rlHostile) or (GetPlayer.PendingDockDialogue > 1) then Exit;
+  Galaxy.CheckIntegrityChecksum(172);
+  RestoreTemporaryShopStock;
+  MainPanel.EndTurnClicked(Sender);
+  MainPanel.RebuildMessageButtons(False);
+  if ExitCode = 0 then
   begin
-    Galaxy.CheckIntegrityChecksum(172);
-    RestoreTemporaryShopStock;
-    MainPanel.EndTurnClicked(Sender);
-    MainPanel.RebuildMessageButtons(False);
-    if ExitCode = 0 then
-    begin
-      BuildTemporaryShopSlotGrid;
-      UpdatePortraitAnimation(True);
-      RefreshGovernmentDialog;
-      Galaxy.PrimeIntegrityChecksum(173);
-      RestartTextPresentation(True);
-      AnimationRestartRequested := False;
-    end;
+    BuildTemporaryShopSlotGrid;
+    UpdatePortraitAnimation(True);
+    RefreshGovernmentDialog;
+    Galaxy.PrimeIntegrityChecksum(173);
+    RestartTextPresentation(True);
+    AnimationRestartRequested := False;
   end;
 end;
-{ @end $6CA358 }
+{ @end $51EAA4 }
 
-{ @routine $6CA410 TfGov_ShipClicked }
+{ @routine $51EB44 TfGov_ShipClicked }
 procedure TfGov.ShipClicked(Sender: TObjectGI);
 begin
   MainPanel.ShipClicked(Sender);
@@ -615,16 +613,16 @@ begin
     MainPanel.RebuildMessageButtons(False);
   end;
 end;
-{ @end $6CA410 }
+{ @end $51EB44 }
 
-{ @routine $6CA488 TfGov_RequestAnimationRestart }
+{ @routine $51EBA4 TfGov_RequestAnimationRestart }
 procedure TfGov.RequestAnimationRestart;
 begin
   AnimationRestartRequested := True;
 end;
-{ @end $6CA488 }
+{ @end $51EBA4 }
 
-{ @routine $6CA49C TfGov_PortraitAnimationComplete }
+{ @routine $51EBAC TfGov_PortraitAnimationComplete }
 procedure TfGov.PortraitAnimationComplete(Sender: TObjectGI);
 begin
   if AnimationRestartRequested then
@@ -634,9 +632,9 @@ begin
   end
   else UpdatePortraitAnimation(False);
 end;
-{ @end $6CA49C }
+{ @end $51EBAC }
 
-{ @routine $6CA4D8 TfGov_UpdatePortraitAnimation }
+{ @routine $51EBD8 TfGov_UpdatePortraitAnimation }
 procedure TfGov.UpdatePortraitAnimation(Talking: Boolean);
 begin
   if AnimGov <> 2 then Talking := False;
@@ -683,16 +681,16 @@ begin
     end;
   end;
 end;
-{ @end $6CA4D8 }
+{ @end $51EBD8 }
 
-{ @routine $6CA73C TfGov_RememberChoiceScroll }
+{ @routine $51EDEC TfGov_RememberChoiceScroll }
 procedure TfGov.RememberChoiceScroll;
 begin
   SavedChoiceScroll := (GetByName('TalkPA') as TPanelScrollBarGI).VerticalScrollBar.Position;
 end;
-{ @end $6CA73C }
+{ @end $51EDEC }
 
-{ @routine $6CA788 TfGov_ClearDialogChoices }
+{ @routine $51EE30 TfGov_ClearDialogChoices }
 procedure TfGov.ClearDialogChoices;
 var Child, Panel: TObjectGI;
 begin
@@ -707,27 +705,27 @@ begin
   Panel.FreeOwnedChildren;
   Panel.Invalidate;
 end;
-{ @end $6CA788 }
+{ @end $51EE30 }
 
-{ @routine $6CA804 TfGov_AddChoice }
-procedure TfGov.AddChoice(Text: WideString; Value: Integer; Callback: TDialogChoiceEventGI);
+{ @routine $51EE88 TfGov_AddChoice }
+procedure TfGov.AddChoice(CaptionText: WideString; Value: Cardinal; Callback: TDialogChoiceEventGI);
 var Panel: TPanelScrollBarGI; Choice: TfTalkA; I: Integer; Row: TPanelGI;
   Highlight: TImageGI; BlockMode: Byte;
 begin
   BlockMode := 0;
   if ScriptDialogBlocks <> nil then
     for I := 0 to ScriptDialogBlocks.Count - 1 do
-      if FindTextOffsetW(Text, PScriptDialogBlock(ScriptDialogBlocks[I]).Text) >= 0 then
+      if FindTextOffsetW(CaptionText, PScriptDialogBlock(ScriptDialogBlocks[I]).Text) >= 0 then
         BlockMode := Max(BlockMode, PScriptDialogBlock(ScriptDialogBlocks[I]).Mode);
   if BlockMode >= 2 then Exit;
   Panel := GetByName('TalkPA') as TPanelScrollBarGI;
   I := 0;
-  while I < Length(Text) do
+  while I < Length(CaptionText) do
   begin
-    if (Text[I + 1] <> '-') and (Text[I + 1] <> ' ') then Break;
+    if (CaptionText[I + 1] <> '-') and (CaptionText[I + 1] <> ' ') then Break;
     Inc(I);
   end;
-  if I > 0 then Text := Copy(Text, I + 1, Length(Text) - I);
+  if I > 0 then CaptionText := Copy(CaptionText, I + 1, Length(CaptionText) - I);
   Choice := TfTalkA.Create;
   Choice.Callback := Callback;
   Choice.Value := Value;
@@ -735,7 +733,7 @@ begin
   Row := TPanelGI.Create(Panel);
   Row.UserValue := Integer(Choice);
   Row.SetPosition(Point(0, NextChoiceTop));
-  Row.SetSize(Point(Panel.ClientSize.X, 20));
+  Row.ObjectSize := Point(Panel.ClientSize.X, 20);
   Row.SetPositionModeW(True);
   Row.MouseEnterCallback := ChoiceMouseEnter;
   Row.MouseLeaveCallback := ChoiceMouseLeave;
@@ -744,60 +742,60 @@ begin
   Highlight := TImageGI.Create(Row);
   Highlight.SetDepth(3);
   Highlight.SetPosition(Point(0, 0));
-  Highlight.SetSize(Point(Panel.ClientSize.X, 20));
+  Highlight.ObjectSize := Point(Panel.ClientSize.X, 20);
   Highlight.SetImagePath('GI,Bm.FormGov2.' + GiResourceSuffix + 'Line');
   Highlight.SetImageKindX(ikxLeftFill);
   Highlight.SetImageKindY(ikyTopFill);
   Highlight.SetActive(False);
   with TLabelGI.Create(Row) do
   begin
-  if FontDialog = 0 then SetFontName(NormalFontName)
-  else if FontDialog = 1 then SetFontName(SmoothBigFontName)
-  else if FontDialog = 2 then SetFontName(SmoothHugeFontName)
-  else if FontDialog >= 3 then SetFontName(SmoothIntroFontName);
-  SetSize(Point(Panel.ClientSize.X - GiScalePixels(20), 20));
-  SetPosition(Point(GiScalePixels(10), 0));
-  SetWordWrapEnabled(True);
-  SetTextAlignX(taxLeft);
-  SetTextAlignY(tayAuto);
-  if not Assigned(Callback) then Text := RemoveTextTagsW(Text);
-  SetText('<Object=0,20,14,0>' + ReplaceAllWideString(Text, TextHighlightColorTag, DialogHighlightColorTag));
-  SetTextColor(CurrentPixelFormat.PackRgbBytes(0, 0, 0));
-  if not Assigned(Choice.Callback) then SetTextColor(CurrentPixelFormat.PackRgbBytes(127, 127, 127));
-  CreateEmbeddedControl := CreateDialogObject;
-  SetTextAlignY(tayCenterEx);
-  Row.SetSize(Point(Row.ClientSize.X, ClientSize.Y + 2 * GiScalePixelsEx(2, 2)));
-  SetSize(Point(ClientSize.X, Row.ClientSize.Y));
-  Highlight.SetSize(Row.ClientSize);
-  Inc(NextChoiceTop, ClientSize.Y);
+    if FontDialog = 0 then SetFontName(NormalFontName)
+    else if FontDialog = 1 then SetFontName(SmoothBigFontName)
+    else if FontDialog = 2 then SetFontName(SmoothHugeFontName)
+    else if FontDialog >= 3 then SetFontName(SmoothIntroFontName);
+    ObjectSize := Point(Panel.ClientSize.X - GiScalePixels(20), 20);
+    SetPosition(Point(GiScalePixels(10), 0));
+    SetWordWrapEnabled(True);
+    SetTextAlignX(taxLeft);
+    SetTextAlignY(tayAuto);
+    if not Assigned(Callback) then CaptionText := RemoveTextTagsW(CaptionText);
+    Text := '<Object=0,20,14,0>' + ReplaceAllWideString(CaptionText, TextHighlightColorTag, DialogHighlightColorTag);
+    SetTextColor(CurrentPixelFormat.PackRgbBytes(0, 0, 0));
+    if not Assigned(Choice.Callback) then SetTextColor(CurrentPixelFormat.PackRgbBytes(127, 127, 127));
+    CreateEmbeddedControl := CreateDialogObject;
+    SetTextAlignY(tayCenterEx);
+    Row.ObjectSize := Point(Row.ClientSize.X, ClientSize.Y + 2 * GiScalePixelsEx(2, 2));
+    ObjectSize := Point(ClientSize.X, Row.ClientSize.Y);
+    Highlight.ObjectSize := Row.ClientSize;
+    Inc(NextChoiceTop, ClientSize.Y);
   end;
 end;
-{ @end $6CA804 }
+{ @end $51EE88 }
 
-{ @routine $6CADD0 TfGov_ChoiceMouseEnter }
+{ @routine $51F3E0 TfGov_ChoiceMouseEnter }
 procedure TfGov.ChoiceMouseEnter(Sender: TObjectGI);
 begin
   Sender.FirstChild.SetActive(True);
 end;
-{ @end $6CADD0 }
+{ @end $51F3E0 }
 
-{ @routine $6CADF0 TfGov_ChoiceMouseLeave }
+{ @routine $51F3EC TfGov_ChoiceMouseLeave }
 procedure TfGov.ChoiceMouseLeave(Sender: TObjectGI);
 begin
   Sender.FirstChild.SetActive(False);
 end;
-{ @end $6CADF0 }
+{ @end $51F3EC }
 
-{ @routine $6CAE10 TfGov_ChoiceMouseDown }
+{ @routine $51F3F8 TfGov_ChoiceMouseDown }
 procedure TfGov.ChoiceMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint);
 begin
   if (Sender.FirstChild <> nil) and (Sender.FirstChild.NextSibling <> nil) and
     (Sender.FirstChild.NextSibling.FirstChild <> nil) and (Sender.FirstChild.NextSibling.FirstChild.FirstChild <> nil) then
     Sender.FirstChild.NextSibling.FirstChild.FirstChild.SetPosition(Classes.Point(2, 0));
 end;
-{ @end $6CAE10 }
+{ @end $51F3F8 }
 
-{ @routine $6CAE90 TfGov_ChoiceMouseUp }
+{ @routine $51F458 TfGov_ChoiceMouseUp }
 procedure TfGov.ChoiceMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint);
 var Choice: TfTalkA;
 begin
@@ -819,25 +817,25 @@ begin
   MainPanel.RebuildMessageButtons(False);
   BreakUiMessage;
 end;
-{ @end $6CAE90 }
+{ @end $51F458 }
 
-{ @routine $6CAFB0 TfGov_RestartTextPresentation }
+{ @routine $51F548 TfGov_RestartTextPresentation }
 procedure TfGov.RestartTextPresentation(RestartAnimation: Boolean);
 begin
   if RestartAnimation then RequestAnimationRestart;
   (GetByName('TalkPA') as TPanelScrollBarGI).SetActive(False);
   FormattedTextLength := 0;
-  if DialogRefreshTimer <> nil then
+  if DialogRefreshTimer <> 0 then
   begin
     CancelCallbackTimer(DialogRefreshTimer);
-    DialogRefreshTimer := nil;
+    DialogRefreshTimer := 0;
   end;
   DialogRefreshTimer := ScheduleCallbackTimer(10, 10, AdvanceTextPresentation);
 end;
-{ @end $6CAFB0 }
+{ @end $51F548 }
 
-{ @routine $6CB05C TfGov_AdvanceTextPresentation }
-procedure TfGov.AdvanceTextPresentation(Timer: PCallbackTimerGI; UserData: Integer);
+{ @routine $51F5CC TfGov_AdvanceTextPresentation }
+procedure TfGov.AdvanceTextPresentation(Timer: TCallbackTimerIdGI; UserData: Cardinal);
 var Choices, TextPanel: TPanelScrollBarGI;
 begin
   if FormattedTextLength >= Length(DialogText) then
@@ -852,10 +850,10 @@ begin
     Choices.VerticalScrollBar.SetDepth(4);
     Choices.SetDragScrollingEnabled(Choices.VerticalScrollBar.Active);
     Choices.UpdateScrollRanges;
-    if DialogRefreshTimer <> nil then
+    if DialogRefreshTimer <> 0 then
     begin
       CancelCallbackTimer(DialogRefreshTimer);
-      DialogRefreshTimer := nil;
+      DialogRefreshTimer := 0;
     end;
     if SavedChoiceScroll >= 0 then Choices.VerticalScrollBar.SetPosition(SavedChoiceScroll);
     SavedChoiceScroll := -1;
@@ -868,7 +866,7 @@ begin
     DialogText := ReplaceAllWideString(DialogText, #13#10, #13#10 + LocalizedTextLinePrefix);
     FormattedTextLength := Length(DialogText);
     DialogText := ReplaceAllWideString(DialogText, TextHighlightColorTag, DialogHighlightColorTag);
-    (GetByName('TalkText') as TLabelGI).SetText(DialogText);
+    (GetByName('TalkText') as TLabelGI).Text := DialogText;
     TextPanel := GetByName('TextScroll') as TPanelScrollBarGI;
     TextPanel.SetScrollOffset(Point(0, 0));
     TextPanel.UpdateScrollRanges;
@@ -879,9 +877,9 @@ begin
     (GetByName('UserMsgAdd') as TGraphButtonGI).SetDisabled(False);
   end;
 end;
-{ @end $6CB05C }
+{ @end $51F5CC }
 
-{ @routine $6CB4D0 TfGov_ProcessMouseWheel }
+{ @routine $51F9B4 TfGov_ProcessMouseWheel }
 procedure TfGov.ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer);
 var
   Panel: TPanelScrollBarGI;
@@ -891,9 +889,9 @@ begin
   if Delta = WHEEL_DELTA then Panel.VerticalScrollBar.SetPosition(Panel.VerticalScrollBar.Position - Panel.VerticalScrollBar.SmallChange)
   else if Delta = -WHEEL_DELTA then Panel.VerticalScrollBar.SetPosition(Panel.VerticalScrollBar.Position + Panel.VerticalScrollBar.SmallChange);
 end;
-{ @end $6CB4D0 }
+{ @end $51F9B4 }
 
-{ @routine $6CB5C8 TfGov_CreateDialogObject }
+{ @routine $51FA7C TfGov_CreateDialogObject }
 function TfGov.CreateDialogObject(LabelControl: TLabelGI; Item: PFontObjectEC): TObjectGI;
 var Image: TImageGI;
 begin
@@ -902,9 +900,9 @@ begin
   Image.SetImagePath('GI,Bm.FormGov2.' + GiResourceSuffix + 'Answer');
   Image.SetImageKindX(ikxLeft);
 end;
-{ @end $6CB5C8 }
+{ @end $51FA7C }
 
-{ @routine $6CB6AC TfGov_MainPanelKeyDown }
+{ @routine $51FB4C TfGov_MainPanelKeyDown }
 procedure TfGov.MainPanelKeyDown(Sender: TObjectGI; Key: Cardinal);
 var Panel: TPanelScrollBarGI; Button: TGraphButtonGI;
 begin
@@ -930,13 +928,13 @@ begin
     PlanetPanel.ProcessKeyDown(Key);
   end;
 end;
-{ @end $6CB6AC }
+{ @end $51FB4C }
 
-{ @routine $6CB8DC TfGov_AddMessageClicked }
+{ @routine $51FD0C TfGov_AddMessageClicked }
 procedure TfGov.AddMessageClicked(Sender: TObjectGI);
 var Text: WideString;
 begin
-  Text := (GetByName('TalkText') as TLabelGI).GetText;
+  Text := (GetByName('TalkText') as TLabelGI).Text;
   Text := ReplaceAllWideString(Text, DialogHighlightColorTag, TextHighlightColorTag);
   (Sender as TGraphButtonGI).SetDisabled(True);
   SoundManager.PlaySound('Sound.UserMsgAdd');
@@ -944,9 +942,9 @@ begin
   MainPanel.RebuildMessageButtons(False);
   BreakUiMessage;
 end;
-{ @end $6CB8DC }
+{ @end $51FD0C }
 
-{ @routine $6CBA4C TfGov_SelectMusic }
+{ @routine $51FE70 TfGov_SelectMusic }
 procedure TfGov.SelectMusic;
 begin
   if (ActiveLoadPanel <> nil) and (ActiveLoadPanel.GetShutterDirection = -1) then Exit;
@@ -959,62 +957,60 @@ begin
   end
   else MusicManager.PlayCategory('Nation.' + OwnerInfo[GetPlayer.CurrentPlanet.OwnerId].InternalName);
 end;
-{ @end $6CBA4C }
+{ @end $51FE70 }
 
-{ @routine $6CBBD0 TfGov_RefreshGovernmentDialog }
+{ @routine $51FFF0 TfGov_RefreshGovernmentDialog }
 procedure TfGov.RefreshGovernmentDialog;
 var I, J: Integer; Planet: TPlanet; Ship: TShip;
 begin
   if IsTurnCalculationRunningUI then WaitForTurnCalculationUI;
-  if ExitCode = 0 then
+  if ExitCode <> 0 then Exit;
+  if GetPlayer.InPrison then
   begin
-    if GetPlayer.InPrison then
+    if GetPlayer.CurrentPlanet.OwnerId <> oiPirate then
+      DialogText := LocalizedColorText('FormGov.Prison.GovAfterPrison')
+    else DialogText := LocalizedColorText('FormGov.PirateClanPrison.GovAfterPrison');
+    GetPlayer.InPrison := False;
+    Inc(GetPlayer.PrisonStaysCompleted);
+    TryAddAchievementProgress('PRISON', 1);
+    for I := 0 to Galaxy.Planets.Count - 1 do
     begin
-      if GetPlayer.CurrentPlanet.OwnerId <> oiPirate then
-        DialogText := LocalizedColorText('FormGov.Prison.GovAfterPrison')
-      else DialogText := LocalizedColorText('FormGov.PirateClanPrison.GovAfterPrison');
-      GetPlayer.InPrison := False;
-      Inc(GetPlayer.PrisonStaysCompleted);
-      TryAddAchievementProgress('PRISON', 1);
-      for I := 0 to Galaxy.Planets.Count - 1 do
+      Planet := Galaxy.Planets[I];
+      for J := 0 to Planet.Warriors.Count - 1 do
       begin
-        Planet := Galaxy.Planets[I];
-        for J := 0 to Planet.Warriors.Count - 1 do
-        begin
-          Ship := Planet.Warriors[J];
-          if GetPlayer = Ship.EnemyShip then Ship.EnemyShip := nil;
-          if GetPlayer.EnemyShip = Ship then GetPlayer.EnemyShip := nil;
-        end;
+        Ship := Planet.Warriors[J];
+        if GetPlayer = Ship.EnemyShip then Ship.EnemyShip := nil;
+        if GetPlayer.EnemyShip = Ship then GetPlayer.EnemyShip := nil;
       end;
-      ClearDialogChoices;
-      AddChoice(LocalizedColorText('FormGov.I_Continue'), 0, ContinueAfterPrison);
-    end
-    else if (GetPlayer.CurrentPlanet.GetRelationLevelToShip(GetPlayer) = rlHostile) and
-      not HasPendingScriptRequests and not GetPlayer.CurrentPlanet.IsMainPiratePlanet then
-    begin
-      if GetPlayer.OwnerId <> oiPirate then DialogText := LocalizedColorText('FormGov.Prison.GovBeforePrison')
-      else DialogText := LocalizedColorText('FormGov.PirateClanPrison.GovBeforePrison');
-      ClearDialogChoices;
-      if GetPlayer.CurrentPlanet.OwnerId <> oiPirate then
-        AddChoice(LocalizedColorText('FormGov.Prison.PlayerGoToPrison'), 0, EnterPrison)
-      else AddChoice(LocalizedColorText('FormGov.PirateClanPrison.PlayerGoToPrison'), 0, EnterPrison);
-    end
-    else if GetPlayer.PendingLiberationCeremonyPlanet = GetPlayer.CurrentPlanet then
-    begin
-      DialogText := TNormalShip(GetPlayer).CollectLiberationRewards;
-      ClearDialogChoices;
-      AddChoice(LocalizedColorText('FormGov.PlayerAfterCongratulationsLiberator'), 0, ExitGovernment);
-    end
-    else
-    begin
-      DialogText := GetPlayer.CurrentPlanet.BuildGovernmentGreeting;
-      BuildGovernmentChoices(False);
     end;
+    ClearDialogChoices;
+    AddChoice(LocalizedColorText('FormGov.I_Continue'), 0, ContinueAfterPrison);
+  end
+  else if (GetPlayer.CurrentPlanet.GetRelationLevelToShip(GetPlayer) = rlHostile) and
+    not HasPendingScriptRequests and not GetPlayer.CurrentPlanet.IsMainPiratePlanet then
+  begin
+    if GetPlayer.OwnerId <> oiPirate then DialogText := LocalizedColorText('FormGov.Prison.GovBeforePrison')
+    else DialogText := LocalizedColorText('FormGov.PirateClanPrison.GovBeforePrison');
+    ClearDialogChoices;
+    if GetPlayer.CurrentPlanet.OwnerId <> oiPirate then
+      AddChoice(LocalizedColorText('FormGov.Prison.PlayerGoToPrison'), 0, EnterPrison)
+    else AddChoice(LocalizedColorText('FormGov.PirateClanPrison.PlayerGoToPrison'), 0, EnterPrison);
+  end
+  else if GetPlayer.PendingLiberationCeremonyPlanet = GetPlayer.CurrentPlanet then
+  begin
+    DialogText := TNormalShip(GetPlayer).CollectLiberationRewards;
+    ClearDialogChoices;
+    AddChoice(LocalizedColorText('FormGov.PlayerAfterCongratulationsLiberator'), 0, ExitGovernment);
+  end
+  else
+  begin
+    DialogText := GetPlayer.CurrentPlanet.BuildGovernmentGreeting;
+    BuildGovernmentChoices(False);
   end;
 end;
-{ @end $6CBBD0 }
+{ @end $51FFF0 }
 
-{ @routine $6CC178 TfGov_BuildGovernmentChoices }
+{ @routine $520580 TfGov_BuildGovernmentChoices }
 procedure TfGov.BuildGovernmentChoices(SkipScriptResponseText: Boolean);
 var
   Script: TScript;
@@ -1073,13 +1069,13 @@ begin
       Selected := -1;
       Priority := 0;
       if not SkipScriptResponseText then
-      for I := 0 to ScriptDialogInjections.Count - 1 do
-        if PScriptDialogInjection(ScriptDialogInjections[I]).ReplaceGreeting then
-          if (Selected < 0) or (PScriptDialogInjection(ScriptDialogInjections[I]).Priority > Priority) then
-          begin
-            Priority := PScriptDialogInjection(ScriptDialogInjections[I]).Priority;
-            Selected := I;
-          end;
+        for I := 0 to ScriptDialogInjections.Count - 1 do
+          if PScriptDialogInjection(ScriptDialogInjections[I]).ReplaceGreeting then
+            if (Selected < 0) or (PScriptDialogInjection(ScriptDialogInjections[I]).Priority > Priority) then
+            begin
+              Priority := PScriptDialogInjection(ScriptDialogInjections[I]).Priority;
+              Selected := I;
+            end;
       if Selected >= 0 then
         DialogText := PScriptDialogInjection(ScriptDialogInjections[Selected]).Text;
       for I := 1 to ScriptDialogInjections.Count - 1 do
@@ -1123,9 +1119,9 @@ begin
     StartScriptMessage(Integer(Script));
   end;
 end;
-{ @end $6CC178 }
+{ @end $520580 }
 
-{ @routine $6CC898 TfGov_AddBuiltinGovernmentChoices }
+{ @routine $520BF4 TfGov_AddBuiltinGovernmentChoices }
 procedure TfGov.AddBuiltinGovernmentChoices;
 begin
   if (GetPlayer.CurrentPlanet.CurrentStar.Constellation.Id <> 20) or
@@ -1141,9 +1137,9 @@ begin
     AddChoice(LocalizedColorText('FormGov.GuarantPrison.PlayerAsk'), 0, ShowPrisonBail);
   AddChoice(LocalizedColorText('FormGov.I_Exit'), 0, ReturnToPlanet);
 end;
-{ @end $6CC898 }
+{ @end $520BF4 }
 
-{ @routine $6CCB44 TfGov_ContinueScriptDialog }
+{ @routine $520E8C TfGov_ContinueScriptDialog }
 procedure TfGov.ContinueScriptDialog;
 var Script: TScript;
 begin
@@ -1160,51 +1156,51 @@ begin
   if ScriptDialogIndex < 0 then BuildGovernmentChoices(True)
   else AddChoice(LocalizedColorText('FormGov.I_Continue'), Integer(Script), StartScriptMessage);
 end;
-{ @end $6CCB44 }
+{ @end $520E8C }
 
-{ @routine $6CCC78 TfGov_AddScriptTakeoffChoice }
+{ @routine $520F90 TfGov_AddScriptTakeoffChoice }
 procedure TfGov.AddScriptTakeoffChoice(Caption: WideString);
 begin
   AddChoice(Caption, CurrentScript.CurrentAnswer, RunScriptTakeoffAnswer);
 end;
-{ @end $6CCC78 }
+{ @end $520F90 }
 
-{ @routine $6CCCDC TfGov_AddScriptPlanetChoice }
+{ @routine $520FEC TfGov_AddScriptPlanetChoice }
 procedure TfGov.AddScriptPlanetChoice(Caption: WideString);
 begin
   AddChoice(Caption, CurrentScript.CurrentAnswer, RunScriptPlanetAnswer);
 end;
-{ @end $6CCCDC }
+{ @end $520FEC }
 
-{ @routine $6CCD40 TfGov_AddScriptGoodsChoice }
+{ @routine $521048 TfGov_AddScriptGoodsChoice }
 procedure TfGov.AddScriptGoodsChoice(Caption: WideString);
 begin
   AddChoice(Caption, CurrentScript.CurrentAnswer, RunScriptGoodsAnswer);
 end;
-{ @end $6CCD40 }
+{ @end $521048 }
 
-{ @routine $6CCDA4 TfGov_AddScriptShopChoice }
+{ @routine $5210A4 TfGov_AddScriptShopChoice }
 procedure TfGov.AddScriptShopChoice(Caption: WideString);
 begin
   AddChoice(Caption, CurrentScript.CurrentAnswer, RunScriptShopAnswer);
 end;
-{ @end $6CCDA4 }
+{ @end $5210A4 }
 
-{ @routine $6CCE08 TfGov_AddScriptHangarChoice }
+{ @routine $521100 TfGov_AddScriptHangarChoice }
 procedure TfGov.AddScriptHangarChoice(Caption: WideString);
 begin
   AddChoice(Caption, CurrentScript.CurrentAnswer, RunScriptHangarAnswer);
 end;
-{ @end $6CCE08 }
+{ @end $521100 }
 
-{ @routine $6CCE6C TfGov_AddScriptNewsExitChoice }
+{ @routine $52115C TfGov_AddScriptNewsExitChoice }
 procedure TfGov.AddScriptNewsExitChoice(Caption: WideString);
 begin
   AddChoice(Caption, CurrentScript.CurrentAnswer, RunScriptNewsExitAnswer);
 end;
-{ @end $6CCE6C }
+{ @end $52115C }
 
-{ @routine $6CCED0 TfGov_BuildQuestOfferChoices }
+{ @routine $5211B8 TfGov_BuildQuestOfferChoices }
 procedure TfGov.BuildQuestOfferChoices;
 begin
   ClearDialogChoices;
@@ -1216,19 +1212,19 @@ begin
     AddChoice(LocalizedColorText('FormGov.I_PlanetQuestClose'), 0, PermanentlyDeclineQuest);
   AddChoice(LocalizedColorText('FormGov.I_Exit'), 0, ReturnToPlanet);
 end;
-{ @end $6CCED0 }
+{ @end $5211B8 }
 
-{ @routine $6CD120 TfGov_StartScriptMessage }
-procedure TfGov.StartScriptMessage(Action: Integer);
+{ @routine $5213EC TfGov_StartScriptMessage }
+procedure TfGov.StartScriptMessage(Action: Cardinal);
 begin
   ClearDialogChoices;
   CurrentScript := TScript(Action);
   CurrentScript.CallDialogMessage(ScriptDialogIndex);
 end;
-{ @end $6CD120 }
+{ @end $5213EC }
 
-{ @routine $6CD158 TfGov_RunScriptAnswer }
-procedure TfGov.RunScriptAnswer(Answer: Integer);
+{ @routine $521414 TfGov_RunScriptAnswer }
+procedure TfGov.RunScriptAnswer(Answer: Cardinal);
 begin
   ClearDialogChoices;
   ScriptDialogIndex := -1;
@@ -1236,18 +1232,18 @@ begin
   if ScriptDialogIndex < 0 then RaiseWideMessage('I_Script');
   CurrentScript.CallDialogMessage(ScriptDialogIndex);
 end;
-{ @end $6CD158 }
+{ @end $521414 }
 
-{ @routine $6CD1CC TfGov_RunScriptAnswerKeepingScroll }
-procedure TfGov.RunScriptAnswerKeepingScroll(Answer: Integer);
+{ @routine $521478 TfGov_RunScriptAnswerKeepingScroll }
+procedure TfGov.RunScriptAnswerKeepingScroll(Answer: Cardinal);
 begin
   RememberChoiceScroll;
   RunScriptAnswer(Answer);
 end;
-{ @end $6CD1CC }
+{ @end $521478 }
 
-{ @routine $6CD1F0 TfGov_RunScriptTakeoffAnswer }
-procedure TfGov.RunScriptTakeoffAnswer(Answer: Integer);
+{ @routine $521494 TfGov_RunScriptTakeoffAnswer }
+procedure TfGov.RunScriptTakeoffAnswer(Answer: Cardinal);
 begin
   CaptureSavePreview;
   CaptureGalaxyPreview(Self);
@@ -1257,55 +1253,55 @@ begin
   if not HangarScreen.TryTakeOff then RequestedScreenId := screenHangar;
   RequestClose(1);
 end;
-{ @end $6CD1F0 }
+{ @end $521494 }
 
-{ @routine $6CD2AC TfGov_RunScriptPlanetAnswer }
-procedure TfGov.RunScriptPlanetAnswer(Answer: Integer);
+{ @routine $521544 TfGov_RunScriptPlanetAnswer }
+procedure TfGov.RunScriptPlanetAnswer(Answer: Cardinal);
 begin
   CurrentScript.ExecuteDialogAnswer(Answer);
   RequestedScreenId := screenPlanet;
   RequestClose(1);
 end;
-{ @end $6CD2AC }
+{ @end $521544 }
 
-{ @routine $6CD2E0 TfGov_RunScriptGoodsAnswer }
-procedure TfGov.RunScriptGoodsAnswer(Answer: Integer);
+{ @routine $52156C TfGov_RunScriptGoodsAnswer }
+procedure TfGov.RunScriptGoodsAnswer(Answer: Cardinal);
 begin
   CurrentScript.ExecuteDialogAnswer(Answer);
   RequestedScreenId := screenGoodsShop;
   RequestClose(1);
 end;
-{ @end $6CD2E0 }
+{ @end $52156C }
 
-{ @routine $6CD314 TfGov_RunScriptShopAnswer }
-procedure TfGov.RunScriptShopAnswer(Answer: Integer);
+{ @routine $521594 TfGov_RunScriptShopAnswer }
+procedure TfGov.RunScriptShopAnswer(Answer: Cardinal);
 begin
   CurrentScript.ExecuteDialogAnswer(Answer);
   RequestedScreenId := screenEquipmentShop;
   RequestClose(1);
 end;
-{ @end $6CD314 }
+{ @end $521594 }
 
-{ @routine $6CD348 TfGov_RunScriptHangarAnswer }
-procedure TfGov.RunScriptHangarAnswer(Answer: Integer);
+{ @routine $5215BC TfGov_RunScriptHangarAnswer }
+procedure TfGov.RunScriptHangarAnswer(Answer: Cardinal);
 begin
   CurrentScript.ExecuteDialogAnswer(Answer);
   RequestedScreenId := screenHangar;
   RequestClose(1);
 end;
-{ @end $6CD348 }
+{ @end $5215BC }
 
-{ @routine $6CD37C TfGov_RunScriptNewsExitAnswer }
-procedure TfGov.RunScriptNewsExitAnswer(Answer: Integer);
+{ @routine $5215E4 TfGov_RunScriptNewsExitAnswer }
+procedure TfGov.RunScriptNewsExitAnswer(Answer: Cardinal);
 begin
   CurrentScript.ExecuteDialogAnswer(Answer);
   RequestedScreenId := screenInfo;
   RequestClose(1);
 end;
-{ @end $6CD37C }
+{ @end $5215E4 }
 
-{ @routine $6CD3B0 TfGov_EnterPrison }
-procedure TfGov.EnterPrison(Action: Integer);
+{ @routine $52160C TfGov_EnterPrison }
+procedure TfGov.EnterPrison(Action: Cardinal);
 var I: Integer; Ship: TShip;
 begin
   CaptureSavePreview;
@@ -1341,20 +1337,20 @@ begin
   RequestedScreenId := screenPlanetQuest;
   RequestClose(1);
 end;
-{ @end $6CD3B0 }
+{ @end $52160C }
 
-{ @routine $6CD5C4 TfGov_ContinueAfterPrison }
-procedure TfGov.ContinueAfterPrison(Action: Integer);
+{ @routine $521804 TfGov_ContinueAfterPrison }
+procedure TfGov.ContinueAfterPrison(Action: Cardinal);
 begin
   if GetPlayer.CurrentPlanet.OwnerId <> oiPirate then
     DialogText := LocalizedColorText('FormGov.Prison.GovAfterPrisonNext')
   else DialogText := LocalizedColorText('FormGov.PirateClanPrison.GovAfterPrisonNext');
   BuildGovernmentChoices(True);
 end;
-{ @end $6CD5C4 }
+{ @end $521804 }
 
-{ @routine $6CD704 TfGov_ShowBribeOffer }
-procedure TfGov.ShowBribeOffer(Action: Integer);
+{ @routine $521938 TfGov_ShowBribeOffer }
+procedure TfGov.ShowBribeOffer(Action: Cardinal);
 var Cost, RelationDeficit: Integer; Text: WideString;
 begin
   if GetPlayer.CurrentPlanet.OwnerId <> oiPirate then
@@ -1363,12 +1359,12 @@ begin
     Cost := Round(RemapClamped(RelationDeficit, 0, 100, 1, 5) * (Galaxy.AverageRangerCapital div 100) *
       OwnerInfo[GetPlayer.CurrentPlanet.OwnerId].FuelPriceFactor);
     Text := PickLocalizedTextVariant('FormGov.Bribe.Question', (Galaxy.CurrentTurn div 10) * GetPlayer.CurrentPlanet.GenerationSeed + 223429);
-    ReplaceTextToken(Text, '<Money>', WideString(IntToStr(Cost)), TextHighlightColorTag);
+    ReplaceTextToken(Text, '<Money>', IntToStr(Cost), TextHighlightColorTag);
     DialogText := Text;
     ClearDialogChoices;
     if GetPlayer.Money >= Cost then
       AddChoice(FormatText2(PickLocalizedTextVariant('FormGov.Bribe.Ok', (Galaxy.CurrentTurn div 5) * GetPlayer.CurrentPlanet.GenerationSeed + 8168236),
-        TextHighlightColorTag, '<Money>', WideString(IntToStr(Cost)), '<Planet>', GetPlayer.CurrentPlanet.Name), 0, PayBribe);
+        TextHighlightColorTag, '<Money>', IntToStr(Cost), '<Planet>', GetPlayer.CurrentPlanet.Name), 0, PayBribe);
     AddChoice(PickLocalizedTextVariant('FormGov.Bribe.No', (Galaxy.CurrentTurn div 5) * GetPlayer.CurrentPlanet.GenerationSeed + 23985), 0, DeclineBribe);
   end
   else
@@ -1377,15 +1373,15 @@ begin
     BuildGovernmentChoices(True);
   end;
 end;
-{ @end $6CD704 }
+{ @end $521938 }
 
-{ @routine $6CDADC TfGov_PayBribe }
-procedure TfGov.PayBribe(Action: Integer);
+{ @routine $521CFC TfGov_PayBribe }
+procedure TfGov.PayBribe(Action: Cardinal);
 var Cost, RelationDeficit: Integer;
 begin
-    RelationDeficit := 100 - GetPlayer.CurrentPlanet.RelationToShip(GetPlayer);
-    Cost := Round(RemapClamped(RelationDeficit, 0, 100, 1, 5) * (Galaxy.AverageRangerCapital div 100) *
-      OwnerInfo[GetPlayer.CurrentPlanet.OwnerId].FuelPriceFactor);
+  RelationDeficit := 100 - GetPlayer.CurrentPlanet.RelationToShip(GetPlayer);
+  Cost := Round(RemapClamped(RelationDeficit, 0, 100, 1, 5) * (Galaxy.AverageRangerCapital div 100) *
+    OwnerInfo[GetPlayer.CurrentPlanet.OwnerId].FuelPriceFactor);
   GetPlayer.SetMoney(GetPlayer.Money - Cost);
   SoundManager.PlaySound('Sound.Sell');
   if GetPlayer.CurrentPlanet.OwnerId = oiPirate then
@@ -1399,22 +1395,22 @@ begin
     GetPlayer.ChangePlanetRelations(GetPlayer.CurrentStar, rcmIncrease, 20, PlanetOwnerMasks.Coalition);
   end;
   DialogText := PickLocalizedTextVariant('FormGov.Bribe.QuestionOk', (Galaxy.CurrentTurn div 5) * GetPlayer.CurrentPlanet.GenerationSeed + 7156317);
-  ReplaceTextToken(DialogText, '<Money>', WideString(IntToStr(Cost)), TextHighlightColorTag);
+  ReplaceTextToken(DialogText, '<Money>', IntToStr(Cost), TextHighlightColorTag);
   ReplaceTextToken(DialogText, '<Planet>', GetPlayer.CurrentPlanet.Name, TextHighlightColorTag);
   BuildGovernmentChoices(True);
 end;
-{ @end $6CDADC }
+{ @end $521CFC }
 
-{ @routine $6CDDC4 TfGov_DeclineBribe }
-procedure TfGov.DeclineBribe(Action: Integer);
+{ @routine $521FDC TfGov_DeclineBribe }
+procedure TfGov.DeclineBribe(Action: Cardinal);
 begin
   DialogText := PickLocalizedTextVariant('FormGov.Bribe.QuestionNo', (Galaxy.CurrentTurn div 5) * GetPlayer.CurrentPlanet.GenerationSeed + 92874253);
   BuildGovernmentChoices(True);
 end;
-{ @end $6CDDC4 }
+{ @end $521FDC }
 
-{ @routine $6CDE90 TfGov_RequestQuest }
-procedure TfGov.RequestQuest(Action: Integer);
+{ @routine $52209C TfGov_RequestQuest }
+procedure TfGov.RequestQuest(Action: Cardinal);
 var ResponseText: WideString; MapIndex, MapId: Integer;
 begin
   if (GetPlayer.CurrentPlanet.CurrentStar.Battle <> 0) and (GetPlayer.CurrentPlanet.OwnerId = oiPirate) then
@@ -1457,8 +1453,8 @@ begin
       DialogText := GetPlayer.BuildQuestText(QuestOffer, qtkOffer);
       if (QuestOffer.QuestType = qtPlanetQuest) and (QuestOffer.QuestNumber >= FirstLicensedQuestId) then
         if (LanguageDataConfig.GetBlock('PlanetQuest').CountBlocks('PlanetQuestLic') <= 0) or
-          (LanguageDataConfig.GetBlock('PlanetQuest').GetBlock('PlanetQuestLic').GetParamOrMarker(WideString(IntToStr(QuestOffer.QuestNumber))) <>
-           PlanetQuestScreen.GetQuestContentHash(QuestOffer.QuestNumber)) then
+          (LanguageDataConfig.GetBlock('PlanetQuest').GetBlock('PlanetQuestLic').GetParamOrMarker(IntToStr(QuestOffer.QuestNumber)) <>
+          PlanetQuestScreen.GetQuestContentHash(QuestOffer.QuestNumber)) then
           DialogText := DialogText + #13#10 + ' ' + #13#10 + LocalizedText('FormGov.QuestCertificate.NotCertificate');
       QuestRewardStep := Round(QuestOffer.RewardMoney * 0.3);
       QuestDurationStep := Round((QuestOffer.DeadlineTurn - Galaxy.CurrentTurn) * 0.5);
@@ -1466,10 +1462,10 @@ begin
     end;
   end;
 end;
-{ @end $6CDE90 }
+{ @end $52209C }
 
-{ @routine $6CE5B4 TfGov_MakeQuestEasier }
-procedure TfGov.MakeQuestEasier(Action: Integer);
+{ @routine $522760 TfGov_MakeQuestEasier }
+procedure TfGov.MakeQuestEasier(Action: Cardinal);
 begin
   Dec(QuestNegotiationLevel);
   case QuestOffer.QuestType of
@@ -1490,10 +1486,10 @@ begin
   end
   else BuildQuestOfferChoices;
 end;
-{ @end $6CE5B4 }
+{ @end $522760 }
 
-{ @routine $6CE8AC TfGov_MakeQuestHarder }
-procedure TfGov.MakeQuestHarder(Action: Integer);
+{ @routine $522A18 TfGov_MakeQuestHarder }
+procedure TfGov.MakeQuestHarder(Action: Cardinal);
 begin
   Inc(QuestNegotiationLevel);
   case QuestOffer.QuestType of
@@ -1514,10 +1510,10 @@ begin
   end
   else BuildQuestOfferChoices;
 end;
-{ @end $6CE8AC }
+{ @end $522A18 }
 
-{ @routine $6CEBA4 TfGov_AcceptQuest }
-procedure TfGov.AcceptQuest(Action: Integer);
+{ @routine $522CD0 TfGov_AcceptQuest }
+procedure TfGov.AcceptQuest(Action: Cardinal);
 var Quest: PQuest; Item: TUselessItem;
 begin
   New(Quest);
@@ -1536,19 +1532,19 @@ begin
   ClearDialogChoices;
   AddChoice(LocalizedColorText('FormGov.I_Exit'), 0, ReturnToPlanet);
 end;
-{ @end $6CEBA4 }
+{ @end $522CD0 }
 
-{ @routine $6CEE18 TfGov_RejectQuest }
-procedure TfGov.RejectQuest(Action: Integer);
+{ @routine $522F24 TfGov_RejectQuest }
+procedure TfGov.RejectQuest(Action: Cardinal);
 begin
   DialogText := LocalizedColorText('FormGov.PlayerDontTakeQuest');
   ClearDialogChoices;
   AddChoice(LocalizedColorText('FormGov.I_Exit'), 0, ReturnToPlanet);
 end;
-{ @end $6CEE18 }
+{ @end $522F24 }
 
-{ @routine $6CEF08 TfGov_PermanentlyDeclineQuest }
-procedure TfGov.PermanentlyDeclineQuest(Action: Integer);
+{ @routine $523004 TfGov_PermanentlyDeclineQuest }
+procedure TfGov.PermanentlyDeclineQuest(Action: Cardinal);
 var Quest: PPlayerOldQuest;
 begin
   DialogText := LocalizedColorText('FormGov.GovAfterPlanetQuestClose');
@@ -1562,10 +1558,10 @@ begin
   PlayerOldQuests.Add(Quest);
   BuildGovernmentChoices(True);
 end;
-{ @end $6CEF08 }
+{ @end $523004 }
 
-{ @routine $6CF050 TfGov_DeclinePlanetBattle }
-procedure TfGov.DeclinePlanetBattle(Action: Integer);
+{ @routine $523124 TfGov_DeclinePlanetBattle }
+procedure TfGov.DeclinePlanetBattle(Action: Cardinal);
 begin
   PlanetBattleMapId := Action;
   DialogText := LocalizedColorText('FormGov.GovAfterBattlePlanetQuestClose');
@@ -1586,37 +1582,37 @@ begin
   GetPlayer.LastPlanetBattleTurn := Galaxy.CurrentTurn;
   BuildGovernmentChoices(True);
 end;
-{ @end $6CF050 }
+{ @end $523124 }
 
-{ @routine $6CF1E4 TfGov_ConfirmDeclineAllPlanetBattles }
-procedure TfGov.ConfirmDeclineAllPlanetBattles(Action: Integer);
+{ @routine $523284 TfGov_ConfirmDeclineAllPlanetBattles }
+procedure TfGov.ConfirmDeclineAllPlanetBattles(Action: Cardinal);
 begin
   DialogText := LocalizedColorText('FormGov.I_PlanetBattleRejectAllConfirm');
   ClearDialogChoices;
   AddChoice(LocalizedColorText('FormGov.I_PlanetBattleRejectAllConfirmYes'), Action, DeclineAllPlanetBattles);
   AddChoice(LocalizedColorText('FormGov.I_PlanetBattleRejectAllConfirmNo'), Action, CancelDeclineAllPlanetBattles);
 end;
-{ @end $6CF1E4 }
+{ @end $523284 }
 
-{ @routine $6CF39C TfGov_DeclineAllPlanetBattles }
-procedure TfGov.DeclineAllPlanetBattles(Action: Integer);
+{ @routine $523430 TfGov_DeclineAllPlanetBattles }
+procedure TfGov.DeclineAllPlanetBattles(Action: Cardinal);
 begin
   DialogText := LocalizedColorText('FormGov.I_PlanetBattleRejectAllConfirmAfterYes');
   GetPlayer.DeclinePlanetBattleOffers := True;
   BuildGovernmentChoices(True);
 end;
-{ @end $6CF39C }
+{ @end $523430 }
 
-{ @routine $6CF474 TfGov_CancelDeclineAllPlanetBattles }
-procedure TfGov.CancelDeclineAllPlanetBattles(Action: Integer);
+{ @routine $5234FC TfGov_CancelDeclineAllPlanetBattles }
+procedure TfGov.CancelDeclineAllPlanetBattles(Action: Cardinal);
 begin
   DialogText := LocalizedColorText('FormGov.I_PlanetBattleRejectAllConfirmAfterNo');
   BuildGovernmentChoices(True);
 end;
-{ @end $6CF474 }
+{ @end $5234FC }
 
-{ @routine $6CF53C TfGov_ShowPlanetBattleSupport }
-procedure TfGov.ShowPlanetBattleSupport(Action: Integer);
+{ @routine $5235B8 TfGov_ShowPlanetBattleSupport }
+procedure TfGov.ShowPlanetBattleSupport(Action: Cardinal);
 var MapIndex: Integer;
 begin
   MapIndex := FindRobotMapById(Action);
@@ -1629,10 +1625,10 @@ begin
     AddChoice(LocalizedColorText('FormGov.PlanetBattle.PlayerBeforeBattleHelp'), Action, StartPlanetBattleWithReinforcements);
   AddChoice(LocalizedColorText('FormGov.PlanetBattle.PlayerBeforeBattleDamage'), Action, StartPlanetBattleWithBombardment);
 end;
-{ @end $6CF53C }
+{ @end $5235B8 }
 
-{ @routine $6CF898 TfGov_StartPlanetBattleWithoutSupport }
-procedure TfGov.StartPlanetBattleWithoutSupport(Action: Integer);
+{ @routine $523900 TfGov_StartPlanetBattleWithoutSupport }
+procedure TfGov.StartPlanetBattleWithoutSupport(Action: Cardinal);
 begin
   CaptureSavePreview;
   CaptureGalaxyPreview(Self);
@@ -1646,10 +1642,10 @@ begin
   LoadPanel.RefreshBackgroundImages;
   LoadPanel.StartClosingShutters;
 end;
-{ @end $6CF898 }
+{ @end $523900 }
 
-{ @routine $6CF978 TfGov_StartPlanetBattleWithReinforcements }
-procedure TfGov.StartPlanetBattleWithReinforcements(Action: Integer);
+{ @routine $5239C8 TfGov_StartPlanetBattleWithReinforcements }
+procedure TfGov.StartPlanetBattleWithReinforcements(Action: Cardinal);
 begin
   CaptureSavePreview;
   CaptureGalaxyPreview(Self);
@@ -1663,10 +1659,10 @@ begin
   LoadPanel.RefreshBackgroundImages;
   LoadPanel.StartClosingShutters;
 end;
-{ @end $6CF978 }
+{ @end $5239C8 }
 
-{ @routine $6CFA58 TfGov_StartPlanetBattleWithBombardment }
-procedure TfGov.StartPlanetBattleWithBombardment(Action: Integer);
+{ @routine $523A90 TfGov_StartPlanetBattleWithBombardment }
+procedure TfGov.StartPlanetBattleWithBombardment(Action: Cardinal);
 begin
   CaptureSavePreview;
   CaptureGalaxyPreview(Self);
@@ -1680,19 +1676,19 @@ begin
   LoadPanel.RefreshBackgroundImages;
   LoadPanel.StartClosingShutters;
 end;
-{ @end $6CFA58 }
+{ @end $523A90 }
 
-{ @routine $6CFB38 TfGov_DeclineBattleAndLeave }
-procedure TfGov.DeclineBattleAndLeave(Action: Integer);
+{ @routine $523B58 TfGov_DeclineBattleAndLeave }
+procedure TfGov.DeclineBattleAndLeave(Action: Cardinal);
 begin
   DialogText := PickLocalizedTextVariant('FormGov.PlanetBattle.GovBeforeNormal', (Galaxy.CurrentTurn div 10) * GetPlayer.CurrentPlanet.GenerationSeed + 81263);
   ClearDialogChoices;
   AddChoice(LocalizedColorText('FormGov.I_Exit'), 0, ReturnToPlanet);
 end;
-{ @end $6CFB38 }
+{ @end $523B58 }
 
-{ @routine $6CFC68 TfGov_ChoosePrisonInsteadOfBattle }
-procedure TfGov.ChoosePrisonInsteadOfBattle(Action: Integer);
+{ @routine $523C78 TfGov_ChoosePrisonInsteadOfBattle }
+procedure TfGov.ChoosePrisonInsteadOfBattle(Action: Cardinal);
 begin
   GetPlayer.CurrentPlanet.SetRelationLevelToRanger(GetPlayer, rlHostile);
   if GetPlayer.CurrentPlanet.OwnerId = oiPirate then
@@ -1708,25 +1704,25 @@ begin
     AddChoice(PickLocalizedTextVariant('FormGov.PlanetBattle.PlayerGoToPrison', (Galaxy.CurrentTurn div 10) * GetPlayer.CurrentPlanet.GenerationSeed + 61253), 0, EnterPrison);
   end;
 end;
-{ @end $6CFC68 }
+{ @end $523C78 }
 
-{ @routine $6CFF78 TfGov_ShowMapOffer }
-procedure TfGov.ShowMapOffer(Action: Integer);
+{ @routine $523F74 TfGov_ShowMapOffer }
+procedure TfGov.ShowMapOffer(Action: Cardinal);
 var Cost: Integer;
 begin
   Cost := RoundAndTruncateToTens(Min(GetPlayer.Wealth div 40, Galaxy.ComputeScaledBigMoney(GetPlayer.CurrentPlanet.OwnerId)) + 50);
   DialogText := FormatText2(PickLocalizedTextVariant('FormGov.BuyMap.GovAsk', (Galaxy.CurrentTurn div 10) * GetPlayer.CurrentPlanet.GenerationSeed), TextHighlightColorTag, '<Name>',
     (TObject(GetPlayer.CurrentPlanet.FindUnchartedNeighborConstellation) as TConstellation).GetName,
-    '<Money>', WideString(IntToStr(Cost)));
+    '<Money>', IntToStr(Cost));
   ClearDialogChoices;
   if GetPlayer.Money >= Cost then
     AddChoice(LocalizedColorText('FormGov.BuyMap.PlayerOk'), 0, BuyMap);
   AddChoice(LocalizedColorText('FormGov.BuyMap.PlayerNO'), 0, DeclineMapOffer);
 end;
-{ @end $6CFF78 }
+{ @end $523F74 }
 
-{ @routine $6D022C TfGov_BuyMap }
-procedure TfGov.BuyMap(Action: Integer);
+{ @routine $5241F0 TfGov_BuyMap }
+procedure TfGov.BuyMap(Action: Cardinal);
 var Cost: Integer;
 begin
   Cost := RoundAndTruncateToTens(Min(GetPlayer.Wealth div 40, Galaxy.ComputeScaledBigMoney(GetPlayer.CurrentPlanet.OwnerId)) + 50);
@@ -1737,18 +1733,18 @@ begin
   DialogText := PickLocalizedTextVariant('FormGov.BuyMap.GovAfterOk', (Galaxy.CurrentTurn div 10) * GetPlayer.CurrentPlanet.GenerationSeed + 711);
   BuildGovernmentChoices(True);
 end;
-{ @end $6D022C }
+{ @end $5241F0 }
 
-{ @routine $6D03CC TfGov_DeclineMapOffer }
-procedure TfGov.DeclineMapOffer(Action: Integer);
+{ @routine $524370 TfGov_DeclineMapOffer }
+procedure TfGov.DeclineMapOffer(Action: Cardinal);
 begin
   DialogText := PickLocalizedTextVariant('FormGov.BuyMap.GovAfterNo', (Galaxy.CurrentTurn div 10) * GetPlayer.CurrentPlanet.GenerationSeed + 112);
   BuildGovernmentChoices(True);
 end;
-{ @end $6D03CC }
+{ @end $524370 }
 
-{ @routine $6D0494 TfGov_ShowPrisonBail }
-procedure TfGov.ShowPrisonBail(Action: Integer);
+{ @routine $52442C TfGov_ShowPrisonBail }
+procedure TfGov.ShowPrisonBail(Action: Cardinal);
 var Text, RowText: WideString; Ship: TShip; I, Cost: Integer; Ships: TList;
 begin
   DialogText := LocalizedColorText('FormGov.GuarantPrison.PlanetAsk');
@@ -1762,7 +1758,7 @@ begin
       Ship.IsInPrison and (Ship.GetPrisonTermRemaining > 0) then
     begin
       RowText := FormatText2(LocalizedColorText('FormGov.GuarantPrison.ShipRow'), TextHighlightColorTag,
-        '<Ship>', Ship.GetFullName(' '), '<Cost>', WideString(IntToStr(Ship.GetPrisonReleaseCost)));
+        '<Ship>', Ship.GetFullName(' '), '<Cost>', IntToStr(Ship.GetPrisonReleaseCost));
       Text := Text + #13#10 + ' - ' + RowText;
       Ships.Add(Ship);
     end;
@@ -1777,7 +1773,7 @@ begin
       Cost := Ship.GetPrisonReleaseCost;
       Text := LocalizedColorText('FormGov.GuarantPrison.PlayerOk');
       Text := FormatText2(Text, TextHighlightColorTag, '<Ship>', Ship.GetFullName(' '),
-        '<Cost>', WideString(IntToStr(Cost)));
+        '<Cost>', IntToStr(Cost));
       if GetPlayer.Money >= Cost then AddChoice(Text, Integer(Ship), PayPrisonBail)
       else AddChoice(Text, 0, ScriptDialogBlockCallback);
     end;
@@ -1785,10 +1781,10 @@ begin
   AddChoice(LocalizedColorText('FormGov.GuarantPrison.PlayerNo'), 0, CancelPrisonBail);
   Ships.Free;
 end;
-{ @end $6D0494 }
+{ @end $52442C }
 
-{ @routine $6D0924 TfGov_PayPrisonBail }
-procedure TfGov.PayPrisonBail(Action: Integer);
+{ @routine $524898 TfGov_PayPrisonBail }
+procedure TfGov.PayPrisonBail(Action: Cardinal);
 var Ship: TShip;
 begin
   Ship := TShip(Action);
@@ -1805,34 +1801,34 @@ begin
   DialogText := LocalizedColorText('FormGov.GuarantPrison.PlanetAfterOk');
   BuildGovernmentChoices(True);
 end;
-{ @end $6D0924 }
+{ @end $524898 }
 
-{ @routine $6D0AC4 TfGov_CancelPrisonBail }
-procedure TfGov.CancelPrisonBail(Action: Integer);
+{ @routine $524A18 TfGov_CancelPrisonBail }
+procedure TfGov.CancelPrisonBail(Action: Cardinal);
 begin
   DialogText := LocalizedColorText('FormGov.GuarantPrison.PlanetAfterNo');
   BuildGovernmentChoices(True);
 end;
-{ @end $6D0AC4 }
+{ @end $524A18 }
 
-{ @routine $6D0B78 TfGov_ReturnToPlanet }
-procedure TfGov.ReturnToPlanet(Action: Integer);
+{ @routine $524AC0 TfGov_ReturnToPlanet }
+procedure TfGov.ReturnToPlanet(Action: Cardinal);
 begin
   RequestedScreenId := screenPlanet;
   RequestClose(1);
 end;
-{ @end $6D0B78 }
+{ @end $524AC0 }
 
-{ @routine $6D0BA0 TfGov_ExitGovernment }
-procedure TfGov.ExitGovernment(Action: Integer);
+{ @routine $524AD4 TfGov_ExitGovernment }
+procedure TfGov.ExitGovernment(Action: Cardinal);
 begin
   RequestedScreenId := screenPlanet;
   RequestClose(1);
 end;
-{ @end $6D0BA0 }
+{ @end $524AD4 }
 
-{ @routine $6D0BC8 TfGov_RunInjectedAnswer }
-procedure TfGov.RunInjectedAnswer(Answer: Integer);
+{ @routine $524AE8 TfGov_RunInjectedAnswer }
+procedure TfGov.RunInjectedAnswer(Answer: Cardinal);
 var Injection: PScriptDialogInjection; Text: WideString; PartCount: Integer;
 begin
   Injection := PScriptDialogInjection(Answer);
@@ -1856,33 +1852,33 @@ begin
   if ScriptDialogIndex < 0 then BuildGovernmentChoices(True)
   else CurrentScript.CallDialogMessage(ScriptDialogIndex);
 end;
-{ @end $6D0BC8 }
+{ @end $524AE8 }
 
-{ @routine $6D0D8C TfGov_RunInjectedAnswerKeepingScroll }
-procedure TfGov.RunInjectedAnswerKeepingScroll(Answer: Integer);
+{ @routine $524C7C TfGov_RunInjectedAnswerKeepingScroll }
+procedure TfGov.RunInjectedAnswerKeepingScroll(Answer: Cardinal);
 begin
   RememberChoiceScroll;
   RunInjectedAnswer(Answer);
 end;
-{ @end $6D0D8C }
+{ @end $524C7C }
 
-{ @routine $6D0DB0 TfGov_RunScriptRestartAnswer }
-procedure TfGov.RunScriptRestartAnswer(Answer: Integer);
+{ @routine $524C98 TfGov_RunScriptRestartAnswer }
+procedure TfGov.RunScriptRestartAnswer(Answer: Cardinal);
 begin
   DialogText := '';
   CurrentScript.ExecuteDialogAnswer(Answer);
   RefreshGovernmentDialog;
 end;
-{ @end $6D0DB0 }
+{ @end $524C98 }
 
-{ @routine $6D0DE4 TfGov_AddScriptRestartChoice }
+{ @routine $524CC4 TfGov_AddScriptRestartChoice }
 procedure TfGov.AddScriptRestartChoice(Caption: WideString);
 begin
   AddChoice('- ' + Caption, CurrentScript.CurrentAnswer, RunScriptRestartAnswer);
 end;
-{ @end $6D0DE4 }
+{ @end $524CC4 }
 
-{ @routine $6D0E6C TfGov_ExecuteUiCode }
+{ @routine $524D48 TfGov_ExecuteUiCode }
 procedure TfGov.ExecuteUiCode(Block: TBlockParEC; Key: Cardinal);
 begin
   if MainPanel.NavigationLocked then Exit;
@@ -1894,6 +1890,6 @@ begin
     Galaxy.PrimeIntegrityChecksum(20008);
   end;
 end;
-{ @end $6D0E6C }
+{ @end $524D48 }
 
 end.

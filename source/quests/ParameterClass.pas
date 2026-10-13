@@ -1,5 +1,4 @@
 unit ParameterClass;
-// Unit bracket (inferred): .text 0x004DE770..0x004DF770; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -27,27 +26,27 @@ type
     ViewStringCapacity: Integer; // @offset 0x34
     InitialRange: TCPDiapazone; // @offset 0x38
 
-    constructor Create(Index: Integer); // @addr 0x4DE800
-    destructor Destroy; override; // @addr 0x4DE8CC
-    procedure Reset(Index: Integer); // @addr 0x4DE9A0
-    procedure EnsureViewStringCapacity(RequiredCapacity, ParameterIndex: Integer); // @addr 0x4DEBF0 @note "ParameterIndex labels new entries; ViewStringCount is unchanged."
-    function GetNonCriticalMinimum: Integer; // @addr 0x4DEDE0
-    function GetNonCriticalMaximum: Integer; // @addr 0x4DEE18
-    procedure SetValue(NewValue: Integer); // @addr 0x4DEE50 @note "Clamps ordinary parameters to their bounds; money is only clamped at zero."
-    procedure LoadFromReader(Reader: TBufEC); // @addr 0x4DEEC0 @note "Parameter format used by quest versions 1111111125 and later."
-    procedure LoadLegacyV0FromReader(Reader: TBufEC); // @addr 0x4DF5F4 @note "Quest versions 1111111111..1111111112."
-    procedure LoadLegacyV1FromReader(Reader: TBufEC); // @addr 0x4DF484 @note "Quest versions 1111111113..1111111117."
-    procedure LoadLegacyV2FromReader(Reader: TBufEC); // @addr 0x4DF310 @note "Quest version 1111111118."
-    procedure LoadLegacyV3FromReader(Reader: TBufEC); // @addr 0x4DF18C @note "Quest versions 1111111119..1111111120."
-    procedure LoadLegacyV4FromReader(Reader: TBufEC); // @addr 0x4DF030 @note "Quest versions 1111111121..1111111124."
-    function GetValueText(Value: Integer): WideString; // @addr 0x4DED20
+    constructor Create(Index: Integer); // @addr 0x004DB900
+    destructor Destroy; override; // @addr 0x004DB9A8
+    procedure Reset(Index: Integer); // @addr 0x004DBA40
+    procedure EnsureViewStringCapacity(RequiredCapacity, ParameterIndex: Integer); // @addr 0x004DBC44 @note "ParameterIndex labels new entries; ViewStringCount is unchanged."
+    function GetNonCriticalMinimum: Integer; // @addr 0x004DBDBC
+    function GetNonCriticalMaximum: Integer; // @addr 0x004DBDD8
+    procedure SetValue(NewValue: Integer); // @addr 0x004DBDF4 @note "Clamps ordinary parameters to their bounds; money is only clamped at zero."
+    procedure LoadFromReader(Reader: TBufEC); // @addr 0x004DBE28 @note "Parameter format used by quest versions 1111111125 and later."
+    procedure LoadLegacyV0FromReader(Reader: TBufEC); // @addr 0x004DC334 @note "Quest versions 1111111111..1111111112."
+    procedure LoadLegacyV1FromReader(Reader: TBufEC); // @addr 0x004DC238 @note "Quest versions 1111111113..1111111117."
+    procedure LoadLegacyV2FromReader(Reader: TBufEC); // @addr 0x004DC134 @note "Quest version 1111111118."
+    procedure LoadLegacyV3FromReader(Reader: TBufEC); // @addr 0x004DC018 @note "Quest versions 1111111119..1111111120."
+    procedure LoadLegacyV4FromReader(Reader: TBufEC); // @addr 0x004DBF28 @note "Quest versions 1111111121..1111111124."
+    function GetValueText(Value: Integer): WideString; // @addr 0x004DBD50
   end;
 
 implementation
 
 uses EC_Str, ValueListClass, MessageText;
 
-{ @routine $4DE800 TParameter_Create }
+{ @routine $4DB900 TParameter_Create }
 constructor TParameter.Create(Index: Integer);
 begin
   inherited Create;
@@ -61,9 +60,9 @@ begin
   InitialRange := TCPDiapazone.Create;
   Reset(Index);
 end;
-{ @end $4DE800 }
+{ @end $4DB900 }
 
-{ @routine $4DE8CC TParameter_Destroy }
+{ @routine $4DB9A8 TParameter_Destroy }
 destructor TParameter.Destroy;
 var
   i: Integer;
@@ -84,9 +83,9 @@ begin
   InitialRange := nil;
   inherited Destroy;
 end;
-{ @end $4DE8CC }
+{ @end $4DB9A8 }
 
-{ @routine $4DE9A0 TParameter_Reset }
+{ @routine $4DBA40 TParameter_Reset }
 procedure TParameter.Reset(Index: Integer);
 begin
   IsMoney := False;
@@ -110,9 +109,9 @@ begin
   CriticalEventOverride := nil;
   CriticalEvent.Text.Text := QuestMessages.GetTextOrKey('ParameterDefaultCriticalMessage') + ' ' + IntToWideString(Index);
 end;
-{ @end $4DE9A0 }
+{ @end $4DBA40 }
 
-{ @routine $4DEBF0 TParameter_EnsureViewStringCapacity }
+{ @routine $4DBC44 TParameter_EnsureViewStringCapacity }
 procedure TParameter.EnsureViewStringCapacity(RequiredCapacity: Integer; ParameterIndex: Integer);
 begin
   while RequiredCapacity > ViewStringCapacity do
@@ -123,41 +122,41 @@ begin
       QuestMessages.GetTextOrKey('ParameterDefaultName') + ' ' + IntToWideString(ParameterIndex) + ': <>');
   end;
 end;
-{ @end $4DEBF0 }
+{ @end $4DBC44 }
 
-{ @routine $4DED20 TParameter_GetValueText }
+{ @routine $4DBD50 TParameter_GetValueText }
 function TParameter.GetValueText(Value: Integer): WideString;
 var
   i: Integer;
 begin
   for i := 1 to ViewStringCount do
-    if (ViewStrings[i].MinValue <= Value) and (ViewStrings[i].MaxValue >= Value) then
-    begin
-      Result := TrimWideString(ViewStrings[i].Text.Text);
-      Exit;
-    end;
+  begin
+    if (ViewStrings[i].MinValue > Value) or (ViewStrings[i].MaxValue < Value) then Continue;
+    Result := TrimWideString(ViewStrings[i].Text.Text);
+    Exit;
+  end;
   if ViewStrings[ViewStringCount].MaxValue < Value then Result := ViewStrings[ViewStringCount].Text.Text
   else Result := ViewStrings[1].Text.Text;
 end;
-{ @end $4DED20 }
+{ @end $4DBD50 }
 
-{ @routine $4DEDE0 TParameter_GetNonCriticalMinimum }
+{ @routine $4DBDBC TParameter_GetNonCriticalMinimum }
 function TParameter.GetNonCriticalMinimum: Integer;
 begin
   Result := MinValue;
   if (CriticalOutcome <> qoNone) and (CriticalOutcome <> qoSuccess) and CriticalAtMinimum then Inc(Result);
 end;
-{ @end $4DEDE0 }
+{ @end $4DBDBC }
 
-{ @routine $4DEE18 TParameter_GetNonCriticalMaximum }
+{ @routine $4DBDD8 TParameter_GetNonCriticalMaximum }
 function TParameter.GetNonCriticalMaximum: Integer;
 begin
   Result := MaxValue;
   if (CriticalOutcome <> qoNone) and (CriticalOutcome <> qoSuccess) and not CriticalAtMinimum then Dec(Result);
 end;
-{ @end $4DEE18 }
+{ @end $4DBDD8 }
 
-{ @routine $4DEE50 TParameter_SetValue }
+{ @routine $4DBDF4 TParameter_SetValue }
 procedure TParameter.SetValue(NewValue: Integer);
 begin
   if IsMoney then
@@ -165,16 +164,13 @@ begin
     if NewValue < 0 then Value := 0
     else Value := NewValue;
   end
-  else
-  begin
-    if NewValue > MaxValue then Value := MaxValue
-    else if NewValue < MinValue then Value := MinValue
-    else Value := NewValue;
-  end;
+  else if NewValue > MaxValue then Value := MaxValue
+  else if NewValue < MinValue then Value := MinValue
+  else Value := NewValue;
 end;
-{ @end $4DEE50 }
+{ @end $4DBDF4 }
 
-{ @routine $4DEEC0 TParameter_LoadFromReader }
+{ @routine $4DBE28 TParameter_LoadFromReader }
 procedure TParameter.LoadFromReader(Reader: TBufEC);
 var
   i: Integer;
@@ -190,7 +186,7 @@ begin
   IsMoney := Reader.GetBoolean;
   NameText.LoadTextLinesFromReader(Reader);
   EnsureViewStringCapacity(ViewStringCount, 0);
-  for i := 1 to ViewStringCount do TParViewString(ViewStrings[i]).LoadFromReader(Reader);
+  for i := 1 to ViewStringCount do ViewStrings[i].LoadFromReader(Reader);
   if ViewStringCount <= 0 then
   begin
     ViewStringCount := 1;
@@ -204,9 +200,9 @@ begin
   CriticalEvent.Music.LoadTextLinesFromReader(Reader);
   InitialRange.LoadFromReader(Reader);
 end;
-{ @end $4DEEC0 }
+{ @end $4DBE28 }
 
-{ @routine $4DF030 TParameter_LoadLegacyV4FromReader }
+{ @routine $4DBF28 TParameter_LoadLegacyV4FromReader }
 procedure TParameter.LoadLegacyV4FromReader(Reader: TBufEC);
 var
   i: Integer;
@@ -223,7 +219,7 @@ begin
   IsMoney := Reader.GetBoolean;
   NameText.LoadTextLinesFromReader(Reader);
   EnsureViewStringCapacity(ViewStringCount, 0);
-  for i := 1 to ViewStringCount do TParViewString(ViewStrings[i]).LoadFromReader(Reader);
+  for i := 1 to ViewStringCount do ViewStrings[i].LoadFromReader(Reader);
   if ViewStringCount <= 0 then
   begin
     ViewStringCount := 1;
@@ -235,9 +231,9 @@ begin
   CriticalEvent.Text.LoadTextLinesFromReader(Reader);
   InitialRange.LoadFromReader(Reader);
 end;
-{ @end $4DF030 }
+{ @end $4DBF28 }
 
-{ @routine $4DF18C TParameter_LoadLegacyV3FromReader }
+{ @routine $4DC018 TParameter_LoadLegacyV3FromReader }
 procedure TParameter.LoadLegacyV3FromReader(Reader: TBufEC);
 var
   i: Integer;
@@ -255,7 +251,7 @@ begin
   IsMoney := Reader.GetBoolean;
   NameText.LoadTextLinesFromReader(Reader);
   EnsureViewStringCapacity(ViewStringCount, 0);
-  for i := 1 to ViewStringCount do TParViewString(ViewStrings[i]).LoadFromReader(Reader);
+  for i := 1 to ViewStringCount do ViewStrings[i].LoadFromReader(Reader);
   if ViewStringCount <= 0 then
   begin
     ViewStringCount := 1;
@@ -271,9 +267,9 @@ begin
   Values.Clear;
   Values.Free;
 end;
-{ @end $4DF18C }
+{ @end $4DC018 }
 
-{ @routine $4DF310 TParameter_LoadLegacyV2FromReader }
+{ @routine $4DC134 TParameter_LoadLegacyV2FromReader }
 procedure TParameter.LoadLegacyV2FromReader(Reader: TBufEC);
 var
   i: Integer;
@@ -290,7 +286,7 @@ begin
   IsMoney := Reader.GetBoolean;
   NameText.LoadTextLinesFromReader(Reader);
   EnsureViewStringCapacity(ViewStringCount, 0);
-  for i := 1 to ViewStringCount do TParViewString(ViewStrings[i]).LoadFromReader(Reader);
+  for i := 1 to ViewStringCount do ViewStrings[i].LoadFromReader(Reader);
   if ViewStringCount <= 0 then
   begin
     ViewStringCount := 1;
@@ -303,9 +299,9 @@ begin
   InitialRange.Clear;
   InitialRange.AddRange(Value, Value);
 end;
-{ @end $4DF310 }
+{ @end $4DC134 }
 
-{ @routine $4DF484 TParameter_LoadLegacyV1FromReader }
+{ @routine $4DC238 TParameter_LoadLegacyV1FromReader }
 procedure TParameter.LoadLegacyV1FromReader(Reader: TBufEC);
 var
   i: Integer;
@@ -322,7 +318,7 @@ begin
   IsMoney := False;
   NameText.LoadTextLinesFromReader(Reader);
   EnsureViewStringCapacity(ViewStringCount, 0);
-  for i := 1 to ViewStringCount do TParViewString(ViewStrings[i]).LoadFromReader(Reader);
+  for i := 1 to ViewStringCount do ViewStrings[i].LoadFromReader(Reader);
   if ViewStringCount <= 0 then
   begin
     ViewStringCount := 1;
@@ -335,9 +331,9 @@ begin
   InitialRange.Clear;
   InitialRange.AddRange(Value, Value);
 end;
-{ @end $4DF484 }
+{ @end $4DC238 }
 
-{ @routine $4DF5F4 TParameter_LoadLegacyV0FromReader }
+{ @routine $4DC334 TParameter_LoadLegacyV0FromReader }
 procedure TParameter.LoadLegacyV0FromReader(Reader: TBufEC);
 begin
   MinValue := Reader.GetInt32;
@@ -361,6 +357,6 @@ begin
   InitialRange.Clear;
   InitialRange.AddRange(Value, Value);
 end;
-{ @end $4DF5F4 }
+{ @end $4DC334 }
 
 end.

@@ -1,6 +1,4 @@
 unit DwmApi;
-// Unit bracket (inferred): .text 0x0042A244..0x0042A3D7; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
-// Unit bracket (inferred): .itext 0x008763CC..0x008763D3; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -12,7 +10,7 @@ function DwmExtendFrameIntoClientArea(hWnd: Cardinal; const pMarInset: TMargins)
 function DwmIsCompositionEnabled(out pfEnabled: LongBool): HResult;
 function DwmCompositionEnabled: Boolean;
 
-procedure FinalizeDwmApi; // @nameonly @note "DCC32 MAP DwmApi.Finalization. Prototype pending: no unique source declaration."
+procedure FinalizeDwmApi; // @nameonly
 
 implementation
 end.

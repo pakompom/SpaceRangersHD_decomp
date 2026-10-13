@@ -1,5 +1,4 @@
 unit GI_TextButton;
-// Unit bracket (inferred): .text 0x0049C4F4..0x0049DC0D; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 
 interface
@@ -7,11 +6,13 @@ interface
 uses Classes, EC_BlockPar, EC_CacheBitmap, EC_CacheFont, GI_MessageLoop, Types;
 
 type
+  TTextButtonKindGI = (tbMomentary, tbToggle); // @size $04
+
   TTextButtonGI = class(TObjectGI) // @size $158
   public
     FontCache: TCFontControlEC; // @offset $120
     ImageCache: TCBitmapControlEC; // @offset $124
-    Kind: Integer; // @offset $128
+    Kind: TTextButtonKindGI; // @offset $128
     Caption: WideString; // @offset $12C
     CaptionColor: Cardinal; // @offset $130
     CaptionActiveColor: Cardinal; // @offset $134
@@ -21,26 +22,26 @@ type
     Down: Boolean; // @offset $141
     DownCallback: TObjectNotifyEventGI; // @offset $148
     UpCallback: TObjectNotifyEventGI; // @offset $150
-    constructor Create(Owner: TObjectGI); // @addr $49C628
-    destructor Destroy; override; // @addr $49C740
-    procedure Clear; override; // @addr $49C7A4
-    procedure OnActivate; override; // @addr $49C840
-    procedure OnDeactivate; override; // @addr $49C898
-    procedure OnMouseEnter; override; // @addr $49C8CC
-    procedure OnMouseLeave; override; // @addr $49C908
-    procedure ProcessLeftButtonDown(KeyState: Cardinal; Point: TPoint); override; // @addr $49C984
-    procedure ProcessLeftButtonUp(KeyState: Cardinal; Point: TPoint); override; // @addr $49CAA8
-    procedure LoadFromConfigPath(const Path: WideString); override; // @addr $49CB48
-    procedure LoadFromBlock(Block: TBlockParEC); override; // @addr $49D1BC
-    procedure Draw(ClipRect: TRect); override; // @addr $49D818
-    procedure QueueImageLoad(PendingLoads: TList); override; // @addr $49DBD0
+    constructor Create(Owner: TObjectGI); // @addr $4B2920
+    destructor Destroy; override; // @addr $4B2A10
+    procedure Clear; override; // @addr $4B2A5C
+    procedure OnActivate; override; // @addr $4B2AE0
+    procedure OnDeactivate; override; // @addr $4B2B24
+    procedure OnMouseEnter; override; // @addr $4B2B48
+    procedure OnMouseLeave; override; // @addr $4B2B74
+    procedure ProcessLeftButtonDown(KeyState: Cardinal; Point: TPoint); override; // @addr $4B2BD4
+    procedure ProcessLeftButtonUp(KeyState: Cardinal; Point: TPoint); override; // @addr $4B2CC4
+    procedure LoadFromConfigPath(const Path: WideString); override; // @addr $4B2D44
+    procedure LoadFromBlock(Block: TBlockParEC); override; // @addr $4B3380
+    procedure Draw(ClipRect: TRect); override; // @addr $4B39AC
+    procedure QueueImageLoad(PendingLoads: TList); override; // @addr $4B3D40
   end;
 
 implementation
 
 uses SysUtils, EC_Str, GR_Main, GI_Main;
 
-{ @routine $49C628 TTextButtonGI_Create }
+{ @routine $4B2920 TTextButtonGI_Create }
 constructor TTextButtonGI.Create(Owner: TObjectGI);
 begin
   inherited Create(Owner);
@@ -52,11 +53,11 @@ begin
   CaptionActiveColor := CurrentPixelFormat.PackRgbBytes(255, 0, 0);
   BorderLightColor := CurrentPixelFormat.PackRgbBytes(255, 255, 255);
   BorderDarkColor := CurrentPixelFormat.PackRgbBytes(55, 55, 55);
-  Kind := 0;
+  Kind := tbMomentary;
 end;
-{ @end $49C628 }
+{ @end $4B2920 }
 
-{ @routine $49C740 TTextButtonGI_Destroy }
+{ @routine $4B2A10 TTextButtonGI_Destroy }
 destructor TTextButtonGI.Destroy;
 begin
   FontCache.Free;
@@ -65,9 +66,9 @@ begin
   ImageCache := nil;
   inherited Destroy;
 end;
-{ @end $49C740 }
+{ @end $4B2A10 }
 
-{ @routine $49C7A4 TTextButtonGI_Clear }
+{ @routine $4B2A5C TTextButtonGI_Clear }
 procedure TTextButtonGI.Clear;
 begin
   inherited Clear;
@@ -78,19 +79,19 @@ begin
   Caption := '';
   MouseBlocking := True;
 end;
-{ @end $49C7A4 }
+{ @end $4B2A5C }
 
-{ @routine $49C840 TTextButtonGI_OnActivate }
+{ @routine $4B2AE0 TTextButtonGI_OnActivate }
 procedure TTextButtonGI.OnActivate;
 begin
   inherited OnActivate;
   if HitTestCursor then Hover := True else Hover := False;
-  if Kind = 0 then Down := False;
+  if Kind = tbMomentary then Down := False;
   Invalidate;
 end;
-{ @end $49C840 }
+{ @end $4B2AE0 }
 
-{ @routine $49C898 TTextButtonGI_OnDeactivate }
+{ @routine $4B2B24 TTextButtonGI_OnDeactivate }
 procedure TTextButtonGI.OnDeactivate;
 begin
   inherited OnDeactivate;
@@ -98,83 +99,79 @@ begin
   Down := False;
   Invalidate;
 end;
-{ @end $49C898 }
+{ @end $4B2B24 }
 
-{ @routine $49C8CC TTextButtonGI_OnMouseEnter }
+{ @routine $4B2B48 TTextButtonGI_OnMouseEnter }
 procedure TTextButtonGI.OnMouseEnter;
 begin
   inherited OnMouseEnter;
-  if not IsOccludedAtPoint(AbsolutePosition) then
-  begin
-    Hover := True;
-    Invalidate;
-  end;
+  if IsOccludedAtPoint(AbsolutePosition) then Exit;
+  Hover := True;
+  Invalidate;
 end;
-{ @end $49C8CC }
+{ @end $4B2B48 }
 
-{ @routine $49C908 TTextButtonGI_OnMouseLeave }
+{ @routine $4B2B74 TTextButtonGI_OnMouseLeave }
 procedure TTextButtonGI.OnMouseLeave;
 begin
   inherited OnMouseLeave;
-  if Kind = 0 then
+  if Kind = tbMomentary then
   begin
     if Down then
     begin
       Down := False;
-      DispatchNamedEvent(2, 0, 0);
+      DispatchNamedEvent(nceButtonUp, 0, 0);
       if Assigned(UpCallback) then UpCallback(Self);
     end;
   end;
   Hover := False;
   Invalidate;
 end;
-{ @end $49C908 }
+{ @end $4B2B74 }
 
-{ @routine $49C984 TTextButtonGI_ProcessLeftButtonDown }
+{ @routine $4B2BD4 TTextButtonGI_ProcessLeftButtonDown }
 procedure TTextButtonGI.ProcessLeftButtonDown(KeyState: Cardinal; Point: TPoint);
 begin
   inherited ProcessLeftButtonDown(KeyState, Point);
   if IsOccludedAtPoint(Point) then Exit;
-  if Kind = 0 then
+  if Kind = tbMomentary then
   begin
     Down := True;
-    DispatchNamedEvent(1, Point.X, Point.Y);
+    DispatchNamedEvent(nceButtonDown, Point.X, Point.Y);
     if Assigned(DownCallback) then DownCallback(Self);
   end else
   begin
     if Down then
     begin
       Down := False;
-      DispatchNamedEvent(2, Point.X, Point.Y);
+      DispatchNamedEvent(nceButtonUp, Point.X, Point.Y);
       if Assigned(UpCallback) then UpCallback(Self);
     end else
     begin
       Down := True;
-      DispatchNamedEvent(1, Point.X, Point.Y);
+      DispatchNamedEvent(nceButtonDown, Point.X, Point.Y);
       if Assigned(DownCallback) then DownCallback(Self);
     end;
   end;
   Invalidate;
 end;
-{ @end $49C984 }
+{ @end $4B2BD4 }
 
-{ @routine $49CAA8 TTextButtonGI_ProcessLeftButtonUp }
+{ @routine $4B2CC4 TTextButtonGI_ProcessLeftButtonUp }
 procedure TTextButtonGI.ProcessLeftButtonUp(KeyState: Cardinal; Point: TPoint);
 begin
   inherited ProcessLeftButtonUp(KeyState, Point);
   if IsOccludedAtPoint(Point) then Exit;
-  if Kind = 0 then
-  begin
-    Down := False;
-    Invalidate;
-    DispatchNamedEvent(2, Point.X, Point.Y);
-    if Assigned(UpCallback) then
-      if MessageLoop.ConsumeTimerTickChange then UpCallback(Self);
-  end;
+  if Kind <> tbMomentary then Exit;
+  Down := False;
+  Invalidate;
+  DispatchNamedEvent(nceButtonUp, Point.X, Point.Y);
+  if Assigned(UpCallback) then
+    if MessageLoop.ConsumeTimerTickChange then UpCallback(Self);
 end;
-{ @end $49CAA8 }
+{ @end $4B2CC4 }
 
-{ @routine $49CB48 TTextButtonGI_LoadFromConfigPath }
+{ @routine $4B2D44 TTextButtonGI_LoadFromConfigPath }
 procedure TTextButtonGI.LoadFromConfigPath(const Path: WideString);
 var Block: TBlockParEC; Text: WideString; Red, Green, Blue: Byte;
 begin
@@ -222,12 +219,12 @@ begin
   end;
   if Block.CountParams('Kind') > 0 then
   begin
-    if Block.GetParam('Kind') = 'Normal' then Kind := 0 else Kind := 1;
+    if Block.GetParam('Kind') = 'Normal' then Kind := tbMomentary else Kind := tbToggle;
   end;
 end;
-{ @end $49CB48 }
+{ @end $4B2D44 }
 
-{ @routine $49D1BC TTextButtonGI_LoadFromBlock }
+{ @routine $4B3380 TTextButtonGI_LoadFromBlock }
 procedure TTextButtonGI.LoadFromBlock(Block: TBlockParEC);
 var Text: WideString; Red, Green, Blue: Byte;
 begin
@@ -274,12 +271,12 @@ begin
   end;
   if Block.CountParams('Kind') > 0 then
   begin
-    if Block.GetParam('Kind') = 'Normal' then Kind := 0 else Kind := 1;
+    if Block.GetParam('Kind') = 'Normal' then Kind := tbMomentary else Kind := tbToggle;
   end;
 end;
-{ @end $49D1BC }
+{ @end $4B3380 }
 
-{ @routine $49D818 TTextButtonGI_Draw }
+{ @routine $4B39AC TTextButtonGI_Draw }
 procedure TTextButtonGI.Draw(ClipRect: TRect);
 var Font: TCFontEC; Bitmap: TCBitmapEC; Bounds: TRect;
 begin
@@ -320,14 +317,14 @@ begin
   end;
   inherited Draw(ClipRect);
 end;
-{ @end $49D818 }
+{ @end $4B39AC }
 
-{ @routine $49DBD0 TTextButtonGI_QueueImageLoad }
+{ @routine $4B3D40 TTextButtonGI_QueueImageLoad }
 procedure TTextButtonGI.QueueImageLoad(PendingLoads: TList);
 begin
   FontCache.QueueLoadIfMissing(PendingLoads);
   if ImageCache <> nil then ImageCache.QueueLoadIfMissing(PendingLoads);
 end;
-{ @end $49DBD0 }
+{ @end $4B3D40 }
 
 end.

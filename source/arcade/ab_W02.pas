@@ -1,6 +1,4 @@
 unit ab_W02;
-// Unit bracket (inferred): .text 0x004F432C..0x004F48F1; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
-// Native TabW02 projectile family: $4F4394..$4F48F2.
 
 interface
 
@@ -14,18 +12,18 @@ type
     Phase: Integer; // @offset $B8  0 launch, 1 armed, 2 explosion.
     ExpireTick: Integer; // @offset $BC
     ArmTick: Integer; // @offset $C0
-    constructor Create; // @addr $4F4394
-    destructor Destroy; override; // @addr $4F4418
-    procedure Launch(Owner: TabObject; Amount: Integer; Offset: Single); // @addr $4F4470
-    procedure Advance; override; // @addr $4F45CC
-    procedure UpdateVisuals; override; // @addr $4F48E0
+    constructor Create; // @addr $553CF8
+    destructor Destroy; override; // @addr $553D64
+    procedure Launch(Owner: TabObject; Amount: Integer; Offset: Single); // @addr $553DA0
+    procedure Advance; override; // @addr $553ECC
+    procedure UpdateVisuals; override; // @addr $554160
   end;
 
 implementation
 
 uses ab_Ship, GlobalsV;
 
-{ @routine $4F4394 TabW02_Create }
+{ @routine $553CF8 TabW02_Create }
 constructor TabW02.Create;
 begin
   inherited Create;
@@ -35,9 +33,9 @@ begin
   CollisionRadius := 1;
   Collidable := False;
 end;
-{ @end $4F4394 }
+{ @end $553CF8 }
 
-{ @routine $4F4418 TabW02_Destroy }
+{ @routine $553D64 TabW02_Destroy }
 destructor TabW02.Destroy;
 begin
   if Image <> nil then
@@ -47,9 +45,9 @@ begin
   end;
   inherited Destroy;
 end;
-{ @end $4F4418 }
+{ @end $553D64 }
 
-{ @routine $4F4470 TabW02_Launch }
+{ @routine $553DA0 TabW02_Launch }
 procedure TabW02.Launch(Owner: TabObject; Amount: Integer; Offset: Single);
 begin
   SourceObject := Owner;
@@ -63,9 +61,9 @@ begin
   ab_WorldImage_SetFrameMode(Image, afmRandomStart);
   ab_WorldImage_SetDepth(Image, HitFrontDepth, HitBackDepth);
 end;
-{ @end $4F4470 }
+{ @end $553DA0 }
 
-{ @routine $4F45CC TabW02_Advance }
+{ @routine $553ECC TabW02_Advance }
 procedure TabW02.Advance;
 var
   Collision: TabObject;
@@ -118,13 +116,13 @@ begin
   end
   else if Phase = 2 then DeletionPending := Image.Finished;
 end;
-{ @end $4F45CC }
+{ @end $553ECC }
 
-{ @routine $4F48E0 TabW02_UpdateVisuals }
+{ @routine $554160 TabW02_UpdateVisuals }
 procedure TabW02.UpdateVisuals;
 begin
   inherited UpdateVisuals;
 end;
-{ @end $4F48E0 }
+{ @end $554160 }
 
 end.

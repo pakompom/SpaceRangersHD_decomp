@@ -22,7 +22,7 @@ type
   TDesintegratorPalettes = array of TDesintegratorPalette;
 
 var
-  DesintegratorPalettes: array of TDesintegratorPalette; // @addr $88AEDC
+  DesintegratorPalettes: array of TDesintegratorPalette; // @addr $81B1C8
 
 type
   TPSWeapon11Desintegrator = class(TPSWeaponGI) // @size $170
@@ -38,33 +38,33 @@ type
     LengthScale: Double; // @offset $160
     OriginalLength: Double; // @offset $168
 
-    constructor Create(Owner: TObjectGI; APaletteIndex: Integer); // @addr $691EA4
-    destructor Destroy; override; // @addr $691F8C
-    procedure SetPosition(Position: TPoint); override; // @addr $691FC8
-    procedure SetTargetPoint(Point: TPoint); override; // @addr $69200C
-    procedure UpdateProjectionBounds; // @addr $692060
-    procedure UpdateHitTestBounds; override; // @addr $6923A4
-    function GetLocalBounds: TRect; override; // @addr $692410
-    function AddParticle: PDesintegratorParticle; // @addr $692474
-    procedure RemoveParticle(Particle: PDesintegratorParticle); // @addr $6924EC
-    procedure AdvanceImpactSparks(ClipRect: TRect); // @addr $692B24
-    procedure ClearParticles; // @addr $692570
-    procedure Invalidate; override; // @addr $6925C4 @note "Native empty override."
-    procedure InvalidateRect(Rect: TRect); override; // @addr $6925D0
-    procedure Advance(Timer: PCallbackTimerGI; UserData: Integer); override; // @addr $69269C
-    procedure Draw(ClipRect: TRect); override; // @addr $692EB8
+    constructor Create(Owner: TObjectGI; APaletteIndex: Integer); // @addr $4F2484
+    destructor Destroy; override; // @addr $4F253C
+    procedure SetPosition(Position: TPoint); override; // @addr $4F2568
+    procedure SetTargetPoint(Point: TPoint); override; // @addr $4F25A0
+    procedure UpdateProjectionBounds; // @addr $4F25E0
+    procedure UpdateHitTestBounds; override; // @addr $4F2958
+    function GetLocalBounds: TRect; override; // @addr $4F2998
+    function AddParticle: PDesintegratorParticle; // @addr $4F29C8
+    procedure RemoveParticle(Particle: PDesintegratorParticle); // @addr $4F2A08
+    procedure AdvanceImpactSparks(ClipRect: TRect); // @addr $4F2F00
+    procedure ClearParticles; // @addr $4F2A50
+    procedure Invalidate; override; // @addr $4F2A84 @note "Native empty override."
+    procedure InvalidateRect(Rect: TRect); override; // @addr $4F2A88
+    procedure Advance(Timer: TCallbackTimerIdGI; UserData: Cardinal); override; // @addr $4F2B3C
+    procedure Draw(ClipRect: TRect); override; // @addr $4F3230
   end;
 
-procedure LoadDesintegratorPalettes; // @addr $6931A4
+procedure LoadDesintegratorPalettes; // @addr $4F3498
 
 implementation
 
-// @unit-initialization $877934
-// @unit-finalization $693468
+// @unit-initialization $806844
+// @unit-finalization $4F371C
 
 uses SysUtils, Classes, Math, EC_BlockPar, EC_Str, EC_Mem, GR_Main, GR_DX, aMyFunction, Globals;
 
-{ @routine $691EA4 TPSWeapon11Desintegrator_Create }
+{ @routine $4F2484 TPSWeapon11Desintegrator_Create }
 constructor TPSWeapon11Desintegrator.Create(Owner: TObjectGI; APaletteIndex: Integer);
 begin
   inherited Create(Owner);
@@ -79,17 +79,17 @@ begin
   RemainingTicks := 50;
   LifetimeTicks := RemainingTicks;
 end;
-{ @end $691EA4 }
+{ @end $4F2484 }
 
-{ @routine $691F8C TPSWeapon11Desintegrator_Destroy }
+{ @routine $4F253C TPSWeapon11Desintegrator_Destroy }
 destructor TPSWeapon11Desintegrator.Destroy;
 begin
   ClearParticles;
   inherited Destroy;
 end;
-{ @end $691F8C }
+{ @end $4F253C }
 
-{ @routine $691FC8 TPSWeapon11Desintegrator_SetPosition }
+{ @routine $4F2568 TPSWeapon11Desintegrator_SetPosition }
 procedure TPSWeapon11Desintegrator.SetPosition(Position: TPoint);
 begin
   if (LocalPosition.X <> Position.X) or (LocalPosition.Y <> Position.Y) then
@@ -98,9 +98,9 @@ begin
     UpdateProjectionBounds;
   end;
 end;
-{ @end $691FC8 }
+{ @end $4F2568 }
 
-{ @routine $69200C TPSWeapon11Desintegrator_SetTargetPoint }
+{ @routine $4F25A0 TPSWeapon11Desintegrator_SetTargetPoint }
 procedure TPSWeapon11Desintegrator.SetTargetPoint(Point: TPoint);
 begin
   if (TargetPoint.X <> Point.X) or (TargetPoint.Y <> Point.Y) then
@@ -109,9 +109,9 @@ begin
     UpdateProjectionBounds;
   end;
 end;
-{ @end $69200C }
+{ @end $4F25A0 }
 
-{ @routine $692060 TPSWeapon11Desintegrator_UpdateProjectionBounds }
+{ @routine $4F25E0 TPSWeapon11Desintegrator_UpdateProjectionBounds }
 procedure TPSWeapon11Desintegrator.UpdateProjectionBounds;
 var
   Angle, Sine, Cosine, Distance, A, B, C, D: Single;
@@ -137,9 +137,9 @@ begin
   ProjectionBounds.Top := Floor(Math.Min(Math.Min(Math.Min(A, B), C), D));
   ProjectionBounds.Bottom := Ceil(Math.Max(Math.Max(Math.Max(A, B), C), D));
 end;
-{ @end $692060 }
+{ @end $4F25E0 }
 
-{ @routine $6923A4 TPSWeapon11Desintegrator_UpdateHitTestBounds }
+{ @routine $4F2958 TPSWeapon11Desintegrator_UpdateHitTestBounds }
 procedure TPSWeapon11Desintegrator.UpdateHitTestBounds;
 begin
   HitTestBounds.Left := ProjectionBounds.Left + AbsolutePosition.X - 32;
@@ -147,9 +147,9 @@ begin
   HitTestBounds.Right := ProjectionBounds.Right + AbsolutePosition.X + 32;
   HitTestBounds.Bottom := ProjectionBounds.Bottom + AbsolutePosition.Y + 32;
 end;
-{ @end $6923A4 }
+{ @end $4F2958 }
 
-{ @routine $692410 TPSWeapon11Desintegrator_GetLocalBounds }
+{ @routine $4F2998 TPSWeapon11Desintegrator_GetLocalBounds }
 function TPSWeapon11Desintegrator.GetLocalBounds: TRect;
 begin
   Result.Left := ProjectionBounds.Left + LocalPosition.X;
@@ -157,9 +157,9 @@ begin
   Result.Right := ProjectionBounds.Right + LocalPosition.X;
   Result.Bottom := ProjectionBounds.Bottom + LocalPosition.Y;
 end;
-{ @end $692410 }
+{ @end $4F2998 }
 
-{ @routine $692474 TPSWeapon11Desintegrator_AddParticle }
+{ @routine $4F29C8 TPSWeapon11Desintegrator_AddParticle }
 function TPSWeapon11Desintegrator.AddParticle: PDesintegratorParticle;
 var
   Particle: PDesintegratorParticle;
@@ -172,9 +172,9 @@ begin
   if FirstParticle = nil then FirstParticle := Particle;
   Result := Particle;
 end;
-{ @end $692474 }
+{ @end $4F29C8 }
 
-{ @routine $6924EC TPSWeapon11Desintegrator_RemoveParticle }
+{ @routine $4F2A08 TPSWeapon11Desintegrator_RemoveParticle }
 procedure TPSWeapon11Desintegrator.RemoveParticle(Particle: PDesintegratorParticle);
 begin
   if Particle <> nil then
@@ -186,9 +186,9 @@ begin
   FreeEC(Particle);
   end;
 end;
-{ @end $6924EC }
+{ @end $4F2A08 }
 
-{ @routine $692570 TPSWeapon11Desintegrator_ClearParticles }
+{ @routine $4F2A50 TPSWeapon11Desintegrator_ClearParticles }
 procedure TPSWeapon11Desintegrator.ClearParticles;
 var
   Particle, Current: PDesintegratorParticle;
@@ -203,15 +203,15 @@ begin
   FirstParticle := nil;
   LastParticle := nil;
 end;
-{ @end $692570 }
+{ @end $4F2A50 }
 
-{ @routine $6925C4 TPSWeapon11Desintegrator_Invalidate }
+{ @routine $4F2A84 TPSWeapon11Desintegrator_Invalidate }
 procedure TPSWeapon11Desintegrator.Invalidate;
 begin
 end;
-{ @end $6925C4 }
+{ @end $4F2A84 }
 
-{ @routine $6925D0 TPSWeapon11Desintegrator_InvalidateRect }
+{ @routine $4F2A88 TPSWeapon11Desintegrator_InvalidateRect }
 procedure TPSWeapon11Desintegrator.InvalidateRect(Rect: TRect);
 var
   Target: TPoint;
@@ -226,10 +226,10 @@ begin
   if IntersectRects(Intersection, Rect, GameScreenRect) then
     MessageLoop.QueueUpdateRect(Intersection);
 end;
-{ @end $6925D0 }
+{ @end $4F2A88 }
 
-{ @routine $69269C TPSWeapon11Desintegrator_Advance }
-procedure TPSWeapon11Desintegrator.Advance(Timer: PCallbackTimerGI; UserData: Integer);
+{ @routine $4F2B3C TPSWeapon11Desintegrator_Advance }
+procedure TPSWeapon11Desintegrator.Advance(Timer: TCallbackTimerIdGI; UserData: Cardinal);
 var
   Y, Distance, Angle: Single;
   Current, Spark, Particle: PDesintegratorParticle;
@@ -304,9 +304,9 @@ begin
   Inc(PendingSparkSteps);
   Dec(RemainingTicks);
 end;
-{ @end $69269C }
+{ @end $4F2B3C }
 
-{ @routine $692B24 TPSWeapon11Desintegrator_AdvanceImpactSparks }
+{ @routine $4F2F00 TPSWeapon11Desintegrator_AdvanceImpactSparks }
 procedure TPSWeapon11Desintegrator.AdvanceImpactSparks(ClipRect: TRect);
 var
   TargetX, TargetY, X, Y: Integer;
@@ -415,9 +415,9 @@ begin
     end;
   end;
 end;
-{ @end $692B24 }
+{ @end $4F2F00 }
 
-{ @routine $692EB8 TPSWeapon11Desintegrator_Draw }
+{ @routine $4F3230 TPSWeapon11Desintegrator_Draw }
 procedure TPSWeapon11Desintegrator.Draw(ClipRect: TRect);
 var
   PX, PY, Sine, Cosine, Angle: Single;
@@ -479,9 +479,9 @@ begin
     end;
   end;
 end;
-{ @end $692EB8 }
+{ @end $4F3230 }
 
-{ @routine $6931A4 LoadDesintegratorPalettes }
+{ @routine $4F3498 LoadDesintegratorPalettes }
 procedure LoadDesintegratorPalettes;
 var
   Block, PaletteBlock: TBlockParEC;
@@ -497,21 +497,19 @@ begin
   for Index := 0 to Count - 1 do
   begin
     Text := IntToStr(Index);
-    if Block.CountBlocks(Text) <> 0 then
-    begin
-      PaletteBlock := Block.GetBlockByPath(Text);
-      for ColorIndex := 0 to 0 do
-        if PaletteBlock.CountParams('Color' + IntToStr(ColorIndex)) > 0 then
-        begin
-          Text := PaletteBlock.GetParam('Color' + IntToStr(ColorIndex));
-          DesintegratorPalettes[Index][ColorIndex] := CurrentPixelFormat.PackNormalizedRgb(
-            ExtractDecimalToSingleW(ExtractDelimitedPartW(Text, 0, ',')),
-            ExtractDecimalToSingleW(ExtractDelimitedPartW(Text, 1, ',')),
-            ExtractDecimalToSingleW(ExtractDelimitedPartW(Text, 2, ',')));
-        end;
-    end;
+    if Block.CountBlocks(Text) = 0 then Continue;
+    PaletteBlock := Block.GetBlockByPath(Text);
+    for ColorIndex := Low(TDesintegratorPalette) to High(TDesintegratorPalette) do
+      if PaletteBlock.CountParams('Color' + IntToStr(ColorIndex)) > 0 then
+      begin
+        Text := PaletteBlock.GetParam('Color' + IntToStr(ColorIndex));
+        DesintegratorPalettes[Index][ColorIndex] := CurrentPixelFormat.PackNormalizedRgb(
+          ExtractDecimalToSingleW(ExtractDelimitedPartW(Text, 0, ',')),
+          ExtractDecimalToSingleW(ExtractDelimitedPartW(Text, 1, ',')),
+          ExtractDecimalToSingleW(ExtractDelimitedPartW(Text, 2, ',')));
+      end;
   end;
 end;
-{ @end $6931A4 }
+{ @end $4F3498 }
 
 end.

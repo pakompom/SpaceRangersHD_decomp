@@ -1,6 +1,5 @@
 unit ab_Zone;
-// Unit bracket (inferred): .text 0x005539D8..0x00554FD3; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
-// Original source-unit boundary is unresolved; recovered zone/link addresses are bracketed above.
+// Original source-unit boundary is unresolved.
 
 interface
 
@@ -23,7 +22,7 @@ type
     WorldLines: array of PabWorldLine; // @offset $54
     WorldImage: PabWorldImage; // @offset $58
     Name: WideString; // @offset $5C
-    BarrierHealth: Integer; // @offset $60  Initial wall health for kinds 5..8; TfAB.EnterCurrentSpace ($5433D8).
+    BarrierHealth: Integer; // @offset $60  Initial wall health for kinds 5..8; TfAB.EnterCurrentSpace ($66C5F8).
     GravityStrength: Integer; // @offset $64  Signed attraction/repulsion strength.
     DamagePerTick: Integer; // @offset $68  Negative values heal.
     BonusFlags: Cardinal; // @offset $6C Low eight bits select bonuses; bit 31 conceals the bonus icon.
@@ -40,70 +39,70 @@ type
     First: PabZone; // @offset $08
     Last: PabZone; // @offset $0C
     Distance: Double; // @offset $10
-    BarrierLinkMode: Integer; // @offset $18  Mode 1 creates collidable links between compatible barrier zones ($5433D8).
+    BarrierLinkMode: Integer; // @offset $18  Mode 1 creates collidable links between compatible barrier zones ($66C5F8).
     WorldLine: PabWorldLine; // @offset $1C
     Segments: array[0..1] of PPolyLineSegmentGI; // @offset $20
   end;
 
-procedure ab_Zone_Clear; // @addr $5539F4
-function ab_Zone_Add: PabZone; // @addr $553A28
-procedure ab_Zone_Delete(Zone: PabZone); // @addr $553AE8
-procedure ab_Zone_UpdatePosition(Zone: PabZone); // @addr $553C70
-procedure ab_Zone_UpdateImages(Zone: PabZone); // @addr $553D00
-procedure ab_Zone_ClearImages; // @addr $5540DC
-procedure ab_Zone_ClearSegments(Zone: PabZone); // @addr $554194
-function ab_Zone_CountKind(Kind: Integer): Integer; // @addr $5541E4
-function ab_Zone_Get(Index: Integer): PabZone; // @addr $554224
-function ab_Zone_GetKind(Kind, Index: Integer): PabZone; // @addr $554268
-procedure ab_ZoneLink_Clear; // @addr $5542BC
-function ab_ZoneLink_Add: PabZoneLink; // @addr $5542F0
-procedure ab_ZoneLink_Delete(Link: PabZoneLink); // @addr $5543B4
-procedure ab_ZoneLink_UpdateDistance(Link: PabZoneLink); // @addr $554460
-procedure ab_ZoneLink_ClearImages; // @addr $5544BC
-procedure ab_ZoneLink_ClearSegments(Link: PabZoneLink); // @addr $5544FC
-procedure ab_Zone_Load(Buffer: TBufEC); // @addr $55454C
-function ab_Zone_RandomKind(Kind: Integer): PabZone; // @addr $5546D8
-function ab_Zone_RandomPosition(Zone: PabZone): TSphericalBearingState; // @addr $554708
-function ab_Zone_FindContainingOrNearest(Longitude, PolarAngle: Double; var Nearest: PabZone): Boolean; // @addr $554784
-function ab_Zone_FindNearestOutside(Longitude, PolarAngle: Double): PabZone; // @addr $554864
-function ab_Zone_FindNearestEnabled(Longitude, PolarAngle: Double): PabZone; // @addr $554910
-function ab_Zone_IsInsideKind10(Longitude, PolarAngle: Double): Boolean; // @addr $5549E0
+procedure ab_Zone_Clear; // @addr $6638B0
+function ab_Zone_Add: PabZone; // @addr $6638E4
+procedure ab_Zone_Delete(Zone: PabZone); // @addr $663984
+procedure ab_Zone_UpdatePosition(Zone: PabZone); // @addr $663A84
+procedure ab_Zone_UpdateImages(Zone: PabZone); // @addr $663B00
+procedure ab_Zone_ClearImages; // @addr $663E64
+procedure ab_Zone_ClearSegments(Zone: PabZone); // @addr $663ED4
+function ab_Zone_CountKind(Kind: Integer): Integer; // @addr $663F08
+function ab_Zone_Get(Index: Integer): PabZone; // @addr $663F24
+function ab_Zone_GetKind(Kind, Index: Integer): PabZone; // @addr $663F44
+procedure ab_ZoneLink_Clear; // @addr $663F6C
+function ab_ZoneLink_Add: PabZoneLink; // @addr $663FA0
+procedure ab_ZoneLink_Delete(Link: PabZoneLink); // @addr $664044
+procedure ab_ZoneLink_UpdateDistance(Link: PabZoneLink); // @addr $6640BC
+procedure ab_ZoneLink_ClearImages; // @addr $664100
+procedure ab_ZoneLink_ClearSegments(Link: PabZoneLink); // @addr $66412C
+procedure ab_Zone_Load(Buffer: TBufEC); // @addr $664160
+function ab_Zone_RandomKind(Kind: Integer): PabZone; // @addr $664288
+function ab_Zone_RandomPosition(Zone: PabZone): TSphericalBearingState; // @addr $6642A8
+function ab_Zone_FindContainingOrNearest(Longitude, PolarAngle: Double; var Nearest: PabZone): Boolean; // @addr $66431C
+function ab_Zone_FindNearestOutside(Longitude, PolarAngle: Double): PabZone; // @addr $6643C8
+function ab_Zone_FindNearestEnabled(Longitude, PolarAngle: Double): PabZone; // @addr $664458
+function ab_Zone_IsInsideKind10(Longitude, PolarAngle: Double): Boolean; // @addr $6644FC
 
-function ab_Zone_FindRoute(Source, Target: PabZone): PabZone; // @addr $554B30
-procedure ab_Zone_BuildRoutes(Zone: PabZone); // @addr $554C58
-procedure ab_Zone_BuildAllRoutes; // @addr $554CCC
-function ab_Zone_GetRoute(Source, Target: PabZone): PabZone; // @addr $554D18
-function ab_Zone_IsHeadingInside(Source: TSphericalBearingState; Zone: PabZone; var BearingDelta, AngularRadius: Double): Boolean; // @addr $554D50
-function ab_Zone_FindReachableRouteZone(Source: PabZone): PabZone; // @addr $554E18
-function ab_Zone_RandomRoute(Source: PabZone; Steps: Integer): PabZone; // @addr $554F14
+function ab_Zone_FindRoute(Source, Target: PabZone): PabZone; // @addr $6645E8
+procedure ab_Zone_BuildRoutes(Zone: PabZone); // @addr $6646BC
+procedure ab_Zone_BuildAllRoutes; // @addr $66470C
+function ab_Zone_GetRoute(Source, Target: PabZone): PabZone; // @addr $664738
+function ab_Zone_IsHeadingInside(Source: TSphericalBearingState; Zone: PabZone; var BearingDelta, AngularRadius: Double): Boolean; // @addr $664750
+function ab_Zone_FindReachableRouteZone(Source: PabZone): PabZone; // @addr $6647FC
+function ab_Zone_RandomRoute(Source: PabZone; Steps: Integer): PabZone; // @addr $6648B4
 
 var
-  ZoneHeap: Cardinal = 0; // @addr $87AF10
-  FirstZone: PabZone = nil; // @addr $87AF14
-  LastZone: PabZone = nil; // @addr $87AF18
-  SelectedZone: PabZone = nil; // @addr $87AF1C
-  ZoneLinkHeap: Cardinal = 0; // @addr $87AF20
-  FirstZoneLink: PabZoneLink = nil; // @addr $87AF24
-  LastZoneLink: PabZoneLink = nil; // @addr $87AF28
-  SelectedZoneLink: PabZoneLink = nil; // @addr $87AF2C
+  ZoneHeap: Cardinal = 0; // @addr $80F7A8
+  FirstZone: PabZone = nil; // @addr $80F7AC
+  LastZone: PabZone = nil; // @addr $80F7B0
+  SelectedZone: PabZone = nil; // @addr $80F7B4
+  ZoneLinkHeap: Cardinal = 0; // @addr $80F7B8
+  FirstZoneLink: PabZoneLink = nil; // @addr $80F7BC
+  LastZoneLink: PabZoneLink = nil; // @addr $80F7C0
+  SelectedZoneLink: PabZoneLink = nil; // @addr $80F7C4
 
 implementation
 
 uses Windows, SysUtils, Math, EC_Mem, GR_Main, Globals, aMyFunction, ab_StopLine;
 
-{ @routine $5539F4 ab_Zone_Clear }
+{ @routine $6638B0 ab_Zone_Clear }
 procedure ab_Zone_Clear;
 begin
-  while not (FirstZone = nil) do ab_Zone_Delete(LastZone);
+  while FirstZone <> nil do ab_Zone_Delete(LastZone);
   if ZoneHeap <> 0 then
   begin
     HeapDestroy(ZoneHeap);
     ZoneHeap := 0;
   end;
 end;
-{ @end $5539F4 }
+{ @end $6638B0 }
 
-{ @routine $553A28 ab_Zone_Add }
+{ @routine $6638E4 ab_Zone_Add }
 function ab_Zone_Add: PabZone;
 var
   Entry: PabZone;
@@ -121,9 +120,9 @@ begin
   if FirstZone = nil then FirstZone := Entry;
   Result := Entry;
 end;
-{ @end $553A28 }
+{ @end $6638E4 }
 
-{ @routine $553AE8 ab_Zone_Delete }
+{ @routine $663984 ab_Zone_Delete }
 procedure ab_Zone_Delete(Zone: PabZone);
 var
   Index: Integer;
@@ -166,17 +165,17 @@ begin
   Zone.Name := '';
   if ZoneHeap <> 0 then FreeFromHeapEC(ZoneHeap, Zone);
 end;
-{ @end $553AE8 }
+{ @end $663984 }
 
-{ @routine $553C70 ab_Zone_UpdatePosition }
+{ @routine $663A84 ab_Zone_UpdatePosition }
 procedure ab_Zone_UpdatePosition(Zone: PabZone);
 begin
   Zone.Radius := Pi * SphereRadius * Zone.RadiusDegrees / 180;
   Zone.Position := SphericalToVector3D(HeadingDegreesToRadians(Zone.Longitude), HeadingDegreesToRadians(Zone.PolarAngle), SphereRadius);
 end;
-{ @end $553C70 }
+{ @end $663A84 }
 
-{ @routine $553D00 ab_Zone_UpdateImages }
+{ @routine $663B00 ab_Zone_UpdateImages }
 procedure ab_Zone_UpdateImages(Zone: PabZone);
 var
   Index: Integer;
@@ -221,9 +220,9 @@ begin
       ab_WorldImage_Set(Zone.WorldImage, Zone.Position, 'GI,Bm.PI.Path4', '');
   end;
 end;
-{ @end $553D00 }
+{ @end $663B00 }
 
-{ @routine $5540DC ab_Zone_ClearImages }
+{ @routine $663E64 ab_Zone_ClearImages }
 procedure ab_Zone_ClearImages;
 var
   Zone: PabZone;
@@ -250,9 +249,9 @@ begin
     Zone := Zone.Next;
   end;
 end;
-{ @end $5540DC }
+{ @end $663E64 }
 
-{ @routine $554194 ab_Zone_ClearSegments }
+{ @routine $663ED4 ab_Zone_ClearSegments }
 procedure ab_Zone_ClearSegments(Zone: PabZone);
 var
   Index: Integer;
@@ -264,9 +263,9 @@ begin
       Zone.Segments[Index] := nil;
     end;
 end;
-{ @end $554194 }
+{ @end $663ED4 }
 
-{ @routine $5541E4 ab_Zone_CountKind }
+{ @routine $663F08 ab_Zone_CountKind }
 function ab_Zone_CountKind(Kind: Integer): Integer;
 var
   Zone: PabZone;
@@ -279,9 +278,9 @@ begin
     Zone := Zone.Next;
   end;
 end;
-{ @end $5541E4 }
+{ @end $663F08 }
 
-{ @routine $554224 ab_Zone_Get }
+{ @routine $663F24 ab_Zone_Get }
 function ab_Zone_Get(Index: Integer): PabZone;
 var
   Zone: PabZone;
@@ -299,9 +298,9 @@ begin
   end;
   Result := nil;
 end;
-{ @end $554224 }
+{ @end $663F24 }
 
-{ @routine $554268 ab_Zone_GetKind }
+{ @routine $663F44 ab_Zone_GetKind }
 function ab_Zone_GetKind(Kind, Index: Integer): PabZone;
 var
   Zone: PabZone;
@@ -322,21 +321,21 @@ begin
   end;
   Result := nil;
 end;
-{ @end $554268 }
+{ @end $663F44 }
 
-{ @routine $5542BC ab_ZoneLink_Clear }
+{ @routine $663F6C ab_ZoneLink_Clear }
 procedure ab_ZoneLink_Clear;
 begin
-  while not (FirstZoneLink = nil) do ab_ZoneLink_Delete(LastZoneLink);
+  while FirstZoneLink <> nil do ab_ZoneLink_Delete(LastZoneLink);
   if ZoneLinkHeap <> 0 then
   begin
     HeapDestroy(ZoneLinkHeap);
     ZoneLinkHeap := 0;
   end;
 end;
-{ @end $5542BC }
+{ @end $663F6C }
 
-{ @routine $5542F0 ab_ZoneLink_Add }
+{ @routine $663FA0 ab_ZoneLink_Add }
 function ab_ZoneLink_Add: PabZoneLink;
 var
   Entry: PabZoneLink;
@@ -354,9 +353,9 @@ begin
   if FirstZoneLink = nil then FirstZoneLink := Entry;
   Result := Entry;
 end;
-{ @end $5542F0 }
+{ @end $663FA0 }
 
-{ @routine $5543B4 ab_ZoneLink_Delete }
+{ @routine $664044 ab_ZoneLink_Delete }
 procedure ab_ZoneLink_Delete(Link: PabZoneLink);
 begin
   if Link.Prev <> nil then Link.Prev.Next := Link.Next;
@@ -372,18 +371,18 @@ begin
   if SelectedZoneLink = Link then SelectedZoneLink := nil;
   if ZoneLinkHeap <> 0 then FreeFromHeapEC(ZoneLinkHeap, Link);
 end;
-{ @end $5543B4 }
+{ @end $664044 }
 
-{ @routine $554460 ab_ZoneLink_UpdateDistance }
+{ @routine $6640BC ab_ZoneLink_UpdateDistance }
 procedure ab_ZoneLink_UpdateDistance(Link: PabZoneLink);
 var
   Bearing: Double;
 begin
-  ComputeSphericalBearingAndDistance(Bearing, Link.Distance, Link.First.Longitude, Link.First.PolarAngle, 0, Link.Last.Longitude, Link.Last.PolarAngle, SphereRadius);
+  ComputeSphericalBearingAndDistance(Link.First.Longitude, Link.First.PolarAngle, 0, Link.Last.Longitude, Link.Last.PolarAngle, SphereRadius, Bearing, Link.Distance);
 end;
-{ @end $554460 }
+{ @end $6640BC }
 
-{ @routine $5544BC ab_ZoneLink_ClearImages }
+{ @routine $664100 ab_ZoneLink_ClearImages }
 procedure ab_ZoneLink_ClearImages;
 var
   Link: PabZoneLink;
@@ -399,9 +398,9 @@ begin
     Link := Link.Next;
   end;
 end;
-{ @end $5544BC }
+{ @end $664100 }
 
-{ @routine $5544FC ab_ZoneLink_ClearSegments }
+{ @routine $66412C ab_ZoneLink_ClearSegments }
 procedure ab_ZoneLink_ClearSegments(Link: PabZoneLink);
 var
   Index: Integer;
@@ -413,9 +412,9 @@ begin
       Link.Segments[Index] := nil;
     end;
 end;
-{ @end $5544FC }
+{ @end $66412C }
 
-{ @routine $55454C ab_Zone_Load }
+{ @routine $664160 ab_Zone_Load }
 procedure ab_Zone_Load(Buffer: TBufEC);
 var
   Index, Count: Integer;
@@ -450,23 +449,23 @@ begin
     ab_ZoneLink_UpdateDistance(Link);
   end;
 end;
-{ @end $55454C }
+{ @end $664160 }
 
-{ @routine $5546D8 ab_Zone_RandomKind }
+{ @routine $664288 ab_Zone_RandomKind }
 function ab_Zone_RandomKind(Kind: Integer): PabZone;
 begin
   Result := ab_Zone_GetKind(Kind, RandomIntRange(0, ab_Zone_CountKind(Kind) - 1));
 end;
-{ @end $5546D8 }
+{ @end $664288 }
 
-{ @routine $554708 ab_Zone_RandomPosition }
+{ @routine $6642A8 ab_Zone_RandomPosition }
 function ab_Zone_RandomPosition(Zone: PabZone): TSphericalBearingState;
 begin
   Result := AdvanceSphericalStateOnCurrentSphere(MakeSphericalBearingState(Zone.Longitude, Zone.PolarAngle, RandomIntRange(0, 360)), Random * Zone.Radius / 2 + Zone.Radius / 4);
 end;
-{ @end $554708 }
+{ @end $6642A8 }
 
-{ @routine $554784 ab_Zone_FindContainingOrNearest }
+{ @routine $66431C ab_Zone_FindContainingOrNearest }
 function ab_Zone_FindContainingOrNearest(Longitude, PolarAngle: Double; var Nearest: PabZone): Boolean;
 var
   Zone: PabZone;
@@ -499,9 +498,9 @@ begin
     end;
   end;
 end;
-{ @end $554784 }
+{ @end $66431C }
 
-{ @routine $554864 ab_Zone_FindNearestOutside }
+{ @routine $6643C8 ab_Zone_FindNearestOutside }
 function ab_Zone_FindNearestOutside(Longitude, PolarAngle: Double): PabZone;
 var
   Zone: PabZone;
@@ -524,9 +523,9 @@ begin
     Zone := Zone.Next;
   end;
 end;
-{ @end $554864 }
+{ @end $6643C8 }
 
-{ @routine $554910 ab_Zone_FindNearestEnabled }
+{ @routine $664458 ab_Zone_FindNearestEnabled }
 function ab_Zone_FindNearestEnabled(Longitude, PolarAngle: Double): PabZone;
 var
   Zone: PabZone;
@@ -541,7 +540,7 @@ begin
     begin
       if Zone.GravityStrength <> 0 then
       begin
-        ComputeSphericalBearingAndDistance(Bearing, Distance, Zone.Longitude, Zone.PolarAngle, 0, Longitude, PolarAngle, SphereRadius);
+        ComputeSphericalBearingAndDistance(Zone.Longitude, Zone.PolarAngle, 0, Longitude, PolarAngle, SphereRadius, Bearing, Distance);
         if Distance < Zone.Radius then
         begin
           Result := Zone;
@@ -557,9 +556,9 @@ begin
     end;
   end;
 end;
-{ @end $554910 }
+{ @end $664458 }
 
-{ @routine $5549E0 ab_Zone_IsInsideKind10 }
+{ @routine $6644FC ab_Zone_IsInsideKind10 }
 function ab_Zone_IsInsideKind10(Longitude, PolarAngle: Double): Boolean;
 var
   Zone: PabZone;
@@ -581,17 +580,17 @@ begin
   end;
   Result := False;
 end;
-{ @end $5549E0 }
+{ @end $6644FC }
 
-{ @routine $554B30 ab_Zone_FindRoute }
+{ @routine $6645E8 ab_Zone_FindRoute }
 function ab_Zone_FindRoute(Source, Target: PabZone): PabZone;
 var
   Zone: PabZone;
   Link: PabZoneLink;
   BestDistance: Double;
 
-  // @nested $554A64 PropagateZoneDistances
-  procedure PropagateZoneDistances(Zone: PabZone); // @addr $554A64 @calls "0x554ac5,0x554b13,0x554ba1"
+  // @nested $664568 PropagateZoneDistances
+  procedure PropagateZoneDistances(Zone: PabZone); // @addr $664568 @calls "0x006645A7,0x006645D3,0x0066463D"
   var
     Link: PabZoneLink;
   begin
@@ -652,9 +651,9 @@ begin
     Link := Link.Next;
   end;
 end;
-{ @end $554B30 }
+{ @end $6645E8 }
 
-{ @routine $554C58 ab_Zone_BuildRoutes }
+{ @routine $6646BC ab_Zone_BuildRoutes }
 procedure ab_Zone_BuildRoutes(Zone: PabZone);
 var
   Target: PabZone;
@@ -668,9 +667,9 @@ begin
     Target := Target.Next;
   end;
 end;
-{ @end $554C58 }
+{ @end $6646BC }
 
-{ @routine $554CCC ab_Zone_BuildAllRoutes }
+{ @routine $66470C ab_Zone_BuildAllRoutes }
 procedure ab_Zone_BuildAllRoutes;
 var
   Zone: PabZone;
@@ -689,37 +688,35 @@ begin
     Zone := Zone.Next;
   end;
 end;
-{ @end $554CCC }
+{ @end $66470C }
 
-{ @routine $554D18 ab_Zone_GetRoute }
+{ @routine $664738 ab_Zone_GetRoute }
 function ab_Zone_GetRoute(Source, Target: PabZone): PabZone;
 begin
   if Target.Kind >= 5 then Result := nil
   else Result := Source.Routes[Target.RouteIndex];
 end;
-{ @end $554D18 }
+{ @end $664738 }
 
-{ @routine $554D50 ab_Zone_IsHeadingInside }
+{ @routine $664750 ab_Zone_IsHeadingInside }
 function ab_Zone_IsHeadingInside(Source: TSphericalBearingState; Zone: PabZone; var BearingDelta, AngularRadius: Double): Boolean;
 var
   Bearing, Distance: Double;
 begin
-  ComputeSphericalBearingAndDistance(Bearing, Distance, Source.LongitudeDegrees, Source.PolarAngleDegrees, Source.BearingDegrees, Zone.Longitude, Zone.PolarAngle, SphereRadius);
+  ComputeSphericalBearingAndDistance(Source.LongitudeDegrees, Source.PolarAngleDegrees, Source.BearingDegrees, Zone.Longitude, Zone.PolarAngle, SphereRadius, Bearing, Distance);
   if Zone.Radius >= Distance then
   begin
     Result := True;
     BearingDelta := 0;
-  end
-  else
-  begin
-    AngularRadius := RadiansToHeadingDegrees(Math.ArcSin(Zone.Radius / Distance));
-    Result := Abs(Bearing) < AngularRadius;
-    BearingDelta := Bearing;
+    Exit;
   end;
+  AngularRadius := RadiansToHeadingDegrees(Math.ArcSin(Zone.Radius / Distance));
+  Result := Abs(Bearing) < AngularRadius;
+  BearingDelta := Bearing;
 end;
-{ @end $554D50 }
+{ @end $664750 }
 
-{ @routine $554E18 ab_Zone_FindReachableRouteZone }
+{ @routine $6647FC ab_Zone_FindReachableRouteZone }
 function ab_Zone_FindReachableRouteZone(Source: PabZone): PabZone;
 var
   Zone: PabZone;
@@ -747,9 +744,9 @@ begin
     Zone := Zone.Next;
   end;
 end;
-{ @end $554E18 }
+{ @end $6647FC }
 
-{ @routine $554F14 ab_Zone_RandomRoute }
+{ @routine $6648B4 ab_Zone_RandomRoute }
 function ab_Zone_RandomRoute(Source: PabZone; Steps: Integer): PabZone;
 var
   Current, Candidate: PabZone;
@@ -776,6 +773,6 @@ begin
   end;
   Result := Current;
 end;
-{ @end $554F14 }
+{ @end $6648B4 }
 
 end.

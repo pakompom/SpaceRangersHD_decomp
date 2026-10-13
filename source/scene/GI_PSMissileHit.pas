@@ -1,6 +1,4 @@
 unit GI_PSMissileHit;
-// Unit bracket (inferred): .text 0x0069B05C..0x0069B27B; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
-// Unit bracket (inferred): .itext 0x0087796C..0x00877973; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 // Native animation palette resources; this effect uses the shared GAI control.
 
 interface
@@ -9,19 +7,19 @@ type
   TGAISet = array[0..0] of WideString;
   TMissileHitAnimationPaths = array of TGAISet;
 
-procedure LoadMissileHitAnimationPaths; // @addr $69B080
+procedure LoadMissileHitAnimationPaths; // @addr $4EB550
 
 var
-  MissileHitAnimationPaths: array of TGAISet; // @addr $88AF2C
+  MissileHitAnimationPaths: array of TGAISet; // @addr $81B178
 
 implementation
 
-// @unit-initialization $87796C
-// @unit-finalization $69B23C
+// @unit-initialization $80680C
+// @unit-finalization $4EB6D0
 
 uses SysUtils, Math, EC_BlockPar, EC_Str, Globals;
 
-{ @routine $69B080 LoadMissileHitAnimationPaths }
+{ @routine $4EB550 LoadMissileHitAnimationPaths }
 procedure LoadMissileHitAnimationPaths;
 var
   Block, PaletteBlock: TBlockParEC;
@@ -37,14 +35,12 @@ begin
   for Index := 0 to Count - 1 do
   begin
     Text := IntToStr(Index);
-    if Block.CountBlocks(Text) <> 0 then
-    begin
-      PaletteBlock := Block.GetBlockByPath(Text);
-      if PaletteBlock.CountParams('GAI') > 0 then
-        MissileHitAnimationPaths[Index][0] := PaletteBlock.GetParam('GAI');
-    end;
+    if Block.CountBlocks(Text) = 0 then Continue;
+    PaletteBlock := Block.GetBlockByPath(Text);
+    if PaletteBlock.CountParams('GAI') > 0 then
+      MissileHitAnimationPaths[Index][0] := PaletteBlock.GetParam('GAI');
   end;
 end;
-{ @end $69B080 }
+{ @end $4EB550 }
 
 end.

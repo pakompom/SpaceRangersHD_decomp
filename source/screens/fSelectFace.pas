@@ -1,5 +1,4 @@
 unit fSelectFace;
-// Unit bracket (inferred): .text 0x00564144..0x005655EE; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -18,26 +17,26 @@ type
     AvailableMoney: Integer; // @offset $108
     AcceptedCost: Integer; // @offset $10C
 
-    procedure OnOpen; override; // @addr $5646DC
-    procedure OnClose; override; // @addr $564804
-    procedure ProcessCallbackTimers; override; // @addr $5654C0
-    procedure SelectMusic; override; // @addr $565494
-    procedure PlayerNameMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $564810
-    procedure RefreshPortrait; // @addr $564864
-    procedure PreviousPortraitClicked(Sender: TObjectGI); // @addr $564B60
-    procedure NextPortraitClicked(Sender: TObjectGI); // @addr $564B84
-    procedure SelectRace(Sender: TObjectGI); // @addr $564BA8
-    procedure RaceClicked(Sender: TObjectGI); // @addr $564D18
-    procedure ApplyClicked(Sender: TObjectGI); // @addr $564DB8
-    procedure CancelClicked(Sender: TObjectGI); // @addr $565074
-    procedure RefreshPact; // @addr $565094
-    procedure PlayerNameChanged(Sender: TObjectGI); // @addr $5651C4
-    function ValidatePlayerName(Name: WideString): Boolean; // @addr $565288
-    procedure MainPanelKeyDown(Sender: TObjectGI; Key: Cardinal); // @addr $565408
-    procedure InitializeLayout; override; // @addr $5641F0
+    procedure OnOpen; override; // @addr $5D8D48
+    procedure OnClose; override; // @addr $5D8E60
+    procedure ProcessCallbackTimers; override; // @addr $5D99B4
+    procedure SelectMusic; override; // @addr $5D9990
+    procedure PlayerNameMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $5D8E64
+    procedure RefreshPortrait; // @addr $5D8EB4
+    procedure PreviousPortraitClicked(Sender: TObjectGI); // @addr $5D916C
+    procedure NextPortraitClicked(Sender: TObjectGI); // @addr $5D9178
+    procedure SelectRace(Sender: TObjectGI); // @addr $5D9184
+    procedure RaceClicked(Sender: TObjectGI); // @addr $5D92D0
+    procedure ApplyClicked(Sender: TObjectGI); // @addr $5D9354
+    procedure CancelClicked(Sender: TObjectGI); // @addr $5D95D0
+    procedure RefreshPact; // @addr $5D95DC
+    procedure PlayerNameChanged(Sender: TObjectGI); // @addr $5D9700
+    function ValidatePlayerName(ProposedName: WideString): Boolean; // @addr $5D97AC
+    procedure MainPanelKeyDown(Sender: TObjectGI; Key: Cardinal); // @addr $5D9910
+    procedure InitializeLayout; override; // @addr $5D88C8
   end;
 
-function RunSelectFaceDialog(Parent: TMessageLoopGI): Boolean; // @addr $565500 @note "Borrows the initialized SelectFaceScreen; returns True only for Run result 1. Caller supplies and reads its selection fields."
+function RunSelectFaceDialog(Parent: TMessageLoopGI): Boolean; // @addr $5D99E0 @note "Borrows the initialized SelectFaceScreen; returns True only for Run result 1. Caller supplies and reads its selection fields."
 
 implementation
 
@@ -45,7 +44,7 @@ uses Classes, Windows, GR_Main, GR_Music, Globals, GlobalsV, EC_Str, SysUtils,
   aConst, aMyFunction, GI_Main, GI_Edit, GI_GraphButton, GI_GraphBuf, GI_Image,
   GI_Label, GI_gai;
 
-{ @routine $5641F0 TfSelectFace_InitializeLayout }
+{ @routine $5D88C8 TfSelectFace_InitializeLayout }
 procedure TfSelectFace.InitializeLayout;
 var I: Integer; Face: WideString; Race: TOwnerId; Control: TObjectGI;
 begin
@@ -97,9 +96,9 @@ begin
     MaxLength := 13;
   end;
 end;
-{ @end $5641F0 }
+{ @end $5D88C8 }
 
-{ @routine $5646DC TfSelectFace_OnOpen }
+{ @routine $5D8D48 TfSelectFace_OnOpen }
 procedure TfSelectFace.OnOpen;
 begin
   CaptureScreenBackground(True,0);
@@ -110,22 +109,22 @@ begin
   PlayerNameEdited := False;
   RefreshPortrait;
 end;
-{ @end $5646DC }
+{ @end $5D8D48 }
 
-{ @routine $564804 TfSelectFace_OnClose }
+{ @routine $5D8E60 TfSelectFace_OnClose }
 procedure TfSelectFace.OnClose;
 begin
 end;
-{ @end $564804 }
+{ @end $5D8E60 }
 
-{ @routine $564810 TfSelectFace_PlayerNameMouseDown }
+{ @routine $5D8E64 TfSelectFace_PlayerNameMouseDown }
 procedure TfSelectFace.PlayerNameMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint);
 begin
   SetFocusedControl(GetByName('PlayerName'));
 end;
-{ @end $564810 }
+{ @end $5D8E64 }
 
-{ @routine $564864 TfSelectFace_RefreshPortrait }
+{ @routine $5D8EB4 TfSelectFace_RefreshPortrait }
 procedure TfSelectFace.RefreshPortrait;
 begin
   if CaptainPortraitIndex < 0 then CaptainPortraitIndex := LastPortraitByRace[PlayerRace]
@@ -155,25 +154,25 @@ begin
     else SetActive(False);
   end;
 end;
-{ @end $564864 }
+{ @end $5D8EB4 }
 
-{ @routine $564B60 TfSelectFace_PreviousPortraitClicked }
+{ @routine $5D916C TfSelectFace_PreviousPortraitClicked }
 procedure TfSelectFace.PreviousPortraitClicked(Sender: TObjectGI);
 begin
   Dec(CaptainPortraitIndex);
   RefreshPortrait;
 end;
-{ @end $564B60 }
+{ @end $5D916C }
 
-{ @routine $564B84 TfSelectFace_NextPortraitClicked }
+{ @routine $5D9178 TfSelectFace_NextPortraitClicked }
 procedure TfSelectFace.NextPortraitClicked(Sender: TObjectGI);
 begin
   Inc(CaptainPortraitIndex);
   RefreshPortrait;
 end;
-{ @end $564B84 }
+{ @end $5D9178 }
 
-{ @routine $564BA8 TfSelectFace_SelectRace }
+{ @routine $5D9184 TfSelectFace_SelectRace }
 procedure TfSelectFace.SelectRace(Sender: TObjectGI);
 begin
   PlayerRace := TOwnerId(Sender.UserValue);
@@ -184,9 +183,9 @@ begin
   (GetByName('RaceGaal') as TGraphButtonGI).SetDown(PlayerRace = oiGaal);
 
 end;
-{ @end $564BA8 }
+{ @end $5D9184 }
 
-{ @routine $564D18 TfSelectFace_RaceClicked }
+{ @routine $5D92D0 TfSelectFace_RaceClicked }
 procedure TfSelectFace.RaceClicked(Sender: TObjectGI);
 begin
   SelectRace(Sender);
@@ -196,9 +195,9 @@ begin
   with GetByName('PlayerName') as TEditGI do SetCaretPosition(Length(Text));
   PlayerNameChanged(nil);
 end;
-{ @end $564D18 }
+{ @end $5D92D0 }
 
-{ @routine $564DB8 TfSelectFace_ApplyClicked }
+{ @routine $5D9354 TfSelectFace_ApplyClicked }
 procedure TfSelectFace.ApplyClicked(Sender: TObjectGI);
 var Cost: Integer; Text: WideString;
 begin
@@ -223,26 +222,26 @@ begin
     ShowMessageBoxGI(Self,Text,mbgOK or mbgWarning);
   end;
 end;
-{ @end $564DB8 }
+{ @end $5D9354 }
 
-{ @routine $565074 TfSelectFace_CancelClicked }
+{ @routine $5D95D0 TfSelectFace_CancelClicked }
 procedure TfSelectFace.CancelClicked(Sender: TObjectGI);
 begin
   RequestClose(2);
 end;
-{ @end $565074 }
+{ @end $5D95D0 }
 
-{ @routine $565094 TfSelectFace_RefreshPact }
+{ @routine $5D95DC TfSelectFace_RefreshPact }
 procedure TfSelectFace.RefreshPact;
 var Text: WideString;
 begin
   Text := LocalizedColorText('FormRuins.PB.ChangeNationality.PactText');
   ReplaceTextToken(Text,'<CurName>',PlayerName,'<color=247,148,29>');
-  (GetByName('Pact') as TLabelGI).SetText(Text);
+  (GetByName('Pact') as TLabelGI).Text := Text;
 end;
-{ @end $565094 }
+{ @end $5D95DC }
 
-{ @routine $5651C4 TfSelectFace_PlayerNameChanged }
+{ @routine $5D9700 TfSelectFace_PlayerNameChanged }
 procedure TfSelectFace.PlayerNameChanged(Sender: TObjectGI);
 begin
   if Sender <> nil then PlayerNameEdited := True;
@@ -250,67 +249,68 @@ begin
   PlayerName := (GetByName('PlayerName') as TEditGI).Text;
   RefreshPact;
 end;
-{ @end $5651C4 }
+{ @end $5D9700 }
 
-{ @routine $565288 TfSelectFace_ValidatePlayerName }
-function TfSelectFace.ValidatePlayerName(Name: WideString): Boolean;
+{ @routine $5D97AC TfSelectFace_ValidatePlayerName }
+function TfSelectFace.ValidatePlayerName(ProposedName: WideString): Boolean;
 var I: Integer;
 begin
   Result := False;
-  Name := RemoveWideStringChars(Name,'<>{}');
+  ProposedName := RemoveWideStringChars(ProposedName,'<>{}');
   with GetByName('PlayerName') as TEditGI do
-    if Text <> Name then
+    if Text <> ProposedName then
     begin
       I := CaretPosition;
-      SetText(Name);
+      SetText(ProposedName);
       if I > 0 then SetCaretPosition(I - 1) else SetCaretPosition(0);
     end;
-  Name := TrimWideString(Name);
-  if Length(Name) < 1 then Exit;
+  ProposedName := TrimWideString(ProposedName);
+  if Length(ProposedName) < 1 then Exit;
   with GetByName('PlayerName') as TEditGI do
-    for I := 0 to Length(Name) - 1 do
-      if not HasGlyph(Name[I + 1]) then Exit;
+    for I := 0 to Length(ProposedName) - 1 do
+      if not HasGlyph(ProposedName[I + 1]) then Exit;
   Result := True;
 end;
-{ @end $565288 }
+{ @end $5D97AC }
 
-{ @routine $565408 TfSelectFace_MainPanelKeyDown }
+{ @routine $5D9910 TfSelectFace_MainPanelKeyDown }
 procedure TfSelectFace.MainPanelKeyDown(Sender: TObjectGI; Key: Cardinal);
 begin
   if not IsVirtualKeyDown(VK_CONTROL) and not IsVirtualKeyDown(VK_SHIFT) and not IsVirtualKeyDown(VK_MENU) then
+  begin
     if Key = VK_RETURN then
     begin
       if not (GetByName('Ok') as TGraphButtonGI).Disabled then ApplyClicked(nil);
     end
     else if Key = VK_ESCAPE then CancelClicked(nil);
+  end;
 end;
-{ @end $565408 }
+{ @end $5D9910 }
 
-{ @routine $565494 TfSelectFace_SelectMusic }
+{ @routine $5D9990 TfSelectFace_SelectMusic }
 procedure TfSelectFace.SelectMusic;
 begin
   MusicManager.PlayCategory('Base');
 end;
-{ @end $565494 }
+{ @end $5D9990 }
 
-{ @routine $5654C0 TfSelectFace_ProcessCallbackTimers }
+{ @routine $5D99B4 TfSelectFace_ProcessCallbackTimers }
 procedure TfSelectFace.ProcessCallbackTimers;
 begin
   inherited;
   if (ParentLoop <> nil) and (ParentLoop.ExitCode <> 0) and (ExitCode = 0) then RequestClose(2);
 end;
-{ @end $5654C0 }
+{ @end $5D99B4 }
 
-{ @routine $565500 RunSelectFaceDialog }
+{ @routine $5D99E0 RunSelectFaceDialog }
 function RunSelectFaceDialog(Parent: TMessageLoopGI): Boolean;
 var
-  CursorAlignment: array[0..2] of Byte; // Native gap between the Boolean result and packed cursor record at EBP-$20.
   State: TCursorStateGI;
 begin
   Result := False;
   Parent.RootUiObject.OnModalSuspend;
   Parent.CaptureCursorState(@State);
-  Parent.SetCursorActive(False);
+  Parent.ShowCursor := False;
   Parent.DrawQueuedUpdateRects;
   SelectFaceScreen.ParentLoop := Parent;
   Parent.ChildLoop := SelectFaceScreen;
@@ -324,6 +324,6 @@ begin
   Parent.Present;
   PostMouseMoveMessage;
 end;
-{ @end $565500 }
+{ @end $5D99E0 }
 
 end.

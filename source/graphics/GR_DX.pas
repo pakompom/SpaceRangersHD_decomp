@@ -1,6 +1,4 @@
 unit GR_DX;
-// Unit bracket (inferred): .text 0x0084F5CC..0x00851D4F; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
-// Unit bracket (inferred): .itext 0x008779F0..0x008779F7; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -10,7 +8,7 @@ const
   RgbWhite = $FFFFFF; // White texture tint; alpha is supplied separately.
 
 type
-  TScreenVertexGR = packed record // @size 28
+  TScreenVertexGR = record // @size 28
     X: Single; // @offset 0
     Y: Single; // @offset 4
     Z: Single; // @offset 8
@@ -31,69 +29,69 @@ type
     Surfaces: array of IDirect3DTexture9; // @offset 0x0C
     ResidentBytes: Cardinal; // @offset 0x10
 
-    constructor Create; // @addr 0x84FDF8
-    destructor Destroy; override; // @addr 0x84FE48
-    procedure Clear; // @addr 0x84FE84
-    procedure ReleaseSurfaces; // @addr 0x84FF10 @note "Retains the array and SurfaceCount."
-    function GetSurface(Index: Integer): IDirect3DTexture9; // @addr 0x84FF68 @note "Returns nil when out of range; successful access refreshes LastUseTick."
-    procedure SetSurface(Value: IDirect3DTexture9; Index: Integer); // @addr 0x84FFB4 @note "A negative index appends; indexes beyond the end create nil holes."
+    constructor Create; // @addr 0x004CA780
+    destructor Destroy; override; // @addr 0x004CA7B0
+    procedure Clear; // @addr 0x004CA7DC
+    procedure ReleaseSurfaces; // @addr 0x004CA834 @note "Retains the array and SurfaceCount."
+    function GetSurface(Index: Integer): IDirect3DTexture9; // @addr 0x004CA868 @note "Returns nil when out of range; successful access refreshes LastUseTick."
+    procedure SetSurface(Value: IDirect3DTexture9; Index: Integer); // @addr 0x004CA89C @note "A negative index appends; indexes beyond the end create nil holes."
   end;
 
 var
-  TextureManagerDisabled: Boolean = False; // @addr $882748 @note "DisableTextureManager setting."
-  MaxTextureSize: TPoint; // @addr $88C42C
-  DrawVertices: TScreenVerticesGR; // @addr $88C434
-  PendingPoints: array of TScreenVertexGR; // @addr $88C5F4
-  TextureCaches: TList = nil; // @addr 0x88274C
-  AvailableTextureBytes: Cardinal = 0; // @addr $882750
-  CircleCos: TCircleTableGR; // @addr $88C5F8
-  CircleSin: TCircleTableGR; // @addr $88CB9C
-  LineAlphaTable: TLineAlphaTableGR; // @addr $88D140
-  ReservedTextureBytes: Cardinal = 0; // @addr 0x882754
-  TextureIdleSeconds: Integer = 120; // @addr 0x882758
-  LastTextureEvictionTick: Cardinal = 0; // @addr 0x88275C
-  PendingPointCount: Integer = 0; // @addr $882760
-  PendingPointCapacity: Integer = 0; // @addr $882764
-  ResidentTextureBytes: Cardinal = 0; // @addr 0x882768
+  TextureManagerDisabled: Boolean = False; // @addr $80B71C @note "DisableTextureManager setting."
+  MaxTextureSize: TPoint; // @addr $819F34
+  DrawVertices: TScreenVerticesGR; // @addr $819F3C
+  PendingPoints: array of TScreenVertexGR; // @addr $81A0FC
+  TextureCaches: TList = nil; // @addr 0x0080B720
+  AvailableTextureBytes: Cardinal = 0; // @addr $80B724
+  CircleCos: TCircleTableGR; // @addr $81A100
+  CircleSin: TCircleTableGR; // @addr $81A6A4
+  LineAlphaTable: TLineAlphaTableGR; // @addr $81AC48
+  ReservedTextureBytes: Cardinal = 0; // @addr 0x0080B728
+  TextureIdleSeconds: Integer = 120; // @addr 0x0080B72C
+  LastTextureEvictionTick: Cardinal = 0; // @addr 0x0080B730
+  PendingPointCount: Integer = 0; // @addr $80B734
+  PendingPointCapacity: Integer = 0; // @addr $80B738
+  ResidentTextureBytes: Cardinal = 0; // @addr 0x0080B73C
 
-procedure EvictTextureCaches(Force: Boolean); // @addr 0x84F74C
-procedure SubtractResidentTextureBytes(ByteCount: Cardinal); // @addr 0x851CE8
+procedure EvictTextureCaches(Force: Boolean); // @addr 0x004CA160
+procedure SubtractResidentTextureBytes(ByteCount: Cardinal); // @addr 0x004CC1D8
 
-function CreateTextureCache: TTextureGR; // @addr 0x84F674
-function GR_CreateTexture(Width, Height: Integer; Format, Pool: Cardinal): IDirect3DTexture9; // @addr 0x84F8CC @note "Clamps each dimension to at least 16. Returns nil without a device; retries allocation after evicting textures."
-procedure FreeTextureCache(Cache: TTextureGR); // @addr 0x84F6C0 @note "Accepts nil."
+function CreateTextureCache: TTextureGR; // @addr 0x004CA0BC
+function GR_CreateTexture(Width, Height: Integer; Format, Pool: Cardinal): IDirect3DTexture9; // @addr 0x004CA29C @note "Clamps each dimension to at least 16. Returns nil without a device; retries allocation after evicting textures."
+procedure FreeTextureCache(Cache: TTextureGR); // @addr 0x004CA0F8 @note "Accepts nil."
 
-procedure ClearTexturePixels(Texture: IDirect3DTexture9); // @addr $84FD50
+procedure ClearTexturePixels(Texture: IDirect3DTexture9); // @addr $4CA6E0
 
-procedure ReleaseAllTextureSurfaces; // @addr $84F708
-function GetTextureByteSize(Texture: IDirect3DTexture9): Cardinal; // @addr $851C24 @note "Counts level zero only. Native format test repeats A8R8G8B8; X8R8G8B8 is not recognized."
-procedure AddResidentTextureBytes(ByteCount: Cardinal); // @addr $851CD4
-function Color565ToArgb(Color: Cardinal): Cardinal; // @addr $851BB0
-function ColorWithAlpha(Color, Alpha: Cardinal): Cardinal; // @addr $851BF8
-function CreateTextureFromPixels(Width, Height: Integer; Format: Cardinal; Pixels: Pointer; PitchBytes: Integer; Pool: Cardinal): IDirect3DTexture9; // @addr $84FB3C
+procedure ReleaseAllTextureSurfaces; // @addr $4CA130
+function GetTextureByteSize(Texture: IDirect3DTexture9): Cardinal; // @addr $4CC134 @note "Counts level zero only. Native format test repeats A8R8G8B8; X8R8G8B8 is not recognized."
+procedure AddResidentTextureBytes(ByteCount: Cardinal); // @addr $4CC1D0
+function Color565ToArgb(Color: Cardinal): Cardinal; // @addr $4CC0EC
+function ColorWithAlpha(Color, Alpha: Cardinal): Cardinal; // @addr $4CC120
+function CreateTextureFromPixels(Width, Height: Integer; Format: Cardinal; Pixels: Pointer; PitchBytes: Integer; Pool: Cardinal): IDirect3DTexture9; // @addr $4CA4F0
 
-procedure QueueDrawPoint(X, Y: Integer; Color: Cardinal; Alpha: Integer); // @addr $850118
-procedure FlushDrawPoints(ClipRect: PRect); // @addr $850224
-procedure DrawAlphaLine(X1, Y1, X2, Y2: Integer; Color: Cardinal; Alpha: Integer; ClipRect: PRect); // @addr $8502A0
-procedure DrawGradientLine(X1, Y1: Integer; Color1: Cardinal; X2, Y2: Integer; Color2: Cardinal; ClipRect: PRect); // @addr $8502E8
-procedure DrawColoredTriangle(X1, Y1: Integer; Color1: Cardinal; X2, Y2: Integer; Color2: Cardinal; X3, Y3: Integer; Color3: Cardinal; Filled: Boolean; ClipRect: PRect); // @addr $85103C
-procedure DrawColoredRect(X, Y, Width, Height: Integer; Color: Cardinal; Alpha: Integer; Filled: Boolean; ClipRect: PRect); // @addr $851138
-procedure DrawAntialiasedCircle(X, Y, Radius: Integer; Color: Cardinal; Alpha: Integer; ClipRect: PRect); // @addr $8512D4
-procedure DrawCircle(X, Y, Radius: Integer; Color: Cardinal; Alpha, Mode: Integer; ClipRect: PRect); // @addr $851530
-procedure DrawTexture(Texture: IDirect3DTexture9; X, Y, Alpha: Integer; Color: Cardinal; ClipRect: PRect; UsePreparedVertices, MirrorHorizontal: Boolean); // @addr $8518E0
-procedure DrawTextureSized(Texture: IDirect3DTexture9; X, Y, Width, Height, Alpha: Integer; Color: Cardinal; ClipRect: PRect; UsePreparedVertices, MirrorHorizontal: Boolean); // @addr $851950
+procedure QueueDrawPoint(X, Y: Integer; Color: Cardinal; Alpha: Integer); // @addr $4CA994
+procedure FlushDrawPoints(ClipRect: PRect); // @addr $4CAA64
+procedure DrawAlphaLine(X1, Y1, X2, Y2: Integer; Color: Cardinal; Alpha: Integer; ClipRect: PRect); // @addr $4CAAD4
+procedure DrawGradientLine(X1, Y1: Integer; Color1: Cardinal; X2, Y2: Integer; Color2: Cardinal; ClipRect: PRect); // @addr $4CAB20
+procedure DrawColoredTriangle(X1, Y1: Integer; Color1: Cardinal; X2, Y2: Integer; Color2: Cardinal; X3, Y3: Integer; Color3: Cardinal; Filled: Boolean; ClipRect: PRect); // @addr $4CB6AC
+procedure DrawColoredRect(X, Y, Width, Height: Integer; Color: Cardinal; Alpha: Integer; Filled: Boolean; ClipRect: PRect); // @addr $4CB790
+procedure DrawAntialiasedCircle(X, Y, Radius: Integer; Color: Cardinal; Alpha: Integer; ClipRect: PRect); // @addr $4CB90C
+procedure DrawCircle(X, Y, Radius: Integer; Color: Cardinal; Alpha, Mode: Integer; ClipRect: PRect); // @addr $4CBB20
+procedure DrawTexture(Texture: IDirect3DTexture9; X, Y, Alpha: Integer; Color: Cardinal; ClipRect: PRect; UsePreparedVertices, MirrorHorizontal: Boolean); // @addr $4CBE58
+procedure DrawTextureSized(Texture: IDirect3DTexture9; X, Y, Width, Height, Alpha: Integer; Color: Cardinal; ClipRect: PRect; UsePreparedVertices, MirrorHorizontal: Boolean); // @addr $4CBEC8
 
-procedure DrawAntialiasedLineDX(StartX, StartY, FinishX, FinishY: Integer; Color: Cardinal; Alpha: Integer; UnusedClipRect: PRect); // @addr $8503C4 @note "Native routine ignores the supplied clip rectangle."
-procedure DrawAnimatedLineDX(StartX, StartY, FinishX, FinishY: Integer; Color: Cardinal; Phase: Integer; UnusedClipRect: PRect); // @addr $8509AC @note "Uses LineAlphaTable and advances phase by 20 per column. Ignores the supplied clip rectangle."
+procedure DrawAntialiasedLineDX(StartX, StartY, FinishX, FinishY: Integer; Color: Cardinal; Alpha: Integer; UnusedClipRect: PRect); // @addr $4CABF8 @note "Native routine ignores the supplied clip rectangle."
+procedure DrawAnimatedLineDX(StartX, StartY, FinishX, FinishY: Integer; Color: Cardinal; Phase: Integer; UnusedClipRect: PRect); // @addr $4CB124 @note "Uses LineAlphaTable and advances phase by 20 per column. Ignores the supplied clip rectangle."
 
 implementation
 
-// @unit-initialization $8779F0
-// @unit-finalization $851D10
+// @unit-initialization $8067E0
+// @unit-finalization $4CC1F0
 
 uses MMSystem, EC_Mem, GR_Main, EC_Str, Math, Windows;
 
-{ @routine $84F674 CreateTextureCache }
+{ @routine $4CA0BC CreateTextureCache }
 function CreateTextureCache: TTextureGR;
 var Texture: TTextureGR;
 begin
@@ -102,42 +100,38 @@ begin
   TextureCaches.Add(Texture);
   Result := Texture;
 end;
-{ @end $84F674 }
+{ @end $4CA0BC }
 
-{ @routine $84F6C0 FreeTextureCache }
+{ @routine $4CA0F8 FreeTextureCache }
 procedure FreeTextureCache(Cache: TTextureGR);
 var Index: Integer;
 begin
-  if Cache <> nil then
+  if Cache = nil then Exit;
+  if TextureCaches <> nil then
   begin
-    if TextureCaches <> nil then
-    begin
-      Index := TextureCaches.IndexOf(Cache);
-      if Index >= 0 then TextureCaches.Delete(Index);
-    end;
-    Cache.Free;
+    Index := TextureCaches.IndexOf(Cache);
+    if Index >= 0 then TextureCaches.Delete(Index);
   end;
+  Cache.Free;
 end;
-{ @end $84F6C0 }
+{ @end $4CA0F8 }
 
-{ @routine $84F708 ReleaseAllTextureSurfaces }
+{ @routine $4CA130 ReleaseAllTextureSurfaces }
 procedure ReleaseAllTextureSurfaces;
 var Index: Integer; Texture: TTextureGR;
 begin
-  if TextureCaches <> nil then
+  if TextureCaches = nil then Exit;
+  Index := 0;
+  while TextureCaches.Count > Index do
   begin
-    Index := 0;
-    while TextureCaches.Count > Index do
-    begin
-      Texture := TextureCaches[Index];
-      Texture.ReleaseSurfaces;
-      Inc(Index);
-    end;
+    Texture := TextureCaches[Index];
+    Texture.ReleaseSurfaces;
+    Inc(Index);
   end;
 end;
-{ @end $84F708 }
+{ @end $4CA130 }
 
-{ @routine $84F74C EvictTextureCaches }
+{ @routine $4CA160 EvictTextureCaches }
 procedure EvictTextureCaches(Force: Boolean);
 var
   i: Integer;
@@ -170,9 +164,9 @@ begin
   if (ResidentTextureBytes > $10000000) or (AvailableBytes < $1400000) then
     if TextureIdleSeconds > 20 then Dec(TextureIdleSeconds, 10);
 end;
-{ @end $84F74C }
+{ @end $4CA160 }
 
-{ @routine $84F8CC GR_CreateTexture }
+{ @routine $4CA29C GR_CreateTexture }
 function GR_CreateTexture(Width, Height: Integer; Format, Pool: Cardinal): IDirect3DTexture9;
 var Texture: IDirect3DTexture9; ErrorCode: Integer;
 begin
@@ -200,9 +194,9 @@ begin
   ClearTexturePixels(Texture);
   Result := Texture;
 end;
-{ @end $84F8CC }
+{ @end $4CA29C }
 
-{ @routine $84FB3C CreateTextureFromPixels }
+{ @routine $4CA4F0 CreateTextureFromPixels }
 function CreateTextureFromPixels(Width, Height: Integer; Format: Cardinal; Pixels: Pointer; PitchBytes: Integer; Pool: Cardinal): IDirect3DTexture9;
 var Y: Integer; Staging, Texture: IDirect3DTexture9; Locked: TD3DLockedRect; BytesPerPixel: Integer;
 begin
@@ -234,42 +228,40 @@ begin
   end;
   Result := Texture;
 end;
-{ @end $84FB3C }
+{ @end $4CA4F0 }
 
-{ @routine $84FD50 ClearTexturePixels }
+{ @routine $4CA6E0 ClearTexturePixels }
 procedure ClearTexturePixels(Texture: IDirect3DTexture9);
 var Locked: TD3DLockedRect; Y: Cardinal; Desc: TD3DSurfaceDesc;
 begin
-  if Texture <> nil then
-  begin
-    Texture.GetLevelDesc(0, Desc);
-    Texture.LockRect(0, Locked, nil, 0);
-    if Locked.Bits <> nil then
-      for Y := 0 to Desc.Height - 1 do
-        FillMemory(Pointer(Integer(Y) * Locked.Pitch + PAnsiChar(Locked.Bits)), Locked.Pitch, 0);
-    Texture.UnlockRect(0);
-  end;
+  if Texture = nil then Exit;
+  Texture.GetLevelDesc(0, Desc);
+  Texture.LockRect(0, Locked, nil, 0);
+  if Locked.Bits <> nil then
+    for Y := 0 to Desc.Height - 1 do
+      FillMemory(Integer(Y) * Locked.Pitch + PAnsiChar(Locked.Bits), Locked.Pitch, 0);
+  Texture.UnlockRect(0);
 end;
-{ @end $84FD50 }
+{ @end $4CA6E0 }
 
-{ @routine $84FDF8 TTextureGR_Create }
+{ @routine $4CA780 TTextureGR_Create }
 constructor TTextureGR.Create;
 begin
   SurfaceCount := 0;
   LastUseTick := 0;
   ResidentBytes := 0;
 end;
-{ @end $84FDF8 }
+{ @end $4CA780 }
 
-{ @routine $84FE48 TTextureGR_Destroy }
+{ @routine $4CA7B0 TTextureGR_Destroy }
 destructor TTextureGR.Destroy;
 begin
   Clear;
   inherited Destroy;
 end;
-{ @end $84FE48 }
+{ @end $4CA7B0 }
 
-{ @routine $84FE84 TTextureGR_Clear }
+{ @routine $4CA7DC TTextureGR_Clear }
 procedure TTextureGR.Clear;
 var Index: Integer;
 begin
@@ -285,9 +277,9 @@ begin
   SurfaceCount := 0;
   LastUseTick := 0;
 end;
-{ @end $84FE84 }
+{ @end $4CA7DC }
 
-{ @routine $84FF10 TTextureGR_ReleaseSurfaces }
+{ @routine $4CA834 TTextureGR_ReleaseSurfaces }
 procedure TTextureGR.ReleaseSurfaces;
 var
   i: Integer;
@@ -302,9 +294,9 @@ begin
   ResidentBytes := 0;
   LastUseTick := 0;
 end;
-{ @end $84FF10 }
+{ @end $4CA834 }
 
-{ @routine $84FF68 TTextureGR_GetSurface }
+{ @routine $4CA868 TTextureGR_GetSurface }
 function TTextureGR.GetSurface(Index: Integer): IDirect3DTexture9;
 begin
   Result := nil;
@@ -312,9 +304,9 @@ begin
   LastUseTick := timeGetTime;
   Result := Surfaces[Index];
 end;
-{ @end $84FF68 }
+{ @end $4CA868 }
 
-{ @routine $84FFB4 TTextureGR_SetSurface }
+{ @routine $4CA89C TTextureGR_SetSurface }
 procedure TTextureGR.SetSurface(Value: IDirect3DTexture9; Index: Integer);
 var i: Integer; ByteCount: Cardinal;
 begin
@@ -350,9 +342,9 @@ begin
   Surfaces[Index] := nil;
   Surfaces[Index] := Value;
 end;
-{ @end $84FFB4 }
+{ @end $4CA89C }
 
-{ @routine $850118 QueueDrawPoint }
+{ @routine $4CA994 QueueDrawPoint }
 procedure QueueDrawPoint(X, Y: Integer; Color: Cardinal; Alpha: Integer);
 var Index: Integer;
 begin
@@ -372,9 +364,9 @@ begin
   PendingPoints[Index].U := 0;
   PendingPoints[Index].V := 0;
 end;
-{ @end $850118 }
+{ @end $4CA994 }
 
-{ @routine $850224 FlushDrawPoints }
+{ @routine $4CAA64 FlushDrawPoints }
 procedure FlushDrawPoints(ClipRect: PRect);
 var OldClip: TRect;
 begin
@@ -383,20 +375,20 @@ begin
     Direct3DDevice.GetScissorRect(OldClip);
     Direct3DDevice.SetScissorRect(ClipRect);
   end;
-  Direct3DDevice.DrawPrimitiveUP(D3DPT_POINTLIST, PendingPointCount, Pointer(PendingPoints), SizeOf(TScreenVertexGR));
+  Direct3DDevice.DrawPrimitiveUP(D3DPT_POINTLIST, PendingPointCount, @PendingPoints[0], SizeOf(TScreenVertexGR));
   PendingPointCount := 0;
   if ClipRect <> nil then Direct3DDevice.SetScissorRect(@OldClip);
 end;
-{ @end $850224 }
+{ @end $4CAA64 }
 
-{ @routine $8502A0 DrawAlphaLine }
+{ @routine $4CAAD4 DrawAlphaLine }
 procedure DrawAlphaLine(X1, Y1, X2, Y2: Integer; Color: Cardinal; Alpha: Integer; ClipRect: PRect);
 begin
   DrawGradientLine(X1, Y1, ColorWithAlpha(Color, Alpha), X2, Y2, ColorWithAlpha(Color, Alpha), ClipRect);
 end;
-{ @end $8502A0 }
+{ @end $4CAAD4 }
 
-{ @routine $8502E8 DrawGradientLine }
+{ @routine $4CAB20 DrawGradientLine }
 procedure DrawGradientLine(X1, Y1: Integer; Color1: Cardinal; X2, Y2: Integer; Color2: Cardinal; ClipRect: PRect);
 var OldClip: TRect;
 begin
@@ -414,9 +406,9 @@ begin
   Direct3DDevice.DrawPrimitiveUP(D3DPT_LINESTRIP, 1, @DrawVertices, SizeOf(TScreenVertexGR));
   if ClipRect <> nil then Direct3DDevice.SetScissorRect(@OldClip);
 end;
-{ @end $8502E8 }
+{ @end $4CAB20 }
 
-{ @routine $8503C4 DrawAntialiasedLineDX }
+{ @routine $4CABF8 DrawAntialiasedLineDX }
 procedure DrawAntialiasedLineDX(StartX, StartY, FinishX, FinishY: Integer; Color: Cardinal; Alpha: Integer; UnusedClipRect: PRect);
 var
   Slope, DX, DY, Gap, EndX, EndY, InterY, Coverage1, Coverage2: Double;
@@ -424,8 +416,8 @@ var
   Steep: Boolean;
   Temp, X1, Y1, X2, Y2: Double;
 
-  // @nested $850398 LineFractionDX
-  function LineFractionDX(Value: Double): Double; // @addr $850398 @calls "0x008505E5 0x00850626 0x00850640 0x0085073E 0x00850787 0x0085079E 0x0085088B 0x008508A5"
+  // @nested $4CABCC LineFractionDX
+  function LineFractionDX(Value: Double): Double; // @addr $4CABCC @calls "0x004CADA1,0x004CADDE,0x004CADF6,0x004CAED2,0x004CAF15,0x004CAF2A,0x004CB00B,0x004CB023"
   begin
     Result := Value - Floor(Value);
   end;
@@ -501,9 +493,9 @@ begin
   end;
   FlushDrawPoints(nil);
 end;
-{ @end $8503C4 }
+{ @end $4CABF8 }
 
-{ @routine $8509AC DrawAnimatedLineDX }
+{ @routine $4CB124 DrawAnimatedLineDX }
 procedure DrawAnimatedLineDX(StartX, StartY, FinishX, FinishY: Integer; Color: Cardinal; Phase: Integer; UnusedClipRect: PRect);
 var
   Slope, DX, DY, Gap, EndX, EndY, InterY, Coverage1, Coverage2: Double;
@@ -511,14 +503,14 @@ var
   Steep: Boolean;
   Temp, X1, Y1, X2, Y2: Double;
 
-  // @nested $85095C AnimatedLineFractionDX
-  function AnimatedLineFractionDX(Value: Double): Double; // @addr $85095C @calls "0x00850BCD 0x00850C0E 0x00850C28 0x00850D79 0x00850DC2 0x00850DD9 0x00850F20 0x00850F3A"
+  // @nested $4CB0D4 AnimatedLineFractionDX
+  function AnimatedLineFractionDX(Value: Double): Double; // @addr $4CB0D4 @calls "0x004CB2CD,0x004CB30A,0x004CB322,0x004CB439,0x004CB47C,0x004CB491,0x004CB5AD,0x004CB5C5"
   begin
     Result := Value - Floor(Value);
   end;
 
-  // @nested $850988 AdvanceLinePhase
-  procedure AdvanceLinePhase; // @addr $850988 @calls "0x00850D10 0x00850EF9"
+  // @nested $4CB100 AdvanceLinePhase
+  procedure AdvanceLinePhase; // @addr $4CB100 @calls "0x004CB3E7,0x004CB58B"
   begin
     Inc(Phase, 20);
     if Phase >= 360 then Dec(Phase, 360);
@@ -597,9 +589,9 @@ begin
   end;
   FlushDrawPoints(nil);
 end;
-{ @end $8509AC }
+{ @end $4CB124 }
 
-{ @routine $85103C DrawColoredTriangle }
+{ @routine $4CB6AC DrawColoredTriangle }
 procedure DrawColoredTriangle(X1, Y1: Integer; Color1: Cardinal; X2, Y2: Integer; Color2: Cardinal; X3, Y3: Integer; Color3: Cardinal; Filled: Boolean; ClipRect: PRect);
 var OldClip: TRect;
 begin
@@ -611,15 +603,14 @@ begin
     Direct3DDevice.GetScissorRect(OldClip);
     Direct3DDevice.SetScissorRect(ClipRect);
   end;
-  // Native $8510D3/$851102 set state 8 to 2/3: wireframe/solid fill.
   if not Filled then Direct3DDevice.SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
   Direct3DDevice.DrawPrimitiveUP(D3DPT_TRIANGLELIST, 1, @DrawVertices, SizeOf(TScreenVertexGR));
   Direct3DDevice.SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
   if ClipRect <> nil then Direct3DDevice.SetScissorRect(@OldClip);
 end;
-{ @end $85103C }
+{ @end $4CB6AC }
 
-{ @routine $851138 DrawColoredRect }
+{ @routine $4CB790 DrawColoredRect }
 procedure DrawColoredRect(X, Y, Width, Height: Integer; Color: Cardinal; Alpha: Integer; Filled: Boolean; ClipRect: PRect);
 var OldClip: TRect;
 begin
@@ -637,9 +628,9 @@ begin
   else Direct3DDevice.DrawPrimitiveUP(D3DPT_LINESTRIP, 4, @DrawVertices, SizeOf(TScreenVertexGR));
   if ClipRect <> nil then Direct3DDevice.SetScissorRect(@OldClip);
 end;
-{ @end $851138 }
+{ @end $4CB790 }
 
-{ @routine $8512D4 DrawAntialiasedCircle }
+{ @routine $4CB90C DrawAntialiasedCircle }
 procedure DrawAntialiasedCircle(X, Y, Radius: Integer; Color: Cardinal; Alpha: Integer; ClipRect: PRect);
 var DX, DY, SX, SY, Quadrant: Integer; PreviousCoverage, Coverage: Single; PreviousDX: Integer;
 begin
@@ -680,19 +671,18 @@ begin
   end;
   FlushDrawPoints(ClipRect);
 end;
-{ @end $8512D4 }
+{ @end $4CB90C }
 
-{ @routine $851530 DrawCircle }
+{ @routine $4CBB20 DrawCircle }
 procedure DrawCircle(X, Y, Radius: Integer; Color: Cardinal; Alpha, Mode: Integer; ClipRect: PRect);
 var Index: Integer; Vertices: array[0..4] of TScreenVertexGR; OldClip: TRect;
 begin
-  Index := 0;
-  repeat
+  for Index := 0 to 4 do
+  begin
     Vertices[Index].Color := ColorWithAlpha(Color, Alpha);
     Vertices[Index].X := X; Vertices[Index].Y := Y;
     Vertices[Index].Z := 1; Vertices[Index].RHW := 1;
-    Inc(Index);
-  until Index = 5;
+  end;
   if ClipRect <> nil then
   begin
     Direct3DDevice.GetScissorRect(OldClip);
@@ -701,20 +691,19 @@ begin
   if Mode = 0 then DrawAntialiasedCircle(X, Y, Radius, Color, Alpha, ClipRect)
   else if Mode = 1 then
   begin
-    Index := 0;
-    repeat
+    for Index := 0 to 359 do
+    begin
       Vertices[0].X := Radius * CircleCos[Index] + X;
       Vertices[0].Y := Radius * CircleSin[Index] + Y;
       Vertices[1].X := Radius * CircleCos[Index + 1] + X;
       Vertices[1].Y := Radius * CircleSin[Index + 1] + Y;
       Direct3DDevice.DrawPrimitiveUP(D3DPT_TRIANGLELIST, 1, @Vertices, SizeOf(TScreenVertexGR));
-      Inc(Index);
-    until Index = 360;
+    end;
   end
   else if Mode = 2 then
   begin
-    Index := 0;
-    repeat
+    for Index := 0 to 359 do
+    begin
       Vertices[1].X := X + Trunc(Radius * CircleCos[Index + 1]);
       Vertices[1].Y := Y + Trunc(Radius * CircleSin[Index + 1]);
       Vertices[2].X := X + Trunc(Radius * CircleCos[Index]);
@@ -736,21 +725,20 @@ begin
         Vertices[0].X := X + Radius; Vertices[0].Y := Y - Radius;
       end;
       Direct3DDevice.DrawPrimitiveUP(D3DPT_TRIANGLELIST, 1, @Vertices, SizeOf(TScreenVertexGR));
-      Inc(Index);
-    until Index = 360;
+    end;
   end;
   if ClipRect <> nil then Direct3DDevice.SetScissorRect(@OldClip);
 end;
-{ @end $851530 }
+{ @end $4CBB20 }
 
-{ @routine $8518E0 DrawTexture }
+{ @routine $4CBE58 DrawTexture }
 procedure DrawTexture(Texture: IDirect3DTexture9; X, Y, Alpha: Integer; Color: Cardinal; ClipRect: PRect; UsePreparedVertices, MirrorHorizontal: Boolean);
 begin
   DrawTextureSized(Texture, X, Y, 0, 0, Alpha, Color, ClipRect, UsePreparedVertices, MirrorHorizontal);
 end;
-{ @end $8518E0 }
+{ @end $4CBE58 }
 
-{ @routine $851950 DrawTextureSized }
+{ @routine $4CBEC8 DrawTextureSized }
 procedure DrawTextureSized(Texture: IDirect3DTexture9; X, Y, Width, Height, Alpha: Integer; Color: Cardinal; ClipRect: PRect; UsePreparedVertices, MirrorHorizontal: Boolean);
 var Desc: TD3DSurfaceDesc; OldClip: TRect;
 begin
@@ -761,13 +749,13 @@ begin
     if Width = 0 then Width := Desc.Width;
     if Height = 0 then Height := Desc.Height;
     DrawVertices[0].Color := ColorWithAlpha(Color, Alpha); DrawVertices[0].X := X - 0.5; DrawVertices[0].Y := Y - 0.5;
-    DrawVertices[0].U := Integer(MirrorHorizontal); DrawVertices[0].V := 0;
+    DrawVertices[0].U := 0 + Integer(MirrorHorizontal); DrawVertices[0].V := 0;
     DrawVertices[1].Color := DrawVertices[0].Color; DrawVertices[1].X := X + Width - 0.5; DrawVertices[1].Y := Y - 0.5;
     DrawVertices[1].U := 1 - Integer(MirrorHorizontal); DrawVertices[1].V := 0;
     DrawVertices[2].Color := DrawVertices[0].Color; DrawVertices[2].X := X + Width - 0.5; DrawVertices[2].Y := Y + Height - 0.5;
     DrawVertices[2].U := 1 - Integer(MirrorHorizontal); DrawVertices[2].V := 1;
     DrawVertices[3].Color := DrawVertices[0].Color; DrawVertices[3].X := X - 0.5; DrawVertices[3].Y := Y + Height - 0.5;
-    DrawVertices[3].U := Integer(MirrorHorizontal); DrawVertices[3].V := 1;
+    DrawVertices[3].U := 0 + Integer(MirrorHorizontal); DrawVertices[3].V := 1;
   end;
   if ClipRect <> nil then
   begin
@@ -779,23 +767,23 @@ begin
   Direct3DDevice.SetTexture(0, nil);
   if ClipRect <> nil then Direct3DDevice.SetScissorRect(@OldClip);
 end;
-{ @end $851950 }
+{ @end $4CBEC8 }
 
-{ @routine $851BB0 Color565ToArgb }
+{ @routine $4CC0EC Color565ToArgb }
 function Color565ToArgb(Color: Cardinal): Cardinal;
 begin
   Result := ((Color shl 3) and $F8) or (((Color shr 3) and $FC) shl 8) or (((Color shr 8) and $F8) shl 16) or $FF000000;
 end;
-{ @end $851BB0 }
+{ @end $4CC0EC }
 
-{ @routine $851BF8 ColorWithAlpha }
+{ @routine $4CC120 ColorWithAlpha }
 function ColorWithAlpha(Color, Alpha: Cardinal): Cardinal;
 begin
   Result := (Color and $FFFFFF) or ((Alpha and $FF) shl 24);
 end;
-{ @end $851BF8 }
+{ @end $4CC120 }
 
-{ @routine $851C24 GetTextureByteSize }
+{ @routine $4CC134 GetTextureByteSize }
 function GetTextureByteSize(Texture: IDirect3DTexture9): Cardinal;
 var ByteCount: Cardinal; Desc: TD3DSurfaceDesc;
 begin
@@ -811,16 +799,16 @@ begin
   end;
   Result := ByteCount;
 end;
-{ @end $851C24 }
+{ @end $4CC134 }
 
-{ @routine $851CD4 AddResidentTextureBytes }
+{ @routine $4CC1D0 AddResidentTextureBytes }
 procedure AddResidentTextureBytes(ByteCount: Cardinal);
 begin
   Inc(ResidentTextureBytes, ByteCount);
 end;
-{ @end $851CD4 }
+{ @end $4CC1D0 }
 
-{ @routine $851CE8 SubtractResidentTextureBytes }
+{ @routine $4CC1D8 SubtractResidentTextureBytes }
 procedure SubtractResidentTextureBytes(ByteCount: Cardinal);
 begin
   if ResidentTextureBytes > ByteCount then
@@ -830,6 +818,6 @@ begin
   end;
   ResidentTextureBytes := 0;
 end;
-{ @end $851CE8 }
+{ @end $4CC1D8 }
 
 end.

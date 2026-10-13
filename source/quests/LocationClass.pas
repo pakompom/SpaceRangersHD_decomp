@@ -1,5 +1,4 @@
 unit LocationClass;
-// Unit bracket (inferred): .text 0x004E6BF4..0x004E8669; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -27,35 +26,39 @@ type
     VisitCount: Integer; // @offset 0x38
     Sequence: TSequence; // @offset 0x3C
 
-    constructor Create; // @addr 0x4E6C80
-    destructor Destroy; override; // @addr 0x4E6D30
-    procedure Reset; // @addr 0x4E6DD8 @note "Retains the first event; frees parameter changes and Sequence."
-    function GetParameterChangeCount: Integer; // @addr 0x4E6F10
-    function GetParameterChange(Index: Integer): TParameterDelta; // @addr 0x4E6F2C @note "Index is one-based."
-    procedure AddParameterChange(Change: TParameterDelta); // @addr 0x4E6F54
-    function FindParameterChange(ParameterIndex: Integer): TParameterDelta; // @addr 0x4E7070
-    procedure PruneParameterChanges(Parameters: TList); // @addr 0x4E6FE8 @note "Removed entries are not freed."
-    procedure ApplyParameterChanges(var Parameters: TList); // @addr 0x4E6F74 @note "Evaluates every expression before applying any change."
-    procedure AddEvent; // @addr 0x4E70CC
-    procedure RemoveLastEvent; // @addr 0x4E730C @note "Retains at least one event."
-    function SelectEvent(var Parameters: TList): TEvent; // @addr 0x4E83A0 @note "Expression selection falls back to random choice."
-    procedure LoadFromReader(Reader: TBufEC); // @addr 0x4E735C @note "Location format used by quest versions 1111111126 and later."
-    procedure LoadLegacyV0FromReader(Reader: TBufEC); // @addr 0x4E826C @note "Quest versions 1111111111..1111111114."
-    procedure LoadLegacyV1FromReader(Reader: TBufEC); // @addr 0x4E8138 @note "Quest version 1111111115."
-    procedure LoadLegacyV2FromReader(Reader: TBufEC); // @addr 0x4E7FA0 @note "Quest version 1111111116."
-    procedure LoadLegacyV3FromReader(Reader: TBufEC); // @addr 0x4E7E08 @note "Quest versions 1111111117..1111111118."
-    procedure LoadLegacyV4FromReader(Reader: TBufEC); // @addr 0x4E7C60 @note "Quest versions 1111111119..1111111120."
-    procedure LoadLegacyV5FromReader(Reader: TBufEC); // @addr 0x4E7AAC @note "Quest versions 1111111121..1111111122."
-    procedure LoadLegacyV6FromReader(Reader: TBufEC); // @addr 0x4E78F8 @note "Quest version 1111111123."
-    procedure LoadLegacyV7FromReader(Reader: TBufEC); // @addr 0x4E7744 @note "Quest version 1111111124."
-    procedure LoadLegacyV8FromReader(Reader: TBufEC); // @addr 0x4E7554 @note "Quest version 1111111125; repeated parameter indices overwrite earlier changes."
+    constructor Create; // @addr 0x004E188C
+    destructor Destroy; override; // @addr 0x004E191C
+    procedure Reset; // @addr 0x004E1990 @note "Retains the first event; frees parameter changes and Sequence."
+    function GetParameterChangeCount: Integer; // @addr 0x004E1A68
+    function GetParameterChange(Index: Integer): TParameterDelta; // @addr 0x004E1A70 @note "Index is one-based."
+    procedure AddParameterChange(Change: TParameterDelta); // @addr 0x004E1A84
+    function FindParameterChange(ParameterIndex: Integer): TParameterDelta; // @addr 0x004E1B58
+    procedure PruneParameterChanges(Parameters: TList); // @addr 0x004E1AEC @note "Removed entries are not freed."
+    procedure ApplyParameterChanges(var Parameters: TList); // @addr 0x004E1A90 @note "Evaluates every expression before applying any change."
+    procedure AddEvent; // @addr 0x004E1B98
+    procedure RemoveLastEvent; // @addr 0x004E1D70 @note "Retains at least one event."
+    function SelectEvent(var Parameters: TList): TEvent; // @addr 0x004E29DC @note "Expression selection falls back to random choice."
+    procedure LoadFromReader(Reader: TBufEC); // @addr 0x004E1DA8 @note "Location format used by quest versions 1111111126 and later."
+    procedure LoadLegacyV0FromReader(Reader: TBufEC); // @addr 0x004E28EC @note "Quest versions 1111111111..1111111114."
+    procedure LoadLegacyV1FromReader(Reader: TBufEC); // @addr 0x004E27FC @note "Quest version 1111111115."
+    procedure LoadLegacyV2FromReader(Reader: TBufEC); // @addr 0x004E26C4 @note "Quest version 1111111116."
+    procedure LoadLegacyV3FromReader(Reader: TBufEC); // @addr 0x004E258C @note "Quest versions 1111111117..1111111118."
+    procedure LoadLegacyV4FromReader(Reader: TBufEC); // @addr 0x004E2448 @note "Quest versions 1111111119..1111111120."
+    procedure LoadLegacyV5FromReader(Reader: TBufEC); // @addr 0x004E22FC @note "Quest versions 1111111121..1111111122."
+    procedure LoadLegacyV6FromReader(Reader: TBufEC); // @addr 0x004E21B0 @note "Quest version 1111111123."
+    procedure LoadLegacyV7FromReader(Reader: TBufEC); // @addr 0x004E2064 @note "Quest version 1111111124."
+    procedure LoadLegacyV8FromReader(Reader: TBufEC); // @addr 0x004E1F08 @note "Quest version 1111111125; repeated parameter indices overwrite earlier changes."
   end;
 
 implementation
 
 uses CalcParseClass, EC_Str, Math;
 
-{ @routine $4E6C80 TLocation_Create }
+type
+  TQuestLocationKind = (qlkOrdinary = 0, qlkStart = 1, qlkEmpty = 2,
+    qlkSuccess = 3, qlkFailure = 4, qlkDeath = 5); // @size 0x01 Serialized location tag.
+
+{ @routine $4E188C TLocation_Create }
 constructor TLocation.Create;
 begin
   inherited Create;
@@ -67,9 +70,9 @@ begin
   ParameterChanges := TList.Create;
   Reset;
 end;
-{ @end $4E6C80 }
+{ @end $4E188C }
 
-{ @routine $4E6D30 TLocation_Destroy }
+{ @routine $4E191C TLocation_Destroy }
 destructor TLocation.Destroy;
 var
   i: Integer;
@@ -88,9 +91,9 @@ begin
   ParameterChanges := nil;
   inherited Destroy;
 end;
-{ @end $4E6D30 }
+{ @end $4E191C }
 
-{ @routine $4E6DD8 TLocation_Reset }
+{ @routine $4E1990 TLocation_Reset }
 procedure TLocation.Reset;
 var
   i: Integer;
@@ -118,30 +121,30 @@ begin
   IsDeath := False;
   IsEmpty := False;
 end;
-{ @end $4E6DD8 }
+{ @end $4E1990 }
 
-{ @routine $4E6F10 TLocation_GetParameterChangeCount }
+{ @routine $4E1A68 TLocation_GetParameterChangeCount }
 function TLocation.GetParameterChangeCount: Integer;
 begin
   Result := ParameterChanges.Count;
 end;
-{ @end $4E6F10 }
+{ @end $4E1A68 }
 
-{ @routine $4E6F2C TLocation_GetParameterChange }
+{ @routine $4E1A70 TLocation_GetParameterChange }
 function TLocation.GetParameterChange(Index: Integer): TParameterDelta;
 begin
-  Result := TParameterDelta(ParameterChanges[Index - 1]);
+  Result := ParameterChanges[Index - 1];
 end;
-{ @end $4E6F2C }
+{ @end $4E1A70 }
 
-{ @routine $4E6F54 TLocation_AddParameterChange }
+{ @routine $4E1A84 TLocation_AddParameterChange }
 procedure TLocation.AddParameterChange(Change: TParameterDelta);
 begin
   ParameterChanges.Add(Change);
 end;
-{ @end $4E6F54 }
+{ @end $4E1A84 }
 
-{ @routine $4E6F74 TLocation_ApplyParameterChanges }
+{ @routine $4E1A90 TLocation_ApplyParameterChanges }
 procedure TLocation.ApplyParameterChanges(var Parameters: TList);
 var
   i: Integer;
@@ -151,37 +154,42 @@ begin
   for i := 1 to GetParameterChangeCount do
     GetParameterChange(i).ApplyChange(Parameters);
 end;
-{ @end $4E6F74 }
+{ @end $4E1A90 }
 
-{ @routine $4E6FE8 TLocation_PruneParameterChanges }
+{ @routine $4E1AEC TLocation_PruneParameterChanges }
 procedure TLocation.PruneParameterChanges(Parameters: TList);
 var
   i: Integer;
 begin
   for i := GetParameterChangeCount downto 1 do
+  begin
     if (GetParameterChange(i).ParameterIndex < 1) or (GetParameterChange(i).ParameterIndex > Parameters.Count) then
-      ParameterChanges.Delete(i - 1)
-    else if GetParameterChange(i).HasNoChange(Parameters) then
+    begin
       ParameterChanges.Delete(i - 1);
+      Continue;
+    end;
+    if not GetParameterChange(i).HasNoChange(Parameters) then Continue;
+    ParameterChanges.Delete(i - 1);
+  end;
 end;
-{ @end $4E6FE8 }
+{ @end $4E1AEC }
 
-{ @routine $4E7070 TLocation_FindParameterChange }
+{ @routine $4E1B58 TLocation_FindParameterChange }
 function TLocation.FindParameterChange(ParameterIndex: Integer): TParameterDelta;
 var
   i: Integer;
 begin
   for i := 1 to GetParameterChangeCount do
-    if GetParameterChange(i).ParameterIndex = ParameterIndex then
-    begin
-      Result := GetParameterChange(i);
-      Exit;
-    end;
+  begin
+    if GetParameterChange(i).ParameterIndex <> ParameterIndex then Continue;
+    Result := GetParameterChange(i);
+    Exit;
+  end;
   Result := nil;
 end;
-{ @end $4E7070 }
+{ @end $4E1B58 }
 
-{ @routine $4E70CC TLocation_AddEvent }
+{ @routine $4E1B98 TLocation_AddEvent }
 procedure TLocation.AddEvent;
 var
   Text: WideString;
@@ -191,57 +199,53 @@ begin
   Inc(EventCount);
   SetLength(Events, EventCount + 1);
   Events[EventCount] := TEvent.Create;
-  if EventCount <> 1 then
-  begin
-    Text := TrimWideString(Events[1].Picture.Text);
-    Different := False;
-    for i := 2 to EventCount - 1 do
-      if TrimWideString(Events[i].Picture.Text) <> Text then
-      begin
-        Different := True;
-        Break;
-      end;
-    if not Different then Events[EventCount].Picture.Text := Text;
-    Text := TrimWideString(Events[1].Sound.Text);
-    Different := False;
-    for i := 2 to EventCount - 1 do
-      if TrimWideString(Events[i].Sound.Text) <> Text then
-      begin
-        Different := True;
-        Break;
-      end;
-    if not Different then Events[EventCount].Sound.Text := Text;
-    Text := TrimWideString(Events[1].Music.Text);
-    Different := False;
-    for i := 2 to EventCount - 1 do
-      if TrimWideString(Events[i].Music.Text) <> Text then
-      begin
-        Different := True;
-        Break;
-      end;
-    if not Different then Events[EventCount].Music.Text := Text;
-  end;
+  if EventCount = 1 then Exit;
+  Text := TrimWideString(Events[1].Picture.Text);
+  Different := False;
+  for i := 2 to EventCount - 1 do
+    if TrimWideString(Events[i].Picture.Text) <> Text then
+    begin
+      Different := True;
+      Break;
+    end;
+  if not Different then Events[EventCount].Picture.Text := Text;
+  Text := TrimWideString(Events[1].Sound.Text);
+  Different := False;
+  for i := 2 to EventCount - 1 do
+    if TrimWideString(Events[i].Sound.Text) <> Text then
+    begin
+      Different := True;
+      Break;
+    end;
+  if not Different then Events[EventCount].Sound.Text := Text;
+  Text := TrimWideString(Events[1].Music.Text);
+  Different := False;
+  for i := 2 to EventCount - 1 do
+    if TrimWideString(Events[i].Music.Text) <> Text then
+    begin
+      Different := True;
+      Break;
+    end;
+  if not Different then Events[EventCount].Music.Text := Text;
 end;
-{ @end $4E70CC }
+{ @end $4E1B98 }
 
-{ @routine $4E730C TLocation_RemoveLastEvent }
+{ @routine $4E1D70 TLocation_RemoveLastEvent }
 procedure TLocation.RemoveLastEvent;
 begin
-  if EventCount >= 2 then
-  begin
-    Events[EventCount].Free;
-    Dec(EventCount);
-    SetLength(Events, EventCount + 1);
-  end;
+  if EventCount < 2 then Exit;
+  Events[EventCount].Free;
+  Dec(EventCount);
+  SetLength(Events, EventCount + 1);
 end;
-{ @end $4E730C }
+{ @end $4E1D70 }
 
-{ @routine $4E735C TLocation_LoadFromReader }
+{ @routine $4E1DA8 TLocation_LoadFromReader }
 procedure TLocation.LoadFromReader(Reader: TBufEC);
 var
   i, ParameterIndex, Count: Integer;
   Change: TParameterDelta;
-  LocationType: Byte;
+  LocationType: TQuestLocationKind;
 begin
   Reset;
   Days := Reader.GetInt32;
@@ -249,12 +253,12 @@ begin
   EditorY := Reader.GetInt32;
   Id := Reader.GetInt32;
   VisitLimit := Reader.GetInt32;
-  LocationType := Reader.GetByte;
-  IsStart := LocationType = 1;
-  IsEmpty := LocationType = 2;
-  IsSuccess := LocationType = 3;
-  IsFailure := (LocationType = 4) or (LocationType = 5);
-  IsDeath := LocationType = 5;
+  LocationType := TQuestLocationKind(Reader.GetByte);
+  IsStart := LocationType = qlkStart;
+  IsEmpty := LocationType = qlkEmpty;
+  IsSuccess := LocationType = qlkSuccess;
+  IsFailure := (LocationType = qlkFailure) or (LocationType = qlkDeath);
+  IsDeath := LocationType = qlkDeath;
   Count := Reader.GetInt32;
   for i := 1 to Count do
   begin
@@ -281,14 +285,14 @@ begin
   UseEventExpression := Reader.GetBoolean;
   EventExpression.LoadTextLinesFromReader(Reader);
 end;
-{ @end $4E735C }
+{ @end $4E1DA8 }
 
-{ @routine $4E7554 TLocation_LoadLegacyV8FromReader }
+{ @routine $4E1F08 TLocation_LoadLegacyV8FromReader }
 procedure TLocation.LoadLegacyV8FromReader(Reader: TBufEC);
 var
   i, ParameterIndex, Count: Integer;
   Change: TParameterDelta;
-  LocationType: Byte;
+  LocationType: TQuestLocationKind;
 begin
   Reset;
   Days := Reader.GetInt32;
@@ -296,12 +300,12 @@ begin
   EditorY := Reader.GetInt32;
   Id := Reader.GetInt32;
   VisitLimit := 0;
-  LocationType := Reader.GetByte;
-  IsStart := LocationType = 1;
-  IsEmpty := LocationType = 2;
-  IsSuccess := LocationType = 3;
-  IsFailure := (LocationType = 4) or (LocationType = 5);
-  IsDeath := LocationType = 5;
+  LocationType := TQuestLocationKind(Reader.GetByte);
+  IsStart := LocationType = qlkStart;
+  IsEmpty := LocationType = qlkEmpty;
+  IsSuccess := LocationType = qlkSuccess;
+  IsFailure := (LocationType = qlkFailure) or (LocationType = qlkDeath);
+  IsDeath := LocationType = qlkDeath;
   Count := Reader.GetInt32;
   for i := 1 to Count do
   begin
@@ -328,9 +332,9 @@ begin
   UseEventExpression := Reader.GetBoolean;
   EventExpression.LoadTextLinesFromReader(Reader);
 end;
-{ @end $4E7554 }
+{ @end $4E1F08 }
 
-{ @routine $4E7744 TLocation_LoadLegacyV7FromReader }
+{ @routine $4E2064 TLocation_LoadLegacyV7FromReader }
 procedure TLocation.LoadLegacyV7FromReader(Reader: TBufEC);
 var
   i: Integer;
@@ -369,9 +373,9 @@ begin
   DiscardedText.Free;
   EventExpression.LoadTextLinesFromReader(Reader);
 end;
-{ @end $4E7744 }
+{ @end $4E2064 }
 
-{ @routine $4E78F8 TLocation_LoadLegacyV6FromReader }
+{ @routine $4E21B0 TLocation_LoadLegacyV6FromReader }
 procedure TLocation.LoadLegacyV6FromReader(Reader: TBufEC);
 var
   i: Integer;
@@ -410,9 +414,9 @@ begin
   DiscardedText.Free;
   EventExpression.LoadTextLinesFromReader(Reader);
 end;
-{ @end $4E78F8 }
+{ @end $4E21B0 }
 
-{ @routine $4E7AAC TLocation_LoadLegacyV5FromReader }
+{ @routine $4E22FC TLocation_LoadLegacyV5FromReader }
 procedure TLocation.LoadLegacyV5FromReader(Reader: TBufEC);
 var
   i: Integer;
@@ -451,9 +455,9 @@ begin
   DiscardedText.Free;
   EventExpression.LoadTextLinesFromReader(Reader);
 end;
-{ @end $4E7AAC }
+{ @end $4E22FC }
 
-{ @routine $4E7C60 TLocation_LoadLegacyV4FromReader }
+{ @routine $4E2448 TLocation_LoadLegacyV4FromReader }
 procedure TLocation.LoadLegacyV4FromReader(Reader: TBufEC);
 var
   i: Integer;
@@ -491,9 +495,9 @@ begin
   DiscardedText.LoadTextLinesFromReader(Reader);
   DiscardedText.Free;
 end;
-{ @end $4E7C60 }
+{ @end $4E2448 }
 
-{ @routine $4E7E08 TLocation_LoadLegacyV3FromReader }
+{ @routine $4E258C TLocation_LoadLegacyV3FromReader }
 procedure TLocation.LoadLegacyV3FromReader(Reader: TBufEC);
 var
   i: Integer;
@@ -530,9 +534,9 @@ begin
   DiscardedText.LoadTextLinesFromReader(Reader);
   DiscardedText.Free;
 end;
-{ @end $4E7E08 }
+{ @end $4E258C }
 
-{ @routine $4E7FA0 TLocation_LoadLegacyV2FromReader }
+{ @routine $4E26C4 TLocation_LoadLegacyV2FromReader }
 procedure TLocation.LoadLegacyV2FromReader(Reader: TBufEC);
 var
   i: Integer;
@@ -569,9 +573,9 @@ begin
   DiscardedText.LoadTextLinesFromReader(Reader);
   DiscardedText.Free;
 end;
-{ @end $4E7FA0 }
+{ @end $4E26C4 }
 
-{ @routine $4E8138 TLocation_LoadLegacyV1FromReader }
+{ @routine $4E27FC TLocation_LoadLegacyV1FromReader }
 procedure TLocation.LoadLegacyV1FromReader(Reader: TBufEC);
 var
   i: Integer;
@@ -599,9 +603,9 @@ begin
   Events[1].ClearTextFields;
   Events[1].Text.LoadTextLinesFromReader(Reader);
 end;
-{ @end $4E8138 }
+{ @end $4E27FC }
 
-{ @routine $4E826C TLocation_LoadLegacyV0FromReader }
+{ @routine $4E28EC TLocation_LoadLegacyV0FromReader }
 procedure TLocation.LoadLegacyV0FromReader(Reader: TBufEC);
 var
   i: Integer;
@@ -629,9 +633,9 @@ begin
   Events[1].ClearTextFields;
   Events[1].Text.LoadTextLinesFromReader(Reader);
 end;
-{ @end $4E826C }
+{ @end $4E28EC }
 
-{ @routine $4E83A0 TLocation_SelectEvent }
+{ @routine $4E29DC TLocation_SelectEvent }
 function TLocation.SelectEvent(var Parameters: TList): TEvent;
 var
   i, j, Attempts: Integer;
@@ -708,6 +712,6 @@ begin
     end;
   end;
 end;
-{ @end $4E83A0 }
+{ @end $4E29DC }
 
 end.

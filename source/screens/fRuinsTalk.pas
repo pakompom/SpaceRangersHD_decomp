@@ -1,5 +1,4 @@
 unit fRuinsTalk;
-// Unit bracket (inferred): .text 0x005A5FA8..0x005DC4DA; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -17,7 +16,7 @@ type
     Source: Byte; // @offset $04
   end;
 
-  TResearchItemSortKey = record // @size $0C Native sort helpers at $5A7E14..$5A7F9D.
+  TResearchItemSortKey = record // @size $0C
     Priority: Byte; // @offset $00
     Cost: Integer; // @offset $04
     Weight: Integer; // @offset $08
@@ -31,14 +30,14 @@ type
     LoadPanel: TfPanelLoad; // @offset $D8 Owned.
     DialogText: WideString; // @offset 0xDC
     PresentedTextLength: Integer; // @offset $E0
-    TextPresentationTimer: PCallbackTimerGI; // @offset $E4
+    TextPresentationTimer: TCallbackTimerIdGI; // @offset $E4
     ChoiceHeight: Integer; // @offset $E8 Accumulated dialogue-choice row height.
     NextPortraitCycleAlternate: Boolean; // @offset $EC
     ShowArrivalVideo: Boolean; // @offset $ED Set after docked hyperspace travel; OnOpen tests this together with SkipVideo.
     StationOwner: TOwnerId; // @offset $EE Copied from the docked ship on entry.
     StationType: TStationType; // @offset $EF Copied from the docked ship on entry.
     ScriptVideoStartedAt: Cardinal; // @offset $F0 timeGetTime timestamp used by the queued-video callback.
-    ScriptVideoTimer: PCallbackTimerGI; // @offset $F4
+    ScriptVideoTimer: TCallbackTimerIdGI; // @offset $F4
     ResearchItemVisited: array of Boolean; // @offset $F8
     ResearchItemIndexes: array of Integer; // @offset $FC Negative entries terminate the sorted sale list.
     LargePortraitLayout: Boolean; // @offset $100 Viewport is at least 1280x960; permits HD portraits or the table layout.
@@ -46,323 +45,323 @@ type
     StationTransientControl: TObjectGI; // @offset $104
     SavedChoiceScroll: Integer; // @offset $108
 
-    function SortResearchItems(Series: TDominatorSeries): Integer; // @addr $5A7FA0 Returns inventory count; unused sorted slots are -1.
-    function IsResearchItemQuestLetter(Item: TItem): Boolean; // @addr $5A813C
-    function CountResearchRemains(Series: TDominatorSeries; Count: Integer): Integer; // @addr $5A82A0
-    function CountResearchEquipment(Count: Integer): Integer; // @addr $5A8354
-    procedure BuildResearchItemChoices(Series: TDominatorSeries; var Text: WideString); // @addr $5A83EC
-    procedure ContinueDominatorVictoryDialog(Action: Integer); // @addr $5AB3E4
-    function ShowDominatorVictoryDialog: Boolean; // @addr $5AABA4
-    procedure ShowMilitaryBaseRepairQuote(Action: Integer); // @addr $5BC9FC
-    procedure AcceptMilitaryBaseRepair(Action: Integer); // @addr $5BCE50
-    procedure AcceptMilitaryBasePrograms(Action: Integer); // @addr $5BD3FC
-    procedure AcceptMilitaryBaseWarOperation(Action: Integer); // @addr $5BD94C
-    procedure ConfirmMilitaryBaseTravel(Action: Integer); // @addr $5BE104
-    procedure DeclineMilitaryBaseTravel(Action: Integer); // @addr $5BE6E0
-    procedure ShowMilitaryBaseArrivalInfo(Action: Integer); // @addr $5BE87C
-    procedure ShowMilitaryBaseArrivalQuestions(Action: Integer); // @addr $5BECC4
-    procedure ShowMilitaryBaseArrivalDialog(Action: Integer); // @addr $5BE484
-    procedure RunInjectedDialog(Action: Integer); // @addr $5D1948
-    procedure RunInjectedDialogKeepingScroll(Action: Integer); // @addr $5D1B14
-    procedure AdvanceTextPresentation(Timer: PCallbackTimerGI; UserData: Integer); // @addr $5A9758
-    procedure PortraitCycleComplete(Sender: TObjectGI); // @addr $5A9BE0
-    procedure SelectPortraitAnimation(Alternate: Boolean); // @addr $5A9C1C
-    procedure ShowDominionWarOperationDialog(Action: Integer); // @addr $5D9DEC
-    procedure ShowDominionRelocationDialog(Action: Integer); // @addr $5D7E18
-    procedure ShowDominionAmbushDialog(Action: Integer); // @addr $5DACC8
-    procedure ShowDominionAssaultDialog(Action: Integer); // @addr $5DBA5C
-    procedure ChoiceMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $5A9504
-    procedure ChoiceMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $5A9584
-    function CreateChoiceBullet(LabelControl: TLabelGI; Item: PFontObjectEC): TObjectGI; // @addr $5A9E90
-    constructor Create; // @addr $5A60C0
-    destructor Destroy; override; // @addr $5A612C
-    procedure AdvanceScriptVideo(Timer: PCallbackTimerGI; UserData: Integer); // @addr $5AA424 Advances Film over the native 138-second interval.
+    function SortResearchItems(Series: TDominatorSeries): Integer; // @addr $559080 Returns inventory count; unused sorted slots are -1.
+    function IsResearchItemQuestLetter(Item: TItem): Boolean; // @addr $5591D4
+    function CountResearchRemains(Series: TDominatorSeries; Count: Integer): Integer; // @addr $559314
+    function CountResearchEquipment(Count: Integer): Integer; // @addr $5593A4
+    procedure BuildResearchItemChoices(Series: TDominatorSeries; var Text: WideString); // @addr $559410
+    procedure ContinueDominatorVictoryDialog(Action: Cardinal); // @addr $55BFD8
+    function ShowDominatorVictoryDialog: Boolean; // @addr $55B818
+    procedure ShowMilitaryBaseRepairQuote(Action: Cardinal); // @addr $56CBB0
+    procedure AcceptMilitaryBaseRepair(Action: Cardinal); // @addr $56CFE4
+    procedure AcceptMilitaryBasePrograms(Action: Cardinal); // @addr $56D554
+    procedure AcceptMilitaryBaseWarOperation(Action: Cardinal); // @addr $56DA68
+    procedure ConfirmMilitaryBaseTravel(Action: Cardinal); // @addr $56E1D8
+    procedure DeclineMilitaryBaseTravel(Action: Cardinal); // @addr $56E76C
+    procedure ShowMilitaryBaseArrivalInfo(Action: Cardinal); // @addr $56E8F4
+    procedure ShowMilitaryBaseArrivalQuestions(Action: Cardinal); // @addr $56ED0C
+    procedure ShowMilitaryBaseArrivalDialog(Action: Integer); // @addr $56E52C
+    procedure RunInjectedDialog(Action: Cardinal); // @addr $580AD0
+    procedure RunInjectedDialogKeepingScroll(Action: Cardinal); // @addr $580C6C
+    procedure AdvanceTextPresentation(Timer: TCallbackTimerIdGI; UserData: Cardinal); // @addr $55A5D0
+    procedure PortraitCycleComplete(Sender: TObjectGI); // @addr $55A9C0
+    procedure SelectPortraitAnimation(Alternate: Boolean); // @addr $55A9EC
+    procedure ShowDominionWarOperationDialog(Action: Cardinal); // @addr $5888BC
+    procedure ShowDominionRelocationDialog(Action: Cardinal); // @addr $586A04
+    procedure ShowDominionAmbushDialog(Action: Cardinal); // @addr $589688
+    procedure ShowDominionAssaultDialog(Action: Cardinal); // @addr $58A358
+    procedure ChoiceMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $55A3F8
+    procedure ChoiceMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $55A458
+    function CreateChoiceBullet(LabelControl: TLabelGI; Item: PFontObjectEC): TObjectGI; // @addr $55AC10
+    constructor Create; // @addr $55749C
+    destructor Destroy; override; // @addr $5574F8
+    procedure AdvanceScriptVideo(Timer: TCallbackTimerIdGI; UserData: Cardinal); // @addr $55B0E0 Advances Film over the native 138-second interval.
 
-    procedure OnClose; override; // @addr $5A7D4C
-    procedure EndTurnClicked(Sender: TObjectGI); // @addr $5A899C
-    procedure ShipClicked(Sender: TObjectGI); // @addr $5A8C24
-    procedure ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer); override; // @addr $5A9F74
-    procedure MainPanelKeyDown(Sender: TObjectGI; Key: Cardinal); // @addr $5AA06C
-    procedure AddMessageClicked(Sender: TObjectGI); // @addr $5AA2B4
-    procedure SelectMusic; override; // @addr $5AA618
-    procedure InitializeLayout; override; // @addr $5A63F4
-    procedure LayoutStationPortrait(Panel: TObjectGI); // @addr $5A6B84
-    procedure OnOpen; override; // @addr 0x5A7100 @note "Native diagnostic name: TfRuinsTalk.BeforeRun."
-    procedure DepartWithStation(Action: Integer); // @addr $5BE3E0
-    procedure ClearChoices; // @addr $5A8CF8 Native diagnostic name: TfRuinsTalk.A_Start.
-    procedure RestartTextPresentation; // @addr $5A96B8 Clears the dialogue panel state and restarts its ten-millisecond presentation timer.
-    procedure I_Start; // @addr 0x5AA9D8 Rebuilds the station dialogue root.
-    procedure M_Main(KeepText: Boolean); // @addr 0x5AB408 Rebuilds choices; KeepText preserves the current greeting and skips rank rewards.
-    procedure I_WarWithKlingAndPirates(Action: Integer); // @addr 0x5BB9A0
-    procedure I_CBWarWithKlingAndCoalition(Action: Integer); // @addr 0x5D8EB0
-    procedure AddChoice(Text: WideString; Value: Integer; Callback: TDialogChoiceEventGI); // @addr 0x5A8EF8 @note "Text filters may disable or suppress the choice. Invokes the method callback with Value in EDX."
-    procedure ShowBridgeBlackHoleDialog(Action: Integer); // @addr $5AE59C
-    procedure ShowInterceptorDialog(Action: Integer); // @addr $5AE98C
-    procedure SelectBridgeBlackHoleDestination(Action: Integer); // @addr $5AE8E8
-    procedure RecallInterceptorsFromTarget(Action: Integer); // @addr $5AFCB4
-    procedure RecallAllInterceptors(Action: Integer); // @addr $5AFCF0
-    procedure IncreaseInterceptorPassCount(Action: Integer); // @addr $5B0288
-    procedure DecreaseInterceptorPassCount(Action: Integer); // @addr $5B02C4
-    procedure SelectInterceptorTarget(Action: Integer); // @addr $5B073C
-    procedure ClearInterceptorTarget(Action: Integer); // @addr $5B0768
-    procedure SelectInterceptorStrategy(Action: Integer); // @addr $5B0F94
-    procedure ShowBridgeHelpAnswer(Action: Integer); // @addr $5B11B0
-    procedure ShowInterceptorTargetDialog(Action: Integer); // @addr $5B0300
-    procedure ShowInterceptorStrategyDialog(Action: Integer); // @addr $5B0794
-    procedure ShowActiveInterceptors(Action: Integer); // @addr $5AF828
-    procedure ShowInterceptorPassDialog(Action: Integer); // @addr $5AFD94
-    procedure ShowBridgeHelp(Action: Integer); // @addr $5B0FC4
-    procedure BuyRangerCenterMicroModule(Action: Integer); // @addr $5B5734
-    procedure ExchangeMicroModuleForNodes(Action: Integer); // @addr $5B66B4
-    procedure ShowRangerCenterTakeNodeDialog(Action: Integer); // @addr $5B4ACC
-    procedure ShowRangerCenterGiveNodeDialog(Action: Integer); // @addr $5B5B84
-    procedure AcceptPirateBaseNationality(Action: Integer); // @addr $5B7604
-    procedure BuyPirateBaseNodes(Action: Integer); // @addr $5B903C
-    procedure BuyPirateBaseProgram(Action: Integer); // @addr $5B9AF0
-    procedure AcceptPirateBaseRepair(Action: Integer); // @addr $5BA464
-    procedure BuyPirateBaseChameleon(Action: Integer); // @addr $5BB720
-    procedure ShowPirateBaseProgramDialog(Action: Integer); // @addr $5B9348
-    procedure ShowPirateBaseNodeDialog(Action: Integer); // @addr $5B8AF4
-    procedure ShowPirateBaseRepairDialog(Action: Integer); // @addr $5B9E48
-    procedure ShowPirateBaseChameleonDialog(Action: Integer); // @addr $5BB194
-    procedure ConfirmPirateBaseSubCrack(Action: Integer); // @addr $5BA9F8
-    procedure BuyPirateBaseSubCrack(Action: Integer); // @addr $5BAD34
-    procedure BuyPirateBaseSubCrackHalfPrice(Action: Integer); // @addr $5BAED0
-    procedure DeclinePirateBaseSubCrack(Action: Integer); // @addr $5BB080
-    procedure DeclinePirateBaseNationality(Action: Integer); // @addr $5B7F60
-    procedure DeclinePirateBaseSideChange(Action: Integer); // @addr $5B8990
-    procedure DeclinePirateBaseProgram(Action: Integer); // @addr $5B9D14
-    procedure DeclinePirateBaseRepair(Action: Integer); // @addr $5BA750
-    procedure DeclinePirateBaseChameleon(Action: Integer); // @addr $5BB864
-    procedure ShowPirateBaseSubCrackDialog(Action: Integer); // @addr $5BA800
-    procedure ShowMilitaryBaseRepairDialog(Action: Integer); // @addr $5BC86C
-    procedure ShowMilitaryBaseWarOperationDialog(Action: Integer); // @addr $5BD528
-    procedure ShowMilitaryBaseTravelDialog(Action: Integer); // @addr $5BDFBC
-    procedure ShowMilitaryBaseProgramsDialog(Action: Integer); // @addr $5BD000
-    procedure ShowScienceBaseImprovementItems(Action: Integer); // @addr $5BEF50
-    procedure ShowScienceBaseImprovementQuote(Action: Integer); // @addr $5BF714
-    procedure SelectScienceBaseImprovementKind(Action: Integer); // @addr $5C003C
-    procedure AcceptScienceBaseImprovement(Action: Integer); // @addr $5C03C8
-    procedure ShowScienceBaseRepairQuote(Action: Integer); // @addr $5C0A80
-    procedure AcceptScienceBaseRepair(Action: Integer); // @addr $5C1118
-    procedure ShowScienceBaseImprovementDialog(Action: Integer); // @addr $5BEE14
-    procedure ShowScienceBaseRepairDialog(Action: Integer); // @addr $5C08F0
-    procedure SellResearchRemains(Action: Integer); // @addr $5C2860
-    procedure SellResearchEquipment(Action: Integer); // @addr $5C2E6C
-    procedure SellResearchItem(Action: Integer); // @addr $5C3464
-    procedure SelectScienceBaseResearchSection(Action: Integer); // @addr $5C2494
-    procedure DeclineScienceBaseResearch(Action: Integer); // @addr $5C3A1C
-    procedure AcceptScienceBaseResearchProgram(Action: Integer); // @addr $5C3FDC
-    procedure DeclineScienceBaseResearchProgram(Action: Integer); // @addr $5C41F0
-    procedure ShowScienceBaseResearchDialog(Action: Integer); // @addr $5C1DDC
-    procedure BuyScienceBaseResearchProgram(Action: Integer); // @addr $5C3C20
-    procedure ShowScienceBaseHistoryDialog(Action: Integer); // @addr $5C430C
-    procedure AcceptBusinessCenterInvestment(Action: Integer); // @addr $5CA654
-    procedure DeclineBusinessCenterInvestment(Action: Integer); // @addr $5CC734
-    procedure ShowBusinessCenterInvestmentDialog(Action: Integer); // @addr $5C6FBC
-    procedure BuyBusinessCenterTradeAdvice(Action: Integer); // @addr $5CD528
-    procedure DeclineBusinessCenterTradeAdvice(Action: Integer); // @addr $5CDA30
-    procedure ShowBusinessCenterTradeDialog(Action: Integer); // @addr $5CC850
-    procedure ShowDominionImprovementItems(Action: Integer); // @addr $5D4A64
-    procedure ShowDominionImprovementQuote(Action: Integer); // @addr $5D5228
-    procedure AcceptDominionImprovement(Action: Integer); // @addr $5D57D8
-    procedure BuyDominionPirateLicense(Action: Integer); // @addr $5D616C
-    procedure DeclineDominionPirateLicense(Action: Integer); // @addr $5D6314
-    function CheckDominionServiceStanding(RequiredRank: TShipRank; Prefix: WideString; CreditCost: Single): Boolean; // @addr $5D64E4
-    procedure SpendDominionServiceCredit(CreditCost: Single); // @addr $5D67E8
-    function CheckDominionAvailable: Boolean; // @addr $5D6878
-    procedure ConfirmDominionTravel(Action: Integer); // @addr $5D7318
-    procedure AcceptDominionTravel(Action: Integer); // @addr $5D768C
-    procedure DeclineDominionCancelTravel(Action: Integer); // @addr $5D7BE8
-    procedure AcceptDominionRelocation(Action: Integer); // @addr $5D8590
-    procedure AcceptDominionWarOperation(Action: Integer); // @addr $5DA21C
-    procedure AcceptDominionAmbush(Action: Integer); // @addr $5DB720
-    procedure AcceptDominionAssault(Action: Integer); // @addr $5DC1A4
-    procedure ShowDominionImprovementDialog(Action: Integer); // @addr $5D4928
-    procedure BuyStationSpecialShip(Action: Integer); // @addr $5D15E0
-    procedure DeclineStationSpecialShip(Action: Integer); // @addr $5D1500
-    procedure ShowStationSpecialShipDialog(Action: Integer); // @addr $5D086C
-    procedure BuildBuiltinServiceOptions; // @addr 0x5B1494
-    procedure OpenStationModernization(QuotedCost: Integer); // @addr 0x5B4234 @note "Zero requests a quote; a nonzero quote is charged and enables sponsorship. Sponsored stations open the equipment-refit screen."
-    procedure DeclineStationModernization(Action: Integer); // @addr $5B4710
-    procedure ShowRangerCenterNodeInfoContinuation(Action: Integer); // @addr $5B6BFC
-    procedure DepositNodesAtRangerCenter(Action: Integer); // @addr 0x5B48E4 @note "Deposits every carried node stack."
-    procedure ShowRangerCenterNodeInfo(Action: Integer); // @addr 0x5B6A50
-    procedure ShowPirateBaseNationalityDialog(Action: Integer); // @addr 0x5B6F38
-    procedure ShowPirateBaseSideChangeDialog(Action: Integer); // @addr 0x5B80BC
-    procedure AcceptPirateBaseSideChange(Action: Integer); // @addr 0x5B84FC @note "Recalculates the fee at acceptance time."
-    procedure ShowMilitaryBaseNextRankDialog(Action: Integer); // @addr 0x5BC3D8 @note "Does not promote the player."
-    procedure ShowScienceBaseSatelliteOfferDialog(Refresh: Integer); // @addr 0x5C13C8
-    procedure BuyScienceBaseSatellite(Action: Integer); // @addr 0x5C1B60 @note "Transfers the existing SatelliteOffer into inventory."
-    procedure ShowBusinessCenterPolicyDetails(Action: Integer); // @addr $5C6D1C
-    procedure DeclineBusinessCenterPolicy(Action: Integer); // @addr $5C6E30
-    procedure ShowBusinessCenterDebtDialog(Action: Integer); // @addr 0x5C46B8
-    procedure AcceptBusinessCenterDebtQuote(Quote: Integer); // @addr 0x5C5464 @note "Quotes 1/2/3 use the large/medium/small principal, with 20/15/10 percent interest included in DebtAmount."
-    procedure DeclineBusinessCenterDebtDialog(Action: Integer); // @addr 0x5C5830
-    procedure RepayBusinessCenterDebt(Action: Integer); // @addr 0x5C593C @note "Requires the menu's prior affordability check."
-    procedure ShowBusinessCenterDepositDialog(Action: Integer); // @addr 0x5C5A80
-    procedure AcceptBusinessCenterDepositQuote(Quote: Integer); // @addr 0x5C615C @note "Quotes 1/2/3 select large/medium/small amounts; a new deposit resets accrued days."
-    procedure DeclineBusinessCenterDepositDialog(Action: Integer); // @addr 0x5C6440
-    procedure WithdrawBusinessCenterDeposit(Action: Integer); // @addr 0x5C654C
-    procedure ShowBusinessCenterMedicalPolicyDialog(Refresh: Integer); // @addr 0x5C6774
-    procedure BuyBusinessCenterMedicalPolicy(Action: Integer); // @addr 0x5C6AFC @note "Policy duration is 1825 ticks."
-    procedure DeclineMedicalCenterTreatment(Action: Integer); // @addr $5CF0F4
-    procedure LeaveMedicalCenterTreatment(Action: Integer); // @addr $5CF204
-    procedure DeclineMedicalCenterStimulants(Action: Integer); // @addr $5D06B8
-    procedure ShowMedicalCenterIllnessTreatmentDialog(Refresh: Integer); // @addr 0x5CDB38
-    procedure TreatSelectedDiseaseAtMedicalCenter(DiseaseIndex: Integer); // @addr 0x5CEA24 @note "Treats disease indexes 1..12; valid insurance halves the fee outside pirate-owned systems."
-    procedure TreatAllDiseasesAtMedicalCenter(QuotedCost: Integer); // @addr 0x5CEE5C @note "Trusts QuotedCost from the menu."
-    procedure ShowMedicalCenterStimulantDialog(Action: Integer); // @addr 0x5CF3B0
-    procedure BuySelectedStimulantAtMedicalCenter(StimulantIndex: Integer); // @addr 0x5D0280 @note "Stimulants use effect indices 13..24; valid insurance halves the fee outside pirate-owned systems."
-    function BuildConstructionItemChoices(Kind: TItemType): Integer; // @addr $5D230C
-    procedure ConfirmDominionConstructionLimit(Action: Integer); // @addr $5D2B6C
-    procedure SelectConstructionHeldItem(Action: Integer); // @addr $5D2D7C
-    procedure SelectConstructionStoredItem(Action: Integer); // @addr $5D2DF0
-    procedure SelectConstructionShopItem(Action: Integer); // @addr $5D2E64
-    procedure SkipConstructionItem(Action: Integer); // @addr $5D2ED8
-    procedure AppendConstructionItemList; // @addr $5D2EF4
-    procedure ContinueDominionConstruction(PreviousItem: WideString); // @addr $5D3444
-    procedure PickConstructionWeapon(Action: Integer); // @addr $5D3E28
-    procedure PickConstructionRadar(Action: Integer); // @addr $5D3F24
-    procedure PickConstructionScanner(Action: Integer); // @addr $5D4020
-    procedure PickConstructionRepairRobot(Action: Integer); // @addr $5D411C
-    procedure PickConstructionDefGenerator(Action: Integer); // @addr $5D4224
-    procedure CompleteDominionConstruction(Action: Integer); // @addr $5D4428
-    procedure ShowDominionShipConstructionDialog(Action: Integer); // @addr 0x5D28B0
-    procedure ShowDominionPirateLicenseDialog(Action: Integer); // @addr 0x5D5C10
-    procedure ShowDominionTravelDialog(Action: Integer); // @addr 0x5D6A30
-    procedure ShowDominionCancelTravelDialog(Action: Integer); // @addr 0x5D7924
-    procedure CancelDominionTravel(Action: Integer); // @addr 0x5D7B08
-    procedure AddScriptTakeoffChoice(Caption: WideString); // @addr $5B3C80
-    procedure ContinueScriptDialog; // @addr $5B3C54
-    procedure AddScriptNewsExitChoice(Caption: WideString); // @addr $5B3D7C
-    procedure AddScriptGameEndChoice(Caption: WideString); // @addr $5B3F14
-    procedure AddScriptHangarChoice(Caption: WideString); // @addr $5B3E04
-    procedure AddScriptRestartChoice(Caption: WideString); // @addr $5D1B70
-    procedure AddScriptGoodsChoice(Caption: WideString); // @addr $5B3E8C
-    procedure RunScriptAnswerKeepingScroll(Answer: Integer); // @addr $5B4048
-    procedure RunScriptAnswer(Answer: Integer); // @addr $5B3FD4
+    procedure OnClose; override; // @addr $558EA8
+    procedure EndTurnClicked(Sender: TObjectGI); // @addr $559988
+    procedure ShipClicked(Sender: TObjectGI); // @addr $559BF4
+    procedure ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer); override; // @addr $55ACE0
+    procedure MainPanelKeyDown(Sender: TObjectGI; Key: Cardinal); // @addr $55ADA8
+    procedure AddMessageClicked(Sender: TObjectGI); // @addr $55AF7C
+    procedure SelectMusic; override; // @addr $55B29C
+    procedure InitializeLayout; override; // @addr $557774
+    procedure LayoutStationPortrait(Panel: TObjectGI); // @addr $557E2C
+    procedure OnOpen; override; // @addr 0x005582FC @note "Native diagnostic name: TfRuinsTalk.BeforeRun."
+    procedure DepartWithStation(Action: Cardinal); // @addr $56E494
+    procedure ClearChoices; // @addr $559CAC Native diagnostic name: TfRuinsTalk.A_Start.
+    procedure RestartTextPresentation; // @addr $55A550 Clears the dialogue panel state and restarts its ten-millisecond presentation timer.
+    procedure I_Start; // @addr 0x0055B660 Rebuilds the station dialogue root.
+    procedure M_Main(KeepText: Boolean); // @addr 0x0055BFF0 Rebuilds choices; KeepText preserves the current greeting and skips rank rewards.
+    procedure I_WarWithKlingAndPirates(Action: Cardinal); // @addr 0x0056BBC0
+    procedure I_CBWarWithKlingAndCoalition(Action: Cardinal); // @addr 0x005879E8
+    procedure AddChoice(CaptionText: WideString; Value: Cardinal; Callback: TDialogChoiceEventGI); // @addr 0x00559E88 @note "Text filters may disable or suppress the choice. Invokes the method callback with Value in EDX."
+    procedure ShowBridgeBlackHoleDialog(Action: Cardinal); // @addr $55F034
+    procedure ShowInterceptorDialog(Action: Cardinal); // @addr $55F3F8
+    procedure SelectBridgeBlackHoleDestination(Action: Cardinal); // @addr $55F368
+    procedure RecallInterceptorsFromTarget(Action: Cardinal); // @addr $5606C4
+    procedure RecallAllInterceptors(Action: Cardinal); // @addr $5606F4
+    procedure IncreaseInterceptorPassCount(Action: Cardinal); // @addr $560C5C
+    procedure DecreaseInterceptorPassCount(Action: Cardinal); // @addr $560C88
+    procedure SelectInterceptorTarget(Action: Cardinal); // @addr $5610CC
+    procedure ClearInterceptorTarget(Action: Cardinal); // @addr $5610EC
+    procedure SelectInterceptorStrategy(Action: Cardinal); // @addr $5618E0
+    procedure ShowBridgeHelpAnswer(Action: Cardinal); // @addr $561ADC
+    procedure ShowInterceptorTargetDialog(Action: Cardinal); // @addr $560CB4
+    procedure ShowInterceptorStrategyDialog(Action: Cardinal); // @addr $56110C
+    procedure ShowActiveInterceptors(Action: Cardinal); // @addr $560248
+    procedure ShowInterceptorPassDialog(Action: Cardinal); // @addr $560784
+    procedure ShowBridgeHelp(Action: Cardinal); // @addr $561904
+    procedure BuyRangerCenterMicroModule(Action: Cardinal); // @addr $565E00
+    procedure ExchangeMicroModuleForNodes(Action: Cardinal); // @addr $566CA0
+    procedure ShowRangerCenterTakeNodeDialog(Action: Cardinal); // @addr $565200
+    procedure ShowRangerCenterGiveNodeDialog(Action: Cardinal); // @addr $566228
+    procedure AcceptPirateBaseNationality(Action: Cardinal); // @addr $567AF8
+    procedure BuyPirateBaseNodes(Action: Cardinal); // @addr $56940C
+    procedure BuyPirateBaseProgram(Action: Cardinal); // @addr $569E50
+    procedure AcceptPirateBaseRepair(Action: Cardinal); // @addr $56A75C
+    procedure BuyPirateBaseChameleon(Action: Cardinal); // @addr $56B970
+    procedure ShowPirateBaseProgramDialog(Action: Cardinal); // @addr $5696F8
+    procedure ShowPirateBaseNodeDialog(Action: Cardinal); // @addr $568EE0
+    procedure ShowPirateBaseRepairDialog(Action: Cardinal); // @addr $56A168
+    procedure ShowPirateBaseChameleonDialog(Action: Cardinal); // @addr $56B40C
+    procedure ConfirmPirateBaseSubCrack(Action: Cardinal); // @addr $56ACB4
+    procedure BuyPirateBaseSubCrack(Action: Cardinal); // @addr $56AFD8
+    procedure BuyPirateBaseSubCrackHalfPrice(Action: Cardinal); // @addr $56B16C
+    procedure DeclinePirateBaseSubCrack(Action: Cardinal); // @addr $56B308
+    procedure DeclinePirateBaseNationality(Action: Cardinal); // @addr $5683BC
+    procedure DeclinePirateBaseSideChange(Action: Cardinal); // @addr $568D8C
+    procedure DeclinePirateBaseProgram(Action: Cardinal); // @addr $56A044
+    procedure DeclinePirateBaseRepair(Action: Cardinal); // @addr $56AA24
+    procedure DeclinePirateBaseChameleon(Action: Cardinal); // @addr $56BA94
+    procedure ShowPirateBaseSubCrackDialog(Action: Cardinal); // @addr $56AAC8
+    procedure ShowMilitaryBaseRepairDialog(Action: Cardinal); // @addr $56CA2C
+    procedure ShowMilitaryBaseWarOperationDialog(Action: Cardinal); // @addr $56D664
+    procedure ShowMilitaryBaseTravelDialog(Action: Cardinal); // @addr $56E098
+    procedure ShowMilitaryBaseProgramsDialog(Action: Cardinal); // @addr $56D17C
+    procedure ShowScienceBaseImprovementItems(Action: Cardinal); // @addr $56EF88
+    procedure ShowScienceBaseImprovementQuote(Action: Cardinal); // @addr $56F700
+    procedure SelectScienceBaseImprovementKind(Action: Cardinal); // @addr $56FFBC
+    procedure AcceptScienceBaseImprovement(Action: Cardinal); // @addr $570334
+    procedure ShowScienceBaseRepairQuote(Action: Cardinal); // @addr $5709B0
+    procedure AcceptScienceBaseRepair(Action: Cardinal); // @addr $571008
+    procedure ShowScienceBaseImprovementDialog(Action: Cardinal); // @addr $56EE54
+    procedure ShowScienceBaseRepairDialog(Action: Cardinal); // @addr $57082C
+    procedure SellResearchRemains(Action: Cardinal); // @addr $57266C
+    procedure SellResearchEquipment(Action: Cardinal); // @addr $572C3C
+    procedure SellResearchItem(Action: Cardinal); // @addr $5731F0
+    procedure SelectScienceBaseResearchSection(Action: Cardinal); // @addr $5722CC
+    procedure DeclineScienceBaseResearch(Action: Cardinal); // @addr $57376C
+    procedure AcceptScienceBaseResearchProgram(Action: Cardinal); // @addr $573CF4
+    procedure DeclineScienceBaseResearchProgram(Action: Cardinal); // @addr $573EF8
+    procedure ShowScienceBaseResearchDialog(Action: Cardinal); // @addr $571C40
+    procedure BuyScienceBaseResearchProgram(Action: Cardinal); // @addr $573964
+    procedure ShowScienceBaseHistoryDialog(Action: Cardinal); // @addr $574004
+    procedure AcceptBusinessCenterInvestment(Action: Cardinal); // @addr $579DC4
+    procedure DeclineBusinessCenterInvestment(Action: Cardinal); // @addr $57BD54
+    procedure ShowBusinessCenterInvestmentDialog(Action: Cardinal); // @addr $576ACC
+    procedure BuyBusinessCenterTradeAdvice(Action: Cardinal); // @addr $57CA28
+    procedure DeclineBusinessCenterTradeAdvice(Action: Cardinal); // @addr $57CF24
+    procedure ShowBusinessCenterTradeDialog(Action: Cardinal); // @addr $57BE60
+    procedure ShowDominionImprovementItems(Action: Cardinal); // @addr $583844
+    procedure ShowDominionImprovementQuote(Action: Cardinal); // @addr $583FBC
+    procedure AcceptDominionImprovement(Action: Cardinal); // @addr $584554
+    procedure BuyDominionPirateLicense(Action: Cardinal); // @addr $584E88
+    procedure DeclineDominionPirateLicense(Action: Cardinal); // @addr $585024
+    function CheckDominionServiceStanding(RequiredRank: TShipRank; Prefix: WideString; CreditCost: Single): Boolean; // @addr $5851E8
+    procedure SpendDominionServiceCredit(CreditCost: Single); // @addr $5854DC
+    function CheckDominionAvailable: Boolean; // @addr $585568
+    procedure ConfirmDominionTravel(Action: Cardinal); // @addr $585F70
+    procedure AcceptDominionTravel(Action: Cardinal); // @addr $5862C0
+    procedure DeclineDominionCancelTravel(Action: Cardinal); // @addr $5867E0
+    procedure AcceptDominionRelocation(Action: Cardinal); // @addr $587118
+    procedure AcceptDominionWarOperation(Action: Cardinal); // @addr $588CD8
+    procedure AcceptDominionAmbush(Action: Cardinal); // @addr $58A044
+    procedure AcceptDominionAssault(Action: Cardinal); // @addr $58AA50
+    procedure ShowDominionImprovementDialog(Action: Cardinal); // @addr $583710
+    procedure BuyStationSpecialShip(Action: Cardinal); // @addr $580774
+    procedure DeclineStationSpecialShip(Action: Cardinal); // @addr $580698
+    procedure ShowStationSpecialShipDialog(Action: Cardinal); // @addr $57FA8C
+    procedure BuildBuiltinServiceOptions; // @addr 0x00561DB0
+    procedure OpenStationModernization(QuotedCost: Cardinal); // @addr 0x005649AC @note "Zero requests a quote; a nonzero quote is charged and enables sponsorship. Sponsored stations open the equipment-refit screen."
+    procedure DeclineStationModernization(Action: Cardinal); // @addr $564E5C
+    procedure ShowRangerCenterNodeInfoContinuation(Action: Cardinal); // @addr $5671B4
+    procedure DepositNodesAtRangerCenter(Action: Cardinal); // @addr 0x00565024 @note "Deposits every carried node stack."
+    procedure ShowRangerCenterNodeInfo(Action: Cardinal); // @addr 0x00567018
+    procedure ShowPirateBaseNationalityDialog(Action: Cardinal); // @addr 0x005674C4
+    procedure ShowPirateBaseSideChangeDialog(Action: Cardinal); // @addr 0x00568508
+    procedure AcceptPirateBaseSideChange(Action: Cardinal); // @addr 0x00568920 @note "Recalculates the fee at acceptance time."
+    procedure ShowMilitaryBaseNextRankDialog(Action: Cardinal); // @addr 0x0056C5C0 @note "Does not promote the player."
+    procedure ShowScienceBaseSatelliteOfferDialog(Refresh: Cardinal); // @addr 0x00571294
+    procedure BuyScienceBaseSatellite(Action: Cardinal); // @addr 0x005719E4 @note "Transfers the existing SatelliteOffer into inventory."
+    procedure ShowBusinessCenterPolicyDetails(Action: Cardinal); // @addr $576840
+    procedure DeclineBusinessCenterPolicy(Action: Cardinal); // @addr $576948
+    procedure ShowBusinessCenterDebtDialog(Action: Cardinal); // @addr 0x00574394
+    procedure AcceptBusinessCenterDebtQuote(Quote: Cardinal); // @addr 0x005750B8 @note "Quotes 1/2/3 use the large/medium/small principal, with 20/15/10 percent interest included in DebtAmount."
+    procedure DeclineBusinessCenterDebtDialog(Action: Cardinal); // @addr 0x00575464
+    procedure RepayBusinessCenterDebt(Action: Cardinal); // @addr 0x00575560 @note "Requires the menu's prior affordability check."
+    procedure ShowBusinessCenterDepositDialog(Action: Cardinal); // @addr 0x00575698
+    procedure AcceptBusinessCenterDepositQuote(Quote: Cardinal); // @addr 0x00575CF4 @note "Quotes 1/2/3 select large/medium/small amounts; a new deposit resets accrued days."
+    procedure DeclineBusinessCenterDepositDialog(Action: Cardinal); // @addr 0x00575FAC
+    procedure WithdrawBusinessCenterDeposit(Action: Cardinal); // @addr 0x005760A8
+    procedure ShowBusinessCenterMedicalPolicyDialog(Refresh: Cardinal); // @addr 0x005762C0
+    procedure BuyBusinessCenterMedicalPolicy(Action: Cardinal); // @addr 0x00576630 @note "Policy duration is 1825 ticks."
+    procedure DeclineMedicalCenterTreatment(Action: Cardinal); // @addr $57E4DC
+    procedure LeaveMedicalCenterTreatment(Action: Cardinal); // @addr $57E5DC
+    procedure DeclineMedicalCenterStimulants(Action: Cardinal); // @addr $57F8E8
+    procedure ShowMedicalCenterIllnessTreatmentDialog(Refresh: Cardinal); // @addr 0x0057D01C
+    procedure TreatSelectedDiseaseAtMedicalCenter(DiseaseIndex: Cardinal); // @addr 0x0057DE70 @note "Treats disease indexes 1..12; valid insurance halves the fee outside pirate-owned systems."
+    procedure TreatAllDiseasesAtMedicalCenter(QuotedCost: Cardinal); // @addr 0x0057E264 @note "Trusts QuotedCost from the menu."
+    procedure ShowMedicalCenterStimulantDialog(Action: Cardinal); // @addr 0x0057E778
+    procedure BuySelectedStimulantAtMedicalCenter(StimulantIndex: Cardinal); // @addr 0x0057F514 @note "Stimulants use effect indices 13..24; valid insurance halves the fee outside pirate-owned systems."
+    function BuildConstructionItemChoices(Kind: TItemType): Integer; // @addr $58135C
+    procedure ConfirmDominionConstructionLimit(Action: Cardinal); // @addr $581B2C
+    procedure SelectConstructionHeldItem(Action: Cardinal); // @addr $581D00
+    procedure SelectConstructionStoredItem(Action: Cardinal); // @addr $581D70
+    procedure SelectConstructionShopItem(Action: Cardinal); // @addr $581DE0
+    procedure SkipConstructionItem(Action: Cardinal); // @addr $581E50
+    procedure AppendConstructionItemList; // @addr $581E58
+    procedure ContinueDominionConstruction(PreviousItem: WideString); // @addr $5823A4
+    procedure PickConstructionWeapon(Action: Cardinal); // @addr $582D2C
+    procedure PickConstructionRadar(Action: Cardinal); // @addr $582E18
+    procedure PickConstructionScanner(Action: Cardinal); // @addr $582F04
+    procedure PickConstructionRepairRobot(Action: Cardinal); // @addr $582FF0
+    procedure PickConstructionDefGenerator(Action: Cardinal); // @addr $5830E8
+    procedure CompleteDominionConstruction(Action: Cardinal); // @addr $5832B8
+    procedure ShowDominionShipConstructionDialog(Action: Cardinal); // @addr 0x00581898
+    procedure ShowDominionPirateLicenseDialog(Action: Cardinal); // @addr 0x00584954
+    procedure ShowDominionTravelDialog(Action: Cardinal); // @addr 0x00585708
+    procedure ShowDominionCancelTravelDialog(Action: Cardinal); // @addr 0x00586538
+    procedure CancelDominionTravel(Action: Cardinal); // @addr 0x0058670C
+    procedure AddScriptTakeoffChoice(Caption: WideString); // @addr $5644A8
+    procedure ContinueScriptDialog; // @addr $564484
+    procedure AddScriptNewsExitChoice(Caption: WideString); // @addr $56459C
+    procedure AddScriptGameEndChoice(Caption: WideString); // @addr $564728
+    procedure AddScriptHangarChoice(Caption: WideString); // @addr $564620
+    procedure AddScriptRestartChoice(Caption: WideString); // @addr $580CB4
+    procedure AddScriptGoodsChoice(Caption: WideString); // @addr $5646A4
+    procedure RunScriptAnswerKeepingScroll(Answer: Cardinal); // @addr $564838
+    procedure RunScriptAnswer(Answer: Cardinal); // @addr $5647D4
 
-    procedure RememberChoiceScroll; // @addr $5A8CAC
-    procedure HideStationTransientControl; // @addr $5A70D8
-    procedure ChoiceMouseEnter(Sender: TObjectGI); // @addr $5A94C4
-    procedure ChoiceMouseLeave(Sender: TObjectGI); // @addr $5A94E4
-    procedure ResetPortraitCycle; // @addr $5A9BCC
-    procedure SelectScriptDialog(ScriptValue: Integer); // @addr $5B3F9C @note "Choice callback value carries a TScript pointer."
-    procedure RunScriptNewsExit(Answer: Integer); // @addr $5B4128
-    procedure RunScriptHangar(Answer: Integer); // @addr $5B4158
-    procedure RunScriptGoods(Answer: Integer); // @addr $5B41A8
-    procedure OpenHangar(Action: Integer); // @addr $5B4188
-    procedure RunScriptGameEnd(Answer: Integer); // @addr $5B41D8
-    procedure ReturnToMain(Action: Integer); // @addr $5B4218
-    procedure RunScriptRestart(Answer: Integer); // @addr $5D1B38
-    procedure RunScriptTakeoff(Answer: Integer); // @addr $5B406C
-    procedure CloseHullMode(Action: Integer); // @addr $5AE508
-    procedure CloseRuinsMode(Sender: TObjectGI); // @addr $5D1BF8
-    procedure ToggleImpulseShields(Action: Integer); // @addr $5AE524
-    function StopScriptVideo(Unused: Boolean): Boolean; // @addr $5AA4E0
-    procedure ProcessWindowMessage(Message, WParam: Cardinal; LParam: Integer); override; // @addr $5AA5BC
-    procedure ExecuteUiCode(Block: TBlockParEC; Key: Cardinal); override; // @addr $5DC468
-    procedure DeclineRangerCenterNodeDeposit(Action: Integer); // @addr $5B5ACC
-    procedure DeclineRangerCenterNodeReward(Action: Integer); // @addr $5B69A8
-    procedure ShowRangerCenterRatingAnswer(Action: Integer); // @addr $5B6D30
-    procedure ShowRangerCenterPirateClanAnswer(Action: Integer); // @addr $5B6DD8
-    procedure ShowRangerCenterBestRangerAnswer(Action: Integer); // @addr $5B6E88
-    procedure DeclinePirateBaseNodes(Action: Integer); // @addr $5B929C
-    procedure DeclineMilitaryBaseRepair(Action: Integer); // @addr $5BCF58
-    procedure DeclineMilitaryBaseWarOperation(Action: Integer); // @addr $5BDF08
-    procedure DeclineScienceBaseImprovement(Action: Integer); // @addr $5BF650
-    procedure DeclineScienceBaseRepeatImprovement(Action: Integer); // @addr $5C082C
-    procedure DeclineScienceBaseRepair(Action: Integer); // @addr $5C1320
-    procedure ShowSatelliteInstructions(Action: Integer); // @addr $5C1AA4
-    procedure DeclineScienceBaseSatellite(Action: Integer); // @addr $5C1D2C
-    procedure DeclineDominionShipConstruction(Action: Integer); // @addr $5D2C2C
-    procedure DeclineDominionImprovement(Action: Integer); // @addr $5D5160
-    procedure DeclineDominionRepeatImprovement(Action: Integer); // @addr $5D5B48
-    procedure DeclineDominionTravel(Action: Integer); // @addr $5D75C8
-    procedure DeclineDominionTravelConfirmation(Action: Integer); // @addr $5D785C
-    procedure DeclineDominionRelocation(Action: Integer); // @addr $5D88D4
-    procedure ShowDominionCaptureAnswer(Action: Integer); // @addr $5D9A50
-    procedure ShowDominionRanksAnswer(Action: Integer); // @addr $5D9B14
-    procedure DeclineDominionWarOperation(Action: Integer); // @addr $5DAC00
-    procedure DeclineDominionAmbush(Action: Integer); // @addr $5DB998
-    procedure DeclineDominionAssault(Action: Integer); // @addr $5DC3A4
-    procedure BuildDominionWarOptions; // @addr $5D899C
+    procedure RememberChoiceScroll; // @addr $559C68
+    procedure HideStationTransientControl; // @addr $5582E8
+    procedure ChoiceMouseEnter(Sender: TObjectGI); // @addr $55A3E0
+    procedure ChoiceMouseLeave(Sender: TObjectGI); // @addr $55A3EC
+    procedure ResetPortraitCycle; // @addr $55A9B8
+    procedure SelectScriptDialog(ScriptValue: Cardinal); // @addr $5647AC @note "Choice callback value carries a TScript pointer."
+    procedure RunScriptNewsExit(Answer: Cardinal); // @addr $564904
+    procedure RunScriptHangar(Answer: Cardinal); // @addr $564924
+    procedure RunScriptGoods(Answer: Cardinal); // @addr $564954
+    procedure OpenHangar(Action: Cardinal); // @addr $564944
+    procedure RunScriptGameEnd(Answer: Cardinal); // @addr $564974
+    procedure ReturnToMain(Action: Cardinal); // @addr $5649A4
+    procedure RunScriptRestart(Answer: Cardinal); // @addr $580C88
+    procedure RunScriptTakeoff(Answer: Cardinal); // @addr $564854
+    procedure CloseHullMode(Action: Cardinal); // @addr $55EFC8
+    procedure CloseRuinsMode(Sender: TObjectGI); // @addr $580D38
+    procedure ToggleImpulseShields(Action: Cardinal); // @addr $55EFD4
+    function StopScriptVideo(Unused: Boolean): Boolean; // @addr $55B190
+    procedure ProcessWindowMessage(Message, WParam: Cardinal; LParam: Integer); override; // @addr $55B24C
+    procedure ExecuteUiCode(Block: TBlockParEC; Key: Cardinal); override; // @addr $58ACF8
+    procedure DeclineRangerCenterNodeDeposit(Action: Cardinal); // @addr $56617C
+    procedure DeclineRangerCenterNodeReward(Action: Cardinal); // @addr $566F7C
+    procedure ShowRangerCenterRatingAnswer(Action: Cardinal); // @addr $5672E0
+    procedure ShowRangerCenterPirateClanAnswer(Action: Cardinal); // @addr $56737C
+    procedure ShowRangerCenterBestRangerAnswer(Action: Cardinal); // @addr $567420
+    procedure DeclinePirateBaseNodes(Action: Cardinal); // @addr $569658
+    procedure DeclineMilitaryBaseRepair(Action: Cardinal); // @addr $56D0E0
+    procedure DeclineMilitaryBaseWarOperation(Action: Cardinal); // @addr $56DFF0
+    procedure DeclineScienceBaseImprovement(Action: Cardinal); // @addr $56F648
+    procedure DeclineScienceBaseRepeatImprovement(Action: Cardinal); // @addr $570774
+    procedure DeclineScienceBaseRepair(Action: Cardinal); // @addr $5711F8
+    procedure ShowSatelliteInstructions(Action: Cardinal); // @addr $571934
+    procedure DeclineScienceBaseSatellite(Action: Cardinal); // @addr $571B9C
+    procedure DeclineDominionShipConstruction(Action: Cardinal); // @addr $581BE0
+    procedure DeclineDominionImprovement(Action: Cardinal); // @addr $583F00
+    procedure DeclineDominionRepeatImprovement(Action: Cardinal); // @addr $584898
+    procedure DeclineDominionTravel(Action: Cardinal); // @addr $586208
+    procedure DeclineDominionTravelConfirmation(Action: Cardinal); // @addr $58647C
+    procedure DeclineDominionRelocation(Action: Cardinal); // @addr $587438
+    procedure ShowDominionCaptureAnswer(Action: Cardinal); // @addr $588550
+    procedure ShowDominionRanksAnswer(Action: Cardinal); // @addr $588608
+    procedure DeclineDominionWarOperation(Action: Cardinal); // @addr $5895CC
+    procedure DeclineDominionAmbush(Action: Cardinal); // @addr $58A2A0
+    procedure DeclineDominionAssault(Action: Cardinal); // @addr $58AC40
+    procedure BuildDominionWarOptions; // @addr $5874F4
   end;
 
-function GetDominionRelocationCost(Star: TStar): Integer; // @addr $5D7D1C
+function GetDominionRelocationCost(Star: TStar): Integer; // @addr $586908
 
-function ApplyRecentDominionOrderSurcharge(Cost: Single): Integer; // @addr $5D9C0C @ida "int __stdcall $name(float Cost);"
+function ApplyRecentDominionOrderSurcharge(Cost: Single): Integer; // @addr $5886F4 @ida "int __stdcall $name(float Cost);"
 
-function GetConstructionShopCost: Integer; // @addr $5D1C14
-function GetConstructionFreeSpace: Integer; // @addr $5D1CA0
-procedure SelectConstructionItem(Item: TEquipment; Source: Byte); // @addr $5D2CE8
+function GetConstructionShopCost: Integer; // @addr $580D44
+function GetConstructionFreeSpace: Integer; // @addr $580D88
+procedure SelectConstructionItem(Item: TEquipment; Source: Byte); // @addr $581C90
 
-function GetStationBackgroundPath: WideString; // @addr $5A61A8
+function GetStationBackgroundPath: WideString; // @addr $55754C
 
-procedure ResetStationImprovement; // @addr $5A60A8
+procedure ResetStationImprovement; // @addr $557484
 
 var
-  BusinessQuoteSmallAmount: Integer; // @addr 0x88A878
-  BusinessQuoteMediumAmount: Integer; // @addr 0x88A87C
-  BusinessQuoteLargeAmount: Integer; // @addr 0x88A880
-  BusinessQuoteLargeDueTurn: Integer; // @addr 0x88A884
-  BusinessQuoteMediumDueTurn: Integer; // @addr 0x88A888
-  BusinessQuoteSmallDueTurn: Integer; // @addr 0x88A88C
-  BusinessDepositQuoteInterestRate: Single; // @addr 0x88A890
-  NodeExchangeHighPriorityModule: Integer; // @addr $88A894
-  NodeExchangeMediumPriorityModule: Integer; // @addr $88A898
-  NodeExchangeLowPriorityModule: Integer; // @addr $88A89C
-  NodeExchangeHighPriorityCost: Integer; // @addr $88A8A0
-  NodeExchangeMediumPriorityCost: Integer; // @addr $88A8A4
-  NodeExchangeLowPriorityCost: Integer; // @addr $88A8A8
-  StationServiceQuoteCost: Integer; // @addr $88A8AC Shared by allegiance changes and station service quotes.
-  MilitaryTravelDistance: Integer; // @addr $88A8B0 Rounded distance to the military base destination.
-  InvestmentRangerCenterStar: TStar; // @addr $88A8B4
-  InvestmentPirateBaseStar: TStar; // @addr $88A8B8
-  InvestmentMilitaryBaseStar: TStar; // @addr $88A8BC
-  InvestmentScienceBaseStar: TStar; // @addr $88A8C0
-  InvestmentBusinessCenterStar: TStar; // @addr $88A8C4
-  InvestmentMedicalBaseStar: TStar; // @addr $88A8C8
-  InvestmentDefensePlanet: TPlanet; // @addr $88A8CC
-  InvestmentQuoteCosts: array[TCoalitionProject] of Integer; // @addr $88A8D0
-  SelectedResearchSeries: TDominatorSeries; // @addr $88A900
-  NearbyTradeAdviceCost: Integer; // @addr $88A904
-  DistantTradeAdviceCost: Integer; // @addr $88A908
-  PirateProgramQuoteCosts: array[TProgramIndex] of Integer; // @addr $88A90C
-  PirateChameleonQuoteCosts: array[TDominatorSeries] of Integer; // @addr $88A93C
+  BusinessQuoteSmallAmount: Integer; // @addr 0x0081B654
+  BusinessQuoteMediumAmount: Integer; // @addr 0x0081B658
+  BusinessQuoteLargeAmount: Integer; // @addr 0x0081B65C
+  BusinessQuoteLargeDueTurn: Integer; // @addr 0x0081B660
+  BusinessQuoteMediumDueTurn: Integer; // @addr 0x0081B664
+  BusinessQuoteSmallDueTurn: Integer; // @addr 0x0081B668
+  BusinessDepositQuoteInterestRate: Single; // @addr 0x0081B66C
+  NodeExchangeHighPriorityModule: Integer; // @addr $81B670
+  NodeExchangeMediumPriorityModule: Integer; // @addr $81B674
+  NodeExchangeLowPriorityModule: Integer; // @addr $81B678
+  NodeExchangeHighPriorityCost: Integer; // @addr $81B67C
+  NodeExchangeMediumPriorityCost: Integer; // @addr $81B680
+  NodeExchangeLowPriorityCost: Integer; // @addr $81B684
+  StationServiceQuoteCost: Integer; // @addr $81B688 Shared by allegiance changes and station service quotes.
+  MilitaryTravelDistance: Integer; // @addr $81B68C Rounded distance to the military base destination.
+  InvestmentRangerCenterStar: TStar; // @addr $81B690
+  InvestmentPirateBaseStar: TStar; // @addr $81B694
+  InvestmentMilitaryBaseStar: TStar; // @addr $81B698
+  InvestmentScienceBaseStar: TStar; // @addr $81B69C
+  InvestmentBusinessCenterStar: TStar; // @addr $81B6A0
+  InvestmentMedicalBaseStar: TStar; // @addr $81B6A4
+  InvestmentDefensePlanet: TPlanet; // @addr $81B6A8
+  InvestmentQuoteCosts: array[TCoalitionProject] of Integer; // @addr $81B6AC
+  SelectedResearchSeries: TDominatorSeries; // @addr $81B6DC
+  NearbyTradeAdviceCost: Integer; // @addr $81B6E0
+  DistantTradeAdviceCost: Integer; // @addr $81B6E4
+  PirateProgramQuoteCosts: array[TProgramIndex] of Integer; // @addr $81B6E8
+  PirateChameleonQuoteCosts: array[TDominatorSeries] of Integer; // @addr $81B718
   // Shared quote amounts are replaced when opening either banking dialog.
-  StationImprovementItem: TEquipment; // @addr $88A948
-  StationImprovementKind: TImprovementKind; // @addr $88A94C
-  StationImprovementDetail: Integer; // @addr $88A950
-  StationBridgeMode: Byte; // @addr $88A954 0: station services; 1: hull bridge; higher values: custom bridge.
-  ConstructionEquipment: array[t_Hull..t_DefGenerator] of TConstructionEquipment; // @addr $88A958
-  ConstructionWeapons: array[1..5] of TConstructionEquipment; // @addr $88A998
-  DominionTravelQuotes: array[1..4] of TDominionTravelQuote; // @addr $88A9C0
+  StationImprovementItem: TEquipment; // @addr $81B724
+  StationImprovementKind: TImprovementKind; // @addr $81B728
+  StationImprovementDetail: Integer; // @addr $81B72C
+  StationBridgeMode: Byte; // @addr $81B730 0: station services; 1: hull bridge; higher values: custom bridge.
+  ConstructionEquipment: array[t_Hull..t_DefGenerator] of TConstructionEquipment; // @addr $81B734
+  ConstructionWeapons: array[1..5] of TConstructionEquipment; // @addr $81B774
+  DominionTravelQuotes: array[1..4] of TDominionTravelQuote; // @addr $81B79C
 
 implementation
 
 uses aPirate, aWarrior, aGroup, aPlanet, fSelectFace, aGalaxyEvent, fShip2, fGalaxy2, aMyFunction, aRanger, EC_Expression, SysUtils, EC_Str, Globals, GlobalsV, GR_Main, fEquipmentShop, aGalaxy, aPlayer, aShip, Math, Windows, MMSystem, GI_XviD, GI_PanelScrollBar, ThreadCalc, aCalc, Messages, Classes, fTalk, GI_Main, GI_Panel, GI_Image, GI_ScrollBar, aSaveLoad, fSaveManager, fHangar, GI_GraphButton, GI_GAI, aConst, aGalaxyStruct, aRuins;
 
-{ @routine $5A60A8 ResetStationImprovement }
+{ @routine $557484 ResetStationImprovement }
 procedure ResetStationImprovement;
 begin
   StationImprovementItem := nil;
   StationImprovementKind := ikAny;
   StationImprovementDetail := 0;
 end;
-{ @end $5A60A8 }
+{ @end $557484 }
 
-{ @routine $5A60C0 TfRuinsTalk_Create }
+{ @routine $55749C TfRuinsTalk_Create }
 constructor TfRuinsTalk.Create;
 begin
   inherited Create;
   StationPanel := TfPanelRuins.Create;
   LoadPanel := TfPanelLoad.Create;
 end;
-{ @end $5A60C0 }
+{ @end $55749C }
 
-{ @routine $5A612C TfRuinsTalk_Destroy }
+{ @routine $5574F8 TfRuinsTalk_Destroy }
 destructor TfRuinsTalk.Destroy;
 begin
   if StationPanel <> nil then
@@ -377,9 +376,9 @@ begin
   end;
   inherited Destroy;
 end;
-{ @end $5A612C }
+{ @end $5574F8 }
 
-{ @routine $5A61A8 GetStationBackgroundPath }
+{ @routine $55754C GetStationBackgroundPath }
 function GetStationBackgroundPath: WideString;
 var
   Station: TShip;
@@ -388,22 +387,20 @@ begin
   begin
     Result := GetPlayer.RuinsStatusText;
     if Result = '' then Result := GameDataConfig.GetBlockByPath(WideString('CustomBridges.' + IntToStr(StationBridgeMode))).GetParam('BGI');
-  end
+    Exit;
+  end;
+  if GetPlayer <> nil then Station := GetPlayer.DockedTo else Station := nil;
+  if Station = nil then Result := 'Bm.FormRuins.' + GiResourceSuffix + ShipTypeNames[RuinsTalkScreen.StationType].Name + 'bg'
   else
   begin
-    if GetPlayer <> nil then Station := GetPlayer.DockedTo else Station := nil;
-    if Station = nil then Result := 'Bm.FormRuins.' + GiResourceSuffix + ShipTypeNames[RuinsTalkScreen.StationType].Name + 'bg'
-    else
-    begin
-      if Station.TypeNameOverrideKey <> '' then Result := 'Bm.FormRuins.' + GiResourceSuffix + Station.TypeNameOverrideKey + 'bg'
-      else Result := 'Bm.FormRuins.' + GiResourceSuffix + ShipTypeNames[Station.TypeId].Name + OwnerInfo[Station.OwnerId].InternalName + 'bg';
-      if not CacheDataRoot.FileExistsByPath(Result) then Result := 'Bm.FormRuins.' + GiResourceSuffix + ShipTypeNames[Station.TypeId].Name + 'bg';
-    end;
+    if Station.TypeNameOverrideKey <> '' then Result := 'Bm.FormRuins.' + GiResourceSuffix + Station.TypeNameOverrideKey + 'bg'
+    else Result := 'Bm.FormRuins.' + GiResourceSuffix + ShipTypeNames[Station.TypeId].Name + OwnerInfo[Station.OwnerId].InternalName + 'bg';
+    if not CacheDataRoot.FileExistsByPath(Result) then Result := 'Bm.FormRuins.' + GiResourceSuffix + ShipTypeNames[Station.TypeId].Name + 'bg';
   end;
 end;
-{ @end $5A61A8 }
+{ @end $55754C }
 
-{ @routine $5A63F4 TfRuinsTalk_InitializeLayout }
+{ @routine $557774 TfRuinsTalk_InitializeLayout }
 procedure TfRuinsTalk.InitializeLayout;
 var
   ChoiceExtra, TextExtra: Integer;
@@ -426,7 +423,7 @@ begin
   Panel.FindByNameRecursive('ImageBG').SetSize(Classes.Point(GameScreenWidth, GameScreenHeight));
   LargePortraitLayout := False;
   PortraitTableVisible := False;
-  if (Cardinal(GameScreenWidth) >= 1280) and (Cardinal(GameScreenHeight) >= 960) then
+  if (GameScreenWidth >= 1280) and (GameScreenHeight >= 960) then
   begin
     LargePortraitLayout := True;
     PortraitTableVisible := UseTablesForGov;
@@ -473,9 +470,9 @@ begin
   CloseFormButton := GetByName('ButFormClose') as TGraphButtonGI;
   CloseFormButton.UpCallback := CloseRuinsMode;
 end;
-{ @end $5A63F4 }
+{ @end $557774 }
 
-{ @routine $5A6B84 TfRuinsTalk_LayoutStationPortrait }
+{ @routine $557E2C TfRuinsTalk_LayoutStationPortrait }
 procedure TfRuinsTalk.LayoutStationPortrait(Panel: TObjectGI);
 var
   I, HalfWidth, PortraitX, PortraitY, TableY, Bottom, DeltaX, DeltaY: Integer;
@@ -484,8 +481,8 @@ begin
   if Panel = nil then Exit;
   Panel.ReloadFromBlock;
   Panel.SetSize(Classes.Point(GameScreenWidth, GameScreenHeight));
-  HalfWidth := Cardinal(GameScreenWidth) div 2;
-  PortraitY := Cardinal(GameScreenHeight) div 10;
+  HalfWidth := GameScreenWidth div 2;
+  PortraitY := GameScreenHeight div 10;
   TableY := PortraitY + Panel.FindByNameRecursive('Panel_Anim0').ClientSize.Y div 10 * 6;
   if Panel.FindByNameRecursive('Table2') <> nil then
     Bottom := TableY + Round(Min(Panel.FindByNameRecursive('Table').ClientSize.Y * 0.95 + Panel.FindByNameRecursive('Table').LocalPosition.Y,
@@ -493,10 +490,10 @@ begin
   else Bottom := TableY + Round(Panel.FindByNameRecursive('Table').ClientSize.Y * 0.95 + Panel.FindByNameRecursive('Table').LocalPosition.Y);
   DeltaX := Panel.FindByNameRecursive('Panel_Anim0').LocalPosition.X - Panel.FindByNameRecursive('Panel_Anim1').LocalPosition.X;
   DeltaY := Panel.FindByNameRecursive('Panel_Anim0').ClientSize.Y - Panel.FindByNameRecursive('Panel_Anim1').ClientSize.Y;
-  if GameScreenHeight > Bottom then
+  if Integer(GameScreenHeight) > Bottom then
   begin
-    PortraitY := PortraitY + GameScreenHeight - Bottom;
-    TableY := TableY + GameScreenHeight - Bottom;
+    PortraitY := PortraitY + Integer(GameScreenHeight) - Bottom;
+    TableY := TableY + Integer(GameScreenHeight) - Bottom;
   end;
   Table := Panel.FindByNameRecursive('Table');
   Table.SetPosition(Classes.Point((HalfWidth - Table.ClientSize.X) div 2 + HalfWidth + Table.LocalPosition.X, Table.LocalPosition.Y + TableY));
@@ -519,16 +516,16 @@ begin
   StationTransientControl := Panel;
   StationTransientControl.SetActive(True);
 end;
-{ @end $5A6B84 }
+{ @end $557E2C }
 
-{ @routine $5A70D8 TfRuinsTalk_HideStationTransientControl }
+{ @routine $5582E8 TfRuinsTalk_HideStationTransientControl }
 procedure TfRuinsTalk.HideStationTransientControl;
 begin
   if StationTransientControl <> nil then StationTransientControl.SetActive(False);
 end;
-{ @end $5A70D8 }
+{ @end $5582E8 }
 
-{ @routine $5A7100 TfRuinsTalk_OnOpen }
+{ @routine $5582FC TfRuinsTalk_OnOpen }
 procedure TfRuinsTalk.OnOpen;
 var
   Owner: TOwnerId; Kind: TStationType;
@@ -586,7 +583,7 @@ begin
       Background.SetImageKindY(ikyCenter);
     end;
     Stage := 9;
-    (GetByName('ImageBG') as TImageGI).SetImagePath('GI,' + GetStationBackgroundPath);
+    (GetByName('ImageBG') as TImageGI).ImageSourcePath := 'GI,' + GetStationBackgroundPath;
     Stage := 10;
     I_Start;
     Stage := 11;
@@ -696,9 +693,9 @@ begin
     end;
   end;
 end;
-{ @end $5A7100 }
+{ @end $5582FC }
 
-{ @routine $5A7D4C TfRuinsTalk_OnClose }
+{ @routine $558EA8 TfRuinsTalk_OnClose }
 procedure TfRuinsTalk.OnClose;
 begin
   Galaxy.CheckIntegrityChecksum(181);
@@ -714,25 +711,25 @@ begin
   SetLength(ResearchItemVisited, 0);
   SetLength(ResearchItemIndexes, 0);
 end;
-{ @end $5A7D4C }
+{ @end $558EA8 }
 
-{ @routine $5A7FA0 TfRuinsTalk_SortResearchItems }
+{ @routine $559080 TfRuinsTalk_SortResearchItems }
 function TfRuinsTalk.SortResearchItems(Series: TDominatorSeries): Integer;
 var
   I, Count, BestIndex, SortedCount: Integer;
   Item: TEquipment;
   BestKey, Key: TResearchItemSortKey;
 
-  // @nested $5A7E14 ClearResearchItemSortKey
-  procedure ClearResearchItemSortKey(var Key: TResearchItemSortKey); // @addr $5A7E14 @calls "0x5A8049"
+  // @nested $558F5C ClearResearchItemSortKey
+  procedure ClearResearchItemSortKey(var Key: TResearchItemSortKey); // @addr $558F5C @calls "0x0055910E"
   begin
     Key.Cost := 0;
     Key.Priority := 0;
     Key.Weight := 0;
   end;
 
-  // @nested $5A7E34 MakeResearchItemSortKey
-  function MakeResearchItemSortKey(Item: TEquipment): TResearchItemSortKey; // @addr $5A7E34 @calls "0x5A8095"
+  // @nested $558F6C MakeResearchItemSortKey
+  function MakeResearchItemSortKey(Item: TEquipment): TResearchItemSortKey; // @addr $558F6C @calls "0x00559146"
   begin
     Result.Cost := Item.Cost;
     Result.Weight := Item.Weight;
@@ -749,8 +746,8 @@ var
     end;
   end;
 
-  // @nested $5A7F14 CompareResearchItemSortKeys
-  function CompareResearchItemSortKeys(Left, Right: TResearchItemSortKey): Integer; // @addr $5A7F14 @calls "0x5A80CC"
+  // @nested $559010 CompareResearchItemSortKeys
+  function CompareResearchItemSortKeys(Left, Right: TResearchItemSortKey): Integer; // @addr $559010 @calls "0x00559176"
   begin
     Result := 0;
     if Right.Priority > Left.Priority then Result := 1
@@ -799,9 +796,9 @@ begin
   until BestIndex < 0;
   Result := Count;
 end;
-{ @end $5A7FA0 }
+{ @end $559080 }
 
-{ @routine $5A813C TfRuinsTalk_IsResearchItemQuestLetter }
+{ @routine $5591D4 TfRuinsTalk_IsResearchItemQuestLetter }
 function TfRuinsTalk.IsResearchItemQuestLetter(Item: TItem): Boolean;
 var
   I: Integer;
@@ -816,9 +813,9 @@ begin
         if LocalizedColorText(WideString('Quest.SendLetter.' + IntToStr(Quest.QuestNumber) + '.SysName')) = (Item as TUselessItem).ConfigBlockName then Result := True;
     end;
 end;
-{ @end $5A813C }
+{ @end $5591D4 }
 
-{ @routine $5A82A0 TfRuinsTalk_CountResearchRemains }
+{ @routine $559314 TfRuinsTalk_CountResearchRemains }
 function TfRuinsTalk.CountResearchRemains(Series: TDominatorSeries; Count: Integer): Integer;
 var
   Matches, I, Index: Integer;
@@ -830,14 +827,13 @@ begin
     Index := ResearchItemIndexes[I];
     if Index < 0 then Break;
     Item := GetPlayer.Inventory[Index];
-    if (Item.DominatorSeries = Series) and (Item is TUselessItem) then
-      if (Item as TUselessItem).IsDominatorRemains and not IsResearchItemQuestLetter(Item) then Inc(Matches);
+    if ((Item.DominatorSeries = Series) and (Item is TUselessItem)) and ((Item as TUselessItem).IsDominatorRemains and not IsResearchItemQuestLetter(Item)) then Inc(Matches);
   end;
   Result := Matches;
 end;
-{ @end $5A82A0 }
+{ @end $559314 }
 
-{ @routine $5A8354 TfRuinsTalk_CountResearchEquipment }
+{ @routine $5593A4 TfRuinsTalk_CountResearchEquipment }
 function TfRuinsTalk.CountResearchEquipment(Count: Integer): Integer;
 var
   Matches, I, Index: Integer;
@@ -853,9 +849,9 @@ begin
   end;
   Result := Matches;
 end;
-{ @end $5A8354 }
+{ @end $5593A4 }
 
-{ @routine $5A83EC TfRuinsTalk_BuildResearchItemChoices }
+{ @routine $559410 TfRuinsTalk_BuildResearchItemChoices }
 procedure TfRuinsTalk.BuildResearchItemChoices(Series: TDominatorSeries; var Text: WideString);
 var
   I, Count, Index, Number: Integer;
@@ -886,9 +882,9 @@ begin
   end;
   Text := Items;
 end;
-{ @end $5A83EC }
+{ @end $559410 }
 
-{ @routine $5A899C TfRuinsTalk_EndTurnClicked }
+{ @routine $559988 TfRuinsTalk_EndTurnClicked }
 procedure TfRuinsTalk.EndTurnClicked(Sender: TObjectGI);
 begin
   if (GetPlayer = nil) or (GetPlayer.PendingDockDialogue > 1) or (StationBridgeMode > 0) or (GetPlayer.QueuedTravelTarget <> nil) then Exit;
@@ -924,9 +920,9 @@ begin
     MainPanel.RebuildMessageButtons(False);
   end;
 end;
-{ @end $5A899C }
+{ @end $559988 }
 
-{ @routine $5A8C24 TfRuinsTalk_ShipClicked }
+{ @routine $559BF4 TfRuinsTalk_ShipClicked }
 procedure TfRuinsTalk.ShipClicked(Sender: TObjectGI);
 begin
   if LoadPanel.IsAnimatingShutters then Exit;
@@ -940,16 +936,16 @@ begin
     MainPanel.RebuildMessageButtons(False);
   end;
 end;
-{ @end $5A8C24 }
+{ @end $559BF4 }
 
-{ @routine $5A8CAC TfRuinsTalk_RememberChoiceScroll }
+{ @routine $559C68 TfRuinsTalk_RememberChoiceScroll }
 procedure TfRuinsTalk.RememberChoiceScroll;
 begin
   SavedChoiceScroll := (GetByName('TalkPA') as TPanelScrollBarGI).VerticalScrollBar.Position;
 end;
-{ @end $5A8CAC }
+{ @end $559C68 }
 
-{ @routine $5A8CF8 TfRuinsTalk_ClearChoices }
+{ @routine $559CAC TfRuinsTalk_ClearChoices }
 procedure TfRuinsTalk.ClearChoices;
 var
   Child: TObjectGI;
@@ -982,27 +978,27 @@ begin
     end;
   end;
 end;
-{ @end $5A8CF8 }
+{ @end $559CAC }
 
-{ @routine $5A8EF8 TfRuinsTalk_AddChoice }
-procedure TfRuinsTalk.AddChoice(Text: WideString; Value: Integer; Callback: TDialogChoiceEventGI);
+{ @routine $559E88 TfRuinsTalk_AddChoice }
+procedure TfRuinsTalk.AddChoice(CaptionText: WideString; Value: Cardinal; Callback: TDialogChoiceEventGI);
 var Panel: TPanelScrollBarGI; Choice: TfTalkA; I: Integer; Row: TPanelGI;
   Highlight: TImageGI; BlockMode: Byte;
 begin
   BlockMode := 0;
   if ScriptDialogBlocks <> nil then
     for I := 0 to ScriptDialogBlocks.Count - 1 do
-      if FindTextOffsetW(Text, PScriptDialogBlock(ScriptDialogBlocks[I]).Text) >= 0 then
+      if FindTextOffsetW(CaptionText, PScriptDialogBlock(ScriptDialogBlocks[I]).Text) >= 0 then
         BlockMode := Max(BlockMode, PScriptDialogBlock(ScriptDialogBlocks[I]).Mode);
   if BlockMode >= 2 then Exit;
   Panel := GetByName('TalkPA') as TPanelScrollBarGI;
   I := 0;
-  while I < Length(Text) do
+  while I < Length(CaptionText) do
   begin
-    if (Text[I + 1] <> '-') and (Text[I + 1] <> ' ') then Break;
+    if (CaptionText[I + 1] <> '-') and (CaptionText[I + 1] <> ' ') then Break;
     Inc(I);
   end;
-  if I > 0 then Text := Copy(Text, I + 1, Length(Text) - I);
+  if I > 0 then CaptionText := Copy(CaptionText, I + 1, Length(CaptionText) - I);
   Choice := TfTalkA.Create;
   Choice.Callback := Callback;
   Choice.Value := Value;
@@ -1010,7 +1006,7 @@ begin
   Row := TPanelGI.Create(Panel);
   Row.UserValue := Integer(Choice);
   Row.SetPosition(Point(0, ChoiceHeight));
-  Row.SetSize(Point(Panel.ClientSize.X, 20));
+  Row.ObjectSize := Point(Panel.ClientSize.X, 20);
   Row.SetPositionModeW(True);
   Row.MouseEnterCallback := ChoiceMouseEnter;
   Row.MouseLeaveCallback := ChoiceMouseLeave;
@@ -1019,65 +1015,65 @@ begin
   Highlight := TImageGI.Create(Row);
   Highlight.SetDepth(3);
   Highlight.SetPosition(Point(0, 0));
-  Highlight.SetSize(Point(Panel.ClientSize.X, 20));
+  Highlight.ObjectSize := Point(Panel.ClientSize.X, 20);
   Highlight.SetImagePath('GI,Bm.FormGov2.' + GiResourceSuffix + 'Line');
   Highlight.SetImageKindX(ikxLeftFill);
   Highlight.SetImageKindY(ikyTopFill);
   Highlight.SetActive(False);
   with TLabelGI.Create(Row) do
   begin
-  if FontDialog = 0 then SetFontName(NormalFontName)
-  else if FontDialog = 1 then SetFontName(SmoothBigFontName)
-  else if FontDialog = 2 then SetFontName(SmoothHugeFontName)
-  else if FontDialog >= 3 then SetFontName(SmoothIntroFontName);
-  SetSize(Point(Panel.ClientSize.X - GiScalePixels(20), 1));
-  SetPosition(Point(GiScalePixels(10), 0));
-  SetWordWrapEnabled(True);
-  SetTextAlignX(taxLeft);
-  SetTextAlignY(tayAuto);
-  if not Assigned(Callback) then Text := RemoveTextTagsW(Text);
-  SetText('<Object=0,20,14,0>' + ReplaceAllWideString(Text, TextHighlightColorTag, DialogHighlightColorTag));
-  SetTextColor(CurrentPixelFormat.PackRgbBytes(0, 0, 0));
-  if not Assigned(Choice.Callback) then SetTextColor(CurrentPixelFormat.PackRgbBytes(127, 127, 127));
-  CreateEmbeddedControl := CreateChoiceBullet;
-  SetTextAlignY(tayCenterEx);
-  Row.SetSize(Point(Row.ClientSize.X, ClientSize.Y + 2 * GiScalePixelsEx(2, 2)));
-  SetSize(Point(ClientSize.X, Row.ClientSize.Y));
-  Highlight.SetSize(Row.ClientSize);
-  Inc(ChoiceHeight, ClientSize.Y);
+    if FontDialog = 0 then SetFontName(NormalFontName)
+    else if FontDialog = 1 then SetFontName(SmoothBigFontName)
+    else if FontDialog = 2 then SetFontName(SmoothHugeFontName)
+    else if FontDialog >= 3 then SetFontName(SmoothIntroFontName);
+    ObjectSize := Point(Panel.ClientSize.X - GiScalePixels(20), 1);
+    SetPosition(Point(GiScalePixels(10), 0));
+    SetWordWrapEnabled(True);
+    SetTextAlignX(taxLeft);
+    SetTextAlignY(tayAuto);
+    if not Assigned(Callback) then CaptionText := RemoveTextTagsW(CaptionText);
+    Text := '<Object=0,20,14,0>' + ReplaceAllWideString(CaptionText, TextHighlightColorTag, DialogHighlightColorTag);
+    SetTextColor(CurrentPixelFormat.PackRgbBytes(0, 0, 0));
+    if not Assigned(Choice.Callback) then SetTextColor(CurrentPixelFormat.PackRgbBytes(127, 127, 127));
+    CreateEmbeddedControl := CreateChoiceBullet;
+    SetTextAlignY(tayCenterEx);
+    Row.ObjectSize := Point(Row.ClientSize.X, ClientSize.Y + 2 * GiScalePixelsEx(2, 2));
+    ObjectSize := Point(ClientSize.X, Row.ClientSize.Y);
+    Highlight.ObjectSize := Row.ClientSize;
+    Inc(ChoiceHeight, ClientSize.Y);
   end;
 end;
-{ @end $5A8EF8 }
+{ @end $559E88 }
 
-{ @routine $5A94C4 TfRuinsTalk_ChoiceMouseEnter }
+{ @routine $55A3E0 TfRuinsTalk_ChoiceMouseEnter }
 procedure TfRuinsTalk.ChoiceMouseEnter(Sender: TObjectGI);
 begin
   Sender.FirstChild.SetActive(True);
 end;
-{ @end $5A94C4 }
+{ @end $55A3E0 }
 
-{ @routine $5A94E4 TfRuinsTalk_ChoiceMouseLeave }
+{ @routine $55A3EC TfRuinsTalk_ChoiceMouseLeave }
 procedure TfRuinsTalk.ChoiceMouseLeave(Sender: TObjectGI);
 begin
   Sender.FirstChild.SetActive(False);
 end;
-{ @end $5A94E4 }
+{ @end $55A3EC }
 
-{ @routine $5A9504 TfRuinsTalk_ChoiceMouseDown }
+{ @routine $55A3F8 TfRuinsTalk_ChoiceMouseDown }
 procedure TfRuinsTalk.ChoiceMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint);
 begin
   if (Sender.FirstChild <> nil) and (Sender.FirstChild.NextSibling <> nil) and
-     (Sender.FirstChild.NextSibling.FirstChild <> nil) and (Sender.FirstChild.NextSibling.FirstChild.FirstChild <> nil) then
+    (Sender.FirstChild.NextSibling.FirstChild <> nil) and (Sender.FirstChild.NextSibling.FirstChild.FirstChild <> nil) then
     Sender.FirstChild.NextSibling.FirstChild.FirstChild.SetPosition(Classes.Point(2, 0));
 end;
-{ @end $5A9504 }
+{ @end $55A3F8 }
 
-{ @routine $5A9584 TfRuinsTalk_ChoiceMouseUp }
+{ @routine $55A458 TfRuinsTalk_ChoiceMouseUp }
 procedure TfRuinsTalk.ChoiceMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint);
 var Choice: TfTalkA;
 begin
   if (Sender.FirstChild <> nil) and (Sender.FirstChild.NextSibling <> nil) and
-     (Sender.FirstChild.NextSibling.FirstChild <> nil) and (Sender.FirstChild.NextSibling.FirstChild.FirstChild <> nil) then
+    (Sender.FirstChild.NextSibling.FirstChild <> nil) and (Sender.FirstChild.NextSibling.FirstChild.FirstChild <> nil) then
     Sender.FirstChild.NextSibling.FirstChild.FirstChild.SetPosition(Classes.Point(0, 0));
   if LoadPanel.IsAnimatingShutters then Exit;
   Galaxy.CheckIntegrityChecksum(184);
@@ -1095,25 +1091,25 @@ begin
   MainPanel.RebuildMessageButtons(False);
   BreakUiMessage;
 end;
-{ @end $5A9584 }
+{ @end $55A458 }
 
-{ @routine $5A96B8 TfRuinsTalk_RestartTextPresentation }
+{ @routine $55A550 TfRuinsTalk_RestartTextPresentation }
 procedure TfRuinsTalk.RestartTextPresentation;
 begin
   ResetPortraitCycle;
   (GetByName('TalkPA') as TPanelScrollBarGI).SetActive(False);
   PresentedTextLength := 0;
-  if TextPresentationTimer <> nil then
+  if TextPresentationTimer <> 0 then
   begin
     CancelCallbackTimer(TextPresentationTimer);
-    TextPresentationTimer := nil;
+    TextPresentationTimer := 0;
   end;
   TextPresentationTimer := ScheduleCallbackTimer(10, 10, AdvanceTextPresentation);
 end;
-{ @end $5A96B8 }
+{ @end $55A550 }
 
-{ @routine $5A9758 TfRuinsTalk_AdvanceTextPresentation }
-procedure TfRuinsTalk.AdvanceTextPresentation(Timer: PCallbackTimerGI; UserData: Integer);
+{ @routine $55A5D0 TfRuinsTalk_AdvanceTextPresentation }
+procedure TfRuinsTalk.AdvanceTextPresentation(Timer: TCallbackTimerIdGI; UserData: Cardinal);
 var Choices, TextPanel: TPanelScrollBarGI;
 begin
   if PresentedTextLength >= Length(DialogText) then
@@ -1128,10 +1124,10 @@ begin
     Choices.VerticalScrollBar.SetDepth(4);
     Choices.SetDragScrollingEnabled(Choices.VerticalScrollBar.Active);
     Choices.UpdateScrollRanges;
-    if TextPresentationTimer <> nil then
+    if TextPresentationTimer <> 0 then
     begin
       CancelCallbackTimer(TextPresentationTimer);
-      TextPresentationTimer := nil;
+      TextPresentationTimer := 0;
     end;
     if SavedChoiceScroll >= 0 then Choices.VerticalScrollBar.SetPosition(SavedChoiceScroll);
     SavedChoiceScroll := -1;
@@ -1144,7 +1140,7 @@ begin
     DialogText := ReplaceAllWideString(DialogText, #13#10, #13#10 + LocalizedTextLinePrefix);
     PresentedTextLength := Length(DialogText);
     DialogText := ReplaceAllWideString(DialogText, TextHighlightColorTag, DialogHighlightColorTag);
-    (GetByName('TalkText') as TLabelGI).SetText(DialogText);
+    (GetByName('TalkText') as TLabelGI).Text := DialogText;
     TextPanel := GetByName('TextScroll') as TPanelScrollBarGI;
     TextPanel.SetScrollOffset(Point(0, 0));
     TextPanel.UpdateScrollRanges;
@@ -1155,16 +1151,16 @@ begin
     (GetByName('UserMsgAdd') as TGraphButtonGI).SetDisabled(False);
   end;
 end;
-{ @end $5A9758 }
+{ @end $55A5D0 }
 
-{ @routine $5A9BCC TfRuinsTalk_ResetPortraitCycle }
+{ @routine $55A9B8 TfRuinsTalk_ResetPortraitCycle }
 procedure TfRuinsTalk.ResetPortraitCycle;
 begin
   NextPortraitCycleAlternate := True;
 end;
-{ @end $5A9BCC }
+{ @end $55A9B8 }
 
-{ @routine $5A9BE0 TfRuinsTalk_PortraitCycleComplete }
+{ @routine $55A9C0 TfRuinsTalk_PortraitCycleComplete }
 procedure TfRuinsTalk.PortraitCycleComplete(Sender: TObjectGI);
 begin
   if NextPortraitCycleAlternate then
@@ -1174,9 +1170,9 @@ begin
   end
   else SelectPortraitAnimation(False);
 end;
-{ @end $5A9BE0 }
+{ @end $55A9C0 }
 
-{ @routine $5A9C1C TfRuinsTalk_SelectPortraitAnimation }
+{ @routine $55A9EC TfRuinsTalk_SelectPortraitAnimation }
 procedure TfRuinsTalk.SelectPortraitAnimation(Alternate: Boolean);
 var HdNormal, HdAlternate, Normal, AlternateAnimation: TgaiGI;
 begin
@@ -1212,9 +1208,9 @@ begin
     AlternateAnimation.SetActive(Alternate);
   end;
 end;
-{ @end $5A9C1C }
+{ @end $55A9EC }
 
-{ @routine $5A9E90 TfRuinsTalk_CreateChoiceBullet }
+{ @routine $55AC10 TfRuinsTalk_CreateChoiceBullet }
 function TfRuinsTalk.CreateChoiceBullet(LabelControl: TLabelGI; Item: PFontObjectEC): TObjectGI;
 var Image: TImageGI;
 begin
@@ -1223,9 +1219,9 @@ begin
   Image.SetImagePath('GI,Bm.FormGov2.' + GiResourceSuffix + 'Answer');
   Image.SetImageKindX(ikxLeft);
 end;
-{ @end $5A9E90 }
+{ @end $55AC10 }
 
-{ @routine $5A9F74 TfRuinsTalk_ProcessMouseWheel }
+{ @routine $55ACE0 TfRuinsTalk_ProcessMouseWheel }
 procedure TfRuinsTalk.ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer);
 var
   Panel: TPanelScrollBarGI;
@@ -1235,9 +1231,9 @@ begin
   if Delta = WHEEL_DELTA then Panel.VerticalScrollBar.SetPosition(Panel.VerticalScrollBar.Position - Panel.VerticalScrollBar.SmallChange)
   else if Delta = -WHEEL_DELTA then Panel.VerticalScrollBar.SetPosition(Panel.VerticalScrollBar.Position + Panel.VerticalScrollBar.SmallChange);
 end;
-{ @end $5A9F74 }
+{ @end $55ACE0 }
 
-{ @routine $5AA06C TfRuinsTalk_MainPanelKeyDown }
+{ @routine $55ADA8 TfRuinsTalk_MainPanelKeyDown }
 procedure TfRuinsTalk.MainPanelKeyDown(Sender: TObjectGI; Key: Cardinal);
 var
   Panel: TPanelScrollBarGI;
@@ -1265,14 +1261,14 @@ begin
     StationPanel.ProcessKeyDown(Key);
   end;
 end;
-{ @end $5AA06C }
+{ @end $55ADA8 }
 
-{ @routine $5AA2B4 TfRuinsTalk_AddMessageClicked }
+{ @routine $55AF7C TfRuinsTalk_AddMessageClicked }
 procedure TfRuinsTalk.AddMessageClicked(Sender: TObjectGI);
 var
   Text: WideString;
 begin
-  Text := (GetByName('TalkText') as TLabelGI).GetText;
+  Text := (GetByName('TalkText') as TLabelGI).Text;
   Text := ReplaceAllWideString(Text, DialogHighlightColorTag, TextHighlightColorTag);
   (Sender as TGraphButtonGI).SetDisabled(True);
   SoundManager.PlaySound('Sound.UserMsgAdd');
@@ -1280,10 +1276,10 @@ begin
   MainPanel.RebuildMessageButtons(False);
   BreakUiMessage;
 end;
-{ @end $5AA2B4 }
+{ @end $55AF7C }
 
-{ @routine $5AA424 TfRuinsTalk_AdvanceScriptVideo }
-procedure TfRuinsTalk.AdvanceScriptVideo(Timer: PCallbackTimerGI; UserData: Integer);
+{ @routine $55B0E0 TfRuinsTalk_AdvanceScriptVideo }
+procedure TfRuinsTalk.AdvanceScriptVideo(Timer: TCallbackTimerIdGI; UserData: Cardinal);
 var Progress: Double; Film: TxvidGI;
 begin
   Progress := (timeGetTime - ScriptVideoStartedAt) / 138000;
@@ -1292,22 +1288,22 @@ begin
   Film.SetFramePosition(Round(3449 * Progress));
   if Progress >= 1 then StopScriptVideo(False);
 end;
-{ @end $5AA424 }
+{ @end $55B0E0 }
 
-{ @routine $5AA4E0 TfRuinsTalk_StopScriptVideo }
+{ @routine $55B190 TfRuinsTalk_StopScriptVideo }
 function TfRuinsTalk.StopScriptVideo(Unused: Boolean): Boolean;
 var Film: TxvidGI;
 begin
-  Result := ScriptVideoTimer <> nil;
+  Result := ScriptVideoTimer <> 0;
   if MusicEnabled and Result then
   begin
     MusicManager.StopImmediately;
     while MusicManager.IsPlaying do SysUtils.Sleep(1);
   end;
-  if ScriptVideoTimer <> nil then
+  if ScriptVideoTimer <> 0 then
   begin
     CancelCallbackTimer(ScriptVideoTimer);
-    ScriptVideoTimer := nil;
+    ScriptVideoTimer := 0;
   end;
   Film := GetByName('Film') as TxvidGI;
   Film.ImageClose;
@@ -1315,17 +1311,17 @@ begin
   InvalidateViewport;
   if Result and (QueuedVideos.Count > 0) then CompleteQueuedVideo(2);
 end;
-{ @end $5AA4E0 }
+{ @end $55B190 }
 
-{ @routine $5AA5BC TfRuinsTalk_ProcessWindowMessage }
+{ @routine $55B24C TfRuinsTalk_ProcessWindowMessage }
 procedure TfRuinsTalk.ProcessWindowMessage(Message, WParam: Cardinal; LParam: Integer);
 begin
   if ((Message <> WM_LBUTTONDOWN) and (Message <> WM_RBUTTONDOWN) and (Message <> WM_MBUTTONDOWN) and (Message <> WM_KEYDOWN)) or not StopScriptVideo(False) then
     inherited ProcessWindowMessage(Message, WParam, LParam);
 end;
-{ @end $5AA5BC }
+{ @end $55B24C }
 
-{ @routine $5AA618 TfRuinsTalk_SelectMusic }
+{ @routine $55B29C TfRuinsTalk_SelectMusic }
 procedure TfRuinsTalk.SelectMusic;
 var
   Name: WideString;
@@ -1372,9 +1368,9 @@ begin
     else MusicManager.PlayCategory('Nation.' + OwnerInfo[GetPlayer.CurrentPlanet.OwnerId].InternalName);
   end;
 end;
-{ @end $5AA618 }
+{ @end $55B29C }
 
-{ @routine $5AA9D8 TfRuinsTalk_I_Start }
+{ @routine $55B660 TfRuinsTalk_I_Start }
 procedure TfRuinsTalk.I_Start;
 var
   Stage: Integer;
@@ -1403,17 +1399,18 @@ begin
     end;
   end;
 end;
-{ @end $5AA9D8 }
+{ @end $55B660 }
 
-{ @routine $5AABA4 TfRuinsTalk_ShowDominatorVictoryDialog }
+{ @routine $55B818 TfRuinsTalk_ShowDominatorVictoryDialog }
 function TfRuinsTalk.ShowDominatorVictoryDialog: Boolean;
 var
   MessageEntry: TMessagePlayer;
   Variant: Integer;
 begin
   Result := False;
-  if (Galaxy.TerronSeriesResolvedTurn <> 0) or (Galaxy.KellerSeriesResolvedTurn <> 0) or (Galaxy.BlazerSeriesResolvedTurn <> 0) then
+  while True do
   begin
+    if (Galaxy.TerronSeriesResolvedTurn = 0) and (Galaxy.KellerSeriesResolvedTurn = 0) and (Galaxy.BlazerSeriesResolvedTurn = 0) then Break;
     MessageEntry := FindPlayerBubbleByKey('BlazerWin', False);
     if (MessageEntry <> nil) and (MessageEntry.Kind = pmQuestActive) then
     begin
@@ -1429,70 +1426,70 @@ begin
       DialogText := DialogText + #13#10 + ' ' + #13#10 + ReplaceColoredToken(LocalizedColorText('FormRuinsRC.Win.Reward'), '<Reward>', GetPlayer.AwardRandomMedal, TextHighlightColorTag);
       ClearChoices;
       AddChoice('- ' + LocalizedColorText('FormRuinsRC.Continue'), 0, ContinueDominatorVictoryDialog);
-    end
-    else
+      Break;
+    end;
+    MessageEntry := FindPlayerBubbleByKey('KellerWin', False);
+    if (MessageEntry <> nil) and (MessageEntry.Kind = pmQuestActive) then
     begin
-      MessageEntry := FindPlayerBubbleByKey('KellerWin', False);
-      if (MessageEntry <> nil) and (MessageEntry.Kind = pmQuestActive) then
-      begin
-        MessageEntry.Kind := pmQuestSucceeded;
-        MessageEntry.WasRead := False;
-        Result := True;
-        if KellerShip = nil then Variant := 1 else Variant := 2;
-        DialogText := ReplaceColoredToken(LocalizedColorText('FormRuinsRC.Win.Keller' + IntToStr(Variant)), '<Date>', FormatGameTurnDate(Galaxy.KellerSeriesResolvedTurn), TextHighlightColorTag);
-        DialogText := DialogText + #13#10 + ' ' + #13#10 + ReplaceColoredToken(LocalizedColorText('FormRuinsRC.Win.Reward'), '<Reward>', GetPlayer.AwardRandomMedal, TextHighlightColorTag);
-        ClearChoices;
-        AddChoice('- ' + LocalizedColorText('FormRuinsRC.Continue'), 0, ContinueDominatorVictoryDialog);
-      end
+      MessageEntry.Kind := pmQuestSucceeded;
+      MessageEntry.WasRead := False;
+      Result := True;
+      if KellerShip = nil then Variant := 1 else Variant := 2;
+      DialogText := ReplaceColoredToken(LocalizedColorText('FormRuinsRC.Win.Keller' + IntToStr(Variant)), '<Date>', FormatGameTurnDate(Galaxy.KellerSeriesResolvedTurn), TextHighlightColorTag);
+      DialogText := DialogText + #13#10 + ' ' + #13#10 + ReplaceColoredToken(LocalizedColorText('FormRuinsRC.Win.Reward'), '<Reward>', GetPlayer.AwardRandomMedal, TextHighlightColorTag);
+      ClearChoices;
+      AddChoice('- ' + LocalizedColorText('FormRuinsRC.Continue'), 0, ContinueDominatorVictoryDialog);
+      Break;
+    end;
+    MessageEntry := FindPlayerBubbleByKey('TerronWin', False);
+    if (MessageEntry <> nil) and (MessageEntry.Kind = pmQuestActive) then
+    begin
+      MessageEntry.Kind := pmQuestSucceeded;
+      MessageEntry.WasRead := False;
+      Result := True;
+      if Galaxy.TerronToStarTurn <> 0 then Variant := 1
+      else if Galaxy.TerronWeaponLockTurn <> 0 then Variant := 2
+      else if Galaxy.TerronGrowLockTurn <> 0 then Variant := 3
+      else if Galaxy.TerronLandingLockTurn <> 0 then Variant := 4
       else
       begin
-        MessageEntry := FindPlayerBubbleByKey('TerronWin', False);
-        if (MessageEntry <> nil) and (MessageEntry.Kind = pmQuestActive) then
+        if TerronShip = nil then Variant := 5
+        else
         begin
-          MessageEntry.Kind := pmQuestSucceeded;
-          MessageEntry.WasRead := False;
-          Result := True;
-          if Galaxy.TerronToStarTurn <> 0 then Variant := 1
-          else if Galaxy.TerronWeaponLockTurn <> 0 then Variant := 2
-          else if Galaxy.TerronGrowLockTurn <> 0 then Variant := 3
-          else if Galaxy.TerronLandingLockTurn <> 0 then Variant := 4
-          else
-          begin
-            if TerronShip = nil then Variant := 5
-            else
-            begin
-              Variant := 1;
-              RaiseWideMessage('Terron status');
-            end;
-          end;
-          DialogText := ReplaceColoredToken(LocalizedColorText('FormRuinsRC.Win.Terron' + IntToStr(Variant)), '<Date>', FormatGameTurnDate(Galaxy.TerronSeriesResolvedTurn), TextHighlightColorTag);
-          if (Variant = 1) and (TerronShip <> nil) and (TerronShip.CurrentStar <> nil) then
-            DialogText := ReplaceColoredToken(DialogText, '<Star>', TerronShip.CurrentStar.Name, TextHighlightColorTag);
-          DialogText := DialogText + #13#10 + ' ' + #13#10 + ReplaceColoredToken(LocalizedColorText('FormRuinsRC.Win.Reward'), '<Reward>', GetPlayer.AwardRandomMedal, TextHighlightColorTag);
-          ClearChoices;
-          AddChoice('- ' + LocalizedColorText('FormRuinsRC.Continue'), 0, ContinueDominatorVictoryDialog);
+          Variant := 1;
+          RaiseWideMessage('Terron status');
         end;
       end;
+      DialogText := ReplaceColoredToken(LocalizedColorText('FormRuinsRC.Win.Terron' + IntToStr(Variant)), '<Date>', FormatGameTurnDate(Galaxy.TerronSeriesResolvedTurn), TextHighlightColorTag);
+      if (Variant = 1) and (TerronShip <> nil) and (TerronShip.CurrentStar <> nil) then
+        DialogText := ReplaceColoredToken(DialogText, '<Star>', TerronShip.CurrentStar.Name, TextHighlightColorTag);
+      DialogText := DialogText + #13#10 + ' ' + #13#10 + ReplaceColoredToken(LocalizedColorText('FormRuinsRC.Win.Reward'), '<Reward>', GetPlayer.AwardRandomMedal, TextHighlightColorTag);
+      ClearChoices;
+      AddChoice('- ' + LocalizedColorText('FormRuinsRC.Continue'), 0, ContinueDominatorVictoryDialog);
+      Break;
     end;
+    Break;
   end;
 end;
-{ @end $5AABA4 }
+{ @end $55B818 }
 
-{ @routine $5AB3E4 TfRuinsTalk_ContinueDominatorVictoryDialog }
-procedure TfRuinsTalk.ContinueDominatorVictoryDialog(Action: Integer);
+{ @routine $55BFD8 TfRuinsTalk_ContinueDominatorVictoryDialog }
+procedure TfRuinsTalk.ContinueDominatorVictoryDialog(Action: Cardinal);
 begin
   if not ShowDominatorVictoryDialog then I_Start;
 end;
-{ @end $5AB3E4 }
+{ @end $55BFD8 }
 
-{ @routine $5AB408 TfRuinsTalk_M_Main }
+{ @routine $55BFF0 TfRuinsTalk_M_Main }
 procedure TfRuinsTalk.M_Main(KeepText: Boolean);
 const AllSeries = [dsBlazer, dsKeller, dsTerron];
 var
   Script: TScript;
   Text, Prefix: WideString;
   Item: TItem;
-  I, J, SelectedIndex, BestPriority, ModuleIndex, Place, ExcludedBefore, RangerCount, Parts: Integer;
+  I, J, SelectedIndex: Integer;
+  UnusedLocal: Integer; // Existing native frame gap before BestPriority; original type unknown.
+  BestPriority, ModuleIndex, Place, ExcludedBefore, RangerCount, Parts: Integer;
   Ranger: TRanger;
   SwapEntry: TObject;
   Seed: Cardinal;
@@ -1501,7 +1498,6 @@ var
   Info: PWeaponInfo;
   MinimumSizeFactor, MaximumSizeFactor: Single;
   Stage: Integer;
-  UnusedLocal: Integer; // Native frame retains four unreferenced bytes; original type unknown.
 begin
   Stage := 0;
   try
@@ -1576,7 +1572,7 @@ begin
               RangerCount := Galaxy.Rangers.Count;
               for I := 0 to Galaxy.Rangers.Count - 1 do
               begin
-                Ranger := TRanger(Galaxy.Rangers[I]);
+                Ranger := Galaxy.Rangers[I];
                 if (GetPlayer <> Ranger) and Ranger.ExcludedFromRating then
                 begin
                   Dec(RangerCount);
@@ -1586,10 +1582,10 @@ begin
               Place := Place - ExcludedBefore;
               if Place = 1 then DialogText := DialogText + #13#10 + LocalizedColorText('FormRuins.RC.GreetingBest')
               else case 100 * Place div RangerCount of
-                0..30: DialogText := DialogText + #13#10 + LocalizedColorText('FormRuins.RC.GreetingGood');
-                31..66: DialogText := DialogText + #13#10 + LocalizedColorText('FormRuins.RC.GreetingNormal');
-              else DialogText := DialogText + #13#10 + LocalizedColorText('FormRuins.RC.GreetingBad');
-              end;
+                  0..30: DialogText := DialogText + #13#10 + LocalizedColorText('FormRuins.RC.GreetingGood');
+                  31..66: DialogText := DialogText + #13#10 + LocalizedColorText('FormRuins.RC.GreetingNormal');
+                else DialogText := DialogText + #13#10 + LocalizedColorText('FormRuins.RC.GreetingBad');
+                end;
               DialogText := DialogText + #13#10 + LocalizedColorText('FormRuins.RC.GreetingAdd');
               ReplaceTextToken(DialogText, '<RC>', GetPlayer.DockedTo.Name, TextHighlightColorTag);
               ReplaceTextToken(DialogText, '<Number>', IntToStr(Place), TextHighlightColorTag);
@@ -1598,7 +1594,7 @@ begin
           rstPirateBase:
             begin
               Stage := 9;
-              // Native $5ABDB5 retains this flag comparison with an empty body.
+              // Flag comparison with an empty body.
               if (GetPlayer.DockedTo as TRuins).SpecialServiceActive then;
               GetPlayer.AchievementStats.CheckBaronAchievement;
               DialogText := LocalizedColorText('FormRuins.PB.GreetingPre');
@@ -1658,7 +1654,7 @@ begin
                   end
                   else
                   begin
-                    ItemType := TItemType(PickRandomItemType([Ord(t_FuelTanks)..Ord(t_DefGenerator)]));
+                    ItemType := TItemType(PickRandomItemType([t_FuelTanks..t_DefGenerator]));
                     Seed := Galaxy.CurrentTurn div 33 * (GetPlayer.DockedTo.Id * (GetPlayer.Rank + 17));
                     Weight := NextRandomIntRange(Round(GetAverageItemSize(ItemType) * MinimumSizeFactor), Round(GetAverageItemSize(ItemType) * MaximumSizeFactor), Seed);
                     Level := Round(RemapClamped(Ord(GetPlayer.Rank), 0, 7, 3, 8));
@@ -1731,7 +1727,7 @@ begin
       Stage := 18;
       for I := 0 to Galaxy.Scripts.Count - 1 do
       begin
-        Script := TScript(Galaxy.Scripts[I]);
+        Script := Galaxy.Scripts[I];
         Script.RunDialogCode;
       end;
       Stage := 19;
@@ -1835,27 +1831,27 @@ begin
     end;
   end;
 end;
-{ @end $5AB408 }
+{ @end $55BFF0 }
 
-{ @routine $5AE508 TfRuinsTalk_CloseHullMode }
-procedure TfRuinsTalk.CloseHullMode(Action: Integer);
+{ @routine $55EFC8 TfRuinsTalk_CloseHullMode }
+procedure TfRuinsTalk.CloseHullMode(Action: Cardinal);
 begin
   GetPlayer.CloseRuinsModeScreen;
 end;
-{ @end $5AE508 }
+{ @end $55EFC8 }
 
-{ @routine $5AE524 TfRuinsTalk_ToggleImpulseShields }
-procedure TfRuinsTalk.ToggleImpulseShields(Action: Integer);
+{ @routine $55EFD4 TfRuinsTalk_ToggleImpulseShields }
+procedure TfRuinsTalk.ToggleImpulseShields(Action: Cardinal);
 begin
   GetPlayer.GetHull.ImpulseShieldsEnabled := not GetPlayer.GetHull.ImpulseShieldsEnabled;
   GetPlayer.GetHull.Energy := Max(0, GetPlayer.GetHull.Energy - 10);
   ClearChoices;
   M_Main(False);
 end;
-{ @end $5AE524 }
+{ @end $55EFD4 }
 
-{ @routine $5AE59C TfRuinsTalk_ShowBridgeBlackHoleDialog }
-procedure TfRuinsTalk.ShowBridgeBlackHoleDialog(Action: Integer);
+{ @routine $55F034 TfRuinsTalk_ShowBridgeBlackHoleDialog }
+procedure TfRuinsTalk.ShowBridgeBlackHoleDialog(Action: Cardinal);
 begin
   if not GetPlayer.NoJump then
   begin
@@ -1872,26 +1868,26 @@ begin
     AddChoice('- ' + LocalizedColorText('FormRuins.I_Continue'), 0, ReturnToMain);
   end;
 end;
-{ @end $5AE59C }
+{ @end $55F034 }
 
-{ @routine $5AE8E8 TfRuinsTalk_SelectBridgeBlackHoleDestination }
-procedure TfRuinsTalk.SelectBridgeBlackHoleDestination(Action: Integer);
+{ @routine $55F368 TfRuinsTalk_SelectBridgeBlackHoleDestination }
+procedure TfRuinsTalk.SelectBridgeBlackHoleDestination(Action: Cardinal);
 begin
   MainPanel.NavigationLocked := True;
   GetByName('PM_WinMsg').SetActive(False);
-  SetCursorActive(False);
+  Self.ShowCursor := False;
   Present;
   CaptureScreenBackground(True, 0);
-  SetCursorActive(True);
+  Self.ShowCursor := True;
   GalaxyScreen.ViewMode := 3;
   GalaxyReturnScreenId := FormToId(Self);
   RequestedScreenId := screenGalaxy;
   RequestClose(1);
 end;
-{ @end $5AE8E8 }
+{ @end $55F368 }
 
-{ @routine $5AE98C TfRuinsTalk_ShowInterceptorDialog }
-procedure TfRuinsTalk.ShowInterceptorDialog(Action: Integer);
+{ @routine $55F3F8 TfRuinsTalk_ShowInterceptorDialog }
+procedure TfRuinsTalk.ShowInterceptorDialog(Action: Cardinal);
 begin
   DialogText := LocalizedColorText('FormRuins.Bridge.BridgeInterceptorsChooseAction');
   ReplaceTextToken(DialogText, '<Count>', IntToStr(GetPlayer.CountActiveInterceptorTargets), TextHighlightColorTag);
@@ -1930,10 +1926,10 @@ begin
   AddChoice('- ' + LocalizedColorText('FormRuins.Bridge.BridgeInterceptorsTargeting'), 0, ShowInterceptorStrategyDialog);
   AddChoice('- ' + LocalizedColorText('FormRuins.Bridge.BridgeInterceptorsDone'), 0, ReturnToMain);
 end;
-{ @end $5AE98C }
+{ @end $55F3F8 }
 
-{ @routine $5AF828 TfRuinsTalk_ShowActiveInterceptors }
-procedure TfRuinsTalk.ShowActiveInterceptors(Action: Integer);
+{ @routine $560248 TfRuinsTalk_ShowActiveInterceptors }
+procedure TfRuinsTalk.ShowActiveInterceptors(Action: Cardinal);
 var
   ShipList, Text: WideString;
   I, J: Integer;
@@ -1947,10 +1943,10 @@ begin
   AddChoice('- ' + LocalizedColorText('FormRuins.Bridge.BridgeInterceptorsCallOffAll'), 0, RecallAllInterceptors);
   for I := 0 to Galaxy.Stars.Count - 1 do
   begin
-    Star := GetPlayer.CurrentStar.StarDistances[I].Star;
+    Star := TStar(GetPlayer.CurrentStar.StarDistances[I].Star);
     for J := 0 to Star.Ships.Count - 1 do
     begin
-      Ship := TShip(Star.Ships[J]);
+      Ship := Star.Ships[J];
       if GetPlayer = Ship.InterceptorSourceShip then
       begin
         ShipList := ShipList + Ship.GetFullName(' ') + #13#10;
@@ -1963,19 +1959,19 @@ begin
   ReplaceTextToken(DialogText, '<ShipList>', ShipList, TextHighlightColorTag);
   AddChoice('- ' + LocalizedColorText('FormRuins.Bridge.BridgeInterceptorsCallOffCancel'), 0, ShowInterceptorDialog);
 end;
-{ @end $5AF828 }
+{ @end $560248 }
 
-{ @routine $5AFCB4 TfRuinsTalk_RecallInterceptorsFromTarget }
-procedure TfRuinsTalk.RecallInterceptorsFromTarget(Action: Integer);
+{ @routine $5606C4 TfRuinsTalk_RecallInterceptorsFromTarget }
+procedure TfRuinsTalk.RecallInterceptorsFromTarget(Action: Cardinal);
 begin
   TShip(Action).ClearIncomingInterceptors;
   if GetPlayer.CountActiveInterceptorTargets > 0 then ShowActiveInterceptors(0)
   else ShowInterceptorDialog(0);
 end;
-{ @end $5AFCB4 }
+{ @end $5606C4 }
 
-{ @routine $5AFCF0 TfRuinsTalk_RecallAllInterceptors }
-procedure TfRuinsTalk.RecallAllInterceptors(Action: Integer);
+{ @routine $5606F4 TfRuinsTalk_RecallAllInterceptors }
+procedure TfRuinsTalk.RecallAllInterceptors(Action: Cardinal);
 var
   I, J: Integer;
   Star: TStar;
@@ -1983,19 +1979,19 @@ var
 begin
   for I := 0 to Galaxy.Stars.Count - 1 do
   begin
-    Star := GetPlayer.CurrentStar.StarDistances[I].Star;
+    Star := TStar(GetPlayer.CurrentStar.StarDistances[I].Star);
     for J := 0 to Star.Ships.Count - 1 do
     begin
-      Ship := TShip(Star.Ships[J]);
+      Ship := Star.Ships[J];
       if GetPlayer = Ship.InterceptorSourceShip then Ship.ClearIncomingInterceptors;
     end;
   end;
   ShowInterceptorDialog(0);
 end;
-{ @end $5AFCF0 }
+{ @end $5606F4 }
 
-{ @routine $5AFD94 TfRuinsTalk_ShowInterceptorPassDialog }
-procedure TfRuinsTalk.ShowInterceptorPassDialog(Action: Integer);
+{ @routine $560784 TfRuinsTalk_ShowInterceptorPassDialog }
+procedure TfRuinsTalk.ShowInterceptorPassDialog(Action: Cardinal);
 begin
   DialogText := LocalizedColorText('FormRuins.Bridge.BridgeInterceptorsDurationChoose');
   ReplaceTextToken(DialogText, '<Duration>', IntToStr(GetPlayer.GetInterceptorPassCount), TextHighlightColorTag);
@@ -2011,26 +2007,26 @@ begin
   else AddChoice('- ' + LocalizedColorText('FormRuins.Bridge.BridgeInterceptorsDurationLess'), 0, ScriptDialogBlockCallback);
   AddChoice('- ' + LocalizedColorText('FormRuins.Bridge.BridgeInterceptorsDurationDone'), 0, ShowInterceptorDialog);
 end;
-{ @end $5AFD94 }
+{ @end $560784 }
 
-{ @routine $5B0288 TfRuinsTalk_IncreaseInterceptorPassCount }
-procedure TfRuinsTalk.IncreaseInterceptorPassCount(Action: Integer);
+{ @routine $560C5C TfRuinsTalk_IncreaseInterceptorPassCount }
+procedure TfRuinsTalk.IncreaseInterceptorPassCount(Action: Cardinal);
 begin
   GetPlayer.GetHull.InterceptorPassCountOverride := GetPlayer.GetInterceptorPassCount + 1;
   ShowInterceptorPassDialog(0);
 end;
-{ @end $5B0288 }
+{ @end $560C5C }
 
-{ @routine $5B02C4 TfRuinsTalk_DecreaseInterceptorPassCount }
-procedure TfRuinsTalk.DecreaseInterceptorPassCount(Action: Integer);
+{ @routine $560C88 TfRuinsTalk_DecreaseInterceptorPassCount }
+procedure TfRuinsTalk.DecreaseInterceptorPassCount(Action: Cardinal);
 begin
   GetPlayer.GetHull.InterceptorPassCountOverride := GetPlayer.GetInterceptorPassCount - 1;
   ShowInterceptorPassDialog(0);
 end;
-{ @end $5B02C4 }
+{ @end $560C88 }
 
-{ @routine $5B0300 TfRuinsTalk_ShowInterceptorTargetDialog }
-procedure TfRuinsTalk.ShowInterceptorTargetDialog(Action: Integer);
+{ @routine $560CB4 TfRuinsTalk_ShowInterceptorTargetDialog }
+procedure TfRuinsTalk.ShowInterceptorTargetDialog(Action: Cardinal);
 var
   I: Integer;
   Text: WideString;
@@ -2043,7 +2039,7 @@ begin
   else AddChoice('- ' + LocalizedColorText('FormRuins.Bridge.BridgeInterceptorsTargetCancelManual'), 0, ScriptDialogBlockCallback);
   for I := 0 to GetPlayer.CurrentStar.Ships.Count - 1 do
   begin
-    Ship := TShip(GetPlayer.CurrentStar.Ships[I]);
+    Ship := GetPlayer.CurrentStar.Ships[I];
     if (GetPlayer <> Ship) and (GetPlayer.DockedTo <> Ship) and
       (not (Ship is TRuins) or GetPlayer.CanSelectShipTarget(Ship)) and Ship.InNormalSpace and
       (PointDistanceSquared(GetPlayer.Position, Ship.Position) <= InterceptorTargetRangeSquared) and (Ship.InterceptorPassesRemaining <= 0) then
@@ -2055,26 +2051,26 @@ begin
   end;
   AddChoice('- ' + LocalizedColorText('FormRuins.Bridge.BridgeInterceptorsTargetCancel'), 0, ShowInterceptorDialog);
 end;
-{ @end $5B0300 }
+{ @end $560CB4 }
 
-{ @routine $5B073C TfRuinsTalk_SelectInterceptorTarget }
-procedure TfRuinsTalk.SelectInterceptorTarget(Action: Integer);
+{ @routine $5610CC TfRuinsTalk_SelectInterceptorTarget }
+procedure TfRuinsTalk.SelectInterceptorTarget(Action: Cardinal);
 begin
   GetPlayer.GetHull.InterceptorTarget := Pointer(Action);
   ShowInterceptorDialog(0);
 end;
-{ @end $5B073C }
+{ @end $5610CC }
 
-{ @routine $5B0768 TfRuinsTalk_ClearInterceptorTarget }
-procedure TfRuinsTalk.ClearInterceptorTarget(Action: Integer);
+{ @routine $5610EC TfRuinsTalk_ClearInterceptorTarget }
+procedure TfRuinsTalk.ClearInterceptorTarget(Action: Cardinal);
 begin
   GetPlayer.GetHull.InterceptorTarget := nil;
   ShowInterceptorDialog(0);
 end;
-{ @end $5B0768 }
+{ @end $5610EC }
 
-{ @routine $5B0794 TfRuinsTalk_ShowInterceptorStrategyDialog }
-procedure TfRuinsTalk.ShowInterceptorStrategyDialog(Action: Integer);
+{ @routine $56110C TfRuinsTalk_ShowInterceptorStrategyDialog }
+procedure TfRuinsTalk.ShowInterceptorStrategyDialog(Action: Cardinal);
 var
   Text: WideString;
 begin
@@ -2103,18 +2099,18 @@ begin
   AddChoice('- ' + Text, 6, SelectInterceptorStrategy);
   AddChoice('- ' + LocalizedColorText('FormRuins.Bridge.BridgeInterceptorsTargetingCancel'), 0, ShowInterceptorDialog);
 end;
-{ @end $5B0794 }
+{ @end $56110C }
 
-{ @routine $5B0F94 TfRuinsTalk_SelectInterceptorStrategy }
-procedure TfRuinsTalk.SelectInterceptorStrategy(Action: Integer);
+{ @routine $5618E0 TfRuinsTalk_SelectInterceptorStrategy }
+procedure TfRuinsTalk.SelectInterceptorStrategy(Action: Cardinal);
 begin
   GetPlayer.GetHull.InterceptorTargetingStrategy := TInterceptorTargetingStrategy(Action);
   ShowInterceptorDialog(0);
 end;
-{ @end $5B0F94 }
+{ @end $5618E0 }
 
-{ @routine $5B0FC4 TfRuinsTalk_ShowBridgeHelp }
-procedure TfRuinsTalk.ShowBridgeHelp(Action: Integer);
+{ @routine $561904 TfRuinsTalk_ShowBridgeHelp }
+procedure TfRuinsTalk.ShowBridgeHelp(Action: Cardinal);
 var
   I: Integer;
 begin
@@ -2124,21 +2120,21 @@ begin
     AddChoice('- ' + LocalizedColorText('FormRuins.Bridge.BridgeHelpQuestion' + IntToStr(I)), I, ShowBridgeHelpAnswer);
   AddChoice('- ' + LocalizedColorText('FormRuins.Bridge.BridgeHelpCancel'), 0, ReturnToMain);
 end;
-{ @end $5B0FC4 }
+{ @end $561904 }
 
-{ @routine $5B11B0 TfRuinsTalk_ShowBridgeHelpAnswer }
-procedure TfRuinsTalk.ShowBridgeHelpAnswer(Action: Integer);
+{ @routine $561ADC TfRuinsTalk_ShowBridgeHelpAnswer }
+procedure TfRuinsTalk.ShowBridgeHelpAnswer(Action: Cardinal);
 begin
-  DialogText := LocalizedColorText('FormRuins.Bridge.BridgeHelpAnswer' + IntToStr(Cardinal(Action)));
+  DialogText := LocalizedColorText('FormRuins.Bridge.BridgeHelpAnswer' + IntToStr(Action));
   ClearChoices;
   ReplaceTextToken(DialogText, '<SwitchCost>', IntToStr(10), TextHighlightColorTag);
   ReplaceTextToken(DialogText, '<BHCost>', IntToStr(600), TextHighlightColorTag);
   AddChoice('- ' + LocalizedColorText('FormRuins.Bridge.BridgeHelpMoreQuestions'), 0, ShowBridgeHelp);
   AddChoice('- ' + LocalizedColorText('FormRuins.Bridge.BridgeHelpNoQuestions'), 0, ReturnToMain);
 end;
-{ @end $5B11B0 }
+{ @end $561ADC }
 
-{ @routine $5B1494 TfRuinsTalk_BuildBuiltinServiceOptions }
+{ @routine $561DB0 TfRuinsTalk_BuildBuiltinServiceOptions }
 procedure TfRuinsTalk.BuildBuiltinServiceOptions;
 const AllSeries = [dsBlazer, dsKeller, dsTerron];
 var
@@ -2193,9 +2189,11 @@ begin
           AddChoice('- ' + LocalizedColorText('FormRuins.PB.Repair.PlayerSend'), 0, ShowPirateBaseRepairDialog);
           AddChoice('- ' + LocalizedColorText('FormRuins.PB.Chameleon.PlayerAsk'), 0, ShowPirateBaseChameleonDialog);
           if GetPlayer.MayTakeSubCrack then
+          begin
             if GetPlayer.GetSubCrackCost <= GetPlayer.Money then
               AddChoice('- ' + LocalizedColorText('FormRuins.PB.SabCrack.PlayerInfo'), 0, ShowPirateBaseSubCrackDialog)
             else AddChoice('- ' + LocalizedColorText('FormRuins.PB.SabCrack.PlayerInfo'), 0, ScriptDialogBlockCallback);
+          end;
         end;
       rstMilitaryBase:
         begin
@@ -2306,63 +2304,63 @@ begin
   if StationBridgeMode = 0 then
     AddChoice('- ' + LocalizedColorText('FormRuins.GN.Modern.PlayerAsk'), 0, OpenStationModernization);
 end;
-{ @end $5B1494 }
+{ @end $561DB0 }
 
-{ @routine $5B3C54 TfRuinsTalk_ContinueScriptDialog }
+{ @routine $564484 TfRuinsTalk_ContinueScriptDialog }
 procedure TfRuinsTalk.ContinueScriptDialog;
 begin
   CurrentScript.ExecuteDialogAnswer(CurrentScript.CurrentAnswer);
   M_Main(True);
 end;
-{ @end $5B3C54 }
+{ @end $564484 }
 
-{ @routine $5B3C80 TfRuinsTalk_AddScriptTakeoffChoice }
+{ @routine $5644A8 TfRuinsTalk_AddScriptTakeoffChoice }
 procedure TfRuinsTalk.AddScriptTakeoffChoice(Caption: WideString);
 begin
   if Caption = '' then AddChoice('- ' + LocalizedColorText('FormRuins.I_TakeOff'), CurrentScript.CurrentAnswer, RunScriptTakeoff)
   else AddChoice('- ' + Caption, CurrentScript.CurrentAnswer, RunScriptTakeoff);
 end;
-{ @end $5B3C80 }
+{ @end $5644A8 }
 
-{ @routine $5B3D7C TfRuinsTalk_AddScriptNewsExitChoice }
+{ @routine $56459C TfRuinsTalk_AddScriptNewsExitChoice }
 procedure TfRuinsTalk.AddScriptNewsExitChoice(Caption: WideString);
 begin
   AddChoice('- ' + Caption, CurrentScript.CurrentAnswer, RunScriptNewsExit);
 end;
-{ @end $5B3D7C }
+{ @end $56459C }
 
-{ @routine $5B3E04 TfRuinsTalk_AddScriptHangarChoice }
+{ @routine $564620 TfRuinsTalk_AddScriptHangarChoice }
 procedure TfRuinsTalk.AddScriptHangarChoice(Caption: WideString);
 begin
   AddChoice('- ' + Caption, CurrentScript.CurrentAnswer, RunScriptHangar);
 end;
-{ @end $5B3E04 }
+{ @end $564620 }
 
-{ @routine $5B3E8C TfRuinsTalk_AddScriptGoodsChoice }
+{ @routine $5646A4 TfRuinsTalk_AddScriptGoodsChoice }
 procedure TfRuinsTalk.AddScriptGoodsChoice(Caption: WideString);
 begin
   AddChoice('- ' + Caption, CurrentScript.CurrentAnswer, RunScriptGoods);
 end;
-{ @end $5B3E8C }
+{ @end $5646A4 }
 
-{ @routine $5B3F14 TfRuinsTalk_AddScriptGameEndChoice }
+{ @routine $564728 TfRuinsTalk_AddScriptGameEndChoice }
 procedure TfRuinsTalk.AddScriptGameEndChoice(Caption: WideString);
 begin
   AddChoice('- ' + Caption, CurrentScript.CurrentAnswer, RunScriptGameEnd);
 end;
-{ @end $5B3F14 }
+{ @end $564728 }
 
-{ @routine $5B3F9C TfRuinsTalk_SelectScriptDialog }
-procedure TfRuinsTalk.SelectScriptDialog(ScriptValue: Integer);
+{ @routine $5647AC TfRuinsTalk_SelectScriptDialog }
+procedure TfRuinsTalk.SelectScriptDialog(ScriptValue: Cardinal);
 begin
   ClearChoices;
   CurrentScript := TScript(ScriptValue);
   CurrentScript.CallDialogMessage(ScriptDialogIndex);
 end;
-{ @end $5B3F9C }
+{ @end $5647AC }
 
-{ @routine $5B3FD4 TfRuinsTalk_RunScriptAnswer }
-procedure TfRuinsTalk.RunScriptAnswer(Answer: Integer);
+{ @routine $5647D4 TfRuinsTalk_RunScriptAnswer }
+procedure TfRuinsTalk.RunScriptAnswer(Answer: Cardinal);
 begin
   ClearChoices;
   ScriptDialogIndex := -1;
@@ -2370,18 +2368,18 @@ begin
   if ScriptDialogIndex < 0 then RaiseWideMessage('I_Script');
   CurrentScript.CallDialogMessage(ScriptDialogIndex);
 end;
-{ @end $5B3FD4 }
+{ @end $5647D4 }
 
-{ @routine $5B4048 TfRuinsTalk_RunScriptAnswerKeepingScroll }
-procedure TfRuinsTalk.RunScriptAnswerKeepingScroll(Answer: Integer);
+{ @routine $564838 TfRuinsTalk_RunScriptAnswerKeepingScroll }
+procedure TfRuinsTalk.RunScriptAnswerKeepingScroll(Answer: Cardinal);
 begin
   RememberChoiceScroll;
   RunScriptAnswer(Answer);
 end;
-{ @end $5B4048 }
+{ @end $564838 }
 
-{ @routine $5B406C TfRuinsTalk_RunScriptTakeoff }
-procedure TfRuinsTalk.RunScriptTakeoff(Answer: Integer);
+{ @routine $564854 TfRuinsTalk_RunScriptTakeoff }
+procedure TfRuinsTalk.RunScriptTakeoff(Answer: Cardinal);
 begin
   CaptureSavePreview;
   CaptureGalaxyPreview(Self);
@@ -2391,58 +2389,58 @@ begin
   if not HangarScreen.TryTakeOff then RequestedScreenId := screenHangar;
   RequestClose(1);
 end;
-{ @end $5B406C }
+{ @end $564854 }
 
-{ @routine $5B4128 TfRuinsTalk_RunScriptNewsExit }
-procedure TfRuinsTalk.RunScriptNewsExit(Answer: Integer);
+{ @routine $564904 TfRuinsTalk_RunScriptNewsExit }
+procedure TfRuinsTalk.RunScriptNewsExit(Answer: Cardinal);
 begin
   CurrentScript.ExecuteDialogAnswer(Answer);
   StationPanel.InformationClicked(nil);
 end;
-{ @end $5B4128 }
+{ @end $564904 }
 
-{ @routine $5B4158 TfRuinsTalk_RunScriptHangar }
-procedure TfRuinsTalk.RunScriptHangar(Answer: Integer);
+{ @routine $564924 TfRuinsTalk_RunScriptHangar }
+procedure TfRuinsTalk.RunScriptHangar(Answer: Cardinal);
 begin
   CurrentScript.ExecuteDialogAnswer(Answer);
   StationPanel.HangarClicked(nil);
 end;
-{ @end $5B4158 }
+{ @end $564924 }
 
-{ @routine $5B4188 TfRuinsTalk_OpenHangar }
-procedure TfRuinsTalk.OpenHangar(Action: Integer);
+{ @routine $564944 TfRuinsTalk_OpenHangar }
+procedure TfRuinsTalk.OpenHangar(Action: Cardinal);
 begin
   StationPanel.HangarClicked(nil);
 end;
-{ @end $5B4188 }
+{ @end $564944 }
 
-{ @routine $5B41A8 TfRuinsTalk_RunScriptGoods }
-procedure TfRuinsTalk.RunScriptGoods(Answer: Integer);
+{ @routine $564954 TfRuinsTalk_RunScriptGoods }
+procedure TfRuinsTalk.RunScriptGoods(Answer: Cardinal);
 begin
   CurrentScript.ExecuteDialogAnswer(Answer);
   StationPanel.GoodsShopClicked(nil);
 end;
-{ @end $5B41A8 }
+{ @end $564954 }
 
-{ @routine $5B41D8 TfRuinsTalk_RunScriptGameEnd }
-procedure TfRuinsTalk.RunScriptGameEnd(Answer: Integer);
+{ @routine $564974 TfRuinsTalk_RunScriptGameEnd }
+procedure TfRuinsTalk.RunScriptGameEnd(Answer: Cardinal);
 begin
   CurrentScript.ExecuteDialogAnswer(Answer);
   GameEndReason := gerDefault;
   RequestedScreenId := screenGameEnd;
   RequestClose(1);
 end;
-{ @end $5B41D8 }
+{ @end $564974 }
 
-{ @routine $5B4218 TfRuinsTalk_ReturnToMain }
-procedure TfRuinsTalk.ReturnToMain(Action: Integer);
+{ @routine $5649A4 TfRuinsTalk_ReturnToMain }
+procedure TfRuinsTalk.ReturnToMain(Action: Cardinal);
 begin
   M_Main(False);
 end;
-{ @end $5B4218 }
+{ @end $5649A4 }
 
-{ @routine $5B4234 TfRuinsTalk_OpenStationModernization }
-procedure TfRuinsTalk.OpenStationModernization(QuotedCost: Integer);
+{ @routine $5649AC TfRuinsTalk_OpenStationModernization }
+procedure TfRuinsTalk.OpenStationModernization(QuotedCost: Cardinal);
 var
   Cost: Integer;
   Station: TRuins;
@@ -2450,9 +2448,9 @@ var
 begin
   Cost := 0;
   Station := GetPlayer.DockedTo as TRuins;
-  if Cardinal(QuotedCost) > 0 then
+  if QuotedCost > 0 then
   begin
-    GetPlayer.SetMoney(Max(0, GetPlayer.Money - Trunc(Cardinal(QuotedCost))));
+    GetPlayer.SetMoney(Max(0, GetPlayer.Money - Trunc(QuotedCost)));
     SoundManager.PlaySound('Sound.Sell');
     Station.ModernizationSponsor := True;
   end
@@ -2482,10 +2480,10 @@ begin
     AddChoice('- ' + LocalizedColorText('FormRuins.GN.Modern.PlayerNo'), 0, DeclineStationModernization);
   end;
 end;
-{ @end $5B4234 }
+{ @end $5649AC }
 
-{ @routine $5B4710 TfRuinsTalk_DeclineStationModernization }
-procedure TfRuinsTalk.DeclineStationModernization(Action: Integer);
+{ @routine $564E5C TfRuinsTalk_DeclineStationModernization }
+procedure TfRuinsTalk.DeclineStationModernization(Action: Cardinal);
 begin
   case GetPlayer.DockedTo.TypeId of
     rstPirateBase: DialogText := LocalizedColorText('FormRuins.PB.Modern.AfterNo');
@@ -2495,10 +2493,10 @@ begin
   end;
   M_Main(True);
 end;
-{ @end $5B4710 }
+{ @end $564E5C }
 
-{ @routine $5B48E4 TfRuinsTalk_DepositNodesAtRangerCenter }
-procedure TfRuinsTalk.DepositNodesAtRangerCenter(Action: Integer);
+{ @routine $565024 TfRuinsTalk_DepositNodesAtRangerCenter }
+procedure TfRuinsTalk.DepositNodesAtRangerCenter(Action: Cardinal);
 var
   Count: Integer;
 begin
@@ -2512,10 +2510,10 @@ begin
   ReplaceTextToken(DialogText, '<BaseNod>', IntToStr(GetPlayer.BaseNodes), TextHighlightColorTag);
   M_Main(True);
 end;
-{ @end $5B48E4 }
+{ @end $565024 }
 
-{ @routine $5B4ACC TfRuinsTalk_ShowRangerCenterTakeNodeDialog }
-procedure TfRuinsTalk.ShowRangerCenterTakeNodeDialog(Action: Integer);
+{ @routine $565200 TfRuinsTalk_ShowRangerCenterTakeNodeDialog }
+procedure TfRuinsTalk.ShowRangerCenterTakeNodeDialog(Action: Cardinal);
 var
   I: Integer;
   Text: WideString;
@@ -2580,10 +2578,10 @@ begin
   else AddChoice(Text, 0, ScriptDialogBlockCallback);
   AddChoice('- ' + LocalizedColorText('FormRuins.RC.TakeNod.PlayerNo'), 0, DeclineRangerCenterNodeDeposit);
 end;
-{ @end $5B4ACC }
+{ @end $565200 }
 
-{ @routine $5B5734 TfRuinsTalk_BuyRangerCenterMicroModule }
-procedure TfRuinsTalk.BuyRangerCenterMicroModule(Action: Integer);
+{ @routine $565E00 TfRuinsTalk_BuyRangerCenterMicroModule }
+procedure TfRuinsTalk.BuyRangerCenterMicroModule(Action: Cardinal);
 var
   Cost, ModuleIndex: Integer;
   Item: TMicroModule;
@@ -2622,18 +2620,18 @@ begin
     GR_Main.CCInterface.SetTamperDetected(True);
   M_Main(True);
 end;
-{ @end $5B5734 }
+{ @end $565E00 }
 
-{ @routine $5B5ACC TfRuinsTalk_DeclineRangerCenterNodeDeposit }
-procedure TfRuinsTalk.DeclineRangerCenterNodeDeposit(Action: Integer);
+{ @routine $56617C TfRuinsTalk_DeclineRangerCenterNodeDeposit }
+procedure TfRuinsTalk.DeclineRangerCenterNodeDeposit(Action: Cardinal);
 begin
   DialogText := LocalizedColorText('FormRuins.RC.TakeNod.RCAfterPlayerNo');
   M_Main(True);
 end;
-{ @end $5B5ACC }
+{ @end $56617C }
 
-{ @routine $5B5B84 TfRuinsTalk_ShowRangerCenterGiveNodeDialog }
-procedure TfRuinsTalk.ShowRangerCenterGiveNodeDialog(Action: Integer);
+{ @routine $566228 TfRuinsTalk_ShowRangerCenterGiveNodeDialog }
+procedure TfRuinsTalk.ShowRangerCenterGiveNodeDialog(Action: Cardinal);
 var
   I, Count: Integer;
   Item: TItem;
@@ -2674,7 +2672,7 @@ begin
   Count := 0;
   for I := 0 to GetPlayer.Inventory.Count - 1 do
   begin
-    Item := TItem(GetPlayer.Inventory[I]);
+    Item := GetPlayer.Inventory[I];
     if Item.ItemType = t_MicroModule then
     begin
       Module := Item as TMicroModule;
@@ -2693,7 +2691,7 @@ begin
   if Count > 0 then
     for I := 0 to GetPlayer.Inventory.Count - 1 do
     begin
-      Item := TItem(GetPlayer.Inventory[I]);
+      Item := GetPlayer.Inventory[I];
       if Item.ItemType = t_MicroModule then
       begin
         Module := Item as TMicroModule;
@@ -2701,10 +2699,10 @@ begin
       end;
     end;
 end;
-{ @end $5B5B84 }
+{ @end $566228 }
 
-{ @routine $5B66B4 TfRuinsTalk_ExchangeMicroModuleForNodes }
-procedure TfRuinsTalk.ExchangeMicroModuleForNodes(Action: Integer);
+{ @routine $566CA0 TfRuinsTalk_ExchangeMicroModuleForNodes }
+procedure TfRuinsTalk.ExchangeMicroModuleForNodes(Action: Cardinal);
 var
   I, Value: Integer;
   Item: TItem;
@@ -2713,7 +2711,7 @@ begin
   Module := nil;
   for I := 0 to GetPlayer.Inventory.Count - 1 do
   begin
-    Item := TItem(GetPlayer.Inventory[I]);
+    Item := GetPlayer.Inventory[I];
     if Item.ItemType = t_MicroModule then
     begin
       Module := Item as TMicroModule;
@@ -2721,7 +2719,7 @@ begin
       Module := nil;
     end;
   end;
-  if Module = nil then RaiseWideMessage('Косяк: TfRuinsTalk.I_GiveNodOk [FId = ' + IntToStr(Cardinal(Action)) + ']');
+  if Module = nil then RaiseWideMessage('Косяк: TfRuinsTalk.I_GiveNodOk [FId = ' + IntToStr(Action) + ']');
   Value := Module.CalculateNodeExchangeValue(NodeExchangeLowPriorityCost, NodeExchangeMediumPriorityCost);
   DialogText := FormatText2(LocalizedColorText('FormRuins.RC.GiveNod.AfterOk'), TextHighlightColorTag, '<Name>', Module.GetHighlightedName, '<Count>', IntToStr(Value));
   GetPlayer.Inventory.Delete(GetPlayer.Inventory.IndexOf(Module));
@@ -2732,66 +2730,66 @@ begin
   SoundManager.PlaySound('Sound.Sell');
   ShowRangerCenterGiveNodeDialog(Action);
 end;
-{ @end $5B66B4 }
+{ @end $566CA0 }
 
-{ @routine $5B69A8 TfRuinsTalk_DeclineRangerCenterNodeReward }
-procedure TfRuinsTalk.DeclineRangerCenterNodeReward(Action: Integer);
+{ @routine $566F7C TfRuinsTalk_DeclineRangerCenterNodeReward }
+procedure TfRuinsTalk.DeclineRangerCenterNodeReward(Action: Cardinal);
 begin
   DialogText := LocalizedColorText('FormRuins.RC.GiveNod.AfterNo');
   M_Main(True);
 end;
-{ @end $5B69A8 }
+{ @end $566F7C }
 
-{ @routine $5B6A50 TfRuinsTalk_ShowRangerCenterNodeInfo }
-procedure TfRuinsTalk.ShowRangerCenterNodeInfo(Action: Integer);
+{ @routine $567018 TfRuinsTalk_ShowRangerCenterNodeInfo }
+procedure TfRuinsTalk.ShowRangerCenterNodeInfo(Action: Cardinal);
 begin
   DialogText := LocalizedColorText('FormRuins.RC.AboutNod.RCAnswer');
   ReplaceTextToken(DialogText, '<Percent>', IntToStr(30), TextHighlightColorTag);
   ClearChoices;
   AddChoice('- ' + LocalizedColorText('FormRuins.I_Continue'), 0, ShowRangerCenterNodeInfoContinuation);
 end;
-{ @end $5B6A50 }
+{ @end $567018 }
 
-{ @routine $5B6BFC TfRuinsTalk_ShowRangerCenterNodeInfoContinuation }
-procedure TfRuinsTalk.ShowRangerCenterNodeInfoContinuation(Action: Integer);
+{ @routine $5671B4 TfRuinsTalk_ShowRangerCenterNodeInfoContinuation }
+procedure TfRuinsTalk.ShowRangerCenterNodeInfoContinuation(Action: Cardinal);
 begin
   DialogText := LocalizedColorText('FormRuins.RC.AboutNod.RCAnswerAdd');
   ReplaceTextToken(DialogText, '<Percent>', IntToStr(30), TextHighlightColorTag);
   M_Main(True);
 end;
-{ @end $5B6BFC }
+{ @end $5671B4 }
 
-{ @routine $5B6D30 TfRuinsTalk_ShowRangerCenterRatingAnswer }
-procedure TfRuinsTalk.ShowRangerCenterRatingAnswer(Action: Integer);
+{ @routine $5672E0 TfRuinsTalk_ShowRangerCenterRatingAnswer }
+procedure TfRuinsTalk.ShowRangerCenterRatingAnswer(Action: Cardinal);
 begin
   DialogText := LocalizedColorText('FormRuins.RC.Rating.RCAnswer');
   M_Main(True);
 end;
-{ @end $5B6D30 }
+{ @end $5672E0 }
 
-{ @routine $5B6DD8 TfRuinsTalk_ShowRangerCenterPirateClanAnswer }
-procedure TfRuinsTalk.ShowRangerCenterPirateClanAnswer(Action: Integer);
+{ @routine $56737C TfRuinsTalk_ShowRangerCenterPirateClanAnswer }
+procedure TfRuinsTalk.ShowRangerCenterPirateClanAnswer(Action: Cardinal);
 begin
   DialogText := LocalizedColorText('FormRuins.RC.PirateClan.RCAnswer');
   M_Main(True);
 end;
-{ @end $5B6DD8 }
+{ @end $56737C }
 
-{ @routine $5B6E88 TfRuinsTalk_ShowRangerCenterBestRangerAnswer }
-procedure TfRuinsTalk.ShowRangerCenterBestRangerAnswer(Action: Integer);
+{ @routine $567420 TfRuinsTalk_ShowRangerCenterBestRangerAnswer }
+procedure TfRuinsTalk.ShowRangerCenterBestRangerAnswer(Action: Cardinal);
 begin
   DialogText := LocalizedColorText('FormRuins.RC.BestRanger.RCAnswer');
   M_Main(True);
 end;
-{ @end $5B6E88 }
+{ @end $567420 }
 
-{ @routine $5B6F38 TfRuinsTalk_ShowPirateBaseNationalityDialog }
-procedure TfRuinsTalk.ShowPirateBaseNationalityDialog(Action: Integer);
+{ @routine $5674C4 TfRuinsTalk_ShowPirateBaseNationalityDialog }
+procedure TfRuinsTalk.ShowPirateBaseNationalityDialog(Action: Cardinal);
 var
   Text: WideString;
   I: Integer;
   Factor: Double;
-  D, E, DE, C, CDE, B, BCDE, A, MinimumCost: Integer;
+  C, D, E, DE, CDE, B, BCDE, A, MinimumCost: Integer;
 begin
   DialogText := LocalizedColorText('FormRuins.PB.ChangeNationality.AnswerChangeNationality');
   Text := LocalizedColorText('FormRuins.PB.ChangeNationality.PBNext');
@@ -2818,15 +2816,15 @@ begin
   if B < CDE then BCDE := B else BCDE := CDE;
   if A < BCDE then MinimumCost := A else MinimumCost := BCDE;
   if GetPlayer.Money >= Round(MinimumCost * Factor) then
-  AddChoice('- ' + LocalizedColorText('FormRuins.PB.ChangeNationality.PlayerOk'), 0, AcceptPirateBaseNationality)
+    AddChoice('- ' + LocalizedColorText('FormRuins.PB.ChangeNationality.PlayerOk'), 0, AcceptPirateBaseNationality)
   else
-  AddChoice('- ' + LocalizedColorText('FormRuins.PB.ChangeNationality.PlayerOk'), 0, ScriptDialogBlockCallback);
+    AddChoice('- ' + LocalizedColorText('FormRuins.PB.ChangeNationality.PlayerOk'), 0, ScriptDialogBlockCallback);
   AddChoice('- ' + LocalizedColorText('FormRuins.PB.ChangeNationality.PlayerNo'), 0, DeclinePirateBaseNationality);
 end;
-{ @end $5B6F38 }
+{ @end $5674C4 }
 
-{ @routine $5B7604 TfRuinsTalk_AcceptPirateBaseNationality }
-procedure TfRuinsTalk.AcceptPirateBaseNationality(Action: Integer);
+{ @routine $567AF8 TfRuinsTalk_AcceptPirateBaseNationality }
+procedure TfRuinsTalk.AcceptPirateBaseNationality(Action: Cardinal);
 const
   RelationShipTypes = [htRanger, htPirate..htDiplomat];
 var
@@ -2865,12 +2863,13 @@ begin
     Inc(GetPlayer.NationalityChangeCount);
     TryAddAchievementProgress('MANYFACES', 1);
     for J := 1 to 12 do
-      if not CaptainHealthDefinitions[TCaptainHealthEffect(J)].Disabled then
-        if not (RaceToOwner(GetPlayer.PilotRace) in CaptainHealthDefinitions[TCaptainHealthEffect(J)].AllowedOwners) and (GetPlayer.CaptainHealth[TCaptainHealthEffect(J)].Progress < 100) then
-        begin
-          GetPlayer.CaptainHealth[TCaptainHealthEffect(J)].Progress := 0;
-          GetPlayer.StatusEffectSourceNames[TCaptainHealthEffect(J)] := '';
-        end;
+    begin
+      if CaptainHealthDefinitions[J].Disabled then Continue;
+      if RaceToOwner(GetPlayer.PilotRace) in CaptainHealthDefinitions[J].AllowedOwners then Continue;
+      if GetPlayer.CaptainHealth[J].Progress >= 100 then Continue;
+      GetPlayer.CaptainHealth[J].Progress := 0;
+      GetPlayer.StatusEffectSourceNames[J] := '';
+    end;
     GetPlayer.ChangePlanetRelations(nil, rcmRaiseTo, 70, PlanetOwnerMasks.Coalition);
     GetPlayer.ChangeShipRelations(nil, rcmRaiseTo, 70, RelationShipTypes, PlanetOwnerMasks.Coalition);
     if MainPiratePlanet <> nil then
@@ -2900,20 +2899,20 @@ begin
   ClearChoices;
   M_Main(True);
 end;
-{ @end $5B7604 }
+{ @end $567AF8 }
 
-{ @routine $5B7F60 TfRuinsTalk_DeclinePirateBaseNationality }
-procedure TfRuinsTalk.DeclinePirateBaseNationality(Action: Integer);
+{ @routine $5683BC TfRuinsTalk_DeclinePirateBaseNationality }
+procedure TfRuinsTalk.DeclinePirateBaseNationality(Action: Cardinal);
 begin
   if Galaxy.CoalitionDefeatedTurn = 0 then DialogText := LocalizedColorText('FormRuins.PB.ChangeNationality.PBAfterNo')
   else DialogText := LocalizedColorText('FormRuins.PB.ChangeNationality.PBAfterNoAlt');
   ClearChoices;
   M_Main(True);
 end;
-{ @end $5B7F60 }
+{ @end $5683BC }
 
-{ @routine $5B80BC TfRuinsTalk_ShowPirateBaseSideChangeDialog }
-procedure TfRuinsTalk.ShowPirateBaseSideChangeDialog(Action: Integer);
+{ @routine $568508 TfRuinsTalk_ShowPirateBaseSideChangeDialog }
+procedure TfRuinsTalk.ShowPirateBaseSideChangeDialog(Action: Cardinal);
 var
   I: Integer;
 begin
@@ -2929,15 +2928,15 @@ begin
   ReplaceTextToken(DialogText, '<Cost>', IntToStr(StationServiceQuoteCost), TextHighlightColorTag);
   ClearChoices;
   if GetPlayer.Money >= StationServiceQuoteCost then
-  AddChoice('- ' + LocalizedColorText('FormRuins.PB.ChangeSide.PlayerOk'), 0, AcceptPirateBaseSideChange)
+    AddChoice('- ' + LocalizedColorText('FormRuins.PB.ChangeSide.PlayerOk'), 0, AcceptPirateBaseSideChange)
   else
-  AddChoice('- ' + LocalizedColorText('FormRuins.PB.ChangeSide.PlayerOk'), 0, ScriptDialogBlockCallback);
+    AddChoice('- ' + LocalizedColorText('FormRuins.PB.ChangeSide.PlayerOk'), 0, ScriptDialogBlockCallback);
   AddChoice('- ' + LocalizedColorText('FormRuins.PB.ChangeSide.PlayerNo'), 0, DeclinePirateBaseSideChange);
 end;
-{ @end $5B80BC }
+{ @end $568508 }
 
-{ @routine $5B84FC TfRuinsTalk_AcceptPirateBaseSideChange }
-procedure TfRuinsTalk.AcceptPirateBaseSideChange(Action: Integer);
+{ @routine $568920 TfRuinsTalk_AcceptPirateBaseSideChange }
+procedure TfRuinsTalk.AcceptPirateBaseSideChange(Action: Cardinal);
 const
   RelationShipTypes = [htRanger, htPirate..htDiplomat];
 var
@@ -2982,20 +2981,20 @@ begin
   ClearChoices;
   M_Main(True);
 end;
-{ @end $5B84FC }
+{ @end $568920 }
 
-{ @routine $5B8990 TfRuinsTalk_DeclinePirateBaseSideChange }
-procedure TfRuinsTalk.DeclinePirateBaseSideChange(Action: Integer);
+{ @routine $568D8C TfRuinsTalk_DeclinePirateBaseSideChange }
+procedure TfRuinsTalk.DeclinePirateBaseSideChange(Action: Cardinal);
 begin
   if GetPlayer.OwnerId = oiPirate then DialogText := LocalizedColorText('FormRuins.PB.ChangeSide.AnswerPlayerNoNormal')
   else DialogText := LocalizedColorText('FormRuins.PB.ChangeSide.AnswerPlayerNoPirate');
   ClearChoices;
   M_Main(True);
 end;
-{ @end $5B8990 }
+{ @end $568D8C }
 
-{ @routine $5B8AF4 TfRuinsTalk_ShowPirateBaseNodeDialog }
-procedure TfRuinsTalk.ShowPirateBaseNodeDialog(Action: Integer);
+{ @routine $568EE0 TfRuinsTalk_ShowPirateBaseNodeDialog }
+procedure TfRuinsTalk.ShowPirateBaseNodeDialog(Action: Cardinal);
 var
   Count, Cost, DiscountedCost: Integer;
   Text: WideString;
@@ -3006,18 +3005,18 @@ begin
   begin
     Count := (GetPlayer.DockedTo as TRuins).GetNodeSaleBatchSize;
     Cost := Galaxy.ScaleGoodsPriceByGalaxyAge(Count * 10 * 3);
-  Discount := GetPlayer.GetPirateServiceDiscount;
-  DiscountedCost := Max(Int64(1), Cost - Round(Cost / 100 * Discount));
+    Discount := GetPlayer.GetPirateServiceDiscount;
+    DiscountedCost := Max(Int64(1), Cost - Round(Cost / 100 * Discount));
     Text := LocalizedColorText('FormRuins.PB.Nod.PBStart');
-  ReplaceTextToken(Text, '<Count>', IntToStr(Count), TextHighlightColorTag);
-  ReplaceTextToken(Text, '<MoneyAll>', IntToStr(Cost), TextHighlightColorTag);
-  ReplaceTextToken(Text, '<Percent>', IntToStr(Discount), TextHighlightColorTag);
-  ReplaceTextToken(Text, '<MoneyDec>', IntToStr(DiscountedCost), TextHighlightColorTag);
+    ReplaceTextToken(Text, '<Count>', IntToStr(Count), TextHighlightColorTag);
+    ReplaceTextToken(Text, '<MoneyAll>', IntToStr(Cost), TextHighlightColorTag);
+    ReplaceTextToken(Text, '<Percent>', IntToStr(Discount), TextHighlightColorTag);
+    ReplaceTextToken(Text, '<MoneyDec>', IntToStr(DiscountedCost), TextHighlightColorTag);
     DialogText := Text;
     ClearChoices;
     if GetPlayer.Money >= DiscountedCost then
-  AddChoice('- ' + LocalizedColorText('FormRuins.PB.Nod.PlayerOk'), 0, BuyPirateBaseNodes);
-  AddChoice('- ' + LocalizedColorText('FormRuins.PB.Nod.PlayerNo'), 0, DeclinePirateBaseNodes);
+      AddChoice('- ' + LocalizedColorText('FormRuins.PB.Nod.PlayerOk'), 0, BuyPirateBaseNodes);
+    AddChoice('- ' + LocalizedColorText('FormRuins.PB.Nod.PlayerNo'), 0, DeclinePirateBaseNodes);
   end
   else
   begin
@@ -3034,10 +3033,10 @@ begin
     M_Main(True);
   end;
 end;
-{ @end $5B8AF4 }
+{ @end $568EE0 }
 
-{ @routine $5B903C TfRuinsTalk_BuyPirateBaseNodes }
-procedure TfRuinsTalk.BuyPirateBaseNodes(Action: Integer);
+{ @routine $56940C TfRuinsTalk_BuyPirateBaseNodes }
+procedure TfRuinsTalk.BuyPirateBaseNodes(Action: Cardinal);
 var
   Count, Cost, DiscountedCost: Integer;
   Stack: TProtoplasm;
@@ -3076,19 +3075,19 @@ begin
   ClearChoices;
   M_Main(True);
 end;
-{ @end $5B903C }
+{ @end $56940C }
 
-{ @routine $5B929C TfRuinsTalk_DeclinePirateBaseNodes }
-procedure TfRuinsTalk.DeclinePirateBaseNodes(Action: Integer);
+{ @routine $569658 TfRuinsTalk_DeclinePirateBaseNodes }
+procedure TfRuinsTalk.DeclinePirateBaseNodes(Action: Cardinal);
 begin
   DialogText := LocalizedColorText('FormRuins.PB.Nod.PBAfterNo');
   ClearChoices;
   M_Main(True);
 end;
-{ @end $5B929C }
+{ @end $569658 }
 
-{ @routine $5B9348 TfRuinsTalk_ShowPirateBaseProgramDialog }
-procedure TfRuinsTalk.ShowPirateBaseProgramDialog(Action: Integer);
+{ @routine $5696F8 TfRuinsTalk_ShowPirateBaseProgramDialog }
+procedure TfRuinsTalk.ShowPirateBaseProgramDialog(Action: Cardinal);
 var
   I: TProgramIndex;
   Text: WideString;
@@ -3125,10 +3124,10 @@ begin
     end;
   AddChoice(LocalizedColorText('FormRuins.PB.Program.PlayerNo'), 0, DeclinePirateBaseProgram);
 end;
-{ @end $5B9348 }
+{ @end $5696F8 }
 
-{ @routine $5B9AF0 TfRuinsTalk_BuyPirateBaseProgram }
-procedure TfRuinsTalk.BuyPirateBaseProgram(Action: Integer);
+{ @routine $569E50 TfRuinsTalk_BuyPirateBaseProgram }
+procedure TfRuinsTalk.BuyPirateBaseProgram(Action: Cardinal);
 var
   ProgramIndex: TProgramIndex;
   Cost, CarriedNodes, BaseNodes: Integer;
@@ -3150,20 +3149,20 @@ begin
   end
   else DeclinePirateBaseProgram(0);
 end;
-{ @end $5B9AF0 }
+{ @end $569E50 }
 
-{ @routine $5B9D14 TfRuinsTalk_DeclinePirateBaseProgram }
-procedure TfRuinsTalk.DeclinePirateBaseProgram(Action: Integer);
+{ @routine $56A044 TfRuinsTalk_DeclinePirateBaseProgram }
+procedure TfRuinsTalk.DeclinePirateBaseProgram(Action: Cardinal);
 begin
   if Galaxy.CoalitionDefeatedTurn = 0 then DialogText := LocalizedColorText('FormRuins.PB.Program.PBAfterNo')
   else DialogText := LocalizedColorText('FormRuins.PB.Program.PBAfterNoAlt');
   ClearChoices;
   M_Main(True);
 end;
-{ @end $5B9D14 }
+{ @end $56A044 }
 
-{ @routine $5B9E48 TfRuinsTalk_ShowPirateBaseRepairDialog }
-procedure TfRuinsTalk.ShowPirateBaseRepairDialog(Action: Integer);
+{ @routine $56A168 TfRuinsTalk_ShowPirateBaseRepairDialog }
+procedure TfRuinsTalk.ShowPirateBaseRepairDialog(Action: Cardinal);
 var
   Cost, DiscountedCost: Integer;
   Text: WideString;
@@ -3175,9 +3174,7 @@ begin
   for I := 0 to GetPlayer.Inventory.Count - 1 do
   begin
     Item := GetPlayer.Inventory[I];
-    if Item.EquippedFlag <> 0 then
-      if (Item is TWeapon) and (TWeapon(Item).GetWeaponInfo.Availability = waNotSoldAndNodeRepair) and Item.NeedsRepair then
-        if (GetPlayer.DockedTo as TRuins).CanRepairEquipmentTech(Item) then Inc(NodeCost, Item.CalculateRepairCost);
+    if ((Item.EquippedFlag <> 0) and ((Item is TWeapon) and (TWeapon(Item).GetWeaponInfo.Availability = waNotSoldAndNodeRepair) and Item.NeedsRepair)) and ((GetPlayer.DockedTo as TRuins).CanRepairEquipmentTech(Item)) then Inc(NodeCost, Item.CalculateRepairCost);
   end;
   if NodeCost > 0 then
   begin
@@ -3196,10 +3193,10 @@ begin
   else
   begin
     Text := LocalizedColorText('FormRuins.PB.Repair.PBYouNeedRepair');
-  ReplaceTextToken(Text, '<MoneyAll>', IntToStr(Cost), TextHighlightColorTag);
-  ReplaceTextToken(Text, '<Percent>', IntToStr(Discount), TextHighlightColorTag);
-  ReplaceTextToken(Text, '<MoneyDec>', IntToStr(DiscountedCost), TextHighlightColorTag);
-  ReplaceTextToken(Text, '<PB>', GetPlayer.DockedTo.Name, TextHighlightColorTag);
+    ReplaceTextToken(Text, '<MoneyAll>', IntToStr(Cost), TextHighlightColorTag);
+    ReplaceTextToken(Text, '<Percent>', IntToStr(Discount), TextHighlightColorTag);
+    ReplaceTextToken(Text, '<MoneyDec>', IntToStr(DiscountedCost), TextHighlightColorTag);
+    ReplaceTextToken(Text, '<PB>', GetPlayer.DockedTo.Name, TextHighlightColorTag);
     DialogText := Text;
     if NodeCost <> 0 then
     begin
@@ -3207,16 +3204,15 @@ begin
       ReplaceTextToken(DialogText, '<NeedNode>', IntToStr(NodeCost), TextHighlightColorTag);
     end;
     ClearChoices;
-    if GetPlayer.Money >= DiscountedCost then
-      if (NodeCost = 0) or ((NodeCost > 0) and (GetPlayer.GetAvailableNodeCount(nil) >= NodeCost)) then
-  AddChoice('- ' + LocalizedColorText('FormRuins.PB.Repair.PlayerOk'), 0, AcceptPirateBaseRepair);
-  AddChoice('- ' + LocalizedColorText('FormRuins.PB.Repair.PlayerNo'), 0, DeclinePirateBaseRepair);
+    if (GetPlayer.Money >= DiscountedCost) and ((NodeCost = 0) or ((NodeCost > 0) and (GetPlayer.GetAvailableNodeCount(nil) >= NodeCost))) then
+      AddChoice('- ' + LocalizedColorText('FormRuins.PB.Repair.PlayerOk'), 0, AcceptPirateBaseRepair);
+    AddChoice('- ' + LocalizedColorText('FormRuins.PB.Repair.PlayerNo'), 0, DeclinePirateBaseRepair);
   end;
 end;
-{ @end $5B9E48 }
+{ @end $56A168 }
 
-{ @routine $5BA464 TfRuinsTalk_AcceptPirateBaseRepair }
-procedure TfRuinsTalk.AcceptPirateBaseRepair(Action: Integer);
+{ @routine $56A75C TfRuinsTalk_AcceptPirateBaseRepair }
+procedure TfRuinsTalk.AcceptPirateBaseRepair(Action: Cardinal);
 var
   Cost, DiscountedCost: Integer;
   Discount: Byte;
@@ -3253,19 +3249,19 @@ begin
   end
   else DeclinePirateBaseRepair(0);
 end;
-{ @end $5BA464 }
+{ @end $56A75C }
 
-{ @routine $5BA750 TfRuinsTalk_DeclinePirateBaseRepair }
-procedure TfRuinsTalk.DeclinePirateBaseRepair(Action: Integer);
+{ @routine $56AA24 TfRuinsTalk_DeclinePirateBaseRepair }
+procedure TfRuinsTalk.DeclinePirateBaseRepair(Action: Cardinal);
 begin
   DialogText := LocalizedColorText('FormRuins.PB.Repair.PBAfterNo');
   ClearChoices;
   M_Main(True);
 end;
-{ @end $5BA750 }
+{ @end $56AA24 }
 
-{ @routine $5BA800 TfRuinsTalk_ShowPirateBaseSubCrackDialog }
-procedure TfRuinsTalk.ShowPirateBaseSubCrackDialog(Action: Integer);
+{ @routine $56AAC8 TfRuinsTalk_ShowPirateBaseSubCrackDialog }
+procedure TfRuinsTalk.ShowPirateBaseSubCrackDialog(Action: Cardinal);
 begin
   DialogText := LocalizedColorText('FormRuins.PB.SabCrack.PBInfo');
   ReplaceTextToken(DialogText, '<PB>', GetPlayer.DockedTo.Name, TextHighlightColorTag);
@@ -3273,10 +3269,10 @@ begin
   ClearChoices;
   AddChoice('- ' + LocalizedColorText('FormRuins.PB.SabCrack.PlayerContinue'), 0, ConfirmPirateBaseSubCrack);
 end;
-{ @end $5BA800 }
+{ @end $56AAC8 }
 
-{ @routine $5BA9F8 TfRuinsTalk_ConfirmPirateBaseSubCrack }
-procedure TfRuinsTalk.ConfirmPirateBaseSubCrack(Action: Integer);
+{ @routine $56ACB4 TfRuinsTalk_ConfirmPirateBaseSubCrack }
+procedure TfRuinsTalk.ConfirmPirateBaseSubCrack(Action: Cardinal);
 begin
   DialogText := LocalizedColorText('FormRuins.PB.SabCrack.PBContinue');
   ReplaceTextToken(DialogText, '<PB>', GetPlayer.DockedTo.Name, TextHighlightColorTag);
@@ -3286,10 +3282,10 @@ begin
   AddChoice('- ' + LocalizedColorText('FormRuins.PB.SabCrack.PlayerOkHalf'), 0, BuyPirateBaseSubCrackHalfPrice);
   AddChoice('- ' + LocalizedColorText('FormRuins.PB.SabCrack.PlayerNo'), 0, DeclinePirateBaseSubCrack);
 end;
-{ @end $5BA9F8 }
+{ @end $56ACB4 }
 
-{ @routine $5BAD34 TfRuinsTalk_BuyPirateBaseSubCrack }
-procedure TfRuinsTalk.BuyPirateBaseSubCrack(Action: Integer);
+{ @routine $56AFD8 TfRuinsTalk_BuyPirateBaseSubCrack }
+procedure TfRuinsTalk.BuyPirateBaseSubCrack(Action: Cardinal);
 begin
   DialogText := LocalizedColorText('FormRuins.PB.SabCrack.PBAfterOk');
   GetPlayer.SetMoney(GetPlayer.Money - GetPlayer.GetSubCrackCost);
@@ -3299,10 +3295,10 @@ begin
   ClearChoices;
   M_Main(True);
 end;
-{ @end $5BAD34 }
+{ @end $56AFD8 }
 
-{ @routine $5BAED0 TfRuinsTalk_BuyPirateBaseSubCrackHalfPrice }
-procedure TfRuinsTalk.BuyPirateBaseSubCrackHalfPrice(Action: Integer);
+{ @routine $56B16C TfRuinsTalk_BuyPirateBaseSubCrackHalfPrice }
+procedure TfRuinsTalk.BuyPirateBaseSubCrackHalfPrice(Action: Cardinal);
 var
   Cost: Integer;
 begin
@@ -3315,20 +3311,20 @@ begin
   ClearChoices;
   M_Main(True);
 end;
-{ @end $5BAED0 }
+{ @end $56B16C }
 
-{ @routine $5BB080 TfRuinsTalk_DeclinePirateBaseSubCrack }
-procedure TfRuinsTalk.DeclinePirateBaseSubCrack(Action: Integer);
+{ @routine $56B308 TfRuinsTalk_DeclinePirateBaseSubCrack }
+procedure TfRuinsTalk.DeclinePirateBaseSubCrack(Action: Cardinal);
 begin
   DialogText := LocalizedColorText('FormRuins.PB.SabCrack.PBAfterNo');
   ReplaceTextToken(DialogText, '<PB>', GetPlayer.DockedTo.Name, TextHighlightColorTag);
   ClearChoices;
   M_Main(True);
 end;
-{ @end $5BB080 }
+{ @end $56B308 }
 
-{ @routine $5BB194 TfRuinsTalk_ShowPirateBaseChameleonDialog }
-procedure TfRuinsTalk.ShowPirateBaseChameleonDialog(Action: Integer);
+{ @routine $56B40C TfRuinsTalk_ShowPirateBaseChameleonDialog }
+procedure TfRuinsTalk.ShowPirateBaseChameleonDialog(Action: Cardinal);
 var
   I: TDominatorSeries;
   Text, SeriesName: WideString;
@@ -3367,10 +3363,10 @@ begin
   end;
   AddChoice('- ' + LocalizedColorText('FormRuins.PB.Chameleon.PlayerNo'), 0, DeclinePirateBaseChameleon);
 end;
-{ @end $5BB194 }
+{ @end $56B40C }
 
-{ @routine $5BB720 TfRuinsTalk_BuyPirateBaseChameleon }
-procedure TfRuinsTalk.BuyPirateBaseChameleon(Action: Integer);
+{ @routine $56B970 TfRuinsTalk_BuyPirateBaseChameleon }
+procedure TfRuinsTalk.BuyPirateBaseChameleon(Action: Cardinal);
 var
   Series: TDominatorSeries;
   Cost: Integer;
@@ -3384,20 +3380,20 @@ begin
   ClearChoices;
   M_Main(True);
 end;
-{ @end $5BB720 }
+{ @end $56B970 }
 
-{ @routine $5BB864 TfRuinsTalk_DeclinePirateBaseChameleon }
-procedure TfRuinsTalk.DeclinePirateBaseChameleon(Action: Integer);
+{ @routine $56BA94 TfRuinsTalk_DeclinePirateBaseChameleon }
+procedure TfRuinsTalk.DeclinePirateBaseChameleon(Action: Cardinal);
 begin
   if Galaxy.CoalitionDefeatedTurn = 0 then DialogText := LocalizedColorText('FormRuins.PB.Chameleon.PBAfterNo')
   else DialogText := LocalizedColorText('FormRuins.PB.Chameleon.PBAfterNoAlt');
   ClearChoices;
   M_Main(True);
 end;
-{ @end $5BB864 }
+{ @end $56BA94 }
 
-{ @routine $5BB9A0 TfRuinsTalk_I_WarWithKlingAndPirates }
-procedure TfRuinsTalk.I_WarWithKlingAndPirates(Action: Integer);
+{ @routine $56BBC0 TfRuinsTalk_I_WarWithKlingAndPirates }
+procedure TfRuinsTalk.I_WarWithKlingAndPirates(Action: Cardinal);
 var
   CoalitionPercent, DominatorPercent, PiratePercent: Byte;
   Key: WideString;
@@ -3409,10 +3405,10 @@ begin
   DominatorPercent := Galaxy.GetFactionControlPercent(sfDominators);
   PiratePercent := Galaxy.GetFactionControlPercent(sfPirates);
   for I := 0 to Galaxy.Stars.Count - 1 do
-    if ((TObject(GetPlayer.CurrentStar.StarDistances[I].Star) as TStar).ControlFaction in [sfDominators, sfPirates]) and
-      ((TObject(GetPlayer.CurrentStar.StarDistances[I].Star) as TStar).Constellation.Id <> 20) then
+    if ((GetPlayer.CurrentStar.StarDistances[I].Star as TStar).ControlFaction in [sfDominators, sfPirates]) and
+      ((GetPlayer.CurrentStar.StarDistances[I].Star as TStar).Constellation.Id <> 20) then
     begin
-      EnemyStar := GetPlayer.CurrentStar.StarDistances[I].Star;
+      EnemyStar := TStar(GetPlayer.CurrentStar.StarDistances[I].Star);
       Break;
     end;
   if EnemyStar = nil then
@@ -3451,10 +3447,10 @@ begin
   end;
   M_Main(True);
 end;
-{ @end $5BB9A0 }
+{ @end $56BBC0 }
 
-{ @routine $5BC3D8 TfRuinsTalk_ShowMilitaryBaseNextRankDialog }
-procedure TfRuinsTalk.ShowMilitaryBaseNextRankDialog(Action: Integer);
+{ @routine $56C5C0 TfRuinsTalk_ShowMilitaryBaseNextRankDialog }
+procedure TfRuinsTalk.ShowMilitaryBaseNextRankDialog(Action: Cardinal);
 var
   I: TKlingType;
   Token: WideString;
@@ -3467,29 +3463,29 @@ begin
   ReplaceTextToken(DialogText, '<RankPointsForDeadPirates>', IntToStr(10), TextHighlightColorTag);
   ReplaceTextToken(DialogText, '<RankPointsForDeadPiratesInGiperSpace>', IntToStr(2), TextHighlightColorTag);
   for I := Low(TKlingType) to High(TKlingType) do
-    if I <> ktBoss then
-    begin
-      Token := '<Name' + IntToStr(Ord(I)) + '>';
-      ReplaceTextToken(DialogText, Token, DominatorShipDefinitions[I].DisplayNames[dsBlazer], '');
-      Token := '<RankPointsFor' + DominatorShipTypeKeys[I] + '>';
-      ReplaceTextToken(DialogText, Token, IntToStr(DominatorShipDefinitions[I].RankPoints), TextHighlightColorTag);
-    end;
+  begin
+    if I = ktBoss then Continue;
+    Token := '<Name' + IntToStr(Ord(I)) + '>';
+    ReplaceTextToken(DialogText, Token, DominatorShipDefinitions[I].DisplayNames[dsBlazer], '');
+    Token := '<RankPointsFor' + DominatorShipTypeKeys[I] + '>';
+    ReplaceTextToken(DialogText, Token, IntToStr(DominatorShipDefinitions[I].RankPoints), TextHighlightColorTag);
+  end;
   M_Main(True);
 end;
-{ @end $5BC3D8 }
+{ @end $56C5C0 }
 
-{ @routine $5BC86C TfRuinsTalk_ShowMilitaryBaseRepairDialog }
-procedure TfRuinsTalk.ShowMilitaryBaseRepairDialog(Action: Integer);
+{ @routine $56CA2C TfRuinsTalk_ShowMilitaryBaseRepairDialog }
+procedure TfRuinsTalk.ShowMilitaryBaseRepairDialog(Action: Cardinal);
 begin
   DialogText := LocalizedColorText('FormRuins.WB.Repair.WBAnswer');
   ReplaceTextToken(DialogText, '<WB>', GetPlayer.DockedTo.Name, TextHighlightColorTag);
   ClearChoices;
   AddChoice('- ' + LocalizedColorText('FormRuins.WB.Repair.PlayerCostAsk'), 0, ShowMilitaryBaseRepairQuote);
 end;
-{ @end $5BC86C }
+{ @end $56CA2C }
 
-{ @routine $5BC9FC TfRuinsTalk_ShowMilitaryBaseRepairQuote }
-procedure TfRuinsTalk.ShowMilitaryBaseRepairQuote(Action: Integer);
+{ @routine $56CBB0 TfRuinsTalk_ShowMilitaryBaseRepairQuote }
+procedure TfRuinsTalk.ShowMilitaryBaseRepairQuote(Action: Cardinal);
 var
   Cost: Integer;
 begin
@@ -3508,13 +3504,13 @@ begin
     ClearChoices;
     if (Cost > 0) and (GetPlayer.Money >= Cost) then
       AddChoice('- ' + FormatText1(LocalizedColorText('FormRuins.WB.Repair.PlayerOk'), TextHighlightColorTag, '<Money>', IntToStr(Cost)), 0, AcceptMilitaryBaseRepair);
-  AddChoice('- ' + LocalizedColorText('FormRuins.WB.Repair.PlayerNo'), 0, DeclineMilitaryBaseRepair);
+    AddChoice('- ' + LocalizedColorText('FormRuins.WB.Repair.PlayerNo'), 0, DeclineMilitaryBaseRepair);
   end;
 end;
-{ @end $5BC9FC }
+{ @end $56CBB0 }
 
-{ @routine $5BCE50 TfRuinsTalk_AcceptMilitaryBaseRepair }
-procedure TfRuinsTalk.AcceptMilitaryBaseRepair(Action: Integer);
+{ @routine $56CFE4 TfRuinsTalk_AcceptMilitaryBaseRepair }
+procedure TfRuinsTalk.AcceptMilitaryBaseRepair(Action: Cardinal);
 begin
   (GetPlayer.DockedTo as TRuins).RepairShipEquipment(GetPlayer);
   GetPlayer.RefreshDerivedStats(True);
@@ -3522,18 +3518,18 @@ begin
   SoundManager.PlaySound('Sound.Repair');
   M_Main(True);
 end;
-{ @end $5BCE50 }
+{ @end $56CFE4 }
 
-{ @routine $5BCF58 TfRuinsTalk_DeclineMilitaryBaseRepair }
-procedure TfRuinsTalk.DeclineMilitaryBaseRepair(Action: Integer);
+{ @routine $56D0E0 TfRuinsTalk_DeclineMilitaryBaseRepair }
+procedure TfRuinsTalk.DeclineMilitaryBaseRepair(Action: Cardinal);
 begin
   DialogText := LocalizedColorText('FormRuins.WB.Repair.WBAfterNo');
   M_Main(True);
 end;
-{ @end $5BCF58 }
+{ @end $56D0E0 }
 
-{ @routine $5BD000 TfRuinsTalk_ShowMilitaryBaseProgramsDialog }
-procedure TfRuinsTalk.ShowMilitaryBaseProgramsDialog(Action: Integer);
+{ @routine $56D17C TfRuinsTalk_ShowMilitaryBaseProgramsDialog }
+procedure TfRuinsTalk.ShowMilitaryBaseProgramsDialog(Action: Cardinal);
 var
   Text, Info: WideString;
   I: TProgramIndex;
@@ -3555,10 +3551,10 @@ begin
   ClearChoices;
   AddChoice('- ' + LocalizedColorText('FormRuins.WB.Programms.PlayerOk'), 0, AcceptMilitaryBasePrograms);
 end;
-{ @end $5BD000 }
+{ @end $56D17C }
 
-{ @routine $5BD3FC TfRuinsTalk_AcceptMilitaryBasePrograms }
-procedure TfRuinsTalk.AcceptMilitaryBasePrograms(Action: Integer);
+{ @routine $56D554 TfRuinsTalk_AcceptMilitaryBasePrograms }
+procedure TfRuinsTalk.AcceptMilitaryBasePrograms(Action: Cardinal);
 var
   I: TProgramIndex;
 begin
@@ -3573,10 +3569,10 @@ begin
   DialogText := LocalizedColorText('FormRuins.WB.Programms.WBAfterOk');
   M_Main(True);
 end;
-{ @end $5BD3FC }
+{ @end $56D554 }
 
-{ @routine $5BD528 TfRuinsTalk_ShowMilitaryBaseWarOperationDialog }
-procedure TfRuinsTalk.ShowMilitaryBaseWarOperationDialog(Action: Integer);
+{ @routine $56D664 TfRuinsTalk_ShowMilitaryBaseWarOperationDialog }
+procedure TfRuinsTalk.ShowMilitaryBaseWarOperationDialog(Action: Cardinal);
 begin
   BusinessQuoteSmallAmount := RoundAndTruncateToTens(Galaxy.ComputeScaledSmallMoney(oiHuman));
   StationServiceQuoteCost := RoundAndTruncateToHundreds(Galaxy.ComputeScaledHugeMoney(oiHuman));
@@ -3590,10 +3586,10 @@ begin
   else AddChoice('- ' + FormatText1(LocalizedColorText('FormRuins.WB.WarOperation.PlayerOk'), TextHighlightColorTag, '<Money>', IntToStr(StationServiceQuoteCost)), 0, ScriptDialogBlockCallback);
   AddChoice('- ' + LocalizedColorText('FormRuins.WB.WarOperation.PlayerNo'), 0, DeclineMilitaryBaseWarOperation);
 end;
-{ @end $5BD528 }
+{ @end $56D664 }
 
-{ @routine $5BD94C TfRuinsTalk_AcceptMilitaryBaseWarOperation }
-procedure TfRuinsTalk.AcceptMilitaryBaseWarOperation(Action: Integer);
+{ @routine $56DA68 TfRuinsTalk_AcceptMilitaryBaseWarOperation }
+procedure TfRuinsTalk.AcceptMilitaryBaseWarOperation(Action: Cardinal);
 var
   Names: WideString;
   I: Integer;
@@ -3620,12 +3616,12 @@ begin
     ToStar := Group.Route[3].Target as TStar;
     DialogText := DialogText + #13#10 + LocalizedColorText('FormRuins.WB.WarOperation.WBAfterOkGood');
     ReplaceTextToken(DialogText, '<Names>', Names, '');
-  ReplaceTextToken(DialogText, '<Money>', IntToStr(StationServiceQuoteCost), TextHighlightColorTag);
-  ReplaceTextToken(DialogText, '<StarNormal>', FromStar.Name, TextHighlightColorTag);
-  ReplaceTextToken(DialogText, '<StarEnemy>', ToStar.Name, TextHighlightColorTag);
-  ReplaceTextToken(DialogText, '<SectorNormal>', FromStar.Constellation.GetName, TextHighlightColorTag);
-  ReplaceTextToken(DialogText, '<SectorEnemy>', ToStar.Constellation.GetName, TextHighlightColorTag);
-  ReplaceTextToken(DialogText, '<Date>', Galaxy.FormatTurnDate(Group.Route[2].WaitUntilTurn), TextHighlightColorTag);
+    ReplaceTextToken(DialogText, '<Money>', IntToStr(StationServiceQuoteCost), TextHighlightColorTag);
+    ReplaceTextToken(DialogText, '<StarNormal>', FromStar.Name, TextHighlightColorTag);
+    ReplaceTextToken(DialogText, '<StarEnemy>', ToStar.Name, TextHighlightColorTag);
+    ReplaceTextToken(DialogText, '<SectorNormal>', FromStar.Constellation.GetName, TextHighlightColorTag);
+    ReplaceTextToken(DialogText, '<SectorEnemy>', ToStar.Constellation.GetName, TextHighlightColorTag);
+    ReplaceTextToken(DialogText, '<Date>', Galaxy.FormatTurnDate(Group.Route[2].WaitUntilTurn), TextHighlightColorTag);
   end
   else
   begin
@@ -3635,43 +3631,43 @@ begin
   end;
   M_Main(True);
 end;
-{ @end $5BD94C }
+{ @end $56DA68 }
 
-{ @routine $5BDF08 TfRuinsTalk_DeclineMilitaryBaseWarOperation }
-procedure TfRuinsTalk.DeclineMilitaryBaseWarOperation(Action: Integer);
+{ @routine $56DFF0 TfRuinsTalk_DeclineMilitaryBaseWarOperation }
+procedure TfRuinsTalk.DeclineMilitaryBaseWarOperation(Action: Cardinal);
 begin
   DialogText := LocalizedColorText('FormRuins.WB.WarOperation.WBAfterNo');
   M_Main(True);
 end;
-{ @end $5BDF08 }
+{ @end $56DFF0 }
 
-{ @routine $5BDFBC TfRuinsTalk_ShowMilitaryBaseTravelDialog }
-procedure TfRuinsTalk.ShowMilitaryBaseTravelDialog(Action: Integer);
+{ @routine $56E098 TfRuinsTalk_ShowMilitaryBaseTravelDialog }
+procedure TfRuinsTalk.ShowMilitaryBaseTravelDialog(Action: Cardinal);
 begin
   DialogText := LocalizedColorText('FormRuins.WB.FlyToEnemy.WBToChamber');
   ClearChoices;
   AddChoice('- ' + LocalizedColorText('FormRuins.WB.FlyToEnemy.PlayerToChamber'), 0, ConfirmMilitaryBaseTravel);
 end;
-{ @end $5BDFBC }
+{ @end $56E098 }
 
-{ @routine $5BE104 TfRuinsTalk_ConfirmMilitaryBaseTravel }
-procedure TfRuinsTalk.ConfirmMilitaryBaseTravel(Action: Integer);
+{ @routine $56E1D8 TfRuinsTalk_ConfirmMilitaryBaseTravel }
+procedure TfRuinsTalk.ConfirmMilitaryBaseTravel(Action: Cardinal);
 begin
   if LargePortraitLayout and PortraitTableVisible and (StationTransientControl.FindByNameRecursive('Table2') <> nil) then
   begin
     StationTransientControl.FindByNameRecursive('Table2').SetActive(True);
     StationTransientControl.FindByNameRecursive('Table').SetActive(False);
   end;
-  (GetByName('ImageBG') as TImageGI).SetImagePath('GI,Bm.FormRuins.' + GiResourceSuffix + 'WBbg2');
+  (GetByName('ImageBG') as TImageGI).ImageSourcePath := 'GI,Bm.FormRuins.' + GiResourceSuffix + 'WBbg2';
   DialogText := LocalizedColorText('FormRuins.WB.FlyToEnemy.WBInChamber');
   ClearChoices;
   AddChoice('- ' + LocalizedColorText('FormRuins.WB.FlyToEnemy.PlayerFly'), 0, DepartWithStation);
   AddChoice('- ' + LocalizedColorText('FormRuins.WB.FlyToEnemy.PlayerNotFly'), 0, DeclineMilitaryBaseTravel);
 end;
-{ @end $5BE104 }
+{ @end $56E1D8 }
 
-{ @routine $5BE3E0 TfRuinsTalk_DepartWithStation }
-procedure TfRuinsTalk.DepartWithStation(Action: Integer);
+{ @routine $56E494 TfRuinsTalk_DepartWithStation }
+procedure TfRuinsTalk.DepartWithStation(Action: Cardinal);
 begin
   if Action = 1 then Galaxy.CheckIntegrityChecksum(200);
   RequestedScreenId := screenJump;
@@ -3686,9 +3682,9 @@ begin
   else (TObject(RegisteredScreens[CurrentScreenId]) as TMessageLoopGI).RequestClose(1);
   if Action = 0 then BreakUiMessage;
 end;
-{ @end $5BE3E0 }
+{ @end $56E494 }
 
-{ @routine $5BE484 TfRuinsTalk_ShowMilitaryBaseArrivalDialog }
+{ @routine $56E52C TfRuinsTalk_ShowMilitaryBaseArrivalDialog }
 procedure TfRuinsTalk.ShowMilitaryBaseArrivalDialog(Action: Integer);
 begin
   if LargePortraitLayout and PortraitTableVisible and (StationTransientControl.FindByNameRecursive('Table2') <> nil) then
@@ -3696,29 +3692,29 @@ begin
     StationTransientControl.FindByNameRecursive('Table2').SetActive(True);
     StationTransientControl.FindByNameRecursive('Table').SetActive(False);
   end;
-  (GetByName('ImageBG') as TImageGI).SetImagePath('GI,Bm.FormRuins.' + GiResourceSuffix + 'WBbg2');
+  (GetByName('ImageBG') as TImageGI).ImageSourcePath := 'GI,Bm.FormRuins.' + GiResourceSuffix + 'WBbg2';
   DialogText := LocalizedColorText('FormRuins.WB.FlyToEnemy.WBInStarEnemy');
   ClearChoices;
   AddChoice('- ' + LocalizedColorText('FormRuins.WB.FlyToEnemy.PlayerUp'), 0, ShowMilitaryBaseArrivalInfo);
 end;
-{ @end $5BE484 }
+{ @end $56E52C }
 
-{ @routine $5BE6E0 TfRuinsTalk_DeclineMilitaryBaseTravel }
-procedure TfRuinsTalk.DeclineMilitaryBaseTravel(Action: Integer);
+{ @routine $56E76C TfRuinsTalk_DeclineMilitaryBaseTravel }
+procedure TfRuinsTalk.DeclineMilitaryBaseTravel(Action: Cardinal);
 begin
   if LargePortraitLayout and PortraitTableVisible and (StationTransientControl.FindByNameRecursive('Table2') <> nil) then
   begin
     StationTransientControl.FindByNameRecursive('Table').SetActive(True);
     StationTransientControl.FindByNameRecursive('Table2').SetActive(False);
   end;
-  (GetByName('ImageBG') as TImageGI).SetImagePath('GI,' + GetStationBackgroundPath);
+  (GetByName('ImageBG') as TImageGI).ImageSourcePath := 'GI,' + GetStationBackgroundPath;
   DialogText := LocalizedColorText('FormRuins.WB.FlyToEnemy.WBAfterNotFly');
   M_Main(True);
 end;
-{ @end $5BE6E0 }
+{ @end $56E76C }
 
-{ @routine $5BE87C TfRuinsTalk_ShowMilitaryBaseArrivalInfo }
-procedure TfRuinsTalk.ShowMilitaryBaseArrivalInfo(Action: Integer);
+{ @routine $56E8F4 TfRuinsTalk_ShowMilitaryBaseArrivalInfo }
+procedure TfRuinsTalk.ShowMilitaryBaseArrivalInfo(Action: Cardinal);
 var
   I: Integer;
   Ship: TShip;
@@ -3729,14 +3725,14 @@ begin
     StationTransientControl.FindByNameRecursive('Table2').SetActive(True);
     StationTransientControl.FindByNameRecursive('Table').SetActive(False);
   end;
-  (GetByName('ImageBG') as TImageGI).SetImagePath('GI,' + GetStationBackgroundPath);
+  (GetByName('ImageBG') as TImageGI).ImageSourcePath := 'GI,' + GetStationBackgroundPath;
   Names := '';
   for I := 0 to GetPlayer.CurrentStar.Ships.Count - 1 do
   begin
     Ship := GetPlayer.CurrentStar.Ships[I];
-    if (Ship.TypeId = stKling) and not Ship.InHyperspace then
-      if Names = '' then Names := Ship.GetName
-      else Names := Names + ', ' + Ship.GetName;
+    if not ((Ship.TypeId = stKling) and not Ship.InHyperspace) then Continue;
+    if Names = '' then Names := Ship.GetName
+    else Names := Names + ', ' + Ship.GetName;
   end;
   DialogText := LocalizedColorText('FormRuins.WB.FlyToEnemy.WBStarEnemyInfo');
   ReplaceTextToken(DialogText, '<N>', IntToStr(MilitaryTravelDistance), TextHighlightColorTag);
@@ -3746,28 +3742,28 @@ begin
   AddChoice('- ' + LocalizedColorText('FormRuins.WB.FlyToEnemy.PlayerHangar'), 0, OpenHangar);
   AddChoice('- ' + LocalizedColorText('FormRuins.WB.FlyToEnemy.PlayerQuestions'), 0, ShowMilitaryBaseArrivalQuestions);
 end;
-{ @end $5BE87C }
+{ @end $56E8F4 }
 
-{ @routine $5BECC4 TfRuinsTalk_ShowMilitaryBaseArrivalQuestions }
-procedure TfRuinsTalk.ShowMilitaryBaseArrivalQuestions(Action: Integer);
+{ @routine $56ED0C TfRuinsTalk_ShowMilitaryBaseArrivalQuestions }
+procedure TfRuinsTalk.ShowMilitaryBaseArrivalQuestions(Action: Cardinal);
 begin
   DialogText := LocalizedColorText('FormRuins.WB.FlyToEnemy.WBAfterQuestions');
   ClearChoices;
   AddChoice('- ' + LocalizedColorText('FormRuins.WB.FlyToEnemy.PlayerHangar'), 0, OpenHangar);
 end;
-{ @end $5BECC4 }
+{ @end $56ED0C }
 
-{ @routine $5BEE14 TfRuinsTalk_ShowScienceBaseImprovementDialog }
-procedure TfRuinsTalk.ShowScienceBaseImprovementDialog(Action: Integer);
+{ @routine $56EE54 TfRuinsTalk_ShowScienceBaseImprovementDialog }
+procedure TfRuinsTalk.ShowScienceBaseImprovementDialog(Action: Cardinal);
 begin
   DialogText := LocalizedColorText('FormRuins.SB.Improvement.SBAnswer');
   ClearChoices;
   AddChoice('- ' + LocalizedColorText('FormRuins.SB.Improvement.PlayerAsk'), 0, ShowScienceBaseImprovementItems);
 end;
-{ @end $5BEE14 }
+{ @end $56EE54 }
 
-{ @routine $5BEF50 TfRuinsTalk_ShowScienceBaseImprovementItems }
-procedure TfRuinsTalk.ShowScienceBaseImprovementItems(Action: Integer);
+{ @routine $56EF88 TfRuinsTalk_ShowScienceBaseImprovementItems }
+procedure TfRuinsTalk.ShowScienceBaseImprovementItems(Action: Cardinal);
 var
   I, Count: Integer;
   Item: TEquipment;
@@ -3813,7 +3809,7 @@ begin
   if Count > 0 then
   begin
     DialogText := DialogText + #13#10 + LocalizedColorText('FormRuins.SB.Improvement.SBSeeItemsHaveItems');
-  AddChoice('- ' + LocalizedColorText('FormRuins.SB.Improvement.PlayerNothing'), 0, DeclineScienceBaseImprovement);
+    AddChoice('- ' + LocalizedColorText('FormRuins.SB.Improvement.PlayerNothing'), 0, DeclineScienceBaseImprovement);
   end
   else
   begin
@@ -3821,19 +3817,19 @@ begin
     M_Main(True);
   end;
 end;
-{ @end $5BEF50 }
+{ @end $56EF88 }
 
-{ @routine $5BF650 TfRuinsTalk_DeclineScienceBaseImprovement }
-procedure TfRuinsTalk.DeclineScienceBaseImprovement(Action: Integer);
+{ @routine $56F648 TfRuinsTalk_DeclineScienceBaseImprovement }
+procedure TfRuinsTalk.DeclineScienceBaseImprovement(Action: Cardinal);
 begin
   ResetStationImprovement;
   DialogText := LocalizedColorText('FormRuins.SB.Improvement.SBAnswerNothing');
   M_Main(True);
 end;
-{ @end $5BF650 }
+{ @end $56F648 }
 
-{ @routine $5BF714 TfRuinsTalk_ShowScienceBaseImprovementQuote }
-procedure TfRuinsTalk.ShowScienceBaseImprovementQuote(Action: Integer);
+{ @routine $56F700 TfRuinsTalk_ShowScienceBaseImprovementQuote }
+procedure TfRuinsTalk.ShowScienceBaseImprovementQuote(Action: Cardinal);
 var
   Item: TEquipment;
   Nodes: Integer;
@@ -3843,9 +3839,9 @@ begin
   if Item.OwnerId = oiDominator then
   begin
     DialogText := LocalizedColorText('FormRuins.SB.Improvement.SBNeedCostImprovementNodes');
-  ReplaceTextToken(DialogText, '<MinNode>', IntToStr(Round(Item.CalculateImprovementCost(ikMinor) * 0.01)), TextHighlightColorTag);
-  ReplaceTextToken(DialogText, '<AverageNode>', IntToStr(Round(Item.CalculateImprovementCost(ikMedium) * 0.01)), TextHighlightColorTag);
-  ReplaceTextToken(DialogText, '<MaxNode>', IntToStr(Round(Item.CalculateImprovementCost(ikMajor) * 0.01)), TextHighlightColorTag);
+    ReplaceTextToken(DialogText, '<MinNode>', IntToStr(Round(Item.CalculateImprovementCost(ikMinor) * 0.01)), TextHighlightColorTag);
+    ReplaceTextToken(DialogText, '<AverageNode>', IntToStr(Round(Item.CalculateImprovementCost(ikMedium) * 0.01)), TextHighlightColorTag);
+    ReplaceTextToken(DialogText, '<MaxNode>', IntToStr(Round(Item.CalculateImprovementCost(ikMajor) * 0.01)), TextHighlightColorTag);
   end
   else DialogText := LocalizedColorText('FormRuins.SB.Improvement.SBNeedCostImprovement');
   ReplaceTextToken(DialogText, '<FullName>', NormalizeTextHighlightColors(RemoveTextTagsW(Item.GetDisplayName)), TextHighlightColorTag);
@@ -3858,27 +3854,27 @@ begin
   begin
     Nodes := GetPlayer.GetAvailableNodeCount(nil);
     if (Nodes >= Round(Item.CalculateImprovementCost(ikMajor) * 0.01)) and (Item.CalculateImprovementCost(ikMajor) <= GetPlayer.Money) then
-  AddChoice('- ' + LocalizedColorText('FormRuins.SB.Improvement.PlayerOkMax'), 2, SelectScienceBaseImprovementKind);
+      AddChoice('- ' + LocalizedColorText('FormRuins.SB.Improvement.PlayerOkMax'), 2, SelectScienceBaseImprovementKind);
     if (Nodes >= Round(Item.CalculateImprovementCost(ikMedium) * 0.01)) and (Item.CalculateImprovementCost(ikMedium) <= GetPlayer.Money) then
-  AddChoice('- ' + LocalizedColorText('FormRuins.SB.Improvement.PlayerOkAverage'), 1, SelectScienceBaseImprovementKind);
+      AddChoice('- ' + LocalizedColorText('FormRuins.SB.Improvement.PlayerOkAverage'), 1, SelectScienceBaseImprovementKind);
     if (Nodes >= Round(Item.CalculateImprovementCost(ikMinor) * 0.01)) and (Item.CalculateImprovementCost(ikMinor) <= GetPlayer.Money) then
-  AddChoice('- ' + LocalizedColorText('FormRuins.SB.Improvement.PlayerOkMin'), 0, SelectScienceBaseImprovementKind);
+      AddChoice('- ' + LocalizedColorText('FormRuins.SB.Improvement.PlayerOkMin'), 0, SelectScienceBaseImprovementKind);
   end
   else
   begin
     if Item.CalculateImprovementCost(ikMajor) <= GetPlayer.Money then
-  AddChoice('- ' + LocalizedColorText('FormRuins.SB.Improvement.PlayerOkMax'), 2, SelectScienceBaseImprovementKind);
+      AddChoice('- ' + LocalizedColorText('FormRuins.SB.Improvement.PlayerOkMax'), 2, SelectScienceBaseImprovementKind);
     if Item.CalculateImprovementCost(ikMedium) <= GetPlayer.Money then
-  AddChoice('- ' + LocalizedColorText('FormRuins.SB.Improvement.PlayerOkAverage'), 1, SelectScienceBaseImprovementKind);
+      AddChoice('- ' + LocalizedColorText('FormRuins.SB.Improvement.PlayerOkAverage'), 1, SelectScienceBaseImprovementKind);
     if Item.CalculateImprovementCost(ikMinor) <= GetPlayer.Money then
-  AddChoice('- ' + LocalizedColorText('FormRuins.SB.Improvement.PlayerOkMin'), 0, SelectScienceBaseImprovementKind);
+      AddChoice('- ' + LocalizedColorText('FormRuins.SB.Improvement.PlayerOkMin'), 0, SelectScienceBaseImprovementKind);
   end;
   AddChoice('- ' + LocalizedColorText('FormRuins.SB.Improvement.PlayerNo'), 0, DeclineScienceBaseImprovement);
 end;
-{ @end $5BF714 }
+{ @end $56F700 }
 
-{ @routine $5C003C TfRuinsTalk_SelectScienceBaseImprovementKind }
-procedure TfRuinsTalk.SelectScienceBaseImprovementKind(Action: Integer);
+{ @routine $56FFBC TfRuinsTalk_SelectScienceBaseImprovementKind }
+procedure TfRuinsTalk.SelectScienceBaseImprovementKind(Action: Cardinal);
 var
   Item: TEquipment;
   Text: WideString;
@@ -3888,11 +3884,12 @@ begin
   Item := StationImprovementItem;
   Detail := 1;
   Count := 0;
-  while True do
-  begin
+  repeat
     if not (Item is TEngine) and not (Item is TWeapon) and not (Item is TCargoHook) then Break;
-    if not ((Detail = 2) and (Item is TWeapon) and (TWeapon(Item).GetWeaponInfo.ShotType in [wstTorpedo..wstRocket])) then
-    begin
+    repeat
+      if Detail = 2 then
+        if Item is TWeapon then
+          if TWeapon(Item).GetWeaponInfo.ShotType in [wstTorpedo..wstRocket] then Break;
       Text := LocalizedColorText('Items.' + Item.GetCategoryConfigName + '.Detail.' + IntToStr(Detail));
       if Length(Text) <> 0 then
       begin
@@ -3904,18 +3901,17 @@ begin
         AddChoice('- ' + FormatText1(LocalizedColorText('FormRuins.SB.Improvement.PlayerDetailOk'), TextHighlightColorTag, '<Attr>', Text), Detail, AcceptScienceBaseImprovement);
         Inc(Count);
       end;
-    end;
+    until True;
     Inc(Detail);
-    if Detail > 100 then Break;
-  end;
+  until Detail > 100;
   if Count > 1 then
-  AddChoice('- ' + LocalizedColorText('FormRuins.SB.Improvement.PlayerDetailNo'), 0, DeclineScienceBaseImprovement)
+    AddChoice('- ' + LocalizedColorText('FormRuins.SB.Improvement.PlayerDetailNo'), 0, DeclineScienceBaseImprovement)
   else AcceptScienceBaseImprovement(0);
 end;
-{ @end $5C003C }
+{ @end $56FFBC }
 
-{ @routine $5C03C8 TfRuinsTalk_AcceptScienceBaseImprovement }
-procedure TfRuinsTalk.AcceptScienceBaseImprovement(Action: Integer);
+{ @routine $570334 TfRuinsTalk_AcceptScienceBaseImprovement }
+procedure TfRuinsTalk.AcceptScienceBaseImprovement(Action: Cardinal);
 var
   Item: TEquipment;
   Kind: TImprovementKind;
@@ -3942,35 +3938,35 @@ begin
     ReplaceTextToken(DialogText, '<ShortName>', WideLowerCase(Item.GetShortName), '');
     SoundManager.PlaySound('Sound.Sell');
     ClearChoices;
-  AddChoice('- ' + LocalizedColorText('FormRuins.SB.Improvement.PlayerRepeatOk'), 0, ShowScienceBaseImprovementItems);
-  AddChoice('- ' + LocalizedColorText('FormRuins.SB.Improvement.PlayerRepeatNo'), 0, DeclineScienceBaseRepeatImprovement);
+    AddChoice('- ' + LocalizedColorText('FormRuins.SB.Improvement.PlayerRepeatOk'), 0, ShowScienceBaseImprovementItems);
+    AddChoice('- ' + LocalizedColorText('FormRuins.SB.Improvement.PlayerRepeatNo'), 0, DeclineScienceBaseRepeatImprovement);
     ResetStationImprovement;
   end
   else DeclineScienceBaseRepeatImprovement(0);
 end;
-{ @end $5C03C8 }
+{ @end $570334 }
 
-{ @routine $5C082C TfRuinsTalk_DeclineScienceBaseRepeatImprovement }
-procedure TfRuinsTalk.DeclineScienceBaseRepeatImprovement(Action: Integer);
+{ @routine $570774 TfRuinsTalk_DeclineScienceBaseRepeatImprovement }
+procedure TfRuinsTalk.DeclineScienceBaseRepeatImprovement(Action: Cardinal);
 begin
   ResetStationImprovement;
   DialogText := LocalizedColorText('FormRuins.SB.Improvement.SBAfterRepeatNo');
   M_Main(True);
 end;
-{ @end $5C082C }
+{ @end $570774 }
 
-{ @routine $5C08F0 TfRuinsTalk_ShowScienceBaseRepairDialog }
-procedure TfRuinsTalk.ShowScienceBaseRepairDialog(Action: Integer);
+{ @routine $57082C TfRuinsTalk_ShowScienceBaseRepairDialog }
+procedure TfRuinsTalk.ShowScienceBaseRepairDialog(Action: Cardinal);
 begin
   DialogText := LocalizedColorText('FormRuins.SB.Repair.SBAnswer');
   ReplaceTextToken(DialogText, '<SB>', GetPlayer.DockedTo.Name, TextHighlightColorTag);
   ClearChoices;
   AddChoice('- ' + LocalizedColorText('FormRuins.SB.Repair.PlayerCostAsk'), 0, ShowScienceBaseRepairQuote);
 end;
-{ @end $5C08F0 }
+{ @end $57082C }
 
-{ @routine $5C0A80 TfRuinsTalk_ShowScienceBaseRepairQuote }
-procedure TfRuinsTalk.ShowScienceBaseRepairQuote(Action: Integer);
+{ @routine $5709B0 TfRuinsTalk_ShowScienceBaseRepairQuote }
+procedure TfRuinsTalk.ShowScienceBaseRepairQuote(Action: Cardinal);
 var
   Cost, EquipmentCost, I, NodeCost: Integer;
   Item: TEquipment;
@@ -3979,9 +3975,12 @@ begin
   for I := 0 to GetPlayer.Inventory.Count - 1 do
   begin
     Item := GetPlayer.Inventory[I];
-    if Item.EquippedFlag <> 0 then
-      if (Item is TWeapon) and (TWeapon(Item).GetWeaponInfo.Availability = waNotSoldAndNodeRepair) and Item.NeedsRepair then
-        if (GetPlayer.DockedTo as TRuins).CanRepairEquipmentTech(Item) then Inc(NodeCost, Item.CalculateRepairCost);
+    if Item.EquippedFlag = 0 then Continue;
+    if not (Item is TWeapon) then Continue;
+    if TWeapon(Item).GetWeaponInfo.Availability <> waNotSoldAndNodeRepair then Continue;
+    if not Item.NeedsRepair then Continue;
+    if not (GetPlayer.DockedTo as TRuins).CanRepairEquipmentTech(Item) then Continue;
+    Inc(NodeCost, Item.CalculateRepairCost);
   end;
   if NodeCost > 0 then
   begin
@@ -3993,31 +3992,29 @@ begin
   begin
     DialogText := LocalizedColorText('FormRuins.SB.Repair.SBCostAnswerNonEquipmentsForRepair');
     M_Main(True);
-  end
-  else
-  begin
-    if Cost < GetPlayer.Wealth div 10 then DialogText := LocalizedColorText('FormRuins.SB.Repair.SBCostAnswerYouHaveGoodEquipments')
-    else DialogText := LocalizedColorText('FormRuins.SB.Repair.SBCostAnswerYouHaveBadEquipments');
+    Exit;
+  end;
+  if Cost < GetPlayer.Wealth div 10 then DialogText := LocalizedColorText('FormRuins.SB.Repair.SBCostAnswerYouHaveGoodEquipments')
+  else DialogText := LocalizedColorText('FormRuins.SB.Repair.SBCostAnswerYouHaveBadEquipments');
   ReplaceTextToken(DialogText, '<SB>', GetPlayer.DockedTo.Name, TextHighlightColorTag);
   ReplaceTextToken(DialogText, '<Money>', IntToStr(Cost), TextHighlightColorTag);
   ReplaceTextToken(DialogText, '<EqMoney>', IntToStr(EquipmentCost), TextHighlightColorTag);
   ReplaceTextToken(DialogText, '<ArtMoney>', IntToStr(Cost - EquipmentCost), TextHighlightColorTag);
-    if NodeCost <> 0 then
-    begin
-      DialogText := DialogText + LocalizedColorText('FormRuins.SB.Repair.SBCostAnswerNeedNode');
-      ReplaceTextToken(DialogText, '<NeedNode>', IntToStr(NodeCost), TextHighlightColorTag);
-    end;
-    ClearChoices;
-    if (Cost > 0) and (GetPlayer.Money >= Cost) then
-      if (NodeCost = 0) or ((NodeCost > 0) and (GetPlayer.GetAvailableNodeCount(nil) >= NodeCost)) then
-  AddChoice('- ' + LocalizedColorText('FormRuins.SB.Repair.PlayerOk'), 0, AcceptScienceBaseRepair);
-  AddChoice('- ' + LocalizedColorText('FormRuins.SB.Repair.PlayerNo'), 0, DeclineScienceBaseRepair);
+  if NodeCost <> 0 then
+  begin
+    DialogText := DialogText + LocalizedColorText('FormRuins.SB.Repair.SBCostAnswerNeedNode');
+    ReplaceTextToken(DialogText, '<NeedNode>', IntToStr(NodeCost), TextHighlightColorTag);
   end;
+  ClearChoices;
+  if (Cost > 0) and (GetPlayer.Money >= Cost) then
+    if (NodeCost = 0) or ((NodeCost > 0) and (GetPlayer.GetAvailableNodeCount(nil) >= NodeCost)) then
+      AddChoice('- ' + LocalizedColorText('FormRuins.SB.Repair.PlayerOk'), 0, AcceptScienceBaseRepair);
+  AddChoice('- ' + LocalizedColorText('FormRuins.SB.Repair.PlayerNo'), 0, DeclineScienceBaseRepair);
 end;
-{ @end $5C0A80 }
+{ @end $5709B0 }
 
-{ @routine $5C1118 TfRuinsTalk_AcceptScienceBaseRepair }
-procedure TfRuinsTalk.AcceptScienceBaseRepair(Action: Integer);
+{ @routine $571008 TfRuinsTalk_AcceptScienceBaseRepair }
+procedure TfRuinsTalk.AcceptScienceBaseRepair(Action: Cardinal);
 var
   I, NodeCost: Integer;
   Item: TEquipment;
@@ -4046,18 +4043,18 @@ begin
   end
   else DeclineScienceBaseRepair(0);
 end;
-{ @end $5C1118 }
+{ @end $571008 }
 
-{ @routine $5C1320 TfRuinsTalk_DeclineScienceBaseRepair }
-procedure TfRuinsTalk.DeclineScienceBaseRepair(Action: Integer);
+{ @routine $5711F8 TfRuinsTalk_DeclineScienceBaseRepair }
+procedure TfRuinsTalk.DeclineScienceBaseRepair(Action: Cardinal);
 begin
   DialogText := LocalizedColorText('FormRuins.SB.Repair.SBAfterNo');
   M_Main(True);
 end;
-{ @end $5C1320 }
+{ @end $5711F8 }
 
-{ @routine $5C13C8 TfRuinsTalk_ShowScienceBaseSatelliteOfferDialog }
-procedure TfRuinsTalk.ShowScienceBaseSatelliteOfferDialog(Refresh: Integer);
+{ @routine $571294 TfRuinsTalk_ShowScienceBaseSatelliteOfferDialog }
+procedure TfRuinsTalk.ShowScienceBaseSatelliteOfferDialog(Refresh: Cardinal);
 var
   Satellite: TSatellite;
   Text: WideString;
@@ -4072,11 +4069,11 @@ begin
     else DialogText := DialogText + #13#10 + LocalizedColorText('FormRuins.SB.Satellite.SBInfoNo');
     ReplaceTextToken(DialogText, '<SatName>', Satellite.GetDisplayName, TextHighlightColorTag);
     ReplaceTextToken(DialogText, '<SatText>', Satellite.GetInfoText('', nil), '');
-  ReplaceTextToken(DialogText, '<SatSize>', IntToStr(Satellite.Weight), TextHighlightColorTag);
-  ReplaceTextToken(DialogText, '<SatMoney>', IntToStr(Satellite.Cost), TextHighlightColorTag);
-  ReplaceTextToken(DialogText, '<SatCurCount>', IntToStr(Galaxy.CountExistingSatellites), TextHighlightColorTag);
-  ReplaceTextToken(DialogText, '<SatMayCount>', IntToStr(GetPlayer.GetSatelliteLimit), TextHighlightColorTag);
-  ReplaceTextToken(DialogText, '<SB>', GetPlayer.DockedTo.Name, TextHighlightColorTag);
+    ReplaceTextToken(DialogText, '<SatSize>', IntToStr(Satellite.Weight), TextHighlightColorTag);
+    ReplaceTextToken(DialogText, '<SatMoney>', IntToStr(Satellite.Cost), TextHighlightColorTag);
+    ReplaceTextToken(DialogText, '<SatCurCount>', IntToStr(Galaxy.CountExistingSatellites), TextHighlightColorTag);
+    ReplaceTextToken(DialogText, '<SatMayCount>', IntToStr(GetPlayer.GetSatelliteLimit), TextHighlightColorTag);
+    ReplaceTextToken(DialogText, '<SB>', GetPlayer.DockedTo.Name, TextHighlightColorTag);
   end;
   ClearChoices;
   AddChoice('- ' + LocalizedColorText('FormRuins.SB.Satellite.PlayerInstruction'), 0, ShowSatelliteInstructions);
@@ -4088,18 +4085,18 @@ begin
   else AddChoice('- ' + Text, 0, ScriptDialogBlockCallback);
   AddChoice('- ' + LocalizedColorText('FormRuins.SB.Satellite.PlayerNo'), 0, DeclineScienceBaseSatellite);
 end;
-{ @end $5C13C8 }
+{ @end $571294 }
 
-{ @routine $5C1AA4 TfRuinsTalk_ShowSatelliteInstructions }
-procedure TfRuinsTalk.ShowSatelliteInstructions(Action: Integer);
+{ @routine $571934 TfRuinsTalk_ShowSatelliteInstructions }
+procedure TfRuinsTalk.ShowSatelliteInstructions(Action: Cardinal);
 begin
   DialogText := LocalizedColorText('FormRuins.SB.Satellite.SBInstruction');
   ShowScienceBaseSatelliteOfferDialog(1);
 end;
-{ @end $5C1AA4 }
+{ @end $571934 }
 
-{ @routine $5C1B60 TfRuinsTalk_BuyScienceBaseSatellite }
-procedure TfRuinsTalk.BuyScienceBaseSatellite(Action: Integer);
+{ @routine $5719E4 TfRuinsTalk_BuyScienceBaseSatellite }
+procedure TfRuinsTalk.BuyScienceBaseSatellite(Action: Cardinal);
 var Satellite: TSatellite;
 begin
   Satellite := (GetPlayer.DockedTo as TRuins).SatelliteOffer;
@@ -4112,18 +4109,18 @@ begin
   SoundManager.PlaySound('Sound.Sell');
   M_Main(True);
 end;
-{ @end $5C1B60 }
+{ @end $5719E4 }
 
-{ @routine $5C1D2C TfRuinsTalk_DeclineScienceBaseSatellite }
-procedure TfRuinsTalk.DeclineScienceBaseSatellite(Action: Integer);
+{ @routine $571B9C TfRuinsTalk_DeclineScienceBaseSatellite }
+procedure TfRuinsTalk.DeclineScienceBaseSatellite(Action: Cardinal);
 begin
   DialogText := LocalizedColorText('FormRuins.SB.Satellite.SBAfterNo');
   M_Main(True);
 end;
-{ @end $5C1D2C }
+{ @end $571B9C }
 
-{ @routine $5C1DDC TfRuinsTalk_ShowScienceBaseResearchDialog }
-procedure TfRuinsTalk.ShowScienceBaseResearchDialog(Action: Integer);
+{ @routine $571C40 TfRuinsTalk_ShowScienceBaseResearchDialog }
+procedure TfRuinsTalk.ShowScienceBaseResearchDialog(Action: Cardinal);
 var
   Text, Info: WideString;
   Series: TDominatorSeries;
@@ -4138,9 +4135,9 @@ begin
       if GetPlayer.CountUnequippedDominatorEquipment > 0 then
         AddChoice('- ' + LocalizedColorText('FormRuins.SB.Scn.Section' + DominatorSeriesNames[Series]), Ord(Series) + 1, SelectScienceBaseResearchSection)
       else AddChoice('- ' + LocalizedColorText('FormRuins.SB.Scn.Section' + DominatorSeriesNames[Series]), 0, ScriptDialogBlockCallback);
-  ReplaceTextToken(Info, '<Count>', IntToStr(Galaxy.DominatorResearch[Series].Material), TextHighlightColorTag);
-  ReplaceTextToken(Info, '<Speed>', IntToStr(Galaxy.GetDominatorResearchEfficiency(Series)), TextHighlightColorTag);
-  ReplaceTextToken(Info, '<Day>', IntToStr(Round(Max(1.0, (100 - Galaxy.DominatorResearch[Series].Progress) / Galaxy.GetDominatorResearchRate(Series)))), TextHighlightColorTag);
+      ReplaceTextToken(Info, '<Count>', IntToStr(Galaxy.DominatorResearch[Series].Material), TextHighlightColorTag);
+      ReplaceTextToken(Info, '<Speed>', IntToStr(Galaxy.GetDominatorResearchEfficiency(Series)), TextHighlightColorTag);
+      ReplaceTextToken(Info, '<Day>', IntToStr(Round(Max(1.0, (100 - Galaxy.DominatorResearch[Series].Progress) / Galaxy.GetDominatorResearchRate(Series)))), TextHighlightColorTag);
     end
     else Info := LocalizedColorText('FormRuins.SB.Scn.SBSectionInfoEnd');
     case Series of
@@ -4155,10 +4152,10 @@ begin
   ReplaceTextToken(DialogText, '<SB>', GetPlayer.DockedTo.Name, TextHighlightColorTag);
   AddChoice('- ' + LocalizedColorText('FormRuins.SB.Scn.SectionNone'), 0, SelectScienceBaseResearchSection);
 end;
-{ @end $5C1DDC }
+{ @end $571C40 }
 
-{ @routine $5C2494 TfRuinsTalk_SelectScienceBaseResearchSection }
-procedure TfRuinsTalk.SelectScienceBaseResearchSection(Action: Integer);
+{ @routine $5722CC TfRuinsTalk_SelectScienceBaseResearchSection }
+procedure TfRuinsTalk.SelectScienceBaseResearchSection(Action: Cardinal);
 var
   Text: WideString;
   Series: TDominatorSeries;
@@ -4179,14 +4176,14 @@ begin
     ReplaceTextToken(DialogText, '<SectionName>', LocalizedColorText('FormRuins.SB.Scn.Section' + DominatorSeriesNames[Series]), '');
     ReplaceTextToken(DialogText, '<Items>', Text, '');
     ReplaceTextToken(DialogText, '<ItemsCool>', LookupLocalizedTextOrEmpty('FormRuins.SB.Scn.ItemsCool'), TextHighlightColorTag);
-  AddChoice('- ' + LocalizedColorText('FormRuins.SB.Scn.PlayerSectionChoose'), 1, ShowScienceBaseResearchDialog);
-  AddChoice('- ' + LocalizedColorText('FormRuins.SB.Scn.PlayerSaleNo'), 1, DeclineScienceBaseResearch);
+    AddChoice('- ' + LocalizedColorText('FormRuins.SB.Scn.PlayerSectionChoose'), 1, ShowScienceBaseResearchDialog);
+    AddChoice('- ' + LocalizedColorText('FormRuins.SB.Scn.PlayerSaleNo'), 1, DeclineScienceBaseResearch);
   end;
 end;
-{ @end $5C2494 }
+{ @end $5722CC }
 
-{ @routine $5C2860 TfRuinsTalk_SellResearchRemains }
-procedure TfRuinsTalk.SellResearchRemains(Action: Integer);
+{ @routine $57266C TfRuinsTalk_SellResearchRemains }
+procedure TfRuinsTalk.SellResearchRemains(Action: Cardinal);
 var
   Text: WideString;
   Money, I: Integer;
@@ -4198,12 +4195,12 @@ begin
     Item := GetPlayer.Inventory[I];
     if (Item.OwnerId = oiDominator) and (Item.DominatorSeries = SelectedResearchSeries) and (Item.NoDropFlag = 0) and (Item is TUselessItem) then
       if not IsResearchItemQuestLetter(Item as TUselessItem) and (Item.CustomFaction = '') then
-    begin
-      Inc(Galaxy.DominatorResearch[SelectedResearchSeries].Material, Item.Weight);
-      Inc(Money, 2 * Item.Cost);
-      GetPlayer.Inventory.Delete(I);
-      Item.Free;
-    end;
+      begin
+        Inc(Galaxy.DominatorResearch[SelectedResearchSeries].Material, Item.Weight);
+        Inc(Money, 2 * Item.Cost);
+        GetPlayer.Inventory.Delete(I);
+        Item.Free;
+      end;
   end;
   SoundManager.PlaySound('Sound.Sell');
   GetPlayer.SetMoney(GetPlayer.Money + Money);
@@ -4219,14 +4216,14 @@ begin
   ReplaceTextToken(DialogText, '<ItemsCool>', LookupLocalizedTextOrEmpty('FormRuins.SB.Scn.ItemsCool'), TextHighlightColorTag);
   AddChoice('- ' + LocalizedColorText('FormRuins.SB.Scn.PlayerSectionChoose'), 1, ShowScienceBaseResearchDialog);
   if Text <> '' then
-  AddChoice('- ' + LocalizedColorText('FormRuins.SB.Scn.PlayerSaleNo'), 2, DeclineScienceBaseResearch)
+    AddChoice('- ' + LocalizedColorText('FormRuins.SB.Scn.PlayerSaleNo'), 2, DeclineScienceBaseResearch)
   else
-  AddChoice('- ' + LocalizedColorText('FormRuins.SB.Scn.PlayerSaleNo'), 3, DeclineScienceBaseResearch);
+    AddChoice('- ' + LocalizedColorText('FormRuins.SB.Scn.PlayerSaleNo'), 3, DeclineScienceBaseResearch);
 end;
-{ @end $5C2860 }
+{ @end $57266C }
 
-{ @routine $5C2E6C TfRuinsTalk_SellResearchEquipment }
-procedure TfRuinsTalk.SellResearchEquipment(Action: Integer);
+{ @routine $572C3C TfRuinsTalk_SellResearchEquipment }
+procedure TfRuinsTalk.SellResearchEquipment(Action: Cardinal);
 var
   Text: WideString;
   Money, I: Integer;
@@ -4258,14 +4255,14 @@ begin
   ReplaceTextToken(DialogText, '<ItemsCool>', LookupLocalizedTextOrEmpty('FormRuins.SB.Scn.ItemsCool'), TextHighlightColorTag);
   AddChoice('- ' + LocalizedColorText('FormRuins.SB.Scn.PlayerSectionChoose'), 1, ShowScienceBaseResearchDialog);
   if Text <> '' then
-  AddChoice('- ' + LocalizedColorText('FormRuins.SB.Scn.PlayerSaleNo'), 2, DeclineScienceBaseResearch)
+    AddChoice('- ' + LocalizedColorText('FormRuins.SB.Scn.PlayerSaleNo'), 2, DeclineScienceBaseResearch)
   else
-  AddChoice('- ' + LocalizedColorText('FormRuins.SB.Scn.PlayerSaleNo'), 3, DeclineScienceBaseResearch);
+    AddChoice('- ' + LocalizedColorText('FormRuins.SB.Scn.PlayerSaleNo'), 3, DeclineScienceBaseResearch);
 end;
-{ @end $5C2E6C }
+{ @end $572C3C }
 
-{ @routine $5C3464 TfRuinsTalk_SellResearchItem }
-procedure TfRuinsTalk.SellResearchItem(Action: Integer);
+{ @routine $5731F0 TfRuinsTalk_SellResearchItem }
+procedure TfRuinsTalk.SellResearchItem(Action: Cardinal);
 var
   Text: WideString;
   Money: Integer;
@@ -4291,14 +4288,14 @@ begin
   ReplaceTextToken(DialogText, '<ItemsCool>', LookupLocalizedTextOrEmpty('FormRuins.SB.Scn.ItemsCool'), TextHighlightColorTag);
   AddChoice('- ' + LocalizedColorText('FormRuins.SB.Scn.PlayerSectionChoose'), 1, ShowScienceBaseResearchDialog);
   if Text <> '' then
-  AddChoice('- ' + LocalizedColorText('FormRuins.SB.Scn.PlayerSaleNo'), 2, DeclineScienceBaseResearch)
+    AddChoice('- ' + LocalizedColorText('FormRuins.SB.Scn.PlayerSaleNo'), 2, DeclineScienceBaseResearch)
   else
-  AddChoice('- ' + LocalizedColorText('FormRuins.SB.Scn.PlayerSaleNo'), 3, DeclineScienceBaseResearch);
+    AddChoice('- ' + LocalizedColorText('FormRuins.SB.Scn.PlayerSaleNo'), 3, DeclineScienceBaseResearch);
 end;
-{ @end $5C3464 }
+{ @end $5731F0 }
 
-{ @routine $5C3A1C TfRuinsTalk_DeclineScienceBaseResearch }
-procedure TfRuinsTalk.DeclineScienceBaseResearch(Action: Integer);
+{ @routine $57376C TfRuinsTalk_DeclineScienceBaseResearch }
+procedure TfRuinsTalk.DeclineScienceBaseResearch(Action: Cardinal);
 begin
   ClearChoices;
   if Action = 1 then DialogText := LocalizedColorText('FormRuins.SB.Scn.SBAfterPlayerSaleNo1')
@@ -4307,10 +4304,10 @@ begin
   ReplaceTextToken(DialogText, '<SB>', GetPlayer.DockedTo.Name, TextHighlightColorTag);
   M_Main(True);
 end;
-{ @end $5C3A1C }
+{ @end $57376C }
 
-{ @routine $5C3C20 TfRuinsTalk_BuyScienceBaseResearchProgram }
-procedure TfRuinsTalk.BuyScienceBaseResearchProgram(Action: Integer);
+{ @routine $573964 TfRuinsTalk_BuyScienceBaseResearchProgram }
+procedure TfRuinsTalk.BuyScienceBaseResearchProgram(Action: Cardinal);
 var
   Cost: Integer;
 begin
@@ -4325,10 +4322,10 @@ begin
   else AddChoice('- ' + FormatText1(LocalizedColorText('FormRuins.SB.Scn.PlayerBuyTechOk'), TextHighlightColorTag, '<Money>', IntToStr(Cost)), 0, ScriptDialogBlockCallback);
   AddChoice('- ' + LocalizedColorText('FormRuins.SB.Scn.PlayerBuyTechNo'), 0, DeclineScienceBaseResearchProgram);
 end;
-{ @end $5C3C20 }
+{ @end $573964 }
 
-{ @routine $5C3FDC TfRuinsTalk_AcceptScienceBaseResearchProgram }
-procedure TfRuinsTalk.AcceptScienceBaseResearchProgram(Action: Integer);
+{ @routine $573CF4 TfRuinsTalk_AcceptScienceBaseResearchProgram }
+procedure TfRuinsTalk.AcceptScienceBaseResearchProgram(Action: Cardinal);
 var
   Cost: Integer;
 begin
@@ -4345,54 +4342,54 @@ begin
   ReplaceTextToken(DialogText, '<SB>', GetPlayer.DockedTo.Name, TextHighlightColorTag);
   M_Main(True);
 end;
-{ @end $5C3FDC }
+{ @end $573CF4 }
 
-{ @routine $5C41F0 TfRuinsTalk_DeclineScienceBaseResearchProgram }
-procedure TfRuinsTalk.DeclineScienceBaseResearchProgram(Action: Integer);
+{ @routine $573EF8 TfRuinsTalk_DeclineScienceBaseResearchProgram }
+procedure TfRuinsTalk.DeclineScienceBaseResearchProgram(Action: Cardinal);
 begin
   DialogText := LocalizedColorText('FormRuins.SB.Scn.SBAfterPlayerBuyTechNo');
   ReplaceTextToken(DialogText, '<SB>', GetPlayer.DockedTo.Name, TextHighlightColorTag);
   M_Main(True);
 end;
-{ @end $5C41F0 }
+{ @end $573EF8 }
 
-{ @routine $5C430C TfRuinsTalk_ShowScienceBaseHistoryDialog }
-procedure TfRuinsTalk.ShowScienceBaseHistoryDialog(Action: Integer);
+{ @routine $574004 TfRuinsTalk_ShowScienceBaseHistoryDialog }
+procedure TfRuinsTalk.ShowScienceBaseHistoryDialog(Action: Cardinal);
 begin
   ClearChoices;
   case Action of
     0:
-    begin
-      DialogText := LocalizedColorText('FormRuinsSB.History.SBOk');
-      AddChoice('- ' + LocalizedColorText('FormRuinsSB.Continue'), 1, ShowScienceBaseHistoryDialog);
-    end;
+      begin
+        DialogText := LocalizedColorText('FormRuinsSB.History.SBOk');
+        AddChoice('- ' + LocalizedColorText('FormRuinsSB.Continue'), 1, ShowScienceBaseHistoryDialog);
+      end;
     1:
-    begin
-      DialogText := LocalizedColorText('FormRuinsSB.History.SBOk1');
-      AddChoice('- ' + LocalizedColorText('FormRuinsSB.Continue'), 2, ShowScienceBaseHistoryDialog);
-    end;
+      begin
+        DialogText := LocalizedColorText('FormRuinsSB.History.SBOk1');
+        AddChoice('- ' + LocalizedColorText('FormRuinsSB.Continue'), 2, ShowScienceBaseHistoryDialog);
+      end;
     2:
-    begin
-      DialogText := LocalizedColorText('FormRuinsSB.History.SBOk2');
-      AddChoice('- ' + LocalizedColorText('FormRuinsSB.Continue'), 3, ShowScienceBaseHistoryDialog);
-    end;
+      begin
+        DialogText := LocalizedColorText('FormRuinsSB.History.SBOk2');
+        AddChoice('- ' + LocalizedColorText('FormRuinsSB.Continue'), 3, ShowScienceBaseHistoryDialog);
+      end;
     3:
-    begin
-      DialogText := LocalizedColorText('FormRuinsSB.History.SBOk3');
-      AddChoice('- ' + LocalizedColorText('FormRuinsSB.Continue'), 4, ShowScienceBaseHistoryDialog);
-    end;
+      begin
+        DialogText := LocalizedColorText('FormRuinsSB.History.SBOk3');
+        AddChoice('- ' + LocalizedColorText('FormRuinsSB.Continue'), 4, ShowScienceBaseHistoryDialog);
+      end;
     4:
-    begin
-      DialogText := LocalizedColorText('FormRuinsSB.History.SBOk4');
-      M_Main(True);
-    end;
+      begin
+        DialogText := LocalizedColorText('FormRuinsSB.History.SBOk4');
+        M_Main(True);
+      end;
   end;
   ReplaceTextToken(DialogText, '<SB>', GetPlayer.DockedTo.Name, TextHighlightColorTag);
 end;
-{ @end $5C430C }
+{ @end $574004 }
 
-{ @routine $5C46B8 TfRuinsTalk_ShowBusinessCenterDebtDialog }
-procedure TfRuinsTalk.ShowBusinessCenterDebtDialog(Action: Integer);
+{ @routine $574394 TfRuinsTalk_ShowBusinessCenterDebtDialog }
+procedure TfRuinsTalk.ShowBusinessCenterDebtDialog(Action: Cardinal);
 var
   Days, I: Integer;
   Event: TGalaxyEvent;
@@ -4407,7 +4404,7 @@ begin
   begin
     for I := Galaxy.GalaxyEvents.Count - 1 downto 0 do
     begin
-      Event := TGalaxyEvent(Galaxy.GalaxyEvents[I]);
+      Event := Galaxy.GalaxyEvents[I];
       if Event.Turn + 1825 < Galaxy.CurrentTurn then Break;
       if ((Event.EventType = 'PlayerKillsShip') or (Event.EventType = 'PlayerCompanionKillsShip') or (Event.EventType = 'PlayerTranclucatorKillsShip')) and (Event.GetData(0) = 10) then
       begin
@@ -4420,7 +4417,7 @@ begin
     Factor := 1;
     for I := Galaxy.GalaxyEvents.Count - 1 downto 0 do
     begin
-      Event := TGalaxyEvent(Galaxy.GalaxyEvents[I]);
+      Event := Galaxy.GalaxyEvents[I];
       if Event.Turn + 1095 < Galaxy.CurrentTurn then Break;
       if Event.EventType = 'PlayerDebtNullified' then Factor := Factor * 0.5;
     end;
@@ -4432,30 +4429,30 @@ begin
     BusinessQuoteLargeDueTurn := Galaxy.CurrentTurn + Days div 2;
     BusinessQuoteSmallDueTurn := Galaxy.CurrentTurn + Days * 3;
     DialogText := LocalizedColorText('FormRuins.BK.TakeDebt.BK');
-  ReplaceTextToken(DialogText, '<BK>', GetPlayer.DockedTo.Name, TextHighlightColorTag);
-  ReplaceTextToken(DialogText, '<MinMoney>', IntToStr(BusinessQuoteSmallAmount), TextHighlightColorTag);
-  ReplaceTextToken(DialogText, '<AveMoney>', IntToStr(BusinessQuoteMediumAmount), TextHighlightColorTag);
-  ReplaceTextToken(DialogText, '<MaxMoney>', IntToStr(BusinessQuoteLargeAmount), TextHighlightColorTag);
-  ReplaceTextToken(DialogText, '<MinDay>', IntToStr(BusinessQuoteLargeDueTurn - Galaxy.CurrentTurn), TextHighlightColorTag);
-  ReplaceTextToken(DialogText, '<AveDay>', IntToStr(BusinessQuoteMediumDueTurn - Galaxy.CurrentTurn), TextHighlightColorTag);
-  ReplaceTextToken(DialogText, '<MaxDay>', IntToStr(BusinessQuoteSmallDueTurn - Galaxy.CurrentTurn), TextHighlightColorTag);
-  ReplaceTextToken(DialogText, '<MinMoneyAdd>', IntToStr(Round(BusinessQuoteSmallAmount * 1.1) - BusinessQuoteSmallAmount), TextHighlightColorTag);
-  ReplaceTextToken(DialogText, '<AveMoneyAdd>', IntToStr(Round(BusinessQuoteMediumAmount * 1.15) - BusinessQuoteMediumAmount), TextHighlightColorTag);
-  ReplaceTextToken(DialogText, '<MaxMoneyAdd>', IntToStr(Round(BusinessQuoteLargeAmount * 1.2) - BusinessQuoteLargeAmount), TextHighlightColorTag);
-  ReplaceTextToken(DialogText, '<MinMoneyReturn>', IntToStr(Round(BusinessQuoteSmallAmount * 1.1)), TextHighlightColorTag);
-  ReplaceTextToken(DialogText, '<AveMoneyReturn>', IntToStr(Round(BusinessQuoteMediumAmount * 1.15)), TextHighlightColorTag);
-  ReplaceTextToken(DialogText, '<MaxMoneyReturn>', IntToStr(Round(BusinessQuoteLargeAmount * 1.2)), TextHighlightColorTag);
+    ReplaceTextToken(DialogText, '<BK>', GetPlayer.DockedTo.Name, TextHighlightColorTag);
+    ReplaceTextToken(DialogText, '<MinMoney>', IntToStr(BusinessQuoteSmallAmount), TextHighlightColorTag);
+    ReplaceTextToken(DialogText, '<AveMoney>', IntToStr(BusinessQuoteMediumAmount), TextHighlightColorTag);
+    ReplaceTextToken(DialogText, '<MaxMoney>', IntToStr(BusinessQuoteLargeAmount), TextHighlightColorTag);
+    ReplaceTextToken(DialogText, '<MinDay>', IntToStr(BusinessQuoteLargeDueTurn - Galaxy.CurrentTurn), TextHighlightColorTag);
+    ReplaceTextToken(DialogText, '<AveDay>', IntToStr(BusinessQuoteMediumDueTurn - Galaxy.CurrentTurn), TextHighlightColorTag);
+    ReplaceTextToken(DialogText, '<MaxDay>', IntToStr(BusinessQuoteSmallDueTurn - Galaxy.CurrentTurn), TextHighlightColorTag);
+    ReplaceTextToken(DialogText, '<MinMoneyAdd>', IntToStr(Round(BusinessQuoteSmallAmount * 1.1) - BusinessQuoteSmallAmount), TextHighlightColorTag);
+    ReplaceTextToken(DialogText, '<AveMoneyAdd>', IntToStr(Round(BusinessQuoteMediumAmount * 1.15) - BusinessQuoteMediumAmount), TextHighlightColorTag);
+    ReplaceTextToken(DialogText, '<MaxMoneyAdd>', IntToStr(Round(BusinessQuoteLargeAmount * 1.2) - BusinessQuoteLargeAmount), TextHighlightColorTag);
+    ReplaceTextToken(DialogText, '<MinMoneyReturn>', IntToStr(Round(BusinessQuoteSmallAmount * 1.1)), TextHighlightColorTag);
+    ReplaceTextToken(DialogText, '<AveMoneyReturn>', IntToStr(Round(BusinessQuoteMediumAmount * 1.15)), TextHighlightColorTag);
+    ReplaceTextToken(DialogText, '<MaxMoneyReturn>', IntToStr(Round(BusinessQuoteLargeAmount * 1.2)), TextHighlightColorTag);
     ClearChoices;
-  AddChoice('- ' + LocalizedColorText('FormRuins.BK.TakeDebt.PlayerOkMaxMoney'), 1, AcceptBusinessCenterDebtQuote);
-  AddChoice('- ' + LocalizedColorText('FormRuins.BK.TakeDebt.PlayerOkAveMoney'), 2, AcceptBusinessCenterDebtQuote);
-  AddChoice('- ' + LocalizedColorText('FormRuins.BK.TakeDebt.PlayerOkMinMoney'), 3, AcceptBusinessCenterDebtQuote);
-  AddChoice('- ' + LocalizedColorText('FormRuins.BK.TakeDebt.PlayerNo'), 0, DeclineBusinessCenterDebtDialog);
+    AddChoice('- ' + LocalizedColorText('FormRuins.BK.TakeDebt.PlayerOkMaxMoney'), 1, AcceptBusinessCenterDebtQuote);
+    AddChoice('- ' + LocalizedColorText('FormRuins.BK.TakeDebt.PlayerOkAveMoney'), 2, AcceptBusinessCenterDebtQuote);
+    AddChoice('- ' + LocalizedColorText('FormRuins.BK.TakeDebt.PlayerOkMinMoney'), 3, AcceptBusinessCenterDebtQuote);
+    AddChoice('- ' + LocalizedColorText('FormRuins.BK.TakeDebt.PlayerNo'), 0, DeclineBusinessCenterDebtDialog);
   end;
 end;
-{ @end $5C46B8 }
+{ @end $574394 }
 
-{ @routine $5C5464 TfRuinsTalk_AcceptBusinessCenterDebtQuote }
-procedure TfRuinsTalk.AcceptBusinessCenterDebtQuote(Quote: Integer);
+{ @routine $5750B8 TfRuinsTalk_AcceptBusinessCenterDebtQuote }
+procedure TfRuinsTalk.AcceptBusinessCenterDebtQuote(Quote: Cardinal);
 var Amount: Integer;
 begin
   case Quote of
@@ -4494,19 +4491,19 @@ begin
   SoundManager.PlaySound('Sound.Sell');
   M_Main(True);
 end;
-{ @end $5C5464 }
+{ @end $5750B8 }
 
-{ @routine $5C5830 TfRuinsTalk_DeclineBusinessCenterDebtDialog }
-procedure TfRuinsTalk.DeclineBusinessCenterDebtDialog(Action: Integer);
+{ @routine $575464 TfRuinsTalk_DeclineBusinessCenterDebtDialog }
+procedure TfRuinsTalk.DeclineBusinessCenterDebtDialog(Action: Cardinal);
 begin
   DialogText := LocalizedColorText('FormRuins.BK.TakeDebt.BKAfterNo');
   ReplaceTextToken(DialogText, '<BK>', GetPlayer.DockedTo.Name, TextHighlightColorTag);
   M_Main(True);
 end;
-{ @end $5C5830 }
+{ @end $575464 }
 
-{ @routine $5C593C TfRuinsTalk_RepayBusinessCenterDebt }
-procedure TfRuinsTalk.RepayBusinessCenterDebt(Action: Integer);
+{ @routine $575560 TfRuinsTalk_RepayBusinessCenterDebt }
+procedure TfRuinsTalk.RepayBusinessCenterDebt(Action: Cardinal);
 begin
   DialogText := LocalizedColorText('FormRuins.BK.RetDebt.BK');
   ReplaceTextToken(DialogText, '<BK>', GetPlayer.DockedTo.Name, TextHighlightColorTag);
@@ -4516,10 +4513,10 @@ begin
   GetPlayer.DebtDueTurn := 0;
   M_Main(True);
 end;
-{ @end $5C593C }
+{ @end $575560 }
 
-{ @routine $5C5A80 TfRuinsTalk_ShowBusinessCenterDepositDialog }
-procedure TfRuinsTalk.ShowBusinessCenterDepositDialog(Action: Integer);
+{ @routine $575698 TfRuinsTalk_ShowBusinessCenterDepositDialog }
+procedure TfRuinsTalk.ShowBusinessCenterDepositDialog(Action: Cardinal);
 var
   Text: WideString;
 begin
@@ -4548,10 +4545,10 @@ begin
   end;
   AddChoice('- ' + LocalizedColorText('FormRuins.BK.Deposit.PlayerNo'), 0, DeclineBusinessCenterDepositDialog);
 end;
-{ @end $5C5A80 }
+{ @end $575698 }
 
-{ @routine $5C615C TfRuinsTalk_AcceptBusinessCenterDepositQuote }
-procedure TfRuinsTalk.AcceptBusinessCenterDepositQuote(Quote: Integer);
+{ @routine $575CF4 TfRuinsTalk_AcceptBusinessCenterDepositQuote }
+procedure TfRuinsTalk.AcceptBusinessCenterDepositQuote(Quote: Cardinal);
 begin
   case Quote of
     1: GetPlayer.DepositAmount := Round(BusinessQuoteLargeAmount);
@@ -4569,19 +4566,19 @@ begin
   SoundManager.PlaySound('Sound.Sell');
   M_Main(True);
 end;
-{ @end $5C615C }
+{ @end $575CF4 }
 
-{ @routine $5C6440 TfRuinsTalk_DeclineBusinessCenterDepositDialog }
-procedure TfRuinsTalk.DeclineBusinessCenterDepositDialog(Action: Integer);
+{ @routine $575FAC TfRuinsTalk_DeclineBusinessCenterDepositDialog }
+procedure TfRuinsTalk.DeclineBusinessCenterDepositDialog(Action: Cardinal);
 begin
   DialogText := LocalizedColorText('FormRuins.BK.Deposit.BKAfterNo');
   ReplaceTextToken(DialogText, '<BK>', GetPlayer.DockedTo.Name, TextHighlightColorTag);
   M_Main(True);
 end;
-{ @end $5C6440 }
+{ @end $575FAC }
 
-{ @routine $5C654C TfRuinsTalk_WithdrawBusinessCenterDeposit }
-procedure TfRuinsTalk.WithdrawBusinessCenterDeposit(Action: Integer);
+{ @routine $5760A8 TfRuinsTalk_WithdrawBusinessCenterDeposit }
+procedure TfRuinsTalk.WithdrawBusinessCenterDeposit(Action: Cardinal);
 var Profit: Integer;
 begin
   if GetPlayer.CurrentStar.Battle <> 0 then
@@ -4601,10 +4598,10 @@ begin
   end;
   M_Main(True);
 end;
-{ @end $5C654C }
+{ @end $5760A8 }
 
-{ @routine $5C6774 TfRuinsTalk_ShowBusinessCenterMedicalPolicyDialog }
-procedure TfRuinsTalk.ShowBusinessCenterMedicalPolicyDialog(Refresh: Integer);
+{ @routine $5762C0 TfRuinsTalk_ShowBusinessCenterMedicalPolicyDialog }
+procedure TfRuinsTalk.ShowBusinessCenterMedicalPolicyDialog(Refresh: Cardinal);
 begin
   if Refresh = 0 then
   begin
@@ -4615,17 +4612,17 @@ begin
   end;
   ClearChoices;
   if Galaxy.ComputeScaledAverageMoney(oiHuman) <= GetPlayer.Money then
-  AddChoice('- ' + LocalizedColorText('FormRuins.BK.Policy.PlayerOk'), 0, BuyBusinessCenterMedicalPolicy)
+    AddChoice('- ' + LocalizedColorText('FormRuins.BK.Policy.PlayerOk'), 0, BuyBusinessCenterMedicalPolicy)
   else
-  AddChoice('- ' + LocalizedColorText('FormRuins.BK.Policy.PlayerOk'), 0, ScriptDialogBlockCallback);
+    AddChoice('- ' + LocalizedColorText('FormRuins.BK.Policy.PlayerOk'), 0, ScriptDialogBlockCallback);
   if Refresh = 0 then
-  AddChoice('- ' + LocalizedColorText('FormRuins.BK.Policy.PlayerAsk'), 0, ShowBusinessCenterPolicyDetails);
+    AddChoice('- ' + LocalizedColorText('FormRuins.BK.Policy.PlayerAsk'), 0, ShowBusinessCenterPolicyDetails);
   AddChoice('- ' + LocalizedColorText('FormRuins.BK.Policy.PlayerNo'), 0, DeclineBusinessCenterPolicy);
 end;
-{ @end $5C6774 }
+{ @end $5762C0 }
 
-{ @routine $5C6AFC TfRuinsTalk_BuyBusinessCenterMedicalPolicy }
-procedure TfRuinsTalk.BuyBusinessCenterMedicalPolicy(Action: Integer);
+{ @routine $576630 TfRuinsTalk_BuyBusinessCenterMedicalPolicy }
+procedure TfRuinsTalk.BuyBusinessCenterMedicalPolicy(Action: Cardinal);
 begin
   DialogText := LocalizedColorText('FormRuins.BK.Policy.BKAfterOk');
   ReplaceTextToken(DialogText, '<BK>', GetPlayer.DockedTo.Name, TextHighlightColorTag);
@@ -4636,20 +4633,20 @@ begin
   SoundManager.PlaySound('Sound.Sell');
   M_Main(True);
 end;
-{ @end $5C6AFC }
+{ @end $576630 }
 
-{ @routine $5C6D1C TfRuinsTalk_ShowBusinessCenterPolicyDetails }
-procedure TfRuinsTalk.ShowBusinessCenterPolicyDetails(Action: Integer);
+{ @routine $576840 TfRuinsTalk_ShowBusinessCenterPolicyDetails }
+procedure TfRuinsTalk.ShowBusinessCenterPolicyDetails(Action: Cardinal);
 begin
   DialogText := LocalizedColorText('FormRuins.BK.Policy.BKAfterAsk');
   ReplaceTextToken(DialogText, '<BK>', GetPlayer.DockedTo.Name, TextHighlightColorTag);
   ClearChoices;
   ShowBusinessCenterMedicalPolicyDialog(1);
 end;
-{ @end $5C6D1C }
+{ @end $576840 }
 
-{ @routine $5C6E30 TfRuinsTalk_DeclineBusinessCenterPolicy }
-procedure TfRuinsTalk.DeclineBusinessCenterPolicy(Action: Integer);
+{ @routine $576948 TfRuinsTalk_DeclineBusinessCenterPolicy }
+procedure TfRuinsTalk.DeclineBusinessCenterPolicy(Action: Cardinal);
 var
   Date: TDateTime;
   YearText: AnsiString;
@@ -4661,10 +4658,10 @@ begin
   ReplaceTextToken(DialogText, '<CurYear>', YearText, TextHighlightColorTag);
   M_Main(True);
 end;
-{ @end $5C6E30 }
+{ @end $576948 }
 
-{ @routine $5C6FBC TfRuinsTalk_ShowBusinessCenterInvestmentDialog }
-procedure TfRuinsTalk.ShowBusinessCenterInvestmentDialog(Action: Integer);
+{ @routine $576ACC TfRuinsTalk_ShowBusinessCenterInvestmentDialog }
+procedure TfRuinsTalk.ShowBusinessCenterInvestmentDialog(Action: Cardinal);
 const
   StationTypes = [rstRangerCenter..rstDominion];
 var
@@ -4684,10 +4681,9 @@ begin
     BoundA := 1;
     BoundB := Galaxy.Stars.Count - 1;
     Index := SeededRandomIntRange(BoundA, BoundB, GetPlayer.DockedTo.Seed + Galaxy.GenerationSeed + Galaxy.CurrentTurn div 60 + 1743 + 731 * Integer(Kind));
-    if GetPlayer.StationServiceLastUseTurns[Kind] <= Galaxy.CurrentTurn - StationServiceRepeatPeriods[Kind] then
-    begin
-      case Kind of
-        cpCreateRangerCenter:
+    if GetPlayer.StationServiceLastUseTurns[Kind] > Galaxy.CurrentTurn - StationServiceRepeatPeriods[Kind] then Continue;
+    case Kind of
+      cpCreateRangerCenter:
         begin
           if Galaxy.ShipTypeCounts[rstRangerCenter] > Galaxy.CountFactionStars(sfCoalition) * 0.33 then Continue;
           BestStar := nil;
@@ -4695,24 +4691,27 @@ begin
           for I := 1 to Galaxy.Stars.Count - 1 do
           begin
             IncrementWrapped(Index, BoundA, BoundB);
-            Star := TObject(GetPlayer.CurrentStar.StarDistances[Index].Star) as TStar;
-            if (SeededRandomUnitFloat(GetPlayer.DockedTo.Seed + Star.GenerationSeed + Galaxy.CurrentTurn div 60 + 7281) >= 0.6) and
-               (Star.Constellation.Id <> 20) and (Star.Constellation.ShipTypeCounts[rstRangerCenter] <= 0) and
-               (Star.Constellation.CountShipsByTypeMask(StationTypes) < Star.Constellation.Stars.Count) and
-               (Star.ShipTypeCounts[rstRangerCenter] <= 0) and (Star.CountShipsByTypeMask(StationTypes) <= 2) and
-               (Star.ShipTypeCounts[stKling] <= 0) and
-               (Star.ControlFaction = sfCoalition) and ((Star.Battle = 0) or (Star.CountPirateShips(False) <= 0)) and
-               (Star.Status.CustomFaction = '') and (GetPlayer.CurrentStar <> Star) and
-               (Star.DaysSincePlayerVisit >= 30) and Star.IsConstellationVisible then
+            Star := GetPlayer.CurrentStar.StarDistances[Index].Star as TStar;
+            if not (SeededRandomUnitFloat(GetPlayer.DockedTo.Seed + Star.GenerationSeed + Galaxy.CurrentTurn div 60 + 7281) >= 0.6) then Continue;
+            if Star.Constellation.Id = 20 then Continue;
+            if Star.Constellation.ShipTypeCounts[rstRangerCenter] > 0 then Continue;
+            if Star.Constellation.CountShipsByTypeMask(StationTypes) >= Star.Constellation.Stars.Count then Continue;
+            if Star.ShipTypeCounts[rstRangerCenter] > 0 then Continue;
+            if Star.CountShipsByTypeMask(StationTypes) > 2 then Continue;
+            if Star.ShipTypeCounts[stKling] > 0 then Continue;
+            if Star.ControlFaction <> sfCoalition then Continue;
+            if not ((Star.Battle = 0) or (Star.CountPirateShips(False) <= 0)) then Continue;
+            if Star.Status.CustomFaction <> '' then Continue;
+            if GetPlayer.CurrentStar = Star then Continue;
+            if Star.DaysSincePlayerVisit < 30 then Continue;
+            if not Star.IsConstellationVisible then Continue;
+            Score := Min(40, Star.DaysSincePlayerVisit) + 200 - SeededRandomIntRange(1, 50, Star.GenerationSeed) -
+              10 * Star.Constellation.ShipTypeCounts[rstRangerCenter] - Star.CountShipsByTypeMask(StationTypes) -
+              Round(PointDistance(GetPlayer.CurrentStar.Position, Star.Position));
+            if BestScore <= Score then
             begin
-              Score := Min(40, Star.DaysSincePlayerVisit) + 200 - SeededRandomIntRange(1, 50, Star.GenerationSeed) -
-                10 * Star.Constellation.ShipTypeCounts[rstRangerCenter] - Star.CountShipsByTypeMask(StationTypes) -
-                Round(PointDistance(GetPlayer.CurrentStar.Position, Star.Position));
-              if BestScore <= Score then
-              begin
-                BestScore := Score;
-                BestStar := Star;
-              end;
+              BestScore := Score;
+              BestStar := Star;
             end;
           end;
           if BestStar = nil then Continue;
@@ -4730,7 +4729,7 @@ begin
             AddChoice('- ' + FormatText1(LocalizedColorText('Investment.' + CoalitionProjectNames[Kind] + '.PlayerSend'), TextHighlightColorTag, '<Money>', IntToStr(StationServiceQuoteCost)), Choice, AcceptBusinessCenterInvestment)
           else AddChoice('- ' + FormatText1(LocalizedColorText('Investment.' + CoalitionProjectNames[Kind] + '.PlayerSend'), TextHighlightColorTag, '<Money>', IntToStr(StationServiceQuoteCost)), 0, ScriptDialogBlockCallback);
         end;
-        cpCreatePirateBase:
+      cpCreatePirateBase:
         begin
           if Galaxy.ShipTypeCounts[rstPirateBase] > Galaxy.CountFactionStars(sfCoalition) * 0.22 then Continue;
           BestStar := nil;
@@ -4738,24 +4737,26 @@ begin
           for I := 1 to Galaxy.Stars.Count - 1 do
           begin
             IncrementWrapped(Index, BoundA, BoundB);
-            Star := TObject(GetPlayer.CurrentStar.StarDistances[Index].Star) as TStar;
-            if (SeededRandomUnitFloat(GetPlayer.DockedTo.Seed + Star.GenerationSeed + Galaxy.CurrentTurn div 60 + 113223) >= 0.6) and
-               (Star.Constellation.Id <> 20) and (Star.Constellation.ShipTypeCounts[rstPirateBase] <= 0) and
-               (Star.Constellation.CountShipsByTypeMask(StationTypes) < Star.Constellation.Stars.Count) and
-               (Star.ShipTypeCounts[rstPirateBase] <= 0) and (Star.CountShipsByTypeMask(StationTypes) <= 1) and
-               (Star.ShipTypeCounts[stKling] <= 0) and
-               (Star.ControlFaction in [sfCoalition, sfPirates]) and
-               (Star.Status.CustomFaction = '') and (GetPlayer.CurrentStar <> Star) and
-               (Star.DaysSincePlayerVisit >= 30) and Star.IsConstellationVisible then
+            Star := GetPlayer.CurrentStar.StarDistances[Index].Star as TStar;
+            if not (SeededRandomUnitFloat(GetPlayer.DockedTo.Seed + Star.GenerationSeed + Galaxy.CurrentTurn div 60 + 113223) >= 0.6) then Continue;
+            if Star.Constellation.Id = 20 then Continue;
+            if Star.Constellation.ShipTypeCounts[rstPirateBase] > 0 then Continue;
+            if Star.Constellation.CountShipsByTypeMask(StationTypes) >= Star.Constellation.Stars.Count then Continue;
+            if Star.ShipTypeCounts[rstPirateBase] > 0 then Continue;
+            if Star.CountShipsByTypeMask(StationTypes) > 1 then Continue;
+            if Star.ShipTypeCounts[stKling] > 0 then Continue;
+            if not (Star.ControlFaction in [sfCoalition, sfPirates]) then Continue;
+            if Star.Status.CustomFaction <> '' then Continue;
+            if GetPlayer.CurrentStar = Star then Continue;
+            if Star.DaysSincePlayerVisit < 30 then Continue;
+            if not Star.IsConstellationVisible then Continue;
+            Score := Min(40, Star.DaysSincePlayerVisit) + 200 - SeededRandomIntRange(1, 50, Star.GenerationSeed) -
+              10 * Star.Constellation.ShipTypeCounts[rstPirateBase] - Star.CountShipsByTypeMask(StationTypes) -
+              Round(PointDistance(GetPlayer.CurrentStar.Position, Star.Position));
+            if BestScore <= Score then
             begin
-              Score := Min(40, Star.DaysSincePlayerVisit) + 200 - SeededRandomIntRange(1, 50, Star.GenerationSeed) -
-                10 * Star.Constellation.ShipTypeCounts[rstPirateBase] - Star.CountShipsByTypeMask(StationTypes) -
-                Round(PointDistance(GetPlayer.CurrentStar.Position, Star.Position));
-              if BestScore <= Score then
-              begin
-                BestScore := Score;
-                BestStar := Star;
-              end;
+              BestScore := Score;
+              BestStar := Star;
             end;
           end;
           if BestStar = nil then Continue;
@@ -4773,7 +4774,7 @@ begin
             AddChoice('- ' + FormatText1(LocalizedColorText('Investment.' + CoalitionProjectNames[Kind] + '.PlayerSend'), TextHighlightColorTag, '<Money>', IntToStr(StationServiceQuoteCost)), Choice, AcceptBusinessCenterInvestment)
           else AddChoice('- ' + FormatText1(LocalizedColorText('Investment.' + CoalitionProjectNames[Kind] + '.PlayerSend'), TextHighlightColorTag, '<Money>', IntToStr(StationServiceQuoteCost)), 0, ScriptDialogBlockCallback);
         end;
-        cpCreateMilitaryBase:
+      cpCreateMilitaryBase:
         begin
           if Galaxy.ShipTypeCounts[rstMilitaryBase] > Galaxy.CountFactionStars(sfCoalition) * 0.22 then Continue;
           BestStar := nil;
@@ -4781,24 +4782,27 @@ begin
           for I := 1 to Galaxy.Stars.Count - 1 do
           begin
             IncrementWrapped(Index, BoundA, BoundB);
-            Star := TObject(GetPlayer.CurrentStar.StarDistances[Index].Star) as TStar;
-            if (SeededRandomUnitFloat(GetPlayer.DockedTo.Seed + Star.GenerationSeed + Galaxy.CurrentTurn div 60 + 17823) >= 0.6) and
-               (Star.Constellation.Id <> 20) and (Star.Constellation.ShipTypeCounts[rstMilitaryBase] <= 0) and
-               (Star.Constellation.CountShipsByTypeMask(StationTypes) < Star.Constellation.Stars.Count) and
-               (Star.ShipTypeCounts[rstMilitaryBase] <= 0) and (Star.CountShipsByTypeMask(StationTypes) <= 1) and
-               (Star.ShipTypeCounts[stKling] <= 0) and
-               (Star.ControlFaction = sfCoalition) and ((Star.Battle = 0) or (Star.CountPirateShips(False) <= 0)) and
-               (Star.Status.CustomFaction = '') and (GetPlayer.CurrentStar <> Star) and
-               (Star.DaysSincePlayerVisit >= 30) and Star.IsConstellationVisible then
+            Star := GetPlayer.CurrentStar.StarDistances[Index].Star as TStar;
+            if not (SeededRandomUnitFloat(GetPlayer.DockedTo.Seed + Star.GenerationSeed + Galaxy.CurrentTurn div 60 + 17823) >= 0.6) then Continue;
+            if Star.Constellation.Id = 20 then Continue;
+            if Star.Constellation.ShipTypeCounts[rstMilitaryBase] > 0 then Continue;
+            if Star.Constellation.CountShipsByTypeMask(StationTypes) >= Star.Constellation.Stars.Count then Continue;
+            if Star.ShipTypeCounts[rstMilitaryBase] > 0 then Continue;
+            if Star.CountShipsByTypeMask(StationTypes) > 1 then Continue;
+            if Star.ShipTypeCounts[stKling] > 0 then Continue;
+            if Star.ControlFaction <> sfCoalition then Continue;
+            if not ((Star.Battle = 0) or (Star.CountPirateShips(False) <= 0)) then Continue;
+            if Star.Status.CustomFaction <> '' then Continue;
+            if GetPlayer.CurrentStar = Star then Continue;
+            if Star.DaysSincePlayerVisit < 30 then Continue;
+            if not Star.IsConstellationVisible then Continue;
+            Score := Min(40, Star.DaysSincePlayerVisit) + 200 - SeededRandomIntRange(1, 50, Star.GenerationSeed) -
+              10 * Star.Constellation.ShipTypeCounts[rstMilitaryBase] - Star.CountShipsByTypeMask(StationTypes) -
+              Round(PointDistance(GetPlayer.CurrentStar.Position, Star.Position));
+            if BestScore <= Score then
             begin
-              Score := Min(40, Star.DaysSincePlayerVisit) + 200 - SeededRandomIntRange(1, 50, Star.GenerationSeed) -
-                10 * Star.Constellation.ShipTypeCounts[rstMilitaryBase] - Star.CountShipsByTypeMask(StationTypes) -
-                Round(PointDistance(GetPlayer.CurrentStar.Position, Star.Position));
-              if BestScore <= Score then
-              begin
-                BestScore := Score;
-                BestStar := Star;
-              end;
+              BestScore := Score;
+              BestStar := Star;
             end;
           end;
           if BestStar = nil then Continue;
@@ -4816,7 +4820,7 @@ begin
             AddChoice('- ' + FormatText1(LocalizedColorText('Investment.' + CoalitionProjectNames[Kind] + '.PlayerSend'), TextHighlightColorTag, '<Money>', IntToStr(StationServiceQuoteCost)), Choice, AcceptBusinessCenterInvestment)
           else AddChoice('- ' + FormatText1(LocalizedColorText('Investment.' + CoalitionProjectNames[Kind] + '.PlayerSend'), TextHighlightColorTag, '<Money>', IntToStr(StationServiceQuoteCost)), 0, ScriptDialogBlockCallback);
         end;
-        cpCreateScienceBase:
+      cpCreateScienceBase:
         begin
           if Galaxy.ShipTypeCounts[rstScienceBase] > Galaxy.CountFactionStars(sfCoalition) * 0.15 then Continue;
           BestStar := nil;
@@ -4824,24 +4828,27 @@ begin
           for I := 1 to Galaxy.Stars.Count - 1 do
           begin
             IncrementWrapped(Index, BoundA, BoundB);
-            Star := TObject(GetPlayer.CurrentStar.StarDistances[Index].Star) as TStar;
-            if (SeededRandomUnitFloat(GetPlayer.DockedTo.Seed + Star.GenerationSeed + Galaxy.CurrentTurn div 60 + 11123) >= 0.6) and
-               (Star.Constellation.Id <> 20) and (Star.Constellation.ShipTypeCounts[rstScienceBase] <= 0) and
-               (Star.Constellation.CountShipsByTypeMask(StationTypes) < Star.Constellation.Stars.Count) and
-               (Star.ShipTypeCounts[rstScienceBase] <= 0) and (Star.CountShipsByTypeMask(StationTypes) <= 1) and
-               (Star.ShipTypeCounts[stKling] <= 0) and
-               (Star.ControlFaction = sfCoalition) and ((Star.Battle = 0) or (Star.CountPirateShips(False) <= 0)) and
-               (Star.Status.CustomFaction = '') and (GetPlayer.CurrentStar <> Star) and
-               (Star.DaysSincePlayerVisit >= 30) and Star.IsConstellationVisible then
+            Star := GetPlayer.CurrentStar.StarDistances[Index].Star as TStar;
+            if not (SeededRandomUnitFloat(GetPlayer.DockedTo.Seed + Star.GenerationSeed + Galaxy.CurrentTurn div 60 + 11123) >= 0.6) then Continue;
+            if Star.Constellation.Id = 20 then Continue;
+            if Star.Constellation.ShipTypeCounts[rstScienceBase] > 0 then Continue;
+            if Star.Constellation.CountShipsByTypeMask(StationTypes) >= Star.Constellation.Stars.Count then Continue;
+            if Star.ShipTypeCounts[rstScienceBase] > 0 then Continue;
+            if Star.CountShipsByTypeMask(StationTypes) > 1 then Continue;
+            if Star.ShipTypeCounts[stKling] > 0 then Continue;
+            if Star.ControlFaction <> sfCoalition then Continue;
+            if not ((Star.Battle = 0) or (Star.CountPirateShips(False) <= 0)) then Continue;
+            if Star.Status.CustomFaction <> '' then Continue;
+            if GetPlayer.CurrentStar = Star then Continue;
+            if Star.DaysSincePlayerVisit < 30 then Continue;
+            if not Star.IsConstellationVisible then Continue;
+            Score := Min(40, Star.DaysSincePlayerVisit) + 200 - SeededRandomIntRange(1, 50, Star.GenerationSeed) -
+              10 * Star.Constellation.ShipTypeCounts[rstScienceBase] - Star.CountShipsByTypeMask(StationTypes) -
+              Round(PointDistance(GetPlayer.CurrentStar.Position, Star.Position));
+            if BestScore <= Score then
             begin
-              Score := Min(40, Star.DaysSincePlayerVisit) + 200 - SeededRandomIntRange(1, 50, Star.GenerationSeed) -
-                10 * Star.Constellation.ShipTypeCounts[rstScienceBase] - Star.CountShipsByTypeMask(StationTypes) -
-                Round(PointDistance(GetPlayer.CurrentStar.Position, Star.Position));
-              if BestScore <= Score then
-              begin
-                BestScore := Score;
-                BestStar := Star;
-              end;
+              BestScore := Score;
+              BestStar := Star;
             end;
           end;
           if BestStar = nil then Continue;
@@ -4859,7 +4866,7 @@ begin
             AddChoice('- ' + FormatText1(LocalizedColorText('Investment.' + CoalitionProjectNames[Kind] + '.PlayerSend'), TextHighlightColorTag, '<Money>', IntToStr(StationServiceQuoteCost)), Choice, AcceptBusinessCenterInvestment)
           else AddChoice('- ' + FormatText1(LocalizedColorText('Investment.' + CoalitionProjectNames[Kind] + '.PlayerSend'), TextHighlightColorTag, '<Money>', IntToStr(StationServiceQuoteCost)), 0, ScriptDialogBlockCallback);
         end;
-        cpCreateBusinessCenter:
+      cpCreateBusinessCenter:
         begin
           if Galaxy.ShipTypeCounts[rstBusinessCenter] > Galaxy.CountFactionStars(sfCoalition) * 0.1 then Continue;
           BestStar := nil;
@@ -4867,24 +4874,27 @@ begin
           for I := 1 to Galaxy.Stars.Count - 1 do
           begin
             IncrementWrapped(Index, BoundA, BoundB);
-            Star := TObject(GetPlayer.CurrentStar.StarDistances[Index].Star) as TStar;
-            if (SeededRandomUnitFloat(GetPlayer.DockedTo.Seed + Star.GenerationSeed + Galaxy.CurrentTurn div 60 + 9112323) >= 0.6) and
-               (Star.Constellation.Id <> 20) and (Star.Constellation.ShipTypeCounts[rstBusinessCenter] <= 0) and
-               (Star.Constellation.CountShipsByTypeMask(StationTypes) < Star.Constellation.Stars.Count) and
-               (Star.ShipTypeCounts[rstBusinessCenter] <= 0) and (Star.CountShipsByTypeMask(StationTypes) <= 1) and
-               (Star.ShipTypeCounts[stKling] <= 0) and
-               (Star.ControlFaction = sfCoalition) and ((Star.Battle = 0) or (Star.CountPirateShips(False) <= 0)) and
-               (Star.Status.CustomFaction = '') and (GetPlayer.CurrentStar <> Star) and
-               (Star.DaysSincePlayerVisit >= 30) and Star.IsConstellationVisible then
+            Star := GetPlayer.CurrentStar.StarDistances[Index].Star as TStar;
+            if not (SeededRandomUnitFloat(GetPlayer.DockedTo.Seed + Star.GenerationSeed + Galaxy.CurrentTurn div 60 + 9112323) >= 0.6) then Continue;
+            if Star.Constellation.Id = 20 then Continue;
+            if Star.Constellation.ShipTypeCounts[rstBusinessCenter] > 0 then Continue;
+            if Star.Constellation.CountShipsByTypeMask(StationTypes) >= Star.Constellation.Stars.Count then Continue;
+            if Star.ShipTypeCounts[rstBusinessCenter] > 0 then Continue;
+            if Star.CountShipsByTypeMask(StationTypes) > 1 then Continue;
+            if Star.ShipTypeCounts[stKling] > 0 then Continue;
+            if Star.ControlFaction <> sfCoalition then Continue;
+            if not ((Star.Battle = 0) or (Star.CountPirateShips(False) <= 0)) then Continue;
+            if Star.Status.CustomFaction <> '' then Continue;
+            if GetPlayer.CurrentStar = Star then Continue;
+            if Star.DaysSincePlayerVisit < 30 then Continue;
+            if not Star.IsConstellationVisible then Continue;
+            Score := Min(40, Star.DaysSincePlayerVisit) + 200 - SeededRandomIntRange(1, 50, Star.GenerationSeed) -
+              10 * Star.Constellation.ShipTypeCounts[rstBusinessCenter] - Star.CountShipsByTypeMask(StationTypes) -
+              Round(PointDistance(GetPlayer.CurrentStar.Position, Star.Position));
+            if BestScore <= Score then
             begin
-              Score := Min(40, Star.DaysSincePlayerVisit) + 200 - SeededRandomIntRange(1, 50, Star.GenerationSeed) -
-                10 * Star.Constellation.ShipTypeCounts[rstBusinessCenter] - Star.CountShipsByTypeMask(StationTypes) -
-                Round(PointDistance(GetPlayer.CurrentStar.Position, Star.Position));
-              if BestScore <= Score then
-              begin
-                BestScore := Score;
-                BestStar := Star;
-              end;
+              BestScore := Score;
+              BestStar := Star;
             end;
           end;
           if BestStar = nil then Continue;
@@ -4902,7 +4912,7 @@ begin
             AddChoice('- ' + FormatText1(LocalizedColorText('Investment.' + CoalitionProjectNames[Kind] + '.PlayerSend'), TextHighlightColorTag, '<Money>', IntToStr(StationServiceQuoteCost)), Choice, AcceptBusinessCenterInvestment)
           else AddChoice('- ' + FormatText1(LocalizedColorText('Investment.' + CoalitionProjectNames[Kind] + '.PlayerSend'), TextHighlightColorTag, '<Money>', IntToStr(StationServiceQuoteCost)), 0, ScriptDialogBlockCallback);
         end;
-        cpCreateMedicalBase:
+      cpCreateMedicalBase:
         begin
           if Galaxy.ShipTypeCounts[rstMedicalBase] > Galaxy.CountFactionStars(sfCoalition) * 0.15 then Continue;
           BestStar := nil;
@@ -4910,24 +4920,27 @@ begin
           for I := 1 to Galaxy.Stars.Count - 1 do
           begin
             IncrementWrapped(Index, BoundA, BoundB);
-            Star := TObject(GetPlayer.CurrentStar.StarDistances[Index].Star) as TStar;
-            if (SeededRandomUnitFloat(GetPlayer.DockedTo.Seed + Star.GenerationSeed + Galaxy.CurrentTurn div 60 + 1123087) >= 0.6) and
-               (Star.Constellation.Id <> 20) and (Star.Constellation.ShipTypeCounts[rstMedicalBase] <= 0) and
-               (Star.Constellation.CountShipsByTypeMask(StationTypes) < Star.Constellation.Stars.Count) and
-               (Star.ShipTypeCounts[rstMedicalBase] <= 0) and (Star.CountShipsByTypeMask(StationTypes) <= 1) and
-               (Star.ShipTypeCounts[stKling] <= 0) and
-               (Star.ControlFaction = sfCoalition) and ((Star.Battle = 0) or (Star.CountPirateShips(False) <= 0)) and
-               (Star.Status.CustomFaction = '') and (GetPlayer.CurrentStar <> Star) and
-               (Star.DaysSincePlayerVisit >= 30) and Star.IsConstellationVisible then
+            Star := GetPlayer.CurrentStar.StarDistances[Index].Star as TStar;
+            if not (SeededRandomUnitFloat(GetPlayer.DockedTo.Seed + Star.GenerationSeed + Galaxy.CurrentTurn div 60 + 1123087) >= 0.6) then Continue;
+            if Star.Constellation.Id = 20 then Continue;
+            if Star.Constellation.ShipTypeCounts[rstMedicalBase] > 0 then Continue;
+            if Star.Constellation.CountShipsByTypeMask(StationTypes) >= Star.Constellation.Stars.Count then Continue;
+            if Star.ShipTypeCounts[rstMedicalBase] > 0 then Continue;
+            if Star.CountShipsByTypeMask(StationTypes) > 1 then Continue;
+            if Star.ShipTypeCounts[stKling] > 0 then Continue;
+            if Star.ControlFaction <> sfCoalition then Continue;
+            if not ((Star.Battle = 0) or (Star.CountPirateShips(False) <= 0)) then Continue;
+            if Star.Status.CustomFaction <> '' then Continue;
+            if GetPlayer.CurrentStar = Star then Continue;
+            if Star.DaysSincePlayerVisit < 30 then Continue;
+            if not Star.IsConstellationVisible then Continue;
+            Score := Min(40, Star.DaysSincePlayerVisit) + 200 - SeededRandomIntRange(1, 50, Star.GenerationSeed) -
+              10 * Star.Constellation.ShipTypeCounts[rstMedicalBase] - Star.CountShipsByTypeMask(StationTypes) -
+              Round(PointDistance(GetPlayer.CurrentStar.Position, Star.Position));
+            if BestScore <= Score then
             begin
-              Score := Min(40, Star.DaysSincePlayerVisit) + 200 - SeededRandomIntRange(1, 50, Star.GenerationSeed) -
-                10 * Star.Constellation.ShipTypeCounts[rstMedicalBase] - Star.CountShipsByTypeMask(StationTypes) -
-                Round(PointDistance(GetPlayer.CurrentStar.Position, Star.Position));
-              if BestScore <= Score then
-              begin
-                BestScore := Score;
-                BestStar := Star;
-              end;
+              BestScore := Score;
+              BestStar := Star;
             end;
           end;
           if BestStar = nil then Continue;
@@ -4945,7 +4958,7 @@ begin
             AddChoice('- ' + FormatText1(LocalizedColorText('Investment.' + CoalitionProjectNames[Kind] + '.PlayerSend'), TextHighlightColorTag, '<Money>', IntToStr(StationServiceQuoteCost)), Choice, AcceptBusinessCenterInvestment)
           else AddChoice('- ' + FormatText1(LocalizedColorText('Investment.' + CoalitionProjectNames[Kind] + '.PlayerSend'), TextHighlightColorTag, '<Money>', IntToStr(StationServiceQuoteCost)), 0, ScriptDialogBlockCallback);
         end;
-        cpRangersSubsidy:
+      cpRangersSubsidy:
         begin
           if Galaxy.CountEligibleRangers < 20 then Continue;
           if SeededRandomUnitFloat(Galaxy.CurrentTurn div 71 + GetPlayer.DockedTo.Seed + 16689) < 0.5 then Continue;
@@ -4961,7 +4974,7 @@ begin
             AddChoice('- ' + FormatText1(LocalizedColorText('Investment.' + CoalitionProjectNames[Kind] + '.PlayerSend'), TextHighlightColorTag, '<Money>', IntToStr(StationServiceQuoteCost)), Choice, AcceptBusinessCenterInvestment)
           else AddChoice('- ' + FormatText1(LocalizedColorText('Investment.' + CoalitionProjectNames[Kind] + '.PlayerSend'), TextHighlightColorTag, '<Money>', IntToStr(StationServiceQuoteCost)), 0, ScriptDialogBlockCallback);
         end;
-        cpPiratesSubsidy:
+      cpPiratesSubsidy:
         begin
           if SeededRandomUnitFloat(Galaxy.CurrentTurn div 71 + GetPlayer.DockedTo.Seed + 5789) < 0.7 then Continue;
           StationServiceQuoteCost := SeededRandomIntRange(Galaxy.ComputeScaledHugeMoney(RaceToOwner(GetPlayer.PilotRace)) div 2,
@@ -4976,7 +4989,7 @@ begin
             AddChoice('- ' + FormatText1(LocalizedColorText('Investment.' + CoalitionProjectNames[Kind] + '.PlayerSend'), TextHighlightColorTag, '<Money>', IntToStr(StationServiceQuoteCost)), Choice, AcceptBusinessCenterInvestment)
           else AddChoice('- ' + FormatText1(LocalizedColorText('Investment.' + CoalitionProjectNames[Kind] + '.PlayerSend'), TextHighlightColorTag, '<Money>', IntToStr(StationServiceQuoteCost)), 0, ScriptDialogBlockCallback);
         end;
-        cpTransportSubsidy:
+      cpTransportSubsidy:
         begin
           if SeededRandomUnitFloat(Galaxy.CurrentTurn div 71 + GetPlayer.DockedTo.Seed + 23739) < 0.5 then Continue;
           StationServiceQuoteCost := SeededRandomIntRange(Galaxy.ComputeScaledHugeMoney(RaceToOwner(GetPlayer.PilotRace)) div 4,
@@ -4991,7 +5004,7 @@ begin
             AddChoice('- ' + FormatText1(LocalizedColorText('Investment.' + CoalitionProjectNames[Kind] + '.PlayerSend'), TextHighlightColorTag, '<Money>', IntToStr(StationServiceQuoteCost)), Choice, AcceptBusinessCenterInvestment)
           else AddChoice('- ' + FormatText1(LocalizedColorText('Investment.' + CoalitionProjectNames[Kind] + '.PlayerSend'), TextHighlightColorTag, '<Money>', IntToStr(StationServiceQuoteCost)), 0, ScriptDialogBlockCallback);
         end;
-        cpLostSubsidy:
+      cpLostSubsidy:
         begin
           StationServiceQuoteCost := SeededRandomIntRange(Galaxy.ComputeScaledHugeMoney(RaceToOwner(GetPlayer.PilotRace)),
             4 * Galaxy.ComputeScaledHugeMoney(RaceToOwner(GetPlayer.PilotRace)), 1177961 * (Integer(Kind) + 13));
@@ -5005,7 +5018,7 @@ begin
             AddChoice('- ' + FormatText1(LocalizedColorText('Investment.' + CoalitionProjectNames[Kind] + '.PlayerSend'), TextHighlightColorTag, '<Money>', IntToStr(StationServiceQuoteCost)), Choice, AcceptBusinessCenterInvestment)
           else AddChoice('- ' + FormatText1(LocalizedColorText('Investment.' + CoalitionProjectNames[Kind] + '.PlayerSend'), TextHighlightColorTag, '<Money>', IntToStr(StationServiceQuoteCost)), 0, ScriptDialogBlockCallback);
         end;
-        cpWarSubsidy:
+      cpWarSubsidy:
         begin
           BestPlanet := nil;
           BestScore := 0;
@@ -5016,19 +5029,20 @@ begin
           begin
             IncrementWrapped(Index, BoundA, BoundB);
             Planet := Galaxy.Planets[Index];
-            if Planet.IsCoalitionOwned and not Planet.IsMainPiratePlanet and
-               (SeededRandomUnitFloat(GetPlayer.DockedTo.Seed + Planet.GenerationSeed + Galaxy.CurrentTurn div 60 + 5889) >= 0.9) and
-               (Planet.CurrentStar.ShipTypeCounts[stKling] <= 0) and (Planet.OwnerId <> oiPirate) and
-               ((Planet.CurrentStar.Battle = 0) or (Planet.CurrentStar.CountPirateShips(False) <= 0)) and
-               (Planet.CurrentStar.DaysSincePlayerVisit >= 30) and Planet.CurrentStar.IsConstellationVisible then
+            if not Planet.IsCoalitionOwned then Continue;
+            if Planet.IsMainPiratePlanet then Continue;
+            if not (SeededRandomUnitFloat(GetPlayer.DockedTo.Seed + Planet.GenerationSeed + Galaxy.CurrentTurn div 60 + 5889) >= 0.9) then Continue;
+            if Planet.CurrentStar.ShipTypeCounts[stKling] > 0 then Continue;
+            if Planet.OwnerId = oiPirate then Continue;
+            if not ((Planet.CurrentStar.Battle = 0) or (Planet.CurrentStar.CountPirateShips(False) <= 0)) then Continue;
+            if Planet.CurrentStar.DaysSincePlayerVisit < 30 then Continue;
+            if not Planet.CurrentStar.IsConstellationVisible then Continue;
+            Score := Min(40, Planet.CurrentStar.DaysSincePlayerVisit) + 200 - SeededRandomIntRange(1, 50, Planet.GenerationSeed) -
+              10 * Planet.Warriors.Count - Round(PointDistance(GetPlayer.CurrentStar.Position, Planet.CurrentStar.Position));
+            if BestScore <= Score then
             begin
-              Score := Min(40, Planet.CurrentStar.DaysSincePlayerVisit) + 200 - SeededRandomIntRange(1, 50, Planet.GenerationSeed) -
-                10 * Planet.Warriors.Count - Round(PointDistance(GetPlayer.CurrentStar.Position, Planet.CurrentStar.Position));
-              if BestScore <= Score then
-              begin
-                BestScore := Score;
-                BestPlanet := Planet;
-              end;
+              BestScore := Score;
+              BestPlanet := Planet;
             end;
           end;
           if BestPlanet = nil then Continue;
@@ -5047,19 +5061,18 @@ begin
             AddChoice('- ' + FormatText1(LocalizedColorText('Investment.' + CoalitionProjectNames[Kind] + '.PlayerSend'), TextHighlightColorTag, '<Planet>', InvestmentDefensePlanet.Name), Choice, AcceptBusinessCenterInvestment)
           else AddChoice('- ' + FormatText1(LocalizedColorText('Investment.' + CoalitionProjectNames[Kind] + '.PlayerSend'), TextHighlightColorTag, '<Planet>', InvestmentDefensePlanet.Name), 0, ScriptDialogBlockCallback);
         end;
-      end;
-      InvestmentQuoteCosts[Kind] := StationServiceQuoteCost;
     end;
+    InvestmentQuoteCosts[Kind] := StationServiceQuoteCost;
   end;
   DialogText := LocalizedColorText('FormRuins.BK.Investment.BK');
   ReplaceTextToken(DialogText, '<BK>', GetPlayer.DockedTo.Name, TextHighlightColorTag);
   ReplaceTextToken(DialogText, '<BKInvestment>', Offers, '');
   AddChoice('- ' + LocalizedColorText('FormRuins.BK.Investment.PlayerNo'), 0, DeclineBusinessCenterInvestment);
 end;
-{ @end $5C6FBC }
+{ @end $576ACC }
 
-{ @routine $5CA654 TfRuinsTalk_AcceptBusinessCenterInvestment }
-procedure TfRuinsTalk.AcceptBusinessCenterInvestment(Action: Integer);
+{ @routine $579DC4 TfRuinsTalk_AcceptBusinessCenterInvestment }
+procedure TfRuinsTalk.AcceptBusinessCenterInvestment(Action: Cardinal);
 const
   RangerTypes = [htRanger];
   FriendlyTypes = [htRanger, htTransport..htDiplomat];
@@ -5080,238 +5093,238 @@ begin
   GetPlayer.StationServiceLastUseTurns[Kind] := Galaxy.CurrentTurn;
   case Kind of
     cpCreateRangerCenter:
-    begin
-      GetPlayer.SetMoney(GetPlayer.Money - StationServiceQuoteCost);
-      RangerCenter := TRuins.Create;
-      RangerCenter.Init(rstRangerCenter, InvestmentRangerCenterStar, '');
-      Galaxy.AddPlanetNewsWithPlayerBubble(gnStationCreated, FormatText3(PickLocalizedTextVariant('GalaxyNews.CreateNewObject.RC', Galaxy.CurrentTurn div 10 * GetPlayer.DockedTo.Seed), TextHighlightColorTag,
-        '<Name>', RangerCenter.GetName, '<Star>', RangerCenter.CurrentStar.Name, '<Sector>', RangerCenter.CurrentStar.Constellation.GetName));
-      DialogText := LocalizedColorText('FormRuins.BK.Investment.BKAfterInvestment');
-      ReplaceTextToken(DialogText, '<InvestmentText>', LocalizedColorText('Investment.' + CoalitionProjectNames[Kind] + '.Text'), '');
-      ReplaceTextToken(DialogText, '<BK>', GetPlayer.DockedTo.Name, TextHighlightColorTag);
-      ReplaceTextToken(DialogText, '<Name>', RangerCenter.Name, TextHighlightColorTag);
-      ReplaceTextToken(DialogText, '<Star>', RangerCenter.CurrentStar.Name, TextHighlightColorTag);
-      Experience := SeededRandomIntRange(1000, 1500, RangerCenter.Seed);
-      GetPlayer.GainExperience(Experience, esUnscaled);
-      ReplaceTextToken(DialogText, '<Point>', IntToStr(Experience), TextHighlightColorTag);
-      Galaxy.UpdateConstellationMilitaryStats;
-      GetPlayer.ChangePlanetRelations(nil, rcmIncrease, 10, PlanetOwnerMasks.Coalition);
-      GetPlayer.ChangeShipRelations(nil, rcmIncrease, 40, RangerTypes, PlanetOwnerMasks.Coalition);
-      TryAddAchievementProgress('RUINS', 1);
-    end;
+      begin
+        GetPlayer.SetMoney(GetPlayer.Money - StationServiceQuoteCost);
+        RangerCenter := TRuins.Create;
+        RangerCenter.Init(rstRangerCenter, InvestmentRangerCenterStar, '');
+        Galaxy.AddPlanetNewsWithPlayerBubble(gnStationCreated, FormatText3(PickLocalizedTextVariant('GalaxyNews.CreateNewObject.RC', Galaxy.CurrentTurn div 10 * GetPlayer.DockedTo.Seed), TextHighlightColorTag,
+          '<Name>', RangerCenter.GetName, '<Star>', RangerCenter.CurrentStar.Name, '<Sector>', RangerCenter.CurrentStar.Constellation.GetName));
+        DialogText := LocalizedColorText('FormRuins.BK.Investment.BKAfterInvestment');
+        ReplaceTextToken(DialogText, '<InvestmentText>', LocalizedColorText('Investment.' + CoalitionProjectNames[Kind] + '.Text'), '');
+        ReplaceTextToken(DialogText, '<BK>', GetPlayer.DockedTo.Name, TextHighlightColorTag);
+        ReplaceTextToken(DialogText, '<Name>', RangerCenter.Name, TextHighlightColorTag);
+        ReplaceTextToken(DialogText, '<Star>', RangerCenter.CurrentStar.Name, TextHighlightColorTag);
+        Experience := SeededRandomIntRange(1000, 1500, RangerCenter.Seed);
+        GetPlayer.GainExperience(Experience, esUnscaled);
+        ReplaceTextToken(DialogText, '<Point>', IntToStr(Experience), TextHighlightColorTag);
+        Galaxy.UpdateConstellationMilitaryStats;
+        GetPlayer.ChangePlanetRelations(nil, rcmIncrease, 10, PlanetOwnerMasks.Coalition);
+        GetPlayer.ChangeShipRelations(nil, rcmIncrease, 40, RangerTypes, PlanetOwnerMasks.Coalition);
+        TryAddAchievementProgress('RUINS', 1);
+      end;
     cpCreatePirateBase:
-    begin
-      GetPlayer.SetMoney(GetPlayer.Money - StationServiceQuoteCost);
-      PirateBase := TRuins.Create;
-      PirateBase.Init(rstPirateBase, InvestmentPirateBaseStar, '');
-      Galaxy.AddPlanetNewsWithPlayerBubble(gnStationCreated, FormatText3(PickLocalizedTextVariant('GalaxyNews.CreateNewObject.PB', Galaxy.CurrentTurn div 10 * GetPlayer.DockedTo.Seed), TextHighlightColorTag,
-        '<Name>', PirateBase.GetName, '<Star>', PirateBase.CurrentStar.Name, '<Sector>', PirateBase.CurrentStar.Constellation.GetName));
-      DialogText := LocalizedColorText('FormRuins.BK.Investment.BKAfterInvestment');
-      ReplaceTextToken(DialogText, '<InvestmentText>', LocalizedColorText('Investment.' + CoalitionProjectNames[Kind] + '.Text'), '');
-      ReplaceTextToken(DialogText, '<BK>', GetPlayer.DockedTo.Name, TextHighlightColorTag);
-      ReplaceTextToken(DialogText, '<Name>', PirateBase.Name, TextHighlightColorTag);
-      ReplaceTextToken(DialogText, '<Star>', PirateBase.CurrentStar.Name, TextHighlightColorTag);
-      Galaxy.UpdateConstellationMilitaryStats;
-      GetPlayer.ChangePlanetRelations(nil, rcmDecreaseWithFloor20, 30, [oiFeyan, oiGaal]);
-      GetPlayer.ChangePlanetRelations(nil, rcmDecreaseWithFloor20, 10, [oiMaloc, oiHuman]);
-      GetPlayer.ChangePlanetRelations(nil, rcmIncrease, 20, [oiPeleng]);
-    end;
+      begin
+        GetPlayer.SetMoney(GetPlayer.Money - StationServiceQuoteCost);
+        PirateBase := TRuins.Create;
+        PirateBase.Init(rstPirateBase, InvestmentPirateBaseStar, '');
+        Galaxy.AddPlanetNewsWithPlayerBubble(gnStationCreated, FormatText3(PickLocalizedTextVariant('GalaxyNews.CreateNewObject.PB', Galaxy.CurrentTurn div 10 * GetPlayer.DockedTo.Seed), TextHighlightColorTag,
+          '<Name>', PirateBase.GetName, '<Star>', PirateBase.CurrentStar.Name, '<Sector>', PirateBase.CurrentStar.Constellation.GetName));
+        DialogText := LocalizedColorText('FormRuins.BK.Investment.BKAfterInvestment');
+        ReplaceTextToken(DialogText, '<InvestmentText>', LocalizedColorText('Investment.' + CoalitionProjectNames[Kind] + '.Text'), '');
+        ReplaceTextToken(DialogText, '<BK>', GetPlayer.DockedTo.Name, TextHighlightColorTag);
+        ReplaceTextToken(DialogText, '<Name>', PirateBase.Name, TextHighlightColorTag);
+        ReplaceTextToken(DialogText, '<Star>', PirateBase.CurrentStar.Name, TextHighlightColorTag);
+        Galaxy.UpdateConstellationMilitaryStats;
+        GetPlayer.ChangePlanetRelations(nil, rcmDecreaseWithFloor20, 30, [oiFeyan, oiGaal]);
+        GetPlayer.ChangePlanetRelations(nil, rcmDecreaseWithFloor20, 10, [oiMaloc, oiHuman]);
+        GetPlayer.ChangePlanetRelations(nil, rcmIncrease, 20, [oiPeleng]);
+      end;
     cpCreateMilitaryBase:
-    begin
-      GetPlayer.SetMoney(GetPlayer.Money - StationServiceQuoteCost);
-      MilitaryBase := TRuins.Create;
-      MilitaryBase.Init(rstMilitaryBase, InvestmentMilitaryBaseStar, '');
-      Galaxy.AddPlanetNewsWithPlayerBubble(gnStationCreated, FormatText3(PickLocalizedTextVariant('GalaxyNews.CreateNewObject.WB', Galaxy.CurrentTurn div 10 * GetPlayer.DockedTo.Seed), TextHighlightColorTag,
-        '<Name>', MilitaryBase.GetName, '<Star>', MilitaryBase.CurrentStar.Name, '<Sector>', MilitaryBase.CurrentStar.Constellation.GetName));
-      DialogText := LocalizedColorText('FormRuins.BK.Investment.BKAfterInvestment');
-      if GetPlayer.OwnerId <> oiPirate then
-        ReplaceTextToken(DialogText, '<InvestmentText>', LocalizedColorText('Investment.' + CoalitionProjectNames[Kind] + '.Text'), '')
-      else ReplaceTextToken(DialogText, '<InvestmentText>', LocalizedColorText('Investment.' + CoalitionProjectNames[Kind] + '.TextAlt'), '');
-      ReplaceTextToken(DialogText, '<BK>', GetPlayer.DockedTo.Name, TextHighlightColorTag);
-      ReplaceTextToken(DialogText, '<Name>', MilitaryBase.Name, TextHighlightColorTag);
-      ReplaceTextToken(DialogText, '<Star>', MilitaryBase.CurrentStar.Name, TextHighlightColorTag);
-      if GetPlayer.OwnerId <> oiPirate then
       begin
-        RankPoints := SeededRandomIntRange(50, 200, MilitaryBase.Seed);
-        GetPlayer.AddRankPoints(RankPoints);
-        ReplaceTextToken(DialogText, '<Point>', IntToStr(RankPoints), TextHighlightColorTag);
+        GetPlayer.SetMoney(GetPlayer.Money - StationServiceQuoteCost);
+        MilitaryBase := TRuins.Create;
+        MilitaryBase.Init(rstMilitaryBase, InvestmentMilitaryBaseStar, '');
+        Galaxy.AddPlanetNewsWithPlayerBubble(gnStationCreated, FormatText3(PickLocalizedTextVariant('GalaxyNews.CreateNewObject.WB', Galaxy.CurrentTurn div 10 * GetPlayer.DockedTo.Seed), TextHighlightColorTag,
+          '<Name>', MilitaryBase.GetName, '<Star>', MilitaryBase.CurrentStar.Name, '<Sector>', MilitaryBase.CurrentStar.Constellation.GetName));
+        DialogText := LocalizedColorText('FormRuins.BK.Investment.BKAfterInvestment');
+        if GetPlayer.OwnerId <> oiPirate then
+          ReplaceTextToken(DialogText, '<InvestmentText>', LocalizedColorText('Investment.' + CoalitionProjectNames[Kind] + '.Text'), '')
+        else ReplaceTextToken(DialogText, '<InvestmentText>', LocalizedColorText('Investment.' + CoalitionProjectNames[Kind] + '.TextAlt'), '');
+        ReplaceTextToken(DialogText, '<BK>', GetPlayer.DockedTo.Name, TextHighlightColorTag);
+        ReplaceTextToken(DialogText, '<Name>', MilitaryBase.Name, TextHighlightColorTag);
+        ReplaceTextToken(DialogText, '<Star>', MilitaryBase.CurrentStar.Name, TextHighlightColorTag);
+        if GetPlayer.OwnerId <> oiPirate then
+        begin
+          RankPoints := SeededRandomIntRange(50, 200, MilitaryBase.Seed);
+          GetPlayer.AddRankPoints(RankPoints);
+          ReplaceTextToken(DialogText, '<Point>', IntToStr(RankPoints), TextHighlightColorTag);
+        end;
+        Galaxy.UpdateConstellationMilitaryStats;
+        GetPlayer.ChangePlanetRelations(nil, rcmIncrease, 30, PlanetOwnerMasks.Coalition);
+        GetPlayer.ChangeShipRelations(nil, rcmIncrease, 10, FriendlyTypes, PlanetOwnerMasks.Coalition);
+        GetPlayer.ChangeShipRelations(nil, rcmDecreaseWithFloor20, 30, PirateTypes, PlanetOwnerMasks.Coalition);
+        TryAddAchievementProgress('RUINS', 1);
       end;
-      Galaxy.UpdateConstellationMilitaryStats;
-      GetPlayer.ChangePlanetRelations(nil, rcmIncrease, 30, PlanetOwnerMasks.Coalition);
-      GetPlayer.ChangeShipRelations(nil, rcmIncrease, 10, FriendlyTypes, PlanetOwnerMasks.Coalition);
-      GetPlayer.ChangeShipRelations(nil, rcmDecreaseWithFloor20, 30, PirateTypes, PlanetOwnerMasks.Coalition);
-      TryAddAchievementProgress('RUINS', 1);
-    end;
     cpCreateScienceBase:
-    begin
-      GetPlayer.SetMoney(GetPlayer.Money - StationServiceQuoteCost);
-      ScienceBase := TRuins.Create;
-      ScienceBase.Init(rstScienceBase, InvestmentScienceBaseStar, '');
-      Galaxy.AddPlanetNewsWithPlayerBubble(gnStationCreated, FormatText3(PickLocalizedTextVariant('GalaxyNews.CreateNewObject.SB', Galaxy.CurrentTurn div 10 * GetPlayer.DockedTo.Seed), TextHighlightColorTag,
-        '<Name>', ScienceBase.GetName, '<Star>', ScienceBase.CurrentStar.Name, '<Sector>', ScienceBase.CurrentStar.Constellation.GetName));
-      DialogText := LocalizedColorText('FormRuins.BK.Investment.BKAfterInvestment');
-      ReplaceTextToken(DialogText, '<InvestmentText>', LocalizedColorText('Investment.' + CoalitionProjectNames[Kind] + '.Text'), '');
-      ReplaceTextToken(DialogText, '<BK>', GetPlayer.DockedTo.Name, TextHighlightColorTag);
-      ReplaceTextToken(DialogText, '<Name>', ScienceBase.Name, TextHighlightColorTag);
-      ReplaceTextToken(DialogText, '<Star>', ScienceBase.CurrentStar.Name, TextHighlightColorTag);
-      Galaxy.UpdateConstellationMilitaryStats;
-      GetPlayer.ChangeShipRelations(nil, rcmIncrease, 25, RangerTypes, PlanetOwnerMasks.Coalition);
-      TryAddAchievementProgress('RUINS', 1);
-    end;
+      begin
+        GetPlayer.SetMoney(GetPlayer.Money - StationServiceQuoteCost);
+        ScienceBase := TRuins.Create;
+        ScienceBase.Init(rstScienceBase, InvestmentScienceBaseStar, '');
+        Galaxy.AddPlanetNewsWithPlayerBubble(gnStationCreated, FormatText3(PickLocalizedTextVariant('GalaxyNews.CreateNewObject.SB', Galaxy.CurrentTurn div 10 * GetPlayer.DockedTo.Seed), TextHighlightColorTag,
+          '<Name>', ScienceBase.GetName, '<Star>', ScienceBase.CurrentStar.Name, '<Sector>', ScienceBase.CurrentStar.Constellation.GetName));
+        DialogText := LocalizedColorText('FormRuins.BK.Investment.BKAfterInvestment');
+        ReplaceTextToken(DialogText, '<InvestmentText>', LocalizedColorText('Investment.' + CoalitionProjectNames[Kind] + '.Text'), '');
+        ReplaceTextToken(DialogText, '<BK>', GetPlayer.DockedTo.Name, TextHighlightColorTag);
+        ReplaceTextToken(DialogText, '<Name>', ScienceBase.Name, TextHighlightColorTag);
+        ReplaceTextToken(DialogText, '<Star>', ScienceBase.CurrentStar.Name, TextHighlightColorTag);
+        Galaxy.UpdateConstellationMilitaryStats;
+        GetPlayer.ChangeShipRelations(nil, rcmIncrease, 25, RangerTypes, PlanetOwnerMasks.Coalition);
+        TryAddAchievementProgress('RUINS', 1);
+      end;
     cpCreateBusinessCenter:
-    begin
-      GetPlayer.SetMoney(GetPlayer.Money - StationServiceQuoteCost);
-      BusinessCenter := TRuins.Create;
-      BusinessCenter.Init(rstBusinessCenter, InvestmentBusinessCenterStar, '');
-      Galaxy.AddPlanetNewsWithPlayerBubble(gnStationCreated, FormatText3(PickLocalizedTextVariant('GalaxyNews.CreateNewObject.BK', Galaxy.CurrentTurn div 10 * GetPlayer.DockedTo.Seed), TextHighlightColorTag,
-        '<Name>', BusinessCenter.GetName, '<Star>', BusinessCenter.CurrentStar.Name, '<Sector>', BusinessCenter.CurrentStar.Constellation.GetName));
-      DialogText := LocalizedColorText('FormRuins.BK.Investment.BKAfterInvestment');
-      ReplaceTextToken(DialogText, '<InvestmentText>', LocalizedColorText('Investment.' + CoalitionProjectNames[Kind] + '.Text'), '');
-      ReplaceTextToken(DialogText, '<BK>', GetPlayer.DockedTo.Name, TextHighlightColorTag);
-      ReplaceTextToken(DialogText, '<Name>', BusinessCenter.Name, TextHighlightColorTag);
-      ReplaceTextToken(DialogText, '<Star>', BusinessCenter.CurrentStar.Name, TextHighlightColorTag);
-      Galaxy.UpdateConstellationMilitaryStats;
-      GetPlayer.ChangeShipRelations(nil, rcmIncrease, 30, TransportTypes, PlanetOwnerMasks.Coalition);
-      TryAddAchievementProgress('RUINS', 1);
-    end;
+      begin
+        GetPlayer.SetMoney(GetPlayer.Money - StationServiceQuoteCost);
+        BusinessCenter := TRuins.Create;
+        BusinessCenter.Init(rstBusinessCenter, InvestmentBusinessCenterStar, '');
+        Galaxy.AddPlanetNewsWithPlayerBubble(gnStationCreated, FormatText3(PickLocalizedTextVariant('GalaxyNews.CreateNewObject.BK', Galaxy.CurrentTurn div 10 * GetPlayer.DockedTo.Seed), TextHighlightColorTag,
+          '<Name>', BusinessCenter.GetName, '<Star>', BusinessCenter.CurrentStar.Name, '<Sector>', BusinessCenter.CurrentStar.Constellation.GetName));
+        DialogText := LocalizedColorText('FormRuins.BK.Investment.BKAfterInvestment');
+        ReplaceTextToken(DialogText, '<InvestmentText>', LocalizedColorText('Investment.' + CoalitionProjectNames[Kind] + '.Text'), '');
+        ReplaceTextToken(DialogText, '<BK>', GetPlayer.DockedTo.Name, TextHighlightColorTag);
+        ReplaceTextToken(DialogText, '<Name>', BusinessCenter.Name, TextHighlightColorTag);
+        ReplaceTextToken(DialogText, '<Star>', BusinessCenter.CurrentStar.Name, TextHighlightColorTag);
+        Galaxy.UpdateConstellationMilitaryStats;
+        GetPlayer.ChangeShipRelations(nil, rcmIncrease, 30, TransportTypes, PlanetOwnerMasks.Coalition);
+        TryAddAchievementProgress('RUINS', 1);
+      end;
     cpCreateMedicalBase:
-    begin
-      GetPlayer.SetMoney(GetPlayer.Money - StationServiceQuoteCost);
-      MedicalBase := TRuins.Create;
-      MedicalBase.Init(rstMedicalBase, InvestmentMedicalBaseStar, '');
-      Galaxy.AddPlanetNewsWithPlayerBubble(gnStationCreated, FormatText3(PickLocalizedTextVariant('GalaxyNews.CreateNewObject.MC', Galaxy.CurrentTurn div 10 * GetPlayer.DockedTo.Seed), TextHighlightColorTag,
-        '<Name>', MedicalBase.GetName, '<Star>', MedicalBase.CurrentStar.Name, '<Sector>', MedicalBase.CurrentStar.Constellation.GetName));
-      DialogText := LocalizedColorText('FormRuins.BK.Investment.BKAfterInvestment');
-      ReplaceTextToken(DialogText, '<InvestmentText>', LocalizedColorText('Investment.' + CoalitionProjectNames[Kind] + '.Text'), '');
-      ReplaceTextToken(DialogText, '<BK>', GetPlayer.DockedTo.Name, TextHighlightColorTag);
-      ReplaceTextToken(DialogText, '<Name>', MedicalBase.Name, TextHighlightColorTag);
-      ReplaceTextToken(DialogText, '<Star>', MedicalBase.CurrentStar.Name, TextHighlightColorTag);
-      Galaxy.UpdateConstellationMilitaryStats;
-      GetPlayer.ChangeShipRelations(nil, rcmIncrease, 30, FriendlyTypes, PlanetOwnerMasks.Coalition);
-      TryAddAchievementProgress('RUINS', 1);
-    end;
+      begin
+        GetPlayer.SetMoney(GetPlayer.Money - StationServiceQuoteCost);
+        MedicalBase := TRuins.Create;
+        MedicalBase.Init(rstMedicalBase, InvestmentMedicalBaseStar, '');
+        Galaxy.AddPlanetNewsWithPlayerBubble(gnStationCreated, FormatText3(PickLocalizedTextVariant('GalaxyNews.CreateNewObject.MC', Galaxy.CurrentTurn div 10 * GetPlayer.DockedTo.Seed), TextHighlightColorTag,
+          '<Name>', MedicalBase.GetName, '<Star>', MedicalBase.CurrentStar.Name, '<Sector>', MedicalBase.CurrentStar.Constellation.GetName));
+        DialogText := LocalizedColorText('FormRuins.BK.Investment.BKAfterInvestment');
+        ReplaceTextToken(DialogText, '<InvestmentText>', LocalizedColorText('Investment.' + CoalitionProjectNames[Kind] + '.Text'), '');
+        ReplaceTextToken(DialogText, '<BK>', GetPlayer.DockedTo.Name, TextHighlightColorTag);
+        ReplaceTextToken(DialogText, '<Name>', MedicalBase.Name, TextHighlightColorTag);
+        ReplaceTextToken(DialogText, '<Star>', MedicalBase.CurrentStar.Name, TextHighlightColorTag);
+        Galaxy.UpdateConstellationMilitaryStats;
+        GetPlayer.ChangeShipRelations(nil, rcmIncrease, 30, FriendlyTypes, PlanetOwnerMasks.Coalition);
+        TryAddAchievementProgress('RUINS', 1);
+      end;
     cpRangersSubsidy:
-    begin
-      GetPlayer.SetMoney(GetPlayer.Money - StationServiceQuoteCost);
-      Count := 0;
-      for I := 1 to Galaxy.Rangers.Count - 1 do
       begin
-        Ranger := Galaxy.Rangers[I];
-        if (GetPlayer <> Ranger) and not Ranger.ExcludedFromRating and (Ranger.Wealth <= Galaxy.AverageRangerCapital) then
-          Inc(Count);
+        GetPlayer.SetMoney(GetPlayer.Money - StationServiceQuoteCost);
+        Count := 0;
+        for I := 1 to Galaxy.Rangers.Count - 1 do
+        begin
+          Ranger := Galaxy.Rangers[I];
+          if (GetPlayer <> Ranger) and not Ranger.ExcludedFromRating and (Ranger.Wealth <= Galaxy.AverageRangerCapital) then
+            Inc(Count);
+        end;
+        for I := 1 to Galaxy.Rangers.Count - 1 do
+        begin
+          Ranger := Galaxy.Rangers[I];
+          if (GetPlayer <> Ranger) and not Ranger.ExcludedFromRating and (Ranger.Wealth <= Galaxy.AverageRangerCapital) then
+            Ranger.SetMoney(Ranger.Money + Round(StationServiceQuoteCost / Count));
+        end;
+        Galaxy.AddPlanetNewsWithPlayerBubble(gnCoalitionInvestment, FormatText1(PickLocalizedTextVariant('Investment.' + CoalitionProjectNames[Kind] + '.GalaxyMessage', Integer(Kind) + Galaxy.CurrentTurn div 10 * GetPlayer.DockedTo.Seed), TextHighlightColorTag,
+          '<Money>', IntToStr(StationServiceQuoteCost)));
+        DialogText := LocalizedColorText('FormRuins.BK.Investment.BKAfterInvestment');
+        ReplaceTextToken(DialogText, '<InvestmentText>', LocalizedColorText('Investment.' + CoalitionProjectNames[Kind] + '.Text'), '');
+        ReplaceTextToken(DialogText, '<BK>', GetPlayer.DockedTo.Name, TextHighlightColorTag);
+        ReplaceTextToken(DialogText, '<Money>', IntToStr(StationServiceQuoteCost), TextHighlightColorTag);
       end;
-      for I := 1 to Galaxy.Rangers.Count - 1 do
-      begin
-        Ranger := Galaxy.Rangers[I];
-        if (GetPlayer <> Ranger) and not Ranger.ExcludedFromRating and (Ranger.Wealth <= Galaxy.AverageRangerCapital) then
-          Ranger.SetMoney(Ranger.Money + Round(StationServiceQuoteCost / Count));
-      end;
-      Galaxy.AddPlanetNewsWithPlayerBubble(gnCoalitionInvestment, FormatText1(PickLocalizedTextVariant('Investment.' + CoalitionProjectNames[Kind] + '.GalaxyMessage', Integer(Kind) + Galaxy.CurrentTurn div 10 * GetPlayer.DockedTo.Seed), TextHighlightColorTag,
-        '<Money>', IntToStr(StationServiceQuoteCost)));
-      DialogText := LocalizedColorText('FormRuins.BK.Investment.BKAfterInvestment');
-      ReplaceTextToken(DialogText, '<InvestmentText>', LocalizedColorText('Investment.' + CoalitionProjectNames[Kind] + '.Text'), '');
-      ReplaceTextToken(DialogText, '<BK>', GetPlayer.DockedTo.Name, TextHighlightColorTag);
-      ReplaceTextToken(DialogText, '<Money>', IntToStr(StationServiceQuoteCost), TextHighlightColorTag);
-    end;
     cpPiratesSubsidy:
-    begin
-      GetPlayer.SetMoney(GetPlayer.Money - StationServiceQuoteCost);
-      Count := Max(1, Galaxy.ShipTypeCounts[stPirate]);
-      for I := 0 to Galaxy.Stars.Count - 1 do
       begin
-        Star := Galaxy.Stars[I];
-        for J := 0 to Star.Ships.Count - 1 do
+        GetPlayer.SetMoney(GetPlayer.Money - StationServiceQuoteCost);
+        Count := Max(1, Galaxy.ShipTypeCounts[stPirate]);
+        for I := 0 to Galaxy.Stars.Count - 1 do
         begin
-          Ship := Star.Ships[J];
-          if Ship.TypeId = stPirate then Ship.SetMoney(Ship.Money + StationServiceQuoteCost div Count);
+          Star := Galaxy.Stars[I];
+          for J := 0 to Star.Ships.Count - 1 do
+          begin
+            Ship := Star.Ships[J];
+            if Ship.TypeId = stPirate then Ship.SetMoney(Ship.Money + StationServiceQuoteCost div Count);
+          end;
         end;
+        Galaxy.AddPlanetNewsWithPlayerBubble(gnCoalitionInvestment, FormatText2(PickLocalizedTextVariant('Investment.' + CoalitionProjectNames[Kind] + '.GalaxyMessage', Integer(Kind) + Galaxy.CurrentTurn div 10 * GetPlayer.DockedTo.Seed), TextHighlightColorTag,
+          '<Money>', IntToStr(StationServiceQuoteCost), '<BK>', GetPlayer.DockedTo.Name));
+        DialogText := LocalizedColorText('FormRuins.BK.Investment.BKAfterInvestment');
+        ReplaceTextToken(DialogText, '<InvestmentText>', LocalizedColorText('Investment.' + CoalitionProjectNames[Kind] + '.Text'), '');
+        ReplaceTextToken(DialogText, '<BK>', GetPlayer.DockedTo.Name, TextHighlightColorTag);
+        ReplaceTextToken(DialogText, '<Money>', IntToStr(StationServiceQuoteCost), TextHighlightColorTag);
       end;
-      Galaxy.AddPlanetNewsWithPlayerBubble(gnCoalitionInvestment, FormatText2(PickLocalizedTextVariant('Investment.' + CoalitionProjectNames[Kind] + '.GalaxyMessage', Integer(Kind) + Galaxy.CurrentTurn div 10 * GetPlayer.DockedTo.Seed), TextHighlightColorTag,
-        '<Money>', IntToStr(StationServiceQuoteCost), '<BK>', GetPlayer.DockedTo.Name));
-      DialogText := LocalizedColorText('FormRuins.BK.Investment.BKAfterInvestment');
-      ReplaceTextToken(DialogText, '<InvestmentText>', LocalizedColorText('Investment.' + CoalitionProjectNames[Kind] + '.Text'), '');
-      ReplaceTextToken(DialogText, '<BK>', GetPlayer.DockedTo.Name, TextHighlightColorTag);
-      ReplaceTextToken(DialogText, '<Money>', IntToStr(StationServiceQuoteCost), TextHighlightColorTag);
-    end;
     cpTransportSubsidy:
-    begin
-      GetPlayer.SetMoney(GetPlayer.Money - StationServiceQuoteCost);
-      Count := Max(1, Galaxy.ShipTypeCounts[stTransport]);
-      for I := 0 to Galaxy.Stars.Count - 1 do
       begin
-        Star := Galaxy.Stars[I];
-        for J := 0 to Star.Ships.Count - 1 do
+        GetPlayer.SetMoney(GetPlayer.Money - StationServiceQuoteCost);
+        Count := Max(1, Galaxy.ShipTypeCounts[stTransport]);
+        for I := 0 to Galaxy.Stars.Count - 1 do
         begin
-          Ship := Star.Ships[J];
-          if Ship.TypeId = stTransport then Ship.SetMoney(Ship.Money + StationServiceQuoteCost div Count);
+          Star := Galaxy.Stars[I];
+          for J := 0 to Star.Ships.Count - 1 do
+          begin
+            Ship := Star.Ships[J];
+            if Ship.TypeId = stTransport then Ship.SetMoney(Ship.Money + StationServiceQuoteCost div Count);
+          end;
         end;
+        Galaxy.AddPlanetNewsWithPlayerBubble(gnCoalitionInvestment, FormatText2(PickLocalizedTextVariant('Investment.' + CoalitionProjectNames[Kind] + '.GalaxyMessage', Integer(Kind) + Galaxy.CurrentTurn div 10 * GetPlayer.DockedTo.Seed), TextHighlightColorTag,
+          '<Money>', IntToStr(StationServiceQuoteCost), '<BK>', GetPlayer.DockedTo.Name));
+        DialogText := LocalizedColorText('FormRuins.BK.Investment.BKAfterInvestment');
+        ReplaceTextToken(DialogText, '<InvestmentText>', LocalizedColorText('Investment.' + CoalitionProjectNames[Kind] + '.Text'), '');
+        ReplaceTextToken(DialogText, '<BK>', GetPlayer.DockedTo.Name, TextHighlightColorTag);
+        ReplaceTextToken(DialogText, '<Money>', IntToStr(StationServiceQuoteCost), TextHighlightColorTag);
       end;
-      Galaxy.AddPlanetNewsWithPlayerBubble(gnCoalitionInvestment, FormatText2(PickLocalizedTextVariant('Investment.' + CoalitionProjectNames[Kind] + '.GalaxyMessage', Integer(Kind) + Galaxy.CurrentTurn div 10 * GetPlayer.DockedTo.Seed), TextHighlightColorTag,
-        '<Money>', IntToStr(StationServiceQuoteCost), '<BK>', GetPlayer.DockedTo.Name));
-      DialogText := LocalizedColorText('FormRuins.BK.Investment.BKAfterInvestment');
-      ReplaceTextToken(DialogText, '<InvestmentText>', LocalizedColorText('Investment.' + CoalitionProjectNames[Kind] + '.Text'), '');
-      ReplaceTextToken(DialogText, '<BK>', GetPlayer.DockedTo.Name, TextHighlightColorTag);
-      ReplaceTextToken(DialogText, '<Money>', IntToStr(StationServiceQuoteCost), TextHighlightColorTag);
-    end;
     cpLostSubsidy:
-    begin
-      GetPlayer.SetMoney(GetPlayer.Money - StationServiceQuoteCost);
-      Galaxy.AddPlanetNewsWithPlayerBubble(gnCoalitionInvestment, FormatText2(PickLocalizedTextVariant('Investment.' + CoalitionProjectNames[Kind] + '.GalaxyMessage', Integer(Kind) + Galaxy.CurrentTurn div 10 * GetPlayer.DockedTo.Seed), TextHighlightColorTag,
-        '<Money>', IntToStr(StationServiceQuoteCost), '<BK>', GetPlayer.DockedTo.Name));
-      DialogText := LocalizedColorText('FormRuins.BK.Investment.BKAfterInvestment');
-      ReplaceTextToken(DialogText, '<InvestmentText>', LocalizedColorText('Investment.' + CoalitionProjectNames[Kind] + '.Text'), '');
-      ReplaceTextToken(DialogText, '<BK>', GetPlayer.DockedTo.Name, TextHighlightColorTag);
-      ReplaceTextToken(DialogText, '<Money>', IntToStr(StationServiceQuoteCost), TextHighlightColorTag);
-      GetPlayer.ChangePlanetRelations(nil, rcmIncrease, 30, PlanetOwnerMasks.Coalition);
-      GetPlayer.ChangeShipRelations(nil, rcmIncrease, 20, FriendlyTypes, PlanetOwnerMasks.Coalition);
-      GetPlayer.ChangeShipRelations(nil, rcmDecreaseWithFloor20, 20, PirateTypes, PlanetOwnerMasks.Coalition);
-    end;
-    cpWarSubsidy:
-    begin
-      GetPlayer.SetMoney(GetPlayer.Money - StationServiceQuoteCost);
-      Count := SeededRandomIntRange(4, 7, InvestmentDefensePlanet.GenerationSeed + Galaxy.CurrentTurn div 60);
-      ShipNames := #13#10;
-      for I := 1 to Count do
       begin
-        Warrior := TObject(InvestmentDefensePlanet.BuyWarrior(100)) as TWarrior;
-        Warrior.Name := Warrior.Name + ' ' + GetPlayer.Name;
-        ShipNames := ShipNames + Warrior.GetName + #13#10;
+        GetPlayer.SetMoney(GetPlayer.Money - StationServiceQuoteCost);
+        Galaxy.AddPlanetNewsWithPlayerBubble(gnCoalitionInvestment, FormatText2(PickLocalizedTextVariant('Investment.' + CoalitionProjectNames[Kind] + '.GalaxyMessage', Integer(Kind) + Galaxy.CurrentTurn div 10 * GetPlayer.DockedTo.Seed), TextHighlightColorTag,
+          '<Money>', IntToStr(StationServiceQuoteCost), '<BK>', GetPlayer.DockedTo.Name));
+        DialogText := LocalizedColorText('FormRuins.BK.Investment.BKAfterInvestment');
+        ReplaceTextToken(DialogText, '<InvestmentText>', LocalizedColorText('Investment.' + CoalitionProjectNames[Kind] + '.Text'), '');
+        ReplaceTextToken(DialogText, '<BK>', GetPlayer.DockedTo.Name, TextHighlightColorTag);
+        ReplaceTextToken(DialogText, '<Money>', IntToStr(StationServiceQuoteCost), TextHighlightColorTag);
+        GetPlayer.ChangePlanetRelations(nil, rcmIncrease, 30, PlanetOwnerMasks.Coalition);
+        GetPlayer.ChangeShipRelations(nil, rcmIncrease, 20, FriendlyTypes, PlanetOwnerMasks.Coalition);
+        GetPlayer.ChangeShipRelations(nil, rcmDecreaseWithFloor20, 20, PirateTypes, PlanetOwnerMasks.Coalition);
       end;
-      Text := PickLocalizedTextVariant('Investment.' + CoalitionProjectNames[Kind] + '.GalaxyMessage', Integer(Kind) + Galaxy.CurrentTurn div 10 * GetPlayer.DockedTo.Seed);
-      ReplaceTextToken(Text, '<BK>', GetPlayer.DockedTo.Name, TextHighlightColorTag);
-      ReplaceTextToken(Text, '<Count>', IntToStr(Count), TextHighlightColorTag);
-      ReplaceTextToken(Text, '<Planet>', InvestmentDefensePlanet.Name, TextHighlightColorTag);
-      ReplaceTextToken(Text, '<Star>', InvestmentDefensePlanet.CurrentStar.Name, TextHighlightColorTag);
-      ReplaceTextToken(Text, '<Money>', IntToStr(StationServiceQuoteCost), TextHighlightColorTag);
-      Galaxy.AddPlanetNewsWithPlayerBubble(gnCoalitionInvestment, Text);
-      DialogText := LocalizedColorText('FormRuins.BK.Investment.BKAfterInvestment');
-      ReplaceTextToken(DialogText, '<InvestmentText>', LocalizedColorText('Investment.' + CoalitionProjectNames[Kind] + '.Text'), '');
-      ReplaceTextToken(DialogText, '<BK>', GetPlayer.DockedTo.Name, TextHighlightColorTag);
-      ReplaceTextToken(DialogText, '<ShipsName>', ShipNames, '');
-      ReplaceTextToken(DialogText, '<Count>', IntToStr(Count), TextHighlightColorTag);
-      ReplaceTextToken(DialogText, '<Planet>', InvestmentDefensePlanet.Name, TextHighlightColorTag);
-      ReplaceTextToken(DialogText, '<Star>', InvestmentDefensePlanet.CurrentStar.Name, TextHighlightColorTag);
-      ReplaceTextToken(DialogText, '<Money>', IntToStr(StationServiceQuoteCost), TextHighlightColorTag);
-      InvestmentDefensePlanet.ChangeRelationToRanger(GetPlayer, 100);
-      GetPlayer.ChangePlanetRelations(nil, rcmIncrease, 20, PlanetOwnerMasks.Coalition);
-      GetPlayer.ChangeShipRelations(nil, rcmDecreaseWithFloor20, 30, PirateTypes, PlanetOwnerMasks.Coalition);
-    end;
+    cpWarSubsidy:
+      begin
+        GetPlayer.SetMoney(GetPlayer.Money - StationServiceQuoteCost);
+        Count := SeededRandomIntRange(4, 7, InvestmentDefensePlanet.GenerationSeed + Galaxy.CurrentTurn div 60);
+        ShipNames := #13#10;
+        for I := 1 to Count do
+        begin
+          Warrior := TObject(InvestmentDefensePlanet.BuyWarrior(100)) as TWarrior;
+          Warrior.Name := Warrior.Name + ' ' + GetPlayer.Name;
+          ShipNames := ShipNames + Warrior.GetName + #13#10;
+        end;
+        Text := PickLocalizedTextVariant('Investment.' + CoalitionProjectNames[Kind] + '.GalaxyMessage', Integer(Kind) + Galaxy.CurrentTurn div 10 * GetPlayer.DockedTo.Seed);
+        ReplaceTextToken(Text, '<BK>', GetPlayer.DockedTo.Name, TextHighlightColorTag);
+        ReplaceTextToken(Text, '<Count>', IntToStr(Count), TextHighlightColorTag);
+        ReplaceTextToken(Text, '<Planet>', InvestmentDefensePlanet.Name, TextHighlightColorTag);
+        ReplaceTextToken(Text, '<Star>', InvestmentDefensePlanet.CurrentStar.Name, TextHighlightColorTag);
+        ReplaceTextToken(Text, '<Money>', IntToStr(StationServiceQuoteCost), TextHighlightColorTag);
+        Galaxy.AddPlanetNewsWithPlayerBubble(gnCoalitionInvestment, Text);
+        DialogText := LocalizedColorText('FormRuins.BK.Investment.BKAfterInvestment');
+        ReplaceTextToken(DialogText, '<InvestmentText>', LocalizedColorText('Investment.' + CoalitionProjectNames[Kind] + '.Text'), '');
+        ReplaceTextToken(DialogText, '<BK>', GetPlayer.DockedTo.Name, TextHighlightColorTag);
+        ReplaceTextToken(DialogText, '<ShipsName>', ShipNames, '');
+        ReplaceTextToken(DialogText, '<Count>', IntToStr(Count), TextHighlightColorTag);
+        ReplaceTextToken(DialogText, '<Planet>', InvestmentDefensePlanet.Name, TextHighlightColorTag);
+        ReplaceTextToken(DialogText, '<Star>', InvestmentDefensePlanet.CurrentStar.Name, TextHighlightColorTag);
+        ReplaceTextToken(DialogText, '<Money>', IntToStr(StationServiceQuoteCost), TextHighlightColorTag);
+        InvestmentDefensePlanet.ChangeRelationToRanger(GetPlayer, 100);
+        GetPlayer.ChangePlanetRelations(nil, rcmIncrease, 20, PlanetOwnerMasks.Coalition);
+        GetPlayer.ChangeShipRelations(nil, rcmDecreaseWithFloor20, 30, PirateTypes, PlanetOwnerMasks.Coalition);
+      end;
   end;
   M_Main(True);
 end;
-{ @end $5CA654 }
+{ @end $579DC4 }
 
-{ @routine $5CC734 TfRuinsTalk_DeclineBusinessCenterInvestment }
-procedure TfRuinsTalk.DeclineBusinessCenterInvestment(Action: Integer);
+{ @routine $57BD54 TfRuinsTalk_DeclineBusinessCenterInvestment }
+procedure TfRuinsTalk.DeclineBusinessCenterInvestment(Action: Cardinal);
 begin
   DialogText := LocalizedColorText('FormRuins.BK.Investment.BKAfterPlayerNo');
   ReplaceTextToken(DialogText, '<BK>', GetPlayer.DockedTo.Name, TextHighlightColorTag);
   M_Main(True);
 end;
-{ @end $5CC734 }
+{ @end $57BD54 }
 
-{ @routine $5CC850 TfRuinsTalk_ShowBusinessCenterTradeDialog }
-procedure TfRuinsTalk.ShowBusinessCenterTradeDialog(Action: Integer);
+{ @routine $57BE60 TfRuinsTalk_ShowBusinessCenterTradeDialog }
+procedure TfRuinsTalk.ShowBusinessCenterTradeDialog(Action: Cardinal);
 var
   Discount: Byte;
 begin
@@ -5336,10 +5349,10 @@ begin
   else AddChoice('- ' + FormatText1(LocalizedColorText('FormRuins.BK.Trade.PlayerFar'), TextHighlightColorTag, '<FarMoney>', IntToStr(DistantTradeAdviceCost)), 0, ScriptDialogBlockCallback);
   AddChoice('- ' + LocalizedColorText('FormRuins.BK.Trade.PlayerNo'), 0, DeclineBusinessCenterTradeAdvice);
 end;
-{ @end $5CC850 }
+{ @end $57BE60 }
 
-{ @routine $5CD528 TfRuinsTalk_BuyBusinessCenterTradeAdvice }
-procedure TfRuinsTalk.BuyBusinessCenterTradeAdvice(Action: Integer);
+{ @routine $57CA28 TfRuinsTalk_BuyBusinessCenterTradeAdvice }
+procedure TfRuinsTalk.BuyBusinessCenterTradeAdvice(Action: Cardinal);
 var
   Text: WideString;
   Count: Integer;
@@ -5347,8 +5360,8 @@ var
   Nearby, Found: Boolean;
   Dialog, Greeting, Panel: WideString;
 
-  // @nested $5CCFE4 FindBusinessCenterTradeRoutes
-  procedure FindBusinessCenterTradeRoutes; // @addr $5CCFE4 @ida "void __cdecl $name(void *ParentFrame);" @calls "0x5CD5F9"
+  // @nested $57C568 FindBusinessCenterTradeRoutes
+  procedure FindBusinessCenterTradeRoutes; // @addr $57C568 @calls "0x0057CAF8" @ida "void __cdecl $name(void *ParentFrame);"
   type
     TRoute = record
       FromPlanet, ToPlanet: TPlanet;
@@ -5368,7 +5381,8 @@ var
     for I := Low(Routes) to High(Routes) do
     begin
       Attempts := 0;
-      repeat
+      while True do
+      begin
         Inc(Attempts);
         if Attempts > 100 then
         begin
@@ -5383,7 +5397,8 @@ var
           Routes[I].ToPlanet, Routes[I].GoodsIndex, GoodsMask);
         for J := Low(Routes) to I - 1 do
           if Routes[I].GoodsIndex = Routes[J].GoodsIndex then Found := False;
-      until Found;
+        if Found then Break;
+      end;
       Exclude(GoodsMask, Routes[I].GoodsIndex);
       Inc(Count);
       Text := LocalizedColorText('FormRuins.BK.Trade.BKFindTradePath');
@@ -5427,21 +5442,22 @@ begin
   ReplaceTextToken(DialogText, '<BK>', GetPlayer.DockedTo.Name, TextHighlightColorTag);
   M_Main(True);
 end;
-{ @end $5CD528 }
+{ @end $57CA28 }
 
-{ @routine $5CDA30 TfRuinsTalk_DeclineBusinessCenterTradeAdvice }
-procedure TfRuinsTalk.DeclineBusinessCenterTradeAdvice(Action: Integer);
+{ @routine $57CF24 TfRuinsTalk_DeclineBusinessCenterTradeAdvice }
+procedure TfRuinsTalk.DeclineBusinessCenterTradeAdvice(Action: Cardinal);
 begin
   DialogText := LocalizedColorText('FormRuins.BK.Trade.BKAfterNo');
   ReplaceTextToken(DialogText, '<BK>', GetPlayer.DockedTo.Name, TextHighlightColorTag);
   M_Main(True);
 end;
-{ @end $5CDA30 }
+{ @end $57CF24 }
 
-{ @routine $5CDB38 TfRuinsTalk_ShowMedicalCenterIllnessTreatmentDialog }
-procedure TfRuinsTalk.ShowMedicalCenterIllnessTreatmentDialog(Refresh: Integer);
+{ @routine $57D01C TfRuinsTalk_ShowMedicalCenterIllnessTreatmentDialog }
+procedure TfRuinsTalk.ShowMedicalCenterIllnessTreatmentDialog(Refresh: Cardinal);
 var
-  I, Cost, TotalCost, AllCost: Integer;
+  I: TCaptainHealthEffect;
+  Cost, TotalCost, AllCost: Integer;
   Text, IllnessText, Key: WideString;
   HasDisease: Boolean;
 begin
@@ -5467,24 +5483,24 @@ begin
     TotalCost := 0;
     IllnessText := '';
     if HasDisease then
-      for I := 1 to 12 do
+      for I := Low(TCaptainDisease) to High(TCaptainDisease) do
       begin
         Text := '';
-        if GetPlayer.CaptainHealth[TCaptainHealthEffect(I)].Progress <> 0 then
+        if GetPlayer.CaptainHealth[I].Progress <> 0 then
         begin
           Text := LocalizedColorText('FormRuins.MC.Illnes.MCSeeIll');
-          ReplaceTextToken(Text, '<IllName>', CaptainHealthDefinitions[TCaptainHealthEffect(I)].Name, TextHighlightColorTag);
-          if GetPlayer.CaptainHealth[TCaptainHealthEffect(I)].Progress >= 100 then
+          ReplaceTextToken(Text, '<IllName>', CaptainHealthDefinitions[I].Name, TextHighlightColorTag);
+          if GetPlayer.CaptainHealth[I].Progress >= 100 then
             ReplaceTextToken(Text, '<MCSeeIllType>', LocalizedColorText('FormRuins.MC.Illnes.MCSeeIllType1'), '')
           else
           begin
             ReplaceTextToken(Text, '<MCSeeIllType>', LocalizedColorText('FormRuins.MC.Illnes.MCSeeIllType2'), '');
-            Inc(GetPlayer.CaptainHealth[TCaptainHealthEffect(I)].ApplicationCount);
+            Inc(GetPlayer.CaptainHealth[I].ApplicationCount);
             GetPlayer.AchievementStats.CheckAllDiseasesAchievement;
           end;
-          ReplaceTextToken(Text, '<Date>', Galaxy.FormatTurnDate(GetPlayer.CaptainHealth[TCaptainHealthEffect(I)].AppliedTurn), TextHighlightColorTag);
-          ReplaceTextToken(Text, '<InfectionObjectName>', GetPlayer.StatusEffectSourceNames[TCaptainHealthEffect(I)], TextHighlightColorTag);
-          Cost := GenerateValueForSizeLevel(CaptainHealthDefinitions[TCaptainHealthEffect(I)].MedicalPriceSizeLevel, Galaxy.ComputeScaledMiniMoney(GetPlayer.DockedTo.OwnerId), Galaxy.ComputeScaledAverageMoney(GetPlayer.DockedTo.OwnerId), 50, (Galaxy.CurrentTurn div 10) * Galaxy.GenerationSeed * I);
+          ReplaceTextToken(Text, '<Date>', Galaxy.FormatTurnDate(GetPlayer.CaptainHealth[I].AppliedTurn), TextHighlightColorTag);
+          ReplaceTextToken(Text, '<InfectionObjectName>', GetPlayer.StatusEffectSourceNames[I], TextHighlightColorTag);
+          Cost := GenerateValueForSizeLevel(CaptainHealthDefinitions[I].MedicalPriceSizeLevel, Galaxy.ComputeScaledMiniMoney(GetPlayer.DockedTo.OwnerId), Galaxy.ComputeScaledAverageMoney(GetPlayer.DockedTo.OwnerId), 50, (Galaxy.CurrentTurn div 10) * Galaxy.GenerationSeed * I);
           Inc(TotalCost, Cost);
           ReplaceTextToken(Text, '<Money>', IntToStr(Cost), TextHighlightColorTag);
           if IllnessText = '' then IllnessText := IllnessText + Text
@@ -5501,15 +5517,15 @@ begin
     ClearChoices;
     if HasDisease then
     begin
-      for I := 1 to 12 do
-        if GetPlayer.CaptainHealth[TCaptainHealthEffect(I)].Progress <> 0 then
-        begin
-          Cost := GenerateValueForSizeLevel(CaptainHealthDefinitions[TCaptainHealthEffect(I)].MedicalPriceSizeLevel, Galaxy.ComputeScaledMiniMoney(GetPlayer.DockedTo.OwnerId), Galaxy.ComputeScaledAverageMoney(GetPlayer.DockedTo.OwnerId), 50, (Galaxy.CurrentTurn div 10) * Galaxy.GenerationSeed * I);
-          if (GetPlayer.MedicalPolicyTicks > 0) and (GetPlayer.DockedTo.CurrentStar.ControlFaction <> sfPirates) then Cost := Cost div 2;
-          if GetPlayer.Money >= Cost then
-            AddChoice('- ' + FormatText2(LocalizedColorText('FormRuins.MC.Illnes.PlayerIll'), TextHighlightColorTag, '<IllName>', CaptainHealthDefinitions[TCaptainHealthEffect(I)].Name, '<Money>', IntToStr(Cost)), I, TreatSelectedDiseaseAtMedicalCenter)
-          else AddChoice('- ' + FormatText2(LocalizedColorText('FormRuins.MC.Illnes.PlayerIll'), TextHighlightColorTag, '<IllName>', CaptainHealthDefinitions[TCaptainHealthEffect(I)].Name, '<Money>', IntToStr(Cost)), 0, ScriptDialogBlockCallback);
-        end;
+      for I := Low(TCaptainDisease) to High(TCaptainDisease) do
+      begin
+        if GetPlayer.CaptainHealth[I].Progress = 0 then Continue;
+        Cost := GenerateValueForSizeLevel(CaptainHealthDefinitions[I].MedicalPriceSizeLevel, Galaxy.ComputeScaledMiniMoney(GetPlayer.DockedTo.OwnerId), Galaxy.ComputeScaledAverageMoney(GetPlayer.DockedTo.OwnerId), 50, (Galaxy.CurrentTurn div 10) * Galaxy.GenerationSeed * I);
+        if (GetPlayer.MedicalPolicyTicks > 0) and (GetPlayer.DockedTo.CurrentStar.ControlFaction <> sfPirates) then Cost := Cost div 2;
+        if GetPlayer.Money >= Cost then
+          AddChoice('- ' + FormatText2(LocalizedColorText('FormRuins.MC.Illnes.PlayerIll'), TextHighlightColorTag, '<IllName>', CaptainHealthDefinitions[I].Name, '<Money>', IntToStr(Cost)), I, TreatSelectedDiseaseAtMedicalCenter)
+        else AddChoice('- ' + FormatText2(LocalizedColorText('FormRuins.MC.Illnes.PlayerIll'), TextHighlightColorTag, '<IllName>', CaptainHealthDefinitions[I].Name, '<Money>', IntToStr(Cost)), 0, ScriptDialogBlockCallback);
+      end;
       AllCost := TotalCost div 3 + Galaxy.ComputeScaledSmallMoney(GetPlayer.DockedTo.OwnerId);
       if GetPlayer.Money >= AllCost then
         AddChoice('- ' + FormatText1(LocalizedColorText('FormRuins.MC.Illnes.PlayerIllAll'), TextHighlightColorTag, '<Money>', IntToStr(AllCost)), AllCost, TreatAllDiseasesAtMedicalCenter)
@@ -5535,32 +5551,32 @@ begin
     M_Main(True);
   end;
 end;
-{ @end $5CDB38 }
+{ @end $57D01C }
 
-{ @routine $5CEA24 TfRuinsTalk_TreatSelectedDiseaseAtMedicalCenter }
-procedure TfRuinsTalk.TreatSelectedDiseaseAtMedicalCenter(DiseaseIndex: Integer);
+{ @routine $57DE70 TfRuinsTalk_TreatSelectedDiseaseAtMedicalCenter }
+procedure TfRuinsTalk.TreatSelectedDiseaseAtMedicalCenter(DiseaseIndex: Cardinal);
 var
   I, Cost: Integer;
   Name: WideString;
 begin
   for I := 1 to 12 do
-    if I = DiseaseIndex then
+  begin
+    if I <> Integer(DiseaseIndex) then Continue;
+    if I = 3 then
     begin
-      if I = 3 then
-      begin
-        Galaxy.GraphDominatorSurfacesEnabled := True;
-        Galaxy.DisableDominatorSurfaces;
-      end;
-      GetPlayer.CaptainHealth[TCaptainHealthEffect(I)].Progress := 0;
-      GetPlayer.StatusEffectSourceNames[TCaptainHealthEffect(I)] := '';
-      Name := CaptainHealthDefinitions[TCaptainHealthEffect(I)].Name;
-      Cost := GenerateValueForSizeLevel(CaptainHealthDefinitions[TCaptainHealthEffect(I)].MedicalPriceSizeLevel, Galaxy.ComputeScaledMiniMoney(GetPlayer.DockedTo.OwnerId), Galaxy.ComputeScaledAverageMoney(GetPlayer.DockedTo.OwnerId), 50, (Galaxy.CurrentTurn div 10) * Galaxy.GenerationSeed * I);
-      if (GetPlayer.MedicalPolicyTicks > 0) and (GetPlayer.DockedTo.CurrentStar.ControlFaction <> sfPirates) then Cost := Cost div 2;
-      GetPlayer.SetMoney(GetPlayer.Money - Cost);
-      GetPlayer.DiseaseImmunity := Min(100, GetPlayer.DiseaseImmunity + 40);
-      SoundManager.PlaySound('Sound.Sell');
-      Break;
+      Galaxy.GraphDominatorSurfacesEnabled := True;
+      Galaxy.DisableDominatorSurfaces;
     end;
+    GetPlayer.CaptainHealth[I].Progress := 0;
+    GetPlayer.StatusEffectSourceNames[I] := '';
+    Name := CaptainHealthDefinitions[I].Name;
+    Cost := GenerateValueForSizeLevel(CaptainHealthDefinitions[I].MedicalPriceSizeLevel, Galaxy.ComputeScaledMiniMoney(GetPlayer.DockedTo.OwnerId), Galaxy.ComputeScaledAverageMoney(GetPlayer.DockedTo.OwnerId), 50, (Galaxy.CurrentTurn div 10) * Galaxy.GenerationSeed * I);
+    if (GetPlayer.MedicalPolicyTicks > 0) and (GetPlayer.DockedTo.CurrentStar.ControlFaction <> sfPirates) then Cost := Cost div 2;
+    GetPlayer.SetMoney(GetPlayer.Money - Cost);
+    GetPlayer.DiseaseImmunity := Min(100, GetPlayer.DiseaseImmunity + 40);
+    SoundManager.PlaySound('Sound.Sell');
+    Break;
+  end;
   if GetPlayer.DockedTo.CurrentStar.ControlFaction <> sfPirates then
     DialogText := LocalizedColorText('FormRuins.MC.Illnes.MCSeeAfterIll')
   else DialogText := LocalizedColorText('FormRuins.MC.Illnes.MCSeeAfterIllPirate');
@@ -5571,10 +5587,10 @@ begin
   ClearChoices;
   ShowMedicalCenterIllnessTreatmentDialog(1);
 end;
-{ @end $5CEA24 }
+{ @end $57DE70 }
 
-{ @routine $5CEE5C TfRuinsTalk_TreatAllDiseasesAtMedicalCenter }
-procedure TfRuinsTalk.TreatAllDiseasesAtMedicalCenter(QuotedCost: Integer);
+{ @routine $57E264 TfRuinsTalk_TreatAllDiseasesAtMedicalCenter }
+procedure TfRuinsTalk.TreatAllDiseasesAtMedicalCenter(QuotedCost: Cardinal);
 var
   I: Integer;
   Date: TDateTime;
@@ -5586,44 +5602,44 @@ begin
   DateTimeToString(YearText, 'yyyy', Date);
   ReplaceTextToken(DialogText, '<CurrentYear>', YearText, TextHighlightColorTag);
   for I := 1 to 12 do
-    if GetPlayer.CaptainHealth[TCaptainHealthEffect(I)].Progress <> 0 then
+  begin
+    if GetPlayer.CaptainHealth[I].Progress = 0 then Continue;
+    if I = 3 then
     begin
-      if I = 3 then
-      begin
-        Galaxy.GraphDominatorSurfacesEnabled := True;
-        Galaxy.DisableDominatorSurfaces;
-      end;
-      GetPlayer.CaptainHealth[TCaptainHealthEffect(I)].Progress := 0;
-      GetPlayer.StatusEffectSourceNames[TCaptainHealthEffect(I)] := '';
+      Galaxy.GraphDominatorSurfacesEnabled := True;
+      Galaxy.DisableDominatorSurfaces;
     end;
+    GetPlayer.CaptainHealth[I].Progress := 0;
+    GetPlayer.StatusEffectSourceNames[I] := '';
+  end;
   GetPlayer.SetMoney(GetPlayer.Money - QuotedCost);
   GetPlayer.DiseaseImmunity := Min(100, GetPlayer.DiseaseImmunity + 80);
   SoundManager.PlaySound('Sound.Sell');
   M_Main(True);
 end;
-{ @end $5CEE5C }
+{ @end $57E264 }
 
-{ @routine $5CF0F4 TfRuinsTalk_DeclineMedicalCenterTreatment }
-procedure TfRuinsTalk.DeclineMedicalCenterTreatment(Action: Integer);
+{ @routine $57E4DC TfRuinsTalk_DeclineMedicalCenterTreatment }
+procedure TfRuinsTalk.DeclineMedicalCenterTreatment(Action: Cardinal);
 begin
   DialogText := LocalizedColorText('FormRuins.MC.Illnes.MCSeeAfterNo');
   ReplaceTextToken(DialogText, '<MC>', GetPlayer.DockedTo.Name, TextHighlightColorTag);
   M_Main(True);
 end;
-{ @end $5CF0F4 }
+{ @end $57E4DC }
 
-{ @routine $5CF204 TfRuinsTalk_LeaveMedicalCenterTreatment }
-procedure TfRuinsTalk.LeaveMedicalCenterTreatment(Action: Integer);
+{ @routine $57E5DC TfRuinsTalk_LeaveMedicalCenterTreatment }
+procedure TfRuinsTalk.LeaveMedicalCenterTreatment(Action: Cardinal);
 begin
   if (GetPlayer.OwnerId = oiPirate) and (GetPlayer.DockedTo.CurrentStar.ControlFaction = sfPirates) then DialogText := LocalizedColorText('FormRuins.MC.Illnes.MCSeeAfterExitPirate')
   else DialogText := LocalizedColorText('FormRuins.MC.Illnes.MCSeeAfterExit');
   ReplaceTextToken(DialogText, '<MC>', GetPlayer.DockedTo.Name, TextHighlightColorTag);
   M_Main(True);
 end;
-{ @end $5CF204 }
+{ @end $57E5DC }
 
-{ @routine $5CF3B0 TfRuinsTalk_ShowMedicalCenterStimulantDialog }
-procedure TfRuinsTalk.ShowMedicalCenterStimulantDialog(Action: Integer);
+{ @routine $57E778 TfRuinsTalk_ShowMedicalCenterStimulantDialog }
+procedure TfRuinsTalk.ShowMedicalCenterStimulantDialog(Action: Cardinal);
 var
   I, OfferCount, Cost, Duration, MaxStimulants, LawStimulants: Integer;
   Seed: Cardinal;
@@ -5641,7 +5657,7 @@ begin
   begin
     AdvanceRandomSeed(Seed);
     I := SeededRandomIntRange(13, 24, Seed);
-    if not (I in Offers) and (SeededRandomUnitFloat(Seed) <= CaptainHealthDefinitions[TCaptainHealthEffect(I)].InfectionChance) then
+    if not (I in Offers) and (SeededRandomUnitFloat(Seed) <= CaptainHealthDefinitions[I].InfectionChance) then
     begin
       Include(Offers, I);
       Inc(OfferCount);
@@ -5651,7 +5667,7 @@ begin
   Bonus := GetPlayer.GetTotalStatBonus(bonStimCapacity) + GetPlayer.CountActiveArtefacts(t_ArtBio);
   MaxStimulants := Max(GetPlayer.CountActiveStimulants,
     Floor(SeededRandomFloatRange(Galaxy.CurrentTurn div 70 * GetPlayer.DockedTo.Id, 0, 1) *
-      (Max(2, Max(2, Integer(Rank)) + Bonus) - 1)) + 2);
+    (Max(2, Max(2, Integer(Rank)) + Bonus) - 1)) + 2);
   LawStimulants := Max(2, Rank);
   DialogText := LocalizedColorText('FormRuins.MC.Stimulants.MC1');
   if MaxStimulants < LawStimulants then
@@ -5682,22 +5698,22 @@ begin
   begin
     StimulantText := '';
     for I := 13 to 24 do
-      if I in Offers then
-      begin
-        Text := '';
-        Text := LocalizedColorText('FormRuins.MC.Stimulants.MCStimInfo');
-        ReplaceTextToken(Text, '<StimName>', CaptainHealthDefinitions[TCaptainHealthEffect(I)].Name, TextHighlightColorTag);
-        ReplaceTextToken(Text, '<StimText>', CaptainHealthDefinitions[TCaptainHealthEffect(I)].Text, '');
-        Duration := CaptainHealthDefinitions[TCaptainHealthEffect(I)].Duration + SeededRandomIntRange(CaptainHealthDefinitions[TCaptainHealthEffect(I)].Duration div 10,
-    CaptainHealthDefinitions[TCaptainHealthEffect(I)].Duration div 3, GetPlayer.DockedTo.Id + I + Galaxy.CurrentTurn div 13);
-  Duration := Round(Duration / GalaxyDifficultyTuning[Galaxy.DifficultyLevels[7]].GoodsEventDurationFactor);
-        ReplaceTextToken(Text, '<Month>', IntToStr(Duration div 30), TextHighlightColorTag);
-        Cost := GenerateValueForSizeLevel(CaptainHealthDefinitions[TCaptainHealthEffect(I)].MedicalPriceSizeLevel, Galaxy.ComputeScaledSmallMoney(GetPlayer.DockedTo.OwnerId), 2 * Galaxy.ComputeScaledAverageMoney(GetPlayer.DockedTo.OwnerId), 50, (Galaxy.CurrentTurn div 13) * Galaxy.GenerationSeed * I);
-        if (GetPlayer.MedicalPolicyTicks > 0) and (GetPlayer.DockedTo.CurrentStar.ControlFaction <> sfPirates) then Cost := Cost div 2;
-        ReplaceTextToken(Text, '<Money>', IntToStr(Cost), TextHighlightColorTag);
-        if StimulantText = '' then StimulantText := StimulantText + Text
-        else StimulantText := StimulantText + #13#10 + Text;
-      end;
+    begin
+      if not (I in Offers) then Continue;
+      Text := '';
+      Text := LocalizedColorText('FormRuins.MC.Stimulants.MCStimInfo');
+      ReplaceTextToken(Text, '<StimName>', CaptainHealthDefinitions[I].Name, TextHighlightColorTag);
+      ReplaceTextToken(Text, '<StimText>', CaptainHealthDefinitions[I].Text, '');
+      Duration := CaptainHealthDefinitions[I].Duration + SeededRandomIntRange(CaptainHealthDefinitions[I].Duration div 10,
+        CaptainHealthDefinitions[I].Duration div 3, GetPlayer.DockedTo.Id + I + Galaxy.CurrentTurn div 13);
+      Duration := Round(Duration / GalaxyDifficultyTuning[Galaxy.DifficultyLevels[7]].GoodsEventDurationFactor);
+      ReplaceTextToken(Text, '<Month>', IntToStr(Duration div 30), TextHighlightColorTag);
+      Cost := GenerateValueForSizeLevel(CaptainHealthDefinitions[I].MedicalPriceSizeLevel, Galaxy.ComputeScaledSmallMoney(GetPlayer.DockedTo.OwnerId), 2 * Galaxy.ComputeScaledAverageMoney(GetPlayer.DockedTo.OwnerId), 50, (Galaxy.CurrentTurn div 13) * Galaxy.GenerationSeed * I);
+      if (GetPlayer.MedicalPolicyTicks > 0) and (GetPlayer.DockedTo.CurrentStar.ControlFaction <> sfPirates) then Cost := Cost div 2;
+      ReplaceTextToken(Text, '<Money>', IntToStr(Cost), TextHighlightColorTag);
+      if StimulantText = '' then StimulantText := StimulantText + Text
+      else StimulantText := StimulantText + #13#10 + Text;
+    end;
     if GetPlayer.DockedTo.CurrentStar.ControlFaction <> sfPirates then
       DialogText := DialogText + #13#10 + LocalizedColorText('FormRuins.MC.Stimulants.MC5MedPolicy');
     DialogText := DialogText + #13#10 + LocalizedColorText('FormRuins.MC.Stimulants.MC5');
@@ -5706,11 +5722,11 @@ begin
     for I := 13 to 24 do
       if I in Offers then
       begin
-        Cost := GenerateValueForSizeLevel(CaptainHealthDefinitions[TCaptainHealthEffect(I)].MedicalPriceSizeLevel, Galaxy.ComputeScaledSmallMoney(GetPlayer.DockedTo.OwnerId), 2 * Galaxy.ComputeScaledAverageMoney(GetPlayer.DockedTo.OwnerId), 50, (Galaxy.CurrentTurn div 13) * Galaxy.GenerationSeed * I);
+        Cost := GenerateValueForSizeLevel(CaptainHealthDefinitions[I].MedicalPriceSizeLevel, Galaxy.ComputeScaledSmallMoney(GetPlayer.DockedTo.OwnerId), 2 * Galaxy.ComputeScaledAverageMoney(GetPlayer.DockedTo.OwnerId), 50, (Galaxy.CurrentTurn div 13) * Galaxy.GenerationSeed * I);
         if (GetPlayer.MedicalPolicyTicks > 0) and (GetPlayer.DockedTo.CurrentStar.ControlFaction <> sfPirates) then Cost := Cost div 2;
-        if (GetPlayer.Money < Cost) or (GetPlayer.CaptainHealth[TCaptainHealthEffect(I)].Progress = 100) then
-          AddChoice('- ' + FormatText2(LocalizedColorText('FormRuins.MC.Stimulants.PlayerStim'), TextHighlightColorTag, '<StimName>', CaptainHealthDefinitions[TCaptainHealthEffect(I)].Name, '<Money>', IntToStr(Cost)), 0, ScriptDialogBlockCallback)
-        else AddChoice('- ' + FormatText2(LocalizedColorText('FormRuins.MC.Stimulants.PlayerStim'), TextHighlightColorTag, '<StimName>', CaptainHealthDefinitions[TCaptainHealthEffect(I)].Name, '<Money>', IntToStr(Cost)), I, BuySelectedStimulantAtMedicalCenter);
+        if (GetPlayer.Money < Cost) or (GetPlayer.CaptainHealth[I].Progress = 100) then
+          AddChoice('- ' + FormatText2(LocalizedColorText('FormRuins.MC.Stimulants.PlayerStim'), TextHighlightColorTag, '<StimName>', CaptainHealthDefinitions[I].Name, '<Money>', IntToStr(Cost)), 0, ScriptDialogBlockCallback)
+        else AddChoice('- ' + FormatText2(LocalizedColorText('FormRuins.MC.Stimulants.PlayerStim'), TextHighlightColorTag, '<StimName>', CaptainHealthDefinitions[I].Name, '<Money>', IntToStr(Cost)), I, BuySelectedStimulantAtMedicalCenter);
       end;
     AddChoice('- ' + LocalizedColorText('FormRuins.MC.Stimulants.PlayerNo'), 0, DeclineMedicalCenterStimulants);
   end
@@ -5720,26 +5736,26 @@ begin
     M_Main(True);
   end;
 end;
-{ @end $5CF3B0 }
+{ @end $57E778 }
 
-{ @routine $5D0280 TfRuinsTalk_BuySelectedStimulantAtMedicalCenter }
-procedure TfRuinsTalk.BuySelectedStimulantAtMedicalCenter(StimulantIndex: Integer);
+{ @routine $57F514 TfRuinsTalk_BuySelectedStimulantAtMedicalCenter }
+procedure TfRuinsTalk.BuySelectedStimulantAtMedicalCenter(StimulantIndex: Cardinal);
 var
   I, Cost, Duration: Integer;
   Name: WideString;
 begin
   for I := 13 to 24 do
-    if I = StimulantIndex then
+    if I = Integer(StimulantIndex) then
     begin
-      GetPlayer.CaptainHealth[TCaptainHealthEffect(I)].Progress := 100;
-      GetPlayer.StatusEffectSourceNames[TCaptainHealthEffect(I)] := '';
-      Name := CaptainHealthDefinitions[TCaptainHealthEffect(I)].Name;
-      Duration := CaptainHealthDefinitions[TCaptainHealthEffect(I)].Duration + SeededRandomIntRange(CaptainHealthDefinitions[TCaptainHealthEffect(I)].Duration div 10,
-    CaptainHealthDefinitions[TCaptainHealthEffect(I)].Duration div 3, GetPlayer.DockedTo.Id + I + Galaxy.CurrentTurn div 13);
-  Duration := Round(Duration / GalaxyDifficultyTuning[Galaxy.DifficultyLevels[7]].GoodsEventDurationFactor);
-      GetPlayer.CaptainHealth[TCaptainHealthEffect(I)].AppliedTurn := Galaxy.CurrentTurn;
-      GetPlayer.CaptainHealth[TCaptainHealthEffect(I)].ExpireTurn := Duration + Galaxy.CurrentTurn;
-      Cost := GenerateValueForSizeLevel(CaptainHealthDefinitions[TCaptainHealthEffect(I)].MedicalPriceSizeLevel, Galaxy.ComputeScaledSmallMoney(GetPlayer.DockedTo.OwnerId), 2 * Galaxy.ComputeScaledAverageMoney(GetPlayer.DockedTo.OwnerId), 50, (Galaxy.CurrentTurn div 13) * Galaxy.GenerationSeed * I);
+      GetPlayer.CaptainHealth[I].Progress := 100;
+      GetPlayer.StatusEffectSourceNames[I] := '';
+      Name := CaptainHealthDefinitions[I].Name;
+      Duration := CaptainHealthDefinitions[I].Duration + SeededRandomIntRange(CaptainHealthDefinitions[I].Duration div 10,
+        CaptainHealthDefinitions[I].Duration div 3, GetPlayer.DockedTo.Id + I + Galaxy.CurrentTurn div 13);
+      Duration := Round(Duration / GalaxyDifficultyTuning[Galaxy.DifficultyLevels[7]].GoodsEventDurationFactor);
+      GetPlayer.CaptainHealth[I].AppliedTurn := Galaxy.CurrentTurn;
+      GetPlayer.CaptainHealth[I].ExpireTurn := Duration + Galaxy.CurrentTurn;
+      Cost := GenerateValueForSizeLevel(CaptainHealthDefinitions[I].MedicalPriceSizeLevel, Galaxy.ComputeScaledSmallMoney(GetPlayer.DockedTo.OwnerId), 2 * Galaxy.ComputeScaledAverageMoney(GetPlayer.DockedTo.OwnerId), 50, (Galaxy.CurrentTurn div 13) * Galaxy.GenerationSeed * I);
       if (GetPlayer.MedicalPolicyTicks > 0) and (GetPlayer.DockedTo.CurrentStar.ControlFaction <> sfPirates) then Cost := Cost div 2;
       GetPlayer.SetMoney(GetPlayer.Money - Cost);
       GetPlayer.DiseaseImmunity := Max(0, GetPlayer.DiseaseImmunity - 20);
@@ -5747,28 +5763,28 @@ begin
       SoundManager.PlaySound('Sound.Sell');
       DialogText := LocalizedColorText('FormRuins.MC.Stimulants.MCAfterPlayerStim');
       ReplaceTextToken(DialogText, '<StimName>', Name, TextHighlightColorTag);
-      ReplaceTextToken(DialogText, '<Date>', Galaxy.FormatTurnDate(GetPlayer.CaptainHealth[TCaptainHealthEffect(I)].ExpireTurn), TextHighlightColorTag);
+      ReplaceTextToken(DialogText, '<Date>', Galaxy.FormatTurnDate(GetPlayer.CaptainHealth[I].ExpireTurn), TextHighlightColorTag);
       ReplaceTextToken(DialogText, '<MC>', GetPlayer.DockedTo.Name, TextHighlightColorTag);
-      Inc(GetPlayer.CaptainHealth[TCaptainHealthEffect(I)].ApplicationCount);
+      Inc(GetPlayer.CaptainHealth[I].ApplicationCount);
       GetPlayer.AchievementStats.CheckAllDrugsAchievement;
       M_Main(True);
       Break;
     end;
 end;
-{ @end $5D0280 }
+{ @end $57F514 }
 
-{ @routine $5D06B8 TfRuinsTalk_DeclineMedicalCenterStimulants }
-procedure TfRuinsTalk.DeclineMedicalCenterStimulants(Action: Integer);
+{ @routine $57F8E8 TfRuinsTalk_DeclineMedicalCenterStimulants }
+procedure TfRuinsTalk.DeclineMedicalCenterStimulants(Action: Cardinal);
 begin
   if GetPlayer.DockedTo.CurrentStar.ControlFaction = sfPirates then DialogText := LocalizedColorText('FormRuins.MC.Stimulants.MCAfterPlayerNoPirate')
   else DialogText := LocalizedColorText('FormRuins.MC.Stimulants.MCAfterPlayerNo');
   ReplaceTextToken(DialogText, '<MC>', GetPlayer.DockedTo.Name, TextHighlightColorTag);
   M_Main(True);
 end;
-{ @end $5D06B8 }
+{ @end $57F8E8 }
 
-{ @routine $5D086C TfRuinsTalk_ShowStationSpecialShipDialog }
-procedure TfRuinsTalk.ShowStationSpecialShipDialog(Action: Integer);
+{ @routine $57FA8C TfRuinsTalk_ShowStationSpecialShipDialog }
+procedure TfRuinsTalk.ShowStationSpecialShipDialog(Action: Cardinal);
 var
   CanBuy: Boolean;
   Price: Integer;
@@ -5799,79 +5815,79 @@ begin
   DialogText := LocalizedColorText('FormRuins.' + GetPlayer.DockedTo.GetTypeNameKey + '.SpecialShip.Info');
   if GetPlayer.DockedTo.TypeId = rstPirateBase then
   begin
-  ReplaceTextToken(DialogText, '<KillCnt>', IntToStr(100), TextHighlightColorTag);
-  ReplaceTextToken(DialogText, '<Price>', IntToStr(Price), TextHighlightColorTag);
-  if GetPlayer.CivilianKillCount < 100 then
-  begin
-    CanBuy := False;
-    ReplaceTextToken(DialogText, '<KillComplate>', '', '');
-  end
-  else ReplaceTextToken(DialogText, '<KillComplate>', LocalizedColorText('FormRuins.' + GetPlayer.DockedTo.GetTypeNameKey + '.SpecialShip.Complate'), TextHighlightColorTag);
-  if GetPlayer.GetDominantCareer <> rcPirate then
-  begin
-    CanBuy := False;
-    ReplaceTextToken(DialogText, '<PirateComplate>', '', '');
-  end
-  else ReplaceTextToken(DialogText, '<PirateComplate>', LocalizedColorText('FormRuins.' + GetPlayer.DockedTo.GetTypeNameKey + '.SpecialShip.Complate'), TextHighlightColorTag);
-  if GetPlayer.Rank < 5 then
-  begin
-    CanBuy := False;
-    ReplaceTextToken(DialogText, '<RankComplate>', '', '');
-  end
-  else ReplaceTextToken(DialogText, '<RankComplate>', LocalizedColorText('FormRuins.' + GetPlayer.DockedTo.GetTypeNameKey + '.SpecialShip.Complate'), TextHighlightColorTag);
+    ReplaceTextToken(DialogText, '<KillCnt>', IntToStr(100), TextHighlightColorTag);
+    ReplaceTextToken(DialogText, '<Price>', IntToStr(Price), TextHighlightColorTag);
+    if GetPlayer.CivilianKillCount < 100 then
+    begin
+      CanBuy := False;
+      ReplaceTextToken(DialogText, '<KillComplate>', '', '');
+    end
+    else ReplaceTextToken(DialogText, '<KillComplate>', LocalizedColorText('FormRuins.' + GetPlayer.DockedTo.GetTypeNameKey + '.SpecialShip.Complate'), TextHighlightColorTag);
+    if GetPlayer.GetDominantCareer <> rcPirate then
+    begin
+      CanBuy := False;
+      ReplaceTextToken(DialogText, '<PirateComplate>', '', '');
+    end
+    else ReplaceTextToken(DialogText, '<PirateComplate>', LocalizedColorText('FormRuins.' + GetPlayer.DockedTo.GetTypeNameKey + '.SpecialShip.Complate'), TextHighlightColorTag);
+    if GetPlayer.Rank < 5 then
+    begin
+      CanBuy := False;
+      ReplaceTextToken(DialogText, '<RankComplate>', '', '');
+    end
+    else ReplaceTextToken(DialogText, '<RankComplate>', LocalizedColorText('FormRuins.' + GetPlayer.DockedTo.GetTypeNameKey + '.SpecialShip.Complate'), TextHighlightColorTag);
   end
   else if GetPlayer.DockedTo.TypeId = rstMilitaryBase then
   begin
-  ReplaceTextToken(DialogText, '<KillCnt>', IntToStr(50), TextHighlightColorTag);
-  ReplaceTextToken(DialogText, '<Price>', IntToStr(Price), TextHighlightColorTag);
-  if GetPlayer.PirateKillCount < 50 then
-  begin
-    CanBuy := False;
-    ReplaceTextToken(DialogText, '<KillComplate>', '', '');
-  end
-  else ReplaceTextToken(DialogText, '<KillComplate>', LocalizedColorText('FormRuins.' + GetPlayer.DockedTo.GetTypeNameKey + '.SpecialShip.Complate'), TextHighlightColorTag);
-  if GetPlayer.GetDominantCareer <> rcWarrior then
-  begin
-    CanBuy := False;
-    ReplaceTextToken(DialogText, '<WarriorComplate>', '', '');
-  end
-  else ReplaceTextToken(DialogText, '<WarriorComplate>', LocalizedColorText('FormRuins.' + GetPlayer.DockedTo.GetTypeNameKey + '.SpecialShip.Complate'), TextHighlightColorTag);
-  if GetPlayer.Rank < 5 then
-  begin
-    CanBuy := False;
-    ReplaceTextToken(DialogText, '<RankComplate>', '', '');
-  end
-  else ReplaceTextToken(DialogText, '<RankComplate>', LocalizedColorText('FormRuins.' + GetPlayer.DockedTo.GetTypeNameKey + '.SpecialShip.Complate'), TextHighlightColorTag);
+    ReplaceTextToken(DialogText, '<KillCnt>', IntToStr(50), TextHighlightColorTag);
+    ReplaceTextToken(DialogText, '<Price>', IntToStr(Price), TextHighlightColorTag);
+    if GetPlayer.PirateKillCount < 50 then
+    begin
+      CanBuy := False;
+      ReplaceTextToken(DialogText, '<KillComplate>', '', '');
+    end
+    else ReplaceTextToken(DialogText, '<KillComplate>', LocalizedColorText('FormRuins.' + GetPlayer.DockedTo.GetTypeNameKey + '.SpecialShip.Complate'), TextHighlightColorTag);
+    if GetPlayer.GetDominantCareer <> rcWarrior then
+    begin
+      CanBuy := False;
+      ReplaceTextToken(DialogText, '<WarriorComplate>', '', '');
+    end
+    else ReplaceTextToken(DialogText, '<WarriorComplate>', LocalizedColorText('FormRuins.' + GetPlayer.DockedTo.GetTypeNameKey + '.SpecialShip.Complate'), TextHighlightColorTag);
+    if GetPlayer.Rank < 5 then
+    begin
+      CanBuy := False;
+      ReplaceTextToken(DialogText, '<RankComplate>', '', '');
+    end
+    else ReplaceTextToken(DialogText, '<RankComplate>', LocalizedColorText('FormRuins.' + GetPlayer.DockedTo.GetTypeNameKey + '.SpecialShip.Complate'), TextHighlightColorTag);
   end
   else if GetPlayer.DockedTo.TypeId = rstScienceBase then
   begin
-  ReplaceTextToken(DialogText, '<KillCnt>', IntToStr(500), TextHighlightColorTag);
-  ReplaceTextToken(DialogText, '<Price>', IntToStr(Price), TextHighlightColorTag);
-  if GetPlayer.DominatorKillCount < 500 then
-  begin
-    CanBuy := False;
-    ReplaceTextToken(DialogText, '<KillComplate>', '', '');
-  end
-  else ReplaceTextToken(DialogText, '<KillComplate>', LocalizedColorText('FormRuins.' + GetPlayer.DockedTo.GetTypeNameKey + '.SpecialShip.Complate'), TextHighlightColorTag);
-  if GetPlayer.Rank < 5 then
-  begin
-    CanBuy := False;
-    ReplaceTextToken(DialogText, '<RankComplate>', '', '');
-  end
-  else ReplaceTextToken(DialogText, '<RankComplate>', LocalizedColorText('FormRuins.' + GetPlayer.DockedTo.GetTypeNameKey + '.SpecialShip.Complate'), TextHighlightColorTag);
-  CompletedQuests := 0;
-  for I := 0 to PlayerOldQuests.Count - 1 do
-  begin
-    Quest := PlayerOldQuests[I];
-    if Quest.Successful then Inc(CompletedQuests);
-  end;
-  ReplaceTextToken(DialogText, '<QuestCnt>', IntToStr(20), TextHighlightColorTag);
-  if CompletedQuests < 20 then
-  begin
-    CanBuy := False;
-    ReplaceTextToken(DialogText, '<QuestComplate>', '', '');
-  end
-  else ReplaceTextToken(DialogText, '<QuestComplate>', LocalizedColorText('FormRuins.' + GetPlayer.DockedTo.GetTypeNameKey + '.SpecialShip.Complate'), TextHighlightColorTag);
+    ReplaceTextToken(DialogText, '<KillCnt>', IntToStr(500), TextHighlightColorTag);
+    ReplaceTextToken(DialogText, '<Price>', IntToStr(Price), TextHighlightColorTag);
+    if GetPlayer.DominatorKillCount < 500 then
+    begin
+      CanBuy := False;
+      ReplaceTextToken(DialogText, '<KillComplate>', '', '');
+    end
+    else ReplaceTextToken(DialogText, '<KillComplate>', LocalizedColorText('FormRuins.' + GetPlayer.DockedTo.GetTypeNameKey + '.SpecialShip.Complate'), TextHighlightColorTag);
+    if GetPlayer.Rank < 5 then
+    begin
+      CanBuy := False;
+      ReplaceTextToken(DialogText, '<RankComplate>', '', '');
+    end
+    else ReplaceTextToken(DialogText, '<RankComplate>', LocalizedColorText('FormRuins.' + GetPlayer.DockedTo.GetTypeNameKey + '.SpecialShip.Complate'), TextHighlightColorTag);
+    CompletedQuests := 0;
+    for I := 0 to PlayerOldQuests.Count - 1 do
+    begin
+      Quest := PlayerOldQuests[I];
+      if Quest.Successful then Inc(CompletedQuests);
+    end;
+    ReplaceTextToken(DialogText, '<QuestCnt>', IntToStr(20), TextHighlightColorTag);
+    if CompletedQuests < 20 then
+    begin
+      CanBuy := False;
+      ReplaceTextToken(DialogText, '<QuestComplate>', '', '');
+    end
+    else ReplaceTextToken(DialogText, '<QuestComplate>', LocalizedColorText('FormRuins.' + GetPlayer.DockedTo.GetTypeNameKey + '.SpecialShip.Complate'), TextHighlightColorTag);
   end
   else RaiseWideMessage('Ask special ship 2');
   ClearChoices;
@@ -5879,18 +5895,18 @@ begin
     AddChoice('- ' + LocalizedColorText('FormRuins.' + GetPlayer.DockedTo.GetTypeNameKey + '.SpecialShip.PlayerBuy'), 0, BuyStationSpecialShip);
   AddChoice('- ' + LocalizedColorText('FormRuins.' + GetPlayer.DockedTo.GetTypeNameKey + '.SpecialShip.PlayerNo'), 0, DeclineStationSpecialShip);
 end;
-{ @end $5D086C }
+{ @end $57FA8C }
 
-{ @routine $5D1500 TfRuinsTalk_DeclineStationSpecialShip }
-procedure TfRuinsTalk.DeclineStationSpecialShip(Action: Integer);
+{ @routine $580698 TfRuinsTalk_DeclineStationSpecialShip }
+procedure TfRuinsTalk.DeclineStationSpecialShip(Action: Cardinal);
 begin
   DialogText := LocalizedColorText('FormRuins.' + GetPlayer.DockedTo.GetTypeNameKey + '.SpecialShip.AfterNo');
   M_Main(True);
 end;
-{ @end $5D1500 }
+{ @end $580698 }
 
-{ @routine $5D15E0 TfRuinsTalk_BuyStationSpecialShip }
-procedure TfRuinsTalk.BuyStationSpecialShip(Action: Integer);
+{ @routine $580774 TfRuinsTalk_BuyStationSpecialShip }
+procedure TfRuinsTalk.BuyStationSpecialShip(Action: Cardinal);
 const
   RelationShipTypes = [htRanger, htPirate..htDiplomat];
   PirateOwners = [oiPeleng];
@@ -5935,10 +5951,10 @@ begin
   DialogText := LocalizedColorText('FormRuins.' + GetPlayer.DockedTo.GetTypeNameKey + '.SpecialShip.AfterBuy');
   M_Main(True);
 end;
-{ @end $5D15E0 }
+{ @end $580774 }
 
-{ @routine $5D1948 TfRuinsTalk_RunInjectedDialog }
-procedure TfRuinsTalk.RunInjectedDialog(Action: Integer);
+{ @routine $580AD0 TfRuinsTalk_RunInjectedDialog }
+procedure TfRuinsTalk.RunInjectedDialog(Action: Cardinal);
 var
   Injection: PScriptDialogInjection;
   Text: WideString;
@@ -5965,40 +5981,40 @@ begin
   if ScriptDialogIndex < 0 then M_Main(True)
   else CurrentScript.CallDialogMessage(ScriptDialogIndex);
 end;
-{ @end $5D1948 }
+{ @end $580AD0 }
 
-{ @routine $5D1B14 TfRuinsTalk_RunInjectedDialogKeepingScroll }
-procedure TfRuinsTalk.RunInjectedDialogKeepingScroll(Action: Integer);
+{ @routine $580C6C TfRuinsTalk_RunInjectedDialogKeepingScroll }
+procedure TfRuinsTalk.RunInjectedDialogKeepingScroll(Action: Cardinal);
 begin
   RememberChoiceScroll;
   RunInjectedDialog(Action);
 end;
-{ @end $5D1B14 }
+{ @end $580C6C }
 
-{ @routine $5D1B38 TfRuinsTalk_RunScriptRestart }
-procedure TfRuinsTalk.RunScriptRestart(Answer: Integer);
+{ @routine $580C88 TfRuinsTalk_RunScriptRestart }
+procedure TfRuinsTalk.RunScriptRestart(Answer: Cardinal);
 begin
   DialogText := '';
   CurrentScript.ExecuteDialogAnswer(Answer);
   M_Main(False);
 end;
-{ @end $5D1B38 }
+{ @end $580C88 }
 
-{ @routine $5D1B70 TfRuinsTalk_AddScriptRestartChoice }
+{ @routine $580CB4 TfRuinsTalk_AddScriptRestartChoice }
 procedure TfRuinsTalk.AddScriptRestartChoice(Caption: WideString);
 begin
   AddChoice('- ' + Caption, CurrentScript.CurrentAnswer, RunScriptRestart);
 end;
-{ @end $5D1B70 }
+{ @end $580CB4 }
 
-{ @routine $5D1BF8 TfRuinsTalk_CloseRuinsMode }
+{ @routine $580D38 TfRuinsTalk_CloseRuinsMode }
 procedure TfRuinsTalk.CloseRuinsMode(Sender: TObjectGI);
 begin
   GetPlayer.CloseRuinsModeScreen;
 end;
-{ @end $5D1BF8 }
+{ @end $580D38 }
 
-{ @routine $5D1C14 GetConstructionShopCost }
+{ @routine $580D44 GetConstructionShopCost }
 function GetConstructionShopCost: Integer;
 var
   J: Integer;
@@ -6012,9 +6028,9 @@ begin
     if (ConstructionWeapons[J].Item <> nil) and (ConstructionWeapons[J].Source = 2) then
       Inc(Result, ConstructionWeapons[J].Item.Cost);
 end;
-{ @end $5D1C14 }
+{ @end $580D44 }
 
-{ @routine $5D1CA0 GetConstructionFreeSpace }
+{ @routine $580D88 GetConstructionFreeSpace }
 function GetConstructionFreeSpace: Integer;
 var
   J: Integer;
@@ -6023,14 +6039,16 @@ begin
   Result := 0;
   for Kind := t_Hull to t_DefGenerator do
     if ConstructionEquipment[Kind].Item <> nil then
+    begin
       if Kind = t_Hull then Inc(Result, ConstructionEquipment[Kind].Item.Weight)
       else Dec(Result, ConstructionEquipment[Kind].Item.Weight);
+    end;
   for J := 1 to 5 do
     if ConstructionWeapons[J].Item <> nil then Dec(Result, ConstructionWeapons[J].Item.Weight);
 end;
-{ @end $5D1CA0 }
+{ @end $580D88 }
 
-{ @routine $5D230C TfRuinsTalk_BuildConstructionItemChoices }
+{ @routine $58135C TfRuinsTalk_BuildConstructionItemChoices }
 function TfRuinsTalk.BuildConstructionItemChoices(Kind: TItemType): Integer;
 var
   I, Count: Integer;
@@ -6039,15 +6057,15 @@ var
   Text: WideString;
   Entry: PStorageEntry;
 
-  // @nested $5D1D28 IsConstructionItemEligible
-  function IsConstructionItemEligible(Item: TEquipment): Boolean; // @addr $5D1D28 @calls "0x5D2389 0x5D2492 0x5D258B"
+  // @nested $580DCC IsConstructionItemEligible
+  function IsConstructionItemEligible(Item: TEquipment): Boolean; // @addr $580DCC @calls "0x005813CD,0x005814AE,0x00581581"
   var
     I: Integer;
   begin
     Result := False;
     if (Item.ScriptItem <> nil) and (TScriptItem(Item.ScriptItem).Name <> '') then Exit;
-    if (Kind in [t_IndustrialLaser..t_CustomWeapon]) and not (Item.ItemType in [t_IndustrialLaser..t_CustomWeapon]) then Exit;
-    if not (Kind in [t_IndustrialLaser..t_CustomWeapon]) and (Kind <> Item.ItemType) then Exit;
+    if (Kind in WeaponItemTypes) and not (Item.ItemType in WeaponItemTypes) then Exit;
+    if not (Kind in WeaponItemTypes) and (Kind <> Item.ItemType) then Exit;
     if Kind = t_Hull then
     begin
       if not (THull(Item).HullType in [htPirate, htSpecial]) or (THull(Item).GetSlotCount(sskCargoHook) < 1) or (THull(Item).CapitalShip <> 0) then Exit;
@@ -6058,13 +6076,13 @@ var
       end
       else if not (Item.OwnerId in PlanetOwnerMasks.Coalition) then Exit;
     end;
-    if Kind in [t_IndustrialLaser..t_CustomWeapon] then
+    if Kind in WeaponItemTypes then
       for I := 1 to 5 do
         if ConstructionWeapons[I].Item = Item then Exit;
     Result := True;
   end;
-  // @nested $5D1E58 FormatConstructionItem
-  procedure FormatConstructionItem(var Text: WideString; Item: TEquipment); // @addr $5D1E58 @calls "0x5D23AB 0x5D24B4 0x5D25AD"
+  // @nested $580ECC FormatConstructionItem
+  procedure FormatConstructionItem(var Text: WideString; Item: TEquipment); // @addr $580ECC @calls "0x005813E9,0x005814CA,0x005815A1"
   var
     Stats: WideString;
   begin
@@ -6108,39 +6126,36 @@ begin
   for I := 0 to GetPlayer.StorageEntries.Count - 1 do
   begin
     Entry := GetPlayer.StorageEntries[I];
-    if GetPlayer.DockedTo = Entry.LocationOwner then
-      if (Entry <> nil) and (Entry.Item <> nil) then
-      begin
-        Item := TEquipment(Entry.Item);
-        if IsConstructionItemEligible(Item) then
-        begin
-          Text := LocalizedColorText('FormRuins.CB.ConstructPirate.InStorage');
-          FormatConstructionItem(Text, Item);
-          if (Kind <> t_Hull) and (GetConstructionFreeSpace - Item.Weight < 0) then
-            AddChoice('- ' + Text, 0, ScriptDialogBlockCallback)
-          else AddChoice('- ' + Text, Integer(Item), SelectConstructionStoredItem);
-          Inc(Count);
-        end;
-      end;
+    if GetPlayer.DockedTo <> Entry.LocationOwner then Continue;
+    if Entry = nil then Continue;
+    if Entry.Item = nil then Continue;
+    Item := TEquipment(Entry.Item);
+    if IsConstructionItemEligible(Item) then
+    begin
+      Text := LocalizedColorText('FormRuins.CB.ConstructPirate.InStorage');
+      FormatConstructionItem(Text, Item);
+      if (Kind <> t_Hull) and (GetConstructionFreeSpace - Item.Weight < 0) then
+        AddChoice('- ' + Text, 0, ScriptDialogBlockCallback)
+      else AddChoice('- ' + Text, Integer(Item), SelectConstructionStoredItem);
+      Inc(Count);
+    end;
   end;
   if TemporaryShopSlots <> nil then
     for I := 0 to TemporaryShopSlots.Count - 1 do
     begin
       Slot := TemporaryShopSlots[I];
-      if Slot <> nil then
+      if Slot = nil then Continue;
+      Item := TEquipment(Slot.Item);
+      if (Item <> nil) and IsConstructionItemEligible(Item) then
       begin
-        Item := TEquipment(Slot.Item);
-        if (Item <> nil) and IsConstructionItemEligible(Item) then
-        begin
-          Text := LocalizedColorText('FormRuins.CB.ConstructPirate.InShop');
-          FormatConstructionItem(Text, Item);
-          if Item.Cost + GetConstructionShopCost > GetPlayer.Money then
-            AddChoice('- ' + Text, 0, ScriptDialogBlockCallback)
-          else if (Kind <> t_Hull) and (GetConstructionFreeSpace - Item.Weight < 0) then
-            AddChoice('- ' + Text, 0, ScriptDialogBlockCallback)
-          else AddChoice('- ' + Text, Integer(Item), SelectConstructionShopItem);
-          Inc(Count);
-        end;
+        Text := LocalizedColorText('FormRuins.CB.ConstructPirate.InShop');
+        FormatConstructionItem(Text, Item);
+        if Item.Cost + GetConstructionShopCost > GetPlayer.Money then
+          AddChoice('- ' + Text, 0, ScriptDialogBlockCallback)
+        else if (Kind <> t_Hull) and (GetConstructionFreeSpace - Item.Weight < 0) then
+          AddChoice('- ' + Text, 0, ScriptDialogBlockCallback)
+        else AddChoice('- ' + Text, Integer(Item), SelectConstructionShopItem);
+        Inc(Count);
       end;
     end;
   if not (Kind in [t_Hull..t_Engine, t_CargoHook]) and ((Kind <> WeaponCategoryItemType) or (ConstructionWeapons[1].Item <> nil)) then
@@ -6148,10 +6163,10 @@ begin
   AddChoice('- ' + LocalizedColorText('FormRuins.CB.ConstructPirate.cancel'), 0, DeclineDominionShipConstruction);
   Result := Count;
 end;
-{ @end $5D230C }
+{ @end $58135C }
 
-{ @routine $5D28B0 TfRuinsTalk_ShowDominionShipConstructionDialog }
-procedure TfRuinsTalk.ShowDominionShipConstructionDialog(Action: Integer);
+{ @routine $581898 TfRuinsTalk_ShowDominionShipConstructionDialog }
+procedure TfRuinsTalk.ShowDominionShipConstructionDialog(Action: Cardinal);
 var
   J: Integer;
   Kind: TItemType;
@@ -6171,26 +6186,26 @@ begin
     DialogText := LocalizedColorText('FormRuins.CB.ConstructPirate.PickHull');
   end;
 end;
-{ @end $5D28B0 }
+{ @end $581898 }
 
-{ @routine $5D2B6C TfRuinsTalk_ConfirmDominionConstructionLimit }
-procedure TfRuinsTalk.ConfirmDominionConstructionLimit(Action: Integer);
+{ @routine $581B2C TfRuinsTalk_ConfirmDominionConstructionLimit }
+procedure TfRuinsTalk.ConfirmDominionConstructionLimit(Action: Cardinal);
 begin
   ClearChoices;
   BuildConstructionItemChoices(t_Hull);
   DialogText := LocalizedColorText('FormRuins.CB.ConstructPirate.PickHull');
 end;
-{ @end $5D2B6C }
+{ @end $581B2C }
 
-{ @routine $5D2C2C TfRuinsTalk_DeclineDominionShipConstruction }
-procedure TfRuinsTalk.DeclineDominionShipConstruction(Action: Integer);
+{ @routine $581BE0 TfRuinsTalk_DeclineDominionShipConstruction }
+procedure TfRuinsTalk.DeclineDominionShipConstruction(Action: Cardinal);
 begin
   DialogText := LocalizedColorText('FormRuins.CB.ConstructPirate.Cancelled');
   M_Main(True);
 end;
-{ @end $5D2C2C }
+{ @end $581BE0 }
 
-{ @routine $5D2CE8 SelectConstructionItem }
+{ @routine $581C90 SelectConstructionItem }
 procedure SelectConstructionItem(Item: TEquipment; Source: Byte);
 var
   I: Integer;
@@ -6200,8 +6215,9 @@ begin
     ConstructionEquipment[Item.ItemType].Item := Item;
     ConstructionEquipment[Item.ItemType].Source := Source;
   end
-  else if Item is TWeapon then
+  else
   begin
+    if not (Item is TWeapon) then Exit;
     I := 1;
     while (I <= 5) and (ConstructionWeapons[I].Item <> nil) do Inc(I);
     if I <= 5 then
@@ -6211,40 +6227,40 @@ begin
     end;
   end;
 end;
-{ @end $5D2CE8 }
+{ @end $581C90 }
 
-{ @routine $5D2D7C TfRuinsTalk_SelectConstructionHeldItem }
-procedure TfRuinsTalk.SelectConstructionHeldItem(Action: Integer);
+{ @routine $581D00 TfRuinsTalk_SelectConstructionHeldItem }
+procedure TfRuinsTalk.SelectConstructionHeldItem(Action: Cardinal);
 begin
   SelectConstructionItem(TEquipment(Action), 0);
   ContinueDominionConstruction(RemoveTextTagsW(TEquipment(Action).GetDisplayName));
 end;
-{ @end $5D2D7C }
+{ @end $581D00 }
 
-{ @routine $5D2DF0 TfRuinsTalk_SelectConstructionStoredItem }
-procedure TfRuinsTalk.SelectConstructionStoredItem(Action: Integer);
+{ @routine $581D70 TfRuinsTalk_SelectConstructionStoredItem }
+procedure TfRuinsTalk.SelectConstructionStoredItem(Action: Cardinal);
 begin
   SelectConstructionItem(TEquipment(Action), 1);
   ContinueDominionConstruction(RemoveTextTagsW(TEquipment(Action).GetDisplayName));
 end;
-{ @end $5D2DF0 }
+{ @end $581D70 }
 
-{ @routine $5D2E64 TfRuinsTalk_SelectConstructionShopItem }
-procedure TfRuinsTalk.SelectConstructionShopItem(Action: Integer);
+{ @routine $581DE0 TfRuinsTalk_SelectConstructionShopItem }
+procedure TfRuinsTalk.SelectConstructionShopItem(Action: Cardinal);
 begin
   SelectConstructionItem(TEquipment(Action), 2);
   ContinueDominionConstruction(RemoveTextTagsW(TEquipment(Action).GetDisplayName));
 end;
-{ @end $5D2E64 }
+{ @end $581DE0 }
 
-{ @routine $5D2ED8 TfRuinsTalk_SkipConstructionItem }
-procedure TfRuinsTalk.SkipConstructionItem(Action: Integer);
+{ @routine $581E50 TfRuinsTalk_SkipConstructionItem }
+procedure TfRuinsTalk.SkipConstructionItem(Action: Cardinal);
 begin
   ContinueDominionConstruction('');
 end;
-{ @end $5D2ED8 }
+{ @end $581E50 }
 
-{ @routine $5D2EF4 TfRuinsTalk_AppendConstructionItemList }
+{ @routine $581E58 TfRuinsTalk_AppendConstructionItemList }
 procedure TfRuinsTalk.AppendConstructionItemList;
 var
   I: Integer;
@@ -6258,31 +6274,38 @@ begin
   begin
     Item := ConstructionEquipment[Kind].Item;
     if Item <> nil then
-      Text := Text + Item.GetShortName + ' - ' + RemoveTextTagsW(Item.GetDisplayName) + #13#10
-    else
     begin
-      Text := Text + LocalizedText('Items.' + ItemTypeNames[Kind] + '.ShortName') + ' - ';
-      if THull(ConstructionEquipment[t_Hull].Item).GetSlotCount(ItemTypeToSlotKind(Kind)) > 0 then
-        Text := Text + LocalizedColorText('FormRuins.CB.ConstructPirate.NotInstalled') + #13#10
-      else Text := Text + LocalizedColorText('FormRuins.CB.ConstructPirate.NotAvailable') + #13#10;
+      Text := Text + Item.GetShortName + ' - ' + RemoveTextTagsW(Item.GetDisplayName) + #13#10;
+      Continue;
     end;
+    Text := Text + LocalizedText('Items.' + ItemTypeNames[Kind] + '.ShortName') + ' - ';
+    if THull(ConstructionEquipment[t_Hull].Item).GetSlotCount(ItemTypeToSlotKind(Kind)) > 0 then
+      Text := Text + LocalizedColorText('FormRuins.CB.ConstructPirate.NotInstalled') + #13#10
+    else Text := Text + LocalizedColorText('FormRuins.CB.ConstructPirate.NotAvailable') + #13#10;
   end;
   for I := 1 to 5 do
   begin
     Text := Text + LocalizedColorText('FormRuins.CB.ConstructPirate.weaponN') + IntToStr(I) + ' - ';
     Item := ConstructionWeapons[I].Item;
-    if Item <> nil then Text := Text + RemoveTextTagsW(Item.GetDisplayName) + #13#10
-    else if THull(ConstructionEquipment[t_Hull].Item).GetSlotCount(sskWeapon) >= I then
-      Text := Text + LocalizedColorText('FormRuins.CB.ConstructPirate.NotInstalled') + #13#10
-    else Text := Text + LocalizedColorText('FormRuins.CB.ConstructPirate.NotAvailable') + #13#10;
+    if Item <> nil then
+    begin
+      Text := Text + RemoveTextTagsW(Item.GetDisplayName) + #13#10;
+      Continue;
+    end;
+    if THull(ConstructionEquipment[t_Hull].Item).GetSlotCount(sskWeapon) >= I then
+    begin
+      Text := Text + LocalizedColorText('FormRuins.CB.ConstructPirate.NotInstalled') + #13#10;
+      Continue;
+    end;
+    Text := Text + LocalizedColorText('FormRuins.CB.ConstructPirate.NotAvailable') + #13#10;
   end;
   ReplaceTextToken(DialogText, '<ItemList>', Text, '');
   ReplaceTextToken(DialogText, '<TotalCost>', IntToStr(GetConstructionShopCost), TextHighlightColorTag);
   ReplaceTextToken(DialogText, '<FreeSpace>', IntToStr(GetConstructionFreeSpace), TextHighlightColorTag);
 end;
-{ @end $5D2EF4 }
+{ @end $581E58 }
 
-{ @routine $5D3444 TfRuinsTalk_ContinueDominionConstruction }
+{ @routine $5823A4 TfRuinsTalk_ContinueDominionConstruction }
 procedure TfRuinsTalk.ContinueDominionConstruction(PreviousItem: WideString);
 var
   CanAdd: Boolean;
@@ -6348,10 +6371,10 @@ begin
     AddChoice('- ' + LocalizedColorText('FormRuins.CB.ConstructPirate.cancel'), 0, DeclineDominionShipConstruction);
   end;
 end;
-{ @end $5D3444 }
+{ @end $5823A4 }
 
-{ @routine $5D3E28 TfRuinsTalk_PickConstructionWeapon }
-procedure TfRuinsTalk.PickConstructionWeapon(Action: Integer);
+{ @routine $582D2C TfRuinsTalk_PickConstructionWeapon }
+procedure TfRuinsTalk.PickConstructionWeapon(Action: Cardinal);
 begin
   DialogText := '';
   AppendConstructionItemList;
@@ -6359,10 +6382,10 @@ begin
   BuildConstructionItemChoices(WeaponCategoryItemType);
   DialogText := DialogText + #13#10 + #13#10 + LocalizedColorText('FormRuins.CB.ConstructPirate.PickWeapon');
 end;
-{ @end $5D3E28 }
+{ @end $582D2C }
 
-{ @routine $5D3F24 TfRuinsTalk_PickConstructionRadar }
-procedure TfRuinsTalk.PickConstructionRadar(Action: Integer);
+{ @routine $582E18 TfRuinsTalk_PickConstructionRadar }
+procedure TfRuinsTalk.PickConstructionRadar(Action: Cardinal);
 begin
   DialogText := '';
   AppendConstructionItemList;
@@ -6370,10 +6393,10 @@ begin
   BuildConstructionItemChoices(t_Radar);
   DialogText := DialogText + #13#10 + #13#10 + LocalizedColorText('FormRuins.CB.ConstructPirate.PickRadar');
 end;
-{ @end $5D3F24 }
+{ @end $582E18 }
 
-{ @routine $5D4020 TfRuinsTalk_PickConstructionScanner }
-procedure TfRuinsTalk.PickConstructionScanner(Action: Integer);
+{ @routine $582F04 TfRuinsTalk_PickConstructionScanner }
+procedure TfRuinsTalk.PickConstructionScanner(Action: Cardinal);
 begin
   DialogText := '';
   AppendConstructionItemList;
@@ -6381,10 +6404,10 @@ begin
   BuildConstructionItemChoices(t_Scaner);
   DialogText := DialogText + #13#10 + #13#10 + LocalizedColorText('FormRuins.CB.ConstructPirate.PickScaner');
 end;
-{ @end $5D4020 }
+{ @end $582F04 }
 
-{ @routine $5D411C TfRuinsTalk_PickConstructionRepairRobot }
-procedure TfRuinsTalk.PickConstructionRepairRobot(Action: Integer);
+{ @routine $582FF0 TfRuinsTalk_PickConstructionRepairRobot }
+procedure TfRuinsTalk.PickConstructionRepairRobot(Action: Cardinal);
 begin
   DialogText := '';
   AppendConstructionItemList;
@@ -6392,10 +6415,10 @@ begin
   BuildConstructionItemChoices(t_RepairRobot);
   DialogText := DialogText + #13#10 + #13#10 + LocalizedColorText('FormRuins.CB.ConstructPirate.PickRepairRobot');
 end;
-{ @end $5D411C }
+{ @end $582FF0 }
 
-{ @routine $5D4224 TfRuinsTalk_PickConstructionDefGenerator }
-procedure TfRuinsTalk.PickConstructionDefGenerator(Action: Integer);
+{ @routine $5830E8 TfRuinsTalk_PickConstructionDefGenerator }
+procedure TfRuinsTalk.PickConstructionDefGenerator(Action: Cardinal);
 begin
   DialogText := '';
   AppendConstructionItemList;
@@ -6403,10 +6426,10 @@ begin
   BuildConstructionItemChoices(t_DefGenerator);
   DialogText := DialogText + #13#10 + #13#10 + LocalizedColorText('FormRuins.CB.ConstructPirate.PickDefGenerator');
 end;
-{ @end $5D4224 }
+{ @end $5830E8 }
 
-{ @routine $5D4428 TfRuinsTalk_CompleteDominionConstruction }
-procedure TfRuinsTalk.CompleteDominionConstruction(Action: Integer);
+{ @routine $5832B8 TfRuinsTalk_CompleteDominionConstruction }
+procedure TfRuinsTalk.CompleteDominionConstruction(Action: Cardinal);
 var
   Ship: TPirate;
   Planet: TPlanet;
@@ -6414,8 +6437,8 @@ var
   Kind: TItemType;
   J, Months: Integer;
   Item: TEquipment;
-  // @nested $5D432C RemoveConstructionStoredItem
-  procedure RemoveConstructionStoredItem(Item: TEquipment); // @addr $5D432C @calls "0x5D4540 0x5D45F7"
+  // @nested $5831E0 RemoveConstructionStoredItem
+  procedure RemoveConstructionStoredItem(Item: TEquipment); // @addr $5831E0 @calls "0x0058338D,0x00583409"
   var
     I: Integer;
     Entry: PStorageEntry;
@@ -6433,8 +6456,8 @@ var
     end;
   end;
 
-  // @nested $5D43B4 RemoveConstructionShopItem
-  procedure RemoveConstructionShopItem(Item: TEquipment); // @addr $5D43B4 @calls "0x5D454C 0x5D4603"
+  // @nested $583254 RemoveConstructionShopItem
+  procedure RemoveConstructionShopItem(Item: TEquipment); // @addr $583254 @calls "0x00583396,0x00583412"
   var
     Station: TRuins;
   begin
@@ -6507,19 +6530,19 @@ begin
   ReplaceTextToken(DialogText, '<CntMonth>', IntToStr(Months), TextHighlightColorTag);
   M_Main(True);
 end;
-{ @end $5D4428 }
+{ @end $5832B8 }
 
-{ @routine $5D4928 TfRuinsTalk_ShowDominionImprovementDialog }
-procedure TfRuinsTalk.ShowDominionImprovementDialog(Action: Integer);
+{ @routine $583710 TfRuinsTalk_ShowDominionImprovementDialog }
+procedure TfRuinsTalk.ShowDominionImprovementDialog(Action: Cardinal);
 begin
   DialogText := LocalizedColorText('FormRuins.CB.Improvement.CBAnswer');
   ClearChoices;
   AddChoice('- ' + LocalizedColorText('FormRuins.CB.Improvement.PlayerAsk'), 0, ShowDominionImprovementItems);
 end;
-{ @end $5D4928 }
+{ @end $583710 }
 
-{ @routine $5D4A64 TfRuinsTalk_ShowDominionImprovementItems }
-procedure TfRuinsTalk.ShowDominionImprovementItems(Action: Integer);
+{ @routine $583844 TfRuinsTalk_ShowDominionImprovementItems }
+procedure TfRuinsTalk.ShowDominionImprovementItems(Action: Cardinal);
 var
   I, Count: Integer;
   Item: TEquipment;
@@ -6564,7 +6587,7 @@ begin
   if Count > 0 then
   begin
     DialogText := DialogText + #13#10 + LocalizedColorText('FormRuins.CB.Improvement.CBSeeItemsHaveItems');
-  AddChoice('- ' + LocalizedColorText('FormRuins.CB.Improvement.PlayerNothing'), 0, DeclineDominionImprovement);
+    AddChoice('- ' + LocalizedColorText('FormRuins.CB.Improvement.PlayerNothing'), 0, DeclineDominionImprovement);
   end
   else
   begin
@@ -6572,19 +6595,19 @@ begin
     M_Main(True);
   end;
 end;
-{ @end $5D4A64 }
+{ @end $583844 }
 
-{ @routine $5D5160 TfRuinsTalk_DeclineDominionImprovement }
-procedure TfRuinsTalk.DeclineDominionImprovement(Action: Integer);
+{ @routine $583F00 TfRuinsTalk_DeclineDominionImprovement }
+procedure TfRuinsTalk.DeclineDominionImprovement(Action: Cardinal);
 begin
   DialogText := LocalizedColorText('FormRuins.CB.Improvement.CBAnswerNothing');
   ClearChoices;
   M_Main(True);
 end;
-{ @end $5D5160 }
+{ @end $583F00 }
 
-{ @routine $5D5228 TfRuinsTalk_ShowDominionImprovementQuote }
-procedure TfRuinsTalk.ShowDominionImprovementQuote(Action: Integer);
+{ @routine $583FBC TfRuinsTalk_ShowDominionImprovementQuote }
+procedure TfRuinsTalk.ShowDominionImprovementQuote(Action: Cardinal);
 var
   Item: TEquipment;
   NodeCost, MoneyCost: Integer;
@@ -6614,10 +6637,10 @@ begin
   else AddChoice('- ' + LocalizedColorText('FormRuins.CB.Improvement.PlayerOk'), 0, ScriptDialogBlockCallback);
   AddChoice('- ' + LocalizedColorText('FormRuins.CB.Improvement.PlayerNo'), 0, DeclineDominionImprovement);
 end;
-{ @end $5D5228 }
+{ @end $583FBC }
 
-{ @routine $5D57D8 TfRuinsTalk_AcceptDominionImprovement }
-procedure TfRuinsTalk.AcceptDominionImprovement(Action: Integer);
+{ @routine $584554 TfRuinsTalk_AcceptDominionImprovement }
+procedure TfRuinsTalk.AcceptDominionImprovement(Action: Cardinal);
 var
   Item: TEquipment;
   Cost, Nodes: Integer;
@@ -6643,19 +6666,19 @@ begin
   end
   else DeclineScienceBaseRepeatImprovement(0); // Native failure branch uses the science-base answer.
 end;
-{ @end $5D57D8 }
+{ @end $584554 }
 
-{ @routine $5D5B48 TfRuinsTalk_DeclineDominionRepeatImprovement }
-procedure TfRuinsTalk.DeclineDominionRepeatImprovement(Action: Integer);
+{ @routine $584898 TfRuinsTalk_DeclineDominionRepeatImprovement }
+procedure TfRuinsTalk.DeclineDominionRepeatImprovement(Action: Cardinal);
 begin
   DialogText := LocalizedColorText('FormRuins.CB.Improvement.CBAfterRepeatNo');
   ClearChoices;
   M_Main(True);
 end;
-{ @end $5D5B48 }
+{ @end $584898 }
 
-{ @routine $5D5C10 TfRuinsTalk_ShowDominionPirateLicenseDialog }
-procedure TfRuinsTalk.ShowDominionPirateLicenseDialog(Action: Integer);
+{ @routine $584954 TfRuinsTalk_ShowDominionPirateLicenseDialog }
+procedure TfRuinsTalk.ShowDominionPirateLicenseDialog(Action: Cardinal);
 var
   Cost: Integer;
   Discount: Byte;
@@ -6684,10 +6707,10 @@ begin
   end;
   AddChoice('- ' + LocalizedColorText('FormRuins.CB.PirateLicense.PlayerNo'), 0, DeclineDominionPirateLicense);
 end;
-{ @end $5D5C10 }
+{ @end $584954 }
 
-{ @routine $5D616C TfRuinsTalk_BuyDominionPirateLicense }
-procedure TfRuinsTalk.BuyDominionPirateLicense(Action: Integer);
+{ @routine $584E88 TfRuinsTalk_BuyDominionPirateLicense }
+procedure TfRuinsTalk.BuyDominionPirateLicense(Action: Cardinal);
 begin
   if GetPlayer.PirateLicenseTicks = 0 then
     DialogText := LocalizedColorText('FormRuins.CB.PirateLicense.CBAfterOk')
@@ -6697,10 +6720,10 @@ begin
   SoundManager.PlaySound('Sound.Sell');
   M_Main(True);
 end;
-{ @end $5D616C }
+{ @end $584E88 }
 
-{ @routine $5D6314 TfRuinsTalk_DeclineDominionPirateLicense }
-procedure TfRuinsTalk.DeclineDominionPirateLicense(Action: Integer);
+{ @routine $585024 TfRuinsTalk_DeclineDominionPirateLicense }
+procedure TfRuinsTalk.DeclineDominionPirateLicense(Action: Cardinal);
 begin
   if GetPlayer.PirateLicenseTicks = 0 then
     DialogText := LocalizedColorText('FormRuins.CB.PirateLicense.CBAfterNo')
@@ -6708,9 +6731,9 @@ begin
   ReplaceTextToken(DialogText, '<Days>', IntToStr(GetPlayer.PirateLicenseTicks), TextHighlightColorTag);
   M_Main(True);
 end;
-{ @end $5D6314 }
+{ @end $585024 }
 
-{ @routine $5D64E4 TfRuinsTalk_CheckDominionServiceStanding }
+{ @routine $5851E8 TfRuinsTalk_CheckDominionServiceStanding }
 function TfRuinsTalk.CheckDominionServiceStanding(RequiredRank: TShipRank; Prefix: WideString; CreditCost: Single): Boolean;
 begin
   Result := False;
@@ -6718,25 +6741,27 @@ begin
   begin
     DialogText := Prefix + ' ' + LocalizedColorText('FormRuins.CB.GenericRefuseNeedRank');
     ReplaceTextToken(DialogText, '<PirateRank>', LocalizedText('RankPirate.' + PirateRankNames[RequiredRank] + '.Name'), TextHighlightColorTag);
-  end
-  else if (Galaxy.AverageRangerCapital * CreditCost / 600 > GetPlayer.PirateLicenseCash) and (GetPlayer.PirateRank < 7) then
+    Exit;
+  end;
+  if (Galaxy.AverageRangerCapital * CreditCost / 600 > GetPlayer.PirateLicenseCash) and (GetPlayer.PirateRank < 7) then
   begin
     if GetPlayer.PirateLicenseTicks > 0 then
       DialogText := Prefix + ' ' + LocalizedColorText('FormRuins.CB.GenericRefuseNeedPoints')
     else DialogText := Prefix + ' ' + LocalizedColorText('FormRuins.CB.GenericRefuseNeedLicense');
-  end
-  else Result := True;
+    Exit;
+  end;
+  Result := True;
 end;
-{ @end $5D64E4 }
+{ @end $5851E8 }
 
-{ @routine $5D67E8 TfRuinsTalk_SpendDominionServiceCredit }
+{ @routine $5854DC TfRuinsTalk_SpendDominionServiceCredit }
 procedure TfRuinsTalk.SpendDominionServiceCredit(CreditCost: Single);
 begin
   GetPlayer.PirateLicenseCash := Max(0, Round((GetPlayer.PirateLicenseCash - Galaxy.AverageRangerCapital * CreditCost / 600) * 0.85));
 end;
-{ @end $5D67E8 }
+{ @end $5854DC }
 
-{ @routine $5D6878 TfRuinsTalk_CheckDominionAvailable }
+{ @routine $585568 TfRuinsTalk_CheckDominionAvailable }
 function TfRuinsTalk.CheckDominionAvailable: Boolean;
 begin
   if (TRuins(GetPlayer.DockedTo).FlyToStar <> nil) or (GetPlayer.DockedTo.Order = soTeleport) or GetPlayer.DockedTo.HasScriptControl then
@@ -6746,10 +6771,10 @@ begin
   end
   else Result := True;
 end;
-{ @end $5D6878 }
+{ @end $585568 }
 
-{ @routine $5D6A30 TfRuinsTalk_ShowDominionTravelDialog }
-procedure TfRuinsTalk.ShowDominionTravelDialog(Action: Integer);
+{ @routine $585708 TfRuinsTalk_ShowDominionTravelDialog }
+procedure TfRuinsTalk.ShowDominionTravelDialog(Action: Cardinal);
 var
   Text: WideString;
   Seed: Cardinal;
@@ -6757,8 +6782,8 @@ var
   I, J, Count: Integer;
   Duplicate: Boolean;
   Discount: Byte;
-  // @nested $5D696C GetDominionTravelQuoteCost
-  function GetDominionTravelQuoteCost(Index: Integer): Integer; // @addr $5D696C @calls "0x5D6C4E 0x5D6C97"
+  // @nested $585650 GetDominionTravelQuoteCost
+  function GetDominionTravelQuoteCost(Index: Integer): Integer; // @addr $585650 @calls "0x005858FF,0x00585936"
   begin
     Result := Min(MaxMonetaryValue, Round(Galaxy.ComputeScaledHugeMoney(oiHuman) / DominionTravelQuotes[Index].DrawCount * PointDistanceSquared(GetPlayer.CurrentStar.Position, DominionTravelQuotes[Index].Star.Position) / 1600 * (100 - Discount) / 100));
   end;
@@ -6797,23 +6822,21 @@ begin
   for I := 1 to 4 do
   begin
     Star := Galaxy.Stars[NextRandomIntRange(0, Galaxy.Stars.Count - 1, Seed)];
-    if (GetPlayer.CurrentStar <> Star) and Star.IsConstellationVisible and ((Star.Constellation.Id <> 20) or (Galaxy.CoalitionDefeatedTurn <> 0)) then
-    begin
-      Duplicate := False;
-      for J := 1 to Count do
-        if DominionTravelQuotes[J].Star = Star then
-        begin
-          Duplicate := True;
-          Inc(DominionTravelQuotes[J].DrawCount);
-          DominionTravelQuotes[J].Cost := GetDominionTravelQuoteCost(J);
-        end;
-      if not Duplicate then
+    if not ((GetPlayer.CurrentStar <> Star) and Star.IsConstellationVisible and ((Star.Constellation.Id <> 20) or (Galaxy.CoalitionDefeatedTurn <> 0))) then Continue;
+    Duplicate := False;
+    for J := 1 to Count do
+      if DominionTravelQuotes[J].Star = Star then
       begin
-        Inc(Count);
-        DominionTravelQuotes[Count].Star := Star;
-        DominionTravelQuotes[Count].DrawCount := 1;
-        DominionTravelQuotes[Count].Cost := GetDominionTravelQuoteCost(Count);
+        Duplicate := True;
+        Inc(DominionTravelQuotes[J].DrawCount);
+        DominionTravelQuotes[J].Cost := GetDominionTravelQuoteCost(J);
       end;
+    if not Duplicate then
+    begin
+      Inc(Count);
+      DominionTravelQuotes[Count].Star := Star;
+      DominionTravelQuotes[Count].DrawCount := 1;
+      DominionTravelQuotes[Count].Cost := GetDominionTravelQuoteCost(Count);
     end;
   end;
   if Count <= 0 then
@@ -6840,10 +6863,10 @@ begin
   end;
   AddChoice('- ' + LocalizedColorText('FormRuins.CB.ShuffleTeleport.Refuse'), 0, DeclineDominionTravel);
 end;
-{ @end $5D6A30 }
+{ @end $585708 }
 
-{ @routine $5D7318 TfRuinsTalk_ConfirmDominionTravel }
-procedure TfRuinsTalk.ConfirmDominionTravel(Action: Integer);
+{ @routine $585F70 TfRuinsTalk_ConfirmDominionTravel }
+procedure TfRuinsTalk.ConfirmDominionTravel(Action: Cardinal);
 begin
   DialogText := LocalizedColorText('FormRuins.CB.ShuffleTeleport.CBConfirmation');
   ReplaceTextToken(DialogText, '<ToStar>', DominionTravelQuotes[Action].Star.Name, TextHighlightColorTag);
@@ -6852,18 +6875,18 @@ begin
   AddChoice('- ' + LocalizedColorText('FormRuins.CB.ShuffleTeleport.Confirm'), Action, AcceptDominionTravel);
   AddChoice('- ' + LocalizedColorText('FormRuins.CB.ShuffleTeleport.NoConfirm'), 0, DeclineDominionTravelConfirmation);
 end;
-{ @end $5D7318 }
+{ @end $585F70 }
 
-{ @routine $5D75C8 TfRuinsTalk_DeclineDominionTravel }
-procedure TfRuinsTalk.DeclineDominionTravel(Action: Integer);
+{ @routine $586208 TfRuinsTalk_DeclineDominionTravel }
+procedure TfRuinsTalk.DeclineDominionTravel(Action: Cardinal);
 begin
   DialogText := LocalizedColorText('FormRuins.CB.ShuffleTeleport.CBAfterRefuse');
   M_Main(True);
 end;
-{ @end $5D75C8 }
+{ @end $586208 }
 
-{ @routine $5D768C TfRuinsTalk_AcceptDominionTravel }
-procedure TfRuinsTalk.AcceptDominionTravel(Action: Integer);
+{ @routine $5862C0 TfRuinsTalk_AcceptDominionTravel }
+procedure TfRuinsTalk.AcceptDominionTravel(Action: Cardinal);
 begin
   DialogText := LocalizedColorText('FormRuins.CB.ShuffleTeleport.CBAfterConfirm');
   GetPlayer.QueuedTravelTarget := DominionTravelQuotes[Action].Star;
@@ -6874,45 +6897,45 @@ begin
   ReplaceTextToken(DialogText, '<FlyToStar>', GetPlayer.QueuedTravelTarget.Name, TextHighlightColorTag);
   M_Main(True);
 end;
-{ @end $5D768C }
+{ @end $5862C0 }
 
-{ @routine $5D785C TfRuinsTalk_DeclineDominionTravelConfirmation }
-procedure TfRuinsTalk.DeclineDominionTravelConfirmation(Action: Integer);
+{ @routine $58647C TfRuinsTalk_DeclineDominionTravelConfirmation }
+procedure TfRuinsTalk.DeclineDominionTravelConfirmation(Action: Cardinal);
 begin
   DialogText := LocalizedColorText('FormRuins.CB.ShuffleTeleport.CBAfterNoConfirm');
   M_Main(True);
 end;
-{ @end $5D785C }
+{ @end $58647C }
 
-{ @routine $5D7924 TfRuinsTalk_ShowDominionCancelTravelDialog }
-procedure TfRuinsTalk.ShowDominionCancelTravelDialog(Action: Integer);
+{ @routine $586538 TfRuinsTalk_ShowDominionCancelTravelDialog }
+procedure TfRuinsTalk.ShowDominionCancelTravelDialog(Action: Cardinal);
 begin
   DialogText := LocalizedColorText('FormRuins.CB.ShuffleTeleport.CBCancelTeleport');
   ClearChoices;
   AddChoice('- ' + LocalizedColorText('FormRuins.CB.ShuffleTeleport.CancelYes'), 0, CancelDominionTravel);
   AddChoice('- ' + LocalizedColorText('FormRuins.CB.ShuffleTeleport.CancelNo'), 0, DeclineDominionCancelTravel);
 end;
-{ @end $5D7924 }
+{ @end $586538 }
 
-{ @routine $5D7B08 TfRuinsTalk_CancelDominionTravel }
-procedure TfRuinsTalk.CancelDominionTravel(Action: Integer);
+{ @routine $58670C TfRuinsTalk_CancelDominionTravel }
+procedure TfRuinsTalk.CancelDominionTravel(Action: Cardinal);
 begin
   DialogText := LocalizedColorText('FormRuins.CB.ShuffleTeleport.CBAfterCancelTeleport');
   GetPlayer.QueuedTravelTarget := nil;
   M_Main(True);
 end;
-{ @end $5D7B08 }
+{ @end $58670C }
 
-{ @routine $5D7BE8 TfRuinsTalk_DeclineDominionCancelTravel }
-procedure TfRuinsTalk.DeclineDominionCancelTravel(Action: Integer);
+{ @routine $5867E0 TfRuinsTalk_DeclineDominionCancelTravel }
+procedure TfRuinsTalk.DeclineDominionCancelTravel(Action: Cardinal);
 begin
   DialogText := LocalizedColorText('FormRuins.CB.ShuffleTeleport.CBAfterNoCancel');
   ReplaceTextToken(DialogText, '<FlyToStar>', GetPlayer.QueuedTravelTarget.Name, TextHighlightColorTag);
   M_Main(True);
 end;
-{ @end $5D7BE8 }
+{ @end $5867E0 }
 
-{ @routine $5D7D1C GetDominionRelocationCost }
+{ @routine $586908 GetDominionRelocationCost }
 function GetDominionRelocationCost(Star: TStar): Integer;
 var
   Discount: Byte;
@@ -6920,10 +6943,10 @@ begin
   Discount := GetPlayer.GetPirateServiceDiscount;
   Result := Min(MaxMonetaryValue, Round((PointDistanceSquared(GetPlayer.DockedTo.CurrentStar.Position, Star.Position) + 6400) * SeededRandomIntRange(Galaxy.ComputeScaledHugeMoney(oiHuman) div 2, Galaxy.ComputeScaledHugeMoney(oiHuman) * 2, Star.GenerationSeed + 1171 + GetPlayer.DockedTo.CurrentStar.GenerationSeed) / 6400 * (100 - Discount) / 100));
 end;
-{ @end $5D7D1C }
+{ @end $586908 }
 
-{ @routine $5D7E18 TfRuinsTalk_ShowDominionRelocationDialog }
-procedure TfRuinsTalk.ShowDominionRelocationDialog(Action: Integer);
+{ @routine $586A04 TfRuinsTalk_ShowDominionRelocationDialog }
+procedure TfRuinsTalk.ShowDominionRelocationDialog(Action: Cardinal);
 const
   StationMask = [rstRangerCenter..rstDominion];
 var
@@ -6954,27 +6977,32 @@ begin
   Index := SeededRandomIntRange(First, Last, GetPlayer.DockedTo.Seed + Galaxy.GenerationSeed + Galaxy.CurrentTurn div 60 + 1141);
   Constellations := TList.Create;
   for I := 1 to Galaxy.Stars.Count - 1 do
-    if not GetPlayer.NoJump then
-    begin
-      IncrementWrapped(Index, First, Last);
-      Star := TObject(GetPlayer.CurrentStar.StarDistances[Index].Star) as TStar;
-      if not Star.NoComeKling and (Constellations.IndexOf(Star.Constellation) < 0) then
-        if (SeededRandomUnitFloat(GetPlayer.DockedTo.Seed + Star.GenerationSeed + Galaxy.CurrentTurn div 60 + 1387) >= 0.6) and
-          (Star.Constellation.Id <> 20) and ((Star.Constellation.ShipTypeCounts[rstDominion] <= 0) or (GetPlayer.DockedTo.CurrentStar.Constellation = Star.Constellation)) and
-          (Star.Constellation.CountShipsByTypeMask(StationMask) < Star.Constellation.Stars.Count) and
-          (Star.Dominion = nil) and (Star.CountShipsByTypeMask(StationMask) <= 2) and
-          (Star.ShipTypeCounts[stKling] <= 0) and (Star.ControlFaction = sfPirates) and (Star.Battle = 0) and
-          (Star.Status.CustomFaction = '') and (GetPlayer.DockedTo.CurrentStar <> Star) and Star.IsConstellationVisible then
-        begin
-          Inc(Count);
-          Cost := GetDominionRelocationCost(Star);
-          if GetPlayer.Money < Cost then
-            AddChoice('- ' + FormatText2(LocalizedColorText('FormRuins.CB.WarPlans.Relocate.ToStar'), TextHighlightColorTag, '<ToStar>', Star.Name, '<Money>', IntToStr(StationServiceQuoteCost)), 0, ScriptDialogBlockCallback)
-          else AddChoice('- ' + FormatText2(LocalizedColorText('FormRuins.CB.WarPlans.Relocate.ToStar'), TextHighlightColorTag, '<ToStar>', Star.Name, '<Cost>', IntToStr(Cost)), Integer(Star), AcceptDominionRelocation);
-          // Native disabled choice uses the shared quote and <Money>, unlike the enabled choice.
-          Constellations.Add(Star.Constellation);
-        end;
-    end;
+  begin
+    if GetPlayer.NoJump then Continue;
+    IncrementWrapped(Index, First, Last);
+    Star := GetPlayer.CurrentStar.StarDistances[Index].Star as TStar;
+    if Star.NoComeKling then Continue;
+    if Constellations.IndexOf(Star.Constellation) >= 0 then Continue;
+    if not ((SeededRandomUnitFloat(GetPlayer.DockedTo.Seed + Star.GenerationSeed + Galaxy.CurrentTurn div 60 + 1387) >= 0.6)) then Continue;
+    if Star.Constellation.Id = 20 then Continue;
+    if not (((Star.Constellation.ShipTypeCounts[rstDominion] <= 0) or (Star.Constellation = GetPlayer.DockedTo.CurrentStar.Constellation))) then Continue;
+    if not ((Star.Constellation.CountShipsByTypeMask(StationMask) < Star.Constellation.Stars.Count)) then Continue;
+    if Star.Dominion <> nil then Continue;
+    if not ((Star.CountShipsByTypeMask(StationMask) <= 2)) then Continue;
+    if Star.ShipTypeCounts[stKling] > 0 then Continue;
+    if Star.ControlFaction <> sfPirates then Continue;
+    if Star.Battle <> 0 then Continue;
+    if Star.Status.CustomFaction <> '' then Continue;
+    if GetPlayer.DockedTo.CurrentStar = Star then Continue;
+    if not (Star.IsConstellationVisible) then Continue;
+    Inc(Count);
+    Cost := GetDominionRelocationCost(Star);
+    if Cost > GetPlayer.Money then
+      AddChoice('- ' + FormatText2(LocalizedColorText('FormRuins.CB.WarPlans.Relocate.ToStar'), TextHighlightColorTag, '<ToStar>', Star.Name, '<Money>', IntToStr(StationServiceQuoteCost)), 0, ScriptDialogBlockCallback)
+    else AddChoice('- ' + FormatText2(LocalizedColorText('FormRuins.CB.WarPlans.Relocate.ToStar'), TextHighlightColorTag, '<ToStar>', Star.Name, '<Cost>', IntToStr(Cost)), Integer(Star), AcceptDominionRelocation);
+    // Native disabled choice uses the shared quote and <Money>, unlike the enabled choice.
+    Constellations.Add(Star.Constellation);
+  end;
   Constellations.Free;
   if Count <= 0 then
   begin
@@ -6987,10 +7015,10 @@ begin
     AddChoice('- ' + LocalizedColorText('FormRuins.CB.WarPlans.Relocate.Refuse'), 0, DeclineDominionRelocation);
   end;
 end;
-{ @end $5D7E18 }
+{ @end $586A04 }
 
-{ @routine $5D8590 TfRuinsTalk_AcceptDominionRelocation }
-procedure TfRuinsTalk.AcceptDominionRelocation(Action: Integer);
+{ @routine $587118 TfRuinsTalk_AcceptDominionRelocation }
+procedure TfRuinsTalk.AcceptDominionRelocation(Action: Cardinal);
 var
   Star: TStar;
 begin
@@ -7008,17 +7036,17 @@ begin
   AddChoice('- ' + LocalizedColorText('FormRuins.CB.WarPlans.Relocate.ToHangar'), 0, OpenHangar);
   AddChoice('- ' + LocalizedColorText('FormRuins.CB.WarPlans.Relocate.IgnoreWarning'), 0, ReturnToMain);
 end;
-{ @end $5D8590 }
+{ @end $587118 }
 
-{ @routine $5D88D4 TfRuinsTalk_DeclineDominionRelocation }
-procedure TfRuinsTalk.DeclineDominionRelocation(Action: Integer);
+{ @routine $587438 TfRuinsTalk_DeclineDominionRelocation }
+procedure TfRuinsTalk.DeclineDominionRelocation(Action: Cardinal);
 begin
   DialogText := LocalizedColorText('FormRuins.CB.WarPlans.Relocate.CBAfterRefuse');
   BuildDominionWarOptions;
 end;
-{ @end $5D88D4 }
+{ @end $587438 }
 
-{ @routine $5D899C TfRuinsTalk_BuildDominionWarOptions }
+{ @routine $5874F4 TfRuinsTalk_BuildDominionWarOptions }
 procedure TfRuinsTalk.BuildDominionWarOptions;
 begin
   ClearChoices;
@@ -7036,10 +7064,10 @@ begin
     AddChoice('- ' + LocalizedColorText('FormRuins.CB.WarPlans.Assault.PlayerSend2'), 1, ShowDominionAssaultDialog);
   AddChoice('- ' + LocalizedColorText('FormRuins.CB.WarPlans.PlayerNoQuestions'), 0, ReturnToMain);
 end;
-{ @end $5D899C }
+{ @end $5874F4 }
 
-{ @routine $5D8EB0 TfRuinsTalk_I_CBWarWithKlingAndCoalition }
-procedure TfRuinsTalk.I_CBWarWithKlingAndCoalition(Action: Integer);
+{ @routine $5879E8 TfRuinsTalk_I_CBWarWithKlingAndCoalition }
+procedure TfRuinsTalk.I_CBWarWithKlingAndCoalition(Action: Cardinal);
 var
   CoalitionPercent, DominatorPercent, PiratePercent: Byte;
   Path: WideString;
@@ -7057,10 +7085,10 @@ begin
   DominatorPercent := Galaxy.GetFactionControlPercent(sfDominators);
   PiratePercent := Galaxy.GetFactionControlPercent(sfPirates);
   for I := 0 to Galaxy.Stars.Count - 1 do
-    if ((TObject(GetPlayer.CurrentStar.StarDistances[I].Star) as TStar).ControlFaction in [sfCoalition, sfDominators]) and
-      ((TObject(GetPlayer.CurrentStar.StarDistances[I].Star) as TStar).Constellation.Id <> 20) then
+    if ((GetPlayer.CurrentStar.StarDistances[I].Star as TStar).ControlFaction in [sfCoalition, sfDominators]) and
+      ((GetPlayer.CurrentStar.StarDistances[I].Star as TStar).Constellation.Id <> 20) then
     begin
-      Star := GetPlayer.CurrentStar.StarDistances[I].Star;
+      Star := TStar(GetPlayer.CurrentStar.StarDistances[I].Star);
       Break;
     end;
   if Star = nil then
@@ -7097,26 +7125,26 @@ begin
   DialogText := DialogText + #13#10 + LocalizedColorText('FormRuins.CB.WarPlans.WarWithKlingAndCoalition.ExtraTextAboutRanks');
   BuildDominionWarOptions;
 end;
-{ @end $5D8EB0 }
+{ @end $5879E8 }
 
-{ @routine $5D9A50 TfRuinsTalk_ShowDominionCaptureAnswer }
-procedure TfRuinsTalk.ShowDominionCaptureAnswer(Action: Integer);
+{ @routine $588550 TfRuinsTalk_ShowDominionCaptureAnswer }
+procedure TfRuinsTalk.ShowDominionCaptureAnswer(Action: Cardinal);
 begin
   DialogText := LocalizedColorText('FormRuins.CB.WarPlans.CBAnswersAboutCapture');
   BuildDominionWarOptions;
 end;
-{ @end $5D9A50 }
+{ @end $588550 }
 
-{ @routine $5D9B14 TfRuinsTalk_ShowDominionRanksAnswer }
-procedure TfRuinsTalk.ShowDominionRanksAnswer(Action: Integer);
+{ @routine $588608 TfRuinsTalk_ShowDominionRanksAnswer }
+procedure TfRuinsTalk.ShowDominionRanksAnswer(Action: Cardinal);
 begin
   DialogText := LocalizedColorText('FormRuins.CB.WarPlans.CBAnswersAboutRanks');
   ReplaceTextToken(DialogText, '<BaseName>', GetPlayer.DockedTo.Name, '');
   BuildDominionWarOptions;
 end;
-{ @end $5D9B14 }
+{ @end $588608 }
 
-{ @routine $5D9C0C ApplyRecentDominionOrderSurcharge }
+{ @routine $5886F4 ApplyRecentDominionOrderSurcharge }
 function ApplyRecentDominionOrderSurcharge(Cost: Single): Integer;
 var
   I: Integer;
@@ -7131,10 +7159,10 @@ begin
   end;
   Result := RoundAndTruncateToHundreds(Cost);
 end;
-{ @end $5D9C0C }
+{ @end $5886F4 }
 
-{ @routine $5D9DEC TfRuinsTalk_ShowDominionWarOperationDialog }
-procedure TfRuinsTalk.ShowDominionWarOperationDialog(Action: Integer);
+{ @routine $5888BC TfRuinsTalk_ShowDominionWarOperationDialog }
+procedure TfRuinsTalk.ShowDominionWarOperationDialog(Action: Cardinal);
 begin
   if not CheckDominionServiceStanding(1, LocalizedColorText('FormRuins.CB.WarPlans.WarOperation.CBRefusePrefix'), 0) then
   begin
@@ -7150,10 +7178,10 @@ begin
   else AddChoice('- ' + FormatText1(LocalizedColorText('FormRuins.CB.WarPlans.WarOperation.PlayerOk'), TextHighlightColorTag, '<Money>', IntToStr(StationServiceQuoteCost)), 0, ScriptDialogBlockCallback);
   AddChoice('- ' + LocalizedColorText('FormRuins.CB.WarPlans.WarOperation.PlayerNo'), 0, DeclineDominionWarOperation);
 end;
-{ @end $5D9DEC }
+{ @end $5888BC }
 
-{ @routine $5DA21C TfRuinsTalk_AcceptDominionWarOperation }
-procedure TfRuinsTalk.AcceptDominionWarOperation(Action: Integer);
+{ @routine $588CD8 TfRuinsTalk_AcceptDominionWarOperation }
+procedure TfRuinsTalk.AcceptDominionWarOperation(Action: Cardinal);
 var
   Names: WideString;
   I, J, K, Available, BestAvailable, Total, BestTotal: Integer;
@@ -7216,7 +7244,7 @@ begin
     while BestAvailable > 0 do
       for J := 1 to Galaxy.Stars.Count - 1 do
       begin
-        Origin := Target.StarDistances[J].Star;
+        Origin := TStar(Target.StarDistances[J].Star);
         if (Origin.ControlFaction = sfPirates) and (Origin.Status.CustomFaction = '') and (Origin.Battle = 0) and
           (Origin.CountForcesByOwnerGroups(Strength, True, True, False, False) <= 0) then
           for K := 0 to Origin.Ships.Count - 1 do
@@ -7226,14 +7254,14 @@ begin
               if not ((Ship.GetFuelTanks = nil) or (Ship.GetEngine = nil) or
                 (PointDistance(Origin.Position, Target.Position) > Min(Ship.GetFuelTanks.Capacity, Ship.GetEngine.JumpRange) + 10)) then
                 if not Ship.OrderAbsolute and (Ship.AbsoluteScriptOrder = 0) and not Ship.IsOutsideStarSpace and (Ship.ScriptShip = nil) then
-                if NextRandomIntRange(1, 10, GetPlayer.DockedTo.RandomState) < 3 then
-                begin
-                  Ship.OrderJump(Target, True);
-                  TPirate(Ship).RaidPressure := TPirate(Ship).RaidPressure + 10;
-                  if Names = '' then Names := Ship.GetFullName(' ')
-                  else Names := Names + #13#10 + Ship.GetFullName(' ');
-                  Dec(BestAvailable);
-                end;
+                  if NextRandomIntRange(1, 10, GetPlayer.DockedTo.RandomState) < 3 then
+                  begin
+                    Ship.OrderJump(Target, True);
+                    TPirate(Ship).RaidPressure := TPirate(Ship).RaidPressure + 10;
+                    if Names = '' then Names := Ship.GetFullName(' ')
+                    else Names := Names + #13#10 + Ship.GetFullName(' ');
+                    Dec(BestAvailable);
+                  end;
           end;
       end;
     Event := AddGalaxyEvent('PlayerOrdersPirateRaid');
@@ -7247,18 +7275,18 @@ begin
     M_Main(True);
   end;
 end;
-{ @end $5DA21C }
+{ @end $588CD8 }
 
-{ @routine $5DAC00 TfRuinsTalk_DeclineDominionWarOperation }
-procedure TfRuinsTalk.DeclineDominionWarOperation(Action: Integer);
+{ @routine $5895CC TfRuinsTalk_DeclineDominionWarOperation }
+procedure TfRuinsTalk.DeclineDominionWarOperation(Action: Cardinal);
 begin
   DialogText := LocalizedColorText('FormRuins.CB.WarPlans.WarOperation.CBAfterNo');
   BuildDominionWarOptions;
 end;
-{ @end $5DAC00 }
+{ @end $5895CC }
 
-{ @routine $5DACC8 TfRuinsTalk_ShowDominionAmbushDialog }
-procedure TfRuinsTalk.ShowDominionAmbushDialog(Action: Integer);
+{ @routine $589688 TfRuinsTalk_ShowDominionAmbushDialog }
+procedure TfRuinsTalk.ShowDominionAmbushDialog(Action: Cardinal);
 var
   I, Count, Turn: Integer;
   Star, Target: TStar;
@@ -7290,16 +7318,15 @@ begin
     Group := Galaxy.LiberationGroups[I];
     if (Group = nil) or (Group.Ships.Count <= 0) then Continue;
     Entry := Group.Route[Length(Group.Route) - 1];
-    if Entry.Kind = soJump then
+    if Entry.Kind <> soJump then Continue;
+    Star := TStar(Entry.Target);
+    if Star = nil then Continue;
+    if not Star.IsConstellationVisible then Continue;
+    if (Star.ControlFaction = sfCoalition) and (Star.Status.CustomFaction = '') then Continue;
+    if (Group.Route[2].WaitUntilTurn < Turn) or (Target = nil) then
     begin
-      Star := TStar(Entry.Target);
-      if Star = nil then Continue;
-      if Star.IsConstellationVisible and ((Star.ControlFaction <> sfCoalition) or (Star.Status.CustomFaction <> '')) and
-        ((Group.Route[2].WaitUntilTurn < Turn) or (Target = nil)) then
-      begin
-        Target := Star;
-        Turn := Group.Route[2].WaitUntilTurn;
-      end;
+      Target := Star;
+      Turn := Group.Route[2].WaitUntilTurn;
     end;
   end;
   Base := Galaxy.FindMilitaryBaseInTransit;
@@ -7368,10 +7395,10 @@ begin
   else AddChoice('- ' + LocalizedColorText('FormRuins.CB.WarPlans.Ambush.Confirm'), 0, ScriptDialogBlockCallback);
   AddChoice('- ' + LocalizedColorText('FormRuins.CB.WarPlans.Ambush.Refuse'), 0, DeclineDominionAmbush);
 end;
-{ @end $5DACC8 }
+{ @end $589688 }
 
-{ @routine $5DB720 TfRuinsTalk_AcceptDominionAmbush }
-procedure TfRuinsTalk.AcceptDominionAmbush(Action: Integer);
+{ @routine $58A044 TfRuinsTalk_AcceptDominionAmbush }
+procedure TfRuinsTalk.AcceptDominionAmbush(Action: Cardinal);
 var
   Star: TStar;
   Event: TGalaxyEvent;
@@ -7391,18 +7418,18 @@ begin
   else TRuins(GetPlayer.DockedTo).FlyDate := Galaxy.CurrentTurn + 16;
   M_Main(True);
 end;
-{ @end $5DB720 }
+{ @end $58A044 }
 
-{ @routine $5DB998 TfRuinsTalk_DeclineDominionAmbush }
-procedure TfRuinsTalk.DeclineDominionAmbush(Action: Integer);
+{ @routine $58A2A0 TfRuinsTalk_DeclineDominionAmbush }
+procedure TfRuinsTalk.DeclineDominionAmbush(Action: Cardinal);
 begin
   DialogText := LocalizedColorText('FormRuins.CB.WarPlans.Ambush.CBAfterRefuse');
   BuildDominionWarOptions;
 end;
-{ @end $5DB998 }
+{ @end $58A2A0 }
 
-{ @routine $5DBA5C TfRuinsTalk_ShowDominionAssaultDialog }
-procedure TfRuinsTalk.ShowDominionAssaultDialog(Action: Integer);
+{ @routine $58A358 TfRuinsTalk_ShowDominionAssaultDialog }
+procedure TfRuinsTalk.ShowDominionAssaultDialog(Action: Cardinal);
 var
   I, Count, Index, First, Last, Cost: Integer;
   Star: TStar;
@@ -7446,25 +7473,28 @@ begin
   Index := SeededRandomIntRange(First, Last, GetPlayer.DockedTo.Seed + Galaxy.GenerationSeed + Galaxy.CurrentTurn div 60 + 1141);
   Constellations := TList.Create;
   for I := 1 to Galaxy.Stars.Count - 1 do
-    if not GetPlayer.NoJump then
-    begin
-      IncrementWrapped(Index, First, Last);
-      Star := TObject(GetPlayer.CurrentStar.StarDistances[Index].Star) as TStar;
-      if not Star.NoComeKling and (Constellations.IndexOf(Star.Constellation) < 0) then
-        if (SeededRandomUnitFloat(GetPlayer.DockedTo.Seed + Star.GenerationSeed + Galaxy.CurrentTurn div 60 + 1387) >= 0.8) and
-          (Star.Constellation.Id <> 20) and (Star.Constellation.ShipTypeCounts[rstDominion] <= 0) and
-          (Star.Dominion = nil) and (Star.ControlFaction = Faction) and
-          (Star.Status.CustomFaction = '') and (GetPlayer.DockedTo.CurrentStar <> Star) and Star.IsConstellationVisible then
-        begin
-          Inc(Count);
-          Cost := ApplyRecentDominionOrderSurcharge(GetDominionRelocationCost(Star) * 2.5);
-          if GetPlayer.Money < Cost then
-            AddChoice('- ' + FormatText2(LocalizedColorText('FormRuins.CB.WarPlans.Assault.ToStar'), TextHighlightColorTag, '<ToStar>', Star.Name, '<Money>', IntToStr(StationServiceQuoteCost)), 0, ScriptDialogBlockCallback)
-          else AddChoice('- ' + FormatText2(LocalizedColorText('FormRuins.CB.WarPlans.Assault.ToStar'), TextHighlightColorTag, '<ToStar>', Star.Name, '<Cost>', IntToStr(Cost)), Integer(Star), AcceptDominionAssault);
-          // Native disabled choice uses the shared quote and <Money>, unlike the enabled choice.
-          Constellations.Add(Star.Constellation);
-        end;
-    end;
+  begin
+    if GetPlayer.NoJump then Continue;
+    IncrementWrapped(Index, First, Last);
+    Star := GetPlayer.CurrentStar.StarDistances[Index].Star as TStar;
+    if Star.NoComeKling then Continue;
+    if Constellations.IndexOf(Star.Constellation) >= 0 then Continue;
+    if SeededRandomUnitFloat(GetPlayer.DockedTo.Seed + Star.GenerationSeed + Galaxy.CurrentTurn div 60 + 1387) < 0.8 then Continue;
+    if Star.Constellation.Id = 20 then Continue;
+    if not ((Star.Constellation.ShipTypeCounts[rstDominion] <= 0) and
+      (Star.Dominion = nil)) then Continue;
+    if not ((Star.ControlFaction = Faction) and
+      (Star.Status.CustomFaction = '')) then Continue;
+    if GetPlayer.DockedTo.CurrentStar = Star then Continue;
+    if not (Star.IsConstellationVisible) then Continue;
+    Inc(Count);
+    Cost := ApplyRecentDominionOrderSurcharge(GetDominionRelocationCost(Star) * 2.5);
+    if Cost > GetPlayer.Money then
+      AddChoice('- ' + FormatText2(LocalizedColorText('FormRuins.CB.WarPlans.Assault.ToStar'), TextHighlightColorTag, '<ToStar>', Star.Name, '<Money>', IntToStr(StationServiceQuoteCost)), 0, ScriptDialogBlockCallback)
+    else AddChoice('- ' + FormatText2(LocalizedColorText('FormRuins.CB.WarPlans.Assault.ToStar'), TextHighlightColorTag, '<ToStar>', Star.Name, '<Cost>', IntToStr(Cost)), Integer(Star), AcceptDominionAssault);
+    // Native disabled choice uses the shared quote and <Money>, unlike the enabled choice.
+    Constellations.Add(Star.Constellation);
+  end;
   Constellations.Free;
   if Count <= 0 then
   begin
@@ -7477,10 +7507,10 @@ begin
     AddChoice('- ' + LocalizedColorText('FormRuins.CB.WarPlans.Assault.Refuse'), 0, DeclineDominionAssault);
   end;
 end;
-{ @end $5DBA5C }
+{ @end $58A358 }
 
-{ @routine $5DC1A4 TfRuinsTalk_AcceptDominionAssault }
-procedure TfRuinsTalk.AcceptDominionAssault(Action: Integer);
+{ @routine $58AA50 TfRuinsTalk_AcceptDominionAssault }
+procedure TfRuinsTalk.AcceptDominionAssault(Action: Cardinal);
 var
   Star: TStar;
 begin
@@ -7495,27 +7525,27 @@ begin
   TRuins(GetPlayer.DockedTo).FlyDate := Galaxy.CurrentTurn + 12;
   M_Main(True);
 end;
-{ @end $5DC1A4 }
+{ @end $58AA50 }
 
-{ @routine $5DC3A4 TfRuinsTalk_DeclineDominionAssault }
-procedure TfRuinsTalk.DeclineDominionAssault(Action: Integer);
+{ @routine $58AC40 TfRuinsTalk_DeclineDominionAssault }
+procedure TfRuinsTalk.DeclineDominionAssault(Action: Cardinal);
 begin
   DialogText := LocalizedColorText('FormRuins.CB.WarPlans.Assault.CBAfterRefuse');
   BuildDominionWarOptions;
 end;
-{ @end $5DC3A4 }
+{ @end $58AC40 }
 
-{ @routine $5DC468 TfRuinsTalk_ExecuteUiCode }
+{ @routine $58ACF8 TfRuinsTalk_ExecuteUiCode }
 procedure TfRuinsTalk.ExecuteUiCode(Block: TBlockParEC; Key: Cardinal);
 begin
   if not MainPanel.NavigationLocked and not ExitScreenLoop and
-     (TurnCalculationPhase in [tcpIdle, tcpGalaxyFinished, tcpPlayerStarFinished, tcpPlayerStarPrepared]) then
+    (TurnCalculationPhase in [tcpIdle, tcpGalaxyFinished, tcpPlayerStarFinished, tcpPlayerStarPrepared]) then
   begin
     Galaxy.CheckIntegrityChecksum(10009);
     ExecuteGameplayUiCode(Block, Key);
     Galaxy.PrimeIntegrityChecksum(20009);
   end;
 end;
-{ @end $5DC468 }
+{ @end $58ACF8 }
 
 end.

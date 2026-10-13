@@ -1,7 +1,4 @@
 unit ab_Global;
-// Native math contribution: $4EC5A4..$4EE157.
-// Native PACKAGEINFO visits ab_Global from the arcade geometry family.
-// Shared globals retain direct accesses.
 
 interface
 
@@ -10,8 +7,8 @@ uses EC_Struct, SE_Process, EC_Buf, Types;
 const
   ArcadeTickMs = 20;
 
-  // BonusTicks order from TabShip.ApplyDamage ($5028E4), UpdateState ($5032E0)
-  // and Advance ($50361C); shared with map bonus flags and pickup handling.
+  // BonusTicks order from TabShip.ApplyDamage ($65FF7C), UpdateState ($6606DC)
+  // and Advance ($66095C); shared with map bonus flags and pickup handling.
   abkRegeneration = 0;
   abkSpeed = 1;
   abkSlow = 2;
@@ -41,129 +38,130 @@ type
     Distance: Double; // @offset 0x08
   end;
 
-function MakeSphericalBearingState(LongitudeDegrees, PolarAngleDegrees, BearingDegrees: Double): TSphericalBearingState; // @addr 0x4EC5A4 @ida "void __userpurge $name(TSphericalBearingState *Result@<eax>, double LongitudeDegrees@<^16>, double PolarAngleDegrees@<^8>, double BearingDegrees@<^0>);"
-function SphericalToVector3D(LongitudeRadians, PolarAngleRadians, Radius: Double): TVector3D; // @addr 0x4EC5DC @ida "void __userpurge $name(TVector3D *Result@<eax>, double LongitudeRadians@<^16>, double PolarAngleRadians@<^8>, double Radius@<^0>);"
-procedure VectorToSphericalAngles(Vector: TVector3D; var LongitudeDegrees, PolarAngleDegrees: Double); // @addr 0x4EC664 @note "Requires a nonzero vector."
-procedure AdvanceSphericalBearingState(var LongitudeDegrees, PolarAngleDegrees, BearingDegrees: Double; SphereRadius, ArcDistance: Double); // @addr 0x4EC71C @note "Negative distance moves backward. Longitude and bearing pass through Single precision when wrapped."
-function AdvanceSphericalStateOnCurrentSphere(Source: TSphericalBearingState; ArcDistance: Double): TSphericalBearingState; // @addr 0x4ECB08 @ida "void __userpurge $name(TSphericalBearingState *Source@<eax>, TSphericalBearingState *Result@<edx>, double ArcDistance@<^0>);"
-function AdvanceSphericalStateAlongBearing(Source: TSphericalBearingState; TravelBearingDegrees, ArcDistance: Double): TSphericalBearingState; // @addr 0x4ECB5C @ida "void __userpurge $name(TSphericalBearingState *Source@<eax>, TSphericalBearingState *Result@<edx>, double TravelBearingDegrees@<^8>, double ArcDistance@<^0>);" @note "Uses the current sphere radius; preserves the body's bearing relative to travel."
-function AdvanceSphericalStateAndTravelBearing(Source: TSphericalBearingState; var TravelBearingDegrees: Double; ArcDistance: Double): TSphericalBearingState; // @addr 0x4ECBE0 @ida "void __userpurge $name(TSphericalBearingState *Source@<eax>, double *TravelBearingDegrees@<edx>, TSphericalBearingState *Result@<ecx>, double ArcDistance@<^0>);" @note "Uses the current sphere radius; updates travel bearing and preserves the body's bearing relative to it."
-procedure ComputeSphericalBearingAndDistance(var BearingDeltaDegrees, Distance: Double; SourceLongitudeDegrees, SourcePolarAngleDegrees, SourceBearingDegrees, TargetLongitudeDegrees, TargetPolarAngleDegrees, SphereRadius: Double); // @addr 0x4ECC6C @note "Bearing is relative to SourceBearingDegrees; coincident points return zero bearing delta and distance."
-procedure ComputeSphericalDistance(var Distance: Double; SourceLongitudeDegrees, SourcePolarAngleDegrees, UnusedSourceBearingDegrees, TargetLongitudeDegrees, TargetPolarAngleDegrees, SphereRadius: Double); // @addr 0x4ECEFC
-function GetSphericalBearingAndDistance(Source, Target: TSphericalBearingState): TSphericalBearingDistance; // @addr 0x4ED04C @note "Uses the current sphere radius; ignores Target.BearingDegrees."
-procedure UpdateSphereProjectionMetrics; // @addr 0x4ED0B4 @note "Uses the shared sphere radius, camera distance, field of view and projection scale."
-function IsDepthBeforeSphereHorizon(ProjectedDepth: Double): Boolean; // @addr 0x4ED3C0 @note "Compares against the horizon depth set by UpdateSphereProjectionMetrics."
+function MakeSphericalBearingState(LongitudeDegrees, PolarAngleDegrees, BearingDegrees: Double): TSphericalBearingState; // @addr 0x004E7140 @ida "void __userpurge $name(TSphericalBearingState *Result@<eax>, double LongitudeDegrees@<^16>, double PolarAngleDegrees@<^8>, double BearingDegrees@<^0>);"
+function SphericalToVector3D(LongitudeRadians, PolarAngleRadians, Radius: Double): TVector3D; // @addr 0x004E716C @ida "void __userpurge $name(TVector3D *Result@<eax>, double LongitudeRadians@<^16>, double PolarAngleRadians@<^8>, double Radius@<^0>);"
+procedure VectorToSphericalAngles(Vector: TVector3D; var LongitudeDegrees, PolarAngleDegrees: Double); // @addr 0x004E71EC @note "Requires a nonzero vector."
+procedure AdvanceSphericalBearingState(var LongitudeDegrees, PolarAngleDegrees, BearingDegrees: Double; SphereRadius, ArcDistance: Double); // @addr 0x004E72A8 @note "Negative distance moves backward. Longitude and bearing pass through Single precision when wrapped."
+function AdvanceSphericalStateOnCurrentSphere(Source: TSphericalBearingState; ArcDistance: Double): TSphericalBearingState; // @addr 0x004E7658 @ida "void __userpurge $name(TSphericalBearingState *Source@<eax>, TSphericalBearingState *Result@<edx>, double ArcDistance@<^0>);"
+function AdvanceSphericalStateAlongBearing(Source: TSphericalBearingState; TravelBearingDegrees, ArcDistance: Double): TSphericalBearingState; // @addr 0x004E76A0 @ida "void __userpurge $name(TSphericalBearingState *Source@<eax>, TSphericalBearingState *Result@<edx>, double TravelBearingDegrees@<^8>, double ArcDistance@<^0>);" @note "Uses the current sphere radius; preserves the body's bearing relative to travel."
+function AdvanceSphericalStateAndTravelBearing(Source: TSphericalBearingState; var TravelBearingDegrees: Double; ArcDistance: Double): TSphericalBearingState; // @addr 0x004E7718 @ida "void __userpurge $name(TSphericalBearingState *Source@<eax>, double *TravelBearingDegrees@<edx>, TSphericalBearingState *Result@<ecx>, double ArcDistance@<^0>);" @note "Uses the current sphere radius; updates travel bearing and preserves the body's bearing relative to it."
+procedure ComputeSphericalBearingAndDistance(SourceLongitudeDegrees, SourcePolarAngleDegrees, SourceBearingDegrees, TargetLongitudeDegrees, TargetPolarAngleDegrees, SphereRadius: Double; var BearingDeltaDegrees, Distance: Double); // @addr 0x004E7794 @note "Bearing is relative to SourceBearingDegrees; coincident points return zero bearing delta and distance."
+procedure ComputeSphericalDistance(var Distance: Double; SourceLongitudeDegrees, SourcePolarAngleDegrees, UnusedSourceBearingDegrees, TargetLongitudeDegrees, TargetPolarAngleDegrees, SphereRadius: Double); // @addr 0x004E7A1C
+function GetSphericalBearingAndDistance(Source, Target: TSphericalBearingState): TSphericalBearingDistance; // @addr 0x004E7B68 @note "Uses the current sphere radius; ignores Target.BearingDegrees."
+procedure UpdateSphereProjectionMetrics; // @addr 0x004E7BD0 @note "Uses the shared sphere radius, camera distance, field of view and projection scale."
+function IsDepthBeforeSphereHorizon(ProjectedDepth: Double): Boolean; // @addr 0x004E7EEC @note "Compares against the horizon depth set by UpdateSphereProjectionMetrics."
 
-function NormalizeVector3D(const Source: TVector3D): TVector3D; // @addr 0x4ED3E0 @ida "void __usercall $name(const TVector3D *Source@<eax>, TVector3D *Result@<edx>);" @note "Requires a nonzero vector."
-function CrossProduct3D(const A, B: TVector3D): TVector3D; // @addr 0x4ED460 @ida "void __usercall $name(const TVector3D *A@<eax>, const TVector3D *B@<edx>, TVector3D *Result@<ecx>);"
-function DotProduct3D(const A, B: TVector3D): Double; // @addr 0x4ED4D4 @ida "double __usercall $name@<st0>(const TVector3D *A@<eax>, const TVector3D *B@<edx>);"
+function NormalizeVector3D(const Source: TVector3D): TVector3D; // @addr 0x004E7F04 @ida "void __usercall $name(const TVector3D *Source@<eax>, TVector3D *Result@<edx>);" @note "Requires a nonzero vector."
+function CrossProduct3D(const A, B: TVector3D): TVector3D; // @addr 0x004E7F5C @ida "void __usercall $name(const TVector3D *A@<eax>, const TVector3D *B@<edx>, TVector3D *Result@<ecx>);"
+function DotProduct3D(const A, B: TVector3D): Double; // @addr 0x004E7F90 @ida "double __usercall $name@<st0>(const TVector3D *A@<eax>, const TVector3D *B@<edx>);"
 
-procedure ClearMatrix4D(var Matrix: TMatrix4D); // @addr 0x4ED514
-procedure SetIdentityMatrix4D(var Matrix: TMatrix4D); // @addr 0x4ED558
-function BuildZAxisRotationMatrix(AngleRadians: Double): TMatrix4D; // @addr 0x4ED624 @ida "void __userpurge $name(TMatrix4D *Result@<eax>, double AngleRadians@<^0>);" @note "Rotates clockwise in the XY plane for positive angles."
-function BuildPerspectiveProjectionMatrix(NearPlane, FarPlane, FovRadians, ProjectionScale: Double): TMatrix4D; // @addr 0x4ED69C @ida "void __userpurge $name(TMatrix4D *Result@<eax>, double NearPlane@<^24>, double FarPlane@<^16>, double FovRadians@<^8>, double ProjectionScale@<^0>);" @note "Uses the same scale for X and Y; projects NearPlane to depth 0 and FarPlane to depth 1."
-function BuildLookAtMatrix(const CameraPos, TargetPos, UpVector: TVector3D): TMatrix4D; // @addr 0x4ED748 @ida "void __userpurge $name(const TVector3D *CameraPos@<eax>, const TVector3D *TargetPos@<edx>, const TVector3D *UpVector@<ecx>, TMatrix4D *Result@<^0>);" @note "CameraPos must differ from TargetPos; UpVector must not be parallel to the viewing direction."
-function InvertMatrix4D(const Matrix: TMatrix4D): TMatrix4D; // @addr 0x4EDD68 @ida "void __usercall $name(const TMatrix4D *Matrix@<eax>, TMatrix4D *Result@<edx>);" @note "Does not report singularity; zero pivots are replaced by 1e-20."
-function MultiplyMatrix4D(const Left, Right: TMatrix4D): TMatrix4D; // @addr 0x4EDE1C @ida "void __usercall $name(const TMatrix4D *Left@<eax>, const TMatrix4D *Right@<edx>, TMatrix4D *Result@<ecx>);"
-function ProjectPointByMatrix(const Matrix: TMatrix4D; const Source: TVector3D): TVector3D; // @addr 0x4EDEAC @ida "void __usercall $name(const TMatrix4D *Matrix@<eax>, const TVector3D *Source@<edx>, TVector3D *Result@<ecx>);" @note "Includes perspective division; homogeneous W must be nonzero."
-function TryIntersectRayWithSphere(RayOrigin, RayPointOnRay, SphereCenter: TVector3D; SphereRadius: Double; var HitPoint: TVector3D): Boolean; // @addr 0x4EDF2C @note "Ray points must differ. Rejects tangency. May write HitPoint on false; true requires forward distance greater than 0.001."
+procedure ClearMatrix4D(var Matrix: TMatrix4D); // @addr 0x004E7FB4
+procedure SetIdentityMatrix4D(var Matrix: TMatrix4D); // @addr 0x004E7FDC
+function BuildZAxisRotationMatrix(AngleRadians: Double): TMatrix4D; // @addr 0x004E806C @ida "void __userpurge $name(TMatrix4D *Result@<eax>, double AngleRadians@<^0>);" @note "Rotates clockwise in the XY plane for positive angles."
+function BuildPerspectiveProjectionMatrix(NearPlane, FarPlane, FovRadians, ProjectionScale: Double): TMatrix4D; // @addr 0x004E80D8 @ida "void __userpurge $name(TMatrix4D *Result@<eax>, double NearPlane@<^24>, double FarPlane@<^16>, double FovRadians@<^8>, double ProjectionScale@<^0>);" @note "Uses the same scale for X and Y; projects NearPlane to depth 0 and FarPlane to depth 1."
+function BuildLookAtMatrix(const CameraPos, TargetPos, UpVector: TVector3D): TMatrix4D; // @addr 0x004E8174 @ida "void __userpurge $name(const TVector3D *CameraPos@<eax>, const TVector3D *TargetPos@<edx>, const TVector3D *UpVector@<ecx>, TMatrix4D *Result@<^0>);" @note "CameraPos must differ from TargetPos; UpVector must not be parallel to the viewing direction."
+function InvertMatrix4D(const Matrix: TMatrix4D): TMatrix4D; // @addr 0x004E86D4 @ida "void __usercall $name(const TMatrix4D *Matrix@<eax>, TMatrix4D *Result@<edx>);" @note "Does not report singularity; zero pivots are replaced by 1e-20."
+function MultiplyMatrix4D(const Left, Right: TMatrix4D): TMatrix4D; // @addr 0x004E8778 @ida "void __usercall $name(const TMatrix4D *Left@<eax>, const TMatrix4D *Right@<edx>, TMatrix4D *Result@<ecx>);"
+function ProjectPointByMatrix(const Matrix: TMatrix4D; const Source: TVector3D): TVector3D; // @addr 0x004E87F8 @ida "void __usercall $name(const TMatrix4D *Matrix@<eax>, const TVector3D *Source@<edx>, TVector3D *Result@<ecx>);" @note "Includes perspective division; homogeneous W must be nonzero."
+function TryIntersectRayWithSphere(RayOrigin, RayPointOnRay, SphereCenter: TVector3D; SphereRadius: Double; var HitPoint: TVector3D): Boolean; // @addr 0x004E8878 @note "Ray points must differ. Rejects tangency. May write HitPoint on false; true requires forward distance greater than 0.001."
 
 var
-  ArcadeViewMode: Byte = 0; // @addr $87AB4C Shared camera/transition state; native TfAB accesses it through an external reference cell. Original unit unresolved.
-  ArcadeSpaceProcess: TProcessSE = nil; // @addr $87AB50 Shared scene process; native TfAB accesses it through external reference $883D3C. Original unit unresolved.
+  ArcadeViewMode: Byte = 0; // @addr $80E788 Shared camera/transition state; native TfAB accesses it through an external reference cell. Original unit unresolved.
+  ArcadeSpaceProcess: TProcessSE = nil; // @addr $80E78C Shared scene process; original unit unresolved.
 var
-  ArcadeTickCount: Integer; // @addr $88A240
-  ArcadeFrameCount: Integer; // @addr $88A244
-  ArcadeMapVersion: Cardinal; // @addr $88A248 Second dword of the native abwm map header.
-var
-
-  SphereViewState: TSphericalBearingState; // @addr $88A24C Shared view state via $883CAC; original data ownership unresolved.
-  SphereViewMatrix: TMatrix4D; // @addr $88A264
-  SpherePerspectiveMatrix: TMatrix4D; // @addr $88A2E4
-  SphereProjectionMatrix: TMatrix4D; // @addr $88A364 Shared projection matrix via reference cell $883638; original data ownership unresolved.
-var
-  ArcadeMapViewPosition: TPoint; // @addr $88A3E4
-  ArcadeMapCenter: TPoint; // @addr $88A3EC
-  ArcadeMapBounds: TRect; // @addr $88A3F4
-  ArcadeGridMode: Integer; // @addr $88A404
-  ArcadeMapColorBuffer: TBufEC; // @addr $88A408 Loaded by the arcade map reader; stop lines and triangles borrow color pointers into Data.
-  ArcadeAutopilotEnabled: Boolean; // @addr $88A40C
-  ArcadeEnemiesDefeated: Boolean; // @addr $88A40D
-  ArcadeLastInputTick: Integer; // @addr $88A410
+  ArcadeTickCount: Integer; // @addr $81AE14
+  ArcadeFrameCount: Integer; // @addr $81AE18
+  ArcadeMapVersion: Cardinal; // @addr $81AE1C Second dword of the native abwm map header.
 var
 
-  SphereRadius: Double = 1000; // @addr $87AB54
-  SphereCameraDistance: Double = 2300; // @addr $87AB5C
-  SphereNearCameraOffset: Double = 1300; // @addr $87AB64
-  SphereFarCameraOffset: Double = 20000; // @addr $87AB6C
-  SphereFieldOfView: Double = 88; // @addr $87AB74
-  CameraFollowStep: Double = 14; // @addr $87AB7C Maximum camera travel per tick; doubled for Keller dialogue framing.
-  CameraLookAheadDistance: Double = 0; // @addr $87AB84 Forward offset from the player when following.
-  PlayerDriftTurnStep: Single = 1.8; // @addr $87AB8C
-  PlayerInitialTurnSpeed: Single = 3.3; // @addr $87AB90 Set on the player ship during TfAB.OnOpen.
-  PlayerFastTurnSpeed: Single = 2.5; // @addr $87AB94
+  SphereViewState: TSphericalBearingState; // @addr $81AE20 Shared view state; original data ownership unresolved.
+  SphereViewMatrix: TMatrix4D; // @addr $81AE38
+  SpherePerspectiveMatrix: TMatrix4D; // @addr $81AEB8
+  SphereProjectionMatrix: TMatrix4D; // @addr $81AF38 Shared projection matrix; original data ownership unresolved.
+var
+  ArcadeMapViewPosition: TPoint; // @addr $81AFB8
+  ArcadeMapCenter: TPoint; // @addr $81AFC0
+  ArcadeMapBounds: TRect; // @addr $81AFC8
+  ArcadeGridMode: Integer; // @addr $81AFD8
+  ArcadeMapColorBuffer: TBufEC; // @addr $81AFDC Loaded by the arcade map reader; stop lines and triangles borrow color pointers into Data.
+  ArcadeAutopilotEnabled: Boolean; // @addr $81AFE0
+  ArcadeEnemiesDefeated: Boolean; // @addr $81AFE1
+  ArcadeLastInputTick: Integer; // @addr $81AFE4
+var
 
-  PlayerSlowTurnSpeed: Single = 3.8; // @addr $87AB98
-  SphereLowSpeedDrag: Single = 0.007; // @addr $87AB9C
-  SphereHighSpeedDrag: Single = 0.18; // @addr $87ABA0
-  ArcadeMapNodeRadius: Integer = 60; // @addr $87ABA4
-  ArcadeMapPanMargin: Integer = 200; // @addr $87ABA8
-  ArcadePathStep: Single = 4; // @addr $87ABAC Heading increment, straight-path spacing and endpoint snap distance.
-  ArcadePathArcStep: Single = 4; // @addr $87ABB0 Initial spacing along turning arcs.
-  SphereProjectedRadius: Single = 1; // @addr $87ABB4
-  SphereNearHorizonDepth: Single = -1; // @addr $87ABB8
-  SphereHorizonDepth: Single = 0; // @addr $87ABBC
-  SphereFarHorizonDepth: Single = 1; // @addr $87ABC0
-  ShipFrontDepth: Single = 20; // @addr $87ABC4
-  ShipBackDepth: Single = 30; // @addr $87ABC8
-  ShipTailFrontDepth: Single = 21; // @addr $87ABCC
-  ShipTailBackDepth: Single = 31; // @addr $87ABD0
-  ItemFrontDepth: Single = 21; // @addr $87ABD4
-  HitFrontDepth: Single = 19; // @addr $87ABD8
-  HitBackDepth: Single = 29; // @addr $87ABDC
-  WorldImageFrontDepth: Single = 22; // @addr $87ABE0
-  WorldImageBackDepth: Single = 28; // @addr $87ABE4
-  ExplosionFrontDepth: Single = 18; // @addr $87ABE8
-  ExplosionBackDepth: Single = 28; // @addr $87ABEC
+  SphereRadius: Double = 1000; // @addr $80E790
+  SphereCameraDistance: Double = 2300; // @addr $80E798
+  SphereNearCameraOffset: Double = 1300; // @addr $80E7A0
+  SphereFarCameraOffset: Double = 20000; // @addr $80E7A8
+  SphereFieldOfView: Double = 88; // @addr $80E7B0
+  CameraFollowStep: Double = 14; // @addr $80E7B8 Maximum camera travel per tick; doubled for Keller dialogue framing.
+  CameraLookAheadDistance: Double = 0; // @addr $80E7C0 Forward offset from the player when following.
+  PlayerDriftTurnStep: Single = 1.8; // @addr $80E7C8
+  PlayerInitialTurnSpeed: Single = 3.3; // @addr $80E7CC Set on the player ship during TfAB.OnOpen.
+  PlayerFastTurnSpeed: Single = 2.5; // @addr $80E7D0
+
+  PlayerSlowTurnSpeed: Single = 3.8; // @addr $80E7D4
+  SphereLowSpeedDrag: Single = 0.007; // @addr $80E7D8
+  SphereHighSpeedDrag: Single = 0.18; // @addr $80E7DC
+  ArcadeMapNodeRadius: Integer = 60; // @addr $80E7E0
+  ArcadeMapPanMargin: Integer = 200; // @addr $80E7E4
+  ArcadePathStep: Single = 4; // @addr $80E7E8 Heading increment, straight-path spacing and endpoint snap distance.
+  ArcadePathArcStep: Single = 4; // @addr $80E7EC Initial spacing along turning arcs.
+  SphereProjectedRadius: Single = 1; // @addr $80E7F0
+  SphereNearHorizonDepth: Single = -1; // @addr $80E7F4
+  SphereHorizonDepth: Single = 0; // @addr $80E7F8
+  SphereFarHorizonDepth: Single = 1; // @addr $80E7FC
+  ShipFrontDepth: Single = 20; // @addr $80E800
+  ShipBackDepth: Single = 30; // @addr $80E804
+  ShipTailFrontDepth: Single = 21; // @addr $80E808
+  ShipTailBackDepth: Single = 31; // @addr $80E80C
+  ItemFrontDepth: Single = 21; // @addr $80E810
+  HitFrontDepth: Single = 19; // @addr $80E814
+  HitBackDepth: Single = 29; // @addr $80E818
+  WorldImageFrontDepth: Single = 22; // @addr $80E81C
+  WorldImageBackDepth: Single = 28; // @addr $80E820
+  ExplosionFrontDepth: Single = 18; // @addr $80E824
+  ExplosionBackDepth: Single = 28; // @addr $80E828
   ArcadeMapPalette: array[0..35] of Cardinal = (
     $FF28AC00, $8028AC00, $C028AC00, $0028AC00, $C028AC00, $C0FFFFFF,
     $FF003CFF, $80003CFF, $C0003CFF, $00003CFF, $C0003CFF, $C0FFFFFF,
     $FFFFFF00, $80FFFF00, $C0FFFF00, $00FFFF00, $C0FFFF00, $C0FFFFFF,
     $FFFFA636, $80FFA636, $C0FFA636, $00FFA636, $C0FFA636, $C0FFFFFF,
     $FFC80000, $80C80000, $C0C80000, $00C80000, $C0C80000, $C0FFFFFF,
-    $FFA6002B, $80A6002B, $C0A6002B, $00A6002B, $C0A6002B, $C0FFFFFF); // @addr $87ABF0 Six colors for each of six difficulty appearances.
-  BonusRespawnSeconds: array[0..5] of Integer = (40, 60, 80, 100, 100, 150); // @addr $87AC80
-  BonusDurationSeconds: array[0..7] of Integer = (12, 50, 40, 50, 40, 50, 60, 60); // @addr $87AC98
-  RegenerationHealthPerTick: Integer = 1; // @addr $87ACB8
-  SpeedBonusScale: Single = 1.2; // @addr $87ACBC
-  SpeedPenaltyScale: Single = 0.7; // @addr $87ACC0
-  WeaponDamageBonusScale: Single = 1.5; // @addr $87ACC4
-  AmmoRechargeBonusScale: Single = 2; // @addr $87ACC8
-  ShieldDamageScale: Single = 0.4; // @addr $87ACCC
-  OtherInvisibleAlpha: Single = 0.2; // @addr $87ACD0
-  PlayerInvisibleAlpha: Single = 0.5; // @addr $87ACD4
-  RevealAfterFiringMs: Integer = 5500; // @addr $87ACD8
-  WeaponSwitchDelayMs: Integer = 1200; // @addr $87ACDC
-  ArcadeHighDangerThreshold: Single = 70; // @addr $87ACE0
-  ManualCargoPickupDistance: Single = 200; // @addr $87ACE4
-  CargoPickupDistance: Single = 80; // @addr $87ACE8
+    $FFA6002B, $80A6002B, $C0A6002B, $00A6002B, $C0A6002B, $C0FFFFFF); // @addr $80E82C Six colors for each of six difficulty appearances.
+  BonusRespawnSeconds: array[0..5] of Integer = (40, 60, 80, 100, 100, 150); // @addr $80E8BC
+  BonusDurationSeconds: array[0..7] of Integer = (12, 50, 40, 50, 40, 50, 60, 60); // @addr $80E8D4
+  RegenerationHealthPerTick: Integer = 1; // @addr $80E8F4
+  SpeedBonusScale: Single = 1.2; // @addr $80E8F8
+  SpeedPenaltyScale: Single = 0.7; // @addr $80E8FC
+  WeaponDamageBonusScale: Single = 1.5; // @addr $80E900
+  AmmoRechargeBonusScale: Single = 2; // @addr $80E904
+  ShieldDamageScale: Single = 0.4; // @addr $80E908
+  OtherInvisibleAlpha: Single = 0.2; // @addr $80E90C
+  PlayerInvisibleAlpha: Single = 0.5; // @addr $80E910
+  RevealAfterFiringMs: Integer = 5500; // @addr $80E914
+  WeaponSwitchDelayMs: Integer = 1200; // @addr $80E918
+  ArcadeHighDangerThreshold: Single = 70; // @addr $80E91C
+  ManualCargoPickupDistance: Single = 200; // @addr $80E920
+  CargoPickupDistance: Single = 80; // @addr $80E924
 
 implementation
 
 uses Math, aMyFunction, GR_Main;
 
-{ @routine $4EC5A4 MakeSphericalBearingState }
+{ @routine $4E7140 MakeSphericalBearingState }
 function MakeSphericalBearingState(LongitudeDegrees, PolarAngleDegrees, BearingDegrees: Double): TSphericalBearingState;
 begin
   Result.LongitudeDegrees := LongitudeDegrees;
   Result.PolarAngleDegrees := PolarAngleDegrees;
   Result.BearingDegrees := BearingDegrees;
 end;
-{ @end $4EC5A4 }
+{ @end $4E7140 }
 
-{ @routine $4EC5DC SphericalToVector3D }
+{ @routine $4E716C SphericalToVector3D }
 function SphericalToVector3D(LongitudeRadians, PolarAngleRadians, Radius: Double): TVector3D;
-var V: TVector3D;
+var
+  V: TVector3D;
 begin
   V.X := Sin(PolarAngleRadians) * Radius;
   V.Y := -Cos(PolarAngleRadians) * Radius;
@@ -172,22 +170,24 @@ begin
   Result.Y := V.Y;
   Result.Z := -Cos(LongitudeRadians) * V.X;
 end;
-{ @end $4EC5DC }
+{ @end $4E716C }
 
-{ @routine $4EC664 VectorToSphericalAngles }
+{ @routine $4E71EC VectorToSphericalAngles }
 procedure VectorToSphericalAngles(Vector: TVector3D; var LongitudeDegrees, PolarAngleDegrees: Double);
-var Radius: Double;
+var
+  Radius: Double;
 begin
   Radius := Sqrt(Sqr(Vector.X) + Sqr(Vector.Y) + Sqr(Vector.Z));
   PolarAngleDegrees := RadiansToHeadingDegrees(ArcCos(-Vector.Y / Radius));
   LongitudeDegrees := RadiansToHeadingDegrees(Pi - ArcTan2(Vector.X, Vector.Z));
 end;
-{ @end $4EC664 }
+{ @end $4E71EC }
 
-{ @routine $4EC71C AdvanceSphericalBearingState }
+{ @routine $4E72A8 AdvanceSphericalBearingState }
 procedure AdvanceSphericalBearingState(var LongitudeDegrees, PolarAngleDegrees, BearingDegrees: Double; SphereRadius, ArcDistance: Double);
-var ArcAngle, NewPolar, OldPolar, LongitudeDelta, OldBearing, NewBearing, InvSin, Value: Double;
-    Reverse: Boolean;
+var
+  ArcAngle, NewPolar, OldPolar, LongitudeDelta, OldBearing, NewBearing, InvSin, Value: Double;
+  Reverse: Boolean;
 begin
   if ArcDistance < 0 then
   begin
@@ -223,41 +223,44 @@ begin
   PolarAngleDegrees := RadiansToHeadingDegrees(NewPolar);
   if Reverse then BearingDegrees := WrapHeadingDegrees(BearingDegrees + 180);
 end;
-{ @end $4EC71C }
+{ @end $4E72A8 }
 
-{ @routine $4ECB08 AdvanceSphericalStateOnCurrentSphere }
+{ @routine $4E7658 AdvanceSphericalStateOnCurrentSphere }
 function AdvanceSphericalStateOnCurrentSphere(Source: TSphericalBearingState; ArcDistance: Double): TSphericalBearingState;
 begin
   Result := Source;
   AdvanceSphericalBearingState(Result.LongitudeDegrees, Result.PolarAngleDegrees, Result.BearingDegrees, SphereRadius, ArcDistance);
 end;
-{ @end $4ECB08 }
+{ @end $4E7658 }
 
-{ @routine $4ECB5C AdvanceSphericalStateAlongBearing }
+{ @routine $4E76A0 AdvanceSphericalStateAlongBearing }
 function AdvanceSphericalStateAlongBearing(Source: TSphericalBearingState; TravelBearingDegrees, ArcDistance: Double): TSphericalBearingState;
-var RelativeBearing: Double;
+var
+  RelativeBearing: Double;
 begin
   Result := Source;
   RelativeBearing := HeadingDifferenceDegrees(TravelBearingDegrees, Result.BearingDegrees);
   AdvanceSphericalBearingState(Result.LongitudeDegrees, Result.PolarAngleDegrees, TravelBearingDegrees, SphereRadius, ArcDistance);
   Result.BearingDegrees := WrapHeadingDegrees(TravelBearingDegrees + RelativeBearing);
 end;
-{ @end $4ECB5C }
+{ @end $4E76A0 }
 
-{ @routine $4ECBE0 AdvanceSphericalStateAndTravelBearing }
+{ @routine $4E7718 AdvanceSphericalStateAndTravelBearing }
 function AdvanceSphericalStateAndTravelBearing(Source: TSphericalBearingState; var TravelBearingDegrees: Double; ArcDistance: Double): TSphericalBearingState;
-var RelativeBearing: Double;
+var
+  RelativeBearing: Double;
 begin
   Result := Source;
   RelativeBearing := HeadingDifferenceDegrees(TravelBearingDegrees, Result.BearingDegrees);
   AdvanceSphericalBearingState(Result.LongitudeDegrees, Result.PolarAngleDegrees, TravelBearingDegrees, SphereRadius, ArcDistance);
   Result.BearingDegrees := WrapHeadingDegrees(TravelBearingDegrees + RelativeBearing);
 end;
-{ @end $4ECBE0 }
+{ @end $4E7718 }
 
-{ @routine $4ECC6C ComputeSphericalBearingAndDistance }
-procedure ComputeSphericalBearingAndDistance(var BearingDeltaDegrees, Distance: Double; SourceLongitudeDegrees, SourcePolarAngleDegrees, SourceBearingDegrees, TargetLongitudeDegrees, TargetPolarAngleDegrees, SphereRadius: Double);
-var ArcAngle, TargetPolar, SourcePolar, LongitudeDelta, Bearing, Value: Double;
+{ @routine $4E7794 ComputeSphericalBearingAndDistance }
+procedure ComputeSphericalBearingAndDistance(SourceLongitudeDegrees, SourcePolarAngleDegrees, SourceBearingDegrees, TargetLongitudeDegrees, TargetPolarAngleDegrees, SphereRadius: Double; var BearingDeltaDegrees, Distance: Double);
+var
+  ArcAngle, TargetPolar, SourcePolar, LongitudeDelta, Bearing, Value: Double;
 begin
   TargetPolar := HeadingDegreesToRadians(TargetPolarAngleDegrees);
   SourcePolar := HeadingDegreesToRadians(SourcePolarAngleDegrees);
@@ -279,11 +282,12 @@ begin
   if HeadingDifferenceDegrees(SourceLongitudeDegrees, TargetLongitudeDegrees) < 0 then Bearing := -Bearing;
   BearingDeltaDegrees := HeadingDifferenceDegrees(SourceBearingDegrees, RadiansToHeadingDegrees(Bearing));
 end;
-{ @end $4ECC6C }
+{ @end $4E7794 }
 
-{ @routine $4ECEFC ComputeSphericalDistance }
+{ @routine $4E7A1C ComputeSphericalDistance }
 procedure ComputeSphericalDistance(var Distance: Double; SourceLongitudeDegrees, SourcePolarAngleDegrees, UnusedSourceBearingDegrees, TargetLongitudeDegrees, TargetPolarAngleDegrees, SphereRadius: Double);
-var ArcAngle, TargetPolar, SourcePolar, LongitudeDelta, Value: Double;
+var
+  ArcAngle, TargetPolar, SourcePolar, LongitudeDelta, Value: Double;
 begin
   TargetPolar := HeadingDegreesToRadians(TargetPolarAngleDegrees);
   SourcePolar := HeadingDegreesToRadians(SourcePolarAngleDegrees);
@@ -294,29 +298,29 @@ begin
   ArcAngle := ArcCos(Value);
   Distance := ArcAngle / (2 * Pi) * 2 * Pi * SphereRadius;
 end;
-{ @end $4ECEFC }
+{ @end $4E7A1C }
 
-{ @routine $4ED04C GetSphericalBearingAndDistance }
+{ @routine $4E7B68 GetSphericalBearingAndDistance }
 function GetSphericalBearingAndDistance(Source, Target: TSphericalBearingState): TSphericalBearingDistance;
 begin
-  ComputeSphericalBearingAndDistance(Result.BearingDeltaDegrees, Result.Distance,
-    Source.LongitudeDegrees, Source.PolarAngleDegrees, Source.BearingDegrees,
-    Target.LongitudeDegrees, Target.PolarAngleDegrees, SphereRadius);
+  ComputeSphericalBearingAndDistance(Source.LongitudeDegrees, Source.PolarAngleDegrees, Source.BearingDegrees,
+    Target.LongitudeDegrees, Target.PolarAngleDegrees, SphereRadius, Result.BearingDeltaDegrees, Result.Distance);
 end;
-{ @end $4ED04C }
+{ @end $4E7B68 }
 
-{ @routine $4ED0B4 UpdateSphereProjectionMetrics }
+{ @routine $4E7BD0 UpdateSphereProjectionMetrics }
 procedure UpdateSphereProjectionMetrics;
-var Angle: Double;
-    V, Target, Up: TVector3D;
-    View, Projection, Combined: TMatrix4D;
+var
+  Angle: Double;
+  V, Target, Up: TVector3D;
+  View, Projection, Combined: TMatrix4D;
 begin
   V := MakeVector3D(0, 0, SphereCameraDistance);
   Target := MakeVector3D(0, 0, 0);
   Up := MakeVector3D(0, 1, 0);
   View := BuildLookAtMatrix(V, Target, Up);
   Projection := BuildPerspectiveProjectionMatrix(SphereCameraDistance - SphereRadius - 100,
-    SphereCameraDistance + SphereRadius + 100, HeadingDegreesToRadians(SphereFieldOfView), Cardinal(GameScreenWidth));
+    SphereCameraDistance + SphereRadius + 100, HeadingDegreesToRadians(SphereFieldOfView), GameScreenWidth);
   Combined := MultiplyMatrix4D(Projection, View);
   Angle := 90 - (90 - RadiansToHeadingDegrees(ArcSin(SphereRadius / SphereCameraDistance)));
   V := MakeVector3D(0, 0, Sin(HeadingDegreesToRadians(Angle)) * SphereRadius);
@@ -332,52 +336,54 @@ begin
   V := ProjectPointByMatrix(Combined, V);
   SphereProjectedRadius := Max(Abs(V.X), Abs(V.Y));
 end;
-{ @end $4ED0B4 }
+{ @end $4E7BD0 }
 
-{ @routine $4ED3C0 IsDepthBeforeSphereHorizon }
+{ @routine $4E7EEC IsDepthBeforeSphereHorizon }
 function IsDepthBeforeSphereHorizon(ProjectedDepth: Double): Boolean;
 begin
   Result := ProjectedDepth < SphereHorizonDepth;
 end;
-{ @end $4ED3C0 }
+{ @end $4E7EEC }
 
-{ @routine $4ED3E0 NormalizeVector3D }
+{ @routine $4E7F04 NormalizeVector3D }
 function NormalizeVector3D(const Source: TVector3D): TVector3D;
-var Scale: Double;
+var
+  Scale: Double;
 begin
   Scale := 1.0 / Sqrt(Source.X * Source.X + Source.Y * Source.Y + Source.Z * Source.Z);
   Result.X := Source.X * Scale;
   Result.Y := Source.Y * Scale;
   Result.Z := Source.Z * Scale;
 end;
-{ @end $4ED3E0 }
+{ @end $4E7F04 }
 
-{ @routine $4ED460 CrossProduct3D }
+{ @routine $4E7F5C CrossProduct3D }
 function CrossProduct3D(const A, B: TVector3D): TVector3D;
 begin
   Result.X := A.Y * B.Z - A.Z * B.Y;
   Result.Y := A.Z * B.X - A.X * B.Z;
   Result.Z := A.X * B.Y - A.Y * B.X;
 end;
-{ @end $4ED460 }
+{ @end $4E7F5C }
 
-{ @routine $4ED4D4 DotProduct3D }
+{ @routine $4E7F90 DotProduct3D }
 function DotProduct3D(const A, B: TVector3D): Double;
 begin
   Result := A.X * B.X + A.Y * B.Y + A.Z * B.Z;
 end;
-{ @end $4ED4D4 }
+{ @end $4E7F90 }
 
-{ @routine $4ED514 ClearMatrix4D }
+{ @routine $4E7FB4 ClearMatrix4D }
 procedure ClearMatrix4D(var Matrix: TMatrix4D);
-var I, J: Integer;
+var
+  I, J: Integer;
 begin
-  for I := 0 to 3 do
-    for J := 0 to 3 do Matrix[I, J] := 0;
+  for I := Low(TMatrix4D) to High(TMatrix4D) do
+    for J := Low(TMatrix4D) to High(TMatrix4D) do Matrix[I, J] := 0;
 end;
-{ @end $4ED514 }
+{ @end $4E7FB4 }
 
-{ @routine $4ED558 SetIdentityMatrix4D }
+{ @routine $4E7FDC SetIdentityMatrix4D }
 procedure SetIdentityMatrix4D(var Matrix: TMatrix4D);
 begin
   Matrix[0, 0] := 1; Matrix[1, 0] := 0; Matrix[2, 0] := 0; Matrix[3, 0] := 0;
@@ -385,11 +391,12 @@ begin
   Matrix[0, 2] := 0; Matrix[1, 2] := 0; Matrix[2, 2] := 1; Matrix[3, 2] := 0;
   Matrix[0, 3] := 0; Matrix[1, 3] := 0; Matrix[2, 3] := 0; Matrix[3, 3] := 1;
 end;
-{ @end $4ED558 }
+{ @end $4E7FDC }
 
-{ @routine $4ED624 BuildZAxisRotationMatrix }
+{ @routine $4E806C BuildZAxisRotationMatrix }
 function BuildZAxisRotationMatrix(AngleRadians: Double): TMatrix4D;
-var C, S: Double;
+var
+  C, S: Double;
 begin
   C := Cos(AngleRadians);
   S := Sin(AngleRadians);
@@ -399,11 +406,12 @@ begin
   Result[0, 1] := -S;
   Result[1, 0] := S;
 end;
-{ @end $4ED624 }
+{ @end $4E806C }
 
-{ @routine $4ED69C BuildPerspectiveProjectionMatrix }
+{ @routine $4E80D8 BuildPerspectiveProjectionMatrix }
 function BuildPerspectiveProjectionMatrix(NearPlane, FarPlane, FovRadians, ProjectionScale: Double): TMatrix4D;
-var C, S, Q: Double;
+var
+  C, S, Q: Double;
 begin
   C := Cos(FovRadians * 0.5);
   S := Sin(FovRadians * 0.5);
@@ -415,11 +423,12 @@ begin
   Result[3, 2] := -Q * NearPlane;
   Result[2, 3] := S;
 end;
-{ @end $4ED69C }
+{ @end $4E80D8 }
 
-{ @routine $4ED748 BuildLookAtMatrix }
+{ @routine $4E8174 BuildLookAtMatrix }
 function BuildLookAtMatrix(const CameraPos, TargetPos, UpVector: TVector3D): TMatrix4D;
-var Forward, Right, Up: TVector3D;
+var
+  Forward, Right, Up: TVector3D;
 begin
   SetIdentityMatrix4D(Result);
   Forward := MakeVector3D(TargetPos.X - CameraPos.X, TargetPos.Y - CameraPos.Y, TargetPos.Z - CameraPos.Z);
@@ -435,23 +444,25 @@ begin
   Result[3, 1] := -DotProduct3D(Up, CameraPos);
   Result[3, 2] := -DotProduct3D(Forward, CameraPos);
 end;
-{ @end $4ED748 }
+{ @end $4E8174 }
 
-{ @routine $4EDD68 InvertMatrix4D }
+{ @routine $4E86D4 InvertMatrix4D }
 function InvertMatrix4D(const Matrix: TMatrix4D): TMatrix4D;
-var Permutations: array[0..3] of Integer;
-    Solution: array[0..3] of Double;
-    I, J: Integer;
-    PermutationSign: Double;
-    Factors: TMatrix4D;
+var
+  Permutations: array[0..3] of Integer;
+  Solution: array[0..3] of Double;
+  I, J: Integer;
+  PermutationSign: Double;
+  Factors: TMatrix4D;
 
-  // @nested $4ED8D0 SolveMatrix4DLuSystem
-  procedure SolveMatrix4DLuSystem(const Factors: TMatrix4D); // @addr 0x4ED8D0 @ida "void __usercall $name(const TMatrix4D *Factors@<eax>, void *ParentFrame@<^0>);"
-  var I, J, FirstNonzero, Pivot: Integer;
-      Sum: Double;
+  // @nested $4E82CC SolveMatrix4DLuSystem
+  procedure SolveMatrix4DLuSystem(const Factors: TMatrix4D); // @addr 0x004E82CC @ida "void __usercall $name(const TMatrix4D *Factors@<eax>, void *ParentFrame@<^0>);"
+  var
+    I, J, FirstNonzero, Pivot: Integer;
+    Sum: Double;
   begin
     FirstNonzero := -1;
-    for I := 0 to 3 do
+    for I := Low(TMatrix4D) to High(TMatrix4D) do
     begin
       Pivot := Permutations[I];
       Sum := Solution[Pivot];
@@ -461,32 +472,33 @@ var Permutations: array[0..3] of Integer;
       else if Sum <> 0 then FirstNonzero := I;
       Solution[I] := Sum;
     end;
-    for I := 3 downto 0 do
+    for I := High(TMatrix4D) downto Low(TMatrix4D) do
     begin
       Sum := Solution[I];
-      for J := I + 1 to 3 do Sum := Sum - Factors[I, J] * Solution[J];
+      for J := I + 1 to High(TMatrix4D) do Sum := Sum - Factors[I, J] * Solution[J];
       Solution[I] := Sum / Factors[I, I];
     end;
   end;
 
-  // @nested $4EDA20 DecomposeMatrix4DLu
-  procedure DecomposeMatrix4DLu(var Matrix: TMatrix4D; var PermutationSign: Double); // @addr 0x4EDA20
-  var Big, Temp, Sum, Magnitude: Double;
-      I, Pivot, J, K: Integer;
-      Scales: array[0..3] of Double;
+  // @nested $4E8414 DecomposeMatrix4DLu
+  procedure DecomposeMatrix4DLu(var Matrix: TMatrix4D; var PermutationSign: Double); // @addr 0x004E8414
+  var
+    Big, Temp, Sum, Magnitude: Double;
+    I, Pivot, J, K: Integer;
+    Scales: array[0..3] of Double;
   begin
     PermutationSign := 1;
-    for I := 0 to 3 do
+    for I := Low(TMatrix4D) to High(TMatrix4D) do
     begin
       Big := 0;
-      for J := 0 to 3 do
+      for J := Low(TMatrix4D) to High(TMatrix4D) do
       begin
         Magnitude := Abs(Matrix[I, J]);
         if Magnitude > Big then Big := Magnitude;
       end;
       Scales[I] := 1 / Big;
     end;
-    for J := 0 to 3 do
+    for J := Low(TMatrix4D) to High(TMatrix4D) do
     begin
       I := 0;
       while I < J do
@@ -503,7 +515,7 @@ var Permutations: array[0..3] of Integer;
       end;
       Pivot := 0;
       Big := 0;
-      for I := J to 3 do
+      for I := J to High(TMatrix4D) do
       begin
         Sum := Matrix[I, J];
         K := 0;
@@ -522,7 +534,7 @@ var Permutations: array[0..3] of Integer;
       end;
       if J <> Pivot then
       begin
-        for K := 0 to 3 do
+        for K := Low(TMatrix4D) to High(TMatrix4D) do
         begin
           Temp := Matrix[Pivot, K];
           Matrix[Pivot, K] := Matrix[J, K];
@@ -533,10 +545,10 @@ var Permutations: array[0..3] of Integer;
       end;
       Permutations[J] := Pivot;
       if Matrix[J, J] = 0 then Matrix[J, J] := 1E-20;
-      if J <> 3 then
+      if J <> High(TMatrix4D) then
       begin
         Temp := 1 / Matrix[J, J];
-        for I := J + 1 to 3 do Matrix[I, J] := Matrix[I, J] * Temp;
+        for I := J + 1 to High(TMatrix4D) do Matrix[I, J] := Matrix[I, J] * Temp;
       end;
     end;
   end;
@@ -544,32 +556,31 @@ var Permutations: array[0..3] of Integer;
 begin
   Factors := Matrix;
   DecomposeMatrix4DLu(Factors, PermutationSign);
-  for J := 0 to 3 do
+  for J := Low(TMatrix4D) to High(TMatrix4D) do
   begin
-    for I := 0 to 3 do Solution[I] := 0;
+    for I := Low(TMatrix4D) to High(TMatrix4D) do Solution[I] := 0;
     Solution[J] := 1;
     SolveMatrix4DLuSystem(Factors);
-    for I := 0 to 3 do Result[I, J] := Solution[I];
+    for I := Low(TMatrix4D) to High(TMatrix4D) do Result[I, J] := Solution[I];
   end;
 end;
-{ @end $4EDD68 }
+{ @end $4E86D4 }
 
-{ @routine $4EDE1C MultiplyMatrix4D }
+{ @routine $4E8778 MultiplyMatrix4D }
 function MultiplyMatrix4D(const Left, Right: TMatrix4D): TMatrix4D;
-var I, J, K: Integer;
+var
+  I, J, K: Integer;
 begin
   ClearMatrix4D(Result);
-  for I := 0 to 3 do
-    for J := 0 to 3 do
-      for K := 0 to 3 do
-        Result[I, J] := Left[K, J] * Right[I, K] + Result[I, J];
+  for I := Low(TMatrix4D) to High(TMatrix4D) do
+    for J := Low(TMatrix4D) to High(TMatrix4D) do
+      for K := Low(TMatrix4D) to High(TMatrix4D) do
+        Result[I, J] := Result[I, J] + Left[K, J] * Right[I, K];
 end;
-{ @end $4EDE1C }
+{ @end $4E8778 }
 
-{ @routine $4EDEAC ProjectPointByMatrix }
+{ @routine $4E87F8 ProjectPointByMatrix }
 function ProjectPointByMatrix(const Matrix: TMatrix4D; const Source: TVector3D): TVector3D;
-// Handwritten native x87 implementation: keeps X, Y, Z and reciprocal W on the
-// FPU stack and writes the result without a Delphi frame or intermediate stores.
 asm
   push ebx
   push edx
@@ -629,12 +640,13 @@ asm
   pop edx
   pop ebx
 end;
-{ @end $4EDEAC }
+{ @end $4E87F8 }
 
-{ @routine $4EDF2C TryIntersectRayWithSphere }
+{ @routine $4E8878 TryIntersectRayWithSphere }
 function TryIntersectRayWithSphere(RayOrigin, RayPointOnRay, SphereCenter: TVector3D; SphereRadius: Double; var HitPoint: TVector3D): Boolean;
-var T, OtherT, Projection, Discriminant, DistanceSquared: Double;
-    Direction, CenterDelta: TVector3D;
+var
+  T, OtherT, Projection, Discriminant, DistanceSquared: Double;
+  Direction, CenterDelta: TVector3D;
 begin
   Direction.X := RayPointOnRay.X - RayOrigin.X;
   Direction.Y := RayPointOnRay.Y - RayOrigin.Y;
@@ -671,6 +683,6 @@ begin
   HitPoint.Z := Direction.Z * T + RayOrigin.Z;
   Result := T > 0.001;
 end;
-{ @end $4EDF2C }
+{ @end $4E8878 }
 
 end.

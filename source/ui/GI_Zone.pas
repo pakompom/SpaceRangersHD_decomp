@@ -1,5 +1,4 @@
 unit GI_Zone;
-// Unit bracket (inferred): .text 0x004A1080..0x004A18CD; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -13,59 +12,59 @@ type
     CursorInside: Boolean; // @offset 0x121
     EnterCallback: TObjectNotifyEventGI; // @offset $128
     LeaveCallback: TObjectNotifyEventGI; // @offset $130
-    ZoneMouseDownCallback: TObjectMouseEventGI; // @offset $138 Verified at $4A1671: Context/EAX, Sender/EDX, KeyState/ECX and Point on stack.
+    ZoneMouseDownCallback: TObjectMouseEventGI; // @offset $138 Context/EAX, Sender/EDX, KeyState/ECX and Point on stack.
     ZoneMouseUpCallback: TObjectMouseEventGI; // @offset $140
 
-    constructor Create(Owner: TObjectGI); // @addr 0x4A11C0
-    destructor Destroy; override; // @addr 0x4A1208
-    procedure SetKind(Value: TZoneKindGI); // @addr 0x4A123C
-    procedure Invalidate; override; // @addr $4A1268 Native no-op: hit zones do not draw.
-    function HitTest(Point: TPoint): Boolean; // @addr 0x4A1274 @note "Circle mode ignores Active and HitTestDisabled."
-    procedure OnActivate; override; // @addr 0x4A137C @note "May invoke cursor enter/leave callbacks."
-    procedure OnDeactivate; override; // @addr 0x4A141C
-    procedure OnMouseEnter; override; // @addr $4A1468
-    procedure OnMouseLeave; override; // @addr $4A1508
-    procedure ProcessMouseMove(KeyState: Cardinal; Point: TPoint); override; // @addr $4A1554
-    procedure ProcessLeftButtonDown(KeyState: Cardinal; Point: TPoint); override; // @addr $4A15FC
-    procedure ProcessLeftButtonUp(KeyState: Cardinal; Point: TPoint); override; // @addr $4A16C8 Native calls inherited ProcessLeftButtonDown before the zone's up callback.
-    procedure LoadFromConfigPath(const Path: WideString); override; // @addr 0x4A1794
-    procedure LoadFromBlock(Block: TBlockParEC); override; // @addr 0x4A17C8
-    procedure LoadZoneProperties(Block: TBlockParEC); // @addr 0x4A17F0
-    procedure UpdateAutoGeometry; override; // @addr $4A18BC
+    constructor Create(Owner: TObjectGI); // @addr 0x004B227C
+    destructor Destroy; override; // @addr 0x004B22B4
+    procedure SetKind(Value: TZoneKindGI); // @addr 0x004B22DC
+    procedure Invalidate; override; // @addr $4B22EC Native no-op: hit zones do not draw.
+    function HitTest(Point: TPoint): Boolean; // @addr 0x004B22F0 @note "Circle mode ignores Active and HitTestDisabled."
+    procedure OnActivate; override; // @addr 0x004B23C4 @note "May invoke cursor enter/leave callbacks."
+    procedure OnDeactivate; override; // @addr 0x004B2440
+    procedure OnMouseEnter; override; // @addr $4B2474
+    procedure OnMouseLeave; override; // @addr $4B24F0
+    procedure ProcessMouseMove(KeyState: Cardinal; Point: TPoint); override; // @addr $4B2524
+    procedure ProcessLeftButtonDown(KeyState: Cardinal; Point: TPoint); override; // @addr $4B25A4
+    procedure ProcessLeftButtonUp(KeyState: Cardinal; Point: TPoint); override; // @addr $4B2640 Native calls inherited ProcessLeftButtonDown before the zone's up callback.
+    procedure LoadFromConfigPath(const Path: WideString); override; // @addr 0x004B26DC
+    procedure LoadFromBlock(Block: TBlockParEC); override; // @addr 0x004B2708
+    procedure LoadZoneProperties(Block: TBlockParEC); // @addr 0x004B2724
+    procedure UpdateAutoGeometry; override; // @addr $4B27E4
   end;
 
 implementation
 
 uses EC_Struct, Math, GR_Main;
 
-{ @routine $4A11C0 TZoneGI_Create }
+{ @routine $4B227C TZoneGI_Create }
 constructor TZoneGI.Create(Owner: TObjectGI);
 begin
   inherited Create(Owner);
 end;
-{ @end $4A11C0 }
+{ @end $4B227C }
 
-{ @routine $4A1208 TZoneGI_Destroy }
+{ @routine $4B22B4 TZoneGI_Destroy }
 destructor TZoneGI.Destroy;
 begin
   inherited Destroy;
 end;
-{ @end $4A1208 }
+{ @end $4B22B4 }
 
-{ @routine $4A123C TZoneGI_SetKind }
+{ @routine $4B22DC TZoneGI_SetKind }
 procedure TZoneGI.SetKind(Value: TZoneKindGI);
 begin
   if Kind <> Value then Kind := Value;
 end;
-{ @end $4A123C }
+{ @end $4B22DC }
 
-{ @routine $4A1268 TZoneGI_Invalidate }
+{ @routine $4B22EC TZoneGI_Invalidate }
 procedure TZoneGI.Invalidate;
 begin
 end;
-{ @end $4A1268 }
+{ @end $4B22EC }
 
-{ @routine $4A1274 TZoneGI_HitTest }
+{ @routine $4B22F0 TZoneGI_HitTest }
 function TZoneGI.HitTest(Point: TPoint): Boolean;
 var
   Diameter: Integer;
@@ -81,9 +80,9 @@ begin
       (HitTestBounds.Top + HitTestBounds.Bottom) div 2), PointToPointF(Point));
   end;
 end;
-{ @end $4A1274 }
+{ @end $4B22F0 }
 
-{ @routine $4A137C TZoneGI_OnActivate }
+{ @routine $4B23C4 TZoneGI_OnActivate }
 procedure TZoneGI.OnActivate;
 begin
   inherited OnActivate;
@@ -101,9 +100,9 @@ begin
     if Assigned(LeaveCallback) then LeaveCallback(Self);
   end;
 end;
-{ @end $4A137C }
+{ @end $4B23C4 }
 
-{ @routine $4A141C TZoneGI_OnDeactivate }
+{ @routine $4B2440 TZoneGI_OnDeactivate }
 procedure TZoneGI.OnDeactivate;
 begin
   inherited OnDeactivate;
@@ -113,9 +112,9 @@ begin
     if Assigned(LeaveCallback) then LeaveCallback(Self);
   end;
 end;
-{ @end $4A141C }
+{ @end $4B2440 }
 
-{ @routine $4A1468 TZoneGI_OnMouseEnter }
+{ @routine $4B2474 TZoneGI_OnMouseEnter }
 procedure TZoneGI.OnMouseEnter;
 begin
   inherited OnMouseEnter;
@@ -133,9 +132,9 @@ begin
     if Assigned(LeaveCallback) then LeaveCallback(Self);
   end;
 end;
-{ @end $4A1468 }
+{ @end $4B2474 }
 
-{ @routine $4A1508 TZoneGI_OnMouseLeave }
+{ @routine $4B24F0 TZoneGI_OnMouseLeave }
 procedure TZoneGI.OnMouseLeave;
 begin
   inherited OnMouseLeave;
@@ -145,9 +144,9 @@ begin
     if Assigned(LeaveCallback) then LeaveCallback(Self);
   end;
 end;
-{ @end $4A1508 }
+{ @end $4B24F0 }
 
-{ @routine $4A1554 TZoneGI_ProcessMouseMove }
+{ @routine $4B2524 TZoneGI_ProcessMouseMove }
 procedure TZoneGI.ProcessMouseMove(KeyState: Cardinal; Point: TPoint);
 begin
   inherited ProcessMouseMove(KeyState, Point);
@@ -165,9 +164,9 @@ begin
     if Assigned(LeaveCallback) then LeaveCallback(Self);
   end;
 end;
-{ @end $4A1554 }
+{ @end $4B2524 }
 
-{ @routine $4A15FC TZoneGI_ProcessLeftButtonDown }
+{ @routine $4B25A4 TZoneGI_ProcessLeftButtonDown }
 procedure TZoneGI.ProcessLeftButtonDown(KeyState: Cardinal; Point: TPoint);
 begin
   inherited ProcessLeftButtonDown(KeyState, Point);
@@ -186,9 +185,9 @@ begin
     if Assigned(LeaveCallback) then LeaveCallback(Self);
   end;
 end;
-{ @end $4A15FC }
+{ @end $4B25A4 }
 
-{ @routine $4A16C8 TZoneGI_ProcessLeftButtonUp }
+{ @routine $4B2640 TZoneGI_ProcessLeftButtonUp }
 procedure TZoneGI.ProcessLeftButtonUp(KeyState: Cardinal; Point: TPoint);
 begin
   inherited ProcessLeftButtonDown(KeyState, Point);
@@ -207,25 +206,25 @@ begin
     if Assigned(LeaveCallback) then LeaveCallback(Self);
   end;
 end;
-{ @end $4A16C8 }
+{ @end $4B2640 }
 
-{ @routine $4A1794 TZoneGI_LoadFromConfigPath }
+{ @routine $4B26DC TZoneGI_LoadFromConfigPath }
 procedure TZoneGI.LoadFromConfigPath(const Path: WideString);
 begin
   inherited LoadFromConfigPath(Path);
   LoadZoneProperties(UiStyleConfig.GetBlockByPath(Path));
 end;
-{ @end $4A1794 }
+{ @end $4B26DC }
 
-{ @routine $4A17C8 TZoneGI_LoadFromBlock }
+{ @routine $4B2708 TZoneGI_LoadFromBlock }
 procedure TZoneGI.LoadFromBlock(Block: TBlockParEC);
 begin
   inherited LoadFromBlock(Block);
   LoadZoneProperties(Block);
 end;
-{ @end $4A17C8 }
+{ @end $4B2708 }
 
-{ @routine $4A17F0 TZoneGI_LoadZoneProperties }
+{ @routine $4B2724 TZoneGI_LoadZoneProperties }
 procedure TZoneGI.LoadZoneProperties(Block: TBlockParEC);
 var
   Value: WideString;
@@ -237,13 +236,13 @@ begin
     else if Value = 'Circle' then SetKind(zkCircle);
   end;
 end;
-{ @end $4A17F0 }
+{ @end $4B2724 }
 
-{ @routine $4A18BC TZoneGI_UpdateAutoGeometry }
+{ @routine $4B27E4 TZoneGI_UpdateAutoGeometry }
 procedure TZoneGI.UpdateAutoGeometry;
 begin
   inherited UpdateAutoGeometry;
 end;
-{ @end $4A18BC }
+{ @end $4B27E4 }
 
 end.

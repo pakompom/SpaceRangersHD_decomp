@@ -1,6 +1,4 @@
 unit GI_Cursor;
-// Unit bracket (inferred): .text 0x004B9484..0x004BA422; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
-// Native dynamic-array RTTI names GI_Cursor at $4B9484, $4B94A8 and $4B94CC.
 
 interface
 
@@ -15,41 +13,41 @@ type
     FrameIndices: array of Integer; // @offset $12C
     FrameDelays: array of Integer; // @offset $130
     FrameIndex: Integer; // @offset $134
-    AnimationTimer: PCallbackTimerGI; // @offset $138
+    AnimationTimer: TCallbackTimerIdGI; // @offset $138
 
-    constructor Create(Owner: TObjectGI); // @addr $4B9634
-    destructor Destroy; override; // @addr $4B969C
-    procedure Clear; override; // @addr $4B979C @note "Clears cursor resources and the image child, retaining the child object."
-    procedure SetImagePath(const Path: WideString); // @addr $4B9884
-    procedure SetActive(Enabled: Boolean); override; // @addr $4B992C
-    procedure SetOrigin(Origin: TPoint); override; // @addr $4B9A94
-    procedure Draw(ClipRect: TRect); override; // @addr $4B9AEC
-    procedure RebuildSystemCursor; // @addr $4B9B14 @note "Builds Windows cursor handles from GI/GAI resources and schedules animation when active."
-    function CreateCursorBitmap(Buffer: TGraphBufGR): Cardinal; // @addr $4BA1AC @note "Copies a 32-bit image to a top-down Windows DIB; caller owns the bitmap."
-    procedure AdvanceAnimation(Timer: PCallbackTimerGI; UserData: Integer); // @addr $4BA348 @note "Timer and UserData are unused; replaces AnimationTimer after advancing the sequence."
+    constructor Create(Owner: TObjectGI); // @addr $4BFB6C
+    destructor Destroy; override; // @addr $4BFBBC
+    procedure Clear; override; // @addr $4BFC78 @note "Clears cursor resources and the image child, retaining the child object."
+    procedure SetImagePath(const Path: WideString); // @addr $4BFD1C
+    procedure SetActive(Enabled: Boolean); override; // @addr $4BFDA4
+    procedure SetOrigin(Origin: TPoint); override; // @addr $4BFEA8
+    procedure Draw(ClipRect: TRect); override; // @addr $4BFEFC
+    procedure RebuildSystemCursor; // @addr $4BFF18 @note "Builds Windows cursor handles from GI/GAI resources and schedules animation when active."
+    function CreateCursorBitmap(Buffer: TGraphBufGR): Cardinal; // @addr $4C054C @note "Copies a 32-bit image to a top-down Windows DIB; caller owns the bitmap."
+    procedure AdvanceAnimation(Timer: TCallbackTimerIdGI; UserData: Cardinal); // @addr $4C0664 @note "Timer and UserData are unused; replaces AnimationTimer after advancing the sequence."
   end;
 
 implementation
 
 uses Classes, EC_Cache, EC_CacheGAI, EC_CacheGI, EC_Str, GR_Main, SysUtils, Windows;
 
-{ @routine $4B9634 TCursorGI_Create }
+{ @routine $4BFB6C TCursorGI_Create }
 constructor TCursorGI.Create(Owner: TObjectGI);
 begin
   inherited Create(Owner);
   ImageControl := TImageGI.Create(Self);
   Active := False;
 end;
-{ @end $4B9634 }
+{ @end $4BFB6C }
 
-{ @routine $4B969C TCursorGI_Destroy }
+{ @routine $4BFBBC TCursorGI_Destroy }
 destructor TCursorGI.Destroy;
 var Index: Integer;
 begin
-  if AnimationTimer <> nil then
+  if AnimationTimer <> 0 then
   begin
     MessageLoop.CancelCallbackTimer(AnimationTimer);
-    AnimationTimer := nil;
+    AnimationTimer := 0;
   end;
   for Index := 0 to High(CursorHandles) do
     if CursorHandles[Index] <> 0 then
@@ -63,16 +61,16 @@ begin
   FrameDelays := nil;
   inherited Destroy;
 end;
-{ @end $4B969C }
+{ @end $4BFBBC }
 
-{ @routine $4B979C TCursorGI_Clear }
+{ @routine $4BFC78 TCursorGI_Clear }
 procedure TCursorGI.Clear;
 var Index: Integer;
 begin
-  if AnimationTimer <> nil then
+  if AnimationTimer <> 0 then
   begin
     MessageLoop.CancelCallbackTimer(AnimationTimer);
-    AnimationTimer := nil;
+    AnimationTimer := 0;
   end;
   for Index := 0 to High(CursorHandles) do
     if CursorHandles[Index] <> 0 then
@@ -86,9 +84,9 @@ begin
   FrameDelays := nil;
   ImageControl.Clear;
 end;
-{ @end $4B979C }
+{ @end $4BFC78 }
 
-{ @routine $4B9884 TCursorGI_SetImagePath }
+{ @routine $4BFD1C TCursorGI_SetImagePath }
 procedure TCursorGI.SetImagePath(const Path: WideString);
 begin
   Clear;
@@ -100,15 +98,15 @@ begin
   end
   else
   begin
-    ImageControl.SetImagePath(Path);
-    SetSize(ImageControl.GetContentSize);
-    ImageControl.SetSize(ClientSize);
+    ImageControl.ImageSourcePath := Path;
+    ObjectSize := ImageControl.GetContentSize;
+    ImageControl.ObjectSize := ClientSize;
     ImageControl.RestartPlayback;
   end;
 end;
-{ @end $4B9884 }
+{ @end $4BFD1C }
 
-{ @routine $4B992C TCursorGI_SetActive }
+{ @routine $4BFDA4 TCursorGI_SetActive }
 procedure TCursorGI.SetActive(Enabled: Boolean);
 begin
   Invalidate;
@@ -124,10 +122,10 @@ begin
         while ShowCursor(True) < 0 do;
         if High(FrameIndices) > 0 then
         begin
-          if AnimationTimer <> nil then
+          if AnimationTimer <> 0 then
           begin
             MessageLoop.CancelCallbackTimer(AnimationTimer);
-            AnimationTimer := nil;
+            AnimationTimer := 0;
           end;
           AnimationTimer := MessageLoop.ScheduleCallbackTimer(
             FrameDelays[FrameIndex], FrameDelays[FrameIndex], AdvanceAnimation);
@@ -136,39 +134,39 @@ begin
     end
     else
     begin
-      if AnimationTimer <> nil then
+      if AnimationTimer <> 0 then
       begin
         MessageLoop.CancelCallbackTimer(AnimationTimer);
-        AnimationTimer := nil;
+        AnimationTimer := 0;
       end;
       while ShowCursor(False) >= 0 do;
     end;
   end
   else
   begin
-    ImageControl.SetActive(Enabled);
+    ImageControl.IsActive := Enabled;
     ImageControl.RestartPlayback;
   end;
 end;
-{ @end $4B992C }
+{ @end $4BFDA4 }
 
-{ @routine $4B9A94 TCursorGI_SetOrigin }
+{ @routine $4BFEA8 TCursorGI_SetOrigin }
 procedure TCursorGI.SetOrigin(Origin: TPoint);
 begin
   inherited SetOrigin(Origin);
-  ImageControl.SetPosition(Classes.Point(-Origin.X, -Origin.Y));
+  ImageControl.Pos := Classes.Point(-Origin.X, -Origin.Y);
   if ShowSystemMouse then RebuildSystemCursor;
 end;
-{ @end $4B9A94 }
+{ @end $4BFEA8 }
 
-{ @routine $4B9AEC TCursorGI_Draw }
+{ @routine $4BFEFC TCursorGI_Draw }
 procedure TCursorGI.Draw(ClipRect: TRect);
 begin
   inherited Draw(ClipRect);
 end;
-{ @end $4B9AEC }
+{ @end $4BFEFC }
 
-{ @routine $4B9B14 TCursorGI_RebuildSystemCursor }
+{ @routine $4BFF18 TCursorGI_RebuildSystemCursor }
 procedure TCursorGI.RebuildSystemCursor;
 var
   GaiControl: TCGaiControlEC;
@@ -180,10 +178,10 @@ var
   Buffer: TGraphBufGR;
   Info: TIconInfo;
 begin
-  if AnimationTimer <> nil then
+  if AnimationTimer <> 0 then
   begin
     MessageLoop.CancelCallbackTimer(AnimationTimer);
-    AnimationTimer := nil;
+    AnimationTimer := 0;
   end;
   for Index := 0 to High(CursorHandles) do
     if CursorHandles[Index] <> 0 then
@@ -207,8 +205,8 @@ begin
       SetLength(CursorHandles, Gai.GetFrameCount);
       SetLength(FrameIndices, Gai.GetSequenceFrameCount(0));
       SetLength(FrameDelays, Gai.GetSequenceFrameCount(0));
-      Gai.FillSequenceFrameIndexTable(0, Pointer(FrameIndices), 4);
-      Gai.FillSequenceFrameDelayTable(0, Pointer(FrameDelays), 4);
+      Gai.FillSequenceFrameIndexTable(0, @FrameIndices[0], SizeOf(Integer));
+      Gai.FillSequenceFrameDelayTable(0, @FrameDelays[0], SizeOf(Integer));
       for Index := 0 to High(CursorHandles) do
       begin
         Gai.LoadFrameGi(Index).DecodeToGraphBuf(Buffer, False);
@@ -257,31 +255,31 @@ begin
     Buffer.Free;
     GiControl.Free;
   end;
-  if (FrameIndex < 0) or (High(FrameIndices) < FrameIndex) then FrameIndex := 0;
+  if (FrameIndex < 0) or (FrameIndex > High(FrameIndices)) then FrameIndex := 0;
   if Active then
   begin
     Windows.SetCursor(CursorHandles[FrameIndices[FrameIndex]]);
     while ShowCursor(True) < 0 do;
     if High(FrameIndices) > 0 then
     begin
-      if AnimationTimer <> nil then
+      if AnimationTimer <> 0 then
       begin
         MessageLoop.CancelCallbackTimer(AnimationTimer);
-        AnimationTimer := nil;
+        AnimationTimer := 0;
       end;
       AnimationTimer := MessageLoop.ScheduleCallbackTimer(
         FrameDelays[FrameIndex], FrameDelays[FrameIndex], AdvanceAnimation);
     end;
   end;
 end;
-{ @end $4B9B14 }
+{ @end $4BFF18 }
 
 // This local import has its own native thunk and IAT entry, separate from Windows.
 function CreateDIBSection(DC: HDC; const BitmapInfo: TBitmapInfo; Usage: Cardinal;
   var Bits: Pointer; Section: THandle; Offset: Cardinal): HBITMAP; stdcall;
-  external 'gdi32.dll' name 'CreateDIBSection'; // @addr $4BA1A4
+  external 'gdi32.dll' name 'CreateDIBSection'; // @addr $4C0544
 
-{ @routine $4BA1AC TCursorGI_CreateCursorBitmap }
+{ @routine $4C054C TCursorGI_CreateCursorBitmap }
 function TCursorGI.CreateCursorBitmap(Buffer: TGraphBufGR): Cardinal;
 var
   DC: HDC;
@@ -289,11 +287,11 @@ var
   Bits: Pointer;
   X, Y: Cardinal;
   Pitch, SourceSkip, DestSkip: Integer;
-  Dest, Source: Pointer;
+  Dest, Source: PCardinal;
   Info: TBitmapV4Header;
 begin
-  Pitch := (Buffer.Width * 4) and not 1;
-  if (Buffer.Width * 4) and 1 <> 0 then Inc(Pitch, 2);
+  Pitch := (Buffer.Width * SizeOf(Cardinal)) and not 1;
+  if (Buffer.Width * SizeOf(Cardinal)) and 1 <> 0 then Inc(Pitch, 2);
   FillChar(Info, SizeOf(Info), 0);
   Info.bV4Size := SizeOf(Info);
   Info.bV4Width := Buffer.Width;
@@ -305,40 +303,40 @@ begin
   DC := GetDC(0);
   Bitmap := CreateDIBSection(DC, PBitmapInfo(@Info)^, DIB_RGB_COLORS, Bits, 0, 0);
   if Bitmap = 0 then RaiseWideMessage('DIB section');
-  SourceSkip := Buffer.PitchBytes - Buffer.Width * 4;
-  DestSkip := Pitch - Buffer.Width * 4;
+  SourceSkip := Buffer.PitchBytes - Buffer.Width * SizeOf(Cardinal);
+  DestSkip := Pitch - Buffer.Width * SizeOf(Cardinal);
   Dest := Bits;
   Source := Buffer.GetPixels;
   for Y := 0 to Buffer.Height - 1 do
   begin
     for X := 0 to Buffer.Width - 1 do
     begin
-      PCardinal(Dest)^ := PCardinal(Source)^;
-      Source := Pointer(PAnsiChar(Source) + 4);
-      Dest := Pointer(PAnsiChar(Dest) + 4);
+      Dest^ := Source^;
+      Inc(Source);
+      Inc(Dest);
     end;
-    Source := Pointer(PAnsiChar(Source) + SourceSkip);
-    Dest := Pointer(PAnsiChar(Dest) + DestSkip);
+    Source := PCardinal(PAnsiChar(Source) + SourceSkip);
+    Dest := PCardinal(PAnsiChar(Dest) + DestSkip);
   end;
   ReleaseDC(0, DC);
   Result := Bitmap;
 end;
-{ @end $4BA1AC }
+{ @end $4C054C }
 
-{ @routine $4BA348 TCursorGI_AdvanceAnimation }
-procedure TCursorGI.AdvanceAnimation(Timer: PCallbackTimerGI; UserData: Integer);
+{ @routine $4C0664 TCursorGI_AdvanceAnimation }
+procedure TCursorGI.AdvanceAnimation(Timer: TCallbackTimerIdGI; UserData: Cardinal);
 begin
   Inc(FrameIndex);
   if High(FrameIndices) < FrameIndex then FrameIndex := 0;
   Windows.SetCursor(CursorHandles[FrameIndices[FrameIndex]]);
-  if AnimationTimer <> nil then
+  if AnimationTimer <> 0 then
   begin
     MessageLoop.CancelCallbackTimer(AnimationTimer);
-    AnimationTimer := nil;
+    AnimationTimer := 0;
   end;
   AnimationTimer := MessageLoop.ScheduleCallbackTimer(
     FrameDelays[FrameIndex], FrameDelays[FrameIndex], AdvanceAnimation);
 end;
-{ @end $4BA348 }
+{ @end $4C0664 }
 
 end.

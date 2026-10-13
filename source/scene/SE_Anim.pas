@@ -1,6 +1,4 @@
 unit SE_Anim;
-// Unit bracket (inferred): .text 0x008245CC..0x00824B19; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
-// Native class and methods: $8245CC..$824B19.
 
 interface
 
@@ -14,90 +12,84 @@ type
     LoopAnimation: Boolean; // @offset $58
     Animation: TgaiGI; // @offset $5C
     FinishedCallback: TNotifyEvent; // @offset $60
-    destructor Destroy; override; // @addr $824690
-    procedure AttachToSpace(ASpace: TSpaceSE); override; // @addr $8246C4
-    procedure DetachFromSpace; override; // @addr $8247C4
-    procedure SetPosition(APosition: TPointF); override; // @addr $824804
-    procedure AnimationCycleComplete(Sender: TObjectGI); // @addr $824850
-    function HitTestCursor: Boolean; override; // @addr $82488C
-    procedure LoadTemplate(Block: TBlockParEC); override; // @addr $8248BC
-    procedure ApplyConfig(Block: TBlockParEC); override; // @addr $8249E4
-    procedure QueueImageLoad(PendingLoads: TList; Owner: TObjectGI); override; // @addr $824AD4
+    destructor Destroy; override; // @addr $77F5A0
+    procedure AttachToSpace(ASpace: TSpaceSE); override; // @addr $77F5C8
+    procedure DetachFromSpace; override; // @addr $77F684
+    procedure SetPosition(APosition: TPointF); override; // @addr $77F6B4
+    procedure AnimationCycleComplete(Sender: TObjectGI); // @addr $77F6F8
+    function HitTestCursor: Boolean; override; // @addr $77F71C
+    procedure LoadTemplate(Block: TBlockParEC); override; // @addr $77F738
+    procedure ApplyConfig(Block: TBlockParEC); override; // @addr $77F84C
+    procedure QueueImageLoad(PendingLoads: TList; Owner: TObjectGI); override; // @addr $77F934
   end;
 
 implementation
 
 uses GI_Main;
 
-{ @routine $824690 TAnimSE_Destroy }
+{ @routine $77F5A0 TAnimSE_Destroy }
 destructor TAnimSE.Destroy;
 begin
   inherited Destroy;
 end;
-{ @end $824690 }
+{ @end $77F5A0 }
 
-{ @routine $8246C4 TAnimSE_AttachToSpace }
+{ @routine $77F5C8 TAnimSE_AttachToSpace }
 procedure TAnimSE.AttachToSpace(ASpace: TSpaceSE);
 begin
-  if not IsAttachedToSpace then
-  begin
-    inherited AttachToSpace(ASpace);
-    Animation := TgaiGI.Create(Space.MapPanel);
-    Animation.SetImagePath(ImagePath);
-    Animation.SequenceIndex := 0;
-    Animation.UpdateAutoGeometry;
-    Animation.SetPositionModeW(True);
-    Animation.SetDepthByName(DepthExpression);
-    Animation.SetPosition(TruncatePointF(Position));
-    Animation.SetOrigin(ImageOrigin);
-    Animation.SetSize(Animation.GetContentSize);
-    Animation.CycleCompleteCallback := AnimationCycleComplete;
-    Animation.RestartPlayback;
-  end;
+  if IsAttachedToSpace then Exit;
+  inherited AttachToSpace(ASpace);
+  Animation := TgaiGI.Create(Space.MapPanel);
+  Animation.SetImagePath(ImagePath);
+  Animation.SequenceIndex := 0;
+  Animation.UpdateAutoGeometry;
+  Animation.World := True;
+  Animation.SetDepthByName(DepthExpression);
+  Animation.Pos := TruncatePointF(Position);
+  Animation.Sme := ImageOrigin;
+  Animation.ObjectSize := Animation.GetContentSize;
+  Animation.CycleCompleteCallback := AnimationCycleComplete;
+  Animation.RestartPlayback;
 end;
-{ @end $8246C4 }
+{ @end $77F5C8 }
 
-{ @routine $8247C4 TAnimSE_DetachFromSpace }
+{ @routine $77F684 TAnimSE_DetachFromSpace }
 procedure TAnimSE.DetachFromSpace;
 begin
-  if IsAttachedToSpace then
-  begin
-    Animation.SetActive(False);
-    Animation.Free;
-    Animation := nil;
-    inherited DetachFromSpace;
-  end;
+  if not IsAttachedToSpace then Exit;
+  Animation.IsActive := False;
+  Animation.Free;
+  Animation := nil;
+  inherited DetachFromSpace;
 end;
-{ @end $8247C4 }
+{ @end $77F684 }
 
-{ @routine $824804 TAnimSE_SetPosition }
+{ @routine $77F6B4 TAnimSE_SetPosition }
 procedure TAnimSE.SetPosition(APosition: TPointF);
 begin
   inherited SetPosition(APosition);
-  if IsAttachedToSpace then Animation.SetPosition(TruncatePointF(Position));
+  if IsAttachedToSpace then Animation.Pos := TruncatePointF(Position);
 end;
-{ @end $824804 }
+{ @end $77F6B4 }
 
-{ @routine $824850 TAnimSE_AnimationCycleComplete }
+{ @routine $77F6F8 TAnimSE_AnimationCycleComplete }
 procedure TAnimSE.AnimationCycleComplete(Sender: TObjectGI);
 begin
-  if not LoopAnimation then
-  begin
-    DetachFromSpace;
-    if Assigned(FinishedCallback) then FinishedCallback(Self);
-  end;
+  if LoopAnimation then Exit;
+  DetachFromSpace;
+  if Assigned(FinishedCallback) then FinishedCallback(Self);
 end;
-{ @end $824850 }
+{ @end $77F6F8 }
 
-{ @routine $82488C TAnimSE_HitTestCursor }
+{ @routine $77F71C TAnimSE_HitTestCursor }
 function TAnimSE.HitTestCursor: Boolean;
 begin
   if not IsAttachedToSpace then Result := False
   else Result := Animation.HitTestCursor;
 end;
-{ @end $82488C }
+{ @end $77F71C }
 
-{ @routine $8248BC TAnimSE_LoadTemplate }
+{ @routine $77F738 TAnimSE_LoadTemplate }
 procedure TAnimSE.LoadTemplate(Block: TBlockParEC);
 begin
   inherited LoadTemplate(Block);
@@ -105,18 +97,18 @@ begin
   if Block.CountParams('LoopAnim') > 0 then LoopAnimation := ParseEnabledNameGI(Block.GetParam('LoopAnim'));
   if Block.CountParams('SmeImage') > 0 then ImageOrigin := GetPointGI(Block.GetParam('SmeImage'));
 end;
-{ @end $8248BC }
+{ @end $77F738 }
 
-{ @routine $8249E4 TAnimSE_ApplyConfig }
+{ @routine $77F84C TAnimSE_ApplyConfig }
 procedure TAnimSE.ApplyConfig(Block: TBlockParEC);
 begin
   inherited ApplyConfig(Block);
   if Block.CountParams('LoopAnim') > 0 then LoopAnimation := ParseEnabledNameGI(Block.GetParam('LoopAnim'));
   if Block.CountParams('SmeImage') > 0 then ImageOrigin := GetPointGI(Block.GetParam('SmeImage'));
 end;
-{ @end $8249E4 }
+{ @end $77F84C }
 
-{ @routine $824AD4 TAnimSE_QueueImageLoad }
+{ @routine $77F934 TAnimSE_QueueImageLoad }
 procedure TAnimSE.QueueImageLoad(PendingLoads: TList; Owner: TObjectGI);
 var
   Image: TgaiGI;
@@ -126,6 +118,6 @@ begin
   Image.QueueImageLoad(PendingLoads);
   Image.Free;
 end;
-{ @end $824AD4 }
+{ @end $77F934 }
 
 end.

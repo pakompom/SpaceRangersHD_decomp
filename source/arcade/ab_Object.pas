@@ -1,13 +1,11 @@
 unit ab_Object;
-// Unit bracket (inferred): .text 0x0054E2C0..0x0054F667; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
-// Native TabObject VMT and methods: $54E30C..$54F668.
 
 interface
 
 uses Classes, EC_Struct, GI_MessageLoop, GI_Tail, ab_Global, GR_Sound;
 
 type
-  TabObject = class(TObjectEx) // @size $B0
+  TabObject = class(TObjectEx) // @size $B0 @methodorder source
   public
     Prev: TabObject; // @offset $04
     Next: TabObject; // @offset $08
@@ -26,8 +24,7 @@ type
     GravityEnabled: Boolean; // @offset $72
     ZoneDamageEnabled: Boolean; // @offset $73
     Active: Boolean; // @offset $74
-    // Non-owning original firing object: Launch stores Owner ($4F3C98), child
-    // projectiles inherit it, and hits pass it as damage source ($4F3E48).
+    // Non-owning firing object, inherited by child projectiles and passed as the damage source.
     // Used to exclude self-collisions and select enemies; cleared on destruction.
     SourceObject: TabObject; // @offset $78
     InitialRandomSeed: Cardinal; // @offset $7C
@@ -42,41 +39,41 @@ type
     GravityScale: Single; // @offset $A0
     RegenerationRate: Single; // @offset $A4
     DamageTakenScale: Single; // @offset $A8
-    LuckScale: Single; // @offset $AC  Default 1; SF_ABShipModifiers exposes luck at $61F7FE. Multiplies the random reward roll.
+    LuckScale: Single; // @offset $AC Default 1; multiplies the random reward roll. Exposed as luck by SF_ABShipModifiers.
 
-    constructor Create; // @addr $54E33C
-    destructor Destroy; override; // @addr $54E458
-    function GetWorldPosition: TVector3D; // @addr $54E4E0
-    function GetProjectedPosition: TVector3D; // @addr $54E52C
-    function DistanceTo(Other: TabObject): Double; // @addr $54E56C
-    function BearingAndDistanceTo(Other: TabObject): TSphericalBearingDistance; // @addr $54E6CC
-    function GetProjectedHeading(Position: TVector3D): Double; // @addr $54E6F4
-    procedure ChangeSpeed(Delta: Double); // @addr $54E804
-    function CollidesWith(Other: TabObject): Boolean; // @addr $54E8E0
-    function FindCollision: TabObject; // @addr $54E98C
-    procedure ApplyDamage(Amount: Integer; Source: TabObject; Disrupt: Boolean); virtual; // @addr $54E9F0 @slot $00
-    procedure UpdateState; virtual; // @addr $54EA08 @slot $04
-    procedure Advance; virtual; // @addr $54EA14 @slot $08
-    procedure UpdateVisuals; virtual; // @addr $54F258 @slot $0C
-    procedure QueueImageLoad(PendingLoads: TList; Owner: TObjectGI); virtual; // @addr $54F264 @slot $10
-    function RandomRange(BoundA, BoundB: Integer): Integer; // @addr $54F278
+    constructor Create; // @addr $65A6CC
+    destructor Destroy; override; // @addr $65A7A4
+    function GetWorldPosition: TVector3D; // @addr $65A7FC
+    function GetProjectedPosition: TVector3D; // @addr $65A83C
+    function DistanceTo(Other: TabObject): Double; // @addr $65A870
+    function BearingAndDistanceTo(Other: TabObject): TSphericalBearingDistance; // @addr $65A9E0
+    function GetProjectedHeading(Position: TVector3D): Double; // @addr $65A9FC
+    function CollidesWith(Other: TabObject): Boolean; // @addr $65ABE0
+    function FindCollision: TabObject; // @addr $65AC64
+    procedure ApplyDamage(Amount: Integer; Source: TabObject; Disrupt: Boolean); virtual; // @addr $65ACA8 @slot $00
+    procedure UpdateState; virtual; // @addr $65ACB0 @slot $04
+    procedure Advance; virtual; // @addr $65ACB4 @slot $08
+    procedure UpdateVisuals; virtual; // @addr $65B498 @slot $0C
+    procedure QueueImageLoad(PendingLoads: TList; Owner: TObjectGI); virtual; // @addr $65B49C @slot $10
+    function RandomRange(BoundA, BoundB: Integer): Integer; // @addr $65B4A0
+    procedure ChangeSpeed(Delta: Double); // @addr $65AB1C
   end;
 
-procedure ab_Object_Clear; // @addr $54F31C
-procedure ab_Object_Add(Obj: TabObject); // @addr $54F334
-procedure ab_Object_Delete(Obj: TabObject); // @addr $54F380
-procedure ab_Object_QueueImageLoads(PendingLoads: TList; Owner: TObjectGI); // @addr $54F3EC
-procedure ab_Object_UpdateSounds; // @addr $54F42C
+procedure ab_Object_Clear; // @addr $65B508
+procedure ab_Object_Add(Obj: TabObject); // @addr $65B520
+procedure ab_Object_Delete(Obj: TabObject); // @addr $65B554
+procedure ab_Object_QueueImageLoads(PendingLoads: TList; Owner: TObjectGI); // @addr $65B598
+procedure ab_Object_UpdateSounds; // @addr $65B5C4
 
 var
-  FirstArcadeObject: TabObject = nil; // @addr $87AEE4
-  LastArcadeObject: TabObject = nil; // @addr $87AEE8
+  FirstArcadeObject: TabObject = nil; // @addr $80F758
+  LastArcadeObject: TabObject = nil; // @addr $80F75C
 
 implementation
 
 uses Math, aMyFunction, Globals, GlobalsV, ab_Hit, ab_Ship, ab_ShipAI, ab_Zone, ab_StopLine, EC_Buf;
 
-{ @routine $54E33C TabObject_Create }
+{ @routine $65A6CC TabObject_Create }
 constructor TabObject.Create;
 begin
   inherited Create;
@@ -99,9 +96,9 @@ begin
   DamageTakenScale := 1;
   LuckScale := 1;
 end;
-{ @end $54E33C }
+{ @end $65A6CC }
 
-{ @routine $54E458 TabObject_Destroy }
+{ @routine $65A7A4 TabObject_Destroy }
 destructor TabObject.Destroy;
 var
   Obj: TabObject;
@@ -119,24 +116,24 @@ begin
   end;
   inherited Destroy;
 end;
-{ @end $54E458 }
+{ @end $65A7A4 }
 
-{ @routine $54E4E0 TabObject_GetWorldPosition }
+{ @routine $65A7FC TabObject_GetWorldPosition }
 function TabObject.GetWorldPosition: TVector3D;
 begin
   Result := SphericalToVector3D(HeadingDegreesToRadians(State.LongitudeDegrees), HeadingDegreesToRadians(State.PolarAngleDegrees), SphereRadius);
 end;
-{ @end $54E4E0 }
+{ @end $65A7FC }
 
-{ @routine $54E52C TabObject_GetProjectedPosition }
+{ @routine $65A83C TabObject_GetProjectedPosition }
 function TabObject.GetProjectedPosition: TVector3D;
 begin
   Result := GetWorldPosition;
   Result := ProjectPointByMatrix(SphereProjectionMatrix, Result);
 end;
-{ @end $54E52C }
+{ @end $65A83C }
 
-{ @routine $54E56C TabObject_DistanceTo }
+{ @routine $65A870 TabObject_DistanceTo }
 function TabObject.DistanceTo(Other: TabObject): Double;
 var
   ArcAngle, TargetPolar, SourcePolar, LongitudeDelta, Value: Double;
@@ -150,16 +147,16 @@ begin
   ArcAngle := ArcCos(Value);
   Result := ArcAngle / (2 * Pi) * 2 * Pi * SphereRadius;
 end;
-{ @end $54E56C }
+{ @end $65A870 }
 
-{ @routine $54E6CC TabObject_BearingAndDistanceTo }
+{ @routine $65A9E0 TabObject_BearingAndDistanceTo }
 function TabObject.BearingAndDistanceTo(Other: TabObject): TSphericalBearingDistance;
 begin
   Result := GetSphericalBearingAndDistance(State, Other.State);
 end;
-{ @end $54E6CC }
+{ @end $65A9E0 }
 
-{ @routine $54E6F4 TabObject_GetProjectedHeading }
+{ @routine $65A9FC TabObject_GetProjectedHeading }
 function TabObject.GetProjectedHeading(Position: TVector3D): Double;
 var
   ForwardState: TSphericalBearingState;
@@ -176,9 +173,9 @@ begin
   end;
   Result := PointBearingDegrees(MakePointF(Position.X, Position.Y), MakePointF(ForwardPosition.X, ForwardPosition.Y));
 end;
-{ @end $54E6F4 }
+{ @end $65A9FC }
 
-{ @routine $54E804 TabObject_ChangeSpeed }
+{ @routine $65AB1C TabObject_ChangeSpeed }
 procedure TabObject.ChangeSpeed(Delta: Double);
 var
   Speed, Angle: Double;
@@ -190,31 +187,23 @@ begin
   Velocity.X := Sin(Angle) * Speed;
   Velocity.Y := -Cos(Angle) * Speed;
 end;
-{ @end $54E804 }
+{ @end $65AB1C }
 
-{ @routine $54E8E0 TabObject_CollidesWith }
+{ @routine $65ABE0 TabObject_CollidesWith }
 function TabObject.CollidesWith(Other: TabObject): Boolean;
 begin
   if (CollisionRadius <= 0) or (Other.CollisionRadius <= 0) then
-  begin
-    Result := False;
-    Exit;
-  end;
-  if (not Collidable) and (not Other.Collidable) then
-  begin
-    Result := False;
-    Exit;
-  end;
-  if (Other is TabHit) and ((Other as TabHit).Health <= 0) then
-  begin
-    Result := False;
-    Exit;
-  end;
-  Result := CollisionRadius + Other.CollisionRadius >= DistanceTo(Other);
+    Result := False
+  else if (not Collidable) and (not Other.Collidable) then
+    Result := False
+  else if (Other is TabHit) and ((Other as TabHit).Health <= 0) then
+    Result := False
+  else
+    Result := CollisionRadius + Other.CollisionRadius >= DistanceTo(Other);
 end;
-{ @end $54E8E0 }
+{ @end $65ABE0 }
 
-{ @routine $54E98C TabObject_FindCollision }
+{ @routine $65AC64 TabObject_FindCollision }
 function TabObject.FindCollision: TabObject;
 var
   Obj: TabObject;
@@ -236,28 +225,28 @@ begin
   end;
   Result := nil;
 end;
-{ @end $54E98C }
+{ @end $65AC64 }
 
-{ @routine $54E9F0 TabObject_ApplyDamage }
+{ @routine $65ACA8 TabObject_ApplyDamage }
 procedure TabObject.ApplyDamage(Amount: Integer; Source: TabObject; Disrupt: Boolean);
 begin
 end;
-{ @end $54E9F0 }
+{ @end $65ACA8 }
 
-{ @routine $54EA08 TabObject_UpdateState }
+{ @routine $65ACB0 TabObject_UpdateState }
 procedure TabObject.UpdateState;
 begin
 end;
-{ @end $54EA08 }
+{ @end $65ACB0 }
 
-{ @routine $54EA14 TabObject_Advance }
+{ @routine $65ACB4 TabObject_Advance }
 procedure TabObject.Advance;
 var
   Force: TPointF;
   TravelBearing, ArcDistance, HeadingDelta, ReflectedSpeed: Double;
   Factor, Limit: Single;
   Zone: PabZone;
-  Bearing, Distance, UnusedResult: Double;
+  Bearing, Distance, BearingAdjustment: Double;
 begin
   Force := MakePointF(0, 0);
   if Thrust <> 0 then
@@ -270,7 +259,7 @@ begin
     Zone := ab_Zone_FindNearestEnabled(State.LongitudeDegrees, State.PolarAngleDegrees);
     if Zone <> nil then
     begin
-      ComputeSphericalBearingAndDistance(Bearing, Distance, State.LongitudeDegrees, State.PolarAngleDegrees, 0, Zone.Longitude, Zone.PolarAngle, SphereRadius);
+      ComputeSphericalBearingAndDistance(State.LongitudeDegrees, State.PolarAngleDegrees, 0, Zone.Longitude, Zone.PolarAngle, SphereRadius, Bearing, Distance);
       Limit := 2;
       if PlayerArcadeShip = Self then
         if Sqr(Velocity.X) + Sqr(Velocity.Y) > Sqr(2.0) then Limit := 8;
@@ -290,7 +279,7 @@ begin
     begin
       if Zone.DamagePerTick <> 0 then
       begin
-        ComputeSphericalBearingAndDistance(Bearing, Distance, Zone.Longitude, Zone.PolarAngle, 0, State.LongitudeDegrees, State.PolarAngleDegrees, SphereRadius);
+        ComputeSphericalBearingAndDistance(Zone.Longitude, Zone.PolarAngle, 0, State.LongitudeDegrees, State.PolarAngleDegrees, SphereRadius, Bearing, Distance);
         if Zone.Radius + ZoneRadius + 5 > Distance then
         begin
           if Zone.DamagePerTick < 0 then
@@ -335,12 +324,12 @@ begin
   begin
     if WallCollisionEnabled then
     begin
-      if ab_StopLine_ReflectMovement(State, AdvanceSphericalStateAlongBearing(State, TravelBearing, ArcDistance), HeadingDelta, ReflectedSpeed, UnusedResult) then
+      if ab_StopLine_ReflectMovement(State, AdvanceSphericalStateAlongBearing(State, TravelBearing, ArcDistance), HeadingDelta, ReflectedSpeed, BearingAdjustment) then
       begin
         ArcDistance := ReflectedSpeed;
         TravelBearing := WrapHeadingDegrees(TravelBearing + HeadingDelta);
       end;
-      State.BearingDegrees := WrapHeadingDegrees(State.BearingDegrees + UnusedResult);
+      State.BearingDegrees := WrapHeadingDegrees(State.BearingDegrees + BearingAdjustment);
     end;
     if ArcDistance > 0 then
     begin
@@ -361,21 +350,21 @@ begin
     Velocity.Y := 0;
   end;
 end;
-{ @end $54EA14 }
+{ @end $65ACB4 }
 
-{ @routine $54F258 TabObject_UpdateVisuals }
+{ @routine $65B498 TabObject_UpdateVisuals }
 procedure TabObject.UpdateVisuals;
 begin
 end;
-{ @end $54F258 }
+{ @end $65B498 }
 
-{ @routine $54F264 TabObject_QueueImageLoad }
+{ @routine $65B49C TabObject_QueueImageLoad }
 procedure TabObject.QueueImageLoad(PendingLoads: TList; Owner: TObjectGI);
 begin
 end;
-{ @end $54F264 }
+{ @end $65B49C }
 
-{ @routine $54F278 TabObject_RandomRange }
+{ @routine $65B4A0 TabObject_RandomRange }
 function TabObject.RandomRange(BoundA, BoundB: Integer): Integer;
 begin
   RandomState := SeedRngMultiplier * (RandomState mod SeedRngQuotient) - SeedRngRemainder * (RandomState div SeedRngQuotient);
@@ -384,16 +373,16 @@ begin
   if BoundA <= BoundB then Result := BoundA + Result mod (BoundB - BoundA + 1)
   else Result := BoundB + Result mod (BoundA - BoundB + 1);
 end;
-{ @end $54F278 }
+{ @end $65B4A0 }
 
-{ @routine $54F31C ab_Object_Clear }
+{ @routine $65B508 ab_Object_Clear }
 procedure ab_Object_Clear;
 begin
-  while not (FirstArcadeObject = nil) do ab_Object_Delete(LastArcadeObject);
+  while FirstArcadeObject <> nil do ab_Object_Delete(LastArcadeObject);
 end;
-{ @end $54F31C }
+{ @end $65B508 }
 
-{ @routine $54F334 ab_Object_Add }
+{ @routine $65B520 ab_Object_Add }
 procedure ab_Object_Add(Obj: TabObject);
 begin
   if LastArcadeObject <> nil then LastArcadeObject.Next := Obj;
@@ -402,9 +391,9 @@ begin
   LastArcadeObject := Obj;
   if FirstArcadeObject = nil then FirstArcadeObject := Obj;
 end;
-{ @end $54F334 }
+{ @end $65B520 }
 
-{ @routine $54F380 ab_Object_Delete }
+{ @routine $65B554 ab_Object_Delete }
 procedure ab_Object_Delete(Obj: TabObject);
 begin
   if Obj.Prev <> nil then Obj.Prev.Next := Obj.Next;
@@ -413,9 +402,9 @@ begin
   if FirstArcadeObject = Obj then FirstArcadeObject := Obj.Next;
   Obj.Free;
 end;
-{ @end $54F380 }
+{ @end $65B554 }
 
-{ @routine $54F3EC ab_Object_QueueImageLoads }
+{ @routine $65B598 ab_Object_QueueImageLoads }
 procedure ab_Object_QueueImageLoads(PendingLoads: TList; Owner: TObjectGI);
 var
   Obj: TabObject;
@@ -427,9 +416,9 @@ begin
     Obj := Obj.Next;
   end;
 end;
-{ @end $54F3EC }
+{ @end $65B598 }
 
-{ @routine $54F42C ab_Object_UpdateSounds }
+{ @routine $65B5C4 ab_Object_UpdateSounds }
 procedure ab_Object_UpdateSounds;
 var
   Obj: TabObject;
@@ -439,7 +428,7 @@ var
   Counts: array[0..14] of Integer;
   Position: TVector3D;
 begin
-  for Index := 0 to 14 do Counts[Index] := 0;
+  for Index := Low(Counts) to High(Counts) do Counts[Index] := 0;
   Obj := FirstArcadeObject;
   while Obj <> nil do
   begin
@@ -448,50 +437,50 @@ begin
       Inc(Counts[Obj.SoundGroup - 9000]);
     Obj := Obj.Next;
   end;
-  for Index := 0 to 14 do
-    if Counts[Index] > 0 then
+  for Index := Low(Counts) to High(Counts) do
+  begin
+    if Counts[Index] <= 0 then Continue;
+    Closest := nil;
+    Playing := nil;
+    BestDistance := 1e20;
+    Obj := FirstArcadeObject;
+    while Obj <> nil do
     begin
-      Closest := nil;
-      Playing := nil;
-      BestDistance := 1e20;
-      Obj := FirstArcadeObject;
-      while Obj <> nil do
+      if (Obj.SoundDelay = 0) and (Index + 9000 = Obj.SoundGroup) then
       begin
-        if (Obj.SoundDelay = 0) and (Index + 9000 = Obj.SoundGroup) then
+        if Obj.Sound <> nil then Playing := Obj;
+        Position := Obj.GetProjectedPosition;
+        if IsDepthBeforeSphereHorizon(Position.Z) then
         begin
-          if Obj.Sound <> nil then Playing := Obj;
-          Position := Obj.GetProjectedPosition;
-          if IsDepthBeforeSphereHorizon(Position.Z) then
+          Distance := Sqr(Position.X) + Sqr(Position.Y);
+          if Distance < BestDistance then
           begin
-            Distance := Sqr(Position.X) + Sqr(Position.Y);
-            if Distance < BestDistance then
-            begin
-              BestDistance := Distance;
-              Closest := Obj;
-            end;
+            BestDistance := Distance;
+            Closest := Obj;
           end;
         end;
-        Obj := Obj.Next;
       end;
-      if (Playing <> nil) and (Closest <> Playing) then
-      begin
-        Playing.Sound.Free;
-        Playing.Sound := nil;
-      end;
-      if Closest <> nil then
-      begin
-        if Closest.Sound = nil then
-        begin
-          Closest.Sound := TSoundBufferControl.Create;
-          Closest.Sound.Configure(Closest.SoundPath, Closest.SoundGroup, True);
-        end;
-        Volume := (Sqrt(BestDistance) - 100) * (1 / 300);
-        if Volume < 0 then Volume := 0
-        else if Volume > 1 then Volume := 1;
-        Closest.Sound.SetVolume(1 - Volume);
-      end;
+      Obj := Obj.Next;
     end;
+    if (Playing <> nil) and (Closest <> Playing) then
+    begin
+      Playing.Sound.Free;
+      Playing.Sound := nil;
+    end;
+    if Closest <> nil then
+    begin
+      if Closest.Sound = nil then
+      begin
+        Closest.Sound := TSoundBufferControl.Create;
+        Closest.Sound.Configure(Closest.SoundPath, Closest.SoundGroup, True);
+      end;
+      Volume := (Sqrt(BestDistance) - 100) * (1 / 300);
+      if Volume < 0 then Volume := 0
+      else if Volume > 1 then Volume := 1;
+      Closest.Sound.SetVolume(1 - Volume);
+    end;
+  end;
 end;
-{ @end $54F42C }
+{ @end $65B5C4 }
 
 end.

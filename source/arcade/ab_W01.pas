@@ -1,6 +1,4 @@
 unit ab_W01;
-// Unit bracket (inferred): .text 0x004F3AC0..0x004F42FF; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
-// Native TabW01 projectile family: $4F3B28..$4F4300.
 
 interface
 
@@ -18,18 +16,18 @@ type
     ExpireTick: Integer; // @offset $E0
     TurnSpeed: Single; // @offset $E4
     TrailImages: TList; // @offset $E8
-    constructor Create; // @addr $4F3B28
-    destructor Destroy; override; // @addr $4F3BE0
-    procedure Launch(Owner: TabObject; Amount: Integer; Offset: Single); // @addr $4F3C98
-    procedure Advance; override; // @addr $4F3E48
-    procedure UpdateVisuals; override; // @addr $4F4080
+    constructor Create; // @addr $5541D0
+    destructor Destroy; override; // @addr $554264
+    procedure Launch(Owner: TabObject; Amount: Integer; Offset: Single); // @addr $5542E4
+    procedure Advance; override; // @addr $55445C
+    procedure UpdateVisuals; override; // @addr $55461C
   end;
 
 implementation
 
 uses ab_Ship, GlobalsV;
 
-{ @routine $4F3B28 TabW01_Create }
+{ @routine $5541D0 TabW01_Create }
 constructor TabW01.Create;
 begin
   inherited Create;
@@ -42,9 +40,9 @@ begin
   Collidable := False;
   TrailImages := TList.Create;
 end;
-{ @end $4F3B28 }
+{ @end $5541D0 }
 
-{ @routine $4F3BE0 TabW01_Destroy }
+{ @routine $554264 TabW01_Destroy }
 destructor TabW01.Destroy;
 var
   Index: Integer;
@@ -62,9 +60,9 @@ begin
   end;
   inherited Destroy;
 end;
-{ @end $4F3BE0 }
+{ @end $554264 }
 
-{ @routine $4F3C98 TabW01_Launch }
+{ @routine $5542E4 TabW01_Launch }
 procedure TabW01.Launch(Owner: TabObject; Amount: Integer; Offset: Single);
 var
   Heading, HeadingDelta: Double;
@@ -86,9 +84,9 @@ begin
   Image := ab_WorldImage_Create(MakeVector3D(0, 0, 0), 'GAI,Bm.AB.w01_f', 'GAI,Bm.AB.w01_s', False);
   ab_WorldImage_SetDepth(Image, HitFrontDepth, HitBackDepth);
 end;
-{ @end $4F3C98 }
+{ @end $5542E4 }
 
-{ @routine $4F3E48 TabW01_Advance }
+{ @routine $55445C TabW01_Advance }
 procedure TabW01.Advance;
 var
   Collision: TabObject;
@@ -127,9 +125,9 @@ begin
   end
   else if Exploding then DeletionPending := Image.Finished;
 end;
-{ @end $4F3E48 }
+{ @end $55445C }
 
-{ @routine $4F4080 TabW01_UpdateVisuals }
+{ @routine $55461C TabW01_UpdateVisuals }
 procedure TabW01.UpdateVisuals;
 var
   Entry: PabWorldImage;
@@ -185,6 +183,6 @@ begin
     LastTrailPosition := GetWorldPosition;
   end;
 end;
-{ @end $4F4080 }
+{ @end $55461C }
 
 end.

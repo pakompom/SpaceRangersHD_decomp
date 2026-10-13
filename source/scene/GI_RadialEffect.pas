@@ -20,9 +20,9 @@ type
   TAuraAnimationPaths = array of WideString;
 
 var
-  AuraAnimationPaths: array of WideString; // @addr $88AF34
-  RadiationRadii: array of Integer; // @addr $88AF38
-  RadiationPalettes: array of TRadiationPalette; // @addr $88AF3C
+  AuraAnimationPaths: array of WideString; // @addr $81AFE8
+  RadiationRadii: array of Integer; // @addr $81AFEC
+  RadiationPalettes: array of TRadiationPalette; // @addr $81AFF0
 
 type
   TPSRadEffectGI = class(TPSWeaponGI) // @size $164
@@ -37,39 +37,39 @@ type
     LatticeOffset: TPointF; // @offset $158
     PositionInitialized: Boolean; // @offset $160
 
-    constructor Create(Owner: TObjectGI; APaletteIndex: Integer); // @addr $69B424
-    destructor Destroy; override; // @addr $69B4F4
-    procedure SetColor(Value: Word); // @addr $69B530
-    procedure SetPosition(Position: TPoint); override; // @addr $69B550
-    procedure SetTargetPoint(Point: TPoint); override; // @addr $69B740
-    procedure UpdateProjectionBounds; // @addr $69B794
-    procedure UpdateHitTestBounds; override; // @addr $69B80C
-    function GetLocalBounds: TRect; override; // @addr $69B86C
-    function AddParticle: PRadiationParticle; // @addr $69B8D0
-    procedure ClearParticles; // @addr $69B948
-    procedure InvalidateRect(Rect: TRect); override; // @addr $69B99C
-    procedure Advance(Timer: PCallbackTimerGI; UserData: Integer); override; // @addr $69BA68
-    procedure Draw(ClipRect: TRect); override; // @addr $69C4B0
+    constructor Create(Owner: TObjectGI; APaletteIndex: Integer); // @addr $4E9F68
+    destructor Destroy; override; // @addr $4EA014
+    procedure SetColor(Value: Word); // @addr $4EA040
+    procedure SetPosition(Position: TPoint); override; // @addr $4EA048
+    procedure SetTargetPoint(Point: TPoint); override; // @addr $4EA21C
+    procedure UpdateProjectionBounds; // @addr $4EA25C
+    procedure UpdateHitTestBounds; override; // @addr $4EA2B8
+    function GetLocalBounds: TRect; override; // @addr $4EA2EC
+    function AddParticle: PRadiationParticle; // @addr $4EA31C
+    procedure ClearParticles; // @addr $4EA35C
+    procedure InvalidateRect(Rect: TRect); override; // @addr $4EA390
+    procedure Advance(Timer: TCallbackTimerIdGI; UserData: Cardinal); override; // @addr $4EA444
+    procedure Draw(ClipRect: TRect); override; // @addr $4EADD8
   end;
 
-procedure LoadRadiationPalettes; // @addr $69C7BC
+procedure LoadRadiationPalettes; // @addr $4EB018
 
 var
-  RadiationEdgeStarts: array[0..23] of TPoint; // @addr $88AF40
-  RadiationEdgeEnds: array[0..23] of TPoint; // @addr $88B000
+  RadiationEdgeStarts: array[0..23] of TPoint; // @addr $81AFF4
+  RadiationEdgeEnds: array[0..23] of TPoint; // @addr $81B0B4
   RadiationHexagon: array[0..5] of TPointF = (
     (X: -0.866025404; Y: 0.5), (X: 0; Y: 1),
     (X: 0.866025404; Y: 0.5), (X: 0.866025404; Y: -0.5),
-    (X: 0; Y: -1), (X: -0.866025404; Y: -0.5)); // @addr $87BF40
+    (X: 0; Y: -1), (X: -0.866025404; Y: -0.5)); // @addr $80E928
 
 implementation
 
-// @unit-initialization $877974
-// @unit-finalization $69CD04
+// @unit-initialization $806804
+// @unit-finalization $4EB4AC
 
 uses SysUtils, Math, EC_BlockPar, EC_Str, EC_Mem, GR_Main, GR_DX, aMyFunction, Globals;
 
-{ @routine $69B424 TPSRadEffectGI_Create }
+{ @routine $4E9F68 TPSRadEffectGI_Create }
 constructor TPSRadEffectGI.Create(Owner: TObjectGI; APaletteIndex: Integer);
 begin
   inherited Create(Owner);
@@ -80,24 +80,24 @@ begin
   PaletteIndex := APaletteIndex;
   SetColor(CurrentPixelFormat.PackNormalizedRgb(RadiationPalettes[APaletteIndex][0], RadiationPalettes[APaletteIndex][1], RadiationPalettes[APaletteIndex][2]));
 end;
-{ @end $69B424 }
+{ @end $4E9F68 }
 
-{ @routine $69B4F4 TPSRadEffectGI_Destroy }
+{ @routine $4EA014 TPSRadEffectGI_Destroy }
 destructor TPSRadEffectGI.Destroy;
 begin
   ClearParticles;
   inherited Destroy;
 end;
-{ @end $69B4F4 }
+{ @end $4EA014 }
 
-{ @routine $69B530 TPSRadEffectGI_SetColor }
+{ @routine $4EA040 TPSRadEffectGI_SetColor }
 procedure TPSRadEffectGI.SetColor(Value: Word);
 begin
   Color := Value;
 end;
-{ @end $69B530 }
+{ @end $4EA040 }
 
-{ @routine $69B550 TPSRadEffectGI_SetPosition }
+{ @routine $4EA048 TPSRadEffectGI_SetPosition }
 procedure TPSRadEffectGI.SetPosition(Position: TPoint);
 var
   X1, Y1, X2, Y2, Distance1, Distance2: Single;
@@ -125,9 +125,9 @@ begin
   end;
   UpdateProjectionBounds;
 end;
-{ @end $69B550 }
+{ @end $4EA048 }
 
-{ @routine $69B740 TPSRadEffectGI_SetTargetPoint }
+{ @routine $4EA21C TPSRadEffectGI_SetTargetPoint }
 procedure TPSRadEffectGI.SetTargetPoint(Point: TPoint);
 begin
   if (TargetPoint.X <> Point.X) or (TargetPoint.Y <> Point.Y) then
@@ -136,9 +136,9 @@ begin
     UpdateProjectionBounds;
   end;
 end;
-{ @end $69B740 }
+{ @end $4EA21C }
 
-{ @routine $69B794 TPSRadEffectGI_UpdateProjectionBounds }
+{ @routine $4EA25C TPSRadEffectGI_UpdateProjectionBounds }
 procedure TPSRadEffectGI.UpdateProjectionBounds;
 begin
   ProjectionBounds.Left := -RadiationRadii[PaletteIndex];
@@ -146,9 +146,9 @@ begin
   ProjectionBounds.Top := -RadiationRadii[PaletteIndex];
   ProjectionBounds.Bottom := RadiationRadii[PaletteIndex];
 end;
-{ @end $69B794 }
+{ @end $4EA25C }
 
-{ @routine $69B80C TPSRadEffectGI_UpdateHitTestBounds }
+{ @routine $4EA2B8 TPSRadEffectGI_UpdateHitTestBounds }
 procedure TPSRadEffectGI.UpdateHitTestBounds;
 begin
   HitTestBounds.Left := ProjectionBounds.Left + AbsolutePosition.X;
@@ -156,9 +156,9 @@ begin
   HitTestBounds.Right := ProjectionBounds.Right + AbsolutePosition.X;
   HitTestBounds.Bottom := ProjectionBounds.Bottom + AbsolutePosition.Y;
 end;
-{ @end $69B80C }
+{ @end $4EA2B8 }
 
-{ @routine $69B86C TPSRadEffectGI_GetLocalBounds }
+{ @routine $4EA2EC TPSRadEffectGI_GetLocalBounds }
 function TPSRadEffectGI.GetLocalBounds: TRect;
 begin
   Result.Left := ProjectionBounds.Left + LocalPosition.X;
@@ -166,9 +166,9 @@ begin
   Result.Right := ProjectionBounds.Right + LocalPosition.X;
   Result.Bottom := ProjectionBounds.Bottom + LocalPosition.Y;
 end;
-{ @end $69B86C }
+{ @end $4EA2EC }
 
-{ @routine $69B8D0 TPSRadEffectGI_AddParticle }
+{ @routine $4EA31C TPSRadEffectGI_AddParticle }
 function TPSRadEffectGI.AddParticle: PRadiationParticle;
 var
   Particle: PRadiationParticle;
@@ -181,9 +181,9 @@ begin
   if FirstParticle = nil then FirstParticle := Particle;
   Result := Particle;
 end;
-{ @end $69B8D0 }
+{ @end $4EA31C }
 
-{ @routine $69B948 TPSRadEffectGI_ClearParticles }
+{ @routine $4EA35C TPSRadEffectGI_ClearParticles }
 procedure TPSRadEffectGI.ClearParticles;
 var
   Particle, Current: PRadiationParticle;
@@ -198,9 +198,9 @@ begin
   FirstParticle := nil;
   LastParticle := nil;
 end;
-{ @end $69B948 }
+{ @end $4EA35C }
 
-{ @routine $69B99C TPSRadEffectGI_InvalidateRect }
+{ @routine $4EA390 TPSRadEffectGI_InvalidateRect }
 procedure TPSRadEffectGI.InvalidateRect(Rect: TRect);
 var
   Target: TPoint;
@@ -215,10 +215,10 @@ begin
   if IntersectRects(Intersection, Rect, GameScreenRect) then
     MessageLoop.QueueUpdateRect(Intersection);
 end;
-{ @end $69B99C }
+{ @end $4EA390 }
 
-{ @routine $69BA68 TPSRadEffectGI_Advance }
-procedure TPSRadEffectGI.Advance(Timer: PCallbackTimerGI; UserData: Integer);
+{ @routine $4EA444 TPSRadEffectGI_Advance }
+procedure TPSRadEffectGI.Advance(Timer: TCallbackTimerIdGI; UserData: Cardinal);
 var
   Column, Row, Edge, X, Y, Columns, Rows, RingOffset, FadeAlpha: Integer;
   Particle, Current: PRadiationParticle;
@@ -269,29 +269,29 @@ begin
   Dec(RemainingTicks);
   if RadiationRadii[PaletteIndex] < Radius then RemainingTicks := 0;
 end;
-{ @end $69BA68 }
+{ @end $4EA444 }
 
-{ @routine $69C4B0 TPSRadEffectGI_Draw }
+{ @routine $4EADD8 TPSRadEffectGI_Draw }
 procedure TPSRadEffectGI.Draw(ClipRect: TRect);
 var
   DistanceSquared, FadeRadius, CenterX, CenterY: Integer;
 
-  // @nested $69BF88 RadiationRingColor
-  function RadiationRingColor(Value: Integer): Cardinal; // @addr $69BF88 @calls "0x0069C3A2, 0x0069C198"
+  // @nested $4EA92C RadiationRingColor
+  function RadiationRingColor(Value: Integer): Cardinal; // @addr $4EA92C @calls "0x004EAB25,0x004EACE2"
   begin
     Result := SampleGradientColor(RadiationPalettes[PaletteIndex], Sqr(Value / 255.0));
   end;
 
-  // @nested $69BFDC RadiationRingAlpha
-  function RadiationRingAlpha(Distance: Single): Integer; // @addr $69BFDC @calls "0x0069C388, 0x0069C17E"
+  // @nested $4EA978 RadiationRingAlpha
+  function RadiationRingAlpha(Distance: Single): Integer; // @addr $4EA978 @calls "0x004EAB0F,0x004EACC8"
   begin
     if Distance > 0 then Result := Round(Math.Max(0, Alpha - Sqr(Distance) * 10.0))
     else if Distance > -10.0 then Result := Round(Math.Max(0, 10.0 * Distance + Alpha))
     else Result := Round(Math.Max(0, (Distance + 10.0) * 3.0 + (Alpha - 100)));
   end;
 
-  // @nested $69C148 QueueRadiationOctants
-  procedure QueueRadiationOctants(X, Y: Integer); // @addr $69C148 @calls "0x0069C65F"
+  // @nested $4EAAD8 QueueRadiationOctants
+  procedure QueueRadiationOctants(X, Y: Integer); // @addr $4EAAD8 @calls "0x004EAF0D"
   var
     PixelColor: Cardinal;
     PixelAlpha: Integer;
@@ -299,25 +299,23 @@ var
   begin
     Distance := Sqrt(DistanceSquared);
     PixelAlpha := RadiationRingAlpha(Distance - FadeRadius);
-    if PixelAlpha > 0 then
+    if PixelAlpha <= 0 then Exit;
+    PixelColor := Color565ToArgb(RadiationRingColor(PixelAlpha));
+    QueueDrawPoint(X + CenterX, Y + CenterY, PixelColor, PixelAlpha);
+    QueueDrawPoint(-X + CenterX, -Y + CenterY, PixelColor, PixelAlpha);
+    if (X > 0) and (Y > 0) then
     begin
-      PixelColor := Color565ToArgb(RadiationRingColor(PixelAlpha));
-      QueueDrawPoint(X + CenterX, Y + CenterY, PixelColor, PixelAlpha);
-      QueueDrawPoint(-X + CenterX, -Y + CenterY, PixelColor, PixelAlpha);
+      QueueDrawPoint(-X + CenterX, Y + CenterY, PixelColor, PixelAlpha);
+      QueueDrawPoint(X + CenterX, -Y + CenterY, PixelColor, PixelAlpha);
+    end;
+    if X <> Y then
+    begin
+      QueueDrawPoint(Y + CenterX, X + CenterY, PixelColor, PixelAlpha);
+      QueueDrawPoint(-Y + CenterX, -X + CenterY, PixelColor, PixelAlpha);
       if (X > 0) and (Y > 0) then
       begin
-        QueueDrawPoint(-X + CenterX, Y + CenterY, PixelColor, PixelAlpha);
-        QueueDrawPoint(X + CenterX, -Y + CenterY, PixelColor, PixelAlpha);
-      end;
-      if X <> Y then
-      begin
-        QueueDrawPoint(Y + CenterX, X + CenterY, PixelColor, PixelAlpha);
-        QueueDrawPoint(-Y + CenterX, -X + CenterY, PixelColor, PixelAlpha);
-        if (X > 0) and (Y > 0) then
-        begin
-          QueueDrawPoint(-Y + CenterX, X + CenterY, PixelColor, PixelAlpha);
-          QueueDrawPoint(Y + CenterX, -X + CenterY, PixelColor, PixelAlpha);
-        end;
+        QueueDrawPoint(-Y + CenterX, X + CenterY, PixelColor, PixelAlpha);
+        QueueDrawPoint(Y + CenterX, -X + CenterY, PixelColor, PixelAlpha);
       end;
     end;
   end;
@@ -325,17 +323,20 @@ var
 var
   Edge: Integer;
 
-  // @nested $69C338 BlendRadiationOctants
-  procedure BlendRadiationOctants(X, Y: Integer); // @addr $69C338 @calls "0x0069C7A9"
+  // @nested $4EAC78 BlendRadiationOctants
+  procedure BlendRadiationOctants(X, Y: Integer); // @addr $4EAC78 @calls "0x004EB006"
   var
     PixelColor: Cardinal;
     PixelAlpha: Integer;
 
-    // @nested $69C2D0 BlendRadiationPoint
-    procedure BlendRadiationPoint(X, Y: Integer); // @addr $69C2D0 @calls "0x0069C3C6, 0x0069C3E3, 0x0069C40A, 0x0069C425, 0x0069C446, 0x0069C463, 0x0069C48A, 0x0069C4A5"
+    // @nested $4EAC28 BlendRadiationPoint
+    procedure BlendRadiationPoint(X, Y: Integer); // @addr $4EAC28 @calls "0x004EAD04,0x004EAD1F,0x004EAD40,0x004EAD59,0x004EAD74,0x004EAD8F,0x004EADB0,0x004EADC9"
     begin
-      if (ClipRect.Left <= X) and (ClipRect.Right > X) and (ClipRect.Top <= Y) and (ClipRect.Bottom > Y) then
-        ScreenRenderBuffer.BlendPixel16(X, Y, PixelColor, PixelAlpha);
+      if ClipRect.Left > X then Exit;
+      if ClipRect.Right <= X then Exit;
+      if ClipRect.Top > Y then Exit;
+      if ClipRect.Bottom <= Y then Exit;
+      ScreenRenderBuffer.BlendPixel16(X, Y, PixelColor, PixelAlpha);
     end;
 
   var
@@ -343,26 +344,24 @@ var
   begin
     Distance := Sqrt(DistanceSquared);
     PixelAlpha := RadiationRingAlpha(Round(Distance) - FadeRadius);
-    if PixelAlpha > 0 then
+    if PixelAlpha <= 0 then Exit;
+    PixelColor := RadiationRingColor(PixelAlpha);
+    Edge := 0;
+    BlendRadiationPoint(X + CenterX, Y + CenterY);
+    BlendRadiationPoint(-X + CenterX, -Y + CenterY);
+    if (X > 0) and (Y > 0) then
     begin
-      PixelColor := RadiationRingColor(PixelAlpha);
-      Edge := 0;
-      BlendRadiationPoint(X + CenterX, Y + CenterY);
-      BlendRadiationPoint(-X + CenterX, -Y + CenterY);
+      BlendRadiationPoint(-X + CenterX, Y + CenterY);
+      BlendRadiationPoint(X + CenterX, -Y + CenterY);
+    end;
+    if X <> Y then
+    begin
+      BlendRadiationPoint(Y + CenterX, X + CenterY);
+      BlendRadiationPoint(-Y + CenterX, -X + CenterY);
       if (X > 0) and (Y > 0) then
       begin
-        BlendRadiationPoint(-X + CenterX, Y + CenterY);
-        BlendRadiationPoint(X + CenterX, -Y + CenterY);
-      end;
-      if X <> Y then
-      begin
-        BlendRadiationPoint(Y + CenterX, X + CenterY);
-        BlendRadiationPoint(-Y + CenterX, -X + CenterY);
-        if (X > 0) and (Y > 0) then
-        begin
-          BlendRadiationPoint(-Y + CenterX, X + CenterY);
-          BlendRadiationPoint(Y + CenterX, -X + CenterY);
-        end;
+        BlendRadiationPoint(-Y + CenterX, X + CenterY);
+        BlendRadiationPoint(Y + CenterX, -X + CenterY);
       end;
     end;
   end;
@@ -455,9 +454,9 @@ begin
     end;
   end;
 end;
-{ @end $69C4B0 }
+{ @end $4EADD8 }
 
-{ @routine $69C7BC LoadRadiationPalettes }
+{ @routine $4EB018 LoadRadiationPalettes }
 procedure LoadRadiationPalettes;
 var
   Block, PaletteBlock: TBlockParEC;
@@ -474,19 +473,17 @@ begin
   for Index := 0 to Count - 1 do
   begin
     Text := IntToStr(Index);
-    if Block.CountBlocks(Text) <> 0 then
+    if Block.CountBlocks(Text) = 0 then Continue;
+    PaletteBlock := Block.GetBlockByPath(Text);
+    for ColorIndex := 0 to 1 do
     begin
-      PaletteBlock := Block.GetBlockByPath(Text);
-      for ColorIndex := 0 to 1 do
-      begin
-        Text := PaletteBlock.GetParam('Color' + IntToStr(ColorIndex));
-        for PartIndex := 0 to 2 do
-          RadiationPalettes[Index][3 * ColorIndex + PartIndex] := ExtractDecimalToSingleW(ExtractDelimitedPartW(Text, PartIndex, ','));
-      end;
-      if PaletteBlock.CountParams('Radius') > 0 then
-        RadiationRadii[Index] := ExtractDigitsToIntW(PaletteBlock.GetParam('Radius'))
-      else RadiationRadii[Index] := 500;
+      Text := PaletteBlock.GetParam('Color' + IntToStr(ColorIndex));
+      for PartIndex := 0 to 2 do
+        RadiationPalettes[Index][3 * ColorIndex + PartIndex] := ExtractDecimalToSingleW(ExtractDelimitedPartW(Text, PartIndex, ','));
     end;
+    if PaletteBlock.CountParams('Radius') > 0 then
+      RadiationRadii[Index] := ExtractDigitsToIntW(PaletteBlock.GetParam('Radius'))
+    else RadiationRadii[Index] := 500;
   end;
   for Index := Low(RadiationHexagon) to High(RadiationHexagon) do
     for ColorIndex := 0 to 3 do
@@ -508,14 +505,12 @@ begin
   for Index := 0 to Count - 1 do
   begin
     Text := IntToStr(Index);
-    if Block.CountBlocks(Text) <> 0 then
-    begin
-      PaletteBlock := Block.GetBlockByPath(Text);
-      if PaletteBlock.CountParams('GAI') > 0 then
-        AuraAnimationPaths[Index] := PaletteBlock.GetParam('GAI');
-    end;
+    if Block.CountBlocks(Text) = 0 then Continue;
+    PaletteBlock := Block.GetBlockByPath(Text);
+    if PaletteBlock.CountParams('GAI') > 0 then
+      AuraAnimationPaths[Index] := PaletteBlock.GetParam('GAI');
   end;
 end;
-{ @end $69C7BC }
+{ @end $4EB018 }
 
 end.

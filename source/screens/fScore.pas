@@ -1,5 +1,4 @@
 unit fScore;
-// Unit bracket (inferred): .text 0x0057B608..0x005836DE; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -48,14 +47,14 @@ type
     TotalScore: Integer; // @offset 0x74
     Exported: Boolean; // @offset 0x78  Session-only; not serialized.
 
-    constructor Create; // @addr 0x57B77C
-    destructor Destroy; override; // @addr 0x57B7D0
-    procedure CapturePlayer(Victory: Boolean); // @addr 0x57B80C @note "Also checks end-game achievements and submits eligible victories through the Steam score callback."
-    procedure RecalculateDifficultyPercent; // @addr 0x57BE28
-    procedure RecalculateTotalScore; // @addr 0x57BE80 @note "Defeats score zero. Victories use experience, difficulty, elapsed years and ending-resolution penalties; Disqualified does not suppress the local score."
-    procedure SaveToBuffer(Buffer: TBufEC); // @addr 0x57BFF0 @note "Writes entry marker 205. PortraitFaceId and quest numbers are truncated to bytes; separate civilian/military/ranger kill counts are not saved."
-    procedure LoadFromBuffer(Buffer: TBufEC; FileVersion: Integer); // @addr 0x57C374 @note "Recalculates TotalScore. An unexpected entry marker resets the registered score screen to defaults."
-    procedure ExportToFile(FileName: WideString); // @addr 0x57C7F0 @note "Writes readable statistics and a protected payload; overwrites the destination."
+    constructor Create; // @addr 0x0068A5F0
+    destructor Destroy; override; // @addr 0x0068A634
+    procedure CapturePlayer(Victory: Boolean); // @addr 0x0068A664 @note "Also checks end-game achievements and submits eligible victories through the Steam score callback."
+    procedure RecalculateDifficultyPercent; // @addr 0x0068AB7C
+    procedure RecalculateTotalScore; // @addr 0x0068ABB0 @note "Defeats score zero. Victories use experience, difficulty, elapsed years and ending-resolution penalties; Disqualified does not suppress the local score."
+    procedure SaveToBuffer(Buffer: TBufEC); // @addr 0x0068ACE8 @note "Writes entry marker 205. PortraitFaceId and quest numbers are truncated to bytes; separate civilian/military/ranger kill counts are not saved."
+    procedure LoadFromBuffer(Buffer: TBufEC; FileVersion: Integer); // @addr 0x0068AF80 @note "Recalculates TotalScore. An unexpected entry marker resets the registered score screen to defaults."
+    procedure ExportToFile(FileName: WideString); // @addr 0x0068B2F4 @note "Writes readable statistics and a protected payload; overwrites the destination."
   end;
 
   TfScore = class(TMessageLoopGI) // @size 0xD8
@@ -63,33 +62,33 @@ type
     Entries: TList; // @offset 0xD0  Owned TfScoreUnit objects; table capacity is 11.
     SelectedIndex: Integer; // @offset 0xD4
 
-    constructor Create; // @addr 0x57ECD4
-    destructor Destroy; override; // @addr 0x57ED2C
-    procedure InitializeLayout; override; // @addr 0x57ED74 @slot 0x30
-    procedure OnOpen; override; // @addr 0x57EFF0 @slot 0x1C @note "Releases the active galaxy and memory save snapshot."
-    procedure OnClose; override; // @addr 0x57FE0C @slot 0x20
-    procedure SelectMusic; override; // @addr 0x5836C4 @slot 0x28
-    procedure SortAndTrimEntries; // @addr 0x57D1BC @note "Keeps 11 entries. Equal-score comparison only favors an earlier finish when candidate difficulty is at least the incumbent's; this is not a lexicographic comparison."
-    procedure InitializeDefaultEntry(Index: Integer; var Entry: TfScoreUnit); // @addr 0x57D2C4 @note "Index must be 0..10; Entry must already be allocated."
-    procedure CreateDefaultTable; // @addr 0x57E2FC
-    procedure RecordPlayerResult(Victory: Boolean); // @addr 0x57E358 @note "Reloads the table. Matches an existing run by score and generation seed; otherwise replaces the last entry, sorts by score alone, and tracks its selection. Saves immediately."
-    procedure RemoveSelectedEntryAndRefill; // @addr 0x57E5A4 @note "Also removes every entry with an empty ScoreTags buffer; surviving entries are mixed with defaults and trimmed to 11. Does not save."
-    procedure ClearEntries; // @addr 0x57E6A8
-    procedure LoadTableFromDisk; // @addr 0x57E704 @note "Appends to Entries; the caller must clear it first. Reads file version 2 and verifies its checksum."
-    procedure ReloadTable; // @addr 0x57E9C4 @note "Clears Entries, loads score.dat when present, otherwise creates defaults."
-    procedure SaveTableToDisk; // @addr 0x57EA70 @note "Replaces the table with defaults if its count is not 11."
-    procedure EntryMouseEnter(Sender: TObjectGI); // @addr 0x57FE98
-    procedure EntryMouseLeave(Sender: TObjectGI); // @addr 0x580040
-    procedure DeleteEntryClicked(Sender: TObjectGI); // @addr 0x5801E8
-    procedure ClearTableClicked(Sender: TObjectGI); // @addr 0x580374
-    procedure CloseClicked(Sender: TObjectGI); // @addr 0x5804A4
-    procedure KeyDown(Sender: TObjectGI; Key: Cardinal); // @addr 0x5804DC
-    procedure RefreshDetails; // @addr 0x580610
-    procedure EntryMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x583278
-    procedure ExportEntryClicked(Sender: TObjectGI); // @addr 0x583300 @note "Exports ToServerNN.txt and also submits an eligible score through the Steam callback when available."
-    procedure QuestHelpMouseEnter(Sender: TObjectGI); // @addr 0x583610
-    procedure QuestHelpMouseLeave(Sender: TObjectGI); // @addr 0x583630
-    procedure ShowControlHelp(Sender: TObjectGI; Visible: Boolean); // @addr 0x583650
+    constructor Create; // @addr 0x0068D16C
+    destructor Destroy; override; // @addr 0x0068D1B4
+    procedure InitializeLayout; override; // @addr 0x0068D1EC @slot 0x30
+    procedure OnOpen; override; // @addr 0x0068D440 @slot 0x1C @note "Releases the active galaxy and memory save snapshot."
+    procedure OnClose; override; // @addr 0x0068E1CC @slot 0x20
+    procedure SelectMusic; override; // @addr 0x006917F8 @slot 0x28
+    procedure SortAndTrimEntries; // @addr 0x0068BBFC @note "Keeps 11 entries. Equal-score comparison only favors an earlier finish when candidate difficulty is at least the incumbent's; this is not a lexicographic comparison."
+    procedure InitializeDefaultEntry(Index: Integer; var Entry: TfScoreUnit); // @addr 0x0068BCD8 @note "Index must be 0..10; Entry must already be allocated."
+    procedure CreateDefaultTable; // @addr 0x0068C924
+    procedure RecordPlayerResult(Victory: Boolean); // @addr 0x0068C970 @note "Reloads the table. Matches an existing run by score and generation seed; otherwise replaces the last entry, sorts by score alone, and tracks its selection. Saves immediately."
+    procedure RemoveSelectedEntryAndRefill; // @addr 0x0068CB54 @note "Also removes every entry with an empty ScoreTags buffer; surviving entries are mixed with defaults and trimmed to 11. Does not save."
+    procedure ClearEntries; // @addr 0x0068CC18
+    procedure LoadTableFromDisk; // @addr 0x0068CC54 @note "Appends to Entries; the caller must clear it first. Reads file version 2 and verifies its checksum."
+    procedure ReloadTable; // @addr 0x0068CEBC @note "Clears Entries, loads score.dat when present, otherwise creates defaults."
+    procedure SaveTableToDisk; // @addr 0x0068CF60 @note "Replaces the table with defaults if its count is not 11."
+    procedure EntryMouseEnter(Sender: TObjectGI); // @addr 0x0068E244
+    procedure EntryMouseLeave(Sender: TObjectGI); // @addr 0x0068E3DC
+    procedure DeleteEntryClicked(Sender: TObjectGI); // @addr 0x0068E574
+    procedure ClearTableClicked(Sender: TObjectGI); // @addr 0x0068E6E8
+    procedure CloseClicked(Sender: TObjectGI); // @addr 0x0068E808
+    procedure KeyDown(Sender: TObjectGI; Key: Cardinal); // @addr 0x0068E830
+    procedure RefreshDetails; // @addr 0x0068E8E0
+    procedure EntryMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x00691404
+    procedure ExportEntryClicked(Sender: TObjectGI); // @addr 0x00691480 @note "Exports ToServerNN.txt and also submits an eligible score through the Steam callback when available."
+    procedure QuestHelpMouseEnter(Sender: TObjectGI); // @addr 0x00691784
+    procedure QuestHelpMouseLeave(Sender: TObjectGI); // @addr 0x0069178C
+    procedure ShowControlHelp(Sender: TObjectGI; Visible: Boolean); // @addr 0x00691794
   end;
 
 implementation
@@ -101,27 +100,26 @@ uses aKling, SysUtils, Windows, Math, EC_File, EC_Str, GR_Main, GlobalsV, Global
 const
   ScoreValueColorTag = '<color=255,222,0>';
 
-{ @routine $57B77C TfScoreUnit_Create }
+{ @routine $68A5F0 TfScoreUnit_Create }
 constructor TfScoreUnit.Create;
 begin
   inherited Create;
   ScoreTags := TBufEC.Create;
 end;
-{ @end $57B77C }
+{ @end $68A5F0 }
 
-{ @routine $57B7D0 TfScoreUnit_Destroy }
+{ @routine $68A634 TfScoreUnit_Destroy }
 destructor TfScoreUnit.Destroy;
 begin
   ScoreTags.Free;
   inherited Destroy;
 end;
-{ @end $57B7D0 }
+{ @end $68A634 }
 
-{ @routine $57B80C TfScoreUnit_CapturePlayer }
+{ @routine $68A664 TfScoreUnit_CapturePlayer }
 procedure TfScoreUnit.CapturePlayer(Victory: Boolean);
 type
   TScoreKillCounters = array[0..6] of Integer;
-  // These views preserve the native aggregate assignment across seven named fields.
   PScoreCounterView = ^TScoreCounterView;
   TScoreCounterView = packed record
     Prefix: array[0..$27] of Byte;
@@ -215,9 +213,9 @@ begin
     if SteamInitialized and SteamLeaderboardFound then SteamUploadScore(TotalScore);
   end;
 end;
-{ @end $57B80C }
+{ @end $68A664 }
 
-{ @routine $57BE28 TfScoreUnit_RecalculateDifficultyPercent }
+{ @routine $68AB7C TfScoreUnit_RecalculateDifficultyPercent }
 procedure TfScoreUnit.RecalculateDifficultyPercent;
 var I: Byte;
 begin
@@ -225,9 +223,9 @@ begin
   for I := 0 to 7 do DifficultyPercent := DifficultyPercent + 50 * DifficultyLevels[I] + 50;
   DifficultyPercent := DifficultyPercent div 8;
 end;
-{ @end $57BE28 }
+{ @end $68AB7C }
 
-{ @routine $57BE80 TfScoreUnit_RecalculateTotalScore }
+{ @routine $68ABB0 TfScoreUnit_RecalculateTotalScore }
 procedure TfScoreUnit.RecalculateTotalScore;
 var
   Experience, Difficulty: Extended;
@@ -243,14 +241,16 @@ begin
     PirateResolved := (PirateRank >= 7) or (PirateEndingState = 3);
     PirateDefeat := PirateEndingState = 4;
     if (DominatorsResolved = False) or (PirateDefeat <> False) then
+    begin
       if PirateResolved or DominatorsResolved then TotalScore := Floor(TotalScore * 0.75)
       else TotalScore := TotalScore div 2;
+    end;
   end
   else TotalScore := 0;
 end;
-{ @end $57BE80 }
+{ @end $68ABB0 }
 
-{ @routine $57BFF0 TfScoreUnit_SaveToBuffer }
+{ @routine $68ACE8 TfScoreUnit_SaveToBuffer }
 procedure TfScoreUnit.SaveToBuffer(Buffer: TBufEC);
 var
   Skill: TPilotSkill;
@@ -306,9 +306,9 @@ begin
     Buffer.AddIntegerValue(PlanetBattleHistory[I].DateTurn);
   end;
 end;
-{ @end $57BFF0 }
+{ @end $68ACE8 }
 
-{ @routine $57C374 TfScoreUnit_LoadFromBuffer }
+{ @routine $68AF80 TfScoreUnit_LoadFromBuffer }
 procedure TfScoreUnit.LoadFromBuffer(Buffer: TBufEC; FileVersion: Integer);
 var
   Skill: TPilotSkill;
@@ -386,9 +386,9 @@ begin
     RecalculateTotalScore;
   end;
 end;
-{ @end $57C374 }
+{ @end $68AF80 }
 
-{ @routine $57C7F0 TfScoreUnit_ExportToFile }
+{ @routine $68B2F4 TfScoreUnit_ExportToFile }
 procedure TfScoreUnit.ExportToFile(FileName: WideString);
 var
   Text: WideString;
@@ -451,16 +451,16 @@ begin
   Buffer.Free;
   Encoded.Free;
 end;
-{ @end $57C7F0 }
+{ @end $68B2F4 }
 
-{ @routine $57D1BC TfScore_SortAndTrimEntries }
+{ @routine $68BBFC TfScore_SortAndTrimEntries }
 procedure TfScore.SortAndTrimEntries;
 var
   Candidate, Current: TfScoreUnit;
   Last: TObject;
   I, Count, J: Integer;
-  // @nested $57D10C ShouldSwapScoreEntries
-  function ShouldSwapScoreEntries: Boolean; // @addr 0x57D10C @ida "bool __cdecl $name(void *ParentFrame);" @note "Nested in TfScore.SortAndTrimEntries; requires its parent frame."
+  // @nested $68BB90 ShouldSwapScoreEntries
+  function ShouldSwapScoreEntries: Boolean; // @addr 0x0068BB90 @ida "bool __cdecl $name(void *ParentFrame);" @note "Nested in TfScore.SortAndTrimEntries; requires its parent frame."
   begin
     if Candidate.TotalScore < Current.TotalScore then begin Result := False; Exit; end;
     if Candidate.TotalScore > Current.TotalScore then begin Result := True; Exit; end;
@@ -491,9 +491,9 @@ begin
     Entries.Delete(Entries.Count - 1);
   end;
 end;
-{ @end $57D1BC }
+{ @end $68BBFC }
 
-{ @routine $57D2C4 TfScore_InitializeDefaultEntry }
+{ @routine $68BCD8 TfScore_InitializeDefaultEntry }
 procedure TfScore.InitializeDefaultEntry(Index: Integer; var Entry: TfScoreUnit);
 var
   Count, I: Integer;
@@ -914,9 +914,9 @@ begin
     end;
   Entry.RecalculateTotalScore;
 end;
-{ @end $57D2C4 }
+{ @end $68BCD8 }
 
-{ @routine $57E2FC TfScore_CreateDefaultTable }
+{ @routine $68C924 TfScore_CreateDefaultTable }
 procedure TfScore.CreateDefaultTable;
 var Entry: TfScoreUnit; I: Integer;
 begin
@@ -929,9 +929,9 @@ begin
   end;
   SortAndTrimEntries;
 end;
-{ @end $57E2FC }
+{ @end $68C924 }
 
-{ @routine $57E358 TfScore_RecordPlayerResult }
+{ @routine $68C970 TfScore_RecordPlayerResult }
 procedure TfScore.RecordPlayerResult(Victory: Boolean);
 var
   I, J, Count: Integer;
@@ -974,9 +974,9 @@ begin
     end;
   SaveTableToDisk;
 end;
-{ @end $57E358 }
+{ @end $68C970 }
 
-{ @routine $57E5A4 TfScore_RemoveSelectedEntryAndRefill }
+{ @routine $68CB54 TfScore_RemoveSelectedEntryAndRefill }
 procedure TfScore.RemoveSelectedEntryAndRefill;
 var I: Integer; Entry: TfScoreUnit;
 begin
@@ -1000,9 +1000,9 @@ begin
   end;
   SortAndTrimEntries;
 end;
-{ @end $57E5A4 }
+{ @end $68CB54 }
 
-{ @routine $57E6A8 TfScore_ClearEntries }
+{ @routine $68CC18 TfScore_ClearEntries }
 procedure TfScore.ClearEntries;
 var I: Integer; Entry: TObject;
 begin
@@ -1013,9 +1013,9 @@ begin
   end;
   Entries.Clear;
 end;
-{ @end $57E6A8 }
+{ @end $68CC18 }
 
-{ @routine $57E704 TfScore_LoadTableFromDisk }
+{ @routine $68CC54 TfScore_LoadTableFromDisk }
 procedure TfScore.LoadTableFromDisk;
 var
   Buffer: TBufEC;
@@ -1034,7 +1034,7 @@ begin
       if Version <> 2 then raise EAbort.Create('Error unpacking score.dat');
       Seed := Integer(Buffer.GetByteAt(6)) or (Integer(Buffer.GetByteAt(7)) shl 8) or
         (Integer(Buffer.GetByteAt(4)) shl 16) or (Integer(Buffer.GetByteAt(5)) shl 24);
-      Data := @PEncodedTableHeaderEC(Buffer.Data).Checksum;
+      Data := PByte(Cardinal(Buffer.Data) + 8);
       Size := Buffer.DataSize;
       for I := 8 to Size - 1 do
       begin
@@ -1065,9 +1065,9 @@ begin
     Buffer.Free;
   end;
 end;
-{ @end $57E704 }
+{ @end $68CC54 }
 
-{ @routine $57E9C4 TfScore_ReloadTable }
+{ @routine $68CEBC TfScore_ReloadTable }
 procedure TfScore.ReloadTable;
 begin
   ClearEntries;
@@ -1078,9 +1078,9 @@ begin
     SortAndTrimEntries;
   end;
 end;
-{ @end $57E9C4 }
+{ @end $68CEBC }
 
-{ @routine $57EA70 TfScore_SaveTableToDisk }
+{ @routine $68CF60 TfScore_SaveTableToDisk }
 procedure TfScore.SaveTableToDisk;
 var
   Buffer: TBufEC;
@@ -1096,10 +1096,10 @@ begin
   Buffer.AddIntegerValue(2);
   Buffer.AddIntegerValue(0);
   Buffer.AddIntegerValue(0);
-  Buffer.SetByteAt(6, Byte(Seed));
-  Buffer.SetByteAt(7, Byte(Seed shr 8));
-  Buffer.SetByteAt(4, Byte(Seed shr 16));
-  Buffer.SetByteAt(5, Byte(Seed shr 24));
+  Buffer.SetByteAt(6, Seed);
+  Buffer.SetByteAt(7, Cardinal(Seed) shr 8);
+  Buffer.SetByteAt(4, Cardinal(Seed) shr 16);
+  Buffer.SetByteAt(5, Cardinal(Seed) shr 24);
   for I := 0 to Entries.Count - 1 do
   begin
     Entry := Entries[I];
@@ -1114,7 +1114,8 @@ begin
     Data := PByte(PAnsiChar(Data) + 1);
   end;
   Buffer.SetInt32At(8, Checksum);
-  Data := @PEncodedTableHeaderEC(Buffer.Data).Checksum;
+  Data := Buffer.Data;
+  Inc(Data, 8);
   for I := 8 to Size - 1 do
   begin
     Data^ := Data^ xor Byte(Seed - 1);
@@ -1130,26 +1131,26 @@ begin
   FileObject.Free;
   Buffer.Free;
 end;
-{ @end $57EA70 }
+{ @end $68CF60 }
 
-{ @routine $57ECD4 TfScore_Create }
+{ @routine $68D16C TfScore_Create }
 constructor TfScore.Create;
 begin
   inherited Create;
   Entries := TList.Create;
 end;
-{ @end $57ECD4 }
+{ @end $68D16C }
 
-{ @routine $57ED2C TfScore_Destroy }
+{ @routine $68D1B4 TfScore_Destroy }
 destructor TfScore.Destroy;
 begin
   ClearEntries;
   Entries.Free;
   inherited Destroy;
 end;
-{ @end $57ED2C }
+{ @end $68D1B4 }
 
-{ @routine $57ED74 TfScore_InitializeLayout }
+{ @routine $68D1EC TfScore_InitializeLayout }
 procedure TfScore.InitializeLayout;
 begin
   inherited InitializeLayout;
@@ -1171,9 +1172,9 @@ begin
   GetByName('MainPanel').KeyDownCallback := KeyDown;
   SelectedIndex := 0;
 end;
-{ @end $57ED74 }
+{ @end $68D1EC }
 
-{ @routine $57EFF0 TfScore_OnOpen }
+{ @routine $68D440 TfScore_OnOpen }
 procedure TfScore.OnOpen;
 var
   I: Integer;
@@ -1200,7 +1201,7 @@ begin
       Row.SetPosition(Classes.Point(0, I * 51));
       Row.SetSize(Classes.Point(Panel.ClientSize.X, 51));
     end;
-    Row.SetName(WideString('Slot' + IntToStr(I)));
+    Row.Name := WideString('Slot' + IntToStr(I));
     Row.LeftButtonDownCallback := EntryMouseDown;
     Row.MouseEnterCallback := EntryMouseEnter;
     Row.MouseLeaveCallback := EntryMouseLeave;
@@ -1212,7 +1213,7 @@ begin
       if GiResourceVariant = 1 then SetSize(Classes.Point(454, 40))
       else SetSize(Classes.Point(577, 51));
       SetActive(True);
-      SetName(WideString('Slot' + IntToStr(I) + 'Active'));
+      Name := WideString('Slot' + IntToStr(I) + 'Active');
     end;
     with TLabelGI.Create(Row) do
     begin
@@ -1230,8 +1231,8 @@ begin
       SetFontName(NormalFontName);
       SetTextAlignX(taxCenter);
       SetTextAlignY(tayCenterEx);
-      SetName(WideString('Slot' + IntToStr(I) + 'Nom'));
-      SetText(WideString(IntToStr(I + 1)));
+      Name := WideString('Slot' + IntToStr(I) + 'Nom');
+      Text := IntToStr(I + 1);
     end;
     with TLabelGI.Create(Row) do
     begin
@@ -1249,7 +1250,7 @@ begin
       SetFontName(NormalBoldFontName);
       SetTextAlignX(taxCenter);
       SetTextAlignY(tayCenterEx);
-      SetName(WideString('Slot' + IntToStr(I) + 'Score'));
+      Name := WideString('Slot' + IntToStr(I) + 'Score');
     end;
     with TLabelGI.Create(Row) do
     begin
@@ -1267,7 +1268,7 @@ begin
       SetFontName(NormalBoldFontName);
       SetTextAlignX(taxCenter);
       SetTextAlignY(tayCenterEx);
-      SetName(WideString('Slot' + IntToStr(I) + 'Name'));
+      Name := WideString('Slot' + IntToStr(I) + 'Name');
     end;
     with TLabelGI.Create(Row) do
     begin
@@ -1285,23 +1286,23 @@ begin
       SetFontName(NormalFontName);
       SetTextAlignX(taxCenter);
       SetTextAlignY(tayCenterEx);
-      SetName(WideString('Slot' + IntToStr(I) + 'Code'));
+      Name := WideString('Slot' + IntToStr(I) + 'Code');
     end;
     SendPanel := TPanelGI.Create(GetByName('PanelToServer') as TPanelGI);
-    SendPanel.SetName(WideString('Slot' + IntToStr(I) + 'ToServer'));
+    SendPanel.Name := WideString('Slot' + IntToStr(I) + 'ToServer');
     SendPanel.SetPosition(Classes.Point(0, I * GiScalePixelsEx(51, 40)));
     SendPanel.SetSize(Classes.Point(GiScalePixelsEx(56, 45), GiScalePixelsEx(55, 44)));
     with TImageGI.Create(SendPanel) do
     begin
-      SetImagePath('GI,Bm.FormScore2.' + GiResourceSuffix + 'SendPanel');
+      ImageSourcePath := 'GI,Bm.FormScore2.' + GiResourceSuffix + 'SendPanel';
       SetPosition(Classes.Point(0, 0));
       SetSize(GetContentSize);
       SetDepth(9);
     end;
     with TImageGI.Create(SendPanel) do
     begin
-      SetName(WideString('Slot' + IntToStr(I) + 'ToServerLight'));
-      SetImagePath('GI,Bm.FormScore2.' + GiResourceSuffix + 'SendLight');
+      Name := WideString('Slot' + IntToStr(I) + 'ToServerLight');
+      ImageSourcePath := 'GI,Bm.FormScore2.' + GiResourceSuffix + 'SendLight';
       SetPosition(Classes.Point(GiScalePixelsEx(20, 16), GiScalePixelsEx(4, 5)));
       SetSize(GetContentSize);
       SetDepth(8);
@@ -1329,17 +1330,17 @@ begin
   ReloadTable;
   RefreshDetails;
 end;
-{ @end $57EFF0 }
+{ @end $68D440 }
 
-{ @routine $57FE0C TfScore_OnClose }
+{ @routine $68E1CC TfScore_OnClose }
 procedure TfScore.OnClose;
 begin
   with GetByName('PanelSlot') as TPanelGI do FreeOwnedChildren;
   with GetByName('PanelToServer') as TPanelGI do FreeOwnedChildren;
 end;
-{ @end $57FE0C }
+{ @end $68E1CC }
 
-{ @routine $57FE98 TfScore_EntryMouseEnter }
+{ @routine $68E244 TfScore_EntryMouseEnter }
 procedure TfScore.EntryMouseEnter(Sender: TObjectGI);
 begin
   if Sender.UserValue <> SelectedIndex then
@@ -1350,9 +1351,9 @@ begin
         OwnerInfo[RaceToOwner(TfScoreUnit(Entries[Sender.UserValue]).PilotRace)].InternalName + 'A');
   end;
 end;
-{ @end $57FE98 }
+{ @end $68E244 }
 
-{ @routine $580040 TfScore_EntryMouseLeave }
+{ @routine $68E3DC TfScore_EntryMouseLeave }
 procedure TfScore.EntryMouseLeave(Sender: TObjectGI);
 begin
   if Sender.UserValue <> SelectedIndex then
@@ -1363,15 +1364,15 @@ begin
         OwnerInfo[RaceToOwner(TfScoreUnit(Entries[Sender.UserValue]).PilotRace)].InternalName + 'N');
   end;
 end;
-{ @end $580040 }
+{ @end $68E3DC }
 
-{ @routine $5801E8 TfScore_DeleteEntryClicked }
+{ @routine $68E574 TfScore_DeleteEntryClicked }
 procedure TfScore.DeleteEntryClicked(Sender: TObjectGI);
 var Text: WideString; Entry: TfScoreUnit;
 begin
   Entry := Entries[SelectedIndex];
   Text := FormatText2(LanguageDataConfig.GetParamByPathOrMarker('FormScore.QueryDelete'),
-    TextHighlightColorTag, '<Name>', Entry.PlayerName, '<Score>', WideString(IntToStr(Entry.TotalScore)));
+    TextHighlightColorTag, '<Name>', Entry.PlayerName, '<Score>', IntToStr(Entry.TotalScore));
   if ShowMessageBoxGI(Self, Text, mbgOK or mbgCancel or mbgQuestion) <> mbgResultOK then PostMouseMoveMessage
   else
   begin
@@ -1381,9 +1382,9 @@ begin
     RefreshDetails;
   end;
 end;
-{ @end $5801E8 }
+{ @end $68E574 }
 
-{ @routine $580374 TfScore_ClearTableClicked }
+{ @routine $68E6E8 TfScore_ClearTableClicked }
 procedure TfScore.ClearTableClicked(Sender: TObjectGI);
 begin
   if ShowMessageBoxGI(Self, LanguageDataConfig.GetParamByPathOrMarker('FormScore.QueryClear'), mbgOK or mbgCancel or mbgQuestion) <> mbgResultOK then
@@ -1397,9 +1398,9 @@ begin
     RefreshDetails;
   end;
 end;
-{ @end $580374 }
+{ @end $68E6E8 }
 
-{ @routine $5804A4 TfScore_CloseClicked }
+{ @routine $68E808 TfScore_CloseClicked }
 procedure TfScore.CloseClicked(Sender: TObjectGI);
 begin
   ScreenLoadMode := 4;
@@ -1407,9 +1408,9 @@ begin
   RequestedScreenId := screenLoad;
   RequestClose(1);
 end;
-{ @end $5804A4 }
+{ @end $68E808 }
 
-{ @routine $5804DC TfScore_KeyDown }
+{ @routine $68E830 TfScore_KeyDown }
 procedure TfScore.KeyDown(Sender: TObjectGI; Key: Cardinal);
 begin
   if (Key = VK_ESCAPE) or (Key = VK_RETURN) then CloseClicked(nil)
@@ -1435,9 +1436,9 @@ begin
     RefreshDetails;
   end;
 end;
-{ @end $5804DC }
+{ @end $68E830 }
 
-{ @routine $580610 TfScore_RefreshDetails }
+{ @routine $68E8E0 TfScore_RefreshDetails }
 procedure TfScore.RefreshDetails;
 var
   I, X: Integer;
@@ -1445,7 +1446,7 @@ var
   Selected: Boolean;
   LetterQuests, ShipKillQuests, PlanetQuests, SystemDefenseQuests, ShipDefenseQuests: Word;
   Control: TObjectGI;
-  Text, Separator, ResolvedColor, UnresolvedColor: WideString;
+  CaptionText, Separator, ResolvedColor, UnresolvedColor: WideString;
 begin
   for I := 0 to Entries.Count - 1 do
   begin
@@ -1453,9 +1454,9 @@ begin
     Selected := I = SelectedIndex;
     with GetByName(WideString('Slot' + IntToStr(I) + 'Active')) as TImageGI do
       if Selected then SetImagePath('GI,Bm.FormScore2.' + GiResourceSuffix +
-        OwnerInfo[RaceToOwner(Entry.PilotRace)].InternalName + 'D')
+          OwnerInfo[RaceToOwner(Entry.PilotRace)].InternalName + 'D')
       else SetImagePath('GI,Bm.FormScore2.' + GiResourceSuffix +
-        OwnerInfo[RaceToOwner(Entry.PilotRace)].InternalName + 'N');
+          OwnerInfo[RaceToOwner(Entry.PilotRace)].InternalName + 'N');
     with GetByName(WideString('Slot' + IntToStr(I) + 'Nom')) as TLabelGI do
     begin
       if Selected then SetTextColor(CurrentPixelFormat.PackRgbBytes(255, 222, 0))
@@ -1465,17 +1466,17 @@ begin
     begin
       if Selected then SetTextColor(CurrentPixelFormat.PackRgbBytes(255, 222, 0))
       else SetTextColor(CurrentPixelFormat.PackRgbBytes(0, 0, 0));
-      SetText(WideString(IntToStr(Entry.TotalScore)));
+      Text := IntToStr(Entry.TotalScore);
     end;
     with GetByName(WideString('Slot' + IntToStr(I) + 'Name')) as TLabelGI do
     begin
-      SetText(Entry.PlayerName);
+      Text := Entry.PlayerName;
       if Selected then SetTextColor(CurrentPixelFormat.PackRgbBytes(255, 222, 0))
       else SetTextColor(CurrentPixelFormat.PackRgbBytes(0, 0, 0));
     end;
     with GetByName(WideString('Slot' + IntToStr(I) + 'Code')) as TLabelGI do
     begin
-      SetText(WideString(IntToStr(Entry.DifficultyPercent) + '%'));
+      Text := WideString(IntToStr(Entry.DifficultyPercent) + '%');
       if Selected then SetTextColor(CurrentPixelFormat.PackRgbBytes(255, 222, 0))
       else SetTextColor(CurrentPixelFormat.PackRgbBytes(0, 0, 0));
     end;
@@ -1486,10 +1487,10 @@ begin
   with GetByName('ButClear') as TGraphButtonGI do SetDisabled(Entry.ScoreTags.DataSize <= 0);
   with GetByName('CaptainI') as TImageGI do
   begin
-    SetImagePath('GI,Bm.Captain.' + GiResourceSuffix +
-      OwnerInfo[RaceToOwner(Entry.PilotRace)].InternalName + WideString(IntToStr(Entry.PortraitFaceId)) + 'i');
-    SetImageKindX(ikxCenter);
-    SetImageKindY(ikyCenter);
+    ImageSourcePath := 'GI,Bm.Captain.' + GiResourceSuffix +
+      OwnerInfo[RaceToOwner(Entry.PilotRace)].InternalName + WideString(IntToStr(Entry.PortraitFaceId)) + 'i';
+    KindX := ikxCenter;
+    KindY := ikyCenter;
     SetActive(True);
   end;
   with GetByName('CaptainA') as TgaiGI do
@@ -1516,47 +1517,47 @@ begin
   with GetByName('Skill0') as TImageGI do
   begin
     SetActive(Entry.SkillLevels[psAccuracy] > 0);
-    if Active then SetImagePath('GI,Bm.FormScore2.' + GiResourceSuffix + 'Skill' + WideString(IntToStr(Entry.SkillLevels[psAccuracy] - 1)));
+    if Active then ImageSourcePath := 'GI,Bm.FormScore2.' + GiResourceSuffix + 'Skill' + WideString(IntToStr(Entry.SkillLevels[psAccuracy] - 1));
   end;
   with GetByName('Skill1') as TImageGI do
   begin
     SetActive(Entry.SkillLevels[psManeuverability] > 0);
-    if Active then SetImagePath('GI,Bm.FormScore2.' + GiResourceSuffix + 'Skill' + WideString(IntToStr(Entry.SkillLevels[psManeuverability] - 1)));
+    if Active then ImageSourcePath := 'GI,Bm.FormScore2.' + GiResourceSuffix + 'Skill' + WideString(IntToStr(Entry.SkillLevels[psManeuverability] - 1));
   end;
   with GetByName('Skill2') as TImageGI do
   begin
     SetActive(Entry.SkillLevels[psTechnical] > 0);
-    if Active then SetImagePath('GI,Bm.FormScore2.' + GiResourceSuffix + 'Skill' + WideString(IntToStr(Entry.SkillLevels[psTechnical] - 1)));
+    if Active then ImageSourcePath := 'GI,Bm.FormScore2.' + GiResourceSuffix + 'Skill' + WideString(IntToStr(Entry.SkillLevels[psTechnical] - 1));
   end;
   with GetByName('Skill3') as TImageGI do
   begin
     SetActive(Entry.SkillLevels[psTrading] > 0);
-    if Active then SetImagePath('GI,Bm.FormScore2.' + GiResourceSuffix + 'Skill' + WideString(IntToStr(Entry.SkillLevels[psTrading] - 1)));
+    if Active then ImageSourcePath := 'GI,Bm.FormScore2.' + GiResourceSuffix + 'Skill' + WideString(IntToStr(Entry.SkillLevels[psTrading] - 1));
   end;
   with GetByName('Skill4') as TImageGI do
   begin
     SetActive(Entry.SkillLevels[psCharisma] > 0);
-    if Active then SetImagePath('GI,Bm.FormScore2.' + GiResourceSuffix + 'Skill' + WideString(IntToStr(Entry.SkillLevels[psCharisma] - 1)));
+    if Active then ImageSourcePath := 'GI,Bm.FormScore2.' + GiResourceSuffix + 'Skill' + WideString(IntToStr(Entry.SkillLevels[psCharisma] - 1));
   end;
   with GetByName('Skill5') as TImageGI do
   begin
     SetActive(Entry.SkillLevels[psLeadership] > 0);
-    if Active then SetImagePath('GI,Bm.FormScore2.' + GiResourceSuffix + 'Skill' + WideString(IntToStr(Entry.SkillLevels[psLeadership] - 1)));
+    if Active then ImageSourcePath := 'GI,Bm.FormScore2.' + GiResourceSuffix + 'Skill' + WideString(IntToStr(Entry.SkillLevels[psLeadership] - 1));
   end;
-  (GetByName('IDate') as TLabelGI).SetText(FormatText1(LocalizedColorText('FormScore.DateWin'),
-    ScoreValueColorTag, '<Date>', FormatGameTurnDate(Entry.FinishedTurn)));
-  (GetByName('ITurn') as TLabelGI).SetText(FormatText1(LocalizedColorText('FormScore.TurnWin'),
-    ScoreValueColorTag, '<Date>', WideString(IntToStr(Max(0, Entry.FinishedTurn - GalaxyWarmupTurns)))));
-  (GetByName('IRank') as TLabelGI).SetText(FormatText1(LocalizedColorText('FormScore.Rank'),
-    TextHighlightColorTag, '<Rank>', LocalizedText('Rank.' + CoalitionRankNames[Entry.Rank] + '.Name')));
-  (GetByName('IKillDominator') as TLabelGI).SetText(WideString(IntToStr(Entry.DominatorKillCount)));
-  (GetByName('IKillPirate') as TLabelGI).SetText(WideString(IntToStr(Entry.PirateKillCount)));
-  (GetByName('IKillNormal') as TLabelGI).SetText(WideString(IntToStr(Entry.OtherShipKillCount)));
-  (GetByName('IKillHyper') as TLabelGI).SetText(WideString(IntToStr(Entry.ArcadeKillCount)));
-  (GetByName('ILiberationSystem') as TLabelGI).SetText(FormatText1(LocalizedColorText('FormScore.LiberationSystem'),
-    ScoreValueColorTag, '<LiberationSystem>', WideString(IntToStr(Entry.LiberatedSystemCount))));
-  (GetByName('IRewards') as TLabelGI).SetText(FormatText1(LocalizedColorText('FormScore.Rewards'),
-    TextHighlightColorTag, '<Rewards>', WideString(IntToStr(Entry.AwardCount))));
+  (GetByName('IDate') as TLabelGI).Text := FormatText1(LocalizedColorText('FormScore.DateWin'),
+    ScoreValueColorTag, '<Date>', FormatGameTurnDate(Entry.FinishedTurn));
+  (GetByName('ITurn') as TLabelGI).Text := FormatText1(LocalizedColorText('FormScore.TurnWin'),
+    ScoreValueColorTag, '<Date>', IntToStr(Max(0, Entry.FinishedTurn - GalaxyWarmupTurns)));
+  (GetByName('IRank') as TLabelGI).Text := FormatText1(LocalizedColorText('FormScore.Rank'),
+    TextHighlightColorTag, '<Rank>', LocalizedText('Rank.' + CoalitionRankNames[Entry.Rank] + '.Name'));
+  (GetByName('IKillDominator') as TLabelGI).Text := IntToStr(Entry.DominatorKillCount);
+  (GetByName('IKillPirate') as TLabelGI).Text := IntToStr(Entry.PirateKillCount);
+  (GetByName('IKillNormal') as TLabelGI).Text := IntToStr(Entry.OtherShipKillCount);
+  (GetByName('IKillHyper') as TLabelGI).Text := IntToStr(Entry.ArcadeKillCount);
+  (GetByName('ILiberationSystem') as TLabelGI).Text := FormatText1(LocalizedColorText('FormScore.LiberationSystem'),
+    ScoreValueColorTag, '<LiberationSystem>', IntToStr(Entry.LiberatedSystemCount));
+  (GetByName('IRewards') as TLabelGI).Text := FormatText1(LocalizedColorText('FormScore.Rewards'),
+    TextHighlightColorTag, '<Rewards>', IntToStr(Entry.AwardCount));
   LetterQuests := 0;
   ShipKillQuests := 0;
   PlanetQuests := 0;
@@ -1564,13 +1565,15 @@ begin
   ShipDefenseQuests := 0;
   for I := 0 to High(Entry.QuestResults) do
     if Entry.QuestResults[I].Successful then
+    begin
       if Entry.QuestResults[I].QuestType = qtSendLetter then Inc(LetterQuests)
       else if Entry.QuestResults[I].QuestType = qtKillShip then Inc(ShipKillQuests)
       else if Entry.QuestResults[I].QuestType = qtPlanetQuest then Inc(PlanetQuests)
       else if Entry.QuestResults[I].QuestType = qtDefendSystem then Inc(SystemDefenseQuests)
       else if Entry.QuestResults[I].QuestType = qtDefendShip then Inc(ShipDefenseQuests);
-  (GetByName('IQuests') as TLabelGI).SetText(FormatText1(LocalizedColorText('FormScore.Quests'),
-    TextHighlightColorTag, '<Quests>', WideString(IntToStr(LetterQuests + ShipKillQuests + PlanetQuests + SystemDefenseQuests + ShipDefenseQuests))));
+    end;
+  (GetByName('IQuests') as TLabelGI).Text := FormatText1(LocalizedColorText('FormScore.Quests'),
+    TextHighlightColorTag, '<Quests>', IntToStr(LetterQuests + ShipKillQuests + PlanetQuests + SystemDefenseQuests + ShipDefenseQuests));
   if GiResourceVariant = 2 then Separator := '+' else Separator := ':';
   with GetByName('IQuests') do
   begin
@@ -1581,7 +1584,7 @@ begin
       if Control = nil then
       begin
         Control := TLabelGI.Create(GetByName('PanelWin'));
-        Control.SetName(WideString('QI' + IntToStr(I)));
+        Control.Name := WideString('QI' + IntToStr(I));
       end;
       Control.SetPosition(Classes.Point(X, LocalPosition.Y + 2));
       Control.SetSize(Classes.Point(1, ClientSize.Y - 2));
@@ -1591,21 +1594,21 @@ begin
         SetTextAlignX(taxAuto);
         SetTextAlignY(tayCenterEx);
         SetTextColor(CurrentPixelFormat.PackRgbBytes(199, 135, 0));
-        if I = 0 then SetText('(')
-        else if I = 1 then SetText(WideString(IntToStr(LetterQuests)))
-        else if I = 2 then SetText(Separator)
-        else if I = 3 then SetText(WideString(IntToStr(ShipKillQuests)))
-        else if I = 4 then SetText(Separator)
-        else if I = 5 then SetText(WideString(IntToStr(PlanetQuests)))
-        else if I = 6 then SetText(Separator)
-        else if I = 7 then SetText(WideString(IntToStr(SystemDefenseQuests)))
-        else if I = 8 then SetText(Separator)
-        else if I = 9 then SetText(WideString(IntToStr(ShipDefenseQuests)))
-        else if I = 10 then SetText(')');
+        if I = 0 then Text := '('
+        else if I = 1 then Text := IntToStr(LetterQuests)
+        else if I = 2 then Text := Separator
+        else if I = 3 then Text := IntToStr(ShipKillQuests)
+        else if I = 4 then Text := Separator
+        else if I = 5 then Text := IntToStr(PlanetQuests)
+        else if I = 6 then Text := Separator
+        else if I = 7 then Text := IntToStr(SystemDefenseQuests)
+        else if I = 8 then Text := Separator
+        else if I = 9 then Text := IntToStr(ShipDefenseQuests)
+        else if I = 10 then Text := ')';
         if I in [1, 3, 5, 7, 9] then
         begin
           HelpText := FormatText1(LookupLocalizedTextByKey(WideString('FormScore.Quests' + IntToStr((I - 1) div 2 + 1))),
-            TextHighlightColorTag, '<N>', GetText);
+            TextHighlightColorTag, '<N>', Text);
           MouseEnterCallback := QuestHelpMouseEnter;
           MouseLeaveCallback := QuestHelpMouseLeave;
         end;
@@ -1616,52 +1619,52 @@ begin
       end;
     end;
   end;
-  (GetByName('IPlanetBattles') as TLabelGI).SetText(FormatText1(LocalizedColorText('FormScore.PlanetBattles'),
-    TextHighlightColorTag, '<PlanetBattles>', WideString(IntToStr(Entry.PlanetBattles))));
-  (GetByName('IExp') as TLabelGI).SetText(FormatText1(LocalizedColorText('FormScore.Exp'),
-    ScoreValueColorTag, '<Exp>', WideString(IntToStr(Entry.TotalExperience))));
+  (GetByName('IPlanetBattles') as TLabelGI).Text := FormatText1(LocalizedColorText('FormScore.PlanetBattles'),
+    TextHighlightColorTag, '<PlanetBattles>', IntToStr(Entry.PlanetBattles));
+  (GetByName('IExp') as TLabelGI).Text := FormatText1(LocalizedColorText('FormScore.Exp'),
+    ScoreValueColorTag, '<Exp>', IntToStr(Entry.TotalExperience));
   ResolvedColor := '<color=255,100,50>';
   UnresolvedColor := '<color=30,252,30>';
   case Entry.BlazerEndingState of
-    0: Text := WrapTextInColor(LocalizedColorText('FormScore.BlazerLeave'), UnresolvedColor);
-    1: Text := WrapTextInColor(LocalizedColorText('FormScore.BlazerDead'), ResolvedColor);
-    2: Text := WrapTextInColor(LocalizedColorText('FormScore.BlazerSuicide'), ResolvedColor);
+    0: CaptionText := WrapTextInColor(LocalizedColorText('FormScore.BlazerLeave'), UnresolvedColor);
+    1: CaptionText := WrapTextInColor(LocalizedColorText('FormScore.BlazerDead'), ResolvedColor);
+    2: CaptionText := WrapTextInColor(LocalizedColorText('FormScore.BlazerSuicide'), ResolvedColor);
   else
-    if Entry.PirateEndingState = 5 then Text := WrapTextInColor(LocalizedColorText('FormScore.BlazerChangeSideAlt'), ResolvedColor)
-    else Text := WrapTextInColor(LocalizedColorText('FormScore.BlazerChangeSide'), ResolvedColor);
+    if Entry.PirateEndingState = 5 then CaptionText := WrapTextInColor(LocalizedColorText('FormScore.BlazerChangeSideAlt'), ResolvedColor)
+    else CaptionText := WrapTextInColor(LocalizedColorText('FormScore.BlazerChangeSide'), ResolvedColor);
   end;
-  (GetByName('IBlazer') as TLabelGI).SetText(FormatText1(Text, '', '<Blazer>', LookupLocalizedTextByKey('ShipType.Dominator.Blazer.0')));
+  (GetByName('IBlazer') as TLabelGI).Text := FormatText1(CaptionText, '', '<Blazer>', LookupLocalizedTextByKey('ShipType.Dominator.Blazer.0'));
   case Entry.KellerEndingState of
-    0: Text := WrapTextInColor(LocalizedColorText('FormScore.KellerLeave'), UnresolvedColor);
-    1: Text := WrapTextInColor(LocalizedColorText('FormScore.KellerDead'), ResolvedColor);
-    2: Text := WrapTextInColor(LocalizedColorText('FormScore.KellerFly'), ResolvedColor);
-  else Text := WrapTextInColor(LocalizedColorText('FormScore.KellerNewResearch'), ResolvedColor);
+    0: CaptionText := WrapTextInColor(LocalizedColorText('FormScore.KellerLeave'), UnresolvedColor);
+    1: CaptionText := WrapTextInColor(LocalizedColorText('FormScore.KellerDead'), ResolvedColor);
+    2: CaptionText := WrapTextInColor(LocalizedColorText('FormScore.KellerFly'), ResolvedColor);
+  else CaptionText := WrapTextInColor(LocalizedColorText('FormScore.KellerNewResearch'), ResolvedColor);
   end;
-  (GetByName('IKeller') as TLabelGI).SetText(FormatText1(Text, '', '<Keller>', LookupLocalizedTextByKey('ShipType.Dominator.Keller.0')));
+  (GetByName('IKeller') as TLabelGI).Text := FormatText1(CaptionText, '', '<Keller>', LookupLocalizedTextByKey('ShipType.Dominator.Keller.0'));
   case Entry.TerronEndingState of
-    0: Text := WrapTextInColor(LocalizedColorText('FormScore.TerronLeave'), UnresolvedColor);
-    1: Text := WrapTextInColor(LocalizedColorText('FormScore.TerronDead'), ResolvedColor);
-    2: Text := WrapTextInColor(LocalizedColorText('FormScore.TerronStar'), ResolvedColor);
-  else Text := WrapTextInColor(LocalizedColorText('FormScore.TerronBattle'), ResolvedColor);
+    0: CaptionText := WrapTextInColor(LocalizedColorText('FormScore.TerronLeave'), UnresolvedColor);
+    1: CaptionText := WrapTextInColor(LocalizedColorText('FormScore.TerronDead'), ResolvedColor);
+    2: CaptionText := WrapTextInColor(LocalizedColorText('FormScore.TerronStar'), ResolvedColor);
+  else CaptionText := WrapTextInColor(LocalizedColorText('FormScore.TerronBattle'), ResolvedColor);
   end;
-  (GetByName('ITerron') as TLabelGI).SetText(FormatText1(Text, '', '<Terron>', LookupLocalizedTextByKey('ShipType.Dominator.Terron.0')));
+  (GetByName('ITerron') as TLabelGI).Text := FormatText1(CaptionText, '', '<Terron>', LookupLocalizedTextByKey('ShipType.Dominator.Terron.0'));
   if Entry.PirateEndingState > 0 then
-    Text := WrapTextInColor(LocalizedColorText(WideString('FormScore.PirateWin' + IntToStr(Entry.PirateEndingState))), ResolvedColor)
-  else Text := WrapTextInColor(LocalizedColorText('FormScore.PirateWin0'), UnresolvedColor);
+    CaptionText := WrapTextInColor(LocalizedColorText(WideString('FormScore.PirateWin' + IntToStr(Entry.PirateEndingState))), ResolvedColor)
+  else CaptionText := WrapTextInColor(LocalizedColorText('FormScore.PirateWin0'), UnresolvedColor);
   with GetByName('IPirate') as TLabelGI do
   begin
     SetActive(True);
-    SetText(Text);
+    Text := CaptionText;
   end;
   if Entry.VictoryAchieved then
-    (GetByName('ITotal') as TLabelGI).SetText(FormatText1(LocalizedColorText('FormScore.TotalWin'),
-      ScoreValueColorTag, '<Total>', WideString(IntToStr(Entry.TotalScore))))
-  else (GetByName('ITotal') as TLabelGI).SetText(LocalizedColorText('FormScore.TotalLoss'));
-  (GetByName('INote') as TLabelGI).SetText(LocalizedColorText('FormScore.Note'));
+    (GetByName('ITotal') as TLabelGI).Text := FormatText1(LocalizedColorText('FormScore.TotalWin'),
+      ScoreValueColorTag, '<Total>', IntToStr(Entry.TotalScore))
+  else (GetByName('ITotal') as TLabelGI).Text := LocalizedColorText('FormScore.TotalLoss');
+  (GetByName('INote') as TLabelGI).Text := LocalizedColorText('FormScore.Note');
 end;
-{ @end $580610 }
+{ @end $68E8E0 }
 
-{ @routine $583278 TfScore_EntryMouseDown }
+{ @routine $691404 TfScore_EntryMouseDown }
 procedure TfScore.EntryMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint);
 begin
   if not Sender.IsOccludedAtPoint(Point) then
@@ -1671,9 +1674,9 @@ begin
     RefreshDetails;
   end;
 end;
-{ @end $583278 }
+{ @end $691404 }
 
-{ @routine $583300 TfScore_ExportEntryClicked }
+{ @routine $691480 TfScore_ExportEntryClicked }
 procedure TfScore.ExportEntryClicked(Sender: TObjectGI);
 var
   Entry: TfScoreUnit;
@@ -1694,39 +1697,39 @@ begin
   ShowMessageBoxGI(Self, Text, mbgOK or mbgUnused04 or mbgLeftAlign);
   RefreshDetails;
 end;
-{ @end $583300 }
+{ @end $691480 }
 
-{ @routine $583610 TfScore_QuestHelpMouseEnter }
+{ @routine $691784 TfScore_QuestHelpMouseEnter }
 procedure TfScore.QuestHelpMouseEnter(Sender: TObjectGI);
 begin
   ShowControlHelp(Sender, True);
 end;
-{ @end $583610 }
+{ @end $691784 }
 
-{ @routine $583630 TfScore_QuestHelpMouseLeave }
+{ @routine $69178C TfScore_QuestHelpMouseLeave }
 procedure TfScore.QuestHelpMouseLeave(Sender: TObjectGI);
 begin
   ShowControlHelp(Sender, False);
 end;
-{ @end $583630 }
+{ @end $69178C }
 
-{ @routine $583650 TfScore_ShowControlHelp }
+{ @routine $691794 TfScore_ShowControlHelp }
 procedure TfScore.ShowControlHelp(Sender: TObjectGI; Visible: Boolean);
 begin
   with GetByName('LabelHelp') as TLabelGI do
   begin
     if Sender.HelpText = '' then Visible := False;
     SetActive(Visible);
-    SetText(Sender.HelpText);
+    Text := Sender.HelpText;
   end;
 end;
-{ @end $583650 }
+{ @end $691794 }
 
-{ @routine $5836C4 TfScore_SelectMusic }
+{ @routine $6917F8 TfScore_SelectMusic }
 procedure TfScore.SelectMusic;
 begin
   MusicManager.PlayCategory('Base');
 end;
-{ @end $5836C4 }
+{ @end $6917F8 }
 
 end.

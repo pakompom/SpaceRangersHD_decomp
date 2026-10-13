@@ -1,6 +1,4 @@
 unit ab_W09;
-// Unit bracket (inferred): .text 0x004F70B4..0x004F7839; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
-// Native TabW09 projectile family: $4F711C..$4F783A.
 
 interface
 
@@ -13,19 +11,19 @@ type
     Image: PabWorldImage; // @offset $B4
     Phase: Integer; // @offset $B8  0 parent, 1 parent explosion, 2 child, 3 child explosion.
     ExpireTick: Integer; // @offset $BC
-    constructor Create; // @addr $4F711C
-    destructor Destroy; override; // @addr $4F71A0
-    procedure Launch(Owner: TabObject; Amount: Integer); // @addr $4F71F8
-    procedure LaunchChild(Parent: TabW09; Angle: Single); // @addr $4F72F4
-    procedure Advance; override; // @addr $4F7458
-    procedure UpdateVisuals; override; // @addr $4F7828
+    constructor Create; // @addr $551540
+    destructor Destroy; override; // @addr $5515AC
+    procedure Launch(Owner: TabObject; Amount: Integer); // @addr $5515E8
+    procedure LaunchChild(Parent: TabW09; Angle: Single); // @addr $5516BC
+    procedure Advance; override; // @addr $5517F0
+    procedure UpdateVisuals; override; // @addr $551B28
   end;
 
 implementation
 
 uses ab_Ship, GlobalsV;
 
-{ @routine $4F711C TabW09_Create }
+{ @routine $551540 TabW09_Create }
 constructor TabW09.Create;
 begin
   inherited Create;
@@ -35,9 +33,9 @@ begin
   CollisionRadius := 5;
   Collidable := False;
 end;
-{ @end $4F711C }
+{ @end $551540 }
 
-{ @routine $4F71A0 TabW09_Destroy }
+{ @routine $5515AC TabW09_Destroy }
 destructor TabW09.Destroy;
 begin
   if Image <> nil then
@@ -47,9 +45,9 @@ begin
   end;
   inherited Destroy;
 end;
-{ @end $4F71A0 }
+{ @end $5515AC }
 
-{ @routine $4F71F8 TabW09_Launch }
+{ @routine $5515E8 TabW09_Launch }
 procedure TabW09.Launch(Owner: TabObject; Amount: Integer);
 begin
   SourceObject := Owner;
@@ -60,9 +58,9 @@ begin
   Image := ab_WorldImage_Create(MakeVector3D(0, 0, 0), 'GAI,Bm.AB.w09_f', 'GAI,Bm.AB.w09_s', False);
   ab_WorldImage_SetDepth(Image, HitFrontDepth, HitBackDepth);
 end;
-{ @end $4F71F8 }
+{ @end $5515E8 }
 
-{ @routine $4F72F4 TabW09_LaunchChild }
+{ @routine $5516BC TabW09_LaunchChild }
 procedure TabW09.LaunchChild(Parent: TabW09; Angle: Single);
 begin
   SourceObject := Parent.SourceObject;
@@ -77,9 +75,9 @@ begin
   Image := ab_WorldImage_Create(MakeVector3D(0, 0, 0), 'GAI,Bm.AB.w09b_f', 'GAI,Bm.AB.w09b_s', False);
   ab_WorldImage_SetDepth(Image, HitFrontDepth, HitBackDepth);
 end;
-{ @end $4F72F4 }
+{ @end $5516BC }
 
-{ @routine $4F7458 TabW09_Advance }
+{ @routine $5517F0 TabW09_Advance }
 procedure TabW09.Advance;
 var
   Index: Integer;
@@ -131,13 +129,13 @@ begin
   end
   else if (Phase = 1) or (Phase = 3) then DeletionPending := Image.Finished;
 end;
-{ @end $4F7458 }
+{ @end $5517F0 }
 
-{ @routine $4F7828 TabW09_UpdateVisuals }
+{ @routine $551B28 TabW09_UpdateVisuals }
 procedure TabW09.UpdateVisuals;
 begin
   inherited UpdateVisuals;
 end;
-{ @end $4F7828 }
+{ @end $551B28 }
 
 end.

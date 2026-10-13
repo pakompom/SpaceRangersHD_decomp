@@ -1,5 +1,4 @@
 unit fGalaxy2;
-// Unit bracket (inferred): .text 0x0067182C..0x0067B5DF; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -17,8 +16,8 @@ type
     SelectedJumpStar: TStar; // @offset 0x100
     RouteStars: TList; // @offset $104 Borrowed TStar objects forming intermediate route markers.
     StarLinks: TPolyLineGI; // @offset $108 Constellation links owned by MapPanel.
-    StarInfoHideTimer: PCallbackTimerGI; // @offset 0x10C
-    JumpAnimationTimer: PCallbackTimerGI; // @offset 0x110
+    StarInfoHideTimer: TCallbackTimerIdGI; // @offset 0x10C
+    JumpAnimationTimer: TCallbackTimerIdGI; // @offset 0x110
     JumpHintAnimationState: Integer; // @offset 0x114
     JumpLightTick: Integer; // @offset 0x118
     JumpButton: TGraphButtonGI; // @offset 0x11C
@@ -31,53 +30,53 @@ type
     CreateMarkerActiveImagePath: WideString; // @offset 0x140
     CreateMarkerMode: Boolean; // @offset $144
 
-    destructor Destroy; override; // @addr 0x67193C
-    procedure OnOpen; override; // @addr 0x671EA0
-    procedure OnClose; override; // @addr 0x674B00
-    procedure ProcessCallbackTimers; override; // @addr 0x67B288
-    procedure SelectMusic; override; // @addr 0x67AF54
-    procedure InitializeLayout; override; // @addr 0x671994
-    procedure ExecuteUiCode(Block: TBlockParEC; Key: Cardinal); override; // @addr 0x67B57C
-    function GalaxyPointToMapPoint(Point: TPointF): TPoint; // @addr 0x674FF4
-    function GalaxyDistanceToMapDistance(Distance: Double): Integer; // @addr 0x675098 @note "Uses the horizontal projection scale."
-    procedure ConfigureReadOnlyMap; // @addr 0x675C30
-    procedure ConfigureJumpSelection; // @addr 0x675D64
-    procedure ShowStarInfo(Star: TStar); // @addr 0x676DB8 @note "Nil hides the panel; cancels StarInfoHideTimer."
-    procedure HideStarInfo(Timer: PCallbackTimerGI; UserData: Integer); // @addr 0x6764F8
-    procedure UpdateJumpAnimations(Timer: PCallbackTimerGI; UserData: Integer); // @addr 0x67AB80
-    function CanShowExtendedRadarInfo(Star: TStar): Boolean; // @addr 0x674E74 @note "Requires an active Prolonger effect as well as radar coverage."
-    function GetRadarSummaryRadius: Integer; // @addr 0x674F18 @note "Measured in radar-summary units of 150 range units."
-    function CanRevealBossPresence(Ship: TShip): Boolean; // @addr 0x679134 @note "Requires boss-specific scanner technology; does not test general visibility."
+    destructor Destroy; override; // @addr 0x006746E4
+    procedure OnOpen; override; // @addr 0x00674BB8
+    procedure OnClose; override; // @addr 0x006775CC
+    procedure ProcessCallbackTimers; override; // @addr 0x0067D3F4
+    procedure SelectMusic; override; // @addr 0x0067D0BC
+    procedure InitializeLayout; override; // @addr 0x00674720
+    procedure ExecuteUiCode(Block: TBlockParEC; Key: Cardinal); override; // @addr 0x0067D634
+    function GalaxyPointToMapPoint(Point: TPointF): TPoint; // @addr 0x00677A18
+    function GalaxyDistanceToMapDistance(Distance: Double): Integer; // @addr 0x00677A94 @note "Uses the horizontal projection scale."
+    procedure ConfigureReadOnlyMap; // @addr 0x006784E4
+    procedure ConfigureJumpSelection; // @addr 0x006785B4
+    procedure ShowStarInfo(Star: TStar); // @addr 0x006793AC @note "Nil hides the panel; cancels StarInfoHideTimer."
+    procedure HideStarInfo(Timer: TCallbackTimerIdGI; UserData: Cardinal); // @addr 0x00678BF0
+    procedure UpdateJumpAnimations(Timer: TCallbackTimerIdGI; UserData: Cardinal); // @addr 0x0067CDDC
+    function CanShowExtendedRadarInfo(Star: TStar): Boolean; // @addr 0x006778CC @note "Requires an active Prolonger effect as well as radar coverage."
+    function GetRadarSummaryRadius: Integer; // @addr 0x00677974 @note "Measured in radar-summary units of 150 range units."
+    function CanRevealBossPresence(Ship: TShip): Boolean; // @addr 0x0067B5B4 @note "Requires boss-specific scanner technology; does not test general visibility."
 
-    procedure CloseClicked(Sender: TObjectGI); // @addr $674C50
-    procedure JumpClicked(Sender: TObjectGI); // @addr $676518
-    procedure JumpMouseEnter(Sender: TObjectGI); // @addr $676B74
-    procedure JumpMouseLeave(Sender: TObjectGI); // @addr $676D58
-    procedure CreateMarkerClicked(Sender: TObjectGI); // @addr $67B418
-    procedure UndoMarkerClicked(Sender: TObjectGI); // @addr $67B500
-    procedure ClearMarkersClicked(Sender: TObjectGI); // @addr $67B544
-    procedure MainPanelKeyDown(Sender: TObjectGI; Key: Cardinal); // @addr $674C7C
-    procedure MainPanelMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $674D4C
-    procedure MapMouseMove(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $675F90
-    procedure MapLeftButtonDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $675FC0
-    procedure MapRightButtonDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $6762E4
-    procedure MapButtonUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $67643C
-    procedure MapDoubleClick(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $6764AC
-    procedure RebuildJumpPath; // @addr $6750DC
-    procedure ClearJumpPath; // @addr $675BA0
-    procedure ClearReadOnlyMapCallbacks; // @addr $675D2C
-    procedure ClearJumpSelectionCallbacks; // @addr $675F20
-    function MapPointToGalaxyPoint(Point: TPoint): TPointF; // @addr $674F4C
-    function BuildStarShipSummary(Star: TStar; var LineCount: Integer): WideString; // @addr $6798E0
+    procedure CloseClicked(Sender: TObjectGI); // @addr $6776E0
+    procedure JumpClicked(Sender: TObjectGI); // @addr $678BF8
+    procedure JumpMouseEnter(Sender: TObjectGI); // @addr $6791CC
+    procedure JumpMouseLeave(Sender: TObjectGI); // @addr $679374
+    procedure CreateMarkerClicked(Sender: TObjectGI); // @addr $67D540
+    procedure UndoMarkerClicked(Sender: TObjectGI); // @addr $67D5F4
+    procedure ClearMarkersClicked(Sender: TObjectGI); // @addr $67D614
+    procedure MainPanelKeyDown(Sender: TObjectGI; Key: Cardinal); // @addr $6776FC
+    procedure MainPanelMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $6777B0
+    procedure MapMouseMove(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $678758
+    procedure MapLeftButtonDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $678780
+    procedure MapRightButtonDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $678A24
+    procedure MapButtonUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $678B54
+    procedure MapDoubleClick(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $678BAC
+    procedure RebuildJumpPath; // @addr $677AC4
+    procedure ClearJumpPath; // @addr $678470
+    procedure ClearReadOnlyMapCallbacks; // @addr $678590
+    procedure ClearJumpSelectionCallbacks; // @addr $678700
+    function MapPointToGalaxyPoint(Point: TPoint): TPointF; // @addr $677998
+    function BuildStarShipSummary(Star: TStar; var LineCount: Integer): WideString; // @addr $67BC54
 
-    constructor Create; // @addr 0x6718DC
+    constructor Create; // @addr 0x00674694
   end;
 
-procedure CaptureGalaxyPreview(ParentLoop: TMessageLoopGI); // @addr $67B3B0
-function RunGalaxyMap(ParentLoop: TMessageLoopGI): Boolean; // @addr $67B2C8
+procedure CaptureGalaxyPreview(ParentLoop: TMessageLoopGI); // @addr $67D4F4
+function RunGalaxyMap(ParentLoop: TMessageLoopGI): Boolean; // @addr $67D420
 
 const
-  GalaxyMapFriendlyShipOrder: array[1..7] of Byte = (0, 1, 10, 2, 3, 4, 5); // @addr $87BF2C
+  GalaxyMapFriendlyShipOrder: array[1..7] of Byte = (0, 1, 10, 2, 3, 4, 5); // @addr $80F7D0
 
 implementation
 
@@ -86,16 +85,16 @@ uses EC_CacheBitmap, Globals, GR_Main, GR_GraphBuf, Windows, SysUtils, Math, aPl
 const
   GalaxySummaryWhiteColorTag = '<color=255,255,254>';
 
-{ @routine $6718DC TfGalaxy2_Create }
+{ @routine $674694 TfGalaxy2_Create }
 constructor TfGalaxy2.Create;
 begin
   inherited Create;
   RouteStars := TList.Create;
   ViewMode := 0;
 end;
-{ @end $6718DC }
+{ @end $674694 }
 
-{ @routine $67193C TfGalaxy2_Destroy }
+{ @routine $6746E4 TfGalaxy2_Destroy }
 destructor TfGalaxy2.Destroy;
 begin
   if RouteStars <> nil then
@@ -105,9 +104,9 @@ begin
   end;
   inherited Destroy;
 end;
-{ @end $67193C }
+{ @end $6746E4 }
 
-{ @routine $671994 TfGalaxy2_InitializeLayout }
+{ @routine $674720 TfGalaxy2_InitializeLayout }
 procedure TfGalaxy2.InitializeLayout;
 begin
   inherited InitializeLayout;
@@ -147,9 +146,9 @@ begin
   (GetByName('ButUndo') as TGraphButtonGI).UpCallback := UndoMarkerClicked;
   (GetByName('ButDel') as TGraphButtonGI).UpCallback := ClearMarkersClicked;
 end;
-{ @end $671994 }
+{ @end $674720 }
 
-{ @routine $671EA0 TfGalaxy2_OnOpen }
+{ @routine $674BB8 TfGalaxy2_OnOpen }
 procedure TfGalaxy2.OnOpen;
 var
   I, J, K: Integer;
@@ -173,11 +172,13 @@ var
   BufferOffset: TPoint;
   Hole, SelectedHole: THole;
   { No native accesses remain to these stack slots. }
-  Reserved84, Reserved88, Reserved8C, Reserved90: Integer;
+  Reserved84, Reserved88, Reserved8C, Reserved90: array[0..3] of Byte;
   ForceText, BossText: WideString;
   CoalitionCount, BlazerCount, KellerCount, TerronCount: Integer;
-  ReservedAC: Integer;
+  ReservedAC: array[0..3] of Byte;
   PirateCount, CustomCount, OtherCount: Integer;
+  { Unreferenced four-byte local; original name and type are unknown. }
+  ReservedBeforeStrength: array[0..3] of Byte;
   Strength: Extended;
   CoalitionPresent, DominatorsPresent, PiratesPresent, CustomPresent, PlayerPartyPresent: Boolean;
   CaptureBuffer: TGraphBufGR;
@@ -210,7 +211,7 @@ begin
   Maximum := MakePointF(-1.0e20, -1.0e20);
   for I := 0 to Galaxy.Constellations.Count - 1 do
   begin
-    Constellation := TConstellation(Galaxy.Constellations[I]);
+    Constellation := Galaxy.Constellations[I];
     for J := 0 to Constellation.OutlinePolygons.CountChain - 1 do
     begin
       Polygon := Constellation.OutlinePolygons.GetChainItem(J);
@@ -232,7 +233,7 @@ begin
   else Block := nil;
   for I := 0 to Galaxy.Constellations.Count - 1 do
   begin
-    Constellation := TConstellation(Galaxy.Constellations[I]);
+    Constellation := Galaxy.Constellations[I];
     if Constellation.Visible then
       for J := 0 to Constellation.OutlinePolygons.CountChain - 1 do
       begin
@@ -253,71 +254,69 @@ begin
         Second := AddPoints(GalaxyPointToMapPoint(Segment.EndPoint), BufferOffset);
         HideBuffer.GraphBuf.DrawAntialiasedLine(First, Second, $FF008080);
       end;
-    if Constellation.Visible then
-      if (Block = nil) or (Block.CountParams('DrawLines') <= 0) or ParseEnabledNameGI(Block.GetParam('DrawLines')) then
-        for J := 0 to Constellation.StarLinks.Count - 1 do
-        begin
-          Segment := Constellation.StarLinks[J];
-          if (Block = nil) or (Block.CountParams('LinesColor') <= 0) then Color := CurrentPixelFormat.PackNormalizedRgb(1, 1, 0)
-          else
-          begin
-            Text := Block.GetParam('LinesColor');
-            Color := CurrentPixelFormat.PackNormalizedRgb(ExtractDecimalToSingleW(ExtractDelimitedPartW(Text, 0, ',')),
-              ExtractDecimalToSingleW(ExtractDelimitedPartW(Text, 1, ',')), ExtractDecimalToSingleW(ExtractDelimitedPartW(Text, 2, ',')));
-          end;
-          StarLinks.AddParentLine(GalaxyPointToMapPoint(Segment.StartPoint), GalaxyPointToMapPoint(Segment.EndPoint), Color, Constellation.Id).Animated := True;
-        end;
-  end;
-  for I := 0 to Galaxy.Constellations.Count - 1 do
-  begin
-    Constellation := TConstellation(Galaxy.Constellations[I]);
-    if Constellation.Visible then
-      for J := 0 to Constellation.OutlineSegments.Count - 1 do
+    if not Constellation.Visible then Continue;
+    if (Block = nil) or (Block.CountParams('DrawLines') <= 0) or ParseEnabledNameGI(Block.GetParam('DrawLines')) then
+      for J := 0 to Constellation.StarLinks.Count - 1 do
       begin
-        Segment := Constellation.OutlineSegments[J];
-        if Galaxy.CountVisibleConstellationsWithBoundaryPoints(Segment.StartPoint, Segment.EndPoint) <= 1 then
-          HideBuffer.GraphBuf.DrawAntialiasedLine(AddPoints(GalaxyPointToMapPoint(Segment.StartPoint), BufferOffset), AddPoints(GalaxyPointToMapPoint(Segment.EndPoint), BufferOffset), $FFFFFF00)
+        Segment := Constellation.StarLinks[J];
+        if (Block = nil) or (Block.CountParams('LinesColor') <= 0) then Color := CurrentPixelFormat.PackNormalizedRgb(1, 1, 0)
         else
-          HideBuffer.GraphBuf.DrawAntialiasedLine(AddPoints(GalaxyPointToMapPoint(Segment.StartPoint), BufferOffset), AddPoints(GalaxyPointToMapPoint(Segment.EndPoint), BufferOffset), $FF000090);
+        begin
+          Text := Block.GetParam('LinesColor');
+          Color := CurrentPixelFormat.PackNormalizedRgb(ExtractDecimalToSingleW(ExtractDelimitedPartW(Text, 0, ',')),
+            ExtractDecimalToSingleW(ExtractDelimitedPartW(Text, 1, ',')), ExtractDecimalToSingleW(ExtractDelimitedPartW(Text, 2, ',')));
+        end;
+        StarLinks.AddParentLine(GalaxyPointToMapPoint(Segment.StartPoint), GalaxyPointToMapPoint(Segment.EndPoint), Color, Constellation.Id).Animated := True;
       end;
   end;
   for I := 0 to Galaxy.Constellations.Count - 1 do
   begin
-    Constellation := TConstellation(Galaxy.Constellations[I]);
-    if (Constellation.OutlineSegments <> nil) and (Constellation.OutlineSegments.Count <> 0) then
+    Constellation := Galaxy.Constellations[I];
+    if not Constellation.Visible then Continue;
+    for J := 0 to Constellation.OutlineSegments.Count - 1 do
     begin
-      if not Constellation.Visible then
-      begin
-        First := GalaxyPointToMapPoint(Constellation.CalculateLabelPosition);
-        NameLabel := TLabelGI.Create(MapPanel);
-        NameLabel.SetFontName(BigFontName);
-        NameLabel.SetDepth(100);
-        NameLabel.SetTextAlignX(taxCenter);
-        NameLabel.SetTextAlignY(tayCenter);
-        NameLabel.SetPositionModeW(False);
-        NameLabel.SetSize(Classes.Point(250, 40));
-        NameLabel.SetPosition(Classes.Point(First.X - 125, First.Y - 20));
-        NameLabel.SetTextColor(CurrentPixelFormat.PackRgbBytes($DB, $DA, $9C));
-        NameLabel.SetTextBorderWidth(1);
-        NameLabel.SetTextBorderColor(CurrentPixelFormat.PackRgbBytes(0, 0, 0));
-        if GiResourceVariant = 1 then NameLabel.SetShadowOffset(2)
-        else NameLabel.SetShadowOffset(3);
-        NameLabel.SetText(Constellation.GetName);
-      end
+      Segment := Constellation.OutlineSegments[J];
+      if Galaxy.CountVisibleConstellationsWithBoundaryPoints(Segment.StartPoint, Segment.EndPoint) <= 1 then
+        HideBuffer.GraphBuf.DrawAntialiasedLine(AddPoints(GalaxyPointToMapPoint(Segment.StartPoint), BufferOffset), AddPoints(GalaxyPointToMapPoint(Segment.EndPoint), BufferOffset), $FFFFFF00)
       else
-      begin
-        First := GalaxyPointToMapPoint(Constellation.CalculateLabelPosition);
-        NameLabel := TLabelGI.Create(MapPanel);
-        NameLabel.SetFontName(BigFontName);
-        NameLabel.SetDepth(1000);
-        NameLabel.SetTextAlignX(taxCenter);
-        NameLabel.SetTextAlignY(tayCenter);
-        NameLabel.SetPositionModeW(False);
-        NameLabel.SetSize(Classes.Point(200, 40));
-        NameLabel.SetPosition(Classes.Point(First.X - 100, First.Y - 20));
-        NameLabel.SetTextColor(CurrentPixelFormat.PackRgbBytes($55, $66, $6E));
-        NameLabel.SetText(Constellation.GetName);
-      end;
+        HideBuffer.GraphBuf.DrawAntialiasedLine(AddPoints(GalaxyPointToMapPoint(Segment.StartPoint), BufferOffset), AddPoints(GalaxyPointToMapPoint(Segment.EndPoint), BufferOffset), $FF000090);
+    end;
+  end;
+  for I := 0 to Galaxy.Constellations.Count - 1 do
+  begin
+    Constellation := Galaxy.Constellations[I];
+    if not ((Constellation.OutlineSegments <> nil) and (Constellation.OutlineSegments.Count <> 0)) then Continue;
+    if not Constellation.Visible then
+    begin
+      First := GalaxyPointToMapPoint(Constellation.CalculateLabelPosition);
+      NameLabel := TLabelGI.Create(MapPanel);
+      NameLabel.SetFontName(BigFontName);
+      NameLabel.SetDepth(100);
+      NameLabel.SetTextAlignX(taxCenter);
+      NameLabel.SetTextAlignY(tayCenter);
+      NameLabel.SetPositionModeW(False);
+      NameLabel.SetSize(Classes.Point(250, 40));
+      NameLabel.SetPosition(Classes.Point(First.X - 125, First.Y - 20));
+      NameLabel.SetTextColor(CurrentPixelFormat.PackRgbBytes($DB, $DA, $9C));
+      NameLabel.SetTextBorderWidth(1);
+      NameLabel.SetTextBorderColor(CurrentPixelFormat.PackRgbBytes(0, 0, 0));
+      if GiResourceVariant = 1 then NameLabel.SetShadowOffset(2)
+      else NameLabel.SetShadowOffset(3);
+      NameLabel.SetText(Constellation.GetName);
+    end
+    else
+    begin
+      First := GalaxyPointToMapPoint(Constellation.CalculateLabelPosition);
+      NameLabel := TLabelGI.Create(MapPanel);
+      NameLabel.SetFontName(BigFontName);
+      NameLabel.SetDepth(1000);
+      NameLabel.SetTextAlignX(taxCenter);
+      NameLabel.SetTextAlignY(tayCenter);
+      NameLabel.SetPositionModeW(False);
+      NameLabel.SetSize(Classes.Point(200, 40));
+      NameLabel.SetPosition(Classes.Point(First.X - 100, First.Y - 20));
+      NameLabel.SetTextColor(CurrentPixelFormat.PackRgbBytes($55, $66, $6E));
+      NameLabel.SetText(Constellation.GetName);
     end;
   end;
   StarLinks.SetPositionModeW(False);
@@ -327,203 +326,201 @@ begin
   for I := 0 to Galaxy.Stars.Count - 1 do
   begin
     Star := Galaxy.Stars[I];
-    if Star.IsConstellationVisible then
+    if not Star.IsConstellationVisible then Continue;
+    StarImage := TgaiGI.Create(MapPanel);
+    StarImage.SetImagePath(Block.GetParamValue(Integer(Star.GenerationSeed) mod StarImageCount));
+    StarImage.SetSize(StarImage.GetContentSize);
+    StarImage.SetOrigin(HalfPoint(StarImage.ClientSize));
+    StarImage.SetPosition(GalaxyPointToMapPoint(Star.Position));
+    StarImage.SetDepth(5);
+    StarImage.SetPositionModeW(True);
+    StarImage.SequenceIndex := 0;
+    StarImage.UpdateAutoGeometry;
+    StarImage.SetSequenceFrame(RandomIntRange(0, StarImage.SequenceFrameCount - 1));
+    StarImage.Name := 'gs_' + IntToStr(Star.Id);
+    StarImage.UserValue := 1;
+    StarImage.RestartPlayback;
+    NameLabel := TLabelGI.Create(MapPanel);
+    NameLabel.SetFontName(NormalBoldFontName);
+    NameLabel.SetDepth(6);
+    case GalaxyMapFontChoice of
+      gmfRanger: NameLabel.SetFontName(RangerFontName);
+      gmfMini: NameLabel.SetFontName(MiniFontName);
+      gmfSmall: NameLabel.SetFontName(SmallFontName);
+      gmfSmallBold: NameLabel.SetFontName(SmallBoldFontName);
+      gmfNormal: NameLabel.SetFontName(NormalFontName);
+      gmfNormalBold: NameLabel.SetFontName(NormalBoldFontName);
+    else NameLabel.SetFontName(NormalBoldFontName);
+    end;
+    NameLabel.SetSize(Classes.Point(150, 1));
+    NameLabel.SetTextAlignX(taxCenter);
+    NameLabel.SetTextAlignY(tayAuto);
+    NameLabel.SetPosition(Classes.Point(StarImage.LocalPosition.X - NameLabel.ClientSize.X div 2,
+      StarImage.LocalPosition.Y + StarImage.ClientSize.Y div 2 - 5));
+    NameLabel.SetPositionModeW(False);
+    Planet := Star.Planets[0];
+    for J := 0 to Star.Planets.Count - 1 do
     begin
+      Planet := Star.Planets[J];
+      if Planet.OwnerId <> oiUninhabited then Break;
+    end;
+    Text := Star.Name;
+    if Star.Status.CustomFaction <> '' then ColoredName := WrapTextInColor(Text, LookupNamedColorTag(Star.Status.CustomFaction))
+    else
+    begin
+      ColoredName := '';
+      J := 1;
+      K := Length(Star.Name) div Star.CountDistinctInhabitedPlanetOwners;
+      ColoredName := ColoredName + WrapTextInColor(Copy(Text, 1, K), OwnerInfo[Planet.OwnerId].ColorTag);
+      Delete(Text, 1, K);
+      if Text <> '' then
+        for OwnerId := oiMaloc to oiPirate do
+          if (OwnerId <> oiUninhabited) and (Star.CountPlanetsByOwner(OwnerId) > 0) and (Planet.OwnerId <> OwnerId) then
+          begin
+            K := Length(Star.Name) div Star.CountDistinctInhabitedPlanetOwners;
+            Inc(J);
+            if J = Star.CountDistinctInhabitedPlanetOwners then K := Length(Text);
+            ColoredName := ColoredName + WrapTextInColor(Copy(Text, 1, K), OwnerInfo[OwnerId].ColorTag);
+            Delete(Text, 1, K);
+          end;
+    end;
+    ColoredName := ColoredName + Star.MapLabel;
+    ForceLabel := TLabelGI.Create(MapPanel);
+    ForceLabel.SetFontName(MiniFontName);
+    ForceLabel.SetDepth(6);
+    ForceLabel.SetSize(Classes.Point(150, 1));
+    ForceLabel.SetTextAlignX(taxCenter);
+    ForceLabel.SetTextAlignY(tayAuto);
+    ForceLabel.SetPositionModeW(False);
+    ForceText := '';
+    BossText := '';
+    if CanShowExtendedRadarInfo(Star) then
+    begin
+      CoalitionCount := Star.CountForcesByOwnerGroups(Strength, True, False, False, False);
+      BlazerCount := Star.CountDominatorForces(dsBlazer, False, False, Strength);
+      KellerCount := Star.CountDominatorForces(dsKeller, False, False, Strength);
+      TerronCount := Star.CountDominatorForces(dsTerron, False, False, Strength);
+      PirateCount := Star.CountPirateForces(False, Strength, True, True);
+      CustomCount := Star.CountCustomFactionForces(False, CustomFaction, Strength);
+      OtherCount := Star.CountOtherCustomFactionForces(False, OtherFaction, Strength);
+      if (BlazerShip <> nil) and (BlazerShip.CurrentStar = Star) and BlazerShip.InNormalSpace then
+      begin
+        if CanRevealBossPresence(BlazerShip) and GetPlayer.CanResolveObjectWithScanner(BlazerShip) then
+        begin
+          if Length(BossText) > 0 then BossText := BossText + '-';
+          BossText := BossText + WrapTextInColor(LocalizedText('FormGalaxy.Boss1')[1], RedColorTag);
+        end
+        else Inc(BlazerCount);
+      end;
+      if (KellerShip <> nil) and (KellerShip.CurrentStar = Star) and KellerShip.InNormalSpace then
+      begin
+        if CanRevealBossPresence(KellerShip) and GetPlayer.CanResolveObjectWithScanner(KellerShip) then
+        begin
+          if Length(BossText) > 0 then BossText := BossText + '-';
+          BossText := BossText + WrapTextInColor(LocalizedText('FormGalaxy.Boss2')[1], AzureColorTag);
+        end
+        else Inc(KellerCount);
+      end;
+      if (TerronShip <> nil) and (TerronShip.CurrentStar = Star) and TerronShip.InNormalSpace then
+      begin
+        if CanRevealBossPresence(TerronShip) and GetPlayer.CanResolveObjectWithScanner(TerronShip) then
+        begin
+          if Length(BossText) > 0 then BossText := BossText + '-';
+          BossText := BossText + WrapTextInColor(LocalizedText('FormGalaxy.Boss3')[1], GreenColorTag);
+        end
+        else Inc(TerronCount);
+      end;
+      if CoalitionCount > 0 then
+      begin
+        if Length(ForceText) > 0 then ForceText := ForceText + '-';
+        ForceText := ForceText + WrapTextInColor(IntToStr(CoalitionCount), TextHighlightColorTag);
+      end;
+      if BlazerCount > 0 then
+      begin
+        if Length(ForceText) > 0 then ForceText := ForceText + '-';
+        ForceText := ForceText + WrapTextInColor(IntToStr(BlazerCount), RedColorTag);
+      end;
+      if KellerCount > 0 then
+      begin
+        if Length(ForceText) > 0 then ForceText := ForceText + '-';
+        ForceText := ForceText + WrapTextInColor(IntToStr(KellerCount), AzureColorTag);
+      end;
+      if TerronCount > 0 then
+      begin
+        if Length(ForceText) > 0 then ForceText := ForceText + '-';
+        ForceText := ForceText + WrapTextInColor(IntToStr(TerronCount), GreenColorTag);
+      end;
+      if PirateCount > 0 then
+      begin
+        if Length(ForceText) > 0 then ForceText := ForceText + '-';
+        ForceText := ForceText + WrapTextInColor(IntToStr(PirateCount), GalaxySummaryWhiteColorTag);
+      end;
+      if CustomCount > 0 then
+      begin
+        if Length(ForceText) > 0 then ForceText := ForceText + '-';
+        ForceText := ForceText + WrapTextInColor(IntToStr(CustomCount), LookupNamedColorTag(CustomFaction));
+      end;
+      if OtherCount > 0 then
+      begin
+        if Length(ForceText) > 0 then ForceText := ForceText + '-';
+        if OtherFaction <> '' then ForceText := ForceText + WrapTextInColor(IntToStr(OtherCount), LookupNamedColorTag(OtherFaction))
+        else ForceText := ForceText + WrapTextInColor(IntToStr(OtherCount), GrayColorTag);
+      end;
+      if Length(BossText) > 0 then
+      begin
+        if Length(ForceText) > 0 then ForceText := ForceText + '-';
+        ForceText := ForceText + BossText;
+      end;
+    end;
+    NameLabel.SetText(ColoredName);
+    ForceLabel.SetText(ForceText);
+    ForceLabel.SetPosition(Classes.Point(NameLabel.LocalPosition.X, NameLabel.LocalPosition.Y + ForceLabel.ClientSize.Y + 2));
+    Star.GetControlPresence(PlayerPartyPresent, CoalitionPresent, DominatorsPresent, PiratesPresent, CustomPresent);
+    if CustomPresent then DominatorsPresent := True;
+    if (Star.Battle <> 0) and (not PlayerPartyPresent or ((CoalitionPresent or PiratesPresent) and
+      (PiratesPresent or DominatorsPresent) and (CoalitionPresent or DominatorsPresent))) then
+    begin
+      BattleRing := TgaiGI.Create(MapPanel);
+      BattleRing.SetImagePath('Bm.FormGalaxy.RedRing');
+      BattleRing.SetSize(BattleRing.GetContentSize);
+      BattleRing.SetOrigin(Classes.Point(BattleRing.ClientSize.X div 2, BattleRing.ClientSize.Y div 2));
+      BattleRing.SetPosition(GalaxyPointToMapPoint(Star.Position));
+      BattleRing.SetDepth(4);
+      BattleRing.SetPositionModeW(True);
+      BattleRing.SequenceIndex := 0;
+      BattleRing.UpdateAutoGeometry;
+      BattleRing.RestartPlayback;
       StarImage := TgaiGI.Create(MapPanel);
-      StarImage.SetImagePath(Block.GetParamValue(Integer(Star.GenerationSeed) mod StarImageCount));
+      if (CoalitionPresent and PiratesPresent) and DominatorsPresent then StarImage.SetImagePath('Bm.FormGalaxy.BattleRoyale')
+      else if CoalitionPresent and PiratesPresent then StarImage.SetImagePath('Bm.FormGalaxy.BattleNormalsVsPirates')
+      else if CoalitionPresent and DominatorsPresent then StarImage.SetImagePath('Bm.FormGalaxy.BattleNormalsVsDominators')
+      else if PiratesPresent and DominatorsPresent then StarImage.SetImagePath('Bm.FormGalaxy.BattlePiratesVsDominators')
+      else StarImage.SetImagePath('Bm.FormGalaxy.Defend');
       StarImage.SetSize(StarImage.GetContentSize);
-      StarImage.SetOrigin(HalfPoint(StarImage.ClientSize));
-      StarImage.SetPosition(GalaxyPointToMapPoint(Star.Position));
-      StarImage.SetDepth(5);
+      StarImage.SetOrigin(Classes.Point(StarImage.ClientSize.X div 2, StarImage.ClientSize.Y div 2));
+      StarImage.SetPosition(AddPoints(GalaxyPointToMapPoint(Star.Position), Classes.Point(BattleRing.ClientSize.X div 2 - 5, -BattleRing.ClientSize.Y div 2 + 5)));
+      StarImage.SetDepth(3);
       StarImage.SetPositionModeW(True);
       StarImage.SequenceIndex := 0;
       StarImage.UpdateAutoGeometry;
-      StarImage.SetSequenceFrame(RandomIntRange(0, StarImage.SequenceFrameCount - 1));
-      StarImage.SetName('gs_' + IntToStr(Star.Id));
-      StarImage.UserValue := 1;
       StarImage.RestartPlayback;
-      NameLabel := TLabelGI.Create(MapPanel);
-      NameLabel.SetFontName(NormalBoldFontName);
-      NameLabel.SetDepth(6);
-      case GalaxyMapFontChoice of
-        gmfRanger: NameLabel.SetFontName(RangerFontName);
-        gmfMini: NameLabel.SetFontName(MiniFontName);
-        gmfSmall: NameLabel.SetFontName(SmallFontName);
-        gmfSmallBold: NameLabel.SetFontName(SmallBoldFontName);
-        gmfNormal: NameLabel.SetFontName(NormalFontName);
-        gmfNormalBold: NameLabel.SetFontName(NormalBoldFontName);
-      else NameLabel.SetFontName(NormalBoldFontName);
-      end;
-      NameLabel.SetSize(Classes.Point(150, 1));
-      NameLabel.SetTextAlignX(taxCenter);
-      NameLabel.SetTextAlignY(tayAuto);
-      NameLabel.SetPosition(Classes.Point(StarImage.LocalPosition.X - NameLabel.ClientSize.X div 2,
-        StarImage.LocalPosition.Y + StarImage.ClientSize.Y div 2 - 5));
-      NameLabel.SetPositionModeW(False);
-      Planet := Star.Planets[0];
-      for J := 0 to Star.Planets.Count - 1 do
-      begin
-        Planet := Star.Planets[J];
-        if Planet.OwnerId <> oiUninhabited then Break;
-      end;
-      Text := Star.Name;
-      if Star.Status.CustomFaction <> '' then ColoredName := WrapTextInColor(Text, LookupNamedColorTag(Star.Status.CustomFaction))
-      else
-      begin
-        ColoredName := '';
-        J := 1;
-        K := Length(Star.Name) div Star.CountDistinctInhabitedPlanetOwners;
-        ColoredName := ColoredName + WrapTextInColor(Copy(Text, 1, K), OwnerInfo[Planet.OwnerId].ColorTag);
-        Delete(Text, 1, K);
-        if Text <> '' then
-          for OwnerId := oiMaloc to oiPirate do
-            if (OwnerId <> oiUninhabited) and (Star.CountPlanetsByOwner(OwnerId) > 0) and (Planet.OwnerId <> OwnerId) then
-            begin
-              K := Length(Star.Name) div Star.CountDistinctInhabitedPlanetOwners;
-              Inc(J);
-              if J = Star.CountDistinctInhabitedPlanetOwners then K := Length(Text);
-              ColoredName := ColoredName + WrapTextInColor(Copy(Text, 1, K), OwnerInfo[OwnerId].ColorTag);
-              Delete(Text, 1, K);
-            end;
-      end;
-      ColoredName := ColoredName + Star.MapLabel;
-      ForceLabel := TLabelGI.Create(MapPanel);
-      ForceLabel.SetFontName(MiniFontName);
-      ForceLabel.SetDepth(6);
-      ForceLabel.SetSize(Classes.Point(150, 1));
-      ForceLabel.SetTextAlignX(taxCenter);
-      ForceLabel.SetTextAlignY(tayAuto);
-      ForceLabel.SetPositionModeW(False);
-      ForceText := '';
-      BossText := '';
-      if CanShowExtendedRadarInfo(Star) then
-      begin
-        CoalitionCount := Star.CountForcesByOwnerGroups(Strength, True, False, False, False);
-        BlazerCount := Star.CountDominatorForces(dsBlazer, False, False, Strength);
-        KellerCount := Star.CountDominatorForces(dsKeller, False, False, Strength);
-        TerronCount := Star.CountDominatorForces(dsTerron, False, False, Strength);
-        PirateCount := Star.CountPirateForces(False, Strength, True, True);
-        CustomCount := Star.CountCustomFactionForces(False, CustomFaction, Strength);
-        OtherCount := Star.CountOtherCustomFactionForces(False, OtherFaction, Strength);
-        if (BlazerShip <> nil) and (BlazerShip.CurrentStar = Star) and BlazerShip.InNormalSpace then
-        begin
-          if CanRevealBossPresence(BlazerShip) and GetPlayer.CanResolveObjectWithScanner(BlazerShip) then
-          begin
-            if Length(BossText) > 0 then BossText := BossText + '-';
-            BossText := BossText + WrapTextInColor(LocalizedText('FormGalaxy.Boss1')[1], RedColorTag);
-          end
-          else Inc(BlazerCount);
-        end;
-        if (KellerShip <> nil) and (KellerShip.CurrentStar = Star) and KellerShip.InNormalSpace then
-        begin
-          if CanRevealBossPresence(KellerShip) and GetPlayer.CanResolveObjectWithScanner(KellerShip) then
-          begin
-            if Length(BossText) > 0 then BossText := BossText + '-';
-            BossText := BossText + WrapTextInColor(LocalizedText('FormGalaxy.Boss2')[1], AzureColorTag);
-          end
-          else Inc(KellerCount);
-        end;
-        if (TerronShip <> nil) and (TerronShip.CurrentStar = Star) and TerronShip.InNormalSpace then
-        begin
-          if CanRevealBossPresence(TerronShip) and GetPlayer.CanResolveObjectWithScanner(TerronShip) then
-          begin
-            if Length(BossText) > 0 then BossText := BossText + '-';
-            BossText := BossText + WrapTextInColor(LocalizedText('FormGalaxy.Boss3')[1], GreenColorTag);
-          end
-          else Inc(TerronCount);
-        end;
-        if CoalitionCount > 0 then
-        begin
-          if Length(ForceText) > 0 then ForceText := ForceText + '-';
-          ForceText := ForceText + WrapTextInColor(IntToStr(CoalitionCount), TextHighlightColorTag);
-        end;
-        if BlazerCount > 0 then
-        begin
-          if Length(ForceText) > 0 then ForceText := ForceText + '-';
-          ForceText := ForceText + WrapTextInColor(IntToStr(BlazerCount), RedColorTag);
-        end;
-        if KellerCount > 0 then
-        begin
-          if Length(ForceText) > 0 then ForceText := ForceText + '-';
-          ForceText := ForceText + WrapTextInColor(IntToStr(KellerCount), AzureColorTag);
-        end;
-        if TerronCount > 0 then
-        begin
-          if Length(ForceText) > 0 then ForceText := ForceText + '-';
-          ForceText := ForceText + WrapTextInColor(IntToStr(TerronCount), GreenColorTag);
-        end;
-        if PirateCount > 0 then
-        begin
-          if Length(ForceText) > 0 then ForceText := ForceText + '-';
-          ForceText := ForceText + WrapTextInColor(IntToStr(PirateCount), GalaxySummaryWhiteColorTag);
-        end;
-        if CustomCount > 0 then
-        begin
-          if Length(ForceText) > 0 then ForceText := ForceText + '-';
-          ForceText := ForceText + WrapTextInColor(IntToStr(CustomCount), LookupNamedColorTag(CustomFaction));
-        end;
-        if OtherCount > 0 then
-        begin
-          if Length(ForceText) > 0 then ForceText := ForceText + '-';
-          if OtherFaction <> '' then ForceText := ForceText + WrapTextInColor(IntToStr(OtherCount), LookupNamedColorTag(OtherFaction))
-          else ForceText := ForceText + WrapTextInColor(IntToStr(OtherCount), GrayColorTag);
-        end;
-        if Length(BossText) > 0 then
-        begin
-          if Length(ForceText) > 0 then ForceText := ForceText + '-';
-          ForceText := ForceText + BossText;
-        end;
-      end;
-      NameLabel.SetText(ColoredName);
-      ForceLabel.SetText(ForceText);
-      ForceLabel.SetPosition(Classes.Point(NameLabel.LocalPosition.X, NameLabel.LocalPosition.Y + ForceLabel.ClientSize.Y + 2));
-      Star.GetControlPresence(PlayerPartyPresent, CoalitionPresent, DominatorsPresent, PiratesPresent, CustomPresent);
-      if CustomPresent then DominatorsPresent := True;
-      if (Star.Battle <> 0) and (not PlayerPartyPresent or ((CoalitionPresent or PiratesPresent) and
-        (PiratesPresent or DominatorsPresent) and (CoalitionPresent or DominatorsPresent))) then
-      begin
-        BattleRing := TgaiGI.Create(MapPanel);
-        BattleRing.SetImagePath('Bm.FormGalaxy.RedRing');
-        BattleRing.SetSize(BattleRing.GetContentSize);
-        BattleRing.SetOrigin(Classes.Point(BattleRing.ClientSize.X div 2, BattleRing.ClientSize.Y div 2));
-        BattleRing.SetPosition(GalaxyPointToMapPoint(Star.Position));
-        BattleRing.SetDepth(4);
-        BattleRing.SetPositionModeW(True);
-        BattleRing.SequenceIndex := 0;
-        BattleRing.UpdateAutoGeometry;
-        BattleRing.RestartPlayback;
-        StarImage := TgaiGI.Create(MapPanel);
-        if (CoalitionPresent and PiratesPresent) and DominatorsPresent then StarImage.SetImagePath('Bm.FormGalaxy.BattleRoyale')
-        else if CoalitionPresent and PiratesPresent then StarImage.SetImagePath('Bm.FormGalaxy.BattleNormalsVsPirates')
-        else if CoalitionPresent and DominatorsPresent then StarImage.SetImagePath('Bm.FormGalaxy.BattleNormalsVsDominators')
-        else if PiratesPresent and DominatorsPresent then StarImage.SetImagePath('Bm.FormGalaxy.BattlePiratesVsDominators')
-        else StarImage.SetImagePath('Bm.FormGalaxy.Defend');
-        StarImage.SetSize(StarImage.GetContentSize);
-        StarImage.SetOrigin(Classes.Point(StarImage.ClientSize.X div 2, StarImage.ClientSize.Y div 2));
-        StarImage.SetPosition(AddPoints(GalaxyPointToMapPoint(Star.Position), Classes.Point(BattleRing.ClientSize.X div 2 - 5, -BattleRing.ClientSize.Y div 2 + 5)));
-        StarImage.SetDepth(3);
-        StarImage.SetPositionModeW(True);
-        StarImage.SequenceIndex := 0;
-        StarImage.UpdateAutoGeometry;
-        StarImage.RestartPlayback;
-      end;
-      SelectedHole := nil;
-      for J := 0 to Galaxy.Holes.Count - 1 do
-      begin
-        Hole := THole(Galaxy.Holes[J]);
-        if (Hole.ArcadeMapName <> 'NoEntry') and (Hole.Star1 = Star) and
-          ((SelectedHole = nil) or (THoleSE(SelectedHole.Graphic).GalaxyPriority < THoleSE(Hole.Graphic).GalaxyPriority)) then SelectedHole := Hole;
-      end;
-      if SelectedHole <> nil then
-      begin
-        HoleImage := TImageGI.Create(MapPanel);
-        HoleImage.SetImagePath(THoleSE(SelectedHole.Graphic).GalaxyImagePath);
-        HoleImage.SetSize(HoleImage.GetContentSize);
-        HoleImage.SetOrigin(Classes.Point(HoleImage.ClientSize.X div 2, HoleImage.ClientSize.Y div 2));
-        HoleImage.SetPosition(AddPoints(GalaxyPointToMapPoint(Star.Position), Classes.Point(HoleImage.ClientSize.X div 2 + 3, HoleImage.ClientSize.Y div 2 + 3)));
-        HoleImage.SetDepth(3);
-        HoleImage.SetPositionModeW(True);
-      end;
+    end;
+    SelectedHole := nil;
+    for J := 0 to Galaxy.Holes.Count - 1 do
+    begin
+      Hole := Galaxy.Holes[J];
+      if (Hole.ArcadeMapName <> 'NoEntry') and (Hole.Star1 = Star) and
+        ((SelectedHole = nil) or (THoleSE(SelectedHole.Graphic).GalaxyPriority < THoleSE(Hole.Graphic).GalaxyPriority)) then SelectedHole := Hole;
+    end;
+    if SelectedHole <> nil then
+    begin
+      HoleImage := TImageGI.Create(MapPanel);
+      HoleImage.SetImagePath(THoleSE(SelectedHole.Graphic).GalaxyImagePath);
+      HoleImage.SetSize(HoleImage.GetContentSize);
+      HoleImage.SetOrigin(Classes.Point(HoleImage.ClientSize.X div 2, HoleImage.ClientSize.Y div 2));
+      HoleImage.SetPosition(AddPoints(GalaxyPointToMapPoint(Star.Position), Classes.Point(HoleImage.ClientSize.X div 2 + 3, HoleImage.ClientSize.Y div 2 + 3)));
+      HoleImage.SetDepth(3);
+      HoleImage.SetPositionModeW(True);
     end;
   end;
   with GetByName('PathCurPos') as TgaiGI do
@@ -560,10 +557,10 @@ begin
   end;
   if ViewMode = 1 then ConfigureReadOnlyMap
   else if ViewMode in [0, 2, 3] then ConfigureJumpSelection;
-  if JumpAnimationTimer <> nil then
+  if JumpAnimationTimer <> 0 then
   begin
     CancelCallbackTimer(JumpAnimationTimer);
-    JumpAnimationTimer := nil;
+    JumpAnimationTimer := 0;
   end;
   JumpAnimationTimer := ScheduleCallbackTimer(20, 20, UpdateJumpAnimations);
   JumpHintAnimationState := 0;
@@ -577,9 +574,9 @@ begin
     First := SubtractPoints(MapPanel.ToAbsolutePoint(GalaxyPointToMapPoint(GetPlayer.CurrentStar.Position)),
       Classes.Point(SecondarySavePreviewGraph.Width shr 1, SecondarySavePreviewGraph.Height shr 1));
     if First.X < MapPanel.HitTestBounds.Left then First.X := MapPanel.HitTestBounds.Left;
-    if First.X + SecondarySavePreviewGraph.Width >= MapPanel.HitTestBounds.Right then First.X := MapPanel.HitTestBounds.Right - SecondarySavePreviewGraph.Width;
+    if First.X + Integer(SecondarySavePreviewGraph.Width) >= MapPanel.HitTestBounds.Right then First.X := MapPanel.HitTestBounds.Right - Integer(SecondarySavePreviewGraph.Width);
     if First.Y < MapPanel.HitTestBounds.Top then First.Y := MapPanel.HitTestBounds.Top;
-    if First.Y + SecondarySavePreviewGraph.Height >= MapPanel.HitTestBounds.Bottom then First.Y := MapPanel.HitTestBounds.Bottom - SecondarySavePreviewGraph.Height;
+    if First.Y + Integer(SecondarySavePreviewGraph.Height) >= MapPanel.HitTestBounds.Bottom then First.Y := MapPanel.HitTestBounds.Bottom - Integer(SecondarySavePreviewGraph.Height);
     if HardwareRenderingEnabled then
     begin
       CaptureBuffer := TGraphBufGR.Create(False);
@@ -599,24 +596,24 @@ begin
   Galaxy.PrimeIntegrityChecksum(1111);
   MainPanel.RebuildMessageButtons(False);
 end;
-{ @end $671EA0 }
+{ @end $674BB8 }
 
-{ @routine $674B00 TfGalaxy2_OnClose }
+{ @routine $6775CC TfGalaxy2_OnClose }
 procedure TfGalaxy2.OnClose;
 begin
   inherited OnClose;
   Galaxy.CheckIntegrityChecksum(1112);
   if (GetPlayer <> nil) and not CapturePreviewOnOpen then GetPlayer.ScriptItemsAct(satOnLeavingForm, nil, nil, 0);
   CapturePreviewOnOpen := False;
-  if JumpAnimationTimer <> nil then
+  if JumpAnimationTimer <> 0 then
   begin
     CancelCallbackTimer(JumpAnimationTimer);
-    JumpAnimationTimer := nil;
+    JumpAnimationTimer := 0;
   end;
-  if StarInfoHideTimer <> nil then
+  if StarInfoHideTimer <> 0 then
   begin
     CancelCallbackTimer(StarInfoHideTimer);
-    StarInfoHideTimer := nil;
+    StarInfoHideTimer := 0;
   end;
   ClearJumpPath;
   if ViewMode in [0, 2, 3] then ClearJumpSelectionCallbacks
@@ -628,34 +625,32 @@ begin
   AuxRenderBuffer.Clear;
   ViewMode := 0;
 end;
-{ @end $674B00 }
+{ @end $6775CC }
 
-{ @routine $674C50 TfGalaxy2_CloseClicked }
+{ @routine $6776E0 TfGalaxy2_CloseClicked }
 procedure TfGalaxy2.CloseClicked(Sender: TObjectGI);
 begin
   RequestedScreenId := GalaxyReturnScreenId;
   RequestClose(1);
 end;
-{ @end $674C50 }
+{ @end $6776E0 }
 
-{ @routine $674C7C TfGalaxy2_MainPanelKeyDown }
+{ @routine $6776FC TfGalaxy2_MainPanelKeyDown }
 procedure TfGalaxy2.MainPanelKeyDown(Sender: TObjectGI; Key: Cardinal);
 begin
-  if not IsVirtualKeyDown(VK_CONTROL) and not IsVirtualKeyDown(VK_SHIFT) and not IsVirtualKeyDown(VK_MENU) then
+  if IsVirtualKeyDown(VK_CONTROL) or IsVirtualKeyDown(VK_SHIFT) or IsVirtualKeyDown(VK_MENU) then Exit;
+  if Key = Ord('M') then CloseClicked(nil)
+  else if (Key = VK_RETURN) or (Key = Ord('J')) then
   begin
-    if Key = Ord('M') then CloseClicked(nil)
-    else if (Key = VK_RETURN) or (Key = Ord('J')) then
-    begin
-      if not JumpButton.Disabled then JumpClicked(nil);
-    end
-    else if Key = VK_ESCAPE then CloseClicked(nil)
-    else if Key = VK_F11 then
-      if not MainPanel.RemoveDismissibleMessages('GOODS') then MainPanel.RemoveDismissibleMessages('');
-  end;
+    if not JumpButton.Disabled then JumpClicked(nil);
+  end
+  else if Key = VK_ESCAPE then CloseClicked(nil)
+  else if Key = VK_F11 then
+    if not MainPanel.RemoveDismissibleMessages('GOODS') then MainPanel.RemoveDismissibleMessages('');
 end;
-{ @end $674C7C }
+{ @end $6776FC }
 
-{ @routine $674D4C TfGalaxy2_MainPanelMouseUp }
+{ @routine $6777B0 TfGalaxy2_MainPanelMouseUp }
 procedure TfGalaxy2.MainPanelMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint);
 begin
   if ClickAutoCloseForm then
@@ -665,9 +660,9 @@ begin
       not JumpButton.ContainsPoint(Point) and
       not GetByName('PM_PanelMsg').ContainsPoint(Point) then CloseClicked(nil);
 end;
-{ @end $674D4C }
+{ @end $6777B0 }
 
-{ @routine $674E74 TfGalaxy2_CanShowExtendedRadarInfo }
+{ @routine $6778CC TfGalaxy2_CanShowExtendedRadarInfo }
 function TfGalaxy2.CanShowExtendedRadarInfo(Star: TStar): Boolean;
 var First, Second: TPointF;
 begin
@@ -680,39 +675,39 @@ begin
     Result := True;
   end;
 end;
-{ @end $674E74 }
+{ @end $6778CC }
 
-{ @routine $674F18 TfGalaxy2_GetRadarSummaryRadius }
+{ @routine $677974 TfGalaxy2_GetRadarSummaryRadius }
 function TfGalaxy2.GetRadarSummaryRadius: Integer;
 begin
   Result := Round(GetPlayer.GetRadarRange / 150);
 end;
-{ @end $674F18 }
+{ @end $677974 }
 
-{ @routine $674F4C TfGalaxy2_MapPointToGalaxyPoint }
+{ @routine $677998 TfGalaxy2_MapPointToGalaxyPoint }
 function TfGalaxy2.MapPointToGalaxyPoint(Point: TPoint): TPointF;
 begin
   Result.X := (Point.X - MapPixelBounds.Left) / (MapPixelBounds.Right - MapPixelBounds.Left + 1) * GalaxyExtent.X + GalaxyOrigin.X;
   Result.Y := (Point.Y - MapPixelBounds.Top) / (MapPixelBounds.Bottom - MapPixelBounds.Top + 1) * GalaxyExtent.Y + GalaxyOrigin.Y;
 end;
-{ @end $674F4C }
+{ @end $677998 }
 
-{ @routine $674FF4 TfGalaxy2_GalaxyPointToMapPoint }
+{ @routine $677A18 TfGalaxy2_GalaxyPointToMapPoint }
 function TfGalaxy2.GalaxyPointToMapPoint(Point: TPointF): TPoint;
 begin
   Result.X := Round((Point.X - GalaxyOrigin.X) / GalaxyExtent.X * (MapPixelBounds.Right - MapPixelBounds.Left + 1)) + MapPixelBounds.Left;
   Result.Y := Round((Point.Y - GalaxyOrigin.Y) / GalaxyExtent.Y * (MapPixelBounds.Bottom - MapPixelBounds.Top + 1)) + MapPixelBounds.Top;
 end;
-{ @end $674FF4 }
+{ @end $677A18 }
 
-{ @routine $675098 TfGalaxy2_GalaxyDistanceToMapDistance }
+{ @routine $677A94 TfGalaxy2_GalaxyDistanceToMapDistance }
 function TfGalaxy2.GalaxyDistanceToMapDistance(Distance: Double): Integer;
 begin
   Result := Round(Distance / GalaxyExtent.X * (MapPixelBounds.Right - MapPixelBounds.Left + 1));
 end;
-{ @end $675098 }
+{ @end $677A94 }
 
-{ @routine $6750DC TfGalaxy2_RebuildJumpPath }
+{ @routine $677AC4 TfGalaxy2_RebuildJumpPath }
 procedure TfGalaxy2.RebuildJumpPath;
 var
   I, TotalDistance, JumpDistance: Integer;
@@ -730,18 +725,61 @@ begin
     SetActive(True);
     RestartPlayback;
   end;
-  (GetByName('Distance') as TLabelGI).SetText('');
-  if (GetPlayer.CurrentStar <> SelectedJumpStar) and (SelectedJumpStar <> nil) then
+  (GetByName('Distance') as TLabelGI).Text := '';
+  if (GetPlayer.CurrentStar = SelectedJumpStar) or (SelectedJumpStar = nil) then Exit;
+  with GetByName('PathDesPos') as TgaiGI do
   begin
-    with GetByName('PathDesPos') as TgaiGI do
+    SetPosition(GalaxyPointToMapPoint(SelectedJumpStar.Position));
+    SetOrigin(HalfPoint(ClientSize));
+    SetActive(True);
+    RestartPlayback;
+  end;
+  First := PointToPointF(GalaxyPointToMapPoint(SelectedJumpStar.Position));
+  Second := PointToPointF(GalaxyPointToMapPoint(GetPlayer.CurrentStar.Position));
+  if Abs(First.X - Second.X) < Abs(First.Y - Second.Y) then UseY := True else UseY := False;
+  Length := Sqrt((First.X - Second.X) * (First.X - Second.X) + (First.Y - Second.Y) * (First.Y - Second.Y));
+  if UseY then
+  begin
+    Slope := (Second.X - First.X) / (Second.Y - First.Y);
+    Step := 1 / Sqrt(Slope * Slope + 1);
+    if Second.Y - First.Y < 0 then Step := -Step;
+    Origin := First.Y;
+  end
+  else
+  begin
+    Slope := (Second.Y - First.Y) / (Second.X - First.X);
+    Step := 1 / Sqrt(Slope * Slope + 1);
+    if Second.X - First.X < 0 then Step := -Step;
+    Origin := First.X;
+  end;
+  Distance := 0;
+  while Distance < Length do
+  begin
+    if UseY then
     begin
-      SetPosition(GalaxyPointToMapPoint(SelectedJumpStar.Position));
-      SetOrigin(HalfPoint(ClientSize));
-      SetActive(True);
-      RestartPlayback;
+      DotPoint.Y := Distance * Step + Origin;
+      DotPoint.X := (DotPoint.Y - First.Y) * Slope + First.X;
+    end
+    else
+    begin
+      DotPoint.X := Distance * Step + Origin;
+      DotPoint.Y := (DotPoint.X - First.X) * Slope + First.Y;
     end;
-    First := PointToPointF(GalaxyPointToMapPoint(SelectedJumpStar.Position));
-    Second := PointToPointF(GalaxyPointToMapPoint(GetPlayer.CurrentStar.Position));
+    DotImage := TImageGI.Create(MapPanel);
+    DotImage.SetDepth(1);
+    DotImage.SetPosition(TruncatePointF(DotPoint));
+    DotImage.SetPositionModeW(True);
+    DotImage.SetImagePath('GI,Bm.PI.Path1');
+    ImageSize := DotImage.GetContentSize;
+    DotImage.SetOrigin(Classes.Point(ImageSize.X div 2, ImageSize.Y div 2));
+    DotImage.SetSize(ImageSize);
+    Distance := Distance + 10;
+  end;
+
+  First := PointToPointF(GalaxyPointToMapPoint(SelectedJumpStar.Position));
+  for I := 0 to RouteStars.Count - 1 do
+  begin
+    Second := PointToPointF(GalaxyPointToMapPoint(TStar(RouteStars[I]).Position));
     if Abs(First.X - Second.X) < Abs(First.Y - Second.Y) then UseY := True else UseY := False;
     Length := Sqrt((First.X - Second.X) * (First.X - Second.X) + (First.Y - Second.Y) * (First.Y - Second.Y));
     if UseY then
@@ -775,102 +813,57 @@ begin
       DotImage.SetDepth(1);
       DotImage.SetPosition(TruncatePointF(DotPoint));
       DotImage.SetPositionModeW(True);
-      DotImage.SetImagePath('GI,Bm.PI.Path1');
+      DotImage.SetImagePath('GI,Bm.PI.Path2');
       ImageSize := DotImage.GetContentSize;
       DotImage.SetOrigin(Classes.Point(ImageSize.X div 2, ImageSize.Y div 2));
       DotImage.SetSize(ImageSize);
       Distance := Distance + 10;
     end;
-
-    First := PointToPointF(GalaxyPointToMapPoint(SelectedJumpStar.Position));
+    First := Second;
+  end;
+  Reachable := True;
+  if RouteStars.Count <= 0 then
+  begin
+    First := SelectedJumpStar.Position;
+    Second := GetPlayer.CurrentStar.Position;
+    with GetByName('Distance') as TLabelGI do
+    begin
+      ImageSize := GalaxyPointToMapPoint(SelectedJumpStar.Position);
+      SetPosition(Classes.Point(ImageSize.X + 15, ImageSize.Y - ClientSize.Y div 2));
+      JumpDistance := Round(Sqrt(Sqr(First.X - Second.X) + Sqr(First.Y - Second.Y)));
+      if GetPlayer.GetJumpRange < JumpDistance then Reachable := ViewMode in [0, 3];
+      Text := IntToStr(JumpDistance);
+    end;
+  end
+  else
+  begin
+    First := GetPlayer.CurrentStar.Position;
+    Second := SelectedJumpStar.Position;
+    TotalDistance := Round(Sqrt(Sqr(First.X - Second.X) + Sqr(First.Y - Second.Y)));
+    if GetPlayer.GetJumpRange < TotalDistance then Reachable := ViewMode in [0, 3];
+    First := Second;
     for I := 0 to RouteStars.Count - 1 do
     begin
-      Second := PointToPointF(GalaxyPointToMapPoint(TStar(RouteStars[I]).Position));
-      if Abs(First.X - Second.X) < Abs(First.Y - Second.Y) then UseY := True else UseY := False;
-      Length := Sqrt((First.X - Second.X) * (First.X - Second.X) + (First.Y - Second.Y) * (First.Y - Second.Y));
-      if UseY then
-      begin
-        Slope := (Second.X - First.X) / (Second.Y - First.Y);
-        Step := 1 / Sqrt(Slope * Slope + 1);
-        if Second.Y - First.Y < 0 then Step := -Step;
-        Origin := First.Y;
-      end
-      else
-      begin
-        Slope := (Second.Y - First.Y) / (Second.X - First.X);
-        Step := 1 / Sqrt(Slope * Slope + 1);
-        if Second.X - First.X < 0 then Step := -Step;
-        Origin := First.X;
-      end;
-      Distance := 0;
-      while Distance < Length do
-      begin
-        if UseY then
-        begin
-          DotPoint.Y := Distance * Step + Origin;
-          DotPoint.X := (DotPoint.Y - First.Y) * Slope + First.X;
-        end
-        else
-        begin
-          DotPoint.X := Distance * Step + Origin;
-          DotPoint.Y := (DotPoint.X - First.X) * Slope + First.Y;
-        end;
-        DotImage := TImageGI.Create(MapPanel);
-        DotImage.SetDepth(1);
-        DotImage.SetPosition(TruncatePointF(DotPoint));
-        DotImage.SetPositionModeW(True);
-        DotImage.SetImagePath('GI,Bm.PI.Path2');
-        ImageSize := DotImage.GetContentSize;
-        DotImage.SetOrigin(Classes.Point(ImageSize.X div 2, ImageSize.Y div 2));
-        DotImage.SetSize(ImageSize);
-        Distance := Distance + 10;
-      end;
+      Second := TStar(RouteStars[I]).Position;
+      JumpDistance := Round(Sqrt(Sqr(First.X - Second.X) + Sqr(First.Y - Second.Y)));
+      if GetPlayer.GetJumpRange < JumpDistance then Reachable := ViewMode in [0, 3];
+      TotalDistance := TotalDistance + JumpDistance;
       First := Second;
-    end;
-    Reachable := True;
-    if RouteStars.Count <= 0 then
-    begin
-      First := SelectedJumpStar.Position;
-      Second := GetPlayer.CurrentStar.Position;
-      with GetByName('Distance') as TLabelGI do
-      begin
-        ImageSize := GalaxyPointToMapPoint(SelectedJumpStar.Position);
-        SetPosition(Classes.Point(ImageSize.X + 15, ImageSize.Y - ClientSize.Y div 2));
-        JumpDistance := Round(Sqrt(Sqr(First.X - Second.X) + Sqr(First.Y - Second.Y)));
-        if GetPlayer.GetJumpRange < JumpDistance then Reachable := ViewMode in [0, 3];
-        SetText(IntToStr(JumpDistance));
-      end;
-    end
-    else
-    begin
-      First := GetPlayer.CurrentStar.Position;
-      Second := SelectedJumpStar.Position;
-      TotalDistance := Round(Sqrt(Sqr(First.X - Second.X) + Sqr(First.Y - Second.Y)));
-      if GetPlayer.GetJumpRange < TotalDistance then Reachable := ViewMode in [0, 3];
-      First := Second;
-      for I := 0 to RouteStars.Count - 1 do
-      begin
-        Second := TStar(RouteStars[I]).Position;
-        JumpDistance := Round(Sqrt(Sqr(First.X - Second.X) + Sqr(First.Y - Second.Y)));
-        if GetPlayer.GetJumpRange < JumpDistance then Reachable := ViewMode in [0, 3];
-        TotalDistance := TotalDistance + JumpDistance;
-        First := Second;
-      end;
-      with GetByName('Distance') as TLabelGI do
-      begin
-        ImageSize := GalaxyPointToMapPoint(First);
-        SetPosition(Classes.Point(ImageSize.X + 15, ImageSize.Y - ClientSize.Y div 2));
-        SetText(IntToStr(TotalDistance));
-      end;
     end;
     with GetByName('Distance') as TLabelGI do
-      if Reachable then SetTextColor(CurrentPixelFormat.PackRgbBytes(255, 255, 255))
-      else SetTextColor(CurrentPixelFormat.PackRgbBytes(255, 0, 0));
+    begin
+      ImageSize := GalaxyPointToMapPoint(First);
+      SetPosition(Classes.Point(ImageSize.X + 15, ImageSize.Y - ClientSize.Y div 2));
+      Text := IntToStr(TotalDistance);
+    end;
   end;
+  with GetByName('Distance') as TLabelGI do
+    if Reachable then SetTextColor(CurrentPixelFormat.PackRgbBytes(255, 255, 255))
+    else SetTextColor(CurrentPixelFormat.PackRgbBytes(255, 0, 0));
 end;
-{ @end $6750DC }
+{ @end $677AC4 }
 
-{ @routine $675BA0 TfGalaxy2_ClearJumpPath }
+{ @routine $678470 TfGalaxy2_ClearJumpPath }
 procedure TfGalaxy2.ClearJumpPath;
 var Control, Current: TObjectGI;
 begin
@@ -887,9 +880,9 @@ begin
   end;
   GetByName('PathDesPos').SetActive(False);
 end;
-{ @end $675BA0 }
+{ @end $678470 }
 
-{ @routine $675C30 TfGalaxy2_ConfigureReadOnlyMap }
+{ @routine $6784E4 TfGalaxy2_ConfigureReadOnlyMap }
 procedure TfGalaxy2.ConfigureReadOnlyMap;
 begin
   with JumpButton do
@@ -907,17 +900,17 @@ begin
   SelectedJumpStar := GetPlayer.CurrentStar;
   RebuildJumpPath;
 end;
-{ @end $675C30 }
+{ @end $6784E4 }
 
-{ @routine $675D2C TfGalaxy2_ClearReadOnlyMapCallbacks }
+{ @routine $678590 TfGalaxy2_ClearReadOnlyMapCallbacks }
 procedure TfGalaxy2.ClearReadOnlyMapCallbacks;
 begin
   MapPanel.LeftButtonDownCallback := nil;
   MapPanel.MouseMoveCallback := nil;
 end;
-{ @end $675D2C }
+{ @end $678590 }
 
-{ @routine $675D64 TfGalaxy2_ConfigureJumpSelection }
+{ @routine $6785B4 TfGalaxy2_ConfigureJumpSelection }
 procedure TfGalaxy2.ConfigureJumpSelection;
 begin
   MapPanel.LeftButtonDownCallback := MapLeftButtonDown;
@@ -936,11 +929,11 @@ begin
   if (GetPlayer.Order = soJump) and (GetPlayer.OrderTarget is TStar) then SelectedJumpStar := GetPlayer.OrderTarget as TStar
   else SelectedJumpStar := GetPlayer.CurrentStar;
   RebuildJumpPath;
-  JumpButton.SetDisabled((SelectedJumpStar = nil) or (GetPlayer.CurrentStar = SelectedJumpStar) or (ViewMode = 1) or GetPlayer.NoJump);
+  JumpButton.SetDisabled((SelectedJumpStar = nil) or (SelectedJumpStar = GetPlayer.CurrentStar) or (ViewMode = 1) or GetPlayer.NoJump);
 end;
-{ @end $675D64 }
+{ @end $6785B4 }
 
-{ @routine $675F20 TfGalaxy2_ClearJumpSelectionCallbacks }
+{ @routine $678700 TfGalaxy2_ClearJumpSelectionCallbacks }
 procedure TfGalaxy2.ClearJumpSelectionCallbacks;
 begin
   ClearJumpPath;
@@ -949,16 +942,16 @@ begin
   MapPanel.MouseMoveCallback := nil;
   MapPanel.LeftButtonDoubleClickCallback := nil;
 end;
-{ @end $675F20 }
+{ @end $678700 }
 
-{ @routine $675F90 TfGalaxy2_MapMouseMove }
+{ @routine $678758 TfGalaxy2_MapMouseMove }
 procedure TfGalaxy2.MapMouseMove(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint);
 begin
   if Sender.IsOccludedAtPoint(Point) then Exit;
 end;
-{ @end $675F90 }
+{ @end $678758 }
 
-{ @routine $675FC0 TfGalaxy2_MapLeftButtonDown }
+{ @routine $678780 TfGalaxy2_MapLeftButtonDown }
 procedure TfGalaxy2.MapLeftButtonDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint);
 var
   Selected, Star: TStar;
@@ -1006,12 +999,12 @@ begin
     if BestDistance < (GalaxySizeY * 0.1) * (GalaxySizeY * 0.1) then SelectedJumpStar := Selected
     else SelectedJumpStar := GetPlayer.CurrentStar;
     RebuildJumpPath;
-    JumpButton.SetDisabled((SelectedJumpStar = nil) or (GetPlayer.CurrentStar = SelectedJumpStar) or (ViewMode = 1) or GetPlayer.NoJump);
+    JumpButton.SetDisabled((SelectedJumpStar = nil) or (SelectedJumpStar = GetPlayer.CurrentStar) or (ViewMode = 1) or GetPlayer.NoJump);
   end;
 end;
-{ @end $675FC0 }
+{ @end $678780 }
 
-{ @routine $6762E4 TfGalaxy2_MapRightButtonDown }
+{ @routine $678A24 TfGalaxy2_MapRightButtonDown }
 procedure TfGalaxy2.MapRightButtonDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint);
 var
   Selected, Star: TStar;
@@ -1038,36 +1031,36 @@ begin
   if BestDistance >= (GalaxySizeY * 0.1) * (GalaxySizeY * 0.1) then Selected := nil;
   ShowStarInfo(Selected);
 end;
-{ @end $6762E4 }
+{ @end $678A24 }
 
-{ @routine $67643C TfGalaxy2_MapButtonUp }
+{ @routine $678B54 TfGalaxy2_MapButtonUp }
 procedure TfGalaxy2.MapButtonUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint);
 begin
-  if StarInfoHideTimer <> nil then
+  if StarInfoHideTimer <> 0 then
   begin
     CancelCallbackTimer(StarInfoHideTimer);
-    StarInfoHideTimer := nil;
+    StarInfoHideTimer := 0;
   end;
   StarInfoHideTimer := ScheduleCallbackTimer(50, 50, HideStarInfo);
 end;
-{ @end $67643C }
+{ @end $678B54 }
 
-{ @routine $6764AC TfGalaxy2_MapDoubleClick }
+{ @routine $678BAC TfGalaxy2_MapDoubleClick }
 procedure TfGalaxy2.MapDoubleClick(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint);
 begin
   if ViewMode in [0, 2, 3] then
     if not GetPlayer.NoJump then JumpClicked(nil);
 end;
-{ @end $6764AC }
+{ @end $678BAC }
 
-{ @routine $6764F8 TfGalaxy2_HideStarInfo }
-procedure TfGalaxy2.HideStarInfo(Timer: PCallbackTimerGI; UserData: Integer);
+{ @routine $678BF0 TfGalaxy2_HideStarInfo }
+procedure TfGalaxy2.HideStarInfo(Timer: TCallbackTimerIdGI; UserData: Cardinal);
 begin
   ShowStarInfo(nil);
 end;
-{ @end $6764F8 }
+{ @end $678BF0 }
 
-{ @routine $676518 TfGalaxy2_JumpClicked }
+{ @routine $678BF8 TfGalaxy2_JumpClicked }
 procedure TfGalaxy2.JumpClicked(Sender: TObjectGI);
 var
   First, Second: TPointF;
@@ -1135,9 +1128,9 @@ begin
   RequestedScreenId := screenStarMap;
   RequestClose(1);
 end;
-{ @end $676518 }
+{ @end $678BF8 }
 
-{ @routine $676B74 TfGalaxy2_JumpMouseEnter }
+{ @routine $6791CC TfGalaxy2_JumpMouseEnter }
 procedure TfGalaxy2.JumpMouseEnter(Sender: TObjectGI);
 var First, Second: TPointF;
 begin
@@ -1155,25 +1148,25 @@ begin
   else if JumpHintAnimationState = 4 then JumpHintAnimationState := 3
   else if JumpHintAnimationState = 5 then JumpHintAnimationState := 2;
 end;
-{ @end $676B74 }
+{ @end $6791CC }
 
-{ @routine $676D58 TfGalaxy2_JumpMouseLeave }
+{ @routine $679374 TfGalaxy2_JumpMouseLeave }
 procedure TfGalaxy2.JumpMouseLeave(Sender: TObjectGI);
 begin
   if JumpHintAnimationState = 1 then JumpHintAnimationState := 0
   else if JumpHintAnimationState = 2 then JumpHintAnimationState := 5
   else if JumpHintAnimationState = 3 then JumpHintAnimationState := 4;
 end;
-{ @end $676D58 }
+{ @end $679374 }
 
-{ @routine $676DB8 TfGalaxy2_ShowStarInfo }
+{ @routine $6793AC TfGalaxy2_ShowStarInfo }
 procedure TfGalaxy2.ShowStarInfo(Star: TStar);
 var
   InfoPanel: TWindowGI;
-  UnusedControl: TObjectGI; // Native O- frame retains this unused slot at -$10.
+  UnusedLocal: array[0..3] of Byte; // Unused local; original type is unknown.
   Owner: TPanelGI;
   Objects: TList;
-  I, J, RowHeight, IconX: Integer;
+  I, J, RowHeight, IconX, WindowX: Integer;
   IconInset: Cardinal;
   NameWidth, DetailWidth, RowCount, SummaryLines: Integer;
   ObjectDistance: Single;
@@ -1184,31 +1177,31 @@ var
   Value: WideString;
 begin
   if (Star <> nil) and (GetPlayer <> nil) then GetPlayer.ScriptItemsAct(satOnShowingStarInfo, Star, nil, 0);
-  if StarInfoHideTimer <> nil then
+  if StarInfoHideTimer <> 0 then
   begin
     CancelCallbackTimer(StarInfoHideTimer);
-    StarInfoHideTimer := nil;
+    StarInfoHideTimer := 0;
   end;
   InfoPanel := TWindowGI(GetByName('InfoStar'));
   if Star = nil then
   begin
-    InfoPanel.SetActive(False);
+    InfoPanel.IsActive := False;
     Exit;
   end;
-  InfoPanel.SetActive(True);
+  InfoPanel.IsActive := True;
   with GetByName('InfoStarImage') as TGraphBufGI do
   begin
     SourceHasPerPixelAlpha := True;
     LoadGiByPathIntoGraphBuf(ExtractDelimitedPartW(TStarSE(Star.Graphic).StaticImagePath, 1, ','), GraphBuf);
-    if Cardinal(GraphBuf.Width) >= Cardinal(GraphBuf.Height) then
-      GraphBuf.RescaleRgba(ClientSize.X, Round(ClientSize.X / Cardinal(GraphBuf.Width) * Cardinal(GraphBuf.Height)), 5)
-    else GraphBuf.RescaleRgba(Round(ClientSize.Y / Cardinal(GraphBuf.Height) * Cardinal(GraphBuf.Width)), ClientSize.Y, 5);
+    if GraphBuf.Width >= GraphBuf.Height then
+      GraphBuf.RescaleRgba(ClientSize.X, Round(ClientSize.X / GraphBuf.Width * GraphBuf.Height), 5)
+    else GraphBuf.RescaleRgba(Round(ClientSize.Y / GraphBuf.Height * GraphBuf.Width), ClientSize.Y, 5);
     SetImageKindX(ikxCenter);
     SetImageKindY(ikyCenter);
   end;
   Owner := GetByName('InfoStarPanel') as TPanelGI;
   Owner.FreeOwnedChildren;
-  Owner.SetSize(Classes.Point(InfoPanel.ClientSize.X - InfoPanel.WorkSubRect.Left - InfoPanel.WorkSubRect.Right, Owner.ClientSize.Y));
+  Owner.ObjectSize := Classes.Point(InfoPanel.ClientSize.X - InfoPanel.WorkSubRect.Left - InfoPanel.WorkSubRect.Right, Owner.ClientSize.Y);
   Objects := TList.Create;
   for I := 0 to Star.Planets.Count - 1 do Objects.Add(Star.Planets[I]);
   for I := 0 to Star.Ships.Count - 1 do
@@ -1233,7 +1226,7 @@ begin
         end;
   for I := 0 to Star.CustomSystemInfos.Count - 1 do
   begin
-    CustomInfo := TCustomSystemInfo(Star.CustomSystemInfos[I]);
+    CustomInfo := Star.CustomSystemInfos[I];
     ObjectDistance := Sqr(CustomInfo.Distance);
     J := 0;
     while J < Objects.Count do
@@ -1259,14 +1252,14 @@ begin
     begin
       SetFontName(NormalFontName);
       SetTextColor(CurrentPixelFormat.PackRgbBytes(255, 255, 255));
-      SetSize(Classes.Point(1, RowHeight));
-      SetPosition(Classes.Point(0, RowHeight * I));
+      ObjectSize := Classes.Point(1, RowHeight);
+      Pos := Classes.Point(0, RowHeight * I);
       SetWordWrapEnabled(False);
       SetTextAlignX(taxAuto);
       SetTextAlignY(tayCenterEx);
-      if TObject(Objects[I]) is TPlanet then SetText(TPlanet(Objects[I]).Name)
-      else if TObject(Objects[I]) is TShip then SetText(TShip(Objects[I]).Name)
-      else SetText(TCustomSystemInfo(Objects[I]).Name);
+      if TObject(Objects[I]) is TPlanet then Text := TPlanet(Objects[I]).Name
+      else if TObject(Objects[I]) is TShip then Text := TShip(Objects[I]).Name
+      else Text := TCustomSystemInfo(Objects[I]).Name;
       NameWidth := Max(NameWidth, ClientSize.X);
     end;
   CurrentChild := Owner.FirstChild;
@@ -1276,7 +1269,7 @@ begin
       with CurrentChild as TLabelGI do
       begin
         SetTextAlignX(taxRight);
-        SetSize(Classes.Point(NameWidth, RowHeight));
+        ObjectSize := Classes.Point(NameWidth, RowHeight);
       end;
     CurrentChild := CurrentChild.NextSibling;
   end;
@@ -1286,35 +1279,37 @@ begin
     begin
       IconInset := 0;
       if TObject(Objects[I]) is TPlanet then
+      begin
         if (TObject(Objects[I]) as TPlanet).Radius < 70 then IconInset := 4
         else if (TObject(Objects[I]) as TPlanet).Radius < 80 then IconInset := 3
         else if (TObject(Objects[I]) as TPlanet).Radius < 90 then IconInset := 2
         else if (TObject(Objects[I]) as TPlanet).Radius < 100 then IconInset := 1 else IconInset := 0;
+      end;
       SourceHasPerPixelAlpha := True;
-      SetPosition(Classes.Point(NameWidth + 5 + 1 + (IconInset shr 1), RowHeight * I + 1 + (IconInset shr 1)));
-      SetSize(Classes.Point(RowHeight - 2 - IconInset, RowHeight - 2 - IconInset));
+      Pos := Classes.Point(NameWidth + 5 + 1 + (IconInset shr 1), RowHeight * I + 1 + (IconInset shr 1));
+      ObjectSize := Classes.Point(RowHeight - 2 - IconInset, RowHeight - 2 - IconInset);
       if TObject(Objects[I]) is TPlanet then
       begin
         TPlanet(Objects[I]).Graphic.RenderToBuffer(Self, GraphBuf, True);
-        if Cardinal(GraphBuf.Width) >= Cardinal(GraphBuf.Height) then
-          GraphBuf.RescaleRgba(ClientSize.X, Round(ClientSize.X / Cardinal(GraphBuf.Width) * Cardinal(GraphBuf.Height)), 5)
-        else GraphBuf.RescaleRgba(Round(ClientSize.Y / Cardinal(GraphBuf.Height) * Cardinal(GraphBuf.Width)), ClientSize.Y, 5);
+        if GraphBuf.Width >= GraphBuf.Height then
+          GraphBuf.RescaleRgba(ClientSize.X, Round(ClientSize.X / GraphBuf.Width * GraphBuf.Height), 5)
+        else GraphBuf.RescaleRgba(Round(ClientSize.Y / GraphBuf.Height * GraphBuf.Width), ClientSize.Y, 5);
       end
       else if TObject(Objects[I]) is TRuins then
       begin
         if TRuins(Objects[I]).Graphic is TRuinsSE then
           LoadGiByPathIntoGraphBuf(ExtractDelimitedPartW((TRuins(Objects[I]).Graphic as TRuinsSE).StaticImagePath, 1, ','), GraphBuf)
         else LoadGiByPathIntoGraphBuf(ExtractDelimitedPartW((TRuins(Objects[I]).Graphic as TShip2SE).AlternateImagePath, 1, ','), GraphBuf);
-        if Cardinal(GraphBuf.Width) >= Cardinal(GraphBuf.Height) then
-          GraphBuf.RescaleRgba(ClientSize.X, Round(ClientSize.X / Cardinal(GraphBuf.Width) * Cardinal(GraphBuf.Height)), 5)
-        else GraphBuf.RescaleRgba(Round(ClientSize.Y / Cardinal(GraphBuf.Height) * Cardinal(GraphBuf.Width)), ClientSize.Y, 5);
+        if GraphBuf.Width >= GraphBuf.Height then
+          GraphBuf.RescaleRgba(ClientSize.X, Round(ClientSize.X / GraphBuf.Width * GraphBuf.Height), 5)
+        else GraphBuf.RescaleRgba(Round(ClientSize.Y / GraphBuf.Height * GraphBuf.Width), ClientSize.Y, 5);
       end
       else if TCustomSystemInfo(Objects[I]).Icon <> '' then
       begin
         LoadGiByPathIntoGraphBuf(TCustomSystemInfo(Objects[I]).Icon, GraphBuf);
-        if Cardinal(GraphBuf.Width) >= Cardinal(GraphBuf.Height) then
-          GraphBuf.RescaleRgba(ClientSize.X, Round(ClientSize.X / Cardinal(GraphBuf.Width) * Cardinal(GraphBuf.Height)), 5)
-        else GraphBuf.RescaleRgba(Round(ClientSize.Y / Cardinal(GraphBuf.Height) * Cardinal(GraphBuf.Width)), ClientSize.Y, 5);
+        if GraphBuf.Width >= GraphBuf.Height then
+          GraphBuf.RescaleRgba(ClientSize.X, Round(ClientSize.X / GraphBuf.Width * GraphBuf.Height), 5)
+        else GraphBuf.RescaleRgba(Round(ClientSize.Y / GraphBuf.Height * GraphBuf.Width), ClientSize.Y, 5);
       end;
       SetImageKindX(ikxCenter);
       SetImageKindY(ikyCenter);
@@ -1328,18 +1323,18 @@ begin
       begin
         if GiResourceVariant = 2 then SetFontName(MiniFontName) else SetFontName(SmallFontName);
         SetTextColor(GetStyleColorGI('StarInfoObjectType', 40, 237, 245));
-        SetSize(Classes.Point(1, RowHeight));
-        SetPosition(Classes.Point(NameWidth + 5 + RowHeight + 5 + 1, RowHeight * I));
+        ObjectSize := Classes.Point(1, RowHeight);
+        Pos := Classes.Point(NameWidth + 5 + RowHeight + 5 + 1, RowHeight * I);
         SetWordWrapEnabled(False);
         SetTextAlignX(taxAuto);
         SetTextAlignY(tayCenterEx);
-        SetText(LowerCaseWideString(TShip(Objects[I]).GetLocalizedTypeName));
+        Text := LowerCaseWideString(TShip(Objects[I]).GetLocalizedTypeName);
         DetailWidth := Max(DetailWidth, ClientSize.X + GiScalePixels(35));
       end;
     end
     else if TObject(Objects[I]) is TCustomSystemInfo then
     begin
-      CustomInfo := TCustomSystemInfo(Objects[I]);
+      CustomInfo := Objects[I];
       if (CountDelimitedPartsW(CustomInfo.Info, ':') > 1) and (ExtractDelimitedPartW(CustomInfo.Info, 0, ':') = 'Image') then
       begin
         Value := ExtractDelimitedPartW(CustomInfo.Info, 1, ':');
@@ -1347,9 +1342,9 @@ begin
         for J := 0 to CountDelimitedPartsW(Value, ',') - 1 do
           with TImageGI.Create(Owner) do
           begin
-            SetImagePath('GI,' + ExtractDelimitedPartW(Value, J, ','));
-            SetSize(Classes.Point(RowHeight - 2, RowHeight - 2));
-            SetPosition(Classes.Point(IconX, RowHeight * I + 1));
+            ImageSourcePath := 'GI,' + ExtractDelimitedPartW(Value, J, ',');
+            ObjectSize := Classes.Point(RowHeight - 2, RowHeight - 2);
+            Pos := Classes.Point(IconX, RowHeight * I + 1);
             IconX := IconX + RowHeight + 2;
           end;
       end
@@ -1362,13 +1357,13 @@ begin
           begin
             SourceHasPerPixelAlpha := True;
             LoadBitmapPathAsRgba(ExtractDelimitedPartW(Value, J, ',') + RgbaImagePathSuffix);
-            SetPosition(Classes.Point(IconX, RowHeight * I + 1));
-            SetSize(Classes.Point(RowHeight - 2, RowHeight - 2));
-            if (ClientSize.X < GraphBuf.Width) or (ClientSize.Y < GraphBuf.Height) then
+            Pos := Classes.Point(IconX, RowHeight * I + 1);
+            ObjectSize := Classes.Point(RowHeight - 2, RowHeight - 2);
+            if (ClientSize.X < Integer(GraphBuf.Width)) or (ClientSize.Y < Integer(GraphBuf.Height)) then
             begin
-              if Cardinal(GraphBuf.Width) >= Cardinal(GraphBuf.Height) then
-                GraphBuf.RescaleRgba(ClientSize.X, Round(ClientSize.X / Cardinal(GraphBuf.Width) * Cardinal(GraphBuf.Height)), 5)
-              else GraphBuf.RescaleRgba(Round(ClientSize.Y / Cardinal(GraphBuf.Height) * Cardinal(GraphBuf.Width)), ClientSize.Y, 5);
+              if GraphBuf.Width >= GraphBuf.Height then
+                GraphBuf.RescaleRgba(ClientSize.X, Round(ClientSize.X / GraphBuf.Width * GraphBuf.Height), 5)
+              else GraphBuf.RescaleRgba(Round(ClientSize.Y / GraphBuf.Height * GraphBuf.Width), ClientSize.Y, 5);
             end;
             SetImageKindX(ikxCenter);
             SetImageKindY(ikyCenter);
@@ -1380,12 +1375,12 @@ begin
         begin
           if GiResourceVariant = 2 then SetFontName(MiniFontName) else SetFontName(SmallFontName);
           SetTextColor(GetStyleColorGI('StarInfoObjectType', 40, 237, 245));
-          SetSize(Classes.Point(1, RowHeight));
-          SetPosition(Classes.Point(NameWidth + 5 + RowHeight + 5 + 1, RowHeight * I));
+          ObjectSize := Classes.Point(1, RowHeight);
+          Pos := Classes.Point(NameWidth + 5 + RowHeight + 5 + 1, RowHeight * I);
           SetWordWrapEnabled(False);
           SetTextAlignX(taxAuto);
           SetTextAlignY(tayCenterEx);
-          SetText(CustomInfo.Info);
+          Text := CustomInfo.Info;
           DetailWidth := Max(DetailWidth, ClientSize.X + GiScalePixels(35));
         end;
     end
@@ -1395,43 +1390,43 @@ begin
         begin
           SourceHasPerPixelAlpha := True;
           LoadBitmapPathAsRgba(ExtractDelimitedPartW(GetFactionEmblemPath((TObject(Objects[I]) as TPlanet).GetFactionResourceName), 1, ',') + RgbaImagePathSuffix);
-          SetPosition(Classes.Point(NameWidth + 5 + RowHeight + 5 + 1, RowHeight * I + 1));
-          SetSize(Classes.Point(RowHeight - 2, RowHeight - 2));
-          if Cardinal(GraphBuf.Width) >= Cardinal(GraphBuf.Height) then
-            GraphBuf.RescaleRgba(ClientSize.X, Round(ClientSize.X / Cardinal(GraphBuf.Width) * Cardinal(GraphBuf.Height)), 5)
-          else GraphBuf.RescaleRgba(Round(ClientSize.Y / Cardinal(GraphBuf.Height) * Cardinal(GraphBuf.Width)), ClientSize.Y, 5);
+          Pos := Classes.Point(NameWidth + 5 + RowHeight + 5 + 1, RowHeight * I + 1);
+          ObjectSize := Classes.Point(RowHeight - 2, RowHeight - 2);
+          if GraphBuf.Width >= GraphBuf.Height then
+            GraphBuf.RescaleRgba(ClientSize.X, Round(ClientSize.X / GraphBuf.Width * GraphBuf.Height), 5)
+          else GraphBuf.RescaleRgba(Round(ClientSize.Y / GraphBuf.Height * GraphBuf.Width), ClientSize.Y, 5);
           SetImageKindX(ikxCenter);
           SetImageKindY(ikyCenter);
         end;
     if TObject(Objects[I]) is TPlanet then
     begin
-      Planet := TPlanet(Objects[I]);
+      Planet := Objects[I];
       if (Planet.OwnerId in [oiMaloc..oiGaal, oiPirate]) and not Planet.IsMainPiratePlanet and (Planet.CurrentStar.Status.CustomFaction = '') then
       begin
         IconX := NameWidth + 5 + RowHeight + 5 + 1;
         with TImageGI.Create(Owner) do
         begin
           case Ord((TObject(Objects[I]) as TPlanet).GetRelationLevelToShip(GetPlayer)) of
-            0: SetImagePath('GI,Bm.FormGalaxy2.Face4');
-            1: SetImagePath('GI,Bm.FormGalaxy2.Face3');
-            2: SetImagePath('GI,Bm.FormGalaxy2.Face2');
-            3: SetImagePath('GI,Bm.FormGalaxy2.Face1');
-            4: SetImagePath('GI,Bm.FormGalaxy2.Face0');
-          else SetImagePath('GI,Bm.FormGalaxy2.Face2');
+            0: ImageSourcePath := 'GI,Bm.FormGalaxy2.Face4';
+            1: ImageSourcePath := 'GI,Bm.FormGalaxy2.Face3';
+            2: ImageSourcePath := 'GI,Bm.FormGalaxy2.Face2';
+            3: ImageSourcePath := 'GI,Bm.FormGalaxy2.Face1';
+            4: ImageSourcePath := 'GI,Bm.FormGalaxy2.Face0';
+          else ImageSourcePath := 'GI,Bm.FormGalaxy2.Face2';
           end;
-          SetSize(Classes.Point(RowHeight - 2, RowHeight - 2));
-          SetPosition(Classes.Point(IconX + RowHeight + 2, RowHeight * I + 1));
+          ObjectSize := Classes.Point(RowHeight - 2, RowHeight - 2);
+          Pos := Classes.Point(IconX + RowHeight + 2, RowHeight * I + 1);
         end;
         IconX := IconX + RowHeight + 2;
         if Planet.Economy in [peAgricultural, peIndustrial] then
           with TImageGI.Create(Owner) do
           begin
             case Planet.Economy of
-              peAgricultural: SetImagePath('GI,Bm.FormGalaxy.EconAgrar');
-              peIndustrial: SetImagePath('GI,Bm.FormGalaxy.EconIndustr');
+              peAgricultural: ImageSourcePath := 'GI,Bm.FormGalaxy.EconAgrar';
+              peIndustrial: ImageSourcePath := 'GI,Bm.FormGalaxy.EconIndustr';
             end;
-            SetSize(Classes.Point(RowHeight - 2, RowHeight - 2));
-            SetPosition(Classes.Point(IconX + RowHeight, RowHeight * I + 1));
+            ObjectSize := Classes.Point(RowHeight - 2, RowHeight - 2);
+            Pos := Classes.Point(IconX + RowHeight, RowHeight * I + 1);
           end;
       end
       else if Planet.IsMainPiratePlanet then
@@ -1439,12 +1434,12 @@ begin
         begin
           if GiResourceVariant = 2 then SetFontName(MiniFontName) else SetFontName(SmallFontName);
           SetTextColor(GetStyleColorGI('StarInfoObjectType', 40, 237, 245));
-          SetSize(Classes.Point(1, RowHeight));
-          SetPosition(Classes.Point(NameWidth + 5 + RowHeight + 5 + 1, RowHeight * I));
+          ObjectSize := Classes.Point(1, RowHeight);
+          Pos := Classes.Point(NameWidth + 5 + RowHeight + 5 + 1, RowHeight * I);
           SetWordWrapEnabled(False);
           SetTextAlignX(taxAuto);
           SetTextAlignY(tayCenterEx);
-          SetText(LowerCaseWideString(LocalizedText('ShipType.TypeName.PB')));
+          Text := LowerCaseWideString(LocalizedText('ShipType.TypeName.PB'));
           DetailWidth := Max(DetailWidth, ClientSize.X + GiScalePixels(35));
         end
       else if (Planet.OwnerId = oiUninhabited) and (Planet.GetUnexploredSurfaceTileCount = 0) then
@@ -1452,12 +1447,12 @@ begin
         begin
           if GiResourceVariant = 2 then SetFontName(MiniFontName) else SetFontName(SmallFontName);
           SetTextColor(CurrentPixelFormat.PackRgbBytes(140, 140, 140));
-          SetSize(Classes.Point(1, RowHeight));
-          SetPosition(Classes.Point(NameWidth + 5 + RowHeight + 5 + 1, RowHeight * I));
+          ObjectSize := Classes.Point(1, RowHeight);
+          Pos := Classes.Point(NameWidth + 5 + RowHeight + 5 + 1, RowHeight * I);
           SetWordWrapEnabled(False);
           SetTextAlignX(taxAuto);
           SetTextAlignY(tayCenterEx);
-          SetText(LowerCaseWideString(LocalizedText('Planet.NotCivil.AllExplore')));
+          Text := LowerCaseWideString(LocalizedText('Planet.NotCivil.AllExplore'));
           DetailWidth := Max(DetailWidth, ClientSize.X + GiScalePixels(35));
         end;
     end;
@@ -1469,44 +1464,45 @@ begin
     begin
       SetFontName(SmallFontName);
       SetTextColor(CurrentPixelFormat.PackRgbBytes(255, 255, 255));
-      SetPosition(Classes.Point(0, RowCount * RowHeight));
+      Pos := Classes.Point(0, RowCount * RowHeight);
       SetWordWrapEnabled(False);
       SetTextAlignX(taxCenter);
       SetTextAlignY(tayCenterEx);
-      SetText(BuildStarShipSummary(Star, SummaryLines));
-      SetSize(Classes.Point(NameWidth + DetailWidth, RowHeight * SummaryLines));
+      Text := BuildStarShipSummary(Star, SummaryLines);
+      ObjectSize := Classes.Point(NameWidth + DetailWidth, RowHeight * SummaryLines);
     end;
     Inc(RowCount, SummaryLines);
   end;
-  Owner.SetSize(Classes.Point(NameWidth + DetailWidth, RowCount * RowHeight));
-  Owner.SetPosition(InfoPanel.WorkSubRect.TopLeft);
-  InfoPanel.SetSize(Classes.Point(Owner.ClientSize.X + InfoPanel.WorkSubRect.Left + InfoPanel.WorkSubRect.Right,
-    InfoPanel.WorkSubRect.Top + InfoPanel.WorkSubRect.Bottom + RowCount * RowHeight));
+  Owner.ObjectSize := Classes.Point(NameWidth + DetailWidth, RowCount * RowHeight);
+  Owner.Pos := InfoPanel.WorkSubRect.TopLeft;
+  InfoPanel.ObjectSize := Classes.Point(Owner.ClientSize.X + InfoPanel.WorkSubRect.Left + InfoPanel.WorkSubRect.Right,
+    InfoPanel.WorkSubRect.Top + InfoPanel.WorkSubRect.Bottom + RowCount * RowHeight);
   InfoPanel.UpdateAutoGeometry;
   with GetByName('InfoStarName') as TLabelGI do
   begin
-    SetText(WrapTextInColor(Star.Name, InfoNameColorTag));
-    SetSize(Classes.Point(InfoPanel.ClientSize.X - InfoPanel.WorkSubRect.Right - LocalPosition.X - 15, ClientSize.Y));
+    Text := WrapTextInColor(Star.Name, InfoNameColorTag);
+    ObjectSize := Classes.Point(InfoPanel.ClientSize.X - InfoPanel.WorkSubRect.Right - LocalPosition.X - 15, ClientSize.Y);
   end;
   Objects.Free;
   for I := 0 to 3 do
   begin
     if I = 0 then
-      InfoPanel.SetPosition(AddPoints(MapPanel.ToAbsolutePoint(GalaxyPointToMapPoint(Star.Position)), Classes.Point(-InfoPanel.ClientSize.X - GiScalePixels(50), -InfoPanel.ClientSize.Y - GiScalePixels(50))))
+      InfoPanel.Pos := AddPoints(MapPanel.ToAbsolutePoint(GalaxyPointToMapPoint(Star.Position)), Classes.Point(-InfoPanel.ClientSize.X - GiScalePixels(50), -InfoPanel.ClientSize.Y - GiScalePixels(50)))
     else if I = 1 then
-      InfoPanel.SetPosition(AddPoints(MapPanel.ToAbsolutePoint(GalaxyPointToMapPoint(Star.Position)), Classes.Point(GiScalePixels(50), -InfoPanel.ClientSize.Y - GiScalePixels(50))))
+      InfoPanel.Pos := AddPoints(MapPanel.ToAbsolutePoint(GalaxyPointToMapPoint(Star.Position)), Classes.Point(GiScalePixels(50), -InfoPanel.ClientSize.Y - GiScalePixels(50)))
     else if I = 2 then
-      InfoPanel.SetPosition(AddPoints(MapPanel.ToAbsolutePoint(GalaxyPointToMapPoint(Star.Position)), Classes.Point(GiScalePixels(50), GiScalePixels(50))))
+      InfoPanel.Pos := AddPoints(MapPanel.ToAbsolutePoint(GalaxyPointToMapPoint(Star.Position)), Classes.Point(GiScalePixels(50), GiScalePixels(50)))
     else
-      InfoPanel.SetPosition(AddPoints(MapPanel.ToAbsolutePoint(GalaxyPointToMapPoint(Star.Position)), Classes.Point(-InfoPanel.ClientSize.X - GiScalePixels(50), GiScalePixels(50))));
-    if (InfoPanel.LocalPosition.X >= 0) and (InfoPanel.LocalPosition.Y >= 0) and
-      (GameScreenWidth - GiScalePixels(100) >= InfoPanel.LocalPosition.X + InfoPanel.ClientSize.X) and
-      (GameScreenHeight - GiScalePixels(100) >= InfoPanel.LocalPosition.Y + InfoPanel.ClientSize.Y) then Break;
+      InfoPanel.Pos := AddPoints(MapPanel.ToAbsolutePoint(GalaxyPointToMapPoint(Star.Position)), Classes.Point(-InfoPanel.ClientSize.X - GiScalePixels(50), GiScalePixels(50)));
+    WindowX := InfoPanel.LocalPosition.X;
+    if (WindowX >= 0) and (InfoPanel.LocalPosition.Y >= 0) and
+      (Integer(GameScreenWidth) - GiScalePixels(100) >= WindowX + InfoPanel.ClientSize.X) and
+      (Integer(GameScreenHeight) - GiScalePixels(100) >= InfoPanel.LocalPosition.Y + InfoPanel.ClientSize.Y) then Break;
   end;
 end;
-{ @end $676DB8 }
+{ @end $6793AC }
 
-{ @routine $679134 TfGalaxy2_CanRevealBossPresence }
+{ @routine $67B5B4 TfGalaxy2_CanRevealBossPresence }
 function TfGalaxy2.CanRevealBossPresence(Ship: TShip): Boolean;
 var TechLevel: Integer;
 begin
@@ -1519,9 +1515,9 @@ begin
   if (KellerShip = Ship) and (TechLevel < 5) then begin Result := False; Exit; end;
   if (TerronShip = Ship) and (TechLevel < 3) then begin Result := False; Exit; end;
 end;
-{ @end $679134 }
+{ @end $67B5B4 }
 
-{ @routine $6798E0 TfGalaxy2_BuildStarShipSummary }
+{ @routine $67BC54 TfGalaxy2_BuildStarShipSummary }
 function TfGalaxy2.BuildStarShipSummary(Star: TStar; var LineCount: Integer): WideString;
 var
   Ship: TShip;
@@ -1529,7 +1525,7 @@ var
   OtherFaction, StarFaction: WideString;
   StarFactionCount: Integer;
   Kling: TKling;
-  DominatorCounts: array[TDominatorSeries, TKlingType] of Integer;
+  DominatorCounts: array[TDominatorSeries, 0..7] of Integer;
   ScriptedPirates, ScriptedCoalition: Integer;
   RoleCounts: array[0..13] of Integer;
   Transport: TTransport;
@@ -1546,8 +1542,8 @@ var
   ColorTag: WideString;
   HasSeparator: Boolean;
 
-  // @nested $6791E4 AccumulateShip
-  procedure AccumulateShip; cdecl; // @addr $6791E4 @ida "void __cdecl $name(void *ParentFrame);"
+  // @nested $67B634 AccumulateShip
+  procedure AccumulateShip; cdecl; // @addr $67B634 @ida "void __cdecl $name(void *ParentFrame);"
   var Faction: WideString;
   begin
     if Ship.InHyperspace then Exit;
@@ -1578,7 +1574,7 @@ var
     else if Ship.TypeId = stKling then
     begin
       Kling := Ship as TKling;
-      Inc(DominatorCounts[Kling.DominatorSeries, Kling.KlingType]);
+      Inc(DominatorCounts[Kling.DominatorSeries, Ord(Kling.KlingType)]);
     end
     else
       case Ship.TypeId of
@@ -1649,8 +1645,8 @@ var
       end;
   end;
 
-  // @nested $6797C8 SeriesColor
-  function SeriesColor: WideString; // @addr $6797C8
+  // @nested $67BB40 SeriesColor
+  function SeriesColor: WideString; // @addr $67BB40
   begin
     Result := '';
     case Series of
@@ -1660,8 +1656,8 @@ var
     end;
   end;
 
-  // @nested $67988C AppendLine
-  procedure AppendLine; cdecl; // @addr $67988C @ida "void __cdecl $name(void *ParentFrame);"
+  // @nested $67BC00 AppendLine
+  procedure AppendLine; cdecl; // @addr $67BC00 @ida "void __cdecl $name(void *ParentFrame);"
   begin
     if LineActive then
     begin
@@ -1684,7 +1680,7 @@ begin
   OtherFaction := '';
   Summary := '';
   for Series := dsBlazer to dsTerron do
-    for DominatorIndex := Ord(Low(TKlingType)) to Ord(High(TKlingType)) do DominatorCounts[Series, TKlingType(DominatorIndex)] := 0;
+    for DominatorIndex := Ord(Low(TKlingType)) to Ord(High(TKlingType)) do DominatorCounts[Series, DominatorIndex] := 0;
   for Role := 0 to 10 do RoleCounts[Role] := 0;
   for I := 0 to Star.Ships.Count - 1 do
   begin
@@ -1696,7 +1692,7 @@ begin
     Planet := Star.Planets[I];
     for J := 0 to Planet.Warriors.Count - 1 do
     begin
-      Ship := TShip(Planet.Warriors[J]);
+      Ship := Planet.Warriors[J];
       if (Ship.CurrentStar = Star) and (Star.Ships.IndexOf(Ship) < 0) then AccumulateShip;
     end;
   end;
@@ -1797,13 +1793,13 @@ begin
     HasSeparator := False;
     ColorTag := SeriesColor;
     for DominatorIndex := Low(DominatorDisplayOrder) to High(DominatorDisplayOrder) do
-      if (DominatorDisplayOrder[DominatorIndex] <> ktBoss) and (DominatorCounts[Series, DominatorDisplayOrder[DominatorIndex]] > 0) then
+      if (DominatorDisplayOrder[DominatorIndex] <> ktBoss) and (DominatorCounts[Series, Ord(DominatorDisplayOrder[DominatorIndex])] > 0) then
       begin
         if HasSeparator then Line := Line + WrapTextInColor('-', GrayColorTag);
         HasSeparator := True;
         LineActive := True;
         Line := Line + WrapTextInColor(LocalizedText('FormGalaxy.DomikShip' + IntToStr(Ord(DominatorDisplayOrder[DominatorIndex]))), ColorTag);
-        Line := Line + WrapTextInColor(IntToStr(DominatorCounts[Series, DominatorDisplayOrder[DominatorIndex]]), GalaxySummaryWhiteColorTag);
+        Line := Line + WrapTextInColor(IntToStr(DominatorCounts[Series, Ord(DominatorDisplayOrder[DominatorIndex])]), GalaxySummaryWhiteColorTag);
       end;
     AppendLine;
   end;
@@ -1813,7 +1809,7 @@ begin
   for Series := dsBlazer to dsTerron do
   begin
     ColorTag := SeriesColor;
-    if DominatorCounts[Series, ktBoss] > 0 then
+    if DominatorCounts[Series, Ord(ktBoss)] > 0 then
     begin
       if LineActive then Line := Line + WrapTextInColor(', ', GrayColorTag);
       Line := Line + WrapTextInColor(LocalizedText('FormGalaxy.Boss' + IntToStr(GroupIndex)), ColorTag);
@@ -1833,10 +1829,10 @@ begin
   AppendLine;
   Result := Summary;
 end;
-{ @end $6798E0 }
+{ @end $67BC54 }
 
-{ @routine $67AB80 TfGalaxy2_UpdateJumpAnimations }
-procedure TfGalaxy2.UpdateJumpAnimations(Timer: PCallbackTimerGI; UserData: Integer);
+{ @routine $67CDDC TfGalaxy2_UpdateJumpAnimations }
+procedure TfGalaxy2.UpdateJumpAnimations(Timer: TCallbackTimerIdGI; UserData: Cardinal);
 var
   First, Second: TPointF;
   LightIndex: Integer;
@@ -1896,22 +1892,28 @@ begin
   JumpLightImages[0].SetActive(False);
   JumpLightImages[1].SetActive(False);
   JumpLightImages[2].SetActive(False);
-  if not JumpButton.Disabled and (GetPlayer.CurrentStar <> SelectedJumpStar) and
-    (SelectedJumpStar <> nil) and GetPlayer.HasPositiveSpeed then
+  while True do
   begin
-    First := SelectedJumpStar.Position;
-    Second := GetPlayer.CurrentStar.Position;
-    if GetPlayer.JumpRange < Round(Sqrt(Sqr(First.X - Second.X) + Sqr(First.Y - Second.Y))) then Exit;
-    Inc(JumpLightTick);
-    LightIndex := (JumpLightTick div 5) mod 3;
-    JumpLightImages[0].SetActive(LightIndex = 2);
-    JumpLightImages[1].SetActive(LightIndex = 1);
-    JumpLightImages[2].SetActive(LightIndex = 0);
+    if JumpButton.Disabled then Break;
+    if GetPlayer.CurrentStar = SelectedJumpStar then Break;
+    if SelectedJumpStar = nil then Break;
+    if GetPlayer.HasPositiveSpeed then
+    begin
+      First := SelectedJumpStar.Position;
+      Second := GetPlayer.CurrentStar.Position;
+      if GetPlayer.JumpRange < Round(Sqrt(Sqr(First.X - Second.X) + Sqr(First.Y - Second.Y))) then Break;
+      Inc(JumpLightTick);
+      LightIndex := (JumpLightTick div 5) mod 3;
+      JumpLightImages[0].SetActive(LightIndex = 2);
+      JumpLightImages[1].SetActive(LightIndex = 1);
+      JumpLightImages[2].SetActive(LightIndex = 0);
+    end;
+    Break;
   end;
 end;
-{ @end $67AB80 }
+{ @end $67CDDC }
 
-{ @routine $67AF54 TfGalaxy2_SelectMusic }
+{ @routine $67D0BC TfGalaxy2_SelectMusic }
 procedure TfGalaxy2.SelectMusic;
 begin
   if GetPlayer = nil then MusicManager.PlayCategory('Base')
@@ -1951,25 +1953,24 @@ begin
     else MusicManager.RequestFadeOut;
   end;
 end;
-{ @end $67AF54 }
+{ @end $67D0BC }
 
-{ @routine $67B288 TfGalaxy2_ProcessCallbackTimers }
+{ @routine $67D3F4 TfGalaxy2_ProcessCallbackTimers }
 procedure TfGalaxy2.ProcessCallbackTimers;
 begin
   inherited ProcessCallbackTimers;
   if (ParentLoop <> nil) and (ParentLoop.ExitCode <> 0) and (ExitCode = 0) then RequestClose(2);
 end;
-{ @end $67B288 }
+{ @end $67D3F4 }
 
-{ @routine $67B2C8 RunGalaxyMap }
+{ @routine $67D420 RunGalaxyMap }
 function RunGalaxyMap(ParentLoop: TMessageLoopGI): Boolean;
 var
-  CursorAlignment: array[0..2] of Byte;
   State: TCursorStateGI;
 begin
   ParentLoop.RootUiObject.OnModalSuspend;
   ParentLoop.CaptureCursorState(@State);
-  ParentLoop.SetCursorActive(False);
+  ParentLoop.ShowCursor := False;
   ParentLoop.DrawQueuedUpdateRects;
   GalaxyScreen.ParentLoop := ParentLoop;
   ParentLoop.ChildLoop := GalaxyScreen;
@@ -1982,9 +1983,9 @@ begin
   ParentLoop.RootUiObject.OnModalResume;
   PostMouseMoveMessage;
 end;
-{ @end $67B2C8 }
+{ @end $67D420 }
 
-{ @routine $67B3B0 CaptureGalaxyPreview }
+{ @routine $67D4F4 CaptureGalaxyPreview }
 procedure CaptureGalaxyPreview(ParentLoop: TMessageLoopGI);
 begin
   GalaxyScreen.ParentLoop := nil;
@@ -1996,9 +1997,9 @@ begin
   ParentLoop.InvalidateViewport;
   ParentLoop.Present;
 end;
-{ @end $67B3B0 }
+{ @end $67D4F4 }
 
-{ @routine $67B418 TfGalaxy2_CreateMarkerClicked }
+{ @routine $67D540 TfGalaxy2_CreateMarkerClicked }
 procedure TfGalaxy2.CreateMarkerClicked(Sender: TObjectGI);
 begin
   CreateMarkerMode := not CreateMarkerMode;
@@ -2013,9 +2014,9 @@ begin
     CreateMarkerButton.SetImageNormalActivePath(CreateMarkerActiveImagePath);
   end;
 end;
-{ @end $67B418 }
+{ @end $67D540 }
 
-{ @routine $67B500 TfGalaxy2_UndoMarkerClicked }
+{ @routine $67D5F4 TfGalaxy2_UndoMarkerClicked }
 procedure TfGalaxy2.UndoMarkerClicked(Sender: TObjectGI);
 begin
   if RouteStars.Count > 0 then
@@ -2024,9 +2025,9 @@ begin
     RebuildJumpPath;
   end;
 end;
-{ @end $67B500 }
+{ @end $67D5F4 }
 
-{ @routine $67B544 TfGalaxy2_ClearMarkersClicked }
+{ @routine $67D614 TfGalaxy2_ClearMarkersClicked }
 procedure TfGalaxy2.ClearMarkersClicked(Sender: TObjectGI);
 begin
   if RouteStars.Count > 0 then
@@ -2035,9 +2036,9 @@ begin
     RebuildJumpPath;
   end;
 end;
-{ @end $67B544 }
+{ @end $67D614 }
 
-{ @routine $67B57C TfGalaxy2_ExecuteUiCode }
+{ @routine $67D634 TfGalaxy2_ExecuteUiCode }
 procedure TfGalaxy2.ExecuteUiCode(Block: TBlockParEC; Key: Cardinal);
 begin
   if not ExitScreenLoop and (TurnCalculationPhase in [tcpIdle, tcpGalaxyFinished, tcpPlayerStarFinished, tcpPlayerStarPrepared]) then
@@ -2047,6 +2048,6 @@ begin
     Galaxy.PrimeIntegrityChecksum(20005);
   end;
 end;
-{ @end $67B57C }
+{ @end $67D634 }
 
 end.

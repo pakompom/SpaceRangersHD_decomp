@@ -1,5 +1,4 @@
 unit GI_GI;
-// Unit bracket (inferred): .text 0x0047B4D4..0x0047C67E; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -14,34 +13,34 @@ type
     Alpha: Byte; // @offset 0x126
     HardwareMirrorHorizontal: Boolean; // @offset $127  Passed to the hardware texture draw only.
 
-    constructor Create(Owner: TObjectGI); // @addr 0x47B5F0
-    destructor Destroy; override; // @addr 0x47B680
-    procedure Clear; override; // @addr 0x47B6CC @note "Preserves alpha and the cache key."
-    procedure SetImagePath(const ImagePath: WideString); // @addr 0x47B6F4
-    function GetImagePath: WideString; // @addr 0x47B738
-    function GetContentSize: TPoint; // @addr 0x47B75C
-    function GetContentOrigin: TPoint; // @addr 0x47B7BC
-    procedure SetImageKindX(Value: TImageKindXGI); // @addr 0x47B82C
-    procedure SetImageKindY(Value: TImageKindYGI); // @addr 0x47B864
-    procedure SetHardwareMirrorHorizontal(Value: Boolean); // @addr $47C1A4
-    procedure SetAlpha(Value: Byte); // @addr 0x47B89C
-    function HitTestPixel(Point: TPoint): Boolean; // @addr 0x47B8D4 @note "Black pixels do not count as hits."
-    function GetVisualCenter: TPoint; // @addr 0x47BBF4 @note "Returns the mean coordinates of nonzero rendered pixels, or (0,0) when none exist."
-    procedure LoadFromConfigPath(const Path: WideString); override; // @addr 0x47BFBC
-    procedure LoadFromBlock(Block: TBlockParEC); override; // @addr 0x47BFF0
-    procedure LoadImageProperties(Block: TBlockParEC); // @addr 0x47C018
-    procedure Draw(ClipRect: TRect); override; // @addr 0x47C1C0
-    procedure QueueImageLoad(PendingLoads: TList); override; // @addr 0x47C5D4
+    constructor Create(Owner: TObjectGI); // @addr 0x00493AF0
+    destructor Destroy; override; // @addr 0x00493B68
+    procedure Clear; override; // @addr 0x00493BA0 @note "Preserves alpha and the cache key."
+    procedure SetImagePath(const ImagePath: WideString); // @addr 0x00493BB4
+    function GetImagePath: WideString; // @addr 0x00493BE8
+    function GetContentSize: TPoint; // @addr 0x00493C04
+    function GetContentOrigin: TPoint; // @addr 0x00493C60
+    procedure SetImageKindX(Value: TImageKindXGI); // @addr 0x00493CCC
+    procedure SetImageKindY(Value: TImageKindYGI); // @addr 0x00493CEC
+    procedure SetHardwareMirrorHorizontal(Value: Boolean); // @addr $4944AC
+    procedure SetAlpha(Value: Byte); // @addr 0x00493D0C
+    function HitTestPixel(Point: TPoint): Boolean; // @addr 0x00493D2C @note "Black pixels do not count as hits."
+    function GetVisualCenter: TPoint; // @addr 0x00493FBC @note "Returns the mean coordinates of nonzero rendered pixels, or (0,0) when none exist."
+    procedure LoadFromConfigPath(const Path: WideString); override; // @addr 0x004942E8
+    procedure LoadFromBlock(Block: TBlockParEC); override; // @addr 0x00494314
+    procedure LoadImageProperties(Block: TBlockParEC); // @addr 0x00494330
+    procedure Draw(ClipRect: TRect); override; // @addr 0x004944B4
+    procedure QueueImageLoad(PendingLoads: TList); override; // @addr 0x00494828
   end;
 
-procedure LoadGiByPathIntoGraphBuf(const GiPath: WideString; Destination: TGraphBufGR); // @addr 0x47C5F8
+procedure LoadGiByPathIntoGraphBuf(const GiPath: WideString; Destination: TGraphBufGR); // @addr 0x00494834
 
 implementation
 
 uses EC_Cache, EC_Mem, GR_Main, GR_DX, GlobalsV;
 
 
-{ @routine $47B5F0 TgiGI_Create }
+{ @routine $493AF0 TgiGI_Create }
 constructor TgiGI.Create(Owner: TObjectGI);
 begin
   inherited Create(Owner);
@@ -51,45 +50,43 @@ begin
   ImageKindY := ikyCenter;
   Alpha := 255;
 end;
-{ @end $47B5F0 }
+{ @end $493AF0 }
 
-{ @routine $47B680 TgiGI_Destroy }
+{ @routine $493B68 TgiGI_Destroy }
 destructor TgiGI.Destroy;
 begin
   ImageCache.Free;
   ImageCache := nil;
   inherited Destroy;
 end;
-{ @end $47B680 }
+{ @end $493B68 }
 
-{ @routine $47B6CC TgiGI_Clear }
+{ @routine $493BA0 TgiGI_Clear }
 procedure TgiGI.Clear;
 begin
   ImageKindX := ikxCenter;
   ImageKindY := ikyCenter;
   inherited Clear;
 end;
-{ @end $47B6CC }
+{ @end $493BA0 }
 
-{ @routine $47B6F4 TgiGI_SetImagePath }
+{ @routine $493BB4 TgiGI_SetImagePath }
 procedure TgiGI.SetImagePath(const ImagePath: WideString);
 begin
-  if ImageCache.CacheKey <> ImagePath then
-  begin
-    Invalidate;
-    ImageCache.SetCacheKey(ImagePath);
-  end;
+  if ImageCache.CacheKey = ImagePath then Exit;
+  Invalidate;
+  ImageCache.SetCacheKey(ImagePath);
 end;
-{ @end $47B6F4 }
+{ @end $493BB4 }
 
-{ @routine $47B738 TgiGI_GetImagePath }
+{ @routine $493BE8 TgiGI_GetImagePath }
 function TgiGI.GetImagePath: WideString;
 begin
   Result := ImageCache.CacheKey;
 end;
-{ @end $47B738 }
+{ @end $493BE8 }
 
-{ @routine $47B75C TgiGI_GetContentSize }
+{ @routine $493C04 TgiGI_GetContentSize }
 function TgiGI.GetContentSize: TPoint;
 var Image: TCGiEC;
 begin
@@ -100,9 +97,9 @@ begin
     ImageCache.Release;
   end;
 end;
-{ @end $47B75C }
+{ @end $493C04 }
 
-{ @routine $47B7BC TgiGI_GetContentOrigin }
+{ @routine $493C60 TgiGI_GetContentOrigin }
 function TgiGI.GetContentOrigin: TPoint;
 var Image: TCGiEC; Bounds: TRect;
 begin
@@ -114,42 +111,36 @@ begin
     ImageCache.Release;
   end;
 end;
-{ @end $47B7BC }
+{ @end $493C60 }
 
-{ @routine $47B82C TgiGI_SetImageKindX }
+{ @routine $493CCC TgiGI_SetImageKindX }
 procedure TgiGI.SetImageKindX(Value: TImageKindXGI);
 begin
-  if ImageKindX <> Value then
-  begin
-    ImageKindX := Value;
-    Invalidate;
-  end;
+  if ImageKindX = Value then Exit;
+  ImageKindX := Value;
+  Invalidate;
 end;
-{ @end $47B82C }
+{ @end $493CCC }
 
-{ @routine $47B864 TgiGI_SetImageKindY }
+{ @routine $493CEC TgiGI_SetImageKindY }
 procedure TgiGI.SetImageKindY(Value: TImageKindYGI);
 begin
-  if ImageKindY <> Value then
-  begin
-    ImageKindY := Value;
-    Invalidate;
-  end;
+  if ImageKindY = Value then Exit;
+  ImageKindY := Value;
+  Invalidate;
 end;
-{ @end $47B864 }
+{ @end $493CEC }
 
-{ @routine $47B89C TgiGI_SetAlpha }
+{ @routine $493D0C TgiGI_SetAlpha }
 procedure TgiGI.SetAlpha(Value: Byte);
 begin
-  if Alpha <> Value then
-  begin
-    Alpha := Value;
-    Invalidate;
-  end;
+  if Alpha = Value then Exit;
+  Alpha := Value;
+  Invalidate;
 end;
-{ @end $47B89C }
+{ @end $493D0C }
 
-{ @routine $47B8D4 TgiGI_HitTestPixel }
+{ @routine $493D2C TgiGI_HitTestPixel }
 function TgiGI.HitTestPixel(Point: TPoint): Boolean;
 var Image: TCGiEC; Width, Height, Left, Right, X, Top, Bottom, Y: Integer; Pixel: Cardinal; Pixels: Pointer; Buffer: TGraphBufGR; Clip: TRect;
 begin
@@ -237,9 +228,9 @@ begin
   end;
   Result := Pixel <> 0;
 end;
-{ @end $47B8D4 }
+{ @end $493D2C }
 
-{ @routine $47BBF4 TgiGI_GetVisualCenter }
+{ @routine $493FBC TgiGI_GetVisualCenter }
 function TgiGI.GetVisualCenter: TPoint;
 var Buffer: TGraphBufGR; Image: TCGiEC; Width, Height, Left, Right, X, Top, Bottom, Y, Count: Integer; SavedBounds, Clip: TRect;
 begin
@@ -340,25 +331,25 @@ begin
   if Count < 1 then Result := Classes.Point(0, 0)
   else Result := Classes.Point(Result.X div Count, Result.Y div Count);
 end;
-{ @end $47BBF4 }
+{ @end $493FBC }
 
-{ @routine $47BFBC TgiGI_LoadFromConfigPath }
+{ @routine $4942E8 TgiGI_LoadFromConfigPath }
 procedure TgiGI.LoadFromConfigPath(const Path: WideString);
 begin
   inherited LoadFromConfigPath(Path);
   LoadImageProperties(UiStyleConfig.GetBlockByPath(Path));
 end;
-{ @end $47BFBC }
+{ @end $4942E8 }
 
-{ @routine $47BFF0 TgiGI_LoadFromBlock }
+{ @routine $494314 TgiGI_LoadFromBlock }
 procedure TgiGI.LoadFromBlock(Block: TBlockParEC);
 begin
   inherited LoadFromBlock(Block);
   LoadImageProperties(Block);
 end;
-{ @end $47BFF0 }
+{ @end $494314 }
 
-{ @routine $47C018 TgiGI_LoadImageProperties }
+{ @routine $494330 TgiGI_LoadImageProperties }
 procedure TgiGI.LoadImageProperties(Block: TBlockParEC);
 begin
   ImageCache.SetCacheKey(Block.GetParam('Image'));
@@ -367,16 +358,16 @@ begin
   if Block.CountParams('AlignX') > 0 then SetImageKindX(ParseImageKindXName(Block.GetParam('AlignX')));
   if Block.CountParams('AlignY') > 0 then SetImageKindY(ParseImageKindYName(Block.GetParam('AlignY')));
 end;
-{ @end $47C018 }
+{ @end $494330 }
 
-{ @routine $47C1A4 TgiGI_SetHardwareMirrorHorizontal }
+{ @routine $4944AC TgiGI_SetHardwareMirrorHorizontal }
 procedure TgiGI.SetHardwareMirrorHorizontal(Value: Boolean);
 begin
   HardwareMirrorHorizontal := Value;
 end;
-{ @end $47C1A4 }
+{ @end $4944AC }
 
-{ @routine $47C1C0 TgiGI_Draw }
+{ @routine $4944B4 TgiGI_Draw }
 procedure TgiGI.Draw(ClipRect: TRect);
 var Image: TCGiEC; Width, Height, Left, Right, X, Top, Bottom, Y, TileIndex: Integer; TileOrigin: TPoint;
 begin
@@ -492,16 +483,16 @@ begin
     ImageCache.Release;
   end;
 end;
-{ @end $47C1C0 }
+{ @end $4944B4 }
 
-{ @routine $47C5D4 TgiGI_QueueImageLoad }
+{ @routine $494828 TgiGI_QueueImageLoad }
 procedure TgiGI.QueueImageLoad(PendingLoads: TList);
 begin
   ImageCache.QueueLoadIfMissing(PendingLoads);
 end;
-{ @end $47C5D4 }
+{ @end $494828 }
 
-{ @routine $47C5F8 LoadGiByPathIntoGraphBuf }
+{ @routine $494834 LoadGiByPathIntoGraphBuf }
 procedure LoadGiByPathIntoGraphBuf(const GiPath: WideString; Destination: TGraphBufGR);
 var Control: TCacheControlEC; Image: TCGiEC;
 begin
@@ -516,6 +507,6 @@ begin
   end;
   Control.Free;
 end;
-{ @end $47C5F8 }
+{ @end $494834 }
 
 end.

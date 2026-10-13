@@ -1,5 +1,4 @@
 unit fEquipmentShop;
-// Unit bracket (inferred): .text 0x007DC884..0x007E3B52; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -16,11 +15,11 @@ type
     ItemIconImage: TImageGI; // @offset 0x1C
     ItemAnimation: TgaiGI; // @offset 0x20
     MicroModuleImage: TImageGI; // @offset 0x24
-    procedure SaveToBuffer(Buffer: TBufEC); // @addr $7DD134
-    procedure LoadFromBuffer(Buffer: TBufEC; Galaxy: TGalaxy); // @addr $7DD1C8
+    procedure SaveToBuffer(Buffer: TBufEC); // @addr $67E8A0
+    procedure LoadFromBuffer(Buffer: TBufEC; Galaxy: TGalaxy); // @addr $67E918
     // Owns Item while the location's shop list is detached, and frees remaining controls.
-    constructor Create; // @addr 0x7DCFF8
-    destructor Destroy; override; // @addr 0x7DD03C
+    constructor Create; // @addr 0x0067E7CC
+    destructor Destroy; override; // @addr 0x0067E804
   end;
 
   TfEquipmentShop = class(TMessageLoopGIWithMainPanel) // @size 0x120
@@ -33,72 +32,72 @@ type
     UnknownEC: Integer; // @offset $EC Cleared when rebuilding the stock controls; purpose unresolved.
     ContentColumnCount: Integer; // @offset 0xF0
     TargetScrollX: Integer; // @offset 0xF4
-    ScrollTimer: PCallbackTimerGI; // @offset 0xF8
-    ItemInfoTimer: PCallbackTimerGI; // @offset 0xFC
-    OpenPreviewTimer: PCallbackTimerGI; // @offset 0x100
+    ScrollTimer: TCallbackTimerIdGI; // @offset 0xF8
+    ItemInfoTimer: TCallbackTimerIdGI; // @offset 0xFC
+    OpenPreviewTimer: TCallbackTimerIdGI; // @offset 0x100
     PreviewSlot: TShopSlot; // @offset 0x104
     HullSizeOffset: TPoint; // @offset 0x108
     HullPriceOffset: TPoint; // @offset 0x110
     HullRaceOffset: TPoint; // @offset 0x118
 
-    constructor Create; // @addr 0x7DD244
-    destructor Destroy; override; // @addr 0x7DD2C4
-    procedure OnOpen; override; // @addr 0x7DD948
-    procedure OnClose; override; // @addr 0x7DE0F0
-    procedure SelectMusic; override; // @addr 0x7E3948
-    procedure ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer); override; // @addr 0x7E3694
-    procedure InitializeLayout; override; // @addr 0x7DD364
-    procedure ExecuteUiCode(Block: TBlockParEC; Key: Cardinal); override; // @addr 0x7E38D4
-    procedure BuildGoodsControls; // @addr 0x7DE2EC
-    procedure ClearGoodsControls; // @addr 0x7DF240
-    procedure UpdateScrollButtons; // @addr 0x7DF7B8
-    procedure ScrollLeft(Sender: TObjectGI); // @addr 0x7DFC48
-    procedure ScrollRight(Sender: TObjectGI); // @addr 0x7DFD34
-    procedure ItemMouseEnter(Sender: TObjectGI); // @addr 0x7DF980
-    procedure ItemMouseLeave(Sender: TObjectGI); // @addr 0x7DFB2C
-    procedure RefreshItemInfo(Item: TItem); // @addr 0x7E11AC
+    constructor Create; // @addr 0x0067E978
+    destructor Destroy; override; // @addr 0x0067E9E4
+    procedure OnOpen; override; // @addr 0x0067EFAC
+    procedure OnClose; override; // @addr 0x0067F6D8
+    procedure SelectMusic; override; // @addr 0x0068460C
+    procedure ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer); override; // @addr 0x006843A8
+    procedure InitializeLayout; override; // @addr 0x0067EA50
+    procedure ExecuteUiCode(Block: TBlockParEC; Key: Cardinal); override; // @addr 0x006845A8
+    procedure BuildGoodsControls; // @addr 0x0067F844
+    procedure ClearGoodsControls; // @addr 0x00680650
+    procedure UpdateScrollButtons; // @addr 0x00680AFC
+    procedure ScrollLeft(Sender: TObjectGI); // @addr 0x00680ED8
+    procedure ScrollRight(Sender: TObjectGI); // @addr 0x00680F98
+    procedure ItemMouseEnter(Sender: TObjectGI); // @addr 0x00680C5C
+    procedure ItemMouseLeave(Sender: TObjectGI); // @addr 0x00680DD8
+    procedure RefreshItemInfo(Item: TItem); // @addr 0x00682150
 
-    procedure EndTurnClicked(Sender: TObjectGI); // @addr $7DF3B0
-    procedure ShipClicked(Sender: TObjectGI); // @addr $7DF688
-    procedure ScrollTick(Timer: PCallbackTimerGI; UserData: Integer); // @addr $7DFE54
-    procedure ItemMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $7DFFE4
-    procedure ChooseAnimatedPreview(Timer: PCallbackTimerGI; UserData: Integer); // @addr $7E0F54
-    procedure PreviewCycleComplete(Sender: TObjectGI); // @addr $7E105C
-    procedure HideItemInfo(Timer: PCallbackTimerGI; UserData: Integer); // @addr $7E1080
-    procedure BuildHullSlotOverlays(Parent: TObjectGI; Hull: THull; OffsetX, OffsetY: Integer); // @addr $7E202C
-    procedure RefreshHullInfo(Target: TMessageLoopGI; Hull: THull; Text: WideString; SuppressImage: Boolean); // @addr $7E2450
-    procedure MainPanelKeyDown(Sender: TObjectGI; Key: Cardinal); // @addr $7E374C
+    procedure EndTurnClicked(Sender: TObjectGI); // @addr $680748
+    procedure ShipClicked(Sender: TObjectGI); // @addr $6809EC
+    procedure ScrollTick(Timer: TCallbackTimerIdGI; UserData: Cardinal); // @addr $68106C
+    procedure ItemMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $681178
+    procedure ChooseAnimatedPreview(Timer: TCallbackTimerIdGI; UserData: Cardinal); // @addr $681F64
+    procedure PreviewCycleComplete(Sender: TObjectGI); // @addr $68202C
+    procedure HideItemInfo(Timer: TCallbackTimerIdGI; UserData: Cardinal); // @addr $682044
+    procedure BuildHullSlotOverlays(Parent: TObjectGI; Hull: THull; OffsetX, OffsetY: Integer); // @addr $682E30
+    procedure RefreshHullInfo(Target: TMessageLoopGI; Hull: THull; Text: WideString; SuppressImage: Boolean); // @addr $68323C
+    procedure MainPanelKeyDown(Sender: TObjectGI; Key: Cardinal); // @addr $684448
 
-    procedure StartSlotAnimatedPreview(Slot: TShopSlot); // @addr 0x7DF8C8
-    procedure ScheduleSlotPreviewStop(Slot: TShopSlot); // @addr 0x7DF94C @note "Playback continues until the current animation cycle ends."
-    procedure PanelScrollChanged(Sender: TObjectGI); // @addr 0x7DFF90
+    procedure StartSlotAnimatedPreview(Slot: TShopSlot); // @addr 0x00680BEC
+    procedure ScheduleSlotPreviewStop(Slot: TShopSlot); // @addr 0x00680C40 @note "Playback continues until the current animation cycle ends."
+    procedure PanelScrollChanged(Sender: TObjectGI); // @addr 0x0068112C
   end;
 
-procedure TemporaryShopStockHook(Argument: Pointer); // @addr $7DC978 Native no-op. Sole caller passes nil; original parameter meaning is unresolved.
-procedure BuildTemporaryShopSlotGrid; // @addr 0x7DC984 @note "Transfers ownership of market inventory into the temporary slots."
-procedure RestoreTemporaryShopStock; // @addr 0x7DCD40 @note "Returns ownership of remaining items to the original market."
-procedure ClearTemporaryShopSlotGrid; // @addr 0x7DCE30 @note "Frees remaining items without returning them to the market."
-function FindShopSlotByGridPoint(Point: TPoint): TShopSlot; // @addr 0x7DCEAC
-function FindShopSlotByItem(Item: TItem): TShopSlot; // @addr 0x7DCF20
-function GetShopItemIconName(Item: TItem): WideString; // @addr 0x7DCF7C
+procedure TemporaryShopStockHook(Argument: Pointer); // @addr $67E2AC Native no-op. Sole caller passes nil; original parameter meaning is unresolved.
+procedure BuildTemporaryShopSlotGrid; // @addr 0x0067E2B0 @note "Transfers ownership of market inventory into the temporary slots."
+procedure RestoreTemporaryShopStock; // @addr 0x0067E5D4 @note "Returns ownership of remaining items to the original market."
+procedure ClearTemporaryShopSlotGrid; // @addr 0x0067E68C @note "Frees remaining items without returning them to the market."
+function FindShopSlotByGridPoint(Point: TPoint): TShopSlot; // @addr 0x0067E6E0
+function FindShopSlotByItem(Item: TItem): TShopSlot; // @addr 0x0067E728
+function GetShopItemIconName(Item: TItem): WideString; // @addr 0x0067E768
 
 var
-  ShopGridRowCount: Integer = 4; // @addr 0x87CD04
-  ShopVisibleColumnCount: Integer = 6; // @addr 0x87CD08
-  TemporaryShopSlots: TList = nil; // @addr 0x87CD0C
-  TemporaryShopPlanet: TPlanet = nil; // @addr 0x87CD10
-  TemporaryShopStation: TRuins = nil; // @addr 0x87CD14
+  ShopGridRowCount: Integer = 4; // @addr 0x0080F7D8
+  ShopVisibleColumnCount: Integer = 6; // @addr 0x0080F7DC
+  TemporaryShopSlots: TList = nil; // @addr 0x0080F7E0
+  TemporaryShopPlanet: TPlanet = nil; // @addr 0x0080F7E4
+  TemporaryShopStation: TRuins = nil; // @addr 0x0080F7E8
 
 implementation
 
 uses aGalaxyEvent, GI_MessageBox, SE_Space, aKling, aScript, GI_GraphBuf, GI_GI, fShip2, fRuinsTalk, aPlayer, aGalaxyStruct, aConst, aShip, aMyFunction, EC_Str, Math, Windows, SysUtils, GI_Panel, GI_PanelScrollBar, GI_GraphButton, GI_Label, GR_Main, GR_Music, Globals, GlobalsV;
-{ @routine $7DC978 TemporaryShopStockHook }
+{ @routine $67E2AC TemporaryShopStockHook }
 procedure TemporaryShopStockHook(Argument: Pointer);
 begin
 end;
-{ @end $7DC978 }
+{ @end $67E2AC }
 
-{ @routine $7DC984 BuildTemporaryShopSlotGrid }
+{ @routine $67E2B0 BuildTemporaryShopSlotGrid }
 procedure BuildTemporaryShopSlotGrid;
 var X, Y, EmptyCount, I, J: Integer; Slot, Other: TShopSlot; Item: TItem; ItemOrder, OtherOrder: Integer; Station: TRuins;
 begin
@@ -109,7 +108,7 @@ begin
   begin
     for I := 0 to GetPlayer.CurrentPlanet.EquipmentShop.Count - 1 do
     begin
-      Item := TItem(GetPlayer.CurrentPlanet.EquipmentShop[I]);
+      Item := GetPlayer.CurrentPlanet.EquipmentShop[I];
       Slot := TShopSlot.Create;
       TemporaryShopSlots.Add(Slot);
       Slot.Item := Item;
@@ -124,7 +123,7 @@ begin
     Station := GetPlayer.DockedTo as TRuins;
     for I := 0 to Station.EquipmentShop.Count - 1 do
     begin
-      Item := TItem(Station.EquipmentShop[I]);
+      Item := Station.EquipmentShop[I];
       Slot := TShopSlot.Create;
       TemporaryShopSlots.Add(Slot);
       Slot.Item := Item;
@@ -172,9 +171,9 @@ begin
       Inc(EmptyCount);
     end;
 end;
-{ @end $7DC984 }
+{ @end $67E2B0 }
 
-{ @routine $7DCD40 RestoreTemporaryShopStock }
+{ @routine $67E5D4 RestoreTemporaryShopStock }
 procedure RestoreTemporaryShopStock;
 var I, Count: Integer; Slot: TShopSlot;
 begin
@@ -201,30 +200,28 @@ begin
   end;
   ClearTemporaryShopSlotGrid;
 end;
-{ @end $7DCD40 }
+{ @end $67E5D4 }
 
-{ @routine $7DCE30 ClearTemporaryShopSlotGrid }
+{ @routine $67E68C ClearTemporaryShopSlotGrid }
 procedure ClearTemporaryShopSlotGrid;
 var I, Count: Integer; Slot: TShopSlot;
 begin
-  if TemporaryShopSlots <> nil then
+  if TemporaryShopSlots = nil then Exit;
+  Count := TemporaryShopSlots.Count;
+  for I := 0 to Count - 1 do
   begin
-    Count := TemporaryShopSlots.Count;
-    for I := 0 to Count - 1 do
-    begin
-      Slot := TemporaryShopSlots[I];
-      Slot.Free;
-    end;
-    TemporaryShopSlots.Clear;
-    TemporaryShopSlots.Free;
-    TemporaryShopSlots := nil;
-    TemporaryShopPlanet := nil;
-    TemporaryShopStation := nil;
+    Slot := TemporaryShopSlots[I];
+    Slot.Free;
   end;
+  TemporaryShopSlots.Clear;
+  TemporaryShopSlots.Free;
+  TemporaryShopSlots := nil;
+  TemporaryShopPlanet := nil;
+  TemporaryShopStation := nil;
 end;
-{ @end $7DCE30 }
+{ @end $67E68C }
 
-{ @routine $7DCEAC FindShopSlotByGridPoint }
+{ @routine $67E6E0 FindShopSlotByGridPoint }
 function FindShopSlotByGridPoint(Point: TPoint): TShopSlot;
 var
   Count, I: Integer;
@@ -242,9 +239,9 @@ begin
   end;
   Result := nil;
 end;
-{ @end $7DCEAC }
+{ @end $67E6E0 }
 
-{ @routine $7DCF20 FindShopSlotByItem }
+{ @routine $67E728 FindShopSlotByItem }
 function FindShopSlotByItem(Item: TItem): TShopSlot;
 var I: Integer;
 begin
@@ -256,13 +253,13 @@ begin
     end;
   Result := nil;
 end;
-{ @end $7DCF20 }
+{ @end $67E728 }
 
-{ @routine $7DCF7C GetShopItemIconName }
+{ @routine $67E768 GetShopItemIconName }
 function GetShopItemIconName(Item: TItem): WideString;
 var Owner: TOwnerId;
 begin
-  if (Item is TEquipment) and (Item.ItemType in [t_FuelTanks..t_DefGenerator]) and
+  if (Item is TEquipment) and (Item.ItemType in UtilityEquipmentTypes) and
     (GetPlayer <> nil) and GetPlayer.IsHealthEffectActive(heHolyFanaticism) then
   begin
     Owner := Item.OwnerId;
@@ -272,16 +269,16 @@ begin
   end
   else Result := Item.GetBitmapResourceName;
 end;
-{ @end $7DCF7C }
+{ @end $67E768 }
 
-{ @routine $7DCFF8 TShopSlot_Create }
+{ @routine $67E7CC TShopSlot_Create }
 constructor TShopSlot.Create;
 begin
   inherited Create;
 end;
-{ @end $7DCFF8 }
+{ @end $67E7CC }
 
-{ @routine $7DD03C TShopSlot_Destroy }
+{ @routine $67E804 TShopSlot_Destroy }
 destructor TShopSlot.Destroy;
 begin
   if Item <> nil then
@@ -321,9 +318,9 @@ begin
   end;
   inherited Destroy;
 end;
-{ @end $7DD03C }
+{ @end $67E804 }
 
-{ @routine $7DD134 TShopSlot_SaveToBuffer }
+{ @routine $67E8A0 TShopSlot_SaveToBuffer }
 procedure TShopSlot.SaveToBuffer(Buffer: TBufEC);
 begin
   Buffer.AddAnsiChar(AnsiChar(GridPoint.X));
@@ -337,22 +334,22 @@ begin
     Item.SaveToBuffer(Buffer);
   end;
 end;
-{ @end $7DD134 }
+{ @end $67E8A0 }
 
-{ @routine $7DD1C8 TShopSlot_LoadFromBuffer }
+{ @routine $67E918 TShopSlot_LoadFromBuffer }
 procedure TShopSlot.LoadFromBuffer(Buffer: TBufEC; Galaxy: TGalaxy);
 begin
   GridPoint.X := Buffer.GetByte;
   GridPoint.Y := Buffer.GetByte;
   if Buffer.GetByte = 1 then
   begin
-    Item := TObject(CreateItemByType(MigrateSavedItemType(Buffer.GetByte))) as TEquipment;
+    Item := CreateItemByType(MigrateSavedItemType(Buffer.GetByte)) as TEquipment;
     Item.LoadFromBuffer(Buffer, Galaxy);
   end;
 end;
-{ @end $7DD1C8 }
+{ @end $67E918 }
 
-{ @routine $7DD244 TfEquipmentShop_Create }
+{ @routine $67E978 TfEquipmentShop_Create }
 constructor TfEquipmentShop.Create;
 begin
   inherited Create;
@@ -360,9 +357,9 @@ begin
   StationPanel := TfPanelRuins.Create;
   LoadPanel := TfPanelLoad.Create;
 end;
-{ @end $7DD244 }
+{ @end $67E978 }
 
-{ @routine $7DD2C4 TfEquipmentShop_Destroy }
+{ @routine $67E9E4 TfEquipmentShop_Destroy }
 destructor TfEquipmentShop.Destroy;
 begin
   if PlanetPanel <> nil then begin PlanetPanel.Free; PlanetPanel := nil; end;
@@ -370,9 +367,9 @@ begin
   if LoadPanel <> nil then begin LoadPanel.Free; LoadPanel := nil; end;
   inherited Destroy;
 end;
-{ @end $7DD2C4 }
+{ @end $67E9E4 }
 
-{ @routine $7DD364 TfEquipmentShop_InitializeLayout }
+{ @routine $67EA50 TfEquipmentShop_InitializeLayout }
 procedure TfEquipmentShop.InitializeLayout;
 var ExtraWidth: Integer;
 begin
@@ -394,7 +391,7 @@ begin
     with FindByNameRecursive('PanelShop') do
     begin
       SetSize(Classes.Point(ClientSize.X + ExtraWidth, ClientSize.Y));
-      SetPosition(Classes.Point((GameScreenWidth - ClientSize.X) div 2, LocalPosition.Y + ExtraScreenHeight div 2));
+      SetPosition(Classes.Point((Integer(GameScreenWidth) - ClientSize.X) div 2, LocalPosition.Y + ExtraScreenHeight div 2));
       if ExtraWidth > 0 then
       begin
         with FindByNameRecursive('Right') do SetPosition(Classes.Point(LocalPosition.X + ExtraWidth, LocalPosition.Y));
@@ -414,9 +411,9 @@ begin
   with GetByName('InfoHullPrice') do HullPriceOffset := Classes.Point(LocalPosition.X, LocalPosition.Y - Parent.ClientSize.Y);
   with GetByName('InfoHullEmRace') do HullRaceOffset := Classes.Point(LocalPosition.X - Parent.ClientSize.X, LocalPosition.Y - Parent.ClientSize.Y);
 end;
-{ @end $7DD364 }
+{ @end $67EA50 }
 
-{ @routine $7DD948 TfEquipmentShop_OnOpen }
+{ @routine $67EFAC TfEquipmentShop_OnOpen }
 procedure TfEquipmentShop.OnOpen;
 var
   Owner: TOwnerId;
@@ -447,17 +444,17 @@ begin
     SetActive(GetPlayer.IsDockedToShip and (GetPlayer.DockedTo.TypeId = rstMilitaryBase));
     if Active then
     begin
-      SetImagePath('GAI,' + GetPlayer.CurrentStar.GetBackgroundImagePath(Size));
+      ImageSourcePath := 'GAI,' + GetPlayer.CurrentStar.GetBackgroundImagePath(Size);
       GaiImageControl.LoadFrameSequenceFromText(SingleFrameAnimationSpec);
-      SetImageKindX(ikxCenter);
-      SetImageKindY(ikyCenter);
+      KindX := ikxCenter;
+      KindY := ikyCenter;
     end;
   end;
   with GetByName('BGCity') as TImageGI do
     if GetPlayer.IsOnPlanet then
     begin
       SetActive(True);
-      (FindByNameRecursive('BGCity') as TImageGI).SetImagePath(GetPlayer.CurrentPlanet.GetGovernmentBackgroundGraph);
+      (FindByNameRecursive('BGCity') as TImageGI).ImageSourcePath := GetPlayer.CurrentPlanet.GetGovernmentBackgroundGraph;
     end
     else if GetPlayer.IsDockedToShip then
     begin
@@ -477,10 +474,10 @@ begin
     else if GetPlayer.IsDockedToShip then Owner := GetPlayer.DockedTo.OwnerId
     else Owner := oiMaloc;
     SetActive(True);
-    if Owner = oiPeleng then SetImagePath('GI,Bm.FormShop2.' + GiResourceSuffix + 'Peleng')
-    else if Owner = oiHuman then SetImagePath('GI,Bm.FormShop2.' + GiResourceSuffix + 'People')
-    else if Owner = oiFeyan then SetImagePath('GI,Bm.FormShop2.' + GiResourceSuffix + 'Fei')
-    else if Owner = oiGaal then SetImagePath('GI,Bm.FormShop2.' + GiResourceSuffix + 'Gaal')
+    if Owner = oiPeleng then ImageSourcePath := 'GI,Bm.FormShop2.' + GiResourceSuffix + 'Peleng'
+    else if Owner = oiHuman then ImageSourcePath := 'GI,Bm.FormShop2.' + GiResourceSuffix + 'People'
+    else if Owner = oiFeyan then ImageSourcePath := 'GI,Bm.FormShop2.' + GiResourceSuffix + 'Fei'
+    else if Owner = oiGaal then ImageSourcePath := 'GI,Bm.FormShop2.' + GiResourceSuffix + 'Gaal'
     else SetActive(False);
   end;
   with GetByName('Left') as TGraphButtonGI do DownCallback := ScrollLeft;
@@ -499,18 +496,18 @@ begin
   BuildGoodsControls;
   UpdateScrollButtons;
   PreviewSlot := nil;
-  if OpenPreviewTimer <> nil then
+  if OpenPreviewTimer <> 0 then
   begin
     CancelCallbackTimer(OpenPreviewTimer);
-    OpenPreviewTimer := nil;
+    OpenPreviewTimer := 0;
   end;
   if AnimItem then OpenPreviewTimer := ScheduleCallbackTimer(100, 99999, ChooseAnimatedPreview);
   MainPanel.RebuildMessageButtons(False);
   Galaxy.PrimeIntegrityChecksum(190);
 end;
-{ @end $7DD948 }
+{ @end $67EFAC }
 
-{ @routine $7DE0F0 TfEquipmentShop_OnClose }
+{ @routine $67F6D8 TfEquipmentShop_OnClose }
 procedure TfEquipmentShop.OnClose;
 var
   Slot: TShopSlot;
@@ -532,18 +529,18 @@ begin
       if Slot.MicroModuleImage <> nil then begin Slot.MicroModuleImage.Free; Slot.MicroModuleImage := nil; end;
     end;
   end;
-  if OpenPreviewTimer <> nil then begin CancelCallbackTimer(OpenPreviewTimer); OpenPreviewTimer := nil; end;
-  if ScrollTimer <> nil then begin CancelCallbackTimer(ScrollTimer); ScrollTimer := nil; end;
-  if ItemInfoTimer <> nil then begin CancelCallbackTimer(ItemInfoTimer); ItemInfoTimer := nil; end;
+  if OpenPreviewTimer <> 0 then begin CancelCallbackTimer(OpenPreviewTimer); OpenPreviewTimer := 0; end;
+  if ScrollTimer <> 0 then begin CancelCallbackTimer(ScrollTimer); ScrollTimer := 0; end;
+  if ItemInfoTimer <> 0 then begin CancelCallbackTimer(ItemInfoTimer); ItemInfoTimer := 0; end;
   RestoreTemporaryShopStock;
   MainPanel.OnClose;
   LoadPanel.OnClose;
   if (GetPlayer <> nil) and GetPlayer.IsOnPlanet then PlanetPanel.OnClose
   else StationPanel.OnClose;
 end;
-{ @end $7DE0F0 }
+{ @end $67F6D8 }
 
-{ @routine $7DE2EC TfEquipmentShop_BuildGoodsControls }
+{ @routine $67F844 TfEquipmentShop_BuildGoodsControls }
 procedure TfEquipmentShop.BuildGoodsControls;
 var
   Slot: TShopSlot;
@@ -567,12 +564,12 @@ begin
   for I := 1 to ContentColumnCount - 1 do
     with TImageGI.Create(Panel) do
     begin
-      SetPositionModeW(True);
-      SetImagePath('GI,Bm.FormShop2.' + GiResourceSuffix + 'Line');
-      SetSize(GetContentSize);
-      SetOrigin(Classes.Point(ClientSize.X div 2, 0));
-      SetPosition(Classes.Point(Round(I * CellWidth), Panel.ClientSize.Y div 2 - ClientSize.Y div 2));
-      SetDepth(4);
+      World := True;
+      ImageSourcePath := 'GI,Bm.FormShop2.' + GiResourceSuffix + 'Line';
+      ObjectSize := GetContentSize;
+      Sme := Classes.Point(ClientSize.X div 2, 0);
+      Pos := Classes.Point(Round(I * CellWidth), Panel.ClientSize.Y div 2 - ClientSize.Y div 2);
+      PosZd := 4;
       UserData := 1;
     end;
   for Y := 0 to ShopGridRowCount - 1 do
@@ -582,12 +579,12 @@ begin
       Slot.SlotImage := TImageGI.Create(Panel);
       with Slot.SlotImage do
       begin
-        SetPositionModeW(True);
-        SetPosition(Classes.Point(Round(X * CellWidth), Round(Y * CellHeight)));
-        SetSize(Classes.Point(Trunc(CellWidth), Trunc(CellHeight)));
-        SetDepth(3);
+        World := True;
+        Pos := Classes.Point(Round(X * CellWidth), Round(Y * CellHeight));
+        ObjectSize := Classes.Point(Trunc(CellWidth), Trunc(CellHeight));
+        PosZd := 3;
         UserValue := Integer(Slot);
-        if Slot.Item = nil then SetActive(False)
+        if Slot.Item = nil then IsActive := False
         else
         begin
           if Slot.Item is TWeapon then (Slot.Item as TWeapon).Target := nil;
@@ -602,10 +599,10 @@ begin
       Slot.BorderImage := TImageGI.Create(Panel);
       with Slot.BorderImage do
       begin
-        SetPositionModeW(True);
-        SetPosition(Classes.Point(Round(X * CellWidth), Round(Y * CellHeight)));
-        SetSize(Classes.Point(Trunc(CellWidth), Trunc(CellHeight)));
-        SetDepth(3);
+        World := True;
+        Pos := Classes.Point(Round(X * CellWidth), Round(Y * CellHeight));
+        ObjectSize := Classes.Point(Trunc(CellWidth), Trunc(CellHeight));
+        PosZd := 3;
         if Slot.Item = nil then SetImagePath('GI,Bm.FormShop2.' + GiResourceSuffix + 'SlotBorderN')
         else
         begin
@@ -623,10 +620,10 @@ begin
         Slot.TypeOverlayImage := TImageGI.Create(Panel);
         with Slot.TypeOverlayImage do
         begin
-          SetPositionModeW(True);
-          SetPosition(Classes.Point(Round(X * CellWidth), Round(Y * CellHeight)));
-          SetSize(Classes.Point(Trunc(CellWidth), Trunc(CellHeight)));
-          SetDepth(3);
+          World := True;
+          Pos := Classes.Point(Round(X * CellWidth), Round(Y * CellHeight));
+          ObjectSize := Classes.Point(Trunc(CellWidth), Trunc(CellHeight));
+          PosZd := 3;
           if TEquipment(Slot.Item).GetLevel <> 0 then LevelSuffix := '_' + IntToWideString(TEquipment(Slot.Item).GetLevel)
           else if Slot.Item is TMicroModule then LevelSuffix := '_' + IntToWideString(GetMicroModulePriorityColorTier(TEquipment(Slot.Item).MicroModuleIndex - 1))
           else LevelSuffix := '';
@@ -652,28 +649,28 @@ begin
         Slot.ItemIconImage := TImageGI.Create(Panel);
         with Slot.ItemIconImage do
         begin
-          SetPositionModeW(True);
-          SetPosition(Classes.Point(Round(X * CellWidth), Round(Y * CellHeight)));
-          SetSize(Classes.Point(Trunc(CellWidth) - GiScalePixels(10), Trunc(CellHeight)));
-          SetDepth(2);
-          SetActive(True);
+          World := True;
+          Pos := Classes.Point(Round(X * CellWidth), Round(Y * CellHeight));
+          ObjectSize := Classes.Point(Trunc(CellWidth) - GiScalePixels(10), Trunc(CellHeight));
+          PosZd := 2;
+          IsActive := True;
           SetImagePath('GI,' + GetShopItemIconName(Slot.Item) + 'i');
           SetImageKindX(ikxCenter);
           SetImageKindY(ikyCenter);
-          SetActive(True);
+          IsActive := True;
         end;
         if AnimItem then
         begin
           Slot.ItemAnimation := TgaiGI.Create(Panel);
           with Slot.ItemAnimation do
           begin
-            SetPositionModeW(True);
-            SetPosition(Classes.Point(Round(X * CellWidth), Round(Y * CellHeight)));
-            SetSize(Classes.Point(Trunc(CellWidth) - GiScalePixels(10), Trunc(CellHeight)));
-            SetDepth(1);
+            World := True;
+            Pos := Classes.Point(Round(X * CellWidth), Round(Y * CellHeight));
+            ObjectSize := Classes.Point(Trunc(CellWidth) - GiScalePixels(10), Trunc(CellHeight));
+            PosZd := 1;
             SetImagePath(GetShopItemIconName(Slot.Item) + 'a');
             SequenceIndex := 0;
-            SetActive(False);
+            IsActive := False;
           end;
         end;
       end;
@@ -683,13 +680,13 @@ begin
         with Slot.MicroModuleImage do
         begin
           SetImagePath('GI,' + GetMicroModuleBitmapResourceName(TEquipment(Slot.Item).MicroModuleIndex - 1) + 'Set');
-          SetPositionModeW(True);
-          SetPosition(Classes.Point(Round(X * CellWidth) + GiScalePixels(5), Round(Y * CellHeight) + GiScalePixels(45)));
-          SetSize(GetContentSize);
-          SetDepth(0);
+          World := True;
+          Pos := Classes.Point(Round(X * CellWidth) + GiScalePixels(5), Round(Y * CellHeight) + GiScalePixels(45));
+          ObjectSize := GetContentSize;
+          PosZd := 0;
           SetImageKindX(ikxCenter);
           SetImageKindY(ikyCenter);
-          SetActive(True);
+          IsActive := True;
         end;
       end;
     end;
@@ -698,9 +695,9 @@ begin
   TargetScrollX := 0;
   Panel.SetScrollOffset(Classes.Point(0, 0));
 end;
-{ @end $7DE2EC }
+{ @end $67F844 }
 
-{ @routine $7DF240 TfEquipmentShop_ClearGoodsControls }
+{ @routine $680650 TfEquipmentShop_ClearGoodsControls }
 procedure TfEquipmentShop.ClearGoodsControls;
 var
   Slot: TShopSlot;
@@ -731,9 +728,9 @@ begin
     if Current.UserData = 1 then Current.Free;
   end;
 end;
-{ @end $7DF240 }
+{ @end $680650 }
 
-{ @routine $7DF3B0 TfEquipmentShop_EndTurnClicked }
+{ @routine $680748 TfEquipmentShop_EndTurnClicked }
 procedure TfEquipmentShop.EndTurnClicked(Sender: TObjectGI);
 begin
   if GetPlayer = nil then Exit;
@@ -776,26 +773,26 @@ begin
       ClearGoodsControls;
       BuildGoodsControls;
       UpdateScrollButtons;
-      if OpenPreviewTimer <> nil then
+      if OpenPreviewTimer <> 0 then
       begin
         CancelCallbackTimer(OpenPreviewTimer);
-        OpenPreviewTimer := nil;
+        OpenPreviewTimer := 0;
       end;
       if AnimItem then OpenPreviewTimer := ScheduleCallbackTimer(RandomIntRange(3000, 6000), 99999, ChooseAnimatedPreview);
     end;
   end;
 end;
-{ @end $7DF3B0 }
+{ @end $680748 }
 
-{ @routine $7DF688 TfEquipmentShop_ShipClicked }
+{ @routine $6809EC TfEquipmentShop_ShipClicked }
 procedure TfEquipmentShop.ShipClicked(Sender: TObjectGI);
 begin
   if ExitCode <> 0 then Exit;
-  HideItemInfo(nil, 0);
-  SetCursorActive(False);
+  HideItemInfo(0, 0);
+  Self.ShowCursor := False;
   Present;
   CaptureScreenBackground(True, 0);
-  SetCursorActive(True);
+  Self.ShowCursor := True;
   ShipScreen.PlayTransitionSounds := True;
   Galaxy.CheckIntegrityChecksum(194);
   while True do
@@ -807,10 +804,10 @@ begin
     BuildGoodsControls;
     UpdateScrollButtons;
     if not ShipScreen.ReopenRequested then Break;
-    SetCursorActive(False);
+    Self.ShowCursor := False;
     DrawQueuedUpdateRects;
     CaptureScreenBackground(True, 0);
-    SetCursorActive(True);
+    Self.ShowCursor := True;
   end;
   Galaxy.PrimeIntegrityChecksum(195);
   if GetPlayer.IsOnPlanet then
@@ -820,9 +817,9 @@ begin
       RequestClose(1);
     end;
 end;
-{ @end $7DF688 }
+{ @end $6809EC }
 
-{ @routine $7DF7B8 TfEquipmentShop_UpdateScrollButtons }
+{ @routine $680AFC TfEquipmentShop_UpdateScrollButtons }
 procedure TfEquipmentShop.UpdateScrollButtons;
 var Panel: TPanelGI;
 begin
@@ -831,38 +828,36 @@ begin
   with GetByName('Right') as TGraphButtonGI do
     SetDisabled(Panel.ScrollOffset.X >= Round(Panel.ClientSize.X / ShopVisibleColumnCount * ContentColumnCount - Panel.ClientSize.X / ShopVisibleColumnCount * ShopVisibleColumnCount) - 1);
 end;
-{ @end $7DF7B8 }
+{ @end $680AFC }
 
-{ @routine $7DF8C8 TfEquipmentShop_StartSlotAnimatedPreview }
+{ @routine $680BEC TfEquipmentShop_StartSlotAnimatedPreview }
 procedure TfEquipmentShop.StartSlotAnimatedPreview(Slot: TShopSlot);
 begin
-  if Slot.ItemAnimation <> nil then
+  if Slot.ItemAnimation = nil then Exit;
+  if not Slot.ItemAnimation.Active then
   begin
-    if not Slot.ItemAnimation.Active then
-    begin
-      Slot.ItemAnimation.UpdateAutoGeometry;
-      Slot.ItemAnimation.SetImageKindX(ikxCenter);
-      Slot.ItemAnimation.SetImageKindY(ikyCenter);
-      Slot.ItemAnimation.SetActive(True);
-    end;
-    Slot.ItemAnimation.RestartPlayback;
-    if Slot.ItemIconImage <> nil then
-    begin
-      Slot.ItemIconImage.Free;
-      Slot.ItemIconImage := nil;
-    end;
+    Slot.ItemAnimation.UpdateAutoGeometry;
+    Slot.ItemAnimation.SetImageKindX(ikxCenter);
+    Slot.ItemAnimation.SetImageKindY(ikyCenter);
+    Slot.ItemAnimation.SetActive(True);
+  end;
+  Slot.ItemAnimation.RestartPlayback;
+  if Slot.ItemIconImage <> nil then
+  begin
+    Slot.ItemIconImage.Free;
+    Slot.ItemIconImage := nil;
   end;
 end;
-{ @end $7DF8C8 }
+{ @end $680BEC }
 
-{ @routine $7DF94C TfEquipmentShop_ScheduleSlotPreviewStop }
+{ @routine $680C40 TfEquipmentShop_ScheduleSlotPreviewStop }
 procedure TfEquipmentShop.ScheduleSlotPreviewStop(Slot: TShopSlot);
 begin
   if Slot.ItemAnimation <> nil then Slot.ItemAnimation.CycleCompleteCallback := PreviewCycleComplete;
 end;
-{ @end $7DF94C }
+{ @end $680C40 }
 
-{ @routine $7DF980 TfEquipmentShop_ItemMouseEnter }
+{ @routine $680C5C TfEquipmentShop_ItemMouseEnter }
 procedure TfEquipmentShop.ItemMouseEnter(Sender: TObjectGI);
 var
   Slot: TShopSlot;
@@ -878,9 +873,9 @@ begin
   RefreshItemInfo(Slot.Item);
   if not IsCursorImageSelected('Take') then SetCursorByName('Take');
 end;
-{ @end $7DF980 }
+{ @end $680C5C }
 
-{ @routine $7DFB2C TfEquipmentShop_ItemMouseLeave }
+{ @routine $680DD8 TfEquipmentShop_ItemMouseLeave }
 procedure TfEquipmentShop.ItemMouseLeave(Sender: TObjectGI);
 var Slot: TShopSlot;
 begin
@@ -892,9 +887,9 @@ begin
   RefreshItemInfo(nil);
   if not IsCursorImageSelected('Main') then SetCursorByName('Main');
 end;
-{ @end $7DFB2C }
+{ @end $680DD8 }
 
-{ @routine $7DFC48 TfEquipmentShop_ScrollLeft }
+{ @routine $680ED8 TfEquipmentShop_ScrollLeft }
 procedure TfEquipmentShop.ScrollLeft(Sender: TObjectGI);
 var
   Panel: TPanelGI;
@@ -904,12 +899,12 @@ begin
   Column := Round((Panel.ScrollOffset.X - Panel.ClientSize.X / ShopVisibleColumnCount) / (Panel.ClientSize.X / ShopVisibleColumnCount));
   if Column < 0 then Column := 0;
   TargetScrollX := Round(Panel.ClientSize.X / ShopVisibleColumnCount * Column);
-  if (ScrollTimer = nil) and (TargetScrollX <> Panel.ScrollOffset.X) then ScrollTimer := ScheduleCallbackTimer(0, 20, ScrollTick);
+  if (ScrollTimer = 0) and (TargetScrollX <> Panel.ScrollOffset.X) then ScrollTimer := ScheduleCallbackTimer(0, 20, ScrollTick);
   UpdateScrollButtons;
 end;
-{ @end $7DFC48 }
+{ @end $680ED8 }
 
-{ @routine $7DFD34 TfEquipmentShop_ScrollRight }
+{ @routine $680F98 TfEquipmentShop_ScrollRight }
 procedure TfEquipmentShop.ScrollRight(Sender: TObjectGI);
 var
   Panel: TPanelGI;
@@ -919,39 +914,39 @@ begin
   Column := Round((Panel.ScrollOffset.X + Panel.ClientSize.X / ShopVisibleColumnCount) / (Panel.ClientSize.X / ShopVisibleColumnCount));
   if Column > ContentColumnCount - ShopVisibleColumnCount then Column := Max(ContentColumnCount - ShopVisibleColumnCount, 0);
   TargetScrollX := Round(Panel.ClientSize.X / ShopVisibleColumnCount * Column);
-  if (ScrollTimer = nil) and (TargetScrollX <> Panel.ScrollOffset.X) then ScrollTimer := ScheduleCallbackTimer(0, 20, ScrollTick);
+  if (ScrollTimer = 0) and (TargetScrollX <> Panel.ScrollOffset.X) then ScrollTimer := ScheduleCallbackTimer(0, 20, ScrollTick);
   UpdateScrollButtons;
 end;
-{ @end $7DFD34 }
+{ @end $680F98 }
 
-{ @routine $7DFE54 TfEquipmentShop_ScrollTick }
-procedure TfEquipmentShop.ScrollTick(Timer: PCallbackTimerGI; UserData: Integer);
+{ @routine $68106C TfEquipmentShop_ScrollTick }
+procedure TfEquipmentShop.ScrollTick(Timer: TCallbackTimerIdGI; UserData: Cardinal);
 var Panel: TPanelGI;
 begin
   Panel := GetByName('PanelGoods') as TPanelGI;
   if Panel.ScrollOffset.X = TargetScrollX then
   begin
-    if ScrollTimer <> nil then
+    if ScrollTimer <> 0 then
     begin
       CancelCallbackTimer(ScrollTimer);
-      ScrollTimer := nil;
+      ScrollTimer := 0;
     end;
   end
   else if TargetScrollX < Panel.ScrollOffset.X then Panel.SetScrollOffset(Classes.Point(Max(TargetScrollX, Panel.ScrollOffset.X - 12), 0))
   else Panel.SetScrollOffset(Classes.Point(Min(TargetScrollX, Panel.ScrollOffset.X + 12), 0));
   UpdateScrollButtons;
 end;
-{ @end $7DFE54 }
+{ @end $68106C }
 
-{ @routine $7DFF90 TfEquipmentShop_PanelScrollChanged }
+{ @routine $68112C TfEquipmentShop_PanelScrollChanged }
 procedure TfEquipmentShop.PanelScrollChanged(Sender: TObjectGI);
 begin
   (GetByName('PanelGoods') as TPanelScrollBarGI).PanelScrollChanged(Sender);
   UpdateScrollButtons;
 end;
-{ @end $7DFF90 }
+{ @end $68112C }
 
-{ @routine $7DFFE4 TfEquipmentShop_ItemMouseUp }
+{ @routine $681178 TfEquipmentShop_ItemMouseUp }
 procedure TfEquipmentShop.ItemMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint);
 var
   Slot: TShopSlot;
@@ -990,7 +985,7 @@ begin
     begin
       if Slot.Item is THull then
       begin
-        if Slot.Item.GetConditionAdjustedCost <= GetPlayer.Money then
+        if GetPlayer.Money >= Slot.Item.GetConditionAdjustedCost then
         begin
           if ShowMessageBoxGI(Self, FormatText1(LanguageDataConfig.GetParamByPathOrMarker('FormShop.BuyHull'), TextHighlightColorTag, '<Money>', IntToWideString(Galaxy.PendingEquipmentPurchasePrice)), mbgOK or mbgCancel or mbgQuestion) <> mbgResultOK then Exit;
         end
@@ -1030,7 +1025,7 @@ begin
       Event.AddTextData(Slot.Item.GetCategoryConfigName);
       if Slot.Item is THull then
       begin
-        if Slot.Item.GetConditionAdjustedCost > GetPlayer.Money then
+        if GetPlayer.Money < Slot.Item.GetConditionAdjustedCost then
         begin
           Event := AddGalaxyEvent('PlayerSellsEquipment');
           Event.AddData(Ord(GetPlayer.GetHull.ItemType));
@@ -1138,10 +1133,10 @@ begin
     end;
   end;
 end;
-{ @end $7DFFE4 }
+{ @end $681178 }
 
-{ @routine $7E0F54 TfEquipmentShop_ChooseAnimatedPreview }
-procedure TfEquipmentShop.ChooseAnimatedPreview(Timer: PCallbackTimerGI; UserData: Integer);
+{ @routine $681F64 TfEquipmentShop_ChooseAnimatedPreview }
+procedure TfEquipmentShop.ChooseAnimatedPreview(Timer: TCallbackTimerIdGI; UserData: Cardinal);
 var
   I: Integer;
   Slot: TShopSlot;
@@ -1162,42 +1157,42 @@ begin
     end;
     Dec(Attempts);
   end;
-  if OpenPreviewTimer <> nil then
+  if OpenPreviewTimer <> 0 then
   begin
     CancelCallbackTimer(OpenPreviewTimer);
-    OpenPreviewTimer := nil;
+    OpenPreviewTimer := 0;
   end;
   if AnimItem then OpenPreviewTimer := ScheduleCallbackTimer(RandomIntRange(3000, 6000), 99999, ChooseAnimatedPreview);
 end;
-{ @end $7E0F54 }
+{ @end $681F64 }
 
-{ @routine $7E105C TfEquipmentShop_PreviewCycleComplete }
+{ @routine $68202C TfEquipmentShop_PreviewCycleComplete }
 procedure TfEquipmentShop.PreviewCycleComplete(Sender: TObjectGI);
 begin
   (Sender as TgaiGI).StopAutoPlayback;
 end;
-{ @end $7E105C }
+{ @end $68202C }
 
-{ @routine $7E1080 TfEquipmentShop_HideItemInfo }
-procedure TfEquipmentShop.HideItemInfo(Timer: PCallbackTimerGI; UserData: Integer);
+{ @routine $682044 TfEquipmentShop_HideItemInfo }
+procedure TfEquipmentShop.HideItemInfo(Timer: TCallbackTimerIdGI; UserData: Cardinal);
 begin
-  if ItemInfoTimer <> nil then
+  if ItemInfoTimer <> 0 then
   begin
     CancelCallbackTimer(ItemInfoTimer);
-    ItemInfoTimer := nil;
+    ItemInfoTimer := 0;
   end;
   GetByName('PII').SetActive(False);
   GetByName('InfoHull').SetActive(False);
-  (GetByName('InfoText') as TLabelGI).SetText('');
-  (GetByName('InfoSize') as TLabelGI).SetText('');
-  (GetByName('InfoPrice') as TLabelGI).SetText('');
+  (GetByName('InfoText') as TLabelGI).Text := '';
+  (GetByName('InfoSize') as TLabelGI).Text := '';
+  (GetByName('InfoPrice') as TLabelGI).Text := '';
 end;
-{ @end $7E1080 }
+{ @end $682044 }
 
-{ @routine $7E11AC TfEquipmentShop_RefreshItemInfo }
+{ @routine $682150 TfEquipmentShop_RefreshItemInfo }
 procedure TfEquipmentShop.RefreshItemInfo(Item: TItem);
 const
-  DurableTypes = [0..79] - [0..7, 9, 23..25, 35..38, 42, 69..72, 74..79];
+  DurableTypes = [Low(TItemType)..High(TItemType)] - [t_Food..t_Narcotics, t_Artefact2, t_ArtefactTransmitter..t_ArtefactTranclucator, t_ArtBlackHole..t_ArtArtefactor, t_Hull, t_Protoplasm..t_Cistern, t_TreasureMap..t_UselessCountableItem];
 var
   Equipment: TEquipment;
   Price: WideString;
@@ -1206,7 +1201,7 @@ begin
   Equipment := Item as TEquipment;
   if Equipment = nil then
   begin
-    if ItemInfoTimer <> nil then begin CancelCallbackTimer(ItemInfoTimer); ItemInfoTimer := nil; end;
+    if ItemInfoTimer <> 0 then begin CancelCallbackTimer(ItemInfoTimer); ItemInfoTimer := 0; end;
     ItemInfoTimer := ScheduleCallbackTimer(100, 99999, HideItemInfo);
     MainPanel.HelpLabel.SetActive(False);
     MainPanel.SlideMessagesIn;
@@ -1214,29 +1209,31 @@ begin
   end
   else
   begin
-    if OpenPreviewTimer <> nil then begin CancelCallbackTimer(OpenPreviewTimer); OpenPreviewTimer := nil; end;
+    if OpenPreviewTimer <> 0 then begin CancelCallbackTimer(OpenPreviewTimer); OpenPreviewTimer := 0; end;
     if TemporaryShopSlots.IndexOf(PreviewSlot) >= 0 then ScheduleSlotPreviewStop(PreviewSlot);
     PreviewSlot := nil;
-    if ItemInfoTimer <> nil then begin CancelCallbackTimer(ItemInfoTimer); ItemInfoTimer := nil; end;
+    if ItemInfoTimer <> 0 then begin CancelCallbackTimer(ItemInfoTimer); ItemInfoTimer := 0; end;
     with MainPanel.HelpLabel do
     begin
       SetActive(True);
       SetText(FormatText1(LookupLocalizedTextByKey('FormShop.BuyHelp'), InfoNameColorTag, '<Item>', Equipment.GetDisplayName));
     end;
     MainPanel.SlideMessagesOut;
-    if (Galaxy <> nil) and not Galaxy.Destroying and (GetPlayer <> nil) then
-    begin
-      if GetPlayer.CurrentPlanet <> nil then
-      begin
-        if Item.ScriptItem <> nil then TScriptItem(Item.ScriptItem).RunActionCode(satOnShowingItemInfo, nil, GetPlayer.CurrentPlanet, nil, 0);
-        if Item is TEquipmentWithActCode then RunItemConfigActionCode(Item, satOnShowingItemInfo, nil, GetPlayer.CurrentPlanet, nil, 0);
-      end
-      else
-      begin
-        if Item.ScriptItem <> nil then TScriptItem(Item.ScriptItem).RunActionCode(satOnShowingItemInfo, nil, GetPlayer.DockedTo, nil, 0);
-        if Item is TEquipmentWithActCode then RunItemConfigActionCode(Item, satOnShowingItemInfo, nil, GetPlayer.DockedTo, nil, 0);
-      end;
-    end;
+    if Galaxy <> nil then
+      if not Galaxy.Destroying then
+        if GetPlayer <> nil then
+        begin
+          if GetPlayer.CurrentPlanet <> nil then
+          begin
+            if Item.ScriptItem <> nil then TScriptItem(Item.ScriptItem).RunActionCode(satOnShowingItemInfo, nil, GetPlayer.CurrentPlanet, nil, 0);
+            if Item is TEquipmentWithActCode then RunItemConfigActionCode(Item, satOnShowingItemInfo, nil, GetPlayer.CurrentPlanet, nil, 0);
+          end
+          else
+          begin
+            if Item.ScriptItem <> nil then TScriptItem(Item.ScriptItem).RunActionCode(satOnShowingItemInfo, nil, GetPlayer.DockedTo, nil, 0);
+            if Item is TEquipmentWithActCode then RunItemConfigActionCode(Item, satOnShowingItemInfo, nil, GetPlayer.DockedTo, nil, 0);
+          end;
+        end;
     if Item.ItemType = t_Hull then
     begin
       RefreshHullInfo(Self, Item as THull, Equipment.GetInfoText(TextHighlightColorTag, nil), False);
@@ -1248,25 +1245,25 @@ begin
       GetByName('InfoHull').SetActive(False);
       with GetByName('InfoImage') as TImageGI do
       begin
-        SetImagePath('GI,' + GetShopItemIconName(Equipment) + 's');
-        SetImageKindX(ikxCenter);
-        SetImageKindY(ikyCenter);
+        ImageSourcePath := 'GI,' + GetShopItemIconName(Equipment) + 's';
+        KindX := ikxCenter;
+        KindY := ikyCenter;
         SetPosition(SubtractPoints(ShipScreen.ItemImageCenter, GetVisualCenter));
       end;
-      (GetByName('InfoName') as TLabelGI).SetText('');
-      (GetByName('InfoName') as TLabelGI).SetText(WrapTextInColor(Equipment.GetDisplayName, InfoNameColorTag));
-      (GetByName('InfoText') as TLabelGI).SetText(Equipment.GetInfoText(TextHighlightColorTag, nil));
-      (GetByName('InfoSize') as TLabelGI).SetText(IntToWideString(Equipment.Weight));
+      (GetByName('InfoName') as TLabelGI).Text := '';
+      (GetByName('InfoName') as TLabelGI).Text := WrapTextInColor(Equipment.GetDisplayName, InfoNameColorTag);
+      (GetByName('InfoText') as TLabelGI).Text := Equipment.GetInfoText(TextHighlightColorTag, nil);
+      (GetByName('InfoSize') as TLabelGI).Text := IntToWideString(Equipment.Weight);
       Price := IntToWideString(Equipment.GetConditionAdjustedCost);
       if Equipment.GetConditionAdjustedCost < Equipment.Cost then Price := WrapTextInColor(Price, RedColorTag);
-      (GetByName('InfoPrice') as TLabelGI).SetText(Price);
+      (GetByName('InfoPrice') as TLabelGI).Text := Price;
       with GetByName('EmRace') as TImageGI do
       begin
-        SetImagePath(GetFactionEmblemPath(Equipment.GetOwnerConfigName));
-        SetImageKindX(ikxCenter);
-        SetImageKindY(ikyCenter);
+        ImageSourcePath := GetFactionEmblemPath(Equipment.GetOwnerConfigName);
+        KindX := ikxCenter;
+        KindY := ikyCenter;
       end;
-      if not (Byte(Equipment.ItemType) in DurableTypes) and (Equipment.ItemType <> t_Hull) then
+      if not (Equipment.ItemType in DurableTypes) and (Equipment.ItemType <> t_Hull) then
       begin
         with GetByName('InfoDurable') as TImageGI do Parent.Parent.SetActive(False);
         MinimumWidth := 0;
@@ -1309,16 +1306,16 @@ begin
     end;
   end;
 end;
-{ @end $7E11AC }
+{ @end $682150 }
 
-{ @routine $7E202C TfEquipmentShop_BuildHullSlotOverlays }
+{ @routine $682E30 TfEquipmentShop_BuildHullSlotOverlays }
 procedure TfEquipmentShop.BuildHullSlotOverlays(Parent: TObjectGI; Hull: THull; OffsetX, OffsetY: Integer);
 var
   Root: TObjectGI;
   I: Integer;
 
-  // @nested $7E1EF0 AddOverlay
-  procedure AddOverlay(Name: WideString); // @addr $7E1EF0 @calls "0x7e2075,0x7e208e,0x7e20a9,0x7e20c4,0x7e20df,0x7e20fa,0x7e2144,0x7e2165,0x7e217e,0x7e2197,0x7e21b0,0x7e21c9,0x7e21e2,0x7e21fb" @note "Nested in BuildHullSlotOverlays; captures root, parent and offsets."
+  // @nested $682D0C AddOverlay
+  procedure AddOverlay(Name: WideString); // @addr $682D0C @calls "0x00682E77,0x00682E8F,0x00682EA9,0x00682EC3,0x00682EDD,0x00682EF7,0x00682F3A,0x00682F56,0x00682F6E,0x00682F86,0x00682F9E,0x00682FB6,0x00682FCE,0x00682FE6" @note "Nested in BuildHullSlotOverlays; captures root, parent and offsets."
   var
     Control: TObjectGI;
     Path: WideString;
@@ -1356,13 +1353,12 @@ begin
   if Hull.GetSlotCount(sskCargoHook) < 1 then AddOverlay('InfoHull_CargoHook');
   if Hull.GetSlotCount(sskDefGenerator) < 1 then AddOverlay('InfoHull_DefGenerator');
 end;
-{ @end $7E202C }
+{ @end $682E30 }
 
 var
-  // Native managed-string initialization pairs at $7E3C0C, $7E3C04 and $7E3BFC.
-  ShopDominatorImagePrefixes: TDominatorSeriesNameTable = ('B', 'K', 'T'); // @addr $87CD18
+  ShopDominatorImagePrefixes: TDominatorSeriesNameTable = ('B', 'K', 'T'); // @addr $80F7EC
 
-{ @routine $7E2450 TfEquipmentShop_RefreshHullInfo }
+{ @routine $68323C TfEquipmentShop_RefreshHullInfo }
 procedure TfEquipmentShop.RefreshHullInfo(Target: TMessageLoopGI; Hull: THull; Text: WideString; SuppressImage: Boolean);
 var
   Window: TWindowGI;
@@ -1370,18 +1366,18 @@ var
   Control: TObjectGI;
   I: Integer;
   PreviewPath, SeriesName: WideString;
+  UnusedNativeLocal: array[0..7] of Byte; { Eight unreferenced frame bytes precede the managed temporaries; original local type is unknown. }
   HullKind: THullType; DisplayKind: TKlingType;
   Series: TDominatorSeries;
   BarWidth, CapWidth, MinimumWidth: Integer;
-  UnusedNativeLocal: array[0..7] of Byte; { Eight unreferenced frame bytes precede the managed temporaries; original local type is unknown. }
 begin
   Window := Target.GetByName('InfoHull') as TWindowGI;
   TextLabel := Target.GetByName('InfoHullText') as TLabelGI;
   Window.SetActive(True);
-  (Target.GetByName('InfoHullName') as TLabelGI).SetText(WrapTextInColor(Hull.GetDisplayName, InfoNameColorTag));
+  (Target.GetByName('InfoHullName') as TLabelGI).Text := WrapTextInColor(Hull.GetDisplayName, InfoNameColorTag);
   SeriesName := Hull.GetSeriesName;
   if SeriesName <> '' then SeriesName := #13#10 + WrapTextInColor(SeriesName, InfoHullSeriesColorTag);
-  (Target.GetByName('InfoHullName') as TLabelGI).SetText((Target.GetByName('InfoHullName') as TLabelGI).GetText + SeriesName);
+  (Target.GetByName('InfoHullName') as TLabelGI).Text := (Target.GetByName('InfoHullName') as TLabelGI).Text + SeriesName;
   TextLabel.SetText(Text);
   Target.GetByName('InfoHull_Forsage').SetActive(Hull.GetSlotCount(sskAfterburner) >= 1);
   Target.GetByName('InfoHull_W1').SetActive(not (Hull.GetSlotCount(sskWeapon) >= 1));
@@ -1404,18 +1400,18 @@ begin
   DisplayKind := ktBoss;
   Series := dsBlazer;
   HullKind := Hull.HullType;
-  if (Hull.OwnerShip <> nil) and (GetPlayer = Hull.OwnerShip) and GetPlayer.ChameleonActive and
+  if (Hull.OwnerShip <> nil) and (Hull.OwnerShip = GetPlayer) and GetPlayer.ChameleonActive and
     (GetPlayer.ChameleonVisualType in [Low(TKlingType)..High(TKlingType)]) and (GetPlayer.ChameleonVisualType <> ktBoss) then
   begin
     HullKind := htKling;
     DisplayKind := GetPlayer.ChameleonVisualType;
     Series := GetPlayer.ChameleonSeries;
   end;
-  if (Hull.OwnerShip <> nil) and (TObject(Hull.OwnerShip) is TKling) then
+  if (Hull.OwnerShip <> nil) and (Hull.OwnerShip is TKling) then
   begin
     HullKind := htKling;
-    DisplayKind := (TObject(Hull.OwnerShip) as TKling).KlingType;
-    Series := (TObject(Hull.OwnerShip) as TKling).DominatorSeries;
+    DisplayKind := (Hull.OwnerShip as TKling).KlingType;
+    Series := (Hull.OwnerShip as TKling).DominatorSeries;
   end;
   if not SuppressImage then
     with Target.GetByName('InfoHullImage') as TImageGI do
@@ -1430,8 +1426,8 @@ begin
           begin
             SourceHasPerPixelAlpha := True;
             LoadGiByPathIntoGraphBuf(ExtractDelimitedPartW(PreviewPath, 1, ','), GraphBuf);
-            if Cardinal(GraphBuf.Width) >= Cardinal(GraphBuf.Height) then GraphBuf.RescaleRgba(ClientSize.X, Round(ClientSize.X / Cardinal(GraphBuf.Width) * Cardinal(GraphBuf.Height)), 5)
-            else GraphBuf.RescaleRgba(Round(ClientSize.Y / Cardinal(GraphBuf.Height) * Cardinal(GraphBuf.Width)), ClientSize.Y, 5);
+            if GraphBuf.Width >= GraphBuf.Height then GraphBuf.RescaleRgba(ClientSize.X, Round(ClientSize.X / GraphBuf.Width * GraphBuf.Height), 5)
+            else GraphBuf.RescaleRgba(Round(ClientSize.Y / GraphBuf.Height * GraphBuf.Width), ClientSize.Y, 5);
           end
         else
           with GraphBufControl do
@@ -1443,8 +1439,8 @@ begin
                 dsKeller: LoadGiByPathIntoGraphBuf('Bm.Ruins.Kelleri', GraphBuf);
                 dsBlazer: LoadGiByPathIntoGraphBuf('Bm.Ruins.Blazeri', GraphBuf);
               end;
-            if Cardinal(GraphBuf.Width) >= Cardinal(GraphBuf.Height) then GraphBuf.RescaleRgba(ClientSize.X, Round(ClientSize.X / Cardinal(GraphBuf.Width) * Cardinal(GraphBuf.Height)), 5)
-            else GraphBuf.RescaleRgba(Round(ClientSize.Y / Cardinal(GraphBuf.Height) * Cardinal(GraphBuf.Width)), ClientSize.Y, 5);
+            if GraphBuf.Width >= GraphBuf.Height then GraphBuf.RescaleRgba(ClientSize.X, Round(ClientSize.X / GraphBuf.Width * GraphBuf.Height), 5)
+            else GraphBuf.RescaleRgba(Round(ClientSize.Y / GraphBuf.Height * GraphBuf.Width), ClientSize.Y, 5);
           end;
       end
       else SetImagePath('GI,' + GetShopItemIconName(Hull) + 's');
@@ -1452,13 +1448,13 @@ begin
       SetImageKindY(ikyCenter);
       SetPosition(SubtractPoints(ShipScreen.ItemImageCenter, GetVisualCenter));
     end;
-  (Target.GetByName('InfoHullSize') as TLabelGI).SetText(IntToWideString(Hull.Weight));
-  (Target.GetByName('InfoHullPrice') as TLabelGI).SetText(IntToWideString(Hull.GetConditionAdjustedCost));
+  (Target.GetByName('InfoHullSize') as TLabelGI).Text := IntToWideString(Hull.Weight);
+  (Target.GetByName('InfoHullPrice') as TLabelGI).Text := IntToWideString(Hull.GetConditionAdjustedCost);
   with Target.GetByName('InfoHullEmRace') as TImageGI do
   begin
-    SetImagePath(GetFactionEmblemPath(Hull.GetOwnerConfigName));
-    SetImageKindX(ikxCenter);
-    SetImageKindY(ikyCenter);
+    ImageSourcePath := GetFactionEmblemPath(Hull.GetOwnerConfigName);
+    KindX := ikxCenter;
+    KindY := ikyCenter;
   end;
   BarWidth := Round(Sqrt(Hull.Weight / HullBaseSize / Max(0.1, Hull.GetFragilityFactor([]))) * 64);
   BarWidth := Min(192, Max(32, BarWidth));
@@ -1491,9 +1487,9 @@ begin
   if DynamicTipsPos then Window.SetPosition(Classes.Point(ItemInfoAnchor.X - Window.ClientSize.X div 2, ItemInfoAnchor.Y))
   else Window.SetPosition(Classes.Point(10, 10));
 end;
-{ @end $7E2450 }
+{ @end $68323C }
 
-{ @routine $7E3694 TfEquipmentShop_ProcessMouseWheel }
+{ @routine $6843A8 TfEquipmentShop_ProcessMouseWheel }
 procedure TfEquipmentShop.ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer);
 begin
   if (Delta = WHEEL_DELTA) and not (GetByName('Left') as TGraphButtonGI).Disabled then
@@ -1507,39 +1503,41 @@ begin
     RefreshItemInfo(nil);
   end;
 end;
-{ @end $7E3694 }
+{ @end $6843A8 }
 
-{ @routine $7E374C TfEquipmentShop_MainPanelKeyDown }
+{ @routine $684448 TfEquipmentShop_MainPanelKeyDown }
 procedure TfEquipmentShop.MainPanelKeyDown(Sender: TObjectGI; Key: Cardinal);
 begin
-  if not IsVirtualKeyDown(VK_CONTROL) and not IsVirtualKeyDown(VK_SHIFT) and not IsVirtualKeyDown(VK_MENU) and (ExitCode = 0) then
+  if IsVirtualKeyDown(VK_CONTROL) or IsVirtualKeyDown(VK_SHIFT) or IsVirtualKeyDown(VK_MENU) or (ExitCode <> 0) then Exit;
+  if Key = Ord('S') then
   begin
-    if Key = Ord('S') then ShipClicked(nil)
-    else if ((Key = VK_LEFT) or (Key = VK_UP)) and not (GetByName('Left') as TGraphButtonGI).Disabled then
-    begin
-      ScrollLeft(nil);
-      RefreshItemInfo(nil);
-    end
-    else if ((Key = VK_RIGHT) or (Key = VK_DOWN)) and not (GetByName('Right') as TGraphButtonGI).Disabled then
-    begin
-      ScrollRight(nil);
-      RefreshItemInfo(nil);
-    end
-    else if Key = VK_SPACE then
-    begin
-      if GetByName('PM_EndTurn').Active then EndTurnClicked(nil);
-    end
-    else
-    begin
-      MainPanel.ProcessKeyDown(Key);
-      PlanetPanel.ProcessKeyDown(Key);
-      StationPanel.ProcessKeyDown(Key);
-    end;
+    ShipClicked(nil);
+    Exit;
+  end;
+  if ((Key = VK_LEFT) or (Key = VK_UP)) and not (GetByName('Left') as TGraphButtonGI).Disabled then
+  begin
+    ScrollLeft(nil);
+    RefreshItemInfo(nil);
+  end
+  else if ((Key = VK_RIGHT) or (Key = VK_DOWN)) and not (GetByName('Right') as TGraphButtonGI).Disabled then
+  begin
+    ScrollRight(nil);
+    RefreshItemInfo(nil);
+  end
+  else if Key = VK_SPACE then
+  begin
+    if GetByName('PM_EndTurn').Active then EndTurnClicked(nil);
+  end
+  else
+  begin
+    MainPanel.ProcessKeyDown(Key);
+    PlanetPanel.ProcessKeyDown(Key);
+    StationPanel.ProcessKeyDown(Key);
   end;
 end;
-{ @end $7E374C }
+{ @end $684448 }
 
-{ @routine $7E38D4 TfEquipmentShop_ExecuteUiCode }
+{ @routine $6845A8 TfEquipmentShop_ExecuteUiCode }
 procedure TfEquipmentShop.ExecuteUiCode(Block: TBlockParEC; Key: Cardinal);
 begin
   if MainPanel.NavigationLocked then Exit;
@@ -1551,9 +1549,9 @@ begin
     Galaxy.PrimeIntegrityChecksum(20011);
   end;
 end;
-{ @end $7E38D4 }
+{ @end $6845A8 }
 
-{ @routine $7E3948 TfEquipmentShop_SelectMusic }
+{ @routine $68460C TfEquipmentShop_SelectMusic }
 procedure TfEquipmentShop.SelectMusic;
 begin
   if (ActiveLoadPanel <> nil) and (ActiveLoadPanel.GetShutterDirection = -1) then Exit;
@@ -1580,6 +1578,6 @@ begin
     else MusicManager.PlayCategory('Nation.' + OwnerInfo[RaceToOwner(GetPlayer.DockedTo.PilotRace)].InternalName);
   end;
 end;
-{ @end $7E3948 }
+{ @end $68460C }
 
 end.

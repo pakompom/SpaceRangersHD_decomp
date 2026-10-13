@@ -1,5 +1,4 @@
 unit fTalk;
-// Unit bracket (inferred): .text 0x006D0EE0..0x006E69C0; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -16,11 +15,11 @@ type
     Reserved04: Integer; // @offset $04 No managed cleanup at this offset.
     Callback: TDialogChoiceEventGI; // @offset $08
     FallbackCallback: TDialogTextChoiceEvent; // @offset $10
-    Value: Integer; // @offset $18
+    Value: Cardinal; // @offset $18
     ExtraValue: Integer; // @offset $1C
-    FallbackText: WideString; // @offset $20 Native cleanup table $6D0F2C owns this string.
-    constructor Create; // @addr $6D0FF0
-    destructor Destroy; override; // @addr $6D1034
+    FallbackText: WideString; // @offset $20 Owned string.
+    constructor Create; // @addr $5E9E74
+    destructor Destroy; override; // @addr $5E9EAC
   end;
 
   TfTalk = class(TMessageLoopGI) // @size 0x134
@@ -29,193 +28,193 @@ type
     DialogPanel: TPanelGI; // @offset $D4
     DialogText: WideString; // @offset $D8
     PresentedTextLength: Integer; // @offset $DC
-    TextPresentationTimer: PCallbackTimerGI; // @offset $E0
+    TextPresentationTimer: TCallbackTimerIdGI; // @offset $E0
     ChoiceHeight: Integer; // @offset $E4
     SkipShipScriptAdvance: Boolean; // @offset $F0
     ChoiceMousePressed: Boolean; // @offset $F1
     RequestedMapCenter: TObject; // @offset $F4
     CurrentMapCenter: TObject; // @offset $F8
-    MapSelectionTimer: PCallbackTimerGI; // @offset $FC
+    MapSelectionTimer: TCallbackTimerIdGI; // @offset $FC
     RequestedMapHover: TObject; // @offset $100
     CurrentFilmObjectId: Cardinal; // @offset $104
     CurrentMapHover: TObject; // @offset $108
-    MinimapRefreshTimer: PCallbackTimerGI; // @offset $10C
+    MinimapRefreshTimer: TCallbackTimerIdGI; // @offset $10C
     MinimapEnabled: Boolean; // @offset $110
     MapDragging: Boolean; // @offset $111
     MapDragPoint: TPoint; // @offset $112
-    SlideTimer: PCallbackTimerGI; // @offset $11C
+    SlideTimer: TCallbackTimerIdGI; // @offset $11C
     SlideProgress: Single; // @offset $120
     DialogPanelLeft: Integer; // @offset $124
     ModalTransition: TTalkModalTransition; // @offset $128 Reopen dialogue or switch to goods trading after refreshing the star-map background.
     ReturnedFromTrade: Boolean; // @offset $12C Set after the goods-trading modal returns; reset on opening dialogue, with no retained reader.
     SavedChoiceScroll: Integer; // @offset $130
 
-    procedure ShowMoneyDemand(Action: Integer); // @addr $6D94E8
-    procedure ShowTruceOffer(Action: Integer); // @addr $6D9BFC
-    procedure ShowPartnerOffer(Action: Integer); // @addr $6DBFCC
-    procedure ShowPartnerGift(Action: Integer); // @addr $6DD6B0
-    procedure ShowPiratePartnerOffer(Action: Integer); // @addr $6DFBB4
-    procedure ShowPiratePartnerGift(Action: Integer); // @addr $6E1768
-    procedure ShowMilitarySupport(Action: Integer); // @addr $6E36B8
-    procedure ShowMilitaryHullRepair(Action: Integer); // @addr $6E3C68
-    procedure AcceptMilitaryHullRepair(Action: Integer); // @addr $6E40D4
-    procedure ShowMilitaryEquipmentRepair(Action: Integer); // @addr $6E4458
-    procedure AcceptMilitaryEquipmentRepair(Action: Integer); // @addr $6E48B0
-    procedure ShowMilitaryRemains(Action: Integer); // @addr $6E4C1C
-    procedure SellAllMilitaryRemains(Action: Integer); // @addr $6E51DC
-    procedure SellIndividualMilitaryRemains(Action: Integer); // @addr $6E53E0
-    procedure AcceptMilitaryBuff(Action: Integer); // @addr $6E5CBC
-    procedure DiscussOldHull(Action: Integer); // @addr $6E5E70
-    procedure ShowMilitaryBuff(Action: Integer); // @addr $6E59A8
-    procedure BuildMilitarySupportChoices; // @addr $6E3200
-    procedure AcceptScriptedConversation(Action: Integer); // @addr $6D8C88
-    procedure RunScriptExitAnswer(Action: Integer); // @addr $6D8BC0
-    function GetShipGreeting: WideString; // @addr $6E2F3C
-    procedure ShowGreeting(Action: Integer); // @addr $6D8C20
-    procedure OpenTrade(Action: Integer); // @addr $6D93F0
-    procedure CancelTrade(Action: Integer); // @addr $6D9448
-    procedure DemandMoney(Action: Integer); // @addr $6D9AAC
-    procedure DemandCargo(Action: Integer); // @addr $6D9B98
-    procedure HalveMoneyDemand(Action: Integer); // @addr $6D9B44
-    procedure HalvePartnerOffer(Action: Integer); // @addr $6DC804
-    procedure HalvePartnerGift(Action: Integer); // @addr $6DDC4C
-    procedure HalvePiratePartnerOffer(Action: Integer); // @addr $6E0304
-    procedure HalvePiratePartnerGift(Action: Integer); // @addr $6E1D64
-    procedure DoubleMoneyDemand(Action: Integer); // @addr $6D9B70
-    procedure HalveTruceOffer(Action: Integer); // @addr $6DA2EC
-    procedure DoubleTruceOffer(Action: Integer); // @addr $6DA334
-    procedure DoublePartnerOffer(Action: Integer); // @addr $6DC830
-    procedure DoublePiratePartnerOffer(Action: Integer); // @addr $6E0330
-    procedure DoublePartnerGift(Action: Integer); // @addr $6DDC78
-    procedure DoublePiratePartnerGift(Action: Integer); // @addr $6E1D90
-    procedure AcceptPartnerOffer(Action: Integer); // @addr $6DC790
-    procedure AcceptPiratePartnerOffer(Action: Integer); // @addr $6E0278
-    procedure ExitPartnerConversation(Action: Integer); // @addr $6DDE24
-    procedure ShowDominatorGreeting(Action: Integer); // @addr $6E2808
-    procedure ShowDominatorPeace(Action: Integer); // @addr $6E28D4
-    procedure ShowDominatorGoods(Action: Integer); // @addr $6E29A8
-    procedure ShowDominatorCommand(Action: Integer); // @addr $6E2A7C
-    procedure RunInjectedAnswer(Action: Integer); // @addr $6E2FB8
-    procedure RunInjectedAnswerKeepingScroll(Action: Integer); // @addr $6E31A4
-    procedure StartScriptMessage(Script: TScript); // @addr $6E31C8
-    procedure CancelMilitarySupport(Action: Integer); // @addr $6E3A44
-    procedure DeclineMilitarySupport(Action: Integer); // @addr $6E3AFC
-    procedure RunScriptRestartAnswer(Action: Integer); // @addr $6E6900
-    procedure ShowTrade(Action: Integer); // @addr $6D8D38
-    procedure AcceptTruceOffer(Action: Integer); // @addr $6DA1D8
-    procedure GivePartnerGift(Action: Integer); // @addr $6DD9D8
-    procedure GivePiratePartnerGift(Action: Integer); // @addr $6E1A8C
-    procedure OrderPartnerFollow(Action: Integer); // @addr $6DC880
-    procedure OrderPiratePartnerFollow(Action: Integer); // @addr $6E095C
-    procedure OrderPartnerLand(Action: Integer); // @addr $6DCB34
-    procedure OrderPartnerJump(Action: Integer); // @addr $6DCEE0
-    procedure OrderPiratePartnerLand(Action: Integer); // @addr $6E0C0C
-    procedure OrderPiratePartnerJump(Action: Integer); // @addr $6E1088
-    procedure OrderPiratePartnerAttack(Action: Integer); // @addr $6E063C
-    procedure ApplyOrderToAllPartners(Action: Integer); // @addr $6DDCC4
-    procedure OrderPartnerDropCargo(Action: Integer); // @addr $6DD218
-    procedure ShowPartnerFinances(Action: Integer); // @addr $6DD454
-    procedure ShowPiratePartnerFinances(Action: Integer); // @addr $6E1514
-    procedure ShowPartnerDismissal(Action: Integer); // @addr $6E1DDC
-    procedure ShowPirateAttackTargets(Action: Integer); // @addr $6E0380
-    procedure OrderTranclucatorFollow(Action: Integer); // @addr $6DDE40
-    procedure OrderTranclucatorReturn(Action: Integer); // @addr $6DDF9C
-    procedure OrderTranclucatorSeekItems(Action: Integer); // @addr $6DE0F8
-    procedure CancelTranclucatorSeekItems(Action: Integer); // @addr $6DE260
-    procedure OrderTranclucatorDropCargo(Action: Integer); // @addr $6DF2A4
-    procedure OrderTranclucatorLand(Action: Integer); // @addr $6DF3F8
-    procedure OrderTranclucatorStoreCargo(Action: Integer); // @addr $6DF654
-    procedure AddTranclucatorGroupChoice; // @addr $6DF898
-    procedure ApplyOrderToAllTranclucators(Action: Integer); // @addr $6DF9F8
-    procedure ShowTranclucatorOptions(Action: Integer); // @addr $6DEE2C
-    procedure ShowAttackTargets(Action: Integer); // @addr $6DA568
-    procedure RequestAttackTarget(Action: Integer); // @addr $6DABA4
-    procedure AcceptJointAttack(Action: Integer); // @addr $6DAFF8
-    procedure RunDominatorProgram(Action: Integer); // @addr $6E2464
-    function AddImmediateAttackChoices: Boolean; // @addr $6E2B54
-    procedure RequestProtection(Action: Integer); // @addr $6DB26C
-    procedure RequestPreserveItems(Action: Integer); // @addr $6DBD2C
-    procedure BuildBuiltinChoices; // @addr $6D5048
-    procedure BuildStandardChoices(KeepGreeting: Boolean); // @addr $6D498C
-    procedure OnOpen; override; // @addr $6D14AC
-    procedure OnClose; override; // @addr $6D222C
-    procedure InitializeLayout; override; // @addr $6D1068
-    procedure MainPanelMouseMove(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $6D3074
-    procedure MainPanelMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $6D3354
-    procedure MainPanelMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $6D34AC
-    procedure AddDialogEffect(Position: TPointF; ImagePath: WideString; DelayMs: Integer); // @addr $6D3C08
-    procedure MinimapScrolled; // @addr $6D42DC
-    procedure FlushMinimapRefresh(Timer: PCallbackTimerGI; UserData: Integer); // @addr $6D437C
-    procedure AdvanceSlide(Timer: PCallbackTimerGI; UserData: Integer); // @addr $6D4410
-    procedure UpdateSlidePosition; // @addr $6D44A0
-    procedure MainPanelKeyDown(Sender: TObjectGI; Key: Cardinal); // @addr $6D45BC
-    procedure ApplyMapSelection(Timer: PCallbackTimerGI; UserData: Integer); // @addr $6D3DF0
-    procedure RememberChoiceScroll; // @addr $6D247C
-    procedure EnableCloseButton; // @addr $6D24C8
-    procedure CloseClicked(Sender: TObjectGI); // @addr $6D250C
-    procedure ClearChoices(AllowClose: Boolean); // @addr $6D2528
-    function CreateDialogObject(LabelControl: TLabelGI; Item: PFontObjectEC): TObjectGI; // @addr $6D2BCC
-    procedure CenterEmbeddedObject(Sender: TObjectGI); // @addr $6D2F60
-    procedure CenterShipClicked(Sender: TObjectGI); // @addr $6D2FBC
-    procedure ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer); override; // @addr $6D3518
-    procedure ChoiceMouseEnter(Sender: TObjectGI); // @addr $6D3610
-    procedure ChoiceMouseLeave(Sender: TObjectGI); // @addr $6D3630
-    procedure ChoiceMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $6D3650
-    procedure ChoiceMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $6D36D8
-    procedure RestartTextPresentation; // @addr $6D37C8
-    procedure AdvanceTextPresentation(Timer: PCallbackTimerGI; UserData: Integer); // @addr $6D3860
-    procedure ClearDialogEffects; // @addr $6D3D30
-    procedure DialogEffectComplete(Sender: TObjectGI); // @addr $6D3D88
-    procedure ProcessCallbackTimers; override; // @addr $6D3DB0
-    procedure AddMessageClicked(Sender: TObjectGI); // @addr $6D40F8
-    procedure ReturnToMap(Action: Integer); // @addr $6D8CE0
-    procedure SelectMusic; override; // @addr $6D477C
-    procedure AddChoice(Text: WideString; Value: Integer; Callback: TDialogChoiceEventGI; ExtraValue: Integer); // @addr $6D25DC ExtraValue is stored in the choice object at $1C; its wider meaning remains unresolved.
-    procedure CodeMsgOut(KeepGreeting: Boolean); // @addr $6D831C
-    procedure ShipDismissAct(Action: Integer); // @addr 0x6E20EC
-    procedure AddScriptExitChoice(Caption: WideString); // @addr $6D822C
-    procedure AddScriptRestartChoice(Caption: WideString); // @addr $6E6944
-    procedure FastExit(Answer: Integer); // @addr $6D8B58
-    procedure RunScriptAnswerKeepingScroll(Answer: Integer); // @addr $6D8B34
-    procedure RunScriptAnswer(Answer: Integer); // @addr $6D8AC0
+    procedure ShowMoneyDemand(Action: Cardinal); // @addr $5F1868
+    procedure ShowTruceOffer(Action: Cardinal); // @addr $5F1F18
+    procedure ShowPartnerOffer(Action: Cardinal); // @addr $5F40E0
+    procedure ShowPartnerGift(Action: Cardinal); // @addr $5F56A0
+    procedure ShowPiratePartnerOffer(Action: Cardinal); // @addr $5F7960
+    procedure ShowPiratePartnerGift(Action: Cardinal); // @addr $5F93C0
+    procedure ShowMilitarySupport(Action: Cardinal); // @addr $5FB148
+    procedure ShowMilitaryHullRepair(Action: Cardinal); // @addr $5FB6C4
+    procedure AcceptMilitaryHullRepair(Action: Cardinal); // @addr $5FBAF0
+    procedure ShowMilitaryEquipmentRepair(Action: Cardinal); // @addr $5FBE44
+    procedure AcceptMilitaryEquipmentRepair(Action: Cardinal); // @addr $5FC25C
+    procedure ShowMilitaryRemains(Action: Cardinal); // @addr $5FC584
+    procedure SellAllMilitaryRemains(Action: Cardinal); // @addr $5FCAD0
+    procedure SellIndividualMilitaryRemains(Action: Cardinal); // @addr $5FCCB0
+    procedure AcceptMilitaryBuff(Action: Cardinal); // @addr $5FD528
+    procedure DiscussOldHull(Action: Cardinal); // @addr $5FD6D0
+    procedure ShowMilitaryBuff(Action: Cardinal); // @addr $5FD230
+    procedure BuildMilitarySupportChoices; // @addr $5FACBC
+    procedure AcceptScriptedConversation(Action: Cardinal); // @addr $5F10E0
+    procedure RunScriptExitAnswer(Action: Cardinal); // @addr $5F1038
+    function GetShipGreeting: WideString; // @addr $5FAA58
+    procedure ShowGreeting(Action: Cardinal); // @addr $5F1088
+    procedure OpenTrade(Action: Cardinal); // @addr $5F178C
+    procedure CancelTrade(Action: Cardinal); // @addr $5F17D4
+    procedure DemandMoney(Action: Cardinal); // @addr $5F1E04
+    procedure DemandCargo(Action: Cardinal); // @addr $5F1EC4
+    procedure HalveMoneyDemand(Action: Cardinal); // @addr $5F1E8C
+    procedure HalvePartnerOffer(Action: Cardinal); // @addr $5F489C
+    procedure HalvePartnerGift(Action: Cardinal); // @addr $5F5BDC
+    procedure HalvePiratePartnerOffer(Action: Cardinal); // @addr $5F803C
+    procedure HalvePiratePartnerGift(Action: Cardinal); // @addr $5F9954
+    procedure DoubleMoneyDemand(Action: Cardinal); // @addr $5F1EAC
+    procedure HalveTruceOffer(Action: Cardinal); // @addr $5F25A4
+    procedure DoubleTruceOffer(Action: Cardinal); // @addr $5F25CC
+    procedure DoublePartnerOffer(Action: Cardinal); // @addr $5F48BC
+    procedure DoublePiratePartnerOffer(Action: Cardinal); // @addr $5F805C
+    procedure DoublePartnerGift(Action: Cardinal); // @addr $5F5BFC
+    procedure DoublePiratePartnerGift(Action: Cardinal); // @addr $5F9974
+    procedure AcceptPartnerOffer(Action: Cardinal); // @addr $5F4838
+    procedure AcceptPiratePartnerOffer(Action: Cardinal); // @addr $5F7FC0
+    procedure ExitPartnerConversation(Action: Cardinal); // @addr $5F5D70
+    procedure ShowDominatorGreeting(Action: Cardinal); // @addr $5FA390
+    procedure ShowDominatorPeace(Action: Cardinal); // @addr $5FA450
+    procedure ShowDominatorGoods(Action: Cardinal); // @addr $5FA518
+    procedure ShowDominatorCommand(Action: Cardinal); // @addr $5FA5E0
+    procedure RunInjectedAnswer(Action: Cardinal); // @addr $5FAAC4
+    procedure RunInjectedAnswerKeepingScroll(Action: Cardinal); // @addr $5FAC78
+    procedure StartScriptMessage(Script: TScript); // @addr $5FAC94
+    procedure CancelMilitarySupport(Action: Cardinal); // @addr $5FB4BC
+    procedure DeclineMilitarySupport(Action: Cardinal); // @addr $5FB568
+    procedure RunScriptRestartAnswer(Action: Cardinal); // @addr $5FE118
+    procedure ShowTrade(Action: Cardinal); // @addr $5F1174
+    procedure AcceptTruceOffer(Action: Cardinal); // @addr $5F24A0
+    procedure GivePartnerGift(Action: Cardinal); // @addr $5F59A8
+    procedure GivePiratePartnerGift(Action: Cardinal); // @addr $5F96C4
+    procedure OrderPartnerFollow(Action: Cardinal); // @addr $5F4900
+    procedure OrderPiratePartnerFollow(Action: Cardinal); // @addr $5F862C
+    procedure OrderPartnerLand(Action: Cardinal); // @addr $5F4B9C
+    procedure OrderPartnerJump(Action: Cardinal); // @addr $5F4F2C
+    procedure OrderPiratePartnerLand(Action: Cardinal); // @addr $5F88C0
+    procedure OrderPiratePartnerJump(Action: Cardinal); // @addr $5F8D10
+    procedure OrderPiratePartnerAttack(Action: Cardinal); // @addr $5F8328
+    procedure ApplyOrderToAllPartners(Action: Cardinal); // @addr $5F5C3C
+    procedure OrderPartnerDropCargo(Action: Cardinal); // @addr $5F5250
+    procedure ShowPartnerFinances(Action: Cardinal); // @addr $5F5458
+    procedure ShowPiratePartnerFinances(Action: Cardinal); // @addr $5F9180
+    procedure ShowPartnerDismissal(Action: Cardinal); // @addr $5F99B4
+    procedure ShowPirateAttackTargets(Action: Cardinal); // @addr $5F80A0
+    procedure OrderTranclucatorFollow(Action: Cardinal); // @addr $5F5D78
+    procedure OrderTranclucatorReturn(Action: Cardinal); // @addr $5F5EBC
+    procedure OrderTranclucatorSeekItems(Action: Cardinal); // @addr $5F5FFC
+    procedure CancelTranclucatorSeekItems(Action: Cardinal); // @addr $5F6140
+    procedure OrderTranclucatorDropCargo(Action: Cardinal); // @addr $5F7110
+    procedure OrderTranclucatorLand(Action: Cardinal); // @addr $5F724C
+    procedure OrderTranclucatorStoreCargo(Action: Cardinal); // @addr $5F748C
+    procedure AddTranclucatorGroupChoice; // @addr $5F76B4
+    procedure ApplyOrderToAllTranclucators(Action: Cardinal); // @addr $5F7804
+    procedure ShowTranclucatorOptions(Action: Cardinal); // @addr $5F6CA8
+    procedure ShowAttackTargets(Action: Cardinal); // @addr $5F27A4
+    procedure RequestAttackTarget(Action: Cardinal); // @addr $5F2DC8
+    procedure AcceptJointAttack(Action: Cardinal); // @addr $5F31E4
+    procedure RunDominatorProgram(Action: Cardinal); // @addr $5FA010
+    function AddImmediateAttackChoices: Boolean; // @addr $5FA6AC
+    procedure RequestProtection(Action: Cardinal); // @addr $5F343C
+    procedure RequestPreserveItems(Action: Cardinal); // @addr $5F3E58
+    procedure BuildBuiltinChoices; // @addr $5ED6DC
+    procedure BuildStandardChoices(KeepGreeting: Boolean); // @addr $5ED0A4
+    procedure OnOpen; override; // @addr $5EA278
+    procedure OnClose; override; // @addr $5EAEDC
+    procedure InitializeLayout; override; // @addr $5E9ED4
+    procedure MainPanelMouseMove(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $5EBB78
+    procedure MainPanelMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $5EBDFC
+    procedure MainPanelMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $5EBF3C
+    procedure AddDialogEffect(Position: TPointF; ImagePath: WideString; DelayMs: Integer); // @addr $5EC558
+    procedure MinimapScrolled; // @addr $5ECB1C
+    procedure FlushMinimapRefresh(Timer: TCallbackTimerIdGI; UserData: Cardinal); // @addr $5ECBA4
+    procedure AdvanceSlide(Timer: TCallbackTimerIdGI; UserData: Cardinal); // @addr $5ECC14
+    procedure UpdateSlidePosition; // @addr $5ECC7C
+    procedure MainPanelKeyDown(Sender: TObjectGI; Key: Cardinal); // @addr $5ECD6C
+    procedure ApplyMapSelection(Timer: TCallbackTimerIdGI; UserData: Cardinal); // @addr $5EC6E0
+    procedure RememberChoiceScroll; // @addr $5EB0B8
+    procedure EnableCloseButton; // @addr $5EB0FC
+    procedure CloseClicked(Sender: TObjectGI); // @addr $5EB130
+    procedure ClearChoices(AllowClose: Boolean); // @addr $5EB138
+    function CreateDialogObject(LabelControl: TLabelGI; Item: PFontObjectEC): TObjectGI; // @addr $5EB748
+    procedure CenterEmbeddedObject(Sender: TObjectGI); // @addr $5EBAA4
+    procedure CenterShipClicked(Sender: TObjectGI); // @addr $5EBADC
+    procedure ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer); override; // @addr $5EBFA0
+    procedure ChoiceMouseEnter(Sender: TObjectGI); // @addr $5EC068
+    procedure ChoiceMouseLeave(Sender: TObjectGI); // @addr $5EC074
+    procedure ChoiceMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $5EC080
+    procedure ChoiceMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $5EC0EC
+    procedure RestartTextPresentation; // @addr $5EC1A8
+    procedure AdvanceTextPresentation(Timer: TCallbackTimerIdGI; UserData: Cardinal); // @addr $5EC224
+    procedure ClearDialogEffects; // @addr $5EC664
+    procedure DialogEffectComplete(Sender: TObjectGI); // @addr $5EC698
+    procedure ProcessCallbackTimers; override; // @addr $5EC6B4
+    procedure AddMessageClicked(Sender: TObjectGI); // @addr $5EC944
+    procedure ReturnToMap(Action: Integer); // @addr $5F112C
+    procedure SelectMusic; override; // @addr $5ECEC0
+    procedure AddChoice(CaptionText: WideString; Value: Cardinal; Callback: TDialogChoiceEventGI; ExtraValue: Integer); // @addr $5EB1C8 ExtraValue is stored in the choice object at $1C; its wider meaning remains unresolved.
+    procedure CodeMsgOut(KeepGreeting: Boolean); // @addr $5F07DC
+    procedure ShipDismissAct(Action: Cardinal); // @addr 0x005F9CA8
+    procedure AddScriptExitChoice(Caption: WideString); // @addr $5F06F4
+    procedure AddScriptRestartChoice(Caption: WideString); // @addr $5FE150
+    procedure FastExit(Answer: Cardinal); // @addr $5F0FE4
+    procedure RunScriptAnswerKeepingScroll(Answer: Cardinal); // @addr $5F0FC8
+    procedure RunScriptAnswer(Answer: Cardinal); // @addr $5F0F60
   end;
 
-function IsMilitaryProtectedQuestItem(Item: TItem): Boolean; // @addr $6E4ABC
-procedure DonateMilitaryResearchMaterial(Series: TDominatorSeries; Amount: Integer); // @addr $6E50D0
+function IsMilitaryProtectedQuestItem(Item: TItem): Boolean; // @addr $5FC444
+procedure DonateMilitaryResearchMaterial(Series: TDominatorSeries; Amount: Integer); // @addr $5FCA0C
 
-function GetMilitaryHullRepairCost: Integer; // @addr $6E3BA8
-function GetMilitaryEquipmentRepairCost: Integer; // @addr $6E4320
+function GetMilitaryHullRepairCost: Integer; // @addr $5FB608
+function GetMilitaryEquipmentRepairCost: Integer; // @addr $5FBD38
 
-function RunTalk(ParentLoop: TMessageLoopGI): Boolean; // @addr $6D4838 Native modal conversation wrapper.
+function RunTalk(ParentLoop: TMessageLoopGI): Boolean; // @addr $5ECF70 Native modal conversation wrapper.
 
 var
-  ScriptDialogBlockCallback: TDialogChoiceEventGI = nil; // @addr $87BFB4 Shared disabled-choice callback.
-  TruceOfferAmount: Integer; // @addr $88B0C8
-  ExtortionDemandAmount: Integer; // @addr $88B0CC
-  PartnerOfferAmount: Integer; // @addr $88B0D0
-  PartnerGiftAmount: Integer; // @addr $88B0D4
-  TalkDialogActive: Boolean = False; // @addr $87BFBC Set by native conversation setup at $6D14AC; cleared by cleanup at $6D222C. Suppresses recursive SF_Dialog dispatch.
-  TalkSlideCurve: array[0..15] of Single = (0, 0.033, 0.078, 0.149, 0.273, 0.44, 0.611, 0.753, 0.888, 0.963, 1.009, 1.025, 1.02, 1.012, 1.008, 1); // @addr $87BFC0
+  ScriptDialogBlockCallback: TDialogChoiceEventGI = nil; // @addr $80F654 Shared disabled-choice callback.
+  TruceOfferAmount: Integer; // @addr $81B838
+  ExtortionDemandAmount: Integer; // @addr $81B83C
+  PartnerOfferAmount: Integer; // @addr $81B840
+  PartnerGiftAmount: Integer; // @addr $81B844
+  TalkDialogActive: Boolean = False; // @addr $80F65C Set by native conversation setup at $5EA278; cleared by cleanup at $5EAEDC. Suppresses recursive SF_Dialog dispatch.
+  TalkSlideCurve: array[0..15] of Single = (0, 0.033, 0.078, 0.149, 0.273, 0.44, 0.611, 0.753, 0.888, 0.963, 1.009, 1.025, 1.02, 1.012, 1.008, 1); // @addr $80F660
 
 implementation
 
 uses Globals, GlobalsV, aPlayer, aShip, aGalaxy, aConst, aMyFunction, fStarMap, GI_PanelScrollBar, GI_ScrollBar, GI_Image, GI_GraphButton, GI_Main, GI_GAI, EC_Str, SysUtils, Classes, Math, GR_Main, Windows, aPlanet, aItem, SE_Space, SE_Process, GI_GraphBuf, aRanger, aRuins, aKling, aNormalShip, aGalaxyStruct, aPirate, aTranclucator, SE_Weapon, Achievements, aWarrior;
 
-{ @routine $6D0FF0 TfTalkA_Create }
+{ @routine $5E9E74 TfTalkA_Create }
 constructor TfTalkA.Create;
 begin
   inherited Create;
 end;
-{ @end $6D0FF0 }
+{ @end $5E9E74 }
 
-{ @routine $6D1034 TfTalkA_Destroy }
+{ @routine $5E9EAC TfTalkA_Destroy }
 destructor TfTalkA.Destroy;
 begin
   inherited Destroy;
 end;
-{ @end $6D1034 }
+{ @end $5E9EAC }
 
-{ @routine $6D1068 TfTalk_InitializeLayout }
+{ @routine $5E9ED4 TfTalk_InitializeLayout }
 procedure TfTalk.InitializeLayout;
 var
   Panel, MapPanel, Sibling, CenterPlayer, TalkPanel: TObjectGI;
@@ -258,9 +257,9 @@ begin
   CloseButton := GetByName('Close') as TGraphButtonGI;
   CloseButton.UpCallback := CloseClicked;
 end;
-{ @end $6D1068 }
+{ @end $5E9ED4 }
 
-{ @routine $6D14AC TfTalk_OnOpen }
+{ @routine $5EA278 TfTalk_OnOpen }
 procedure TfTalk.OnOpen;
 var
   Position: TPoint;
@@ -275,10 +274,10 @@ begin
   TalkDialogActive := True;
   if AuxRenderBuffer.GetPixels = nil then CaptureScreenBackground(False, 0);
   (GetByName('BGBuf') as TGraphBufGI).BindExternalGraphBuf(AuxRenderBuffer);
-  if SlideTimer <> nil then
+  if SlideTimer <> 0 then
   begin
     CancelCallbackTimer(SlideTimer);
-    SlideTimer := nil;
+    SlideTimer := 0;
   end;
   SavedChoiceScroll := -1;
   MinimapEnabled := False;
@@ -350,21 +349,21 @@ begin
     end;
     CurrentMapCenter := nil;
     if not MusicInSpaceEnabled then MusicManager.RequestFadeOut;
-    (GetByName('TalkText') as TLabelGI).SetText('');
+    (GetByName('TalkText') as TLabelGI).Text := '';
     if TalkShip <> nil then
-      (GetByName('TalkShip') as TLabelGI).SetText(FormatText1(LocalizedText('Talk.ShipSay'), '', '<Name>', TalkShip.GetFullName(#13#10)))
+      (GetByName('TalkShip') as TLabelGI).Text := FormatText1(LocalizedText('Talk.ShipSay'), '', '<Name>', TalkShip.GetFullName(#13#10))
     else if TalkPlanet <> nil then
-      (GetByName('TalkShip') as TLabelGI).SetText(FormatText1(LocalizedText('Talk.PlanetSay'), '', '<Name>', TalkPlanet.GetFullName(#13#10)))
-    else (GetByName('TalkShip') as TLabelGI).SetText('');
+      (GetByName('TalkShip') as TLabelGI).Text := FormatText1(LocalizedText('Talk.PlanetSay'), '', '<Name>', TalkPlanet.GetFullName(#13#10))
+    else (GetByName('TalkShip') as TLabelGI).Text := '';
     if (TalkShip <> nil) and (TalkShip.TypeId = stRanger) then
-      (GetByName('TalkShipChar') as TLabelGI).SetText((TalkShip as TRanger).GetCharacterName)
+      (GetByName('TalkShipChar') as TLabelGI).Text := (TalkShip as TRanger).GetCharacterName
     else if (TalkShip <> nil) and (TalkShip is TRuins) then
-      (GetByName('TalkShipChar') as TLabelGI).SetText(LocalizedText('ShipType.TypeName.Ruins'))
+      (GetByName('TalkShipChar') as TLabelGI).Text := LocalizedText('ShipType.TypeName.Ruins')
     else if TalkShip <> nil then
-      (GetByName('TalkShipChar') as TLabelGI).SetText(TalkShip.GetLocalizedTypeName)
+      (GetByName('TalkShipChar') as TLabelGI).Text := TalkShip.GetLocalizedTypeName
     else if TalkPlanet <> nil then
-      (GetByName('TalkShipChar') as TLabelGI).SetText(PlanetEconomyInfo[TalkPlanet.Economy].DisplayName)
-    else (GetByName('TalkShipChar') as TLabelGI).SetText('');
+      (GetByName('TalkShipChar') as TLabelGI).Text := PlanetEconomyInfo[TalkPlanet.Economy].DisplayName
+    else (GetByName('TalkShipChar') as TLabelGI).Text := '';
     Portrait := GetByName('CaptainI') as TImageGI;
     if TalkShip <> nil then Portrait.SetImagePath('GI,' + TalkShip.GetCaptainPortraitResourceBase + 'i')
     else if TalkPlanet <> nil then Portrait.SetImagePath('GI,' + TalkPlanet.GetGovernmentPortraitGraph + 'i')
@@ -400,9 +399,9 @@ begin
     ReturnedFromTrade := False;
   end;
 end;
-{ @end $6D14AC }
+{ @end $5EA278 }
 
-{ @routine $6D222C TfTalk_OnClose }
+{ @routine $5EAEDC TfTalk_OnClose }
 procedure TfTalk.OnClose;
 var
   I, Count: Integer;
@@ -412,71 +411,74 @@ begin
   if AuxRenderBuffer <> nil then AuxRenderBuffer.Clear;
   MinimapEnabled := False;
   ClearDialogEffects;
-  if MapSelectionTimer <> nil then
+  if MapSelectionTimer <> 0 then
   begin
     CancelCallbackTimer(MapSelectionTimer);
-    MapSelectionTimer := nil;
+    MapSelectionTimer := 0;
   end;
-  if TextPresentationTimer <> nil then
+  if TextPresentationTimer <> 0 then
   begin
     CancelCallbackTimer(TextPresentationTimer);
-    TextPresentationTimer := nil;
+    TextPresentationTimer := 0;
   end;
-  if MinimapRefreshTimer <> nil then
+  if MinimapRefreshTimer <> 0 then
   begin
     CancelCallbackTimer(MinimapRefreshTimer);
-    MinimapRefreshTimer := nil;
+    MinimapRefreshTimer := 0;
   end;
-  if SlideTimer <> nil then
+  if SlideTimer <> 0 then
   begin
     CancelCallbackTimer(SlideTimer);
-    SlideTimer := nil;
+    SlideTimer := 0;
   end;
-  if ModalTransition = tmtNone then
+  if ModalTransition <> tmtNone then Exit;
+  RequestedMapCenter := nil;
+  ClearChoices(False);
+  Count := GetPlayer.ProgramCounts[prgIntercom];
+  if (TalkShip <> nil) and (TalkShip.TypeId = stKling) and (Count > 0) and GetPlayer.CanResolveObjectWithScanner(TalkShip) then
   begin
-    RequestedMapCenter := nil;
-    ClearChoices(False);
-    Count := GetPlayer.ProgramCounts[prgIntercom];
-    if (TalkShip <> nil) and (TalkShip.TypeId = stKling) and (Count > 0) and GetPlayer.CanResolveObjectWithScanner(TalkShip) then
-    begin
-      Dec(Count);
-      GetPlayer.ProgramCounts[prgIntercom] := Count;
-      SysUtils.Sleep(1);
-      if (GetPlayer.ProgramCounts[prgIntercom] <> Count) and not GR_Main.CCInterface.GetTamperDetected then
-        GR_Main.CCInterface.SetTamperDetected(True);
-    end;
-    if (GetPlayer <> nil) and (TalkShip <> nil) and not TalkScripted then GetPlayer.ScriptItemsAct(satOnPlayerTalkedWithShip, TalkShip, nil, 0);
-    TalkShip := nil;
-    TalkPlanet := nil;
-    if not TalkScripted and not SkipShipScriptAdvance then
-    begin
-      I := 0;
-      Star := GetPlayer.CurrentStar;
-      while I < Star.Ships.Count do
-      begin
-        Ship := Star.Ships[I];
-        if Ship = KellerShip then Inc(I)
-        else if Ship = BlazerShip then Inc(I)
-        else
-        begin
-          if Ship.ScriptShip <> nil then Ship.ScriptNextDay;
-          Inc(I);
-        end;
-      end;
-    end;
-    TalkDialogActive := False;
+    Dec(Count);
+    GetPlayer.ProgramCounts[prgIntercom] := Count;
+    SysUtils.Sleep(1);
+    if (GetPlayer.ProgramCounts[prgIntercom] <> Count) and not GR_Main.CCInterface.GetTamperDetected then
+      GR_Main.CCInterface.SetTamperDetected(True);
   end;
+  if (GetPlayer <> nil) and (TalkShip <> nil) and not TalkScripted then GetPlayer.ScriptItemsAct(satOnPlayerTalkedWithShip, TalkShip, nil, 0);
+  TalkShip := nil;
+  TalkPlanet := nil;
+  if not TalkScripted and not SkipShipScriptAdvance then
+  begin
+    I := 0;
+    Star := GetPlayer.CurrentStar;
+    while I < Star.Ships.Count do
+    begin
+      Ship := Star.Ships[I];
+      if Ship = KellerShip then
+      begin
+        Inc(I);
+        Continue;
+      end;
+      if Ship = BlazerShip then
+      begin
+        Inc(I);
+        Continue;
+      end;
+      if Ship.ScriptShip <> nil then Ship.ScriptNextDay;
+      Inc(I);
+    end;
+  end;
+  TalkDialogActive := False;
 end;
-{ @end $6D222C }
+{ @end $5EAEDC }
 
-{ @routine $6D247C TfTalk_RememberChoiceScroll }
+{ @routine $5EB0B8 TfTalk_RememberChoiceScroll }
 procedure TfTalk.RememberChoiceScroll;
 begin
   SavedChoiceScroll := (GetByName('TalkPA') as TPanelScrollBarGI).VerticalScrollBar.Position;
 end;
-{ @end $6D247C }
+{ @end $5EB0B8 }
 
-{ @routine $6D24C8 TfTalk_EnableCloseButton }
+{ @routine $5EB0FC TfTalk_EnableCloseButton }
 procedure TfTalk.EnableCloseButton;
 var
   Button: TGraphButtonGI;
@@ -484,16 +486,16 @@ begin
   Button := GetByName('Close') as TGraphButtonGI;
   Button.SetDisabled(False);
 end;
-{ @end $6D24C8 }
+{ @end $5EB0FC }
 
-{ @routine $6D250C TfTalk_CloseClicked }
+{ @routine $5EB130 TfTalk_CloseClicked }
 procedure TfTalk.CloseClicked(Sender: TObjectGI);
 begin
   FastExit(0);
 end;
-{ @end $6D250C }
+{ @end $5EB130 }
 
-{ @routine $6D2528 TfTalk_ClearChoices }
+{ @routine $5EB138 TfTalk_ClearChoices }
 procedure TfTalk.ClearChoices(AllowClose: Boolean);
 var
   Child, Panel: TObjectGI;
@@ -510,30 +512,29 @@ begin
   Panel.FreeOwnedChildren;
   Panel.Invalidate;
 end;
-{ @end $6D2528 }
+{ @end $5EB138 }
 
-{ @routine $6D25DC TfTalk_AddChoice }
-procedure TfTalk.AddChoice(Text: WideString; Value: Integer; Callback: TDialogChoiceEventGI; ExtraValue: Integer);
-var Panel: TPanelScrollBarGI; Choice: TfTalkA; I: Integer; ExitCallback: TMethod; Row: TPanelGI;
+{ @routine $5EB1C8 TfTalk_AddChoice }
+procedure TfTalk.AddChoice(CaptionText: WideString; Value: Cardinal; Callback: TDialogChoiceEventGI; ExtraValue: Integer);
+var Panel: TPanelScrollBarGI; Choice: TfTalkA; I: Integer; ExitCallback: TDialogChoiceEventGI; Row: TPanelGI;
   Highlight: TImageGI; BlockMode: Byte;
 begin
   BlockMode := 0;
   if ScriptDialogBlocks <> nil then
     for I := 0 to ScriptDialogBlocks.Count - 1 do
-      if FindTextOffsetW(Text, PScriptDialogBlock(ScriptDialogBlocks[I]).Text) >= 0 then
+      if FindTextOffsetW(CaptionText, PScriptDialogBlock(ScriptDialogBlocks[I]).Text) >= 0 then
         BlockMode := Max(BlockMode, PScriptDialogBlock(ScriptDialogBlocks[I]).Mode);
   if BlockMode >= 2 then Exit;
-  ExitCallback.Data := Self;
-  ExitCallback.Code := @TfTalk.FastExit;
-  if TMethod(Callback).Code = ExitCallback.Code then EnableCloseButton;
+  ExitCallback := FastExit;
+  if @Callback = @ExitCallback then EnableCloseButton;
   Panel := GetByName('TalkPA') as TPanelScrollBarGI;
   I := 0;
-  while I < Length(Text) do
+  while I < Length(CaptionText) do
   begin
-    if (Text[I + 1] <> '-') and (Text[I + 1] <> ' ') then Break;
+    if (CaptionText[I + 1] <> '-') and (CaptionText[I + 1] <> ' ') then Break;
     Inc(I);
   end;
-  if I > 0 then Text := Copy(Text, I + 1, Length(Text) - I);
+  if I > 0 then CaptionText := Copy(CaptionText, I + 1, Length(CaptionText) - I);
   Choice := TfTalkA.Create;
   Choice.Callback := Callback;
   Choice.Value := Value;
@@ -542,7 +543,7 @@ begin
   Row := TPanelGI.Create(Panel);
   Row.UserValue := Integer(Choice);
   Row.SetPosition(Point(0, ChoiceHeight));
-  Row.SetSize(Point(Panel.ClientSize.X, 20));
+  Row.ObjectSize := Point(Panel.ClientSize.X, 20);
   Row.SetPositionModeW(True);
   Row.MouseEnterCallback := ChoiceMouseEnter;
   Row.MouseLeaveCallback := ChoiceMouseLeave;
@@ -551,37 +552,37 @@ begin
   Highlight := TImageGI.Create(Row);
   Highlight.SetDepth(3);
   Highlight.SetPosition(Point(0, 0));
-  Highlight.SetSize(Point(Panel.ClientSize.X, 20));
+  Highlight.ObjectSize := Point(Panel.ClientSize.X, 20);
   Highlight.SetImagePath('GI,Bm.FormGov2.' + GiResourceSuffix + 'Line');
   Highlight.SetImageKindX(ikxLeftFill);
   Highlight.SetImageKindY(ikyTopFill);
   Highlight.SetActive(False);
   with TLabelGI.Create(Row) do
   begin
-  if FontDialog = 0 then SetFontName(NormalFontName)
-  else if FontDialog = 1 then SetFontName(SmoothBigFontName)
-  else if FontDialog = 2 then SetFontName(SmoothHugeFontName)
-  else if FontDialog >= 3 then SetFontName(SmoothIntroFontName);
-  SetSize(Point(Panel.ClientSize.X - GiScalePixels(20), 20));
-  SetPosition(Point(GiScalePixels(10), 0));
-  SetWordWrapEnabled(True);
-  SetTextAlignX(taxLeft);
-  SetTextAlignY(tayAuto);
-  if not Assigned(Callback) then Text := RemoveTextTagsW(Text);
-  SetText('<Object=0,20,14,0>' + ReplaceAllWideString(Text, TextHighlightColorTag, DialogHighlightColorTag));
-  SetTextColor(CurrentPixelFormat.PackRgbBytes(0, 0, 0));
-  if not Assigned(Choice.Callback) then SetTextColor(CurrentPixelFormat.PackRgbBytes(127, 127, 127));
-  CreateEmbeddedControl := CreateDialogObject;
-  SetTextAlignY(tayCenterEx);
-  Row.SetSize(Point(Row.ClientSize.X, ClientSize.Y + 2 * GiScalePixelsEx(2, 1)));
-  SetSize(Point(ClientSize.X, Row.ClientSize.Y));
-  Highlight.SetSize(Row.ClientSize);
-  Inc(ChoiceHeight, ClientSize.Y);
+    if FontDialog = 0 then SetFontName(NormalFontName)
+    else if FontDialog = 1 then SetFontName(SmoothBigFontName)
+    else if FontDialog = 2 then SetFontName(SmoothHugeFontName)
+    else if FontDialog >= 3 then SetFontName(SmoothIntroFontName);
+    ObjectSize := Point(Panel.ClientSize.X - GiScalePixels(20), 20);
+    SetPosition(Point(GiScalePixels(10), 0));
+    SetWordWrapEnabled(True);
+    SetTextAlignX(taxLeft);
+    SetTextAlignY(tayAuto);
+    if not Assigned(Callback) then CaptionText := RemoveTextTagsW(CaptionText);
+    Text := '<Object=0,20,14,0>' + ReplaceAllWideString(CaptionText, TextHighlightColorTag, DialogHighlightColorTag);
+    SetTextColor(CurrentPixelFormat.PackRgbBytes(0, 0, 0));
+    if not Assigned(Choice.Callback) then SetTextColor(CurrentPixelFormat.PackRgbBytes(127, 127, 127));
+    CreateEmbeddedControl := CreateDialogObject;
+    SetTextAlignY(tayCenterEx);
+    Row.ObjectSize := Point(Row.ClientSize.X, ClientSize.Y + 2 * GiScalePixelsEx(2, 1));
+    ObjectSize := Point(ClientSize.X, Row.ClientSize.Y);
+    Highlight.ObjectSize := Row.ClientSize;
+    Inc(ChoiceHeight, ClientSize.Y);
   end;
 end;
-{ @end $6D25DC }
+{ @end $5EB1C8 }
 
-{ @routine $6D2BCC TfTalk_CreateDialogObject }
+{ @routine $5EB748 TfTalk_CreateDialogObject }
 function TfTalk.CreateDialogObject(LabelControl: TLabelGI; Item: PFontObjectEC): TObjectGI;
 var
   Image: TImageGI;
@@ -616,80 +617,78 @@ begin
     Button.UpCallback := CenterEmbeddedObject;
   end;
 end;
-{ @end $6D2BCC }
+{ @end $5EB748 }
 
-{ @routine $6D2F60 TfTalk_CenterEmbeddedObject }
+{ @routine $5EBAA4 TfTalk_CenterEmbeddedObject }
 procedure TfTalk.CenterEmbeddedObject(Sender: TObjectGI);
 begin
-  if (TextPresentationTimer <> nil) or (SlideTimer <> nil) then Exit;
+  if (TextPresentationTimer <> 0) or (SlideTimer <> 0) then Exit;
   RequestedMapCenter := TObject(Sender.UserValue);
   RequestedMapHover := nil;
   CurrentMapCenter := nil;
-  ApplyMapSelection(nil, 0);
+  ApplyMapSelection(0, 0);
 end;
-{ @end $6D2F60 }
+{ @end $5EBAA4 }
 
-{ @routine $6D2FBC TfTalk_CenterShipClicked }
+{ @routine $5EBADC TfTalk_CenterShipClicked }
 procedure TfTalk.CenterShipClicked(Sender: TObjectGI);
 begin
-  if (TextPresentationTimer <> nil) or (SlideTimer <> nil) then Exit;
+  if (TextPresentationTimer <> 0) or (SlideTimer <> 0) then Exit;
   if GetByName('CenterPlayer') = Sender then RequestedMapCenter := GetPlayer
   else if TalkPlanet <> nil then RequestedMapCenter := TalkShip
   else RequestedMapCenter := TalkShip; // Both native branches use TalkShip, including planet conversations.
   RequestedMapHover := nil;
   CurrentMapCenter := nil;
-  ApplyMapSelection(nil, 0);
+  ApplyMapSelection(0, 0);
 end;
-{ @end $6D2FBC }
+{ @end $5EBADC }
 
-{ @routine $6D3074 TfTalk_MainPanelMouseMove }
+{ @routine $5EBB78 TfTalk_MainPanelMouseMove }
 procedure TfTalk.MainPanelMouseMove(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint);
 var
   Child: TObjectGI;
 begin
-  if not GetPlayer.InHyperspace and (TextPresentationTimer = nil) and (SlideTimer = nil) then
+  if GetPlayer.InHyperspace or (TextPresentationTimer <> 0) or (SlideTimer <> 0) then Exit;
+  if MapDragging then
   begin
-    if MapDragging then
+    RequestedMapCenter := nil;
+    CurrentMapCenter := nil;
+    RequestedMapHover := nil;
+    CurrentMapHover := nil;
+    StarMapScreen.ShowObjectInfo(nil);
+    StarMapScreen.ShowFilmObjectInfo(nil, 0);
+    StarMapScreen.SetMapCenter(Classes.Point(StarMapScreen.GetMapCenter.X + MapDragPoint.X - Point.X,
+      StarMapScreen.GetMapCenter.Y + MapDragPoint.Y - Point.Y));
+    MapDragPoint := Point;
+  end
+  else if (GetByName('ImageBG') as TImageGI).HitTestPixel(Point) or
+    (GetByName('ImageBGB') as TImageGI).HitTestPixel(Point) or
+    (GetByName('CaptainI') as TImageGI).ContainsPoint(Point) then
+  begin
+    RequestedMapHover := nil;
+    if MapSelectionTimer = 0 then MapSelectionTimer := ScheduleCallbackTimer(100, 100, ApplyMapSelection);
+  end
+  else
+  begin
+    Child := MainPanel.FirstChild;
+    while Child <> nil do
     begin
-      RequestedMapCenter := nil;
-      CurrentMapCenter := nil;
-      RequestedMapHover := nil;
-      CurrentMapHover := nil;
-      StarMapScreen.ShowObjectInfo(nil);
-      StarMapScreen.ShowFilmObjectInfo(nil, 0);
-      StarMapScreen.SetMapCenter(Classes.Point(StarMapScreen.GetMapCenter.X + MapDragPoint.X - Point.X,
-        StarMapScreen.GetMapCenter.Y + MapDragPoint.Y - Point.Y));
-      MapDragPoint := Point;
-    end
-    else if (GetByName('ImageBG') as TImageGI).HitTestPixel(Point) or
-      (GetByName('ImageBGB') as TImageGI).HitTestPixel(Point) or
-      (GetByName('CaptainI') as TImageGI).ContainsPoint(Point) then
-    begin
-      RequestedMapHover := nil;
-      if MapSelectionTimer = nil then MapSelectionTimer := ScheduleCallbackTimer(100, 100, ApplyMapSelection);
-    end
-    else
-    begin
-      Child := MainPanel.FirstChild;
-      while Child <> nil do
-      begin
-        if Child.UserValue = 102 then Exit;
-        Child := Child.NextSibling;
-      end;
-      StarMapScreen.CursorControl.SetPosition(GetCursorPoint);
-      RequestedMapCenter := nil;
-      if TalkScripted then RequestedMapHover := StarMapScreen.FindFilmObjectAtCursor(CurrentFilmObjectId)
-      else RequestedMapHover := StarMapScreen.FindObjectAtCursor;
-      if MapSelectionTimer = nil then MapSelectionTimer := ScheduleCallbackTimer(100, 100, ApplyMapSelection);
+      if Child.UserValue = 102 then Exit;
+      Child := Child.NextSibling;
     end;
+    StarMapScreen.CursorControl.SetPosition(GetCursorPoint);
+    RequestedMapCenter := nil;
+    if TalkScripted then RequestedMapHover := StarMapScreen.FindFilmObjectAtCursor(CurrentFilmObjectId)
+    else RequestedMapHover := StarMapScreen.FindObjectAtCursor;
+    if MapSelectionTimer = 0 then MapSelectionTimer := ScheduleCallbackTimer(100, 100, ApplyMapSelection);
   end;
 end;
-{ @end $6D3074 }
+{ @end $5EBB78 }
 
-{ @routine $6D3354 TfTalk_MainPanelMouseDown }
+{ @routine $5EBDFC TfTalk_MainPanelMouseDown }
 procedure TfTalk.MainPanelMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint);
 begin
-  if not GetPlayer.InHyperspace and (TextPresentationTimer = nil) and (SlideTimer = nil) then
+  if not GetPlayer.InHyperspace and (TextPresentationTimer = 0) and (SlideTimer = 0) then
     if not (GetByName('ImageBG') as TImageGI).HitTestPixel(Point) and
       not (GetByName('ImageBGB') as TImageGI).HitTestPixel(Point) and
       not (GetByName('CaptainI') as TImageGI).ContainsPoint(Point) then
@@ -699,9 +698,9 @@ begin
       if not IsCursorImageSelected('Scroll') then SetCursorByName('Scroll');
     end;
 end;
-{ @end $6D3354 }
+{ @end $5EBDFC }
 
-{ @routine $6D34AC TfTalk_MainPanelMouseUp }
+{ @routine $5EBF3C TfTalk_MainPanelMouseUp }
 procedure TfTalk.MainPanelMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint);
 begin
   if not GetPlayer.InHyperspace then
@@ -711,9 +710,9 @@ begin
     PostMouseMoveMessage;
   end;
 end;
-{ @end $6D34AC }
+{ @end $5EBF3C }
 
-{ @routine $6D3518 TfTalk_ProcessMouseWheel }
+{ @routine $5EBFA0 TfTalk_ProcessMouseWheel }
 procedure TfTalk.ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer);
 var
   Panel: TPanelScrollBarGI;
@@ -723,33 +722,33 @@ begin
   if Delta = WHEEL_DELTA then Panel.VerticalScrollBar.SetPosition(Panel.VerticalScrollBar.Position - Panel.VerticalScrollBar.SmallChange)
   else if Delta = -WHEEL_DELTA then Panel.VerticalScrollBar.SetPosition(Panel.VerticalScrollBar.Position + Panel.VerticalScrollBar.SmallChange);
 end;
-{ @end $6D3518 }
+{ @end $5EBFA0 }
 
-{ @routine $6D3610 TfTalk_ChoiceMouseEnter }
+{ @routine $5EC068 TfTalk_ChoiceMouseEnter }
 procedure TfTalk.ChoiceMouseEnter(Sender: TObjectGI);
 begin
   Sender.FirstChild.SetActive(True);
 end;
-{ @end $6D3610 }
+{ @end $5EC068 }
 
-{ @routine $6D3630 TfTalk_ChoiceMouseLeave }
+{ @routine $5EC074 TfTalk_ChoiceMouseLeave }
 procedure TfTalk.ChoiceMouseLeave(Sender: TObjectGI);
 begin
   Sender.FirstChild.SetActive(False);
 end;
-{ @end $6D3630 }
+{ @end $5EC074 }
 
-{ @routine $6D3650 TfTalk_ChoiceMouseDown }
+{ @routine $5EC080 TfTalk_ChoiceMouseDown }
 procedure TfTalk.ChoiceMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint);
 begin
   if (Sender.FirstChild <> nil) and (Sender.FirstChild.NextSibling <> nil) and
-     (Sender.FirstChild.NextSibling.FirstChild <> nil) and (Sender.FirstChild.NextSibling.FirstChild.FirstChild <> nil) then
+    (Sender.FirstChild.NextSibling.FirstChild <> nil) and (Sender.FirstChild.NextSibling.FirstChild.FirstChild <> nil) then
     Sender.FirstChild.NextSibling.FirstChild.FirstChild.SetPosition(Classes.Point(2, 0));
   ChoiceMousePressed := True;
 end;
-{ @end $6D3650 }
+{ @end $5EC080 }
 
-{ @routine $6D36D8 TfTalk_ChoiceMouseUp }
+{ @routine $5EC0EC TfTalk_ChoiceMouseUp }
 procedure TfTalk.ChoiceMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint);
 var
   Choice: TfTalkA;
@@ -766,24 +765,24 @@ begin
   RestartTextPresentation;
   BreakUiMessage;
 end;
-{ @end $6D36D8 }
+{ @end $5EC0EC }
 
-{ @routine $6D37C8 TfTalk_RestartTextPresentation }
+{ @routine $5EC1A8 TfTalk_RestartTextPresentation }
 procedure TfTalk.RestartTextPresentation;
 begin
   (GetByName('TalkPA') as TPanelScrollBarGI).SetActive(False);
   PresentedTextLength := 0;
-  if TextPresentationTimer <> nil then
+  if TextPresentationTimer <> 0 then
   begin
     CancelCallbackTimer(TextPresentationTimer);
-    TextPresentationTimer := nil;
+    TextPresentationTimer := 0;
   end;
   TextPresentationTimer := ScheduleCallbackTimer(10, 10, AdvanceTextPresentation);
 end;
-{ @end $6D37C8 }
+{ @end $5EC1A8 }
 
-{ @routine $6D3860 TfTalk_AdvanceTextPresentation }
-procedure TfTalk.AdvanceTextPresentation(Timer: PCallbackTimerGI; UserData: Integer);
+{ @routine $5EC224 TfTalk_AdvanceTextPresentation }
+procedure TfTalk.AdvanceTextPresentation(Timer: TCallbackTimerIdGI; UserData: Cardinal);
 var Choices, TextPanel: TPanelScrollBarGI;
 begin
   if PresentedTextLength >= Length(DialogText) then
@@ -798,10 +797,10 @@ begin
     Choices.VerticalScrollBar.SetDepth(4);
     Choices.SetDragScrollingEnabled(Choices.IsVerticalScrollbarEnabled);
     Choices.UpdateScrollRanges;
-    if TextPresentationTimer <> nil then
+    if TextPresentationTimer <> 0 then
     begin
       CancelCallbackTimer(TextPresentationTimer);
-      TextPresentationTimer := nil;
+      TextPresentationTimer := 0;
     end;
     if SavedChoiceScroll >= 0 then Choices.VerticalScrollBar.SetPosition(SavedChoiceScroll);
     SavedChoiceScroll := -1;
@@ -811,7 +810,7 @@ begin
   begin
     PresentedTextLength := Length(DialogText);
     DialogText := ReplaceAllWideString(DialogText, TextHighlightColorTag, DialogHighlightColorTag);
-    (GetByName('TalkText') as TLabelGI).SetText(DialogText);
+    (GetByName('TalkText') as TLabelGI).Text := DialogText;
     TextPanel := GetByName('TextScroll') as TPanelScrollBarGI;
     TextPanel.SetScrollOffset(Point(0, 0));
     TextPanel.UpdateScrollRanges;
@@ -822,9 +821,9 @@ begin
     (GetByName('UserMsgAdd') as TGraphButtonGI).SetDisabled(False);
   end;
 end;
-{ @end $6D3860 }
+{ @end $5EC224 }
 
-{ @routine $6D3C08 TfTalk_AddDialogEffect }
+{ @routine $5EC558 TfTalk_AddDialogEffect }
 procedure TfTalk.AddDialogEffect(Position: TPointF; ImagePath: WideString; DelayMs: Integer);
 var
   Animation: TgaiGI;
@@ -843,9 +842,9 @@ begin
   Animation.CycleCompleteCallback := DialogEffectComplete;
   Animation.RestartPlayback;
 end;
-{ @end $6D3C08 }
+{ @end $5EC558 }
 
-{ @routine $6D3D30 TfTalk_ClearDialogEffects }
+{ @routine $5EC664 TfTalk_ClearDialogEffects }
 procedure TfTalk.ClearDialogEffects;
 var
   Child, Next: TObjectGI;
@@ -862,27 +861,27 @@ begin
     end;
   end;
 end;
-{ @end $6D3D30 }
+{ @end $5EC664 }
 
-{ @routine $6D3D88 TfTalk_DialogEffectComplete }
+{ @routine $5EC698 TfTalk_DialogEffectComplete }
 procedure TfTalk.DialogEffectComplete(Sender: TObjectGI);
 begin
   Sender.SetActive(False);
   Sender.Free;
   PostMouseMoveMessage;
 end;
-{ @end $6D3D88 }
+{ @end $5EC698 }
 
-{ @routine $6D3DB0 TfTalk_ProcessCallbackTimers }
+{ @routine $5EC6B4 TfTalk_ProcessCallbackTimers }
 procedure TfTalk.ProcessCallbackTimers;
 begin
   inherited ProcessCallbackTimers;
   if (ParentLoop <> nil) and (ParentLoop.ExitCode <> 0) and (ExitCode = 0) then RequestClose(2);
 end;
-{ @end $6D3DB0 }
+{ @end $5EC6B4 }
 
-{ @routine $6D3DF0 TfTalk_ApplyMapSelection }
-procedure TfTalk.ApplyMapSelection(Timer: PCallbackTimerGI; UserData: Integer);
+{ @routine $5EC6E0 TfTalk_ApplyMapSelection }
+procedure TfTalk.ApplyMapSelection(Timer: TCallbackTimerIdGI; UserData: Cardinal);
 var
   Previous: TObject;
 begin
@@ -900,10 +899,10 @@ begin
       StarMapScreen.CenterMapForTalk((CurrentMapCenter as TItem).Position);
     StarMapScreen.ShowObjectInfo(nil);
     StarMapScreen.ShowFilmObjectInfo(nil, 0);
-    if MapSelectionTimer <> nil then
+    if MapSelectionTimer <> 0 then
     begin
       CancelCallbackTimer(MapSelectionTimer);
-      MapSelectionTimer := nil;
+      MapSelectionTimer := 0;
     end;
     if Previous <> CurrentMapCenter then
     begin
@@ -927,10 +926,10 @@ begin
       StarMapScreen.ShowFilmObjectInfo(nil, 0);
       StarMapScreen.ShowObjectInfo(CurrentMapHover);
     end;
-    if MapSelectionTimer <> nil then
+    if MapSelectionTimer <> 0 then
     begin
       CancelCallbackTimer(MapSelectionTimer);
-      MapSelectionTimer := nil;
+      MapSelectionTimer := 0;
     end;
     if Previous <> CurrentMapHover then
     begin
@@ -941,14 +940,14 @@ begin
     end;
   end;
 end;
-{ @end $6D3DF0 }
+{ @end $5EC6E0 }
 
-{ @routine $6D40F8 TfTalk_AddMessageClicked }
+{ @routine $5EC944 TfTalk_AddMessageClicked }
 procedure TfTalk.AddMessageClicked(Sender: TObjectGI);
 var
   Text: WideString;
 begin
-  Text := (GetByName('TalkText') as TLabelGI).GetText;
+  Text := (GetByName('TalkText') as TLabelGI).Text;
   Text := ReplaceAllWideString(Text, DialogHighlightColorTag, TextHighlightColorTag);
   Text := RemoveMatchingTextTagsW(Text, 'object', 'OBJECT');
   (GetByName('UserMsgAdd') as TGraphButtonGI).SetDisabled(True);
@@ -956,29 +955,29 @@ begin
   AddOrUpdatePlayerBubble(pmUserNote, Galaxy.CurrentTurn, Text, '');
   if not GetPlayer.InHyperspace then ReturnToMap(0);
 end;
-{ @end $6D40F8 }
+{ @end $5EC944 }
 
-{ @routine $6D42DC TfTalk_MinimapScrolled }
+{ @routine $5ECB1C TfTalk_MinimapScrolled }
 procedure TfTalk.MinimapScrolled;
 begin
   if MinimapEnabled and (ModalTransition = tmtNone) and GetPlayer.InNormalSpace then
   begin
     SpaceProcess.Space.DrawMinimap;
     GetByName('MapPanel').Invalidate;
-    if MinimapRefreshTimer = nil then MinimapRefreshTimer := ScheduleCallbackTimer(1, 1, FlushMinimapRefresh);
+    if MinimapRefreshTimer = 0 then MinimapRefreshTimer := ScheduleCallbackTimer(1, 1, FlushMinimapRefresh);
   end;
 end;
-{ @end $6D42DC }
+{ @end $5ECB1C }
 
-{ @routine $6D437C TfTalk_FlushMinimapRefresh }
-procedure TfTalk.FlushMinimapRefresh(Timer: PCallbackTimerGI; UserData: Integer);
+{ @routine $5ECBA4 TfTalk_FlushMinimapRefresh }
+procedure TfTalk.FlushMinimapRefresh(Timer: TCallbackTimerIdGI; UserData: Cardinal);
 begin
-  if (TextPresentationTimer = nil) and (SlideTimer = nil) then
+  if (TextPresentationTimer = 0) and (SlideTimer = 0) then
   begin
-    if MinimapRefreshTimer <> nil then
+    if MinimapRefreshTimer <> 0 then
     begin
       CancelCallbackTimer(MinimapRefreshTimer);
-      MinimapRefreshTimer := nil;
+      MinimapRefreshTimer := 0;
     end;
     ModalTransition := tmtReopen;
     RequestedScreenId := TalkReturnScreenId;
@@ -986,26 +985,26 @@ begin
     RequestClose(1);
   end;
 end;
-{ @end $6D437C }
+{ @end $5ECBA4 }
 
-{ @routine $6D4410 TfTalk_AdvanceSlide }
-procedure TfTalk.AdvanceSlide(Timer: PCallbackTimerGI; UserData: Integer);
+{ @routine $5ECC14 TfTalk_AdvanceSlide }
+procedure TfTalk.AdvanceSlide(Timer: TCallbackTimerIdGI; UserData: Cardinal);
 begin
   SlideProgress := SlideProgress + 0.05;
   if SlideProgress >= 1 then
   begin
     SlideProgress := 1;
-    if SlideTimer <> nil then
+    if SlideTimer <> 0 then
     begin
       CancelCallbackTimer(SlideTimer);
-      SlideTimer := nil;
+      SlideTimer := 0;
     end;
   end;
   UpdateSlidePosition;
 end;
-{ @end $6D4410 }
+{ @end $5ECC14 }
 
-{ @routine $6D44A0 TfTalk_UpdateSlidePosition }
+{ @routine $5ECC7C TfTalk_UpdateSlidePosition }
 procedure TfTalk.UpdateSlidePosition;
 var
   T: Single;
@@ -1022,9 +1021,9 @@ begin
   DialogPanel.SetPosition(Point(DialogPanelLeft + DialogPanel.ClientSize.X - Round(DialogPanel.ClientSize.X * T),
     DialogPanel.LocalPosition.Y));
 end;
-{ @end $6D44A0 }
+{ @end $5ECC7C }
 
-{ @routine $6D45BC TfTalk_MainPanelKeyDown }
+{ @routine $5ECD6C TfTalk_MainPanelKeyDown }
 procedure TfTalk.MainPanelKeyDown(Sender: TObjectGI; Key: Cardinal);
 var
   Panel: TPanelScrollBarGI;
@@ -1040,9 +1039,9 @@ begin
     else if Key = VK_NEXT then Panel.VerticalScrollBar.SetPosition(Panel.VerticalScrollBar.Position + Panel.VerticalScrollBar.LargeChange);
   end;
 end;
-{ @end $6D45BC }
+{ @end $5ECD6C }
 
-{ @routine $6D477C TfTalk_SelectMusic }
+{ @routine $5ECEC0 TfTalk_SelectMusic }
 procedure TfTalk.SelectMusic;
 begin
   if not MusicInSpaceEnabled then
@@ -1050,22 +1049,20 @@ begin
     MusicManager.RequestFadeOut;
     Exit;
   end;
+  if (GetPlayer <> nil) and (GetPlayer.GetHull.CapitalShip = 1) and (RandomIntRange(0, 100) < 20) then
   begin
-    if (GetPlayer <> nil) and (GetPlayer.GetHull.CapitalShip = 1) and (RandomIntRange(0, 100) < 20) then
-    begin
-      StarMapScreen.BattleMusicSelected := True;
-      MusicManager.PlayCategory('Destroyer');
-    end
-    else
-    begin
-      StarMapScreen.BattleMusicSelected := False;
-      MusicManager.PlayCategory('StarMap');
-    end;
+    StarMapScreen.BattleMusicSelected := True;
+    MusicManager.PlayCategory('Destroyer');
+  end
+  else
+  begin
+    StarMapScreen.BattleMusicSelected := False;
+    MusicManager.PlayCategory('StarMap');
   end;
 end;
-{ @end $6D477C }
+{ @end $5ECEC0 }
 
-{ @routine $6D4838 RunTalk }
+{ @routine $5ECF70 RunTalk }
 function RunTalk(ParentLoop: TMessageLoopGI): Boolean;
 var
   OtherShip: TShip;
@@ -1073,7 +1070,7 @@ var
 begin
   ParentLoop.RootUiObject.OnModalSuspend;
   ParentLoop.CaptureCursorState(@State);
-  ParentLoop.SetCursorActive(False);
+  ParentLoop.ShowCursor := False;
   ParentLoop.DrawQueuedUpdateRects;
   TalkScreen.ParentLoop := ParentLoop;
   ParentLoop.ChildLoop := TalkScreen;
@@ -1094,9 +1091,9 @@ begin
   ParentLoop.UpdateCursorPosition;
   ParentLoop.RootUiObject.OnModalResume;
 end;
-{ @end $6D4838 }
+{ @end $5ECF70 }
 
-{ @routine $6D498C TfTalk_BuildStandardChoices }
+{ @routine $5ED0A4 TfTalk_BuildStandardChoices }
 procedure TfTalk.BuildStandardChoices(KeepGreeting: Boolean);
 var
   Binding: TScriptShip;
@@ -1209,9 +1206,9 @@ begin
     BuildBuiltinChoices;
   end;
 end;
-{ @end $6D498C }
+{ @end $5ED0A4 }
 
-{ @routine $6D5048 TfTalk_BuildBuiltinChoices }
+{ @routine $5ED6DC TfTalk_BuildBuiltinChoices }
 procedure TfTalk.BuildBuiltinChoices;
 var HasAttackChoice, RecognizesPlayer: Boolean; TargetName: WideString;
   Callback: TDialogChoiceEventGI; ProgramIndex: TProgramIndex; I: Integer;
@@ -1251,7 +1248,7 @@ begin
           begin
             if not (TalkShip.EnemyShip is TTranclucator) then
               AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Attack.PlayerWeFriends'), 0, FastExit, 0)
-            else if GetPlayer = TTranclucator(TalkShip.EnemyShip).OwnerShip then
+            else if TTranclucator(TalkShip.EnemyShip).OwnerShip = GetPlayer then
               AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Attack.PlayerItsMyTranc'), 0, FastExit, 0)
             else if TTranclucator(TalkShip.EnemyShip).OwnerShip = TalkShip then
               AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Attack.PlayerItsYourTranc'), 0, FastExit, 0)
@@ -1301,88 +1298,89 @@ begin
     ExtortionDemandAmount := (TalkShip.GetWealthScaledAmount(3) + GetPlayer.GetWealthScaledAmount(3)) div 2;
     PartnerOfferAmount := Min(GetPlayer.Money, TalkShip.Wealth div 8);
     PartnerGiftAmount := Min(GetPlayer.Money, TalkShip.Wealth div 32);
-    if ((GetPlayer <> TalkShip.PartnerShip) or not (TalkShip.TypeId in [stPirate])) and
-      ((TalkShip.TypeId in [stRanger..stWarrior]) and RecognizesPlayer) then
-    begin
-      if (TalkShip.GetRelationLevelToShip(GetPlayer) = rlHostile) and (GetPlayer <> TalkShip.PartnerShip) then
+    if (GetPlayer <> TalkShip.PartnerShip) or not (TalkShip.TypeId in [stPirate]) then
+      if (TalkShip.TypeId in [stRanger..stWarrior]) and RecognizesPlayer then
       begin
-        AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Truce.PlayerSend'), 0, ShowTruceOffer, 0);
-        if GetPlayer.IsHealthEffectActive(heMysteriousLuatanza) then Callback := ScriptDialogBlockCallback
-        else Callback := ShowMoneyDemand;
-        AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Money.PlayerSend'), 0, Callback, 0);
-        if GetPlayer.IsHealthEffectActive(heMysteriousLuatanza) then Callback := ScriptDialogBlockCallback
-        else Callback := DemandCargo;
-        AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Goods.PlayerSend'), 0, Callback, 0);
-      end
-      else
-      begin
-        HasAttackChoice := AddImmediateAttackChoices;
-        if (not HasAttackChoice) and (GetPlayer <> TalkShip.PartnerShip) then
+        if (TalkShip.GetRelationLevelToShip(GetPlayer) = rlHostile) and (GetPlayer <> TalkShip.PartnerShip) then
         begin
-        if GetPlayer.IsHealthEffectActive(heMysteriousLuatanza) then Callback := ScriptDialogBlockCallback
-        else Callback := ShowMoneyDemand;
-        AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Money.PlayerSend'), 0, Callback, 0);
-        if GetPlayer.IsHealthEffectActive(heMysteriousLuatanza) then Callback := ScriptDialogBlockCallback
-        else Callback := DemandCargo;
-        AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Goods.PlayerSend'), 0, Callback, 0);
-        end;
-        AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Attack.PlayerOffersAttack'), 0, ShowAttackTargets, 0);
-      end;
-      if (GetPlayer <> TalkShip.PartnerShip) and (TalkShip.OrderTarget is TShip) and
-        not (TalkShip.OrderTarget is TRuins) and (GetPlayer <> TalkShip.OrderTarget) and
-        ((TalkShip.OrderTarget as TShip).GetRelationLevelToShip(GetPlayer) > rlHostile) and
-        ((TalkShip.OrderTarget as TShip).OrderTarget <> TalkShip) and
-        (TalkShip.GetRelationLevelToShip(TalkShip.OrderTarget as TShip) = rlHostile) then
-        AddChoice(FormatText1('- ' + GetPlayer.LookupTalkText('Talk.Protect.PlayerSend'), '', '<Target>', (TalkShip.OrderTarget as TShip).GetFullName(' ') + GetLocalObjectLink(TalkShip.OrderTarget as TShip, False)), 0, RequestProtection, 0);
-      if GetPlayer.PickupTargets <> nil then
-        for I := 1 to TalkShip.WeaponCount do
-          if (TalkShip.Weapons[I].Target <> nil) and
-            (GetPlayer.PickupTargets.IndexOf(TalkShip.Weapons[I].Target) >= 0) then
+          AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Truce.PlayerSend'), 0, ShowTruceOffer, 0);
+          if GetPlayer.IsHealthEffectActive(heMysteriousLuatanza) then Callback := ScriptDialogBlockCallback
+          else Callback := ShowMoneyDemand;
+          AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Money.PlayerSend'), 0, Callback, 0);
+          if GetPlayer.IsHealthEffectActive(heMysteriousLuatanza) then Callback := ScriptDialogBlockCallback
+          else Callback := DemandCargo;
+          AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Goods.PlayerSend'), 0, Callback, 0);
+        end
+        else
+        begin
+          HasAttackChoice := AddImmediateAttackChoices;
+          if (not HasAttackChoice) and (GetPlayer <> TalkShip.PartnerShip) then
           begin
-            AddChoice('- ' + GetPlayer.LookupTalkText('Talk.PreserveItems.PlayerSend'), 0, RequestPreserveItems, 0);
-            Break;
+            if GetPlayer.IsHealthEffectActive(heMysteriousLuatanza) then Callback := ScriptDialogBlockCallback
+            else Callback := ShowMoneyDemand;
+            AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Money.PlayerSend'), 0, Callback, 0);
+            if GetPlayer.IsHealthEffectActive(heMysteriousLuatanza) then Callback := ScriptDialogBlockCallback
+            else Callback := DemandCargo;
+            AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Goods.PlayerSend'), 0, Callback, 0);
           end;
-    end;
+          AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Attack.PlayerOffersAttack'), 0, ShowAttackTargets, 0);
+        end;
+        if (GetPlayer <> TalkShip.PartnerShip) and (TalkShip.OrderTarget is TShip) and not (TalkShip.OrderTarget is TRuins) and (GetPlayer <> TalkShip.OrderTarget) then
+          if ((TalkShip.OrderTarget as TShip).GetRelationLevelToShip(GetPlayer) > rlHostile) and ((TalkShip.OrderTarget as TShip).OrderTarget <> TalkShip) and (TalkShip.GetRelationLevelToShip(TalkShip.OrderTarget as TShip) = rlHostile) then
+            AddChoice(FormatText1('- ' + GetPlayer.LookupTalkText('Talk.Protect.PlayerSend'), '', '<Target>', (TalkShip.OrderTarget as TShip).GetFullName(' ') + GetLocalObjectLink(TalkShip.OrderTarget as TShip, False)), 0, RequestProtection, 0);
+        if GetPlayer.PickupTargets <> nil then
+          for I := 1 to TalkShip.WeaponCount do
+            if TalkShip.Weapons[I].Target <> nil then
+              if GetPlayer.PickupTargets.IndexOf(TalkShip.Weapons[I].Target) >= 0 then
+              begin
+                AddChoice('- ' + GetPlayer.LookupTalkText('Talk.PreserveItems.PlayerSend'), 0, RequestPreserveItems, 0);
+                Break;
+              end;
+      end;
     case TalkShip.TypeId of
       stRanger:
         begin
           if GetPlayer <> TalkShip.PartnerShip then
           begin
-            if RecognizesPlayer and (GetPlayer.Money > 0) and (GetPlayer.CountWingmen < 6) then
-              AddChoice(FormatText1('- ' + GetPlayer.LookupTalkText('Talk.Partner.PlayerSend'), '', '<Ranger>', TalkShip.GetName), 0, ShowPartnerOffer, 0);
+            if RecognizesPlayer then
+              if GetPlayer.Money > 0 then
+                if GetPlayer.CountWingmen < 6 then
+                  AddChoice(FormatText1('- ' + GetPlayer.LookupTalkText('Talk.Partner.PlayerSend'), '', '<Ranger>', TalkShip.GetName), 0, ShowPartnerOffer, 0);
           end
           else
           begin
-          if GetPlayer <> TalkShip.OrderTarget then
-            AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Partner.FlyToMe'), 0, OrderPartnerFollow, 0);
-          case GetPlayer.Order of
-            soLand:
-              if GetPlayer.OrderTarget <> TalkShip.OrderTarget then
+            if GetPlayer <> TalkShip.OrderTarget then
+              AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Partner.FlyToMe'), 0, OrderPartnerFollow, 0);
+            case GetPlayer.Order of
+              soLand:
+                if GetPlayer.OrderTarget <> TalkShip.OrderTarget then
+                begin
+                  if GetPlayer.OrderTarget is TPlanet then TargetName := (GetPlayer.OrderTarget as TPlanet).Name
+                  else if GetPlayer.OrderTarget is TRuins then TargetName := (GetPlayer.OrderTarget as TRuins).GetColoredFullName('')
+                  else TargetName := '';
+                  if Length(TargetName) > 0 then
+                    AddChoice(FormatText1('- ' + GetPlayer.LookupTalkText('Talk.Partner.LandingToObject'), TextHighlightColorTag, '<ObjectName>', TargetName), 0, OrderPartnerLand, 0);
+                end;
+              soJump:
+                if GetPlayer.OrderTarget <> TalkShip.OrderTarget then
+                  AddChoice(FormatText1('- ' + GetPlayer.LookupTalkText('Talk.Partner.FlyToStar'), TextHighlightColorTag, '<Star>', (GetPlayer.OrderTarget as TStar).Name), 0, OrderPartnerJump, 0);
+            end;
+            if TalkShip.HasLooseNonScriptItemsOrGoods or not GetPlayer.CanResolveObjectWithScanner(TalkShip) then
+              AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Partner.PlayerSendDropCargo'), 0, OrderPartnerDropCargo, 0);
+            AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Partner.FinancesCheck'), 0, ShowPartnerFinances, 0);
+            AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Partner.PlayerDismissSend'), 0, ShowPartnerDismissal, 0);
+          end;
+          if RecognizesPlayer then
+            if GetPlayer <> TalkShip.PartnerShip then
+              AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Trade.PlayerSend'), 0, ShowTrade, 0);
+          if RecognizesPlayer then
+            if TalkShip.UsesVeteranHumanRangerAppearance then
+              if TalkShip.GetRelationLevelToShip(GetPlayer) >= rlGood then
               begin
-                if GetPlayer.OrderTarget is TPlanet then TargetName := (GetPlayer.OrderTarget as TPlanet).Name
-                else if GetPlayer.OrderTarget is TRuins then TargetName := (GetPlayer.OrderTarget as TRuins).GetColoredFullName('')
-                else TargetName := '';
-                if Length(TargetName) > 0 then
-                  AddChoice(FormatText1('- ' + GetPlayer.LookupTalkText('Talk.Partner.LandingToObject'), TextHighlightColorTag, '<ObjectName>', TargetName), 0, OrderPartnerLand, 0);
+                if GetPlayer = TalkShip.PartnerShip then
+                  AddChoice('- ' + GetPlayer.LookupTalkText('Talk.ExTalk.OldHullPlayerSendP'), 0, DiscussOldHull, 0)
+                else AddChoice('- ' + GetPlayer.LookupTalkText('Talk.ExTalk.OldHullPlayerSend'), 0, DiscussOldHull, 0);
               end;
-            soJump:
-              if GetPlayer.OrderTarget <> TalkShip.OrderTarget then
-                AddChoice(FormatText1('- ' + GetPlayer.LookupTalkText('Talk.Partner.FlyToStar'), TextHighlightColorTag, '<Star>', (GetPlayer.OrderTarget as TStar).Name), 0, OrderPartnerJump, 0);
-          end;
-          if TalkShip.HasLooseNonScriptItemsOrGoods or not GetPlayer.CanResolveObjectWithScanner(TalkShip) then
-            AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Partner.PlayerSendDropCargo'), 0, OrderPartnerDropCargo, 0);
-          AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Partner.FinancesCheck'), 0, ShowPartnerFinances, 0);
-          AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Partner.PlayerDismissSend'), 0, ShowPartnerDismissal, 0);
-          end;
-          if RecognizesPlayer and (GetPlayer <> TalkShip.PartnerShip) then
-            AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Trade.PlayerSend'), 0, ShowTrade, 0);
-          if RecognizesPlayer and TalkShip.UsesVeteranHumanRangerAppearance and
-            (TalkShip.GetRelationLevelToShip(GetPlayer) >= rlGood) then
-          begin
-            if GetPlayer = TalkShip.PartnerShip then
-              AddChoice('- ' + GetPlayer.LookupTalkText('Talk.ExTalk.OldHullPlayerSendP'), 0, DiscussOldHull, 0)
-            else AddChoice('- ' + GetPlayer.LookupTalkText('Talk.ExTalk.OldHullPlayerSend'), 0, DiscussOldHull, 0);
-          end;
         end;
       stTransport:
         if RecognizesPlayer then
@@ -1397,40 +1395,42 @@ begin
           end
           else
           begin
-          if GetPlayer <> TalkShip.OrderTarget then
-            AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Pirate.FlyToMe'), 0, OrderPiratePartnerFollow, 0);
-          AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Pirate.Attack'), 0, ShowPirateAttackTargets, 0);
-          case GetPlayer.Order of
-            soLand:
-              if GetPlayer.OrderTarget <> TalkShip.OrderTarget then
-              begin
-                if GetPlayer.OrderTarget is TPlanet then TargetName := (GetPlayer.OrderTarget as TPlanet).Name
-                else if GetPlayer.OrderTarget is TRuins then TargetName := (GetPlayer.OrderTarget as TRuins).GetColoredFullName('')
-                else TargetName := '';
-                if Length(TargetName) > 0 then
-                  AddChoice(FormatText1('- ' + GetPlayer.LookupTalkText('Talk.Pirate.LandingToObject'), TextHighlightColorTag, '<ObjectName>', TargetName), 0, OrderPiratePartnerLand, 0);
-              end;
-            soJump:
-              if GetPlayer.OrderTarget <> TalkShip.OrderTarget then
-                AddChoice(FormatText1('- ' + GetPlayer.LookupTalkText('Talk.Pirate.FlyToStar'), TextHighlightColorTag, '<Star>', (GetPlayer.OrderTarget as TStar).Name), 0, OrderPiratePartnerJump, 0);
-          end;
-          AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Pirate.FinancesCheck'), 0, ShowPiratePartnerFinances, 0);
-          AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Pirate.PlayerDismissSend'), 0, ShowPartnerDismissal, 0);
+            if GetPlayer <> TalkShip.OrderTarget then
+              AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Pirate.FlyToMe'), 0, OrderPiratePartnerFollow, 0);
+            AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Pirate.Attack'), 0, ShowPirateAttackTargets, 0);
+            case GetPlayer.Order of
+              soLand:
+                if GetPlayer.OrderTarget <> TalkShip.OrderTarget then
+                begin
+                  if GetPlayer.OrderTarget is TPlanet then TargetName := (GetPlayer.OrderTarget as TPlanet).Name
+                  else if GetPlayer.OrderTarget is TRuins then TargetName := (GetPlayer.OrderTarget as TRuins).GetColoredFullName('')
+                  else TargetName := '';
+                  if Length(TargetName) > 0 then
+                    AddChoice(FormatText1('- ' + GetPlayer.LookupTalkText('Talk.Pirate.LandingToObject'), TextHighlightColorTag, '<ObjectName>', TargetName), 0, OrderPiratePartnerLand, 0);
+                end;
+              soJump:
+                if GetPlayer.OrderTarget <> TalkShip.OrderTarget then
+                  AddChoice(FormatText1('- ' + GetPlayer.LookupTalkText('Talk.Pirate.FlyToStar'), TextHighlightColorTag, '<Star>', (GetPlayer.OrderTarget as TStar).Name), 0, OrderPiratePartnerJump, 0);
+            end;
+            AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Pirate.FinancesCheck'), 0, ShowPiratePartnerFinances, 0);
+            AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Pirate.PlayerDismissSend'), 0, ShowPartnerDismissal, 0);
           end;
         end;
       stWarrior:
-        if RecognizesPlayer and (TWarrior(TalkShip).WarriorType = wtFlagship) then
-          AddChoice('- ' + GetPlayer.LookupTalkText('Talk.MilitarySupport.PlayerAsk'), 0, ShowMilitarySupport, 0);
+        if RecognizesPlayer then
+          if TWarrior(TalkShip).WarriorType = wtFlagship then
+            AddChoice('- ' + GetPlayer.LookupTalkText('Talk.MilitarySupport.PlayerAsk'), 0, ShowMilitarySupport, 0);
       stKling:
         if (TalkShip <> BlazerShip) and (TalkShip <> KellerShip) and (TalkShip <> TerronShip) and
           ((TalkShip as TKling).ActiveProgramAppliedTurn <= 0) and GetPlayer.HasProgram(prgIntercom) and
           GetPlayer.CanResolveObjectWithScanner(TalkShip) then
         begin
           for ProgramIndex := Low(ProgramNames) to High(ProgramNames) do
-            if (GetPlayer.ProgramCounts[ProgramIndex] > 0) and (ProgramIndex in [prgShipwreck..prgDisconnection]) and
-              ((TalkShip as TKling).ActiveProgramAppliedTurn = 0) then
-              AddChoice('- ' + FormatText1(GetPlayer.LookupTalkText('Talk.Dominator.ProgrammPlayer'),
-                TextHighlightColorTag, '<Name>', GetPlayer.GetProgramName(ProgramIndex)), Ord(ProgramIndex), RunDominatorProgram, 0);
+            if GetPlayer.ProgramCounts[ProgramIndex] > 0 then
+              if (ProgramIndex in [prgShipwreck..prgDisconnection]) and
+                ((TalkShip as TKling).ActiveProgramAppliedTurn = 0) then
+                AddChoice('- ' + FormatText1(GetPlayer.LookupTalkText('Talk.Dominator.ProgrammPlayer'),
+                  TextHighlightColorTag, '<Name>', GetPlayer.GetProgramName(ProgramIndex)), Ord(ProgramIndex), RunDominatorProgram, 0);
           if RecognizesPlayer or GetPlayer.ChameleonDetected[(TalkShip as TKling).DominatorSeries] or
             ((TalkShip as TKling).DominatorSeries <> GetPlayer.ChameleonSeries) then
           begin
@@ -1455,22 +1455,23 @@ begin
           AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Tranclucator.Options.PlayerSend'), 0, ShowTranclucatorOptions, 0);
           if TalkShip.HasLooseNonScriptItemsOrGoods then
             AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Tranclucator.DropCargo.PlayerSend'), 0, OrderTranclucatorDropCargo, 0);
-          if (GetPlayer.Order in [soLand]) and (GetPlayer.OrderTarget <> TalkShip.OrderTarget) then
-          begin
-            TargetName := '';
-            if GetPlayer.OrderTarget is TPlanet then
+          if GetPlayer.Order in [soLand] then
+            if GetPlayer.OrderTarget <> TalkShip.OrderTarget then
             begin
-              if (GetPlayer.OrderTarget as TPlanet).OwnerId in [oiMaloc..oiGaal, oiPirate] then
-                TargetName := (GetPlayer.OrderTarget as TPlanet).Name;
-            end
-            else if GetPlayer.OrderTarget is TRuins then
-              TargetName := (GetPlayer.OrderTarget as TRuins).GetColoredFullName('');
-            if Length(TargetName) > 0 then
-            begin
-              AddChoice(FormatText1('- ' + GetPlayer.LookupTalkText('Talk.Tranclucator.LandingToObject'), TextHighlightColorTag, '<ObjectName>', TargetName), 0, OrderTranclucatorLand, 0);
-              AddChoice(FormatText1('- ' + GetPlayer.LookupTalkText('Talk.Tranclucator.LandingToStorage'), TextHighlightColorTag, '<ObjectName>', TargetName), 0, OrderTranclucatorStoreCargo, 0);
+              TargetName := '';
+              if GetPlayer.OrderTarget is TPlanet then
+              begin
+                if (GetPlayer.OrderTarget as TPlanet).OwnerId in [oiMaloc..oiGaal, oiPirate] then
+                  TargetName := (GetPlayer.OrderTarget as TPlanet).Name;
+              end
+              else if GetPlayer.OrderTarget is TRuins then
+                TargetName := (GetPlayer.OrderTarget as TRuins).GetColoredFullName('');
+              if Length(TargetName) > 0 then
+              begin
+                AddChoice(FormatText1('- ' + GetPlayer.LookupTalkText('Talk.Tranclucator.LandingToObject'), TextHighlightColorTag, '<ObjectName>', TargetName), 0, OrderTranclucatorLand, 0);
+                AddChoice(FormatText1('- ' + GetPlayer.LookupTalkText('Talk.Tranclucator.LandingToStorage'), TextHighlightColorTag, '<ObjectName>', TargetName), 0, OrderTranclucatorStoreCargo, 0);
+              end;
             end;
-          end;
           if GetPlayer <> TalkShip.OrderTarget then
             AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Tranclucator.FlyToMe.PlayerSend'), 0, OrderTranclucatorFollow, 0);
           AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Tranclucator.Return.PlayerSend'), 0, OrderTranclucatorReturn, 0);
@@ -1479,17 +1480,17 @@ begin
     AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Exit'), 0, FastExit, 0);
   end;
 end;
-{ @end $6D5048 }
+{ @end $5ED6DC }
 
-{ @routine $6D822C TfTalk_AddScriptExitChoice }
+{ @routine $5F06F4 TfTalk_AddScriptExitChoice }
 procedure TfTalk.AddScriptExitChoice(Caption: WideString);
 begin
   if Caption <> '' then AddChoice('- ' + Caption, CurrentScript.CurrentAnswer, RunScriptExitAnswer, 0)
   else AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Exit'), CurrentScript.CurrentAnswer, RunScriptExitAnswer, 0);
 end;
-{ @end $6D822C }
+{ @end $5F06F4 }
 
-{ @routine $6D831C TfTalk_CodeMsgOut }
+{ @routine $5F07DC TfTalk_CodeMsgOut }
 procedure TfTalk.CodeMsgOut(KeepGreeting: Boolean);
 var
   Binding: TScriptShip;
@@ -1533,7 +1534,7 @@ begin
         try
           Binding.State.DialogCode.Run(ScriptProcess);
         except
-          on E: EBreakMessageGI do ;
+          on E: EBreakMessageGI do;
           on E: Exception do
           begin
             AppendLogLineThreadSafe(E.ClassName + ' ' + E.Message);
@@ -1588,10 +1589,10 @@ begin
     BuildStandardChoices(False);
   end;
 end;
-{ @end $6D831C }
+{ @end $5F07DC }
 
-{ @routine $6D8AC0 TfTalk_RunScriptAnswer }
-procedure TfTalk.RunScriptAnswer(Answer: Integer);
+{ @routine $5F0F60 TfTalk_RunScriptAnswer }
+procedure TfTalk.RunScriptAnswer(Answer: Cardinal);
 begin
   ClearChoices(False);
   ScriptDialogIndex := -1;
@@ -1599,20 +1600,20 @@ begin
   if ScriptDialogIndex < 0 then RaiseWideMessage('I_Script');
   CurrentScript.CallDialogMessage(ScriptDialogIndex);
 end;
-{ @end $6D8AC0 }
+{ @end $5F0F60 }
 
-{ @routine $6D8B34 TfTalk_RunScriptAnswerKeepingScroll }
-procedure TfTalk.RunScriptAnswerKeepingScroll(Answer: Integer);
+{ @routine $5F0FC8 TfTalk_RunScriptAnswerKeepingScroll }
+procedure TfTalk.RunScriptAnswerKeepingScroll(Answer: Cardinal);
 begin
   RememberChoiceScroll;
   RunScriptAnswer(Answer);
 end;
-{ @end $6D8B34 }
+{ @end $5F0FC8 }
 
-{ @routine $6D8B58 TfTalk_FastExit }
-procedure TfTalk.FastExit(Answer: Integer);
+{ @routine $5F0FE4 TfTalk_FastExit }
+procedure TfTalk.FastExit(Answer: Cardinal);
 begin
-  if (TextPresentationTimer = nil) and (SlideTimer = nil) then
+  if (TextPresentationTimer = 0) and (SlideTimer = 0) then
   begin
     RequestedScreenId := TalkReturnScreenId;
     if TalkScripted then StarMapScreen.ResumeMode := smrWaitForTurn;
@@ -1620,10 +1621,10 @@ begin
     RequestClose(1);
   end;
 end;
-{ @end $6D8B58 }
+{ @end $5F0FE4 }
 
-{ @routine $6D8BC0 TfTalk_RunScriptExitAnswer }
-procedure TfTalk.RunScriptExitAnswer(Action: Integer);
+{ @routine $5F1038 TfTalk_RunScriptExitAnswer }
+procedure TfTalk.RunScriptExitAnswer(Action: Cardinal);
 begin
   CurrentScript.ExecuteDialogAnswer(Action);
   RequestedScreenId := TalkReturnScreenId;
@@ -1631,18 +1632,18 @@ begin
   ScriptDialogIndex := -1;
   RequestClose(1);
 end;
-{ @end $6D8BC0 }
+{ @end $5F1038 }
 
-{ @routine $6D8C20 TfTalk_ShowGreeting }
-procedure TfTalk.ShowGreeting(Action: Integer);
+{ @routine $5F1088 TfTalk_ShowGreeting }
+procedure TfTalk.ShowGreeting(Action: Cardinal);
 begin
   DialogText := GetShipGreeting;
   BuildStandardChoices(False);
 end;
-{ @end $6D8C20 }
+{ @end $5F1088 }
 
-{ @routine $6D8C88 TfTalk_AcceptScriptedConversation }
-procedure TfTalk.AcceptScriptedConversation(Action: Integer);
+{ @routine $5F10E0 TfTalk_AcceptScriptedConversation }
+procedure TfTalk.AcceptScriptedConversation(Action: Cardinal);
 begin
   TalkResponse := 1;
   RequestedScreenId := TalkReturnScreenId;
@@ -1650,9 +1651,9 @@ begin
   ScriptDialogIndex := -1;
   RequestClose(1);
 end;
-{ @end $6D8C88 }
+{ @end $5F10E0 }
 
-{ @routine $6D8CE0 TfTalk_ReturnToMap }
+{ @routine $5F112C TfTalk_ReturnToMap }
 procedure TfTalk.ReturnToMap(Action: Integer);
 begin
   ModalTransition := tmtReopen;
@@ -1661,10 +1662,10 @@ begin
   RequestClose(1);
   BreakUiMessage;
 end;
-{ @end $6D8CE0 }
+{ @end $5F112C }
 
-{ @routine $6D8D38 TfTalk_ShowTrade }
-procedure TfTalk.ShowTrade(Action: Integer);
+{ @routine $5F1174 TfTalk_ShowTrade }
+procedure TfTalk.ShowTrade(Action: Cardinal);
 var
   Capacity, Money: Integer;
 begin
@@ -1687,17 +1688,17 @@ begin
   else
   begin
     if Capacity > 0 then DialogText := FormatText1(TalkShip.LookupTalkText('Talk.Trade.TradeOkMayBuyOk'),
-      TextHighlightColorTag, '<Cnt>', WideString(IntToStr(Capacity)))
+        TextHighlightColorTag, '<Cnt>', IntToStr(Capacity))
     else DialogText := TalkShip.LookupTalkText('Talk.Trade.TradeOkMayBuyNo');
     AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Trade.TradeGo'), 0, OpenTrade, 0);
   end;
   AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Trade.TradeBreak'), 0, CancelTrade, 0);
   AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Exit'), 0, FastExit, 0);
 end;
-{ @end $6D8D38 }
+{ @end $5F1174 }
 
-{ @routine $6D93F0 TfTalk_OpenTrade }
-procedure TfTalk.OpenTrade(Action: Integer);
+{ @routine $5F178C TfTalk_OpenTrade }
+procedure TfTalk.OpenTrade(Action: Cardinal);
 begin
   ModalTransition := tmtTrade;
   RequestedScreenId := TalkReturnScreenId;
@@ -1705,18 +1706,18 @@ begin
   RequestClose(1);
   BreakUiMessage;
 end;
-{ @end $6D93F0 }
+{ @end $5F178C }
 
-{ @routine $6D9448 TfTalk_CancelTrade }
-procedure TfTalk.CancelTrade(Action: Integer);
+{ @routine $5F17D4 TfTalk_CancelTrade }
+procedure TfTalk.CancelTrade(Action: Cardinal);
 begin
   DialogText := TalkShip.LookupTalkText('Talk.Trade.AfterBreak');
   BuildStandardChoices(True);
 end;
-{ @end $6D9448 }
+{ @end $5F17D4 }
 
-{ @routine $6D94E8 TfTalk_ShowMoneyDemand }
-procedure TfTalk.ShowMoneyDemand(Action: Integer);
+{ @routine $5F1868 TfTalk_ShowMoneyDemand }
+procedure TfTalk.ShowMoneyDemand(Action: Cardinal);
 var
   I: Integer;
   Partner: TShip;
@@ -1746,30 +1747,29 @@ begin
       DialogText := TalkShip.LookupTalkText('Talk.Money.' + TalkShip.GetTypeNameKey + 'No');
       TalkShip.ReactToExtortionDemand(GetPlayer);
       BuildStandardChoices(True);
-    end
-    else if (TalkShip.TypeId <> stWarrior) and TalkShip.CanEscapePursuer(GetPlayer) then
+      Exit;
+    end;
+    if (TalkShip.TypeId <> stWarrior) and TalkShip.CanEscapePursuer(GetPlayer) then
     begin
       DialogText := TalkShip.LookupTalkText('Talk.Money.' + TalkShip.GetTypeNameKey + 'LongDistance');
       TalkShip.ReactToExtortionDemand(GetPlayer);
       BuildStandardChoices(True);
-    end
-    else
-    begin
-      DialogText := TalkShip.LookupTalkText('Talk.Money.ComputerAsk');
-      ClearChoices(False);
-      AddChoice('- ' + ReplaceColoredToken(GetPlayer.LookupTalkText('Talk.Money.PlayerSendSum'), '<Money>',
-        WideString(IntToStr(ExtortionDemandAmount)), TextHighlightColorTag), 0, DemandMoney, 0);
-      if ExtortionDemandAmount div 2 > 10 then AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Money.PlayerLess'), 0, HalveMoneyDemand, 0);
-      if 3 * (TalkShip.GetWealthScaledAmount(3) + GetPlayer.GetWealthScaledAmount(3)) >= 2 * ExtortionDemandAmount then
-        AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Money.PlayerMore'), 0, DoubleMoneyDemand, 0);
-      AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Cancel'), 0, ShowGreeting, 0);
+      Exit;
     end;
+    DialogText := TalkShip.LookupTalkText('Talk.Money.ComputerAsk');
+    ClearChoices(False);
+    AddChoice('- ' + ReplaceColoredToken(GetPlayer.LookupTalkText('Talk.Money.PlayerSendSum'), '<Money>',
+      IntToStr(ExtortionDemandAmount), TextHighlightColorTag), 0, DemandMoney, 0);
+    if ExtortionDemandAmount div 2 > 10 then AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Money.PlayerLess'), 0, HalveMoneyDemand, 0);
+    if 3 * (TalkShip.GetWealthScaledAmount(3) + GetPlayer.GetWealthScaledAmount(3)) >= 2 * ExtortionDemandAmount then
+      AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Money.PlayerMore'), 0, DoubleMoneyDemand, 0);
+    AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Cancel'), 0, ShowGreeting, 0);
   end;
 end;
-{ @end $6D94E8 }
+{ @end $5F1868 }
 
-{ @routine $6D9AAC TfTalk_DemandMoney }
-procedure TfTalk.DemandMoney(Action: Integer);
+{ @routine $5F1E04 TfTalk_DemandMoney }
+procedure TfTalk.DemandMoney(Action: Cardinal);
 begin
   if TalkShip.BuildMoneyExtortionResponse(GetPlayer, DialogText, ExtortionDemandAmount) then
   begin
@@ -1778,34 +1778,34 @@ begin
   end;
   BuildStandardChoices(True);
 end;
-{ @end $6D9AAC }
+{ @end $5F1E04 }
 
-{ @routine $6D9B44 TfTalk_HalveMoneyDemand }
-procedure TfTalk.HalveMoneyDemand(Action: Integer);
+{ @routine $5F1E8C TfTalk_HalveMoneyDemand }
+procedure TfTalk.HalveMoneyDemand(Action: Cardinal);
 begin
   ExtortionDemandAmount := ExtortionDemandAmount div 2;
   ShowMoneyDemand(0);
 end;
-{ @end $6D9B44 }
+{ @end $5F1E8C }
 
-{ @routine $6D9B70 TfTalk_DoubleMoneyDemand }
-procedure TfTalk.DoubleMoneyDemand(Action: Integer);
+{ @routine $5F1EAC TfTalk_DoubleMoneyDemand }
+procedure TfTalk.DoubleMoneyDemand(Action: Cardinal);
 begin
   ExtortionDemandAmount := ExtortionDemandAmount * 2;
   ShowMoneyDemand(0);
 end;
-{ @end $6D9B70 }
+{ @end $5F1EAC }
 
-{ @routine $6D9B98 TfTalk_DemandCargo }
-procedure TfTalk.DemandCargo(Action: Integer);
+{ @routine $5F1EC4 TfTalk_DemandCargo }
+procedure TfTalk.DemandCargo(Action: Cardinal);
 begin
   if TalkShip.BuildCargoExtortionResponse(GetPlayer, DialogText) then TryAddAchievementProgress('ROBBER', 1);
   BuildStandardChoices(True);
 end;
-{ @end $6D9B98 }
+{ @end $5F1EC4 }
 
-{ @routine $6D9BFC TfTalk_ShowTruceOffer }
-procedure TfTalk.ShowTruceOffer(Action: Integer);
+{ @routine $5F1F18 TfTalk_ShowTruceOffer }
+procedure TfTalk.ShowTruceOffer(Action: Cardinal);
 var
   Response: WideString;
 begin
@@ -1814,38 +1814,38 @@ begin
     DialogText := TalkShip.LookupTalkText('Talk.Truce.WeAlreadyHavePact');
     ClearChoices(False);
     AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Exit'), 0, FastExit, 0);
-  end
-  else if TalkShip.RefusesFactionNegotiation(GetPlayer) then
+    Exit;
+  end;
+  if TalkShip.RefusesFactionNegotiation(GetPlayer) then
   begin
     ClearChoices(False);
     BuildStandardChoices(True);
     DialogText := TalkShip.LookupTalkText('Talk.Refuse.' + TalkShip.GetTypeNameKey);
-  end
-  else if TalkShip.BuildTrucePaymentResponse(GetPlayer, Response, 0) then
+    Exit;
+  end;
+  if TalkShip.BuildTrucePaymentResponse(GetPlayer, Response, 0) then
   begin
     DialogText := TalkShip.LookupTalkText('Talk.Truce.ComputerOkWithoutMoney');
     ClearChoices(False);
     AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Exit'), 0, FastExit, 0);
-  end
-  else
-  begin
-    DialogText := TalkShip.LookupTalkText('Talk.Truce.ComputerAsk');
-    ClearChoices(False);
-    if GetPlayer.Money > 0 then
-    begin
-      AddChoice('- ' + ReplaceColoredToken(GetPlayer.LookupTalkText('Talk.Truce.PlayerSendSum'), '<Money>',
-        WideString(IntToStr(TruceOfferAmount)), TextHighlightColorTag), 0, AcceptTruceOffer, 0);
-      if TruceOfferAmount div 2 > 100 then AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Truce.PlayerLess'), 0, HalveTruceOffer, 0);
-      if GetPlayer.Money > TruceOfferAmount then AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Truce.PlayerMore'), 0, DoubleTruceOffer, 0);
-    end
-    else AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Truce.PlayerNotHaveMoney'), 0, ShowGreeting, 0);
-    AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Cancel'), 0, ShowGreeting, 0);
+    Exit;
   end;
+  DialogText := TalkShip.LookupTalkText('Talk.Truce.ComputerAsk');
+  ClearChoices(False);
+  if GetPlayer.Money > 0 then
+  begin
+    AddChoice('- ' + ReplaceColoredToken(GetPlayer.LookupTalkText('Talk.Truce.PlayerSendSum'), '<Money>',
+      IntToStr(TruceOfferAmount), TextHighlightColorTag), 0, AcceptTruceOffer, 0);
+    if TruceOfferAmount div 2 > 100 then AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Truce.PlayerLess'), 0, HalveTruceOffer, 0);
+    if GetPlayer.Money > TruceOfferAmount then AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Truce.PlayerMore'), 0, DoubleTruceOffer, 0);
+  end
+  else AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Truce.PlayerNotHaveMoney'), 0, ShowGreeting, 0);
+  AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Cancel'), 0, ShowGreeting, 0);
 end;
-{ @end $6D9BFC }
+{ @end $5F1F18 }
 
-{ @routine $6DA1D8 TfTalk_AcceptTruceOffer }
-procedure TfTalk.AcceptTruceOffer(Action: Integer);
+{ @routine $5F24A0 TfTalk_AcceptTruceOffer }
+procedure TfTalk.AcceptTruceOffer(Action: Cardinal);
 begin
   if TalkShip.BuildTrucePaymentResponse(GetPlayer, DialogText, TruceOfferAmount) then
   begin
@@ -1855,29 +1855,29 @@ begin
   end
   else BuildStandardChoices(True);
 end;
-{ @end $6DA1D8 }
+{ @end $5F24A0 }
 
-{ @routine $6DA2EC TfTalk_HalveTruceOffer }
-procedure TfTalk.HalveTruceOffer(Action: Integer);
+{ @routine $5F25A4 TfTalk_HalveTruceOffer }
+procedure TfTalk.HalveTruceOffer(Action: Cardinal);
 begin
   TruceOfferAmount := Max(100, TruceOfferAmount div 2);
   ShowTruceOffer(0);
 end;
-{ @end $6DA2EC }
+{ @end $5F25A4 }
 
-{ @routine $6DA334 TfTalk_DoubleTruceOffer }
-procedure TfTalk.DoubleTruceOffer(Action: Integer);
+{ @routine $5F25CC TfTalk_DoubleTruceOffer }
+procedure TfTalk.DoubleTruceOffer(Action: Cardinal);
 begin
   TruceOfferAmount := Min(GetPlayer.Money, TruceOfferAmount * 2);
   ShowTruceOffer(0);
 end;
-{ @end $6DA334 }
+{ @end $5F25CC }
 
-{ @routine $6DA568 TfTalk_ShowAttackTargets }
-procedure TfTalk.ShowAttackTargets(Action: Integer);
+{ @routine $5F27A4 TfTalk_ShowAttackTargets }
+procedure TfTalk.ShowAttackTargets(Action: Cardinal);
 var RadarRangeSquared: Integer; Ship: TShip; AllowTargets: Boolean; SavedText: WideString;
-  // @nested $6DA384 AddAvailableAttackTargets
-  procedure AddAvailableAttackTargets; // @addr $6DA384 @calls "0x6DA8CA"
+  // @nested $5F25F8 AddAvailableAttackTargets
+  procedure AddAvailableAttackTargets; // @addr $5F25F8 @calls "0x005F2AF3"
   var I: Integer;
   begin
     RadarRangeSquared := GetPlayer.GetRadarRange * GetPlayer.GetRadarRange;
@@ -1945,10 +1945,10 @@ begin
     DialogText := SavedText;
   end;
 end;
-{ @end $6DA568 }
+{ @end $5F27A4 }
 
-{ @routine $6DABA4 TfTalk_RequestAttackTarget }
-procedure TfTalk.RequestAttackTarget(Action: Integer);
+{ @routine $5F2DC8 TfTalk_RequestAttackTarget }
+procedure TfTalk.RequestAttackTarget(Action: Cardinal);
 var Target: TShip; Event: TGalaxyEvent; Accepted: Boolean;
 begin
   Target := TShip(Action);
@@ -1989,15 +1989,16 @@ begin
     AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Exit'), 0, FastExit, 0);
   end;
 end;
-{ @end $6DABA4 }
+{ @end $5F2DC8 }
 
-{ @routine $6DAFF8 TfTalk_AcceptJointAttack }
-procedure TfTalk.AcceptJointAttack(Action: Integer);
+{ @routine $5F31E4 TfTalk_AcceptJointAttack }
+procedure TfTalk.AcceptJointAttack(Action: Cardinal);
 var Target: TShip;
 begin
   Target := TShip(Action);
   TalkShip.SetJointAttackTarget(GetPlayer, Target);
   if GetPlayer = TalkShip.PartnerShip then
+  begin
     if GetPlayer.CountPartnersInNormalSpace > 1 then
     begin
       DialogText := DialogText + #13#10 + TalkShip.LookupTalkText('Talk.Partner.IsOrderForAll');
@@ -2010,12 +2011,13 @@ begin
       ClearChoices(False);
       AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Exit'), 0, FastExit, 0);
     end;
+  end;
   FastExit(0);
 end;
-{ @end $6DAFF8 }
+{ @end $5F31E4 }
 
-{ @routine $6DB26C TfTalk_RequestProtection }
-procedure TfTalk.RequestProtection(Action: Integer);
+{ @routine $5F343C TfTalk_RequestProtection }
+procedure TfTalk.RequestProtection(Action: Cardinal);
 var Target: TShip; I, Reward: Integer; Weapon: TWeapon;
   CanEscape, FearsAttacker, RecognizesPlayer: Boolean;
 begin
@@ -2090,7 +2092,7 @@ begin
         Target.SetMoney(Target.Money - Reward);
         GetPlayer.SetMoney(GetPlayer.Money + Reward);
         Target.ShowMessageToPlayer(FormatText1(Target.LookupTalkText('Talk.Protect.TargetGiveMoney'),
-          TextHighlightColorTag, '<Money>', WideString(IntToStr(Reward))));
+          TextHighlightColorTag, '<Money>', IntToStr(Reward)));
       end
       else Target.ShowMessageToPlayer(Target.LookupTalkText('Talk.Protect.TargetThanks'));
     end;
@@ -2100,10 +2102,10 @@ begin
   ClearChoices(False);
   AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Exit'), 0, FastExit, 0);
 end;
-{ @end $6DB26C }
+{ @end $5F343C }
 
-{ @routine $6DBD2C TfTalk_RequestPreserveItems }
-procedure TfTalk.RequestPreserveItems(Action: Integer);
+{ @routine $5F3E58 TfTalk_RequestPreserveItems }
+procedure TfTalk.RequestPreserveItems(Action: Cardinal);
 var I: Integer;
 begin
   if (TalkShip.GetRelationLevelToShip(GetPlayer) = rlHostile) and not TalkShip.RecomputeFearState then
@@ -2119,10 +2121,10 @@ begin
   else DialogText := TalkShip.LookupTalkText('Talk.PreserveItems.' + TalkShip.GetTypeNameKey + 'No');
   BuildStandardChoices(True);
 end;
-{ @end $6DBD2C }
+{ @end $5F3E58 }
 
-{ @routine $6DBFCC TfTalk_ShowPartnerOffer }
-procedure TfTalk.ShowPartnerOffer(Action: Integer);
+{ @routine $5F40E0 TfTalk_ShowPartnerOffer }
+procedure TfTalk.ShowPartnerOffer(Action: Cardinal);
 var
   Response: WideString;
 begin
@@ -2130,70 +2132,72 @@ begin
   begin
     DialogText := TalkShip.LookupTalkText('Talk.Partner.Suspect');
     BuildStandardChoices(True);
-  end
-  else if TalkShip.PartnerShip <> nil then
+    Exit;
+  end;
+  if TalkShip.PartnerShip <> nil then
   begin
     DialogText := FormatText1(TalkShip.LookupTalkText('Talk.Partner.AlreadyHavePartner'), TextHighlightColorTag, '<Partner>', (TalkShip.PartnerShip as TRanger).Name);
     BuildStandardChoices(True);
-  end
-  else if (TalkShip as TRanger).CountWingmen > 0 then
+    Exit;
+  end;
+  if (TalkShip as TRanger).CountWingmen > 0 then
   begin
     DialogText := FormatText1(TalkShip.LookupTalkText('Talk.Partner.ILeader'), TextHighlightColorTag, '<Ranger>', GetPlayer.Name);
     BuildStandardChoices(True);
-  end
-  else if GetPlayer.GetEffectiveSkillLevel(psLeadership) <= GetPlayer.CountWingmen then
+    Exit;
+  end;
+  if GetPlayer.GetEffectiveSkillLevel(psLeadership) <= GetPlayer.CountWingmen then
   begin
     DialogText := FormatText1(TalkShip.LookupTalkText('Talk.Partner.NeedLeadership'), TextHighlightColorTag, '<Ranger>', GetPlayer.Name);
     BuildStandardChoices(True);
-  end
-  else if (TalkShip as TRanger).Rank > GetPlayer.Rank then
+    Exit;
+  end;
+  if (TalkShip as TRanger).Rank > GetPlayer.Rank then
   begin
     DialogText := FormatText1(TalkShip.LookupTalkText('Talk.Partner.YouNeedInMoreRank'), TextHighlightColorTag, '<Ranger>', GetPlayer.Name);
     BuildStandardChoices(True);
-  end
-  else
-  begin
-    if TalkShip.BuildPartnershipOfferResponse(GetPlayer, Response, PartnerOfferAmount) then
-      DialogText := FormatText2(TalkShip.LookupTalkText('Talk.Partner.ComputerSayOk'), TextHighlightColorTag,
-        '<Money>', WideString(IntToStr(PartnerOfferAmount)), '<Month>', WideString(IntToStr(TalkShip.CalculatePartnershipMonths(PartnerOfferAmount, GetPlayer))))
-    else DialogText := FormatText1(TalkShip.LookupTalkText('Talk.Partner.ComputerSayNo'), TextHighlightColorTag, '<Money>', WideString(IntToStr(PartnerOfferAmount)));
-    ClearChoices(False);
-    if TalkShip.BuildPartnershipOfferResponse(GetPlayer, Response, PartnerOfferAmount) then
-      AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Partner.PlayerOk'), 0, AcceptPartnerOffer, 0);
-    if PartnerOfferAmount div 2 > 0 then AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Partner.PlayerLess'), 0, HalvePartnerOffer, 0);
-    if GetPlayer.Money > PartnerOfferAmount then AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Partner.PlayerMore'), 0, DoublePartnerOffer, 0);
-    AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Cancel'), 0, ShowGreeting, 0);
+    Exit;
   end;
+  if TalkShip.BuildPartnershipOfferResponse(GetPlayer, Response, PartnerOfferAmount) then
+    DialogText := FormatText2(TalkShip.LookupTalkText('Talk.Partner.ComputerSayOk'), TextHighlightColorTag,
+      '<Money>', IntToStr(PartnerOfferAmount), '<Month>', IntToStr(TalkShip.CalculatePartnershipMonths(PartnerOfferAmount, GetPlayer)))
+  else DialogText := FormatText1(TalkShip.LookupTalkText('Talk.Partner.ComputerSayNo'), TextHighlightColorTag, '<Money>', IntToStr(PartnerOfferAmount));
+  ClearChoices(False);
+  if TalkShip.BuildPartnershipOfferResponse(GetPlayer, Response, PartnerOfferAmount) then
+    AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Partner.PlayerOk'), 0, AcceptPartnerOffer, 0);
+  if PartnerOfferAmount div 2 > 0 then AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Partner.PlayerLess'), 0, HalvePartnerOffer, 0);
+  if GetPlayer.Money > PartnerOfferAmount then AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Partner.PlayerMore'), 0, DoublePartnerOffer, 0);
+  AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Cancel'), 0, ShowGreeting, 0);
 end;
-{ @end $6DBFCC }
+{ @end $5F40E0 }
 
-{ @routine $6DC790 TfTalk_AcceptPartnerOffer }
-procedure TfTalk.AcceptPartnerOffer(Action: Integer);
+{ @routine $5F4838 TfTalk_AcceptPartnerOffer }
+procedure TfTalk.AcceptPartnerOffer(Action: Cardinal);
 begin
   if TalkShip.AcceptPartnershipOffer(GetPlayer, DialogText, PartnerOfferAmount) then SoundManager.PlaySound('Sound.Sell');
   BuildStandardChoices(True);
 end;
-{ @end $6DC790 }
+{ @end $5F4838 }
 
-{ @routine $6DC804 TfTalk_HalvePartnerOffer }
-procedure TfTalk.HalvePartnerOffer(Action: Integer);
+{ @routine $5F489C TfTalk_HalvePartnerOffer }
+procedure TfTalk.HalvePartnerOffer(Action: Cardinal);
 begin
   PartnerOfferAmount := PartnerOfferAmount div 2;
   ShowPartnerOffer(0);
 end;
-{ @end $6DC804 }
+{ @end $5F489C }
 
-{ @routine $6DC830 TfTalk_DoublePartnerOffer }
-procedure TfTalk.DoublePartnerOffer(Action: Integer);
+{ @routine $5F48BC TfTalk_DoublePartnerOffer }
+procedure TfTalk.DoublePartnerOffer(Action: Cardinal);
 begin
   if GetPlayer.Money < PartnerOfferAmount * 2 then PartnerOfferAmount := GetPlayer.Money
   else PartnerOfferAmount := PartnerOfferAmount * 2;
   ShowPartnerOffer(0);
 end;
-{ @end $6DC830 }
+{ @end $5F48BC }
 
-{ @routine $6DC880 TfTalk_OrderPartnerFollow }
-procedure TfTalk.OrderPartnerFollow(Action: Integer);
+{ @routine $5F4900 TfTalk_OrderPartnerFollow }
+procedure TfTalk.OrderPartnerFollow(Action: Cardinal);
 begin
   TalkShip.OrderFollowShip(GetPlayer, fmFollowNear, True);
   DialogText := TalkShip.LookupTalkText('Talk.Partner.ComputerAgreeFlyToMe');
@@ -2211,10 +2215,10 @@ begin
     AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Exit'), 0, FastExit, 0);
   end;
 end;
-{ @end $6DC880 }
+{ @end $5F4900 }
 
-{ @routine $6DCB34 TfTalk_OrderPartnerLand }
-procedure TfTalk.OrderPartnerLand(Action: Integer);
+{ @routine $5F4B9C TfTalk_OrderPartnerLand }
+procedure TfTalk.OrderPartnerLand(Action: Cardinal);
 var
   Name: WideString;
 begin
@@ -2236,10 +2240,10 @@ begin
     AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Exit'), 0, FastExit, 0);
   end;
 end;
-{ @end $6DCB34 }
+{ @end $5F4B9C }
 
-{ @routine $6DCEE0 TfTalk_OrderPartnerJump }
-procedure TfTalk.OrderPartnerJump(Action: Integer);
+{ @routine $5F4F2C TfTalk_OrderPartnerJump }
+procedure TfTalk.OrderPartnerJump(Action: Cardinal);
 begin
   TalkShip.OrderJump(GetPlayer.OrderTarget as TStar, True);
   DialogText := FormatText1(TalkShip.LookupTalkText('Talk.Partner.ComputerAgreeFlyToStar'), TextHighlightColorTag, '<Star>',
@@ -2258,10 +2262,10 @@ begin
     AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Exit'), 0, FastExit, 0);
   end;
 end;
-{ @end $6DCEE0 }
+{ @end $5F4F2C }
 
-{ @routine $6DD218 TfTalk_OrderPartnerDropCargo }
-procedure TfTalk.OrderPartnerDropCargo(Action: Integer);
+{ @routine $5F5250 TfTalk_OrderPartnerDropCargo }
+procedure TfTalk.OrderPartnerDropCargo(Action: Cardinal);
 begin
   TalkShip.ChangeRelationToRanger(GetPlayer, -Round(TalkShip.NextRandomInteger(5, 15) / PlanetRaceMarket[TalkShip.PilotRace].PirateRelationFactor));
   if TalkShip.GetRelationLevelToShip(GetPlayer) = rlHostile then TalkShip.ChangeRelationToRanger(GetPlayer, 10);
@@ -2278,37 +2282,37 @@ begin
     BuildStandardChoices(True);
   end;
 end;
-{ @end $6DD218 }
+{ @end $5F5250 }
 
-{ @routine $6DD454 TfTalk_ShowPartnerFinances }
-procedure TfTalk.ShowPartnerFinances(Action: Integer);
+{ @routine $5F5458 TfTalk_ShowPartnerFinances }
+procedure TfTalk.ShowPartnerFinances(Action: Cardinal);
 begin
   DialogText := TalkShip.LookupTalkText('Talk.Partner.FinancesReport');
-  ReplaceTextToken(DialogText, '<Money>', WideString(IntToStr(TalkShip.Money)), TextHighlightColorTag);
+  ReplaceTextToken(DialogText, '<Money>', IntToStr(TalkShip.Money), TextHighlightColorTag);
   ClearChoices(False);
   if GetPlayer.Money > 0 then AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Partner.FinancesOfferGift'), 0, ShowPartnerGift, 0);
   AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Partner.FinancesConfirmed'), 0, ShowGreeting, 0);
 end;
-{ @end $6DD454 }
+{ @end $5F5458 }
 
-{ @routine $6DD6B0 TfTalk_ShowPartnerGift }
-procedure TfTalk.ShowPartnerGift(Action: Integer);
+{ @routine $5F56A0 TfTalk_ShowPartnerGift }
+procedure TfTalk.ShowPartnerGift(Action: Cardinal);
 var
   Text: WideString;
 begin
   DialogText := TalkShip.LookupTalkText('Talk.Partner.FinancesWaitForGift');
   ClearChoices(False);
   Text := '- ' + GetPlayer.LookupTalkText('Talk.Partner.FinancesSendGift');
-  ReplaceTextToken(Text, '<Money>', WideString(IntToStr(PartnerGiftAmount)), TextHighlightColorTag);
+  ReplaceTextToken(Text, '<Money>', IntToStr(PartnerGiftAmount), TextHighlightColorTag);
   AddChoice(Text, 0, GivePartnerGift, 0);
   if PartnerGiftAmount div 2 > 0 then AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Partner.PlayerLess'), 0, HalvePartnerGift, 0);
   if GetPlayer.Money > PartnerGiftAmount then AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Partner.PlayerMore'), 0, DoublePartnerGift, 0);
   AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Cancel'), 0, ShowGreeting, 0);
 end;
-{ @end $6DD6B0 }
+{ @end $5F56A0 }
 
-{ @routine $6DD9D8 TfTalk_GivePartnerGift }
-procedure TfTalk.GivePartnerGift(Action: Integer);
+{ @routine $5F59A8 TfTalk_GivePartnerGift }
+procedure TfTalk.GivePartnerGift(Action: Cardinal);
 var
   Change: Integer;
 begin
@@ -2319,30 +2323,30 @@ begin
   GetPlayer.SetMoney(Max(0, GetPlayer.Money - PartnerGiftAmount));
   TalkShip.SetMoney(TalkShip.Money + PartnerGiftAmount);
   DialogText := TalkShip.LookupTalkText('Talk.Partner.FinancesGotGift');
-  ReplaceTextToken(DialogText, '<Money>', WideString(IntToStr(TalkShip.Money)), TextHighlightColorTag);
+  ReplaceTextToken(DialogText, '<Money>', IntToStr(TalkShip.Money), TextHighlightColorTag);
   BuildStandardChoices(True);
 end;
-{ @end $6DD9D8 }
+{ @end $5F59A8 }
 
-{ @routine $6DDC4C TfTalk_HalvePartnerGift }
-procedure TfTalk.HalvePartnerGift(Action: Integer);
+{ @routine $5F5BDC TfTalk_HalvePartnerGift }
+procedure TfTalk.HalvePartnerGift(Action: Cardinal);
 begin
   PartnerGiftAmount := PartnerGiftAmount div 2;
   ShowPartnerGift(0);
 end;
-{ @end $6DDC4C }
+{ @end $5F5BDC }
 
-{ @routine $6DDC78 TfTalk_DoublePartnerGift }
-procedure TfTalk.DoublePartnerGift(Action: Integer);
+{ @routine $5F5BFC TfTalk_DoublePartnerGift }
+procedure TfTalk.DoublePartnerGift(Action: Cardinal);
 begin
   PartnerGiftAmount := PartnerGiftAmount * 2;
   if GetPlayer.Money < PartnerGiftAmount then PartnerGiftAmount := GetPlayer.Money;
   ShowPartnerGift(0);
 end;
-{ @end $6DDC78 }
+{ @end $5F5BFC }
 
-{ @routine $6DDCC4 TfTalk_ApplyOrderToAllPartners }
-procedure TfTalk.ApplyOrderToAllPartners(Action: Integer);
+{ @routine $5F5C3C TfTalk_ApplyOrderToAllPartners }
+procedure TfTalk.ApplyOrderToAllPartners(Action: Cardinal);
 var
   I: Integer;
   Ship: TShip;
@@ -2360,17 +2364,17 @@ begin
   end;
   FastExit(0);
 end;
-{ @end $6DDCC4 }
+{ @end $5F5C3C }
 
-{ @routine $6DDE24 TfTalk_ExitPartnerConversation }
-procedure TfTalk.ExitPartnerConversation(Action: Integer);
+{ @routine $5F5D70 TfTalk_ExitPartnerConversation }
+procedure TfTalk.ExitPartnerConversation(Action: Cardinal);
 begin
   FastExit(0);
 end;
-{ @end $6DDE24 }
+{ @end $5F5D70 }
 
-{ @routine $6DDE40 TfTalk_OrderTranclucatorFollow }
-procedure TfTalk.OrderTranclucatorFollow(Action: Integer);
+{ @routine $5F5D78 TfTalk_OrderTranclucatorFollow }
+procedure TfTalk.OrderTranclucatorFollow(Action: Cardinal);
 var
   Ship: TTranclucator;
 begin
@@ -2383,10 +2387,10 @@ begin
   AddTranclucatorGroupChoice;
   AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Exit'), 0, FastExit, 0);
 end;
-{ @end $6DDE40 }
+{ @end $5F5D78 }
 
-{ @routine $6DDF9C TfTalk_OrderTranclucatorReturn }
-procedure TfTalk.OrderTranclucatorReturn(Action: Integer);
+{ @routine $5F5EBC TfTalk_OrderTranclucatorReturn }
+procedure TfTalk.OrderTranclucatorReturn(Action: Cardinal);
 var
   Ship: TTranclucator;
 begin
@@ -2399,10 +2403,10 @@ begin
   AddTranclucatorGroupChoice;
   AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Exit'), 0, FastExit, 0);
 end;
-{ @end $6DDF9C }
+{ @end $5F5EBC }
 
-{ @routine $6DE0F8 TfTalk_OrderTranclucatorSeekItems }
-procedure TfTalk.OrderTranclucatorSeekItems(Action: Integer);
+{ @routine $5F5FFC TfTalk_OrderTranclucatorSeekItems }
+procedure TfTalk.OrderTranclucatorSeekItems(Action: Cardinal);
 var
   Ship: TTranclucator;
 begin
@@ -2415,10 +2419,10 @@ begin
   AddTranclucatorGroupChoice;
   AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Exit'), 0, FastExit, 0);
 end;
-{ @end $6DE0F8 }
+{ @end $5F5FFC }
 
-{ @routine $6DE260 TfTalk_CancelTranclucatorSeekItems }
-procedure TfTalk.CancelTranclucatorSeekItems(Action: Integer);
+{ @routine $5F6140 TfTalk_CancelTranclucatorSeekItems }
+procedure TfTalk.CancelTranclucatorSeekItems(Action: Cardinal);
 var
   Ship: TTranclucator;
 begin
@@ -2431,10 +2435,10 @@ begin
   AddTranclucatorGroupChoice;
   AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Exit'), 0, FastExit, 0);
 end;
-{ @end $6DE260 }
+{ @end $5F6140 }
 
-{ @routine $6DEE2C TfTalk_ShowTranclucatorOptions }
-procedure TfTalk.ShowTranclucatorOptions(Action: Integer);
+{ @routine $5F6CA8 TfTalk_ShowTranclucatorOptions }
+procedure TfTalk.ShowTranclucatorOptions(Action: Cardinal);
 var
   Ship: TTranclucator;
   Digit: Cardinal;
@@ -2442,8 +2446,8 @@ var
   Enabled: Boolean;
   Text: WideString;
 
-  // @nested $6DE3BC AddTranclucatorCollectionOption
-  procedure AddTranclucatorCollectionOption(Kind: Integer); // @addr $6DE3BC @calls "0x6DF075"
+  // @nested $5F6280 AddTranclucatorCollectionOption
+  procedure AddTranclucatorCollectionOption(Kind: Integer); // @addr $5F6280 @calls "0x005F6EE7"
   var
     Value: Integer;
     Caption: WideString;
@@ -2462,8 +2466,8 @@ var
       LocalizedColorText(WideString('Talk.Tranclucator.Options.Collect' + IntToStr(Kind)))), Value, ShowTranclucatorOptions, 0);
   end;
 
-  // @nested $6DE650 GetTranclucatorCollectionText
-  function GetTranclucatorCollectionText: WideString; // @addr $6DE650 @calls "0x6DEEF3"
+  // @nested $5F650C GetTranclucatorCollectionText
+  function GetTranclucatorCollectionText: WideString; // @addr $5F650C @calls "0x005F6D70"
   var
     Kind: Integer;
   begin
@@ -2476,8 +2480,8 @@ var
       end;
   end;
 
-  // @nested $6DE768 AddTranclucatorStorageOption
-  procedure AddTranclucatorStorageOption(Kind: Integer); // @addr $6DE768 @calls "0x6DF09B"
+  // @nested $5F6610 AddTranclucatorStorageOption
+  procedure AddTranclucatorStorageOption(Kind: Integer); // @addr $5F6610 @calls "0x005F6F07"
   var
     Value: Integer;
     Caption: WideString;
@@ -2496,8 +2500,8 @@ var
       LocalizedColorText(WideString('Talk.Tranclucator.Options.Land' + IntToStr(Kind)))), Value, ShowTranclucatorOptions, 0);
   end;
 
-  // @nested $6DE9EC GetTranclucatorStorageText
-  function GetTranclucatorStorageText: WideString; // @addr $6DE9EC @calls "0x6DEF88"
+  // @nested $5F688C GetTranclucatorStorageText
+  function GetTranclucatorStorageText: WideString; // @addr $5F688C @calls "0x005F6E03"
   var
     Kind: Integer;
   begin
@@ -2510,8 +2514,8 @@ var
       end;
   end;
 
-  // @nested $6DEB00 AddTranclucatorArrangeOption
-  procedure AddTranclucatorArrangeOption; // @addr $6DEB00 @calls "0x6DF0AB"
+  // @nested $5F698C AddTranclucatorArrangeOption
+  procedure AddTranclucatorArrangeOption; // @addr $5F698C @calls "0x005F6F14"
   var
     Value: Integer;
     Caption: WideString;
@@ -2529,19 +2533,19 @@ var
     AddChoice('- ' + Caption, Value, ShowTranclucatorOptions, 0);
   end;
 
-  // @nested $6DECBC GetTranclucatorArrangeText
-  function GetTranclucatorArrangeText: WideString; // @addr $6DECBC @calls "0x6DF023"
+  // @nested $5F6B44 GetTranclucatorArrangeText
+  function GetTranclucatorArrangeText: WideString; // @addr $5F6B44 @calls "0x005F6E9B"
   begin
     Result := '';
     if Ship.AutoArrange then Result := Result + TalkShip.LookupTalkText('Talk.Tranclucator.Options.ArrangeText')
     else Result := Result + TalkShip.LookupTalkText('Talk.Tranclucator.Options.ArrangeBad');
   end;
 
-  // @nested $6DEDFC PopTranclucatorOptionDigit
-  procedure PopTranclucatorOptionDigit; // @addr $6DEDFC @calls "0x6DEE73 0x6DEE82 0x6DEE97 0x6DEEA6 0x6DEEBB"
+  // @nested $5F6C78 PopTranclucatorOptionDigit
+  procedure PopTranclucatorOptionDigit; // @addr $5F6C78 @calls "0x005F6CF3,0x005F6D01,0x005F6D16,0x005F6D24,0x005F6D38"
   begin
-    Digit := Cardinal(Action) mod 10;
-    Cardinal(Action) := Cardinal(Action) div 10;
+    Digit := Action mod 10;
+    Action := Action div 10;
   end;
 begin
   DialogText := '';
@@ -2582,10 +2586,10 @@ begin
   AddTranclucatorArrangeOption;
   AddChoice('- ' + LocalizedColorText('Talk.Tranclucator.Options.PlayerBack'), 0, ShowGreeting, 0);
 end;
-{ @end $6DEE2C }
+{ @end $5F6CA8 }
 
-{ @routine $6DF2A4 TfTalk_OrderTranclucatorDropCargo }
-procedure TfTalk.OrderTranclucatorDropCargo(Action: Integer);
+{ @routine $5F7110 TfTalk_OrderTranclucatorDropCargo }
+procedure TfTalk.OrderTranclucatorDropCargo(Action: Cardinal);
 var
   Ship: TTranclucator;
 begin
@@ -2598,10 +2602,10 @@ begin
   ClearChoices(False);
   AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Exit'), 0, FastExit, 0);
 end;
-{ @end $6DF2A4 }
+{ @end $5F7110 }
 
-{ @routine $6DF3F8 TfTalk_OrderTranclucatorLand }
-procedure TfTalk.OrderTranclucatorLand(Action: Integer);
+{ @routine $5F724C TfTalk_OrderTranclucatorLand }
+procedure TfTalk.OrderTranclucatorLand(Action: Cardinal);
 var
   Name: WideString;
   Ship: TTranclucator;
@@ -2618,10 +2622,10 @@ begin
   AddTranclucatorGroupChoice;
   AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Exit'), 0, FastExit, 0);
 end;
-{ @end $6DF3F8 }
+{ @end $5F724C }
 
-{ @routine $6DF654 TfTalk_OrderTranclucatorStoreCargo }
-procedure TfTalk.OrderTranclucatorStoreCargo(Action: Integer);
+{ @routine $5F748C TfTalk_OrderTranclucatorStoreCargo }
+procedure TfTalk.OrderTranclucatorStoreCargo(Action: Cardinal);
 var
   Name: WideString;
   Ship: TTranclucator;
@@ -2638,9 +2642,9 @@ begin
   AddTranclucatorGroupChoice;
   AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Exit'), 0, FastExit, 0);
 end;
-{ @end $6DF654 }
+{ @end $5F748C }
 
-{ @routine $6DF898 TfTalk_AddTranclucatorGroupChoice }
+{ @routine $5F76B4 TfTalk_AddTranclucatorGroupChoice }
 procedure TfTalk.AddTranclucatorGroupChoice;
 var
   Ship: TShip;
@@ -2649,17 +2653,15 @@ begin
   for I := 0 to TalkShip.CurrentStar.Ships.Count - 1 do
   begin
     Ship := TalkShip.CurrentStar.Ships[I];
-    if (Ship is TTranclucator) and (Ship <> TalkShip) and ((Ship as TTranclucator).OwnerShip = GetPlayer) and Ship.InNormalSpace then
-    begin
-      AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Tranclucator.OrderForAll'), 0, ApplyOrderToAllTranclucators, 0);
-      Break;
-    end;
+    if not ((Ship is TTranclucator) and (Ship <> TalkShip) and ((Ship as TTranclucator).OwnerShip = GetPlayer) and Ship.InNormalSpace) then Continue;
+    AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Tranclucator.OrderForAll'), 0, ApplyOrderToAllTranclucators, 0);
+    Break;
   end;
 end;
-{ @end $6DF898 }
+{ @end $5F76B4 }
 
-{ @routine $6DF9F8 TfTalk_ApplyOrderToAllTranclucators }
-procedure TfTalk.ApplyOrderToAllTranclucators(Action: Integer);
+{ @routine $5F7804 TfTalk_ApplyOrderToAllTranclucators }
+procedure TfTalk.ApplyOrderToAllTranclucators(Action: Cardinal);
 var
   Current, Target: TTranclucator;
   Ship: TShip;
@@ -2690,10 +2692,10 @@ begin
   end;
   FastExit(0);
 end;
-{ @end $6DF9F8 }
+{ @end $5F7804 }
 
-{ @routine $6DFBB4 TfTalk_ShowPiratePartnerOffer }
-procedure TfTalk.ShowPiratePartnerOffer(Action: Integer);
+{ @routine $5F7960 TfTalk_ShowPiratePartnerOffer }
+procedure TfTalk.ShowPiratePartnerOffer(Action: Cardinal);
 var
   Response: WideString;
 begin
@@ -2701,37 +2703,37 @@ begin
   begin
     DialogText := TalkShip.LookupTalkText('Talk.Pirate.Suspect');
     BuildStandardChoices(True);
-  end
-  else if TalkShip.PartnerShip <> nil then
+    Exit;
+  end;
+  if TalkShip.PartnerShip <> nil then
   begin
     DialogText := FormatText1(TalkShip.LookupTalkText('Talk.Pirate.AlreadyHavePartner'), TextHighlightColorTag, '<Partner>', (TalkShip.PartnerShip as TRanger).Name);
     BuildStandardChoices(True);
-  end
-  else if (GetPlayer.GetMaxPiratePartners <= GetPlayer.PiratePartners.Count) or
+    Exit;
+  end;
+  if (GetPlayer.GetMaxPiratePartners <= GetPlayer.PiratePartners.Count) or
     (GetPlayer.GetEffectiveSkillLevel(psLeadership) <= GetPlayer.CountWingmen) or
     ((TalkShip is TPirate) and (TalkShip.OwnerId = oiPirate) and ((TalkShip as TPirate).PirateRank > GetPlayer.PirateRank)) then
   begin
     DialogText := FormatText1(TalkShip.LookupTalkText('Talk.Pirate.NeedPirate'), TextHighlightColorTag, '<Ranger>', GetPlayer.Name);
     BuildStandardChoices(True);
-  end
-  else
-  begin
-    if TalkShip.BuildPartnershipOfferResponse(GetPlayer, Response, PartnerOfferAmount) then
-      DialogText := FormatText2(TalkShip.LookupTalkText('Talk.Partner.ComputerSayOk'), TextHighlightColorTag,
-        '<Money>', WideString(IntToStr(PartnerOfferAmount)), '<Month>', WideString(IntToStr(TalkShip.CalculatePartnershipMonths(PartnerOfferAmount, GetPlayer))))
-    else DialogText := FormatText1(TalkShip.LookupTalkText('Talk.Pirate.ComputerSayNo'), TextHighlightColorTag, '<Money>', WideString(IntToStr(PartnerOfferAmount)));
-    ClearChoices(False);
-    if TalkShip.BuildPartnershipOfferResponse(GetPlayer, Response, PartnerOfferAmount) then
-      AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Pirate.PlayerOk'), 0, AcceptPiratePartnerOffer, 0);
-    if PartnerOfferAmount div 2 > 0 then AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Pirate.PlayerLess'), 0, HalvePiratePartnerOffer, 0);
-    if GetPlayer.Money > PartnerOfferAmount then AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Pirate.PlayerMore'), 0, DoublePiratePartnerOffer, 0);
-    AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Cancel'), 0, ShowGreeting, 0);
+    Exit;
   end;
+  if TalkShip.BuildPartnershipOfferResponse(GetPlayer, Response, PartnerOfferAmount) then
+    DialogText := FormatText2(TalkShip.LookupTalkText('Talk.Partner.ComputerSayOk'), TextHighlightColorTag,
+      '<Money>', IntToStr(PartnerOfferAmount), '<Month>', IntToStr(TalkShip.CalculatePartnershipMonths(PartnerOfferAmount, GetPlayer)))
+  else DialogText := FormatText1(TalkShip.LookupTalkText('Talk.Pirate.ComputerSayNo'), TextHighlightColorTag, '<Money>', IntToStr(PartnerOfferAmount));
+  ClearChoices(False);
+  if TalkShip.BuildPartnershipOfferResponse(GetPlayer, Response, PartnerOfferAmount) then
+    AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Pirate.PlayerOk'), 0, AcceptPiratePartnerOffer, 0);
+  if PartnerOfferAmount div 2 > 0 then AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Pirate.PlayerLess'), 0, HalvePiratePartnerOffer, 0);
+  if GetPlayer.Money > PartnerOfferAmount then AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Pirate.PlayerMore'), 0, DoublePiratePartnerOffer, 0);
+  AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Cancel'), 0, ShowGreeting, 0);
 end;
-{ @end $6DFBB4 }
+{ @end $5F7960 }
 
-{ @routine $6E0278 TfTalk_AcceptPiratePartnerOffer }
-procedure TfTalk.AcceptPiratePartnerOffer(Action: Integer);
+{ @routine $5F7FC0 TfTalk_AcceptPiratePartnerOffer }
+procedure TfTalk.AcceptPiratePartnerOffer(Action: Cardinal);
 begin
   if TalkShip.AcceptPartnershipOffer(GetPlayer, DialogText, PartnerOfferAmount) then
   begin
@@ -2740,27 +2742,27 @@ begin
   end;
   BuildStandardChoices(True);
 end;
-{ @end $6E0278 }
+{ @end $5F7FC0 }
 
-{ @routine $6E0304 TfTalk_HalvePiratePartnerOffer }
-procedure TfTalk.HalvePiratePartnerOffer(Action: Integer);
+{ @routine $5F803C TfTalk_HalvePiratePartnerOffer }
+procedure TfTalk.HalvePiratePartnerOffer(Action: Cardinal);
 begin
   PartnerOfferAmount := PartnerOfferAmount div 2;
   ShowPiratePartnerOffer(0);
 end;
-{ @end $6E0304 }
+{ @end $5F803C }
 
-{ @routine $6E0330 TfTalk_DoublePiratePartnerOffer }
-procedure TfTalk.DoublePiratePartnerOffer(Action: Integer);
+{ @routine $5F805C TfTalk_DoublePiratePartnerOffer }
+procedure TfTalk.DoublePiratePartnerOffer(Action: Cardinal);
 begin
   if GetPlayer.Money < PartnerOfferAmount * 2 then PartnerOfferAmount := GetPlayer.Money
   else PartnerOfferAmount := PartnerOfferAmount * 2;
   ShowPiratePartnerOffer(0);
 end;
-{ @end $6E0330 }
+{ @end $5F805C }
 
-{ @routine $6E0380 TfTalk_ShowPirateAttackTargets }
-procedure TfTalk.ShowPirateAttackTargets(Action: Integer);
+{ @routine $5F80A0 TfTalk_ShowPirateAttackTargets }
+procedure TfTalk.ShowPirateAttackTargets(Action: Cardinal);
 var
   I: Integer;
   Ship: TShip;
@@ -2784,10 +2786,10 @@ begin
   end;
   AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Pirate.Back'), 0, ShowGreeting, 0);
 end;
-{ @end $6E0380 }
+{ @end $5F80A0 }
 
-{ @routine $6E063C TfTalk_OrderPiratePartnerAttack }
-procedure TfTalk.OrderPiratePartnerAttack(Action: Integer);
+{ @routine $5F8328 TfTalk_OrderPiratePartnerAttack }
+procedure TfTalk.OrderPiratePartnerAttack(Action: Cardinal);
 var
   Target: TShip;
 begin
@@ -2807,10 +2809,10 @@ begin
     AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Exit'), 0, FastExit, 0);
   end;
 end;
-{ @end $6E063C }
+{ @end $5F8328 }
 
-{ @routine $6E095C TfTalk_OrderPiratePartnerFollow }
-procedure TfTalk.OrderPiratePartnerFollow(Action: Integer);
+{ @routine $5F862C TfTalk_OrderPiratePartnerFollow }
+procedure TfTalk.OrderPiratePartnerFollow(Action: Cardinal);
 begin
   TalkShip.OrderFollowShip(GetPlayer, fmFollowNear, True);
   DialogText := TalkShip.LookupTalkText('Talk.Pirate.ComputerAgreeFlyToMe');
@@ -2827,10 +2829,10 @@ begin
     AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Exit'), 0, FastExit, 0);
   end;
 end;
-{ @end $6E095C }
+{ @end $5F862C }
 
-{ @routine $6E0C0C TfTalk_OrderPiratePartnerLand }
-procedure TfTalk.OrderPiratePartnerLand(Action: Integer);
+{ @routine $5F88C0 TfTalk_OrderPiratePartnerLand }
+procedure TfTalk.OrderPiratePartnerLand(Action: Cardinal);
 var
   Name: WideString;
   Relation: Byte;
@@ -2865,10 +2867,10 @@ begin
     AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Exit'), 0, FastExit, 0);
   end;
 end;
-{ @end $6E0C0C }
+{ @end $5F88C0 }
 
-{ @routine $6E1088 TfTalk_OrderPiratePartnerJump }
-procedure TfTalk.OrderPiratePartnerJump(Action: Integer);
+{ @routine $5F8D10 TfTalk_OrderPiratePartnerJump }
+procedure TfTalk.OrderPiratePartnerJump(Action: Cardinal);
 begin
   if ((GetPlayer.OrderTarget as TStar).CountPlanetsByOwner(oiDominator) > 0) and
     ((TalkShip.OwnerId <> oiPirate) or (Galaxy.CoalitionDefeatedTurn = 0)) then
@@ -2897,73 +2899,73 @@ begin
     end;
   end;
 end;
-{ @end $6E1088 }
+{ @end $5F8D10 }
 
-{ @routine $6E1514 TfTalk_ShowPiratePartnerFinances }
-procedure TfTalk.ShowPiratePartnerFinances(Action: Integer);
+{ @routine $5F9180 TfTalk_ShowPiratePartnerFinances }
+procedure TfTalk.ShowPiratePartnerFinances(Action: Cardinal);
 begin
   DialogText := TalkShip.LookupTalkText('Talk.Pirate.FinancesReport');
-  ReplaceTextToken(DialogText, '<Money>', WideString(IntToStr(TalkShip.Money)), TextHighlightColorTag);
+  ReplaceTextToken(DialogText, '<Money>', IntToStr(TalkShip.Money), TextHighlightColorTag);
   ClearChoices(False);
   if GetPlayer.Money > 0 then AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Pirate.FinancesOfferGift'), 0, ShowPiratePartnerGift, 0);
   AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Pirate.FinancesConfirmed'), 0, ShowGreeting, 0);
 end;
-{ @end $6E1514 }
+{ @end $5F9180 }
 
-{ @routine $6E1768 TfTalk_ShowPiratePartnerGift }
-procedure TfTalk.ShowPiratePartnerGift(Action: Integer);
+{ @routine $5F93C0 TfTalk_ShowPiratePartnerGift }
+procedure TfTalk.ShowPiratePartnerGift(Action: Cardinal);
 var
   Text: WideString;
 begin
   DialogText := TalkShip.LookupTalkText('Talk.Pirate.FinancesWaitForGift');
   ClearChoices(False);
   Text := '- ' + GetPlayer.LookupTalkText('Talk.Pirate.FinancesSendGift');
-  ReplaceTextToken(Text, '<Money>', WideString(IntToStr(PartnerGiftAmount)), TextHighlightColorTag);
+  ReplaceTextToken(Text, '<Money>', IntToStr(PartnerGiftAmount), TextHighlightColorTag);
   AddChoice(Text, 0, GivePiratePartnerGift, 0);
   if PartnerGiftAmount div 2 > 0 then AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Pirate.PlayerLess'), 0, HalvePiratePartnerGift, 0);
   if GetPlayer.Money > PartnerGiftAmount then AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Pirate.PlayerMore'), 0, DoublePiratePartnerGift, 0);
   AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Cancel'), 0, ShowGreeting, 0);
 end;
-{ @end $6E1768 }
+{ @end $5F93C0 }
 
-{ @routine $6E1A8C TfTalk_GivePiratePartnerGift }
-procedure TfTalk.GivePiratePartnerGift(Action: Integer);
+{ @routine $5F96C4 TfTalk_GivePiratePartnerGift }
+procedure TfTalk.GivePiratePartnerGift(Action: Cardinal);
 var
   Change: Integer;
 begin
   SoundManager.PlaySound('Sound.Sell');
   if TalkShip is TNormalShip then
-  Change := Round((150 * PartnerGiftAmount) / Max(1, TalkShip.Wealth + GetPlayer.Wealth) * PlanetRaceMarket[TalkShip.PilotRace].FriendlyRelationScale)
+    Change := Round((150 * PartnerGiftAmount) / Max(1, TalkShip.Wealth + GetPlayer.Wealth) * PlanetRaceMarket[TalkShip.PilotRace].FriendlyRelationScale)
   else Change := Round((150 * PartnerGiftAmount) / Max(1, TalkShip.Wealth + GetPlayer.Wealth));
   Change := Max(0, Min(100, Change));
   TalkShip.ChangeRelationToRanger(GetPlayer, Change);
   GetPlayer.SetMoney(Max(0, GetPlayer.Money - PartnerGiftAmount));
   TalkShip.SetMoney(TalkShip.Money + PartnerGiftAmount);
   DialogText := TalkShip.LookupTalkText('Talk.Pirate.FinancesGotGift');
-  ReplaceTextToken(DialogText, '<Money>', WideString(IntToStr(TalkShip.Money)), TextHighlightColorTag);
+  ReplaceTextToken(DialogText, '<Money>', IntToStr(TalkShip.Money), TextHighlightColorTag);
   BuildStandardChoices(True);
 end;
-{ @end $6E1A8C }
+{ @end $5F96C4 }
 
-{ @routine $6E1D64 TfTalk_HalvePiratePartnerGift }
-procedure TfTalk.HalvePiratePartnerGift(Action: Integer);
+{ @routine $5F9954 TfTalk_HalvePiratePartnerGift }
+procedure TfTalk.HalvePiratePartnerGift(Action: Cardinal);
 begin
   PartnerGiftAmount := PartnerGiftAmount div 2;
   ShowPiratePartnerGift(0);
 end;
-{ @end $6E1D64 }
+{ @end $5F9954 }
 
-{ @routine $6E1D90 TfTalk_DoublePiratePartnerGift }
-procedure TfTalk.DoublePiratePartnerGift(Action: Integer);
+{ @routine $5F9974 TfTalk_DoublePiratePartnerGift }
+procedure TfTalk.DoublePiratePartnerGift(Action: Cardinal);
 begin
   PartnerGiftAmount := PartnerGiftAmount * 2;
   if GetPlayer.Money < PartnerGiftAmount then PartnerGiftAmount := GetPlayer.Money;
   ShowPiratePartnerGift(0);
 end;
-{ @end $6E1D90 }
+{ @end $5F9974 }
 
-{ @routine $6E1DDC TfTalk_ShowPartnerDismissal }
-procedure TfTalk.ShowPartnerDismissal(Action: Integer);
+{ @routine $5F99B4 TfTalk_ShowPartnerDismissal }
+procedure TfTalk.ShowPartnerDismissal(Action: Cardinal);
 var
   Prefix: WideString;
 begin
@@ -2975,10 +2977,10 @@ begin
   AddChoice('- ' + GetPlayer.LookupTalkText('Talk.' + Prefix + '.PlayerDismissBad'), 3, ShipDismissAct, 0);
   AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Exit'), 0, FastExit, 0);
 end;
-{ @end $6E1DDC }
+{ @end $5F99B4 }
 
-{ @routine $6E20EC TfTalk_ShipDismissAct }
-procedure TfTalk.ShipDismissAct(Action: Integer);
+{ @routine $5F9CA8 TfTalk_ShipDismissAct }
+procedure TfTalk.ShipDismissAct(Action: Cardinal);
 var
   Prefix: WideString;
 begin
@@ -2986,28 +2988,28 @@ begin
   case Action of
     1: DialogText := TalkShip.LookupTalkText('Talk.' + Prefix + '.ComputerDismissNo');
     2:
-    begin
-      if (TalkShip.Order = soFollowShip) and (TalkShip.OrderTarget = TalkShip.PartnerShip) then TalkShip.OrderNone(False);
-      TalkShip.PartnerShip := nil;
-      DialogText := TalkShip.LookupTalkText('Talk.' + Prefix + '.ComputerDismissGood');
-    end;
+      begin
+        if (TalkShip.Order = soFollowShip) and (TalkShip.OrderTarget = TalkShip.PartnerShip) then TalkShip.OrderNone(False);
+        TalkShip.PartnerShip := nil;
+        DialogText := TalkShip.LookupTalkText('Talk.' + Prefix + '.ComputerDismissGood');
+      end;
     3:
-    begin
-      TalkShip.PartnerShip := nil;
-      TalkShip.ChangeRelationToRanger(GetPlayer, 10);
-      TalkShip.EnemyShip := GetPlayer;
-      TalkShip.EngageEnemyShip;
-      DialogText := TalkShip.LookupTalkText('Talk.' + Prefix + '.ComputerDismissBad');
-    end;
-  else RaiseWideMessage(WideString('ShipDismissAct: invalid data = ' + IntToStr(Int64(Cardinal(Action)))));
+      begin
+        TalkShip.PartnerShip := nil;
+        TalkShip.ChangeRelationToRanger(GetPlayer, 10);
+        TalkShip.EnemyShip := GetPlayer;
+        TalkShip.EngageEnemyShip;
+        DialogText := TalkShip.LookupTalkText('Talk.' + Prefix + '.ComputerDismissBad');
+      end;
+  else RaiseWideMessage(WideString('ShipDismissAct: invalid data = ' + IntToStr(Int64(Action))));
   end;
   ClearChoices(False);
   AddChoice('- ' + GetPlayer.LookupTalkText('Talk.Exit'), 0, FastExit, 0);
 end;
-{ @end $6E20EC }
+{ @end $5F9CA8 }
 
-{ @routine $6E2464 TfTalk_RunDominatorProgram }
-procedure TfTalk.RunDominatorProgram(Action: Integer);
+{ @routine $5FA010 TfTalk_RunDominatorProgram }
+procedure TfTalk.RunDominatorProgram(Action: Cardinal);
 var ProgramIndex: TProgramIndex; Remaining: Integer;
 begin
   ProgramIndex := TProgramIndex(Action);
@@ -3043,41 +3045,41 @@ begin
   (TalkShip as TKling).DetectAttackingPlayer(GetPlayer);
   BuildStandardChoices(True);
 end;
-{ @end $6E2464 }
+{ @end $5FA010 }
 
-{ @routine $6E2808 TfTalk_ShowDominatorGreeting }
-procedure TfTalk.ShowDominatorGreeting(Action: Integer);
+{ @routine $5FA390 TfTalk_ShowDominatorGreeting }
+procedure TfTalk.ShowDominatorGreeting(Action: Cardinal);
 begin
   DialogText := TalkShip.LookupTalkText('Talk.Dominator.Hi' + DominatorSeriesNames[(TalkShip as TKling).DominatorSeries]);
   BuildStandardChoices(True);
 end;
-{ @end $6E2808 }
+{ @end $5FA390 }
 
-{ @routine $6E28D4 TfTalk_ShowDominatorPeace }
-procedure TfTalk.ShowDominatorPeace(Action: Integer);
+{ @routine $5FA450 TfTalk_ShowDominatorPeace }
+procedure TfTalk.ShowDominatorPeace(Action: Cardinal);
 begin
   DialogText := TalkShip.LookupTalkText('Talk.Dominator.Peace' + DominatorSeriesNames[(TalkShip as TKling).DominatorSeries]);
   BuildStandardChoices(True);
 end;
-{ @end $6E28D4 }
+{ @end $5FA450 }
 
-{ @routine $6E29A8 TfTalk_ShowDominatorGoods }
-procedure TfTalk.ShowDominatorGoods(Action: Integer);
+{ @routine $5FA518 TfTalk_ShowDominatorGoods }
+procedure TfTalk.ShowDominatorGoods(Action: Cardinal);
 begin
   DialogText := TalkShip.LookupTalkText('Talk.Dominator.Goods' + DominatorSeriesNames[(TalkShip as TKling).DominatorSeries]);
   BuildStandardChoices(True);
 end;
-{ @end $6E29A8 }
+{ @end $5FA518 }
 
-{ @routine $6E2A7C TfTalk_ShowDominatorCommand }
-procedure TfTalk.ShowDominatorCommand(Action: Integer);
+{ @routine $5FA5E0 TfTalk_ShowDominatorCommand }
+procedure TfTalk.ShowDominatorCommand(Action: Cardinal);
 begin
   DialogText := TalkShip.LookupTalkText('Talk.Dominator.Command' + DominatorSeriesNames[(TalkShip as TKling).DominatorSeries]);
   BuildStandardChoices(True);
 end;
-{ @end $6E2A7C }
+{ @end $5FA5E0 }
 
-{ @routine $6E2B54 TfTalk_AddImmediateAttackChoices }
+{ @routine $5FA6AC TfTalk_AddImmediateAttackChoices }
 function TfTalk.AddImmediateAttackChoices: Boolean;
 var I, J: Integer; Ship: TShip; RadarRangeSquared: Integer; Weapon: TWeapon;
 begin
@@ -3087,10 +3089,15 @@ begin
   begin
     Ship := GetPlayer.CurrentStar.Ships[I];
     if not (Ship.TargetingRestriction in [1, 2]) then
+    begin
       if (TalkShip.OrderTarget = Ship) and (TalkShip.GetRelationLevelToShip(Ship) = rlHostile) and
         ((GetPlayer.OrderTarget = Ship) or (PendingPlayerFollowTarget = Ship)) and
-        (GetPlayer.GetRelationLevelToShip(Ship) = rlHostile) then Result := True
-      else if (GetPlayer <> Ship) and (TalkShip <> Ship) and Ship.InNormalSpace and
+        (GetPlayer.GetRelationLevelToShip(Ship) = rlHostile) then
+      begin
+        Result := True;
+        Continue;
+      end;
+      if (GetPlayer <> Ship) and (TalkShip <> Ship) and Ship.InNormalSpace and
         (RadarRangeSquared > PointDistanceSquared(GetPlayer.Position, Ship.Position)) then
       begin
         if (Ship.GetRelationLevelToShip(GetPlayer) = rlHostile) and
@@ -3098,38 +3105,40 @@ begin
         begin
           AddChoice('- ' + ReplaceColoredToken(GetPlayer.LookupTalkText('Talk.Attack.PlayerSend'), '<Target>', Ship.GetFullName(' '), '') + GetLocalObjectLink(Ship, False), Integer(Ship), RequestAttackTarget, 0);
           Result := True;
-        end
-        else if PendingPlayerFollowTarget = Ship then
+          Continue;
+        end;
+        if PendingPlayerFollowTarget = Ship then
         begin
           AddChoice('- ' + ReplaceColoredToken(GetPlayer.LookupTalkText('Talk.Attack.PlayerSend'), '<Target>', Ship.GetFullName(' '), '') + GetLocalObjectLink(Ship, False), Integer(Ship), RequestAttackTarget, 0);
           Result := True;
-        end
-        else
-          for J := 1 to GetPlayer.WeaponCount do
+          Continue;
+        end;
+        for J := 1 to GetPlayer.WeaponCount do
+        begin
+          Weapon := GetPlayer.Weapons[J];
+          if Weapon.Target = Ship then
           begin
-            Weapon := GetPlayer.Weapons[J];
-            if Weapon.Target = Ship then
-            begin
-              AddChoice('- ' + ReplaceColoredToken(GetPlayer.LookupTalkText('Talk.Attack.PlayerSend'), '<Target>', Ship.GetFullName(' '), '') + GetLocalObjectLink(Ship, False), Integer(Ship), RequestAttackTarget, 0);
-              Result := True;
-              Break;
-            end;
+            AddChoice('- ' + ReplaceColoredToken(GetPlayer.LookupTalkText('Talk.Attack.PlayerSend'), '<Target>', Ship.GetFullName(' '), '') + GetLocalObjectLink(Ship, False), Integer(Ship), RequestAttackTarget, 0);
+            Result := True;
+            Break;
           end;
+        end;
       end;
+    end;
   end;
 end;
-{ @end $6E2B54 }
+{ @end $5FA6AC }
 
-{ @routine $6E2F3C TfTalk_GetShipGreeting }
+{ @routine $5FAA58 TfTalk_GetShipGreeting }
 function TfTalk.GetShipGreeting: WideString;
 begin
   Result := TalkShip.GetGreetingText;
   if Result = '' then RaiseWideMessage('Не найдено приветствие корабля');
 end;
-{ @end $6E2F3C }
+{ @end $5FAA58 }
 
-{ @routine $6E2FB8 TfTalk_RunInjectedAnswer }
-procedure TfTalk.RunInjectedAnswer(Action: Integer);
+{ @routine $5FAAC4 TfTalk_RunInjectedAnswer }
+procedure TfTalk.RunInjectedAnswer(Action: Cardinal);
 var
   Text: WideString;
   Injection: PScriptDialogInjection;
@@ -3163,26 +3172,26 @@ begin
     end;
   end;
 end;
-{ @end $6E2FB8 }
+{ @end $5FAAC4 }
 
-{ @routine $6E31A4 TfTalk_RunInjectedAnswerKeepingScroll }
-procedure TfTalk.RunInjectedAnswerKeepingScroll(Action: Integer);
+{ @routine $5FAC78 TfTalk_RunInjectedAnswerKeepingScroll }
+procedure TfTalk.RunInjectedAnswerKeepingScroll(Action: Cardinal);
 begin
   RememberChoiceScroll;
   RunInjectedAnswer(Action);
 end;
-{ @end $6E31A4 }
+{ @end $5FAC78 }
 
-{ @routine $6E31C8 TfTalk_StartScriptMessage }
+{ @routine $5FAC94 TfTalk_StartScriptMessage }
 procedure TfTalk.StartScriptMessage(Script: TScript);
 begin
   ClearChoices(False);
   CurrentScript := Script;
   CurrentScript.CallDialogMessage(ScriptDialogIndex);
 end;
-{ @end $6E31C8 }
+{ @end $5FAC94 }
 
-{ @routine $6E3200 TfTalk_BuildMilitarySupportChoices }
+{ @routine $5FACBC TfTalk_BuildMilitarySupportChoices }
 procedure TfTalk.BuildMilitarySupportChoices;
 begin
   ClearChoices(True);
@@ -3215,10 +3224,10 @@ begin
   end;
   AddChoice('- ' + GetPlayer.LookupTalkText('Talk.MilitarySupport.Cancel'), 0, CancelMilitarySupport, 0);
 end;
-{ @end $6E3200 }
+{ @end $5FACBC }
 
-{ @routine $6E36B8 TfTalk_ShowMilitarySupport }
-procedure TfTalk.ShowMilitarySupport(Action: Integer);
+{ @routine $5FB148 TfTalk_ShowMilitarySupport }
+procedure TfTalk.ShowMilitarySupport(Action: Cardinal);
 var Refused: Boolean;
 begin
   Refused := True;
@@ -3239,35 +3248,35 @@ begin
     BuildMilitarySupportChoices;
   end;
 end;
-{ @end $6E36B8 }
+{ @end $5FB148 }
 
-{ @routine $6E3A44 TfTalk_CancelMilitarySupport }
-procedure TfTalk.CancelMilitarySupport(Action: Integer);
+{ @routine $5FB4BC TfTalk_CancelMilitarySupport }
+procedure TfTalk.CancelMilitarySupport(Action: Cardinal);
 begin
   DialogText := TalkShip.LookupTalkText('Talk.MilitarySupport.AfterCancel');
   BuildStandardChoices(True);
 end;
-{ @end $6E3A44 }
+{ @end $5FB4BC }
 
-{ @routine $6E3AFC TfTalk_DeclineMilitarySupport }
-procedure TfTalk.DeclineMilitarySupport(Action: Integer);
+{ @routine $5FB568 TfTalk_DeclineMilitarySupport }
+procedure TfTalk.DeclineMilitarySupport(Action: Cardinal);
 begin
   DialogText := TalkShip.LookupTalkText('Talk.MilitarySupport.AfterNo');
   BuildMilitarySupportChoices;
 end;
-{ @end $6E3AFC }
+{ @end $5FB568 }
 
-{ @routine $6E3BA8 GetMilitaryHullRepairCost }
+{ @routine $5FB608 GetMilitaryHullRepairCost }
 function GetMilitaryHullRepairCost: Integer;
 begin
   Result := Ceil(((GetPlayer.GetHull.Weight - GetPlayer.GetHull.HullPoints) / 10) *
     (GetPlayer.GetCombatStatusStrength(cseBWRepairDebuff) * 0.002 + 1) *
     RemapClamped(Galaxy.TechLevel, 2, 8, 5, 1));
 end;
-{ @end $6E3BA8 }
+{ @end $5FB608 }
 
-{ @routine $6E3C68 TfTalk_ShowMilitaryHullRepair }
-procedure TfTalk.ShowMilitaryHullRepair(Action: Integer);
+{ @routine $5FB6C4 TfTalk_ShowMilitaryHullRepair }
+procedure TfTalk.ShowMilitaryHullRepair(Action: Cardinal);
 var Cost, Available: Integer; Caption: WideString;
 begin
   Cost := GetMilitaryHullRepairCost;
@@ -3282,7 +3291,7 @@ begin
     if Available > 0 then
     begin
       DialogText := TalkShip.LookupTalkText('Talk.MilitarySupport.AnswerRepairHull');
-      ReplaceTextToken(DialogText, '<Nodes>', WideString(IntToStr(Cost)), TextHighlightColorTag);
+      ReplaceTextToken(DialogText, '<Nodes>', IntToStr(Cost), TextHighlightColorTag);
       ClearChoices(True);
       if Available = Cost then Caption := GetPlayer.LookupTalkText('Talk.MilitarySupport.RepairHullOk')
       else Caption := GetPlayer.LookupTalkText('Talk.MilitarySupport.RepairHullPartialOk');
@@ -3292,35 +3301,34 @@ begin
     else
     begin
       DialogText := TalkShip.LookupTalkText('Talk.MilitarySupport.AnswerRepairHullNoNodes');
-      ReplaceTextToken(DialogText, '<Nodes>', WideString(IntToStr(Cost)), TextHighlightColorTag);
+      ReplaceTextToken(DialogText, '<Nodes>', IntToStr(Cost), TextHighlightColorTag);
       BuildMilitarySupportChoices;
     end;
   end;
 end;
-{ @end $6E3C68 }
+{ @end $5FB6C4 }
 
-{ @routine $6E40D4 TfTalk_AcceptMilitaryHullRepair }
-procedure TfTalk.AcceptMilitaryHullRepair(Action: Integer);
+{ @routine $5FBAF0 TfTalk_AcceptMilitaryHullRepair }
+procedure TfTalk.AcceptMilitaryHullRepair(Action: Cardinal);
 var Effect: TWeaponSE; RepairAmount: Integer; Fraction: Single;
 begin
   GetPlayer.ConsumeAvailableNodes(Action, nil);
-  Fraction := Action / GetMilitaryHullRepairCost;
+  Fraction := Integer(Action) / GetMilitaryHullRepairCost;
   RepairAmount := Ceil(RemapClamped(Fraction, 0, 1, 0.01, GetPlayer.GetHull.Weight - GetPlayer.GetHull.HullPoints));
   Inc(GetPlayer.GetHull.HullPoints, RepairAmount);
   GetPlayer.AddCombatStatusStrength(cseBWRepairDebuff, RepairAmount, nil);
   GetPlayer.RefreshDerivedStats(True);
   Effect := TWeaponSE.Create('Weapon.NoGraph', Classes.Point(0, 0), 0, -1);
   Effect.SetEndpoints(GetPlayer.Graphic, GetPlayer.Graphic);
-  // Multiplication by -1 retains the native DCC32 register copy before NEG.
   Effect.SetHit(OwnerToFilmColor(RaceToOwner(GetPlayer.PilotRace)), RepairAmount * -1, False, False);
   StarMapScreen.PendingSceneObjects.Add(Effect);
   SoundManager.PlaySound('Sound.Repair');
   DialogText := TalkShip.LookupTalkText('Talk.MilitarySupport.AfterRepairHull');
   BuildMilitarySupportChoices;
 end;
-{ @end $6E40D4 }
+{ @end $5FBAF0 }
 
-{ @routine $6E4320 GetMilitaryEquipmentRepairCost }
+{ @routine $5FBD38 GetMilitaryEquipmentRepairCost }
 function GetMilitaryEquipmentRepairCost: Integer;
 var I: Integer; Item: TEquipment;
 begin
@@ -3339,10 +3347,10 @@ begin
     if Result = 0 then Result := 1;
   end;
 end;
-{ @end $6E4320 }
+{ @end $5FBD38 }
 
-{ @routine $6E4458 TfTalk_ShowMilitaryEquipmentRepair }
-procedure TfTalk.ShowMilitaryEquipmentRepair(Action: Integer);
+{ @routine $5FBE44 TfTalk_ShowMilitaryEquipmentRepair }
+procedure TfTalk.ShowMilitaryEquipmentRepair(Action: Cardinal);
 var Cost, Available: Integer; Caption: WideString;
 begin
   Cost := GetMilitaryEquipmentRepairCost;
@@ -3357,7 +3365,7 @@ begin
     if Available > 0 then
     begin
       DialogText := TalkShip.LookupTalkText('Talk.MilitarySupport.AnswerRepairEq');
-      ReplaceTextToken(DialogText, '<Nodes>', WideString(IntToStr(Cost)), TextHighlightColorTag);
+      ReplaceTextToken(DialogText, '<Nodes>', IntToStr(Cost), TextHighlightColorTag);
       ClearChoices(True);
       if Available = Cost then Caption := GetPlayer.LookupTalkText('Talk.MilitarySupport.RepairEqOk')
       else Caption := GetPlayer.LookupTalkText('Talk.MilitarySupport.RepairEqPartialOk');
@@ -3367,18 +3375,18 @@ begin
     else
     begin
       DialogText := TalkShip.LookupTalkText('Talk.MilitarySupport.AnswerRepairEqNoNodes');
-      ReplaceTextToken(DialogText, '<Nodes>', WideString(IntToStr(Cost)), TextHighlightColorTag);
+      ReplaceTextToken(DialogText, '<Nodes>', IntToStr(Cost), TextHighlightColorTag);
       BuildMilitarySupportChoices;
     end;
   end;
 end;
-{ @end $6E4458 }
+{ @end $5FBE44 }
 
-{ @routine $6E48B0 TfTalk_AcceptMilitaryEquipmentRepair }
-procedure TfTalk.AcceptMilitaryEquipmentRepair(Action: Integer);
+{ @routine $5FC25C TfTalk_AcceptMilitaryEquipmentRepair }
+procedure TfTalk.AcceptMilitaryEquipmentRepair(Action: Cardinal);
 var Fraction: Single; I: Integer; Item: TEquipment;
 begin
-  Fraction := Action / GetMilitaryEquipmentRepairCost;
+  Fraction := Integer(Action) / GetMilitaryEquipmentRepairCost;
   GetPlayer.ConsumeAvailableNodes(Action, nil);
   for I := 0 to GetPlayer.Inventory.Count - 1 do
   begin
@@ -3396,9 +3404,9 @@ begin
   DialogText := TalkShip.LookupTalkText('Talk.MilitarySupport.AfterRepairEq');
   BuildMilitarySupportChoices;
 end;
-{ @end $6E48B0 }
+{ @end $5FC25C }
 
-{ @routine $6E4ABC IsMilitaryProtectedQuestItem }
+{ @routine $5FC444 IsMilitaryProtectedQuestItem }
 function IsMilitaryProtectedQuestItem(Item: TItem): Boolean;
 var I: Integer; Quest: PQuest;
 begin
@@ -3412,10 +3420,10 @@ begin
           (Item as TUselessItem).ConfigBlockName then Result := True;
     end;
 end;
-{ @end $6E4ABC }
+{ @end $5FC444 }
 
-{ @routine $6E4C1C TfTalk_ShowMilitaryRemains }
-procedure TfTalk.ShowMilitaryRemains(Action: Integer);
+{ @routine $5FC584 TfTalk_ShowMilitaryRemains }
+procedure TfTalk.ShowMilitaryRemains(Action: Cardinal);
 var I, Count, Cost: Integer; Item: TEquipment;
 begin
   Count := 0;
@@ -3436,22 +3444,20 @@ begin
   begin
     DialogText := TalkShip.LookupTalkText('Talk.MilitarySupport.AnswerNoRemains');
     BuildMilitarySupportChoices;
-  end
-  else
-  begin
-    DialogText := TalkShip.LookupTalkText('Talk.MilitarySupport.AnswerSellRemains');
-    ReplaceTextToken(DialogText, '<Remains>', WideString(IntToStr(Count)), TextHighlightColorTag);
-    ReplaceTextToken(DialogText, '<Cost>', WideString(IntToStr(Cost)), TextHighlightColorTag);
-    ClearChoices(True);
-    AddChoice('- ' + GetPlayer.LookupTalkText('Talk.MilitarySupport.SellRemainsSellAll'), 0, SellAllMilitaryRemains, 0);
-    if Count > 1 then
-      AddChoice('- ' + GetPlayer.LookupTalkText('Talk.MilitarySupport.SellRemainsSellSome'), 0, SellIndividualMilitaryRemains, 0);
-    AddChoice('- ' + GetPlayer.LookupTalkText('Talk.MilitarySupport.PlayerNo'), 0, DeclineMilitarySupport, 0);
+    Exit;
   end;
+  DialogText := TalkShip.LookupTalkText('Talk.MilitarySupport.AnswerSellRemains');
+  ReplaceTextToken(DialogText, '<Remains>', IntToStr(Count), TextHighlightColorTag);
+  ReplaceTextToken(DialogText, '<Cost>', IntToStr(Cost), TextHighlightColorTag);
+  ClearChoices(True);
+  AddChoice('- ' + GetPlayer.LookupTalkText('Talk.MilitarySupport.SellRemainsSellAll'), 0, SellAllMilitaryRemains, 0);
+  if Count > 1 then
+    AddChoice('- ' + GetPlayer.LookupTalkText('Talk.MilitarySupport.SellRemainsSellSome'), 0, SellIndividualMilitaryRemains, 0);
+  AddChoice('- ' + GetPlayer.LookupTalkText('Talk.MilitarySupport.PlayerNo'), 0, DeclineMilitarySupport, 0);
 end;
-{ @end $6E4C1C }
+{ @end $5FC584 }
 
-{ @routine $6E50D0 DonateMilitaryResearchMaterial }
+{ @routine $5FCA0C DonateMilitaryResearchMaterial }
 procedure DonateMilitaryResearchMaterial(Series: TDominatorSeries; Amount: Integer);
 var Other: TDominatorSeries; Count: Integer;
 begin
@@ -3469,36 +3475,34 @@ begin
           Inc(Galaxy.DominatorResearch[Other].Material, Amount div Count);
   end;
 end;
-{ @end $6E50D0 }
+{ @end $5FCA0C }
 
-{ @routine $6E51DC TfTalk_SellAllMilitaryRemains }
-procedure TfTalk.SellAllMilitaryRemains(Action: Integer);
+{ @routine $5FCAD0 TfTalk_SellAllMilitaryRemains }
+procedure TfTalk.SellAllMilitaryRemains(Action: Cardinal);
 var I, Cost: Integer; Item: TEquipment;
 begin
   Cost := 0;
   for I := GetPlayer.Inventory.Count - 1 downto 1 do
   begin
     Item := GetPlayer.Inventory[I];
-    if (Item.OwnerId = oiDominator) and (Item is TUselessItem) and not IsMilitaryProtectedQuestItem(Item) then
-    begin
-      GetPlayer.Inventory.Delete(I);
-      if (Galaxy.DominatorResearch[Item.DominatorSeries].Progress < 100) and
-        Galaxy.IsDominatorSeriesUnresolved(Item.DominatorSeries) then
-        Inc(Cost, Round(Item.Cost * 1.5))
-      else Inc(Cost, Item.Cost);
-      DonateMilitaryResearchMaterial(Item.DominatorSeries, Item.Weight);
-      Item.Free;
-    end;
+    if not ((Item.OwnerId = oiDominator) and (Item is TUselessItem) and not IsMilitaryProtectedQuestItem(Item)) then Continue;
+    GetPlayer.Inventory.Delete(I);
+    if (Galaxy.DominatorResearch[Item.DominatorSeries].Progress < 100) and
+      Galaxy.IsDominatorSeriesUnresolved(Item.DominatorSeries) then
+      Inc(Cost, Round(Item.Cost * 1.5))
+    else Inc(Cost, Item.Cost);
+    DonateMilitaryResearchMaterial(Item.DominatorSeries, Item.Weight);
+    Item.Free;
   end;
   GetPlayer.SetMoney(GetPlayer.Money + Cost);
   SoundManager.PlaySound('Sound.Sell');
   DialogText := TalkShip.LookupTalkText('Talk.MilitarySupport.AfterSellRemains');
   BuildMilitarySupportChoices;
 end;
-{ @end $6E51DC }
+{ @end $5FCAD0 }
 
-{ @routine $6E53E0 TfTalk_SellIndividualMilitaryRemains }
-procedure TfTalk.SellIndividualMilitaryRemains(Action: Integer);
+{ @routine $5FCCB0 TfTalk_SellIndividualMilitaryRemains }
+procedure TfTalk.SellIndividualMilitaryRemains(Action: Cardinal);
 var I, Count, Cost: Integer; Item: TEquipment; Caption, BonusCaption: WideString;
 begin
   if Action <> 0 then
@@ -3524,18 +3528,16 @@ begin
   for I := 1 to GetPlayer.Inventory.Count - 1 do
   begin
     Item := GetPlayer.Inventory[I];
-    if (Item.OwnerId = oiDominator) and (Item is TUselessItem) and not IsMilitaryProtectedQuestItem(Item) then
-    begin
-      Inc(Count);
-      if (Galaxy.DominatorResearch[Item.DominatorSeries].Progress < 100) and
-        Galaxy.IsDominatorSeriesUnresolved(Item.DominatorSeries) then Cost := Round(Item.Cost * 1.5)
-      else Cost := Item.Cost;
-      Caption := Item.GetDisplayName + ' (' + WrapTextInColor(WideString(IntToStr(Cost)), TextHighlightColorTag) + ' cr)';
-      if (Galaxy.DominatorResearch[Item.DominatorSeries].Progress < 100) and
-        Galaxy.IsDominatorSeriesUnresolved(Item.DominatorSeries) then Caption := Caption + BonusCaption;
-      AddChoice('- ' + Caption, Integer(Item), SellIndividualMilitaryRemains, 0);
-      DialogText := DialogText + #13#10 + WideString(IntToStr(Count)) + ') ' + Caption;
-    end;
+    if not ((Item.OwnerId = oiDominator) and (Item is TUselessItem) and not IsMilitaryProtectedQuestItem(Item)) then Continue;
+    Inc(Count);
+    if (Galaxy.DominatorResearch[Item.DominatorSeries].Progress < 100) and
+      Galaxy.IsDominatorSeriesUnresolved(Item.DominatorSeries) then Cost := Round(Item.Cost * 1.5)
+    else Cost := Item.Cost;
+    Caption := Item.GetDisplayName + ' (' + WrapTextInColor(IntToStr(Cost), TextHighlightColorTag) + ' cr)';
+    if (Galaxy.DominatorResearch[Item.DominatorSeries].Progress < 100) and
+      Galaxy.IsDominatorSeriesUnresolved(Item.DominatorSeries) then Caption := Caption + BonusCaption;
+    AddChoice('- ' + Caption, Integer(Item), SellIndividualMilitaryRemains, 0);
+    DialogText := DialogText + #13#10 + WideString(IntToStr(Count)) + ') ' + Caption;
   end;
   if Count <= 0 then
   begin
@@ -3545,15 +3547,15 @@ begin
   else
     AddChoice('- ' + GetPlayer.LookupTalkText('Talk.MilitarySupport.PlayerNo'), 0, DeclineMilitarySupport, 0);
 end;
-{ @end $6E53E0 }
+{ @end $5FCCB0 }
 
-{ @routine $6E59A8 TfTalk_ShowMilitaryBuff }
-procedure TfTalk.ShowMilitaryBuff(Action: Integer);
+{ @routine $5FD230 TfTalk_ShowMilitaryBuff }
+procedure TfTalk.ShowMilitaryBuff(Action: Cardinal);
 var Cost: Integer; Caption: WideString;
 begin
   Cost := 100;
   DialogText := TalkShip.LookupTalkText('Talk.MilitarySupport.AnswerBuff');
-  ReplaceTextToken(DialogText, '<Nodes>', WideString(IntToStr(Cost)), TextHighlightColorTag);
+  ReplaceTextToken(DialogText, '<Nodes>', IntToStr(Cost), TextHighlightColorTag);
   ClearChoices(True);
   if GetPlayer.GetCombatStatusStrength(cseBWBuff) > 0.01 then
     Caption := GetPlayer.LookupTalkText('Talk.MilitarySupport.BuffProlongateOk')
@@ -3563,10 +3565,10 @@ begin
   else AddChoice('- ' + Caption, 0, ScriptDialogBlockCallback, 0);
   AddChoice('- ' + GetPlayer.LookupTalkText('Talk.MilitarySupport.PlayerNo'), 0, DeclineMilitarySupport, 0);
 end;
-{ @end $6E59A8 }
+{ @end $5FD230 }
 
-{ @routine $6E5CBC TfTalk_AcceptMilitaryBuff }
-procedure TfTalk.AcceptMilitaryBuff(Action: Integer);
+{ @routine $5FD528 TfTalk_AcceptMilitaryBuff }
+procedure TfTalk.AcceptMilitaryBuff(Action: Cardinal);
 begin
   GetPlayer.ConsumeAvailableNodes(Action, nil);
   SoundManager.PlaySound('Sound.Buy');
@@ -3577,26 +3579,26 @@ begin
   GetPlayer.RefreshDerivedStats(True);
   BuildMilitarySupportChoices;
 end;
-{ @end $6E5CBC }
+{ @end $5FD528 }
 
-{ @routine $6E5E70 TfTalk_DiscussOldHull }
-procedure TfTalk.DiscussOldHull(Action: Integer);
+{ @routine $5FD6D0 TfTalk_DiscussOldHull }
+procedure TfTalk.DiscussOldHull(Action: Cardinal);
 begin
   case Action of
     0:
       begin
         if GetPlayer = TalkShip.PartnerShip then
         begin
-        DialogText := TalkShip.LookupTalkText('Talk.ExTalk.OldHullRangerAnswerP');
-        ClearChoices(False);
-        AddChoice('- ' + GetPlayer.LookupTalkText('Talk.ExTalk.OldHullPlayerSend_1P'), 1, DiscussOldHull, 0);
+          DialogText := TalkShip.LookupTalkText('Talk.ExTalk.OldHullRangerAnswerP');
+          ClearChoices(False);
+          AddChoice('- ' + GetPlayer.LookupTalkText('Talk.ExTalk.OldHullPlayerSend_1P'), 1, DiscussOldHull, 0);
         end
         else
         begin
-        DialogText := TalkShip.LookupTalkText('Talk.ExTalk.OldHullRangerAnswer');
-        ClearChoices(False);
-        AddChoice('- ' + GetPlayer.LookupTalkText('Talk.ExTalk.OldHullPlayerSend_1'), 1, DiscussOldHull, 0);
-        AddChoice('- ' + GetPlayer.LookupTalkText('Talk.ExTalk.OldHullPlayerSend_2'), 2, DiscussOldHull, 0);
+          DialogText := TalkShip.LookupTalkText('Talk.ExTalk.OldHullRangerAnswer');
+          ClearChoices(False);
+          AddChoice('- ' + GetPlayer.LookupTalkText('Talk.ExTalk.OldHullPlayerSend_1'), 1, DiscussOldHull, 0);
+          AddChoice('- ' + GetPlayer.LookupTalkText('Talk.ExTalk.OldHullPlayerSend_2'), 2, DiscussOldHull, 0);
         end;
       end;
     1:
@@ -3641,23 +3643,23 @@ begin
       end;
   end;
 end;
-{ @end $6E5E70 }
+{ @end $5FD6D0 }
 
-{ @routine $6E6900 TfTalk_RunScriptRestartAnswer }
-procedure TfTalk.RunScriptRestartAnswer(Action: Integer);
+{ @routine $5FE118 TfTalk_RunScriptRestartAnswer }
+procedure TfTalk.RunScriptRestartAnswer(Action: Cardinal);
 begin
   DialogText := '';
   CurrentScript.ExecuteDialogAnswer(Action);
   ScriptDialogIndex := -1;
   CodeMsgOut(False);
 end;
-{ @end $6E6900 }
+{ @end $5FE118 }
 
-{ @routine $6E6944 TfTalk_AddScriptRestartChoice }
+{ @routine $5FE150 TfTalk_AddScriptRestartChoice }
 procedure TfTalk.AddScriptRestartChoice(Caption: WideString);
 begin
   AddChoice('- ' + Caption, CurrentScript.CurrentAnswer, RunScriptRestartAnswer, 0);
 end;
-{ @end $6E6944 }
+{ @end $5FE150 }
 
 end.

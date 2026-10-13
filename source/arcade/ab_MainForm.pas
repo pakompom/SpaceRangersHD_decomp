@@ -1,14 +1,12 @@
 unit ab_MainForm;
-// Unit bracket (inferred): .text 0x0053B550..0x0054BE3F; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
 uses aGalaxyStruct, Classes, aItem, EC_Buf, EC_Struct, aScript, aMyFunction, ab_Space, GI_GAI, GI_Image, GI_Label, GI_StarField, GI_Window, GI_GraphButton, GI_MessageLoop, GI_Panel, GI_PolyLine, SE_Space, fLoad, fPanelLoad, aPath, ab_Item, ab_Zone;
 
 type
-  // Variable-length map-color blocks read by LoadMap and used at
-  // $544150/$5433D8. Offsets are relative to the start of each color block.
-  // PInteger(@Field)^ below preserves the native separate address calculation.
+  // Variable-length map-color blocks read by LoadMap.
+  // Offsets are relative to the start of each color block.
   TArcadeMapColorHeader = packed record // @size $10
     CurrentColor: Integer; // @offset $00
     VariantCount: Integer; // @offset $04
@@ -51,7 +49,7 @@ type
     ShipPath: TSPath; // @offset $10C
     RouteSpaces: TList; // @offset $110
     MapDrag: TArcadeMapDrag; // @offset $114
-    ScrollTimer: PCallbackTimerGI; // @offset $120
+    ScrollTimer: TCallbackTimerIdGI; // @offset $120
     MapBackgroundPath: WideString; // @offset $124
     WeaponButtons: array[0..4] of TObjectGI; // @offset $128 Native access includes explicit graph-button casts.
     WeaponIcons: array[0..4] of TImageGI; // @offset $13C
@@ -61,7 +59,7 @@ type
     PlayButton: TGraphButtonGI; // @offset $190
     PauseButton: TGraphButtonGI; // @offset $194
     WorldLines: TPolyLineGI; // @offset $198
-    UpdateTimer: PCallbackTimerGI; // @offset $19C Simulation callback TimerTakt.
+    UpdateTimer: TCallbackTimerIdGI; // @offset $19C Simulation callback TimerTakt.
     WorldCenterX: Integer; // @offset $1A0
     WorldCenterY: Integer; // @offset $1A4
     BonusIcons: array[0..7] of TImageGI; // @offset $1A8
@@ -100,92 +98,92 @@ type
     RandomSeed: Cardinal; // @offset $340
     ViewModeBeforeDefeat: Byte; // @offset $344
     SimulationPaused: Boolean; // @offset $345 P/Pause toggles; distinct from route pause.
-    VictoryTimer: PCallbackTimerGI; // @offset $348
+    VictoryTimer: TCallbackTimerIdGI; // @offset $348
     ListedObjects: TList; // @offset $34C Owned list; borrowed objects supply text to the battle list controls.
     LoadPanel: TfPanelLoad; // @offset $350 Owned.
     SelectedMapName: WideString; // @offset $354 Arena Map value supplied by the standalone selector.
 
-    constructor Create; // @addr $53B604
-    destructor Destroy; override; // @addr $53B670
-    function ScreenPointToSphere(Point: TPoint; var Longitude, PolarAngle: Double): Boolean; // @addr $53EF60
-    function RandomRange(BoundA, BoundB: Integer): Integer; // @addr $54B6E8
-    function RandomFloat(BoundA, BoundB: Double): Double; // @addr $54B774
-    procedure UpdateHelp(Sender: TObjectGI; Show: Boolean); // @addr $54B808
-    procedure ControlMouseEnter(Sender: TObjectGI); // @addr $54B848
-    procedure ControlMouseLeave(Sender: TObjectGI); // @addr $54B868
-    procedure HideHelp; // @addr $54B880
-    procedure HideObjectInfo; // @addr $54A114
-    procedure TogglePause(Sender: TObjectGI); // @addr $54115C
-    procedure WeaponSelect(Sender: TObjectGI); // @addr $540E1C
-    procedure ToggleWeaponGroup(Sender: TObjectGI); // @addr $540E74
-    procedure WeaponButtonClick(Sender: TObjectGI); // @addr $540F70
-    procedure NormalizeWeaponSelection; // @addr $540F8C
-    procedure ClearWeaponPanel; // @addr $540318
-    procedure InvalidateFrame; // @addr $546854
-    procedure DrawShipHealthBars; // @addr $5468DC
-    procedure UpdateShipStatusIcons; // @addr $546E08
-    procedure WeaponStateChanged(Sender: TObjectGI); // @addr $53FEC0
-    procedure UpdateWeaponPanel; // @addr $53F12C
-    procedure UpdateWeaponHighlights(Force: Boolean); // @addr $540534
-    procedure OpenShipEquipment(Sender: TObjectGI); // @addr $54B0A8
-    procedure RequestExit(Sender: TObjectGI); // @addr $53D8F4
-    procedure BeginKellerDialogTransition; // @addr $548FA0
-    procedure FinishCampaignTransition; // @addr $546658
-    procedure ReportSurvivingShips; // @addr $541208
-    procedure BeginBattleExit; // @addr $548FC0
-    procedure SyncWeaponInventory; // @addr $54B290
-    procedure EnterMapView; // @addr $542FC4
-    procedure AdvanceMapColors; // @addr $544150
-    procedure EnterCurrentSpace; // @addr $5433D8
-    procedure BattleKeyDown(Sender: TObjectGI; VirtualKey: Cardinal); // @addr $53DAA4
-    procedure BattleKeyUp(Sender: TObjectGI; VirtualKey: Cardinal); // @addr $53E478
-    procedure BattleMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $53E654
-    procedure BattleMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $53E9B8
-    procedure BattleRightMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $53E9DC
-    procedure BattleRightMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $53EA84
-    procedure BattleMouseMove(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $53EB08
-    procedure BuildSpaceRoute(Route: TList; Origin, Destination: TabSpace); // @addr $548808
-    procedure AppendShipPathArc(Destination: TPointF); // @addr $5481D8
-    procedure AppendShipPathLine(Destination: TPointF); // @addr $5484D8
-    procedure AppendShipPath(Destination: TPointF); // @addr $548784
-    procedure UpdateShipPathImages; // @addr $548DDC
-    procedure RebuildShipPath; // @addr $548A6C
-    procedure BuildShipPathImages; // @addr $548AD8
-    procedure ShowSpaceInfo(Space: TabSpace); // @addr $54916C
-    procedure ShowItemInfo(Item: TabItem); // @addr $54A198
-    procedure UpdateAutopilotButtons; // @addr $5410E8
-    procedure ToggleAutopilot(Sender: TObjectGI); // @addr $541124
-    procedure ResetBattleControls; // @addr $542E64
-    procedure BeginMapTransition; // @addr $542F4C
-    procedure CancelCargoPickup; // @addr $54B024
-    procedure PickUpItem(Item: TabItem); // @addr $54B450
-    procedure ShowVictory; // @addr $54B89C
-    procedure CloseVictory(Sender: TObjectGI; VirtualKey: Cardinal); // @addr $54BD88
-    procedure ClearEnemyStatus(Index: Integer); // @addr $546CC0
-    procedure ClearTrackedShipStatus(Index: Integer); // @addr $546D94
-    procedure ClearShipPath; // @addr $548F24
-    procedure DrawFrame; override; // @addr $547F2C
-    procedure OnOpen; override; // @addr $53C610
-    procedure OnClose; override; // @addr $53D730
-    procedure SelectMusic; override; // @addr $54BE0C
-    procedure InitializeLayout; override; // @addr $53B6EC
-    procedure ABSpaceBuild(GridSize: Integer; Angle: Single); // @addr 0x541B60
-    procedure WorldImageCycleComplete(Sender: TObjectGI); // @addr $54819C
-    procedure ClearOverlaySegments; // @addr $53EF08
-    procedure ClearBattle; // @addr $5413C8
-    procedure ClearMap; // @addr $541440
-    procedure LoadMap(Buffer: TBufEC; LoadPolygons: Boolean); // @addr $541490
-    procedure LoadMapResource(Path: WideString; LoadPolygons: Boolean); // @addr $5415BC
-    procedure LoadMapFile(Path: WideString; LoadPolygons: Boolean); // @addr $541744
-    procedure ClearGrid; // @addr $541870
-    procedure BuildGrid; // @addr $5418DC
-    procedure ScrollMapTimer(Timer: PCallbackTimerGI; UserData: Integer); // @addr $5463C4
-    procedure TimerTakt(Timer: PCallbackTimerGI; UserData: Integer); // @addr 0x544214
+    constructor Create; // @addr $665584
+    destructor Destroy; override; // @addr $6655E0
+    function ScreenPointToSphere(Point: TPoint; var Longitude, PolarAngle: Double): Boolean; // @addr $6688C0
+    function RandomRange(BoundA, BoundB: Integer): Integer; // @addr $673B50
+    function RandomFloat(BoundA, BoundB: Double): Double; // @addr $673BA4
+    procedure UpdateHelp(Sender: TObjectGI; Show: Boolean); // @addr $673C28
+    procedure ControlMouseEnter(Sender: TObjectGI); // @addr $673C54
+    procedure ControlMouseLeave(Sender: TObjectGI); // @addr $673C5C
+    procedure HideHelp; // @addr $673C64
+    procedure HideObjectInfo; // @addr $67284C
+    procedure TogglePause(Sender: TObjectGI); // @addr $66A6D8
+    procedure WeaponSelect(Sender: TObjectGI); // @addr $66A484
+    procedure ToggleWeaponGroup(Sender: TObjectGI); // @addr $66A4C4
+    procedure WeaponButtonClick(Sender: TObjectGI); // @addr $66A59C
+    procedure NormalizeWeaponSelection; // @addr $66A5A4
+    procedure ClearWeaponPanel; // @addr $669B18
+    procedure InvalidateFrame; // @addr $66F624
+    procedure DrawShipHealthBars; // @addr $66F698
+    procedure UpdateShipStatusIcons; // @addr $66FAF0
+    procedure WeaponStateChanged(Sender: TObjectGI); // @addr $669738
+    procedure UpdateWeaponPanel; // @addr $668A64
+    procedure UpdateWeaponHighlights(Force: Boolean); // @addr $669C60
+    procedure OpenShipEquipment(Sender: TObjectGI); // @addr $673600
+    procedure RequestExit(Sender: TObjectGI); // @addr $66743C
+    procedure BeginKellerDialogTransition; // @addr $671894
+    procedure FinishCampaignTransition; // @addr $66F448
+    procedure ReportSurvivingShips; // @addr $66A760
+    procedure BeginBattleExit; // @addr $6718A8
+    procedure SyncWeaponInventory; // @addr $67379C
+    procedure EnterMapView; // @addr $66C280
+    procedure AdvanceMapColors; // @addr $66D200
+    procedure EnterCurrentSpace; // @addr $66C5F8
+    procedure BattleKeyDown(Sender: TObjectGI; VirtualKey: Cardinal); // @addr $6675D4
+    procedure BattleKeyUp(Sender: TObjectGI; VirtualKey: Cardinal); // @addr $667F24
+    procedure BattleMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $6680CC
+    procedure BattleMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $6683CC
+    procedure BattleRightMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $6683E4
+    procedure BattleRightMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $66847C
+    procedure BattleMouseMove(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $6684F4
+    procedure BuildSpaceRoute(Route: TList; Origin, Destination: TabSpace); // @addr $6711F4
+    procedure AppendShipPathArc(Destination: TPointF); // @addr $670BE8
+    procedure AppendShipPathLine(Destination: TPointF); // @addr $670ED0
+    procedure AppendShipPath(Destination: TPointF); // @addr $671180
+    procedure UpdateShipPathImages; // @addr $6716FC
+    procedure RebuildShipPath; // @addr $6713D0
+    procedure BuildShipPathImages; // @addr $671424
+    procedure ShowSpaceInfo(Space: TabSpace); // @addr $671A34
+    procedure ShowItemInfo(Item: TabItem); // @addr $6728C0
+    procedure UpdateAutopilotButtons; // @addr $66A67C
+    procedure ToggleAutopilot(Sender: TObjectGI); // @addr $66A6AC
+    procedure ResetBattleControls; // @addr $66C160
+    procedure BeginMapTransition; // @addr $66C224
+    procedure CancelCargoPickup; // @addr $673598
+    procedure PickUpItem(Item: TabItem); // @addr $673900
+    procedure ShowVictory; // @addr $673C74
+    procedure CloseVictory(Sender: TObjectGI; VirtualKey: Cardinal); // @addr $67410C
+    procedure ClearEnemyStatus(Index: Integer); // @addr $66FA44
+    procedure ClearTrackedShipStatus(Index: Integer); // @addr $66FAB4
+    procedure ClearShipPath; // @addr $671820
+    procedure DrawFrame; override; // @addr $6709A8
+    procedure OnOpen; override; // @addr $6663AC
+    procedure OnClose; override; // @addr $6672F0
+    procedure SelectMusic; override; // @addr $67416C
+    procedure InitializeLayout; override; // @addr $665634
+    procedure ABSpaceBuild(GridSize: Integer; Angle: Single); // @addr 0x0066B000
+    procedure WorldImageCycleComplete(Sender: TObjectGI); // @addr $670BCC
+    procedure ClearOverlaySegments; // @addr $668890
+    procedure ClearBattle; // @addr $66A8C8
+    procedure ClearMap; // @addr $66A928
+    procedure LoadMap(Buffer: TBufEC; LoadPolygons: Boolean); // @addr $66A970
+    procedure LoadMapResource(Path: WideString; LoadPolygons: Boolean); // @addr $66AA80
+    procedure LoadMapFile(Path: WideString; LoadPolygons: Boolean); // @addr $66AC00
+    procedure ClearGrid; // @addr $66AD28
+    procedure BuildGrid; // @addr $66AD70
+    procedure ScrollMapTimer(Timer: TCallbackTimerIdGI; UserData: Cardinal); // @addr $66F1D8
+    procedure TimerTakt(Timer: TCallbackTimerIdGI; UserData: Cardinal); // @addr 0x0066D294
   end;
 
 var
-  ActiveArcadeRequestShips: TObjectList = nil; // @addr $87AEDC Borrowed ActiveArcadeRequest.Ships.
-  ActiveArcadeRequest: PScriptABRequest = nil; // @addr $87AEE0 Borrowed head of QueuedArcadeBattles.
+  ActiveArcadeRequestShips: TObjectList = nil; // @addr $80F7C8 Borrowed ActiveArcadeRequest.Ships.
+  ActiveArcadeRequest: PScriptABRequest = nil; // @addr $80F7CC Borrowed head of QueuedArcadeBattles.
 
 implementation
 
@@ -193,16 +191,16 @@ uses EC_CacheBitmap, aKling, Windows, SysUtils, Math, GI_Tail, ab_Global, Global
   EC_CacheBuf, GR_DX, GR_Rect, GI_MultiImage, ab_Polygon, ab_StopLine, ab_WorldLine, ab_Object, ab_ShipAI, ab_W, aSaveLoad, GI_MessageBox, EC_BlockPar, SE_Process, SE_Ship2, SE_Ruins, ab_Hit, aShip, abWall, Globals, fShip2, fTalk, fStarMap, ThreadCalc, aCalc, aGalaxyEvent, aTranclucator, EC_Str, GI_RotateImage5, GI_GraphBuf, aPlanet, aRuins, SE_Star, SE_Planet;
 
 
-{ @routine $53B604 TfAB_Create }
+{ @routine $665584 TfAB_Create }
 constructor TfAB.Create;
 begin
   inherited Create;
   ListedObjects := TList.Create;
   LoadPanel := TfPanelLoad.Create;
 end;
-{ @end $53B604 }
+{ @end $665584 }
 
-{ @routine $53B670 TfAB_Destroy }
+{ @routine $6655E0 TfAB_Destroy }
 destructor TfAB.Destroy;
 begin
   if ListedObjects <> nil then
@@ -217,9 +215,9 @@ begin
   end;
   inherited Destroy;
 end;
-{ @end $53B670 }
+{ @end $6655E0 }
 
-{ @routine $53B6EC TfAB_InitializeLayout }
+{ @routine $665634 TfAB_InitializeLayout }
 procedure TfAB.InitializeLayout;
 var
   Index: Integer;
@@ -229,46 +227,46 @@ begin
   ViewportRect := Classes.Rect(0, 0, GameScreenWidth, GameScreenHeight);
   with GetByName('MainPanel') do
   begin
-    SetSize(Classes.Point(GameScreenWidth, GameScreenHeight));
+    ObjectSize := Classes.Point(GameScreenWidth, GameScreenHeight);
     with FindByNameRecursive('Map') do
     begin
-      SetSize(Classes.Point(GameScreenWidth, GameScreenHeight));
+      ObjectSize := Classes.Point(GameScreenWidth, GameScreenHeight);
       with FindByNameRecursive('SE') do
       begin
-        SetPosition(Classes.Point(GameScreenWidth shr 1, GameScreenHeight shr 1));
-        SetOrigin(Classes.Point(GameScreenWidth shr 1, GameScreenHeight shr 1));
-        SetSize(Classes.Point(GameScreenWidth, GameScreenHeight));
+        Pos := Classes.Point(GameScreenWidth shr 1, GameScreenHeight shr 1);
+        Sme := Classes.Point(GameScreenWidth shr 1, GameScreenHeight shr 1);
+        ObjectSize := Classes.Point(GameScreenWidth, GameScreenHeight);
       end;
       with FindByNameRecursive('UpdateObj') do
       begin
-        SetSize(Classes.Point(GameScreenWidth, GameScreenHeight));
+        ObjectSize := Classes.Point(GameScreenWidth, GameScreenHeight);
         with FindByNameRecursive('FPS') do
-          SetPosition(Classes.Point(LocalPosition.X + ExtraScreenWidth div 2, LocalPosition.Y));
+          Pos := Classes.Point(LocalPosition.X + ExtraScreenWidth div 2, LocalPosition.Y);
         with FindByNameRecursive('LInfo') do
         begin
-          SetPosition(Classes.Point(LocalPosition.X, LocalPosition.Y + ExtraScreenHeight));
-          SetSize(Classes.Point(GameScreenWidth, ClientSize.Y));
+          Pos := Classes.Point(LocalPosition.X, LocalPosition.Y + ExtraScreenHeight);
+          ObjectSize := Classes.Point(GameScreenWidth, ClientSize.Y);
         end;
         with FindByNameRecursive('LHelp') do
         begin
-          SetPosition(Classes.Point(LocalPosition.X, LocalPosition.Y + ExtraScreenHeight));
-          SetSize(Classes.Point(GameScreenWidth - 10, ClientSize.Y));
+          Pos := Classes.Point(LocalPosition.X, LocalPosition.Y + ExtraScreenHeight);
+          ObjectSize := Classes.Point(GameScreenWidth - 10, ClientSize.Y);
         end;
         if GiResourceVariant = 2 then
           with FindByNameRecursive('ABInfo') do SetSize(Classes.Point(GameScreenWidth, ClientSize.Y));
         with FindByNameRecursive('PanelWeapon') do
-          SetPosition(Classes.Point(LocalPosition.X + ExtraScreenWidth div 2, LocalPosition.Y + ExtraScreenHeight));
+          Pos := Classes.Point(LocalPosition.X + ExtraScreenWidth div 2, LocalPosition.Y + ExtraScreenHeight);
         with FindByNameRecursive('PRight') do
-          SetPosition(Classes.Point(LocalPosition.X + ExtraScreenWidth div 2, LocalPosition.Y + ExtraScreenHeight));
+          Pos := Classes.Point(LocalPosition.X + ExtraScreenWidth div 2, LocalPosition.Y + ExtraScreenHeight);
         with FindByNameRecursive('PItem') do
-          SetPosition(Classes.Point(LocalPosition.X, LocalPosition.Y + ExtraScreenHeight));
+          Pos := Classes.Point(LocalPosition.X, LocalPosition.Y + ExtraScreenHeight);
         with FindByNameRecursive('PanelWin') do
         begin
-          SetPosition(Classes.Point(LocalPosition.X, LocalPosition.Y + ExtraScreenHeight));
-          SetSize(Classes.Point(GameScreenWidth, ClientSize.Y));
+          Pos := Classes.Point(LocalPosition.X, LocalPosition.Y + ExtraScreenHeight);
+          ObjectSize := Classes.Point(GameScreenWidth, ClientSize.Y);
           with FindByNameRecursive('PanelWinHide') do
           begin
-            SetSize(Classes.Point(GameScreenWidth, ClientSize.Y));
+            ObjectSize := Classes.Point(GameScreenWidth, ClientSize.Y);
             with FindByNameRecursive('WinText') do SetSize(Classes.Point(GameScreenWidth, ClientSize.Y));
             with FindByNameRecursive('WinItem') do SetSize(Classes.Point(GameScreenWidth - 4, ClientSize.Y));
             with FindByNameRecursive('WinShr') do SetSize(Classes.Point(GameScreenWidth, ClientSize.Y));
@@ -276,11 +274,11 @@ begin
         end;
         with FindByNameRecursive('PanelMenuLose') do
         begin
-          SetPosition(Classes.Point(LocalPosition.X, LocalPosition.Y + ExtraScreenHeight));
-          SetSize(Classes.Point(GameScreenWidth, ClientSize.Y));
+          Pos := Classes.Point(LocalPosition.X, LocalPosition.Y + ExtraScreenHeight);
+          ObjectSize := Classes.Point(GameScreenWidth, ClientSize.Y);
           with FindByNameRecursive('PanelLoseHide') do
           begin
-            SetSize(Classes.Point(GameScreenWidth, ClientSize.Y));
+            ObjectSize := Classes.Point(GameScreenWidth, ClientSize.Y);
             with FindByNameRecursive('PanelLose') do SetSize(Classes.Point(GameScreenWidth, ClientSize.Y));
             with FindByNameRecursive('LoseKeyPress') do SetSize(Classes.Point(GameScreenWidth - 4, ClientSize.Y));
             with FindByNameRecursive('LoseShr') do SetSize(Classes.Point(GameScreenWidth, ClientSize.Y));
@@ -289,9 +287,9 @@ begin
       end;
       with FindByNameRecursive('StarField') do
       begin
-        SetSize(Classes.Point(GameScreenWidth, GameScreenHeight));
-        SetPosition(Classes.Point(GameScreenWidth shr 1, GameScreenHeight shr 1));
-        SetOrigin(Classes.Point(GameScreenWidth shr 1, GameScreenHeight shr 1));
+        ObjectSize := Classes.Point(GameScreenWidth, GameScreenHeight);
+        Pos := Classes.Point(GameScreenWidth shr 1, GameScreenHeight shr 1);
+        Sme := Classes.Point(GameScreenWidth shr 1, GameScreenHeight shr 1);
       end;
     end;
   end;
@@ -338,9 +336,9 @@ begin
   PauseButton.UpCallback := TogglePause;
   SelectedMapName := '';
 end;
-{ @end $53B6EC }
+{ @end $665634 }
 
-{ @routine $53C610 TfAB_OnOpen }
+{ @routine $6663AC TfAB_OnOpen }
 procedure TfAB.OnOpen;
 var
   Ship, ShipX0, ShipX1: TabShip;
@@ -373,7 +371,7 @@ begin
     DepartureTurn := Galaxy.CurrentTurn;
     ArrivalTurn := DepartureTurn + (GetPlayer.OrderStateData and $FFFF);
   end;
-  GetByName('LInfo').SetActive(False);
+  GetByName('LInfo').IsActive := False;
   ShipPath := TSPath.Create;
   RouteSpaces := TList.Create;
   if ArcadeSpaceProcess <> nil then
@@ -396,18 +394,18 @@ begin
   WorldLines := TPolyLineGI.Create(MapPanel);
   WorldLines.SetDepth(200);
   WorldLines.NormalizeBounds := False;
-  WorldLines.SetPosition(StarField.LocalPosition);
-  WorldLines.SetSize(StarField.ClientSize);
-  WorldLines.SetOrigin(StarField.OriginPoint);
+  WorldLines.Pos := StarField.LocalPosition;
+  WorldLines.ObjectSize := StarField.ClientSize;
+  WorldLines.Sme := StarField.OriginPoint;
   WorldLines.AutoRebuildBounds := True;
-  WorldLines.SetPositionModeW(True);
-  WorldLines.SetActive(True);
+  WorldLines.World := True;
+  WorldLines.IsActive := True;
   WorldCenterX := MapPanel.ClientSize.X div 2;
   WorldCenterY := MapPanel.ClientSize.Y div 2;
   if GetPlayer = nil then
   begin
     RetainSpaceObject(PlayerVisual, CreateSpaceObjectByName('Ship2', 'Ship.People.Ranger', Classes.Point(0, 0)));
-    PlayerVisual.SetSize(Classes.Point(GiScalePixels(64), GiScalePixels(64)));
+    PlayerVisual.ObjectSize := Classes.Point(GiScalePixels(64), GiScalePixels(64));
   end
   else
   begin
@@ -415,9 +413,9 @@ begin
       RetainSpaceObject(PlayerVisual, CreateSpaceObjectByName('Ship2', GetPlayer.Graphic.GraphKey, Classes.Point(0, 0)))
     else
       RetainSpaceObject(PlayerVisual, CreateSpaceObjectByName('Ruins', GetPlayer.Graphic.GraphKey, Classes.Point(0, 0)));
-    PlayerVisual.SetSize(Classes.Point(GetPlayer.Graphic.Size.X, GetPlayer.Graphic.Size.Y));
+    PlayerVisual.ObjectSize := Classes.Point(GetPlayer.Graphic.Size.X, GetPlayer.Graphic.Size.Y);
   end;
-  PlayerVisual.SetAlpha(255);
+  PlayerVisual.Alpha := 255;
   if PlayerVisual is TShip2SE then
   begin
     TShip2SE(PlayerVisual).TailEmitIntervalMs := 10;
@@ -447,15 +445,15 @@ begin
     Ship.MaxHealth := 1000;
     Ship.Health := 1000;
     Ship.WeaponCount := 5;
-    ab_Weapon_Initialize(@Ship.Weapons[0], PickRandomItemType([Ord(t_IndustrialLaser)..Ord(t_Lirecron)]));
+    ab_Weapon_Initialize(@Ship.Weapons[0], PickRandomItemType([t_IndustrialLaser..t_Lirecron]));
     Ship.Weapons[0].SlotData := 0;
-    ab_Weapon_Initialize(@Ship.Weapons[1], PickRandomItemType([Ord(t_IndustrialLaser)..Ord(t_Lirecron)]));
+    ab_Weapon_Initialize(@Ship.Weapons[1], PickRandomItemType([t_IndustrialLaser..t_Lirecron]));
     Ship.Weapons[1].SlotData := 1;
-    ab_Weapon_Initialize(@Ship.Weapons[2], PickRandomItemType([Ord(t_IndustrialLaser)..Ord(t_Lirecron)]));
+    ab_Weapon_Initialize(@Ship.Weapons[2], PickRandomItemType([t_IndustrialLaser..t_Lirecron]));
     Ship.Weapons[2].SlotData := 2;
-    ab_Weapon_Initialize(@Ship.Weapons[3], PickRandomItemType([Ord(t_IndustrialLaser)..Ord(t_Lirecron)]));
+    ab_Weapon_Initialize(@Ship.Weapons[3], PickRandomItemType([t_IndustrialLaser..t_Lirecron]));
     Ship.Weapons[3].SlotData := 3 or EquipmentSecondaryFireFlag;
-    ab_Weapon_Initialize(@Ship.Weapons[4], PickRandomItemType([Ord(t_IndustrialLaser)..Ord(t_Lirecron)]));
+    ab_Weapon_Initialize(@Ship.Weapons[4], PickRandomItemType([t_IndustrialLaser..t_Lirecron]));
     Ship.Weapons[4].SlotData := 4 or EquipmentSecondaryFireFlag;
     Ship.PrimaryWeapon := -1;
     Ship.SecondaryWeapon := -1;
@@ -465,7 +463,7 @@ begin
   begin
     Ship.MaxHealth := GetPlayer.GetHull.Weight;
     Ship.Health := GetPlayer.GetHull.HullPoints;
-    for Index := 0 to 4 do CampaignWeapons[Index] := nil;
+    for Index := Low(CampaignWeapons) to High(CampaignWeapons) do CampaignWeapons[Index] := nil;
     SyncWeaponInventory;
     for Index := 0 to Ship.WeaponCount - 1 do Ship.Weapons[Index].Ammo := Ship.Weapons[Index].MaxAmmo;
     Ship.PrimaryWeapon := -1;
@@ -483,11 +481,11 @@ begin
     Ship.Health := 500;
     Ship.MaxHealth := 500;
     Ship.WeaponCount := 5;
-    ab_Weapon_Initialize(@Ship.Weapons[0], PickRandomItemType([Ord(t_IndustrialLaser)..Ord(t_Lirecron)]));
-    ab_Weapon_Initialize(@Ship.Weapons[1], PickRandomItemType([Ord(t_IndustrialLaser)..Ord(t_Lirecron)]));
-    ab_Weapon_Initialize(@Ship.Weapons[2], PickRandomItemType([Ord(t_IndustrialLaser)..Ord(t_Lirecron)]));
-    ab_Weapon_Initialize(@Ship.Weapons[3], PickRandomItemType([Ord(t_IndustrialLaser)..Ord(t_Lirecron)]));
-    ab_Weapon_Initialize(@Ship.Weapons[4], PickRandomItemType([Ord(t_IndustrialLaser)..Ord(t_Lirecron)]));
+    ab_Weapon_Initialize(@Ship.Weapons[0], PickRandomItemType([t_IndustrialLaser..t_Lirecron]));
+    ab_Weapon_Initialize(@Ship.Weapons[1], PickRandomItemType([t_IndustrialLaser..t_Lirecron]));
+    ab_Weapon_Initialize(@Ship.Weapons[2], PickRandomItemType([t_IndustrialLaser..t_Lirecron]));
+    ab_Weapon_Initialize(@Ship.Weapons[3], PickRandomItemType([t_IndustrialLaser..t_Lirecron]));
+    ab_Weapon_Initialize(@Ship.Weapons[4], PickRandomItemType([t_IndustrialLaser..t_Lirecron]));
     Ship.PrimaryWeapon := 0;
     ShipX0 := Ship;
     Ship := TabShipAI.Create;
@@ -499,11 +497,11 @@ begin
     Ship.Health := 500;
     Ship.MaxHealth := 500;
     Ship.WeaponCount := 5;
-    ab_Weapon_Initialize(@Ship.Weapons[0], PickRandomItemType([Ord(t_IndustrialLaser)..Ord(t_Lirecron)]));
-    ab_Weapon_Initialize(@Ship.Weapons[1], PickRandomItemType([Ord(t_IndustrialLaser)..Ord(t_Lirecron)]));
-    ab_Weapon_Initialize(@Ship.Weapons[2], PickRandomItemType([Ord(t_IndustrialLaser)..Ord(t_Lirecron)]));
-    ab_Weapon_Initialize(@Ship.Weapons[3], PickRandomItemType([Ord(t_IndustrialLaser)..Ord(t_Lirecron)]));
-    ab_Weapon_Initialize(@Ship.Weapons[4], PickRandomItemType([Ord(t_IndustrialLaser)..Ord(t_Lirecron)]));
+    ab_Weapon_Initialize(@Ship.Weapons[0], PickRandomItemType([t_IndustrialLaser..t_Lirecron]));
+    ab_Weapon_Initialize(@Ship.Weapons[1], PickRandomItemType([t_IndustrialLaser..t_Lirecron]));
+    ab_Weapon_Initialize(@Ship.Weapons[2], PickRandomItemType([t_IndustrialLaser..t_Lirecron]));
+    ab_Weapon_Initialize(@Ship.Weapons[3], PickRandomItemType([t_IndustrialLaser..t_Lirecron]));
+    ab_Weapon_Initialize(@Ship.Weapons[4], PickRandomItemType([t_IndustrialLaser..t_Lirecron]));
     Ship.PrimaryWeapon := 0;
     ShipX1 := Ship;
     Ship := TabShipAI.Create;
@@ -515,11 +513,11 @@ begin
     Ship.Health := 500;
     Ship.MaxHealth := 500;
     Ship.WeaponCount := 5;
-    ab_Weapon_Initialize(@Ship.Weapons[0], PickRandomItemType([Ord(t_IndustrialLaser)..Ord(t_Lirecron)]));
-    ab_Weapon_Initialize(@Ship.Weapons[1], PickRandomItemType([Ord(t_IndustrialLaser)..Ord(t_Lirecron)]));
-    ab_Weapon_Initialize(@Ship.Weapons[2], PickRandomItemType([Ord(t_IndustrialLaser)..Ord(t_Lirecron)]));
-    ab_Weapon_Initialize(@Ship.Weapons[3], PickRandomItemType([Ord(t_IndustrialLaser)..Ord(t_Lirecron)]));
-    ab_Weapon_Initialize(@Ship.Weapons[4], PickRandomItemType([Ord(t_IndustrialLaser)..Ord(t_Lirecron)]));
+    ab_Weapon_Initialize(@Ship.Weapons[0], PickRandomItemType([t_IndustrialLaser..t_Lirecron]));
+    ab_Weapon_Initialize(@Ship.Weapons[1], PickRandomItemType([t_IndustrialLaser..t_Lirecron]));
+    ab_Weapon_Initialize(@Ship.Weapons[2], PickRandomItemType([t_IndustrialLaser..t_Lirecron]));
+    ab_Weapon_Initialize(@Ship.Weapons[3], PickRandomItemType([t_IndustrialLaser..t_Lirecron]));
+    ab_Weapon_Initialize(@Ship.Weapons[4], PickRandomItemType([t_IndustrialLaser..t_Lirecron]));
     Ship.PrimaryWeapon := 0;
     for Index := 0 to 3 do
     begin
@@ -560,8 +558,8 @@ begin
   SecondaryFireKeyDown := False;
   ArcadePaused := False;
   ArcadePauseWithShift := False;
-  PlayButton.SetActive(not ArcadePaused);
-  PauseButton.SetActive(ArcadePaused);
+  PlayButton.IsActive := not ArcadePaused;
+  PauseButton.IsActive := ArcadePaused;
   CampaignTransitionStarted := False;
   CampaignLoadStarted := False;
   CampaignLoadFinished := False;
@@ -589,12 +587,12 @@ begin
   ArcadeTickCount := 0;
   UpdateTimer := ScheduleCallbackTimer(ArcadeTickMs, ArcadeTickMs, TimerTakt);
   ScrollTimer := ScheduleCallbackTimer(ScrollTime, ScrollTime, ScrollMapTimer);
-  TimerTakt(nil, 0);
+  TimerTakt(0, 0);
   HideHelp;
 end;
-{ @end $53C610 }
+{ @end $6663AC }
 
-{ @routine $53D730 TfAB_OnClose }
+{ @routine $6672F0 TfAB_OnClose }
 procedure TfAB.OnClose;
 var
   Index: Integer;
@@ -611,15 +609,15 @@ begin
     CacheLoader := nil;
   end;
   if PlayerVisual <> nil then ReleaseSpaceObject(PlayerVisual);
-  if ScrollTimer <> nil then
+  if ScrollTimer <> 0 then
   begin
     CancelCallbackTimer(ScrollTimer);
-    ScrollTimer := nil;
+    ScrollTimer := 0;
   end;
-  if UpdateTimer <> nil then
+  if UpdateTimer <> 0 then
   begin
     CancelCallbackTimer(UpdateTimer);
-    UpdateTimer := nil;
+    UpdateTimer := 0;
   end;
   if WorldLines <> nil then
   begin
@@ -646,13 +644,13 @@ begin
     ArcadeMapColorBuffer.Free;
     ArcadeMapColorBuffer := nil;
   end;
-  for Index := 0 to 7 do ClearEnemyStatus(Index);
-  for Index := 0 to 7 do ClearTrackedShipStatus(Index);
+  for Index := Low(EnemyIcons) to High(EnemyIcons) do ClearEnemyStatus(Index);
+  for Index := Low(TrackedShipIcons) to High(TrackedShipIcons) do ClearTrackedShipStatus(Index);
   CloseVictory(nil, 0);
 end;
-{ @end $53D730 }
+{ @end $6672F0 }
 
-{ @routine $53D8F4 TfAB_RequestExit }
+{ @routine $66743C TfAB_RequestExit }
 procedure TfAB.RequestExit(Sender: TObjectGI);
 var
   Standalone: Boolean;
@@ -687,9 +685,9 @@ begin
     BreakUiMessage;
   end;
 end;
-{ @end $53D8F4 }
+{ @end $66743C }
 
-{ @routine $53DAA4 TfAB_BattleKeyDown }
+{ @routine $6675D4 TfAB_BattleKeyDown }
 procedure TfAB.BattleKeyDown(Sender: TObjectGI; VirtualKey: Cardinal);
 var
   Index: Integer;
@@ -739,8 +737,8 @@ begin
   else if (VirtualKey = VK_SPACE) and (ArcadeViewMode = 2) then
   begin
     ArcadePaused := not ArcadePaused;
-    PlayButton.SetActive(not ArcadePaused);
-    PauseButton.SetActive(ArcadePaused);
+    PlayButton.IsActive := not ArcadePaused;
+    PauseButton.IsActive := ArcadePaused;
     ArcadePauseWithShift := IsVirtualKeyDown(VK_SHIFT);
   end
   else if (VirtualKey = VK_RETURN) and (ArcadeViewMode = 2) and (NextArcadeSpace = nil) and
@@ -858,9 +856,9 @@ begin
   else if (VirtualKey = Ord('S')) and not IsVirtualKeyDown(VK_SHIFT) and not IsVirtualKeyDown(VK_CONTROL) then OpenShipEquipment(nil)
   else if (VirtualKey = Ord('P')) or (VirtualKey = VK_PAUSE) then SimulationPaused := not SimulationPaused;
 end;
-{ @end $53DAA4 }
+{ @end $6675D4 }
 
-{ @routine $53E478 TfAB_BattleKeyUp }
+{ @routine $667F24 TfAB_BattleKeyUp }
 procedure TfAB.BattleKeyUp(Sender: TObjectGI; VirtualKey: Cardinal);
 begin
   CancelCargoPickup;
@@ -907,9 +905,9 @@ begin
     UpdateAutopilotButtons;
   end;
 end;
-{ @end $53E478 }
+{ @end $667F24 }
 
-{ @routine $53E654 TfAB_BattleMouseDown }
+{ @routine $6680CC TfAB_BattleMouseDown }
 procedure TfAB.BattleMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint);
 var
   Origin: TabSpace;
@@ -935,8 +933,8 @@ begin
     else if (RouteSpaces.Count > 0) and (RouteSpaces[RouteSpaces.Count - 1] = HoveredArcadeSpace) then
     begin
       ArcadePaused := True;
-      PlayButton.SetActive(not ArcadePaused);
-      PauseButton.SetActive(ArcadePaused);
+      PlayButton.IsActive := not ArcadePaused;
+      PauseButton.IsActive := ArcadePaused;
       ArcadePauseWithShift := IsVirtualKeyDown(VK_SHIFT);
       HideObjectInfo;
     end
@@ -965,38 +963,34 @@ begin
     CancelCargoPickup;
   end;
 end;
-{ @end $53E654 }
+{ @end $6680CC }
 
-{ @routine $53E9B8 TfAB_BattleMouseUp }
+{ @routine $6683CC TfAB_BattleMouseUp }
 procedure TfAB.BattleMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint);
 begin
 end;
-{ @end $53E9B8 }
+{ @end $6683CC }
 
-{ @routine $53E9DC TfAB_BattleRightMouseDown }
+{ @routine $6683E4 TfAB_BattleRightMouseDown }
 procedure TfAB.BattleRightMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint);
 begin
-  if (ArcadeViewMode = 2) and (NextArcadeSpace = nil) and not ContentPanel.IsOccludedAtPoint(Point) then
-  begin
-    MapDrag.Active := True;
-    MapDrag.Position := Point;
-    if IsCursorImageSelected('Main') then SetCursorByName('Scroll');
-  end;
+  if (ArcadeViewMode <> 2) or (NextArcadeSpace <> nil) or ContentPanel.IsOccludedAtPoint(Point) then Exit;
+  MapDrag.Active := True;
+  MapDrag.Position := Point;
+  if IsCursorImageSelected('Main') then SetCursorByName('Scroll');
 end;
-{ @end $53E9DC }
+{ @end $6683E4 }
 
-{ @routine $53EA84 TfAB_BattleRightMouseUp }
+{ @routine $66847C TfAB_BattleRightMouseUp }
 procedure TfAB.BattleRightMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint);
 begin
-  if (ArcadeViewMode = 2) and MapDrag.Active then
-  begin
-    MapDrag.Active := False;
-    if IsCursorImageSelected('Scroll') then SetCursorByName('Main');
-  end;
+  if (ArcadeViewMode <> 2) or not MapDrag.Active then Exit;
+  MapDrag.Active := False;
+  if IsCursorImageSelected('Scroll') then SetCursorByName('Main');
 end;
-{ @end $53EA84 }
+{ @end $66847C }
 
-{ @routine $53EB08 TfAB_BattleMouseMove }
+{ @routine $6684F4 TfAB_BattleMouseMove }
 procedure TfAB.BattleMouseMove(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint);
 var
   Distance, NearestDistance, ItemDistance: Double;
@@ -1022,7 +1016,7 @@ begin
   end
   else
   begin
-    if (Point.X = 0) or (Point.Y = 0) or (GameScreenWidth - 1 = Point.X) or (GameScreenHeight - 1 = Point.Y) then
+    if (Point.X = 0) or (Point.Y = 0) or (Integer(GameScreenWidth) - 1 = Point.X) or (Integer(GameScreenHeight) - 1 = Point.Y) then
     begin
       if (ArcadeViewMode = 2) and (NextArcadeSpace = nil) then
       begin
@@ -1076,9 +1070,9 @@ begin
     if IsCursorImageSelected('Scroll') then SetCursorByName('Main');
   end;
 end;
-{ @end $53EB08 }
+{ @end $6684F4 }
 
-{ @routine $53EF08 TfAB_ClearOverlaySegments }
+{ @routine $668890 TfAB_ClearOverlaySegments }
 procedure TfAB.ClearOverlaySegments;
 var
   Index: Integer;
@@ -1090,9 +1084,9 @@ begin
       OverlaySegments[Index] := nil;
     end;
 end;
-{ @end $53EF08 }
+{ @end $668890 }
 
-{ @routine $53EF60 TfAB_ScreenPointToSphere }
+{ @routine $6688C0 TfAB_ScreenPointToSphere }
 function TfAB.ScreenPointToSphere(Point: TPoint; var Longitude, PolarAngle: Double): Boolean;
 var
   Source, RayOrigin, RayDirection: TVector3D;
@@ -1114,9 +1108,9 @@ begin
     MakeVector3D(0, 0, 0), SphereRadius, RayOrigin);
   if Result then VectorToSphericalAngles(RayOrigin, Longitude, PolarAngle);
 end;
-{ @end $53EF60 }
+{ @end $6688C0 }
 
-{ @routine $53F12C TfAB_UpdateWeaponPanel }
+{ @routine $668A64 TfAB_UpdateWeaponPanel }
 procedure TfAB.UpdateWeaponPanel;
 var
   Value, Index, SlotIndex, Group: Integer;
@@ -1125,115 +1119,116 @@ var
   WeaponName: WideString;
   MicroModule: Integer;
 begin
-  if (PlayerArcadeShip = nil) or (PlayerArcadeShip.Health <= 0) or (ArcadeViewMode = 5) then ClearWeaponPanel
-  else
+  if (PlayerArcadeShip = nil) or (PlayerArcadeShip.Health <= 0) or (ArcadeViewMode = 5) then
   begin
-    GetByName('PanelWeapon').SetActive(True);
-    for Value := 1 to 5 do
-    begin
-      Button := GetByName('F' + IntToStr(Value)) as TGraphButtonGI;
-      Button.HelpText := '';
-      Button.SetDisabled(True);
-      Group := 0;
-      for Index := 0 to PlayerArcadeShip.WeaponCount - 1 do
-      begin
-        SlotIndex := PlayerArcadeShip.Weapons[Index].SlotData and EquipmentSlotIndexMask;
-        if Value - 1 = SlotIndex then
-        begin
-          if (PlayerArcadeShip.Weapons[Index].SlotData and EquipmentSecondaryFireFlag) <> 0 then Group := 1;
-          Break;
-        end;
-      end;
-      if Group <> 0 then
-      begin
-        Button.SetImageNormalPath('GI,Bm.FormAB2.' + GiResourceSuffix + 'W' + IntToStr(Value) + 'GN');
-        Button.SetImageNormalActivePath('GI,Bm.FormAB2.' + GiResourceSuffix + 'W' + IntToStr(Value) + 'GA');
-        Button.SetImageDownPath('GI,Bm.FormAB2.' + GiResourceSuffix + 'W' + IntToStr(Value) + 'GD');
-      end
-      else
-      begin
-        Button.SetImageNormalPath('GI,Bm.FormAB2.' + GiResourceSuffix + 'W' + IntToStr(Value) + 'BN');
-        Button.SetImageNormalActivePath('GI,Bm.FormAB2.' + GiResourceSuffix + 'W' + IntToStr(Value) + 'BA');
-        Button.SetImageDownPath('GI,Bm.FormAB2.' + GiResourceSuffix + 'W' + IntToStr(Value) + 'BD');
-      end;
-      Button.SetImageDisabledPath('GI,Bm.FormAB2.' + GiResourceSuffix + 'W' + IntToStr(Value) + 'H');
-      Button.ImageNormal.SetImageKindY(ikyBottom);
-      Button.ImageNormalActive.SetImageKindY(ikyBottom);
-      Button.ImageDown.SetImageKindY(ikyBottom);
-      Button.UserValue := -1;
-      Button.UserIndex := -1;
-      Button.UserData := Value;
-      Button.StateChangedCallback := WeaponStateChanged;
-      for Index := 0 to PlayerArcadeShip.WeaponCount - 1 do
-      begin
-        SlotIndex := PlayerArcadeShip.Weapons[Index].SlotData and EquipmentSlotIndexMask;
-        if Value - 1 = SlotIndex then
-        begin
-          Button.UserIndex := Index;
-          Break;
-        end;
-      end;
-      if GetPlayer <> nil then
-      begin
-        Item := GetPlayer.FindEquippedItemInSlot(WeaponCategoryItemType, Value - 1) as TWeapon;
-        if GetPlayer.GetSlotCount(sskWeapon) <= Value - 1 then
-          Button.SetImageDisabledPath('GI,Bm.FormAB2.' + GiResourceSuffix + 'W' + IntToStr(Value) + 'H')
-        else if Item = nil then
-          Button.SetImageDisabledPath('GI,Bm.FormAB2.' + GiResourceSuffix + 'W' + IntToStr(Value) + 'E')
-        else if not GetPlayer.IsEquipmentUsable(Item) then
-          Button.SetImageDisabledPath('GI,Bm.FormAB2.' + GiResourceSuffix + 'W' + IntToStr(Value) + 'R');
-      end;
-      WeaponChargeImages[Value - 1].SetImagePath('GI,Bm.FormAB2.' + GiResourceSuffix + 'CurH');
-      WeaponPrimaryImages[Value - 1].SetActive(False);
-      WeaponSecondaryImages[Value - 1].SetActive(False);
-      with WeaponIcons[Value - 1] do
-      begin
-        if (GetPlayer <> nil) and (GetPlayer.FindEquippedItemInSlot(WeaponCategoryItemType, Value - 1) <> nil) then
-        begin
-          WeaponIcons[Value - 1].SetActive(True);
-          SetImagePath('GI,' + GetPlayer.FindEquippedItemInSlot(WeaponCategoryItemType, Value - 1).GetBitmapResourceName + 's');
-        end
-        else if Button.UserIndex >= 0 then
-        begin
-          WeaponIcons[Value - 1].SetActive(True);
-          SetImagePath('GI,Bm.Items.' + GiResourceSuffix + ItemTypeNames[TItemType(PlayerArcadeShip.Weapons[Button.UserIndex].ItemType)] + 's');
-        end
-        else WeaponIcons[Value - 1].SetActive(False);
-        SetImageKindX(ikxCenter);
-        SetImageKindY(ikyCenter);
-      end;
-    end;
-    Value := 0;
-    while Value < PlayerArcadeShip.WeaponCount do
-    begin
-      SlotIndex := PlayerArcadeShip.Weapons[Value].SlotData and EquipmentSlotIndexMask;
-      (WeaponButtons[SlotIndex] as TGraphButtonGI).SetDisabled(False);
-      WeaponButtons[SlotIndex].SetActive(True);
-      WeaponButtons[SlotIndex].HelpCallback := UpdateHelp;
-      if WeaponButtons[SlotIndex].UserState = 0 then
-        WeaponButtons[SlotIndex].UserState := Integer(TImageGI.Create(WeaponButtons[SlotIndex]));
-      if (GetPlayer <> nil) and (GetPlayer.FindEquippedItemInSlot(WeaponCategoryItemType, SlotIndex) <> nil) then
-      begin
-        Item := GetPlayer.FindEquippedItemInSlot(WeaponCategoryItemType, SlotIndex) as TWeapon;
-        MicroModule := Item.MicroModuleIndex;
-        Item.MicroModuleIndex := 0;
-        WeaponName := Item.GetShortName;
-        Item.MicroModuleIndex := MicroModule;
-      end
-      else WeaponName := LocalizedText('Items.Weapon.Name.' + IntToStr(PlayerArcadeShip.Weapons[Value].ItemType - 50 + 1));
-      if (PlayerArcadeShip.Weapons[Value].SlotData and EquipmentSecondaryFireFlag) <> 0 then
-        WeaponButtons[SlotIndex].HelpText := ReplaceAllWideString(ReplaceAllWideString(LookupLocalizedTextByKey('Help.ABWeapon2'), '<SelectKey>', IntToStr(Value + 1)), '<WeaponName>', WeaponName)
-      else
-        WeaponButtons[SlotIndex].HelpText := ReplaceAllWideString(ReplaceAllWideString(LookupLocalizedTextByKey('Help.ABWeapon1'), '<SelectKey>', IntToStr(Value + 1)), '<WeaponName>', WeaponName);
-      (WeaponButtons[SlotIndex] as TGraphButtonGI).UpdateStateVisuals;
-      Inc(Value);
-    end;
-    UpdateWeaponHighlights(True);
+    ClearWeaponPanel;
+    Exit;
   end;
+  GetByName('PanelWeapon').IsActive := True;
+  for Value := 1 to 5 do
+  begin
+    Button := GetByName('F' + IntToStr(Value)) as TGraphButtonGI;
+    Button.HelpText := '';
+    Button.SetDisabled(True);
+    Group := 0;
+    for Index := 0 to PlayerArcadeShip.WeaponCount - 1 do
+    begin
+      SlotIndex := PlayerArcadeShip.Weapons[Index].SlotData and EquipmentSlotIndexMask;
+      if Value - 1 = SlotIndex then
+      begin
+        if (PlayerArcadeShip.Weapons[Index].SlotData and EquipmentSecondaryFireFlag) <> 0 then Group := 1;
+        Break;
+      end;
+    end;
+    if Group <> 0 then
+    begin
+      Button.SetImageNormalPath('GI,Bm.FormAB2.' + GiResourceSuffix + 'W' + IntToStr(Value) + 'GN');
+      Button.SetImageNormalActivePath('GI,Bm.FormAB2.' + GiResourceSuffix + 'W' + IntToStr(Value) + 'GA');
+      Button.SetImageDownPath('GI,Bm.FormAB2.' + GiResourceSuffix + 'W' + IntToStr(Value) + 'GD');
+    end
+    else
+    begin
+      Button.SetImageNormalPath('GI,Bm.FormAB2.' + GiResourceSuffix + 'W' + IntToStr(Value) + 'BN');
+      Button.SetImageNormalActivePath('GI,Bm.FormAB2.' + GiResourceSuffix + 'W' + IntToStr(Value) + 'BA');
+      Button.SetImageDownPath('GI,Bm.FormAB2.' + GiResourceSuffix + 'W' + IntToStr(Value) + 'BD');
+    end;
+    Button.SetImageDisabledPath('GI,Bm.FormAB2.' + GiResourceSuffix + 'W' + IntToStr(Value) + 'H');
+    Button.ImageNormal.KindY := ikyBottom;
+    Button.ImageNormalActive.KindY := ikyBottom;
+    Button.ImageDown.KindY := ikyBottom;
+    Button.UserValue := -1;
+    Button.UserIndex := Cardinal(-1);
+    Button.UserData := Value;
+    Button.StateChangedCallback := WeaponStateChanged;
+    for Index := 0 to PlayerArcadeShip.WeaponCount - 1 do
+    begin
+      SlotIndex := PlayerArcadeShip.Weapons[Index].SlotData and EquipmentSlotIndexMask;
+      if Value - 1 = SlotIndex then
+      begin
+        Button.UserIndex := Index;
+        Break;
+      end;
+    end;
+    if GetPlayer <> nil then
+    begin
+      Item := GetPlayer.FindEquippedItemInSlot(WeaponCategoryItemType, Value - 1) as TWeapon;
+      if GetPlayer.GetSlotCount(sskWeapon) <= Value - 1 then
+        Button.SetImageDisabledPath('GI,Bm.FormAB2.' + GiResourceSuffix + 'W' + IntToStr(Value) + 'H')
+      else if Item = nil then
+        Button.SetImageDisabledPath('GI,Bm.FormAB2.' + GiResourceSuffix + 'W' + IntToStr(Value) + 'E')
+      else if not GetPlayer.IsEquipmentUsable(Item) then
+        Button.SetImageDisabledPath('GI,Bm.FormAB2.' + GiResourceSuffix + 'W' + IntToStr(Value) + 'R');
+    end;
+    WeaponChargeImages[Value - 1].ImageSourcePath := 'GI,Bm.FormAB2.' + GiResourceSuffix + 'CurH';
+    WeaponPrimaryImages[Value - 1].IsActive := False;
+    WeaponSecondaryImages[Value - 1].IsActive := False;
+    with WeaponIcons[Value - 1] do
+    begin
+      if (GetPlayer <> nil) and (GetPlayer.FindEquippedItemInSlot(WeaponCategoryItemType, Value - 1) <> nil) then
+      begin
+        WeaponIcons[Value - 1].IsActive := True;
+        ImageSourcePath := 'GI,' + GetPlayer.FindEquippedItemInSlot(WeaponCategoryItemType, Value - 1).GetBitmapResourceName + 's';
+      end
+      else if Integer(Button.UserIndex) >= 0 then
+      begin
+        WeaponIcons[Value - 1].IsActive := True;
+        ImageSourcePath := 'GI,Bm.Items.' + GiResourceSuffix + ItemTypeNames[TItemType(PlayerArcadeShip.Weapons[Button.UserIndex].ItemType)] + 's';
+      end
+      else WeaponIcons[Value - 1].IsActive := False;
+      KindX := ikxCenter;
+      KindY := ikyCenter;
+    end;
+  end;
+  Value := 0;
+  while Value < PlayerArcadeShip.WeaponCount do
+  begin
+    SlotIndex := PlayerArcadeShip.Weapons[Value].SlotData and EquipmentSlotIndexMask;
+    (WeaponButtons[SlotIndex] as TGraphButtonGI).SetDisabled(False);
+    WeaponButtons[SlotIndex].IsActive := True;
+    WeaponButtons[SlotIndex].HelpCallback := UpdateHelp;
+    if WeaponButtons[SlotIndex].UserState = 0 then
+      WeaponButtons[SlotIndex].UserState := Integer(TImageGI.Create(WeaponButtons[SlotIndex]));
+    if (GetPlayer <> nil) and (GetPlayer.FindEquippedItemInSlot(WeaponCategoryItemType, SlotIndex) <> nil) then
+    begin
+      Item := GetPlayer.FindEquippedItemInSlot(WeaponCategoryItemType, SlotIndex) as TWeapon;
+      MicroModule := Item.MicroModuleIndex;
+      Item.MicroModuleIndex := 0;
+      WeaponName := Item.GetShortName;
+      Item.MicroModuleIndex := MicroModule;
+    end
+    else WeaponName := LocalizedText('Items.Weapon.Name.' + IntToStr(PlayerArcadeShip.Weapons[Value].ItemType - 50 + 1));
+    if (PlayerArcadeShip.Weapons[Value].SlotData and EquipmentSecondaryFireFlag) <> 0 then
+      WeaponButtons[SlotIndex].HelpText := ReplaceAllWideString(ReplaceAllWideString(LookupLocalizedTextByKey('Help.ABWeapon2'), '<SelectKey>', IntToStr(Value + 1)), '<WeaponName>', WeaponName)
+    else
+      WeaponButtons[SlotIndex].HelpText := ReplaceAllWideString(ReplaceAllWideString(LookupLocalizedTextByKey('Help.ABWeapon1'), '<SelectKey>', IntToStr(Value + 1)), '<WeaponName>', WeaponName);
+    (WeaponButtons[SlotIndex] as TGraphButtonGI).UpdateStateVisuals;
+    Inc(Value);
+  end;
+  UpdateWeaponHighlights(True);
 end;
-{ @end $53F12C }
+{ @end $668A64 }
 
-{ @routine $53FEC0 TfAB_WeaponStateChanged }
+{ @routine $669738 TfAB_WeaponStateChanged }
 procedure TfAB.WeaponStateChanged(Sender: TObjectGI);
 var
   Button: TGraphButtonGI;
@@ -1243,89 +1238,87 @@ var
 begin
   Button := TGraphButtonGI(Sender);
   Image := TImageGI(Button.UserState);
-  if Image <> nil then
+  if Image = nil then Exit;
+  if Button.Disabled then Image.IsActive := False
+  else
   begin
-    if Button.Disabled then Image.SetActive(False)
+    Image.IsActive := True;
+    if PlayerArcadeShip = nil then Charge := 0
     else
     begin
-      Image.SetActive(True);
-      if PlayerArcadeShip = nil then Charge := 0
-      else
-      begin
-        Index := Sender.UserIndex;
-        Charge := PlayerArcadeShip.Weapons[Index].Ammo / PlayerArcadeShip.Weapons[Index].MaxAmmo;
-      end;
-      if Button.Down then
-      begin
-        Charge := Charge - 0.05;
-        if Charge < 0 then Charge := 0;
-      end;
-      if (Sender as TGraphButtonGI).Down then
-        Image.SetImagePath('GI,Bm.FormAB2.' + GiResourceSuffix + 'W' + IntToStr(Cardinal(Sender.UserData)) + 'OD')
-      else if (Sender as TGraphButtonGI).IsHovered then
-        Image.SetImagePath('GI,Bm.FormAB2.' + GiResourceSuffix + 'W' + IntToStr(Cardinal(Sender.UserData)) + 'OA')
-      else
-        Image.SetImagePath('GI,Bm.FormAB2.' + GiResourceSuffix + 'W' + IntToStr(Cardinal(Sender.UserData)) + 'ON');
-      Image.SetImageKindY(ikyTop);
-      Image.SetSize(Classes.Point(Button.ClientSize.X, Button.ClientSize.Y - Round(Button.ClientSize.Y * Charge)));
-      Button.ImageNormal.SetPosition(Classes.Point(Button.ImageNormal.LocalPosition.X, Button.ClientSize.Y - Round(Button.ClientSize.Y * Charge)));
-      Button.ImageNormal.SetSize(Classes.Point(Button.ImageNormal.ClientSize.X, Round(Button.ClientSize.Y * Charge)));
-      Button.ImageNormalActive.SetPosition(Classes.Point(Button.ImageNormalActive.LocalPosition.X, Button.ClientSize.Y - Round(Button.ClientSize.Y * Charge)));
-      Button.ImageNormalActive.SetSize(Classes.Point(Button.ImageNormalActive.ClientSize.X, Round(Button.ClientSize.Y * Charge)));
-      Button.ImageDown.SetPosition(Classes.Point(Button.ImageDown.LocalPosition.X, Button.ClientSize.Y - Round(Button.ClientSize.Y * Charge)));
-      Button.ImageDown.SetSize(Classes.Point(Button.ImageDown.ClientSize.X, Round(Button.ClientSize.Y * Charge)));
+      Index := Sender.UserIndex;
+      Charge := PlayerArcadeShip.Weapons[Index].Ammo / PlayerArcadeShip.Weapons[Index].MaxAmmo;
     end;
+    if Button.Down then
+    begin
+      Charge := Charge - 0.05;
+      if Charge < 0 then Charge := 0;
+    end;
+    if (Sender as TGraphButtonGI).Down then
+      Image.ImageSourcePath := 'GI,Bm.FormAB2.' + GiResourceSuffix + 'W' + IntToStr(Sender.UserData) + 'OD'
+    else if (Sender as TGraphButtonGI).IsHovered then
+      Image.ImageSourcePath := 'GI,Bm.FormAB2.' + GiResourceSuffix + 'W' + IntToStr(Sender.UserData) + 'OA'
+    else
+      Image.ImageSourcePath := 'GI,Bm.FormAB2.' + GiResourceSuffix + 'W' + IntToStr(Sender.UserData) + 'ON';
+    Image.KindY := ikyTop;
+    Image.ObjectSize := Classes.Point(Button.ClientSize.X, Button.ClientSize.Y - Round(Button.ClientSize.Y * Charge));
+    Button.ImageNormal.Pos := Classes.Point(Button.ImageNormal.LocalPosition.X, Button.ClientSize.Y - Round(Button.ClientSize.Y * Charge));
+    Button.ImageNormal.ObjectSize := Classes.Point(Button.ImageNormal.ClientSize.X, Round(Button.ClientSize.Y * Charge));
+    Button.ImageNormalActive.Pos := Classes.Point(Button.ImageNormalActive.LocalPosition.X, Button.ClientSize.Y - Round(Button.ClientSize.Y * Charge));
+    Button.ImageNormalActive.ObjectSize := Classes.Point(Button.ImageNormalActive.ClientSize.X, Round(Button.ClientSize.Y * Charge));
+    Button.ImageDown.Pos := Classes.Point(Button.ImageDown.LocalPosition.X, Button.ClientSize.Y - Round(Button.ClientSize.Y * Charge));
+    Button.ImageDown.ObjectSize := Classes.Point(Button.ImageDown.ClientSize.X, Round(Button.ClientSize.Y * Charge));
   end;
 end;
-{ @end $53FEC0 }
+{ @end $669738 }
 
-{ @routine $540318 TfAB_ClearWeaponPanel }
+{ @routine $669B18 TfAB_ClearWeaponPanel }
 procedure TfAB.ClearWeaponPanel;
 var
   Index: Integer;
 begin
   with GetByName('PanelWeapon') do
-    if Active then
+  begin
+    if not Active then Exit;
+    FindByNameRecursive('PanelWeapon').IsActive := False;
+    for Index := 0 to 4 do
     begin
-      FindByNameRecursive('PanelWeapon').SetActive(False);
-      for Index := 0 to 4 do
-      begin
-        WeaponButtons[Index].SetActive(False);
-        WeaponIcons[Index].SetActive(False);
-      end;
-      for Index := Low(BonusIcons) to High(BonusIcons) do
-        if BonusIcons[Index] <> nil then
-        begin
-          BonusIcons[Index].Free;
-          BonusIcons[Index] := nil;
-          BonusRings[Index].Free;
-          BonusRings[Index] := nil;
-        end;
-      for Index := 0 to 7 do
-        if EnemyIcons[Index] <> nil then
-        begin
-          EnemyIcons[Index].Free;
-          EnemyIcons[Index] := nil;
-          EnemyHealthRings[Index].Free;
-          EnemyHealthRings[Index] := nil;
-          if EnemyRewardIcons[Index] <> nil then EnemyRewardIcons[Index].Free;
-          EnemyRewardIcons[Index] := nil;
-          if EnemyRewardBackdrops[Index] <> nil then EnemyRewardBackdrops[Index].Free;
-          EnemyRewardBackdrops[Index] := nil;
-        end;
-      for Index := 0 to 7 do
-        if TrackedShipIcons[Index] <> nil then
-        begin
-          TrackedShipIcons[Index].Free;
-          TrackedShipIcons[Index] := nil;
-          TrackedShipHealthRings[Index].Free;
-          TrackedShipHealthRings[Index] := nil;
-        end;
+      WeaponButtons[Index].IsActive := False;
+      WeaponIcons[Index].IsActive := False;
     end;
+    for Index := Low(BonusIcons) to High(BonusIcons) do
+      if BonusIcons[Index] <> nil then
+      begin
+        BonusIcons[Index].Free;
+        BonusIcons[Index] := nil;
+        BonusRings[Index].Free;
+        BonusRings[Index] := nil;
+      end;
+    for Index := Low(EnemyIcons) to High(EnemyIcons) do
+      if EnemyIcons[Index] <> nil then
+      begin
+        EnemyIcons[Index].Free;
+        EnemyIcons[Index] := nil;
+        EnemyHealthRings[Index].Free;
+        EnemyHealthRings[Index] := nil;
+        if EnemyRewardIcons[Index] <> nil then EnemyRewardIcons[Index].Free;
+        EnemyRewardIcons[Index] := nil;
+        if EnemyRewardBackdrops[Index] <> nil then EnemyRewardBackdrops[Index].Free;
+        EnemyRewardBackdrops[Index] := nil;
+      end;
+    for Index := Low(TrackedShipIcons) to High(TrackedShipIcons) do
+      if TrackedShipIcons[Index] <> nil then
+      begin
+        TrackedShipIcons[Index].Free;
+        TrackedShipIcons[Index] := nil;
+        TrackedShipHealthRings[Index].Free;
+        TrackedShipHealthRings[Index] := nil;
+      end;
+  end;
 end;
-{ @end $540318 }
+{ @end $669B18 }
 
-{ @routine $540534 TfAB_UpdateWeaponHighlights }
+{ @routine $669C60 TfAB_UpdateWeaponHighlights }
 procedure TfAB.UpdateWeaponHighlights(Force: Boolean);
 var
   Index, Top, Height, Slot: Integer;
@@ -1334,138 +1327,130 @@ var
   Ring: TgaiGI;
 begin
   if (PlayerArcadeShip = nil) or (PlayerArcadeShip.Health <= 0) then
-    ClearWeaponPanel
-  else
   begin
-    Index := 0;
-    while Index < PlayerArcadeShip.WeaponCount do
-    begin
-      Slot := PlayerArcadeShip.Weapons[Index].SlotData and EquipmentSlotIndexMask;
-      Button := WeaponButtons[Slot] as TGraphButtonGI;
-      if Force or ((ArcadeTickCount and 3) = 0) then
-      begin
-        Button.UpdateStateVisuals;
-        if PlayerArcadeShip.PrimaryWeapon = Index then
-          WeaponChargeImages[Slot].SetImagePath('GI,Bm.FormAB2.' + GiResourceSuffix + 'CurB')
-        else if PlayerArcadeShip.SecondaryWeapon = Index then
-          WeaponChargeImages[Slot].SetImagePath('GI,Bm.FormAB2.' + GiResourceSuffix + 'CurG')
-        else
-          WeaponChargeImages[Slot].SetImagePath('GI,Bm.FormAB2.' + GiResourceSuffix + 'CurH');
-        WeaponPrimaryImages[Slot].SetActive((PlayerArcadeShip.Weapons[Index].Ammo < PlayerArcadeShip.Weapons[Index].AmmoCost) and (((ArcadeTickCount shr 2) and 1) = 0));
-        WeaponSecondaryImages[Slot].SetActive((PlayerArcadeShip.Weapons[Index].Ammo < PlayerArcadeShip.Weapons[Index].AmmoCost) and (((ArcadeTickCount shr 2) and 1) <> 0));
-      end;
-      WeaponButtons[Slot].UserValue := Index;
-      Inc(Index);
-    end;
-    Height := GiScalePixels(64);
-    for Index := 0 to 7 do
-    begin
-      if PlayerArcadeShip.BonusTicks[Index] <= 0 then
-      begin
-        if BonusIcons[Index] <> nil then
-        begin
-          BonusIcons[Index].Free;
-          BonusIcons[Index] := nil;
-          BonusRings[Index].Free;
-          BonusRings[Index] := nil;
-          HideHelp;
-        end;
-      end
-      else
-      begin
-        if BonusIcons[Index] = nil then
-        begin
-          BonusIcons[Index] := TImageGI.Create(ItemPanel);
-          Icon := BonusIcons[Index];
-          Icon.SetImagePath('GI,Bm.ABItem.' + GiResourceSuffix + '_0' + IntToStr(Index) + '_i');
-          Icon.SetSize(Classes.Point(ItemPanel.ClientSize.X, Height));
-          Icon.SetDepth(0);
-          BonusRings[Index] := TgaiGI.Create(ItemPanel);
-          Ring := BonusRings[Index];
-          Ring.SetImagePath('Bm.ABItem.' + GiResourceSuffix + '_Ring');
-          Ring.SetSize(Classes.Point(ItemPanel.ClientSize.X, Height));
-          Ring.SequenceIndex := 0;
-          Ring.UpdateAutoGeometry;
-          Ring.SetMouseViewUpdates(True);
-          Ring.MouseBlocking := True;
-          Ring.StopAutoPlayback;
-          Ring.SetDepth(1);
-          Ring.HelpCallback := UpdateHelp;
-          Ring.MouseEnterCallback := ControlMouseEnter;
-          Ring.MouseLeaveCallback := ControlMouseLeave;
-          if Index = 0 then Ring.HelpText := LookupLocalizedTextByKey('Help.ABItemLife')
-          else if Index = 1 then Ring.HelpText := LookupLocalizedTextByKey('Help.ABItemFast')
-          else if Index = 2 then Ring.HelpText := LookupLocalizedTextByKey('Help.ABItemSlow')
-          else if Index = 3 then Ring.HelpText := LookupLocalizedTextByKey('Help.ABItemLock')
-          else if Index = 4 then Ring.HelpText := LookupLocalizedTextByKey('Help.ABItemDamage')
-          else if Index = 5 then Ring.HelpText := LookupLocalizedTextByKey('Help.ABItemReload')
-          else if Index = 6 then Ring.HelpText := LookupLocalizedTextByKey('Help.ABItemDefence')
-          else if Index = 7 then Ring.HelpText := LookupLocalizedTextByKey('Help.ABItemInvisible');
-        end;
-      end;
-    end;
-    Top := ItemPanel.ClientSize.Y - Height;
-    for Index := Low(BonusIcons) to High(BonusIcons) do
-      if PlayerArcadeShip.BonusTicks[Index] > 0 then
-      begin
-        BonusIcons[Index].SetPosition(Classes.Point(0, Top));
-        BonusRings[Index].SetPosition(Classes.Point(0, Top));
-        BonusRings[Index].SetSequenceFrame(Round((1 - PlayerArcadeShip.BonusTicks[Index] / (BonusDurationSeconds[Index] * 20)) * BonusRings[Index].SequenceFrameCount));
-        Dec(Top, Height);
-      end;
+    ClearWeaponPanel;
+    Exit;
   end;
+  Index := 0;
+  while Index < PlayerArcadeShip.WeaponCount do
+  begin
+    Slot := PlayerArcadeShip.Weapons[Index].SlotData and EquipmentSlotIndexMask;
+    Button := WeaponButtons[Slot] as TGraphButtonGI;
+    if Force or ((ArcadeTickCount and 3) = 0) then
+    begin
+      Button.UpdateStateVisuals;
+      if PlayerArcadeShip.PrimaryWeapon = Index then
+        WeaponChargeImages[Slot].ImageSourcePath := 'GI,Bm.FormAB2.' + GiResourceSuffix + 'CurB'
+      else if PlayerArcadeShip.SecondaryWeapon = Index then
+        WeaponChargeImages[Slot].ImageSourcePath := 'GI,Bm.FormAB2.' + GiResourceSuffix + 'CurG'
+      else
+        WeaponChargeImages[Slot].ImageSourcePath := 'GI,Bm.FormAB2.' + GiResourceSuffix + 'CurH';
+      WeaponPrimaryImages[Slot].IsActive := (PlayerArcadeShip.Weapons[Index].Ammo < PlayerArcadeShip.Weapons[Index].AmmoCost) and (((ArcadeTickCount shr 2) and 1) = 0);
+      WeaponSecondaryImages[Slot].IsActive := (PlayerArcadeShip.Weapons[Index].Ammo < PlayerArcadeShip.Weapons[Index].AmmoCost) and (((ArcadeTickCount shr 2) and 1) <> 0);
+    end;
+    WeaponButtons[Slot].UserValue := Index;
+    Inc(Index);
+  end;
+  Height := GiScalePixels(64);
+  for Index := Low(PlayerArcadeShip.BonusTicks) to High(PlayerArcadeShip.BonusTicks) do
+  begin
+    if PlayerArcadeShip.BonusTicks[Index] <= 0 then
+    begin
+      if BonusIcons[Index] <> nil then
+      begin
+        BonusIcons[Index].Free;
+        BonusIcons[Index] := nil;
+        BonusRings[Index].Free;
+        BonusRings[Index] := nil;
+        HideHelp;
+      end;
+    end
+    else
+    begin
+      if BonusIcons[Index] = nil then
+      begin
+        BonusIcons[Index] := TImageGI.Create(ItemPanel);
+        Icon := BonusIcons[Index];
+        Icon.ImageSourcePath := 'GI,Bm.ABItem.' + GiResourceSuffix + '_0' + IntToStr(Index) + '_i';
+        Icon.ObjectSize := Classes.Point(ItemPanel.ClientSize.X, Height);
+        Icon.SetDepth(0);
+        BonusRings[Index] := TgaiGI.Create(ItemPanel);
+        Ring := BonusRings[Index];
+        Ring.SetImagePath('Bm.ABItem.' + GiResourceSuffix + '_Ring');
+        Ring.ObjectSize := Classes.Point(ItemPanel.ClientSize.X, Height);
+        Ring.SequenceIndex := 0;
+        Ring.UpdateAutoGeometry;
+        Ring.MVUpdate := True;
+        Ring.MouseBlocking := True;
+        Ring.StopAutoPlayback;
+        Ring.SetDepth(1);
+        Ring.HelpCallback := UpdateHelp;
+        Ring.MouseEnterCallback := ControlMouseEnter;
+        Ring.MouseLeaveCallback := ControlMouseLeave;
+        if Index = 0 then Ring.HelpText := LookupLocalizedTextByKey('Help.ABItemLife')
+        else if Index = 1 then Ring.HelpText := LookupLocalizedTextByKey('Help.ABItemFast')
+        else if Index = 2 then Ring.HelpText := LookupLocalizedTextByKey('Help.ABItemSlow')
+        else if Index = 3 then Ring.HelpText := LookupLocalizedTextByKey('Help.ABItemLock')
+        else if Index = 4 then Ring.HelpText := LookupLocalizedTextByKey('Help.ABItemDamage')
+        else if Index = 5 then Ring.HelpText := LookupLocalizedTextByKey('Help.ABItemReload')
+        else if Index = 6 then Ring.HelpText := LookupLocalizedTextByKey('Help.ABItemDefence')
+        else if Index = 7 then Ring.HelpText := LookupLocalizedTextByKey('Help.ABItemInvisible');
+      end;
+    end;
+  end;
+  Top := ItemPanel.ClientSize.Y - Height;
+  for Index := Low(BonusIcons) to High(BonusIcons) do
+    if PlayerArcadeShip.BonusTicks[Index] > 0 then
+    begin
+      BonusIcons[Index].Pos := Classes.Point(0, Top);
+      BonusRings[Index].Pos := Classes.Point(0, Top);
+      BonusRings[Index].SetSequenceFrame(Round((1 - PlayerArcadeShip.BonusTicks[Index] / (BonusDurationSeconds[Index] * 20)) * BonusRings[Index].SequenceFrameCount));
+      Dec(Top, Height);
+    end;
 end;
-{ @end $540534 }
+{ @end $669C60 }
 
-{ @routine $540E1C TfAB_WeaponSelect }
+{ @routine $66A484 TfAB_WeaponSelect }
 procedure TfAB.WeaponSelect(Sender: TObjectGI);
 var
   Index: Integer;
 begin
-  if PlayerArcadeShip <> nil then
-  begin
-    Index := Sender.UserValue;
-    if (Index >= 0) and (PlayerArcadeShip.PrimaryWeapon <> Index) then
-    begin
-      PlayerArcadeShip.SelectWeapon(Index);
-      UpdateWeaponHighlights(True);
-    end;
-  end;
+  if PlayerArcadeShip = nil then Exit;
+  Index := Sender.UserValue;
+  if (Index < 0) or (PlayerArcadeShip.PrimaryWeapon = Index) then Exit;
+  PlayerArcadeShip.SelectWeapon(Index);
+  UpdateWeaponHighlights(True);
 end;
-{ @end $540E1C }
+{ @end $66A484 }
 
-{ @routine $540E74 TfAB_ToggleWeaponGroup }
+{ @routine $66A4C4 TfAB_ToggleWeaponGroup }
 procedure TfAB.ToggleWeaponGroup(Sender: TObjectGI);
 var
   Index: Integer;
 begin
-  if PlayerArcadeShip <> nil then
-  begin
-    Index := Sender.UserValue;
-    if Index >= 0 then
-    begin
-      PlayerArcadeShip.Weapons[Index].SlotData := PlayerArcadeShip.Weapons[Index].SlotData xor EquipmentSecondaryFireFlag;
-      if Galaxy <> nil then Galaxy.CheckIntegrityChecksum1(640);
-      if GetPlayer <> nil then
-        with GetPlayer.FindEquippedItemInSlot(WeaponCategoryItemType, PlayerArcadeShip.Weapons[Index].SlotData and EquipmentSlotIndexMask) as TWeapon do
-          AssignedSlotData := PlayerArcadeShip.Weapons[Index].SlotData;
-      NormalizeWeaponSelection;
-      UpdateWeaponPanel;
-      if Galaxy <> nil then Galaxy.PrimeIntegrityChecksum1(641);
-      UpdateHelp(Sender, True);
-    end;
-  end;
+  if PlayerArcadeShip = nil then Exit;
+  Index := Sender.UserValue;
+  if Index < 0 then Exit;
+  PlayerArcadeShip.Weapons[Index].SlotData := PlayerArcadeShip.Weapons[Index].SlotData xor EquipmentSecondaryFireFlag;
+  if Galaxy <> nil then Galaxy.CheckIntegrityChecksum1(640);
+  if GetPlayer <> nil then
+    with GetPlayer.FindEquippedItemInSlot(WeaponCategoryItemType, PlayerArcadeShip.Weapons[Index].SlotData and EquipmentSlotIndexMask) as TWeapon do
+      AssignedSlotData := PlayerArcadeShip.Weapons[Index].SlotData;
+  NormalizeWeaponSelection;
+  UpdateWeaponPanel;
+  if Galaxy <> nil then Galaxy.PrimeIntegrityChecksum1(641);
+  UpdateHelp(Sender, True);
 end;
-{ @end $540E74 }
+{ @end $66A4C4 }
 
-{ @routine $540F70 TfAB_WeaponButtonClick }
+{ @routine $66A59C TfAB_WeaponButtonClick }
 procedure TfAB.WeaponButtonClick(Sender: TObjectGI);
 begin
   ToggleWeaponGroup(Sender);
 end;
-{ @end $540F70 }
+{ @end $66A59C }
 
-{ @routine $540F8C TfAB_NormalizeWeaponSelection }
+{ @routine $66A5A4 TfAB_NormalizeWeaponSelection }
 procedure TfAB.NormalizeWeaponSelection;
 var
   Index: Integer;
@@ -1491,75 +1476,69 @@ begin
         Break;
       end;
 end;
-{ @end $540F8C }
+{ @end $66A5A4 }
 
-{ @routine $5410E8 TfAB_UpdateAutopilotButtons }
+{ @routine $66A67C TfAB_UpdateAutopilotButtons }
 procedure TfAB.UpdateAutopilotButtons;
 begin
-  AutoButton.SetActive(ArcadeAutopilotEnabled);
-  ManualButton.SetActive(not ArcadeAutopilotEnabled);
+  AutoButton.IsActive := ArcadeAutopilotEnabled;
+  ManualButton.IsActive := not ArcadeAutopilotEnabled;
 end;
-{ @end $5410E8 }
+{ @end $66A67C }
 
-{ @routine $541124 TfAB_ToggleAutopilot }
+{ @routine $66A6AC TfAB_ToggleAutopilot }
 procedure TfAB.ToggleAutopilot(Sender: TObjectGI);
 begin
   ArcadeLastInputTick := ArcadeTickCount;
   ArcadeAutopilotEnabled := not ArcadeAutopilotEnabled;
   UpdateAutopilotButtons;
 end;
-{ @end $541124 }
+{ @end $66A6AC }
 
-{ @routine $54115C TfAB_TogglePause }
+{ @routine $66A6D8 TfAB_TogglePause }
 procedure TfAB.TogglePause(Sender: TObjectGI);
 begin
   HideObjectInfo;
   ArcadePauseWithShift := IsVirtualKeyDown(VK_SHIFT);
   ArcadePaused := Sender = PlayButton;
-  PlayButton.SetActive(not ArcadePaused);
-  PauseButton.SetActive(ArcadePaused);
+  PlayButton.IsActive := not ArcadePaused;
+  PauseButton.IsActive := ArcadePaused;
   if PlayButton.Active then UpdateHelp(PlayButton, True)
   else UpdateHelp(PauseButton, True);
   BreakUiMessage;
 end;
-{ @end $54115C }
+{ @end $66A6D8 }
 
-{ @routine $541208 TfAB_ReportSurvivingShips }
+{ @routine $66A760 TfAB_ReportSurvivingShips }
 procedure TfAB.ReportSurvivingShips;
 var
   Index: Integer;
   Ship: TabShip;
   Event: TGalaxyEvent;
 begin
-  if (PlayerArcadeShip <> nil) and (PlayerArcadeShip.Health > 0) then
+  if (PlayerArcadeShip = nil) or (PlayerArcadeShip.Health <= 0) then Exit;
+  for Index := 0 to PlayerArcadeShip.TrackedShips.Count - 1 do
   begin
-    for Index := 0 to PlayerArcadeShip.TrackedShips.Count - 1 do
-    begin
-      Ship := PlayerArcadeShip.TrackedShips[Index];
-      if (Ship <> nil) and (Ship.ScriptLabel <> '') and (Ship.Health > 0) then
-      begin
-        Event := AddGalaxyEvent('LabeledShipSurvivedInAB');
-        Event.AddTextData(Ship.ScriptLabel);
-        Event.AddData(Ship.Health);
-        Event.AddData(Ship.MaxHealth);
-      end;
-    end;
-    for Index := 0 to PlayerArcadeShip.InitialEnemies.Count - 1 do
-    begin
-      Ship := PlayerArcadeShip.InitialEnemies[Index];
-      if (Ship <> nil) and (Ship.ScriptLabel <> '') and (Ship.Health > 0) then
-      begin
-        Event := AddGalaxyEvent('LabeledShipSurvivedInAB');
-        Event.AddTextData(Ship.ScriptLabel);
-        Event.AddData(Ship.Health);
-        Event.AddData(Ship.MaxHealth);
-      end;
-    end;
+    Ship := PlayerArcadeShip.TrackedShips[Index];
+    if not ((Ship <> nil) and (Ship.ScriptLabel <> '') and (Ship.Health > 0)) then Continue;
+    Event := AddGalaxyEvent('LabeledShipSurvivedInAB');
+    Event.AddTextData(Ship.ScriptLabel);
+    Event.AddData(Ship.Health);
+    Event.AddData(Ship.MaxHealth);
+  end;
+  for Index := 0 to PlayerArcadeShip.InitialEnemies.Count - 1 do
+  begin
+    Ship := PlayerArcadeShip.InitialEnemies[Index];
+    if not ((Ship <> nil) and (Ship.ScriptLabel <> '') and (Ship.Health > 0)) then Continue;
+    Event := AddGalaxyEvent('LabeledShipSurvivedInAB');
+    Event.AddTextData(Ship.ScriptLabel);
+    Event.AddData(Ship.Health);
+    Event.AddData(Ship.MaxHealth);
   end;
 end;
-{ @end $541208 }
+{ @end $66A760 }
 
-{ @routine $5413C8 TfAB_ClearBattle }
+{ @routine $66A8C8 TfAB_ClearBattle }
 procedure TfAB.ClearBattle;
 begin
   PlayerArcadeShip := nil;
@@ -1577,9 +1556,9 @@ begin
   if WorldLines <> nil then WorldLines.ClearSegments;
   MapState2C8 := 0;
 end;
-{ @end $5413C8 }
+{ @end $66A8C8 }
 
-{ @routine $541440 TfAB_ClearMap }
+{ @routine $66A928 TfAB_ClearMap }
 procedure TfAB.ClearMap;
 begin
   ClearGrid;
@@ -1594,9 +1573,9 @@ begin
   ab_Space_ClearImages;
   WorldLines.ClearSegments;
 end;
-{ @end $541440 }
+{ @end $66A928 }
 
-{ @routine $541490 TfAB_LoadMap }
+{ @routine $66A970 TfAB_LoadMap }
 procedure TfAB.LoadMap(Buffer: TBufEC; LoadPolygons: Boolean);
 begin
   ClearMap;
@@ -1616,9 +1595,9 @@ begin
     if LoadPolygons then ab_Polygon_Load(Buffer);
   end;
 end;
-{ @end $541490 }
+{ @end $66A970 }
 
-{ @routine $5415BC TfAB_LoadMapResource }
+{ @routine $66AA80 TfAB_LoadMapResource }
 procedure TfAB.LoadMapResource(Path: WideString; LoadPolygons: Boolean);
 var
   Control: TCBufControlEC;
@@ -1658,9 +1637,9 @@ begin
   end;
   ab_StopPoint_ClearIndex;
 end;
-{ @end $5415BC }
+{ @end $66AA80 }
 
-{ @routine $541744 TfAB_LoadMapFile }
+{ @routine $66AC00 TfAB_LoadMapFile }
 procedure TfAB.LoadMapFile(Path: WideString; LoadPolygons: Boolean);
 var
   Buffer: TBufEC;
@@ -1681,71 +1660,67 @@ begin
   end;
   ab_StopPoint_ClearIndex;
 end;
-{ @end $541744 }
+{ @end $66AC00 }
 
-{ @routine $541870 TfAB_ClearGrid }
+{ @routine $66AD28 TfAB_ClearGrid }
 procedure TfAB.ClearGrid;
 var
   Index: Integer;
 begin
-  if GridLines <> nil then
-  begin
-    for Index := 0 to GridLines.Count - 1 do
-      ab_WorldLine_Delete(GridLines[Index]);
-    GridLines.Free;
-    GridLines := nil;
-  end;
+  if GridLines = nil then Exit;
+  for Index := 0 to GridLines.Count - 1 do
+    ab_WorldLine_Delete(GridLines[Index]);
+  GridLines.Free;
+  GridLines := nil;
 end;
-{ @end $541870 }
+{ @end $66AD28 }
 
-{ @routine $5418DC TfAB_BuildGrid }
+{ @routine $66AD70 TfAB_BuildGrid }
 procedure TfAB.BuildGrid;
 var
   PolarAngle, Longitude, LongitudeStep, PolarStep: Double;
   First, Last: TVector3D;
 begin
   ClearGrid;
-  if (ArcadeGridMode <> 0) and (ArcadeViewMode = 0) then
+  if (ArcadeGridMode = 0) or (ArcadeViewMode <> 0) then Exit;
+  GridLines := TList.Create;
+  LongitudeStep := Pi / 8;
+  PolarStep := Pi / 16;
+  Longitude := 0;
+  while Longitude < Pi * 2 - 0.001 do
   begin
-    GridLines := TList.Create;
-    LongitudeStep := Pi / 8;
-    PolarStep := Pi / 16;
+    PolarAngle := PolarStep * 2;
+    while PolarAngle < Pi - PolarStep * 2 - 0.001 do
+    begin
+      First := SphericalToVector3D(Longitude, PolarAngle, SphereRadius);
+      Last := SphericalToVector3D(Longitude, PolarAngle + PolarStep, SphereRadius);
+      GridLines.Add(ab_WorldLine_Create(First, Last, 1,
+        CurrentPixelFormat.PackRgbBytes(240, 240, 255),
+        CurrentPixelFormat.PackRgbBytes(75, 75, 75), True));
+      PolarAngle := PolarAngle + PolarStep;
+    end;
+    Longitude := Longitude + LongitudeStep;
+  end;
+  PolarStep := PolarStep * 2;
+  PolarAngle := PolarStep;
+  while PolarAngle < Pi - PolarStep + 0.001 do
+  begin
     Longitude := 0;
     while Longitude < Pi * 2 - 0.001 do
     begin
-      PolarAngle := PolarStep * 2;
-      while PolarAngle < Pi - PolarStep * 2 - 0.001 do
-      begin
-        First := SphericalToVector3D(Longitude, PolarAngle, SphereRadius);
-        Last := SphericalToVector3D(Longitude, PolarAngle + PolarStep, SphereRadius);
-        GridLines.Add(ab_WorldLine_Create(First, Last, 1,
-          CurrentPixelFormat.PackRgbBytes(240, 240, 255),
-          CurrentPixelFormat.PackRgbBytes(75, 75, 75), True));
-        PolarAngle := PolarAngle + PolarStep;
-      end;
+      First := SphericalToVector3D(Longitude, PolarAngle, SphereRadius);
+      Last := SphericalToVector3D(Longitude + LongitudeStep, PolarAngle, SphereRadius);
+      GridLines.Add(ab_WorldLine_Create(First, Last, 1,
+        CurrentPixelFormat.PackRgbBytes(240, 240, 255),
+        CurrentPixelFormat.PackRgbBytes(75, 75, 75), True));
       Longitude := Longitude + LongitudeStep;
     end;
-    PolarStep := PolarStep * 2;
-    PolarAngle := PolarStep;
-    while PolarAngle < Pi - PolarStep + 0.001 do
-    begin
-      Longitude := 0;
-      while Longitude < Pi * 2 - 0.001 do
-      begin
-        First := SphericalToVector3D(Longitude, PolarAngle, SphereRadius);
-        Last := SphericalToVector3D(Longitude + LongitudeStep, PolarAngle, SphereRadius);
-        GridLines.Add(ab_WorldLine_Create(First, Last, 1,
-          CurrentPixelFormat.PackRgbBytes(240, 240, 255),
-          CurrentPixelFormat.PackRgbBytes(75, 75, 75), True));
-        Longitude := Longitude + LongitudeStep;
-      end;
-      PolarAngle := PolarAngle + PolarStep;
-    end;
+    PolarAngle := PolarAngle + PolarStep;
   end;
 end;
-{ @end $5418DC }
+{ @end $66AD70 }
 
-{ @routine $541B60 TfAB_ABSpaceBuild }
+{ @routine $66B000 TfAB_ABSpaceBuild }
 procedure TfAB.ABSpaceBuild(GridSize: Integer; Angle: Single);
 var
   Index, Attempt, OtherIndex, Choice: Integer;
@@ -1779,74 +1754,72 @@ begin
     StartPoint := Classes.Point(0, GridSize div 2);
     EndPoint := Classes.Point(GridSize - 1, GridSize div 2);
     Previous := StartPoint;
-    if Weight > 1 then
+    if not (Weight > 1) then Continue;
+    for Index := 0 to Weight - 1 do
     begin
-      for Index := 0 to Weight - 1 do
+      Current := StartPoint;
+      Space := ab_Space_Find(Current);
+      while GridSize - 1 > Current.X do
       begin
-        Current := StartPoint;
-        Space := ab_Space_Find(Current);
-        while GridSize - 1 > Current.X do
+        if (Abs(Current.X - EndPoint.X) <= 1) and (Abs(Current.Y - EndPoint.Y) <= 1) then
+          Candidate := EndPoint
+        else
         begin
-          if (Abs(Current.X - EndPoint.X) <= 1) and (Abs(Current.Y - EndPoint.Y) <= 1) then
-            Candidate := EndPoint
-          else
+          Attempt := 0;
+          while Attempt < 5 do
           begin
-            Attempt := 0;
-            while Attempt < 5 do
-            begin
-              Inc(Attempt);
-              Candidate.X := Current.X + 1;
-              Candidate.Y := Current.Y + RandomRange(-1, 1);
-              if ((Candidate.X <> Current.X) or (Candidate.Y <> Current.Y)) and
-                ((Candidate.X <> Previous.X) or (Candidate.Y <> Previous.Y)) and
-                (Candidate.X >= 0) and (Candidate.X < GridSize) and
-                (Candidate.Y >= 0) and (Candidate.Y < GridSize) then
-                if (Candidate.X = Current.X) or (Candidate.Y = Current.Y) or
-                  (ab_SpaceLink_Find(ab_Space_Find(Classes.Point(Candidate.X, Current.Y)),
-                    ab_Space_Find(Classes.Point(Current.X, Candidate.Y))) = nil) then
-                begin
-                  Other := ab_Space_Find(Candidate);
-                  if (Other.IncomingCount < 3) and (Other.IncomingCount + Other.OutgoingCount < 4) then Break;
-                end;
-            end;
-            if Attempt >= 5 then Break;
+            Inc(Attempt);
+            Candidate.X := Current.X + 1;
+            Candidate.Y := Current.Y + RandomRange(-1, 1);
+            if ((Candidate.X <> Current.X) or (Candidate.Y <> Current.Y)) and
+              ((Candidate.X <> Previous.X) or (Candidate.Y <> Previous.Y)) and
+              (Candidate.X >= 0) and (Candidate.X < GridSize) and
+              (Candidate.Y >= 0) and (Candidate.Y < GridSize) then
+              if (Candidate.X = Current.X) or (Candidate.Y = Current.Y) or
+                (ab_SpaceLink_Find(ab_Space_Find(Classes.Point(Candidate.X, Current.Y)),
+                  ab_Space_Find(Classes.Point(Current.X, Candidate.Y))) = nil) then
+              begin
+                Other := ab_Space_Find(Candidate);
+                if (Other.IncomingCount < 3) and (Other.IncomingCount + Other.OutgoingCount < 4) then Break;
+              end;
           end;
-          Other := ab_Space_Find(Candidate);
-          if ab_SpaceLink_Find(Space, Other) = nil then
-          begin
-            if (Current.X = StartPoint.X) and (Current.Y = StartPoint.Y) and (Space.OutgoingCount >= 3) then Break;
-            ab_SpaceLink_Connect(Space, Other);
-            Inc(Space.OutgoingCount);
-            Inc(Other.IncomingCount);
-          end;
-          Previous := Current;
-          Current := Candidate;
-          Space := Other;
+          if Attempt >= 5 then Break;
         end;
-        ab_Space_RecountLinks;
-      end;
-      Changed := True;
-      while Changed do
-      begin
-        Changed := False;
-        Space := FirstArcadeSpace;
-        while Space <> nil do
+        Other := ab_Space_Find(Candidate);
+        if ab_SpaceLink_Find(Space, Other) = nil then
         begin
-          Other := Space;
-          Space := Space.Next;
-          if ((Other.GridPosition.X <> EndPoint.X) or (Other.GridPosition.Y <> EndPoint.Y)) and
-            ((Other.GridPosition.X <> StartPoint.X) or (Other.GridPosition.Y <> StartPoint.Y)) and
-            ((Other.OutgoingCount = 0) or (Other.IncomingCount = 0)) then
-          begin
-            Changed := True;
-            ab_Space_Delete(Other);
-          end;
+          if (Current.X = StartPoint.X) and (Current.Y = StartPoint.Y) and (Space.OutgoingCount >= 3) then Break;
+          ab_SpaceLink_Connect(Space, Other);
+          Inc(Space.OutgoingCount);
+          Inc(Other.IncomingCount);
         end;
-        ab_Space_RecountLinks;
+        Previous := Current;
+        Current := Candidate;
+        Space := Other;
       end;
-      Space := ab_Space_Find(EndPoint);
-      if Space.IncomingCount <= 0 then Retry := True;
+      ab_Space_RecountLinks;
     end;
+    Changed := True;
+    while Changed do
+    begin
+      Changed := False;
+      Space := FirstArcadeSpace;
+      while Space <> nil do
+      begin
+        Other := Space;
+        Space := Space.Next;
+        if ((Other.GridPosition.X <> EndPoint.X) or (Other.GridPosition.Y <> EndPoint.Y)) and
+          ((Other.GridPosition.X <> StartPoint.X) or (Other.GridPosition.Y <> StartPoint.Y)) and
+          ((Other.OutgoingCount = 0) or (Other.IncomingCount = 0)) then
+        begin
+          Changed := True;
+          ab_Space_Delete(Other);
+        end;
+      end;
+      ab_Space_RecountLinks;
+    end;
+    Space := ab_Space_Find(EndPoint);
+    if Space.IncomingCount <= 0 then Retry := True;
   end;
   StartArcadeSpace := ab_Space_Add;
   StartArcadeSpace.GridPosition := Classes.Point(StartPoint.X - 1, StartPoint.Y);
@@ -1872,7 +1845,7 @@ begin
     Space := Space.Next;
   end;
   Space := StartArcadeSpace;
-  while not (EndArcadeSpace = Space) do
+  while EndArcadeSpace <> Space do
   begin
     Choice := RandomRange(0, Space.OutgoingCount - 1);
     Link := FirstArcadeSpaceLink;
@@ -1927,7 +1900,7 @@ begin
   CurrentArcadeSpace := StartArcadeSpace;
   NextArcadeSpace := ab_Space_Find(StartPoint);
   ArcadeMapViewPosition := CurrentArcadeSpace.MapPosition;
-  PlayerVisual.SetAngle(HeadingDegreesToByte(RadiansToHeadingDegrees(Angle)));
+  PlayerVisual.Angle := HeadingDegreesToByte(RadiansToHeadingDegrees(Angle));
   PlayerMapPosition := PointToPointF(StartArcadeSpace.MapPosition);
   RouteSpaces.Add(NextArcadeSpace);
   RebuildShipPath;
@@ -1952,42 +1925,43 @@ begin
   Space := FirstArcadeSpace;
   while Space <> nil do
   begin
-    if Space.BoundaryKind = 1 then Space := Space.Next
+    if Space.BoundaryKind = 1 then
+    begin
+      Space := Space.Next;
+      Continue;
+    end;
+    if Space.OutgoingCount > 3 then RaiseWideMessage('Error in ABSpaceBuild');
+    Changed := False;
+    Retry := False;
+    Selected := nil;
+    if (KellerArcadeShip <> nil) and (GetPlayer <> nil) then Space.MapPath := 'ABMap.map_boss'
+    else if (GetPlayer <> nil) and (ActiveArcadeRequest <> nil) then Space.MapPath := ActiveArcadeRequest.MapName
     else
     begin
-      if Space.OutgoingCount > 3 then RaiseWideMessage('Error in ABSpaceBuild');
-      Changed := False;
-      Retry := False;
-      Selected := nil;
-      if (KellerArcadeShip <> nil) and (GetPlayer <> nil) then Space.MapPath := 'ABMap.map_boss'
-      else if (GetPlayer <> nil) and (ActiveArcadeRequest <> nil) then Space.MapPath := ActiveArcadeRequest.MapName
-      else
+      Attempt := RandomRange(0, Weight - 1);
+      Index := 0;
+      while True do
       begin
-        Attempt := RandomRange(0, Weight - 1);
-        Index := 0;
-        while True do
+        Selected := Config.GetBlockByIndex(Index);
+        if FindTextOffsetW(Selected.GetParam('Portal'), IntToStr(Space.OutgoingCount)) >= 0 then
         begin
-          Selected := Config.GetBlockByIndex(Index);
-          if FindTextOffsetW(Selected.GetParam('Portal'), IntToStr(Space.OutgoingCount)) >= 0 then
-          begin
-            Changed := True;
-            Retry := True;
-            Dec(Attempt, ExtractDigitsToIntW(Selected.GetParam('Priority')));
-            if Attempt < 0 then Break;
-          end;
-          Inc(Index);
-          if Index >= BlockCount then
-          begin
-            Index := 0;
-            if not Retry then Break;
-            Retry := False;
-          end;
+          Changed := True;
+          Retry := True;
+          Dec(Attempt, ExtractDigitsToIntW(Selected.GetParam('Priority')));
+          if Attempt < 0 then Break;
         end;
-        if not Changed then RaiseWideMessage('ABMap not found');
-        Space.MapPath := Selected.GetParam('Path');
+        Inc(Index);
+        if Index >= BlockCount then
+        begin
+          Index := 0;
+          if not Retry then Break;
+          Retry := False;
+        end;
       end;
-      Space := Space.Next;
+      if not Changed then RaiseWideMessage('ABMap not found');
+      Space.MapPath := Selected.GetParam('Path');
     end;
+    Space := Space.Next;
   end;
   ArcadeMapBounds.TopLeft := FirstArcadeSpace.MapPosition;
   ArcadeMapBounds.BottomRight := FirstArcadeSpace.MapPosition;
@@ -2026,9 +2000,9 @@ begin
     Space := Space.Next;
   end;
 end;
-{ @end $541B60 }
+{ @end $66B000 }
 
-{ @routine $542E64 TfAB_ResetBattleControls }
+{ @routine $66C160 TfAB_ResetBattleControls }
 procedure TfAB.ResetBattleControls;
 begin
   CloseVictory(nil, 0);
@@ -2050,9 +2024,9 @@ begin
   ArcadeViewMode := 0;
   SetSystemCursorPosition(Classes.Point(GameScreenWidth - 2, GameScreenHeight - 2));
 end;
-{ @end $542E64 }
+{ @end $66C160 }
 
-{ @routine $542F4C TfAB_BeginMapTransition }
+{ @routine $66C224 TfAB_BeginMapTransition }
 procedure TfAB.BeginMapTransition;
 var
   NextObject, Obj: TabObject;
@@ -2069,9 +2043,9 @@ begin
   end;
   TransitionSpeed := 10;
 end;
-{ @end $542F4C }
+{ @end $66C224 }
 
-{ @routine $542FC4 TfAB_EnterMapView }
+{ @routine $66C280 TfAB_EnterMapView }
 procedure TfAB.EnterMapView;
 var
   Obj: TabObject;
@@ -2095,20 +2069,20 @@ begin
   end;
   with StartStarImage do
   begin
-    SetSize(GetContentSize);
-    SetOrigin(HalfPoint(ClientSize));
+    ObjectSize := GetContentSize;
+    Sme := HalfPoint(ClientSize);
     SequenceIndex := 0;
     UpdateAutoGeometry;
-    SetActive(True);
+    IsActive := True;
     RestartPlayback;
   end;
   with EndStarImage do
   begin
-    SetSize(GetContentSize);
-    SetOrigin(HalfPoint(ClientSize));
+    ObjectSize := GetContentSize;
+    Sme := HalfPoint(ClientSize);
     SequenceIndex := 0;
     UpdateAutoGeometry;
-    SetActive(True);
+    IsActive := True;
     RestartPlayback;
   end;
   StarField.SetBackgroundImage(MapBackgroundPath);
@@ -2121,9 +2095,9 @@ begin
   PlayerVisual.SetDepth(ShipFrontDepth);
   if PlayerVisual is TShip2SE then TShip2SE(PlayerVisual).SetTailDepth(ShipTailFrontDepth);
   PlayerMapPosition := PointToPointF(CurrentArcadeSpace.MapPosition);
-  PlayerVisual.SetPosition(PlayerMapPosition);
+  PlayerVisual.Pos := PlayerMapPosition;
   if NextArcadeSpace <> nil then
-    PlayerVisual.SetAngle(HeadingDegreesToByte(PointBearingDegrees(PointToPointF(CurrentArcadeSpace.MapPosition), PointToPointF(NextArcadeSpace.MapPosition))));
+    PlayerVisual.Angle := HeadingDegreesToByte(PointBearingDegrees(PointToPointF(CurrentArcadeSpace.MapPosition), PointToPointF(NextArcadeSpace.MapPosition)));
   if NextArcadeSpace = nil then BuildSpaceRoute(RouteSpaces, CurrentArcadeSpace, EndArcadeSpace)
   else if (RouteSpaces.Count < 1) or (RouteSpaces[0] <> NextArcadeSpace) then
   begin
@@ -2134,34 +2108,37 @@ begin
   if NextArcadeSpace = nil then BuildShipPathImages else ClearShipPath;
   ArcadePauseWithShift := False;
   ArcadePaused := NextArcadeSpace <> nil;
-  PlayButton.SetActive(not ArcadePaused);
-  PauseButton.SetActive(ArcadePaused);
+  PlayButton.IsActive := not ArcadePaused;
+  PauseButton.IsActive := ArcadePaused;
   ab_StopLine_Clear;
   ab_StopPoint_Clear;
   if (GetPlayer <> nil) and CampaignTransitionStarted and CampaignLoadStarted and not CampaignLoadFinished then CacheLoader.ClearFlag18;
-  GetByName('PRight').SetActive(True);
+  GetByName('PRight').IsActive := True;
 end;
-{ @end $542FC4 }
+{ @end $66C280 }
 
-{ @routine $5433D8 TfAB_EnterCurrentSpace }
+{ @routine $66C5F8 TfAB_EnterCurrentSpace }
 procedure TfAB.EnterCurrentSpace;
+label
+  NextBarrierLink, NextPermanentLink;
+const
+  BattleBarrierZoneKinds = [6..8];
 var
   Obj, Other: TabObject;
   ExitLink: PabSpaceLink;
   StopLine: PabStopLine;
   Zone: PabZone;
   ZoneLink: PabZoneLink;
-  Ship: TabShipAI;
+  Ship, OtherShip: TabShipAI;
   Wall, OtherWall: TabWall;
   Index, OtherIndex, DesiredColor, ColorCount, BestDifference, ColorValue, Selection: Integer;
   HasEnemies: Boolean;
   PendingLoads: TList;
   Remaining: Integer;
   ColorData: PArcadeMapColorHeader;
-  UnusedLocal: Integer; // Native unused dword before compiler temporaries; original name/type unknown.
 begin
   CloseVictory(nil, 0);
-  GetByName('PRight').SetActive(False);
+  GetByName('PRight').IsActive := False;
   HideObjectInfo;
   CancelCargoPickup;
   HasEnemies := GetPlayer = nil;
@@ -2173,8 +2150,8 @@ begin
   PlayerArcadeShip.Velocity := MakePointF(0, 0);
   PlayerArcadeShip.SetTurnInput(0);
   ab_Space_ClearImages;
-  StartStarImage.SetActive(False);
-  EndStarImage.SetActive(False);
+  StartStarImage.IsActive := False;
+  EndStarImage.IsActive := False;
   PlayerVisual.DetachFromSpace;
   StarField.SetBackgroundImage(MapBackgroundPath);
   StarField.BackgroundScale := 8;
@@ -2188,14 +2165,14 @@ begin
   ColorData := ArcadeMapColorBuffer.Data;
   while Remaining > 0 do
   begin
-    ColorCount := PInteger(@ColorData.VariantCount)^;
-    Selection := PInteger(@ColorData.SelectedVariant)^;
+    ColorCount := PInteger(Integer(ColorData) + 4)^;
+    Selection := PInteger(Integer(ColorData) + 8)^;
     if Selection = 0 then
     begin
       Selection := 0;
       for Index := 0 to ColorCount - 1 do
       begin
-        ColorValue := PInteger(Index * SizeOf(TArcadeMapColorVariant) + SizeOf(TArcadeMapColorHeader) + SizeOf(Integer) + PAnsiChar(ColorData))^;
+        ColorValue := PInteger(Index * SizeOf(TArcadeMapColorVariant) + SizeOf(TArcadeMapColorHeader) + SizeOf(Integer) + Integer(ColorData))^;
         if ColorValue = 0 then
         begin
           Selection := Index;
@@ -2211,7 +2188,7 @@ begin
         Selection := -1;
         for Index := 0 to ColorCount - 1 do
         begin
-          ColorValue := PInteger(Index * SizeOf(TArcadeMapColorVariant) + SizeOf(TArcadeMapColorHeader) + SizeOf(Integer) + PAnsiChar(ColorData))^;
+          ColorValue := PInteger(Index * SizeOf(TArcadeMapColorVariant) + SizeOf(TArcadeMapColorHeader) + SizeOf(Integer) + Integer(ColorData))^;
           if ColorValue = 0 then
           begin
             Selection := Index;
@@ -2235,7 +2212,7 @@ begin
         BestDifference := 999999;
         for Index := 0 to ColorCount - 1 do
         begin
-          ColorValue := PInteger(Index * SizeOf(TArcadeMapColorVariant) + SizeOf(TArcadeMapColorHeader) + SizeOf(Integer) + PAnsiChar(ColorData))^;
+          ColorValue := PInteger(Index * SizeOf(TArcadeMapColorVariant) + SizeOf(TArcadeMapColorHeader) + SizeOf(Integer) + Integer(ColorData))^;
           if ColorValue < 20 then Dec(ColorValue, 10);
           ColorValue := Abs(DesiredColor - ColorValue);
           if ColorValue < BestDifference then
@@ -2246,9 +2223,9 @@ begin
         end;
       end;
     end;
-    PInteger(@ColorData.SelectedVariant)^ := Selection;
-    Dec(Remaining, PInteger(@ColorData.ByteSize)^);
-    ColorData := Pointer(PInteger(@ColorData.ByteSize)^ + PAnsiChar(ColorData));
+    PInteger(Integer(ColorData) + 8)^ := Selection;
+    Dec(Remaining, PInteger(Integer(ColorData) + 12)^);
+    ColorData := Pointer(PInteger(Integer(ColorData) + 12)^ + Integer(ColorData));
   end;
   ArcadeKellerEncounter := (GetPlayer <> nil) and (GetPlayer.Order = soJumpHole) and
     ((GetPlayer.OrderTarget as THole).HoleType = 4) and (Galaxy.KellerLeaveTurn = 0) and
@@ -2259,28 +2236,26 @@ begin
     begin
       Obj := CurrentArcadeSpace.Objects[Index];
       ab_Object_Add(Obj);
-      if Obj is TabShipAI then
+      if not (Obj is TabShipAI) then Continue;
+      if ActiveArcadeRequest = nil then
       begin
-        if ActiveArcadeRequest = nil then
-        begin
-          Ship := Obj as TabShipAI;
-          PlayerArcadeShip.AddEnemy(Ship);
-          Ship.AddEnemy(PlayerArcadeShip);
-          if Galaxy <> nil then
-            if (KellerArcadeShip = nil) and Galaxy.IsArcadeBattleRoyaleEnabled then
-              for OtherIndex := Index + 1 to CurrentArcadeSpace.Objects.Count - 1 do
-              begin
-                Other := CurrentArcadeSpace.Objects[OtherIndex];
-                if (Other is TabShipAI) and (PlayerArcadeShip <> Other) then
-                  if Ship.Visual.GraphKey <> (Other as TabShipAI).Visual.GraphKey then
-                  begin
-                    Ship.AddEnemy(Other as TabShipAI);
-                    (Other as TabShipAI).AddEnemy(Ship);
-                  end;
-              end;
-        end;
-        HasEnemies := True;
+        Ship := Obj as TabShipAI;
+        PlayerArcadeShip.AddEnemy(Ship);
+        Ship.AddEnemy(PlayerArcadeShip);
+        if Galaxy <> nil then
+          if (KellerArcadeShip = nil) and Galaxy.IsArcadeBattleRoyaleEnabled then
+            for OtherIndex := Index + 1 to CurrentArcadeSpace.Objects.Count - 1 do
+            begin
+              Other := CurrentArcadeSpace.Objects[OtherIndex];
+              if (Other is TabShipAI) and (PlayerArcadeShip <> Other) then
+                if Ship.Visual.GraphKey <> (Other as TabShipAI).Visual.GraphKey then
+                begin
+                  Ship.AddEnemy(Other as TabShipAI);
+                  (Other as TabShipAI).AddEnemy(Ship);
+                end;
+            end;
       end;
+      HasEnemies := True;
     end;
     CurrentArcadeSpace.Objects.Clear;
   end;
@@ -2301,7 +2276,7 @@ begin
         (Obj as TabShip).State := ab_Zone_RandomPosition(Zone);
       end
       else (Obj as TabShip).State := ab_Zone_RandomPosition(ab_Zone_RandomKind(0));
-      (Obj as TabShip).Visual.SetAlpha(0);
+      (Obj as TabShip).Visual.Alpha := 0;
       (Obj as TabShip).AttachVisual;
       if Obj is TabShipAI then (Obj as TabShipAI).ResetIntent;
     end
@@ -2312,7 +2287,7 @@ begin
   Zone := FirstZone;
   while Zone <> nil do
   begin
-    if (Zone.Kind = 5) or ((Zone.Kind in [6..8]) and (HasEnemies and not ArcadeKellerEncounter)) then
+    if (Zone.Kind = 5) or ((Zone.Kind in BattleBarrierZoneKinds) and (HasEnemies and not ArcadeKellerEncounter)) then
     begin
       Wall := TabWall.Create;
       ab_Object_Add(Wall);
@@ -2341,71 +2316,69 @@ begin
   ZoneLink := FirstZoneLink;
   while ZoneLink <> nil do
   begin
-    if (ZoneLink.BarrierLinkMode = 1) and (ZoneLink.First.Kind in [6..8]) and (ZoneLink.Last.Kind in [6..8]) then
-    begin
-      Wall := ab_Wall_FindZone(ZoneLink.First);
-      OtherWall := ab_Wall_FindZone(ZoneLink.Last);
-      if Wall <> nil then
-        if OtherWall <> nil then
+    if not ((ZoneLink.BarrierLinkMode = 1) and (ZoneLink.First.Kind in BattleBarrierZoneKinds) and (ZoneLink.Last.Kind in BattleBarrierZoneKinds)) then goto NextBarrierLink;
+    Wall := ab_Wall_FindZone(ZoneLink.First);
+    OtherWall := ab_Wall_FindZone(ZoneLink.Last);
+    if Wall <> nil then
+      if OtherWall <> nil then
+      begin
+        if Wall.StopPoint = nil then
         begin
-          if Wall.StopPoint = nil then
-          begin
-            Wall.StopPoint := ab_StopPoint_Add;
-            Wall.StopPoint.Longitude := ZoneLink.First.Longitude;
-            Wall.StopPoint.PolarAngle := ZoneLink.First.PolarAngle;
-            Wall.StopPoint.Radius := SphereRadius;
-            ab_StopPoint_UpdatePosition(Wall.StopPoint);
-          end;
-          if OtherWall.StopPoint = nil then
-          begin
-            OtherWall.StopPoint := ab_StopPoint_Add;
-            OtherWall.StopPoint.Longitude := ZoneLink.Last.Longitude;
-            OtherWall.StopPoint.PolarAngle := ZoneLink.Last.PolarAngle;
-            OtherWall.StopPoint.Radius := SphereRadius;
-            ab_StopPoint_UpdatePosition(OtherWall.StopPoint);
-          end;
-          StopLine := ab_StopLine_Add;
-          StopLine.First := Wall.StopPoint;
-          StopLine.Last := OtherWall.StopPoint;
-          StopLine.Visible := False;
-          StopLine.Collidable := True;
+          Wall.StopPoint := ab_StopPoint_Add;
+          Wall.StopPoint.Longitude := ZoneLink.First.Longitude;
+          Wall.StopPoint.PolarAngle := ZoneLink.First.PolarAngle;
+          Wall.StopPoint.Radius := SphereRadius;
+          ab_StopPoint_UpdatePosition(Wall.StopPoint);
         end;
-    end;
+        if OtherWall.StopPoint = nil then
+        begin
+          OtherWall.StopPoint := ab_StopPoint_Add;
+          OtherWall.StopPoint.Longitude := ZoneLink.Last.Longitude;
+          OtherWall.StopPoint.PolarAngle := ZoneLink.Last.PolarAngle;
+          OtherWall.StopPoint.Radius := SphereRadius;
+          ab_StopPoint_UpdatePosition(OtherWall.StopPoint);
+        end;
+        StopLine := ab_StopLine_Add;
+        StopLine.First := Wall.StopPoint;
+        StopLine.Last := OtherWall.StopPoint;
+        StopLine.Visible := False;
+        StopLine.Collidable := True;
+      end;
+  NextBarrierLink:
     ZoneLink := ZoneLink.Next;
   end;
   ZoneLink := FirstZoneLink;
   while ZoneLink <> nil do
   begin
-    if (ZoneLink.BarrierLinkMode = 1) and (ZoneLink.First.Kind = 5) and (ZoneLink.Last.Kind = 5) then
-    begin
-      Wall := ab_Wall_FindZone(ZoneLink.First);
-      OtherWall := ab_Wall_FindZone(ZoneLink.Last);
-      if Wall <> nil then
-        if OtherWall <> nil then
+    if not ((ZoneLink.BarrierLinkMode = 1) and (ZoneLink.First.Kind = 5) and (ZoneLink.Last.Kind = 5)) then goto NextPermanentLink;
+    Wall := ab_Wall_FindZone(ZoneLink.First);
+    OtherWall := ab_Wall_FindZone(ZoneLink.Last);
+    if Wall <> nil then
+      if OtherWall <> nil then
+      begin
+        if Wall.StopPoint = nil then
         begin
-          if Wall.StopPoint = nil then
-          begin
-            Wall.StopPoint := ab_StopPoint_Add;
-            Wall.StopPoint.Longitude := ZoneLink.First.Longitude;
-            Wall.StopPoint.PolarAngle := ZoneLink.First.PolarAngle;
-            Wall.StopPoint.Radius := SphereRadius;
-            ab_StopPoint_UpdatePosition(Wall.StopPoint);
-          end;
-          if OtherWall.StopPoint = nil then
-          begin
-            OtherWall.StopPoint := ab_StopPoint_Add;
-            OtherWall.StopPoint.Longitude := ZoneLink.Last.Longitude;
-            OtherWall.StopPoint.PolarAngle := ZoneLink.Last.PolarAngle;
-            OtherWall.StopPoint.Radius := SphereRadius;
-            ab_StopPoint_UpdatePosition(OtherWall.StopPoint);
-          end;
-          StopLine := ab_StopLine_Add;
-          StopLine.First := Wall.StopPoint;
-          StopLine.Last := OtherWall.StopPoint;
-          StopLine.Visible := False;
-          StopLine.Collidable := True;
+          Wall.StopPoint := ab_StopPoint_Add;
+          Wall.StopPoint.Longitude := ZoneLink.First.Longitude;
+          Wall.StopPoint.PolarAngle := ZoneLink.First.PolarAngle;
+          Wall.StopPoint.Radius := SphereRadius;
+          ab_StopPoint_UpdatePosition(Wall.StopPoint);
         end;
-    end;
+        if OtherWall.StopPoint = nil then
+        begin
+          OtherWall.StopPoint := ab_StopPoint_Add;
+          OtherWall.StopPoint.Longitude := ZoneLink.Last.Longitude;
+          OtherWall.StopPoint.PolarAngle := ZoneLink.Last.PolarAngle;
+          OtherWall.StopPoint.Radius := SphereRadius;
+          ab_StopPoint_UpdatePosition(OtherWall.StopPoint);
+        end;
+        StopLine := ab_StopLine_Add;
+        StopLine.First := Wall.StopPoint;
+        StopLine.Last := OtherWall.StopPoint;
+        StopLine.Visible := False;
+        StopLine.Collidable := True;
+      end;
+  NextPermanentLink:
     ZoneLink := ZoneLink.Next;
   end;
   ab_StopLine_BuildCollisionList;
@@ -2422,9 +2395,9 @@ begin
   PendingLoads.Free;
   RefreshTimerTick;
 end;
-{ @end $5433D8 }
+{ @end $66C5F8 }
 
-{ @routine $544150 TfAB_AdvanceMapColors }
+{ @routine $66D200 TfAB_AdvanceMapColors }
 procedure TfAB.AdvanceMapColors;
 var
   Remaining, BlockBytes, Selection, FrameIndex, FrameCount: Integer;
@@ -2438,27 +2411,27 @@ begin
   ColorData := ArcadeMapColorBuffer.Data;
   while Remaining > 0 do
   begin
-    Selection := PInteger(@ColorData.SelectedVariant)^;
-    BlockBytes := PInteger(@ColorData.ByteSize)^;
+    Selection := PInteger(Integer(ColorData) + 8)^;
+    BlockBytes := PInteger(Integer(ColorData) + 12)^;
     if Selection < 0 then ColorData.CurrentColor := 0
     else
     begin
-      Frames := Pointer(PArcadeMapColorVariant(Selection * SizeOf(TArcadeMapColorVariant) + SizeOf(TArcadeMapColorHeader) + PAnsiChar(ColorData)).SequenceOffset + PAnsiChar(ColorData));
+      Frames := Pointer(PArcadeMapColorVariant(Selection * SizeOf(TArcadeMapColorVariant) + SizeOf(TArcadeMapColorHeader) + Integer(ColorData)).SequenceOffset + Integer(ColorData));
       FrameIndex := Frames.FrameIndex;
-      FrameCount := PInteger(@Frames.FrameCount)^;
+      FrameCount := PInteger(Integer(Frames) + 4)^;
       Inc(FrameIndex);
       if FrameIndex >= FrameCount then FrameIndex := 0;
       Frames.FrameIndex := FrameIndex;
-      ColorData.CurrentColor := PInteger(FrameIndex * SizeOf(Integer) + SizeOf(TArcadeMapColorSequence) + PAnsiChar(Frames))^;
+      ColorData.CurrentColor := PInteger(FrameIndex * SizeOf(Integer) + SizeOf(TArcadeMapColorSequence) + Integer(Frames))^;
     end;
-    ColorData := Pointer(PAnsiChar(ColorData) + BlockBytes);
+    ColorData := Pointer(Integer(ColorData) + BlockBytes);
     Dec(Remaining, BlockBytes);
   end;
 end;
-{ @end $544150 }
+{ @end $66D200 }
 
-{ @routine $544214 TfAB_TimerTakt }
-procedure TfAB.TimerTakt(Timer: PCallbackTimerGI; UserData: Integer);
+{ @routine $66D294 TfAB_TimerTakt }
+procedure TfAB.TimerTakt(Timer: TCallbackTimerIdGI; UserData: Cardinal);
 var
   Obj, NextObject: TabObject;
   BearingDegrees, Distance, Step: Double;
@@ -2467,16 +2440,16 @@ var
   Loads: TList;
   Index: Integer;
   Space: TabSpace;
+  DateLabel: TLabelGI;
+  StopPoint: PabStopPoint; // Unused editor local; original purpose is unknown.
   Panel: TObjectGI;
   Owner: TPanelGI;
   Stage: Integer;
-  LabelControl, DateLabel: TLabelGI;
+  LabelControl: TLabelGI;
   CameraPos, TargetPos, UpVector: TVector3D;
   View, Rotation: TMatrix4D;
-  UnusedBeforeBearing: array[0..7] of Byte; // Native unused bytes between the matrix and bearing records.
   Bearing: TSphericalBearingDistance;
   State: TSphericalBearingState;
-  UnusedAfterState: array[0..3] of Byte; // Native unused bytes before backend temporaries.
 begin
   Stage := 0;
   Obj := nil;
@@ -2487,10 +2460,10 @@ begin
         if GetPlayer <> nil then Galaxy.ScoreScreenDismissed := 1;
         while GetPlayer <> nil do SysUtils.Sleep(1);
         RequestedScreenId := screenGameEnd;
-        if UpdateTimer <> nil then
+        if UpdateTimer <> 0 then
         begin
           CancelCallbackTimer(UpdateTimer);
-          UpdateTimer := nil;
+          UpdateTimer := 0;
         end;
         RequestClose(1);
         Exit;
@@ -2526,10 +2499,10 @@ begin
           ArcadeKellerReward.Free;
           ArcadeKellerReward := nil;
         end;
-        if UpdateTimer <> nil then
+        if UpdateTimer <> 0 then
         begin
           CancelCallbackTimer(UpdateTimer);
-          UpdateTimer := nil;
+          UpdateTimer := 0;
         end;
         RequestClose(1);
         Exit;
@@ -2546,29 +2519,29 @@ begin
         Owner.FreeOwnedChildren;
         LabelControl := TLabelGI.Create(Owner);
         LabelControl.SetFontName(NormalFontName);
-        LabelControl.SetPosition(Classes.Point(0, GiScalePixels(30)));
-        LabelControl.SetSize(Classes.Point(Owner.ClientSize.X, 1));
+        LabelControl.Pos := Classes.Point(0, GiScalePixels(30));
+        LabelControl.ObjectSize := Classes.Point(Owner.ClientSize.X, 1);
         LabelControl.SetTextAlignX(taxCenter);
         LabelControl.SetTextAlignY(tayAuto);
-        LabelControl.SetText(LocalizedColorText('FormAB.TextExit'));
+        LabelControl.Text := LocalizedColorText('FormAB.TextExit');
         LabelControl.SetTextColor(CurrentPixelFormat.PackRgbBytes(255, 255, 255));
-        Owner.SetSize(Classes.Point(Owner.ClientSize.X, GiScalePixels(30) + Owner.ClientSize.Y + LabelControl.ClientSize.Y));
+        Owner.ObjectSize := Classes.Point(Owner.ClientSize.X, GiScalePixels(30) + Owner.ClientSize.Y + LabelControl.ClientSize.Y);
         Panel := DefeatPanel;
-        Panel.SetSize(Classes.Point(Panel.ClientSize.X, Owner.LocalPosition.Y + Owner.ClientSize.Y + GiScalePixels(20)));
-        Panel.SetActive(True);
+        Panel.ObjectSize := Classes.Point(Panel.ClientSize.X, Owner.LocalPosition.Y + Owner.ClientSize.Y + GiScalePixels(20));
+        Panel.IsActive := True;
         Panel := GetByName('LoseShr');
-        Panel.SetSize(Classes.Point(Panel.ClientSize.X, Owner.LocalPosition.Y + Owner.ClientSize.Y + GiScalePixels(20)));
-        GetByName('PanelLoseHide').SetActive(True);
+        Panel.ObjectSize := Classes.Point(Panel.ClientSize.X, Owner.LocalPosition.Y + Owner.ClientSize.Y + GiScalePixels(20));
+        GetByName('PanelLoseHide').IsActive := True;
       end;
       if DefeatCountdownTicks <= -500 then
       begin
         ScreenLoadMode := 4;
         PostLoadScreenId := screenLoadArcade;
         RequestedScreenId := screenLoad;
-        if UpdateTimer <> nil then
+        if UpdateTimer <> 0 then
         begin
           CancelCallbackTimer(UpdateTimer);
-          UpdateTimer := nil;
+          UpdateTimer := 0;
         end;
         RequestClose(1);
         Exit;
@@ -2600,7 +2573,7 @@ begin
         if PlayerVisual is TShip2SE then
           TShip2SE(PlayerVisual).OffsetTailsAlongHeading(PointDistance(PlayerMapPosition, ShipPath.ActiveHead.Position) / 2.5 + RandomIntRange(0, 1) * 0.3);
         PlayerMapPosition := ShipPath.ActiveHead.Position;
-        PlayerVisual.SetAngle(HeadingDegreesToByte(ShipPath.ActiveHead.Heading));
+        PlayerVisual.Angle := HeadingDegreesToByte(ShipPath.ActiveHead.Heading);
         ShipPath.RemoveNode(ShipPath.ActiveHead);
         if (ShipPath.ActiveHead = nil) or
           (PointDistanceSquared(PointToPointF(NextArcadeSpace.MapPosition), PlayerMapPosition) <= ArcadePathStep * ArcadePathStep) then
@@ -2627,8 +2600,8 @@ begin
             begin
               ArcadePauseWithShift := False;
               ArcadePaused := False;
-              PlayButton.SetActive(not ArcadePaused);
-              PauseButton.SetActive(ArcadePaused);
+              PlayButton.IsActive := not ArcadePaused;
+              PauseButton.IsActive := ArcadePaused;
               if RouteSpaces.Count < 1 then BuildSpaceRoute(RouteSpaces, CurrentArcadeSpace, EndArcadeSpace);
               RebuildShipPath;
               BuildShipPathImages;
@@ -2648,18 +2621,18 @@ begin
         begin
           ArcadePauseWithShift := False;
           ArcadePaused := False;
-          PlayButton.SetActive(not ArcadePaused);
-          PauseButton.SetActive(ArcadePaused);
+          PlayButton.IsActive := not ArcadePaused;
+          PauseButton.IsActive := ArcadePaused;
         end;
       end;
       if (CurrentArcadeSpace = EndArcadeSpace) and (GetPlayer <> nil) and CampaignLoadFinished and
         CampaignTransitionStarted and (CampaignLoadProgress >= 1) then
       begin
         Stage := 11;
-        if UpdateTimer <> nil then
+        if UpdateTimer <> 0 then
         begin
           CancelCallbackTimer(UpdateTimer);
-          UpdateTimer := nil;
+          UpdateTimer := 0;
         end;
         Galaxy.PrimeIntegrityChecksum(614);
         RequestClose(1);
@@ -2676,7 +2649,7 @@ begin
         if Loads.Count > 0 then
         begin
           CacheLoader.SetPendingLoads(Loads, True);
-          if ArcadeViewMode = 5 then CacheLoader.SetPriority(3);
+          if ArcadeViewMode = 5 then CacheLoader.SetPriority(ThreadPriorityNormal);
         end
         else
         begin
@@ -2797,8 +2770,8 @@ begin
         begin
           ArcadePaused := False;
           ArcadePauseWithShift := False;
-          PlayButton.SetActive(not ArcadePaused);
-          PauseButton.SetActive(ArcadePaused);
+          PlayButton.IsActive := not ArcadePaused;
+          PauseButton.IsActive := ArcadePaused;
           BeginMapTransition;
         end;
       end;
@@ -2827,10 +2800,10 @@ begin
     else if (ArcadeViewMode = 4) and (KellerArcadeShip <> nil) then
     begin
       Stage := 27;
-      ScreenPointToSphere(Classes.Point(GameScreenWidth div 2, GameScreenHeight div 2), TargetLongitude, TargetPolarAngle);
+      ScreenPointToSphere(Classes.Point(Integer(GameScreenWidth) div 2, Integer(GameScreenHeight) div 2), TargetLongitude, TargetPolarAngle);
       ScreenPointToSphere(Classes.Point(GiScalePixels(250), GiScalePixels(300)), SourceLongitude, SourcePolarAngle);
-      ComputeSphericalBearingAndDistance(BearingDegrees, Distance, SourceLongitude, SourcePolarAngle, 0,
-        TargetLongitude, TargetPolarAngle, SphereRadius);
+      ComputeSphericalBearingAndDistance(SourceLongitude, SourcePolarAngle, 0,
+        TargetLongitude, TargetPolarAngle, SphereRadius, BearingDegrees, Distance);
       if BearingDegrees < 0 then BearingDegrees := 360 + BearingDegrees;
       State := KellerArcadeShip.State;
       State := AdvanceSphericalStateAlongBearing(State, BearingDegrees, Distance);
@@ -2883,7 +2856,7 @@ begin
     Rotation := BuildZAxisRotationMatrix(HeadingDegreesToRadians(SphereViewState.BearingDegrees));
     SphereViewMatrix := MultiplyMatrix4D(Rotation, View);
     SpherePerspectiveMatrix := BuildPerspectiveProjectionMatrix(SphereCameraDistance - SphereRadius - 100,
-      SphereCameraDistance + SphereRadius + 100, HeadingDegreesToRadians(SphereFieldOfView), Cardinal(GameScreenWidth));
+      SphereCameraDistance + SphereRadius + 100, HeadingDegreesToRadians(SphereFieldOfView), GameScreenWidth);
     SphereProjectionMatrix := MultiplyMatrix4D(SpherePerspectiveMatrix, SphereViewMatrix);
     UpdateSphereProjectionMetrics;
     if ArcadeViewMode = 2 then
@@ -2896,18 +2869,18 @@ begin
       end;
       ab_Space_Update;
       ab_Space_CreateImages;
-      StartStarImage.SetPosition(SubtractPoints(StartArcadeSpace.MapPosition, ArcadeMapViewPosition));
-      EndStarImage.SetPosition(SubtractPoints(EndArcadeSpace.MapPosition, ArcadeMapViewPosition));
+      StartStarImage.Pos := SubtractPoints(StartArcadeSpace.MapPosition, ArcadeMapViewPosition);
+      EndStarImage.Pos := SubtractPoints(EndArcadeSpace.MapPosition, ArcadeMapViewPosition);
       Space := FirstArcadeSpace;
       while Space <> nil do
       begin
-        if Space.Image <> nil then Space.Image.SetPosition(SubtractPoints(Space.MapPosition, ArcadeMapViewPosition));
+        if Space.Image <> nil then Space.Image.Pos := SubtractPoints(Space.MapPosition, ArcadeMapViewPosition);
         Space := Space.Next;
       end;
       Position := PointToPointF(SubtractPoints(TruncatePointF(PlayerMapPosition), ArcadeMapViewPosition));
       if PlayerVisual is TShip2SE then
         TShip2SE(PlayerVisual).OffsetTails(MakePointF(Position.X - PlayerVisual.Position.X, Position.Y - PlayerVisual.Position.Y));
-      PlayerVisual.SetPosition(Position);
+      PlayerVisual.Pos := Position;
       if NextArcadeSpace = nil then UpdateShipPathImages;
     end;
     Stage := 32;
@@ -2933,8 +2906,8 @@ begin
       CameraPos.Y := EndArcadeSpace.MapPosition.Y - StartArcadeSpace.MapPosition.Y;
       TargetPos.X := PlayerMapPosition.X - StartArcadeSpace.MapPosition.X;
       TargetPos.Y := PlayerMapPosition.Y - StartArcadeSpace.MapPosition.Y;
-      DateLabel.SetText(FormatGameTurnDate(Round((CameraPos.X * TargetPos.X + CameraPos.Y * TargetPos.Y) /
-        (Sqr(CameraPos.X) + Sqr(CameraPos.Y)) * (ArrivalTurn - DepartureTurn) + DepartureTurn)));
+      DateLabel.Text := FormatGameTurnDate(Round((ArrivalTurn - DepartureTurn) * ((CameraPos.X * TargetPos.X + CameraPos.Y * TargetPos.Y) /
+        (Sqr(CameraPos.X) + Sqr(CameraPos.Y))) + DepartureTurn));
     end;
     Stage := 37;
     if not SimulationPaused then ab_Ship_RepelOverlaps;
@@ -2948,10 +2921,10 @@ begin
     end;
   end;
 end;
-{ @end $544214 }
+{ @end $66D294 }
 
-{ @routine $5463C4 TfAB_ScrollMapTimer }
-procedure TfAB.ScrollMapTimer(Timer: PCallbackTimerGI; UserData: Integer);
+{ @routine $66F1D8 TfAB_ScrollMapTimer }
+procedure TfAB.ScrollMapTimer(Timer: TCallbackTimerIdGI; UserData: Cardinal);
 var
   Position, PreviousPosition: TPoint;
   CursorX, CursorY: SmallInt;
@@ -2974,9 +2947,9 @@ begin
     CursorX := GetCursorPoint.X;
     CursorY := GetCursorPoint.Y;
     if CursorX < ScrollSense then Dec(Position.X, ScrollStep);
-    if GameScreenWidth - ScrollSense - 1 < CursorX then Inc(Position.X, ScrollStep);
+    if Integer(GameScreenWidth) - ScrollSense - 1 < CursorX then Inc(Position.X, ScrollStep);
     if CursorY < ScrollSense then Dec(Position.Y, ScrollStep);
-    if GameScreenHeight - ScrollSense - 1 < CursorY then Inc(Position.Y, ScrollStep);
+    if Integer(GameScreenHeight) - ScrollSense - 1 < CursorY then Inc(Position.Y, ScrollStep);
     if (PreviousPosition.X <> Position.X) or (PreviousPosition.Y <> Position.Y) then
     begin
       ArcadeMapViewPosition := Position;
@@ -2991,19 +2964,19 @@ begin
     end;
   end;
 end;
-{ @end $5463C4 }
+{ @end $66F1D8 }
 
-{ @routine $546658 TfAB_FinishCampaignTransition }
+{ @routine $66F448 TfAB_FinishCampaignTransition }
 procedure TfAB.FinishCampaignTransition;
 var
   SavedStar: TStar;
 begin
   if (Galaxy <> nil) and ((GetPlayer = nil) or (GetPlayer.GetHull.HullPoints <= 0)) then
   begin
-    if UpdateTimer <> nil then
+    if UpdateTimer <> 0 then
     begin
       CancelCallbackTimer(UpdateTimer);
-      UpdateTimer := nil;
+      UpdateTimer := 0;
     end;
     if GetPlayer <> nil then Galaxy.ScoreScreenDismissed := 1;
     while GetPlayer <> nil do SysUtils.Sleep(1);
@@ -3043,9 +3016,9 @@ begin
     end;
   end;
 end;
-{ @end $546658 }
+{ @end $66F448 }
 
-{ @routine $546854 TfAB_InvalidateFrame }
+{ @routine $66F624 TfAB_InvalidateFrame }
 procedure TfAB.InvalidateFrame;
 begin
   UpdateRectsEnabled := True;
@@ -3056,22 +3029,26 @@ begin
   CursorControl.Invalidate;
   UpdateRectsEnabled := False;
 end;
-{ @end $546854 }
+{ @end $66F624 }
 
-{ @routine $5468DC TfAB_DrawShipHealthBars }
+{ @routine $66F698 TfAB_DrawShipHealthBars }
 procedure TfAB.DrawShipHealthBars;
 var
   Obj: TabObject;
   Ship: TabShip;
-  CenterY, CenterX, Width, FilledWidth, Height: Integer;
-  BottomLeft, BottomRight, TopRight, TopLeft: TPoint;
+  CenterX, CenterY, Width, FilledWidth, Height: Integer;
+  Corners: record TopLeft, TopRight, BottomRight, BottomLeft: TPoint; end;
 begin
-  Obj := FirstArcadeObject;
-  while Obj <> nil do
+  with Corners do
   begin
-    if not (Obj is TabShip) then Obj := Obj.Next
-    else
+    Obj := FirstArcadeObject;
+    while Obj <> nil do
     begin
+      if not (Obj is TabShip) then
+      begin
+        Obj := Obj.Next;
+        Continue;
+      end;
       Ship := TabShip(Obj);
       Obj := Obj.Next;
       if (Ship.Visual <> nil) and Ship.Visual.IsAttachedToSpace and
@@ -3145,9 +3122,9 @@ begin
     end;
   end;
 end;
-{ @end $5468DC }
+{ @end $66F698 }
 
-{ @routine $546CC0 TfAB_ClearEnemyStatus }
+{ @routine $66FA44 TfAB_ClearEnemyStatus }
 procedure TfAB.ClearEnemyStatus(Index: Integer);
 begin
   if EnemyIcons[Index] <> nil then
@@ -3171,9 +3148,9 @@ begin
     EnemyRewardBackdrops[Index] := nil;
   end;
 end;
-{ @end $546CC0 }
+{ @end $66FA44 }
 
-{ @routine $546D94 TfAB_ClearTrackedShipStatus }
+{ @routine $66FAB4 TfAB_ClearTrackedShipStatus }
 procedure TfAB.ClearTrackedShipStatus(Index: Integer);
 begin
   if TrackedShipIcons[Index] <> nil then
@@ -3187,21 +3164,21 @@ begin
     TrackedShipHealthRings[Index] := nil;
   end;
 end;
-{ @end $546D94 }
+{ @end $66FAB4 }
 
-{ @routine $546E08 TfAB_UpdateShipStatusIcons }
+{ @routine $66FAF0 TfAB_UpdateShipStatusIcons }
 procedure TfAB.UpdateShipStatusIcons;
 var
   PosX, PosY, RingWidth, RingHeight, Index, OffsetX, OffsetY, IconWidth, IconHeight: Integer;
+  UnusedRecord: record Reserved: Integer; end; // Native unused four-byte slot before Ship.
   Ship: TabShipAI;
   Item: TItem;
-  UnusedRecord: record Reserved: Integer; end; // Native unused four-byte slot before the temporary point records.
 begin
   if (PlayerArcadeShip = nil) or ((GetPlayer <> nil) and (GetPlayer.CountActiveArtefacts(t_ArtefactScaner) <= 0)) or
     (ExitCode <> 0) or (ArcadeViewMode = 5) then
   begin
-    for Index := 0 to 7 do ClearEnemyStatus(Index);
-    for Index := 0 to 7 do ClearTrackedShipStatus(Index);
+    for Index := Low(EnemyIcons) to High(EnemyIcons) do ClearEnemyStatus(Index);
+    for Index := Low(TrackedShipIcons) to High(TrackedShipIcons) do ClearTrackedShipStatus(Index);
   end
   else
   begin
@@ -3231,12 +3208,12 @@ begin
               with EnemyIcons[Index] as TGraphBufGI do
               begin
                 SourceHasPerPixelAlpha := True;
-                SetSize(Classes.Point(IconWidth, IconHeight));
+                ObjectSize := Classes.Point(IconWidth, IconHeight);
                 LoadGiByPathIntoGraphBuf(ExtractDelimitedPartW((Ship.Visual as TRuinsSE).StaticImagePath, 1, ','), GraphBuf);
-                if Cardinal(GraphBuf.Width) >= Cardinal(GraphBuf.Height) then
-                  GraphBuf.RescaleRgba(ClientSize.X, Round(ClientSize.X / Cardinal(GraphBuf.Width) * Cardinal(GraphBuf.Height)), 5)
+                if GraphBuf.Width >= GraphBuf.Height then
+                  GraphBuf.RescaleRgba(ClientSize.X, Round(ClientSize.X / GraphBuf.Width * GraphBuf.Height), 5)
                 else
-                  GraphBuf.RescaleRgba(Round(ClientSize.Y / Cardinal(GraphBuf.Height) * Cardinal(GraphBuf.Width)), ClientSize.Y, 5);
+                  GraphBuf.RescaleRgba(Round(ClientSize.Y / GraphBuf.Height * GraphBuf.Width), ClientSize.Y, 5);
               end;
             end;
           end;
@@ -3246,10 +3223,10 @@ begin
             with EnemyHealthRings[Index] do
             begin
               SetImagePath('Bm.ABItem.' + GiResourceSuffix + '_Ring');
-              SetSize(Classes.Point(RingWidth, RingHeight));
+              ObjectSize := Classes.Point(RingWidth, RingHeight);
               SequenceIndex := 0;
               UpdateAutoGeometry;
-              SetMouseViewUpdates(True);
+              MVUpdate := True;
               MouseBlocking := True;
               StopAutoPlayback;
               SetDepth(1);
@@ -3263,14 +3240,15 @@ begin
               EnemyRewardBackdrops[Index].Free;
               EnemyRewardBackdrops[Index] := nil;
             end;
-          if (GetPlayer <> nil) and (GetPlayer.CountActiveArtefacts(t_ArtefactAnalyzer) > 0) and (EnemyRewardIcons[Index] = nil) then
+          if GetPlayer <> nil then
+            if (GetPlayer.CountActiveArtefacts(t_ArtefactAnalyzer) > 0) and (EnemyRewardIcons[Index] = nil) then
           begin
             EnemyRewardBackdrops[Index] := TImageGI.Create(MapPanel);
             with EnemyRewardBackdrops[Index] as TImageGI do
             begin
-              SetImagePath('GI,Bm.Items.' + GiResourceSuffix + 'ABArtSlot');
-              SetSize(GetContentSize);
-              SetOrigin(HalfPoint(ClientSize));
+              ImageSourcePath := 'GI,Bm.Items.' + GiResourceSuffix + 'ABArtSlot';
+              ObjectSize := GetContentSize;
+              Sme := HalfPoint(ClientSize);
             end;
             EnemyRewardIcons[Index] := TImageGI.Create(MapPanel);
             with EnemyRewardIcons[Index] as TImageGI do
@@ -3283,9 +3261,9 @@ begin
               end;
               if Item <> nil then
               begin
-                SetImagePath('GI,' + Item.GetBitmapResourceName + 'ab');
-                SetSize(GetContentSize);
-                SetOrigin(HalfPoint(ClientSize));
+                ImageSourcePath := 'GI,' + Item.GetBitmapResourceName + 'ab';
+                ObjectSize := GetContentSize;
+                Sme := HalfPoint(ClientSize);
                 Item.Free;
               end
               else
@@ -3322,12 +3300,12 @@ begin
               with TrackedShipIcons[Index] as TGraphBufGI do
               begin
                 SourceHasPerPixelAlpha := True;
-                SetSize(Classes.Point(IconWidth, IconHeight));
+                ObjectSize := Classes.Point(IconWidth, IconHeight);
                 LoadGiByPathIntoGraphBuf(ExtractDelimitedPartW((Ship.Visual as TRuinsSE).StaticImagePath, 1, ','), GraphBuf);
-                if Cardinal(GraphBuf.Width) >= Cardinal(GraphBuf.Height) then
-                  GraphBuf.RescaleRgba(ClientSize.X, Round(ClientSize.X / Cardinal(GraphBuf.Width) * Cardinal(GraphBuf.Height)), 5)
+                if GraphBuf.Width >= GraphBuf.Height then
+                  GraphBuf.RescaleRgba(ClientSize.X, Round(ClientSize.X / GraphBuf.Width * GraphBuf.Height), 5)
                 else
-                  GraphBuf.RescaleRgba(Round(ClientSize.Y / Cardinal(GraphBuf.Height) * Cardinal(GraphBuf.Width)), ClientSize.Y, 5);
+                  GraphBuf.RescaleRgba(Round(ClientSize.Y / GraphBuf.Height * GraphBuf.Width), ClientSize.Y, 5);
               end;
             end;
           end;
@@ -3337,10 +3315,10 @@ begin
             with TrackedShipHealthRings[Index] do
             begin
               SetImagePath('Bm.ABItem.' + GiResourceSuffix + '_Ring');
-              SetSize(Classes.Point(RingWidth, RingHeight));
+              ObjectSize := Classes.Point(RingWidth, RingHeight);
               SequenceIndex := 0;
               UpdateAutoGeometry;
-              SetMouseViewUpdates(True);
+              MVUpdate := True;
               MouseBlocking := True;
               StopAutoPlayback;
               SetDepth(1);
@@ -3355,62 +3333,61 @@ begin
     OffsetY := Round((RingHeight - IconHeight) / 2);
     for Index := 0 to 7 do
     begin
-      if Index < PlayerArcadeShip.InitialEnemies.Count then
+      if Index >= PlayerArcadeShip.InitialEnemies.Count then Continue;
+      Ship := PlayerArcadeShip.InitialEnemies[Index];
+      if (Ship <> nil) and (EnemyIcons[Index] <> nil) then
+        if EnemyHealthRings[Index] <> nil then
       begin
-        Ship := PlayerArcadeShip.InitialEnemies[Index];
-        if (Ship <> nil) and (EnemyIcons[Index] <> nil) and (EnemyHealthRings[Index] <> nil) then
+        if EnemyIcons[Index] is TRotateImage5GI then
+          EnemyIcons[Index].Pos := Classes.Point(PosX + IconWidth + OffsetX, PosY + IconHeight + OffsetY)
+        else if EnemyIcons[Index] is TGraphBufGI then
+          EnemyIcons[Index].Pos := Classes.Point(PosX + OffsetX, PosY + OffsetY);
+        EnemyHealthRings[Index].Pos := Classes.Point(PosX, PosY);
+        if EnemyRewardIcons[Index] <> nil then
+          EnemyHealthRings[Index].SetSequenceFrame(Round((1.04 - Ship.Health * 0.96 / Ship.MaxHealth) * EnemyHealthRings[Index].SequenceFrameCount))
+        else
+          EnemyHealthRings[Index].SetSequenceFrame(Round((1 - Ship.Health / Ship.MaxHealth) * EnemyHealthRings[Index].SequenceFrameCount));
+        if EnemyRewardIcons[Index] <> nil then
         begin
-          if EnemyIcons[Index] is TRotateImage5GI then
-            EnemyIcons[Index].SetPosition(Classes.Point(PosX + IconWidth + OffsetX, PosY + IconHeight + OffsetY))
-          else if EnemyIcons[Index] is TGraphBufGI then
-            EnemyIcons[Index].SetPosition(Classes.Point(PosX + OffsetX, PosY + OffsetY));
-          EnemyHealthRings[Index].SetPosition(Classes.Point(PosX, PosY));
-          if EnemyRewardIcons[Index] <> nil then
-            EnemyHealthRings[Index].SetSequenceFrame(Round((1.04 - Ship.Health * 0.96 / Ship.MaxHealth) * EnemyHealthRings[Index].SequenceFrameCount))
-          else
-            EnemyHealthRings[Index].SetSequenceFrame(Round((1 - Ship.Health / Ship.MaxHealth) * EnemyHealthRings[Index].SequenceFrameCount));
-          if EnemyRewardIcons[Index] <> nil then
+          with EnemyRewardIcons[Index] as TImageGI do
           begin
-            with EnemyRewardIcons[Index] as TImageGI do
+            if GetPlayer.CountActiveArtefacts(t_ArtefactAnalyzer) <= 0 then
             begin
-              if GetPlayer.CountActiveArtefacts(t_ArtefactAnalyzer) <= 0 then
+              EnemyRewardIcons[Index].Free;
+              EnemyRewardIcons[Index] := nil;
+              EnemyRewardBackdrops[Index].Free;
+              EnemyRewardBackdrops[Index] := nil;
+            end
+            else
+            begin
+              Pos := Classes.Point(PosX + GiScalePixels(31), PosY + GiScalePixels(60));
+              Item := Ship.GetRewardItem(True);
+              if (Item <> nil) and (not (Item is TEquipmentWithActCode) or not TEquipmentWithActCode(Item).DisplayAsArtefact) then
+              begin
+                Item.Free;
+                Item := nil;
+              end;
+              if Item <> nil then
+              begin
+                ImageSourcePath := 'GI,' + Item.GetBitmapResourceName + 'ab';
+                ObjectSize := GetContentSize;
+                Sme := HalfPoint(ClientSize);
+                Item.Free;
+              end
+              else
               begin
                 EnemyRewardIcons[Index].Free;
                 EnemyRewardIcons[Index] := nil;
                 EnemyRewardBackdrops[Index].Free;
                 EnemyRewardBackdrops[Index] := nil;
-              end
-              else
-              begin
-                SetPosition(Classes.Point(PosX + GiScalePixels(31), PosY + GiScalePixels(60)));
-                Item := Ship.GetRewardItem(True);
-                if (Item <> nil) and (not (Item is TEquipmentWithActCode) or not TEquipmentWithActCode(Item).DisplayAsArtefact) then
-                begin
-                  Item.Free;
-                  Item := nil;
-                end;
-                if Item <> nil then
-                begin
-                  SetImagePath('GI,' + Item.GetBitmapResourceName + 'ab');
-                  SetSize(GetContentSize);
-                  SetOrigin(HalfPoint(ClientSize));
-                  Item.Free;
-                end
-                else
-                begin
-                  EnemyRewardIcons[Index].Free;
-                  EnemyRewardIcons[Index] := nil;
-                  EnemyRewardBackdrops[Index].Free;
-                  EnemyRewardBackdrops[Index] := nil;
-                end;
               end;
             end;
           end;
-          if EnemyRewardBackdrops[Index] <> nil then
-            (EnemyRewardBackdrops[Index] as TImageGI).SetPosition(Classes.Point(PosX + GiScalePixels(31), PosY + GiScalePixels(60)));
         end;
-        Inc(PosX, RingWidth);
+        if EnemyRewardBackdrops[Index] <> nil then
+          (EnemyRewardBackdrops[Index] as TImageGI).Pos := Classes.Point(PosX + GiScalePixels(31), PosY + GiScalePixels(60));
       end;
+      Inc(PosX, RingWidth);
     end;
     PosX := GameScreenWidth - 5 - RingWidth;
     PosY := 5;
@@ -3418,26 +3395,25 @@ begin
     OffsetY := Round((RingHeight - IconHeight) / 2);
     for Index := 0 to 7 do
     begin
-      if Index < PlayerArcadeShip.TrackedShips.Count then
-      begin
+      if Index >= PlayerArcadeShip.TrackedShips.Count then Continue;
         Ship := PlayerArcadeShip.TrackedShips[Index];
-        if (Ship <> nil) and (TrackedShipIcons[Index] <> nil) and (TrackedShipHealthRings[Index] <> nil) then
+        if (Ship <> nil) and (TrackedShipIcons[Index] <> nil) then
+        if TrackedShipHealthRings[Index] <> nil then
         begin
           if TrackedShipIcons[Index] is TRotateImage5GI then
-            TrackedShipIcons[Index].SetPosition(Classes.Point(PosX + IconWidth + OffsetX, PosY + IconHeight + OffsetY))
+            TrackedShipIcons[Index].Pos := Classes.Point(PosX + IconWidth + OffsetX, PosY + IconHeight + OffsetY)
           else if TrackedShipIcons[Index] is TGraphBufGI then
-            TrackedShipIcons[Index].SetPosition(Classes.Point(PosX + OffsetX, PosY + OffsetY));
-          TrackedShipHealthRings[Index].SetPosition(Classes.Point(PosX, PosY));
+            TrackedShipIcons[Index].Pos := Classes.Point(PosX + OffsetX, PosY + OffsetY);
+          TrackedShipHealthRings[Index].Pos := Classes.Point(PosX, PosY);
           TrackedShipHealthRings[Index].SetSequenceFrame(Round((1 - Ship.Health / Ship.MaxHealth) * TrackedShipHealthRings[Index].SequenceFrameCount));
         end;
         Dec(PosX, RingWidth);
-      end;
     end;
   end;
 end;
-{ @end $546E08 }
+{ @end $66FAF0 }
 
-{ @routine $547F2C TfAB_DrawFrame }
+{ @routine $6709A8 TfAB_DrawFrame }
 procedure TfAB.DrawFrame;
 var
   Rect: TRectGR;
@@ -3512,20 +3488,20 @@ begin
     SkipSavedPixelRestore := False;
   end;
 end;
-{ @end $547F2C }
+{ @end $6709A8 }
 
-{ @routine $54819C TfAB_WorldImageCycleComplete }
+{ @routine $670BCC TfAB_WorldImageCycleComplete }
 procedure TfAB.WorldImageCycleComplete(Sender: TObjectGI);
 var
   Entry: PabWorldImage;
 begin
   Entry := PabWorldImage(Sender.UserValue);
   Entry.Finished := True;
-  if Entry.Image <> nil then Entry.Image.SetActive(False);
+  if Entry.Image <> nil then Entry.Image.IsActive := False;
 end;
-{ @end $54819C }
+{ @end $670BCC }
 
-{ @routine $5481D8 TfAB_AppendShipPathArc }
+{ @routine $670BE8 TfAB_AppendShipPathArc }
 procedure TfAB.AppendShipPathArc(Destination: TPointF);
 var
   Node: PSPathNode;
@@ -3535,55 +3511,49 @@ begin
   if ShipPath.ActiveTail = nil then
   begin
     Position := PlayerMapPosition;
-    FromHeading := ByteToHeadingDegrees(PlayerVisual.GetAngle);
+    FromHeading := ByteToHeadingDegrees(PlayerVisual.Angle);
   end
   else
   begin
     Position := ShipPath.ActiveTail.Position;
     FromHeading := ShipPath.ActiveTail.Heading;
   end;
-  if (Position.X <> Destination.X) or (Position.Y <> Destination.Y) then
+  if (Position.X = Destination.X) and (Position.Y = Destination.Y) then Exit;
+  AngleStep := ArcadePathStep;
+  Step := ArcadePathArcStep;
+  if PointDistanceSquared(Position, Destination) < Step then
   begin
-    AngleStep := ArcadePathStep;
-    Step := ArcadePathArcStep;
-    if PointDistanceSquared(Position, Destination) < Step then
-    begin
-      ShipPath.AppendNode;
-      Node := ShipPath.ActiveTail;
-      Node.Position := Position;
-      Node.Heading := FromHeading;
-    end
-    else
-    begin
-      ToHeading := RadiansToHeadingDegrees(ArcTan2(-(Position.X - Destination.X), Position.Y - Destination.Y));
-      InitialDifference := HeadingDifferenceDegrees(FromHeading, ToHeading);
-      if Abs(InitialDifference) >= AngleStep then
-      begin
-        TangentStep := CalculateTangentArcOffset(Position, Destination, FromHeading, AngleStep);
-        if TangentStep < Step then Step := TangentStep;
-        while (Position.X <> Destination.X) or (Position.Y <> Destination.Y) do
-        begin
-          ToHeading := RadiansToHeadingDegrees(ArcTan2(-(Position.X - Destination.X), Position.Y - Destination.Y));
-          Difference := HeadingDifferenceDegrees(FromHeading, ToHeading);
-          if Abs(Difference) <= AngleStep then Break;
-          if InitialDifference > 0 then FromHeading := WrapHeadingDegrees(FromHeading + AngleStep)
-          else FromHeading := WrapHeadingDegrees(FromHeading - AngleStep);
-          Position.X := Sin(HeadingDegreesToRadians(FromHeading)) * Step + Position.X;
-          Position.Y := Position.Y - Cos(HeadingDegreesToRadians(FromHeading)) * Step;
-          if (Position.X - Destination.X) * (Position.X - Destination.X) +
-            (Position.Y - Destination.Y) * (Position.Y - Destination.Y) <= Step * Step then Position := Destination;
-          ShipPath.AppendNode;
-          Node := ShipPath.ActiveTail;
-          Node.Position := Position;
-          Node.Heading := FromHeading;
-        end;
-      end;
-    end;
+    ShipPath.AppendNode;
+    Node := ShipPath.ActiveTail;
+    Node.Position := Position;
+    Node.Heading := FromHeading;
+    Exit;
+  end;
+  ToHeading := RadiansToHeadingDegrees(ArcTan2(-(Position.X - Destination.X), Position.Y - Destination.Y));
+  InitialDifference := HeadingDifferenceDegrees(FromHeading, ToHeading);
+  if not (Abs(InitialDifference) >= AngleStep) then Exit;
+  TangentStep := CalculateTangentArcOffset(Position, Destination, FromHeading, AngleStep);
+  if TangentStep < Step then Step := TangentStep;
+  while (Position.X <> Destination.X) or (Position.Y <> Destination.Y) do
+  begin
+    ToHeading := RadiansToHeadingDegrees(ArcTan2(-(Position.X - Destination.X), Position.Y - Destination.Y));
+    Difference := HeadingDifferenceDegrees(FromHeading, ToHeading);
+    if Abs(Difference) <= AngleStep then Break;
+    if InitialDifference > 0 then FromHeading := WrapHeadingDegrees(FromHeading + AngleStep)
+    else FromHeading := WrapHeadingDegrees(FromHeading - AngleStep);
+    Position.X := Sin(HeadingDegreesToRadians(FromHeading)) * Step + Position.X;
+    Position.Y := Position.Y - Cos(HeadingDegreesToRadians(FromHeading)) * Step;
+    if (Position.X - Destination.X) * (Position.X - Destination.X) +
+      (Position.Y - Destination.Y) * (Position.Y - Destination.Y) <= Step * Step then Position := Destination;
+    ShipPath.AppendNode;
+    Node := ShipPath.ActiveTail;
+    Node.Position := Position;
+    Node.Heading := FromHeading;
   end;
 end;
-{ @end $5481D8 }
+{ @end $670BE8 }
 
-{ @routine $5484D8 TfAB_AppendShipPathLine }
+{ @routine $670ED0 TfAB_AppendShipPathLine }
 procedure TfAB.AppendShipPathLine(Destination: TPointF);
 var
   Vertical: Boolean;
@@ -3594,60 +3564,58 @@ var
 begin
   if ShipPath.ActiveTail = nil then Origin := PlayerMapPosition
   else Origin := ShipPath.ActiveTail.Position;
-  if (Origin.X <> Destination.X) or (Origin.Y <> Destination.Y) then
+  if (Origin.X = Destination.X) and (Origin.Y = Destination.Y) then Exit;
+  Step := ArcadePathStep;
+  Heading := RadiansToHeadingDegrees(ArcTan2(-(Origin.X - Destination.X), Origin.Y - Destination.Y));
+  if Abs(Origin.X - Destination.X) < Abs(Origin.Y - Destination.Y) then Vertical := True
+  else Vertical := False;
+  Distance := Sqrt((Origin.X - Destination.X) * (Origin.X - Destination.X) +
+    (Origin.Y - Destination.Y) * (Origin.Y - Destination.Y));
+  if Vertical then
   begin
-    Step := ArcadePathStep;
-    Heading := RadiansToHeadingDegrees(ArcTan2(-(Origin.X - Destination.X), Origin.Y - Destination.Y));
-    if Abs(Origin.X - Destination.X) < Abs(Origin.Y - Destination.Y) then Vertical := True
-    else Vertical := False;
-    Distance := Sqrt((Origin.X - Destination.X) * (Origin.X - Destination.X) +
-      (Origin.Y - Destination.Y) * (Origin.Y - Destination.Y));
-    if Vertical then
+    Slope := (Destination.X - Origin.X) / (Destination.Y - Origin.Y);
+    AxisScale := 1 / Sqrt(Slope * Slope + 1);
+    if Destination.Y - Origin.Y < 0 then AxisScale := -AxisScale;
+    AxisOrigin := Origin.Y;
+  end
+  else
+  begin
+    Slope := (Destination.Y - Origin.Y) / (Destination.X - Origin.X);
+    AxisScale := 1 / Sqrt(Slope * Slope + 1);
+    if Destination.X - Origin.X < 0 then AxisScale := -AxisScale;
+    AxisOrigin := Origin.X;
+  end;
+  Travelled := Step;
+  if Travelled >= Distance then
+  begin
+    ShipPath.AppendNode;
+    Node := ShipPath.ActiveTail;
+    Node.Position := Destination;
+    Node.Heading := Heading;
+  end
+  else
+    while Travelled < Distance do
     begin
-      Slope := (Destination.X - Origin.X) / (Destination.Y - Origin.Y);
-      AxisScale := 1 / Sqrt(Slope * Slope + 1);
-      if Destination.Y - Origin.Y < 0 then AxisScale := -AxisScale;
-      AxisOrigin := Origin.Y;
-    end
-    else
-    begin
-      Slope := (Destination.Y - Origin.Y) / (Destination.X - Origin.X);
-      AxisScale := 1 / Sqrt(Slope * Slope + 1);
-      if Destination.X - Origin.X < 0 then AxisScale := -AxisScale;
-      AxisOrigin := Origin.X;
-    end;
-    Travelled := Step;
-    if Travelled >= Distance then
-    begin
+      if Vertical then
+      begin
+        Position.Y := Travelled * AxisScale + AxisOrigin;
+        Position.X := (Position.Y - Origin.Y) * Slope + Origin.X;
+      end
+      else
+      begin
+        Position.X := Travelled * AxisScale + AxisOrigin;
+        Position.Y := (Position.X - Origin.X) * Slope + Origin.Y;
+      end;
       ShipPath.AppendNode;
       Node := ShipPath.ActiveTail;
-      Node.Position := Destination;
+      Node.Position := Position;
       Node.Heading := Heading;
-    end
-    else
-      while Travelled < Distance do
-      begin
-        if Vertical then
-        begin
-          Position.Y := Travelled * AxisScale + AxisOrigin;
-          Position.X := (Position.Y - Origin.Y) * Slope + Origin.X;
-        end
-        else
-        begin
-          Position.X := Travelled * AxisScale + AxisOrigin;
-          Position.Y := (Position.X - Origin.X) * Slope + Origin.Y;
-        end;
-        ShipPath.AppendNode;
-        Node := ShipPath.ActiveTail;
-        Node.Position := Position;
-        Node.Heading := Heading;
-        Travelled := Travelled + Step;
-      end;
-  end;
+      Travelled := Travelled + Step;
+    end;
 end;
-{ @end $5484D8 }
+{ @end $670ED0 }
 
-{ @routine $548784 TfAB_AppendShipPath }
+{ @routine $671180 TfAB_AppendShipPath }
 procedure TfAB.AppendShipPath(Destination: TPointF);
 var
   Step: Single;
@@ -3659,9 +3627,9 @@ begin
     (Step * Step > PointDistanceSquared(ShipPath.ActiveTail.Position, Destination)) then
     ShipPath.ActiveTail.Position := Destination;
 end;
-{ @end $548784 }
+{ @end $671180 }
 
-{ @routine $548808 TfAB_BuildSpaceRoute }
+{ @routine $6711F4 TfAB_BuildSpaceRoute }
 procedure TfAB.BuildSpaceRoute(Route: TList; Origin, Destination: TabSpace);
 var
   Space, BestSpace: TabSpace;
@@ -3690,7 +3658,8 @@ begin
       Link := FirstArcadeSpaceLink;
       while Link <> nil do
       begin
-        if (Link.Last = Space) and ((Link.First.RouteCost < 0) or
+        if (Link.Last = Space) then
+          if ((Link.First.RouteCost < 0) or
           (Space.RouteCost + Link.First.Danger + 0.001 < Link.First.RouteCost)) then
         begin
           Link.First.RouteCost := Space.RouteCost + Link.First.Danger + 0.001;
@@ -3713,7 +3682,9 @@ begin
     Link := FirstArcadeSpaceLink;
     while Link <> nil do
     begin
-      if (Link.First = Space) and (Link.Last.RouteCost >= 0) and (Link.Last.RouteCost < BestCost) then
+      if (Link.First = Space) then
+        if (Link.Last.RouteCost >= 0) then
+        if (Link.Last.RouteCost < BestCost) then
       begin
         BestSpace := Link.Last;
         BestCost := Link.Last.RouteCost;
@@ -3725,9 +3696,9 @@ begin
     Route.Add(Space);
   end;
 end;
-{ @end $548808 }
+{ @end $6711F4 }
 
-{ @routine $548A6C TfAB_RebuildShipPath }
+{ @routine $6713D0 TfAB_RebuildShipPath }
 procedure TfAB.RebuildShipPath;
 var
   Index: Integer;
@@ -3740,9 +3711,9 @@ begin
     AppendShipPath(PointToPointF(Space.MapPosition));
   end;
 end;
-{ @end $548A6C }
+{ @end $6713D0 }
 
-{ @routine $548AD8 TfAB_BuildShipPathImages }
+{ @routine $671424 TfAB_BuildShipPathImages }
 procedure TfAB.BuildShipPathImages;
 var
   PreviousPosition: TPointF;
@@ -3752,101 +3723,97 @@ var
   Index: Integer;
   Space: TabSpace;
 begin
-  if ShipPath.ActiveHead <> nil then
+  if ShipPath.ActiveHead = nil then Exit;
+  Images := GetByName('ShipPath') as TMultiImageGI;
+  if Images.Images.Count < 1 then
   begin
-    Images := GetByName('ShipPath') as TMultiImageGI;
-    if Images.Images.Count < 1 then
+    Images.AddImage('Bm.PI.Path1');
+    Images.AddImage('Bm.PI.Path2');
+    Images.AddImage('Bm.PI.Path3');
+    Images.AddImage('Bm.PI.Path4');
+  end;
+  Images.ClearUnits;
+  First := ShipPath.ActiveHead;
+  for Index := 0 to RouteSpaces.Count - 1 do
+  begin
+    Space := RouteSpaces[Index];
+    Last := ShipPath.FindNearestFollowingNode(First, PointToPointF(Space.MapPosition));
+    if Last = nil then Last := ShipPath.ActiveTail;
+    PreviousPosition := MakePointF(1E10, 1E10);
+    Node := Last;
+    while True do
     begin
-      Images.AddImage('Bm.PI.Path1');
-      Images.AddImage('Bm.PI.Path2');
-      Images.AddImage('Bm.PI.Path3');
-      Images.AddImage('Bm.PI.Path4');
-    end;
-    Images.ClearUnits;
-    First := ShipPath.ActiveHead;
-    for Index := 0 to RouteSpaces.Count - 1 do
-    begin
-      Space := RouteSpaces[Index];
-      Last := ShipPath.FindNearestFollowingNode(First, PointToPointF(Space.MapPosition));
-      if Last = nil then Last := ShipPath.ActiveTail;
-      PreviousPosition := MakePointF(1E10, 1E10);
-      Node := Last;
-      while True do
+      if PointDistanceSquared(PreviousPosition, Node.Position) > 225 then
       begin
-        if PointDistanceSquared(PreviousPosition, Node.Position) > 225 then
+        PreviousPosition := Node.Position;
+        if ShipPath.ActiveTail <> Node then
         begin
-          PreviousPosition := Node.Position;
-          if ShipPath.ActiveTail <> Node then
-          begin
-            Item := Images.AddUnit;
-            Item.UserData := Node;
-            Images.SetUnitPosition(Item, SubtractPoints(TruncatePointF(PreviousPosition), ArcadeMapViewPosition));
-            if Node <> Last then Item.ImageIndex := 1
-            else Item.ImageIndex := 2;
-          end;
+          Item := Images.AddUnit;
+          Item.UserData := Node;
+          Images.SetUnitPosition(Item, SubtractPoints(TruncatePointF(PreviousPosition), ArcadeMapViewPosition));
+          if Node <> Last then Item.ImageIndex := 1
+          else Item.ImageIndex := 2;
         end;
-        if Node = First then Break;
-        Node := Node.Prev;
       end;
-      First := Last.Next;
+      if Node = First then Break;
+      Node := Node.Prev;
     end;
-    with GetByName('ShipPathEnd') as TgaiGI do
-    begin
-      SetActive(True);
-      SetOrigin(HalfPoint(GetContentSize));
-      SetPosition(SubtractPoints(TruncatePointF(ShipPath.ActiveTail.Position), ArcadeMapViewPosition));
-      RestartPlayback;
-    end;
+    First := Last.Next;
+  end;
+  with GetByName('ShipPathEnd') as TgaiGI do
+  begin
+    IsActive := True;
+    Sme := HalfPoint(GetContentSize);
+    Pos := SubtractPoints(TruncatePointF(ShipPath.ActiveTail.Position), ArcadeMapViewPosition);
+    RestartPlayback;
   end;
 end;
-{ @end $548AD8 }
+{ @end $671424 }
 
-{ @routine $548DDC TfAB_UpdateShipPathImages }
+{ @routine $6716FC TfAB_UpdateShipPathImages }
 procedure TfAB.UpdateShipPathImages;
 var
   Node: PSPathNode;
   Item: TMultiImageUnitGI;
 begin
-  if ShipPath.ActiveHead <> nil then
+  if ShipPath.ActiveHead = nil then Exit;
+  with GetByName('ShipPath') as TMultiImageGI do
   begin
-    with GetByName('ShipPath') as TMultiImageGI do
+    Item := FirstUnit;
+    while Item <> nil do
     begin
-      Item := FirstUnit;
-      while Item <> nil do
-      begin
-        Node := Item.UserData;
-        SetUnitPosition(Item, SubtractPoints(TruncatePointF(Node.Position), ArcadeMapViewPosition));
-        Item := Item.Next;
-      end;
-    end;
-    with GetByName('ShipPathEnd') as TgaiGI do
-    begin
-      SetActive(True);
-      SetOrigin(HalfPoint(GetContentSize));
-      SetPosition(SubtractPoints(TruncatePointF(ShipPath.ActiveTail.Position), ArcadeMapViewPosition));
-      RestartPlayback;
+      Node := Item.UserData;
+      SetUnitPosition(Item, SubtractPoints(TruncatePointF(Node.Position), ArcadeMapViewPosition));
+      Item := Item.Next;
     end;
   end;
+  with GetByName('ShipPathEnd') as TgaiGI do
+  begin
+    IsActive := True;
+    Sme := HalfPoint(GetContentSize);
+    Pos := SubtractPoints(TruncatePointF(ShipPath.ActiveTail.Position), ArcadeMapViewPosition);
+    RestartPlayback;
+  end;
 end;
-{ @end $548DDC }
+{ @end $6716FC }
 
-{ @routine $548F24 TfAB_ClearShipPath }
+{ @routine $671820 TfAB_ClearShipPath }
 procedure TfAB.ClearShipPath;
 begin
   (GetByName('ShipPath') as TMultiImageGI).ClearUnits;
-  (GetByName('ShipPathEnd') as TgaiGI).SetActive(False);
+  (GetByName('ShipPathEnd') as TgaiGI).IsActive := False;
 end;
-{ @end $548F24 }
+{ @end $671820 }
 
-{ @routine $548FA0 TfAB_BeginKellerDialogTransition }
+{ @routine $671894 TfAB_BeginKellerDialogTransition }
 procedure TfAB.BeginKellerDialogTransition;
 begin
   CloseVictory(nil, 0);
   ArcadeViewMode := 4;
 end;
-{ @end $548FA0 }
+{ @end $671894 }
 
-{ @routine $548FC0 TfAB_BeginBattleExit }
+{ @routine $6718A8 TfAB_BeginBattleExit }
 procedure TfAB.BeginBattleExit;
 begin
   StarMapWeaponPanelOpen := False;
@@ -3882,15 +3849,15 @@ begin
   ArcadeViewMode := 5;
   NextArcadeSpace := EndArcadeSpace;
   CurrentArcadeSpace := EndArcadeSpace;
-  if CampaignLoadStarted and not CampaignLoadFinished then CacheLoader.SetPriority(3);
+  if CampaignLoadStarted and not CampaignLoadFinished then CacheLoader.SetPriority(ThreadPriorityNormal);
   LoadPanel.SetProgress(0);
   LoadPanel.SetShutterOpenFraction(0);
   LoadPanel.Show;
   CampaignLoadProgress := 0;
 end;
-{ @end $548FC0 }
+{ @end $6718A8 }
 
-{ @routine $54916C TfAB_ShowSpaceInfo }
+{ @routine $671A34 TfAB_ShowSpaceInfo }
 procedure TfAB.ShowSpaceInfo(Space: TabSpace);
 var
   Distance: Single;
@@ -3908,17 +3875,17 @@ begin
     InfoSpace := Space;
     if (GetPlayer <> nil) and ((StartArcadeSpace = Space) or (EndArcadeSpace = Space)) then
     begin
-      GetByName('InfoStar').SetActive(True);
+      GetByName('InfoStar').IsActive := True;
       if StartArcadeSpace = Space then Star := GetPlayer.TransitOriginStar else Star := GetPlayer.CurrentStar;
-      (GetByName('InfoStarName') as TLabelGI).SetText(WrapTextInColor(Star.Name, TextHighlightColorTag));
+      (GetByName('InfoStarName') as TLabelGI).Text := WrapTextInColor(Star.Name, TextHighlightColorTag);
       with GetByName('InfoStarImage') as TGraphBufGI do
       begin
         SourceHasPerPixelAlpha := True;
         LoadGiByPathIntoGraphBuf(ExtractDelimitedPartW(TStarSE(Star.Graphic).StaticImagePath, 1, ','), GraphBuf);
-        if Cardinal(GraphBuf.Width) >= Cardinal(GraphBuf.Height) then
-          GraphBuf.RescaleBilinearRgba(ClientSize.X, Round(ClientSize.X / Cardinal(GraphBuf.Width) * Cardinal(GraphBuf.Height)))
+        if GraphBuf.Width >= GraphBuf.Height then
+          GraphBuf.RescaleBilinearRgba(ClientSize.X, Round(ClientSize.X / GraphBuf.Width * GraphBuf.Height))
         else
-          GraphBuf.RescaleBilinearRgba(Round(ClientSize.Y / Cardinal(GraphBuf.Height) * Cardinal(GraphBuf.Width)), ClientSize.Y);
+          GraphBuf.RescaleBilinearRgba(Round(ClientSize.Y / GraphBuf.Height * GraphBuf.Width), ClientSize.Y);
         SetImageKindX(ikxCenter);
         SetImageKindY(ikyCenter);
       end;
@@ -3949,19 +3916,19 @@ begin
         begin
           SetFontName(NormalFontName);
           SetTextColor(CurrentPixelFormat.PackRgbBytes(255, 255, 255));
-          SetSize(Classes.Point(Owner.ClientSize.X div 2 + 15, RowHeight));
-          SetPosition(Classes.Point(0, RowHeight * Index));
+          ObjectSize := Classes.Point(Owner.ClientSize.X div 2 + 15, RowHeight);
+          Pos := Classes.Point(0, RowHeight * Index);
           SetWordWrapEnabled(False);
           SetTextAlignX(taxRight);
           SetTextAlignY(tayCenterEx);
-          if TObject(Objects[Index]) is TPlanet then SetText(TPlanet(Objects[Index]).Name)
-          else SetText(TShip(Objects[Index]).Name);
+          if TObject(Objects[Index]) is TPlanet then Text := TPlanet(Objects[Index]).Name
+          else Text := TShip(Objects[Index]).Name;
         end;
         with TGraphBufGI.Create(Owner, False) do
         begin
           SourceHasPerPixelAlpha := True;
-          SetPosition(Classes.Point(Owner.ClientSize.X div 2 + 15 + 5 + 1, RowHeight * Index + 1));
-          SetSize(Classes.Point(RowHeight - 2, RowHeight - 2));
+          Pos := Classes.Point(Owner.ClientSize.X div 2 + 15 + 5 + 1, RowHeight * Index + 1);
+          ObjectSize := Classes.Point(RowHeight - 2, RowHeight - 2);
           if TObject(Objects[Index]) is TPlanet then
           begin
             TPlanet(Objects[Index]).Graphic.RenderToBuffer(Self, GraphBuf, True);
@@ -3973,10 +3940,10 @@ begin
               LoadGiByPathIntoGraphBuf(ExtractDelimitedPartW((TShip(Objects[Index]).Graphic as TRuinsSE).StaticImagePath, 1, ','), GraphBuf)
             else
               LoadGiByPathIntoGraphBuf(ExtractDelimitedPartW((TShip(Objects[Index]).Graphic as TShip2SE).AlternateImagePath, 1, ','), GraphBuf);
-            if Cardinal(GraphBuf.Width) >= Cardinal(GraphBuf.Height) then
-              GraphBuf.RescaleRgba(ClientSize.X, Round(ClientSize.X / Cardinal(GraphBuf.Width) * Cardinal(GraphBuf.Height)), 5)
+            if GraphBuf.Width >= GraphBuf.Height then
+              GraphBuf.RescaleRgba(ClientSize.X, Round(ClientSize.X / GraphBuf.Width * GraphBuf.Height), 5)
             else
-              GraphBuf.RescaleRgba(Round(ClientSize.Y / Cardinal(GraphBuf.Height) * Cardinal(GraphBuf.Width)), ClientSize.Y, 5);
+              GraphBuf.RescaleRgba(Round(ClientSize.Y / GraphBuf.Height * GraphBuf.Width), ClientSize.Y, 5);
           end;
           SetImageKindX(ikxCenter);
           SetImageKindY(ikyCenter);
@@ -3992,77 +3959,75 @@ begin
               LoadBitmapPathAsRgba(ExtractDelimitedPartW(GetFactionEmblemPath(TPlanet(Objects[Index]).GetFactionResourceName), 1, ',') + RgbaImagePathSuffix)
             else
               LoadBitmapPathAsRgba(ExtractDelimitedPartW(GetFactionEmblemPath(TShip(Objects[Index]).GetFactionNameKey), 1, ',') + RgbaImagePathSuffix);
-            SetPosition(Classes.Point(Owner.ClientSize.X div 2 + 15 + 5 + RowHeight + 5 + 1, RowHeight * Index + 1));
-            SetSize(Classes.Point(RowHeight - 2, RowHeight - 2));
-            if Cardinal(GraphBuf.Width) >= Cardinal(GraphBuf.Height) then
-              GraphBuf.RescaleRgba(ClientSize.X, Round(ClientSize.X / Cardinal(GraphBuf.Width) * Cardinal(GraphBuf.Height)), 5)
+            Pos := Classes.Point(Owner.ClientSize.X div 2 + 15 + 5 + RowHeight + 5 + 1, RowHeight * Index + 1);
+            ObjectSize := Classes.Point(RowHeight - 2, RowHeight - 2);
+            if GraphBuf.Width >= GraphBuf.Height then
+              GraphBuf.RescaleRgba(ClientSize.X, Round(ClientSize.X / GraphBuf.Width * GraphBuf.Height), 5)
             else
-              GraphBuf.RescaleRgba(Round(ClientSize.Y / Cardinal(GraphBuf.Height) * Cardinal(GraphBuf.Width)), ClientSize.Y, 5);
+              GraphBuf.RescaleRgba(Round(ClientSize.Y / GraphBuf.Height * GraphBuf.Width), ClientSize.Y, 5);
             SetImageKindX(ikxCenter);
             SetImageKindY(ikyCenter);
           end;
         end;
       end;
-      Owner.SetSize(Classes.Point(Owner.ClientSize.X, Objects.Count * RowHeight));
+      Owner.ObjectSize := Classes.Point(Owner.ClientSize.X, Objects.Count * RowHeight);
       with GetByName('InfoStar') as TWindowGI do
       begin
-        SetSize(Classes.Point(ClientSize.X, WorkSubRect.Top + WorkSubRect.Bottom + Objects.Count * RowHeight));
+        ObjectSize := Classes.Point(ClientSize.X, WorkSubRect.Top + WorkSubRect.Bottom + Objects.Count * RowHeight);
         UpdateAutoGeometry;
       end;
       Objects.Free;
-      GetByName('InfoPanel').SetActive(False);
-    end
-    else
-    begin
-      GetByName('InfoStar').SetActive(False);
-      GetByName('InfoPanel').SetActive(True);
-      (GetByName('InfoName') as TLabelGI).SetText(WrapTextInColor(LocalizedColorText('FormAB.InfoName'), TextHighlightColorTag));
-      (GetByName('InfoExit') as TLabelGI).SetText(IntToStr(Space.OutgoingCount));
-      Text := Space.GetDangerText;
-      (GetByName('InfoDanger') as TLabelGI).SetText(Text);
-      ShipCount := 0;
-      for Index := 0 to Space.Objects.Count - 1 do
-      begin
-        Obj := Space.Objects[Index];
-        if Obj is TabShipAI then Inc(ShipCount);
-      end;
-      if (GetPlayer <> nil) and (GetPlayer.CountActiveArtefacts(t_ArtefactAnalyzer) > 0) then Text := IntToStr(ShipCount)
-      else Text := LocalizedColorText('FormAB.Unknow');
-      (GetByName('InfoPirate') as TLabelGI).SetText(Text);
-      with GetByName('InfoPlanetImage') as TGraphBufGI do
-      begin
-        SetActive(True);
-        SourceHasPerPixelAlpha := True;
-        if StartArcadeSpace = Space then LoadGaiFrameToGraphBuf(StartStarImage.GetImagePath, GraphBuf, 0)
-        else if EndArcadeSpace = Space then LoadGaiFrameToGraphBuf(EndStarImage.GetImagePath, GraphBuf, 0)
-        else LoadGaiFrameToGraphBuf(Space.Image.GetImagePath, GraphBuf, 0);
-        if Cardinal(GraphBuf.Width) >= Cardinal(GraphBuf.Height) then
-          GraphBuf.RescaleRgba(ClientSize.X, Round(ClientSize.X / Cardinal(GraphBuf.Width) * Cardinal(GraphBuf.Height)), 5)
-        else
-          GraphBuf.RescaleRgba(Round(ClientSize.Y / Cardinal(GraphBuf.Height) * Cardinal(GraphBuf.Width)), ClientSize.Y, 5);
-        SetPosition(SubtractPoints(ShipScreen.ItemImageCenter, GetVisualCenter));
-      end;
-      BattleHelpLabel.SetActive(True);
-      BattleHelpLabel.SetText(LocalizedColorText('Help.ABSphere'));
+      GetByName('InfoPanel').IsActive := False;
+      Exit;
     end;
+    GetByName('InfoStar').IsActive := False;
+    GetByName('InfoPanel').IsActive := True;
+    (GetByName('InfoName') as TLabelGI).Text := WrapTextInColor(LocalizedColorText('FormAB.InfoName'), TextHighlightColorTag);
+    (GetByName('InfoExit') as TLabelGI).Text := IntToStr(Space.OutgoingCount);
+    Text := Space.GetDangerText;
+    (GetByName('InfoDanger') as TLabelGI).Text := Text;
+    ShipCount := 0;
+    for Index := 0 to Space.Objects.Count - 1 do
+    begin
+      Obj := Space.Objects[Index];
+      if Obj is TabShipAI then Inc(ShipCount);
+    end;
+    if (GetPlayer <> nil) and (GetPlayer.CountActiveArtefacts(t_ArtefactAnalyzer) > 0) then Text := IntToStr(ShipCount)
+    else Text := LocalizedColorText('FormAB.Unknow');
+    (GetByName('InfoPirate') as TLabelGI).Text := Text;
+    with GetByName('InfoPlanetImage') as TGraphBufGI do
+    begin
+      IsActive := True;
+      SourceHasPerPixelAlpha := True;
+      if StartArcadeSpace = Space then LoadGaiFrameToGraphBuf(StartStarImage.GetImagePath, GraphBuf, 0)
+      else if EndArcadeSpace = Space then LoadGaiFrameToGraphBuf(EndStarImage.GetImagePath, GraphBuf, 0)
+      else LoadGaiFrameToGraphBuf(Space.Image.GetImagePath, GraphBuf, 0);
+      if GraphBuf.Width >= GraphBuf.Height then
+        GraphBuf.RescaleRgba(ClientSize.X, Round(ClientSize.X / GraphBuf.Width * GraphBuf.Height), 5)
+      else
+        GraphBuf.RescaleRgba(Round(ClientSize.Y / GraphBuf.Height * GraphBuf.Width), ClientSize.Y, 5);
+      Pos := SubtractPoints(ShipScreen.ItemImageCenter, GetVisualCenter);
+    end;
+    BattleHelpLabel.IsActive := True;
+    BattleHelpLabel.Text := LocalizedColorText('Help.ABSphere');
   end;
 end;
-{ @end $54916C }
+{ @end $671A34 }
 
-{ @routine $54A114 TfAB_HideObjectInfo }
+{ @routine $67284C TfAB_HideObjectInfo }
 procedure TfAB.HideObjectInfo;
 begin
   if InfoSpace <> nil then
   begin
-    GetByName('InfoPanel').SetActive(False);
-    GetByName('InfoStar').SetActive(False);
+    GetByName('InfoPanel').IsActive := False;
+    GetByName('InfoStar').IsActive := False;
     HideHelp;
   end;
   InfoSpace := nil;
 end;
-{ @end $54A114 }
+{ @end $67284C }
 
-{ @routine $54A198 TfAB_ShowItemInfo }
+{ @routine $6728C0 TfAB_ShowItemInfo }
 procedure TfAB.ShowItemInfo(Item: TabItem);
 var
   Instance: TItem;
@@ -4102,38 +4067,40 @@ begin
       if Instance.ScriptItem <> nil then TScriptItem(Instance.ScriptItem).RunActionCode(satOnShowingItemInfo, nil, nil, nil, 0);
       if Instance is TEquipmentWithActCode then RunItemConfigActionCode(Instance, satOnShowingItemInfo, nil, nil, nil, 0);
     end;
-    ItemInfoWindow.SetActive(True);
+    ItemInfoWindow.IsActive := True;
     with GetByName('InfoItemImage') as TImageGI do
     begin
-      if Instance is TGoods then SetImagePath('GI,' + GetItemTypeBitmapPath(Instance.ItemType))
-      else SetImagePath('GI,' + Instance.GetBitmapResourceName + 's');
-      SetImageKindX(ikxCenter);
-      SetImageKindY(ikyCenter);
-      SetPosition(SubtractPoints(ShipScreen.ItemImageCenter, GetVisualCenter));
+      if Instance is TGoods then ImageSourcePath := 'GI,' + GetItemTypeBitmapPath(Instance.ItemType)
+      else ImageSourcePath := 'GI,' + Instance.GetBitmapResourceName + 's';
+      KindX := ikxCenter;
+      KindY := ikyCenter;
+      Pos := SubtractPoints(ShipScreen.ItemImageCenter, GetVisualCenter);
     end;
     if Instance is TGoods then
     begin
-      (GetByName('InfoItemName') as TLabelGI).SetText(WrapTextInColor(GoodsMarket[Ord(Instance.ItemType)].DisplayName, InfoNameColorTag));
-      (GetByName('InfoItemText') as TLabelGI).SetText(LocalizedText('Items.Goods.Text.' + IntToStr(Ord(Instance.ItemType) + 1)));
+      (GetByName('InfoItemName') as TLabelGI).Text := WrapTextInColor(GoodsMarket[Ord(Instance.ItemType)].DisplayName, InfoNameColorTag);
+      (GetByName('InfoItemText') as TLabelGI).Text := LocalizedText('Items.Goods.Text.' + IntToStr(Ord(Instance.ItemType) + 1));
     end
     else
     begin
-      (GetByName('InfoItemName') as TLabelGI).SetText('');
-      (GetByName('InfoItemName') as TLabelGI).SetText(WrapTextInColor(Instance.GetDisplayName, InfoNameColorTag));
-      (GetByName('InfoItemText') as TLabelGI).SetText(Instance.GetInfoText(TextHighlightColorTag, nil));
+      (GetByName('InfoItemName') as TLabelGI).Text := '';
+      (GetByName('InfoItemName') as TLabelGI).Text := WrapTextInColor(Instance.GetDisplayName, InfoNameColorTag);
+      (GetByName('InfoItemText') as TLabelGI).Text := Instance.GetInfoText(TextHighlightColorTag, nil);
     end;
-    (GetByName('InfoItemSize') as TLabelGI).SetText(IntToStr(Instance.Weight));
-    (GetByName('InfoItemPrice') as TLabelGI).SetText(IntToStr(Instance.Cost));
+    (GetByName('InfoItemSize') as TLabelGI).Text := IntToStr(Instance.Weight);
+    (GetByName('InfoItemPrice') as TLabelGI).Text := IntToStr(Instance.Cost);
     with GetByName('InfoItemEmRace') as TImageGI do
     begin
-      if Instance is TGoods then SetImagePath(GetFactionEmblemPath(OwnerInfo[oiUninhabited].InternalName))
-      else SetImagePath(GetFactionEmblemPath(Instance.GetOwnerConfigName));
-      SetImageKindX(ikxCenter);
-      SetImageKindY(ikyCenter);
+      if Instance is TGoods then ImageSourcePath := GetFactionEmblemPath(OwnerInfo[oiUninhabited].InternalName)
+      else ImageSourcePath := GetFactionEmblemPath(Instance.GetOwnerConfigName);
+      KindX := ikxCenter;
+      KindY := ikyCenter;
     end;
-    if not ((Byte(Instance.ItemType) in ([0..79] - [0..7, 9, 23..25, 35..38, 42, 69..72, 74..79])) or (Instance.ItemType = t_Hull)) then
+    if not ((Instance.ItemType in ([Low(TItemType)..High(TItemType)] -
+      [t_Food..t_Narcotics, t_Artefact2, t_ArtefactTransmitter..t_ArtefactTranclucator,
+       t_ArtBlackHole..t_ArtArtefactor, t_Hull, t_Protoplasm..t_Cistern, t_TreasureMap..t_UselessCountableItem])) or (Instance.ItemType = t_Hull)) then
     begin
-      with GetByName('InfoDurable') as TImageGI do Parent.Parent.SetActive(False);
+      with GetByName('InfoDurable') as TImageGI do Parent.Parent.IsActive := False;
       MinimumWidth := 0;
     end
     else
@@ -4148,30 +4115,30 @@ begin
       end;
       with GetByName('InfoDurable') as TImageGI do
       begin
-        Parent.Parent.SetActive(True);
-        Parent.Parent.SetSize(Classes.Point(LeftWidth * 2 + Width, Parent.Parent.ClientSize.Y));
-        Parent.SetSize(Classes.Point(Width + 2, Parent.Parent.ClientSize.Y));
+        Parent.Parent.IsActive := True;
+        Parent.Parent.ObjectSize := Classes.Point(LeftWidth * 2 + Width, Parent.Parent.ClientSize.Y);
+        Parent.ObjectSize := Classes.Point(Width + 2, Parent.Parent.ClientSize.Y);
         if Instance.ItemType = t_Hull then
-          SetPosition(Classes.Point(Round((Instance as THull).HullPoints / (Instance as THull).Weight * Width) - (GetContentSize.X - 5), LocalPosition.Y))
+          Pos := Classes.Point(Round((Instance as THull).HullPoints / (Instance as THull).Weight * Width) - (GetContentSize.X - 5), LocalPosition.Y)
         else
-          SetPosition(Classes.Point(Round((Instance as TEquipment).ConditionPercent / 100 * Width) - (GetContentSize.X - 5), LocalPosition.Y));
+          Pos := Classes.Point(Round((Instance as TEquipment).ConditionPercent / 100 * Width) - (GetContentSize.X - 5), LocalPosition.Y);
       end;
       with GetByName('InfoDurableRight') as TImageGI do
       begin
-        SetPosition(Classes.Point(Width + LeftWidth - GetContentSize.X, LocalPosition.Y));
-        Parent.SetPosition(Classes.Point(LeftWidth, Parent.LocalPosition.Y));
-        Parent.SetSize(Classes.Point(Width + LeftWidth, Parent.ClientSize.Y));
+        Pos := Classes.Point(Width + LeftWidth - GetContentSize.X, LocalPosition.Y);
+        Parent.Pos := Classes.Point(LeftWidth, Parent.LocalPosition.Y);
+        Parent.ObjectSize := Classes.Point(Width + LeftWidth, Parent.ClientSize.Y);
       end;
       with GetByName('InfoDurableBack') as TImageGI do
       begin
-        SetPosition(Classes.Point(Width + 1 - GetContentSize.X, LocalPosition.Y));
-        Parent.SetSize(Classes.Point(Width + LeftWidth, Parent.ClientSize.Y));
+        Pos := Classes.Point(Width + 1 - GetContentSize.X, LocalPosition.Y);
+        Parent.ObjectSize := Classes.Point(Width + LeftWidth, Parent.ClientSize.Y);
       end;
     end;
     ShipScreen.LayoutItemInfo(ItemInfoWindow, GetByName('InfoItemName') as TLabelGI, GetByName('InfoItemText') as TLabelGI, True, True, MinimumWidth);
-    GetByName('InfoItemSize').SetPosition(Classes.Point(ShipScreen.ItemSizeLabelPosition.X, ItemInfoWindow.ClientSize.Y + ShipScreen.ItemSizeLabelPosition.Y));
-    GetByName('InfoItemPrice').SetPosition(Classes.Point(ShipScreen.ItemPriceLabelPosition.X, ItemInfoWindow.ClientSize.Y + ShipScreen.ItemPriceLabelPosition.Y));
-    GetByName('InfoItemEmRace').SetPosition(Classes.Point(ItemInfoWindow.ClientSize.X + ShipScreen.ItemRaceImagePosition.X, ItemInfoWindow.ClientSize.Y + ShipScreen.ItemRaceImagePosition.Y));
+    GetByName('InfoItemSize').Pos := Classes.Point(ShipScreen.ItemSizeLabelPosition.X, ItemInfoWindow.ClientSize.Y + ShipScreen.ItemSizeLabelPosition.Y);
+    GetByName('InfoItemPrice').Pos := Classes.Point(ShipScreen.ItemPriceLabelPosition.X, ItemInfoWindow.ClientSize.Y + ShipScreen.ItemPriceLabelPosition.Y);
+    GetByName('InfoItemEmRace').Pos := Classes.Point(ItemInfoWindow.ClientSize.X + ShipScreen.ItemRaceImagePosition.X, ItemInfoWindow.ClientSize.Y + ShipScreen.ItemRaceImagePosition.Y);
   end;
   if CargoPickupZone = nil then
   begin
@@ -4185,55 +4152,51 @@ begin
   ab_Zone_UpdatePosition(CargoPickupZone);
   ab_Zone_UpdateImages(CargoPickupZone);
 end;
-{ @end $54A198 }
+{ @end $6728C0 }
 
-{ @routine $54B024 TfAB_CancelCargoPickup }
+{ @routine $673598 TfAB_CancelCargoPickup }
 procedure TfAB.CancelCargoPickup;
 begin
-  if CargoPickupItem <> nil then
+  if CargoPickupItem = nil then Exit;
+  if not IsCursorImageSelected('Main') then SetCursorByName('Main');
+  ItemInfoWindow.IsActive := False;
+  CargoPickupItem := nil;
+  if CargoPickupZone <> nil then
   begin
-    if not IsCursorImageSelected('Main') then SetCursorByName('Main');
-    ItemInfoWindow.SetActive(False);
-    CargoPickupItem := nil;
-    if CargoPickupZone <> nil then
-    begin
-      ab_Zone_Delete(CargoPickupZone);
-      CargoPickupZone := nil;
-    end;
+    ab_Zone_Delete(CargoPickupZone);
+    CargoPickupZone := nil;
   end;
 end;
-{ @end $54B024 }
+{ @end $673598 }
 
-{ @routine $54B0A8 TfAB_OpenShipEquipment }
+{ @routine $673600 TfAB_OpenShipEquipment }
 procedure TfAB.OpenShipEquipment(Sender: TObjectGI);
 begin
-  if (ArcadeViewMode <> 5) and (GetPlayer <> nil) and (PlayerArcadeShip <> nil) and (PlayerArcadeShip.Health > 0) then
-  begin
-    Galaxy.CheckIntegrityChecksum1(601);
-    Galaxy.CheckIntegrityChecksum2(602);
-    ForwardKeyDown := False;
-    ReverseKeyDown := False;
-    BrakeKeyDown := False;
-    TurnLeftKeyDown := False;
-    TurnRightKeyDown := False;
-    PrimaryFireKeyDown := False;
-    SecondaryFireKeyDown := False;
-    GetPlayer.GetHull.HullPoints := PlayerArcadeShip.Health;
-    SetCursorActive(False);
-    Present;
-    CaptureScreenBackground(True, 0);
-    SetCursorActive(True);
-    RunShipEquipment(Self);
-    SyncWeaponInventory;
-    Galaxy.PrimeIntegrityChecksum1(603);
-    Galaxy.PrimeIntegrityChecksum2(604);
-    UpdateWeaponPanel;
-    Present;
-  end;
+  if (ArcadeViewMode = 5) or (GetPlayer = nil) or (PlayerArcadeShip = nil) or (PlayerArcadeShip.Health <= 0) then Exit;
+  Galaxy.CheckIntegrityChecksum1(601);
+  Galaxy.CheckIntegrityChecksum2(602);
+  ForwardKeyDown := False;
+  ReverseKeyDown := False;
+  BrakeKeyDown := False;
+  TurnLeftKeyDown := False;
+  TurnRightKeyDown := False;
+  PrimaryFireKeyDown := False;
+  SecondaryFireKeyDown := False;
+  GetPlayer.GetHull.HullPoints := PlayerArcadeShip.Health;
+  SetCursorActive(False);
+  Present;
+  CaptureScreenBackground(True, 0);
+  SetCursorActive(True);
+  RunShipEquipment(Self);
+  SyncWeaponInventory;
+  Galaxy.PrimeIntegrityChecksum1(603);
+  Galaxy.PrimeIntegrityChecksum2(604);
+  UpdateWeaponPanel;
+  Present;
 end;
-{ @end $54B0A8 }
+{ @end $673600 }
 
-{ @routine $54B290 TfAB_SyncWeaponInventory }
+{ @routine $67379C TfAB_SyncWeaponInventory }
 procedure TfAB.SyncWeaponInventory;
 var
   SavedWeapons: array[0..4] of TWeapon;
@@ -4241,8 +4204,8 @@ var
   SlotIndex, SlotCount: Integer;
   Item: TWeapon;
 
-  // @nested $54B1E0 SaveWeaponInventory
-  procedure SaveWeaponInventory; // @addr $54B1E0 @calls "0x54B2A8"
+  // @nested $673710 SaveWeaponInventory
+  procedure SaveWeaponInventory; // @addr $673710 @calls "0x006737B8"
   var
     Index: Integer;
   begin
@@ -4254,8 +4217,8 @@ var
     end;
   end;
 
-  // @nested $54B24C FindSavedWeaponAmmo
-  function FindSavedWeaponAmmo(Weapon: TWeapon): Integer; // @addr $54B24C @calls "0x54B3D0"
+  // @nested $673764 FindSavedWeaponAmmo
+  function FindSavedWeaponAmmo(Weapon: TWeapon): Integer; // @addr $673764 @calls "0x00673893"
   var
     Index: Integer;
   begin
@@ -4269,38 +4232,34 @@ var
   end;
 
 begin
-  if PlayerArcadeShip <> nil then
+  if PlayerArcadeShip = nil then Exit;
+  SaveWeaponInventory;
+  PlayerArcadeShip.WeaponCount := 0;
+  SlotCount := GetPlayer.GetSlotCount(sskWeapon);
+  for SlotIndex := 0 to SlotCount - 1 do
   begin
-    SaveWeaponInventory;
-    PlayerArcadeShip.WeaponCount := 0;
-    SlotCount := GetPlayer.GetSlotCount(sskWeapon);
-    for SlotIndex := 0 to SlotCount - 1 do
+    Item := GetPlayer.FindEquippedItemInSlot(WeaponCategoryItemType, SlotIndex) as TWeapon;
+    if not GetPlayer.IsEquipmentUsable(Item) then Continue;
+    if (CampaignWeapons[PlayerArcadeShip.WeaponCount] <> Item) or
+      (PlayerArcadeShip.Weapons[PlayerArcadeShip.WeaponCount].SlotData <> Item.AssignedSlotData) then
     begin
-      Item := GetPlayer.FindEquippedItemInSlot(WeaponCategoryItemType, SlotIndex) as TWeapon;
-      if GetPlayer.IsEquipmentUsable(Item) then
+      ab_Weapon_InitializeFromInfo(@PlayerArcadeShip.Weapons[PlayerArcadeShip.WeaponCount], Item.GetWeaponInfo);
+      CampaignWeapons[PlayerArcadeShip.WeaponCount] := Item;
+      with PlayerArcadeShip.Weapons[PlayerArcadeShip.WeaponCount] do
       begin
-        if (CampaignWeapons[PlayerArcadeShip.WeaponCount] <> Item) or
-          (PlayerArcadeShip.Weapons[PlayerArcadeShip.WeaponCount].SlotData <> Item.AssignedSlotData) then
-        begin
-          ab_Weapon_InitializeFromInfo(@PlayerArcadeShip.Weapons[PlayerArcadeShip.WeaponCount], Item.GetWeaponInfo);
-          CampaignWeapons[PlayerArcadeShip.WeaponCount] := Item;
-          with PlayerArcadeShip.Weapons[PlayerArcadeShip.WeaponCount] do
-          begin
-            Ammo := FindSavedWeaponAmmo(Item);
-            if Ammo > MaxAmmo then Ammo := 0;
-            SlotData := Item.AssignedSlotData;
-          end;
-        end;
-        Inc(PlayerArcadeShip.WeaponCount);
+        Ammo := FindSavedWeaponAmmo(Item);
+        if Ammo > MaxAmmo then Ammo := 0;
+        SlotData := Item.AssignedSlotData;
       end;
     end;
-    for SlotIndex := PlayerArcadeShip.WeaponCount to 4 do CampaignWeapons[SlotIndex] := nil;
-    NormalizeWeaponSelection;
+    Inc(PlayerArcadeShip.WeaponCount);
   end;
+  for SlotIndex := PlayerArcadeShip.WeaponCount to 4 do CampaignWeapons[SlotIndex] := nil;
+  NormalizeWeaponSelection;
 end;
-{ @end $54B290 }
+{ @end $67379C }
 
-{ @routine $54B450 TfAB_PickUpItem }
+{ @routine $673900 TfAB_PickUpItem }
 procedure TfAB.PickUpItem(Item: TabItem);
 var
   Instance: TItem;
@@ -4318,7 +4277,7 @@ begin
     (Instance as TEquipment).EquippedFlag := 0;
     GetPlayer.Artefacts.Add(Instance);
     if Instance is TArtefactTranclucator then
-      (TObject((Instance as TArtefactTranclucator).Ship) as TTranclucator).OwnerShip := GetPlayer;
+      ((Instance as TArtefactTranclucator).Ship as TTranclucator).OwnerShip := GetPlayer;
   end
   else if Instance is TCountableItem then
   begin
@@ -4354,55 +4313,55 @@ begin
   GetPlayer.RefreshDerivedStats(True);
   if Galaxy <> nil then Galaxy.PrimeIntegrityChecksum1(616);
 end;
-{ @end $54B450 }
+{ @end $673900 }
 
-{ @routine $54B6E8 TfAB_RandomRange }
+{ @routine $673B50 TfAB_RandomRange }
 function TfAB.RandomRange(BoundA, BoundB: Integer): Integer;
 begin
   RandomSeed := RandomSeed div 7981 + (RandomSeed * 7981 + 567);
   if BoundA < BoundB then Result := RandomSeed mod Cardinal(BoundB - BoundA + 1) + BoundA
   else Result := RandomSeed mod Cardinal(BoundA - BoundB + 1) + BoundB;
 end;
-{ @end $54B6E8 }
+{ @end $673B50 }
 
-{ @routine $54B774 TfAB_RandomFloat }
+{ @routine $673BA4 TfAB_RandomFloat }
 function TfAB.RandomFloat(BoundA, BoundB: Double): Double;
 begin
   RandomSeed := RandomSeed div 7931 + (RandomSeed * 7981 + 567);
   Result := SeededRandomIntRange(Trunc(BoundA * RandomFloatResolution + 1), Trunc(BoundB * RandomFloatResolution + 1), RandomSeed) / RandomFloatResolution;
 end;
-{ @end $54B774 }
+{ @end $673BA4 }
 
-{ @routine $54B808 TfAB_UpdateHelp }
+{ @routine $673C28 TfAB_UpdateHelp }
 procedure TfAB.UpdateHelp(Sender: TObjectGI; Show: Boolean);
 begin
-  BattleHelpLabel.SetActive(Show);
-  if Show then BattleHelpLabel.SetText(Sender.HelpText);
+  BattleHelpLabel.IsActive := Show;
+  if Show then BattleHelpLabel.Text := Sender.HelpText;
 end;
-{ @end $54B808 }
+{ @end $673C28 }
 
-{ @routine $54B848 TfAB_ControlMouseEnter }
+{ @routine $673C54 TfAB_ControlMouseEnter }
 procedure TfAB.ControlMouseEnter(Sender: TObjectGI);
 begin
   UpdateHelp(Sender, True);
 end;
-{ @end $54B848 }
+{ @end $673C54 }
 
-{ @routine $54B868 TfAB_ControlMouseLeave }
+{ @routine $673C5C TfAB_ControlMouseLeave }
 procedure TfAB.ControlMouseLeave(Sender: TObjectGI);
 begin
   HideHelp;
 end;
-{ @end $54B868 }
+{ @end $673C5C }
 
-{ @routine $54B880 TfAB_HideHelp }
+{ @routine $673C64 TfAB_HideHelp }
 procedure TfAB.HideHelp;
 begin
-  BattleHelpLabel.SetActive(False);
+  BattleHelpLabel.IsActive := False;
 end;
-{ @end $54B880 }
+{ @end $673C64 }
 
-{ @routine $54B89C TfAB_ShowVictory }
+{ @routine $673C74 TfAB_ShowVictory }
 procedure TfAB.ShowVictory;
 var
   ItemsPanel: TPanelGI;
@@ -4415,46 +4374,46 @@ begin
   ItemsPanel.FreeOwnedChildren;
   Index := 0;
   if ListedObjects.Count <= 0 then
-    ItemsPanel.SetSize(Classes.Point(ItemsPanel.ClientSize.X, 0))
+    ItemsPanel.ObjectSize := Classes.Point(ItemsPanel.ClientSize.X, 0)
   else
   begin
-    ItemsPanel.SetSize(Classes.Point(ItemsPanel.ClientSize.X, (ListedObjects.Count + 1) * GiScalePixels(20) + 5));
+    ItemsPanel.ObjectSize := Classes.Point(ItemsPanel.ClientSize.X, (ListedObjects.Count + 1) * GiScalePixels(20) + 5);
     Heading := TLabelGI.Create(ItemsPanel);
     Heading.SetFontName(NormalFontName);
-    Heading.SetPosition(Classes.Point(0, 0 * GiScalePixels(20)));
-    Heading.SetSize(Classes.Point(ItemsPanel.ClientSize.X, GiScalePixels(20)));
+    Heading.Pos := Classes.Point(0, 0 * GiScalePixels(20));
+    Heading.ObjectSize := Classes.Point(ItemsPanel.ClientSize.X, GiScalePixels(20));
     Heading.SetTextAlignX(taxCenter);
     Heading.SetTextAlignY(tayCenterEx);
-    Heading.SetText(LocalizedColorText('FormAB.WinItems'));
+    Heading.Text := LocalizedColorText('FormAB.WinItems');
     Heading.SetTextColor(CurrentPixelFormat.PackRgbBytes(219, 218, 156));
     while ListedObjects.Count > Index do
     begin
       ItemLabel := TLabelGI.Create(ItemsPanel);
       ItemLabel.SetFontName(NormalFontName);
-      ItemLabel.SetPosition(Classes.Point(0, (Index + 1) * GiScalePixels(20) + 5));
-      ItemLabel.SetSize(Classes.Point(ItemsPanel.ClientSize.X, GiScalePixels(20)));
+      ItemLabel.Pos := Classes.Point(0, (Index + 1) * GiScalePixels(20) + 5);
+      ItemLabel.ObjectSize := Classes.Point(ItemsPanel.ClientSize.X, GiScalePixels(20));
       ItemLabel.SetTextAlignX(taxCenter);
       ItemLabel.SetTextAlignY(tayCenterEx);
-      ItemLabel.SetText(TEquipment(ListedObjects[Index]).GetDisplayName);
+      ItemLabel.Text := TEquipment(ListedObjects[Index]).GetDisplayName;
       ItemLabel.SetTextColor(CurrentPixelFormat.PackRgbBytes(255, 255, 255));
       Inc(Index);
     end;
   end;
   Footer := TLabelGI.Create(ItemsPanel);
   Footer.SetFontName(NormalFontName);
-  Footer.SetPosition(Classes.Point(0, (Index + 1) * GiScalePixels(30)));
-  Footer.SetSize(Classes.Point(ItemsPanel.ClientSize.X, 1));
+  Footer.Pos := Classes.Point(0, (Index + 1) * GiScalePixels(30));
+  Footer.ObjectSize := Classes.Point(ItemsPanel.ClientSize.X, 1);
   Footer.SetTextAlignX(taxCenter);
   Footer.SetTextAlignY(tayAuto);
-  Footer.SetText(LocalizedColorText('FormAB.TextExit'));
+  Footer.Text := LocalizedColorText('FormAB.TextExit');
   Footer.SetTextColor(CurrentPixelFormat.PackRgbBytes(255, 255, 255));
-  ItemsPanel.SetSize(Classes.Point(ItemsPanel.ClientSize.X, GiScalePixels(30) + ItemsPanel.ClientSize.Y + Footer.ClientSize.Y));
+  ItemsPanel.ObjectSize := Classes.Point(ItemsPanel.ClientSize.X, GiScalePixels(30) + ItemsPanel.ClientSize.Y + Footer.ClientSize.Y);
   Panel := VictoryPanel;
-  Panel.SetSize(Classes.Point(Panel.ClientSize.X, ItemsPanel.LocalPosition.Y + ItemsPanel.ClientSize.Y + GiScalePixels(20)));
-  Panel.SetActive(True);
+  Panel.ObjectSize := Classes.Point(Panel.ClientSize.X, ItemsPanel.LocalPosition.Y + ItemsPanel.ClientSize.Y + GiScalePixels(20));
+  Panel.IsActive := True;
   Panel := GetByName('WinShr');
-  Panel.SetSize(Classes.Point(Panel.ClientSize.X, ItemsPanel.LocalPosition.Y + ItemsPanel.ClientSize.Y + GiScalePixels(20)));
-  GetByName('PanelWinHide').SetActive(True);
+  Panel.ObjectSize := Classes.Point(Panel.ClientSize.X, ItemsPanel.LocalPosition.Y + ItemsPanel.ClientSize.Y + GiScalePixels(20));
+  GetByName('PanelWinHide').IsActive := True;
   if (GetPlayer <> nil) and (PlayerArcadeShip <> nil) and not PlayerArcadeShip.HasFiredWeapon then
   begin
     Galaxy.CheckIntegrityChecksum1(630);
@@ -4462,29 +4421,29 @@ begin
     Galaxy.PrimeIntegrityChecksum1(631);
   end;
 end;
-{ @end $54B89C }
+{ @end $673C74 }
 
-{ @routine $54BD88 TfAB_CloseVictory }
+{ @routine $67410C TfAB_CloseVictory }
 procedure TfAB.CloseVictory(Sender: TObjectGI; VirtualKey: Cardinal);
 begin
-  VictoryPanel.SetActive(False);
+  VictoryPanel.IsActive := False;
   GetByName('WinItem').FreeOwnedChildren;
-  DefeatPanel.SetActive(False);
-  if VictoryTimer <> nil then
+  DefeatPanel.IsActive := False;
+  if VictoryTimer <> 0 then
   begin
     CancelCallbackTimer(VictoryTimer);
-    VictoryTimer := nil;
+    VictoryTimer := 0;
   end;
 end;
-{ @end $54BD88 }
+{ @end $67410C }
 
-{ @routine $54BE0C TfAB_SelectMusic }
+{ @routine $67416C TfAB_SelectMusic }
 procedure TfAB.SelectMusic;
 begin
   // Native arcade playback follows the hyper-space music setting.
   if MusicInHyperEnabled then MusicManager.PlayCategory('ArcadeBattle')
   else MusicManager.RequestFadeOut;
 end;
-{ @end $54BE0C }
+{ @end $67416C }
 
 end.

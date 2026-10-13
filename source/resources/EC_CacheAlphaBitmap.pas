@@ -1,5 +1,4 @@
 unit EC_CacheAlphaBitmap;
-// Unit bracket (inferred): .text 0x00475398..0x00475A38; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -11,9 +10,9 @@ type
 
   TCAlphaBitmapControlEC = class(TCacheControlEC) // @size 0x18
   public
-    procedure QueueLoadIfMissing(PendingLoads: TList); override; // @addr 0x475478
-    function CreateData: TCacheDataEC; override; // @addr 0x4754FC
-    function AcquireData: TCacheDataEC; override; // @addr 0x475548
+    procedure QueueLoadIfMissing(PendingLoads: TList); override; // @addr 0x00494994
+    function CreateData: TCacheDataEC; override; // @addr 0x00494A00
+    function AcquireData: TCacheDataEC; override; // @addr 0x00494A30
   end;
 
   TCAlphaBitmapEC = class(TCacheDataEC) // @size 0x38
@@ -24,67 +23,65 @@ type
     PixelSize: TPoint; // @offset $2C  Native controls copy these dimensions as one point.
     SurfaceCache: TTextureGR; // @offset 0x34
 
-    procedure Draw16(Dest: Pointer; Pitch, X, Y: Integer; Clip: TRect); // @addr $475858
-    procedure DecodeToGraphBuf(Buffer: TGraphBufGR); // @addr $4758EC
-    function GetTexture: IDirect3DTexture9; // @addr $475964
-    constructor Create; // @addr 0x475564
-    destructor Destroy; override; // @addr 0x4755B0
-    procedure LoadFromConfigBuffer(SourceBuffer: TBufEC; const LoadOption: WideString); override; // @addr 0x475654
+    procedure Draw16(Dest: Pointer; Pitch, X, Y: Integer; Clip: TRect); // @addr $494C60
+    procedure DecodeToGraphBuf(Buffer: TGraphBufGR); // @addr $494CE4
+    function GetTexture: IDirect3DTexture9; // @addr $494D38
+    constructor Create; // @addr 0x00494A38
+    destructor Destroy; override; // @addr 0x00494A74
+    procedure LoadFromConfigBuffer(SourceBuffer: TBufEC; const LoadOption: WideString); override; // @addr 0x00494AE0
   end;
 
-function AcquireOrCreateAlphaBitmap(Control: TCacheControlEC): TCAlphaBitmapEC; // @addr 0x47551C
+function AcquireOrCreateAlphaBitmap(Control: TCacheControlEC): TCAlphaBitmapEC; // @addr 0x00494A10
 
 implementation
 
 uses SysUtils, EC_Mem, GR_Main, Windows;
 
-{ @routine $475478 TCAlphaBitmapControlEC_QueueLoadIfMissing }
+{ @routine $494994 TCAlphaBitmapControlEC_QueueLoadIfMissing }
 procedure TCAlphaBitmapControlEC.QueueLoadIfMissing(PendingLoads: TList);
 var Control: TCAlphaBitmapControlEC;
 begin
   if RetainCount > 0 then Exit;
   if BoundData <> nil then Exit;
   if HasEmptyCacheKey then Exit;
-  if GlobalCache.FindDataByKeyAndClass(CacheKey, TCAlphaBitmapEC) = nil then
-  begin
-    Control := TCAlphaBitmapControlEC.Create;
-    GlobalCache.ResetControl(Control);
-    Control.SetCacheKey(CacheKey);
-    PendingLoads.Add(Control);
-  end;
+  if GlobalCache.FindDataByKeyAndClass(CacheKey, TCAlphaBitmapEC) <> nil then Exit;
+  Control := TCAlphaBitmapControlEC.Create;
+  GlobalCache.ResetControl(Control);
+  Control.SetCacheKey(CacheKey);
+  PendingLoads.Add(Control);
 end;
-{ @end $475478 }
+{ @end $494994 }
 
-{ @routine $4754FC TCAlphaBitmapControlEC_CreateData }
+{ @routine $494A00 TCAlphaBitmapControlEC_CreateData }
 function TCAlphaBitmapControlEC.CreateData: TCacheDataEC;
 begin
   Result := TCAlphaBitmapEC.Create;
 end;
-{ @end $4754FC }
+{ @end $494A00 }
 
-{ @routine $47551C AcquireOrCreateAlphaBitmap }
+{ @routine $494A10 AcquireOrCreateAlphaBitmap }
 function AcquireOrCreateAlphaBitmap(Control: TCacheControlEC): TCAlphaBitmapEC;
 begin
   Result := Control.AcquireDataFromConfig(TCAlphaBitmapEC) as TCAlphaBitmapEC;
 end;
-{ @end $47551C }
+{ @end $494A10 }
 
-{ @routine $475548 TCAlphaBitmapControlEC_AcquireData }
+{ @routine $494A30 TCAlphaBitmapControlEC_AcquireData }
 function TCAlphaBitmapControlEC.AcquireData: TCacheDataEC;
 begin
   Result := AcquireOrCreateAlphaBitmap(Self);
 end;
-{ @end $475548 }
+{ @end $494A30 }
 
-{ @routine $475564 TCAlphaBitmapEC_Create }
+{ @routine $494A38 TCAlphaBitmapEC_Create }
 constructor TCAlphaBitmapEC.Create;
 begin
   SurfaceCache := nil;
   inherited Create;
 end;
-{ @end $475564 }
+{ @end $494A38 }
 
-{ @routine $4755B0 TCAlphaBitmapEC_Destroy }
+{ @routine $494A74 TCAlphaBitmapEC_Destroy }
 destructor TCAlphaBitmapEC.Destroy;
 begin
   if TransBuf16 <> nil then
@@ -109,9 +106,9 @@ begin
   end;
   inherited Destroy;
 end;
-{ @end $4755B0 }
+{ @end $494A74 }
 
-{ @routine $475654 TCAlphaBitmapEC_LoadFromConfigBuffer }
+{ @routine $494AE0 TCAlphaBitmapEC_LoadFromConfigBuffer }
 procedure TCAlphaBitmapEC.LoadFromConfigBuffer(SourceBuffer: TBufEC; const LoadOption: WideString);
 var Bitmap: TGraphBufGR; ByteCount: Cardinal;
 begin
@@ -137,9 +134,9 @@ begin
   PixelSize.Y := Bitmap.Height;
   Bitmap.Free;
 end;
-{ @end $475654 }
+{ @end $494AE0 }
 
-{ @routine $475858 TCAlphaBitmapEC_Draw16 }
+{ @routine $494C60 TCAlphaBitmapEC_Draw16 }
 procedure TCAlphaBitmapEC.Draw16(Dest: Pointer; Pitch, X, Y: Integer; Clip: TRect);
 var InclusiveClip: TRect;
 begin
@@ -151,9 +148,9 @@ begin
   Ex_OKGR_TransAlphaBuf_DrawClip_WORD(Dest, Pitch, X, Y, TransAlphaBuf16, InclusiveClip);
   Ex_OKGR_TransBuf_DrawClip_WORD(Dest, Pitch, X, Y, TransBuf16, InclusiveClip);
 end;
-{ @end $475858 }
+{ @end $494C60 }
 
-{ @routine $4758EC TCAlphaBitmapEC_DecodeToGraphBuf }
+{ @routine $494CE4 TCAlphaBitmapEC_DecodeToGraphBuf }
 procedure TCAlphaBitmapEC.DecodeToGraphBuf(Buffer: TGraphBufGR);
 begin
   Buffer.AllocateRgbaTight(PixelSize.X, PixelSize.Y);
@@ -162,9 +159,9 @@ begin
   Ex_OKGR_TransAlphaBuf_Draw_RGBA(Buffer.GetPixels, Buffer.PitchBytes, TransAlphaBuf16);
   Ex_OKGR_TransBuf_Draw_RGBA(Buffer.GetPixels, Buffer.PitchBytes, TransBuf16);
 end;
-{ @end $4758EC }
+{ @end $494CE4 }
 
-{ @routine $475964 TCAlphaBitmapEC_GetTexture }
+{ @routine $494D38 TCAlphaBitmapEC_GetTexture }
 function TCAlphaBitmapEC.GetTexture: IDirect3DTexture9;
 var Buffer: TGraphBufGR; Texture: IDirect3DTexture9;
 begin
@@ -180,6 +177,6 @@ begin
   end;
   Result := Texture;
 end;
-{ @end $475964 }
+{ @end $494D38 }
 
 end.

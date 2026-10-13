@@ -96,6 +96,7 @@ impl Project {
                     .filter(|d| d.kind == "global" && d.meta.contains_key("addr")),
             );
             declarations.extend(document.nested_declarations());
+            declarations.extend(document.local_data_declarations());
             documents.push(document);
         }
         ensure!(
@@ -126,12 +127,14 @@ impl Project {
                     tree.children
                         .iter()
                         .filter_map(|n| n.declaration.clone())
+                        .filter(|d| d.kind != "global" || d.meta.contains_key("addr"))
                         .filter(|d|
                     // Program method bodies share the declarations already
                     // collected from their classes, just like unit methods.
                     d.kind != "routine" || d.data["owner"].is_null()),
                 );
                 declarations.extend(document.nested_declarations());
+                declarations.extend(document.local_data_declarations());
                 Some(document)
             } else {
                 None
@@ -139,7 +142,8 @@ impl Project {
         } else {
             None
         };
-        let compiler = Compiler::new(declarations)?;
+        let mut compiler = Compiler::new(declarations)?;
+        compiler.source_member_order = settings["compiler"]["source_method_order"] == true;
         let mut routines_by_address = BTreeMap::<u32, Vec<usize>>::new();
         let mut routines_by_name = BTreeMap::<String, Vec<usize>>::new();
         for (index, d) in compiler.decls.iter().enumerate() {

@@ -1,13 +1,10 @@
 unit SE_SoundRnd;
-// Unit bracket (inferred): .text 0x004D5B48..0x004D639B; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
-// Native class metadata and dynamic-array RTTI identify SE_SoundRnd.
 
 interface
 
 uses EC_Struct, EC_BlockPar;
 
 type
-  // Native record RTTI at $4D5B8C.
   TSoundRndUnitSE = record // @size $1C
     Weight: Integer; // @offset $00
     Group: Integer; // @offset $04 Native Group parameter.
@@ -24,27 +21,27 @@ type
     Name: WideString; // @offset $0C
     Groups: array of TSoundRndUnitSE; // @offset $10
     TotalGroupWeight: Integer; // @offset $14
-    constructor Create; // @addr $4D5E84
-    destructor Destroy; override; // @addr $4D5EC8
-    procedure Clear; // @addr $4D5F04
-    procedure LoadFromBlock(Block: TBlockParEC); // @addr $4D5F84
-    function SelectSound(GroupIndex: Integer): WideString; // @addr $4D62D0
+    constructor Create; // @addr $4D5BF0
+    destructor Destroy; override; // @addr $4D5C28
+    procedure Clear; // @addr $4D5C54
+    procedure LoadFromBlock(Block: TBlockParEC); // @addr $4D5CB0
+    function SelectSound(GroupIndex: Integer): WideString; // @addr $4D5F94
   end;
 
 var
-  FirstRandomSound: TSoundRndSE = nil; // @addr $87AB30
-  LastRandomSound: TSoundRndSE = nil; // @addr $87AB34
+  FirstRandomSound: TSoundRndSE = nil; // @addr $80E768
+  LastRandomSound: TSoundRndSE = nil; // @addr $80E76C
 
-function CreateRandomSound: TSoundRndSE; // @addr $4D5C54
-procedure FreeRandomSound(Sound: TSoundRndSE); // @addr $4D5CB8 @note "Unlinks and frees a nonnil registered sound."
-procedure FreeAllRandomSounds; // @addr $4D5D24
-function FindRandomSound(Name: WideString; var GroupIndex: Integer): TSoundRndSE; // @addr $4D5D3C @note "Creates and loads an uncached name, then selects a weighted group; -1 for zero total weight."
+function CreateRandomSound: TSoundRndSE; // @addr $4D5A48
+procedure FreeRandomSound(Sound: TSoundRndSE); // @addr $4D5A88 @note "Unlinks and frees a nonnil registered sound."
+procedure FreeAllRandomSounds; // @addr $4D5ACC
+function FindRandomSound(Name: WideString; var GroupIndex: Integer): TSoundRndSE; // @addr $4D5AE4 @note "Creates and loads an uncached name, then selects a weighted group; -1 for zero total weight."
 
 implementation
 
 uses EC_Str, GR_Main, aMyFunction;
 
-{ @routine $4D5C54 CreateRandomSound }
+{ @routine $4D5A48 CreateRandomSound }
 function CreateRandomSound: TSoundRndSE;
 var Sound: TSoundRndSE;
 begin
@@ -56,9 +53,9 @@ begin
   if FirstRandomSound = nil then FirstRandomSound := Sound;
   Result := Sound;
 end;
-{ @end $4D5C54 }
+{ @end $4D5A48 }
 
-{ @routine $4D5CB8 FreeRandomSound }
+{ @routine $4D5A88 FreeRandomSound }
 procedure FreeRandomSound(Sound: TSoundRndSE);
 begin
   if Sound.Prev <> nil then Sound.Prev.Next := Sound.Next;
@@ -67,16 +64,16 @@ begin
   if FirstRandomSound = Sound then FirstRandomSound := Sound.Next;
   Sound.Free;
 end;
-{ @end $4D5CB8 }
+{ @end $4D5A88 }
 
-{ @routine $4D5D24 FreeAllRandomSounds }
+{ @routine $4D5ACC FreeAllRandomSounds }
 procedure FreeAllRandomSounds;
 begin
-  while not (FirstRandomSound = nil) do FreeRandomSound(LastRandomSound);
+  while FirstRandomSound <> nil do FreeRandomSound(LastRandomSound);
 end;
-{ @end $4D5D24 }
+{ @end $4D5ACC }
 
-{ @routine $4D5D3C FindRandomSound }
+{ @routine $4D5AE4 FindRandomSound }
 function FindRandomSound(Name: WideString; var GroupIndex: Integer): TSoundRndSE;
 var Sound: TSoundRndSE; Index: Integer;
 begin
@@ -110,24 +107,24 @@ begin
   end;
   Result := Sound;
 end;
-{ @end $4D5D3C }
+{ @end $4D5AE4 }
 
-{ @routine $4D5E84 TSoundRndSE_Create }
+{ @routine $4D5BF0 TSoundRndSE_Create }
 constructor TSoundRndSE.Create;
 begin
   inherited Create;
 end;
-{ @end $4D5E84 }
+{ @end $4D5BF0 }
 
-{ @routine $4D5EC8 TSoundRndSE_Destroy }
+{ @routine $4D5C28 TSoundRndSE_Destroy }
 destructor TSoundRndSE.Destroy;
 begin
   Clear;
   inherited Destroy;
 end;
-{ @end $4D5EC8 }
+{ @end $4D5C28 }
 
-{ @routine $4D5F04 TSoundRndSE_Clear }
+{ @routine $4D5C54 TSoundRndSE_Clear }
 procedure TSoundRndSE.Clear;
 var Index: Integer;
 begin
@@ -138,9 +135,9 @@ begin
   end;
   Groups := nil;
 end;
-{ @end $4D5F04 }
+{ @end $4D5C54 }
 
-{ @routine $4D5F84 TSoundRndSE_LoadFromBlock }
+{ @routine $4D5CB0 TSoundRndSE_LoadFromBlock }
 procedure TSoundRndSE.LoadFromBlock(Block: TBlockParEC);
 var
   Index, Count, ParamIndex, ParamCount, SoundIndex, SoundCount: Integer;
@@ -180,9 +177,9 @@ begin
     end;
   end;
 end;
-{ @end $4D5F84 }
+{ @end $4D5CB0 }
 
-{ @routine $4D62D0 TSoundRndSE_SelectSound }
+{ @routine $4D5F94 TSoundRndSE_SelectSound }
 function TSoundRndSE.SelectSound(GroupIndex: Integer): WideString;
 var Index, Weight: Integer;
 begin
@@ -201,6 +198,6 @@ begin
   end;
   Result := '';
 end;
-{ @end $4D62D0 }
+{ @end $4D5F94 }
 
 end.

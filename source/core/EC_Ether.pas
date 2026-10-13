@@ -1,5 +1,4 @@
 unit EC_Ether;
-// Unit bracket (inferred): .text 0x004DC780..0x004DCCA8; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -23,63 +22,68 @@ type
     Count: Integer; // @offset $0C
     SortedItems: PEtherIndex; // @offset $10
     Lock: TCriticalSection; // @offset $14
-    constructor Create; // @addr $4DC840
-    destructor Destroy; override; // @addr $4DC894 @note "Native destructor leaves the critical section; it does not free the lock or clear entries."
-    procedure Clear; // @addr $4DC8D0
-    function AppendEntry: TEtherUnit; // @addr $4DC918
-    procedure RemoveEntry(Item: TEtherUnit); // @addr $4DC984 @note "Unlinks and frees the entry without updating SortedItems or Count."
-    function GetIndexedEntry(Index: Integer): TEtherUnit; // @addr $4DC9FC @note "Native assembly restores EAX after loading the entry, returning Self instead of the indexed value."
-    procedure SetIndexedEntry(Index: Integer; Item: TEtherUnit); // @addr $4DCA10
-    function FindInsertionIndex(const Name: WideString): Integer; // @addr $4DCA24
-    procedure Add(const Name: WideString; Value: Integer); // @addr $4DCAD8
-    procedure SaveToBuffer(Buffer: TBufEC); // @addr $4DCB90
-    procedure LoadFromBuffer(Buffer: TBufEC); // @addr $4DCBE8
-    procedure Enter; // @addr $4DCC7C
-    procedure Leave; // @addr $4DCC94
+    constructor Create; // @addr $4E9838
+    destructor Destroy; override; // @addr $4E987C @note "Native destructor leaves the critical section; it does not free the lock or clear entries."
+    procedure Clear; // @addr $4E98AC
+    function AppendEntry: TEtherUnit; // @addr $4E98DC
+    procedure RemoveEntry(Item: TEtherUnit); // @addr $4E9910 @note "Unlinks and frees the entry without updating SortedItems or Count."
+    function GetIndexedEntry(Index: Integer): TEtherUnit; // @addr $4E994C @note "Native assembly restores EAX after loading the entry, returning Self instead of the indexed value."
+    procedure SetIndexedEntry(Index: Integer; Item: TEtherUnit); // @addr $4E9960
+    function FindInsertionIndex(const Name: WideString): Integer; // @addr $4E9974
+    procedure Add(const Name: WideString; Value: Integer); // @addr $4E9A08
+    procedure SaveToBuffer(Buffer: TBufEC); // @addr $4E9AB4
+    procedure LoadFromBuffer(Buffer: TBufEC); // @addr $4E9AEC
+    procedure Enter; // @addr $4E9B68
+    procedure Leave; // @addr $4E9B74
+    property Items[Index: Integer]: TEtherUnit read GetIndexedEntry write SetIndexedEntry; default;
   end;
 
 implementation
 
 uses EC_Mem, EC_Str;
 
-{ @routine $4DC840 TEther_Create }
+{ @routine $4E9838 TEther_Create }
 constructor TEther.Create;
 begin
   inherited Create;
   Lock := TCriticalSection.Create;
 end;
-{ @end $4DC840 }
+{ @end $4E9838 }
 
-{ @routine $4DC894 TEther_Destroy }
+{ @routine $4E987C TEther_Destroy }
 destructor TEther.Destroy;
 begin
   Lock.Leave;
   inherited Destroy;
 end;
-{ @end $4DC894 }
+{ @end $4E987C }
 
-{ @routine $4DC8D0 TEther_Clear }
+{ @routine $4E98AC TEther_Clear }
 procedure TEther.Clear;
 begin
   while First <> nil do RemoveEntry(Last);
-  if SortedItems <> nil then begin FreeEC(SortedItems); SortedItems := nil; end;
+  if SortedItems <> nil then
+  begin
+    FreeEC(SortedItems);
+    SortedItems := nil;
+  end;
   Count := 0;
 end;
-{ @end $4DC8D0 }
+{ @end $4E98AC }
 
-{ @routine $4DC918 TEther_AppendEntry }
+{ @routine $4E98DC TEther_AppendEntry }
 function TEther.AppendEntry: TEtherUnit;
-var Item: TEtherUnit;
 begin
-  Item := TEtherUnit.Create;
-  if Last <> nil then Last.Next := Item;
-  Item.Prev := Last; Item.Next := nil; Last := Item;
-  if First = nil then First := Item;
-  Result := Item;
+  Result := TEtherUnit.Create;
+  if Last <> nil then Last.Next := Result;
+  Result.Prev := Last;
+  Result.Next := nil;
+  Last := Result;
+  if First = nil then First := Result;
 end;
-{ @end $4DC918 }
+{ @end $4E98DC }
 
-{ @routine $4DC984 TEther_RemoveEntry }
+{ @routine $4E9910 TEther_RemoveEntry }
 procedure TEther.RemoveEntry(Item: TEtherUnit);
 begin
   if Item.Prev <> nil then Item.Prev.Next := Item.Next;
@@ -88,9 +92,9 @@ begin
   if First = Item then First := Item.Next;
   Item.Free;
 end;
-{ @end $4DC984 }
+{ @end $4E9910 }
 
-{ @routine $4DC9FC TEther_GetIndexedEntry }
+{ @routine $4E994C TEther_GetIndexedEntry }
 function TEther.GetIndexedEntry(Index: Integer): TEtherUnit;
 asm
   PUSH EAX
@@ -103,9 +107,9 @@ asm
   POP EBX
   POP EAX
 end;
-{ @end $4DC9FC }
+{ @end $4E994C }
 
-{ @routine $4DCA10 TEther_SetIndexedEntry }
+{ @routine $4E9960 TEther_SetIndexedEntry }
 procedure TEther.SetIndexedEntry(Index: Integer; Item: TEtherUnit);
 asm
   PUSH EAX
@@ -119,32 +123,44 @@ asm
   POP EBX
   POP EAX
 end;
-{ @end $4DCA10 }
+{ @end $4E9960 }
 
-{ @routine $4DCA24 TEther_FindInsertionIndex }
+{ @routine $4E9974 TEther_FindInsertionIndex }
 function TEther.FindInsertionIndex(const Name: WideString): Integer;
 var Left, Right, Middle, Comparison: Integer; Item: TEtherUnit;
 begin
-  if Count <= 0 then begin Result := 0; Exit; end;
-  Left := 0; Right := Count - 1;
-  repeat
+  if Count <= 0 then
+  begin
+    Result := 0;
+    Exit;
+  end;
+  Left := 0;
+  Right := Count - 1;
+  while True do
+  begin
     Middle := ((Right - Left) shr 1) + Left;
-    Item := GetIndexedEntry(Middle);
+    Item := Items[Middle];
     Comparison := CompareWideChars(PWideChar(Name), PWideChar(Item.Name));
-    if Comparison = 0 then begin Result := Middle; Exit; end;
+    if Comparison = 0 then
+    begin
+      Result := Middle;
+      Exit;
+    end;
     if Comparison < 0 then Right := Middle - 1 else Left := Middle + 1;
-  until Right < Left;
+    if Right < Left then Break;
+  end;
   if Comparison < 0 then Result := Middle else Result := Middle + 1;
 end;
-{ @end $4DCA24 }
+{ @end $4E9974 }
 
-{ @routine $4DCAD8 TEther_Add }
+{ @routine $4E9A08 TEther_Add }
 procedure TEther.Add(const Name: WideString; Value: Integer);
 var MoveCount: Integer; Item: TEtherUnit; Index: Integer;
 begin
   Enter;
   Item := AppendEntry;
-  Item.Name := Name; Item.Value := Value;
+  Item.Name := Name;
+  Item.Value := Value;
   Index := FindInsertionIndex(Name);
   Inc(Count);
   SortedItems := ReAllocREC(SortedItems, Count * SizeOf(TEtherUnit));
@@ -170,12 +186,12 @@ begin
     POP EAX
     POP EBX
   end;
-  SetIndexedEntry(Index, Item);
+  Items[Index] := Item;
   Leave;
 end;
-{ @end $4DCAD8 }
+{ @end $4E9A08 }
 
-{ @routine $4DCB90 TEther_SaveToBuffer }
+{ @routine $4E9AB4 TEther_SaveToBuffer }
 procedure TEther.SaveToBuffer(Buffer: TBufEC);
 var Item: TEtherUnit;
 begin
@@ -187,9 +203,9 @@ begin
     Item := Item.Next;
   end;
 end;
-{ @end $4DCB90 }
+{ @end $4E9AB4 }
 
-{ @routine $4DCBE8 TEther_LoadFromBuffer }
+{ @routine $4E9AEC TEther_LoadFromBuffer }
 procedure TEther.LoadFromBuffer(Buffer: TBufEC);
 var Name: WideString; Index, ItemCount, Value: Integer;
 begin
@@ -197,24 +213,25 @@ begin
   ItemCount := Buffer.GetInt32;
   for Index := 0 to ItemCount - 1 do
   begin
-    Name := Buffer.ReadWideString; Value := Buffer.GetInt32;
+    Name := Buffer.ReadWideString;
+    Value := Buffer.GetInt32;
     Add(Name, Value);
   end;
 end;
-{ @end $4DCBE8 }
+{ @end $4E9AEC }
 
-{ @routine $4DCC7C TEther_Enter }
+{ @routine $4E9B68 TEther_Enter }
 procedure TEther.Enter;
 begin
   Lock.Enter;
 end;
-{ @end $4DCC7C }
+{ @end $4E9B68 }
 
-{ @routine $4DCC94 TEther_Leave }
+{ @routine $4E9B74 TEther_Leave }
 procedure TEther.Leave;
 begin
   Lock.Leave;
 end;
-{ @end $4DCC94 }
+{ @end $4E9B74 }
 
 end.

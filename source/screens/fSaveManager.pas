@@ -1,14 +1,13 @@
 unit fSaveManager;
-// Unit bracket (inferred): .text 0x0066275C..0x00667F51; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
 uses Classes, GI_MessageLoop, GI_Panel, GR_Sound, Types, Windows;
 
 var
-  AutoSaveFileName: WideString = 'AutoSave.sav'; // @addr 0x87BEB4
-  QuickSaveFileNames: array[1..3] of WideString = ('QuickSave.sav', 'QuickSave2.sav', 'QuickSave3.sav'); // @addr $87BEB8
-  TurnSaveFileName: WideString = 'TurnSave.sav'; // @addr 0x87BEC4
+  AutoSaveFileName: WideString = 'AutoSave.sav'; // @addr 0x00810160
+  QuickSaveFileNames: array[1..3] of WideString = ('QuickSave.sav', 'QuickSave2.sav', 'QuickSave3.sav'); // @addr $810164
+  TurnSaveFileName: WideString = 'TurnSave.sav'; // @addr 0x00810170
 
 type
   PSMSlot = ^TSMSlot;
@@ -24,71 +23,71 @@ type
 
   TSaveManagerMode = (smmLoad=0, smmSave=1); // @size 0x01
 
-  TfSaveManager = class(TMessageLoopGI) // @size 0xE4
+  TfSaveManager = class(TMessageLoopGI) // @size 0xE4 @methodorder source
   public
     SelectedSlot: Integer; // @offset 0xD0
     Slots: TList; // @offset 0xD4  Owns PSMSlot records; an empty FileName marks the new-save slot.
-    PreviewTimer: PCallbackTimerGI; // @offset 0xD8
+    PreviewTimer: TCallbackTimerIdGI; // @offset 0xD8
     PreviewSound: TSoundBufferControl; // @offset 0xDC
     Closing: Boolean; // @offset 0xE0
 
-    constructor Create; // @addr 0x6627F8
-    destructor Destroy; override; // @addr 0x6628B4
-    procedure InitializeLayout; override; // @addr 0x662904
-    procedure OnOpen; override; // @addr 0x662BA8 @note "Waits for the save writer before scanning slots."
-    procedure OnClose; override; // @addr 0x662FE0
-    procedure SelectMusic; override; // @addr 0x667F48
-    procedure ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer); override; // @addr 0x665B58
+    constructor Create; // @addr 0x00754B78
+    destructor Destroy; override; // @addr 0x00754C1C
+    procedure InitializeLayout; override; // @addr 0x00754C58
+    procedure OnOpen; override; // @addr 0x00754EEC @note "Waits for the save writer before scanning slots."
+    procedure OnClose; override; // @addr 0x007552D4
 
-    procedure RebuildSlotControls; // @addr 0x663178
-    procedure InitializeSlotPanel(Panel: TPanelGI); // @addr 0x663588
-    procedure RefreshSlot(SlotIndex: Integer; UnusedEditingFlag: Boolean); // @addr 0x6641F0
-    procedure CloseClicked(Sender: TObjectGI); // @addr 0x664F24
-    procedure LoadClicked(Sender: TObjectGI); // @addr 0x664F5C
-    procedure SaveClicked(Sender: TObjectGI); // @addr 0x6651E0
-    procedure DeleteClicked(Sender: TObjectGI); // @addr 0x6655CC
-    procedure SlotMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x6657E0
-    procedure SlotDoubleClick(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x665874
-    procedure SlotKeyDown(Sender: TObjectGI; Key: Cardinal); // @addr 0x6658B8
-    function AcceptSaveNameCharacter(Sender: TObjectGI; Character: WideChar): Boolean; // @addr 0x665BA4
-    procedure SelectSlot(SlotIndex: Integer); // @addr 0x665C04
-    procedure ClearSlotSelection; // @addr 0x6662C0
-    function AutoSaveExists: Boolean; // @addr 0x666430
-    function GetAutoSavePath: WideString; // @addr 0x66649C
-    function FindAutoSaveSlot: Integer; // @addr 0x666510 @note "Checks only the last list entry; returns -1 when absent."
-    function BuildCurrentSaveDescription: WideString; // @addr 0x6665AC @note "Requires the current player and star; station-control mode uses the player's saved docking location."
-    function BuildUniqueSavePath(const FileName: WideString; out SuffixIndex: Integer): WideString; // @addr 0x6669D0 @note "Uses the current Slots list, without rescanning disk. SuffixIndex is zero when no numbered suffix is needed."
-    function GetSaveConfigPath(const FileName: WideString): WideString; // @addr 0x666DEC
-    function QuickSaveExists(SlotIndex: Integer): Boolean; // @addr 0x666EB4
-    function GetQuickSavePath(SlotIndex: Integer): WideString; // @addr 0x666F28 @note "One-based quick-save index (1..3); unchecked."
-    function GetTurnSavePath: WideString; // @addr 0x666FA4
-    procedure SlotMouseEnter(Sender: TObjectGI); // @addr 0x667018
-    procedure SlotMouseLeave(Sender: TObjectGI); // @addr 0x66712C
-    procedure ScanSaveFiles; // @addr 0x6673BC @note "Owns TSMSlot records, newest first; optional new-save entry comes first and autosave last. Rejects malformed headers and versions outside 13..CurrentSaveVersion."
-    function IsSlotEmpty(SlotIndex: Integer): Boolean; // @addr 0x667974 @note "True for an out-of-range index or empty FileName."
-    function FindNewestSlot: Integer; // @addr 0x6679C4 @note "Returns -1 when no timestamp is greater than zero; ties retain the first match."
-    function ReadSaveVersion(FileName: WideString): Integer; // @addr 0x667A50 @note "Reads the first two strings without checking the RSG magic."
-    procedure LoadSavePreviews(FileName: WideString); // @addr 0x667B0C
-    procedure FinishPreviewDelay(Timer: PCallbackTimerGI; UserData: Integer); // @addr 0x667E4C
+    procedure RebuildSlotControls; // @addr 0x00755428
+    procedure InitializeSlotPanel(Panel: TPanelGI); // @addr 0x007557CC
+    procedure RefreshSlot(SlotIndex: Integer; UnusedEditingFlag: Boolean); // @addr 0x00756340
+    procedure CloseClicked(Sender: TObjectGI); // @addr 0x0075700C
+    procedure LoadClicked(Sender: TObjectGI); // @addr 0x00757030
+    procedure SaveClicked(Sender: TObjectGI); // @addr 0x00757298
+    procedure DeleteClicked(Sender: TObjectGI); // @addr 0x0075765C
+    procedure SlotMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x00757834
+    procedure SlotDoubleClick(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x007578BC
+    procedure SlotKeyDown(Sender: TObjectGI; Key: Cardinal); // @addr 0x007578EC
+    procedure ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer); override; // @addr 0x00757ADC
+    function AcceptSaveNameCharacter(Sender: TObjectGI; Character: WideChar): Boolean; // @addr 0x00757B0C
+    procedure SelectSlot(SlotIndex: Integer); // @addr 0x00757B48
+    procedure ClearSlotSelection; // @addr 0x0075813C
+    function AutoSaveExists: Boolean; // @addr 0x0075828C
+    function GetAutoSavePath: WideString; // @addr 0x007582F0
+    function FindAutoSaveSlot: Integer; // @addr 0x0075835C @note "Checks only the last list entry; returns -1 when absent."
+    function BuildCurrentSaveDescription: WideString; // @addr 0x007583E4 @note "Requires the current player and star; station-control mode uses the player's saved docking location."
+    function BuildUniqueSavePath(const FileName: WideString; out SuffixIndex: Integer): WideString; // @addr 0x007587D8 @note "Uses the current Slots list, without rescanning disk. SuffixIndex is zero when no numbered suffix is needed."
+    function GetSaveConfigPath(const FileName: WideString): WideString; // @addr 0x00758BD8
+    function QuickSaveExists(SlotIndex: Integer): Boolean; // @addr 0x00758C94
+    function GetQuickSavePath(SlotIndex: Integer): WideString; // @addr 0x00758D00 @note "One-based quick-save index (1..3); unchecked."
+    function GetTurnSavePath: WideString; // @addr 0x00758D70
+    procedure SlotMouseEnter(Sender: TObjectGI); // @addr 0x00758DDC
+    procedure SlotMouseLeave(Sender: TObjectGI); // @addr 0x00758EEC
+    procedure ScanSaveFiles; // @addr 0x0075914C @note "Owns TSMSlot records, newest first; optional new-save entry comes first and autosave last. Rejects malformed headers and versions outside 13..CurrentSaveVersion."
+    function IsSlotEmpty(SlotIndex: Integer): Boolean; // @addr 0x007596F4 @note "True for an out-of-range index or empty FileName."
+    function FindNewestSlot: Integer; // @addr 0x0075972C @note "Returns -1 when no timestamp is greater than zero; ties retain the first match."
+    function ReadSaveVersion(FileName: WideString): Integer; // @addr 0x00759798 @note "Reads the first two strings without checking the RSG magic."
+    procedure LoadSavePreviews(FileName: WideString); // @addr 0x0075983C
+    procedure FinishPreviewDelay(Timer: TCallbackTimerIdGI; UserData: Cardinal); // @addr 0x00759B74
+    procedure SelectMusic; override; // @addr 0x00759C48
   end;
 
 implementation
 
-// @unit-initialization $8778D8
-// @unit-finalization $667F54
+// @unit-initialization $807998
+// @unit-finalization $759C4C
 
 uses aGalaxyStruct, GR_Main, SysUtils, Math, EC_Str, EC_File, EC_Buf, EC_BlockPar,
   GI_Main, GI_GAI, GI_Image, GI_Edit, GI_Label, GI_GraphBuf, GI_PanelScrollBar, GI_GraphButton,
   Globals, GlobalsV, aConst, aMyFunction, aPlayer, aGalaxy, aSaveLoad, fMainForm, fShip2;
 
 var
-  NewSaveNormalColor: Cardinal; // @addr $88AA58
-  NewSaveSelectedColor: Cardinal; // @addr $88AA5C
-  SaveSlotNormalColor: Cardinal; // @addr $88AA60
-  SaveSlotSelectedColor: Cardinal; // @addr $88AA64
+  NewSaveNormalColor: Cardinal; // @addr $81B918
+  NewSaveSelectedColor: Cardinal; // @addr $81B91C
+  SaveSlotNormalColor: Cardinal; // @addr $81B920
+  SaveSlotSelectedColor: Cardinal; // @addr $81B924
 
 
-{ @routine $6627F8 TfSaveManager_Create }
+{ @routine $754B78 TfSaveManager_Create }
 constructor TfSaveManager.Create;
 begin
   inherited;
@@ -97,18 +96,18 @@ begin
   PreviewSound := TSoundBufferControl.Create;
   PreviewSound.Configure('Sound.SaveLoadLoop',0,True);
 end;
-{ @end $6627F8 }
+{ @end $754B78 }
 
-{ @routine $6628B4 TfSaveManager_Destroy }
+{ @routine $754C1C TfSaveManager_Destroy }
 destructor TfSaveManager.Destroy;
 begin
   Slots.Free;
   PreviewSound.Free;
   inherited;
 end;
-{ @end $6628B4 }
+{ @end $754C1C }
 
-{ @routine $662904 TfSaveManager_InitializeLayout }
+{ @routine $754C58 TfSaveManager_InitializeLayout }
 procedure TfSaveManager.InitializeLayout;
 begin
   inherited;
@@ -124,9 +123,9 @@ begin
   SaveSlotSelectedColor := GetStyleColorGI('SaveManager.SlotSelected',65,121,145);
   AppendLogLineThreadSafe('ok');
 end;
-{ @end $662904 }
+{ @end $754C58 }
 
-{ @routine $662BA8 TfSaveManager_OnOpen }
+{ @routine $754EEC TfSaveManager_OnOpen }
 procedure TfSaveManager.OnOpen;
 var
   Directory: AnsiString;
@@ -174,9 +173,9 @@ begin
   if Slots.Count <= 0 then PreviewSound.SetVolume(1);
   Closing := False;
 end;
-{ @end $662BA8 }
+{ @end $754EEC }
 
-{ @routine $662FE0 TfSaveManager_OnClose }
+{ @routine $7552D4 TfSaveManager_OnClose }
 procedure TfSaveManager.OnClose;
 var
   I: Integer;
@@ -185,17 +184,17 @@ var
 begin
   for I := 0 to Slots.Count - 1 do
   begin
-    Slot := PSMSlot(Slots[I]);
+    Slot := Slots[I];
     Slot.FileName := '';
     Dispose(Slot);
   end;
   Slots.Clear;
   PreviewSound.SetVolume(0);
   if Galaxy <> nil then Galaxy.CampaignFlag183 := 0;
-  if PreviewTimer <> nil then
+  if PreviewTimer <> 0 then
   begin
     CancelCallbackTimer(PreviewTimer);
-    PreviewTimer := nil;
+    PreviewTimer := 0;
   end;
   ScrollPanel := GetByName('PanelSlot') as TPanelScrollBarGI;
   ScrollPanel.FreeOwnedChildren;
@@ -205,9 +204,9 @@ begin
   inherited;
   Closing := False;
 end;
-{ @end $662FE0 }
+{ @end $7552D4 }
 
-{ @routine $663178 TfSaveManager_RebuildSlotControls }
+{ @routine $755428 TfSaveManager_RebuildSlotControls }
 procedure TfSaveManager.RebuildSlotControls;
 var
   Panel: TPanelGI;
@@ -232,7 +231,7 @@ begin
       Panel.SetPosition(Classes.Point(0,Y));
       InitializeSlotPanel(Panel);
       Inc(Y,Panel.ClientSize.Y);
-      Panel.SetName('Slot' + IntToStr(I));
+      Panel.Name := 'Slot' + IntToStr(I);
       Panel.SetPositionModeW(True);
       RefreshSlot(I,False);
       ScrollPanel.VerticalScrollBar.SetSmallChange(Panel.ClientSize.Y);
@@ -244,7 +243,7 @@ begin
     Panel.UserValue := FindAutoSaveSlot;
     Panel.SetPosition(Classes.Point(0,0));
     InitializeSlotPanel(Panel);
-    Panel.SetName('Slot' + IntToStr(FindAutoSaveSlot));
+    Panel.Name := 'Slot' + IntToStr(FindAutoSaveSlot);
     Panel.SetPositionModeW(False);
     RefreshSlot(FindAutoSaveSlot,False);
     GetByName('PanelAutoSave').SetSize(Panel.ClientSize);
@@ -259,14 +258,14 @@ begin
   ScrollPanel.VerticalScrollBar.SetPosition(I);
   if (SelectedSlot < 0) or (Slots.Count <= SelectedSlot) then SelectedSlot := -1;
   SelectSlot(SelectedSlot);
-  FinishPreviewDelay(nil,0);
+  FinishPreviewDelay(0,0);
 end;
-{ @end $663178 }
+{ @end $755428 }
 
-{ @routine $663588 TfSaveManager_InitializeSlotPanel }
+{ @routine $7557CC TfSaveManager_InitializeSlotPanel }
 procedure TfSaveManager.InitializeSlotPanel(Panel: TPanelGI);
 begin
-  Panel.SetName('Slot' + IntToStr(Cardinal(Panel.UserValue)));
+  Panel.Name := 'Slot' + IntToStr(Cardinal(Panel.UserValue));
   Panel.MouseEnterCallback := SlotMouseEnter;
   Panel.MouseLeaveCallback := SlotMouseLeave;
   Panel.LeftButtonDownCallback := SlotMouseDown;
@@ -276,20 +275,20 @@ begin
   begin
     SetPosition(Classes.Point(0,0));
     SetDepth(10);
-    SetImagePath('GI,Bm.FormSave2.' + GiResourceSuffix + 'Glow');
+    ImageSourcePath := 'GI,Bm.FormSave2.' + GiResourceSuffix + 'Glow';
     SetSize(GetContentSize);
     Panel.SetSize(ClientSize);
     SetActive(False);
-    SetName('Slot' + IntToStr(Cardinal(Panel.UserValue)) + 'onmouse');
+    Name := 'Slot' + IntToStr(Cardinal(Panel.UserValue)) + 'onmouse';
   end;
   with TImageGI.Create(Panel) do
   begin
     if GiResourceVariant = 1 then SetPosition(Classes.Point(51,2))
     else SetPosition(Classes.Point(64,3));
     SetDepth(9);
-    SetImagePath('GI,Bm.FormSave2.' + GiResourceSuffix + 'SlotN');
+    ImageSourcePath := 'GI,Bm.FormSave2.' + GiResourceSuffix + 'SlotN';
     SetSize(GetContentSize);
-    SetName('Slot' + IntToStr(Cardinal(Panel.UserValue)) + 'BG');
+    Name := 'Slot' + IntToStr(Cardinal(Panel.UserValue)) + 'BG';
   end;
   with TImageGI.Create(Panel) do
   begin
@@ -304,7 +303,7 @@ begin
       SetSize(Classes.Point(61,61));
     end;
     SetDepth(9);
-    SetName('Slot' + IntToStr(Cardinal(Panel.UserValue)) + 'Emblem');
+    Name := 'Slot' + IntToStr(Cardinal(Panel.UserValue)) + 'Emblem';
   end;
   if (SaveManagerMode = smmLoad) or (FindAutoSaveSlot = Panel.UserValue) then
   begin
@@ -319,9 +318,9 @@ begin
       else if FontDialog >= 3 then SetFontName(SmoothIntroFontName);
       SetTextAlignX(taxLeft);
       SetTextAlignY(tayCenterEx);
-      SetName('Slot' + IntToStr(Cardinal(Panel.UserValue)) + 'Edit');
-      if Self.IsSlotEmpty(Panel.UserValue) then SetText('')
-      else SetText(PSMSlot(Self.Slots[Panel.UserValue]).DisplayName);
+      Name := 'Slot' + IntToStr(Cardinal(Panel.UserValue)) + 'Edit';
+      if Self.IsSlotEmpty(Panel.UserValue) then Text := ''
+      else Text := PSMSlot(Self.Slots[Panel.UserValue]).DisplayName;
       SetTextColor(CurrentPixelFormat.PackRgbBytes(0,0,0));
     end;
   end
@@ -336,7 +335,7 @@ begin
       else if FontDialog = 1 then SetFontName(SmoothBigFontName)
       else if FontDialog = 2 then SetFontName(SmoothHugeFontName)
       else if FontDialog >= 3 then SetFontName(SmoothIntroFontName);
-      SetName('Slot' + IntToStr(Cardinal(Panel.UserValue)) + 'Edit');
+      Name := 'Slot' + IntToStr(Cardinal(Panel.UserValue)) + 'Edit';
       MaxLength := 55;
       if Self.IsSlotEmpty(Panel.UserValue) then SetText('')
       else SetText(PSMSlot(Self.Slots[Panel.UserValue]).DisplayName);
@@ -352,7 +351,7 @@ begin
     SetFontName(RangerFontName);
     SetTextAlignX(taxCenter);
     SetTextAlignY(tayCenterEx);
-    SetName('Slot' + IntToStr(Cardinal(Panel.UserValue)) + 'Captain');
+    Name := 'Slot' + IntToStr(Cardinal(Panel.UserValue)) + 'Captain';
   end;
   with TLabelGI.Create(Panel) do
   begin
@@ -363,7 +362,7 @@ begin
     SetTextColor(CurrentPixelFormat.PackRgbBytes(227,227,227));
     SetTextAlignX(taxCenter);
     SetTextAlignY(tayCenterEx);
-    SetName('Slot' + IntToStr(Cardinal(Panel.UserValue)) + 'Turn');
+    Name := 'Slot' + IntToStr(Cardinal(Panel.UserValue)) + 'Turn';
   end;
   with TLabelGI.Create(Panel) do
   begin
@@ -374,7 +373,7 @@ begin
     SetTextColor(CurrentPixelFormat.PackRgbBytes(227,227,227));
     SetTextAlignX(taxCenter);
     SetTextAlignY(tayCenterEx);
-    SetName('Slot' + IntToStr(Cardinal(Panel.UserValue)) + 'Money');
+    Name := 'Slot' + IntToStr(Cardinal(Panel.UserValue)) + 'Money';
   end;
   with TLabelGI.Create(Panel) do
   begin
@@ -385,13 +384,13 @@ begin
     SetTextColor(CurrentPixelFormat.PackRgbBytes(227,227,227));
     SetTextAlignX(taxRight);
     SetTextAlignY(tayCenterEx);
-    SetName('Slot' + IntToStr(Cardinal(Panel.UserValue)) + 'Date');
+    Name := 'Slot' + IntToStr(Cardinal(Panel.UserValue)) + 'Date';
   end;
 
 end;
-{ @end $663588 }
+{ @end $7557CC }
 
-{ @routine $6641F0 TfSaveManager_RefreshSlot }
+{ @routine $756340 TfSaveManager_RefreshSlot }
 procedure TfSaveManager.RefreshSlot(SlotIndex: Integer; UnusedEditingFlag: Boolean);
 var
   State: WideString;
@@ -404,18 +403,18 @@ begin
       SetImagePath('GI,Bm.FormSave2.2Slot' + State);
     with GetByName('Slot' + IntToStr(SlotIndex) + 'Emblem') as TImageGI do
     begin
-      SetImagePath('GI,Bm.FormSave2.2' + PSMSlot(Slots[SlotIndex]).RaceName + State);
-      SetImageKindX(ikxCenter);
-      SetImageKindY(ikyCenter);
+      ImageSourcePath := 'GI,Bm.FormSave2.2' + PSMSlot(Slots[SlotIndex]).RaceName + State;
+      KindX := ikxCenter;
+      KindY := ikyCenter;
       SetActive(True);
     end;
     with GetByName('Slot' + IntToStr(SlotIndex) + 'Date') as TLabelGI do
     begin
-      if IsSlotEmpty(SlotIndex) then SetText(LocalizedText('FormSaveManager.New'))
+      if IsSlotEmpty(SlotIndex) then Text := LocalizedText('FormSaveManager.New')
       else
       begin
         FileTimeToSystemTime(PSMSlot(Slots[SlotIndex]).LocalWriteTime,Time);
-        SetText(FormatDateTime(AnsiString(LocalizedText('FormSaveManager.DateFormatStr')),SystemTimeToDateTime(Time)));
+        Text := FormatDateTime(AnsiString(LocalizedText('FormSaveManager.DateFormatStr')),SystemTimeToDateTime(Time));
       end;
       if (SaveManagerMode = smmSave) and (SlotIndex = 0) then
       begin
@@ -442,7 +441,7 @@ begin
     begin
       with GetByName('Slot' + IntToStr(SlotIndex) + 'Edit') as TLabelGI do
       begin
-        SetText(PSMSlot(Slots[SlotIndex]).DisplayName);
+        Text := PSMSlot(Slots[SlotIndex]).DisplayName;
         SetTextColor(Color);
       end;
     end;
@@ -450,22 +449,22 @@ begin
     begin
       if SelectedSlot = SlotIndex then
       begin
-        (GetByName('Slot' + IntToStr(SlotIndex) + 'Captain') as TLabelGI).SetText(GetPlayer.Name);
-        (GetByName('Slot' + IntToStr(SlotIndex) + 'Turn') as TLabelGI).SetText(FormatGameTurnDate(Galaxy.CurrentTurn));
-        (GetByName('Slot' + IntToStr(SlotIndex) + 'Money') as TLabelGI).SetText(IntToStr(GetPlayer.Money));
+        (GetByName('Slot' + IntToStr(SlotIndex) + 'Captain') as TLabelGI).Text := GetPlayer.Name;
+        (GetByName('Slot' + IntToStr(SlotIndex) + 'Turn') as TLabelGI).Text := FormatGameTurnDate(Galaxy.CurrentTurn);
+        (GetByName('Slot' + IntToStr(SlotIndex) + 'Money') as TLabelGI).Text := IntToStr(GetPlayer.Money);
       end
       else
       begin
-        (GetByName('Slot' + IntToStr(SlotIndex) + 'Captain') as TLabelGI).SetText('');
-        (GetByName('Slot' + IntToStr(SlotIndex) + 'Turn') as TLabelGI).SetText('');
-        (GetByName('Slot' + IntToStr(SlotIndex) + 'Money') as TLabelGI).SetText('');
+        (GetByName('Slot' + IntToStr(SlotIndex) + 'Captain') as TLabelGI).Text := '';
+        (GetByName('Slot' + IntToStr(SlotIndex) + 'Turn') as TLabelGI).Text := '';
+        (GetByName('Slot' + IntToStr(SlotIndex) + 'Money') as TLabelGI).Text := '';
       end;
     end
     else
     begin
-      (GetByName('Slot' + IntToStr(SlotIndex) + 'Captain') as TLabelGI).SetText(PSMSlot(Slots[SlotIndex]).PilotName);
-      (GetByName('Slot' + IntToStr(SlotIndex) + 'Turn') as TLabelGI).SetText(FormatGameTurnDate(PSMSlot(Slots[SlotIndex]).Turn));
-      (GetByName('Slot' + IntToStr(SlotIndex) + 'Money') as TLabelGI).SetText(IntToStr(PSMSlot(Slots[SlotIndex]).Money));
+      (GetByName('Slot' + IntToStr(SlotIndex) + 'Captain') as TLabelGI).Text := PSMSlot(Slots[SlotIndex]).PilotName;
+      (GetByName('Slot' + IntToStr(SlotIndex) + 'Turn') as TLabelGI).Text := FormatGameTurnDate(PSMSlot(Slots[SlotIndex]).Turn);
+      (GetByName('Slot' + IntToStr(SlotIndex) + 'Money') as TLabelGI).Text := IntToStr(PSMSlot(Slots[SlotIndex]).Money);
     end;
   except
     on E: Exception do
@@ -475,99 +474,94 @@ begin
     end;
   end;
 end;
-{ @end $6641F0 }
+{ @end $756340 }
 
-{ @routine $664F24 TfSaveManager_CloseClicked }
+{ @routine $75700C TfSaveManager_CloseClicked }
 procedure TfSaveManager.CloseClicked(Sender: TObjectGI);
 begin
   RequestedScreenId := SaveManagerReturnScreenId;
   Closing := True;
   RequestClose(1);
 end;
-{ @end $664F24 }
+{ @end $75700C }
 
-{ @routine $664F5C TfSaveManager_LoadClicked }
+{ @routine $757030 TfSaveManager_LoadClicked }
 procedure TfSaveManager.LoadClicked(Sender: TObjectGI);
 begin
   ReleaseAllTextureSurfaces;
   MainMenuScreen.LoadPanel.SelectBackgroundStyle(0);
-  if SelectedSlot >= 0 then
+  if SelectedSlot < 0 then Exit;
+  if not IsSlotEmpty(SelectedSlot) and (ReadSaveVersion(PSMSlot(Slots[SelectedSlot]).FileName) < MinimumLoadableSaveVersion) then
+    ShowMessageBoxGI(TMessageLoopGI(GetRegisteredScreenLoop(CurrentScreenId)),LanguageDataConfig.GetParamByPathOrMarker('FormSaveManager.LoadError'),mbgCancel or mbgError)
+  else if not IsSlotEmpty(SelectedSlot) then
   begin
-    if not IsSlotEmpty(SelectedSlot) and (ReadSaveVersion(PSMSlot(Slots[SelectedSlot]).FileName) < MinimumLoadableSaveVersion) then
-      ShowMessageBoxGI(TMessageLoopGI(GetRegisteredScreenLoop(CurrentScreenId)),LanguageDataConfig.GetParamByPathOrMarker('FormSaveManager.LoadError'),mbgCancel or mbgError)
-    else if not IsSlotEmpty(SelectedSlot) then
-    begin
-      PendingLoadFileName := PSMSlot(Slots[SelectedSlot]).FileName;
-      EditableSaveFileName := GetSaveConfigPath(PendingLoadFileName);
-      if SysUtils.FileExists(EditableSaveFileName) then
-        if ShowMessageBoxGI(Self,LocalizedColorText('FormSaveManager.LoadDumpConfirm'),mbgOK or mbgCancel or mbgQuestion) = mbgResultOK then
-        begin
-          EditableSaveBlock.Clear;
-          EditableSaveBlock.LoadFromTextFileWithEncodingProbe(PWideChar(EditableSaveFileName),True);
-          ApplyEditableSaveOnLoad := True;
-        end;
-      ShipScreen.SelectedHoldKind := phkEmpty;
-      ShipScreen.SelectedHoldItem := nil;
-      RequestedScreenId := screenGameLoad;
-      RequestClose(1);
-    end;
+    PendingLoadFileName := PSMSlot(Slots[SelectedSlot]).FileName;
+    EditableSaveFileName := GetSaveConfigPath(PendingLoadFileName);
+    if SysUtils.FileExists(EditableSaveFileName) then
+      if ShowMessageBoxGI(Self,LocalizedColorText('FormSaveManager.LoadDumpConfirm'),mbgOK or mbgCancel or mbgQuestion) = mbgResultOK then
+      begin
+        EditableSaveBlock.Clear;
+        EditableSaveBlock.LoadFromTextFileWithEncodingProbe(PWideChar(EditableSaveFileName),True);
+        ApplyEditableSaveOnLoad := True;
+      end;
+    ShipScreen.SelectedHoldKind := phkEmpty;
+    ShipScreen.SelectedHoldItem := nil;
+    RequestedScreenId := screenGameLoad;
+    RequestClose(1);
   end;
 end;
-{ @end $664F5C }
+{ @end $757030 }
 
-{ @routine $6651E0 TfSaveManager_SaveClicked }
+{ @routine $757298 TfSaveManager_SaveClicked }
 procedure TfSaveManager.SaveClicked(Sender: TObjectGI);
 var
   Saved: Boolean;
   FileName, Description: WideString;
   SuffixIndex: Integer;
 begin
-  if SelectedSlot >= 0 then
+  if SelectedSlot < 0 then Exit;
+  if not IsSlotEmpty(SelectedSlot) then
   begin
-    if not IsSlotEmpty(SelectedSlot) then
-    begin
-      SysUtils.DeleteFile(AnsiString(PSMSlot(Slots[SelectedSlot]).FileName));
-      PSMSlot(Slots[SelectedSlot]).FileName := '';
-    end;
-    FileName := TrimWideString((GetByName('Slot' + IntToStr(SelectedSlot) + 'Edit') as TEditGI).Text);
-    if FileName = '' then SetFocusedControl(GetByName('Slot' + IntToStr(SelectedSlot) + 'Edit'))
-    else
-    begin
-      Description := FileName;
-      FileName := RemoveWideStringChars(FileName,'<>"/\:');
-      if RunningUnderWine or ((UserSettingsConfig.CountParams('TransliterateSaveNames') > 0) and
-        ParseEnabledNameGI(TrimWideString(UserSettingsConfig.GetParamByPathOrMarker('TransliterateSaveNames')))) then
-        FileName := TransliterateCyrillicToLatin(FileName);
-      FileName := BuildUniqueSavePath(GetGameUserDirectory + 'save\' + FileName + '.sav',SuffixIndex);
-      if SuffixIndex > 0 then Description := Description + ' (' + IntToStr(SuffixIndex) + ')';
-      Saved := SaveGameToFile(FileName,Description);
-      if not Saved then
-        ShowMessageBoxGI(Self,LanguageDataConfig.GetParamByPathOrMarker('FormSaveManager.SaveError'),mbgOK or mbgError);
-      CloseClicked(Sender);
-    end;
+    SysUtils.DeleteFile(AnsiString(PSMSlot(Slots[SelectedSlot]).FileName));
+    PSMSlot(Slots[SelectedSlot]).FileName := '';
+  end;
+  FileName := TrimWideString((GetByName('Slot' + IntToStr(SelectedSlot) + 'Edit') as TEditGI).Text);
+  if FileName = '' then SetFocusedControl(GetByName('Slot' + IntToStr(SelectedSlot) + 'Edit'))
+  else
+  begin
+    Description := FileName;
+    FileName := RemoveWideStringChars(FileName,'<>"/\:');
+    if RunningUnderWine or ((UserSettingsConfig.CountParams('TransliterateSaveNames') > 0) and
+      ParseEnabledNameGI(TrimWideString(UserSettingsConfig.GetParamByPathOrMarker('TransliterateSaveNames')))) then
+      FileName := TransliterateCyrillicToLatin(FileName);
+    FileName := BuildUniqueSavePath(GetGameUserDirectory + 'save\' + FileName + '.sav',SuffixIndex);
+    if SuffixIndex > 0 then Description := Description + ' (' + IntToStr(SuffixIndex) + ')';
+    Saved := SaveGameToFile(FileName,Description);
+    if not Saved then
+      ShowMessageBoxGI(Self,LanguageDataConfig.GetParamByPathOrMarker('FormSaveManager.SaveError'),mbgOK or mbgError);
+    CloseClicked(Sender);
   end;
 end;
-{ @end $6651E0 }
+{ @end $757298 }
 
-{ @routine $6655CC TfSaveManager_DeleteClicked }
+{ @routine $75765C TfSaveManager_DeleteClicked }
 procedure TfSaveManager.DeleteClicked(Sender: TObjectGI);
 var
   WasAutoSave: Boolean;
 begin
-  if (SelectedSlot >= 0) and not IsSlotEmpty(SelectedSlot) then
-    if ShowMessageBoxGI(Self,LanguageDataConfig.GetParamByPathOrMarker('FormSaveManager.QueryDelete'),mbgOK or mbgCancel or mbgQuestion) = mbgResultOK then
-    begin
-      if (FindAutoSaveSlot = SelectedSlot) and (SaveManagerMode = smmLoad) then WasAutoSave := True else WasAutoSave := False;
-      SysUtils.DeleteFile(AnsiString(PSMSlot(Slots[SelectedSlot]).FileName));
-      if SysUtils.FileExists(GetSaveConfigPath(PSMSlot(Slots[SelectedSlot]).FileName)) then
-        SysUtils.DeleteFile(AnsiString(GetSaveConfigPath(PSMSlot(Slots[SelectedSlot]).FileName)));
-      if WasAutoSave then SelectedSlot := 0;
-      RebuildSlotControls;
-    end;
+  if SelectedSlot < 0 then Exit;
+  if IsSlotEmpty(SelectedSlot) then Exit;
+  if ShowMessageBoxGI(Self,LanguageDataConfig.GetParamByPathOrMarker('FormSaveManager.QueryDelete'),mbgOK or mbgCancel or mbgQuestion) <> mbgResultOK then Exit;
+  if (SelectedSlot = FindAutoSaveSlot) and (SaveManagerMode = smmLoad) then WasAutoSave := True else WasAutoSave := False;
+  SysUtils.DeleteFile(AnsiString(PSMSlot(Slots[SelectedSlot]).FileName));
+  if SysUtils.FileExists(GetSaveConfigPath(PSMSlot(Slots[SelectedSlot]).FileName)) then
+    SysUtils.DeleteFile(AnsiString(GetSaveConfigPath(PSMSlot(Slots[SelectedSlot]).FileName)));
+  if WasAutoSave then SelectedSlot := 0;
+  RebuildSlotControls;
 end;
-{ @end $6655CC }
+{ @end $75765C }
 
-{ @routine $6657E0 TfSaveManager_SlotMouseDown }
+{ @routine $757834 TfSaveManager_SlotMouseDown }
 procedure TfSaveManager.SlotMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint);
 begin
   if not Closing and ((SaveManagerMode = smmLoad) or (FindAutoSaveSlot <> Sender.UserValue)) then
@@ -576,16 +570,16 @@ begin
     SelectSlot(Sender.UserValue);
   end;
 end;
-{ @end $6657E0 }
+{ @end $757834 }
 
-{ @routine $665874 TfSaveManager_SlotDoubleClick }
+{ @routine $7578BC TfSaveManager_SlotDoubleClick }
 procedure TfSaveManager.SlotDoubleClick(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint);
 begin
   if SaveManagerMode = smmSave then SaveClicked(Sender) else LoadClicked(Sender);
 end;
-{ @end $665874 }
+{ @end $7578BC }
 
-{ @routine $6658B8 TfSaveManager_SlotKeyDown }
+{ @routine $7578EC TfSaveManager_SlotKeyDown }
 procedure TfSaveManager.SlotKeyDown(Sender: TObjectGI; Key: Cardinal);
 begin
   if Key = VK_DOWN then
@@ -627,26 +621,26 @@ begin
     if SaveManagerMode = smmSave then SaveClicked(Sender) else LoadClicked(Sender);
   end;
 end;
-{ @end $6658B8 }
+{ @end $7578EC }
 
-{ @routine $665B58 TfSaveManager_ProcessMouseWheel }
+{ @routine $757ADC TfSaveManager_ProcessMouseWheel }
 procedure TfSaveManager.ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer);
 begin
   if Delta = WHEEL_DELTA then SlotKeyDown(nil,VK_UP)
   else if Delta = -WHEEL_DELTA then SlotKeyDown(nil,VK_DOWN);
 end;
-{ @end $665B58 }
+{ @end $757ADC }
 
-{ @routine $665BA4 TfSaveManager_AcceptSaveNameCharacter }
+{ @routine $757B0C TfSaveManager_AcceptSaveNameCharacter }
 function TfSaveManager.AcceptSaveNameCharacter(Sender: TObjectGI; Character: WideChar): Boolean;
 begin
   Result := (Character <> '\') and (Character <> '/') and (Character <> ':') and
     (Character <> '*') and (Character <> '?') and (Character <> '"') and
     (Character <> '<') and (Character <> '>') and (Character <> '|');
 end;
-{ @end $665BA4 }
+{ @end $757B0C }
 
-{ @routine $665C04 TfSaveManager_SelectSlot }
+{ @routine $757B48 TfSaveManager_SelectSlot }
 procedure TfSaveManager.SelectSlot(SlotIndex: Integer);
 var
   ScrollPanel: TPanelScrollBarGI;
@@ -657,87 +651,85 @@ begin
   (GetByName('ButDelete') as TGraphButtonGI).SetDisabled(IsSlotEmpty(SlotIndex));
   (GetByName('ButLoad') as TGraphButtonGI).SetDisabled(IsSlotEmpty(SlotIndex));
   (GetByName('ButSave') as TGraphButtonGI).SetDisabled((SlotIndex < 0) or (Slots.Count <= SlotIndex));
-  if (SelectedSlot >= 0) and (Slots.Count > SelectedSlot) then
+  if (SelectedSlot < 0) or (Slots.Count <= SelectedSlot) then Exit;
+  ScrollPanel := GetByName('PanelSlot') as TPanelScrollBarGI;
+  if FindAutoSaveSlot <> SlotIndex then
+    with GetByName('Slot' + IntToStr(SlotIndex)) as TPanelGI do
+      ScrollPanel.ScrollRectIntoView(GetLocalBounds);
+  RefreshSlot(SlotIndex,SaveManagerMode = smmSave);
+  if GetByName('Slot' + IntToStr(SlotIndex) + 'Edit') is TEditGI then
   begin
-    ScrollPanel := GetByName('PanelSlot') as TPanelScrollBarGI;
-    if FindAutoSaveSlot <> SlotIndex then
-      with GetByName('Slot' + IntToStr(SlotIndex)) as TPanelGI do
-        ScrollPanel.ScrollRectIntoView(GetLocalBounds);
-    RefreshSlot(SlotIndex,SaveManagerMode = smmSave);
-    if GetByName('Slot' + IntToStr(SlotIndex) + 'Edit') is TEditGI then
-    begin
-      if IsSlotEmpty(SlotIndex) then
-        with GetByName('Slot' + IntToStr(SlotIndex) + 'Edit') as TEditGI do SetText(BuildCurrentSaveDescription);
-      SetFocusedControl(GetByName('Slot' + IntToStr(SlotIndex) + 'Edit'));
-    end;
-    if not IsSlotEmpty(SlotIndex) then
-    begin
-      if PreviewTimer <> nil then
-      begin
-        CancelCallbackTimer(PreviewTimer);
-        PreviewTimer := nil;
-      end;
-      LoadSavePreviews(PSMSlot(Slots[SlotIndex]).FileName);
-    end
-    else if (SelectedSlot = 0) and (SaveManagerMode = smmSave) then
-    begin
-      with GetByName('GameImage') as TGraphBufGI do
-      begin
-        GraphBuf.Clear;
-        GraphBuf.AllocateRgb(SavePreviewGraph.Width,SavePreviewGraph.Height,SavePreviewGraph.PitchBytes);
-        Windows.CopyMemory(GraphBuf.GetPixels,SavePreviewGraph.GetPixels,GraphBuf.Height * GraphBuf.PitchBytes);
-        GraphBuf.RescaleRgb(ClientSize.X,ClientSize.Y);
-        GraphBuf.ConvertRgbTo565;
-        Invalidate;
-        SetActive(False);
-      end;
-      with GetByName('GameImage2') as TGraphBufGI do
-      begin
-        GraphBuf.Clear;
-        GraphBuf.AllocateRgb(SecondarySavePreviewGraph.Width,SecondarySavePreviewGraph.Height,SecondarySavePreviewGraph.PitchBytes);
-        Windows.CopyMemory(GraphBuf.GetPixels,SecondarySavePreviewGraph.GetPixels,GraphBuf.Height * GraphBuf.PitchBytes);
-        GraphBuf.RescaleRgb(ClientSize.X,ClientSize.Y);
-        GraphBuf.ConvertRgbTo565;
-        Invalidate;
-        SetActive(False);
-      end;
-      if PreviewTimer <> nil then
-      begin
-        CancelCallbackTimer(PreviewTimer);
-        PreviewTimer := nil;
-      end;
-      PreviewTimer := ScheduleCallbackTimer(250,250,FinishPreviewDelay);
-      PreviewSound.SetVolume(1);
-    end
-    else
-    begin
-      with GetByName('GameImage') as TGraphBufGI do
-      begin
-        GraphBuf.Clear;
-        Invalidate;
-        SetActive(False);
-      end;
-      with GetByName('GameImage2') as TGraphBufGI do
-      begin
-        GraphBuf.Clear;
-        Invalidate;
-        SetActive(False);
-      end;
-    end;
-    PostMouseMoveMessage;
+    if IsSlotEmpty(SlotIndex) then
+      with GetByName('Slot' + IntToStr(SlotIndex) + 'Edit') as TEditGI do SetText(BuildCurrentSaveDescription);
+    SetFocusedControl(GetByName('Slot' + IntToStr(SlotIndex) + 'Edit'));
   end;
+  if not IsSlotEmpty(SlotIndex) then
+  begin
+    if PreviewTimer <> 0 then
+    begin
+      CancelCallbackTimer(PreviewTimer);
+      PreviewTimer := 0;
+    end;
+    LoadSavePreviews(PSMSlot(Slots[SlotIndex]).FileName);
+  end
+  else if (SelectedSlot = 0) and (SaveManagerMode = smmSave) then
+  begin
+    with GetByName('GameImage') as TGraphBufGI do
+    begin
+      GraphBuf.Clear;
+      GraphBuf.AllocateRgb(SavePreviewGraph.Width,SavePreviewGraph.Height,SavePreviewGraph.PitchBytes);
+      Windows.CopyMemory(GraphBuf.GetPixels,SavePreviewGraph.GetPixels,GraphBuf.Height * GraphBuf.PitchBytes);
+      GraphBuf.RescaleRgb(ClientSize.X,ClientSize.Y);
+      GraphBuf.ConvertRgbTo565;
+      Invalidate;
+      SetActive(False);
+    end;
+    with GetByName('GameImage2') as TGraphBufGI do
+    begin
+      GraphBuf.Clear;
+      GraphBuf.AllocateRgb(SecondarySavePreviewGraph.Width,SecondarySavePreviewGraph.Height,SecondarySavePreviewGraph.PitchBytes);
+      Windows.CopyMemory(GraphBuf.GetPixels,SecondarySavePreviewGraph.GetPixels,GraphBuf.Height * GraphBuf.PitchBytes);
+      GraphBuf.RescaleRgb(ClientSize.X,ClientSize.Y);
+      GraphBuf.ConvertRgbTo565;
+      Invalidate;
+      SetActive(False);
+    end;
+    if PreviewTimer <> 0 then
+    begin
+      CancelCallbackTimer(PreviewTimer);
+      PreviewTimer := 0;
+    end;
+    PreviewTimer := ScheduleCallbackTimer(250,250,FinishPreviewDelay);
+    PreviewSound.SetVolume(1);
+  end
+  else
+  begin
+    with GetByName('GameImage') as TGraphBufGI do
+    begin
+      GraphBuf.Clear;
+      Invalidate;
+      SetActive(False);
+    end;
+    with GetByName('GameImage2') as TGraphBufGI do
+    begin
+      GraphBuf.Clear;
+      Invalidate;
+      SetActive(False);
+    end;
+  end;
+  PostMouseMoveMessage;
 end;
-{ @end $665C04 }
+{ @end $757B48 }
 
-{ @routine $6662C0 TfSaveManager_ClearSlotSelection }
+{ @routine $75813C TfSaveManager_ClearSlotSelection }
 procedure TfSaveManager.ClearSlotSelection;
 var
   PreviousSlot: Integer;
 begin
-  if PreviewTimer <> nil then
+  if PreviewTimer <> 0 then
   begin
     CancelCallbackTimer(PreviewTimer);
-    PreviewTimer := nil;
+    PreviewTimer := 0;
   end;
   GetByName('GameImage').SetActive(False);
   GetByName('GameImage2').SetActive(False);
@@ -749,32 +741,31 @@ begin
     RefreshSlot(PreviousSlot,False);
   end;
 end;
-{ @end $6662C0 }
+{ @end $75813C }
 
-{ @routine $666430 TfSaveManager_AutoSaveExists }
+{ @routine $75828C TfSaveManager_AutoSaveExists }
 function TfSaveManager.AutoSaveExists: Boolean;
 begin
   Result := SysUtils.FileExists(GetAutoSavePath);
 end;
-{ @end $666430 }
+{ @end $75828C }
 
-{ @routine $66649C TfSaveManager_GetAutoSavePath }
+{ @routine $7582F0 TfSaveManager_GetAutoSavePath }
 function TfSaveManager.GetAutoSavePath: WideString;
 begin
   Result := GetGameUserDirectory + 'save\' + AutoSaveFileName;
 end;
-{ @end $66649C }
+{ @end $7582F0 }
 
-{ @routine $666510 TfSaveManager_FindAutoSaveSlot }
+{ @routine $75835C TfSaveManager_FindAutoSaveSlot }
 function TfSaveManager.FindAutoSaveSlot: Integer;
 begin
   Result := -1;
-  if Slots.Count > 0 then
-    if PSMSlot(Slots[Slots.Count - 1]).FileName = GetAutoSavePath then Result := Slots.Count - 1;
+  if (Slots.Count > 0) and (PSMSlot(Slots[Slots.Count - 1]).FileName = GetAutoSavePath) then Result := Slots.Count - 1;
 end;
-{ @end $666510 }
+{ @end $75835C }
 
-{ @routine $6665AC TfSaveManager_BuildCurrentSaveDescription }
+{ @routine $7583E4 TfSaveManager_BuildCurrentSaveDescription }
 function TfSaveManager.BuildCurrentSaveDescription: WideString;
 begin
   if GetPlayer.RuinsMode = 0 then
@@ -825,9 +816,9 @@ begin
   Result := ReplaceAllWideString(Result,'<Constellation>',GetPlayer.CurrentStar.Constellation.GetName);
   Result := ReplaceAllWideString(Result,'<Player>',GetPlayer.Name);
 end;
-{ @end $6665AC }
+{ @end $7583E4 }
 
-{ @routine $6669D0 TfSaveManager_BuildUniqueSavePath }
+{ @routine $7587D8 TfSaveManager_BuildUniqueSavePath }
 function TfSaveManager.BuildUniqueSavePath(const FileName: WideString; out SuffixIndex: Integer): WideString;
 var
   I, ExistingSuffix, Parts: Integer;
@@ -876,9 +867,9 @@ begin
     else Result := Directory + '\' + BaseName + ' (' + IntToStr(SuffixIndex) + ').' + Extension;
   end;
 end;
-{ @end $6669D0 }
+{ @end $7587D8 }
 
-{ @routine $666DEC TfSaveManager_GetSaveConfigPath }
+{ @routine $758BD8 TfSaveManager_GetSaveConfigPath }
 function TfSaveManager.GetSaveConfigPath(const FileName: WideString): WideString;
 var
   Directory, BaseName, Extension: WideString;
@@ -888,46 +879,46 @@ begin
   Extension := 'txt';
   Result := Directory + '\' + BaseName + '.' + Extension;
 end;
-{ @end $666DEC }
+{ @end $758BD8 }
 
-{ @routine $666EB4 TfSaveManager_QuickSaveExists }
+{ @routine $758C94 TfSaveManager_QuickSaveExists }
 function TfSaveManager.QuickSaveExists(SlotIndex: Integer): Boolean;
 begin
   Result := SysUtils.FileExists(GetQuickSavePath(SlotIndex));
 end;
-{ @end $666EB4 }
+{ @end $758C94 }
 
-{ @routine $666F28 TfSaveManager_GetQuickSavePath }
+{ @routine $758D00 TfSaveManager_GetQuickSavePath }
 function TfSaveManager.GetQuickSavePath(SlotIndex: Integer): WideString;
 begin
   Result := GetGameUserDirectory + 'save\' + QuickSaveFileNames[SlotIndex];
 end;
-{ @end $666F28 }
+{ @end $758D00 }
 
-{ @routine $666FA4 TfSaveManager_GetTurnSavePath }
+{ @routine $758D70 TfSaveManager_GetTurnSavePath }
 function TfSaveManager.GetTurnSavePath: WideString;
 begin
   Result := GetGameUserDirectory + 'save\' + TurnSaveFileName;
 end;
-{ @end $666FA4 }
+{ @end $758D70 }
 
-{ @routine $667018 TfSaveManager_SlotMouseEnter }
+{ @routine $758DDC TfSaveManager_SlotMouseEnter }
 procedure TfSaveManager.SlotMouseEnter(Sender: TObjectGI);
 begin
   GetByName('Slot' + IntToStr(Cardinal(Sender.UserValue)) + 'onmouse').SetActive((FindAutoSaveSlot <> Sender.UserValue) or (SaveManagerMode <> smmSave));
   SoundManager.PlaySound('Sound.ButtonEnter');
 end;
-{ @end $667018 }
+{ @end $758DDC }
 
-{ @routine $66712C TfSaveManager_SlotMouseLeave }
+{ @routine $758EEC TfSaveManager_SlotMouseLeave }
 procedure TfSaveManager.SlotMouseLeave(Sender: TObjectGI);
 begin
   GetByName('Slot' + IntToStr(Cardinal(Sender.UserValue)) + 'onmouse').SetActive(False);
   SoundManager.PlaySound('Sound.ButtonLeave');
 end;
-{ @end $66712C }
+{ @end $758EEC }
 
-{ @routine $6673BC TfSaveManager_ScanSaveFiles }
+{ @routine $75914C TfSaveManager_ScanSaveFiles }
 procedure TfSaveManager.ScanSaveFiles;
 var
   Slot: PSMSlot;
@@ -939,8 +930,8 @@ var
   AutoPath: WideString;
   FindData: TWin32FindData;
 
-  // @nested $667220 InsertScannedSaveSlotByTime
-  procedure InsertScannedSaveSlotByTime; // @addr 0x667220 @calls "0x66783A" @note "Nested helper of TfSaveManager.ScanSaveFiles; requires its parent stack frame."
+  // @nested $758FDC InsertScannedSaveSlotByTime
+  procedure InsertScannedSaveSlotByTime; // @addr 0x00758FDC @calls "0x007595BB" @note "Nested helper of TfSaveManager.ScanSaveFiles; requires its parent stack frame."
   var
     Low, High, Middle, Comparison: Integer;
     OtherSlot: PSMSlot;
@@ -953,7 +944,7 @@ var
     end;
     Time := Slot.LocalWriteTime;
     Low := 0;
-    OtherSlot := PSMSlot(Slots[0]);
+    OtherSlot := Slots[0];
     Comparison := CompareFileTime(OtherSlot.LocalWriteTime,Time);
     if Comparison <= 0 then
     begin
@@ -961,7 +952,7 @@ var
       Exit;
     end;
     High := Slots.Count - 1;
-    OtherSlot := PSMSlot(Slots[High]);
+    OtherSlot := Slots[High];
     Comparison := CompareFileTime(OtherSlot.LocalWriteTime,Time);
     if Comparison >= 0 then
     begin
@@ -976,7 +967,7 @@ var
         Exit;
       end;
       Middle := (Low + High) div 2;
-      OtherSlot := PSMSlot(Slots[Middle]);
+      OtherSlot := Slots[Middle];
       Comparison := CompareFileTime(OtherSlot.LocalWriteTime,Time);
       if Comparison = 0 then
       begin
@@ -996,7 +987,7 @@ begin
   NewSlot := nil;
   for I := 0 to Slots.Count - 1 do
   begin
-    Slot := PSMSlot(Slots[I]);
+    Slot := Slots[I];
     Slot.FileName := '';
     Dispose(Slot);
   end;
@@ -1066,17 +1057,17 @@ begin
   if NewSlot <> nil then Slots.Insert(0,NewSlot);
   if AutoSlot <> nil then Slots.Add(AutoSlot);
 end;
-{ @end $6673BC }
+{ @end $75914C }
 
-{ @routine $667974 TfSaveManager_IsSlotEmpty }
+{ @routine $7596F4 TfSaveManager_IsSlotEmpty }
 function TfSaveManager.IsSlotEmpty(SlotIndex: Integer): Boolean;
 begin
   if (SlotIndex < 0) or (Slots.Count <= SlotIndex) then Result := True
   else Result := PSMSlot(Slots[SlotIndex]).FileName = '';
 end;
-{ @end $667974 }
+{ @end $7596F4 }
 
-{ @routine $6679C4 TfSaveManager_FindNewestSlot }
+{ @routine $75972C TfSaveManager_FindNewestSlot }
 function TfSaveManager.FindNewestSlot: Integer;
 var
   I: Integer;
@@ -1092,9 +1083,9 @@ begin
       Result := I;
     end;
 end;
-{ @end $6679C4 }
+{ @end $75972C }
 
-{ @routine $667A50 TfSaveManager_ReadSaveVersion }
+{ @routine $759798 TfSaveManager_ReadSaveVersion }
 function TfSaveManager.ReadSaveVersion(FileName: WideString): Integer;
 var
   FileObject: TFileEC;
@@ -1108,9 +1099,9 @@ begin
   FileObject.ReleaseHandle;
   FileObject.Free;
 end;
-{ @end $667A50 }
+{ @end $759798 }
 
-{ @routine $667B0C TfSaveManager_LoadSavePreviews }
+{ @routine $75983C TfSaveManager_LoadSavePreviews }
 procedure TfSaveManager.LoadSavePreviews(FileName: WideString);
 var
   FileObject: TFileEC;
@@ -1172,24 +1163,24 @@ begin
   end;
   FileObject.Free;
   Buffer.Free;
-  if PreviewTimer <> nil then
+  if PreviewTimer <> 0 then
   begin
     CancelCallbackTimer(PreviewTimer);
-    PreviewTimer := nil;
+    PreviewTimer := 0;
   end;
   PreviewTimer := ScheduleCallbackTimer(250,250,FinishPreviewDelay);
   PreviewSound.SetVolume(1);
 end;
-{ @end $667B0C }
+{ @end $75983C }
 
-{ @routine $667E4C TfSaveManager_FinishPreviewDelay }
-procedure TfSaveManager.FinishPreviewDelay(Timer: PCallbackTimerGI; UserData: Integer);
+{ @routine $759B74 TfSaveManager_FinishPreviewDelay }
+procedure TfSaveManager.FinishPreviewDelay(Timer: TCallbackTimerIdGI; UserData: Cardinal);
 begin
   PreviewSound.SetVolume(0);
-  if PreviewTimer <> nil then
+  if PreviewTimer <> 0 then
   begin
     CancelCallbackTimer(PreviewTimer);
-    PreviewTimer := nil;
+    PreviewTimer := 0;
   end;
   if not IsSlotEmpty(SelectedSlot) or ((SelectedSlot = 0) and (SaveManagerMode = smmSave)) then
   begin
@@ -1202,13 +1193,13 @@ begin
     GetByName('GameImage2').SetActive(False);
   end;
 end;
-{ @end $667E4C }
+{ @end $759B74 }
 
-{ @routine $667F48 TfSaveManager_SelectMusic }
+{ @routine $759C48 TfSaveManager_SelectMusic }
 procedure TfSaveManager.SelectMusic;
 begin
 
 end;
-{ @end $667F48 }
+{ @end $759C48 }
 
 end.

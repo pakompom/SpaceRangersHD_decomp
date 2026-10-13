@@ -1,6 +1,4 @@
 unit ab_W08;
-// Unit bracket (inferred): .text 0x004F6A1C..0x004F70B1; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
-// Native TabW08 projectile family: $4F6A84..$4F70B2.
 
 interface
 
@@ -14,11 +12,11 @@ type
     Exploding: Boolean; // @offset $B8
     Generation: Integer; // @offset $BC
     ExpireTick: Integer; // @offset $C0
-    constructor Create; // @addr $4F6A84
-    destructor Destroy; override; // @addr $4F6B0C
-    procedure Launch(Owner: TabObject; Amount: Integer; Angle: Single; AGeneration: Integer; Origin: TabObject); // @addr $4F6B64
-    procedure Advance; override; // @addr $4F6DAC
-    procedure UpdateVisuals; override; // @addr $4F70A0
+    constructor Create; // @addr $551B98
+    destructor Destroy; override; // @addr $551C04
+    procedure Launch(Owner: TabObject; Amount: Integer; Angle: Single; AGeneration: Integer; Origin: TabObject); // @addr $551C40
+    procedure Advance; override; // @addr $551E40
+    procedure UpdateVisuals; override; // @addr $5520C8
   end;
 
 
@@ -26,7 +24,7 @@ implementation
 
 uses ab_Ship, GlobalsV, aMyFunction;
 
-{ @routine $4F6A84 TabW08_Create }
+{ @routine $551B98 TabW08_Create }
 constructor TabW08.Create;
 begin
   inherited Create;
@@ -36,9 +34,9 @@ begin
   CollisionRadius := 5;
   Collidable := False;
 end;
-{ @end $4F6A84 }
+{ @end $551B98 }
 
-{ @routine $4F6B0C TabW08_Destroy }
+{ @routine $551C04 TabW08_Destroy }
 destructor TabW08.Destroy;
 begin
   if Image <> nil then
@@ -48,9 +46,9 @@ begin
   end;
   inherited Destroy;
 end;
-{ @end $4F6B0C }
+{ @end $551C04 }
 
-{ @routine $4F6B64 TabW08_Launch }
+{ @routine $551C40 TabW08_Launch }
 procedure TabW08.Launch(Owner: TabObject; Amount: Integer; Angle: Single; AGeneration: Integer; Origin: TabObject);
 begin
   SourceObject := Owner;
@@ -75,9 +73,9 @@ begin
     ab_WorldImage_SetDepth(Image, HitFrontDepth, HitBackDepth);
   end;
 end;
-{ @end $4F6B64 }
+{ @end $551C40 }
 
-{ @routine $4F6DAC TabW08_Advance }
+{ @routine $551E40 TabW08_Advance }
 procedure TabW08.Advance;
 var
   Collision: TabObject;
@@ -113,13 +111,13 @@ begin
   end
   else if Exploding then DeletionPending := Image.Finished;
 end;
-{ @end $4F6DAC }
+{ @end $551E40 }
 
-{ @routine $4F70A0 TabW08_UpdateVisuals }
+{ @routine $5520C8 TabW08_UpdateVisuals }
 procedure TabW08.UpdateVisuals;
 begin
   inherited UpdateVisuals;
 end;
-{ @end $4F70A0 }
+{ @end $5520C8 }
 
 end.

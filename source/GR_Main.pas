@@ -1,6 +1,4 @@
 unit GR_Main;
-// Unit bracket (inferred): .text 0x004C6044..0x004D5B42; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
-// Unit bracket (inferred): .itext 0x00876738..0x0087673F; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -11,8 +9,6 @@ const
   GameVersionText = '2.1.2500';
   ModSelectionConfigPath = 'Mods\ModCFG.txt';
 
-// Unit attribution of the cursor registry is inferred from its VMT and
-// implementation region; it is not an explicit class RTTI unit name.
 type
   TWindowMessageCallbackGR = procedure(Message, WParam: Cardinal; LParam: Integer) of object;
   TRuntimeCallbackGR = procedure;
@@ -21,7 +17,7 @@ type
   TLineRasterizer16 = procedure(Pixels: Pointer; Pitch, X1, Y1: Integer; Color1: Cardinal; X2, Y2: Integer; Color2: Cardinal); cdecl;
   TBlendPixel16 = procedure(Pixel: Pointer; Color: Word; Alpha: Byte); cdecl;
 
-  TMemoryStatusEx = packed record // @size 64
+  TMemoryStatusEx = record // @size 64
     Length: Cardinal; // @offset 0
     MemoryLoad: Cardinal; // @offset 4
     TotalPhys: UInt64; // @offset 8
@@ -42,7 +38,6 @@ type
     HotSpot: TPoint; // @offset 0x14
   end;
 
-  // VMT and methods share the native GR_Main contribution.
   PCCSnapshot = ^TCCSnapshot;
   // Links hide the live snapshot among randomized decoys. Unidentified payload
   // slots remain explicit alongside the recovered status/checksum channels.
@@ -52,7 +47,7 @@ type
     ResourceChecksumFailed: Boolean; // @offset $08
     TamperDetected: Boolean; // @offset $09
     Flag0A: Boolean; // @offset $0A
-    ProtectedStateXorSeed: Integer; // @offset $0C Nonzero while galaxy state is XOR-obfuscated ($7A8D80/$7A8DDC).
+    ProtectedStateXorSeed: Integer; // @offset $0C Nonzero while galaxy state is XOR-obfuscated ($7DAA3C/$7DAA84).
     Value10: Integer; // @offset $10
     IntegrityStatus: Integer; // @offset $14
     IntegrityError: Integer; // @offset $18
@@ -60,645 +55,636 @@ type
     IntegrityChecksum1: Cardinal; // @offset $20
     IntegrityChecksum2: Cardinal; // @offset $24
     EncodedCheatPoints: Integer; // @offset $28
-    EditableStateApplied: Boolean; // @offset $2C Set by ApplyEditableState ($7A2AEC); saved and checked for score eligibility and cheat warnings.
+    EditableStateApplied: Boolean; // @offset $2C Set by ApplyEditableState ($7D5418); saved and checked for score eligibility and cheat warnings.
   end;
   TCCInterface = class(TObject) // @size 0x10
   public
     Buffer: TBufEC; // @offset $04
     SnapshotHead: PCCSnapshot; // @offset $08
     Lock: TCriticalSection; // @offset 0x0C
-    constructor Create; // @addr $4C6FB0
-    destructor Destroy; override; // @addr $4C702C
-    procedure Reset; // @addr $4C707C
-    function CreateEmptySnapshot: PCCSnapshot; // @addr $4C7218
-    function GetSnapshot: PCCSnapshot; // @addr $4C70C4
-    function CreateDecoy: PCCSnapshot; // @addr $4C7108
-    function CopySnapshot(Source: PCCSnapshot): PCCSnapshot; // @addr $4C7294
-    procedure CommitSnapshot(Snapshot: PCCSnapshot); // @addr $4C7344
-    procedure ClearSnapshots; // @addr $4C7478
-    function GetResourceChecksumFailed: Boolean; // @addr $4C74F4
-    procedure SetResourceChecksumFailed(Value: Boolean); // @addr $4C7528
-    procedure SetFlag0A(Value: Boolean); // @addr $4C7630
-    function GetValue10: Integer; // @addr $4C7788 Protected payload with unresolved purpose.
-    procedure SetValue10(Value: Integer); // @addr $4C77BC
-    function GetFlag0A: Boolean; // @addr $4C75FC Protected flag consumed by the dormant galaxy checksum; purpose unresolved.
-    procedure SetEditableStateApplied(Value: Boolean); // @addr $4C76B4 Replaces the protected score-mod warning flag.
-    function GetEditableStateApplied: Boolean; // @addr $4C7680 Read under Lock; used for the score-mod cheat warning.
-    procedure SetProtectedStateXorSeed(Value: Integer); // @addr $4C7738 Protected-state XOR seed; zero denotes restored state.
-    function GetProtectedStateXorSeed: Integer; // @addr $4C7704 @note "Protected-state XOR seed; zero denotes restored state. Rangers reads it after the screen loop."
-    function GetTamperDetected: Boolean; // @addr 0x4C7578 @note "Reads the protected tamper flag under Lock. SetMoney checks its encoded mirror and rereads after Sleep(1); NextDay similarly checks ammunition."
-    procedure SetTamperDetected(Value: Boolean); // @addr 0x4C75AC @note "Copies the current snapshot, replaces byte 9 and commits it under Lock."
-    function GetIntegrityStatus: Integer; // @addr $4C780C
-    procedure SetIntegrityStatus(Value: Integer); // @addr $4C7840
-    function GetIntegrityError: Integer; // @addr $4C7890
-    procedure SetIntegrityError(Value: Integer); // @addr $4C78C4
-    function GetIntegrityChecksum: Cardinal; // @addr $4C7914
-    procedure SetIntegrityChecksum(Value: Cardinal); // @addr $4C7948
-    function GetIntegrityChecksum1: Cardinal; // @addr $4C7998
-    procedure SetIntegrityChecksum1(Value: Cardinal); // @addr $4C79CC
-    function GetIntegrityChecksum2: Cardinal; // @addr $4C7A1C
-    procedure SetIntegrityChecksum2(Value: Cardinal); // @addr $4C7A50
-    function GetEncodedCheatPoints: Integer; // @addr $4C7AA0
-    procedure SetEncodedCheatPoints(Value: Integer); // @addr $4C7AD4
+    constructor Create; // @addr $7C06C8
+    destructor Destroy; override; // @addr $7C0730
+    procedure Reset; // @addr $7C076C
+    function CreateEmptySnapshot: PCCSnapshot; // @addr $7C0898
+    function GetSnapshot: PCCSnapshot; // @addr $7C07A0
+    function CreateDecoy: PCCSnapshot; // @addr $7C07B8
+    function CopySnapshot(Source: PCCSnapshot): PCCSnapshot; // @addr $7C08DC
+    procedure CommitSnapshot(Snapshot: PCCSnapshot); // @addr $7C0938
+    procedure ClearSnapshots; // @addr $7C0A10
+    function GetResourceChecksumFailed: Boolean; // @addr $7C0A5C
+    procedure SetResourceChecksumFailed(Value: Boolean); // @addr $7C0A80
+    procedure SetFlag0A(Value: Boolean); // @addr $7C0B38
+    function GetValue10: Integer; // @addr $7C0C28 Protected payload with unresolved purpose.
+    procedure SetValue10(Value: Integer); // @addr $7C0C4C
+    function GetFlag0A: Boolean; // @addr $7C0B14 Protected flag consumed by the dormant galaxy checksum; purpose unresolved.
+    procedure SetEditableStateApplied(Value: Boolean); // @addr $7C0B94 Replaces the protected score-mod warning flag.
+    function GetEditableStateApplied: Boolean; // @addr $7C0B70 Read under Lock; used for the score-mod cheat warning.
+    procedure SetProtectedStateXorSeed(Value: Integer); // @addr $7C0BF0 Protected-state XOR seed; zero denotes restored state.
+    function GetProtectedStateXorSeed: Integer; // @addr $7C0BCC @note "Protected-state XOR seed; zero denotes restored state. Rangers reads it after the screen loop."
+    function GetTamperDetected: Boolean; // @addr 0x007C0AB8 @note "Reads the protected tamper flag under Lock. SetMoney checks its encoded mirror and rereads after Sleep(1); NextDay similarly checks ammunition."
+    procedure SetTamperDetected(Value: Boolean); // @addr 0x007C0ADC @note "Copies the current snapshot, replaces byte 9 and commits it under Lock."
+    function GetIntegrityStatus: Integer; // @addr $7C0C84
+    procedure SetIntegrityStatus(Value: Integer); // @addr $7C0CA8
+    function GetIntegrityError: Integer; // @addr $7C0CE0
+    procedure SetIntegrityError(Value: Integer); // @addr $7C0D04
+    function GetIntegrityChecksum: Cardinal; // @addr $7C0D3C
+    procedure SetIntegrityChecksum(Value: Cardinal); // @addr $7C0D60
+    function GetIntegrityChecksum1: Cardinal; // @addr $7C0D98
+    procedure SetIntegrityChecksum1(Value: Cardinal); // @addr $7C0DBC
+    function GetIntegrityChecksum2: Cardinal; // @addr $7C0DF4
+    procedure SetIntegrityChecksum2(Value: Cardinal); // @addr $7C0E18
+    function GetEncodedCheatPoints: Integer; // @addr $7C0E50
+    procedure SetEncodedCheatPoints(Value: Integer); // @addr $7C0E74
   end;
 
-function AddCursorUnit: TCursorUnit; // @addr 0x4D402C
-procedure RemoveCursorUnit(Cursor: TCursorUnit); // @addr 0x4D4090
-function FindCursorByName(const Name: WideString): TCursorUnit; // @addr 0x4D40FC @note "Case-sensitive lookup; raises when absent."
-procedure PostMouseMoveMessage; // @addr 0x4D4170 @note "Uses a zero key/button state."
+function AddCursorUnit: TCursorUnit; // @addr 0x007CC5C0
+procedure RemoveCursorUnit(Cursor: TCursorUnit); // @addr 0x007CC600
+function FindCursorByName(const Name: WideString): TCursorUnit; // @addr 0x007CC644 @note "Case-sensitive lookup; raises when absent."
+procedure PostMouseMoveMessage; // @addr 0x007CC6A0 @note "Uses a zero key/button state."
 
-procedure CheckRuntimeWatchdog; // @addr $4CB190 @note "Native uses an explicit indirect jump into a generated fault sequence if the watchdog stops."
-function MainWindowProc(Window, Message, WParam: Cardinal; LParam: Integer): Integer; stdcall; // @addr $4D22B8
-procedure CaptureSavePreview; // @addr $4D29EC Creates a 300x225 RGB preview and equally sized scratch buffer.
-procedure FreeSavePreviewBuffers; // @addr $4D2A98
-function GetGameUserDirectory: WideString; // @addr 0x4D5028 @note "Returns a trailing directory separator."
-procedure CreateStartupLogFile; // @addr 0x4CB1C8
-function MeasureCpuClockMHz: Double; // @addr $4D41B4 @note "Samples the low 32 bits of RDTSC over 200ms; returns 1500 on an exception."
-function ReadRegistryText(Root: Cardinal; KeyPath, ValueName, DefaultValue: WideString): WideString; // @addr $4D4290 @note "ANSI registry API, fixed 2048-byte buffer, REG_SZ only."
-function ReadRegistryInteger(Root: Cardinal; KeyPath, ValueName: WideString; DefaultValue: Integer): Integer; // @addr $4D43D8
-procedure ApplyProcessAffinity; // @addr $4CB144
-procedure CheckPlatformModules; // @addr $4C664C @note "Native entry exits before the retained module/process checks; the entire dormant body is preserved."
-procedure InitializePlatformRuntimeAndMainWindow; // @addr 0x4CB28C
-procedure LoadLanguageAndPackages; // @addr 0x4CB910 @note "Falls back to Russian when the selected language is unavailable; raises on package-open failure."
-procedure LoadSelectedModInstallBlocks; // @addr 0x4CBCC4
-procedure ResetInstalledPackageState; // @addr 0x4CC0B8
-procedure FinalizePlatformRuntime; // @addr 0x4CC144
-function HasWow64Support: Boolean; // @addr 0x4CC19C @note "Requires a WOW64 process and the filesystem-redirection and extended registry APIs."
-procedure ApplyMainWindowGeometry; // @addr 0x4CC2F0
-procedure ShowAndFocusMainWindow; // @addr 0x4CC530
-procedure LoadDatConfigAndModOverrides; // @addr 0x4CC738
-procedure FreeDatConfigRoots; // @addr 0x4CCDD0
-function IsInstallFeatureEnabled(const Path: WideString): Boolean; // @addr $4D3FB8
-procedure LoadInformationColorTags; // @addr $4D4B9C
-procedure InitializeRuntimeAndSettings; // @addr 0x4CCEA8
-procedure FinalizeRuntimeAndSettings; // @addr 0x4CF9FC
+procedure CheckRuntimeWatchdog; // @addr $7C3D80 @note "Native uses an explicit indirect jump into a generated fault sequence if the watchdog stops."
+function MainWindowProc(Window, Message, WParam: Cardinal; LParam: Integer): Integer; stdcall; // @addr $7CAB90
+procedure CaptureSavePreview; // @addr $7CB258 Creates a 300x225 RGB preview and equally sized scratch buffer.
+procedure FreeSavePreviewBuffers; // @addr $7CB304
+function GetGameUserDirectory: WideString; // @addr 0x007CD4E4 @note "Returns a trailing directory separator."
+procedure CreateStartupLogFile; // @addr 0x007C3DB8
+function MeasureCpuClockMHz: Double; // @addr $7CC6DC @note "Samples the low 32 bits of RDTSC over 200ms; returns 1500 on an exception."
+function ReadRegistryText(Root: Cardinal; KeyPath, ValueName, DefaultValue: WideString): WideString; // @addr $7CC7B8 @note "ANSI registry API, fixed 2048-byte buffer, REG_SZ only."
+function ReadRegistryInteger(Root: Cardinal; KeyPath, ValueName: WideString; DefaultValue: Integer): Integer; // @addr $7CC8F4
+procedure ApplyProcessAffinity; // @addr $7C3D48
+procedure CheckPlatformModules; // @addr $7BFDA0 @note "Native entry exits before the retained module/process checks; the entire dormant body is preserved."
+procedure InitializePlatformRuntimeAndMainWindow; // @addr 0x007C3E7C
+procedure LoadLanguageAndPackages; // @addr 0x007C44F8 @note "Falls back to Russian when the selected language is unavailable; raises on package-open failure."
+procedure LoadSelectedModInstallBlocks; // @addr 0x007C4890
+procedure ResetInstalledPackageState; // @addr 0x007C4C6C
+procedure FinalizePlatformRuntime; // @addr 0x007C4CD8
+function HasWow64Support: Boolean; // @addr 0x007C4D30 @note "Requires a WOW64 process and the filesystem-redirection and extended registry APIs."
+procedure ApplyMainWindowGeometry; // @addr 0x007C4E68
+procedure ShowAndFocusMainWindow; // @addr 0x007C508C
+procedure LoadDatConfigAndModOverrides; // @addr 0x007C5288
+procedure FreeDatConfigRoots; // @addr 0x007C58D8
+function IsInstallFeatureEnabled(const Path: WideString): Boolean; // @addr $7CC558
+procedure LoadInformationColorTags; // @addr $7CD074
+procedure InitializeRuntimeAndSettings; // @addr 0x007C59B0
+procedure FinalizeRuntimeAndSettings; // @addr 0x007C84A8
 
-procedure EnumerateAndSelectDisplayModes; // @addr 0x4CFAF0 @note "Keeps the highest refresh rate for each size. A zero-width entry means automatic resolution; a custom size may be appended."
-procedure ConfigureDefaultRenderState; // @addr $4D058C
-procedure PreparePresentationParameters; // @addr $4D063C
-procedure FreeScreenRenderBuffers; // @addr $4D1C10
-procedure LogPresentationParameters; // @addr $4D55F8
-function Direct3DErrorText(Code: Integer): AnsiString; // @addr $4D453C
-procedure GR_DXInit; // @addr 0x4D07C4
-procedure ApplyGammaRamp(Brightness, Contrast: Single); // @addr $4D1C68 @note "Linear RGB ramp with brightness/contrast endpoints; returns when no device is present."
-procedure GR_DXReset; // @addr 0x4D1A88
-function BeginFramePresentation: Boolean; // @addr $4D25E0 @note "Increments the nesting count and always returns true."
-procedure EndFramePresentation; // @addr $4D25F4 @note "Presents at the outermost level, subject to the frame-rate limit."
-procedure PresentScreenBuffer; // @addr $4D2654 @note "Hardware mode ends/presents/restarts the scene; software mode draws the buffer texture unless OffscreenTexture is assigned."
-function GR_WinMessage(Callback: TWindowMessageCallbackGR): Integer; // @addr $4D1F6C @note "Method callback receives Context/EAX, Message/EDX, WParam/ECX and LParam on stack. Returns zero when exiting."
-procedure DrawOffscreenTexture; // @addr $4D27B8 @note "Presents OffscreenTexture, fitting or cropping it to the viewport."
-procedure CaptureScreenBackground(ApplyEffects: Boolean; UnusedOption: Byte); // @addr $4D299C
-procedure CopyBgraToRgb24(Dest: Pointer; DestPitch: Integer; Source: Pointer; SourcePitch, Width, Height: Integer); // @addr $4D2AD0
-procedure CaptureRecordingFrame; // @addr $4D2BD4 @note "Copies a due software frame into the recording ring and flushes it when full."
-procedure FlushRecordingFrames; // @addr $4D2C54 @note "Writes pending RGB565 frames as sequential Film\\NNNNNN.bmp files."
-function IsVirtualKeyDown(Key: Integer): Boolean; // @addr $4D3C04 @note "Tests bit 15 of GetAsyncKeyState."
+procedure EnumerateAndSelectDisplayModes; // @addr 0x007C859C @note "Keeps the highest refresh rate for each size. A zero-width entry means automatic resolution; a custom size may be appended."
+procedure ConfigureDefaultRenderState; // @addr $7C8FD8
+procedure PreparePresentationParameters; // @addr $7C9074
+procedure FreeScreenRenderBuffers; // @addr $7CA554
+procedure LogPresentationParameters; // @addr $7CDA80
+function Direct3DErrorText(Code: Integer): AnsiString; // @addr $7CCA3C
+procedure GR_DXInit; // @addr 0x007C91B4
+procedure ApplyGammaRamp(Brightness, Contrast: Single); // @addr $7CA5AC @note "Linear RGB ramp with brightness/contrast endpoints; returns when no device is present."
+procedure GR_DXReset; // @addr 0x007CA3DC
+function BeginFramePresentation: Boolean; // @addr $7CAE98 @note "Increments the nesting count and always returns true."
+procedure EndFramePresentation; // @addr $7CAEA4 @note "Presents at the outermost level, subject to the frame-rate limit."
+procedure PresentScreenBuffer; // @addr $7CAEF8 @note "Hardware mode ends/presents/restarts the scene; software mode draws the buffer texture unless OffscreenTexture is assigned."
+function GR_WinMessage(Callback: TWindowMessageCallbackGR): Integer; // @addr $7CA854 @note "Method callback receives Context/EAX, Message/EDX, WParam/ECX and LParam on stack. Returns zero when exiting."
+procedure DrawOffscreenTexture; // @addr $7CB05C @note "Presents OffscreenTexture, fitting or cropping it to the viewport."
+procedure CaptureScreenBackground(ApplyEffects: Boolean; UnusedOption: Byte); // @addr $7CB218
+procedure CopyBgraToRgb24(Dest: Pointer; DestPitch: Integer; Source: Pointer; SourcePitch, Width, Height: Integer); // @addr $7CB33C
+procedure CaptureRecordingFrame; // @addr $7CB414 @note "Copies a due software frame into the recording ring and flushes it when full."
+procedure FlushRecordingFrames; // @addr $7CB494 @note "Writes pending RGB565 frames as sequential Film\\NNNNNN.bmp files."
+function IsVirtualKeyDown(Key: Integer): Boolean; // @addr $7CC234 @note "Tests bit 15 of GetAsyncKeyState."
 
-function LookupLocalizedTextByKey(const Path: WideString): WideString; // @addr 0x4D3C30 @note "Returns one raw value, or a marker containing Path on lookup failure."
-function LookupLocalizedTextOrEmpty(const Path: WideString): WideString; // @addr 0x4D3C50 @note "Returns one raw value; missing paths return empty and may create intermediate blocks."
-function FormatUnixDateTime(Value: Cardinal): WideString; // @addr $4D4B30
+function LookupLocalizedTextByKey(const Path: WideString): WideString; // @addr 0x007CC250 @note "Returns one raw value, or a marker containing Path on lookup failure."
+function LookupLocalizedTextOrEmpty(const Path: WideString): WideString; // @addr 0x007CC268 @note "Returns one raw value; missing paths return empty and may create intermediate blocks."
+function FormatUnixDateTime(Value: Cardinal): WideString; // @addr $7CD008
 
-function GiResourceSuffix: WideString; // @addr 0x4D3CA0 @note "Always returns 2 in this binary."
-function GiResourceVariant: Integer; // @addr $4D3C8C @note "Always returns 2; variant 1 retains the legacy quest-picture downscaling branch."
-procedure AppendLogLineThreadSafe(const Text: AnsiString); // @addr 0x4D3CF4 @note "Appends a line to the session log and closes the file. The lock is not released if a write raises."
-procedure AppendDebugLogLine(const Text: AnsiString); // @addr $4D3DB4 Creates #####add.log when absent; native unchecked TextFile I/O.
-procedure AppendOptionalDebugLogLine(const Text: AnsiString); // @addr $4D3E60 @note "Appends only when #####add.log already exists; shares SessionLogLock and native unchecked TextFile I/O."
-procedure AppendLogTextThreadSafe(const Text: AnsiString); // @addr 0x4D3D54 @note "Appends without a newline, flushes and closes the file."
-procedure LogMemoryUsage; // @addr 0x4C6CA8
+function GiResourceSuffix: WideString; // @addr 0x007CC2A4 @note "Always returns 2 in this binary."
+function GiResourceVariant: Integer; // @addr $7CC29C @note "Always returns 2; variant 1 retains the legacy quest-picture downscaling branch."
+procedure AppendLogLineThreadSafe(const Text: AnsiString); // @addr 0x007CC2C8 @note "Appends a line to the session log and closes the file. The lock is not released if a write raises."
+procedure AppendDebugLogLine(const Text: AnsiString); // @addr $7CC378 Creates #####add.log when absent; native unchecked TextFile I/O.
+procedure AppendOptionalDebugLogLine(const Text: AnsiString); // @addr $7CC410 @note "Appends only when #####add.log already exists; shares SessionLogLock and native unchecked TextFile I/O."
+procedure AppendLogTextThreadSafe(const Text: AnsiString); // @addr 0x007CC320 @note "Appends without a newline, flushes and closes the file."
+procedure LogMemoryUsage; // @addr 0x007C03C0
 
 // Delphi wrappers translate DLL exceptions into Exception objects.
-function BeginImageRead(Source: Pointer; SourceSize: Integer; out Width, Height: Integer): POkgfReadContext; // @addr 0x4C7C0C @note "Borrows Source until ReadImagePixels consumes the context. Returns nil for unsupported input. Detection requires at least 34 bytes and accepts BMP, JFIF JPEG, PNG and supported PSD modes."
-function ReadImagePixels(Context: POkgfReadContext; Pixels: Pointer; PitchBytes: Integer; RedMask, GreenMask, BlueMask, AlphaMask: Cardinal; BytesPerPixel: Integer): Integer; // @addr 0x4C7CA4 @note "Consumes Context on success; returns nonzero on success."
-function BeginIndexedImageRead(Source: Pointer; SourceSize: Integer; out Width, Height, PaletteCount, BytesPerPixel: Integer): POkgfReadContext; // @addr 0x4C7D44 @note "Borrows Source; accepts indexed PNG and indexed or grayscale PSD. Returns nil on failure. BytesPerPixel is one or two."
-function ReadIndexedImagePixels(Context: POkgfReadContext; Pixels: Pointer; PitchBytes: Integer; Palette: PColorRGBA): Integer; // @addr 0x4C7DE8 @note "Consumes Context on success. Palette requires the count returned by BeginIndexedImageRead."
-function WritePngFile(FileName: PAnsiChar; Pixels: Pointer; PitchBytes, Width, Height, HasAlpha, SwapRedBlue: Integer): Integer; // @addr 0x4C7E7C
-function WriteBmpFile(FileName: PAnsiChar; Pixels: Pointer; PitchBytes, BitsPerPixel: Integer; RedMask, GreenMask, BlueMask, AlphaMask: Cardinal; Width, Height: Integer): Integer; // @addr 0x4C7F24
+function BeginImageRead(Source: Pointer; SourceSize: Integer; out Width, Height: Cardinal): POkgfReadContext; // @addr 0x007C0F8C @note "Borrows Source until ReadImagePixels consumes the context. Returns nil for unsupported input. Detection requires at least 34 bytes and accepts BMP, JFIF JPEG, PNG and supported PSD modes."
+function ReadImagePixels(Context: POkgfReadContext; Pixels: Pointer; PitchBytes: Integer; RedMask, GreenMask, BlueMask, AlphaMask: Cardinal; BytesPerPixel: Integer): Integer; // @addr 0x007C1008 @note "Consumes Context on success; returns nonzero on success."
+function BeginIndexedImageRead(Source: Pointer; SourceSize: Integer; out Width, Height, PaletteCount, BytesPerPixel: Integer): POkgfReadContext; // @addr 0x007C108C @note "Borrows Source; accepts indexed PNG and indexed or grayscale PSD. Returns nil on failure. BytesPerPixel is one or two."
+function ReadIndexedImagePixels(Context: POkgfReadContext; Pixels: Pointer; PitchBytes: Integer; Palette: PColorRGBA): Integer; // @addr 0x007C1114 @note "Consumes Context on success. Palette requires the count returned by BeginIndexedImageRead."
+function WritePngFile(FileName: PAnsiChar; Pixels: Pointer; PitchBytes, Width, Height, HasAlpha, SwapRedBlue: Integer): Integer; // @addr 0x007C118C
+function WriteBmpFile(FileName: PAnsiChar; Pixels: Pointer; PitchBytes, BitsPerPixel: Integer; RedMask, GreenMask, BlueMask, AlphaMask: Cardinal; Width, Height: Integer): Integer; // @addr 0x007C1218
 
 // Delphi exception wrappers around the named OKGF/OKGR DLL exports.
 // Ex_ distinguishes wrappers from DLL import symbols; full parameter types remain unresolved.
-function Ex_OKGF_MulTable256x256: Pointer; // @addr 0x4C7B24
-function Ex_OKGF_DXVersion: Cardinal; // @addr 0x4C7B9C
-procedure Ex_OKGR_AlphaBuf_Draw_RGBA(Dest: Pointer; Pitch: Integer; Source: Pointer); // @addr $4C7FD8
-procedure Ex_OKGR_TransAlphaBuf_Draw_RGBA(Dest: Pointer; Pitch: Integer; Source: Pointer); // @addr $4C806C
-procedure Ex_OKGR_AlphaIndexed_Draw_RGBA(Dest: Pointer; Pitch: Integer; Source: Pointer); // @addr $4C8104
-procedure Ex_OKGR_AlphaIndexed_AlphaDraw_RGBA(Dest: Pointer; Pitch: Integer; Source: Pointer); // @addr $4C819C
-procedure Ex_OKGR_TransBuf_Draw_RGBA(Dest: Pointer; Pitch: Integer; Source: Pointer); // @addr $4C8238
-procedure Ex_OKGR_TransBuf_DrawClip_WORD(Dest: Pointer; Pitch, X, Y: Integer; Source: Pointer; const Clip: TRect); // @addr $4C82CC
-procedure Ex_OKGR_TransBuf_HADrawClip_16(Dest: Pointer; Pitch, X, Y: Integer; Source: Pointer; const Clip: TRect); // @addr $4C8370
-function Ex_OKGR_TransBuf_Build_WORD(Source: Pointer; Pitch, Width, Height: Integer; Dest: Pointer; TransparentColor: Word): Integer; // @addr $4C8414
-function Ex_OKGR_TransBuf_BuildFromRGBA_16(Source: Pointer; Pitch, Width, Height: Integer; Dest: Pointer): Integer; // @addr $4C84BC
-procedure Ex_OKGR_TransAlphaBuf_DrawClip_WORD(Dest: Pointer; Pitch, X, Y: Integer; Source: Pointer; const Clip: TRect); // @addr $4C8564
-procedure Ex_OKGR_AlphaBuf_DrawClip_16(Dest: Pointer; Pitch, X, Y: Integer; Source: Pointer; const Clip: TRect); // @addr $4C860C
-function Ex_OKGR_TransAlphaBuf_BuildFromRGBA_16(Source: Pointer; Pitch, Width, Height: Integer; Dest: Pointer): Integer; // @addr $4C86AC
-function Ex_OKGR_AlphaBuf_BuildFromRGBA(Source: Pointer; Pitch, Width, Height: Integer; Dest: Pointer): Integer; // @addr $4C875C
-procedure Ex_OKGR_AlphaSimpleBuf_Draw_16(Dest: Pointer; DestPitch, DestX, DestY: Integer; Source: Pointer; SourcePitch, SourceX, SourceY, Width, Height: Integer); // @addr $4C8804
-procedure Ex_OKGR_AlphaSimpleBufPalAlpha_Draw_16(Dest: Pointer; DestPitch, DestX, DestY: Integer; Source: Pointer; SourcePitch, SourceX, SourceY, Width, Height: Integer; Palette: PColorRGBA); // @addr $4C88B8
-procedure Ex_OKGR_MaskBuf_DrawClip_DWORD(Dest: Pointer; Pitch, X, Y: Integer; Source: Pointer; Color: Cardinal; const Clip: TRect); // @addr $4C8978
-procedure Ex_OKGR_MaskBuf_DrawClip_WORD(Dest: Pointer; Pitch, X, Y: Integer; Source: Pointer; Color: Word; const Clip: TRect); // @addr $4C8A20
-procedure Ex_OKGR_TransBuf_FillAlphaClip_RGBA(Dest: Pointer; Pitch, X, Y: Integer; Source: Pointer; const Clip: TRect; Color: Cardinal); // @addr $4C8AC4
-procedure Ex_OKGR_TransBuf_FillAlphaClip_16(Dest: Pointer; Pitch, X, Y: Integer; Source: Pointer; const Clip: TRect; Color: Word); // @addr $4C8B70
-procedure Ex_OKGR_AlphaIndexed_CopyDrawClip_WORD(Dest: Pointer; Pitch, X, Y: Integer; Source: Pointer; const Clip: TRect); // @addr $4C8C18
-procedure Ex_OKGR_AlphaIndexed_CopyDrawClip_Alpha_16(Dest: Pointer; Pitch, X, Y: Integer; Source: Pointer; const Clip: TRect; Alpha: Byte); // @addr $4C8CC4
-procedure Ex_OKGR_AlphaIndexed_AlphaDrawClip_16(Dest: Pointer; Pitch, X, Y: Integer; Source: Pointer; const Clip: TRect); // @addr $4C8D78
-procedure Ex_OKGR_AlphaIndexed_AlphaDrawClip_Alpha_16(Dest: Pointer; Pitch, X, Y: Integer; Source: Pointer; const Clip: TRect; Alpha: Byte); // @addr $4C8E20
-function Ex_OKGR_RotateBuf_Build(Width, Height, SourceWidth, SourceHeight, CenterX, CenterY: Integer): Pointer; // @addr $4C8ED4
-procedure Ex_OKGR_RotateBuf_Free(Buffer: Pointer); // @addr $4C8F78
-procedure Ex_OKGR_RotateBuf_Size(X, Y: Integer; Angle: Byte; RotationMap: Pointer; var Bounds: TRect); // @addr $4C8FF4
-procedure Ex_OKGR_RotateBuf_Draw_DWORD(Dest: Pointer; DestPitch: Integer; Source: Pointer; SourcePitch, CenterX, CenterY: Integer; Angle: Byte; RotationMap: Pointer); // @addr $4C908C
-procedure Ex_OKGR_RotateBuf_Draw_BYTE(Dest: Pointer; DestPitch: Integer; Source: Pointer; SourcePitch, Width, Height: Integer; Angle: Byte; RotationMap: Pointer); // @addr $4C9134
-procedure Ex_OKGR_RotateBuf_DrawTransClip_WORD(Dest: Pointer; DestPitch: Integer; Source: Pointer; SourcePitch, CenterX, CenterY: Integer; Angle: Byte; RotationMap: Pointer; const Clip: TRect); // @addr $4C91DC
-function Ex_OKGR_LightBuf_Create(Width, Height: Integer): Pointer; // @addr $4C9290
-procedure Ex_OKGR_LightBuf_Destroy(Buffer: Pointer); // @addr $4C931C
-procedure Ex_OKGR_LightBuf_SetSme(Buffer: Pointer; X, Y: Integer); // @addr $4C9398
-procedure Ex_OKGR_LightBuf_Init(Buffer: Pointer; Value: Byte); // @addr $4C9428
-procedure Ex_OKGR_LightBuf_LoadFromPalBuf(Buffer, Source: Pointer; Width, Height, Pitch: Integer; Palette: PColorRGBA); // @addr $4C94AC
-procedure Ex_OKGR_LightBuf_Rotate(Dest, Source, RotationMap: Pointer; Angle: Byte); // @addr $4C9550
-function Ex_OKGR_Planet2_TemplBuild(Source: Pointer; Pitch, Height, TextureWidth, TextureHeight: Integer; var ByteCount: Integer): Pointer; // @addr $4C95E4
-function Ex_OKGR_Planet2_TemplDel(TemplateData: Pointer): Integer; // @addr $4C968C
-procedure Ex_OKGR_Planet2_DrawAndLight_32(Dest: Pointer; DestPitch: Integer; TemplateData, Source: Pointer; SourcePitch, WidthMask, MapOffset: Integer; LightBuffer, Palette: Pointer; X, Y: Integer); // @addr $4C9710
-procedure Ex_OKGR_Planet2_DrawAndLightClip_16(Dest: Pointer; DestPitch: Integer; TemplateData, Source: Pointer; SourcePitch, WidthMask, MapOffset: Integer; LightBuffer, Palette: Pointer; X, Y: Integer; const Clip: TRect); // @addr $4C97C8
-procedure Ex_OKGR_Planet3_DrawAndLight_32(Dest: Pointer; DestPitch: Integer; TemplateData, Source: Pointer; SourcePitch, WidthMask, MapOffset: Integer; LightBuffer, Palette: Pointer; X, Y: Integer); // @addr $4C9888
-procedure Ex_OKGR_Planet3_DrawAndLightClip_16(Dest: Pointer; DestPitch: Integer; TemplateData, Source: Pointer; SourcePitch, WidthMask, MapOffset: Integer; LightBuffer, Palette: Pointer; X, Y: Integer; const Clip: TRect); // @addr $4C9940
-procedure Ex_OKGR_Planet4_DrawAndLight_32(Dest: Pointer; DestPitch: Integer; TemplateData, Source: Pointer; SourcePitch, WidthMask, MapOffset: Integer; LightBuffer, Palette: Pointer; X, Y: Integer); // @addr $4C9A00
-procedure Ex_OKGR_Planet4_DrawAndLightClip_16(Dest: Pointer; DestPitch: Integer; TemplateData, Source: Pointer; SourcePitch, WidthMask, MapOffset: Integer; LightBuffer, Palette: Pointer; X, Y: Integer; const Clip: TRect); // @addr $4C9AB8
-procedure Ex_OKGR_Copy_XY_XY_WORD(Dest: Pointer; DestPitch, DestX, DestY: Integer; Source: Pointer; SourcePitch, SourceX, SourceY, Width, Height: Integer); // @addr $4C9B78
-procedure Ex_OKGR_PalCopy_XY_XY_WORD(Dest: Pointer; DestPitch, DestX, DestY: Integer; Source: Pointer; SourcePitch, SourceX, SourceY: Integer; Palette: Pointer; Width, Height: Integer); // @addr $4C9C24
-procedure Ex_OKGR_CopyTrans_XY_XY_WORD(Dest: Pointer; DestPitch, DestX, DestY: Integer; Source: Pointer; SourcePitch, SourceX, SourceY, Width, Height: Integer; TransparentColor: Word); // @addr $4C9CD8
-procedure Ex_OKGR_CopySingleBuf_XY_XY_WORD(Pixels: Pointer; Pitch, DestX, DestY, SourceX, SourceY, Width, Height: Integer); // @addr $4C9D8C
-procedure Ex_OKGR_HACopy_XY_XY_16(Dest: Pointer; DestPitch, DestX, DestY: Integer; Source: Pointer; SourcePitch, SourceX, SourceY, Width, Height: Integer); // @addr $4C9E38
-procedure Ex_OKGR_StretchGdi_WORD(Dest: Pointer; Width, Height: Cardinal; Source: Pointer; SourceWidth, SourceHeight: Cardinal); // @addr 0x4C9EE4
-procedure Ex_OKGR_Fill_WORD(Pixels: Pointer; Pitch, Width, Height: Integer; Color: Word); // @addr 0x4C9F80
-procedure Ex_OKGF_ConvertRGBto565(Source, Dest: Pointer; Pitch, Width, Height: Integer); // @addr 0x4CA010
-procedure Ex_OKGF_Convert565toRGB(Source: Pointer; SourcePitch: Integer; Dest: Pointer; DestPitch, Width, Height: Integer); // @addr 0x4CA0A8
-procedure Ex_OKGF_Convert565toBGR(Source: Pointer; SourcePitch: Integer; Dest: Pointer; DestPitch, Width, Height: Integer); // @addr $4CA144
-procedure Ex_OKGF_Convert565toBGRA(Source: Pointer; SourcePitch: Integer; Dest: Pointer; DestPitch, Width, Height: Integer); // @addr $4CA1E0
-procedure Ex_OKGF_Convert_8888to565(Dest: Pointer; DestPitch, DestX, DestY: Integer; Source: Pointer; SourcePitch, SourceX, SourceY, Width, Height: Integer); // @addr $4CA27C
-procedure Ex_OKGR_ShrLight_16(Pixels: Pointer; Pitch, Width, Height, Shift: Integer); // @addr 0x4CA328
-procedure Ex_OKGR_ShrLightMask_16(Dest: Pointer; DestPitch: Integer; Source: Pointer; SourcePitch, Width, Height: Integer); // @addr $4CA3BC
-procedure Ex_OKGR_Light_BYTE(Pixels: Pointer; PixelStride, Pitch, Width, Height: Integer; Alpha: Byte); // @addr $4CA458
-procedure Ex_OKGR_Circle_DrawClip_WORD(Pixels: Pointer; Pitch, X, Y, Radius: Integer; Color: Word; const Clip: TRect); // @addr 0x4CA4F0
-procedure Ex_OKGR_Circle_DrawClip_BYTE(Pixels: Pointer; Pitch, X, Y, Radius: Integer; Color: Byte; const Clip: TRect); // @addr 0x4CA594
-procedure Ex_OKGR_Circle_DrawFillClip_WORD(Pixels: Pointer; Pitch, X, Y, Radius: Integer; Color: Word; const Clip: TRect); // @addr 0x4CA638
-procedure Ex_OKGR_Circle_DrawFillClip_BYTE(Pixels: Pointer; Pitch, X, Y, Radius: Integer; Color: Byte; const Clip: TRect); // @addr 0x4CA6E0
-function Ex_OKGR_Line_Clip(var X1, Y1, X2, Y2: Integer; const Clip: TRect): Integer; // @addr $4CA788 @ida "int __userpurge $name@<eax>(int *X1@<eax>, int *Y1@<edx>, int *X2@<ecx>, int *Y2@<^4>, const TRect *Clip@<^0>);"
-procedure DrawGradientLine16Clipped(Pixels: Pointer; Pitch, X1, Y1: Integer; Color1: Cardinal; X2, Y2: Integer; Color2: Cardinal; Clip: TRect); // @addr $4D3B88 @note "Native implementation ignores Pixels/Pitch and draws into ScreenRenderBuffer."
-function Ex_OKGR_LineColor_Clip(var X1, Y1: Integer; var Color1: Cardinal; var X2, Y2: Integer; var Color2: Cardinal; const Clip: TRect): Integer; // @addr $4CA820 @ida "int __userpurge $name@<eax>(int *X1@<eax>, int *Y1@<edx>, unsigned int *Color1@<ecx>, int *X2@<^12>, int *Y2@<^8>, unsigned int *Color2@<^4>, const TRect *Clip@<^0>);"
-procedure Ex_OKGR_Line_Draw_WORD(Pixels: Pointer; Pitch, X1, Y1, X2, Y2: Integer; Color: Word); // @addr 0x4CA8C8
-procedure Ex_OKGR_Line_DrawClip_WORD(Pixels: Pointer; Pitch, X1, Y1, X2, Y2: Integer; Color: Word; const Clip: TRect); // @addr 0x4CA968
-function Ex_OKGR_Line_CopyToBuf_WORD(Dest, Source: Pointer; Pitch, X1, Y1, X2, Y2: Integer): Integer; // @addr $4CAA10
-function Ex_OKGR_Line_CopyFromBuf_WORD(Source, Dest: Pointer; Pitch, X1, Y1, X2, Y2: Integer): Integer; // @addr $4CAABC @note "Restores one saved 16-bit pixel per rasterized line point; returns the pixel count."
-procedure Ex_OKGR_Line_DrawClip_Alpha_16(Pixels: Pointer; Pitch, X1, Y1, X2, Y2: Integer; Color: Word; Alpha: Byte; const Clip: TRect); // @addr 0x4CAB68
-procedure Ex_OKGR_AnimLine_Draw_16(Pixels: Pointer; Pitch, X1, Y1, X2, Y2: Integer; Color: Word; Phase: Integer; const Clip: TRect); // @addr 0x4CAC18
-procedure Ex_OKGR_AnimShadowLine_Draw_16(Pixels: Pointer; Pitch, X1, Y1, X2, Y2: Integer; Color: Word; Phase: Integer; const Clip: TRect; ShadowPixels: Pointer; ShadowPitch: Integer); // @addr 0x4CACC0
-procedure Ex_OKGR_Alpha64Trapezium_16(Pixels: Pointer; Pitch, X1, Y1, X2, Y2, X3, X4: Integer; Color: Word; const Clip: TRect); // @addr 0x4CAD78
-procedure Ex_OKGR_Alpha128Trapezium_16(Pixels: Pointer; Pitch, X1, Y1, X2, Y2, X3, X4: Integer; Color: Word; const Clip: TRect); // @addr 0x4CAE28
-procedure Ex_OKGR_FillTrapezium_DWORD(Pixels: Pointer; Pitch, X1, X2, Y1, X3, X4, Y2: Integer; Color: Cardinal; const Clip: TRect); // @addr 0x4CAED8
-procedure Ex_OKGF_Rescale(Dest: Pointer; Width, Height, DestPitch: Integer; Source: Pointer; SourceWidth, SourceHeight, SourcePitch, BytesPerPixel, Filter: Integer); // @addr 0x4CAF88
-procedure Ex_OKGR_F5_DrawRGBA(Dest: Pointer; Pitch: Integer; Source: Pointer); // @addr $4CB02C
-procedure Ex_OKGR_F6_DrawRGBA(Dest: Pointer; Pitch: Integer; Source: Pointer); // @addr $4CB0B8
+function Ex_OKGF_MulTable256x256: Pointer; // @addr 0x007C0EAC
+function Ex_OKGF_DXVersion: Cardinal; // @addr 0x007C0F20
+procedure Ex_OKGR_AlphaBuf_Draw_RGBA(Dest: Pointer; Pitch: Integer; Source: Pointer); // @addr $7C12B0
+procedure Ex_OKGR_TransAlphaBuf_Draw_RGBA(Dest: Pointer; Pitch: Integer; Source: Pointer); // @addr $7C132C
+procedure Ex_OKGR_AlphaIndexed_Draw_RGBA(Dest: Pointer; Pitch: Integer; Source: Pointer); // @addr $7C13AC
+procedure Ex_OKGR_AlphaIndexed_AlphaDraw_RGBA(Dest: Pointer; Pitch: Integer; Source: Pointer); // @addr $7C142C
+procedure Ex_OKGR_TransBuf_Draw_RGBA(Dest: Pointer; Pitch: Integer; Source: Pointer); // @addr $7C14B0
+procedure Ex_OKGR_TransBuf_DrawClip_WORD(Dest: Pointer; Pitch, X, Y: Integer; Source: Pointer; const Clip: TRect); // @addr $7C152C
+procedure Ex_OKGR_TransBuf_HADrawClip_16(Dest: Pointer; Pitch, X, Y: Integer; Source: Pointer; const Clip: TRect); // @addr $7C15B8
+function Ex_OKGR_TransBuf_Build_WORD(Source: Pointer; Pitch, Width, Height: Integer; Dest: Pointer; TransparentColor: Word): Integer; // @addr $7C1644
+function Ex_OKGR_TransBuf_BuildFromRGBA_16(Source: Pointer; Pitch, Width, Height: Integer; Dest: Pointer): Integer; // @addr $7C16D0
+procedure Ex_OKGR_TransAlphaBuf_DrawClip_WORD(Dest: Pointer; Pitch, X, Y: Integer; Source: Pointer; const Clip: TRect); // @addr $7C175C
+procedure Ex_OKGR_AlphaBuf_DrawClip_16(Dest: Pointer; Pitch, X, Y: Integer; Source: Pointer; const Clip: TRect); // @addr $7C17EC
+function Ex_OKGR_TransAlphaBuf_BuildFromRGBA_16(Source: Pointer; Pitch, Width, Height: Integer; Dest: Pointer): Integer; // @addr $7C1874
+function Ex_OKGR_AlphaBuf_BuildFromRGBA(Source: Pointer; Pitch, Width, Height: Integer; Dest: Pointer): Integer; // @addr $7C1908
+procedure Ex_OKGR_AlphaSimpleBuf_Draw_16(Dest: Pointer; DestPitch, DestX, DestY: Integer; Source: Pointer; SourcePitch, SourceX, SourceY, Width, Height: Integer); // @addr $7C1994
+procedure Ex_OKGR_AlphaSimpleBufPalAlpha_Draw_16(Dest: Pointer; DestPitch, DestX, DestY: Integer; Source: Pointer; SourcePitch, SourceX, SourceY, Width, Height: Integer; Palette: PColorRGBA); // @addr $7C1A30
+procedure Ex_OKGR_MaskBuf_DrawClip_DWORD(Dest: Pointer; Pitch, X, Y: Integer; Source: Pointer; Color: Cardinal; const Clip: TRect); // @addr $7C1AD8
+procedure Ex_OKGR_MaskBuf_DrawClip_WORD(Dest: Pointer; Pitch, X, Y: Integer; Source: Pointer; Color: Word; const Clip: TRect); // @addr $7C1B68
+procedure Ex_OKGR_TransBuf_FillAlphaClip_RGBA(Dest: Pointer; Pitch, X, Y: Integer; Source: Pointer; const Clip: TRect; Color: Cardinal); // @addr $7C1BF8
+procedure Ex_OKGR_TransBuf_FillAlphaClip_16(Dest: Pointer; Pitch, X, Y: Integer; Source: Pointer; const Clip: TRect; Color: Word); // @addr $7C1C8C
+procedure Ex_OKGR_AlphaIndexed_CopyDrawClip_WORD(Dest: Pointer; Pitch, X, Y: Integer; Source: Pointer; const Clip: TRect); // @addr $7C1D20
+procedure Ex_OKGR_AlphaIndexed_CopyDrawClip_Alpha_16(Dest: Pointer; Pitch, X, Y: Integer; Source: Pointer; const Clip: TRect; Alpha: Byte); // @addr $7C1DB4
+procedure Ex_OKGR_AlphaIndexed_AlphaDrawClip_16(Dest: Pointer; Pitch, X, Y: Integer; Source: Pointer; const Clip: TRect); // @addr $7C1E54
+procedure Ex_OKGR_AlphaIndexed_AlphaDrawClip_Alpha_16(Dest: Pointer; Pitch, X, Y: Integer; Source: Pointer; const Clip: TRect; Alpha: Byte); // @addr $7C1EE4
+function Ex_OKGR_RotateBuf_Build(Width, Height, SourceWidth, SourceHeight, CenterX, CenterY: Integer): Pointer; // @addr $7C1F84
+procedure Ex_OKGR_RotateBuf_Free(Buffer: Pointer); // @addr $7C200C
+procedure Ex_OKGR_RotateBuf_Size(X, Y: Integer; Angle: Byte; RotationMap: Pointer; var Bounds: TRect); // @addr $7C2080
+procedure Ex_OKGR_RotateBuf_Draw_DWORD(Dest: Pointer; DestPitch: Integer; Source: Pointer; SourcePitch, CenterX, CenterY: Integer; Angle: Byte; RotationMap: Pointer); // @addr $7C2100
+procedure Ex_OKGR_RotateBuf_Draw_BYTE(Dest: Pointer; DestPitch: Integer; Source: Pointer; SourcePitch, Width, Height: Integer; Angle: Byte; RotationMap: Pointer); // @addr $7C2194
+procedure Ex_OKGR_RotateBuf_DrawTransClip_WORD(Dest: Pointer; DestPitch: Integer; Source: Pointer; SourcePitch, CenterX, CenterY: Integer; Angle: Byte; RotationMap: Pointer; const Clip: TRect); // @addr $7C2228
+function Ex_OKGR_LightBuf_Create(Width, Height: Integer): Pointer; // @addr $7C22C8
+procedure Ex_OKGR_LightBuf_Destroy(Buffer: Pointer); // @addr $7C2340
+procedure Ex_OKGR_LightBuf_SetSme(Buffer: Pointer; X, Y: Integer); // @addr $7C23B4
+procedure Ex_OKGR_LightBuf_Init(Buffer: Pointer; Value: Byte); // @addr $7C242C
+procedure Ex_OKGR_LightBuf_LoadFromPalBuf(Buffer, Source: Pointer; Width, Height, Pitch: Integer; Palette: PColorRGBA); // @addr $7C24A0
+procedure Ex_OKGR_LightBuf_Rotate(Dest, Source, RotationMap: Pointer; Angle: Byte); // @addr $7C252C
+function Ex_OKGR_Planet2_TemplBuild(Source: Pointer; Pitch, Height, TextureWidth, TextureHeight: Integer; var ByteCount: Integer): Pointer; // @addr $7C25AC
+function Ex_OKGR_Planet2_TemplDel(TemplateData: Pointer): Integer; // @addr $7C2638
+procedure Ex_OKGR_Planet2_DrawAndLight_32(Dest: Pointer; DestPitch: Integer; TemplateData, Source: Pointer; SourcePitch, WidthMask, MapOffset: Integer; LightBuffer, Palette: Pointer; X, Y: Integer); // @addr $7C26AC
+procedure Ex_OKGR_Planet2_DrawAndLightClip_16(Dest: Pointer; DestPitch: Integer; TemplateData, Source: Pointer; SourcePitch, WidthMask, MapOffset: Integer; LightBuffer, Palette: Pointer; X, Y: Integer; const Clip: TRect); // @addr $7C274C
+procedure Ex_OKGR_Planet3_DrawAndLight_32(Dest: Pointer; DestPitch: Integer; TemplateData, Source: Pointer; SourcePitch, WidthMask, MapOffset: Integer; LightBuffer, Palette: Pointer; X, Y: Integer); // @addr $7C27F4
+procedure Ex_OKGR_Planet3_DrawAndLightClip_16(Dest: Pointer; DestPitch: Integer; TemplateData, Source: Pointer; SourcePitch, WidthMask, MapOffset: Integer; LightBuffer, Palette: Pointer; X, Y: Integer; const Clip: TRect); // @addr $7C2894
+procedure Ex_OKGR_Planet4_DrawAndLight_32(Dest: Pointer; DestPitch: Integer; TemplateData, Source: Pointer; SourcePitch, WidthMask, MapOffset: Integer; LightBuffer, Palette: Pointer; X, Y: Integer); // @addr $7C293C
+procedure Ex_OKGR_Planet4_DrawAndLightClip_16(Dest: Pointer; DestPitch: Integer; TemplateData, Source: Pointer; SourcePitch, WidthMask, MapOffset: Integer; LightBuffer, Palette: Pointer; X, Y: Integer; const Clip: TRect); // @addr $7C29DC
+procedure Ex_OKGR_Copy_XY_XY_WORD(Dest: Pointer; DestPitch, DestX, DestY: Integer; Source: Pointer; SourcePitch, SourceX, SourceY, Width, Height: Integer); // @addr $7C2A84
+procedure Ex_OKGR_PalCopy_XY_XY_WORD(Dest: Pointer; DestPitch, DestX, DestY: Integer; Source: Pointer; SourcePitch, SourceX, SourceY: Integer; Palette: Pointer; Width, Height: Integer); // @addr $7C2B18
+procedure Ex_OKGR_CopyTrans_XY_XY_WORD(Dest: Pointer; DestPitch, DestX, DestY: Integer; Source: Pointer; SourcePitch, SourceX, SourceY, Width, Height: Integer; TransparentColor: Word); // @addr $7C2BB4
+procedure Ex_OKGR_CopySingleBuf_XY_XY_WORD(Pixels: Pointer; Pitch, DestX, DestY, SourceX, SourceY, Width, Height: Integer); // @addr $7C2C54
+procedure Ex_OKGR_HACopy_XY_XY_16(Dest: Pointer; DestPitch, DestX, DestY: Integer; Source: Pointer; SourcePitch, SourceX, SourceY, Width, Height: Integer); // @addr $7C2CE8
+procedure Ex_OKGR_StretchGdi_WORD(Dest: Pointer; Width, Height: Cardinal; Source: Pointer; SourceWidth, SourceHeight: Cardinal); // @addr 0x007C2D7C
+procedure Ex_OKGR_Fill_WORD(Pixels: Pointer; Pitch, Width, Height: Integer; Color: Word); // @addr 0x007C2E00
+procedure Ex_OKGF_ConvertRGBto565(Source, Dest: Pointer; Pitch, Width, Height: Integer); // @addr 0x007C2E7C
+procedure Ex_OKGF_Convert565toRGB(Source: Pointer; SourcePitch: Integer; Dest: Pointer; DestPitch, Width, Height: Integer); // @addr 0x007C2EFC
+procedure Ex_OKGF_Convert565toBGR(Source: Pointer; SourcePitch: Integer; Dest: Pointer; DestPitch, Width, Height: Integer); // @addr $7C2F80
+procedure Ex_OKGF_Convert565toBGRA(Source: Pointer; SourcePitch: Integer; Dest: Pointer; DestPitch, Width, Height: Integer); // @addr $7C3004
+procedure Ex_OKGF_Convert_8888to565(Dest: Pointer; DestPitch, DestX, DestY: Integer; Source: Pointer; SourcePitch, SourceX, SourceY, Width, Height: Integer); // @addr $7C3088
+procedure Ex_OKGR_ShrLight_16(Pixels: Pointer; Pitch, Width, Height, Shift: Integer); // @addr 0x007C311C
+procedure Ex_OKGR_ShrLightMask_16(Dest: Pointer; DestPitch: Integer; Source: Pointer; SourcePitch, Width, Height: Integer); // @addr $7C3198
+procedure Ex_OKGR_Light_BYTE(Pixels: Pointer; PixelStride, Pitch, Width, Height: Integer; Alpha: Byte); // @addr $7C321C
+procedure Ex_OKGR_Circle_DrawClip_WORD(Pixels: Pointer; Pitch, X, Y, Radius: Integer; Color: Word; const Clip: TRect); // @addr 0x007C32A0
+procedure Ex_OKGR_Circle_DrawClip_BYTE(Pixels: Pointer; Pitch, X, Y, Radius: Integer; Color: Byte; const Clip: TRect); // @addr 0x007C3330
+procedure Ex_OKGR_Circle_DrawFillClip_WORD(Pixels: Pointer; Pitch, X, Y, Radius: Integer; Color: Word; const Clip: TRect); // @addr 0x007C33C0
+procedure Ex_OKGR_Circle_DrawFillClip_BYTE(Pixels: Pointer; Pitch, X, Y, Radius: Integer; Color: Byte; const Clip: TRect); // @addr 0x007C3454
+function Ex_OKGR_Line_Clip(var X1, Y1, X2, Y2: Integer; const Clip: TRect): Integer; // @addr $7C34E8 @ida "int __userpurge $name@<eax>(int *X1@<eax>, int *Y1@<edx>, int *X2@<ecx>, int *Y2@<^4>, const TRect *Clip@<^0>);"
+procedure DrawGradientLine16Clipped(Pixels: Pointer; Pitch, X1, Y1: Integer; Color1: Cardinal; X2, Y2: Integer; Color2: Cardinal; Clip: TRect); // @addr $7CC1C0 @note "Native implementation ignores Pixels/Pitch and draws into ScreenRenderBuffer."
+function Ex_OKGR_LineColor_Clip(var X1, Y1: Integer; var Color1: Cardinal; var X2, Y2: Integer; var Color2: Cardinal; const Clip: TRect): Integer; // @addr $7C3564 @ida "int __userpurge $name@<eax>(int *X1@<eax>, int *Y1@<edx>, unsigned int *Color1@<ecx>, int *X2@<^12>, int *Y2@<^8>, unsigned int *Color2@<^4>, const TRect *Clip@<^0>);"
+procedure Ex_OKGR_Line_Draw_WORD(Pixels: Pointer; Pitch, X1, Y1, X2, Y2: Integer; Color: Word); // @addr 0x007C35F0
+procedure Ex_OKGR_Line_DrawClip_WORD(Pixels: Pointer; Pitch, X1, Y1, X2, Y2: Integer; Color: Word; const Clip: TRect); // @addr 0x007C367C
+function Ex_OKGR_Line_CopyToBuf_WORD(Dest, Source: Pointer; Pitch, X1, Y1, X2, Y2: Integer): Integer; // @addr $7C3710
+function Ex_OKGR_Line_CopyFromBuf_WORD(Source, Dest: Pointer; Pitch, X1, Y1, X2, Y2: Integer): Integer; // @addr $7C37A0 @note "Restores one saved 16-bit pixel per rasterized line point; returns the pixel count."
+procedure Ex_OKGR_Line_DrawClip_Alpha_16(Pixels: Pointer; Pitch, X1, Y1, X2, Y2: Integer; Color: Word; Alpha: Byte; const Clip: TRect); // @addr 0x007C3830
+procedure Ex_OKGR_AnimLine_Draw_16(Pixels: Pointer; Pitch, X1, Y1, X2, Y2: Integer; Color: Word; Phase: Integer; const Clip: TRect); // @addr 0x007C38CC
+procedure Ex_OKGR_AnimShadowLine_Draw_16(Pixels: Pointer; Pitch, X1, Y1, X2, Y2: Integer; Color: Word; Phase: Integer; const Clip: TRect; ShadowPixels: Pointer; ShadowPitch: Integer); // @addr 0x007C3960
+procedure Ex_OKGR_Alpha64Trapezium_16(Pixels: Pointer; Pitch, X1, Y1, X2, Y2, X3, X4: Integer; Color: Word; const Clip: TRect); // @addr 0x007C3A04
+procedure Ex_OKGR_Alpha128Trapezium_16(Pixels: Pointer; Pitch, X1, Y1, X2, Y2, X3, X4: Integer; Color: Word; const Clip: TRect); // @addr 0x007C3AA0
+procedure Ex_OKGR_FillTrapezium_DWORD(Pixels: Pointer; Pitch, X1, X2, Y1, X3, X4, Y2: Integer; Color: Cardinal; const Clip: TRect); // @addr 0x007C3B3C
+procedure Ex_OKGF_Rescale(Dest: Pointer; Width, Height, DestPitch: Integer; Source: Pointer; SourceWidth, SourceHeight, SourcePitch, BytesPerPixel, Filter: Integer); // @addr 0x007C3BD4
+procedure Ex_OKGR_F5_DrawRGBA(Dest: Pointer; Pitch: Integer; Source: Pointer); // @addr $7C3C60
+procedure Ex_OKGR_F6_DrawRGBA(Dest: Pointer; Pitch: Integer; Source: Pointer); // @addr $7C3CD4
 
-function GiScalePixels(Value: Integer): Integer; // @addr 0x4D3CC0 @note "Identity function in this binary."
-function GiScalePixelsEx(Value, AlternateValue: Integer): Integer; // @addr 0x4D3CD8 @note "Returns Value; AlternateValue is unused in this binary."
+function GiScalePixels(Value: Integer): Integer; // @addr 0x007CC2C0 @note "Identity function in this binary."
+function GiScalePixelsEx(Value, AlternateValue: Integer): Integer; // @addr 0x007CC2C4 @note "Returns Value; AlternateValue is unused in this binary."
 
-procedure RaiseWideMessage(const Message: WideString); // @addr 0x4D44E0 @note "Converts the borrowed UTF-16 message to AnsiString and raises Exception."
+procedure RaiseWideMessage(const Message: WideString); // @addr 0x007CC9E4 @note "Converts the borrowed UTF-16 message to AnsiString and raises Exception."
 
-procedure DrawTransparentBuffer16(Dest: Pointer; Pitch, X, Y: Integer; Source: Pointer; Clip: TRect; HalfAlpha: Boolean); // @addr $4D2EFC @ida "void __userpurge $name(void *Dest@<eax>, int Pitch@<edx>, int X@<ecx>, int Y@<^12>, void *Source@<^8>, TRect *Clip@<^4>, unsigned __int8 HalfAlpha@<^0>);"
-procedure CopyPalettedBuffer16Clipped(Dest: Pointer; DestPitch, X, Y: Integer; Source, Palette: Pointer; SourcePitch, Width, Height: Integer; Clip: TRect); // @addr $4D2F78
-procedure CopyBuffer16Clipped(Dest: Pointer; DestPitch, X, Y: Integer; Source: Pointer; SourcePitch, Width, Height: Integer; Clip: TRect; UnusedOption: Boolean); // @addr $4D31DC @ida "void __userpurge $name(void *Dest@<eax>, int DestPitch@<edx>, int X@<ecx>, int Y@<^24>, void *Source@<^20>, int SourcePitch@<^16>, int Width@<^12>, int Height@<^8>, TRect *Clip@<^4>, unsigned __int8 UnusedOption@<^0>);"
-procedure DrawAlphaBuffer16Clipped(Dest: Pointer; DestPitch, X, Y: Integer; Source: Pointer; SourcePitch, Width, Height: Integer; Clip: TRect); // @addr $4D352C
-procedure ExpandPaletteToBgra(Dest: Pointer; DestPitch: Integer; Width, Height: Cardinal; Source: Pointer; SourcePitch: Integer; Palette: Pointer); // @addr $4D3758
+procedure DrawTransparentBuffer16(Dest: Pointer; Pitch, X, Y: Integer; Source: Pointer; Clip: TRect; HalfAlpha: Boolean); // @addr $7CB6FC @ida "void __userpurge $name(void *Dest@<eax>, int Pitch@<edx>, int X@<ecx>, int Y@<^12>, void *Source@<^8>, TRect *Clip@<^4>, unsigned __int8 HalfAlpha@<^0>);"
+procedure CopyPalettedBuffer16Clipped(Dest: Pointer; DestPitch: Cardinal; X, Y: Integer; Source, Palette: Pointer; SourcePitch, Width, Height: Cardinal; Clip: TRect); // @addr $7CB758
+procedure CopyBuffer16Clipped(Dest: Pointer; DestPitch: Cardinal; X, Y: Integer; Source: Pointer; SourcePitch, Width, Height: Cardinal; Clip: TRect; UnusedOption: Boolean); // @addr $7CB960 @ida "void __userpurge $name(void *Dest@<eax>, unsigned int DestPitch@<edx>, int X@<ecx>, int Y@<^24>, void *Source@<^20>, unsigned int SourcePitch@<^16>, unsigned int Width@<^12>, unsigned int Height@<^8>, TRect *Clip@<^4>, unsigned __int8 UnusedOption@<^0>);"
+procedure DrawAlphaBuffer16Clipped(Dest: Pointer; DestPitch: Cardinal; X, Y: Integer; Source: Pointer; SourcePitch, Width, Height: Cardinal; Clip: TRect); // @addr $7CBC28
+procedure ExpandPaletteToBgra(Dest: Pointer; DestPitch: Integer; Width, Height: Cardinal; Source: Pointer; SourcePitch: Integer; Palette: Pointer); // @addr $7CBDE8
 
-function GetStyleColorGI(StyleName: WideString; DefaultRed, DefaultGreen, DefaultBlue: Integer): Cardinal; // @addr 0x4D4D78 @note "Uses Data.StyleColor from Main.dat and the current pixel format. Missing entries use the defaults; malformed configured RGB text may raise."
-function GetStyleColorTagGI(StyleName: WideString; DefaultRed, DefaultGreen, DefaultBlue: Integer): WideString; // @addr 0x4D4ECC @note "Returns a complete opening <color=...> tag. Configured Data.StyleColor text is inserted verbatim; missing entries use the default RGB values."
+function GetStyleColorGI(StyleName: WideString; DefaultRed, DefaultGreen, DefaultBlue: Integer): Cardinal; // @addr 0x007CD24C @note "Uses Data.StyleColor from Main.dat and the current pixel format. Missing entries use the defaults; malformed configured RGB text may raise."
+function GetStyleColorTagGI(StyleName: WideString; DefaultRed, DefaultGreen, DefaultBlue: Integer): WideString; // @addr 0x007CD38C @note "Returns a complete opening <color=...> tag. Configured Data.StyleColor text is inserted verbatim; missing entries use the default RGB values."
 
-procedure CopyGraphBuffer16Clipped(Dest: Pointer; DestPitch, X, Y: Integer; Source: TGraphBufGR; Clip: TRect; HalfAlpha, UnusedOption: Boolean); // @addr $4D3080
+procedure CopyGraphBuffer16Clipped(Dest: Pointer; DestPitch, X, Y: Integer; Source: TGraphBufGR; Clip: TRect; HalfAlpha, UnusedOption: Boolean); // @addr $7CB834
 
-procedure DrawAlphaGraphBuffer16Clipped(Dest: Pointer; DestPitch, X, Y: Integer; Source: TGraphBufGR; Clip: TRect); // @addr $4D3408
+procedure DrawAlphaGraphBuffer16Clipped(Dest: Pointer; DestPitch, X, Y: Integer; Source: TGraphBufGR; Clip: TRect); // @addr $7CBB30
 
-procedure CopyTransparentGraphBuffer16Clipped(Dest: Pointer; DestPitch, X, Y: Integer; Source: TGraphBufGR; Clip: TRect; TransparentColor: Word); // @addr $4D32E0
+procedure CopyTransparentGraphBuffer16Clipped(Dest: Pointer; DestPitch, X, Y: Integer; Source: TGraphBufGR; Clip: TRect; TransparentColor: Word); // @addr $7CBA34
 
-procedure DrawPaletteAlphaBuffer16Clipped(Dest: Pointer; DestPitch, X, Y: Integer; Source: TGraphBufPalGR; Clip: TRect); // @addr $4D3630
+procedure DrawPaletteAlphaBuffer16Clipped(Dest: Pointer; DestPitch: Cardinal; X, Y: Integer; Source: TGraphBufPalGR; Clip: TRect); // @addr $7CBCFC
 
-procedure BlendPaletteBuffer16Clipped(Dest: Pointer; DestPitch, X, Y: Integer; Source: TGraphBufPalGR; Clip: TRect); // @addr $4D383C
+procedure BlendPaletteBuffer16Clipped(Dest: Pointer; DestPitch: Cardinal; X, Y: Integer; Source: TGraphBufPalGR; Clip: TRect); // @addr $7CBEB0
 
-function GetClipboardWideText: WideString; // @addr $4D536C
-procedure SetClipboardWideText(Text: WideString); // @addr $4D53EC
-procedure WriteTextFileThreadSafe(FileName, Text: AnsiString); // @addr $4D3F00
+function GetClipboardWideText: WideString; // @addr $7CD804
+procedure SetClipboardWideText(Text: WideString); // @addr $7CD880
+procedure WriteTextFileThreadSafe(FileName, Text: AnsiString); // @addr $7CC4A0
 
-function ComputeMachineFingerprintCRC: Cardinal; // @addr $4D51D4 CRC32 of the C: volume serial and ANSI processor name. Native code ignores volume-query failure.
+function ComputeMachineFingerprintCRC: Cardinal; // @addr $7CD688 CRC32 of the C: volume serial and ANSI processor name. Native code ignores volume-query failure.
 
 var
-  RuntimeActive: Boolean; // @addr $889EC4 @note "Message pump returns without sleeping when active; cleared during device loss."
-  VSyncEnabled: Boolean; // @addr $889EC5
-  PathGrowEnabled: Boolean; // @addr $889EC6 @note "User setting PathGrow; permits extending the shared path-node pool."
-  ShowSystemMouse: Boolean; // @addr $889EC7 @note "User setting ShowSystemMouse; uses Windows cursor handles instead of drawing the image child."
-  ScreenRenderBuffer: TGraphBufGR; // @addr 0x889EC8
-  RenderScratchBuffer: TGraphBufGR; // @addr $889ECC
-  AuxRenderBuffer: TGraphBufGR; // @addr $889ED0  Second shared scratch buffer, also used for captured screen backgrounds.
-  SelectedLanguage: WideString; // @addr $889ED4
-  RequestedLanguage: WideString; // @addr $889ED8
-  AvailableLanguageCodes: WideString; // @addr $889EDC
-  OverrideGameUserDirectory: WideString; // @addr $889EE0
+  RuntimeActive: Boolean; // @addr $81CF38 @note "Message pump returns without sleeping when active; cleared during device loss."
+  VSyncEnabled: Boolean; // @addr $81CF39
+  PathGrowEnabled: Boolean; // @addr $81CF3A @note "User setting PathGrow; permits extending the shared path-node pool."
+  ShowSystemMouse: Boolean; // @addr $81CF3B @note "User setting ShowSystemMouse; uses Windows cursor handles instead of drawing the image child."
+  ScreenRenderBuffer: TGraphBufGR; // @addr 0x0081CF3C
+  RenderScratchBuffer: TGraphBufGR; // @addr $81CF40
+  AuxRenderBuffer: TGraphBufGR; // @addr $81CF44  Second shared scratch buffer, also used for captured screen backgrounds.
+  SelectedLanguage: WideString; // @addr $81CF48
+  RequestedLanguage: WideString; // @addr $81CF4C
+  AvailableLanguageCodes: WideString; // @addr $81CF50
+  OverrideGameUserDirectory: WideString; // @addr $81CF54
 var
-  CurrentPixelFormat: TPixelFormatGR; // @addr $889EE4
-  GameScreenWidth: Integer; // @addr $889EE8
-  GameScreenHeight: Integer; // @addr $889EEC
-  PresentationWidth: Integer; // @addr $889EF0
-  PresentationHeight: Integer; // @addr $889EF4
-  ViewportOffset: TPoint; // @addr $889EF8
-  AlternateViewportEnabled: Boolean; // @addr $889F00  Enables scaled or panned software presentation and mouse-coordinate conversion.
-  GameScreenRect: TRect; // @addr $889F04
-  PresentationRect: TRect; // @addr $889F14
-  ScrollInteriorRect: TRect; // @addr $889F24
-  MainWindowHandle: Cardinal; // @addr 0x889F34
-  WideCaseTable: array of TWideCasePair; // @addr 0x889F38
+  CurrentPixelFormat: TPixelFormatGR; // @addr $81CF58
+  GameScreenWidth: Cardinal; // @addr $81CF5C
+  GameScreenHeight: Cardinal; // @addr $81CF60
+  PresentationWidth: Integer; // @addr $81CF64
+  PresentationHeight: Integer; // @addr $81CF68
+  ViewportOffset: TPoint; // @addr $81CF6C
+  AlternateViewportEnabled: Boolean; // @addr $81CF74  Enables scaled or panned software presentation and mouse-coordinate conversion.
+  GameScreenRect: TRect; // @addr $81CF78
+  PresentationRect: TRect; // @addr $81CF88
+  ScrollInteriorRect: TRect; // @addr $81CF98
+  MainWindowHandle: Cardinal; // @addr 0x0081CFA8
+  WideCaseTable: array of TWideCasePair; // @addr 0x0081CFAC
 
 function OKGF_ZLib_Compress(Dest, Source: Pointer; SourceSize, Mode: Integer): Integer; stdcall;
-  external 'ZLib.dll' name 'OKGF_ZLib_Compress'; // @addr 0x4C6134
+  external 'ZLib.dll' name 'OKGF_ZLib_Compress'; // @addr 0x007BF8DC
 function OKGF_ZLib_UnCompress(Dest: Pointer; DestCapacity: Integer; Source: Pointer; SourceSize: Integer): Integer; stdcall;
-  external 'ZLib.dll' name 'OKGF_ZLib_UnCompress'; // @addr 0x4C613C
+  external 'ZLib.dll' name 'OKGF_ZLib_UnCompress'; // @addr 0x007BF8E4
 
 function GlobalMemoryStatusEx(var Status: TMemoryStatusEx): LongBool; stdcall;
-  external 'kernel32' name 'GlobalMemoryStatusEx'; // @addr 0x4C6144
+  external 'kernel32' name 'GlobalMemoryStatusEx'; // @addr 0x007BF8EC
 
 function OKGF_MulTable256x256: Pointer; cdecl;
-  external 'okgf.dll' name 'OKGF_MulTable256x256'; // @addr $4C614C
+  external 'okgf.dll' name 'OKGF_MulTable256x256'; // @addr $7BF8F4
 
 function OKGF_DXVersion: Cardinal; cdecl;
-  external 'okgf.dll' name 'DXVersion'; // @addr $4C6154
+  external 'okgf.dll' name 'DXVersion'; // @addr $7BF8FC
 
-function OKGF_ReadStart_Buf(Source: Pointer; SourceSize: Integer; out Width, Height: Integer): POkgfReadContext; cdecl;
-  external 'okgf.dll' name 'OKGF_ReadStart_Buf'; // @addr $4C615C
+function OKGF_ReadStart_Buf(Source: Pointer; SourceSize: Integer; out Width, Height: Cardinal): POkgfReadContext; cdecl;
+  external 'okgf.dll' name 'OKGF_ReadStart_Buf'; // @addr $7BF904
 
 function OKGF_Read(Context: POkgfReadContext; Pixels: Pointer; PitchBytes: Integer; RedMask, GreenMask, BlueMask, AlphaMask: Cardinal; BytesPerPixel: Integer): Integer; cdecl;
-  external 'okgf.dll' name 'OKGF_Read'; // @addr $4C6164
+  external 'okgf.dll' name 'OKGF_Read'; // @addr $7BF90C
 
 function OKGF_ReadStartPal_Buf(Source: Pointer; SourceSize: Integer; out Width, Height, PaletteCount, BytesPerPixel: Integer): POkgfReadContext; cdecl;
-  external 'okgf.dll' name 'OKGF_ReadStartPal_Buf'; // @addr $4C616C
+  external 'okgf.dll' name 'OKGF_ReadStartPal_Buf'; // @addr $7BF914
 
 function OKGF_ReadPal(Context: POkgfReadContext; Pixels: Pointer; PitchBytes: Integer; Palette: PColorRGBA): Integer; cdecl;
-  external 'okgf.dll' name 'OKGF_ReadPal'; // @addr $4C6174
+  external 'okgf.dll' name 'OKGF_ReadPal'; // @addr $7BF91C
 
 function OKGF_Write_PNG_File(FileName: PAnsiChar; Pixels: Pointer; PitchBytes, Width, Height, HasAlpha, SwapRedBlue: Integer): Integer; cdecl;
-  external 'okgf.dll' name 'OKGF_Write_PNG_File'; // @addr $4C617C
+  external 'okgf.dll' name 'OKGF_Write_PNG_File'; // @addr $7BF924
 
 function OKGF_Write_BMP_File(FileName: PAnsiChar; Pixels: Pointer; PitchBytes, BitsPerPixel: Integer; RedMask, GreenMask, BlueMask, AlphaMask: Cardinal; Width, Height: Integer): Integer; cdecl;
-  external 'okgf.dll' name 'OKGF_Write_BMP_File'; // @addr $4C6184
+  external 'okgf.dll' name 'OKGF_Write_BMP_File'; // @addr $7BF92C
 
 procedure OKGR_AlphaBuf_Draw_RGBA(Dest: Pointer; Pitch: Integer; Source: Pointer); cdecl;
-  external 'okgf.dll' name 'OKGR_AlphaBuf_Draw_RGBA'; // @addr $4C618C
+  external 'okgf.dll' name 'OKGR_AlphaBuf_Draw_RGBA'; // @addr $7BF934
 
 procedure OKGR_TransAlphaBuf_Draw_RGBA(Dest: Pointer; Pitch: Integer; Source: Pointer); cdecl;
-  external 'okgf.dll' name 'OKGR_TransAlphaBuf_Draw_RGBA'; // @addr $4C6194
+  external 'okgf.dll' name 'OKGR_TransAlphaBuf_Draw_RGBA'; // @addr $7BF93C
 
 procedure OKGR_AlphaIndexed_Draw_RGBA(Dest: Pointer; Pitch: Integer; Source: Pointer); cdecl;
-  external 'okgf.dll' name 'OKGR_AlphaIndexed_Draw_RGBA'; // @addr $4C619C
+  external 'okgf.dll' name 'OKGR_AlphaIndexed_Draw_RGBA'; // @addr $7BF944
 
 procedure OKGR_AlphaIndexed_AlphaDraw_RGBA(Dest: Pointer; Pitch: Integer; Source: Pointer); cdecl;
-  external 'okgf.dll' name 'OKGR_AlphaIndexed_AlphaDraw_RGBA'; // @addr $4C61A4
+  external 'okgf.dll' name 'OKGR_AlphaIndexed_AlphaDraw_RGBA'; // @addr $7BF94C
 
 procedure OKGR_TransBuf_Draw_RGBA(Dest: Pointer; Pitch: Integer; Source: Pointer); cdecl;
-  external 'okgf.dll' name 'OKGR_TransBuf_Draw_RGBA'; // @addr $4C61AC
+  external 'okgf.dll' name 'OKGR_TransBuf_Draw_RGBA'; // @addr $7BF954
 
 procedure OKGR_TransBuf_DrawClip_WORD(Dest: Pointer; Pitch, X, Y: Integer; Source: Pointer; const Clip: TRect); cdecl;
-  external 'okgf.dll' name 'OKGR_TransBuf_DrawClip_WORD'; // @addr $4C61B4
+  external 'okgf.dll' name 'OKGR_TransBuf_DrawClip_WORD'; // @addr $7BF95C
 
 procedure OKGR_TransBuf_HADrawClip_16(Dest: Pointer; Pitch, X, Y: Integer; Source: Pointer; const Clip: TRect); cdecl;
-  external 'okgf.dll' name 'OKGR_TransBuf_HADrawClip_16'; // @addr $4C61BC
+  external 'okgf.dll' name 'OKGR_TransBuf_HADrawClip_16'; // @addr $7BF964
 
 function OKGR_TransBuf_Build_WORD(Source: Pointer; Pitch, Width, Height: Integer; Dest: Pointer; TransparentColor: Word): Integer; cdecl;
-  external 'okgf.dll' name 'OKGR_TransBuf_Build_WORD'; // @addr $4C61C4
+  external 'okgf.dll' name 'OKGR_TransBuf_Build_WORD'; // @addr $7BF96C
 
 function OKGR_TransBuf_BuildFromRGBA_16(Source: Pointer; Pitch, Width, Height: Integer; Dest: Pointer): Integer; cdecl;
-  external 'okgf.dll' name 'OKGR_TransBuf_BuildFromRGBA_16'; // @addr $4C61CC
+  external 'okgf.dll' name 'OKGR_TransBuf_BuildFromRGBA_16'; // @addr $7BF974
 
 procedure OKGR_TransAlphaBuf_DrawClip_WORD(Dest: Pointer; Pitch, X, Y: Integer; Source: Pointer; const Clip: TRect); cdecl;
-  external 'okgf.dll' name 'OKGR_TransAlphaBuf_DrawClip_WORD'; // @addr $4C61D4
+  external 'okgf.dll' name 'OKGR_TransAlphaBuf_DrawClip_WORD'; // @addr $7BF97C
 
 procedure OKGR_AlphaBuf_DrawClip_16(Dest: Pointer; Pitch, X, Y: Integer; Source: Pointer; const Clip: TRect); cdecl;
-  external 'okgf.dll' name 'OKGR_AlphaBuf_DrawClip_16'; // @addr $4C61DC
+  external 'okgf.dll' name 'OKGR_AlphaBuf_DrawClip_16'; // @addr $7BF984
 
 function OKGR_TransAlphaBuf_BuildFromRGBA_16(Source: Pointer; Pitch, Width, Height: Integer; Dest: Pointer): Integer; cdecl;
-  external 'okgf.dll' name 'OKGR_TransAlphaBuf_BuildFromRGBA_16'; // @addr $4C61E4
+  external 'okgf.dll' name 'OKGR_TransAlphaBuf_BuildFromRGBA_16'; // @addr $7BF98C
 
 function OKGR_AlphaBuf_BuildFromRGBA(Source: Pointer; Pitch, Width, Height: Integer; Dest: Pointer): Integer; cdecl;
-  external 'okgf.dll' name 'OKGR_AlphaBuf_BuildFromRGBA'; // @addr $4C61EC
+  external 'okgf.dll' name 'OKGR_AlphaBuf_BuildFromRGBA'; // @addr $7BF994
 
 procedure OKGR_AlphaSimpleBuf_Draw_16(Dest: Pointer; DestPitch, DestX, DestY: Integer; Source: Pointer; SourcePitch, SourceX, SourceY, Width, Height: Integer); cdecl;
-  external 'okgf.dll' name 'OKGR_AlphaSimpleBuf_Draw_16'; // @addr $4C61F4
+  external 'okgf.dll' name 'OKGR_AlphaSimpleBuf_Draw_16'; // @addr $7BF99C
 
 procedure OKGR_AlphaSimpleBufPalAlpha_Draw_16(Dest: Pointer; DestPitch, DestX, DestY: Integer; Source: Pointer; SourcePitch, SourceX, SourceY, Width, Height: Integer; Palette: PColorRGBA); cdecl;
-  external 'okgf.dll' name 'OKGR_AlphaSimpleBufPalAlpha_Draw_16'; // @addr $4C61FC
+  external 'okgf.dll' name 'OKGR_AlphaSimpleBufPalAlpha_Draw_16'; // @addr $7BF9A4
 
 procedure OKGR_MaskBuf_DrawClip_DWORD(Dest: Pointer; Pitch, X, Y: Integer; Source: Pointer; Color: Cardinal; const Clip: TRect); cdecl;
-  external 'okgf.dll' name 'OKGR_MaskBuf_DrawClip_DWORD'; // @addr $4C6204
+  external 'okgf.dll' name 'OKGR_MaskBuf_DrawClip_DWORD'; // @addr $7BF9AC
 
 procedure OKGR_MaskBuf_DrawClip_WORD(Dest: Pointer; Pitch, X, Y: Integer; Source: Pointer; Color: Word; const Clip: TRect); cdecl;
-  external 'okgf.dll' name 'OKGR_MaskBuf_DrawClip_WORD'; // @addr $4C620C
+  external 'okgf.dll' name 'OKGR_MaskBuf_DrawClip_WORD'; // @addr $7BF9B4
 
 procedure OKGR_TransBuf_FillAlphaClip_RGBA(Dest: Pointer; Pitch, X, Y: Integer; Source: Pointer; const Clip: TRect; Color: Cardinal); cdecl;
-  external 'okgf.dll' name 'OKGR_TransBuf_FillAlphaClip_RGBA'; // @addr $4C6214
+  external 'okgf.dll' name 'OKGR_TransBuf_FillAlphaClip_RGBA'; // @addr $7BF9BC
 
 procedure OKGR_TransBuf_FillAlphaClip_16(Dest: Pointer; Pitch, X, Y: Integer; Source: Pointer; const Clip: TRect; Color: Word); cdecl;
-  external 'okgf.dll' name 'OKGR_TransBuf_FillAlphaClip_16'; // @addr $4C621C
+  external 'okgf.dll' name 'OKGR_TransBuf_FillAlphaClip_16'; // @addr $7BF9C4
 
 procedure OKGR_AlphaIndexed_CopyDrawClip_WORD(Dest: Pointer; Pitch, X, Y: Integer; Source: Pointer; const Clip: TRect); cdecl;
-  external 'okgf.dll' name 'OKGR_AlphaIndexed_CopyDrawClip_WORD'; // @addr $4C6224
+  external 'okgf.dll' name 'OKGR_AlphaIndexed_CopyDrawClip_WORD'; // @addr $7BF9CC
 
 procedure OKGR_AlphaIndexed_CopyDrawClip_Alpha_16(Dest: Pointer; Pitch, X, Y: Integer; Source: Pointer; const Clip: TRect; Alpha: Byte); cdecl;
-  external 'okgf.dll' name 'OKGR_AlphaIndexed_CopyDrawClip_Alpha_16'; // @addr $4C622C
+  external 'okgf.dll' name 'OKGR_AlphaIndexed_CopyDrawClip_Alpha_16'; // @addr $7BF9D4
 
 procedure OKGR_AlphaIndexed_AlphaDrawClip_16(Dest: Pointer; Pitch, X, Y: Integer; Source: Pointer; const Clip: TRect); cdecl;
-  external 'okgf.dll' name 'OKGR_AlphaIndexed_AlphaDrawClip_16'; // @addr $4C6234
+  external 'okgf.dll' name 'OKGR_AlphaIndexed_AlphaDrawClip_16'; // @addr $7BF9DC
 
 procedure OKGR_AlphaIndexed_AlphaDrawClip_Alpha_16(Dest: Pointer; Pitch, X, Y: Integer; Source: Pointer; const Clip: TRect; Alpha: Byte); cdecl;
-  external 'okgf.dll' name 'OKGR_AlphaIndexed_AlphaDrawClip_Alpha_16'; // @addr $4C623C
+  external 'okgf.dll' name 'OKGR_AlphaIndexed_AlphaDrawClip_Alpha_16'; // @addr $7BF9E4
 
 function OKGR_RotateBuf_Build(Width, Height, SourceWidth, SourceHeight, CenterX, CenterY: Integer): Pointer; cdecl;
-  external 'okgf.dll' name 'OKGR_RotateBuf_Build'; // @addr $4C6244
+  external 'okgf.dll' name 'OKGR_RotateBuf_Build'; // @addr $7BF9EC
 
 procedure OKGR_RotateBuf_Free(Buffer: Pointer); cdecl;
-  external 'okgf.dll' name 'OKGR_RotateBuf_Free'; // @addr $4C624C
+  external 'okgf.dll' name 'OKGR_RotateBuf_Free'; // @addr $7BF9F4
 
 procedure OKGR_RotateBuf_Size(X, Y: Integer; Angle: Byte; RotationMap: Pointer; var Bounds: TRect); cdecl;
-  external 'okgf.dll' name 'OKGR_RotateBuf_Size'; // @addr $4C6254
+  external 'okgf.dll' name 'OKGR_RotateBuf_Size'; // @addr $7BF9FC
 
 procedure OKGR_RotateBuf_Draw_DWORD(Dest: Pointer; DestPitch: Integer; Source: Pointer; SourcePitch, CenterX, CenterY: Integer; Angle: Byte; RotationMap: Pointer); cdecl;
-  external 'okgf.dll' name 'OKGR_RotateBuf_Draw_DWORD'; // @addr $4C625C
+  external 'okgf.dll' name 'OKGR_RotateBuf_Draw_DWORD'; // @addr $7BFA04
 
 procedure OKGR_RotateBuf_Draw_BYTE(Dest: Pointer; DestPitch: Integer; Source: Pointer; SourcePitch, Width, Height: Integer; Angle: Byte; RotationMap: Pointer); cdecl;
-  external 'okgf.dll' name 'OKGR_RotateBuf_Draw_BYTE'; // @addr $4C6264
+  external 'okgf.dll' name 'OKGR_RotateBuf_Draw_BYTE'; // @addr $7BFA0C
 
 procedure OKGR_RotateBuf_DrawTransClip_WORD(Dest: Pointer; DestPitch: Integer; Source: Pointer; SourcePitch, CenterX, CenterY: Integer; Angle: Byte; RotationMap: Pointer; const Clip: TRect); cdecl;
-  external 'okgf.dll' name 'OKGR_RotateBuf_DrawTransClip_WORD'; // @addr $4C626C
+  external 'okgf.dll' name 'OKGR_RotateBuf_DrawTransClip_WORD'; // @addr $7BFA14
 
 function OKGR_LightBuf_Create(Width, Height: Integer): Pointer; cdecl;
-  external 'okgf.dll' name 'OKGR_LightBuf_Create'; // @addr $4C6274
+  external 'okgf.dll' name 'OKGR_LightBuf_Create'; // @addr $7BFA1C
 
 procedure OKGR_LightBuf_Destroy(Buffer: Pointer); cdecl;
-  external 'okgf.dll' name 'OKGR_LightBuf_Destroy'; // @addr $4C627C
+  external 'okgf.dll' name 'OKGR_LightBuf_Destroy'; // @addr $7BFA24
 
 procedure OKGR_LightBuf_SetSme(Buffer: Pointer; X, Y: Integer); cdecl;
-  external 'okgf.dll' name 'OKGR_LightBuf_SetSme'; // @addr $4C6284
+  external 'okgf.dll' name 'OKGR_LightBuf_SetSme'; // @addr $7BFA2C
 
 procedure OKGR_LightBuf_Init(Buffer: Pointer; Value: Byte); cdecl;
-  external 'okgf.dll' name 'OKGR_LightBuf_Init'; // @addr $4C628C
+  external 'okgf.dll' name 'OKGR_LightBuf_Init'; // @addr $7BFA34
 
 procedure OKGR_LightBuf_LoadFromPalBuf(Buffer, Source: Pointer; Width, Height, Pitch: Integer; Palette: PColorRGBA); cdecl;
-  external 'okgf.dll' name 'OKGR_LightBuf_LoadFromPalBuf'; // @addr $4C6294
+  external 'okgf.dll' name 'OKGR_LightBuf_LoadFromPalBuf'; // @addr $7BFA3C
 
 procedure OKGR_LightBuf_Rotate(Dest, Source, RotationMap: Pointer; Angle: Byte); cdecl;
-  external 'okgf.dll' name 'OKGR_LightBuf_Rotate'; // @addr $4C629C
+  external 'okgf.dll' name 'OKGR_LightBuf_Rotate'; // @addr $7BFA44
 
 function OKGR_Planet2_TemplBuild(Source: Pointer; Pitch, Height, TextureWidth, TextureHeight: Integer; var ByteCount: Integer): Pointer; cdecl;
-  external 'okgf.dll' name 'OKGR_Planet2_TemplBuild'; // @addr $4C62A4
+  external 'okgf.dll' name 'OKGR_Planet2_TemplBuild'; // @addr $7BFA4C
 
 // The native Delphi binding preserves EAX, but the DLL defines no result contract.
 function OKGR_Planet2_TemplDel(TemplateData: Pointer): Integer; cdecl;
-  external 'okgf.dll' name 'OKGR_Planet2_TemplDel'; // @addr $4C62AC
+  external 'okgf.dll' name 'OKGR_Planet2_TemplDel'; // @addr $7BFA54
 
 procedure OKGR_Planet2_DrawAndLight_32(Dest: Pointer; DestPitch: Integer; TemplateData, Source: Pointer; SourcePitch, WidthMask, MapOffset: Integer; LightBuffer, Palette: Pointer; X, Y: Integer); cdecl;
-  external 'okgf.dll' name 'OKGR_Planet2_DrawAndLight_32'; // @addr $4C62B4
+  external 'okgf.dll' name 'OKGR_Planet2_DrawAndLight_32'; // @addr $7BFA5C
 
 procedure OKGR_Planet2_DrawAndLightClip_16(Dest: Pointer; DestPitch: Integer; TemplateData, Source: Pointer; SourcePitch, WidthMask, MapOffset: Integer; LightBuffer, Palette: Pointer; X, Y: Integer; const Clip: TRect); cdecl;
-  external 'okgf.dll' name 'OKGR_Planet2_DrawAndLightClip_16'; // @addr $4C62BC
+  external 'okgf.dll' name 'OKGR_Planet2_DrawAndLightClip_16'; // @addr $7BFA64
 
 procedure OKGR_Planet3_DrawAndLight_32(Dest: Pointer; DestPitch: Integer; TemplateData, Source: Pointer; SourcePitch, WidthMask, MapOffset: Integer; LightBuffer, Palette: Pointer; X, Y: Integer); cdecl;
-  external 'okgf.dll' name 'OKGR_Planet3_DrawAndLight_32'; // @addr $4C62C4
+  external 'okgf.dll' name 'OKGR_Planet3_DrawAndLight_32'; // @addr $7BFA6C
 
 procedure OKGR_Planet3_DrawAndLightClip_16(Dest: Pointer; DestPitch: Integer; TemplateData, Source: Pointer; SourcePitch, WidthMask, MapOffset: Integer; LightBuffer, Palette: Pointer; X, Y: Integer; const Clip: TRect); cdecl;
-  external 'okgf.dll' name 'OKGR_Planet3_DrawAndLightClip_16'; // @addr $4C62CC
+  external 'okgf.dll' name 'OKGR_Planet3_DrawAndLightClip_16'; // @addr $7BFA74
 
 procedure OKGR_Planet4_DrawAndLight_32(Dest: Pointer; DestPitch: Integer; TemplateData, Source: Pointer; SourcePitch, WidthMask, MapOffset: Integer; LightBuffer, Palette: Pointer; X, Y: Integer); cdecl;
-  external 'okgf.dll' name 'OKGR_Planet4_DrawAndLight_32'; // @addr $4C62D4
+  external 'okgf.dll' name 'OKGR_Planet4_DrawAndLight_32'; // @addr $7BFA7C
 
 procedure OKGR_Planet4_DrawAndLightClip_16(Dest: Pointer; DestPitch: Integer; TemplateData, Source: Pointer; SourcePitch, WidthMask, MapOffset: Integer; LightBuffer, Palette: Pointer; X, Y: Integer; const Clip: TRect); cdecl;
-  external 'okgf.dll' name 'OKGR_Planet4_DrawAndLightClip_16'; // @addr $4C62DC
+  external 'okgf.dll' name 'OKGR_Planet4_DrawAndLightClip_16'; // @addr $7BFA84
 
 procedure OKGR_Copy_XY_XY_WORD(Dest: Pointer; DestPitch, DestX, DestY: Integer; Source: Pointer; SourcePitch, SourceX, SourceY, Width, Height: Integer); cdecl;
-  external 'okgf.dll' name 'OKGR_Copy_XY_XY_WORD'; // @addr $4C62E4
+  external 'okgf.dll' name 'OKGR_Copy_XY_XY_WORD'; // @addr $7BFA8C
 
 procedure OKGR_PalCopy_XY_XY_WORD(Dest: Pointer; DestPitch, DestX, DestY: Integer; Source: Pointer; SourcePitch, SourceX, SourceY: Integer; Palette: Pointer; Width, Height: Integer); cdecl;
-  external 'okgf.dll' name 'OKGR_PalCopy_XY_XY_WORD'; // @addr $4C62EC
+  external 'okgf.dll' name 'OKGR_PalCopy_XY_XY_WORD'; // @addr $7BFA94
 
 procedure OKGR_CopyTrans_XY_XY_WORD(Dest: Pointer; DestPitch, DestX, DestY: Integer; Source: Pointer; SourcePitch, SourceX, SourceY, Width, Height: Integer; TransparentColor: Word); cdecl;
-  external 'okgf.dll' name 'OKGR_CopyTrans_XY_XY_WORD'; // @addr $4C62F4
+  external 'okgf.dll' name 'OKGR_CopyTrans_XY_XY_WORD'; // @addr $7BFA9C
 
 procedure OKGR_CopySingleBuf_XY_XY_WORD(Pixels: Pointer; Pitch, DestX, DestY, SourceX, SourceY, Width, Height: Integer); cdecl;
-  external 'okgf.dll' name 'OKGR_CopySingleBuf_XY_XY_WORD'; // @addr $4C62FC
+  external 'okgf.dll' name 'OKGR_CopySingleBuf_XY_XY_WORD'; // @addr $7BFAA4
 
 procedure OKGR_HACopy_XY_XY_16(Dest: Pointer; DestPitch, DestX, DestY: Integer; Source: Pointer; SourcePitch, SourceX, SourceY, Width, Height: Integer); cdecl;
-  external 'okgf.dll' name 'OKGR_HACopy_XY_XY_16'; // @addr $4C6304
+  external 'okgf.dll' name 'OKGR_HACopy_XY_XY_16'; // @addr $7BFAAC
 
 procedure OKGR_StretchGdi_WORD(Dest: Pointer; Width, Height: Cardinal; Source: Pointer; SourceWidth, SourceHeight: Cardinal); cdecl;
-  external 'okgf.dll' name 'OKGR_StretchGdi_WORD'; // @addr $4C630C
+  external 'okgf.dll' name 'OKGR_StretchGdi_WORD'; // @addr $7BFAB4
 
 procedure OKGR_Fill_WORD(Pixels: Pointer; Pitch, Width, Height: Integer; Color: Word); cdecl;
-  external 'okgf.dll' name 'OKGR_Fill_WORD'; // @addr $4C6314
+  external 'okgf.dll' name 'OKGR_Fill_WORD'; // @addr $7BFABC
 
 procedure OKGF_ConvertRGBto565(Source, Dest: Pointer; Pitch, Width, Height: Integer); cdecl;
-  external 'okgf.dll' name 'OKGF_ConvertRGBto565'; // @addr $4C631C
+  external 'okgf.dll' name 'OKGF_ConvertRGBto565'; // @addr $7BFAC4
 
 procedure OKGF_Convert565toRGB(Source: Pointer; SourcePitch: Integer; Dest: Pointer; DestPitch, Width, Height: Integer); cdecl;
-  external 'okgf.dll' name 'OKGF_Convert565toRGB'; // @addr $4C6324
+  external 'okgf.dll' name 'OKGF_Convert565toRGB'; // @addr $7BFACC
 
 procedure OKGF_Convert565toBGR(Source: Pointer; SourcePitch: Integer; Dest: Pointer; DestPitch, Width, Height: Integer); cdecl;
-  external 'okgf.dll' name 'OKGF_Convert565toBGR'; // @addr $4C632C
+  external 'okgf.dll' name 'OKGF_Convert565toBGR'; // @addr $7BFAD4
 
 procedure OKGF_Convert565toBGRA(Source: Pointer; SourcePitch: Integer; Dest: Pointer; DestPitch, Width, Height: Integer); cdecl;
-  external 'okgf.dll' name 'OKGF_Convert565toBGRA'; // @addr $4C6334
+  external 'okgf.dll' name 'OKGF_Convert565toBGRA'; // @addr $7BFADC
 
 procedure OKGF_Convert_8888to565(Dest: Pointer; DestPitch, DestX, DestY: Integer; Source: Pointer; SourcePitch, SourceX, SourceY, Width, Height: Integer); cdecl;
-  external 'okgf.dll' name 'OKGF_Convert_8888to565'; // @addr $4C633C
+  external 'okgf.dll' name 'OKGF_Convert_8888to565'; // @addr $7BFAE4
 
 procedure OKGR_ShrLight_16(Pixels: Pointer; Pitch, Width, Height, Shift: Integer); cdecl;
-  external 'okgf.dll' name 'OKGR_ShrLight_16'; // @addr $4C6344
+  external 'okgf.dll' name 'OKGR_ShrLight_16'; // @addr $7BFAEC
 
 procedure OKGR_ShrLightMask_16(Dest: Pointer; DestPitch: Integer; Source: Pointer; SourcePitch, Width, Height: Integer); cdecl;
-  external 'okgf.dll' name 'OKGR_ShrLightMask_16'; // @addr $4C634C
+  external 'okgf.dll' name 'OKGR_ShrLightMask_16'; // @addr $7BFAF4
 
 procedure OKGR_Light_BYTE(Pixels: Pointer; PixelStride, Pitch, Width, Height: Integer; Alpha: Byte); cdecl;
-  external 'okgf.dll' name 'OKGR_Light_BYTE'; // @addr $4C6354
+  external 'okgf.dll' name 'OKGR_Light_BYTE'; // @addr $7BFAFC
 
 procedure OKGR_Circle_DrawClip_WORD(Pixels: Pointer; Pitch, X, Y, Radius: Integer; Color: Word; const Clip: TRect); cdecl;
-  external 'okgf.dll' name 'OKGR_Circle_DrawClip_WORD'; // @addr $4C635C
+  external 'okgf.dll' name 'OKGR_Circle_DrawClip_WORD'; // @addr $7BFB04
 
 procedure OKGR_Circle_DrawClip_BYTE(Pixels: Pointer; Pitch, X, Y, Radius: Integer; Color: Byte; const Clip: TRect); cdecl;
-  external 'okgf.dll' name 'OKGR_Circle_DrawClip_BYTE'; // @addr $4C6364
+  external 'okgf.dll' name 'OKGR_Circle_DrawClip_BYTE'; // @addr $7BFB0C
 
 procedure OKGR_Circle_DrawFillClip_WORD(Pixels: Pointer; Pitch, X, Y, Radius: Integer; Color: Word; const Clip: TRect); cdecl;
-  external 'okgf.dll' name 'OKGR_Circle_DrawFillClip_WORD'; // @addr $4C636C
+  external 'okgf.dll' name 'OKGR_Circle_DrawFillClip_WORD'; // @addr $7BFB14
 
 procedure OKGR_Circle_DrawFillClip_BYTE(Pixels: Pointer; Pitch, X, Y, Radius: Integer; Color: Byte; const Clip: TRect); cdecl;
-  external 'okgf.dll' name 'OKGR_Circle_DrawFillClip_BYTE'; // @addr $4C6374
+  external 'okgf.dll' name 'OKGR_Circle_DrawFillClip_BYTE'; // @addr $7BFB1C
 
 procedure OKGR_PixelAlpha_16(Pixel: Pointer; Color: Word; Alpha: Byte); cdecl;
-  external 'okgf.dll' name 'OKGR_PixelAlpha_16'; // @addr $4C637C
+  external 'okgf.dll' name 'OKGR_PixelAlpha_16'; // @addr $7BFB24
 
 function OKGR_Line_Clip(var X1, Y1, X2, Y2: Integer; const Clip: TRect): Integer; cdecl;
-  external 'okgf.dll' name 'OKGR_Line_Clip'; // @addr $4C6384
+  external 'okgf.dll' name 'OKGR_Line_Clip'; // @addr $7BFB2C
 
 function OKGR_LineColor_Clip(var X1, Y1: Integer; var Color1: Cardinal; var X2, Y2: Integer; var Color2: Cardinal; const Clip: TRect): Integer; cdecl;
-  external 'okgf.dll' name 'OKGR_LineColor_Clip'; // @addr $4C638C
+  external 'okgf.dll' name 'OKGR_LineColor_Clip'; // @addr $7BFB34
 
 procedure OKGR_Line_Draw_WORD(Pixels: Pointer; Pitch, X1, Y1, X2, Y2: Integer; Color: Word); cdecl;
-  external 'okgf.dll' name 'OKGR_Line_Draw_WORD'; // @addr $4C6394
+  external 'okgf.dll' name 'OKGR_Line_Draw_WORD'; // @addr $7BFB3C
 
 procedure OKGR_Line_DrawClip_WORD(Pixels: Pointer; Pitch, X1, Y1, X2, Y2: Integer; Color: Word; const Clip: TRect); cdecl;
-  external 'okgf.dll' name 'OKGR_Line_DrawClip_WORD'; // @addr $4C639C
+  external 'okgf.dll' name 'OKGR_Line_DrawClip_WORD'; // @addr $7BFB44
 
 function OKGR_Line_CopyToBuf_WORD(Dest, Source: Pointer; Pitch, X1, Y1, X2, Y2: Integer): Integer; cdecl;
-  external 'okgf.dll' name 'OKGR_Line_CopyToBuf_WORD'; // @addr $4C63A4
+  external 'okgf.dll' name 'OKGR_Line_CopyToBuf_WORD'; // @addr $7BFB4C
 
 function OKGR_Line_CopyFromBuf_WORD(Source, Dest: Pointer; Pitch, X1, Y1, X2, Y2: Integer): Integer; cdecl;
-  external 'okgf.dll' name 'OKGR_Line_CopyFromBuf_WORD'; // @addr $4C63AC
+  external 'okgf.dll' name 'OKGR_Line_CopyFromBuf_WORD'; // @addr $7BFB54
 
 procedure OKGR_Line_DrawClip_Alpha_16(Pixels: Pointer; Pitch, X1, Y1, X2, Y2: Integer; Color: Word; Alpha: Byte; const Clip: TRect); cdecl;
-  external 'okgf.dll' name 'OKGR_Line_DrawClip_Alpha_16'; // @addr $4C63B4
+  external 'okgf.dll' name 'OKGR_Line_DrawClip_Alpha_16'; // @addr $7BFB5C
 
 procedure OKGR_AnimLine_Draw_16(Pixels: Pointer; Pitch, X1, Y1, X2, Y2: Integer; Color: Word; Phase: Integer; const Clip: TRect); cdecl;
-  external 'okgf.dll' name 'OKGR_AnimLine_Draw_16'; // @addr $4C63BC
+  external 'okgf.dll' name 'OKGR_AnimLine_Draw_16'; // @addr $7BFB64
 
 procedure OKGR_AnimShadowLine_Draw_16(Pixels: Pointer; Pitch, X1, Y1, X2, Y2: Integer; Color: Word; Phase: Integer; const Clip: TRect; ShadowPixels: Pointer; ShadowPitch: Integer); cdecl;
-  external 'okgf.dll' name 'OKGR_AnimShadowLine_Draw_16'; // @addr $4C63C4
+  external 'okgf.dll' name 'OKGR_AnimShadowLine_Draw_16'; // @addr $7BFB6C
 
 procedure OKGR_Alpha64Trapezium_16(Pixels: Pointer; Pitch, X1, Y1, X2, Y2, X3, X4: Integer; Color: Word; const Clip: TRect); cdecl;
-  external 'okgf.dll' name 'OKGR_Alpha64Trapezium_16'; // @addr $4C63CC
+  external 'okgf.dll' name 'OKGR_Alpha64Trapezium_16'; // @addr $7BFB74
 
 procedure OKGR_Alpha128Trapezium_16(Pixels: Pointer; Pitch, X1, Y1, X2, Y2, X3, X4: Integer; Color: Word; const Clip: TRect); cdecl;
-  external 'okgf.dll' name 'OKGR_Alpha128Trapezium_16'; // @addr $4C63D4
+  external 'okgf.dll' name 'OKGR_Alpha128Trapezium_16'; // @addr $7BFB7C
 
 procedure OKGR_FillTrapezium_DWORD(Pixels: Pointer; Pitch, X1, X2, Y1, X3, X4, Y2: Integer; Color: Cardinal; const Clip: TRect); cdecl;
-  external 'okgf.dll' name 'OKGR_FillTrapezium_DWORD'; // @addr $4C63DC
+  external 'okgf.dll' name 'OKGR_FillTrapezium_DWORD'; // @addr $7BFB84
 
 procedure OKGF_Rescale(Dest: Pointer; Width, Height, DestPitch: Integer; Source: Pointer; SourceWidth, SourceHeight, SourcePitch, BytesPerPixel, Filter: Integer); cdecl;
-  external 'okgf.dll' name 'OKGF_Rescale'; // @addr $4C63E4
+  external 'okgf.dll' name 'OKGF_Rescale'; // @addr $7BFB8C
 
 procedure OKGR_F5_DrawRGBA(Dest: Pointer; Pitch: Integer; Source: Pointer); cdecl;
-  external 'okgf.dll' name 'OKGR_F5_DrawRGBA'; // @addr $4C63EC
+  external 'okgf.dll' name 'OKGR_F5_DrawRGBA'; // @addr $7BFB94
 
 procedure OKGR_F6_DrawRGBA(Dest: Pointer; Pitch: Integer; Source: Pointer); cdecl;
-  external 'okgf.dll' name 'OKGR_F6_DrawRGBA'; // @addr $4C63F4
+  external 'okgf.dll' name 'OKGR_F6_DrawRGBA'; // @addr $7BFB9C
 
 procedure OKGF_Triangle_16(Pixels: Pointer; Pitch, X1, Y1: Integer; Color1: Cardinal; X2, Y2: Integer; Color2: Cardinal; X3, Y3: Integer; Color3: Cardinal; Clip: PRect); cdecl;
-  external 'okgf.dll' name 'OKGF_Triangle_16'; // @addr $4C63FC @note "Cdecl triangle ABI verified at native caller $53B264."
+  external 'okgf.dll' name 'OKGF_Triangle_16'; // @addr $7BFBA4 @note "Cdecl triangle ABI verified at native caller $5E820C."
 
 procedure OKGF_LineIp_16(Pixels: Pointer; Pitch, X1, Y1: Integer; Color1: Cardinal; X2, Y2: Integer; Color2: Cardinal); cdecl;
-  external 'okgf.dll' name 'OKGF_LineIp_16'; // @addr $4C6404 @note "Cdecl gradient-line ABI verified at native caller $4D3B88."
+  external 'okgf.dll' name 'OKGF_LineIp_16'; // @addr $7BFBAC @note "Cdecl gradient-line ABI verified at native caller $7CC1C0."
 
 var
-  InstallConfig: TBlockParEC; // @addr 0x889F3C
-  LanguageInstallConfig: TBlockParEC; // @addr 0x889F40
-  UserSettingsConfig: TBlockParEC; // @addr 0x889F44
-  MainDataConfig: TBlockParEC; // @addr 0x889F48
-  LanguageDataConfig: TBlockParEC; // @addr 0x889F4C
-  UiStyleConfig: TBlockParEC; // @addr $889F50
-  SelectedMods: WideString; // @addr $889F54
-  SelectedModsDisplaySuffix: WideString; // @addr $889F58
-  LoadedSaveModSet: WideString; // @addr 0x889F5C
+  InstallConfig: TBlockParEC; // @addr 0x0081CFB0
+  LanguageInstallConfig: TBlockParEC; // @addr 0x0081CFB4
+  UserSettingsConfig: TBlockParEC; // @addr 0x0081CFB8
+  MainDataConfig: TBlockParEC; // @addr 0x0081CFBC
+  LanguageDataConfig: TBlockParEC; // @addr 0x0081CFC0
+  UiStyleConfig: TBlockParEC; // @addr $81CFC4
+  SelectedMods: WideString; // @addr $81CFC8
+  SelectedModsDisplaySuffix: WideString; // @addr $81CFCC
+  LoadedSaveModSet: WideString; // @addr 0x0081CFD0
 var
-  SuppressModRetryPrompt: Boolean = False; // @addr $87AA10 @note "Startup failure guard; other writers remain to be recovered."
-  SkipModsOnReload: Boolean = False; // @addr $87AA14
-  WindowedModeRequested: Boolean = False; // @addr $87AA18
-  ExitScreenLoop: Boolean = False; // @addr 0x87AA1C
-  FullFrameRedrawRequested: Boolean = True; // @addr $87AA20
-  DisplayBrightness: Single = 0; // @addr $87AA24
-  DisplayContrast: Single = 0; // @addr $87AA28
-  RobotBrightness: Single = 0; // @addr $87AA2C
-  RobotContrast: Single = 0; // @addr $87AA30
-  OffscreenFrameUpdated: Boolean = False; // @addr $87AA34
-  OffscreenLastPresentationTick: Cardinal = 0; // @addr $87AA38
-  InterfaceBlendPalette: Pointer = nil; // @addr $87AA3C @note "256 RGB565 colors blended between (8,32,255) and (200,128,128)."
-  RequestedRefreshRate: Integer = 0; // @addr $87AA40
-  PresentWithoutLimit: Boolean = False; // @addr $87AA44
-  DisableHardwareVertexProcessing: Boolean = False; // @addr $87AA48
-  DisableMultithreadFlag: Boolean = False; // @addr $87AA4C
-  DisableTripleBuffer: Boolean = False; // @addr $87AA50
-  ModInstallConfigs: TList = nil; // @addr $87AA54 @note "Owns TBlockParEC entries loaded from selected mods' Install.txt files."
-  ModLanguageInstallConfigs: TList = nil; // @addr $87AA58 @note "Owns the selected mods' language-specific install blocks."
-  ApplyEditableSaveOnLoad: Boolean = False; // @addr $87AA5C
-  EditableSaveFileName: WideString = ''; // @addr $87AA60
+  SuppressModRetryPrompt: Boolean = False; // @addr $812F70 @note "Startup failure guard; other writers remain to be recovered."
+  SkipModsOnReload: Boolean = False; // @addr $812F74
+  WindowedModeRequested: Boolean = False; // @addr $812F78
+  ExitScreenLoop: Boolean = False; // @addr 0x00812F7C
+  FullFrameRedrawRequested: Boolean = True; // @addr $812F80
+  DisplayBrightness: Single = 0; // @addr $812F84
+  DisplayContrast: Single = 0; // @addr $812F88
+  RobotBrightness: Single = 0; // @addr $812F8C
+  RobotContrast: Single = 0; // @addr $812F90
+  OffscreenFrameUpdated: Boolean = False; // @addr $812F94
+  OffscreenLastPresentationTick: Cardinal = 0; // @addr $812F98
+  InterfaceBlendPalette: Pointer = nil; // @addr $812F9C @note "256 RGB565 colors blended between (8,32,255) and (200,128,128)."
+  RequestedRefreshRate: Integer = 0; // @addr $812FA0
+  PresentWithoutLimit: Boolean = False; // @addr $812FA4
+  DisableHardwareVertexProcessing: Boolean = False; // @addr $812FA8
+  DisableMultithreadFlag: Boolean = False; // @addr $812FAC
+  DisableTripleBuffer: Boolean = False; // @addr $812FB0
+  ModInstallConfigs: TList = nil; // @addr $812FB4 @note "Owns TBlockParEC entries loaded from selected mods' Install.txt files."
+  ModLanguageInstallConfigs: TList = nil; // @addr $812FB8 @note "Owns the selected mods' language-specific install blocks."
+  ApplyEditableSaveOnLoad: Boolean = False; // @addr $812FBC
+  EditableSaveFileName: WideString = ''; // @addr $812FC0
 var
-  // Native CheckPlatformModules adds a local byte offset of 4 to this address
-  // ($4C67FA, $4C6964, $4C6AD3), then overwrites ModShipNameConfig with a random
-  // integer. Its early Exit leaves these checks dormant in this build.
-  // Keep both globals initialized and adjacent: a direct assignment would
-  // remove address arithmetic that is present in the native instructions.
-  PlatformCheckAnchor: Integer = -35753766; // @addr $87AA64 @note "Dormant checks write a random integer at byte offset 4 from this address, overlapping ModShipNameConfig. Original anchor meaning unresolved."
-  ModShipNameConfig: TBlockParEC = nil; // @addr $87AA68
-  ModRuinNameConfig: TBlockParEC = nil; // @addr $87AA6C
-  NewGameSeedText: WideString = ''; // @addr $87AA70 User-supplied galaxy seed, edited by CheatSeed.
+  // CheckPlatformModules reaches ModShipNameConfig by adding four bytes to this address.
+  // Keep both initialized globals adjacent; these checks are disabled in this build.
+  PlatformCheckAnchor: Integer = -35753766; // @addr $812FC4 @note "Dormant checks write a random integer at byte offset 4 from this address, overlapping ModShipNameConfig. Original anchor meaning unresolved."
+  ModShipNameConfig: TBlockParEC = nil; // @addr $812FC8
+  ModRuinNameConfig: TBlockParEC = nil; // @addr $812FCC
+  NewGameSeedText: WideString = ''; // @addr $812FD0 User-supplied galaxy seed, edited by CheatSeed.
 var
-  CacheLoadLoggingEnabled: Boolean = False; // @addr $87AA74
-  SoundManager: TSoundControl = nil; // @addr $87AA78
-  MusicManager: TMusicControl = nil; // @addr $87AA7C
-  ShowFrameRate: Boolean = False; // @addr $87AA80
-  RecordingFrames: Boolean = False; // @addr $87AA84
-  RecordingFrameBuffers: TList = nil; // @addr $87AA88
-  FirstRegisteredCursor: TCursorUnit = nil; // @addr 0x87AA8C
-  LastRegisteredCursor: TCursorUnit = nil; // @addr 0x87AA90
-  BuildVersionMismatch: Boolean = False; // @addr $87AA94
-  SessionLogLock: TCriticalSection = nil; // @addr 0x87AA98
-  DebugKeyCallback: TDebugKeyCallbackGR = nil; // @addr $87AA9C  Receives Ctrl+Shift keys when Alt is not held.
-  CustomCursorEnabled: Boolean = True; // @addr $87AAA0 @note "Gates message-loop cursor selection and restoration."
-  DirectXVersion: Cardinal = 0; // @addr $87AAA4
-  RecordingFrameCount: Integer = 0; // @addr $87AAA8
-  RecordingFrameInterval: Integer = 50; // @addr $87AAAC @note "1000 div FilmFPS; native does not check for zero."
-  LastRecordingFrameTick: Cardinal = 0; // @addr $87AAB0
-  // Native VerifyStartupModuleChecksum subtracts a local byte offset of 8 from
-  // StartupChecksumAnchor's address for each marker access ($4CCE67..$4CCE97).
-  // The subtraction is emitted at runtime, not inferred from adjacent addresses.
-  // Keep these initialized globals consecutive and in this order; direct access
-  // to StartupIntegrityMarker would remove those native subtraction instructions.
-  // Other routines access StartupIntegrityMarker and LastMouseMessageTick directly.
-  StartupIntegrityMarker: Integer = 0; // @addr $87AAB4 Signed integrity marker: positive after a failed startup module checksum, negative after a clean check; reset by TMessageLoopGI.Present.
-  LastMouseMessageTick: Cardinal = 0; // @addr $87AAB8
-  StartupChecksumAnchor: Integer = 0; // @addr $87AABC @note "Checksum helper accesses StartupIntegrityMarker at byte offset -8; original anchor meaning unresolved."
-  RobotBattleActive: Boolean = False; // @addr $87AAC0 Set across MatrixGame Run, including its exception handler.
-  ProcessorCoreCount: Integer = 1; // @addr $87AAC4 @note "Counts CentralProcessor registry subkeys, with a minimum of one."
-  Direct3D: IDirect3D9 = nil; // @addr $87AAC8
-  Direct3DDevice: IDirect3DDevice9 = nil; // @addr 0x87AACC
-  OffscreenTexture: IDirect3DTexture9 = nil; // @addr $87AAD0
+  CacheLoadLoggingEnabled: Boolean = False; // @addr $812FD4
+  SoundManager: TSoundControl = nil; // @addr $812FD8
+  MusicManager: TMusicControl = nil; // @addr $812FDC
+  ShowFrameRate: Boolean = False; // @addr $812FE0
+  RecordingFrames: Boolean = False; // @addr $812FE4
+  RecordingFrameBuffers: TList = nil; // @addr $812FE8
+  FirstRegisteredCursor: TCursorUnit = nil; // @addr 0x00812FEC
+  LastRegisteredCursor: TCursorUnit = nil; // @addr 0x00812FF0
+  BuildVersionMismatch: Boolean = False; // @addr $812FF4
+  SessionLogLock: TCriticalSection = nil; // @addr 0x00812FF8
+  DebugKeyCallback: TDebugKeyCallbackGR = nil; // @addr $812FFC  Receives Ctrl+Shift keys when Alt is not held.
+  CustomCursorEnabled: Boolean = True; // @addr $813000 @note "Gates message-loop cursor selection and restoration."
+  DirectXVersion: Cardinal = 0; // @addr $813004
+  RecordingFrameCount: Integer = 0; // @addr $813008
+  RecordingFrameInterval: Integer = 50; // @addr $81300C @note "1000 div FilmFPS; native does not check for zero."
+  LastRecordingFrameTick: Cardinal = 0; // @addr $813010
+  // VerifyStartupModuleChecksum reaches StartupIntegrityMarker eight bytes before
+  // StartupChecksumAnchor. Keep these initialized globals consecutive and in order.
+  StartupIntegrityMarker: Integer = 0; // @addr $813014 Signed integrity marker: positive after a failed startup module checksum, negative after a clean check; reset by TMessageLoopGI.Present.
+  LastMouseMessageTick: Cardinal = 0; // @addr $813018
+  StartupChecksumAnchor: Integer = 0; // @addr $81301C @note "Checksum helper accesses StartupIntegrityMarker at byte offset -8; original anchor meaning unresolved."
+  RobotBattleActive: Boolean = False; // @addr $813020 Set across MatrixGame Run, including its exception handler.
+  ProcessorCoreCount: Integer = 1; // @addr $813024 @note "Counts CentralProcessor registry subkeys, with a minimum of one."
+  Direct3D: IDirect3D9 = nil; // @addr $813028
+  Direct3DDevice: IDirect3DDevice9 = nil; // @addr 0x0081302C
+  OffscreenTexture: IDirect3DTexture9 = nil; // @addr $813030
 var
-  OffscreenFillViewport: Boolean = False; // @addr $87AAD4  Fill/crop instead of fitting the entire video frame.
-  UseDesktopDisplayMode: Boolean = False; // @addr $87AAD8
-  GameDisplayModeCount: Integer = 0; // @addr 0x87AADC
-  SelectedGameDisplayMode: Integer = -1; // @addr 0x87AAE0
-  SmallestGameDisplayMode: Integer = -1; // @addr $87AAE4
-  UseAutomaticRobotDisplayMode: Boolean = False; // @addr $87AAE8
-  RobotDisplayModeCount: Integer = 0; // @addr 0x87AAEC
-  SelectedRobotDisplayMode: Integer = -1; // @addr 0x87AAF0
-  AltResolutionSwitch: Boolean = False; // @addr $87AAF4
-  LastPresentationTick: Cardinal = 0; // @addr $87AAF8
-  PresentationFrameRate: Cardinal = 0; // @addr $87AAFC
-  RuntimeWatchdog: TThreadEC = nil; // @addr $87AB00
-  PresentationDepth: Integer = 0; // @addr $87AB04
+  OffscreenFillViewport: Boolean = False; // @addr $813034  Fill/crop instead of fitting the entire video frame.
+  UseDesktopDisplayMode: Boolean = False; // @addr $813038
+  GameDisplayModeCount: Integer = 0; // @addr 0x0081303C
+  SelectedGameDisplayMode: Integer = -1; // @addr 0x00813040
+  SmallestGameDisplayMode: Integer = -1; // @addr $813044
+  UseAutomaticRobotDisplayMode: Boolean = False; // @addr $813048
+  RobotDisplayModeCount: Integer = 0; // @addr 0x0081304C
+  SelectedRobotDisplayMode: Integer = -1; // @addr 0x00813050
+  AltResolutionSwitch: Boolean = False; // @addr $813054
+  LastPresentationTick: Cardinal = 0; // @addr $813058
+  PresentationFrameRate: Cardinal = 0; // @addr $81305C
+  RuntimeWatchdog: TThreadEC = nil; // @addr $813060
+  PresentationDepth: Integer = 0; // @addr $813064
 
 var
-  EditableSaveBlock: TBlockParEC; // @addr $889F60
-  GameDataConfig: TBlockParEC; // @addr 0x889F64 @note "Borrowed MainDataConfig.Data block; contains StyleColor."
-  NewGameSettingsConfig: TBlockParEC; // @addr $889F68 @note "Optional user-directory newgame.txt."
-  UiDepthConfig: TBlockParEC; // @addr $889F6C  Borrowed MainDataConfig.ZPos depth-name table.
-  CacheDataRoot: TDataEC; // @addr $889F70
-  GlobalCache: TCacheEC; // @addr 0x889F74
-  SessionLog: TextFile; // @addr 0x889F78
-  SavePreviewGraph: TGraphBufGR; // @addr $88A144
-  SecondarySavePreviewGraph: TGraphBufGR; // @addr $88A148
-  PerformanceCounterFrequency: Int64; // @addr $88A14C
-  DebugCommandMessage: Cardinal; // @addr $88A154
-  SuppressExceptionLogCopy: Boolean; // @addr $88A158  Consumed by $57AC44 to skip the separate exception-log copy.
-  BlendPixel16: TBlendPixel16; // @addr $88A15C
-  TriangleRasterizer16: TTriangleRasterizer16; // @addr $88A160 @note "OKGF_Triangle_16 callback; cdecl pixel, pitch, vertex/color arguments."
-  LineRasterizer16: TLineRasterizer16; // @addr $88A164 @note "OKGF_LineIp_16 callback; cdecl pixel, pitch, vertex/color arguments."
-  RuntimeExitCheckCallback1: procedure; // @addr $88A168 Assigned by Rangers.start; no native reads indexed.
-  RuntimeExitCheckCallback2: procedure; // @addr $88A16C Assigned by Rangers.start; no native reads indexed.
-  OnMessageIdle: TRuntimeCallbackGR; // @addr $88A170
-  OnMessageResume: TRuntimeCallbackGR; // @addr $88A174
-  CCInterface: TCCInterface; // @addr $88A178 @note "Owned here: direct startup/helper accesses; other units use reference cell $883218."
-  RuntimeStartupTick: Cardinal; // @addr $88A17C
-  MainRuntimeThreadId: Cardinal; // @addr $88A180
+  EditableSaveBlock: TBlockParEC; // @addr $81CFD4
+  GameDataConfig: TBlockParEC; // @addr 0x0081CFD8 @note "Borrowed MainDataConfig.Data block; contains StyleColor."
+  NewGameSettingsConfig: TBlockParEC; // @addr $81CFDC @note "Optional user-directory newgame.txt."
+  UiDepthConfig: TBlockParEC; // @addr $81CFE0  Borrowed MainDataConfig.ZPos depth-name table.
+  CacheDataRoot: TDataEC; // @addr $81CFE4
+  GlobalCache: TCacheEC; // @addr 0x0081CFE8
+  SessionLog: TextFile; // @addr 0x0081CFEC
+  SavePreviewGraph: TGraphBufGR; // @addr $81D1B8
+  SecondarySavePreviewGraph: TGraphBufGR; // @addr $81D1BC
+  PerformanceCounterFrequency: Int64; // @addr $81D1C0
+  DebugCommandMessage: Cardinal; // @addr $81D1C8
+  SuppressExceptionLogCopy: Boolean; // @addr $81D1CC  Consumed by $5E7574 to skip the separate exception-log copy.
+  BlendPixel16: TBlendPixel16; // @addr $81D1D0
+  TriangleRasterizer16: TTriangleRasterizer16; // @addr $81D1D4 @note "OKGF_Triangle_16 callback; cdecl pixel, pitch, vertex/color arguments."
+  LineRasterizer16: TLineRasterizer16; // @addr $81D1D8 @note "OKGF_LineIp_16 callback; cdecl pixel, pitch, vertex/color arguments."
+  RuntimeExitCheckCallback1: procedure; // @addr $81D1DC Assigned by Rangers.start; no native reads indexed.
+  RuntimeExitCheckCallback2: procedure; // @addr $81D1E0 Assigned by Rangers.start; no native reads indexed.
+  OnMessageIdle: TRuntimeCallbackGR; // @addr $81D1E4
+  OnMessageResume: TRuntimeCallbackGR; // @addr $81D1E8
+  CCInterface: TCCInterface; // @addr $81D1EC @note "Owned here; shared with startup helpers and other units."
+  RuntimeStartupTick: Cardinal; // @addr $81D1F0
+  MainRuntimeThreadId: Cardinal; // @addr $81D1F4
 type
-  // This value-object declaration advances DCC32's anonymous RTTI counter.
-  // Its position reproduces the display arrays' native names; original spelling is unknown.
   PDisplayModeGR = ^TDisplayModeGR;
   TDisplayModeGR = object // @size 0x10
     Width: Cardinal; // @offset 0x00
@@ -710,38 +696,38 @@ type
   TDisplayModeArrayGR = array of TDisplayModeGR;
 
 var
-  DesktopDisplayMode: TDisplayModeGR; // @addr $88A184
-  Direct3DPresentParameters: TD3DPresentParameters; // @addr $88A194
-  PreviousPresentParameters: TD3DPresentParameters; // @addr $88A1CC
-  GameDisplayModes: array of TDisplayModeGR; // @addr 0x88A204
-  RobotDisplayModes: array of TDisplayModeGR; // @addr 0x88A208
+  DesktopDisplayMode: TDisplayModeGR; // @addr $81D1F8
+  Direct3DPresentParameters: TD3DPresentParameters; // @addr $81D208
+  PreviousPresentParameters: TD3DPresentParameters; // @addr $81D240
+  GameDisplayModes: array of TDisplayModeGR; // @addr 0x0081D278
+  RobotDisplayModes: array of TDisplayModeGR; // @addr 0x0081D27C
 var
   // Differences from the 1024x768 UI baseline; may be negative.
-  ExtraScreenWidth: Integer; // @addr 0x88A20C
-  ExtraScreenHeight: Integer; // @addr 0x88A210
+  ExtraScreenWidth: Integer; // @addr 0x0081D280
+  ExtraScreenHeight: Integer; // @addr 0x0081D284
   EncodedPlatformModuleNames: array[0..8] of AnsiString = (
     'loinbaosgaga-10a', 'loinbavrokrablius-->0', 'loinbaveohrablissufainlae', // 'libogg-0', 'libvorbis-0', 'libvorbisfile'
     'mhastorhinxagrakmae', 'ookogifa', 'sotoenalm^_^aucah', 'sotoenalm^_^aupki', // 'matrixgame', 'okgf', 'steam_ach', 'steam_api'
-    'xavriadeccomrie', 'zoloimba'); // @addr $87AB08 @note "Alternating-character DLL basenames consumed by dormant CheckPlatformModules." 'xvidcore', 'zlib'
-  CachedGameUserDirectory: WideString = ''; // @addr $87AB2C
+    'xavriadeccomrie', 'zoloimba'); // @addr $813068 @note "Alternating-character DLL basenames consumed by dormant CheckPlatformModules." 'xvidcore', 'zlib'
+  CachedGameUserDirectory: WideString = ''; // @addr $81308C
 
 implementation
 
-// @unit-initialization $876738
-// @unit-finalization $4D5A48
+// @unit-initialization $8079EC
+// @unit-finalization $7CDE98
 
 uses GI_Main, DirectXRenderException, TlHelp32, aPacket, DateUtils, Robot, GI_MessageLoop, MMSystem, EC_Mem, GR_DX, Globals, aMyFunction, MessageText, GlobalsV, ShlObj, Math, Forms, Clipbrd, SysUtils, Messages, ActiveX, Windows, Registry;
 
 var
-  StartupState: Cardinal; // @addr $88A218 @note "Cleared by settings initialization; no retained reader found, original meaning unresolved."
-  ScreenCenterX: Cardinal; // @addr $88A21C
-  ScreenCenterY: Cardinal; // @addr $88A220
-  LastWindowMessageTick: Cardinal; // @addr $88A224
-  MessageIdle: Boolean; // @addr $88A228
+  StartupState: Cardinal; // @addr $81D28C @note "Cleared by settings initialization; no retained reader found, original meaning unresolved."
+  ScreenCenterX: Cardinal; // @addr $81D290
+  ScreenCenterY: Cardinal; // @addr $81D294
+  LastWindowMessageTick: Cardinal; // @addr $81D298
+  MessageIdle: Boolean; // @addr $81D29C
 
 {$I-}
 
-{ @routine $4C664C CheckPlatformModules }
+{ @routine $7BFDA0 CheckPlatformModules }
 procedure CheckPlatformModules;
 var
   GameDirectory, ModulePath: AnsiString;
@@ -752,8 +738,8 @@ var
   SteamClientPath: AnsiString;
   Entry: TModuleEntry32;
 
-  // @nested $4C6540 MatchesModuleDirectoryPrefix
-  function MatchesModuleDirectoryPrefix(Prefix, Path: AnsiString): Boolean; // @addr $4C6540 @calls "0x4C673D" @note "Nested helper. Requires Prefix no longer than Path, but compares only characters 1 through Length(Prefix)-1."
+  // @nested $7BFCE8 MatchesModuleDirectoryPrefix
+  function MatchesModuleDirectoryPrefix(Prefix, Path: AnsiString): Boolean; // @addr $7BFCE8 @calls "0x007BFE8F" @note "Nested helper. Requires Prefix no longer than Path, but compares only characters 1 through Length(Prefix)-1."
   var
     CharacterIndex, CharacterCount: Integer;
   begin
@@ -770,7 +756,7 @@ var
   end;
 
 begin
-  // This build disables the checks, but Delphi O- retained their native bytes.
+  // Startup integrity checks are disabled in this build.
   Exit;
   DllSuffix := 'll';
   DllSuffix := '.d' + DllSuffix;
@@ -781,7 +767,8 @@ begin
     Entry.dwSize := SizeOf(Entry);
     if Module32First(Snapshot, Entry) then
     begin
-      repeat
+      while True do
+      begin
         if MatchesModuleDirectoryPrefix(GameDirectory,
           AnsiLowerCase(ExtractFilePath(AnsiString(Entry.szExePath)))) then
         begin
@@ -808,7 +795,8 @@ begin
             Exit;
           end;
         end;
-      until not Module32Next(Snapshot, Entry);
+        if not Module32Next(Snapshot, Entry) then Break;
+      end;
     end;
     CloseHandle(Snapshot);
   end;
@@ -874,9 +862,9 @@ begin
       RandomIntRange(1000000000, 2000000000);
   end;
 end;
-{ @end $4C664C }
+{ @end $7BFDA0 }
 
-{ @routine $4C6CA8 LogMemoryUsage }
+{ @routine $7C03C0 LogMemoryUsage }
 procedure LogMemoryUsage;
 var
   Status: TMemoryStatusEx;
@@ -895,9 +883,9 @@ begin
   if GlobalCache <> nil then AppendLogLineThreadSafe('Cache Size=' + SysUtils.IntToStr(GlobalCache.ResidentBytes shr 10) + ' KB');
   AppendLogLineThreadSafe('Textures Cache Size=' + SysUtils.IntToStr(Int64(ResidentTextureBytes shr 10)) + ' KB');
 end;
-{ @end $4C6CA8 }
+{ @end $7C03C0 }
 
-{ @routine $4C6FB0 TCCInterface_Create }
+{ @routine $7C06C8 TCCInterface_Create }
 constructor TCCInterface.Create;
 begin
   inherited Create;
@@ -906,9 +894,9 @@ begin
   Buffer := TBufEC.Create;
   CommitSnapshot(CreateEmptySnapshot);
 end;
-{ @end $4C6FB0 }
+{ @end $7C06C8 }
 
-{ @routine $4C702C TCCInterface_Destroy }
+{ @routine $7C0730 TCCInterface_Destroy }
 destructor TCCInterface.Destroy;
 begin
   Lock.Free;
@@ -916,9 +904,9 @@ begin
   ClearSnapshots;
   inherited Destroy;
 end;
-{ @end $4C702C }
+{ @end $7C0730 }
 
-{ @routine $4C707C TCCInterface_Reset }
+{ @routine $7C076C TCCInterface_Reset }
 procedure TCCInterface.Reset;
 begin
   Lock.Enter;
@@ -927,9 +915,9 @@ begin
   CommitSnapshot(CreateEmptySnapshot);
   Lock.Leave;
 end;
-{ @end $4C707C }
+{ @end $7C076C }
 
-{ @routine $4C70C4 TCCInterface_GetSnapshot }
+{ @routine $7C07A0 TCCInterface_GetSnapshot }
 function TCCInterface.GetSnapshot: PCCSnapshot;
 var Entry: PCCSnapshot;
 begin
@@ -937,9 +925,9 @@ begin
   while (Entry.Prev = nil) or (Entry.Next.Prev = Entry) do Entry := Entry.Next;
   Result := Entry.Next;
 end;
-{ @end $4C70C4 }
+{ @end $7C07A0 }
 
-{ @routine $4C7108 TCCInterface_CreateDecoy }
+{ @routine $7C07B8 TCCInterface_CreateDecoy }
 function TCCInterface.CreateDecoy: PCCSnapshot;
 begin
   New(Result);
@@ -956,9 +944,9 @@ begin
   Result.EncodedCheatPoints := Random(2000000000);
   Result.EditableStateApplied := Random(11) > 9;
 end;
-{ @end $4C7108 }
+{ @end $7C07B8 }
 
-{ @routine $4C7218 TCCInterface_CreateEmptySnapshot }
+{ @routine $7C0898 TCCInterface_CreateEmptySnapshot }
 function TCCInterface.CreateEmptySnapshot: PCCSnapshot;
 begin
   New(Result);
@@ -975,9 +963,9 @@ begin
   Result.EncodedCheatPoints := 0;
   Result.EditableStateApplied := False;
 end;
-{ @end $4C7218 }
+{ @end $7C0898 }
 
-{ @routine $4C7294 TCCInterface_CopySnapshot }
+{ @routine $7C08DC TCCInterface_CopySnapshot }
 function TCCInterface.CopySnapshot(Source: PCCSnapshot): PCCSnapshot;
 begin
   New(Result);
@@ -994,9 +982,9 @@ begin
   Result.EncodedCheatPoints := Source.EncodedCheatPoints;
   Result.EditableStateApplied := Source.EditableStateApplied;
 end;
-{ @end $4C7294 }
+{ @end $7C08DC }
 
-{ @routine $4C7344 TCCInterface_CommitSnapshot }
+{ @routine $7C0938 TCCInterface_CommitSnapshot }
 procedure TCCInterface.CommitSnapshot(Snapshot: PCCSnapshot);
 var RingCount, PrefixCount, OldPrefixCount: Integer;
     Entry, Added: PCCSnapshot;
@@ -1040,9 +1028,9 @@ begin
   if SnapshotHead <> nil then ClearSnapshots;
   SnapshotHead := Added;
 end;
-{ @end $4C7344 }
+{ @end $7C0938 }
 
-{ @routine $4C7478 TCCInterface_ClearSnapshots }
+{ @routine $7C0A10 TCCInterface_ClearSnapshots }
 procedure TCCInterface.ClearSnapshots;
 var Snapshot, Entry, Next: PCCSnapshot;
 begin
@@ -1062,18 +1050,18 @@ begin
     Entry := Next;
   end;
 end;
-{ @end $4C7478 }
+{ @end $7C0A10 }
 
-{ @routine $4C74F4 TCCInterface_GetResourceChecksumFailed }
+{ @routine $7C0A5C TCCInterface_GetResourceChecksumFailed }
 function TCCInterface.GetResourceChecksumFailed: Boolean;
 begin
   Lock.Enter;
   Result := GetSnapshot.ResourceChecksumFailed;
   Lock.Leave;
 end;
-{ @end $4C74F4 }
+{ @end $7C0A5C }
 
-{ @routine $4C7528 TCCInterface_SetResourceChecksumFailed }
+{ @routine $7C0A80 TCCInterface_SetResourceChecksumFailed }
 procedure TCCInterface.SetResourceChecksumFailed(Value: Boolean);
 var Snapshot: PCCSnapshot;
 begin
@@ -1083,18 +1071,18 @@ begin
   CommitSnapshot(Snapshot);
   Lock.Leave;
 end;
-{ @end $4C7528 }
+{ @end $7C0A80 }
 
-{ @routine $4C7578 TCCInterface_GetTamperDetected }
+{ @routine $7C0AB8 TCCInterface_GetTamperDetected }
 function TCCInterface.GetTamperDetected: Boolean;
 begin
   Lock.Enter;
   Result := GetSnapshot.TamperDetected;
   Lock.Leave;
 end;
-{ @end $4C7578 }
+{ @end $7C0AB8 }
 
-{ @routine $4C75AC TCCInterface_SetTamperDetected }
+{ @routine $7C0ADC TCCInterface_SetTamperDetected }
 procedure TCCInterface.SetTamperDetected(Value: Boolean);
 var Snapshot: PCCSnapshot;
 begin
@@ -1104,18 +1092,18 @@ begin
   CommitSnapshot(Snapshot);
   Lock.Leave;
 end;
-{ @end $4C75AC }
+{ @end $7C0ADC }
 
-{ @routine $4C75FC TCCInterface_GetFlag0A }
+{ @routine $7C0B14 TCCInterface_GetFlag0A }
 function TCCInterface.GetFlag0A: Boolean;
 begin
   Lock.Enter;
   Result := GetSnapshot.Flag0A;
   Lock.Leave;
 end;
-{ @end $4C75FC }
+{ @end $7C0B14 }
 
-{ @routine $4C7630 TCCInterface_SetFlag0A }
+{ @routine $7C0B38 TCCInterface_SetFlag0A }
 procedure TCCInterface.SetFlag0A(Value: Boolean);
 var Snapshot: PCCSnapshot;
 begin
@@ -1125,18 +1113,18 @@ begin
   CommitSnapshot(Snapshot);
   Lock.Leave;
 end;
-{ @end $4C7630 }
+{ @end $7C0B38 }
 
-{ @routine $4C7680 TCCInterface_GetEditableStateApplied }
+{ @routine $7C0B70 TCCInterface_GetEditableStateApplied }
 function TCCInterface.GetEditableStateApplied: Boolean;
 begin
   Lock.Enter;
   Result := GetSnapshot.EditableStateApplied;
   Lock.Leave;
 end;
-{ @end $4C7680 }
+{ @end $7C0B70 }
 
-{ @routine $4C76B4 TCCInterface_SetEditableStateApplied }
+{ @routine $7C0B94 TCCInterface_SetEditableStateApplied }
 procedure TCCInterface.SetEditableStateApplied(Value: Boolean);
 var Snapshot: PCCSnapshot;
 begin
@@ -1146,18 +1134,18 @@ begin
   CommitSnapshot(Snapshot);
   Lock.Leave;
 end;
-{ @end $4C76B4 }
+{ @end $7C0B94 }
 
-{ @routine $4C7704 TCCInterface_GetProtectedStateXorSeed }
+{ @routine $7C0BCC TCCInterface_GetProtectedStateXorSeed }
 function TCCInterface.GetProtectedStateXorSeed: Integer;
 begin
   Lock.Enter;
   Result := GetSnapshot.ProtectedStateXorSeed;
   Lock.Leave;
 end;
-{ @end $4C7704 }
+{ @end $7C0BCC }
 
-{ @routine $4C7738 TCCInterface_SetProtectedStateXorSeed }
+{ @routine $7C0BF0 TCCInterface_SetProtectedStateXorSeed }
 procedure TCCInterface.SetProtectedStateXorSeed(Value: Integer);
 var
   Snapshot: PCCSnapshot;
@@ -1168,18 +1156,18 @@ begin
   CommitSnapshot(Snapshot);
   Lock.Leave;
 end;
-{ @end $4C7738 }
+{ @end $7C0BF0 }
 
-{ @routine $4C7788 TCCInterface_GetValue10 }
+{ @routine $7C0C28 TCCInterface_GetValue10 }
 function TCCInterface.GetValue10: Integer;
 begin
   Lock.Enter;
   Result := GetSnapshot.Value10;
   Lock.Leave;
 end;
-{ @end $4C7788 }
+{ @end $7C0C28 }
 
-{ @routine $4C77BC TCCInterface_SetValue10 }
+{ @routine $7C0C4C TCCInterface_SetValue10 }
 procedure TCCInterface.SetValue10(Value: Integer);
 var Snapshot: PCCSnapshot;
 begin
@@ -1189,18 +1177,18 @@ begin
   CommitSnapshot(Snapshot);
   Lock.Leave;
 end;
-{ @end $4C77BC }
+{ @end $7C0C4C }
 
-{ @routine $4C780C TCCInterface_GetIntegrityStatus }
+{ @routine $7C0C84 TCCInterface_GetIntegrityStatus }
 function TCCInterface.GetIntegrityStatus: Integer;
 begin
   Lock.Enter;
   Result := GetSnapshot.IntegrityStatus;
   Lock.Leave;
 end;
-{ @end $4C780C }
+{ @end $7C0C84 }
 
-{ @routine $4C7840 TCCInterface_SetIntegrityStatus }
+{ @routine $7C0CA8 TCCInterface_SetIntegrityStatus }
 procedure TCCInterface.SetIntegrityStatus(Value: Integer);
 var Snapshot: PCCSnapshot;
 begin
@@ -1210,18 +1198,18 @@ begin
   CommitSnapshot(Snapshot);
   Lock.Leave;
 end;
-{ @end $4C7840 }
+{ @end $7C0CA8 }
 
-{ @routine $4C7890 TCCInterface_GetIntegrityError }
+{ @routine $7C0CE0 TCCInterface_GetIntegrityError }
 function TCCInterface.GetIntegrityError: Integer;
 begin
   Lock.Enter;
   Result := GetSnapshot.IntegrityError;
   Lock.Leave;
 end;
-{ @end $4C7890 }
+{ @end $7C0CE0 }
 
-{ @routine $4C78C4 TCCInterface_SetIntegrityError }
+{ @routine $7C0D04 TCCInterface_SetIntegrityError }
 procedure TCCInterface.SetIntegrityError(Value: Integer);
 var Snapshot: PCCSnapshot;
 begin
@@ -1231,18 +1219,18 @@ begin
   CommitSnapshot(Snapshot);
   Lock.Leave;
 end;
-{ @end $4C78C4 }
+{ @end $7C0D04 }
 
-{ @routine $4C7914 TCCInterface_GetIntegrityChecksum }
+{ @routine $7C0D3C TCCInterface_GetIntegrityChecksum }
 function TCCInterface.GetIntegrityChecksum: Cardinal;
 begin
   Lock.Enter;
   Result := GetSnapshot.IntegrityChecksum;
   Lock.Leave;
 end;
-{ @end $4C7914 }
+{ @end $7C0D3C }
 
-{ @routine $4C7948 TCCInterface_SetIntegrityChecksum }
+{ @routine $7C0D60 TCCInterface_SetIntegrityChecksum }
 procedure TCCInterface.SetIntegrityChecksum(Value: Cardinal);
 var Snapshot: PCCSnapshot;
 begin
@@ -1252,18 +1240,18 @@ begin
   CommitSnapshot(Snapshot);
   Lock.Leave;
 end;
-{ @end $4C7948 }
+{ @end $7C0D60 }
 
-{ @routine $4C7998 TCCInterface_GetIntegrityChecksum1 }
+{ @routine $7C0D98 TCCInterface_GetIntegrityChecksum1 }
 function TCCInterface.GetIntegrityChecksum1: Cardinal;
 begin
   Lock.Enter;
   Result := GetSnapshot.IntegrityChecksum1;
   Lock.Leave;
 end;
-{ @end $4C7998 }
+{ @end $7C0D98 }
 
-{ @routine $4C79CC TCCInterface_SetIntegrityChecksum1 }
+{ @routine $7C0DBC TCCInterface_SetIntegrityChecksum1 }
 procedure TCCInterface.SetIntegrityChecksum1(Value: Cardinal);
 var Snapshot: PCCSnapshot;
 begin
@@ -1273,18 +1261,18 @@ begin
   CommitSnapshot(Snapshot);
   Lock.Leave;
 end;
-{ @end $4C79CC }
+{ @end $7C0DBC }
 
-{ @routine $4C7A1C TCCInterface_GetIntegrityChecksum2 }
+{ @routine $7C0DF4 TCCInterface_GetIntegrityChecksum2 }
 function TCCInterface.GetIntegrityChecksum2: Cardinal;
 begin
   Lock.Enter;
   Result := GetSnapshot.IntegrityChecksum2;
   Lock.Leave;
 end;
-{ @end $4C7A1C }
+{ @end $7C0DF4 }
 
-{ @routine $4C7A50 TCCInterface_SetIntegrityChecksum2 }
+{ @routine $7C0E18 TCCInterface_SetIntegrityChecksum2 }
 procedure TCCInterface.SetIntegrityChecksum2(Value: Cardinal);
 var Snapshot: PCCSnapshot;
 begin
@@ -1294,18 +1282,18 @@ begin
   CommitSnapshot(Snapshot);
   Lock.Leave;
 end;
-{ @end $4C7A50 }
+{ @end $7C0E18 }
 
-{ @routine $4C7AA0 TCCInterface_GetEncodedCheatPoints }
+{ @routine $7C0E50 TCCInterface_GetEncodedCheatPoints }
 function TCCInterface.GetEncodedCheatPoints: Integer;
 begin
   Lock.Enter;
   Result := GetSnapshot.EncodedCheatPoints;
   Lock.Leave;
 end;
-{ @end $4C7AA0 }
+{ @end $7C0E50 }
 
-{ @routine $4C7AD4 TCCInterface_SetEncodedCheatPoints }
+{ @routine $7C0E74 TCCInterface_SetEncodedCheatPoints }
 procedure TCCInterface.SetEncodedCheatPoints(Value: Integer);
 var Snapshot: PCCSnapshot;
 begin
@@ -1315,9 +1303,9 @@ begin
   CommitSnapshot(Snapshot);
   Lock.Leave;
 end;
-{ @end $4C7AD4 }
+{ @end $7C0E74 }
 
-{ @routine $4C7B24 Ex_OKGF_MulTable256x256 }
+{ @routine $7C0EAC Ex_OKGF_MulTable256x256 }
 function Ex_OKGF_MulTable256x256: Pointer;
 begin
   try
@@ -1326,9 +1314,9 @@ begin
     raise Exception.Create('Error in OKGF_MulTable256x256');
   end;
 end;
-{ @end $4C7B24 }
+{ @end $7C0EAC }
 
-{ @routine $4C7B9C Ex_OKGF_DXVersion }
+{ @routine $7C0F20 Ex_OKGF_DXVersion }
 function Ex_OKGF_DXVersion: Cardinal;
 begin
   try
@@ -1337,10 +1325,10 @@ begin
     raise Exception.Create('Error in OKGF_DXVersion');
   end;
 end;
-{ @end $4C7B9C }
+{ @end $7C0F20 }
 
-{ @routine $4C7C0C BeginImageRead }
-function BeginImageRead(Source: Pointer; SourceSize: Integer; out Width, Height: Integer): POkgfReadContext;
+{ @routine $7C0F8C BeginImageRead }
+function BeginImageRead(Source: Pointer; SourceSize: Integer; out Width, Height: Cardinal): POkgfReadContext;
 begin
   try
     Result := OKGF_ReadStart_Buf(Source, SourceSize, Width, Height);
@@ -1348,9 +1336,9 @@ begin
     raise Exception.Create('Error in OKGF_ReadStart_Buf');
   end;
 end;
-{ @end $4C7C0C }
+{ @end $7C0F8C }
 
-{ @routine $4C7CA4 ReadImagePixels }
+{ @routine $7C1008 ReadImagePixels }
 function ReadImagePixels(Context: POkgfReadContext; Pixels: Pointer; PitchBytes: Integer; RedMask, GreenMask, BlueMask, AlphaMask: Cardinal; BytesPerPixel: Integer): Integer;
 begin
   try
@@ -1359,9 +1347,9 @@ begin
     raise Exception.Create('Error in OKGF_Read');
   end;
 end;
-{ @end $4C7CA4 }
+{ @end $7C1008 }
 
-{ @routine $4C7D44 BeginIndexedImageRead }
+{ @routine $7C108C BeginIndexedImageRead }
 function BeginIndexedImageRead(Source: Pointer; SourceSize: Integer; out Width, Height, PaletteCount, BytesPerPixel: Integer): POkgfReadContext;
 begin
   try
@@ -1370,9 +1358,9 @@ begin
     raise Exception.Create('Error in OKGF_ReadStartPal_Buf');
   end;
 end;
-{ @end $4C7D44 }
+{ @end $7C108C }
 
-{ @routine $4C7DE8 ReadIndexedImagePixels }
+{ @routine $7C1114 ReadIndexedImagePixels }
 function ReadIndexedImagePixels(Context: POkgfReadContext; Pixels: Pointer; PitchBytes: Integer; Palette: PColorRGBA): Integer;
 begin
   try
@@ -1381,9 +1369,9 @@ begin
     raise Exception.Create('Error in OKGF_ReadPal');
   end;
 end;
-{ @end $4C7DE8 }
+{ @end $7C1114 }
 
-{ @routine $4C7E7C WritePngFile }
+{ @routine $7C118C WritePngFile }
 function WritePngFile(FileName: PAnsiChar; Pixels: Pointer; PitchBytes, Width, Height, HasAlpha, SwapRedBlue: Integer): Integer;
 begin
   try
@@ -1392,9 +1380,9 @@ begin
     raise Exception.Create('Error in OKGF_Write_PNG_File');
   end;
 end;
-{ @end $4C7E7C }
+{ @end $7C118C }
 
-{ @routine $4C7F24 WriteBmpFile }
+{ @routine $7C1218 WriteBmpFile }
 function WriteBmpFile(FileName: PAnsiChar; Pixels: Pointer; PitchBytes, BitsPerPixel: Integer; RedMask, GreenMask, BlueMask, AlphaMask: Cardinal; Width, Height: Integer): Integer;
 begin
   try
@@ -1403,9 +1391,9 @@ begin
     raise Exception.Create('Error in OKGF_Write_BMP_File');
   end;
 end;
-{ @end $4C7F24 }
+{ @end $7C1218 }
 
-{ @routine $4C7FD8 Ex_OKGR_AlphaBuf_Draw_RGBA }
+{ @routine $7C12B0 Ex_OKGR_AlphaBuf_Draw_RGBA }
 procedure Ex_OKGR_AlphaBuf_Draw_RGBA(Dest: Pointer; Pitch: Integer; Source: Pointer);
 begin
   try
@@ -1414,9 +1402,9 @@ begin
     raise Exception.Create('Error in OKGR_AlphaBuf_Draw_RGBA');
   end;
 end;
-{ @end $4C7FD8 }
+{ @end $7C12B0 }
 
-{ @routine $4C806C Ex_OKGR_TransAlphaBuf_Draw_RGBA }
+{ @routine $7C132C Ex_OKGR_TransAlphaBuf_Draw_RGBA }
 procedure Ex_OKGR_TransAlphaBuf_Draw_RGBA(Dest: Pointer; Pitch: Integer; Source: Pointer);
 begin
   try
@@ -1425,9 +1413,9 @@ begin
     raise Exception.Create('Error in OKGR_TransAlphaBuf_Draw_RGBA');
   end;
 end;
-{ @end $4C806C }
+{ @end $7C132C }
 
-{ @routine $4C8104 Ex_OKGR_AlphaIndexed_Draw_RGBA }
+{ @routine $7C13AC Ex_OKGR_AlphaIndexed_Draw_RGBA }
 procedure Ex_OKGR_AlphaIndexed_Draw_RGBA(Dest: Pointer; Pitch: Integer; Source: Pointer);
 begin
   try
@@ -1436,9 +1424,9 @@ begin
     raise Exception.Create('Error in OKGR_AlphaIndexed_Draw_RGBA');
   end;
 end;
-{ @end $4C8104 }
+{ @end $7C13AC }
 
-{ @routine $4C819C Ex_OKGR_AlphaIndexed_AlphaDraw_RGBA }
+{ @routine $7C142C Ex_OKGR_AlphaIndexed_AlphaDraw_RGBA }
 procedure Ex_OKGR_AlphaIndexed_AlphaDraw_RGBA(Dest: Pointer; Pitch: Integer; Source: Pointer);
 begin
   try
@@ -1447,9 +1435,9 @@ begin
     raise Exception.Create('Error in OKGR_AlphaIndexed_AlphaDraw_RGBA');
   end;
 end;
-{ @end $4C819C }
+{ @end $7C142C }
 
-{ @routine $4C8238 Ex_OKGR_TransBuf_Draw_RGBA }
+{ @routine $7C14B0 Ex_OKGR_TransBuf_Draw_RGBA }
 procedure Ex_OKGR_TransBuf_Draw_RGBA(Dest: Pointer; Pitch: Integer; Source: Pointer);
 begin
   try
@@ -1458,9 +1446,9 @@ begin
     raise Exception.Create('Error in OKGR_TransBuf_Draw_RGBA');
   end;
 end;
-{ @end $4C8238 }
+{ @end $7C14B0 }
 
-{ @routine $4C82CC Ex_OKGR_TransBuf_DrawClip_WORD }
+{ @routine $7C152C Ex_OKGR_TransBuf_DrawClip_WORD }
 procedure Ex_OKGR_TransBuf_DrawClip_WORD(Dest: Pointer; Pitch, X, Y: Integer; Source: Pointer; const Clip: TRect);
 begin
   try
@@ -1469,9 +1457,9 @@ begin
     raise Exception.Create('Error in OKGR_TransBuf_DrawClip_WORD');
   end;
 end;
-{ @end $4C82CC }
+{ @end $7C152C }
 
-{ @routine $4C8370 Ex_OKGR_TransBuf_HADrawClip_16 }
+{ @routine $7C15B8 Ex_OKGR_TransBuf_HADrawClip_16 }
 procedure Ex_OKGR_TransBuf_HADrawClip_16(Dest: Pointer; Pitch, X, Y: Integer; Source: Pointer; const Clip: TRect);
 begin
   try
@@ -1480,9 +1468,9 @@ begin
     raise Exception.Create('Error in OKGR_TransBuf_HADrawClip_16');
   end;
 end;
-{ @end $4C8370 }
+{ @end $7C15B8 }
 
-{ @routine $4C8414 Ex_OKGR_TransBuf_Build_WORD }
+{ @routine $7C1644 Ex_OKGR_TransBuf_Build_WORD }
 function Ex_OKGR_TransBuf_Build_WORD(Source: Pointer; Pitch, Width, Height: Integer; Dest: Pointer; TransparentColor: Word): Integer;
 begin
   try
@@ -1491,9 +1479,9 @@ begin
     raise Exception.Create('Error in OKGR_TransBuf_Build_WORD');
   end;
 end;
-{ @end $4C8414 }
+{ @end $7C1644 }
 
-{ @routine $4C84BC Ex_OKGR_TransBuf_BuildFromRGBA_16 }
+{ @routine $7C16D0 Ex_OKGR_TransBuf_BuildFromRGBA_16 }
 function Ex_OKGR_TransBuf_BuildFromRGBA_16(Source: Pointer; Pitch, Width, Height: Integer; Dest: Pointer): Integer;
 begin
   try
@@ -1502,9 +1490,9 @@ begin
     raise Exception.Create('Error in OKGR_TransBuf_BuildFromRGBA_16');
   end;
 end;
-{ @end $4C84BC }
+{ @end $7C16D0 }
 
-{ @routine $4C8564 Ex_OKGR_TransAlphaBuf_DrawClip_WORD }
+{ @routine $7C175C Ex_OKGR_TransAlphaBuf_DrawClip_WORD }
 procedure Ex_OKGR_TransAlphaBuf_DrawClip_WORD(Dest: Pointer; Pitch, X, Y: Integer; Source: Pointer; const Clip: TRect);
 begin
   try
@@ -1513,9 +1501,9 @@ begin
     raise Exception.Create('Error in OKGR_TransAlphaBuf_DrawClip_WORD');
   end;
 end;
-{ @end $4C8564 }
+{ @end $7C175C }
 
-{ @routine $4C860C Ex_OKGR_AlphaBuf_DrawClip_16 }
+{ @routine $7C17EC Ex_OKGR_AlphaBuf_DrawClip_16 }
 procedure Ex_OKGR_AlphaBuf_DrawClip_16(Dest: Pointer; Pitch, X, Y: Integer; Source: Pointer; const Clip: TRect);
 begin
   try
@@ -1524,9 +1512,9 @@ begin
     raise Exception.Create('Error in OKGR_AlphaBuf_DrawClip_16');
   end;
 end;
-{ @end $4C860C }
+{ @end $7C17EC }
 
-{ @routine $4C86AC Ex_OKGR_TransAlphaBuf_BuildFromRGBA_16 }
+{ @routine $7C1874 Ex_OKGR_TransAlphaBuf_BuildFromRGBA_16 }
 function Ex_OKGR_TransAlphaBuf_BuildFromRGBA_16(Source: Pointer; Pitch, Width, Height: Integer; Dest: Pointer): Integer;
 begin
   try
@@ -1535,9 +1523,9 @@ begin
     raise Exception.Create('Error in OKGR_TransAlphaBuf_BuildFromRGBA_16');
   end;
 end;
-{ @end $4C86AC }
+{ @end $7C1874 }
 
-{ @routine $4C875C Ex_OKGR_AlphaBuf_BuildFromRGBA }
+{ @routine $7C1908 Ex_OKGR_AlphaBuf_BuildFromRGBA }
 function Ex_OKGR_AlphaBuf_BuildFromRGBA(Source: Pointer; Pitch, Width, Height: Integer; Dest: Pointer): Integer;
 begin
   try
@@ -1546,9 +1534,9 @@ begin
     raise Exception.Create('Error in OKGR_AlphaBuf_BuildFromRGBA');
   end;
 end;
-{ @end $4C875C }
+{ @end $7C1908 }
 
-{ @routine $4C8804 Ex_OKGR_AlphaSimpleBuf_Draw_16 }
+{ @routine $7C1994 Ex_OKGR_AlphaSimpleBuf_Draw_16 }
 procedure Ex_OKGR_AlphaSimpleBuf_Draw_16(Dest: Pointer; DestPitch, DestX, DestY: Integer; Source: Pointer; SourcePitch, SourceX, SourceY, Width, Height: Integer);
 begin
   try
@@ -1557,9 +1545,9 @@ begin
     raise Exception.Create('Error in OKGR_AlphaSimpleBuf_Draw_16');
   end;
 end;
-{ @end $4C8804 }
+{ @end $7C1994 }
 
-{ @routine $4C88B8 Ex_OKGR_AlphaSimpleBufPalAlpha_Draw_16 }
+{ @routine $7C1A30 Ex_OKGR_AlphaSimpleBufPalAlpha_Draw_16 }
 procedure Ex_OKGR_AlphaSimpleBufPalAlpha_Draw_16(Dest: Pointer; DestPitch, DestX, DestY: Integer; Source: Pointer; SourcePitch, SourceX, SourceY, Width, Height: Integer; Palette: PColorRGBA);
 begin
   try
@@ -1568,9 +1556,9 @@ begin
     raise Exception.Create('Error in OKGR_AlphaSimpleBufPalAlpha_Draw_16');
   end;
 end;
-{ @end $4C88B8 }
+{ @end $7C1A30 }
 
-{ @routine $4C8978 Ex_OKGR_MaskBuf_DrawClip_DWORD }
+{ @routine $7C1AD8 Ex_OKGR_MaskBuf_DrawClip_DWORD }
 procedure Ex_OKGR_MaskBuf_DrawClip_DWORD(Dest: Pointer; Pitch, X, Y: Integer; Source: Pointer; Color: Cardinal; const Clip: TRect);
 begin
   try
@@ -1579,9 +1567,9 @@ begin
     raise Exception.Create('Error in OKGR_MaskBuf_DrawClip_DWORD');
   end;
 end;
-{ @end $4C8978 }
+{ @end $7C1AD8 }
 
-{ @routine $4C8A20 Ex_OKGR_MaskBuf_DrawClip_WORD }
+{ @routine $7C1B68 Ex_OKGR_MaskBuf_DrawClip_WORD }
 procedure Ex_OKGR_MaskBuf_DrawClip_WORD(Dest: Pointer; Pitch, X, Y: Integer; Source: Pointer; Color: Word; const Clip: TRect);
 begin
   try
@@ -1590,9 +1578,9 @@ begin
     raise Exception.Create('Error in OKGR_MaskBuf_DrawClip_WORD');
   end;
 end;
-{ @end $4C8A20 }
+{ @end $7C1B68 }
 
-{ @routine $4C8AC4 Ex_OKGR_TransBuf_FillAlphaClip_RGBA }
+{ @routine $7C1BF8 Ex_OKGR_TransBuf_FillAlphaClip_RGBA }
 procedure Ex_OKGR_TransBuf_FillAlphaClip_RGBA(Dest: Pointer; Pitch, X, Y: Integer; Source: Pointer; const Clip: TRect; Color: Cardinal);
 begin
   try
@@ -1601,9 +1589,9 @@ begin
     raise Exception.Create('Error in OKGR_TransBuf_FillAlphaClip_RGBA');
   end;
 end;
-{ @end $4C8AC4 }
+{ @end $7C1BF8 }
 
-{ @routine $4C8B70 Ex_OKGR_TransBuf_FillAlphaClip_16 }
+{ @routine $7C1C8C Ex_OKGR_TransBuf_FillAlphaClip_16 }
 procedure Ex_OKGR_TransBuf_FillAlphaClip_16(Dest: Pointer; Pitch, X, Y: Integer; Source: Pointer; const Clip: TRect; Color: Word);
 begin
   try
@@ -1612,9 +1600,9 @@ begin
     raise Exception.Create('Error in OKGR_TransBuf_FillAlphaClip_16');
   end;
 end;
-{ @end $4C8B70 }
+{ @end $7C1C8C }
 
-{ @routine $4C8C18 Ex_OKGR_AlphaIndexed_CopyDrawClip_WORD }
+{ @routine $7C1D20 Ex_OKGR_AlphaIndexed_CopyDrawClip_WORD }
 procedure Ex_OKGR_AlphaIndexed_CopyDrawClip_WORD(Dest: Pointer; Pitch, X, Y: Integer; Source: Pointer; const Clip: TRect);
 begin
   try
@@ -1623,9 +1611,9 @@ begin
     raise Exception.Create('Error in OKGR_AlphaIndexed_CopyDrawClip_WORD');
   end;
 end;
-{ @end $4C8C18 }
+{ @end $7C1D20 }
 
-{ @routine $4C8CC4 Ex_OKGR_AlphaIndexed_CopyDrawClip_Alpha_16 }
+{ @routine $7C1DB4 Ex_OKGR_AlphaIndexed_CopyDrawClip_Alpha_16 }
 procedure Ex_OKGR_AlphaIndexed_CopyDrawClip_Alpha_16(Dest: Pointer; Pitch, X, Y: Integer; Source: Pointer; const Clip: TRect; Alpha: Byte);
 begin
   try
@@ -1634,9 +1622,9 @@ begin
     raise Exception.Create('Error in OKGR_AlphaIndexed_CopyDrawClip_Alpha_16');
   end;
 end;
-{ @end $4C8CC4 }
+{ @end $7C1DB4 }
 
-{ @routine $4C8D78 Ex_OKGR_AlphaIndexed_AlphaDrawClip_16 }
+{ @routine $7C1E54 Ex_OKGR_AlphaIndexed_AlphaDrawClip_16 }
 procedure Ex_OKGR_AlphaIndexed_AlphaDrawClip_16(Dest: Pointer; Pitch, X, Y: Integer; Source: Pointer; const Clip: TRect);
 begin
   try
@@ -1645,9 +1633,9 @@ begin
     raise Exception.Create('Error in OKGR_AlphaIndexed_AlphaDrawClip_16');
   end;
 end;
-{ @end $4C8D78 }
+{ @end $7C1E54 }
 
-{ @routine $4C8E20 Ex_OKGR_AlphaIndexed_AlphaDrawClip_Alpha_16 }
+{ @routine $7C1EE4 Ex_OKGR_AlphaIndexed_AlphaDrawClip_Alpha_16 }
 procedure Ex_OKGR_AlphaIndexed_AlphaDrawClip_Alpha_16(Dest: Pointer; Pitch, X, Y: Integer; Source: Pointer; const Clip: TRect; Alpha: Byte);
 begin
   try
@@ -1656,9 +1644,9 @@ begin
     raise Exception.Create('Error in OKGR_AlphaIndexed_AlphaDrawClip_Alpha_16');
   end;
 end;
-{ @end $4C8E20 }
+{ @end $7C1EE4 }
 
-{ @routine $4C8ED4 Ex_OKGR_RotateBuf_Build }
+{ @routine $7C1F84 Ex_OKGR_RotateBuf_Build }
 function Ex_OKGR_RotateBuf_Build(Width, Height, SourceWidth, SourceHeight, CenterX, CenterY: Integer): Pointer;
 begin
   try
@@ -1667,9 +1655,9 @@ begin
     raise Exception.Create('Error in OKGR_RotateBuf_Build');
   end;
 end;
-{ @end $4C8ED4 }
+{ @end $7C1F84 }
 
-{ @routine $4C8F78 Ex_OKGR_RotateBuf_Free }
+{ @routine $7C200C Ex_OKGR_RotateBuf_Free }
 procedure Ex_OKGR_RotateBuf_Free(Buffer: Pointer);
 begin
   try
@@ -1678,17 +1666,17 @@ begin
     raise Exception.Create('Error in OKGR_RotateBuf_Free');
   end;
 end;
-{ @end $4C8F78 }
+{ @end $7C200C }
 
-{ @routine $4C8FF4 Ex_OKGR_RotateBuf_Size }
+{ @routine $7C2080 Ex_OKGR_RotateBuf_Size }
 procedure Ex_OKGR_RotateBuf_Size(X, Y: Integer; Angle: Byte; RotationMap: Pointer; var Bounds: TRect);
 begin
   try OKGR_RotateBuf_Size(X, Y, Angle, RotationMap, Bounds);
   except raise Exception.Create('Error in OKGR_RotateBuf_Size'); end;
 end;
-{ @end $4C8FF4 }
+{ @end $7C2080 }
 
-{ @routine $4C908C Ex_OKGR_RotateBuf_Draw_DWORD }
+{ @routine $7C2100 Ex_OKGR_RotateBuf_Draw_DWORD }
 procedure Ex_OKGR_RotateBuf_Draw_DWORD(Dest: Pointer; DestPitch: Integer; Source: Pointer; SourcePitch, CenterX, CenterY: Integer; Angle: Byte; RotationMap: Pointer);
 begin
   try
@@ -1697,9 +1685,9 @@ begin
     raise Exception.Create('Error in OKGR_RotateBuf_Draw_DWORD');
   end;
 end;
-{ @end $4C908C }
+{ @end $7C2100 }
 
-{ @routine $4C9134 Ex_OKGR_RotateBuf_Draw_BYTE }
+{ @routine $7C2194 Ex_OKGR_RotateBuf_Draw_BYTE }
 procedure Ex_OKGR_RotateBuf_Draw_BYTE(Dest: Pointer; DestPitch: Integer; Source: Pointer; SourcePitch, Width, Height: Integer; Angle: Byte; RotationMap: Pointer);
 begin
   try
@@ -1708,17 +1696,17 @@ begin
     raise Exception.Create('Error in OKGR_RotateBuf_Draw_BYTE');
   end;
 end;
-{ @end $4C9134 }
+{ @end $7C2194 }
 
-{ @routine $4C91DC Ex_OKGR_RotateBuf_DrawTransClip_WORD }
+{ @routine $7C2228 Ex_OKGR_RotateBuf_DrawTransClip_WORD }
 procedure Ex_OKGR_RotateBuf_DrawTransClip_WORD(Dest: Pointer; DestPitch: Integer; Source: Pointer; SourcePitch, CenterX, CenterY: Integer; Angle: Byte; RotationMap: Pointer; const Clip: TRect);
 begin
   try OKGR_RotateBuf_DrawTransClip_WORD(Dest, DestPitch, Source, SourcePitch, CenterX, CenterY, Angle, RotationMap, Clip);
   except raise Exception.Create('Error in OKGR_RotateBuf_DrawTransClip_WORD'); end;
 end;
-{ @end $4C91DC }
+{ @end $7C2228 }
 
-{ @routine $4C9290 Ex_OKGR_LightBuf_Create }
+{ @routine $7C22C8 Ex_OKGR_LightBuf_Create }
 function Ex_OKGR_LightBuf_Create(Width, Height: Integer): Pointer;
 begin
   try
@@ -1727,9 +1715,9 @@ begin
     raise Exception.Create('Error in OKGR_LightBuf_Create');
   end;
 end;
-{ @end $4C9290 }
+{ @end $7C22C8 }
 
-{ @routine $4C931C Ex_OKGR_LightBuf_Destroy }
+{ @routine $7C2340 Ex_OKGR_LightBuf_Destroy }
 procedure Ex_OKGR_LightBuf_Destroy(Buffer: Pointer);
 begin
   try
@@ -1738,9 +1726,9 @@ begin
     raise Exception.Create('Error in OKGR_LightBuf_Destroy');
   end;
 end;
-{ @end $4C931C }
+{ @end $7C2340 }
 
-{ @routine $4C9398 Ex_OKGR_LightBuf_SetSme }
+{ @routine $7C23B4 Ex_OKGR_LightBuf_SetSme }
 procedure Ex_OKGR_LightBuf_SetSme(Buffer: Pointer; X, Y: Integer);
 begin
   try
@@ -1749,9 +1737,9 @@ begin
     raise Exception.Create('Error in OKGR_LightBuf_SetSme');
   end;
 end;
-{ @end $4C9398 }
+{ @end $7C23B4 }
 
-{ @routine $4C9428 Ex_OKGR_LightBuf_Init }
+{ @routine $7C242C Ex_OKGR_LightBuf_Init }
 procedure Ex_OKGR_LightBuf_Init(Buffer: Pointer; Value: Byte);
 begin
   try
@@ -1760,9 +1748,9 @@ begin
     raise Exception.Create('Error in OKGR_LightBuf_Init');
   end;
 end;
-{ @end $4C9428 }
+{ @end $7C242C }
 
-{ @routine $4C94AC Ex_OKGR_LightBuf_LoadFromPalBuf }
+{ @routine $7C24A0 Ex_OKGR_LightBuf_LoadFromPalBuf }
 procedure Ex_OKGR_LightBuf_LoadFromPalBuf(Buffer, Source: Pointer; Width, Height, Pitch: Integer; Palette: PColorRGBA);
 begin
   try
@@ -1771,9 +1759,9 @@ begin
     raise Exception.Create('Error in OKGR_LightBuf_LoadFromPalBuf');
   end;
 end;
-{ @end $4C94AC }
+{ @end $7C24A0 }
 
-{ @routine $4C9550 Ex_OKGR_LightBuf_Rotate }
+{ @routine $7C252C Ex_OKGR_LightBuf_Rotate }
 procedure Ex_OKGR_LightBuf_Rotate(Dest, Source, RotationMap: Pointer; Angle: Byte);
 begin
   try
@@ -1782,9 +1770,9 @@ begin
     raise Exception.Create('Error in OKGR_LightBuf_Rotate');
   end;
 end;
-{ @end $4C9550 }
+{ @end $7C252C }
 
-{ @routine $4C95E4 Ex_OKGR_Planet2_TemplBuild }
+{ @routine $7C25AC Ex_OKGR_Planet2_TemplBuild }
 function Ex_OKGR_Planet2_TemplBuild(Source: Pointer; Pitch, Height, TextureWidth, TextureHeight: Integer; var ByteCount: Integer): Pointer;
 begin
   try
@@ -1793,9 +1781,9 @@ begin
     raise Exception.Create('Error in OKGR_Planet2_TemplBuild');
   end;
 end;
-{ @end $4C95E4 }
+{ @end $7C25AC }
 
-{ @routine $4C968C Ex_OKGR_Planet2_TemplDel }
+{ @routine $7C2638 Ex_OKGR_Planet2_TemplDel }
 function Ex_OKGR_Planet2_TemplDel(TemplateData: Pointer): Integer;
 begin
   try
@@ -1804,9 +1792,9 @@ begin
     raise Exception.Create('Error in OKGR_Planet2_TemplDel');
   end;
 end;
-{ @end $4C968C }
+{ @end $7C2638 }
 
-{ @routine $4C9710 Ex_OKGR_Planet2_DrawAndLight_32 }
+{ @routine $7C26AC Ex_OKGR_Planet2_DrawAndLight_32 }
 procedure Ex_OKGR_Planet2_DrawAndLight_32(Dest: Pointer; DestPitch: Integer; TemplateData, Source: Pointer; SourcePitch, WidthMask, MapOffset: Integer; LightBuffer, Palette: Pointer; X, Y: Integer);
 begin
   try
@@ -1815,9 +1803,9 @@ begin
     raise Exception.Create('Error in OKGR_Planet2_DrawAndLight_32');
   end;
 end;
-{ @end $4C9710 }
+{ @end $7C26AC }
 
-{ @routine $4C97C8 Ex_OKGR_Planet2_DrawAndLightClip_16 }
+{ @routine $7C274C Ex_OKGR_Planet2_DrawAndLightClip_16 }
 procedure Ex_OKGR_Planet2_DrawAndLightClip_16(Dest: Pointer; DestPitch: Integer; TemplateData, Source: Pointer; SourcePitch, WidthMask, MapOffset: Integer; LightBuffer, Palette: Pointer; X, Y: Integer; const Clip: TRect);
 begin
   try
@@ -1826,9 +1814,9 @@ begin
     raise Exception.Create('Error in OKGR_Planet2_DrawAndLightClip_16');
   end;
 end;
-{ @end $4C97C8 }
+{ @end $7C274C }
 
-{ @routine $4C9888 Ex_OKGR_Planet3_DrawAndLight_32 }
+{ @routine $7C27F4 Ex_OKGR_Planet3_DrawAndLight_32 }
 procedure Ex_OKGR_Planet3_DrawAndLight_32(Dest: Pointer; DestPitch: Integer; TemplateData, Source: Pointer; SourcePitch, WidthMask, MapOffset: Integer; LightBuffer, Palette: Pointer; X, Y: Integer);
 begin
   try
@@ -1837,9 +1825,9 @@ begin
     raise Exception.Create('Error in OKGR_Planet3_DrawAndLight_32');
   end;
 end;
-{ @end $4C9888 }
+{ @end $7C27F4 }
 
-{ @routine $4C9940 Ex_OKGR_Planet3_DrawAndLightClip_16 }
+{ @routine $7C2894 Ex_OKGR_Planet3_DrawAndLightClip_16 }
 procedure Ex_OKGR_Planet3_DrawAndLightClip_16(Dest: Pointer; DestPitch: Integer; TemplateData, Source: Pointer; SourcePitch, WidthMask, MapOffset: Integer; LightBuffer, Palette: Pointer; X, Y: Integer; const Clip: TRect);
 begin
   try
@@ -1848,9 +1836,9 @@ begin
     raise Exception.Create('Error in OKGR_Planet3_DrawAndLightClip_16');
   end;
 end;
-{ @end $4C9940 }
+{ @end $7C2894 }
 
-{ @routine $4C9A00 Ex_OKGR_Planet4_DrawAndLight_32 }
+{ @routine $7C293C Ex_OKGR_Planet4_DrawAndLight_32 }
 procedure Ex_OKGR_Planet4_DrawAndLight_32(Dest: Pointer; DestPitch: Integer; TemplateData, Source: Pointer; SourcePitch, WidthMask, MapOffset: Integer; LightBuffer, Palette: Pointer; X, Y: Integer);
 begin
   try
@@ -1859,9 +1847,9 @@ begin
     raise Exception.Create('Error in OKGR_Planet4_DrawAndLight_32');
   end;
 end;
-{ @end $4C9A00 }
+{ @end $7C293C }
 
-{ @routine $4C9AB8 Ex_OKGR_Planet4_DrawAndLightClip_16 }
+{ @routine $7C29DC Ex_OKGR_Planet4_DrawAndLightClip_16 }
 procedure Ex_OKGR_Planet4_DrawAndLightClip_16(Dest: Pointer; DestPitch: Integer; TemplateData, Source: Pointer; SourcePitch, WidthMask, MapOffset: Integer; LightBuffer, Palette: Pointer; X, Y: Integer; const Clip: TRect);
 begin
   try
@@ -1870,9 +1858,9 @@ begin
     raise Exception.Create('Error in OKGR_Planet4_DrawAndLightClip_16');
   end;
 end;
-{ @end $4C9AB8 }
+{ @end $7C29DC }
 
-{ @routine $4C9B78 Ex_OKGR_Copy_XY_XY_WORD }
+{ @routine $7C2A84 Ex_OKGR_Copy_XY_XY_WORD }
 procedure Ex_OKGR_Copy_XY_XY_WORD(Dest: Pointer; DestPitch, DestX, DestY: Integer; Source: Pointer; SourcePitch, SourceX, SourceY, Width, Height: Integer);
 begin
   try
@@ -1881,9 +1869,9 @@ begin
     raise Exception.Create('Error in OKGR_Copy_XY_XY_WORD');
   end;
 end;
-{ @end $4C9B78 }
+{ @end $7C2A84 }
 
-{ @routine $4C9C24 Ex_OKGR_PalCopy_XY_XY_WORD }
+{ @routine $7C2B18 Ex_OKGR_PalCopy_XY_XY_WORD }
 procedure Ex_OKGR_PalCopy_XY_XY_WORD(Dest: Pointer; DestPitch, DestX, DestY: Integer; Source: Pointer; SourcePitch, SourceX, SourceY: Integer; Palette: Pointer; Width, Height: Integer);
 begin
   try
@@ -1892,9 +1880,9 @@ begin
     raise Exception.Create('Error in OKGR_PalCopy_XY_XY_WORD');
   end;
 end;
-{ @end $4C9C24 }
+{ @end $7C2B18 }
 
-{ @routine $4C9CD8 Ex_OKGR_CopyTrans_XY_XY_WORD }
+{ @routine $7C2BB4 Ex_OKGR_CopyTrans_XY_XY_WORD }
 procedure Ex_OKGR_CopyTrans_XY_XY_WORD(Dest: Pointer; DestPitch, DestX, DestY: Integer; Source: Pointer; SourcePitch, SourceX, SourceY, Width, Height: Integer; TransparentColor: Word);
 begin
   try
@@ -1903,9 +1891,9 @@ begin
     raise Exception.Create('Error in OKGR_CopyTrans_XY_XY_WORD');
   end;
 end;
-{ @end $4C9CD8 }
+{ @end $7C2BB4 }
 
-{ @routine $4C9D8C Ex_OKGR_CopySingleBuf_XY_XY_WORD }
+{ @routine $7C2C54 Ex_OKGR_CopySingleBuf_XY_XY_WORD }
 procedure Ex_OKGR_CopySingleBuf_XY_XY_WORD(Pixels: Pointer; Pitch, DestX, DestY, SourceX, SourceY, Width, Height: Integer);
 begin
   try
@@ -1914,9 +1902,9 @@ begin
     raise Exception.Create('Error in OKGR_CopySingleBuf_XY_XY_WORD');
   end;
 end;
-{ @end $4C9D8C }
+{ @end $7C2C54 }
 
-{ @routine $4C9E38 Ex_OKGR_HACopy_XY_XY_16 }
+{ @routine $7C2CE8 Ex_OKGR_HACopy_XY_XY_16 }
 procedure Ex_OKGR_HACopy_XY_XY_16(Dest: Pointer; DestPitch, DestX, DestY: Integer; Source: Pointer; SourcePitch, SourceX, SourceY, Width, Height: Integer);
 begin
   try
@@ -1925,9 +1913,9 @@ begin
     raise Exception.Create('Error in OKGR_HACopy_XY_XY_16');
   end;
 end;
-{ @end $4C9E38 }
+{ @end $7C2CE8 }
 
-{ @routine $4C9EE4 Ex_OKGR_StretchGdi_WORD }
+{ @routine $7C2D7C Ex_OKGR_StretchGdi_WORD }
 procedure Ex_OKGR_StretchGdi_WORD(Dest: Pointer; Width, Height: Cardinal; Source: Pointer; SourceWidth, SourceHeight: Cardinal);
 begin
   try
@@ -1936,9 +1924,9 @@ begin
     raise Exception.Create('Error in OKGR_StretchGdi_WORD');
   end;
 end;
-{ @end $4C9EE4 }
+{ @end $7C2D7C }
 
-{ @routine $4C9F80 Ex_OKGR_Fill_WORD }
+{ @routine $7C2E00 Ex_OKGR_Fill_WORD }
 procedure Ex_OKGR_Fill_WORD(Pixels: Pointer; Pitch, Width, Height: Integer; Color: Word);
 begin
   try
@@ -1947,9 +1935,9 @@ begin
     raise Exception.Create('Error in OKGR_Fill_WORD');
   end;
 end;
-{ @end $4C9F80 }
+{ @end $7C2E00 }
 
-{ @routine $4CA010 Ex_OKGF_ConvertRGBto565 }
+{ @routine $7C2E7C Ex_OKGF_ConvertRGBto565 }
 procedure Ex_OKGF_ConvertRGBto565(Source, Dest: Pointer; Pitch, Width, Height: Integer);
 begin
   try
@@ -1958,9 +1946,9 @@ begin
     raise Exception.Create('Error in OKGF_ConvertRGBto565');
   end;
 end;
-{ @end $4CA010 }
+{ @end $7C2E7C }
 
-{ @routine $4CA0A8 Ex_OKGF_Convert565toRGB }
+{ @routine $7C2EFC Ex_OKGF_Convert565toRGB }
 procedure Ex_OKGF_Convert565toRGB(Source: Pointer; SourcePitch: Integer; Dest: Pointer; DestPitch, Width, Height: Integer);
 begin
   try
@@ -1969,9 +1957,9 @@ begin
     raise Exception.Create('Error in OKGF_Convert565toRGB');
   end;
 end;
-{ @end $4CA0A8 }
+{ @end $7C2EFC }
 
-{ @routine $4CA144 Ex_OKGF_Convert565toBGR }
+{ @routine $7C2F80 Ex_OKGF_Convert565toBGR }
 procedure Ex_OKGF_Convert565toBGR(Source: Pointer; SourcePitch: Integer; Dest: Pointer; DestPitch, Width, Height: Integer);
 begin
   try
@@ -1980,9 +1968,9 @@ begin
     raise Exception.Create('Error in OKGF_Convert565toBGR');
   end;
 end;
-{ @end $4CA144 }
+{ @end $7C2F80 }
 
-{ @routine $4CA1E0 Ex_OKGF_Convert565toBGRA }
+{ @routine $7C3004 Ex_OKGF_Convert565toBGRA }
 procedure Ex_OKGF_Convert565toBGRA(Source: Pointer; SourcePitch: Integer; Dest: Pointer; DestPitch, Width, Height: Integer);
 begin
   try
@@ -1991,9 +1979,9 @@ begin
     raise Exception.Create('Error in OKGF_Convert565toBGRA');
   end;
 end;
-{ @end $4CA1E0 }
+{ @end $7C3004 }
 
-{ @routine $4CA27C Ex_OKGF_Convert_8888to565 }
+{ @routine $7C3088 Ex_OKGF_Convert_8888to565 }
 procedure Ex_OKGF_Convert_8888to565(Dest: Pointer; DestPitch, DestX, DestY: Integer; Source: Pointer; SourcePitch, SourceX, SourceY, Width, Height: Integer);
 begin
   try
@@ -2002,9 +1990,9 @@ begin
     raise Exception.Create('Error in OKGF_Convert_8888to565');
   end;
 end;
-{ @end $4CA27C }
+{ @end $7C3088 }
 
-{ @routine $4CA328 Ex_OKGR_ShrLight_16 }
+{ @routine $7C311C Ex_OKGR_ShrLight_16 }
 procedure Ex_OKGR_ShrLight_16(Pixels: Pointer; Pitch, Width, Height, Shift: Integer);
 begin
   try
@@ -2013,9 +2001,9 @@ begin
     raise Exception.Create('Error in OKGR_ShrLight_16');
   end;
 end;
-{ @end $4CA328 }
+{ @end $7C311C }
 
-{ @routine $4CA3BC Ex_OKGR_ShrLightMask_16 }
+{ @routine $7C3198 Ex_OKGR_ShrLightMask_16 }
 procedure Ex_OKGR_ShrLightMask_16(Dest: Pointer; DestPitch: Integer; Source: Pointer; SourcePitch, Width, Height: Integer);
 begin
   try
@@ -2024,9 +2012,9 @@ begin
     raise Exception.Create('Error in OKGR_ShrLightMask_16');
   end;
 end;
-{ @end $4CA3BC }
+{ @end $7C3198 }
 
-{ @routine $4CA458 Ex_OKGR_Light_BYTE }
+{ @routine $7C321C Ex_OKGR_Light_BYTE }
 procedure Ex_OKGR_Light_BYTE(Pixels: Pointer; PixelStride, Pitch, Width, Height: Integer; Alpha: Byte);
 begin
   try
@@ -2035,9 +2023,9 @@ begin
     raise Exception.Create('Error in OKGR_Light_BYTE');
   end;
 end;
-{ @end $4CA458 }
+{ @end $7C321C }
 
-{ @routine $4CA4F0 Ex_OKGR_Circle_DrawClip_WORD }
+{ @routine $7C32A0 Ex_OKGR_Circle_DrawClip_WORD }
 procedure Ex_OKGR_Circle_DrawClip_WORD(Pixels: Pointer; Pitch, X, Y, Radius: Integer; Color: Word; const Clip: TRect);
 begin
   try
@@ -2046,9 +2034,9 @@ begin
     raise Exception.Create('Error in OKGR_Circle_DrawClip_WORD');
   end;
 end;
-{ @end $4CA4F0 }
+{ @end $7C32A0 }
 
-{ @routine $4CA594 Ex_OKGR_Circle_DrawClip_BYTE }
+{ @routine $7C3330 Ex_OKGR_Circle_DrawClip_BYTE }
 procedure Ex_OKGR_Circle_DrawClip_BYTE(Pixels: Pointer; Pitch, X, Y, Radius: Integer; Color: Byte; const Clip: TRect);
 begin
   try
@@ -2057,9 +2045,9 @@ begin
     raise Exception.Create('Error in OKGR_Circle_DrawClip_BYTE');
   end;
 end;
-{ @end $4CA594 }
+{ @end $7C3330 }
 
-{ @routine $4CA638 Ex_OKGR_Circle_DrawFillClip_WORD }
+{ @routine $7C33C0 Ex_OKGR_Circle_DrawFillClip_WORD }
 procedure Ex_OKGR_Circle_DrawFillClip_WORD(Pixels: Pointer; Pitch, X, Y, Radius: Integer; Color: Word; const Clip: TRect);
 begin
   try
@@ -2068,9 +2056,9 @@ begin
     raise Exception.Create('Error in OKGR_Circle_DrawFillClip_WORD');
   end;
 end;
-{ @end $4CA638 }
+{ @end $7C33C0 }
 
-{ @routine $4CA6E0 Ex_OKGR_Circle_DrawFillClip_BYTE }
+{ @routine $7C3454 Ex_OKGR_Circle_DrawFillClip_BYTE }
 procedure Ex_OKGR_Circle_DrawFillClip_BYTE(Pixels: Pointer; Pitch, X, Y, Radius: Integer; Color: Byte; const Clip: TRect);
 begin
   try
@@ -2079,9 +2067,9 @@ begin
     raise Exception.Create('Error in OKGR_Circle_DrawFillClip_BYTE');
   end;
 end;
-{ @end $4CA6E0 }
+{ @end $7C3454 }
 
-{ @routine $4CA788 Ex_OKGR_Line_Clip }
+{ @routine $7C34E8 Ex_OKGR_Line_Clip }
 function Ex_OKGR_Line_Clip(var X1, Y1, X2, Y2: Integer; const Clip: TRect): Integer;
 begin
   try
@@ -2090,9 +2078,9 @@ begin
     raise Exception.Create('Error in OKGR_Line_Clip');
   end;
 end;
-{ @end $4CA788 }
+{ @end $7C34E8 }
 
-{ @routine $4CA820 Ex_OKGR_LineColor_Clip }
+{ @routine $7C3564 Ex_OKGR_LineColor_Clip }
 function Ex_OKGR_LineColor_Clip(var X1, Y1: Integer; var Color1: Cardinal; var X2, Y2: Integer; var Color2: Cardinal; const Clip: TRect): Integer;
 begin
   try
@@ -2101,9 +2089,9 @@ begin
     raise Exception.Create('Error in Ex_OKGR_LineColor_Clip');
   end;
 end;
-{ @end $4CA820 }
+{ @end $7C3564 }
 
-{ @routine $4CA8C8 Ex_OKGR_Line_Draw_WORD }
+{ @routine $7C35F0 Ex_OKGR_Line_Draw_WORD }
 procedure Ex_OKGR_Line_Draw_WORD(Pixels: Pointer; Pitch, X1, Y1, X2, Y2: Integer; Color: Word);
 begin
   try
@@ -2112,9 +2100,9 @@ begin
     raise Exception.Create('Error in OKGR_Line_Draw_WORD');
   end;
 end;
-{ @end $4CA8C8 }
+{ @end $7C35F0 }
 
-{ @routine $4CA968 Ex_OKGR_Line_DrawClip_WORD }
+{ @routine $7C367C Ex_OKGR_Line_DrawClip_WORD }
 procedure Ex_OKGR_Line_DrawClip_WORD(Pixels: Pointer; Pitch, X1, Y1, X2, Y2: Integer; Color: Word; const Clip: TRect);
 begin
   try
@@ -2123,9 +2111,9 @@ begin
     raise Exception.Create('Error in OKGR_Line_DrawClip_WORD');
   end;
 end;
-{ @end $4CA968 }
+{ @end $7C367C }
 
-{ @routine $4CAA10 Ex_OKGR_Line_CopyToBuf_WORD }
+{ @routine $7C3710 Ex_OKGR_Line_CopyToBuf_WORD }
 function Ex_OKGR_Line_CopyToBuf_WORD(Dest, Source: Pointer; Pitch, X1, Y1, X2, Y2: Integer): Integer;
 begin
   try
@@ -2134,9 +2122,9 @@ begin
     raise Exception.Create('Error in OKGR_Line_CopyToBuf_WORD');
   end;
 end;
-{ @end $4CAA10 }
+{ @end $7C3710 }
 
-{ @routine $4CAABC Ex_OKGR_Line_CopyFromBuf_WORD }
+{ @routine $7C37A0 Ex_OKGR_Line_CopyFromBuf_WORD }
 function Ex_OKGR_Line_CopyFromBuf_WORD(Source, Dest: Pointer; Pitch, X1, Y1, X2, Y2: Integer): Integer;
 begin
   try
@@ -2145,9 +2133,9 @@ begin
     raise Exception.Create('Error in OKGR_Line_CopyFromBuf_WORD');
   end;
 end;
-{ @end $4CAABC }
+{ @end $7C37A0 }
 
-{ @routine $4CAB68 Ex_OKGR_Line_DrawClip_Alpha_16 }
+{ @routine $7C3830 Ex_OKGR_Line_DrawClip_Alpha_16 }
 procedure Ex_OKGR_Line_DrawClip_Alpha_16(Pixels: Pointer; Pitch, X1, Y1, X2, Y2: Integer; Color: Word; Alpha: Byte; const Clip: TRect);
 begin
   try
@@ -2156,9 +2144,9 @@ begin
     raise Exception.Create('Error in OKGR_Line_DrawClip_Alpha_16');
   end;
 end;
-{ @end $4CAB68 }
+{ @end $7C3830 }
 
-{ @routine $4CAC18 Ex_OKGR_AnimLine_Draw_16 }
+{ @routine $7C38CC Ex_OKGR_AnimLine_Draw_16 }
 procedure Ex_OKGR_AnimLine_Draw_16(Pixels: Pointer; Pitch, X1, Y1, X2, Y2: Integer; Color: Word; Phase: Integer; const Clip: TRect);
 begin
   try
@@ -2167,9 +2155,9 @@ begin
     raise Exception.Create('Error in OKGR_AnimLine_Draw_16');
   end;
 end;
-{ @end $4CAC18 }
+{ @end $7C38CC }
 
-{ @routine $4CACC0 Ex_OKGR_AnimShadowLine_Draw_16 }
+{ @routine $7C3960 Ex_OKGR_AnimShadowLine_Draw_16 }
 procedure Ex_OKGR_AnimShadowLine_Draw_16(Pixels: Pointer; Pitch, X1, Y1, X2, Y2: Integer; Color: Word; Phase: Integer; const Clip: TRect; ShadowPixels: Pointer; ShadowPitch: Integer);
 begin
   try
@@ -2178,9 +2166,9 @@ begin
     raise Exception.Create('Error in OKGR_AnimShadowLine_Draw_16');
   end;
 end;
-{ @end $4CACC0 }
+{ @end $7C3960 }
 
-{ @routine $4CAD78 Ex_OKGR_Alpha64Trapezium_16 }
+{ @routine $7C3A04 Ex_OKGR_Alpha64Trapezium_16 }
 procedure Ex_OKGR_Alpha64Trapezium_16(Pixels: Pointer; Pitch, X1, Y1, X2, Y2, X3, X4: Integer; Color: Word; const Clip: TRect);
 begin
   try
@@ -2189,9 +2177,9 @@ begin
     raise Exception.Create('Error in OKGR_Alpha64Trapezium_16');
   end;
 end;
-{ @end $4CAD78 }
+{ @end $7C3A04 }
 
-{ @routine $4CAE28 Ex_OKGR_Alpha128Trapezium_16 }
+{ @routine $7C3AA0 Ex_OKGR_Alpha128Trapezium_16 }
 procedure Ex_OKGR_Alpha128Trapezium_16(Pixels: Pointer; Pitch, X1, Y1, X2, Y2, X3, X4: Integer; Color: Word; const Clip: TRect);
 begin
   try
@@ -2200,9 +2188,9 @@ begin
     raise Exception.Create('Error in OKGR_Alpha128Trapezium_16');
   end;
 end;
-{ @end $4CAE28 }
+{ @end $7C3AA0 }
 
-{ @routine $4CAED8 Ex_OKGR_FillTrapezium_DWORD }
+{ @routine $7C3B3C Ex_OKGR_FillTrapezium_DWORD }
 procedure Ex_OKGR_FillTrapezium_DWORD(Pixels: Pointer; Pitch, X1, X2, Y1, X3, X4, Y2: Integer; Color: Cardinal; const Clip: TRect);
 begin
   try
@@ -2211,9 +2199,9 @@ begin
     raise Exception.Create('Error in OKGR_FillTrapezium_DWORD');
   end;
 end;
-{ @end $4CAED8 }
+{ @end $7C3B3C }
 
-{ @routine $4CAF88 Ex_OKGF_Rescale }
+{ @routine $7C3BD4 Ex_OKGF_Rescale }
 procedure Ex_OKGF_Rescale(Dest: Pointer; Width, Height, DestPitch: Integer; Source: Pointer; SourceWidth, SourceHeight, SourcePitch, BytesPerPixel, Filter: Integer);
 begin
   try
@@ -2222,9 +2210,9 @@ begin
     raise Exception.Create('Error in OKGF_Rescale');
   end;
 end;
-{ @end $4CAF88 }
+{ @end $7C3BD4 }
 
-{ @routine $4CB02C Ex_OKGR_F5_DrawRGBA }
+{ @routine $7C3C60 Ex_OKGR_F5_DrawRGBA }
 procedure Ex_OKGR_F5_DrawRGBA(Dest: Pointer; Pitch: Integer; Source: Pointer);
 begin
   try
@@ -2233,9 +2221,9 @@ begin
     raise Exception.Create('Error in OKGR_F5_DrawRGBA');
   end;
 end;
-{ @end $4CB02C }
+{ @end $7C3C60 }
 
-{ @routine $4CB0B8 Ex_OKGR_F6_DrawRGBA }
+{ @routine $7C3CD4 Ex_OKGR_F6_DrawRGBA }
 procedure Ex_OKGR_F6_DrawRGBA(Dest: Pointer; Pitch: Integer; Source: Pointer);
 begin
   try
@@ -2244,9 +2232,9 @@ begin
     raise Exception.Create('Error in OKGR_F6_DrawRGBA');
   end;
 end;
-{ @end $4CB0B8 }
+{ @end $7C3CD4 }
 
-{ @routine $4CB144 ApplyProcessAffinity }
+{ @routine $7C3D48 ApplyProcessAffinity }
 procedure ApplyProcessAffinity;
 var Mask: Cardinal;
 begin
@@ -2258,9 +2246,9 @@ begin
   end;
   SetProcessAffinityMask(GetCurrentProcess, Mask);
 end;
-{ @end $4CB144 }
+{ @end $7C3D48 }
 
-{ @routine $4CB190 CheckRuntimeWatchdog }
+{ @routine $7C3D80 CheckRuntimeWatchdog }
 procedure CheckRuntimeWatchdog;
 var FaultCode: Pointer;
 begin
@@ -2269,15 +2257,14 @@ begin
     begin
       FaultCode := AllocEC(5);
       PCardinal(FaultCode)^ := $89C033;
-      // This jump is handwritten in the native routine, unlike the Delphi body.
       asm
         jmp FaultCode
       end;
     end;
 end;
-{ @end $4CB190 }
+{ @end $7C3D80 }
 
-{ @routine $4CB1C8 CreateStartupLogFile }
+{ @routine $7C3DB8 CreateStartupLogFile }
 procedure CreateStartupLogFile;
 begin
   AssignFile(SessionLog, GetGameUserDirectory + '########.log');
@@ -2285,12 +2272,12 @@ begin
   Writeln(SessionLog, 'Start');
   CloseFile(SessionLog);
 end;
-{ @end $4CB1C8 }
+{ @end $7C3DB8 }
 
-{ @routine $4CB28C InitializePlatformRuntimeAndMainWindow }
+{ @routine $7C3E7C InitializePlatformRuntimeAndMainWindow }
 procedure InitializePlatformRuntimeAndMainWindow;
 var SystemDirectory: WideString; Module: HModule; WindowClass: TWndClassW;
-  UnusedLocal: Int64; // Native reserves eight unreferenced local bytes here; original type and purpose unknown.
+  UnusedLocal: array[0..7] of Byte; // Native reserves eight unreferenced local bytes here; original type and purpose unknown.
 begin
   SetLength(SystemDirectory, 256);
   SetLength(SystemDirectory, GetSystemDirectoryW(PWideChar(SystemDirectory), 256));
@@ -2304,7 +2291,7 @@ begin
   DirectXVersion := Ex_OKGF_DXVersion;
   DebugCommandMessage := RegisterWindowMessage('DebugMsgCommand');
   CopyFile('#ship_c.dbf', '#ship.dbf', False);
-  AppendLogLineThreadSafe('Build=2.1.2500 (11 August 2026)');
+  AppendLogLineThreadSafe('Build=2.1.2500 (6 October 2026)');
   AppendLogLineThreadSafe('DXVersion=' + SysUtils.IntToStr(Int64(DirectXVersion shr 16)) + '.' +
     SysUtils.IntToStr(Int64((DirectXVersion shr 8) and $FF)) + '.' + SysUtils.IntToStr(Int64(DirectXVersion and $FF)));
   PerformanceCounterFrequency := 0;
@@ -2331,9 +2318,9 @@ begin
   InstallConfig.LoadFromTextFileWithEncodingProbe('install.txt', False);
   QuestMessages := TQuestMessages.Create;
 end;
-{ @end $4CB28C }
+{ @end $7C3E7C }
 
-{ @routine $4CB910 LoadLanguageAndPackages }
+{ @routine $7C44F8 LoadLanguageAndPackages }
 procedure LoadLanguageAndPackages;
 begin
   if RequestedLanguage <> '' then
@@ -2345,14 +2332,12 @@ begin
     end
     else SelectedLanguage := RequestedLanguage;
   end;
-  if SelectedLanguage <> '' then
-    if not FileExists('install_' + SelectedLanguage + '.txt') then
+  if (SelectedLanguage <> '') and (not FileExists('install_' + SelectedLanguage + '.txt')) then
     begin
       AppendLogLineThreadSafe('Not installed - ' + SelectedLanguage + ', try to switch to russian');
       SelectedLanguage := 'russian';
     end;
   if SelectedLanguage = '' then SelectedLanguage := 'russian';
-  // Keep the else: DCC32 emits the native jump at $4CBAB6 after the raise.
   if not FileExists('install_' + SelectedLanguage + '.txt') then
     raise Exception.Create('Not installed language: ' + SelectedLanguage)
   else
@@ -2365,9 +2350,9 @@ begin
   LoadSelectedModInstallBlocks;
   if not LoadConfiguredPackages then raise Exception.Create('Error while openning package files');
 end;
-{ @end $4CB910 }
+{ @end $7C44F8 }
 
-{ @routine $4CBCC4 LoadSelectedModInstallBlocks }
+{ @routine $7C4890 LoadSelectedModInstallBlocks }
 procedure LoadSelectedModInstallBlocks;
 var Index: Integer; ModNames, ModPath: WideString; Block: TBlockParEC;
 begin
@@ -2392,8 +2377,7 @@ begin
     SelectedMods := '';
     SelectedModsDisplaySuffix := '';
   end;
-  if not SkipModsOnReload then
-  begin
+  if SkipModsOnReload then Exit;
     Index := 0;
     repeat
       ModPath := TrimWideString(ExtractDelimitedPartW(ModNames, Index, ','));
@@ -2412,11 +2396,10 @@ begin
       end;
       Inc(Index);
     until Index >= CountDelimitedPartsW(ModNames, ',');
-  end;
 end;
-{ @end $4CBCC4 }
+{ @end $7C4890 }
 
-{ @routine $4CC0B8 ResetInstalledPackageState }
+{ @routine $7C4C6C ResetInstalledPackageState }
 procedure ResetInstalledPackageState;
 var I: Integer;
 begin
@@ -2427,9 +2410,9 @@ begin
   for I := 0 to ModLanguageInstallConfigs.Count - 1 do TObject(ModLanguageInstallConfigs[I]).Free;
   ModLanguageInstallConfigs.Clear;
 end;
-{ @end $4CC0B8 }
+{ @end $7C4C6C }
 
-{ @routine $4CC144 FinalizePlatformRuntime }
+{ @routine $7C4CD8 FinalizePlatformRuntime }
 procedure FinalizePlatformRuntime;
 begin
   FreeSavePreviewBuffers;
@@ -2448,9 +2431,9 @@ begin
   MainWindowHandle := 0;
   CoUninitialize;
 end;
-{ @end $4CC144 }
+{ @end $7C4CD8 }
 
-{ @routine $4CC19C HasWow64Support }
+{ @routine $7C4D30 HasWow64Support }
 function HasWow64Support: Boolean;
 type
   TGetNativeSystemInfo = procedure(var Info: TSystemInfo); stdcall;
@@ -2476,13 +2459,13 @@ begin
   else GetSystemInfo(Info);
   Result := Supported;
 end;
-{ @end $4CC19C }
+{ @end $7C4D30 }
 
-{ @routine $4CC2F0 ApplyMainWindowGeometry }
+{ @routine $7C4E68 ApplyMainWindowGeometry }
 procedure ApplyMainWindowGeometry;
 var
   Style: Cardinal;
-  Width, Height: Integer;
+  Width, Height: Cardinal;
   Bounds: TRect;
 begin
   if AlternateViewportEnabled then
@@ -2508,11 +2491,11 @@ begin
     end
     else
     begin
-      Bounds.Left := (DesktopDisplayMode.Width - Cardinal(Width)) div 2;
-      Bounds.Top := (DesktopDisplayMode.Height - Cardinal(Height)) div 2;
+      Bounds.Left := (DesktopDisplayMode.Width - Width) div 2;
+      Bounds.Top := (DesktopDisplayMode.Height - Height) div 2;
     end;
-    Bounds.Right := Bounds.Left + Width;
-    Bounds.Bottom := Bounds.Top + Height;
+    Bounds.Right := Bounds.Left + Integer(Width);
+    Bounds.Bottom := Bounds.Top + Integer(Height);
   end
   else
   begin
@@ -2527,9 +2510,9 @@ begin
   SetWindowPos(MainWindowHandle, HWND_NOTOPMOST, Bounds.Left, Bounds.Top,
     Bounds.Right - Bounds.Left, Bounds.Bottom - Bounds.Top, SWP_SHOWWINDOW);
 end;
-{ @end $4CC2F0 }
+{ @end $7C4E68 }
 
-{ @routine $4CC530 ShowAndFocusMainWindow }
+{ @routine $7C508C ShowAndFocusMainWindow }
 procedure ShowAndFocusMainWindow;
 begin
   if not Direct3DPresentParameters.Windowed then ShowWindow(MainWindowHandle, SW_SHOWMAXIMIZED)
@@ -2538,22 +2521,22 @@ begin
   SetFocus(MainWindowHandle);
   RedrawWindow(0, nil, 0, $787);
 end;
-{ @end $4CC530 }
+{ @end $7C508C }
 
-{ @routine $4CC738 LoadDatConfigAndModOverrides }
+{ @routine $7C5288 LoadDatConfigAndModOverrides }
 procedure LoadDatConfigAndModOverrides;
 var ModNames, ModPath: WideString; HasOverrides: Boolean; Block: TBlockParEC;
   Data: TDataEC; Index: Integer;
-  // @nested $4CC57C LoadBlockDatConfig
-  procedure LoadBlockDatConfig(Root: TBlockParEC; FileName: WideString); // @calls "0x4CC7E7,0x4CC89C,0x4CC93B,0x4CCA24" @addr 0x4CC57C @note "An empty tree produces a log warning, not an exception from this wrapper."
+  // @nested $7C50D8 LoadBlockDatConfig
+  procedure LoadBlockDatConfig(Root: TBlockParEC; FileName: WideString); // @addr 0x007C50D8 @calls "0x007C5332,0x007C53DD,0x007C5474,0x007C5553" @note "An empty tree produces a log warning, not an exception from this wrapper."
   begin
     Root.LoadFromEncryptedDatFile(FileName);
     if (Root.GetBlockCount <= 0) and (Root.GetParamCount <= 0) then
       AppendLogLineThreadSafe('Warning! <' + FileName + '> is empty!');
   end;
 
-  // @nested $4CC660 LoadCacheDatConfig
-  procedure LoadCacheDatConfig(Root: TDataEC; FileName: WideString); // @calls "0x4CCA99,0x4CCB4E" @addr 0x4CC660
+  // @nested $7C51B4 LoadCacheDatConfig
+  procedure LoadCacheDatConfig(Root: TDataEC; FileName: WideString); // @addr 0x007C51B4 @calls "0x007C55C0,0x007C566B"
   begin
     Root.LoadFromEncryptedDatFile(FileName);
     if Root.IsEmpty then AppendLogLineThreadSafe('Warning! <' + FileName + '> is empty!');
@@ -2645,9 +2628,9 @@ begin
     AppendLogLineThreadSafe('Custom mod');
   end;
 end;
-{ @end $4CC738 }
+{ @end $7C5288 }
 
-{ @routine $4CCDD0 FreeDatConfigRoots }
+{ @routine $7C58D8 FreeDatConfigRoots }
 procedure FreeDatConfigRoots;
 begin
   if CacheDataRoot <> nil then
@@ -2667,9 +2650,9 @@ begin
     MainDataConfig := nil;
   end;
 end;
-{ @end $4CCDD0 }
+{ @end $7C58D8 }
 
-{ @routine $4CCEA8 InitializeRuntimeAndSettings }
+{ @routine $7C59B0 InitializeRuntimeAndSettings }
 procedure InitializeRuntimeAndSettings;
 var
   ModuleName, Text, ExtraText: WideString;
@@ -2681,19 +2664,19 @@ var
   Reg: TRegistry;
   MemoryStatus: TMemoryStatusEx;
 
-  // @nested $4CCE28 VerifyStartupModuleChecksum
-  procedure VerifyStartupModuleChecksum; // @addr $4CCE28 @calls "0x4ce8e4,0x4ce91e,0x4ce946,0x4ce96e,0x4ce996,0x4ce9be,0x4cea0b,0x4cea3b,0x4cea6b" @note "Nested startup helper; checks the module path at parent-frame -4 and writes the signed integrity marker."
+  // @nested $7C5930 VerifyStartupModuleChecksum
+  procedure VerifyStartupModuleChecksum; // @addr $7C5930 @calls "0x007C738F,0x007C73C9,0x007C73F1,0x007C7419,0x007C7441,0x007C7469,0x007C74B6,0x007C74E6,0x007C7516" @note "Nested startup helper; checks the module path at parent-frame -4 and writes the signed integrity marker."
   var
-    MarkerOffset: Integer;
+    MarkerOffset: Cardinal;
   begin
     CCInterface.SetResourceChecksumFailed(False);
     VerifyResourceFileChecksum(ModuleName);
     MarkerOffset := 8;
     if CCInterface.GetResourceChecksumFailed then
-      PInteger(PAnsiChar(@StartupChecksumAnchor) - MarkerOffset)^ :=
+      PInteger(PAnsiChar(@StartupChecksumAnchor) - Integer(MarkerOffset))^ :=
         RandomIntRange(1000000000, 2000000000)
-    else if PInteger(PAnsiChar(@StartupChecksumAnchor) - MarkerOffset)^ <= 0 then
-      PInteger(PAnsiChar(@StartupChecksumAnchor) - MarkerOffset)^ :=
+    else if PInteger(PAnsiChar(@StartupChecksumAnchor) - Integer(MarkerOffset))^ <= 0 then
+      PInteger(PAnsiChar(@StartupChecksumAnchor) - Integer(MarkerOffset))^ :=
         RandomIntRange(-2000000000, -1000000000);
     CCInterface.SetResourceChecksumFailed(False);
   end;
@@ -2710,9 +2693,9 @@ begin
   if ExtractDigitsToIntW(ModuleName) >= 22000 then
     Text := ReplaceAllWideString(Text, 'Windows 10', 'Windows 11');
   if RunningUnderWine then
-    AppendLogLineThreadSafe(AnsiString('Wine compatibility mode is set to ''' + Text + ExtraText + ModuleName + ''''))
+    AppendLogLineThreadSafe('Wine compatibility mode is set to ''' + Text + ExtraText + ModuleName + '''')
   else
-    AppendLogLineThreadSafe(AnsiString('Operating System=' + Text + ExtraText + ModuleName));
+    AppendLogLineThreadSafe('Operating System=' + Text + ExtraText + ModuleName);
   Index := 0;
   Count := 0;
   while True do
@@ -2737,7 +2720,7 @@ begin
   if Count <= 1 then ModuleName := ' (1 core)'
   else ModuleName := WideString(' (' + IntToStr(Count) + ' cores)');
   ProcessorCoreCount := Max(Count, 1);
-  AppendLogLineThreadSafe(AnsiString('Processor=' + ExtraText + ModuleName));
+  AppendLogLineThreadSafe('Processor=' + ExtraText + ModuleName);
   AppendLogLineThreadSafe('CPU Clock=' + IntToStr(Round(Min(Min(MeasureCpuClockMHz, MeasureCpuClockMHz), MeasureCpuClockMHz))) + ' MHz');
   MemoryStatus.Length := SizeOf(MemoryStatus);
   GlobalMemoryStatusEx(MemoryStatus);
@@ -2749,7 +2732,7 @@ begin
   AppendLogLineThreadSafe('Virtual Memory Available=' + IntToStr(Integer(MemoryStatus.AvailVirtual div $100000)) + ' MB');
   UserSettingsConfig := TBlockParEC.Create;
   Text := GetGameUserDirectory + 'CFG.TXT';
-  if not FileExists(AnsiString(Text)) then
+  if not FileExists(Text) then
   begin
     AppendLogTextThreadSafe('Creating cfg.txt ... ');
     CopyFileW('cfg.txt', PWideChar(Text), False);
@@ -2809,7 +2792,7 @@ begin
   EditableSaveBlock := TBlockParEC.Create;
   NewGameSettingsConfig := TBlockParEC.Create;
   Text := GetGameUserDirectory + 'newgame.txt';
-  if FileExists(AnsiString(PWideChar(Text))) then
+  if FileExists(PWideChar(Text)) then
     NewGameSettingsConfig.LoadFromTextFileWithEncodingProbe(PWideChar(Text), True);
   if UserSettingsConfig.CountParamsByPath('MultiThread') > 0 then
     MultiThreadEnabled := ParseEnabledNameGI(UserSettingsConfig.GetParamByPathOrMarker('MultiThread'));
@@ -2877,11 +2860,11 @@ begin
   if UserSettingsConfig.CountParamsByPath('SoundInSpace') > 0 then
     SoundInSpaceEnabled := ParseEnabledNameGI(UserSettingsConfig.GetParamByPathOrMarker('SoundInSpace'));
   if UserSettingsConfig.CountParamsByPath('SoundVolume') > 0 then
-    SoundVolume := StrToInt(AnsiString(UserSettingsConfig.GetParamByPathOrMarker('SoundVolume'))) / 100;
+    SoundVolume := StrToInt(UserSettingsConfig.GetParamByPathOrMarker('SoundVolume')) / 100;
   if SoundVolume > 1 then SoundVolume := 1;
   if SoundVolume < 0 then SoundVolume := 0;
   if UserSettingsConfig.CountParamsByPath('RobotSoundVolume') > 0 then
-    RobotSoundVolume := StrToInt(AnsiString(UserSettingsConfig.GetParamByPathOrMarker('RobotSoundVolume'))) / 100;
+    RobotSoundVolume := StrToInt(UserSettingsConfig.GetParamByPathOrMarker('RobotSoundVolume')) / 100;
   if RobotSoundVolume > 1 then RobotSoundVolume := 1;
   if RobotSoundVolume < 0 then RobotSoundVolume := 0;
   if not IsInstallFeatureEnabled('Sound') then SoundEnabled := False;
@@ -2895,11 +2878,11 @@ begin
   if UserSettingsConfig.CountParamsByPath('MusicInPlanet') > 0 then
     MusicInPlanetEnabled := ParseEnabledNameGI(UserSettingsConfig.GetParamByPathOrMarker('MusicInPlanet'));
   if UserSettingsConfig.CountParamsByPath('MusicVolume') > 0 then
-    MusicVolume := StrToInt(AnsiString(UserSettingsConfig.GetParamByPathOrMarker('MusicVolume'))) / 100;
+    MusicVolume := StrToInt(UserSettingsConfig.GetParamByPathOrMarker('MusicVolume')) / 100;
   if MusicVolume > 1 then MusicVolume := 1;
   if MusicVolume < 0 then MusicVolume := 0;
   if UserSettingsConfig.CountParamsByPath('RobotMusicVolume') > 0 then
-    RobotMusicVolume := StrToInt(AnsiString(UserSettingsConfig.GetParamByPathOrMarker('RobotMusicVolume'))) / 100;
+    RobotMusicVolume := StrToInt(UserSettingsConfig.GetParamByPathOrMarker('RobotMusicVolume')) / 100;
   if RobotMusicVolume > 1 then RobotMusicVolume := 1;
   if RobotMusicVolume < 0 then RobotMusicVolume := 0;
   if not IsInstallFeatureEnabled('Music') then MusicEnabled := False;
@@ -2931,12 +2914,12 @@ begin
       ShowXonarWarning := True;
     end;
   GR_DXInit;
-  ScreenCenterX := Cardinal(GameScreenWidth) shr 1;
-  ScreenCenterY := Cardinal(GameScreenHeight) shr 1;
+  ScreenCenterX := GameScreenWidth shr 1;
+  ScreenCenterY := GameScreenHeight shr 1;
   ShowAndFocusMainWindow;
   if not ShowSystemMouse then ShowCursor(False);
-  AppendLogLineThreadSafe(AnsiString('Sound=' + BoolToWideString(SoundEnabled)));
-  AppendLogLineThreadSafe(AnsiString('Music=' + BoolToWideString(MusicEnabled)));
+  AppendLogLineThreadSafe('Sound=' + BoolToWideString(SoundEnabled));
+  AppendLogLineThreadSafe('Music=' + BoolToWideString(MusicEnabled));
   InterfaceBlendPalette := AllocEC(512);
   for Index := 0 to 255 do
   begin
@@ -2956,7 +2939,7 @@ begin
     if BufferSize > 0 then
     begin
       RecordingFrameBuffers := TList.Create;
-      Count := ((BufferSize shl 10) shl 10) div (GameScreenWidth * GameScreenHeight * 2) + 1;
+      Count := ((BufferSize shl 10) shl 10) div Integer(GameScreenWidth * GameScreenHeight * 2) + 1;
       AppendLogLineThreadSafe('FilmFrame=' + IntToStr(Count));
       for Index := 0 to Count - 1 do
       begin
@@ -3015,12 +2998,12 @@ begin
   VerifyStartupModuleChecksum;
   CCInterface.SetResourceChecksumFailed(SavedChecksumFailed);
 end;
-{ @end $4CCEA8 }
+{ @end $7C59B0 }
 
-{ @routine $4CF9FC FinalizeRuntimeAndSettings }
+{ @routine $7C84A8 FinalizeRuntimeAndSettings }
 procedure FinalizeRuntimeAndSettings;
 begin
-  while not (FirstRegisteredCursor = nil) do RemoveCursorUnit(LastRegisteredCursor);
+  while FirstRegisteredCursor <> nil do RemoveCursorUnit(LastRegisteredCursor);
   if InterfaceBlendPalette <> nil then
   begin
     FreeEC(InterfaceBlendPalette);
@@ -3060,9 +3043,9 @@ begin
   FreeScreenRenderBuffers;
   WideCaseTable := nil;
 end;
-{ @end $4CF9FC }
+{ @end $7C84A8 }
 
-{ @routine $4CFAF0 EnumerateAndSelectDisplayModes }
+{ @routine $7C859C EnumerateAndSelectDisplayModes }
 procedure EnumerateAndSelectDisplayModes;
 var
   Index, ModeCount: Integer;
@@ -3112,7 +3095,7 @@ begin
     RobotSettings.ScreenHeight := 0;
   end;
   UseDesktopDisplayMode := False;
-  if (Cardinal(GameScreenWidth) < 1024) or (Cardinal(GameScreenHeight) < 720) then
+  if (GameScreenWidth < 1024) or (GameScreenHeight < 720) then
   begin
     GameScreenWidth := DesktopDisplayMode.Width;
     GameScreenHeight := DesktopDisplayMode.Height;
@@ -3128,13 +3111,11 @@ begin
   for Index := 0 to ModeCount - 1 do
   begin
     Direct3D.EnumAdapterModes(D3DADAPTER_DEFAULT, DesktopDisplayMode.Format, Index, Mode);
-    if Mode.Height >= 720 then
-    begin
-      ModeKey := SysUtils.IntToHex(Int64(Mode.Width), 6) + SysUtils.IntToHex(Int64(Mode.Height), 6);
-      if (Modes.CountParams(ModeKey) <= 0) or
-         (SysUtils.StrToInt(AnsiString(ExtractDelimitedPartW(Modes.GetParam(ModeKey), 0, ','))) < Integer(Mode.RefreshRate)) then
-        Modes.SetOrAddParam(ModeKey, WideString(SysUtils.IntToStr(Int64(Mode.RefreshRate)) + ',' + SysUtils.IntToStr(Index)));
-    end;
+    if Mode.Height < 720 then Continue;
+    ModeKey := SysUtils.IntToHex(Int64(Mode.Width), 6) + SysUtils.IntToHex(Int64(Mode.Height), 6);
+    if (Modes.CountParams(ModeKey) > 0) and
+       (SysUtils.StrToInt(ExtractDelimitedPartW(Modes.GetParam(ModeKey), 0, ',')) >= Integer(Mode.RefreshRate)) then Continue;
+    Modes.SetOrAddParam(ModeKey, SysUtils.IntToStr(Int64(Mode.RefreshRate)) + ',' + SysUtils.IntToStr(Index));
   end;
   GameDisplayModeCount := Modes.GetParamCount;
   RobotDisplayModeCount := Modes.GetParamCount;
@@ -3146,7 +3127,7 @@ begin
   begin
     ModeKey := Modes.GetParamValue(Index);
     Direct3D.EnumAdapterModes(D3DADAPTER_DEFAULT, DesktopDisplayMode.Format,
-      SysUtils.StrToInt(AnsiString(ExtractDelimitedPartW(ModeKey, 1, ','))), Mode);
+      SysUtils.StrToInt(ExtractDelimitedPartW(ModeKey, 1, ',')), Mode);
     GameDisplayModes[Index] := Mode;
     RobotDisplayModes[Index] := Mode;
     if (SmallestArea < 0) or (Integer(Mode.Width * Mode.Height) < SmallestArea) then
@@ -3154,7 +3135,7 @@ begin
       SmallestArea := Mode.Width * Mode.Height;
       SmallestGameDisplayMode := Index;
     end;
-    if (Mode.Width = Cardinal(GameScreenWidth)) and (Mode.Height = Cardinal(GameScreenHeight)) then SelectedGameDisplayMode := Index;
+    if (Mode.Width = GameScreenWidth) and (Mode.Height = GameScreenHeight) then SelectedGameDisplayMode := Index;
     if (Cardinal(RobotSettings.ScreenWidth) = Mode.Width) and (Cardinal(RobotSettings.ScreenHeight) = Mode.Height) then SelectedRobotDisplayMode := Index;
     if Index > 0 then AppendLogTextThreadSafe(', ');
     AppendLogTextThreadSafe(SysUtils.IntToStr(Int64(Mode.Width)) + 'x' + SysUtils.IntToStr(Int64(Mode.Height)));
@@ -3163,7 +3144,7 @@ begin
   if GameDisplayModeCount = 0 then
   begin
     AppendLogTextThreadSafe('No supported resolutions found!');
-    if (Cardinal(GameScreenWidth) < 1024) or (Cardinal(GameScreenHeight) < 720) then
+    if (GameScreenWidth < 1024) or (GameScreenHeight < 720) then
     begin
       AlternateViewportEnabled := True;
       ViewportOffset := Classes.Point(0, 0);
@@ -3173,21 +3154,21 @@ begin
       RobotSettings.ScreenHeight := GameScreenHeight;
       if ScaleViewportToWindow then
       begin
-        if Cardinal(GameScreenWidth) > Cardinal(GameScreenHeight) then
+        if GameScreenWidth > GameScreenHeight then
         begin
           GameScreenHeight := 720;
-          GameScreenWidth := Cardinal(GameScreenHeight * PresentationWidth) div Cardinal(PresentationHeight);
+          GameScreenWidth := Cardinal(Integer(GameScreenHeight) * PresentationWidth) div Cardinal(PresentationHeight);
         end
         else
         begin
           GameScreenWidth := 1024;
-          GameScreenHeight := Cardinal(GameScreenWidth * PresentationHeight) div Cardinal(PresentationWidth);
+          GameScreenHeight := Cardinal(Integer(GameScreenWidth) * PresentationHeight) div Cardinal(PresentationWidth);
         end;
       end
       else
       begin
-        GameScreenWidth := Math.Max(1024, Int64(Cardinal(GameScreenWidth)));
-        GameScreenHeight := Math.Max(720, Int64(Cardinal(GameScreenHeight)));
+        GameScreenWidth := Math.Max(1024, Int64(GameScreenWidth));
+        GameScreenHeight := Math.Max(720, Int64(GameScreenHeight));
       end;
       HardwareRenderingEnabled := False;
     end;
@@ -3216,14 +3197,14 @@ begin
     Inc(RobotDisplayModeCount);
   end;
   AppendLogLineThreadSafe('');
-  ExtraScreenWidth := GameScreenWidth - 1024;
-  ExtraScreenHeight := GameScreenHeight - 768;
+  ExtraScreenWidth := Integer(GameScreenWidth) - 1024;
+  ExtraScreenHeight := Integer(GameScreenHeight) - 768;
   GameScreenRect := Classes.Rect(0, 0, GameScreenWidth, GameScreenHeight);
   PresentationRect := Classes.Rect(0, 0, PresentationWidth, PresentationHeight);
 end;
-{ @end $4CFAF0 }
+{ @end $7C859C }
 
-{ @routine $4D058C ConfigureDefaultRenderState }
+{ @routine $7C8FD8 ConfigureDefaultRenderState }
 procedure ConfigureDefaultRenderState;
 begin
   Direct3DDevice.SetRenderState(D3DRS_ALPHABLENDENABLE, 1);
@@ -3236,16 +3217,16 @@ begin
   Direct3DDevice.SetRenderState(D3DRS_SCISSORTESTENABLE, 1);
   Direct3DDevice.SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 end;
-{ @end $4D058C }
+{ @end $7C8FD8 }
 
-{ @routine $4D063C PreparePresentationParameters }
+{ @routine $7C9074 PreparePresentationParameters }
 procedure PreparePresentationParameters;
 begin
   PreviousPresentParameters := Direct3DPresentParameters;
   with Direct3DPresentParameters do
   begin
     ZeroMemory(@Direct3DPresentParameters, SizeOf(Direct3DPresentParameters));
-    Windowed := WindowedModeRequested and (Cardinal(GameScreenHeight) < DesktopDisplayMode.Height);
+    Windowed := WindowedModeRequested and (GameScreenHeight < DesktopDisplayMode.Height);
     DeviceWindow := MainWindowHandle;
     if DisableTripleBuffer then BackBufferCount := 1 else BackBufferCount := 2;
     BackBufferFormat := DesktopDisplayMode.Format;
@@ -3278,9 +3259,9 @@ begin
     if PresentationFrameRate = 0 then PresentationFrameRate := 50;
   end;
 end;
-{ @end $4D063C }
+{ @end $7C9074 }
 
-{ @routine $4D07C4 GR_DXInit }
+{ @routine $7C91B4 GR_DXInit }
 procedure GR_DXInit;
 var
   ControlWord: Word;
@@ -3327,8 +3308,6 @@ begin
   RenderScratchBuffer := TGraphBufGR.Create(True);
   AuxRenderBuffer := TGraphBufGR.Create(True);
   ControlWord := $133F;
-  // The native code directly clears x87 exceptions and loads the local control
-  // word; this small handwritten sequence has no Pascal intrinsic equivalent.
   asm
     fclex
     and ControlWord, $FCFF
@@ -3382,8 +3361,8 @@ begin
         GameScreenHeight := GameDisplayModes[SelectedGameDisplayMode].Height;
         PresentationWidth := GameScreenWidth;
         PresentationHeight := GameScreenHeight;
-        ExtraScreenWidth := GameScreenWidth - 1024;
-        ExtraScreenHeight := GameScreenHeight - 768;
+        ExtraScreenWidth := Integer(GameScreenWidth) - 1024;
+        ExtraScreenHeight := Integer(GameScreenHeight) - 768;
         GameScreenRect := Classes.Rect(0, 0, GameScreenWidth, GameScreenHeight);
         PresentationRect := Classes.Rect(0, 0, PresentationWidth, PresentationHeight);
         WindowedModeRequested := True;
@@ -3440,15 +3419,15 @@ begin
         IntToStr(Int64(Direct3DPresentParameters.BackBufferHeight)) + ' ' +
         IntToStr(Int64(Direct3DPresentParameters.FullScreenRefreshRateInHz)) + 'Hz');
       if AlternateViewportEnabled then
-        AppendLogLineThreadSafe(' [' + IntToStr(Int64(Cardinal(GameScreenWidth))) + 'x' +
-          IntToStr(Int64(Cardinal(GameScreenHeight))) + ']');
+        AppendLogLineThreadSafe(' [' + IntToStr(Int64(GameScreenWidth)) + 'x' +
+          IntToStr(Int64(GameScreenHeight)) + ']');
     end
     else
     begin
       if AlternateViewportEnabled then
         AppendLogTextThreadSafe(IntToStr(Int64(Cardinal(PresentationWidth))) + 'x' +
           IntToStr(Int64(Cardinal(PresentationHeight))) + ' [');
-      AppendLogTextThreadSafe(IntToStr(Int64(Cardinal(GameScreenWidth))) + 'x' + IntToStr(Int64(Cardinal(GameScreenHeight))));
+      AppendLogTextThreadSafe(IntToStr(Int64(GameScreenWidth)) + 'x' + IntToStr(Int64(GameScreenHeight)));
       if AlternateViewportEnabled then AppendLogTextThreadSafe(']');
     end;
     AppendLogLineThreadSafe('');
@@ -3489,9 +3468,9 @@ begin
   PendingPointCapacity := 1024;
   SetLength(PendingPoints, PendingPointCapacity);
 end;
-{ @end $4D07C4 }
+{ @end $7C91B4 }
 
-{ @routine $4D1A88 GR_DXReset }
+{ @routine $7CA3DC GR_DXReset }
 procedure GR_DXReset;
 var ErrorCode: Integer;
 begin
@@ -3525,9 +3504,9 @@ begin
   if Direct3DPresentParameters.Windowed then ApplyMainWindowGeometry;
   ShowAndFocusMainWindow;
 end;
-{ @end $4D1A88 }
+{ @end $7CA3DC }
 
-{ @routine $4D1C10 FreeScreenRenderBuffers }
+{ @routine $7CA554 FreeScreenRenderBuffers }
 procedure FreeScreenRenderBuffers;
 begin
   if RenderScratchBuffer <> nil then
@@ -3547,9 +3526,9 @@ begin
   end;
   PresentationDepth := 0;
 end;
-{ @end $4D1C10 }
+{ @end $7CA554 }
 
-{ @routine $4D1C68 ApplyGammaRamp }
+{ @routine $7CA5AC ApplyGammaRamp }
 procedure ApplyGammaRamp(Brightness, Contrast: Single);
 var
   Index, Value: Integer;
@@ -3610,9 +3589,9 @@ begin
   end;
   Direct3DDevice.SetGammaRamp(0, 0, Ramp);
 end;
-{ @end $4D1C68 }
+{ @end $7CA5AC }
 
-{ @routine $4D1F6C GR_WinMessage }
+{ @routine $7CA854 GR_WinMessage }
 function GR_WinMessage(Callback: TWindowMessageCallbackGR): Integer;
 var
   ContinueLoop, Stage: Integer;
@@ -3685,9 +3664,9 @@ begin
     end;
   end;
 end;
-{ @end $4D1F6C }
+{ @end $7CA854 }
 
-{ @routine $4D22B8 MainWindowProc }
+{ @routine $7CAB90 MainWindowProc }
 function MainWindowProc(Window, Message, WParam: Cardinal; LParam: Integer): Integer; stdcall;
 var Origin: TPoint; Bounds: TRect;
 begin
@@ -3773,41 +3752,39 @@ begin
   end;
   Result := DefWindowProcW(Window, Message, WParam, LParam);
 end;
-{ @end $4D22B8 }
+{ @end $7CAB90 }
 
-{ @routine $4D25E0 BeginFramePresentation }
+{ @routine $7CAE98 BeginFramePresentation }
 function BeginFramePresentation: Boolean;
 begin
   Inc(PresentationDepth);
   Result := True;
 end;
-{ @end $4D25E0 }
+{ @end $7CAE98 }
 
-{ @routine $4D25F4 EndFramePresentation }
+{ @routine $7CAEA4 EndFramePresentation }
 procedure EndFramePresentation;
 var Tick: Cardinal;
 begin
-  if PresentationDepth > 0 then
+  if PresentationDepth <= 0 then Exit;
+  Dec(PresentationDepth);
+  if PresentationDepth = 0 then
   begin
-    Dec(PresentationDepth);
-    if PresentationDepth = 0 then
+    if PresentWithoutLimit then PresentScreenBuffer
+    else
     begin
-      if PresentWithoutLimit then PresentScreenBuffer
-      else
+      Tick := timeGetTime;
+      if 1000 div PresentationFrameRate < Tick - LastPresentationTick then
       begin
-        Tick := timeGetTime;
-        if 1000 div PresentationFrameRate < Tick - LastPresentationTick then
-        begin
-          LastPresentationTick := Tick;
-          PresentScreenBuffer;
-        end;
+        LastPresentationTick := Tick;
+        PresentScreenBuffer;
       end;
     end;
   end;
 end;
-{ @end $4D25F4 }
+{ @end $7CAEA4 }
 
-{ @routine $4D2654 PresentScreenBuffer }
+{ @routine $7CAEF8 PresentScreenBuffer }
 procedure PresentScreenBuffer;
 begin
   if HardwareRenderingEnabled then
@@ -3829,9 +3806,9 @@ begin
     Direct3DDevice.Present(nil, nil, 0, nil);
   end;
 end;
-{ @end $4D2654 }
+{ @end $7CAEF8 }
 
-{ @routine $4D27B8 DrawOffscreenTexture }
+{ @routine $7CB05C DrawOffscreenTexture }
 procedure DrawOffscreenTexture;
 var
   X, Y: Integer;
@@ -3857,7 +3834,7 @@ begin
     Width := ViewWidth;
     Height := Round((Desc.Height / Desc.Width) * ViewWidth);
     if ((Height > ViewHeight) and not OffscreenFillViewport) or
-       ((Height < ViewHeight) and (OffscreenFillViewport <> False)) then
+       ((Height < ViewHeight) and OffscreenFillViewport) then
     begin
       Width := Round((Desc.Width / Desc.Height) * ViewHeight);
       Height := ViewHeight;
@@ -3876,21 +3853,19 @@ begin
     end;
   end;
 end;
-{ @end $4D27B8 }
+{ @end $7CB05C }
 
-{ @routine $4D299C CaptureScreenBackground }
+{ @routine $7CB218 CaptureScreenBackground }
 procedure CaptureScreenBackground(ApplyEffects: Boolean; UnusedOption: Byte);
 begin
   AuxRenderBuffer.LoadFromScreen(UnusedOption);
-  if ApplyEffects then
-  begin
-    if BackgroundShade then AuxRenderBuffer.AdjustBrightness(-50);
-    if BackgroundGrayscale then AuxRenderBuffer.ConvertToGrayscale;
-  end;
+  if not ApplyEffects then Exit;
+  if BackgroundShade then AuxRenderBuffer.AdjustBrightness(-50);
+  if BackgroundGrayscale then AuxRenderBuffer.ConvertToGrayscale;
 end;
-{ @end $4D299C }
+{ @end $7CB218 }
 
-{ @routine $4D29EC CaptureSavePreview }
+{ @routine $7CB258 CaptureSavePreview }
 procedure CaptureSavePreview;
 begin
   FreeSavePreviewBuffers;
@@ -3909,9 +3884,9 @@ begin
   SecondarySavePreviewGraph := TGraphBufGR.Create(False);
   SecondarySavePreviewGraph.AllocateNativePitch(300, 225, 900);
 end;
-{ @end $4D29EC }
+{ @end $7CB258 }
 
-{ @routine $4D2A98 FreeSavePreviewBuffers }
+{ @routine $7CB304 FreeSavePreviewBuffers }
 procedure FreeSavePreviewBuffers;
 begin
   if SavePreviewGraph <> nil then
@@ -3925,9 +3900,9 @@ begin
     SecondarySavePreviewGraph := nil;
   end;
 end;
-{ @end $4D2A98 }
+{ @end $7CB304 }
 
-{ @routine $4D2AD0 CopyBgraToRgb24 }
+{ @routine $7CB33C CopyBgraToRgb24 }
 procedure CopyBgraToRgb24(Dest: Pointer; DestPitch: Integer; Source: Pointer; SourcePitch, Width, Height: Integer);
 var X, Y: Integer;
 begin
@@ -3938,10 +3913,10 @@ begin
     while X < Width do
     begin
       PColorRGB(AddPointerOffset(Dest, X * SizeOf(TColorRGB))).R :=
-        PByte(AddPointerOffset(Source, Integer(@PColorBGRA(X * SizeOf(TColorBGRA)).R)))^;
-      PByte(AddPointerOffset(Dest, Integer(@PColorRGB(X * SizeOf(TColorRGB)).G)))^ :=
-        PByte(AddPointerOffset(Source, Integer(@PColorBGRA(X * SizeOf(TColorBGRA)).G)))^;
-      PByte(AddPointerOffset(Dest, Integer(@PColorRGB(X * SizeOf(TColorRGB)).B)))^ :=
+        PByte(AddPointerOffset(Source, X * SizeOf(TColorBGRA) + 2))^;
+      PByte(AddPointerOffset(Dest, X * SizeOf(TColorRGB) + 1))^ :=
+        PByte(AddPointerOffset(Source, X * SizeOf(TColorBGRA) + 1))^;
+      PByte(AddPointerOffset(Dest, X * SizeOf(TColorRGB) + 2))^ :=
         PColorBGRA(AddPointerOffset(Source, X * SizeOf(TColorBGRA))).B;
       Inc(X);
     end;
@@ -3950,9 +3925,9 @@ begin
     Inc(Y);
   end;
 end;
-{ @end $4D2AD0 }
+{ @end $7CB33C }
 
-{ @routine $4D2BD4 CaptureRecordingFrame }
+{ @routine $7CB414 CaptureRecordingFrame }
 procedure CaptureRecordingFrame;
 begin
   if timeGetTime - LastRecordingFrameTick >= Cardinal(RecordingFrameInterval) then
@@ -3965,9 +3940,9 @@ begin
     LastRecordingFrameTick := timeGetTime;
   end;
 end;
-{ @end $4D2BD4 }
+{ @end $7CB414 }
 
-{ @routine $4D2C54 FlushRecordingFrames }
+{ @routine $7CB494 FlushRecordingFrames }
 procedure FlushRecordingFrames;
 var
   SearchHandle: THandle;
@@ -3977,37 +3952,37 @@ var
   FileName: AnsiString;
   FindData: TWin32FindDataA;
 begin
-  if RecordingFrameCount >= 1 then
+  if RecordingFrameCount < 1 then Exit;
+  Directory := GetCurrentDir;
+  SetCurrentDir('Film');
+  FirstFrameNumber := -1;
+  SearchHandle := Windows.FindFirstFile('*.*', FindData);
+  // Native code scans without testing for INVALID_HANDLE_VALUE.
+  while True do
   begin
-    Directory := GetCurrentDir;
-    SetCurrentDir('Film');
-    FirstFrameNumber := -1;
-    SearchHandle := Windows.FindFirstFile('*.*', FindData);
-    // Native code scans without testing for INVALID_HANDLE_VALUE.
-    repeat
-      if (FindData.dwFileAttributes and FILE_ATTRIBUTE_DIRECTORY) <> FILE_ATTRIBUTE_DIRECTORY then
-        FirstFrameNumber := Max(FirstFrameNumber, ExtractDigitsToIntW(WideString(AnsiString(FindData.cFileName))));
-    until not Boolean(Windows.FindNextFile(SearchHandle, FindData));
-    Windows.FindClose(SearchHandle);
-    SetCurrentDir(Directory);
-    Inc(FirstFrameNumber);
-    Frame := TGraphBufGR.Create(False);
-    Frame.AllocateNativePitch(ScreenRenderBuffer.Width, ScreenRenderBuffer.Height, ScreenRenderBuffer.Width * 3);
-    for Index := 0 to RecordingFrameCount - 1 do
-    begin
-      Ex_OKGF_Convert565toBGR(RecordingFrameBuffers[Index], GameScreenWidth * 2,
-        Frame.GetPixels, Frame.PitchBytes, Frame.Width, Frame.Height);
-      FileName := AnsiString('Film\' + IntToFixedWidthWideString(FirstFrameNumber + Index, 6) + '.bmp');
-      WriteBmpFile(PAnsiChar(FileName), Frame.GetPixels, Frame.PitchBytes,
-        24, $FF, $FF00, $FF0000, 0, Frame.Width, Frame.Height);
-    end;
-    Frame.Free;
-    RecordingFrameCount := 0;
+    if (FindData.dwFileAttributes and FILE_ATTRIBUTE_DIRECTORY) <> FILE_ATTRIBUTE_DIRECTORY then
+      FirstFrameNumber := Max(FirstFrameNumber, ExtractDigitsToIntW(WideString(AnsiString(FindData.cFileName))));
+    if not Boolean(Windows.FindNextFile(SearchHandle, FindData)) then Break;
   end;
+  Windows.FindClose(SearchHandle);
+  SetCurrentDir(Directory);
+  Inc(FirstFrameNumber);
+  Frame := TGraphBufGR.Create(False);
+  Frame.AllocateNativePitch(ScreenRenderBuffer.Width, ScreenRenderBuffer.Height, ScreenRenderBuffer.Width * 3);
+  for Index := 0 to RecordingFrameCount - 1 do
+  begin
+    Ex_OKGF_Convert565toBGR(RecordingFrameBuffers[Index], GameScreenWidth * 2,
+      Frame.GetPixels, Frame.PitchBytes, Frame.Width, Frame.Height);
+    FileName := AnsiString('Film\' + IntToFixedWidthWideString(FirstFrameNumber + Index, 6) + '.bmp');
+    WriteBmpFile(PAnsiChar(FileName), Frame.GetPixels, Frame.PitchBytes,
+      24, $FF, $FF00, $FF0000, 0, Frame.Width, Frame.Height);
+  end;
+  Frame.Free;
+  RecordingFrameCount := 0;
 end;
-{ @end $4D2C54 }
+{ @end $7CB494 }
 
-{ @routine $4D2EFC DrawTransparentBuffer16 }
+{ @routine $7CB6FC DrawTransparentBuffer16 }
 procedure DrawTransparentBuffer16(Dest: Pointer; Pitch, X, Y: Integer; Source: Pointer; Clip: TRect; HalfAlpha: Boolean);
 var InclusiveClip: TRect;
 begin
@@ -4016,16 +3991,16 @@ begin
   if HalfAlpha then Ex_OKGR_TransBuf_HADrawClip_16(Dest, Pitch, X, Y, Source, InclusiveClip)
   else Ex_OKGR_TransBuf_DrawClip_WORD(Dest, Pitch, X, Y, Source, InclusiveClip);
 end;
-{ @end $4D2EFC }
+{ @end $7CB6FC }
 
-{ @routine $4D2F78 CopyPalettedBuffer16Clipped }
-procedure CopyPalettedBuffer16Clipped(Dest: Pointer; DestPitch, X, Y: Integer; Source, Palette: Pointer; SourcePitch, Width, Height: Integer; Clip: TRect);
-var SourceX, SourceY: Integer;
+{ @routine $7CB758 CopyPalettedBuffer16Clipped }
+procedure CopyPalettedBuffer16Clipped(Dest: Pointer; DestPitch: Cardinal; X, Y: Integer; Source, Palette: Pointer; SourcePitch, Width, Height: Cardinal; Clip: TRect);
+var SourceX, SourceY: Cardinal;
 begin
-  if (X >= Clip.Right) or (Y >= Clip.Bottom) or (X + Width - 1 < Clip.Left) or (Y + Height - 1 < Clip.Top) then Exit;
+  if (X >= Clip.Right) or (Y >= Clip.Bottom) or (X + Integer(Width) - 1 < Clip.Left) or (Y + Integer(Height) - 1 < Clip.Top) then Exit;
   SourceX := 0; SourceY := 0;
-  if X + Width - 1 >= Clip.Right then Dec(Width, X + Width - 1 - (Clip.Right - 1));
-  if Y + Height - 1 >= Clip.Bottom then Dec(Height, Y + Height - 1 - (Clip.Bottom - 1));
+  if X + Integer(Width) - 1 >= Clip.Right then Dec(Width, X + Integer(Width) - 1 - (Clip.Right - 1));
+  if Y + Integer(Height) - 1 >= Clip.Bottom then Dec(Height, Y + Integer(Height) - 1 - (Clip.Bottom - 1));
   if X < Clip.Left then
   begin
     SourceX := Clip.Left - X; Dec(Width, SourceX); X := Clip.Left;
@@ -4036,20 +4011,20 @@ begin
   end;
   Ex_OKGR_PalCopy_XY_XY_WORD(Dest, DestPitch, X, Y, Source, SourcePitch, SourceX, SourceY, Palette, Width, Height);
 end;
-{ @end $4D2F78 }
+{ @end $7CB758 }
 
-{ @routine $4D3080 CopyGraphBuffer16Clipped }
+{ @routine $7CB834 CopyGraphBuffer16Clipped }
 procedure CopyGraphBuffer16Clipped(Dest: Pointer; DestPitch, X, Y: Integer; Source: TGraphBufGR; Clip: TRect; HalfAlpha, UnusedOption: Boolean);
-var SourceX, SourceY, Width, Height: Integer;
+var SourceX, SourceY, Width, Height: Cardinal;
 begin
   if (X >= Clip.Right) or (Y >= Clip.Bottom) or
-    (Source.Width + X - 1 < Clip.Left) or (Source.Height + Y - 1 < Clip.Top) then Exit;
+    (Integer(Source.Width) + X - 1 < Clip.Left) or (Integer(Source.Height) + Y - 1 < Clip.Top) then Exit;
   SourceX := 0;
   SourceY := 0;
   Width := Source.Width;
   Height := Source.Height;
-  if X + Width - 1 >= Clip.Right then Dec(Width, X + Width - 1 - (Clip.Right - 1));
-  if Y + Height - 1 >= Clip.Bottom then Dec(Height, Y + Height - 1 - (Clip.Bottom - 1));
+  if X + Integer(Width) - 1 >= Clip.Right then Dec(Width, Cardinal(X) + Width - 1 - Cardinal(Clip.Right - 1));
+  if Y + Integer(Height) - 1 >= Clip.Bottom then Dec(Height, Cardinal(Y) + Height - 1 - Cardinal(Clip.Bottom - 1));
   if X < Clip.Left then
   begin
     SourceX := Clip.Left - X;
@@ -4065,16 +4040,16 @@ begin
   if HalfAlpha then Ex_OKGR_HACopy_XY_XY_16(Dest, DestPitch, X, Y, Source.GetPixels, Source.PitchBytes, SourceX, SourceY, Width, Height)
   else Ex_OKGR_Copy_XY_XY_WORD(Dest, DestPitch, X, Y, Source.GetPixels, Source.PitchBytes, SourceX, SourceY, Width, Height);
 end;
-{ @end $4D3080 }
+{ @end $7CB834 }
 
-{ @routine $4D31DC CopyBuffer16Clipped }
-procedure CopyBuffer16Clipped(Dest: Pointer; DestPitch, X, Y: Integer; Source: Pointer; SourcePitch, Width, Height: Integer; Clip: TRect; UnusedOption: Boolean);
-var SourceX, SourceY: Integer;
+{ @routine $7CB960 CopyBuffer16Clipped }
+procedure CopyBuffer16Clipped(Dest: Pointer; DestPitch: Cardinal; X, Y: Integer; Source: Pointer; SourcePitch, Width, Height: Cardinal; Clip: TRect; UnusedOption: Boolean);
+var SourceX, SourceY: Cardinal;
 begin
-  if (X >= Clip.Right) or (Y >= Clip.Bottom) or (X + Width - 1 < Clip.Left) or (Y + Height - 1 < Clip.Top) then Exit;
+  if (X >= Clip.Right) or (Y >= Clip.Bottom) or (X + Integer(Width) - 1 < Clip.Left) or (Y + Integer(Height) - 1 < Clip.Top) then Exit;
   SourceX := 0; SourceY := 0;
-  if X + Width - 1 >= Clip.Right then Dec(Width, X + Width - 1 - (Clip.Right - 1));
-  if Y + Height - 1 >= Clip.Bottom then Dec(Height, Y + Height - 1 - (Clip.Bottom - 1));
+  if X + Integer(Width) - 1 >= Clip.Right then Dec(Width, X + Integer(Width) - 1 - (Clip.Right - 1));
+  if Y + Integer(Height) - 1 >= Clip.Bottom then Dec(Height, Y + Integer(Height) - 1 - (Clip.Bottom - 1));
   if X < Clip.Left then
   begin
     SourceX := Clip.Left - X; Dec(Width, SourceX); X := Clip.Left;
@@ -4085,20 +4060,20 @@ begin
   end;
   Ex_OKGR_Copy_XY_XY_WORD(Dest, DestPitch, X, Y, Source, SourcePitch, SourceX, SourceY, Width, Height);
 end;
-{ @end $4D31DC }
+{ @end $7CB960 }
 
-{ @routine $4D32E0 CopyTransparentGraphBuffer16Clipped }
+{ @routine $7CBA34 CopyTransparentGraphBuffer16Clipped }
 procedure CopyTransparentGraphBuffer16Clipped(Dest: Pointer; DestPitch, X, Y: Integer; Source: TGraphBufGR; Clip: TRect; TransparentColor: Word);
-var SourceX, SourceY, Width, Height: Integer;
+var SourceX, SourceY, Width, Height: Cardinal;
 begin
   if (X >= Clip.Right) or (Y >= Clip.Bottom) or
-    (Source.Width + X - 1 < Clip.Left) or (Source.Height + Y - 1 < Clip.Top) then Exit;
+    (Integer(Source.Width) + X - 1 < Clip.Left) or (Integer(Source.Height) + Y - 1 < Clip.Top) then Exit;
   SourceX := 0;
   SourceY := 0;
   Width := Source.Width;
   Height := Source.Height;
-  if X + Width - 1 >= Clip.Right then Dec(Width, X + Width - 1 - (Clip.Right - 1));
-  if Y + Height - 1 >= Clip.Bottom then Dec(Height, Y + Height - 1 - (Clip.Bottom - 1));
+  if X + Integer(Width) - 1 >= Clip.Right then Dec(Width, Cardinal(X) + Width - 1 - Cardinal(Clip.Right - 1));
+  if Y + Integer(Height) - 1 >= Clip.Bottom then Dec(Height, Cardinal(Y) + Height - 1 - Cardinal(Clip.Bottom - 1));
   if X < Clip.Left then
   begin
     SourceX := Clip.Left - X;
@@ -4113,20 +4088,20 @@ begin
   end;
   Ex_OKGR_CopyTrans_XY_XY_WORD(Dest, DestPitch, X, Y, Source.GetPixels, Source.PitchBytes, SourceX, SourceY, Width, Height, TransparentColor);
 end;
-{ @end $4D32E0 }
+{ @end $7CBA34 }
 
-{ @routine $4D3408 DrawAlphaGraphBuffer16Clipped }
+{ @routine $7CBB30 DrawAlphaGraphBuffer16Clipped }
 procedure DrawAlphaGraphBuffer16Clipped(Dest: Pointer; DestPitch, X, Y: Integer; Source: TGraphBufGR; Clip: TRect);
-var SourceX, SourceY, Width, Height: Integer;
+var SourceX, SourceY, Width, Height: Cardinal;
 begin
   if (X >= Clip.Right) or (Y >= Clip.Bottom) or
-    (Source.Width + X - 1 < Clip.Left) or (Source.Height + Y - 1 < Clip.Top) then Exit;
+    (Integer(Source.Width) + X - 1 < Clip.Left) or (Integer(Source.Height) + Y - 1 < Clip.Top) then Exit;
   SourceX := 0;
   SourceY := 0;
   Width := Source.Width;
   Height := Source.Height;
-  if X + Width - 1 >= Clip.Right then Dec(Width, X + Width - 1 - (Clip.Right - 1));
-  if Y + Height - 1 >= Clip.Bottom then Dec(Height, Y + Height - 1 - (Clip.Bottom - 1));
+  if X + Integer(Width) - 1 >= Clip.Right then Dec(Width, Cardinal(X) + Width - 1 - Cardinal(Clip.Right - 1));
+  if Y + Integer(Height) - 1 >= Clip.Bottom then Dec(Height, Cardinal(Y) + Height - 1 - Cardinal(Clip.Bottom - 1));
   if X < Clip.Left then
   begin
     SourceX := Clip.Left - X;
@@ -4141,16 +4116,16 @@ begin
   end;
   Ex_OKGR_AlphaSimpleBuf_Draw_16(Dest, DestPitch, X, Y, Source.GetPixels, Source.PitchBytes, SourceX, SourceY, Width, Height);
 end;
-{ @end $4D3408 }
+{ @end $7CBB30 }
 
-{ @routine $4D352C DrawAlphaBuffer16Clipped }
-procedure DrawAlphaBuffer16Clipped(Dest: Pointer; DestPitch, X, Y: Integer; Source: Pointer; SourcePitch, Width, Height: Integer; Clip: TRect);
-var SourceX, SourceY: Integer;
+{ @routine $7CBC28 DrawAlphaBuffer16Clipped }
+procedure DrawAlphaBuffer16Clipped(Dest: Pointer; DestPitch: Cardinal; X, Y: Integer; Source: Pointer; SourcePitch, Width, Height: Cardinal; Clip: TRect);
+var SourceX, SourceY: Cardinal;
 begin
-  if (X >= Clip.Right) or (Y >= Clip.Bottom) or (X + Width - 1 < Clip.Left) or (Y + Height - 1 < Clip.Top) then Exit;
+  if (X >= Clip.Right) or (Y >= Clip.Bottom) or (X + Integer(Width) - 1 < Clip.Left) or (Y + Integer(Height) - 1 < Clip.Top) then Exit;
   SourceX := 0; SourceY := 0;
-  if X + Width - 1 >= Clip.Right then Dec(Width, X + Width - 1 - (Clip.Right - 1));
-  if Y + Height - 1 >= Clip.Bottom then Dec(Height, Y + Height - 1 - (Clip.Bottom - 1));
+  if X + Integer(Width) - 1 >= Clip.Right then Dec(Width, X + Integer(Width) - 1 - (Clip.Right - 1));
+  if Y + Integer(Height) - 1 >= Clip.Bottom then Dec(Height, Y + Integer(Height) - 1 - (Clip.Bottom - 1));
   if X < Clip.Left then
   begin
     SourceX := Clip.Left - X; Dec(Width, SourceX); X := Clip.Left;
@@ -4161,11 +4136,11 @@ begin
   end;
   Ex_OKGR_AlphaSimpleBuf_Draw_16(Dest, DestPitch, X, Y, Source, SourcePitch, SourceX, SourceY, Width, Height);
 end;
-{ @end $4D352C }
+{ @end $7CBC28 }
 
-{ @routine $4D3630 DrawPaletteAlphaBuffer16Clipped }
-procedure DrawPaletteAlphaBuffer16Clipped(Dest: Pointer; DestPitch, X, Y: Integer; Source: TGraphBufPalGR; Clip: TRect);
-var SourceX, SourceY, Width, Height: Integer;
+{ @routine $7CBCFC DrawPaletteAlphaBuffer16Clipped }
+procedure DrawPaletteAlphaBuffer16Clipped(Dest: Pointer; DestPitch: Cardinal; X, Y: Integer; Source: TGraphBufPalGR; Clip: TRect);
+var SourceX, SourceY, Width, Height: Cardinal;
 begin
   if (X >= Clip.Right) or (Y >= Clip.Bottom) or
     (X + Source.Width - 1 < Clip.Left) or (Y + Source.Height - 1 < Clip.Top) then Exit;
@@ -4173,8 +4148,8 @@ begin
   SourceY := 0;
   Width := Source.Width;
   Height := Source.Height;
-  if X + Width - 1 >= Clip.Right then Dec(Width, X + Width - 1 - (Clip.Right - 1));
-  if Y + Height - 1 >= Clip.Bottom then Dec(Height, Y + Height - 1 - (Clip.Bottom - 1));
+  if X + Integer(Width) - 1 >= Clip.Right then Dec(Width, X + Integer(Width) - 1 - (Clip.Right - 1));
+  if Y + Integer(Height) - 1 >= Clip.Bottom then Dec(Height, Y + Integer(Height) - 1 - (Clip.Bottom - 1));
   if X < Clip.Left then
   begin
     SourceX := Clip.Left - X;
@@ -4189,9 +4164,9 @@ begin
   end;
   Ex_OKGR_AlphaSimpleBufPalAlpha_Draw_16(Dest, DestPitch, X, Y, Source.Pixels, Source.PitchBytes, SourceX, SourceY, Width, Height, Source.Palette);
 end;
-{ @end $4D3630 }
+{ @end $7CBCFC }
 
-{ @routine $4D3758 ExpandPaletteToBgra }
+{ @routine $7CBDE8 ExpandPaletteToBgra }
 procedure ExpandPaletteToBgra(Dest: Pointer; DestPitch: Integer; Width, Height: Cardinal; Source: Pointer; SourcePitch: Integer; Palette: Pointer);
 var X, Y: Cardinal; Offset: Cardinal;
 begin
@@ -4209,16 +4184,17 @@ begin
     Dest := AddPointerOffset(Dest, DestPitch);
   end;
 end;
-{ @end $4D3758 }
+{ @end $7CBDE8 }
 
-{ @routine $4D383C BlendPaletteBuffer16Clipped }
-procedure BlendPaletteBuffer16Clipped(Dest: Pointer; DestPitch, X, Y: Integer; Source: TGraphBufPalGR; Clip: TRect);
+{ @routine $7CBEB0 BlendPaletteBuffer16Clipped }
+procedure BlendPaletteBuffer16Clipped(Dest: Pointer; DestPitch: Cardinal; X, Y: Integer; Source: TGraphBufPalGR; Clip: TRect);
 var
   SourcePixels: Pointer;
-  Width: Integer;
+  Width: Cardinal;
   Palette, MulTable: Pointer;
-  ColumnCount, SourceSkip, DestSkip, Height: Integer;
-  SourceX, SourceY: Integer;
+  ColumnCount, SourceSkip, DestSkip: Integer;
+  Height: Cardinal;
+  SourceX, SourceY: Cardinal;
 begin
   if (X >= Clip.Right) or (Y >= Clip.Bottom) or
      (X + Source.Width - 1 < Clip.Left) or (Y + Source.Height - 1 < Clip.Top) then Exit;
@@ -4226,8 +4202,8 @@ begin
   SourceY := 0;
   Width := Source.Width;
   Height := Source.Height;
-  if X + Width - 1 >= Clip.Right then Dec(Width, X + Width - 1 - (Clip.Right - 1));
-  if Y + Height - 1 >= Clip.Bottom then Dec(Height, Y + Height - 1 - (Clip.Bottom - 1));
+  if X + Integer(Width) - 1 >= Clip.Right then Dec(Width, X + Integer(Width) - 1 - (Clip.Right - 1));
+  if Y + Integer(Height) - 1 >= Clip.Bottom then Dec(Height, Y + Integer(Height) - 1 - (Clip.Bottom - 1));
   if X < Clip.Left then
   begin
     SourceX := Clip.Left - X;
@@ -4240,14 +4216,13 @@ begin
     Dec(Height, SourceY);
     Y := Clip.Top;
   end;
-  SourcePixels := Pointer(SourceY * Source.PitchBytes + PAnsiChar(Source.Pixels) + SourceX);
-  Dest := Pointer(Y * DestPitch + PAnsiChar(Dest) + X * 2);
-  SourceSkip := Source.PitchBytes - Width;
+  SourcePixels := Integer(SourceY) * Source.PitchBytes + PAnsiChar(Source.Pixels) + SourceX;
+  Dest := Y * Integer(DestPitch) + PAnsiChar(Dest) + X * 2;
+  SourceSkip := Source.PitchBytes - Integer(Width);
   DestSkip := DestPitch - Width * 2;
   MulTable := Ex_OKGF_MulTable256x256;
   Palette := Source.Palette;
   ColumnCount := Width;
-  { Native handwritten loops blend palette alpha into RGB565 or RGB555. }
   if CurrentPixelFormat.TotalChannelBits = 16 then
   begin
     asm
@@ -4441,69 +4416,69 @@ begin
     end;
   end;
 end;
-{ @end $4D383C }
+{ @end $7CBEB0 }
 
-{ @routine $4D3B88 DrawGradientLine16Clipped }
+{ @routine $7CC1C0 DrawGradientLine16Clipped }
 procedure DrawGradientLine16Clipped(Pixels: Pointer; Pitch, X1, Y1: Integer; Color1: Cardinal; X2, Y2: Integer; Color2: Cardinal; Clip: TRect);
 begin
   if Ex_OKGR_LineColor_Clip(X1, Y1, Color1, X2, Y2, Color2, Clip) <> 0 then
     LineRasterizer16(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes,
       X1, Y1, Color1, X2, Y2, Color2);
 end;
-{ @end $4D3B88 }
+{ @end $7CC1C0 }
 
-{ @routine $4D3C04 IsVirtualKeyDown }
+{ @routine $7CC234 IsVirtualKeyDown }
 function IsVirtualKeyDown(Key: Integer): Boolean;
 begin
   Result := GetAsyncKeyState(Key) and $8000 = $8000;
 end;
-{ @end $4D3C04 }
+{ @end $7CC234 }
 
-{ @routine $4D3C30 LookupLocalizedTextByKey }
+{ @routine $7CC250 LookupLocalizedTextByKey }
 function LookupLocalizedTextByKey(const Path: WideString): WideString;
 begin
   Result := LanguageDataConfig.GetParamByPathOrMarker(Path);
 end;
-{ @end $4D3C30 }
+{ @end $7CC250 }
 
-{ @routine $4D3C50 LookupLocalizedTextOrEmpty }
+{ @routine $7CC268 LookupLocalizedTextOrEmpty }
 function LookupLocalizedTextOrEmpty(const Path: WideString): WideString;
 begin
   if LanguageDataConfig.CountParamsByPath(Path) > 0 then
     Result := LanguageDataConfig.GetParamByPathOrMarker(Path)
   else Result := '';
 end;
-{ @end $4D3C50 }
+{ @end $7CC268 }
 
-{ @routine $4D3C8C GiResourceVariant }
+{ @routine $7CC29C GiResourceVariant }
 function GiResourceVariant: Integer;
 begin
   Result := 2;
 end;
-{ @end $4D3C8C }
+{ @end $7CC29C }
 
-{ @routine $4D3CA0 GiResourceSuffix }
+{ @routine $7CC2A4 GiResourceSuffix }
 function GiResourceSuffix: WideString;
 begin
   Result := '2';
 end;
-{ @end $4D3CA0 }
+{ @end $7CC2A4 }
 
-{ @routine $4D3CC0 GiScalePixels }
+{ @routine $7CC2C0 GiScalePixels }
 function GiScalePixels(Value: Integer): Integer;
 begin
   Result := Value;
 end;
-{ @end $4D3CC0 }
+{ @end $7CC2C0 }
 
-{ @routine $4D3CD8 GiScalePixelsEx }
+{ @routine $7CC2C4 GiScalePixelsEx }
 function GiScalePixelsEx(Value, AlternateValue: Integer): Integer;
 begin
   Result := Value;
 end;
-{ @end $4D3CD8 }
+{ @end $7CC2C4 }
 
-{ @routine $4D3CF4 AppendLogLineThreadSafe }
+{ @routine $7CC2C8 AppendLogLineThreadSafe }
 procedure AppendLogLineThreadSafe(const Text: AnsiString);
 begin
   if SessionLogLock = nil then SessionLogLock := TCriticalSection.Create;
@@ -4513,9 +4488,9 @@ begin
   CloseFile(SessionLog);
   SessionLogLock.Leave;
 end;
-{ @end $4D3CF4 }
+{ @end $7CC2C8 }
 
-{ @routine $4D3D54 AppendLogTextThreadSafe }
+{ @routine $7CC320 AppendLogTextThreadSafe }
 procedure AppendLogTextThreadSafe(const Text: AnsiString);
 begin
   if SessionLogLock = nil then SessionLogLock := TCriticalSection.Create;
@@ -4525,9 +4500,9 @@ begin
   CloseFile(SessionLog);
   SessionLogLock.Leave;
 end;
-{ @end $4D3D54 }
+{ @end $7CC320 }
 
-{ @routine $4D3DB4 AppendDebugLogLine }
+{ @routine $7CC378 AppendDebugLogLine }
 procedure AppendDebugLogLine(const Text: AnsiString);
 var
   Log: TextFile;
@@ -4541,26 +4516,24 @@ begin
   CloseFile(Log);
   SessionLogLock.Leave;
 end;
-{ @end $4D3DB4 }
+{ @end $7CC378 }
 
-{ @routine $4D3E60 AppendOptionalDebugLogLine }
+{ @routine $7CC410 AppendOptionalDebugLogLine }
 procedure AppendOptionalDebugLogLine(const Text: AnsiString);
 var Log: TextFile;
 begin
-  if FileExists('#####add.log') then
-  begin
-    if SessionLogLock = nil then SessionLogLock := TCriticalSection.Create;
-    SessionLogLock.Enter;
-    AssignFile(Log, '#####add.log');
-    Append(Log);
-    Writeln(Log, Text);
-    CloseFile(Log);
-    SessionLogLock.Leave;
-  end;
+  if not FileExists('#####add.log') then Exit;
+  if SessionLogLock = nil then SessionLogLock := TCriticalSection.Create;
+  SessionLogLock.Enter;
+  AssignFile(Log, '#####add.log');
+  Append(Log);
+  Writeln(Log, Text);
+  CloseFile(Log);
+  SessionLogLock.Leave;
 end;
-{ @end $4D3E60 }
+{ @end $7CC410 }
 
-{ @routine $4D3F00 WriteTextFileThreadSafe }
+{ @routine $7CC4A0 WriteTextFileThreadSafe }
 procedure WriteTextFileThreadSafe(FileName, Text: AnsiString);
 var F: TextFile;
 begin
@@ -4572,17 +4545,17 @@ begin
   CloseFile(F);
   SessionLogLock.Leave;
 end;
-{ @end $4D3F00 }
+{ @end $7CC4A0 }
 
-{ @routine $4D3FB8 IsInstallFeatureEnabled }
+{ @routine $7CC558 IsInstallFeatureEnabled }
 function IsInstallFeatureEnabled(const Path: WideString): Boolean;
 begin
   if InstallConfig.CountParamsByPath(Path) < 1 then Result := False
   else Result := ParseEnabledNameGI(InstallConfig.GetParamByPathOrMarker(Path));
 end;
-{ @end $4D3FB8 }
+{ @end $7CC558 }
 
-{ @routine $4D402C AddCursorUnit }
+{ @routine $7CC5C0 AddCursorUnit }
 function AddCursorUnit: TCursorUnit;
 var Cursor: TCursorUnit;
 begin
@@ -4594,9 +4567,9 @@ begin
   if FirstRegisteredCursor = nil then FirstRegisteredCursor := Cursor;
   Result := Cursor;
 end;
-{ @end $4D402C }
+{ @end $7CC5C0 }
 
-{ @routine $4D4090 RemoveCursorUnit }
+{ @routine $7CC600 RemoveCursorUnit }
 procedure RemoveCursorUnit(Cursor: TCursorUnit);
 begin
   if Cursor.Prev <> nil then Cursor.Prev.Next := Cursor.Next;
@@ -4605,9 +4578,9 @@ begin
   if FirstRegisteredCursor = Cursor then FirstRegisteredCursor := Cursor.Next;
   Cursor.Free;
 end;
-{ @end $4D4090 }
+{ @end $7CC600 }
 
-{ @routine $4D40FC FindCursorByName }
+{ @routine $7CC644 FindCursorByName }
 function FindCursorByName(const Name: WideString): TCursorUnit;
 var Cursor: TCursorUnit;
 begin
@@ -4623,9 +4596,9 @@ begin
   end;
   raise Exception.Create('GR_CursorFind');
 end;
-{ @end $4D40FC }
+{ @end $7CC644 }
 
-{ @routine $4D4170 PostMouseMoveMessage }
+{ @routine $7CC6A0 PostMouseMoveMessage }
 procedure PostMouseMoveMessage;
 var
   Point: TPoint;
@@ -4634,9 +4607,9 @@ begin
   ScreenToClient(MainWindowHandle, Point);
   PostMessage(MainWindowHandle, WM_MOUSEMOVE, 0, Word(Point.X) or (Word(Point.Y) shl 16));
 end;
-{ @end $4D4170 }
+{ @end $7CC6A0 }
 
-{ @routine $4D41B4 MeasureCpuClockMHz }
+{ @routine $7CC6DC MeasureCpuClockMHz }
 function MeasureCpuClockMHz: Double;
 var TickLow, TickHigh: Cardinal; ProcessPriority: Cardinal; ThreadPriority: Integer;
 begin
@@ -4646,7 +4619,6 @@ begin
   SetThreadPriority(GetCurrentThread, THREAD_PRIORITY_TIME_CRITICAL);
   try
     SysUtils.Sleep(10);
-    // The native timestamp reads and 64-bit subtraction are handwritten asm.
     asm
       rdtsc
       mov TickLow, eax
@@ -4667,9 +4639,9 @@ begin
   SetThreadPriority(GetCurrentThread, ThreadPriority);
   SetPriorityClass(GetCurrentProcess, ProcessPriority);
 end;
-{ @end $4D41B4 }
+{ @end $7CC6DC }
 
-{ @routine $4D4290 ReadRegistryText }
+{ @routine $7CC7B8 ReadRegistryText }
 function ReadRegistryText(Root: Cardinal; KeyPath, ValueName, DefaultValue: WideString): WideString;
 var Key: HKey; ValueType: Cardinal; Data: Pointer; ByteCount: Cardinal;
 begin
@@ -4694,9 +4666,9 @@ begin
   FreeEC(Data);
   RegCloseKey(Key);
 end;
-{ @end $4D4290 }
+{ @end $7CC7B8 }
 
-{ @routine $4D43D8 ReadRegistryInteger }
+{ @routine $7CC8F4 ReadRegistryInteger }
 function ReadRegistryInteger(Root: Cardinal; KeyPath, ValueName: WideString; DefaultValue: Integer): Integer;
 var Key: HKey; ValueType: Cardinal; Value: Integer; ByteCount: Cardinal;
 begin
@@ -4718,16 +4690,16 @@ begin
   else Result := Value;
   RegCloseKey(Key);
 end;
-{ @end $4D43D8 }
+{ @end $7CC8F4 }
 
-{ @routine $4D44E0 RaiseWideMessage }
+{ @routine $7CC9E4 RaiseWideMessage }
 procedure RaiseWideMessage(const Message: WideString);
 begin
   raise Exception.Create(Message);
 end;
-{ @end $4D44E0 }
+{ @end $7CC9E4 }
 
-{ @routine $4D453C Direct3DErrorText }
+{ @routine $7CCA3C Direct3DErrorText }
 function Direct3DErrorText(Code: Integer): AnsiString;
 begin
   Result := '';
@@ -4760,9 +4732,9 @@ begin
   end;
   Result := Result + ' (' + SysUtils.IntToStr(Code) + ')';
 end;
-{ @end $4D453C }
+{ @end $7CCA3C }
 
-{ @routine $4D4B30 FormatUnixDateTime }
+{ @routine $7CD008 FormatUnixDateTime }
 function FormatUnixDateTime(Value: Cardinal): WideString;
 var
   DateValue: TDateTime;
@@ -4770,26 +4742,24 @@ begin
   DateValue := UnixToDateTime(Value);
   Result := DateTimeToStr(DateValue);
 end;
-{ @end $4D4B30 }
+{ @end $7CD008 }
 
-{ @routine $4D4B9C LoadInformationColorTags }
+{ @routine $7CD074 LoadInformationColorTags }
 procedure LoadInformationColorTags;
 var Block: TBlockParEC;
 begin
   InfoNameColorTag := DefaultInfoNameColorTag;
   InfoHullSeriesColorTag := DefaultInfoHullSeriesColorTag;
-  if GameDataConfig.CountBlocks('StyleColor') > 0 then
-  begin
-    Block := GameDataConfig.GetBlock('StyleColor');
-    if Block.CountParamsByPath('InfoNameColor') > 0 then
-      InfoNameColorTag := '<color=' + Block.GetParamByPath('InfoNameColor') + '>';
-    if Block.CountParamsByPath('InfoHullSeriesColor') > 0 then
-      InfoHullSeriesColorTag := '<color=' + Block.GetParamByPath('InfoHullSeriesColor') + '>';
-  end;
+  if GameDataConfig.CountBlocks('StyleColor') <= 0 then Exit;
+  Block := GameDataConfig.GetBlock('StyleColor');
+  if Block.CountParamsByPath('InfoNameColor') > 0 then
+    InfoNameColorTag := '<color=' + Block.GetParamByPath('InfoNameColor') + '>';
+  if Block.CountParamsByPath('InfoHullSeriesColor') > 0 then
+    InfoHullSeriesColorTag := '<color=' + Block.GetParamByPath('InfoHullSeriesColor') + '>';
 end;
-{ @end $4D4B9C }
+{ @end $7CD074 }
 
-{ @routine $4D4D78 GetStyleColorGI }
+{ @routine $7CD24C GetStyleColorGI }
 function GetStyleColorGI(StyleName: WideString; DefaultRed, DefaultGreen, DefaultBlue: Integer): Cardinal;
 var Style: TBlockParEC; ColorText: WideString;
 begin
@@ -4808,9 +4778,9 @@ begin
   end;
   Result := CurrentPixelFormat.PackRgb(DefaultRed, DefaultGreen, DefaultBlue);
 end;
-{ @end $4D4D78 }
+{ @end $7CD24C }
 
-{ @routine $4D4ECC GetStyleColorTagGI }
+{ @routine $7CD38C GetStyleColorTagGI }
 function GetStyleColorTagGI(StyleName: WideString; DefaultRed, DefaultGreen, DefaultBlue: Integer): WideString;
 var Style: TBlockParEC;
 begin
@@ -4826,9 +4796,9 @@ begin
   end;
   Result := '<color=' + IntToWideString(DefaultRed) + ',' + IntToWideString(DefaultGreen) + ',' + IntToWideString(DefaultBlue) + '>';
 end;
-{ @end $4D4ECC }
+{ @end $7CD38C }
 
-{ @routine $4D5028 GetGameUserDirectory }
+{ @routine $7CD4E4 GetGameUserDirectory }
 function GetGameUserDirectory: WideString;
 var PathBuffer: PAnsiChar; ItemIdList: PItemIDList; DocumentsPath: WideString;
 begin
@@ -4851,9 +4821,9 @@ begin
     Result := CachedGameUserDirectory;
   end;
 end;
-{ @end $4D5028 }
+{ @end $7CD4E4 }
 
-{ @routine $4D51D4 ComputeMachineFingerprintCRC }
+{ @routine $7CD688 ComputeMachineFingerprintCRC }
 function ComputeMachineFingerprintCRC: Cardinal;
 var Buffer: TBufEC;
   ProcessorName: AnsiString;
@@ -4868,9 +4838,9 @@ begin
   Buffer.Clear;
   Buffer.Free;
 end;
-{ @end $4D51D4 }
+{ @end $7CD688 }
 
-{ @routine $4D536C GetClipboardWideText }
+{ @routine $7CD804 GetClipboardWideText }
 function GetClipboardWideText: WideString;
 var Handle: HGLOBAL;
 begin
@@ -4883,9 +4853,9 @@ begin
     Clipboard.Close;
   end;
 end;
-{ @end $4D536C }
+{ @end $7CD804 }
 
-{ @routine $4D53EC SetClipboardWideText }
+{ @routine $7CD880 SetClipboardWideText }
 procedure SetClipboardWideText(Text: WideString);
 var
   Size: Integer;
@@ -4900,13 +4870,13 @@ begin
   SetClipboardData(CF_UNICODETEXT, Handle);
   CloseClipboard;
 end;
-{ @end $4D53EC }
+{ @end $7CD880 }
 
-{ @routine $4D55F8 LogPresentationParameters }
+{ @routine $7CDA80 LogPresentationParameters }
 procedure LogPresentationParameters;
 var CurrentValue, PreviousValue: Cardinal; Text: WideString;
-  // @nested $4D548C LogPresentationField
-  procedure LogPresentationField(Name: WideString); // @addr $4D548C @calls "0x4D5638,0x4D5654,0x4D5670,0x4D568C,0x4D56A8,0x4D56C4,0x4D56E0,0x4D56FC,0x4D5732,0x4D5768,0x4D5784,0x4D57A0,0x4D57BC,0x4D57D8"
+  // @nested $7CD914 LogPresentationField
+  procedure LogPresentationField(Name: WideString); // @addr $7CD914 @calls "0x007CDAC9,0x007CDAE0,0x007CDAF7,0x007CDB0E,0x007CDB25,0x007CDB3C,0x007CDB53,0x007CDB6A,0x007CDB99,0x007CDBC8,0x007CDBDF,0x007CDBF6,0x007CDC0D,0x007CDC24"
   begin
     if CurrentValue = PreviousValue then
       Text := Name + ' = ' + SysUtils.IntToStr(Int64(CurrentValue))
@@ -4960,6 +4930,6 @@ begin
   LogPresentationField('PresentationInterval');
   AppendLogLineThreadSafe('');
 end;
-{ @end $4D55F8 }
+{ @end $7CDA80 }
 
 end.

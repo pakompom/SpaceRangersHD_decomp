@@ -1,5 +1,4 @@
 unit GR_Music;
-// Unit bracket (inferred): .text 0x00849E70..0x0084B2A9; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -18,13 +17,13 @@ type
     Stream: TFileStreamEC; // @offset $48
     StartPlaybackEvent: Cardinal; // @offset $4C
     CompletionEvent: Cardinal; // @offset $50
-    constructor Create(LibraryName: PWideChar); // @addr $849F58
-    destructor Destroy; override; // @addr $84A290
-    procedure Clear; // @addr $84A33C
-    procedure LoadFile(const FileName: WideString; Deferred: Boolean); // @addr $84A3A8
-    function GetFileName: WideString; // @addr $84A4D8
-    function IsIntroTrack: Boolean; // @addr $84A538
-    procedure Execute; override; // @addr $84A63C
+    constructor Create(LibraryName: PWideChar); // @addr $4D4804
+    destructor Destroy; override; // @addr $4D4B04
+    procedure Clear; // @addr $4D4B84
+    procedure LoadFile(const FileName: WideString; Deferred: Boolean); // @addr $4D4BC8
+    function GetFileName: WideString; // @addr $4D4CD0
+    function IsIntroTrack: Boolean; // @addr $4D4D18
+    procedure Execute; override; // @addr $4D4E18
   end;
   TMusicControl = class(TThreadEC) // @size $48
   public
@@ -34,19 +33,19 @@ type
     Queued: TMusicUnit; // @offset $38
     CurrentFileName: WideString; // @offset $40
     CategoryOverride: WideString; // @offset $44
-    constructor Create; // @addr $84A880
-    destructor Destroy; override; // @addr $84A9F4
-    procedure Clear; // @addr $84AA9C
-    procedure Execute; override; // @addr $84AB70
-    procedure PlayFile(const FileName: WideString); // @addr $84AC7C
-    procedure PlayCategory(const Category: WideString); // @addr $84AD54
-    procedure RequestFadeOut; // @addr $84AEB4
-    procedure StopImmediately; // @addr $84AEE4
-    function HasSelectedMusic: Boolean; // @addr $84AF1C
-    function IsPlaying: Boolean; // @addr $84AFDC
+    constructor Create; // @addr $4D5040
+    destructor Destroy; override; // @addr $4D518C
+    procedure Clear; // @addr $4D5204
+    procedure Execute; override; // @addr $4D5298
+    procedure PlayFile(const FileName: WideString); // @addr $4D5360
+    procedure PlayCategory(const Category: WideString); // @addr $4D5434
+    procedure RequestFadeOut; // @addr $4D5594
+    procedure StopImmediately; // @addr $4D55B8
+    function HasSelectedMusic: Boolean; // @addr $4D55E4
+    function IsPlaying: Boolean; // @addr $4D56A4
   end;
 
-function ChooseMusicFile(const Category, CurrentFile: WideString): WideString; // @addr $84B07C
+function ChooseMusicFile(const Category, CurrentFile: WideString): WideString; // @addr $4D5734
 
 implementation
 
@@ -56,7 +55,7 @@ const
   MusicChunkBytes = 2 * VorbisOutputBytesPerSecond;
   MusicEndFadeThresholdBytes = $C800;
 
-{ @routine $849F58 TMusicUnit_Create }
+{ @routine $4D4804 TMusicUnit_Create }
 constructor TMusicUnit.Create(LibraryName: PWideChar);
 begin
   inherited Create;
@@ -84,17 +83,17 @@ begin
       end;
       if DecoderLibrary = 0 then
       begin
-        AppendLogLineThreadSafe(AnsiString('fail GetLastError=' + IntToWideString(GetLastError)));
-        raise Exception.Create(AnsiString(WideString('Error load=' + AnsiString(LibraryName) + '  GetLastError=') + IntToWideString(GetLastError)));
+        AppendLogLineThreadSafe('fail GetLastError=' + IntToWideString(GetLastError));
+        raise Exception.Create(WideString('Error load=' + AnsiString(LibraryName) + '  GetLastError=') + IntToWideString(GetLastError));
       end;
       AppendLogLineThreadSafe('ok');
     end;
     Buffer := SoundManager.AddBuffer;
   end;
 end;
-{ @end $849F58 }
+{ @end $4D4804 }
 
-{ @routine $84A290 TMusicUnit_Destroy }
+{ @routine $4D4B04 TMusicUnit_Destroy }
 destructor TMusicUnit.Destroy;
 begin
   if IsRunning then
@@ -117,9 +116,9 @@ begin
   // The native destructor leaves Decoder and DecoderLibrary allocated.
   inherited Destroy;
 end;
-{ @end $84A290 }
+{ @end $4D4B04 }
 
-{ @routine $84A33C TMusicUnit_Clear }
+{ @routine $4D4B84 TMusicUnit_Clear }
 procedure TMusicUnit.Clear;
 begin
   ImmediateStop := False;
@@ -137,35 +136,33 @@ begin
   end;
   DecodeLock.Leave;
 end;
-{ @end $84A33C }
+{ @end $4D4B84 }
 
-{ @routine $84A3A8 TMusicUnit_LoadFile }
+{ @routine $4D4BC8 TMusicUnit_LoadFile }
 procedure TMusicUnit.LoadFile(const FileName: WideString; Deferred: Boolean);
 begin
-  if GetFileName <> FileName then
+  if GetFileName = FileName then Exit;
+  RequestedFileName := FileName;
+  if IsRunning then
   begin
-    RequestedFileName := FileName;
-    if IsRunning then
-    begin
-      RequestStop;
-      if StartPlaybackEvent <> 0 then SetEvent(StartPlaybackEvent);
-      WaitForIdle(INFINITE);
-    end;
-    Clear;
-    Stream := TFileStreamEC.Create($400FF, FileName);
-    if Deferred then
-    begin
-      SetPriority(ThreadPriorityLowest);
-      StartPlaybackEvent := CreateEvent(nil, False, False, nil);
-      if StartPlaybackEvent = 0 then raise Exception.Create('CreateEvent');
-    end
-    else SetPriority(ThreadPriorityAboveNormal);
-    Start;
+    RequestStop;
+    if StartPlaybackEvent <> 0 then SetEvent(StartPlaybackEvent);
+    WaitForIdle(INFINITE);
   end;
+  Clear;
+  Stream := TFileStreamEC.Create($400FF, FileName);
+  if Deferred then
+  begin
+    SetPriority(ThreadPriorityLowest);
+    StartPlaybackEvent := CreateEvent(nil, False, False, nil);
+    if StartPlaybackEvent = 0 then raise Exception.Create('CreateEvent');
+  end
+  else SetPriority(ThreadPriorityAboveNormal);
+  Start;
 end;
-{ @end $84A3A8 }
+{ @end $4D4BC8 }
 
-{ @routine $84A4D8 TMusicUnit_GetFileName }
+{ @routine $4D4CD0 TMusicUnit_GetFileName }
 function TMusicUnit.GetFileName: WideString;
 begin
   if not IsRunning then Result := '';
@@ -174,17 +171,17 @@ begin
   else Result := Stream.SourceFile.GetFileName;
   DecodeLock.Leave;
 end;
-{ @end $84A4D8 }
+{ @end $4D4CD0 }
 
-{ @routine $84A538 TMusicUnit_IsIntroTrack }
+{ @routine $4D4D18 TMusicUnit_IsIntroTrack }
 function TMusicUnit.IsIntroTrack: Boolean;
 begin
   Result := (GetFileName = 'music\1c.dat') or
     (GetFileName = 'music\logo.dat') or (GetFileName = 'music\intro.dat');
 end;
-{ @end $84A538 }
+{ @end $4D4D18 }
 
-{ @routine $84A63C TMusicUnit_Execute }
+{ @routine $4D4E18 TMusicUnit_Execute }
 procedure TMusicUnit.Execute;
 var
   Ended: Boolean;
@@ -235,8 +232,7 @@ begin
         if not IsIntroTrack then Buffer.StartVolumeRamp(100, -0.1);
       end;
       Ended := not Buffer.WriteStream(Chunk, Decoder);
-      if Stream.EndOfFile then
-        if Stream.FillAvailable + Stream.ReadAvailable <= MusicEndFadeThresholdBytes then RequestStop;
+      if (Stream.EndOfFile) and (Stream.FillAvailable + Stream.ReadAvailable <= MusicEndFadeThresholdBytes) then RequestStop;
       Chunk := Buffer.WaitForChunk;
       if Chunk < 0 then Break;
     end;
@@ -245,9 +241,9 @@ begin
   Clear;
   SetEvent(CompletionEvent);
 end;
-{ @end $84A63C }
+{ @end $4D4E18 }
 
-{ @routine $84A880 TMusicControl_Create }
+{ @routine $4D5040 TMusicControl_Create }
 constructor TMusicControl.Create;
 begin
   inherited Create;
@@ -271,9 +267,9 @@ begin
     AppendLogLineThreadSafe('Pre-fetching music.... ok!');
   end;
 end;
-{ @end $84A880 }
+{ @end $4D5040 }
 
-{ @routine $84A9F4 TMusicControl_Destroy }
+{ @routine $4D518C TMusicControl_Destroy }
 destructor TMusicControl.Destroy;
 begin
   RequestStop;
@@ -292,9 +288,9 @@ begin
   end;
   inherited Destroy;
 end;
-{ @end $84A9F4 }
+{ @end $4D518C }
 
-{ @routine $84AA9C TMusicControl_Clear }
+{ @routine $4D5204 TMusicControl_Clear }
 procedure TMusicControl.Clear;
 begin
   if Current <> nil then
@@ -322,9 +318,9 @@ begin
     Queued := nil;
   end;
 end;
-{ @end $84AA9C }
+{ @end $4D5204 }
 
-{ @routine $84AB70 TMusicControl_Execute }
+{ @routine $4D5298 TMusicControl_Execute }
 procedure TMusicControl.Execute;
 var Previous: TMusicUnit;
 begin
@@ -347,9 +343,9 @@ begin
     ControlLock.Leave;
   end;
 end;
-{ @end $84AB70 }
+{ @end $4D5298 }
 
-{ @routine $84AC7C TMusicControl_PlayFile }
+{ @routine $4D5360 TMusicControl_PlayFile }
 procedure TMusicControl.PlayFile(const FileName: WideString);
 begin
   if not MusicEnabled then Exit;
@@ -369,60 +365,56 @@ begin
     ControlLock.Leave;
   end;
 end;
-{ @end $84AC7C }
+{ @end $4D5360 }
 
-{ @routine $84AD54 TMusicControl_PlayCategory }
+{ @routine $4D5434 TMusicControl_PlayCategory }
 procedure TMusicControl.PlayCategory(const Category: WideString);
 var
   Attempts: Integer;
   Chosen: WideString;
 begin
-  if MusicEnabled then
-  begin
-    ControlLock.Enter;
-    try
-      if CategoryOverride = '' then
-      begin
-        Chosen := ChooseMusicFile(Category, Current.GetFileName);
-        if (Chosen <> '') and (Chosen = CurrentFileName) then
-          Chosen := ChooseMusicFile('All', Current.GetFileName);
-      end
-      else
-      begin
-        Attempts := 0;
-        repeat
-          Chosen := ChooseMusicFile(CategoryOverride, Current.GetFileName);
-          Inc(Attempts);
-          if Attempts > 20 then Break;
-        until (Chosen = '') or (Chosen <> CurrentFileName);
-      end;
-      if Chosen <> '' then PlayFile(Chosen);
-    finally
-      ControlLock.Leave;
+  if not MusicEnabled then Exit;
+  ControlLock.Enter;
+  try
+    if CategoryOverride = '' then
+    begin
+      Chosen := ChooseMusicFile(Category, Current.GetFileName);
+      if (Chosen <> '') and (Chosen = CurrentFileName) then
+        Chosen := ChooseMusicFile('All', Current.GetFileName);
+    end
+    else
+    begin
+      Attempts := 0;
+      repeat
+        Chosen := ChooseMusicFile(CategoryOverride, Current.GetFileName);
+        Inc(Attempts);
+        if Attempts > 20 then Break;
+      until (Chosen = '') or (Chosen <> CurrentFileName);
     end;
+    if Chosen <> '' then PlayFile(Chosen);
+  finally
+    ControlLock.Leave;
   end;
 end;
-{ @end $84AD54 }
+{ @end $4D5434 }
 
-{ @routine $84AEB4 TMusicControl_RequestFadeOut }
+{ @routine $4D5594 TMusicControl_RequestFadeOut }
 procedure TMusicControl.RequestFadeOut;
 begin
   if MusicEnabled and Current.IsRunning then Current.RequestStop;
 end;
-{ @end $84AEB4 }
+{ @end $4D5594 }
 
-{ @routine $84AEE4 TMusicControl_StopImmediately }
+{ @routine $4D55B8 TMusicControl_StopImmediately }
 procedure TMusicControl.StopImmediately;
 begin
-  if MusicEnabled and Current.IsRunning then
-  begin
-    Current.RequestStop;
-    Current.ImmediateStop := True;
-  end;
+  if not MusicEnabled or not Current.IsRunning then Exit;
+  Current.RequestStop;
+  Current.ImmediateStop := True;
 end;
-{ @end $84AEE4 }
+{ @end $4D55B8 }
 
-{ @routine $84AF1C TMusicControl_HasSelectedMusic }
+{ @routine $4D55E4 TMusicControl_HasSelectedMusic }
 function TMusicControl.HasSelectedMusic: Boolean;
 begin
   ControlLock.Enter;
@@ -432,9 +424,9 @@ begin
     ControlLock.Leave;
   end;
 end;
-{ @end $84AF1C }
+{ @end $4D55E4 }
 
-{ @routine $84AFDC TMusicControl_IsPlaying }
+{ @routine $4D56A4 TMusicControl_IsPlaying }
 function TMusicControl.IsPlaying: Boolean;
 begin
   ControlLock.Enter;
@@ -445,9 +437,9 @@ begin
     ControlLock.Leave;
   end;
 end;
-{ @end $84AFDC }
+{ @end $4D56A4 }
 
-{ @routine $84B07C ChooseMusicFile }
+{ @routine $4D5734 ChooseMusicFile }
 function ChooseMusicFile(const Category, CurrentFile: WideString): WideString;
 var
   Block: TBlockParEC;
@@ -475,7 +467,7 @@ begin
         if Weight < 0 then
         begin
           Result := TrimWideString(LowerCaseWideString(Block.GetParamValue(Index)));
-          AppendLogLineThreadSafe(AnsiString(Result));
+          AppendLogLineThreadSafe(Result);
           Exit;
         end;
       end;
@@ -483,6 +475,6 @@ begin
     Result := '';
   end;
 end;
-{ @end $84B07C }
+{ @end $4D5734 }
 
 end.

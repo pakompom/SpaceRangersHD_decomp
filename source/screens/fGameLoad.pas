@@ -1,5 +1,4 @@
 unit fGameLoad;
-// Unit bracket (inferred): .text 0x00661994..0x00662679; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -9,26 +8,26 @@ type
   TThreadGameLoad = class(TThreadEC) // @size 0x30
   public
     Succeeded: Boolean; // @offset 0x2C
-    procedure Execute; override; // @addr 0x661A8C
+    procedure Execute; override; // @addr 0x00532044
   end;
 
   TfGameLoad = class(TMessageLoopGI) // @size 0xEC
   public
     LoadThread: TThreadGameLoad; // @offset 0xD0
-    ProgressTimer: PCallbackTimerGI; // @offset 0xD4
+    ProgressTimer: TCallbackTimerIdGI; // @offset 0xD4
     AssetPreloadStarted: Boolean; // @offset 0xD8
     TargetProgress: Single; // @offset 0xDC
     DisplayedProgress: Single; // @offset 0xE0
     LoadingComplete: Boolean; // @offset 0xE4
     LoadPanel: TfPanelLoad; // @offset 0xE8
-    constructor Create; // @addr 0x661AF0
-    destructor Destroy; override; // @addr 0x661B48
-    procedure InitializeLayout; override; // @addr 0x661BA0
-    procedure OnOpen; override; // @addr 0x661CA8
-    procedure OnClose; override; // @addr 0x661DD8
-    procedure SelectMusic; override; // @addr 0x662670
-    function IsLoading: Boolean; // @addr $6621FC
-    procedure UpdateLoadingProgress(Timer: PCallbackTimerGI; UserData: Integer); // @addr 0x662234
+    constructor Create; // @addr 0x0053209C
+    destructor Destroy; override; // @addr 0x005320E4
+    procedure InitializeLayout; override; // @addr 0x00532120
+    procedure OnOpen; override; // @addr 0x00532210
+    procedure OnClose; override; // @addr 0x00532314
+    procedure SelectMusic; override; // @addr 0x00532B24
+    function IsLoading: Boolean; // @addr $532720
+    procedure UpdateLoadingProgress(Timer: TCallbackTimerIdGI; UserData: Cardinal); // @addr 0x00532744
   end;
 
 implementation
@@ -37,23 +36,23 @@ uses aGalaxyStruct, SysUtils, Classes, Windows, Math, GR_Main, GR_Music, Globals
   EC_BlockPar, aConst, aMyFunction, aPlayer, aGalaxy, aSaveLoad,
   fLoad, fStarMap;
 
-{ @routine $661A8C TThreadGameLoad_Execute }
+{ @routine $532044 TThreadGameLoad_Execute }
 procedure TThreadGameLoad.Execute;
 begin
   Succeeded := False;
   Succeeded := LoadGameFromFile(PendingLoadFileName);
 end;
-{ @end $661A8C }
+{ @end $532044 }
 
-{ @routine $661AF0 TfGameLoad_Create }
+{ @routine $53209C TfGameLoad_Create }
 constructor TfGameLoad.Create;
 begin
   inherited Create;
   LoadPanel := TfPanelLoad.Create;
 end;
-{ @end $661AF0 }
+{ @end $53209C }
 
-{ @routine $661B48 TfGameLoad_Destroy }
+{ @routine $5320E4 TfGameLoad_Destroy }
 destructor TfGameLoad.Destroy;
 begin
   if LoadPanel <> nil then
@@ -63,9 +62,9 @@ begin
   end;
   inherited Destroy;
 end;
-{ @end $661B48 }
+{ @end $5320E4 }
 
-{ @routine $661BA0 TfGameLoad_InitializeLayout }
+{ @routine $532120 TfGameLoad_InitializeLayout }
 procedure TfGameLoad.InitializeLayout;
 begin
   inherited;
@@ -75,9 +74,9 @@ begin
   AppendLogLineThreadSafe('ok');
   LoadPanel.InitializeLayout(Self);
 end;
-{ @end $661BA0 }
+{ @end $532120 }
 
-{ @routine $661CA8 TfGameLoad_OnOpen }
+{ @routine $532210 TfGameLoad_OnOpen }
 procedure TfGameLoad.OnOpen;
 begin
   LoadPanel.OnOpen;
@@ -93,14 +92,14 @@ begin
   Galaxy := nil;
   AssetPreloadStarted := False;
   LoadThread := TThreadGameLoad.Create;
-  LoadThread.SetPriority(2);
+  LoadThread.SetPriority(ThreadPriorityBelowNormal);
   LoadThread.Start;
   ProgressTimer := ScheduleCallbackTimer(20,20,UpdateLoadingProgress);
   LoadPanel.SetProgress(0);
 end;
-{ @end $661CA8 }
+{ @end $532210 }
 
-{ @routine $661DD8 TfGameLoad_OnClose }
+{ @routine $532314 TfGameLoad_OnClose }
 procedure TfGameLoad.OnClose;
 var Category: WideString;
 begin
@@ -110,74 +109,74 @@ begin
     LoadThread.Free;
     LoadThread := nil;
   end;
-  if ProgressTimer <> nil then
+  if ProgressTimer <> 0 then
   begin
     CancelCallbackTimer(ProgressTimer);
-    ProgressTimer := nil;
+    ProgressTimer := 0;
   end;
   if MusicManager.CategoryOverride = '' then
   begin
     if GetPlayer = nil then MusicManager.PlayCategory('Base')
     else if GetPlayer.IsOnPlanet then
+    begin
+      if GetPlayer.CurrentPlanet.OwnerId = oiPirate then
       begin
-        if GetPlayer.CurrentPlanet.OwnerId = oiPirate then
-        begin
-          if not GetPlayer.CurrentPlanet.IsMainPiratePlanet then MusicManager.PlayCategory('Nation.' + OwnerInfo[RaceToOwner(GetPlayer.CurrentPlanet.RaceId)].InternalName + 'Pirate')
-          else MusicManager.PlayCategory('Nation.PiratePlanetMain');
-        end
-        else MusicManager.PlayCategory('Nation.' + OwnerInfo[GetPlayer.CurrentPlanet.OwnerId].InternalName);
+        if not GetPlayer.CurrentPlanet.IsMainPiratePlanet then MusicManager.PlayCategory('Nation.' + OwnerInfo[RaceToOwner(GetPlayer.CurrentPlanet.RaceId)].InternalName + 'Pirate')
+        else MusicManager.PlayCategory('Nation.PiratePlanetMain');
       end
-      else if GetPlayer.IsDockedToShip then
+      else MusicManager.PlayCategory('Nation.' + OwnerInfo[GetPlayer.CurrentPlanet.OwnerId].InternalName);
+    end
+    else if GetPlayer.IsDockedToShip then
+    begin
+      if GetPlayer.DockedTo.TypeId in [rstRangerCenter..rstCustomStation] then
       begin
-        if GetPlayer.DockedTo.TypeId in [rstRangerCenter..rstCustomStation] then
+        Category := GetPlayer.DockedTo.TypeNameOverrideKey;
+        if (Category <> '') and (MainDataConfig.GetBlock('Music').CountBlocks(Category) > 0) then
+          MusicManager.PlayCategory(GetPlayer.DockedTo.TypeNameOverrideKey)
+        else MusicManager.PlayCategory(GetPlayer.DockedTo.GetTypeNameKey);
+      end
+      else
+      begin
+          // Retain the native CurrentPlanet lookup in this non-station docking branch.
+        if GetPlayer.CurrentPlanet.OwnerId = oiPirate then
+          MusicManager.PlayCategory('Nation.' + OwnerInfo[RaceToOwner(GetPlayer.CurrentPlanet.RaceId)].InternalName + 'Pirate')
+        else MusicManager.PlayCategory('Nation.' + OwnerInfo[GetPlayer.CurrentPlanet.OwnerId].InternalName);
+      end;
+    end
+    else if GetPlayer.InNormalSpace then
+    begin
+      if MusicInSpaceEnabled then
+      begin
+        if (GetPlayer.GetHull.CapitalShip = 1) and (RandomIntRange(0,100) < 20) then
         begin
-          Category := GetPlayer.DockedTo.TypeNameOverrideKey;
-          if (Category <> '') and (MainDataConfig.GetBlock('Music').CountBlocks(Category) > 0) then
-            MusicManager.PlayCategory(GetPlayer.DockedTo.TypeNameOverrideKey)
-          else MusicManager.PlayCategory(GetPlayer.DockedTo.GetTypeNameKey);
+          StarMapScreen.BattleMusicSelected := True;
+          MusicManager.PlayCategory('Destroyer');
         end
         else
         begin
-          // Retain the native CurrentPlanet lookup in this non-station docking branch.
-          if GetPlayer.CurrentPlanet.OwnerId = oiPirate then
-            MusicManager.PlayCategory('Nation.' + OwnerInfo[RaceToOwner(GetPlayer.CurrentPlanet.RaceId)].InternalName + 'Pirate')
-          else MusicManager.PlayCategory('Nation.' + OwnerInfo[GetPlayer.CurrentPlanet.OwnerId].InternalName);
+          StarMapScreen.BattleMusicSelected := False;
+          MusicManager.PlayCategory('StarMap');
         end;
       end
-      else if GetPlayer.InNormalSpace then
-      begin
-        if MusicInSpaceEnabled then
-        begin
-          if (GetPlayer.GetHull.CapitalShip = 1) and (RandomIntRange(0,100) < 20) then
-          begin
-            StarMapScreen.BattleMusicSelected := True;
-            MusicManager.PlayCategory('Destroyer');
-          end
-          else
-          begin
-            StarMapScreen.BattleMusicSelected := False;
-            MusicManager.PlayCategory('StarMap');
-          end;
-        end
-        else MusicManager.RequestFadeOut;
-      end;
+      else MusicManager.RequestFadeOut;
+    end;
     SysUtils.Sleep(100);
     MusicManager.RequestFadeOut;
   end;
   Galaxy.CheckIntegrityChecksumAndSetStatus(555);
 end;
-{ @end $661DD8 }
+{ @end $532314 }
 
-{ @routine $6621FC TfGameLoad_IsLoading }
+{ @routine $532720 TfGameLoad_IsLoading }
 function TfGameLoad.IsLoading: Boolean;
 begin
   if (LoadThread <> nil) and LoadThread.IsRunning then Result := True
   else Result := False;
 end;
-{ @end $6621FC }
+{ @end $532720 }
 
-{ @routine $662234 TfGameLoad_UpdateLoadingProgress }
-procedure TfGameLoad.UpdateLoadingProgress(Timer: PCallbackTimerGI; UserData: Integer);
+{ @routine $532744 TfGameLoad_UpdateLoadingProgress }
+procedure TfGameLoad.UpdateLoadingProgress(Timer: TCallbackTimerIdGI; UserData: Cardinal);
 var Loads: TList; Block: TBlockParEC;
 begin
   if LoadThread.IsRunning then
@@ -242,13 +241,13 @@ begin
   end;
   if LoadingComplete and (DisplayedProgress >= 0.999) then RequestClose(1);
 end;
-{ @end $662234 }
+{ @end $532744 }
 
-{ @routine $662670 TfGameLoad_SelectMusic }
+{ @routine $532B24 TfGameLoad_SelectMusic }
 procedure TfGameLoad.SelectMusic;
 begin
 
 end;
-{ @end $662670 }
+{ @end $532B24 }
 
 end.

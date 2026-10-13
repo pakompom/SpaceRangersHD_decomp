@@ -1,5 +1,4 @@
 unit fPanelMain;
-// Unit bracket (inferred): .text 0x008137D8..0x00818331; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -9,9 +8,9 @@ type
   TfPanelMain = class(TObjectEx) // @size 0x88
   public
     Screen: TMessageLoopGI; // @offset 0x4
-    StatusTimer: PCallbackTimerGI; // @offset 0x8
-    MessagePulseTimer: PCallbackTimerGI; // @offset 0xC
-    MessageSlideTimer: PCallbackTimerGI; // @offset 0x10
+    StatusTimer: TCallbackTimerIdGI; // @offset 0x8
+    MessagePulseTimer: TCallbackTimerIdGI; // @offset 0xC
+    MessageSlideTimer: TCallbackTimerIdGI; // @offset 0x10
     HelpLabel: TLabelGI; // @offset 0x14
     DisplayedShipId: Cardinal; // @offset $18 Last ship selected through a persistent message.
     DisplayedPlanetId: Cardinal; // @offset $1C Last planet selected through a persistent message.
@@ -32,100 +31,100 @@ type
     DisplayedTurn: Integer; // @offset 0x58
     DateSlideProgress: Single; // @offset 0x5C
     TargetTurn: Integer; // @offset 0x60
-    DateTimer: PCallbackTimerGI; // @offset 0x64
+    DateTimer: TCallbackTimerIdGI; // @offset 0x64
     DateTimerIntervalMs: Integer; // @offset 0x68
     AuxiliaryItems: TList; // @offset $6C Owned list of borrowed persistent messages awaiting deletion animation.
     MoneyWarningActive: Boolean; // @offset 0x70
     MoneyWarningTicks: Integer; // @offset 0x74
-    MoneyWarningTimer: PCallbackTimerGI; // @offset 0x78
+    MoneyWarningTimer: TCallbackTimerIdGI; // @offset 0x78
     CargoWarningActive: Boolean; // @offset 0x7C
     CargoWarningTicks: Integer; // @offset 0x80
-    CargoWarningTimer: PCallbackTimerGI; // @offset 0x84
+    CargoWarningTimer: TCallbackTimerIdGI; // @offset 0x84
 
-    constructor Create; // @addr 0x8138D8
-    destructor Destroy; override; // @addr 0x813934
-    procedure InitializeLayout(Screen: TMessageLoopGI); // @addr 0x813970
-    procedure OnOpen; // @addr 0x814340
-    procedure OnClose; // @addr 0x8144B8
-    procedure RefreshMoneyAndCargo; // @addr 0x814654
-    procedure RefreshDate; // @addr 0x8149B0
-    procedure SetDateRange(FirstTurn, LastTurn: Integer); // @addr 0x814B88
-    procedure StartDateAnimation(IntervalMs: Integer); // @addr 0x814BF4
-    procedure AdvanceDateAnimation(Timer: PCallbackTimerGI; UserData: Integer); // @addr $814C84
-    procedure RefreshStatusTimer(Timer: PCallbackTimerGI; UserData: Integer); // @addr $815CE4
-    procedure AdvanceMessageSlide(Timer: PCallbackTimerGI; UserData: Integer); // @addr $81740C
-    procedure AdvanceMoneyWarning(Timer: PCallbackTimerGI; UserData: Integer); // @addr $817D1C
-    procedure AdvanceCargoWarning(Timer: PCallbackTimerGI; UserData: Integer); // @addr $817DEC
-    procedure EndTurnClicked(Sender: TObjectGI); // @addr 0x814D70
-    procedure ShipClicked(Sender: TObjectGI); // @addr 0x815034
-    procedure QuestClicked(Sender: TObjectGI); // @addr 0x815234
-    procedure GalaxyClicked(Sender: TObjectGI); // @addr 0x815348
-    procedure JournalClicked(Sender: TObjectGI); // @addr 0x815468
-    procedure MenuClicked(Sender: TObjectGI); // @addr 0x81557C
-    procedure TryAutoTurnSave; // @addr 0x815660
-    procedure QuickSave; // @addr 0x8157B0
-    procedure QuickLoad(SlotIndex: Integer); // @addr 0x815978
-    procedure RefreshEndTurnButton; // @addr 0x8160B0
-    procedure DisableNavigationButtons; // @addr 0x8160F0
-    procedure EnableNavigationButtons; // @addr 0x816208
-    procedure RebuildMessageButtons(SkipLock: Boolean); // @addr $816320
-    procedure ClearMessageButtons; // @addr $8168F0
-    function RemoveDismissibleMessages(Key: WideString): Boolean; // @addr $8169C4
-    procedure MessageMouseEnter(Sender: TObjectGI); // @addr $816A68
-    procedure MessageMouseLeave(Sender: TObjectGI); // @addr $816CDC
-    procedure DeleteMessage(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint; SkipLock: Boolean); // @addr $816D1C
-    procedure MessageRightButtonDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $816FD4
-    procedure AdvanceMessageDeletion(Sender: TObjectGI); // @addr $817010
-    procedure FinishMessageDeletion(Sender: TObjectGI); // @addr $8171DC
-    procedure MessageClicked(Sender: TObjectGI); // @addr $817500
-    procedure PlayUnreadMessageSounds; // @addr $817AB8
-    procedure PulseUnreadMessages(Timer: PCallbackTimerGI; UserData: Integer); // @addr $815D00
-    procedure ProcessKeyDown(Key: Cardinal); // @addr $817F48
-    procedure PostMouseMove; // @addr $818238
-    procedure SlideMessagesIn; // @addr 0x817328
-    procedure SlideMessagesOut; // @addr 0x817398
-    procedure FlashMoneyWarning; // @addr 0x817CB0
-    procedure FlashCargoWarning; // @addr 0x817D70
-    procedure ShowControlHelp(Sender: TObjectGI; Visible: Boolean); // @addr 0x817E50
-    procedure ShowHelpText(Text: WideString; Visible: Boolean); // @addr 0x817EC8
+    constructor Create; // @addr 0x00759DD4
+    destructor Destroy; override; // @addr 0x00759E1C
+    procedure InitializeLayout(Screen: TMessageLoopGI); // @addr 0x00759E4C
+    procedure OnOpen; // @addr 0x0075A6E0
+    procedure OnClose; // @addr 0x0075A7F0
+    procedure RefreshMoneyAndCargo; // @addr 0x0075A920
+    procedure RefreshDate; // @addr 0x0075AC38
+    procedure SetDateRange(FirstTurn, LastTurn: Integer); // @addr 0x0075ADBC
+    procedure StartDateAnimation(IntervalMs: Integer); // @addr 0x0075ADE8
+    procedure AdvanceDateAnimation(Timer: TCallbackTimerIdGI; UserData: Cardinal); // @addr $75AE48
+    procedure RefreshStatusTimer(Timer: TCallbackTimerIdGI; UserData: Cardinal); // @addr $75BCF8
+    procedure AdvanceMessageSlide(Timer: TCallbackTimerIdGI; UserData: Cardinal); // @addr $75D114
+    procedure AdvanceMoneyWarning(Timer: TCallbackTimerIdGI; UserData: Cardinal); // @addr $75D914
+    procedure AdvanceCargoWarning(Timer: TCallbackTimerIdGI; UserData: Cardinal); // @addr $75D99C
+    procedure EndTurnClicked(Sender: TObjectGI); // @addr 0x0075AEF0
+    procedure ShipClicked(Sender: TObjectGI); // @addr 0x0075B18C
+    procedure QuestClicked(Sender: TObjectGI); // @addr 0x0075B33C
+    procedure GalaxyClicked(Sender: TObjectGI); // @addr 0x0075B428
+    procedure JournalClicked(Sender: TObjectGI); // @addr 0x0075B524
+    procedure MenuClicked(Sender: TObjectGI); // @addr 0x0075B610
+    procedure TryAutoTurnSave; // @addr 0x0075B6C8
+    procedure QuickSave; // @addr 0x0075B7F8
+    procedure QuickLoad(SlotIndex: Integer); // @addr 0x0075B9A8
+    procedure RefreshEndTurnButton; // @addr 0x0075C034
+    procedure DisableNavigationButtons; // @addr 0x0075C064
+    procedure EnableNavigationButtons; // @addr 0x0075C158
+    procedure RebuildMessageButtons(SkipLock: Boolean); // @addr $75C250
+    procedure ClearMessageButtons; // @addr $75C7AC
+    function RemoveDismissibleMessages(Key: WideString): Boolean; // @addr $75C854
+    procedure MessageMouseEnter(Sender: TObjectGI); // @addr $75C8F0
+    procedure MessageMouseLeave(Sender: TObjectGI); // @addr $75CB20
+    procedure DeleteMessage(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint; SkipLock: Boolean); // @addr $75CB54
+    procedure MessageRightButtonDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr $75CDB4
+    procedure AdvanceMessageDeletion(Sender: TObjectGI); // @addr $75CDE0
+    procedure FinishMessageDeletion(Sender: TObjectGI); // @addr $75CF60
+    procedure MessageClicked(Sender: TObjectGI); // @addr $75D1B0
+    procedure PlayUnreadMessageSounds; // @addr $75D704
+    procedure PulseUnreadMessages(Timer: TCallbackTimerIdGI; UserData: Cardinal); // @addr $75BD00
+    procedure ProcessKeyDown(Key: Cardinal); // @addr $75DAA8
+    procedure PostMouseMove; // @addr $75DD64
+    procedure SlideMessagesIn; // @addr 0x0075D074
+    procedure SlideMessagesOut; // @addr 0x0075D0C0
+    procedure FlashMoneyWarning; // @addr 0x0075D8C8
+    procedure FlashCargoWarning; // @addr 0x0075D944
+    procedure ShowControlHelp(Sender: TObjectGI; Visible: Boolean); // @addr 0x0075D9D8
+    procedure ShowHelpText(Text: WideString; Visible: Boolean); // @addr 0x0075DA34
 
-    procedure Show; // @addr 0x8145AC
-    procedure Hide; // @addr 0x814618
+    procedure Show; // @addr 0x0075A88C
+    procedure Hide; // @addr 0x0075A8EC
   end;
 
   TMessageLoopGIWithMainPanel = class(TMessageLoopGI) // @size 0xD4
   public
     MainPanel: TfPanelMain; // @offset 0xD0
-    constructor Create; // @addr 0x818284
-    destructor Destroy; override; // @addr 0x8182DC
+    constructor Create; // @addr 0x0075DDA4
+    destructor Destroy; override; // @addr 0x0075DDEC
   end;
 
 var
-  CurrentDateColor: Cardinal; // @addr $88B110 Normal date text style, selected during layout.
-  AdvancingDateColor: Cardinal; // @addr $88B114 Date-transition text style, selected during layout.
+  CurrentDateColor: Cardinal; // @addr $81B928 Normal date text style, selected during layout.
+  AdvancingDateColor: Cardinal; // @addr $81B92C Date-transition text style, selected during layout.
 
 implementation
 
 uses aMyFunction, aGalaxy, aScript, aPlayer, Globals, GlobalsV, GR_Main, SysUtils, ThreadCalc, aCalc, fStarMap, GI_Window, GI_GAI, GI_Main, GR_gi, Windows, Messages, fPanelLoad, fShip2, fRating2, fGalaxy2, fJournal, fSaveManager, GI_MessageBox, aConst, EC_Str, aPlanet, aGalaxyStruct, aGalaxyEvent, aSaveLoad, aEFilm, aShip;
 
-{ @routine $8138D8 TfPanelMain_Create }
+{ @routine $759DD4 TfPanelMain_Create }
 constructor TfPanelMain.Create;
 begin
   inherited Create;
   NavigationLocked := False;
   AuxiliaryItems := TList.Create;
 end;
-{ @end $8138D8 }
+{ @end $759DD4 }
 
-{ @routine $813934 TfPanelMain_Destroy }
+{ @routine $759E1C TfPanelMain_Destroy }
 destructor TfPanelMain.Destroy;
 begin
   AuxiliaryItems.Free;
   inherited Destroy;
 end;
-{ @end $813934 }
+{ @end $759E1C }
 
-{ @routine $813970 TfPanelMain_InitializeLayout }
+{ @routine $759E4C TfPanelMain_InitializeLayout }
 procedure TfPanelMain.InitializeLayout(Screen: TMessageLoopGI);
 begin
   Self.Screen := Screen;
@@ -209,31 +208,31 @@ begin
   CurrentDateColor := GetStyleColorGI('PanelMain.TextColor', 200, 240, 255);
   AdvancingDateColor := GetStyleColorGI('PanelMain.DateTransitionColor', 6, 166, 198);
 end;
-{ @end $813970 }
+{ @end $759E4C }
 
-{ @routine $814340 TfPanelMain_OnOpen }
+{ @routine $75A6E0 TfPanelMain_OnOpen }
 procedure TfPanelMain.OnOpen;
 begin
   NavigationLocked := False;
-  if MessageSlideTimer <> nil then
+  if MessageSlideTimer <> 0 then
   begin
     Screen.CancelCallbackTimer(MessageSlideTimer);
-    MessageSlideTimer := nil;
+    MessageSlideTimer := 0;
   end;
-  if MessagePulseTimer <> nil then
+  if MessagePulseTimer <> 0 then
   begin
     Screen.CancelCallbackTimer(MessagePulseTimer);
-    MessagePulseTimer := nil;
+    MessagePulseTimer := 0;
   end;
-  if StatusTimer <> nil then
+  if StatusTimer <> 0 then
   begin
     Screen.CancelCallbackTimer(StatusTimer);
-    StatusTimer := nil;
+    StatusTimer := 0;
   end;
-  if DateTimer <> nil then
+  if DateTimer <> 0 then
   begin
     Screen.CancelCallbackTimer(DateTimer);
-    DateTimer := nil;
+    DateTimer := 0;
   end;
   StatusTimer := Screen.ScheduleCallbackTimer(200, 200, RefreshStatusTimer);
   MessagePanel.SetPosition(Classes.Point(MessagePanel.LocalPosition.X, MessagePanelRestTop));
@@ -249,63 +248,63 @@ begin
   MoneyWarningActive := False;
   RefreshMoneyAndCargo;
 end;
-{ @end $814340 }
+{ @end $75A6E0 }
 
-{ @routine $8144B8 TfPanelMain_OnClose }
+{ @routine $75A7F0 TfPanelMain_OnClose }
 procedure TfPanelMain.OnClose;
 begin
   NavigationLocked := False;
-  if StatusTimer <> nil then
+  if StatusTimer <> 0 then
   begin
     Screen.CancelCallbackTimer(StatusTimer);
-    StatusTimer := nil;
+    StatusTimer := 0;
   end;
-  if MessagePulseTimer <> nil then
+  if MessagePulseTimer <> 0 then
   begin
     Screen.CancelCallbackTimer(MessagePulseTimer);
-    MessagePulseTimer := nil;
+    MessagePulseTimer := 0;
   end;
-  if MessageSlideTimer <> nil then
+  if MessageSlideTimer <> 0 then
   begin
     Screen.CancelCallbackTimer(MessageSlideTimer);
-    MessageSlideTimer := nil;
+    MessageSlideTimer := 0;
   end;
-  if DateTimer <> nil then
+  if DateTimer <> 0 then
   begin
     Screen.CancelCallbackTimer(DateTimer);
-    DateTimer := nil;
+    DateTimer := 0;
   end;
-  if CargoWarningTimer <> nil then
+  if CargoWarningTimer <> 0 then
   begin
     Screen.CancelCallbackTimer(CargoWarningTimer);
-    CargoWarningTimer := nil;
+    CargoWarningTimer := 0;
   end;
-  if MoneyWarningTimer <> nil then
+  if MoneyWarningTimer <> 0 then
   begin
     Screen.CancelCallbackTimer(MoneyWarningTimer);
-    MoneyWarningTimer := nil;
+    MoneyWarningTimer := 0;
   end;
   AuxiliaryItems.Clear;
 end;
-{ @end $8144B8 }
+{ @end $75A7F0 }
 
-{ @routine $8145AC TfPanelMain_Show }
+{ @routine $75A88C TfPanelMain_Show }
 procedure TfPanelMain.Show;
 begin
   Screen.GetByName('PanelMain').SetActive(True);
   Screen.GetByName('PM_Help').SetActive(False);
   EnableNavigationButtons;
 end;
-{ @end $8145AC }
+{ @end $75A88C }
 
-{ @routine $814618 TfPanelMain_Hide }
+{ @routine $75A8EC TfPanelMain_Hide }
 procedure TfPanelMain.Hide;
 begin
   Screen.GetByName('PanelMain').SetActive(False);
 end;
-{ @end $814618 }
+{ @end $75A8EC }
 
-{ @routine $814654 TfPanelMain_RefreshMoneyAndCargo }
+{ @routine $75A920 TfPanelMain_RefreshMoneyAndCargo }
 procedure TfPanelMain.RefreshMoneyAndCargo;
 var
   FreeSpace: Integer;
@@ -329,7 +328,7 @@ begin
       Screen.GetByName('PM_WarningMoney').SetActive(False);
       (Screen.GetByName('PM_Money') as TLabelGI).SetTextColor(CurrentDateColor);
     end;
-    (Screen.GetByName('PM_Money') as TLabelGI).SetText(WideString(IntToStr(GetPlayer.Money)));
+    (Screen.GetByName('PM_Money') as TLabelGI).Text := IntToStr(GetPlayer.Money);
     FreeSpace := GetPlayer.GetCargoFreeSpace;
     if (CargoWarningActive and ((CargoWarningTicks and 1) = 0)) or ((FreeSpace < 0) and not CargoWarningActive) then
     begin
@@ -341,17 +340,17 @@ begin
       Screen.GetByName('PM_WarningSpace').SetActive(False);
       (Screen.GetByName('PM_FreeSpace') as TLabelGI).SetTextColor(CurrentDateColor);
     end;
-    (Screen.GetByName('PM_FreeSpace') as TLabelGI).SetText(WideString(IntToStr(FreeSpace)));
+    (Screen.GetByName('PM_FreeSpace') as TLabelGI).Text := IntToStr(FreeSpace);
   end
   else
   begin
-    (Screen.GetByName('PM_Money') as TLabelGI).SetText('');
-    (Screen.GetByName('PM_FreeSpace') as TLabelGI).SetText('');
+    (Screen.GetByName('PM_Money') as TLabelGI).Text := '';
+    (Screen.GetByName('PM_FreeSpace') as TLabelGI).Text := '';
   end;
 end;
-{ @end $814654 }
+{ @end $75A920 }
 
-{ @routine $8149B0 TfPanelMain_RefreshDate }
+{ @routine $75AC38 TfPanelMain_RefreshDate }
 procedure TfPanelMain.RefreshDate;
 var X: Integer;
 begin
@@ -374,9 +373,9 @@ begin
     NextDateLabel.SetTextColor(AdvancingDateColor);
   end;
 end;
-{ @end $8149B0 }
+{ @end $75AC38 }
 
-{ @routine $814B88 TfPanelMain_SetDateRange }
+{ @routine $75ADBC TfPanelMain_SetDateRange }
 procedure TfPanelMain.SetDateRange(FirstTurn, LastTurn: Integer);
 begin
   DisplayedTurn := FirstTurn;
@@ -386,26 +385,26 @@ begin
   else DateSlideProgress := 1;
   RefreshDate;
 end;
-{ @end $814B88 }
+{ @end $75ADBC }
 
-{ @routine $814BF4 TfPanelMain_StartDateAnimation }
+{ @routine $75ADE8 TfPanelMain_StartDateAnimation }
 procedure TfPanelMain.StartDateAnimation(IntervalMs: Integer);
 begin
   if (DisplayedTurn < TargetTurn) and ((DisplayedTurn < TargetTurn - 1) or (DateSlideProgress < 1)) then
   begin
-    if DateTimer <> nil then
+    if DateTimer <> 0 then
     begin
       Screen.CancelCallbackTimer(DateTimer);
-      DateTimer := nil;
+      DateTimer := 0;
     end;
     DateTimerIntervalMs := IntervalMs;
     DateTimer := Screen.ScheduleCallbackTimer(IntervalMs, IntervalMs, AdvanceDateAnimation);
   end;
 end;
-{ @end $814BF4 }
+{ @end $75ADE8 }
 
-{ @routine $814C84 TfPanelMain_AdvanceDateAnimation }
-procedure TfPanelMain.AdvanceDateAnimation(Timer: PCallbackTimerGI; UserData: Integer);
+{ @routine $75AE48 TfPanelMain_AdvanceDateAnimation }
+procedure TfPanelMain.AdvanceDateAnimation(Timer: TCallbackTimerIdGI; UserData: Cardinal);
 begin
   DateSlideProgress := (TargetTurn - DisplayedTurn) * 0.01 * (TargetTurn - DisplayedTurn) + DateSlideProgress;
   if DateSlideProgress >= 1 then
@@ -415,10 +414,10 @@ begin
     if DisplayedTurn >= TargetTurn then
     begin
       DateSlideProgress := 1;
-      if DateTimer <> nil then
+      if DateTimer <> 0 then
       begin
         Screen.CancelCallbackTimer(DateTimer);
-        DateTimer := nil;
+        DateTimer := 0;
         StartScriptRequestThread;
       end;
     end
@@ -426,9 +425,9 @@ begin
   end;
   RefreshDate;
 end;
-{ @end $814C84 }
+{ @end $75AE48 }
 
-{ @routine $814D70 TfPanelMain_EndTurnClicked }
+{ @routine $75AEF0 TfPanelMain_EndTurnClicked }
 procedure TfPanelMain.EndTurnClicked(Sender: TObjectGI);
 var
   Event: TGalaxyEvent;
@@ -474,25 +473,24 @@ begin
     GameEndReason := gerPlayerDeath;
     RequestedScreenId := screenGameEnd;
     Screen.RequestClose(1);
-  end
-  else
+    Exit;
+  end;
+  PostMouseMoveMessage;
+  if (GetPlayer.PendingDockDialogue > 0) and (GetPlayer.DockedTo <> nil) then
   begin
-    PostMouseMoveMessage;
-    if (GetPlayer.PendingDockDialogue > 0) and (GetPlayer.DockedTo <> nil) then
-    begin
-      RequestedScreenId := screenRuinsTalk;
-      TMessageLoopGI(RegisteredScreens[CurrentScreenId]).RequestClose(1);
-    end
-    else if (GetPlayer.PendingDockDialogue > 0) and (GetPlayer.CurrentPlanet <> nil) and (GetPlayer.CurrentPlanet.OwnerId <> oiUninhabited) then
-    begin
-      RequestedScreenId := screenGovernment;
-      TMessageLoopGI(RegisteredScreens[CurrentScreenId]).RequestClose(1);
-    end;
+    RequestedScreenId := screenRuinsTalk;
+    TMessageLoopGI(RegisteredScreens[CurrentScreenId]).RequestClose(1);
+    Exit;
+  end;
+  if (GetPlayer.PendingDockDialogue > 0) and (GetPlayer.CurrentPlanet <> nil) and (GetPlayer.CurrentPlanet.OwnerId <> oiUninhabited) then
+  begin
+    RequestedScreenId := screenGovernment;
+    TMessageLoopGI(RegisteredScreens[CurrentScreenId]).RequestClose(1);
   end;
 end;
-{ @end $814D70 }
+{ @end $75AEF0 }
 
-{ @routine $815034 TfPanelMain_ShipClicked }
+{ @routine $75B18C TfPanelMain_ShipClicked }
 procedure TfPanelMain.ShipClicked(Sender: TObjectGI);
 var
   Changed: Boolean;
@@ -503,10 +501,10 @@ begin
   if (Screen.ParentLoop <> nil) and (Sender = nil) then Exit;
   if Screen.ExitCode <> 0 then Exit;
   Screen.GetByName('PM_WinMsg').SetActive(False);
-  Screen.SetCursorActive(False);
+  Screen.ShowCursor := False;
   Screen.Present;
   CaptureScreenBackground(True, 0);
-  Screen.SetCursorActive(True);
+  Screen.ShowCursor := True;
   Changed := False;
   ShipScreen.PlayTransitionSounds := True;
   Galaxy.CheckIntegrityChecksum(109);
@@ -520,12 +518,12 @@ begin
     RefreshMoneyAndCargo;
     RebuildMessageButtons(False);
     if not ShipScreen.ReopenRequested then Break;
-    Screen.SetCursorActive(False);
+    Screen.ShowCursor := False;
     FullFrameRedrawRequested := True;
     Screen.InvalidateViewport;
     Screen.DrawQueuedUpdateRects;
     CaptureScreenBackground(True, 0);
-    Screen.SetCursorActive(True);
+    Screen.ShowCursor := True;
   end;
   Galaxy.PrimeIntegrityChecksum(110);
   ShipScreen.ShipStateChanged := Changed;
@@ -536,9 +534,9 @@ begin
       Screen.RequestClose(1);
     end;
 end;
-{ @end $815034 }
+{ @end $75B18C }
 
-{ @routine $815234 TfPanelMain_QuestClicked }
+{ @routine $75B33C TfPanelMain_QuestClicked }
 procedure TfPanelMain.QuestClicked(Sender: TObjectGI);
 begin
   if (ActiveLoadPanel <> nil) and ActiveLoadPanel.IsAnimatingShutters then Exit;
@@ -547,10 +545,10 @@ begin
   if Screen.ExitCode <> 0 then Exit;
   if (Screen.ParentLoop <> nil) and (Sender = nil) then Exit;
   Screen.GetByName('PM_WinMsg').SetActive(False);
-  Screen.SetCursorActive(False);
+  Screen.ShowCursor := False;
   Screen.Present;
   CaptureScreenBackground(True, 0);
-  Screen.SetCursorActive(True);
+  Screen.ShowCursor := True;
   Galaxy.CheckIntegrityChecksum(107);
   ClearMessageButtons;
   ShowRangerRating(Screen);
@@ -558,9 +556,9 @@ begin
   PostMouseMove;
   Galaxy.PrimeIntegrityChecksum(108);
 end;
-{ @end $815234 }
+{ @end $75B33C }
 
-{ @routine $815348 TfPanelMain_GalaxyClicked }
+{ @routine $75B428 TfPanelMain_GalaxyClicked }
 procedure TfPanelMain.GalaxyClicked(Sender: TObjectGI);
 begin
   if (ActiveLoadPanel <> nil) and ActiveLoadPanel.IsAnimatingShutters then Exit;
@@ -569,10 +567,10 @@ begin
   if (Screen.ParentLoop <> nil) and (Sender = nil) then Exit;
   if Screen.ExitCode <> 0 then Exit;
   Screen.GetByName('PM_WinMsg').SetActive(False);
-  Screen.SetCursorActive(False);
+  Screen.ShowCursor := False;
   Screen.Present;
   CaptureScreenBackground(True, 0);
-  Screen.SetCursorActive(True);
+  Screen.ShowCursor := True;
   GalaxyScreen.ViewMode := 1;
   Galaxy.CheckIntegrityChecksum(140);
   ClearMessageButtons;
@@ -581,9 +579,9 @@ begin
   PostMouseMove;
   Galaxy.PrimeIntegrityChecksum(141);
 end;
-{ @end $815348 }
+{ @end $75B428 }
 
-{ @routine $815468 TfPanelMain_JournalClicked }
+{ @routine $75B524 TfPanelMain_JournalClicked }
 procedure TfPanelMain.JournalClicked(Sender: TObjectGI);
 begin
   if (ActiveLoadPanel <> nil) and ActiveLoadPanel.IsAnimatingShutters then Exit;
@@ -592,10 +590,10 @@ begin
   if Screen.ExitCode <> 0 then Exit;
   if (Screen.ParentLoop <> nil) and (Sender = nil) then Exit;
   Screen.GetByName('PM_WinMsg').SetActive(False);
-  Screen.SetCursorActive(False);
+  Screen.ShowCursor := False;
   Screen.Present;
   CaptureScreenBackground(True, 0);
-  Screen.SetCursorActive(True);
+  Screen.ShowCursor := True;
   Galaxy.CheckIntegrityChecksum(102);
   ClearMessageButtons;
   RunJournal(Screen);
@@ -603,30 +601,30 @@ begin
   PostMouseMove;
   Galaxy.PrimeIntegrityChecksum(103);
 end;
-{ @end $815468 }
+{ @end $75B524 }
 
-{ @routine $81557C TfPanelMain_MenuClicked }
+{ @routine $75B610 TfPanelMain_MenuClicked }
 procedure TfPanelMain.MenuClicked(Sender: TObjectGI);
 begin
   if (ActiveLoadPanel <> nil) and ActiveLoadPanel.IsAnimatingShutters then Exit;
   if NavigationLocked then Exit;
   if HasPendingScriptRequests then Exit;
   if Screen.ParentLoop <> nil then Exit;
-  Screen.SetCursorActive(False);
+  Screen.ShowCursor := False;
   Screen.Present;
   CaptureScreenBackground(True, 0);
   CaptureSavePreview;
   Galaxy.CheckIntegrityChecksum(98);
   CaptureGalaxyPreview(Screen);
   Galaxy.PrimeIntegrityChecksum(99);
-  Screen.SetCursorActive(True);
+  Screen.ShowCursor := True;
   GameMenuReturnScreenId := FormToId(Screen);
   RequestedScreenId := screenGameMenu;
   Screen.RequestClose(1);
 end;
-{ @end $81557C }
+{ @end $75B610 }
 
-{ @routine $815660 TfPanelMain_TryAutoTurnSave }
+{ @routine $75B6C8 TfPanelMain_TryAutoTurnSave }
 procedure TfPanelMain.TryAutoTurnSave;
 begin
   if (ActiveLoadPanel <> nil) and ActiveLoadPanel.IsAnimatingShutters then Exit;
@@ -636,18 +634,18 @@ begin
   if TurnSaveStep = 0 then Exit;
   if (Galaxy.CurrentTurn mod TurnSaveStep) <> 0 then Exit;
   if Galaxy.SpecialSimulationMode <> 0 then Exit;
-  Screen.SetCursorActive(False);
+  Screen.ShowCursor := False;
   Screen.Present;
   CaptureSavePreview;
   CaptureGalaxyPreview(Screen);
-  Screen.SetCursorActive(False);
+  Screen.ShowCursor := False;
   SaveManagerReturnScreenId := FormToId(Screen);
   SaveGameToFile(SaveManagerScreen.GetTurnSavePath, 'TurnSave');
-  Screen.SetCursorActive(True);
+  Screen.ShowCursor := True;
 end;
-{ @end $815660 }
+{ @end $75B6C8 }
 
-{ @routine $8157B0 TfPanelMain_QuickSave }
+{ @routine $75B7F8 TfPanelMain_QuickSave }
 procedure TfPanelMain.QuickSave;
 begin
   if (ActiveLoadPanel <> nil) and ActiveLoadPanel.IsAnimatingShutters then Exit;
@@ -661,20 +659,20 @@ begin
     Exit;
   end;
   if Galaxy.SpecialSimulationMode <> 0 then Exit;
-  Screen.SetCursorActive(False);
+  Screen.ShowCursor := False;
   Screen.Present;
   CaptureSavePreview;
   Galaxy.CheckIntegrityChecksum(132);
   CaptureGalaxyPreview(Screen);
-  Screen.SetCursorActive(False);
+  Screen.ShowCursor := False;
   SaveManagerReturnScreenId := FormToId(Screen);
   SaveGameToFile(SaveManagerScreen.GetQuickSavePath(1), 'QuickSave');
   Galaxy.PrimeIntegrityChecksum(133);
-  Screen.SetCursorActive(True);
+  Screen.ShowCursor := True;
 end;
-{ @end $8157B0 }
+{ @end $75B7F8 }
 
-{ @routine $815978 TfPanelMain_QuickLoad }
+{ @routine $75B9A8 TfPanelMain_QuickLoad }
 procedure TfPanelMain.QuickLoad(SlotIndex: Integer);
 var
   Text: WideString;
@@ -683,11 +681,11 @@ begin
   if NavigationLocked then Exit;
   if HasPendingScriptRequests then Exit;
   if GetInnermostScreenLoop.ParentLoop <> nil then Exit;
-  Screen.SetCursorActive(False);
+  Screen.ShowCursor := False;
   if SaveManagerScreen.QuickSaveExists(SlotIndex) then
   begin
     if (QuickSaveExtraSlots > 0) or (SlotIndex > 1) then
-      Text := ReplaceColoredToken(LookupLocalizedTextByKey('FormSaveManager.QueryQuickN'), '<Num>', WideString(IntToStr(SlotIndex)), TextHighlightColorTag)
+      Text := ReplaceColoredToken(LookupLocalizedTextByKey('FormSaveManager.QueryQuickN'), '<Num>', IntToStr(SlotIndex), TextHighlightColorTag)
     else
       Text := LookupLocalizedTextByKey('FormSaveManager.QueryQuick');
     if ShowMessageBoxGI(Screen, Text, mbgOK or mbgCancel or mbgQuestion) = mbgResultOK then
@@ -701,26 +699,26 @@ begin
   else if QuickSaveExtraSlots + 1 >= SlotIndex then
   begin
     if QuickSaveExtraSlots > 0 then
-      Text := ReplaceColoredToken(LookupLocalizedTextByKey('FormSaveManager.QuickNotExistN'), '<Num>', WideString(IntToStr(SlotIndex)), TextHighlightColorTag)
+      Text := ReplaceColoredToken(LookupLocalizedTextByKey('FormSaveManager.QuickNotExistN'), '<Num>', IntToStr(SlotIndex), TextHighlightColorTag)
     else
       Text := LookupLocalizedTextByKey('FormSaveManager.QuickNotExist');
     ShowMessageBoxGI(Screen, Text, mbgOK or mbgUnused04);
     FullFrameRedrawRequested := True;
   end;
-  Screen.SetCursorActive(True);
+  Screen.ShowCursor := True;
   Screen.Present;
 end;
-{ @end $815978 }
+{ @end $75B9A8 }
 
-{ @routine $815CE4 TfPanelMain_RefreshStatusTimer }
-procedure TfPanelMain.RefreshStatusTimer(Timer: PCallbackTimerGI; UserData: Integer);
+{ @routine $75BCF8 TfPanelMain_RefreshStatusTimer }
+procedure TfPanelMain.RefreshStatusTimer(Timer: TCallbackTimerIdGI; UserData: Cardinal);
 begin
   RefreshEndTurnButton;
 end;
-{ @end $815CE4 }
+{ @end $75BCF8 }
 
-{ @routine $815D00 TfPanelMain_PulseUnreadMessages }
-procedure TfPanelMain.PulseUnreadMessages(Timer: PCallbackTimerGI; UserData: Integer);
+{ @routine $75BD00 TfPanelMain_PulseUnreadMessages }
+procedure TfPanelMain.PulseUnreadMessages(Timer: TCallbackTimerIdGI; UserData: Cardinal);
 var
   Control: TObjectGI;
   Finished: Boolean;
@@ -744,7 +742,7 @@ begin
       begin
         Stage := 2;
         MessageEntry := TMessagePlayer(Control.UserValue);
-        if IsPersistentPlayerMessageQueued(MessageEntry, True) and (MessageEntry.Button = Control) then
+        if IsPersistentPlayerMessageQueued(MessageEntry, True) and (MessageEntry.Button = TGraphButtonGI(Control)) then
         begin
           Stage := 3;
           if Control is TGraphButtonGI then
@@ -781,18 +779,19 @@ begin
       end;
     end;
     Stage := 12;
-    if Finished and (MessagePulseTimer <> nil) then
-    begin
-      Screen.CancelCallbackTimer(MessagePulseTimer);
-      MessagePulseTimer := nil;
-    end;
+    if Finished then
+      if MessagePulseTimer <> 0 then
+      begin
+        Screen.CancelCallbackTimer(MessagePulseTimer);
+        MessagePulseTimer := 0;
+      end;
   finally
     PersistentPlayerMessageLock.Leave;
   end;
 end;
-{ @end $815D00 }
+{ @end $75BD00 }
 
-{ @routine $8160B0 TfPanelMain_RefreshEndTurnButton }
+{ @routine $75C034 TfPanelMain_RefreshEndTurnButton }
 procedure TfPanelMain.RefreshEndTurnButton;
 var Button: TGraphButtonGI;
 begin
@@ -801,9 +800,9 @@ begin
   else Button.SetDisabled(False);
   RefreshMoneyAndCargo;
 end;
-{ @end $8160B0 }
+{ @end $75C034 }
 
-{ @routine $8160F0 TfPanelMain_DisableNavigationButtons }
+{ @routine $75C064 TfPanelMain_DisableNavigationButtons }
 procedure TfPanelMain.DisableNavigationButtons;
 var Control: TObjectGI;
 begin
@@ -816,9 +815,9 @@ begin
   Control.SetActive(True);
   MenuButton.SetDisabled(True);
 end;
-{ @end $8160F0 }
+{ @end $75C064 }
 
-{ @routine $816208 TfPanelMain_EnableNavigationButtons }
+{ @routine $75C158 TfPanelMain_EnableNavigationButtons }
 procedure TfPanelMain.EnableNavigationButtons;
 var Control: TObjectGI;
 begin
@@ -832,9 +831,9 @@ begin
   MenuButton.SetDisabled(False);
   PostMouseMoveMessage;
 end;
-{ @end $816208 }
+{ @end $75C158 }
 
-{ @routine $816320 TfPanelMain_RebuildMessageButtons }
+{ @routine $75C250 TfPanelMain_RebuildMessageButtons }
 procedure TfPanelMain.RebuildMessageButtons(SkipLock: Boolean);
 var
   Panel: TPanelGI;
@@ -875,9 +874,9 @@ begin
       Button.LeaveSound := 'Sound.ButtonInfoLeave';
       Button.ClickSound := 'Sound.ButtonInfoClick';
       if (MessageEntry.Kind = pmRadio) and (GetPlayer <> nil) and
-        ((Integer(MessageEntry.Targets[0].ShipId) = GetPlayer.Id) or
-         (Integer(MessageEntry.Targets[1].ShipId) = GetPlayer.Id) or
-         (Integer(MessageEntry.Targets[2].ShipId) = GetPlayer.Id)) then MessageEntry.Kind := pmRadioPlayer;
+        ((MessageEntry.Targets[0].ShipId = GetPlayer.Id) or
+        (MessageEntry.Targets[1].ShipId = GetPlayer.Id) or
+        (MessageEntry.Targets[2].ShipId = GetPlayer.Id)) then MessageEntry.Kind := pmRadioPlayer;
       if (MessageEntry.Kind in [pmGalaxyNews, pmTip]) and not MessageEntry.WasRead then
       begin
         Button.SetImageNormalPath('GraphBuf');
@@ -885,7 +884,7 @@ begin
         LoadGiByPathIntoGraphBuf('Bm.MsgPlayer.' + GiResourceSuffix + MessageEntry.GetNormalImageName,
           Button.ImageNormal.GraphBufControl.GraphBuf);
         Button.ImageNormal.SetSize(Button.ImageNormal.GetContentSize);
-        if MessagePulseTimer = nil then
+        if MessagePulseTimer = 0 then
           MessagePulseTimer := Screen.ScheduleCallbackTimer(40, 40, PulseUnreadMessages);
       end
       else
@@ -907,18 +906,18 @@ begin
   SlideMessagesIn;
   PostMouseMove;
 end;
-{ @end $816320 }
+{ @end $75C250 }
 
-{ @routine $8168F0 TfPanelMain_ClearMessageButtons }
+{ @routine $75C7AC TfPanelMain_ClearMessageButtons }
 procedure TfPanelMain.ClearMessageButtons;
 var
   Panel: TPanelGI;
   MessageEntry: TMessagePlayer;
 begin
-  if MessagePulseTimer <> nil then
+  if MessagePulseTimer <> 0 then
   begin
     Screen.CancelCallbackTimer(MessagePulseTimer);
-    MessagePulseTimer := nil;
+    MessagePulseTimer := 0;
   end;
   Panel := Screen.GetByName('PM_PanelMsg') as TPanelGI;
   Panel.SetActive(False);
@@ -931,9 +930,9 @@ begin
     MessageEntry := MessageEntry.Prev;
   end;
 end;
-{ @end $8168F0 }
+{ @end $75C7AC }
 
-{ @routine $8169C4 TfPanelMain_RemoveDismissibleMessages }
+{ @routine $75C854 TfPanelMain_RemoveDismissibleMessages }
 function TfPanelMain.RemoveDismissibleMessages(Key: WideString): Boolean;
 begin
   Result := False;
@@ -944,9 +943,9 @@ begin
     Result := True;
   end;
 end;
-{ @end $8169C4 }
+{ @end $75C854 }
 
-{ @routine $816A68 TfPanelMain_MessageMouseEnter }
+{ @routine $75C8F0 TfPanelMain_MessageMouseEnter }
 procedure TfPanelMain.MessageMouseEnter(Sender: TObjectGI);
 var
   MessageEntry: TMessagePlayer;
@@ -983,16 +982,16 @@ begin
     PersistentPlayerMessageLock.Leave;
   end;
 end;
-{ @end $816A68 }
+{ @end $75C8F0 }
 
-{ @routine $816CDC TfPanelMain_MessageMouseLeave }
+{ @routine $75CB20 TfPanelMain_MessageMouseLeave }
 procedure TfPanelMain.MessageMouseLeave(Sender: TObjectGI);
 begin
   Screen.GetByName('PM_WinMsg').SetActive(False);
 end;
-{ @end $816CDC }
+{ @end $75CB20 }
 
-{ @routine $816D1C TfPanelMain_DeleteMessage }
+{ @routine $75CB54 TfPanelMain_DeleteMessage }
 procedure TfPanelMain.DeleteMessage(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint; SkipLock: Boolean);
 var
   MessageEntry: TMessagePlayer;
@@ -1042,17 +1041,17 @@ begin
     if not SkipLock then PersistentPlayerMessageLock.Leave;
   end;
 end;
-{ @end $816D1C }
+{ @end $75CB54 }
 
-{ @routine $816FD4 TfPanelMain_MessageRightButtonDown }
+{ @routine $75CDB4 TfPanelMain_MessageRightButtonDown }
 procedure TfPanelMain.MessageRightButtonDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint);
 begin
   DeleteMessage(Sender, KeyState, Point, False);
   BreakUiMessage;
 end;
-{ @end $816FD4 }
+{ @end $75CDB4 }
 
-{ @routine $817010 TfPanelMain_AdvanceMessageDeletion }
+{ @routine $75CDE0 TfPanelMain_AdvanceMessageDeletion }
 procedure TfPanelMain.AdvanceMessageDeletion(Sender: TObjectGI);
 var
   Progress: Double;
@@ -1089,9 +1088,9 @@ begin
   end;
   PostMouseMove;
 end;
-{ @end $817010 }
+{ @end $75CDE0 }
 
-{ @routine $8171DC TfPanelMain_FinishMessageDeletion }
+{ @routine $75CF60 TfPanelMain_FinishMessageDeletion }
 procedure TfPanelMain.FinishMessageDeletion(Sender: TObjectGI);
 var
   MessageEntry: TMessagePlayer;
@@ -1106,7 +1105,7 @@ begin
     RebuildMessageButtons(True);
     if AuxiliaryItems.Count > 0 then
     begin
-      MessageEntry := TMessagePlayer(AuxiliaryItems[0]);
+      MessageEntry := AuxiliaryItems[0];
       Control := MessagePanel.FirstChild;
       while Control <> nil do
       begin
@@ -1127,67 +1126,69 @@ begin
     PersistentPlayerMessageLock.Leave;
   end;
 end;
-{ @end $8171DC }
+{ @end $75CF60 }
 
-{ @routine $817328 TfPanelMain_SlideMessagesIn }
+{ @routine $75D074 TfPanelMain_SlideMessagesIn }
 procedure TfPanelMain.SlideMessagesIn;
 begin
   MessageSlideDirection := -1;
-  if MessageSlideTimer <> nil then
+  if MessageSlideTimer <> 0 then
   begin
     Screen.CancelCallbackTimer(MessageSlideTimer);
-    MessageSlideTimer := nil;
+    MessageSlideTimer := 0;
   end;
   if MessagePanel.LocalPosition.Y > MessagePanelRestTop then
     MessageSlideTimer := Screen.ScheduleCallbackTimer(10, 10, AdvanceMessageSlide);
 end;
-{ @end $817328 }
+{ @end $75D074 }
 
-{ @routine $817398 TfPanelMain_SlideMessagesOut }
+{ @routine $75D0C0 TfPanelMain_SlideMessagesOut }
 procedure TfPanelMain.SlideMessagesOut;
 begin
   MessageSlideDirection := 1;
-  if MessageSlideTimer <> nil then
+  if MessageSlideTimer <> 0 then
   begin
     Screen.CancelCallbackTimer(MessageSlideTimer);
-    MessageSlideTimer := nil;
+    MessageSlideTimer := 0;
   end;
-  if MessagePanel.LocalPosition.Y < GameScreenHeight - 5 then
+  if MessagePanel.LocalPosition.Y < Integer(GameScreenHeight) - 5 then
     MessageSlideTimer := Screen.ScheduleCallbackTimer(10, 10, AdvanceMessageSlide);
 end;
-{ @end $817398 }
+{ @end $75D0C0 }
 
-{ @routine $81740C TfPanelMain_AdvanceMessageSlide }
-procedure TfPanelMain.AdvanceMessageSlide(Timer: PCallbackTimerGI; UserData: Integer);
+{ @routine $75D114 TfPanelMain_AdvanceMessageSlide }
+procedure TfPanelMain.AdvanceMessageSlide(Timer: TCallbackTimerIdGI; UserData: Cardinal);
 begin
   if MessageSlideDirection < 0 then
   begin
     if MessagePanel.LocalPosition.Y <= MessagePanelRestTop then
     begin
-      if MessageSlideTimer <> nil then
+      if MessageSlideTimer <> 0 then
       begin
         Screen.CancelCallbackTimer(MessageSlideTimer);
-        MessageSlideTimer := nil;
+        MessageSlideTimer := 0;
       end;
-    end
-    else MessagePanel.SetPosition(Classes.Point(MessagePanel.LocalPosition.X, MessagePanel.LocalPosition.Y + MessageSlideDirection));
+      Exit;
+    end;
+    MessagePanel.SetPosition(Classes.Point(MessagePanel.LocalPosition.X, MessagePanel.LocalPosition.Y + MessageSlideDirection));
   end
   else
   begin
-    if MessagePanel.LocalPosition.Y >= GameScreenHeight - 5 then
+    if MessagePanel.LocalPosition.Y >= Integer(GameScreenHeight) - 5 then
     begin
-      if MessageSlideTimer <> nil then
+      if MessageSlideTimer <> 0 then
       begin
         Screen.CancelCallbackTimer(MessageSlideTimer);
-        MessageSlideTimer := nil;
+        MessageSlideTimer := 0;
       end;
-    end
-    else MessagePanel.SetPosition(Classes.Point(MessagePanel.LocalPosition.X, MessagePanel.LocalPosition.Y + MessageSlideDirection));
+      Exit;
+    end;
+    MessagePanel.SetPosition(Classes.Point(MessagePanel.LocalPosition.X, MessagePanel.LocalPosition.Y + MessageSlideDirection));
   end;
 end;
-{ @end $81740C }
+{ @end $75D114 }
 
-{ @routine $817500 TfPanelMain_MessageClicked }
+{ @routine $75D1B0 TfPanelMain_MessageClicked }
 procedure TfPanelMain.MessageClicked(Sender: TObjectGI);
 var
   MessageEntry: TMessagePlayer;
@@ -1235,7 +1236,7 @@ begin
       begin
         if StarMapScreen.Mode = smmOrders then
         begin
-          Ship := TObject(Galaxy.IdToShip(DisplayedShipId, False)) as TShip;
+          Ship := Galaxy.IdToShip(DisplayedShipId, False) as TShip;
           if (Ship <> nil) and Ship.InNormalSpace and (Ship.CurrentStar = GetPlayer.CurrentStar) then
           begin
             StarMapScreen.SetMapCenterManually(TruncatePointF(Ship.Position));
@@ -1259,7 +1260,7 @@ begin
       begin
         if StarMapScreen.Mode = smmOrders then
         begin
-          Planet := TObject(Galaxy.IdToPlanet(DisplayedPlanetId, False)) as TPlanet;
+          Planet := Galaxy.IdToPlanet(DisplayedPlanetId, False) as TPlanet;
           if (Planet <> nil) and (Planet.CurrentStar = GetPlayer.CurrentStar) then
           begin
             StarMapScreen.SetMapCenterManually(TruncatePointF(Planet.GetPosition));
@@ -1285,9 +1286,9 @@ begin
     PersistentPlayerMessageLock.Leave;
   end;
 end;
-{ @end $817500 }
+{ @end $75D1B0 }
 
-{ @routine $817AB8 TfPanelMain_PlayUnreadMessageSounds }
+{ @routine $75D704 TfPanelMain_PlayUnreadMessageSounds }
 procedure TfPanelMain.PlayUnreadMessageSounds;
 var
   MessageEntry: TMessagePlayer;
@@ -1304,6 +1305,7 @@ begin
     begin
       if not MessageEntry.NotificationSoundPlayed then
         if MessageEntry.Kind in [pmGalaxyNews..pmTip, pmShipNegative] then
+        begin
           if not PlayedQuestOk and (MessageEntry.Kind = pmQuestSucceeded) then
           begin
             PlayedQuestOk := True;
@@ -1324,6 +1326,7 @@ begin
             PlayedLiberation := True;
             SoundManager.PlaySound('Sound.LiberationSystem');
           end;
+        end;
       MessageEntry := MessageEntry.Next;
     end;
     MessageEntry := FirstPersistentPlayerMessage;
@@ -1336,73 +1339,73 @@ begin
     PersistentPlayerMessageLock.Leave;
   end;
 end;
-{ @end $817AB8 }
+{ @end $75D704 }
 
-{ @routine $817CB0 TfPanelMain_FlashMoneyWarning }
+{ @routine $75D8C8 TfPanelMain_FlashMoneyWarning }
 procedure TfPanelMain.FlashMoneyWarning;
 begin
-  if MoneyWarningTimer <> nil then
+  if MoneyWarningTimer <> 0 then
   begin
     Screen.CancelCallbackTimer(MoneyWarningTimer);
-    MoneyWarningTimer := nil;
+    MoneyWarningTimer := 0;
   end;
   MoneyWarningTimer := Screen.ScheduleCallbackTimer(100, 100, AdvanceMoneyWarning);
   MoneyWarningActive := True;
   MoneyWarningTicks := 6;
   RefreshMoneyAndCargo;
 end;
-{ @end $817CB0 }
+{ @end $75D8C8 }
 
-{ @routine $817D1C TfPanelMain_AdvanceMoneyWarning }
-procedure TfPanelMain.AdvanceMoneyWarning(Timer: PCallbackTimerGI; UserData: Integer);
+{ @routine $75D914 TfPanelMain_AdvanceMoneyWarning }
+procedure TfPanelMain.AdvanceMoneyWarning(Timer: TCallbackTimerIdGI; UserData: Cardinal);
 begin
   Dec(MoneyWarningTicks);
   if MoneyWarningTicks <= 0 then
   begin
-    if MoneyWarningTimer <> nil then
+    if MoneyWarningTimer <> 0 then
     begin
       Screen.CancelCallbackTimer(MoneyWarningTimer);
-      MoneyWarningTimer := nil;
+      MoneyWarningTimer := 0;
     end;
     MoneyWarningActive := False;
   end;
   RefreshMoneyAndCargo;
 end;
-{ @end $817D1C }
+{ @end $75D914 }
 
-{ @routine $817D70 TfPanelMain_FlashCargoWarning }
+{ @routine $75D944 TfPanelMain_FlashCargoWarning }
 procedure TfPanelMain.FlashCargoWarning;
 begin
-  if CargoWarningTimer <> nil then
+  if CargoWarningTimer <> 0 then
   begin
     Screen.CancelCallbackTimer(CargoWarningTimer);
-    CargoWarningTimer := nil;
+    CargoWarningTimer := 0;
   end;
   CargoWarningTimer := Screen.ScheduleCallbackTimer(100, 100, AdvanceCargoWarning);
   CargoWarningActive := True;
   CargoWarningTicks := 6;
   RefreshMoneyAndCargo;
 end;
-{ @end $817D70 }
+{ @end $75D944 }
 
-{ @routine $817DEC TfPanelMain_AdvanceCargoWarning }
-procedure TfPanelMain.AdvanceCargoWarning(Timer: PCallbackTimerGI; UserData: Integer);
+{ @routine $75D99C TfPanelMain_AdvanceCargoWarning }
+procedure TfPanelMain.AdvanceCargoWarning(Timer: TCallbackTimerIdGI; UserData: Cardinal);
 begin
   Dec(CargoWarningTicks);
   if CargoWarningTicks <= 0 then
   begin
-    if CargoWarningTimer <> nil then
+    if CargoWarningTimer <> 0 then
     begin
       Screen.CancelCallbackTimer(CargoWarningTimer);
-      CargoWarningTimer := nil;
+      CargoWarningTimer := 0;
     end;
     CargoWarningActive := False;
   end;
   RefreshMoneyAndCargo;
 end;
-{ @end $817DEC }
+{ @end $75D99C }
 
-{ @routine $817E50 TfPanelMain_ShowControlHelp }
+{ @routine $75D9D8 TfPanelMain_ShowControlHelp }
 procedure TfPanelMain.ShowControlHelp(Sender: TObjectGI; Visible: Boolean);
 var LabelControl: TLabelGI;
 begin
@@ -1413,9 +1416,9 @@ begin
   if Sender = nil then LabelControl.SetText('')
   else LabelControl.SetText(Sender.HelpText);
 end;
-{ @end $817E50 }
+{ @end $75D9D8 }
 
-{ @routine $817EC8 TfPanelMain_ShowHelpText }
+{ @routine $75DA34 TfPanelMain_ShowHelpText }
 procedure TfPanelMain.ShowHelpText(Text: WideString; Visible: Boolean);
 var LabelControl: TLabelGI;
 begin
@@ -1424,9 +1427,9 @@ begin
   LabelControl.SetActive(Visible);
   LabelControl.SetText(Text);
 end;
-{ @end $817EC8 }
+{ @end $75DA34 }
 
-{ @routine $817F48 TfPanelMain_ProcessKeyDown }
+{ @routine $75DAA8 TfPanelMain_ProcessKeyDown }
 procedure TfPanelMain.ProcessKeyDown(Key: Cardinal);
 begin
   if IsVirtualKeyDown(VK_CONTROL) or IsVirtualKeyDown(VK_SHIFT) or IsVirtualKeyDown(VK_MENU) then Exit;
@@ -1435,28 +1438,28 @@ begin
   if HasPendingScriptRequests then Exit;
   if IsTurnCalculationRunningUI then Exit;
   if Key = VK_F2 then
-      begin
-        if Galaxy.IronWill then
-          ShowMessageBoxGI(Screen, LocalizedColorText('FormGameSet2.IronWillText'), mbgCancel or mbgUnused04)
-        else if Galaxy.SpecialSimulationMode = 0 then
-        begin
-          CaptureSavePreview;
-          Galaxy.CheckIntegrityChecksum(100);
-          CaptureGalaxyPreview(Screen);
-          Galaxy.PrimeIntegrityChecksum(101);
-          SaveManagerReturnScreenId := FormToId(Screen);
-          SaveManagerMode := smmSave;
-          RequestedScreenId := screenSaveManager;
-          Screen.RequestClose(1);
-        end;
-      end
+  begin
+    if Galaxy.IronWill then
+      ShowMessageBoxGI(Screen, LocalizedColorText('FormGameSet2.IronWillText'), mbgCancel or mbgUnused04)
+    else if Galaxy.SpecialSimulationMode = 0 then
+    begin
+      CaptureSavePreview;
+      Galaxy.CheckIntegrityChecksum(100);
+      CaptureGalaxyPreview(Screen);
+      Galaxy.PrimeIntegrityChecksum(101);
+      SaveManagerReturnScreenId := FormToId(Screen);
+      SaveManagerMode := smmSave;
+      RequestedScreenId := screenSaveManager;
+      Screen.RequestClose(1);
+    end;
+  end
   else if Key = VK_F3 then
-      begin
-        SaveManagerReturnScreenId := FormToId(Screen);
-        SaveManagerMode := smmLoad;
-        RequestedScreenId := screenSaveManager;
-        Screen.RequestClose(1);
-      end
+  begin
+    SaveManagerReturnScreenId := FormToId(Screen);
+    SaveManagerMode := smmLoad;
+    RequestedScreenId := screenSaveManager;
+    Screen.RequestClose(1);
+  end
   else if Key = VK_SPACE then EndTurnClicked(nil)
   else if Key = Ord('M') then GalaxyClicked(nil)
   else if Key = Ord('S') then ShipClicked(nil)
@@ -1470,9 +1473,9 @@ begin
   else if Key = VK_F11 then
     if not RemoveDismissibleMessages('GOODS') then RemoveDismissibleMessages('');
 end;
-{ @end $817F48 }
+{ @end $75DAA8 }
 
-{ @routine $818238 TfPanelMain_PostMouseMove }
+{ @routine $75DD64 TfPanelMain_PostMouseMove }
 procedure TfPanelMain.PostMouseMove;
 var
   Point: TPoint;
@@ -1481,17 +1484,17 @@ begin
   ScreenToClient(MainWindowHandle, Point);
   PostMessage(MainWindowHandle, WM_MOUSEMOVE, 0, SmallInt(Point.X) or (SmallInt(Point.Y) shl 16));
 end;
-{ @end $818238 }
+{ @end $75DD64 }
 
-{ @routine $818284 TMessageLoopGIWithMainPanel_Create }
+{ @routine $75DDA4 TMessageLoopGIWithMainPanel_Create }
 constructor TMessageLoopGIWithMainPanel.Create;
 begin
   inherited Create;
   MainPanel := TfPanelMain.Create;
 end;
-{ @end $818284 }
+{ @end $75DDA4 }
 
-{ @routine $8182DC TMessageLoopGIWithMainPanel_Destroy }
+{ @routine $75DDEC TMessageLoopGIWithMainPanel_Destroy }
 destructor TMessageLoopGIWithMainPanel.Destroy;
 begin
   if MainPanel <> nil then
@@ -1501,6 +1504,6 @@ begin
   end;
   inherited Destroy;
 end;
-{ @end $8182DC }
+{ @end $75DDEC }
 
 end.

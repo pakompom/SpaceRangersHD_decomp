@@ -1,12 +1,10 @@
 unit fAchievements;
-// Unit bracket (inferred): .text 0x00538F30..0x0053A0E5; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
 uses GI_MessageLoop, GI_Image, SimpleSteamApi, Types;
 
 type
-  // Native record RTTI at $538F04.
   TfAchievementsSlot = record // @size $0C
     Key: WideString; // @offset $00
     Data: PAchievementData; // @offset $04
@@ -17,21 +15,21 @@ type
   TfAchievements = class(TMessageLoopGI) // @size 0xD4
   public
     Rows: array of TfAchievementsSlot; // @offset $D0
-    procedure KeyDown(Sender: TObjectGI; Key: Cardinal); // @addr $539364
-    function AppendRow(UnusedIndex: Integer): Integer; // @addr $539544 @note "Ignores the argument and appends. The native insertion-shift loop is retained even though it has no iterations."
-    procedure BuildRow(Owner: TObjectGI); // @addr $5398C0
-    procedure RefreshRowBackground(Index: Integer); // @addr $539FCC
-    procedure BuildProgressBars(Owner: TObjectGI; MinValue, MaxValue, StoredValue, CurrentValue: Integer); // @addr $53A0E8
+    procedure KeyDown(Sender: TObjectGI; Key: Cardinal); // @addr $79E550
+    function AppendRow(UnusedIndex: Integer): Integer; // @addr $79E690 @note "Ignores the argument and appends. The native insertion-shift loop is retained even though it has no iterations."
+    procedure BuildRow(Owner: TObjectGI); // @addr $79E990
+    procedure RefreshRowBackground(Index: Integer); // @addr $79EFF4
+    procedure BuildProgressBars(Owner: TObjectGI; MinValue, MaxValue, StoredValue, CurrentValue: Integer); // @addr $79F0E4
 
-    constructor Create; // @addr 0x539004
-    destructor Destroy; override; // @addr 0x539048
-    procedure OnOpen; override; // @addr 0x539230
-    procedure OnClose; override; // @addr 0x5392A4
-    procedure SelectMusic; override; // @addr 0x53A0DC
-    procedure ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer); override; // @addr 0x539464
-    procedure InitializeLayout; override; // @addr 0x53907C
-    procedure RebuildAchievementList; // @addr 0x5395F4
-    procedure CloseClicked(Sender: TObjectGI); // @addr 0x53932C
+    constructor Create; // @addr 0x0079E248
+    destructor Destroy; override; // @addr 0x0079E280
+    procedure OnOpen; override; // @addr 0x0079E448
+    procedure OnClose; override; // @addr 0x0079E4B4
+    procedure SelectMusic; override; // @addr 0x0079F0E0
+    procedure ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer); override; // @addr 0x0079E5F8
+    procedure InitializeLayout; override; // @addr 0x0079E2A8
+    procedure RebuildAchievementList; // @addr 0x0079E714
+    procedure CloseClicked(Sender: TObjectGI); // @addr 0x0079E520
   end;
 
 implementation
@@ -40,21 +38,21 @@ uses Windows, Classes, SysUtils, Math, Achievements, EC_BlockPar, GI_GraphBuf, G
   GI_Label, GI_Panel, GI_PanelScrollBar, GI_ScrollBar, GI_CountBar,
   GR_Main, GR_GraphBuf, GlobalsV;
 
-{ @routine $539004 TfAchievements_Create }
+{ @routine $79E248 TfAchievements_Create }
 constructor TfAchievements.Create;
 begin
   inherited Create;
 end;
-{ @end $539004 }
+{ @end $79E248 }
 
-{ @routine $539048 TfAchievements_Destroy }
+{ @routine $79E280 TfAchievements_Destroy }
 destructor TfAchievements.Destroy;
 begin
   inherited Destroy;
 end;
-{ @end $539048 }
+{ @end $79E280 }
 
-{ @routine $53907C TfAchievements_InitializeLayout }
+{ @routine $79E2A8 TfAchievements_InitializeLayout }
 procedure TfAchievements.InitializeLayout;
 begin
   inherited InitializeLayout;
@@ -65,15 +63,15 @@ begin
     SetSize(Classes.Point(GameScreenWidth, GameScreenHeight));
     FindByNameRecursive('BGBuf').SetSize(Classes.Point(GameScreenWidth, GameScreenHeight));
     with FindByNameRecursive('MainPanel') do
-      SetPosition(Classes.Point((GameScreenWidth - ClientSize.X) div 2, (GameScreenHeight - ClientSize.Y) div 2));
+      SetPosition(Classes.Point((Integer(GameScreenWidth) - ClientSize.X) div 2, (Integer(GameScreenHeight) - ClientSize.Y) div 2));
   end;
   AppendLogLineThreadSafe('ok');
   GetByName('MainPanel').KeyDownCallback := KeyDown;
   (GetByName('ButClose') as TGraphButtonGI).UpCallback := CloseClicked;
 end;
-{ @end $53907C }
+{ @end $79E2A8 }
 
-{ @routine $539230 TfAchievements_OnOpen }
+{ @routine $79E448 TfAchievements_OnOpen }
 procedure TfAchievements.OnOpen;
 begin
   inherited OnOpen;
@@ -82,9 +80,9 @@ begin
   (GetByName('BGBuf') as TGraphBufGI).BindExternalGraphBuf(AuxRenderBuffer);
   RebuildAchievementList;
 end;
-{ @end $539230 }
+{ @end $79E448 }
 
-{ @routine $5392A4 TfAchievements_OnClose }
+{ @routine $79E4B4 TfAchievements_OnClose }
 procedure TfAchievements.OnClose;
 var
   I: Integer;
@@ -94,18 +92,18 @@ begin
   if RequestedScreenId <> screenArcadeBattle then AuxRenderBuffer.Clear;
   inherited OnClose;
 end;
-{ @end $5392A4 }
+{ @end $79E4B4 }
 
-{ @routine $53932C TfAchievements_CloseClicked }
+{ @routine $79E520 TfAchievements_CloseClicked }
 procedure TfAchievements.CloseClicked(Sender: TObjectGI);
 begin
   AuxRenderBuffer.Clear;
   RequestedScreenId := AchievementsReturnScreenId;
   RequestClose(1);
 end;
-{ @end $53932C }
+{ @end $79E520 }
 
-{ @routine $539364 TfAchievements_KeyDown }
+{ @routine $79E550 TfAchievements_KeyDown }
 procedure TfAchievements.KeyDown(Sender: TObjectGI; Key: Cardinal);
 begin
   if Key = VK_ESCAPE then CloseClicked(Sender)
@@ -121,9 +119,9 @@ begin
         VerticalScrollBar.SetPosition(VerticalScrollBar.Position + VerticalScrollBar.LargeChange);
 
 end;
-{ @end $539364 }
+{ @end $79E550 }
 
-{ @routine $539464 TfAchievements_ProcessMouseWheel }
+{ @routine $79E5F8 TfAchievements_ProcessMouseWheel }
 procedure TfAchievements.ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer);
 begin
   with GetByName('PanelSlot') as TPanelScrollBarGI do
@@ -142,9 +140,9 @@ begin
     end;
   end;
 end;
-{ @end $539464 }
+{ @end $79E5F8 }
 
-{ @routine $539544 TfAchievements_AppendRow }
+{ @routine $79E690 TfAchievements_AppendRow }
 function TfAchievements.AppendRow(UnusedIndex: Integer): Integer;
 var
   Index, I: Integer;
@@ -154,9 +152,9 @@ begin
   for I := High(Rows) downto Index + 1 do Rows[I] := Rows[I - 1];
   Result := Index;
 end;
-{ @end $539544 }
+{ @end $79E690 }
 
-{ @routine $5395F4 TfAchievements_RebuildAchievementList }
+{ @routine $79E714 TfAchievements_RebuildAchievementList }
 procedure TfAchievements.RebuildAchievementList;
 var
   I, Y: Integer;
@@ -180,19 +178,17 @@ begin
   Y := 0;
   for I := 0 to High(Rows) do
   begin
-    if (AchievementDefinitionTable[I + 1].Key <> 'HULL') or Rows[I].Data.Achieved then
-    begin
-      // The native row-spacing branch survives even though its spacing is zero.
-      if I <> 0 then Inc(Y, 0);
-      Row := TPanelGI.Create(Panel);
-      Row.UserValue := I;
-      Row.SetPosition(Classes.Point(0, Y));
-      BuildRow(Row);
-      Inc(Y, Row.ClientSize.Y);
-      Row.SetPositionModeW(True);
-      Panel.VerticalScrollBar.SetSmallChange(Row.ClientSize.Y);
-      RefreshRowBackground(I);
-    end;
+    if not ((AchievementDefinitionTable[I + 1].Key <> 'HULL') or Rows[I].Data.Achieved) then Continue;
+    // The native row-spacing branch survives even though its spacing is zero.
+    if I <> 0 then Inc(Y, 0);
+    Row := TPanelGI.Create(Panel);
+    Row.UserValue := I;
+    Row.SetPosition(Classes.Point(0, Y));
+    BuildRow(Row);
+    Inc(Y, Row.ClientSize.Y);
+    Row.SetPositionModeW(True);
+    Panel.VerticalScrollBar.SetSmallChange(Row.ClientSize.Y);
+    RefreshRowBackground(I);
   end;
   Panel.UpdateScrollRanges;
   Panel.VerticalScrollBar.SetActive(Y > Panel.ClientSize.Y);
@@ -203,9 +199,9 @@ begin
   Panel.VerticalScrollBar.SetPosition(I);
   Panel.Invalidate;
 end;
-{ @end $5395F4 }
+{ @end $79E714 }
 
-{ @routine $5398C0 TfAchievements_BuildRow }
+{ @routine $79E990 TfAchievements_BuildRow }
 procedure TfAchievements.BuildRow(Owner: TObjectGI);
 var
   Index: Integer;
@@ -229,7 +225,7 @@ begin
     SetFontName(NormalBoldFontName);
     SetTextAlignX(taxLeft);
     SetTextAlignY(tayTop);
-    SetText(Rows[Index].Data.Name^);
+    Text := Rows[Index].Data.Name^;
   end;
   with TLabelGI.Create(Owner) do
   begin
@@ -239,7 +235,7 @@ begin
     SetFontName(SmallFontName);
     SetTextAlignX(taxCenter);
     SetTextAlignY(tayCenterEx);
-    SetText(Rows[Index].Data.Description^);
+    Text := Rows[Index].Data.Description^;
     SetWordWrapEnabled(True);
     SetTextColor(CurrentPixelFormat.PackRgbBytes(0, 0, 0));
   end;
@@ -255,9 +251,9 @@ begin
       SetFontName(SmallFontName);
       SetTextAlignX(taxCenter);
       SetTextAlignY(tayCenterEx);
-      SetText(WideString(IntToStr(Rows[Index].Data.Value)) +
+      Text := WideString(IntToStr(Rows[Index].Data.Value)) +
         LanguageDataConfig.GetParamByPathOrMarker('Achievements.Of') +
-        WideString(IntToStr(Rows[Index].Data.MaxValue)));
+        WideString(IntToStr(Rows[Index].Data.MaxValue));
       SetTextColor(CurrentPixelFormat.PackRgbBytes(0, 0, 0));
     end;
   end;
@@ -270,23 +266,23 @@ begin
       SetFontName(SmallFontName);
       SetTextAlignX(taxRight);
       SetTextAlignY(tayCenterEx);
-      SetText(LanguageDataConfig.GetParamByPathOrMarker('Achievements.Achieved') +
-        FormatUnixDateTime(Rows[Index].Data.Date));
+      Text := LanguageDataConfig.GetParamByPathOrMarker('Achievements.Achieved') +
+        FormatUnixDateTime(Rows[Index].Data.Date);
       SetTextColor(CurrentPixelFormat.PackRgbBytes(0, 0, 0));
     end;
   with TImageGI.Create(Owner) do
   begin
     SetPosition(Classes.Point(30, 34));
     SetDepth(7);
-    SetImagePath('GI,Bm.FormAchievements.Img.' + Rows[Index].Key);
-    if not Rows[Index].Data.Achieved then SetImagePath(GetImagePath + 'D');
+    ImageSourcePath := 'GI,Bm.FormAchievements.Img.' + Rows[Index].Key;
+    if not Rows[Index].Data.Achieved then ImageSourcePath := GetImagePath + 'D';
     SetSize(GetContentSize);
     SetActive(True);
   end;
 end;
-{ @end $5398C0 }
+{ @end $79E990 }
 
-{ @routine $539FCC TfAchievements_RefreshRowBackground }
+{ @routine $79EFF4 TfAchievements_RefreshRowBackground }
 procedure TfAchievements.RefreshRowBackground(Index: Integer);
 begin
   if (Index >= 0) and (Index <= High(Rows)) then
@@ -294,21 +290,21 @@ begin
       if Rows[Index].Data.Achieved then SetImagePath('GI,Bm.FormAchievements.Slot.Active')
       else SetImagePath('GI,Bm.FormAchievements.Slot.Inactive');
 end;
-{ @end $539FCC }
+{ @end $79EFF4 }
 
-{ @routine $53A0DC TfAchievements_SelectMusic }
+{ @routine $79F0E0 TfAchievements_SelectMusic }
 procedure TfAchievements.SelectMusic;
 begin
 end;
-{ @end $53A0DC }
+{ @end $79F0E0 }
 
-{ @routine $53A0E8 TfAchievements_BuildProgressBars }
+{ @routine $79F0E4 TfAchievements_BuildProgressBars }
 procedure TfAchievements.BuildProgressBars(Owner: TObjectGI; MinValue, MaxValue, StoredValue, CurrentValue: Integer);
 var
   Bar: TCountBarGI;
 begin
   Bar := TCountBarGI.Create(Owner);
-  TObjectGI(Bar).SetPosition(Classes.Point(630, 60));
+  Bar.Pos := Classes.Point(630, 60);
   Bar.SetSize(Classes.Point(145, 20));
   Bar.SetPositionModeW(False);
   Bar.AfterThumbImage.SetImagePath('GI,Bm.FormOptions2.' + GiResourceSuffix + 'TrackLeft');
@@ -322,7 +318,7 @@ begin
   Bar.UpdateLayout;
   Bar.Invalidate;
   Bar := TCountBarGI.Create(Owner);
-  TObjectGI(Bar).SetPosition(Classes.Point(630, 60));
+  Bar.Pos := Classes.Point(630, 60);
   Bar.SetDepth(Bar.Depth - 1);
   Bar.SetSize(Classes.Point(145, 20));
   Bar.SetPositionModeW(False);
@@ -337,6 +333,6 @@ begin
   Bar.UpdateLayout;
   Bar.Invalidate;
 end;
-{ @end $53A0E8 }
+{ @end $79F0E4 }
 
 end.

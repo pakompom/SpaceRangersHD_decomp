@@ -23,25 +23,25 @@ type
     OriginalLength: Single; // @offset $13C
     ParticleColor: Word; // @offset $140
 
-    constructor Create(Owner: TObjectGI); // @addr $69A898
-    destructor Destroy; override; // @addr $69A92C
-    procedure Invalidate; override; // @addr $69A968 @note "Native empty override."
-    procedure SetPosition(Position: TPoint); override; // @addr $69A974
-    procedure SetTargetPoint(Point: TPoint); override; // @addr $69A9B0
-    procedure UpdateHitTestBounds; override; // @addr $69A9FC
-    procedure SetActive(Enabled: Boolean); override; // @addr $69AA30
-    procedure ClearParticles; // @addr $69AA4C
-    procedure GrowParticles; // @addr $69AA94
-    function AddParticle: PPDWeaponParticle; // @addr $69AACC
-    procedure Advance(Timer: PCallbackTimerGI; UserData: Integer); override; // @addr $69AB24
-    procedure Draw(ClipRect: TRect); override; // @addr $69ADBC
+    constructor Create(Owner: TObjectGI); // @addr $4EB840
+    destructor Destroy; override; // @addr $4EB8B8
+    procedure Invalidate; override; // @addr $4EB8E4 @note "Native empty override."
+    procedure SetPosition(Position: TPoint); override; // @addr $4EB8E8
+    procedure SetTargetPoint(Point: TPoint); override; // @addr $4EB914
+    procedure UpdateHitTestBounds; override; // @addr $4EB950
+    procedure SetActive(Enabled: Boolean); override; // @addr $4EB974
+    procedure ClearParticles; // @addr $4EB97C
+    procedure GrowParticles; // @addr $4EB9A8
+    function AddParticle: PPDWeaponParticle; // @addr $4EB9CC
+    procedure Advance(Timer: TCallbackTimerIdGI; UserData: Cardinal); override; // @addr $4EBA04
+    procedure Draw(ClipRect: TRect); override; // @addr $4EBC00
   end;
 
 implementation
 
 uses Math, EC_Mem, GR_Main, GR_DX;
 
-{ @routine $69A898 TPSPDWeaponGI_Create }
+{ @routine $4EB840 TPSPDWeaponGI_Create }
 constructor TPSPDWeaponGI.Create(Owner: TObjectGI);
 begin
   inherited Create(Owner);
@@ -49,39 +49,39 @@ begin
   LifetimeTicks := 25;
   ParticleColor := CurrentPixelFormat.PackNormalizedRgb(1.0, 0.6, 0.6);
 end;
-{ @end $69A898 }
+{ @end $4EB840 }
 
-{ @routine $69A92C TPSPDWeaponGI_Destroy }
+{ @routine $4EB8B8 TPSPDWeaponGI_Destroy }
 destructor TPSPDWeaponGI.Destroy;
 begin
   ClearParticles;
   inherited Destroy;
 end;
-{ @end $69A92C }
+{ @end $4EB8B8 }
 
-{ @routine $69A968 TPSPDWeaponGI_Invalidate }
+{ @routine $4EB8E4 TPSPDWeaponGI_Invalidate }
 procedure TPSPDWeaponGI.Invalidate;
 begin
 end;
-{ @end $69A968 }
+{ @end $4EB8E4 }
 
-{ @routine $69A974 TPSPDWeaponGI_SetPosition }
+{ @routine $4EB8E8 TPSPDWeaponGI_SetPosition }
 procedure TPSPDWeaponGI.SetPosition(Position: TPoint);
 begin
   if (LocalPosition.X <> Position.X) or (LocalPosition.Y <> Position.Y) then
     inherited SetPosition(Position);
 end;
-{ @end $69A974 }
+{ @end $4EB8E8 }
 
-{ @routine $69A9B0 TPSPDWeaponGI_SetTargetPoint }
+{ @routine $4EB914 TPSPDWeaponGI_SetTargetPoint }
 procedure TPSPDWeaponGI.SetTargetPoint(Point: TPoint);
 begin
   if (TargetPoint.X <> Point.X) or (TargetPoint.Y <> Point.Y) then
     TargetPoint := Point;
 end;
-{ @end $69A9B0 }
+{ @end $4EB914 }
 
-{ @routine $69A9FC TPSPDWeaponGI_UpdateHitTestBounds }
+{ @routine $4EB950 TPSPDWeaponGI_UpdateHitTestBounds }
 procedure TPSPDWeaponGI.UpdateHitTestBounds;
 begin
   HitTestBounds.Left := 0;
@@ -89,16 +89,16 @@ begin
   HitTestBounds.Right := GameScreenWidth;
   HitTestBounds.Bottom := GameScreenHeight;
 end;
-{ @end $69A9FC }
+{ @end $4EB950 }
 
-{ @routine $69AA30 TPSPDWeaponGI_SetActive }
+{ @routine $4EB974 TPSPDWeaponGI_SetActive }
 procedure TPSPDWeaponGI.SetActive(Enabled: Boolean);
 begin
   inherited SetActive(Enabled);
 end;
-{ @end $69AA30 }
+{ @end $4EB974 }
 
-{ @routine $69AA4C TPSPDWeaponGI_ClearParticles }
+{ @routine $4EB97C TPSPDWeaponGI_ClearParticles }
 procedure TPSPDWeaponGI.ClearParticles;
 begin
   if Particles <> nil then
@@ -109,27 +109,27 @@ begin
   ParticleCount := 0;
   ParticleCapacity := 0;
 end;
-{ @end $69AA4C }
+{ @end $4EB97C }
 
-{ @routine $69AA94 TPSPDWeaponGI_GrowParticles }
+{ @routine $4EB9A8 TPSPDWeaponGI_GrowParticles }
 procedure TPSPDWeaponGI.GrowParticles;
 begin
   Inc(ParticleCapacity, 100);
   Particles := ReAllocREC(Particles, ParticleCapacity * SizeOf(TPDWeaponParticle));
 end;
-{ @end $69AA94 }
+{ @end $4EB9A8 }
 
-{ @routine $69AACC TPSPDWeaponGI_AddParticle }
+{ @routine $4EB9CC TPSPDWeaponGI_AddParticle }
 function TPSPDWeaponGI.AddParticle: PPDWeaponParticle;
 begin
   if ParticleCount >= ParticleCapacity then GrowParticles;
   Result := AddPointerOffset(Particles, ParticleCount * SizeOf(TPDWeaponParticle));
   Inc(ParticleCount);
 end;
-{ @end $69AACC }
+{ @end $4EB9CC }
 
-{ @routine $69AB24 TPSPDWeaponGI_Advance }
-procedure TPSPDWeaponGI.Advance(Timer: PCallbackTimerGI; UserData: Integer);
+{ @routine $4EBA04 TPSPDWeaponGI_Advance }
+procedure TPSPDWeaponGI.Advance(Timer: TCallbackTimerIdGI; UserData: Cardinal);
 var
   Particle: PPDWeaponParticle;
   I, J, K: Integer;
@@ -186,9 +186,9 @@ begin
   end;
   if RemainingTicks > 0 then Dec(RemainingTicks);
 end;
-{ @end $69AB24 }
+{ @end $4EBA04 }
 
-{ @routine $69ADBC TPSPDWeaponGI_Draw }
+{ @routine $4EBC00 TPSPDWeaponGI_Draw }
 procedure TPSPDWeaponGI.Draw(ClipRect: TRect);
 var
   X, Y: Integer;
@@ -239,6 +239,6 @@ begin
     end;
   end;
 end;
-{ @end $69ADBC }
+{ @end $4EBC00 }
 
 end.

@@ -1,5 +1,4 @@
 unit GI_StarFieldImg;
-// Unit bracket (inferred): .text 0x004B2478..0x004B38C5; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -22,7 +21,7 @@ type
   end;
   PStarFieldImageGI = ^TStarFieldImageGI;
 
-  TStarFieldImgGI = class(TObjectGI) // @size $158 Native VMT $4B24C4.
+  TStarFieldImgGI = class(TObjectGI) // @size $158
   public
     Stars: PStarFieldImageGI; // @offset $120
     StarCount: Integer; // @offset $124
@@ -35,28 +34,28 @@ type
     TargetFocusDistance: Single; // @offset $148
     CurrentFocusDistance: Single; // @offset $14C
     MotionTicks: Integer; // @offset $150
-    AnimationTimer: PCallbackTimerGI; // @offset $154
+    AnimationTimer: TCallbackTimerIdGI; // @offset $154
 
-    procedure ClearStars; // @addr $4B26B0
-    procedure GrowStars; // @addr $4B26F8 Adds 64 zeroed entries.
-    function AllocateStar: PStarFieldImageGI; // @addr $4B2764
-    procedure CopyStarsFrom(Source: TStarFieldImgGI); // @addr $4B27BC Copies particles only, not camera or timer state.
-    procedure InitializeStar(Star: PStarFieldImageGI); // @addr $4B2848
-    procedure AdvanceStars; // @addr $4B2D7C
-    procedure RedirectStars; // @addr $4B2EE0
-    procedure AnimateStars(Timer: PCallbackTimerGI; UserData: Integer); // @addr $4B3028
-    procedure SetViewPosition(Position: TPointF); // @addr $4B32FC
-    constructor Create(Owner: TObjectGI); // @addr $4B259C
-    destructor Destroy; override; // @addr $4B264C
-    procedure SeedStars; // @addr $4B2CF4 Clears/reseeds the animated image stars and advances 201 warm-up steps.
-    procedure Invalidate; override; // @addr $4B3428
-    procedure OnActivate; override; // @addr $4B34B8
-    procedure OnDeactivate; override; // @addr $4B3520
-    procedure LoadFromConfigPath(const Path: WideString); override; // @addr $4B3560
-    procedure LoadFromBlock(Block: TBlockParEC); override; // @addr $4B3594
-    procedure ApplyStarConfig(Block: TBlockParEC); // @addr $4B35BC Native empty extension hook.
-    procedure UpdateAutoGeometry; override; // @addr $4B35CC
-    procedure Draw(ClipRect: TRect); override; // @addr $4B35D8
+    procedure ClearStars; // @addr $489B94
+    procedure GrowStars; // @addr $489BC0 Adds 64 zeroed entries.
+    function AllocateStar: PStarFieldImageGI; // @addr $489C0C
+    procedure CopyStarsFrom(Source: TStarFieldImgGI); // @addr $489C48 Copies particles only, not camera or timer state.
+    procedure InitializeStar(Star: PStarFieldImageGI); // @addr $489CA0
+    procedure AdvanceStars; // @addr $48A190
+    procedure RedirectStars; // @addr $48A27C
+    procedure AnimateStars(Timer: TCallbackTimerIdGI; UserData: Cardinal); // @addr $48A378
+    procedure SetViewPosition(Position: TPointF); // @addr $48A5DC
+    constructor Create(Owner: TObjectGI); // @addr $489AA8
+    destructor Destroy; override; // @addr $489B4C
+    procedure SeedStars; // @addr $48A12C Clears/reseeds the animated image stars and advances 201 warm-up steps.
+    procedure Invalidate; override; // @addr $48A6F4
+    procedure OnActivate; override; // @addr $48A758
+    procedure OnDeactivate; override; // @addr $48A7A0
+    procedure LoadFromConfigPath(const Path: WideString); override; // @addr $48A7C8
+    procedure LoadFromBlock(Block: TBlockParEC); override; // @addr $48A7F4
+    procedure ApplyStarConfig(Block: TBlockParEC); // @addr $48A810 Native empty extension hook.
+    procedure UpdateAutoGeometry; override; // @addr $48A814
+    procedure Draw(ClipRect: TRect); override; // @addr $48A818
   end;
 
 implementation
@@ -64,29 +63,29 @@ implementation
 uses EC_Mem, EC_CacheGAI, GlobalsV, GR_Main, GR_Gi, GR_DX, Windows,
   Direct3D9, aMyFunction, Math;
 
-{ @routine $4B259C TStarFieldImgGI_Create }
+{ @routine $489AA8 TStarFieldImgGI_Create }
 constructor TStarFieldImgGI.Create(Owner: TObjectGI);
 begin
   inherited Create(Owner);
   ReservedDirty := True;
-  FocusPoint := MakePointF(Cardinal(GameScreenWidth) / 2, Cardinal(GameScreenHeight) / 2);
+  FocusPoint := MakePointF(GameScreenWidth / 2, GameScreenHeight / 2);
 end;
-{ @end $4B259C }
+{ @end $489AA8 }
 
-{ @routine $4B264C TStarFieldImgGI_Destroy }
+{ @routine $489B4C TStarFieldImgGI_Destroy }
 destructor TStarFieldImgGI.Destroy;
 begin
-  if AnimationTimer <> nil then
+  if AnimationTimer <> 0 then
   begin
     MessageLoop.CancelCallbackTimer(AnimationTimer);
-    AnimationTimer := nil;
+    AnimationTimer := 0;
   end;
   ClearStars;
   inherited Destroy;
 end;
-{ @end $4B264C }
+{ @end $489B4C }
 
-{ @routine $4B26B0 TStarFieldImgGI_ClearStars }
+{ @routine $489B94 TStarFieldImgGI_ClearStars }
 procedure TStarFieldImgGI.ClearStars;
 begin
   if Stars <> nil then
@@ -97,29 +96,31 @@ begin
   StarCount := 0;
   Capacity := 0;
 end;
-{ @end $4B26B0 }
+{ @end $489B94 }
 
-{ @routine $4B26F8 TStarFieldImgGI_GrowStars }
+{ @routine $489BC0 TStarFieldImgGI_GrowStars }
 procedure TStarFieldImgGI.GrowStars;
+const
+  GrowthCount = 64;
 var Tail: Pointer;
 begin
-  Inc(Capacity, 64);
+  Inc(Capacity, GrowthCount);
   Stars := ReAllocREC(Stars, SizeOf(TStarFieldImageGI) * Capacity);
-  Tail := AddPointerOffset(Stars, SizeOf(TStarFieldImageGI) * (Capacity - 64));
-  FillChar(Tail^, SizeOf(TStarFieldImageGI) * 64, 0);
+  Tail := AddPointerOffset(Stars, SizeOf(TStarFieldImageGI) * (Capacity - GrowthCount));
+  FillChar(Tail^, SizeOf(TStarFieldImageGI) * GrowthCount, 0);
 end;
-{ @end $4B26F8 }
+{ @end $489BC0 }
 
-{ @routine $4B2764 TStarFieldImgGI_AllocateStar }
+{ @routine $489C0C TStarFieldImgGI_AllocateStar }
 function TStarFieldImgGI.AllocateStar: PStarFieldImageGI;
 begin
   Inc(StarCount);
   if StarCount > Capacity then GrowStars;
   Result := AddPointerOffset(Stars, SizeOf(TStarFieldImageGI) * (StarCount - 1));
 end;
-{ @end $4B2764 }
+{ @end $489C0C }
 
-{ @routine $4B27BC TStarFieldImgGI_CopyStarsFrom }
+{ @routine $489C48 TStarFieldImgGI_CopyStarsFrom }
 procedure TStarFieldImgGI.CopyStarsFrom(Source: TStarFieldImgGI);
 begin
   ClearStars;
@@ -131,9 +132,9 @@ begin
     CopyMemory(Stars, Source.Stars, SizeOf(TStarFieldImageGI) * StarCount);
   end;
 end;
-{ @end $4B27BC }
+{ @end $489C48 }
 
-{ @routine $4B2848 TStarFieldImgGI_InitializeStar }
+{ @routine $489CA0 TStarFieldImgGI_InitializeStar }
 procedure TStarFieldImgGI.InitializeStar(Star: PStarFieldImageGI);
 var
   Angle, DX, DY, Speed, Factor: Single;
@@ -143,19 +144,19 @@ var
 begin
   if RandomIntRange(0, 1) = 0 then
   begin
-    Star.Position.X := Random * (Cardinal(GameScreenWidth) - 1);
-    Star.Position.Y := Random * (Cardinal(GameScreenHeight) - 1);
+    Star.Position.X := Random * (GameScreenWidth - 1);
+    Star.Position.Y := Random * (GameScreenHeight - 1);
   end
   else
   begin
-    Star.Position.X := Random * (Cardinal(GameScreenWidth) - 1) * 0.5 + Cardinal(GameScreenWidth) * 0.25;
-    Star.Position.Y := Random * (Cardinal(GameScreenHeight) - 1) * 0.5 + Cardinal(GameScreenHeight) * 0.25;
+    Star.Position.X := GameScreenWidth * 0.25 + Random * (GameScreenWidth - 1) * 0.5;
+    Star.Position.Y := GameScreenHeight * 0.25 + Random * (GameScreenHeight - 1) * 0.5;
   end;
-  Outside := (FocusPoint.X < 0) or (FocusPoint.X >= Cardinal(GameScreenWidth)) or
-    (FocusPoint.Y < 0) or (FocusPoint.Y >= Cardinal(GameScreenHeight));
+  Outside := (FocusPoint.X < 0) or (FocusPoint.X >= GameScreenWidth) or
+    (FocusPoint.Y < 0) or (FocusPoint.Y >= GameScreenHeight);
   if Outside then
     if SegmentIntersectsRectEdges(MakePointF(Star.Position.X, Star.Position.Y), FocusPoint,
-      MakePointF(0, 0), MakePointF(Cardinal(GameScreenWidth) - 1, Cardinal(GameScreenHeight) - 1), Intersection) then
+      MakePointF(0, 0), MakePointF(GameScreenWidth - 1, GameScreenHeight - 1), Intersection) then
     begin
       Factor := Random * 0.5 + 0.5;
       Star.Position.X := (Intersection.X - Star.Position.X) * Factor + Star.Position.X;
@@ -191,15 +192,15 @@ begin
     TCGaiControlEC(StarFieldImageTemplates[Star.TemplateIndex].CacheControl).Release;
   end;
 end;
-{ @end $4B2848 }
+{ @end $489CA0 }
 
-{ @routine $4B2CF4 TStarFieldImgGI_SeedStars }
+{ @routine $48A12C TStarFieldImgGI_SeedStars }
 procedure TStarFieldImgGI.SeedStars;
 var I, Count: Integer; Star: PStarFieldImageGI;
 begin
   ClearStars;
   Count := 20;
-  if Cardinal(GameScreenHeight) < 768 then Count := Round(Count * 0.6103515625);
+  if GameScreenHeight < 768 then Count := Round(Count * 0.6103515625);
   for I := 0 to Count - 1 do
   begin
     Star := AllocateStar;
@@ -207,9 +208,9 @@ begin
   end;
   for I := 0 to 200 do AdvanceStars;
 end;
-{ @end $4B2CF4 }
+{ @end $48A12C }
 
-{ @routine $4B2D7C TStarFieldImgGI_AdvanceStars }
+{ @routine $48A190 TStarFieldImgGI_AdvanceStars }
 procedure TStarFieldImgGI.AdvanceStars;
 var Star: PStarFieldImageGI; I, X, Y: Integer;
 begin
@@ -231,35 +232,38 @@ begin
     Star := AddPointerOffset(Star, SizeOf(TStarFieldImageGI));
   end;
 end;
-{ @end $4B2D7C }
+{ @end $48A190 }
 
-{ @routine $4B2EE0 TStarFieldImgGI_RedirectStars }
+{ @routine $48A27C TStarFieldImgGI_RedirectStars }
 procedure TStarFieldImgGI.RedirectStars;
-var Star: PStarFieldImageGI; I: Integer; Distance, Speed, DY, DX: Single;
+var Star: PStarFieldImageGI; I: Integer; Distance, Speed: Single; Direction: TPointF;
 begin
-  Star := Stars;
-  for I := 0 to StarCount - 1 do
+  with Direction do
   begin
-    DX := Star.Position.X - FocusPoint.X;
-    DY := Star.Position.Y - FocusPoint.Y;
-    Distance := Sqrt(DX * DX + DY * DY);
-    DX := DX / Distance;
-    DY := DY / Distance;
-    Star.Direction.X := DX;
-    Star.Direction.Y := DY;
-    Speed := Sqrt(Star.Velocity.X * Star.Velocity.X + Star.Velocity.Y * Star.Velocity.Y);
-    Star.Velocity.X := Speed * DX;
-    Star.Velocity.Y := Speed * DY;
-    Speed := Sqrt(Star.Acceleration.X * Star.Acceleration.X + Star.Acceleration.Y * Star.Acceleration.Y);
-    Star.Acceleration.X := Speed * DX;
-    Star.Acceleration.Y := Speed * DY;
-    Star := AddPointerOffset(Star, SizeOf(TStarFieldImageGI));
+    Star := Stars;
+    for I := 0 to StarCount - 1 do
+    begin
+      X := Star.Position.X - FocusPoint.X;
+      Y := Star.Position.Y - FocusPoint.Y;
+      Distance := Sqrt(X * X + Y * Y);
+      X := X / Distance;
+      Y := Y / Distance;
+      Star.Direction.X := X;
+      Star.Direction.Y := Y;
+      Speed := Sqrt(Star.Velocity.X * Star.Velocity.X + Star.Velocity.Y * Star.Velocity.Y);
+      Star.Velocity.X := Speed * X;
+      Star.Velocity.Y := Speed * Y;
+      Speed := Sqrt(Star.Acceleration.X * Star.Acceleration.X + Star.Acceleration.Y * Star.Acceleration.Y);
+      Star.Acceleration.X := Speed * X;
+      Star.Acceleration.Y := Speed * Y;
+      Star := AddPointerOffset(Star, SizeOf(TStarFieldImageGI));
+    end;
   end;
 end;
-{ @end $4B2EE0 }
+{ @end $48A27C }
 
-{ @routine $4B3028 TStarFieldImgGI_AnimateStars }
-procedure TStarFieldImgGI.AnimateStars(Timer: PCallbackTimerGI; UserData: Integer);
+{ @routine $48A378 TStarFieldImgGI_AnimateStars }
+procedure TStarFieldImgGI.AnimateStars(Timer: TCallbackTimerIdGI; UserData: Cardinal);
 var Delta: Single;
 begin
   if StarCount > 0 then
@@ -283,19 +287,19 @@ begin
         CurrentFocusDistance := Max(TargetFocusDistance, CurrentFocusDistance - 150)
       else if TargetFocusDistance > CurrentFocusDistance then
         CurrentFocusDistance := Min(TargetFocusDistance, CurrentFocusDistance + 100);
-      FocusPoint.X := Sin(HeadingDegreesToRadians(CurrentHeading)) * CurrentFocusDistance + Cardinal(GameScreenWidth) / 2;
-      FocusPoint.Y := Cardinal(GameScreenHeight) / 2 - Cos(HeadingDegreesToRadians(CurrentHeading)) * CurrentFocusDistance;
+      FocusPoint.X := Sin(HeadingDegreesToRadians(CurrentHeading)) * CurrentFocusDistance + GameScreenWidth / 2;
+      FocusPoint.Y := GameScreenHeight / 2 - Cos(HeadingDegreesToRadians(CurrentHeading)) * CurrentFocusDistance;
       RedirectStars;
     end;
     AdvanceStars;
     Invalidate;
   end;
 end;
-{ @end $4B3028 }
+{ @end $48A378 }
 
-{ @routine $4B32FC TStarFieldImgGI_SetViewPosition }
+{ @routine $48A5DC TStarFieldImgGI_SetViewPosition }
 procedure TStarFieldImgGI.SetViewPosition(Position: TPointF);
-var DY, DX: Single;
+var DX, DY: Single;
 begin
   DX := Position.X - ViewPosition.X;
   DY := Position.Y - ViewPosition.Y;
@@ -305,7 +309,7 @@ begin
     begin
       TargetHeading := RadiansToHeadingDegrees(ArcTan2(DX, -DY));
       if CurrentFocusDistance = 0 then CurrentFocusDistance := TargetFocusDistance;
-      if Cardinal(GameScreenHeight) >= 768 then TargetFocusDistance := 3000
+      if GameScreenHeight >= 768 then TargetFocusDistance := 3000
       else TargetFocusDistance := 2050;
       MotionTicks := 5;
       RedirectStars;
@@ -313,9 +317,9 @@ begin
     ViewPosition := Position;
   end;
 end;
-{ @end $4B32FC }
+{ @end $48A5DC }
 
-{ @routine $4B3428 TStarFieldImgGI_Invalidate }
+{ @routine $48A6F4 TStarFieldImgGI_Invalidate }
 procedure TStarFieldImgGI.Invalidate;
 var Star: PStarFieldImageGI; I: Integer; Bounds: TRect;
 begin
@@ -330,62 +334,62 @@ begin
     Star := AddPointerOffset(Star, SizeOf(TStarFieldImageGI));
   end;
 end;
-{ @end $4B3428 }
+{ @end $48A6F4 }
 
-{ @routine $4B34B8 TStarFieldImgGI_OnActivate }
+{ @routine $48A758 TStarFieldImgGI_OnActivate }
 procedure TStarFieldImgGI.OnActivate;
 begin
   inherited OnActivate;
-  if AnimationTimer <> nil then
+  if AnimationTimer <> 0 then
   begin
     MessageLoop.CancelCallbackTimer(AnimationTimer);
-    AnimationTimer := nil;
+    AnimationTimer := 0;
   end;
   AnimationTimer := MessageLoop.ScheduleCallbackTimer(50, 50, AnimateStars);
 end;
-{ @end $4B34B8 }
+{ @end $48A758 }
 
-{ @routine $4B3520 TStarFieldImgGI_OnDeactivate }
+{ @routine $48A7A0 TStarFieldImgGI_OnDeactivate }
 procedure TStarFieldImgGI.OnDeactivate;
 begin
-  if AnimationTimer <> nil then
+  if AnimationTimer <> 0 then
   begin
     MessageLoop.CancelCallbackTimer(AnimationTimer);
-    AnimationTimer := nil;
+    AnimationTimer := 0;
   end;
   inherited OnDeactivate;
 end;
-{ @end $4B3520 }
+{ @end $48A7A0 }
 
-{ @routine $4B3560 TStarFieldImgGI_LoadFromConfigPath }
+{ @routine $48A7C8 TStarFieldImgGI_LoadFromConfigPath }
 procedure TStarFieldImgGI.LoadFromConfigPath(const Path: WideString);
 begin
   inherited LoadFromConfigPath(Path);
   ApplyStarConfig(UiStyleConfig.GetBlockByPath(Path));
 end;
-{ @end $4B3560 }
+{ @end $48A7C8 }
 
-{ @routine $4B3594 TStarFieldImgGI_LoadFromBlock }
+{ @routine $48A7F4 TStarFieldImgGI_LoadFromBlock }
 procedure TStarFieldImgGI.LoadFromBlock(Block: TBlockParEC);
 begin
   inherited LoadFromBlock(Block);
   ApplyStarConfig(Block);
 end;
-{ @end $4B3594 }
+{ @end $48A7F4 }
 
-{ @routine $4B35BC TStarFieldImgGI_ApplyStarConfig }
+{ @routine $48A810 TStarFieldImgGI_ApplyStarConfig }
 procedure TStarFieldImgGI.ApplyStarConfig(Block: TBlockParEC);
 begin
 end;
-{ @end $4B35BC }
+{ @end $48A810 }
 
-{ @routine $4B35CC TStarFieldImgGI_UpdateAutoGeometry }
+{ @routine $48A814 TStarFieldImgGI_UpdateAutoGeometry }
 procedure TStarFieldImgGI.UpdateAutoGeometry;
 begin
 end;
-{ @end $4B35CC }
+{ @end $48A814 }
 
-{ @routine $4B35D8 TStarFieldImgGI_Draw }
+{ @routine $48A818 TStarFieldImgGI_Draw }
 procedure TStarFieldImgGI.Draw(ClipRect: TRect);
 var Star: PStarFieldImageGI; I: Integer; Data: TCGaiEC; Frame: TgiGR;
     Origin: TPoint; Bounds, Intersection: TRect;
@@ -429,6 +433,6 @@ begin
       end;
   end;
 end;
-{ @end $4B35D8 }
+{ @end $48A818 }
 
 end.

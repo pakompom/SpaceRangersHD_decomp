@@ -1,6 +1,4 @@
 unit EC_Data;
-// Unit bracket (inferred): .text 0x0083F760..0x00845C1C; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
-// Unit bracket (inferred): .itext 0x008779DC..0x008779EF; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -8,6 +6,7 @@ uses EC_BlockPar, EC_Buf, EC_File, EC_Struct, SyncObjs;
 
 type
   TDataEntryKind = (dekFile = 1, dekSubtree = 2); // @size 0x04
+
   TDataEC = class;
 
   TDataFileEC = class(TObjectEx) // @size 0x10
@@ -16,9 +15,9 @@ type
     Next: TDataFileEC; // @offset 0x08
     FileRef: TFileEC; // @offset 0x0C
 
-    constructor Create; // @addr 0x84483C
-    destructor Destroy; override; // @addr 0x844890
-    procedure Clear; // @addr 0x8448D4 @note "Empty in this binary."
+    constructor Create; // @addr 0x004D13EC
+    destructor Destroy; override; // @addr 0x004D1430
+    procedure Clear; // @addr 0x004D1464 @note "Empty in this binary."
   end;
   PDataFileEC = ^TDataFileEC;
 
@@ -33,11 +32,10 @@ type
     FileOffset: Cardinal; // @offset 0x1C
     ByteCount: Integer; // @offset 0x20
 
-    constructor Create; // @addr 0x8448E0
-    destructor Destroy; override; // @addr 0x844924
-    procedure ClearChildData; // @addr 0x844960
+    constructor Create; // @addr 0x004D1468
+    destructor Destroy; override; // @addr 0x004D14A0
+    procedure ClearChildData; // @addr 0x004D14CC
   end;
-  PDataElEC = ^TDataElEC;
 
   TDataEC = class(TObjectEx) // @size 0x2C
   public
@@ -53,31 +51,30 @@ type
     IndexedEntries: array of TDataElEC; // @offset 0x24
     IndexedEntryCount: Integer; // @offset 0x28
 
-    constructor Create; // @addr 0x844988
-    destructor Destroy; override; // @addr 0x8449F4
-    function IsEmpty: Boolean; // @addr 0x844A38
-    procedure Clear; // @addr 0x844A54 @note "Frees owned files; linked-list head/tail fields remain unchanged."
-    function AddEntry(EntryKind: TDataEntryKind): TDataElEC; // @addr 0x844AFC @note "Caller must update the index. Child subtrees share the interned-file list."
-    function FindIndexedEntry(const Name: WideString): TDataElEC; // @addr 0x844BB4 @note "Returns nil when absent."
-    function FindInsertionIndex(Entry: TDataElEC): Integer; // @addr 0x844C5C
-    procedure InsertIntoIndex(Entry: TDataElEC); // @addr 0x844D14
-    procedure RebuildIndex; // @addr 0x844DBC
-    function InternFileName(const FileName: WideString): TDataFileEC; // @addr 0x844E18
-    function FindEntry(const Name: WideString): TDataElEC; // @addr 0x844F14
-    function FindEntryByPath(const Path: WideString): TDataElEC; // @addr 0x844FCC @note "Accepts dot, slash and backslash separators; returns nil when absent or an intermediate entry is not a subtree."
-    procedure ReadEntryBuffer(Entry: TDataElEC; Dest: TBufEC); // @addr 0x845080 @note "Requires a file entry. Negative ByteCount uses file size minus FileOffset; zero FileOffset skips seeking."
-    function GetData(const Name: WideString): TDataEC; // @addr 0x845154 @note "Raises when Name is absent or is not a subtree."
-    procedure ReadBufferByPath(const Path: WideString; Dest: TBufEC); // @addr 0x84522C @note "Raises when Path is absent or is not a file entry."
-    function FileExistsByPath(const Path: WideString): Boolean; // @addr 0x845310
-    procedure AddMissingFromBlock(Block: TBlockParEC); // @addr 0x84538C @note "Adds only absent names; existing subtrees are not merged recursively."
-    procedure WriteToBlock(Block: TBlockParEC); // @addr 0x845508
-    procedure MergeFrom(Source: TDataEC); // @addr 0x8455C0 @note "Different-kind name matches are skipped."
-    procedure LoadFromDecodedBuffer(Buf: TBufEC); // @addr 0x8456AC @note "Replaces existing contents; trusts index order from the stream."
-    procedure LoadFromEncryptedDatFile(const FileName: WideString); // @addr 0x8457DC @note "An inner checksum mismatch leaves the tree unchanged."
+    constructor Create; // @addr 0x004D14E4
+    destructor Destroy; override; // @addr 0x004D1534
+    function IsEmpty: Boolean; // @addr 0x004D1568
+    procedure Clear; // @addr 0x004D1570 @note "Frees owned files; linked-list head/tail fields remain unchanged."
+    function AddEntry(EntryKind: TDataEntryKind): TDataElEC; // @addr 0x004D15D4 @note "Caller must update the index. Child subtrees share the interned-file list."
+    function FindIndexedEntry(const Name: WideString): TDataElEC; // @addr 0x004D1638 @note "Returns nil when absent."
+    function FindInsertionIndex(Entry: TDataElEC): Integer; // @addr 0x004D16CC
+    procedure InsertIntoIndex(Entry: TDataElEC); // @addr 0x004D1760
+    procedure RebuildIndex; // @addr 0x004D17C8
+    function InternFileName(const FileName: WideString): TDataFileEC; // @addr 0x004D1804
+    function FindEntry(const Name: WideString): TDataElEC; // @addr 0x004D18BC
+    function FindEntryByPath(const Path: WideString): TDataElEC; // @addr 0x004D1934 @note "Accepts dot, slash and backslash separators; returns nil when absent or an intermediate entry is not a subtree."
+    procedure ReadEntryBuffer(Entry: TDataElEC; Dest: TBufEC); // @addr 0x004D19D4 @note "Requires a file entry. Negative ByteCount uses file size minus FileOffset; zero FileOffset skips seeking."
+    function GetData(const Name: WideString): TDataEC; // @addr 0x004D1A9C @note "Raises when Name is absent or is not a subtree."
+    procedure ReadBufferByPath(const Path: WideString; Dest: TBufEC); // @addr 0x004D1B58 @note "Raises when Path is absent or is not a file entry."
+    function FileExistsByPath(const Path: WideString): Boolean; // @addr 0x004D1C28
+    procedure AddMissingFromBlock(Block: TBlockParEC); // @addr 0x004D1C74 @note "Adds only absent names; existing subtrees are not merged recursively."
+    procedure WriteToBlock(Block: TBlockParEC); // @addr 0x004D1DB8
+    procedure MergeFrom(Source: TDataEC); // @addr 0x004D1E54 @note "Different-kind name matches are skipped."
+    procedure LoadFromDecodedBuffer(Buf: TBufEC); // @addr 0x004D1EE8 @note "Replaces existing contents; trusts index order from the stream."
+    procedure LoadFromEncryptedDatFile(const FileName: WideString); // @addr 0x004D1FE8 @note "An inner checksum mismatch leaves the tree unchanged."
   end;
 
 type
-  // Native record RTTI at $83F8CC.
   tclist = record // @size $0C
     NameCrc: Cardinal; // @offset $00
     FileCrc: Cardinal; // @offset $04
@@ -85,7 +82,7 @@ type
   end;
   TResourceChecksumTable = array[0..1023] of tclist;
 
-procedure VerifyResourceFileChecksum(const FileName: WideString); // @addr 0x845A18 @note "Checks only names present in the built-in checksum table; folds ASCII uppercase for lookup."
+procedure VerifyResourceFileChecksum(const FileName: WideString); // @addr 0x004D21F4 @note "Checks only names present in the built-in checksum table; folds ASCII uppercase for lookup."
 
 const
 
@@ -1116,69 +1113,67 @@ const
     (NameCrc: $00000000; FileCrc: $00000000; EncodedName: ''),
     (NameCrc: $00000000; FileCrc: $00000000; EncodedName: ''),
     (NameCrc: $00000000; FileCrc: $00000000; EncodedName: '')
-  ); // @addr $87F710
+  ); // @addr $80B740
 const
-  ResourceDatSeedKey: Cardinal = $EA8F3F37; // @addr $882710
-  ResourceDatCrcKey1: Cardinal = $7DB6C99D; // @addr $882714
-  ResourceDatCrcKey2: Cardinal = $C83FCBF3; // @addr $882718
+  ResourceDatSeedKey: Cardinal = $EA8F3F37; // @addr $80E740
+  ResourceDatCrcKey1: Cardinal = $7DB6C99D; // @addr $80E744
+  ResourceDatCrcKey2: Cardinal = $C83FCBF3; // @addr $80E748
 
 implementation
 
-// @unit-initialization $8779DC
-// @unit-finalization $845BD8
+// @unit-initialization $8067E8
+// @unit-finalization $4D235C
 
 uses EC_Str, Windows, SysUtils, GlobalsV, CrcUnit, GR_Main;
 
-{ @routine $84483C TDataFileEC_Create }
+{ @routine $4D13EC TDataFileEC_Create }
 constructor TDataFileEC.Create;
 begin
   inherited Create;
   FileRef := TFileEC.Create;
 end;
-{ @end $84483C }
+{ @end $4D13EC }
 
-{ @routine $844890 TDataFileEC_Destroy }
+{ @routine $4D1430 TDataFileEC_Destroy }
 destructor TDataFileEC.Destroy;
 begin
   Clear;
   FileRef.Free;
   inherited Destroy;
 end;
-{ @end $844890 }
+{ @end $4D1430 }
 
-{ @routine $8448D4 TDataFileEC_Clear }
+{ @routine $4D1464 TDataFileEC_Clear }
 procedure TDataFileEC.Clear;
 begin
 end;
-{ @end $8448D4 }
+{ @end $4D1464 }
 
-{ @routine $8448E0 TDataElEC_Create }
+{ @routine $4D1468 TDataElEC_Create }
 constructor TDataElEC.Create;
 begin
   inherited Create;
 end;
-{ @end $8448E0 }
+{ @end $4D1468 }
 
-{ @routine $844924 TDataElEC_Destroy }
+{ @routine $4D14A0 TDataElEC_Destroy }
 destructor TDataElEC.Destroy;
 begin
   ClearChildData;
   inherited Destroy;
 end;
-{ @end $844924 }
+{ @end $4D14A0 }
 
-{ @routine $844960 TDataElEC_ClearChildData }
+{ @routine $4D14CC TDataElEC_ClearChildData }
 procedure TDataElEC.ClearChildData;
 begin
-  if ChildData <> nil then
-  begin
-    ChildData.Free;
-    ChildData := nil;
-  end;
+  if ChildData = nil then Exit;
+  ChildData.Free;
+  ChildData := nil;
 end;
-{ @end $844960 }
+{ @end $4D14CC }
 
-{ @routine $844988 TDataEC_Create }
+{ @routine $4D14E4 TDataEC_Create }
 constructor TDataEC.Create;
 begin
   inherited Create;
@@ -1186,25 +1181,25 @@ begin
   InternedFileListHeadRef := @OwnedInternedFileListHead;
   InternedFileListTailRef := @OwnedInternedFileListTail;
 end;
-{ @end $844988 }
+{ @end $4D14E4 }
 
-{ @routine $8449F4 TDataEC_Destroy }
+{ @routine $4D1534 TDataEC_Destroy }
 destructor TDataEC.Destroy;
 begin
   Clear;
   FileLock.Free;
   inherited Destroy;
 end;
-{ @end $8449F4 }
+{ @end $4D1534 }
 
-{ @routine $844A38 TDataEC_IsEmpty }
+{ @routine $4D1568 TDataEC_IsEmpty }
 function TDataEC.IsEmpty: Boolean;
 begin
   Result := FirstEntry = nil;
 end;
-{ @end $844A38 }
+{ @end $4D1568 }
 
-{ @routine $844A54 TDataEC_Clear }
+{ @routine $4D1570 TDataEC_Clear }
 procedure TDataEC.Clear;
 var FileEntry, RemovedFile: TDataFileEC;
     Entry, RemovedEntry: TDataElEC;
@@ -1232,9 +1227,9 @@ begin
   IndexedEntries := nil;
   IndexedEntryCount := 0;
 end;
-{ @end $844A54 }
+{ @end $4D1570 }
 
-{ @routine $844AFC TDataEC_AddEntry }
+{ @routine $4D15D4 TDataEC_AddEntry }
 function TDataEC.AddEntry(EntryKind: TDataEntryKind): TDataElEC;
 var Entry: TDataElEC;
 begin
@@ -1245,8 +1240,9 @@ begin
   LastEntry := Entry;
   if FirstEntry = nil then FirstEntry := Entry;
   Entry.Kind := EntryKind;
-  if EntryKind <> dekFile then
-  begin
+  case EntryKind of
+    dekFile: ;
+  else
     Entry.ChildData := TDataEC.Create;
     Entry.ChildData.SharesInternedFileList := True;
     Entry.ChildData.InternedFileListHeadRef := InternedFileListHeadRef;
@@ -1254,51 +1250,67 @@ begin
   end;
   Result := Entry;
 end;
-{ @end $844AFC }
+{ @end $4D15D4 }
 
-{ @routine $844BB4 TDataEC_FindIndexedEntry }
+{ @routine $4D1638 TDataEC_FindIndexedEntry }
 function TDataEC.FindIndexedEntry(const Name: WideString): TDataElEC;
 var Lo, Hi, Mid, Order: Integer;
     Entry: TDataElEC;
 begin
   if IndexedEntryCount < 1 then
-  begin Result := nil; Exit end;
+  begin
+    Result := nil;
+    Exit;
+  end;
   Lo := 0;
   Hi := IndexedEntryCount - 1;
-  repeat
+  while True do
+  begin
     Mid := (Hi - Lo) div 2 + Lo;
     Entry := IndexedEntries[Mid];
     Order := CompareWideChars(PWideChar(Name), PWideChar(Entry.Name));
     if Order = 0 then
-    begin Result := Entry; Exit end;
-    if Order < 0 then Hi := Mid - 1 else Lo := Mid + 1;
-  until Hi < Lo;
+    begin
+      Result := Entry;
+      Exit;
+    end
+    else if Order < 0 then Hi := Mid - 1 else Lo := Mid + 1;
+    if Hi < Lo then Break;
+  end;
   Result := nil;
 end;
-{ @end $844BB4 }
+{ @end $4D1638 }
 
-{ @routine $844C5C TDataEC_FindInsertionIndex }
+{ @routine $4D16CC TDataEC_FindInsertionIndex }
 function TDataEC.FindInsertionIndex(Entry: TDataElEC): Integer;
 var Lo, Hi, Mid, Order: Integer;
     Existing: TDataElEC;
 begin
   if IndexedEntryCount <= 0 then
-  begin Result := 0; Exit end;
+  begin
+    Result := 0;
+    Exit;
+  end;
   Lo := 0;
   Hi := IndexedEntryCount - 1;
-  repeat
+  while True do
+  begin
     Mid := ((Hi - Lo) shr 1) + Lo;
     Existing := IndexedEntries[Mid];
     Order := CompareWideChars(PWideChar(Entry.Name), PWideChar(Existing.Name));
     if Order = 0 then
-    begin Result := Mid; Exit end;
+    begin
+      Result := Mid;
+      Exit;
+    end;
     if Order < 0 then Hi := Mid - 1 else Lo := Mid + 1;
-  until Hi < Lo;
+    if Hi < Lo then Break;
+  end;
   if Order < 0 then Result := Mid else Result := Mid + 1;
 end;
-{ @end $844C5C }
+{ @end $4D16CC }
 
-{ @routine $844D14 TDataEC_InsertIntoIndex }
+{ @routine $4D1760 TDataEC_InsertIntoIndex }
 procedure TDataEC.InsertIntoIndex(Entry: TDataElEC);
 var Index: Integer;
 begin
@@ -1316,9 +1328,9 @@ begin
     Inc(IndexedEntryCount);
   end;
 end;
-{ @end $844D14 }
+{ @end $4D1760 }
 
-{ @routine $844DBC TDataEC_RebuildIndex }
+{ @routine $4D17C8 TDataEC_RebuildIndex }
 procedure TDataEC.RebuildIndex;
 var Entry: TDataElEC;
 begin
@@ -1331,9 +1343,9 @@ begin
     Entry := Entry.Next;
   end;
 end;
-{ @end $844DBC }
+{ @end $4D17C8 }
 
-{ @routine $844E18 TDataEC_InternFileName }
+{ @routine $4D1804 TDataEC_InternFileName }
 function TDataEC.InternFileName(const FileName: WideString): TDataFileEC;
 var Entry: TDataFileEC;
 begin
@@ -1341,7 +1353,10 @@ begin
   while Entry <> nil do
   begin
     if Entry.FileRef.GetFileName = FileName then
-    begin Result := Entry; Exit end;
+    begin
+      Result := Entry;
+      Exit;
+    end;
     Entry := Entry.Next;
   end;
   Entry := TDataFileEC.Create;
@@ -1353,27 +1368,30 @@ begin
   Entry.FileRef.SetFileName(FileName);
   Result := Entry;
 end;
-{ @end $844E18 }
+{ @end $4D1804 }
 
-{ @routine $844F14 TDataEC_FindEntry }
+{ @routine $4D18BC TDataEC_FindEntry }
 function TDataEC.FindEntry(const Name: WideString): TDataElEC;
 begin
   Result := FindIndexedEntry(Name);
 end;
-{ @end $844F14 }
+{ @end $4D18BC }
 
-{ @routine $844FCC TDataEC_FindEntryByPath }
+{ @routine $4D1934 TDataEC_FindEntryByPath }
 function TDataEC.FindEntryByPath(const Path: WideString): TDataElEC;
 var Position, PathLength, PartStart, PartLength: Integer;
     Entry: TDataElEC;
     Data: TDataEC;
-  // @nested $844F38 NextDataPathComponent
-  function NextDataPathComponent: Boolean; // @addr 0x844F38 @ida "bool __cdecl $name(void *ParentFrame);" @note "Nested helper of TDataEC.FindEntryByPath; requires its parent stack frame."
+  // @nested $4D18C4 NextDataPathComponent
+  function NextDataPathComponent: Boolean; // @addr 0x004D18C4 @ida "bool __cdecl $name(void *ParentFrame);" @note "Nested helper of TDataEC.FindEntryByPath; requires its parent stack frame."
   var Ch: WideChar;
       i: Integer;
   begin
     if Position >= PathLength then
-    begin Result := False; Exit end;
+    begin
+      Result := False;
+      Exit;
+    end;
     PartStart := Position;
     i := PartStart;
     while PathLength > i do
@@ -1395,15 +1413,18 @@ begin
     Entry := Data.FindEntry(Copy(Path, PartStart + 1, PartLength));
     if Entry = nil then Break;
     if Position >= PathLength then
-    begin Result := Entry; Exit end;
+    begin
+      Result := Entry;
+      Exit;
+    end;
     if Entry.Kind <> dekSubtree then Break;
     Data := Entry.ChildData;
   end;
   Result := nil;
 end;
-{ @end $844FCC }
+{ @end $4D1934 }
 
-{ @routine $845080 TDataEC_ReadEntryBuffer }
+{ @routine $4D19D4 TDataEC_ReadEntryBuffer }
 procedure TDataEC.ReadEntryBuffer(Entry: TDataElEC; Dest: TBufEC);
 var Size: Integer;
 begin
@@ -1420,9 +1441,9 @@ begin
     FileLock.Leave;
   end;
 end;
-{ @end $845080 }
+{ @end $4D19D4 }
 
-{ @routine $845154 TDataEC_GetData }
+{ @routine $4D1A9C TDataEC_GetData }
 function TDataEC.GetData(const Name: WideString): TDataEC;
 var Entry: TDataElEC;
 begin
@@ -1431,9 +1452,9 @@ begin
     raise Exception.Create('TDataEC.GetData. name=' + Name);
   Result := Entry.ChildData;
 end;
-{ @end $845154 }
+{ @end $4D1A9C }
 
-{ @routine $84522C TDataEC_ReadBufferByPath }
+{ @routine $4D1B58 TDataEC_ReadBufferByPath }
 procedure TDataEC.ReadBufferByPath(const Path: WideString; Dest: TBufEC);
 var Entry: TDataElEC;
 begin
@@ -1442,41 +1463,47 @@ begin
     raise Exception.Create('TDataEC.PathGetBuf. path=' + Path);
   ReadEntryBuffer(Entry, Dest);
 end;
-{ @end $84522C }
+{ @end $4D1B58 }
 
-{ @routine $845310 TDataEC_FileExistsByPath }
+{ @routine $4D1C28 TDataEC_FileExistsByPath }
 function TDataEC.FileExistsByPath(const Path: WideString): Boolean;
 var Entry: TDataElEC;
 begin
   Entry := FindEntryByPath(Path);
   if (Entry = nil) or (Entry.Kind <> dekFile) then
-  begin Result := False; Exit end;
+  begin
+    Result := False;
+    Exit;
+  end;
   if (Entry.SharedFileRef <> nil) and (Entry.SharedFileRef.FileRef <> nil) and
      Entry.SharedFileRef.FileRef.TryAcquireReadHandle(False) then
     Entry.SharedFileRef.FileRef.ReleaseHandle
   else
-  begin Result := False; Exit end;
+  begin
+    Result := False;
+    Exit;
+  end;
   Result := True;
 end;
-{ @end $845310 }
+{ @end $4D1C28 }
 
-{ @routine $84538C TDataEC_AddMissingFromBlock }
+{ @routine $4D1C74 TDataEC_AddMissingFromBlock }
 procedure TDataEC.AddMissingFromBlock(Block: TBlockParEC);
 var Count, i: Integer;
     Kind: TBlockParKind;
     Entry: TDataElEC;
 begin
-  Count := Block.GetEntryCount;
+  Count := Block.Count;
   for i := 0 to Count - 1 do
   begin
-    Kind := Block.GetEntryKindByIndex(i);
-    if (Kind = bpkString) or (Kind = bpkBlock) then
-      if FindEntry(Block.GetEntryNameByIndex(i)) <> nil then Continue;
+    Kind := Block.EntryKinds[i];
+    if ((Kind = bpkString) or (Kind = bpkBlock)) and
+      (FindEntry(Block.EntryNames[i]) <> nil) then Continue;
     if Kind = bpkString then
     begin
       Entry := AddEntry(dekFile);
-      Entry.Name := Block.GetEntryNameByIndex(i);
-      Entry.SharedFileRef := InternFileName(Block.GetEntryStringByIndex(i));
+      Entry.Name := Block.EntryNames[i];
+      Entry.SharedFileRef := InternFileName(Block.EntryStrings[i]);
       Entry.FileOffset := 0;
       Entry.ByteCount := -1;
       InsertIntoIndex(Entry);
@@ -1484,15 +1511,15 @@ begin
     else if Kind = bpkBlock then
     begin
       Entry := AddEntry(dekSubtree);
-      Entry.Name := Block.GetEntryNameByIndex(i);
+      Entry.Name := Block.EntryNames[i];
       InsertIntoIndex(Entry);
-      Entry.ChildData.AddMissingFromBlock(Block.GetEntryBlockByIndex(i));
+      Entry.ChildData.AddMissingFromBlock(Block.EntryBlocks[i]);
     end;
   end;
 end;
-{ @end $84538C }
+{ @end $4D1C74 }
 
-{ @routine $845508 TDataEC_WriteToBlock }
+{ @routine $4D1DB8 TDataEC_WriteToBlock }
 procedure TDataEC.WriteToBlock(Block: TBlockParEC);
 var i: Integer;
     Entry: TDataElEC;
@@ -1505,9 +1532,9 @@ begin
     else Entry.ChildData.WriteToBlock(Block.AddChildBlock(Entry.Name));
   end;
 end;
-{ @end $845508 }
+{ @end $4D1DB8 }
 
-{ @routine $8455C0 TDataEC_MergeFrom }
+{ @routine $4D1E54 TDataEC_MergeFrom }
 procedure TDataEC.MergeFrom(Source: TDataEC);
 var Entry, Existing: TDataElEC;
 begin
@@ -1525,7 +1552,8 @@ begin
       Entry := Entry.Next;
       Continue;
     end;
-    if Integer(Entry.Kind) <> 0 then
+    // Zero remains a raw sentinel; only the named kinds have merge actions.
+    if Entry.Kind <> TDataEntryKind(0) then
       if Entry.Kind = dekFile then
       begin
         Existing.FileOffset := 0;
@@ -1537,9 +1565,9 @@ begin
   end;
   RebuildIndex;
 end;
-{ @end $8455C0 }
+{ @end $4D1E54 }
 
-{ @routine $8456AC TDataEC_LoadFromDecodedBuffer }
+{ @routine $4D1EE8 TDataEC_LoadFromDecodedBuffer }
 procedure TDataEC.LoadFromDecodedBuffer(Buf: TBufEC);
 var Entry: TDataElEC;
     i: Integer;
@@ -1560,9 +1588,9 @@ begin
     IndexedEntries[i] := Entry;
   end;
 end;
-{ @end $8456AC }
+{ @end $4D1EE8 }
 
-{ @routine $8457DC TDataEC_LoadFromEncryptedDatFile }
+{ @routine $4D1FE8 TDataEC_LoadFromEncryptedDatFile }
 procedure TDataEC.LoadFromEncryptedDatFile(const FileName: WideString);
 var
   Buf: TBufEC;
@@ -1584,7 +1612,7 @@ begin
     Buf := TBufEC.Create;
     Buf.SetSize(ByteCount + SizeOf(Crc));
     Position := FileObj.GetPointer;
-    FileObj.ReadBuffer(Pointer(PAnsiChar(Buf.Data) + SizeOf(Crc)), Buf.DataSize - SizeOf(Crc));
+    FileObj.ReadBuffer(PAnsiChar(Buf.Data) + SizeOf(Crc), Buf.DataSize - SizeOf(Crc));
     Crc := Buf.ComputeCrc32Range(SizeOf(Crc), Buf.DataSize) xor ResourceDatCrcKey1;
     PCardinal(Buf.Data)^ := Crc;
     Crc := Buf.ComputeCrc32 xor ResourceDatCrcKey2;
@@ -1610,9 +1638,9 @@ begin
   Buf.Free;
   FileObj.Free;
 end;
-{ @end $8457DC }
+{ @end $4D1FE8 }
 
-{ @routine $845A18 VerifyResourceFileChecksum }
+{ @routine $4D21F4 VerifyResourceFileChecksum }
 procedure VerifyResourceFileChecksum(const FileName: WideString);
 var LowerName: WideString;
     CharacterIndex, Index, NameLength, TableSize: Integer;
@@ -1657,6 +1685,6 @@ begin
     if Index >= TableSize then Index := 0;
   end;
 end;
-{ @end $845A18 }
+{ @end $4D21F4 }
 
 end.

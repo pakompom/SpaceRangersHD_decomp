@@ -1,5 +1,4 @@
 unit SE_Laser;
-// Unit bracket (inferred): .text 0x00823C00..0x008245C9; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -14,28 +13,28 @@ type
     SegmentSize: Integer; // @offset $5C Template RadiusUnit; used as sprite dimensions and beam spacing.
     Segments: TList; // @offset $60 Owned rotated image controls while attached.
     FrameIndex: Integer; // @offset $64
-    AnimationTimer: PCallbackTimerGI; // @offset $68
+    AnimationTimer: TCallbackTimerIdGI; // @offset $68
     ManualAnimation: Boolean; // @offset $6C
     EndPosition: TPointF; // @offset $70 Rebuilt endpoint after the final segment.
-    destructor Destroy; override; // @addr $823CB4
-    procedure AttachToSpace(ASpace: TSpaceSE); override; // @addr $823D04
-    procedure DetachFromSpace; override; // @addr $823D34
-    procedure SetPosition(APosition: TPointF); override; // @addr $823D5C
-    procedure RebuildSegments; // @addr $823D94
-    procedure ClearSegments; // @addr $824058
-    procedure UpdateSegmentImages; // @addr $8240D0
-    procedure StartAnimationTimer; // @addr $8241E0
-    procedure StopAnimationTimer; // @addr $824228
-    procedure AdvanceAnimationTimer(Timer: PCallbackTimerGI; UserData: Integer); // @addr $824258
-    procedure LoadTemplate(Block: TBlockParEC); override; // @addr $8242A0
-    procedure ApplyConfig(Block: TBlockParEC); override; // @addr $8243E4
-    procedure QueueImageLoad(PendingLoads: TList; Owner: TObjectGI); override; // @addr $8244DC
+    destructor Destroy; override; // @addr $7810C4
+    procedure AttachToSpace(ASpace: TSpaceSE); override; // @addr $7810FC
+    procedure DetachFromSpace; override; // @addr $781120
+    procedure SetPosition(APosition: TPointF); override; // @addr $781140
+    procedure RebuildSegments; // @addr $781170
+    procedure ClearSegments; // @addr $7813D0
+    procedure UpdateSegmentImages; // @addr $781424
+    procedure StartAnimationTimer; // @addr $7814F4
+    procedure StopAnimationTimer; // @addr $781528
+    procedure AdvanceAnimationTimer(Timer: TCallbackTimerIdGI; UserData: Cardinal); // @addr $781548
+    procedure LoadTemplate(Block: TBlockParEC); override; // @addr $781574
+    procedure ApplyConfig(Block: TBlockParEC); override; // @addr $781690
+    procedure QueueImageLoad(PendingLoads: TList; Owner: TObjectGI); override; // @addr $781780
   end;
 
 implementation
 
 uses Math, GI_Main, aMyFunction;
-{ @routine $823CB4 TLaserSE_Destroy }
+{ @routine $7810C4 TLaserSE_Destroy }
 destructor TLaserSE.Destroy;
 begin
   if FrameImages <> nil then
@@ -45,9 +44,9 @@ begin
   end;
   inherited Destroy;
 end;
-{ @end $823CB4 }
+{ @end $7810C4 }
 
-{ @routine $823D04 TLaserSE_AttachToSpace }
+{ @routine $7810FC TLaserSE_AttachToSpace }
 procedure TLaserSE.AttachToSpace(ASpace: TSpaceSE);
 begin
   if not IsAttachedToSpace then
@@ -56,9 +55,9 @@ begin
     RebuildSegments;
   end;
 end;
-{ @end $823D04 }
+{ @end $7810FC }
 
-{ @routine $823D34 TLaserSE_DetachFromSpace }
+{ @routine $781120 TLaserSE_DetachFromSpace }
 procedure TLaserSE.DetachFromSpace;
 begin
   if IsAttachedToSpace then
@@ -67,17 +66,17 @@ begin
     inherited DetachFromSpace;
   end;
 end;
-{ @end $823D34 }
+{ @end $781120 }
 
-{ @routine $823D5C TLaserSE_SetPosition }
+{ @routine $781140 TLaserSE_SetPosition }
 procedure TLaserSE.SetPosition(APosition: TPointF);
 begin
   inherited SetPosition(APosition);
   if IsAttachedToSpace then RebuildSegments;
 end;
-{ @end $823D5C }
+{ @end $781140 }
 
-{ @routine $823D94 TLaserSE_RebuildSegments }
+{ @routine $781170 TLaserSE_RebuildSegments }
 procedure TLaserSE.RebuildSegments;
 var
   Segment: TRotateImage2GI;
@@ -88,7 +87,7 @@ begin
   Angle := ArcTan2(TargetPosition.X - Position.X, -(TargetPosition.Y - Position.Y));
   AngleSin := Sin(Angle);
   AngleCos := Cos(Angle);
-  ImageAngle := Round(Angle / GamePi * 127) and $FF;
+  ImageAngle := Byte(Round(Angle / GamePi * 127));
   Distance := SegmentSize / 2;
   BeamLength := Sqrt(Sqr(TargetPosition.X - Position.X) + Sqr(TargetPosition.Y - Position.Y));
   Segments := TList.Create;
@@ -96,13 +95,13 @@ begin
   while Distance < BeamLength do
   begin
     Segment := TRotateImage2GI.Create(Space.MapPanel);
-    Segment.SetPositionModeW(True);
+    Segment.World := True;
     Segment.SetDepthByName(DepthExpression);
     EndPosition := MakePointF(AngleSin * Distance + Position.X, Position.Y - AngleCos * Distance);
-    Segment.SetPosition(TruncatePointF(EndPosition));
+    Segment.Pos := TruncatePointF(EndPosition);
     Segment.SetAngle(ImageAngle);
     Segment.SetAlpha(192);
-    Segment.SetImage(FrameImages.GetTextAt(0), Classes.Point(SegmentSize, SegmentSize), Classes.Point(SegmentSize div 2, SegmentSize div 2));
+    Segment.SetImage(FrameImages.Strings[0], Classes.Point(SegmentSize, SegmentSize), Classes.Point(SegmentSize div 2, SegmentSize div 2));
     Segments.Add(Segment);
     Distance := Distance + SegmentSize - 4;
   end;
@@ -113,9 +112,9 @@ begin
   UpdateSegmentImages;
   StartAnimationTimer;
 end;
-{ @end $823D94 }
+{ @end $781170 }
 
-{ @routine $824058 TLaserSE_ClearSegments }
+{ @routine $7813D0 TLaserSE_ClearSegments }
 procedure TLaserSE.ClearSegments;
 var
   Index: Integer;
@@ -127,64 +126,64 @@ begin
     for Index := 0 to Segments.Count - 1 do
     begin
       Segment := Segments[Index];
-      Segment.SetActive(False);
+      Segment.IsActive := False;
       Space.MapPanel.FreeOwnedChild(Segment);
     end;
     Segments.Free;
     { The native routine leaves the freed list pointer unchanged. }
   end;
 end;
-{ @end $824058 }
+{ @end $7813D0 }
 
-{ @routine $8240D0 TLaserSE_UpdateSegmentImages }
+{ @routine $781424 TLaserSE_UpdateSegmentImages }
 procedure TLaserSE.UpdateSegmentImages;
 var
   Index: Integer;
   Segment: TRotateImage2GI;
 begin
-  if (Segments <> nil) and (FrameIndex >= 0) and (FrameImages <> nil) and (FrameIndex < FrameImages.GetCount) then
+  if (Segments <> nil) and (FrameIndex >= 0) and (FrameImages <> nil) and (FrameIndex < FrameImages.Count) then
     for Index := 0 to Segments.Count - 1 do
     begin
       Segment := Segments[Index];
-      Segment.SetImage(FrameImages.GetTextAt(FrameIndex), Classes.Point(SegmentSize, SegmentSize), Classes.Point(SegmentSize div 2, SegmentSize div 2));
+      Segment.SetImage(FrameImages.Strings[FrameIndex], Classes.Point(SegmentSize, SegmentSize), Classes.Point(SegmentSize div 2, SegmentSize div 2));
     end;
 end;
-{ @end $8240D0 }
+{ @end $781424 }
 
-{ @routine $8241E0 TLaserSE_StartAnimationTimer }
+{ @routine $7814F4 TLaserSE_StartAnimationTimer }
 procedure TLaserSE.StartAnimationTimer;
 begin
   StopAnimationTimer;
   if not ManualAnimation then
     AnimationTimer := Space.Screen.ScheduleCallbackTimer(FrameInterval, FrameInterval, AdvanceAnimationTimer);
 end;
-{ @end $8241E0 }
+{ @end $7814F4 }
 
-{ @routine $824228 TLaserSE_StopAnimationTimer }
+{ @routine $781528 TLaserSE_StopAnimationTimer }
 procedure TLaserSE.StopAnimationTimer;
 begin
-  if AnimationTimer <> nil then
+  if AnimationTimer <> 0 then
   begin
     Space.Screen.CancelCallbackTimer(AnimationTimer);
-    AnimationTimer := nil;
+    AnimationTimer := 0;
   end;
 end;
-{ @end $824228 }
+{ @end $781528 }
 
-{ @routine $824258 TLaserSE_AdvanceAnimationTimer }
-procedure TLaserSE.AdvanceAnimationTimer(Timer: PCallbackTimerGI; UserData: Integer);
+{ @routine $781548 TLaserSE_AdvanceAnimationTimer }
+procedure TLaserSE.AdvanceAnimationTimer(Timer: TCallbackTimerIdGI; UserData: Cardinal);
 begin
   Inc(FrameIndex);
-  if FrameIndex < FrameImages.GetCount then UpdateSegmentImages
+  if FrameIndex < FrameImages.Count then UpdateSegmentImages
   else
   begin
     FrameIndex := 0;
     UpdateSegmentImages;
   end;
 end;
-{ @end $824258 }
+{ @end $781548 }
 
-{ @routine $8242A0 TLaserSE_LoadTemplate }
+{ @routine $781574 TLaserSE_LoadTemplate }
 procedure TLaserSE.LoadTemplate(Block: TBlockParEC);
 var
   Index: Integer;
@@ -205,32 +204,32 @@ begin
   end;
   SegmentSize := ExtractDigitsToIntW(Block.GetParam('RadiusUnit'));
 end;
-{ @end $8242A0 }
+{ @end $781574 }
 
-{ @routine $8243E4 TLaserSE_ApplyConfig }
+{ @routine $781690 TLaserSE_ApplyConfig }
 procedure TLaserSE.ApplyConfig(Block: TBlockParEC);
 begin
   inherited ApplyConfig(Block);
   if Block.CountParams('PosDes') > 0 then TargetPosition := PointToPointF(GetPointGI(Block.GetParam('PosDes')));
   if Block.CountParams('ManualAnim') > 0 then ManualAnimation := ParseEnabledNameGI(Block.GetParam('ManualAnim'));
 end;
-{ @end $8243E4 }
+{ @end $781690 }
 
-{ @routine $8244DC TLaserSE_QueueImageLoad }
+{ @routine $781780 TLaserSE_QueueImageLoad }
 procedure TLaserSE.QueueImageLoad(PendingLoads: TList; Owner: TObjectGI);
 var
   Index, Count: Integer;
   Segment: TRotateImage2GI;
 begin
   Segment := TRotateImage2GI.Create(Owner);
-  Count := FrameImages.GetCount;
+  Count := FrameImages.Count;
   for Index := 0 to Count - 1 do
   begin
-    Segment.SetImage(FrameImages.GetTextAt(Index), Classes.Point(SegmentSize, SegmentSize), Classes.Point(SegmentSize div 2, SegmentSize div 2));
+    Segment.SetImage(FrameImages.Strings[Index], Classes.Point(SegmentSize, SegmentSize), Classes.Point(SegmentSize div 2, SegmentSize div 2));
     Segment.QueueImageLoad(PendingLoads);
   end;
   Segment.Free;
 end;
-{ @end $8244DC }
+{ @end $781780 }
 
 end.

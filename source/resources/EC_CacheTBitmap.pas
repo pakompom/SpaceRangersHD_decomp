@@ -1,5 +1,4 @@
 unit EC_CacheTBitmap;
-// Unit bracket (inferred): .text 0x004744FC..0x00474830; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -11,72 +10,70 @@ type
 
   TCTBitmapControlEC = class(TCacheControlEC) // @size 0x18
   public
-    procedure QueueLoadIfMissing(PendingLoads: TList); override; // @addr 0x4745D4
-    function CreateData: TCacheDataEC; override; // @addr 0x474658
-    function AcquireData: TCacheDataEC; override; // @addr 0x4746A4
+    procedure QueueLoadIfMissing(PendingLoads: TList); override; // @addr 0x0048B9D0
+    function CreateData: TCacheDataEC; override; // @addr 0x0048BA3C
+    function AcquireData: TCacheDataEC; override; // @addr 0x0048BA6C
   end;
   TCTBitmapEC = class(TCacheDataEC) // @size 0x2C
   public
     TransBuffer: Pointer; // @offset 0x20
     PixelSize: TPoint; // @offset $24  Native controls copy these dimensions as one point.
 
-    constructor Create; // @addr 0x4746C0
-    destructor Destroy; override; // @addr 0x474704
-    procedure LoadFromConfigBuffer(SourceBuffer: TBufEC; const LoadOption: WideString); override; // @addr 0x474754 @note "Applies LoadOption image operations before building the transparent buffer."
+    constructor Create; // @addr 0x0048BA74
+    destructor Destroy; override; // @addr 0x0048BAAC
+    procedure LoadFromConfigBuffer(SourceBuffer: TBufEC; const LoadOption: WideString); override; // @addr 0x0048BAE4 @note "Applies LoadOption image operations before building the transparent buffer."
   end;
 
-function AcquireCachedTransBitmap(Control: TCacheControlEC): TCTBitmapEC; // @addr 0x474678
+function AcquireCachedTransBitmap(Control: TCacheControlEC): TCTBitmapEC; // @addr 0x0048BA4C
 
 implementation
 
 uses SysUtils, EC_Str, GR_Main, GR_GraphBuf;
 
-{ @routine $4745D4 TCTBitmapControlEC_QueueLoadIfMissing }
+{ @routine $48B9D0 TCTBitmapControlEC_QueueLoadIfMissing }
 procedure TCTBitmapControlEC.QueueLoadIfMissing(PendingLoads: TList);
 var Control: TCTBitmapControlEC;
 begin
   if RetainCount > 0 then Exit;
   if BoundData <> nil then Exit;
   if HasEmptyCacheKey then Exit;
-  if GlobalCache.FindDataByKeyAndClass(CacheKey, TCTBitmapEC) = nil then
-  begin
-    Control := TCTBitmapControlEC.Create;
-    GlobalCache.ResetControl(Control);
-    Control.SetCacheKey(CacheKey);
-    PendingLoads.Add(Control);
-  end;
+  if GlobalCache.FindDataByKeyAndClass(CacheKey, TCTBitmapEC) <> nil then Exit;
+  Control := TCTBitmapControlEC.Create;
+  GlobalCache.ResetControl(Control);
+  Control.SetCacheKey(CacheKey);
+  PendingLoads.Add(Control);
 end;
-{ @end $4745D4 }
+{ @end $48B9D0 }
 
-{ @routine $474658 TCTBitmapControlEC_CreateData }
+{ @routine $48BA3C TCTBitmapControlEC_CreateData }
 function TCTBitmapControlEC.CreateData: TCacheDataEC;
 begin
   Result := TCTBitmapEC.Create;
 end;
-{ @end $474658 }
+{ @end $48BA3C }
 
-{ @routine $474678 AcquireCachedTransBitmap }
+{ @routine $48BA4C AcquireCachedTransBitmap }
 function AcquireCachedTransBitmap(Control: TCacheControlEC): TCTBitmapEC;
 begin
   Result := Control.AcquireDataFromConfig(TCTBitmapEC) as TCTBitmapEC;
 end;
-{ @end $474678 }
+{ @end $48BA4C }
 
-{ @routine $4746A4 TCTBitmapControlEC_AcquireData }
+{ @routine $48BA6C TCTBitmapControlEC_AcquireData }
 function TCTBitmapControlEC.AcquireData: TCacheDataEC;
 begin
   Result := AcquireCachedTransBitmap(Self);
 end;
-{ @end $4746A4 }
+{ @end $48BA6C }
 
-{ @routine $4746C0 TCTBitmapEC_Create }
+{ @routine $48BA74 TCTBitmapEC_Create }
 constructor TCTBitmapEC.Create;
 begin
   inherited Create;
 end;
-{ @end $4746C0 }
+{ @end $48BA74 }
 
-{ @routine $474704 TCTBitmapEC_Destroy }
+{ @routine $48BAAC TCTBitmapEC_Destroy }
 destructor TCTBitmapEC.Destroy;
 begin
   if TransBuffer <> nil then
@@ -86,9 +83,9 @@ begin
   end;
   inherited Destroy;
 end;
-{ @end $474704 }
+{ @end $48BAAC }
 
-{ @routine $474754 TCTBitmapEC_LoadFromConfigBuffer }
+{ @routine $48BAE4 TCTBitmapEC_LoadFromConfigBuffer }
 procedure TCTBitmapEC.LoadFromConfigBuffer(SourceBuffer: TBufEC; const LoadOption: WideString);
 var Bitmap: TGraphBufGR; ByteCount: Cardinal;
 begin
@@ -104,6 +101,6 @@ begin
   PixelSize.Y := Bitmap.Height;
   Bitmap.Free;
 end;
-{ @end $474754 }
+{ @end $48BAE4 }
 
 end.

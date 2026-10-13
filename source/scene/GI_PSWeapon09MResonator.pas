@@ -25,8 +25,8 @@ type
   TMResonatorAnimationPaths = array of TGAISet;
 
 var
-  MResonatorPalettes: array of TMResonatorPalette; // @addr $88AEC4
-  MResonatorAnimationPaths: array of TGAISet; // @addr $88AEC8
+  MResonatorPalettes: array of TMResonatorPalette; // @addr $81B1DC
+  MResonatorAnimationPaths: array of TGAISet; // @addr $81B1E0
 
 type
   TPSWeapon09MResonator = class;
@@ -45,15 +45,15 @@ type
     Unknown158: Byte; // @offset $158
     AnimationPath: WideString; // @offset $15C
 
-    constructor Create(Owner: TObjectGI; APaletteIndex: Integer); // @addr $690108
-    destructor Destroy; override; // @addr $6901F0
-    procedure Invalidate; override; // @addr $690250 @note "Native empty override."
-    procedure SetPosition(Position: TPoint); override; // @addr $69025C
-    procedure SetTargetPoint(Point: TPoint); override; // @addr $690298
-    procedure UpdateHitTestBounds; override; // @addr $6902E4
-    procedure ClearParticles; // @addr $690318
-    procedure Advance(Timer: PCallbackTimerGI; UserData: Integer); override; // @addr $690360
-    procedure Draw(ClipRect: TRect); override; // @addr $6908B8
+    constructor Create(Owner: TObjectGI; APaletteIndex: Integer); // @addr $4F4EAC
+    destructor Destroy; override; // @addr $4F4F70
+    procedure Invalidate; override; // @addr $4F4FB4 @note "Native empty override."
+    procedure SetPosition(Position: TPoint); override; // @addr $4F4FB8
+    procedure SetTargetPoint(Point: TPoint); override; // @addr $4F4FE4
+    procedure UpdateHitTestBounds; override; // @addr $4F5020
+    procedure ClearParticles; // @addr $4F5044
+    procedure Advance(Timer: TCallbackTimerIdGI; UserData: Cardinal); override; // @addr $4F5070
+    procedure Draw(ClipRect: TRect); override; // @addr $4F54B4
   end;
 
   TPSWeapon09BranchGI = class(TPSWeaponGI) // @size $148
@@ -66,29 +66,29 @@ type
     Unknown144: Byte; // @offset $144
     ParticleColor: Word; // @offset $146
 
-    constructor Create(Owner: TObjectGI; APaletteIndex: Integer); // @addr $68F71C
-    destructor Destroy; override; // @addr $68F7A0
-    procedure Invalidate; override; // @addr $68F7DC @note "Native empty override."
-    procedure SetPosition(Position: TPoint); override; // @addr $68F7E8
-    procedure SetTargetPoint(Point: TPoint); override; // @addr $68F824
-    procedure UpdateHitTestBounds; override; // @addr $68F870
-    procedure ClearParticles; // @addr $68F8A4
-    procedure GrowParticles; // @addr $68F8EC
-    function AddParticle: PMResonatorParticle; // @addr $68F924
-    procedure Advance(Timer: PCallbackTimerGI; UserData: Integer); override; // @addr $68F97C
-    procedure Draw(ClipRect: TRect); override; // @addr $68FE68
+    constructor Create(Owner: TObjectGI; APaletteIndex: Integer); // @addr $4F4650
+    destructor Destroy; override; // @addr $4F46B8
+    procedure Invalidate; override; // @addr $4F46E4 @note "Native empty override."
+    procedure SetPosition(Position: TPoint); override; // @addr $4F46E8
+    procedure SetTargetPoint(Point: TPoint); override; // @addr $4F4714
+    procedure UpdateHitTestBounds; override; // @addr $4F4750
+    procedure ClearParticles; // @addr $4F4774
+    procedure GrowParticles; // @addr $4F47A0
+    function AddParticle: PMResonatorParticle; // @addr $4F47C4
+    procedure Advance(Timer: TCallbackTimerIdGI; UserData: Cardinal); override; // @addr $4F47FC
+    procedure Draw(ClipRect: TRect); override; // @addr $4F4C58
   end;
 
-procedure LoadMResonatorPalettes; // @addr $690B58
+procedure LoadMResonatorPalettes; // @addr $4F5708
 
 implementation
 
-// @unit-initialization $877924
-// @unit-finalization $690E78
+// @unit-initialization $806854
+// @unit-finalization $4F59E0
 
 uses SysUtils, Classes, Math, EC_BlockPar, EC_Str, EC_Mem, GR_Main, GR_DX, aMyFunction, Globals;
 
-{ @routine $68F71C TPSWeapon09BranchGI_Create }
+{ @routine $4F4650 TPSWeapon09BranchGI_Create }
 constructor TPSWeapon09BranchGI.Create(Owner: TObjectGI; APaletteIndex: Integer);
 begin
   inherited Create(Owner);
@@ -97,39 +97,39 @@ begin
   Unknown144 := 20;
   ParticleColor := MResonatorPalettes[APaletteIndex][0];
 end;
-{ @end $68F71C }
+{ @end $4F4650 }
 
-{ @routine $68F7A0 TPSWeapon09BranchGI_Destroy }
+{ @routine $4F46B8 TPSWeapon09BranchGI_Destroy }
 destructor TPSWeapon09BranchGI.Destroy;
 begin
   ClearParticles;
   inherited Destroy;
 end;
-{ @end $68F7A0 }
+{ @end $4F46B8 }
 
-{ @routine $68F7DC TPSWeapon09BranchGI_Invalidate }
+{ @routine $4F46E4 TPSWeapon09BranchGI_Invalidate }
 procedure TPSWeapon09BranchGI.Invalidate;
 begin
 end;
-{ @end $68F7DC }
+{ @end $4F46E4 }
 
-{ @routine $68F7E8 TPSWeapon09BranchGI_SetPosition }
+{ @routine $4F46E8 TPSWeapon09BranchGI_SetPosition }
 procedure TPSWeapon09BranchGI.SetPosition(Position: TPoint);
 begin
   if (LocalPosition.X <> Position.X) or (LocalPosition.Y <> Position.Y) then
     inherited SetPosition(Position);
 end;
-{ @end $68F7E8 }
+{ @end $4F46E8 }
 
-{ @routine $68F824 TPSWeapon09BranchGI_SetTargetPoint }
+{ @routine $4F4714 TPSWeapon09BranchGI_SetTargetPoint }
 procedure TPSWeapon09BranchGI.SetTargetPoint(Point: TPoint);
 begin
   if (TargetPoint.X <> Point.X) or (TargetPoint.Y <> Point.Y) then
     TargetPoint := Point;
 end;
-{ @end $68F824 }
+{ @end $4F4714 }
 
-{ @routine $68F870 TPSWeapon09BranchGI_UpdateHitTestBounds }
+{ @routine $4F4750 TPSWeapon09BranchGI_UpdateHitTestBounds }
 procedure TPSWeapon09BranchGI.UpdateHitTestBounds;
 begin
   HitTestBounds.Left := 0;
@@ -137,9 +137,9 @@ begin
   HitTestBounds.Right := GameScreenWidth;
   HitTestBounds.Bottom := GameScreenHeight;
 end;
-{ @end $68F870 }
+{ @end $4F4750 }
 
-{ @routine $68F8A4 TPSWeapon09BranchGI_ClearParticles }
+{ @routine $4F4774 TPSWeapon09BranchGI_ClearParticles }
 procedure TPSWeapon09BranchGI.ClearParticles;
 begin
   if Particles <> nil then
@@ -150,27 +150,27 @@ begin
   ParticleCount := 0;
   ParticleCapacity := 0;
 end;
-{ @end $68F8A4 }
+{ @end $4F4774 }
 
-{ @routine $68F8EC TPSWeapon09BranchGI_GrowParticles }
+{ @routine $4F47A0 TPSWeapon09BranchGI_GrowParticles }
 procedure TPSWeapon09BranchGI.GrowParticles;
 begin
   Inc(ParticleCapacity, 100);
   Particles := ReAllocREC(Particles, ParticleCapacity * SizeOf(TMResonatorParticle));
 end;
-{ @end $68F8EC }
+{ @end $4F47A0 }
 
-{ @routine $68F924 TPSWeapon09BranchGI_AddParticle }
+{ @routine $4F47C4 TPSWeapon09BranchGI_AddParticle }
 function TPSWeapon09BranchGI.AddParticle: PMResonatorParticle;
 begin
   if ParticleCount >= ParticleCapacity then GrowParticles;
   Result := AddPointerOffset(Particles, ParticleCount * SizeOf(TMResonatorParticle));
   Inc(ParticleCount);
 end;
-{ @end $68F924 }
+{ @end $4F47C4 }
 
-{ @routine $68F97C TPSWeapon09BranchGI_Advance }
-procedure TPSWeapon09BranchGI.Advance(Timer: PCallbackTimerGI; UserData: Integer);
+{ @routine $4F47FC TPSWeapon09BranchGI_Advance }
+procedure TPSWeapon09BranchGI.Advance(Timer: TCallbackTimerIdGI; UserData: Cardinal);
 var
   Particle: PMResonatorParticle;
   J, I, K: Integer;
@@ -192,14 +192,46 @@ begin
           Particle := AddParticle;
           Particle.Kind := 1;
           case K of
-            0: begin Particle.Position.X := J + PX; Particle.Position.Y := J + PY; end;
-            1: begin Particle.Position.X := J + PX; Particle.Position.Y := PY - J; end;
-            2: begin Particle.Position.X := PX - J; Particle.Position.Y := J + PY; end;
-            3: begin Particle.Position.X := PX - J; Particle.Position.Y := PY - J; end;
-            4: begin Particle.Position.X := J + PX + 1.0; Particle.Position.Y := J + PY; end;
-            5: begin Particle.Position.X := J + PX + 1.0; Particle.Position.Y := PY - J; end;
-            6: begin Particle.Position.X := PX - J + 1.0; Particle.Position.Y := J + PY; end;
-            7: begin Particle.Position.X := PX - J + 1.0; Particle.Position.Y := PY - J; end;
+            0:
+            begin
+              Particle.Position.X := J + PX;
+              Particle.Position.Y := J + PY;
+            end;
+            1:
+            begin
+              Particle.Position.X := J + PX;
+              Particle.Position.Y := PY - J;
+            end;
+            2:
+            begin
+              Particle.Position.X := PX - J;
+              Particle.Position.Y := J + PY;
+            end;
+            3:
+            begin
+              Particle.Position.X := PX - J;
+              Particle.Position.Y := PY - J;
+            end;
+            4:
+            begin
+              Particle.Position.X := J + PX + 1.0;
+              Particle.Position.Y := J + PY;
+            end;
+            5:
+            begin
+              Particle.Position.X := J + PX + 1.0;
+              Particle.Position.Y := PY - J;
+            end;
+            6:
+            begin
+              Particle.Position.X := PX - J + 1.0;
+              Particle.Position.Y := J + PY;
+            end;
+            7:
+            begin
+              Particle.Position.X := PX - J + 1.0;
+              Particle.Position.Y := PY - J;
+            end;
           end;
           Particle.Color := ParticleColor;
           Particle.Alpha := 0;
@@ -258,9 +290,9 @@ begin
     end;
   Dec(RemainingTicks);
 end;
-{ @end $68F97C }
+{ @end $4F47FC }
 
-{ @routine $68FE68 TPSWeapon09BranchGI_Draw }
+{ @routine $4F4C58 TPSWeapon09BranchGI_Draw }
 procedure TPSWeapon09BranchGI.Draw(ClipRect: TRect);
 var
   X, Y: Integer;
@@ -312,9 +344,9 @@ begin
     end;
   end;
 end;
-{ @end $68FE68 }
+{ @end $4F4C58 }
 
-{ @routine $690108 TPSWeapon09MResonator_Create }
+{ @routine $4F4EAC TPSWeapon09MResonator_Create }
 constructor TPSWeapon09MResonator.Create(Owner: TObjectGI; APaletteIndex: Integer);
 begin
   inherited Create(Owner);
@@ -326,9 +358,9 @@ begin
   Unknown158 := 20;
   AnimationPath := MResonatorAnimationPaths[APaletteIndex][0];
 end;
-{ @end $690108 }
+{ @end $4F4EAC }
 
-{ @routine $6901F0 TPSWeapon09MResonator_Destroy }
+{ @routine $4F4F70 TPSWeapon09MResonator_Destroy }
 destructor TPSWeapon09MResonator.Destroy;
 begin
   if Animation <> nil then
@@ -339,31 +371,31 @@ begin
   ClearParticles;
   inherited Destroy;
 end;
-{ @end $6901F0 }
+{ @end $4F4F70 }
 
-{ @routine $690250 TPSWeapon09MResonator_Invalidate }
+{ @routine $4F4FB4 TPSWeapon09MResonator_Invalidate }
 procedure TPSWeapon09MResonator.Invalidate;
 begin
 end;
-{ @end $690250 }
+{ @end $4F4FB4 }
 
-{ @routine $69025C TPSWeapon09MResonator_SetPosition }
+{ @routine $4F4FB8 TPSWeapon09MResonator_SetPosition }
 procedure TPSWeapon09MResonator.SetPosition(Position: TPoint);
 begin
   if (LocalPosition.X <> Position.X) or (LocalPosition.Y <> Position.Y) then
     inherited SetPosition(Position);
 end;
-{ @end $69025C }
+{ @end $4F4FB8 }
 
-{ @routine $690298 TPSWeapon09MResonator_SetTargetPoint }
+{ @routine $4F4FE4 TPSWeapon09MResonator_SetTargetPoint }
 procedure TPSWeapon09MResonator.SetTargetPoint(Point: TPoint);
 begin
   if (TargetPoint.X <> Point.X) or (TargetPoint.Y <> Point.Y) then
     TargetPoint := Point;
 end;
-{ @end $690298 }
+{ @end $4F4FE4 }
 
-{ @routine $6902E4 TPSWeapon09MResonator_UpdateHitTestBounds }
+{ @routine $4F5020 TPSWeapon09MResonator_UpdateHitTestBounds }
 procedure TPSWeapon09MResonator.UpdateHitTestBounds;
 begin
   HitTestBounds.Left := 0;
@@ -371,9 +403,9 @@ begin
   HitTestBounds.Right := GameScreenWidth;
   HitTestBounds.Bottom := GameScreenHeight;
 end;
-{ @end $6902E4 }
+{ @end $4F5020 }
 
-{ @routine $690318 TPSWeapon09MResonator_ClearParticles }
+{ @routine $4F5044 TPSWeapon09MResonator_ClearParticles }
 procedure TPSWeapon09MResonator.ClearParticles;
 begin
   if Particles <> nil then
@@ -384,10 +416,10 @@ begin
   ParticleCount := 0;
   ParticleCapacity := 0;
 end;
-{ @end $690318 }
+{ @end $4F5044 }
 
-{ @routine $690360 TPSWeapon09MResonator_Advance }
-procedure TPSWeapon09MResonator.Advance(Timer: PCallbackTimerGI; UserData: Integer);
+{ @routine $4F5070 TPSWeapon09MResonator_Advance }
+procedure TPSWeapon09MResonator.Advance(Timer: TCallbackTimerIdGI; UserData: Cardinal);
 var
   Particle: PMResonatorParticle;
   Count, I: Integer;
@@ -400,11 +432,11 @@ begin
     if Animation <> nil then Animation.Free;
     Animation := TgaiGI.Create(Parent);
     Animation.SetImagePath(AnimationPath);
-    Animation.SetSize(Animation.GetContentSize);
-    Animation.SetOrigin(HalfPoint(Animation.ClientSize));
+    Animation.ObjectSize := Animation.GetContentSize;
+    Animation.Sme := HalfPoint(Animation.ClientSize);
     Animation.SetDepthByName('Weapon');
-    Animation.SetPosition(TargetPoint);
-    Animation.SetPositionModeW(True);
+    Animation.Pos := TargetPoint;
+    Animation.World := True;
     Animation.LoadFrameSequenceFromText('[50,0-' + IntToStr(Animation.GetMainImageFrameCount - 1) + ']');
     Animation.SetSequenceFrame(0);
     Animation.StopAutoPlayback;
@@ -436,8 +468,8 @@ begin
       Cosine := Cos(Angle);
       PX := AnimationPosition.X;
       PY := AnimationPosition.Y * Scale;
-      Animation.SetPosition(Classes.Point(Round(PX * Cosine + PY * Sine) + LocalPosition.X,
-        Round(PX * Sine - PY * Cosine) + LocalPosition.Y));
+      Animation.Pos := Classes.Point(Round(PX * Cosine + PY * Sine) + LocalPosition.X,
+        Round(PX * Sine - PY * Cosine) + LocalPosition.Y);
     end
     else
     begin
@@ -449,7 +481,7 @@ begin
       else
       begin
         Animation.SetSequenceFrame(Animation.SequenceFrame + 1);
-        Animation.SetPosition(TargetPoint);
+        Animation.Pos := TargetPoint;
       end;
     end;
   end;
@@ -460,9 +492,9 @@ begin
     Animation := nil;
   end;
 end;
-{ @end $690360 }
+{ @end $4F5070 }
 
-{ @routine $6908B8 TPSWeapon09MResonator_Draw }
+{ @routine $4F54B4 TPSWeapon09MResonator_Draw }
 procedure TPSWeapon09MResonator.Draw(ClipRect: TRect);
 var
   X, Y: Integer;
@@ -514,9 +546,9 @@ begin
     end;
   end;
 end;
-{ @end $6908B8 }
+{ @end $4F54B4 }
 
-{ @routine $690B58 LoadMResonatorPalettes }
+{ @routine $4F5708 LoadMResonatorPalettes }
 procedure LoadMResonatorPalettes;
 var
   Block, PaletteBlock: TBlockParEC;
@@ -533,23 +565,21 @@ begin
   for Index := 0 to Count - 1 do
   begin
     Text := IntToStr(Index);
-    if Block.CountBlocks(Text) <> 0 then
-    begin
-      PaletteBlock := Block.GetBlockByPath(Text);
-      for ColorIndex := 0 to 0 do
-        if PaletteBlock.CountParams('Color' + IntToStr(ColorIndex)) > 0 then
-        begin
-          Text := PaletteBlock.GetParam('Color' + IntToStr(ColorIndex));
-          MResonatorPalettes[Index][ColorIndex] := CurrentPixelFormat.PackNormalizedRgb(
-            ExtractDecimalToSingleW(ExtractDelimitedPartW(Text, 0, ',')),
-            ExtractDecimalToSingleW(ExtractDelimitedPartW(Text, 1, ',')),
-            ExtractDecimalToSingleW(ExtractDelimitedPartW(Text, 2, ',')));
-        end;
-      if PaletteBlock.CountParams('GAI') > 0 then
-        MResonatorAnimationPaths[Index][0] := PaletteBlock.GetParam('GAI');
-    end;
+    if Block.CountBlocks(Text) = 0 then Continue;
+    PaletteBlock := Block.GetBlockByPath(Text);
+    for ColorIndex := Low(TMResonatorPalette) to High(TMResonatorPalette) do
+      if PaletteBlock.CountParams('Color' + IntToStr(ColorIndex)) > 0 then
+      begin
+        Text := PaletteBlock.GetParam('Color' + IntToStr(ColorIndex));
+        MResonatorPalettes[Index][ColorIndex] := CurrentPixelFormat.PackNormalizedRgb(
+          ExtractDecimalToSingleW(ExtractDelimitedPartW(Text, 0, ',')),
+          ExtractDecimalToSingleW(ExtractDelimitedPartW(Text, 1, ',')),
+          ExtractDecimalToSingleW(ExtractDelimitedPartW(Text, 2, ',')));
+      end;
+    if PaletteBlock.CountParams('GAI') > 0 then
+      MResonatorAnimationPaths[Index][0] := PaletteBlock.GetParam('GAI');
   end;
 end;
-{ @end $690B58 }
+{ @end $4F5708 }
 
 end.

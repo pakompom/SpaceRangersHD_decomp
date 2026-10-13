@@ -1,5 +1,4 @@
 unit Direct3D9;
-// Unit bracket (inferred): .text 0x0045EB60..0x0045EC7D; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -89,8 +88,7 @@ type
     Green: array[0..255] of Word; // @offset $200
     Blue: array[0..255] of Word; // @offset $400
   end;
-  // D3DPRESENT_PARAMETERS, Win32 SDK layout. Native storage at $88A194 is
-  // copied/cleared as 56 bytes at $4D0642/$4D065F and passed to CreateDevice.
+  // D3DPRESENT_PARAMETERS, 56-byte Win32 SDK layout passed to CreateDevice.
   // https://learn.microsoft.com/en-us/windows/win32/direct3d9/d3dpresent-parameters
   TD3DPresentParameters = record // @size $38
     BackBufferWidth: Cardinal; // @offset $00
@@ -310,17 +308,17 @@ const
 type
   TDirect3DCreate9 = function(SDKVersion: Cardinal): Pointer; stdcall;
 var
-  Direct3DCreate9: TDirect3DCreate9; // @addr $889E04 @note "Native DLL export returns an unowned COM interface pointer in EAX."
+  Direct3DCreate9: TDirect3DCreate9; // @addr $819E08 @note "Native DLL export returns an unowned COM interface pointer in EAX."
 
-function CreateDirect3D9(SDKVersion: Cardinal): IDirect3D9; stdcall; // @addr $45EC50 @ida "void __stdcall $name(IDirect3D9 **Result, unsigned int SDKVersion);" @note "Adopts the DLL's reference through an interface assignment followed by Release."
+function CreateDirect3D9(SDKVersion: Cardinal): IDirect3D9; stdcall; // @addr $45EF30 @ida "void __stdcall $name(IDirect3D9 **Result, unsigned int SDKVersion);" @note "Adopts the DLL's reference through an interface assignment followed by Release."
 
 implementation
 
-{ @routine $45EC50 CreateDirect3D9 }
+{ @routine $45EF30 CreateDirect3D9 }
 function CreateDirect3D9(SDKVersion: Cardinal): IDirect3D9; stdcall;
 begin
   Result := IDirect3D9(Direct3DCreate9(SDKVersion));
   if Result <> nil then Result._Release;
 end;
-{ @end $45EC50 }
+{ @end $45EF30 }
 end.

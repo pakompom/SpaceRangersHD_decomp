@@ -22,7 +22,7 @@ type
   TTretonPalettes = array of TTretonPalette;
 
 var
-  TretonPalettes: array of TTretonPalette; // @addr $88ACA4
+  TretonPalettes: array of TTretonPalette; // @addr $81B400
 
 type
   TPSWeapon05Treton = class(TPSWeaponGI) // @size $160
@@ -36,32 +36,32 @@ type
     LengthScale: Double; // @offset $150
     OriginalLength: Double; // @offset $158
 
-    constructor Create(Owner: TObjectGI; APaletteIndex: Integer); // @addr $68AFE8
-    destructor Destroy; override; // @addr $68B0AC
-    procedure SetColors(FirstColor, SecondColor: Word); // @addr $68B0E8
-    procedure SetPosition(Position: TPoint); override; // @addr $68B11C
-    procedure SetTargetPoint(Point: TPoint); override; // @addr $68B160
-    procedure UpdateProjectionBounds; // @addr $68B1B4
-    procedure UpdateHitTestBounds; override; // @addr $68B500
-    function GetLocalBounds: TRect; override; // @addr $68B560
-    function AddParticle: PTretonParticle; // @addr $68B5C4
-    procedure ClearParticles; // @addr $68B63C
-    procedure Invalidate; override; // @addr $68B690 @note "Native empty override."
-    procedure InvalidateRect(Rect: TRect); override; // @addr $68B69C
-    procedure Advance(Timer: PCallbackTimerGI; UserData: Integer); override; // @addr $68B768
-    procedure Draw(ClipRect: TRect); override; // @addr $68BCB0
+    constructor Create(Owner: TObjectGI; APaletteIndex: Integer); // @addr $4F8614
+    destructor Destroy; override; // @addr $4F86BC
+    procedure SetColors(FirstColor, SecondColor: Word); // @addr $4F86E8
+    procedure SetPosition(Position: TPoint); override; // @addr $4F86F8
+    procedure SetTargetPoint(Point: TPoint); override; // @addr $4F8730
+    procedure UpdateProjectionBounds; // @addr $4F8770
+    procedure UpdateHitTestBounds; override; // @addr $4F8AF0
+    function GetLocalBounds: TRect; override; // @addr $4F8B24
+    function AddParticle: PTretonParticle; // @addr $4F8B54
+    procedure ClearParticles; // @addr $4F8B94
+    procedure Invalidate; override; // @addr $4F8BC8 @note "Native empty override."
+    procedure InvalidateRect(Rect: TRect); override; // @addr $4F8BCC
+    procedure Advance(Timer: TCallbackTimerIdGI; UserData: Cardinal); override; // @addr $4F8C80
+    procedure Draw(ClipRect: TRect); override; // @addr $4F90DC
   end;
 
-procedure LoadTretonPalettes; // @addr $68BED0
+procedure LoadTretonPalettes; // @addr $4F92A4
 
 implementation
 
-// @unit-initialization $877904
-// @unit-finalization $68C194
+// @unit-initialization $806874
+// @unit-finalization $4F9528
 
 uses SysUtils, Math, EC_BlockPar, EC_Str, EC_Mem, GR_Main, GR_DX, aMyFunction, Globals;
 
-{ @routine $68AFE8 TPSWeapon05Treton_Create }
+{ @routine $4F8614 TPSWeapon05Treton_Create }
 constructor TPSWeapon05Treton.Create(Owner: TObjectGI; APaletteIndex: Integer);
 begin
   inherited Create(Owner);
@@ -73,25 +73,25 @@ begin
   UpdateProjectionBounds;
   SetColors(TretonPalettes[APaletteIndex][0], TretonPalettes[APaletteIndex][1]);
 end;
-{ @end $68AFE8 }
+{ @end $4F8614 }
 
-{ @routine $68B0AC TPSWeapon05Treton_Destroy }
+{ @routine $4F86BC TPSWeapon05Treton_Destroy }
 destructor TPSWeapon05Treton.Destroy;
 begin
   ClearParticles;
   inherited Destroy;
 end;
-{ @end $68B0AC }
+{ @end $4F86BC }
 
-{ @routine $68B0E8 TPSWeapon05Treton_SetColors }
+{ @routine $4F86E8 TPSWeapon05Treton_SetColors }
 procedure TPSWeapon05Treton.SetColors(FirstColor, SecondColor: Word);
 begin
   PrimaryColor := FirstColor;
   SecondaryColor := SecondColor;
 end;
-{ @end $68B0E8 }
+{ @end $4F86E8 }
 
-{ @routine $68B11C TPSWeapon05Treton_SetPosition }
+{ @routine $4F86F8 TPSWeapon05Treton_SetPosition }
 procedure TPSWeapon05Treton.SetPosition(Position: TPoint);
 begin
   if (LocalPosition.X <> Position.X) or (LocalPosition.Y <> Position.Y) then
@@ -100,9 +100,9 @@ begin
     UpdateProjectionBounds;
   end;
 end;
-{ @end $68B11C }
+{ @end $4F86F8 }
 
-{ @routine $68B160 TPSWeapon05Treton_SetTargetPoint }
+{ @routine $4F8730 TPSWeapon05Treton_SetTargetPoint }
 procedure TPSWeapon05Treton.SetTargetPoint(Point: TPoint);
 begin
   if (TargetPoint.X <> Point.X) or (TargetPoint.Y <> Point.Y) then
@@ -111,9 +111,9 @@ begin
     UpdateProjectionBounds;
   end;
 end;
-{ @end $68B160 }
+{ @end $4F8730 }
 
-{ @routine $68B1B4 TPSWeapon05Treton_UpdateProjectionBounds }
+{ @routine $4F8770 TPSWeapon05Treton_UpdateProjectionBounds }
 procedure TPSWeapon05Treton.UpdateProjectionBounds;
 var
   Angle, Sine, Cosine, Distance, A, B, C, D: Single;
@@ -139,9 +139,9 @@ begin
   ProjectionBounds.Top := Floor(Math.Min(Math.Min(Math.Min(A, B), C), D));
   ProjectionBounds.Bottom := Ceil(Math.Max(Math.Max(Math.Max(A, B), C), D));
 end;
-{ @end $68B1B4 }
+{ @end $4F8770 }
 
-{ @routine $68B500 TPSWeapon05Treton_UpdateHitTestBounds }
+{ @routine $4F8AF0 TPSWeapon05Treton_UpdateHitTestBounds }
 procedure TPSWeapon05Treton.UpdateHitTestBounds;
 begin
   HitTestBounds.Left := ProjectionBounds.Left + AbsolutePosition.X;
@@ -149,9 +149,9 @@ begin
   HitTestBounds.Right := ProjectionBounds.Right + AbsolutePosition.X;
   HitTestBounds.Bottom := ProjectionBounds.Bottom + AbsolutePosition.Y;
 end;
-{ @end $68B500 }
+{ @end $4F8AF0 }
 
-{ @routine $68B560 TPSWeapon05Treton_GetLocalBounds }
+{ @routine $4F8B24 TPSWeapon05Treton_GetLocalBounds }
 function TPSWeapon05Treton.GetLocalBounds: TRect;
 begin
   Result.Left := ProjectionBounds.Left + LocalPosition.X;
@@ -159,9 +159,9 @@ begin
   Result.Right := ProjectionBounds.Right + LocalPosition.X;
   Result.Bottom := ProjectionBounds.Bottom + LocalPosition.Y;
 end;
-{ @end $68B560 }
+{ @end $4F8B24 }
 
-{ @routine $68B5C4 TPSWeapon05Treton_AddParticle }
+{ @routine $4F8B54 TPSWeapon05Treton_AddParticle }
 function TPSWeapon05Treton.AddParticle: PTretonParticle;
 var
   Particle: PTretonParticle;
@@ -174,9 +174,9 @@ begin
   if FirstParticle = nil then FirstParticle := Particle;
   Result := Particle;
 end;
-{ @end $68B5C4 }
+{ @end $4F8B54 }
 
-{ @routine $68B63C TPSWeapon05Treton_ClearParticles }
+{ @routine $4F8B94 TPSWeapon05Treton_ClearParticles }
 procedure TPSWeapon05Treton.ClearParticles;
 var
   Particle, Current: PTretonParticle;
@@ -191,15 +191,15 @@ begin
   FirstParticle := nil;
   LastParticle := nil;
 end;
-{ @end $68B63C }
+{ @end $4F8B94 }
 
-{ @routine $68B690 TPSWeapon05Treton_Invalidate }
+{ @routine $4F8BC8 TPSWeapon05Treton_Invalidate }
 procedure TPSWeapon05Treton.Invalidate;
 begin
 end;
-{ @end $68B690 }
+{ @end $4F8BC8 }
 
-{ @routine $68B69C TPSWeapon05Treton_InvalidateRect }
+{ @routine $4F8BCC TPSWeapon05Treton_InvalidateRect }
 procedure TPSWeapon05Treton.InvalidateRect(Rect: TRect);
 var
   Target: TPoint;
@@ -214,10 +214,10 @@ begin
   if IntersectRects(Intersection, Rect, GameScreenRect) then
     MessageLoop.QueueUpdateRect(Intersection);
 end;
-{ @end $68B69C }
+{ @end $4F8BCC }
 
-{ @routine $68B768 TPSWeapon05Treton_Advance }
-procedure TPSWeapon05Treton.Advance(Timer: PCallbackTimerGI; UserData: Integer);
+{ @routine $4F8C80 TPSWeapon05Treton_Advance }
+procedure TPSWeapon05Treton.Advance(Timer: TCallbackTimerIdGI; UserData: Cardinal);
 var
   Y, I: Integer;
   Distance: Single;
@@ -299,9 +299,9 @@ begin
   end;
   Dec(RemainingTicks);
 end;
-{ @end $68B768 }
+{ @end $4F8C80 }
 
-{ @routine $68BCB0 TPSWeapon05Treton_Draw }
+{ @routine $4F90DC TPSWeapon05Treton_Draw }
 procedure TPSWeapon05Treton.Draw(ClipRect: TRect);
 var
   Angle, Sine, Cosine, PX, PY: Single;
@@ -347,9 +347,9 @@ begin
     end;
   end;
 end;
-{ @end $68BCB0 }
+{ @end $4F90DC }
 
-{ @routine $68BED0 LoadTretonPalettes }
+{ @routine $4F92A4 LoadTretonPalettes }
 procedure LoadTretonPalettes;
 var
   Block, PaletteBlock: TBlockParEC;
@@ -365,21 +365,19 @@ begin
   for Index := 0 to Count - 1 do
   begin
     Text := IntToStr(Index);
-    if Block.CountBlocks(Text) <> 0 then
-    begin
-      PaletteBlock := Block.GetBlockByPath(Text);
-      for ColorIndex := 0 to 1 do
-        if PaletteBlock.CountParams('Color' + IntToStr(ColorIndex)) > 0 then
-        begin
-          Text := PaletteBlock.GetParam('Color' + IntToStr(ColorIndex));
-          TretonPalettes[Index][ColorIndex] := CurrentPixelFormat.PackNormalizedRgb(
-            ExtractDecimalToSingleW(ExtractDelimitedPartW(Text, 0, ',')),
-            ExtractDecimalToSingleW(ExtractDelimitedPartW(Text, 1, ',')),
-            ExtractDecimalToSingleW(ExtractDelimitedPartW(Text, 2, ',')));
-        end;
-    end;
+    if Block.CountBlocks(Text) = 0 then Continue;
+    PaletteBlock := Block.GetBlockByPath(Text);
+    for ColorIndex := Low(TTretonPalette) to High(TTretonPalette) do
+      if PaletteBlock.CountParams('Color' + IntToStr(ColorIndex)) > 0 then
+      begin
+        Text := PaletteBlock.GetParam('Color' + IntToStr(ColorIndex));
+        TretonPalettes[Index][ColorIndex] := CurrentPixelFormat.PackNormalizedRgb(
+          ExtractDecimalToSingleW(ExtractDelimitedPartW(Text, 0, ',')),
+          ExtractDecimalToSingleW(ExtractDelimitedPartW(Text, 1, ',')),
+          ExtractDecimalToSingleW(ExtractDelimitedPartW(Text, 2, ',')));
+      end;
   end;
 end;
-{ @end $68BED0 }
+{ @end $4F92A4 }
 
 end.

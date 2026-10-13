@@ -1,5 +1,5 @@
 unit GI_PSWeapon06Phaser;
-// Native phaser class and routines: $68C200..$68D0A1. Palette finalizer: $68D0EC.
+// Phaser particles and configuration palette.
 
 interface
 
@@ -25,7 +25,7 @@ type
   TPhaserPalettes = array of TPhaserPalette;
 
 var
-  PhaserPalettes: array of TPhaserPalette; // @addr $88ACAC
+  PhaserPalettes: array of TPhaserPalette; // @addr $81B3F8
 
 type
   TPSWeapon06Phaser = class(TPSWeaponGI) // @size $144
@@ -36,30 +36,30 @@ type
     OriginalLength: Single; // @offset $13C
     PaletteIndex: Integer; // @offset $140
 
-    constructor Create(Owner: TObjectGI; APaletteIndex: Integer); // @addr $68C334
-    destructor Destroy; override; // @addr $68C3A4
-    procedure Invalidate; override; // @addr $68C3E0 @note "Native empty override."
-    procedure SetPosition(Position: TPoint); override; // @addr $68C3EC
-    procedure SetTargetPoint(Point: TPoint); override; // @addr $68C428
-    procedure UpdateHitTestBounds; override; // @addr $68C474
-    procedure ClearParticles; // @addr $68C4A8
-    procedure GrowParticles; // @addr $68C4F0
-    function AddParticle: PPhaserParticle; // @addr $68C5A4
-    procedure AdvanceWave; // @addr $68C65C
-    procedure Advance(Timer: PCallbackTimerGI; UserData: Integer); override; // @addr $68C86C
-    procedure Draw(ClipRect: TRect); override; // @addr $68CB9C
+    constructor Create(Owner: TObjectGI; APaletteIndex: Integer); // @addr $4F7984
+    destructor Destroy; override; // @addr $4F79DC
+    procedure Invalidate; override; // @addr $4F7A08 @note "Native empty override."
+    procedure SetPosition(Position: TPoint); override; // @addr $4F7A0C
+    procedure SetTargetPoint(Point: TPoint); override; // @addr $4F7A38
+    procedure UpdateHitTestBounds; override; // @addr $4F7A74
+    procedure ClearParticles; // @addr $4F7A98
+    procedure GrowParticles; // @addr $4F7AC4
+    function AddParticle: PPhaserParticle; // @addr $4F7B38
+    procedure AdvanceWave; // @addr $4F7BB0
+    procedure Advance(Timer: TCallbackTimerIdGI; UserData: Cardinal); override; // @addr $4F7D28
+    procedure Draw(ClipRect: TRect); override; // @addr $4F7FC4
   end;
 
-procedure LoadPhaserPalettes; // @addr $68CE74 @note "Loads SE.Weapon.5.Palettes; native visual numbering differs from the class name."
+procedure LoadPhaserPalettes; // @addr $4F8240 @note "Loads SE.Weapon.5.Palettes; native visual numbering differs from the class name."
 
 implementation
 
-// @unit-initialization $87790C
-// @unit-finalization $68D0EC
+// @unit-initialization $80686C
+// @unit-finalization $4F8474
 
 uses SysUtils, Math, EC_BlockPar, EC_Str, EC_Mem, GR_Main, GR_DX, aMyFunction, Globals;
 
-{ @routine $68C334 TPSWeapon06Phaser_Create }
+{ @routine $4F7984 TPSWeapon06Phaser_Create }
 constructor TPSWeapon06Phaser.Create(Owner: TObjectGI; APaletteIndex: Integer);
 begin
   inherited Create(Owner);
@@ -67,39 +67,39 @@ begin
   LifetimeTicks := 60;
   PaletteIndex := APaletteIndex;
 end;
-{ @end $68C334 }
+{ @end $4F7984 }
 
-{ @routine $68C3A4 TPSWeapon06Phaser_Destroy }
+{ @routine $4F79DC TPSWeapon06Phaser_Destroy }
 destructor TPSWeapon06Phaser.Destroy;
 begin
   ClearParticles;
   inherited Destroy;
 end;
-{ @end $68C3A4 }
+{ @end $4F79DC }
 
-{ @routine $68C3E0 TPSWeapon06Phaser_Invalidate }
+{ @routine $4F7A08 TPSWeapon06Phaser_Invalidate }
 procedure TPSWeapon06Phaser.Invalidate;
 begin
 end;
-{ @end $68C3E0 }
+{ @end $4F7A08 }
 
-{ @routine $68C3EC TPSWeapon06Phaser_SetPosition }
+{ @routine $4F7A0C TPSWeapon06Phaser_SetPosition }
 procedure TPSWeapon06Phaser.SetPosition(Position: TPoint);
 begin
   if (LocalPosition.X <> Position.X) or (LocalPosition.Y <> Position.Y) then
     inherited SetPosition(Position);
 end;
-{ @end $68C3EC }
+{ @end $4F7A0C }
 
-{ @routine $68C428 TPSWeapon06Phaser_SetTargetPoint }
+{ @routine $4F7A38 TPSWeapon06Phaser_SetTargetPoint }
 procedure TPSWeapon06Phaser.SetTargetPoint(Point: TPoint);
 begin
   if (TargetPoint.X <> Point.X) or (TargetPoint.Y <> Point.Y) then
     TargetPoint := Point;
 end;
-{ @end $68C428 }
+{ @end $4F7A38 }
 
-{ @routine $68C474 TPSWeapon06Phaser_UpdateHitTestBounds }
+{ @routine $4F7A74 TPSWeapon06Phaser_UpdateHitTestBounds }
 procedure TPSWeapon06Phaser.UpdateHitTestBounds;
 begin
   HitTestBounds.Left := 0;
@@ -107,9 +107,9 @@ begin
   HitTestBounds.Right := GameScreenWidth;
   HitTestBounds.Bottom := GameScreenHeight;
 end;
-{ @end $68C474 }
+{ @end $4F7A74 }
 
-{ @routine $68C4A8 TPSWeapon06Phaser_ClearParticles }
+{ @routine $4F7A98 TPSWeapon06Phaser_ClearParticles }
 procedure TPSWeapon06Phaser.ClearParticles;
 begin
   if Particles <> nil then
@@ -120,9 +120,9 @@ begin
   ParticleCount := 0;
   ParticleCapacity := 0;
 end;
-{ @end $68C4A8 }
+{ @end $4F7A98 }
 
-{ @routine $68C4F0 TPSWeapon06Phaser_GrowParticles }
+{ @routine $4F7AC4 TPSWeapon06Phaser_GrowParticles }
 procedure TPSWeapon06Phaser.GrowParticles;
 var
   Index: Integer;
@@ -142,9 +142,9 @@ begin
     Particle := Following;
   end;
 end;
-{ @end $68C4F0 }
+{ @end $4F7AC4 }
 
-{ @routine $68C5A4 TPSWeapon06Phaser_AddParticle }
+{ @routine $4F7B38 TPSWeapon06Phaser_AddParticle }
 function TPSWeapon06Phaser.AddParticle: PPhaserParticle;
 var
   Previous, Particle: PPhaserParticle;
@@ -159,9 +159,9 @@ begin
   Particle.Prev := Previous;
   if Previous <> nil then Previous.Next := Particle;
 end;
-{ @end $68C5A4 }
+{ @end $4F7B38 }
 
-{ @routine $68C65C TPSWeapon06Phaser_AdvanceWave }
+{ @routine $4F7BB0 TPSWeapon06Phaser_AdvanceWave }
 procedure TPSWeapon06Phaser.AdvanceWave;
 var
   Particle: PPhaserParticle;
@@ -208,10 +208,10 @@ begin
     Dec(Count);
   end;
 end;
-{ @end $68C65C }
+{ @end $4F7BB0 }
 
-{ @routine $68C86C TPSWeapon06Phaser_Advance }
-procedure TPSWeapon06Phaser.Advance(Timer: PCallbackTimerGI; UserData: Integer);
+{ @routine $4F7D28 TPSWeapon06Phaser_Advance }
+procedure TPSWeapon06Phaser.Advance(Timer: TCallbackTimerIdGI; UserData: Cardinal);
 var
   Particle: PPhaserParticle;
   Index, Step: Integer;
@@ -260,9 +260,9 @@ begin
   for Step := 1 to 6 do AdvanceWave;
   if RemainingTicks > 0 then Dec(RemainingTicks);
 end;
-{ @end $68C86C }
+{ @end $4F7D28 }
 
-{ @routine $68CB9C TPSWeapon06Phaser_Draw }
+{ @routine $4F7FC4 TPSWeapon06Phaser_Draw }
 procedure TPSWeapon06Phaser.Draw(ClipRect: TRect);
 var
   Particle: PPhaserParticle;
@@ -270,7 +270,7 @@ var
   PX, PY, Sine, Cosine, Angle, Scale: Single;
   Count: Integer;
 begin
-  if OriginalLength = 0 then Advance(nil, 0);
+  if OriginalLength = 0 then Advance(0, 0);
   Scale := Sqrt(Sqr(LocalPosition.X - TargetPoint.X) + Sqr(LocalPosition.Y - TargetPoint.Y)) / OriginalLength;
   PY := -(TargetPoint.Y - LocalPosition.Y);
   if PY = 0 then PY := 1;
@@ -316,9 +316,9 @@ begin
     end;
   end;
 end;
-{ @end $68CB9C }
+{ @end $4F7FC4 }
 
-{ @routine $68CE74 LoadPhaserPalettes }
+{ @routine $4F8240 LoadPhaserPalettes }
 procedure LoadPhaserPalettes;
 var
   Block, PaletteBlock: TBlockParEC;
@@ -347,6 +347,6 @@ begin
     end;
   end;
 end;
-{ @end $68CE74 }
+{ @end $4F8240 }
 
 end.

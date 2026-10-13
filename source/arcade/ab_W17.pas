@@ -1,6 +1,4 @@
 unit ab_W17;
-// Unit bracket (inferred): .text 0x004FAA00..0x004FB2A9; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
-// Native TabW17 projectile family: $4FAA68..$4FB2AA.
 
 interface
 
@@ -14,19 +12,19 @@ type
     Phase: Integer; // @offset $B8  0 parent, 1 parent explosion, 2 child, 3 child explosion.
     ExpireTick: Integer; // @offset $BC
     Partner: TabW17; // @offset $C0
-    constructor Create; // @addr $4FAA68
-    destructor Destroy; override; // @addr $4FAAF0
-    procedure Launch(Owner: TabObject; Amount: Integer); // @addr $4FAB64
-    procedure LaunchPartner(Other: TabW17; Owner: TabObject; Amount: Integer); // @addr $4FACB4
-    procedure Advance; override; // @addr $4FADF4
-    procedure UpdateVisuals; override; // @addr $4FB298
+    constructor Create; // @addr $54E478
+    destructor Destroy; override; // @addr $54E4E4
+    procedure Launch(Owner: TabObject; Amount: Integer); // @addr $54E534
+    procedure LaunchPartner(Other: TabW17; Owner: TabObject; Amount: Integer); // @addr $54E650
+    procedure Advance; override; // @addr $54E75C
+    procedure UpdateVisuals; override; // @addr $54EB34
   end;
 
 implementation
 
 uses ab_Ship, GlobalsV;
 
-{ @routine $4FAA68 TabW17_Create }
+{ @routine $54E478 TabW17_Create }
 constructor TabW17.Create;
 begin
   inherited Create;
@@ -36,9 +34,9 @@ begin
   CollisionRadius := 5;
   Collidable := False;
 end;
-{ @end $4FAA68 }
+{ @end $54E478 }
 
-{ @routine $4FAAF0 TabW17_Destroy }
+{ @routine $54E4E4 TabW17_Destroy }
 destructor TabW17.Destroy;
 begin
   if Image <> nil then
@@ -49,9 +47,9 @@ begin
   if Partner <> nil then Partner.Partner := nil;
   inherited Destroy;
 end;
-{ @end $4FAAF0 }
+{ @end $54E4E4 }
 
-{ @routine $4FAB64 TabW17_Launch }
+{ @routine $54E534 TabW17_Launch }
 procedure TabW17.Launch(Owner: TabObject; Amount: Integer);
 var
   Other: TabW17;
@@ -70,9 +68,9 @@ begin
   ab_Object_Add(Other);
   Other.LaunchPartner(Self, Owner, Amount);
 end;
-{ @end $4FAB64 }
+{ @end $54E534 }
 
-{ @routine $4FACB4 TabW17_LaunchPartner }
+{ @routine $54E650 TabW17_LaunchPartner }
 procedure TabW17.LaunchPartner(Other: TabW17; Owner: TabObject; Amount: Integer);
 begin
   SourceObject := Owner;
@@ -87,9 +85,9 @@ begin
   Image := ab_WorldImage_Create(MakeVector3D(0, 0, 0), 'GAI,Bm.AB.w17b_f', 'GAI,Bm.AB.w17b_s', False);
   ab_WorldImage_SetDepth(Image, HitFrontDepth, HitBackDepth);
 end;
-{ @end $4FACB4 }
+{ @end $54E650 }
 
-{ @routine $4FADF4 TabW17_Advance }
+{ @routine $54E75C TabW17_Advance }
 procedure TabW17.Advance;
 var
   Collision: TabObject;
@@ -113,7 +111,7 @@ begin
       if Partner <> nil then
       begin
         Partner.Velocity := Collision.Velocity;
-        Partner.State.BearingDegrees := Partner.BearingAndDistanceTo(Collision).BearingDeltaDegrees + Partner.State.BearingDegrees;
+        Partner.State.BearingDegrees := Partner.State.BearingDegrees + Partner.BearingAndDistanceTo(Collision).BearingDeltaDegrees;
         Partner.MaxSpeed := Partner.MaxSpeed * 1.5;
         Partner.Thrust := 2;
         Partner.Partner := nil;
@@ -152,13 +150,13 @@ begin
   end
   else if (Phase = 1) or (Phase = 3) then DeletionPending := Image.Finished;
 end;
-{ @end $4FADF4 }
+{ @end $54E75C }
 
-{ @routine $4FB298 TabW17_UpdateVisuals }
+{ @routine $54EB34 TabW17_UpdateVisuals }
 procedure TabW17.UpdateVisuals;
 begin
   inherited UpdateVisuals;
 end;
-{ @end $4FB298 }
+{ @end $54EB34 }
 
 end.

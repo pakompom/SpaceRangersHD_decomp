@@ -22,8 +22,8 @@ type
   TKafacitorPalettes = array of TKafacitorPalette;
 
 var
-  KafacitorPalettes: array of TKafacitorPalette; // @addr $88AF08
-  KafacitorAnimationPaths: array of TGAISet; // @addr $88AF0C
+  KafacitorPalettes: array of TKafacitorPalette; // @addr $81B198
+  KafacitorAnimationPaths: array of TGAISet; // @addr $81B19C
 
 type
   TPSWeapon17Kafacitor = class(TPSWeaponGI) // @size $160
@@ -37,30 +37,30 @@ type
     OriginalLength: Double; // @offset $150
     LengthScale: Double; // @offset $158
 
-    constructor Create(Owner: TObjectGI; APaletteIndex: Integer); // @addr $697868
-    destructor Destroy; override; // @addr $697920
-    procedure SetColors(Primary, Secondary: Word); // @addr $697954
-    procedure SetPosition(Position: TPoint); override; // @addr $697988
-    procedure SetTargetPoint(Point: TPoint); override; // @addr $6979CC
-    procedure UpdateProjectionBounds; // @addr $697A20
-    procedure UpdateHitTestBounds; override; // @addr $697D50
-    function GetLocalBounds: TRect; override; // @addr $697DB0
-    function AddParticle: PKafacitorParticle; // @addr $697E14
-    procedure InvalidateRect(Rect: TRect); override; // @addr $697E8C
-    procedure Advance(Timer: PCallbackTimerGI; UserData: Integer); override; // @addr $697F58
-    procedure Draw(ClipRect: TRect); override; // @addr $69846C
+    constructor Create(Owner: TObjectGI; APaletteIndex: Integer); // @addr $4EDB00
+    destructor Destroy; override; // @addr $4EDB9C
+    procedure SetColors(Primary, Secondary: Word); // @addr $4EDBC4
+    procedure SetPosition(Position: TPoint); override; // @addr $4EDBD4
+    procedure SetTargetPoint(Point: TPoint); override; // @addr $4EDC0C
+    procedure UpdateProjectionBounds; // @addr $4EDC4C
+    procedure UpdateHitTestBounds; override; // @addr $4EDFA8
+    function GetLocalBounds: TRect; override; // @addr $4EDFDC
+    function AddParticle: PKafacitorParticle; // @addr $4EE00C
+    procedure InvalidateRect(Rect: TRect); override; // @addr $4EE04C
+    procedure Advance(Timer: TCallbackTimerIdGI; UserData: Cardinal); override; // @addr $4EE100
+    procedure Draw(ClipRect: TRect); override; // @addr $4EE574
   end;
 
-procedure LoadKafacitorPalettes; // @addr $698684
+procedure LoadKafacitorPalettes; // @addr $4EE738
 
 implementation
 
-// @unit-initialization $87795C
-// @unit-finalization $6989A4
+// @unit-initialization $80681C
+// @unit-finalization $4EEA10
 
 uses GR_Rect, EC_Mem, GR_DX, Globals, aMyFunction, EC_BlockPar, GR_Main, EC_Str, GlobalsV, GR_GraphBuf, Math, SysUtils;
 
-{ @routine $697868 TPSWeapon17Kafacitor_Create }
+{ @routine $4EDB00 TPSWeapon17Kafacitor_Create }
 constructor TPSWeapon17Kafacitor.Create(Owner: TObjectGI; APaletteIndex: Integer);
 begin
   inherited Create(Owner);
@@ -71,25 +71,25 @@ begin
   UpdateProjectionBounds;
   SetColors(KafacitorPalettes[APaletteIndex][0], KafacitorPalettes[APaletteIndex][1]);
 end;
-{ @end $697868 }
+{ @end $4EDB00 }
 
-{ @routine $697920 TPSWeapon17Kafacitor_Destroy }
+{ @routine $4EDB9C TPSWeapon17Kafacitor_Destroy }
 destructor TPSWeapon17Kafacitor.Destroy;
 begin
   // Native destructor does not release the allocated particle list.
   inherited Destroy;
 end;
-{ @end $697920 }
+{ @end $4EDB9C }
 
-{ @routine $697954 TPSWeapon17Kafacitor_SetColors }
+{ @routine $4EDBC4 TPSWeapon17Kafacitor_SetColors }
 procedure TPSWeapon17Kafacitor.SetColors(Primary, Secondary: Word);
 begin
   PrimaryColor := Primary;
   SecondaryColor := Secondary;
 end;
-{ @end $697954 }
+{ @end $4EDBC4 }
 
-{ @routine $697988 TPSWeapon17Kafacitor_SetPosition }
+{ @routine $4EDBD4 TPSWeapon17Kafacitor_SetPosition }
 procedure TPSWeapon17Kafacitor.SetPosition(Position: TPoint);
 begin
   if (LocalPosition.X <> Position.X) or (LocalPosition.Y <> Position.Y) then
@@ -98,9 +98,9 @@ begin
     UpdateProjectionBounds;
   end;
 end;
-{ @end $697988 }
+{ @end $4EDBD4 }
 
-{ @routine $6979CC TPSWeapon17Kafacitor_SetTargetPoint }
+{ @routine $4EDC0C TPSWeapon17Kafacitor_SetTargetPoint }
 procedure TPSWeapon17Kafacitor.SetTargetPoint(Point: TPoint);
 begin
   if (TargetPoint.X <> Point.X) or (TargetPoint.Y <> Point.Y) then
@@ -109,9 +109,9 @@ begin
     UpdateProjectionBounds;
   end;
 end;
-{ @end $6979CC }
+{ @end $4EDC0C }
 
-{ @routine $697A20 TPSWeapon17Kafacitor_UpdateProjectionBounds }
+{ @routine $4EDC4C TPSWeapon17Kafacitor_UpdateProjectionBounds }
 procedure TPSWeapon17Kafacitor.UpdateProjectionBounds;
 var
   Sine, Cosine, Distance, A, B, C, D: Single;
@@ -134,9 +134,9 @@ begin
   ProjectionBounds.Top := Floor(Math.Min(Math.Min(Math.Min(A, B), C), D));
   ProjectionBounds.Bottom := Ceil(Math.Max(Math.Max(Math.Max(A, B), C), D));
 end;
-{ @end $697A20 }
+{ @end $4EDC4C }
 
-{ @routine $697D50 TPSWeapon17Kafacitor_UpdateHitTestBounds }
+{ @routine $4EDFA8 TPSWeapon17Kafacitor_UpdateHitTestBounds }
 procedure TPSWeapon17Kafacitor.UpdateHitTestBounds;
 begin
   HitTestBounds.Left := ProjectionBounds.Left + AbsolutePosition.X;
@@ -144,9 +144,9 @@ begin
   HitTestBounds.Right := ProjectionBounds.Right + AbsolutePosition.X;
   HitTestBounds.Bottom := ProjectionBounds.Bottom + AbsolutePosition.Y;
 end;
-{ @end $697D50 }
+{ @end $4EDFA8 }
 
-{ @routine $697DB0 TPSWeapon17Kafacitor_GetLocalBounds }
+{ @routine $4EDFDC TPSWeapon17Kafacitor_GetLocalBounds }
 function TPSWeapon17Kafacitor.GetLocalBounds: TRect;
 begin
   Result.Left := ProjectionBounds.Left + LocalPosition.X;
@@ -154,9 +154,9 @@ begin
   Result.Right := ProjectionBounds.Right + LocalPosition.X;
   Result.Bottom := ProjectionBounds.Bottom + LocalPosition.Y;
 end;
-{ @end $697DB0 }
+{ @end $4EDFDC }
 
-{ @routine $697E14 TPSWeapon17Kafacitor_AddParticle }
+{ @routine $4EE00C TPSWeapon17Kafacitor_AddParticle }
 function TPSWeapon17Kafacitor.AddParticle: PKafacitorParticle;
 var
   Particle: PKafacitorParticle;
@@ -169,9 +169,9 @@ begin
   if FirstParticle = nil then FirstParticle := Particle;
   Result := Particle;
 end;
-{ @end $697E14 }
+{ @end $4EE00C }
 
-{ @routine $697E8C TPSWeapon17Kafacitor_InvalidateRect }
+{ @routine $4EE04C TPSWeapon17Kafacitor_InvalidateRect }
 procedure TPSWeapon17Kafacitor.InvalidateRect(Rect: TRect);
 var
   Target: TPoint;
@@ -186,10 +186,10 @@ begin
   if IntersectRects(Intersection, Rect, GameScreenRect) then
     MessageLoop.QueueUpdateRect(Intersection);
 end;
-{ @end $697E8C }
+{ @end $4EE04C }
 
-{ @routine $697F58 TPSWeapon17Kafacitor_Advance }
-procedure TPSWeapon17Kafacitor.Advance(Timer: PCallbackTimerGI; UserData: Integer);
+{ @routine $4EE100 TPSWeapon17Kafacitor_Advance }
+procedure TPSWeapon17Kafacitor.Advance(Timer: TCallbackTimerIdGI; UserData: Cardinal);
 var
   I, Pass, Direction, SegmentPosition, SegmentLength, Offset: Integer;
   Distance, Spacing: Single;
@@ -283,9 +283,9 @@ begin
   end;
   Dec(RemainingTicks);
 end;
-{ @end $697F58 }
+{ @end $4EE100 }
 
-{ @routine $69846C TPSWeapon17Kafacitor_Draw }
+{ @routine $4EE574 TPSWeapon17Kafacitor_Draw }
 procedure TPSWeapon17Kafacitor.Draw(ClipRect: TRect);
 var
   Angle, Sine, Cosine, PX, PY: Single;
@@ -325,9 +325,9 @@ begin
     end;
   end;
 end;
-{ @end $69846C }
+{ @end $4EE574 }
 
-{ @routine $698684 LoadKafacitorPalettes }
+{ @routine $4EE738 LoadKafacitorPalettes }
 procedure LoadKafacitorPalettes;
 var
   Block, PaletteBlock: TBlockParEC;
@@ -344,23 +344,21 @@ begin
   for Index := 0 to Count - 1 do
   begin
     Text := IntToStr(Index);
-    if Block.CountBlocks(Text) <> 0 then
-    begin
-      PaletteBlock := Block.GetBlockByPath(Text);
-      for ColorIndex := 0 to 1 do
-        if PaletteBlock.CountParams('Color' + IntToStr(ColorIndex)) > 0 then
-        begin
-          Text := PaletteBlock.GetParam('Color' + IntToStr(ColorIndex));
-          KafacitorPalettes[Index][ColorIndex] := CurrentPixelFormat.PackNormalizedRgb(
-            ExtractDecimalToSingleW(ExtractDelimitedPartW(Text, 0, ',')),
-            ExtractDecimalToSingleW(ExtractDelimitedPartW(Text, 1, ',')),
-            ExtractDecimalToSingleW(ExtractDelimitedPartW(Text, 2, ',')));
-        end;
-      if PaletteBlock.CountParams('GAI') > 0 then
-        KafacitorAnimationPaths[Index][0] := PaletteBlock.GetParam('GAI');
-    end;
+    if Block.CountBlocks(Text) = 0 then Continue;
+    PaletteBlock := Block.GetBlockByPath(Text);
+    for ColorIndex := Low(TKafacitorPalette) to High(TKafacitorPalette) do
+      if PaletteBlock.CountParams('Color' + IntToStr(ColorIndex)) > 0 then
+      begin
+        Text := PaletteBlock.GetParam('Color' + IntToStr(ColorIndex));
+        KafacitorPalettes[Index][ColorIndex] := CurrentPixelFormat.PackNormalizedRgb(
+          ExtractDecimalToSingleW(ExtractDelimitedPartW(Text, 0, ',')),
+          ExtractDecimalToSingleW(ExtractDelimitedPartW(Text, 1, ',')),
+          ExtractDecimalToSingleW(ExtractDelimitedPartW(Text, 2, ',')));
+      end;
+    if PaletteBlock.CountParams('GAI') > 0 then
+      KafacitorAnimationPaths[Index][0] := PaletteBlock.GetParam('GAI');
   end;
 end;
-{ @end $698684 }
+{ @end $4EE738 }
 
 end.

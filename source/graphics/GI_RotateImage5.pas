@@ -1,5 +1,4 @@
 unit GI_RotateImage5;
-// Unit bracket (inferred): .text 0x004953CC..0x00496F3D; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -30,30 +29,30 @@ type
     BottomLeftX: array[0..256] of Single; // @offset 0x19CC
     BottomLeftY: array[0..256] of Single; // @offset 0x1DD0
 
-    constructor Create(Owner: TObjectGI); // @addr 0x495504
-    destructor Destroy; override; // @addr 0x4958D0
-    procedure Clear; override; // @addr 0x495980 @note "Preserves cache keys, image storage and FrameTexture."
-    procedure SetAngle(Value: Byte); // @addr 0x4959D0 @note "A full turn has 256 steps."
-    procedure SetFrameIndex(Value: Cardinal); // @addr 0x495A10 @note "Does not validate against the frame count."
-    procedure SetAlpha(Value: Byte); // @addr 0x495A50
-    procedure SetImage(Path: WideString; ImageSize, Pivot: TPoint); // @addr 0x495A90 @note "Replaces size and origin with a centered square enclosing all rotations."
-    function HitTestPixel(Point: TPoint): Boolean; // @addr 0x496188 @note "Uses the last rendered image. Alpha must exceed 8 in software, or 0 in hardware."
-    procedure LoadFromConfigPath(const Path: WideString); override; // @addr 0x4965C4
-    procedure LoadFromBlock(Block: TBlockParEC); override; // @addr 0x4965F8
-    procedure LoadImageProperties(Block: TBlockParEC); // @addr 0x496648
-    procedure Draw(ClipRect: TRect); override; // @addr 0x496810
-    function GetFrameCount: Cardinal; // @addr 0x496E54
-    procedure QueueImagePath(PendingLoads: TList; Path: WideString); // @addr 0x496EBC @note "Queues an arbitrary HSAI path; does not change this object's image."
+    constructor Create(Owner: TObjectGI); // @addr 0x004B8A38
+    destructor Destroy; override; // @addr 0x004B8DF0
+    procedure Clear; override; // @addr 0x004B8E70 @note "Preserves cache keys, image storage and FrameTexture."
+    procedure SetAngle(Value: Byte); // @addr 0x004B8EA4 @note "A full turn has 256 steps."
+    procedure SetFrameIndex(Value: Cardinal); // @addr 0x004B8EC8 @note "Does not validate against the frame count."
+    procedure SetAlpha(Value: Byte); // @addr 0x004B8EEC
+    procedure SetImage(Path: WideString; ImageSize, Pivot: TPoint); // @addr 0x004B8F10 @note "Replaces size and origin with a centered square enclosing all rotations."
+    function HitTestPixel(Point: TPoint): Boolean; // @addr 0x004B95C0 @note "Uses the last rendered image. Alpha must exceed 8 in software, or 0 in hardware."
+    procedure LoadFromConfigPath(const Path: WideString); override; // @addr 0x004B992C
+    procedure LoadFromBlock(Block: TBlockParEC); override; // @addr 0x004B9958
+    procedure LoadImageProperties(Block: TBlockParEC); // @addr 0x004B9990
+    procedure Draw(ClipRect: TRect); override; // @addr 0x004B9B4C
+    function GetFrameCount: Cardinal; // @addr 0x004BA188
+    procedure QueueImagePath(PendingLoads: TList; Path: WideString); // @addr 0x004BA1F0 @note "Queues an arbitrary HSAI path; does not change this object's image."
   end;
 
 var
-  RotateImageConstructionStage: Integer = -1; // @addr $87A9F4
+  RotateImageConstructionStage: Integer = -1; // @addr $80B708
 
 implementation
 
 uses EC_Struct, SysUtils, Math, EC_Cache, EC_Str, GR_Main, GI_Main, GR_GraphBuf, EC_Mem, aMyFunction;
 
-{ @routine $495504 TRotateImage5GI_Create }
+{ @routine $4B8A38 TRotateImage5GI_Create }
 constructor TRotateImage5GI.Create(Owner: TObjectGI);
 begin
   RotateImageConstructionStage := 0;
@@ -92,9 +91,9 @@ begin
   end;
   RotateImageConstructionStage := -1;
 end;
-{ @end $495504 }
+{ @end $4B8A38 }
 
-{ @routine $4958D0 TRotateImage5GI_Destroy }
+{ @routine $4B8DF0 TRotateImage5GI_Destroy }
 destructor TRotateImage5GI.Destroy;
 begin
   if Unknown13C <> nil then
@@ -111,9 +110,9 @@ begin
   RotatedImage := nil;
   inherited Destroy;
 end;
-{ @end $4958D0 }
+{ @end $4B8DF0 }
 
-{ @routine $495980 TRotateImage5GI_Clear }
+{ @routine $4B8E70 TRotateImage5GI_Clear }
 procedure TRotateImage5GI.Clear;
 begin
   ImageDirty := True;
@@ -124,45 +123,39 @@ begin
   Alpha := 255;
   inherited Clear;
 end;
-{ @end $495980 }
+{ @end $4B8E70 }
 
-{ @routine $4959D0 TRotateImage5GI_SetAngle }
+{ @routine $4B8EA4 TRotateImage5GI_SetAngle }
 procedure TRotateImage5GI.SetAngle(Value: Byte);
 begin
-  if Value <> Angle then
-  begin
-    Angle := Value;
-    ImageDirty := True;
-    Invalidate;
-  end;
+  if Value = Angle then Exit;
+  Angle := Value;
+  ImageDirty := True;
+  Invalidate;
 end;
-{ @end $4959D0 }
+{ @end $4B8EA4 }
 
-{ @routine $495A10 TRotateImage5GI_SetFrameIndex }
+{ @routine $4B8EC8 TRotateImage5GI_SetFrameIndex }
 procedure TRotateImage5GI.SetFrameIndex(Value: Cardinal);
 begin
-  if Value <> FrameIndex then
-  begin
-    FrameIndex := Value;
-    ImageDirty := True;
-    Invalidate;
-  end;
+  if Value = FrameIndex then Exit;
+  FrameIndex := Value;
+  ImageDirty := True;
+  Invalidate;
 end;
-{ @end $495A10 }
+{ @end $4B8EC8 }
 
-{ @routine $495A50 TRotateImage5GI_SetAlpha }
+{ @routine $4B8EEC TRotateImage5GI_SetAlpha }
 procedure TRotateImage5GI.SetAlpha(Value: Byte);
 begin
-  if Value <> Alpha then
-  begin
-    Alpha := Value;
-    ImageDirty := True;
-    Invalidate;
-  end;
+  if Value = Alpha then Exit;
+  Alpha := Value;
+  ImageDirty := True;
+  Invalidate;
 end;
-{ @end $495A50 }
+{ @end $4B8EEC }
 
-{ @routine $495A90 TRotateImage5GI_SetImage }
+{ @routine $4B8F10 TRotateImage5GI_SetImage }
 procedure TRotateImage5GI.SetImage(Path: WideString; ImageSize, Pivot: TPoint);
 var
   Data: TCHSAIEC;
@@ -214,9 +207,9 @@ begin
   end;
   Invalidate;
 end;
-{ @end $495A90 }
+{ @end $4B8F10 }
 
-{ @routine $496188 TRotateImage5GI_HitTestPixel }
+{ @routine $4B95C0 TRotateImage5GI_HitTestPixel }
 function TRotateImage5GI.HitTestPixel(Point: TPoint): Boolean;
 var
   Surface, OldSurface: IDirect3DSurface9;
@@ -226,74 +219,69 @@ var
   Quad: array[0..3] of TScreenVertexGR;
 begin
   Result := False;
-  if inherited ContainsPoint(Point) then
+  if not inherited ContainsPoint(Point) then Exit;
+  if HardwareRenderingEnabled then
   begin
-    if HardwareRenderingEnabled then
+    if FrameTexture = nil then Exit;
+    Quad[0] := Vertices[0];
+    Quad[1] := Vertices[1];
+    Quad[2] := Vertices[2];
+    Quad[3] := Vertices[3];
+    Quad[0].X := TopLeftX[RenderedAngle];
+    Quad[0].Y := TopLeftY[RenderedAngle];
+    Quad[1].X := TopRightX[RenderedAngle];
+    Quad[1].Y := TopRightY[RenderedAngle];
+    Quad[2].X := BottomRightX[RenderedAngle];
+    Quad[2].Y := BottomRightY[RenderedAngle];
+    Quad[3].X := BottomLeftX[RenderedAngle];
+    Quad[3].Y := BottomLeftY[RenderedAngle];
+    Direct3DDevice.CreateRenderTarget(ClientSize.X, ClientSize.Y, D3DFMT_A8R8G8B8, D3DMULTISAMPLE_NONE, 0, False, Surface, nil);
+    Direct3DDevice.CreateTexture(ClientSize.X, ClientSize.Y, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_SYSTEMMEM, Texture, nil);
+    if Surface = nil then Exit;
+    if Texture = nil then
     begin
-      if FrameTexture <> nil then
-      begin
-        Quad[0] := Vertices[0];
-        Quad[1] := Vertices[1];
-        Quad[2] := Vertices[2];
-        Quad[3] := Vertices[3];
-        Quad[0].X := TopLeftX[RenderedAngle];
-        Quad[0].Y := TopLeftY[RenderedAngle];
-        Quad[1].X := TopRightX[RenderedAngle];
-        Quad[1].Y := TopRightY[RenderedAngle];
-        Quad[2].X := BottomRightX[RenderedAngle];
-        Quad[2].Y := BottomRightY[RenderedAngle];
-        Quad[3].X := BottomLeftX[RenderedAngle];
-        Quad[3].Y := BottomLeftY[RenderedAngle];
-        Direct3DDevice.CreateRenderTarget(ClientSize.X, ClientSize.Y, D3DFMT_A8R8G8B8, D3DMULTISAMPLE_NONE, 0, False, Surface, nil);
-        Direct3DDevice.CreateTexture(ClientSize.X, ClientSize.Y, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_SYSTEMMEM, Texture, nil);
-        if Surface <> nil then
-        begin
-          if Texture = nil then Surface := nil
-          else
-          begin
-            Direct3DDevice.GetRenderTarget(0, OldSurface);
-            Direct3DDevice.SetRenderTarget(0, Surface);
-            Direct3DDevice.SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_MODULATE);
-            Direct3DDevice.SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
-            Direct3DDevice.SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
-            Direct3DDevice.Clear(0, nil, D3DCLEAR_TARGET, 0, 1.0, 0);
-            Direct3DDevice.SetTexture(0, FrameTexture);
-            Direct3DDevice.DrawPrimitiveUP(D3DPT_TRIANGLEFAN, 2, @Quad, SizeOf(TScreenVertexGR));
-            Direct3DDevice.SetTexture(0, nil);
-            Direct3DDevice.SetRenderTarget(0, OldSurface);
-            Texture.GetSurfaceLevel(0, OldSurface);
-            if Direct3DDevice.GetRenderTargetData(Surface, OldSurface) <> 0 then
-              AppendLogLineThreadSafe('GetRenderTargetData fail');
-            OldSurface := nil;
-            Surface := nil;
-            Texture.LockRect(0, Locked, nil, 0);
-            if Locked.Bits <> nil then
-            begin
-              Buffer := TGraphBufGR.Create(False);
-              Buffer.AttachPixels(ClientSize.X, ClientSize.Y, Locked.Pitch, Locked.Bits);
-              Result := Buffer.GetPixel32(Point.X - HitTestBounds.Left, Point.Y - HitTestBounds.Top) > $FFFFFF;
-              Buffer.Free;
-            end;
-            Texture := nil;
-          end;
-        end;
-      end;
-    end
-    else
-      Result := Byte(RotatedImage.GetPaletteColor(RotatedImage.GetPixelIndex(Point.X - HitTestBounds.Left, Point.Y - HitTestBounds.Top)) shr 24) > 8;
-  end;
+      Surface := nil;
+      Exit;
+    end;
+    Direct3DDevice.GetRenderTarget(0, OldSurface);
+    Direct3DDevice.SetRenderTarget(0, Surface);
+    Direct3DDevice.SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_MODULATE);
+    Direct3DDevice.SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
+    Direct3DDevice.SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
+    Direct3DDevice.Clear(0, nil, D3DCLEAR_TARGET, 0, 1.0, 0);
+    Direct3DDevice.SetTexture(0, FrameTexture);
+    Direct3DDevice.DrawPrimitiveUP(D3DPT_TRIANGLEFAN, 2, @Quad, SizeOf(TScreenVertexGR));
+    Direct3DDevice.SetTexture(0, nil);
+    Direct3DDevice.SetRenderTarget(0, OldSurface);
+    Texture.GetSurfaceLevel(0, OldSurface);
+    if Direct3DDevice.GetRenderTargetData(Surface, OldSurface) <> 0 then
+      AppendLogLineThreadSafe('GetRenderTargetData fail');
+    OldSurface := nil;
+    Surface := nil;
+    Texture.LockRect(0, Locked, nil, 0);
+    if Locked.Bits <> nil then
+    begin
+      Buffer := TGraphBufGR.Create(False);
+      Buffer.AttachPixels(ClientSize.X, ClientSize.Y, Locked.Pitch, Locked.Bits);
+      Result := Buffer.GetPixel32(Point.X - HitTestBounds.Left, Point.Y - HitTestBounds.Top) > $FFFFFF;
+      Buffer.Free;
+    end;
+    Texture := nil;
+  end
+  else
+    Result := RotatedImage.GetPaletteColor(RotatedImage.GetPixelIndex(Point.X - HitTestBounds.Left, Point.Y - HitTestBounds.Top)).A > 8;
 end;
-{ @end $496188 }
+{ @end $4B95C0 }
 
-{ @routine $4965C4 TRotateImage5GI_LoadFromConfigPath }
+{ @routine $4B992C TRotateImage5GI_LoadFromConfigPath }
 procedure TRotateImage5GI.LoadFromConfigPath(const Path: WideString);
 begin
   inherited LoadFromConfigPath(Path);
   LoadImageProperties(UiStyleConfig.GetBlockByPath(Path));
 end;
-{ @end $4965C4 }
+{ @end $4B992C }
 
-{ @routine $4965F8 TRotateImage5GI_LoadFromBlock }
+{ @routine $4B9958 TRotateImage5GI_LoadFromBlock }
 procedure TRotateImage5GI.LoadFromBlock(Block: TBlockParEC);
 begin
   RenderedAngle := 255;
@@ -303,9 +291,9 @@ begin
   LoadImageProperties(Block);
   ImageDirty := True;
 end;
-{ @end $4965F8 }
+{ @end $4B9958 }
 
-{ @routine $496648 TRotateImage5GI_LoadImageProperties }
+{ @routine $4B9990 TRotateImage5GI_LoadImageProperties }
 procedure TRotateImage5GI.LoadImageProperties(Block: TBlockParEC);
 begin
   if Block.CountParams('Image') > 0 then
@@ -315,17 +303,17 @@ begin
   if Block.CountParams('Angle') > 0 then SetAngle(StrToInt(Block.GetParam('Angle')));
   if Block.CountParams('Trans') > 0 then SetAlpha(StrToInt(Block.GetParam('Trans')));
 end;
-{ @end $496648 }
+{ @end $4B9990 }
 
-{ @routine $496810 TRotateImage5GI_Draw }
+{ @routine $4B9B4C TRotateImage5GI_Draw }
 procedure TRotateImage5GI.Draw(ClipRect: TRect);
 var
   Data: TCHSAIEC;
   Rotation: TCRotateBufEC;
   OldClip: TRect;
 begin
-  if (HitTestBounds.Right < 0) or (HitTestBounds.Left > GameScreenWidth) or
-     (HitTestBounds.Bottom < 0) or (HitTestBounds.Top > GameScreenHeight) then Exit;
+  if (HitTestBounds.Right < 0) or (HitTestBounds.Left > Integer(GameScreenWidth)) or
+     (HitTestBounds.Bottom < 0) or (HitTestBounds.Top > Integer(GameScreenHeight)) then Exit;
   if HardwareRenderingEnabled then
   begin
     if (RenderedAngle <> Angle) or (ImageDirty = True) or
@@ -342,7 +330,7 @@ begin
         if Data <> nil then ImageCache.Release;
       end;
     end;
-    Vertices[0].Color := (Cardinal(Alpha) shl 24) or RgbWhite;
+    Vertices[0].Color := (Alpha shl 24) or RgbWhite;
     Vertices[1].Color := Vertices[0].Color;
     Vertices[2].Color := Vertices[0].Color;
     Vertices[3].Color := Vertices[0].Color;
@@ -395,9 +383,9 @@ begin
       HitTestBounds.Left, HitTestBounds.Top, RotatedImage, ClipRect);
   end;
 end;
-{ @end $496810 }
+{ @end $4B9B4C }
 
-{ @routine $496E54 TRotateImage5GI_GetFrameCount }
+{ @routine $4BA188 TRotateImage5GI_GetFrameCount }
 function TRotateImage5GI.GetFrameCount: Cardinal;
 var Data: TCHSAIEC;
 begin
@@ -409,9 +397,9 @@ begin
     if Data <> nil then ImageCache.Release;
   end;
 end;
-{ @end $496E54 }
+{ @end $4BA188 }
 
-{ @routine $496EBC TRotateImage5GI_QueueImagePath }
+{ @routine $4BA1F0 TRotateImage5GI_QueueImagePath }
 procedure TRotateImage5GI.QueueImagePath(PendingLoads: TList; Path: WideString);
 var Control: TCHSAIControlEC;
 begin
@@ -421,6 +409,6 @@ begin
   Control.QueueLoadIfMissing(PendingLoads);
   Control.Free;
 end;
-{ @end $496EBC }
+{ @end $4BA1F0 }
 
 end.

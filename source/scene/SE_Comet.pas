@@ -1,5 +1,4 @@
 unit SE_Comet;
-// Unit bracket (inferred): .text 0x00824E18..0x008265F1; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -40,30 +39,30 @@ type
     StarAttraction: Single; // @offset $118
     ObjectAttraction: Single; // @offset $11C
 
-    constructor Create(GraphKey: WideString; UnusedPosition: TPoint); // @addr $824F04
-    destructor Destroy; override; // @addr $824FC4
-    procedure AttachToSpace(ASpace: TSpaceSE); override; // @addr $824FF8
-    procedure DetachFromSpace; override; // @addr $8251B8
-    procedure SetPosition(APosition: TPointF); override; // @addr $825280
-    procedure ResetTrajectory(Angle: Single); // @addr $8252D8
-    procedure StartMotionTimer; // @addr $8254BC
-    procedure StopMotionTimer; // @addr $8254F8
-    procedure AdvanceMotionTimer(Timer: PSpaceTimerSE; UserData: Integer); // @addr $825524
-    procedure ApplyAttraction(Center: TPointF; Strength: Single); // @addr $825544
-    procedure ExplosionFinished(Sender: TObjectGI); // @addr $8257A8
-    procedure RemoveTrailEntry(Entry: PCometTrailEntry); // @addr $825844
-    procedure ExplodeAndRespawn; // @addr $8258C8
-    procedure AdvanceSteps(Count: Integer); // @addr $825C38
-    procedure LoadTemplate(Block: TBlockParEC); override; // @addr $82614C
-    procedure ApplyConfig(Block: TBlockParEC); override; // @addr $826590
-    procedure QueueImageLoad(PendingLoads: TList; Owner: TObjectGI); override; // @addr $8265AC
+    constructor Create(GraphKey: WideString; UnusedPosition: TPoint); // @addr $77FA54
+    destructor Destroy; override; // @addr $77FB00
+    procedure AttachToSpace(ASpace: TSpaceSE); override; // @addr $77FB28
+    procedure DetachFromSpace; override; // @addr $77FC7C
+    procedure SetPosition(APosition: TPointF); override; // @addr $77FD04
+    procedure ResetTrajectory(Angle: Single); // @addr $77FD54
+    procedure StartMotionTimer; // @addr $77FEF4
+    procedure StopMotionTimer; // @addr $77FF1C
+    procedure AdvanceMotionTimer(Timer: PSpaceTimerSE; UserData: Integer); // @addr $77FF38
+    procedure ApplyAttraction(Center: TPointF; Strength: Single); // @addr $77FF44
+    procedure ExplosionFinished(Sender: TObjectGI); // @addr $780154
+    procedure RemoveTrailEntry(Entry: PCometTrailEntry); // @addr $7801B4
+    procedure ExplodeAndRespawn; // @addr $7801FC
+    procedure AdvanceSteps(Count: Integer); // @addr $7804F0
+    procedure LoadTemplate(Block: TBlockParEC); override; // @addr $780934
+    procedure ApplyConfig(Block: TBlockParEC); override; // @addr $780D38
+    procedure QueueImageLoad(PendingLoads: TList; Owner: TObjectGI); override; // @addr $780D40
   end;
 
 implementation
 
 uses SysUtils, Math, GlobalsV, GR_Main, GI_Main, EC_Str, aMyFunction, Globals, GR_Sound, SE_Planet;
 
-{ @routine $824F04 TCometSE_Create }
+{ @routine $77FA54 TCometSE_Create }
 constructor TCometSE.Create(GraphKey: WideString; UnusedPosition: TPoint);
 begin
   inherited Create(GraphKey, UnusedPosition);
@@ -73,16 +72,16 @@ begin
   FirstTrailEntry := nil;
   TrailHistoryCount := 0;
 end;
-{ @end $824F04 }
+{ @end $77FA54 }
 
-{ @routine $824FC4 TCometSE_Destroy }
+{ @routine $77FB00 TCometSE_Destroy }
 destructor TCometSE.Destroy;
 begin
   inherited Destroy;
 end;
-{ @end $824FC4 }
+{ @end $77FB00 }
 
-{ @routine $824FF8 TCometSE_AttachToSpace }
+{ @routine $77FB28 TCometSE_AttachToSpace }
 procedure TCometSE.AttachToSpace(ASpace: TSpaceSE);
 begin
   if IsAttachedToSpace then Exit;
@@ -91,11 +90,11 @@ begin
   inherited AttachToSpace(ASpace);
   Animation := TgaiGI.Create(Space.MapPanel);
   Animation.SetImagePath(ImagePath);
-  Animation.SetSize(Animation.GetContentSize);
-  Animation.SetOrigin(HalfPoint(Animation.ClientSize));
+  Animation.ObjectSize := Animation.GetContentSize;
+  Animation.Sme := HalfPoint(Animation.ClientSize);
   Animation.SetDepthByName(DepthExpression);
-  Animation.SetPosition(TruncatePointF(Position));
-  Animation.SetPositionModeW(True);
+  Animation.Pos := TruncatePointF(Position);
+  Animation.World := True;
   Animation.SequenceIndex := 0;
   Animation.UpdateAutoGeometry;
   if (SavedFrameIndex < 0) or (SavedFrameIndex >= Animation.SequenceFrameCount) then
@@ -106,9 +105,9 @@ begin
   while FirstTrailEntry <> nil do RemoveTrailEntry(FirstTrailEntry);
   StartMotionTimer;
 end;
-{ @end $824FF8 }
+{ @end $77FB28 }
 
-{ @routine $8251B8 TCometSE_DetachFromSpace }
+{ @routine $77FC7C TCometSE_DetachFromSpace }
 procedure TCometSE.DetachFromSpace;
 begin
   if not IsAttachedToSpace then Exit;
@@ -132,56 +131,53 @@ begin
   end;
   inherited DetachFromSpace;
 end;
-{ @end $8251B8 }
+{ @end $77FC7C }
 
-{ @routine $825280 TCometSE_SetPosition }
+{ @routine $77FD04 TCometSE_SetPosition }
 procedure TCometSE.SetPosition(APosition: TPointF);
 begin
   inherited SetPosition(APosition);
-  if IsAttachedToSpace then
-    if Animation <> nil then Animation.SetPosition(TruncatePointF(APosition));
+  if IsAttachedToSpace and (Animation <> nil) then Animation.Pos := TruncatePointF(APosition);
 end;
-{ @end $825280 }
+{ @end $77FD04 }
 
-{ @routine $8252D8 TCometSE_ResetTrajectory }
+{ @routine $77FD54 TCometSE_ResetTrajectory }
 procedure TCometSE.ResetTrajectory(Angle: Single);
 begin
-  if SkipMoves >= 0 then
+  if SkipMoves < 0 then Exit;
+  if Random(50) < 25 then
   begin
-    if Random(50) < 25 then
-    begin
-      Velocity.X := Sin(Angle) * Speed;
-      Velocity.Y := Cos(Angle) * -Speed;
-    end
-    else
-    begin
-      Velocity.X := Sin(Angle) * -Speed;
-      Velocity.Y := Cos(Angle) * Speed;
-    end;
+    Velocity.X := Sin(Angle) * Speed;
+    Velocity.Y := Cos(Angle) * -Speed;
+  end
+  else
+  begin
+    Velocity.X := Sin(Angle) * -Speed;
+    Velocity.Y := Cos(Angle) * Speed;
+  end;
+  Position.X := RandomIntRange(-4096, 4096);
+  Position.Y := RandomIntRange(-4096, 4096);
+  SkipMoves := -1;
+  while (SpaceViewPosition.X - (GameScreenWidth shr 1) < Position.X) and
+    (SpaceViewPosition.X + (GameScreenWidth shr 1) > Position.X) and
+    (SpaceViewPosition.Y - (GameScreenHeight shr 1) < Position.Y) and
+    (SpaceViewPosition.Y + (GameScreenHeight shr 1) > Position.Y) do
+  begin
     Position.X := RandomIntRange(-4096, 4096);
     Position.Y := RandomIntRange(-4096, 4096);
-    SkipMoves := -1;
-    while (SpaceViewPosition.X - (Cardinal(GameScreenWidth) shr 1) < Position.X) and
-      (SpaceViewPosition.X + (Cardinal(GameScreenWidth) shr 1) > Position.X) and
-      (SpaceViewPosition.Y - (Cardinal(GameScreenHeight) shr 1) < Position.Y) and
-      (SpaceViewPosition.Y + (Cardinal(GameScreenHeight) shr 1) > Position.Y) do
-    begin
-      Position.X := RandomIntRange(-4096, 4096);
-      Position.Y := RandomIntRange(-4096, 4096);
-    end;
   end;
 end;
-{ @end $8252D8 }
+{ @end $77FD54 }
 
-{ @routine $8254BC TCometSE_StartMotionTimer }
+{ @routine $77FEF4 TCometSE_StartMotionTimer }
 procedure TCometSE.StartMotionTimer;
 begin
   StopMotionTimer;
   MoveTimer := Space.CreateTimer(TimerInterval, TimerInterval, AdvanceMotionTimer, 0);
 end;
-{ @end $8254BC }
+{ @end $77FEF4 }
 
-{ @routine $8254F8 TCometSE_StopMotionTimer }
+{ @routine $77FF1C TCometSE_StopMotionTimer }
 procedure TCometSE.StopMotionTimer;
 begin
   if MoveTimer <> nil then
@@ -190,16 +186,16 @@ begin
     MoveTimer := nil;
   end;
 end;
-{ @end $8254F8 }
+{ @end $77FF1C }
 
-{ @routine $825524 TCometSE_AdvanceMotionTimer }
+{ @routine $77FF38 TCometSE_AdvanceMotionTimer }
 procedure TCometSE.AdvanceMotionTimer(Timer: PSpaceTimerSE; UserData: Integer);
 begin
   AdvanceSteps(1);
 end;
-{ @end $825524 }
+{ @end $77FF38 }
 
-{ @routine $825544 TCometSE_ApplyAttraction }
+{ @routine $77FF44 TCometSE_ApplyAttraction }
 procedure TCometSE.ApplyAttraction(Center: TPointF; Strength: Single);
 var
   Angle: Double;
@@ -239,9 +235,9 @@ begin
     end;
   end;
 end;
-{ @end $825544 }
+{ @end $77FF44 }
 
-{ @routine $8257A8 TCometSE_ExplosionFinished }
+{ @routine $780154 TCometSE_ExplosionFinished }
 procedure TCometSE.ExplosionFinished(Sender: TObjectGI);
 begin
   if Sender <> nil then
@@ -260,9 +256,9 @@ begin
       end;
     end;
 end;
-{ @end $8257A8 }
+{ @end $780154 }
 
-{ @routine $825844 TCometSE_RemoveTrailEntry }
+{ @routine $7801B4 TCometSE_RemoveTrailEntry }
 procedure TCometSE.RemoveTrailEntry(Entry: PCometTrailEntry);
 begin
   if Entry <> nil then
@@ -275,48 +271,64 @@ begin
     Dispose(Entry);
   end;
 end;
-{ @end $825844 }
+{ @end $7801B4 }
 
-{ @routine $8258C8 TCometSE_ExplodeAndRespawn }
+{ @routine $7801FC TCometSE_ExplodeAndRespawn }
 procedure TCometSE.ExplodeAndRespawn;
 var Control: TgaiGI;
 begin
   if Space <> nil then
   begin
     if FilmSoundEffectsEnabled and SoundInSpaceEnabled and Space.ContainsMapPoint(Position) then
-      SoundManager.PlaySound(WideString('Sound.expl' + IntToStr(RandomIntRange(3, 5))));
+      SoundManager.PlaySound('Sound.expl' + IntToStr(RandomIntRange(3, 5)));
     Control := TgaiGI.Create(Space.MapPanel);
     Control.SetImagePath(ExplosionPath);
     Control.LoadFrameSequenceFromText(ExplosionFrames);
     Control.SetSequenceFrame(0);
-    Control.SetSize(Control.GetContentSize);
-    Control.SetOrigin(HalfPoint(Control.ClientSize));
+    Control.ObjectSize := Control.GetContentSize;
+    Control.Sme := HalfPoint(Control.ClientSize);
     Control.SetDepthByName(DepthExpression);
     Control.SetDepth(Control.Depth - 1);
-    Control.SetPosition(TruncatePointF(Position));
-    Control.SetPositionModeW(True);
+    Control.Pos := TruncatePointF(Position);
+    Control.World := True;
     Control.CycleCompleteCallback := ExplosionFinished;
     Control.RestartPlayback;
     if CurrentExplosion <> nil then CurrentExplosion.Free;
     CurrentExplosion := Control;
     repeat
       case Random(4) of
-        0: begin Position.X := -4096; Position.Y := RandomIntRange(-4096, 4096); end;
-        1: begin Position.X := 4096; Position.Y := RandomIntRange(-4096, 4096); end;
-        2: begin Position.Y := 4096; Position.X := RandomIntRange(-4096, 4096); end;
-        3: begin Position.Y := -4096; Position.X := RandomIntRange(-4096, 4096); end;
+        0:
+        begin
+          Position.X := -4096;
+          Position.Y := RandomIntRange(-4096, 4096);
+        end;
+        1:
+        begin
+          Position.X := 4096;
+          Position.Y := RandomIntRange(-4096, 4096);
+        end;
+        2:
+        begin
+          Position.Y := 4096;
+          Position.X := RandomIntRange(-4096, 4096);
+        end;
+        3:
+        begin
+          Position.Y := -4096;
+          Position.X := RandomIntRange(-4096, 4096);
+        end;
       end;
-    until (SpaceViewPosition.X - (Cardinal(GameScreenWidth) shr 1) > Position.X) or
-      (SpaceViewPosition.X + (Cardinal(GameScreenWidth) shr 1) < Position.X) or
-      (SpaceViewPosition.Y - (Cardinal(GameScreenHeight) shr 1) > Position.Y) or
-      (SpaceViewPosition.Y + (Cardinal(GameScreenHeight) shr 1) < Position.Y);
+    until (SpaceViewPosition.X - (GameScreenWidth shr 1) > Position.X) or
+      (SpaceViewPosition.X + (GameScreenWidth shr 1) < Position.X) or
+      (SpaceViewPosition.Y - (GameScreenHeight shr 1) > Position.Y) or
+      (SpaceViewPosition.Y + (GameScreenHeight shr 1) < Position.Y);
     Velocity.X := Velocity.X * 0.5;
     Velocity.Y := Velocity.Y * 0.5;
   end;
 end;
-{ @end $8258C8 }
+{ @end $7801FC }
 
-{ @routine $825C38 TCometSE_AdvanceSteps }
+{ @routine $7804F0 TCometSE_AdvanceSteps }
 procedure TCometSE.AdvanceSteps(Count: Integer);
 var
   NextEntry, Entry: PCometTrailEntry;
@@ -339,7 +351,7 @@ begin
       begin
         Entry.Position := MakePointF(Entry.Position.X + Entry.Velocity.X, Entry.Position.Y + Entry.Velocity.Y);
         if CurrentExplosion <> nil then Entry.Velocity := HalfPointF(Entry.Velocity);
-        if Entry.Animation <> nil then Entry.Animation.SetPosition(TruncatePointF(Entry.Position));
+        if Entry.Animation <> nil then Entry.Animation.Pos := TruncatePointF(Entry.Position);
       end;
     end;
     ApplyAttraction(MakePointF(0, 0), StarAttraction);
@@ -360,31 +372,31 @@ begin
       Circle := Circle.Next;
     end;
     Position := MakePointF(Position.X + Velocity.X, Position.Y + Velocity.Y);
-    if (SpaceViewPosition.X - (Cardinal(GameScreenWidth) shr 1) > Position.X) or
-      (SpaceViewPosition.Y - (Cardinal(GameScreenHeight) shr 1) > Position.Y) or
-      (SpaceViewPosition.X + (Cardinal(GameScreenWidth) shr 1) < Position.X) or
-      (SpaceViewPosition.Y + (Cardinal(GameScreenHeight) shr 1) < Position.Y) then
+    if (SpaceViewPosition.X - (GameScreenWidth shr 1) > Position.X) or
+      (SpaceViewPosition.Y - (GameScreenHeight shr 1) > Position.Y) or
+      (SpaceViewPosition.X + (GameScreenWidth shr 1) < Position.X) or
+      (SpaceViewPosition.Y + (GameScreenHeight shr 1) < Position.Y) then
     begin
       if (Position.X > 4096) and (Velocity.X >= 0) then Position.X := -4096;
       if (Position.X < -4096) and (Velocity.X <= 0) then Position.X := 4096;
       if (Position.Y > 4096) and (Velocity.Y >= 0) then Position.Y := -4096;
       if (Position.Y < -4096) and (Velocity.Y <= 0) then Position.Y := 4096;
-      while (SpaceViewPosition.X - (Cardinal(GameScreenWidth) shr 1) < Position.X) and
-        (SpaceViewPosition.X + (Cardinal(GameScreenWidth) shr 1) > Position.X) and
-        (SpaceViewPosition.Y - (Cardinal(GameScreenHeight) shr 1) < Position.Y) and
-        (SpaceViewPosition.Y + (Cardinal(GameScreenHeight) shr 1) > Position.Y) do
+      while (SpaceViewPosition.X - (GameScreenWidth shr 1) < Position.X) and
+        (SpaceViewPosition.X + (GameScreenWidth shr 1) > Position.X) and
+        (SpaceViewPosition.Y - (GameScreenHeight shr 1) < Position.Y) and
+        (SpaceViewPosition.Y + (GameScreenHeight shr 1) > Position.Y) do
       begin
         Position.X := RandomIntRange(-4096, 4096);
         Position.Y := RandomIntRange(-4096, 4096);
       end;
     end;
-    if Animation <> nil then SetPosition(Position);
+    if Animation <> nil then Pos := Position;
     Dec(Count);
   end;
 end;
-{ @end $825C38 }
+{ @end $7804F0 }
 
-{ @routine $82614C TCometSE_LoadTemplate }
+{ @routine $780934 TCometSE_LoadTemplate }
 procedure TCometSE.LoadTemplate(Block: TBlockParEC);
 var
   IntRange: TPoint;
@@ -432,16 +444,16 @@ begin
   TrailFrames := Block.GetParam('TrackFrame');
   ResetTrajectory(MoveAngle);
 end;
-{ @end $82614C }
+{ @end $780934 }
 
-{ @routine $826590 TCometSE_ApplyConfig }
+{ @routine $780D38 TCometSE_ApplyConfig }
 procedure TCometSE.ApplyConfig(Block: TBlockParEC);
 begin
   inherited ApplyConfig(Block);
 end;
-{ @end $826590 }
+{ @end $780D38 }
 
-{ @routine $8265AC TCometSE_QueueImageLoad }
+{ @routine $780D40 TCometSE_QueueImageLoad }
 procedure TCometSE.QueueImageLoad(PendingLoads: TList; Owner: TObjectGI);
 var Control: TgaiGI;
 begin
@@ -450,6 +462,6 @@ begin
   Control.QueueImageLoad(PendingLoads);
   Control.Free;
 end;
-{ @end $8265AC }
+{ @end $780D40 }
 
 end.

@@ -1,5 +1,4 @@
 unit fPanelPlanet;
-// Unit bracket (inferred): .text 0x0081294C..0x008137D7; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -10,20 +9,20 @@ type
   public
     Screen: TMessageLoopGI; // @offset 0x4
 
-    constructor Create; // @addr 0x8129A8
-    destructor Destroy; override; // @addr 0x8129EC
-    procedure InitializeLayout(Screen: TMessageLoopGI); // @addr 0x812A20
-    procedure OnOpen; // @addr $812C28 Native no-op lifecycle hook.
-    procedure OnClose; // @addr $812C34 Native no-op lifecycle hook.
-    procedure ProcessKeyDown(Key: Integer); // @addr $8136EC
-    procedure Show; // @addr 0x812C40
-    procedure Hide; // @addr 0x812C80
-    procedure HangarClicked(Sender: TObjectGI); // @addr 0x812CC0
-    procedure EquipmentShopClicked(Sender: TObjectGI); // @addr 0x812D64
-    procedure GoodsShopClicked(Sender: TObjectGI); // @addr 0x813024
-    procedure GovernmentClicked(Sender: TObjectGI); // @addr 0x8132E4
-    procedure InformationClicked(Sender: TObjectGI); // @addr 0x813388
-    procedure PlanetClicked(Sender: TObjectGI); // @addr 0x813648
+    constructor Create; // @addr 0x0058ADB8
+    destructor Destroy; override; // @addr 0x0058ADF0
+    procedure InitializeLayout(Screen: TMessageLoopGI); // @addr 0x0058AE18
+    procedure OnOpen; // @addr $58AFE8 Native no-op lifecycle hook.
+    procedure OnClose; // @addr $58AFEC Native no-op lifecycle hook.
+    procedure ProcessKeyDown(Key: Integer); // @addr $58B9F0
+    procedure Show; // @addr 0x0058AFF0
+    procedure Hide; // @addr 0x0058B028
+    procedure HangarClicked(Sender: TObjectGI); // @addr 0x0058B060
+    procedure EquipmentShopClicked(Sender: TObjectGI); // @addr 0x0058B0E8
+    procedure GoodsShopClicked(Sender: TObjectGI); // @addr 0x0058B390
+    procedure GovernmentClicked(Sender: TObjectGI); // @addr 0x0058B638
+    procedure InformationClicked(Sender: TObjectGI); // @addr 0x0058B6C0
+    procedure PlanetClicked(Sender: TObjectGI); // @addr 0x0058B968
   end;
 
 implementation
@@ -31,21 +30,21 @@ implementation
 uses Classes, Windows, GR_Main, Globals, GI_GraphButton, GI_MessageBox,
   aConst, aGalaxyStruct, aMyFunction, aPlanet, aPlayer, aScript, fGov, fPanelLoad;
 
-{ @routine $8129A8 TfPanelPlanet_Create }
+{ @routine $58ADB8 TfPanelPlanet_Create }
 constructor TfPanelPlanet.Create;
 begin
   inherited Create;
 end;
-{ @end $8129A8 }
+{ @end $58ADB8 }
 
-{ @routine $8129EC TfPanelPlanet_Destroy }
+{ @routine $58ADF0 TfPanelPlanet_Destroy }
 destructor TfPanelPlanet.Destroy;
 begin
   inherited Destroy;
 end;
-{ @end $8129EC }
+{ @end $58ADF0 }
 
-{ @routine $812A20 TfPanelPlanet_InitializeLayout }
+{ @routine $58AE18 TfPanelPlanet_InitializeLayout }
 procedure TfPanelPlanet.InitializeLayout(Screen: TMessageLoopGI);
 var
   Panel: TObjectGI;
@@ -62,36 +61,36 @@ begin
   (Self.Screen.GetByName('PP_Gov') as TGraphButtonGI).UpCallback := GovernmentClicked;
   (Self.Screen.GetByName('PP_Info') as TGraphButtonGI).UpCallback := InformationClicked;
 end;
-{ @end $812A20 }
+{ @end $58AE18 }
 
-{ @routine $812C28 TfPanelPlanet_OnOpen }
+{ @routine $58AFE8 TfPanelPlanet_OnOpen }
 procedure TfPanelPlanet.OnOpen;
 begin
 end;
-{ @end $812C28 }
+{ @end $58AFE8 }
 
-{ @routine $812C34 TfPanelPlanet_OnClose }
+{ @routine $58AFEC TfPanelPlanet_OnClose }
 procedure TfPanelPlanet.OnClose;
 begin
 end;
-{ @end $812C34 }
+{ @end $58AFEC }
 
-{ @routine $812C40 TfPanelPlanet_Show }
+{ @routine $58AFF0 TfPanelPlanet_Show }
 procedure TfPanelPlanet.Show;
 begin
   Screen.GetByName('PanelPlanet').SetActive(True);
 end;
-{ @end $812C40 }
+{ @end $58AFF0 }
 
-{ @routine $812C80 TfPanelPlanet_Hide }
+{ @routine $58B028 TfPanelPlanet_Hide }
 procedure TfPanelPlanet.Hide;
 begin
   Screen.GetByName('PanelPlanet').SetActive(False);
 end;
-{ @end $812C80 }
+{ @end $58B028 }
 
 
-{ @routine $812CC0 TfPanelPlanet_HangarClicked }
+{ @routine $58B060 TfPanelPlanet_HangarClicked }
 procedure TfPanelPlanet.HangarClicked(Sender: TObjectGI);
 begin
   if Screen.ExitCode <> 0 then Exit;
@@ -103,9 +102,9 @@ begin
   RequestedScreenId := screenHangar;
   Screen.RequestClose(1);
 end;
-{ @end $812CC0 }
+{ @end $58B060 }
 
-{ @routine $812D64 TfPanelPlanet_EquipmentShopClicked }
+{ @routine $58B0E8 TfPanelPlanet_EquipmentShopClicked }
 procedure TfPanelPlanet.EquipmentShopClicked(Sender: TObjectGI);
 begin
   if Screen.ExitCode <> 0 then Exit;
@@ -132,9 +131,9 @@ begin
     Screen.RequestClose(1);
   end;
 end;
-{ @end $812D64 }
+{ @end $58B0E8 }
 
-{ @routine $813024 TfPanelPlanet_GoodsShopClicked }
+{ @routine $58B390 TfPanelPlanet_GoodsShopClicked }
 procedure TfPanelPlanet.GoodsShopClicked(Sender: TObjectGI);
 begin
   if Screen.ExitCode <> 0 then Exit;
@@ -161,9 +160,9 @@ begin
     Screen.RequestClose(1);
   end;
 end;
-{ @end $813024 }
+{ @end $58B390 }
 
-{ @routine $8132E4 TfPanelPlanet_GovernmentClicked }
+{ @routine $58B638 TfPanelPlanet_GovernmentClicked }
 procedure TfPanelPlanet.GovernmentClicked(Sender: TObjectGI);
 begin
   if Screen.ExitCode <> 0 then Exit;
@@ -175,9 +174,9 @@ begin
   RequestedScreenId := screenGovernment;
   Screen.RequestClose(1);
 end;
-{ @end $8132E4 }
+{ @end $58B638 }
 
-{ @routine $813388 TfPanelPlanet_InformationClicked }
+{ @routine $58B6C0 TfPanelPlanet_InformationClicked }
 procedure TfPanelPlanet.InformationClicked(Sender: TObjectGI);
 begin
   if Screen.ExitCode <> 0 then Exit;
@@ -204,9 +203,9 @@ begin
     Screen.RequestClose(1);
   end;
 end;
-{ @end $813388 }
+{ @end $58B6C0 }
 
-{ @routine $813648 TfPanelPlanet_PlanetClicked }
+{ @routine $58B968 TfPanelPlanet_PlanetClicked }
 procedure TfPanelPlanet.PlanetClicked(Sender: TObjectGI);
 begin
   if Screen.ExitCode <> 0 then Exit;
@@ -218,9 +217,9 @@ begin
   RequestedScreenId := screenPlanet;
   Screen.RequestClose(1);
 end;
-{ @end $813648 }
+{ @end $58B968 }
 
-{ @routine $8136EC TfPanelPlanet_ProcessKeyDown }
+{ @routine $58B9F0 TfPanelPlanet_ProcessKeyDown }
 procedure TfPanelPlanet.ProcessKeyDown(Key: Integer);
 begin
   if Screen.ExitCode <> 0 then Exit;
@@ -235,6 +234,6 @@ begin
   else if Key = Ord('I') then InformationClicked(nil)
   else if Key = Ord('P') then PlanetClicked(nil);
 end;
-{ @end $8136EC }
+{ @end $58B9F0 }
 
 end.

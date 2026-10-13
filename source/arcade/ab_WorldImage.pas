@@ -1,5 +1,4 @@
 unit ab_WorldImage;
-// Unit bracket (inferred): .text 0x0055667C..0x00556EA7; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 // Grouped by native diagnostic prefix; original source-unit boundaries remain unresolved.
 
 interface
@@ -7,7 +6,7 @@ interface
 uses EC_Struct, GI_Image;
 
 const
-  // ab_WorldImage_Update ($5569E8) applies these only when Dirty is set.
+  // ab_WorldImage_Update ($6634B8) applies these only when Dirty is set.
   // Other values, and ordinary front/back switches, preserve the current frame.
   afmRestart = 0;
   afmRandomStart = 1;
@@ -30,39 +29,39 @@ type
     StopAnimation: Boolean; // @offset $3E
   end;
 
-procedure ab_WorldImage_Clear; // @addr $55667C
-function ab_WorldImage_Add: PabWorldImage; // @addr $5566B0 @note "Allocates and links a node owned by the world list."
-procedure ab_WorldImage_Delete(Entry: PabWorldImage); // @addr $556778
-function ab_WorldImage_Create(Position: TVector3D; const FrontPath, BackPath: WideString; StopAnimation: Boolean): PabWorldImage; // @addr $556820
-procedure ab_WorldImage_Set(Entry: PabWorldImage; Position: TVector3D; const FrontPath, BackPath: WideString); // @addr $5568C4
-procedure ab_WorldImage_SetPosition(Entry: PabWorldImage; Position: TVector3D); // @addr $55694C
-procedure ab_WorldImage_SetDepth(Entry: PabWorldImage; FrontDepth, BackDepth: Single); // @addr $55697C
-procedure ab_WorldImage_SetFrameMode(Entry: PabWorldImage; Value: Integer); // @addr $5569A4
-procedure ab_WorldImage_SetLooping(Entry: PabWorldImage; Value: Boolean); // @addr $5569C0
-procedure ab_WorldImage_Update; // @addr $5569E8
+procedure ab_WorldImage_Clear; // @addr $66322C
+function ab_WorldImage_Add: PabWorldImage; // @addr $663260 @note "Allocates and links a node owned by the world list."
+procedure ab_WorldImage_Delete(Entry: PabWorldImage); // @addr $663308
+function ab_WorldImage_Create(Position: TVector3D; const FrontPath, BackPath: WideString; StopAnimation: Boolean): PabWorldImage; // @addr $66337C
+procedure ab_WorldImage_Set(Entry: PabWorldImage; Position: TVector3D; const FrontPath, BackPath: WideString); // @addr $6633FC
+procedure ab_WorldImage_SetPosition(Entry: PabWorldImage; Position: TVector3D); // @addr $66346C
+procedure ab_WorldImage_SetDepth(Entry: PabWorldImage; FrontDepth, BackDepth: Single); // @addr $663490
+procedure ab_WorldImage_SetFrameMode(Entry: PabWorldImage; Value: Integer); // @addr $6634A8
+procedure ab_WorldImage_SetLooping(Entry: PabWorldImage; Value: Boolean); // @addr $6634AC
+procedure ab_WorldImage_Update; // @addr $6634B8
 
 var
-  WorldImageHeap: Cardinal = 0; // @addr $87AF54
-  FirstWorldImage: PabWorldImage = nil; // @addr $87AF58
-  LastWorldImage: PabWorldImage = nil; // @addr $87AF5C
+  WorldImageHeap: Cardinal = 0; // @addr $80F79C
+  FirstWorldImage: PabWorldImage = nil; // @addr $80F7A0
+  LastWorldImage: PabWorldImage = nil; // @addr $80F7A4
 
 implementation
 
 uses Windows, Classes, SysUtils, EC_Mem, GI_Tail, ab_Global, Globals, aMyFunction;
 
-{ @routine $55667C ab_WorldImage_Clear }
+{ @routine $66322C ab_WorldImage_Clear }
 procedure ab_WorldImage_Clear;
 begin
-  while not (FirstWorldImage = nil) do ab_WorldImage_Delete(LastWorldImage);
+  while FirstWorldImage <> nil do ab_WorldImage_Delete(LastWorldImage);
   if WorldImageHeap <> 0 then
   begin
     HeapDestroy(WorldImageHeap);
     WorldImageHeap := 0;
   end;
 end;
-{ @end $55667C }
+{ @end $66322C }
 
-{ @routine $5566B0 ab_WorldImage_Add }
+{ @routine $663260 ab_WorldImage_Add }
 function ab_WorldImage_Add: PabWorldImage;
 var
   Entry: PabWorldImage;
@@ -80,9 +79,9 @@ begin
   if FirstWorldImage = nil then FirstWorldImage := Entry;
   Result := Entry;
 end;
-{ @end $5566B0 }
+{ @end $663260 }
 
-{ @routine $556778 ab_WorldImage_Delete }
+{ @routine $663308 ab_WorldImage_Delete }
 procedure ab_WorldImage_Delete(Entry: PabWorldImage);
 begin
   if Entry.Prev <> nil then Entry.Prev.Next := Entry.Next;
@@ -98,9 +97,9 @@ begin
   Entry.BackImagePath := '';
   if WorldImageHeap <> 0 then FreeFromHeapEC(WorldImageHeap, Entry);
 end;
-{ @end $556778 }
+{ @end $663308 }
 
-{ @routine $556820 ab_WorldImage_Create }
+{ @routine $66337C ab_WorldImage_Create }
 function ab_WorldImage_Create(Position: TVector3D; const FrontPath, BackPath: WideString; StopAnimation: Boolean): PabWorldImage;
 var
   Entry: PabWorldImage;
@@ -118,9 +117,9 @@ begin
   Entry.StopAnimation := StopAnimation;
   Result := Entry;
 end;
-{ @end $556820 }
+{ @end $66337C }
 
-{ @routine $5568C4 ab_WorldImage_Set }
+{ @routine $6633FC ab_WorldImage_Set }
 procedure ab_WorldImage_Set(Entry: PabWorldImage; Position: TVector3D; const FrontPath, BackPath: WideString);
 begin
   Entry.Position := Position;
@@ -133,41 +132,41 @@ begin
   Entry.FrameMode := afmRestart;
   Entry.Dirty := True;
 end;
-{ @end $5568C4 }
+{ @end $6633FC }
 
-{ @routine $55694C ab_WorldImage_SetPosition }
+{ @routine $66346C ab_WorldImage_SetPosition }
 procedure ab_WorldImage_SetPosition(Entry: PabWorldImage; Position: TVector3D);
 begin
   Entry.Position := Position;
 end;
-{ @end $55694C }
+{ @end $66346C }
 
-{ @routine $55697C ab_WorldImage_SetDepth }
+{ @routine $663490 ab_WorldImage_SetDepth }
 procedure ab_WorldImage_SetDepth(Entry: PabWorldImage; FrontDepth, BackDepth: Single);
 begin
   Entry.FrontDepth := FrontDepth;
   Entry.BackDepth := BackDepth;
   Entry.Dirty := True;
 end;
-{ @end $55697C }
+{ @end $663490 }
 
-{ @routine $5569A4 ab_WorldImage_SetFrameMode }
+{ @routine $6634A8 ab_WorldImage_SetFrameMode }
 procedure ab_WorldImage_SetFrameMode(Entry: PabWorldImage; Value: Integer);
 begin
   Entry.FrameMode := Value;
 end;
-{ @end $5569A4 }
+{ @end $6634A8 }
 
-{ @routine $5569C0 ab_WorldImage_SetLooping }
+{ @routine $6634AC ab_WorldImage_SetLooping }
 procedure ab_WorldImage_SetLooping(Entry: PabWorldImage; Value: Boolean);
 begin
   Entry.LoopAnimation := Value;
   Entry.Dirty := True;
   Entry.StopAnimation := False;
 end;
-{ @end $5569C0 }
+{ @end $6634AC }
 
-{ @routine $5569E8 ab_WorldImage_Update }
+{ @routine $6634B8 ab_WorldImage_Update }
 procedure ab_WorldImage_Update;
 var
   Entry: PabWorldImage;
@@ -181,7 +180,7 @@ begin
   begin
     if Entry.Finished then
     begin
-      if Entry.Image <> nil then Entry.Image.SetActive(False);
+      if Entry.Image <> nil then Entry.Image.IsActive := False;
       Entry := Entry.Next;
       Continue;
     end;
@@ -193,12 +192,12 @@ begin
     begin
       if (Entry.Image.Depth <> Entry.BackDepth) or Entry.Dirty then
       begin
-        Entry.Image.SetActive(Entry.BackImagePath <> '');
+        Entry.Image.IsActive := Entry.BackImagePath <> '';
         if Entry.Image.Active then
         begin
-          Entry.Image.SetImagePath(Entry.BackImagePath);
-          Entry.Image.SetSize(Entry.Image.GetContentSize);
-          Entry.Image.SetOrigin(HalfPoint(Entry.Image.ClientSize));
+          Entry.Image.ImageSourcePath := Entry.BackImagePath;
+          Entry.Image.ObjectSize := Entry.Image.GetContentSize;
+          Entry.Image.Sme := HalfPoint(Entry.Image.ClientSize);
           if (Entry.Image.GaiImageControl <> nil) and not Entry.StopAnimation then
           begin
             Entry.Image.GaiImageControl.UserValue := Integer(Entry);
@@ -219,12 +218,12 @@ begin
     begin
       if (Entry.Image.Depth <> Entry.FrontDepth) or Entry.Dirty then
       begin
-        Entry.Image.SetActive(Entry.FrontImagePath <> '');
+        Entry.Image.IsActive := Entry.FrontImagePath <> '';
         if Entry.Image.Active then
         begin
-          Entry.Image.SetImagePath(Entry.FrontImagePath);
-          Entry.Image.SetSize(Entry.Image.GetContentSize);
-          Entry.Image.SetOrigin(HalfPoint(Entry.Image.ClientSize));
+          Entry.Image.ImageSourcePath := Entry.FrontImagePath;
+          Entry.Image.ObjectSize := Entry.Image.GetContentSize;
+          Entry.Image.Sme := HalfPoint(Entry.Image.ClientSize);
           if (Entry.Image.GaiImageControl <> nil) and not Entry.StopAnimation then
           begin
             Entry.Image.GaiImageControl.UserValue := Integer(Entry);
@@ -242,10 +241,10 @@ begin
       end;
     end;
     Entry.Dirty := False;
-    Entry.Image.SetPosition(Classes.Point(Round(Position.X), Round(Position.Y)));
+    Entry.Image.Pos := Classes.Point(Round(Position.X), Round(Position.Y));
     Entry := Entry.Next;
   end;
 end;
-{ @end $5569E8 }
+{ @end $6634B8 }
 
 end.

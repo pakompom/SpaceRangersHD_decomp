@@ -1,5 +1,4 @@
 unit GI_PSEyes;
-// Unit bracket (inferred): .text 0x006989F4..0x0069A767; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 // Native eye/lightning effect, particles and dormant line-list storage.
 
 interface
@@ -32,11 +31,11 @@ type
   TEyesPalette = array[0..1] of Word;
 
 var
-  EyesPalettes: array of TEyesPalette; // @addr $88AF14
-  EyesWidths: array of Integer; // @addr $88AF18
-  EyesSegmentLengths: array of Integer; // @addr $88AF1C
-  EyesDispersions: array of Integer; // @addr $88AF20
-  EyesStartingAlphas: array of Integer; // @addr $88AF24
+  EyesPalettes: array of TEyesPalette; // @addr $81B180
+  EyesWidths: array of Integer; // @addr $81B184
+  EyesSegmentLengths: array of Integer; // @addr $81B188
+  EyesDispersions: array of Integer; // @addr $81B18C
+  EyesStartingAlphas: array of Integer; // @addr $81B190
 
 type
   TPSEyesGI = class(TPSWeaponGI) // @size $168
@@ -54,33 +53,33 @@ type
     SecondaryColor: Word; // @offset $162
     BeamTicks: Integer; // @offset $164
 
-    constructor Create(Owner: TObjectGI; PaletteIndex: Integer); // @addr $698BD4
-    destructor Destroy; override; // @addr $698CE4
-    procedure SetPosition(Position: TPoint); override; // @addr $698D38
-    procedure SetTargetPoint(Point: TPoint); override; // @addr $698D7C
-    procedure UpdateProjectionBounds; // @addr $698DD0
-    procedure UpdateHitTestBounds; override; // @addr $6990EC
-    function GetLocalBounds: TRect; override; // @addr $69914C
-    function AddParticle: PEyesParticle; // @addr $6991B0
-    procedure ClearParticles; // @addr $699228
-    procedure ClearLines; // @addr $69927C
-    procedure EmitBurst(Point: TPoint; Radius: Integer); // @addr $6993C0
-    procedure Invalidate; override; // @addr $6992D0 @note "Native empty override."
-    procedure InvalidateRect(Rect: TRect); override; // @addr $6992DC
-    procedure Advance(Timer: PCallbackTimerGI; UserData: Integer); override; // @addr $6995B8
-    procedure Draw(ClipRect: TRect); override; // @addr $6997E8
+    constructor Create(Owner: TObjectGI; PaletteIndex: Integer); // @addr $4EC018
+    destructor Destroy; override; // @addr $4EC0E8
+    procedure SetPosition(Position: TPoint); override; // @addr $4EC128
+    procedure SetTargetPoint(Point: TPoint); override; // @addr $4EC160
+    procedure UpdateProjectionBounds; // @addr $4EC1A0
+    procedure UpdateHitTestBounds; override; // @addr $4EC4F8
+    function GetLocalBounds: TRect; override; // @addr $4EC52C
+    function AddParticle: PEyesParticle; // @addr $4EC55C
+    procedure ClearParticles; // @addr $4EC59C
+    procedure ClearLines; // @addr $4EC5D0
+    procedure EmitBurst(Point: TPoint; Radius: Integer); // @addr $4EC6C0
+    procedure Invalidate; override; // @addr $4EC604 @note "Native empty override."
+    procedure InvalidateRect(Rect: TRect); override; // @addr $4EC608
+    procedure Advance(Timer: TCallbackTimerIdGI; UserData: Cardinal); override; // @addr $4EC898
+    procedure Draw(ClipRect: TRect); override; // @addr $4ECA40
   end;
 
-procedure LoadEyesPalettes; // @addr $69A068
+procedure LoadEyesPalettes; // @addr $4ED2C0
 
 implementation
 
-// @unit-initialization $877964
-// @unit-finalization $69A6E8
+// @unit-initialization $806814
+// @unit-finalization $4ED8CC
 
 uses SysUtils, Classes, Math, EC_BlockPar, EC_Str, EC_Mem, GR_Main, GR_DX, aMyFunction, Globals;
 
-{ @routine $698BD4 TPSEyesGI_Create }
+{ @routine $4EC018 TPSEyesGI_Create }
 constructor TPSEyesGI.Create(Owner: TObjectGI; PaletteIndex: Integer);
 begin
   inherited Create(Owner);
@@ -97,9 +96,9 @@ begin
   LastLine := nil;
   StartingAlpha := EyesStartingAlphas[PaletteIndex];
 end;
-{ @end $698BD4 }
+{ @end $4EC018 }
 
-{ @routine $698CE4 TPSEyesGI_Destroy }
+{ @routine $4EC0E8 TPSEyesGI_Destroy }
 destructor TPSEyesGI.Destroy;
 begin
   InvalidateRect(HitTestBounds);
@@ -107,9 +106,9 @@ begin
   ClearParticles;
   inherited Destroy;
 end;
-{ @end $698CE4 }
+{ @end $4EC0E8 }
 
-{ @routine $698D38 TPSEyesGI_SetPosition }
+{ @routine $4EC128 TPSEyesGI_SetPosition }
 procedure TPSEyesGI.SetPosition(Position: TPoint);
 begin
   if (LocalPosition.X <> Position.X) or (LocalPosition.Y <> Position.Y) then
@@ -118,9 +117,9 @@ begin
     UpdateProjectionBounds;
   end;
 end;
-{ @end $698D38 }
+{ @end $4EC128 }
 
-{ @routine $698D7C TPSEyesGI_SetTargetPoint }
+{ @routine $4EC160 TPSEyesGI_SetTargetPoint }
 procedure TPSEyesGI.SetTargetPoint(Point: TPoint);
 begin
   if (TargetPoint.X <> Point.X) or (TargetPoint.Y <> Point.Y) then
@@ -129,9 +128,9 @@ begin
     UpdateProjectionBounds;
   end;
 end;
-{ @end $698D7C }
+{ @end $4EC160 }
 
-{ @routine $698DD0 TPSEyesGI_UpdateProjectionBounds }
+{ @routine $4EC1A0 TPSEyesGI_UpdateProjectionBounds }
 procedure TPSEyesGI.UpdateProjectionBounds;
 var
   Distance, Angle, Sine, Cosine, A, B, C, D: Single;
@@ -157,9 +156,9 @@ begin
   ProjectionBounds.Top := Floor(Math.Min(Math.Min(Math.Min(A, B), C), D));
   ProjectionBounds.Bottom := Ceil(Math.Max(Math.Max(Math.Max(A, B), C), D));
 end;
-{ @end $698DD0 }
+{ @end $4EC1A0 }
 
-{ @routine $6990EC TPSEyesGI_UpdateHitTestBounds }
+{ @routine $4EC4F8 TPSEyesGI_UpdateHitTestBounds }
 procedure TPSEyesGI.UpdateHitTestBounds;
 begin
   HitTestBounds.Left := ProjectionBounds.Left + AbsolutePosition.X;
@@ -167,9 +166,9 @@ begin
   HitTestBounds.Right := ProjectionBounds.Right + AbsolutePosition.X;
   HitTestBounds.Bottom := ProjectionBounds.Bottom + AbsolutePosition.Y;
 end;
-{ @end $6990EC }
+{ @end $4EC4F8 }
 
-{ @routine $69914C TPSEyesGI_GetLocalBounds }
+{ @routine $4EC52C TPSEyesGI_GetLocalBounds }
 function TPSEyesGI.GetLocalBounds: TRect;
 begin
   Result.Left := ProjectionBounds.Left + LocalPosition.X;
@@ -177,9 +176,9 @@ begin
   Result.Right := ProjectionBounds.Right + LocalPosition.X;
   Result.Bottom := ProjectionBounds.Bottom + LocalPosition.Y;
 end;
-{ @end $69914C }
+{ @end $4EC52C }
 
-{ @routine $6991B0 TPSEyesGI_AddParticle }
+{ @routine $4EC55C TPSEyesGI_AddParticle }
 function TPSEyesGI.AddParticle: PEyesParticle;
 var
   Particle: PEyesParticle;
@@ -192,9 +191,9 @@ begin
   if FirstParticle = nil then FirstParticle := Particle;
   Result := Particle;
 end;
-{ @end $6991B0 }
+{ @end $4EC55C }
 
-{ @routine $699228 TPSEyesGI_ClearParticles }
+{ @routine $4EC59C TPSEyesGI_ClearParticles }
 procedure TPSEyesGI.ClearParticles;
 var
   Particle, Current: PEyesParticle;
@@ -209,9 +208,9 @@ begin
   FirstParticle := nil;
   LastParticle := nil;
 end;
-{ @end $699228 }
+{ @end $4EC59C }
 
-{ @routine $69927C TPSEyesGI_ClearLines }
+{ @routine $4EC5D0 TPSEyesGI_ClearLines }
 procedure TPSEyesGI.ClearLines;
 var
   Particle, Current: PEyesLine;
@@ -226,15 +225,15 @@ begin
   FirstLine := nil;
   LastLine := nil;
 end;
-{ @end $69927C }
+{ @end $4EC5D0 }
 
-{ @routine $6992D0 TPSEyesGI_Invalidate }
+{ @routine $4EC604 TPSEyesGI_Invalidate }
 procedure TPSEyesGI.Invalidate;
 begin
 end;
-{ @end $6992D0 }
+{ @end $4EC604 }
 
-{ @routine $6992DC TPSEyesGI_InvalidateRect }
+{ @routine $4EC608 TPSEyesGI_InvalidateRect }
 procedure TPSEyesGI.InvalidateRect(Rect: TRect);
 var
   Target: TPoint;
@@ -249,9 +248,9 @@ begin
   if IntersectRects(Intersection, Rect, GameScreenRect) then
     MessageLoop.QueueUpdateRect(Intersection);
 end;
-{ @end $6992DC }
+{ @end $4EC608 }
 
-{ @routine $6993C0 TPSEyesGI_EmitBurst }
+{ @routine $4EC6C0 TPSEyesGI_EmitBurst }
 procedure TPSEyesGI.EmitBurst(Point: TPoint; Radius: Integer);
 var
   X, Y: Integer;
@@ -274,10 +273,10 @@ begin
       else Particle.Velocity.Y := Particle.Velocity.Y + Random(11) / 16.0;
     end;
 end;
-{ @end $6993C0 }
+{ @end $4EC6C0 }
 
-{ @routine $6995B8 TPSEyesGI_Advance }
-procedure TPSEyesGI.Advance(Timer: PCallbackTimerGI; UserData: Integer);
+{ @routine $4EC898 TPSEyesGI_Advance }
+procedure TPSEyesGI.Advance(Timer: TCallbackTimerIdGI; UserData: Cardinal);
 var
   Particle, Current: PEyesParticle;
 begin
@@ -323,9 +322,9 @@ begin
   Dec(RemainingTicks);
   Dec(BeamTicks);
 end;
-{ @end $6995B8 }
+{ @end $4EC898 }
 
-{ @routine $6997E8 TPSEyesGI_Draw }
+{ @routine $4ECA40 TPSEyesGI_Draw }
 procedure TPSEyesGI.Draw(ClipRect: TRect);
 var
   Particle: PEyesParticle;
@@ -473,15 +472,15 @@ begin
     end;
   end;
 end;
-{ @end $6997E8 }
+{ @end $4ECA40 }
 
-{ @routine $69A068 LoadEyesPalettes }
+{ @routine $4ED2C0 LoadEyesPalettes }
 procedure LoadEyesPalettes;
 var
   Block, PaletteBlock: TBlockParEC;
   Index, BlockCount, Count: Integer;
   Text: WideString;
-  UnusedNativeFrame: Integer; // Native retains one unreferenced four-byte slot.
+  UnusedNativeFrame: array[0..3] of Byte; // Native retains one unreferenced four-byte slot; original type is unknown.
 begin
   Block := GameDataConfig.FindBlockByPath('SE.Weapon.Eyes.Palettes');
   Count := 0;
@@ -552,6 +551,6 @@ begin
     end;
   end;
 end;
-{ @end $69A068 }
+{ @end $4ED2C0 }
 
 end.

@@ -1,5 +1,4 @@
 unit SE_StarsField;
-// Unit bracket (inferred): .text 0x00823880..0x00823BFC; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -12,16 +11,16 @@ type
     ImagePath: WideString; // @offset $4C
     InfiniteImage: TInfiniteImageGI; // @offset $50
     StaticImage: TSimpleImageGI; // @offset $54
-    procedure AttachToSpace(ASpace: TSpaceSE); override; // @addr $823948
-    procedure DetachFromSpace; override; // @addr $823A94
-    procedure LoadTemplate(Block: TBlockParEC); override; // @addr $823AFC
-    procedure QueueImageLoad(PendingLoads: TList; Owner: TObjectGI); override; // @addr $823B78
+    procedure AttachToSpace(ASpace: TSpaceSE); override; // @addr $781914
+    procedure DetachFromSpace; override; // @addr $781A08
+    procedure LoadTemplate(Block: TBlockParEC); override; // @addr $781A50
+    procedure QueueImageLoad(PendingLoads: TList; Owner: TObjectGI); override; // @addr $781AC0
   end;
 
 implementation
 
 uses GlobalsV, GI_Image;
-{ @routine $823948 TStarsFieldSE_AttachToSpace }
+{ @routine $781914 TStarsFieldSE_AttachToSpace }
 procedure TStarsFieldSE.AttachToSpace(ASpace: TSpaceSE);
 begin
   if IsAttachedToSpace then Exit;
@@ -30,24 +29,24 @@ begin
   begin
     StaticImage := TSimpleImageGI.Create(Space.MapPanel);
     StaticImage.SetDepthByName(DepthExpression);
-    StaticImage.SetPositionModeW(False);
-    StaticImage.SetImageKindX(ikxLeftFill);
-    StaticImage.SetImageKindY(ikyTopFill);
-    StaticImage.SetPosition(Classes.Point(-Space.MapPanel.OriginPoint.X, -Space.MapPanel.OriginPoint.Y));
-    StaticImage.SetSize(Classes.Point(Space.MapPanel.ClientSize.X, Space.MapPanel.ClientSize.Y));
+    StaticImage.World := False;
+    StaticImage.KindX := ikxLeftFill;
+    StaticImage.KindY := ikyTopFill;
+    StaticImage.Pos := Classes.Point(-Space.MapPanel.OriginPoint.X, -Space.MapPanel.OriginPoint.Y);
+    StaticImage.ObjectSize := Classes.Point(Space.MapPanel.ClientSize.X, Space.MapPanel.ClientSize.Y);
     StaticImage.SetImagePath(ImagePath);
   end
   else
   begin
     InfiniteImage := TInfiniteImageGI.Create(Space.MapPanel);
     InfiniteImage.SetDepthByName(DepthExpression);
-    InfiniteImage.SetPositionModeW(True);
+    InfiniteImage.World := True;
     InfiniteImage.SetImagePath(ImagePath);
   end;
 end;
-{ @end $823948 }
+{ @end $781914 }
 
-{ @routine $823A94 TStarsFieldSE_DetachFromSpace }
+{ @routine $781A08 TStarsFieldSE_DetachFromSpace }
 procedure TStarsFieldSE.DetachFromSpace;
 begin
   if not IsAttachedToSpace then Exit;
@@ -63,17 +62,17 @@ begin
   end;
   inherited DetachFromSpace;
 end;
-{ @end $823A94 }
+{ @end $781A08 }
 
-{ @routine $823AFC TStarsFieldSE_LoadTemplate }
+{ @routine $781A50 TStarsFieldSE_LoadTemplate }
 procedure TStarsFieldSE.LoadTemplate(Block: TBlockParEC);
 begin
   inherited LoadTemplate(Block);
   ImagePath := Block.GetParam('Image');
 end;
-{ @end $823AFC }
+{ @end $781A50 }
 
-{ @routine $823B78 TStarsFieldSE_QueueImageLoad }
+{ @routine $781AC0 TStarsFieldSE_QueueImageLoad }
 procedure TStarsFieldSE.QueueImageLoad(PendingLoads: TList; Owner: TObjectGI);
 begin
   if StaticBackground then
@@ -91,6 +90,6 @@ begin
       Free;
     end;
 end;
-{ @end $823B78 }
+{ @end $781AC0 }
 
 end.

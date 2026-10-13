@@ -1,5 +1,4 @@
 unit ab_Space;
-// Unit bracket (inferred): .text 0x0054F680..0x005539D3; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -29,26 +28,26 @@ type
     ImageActive: Boolean; // @offset $64
     Image: TgaiGI; // @offset $68
 
-    constructor Create; // @addr $54F6E8
-    destructor Destroy; override; // @addr $54F774
-    procedure UpdateVisuals; // @addr $54F7DC Empty native update hook.
-    procedure Update; // @addr $54FAF0
-    procedure ClearVisuals; // @addr $54F7C8
-    procedure ClearImage; // @addr $54FAC0
-    procedure ClearObjects; // @addr $54FB04
-    procedure UpdateApproachDanger; // @addr $5527B0
-    procedure PruneApproachDanger; // @addr $5527F4 Native instance receiver is unused; visits the complete graph.
-    function GetDangerText: WideString; // @addr $5528EC
-    procedure CreateImage; // @addr $54F7E8
-    procedure PopulateObjects; // @addr $54FB50
-    procedure PopulateHoleEncounter; // @addr $5508B0
-    procedure PopulateScriptedEncounter; // @addr $551D88
-    procedure PopulateKellerEncounter; // @addr $551F30
-    procedure RecountLinks; // @addr $552CD8
+    constructor Create; // @addr $654068
+    destructor Destroy; override; // @addr $6540DC
+    procedure UpdateVisuals; // @addr $654124 Empty native update hook.
+    procedure Update; // @addr $6543DC
+    procedure ClearVisuals; // @addr $65411C
+    procedure ClearImage; // @addr $6543C0
+    procedure ClearObjects; // @addr $6543E4
+    procedure UpdateApproachDanger; // @addr $656C84
+    procedure PruneApproachDanger; // @addr $656CBC Native instance receiver is unused; visits the complete graph.
+    function GetDangerText: WideString; // @addr $656D50
+    procedure CreateImage; // @addr $654128
+    procedure PopulateObjects; // @addr $654418
+    procedure PopulateHoleEncounter; // @addr $6550B4
+    procedure PopulateScriptedEncounter; // @addr $6563E0
+    procedure PopulateKellerEncounter; // @addr $65655C
+    procedure RecountLinks; // @addr $657060
   end;
 
   PabSpaceLink = ^TabSpaceLink;
-  TabSpaceLink = record // @size $6C Allocation size at $552DA4.
+  TabSpaceLink = record // @size $6C Allocation size at $6570DC.
     Prev: PabSpaceLink; // @offset $00
     Next: PabSpaceLink; // @offset $04
     First: TabSpace; // @offset $08
@@ -57,46 +56,46 @@ type
     Points: array[0..10] of TPoint; // @offset $14 Arrow outline and halo geometry.
   end;
 
-procedure ab_Space_UpdateApproachDanger; // @addr $552D38
-procedure ab_Space_CreateImages; // @addr $552BC8
-procedure ab_Space_ClearImages; // @addr $552BF4
-procedure ab_SpaceLink_Invalidate; // @addr $552F58
-procedure ab_SpaceLink_BuildGeometry; // @addr $5530B8
-procedure ab_SpaceLink_Draw; // @addr $553548
-procedure ab_SpaceLink_ClearImages; // @addr $553524
-procedure ab_Space_Clear; // @addr $552A7C
-function ab_Space_Add: TabSpace; // @addr $552AB4
-procedure ab_Space_Delete(Space: TabSpace); // @addr $552B18
-function ab_Space_Find(GridPosition: TPoint): TabSpace; // @addr $552C54
-procedure ab_Space_RecountLinks; // @addr $552CAC
-procedure ab_SpaceLink_Clear; // @addr $552D8C
-function ab_SpaceLink_Add: PabSpaceLink; // @addr $552DA4
-procedure ab_SpaceLink_Delete(Link: PabSpaceLink); // @addr $552E04
-procedure ab_SpaceLink_Connect(First, Last: TabSpace); // @addr $552E6C
-function ab_SpaceLink_Find(First, Last: TabSpace): PabSpaceLink; // @addr $552E98
-function ab_SpaceLink_FindExit(First: TabSpace; ExitIndex: Integer): PabSpaceLink; // @addr $552F04
+procedure ab_Space_UpdateApproachDanger; // @addr $657090
+procedure ab_Space_CreateImages; // @addr $656FB0
+procedure ab_Space_ClearImages; // @addr $656FCC
+procedure ab_SpaceLink_Invalidate; // @addr $6571C8
+procedure ab_SpaceLink_BuildGeometry; // @addr $6572E8
+procedure ab_SpaceLink_Draw; // @addr $657770
+procedure ab_SpaceLink_ClearImages; // @addr $65775C
+procedure ab_Space_Clear; // @addr $656EC8
+function ab_Space_Add: TabSpace; // @addr $656F00
+procedure ab_Space_Delete(Space: TabSpace); // @addr $656F40
+function ab_Space_Find(GridPosition: TPoint): TabSpace; // @addr $657008
+procedure ab_Space_RecountLinks; // @addr $657044
+procedure ab_SpaceLink_Clear; // @addr $6570C4
+function ab_SpaceLink_Add: PabSpaceLink; // @addr $6570DC
+procedure ab_SpaceLink_Delete(Link: PabSpaceLink); // @addr $65711C
+procedure ab_SpaceLink_Connect(First, Last: TabSpace); // @addr $65715C
+function ab_SpaceLink_Find(First, Last: TabSpace): PabSpaceLink; // @addr $657170
+function ab_SpaceLink_FindExit(First: TabSpace; ExitIndex: Integer): PabSpaceLink; // @addr $6571A0
 
 var
-  FirstArcadeSpace: TabSpace = nil; // @addr $87AEEC
-  LastArcadeSpace: TabSpace = nil; // @addr $87AEF0
-  CurrentArcadeSpace: TabSpace = nil; // @addr $87AEF4
-  NextArcadeSpace: TabSpace = nil; // @addr $87AEF8 Destination selected before entering a space.
-  StartArcadeSpace: TabSpace = nil; // @addr $87AEFC
-  EndArcadeSpace: TabSpace = nil; // @addr $87AF00
-  HoveredArcadeSpace: TabSpace = nil; // @addr $87AF04
-  FirstArcadeSpaceLink: PabSpaceLink = nil; // @addr $87AF08
-  LastArcadeSpaceLink: PabSpaceLink = nil; // @addr $87AF0C
+  FirstArcadeSpace: TabSpace = nil; // @addr $80F734
+  LastArcadeSpace: TabSpace = nil; // @addr $80F738
+  CurrentArcadeSpace: TabSpace = nil; // @addr $80F73C
+  NextArcadeSpace: TabSpace = nil; // @addr $80F740 Destination selected before entering a space.
+  StartArcadeSpace: TabSpace = nil; // @addr $80F744
+  EndArcadeSpace: TabSpace = nil; // @addr $80F748
+  HoveredArcadeSpace: TabSpace = nil; // @addr $80F74C
+  FirstArcadeSpaceLink: PabSpaceLink = nil; // @addr $80F750
+  LastArcadeSpaceLink: PabSpaceLink = nil; // @addr $80F754
 
-procedure ab_Space_Update; // @addr $552C28
+procedure ab_Space_Update; // @addr $656FEC
 
 var
-  ArcadeKellerEncounter: Boolean; // @addr $88A800
+  ArcadeKellerEncounter: Boolean; // @addr $81B878
 
 implementation
 
 uses aKling, SysUtils, Math, EC_Mem, GR_Main, GR_DX, Globals, GlobalsV, GI_Tail, ab_Global, aConst, aMyFunction, aPlayer, aGalaxy, aItem, aGalaxyStruct, ab_ShipAI, ab_Item, ab_Ship, ab_W, ab_MainForm, ab_Hit;
 
-{ @routine $54F6E8 TabSpace_Create }
+{ @routine $654068 TabSpace_Create }
 constructor TabSpace.Create;
 begin
   inherited Create;
@@ -105,9 +104,9 @@ begin
   Objects := TList.Create;
   ImageActive := False;
 end;
-{ @end $54F6E8 }
+{ @end $654068 }
 
-{ @routine $54F774 TabSpace_Destroy }
+{ @routine $6540DC TabSpace_Destroy }
 destructor TabSpace.Destroy;
 begin
   ClearVisuals;
@@ -116,22 +115,22 @@ begin
   Objects := nil;
   inherited Destroy;
 end;
-{ @end $54F774 }
+{ @end $6540DC }
 
-{ @routine $54F7C8 TabSpace_ClearVisuals }
+{ @routine $65411C TabSpace_ClearVisuals }
 procedure TabSpace.ClearVisuals;
 begin
   ClearImage;
 end;
-{ @end $54F7C8 }
+{ @end $65411C }
 
-{ @routine $54F7DC TabSpace_UpdateVisuals }
+{ @routine $654124 TabSpace_UpdateVisuals }
 procedure TabSpace.UpdateVisuals;
 begin
 end;
-{ @end $54F7DC }
+{ @end $654124 }
 
-{ @routine $54F7E8 TabSpace_CreateImage }
+{ @routine $654128 TabSpace_CreateImage }
 procedure TabSpace.CreateImage;
 begin
   ImageActive := True;
@@ -145,18 +144,18 @@ begin
       Image.SetImagePath('Bm.ABClot.' + GiResourceSuffix + '1_' + IntToStr(RandomIntRange(0, 3)))
     else
       Image.SetImagePath('Bm.ABClot.' + GiResourceSuffix + '2_' + IntToStr(RandomIntRange(0, 1)));
-    Image.SetSize(Image.GetContentSize);
-    Image.SetOrigin(HalfPoint(Image.ClientSize));
+    Image.ObjectSize := Image.GetContentSize;
+    Image.Sme := HalfPoint(Image.ClientSize);
     Image.SequenceIndex := 0;
     Image.UpdateAutoGeometry;
     Image.SetSequenceFrame(RandomIntRange(0, Image.SequenceFrameCount - 1));
-    Image.SetActive(True);
+    Image.IsActive := True;
     Image.RestartPlayback;
   end;
 end;
-{ @end $54F7E8 }
+{ @end $654128 }
 
-{ @routine $54FAC0 TabSpace_ClearImage }
+{ @routine $6543C0 TabSpace_ClearImage }
 procedure TabSpace.ClearImage;
 begin
   if Image <> nil then
@@ -166,16 +165,16 @@ begin
   end;
   ImageActive := False;
 end;
-{ @end $54FAC0 }
+{ @end $6543C0 }
 
-{ @routine $54FAF0 TabSpace_Update }
+{ @routine $6543DC TabSpace_Update }
 procedure TabSpace.Update;
 begin
   UpdateVisuals;
 end;
-{ @end $54FAF0 }
+{ @end $6543DC }
 
-{ @routine $54FB04 TabSpace_ClearObjects }
+{ @routine $6543E4 TabSpace_ClearObjects }
 procedure TabSpace.ClearObjects;
 var
   Index: Integer;
@@ -183,9 +182,9 @@ begin
   for Index := 0 to Objects.Count - 1 do TObject(Objects[Index]).Free;
   Objects.Clear;
 end;
-{ @end $54FB04 }
+{ @end $6543E4 }
 
-{ @routine $54FB50 TabSpace_PopulateObjects }
+{ @routine $654418 TabSpace_PopulateObjects }
 procedure TabSpace.PopulateObjects;
 var
   Ship: TabShipAI;
@@ -276,9 +275,9 @@ begin
     if Kind > MineralBudget then Break;
   end;
 end;
-{ @end $54FB50 }
+{ @end $654418 }
 
-{ @routine $5508B0 TabSpace_PopulateHoleEncounter }
+{ @routine $6550B4 TabSpace_PopulateHoleEncounter }
 procedure TabSpace.PopulateHoleEncounter;
 var
   Item: TItem;
@@ -365,9 +364,9 @@ begin
     if Kind > MineralBudget then Break;
   end;
 end;
-{ @end $5508B0 }
+{ @end $6550B4 }
 
-{ @routine $551D88 TabSpace_PopulateScriptedEncounter }
+{ @routine $6563E0 TabSpace_PopulateScriptedEncounter }
 procedure TabSpace.PopulateScriptedEncounter;
 var
   Kind: Integer;
@@ -376,8 +375,8 @@ var
   Ship: TabShipAI;
   Minimum, Maximum, J: Integer;
   OtherShip: TabShip;
-  // @nested $5514C8 InitializeScriptedEncounterShip
-  procedure InitializeScriptedEncounterShip; // @addr $5514C8 @ida "void __cdecl $name(void *ParentFrame);"
+  // @nested $655C10 InitializeScriptedEncounterShip
+  procedure InitializeScriptedEncounterShip; // @addr $655C10 @ida "void __cdecl $name(void *ParentFrame);"
   var
     WeaponIndex, Hitpoints: Integer;
   begin
@@ -445,7 +444,7 @@ begin
   Maximum := Round(RemapClamped(Galaxy.RefreshTechLevel, 3, 8, 6, 15));
   for Index := 0 to ActiveArcadeRequestShips.Count - 1 do
   begin
-    Ship := TabShipAI(ActiveArcadeRequestShips[Index]);
+    Ship := ActiveArcadeRequestShips[Index];
     InitializeScriptedEncounterShip;
     if Ship.Team = 1 then PlayerArcadeShip.AddTrackedShip(Ship)
     else
@@ -454,18 +453,20 @@ begin
       Ship.AddEnemy(PlayerArcadeShip);
     end;
     for J := 0 to ActiveArcadeRequestShips.Count - 1 do
-      if J <> Index then
       begin
-        OtherShip := TabShip(ActiveArcadeRequestShips[J]);
+  if J = Index then Continue;
+  begin
+        OtherShip := ActiveArcadeRequestShips[J];
         if Ship.Team <> OtherShip.Team then Ship.AddEnemy(OtherShip);
       end;
+end;
     Objects.Add(Ship);
   end;
   ActiveArcadeRequestShips.Clear;
 end;
-{ @end $551D88 }
+{ @end $6563E0 }
 
-{ @routine $551F30 TabSpace_PopulateKellerEncounter }
+{ @routine $65655C TabSpace_PopulateKellerEncounter }
 procedure TabSpace.PopulateKellerEncounter;
 var
   Ship: TabShipAI;
@@ -528,8 +529,16 @@ begin
     Ship.TurnSpeed := Ship.TurnSpeed * GalaxyDifficultyTuning[Galaxy.DifficultyLevels[6]].QuestTimeAndExperienceFactor;
     Ship.Thrust := 0;
     Ship.WeaponCount := 0;
-    if I = 0 then begin Minimum := 8; Maximum := 13; end
-    else begin Minimum := 5; Maximum := 10; end;
+    if I = 0 then
+    begin
+      Minimum := 8;
+      Maximum := 13;
+    end
+    else
+    begin
+      Minimum := 5;
+      Maximum := 10;
+    end;
     Kind := ArcadeBattleScreen.RandomRange(Minimum, Maximum);
     Ship.AddWeapon(Kind);
     Ship.AddWeapon(IncrementWrapped(Kind, Minimum, Maximum));
@@ -538,13 +547,13 @@ begin
     Objects.Add(Ship);
   end;
 end;
-{ @end $551F30 }
+{ @end $65655C }
 
-{ @routine $5527B0 TabSpace_UpdateApproachDanger }
+{ @routine $656C84 TabSpace_UpdateApproachDanger }
 procedure TabSpace.UpdateApproachDanger;
 
-  // @nested $5526EC FindApproachDanger
-  function FindApproachDanger(Space: TabSpace; Accumulated: Single): Single; // @addr $5526EC @calls "0x552777,0x5527dd"
+  // @nested $656BE8 FindApproachDanger
+  function FindApproachDanger(Space: TabSpace; Accumulated: Single): Single; // @addr $656BE8 @calls "0x00656C4F,0x00656CA9"
   var
     Link: PabSpaceLink;
     Candidate: Single;
@@ -580,9 +589,9 @@ begin
   end;
   ApproachDanger := FindApproachDanger(Self, 0);
 end;
-{ @end $5527B0 }
+{ @end $656C84 }
 
-{ @routine $5527F4 TabSpace_PruneApproachDanger }
+{ @routine $656CBC TabSpace_PruneApproachDanger }
 procedure TabSpace.PruneApproachDanger;
 var
   Changed: Boolean;
@@ -623,9 +632,9 @@ begin
     end;
   end;
 end;
-{ @end $5527F4 }
+{ @end $656CBC }
 
-{ @routine $5528EC TabSpace_GetDangerText }
+{ @routine $656D50 TabSpace_GetDangerText }
 function TabSpace.GetDangerText: WideString;
 begin
   Result := '';
@@ -635,21 +644,21 @@ begin
   else if Danger < 90 then Result := LocalizedColorText('FormAB.DangerBig')
   else Result := LocalizedColorText('FormAB.DangerHuge');
 end;
-{ @end $5528EC }
+{ @end $656D50 }
 
-{ @routine $552A7C ab_Space_Clear }
+{ @routine $656EC8 ab_Space_Clear }
 procedure ab_Space_Clear;
 begin
   ab_SpaceLink_Clear;
-  while not (FirstArcadeSpace = nil) do ab_Space_Delete(LastArcadeSpace);
+  while FirstArcadeSpace <> nil do ab_Space_Delete(LastArcadeSpace);
   CurrentArcadeSpace := nil;
   NextArcadeSpace := nil;
   StartArcadeSpace := nil;
   EndArcadeSpace := nil;
 end;
-{ @end $552A7C }
+{ @end $656EC8 }
 
-{ @routine $552AB4 ab_Space_Add }
+{ @routine $656F00 ab_Space_Add }
 function ab_Space_Add: TabSpace;
 var
   Space: TabSpace;
@@ -662,9 +671,9 @@ begin
   if FirstArcadeSpace = nil then FirstArcadeSpace := Space;
   Result := Space;
 end;
-{ @end $552AB4 }
+{ @end $656F00 }
 
-{ @routine $552B18 ab_Space_Delete }
+{ @routine $656F40 ab_Space_Delete }
 procedure ab_Space_Delete(Space: TabSpace);
 var
   Link, Removing: PabSpaceLink;
@@ -683,9 +692,9 @@ begin
   end;
   Space.Free;
 end;
-{ @end $552B18 }
+{ @end $656F40 }
 
-{ @routine $552BC8 ab_Space_CreateImages }
+{ @routine $656FB0 ab_Space_CreateImages }
 procedure ab_Space_CreateImages;
 var
   Space: TabSpace;
@@ -697,9 +706,9 @@ begin
     Space := Space.Next;
   end;
 end;
-{ @end $552BC8 }
+{ @end $656FB0 }
 
-{ @routine $552BF4 ab_Space_ClearImages }
+{ @routine $656FCC ab_Space_ClearImages }
 procedure ab_Space_ClearImages;
 var
   Space: TabSpace;
@@ -712,9 +721,9 @@ begin
     Space := Space.Next;
   end;
 end;
-{ @end $552BF4 }
+{ @end $656FCC }
 
-{ @routine $552C28 ab_Space_Update }
+{ @routine $656FEC ab_Space_Update }
 procedure ab_Space_Update;
 var
   Space: TabSpace;
@@ -726,9 +735,9 @@ begin
     Space := Space.Next;
   end;
 end;
-{ @end $552C28 }
+{ @end $656FEC }
 
-{ @routine $552C54 ab_Space_Find }
+{ @routine $657008 ab_Space_Find }
 function ab_Space_Find(GridPosition: TPoint): TabSpace;
 var
   Space: TabSpace;
@@ -745,9 +754,9 @@ begin
   end;
   Result := nil;
 end;
-{ @end $552C54 }
+{ @end $657008 }
 
-{ @routine $552CAC ab_Space_RecountLinks }
+{ @routine $657044 ab_Space_RecountLinks }
 procedure ab_Space_RecountLinks;
 var
   Space: TabSpace;
@@ -759,9 +768,9 @@ begin
     Space := Space.Next;
   end;
 end;
-{ @end $552CAC }
+{ @end $657044 }
 
-{ @routine $552CD8 TabSpace_RecountLinks }
+{ @routine $657060 TabSpace_RecountLinks }
 procedure TabSpace.RecountLinks;
 var
   Link: PabSpaceLink;
@@ -776,9 +785,9 @@ begin
     Link := Link.Next;
   end;
 end;
-{ @end $552CD8 }
+{ @end $657060 }
 
-{ @routine $552D38 ab_Space_UpdateApproachDanger }
+{ @routine $657090 ab_Space_UpdateApproachDanger }
 procedure ab_Space_UpdateApproachDanger;
 var
   Space: TabSpace;
@@ -796,16 +805,16 @@ begin
     Space := Space.Next;
   end;
 end;
-{ @end $552D38 }
+{ @end $657090 }
 
-{ @routine $552D8C ab_SpaceLink_Clear }
+{ @routine $6570C4 ab_SpaceLink_Clear }
 procedure ab_SpaceLink_Clear;
 begin
-  while not (FirstArcadeSpaceLink = nil) do ab_SpaceLink_Delete(LastArcadeSpaceLink);
+  while FirstArcadeSpaceLink <> nil do ab_SpaceLink_Delete(LastArcadeSpaceLink);
 end;
-{ @end $552D8C }
+{ @end $6570C4 }
 
-{ @routine $552DA4 ab_SpaceLink_Add }
+{ @routine $6570DC ab_SpaceLink_Add }
 function ab_SpaceLink_Add: PabSpaceLink;
 var
   Link: PabSpaceLink;
@@ -818,9 +827,9 @@ begin
   if FirstArcadeSpaceLink = nil then FirstArcadeSpaceLink := Link;
   Result := Link;
 end;
-{ @end $552DA4 }
+{ @end $6570DC }
 
-{ @routine $552E04 ab_SpaceLink_Delete }
+{ @routine $65711C ab_SpaceLink_Delete }
 procedure ab_SpaceLink_Delete(Link: PabSpaceLink);
 begin
   if Link.Prev <> nil then Link.Prev.Next := Link.Next;
@@ -829,9 +838,9 @@ begin
   if FirstArcadeSpaceLink = Link then FirstArcadeSpaceLink := Link.Next;
   FreeEC(Link);
 end;
-{ @end $552E04 }
+{ @end $65711C }
 
-{ @routine $552E6C ab_SpaceLink_Connect }
+{ @routine $65715C ab_SpaceLink_Connect }
 procedure ab_SpaceLink_Connect(First, Last: TabSpace);
 var
   Link: PabSpaceLink;
@@ -840,9 +849,9 @@ begin
   Link.First := First;
   Link.Last := Last;
 end;
-{ @end $552E6C }
+{ @end $65715C }
 
-{ @routine $552E98 ab_SpaceLink_Find }
+{ @routine $657170 ab_SpaceLink_Find }
 function ab_SpaceLink_Find(First, Last: TabSpace): PabSpaceLink;
 var
   Link: PabSpaceLink;
@@ -860,9 +869,9 @@ begin
   end;
   Result := nil;
 end;
-{ @end $552E98 }
+{ @end $657170 }
 
-{ @routine $552F04 ab_SpaceLink_FindExit }
+{ @routine $6571A0 ab_SpaceLink_FindExit }
 function ab_SpaceLink_FindExit(First: TabSpace; ExitIndex: Integer): PabSpaceLink;
 var
   Link: PabSpaceLink;
@@ -879,46 +888,50 @@ begin
   end;
   Result := nil;
 end;
-{ @end $552F04 }
+{ @end $6571A0 }
 
-{ @routine $552F58 ab_SpaceLink_Invalidate }
+{ @routine $6571C8 ab_SpaceLink_Invalidate }
 procedure ab_SpaceLink_Invalidate;
 var
-  Link: PabSpaceLink;
-  OffsetY, OffsetX, Index: Integer;
+  Offset: TPoint;
   Bounds: TRect;
+  Link: PabSpaceLink;
+  Index: Integer;
 begin
-  OffsetX := ArcadeBattleScreen.WorldCenterX - ArcadeMapViewPosition.X;
-  OffsetY := ArcadeBattleScreen.WorldCenterY - ArcadeMapViewPosition.Y;
-  Link := FirstArcadeSpaceLink;
-  while Link <> nil do
+  with Bounds, Offset do
   begin
-    Bounds.Left := 1000000000;
-    Bounds.Right := -1000000000;
-    Bounds.Top := 1000000000;
-    Bounds.Bottom := -1000000000;
-    for Index := 0 to 10 do
+    X := ArcadeBattleScreen.WorldCenterX - ArcadeMapViewPosition.X;
+    Y := ArcadeBattleScreen.WorldCenterY - ArcadeMapViewPosition.Y;
+    Link := FirstArcadeSpaceLink;
+    while Link <> nil do
     begin
-      Bounds.Left := Min(Bounds.Left, Link.Points[Index].X);
-      Bounds.Top := Min(Bounds.Top, Link.Points[Index].Y);
-      Bounds.Right := Max(Bounds.Right, Link.Points[Index].X);
-      Bounds.Bottom := Max(Bounds.Bottom, Link.Points[Index].Y);
+      Left := 1000000000;
+      Right := -1000000000;
+      Top := 1000000000;
+      Bottom := -1000000000;
+      for Index := Low(Link.Points) to High(Link.Points) do
+      begin
+        Left := Min(Left, Link.Points[Index].X);
+        Top := Min(Top, Link.Points[Index].Y);
+        Right := Max(Right, Link.Points[Index].X);
+        Bottom := Max(Bottom, Link.Points[Index].Y);
+      end;
+      Inc(Left, X);
+      Inc(Top, Y);
+      Inc(Right, X);
+      Inc(Bottom, Y);
+      ArcadeBattleScreen.QueueUpdateRect(Bounds);
+      Link := Link.Next;
     end;
-    Inc(Bounds.Left, OffsetX);
-    Inc(Bounds.Top, OffsetY);
-    Inc(Bounds.Right, OffsetX);
-    Inc(Bounds.Bottom, OffsetY);
-    ArcadeBattleScreen.QueueUpdateRect(Bounds);
-    Link := Link.Next;
   end;
 end;
-{ @end $552F58 }
+{ @end $6571C8 }
 
-{ @routine $5530B8 ab_SpaceLink_BuildGeometry }
+{ @routine $6572E8 ab_SpaceLink_BuildGeometry }
 procedure ab_SpaceLink_BuildGeometry;
 var
-  First, Last: TPointF;
-  DirectionY, DirectionX, WidthY, WidthX, InverseLength, ArrowLength: Single;
+  First, Last, Direction, Width: TPointF;
+  InverseLength, ArrowLength: Single;
   Link: PabSpaceLink;
 begin
   Link := FirstArcadeSpaceLink;
@@ -926,37 +939,37 @@ begin
   begin
     First := PointToPointF(Link.First.MapPosition);
     Last := PointToPointF(Link.Last.MapPosition);
-    DirectionX := Last.X - First.X;
-    DirectionY := Last.Y - First.Y;
-    InverseLength := 1 / Sqrt(Sqr(DirectionX) + Sqr(DirectionY));
-    DirectionX := DirectionX * InverseLength;
-    DirectionY := DirectionY * InverseLength;
+    Direction.X := Last.X - First.X;
+    Direction.Y := Last.Y - First.Y;
+    InverseLength := 1 / Sqrt(Sqr(Direction.X) + Sqr(Direction.Y));
+    Direction.X := Direction.X * InverseLength;
+    Direction.Y := Direction.Y * InverseLength;
     ArrowLength := GiScalePixels(ArcadeMapNodeRadius) * 0.5;
-    First.X := GiScalePixels(ArcadeMapNodeRadius) * DirectionX * 1.1 + First.X;
-    First.Y := GiScalePixels(ArcadeMapNodeRadius) * DirectionY * 1.1 + First.Y;
-    Last.X := Last.X - (GiScalePixels(ArcadeMapNodeRadius) * 1.1 + ArrowLength) * DirectionX;
-    Last.Y := Last.Y - (GiScalePixels(ArcadeMapNodeRadius) * 1.1 + ArrowLength) * DirectionY;
-    WidthX := GiScalePixels(7) * DirectionX;
-    WidthY := GiScalePixels(7) * DirectionY;
-    Link.Points[0] := Classes.Point(Round(First.X - WidthY), Round(First.Y + WidthX));
-    Link.Points[1] := Classes.Point(Round(First.X + WidthY), Round(First.Y - WidthX));
-    Link.Points[2] := Classes.Point(Round(Last.X + WidthY - DirectionX * 2), Round(Last.Y - WidthX - DirectionY * 2));
-    Link.Points[3] := Classes.Point(Round(Last.X - WidthY - DirectionX * 2), Round(Last.Y + WidthX - DirectionY * 2));
-    Link.Points[7] := Classes.Point(Round(First.X - 0.7 * WidthY), Round(0.7 * WidthX + First.Y));
-    Link.Points[8] := Classes.Point(Round(0.7 * WidthY + First.X), Round(First.Y - 0.7 * WidthX));
-    Link.Points[9] := Classes.Point(Round(0.7 * WidthY + Last.X - DirectionX * 2), Round(Last.Y - 0.7 * WidthX - DirectionY * 2));
-    Link.Points[10] := Classes.Point(Round(Last.X - 0.7 * WidthY - DirectionX * 2), Round(0.7 * WidthX + Last.Y - DirectionY * 2));
-    WidthX := DirectionX * ArrowLength * 0.4;
-    WidthY := DirectionY * ArrowLength * 0.4;
-    Link.Points[4] := Classes.Point(Round(Last.X - WidthY), Round(Last.Y + WidthX));
-    Link.Points[5] := Classes.Point(Round(DirectionX * ArrowLength + Last.X), Round(DirectionY * ArrowLength + Last.Y));
-    Link.Points[6] := Classes.Point(Round(Last.X + WidthY), Round(Last.Y - WidthX));
+    First.X := GiScalePixels(ArcadeMapNodeRadius) * Direction.X * 1.1 + First.X;
+    First.Y := GiScalePixels(ArcadeMapNodeRadius) * Direction.Y * 1.1 + First.Y;
+    Last.X := Last.X - (GiScalePixels(ArcadeMapNodeRadius) * 1.1 + ArrowLength) * Direction.X;
+    Last.Y := Last.Y - (GiScalePixels(ArcadeMapNodeRadius) * 1.1 + ArrowLength) * Direction.Y;
+    Width.X := GiScalePixels(7) * Direction.X;
+    Width.Y := GiScalePixels(7) * Direction.Y;
+    Link.Points[0] := Classes.Point(Round(First.X - Width.Y), Round(First.Y + Width.X));
+    Link.Points[1] := Classes.Point(Round(First.X + Width.Y), Round(First.Y - Width.X));
+    Link.Points[2] := Classes.Point(Round(Last.X + Width.Y - Direction.X * 2), Round(Last.Y - Width.X - Direction.Y * 2));
+    Link.Points[3] := Classes.Point(Round(Last.X - Width.Y - Direction.X * 2), Round(Last.Y + Width.X - Direction.Y * 2));
+    Link.Points[7] := Classes.Point(Round(First.X - 0.7 * Width.Y), Round(0.7 * Width.X + First.Y));
+    Link.Points[8] := Classes.Point(Round(0.7 * Width.Y + First.X), Round(First.Y - 0.7 * Width.X));
+    Link.Points[9] := Classes.Point(Round(0.7 * Width.Y + Last.X - Direction.X * 2), Round(Last.Y - 0.7 * Width.X - Direction.Y * 2));
+    Link.Points[10] := Classes.Point(Round(Last.X - 0.7 * Width.Y - Direction.X * 2), Round(0.7 * Width.X + Last.Y - Direction.Y * 2));
+    Width.X := Direction.X * ArrowLength * 0.4;
+    Width.Y := Direction.Y * ArrowLength * 0.4;
+    Link.Points[4] := Classes.Point(Round(Last.X - Width.Y), Round(Last.Y + Width.X));
+    Link.Points[5] := Classes.Point(Round(Direction.X * ArrowLength + Last.X), Round(Direction.Y * ArrowLength + Last.Y));
+    Link.Points[6] := Classes.Point(Round(Last.X + Width.Y), Round(Last.Y - Width.X));
     Link := Link.Next;
   end;
 end;
-{ @end $5530B8 }
+{ @end $6572E8 }
 
-{ @routine $553524 ab_SpaceLink_ClearImages }
+{ @routine $65775C ab_SpaceLink_ClearImages }
 procedure ab_SpaceLink_ClearImages;
 var
   Link: PabSpaceLink;
@@ -965,63 +978,64 @@ begin
   Link := FirstArcadeSpaceLink;
   while Link <> nil do Link := Link.Next;
 end;
-{ @end $553524 }
+{ @end $65775C }
 
-{ @routine $553548 ab_SpaceLink_Draw }
+{ @routine $657770 ab_SpaceLink_Draw }
 procedure ab_SpaceLink_Draw;
 var
   Link: PabSpaceLink;
-  ColorOffset, OffsetY, OffsetX: Integer;
+  ColorOffset: Integer;
+  Offset: TPoint;
 begin
-  OffsetX := ArcadeBattleScreen.WorldCenterX - ArcadeMapViewPosition.X;
-  OffsetY := ArcadeBattleScreen.WorldCenterY - ArcadeMapViewPosition.Y;
+  Offset.X := ArcadeBattleScreen.WorldCenterX - ArcadeMapViewPosition.X;
+  Offset.Y := ArcadeBattleScreen.WorldCenterY - ArcadeMapViewPosition.Y;
   Link := FirstArcadeSpaceLink;
   while Link <> nil do
   begin
     ColorOffset := Link.Last.AppearanceIndex * 6;
     if HardwareRenderingEnabled then
     begin
-      DrawGradientLine(Link.Points[7].X + OffsetX, Link.Points[7].Y + OffsetY, $40FFFFFF,
-        Link.Points[10].X + OffsetX, Link.Points[10].Y + OffsetY, $C0FFFFFF, @GameScreenRect);
-      DrawGradientLine(Link.Points[8].X + OffsetX, Link.Points[8].Y + OffsetY, $40FFFFFF,
-        Link.Points[9].X + OffsetX, Link.Points[9].Y + OffsetY, $C0FFFFFF, @GameScreenRect);
+      DrawGradientLine(Link.Points[7].X + Offset.X, Link.Points[7].Y + Offset.Y, $40FFFFFF,
+        Link.Points[10].X + Offset.X, Link.Points[10].Y + Offset.Y, $C0FFFFFF, @GameScreenRect);
+      DrawGradientLine(Link.Points[8].X + Offset.X, Link.Points[8].Y + Offset.Y, $40FFFFFF,
+        Link.Points[9].X + Offset.X, Link.Points[9].Y + Offset.Y, $C0FFFFFF, @GameScreenRect);
       DrawColoredTriangle(
-        Link.Points[0].X + OffsetX, Link.Points[0].Y + OffsetY, ArcadeMapPalette[ColorOffset + 3],
-        Link.Points[1].X + OffsetX, Link.Points[1].Y + OffsetY, ArcadeMapPalette[ColorOffset + 3],
-        Link.Points[2].X + OffsetX, Link.Points[2].Y + OffsetY, ArcadeMapPalette[ColorOffset + 2], True, @GameScreenRect);
+        Link.Points[0].X + Offset.X, Link.Points[0].Y + Offset.Y, ArcadeMapPalette[ColorOffset + 3],
+        Link.Points[1].X + Offset.X, Link.Points[1].Y + Offset.Y, ArcadeMapPalette[ColorOffset + 3],
+        Link.Points[2].X + Offset.X, Link.Points[2].Y + Offset.Y, ArcadeMapPalette[ColorOffset + 2], True, @GameScreenRect);
       DrawColoredTriangle(
-        Link.Points[2].X + OffsetX, Link.Points[2].Y + OffsetY, ArcadeMapPalette[ColorOffset + 2],
-        Link.Points[3].X + OffsetX, Link.Points[3].Y + OffsetY, ArcadeMapPalette[ColorOffset + 2],
-        Link.Points[0].X + OffsetX, Link.Points[0].Y + OffsetY, ArcadeMapPalette[ColorOffset + 3], True, @GameScreenRect);
+        Link.Points[2].X + Offset.X, Link.Points[2].Y + Offset.Y, ArcadeMapPalette[ColorOffset + 2],
+        Link.Points[3].X + Offset.X, Link.Points[3].Y + Offset.Y, ArcadeMapPalette[ColorOffset + 2],
+        Link.Points[0].X + Offset.X, Link.Points[0].Y + Offset.Y, ArcadeMapPalette[ColorOffset + 3], True, @GameScreenRect);
       DrawColoredTriangle(
-        Link.Points[4].X + OffsetX, Link.Points[4].Y + OffsetY, ArcadeMapPalette[ColorOffset + 1],
-        Link.Points[5].X + OffsetX, Link.Points[5].Y + OffsetY, ArcadeMapPalette[ColorOffset],
-        Link.Points[6].X + OffsetX, Link.Points[6].Y + OffsetY, ArcadeMapPalette[ColorOffset + 1], True, @GameScreenRect);
+        Link.Points[4].X + Offset.X, Link.Points[4].Y + Offset.Y, ArcadeMapPalette[ColorOffset + 1],
+        Link.Points[5].X + Offset.X, Link.Points[5].Y + Offset.Y, ArcadeMapPalette[ColorOffset],
+        Link.Points[6].X + Offset.X, Link.Points[6].Y + Offset.Y, ArcadeMapPalette[ColorOffset + 1], True, @GameScreenRect);
     end
     else
     begin
       DrawGradientLine16Clipped(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes,
-        Link.Points[7].X + OffsetX, Link.Points[7].Y + OffsetY, $40FFFFFF,
-        Link.Points[10].X + OffsetX, Link.Points[10].Y + OffsetY, $C0FFFFFF, GameScreenRect);
+        Link.Points[7].X + Offset.X, Link.Points[7].Y + Offset.Y, $40FFFFFF,
+        Link.Points[10].X + Offset.X, Link.Points[10].Y + Offset.Y, $C0FFFFFF, GameScreenRect);
       DrawGradientLine16Clipped(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes,
-        Link.Points[8].X + OffsetX, Link.Points[8].Y + OffsetY, $40FFFFFF,
-        Link.Points[9].X + OffsetX, Link.Points[9].Y + OffsetY, $C0FFFFFF, GameScreenRect);
+        Link.Points[8].X + Offset.X, Link.Points[8].Y + Offset.Y, $40FFFFFF,
+        Link.Points[9].X + Offset.X, Link.Points[9].Y + Offset.Y, $C0FFFFFF, GameScreenRect);
       TriangleRasterizer16(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes,
-        Link.Points[0].X + OffsetX, Link.Points[0].Y + OffsetY, ArcadeMapPalette[ColorOffset + 3],
-        Link.Points[1].X + OffsetX, Link.Points[1].Y + OffsetY, ArcadeMapPalette[ColorOffset + 3],
-        Link.Points[2].X + OffsetX, Link.Points[2].Y + OffsetY, ArcadeMapPalette[ColorOffset + 2], @GameScreenRect);
+        Link.Points[0].X + Offset.X, Link.Points[0].Y + Offset.Y, ArcadeMapPalette[ColorOffset + 3],
+        Link.Points[1].X + Offset.X, Link.Points[1].Y + Offset.Y, ArcadeMapPalette[ColorOffset + 3],
+        Link.Points[2].X + Offset.X, Link.Points[2].Y + Offset.Y, ArcadeMapPalette[ColorOffset + 2], @GameScreenRect);
       TriangleRasterizer16(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes,
-        Link.Points[2].X + OffsetX, Link.Points[2].Y + OffsetY, ArcadeMapPalette[ColorOffset + 2],
-        Link.Points[3].X + OffsetX, Link.Points[3].Y + OffsetY, ArcadeMapPalette[ColorOffset + 2],
-        Link.Points[0].X + OffsetX, Link.Points[0].Y + OffsetY, ArcadeMapPalette[ColorOffset + 3], @GameScreenRect);
+        Link.Points[2].X + Offset.X, Link.Points[2].Y + Offset.Y, ArcadeMapPalette[ColorOffset + 2],
+        Link.Points[3].X + Offset.X, Link.Points[3].Y + Offset.Y, ArcadeMapPalette[ColorOffset + 2],
+        Link.Points[0].X + Offset.X, Link.Points[0].Y + Offset.Y, ArcadeMapPalette[ColorOffset + 3], @GameScreenRect);
       TriangleRasterizer16(ScreenRenderBuffer.GetPixels, ScreenRenderBuffer.PitchBytes,
-        Link.Points[4].X + OffsetX, Link.Points[4].Y + OffsetY, ArcadeMapPalette[ColorOffset + 1],
-        Link.Points[5].X + OffsetX, Link.Points[5].Y + OffsetY, ArcadeMapPalette[ColorOffset],
-        Link.Points[6].X + OffsetX, Link.Points[6].Y + OffsetY, ArcadeMapPalette[ColorOffset + 1], @GameScreenRect);
+        Link.Points[4].X + Offset.X, Link.Points[4].Y + Offset.Y, ArcadeMapPalette[ColorOffset + 1],
+        Link.Points[5].X + Offset.X, Link.Points[5].Y + Offset.Y, ArcadeMapPalette[ColorOffset],
+        Link.Points[6].X + Offset.X, Link.Points[6].Y + Offset.Y, ArcadeMapPalette[ColorOffset + 1], @GameScreenRect);
     end;
     Link := Link.Next;
   end;
 end;
-{ @end $553548 }
+{ @end $657770 }
 
 end.

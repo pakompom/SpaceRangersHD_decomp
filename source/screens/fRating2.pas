@@ -1,5 +1,4 @@
 unit fRating2;
-// Unit bracket (inferred): .text 0x005655F4..0x0056CC90; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -21,7 +20,7 @@ type
     RewardWindow: TWindowGI; // @offset 0xD4
     Rows: array of TRangerRatingRow; // @offset 0xD8
     SelectedIndex: Integer; // @offset 0xDC  -1 means no selection.
-    SelectedRangerId: Integer; // @offset 0xE0
+    SelectedRangerId: Cardinal; // @offset 0xE0
     SortColumn: TRangerRatingSortColumn; // @offset 0xE4
     SortAscending: Boolean; // @offset 0xE8
     TablePanel: TPanelScrollBarGI; // @offset 0xEC
@@ -29,46 +28,45 @@ type
     BackgroundClickStarted: Boolean; // @offset 0x100
     HoveredAwardId: Integer; // @offset 0x104  -1 means no award hint.
 
-    constructor Create; // @addr 0x5656BC
-    destructor Destroy; override; // @addr 0x565700
-    procedure OnOpen; override; // @addr 0x5659B4 @slot 0x1C
-    procedure OnClose; override; // @addr 0x565D24 @slot 0x20
-    procedure ProcessCallbackTimers; override; // @addr 0x56C5D8 @slot 0x24
-    procedure SelectMusic; override; // @addr 0x56C2A4 @slot 0x28
-    procedure ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer); override; // @addr 0x5660F0 @slot 0x2C
-    procedure InitializeLayout; override; // @addr 0x565734 @slot 0x30
-    procedure CloseClicked(Sender: TObjectGI); // @addr 0x565D78
-    procedure KeyDown(Sender: TObjectGI; Key: Cardinal); // @addr 0x565D98
-    procedure BackgroundMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x565F84
-    procedure BackgroundMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x566038
-    procedure AwardsMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x566198
-    procedure AwardsMouseMove(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x566250
-    procedure HintMouseLeave(Sender: TObjectGI); // @addr 0x566360
-    procedure ShowPartnershipHint(Sender: TObjectGI); // @addr 0x566740
-    procedure ShowCareerHint(Sender: TObjectGI); // @addr 0x5676B4
-    procedure ShowAwardHint(Ranger: TRanger; AwardId: Integer); // @addr 0x567DA0
-    procedure HideHint; // @addr 0x5681DC
-    function FindRowByRangerId(RangerId: Integer): Integer; // @addr 0x568204 @note "Returns -1 if the ranger is absent."
-    procedure SortHeaderMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x568268
-    procedure FeaturedRangerClicked(Sender: TObjectGI); // @addr 0x568334
-    procedure RowMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x568370
-    procedure SelectRow(Index: Integer); // @addr 0x568414 @note "Accepts -1; other indices must be valid. Rebuilds the old and new rows because selection changes row height."
-    procedure ClearRows; // @addr 0x568524
-    procedure RebuildTable; // @addr 0x5685D0 @note "Excludes ExcludedFromRating rangers; preserves selection by ID when SelectedIndex is -1."
-    procedure RebuildRow(Index: Integer); // @addr 0x568ED4
-    procedure CreateRow(Index: Integer); // @addr 0x569774
-    procedure RowMouseEnter(Sender: TObjectGI); // @addr 0x56B6E0
-    procedure RowMouseLeave(Sender: TObjectGI); // @addr 0x56B810
-    procedure RefreshFeaturedRangers; // @addr 0x56B940
-    procedure ShowDominatorKillsHint(Sender: TObjectGI); // @addr 0x56C768 @note "Only displays a hint for the player."
+    constructor Create; // @addr 0x005D1C08
+    destructor Destroy; override; // @addr 0x005D1C40
+    procedure OnOpen; override; // @addr 0x005D1EA4 @slot 0x1C
+    procedure OnClose; override; // @addr 0x005D21B4 @slot 0x20
+    procedure ProcessCallbackTimers; override; // @addr 0x005D8058 @slot 0x24
+    procedure SelectMusic; override; // @addr 0x005D7D20 @slot 0x28
+    procedure ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer); override; // @addr 0x005D24D0 @slot 0x2C
+    procedure InitializeLayout; override; // @addr 0x005D1C68 @slot 0x30
+    procedure CloseClicked(Sender: TObjectGI); // @addr 0x005D2200
+    procedure KeyDown(Sender: TObjectGI; Key: Cardinal); // @addr 0x005D220C
+    procedure BackgroundMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x005D237C
+    procedure BackgroundMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x005D2424
+    procedure AwardsMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x005D2528
+    procedure AwardsMouseMove(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x005D25D8
+    procedure HintMouseLeave(Sender: TObjectGI); // @addr 0x005D26B0
+    procedure ShowPartnershipHint(Sender: TObjectGI); // @addr 0x005D2A54
+    procedure ShowCareerHint(Sender: TObjectGI); // @addr 0x005D3828
+    procedure ShowAwardHint(Ranger: TRanger; AwardId: Integer); // @addr 0x005D3E74
+    procedure HideHint; // @addr 0x005D4230
+    function FindRowByRangerId(RangerId: Cardinal): Integer; // @addr 0x005D4248 @note "Returns -1 if the ranger is absent."
+    procedure SortHeaderMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x005D4280
+    procedure FeaturedRangerClicked(Sender: TObjectGI); // @addr 0x005D430C
+    procedure RowMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x005D433C
+    procedure SelectRow(Index: Integer); // @addr 0x005D43D0 @note "Accepts -1; other indices must be valid. Rebuilds the old and new rows because selection changes row height."
+    procedure ClearRows; // @addr 0x005D449C
+    procedure RebuildTable; // @addr 0x005D452C @note "Excludes ExcludedFromRating rangers; preserves selection by ID when SelectedIndex is -1."
+    procedure RebuildRow(Index: Integer); // @addr 0x005D4CF0
+    procedure CreateRow(Index: Integer); // @addr 0x005D548C
+    procedure RowMouseEnter(Sender: TObjectGI); // @addr 0x005D7248
+    procedure RowMouseLeave(Sender: TObjectGI); // @addr 0x005D736C
+    procedure RefreshFeaturedRangers; // @addr 0x005D7490
+    procedure ShowDominatorKillsHint(Sender: TObjectGI); // @addr 0x005D81B4 @note "Only displays a hint for the player."
   end;
 
-function ShowRangerRating(Parent: TMessageLoopGI): Boolean; // @addr 0x56C618 @note "Runs the registered rating screen modally; true for normal close."
+function ShowRangerRating(Parent: TMessageLoopGI): Boolean; // @addr 0x005D8084 @note "Runs the registered rating screen modally; true for normal close."
 
 const
-  // Native calls at $56786F/$5678B9/$567901/$56791B pass only columns 1, 2 or 3.
-  CareerHintColumns: array[1..3] of Integer = (10,75,105); // @addr $87B00C @indexrefs "$567679"
-  DominatorHintColumns: array[1..3] of Integer = (10,75,95); // @addr $87B018
+  CareerHintColumns: array[1..3] of Integer = (10,75,105); // @addr $80F55C @indexrefs "0x005D37EC"
+  DominatorHintColumns: array[1..3] of Integer = (10,75,95); // @addr $80F568
 
 implementation
 
@@ -76,21 +74,21 @@ uses aGalaxyStruct, GI_Panel, GR_GraphBuf, aPirate, GI_GAI, GI_Label, fShip2, aM
   GI_GraphBuf, GI_GraphButton, GI_Main, GR_Main, GR_Music, Globals, GlobalsV,
   aConst, aGalaxy, aPlanet, aPlayer, aShip, aItem, fRewards, fStarMap;
 
-{ @routine $5656BC TfRating2_Create }
+{ @routine $5D1C08 TfRating2_Create }
 constructor TfRating2.Create;
 begin
   inherited Create;
 end;
-{ @end $5656BC }
+{ @end $5D1C08 }
 
-{ @routine $565700 TfRating2_Destroy }
+{ @routine $5D1C40 TfRating2_Destroy }
 destructor TfRating2.Destroy;
 begin
   inherited Destroy;
 end;
-{ @end $565700 }
+{ @end $5D1C40 }
 
-{ @routine $565734 TfRating2_InitializeLayout }
+{ @routine $5D1C68 TfRating2_InitializeLayout }
 procedure TfRating2.InitializeLayout;
 begin
   inherited InitializeLayout;
@@ -112,9 +110,9 @@ begin
   TablePanel.VerticalScrollBar.SetPageSize(TablePanel.ClientSize.Y);
   TablePanel.VerticalScrollBar.SetLargeChange(TablePanel.ClientSize.Y);
 end;
-{ @end $565734 }
+{ @end $5D1C68 }
 
-{ @routine $5659B4 TfRating2_OnOpen }
+{ @routine $5D1EA4 TfRating2_OnOpen }
 procedure TfRating2.OnOpen;
 begin
   inherited OnOpen;
@@ -158,9 +156,9 @@ begin
   Galaxy.PrimeIntegrityChecksum(1113);
   MainPanel.RebuildMessageButtons(False);
 end;
-{ @end $5659B4 }
+{ @end $5D1EA4 }
 
-{ @routine $565D24 TfRating2_OnClose }
+{ @routine $5D21B4 TfRating2_OnClose }
 procedure TfRating2.OnClose;
 begin
   inherited OnClose;
@@ -169,41 +167,39 @@ begin
   ClearRows;
   MainPanel.OnClose;
 end;
-{ @end $565D24 }
+{ @end $5D21B4 }
 
-{ @routine $565D78 TfRating2_CloseClicked }
+{ @routine $5D2200 TfRating2_CloseClicked }
 procedure TfRating2.CloseClicked(Sender: TObjectGI);
 begin
   RequestClose(1);
 end;
-{ @end $565D78 }
+{ @end $5D2200 }
 
-{ @routine $565D98 TfRating2_KeyDown }
+{ @routine $5D220C TfRating2_KeyDown }
 procedure TfRating2.KeyDown(Sender: TObjectGI; Key: Cardinal);
 begin
-  if not IsVirtualKeyDown(VK_CONTROL) and not IsVirtualKeyDown(VK_SHIFT) and not IsVirtualKeyDown(VK_MENU) then
+  if IsVirtualKeyDown(VK_CONTROL) or IsVirtualKeyDown(VK_SHIFT) or IsVirtualKeyDown(VK_MENU) then Exit;
+  if Key = Ord('R') then CloseClicked(nil)
+  else if (Key = VK_UP) or (Key = VK_LEFT) then
   begin
-    if Key = Ord('R') then CloseClicked(nil)
-    else if (Key = VK_UP) or (Key = VK_LEFT) then
-    begin
-      if SelectedIndex > 0 then SelectRow(SelectedIndex - 1);
-    end
-    else if (Key = VK_DOWN) or (Key = VK_RIGHT) then
-    begin
-      if SelectedIndex < High(Rows) then SelectRow(SelectedIndex + 1);
-    end
-    else if Key = VK_HOME then SelectRow(0)
-    else if Key = VK_END then SelectRow(High(Rows))
-    else if Key = VK_PRIOR then TablePanel.VerticalScrollBar.SetPosition(TablePanel.VerticalScrollBar.Position - TablePanel.VerticalScrollBar.LargeChange)
-    else if Key = VK_NEXT then TablePanel.VerticalScrollBar.SetPosition(TablePanel.VerticalScrollBar.Position + TablePanel.VerticalScrollBar.LargeChange)
-    else if Key = VK_ESCAPE then RequestClose(1)
-    else if Key = VK_F11 then
-      if not MainPanel.RemoveDismissibleMessages('GOODS') then MainPanel.RemoveDismissibleMessages('');
-  end;
+    if SelectedIndex > 0 then SelectRow(SelectedIndex - 1);
+  end
+  else if (Key = VK_DOWN) or (Key = VK_RIGHT) then
+  begin
+    if SelectedIndex < High(Rows) then SelectRow(SelectedIndex + 1);
+  end
+  else if Key = VK_HOME then SelectRow(0)
+  else if Key = VK_END then SelectRow(High(Rows))
+  else if Key = VK_PRIOR then TablePanel.VerticalScrollBar.SetPosition(TablePanel.VerticalScrollBar.Position - TablePanel.VerticalScrollBar.LargeChange)
+  else if Key = VK_NEXT then TablePanel.VerticalScrollBar.SetPosition(TablePanel.VerticalScrollBar.Position + TablePanel.VerticalScrollBar.LargeChange)
+  else if Key = VK_ESCAPE then RequestClose(1)
+  else if Key = VK_F11 then
+    if not MainPanel.RemoveDismissibleMessages('GOODS') then MainPanel.RemoveDismissibleMessages('');
 end;
-{ @end $565D98 }
+{ @end $5D220C }
 
-{ @routine $565F84 TfRating2_BackgroundMouseDown }
+{ @routine $5D237C TfRating2_BackgroundMouseDown }
 procedure TfRating2.BackgroundMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint);
 begin
   if ClickAutoCloseForm then
@@ -213,47 +209,45 @@ begin
       not GetByName('PM_PanelMsg').ContainsPoint(Point) then BackgroundClickStarted := True;
   end;
 end;
-{ @end $565F84 }
+{ @end $5D237C }
 
-{ @routine $566038 TfRating2_BackgroundMouseUp }
+{ @routine $5D2424 TfRating2_BackgroundMouseUp }
 procedure TfRating2.BackgroundMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint);
 begin
   if ClickAutoCloseForm then
     if not (GetByName('ImagePanel') as TImageGI).ContainsPoint(Point) and
       not GetByName('PM_PanelMsg').ContainsPoint(Point) and BackgroundClickStarted then CloseClicked(nil);
 end;
-{ @end $566038 }
+{ @end $5D2424 }
 
-{ @routine $5660F0 TfRating2_ProcessMouseWheel }
+{ @routine $5D24D0 TfRating2_ProcessMouseWheel }
 procedure TfRating2.ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer);
 begin
   if Delta = WHEEL_DELTA then TablePanel.VerticalScrollBar.SetPosition(TablePanel.VerticalScrollBar.Position - TablePanel.VerticalScrollBar.SmallChange)
   else if Delta = -WHEEL_DELTA then TablePanel.VerticalScrollBar.SetPosition(TablePanel.VerticalScrollBar.Position + TablePanel.VerticalScrollBar.SmallChange);
 end;
-{ @end $5660F0 }
+{ @end $5D24D0 }
 
-{ @routine $566198 TfRating2_AwardsMouseDown }
+{ @routine $5D2528 TfRating2_AwardsMouseDown }
 procedure TfRating2.AwardsMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint);
 begin
-  if AwardDialogsEnabled then
+  if not AwardDialogsEnabled then Exit;
+  RewardWindow.SetActive(False);
+  AwardSubject := Galaxy.IdToShip(Sender.UserValue,True);
+  if AwardSubject <> nil then
   begin
-    RewardWindow.SetActive(False);
-    AwardSubject := Galaxy.IdToShip(Sender.UserValue,True);
-    if AwardSubject <> nil then
+    Galaxy.CheckIntegrityChecksum(335);
+    if not RunRewards(Self,True) then
     begin
-      Galaxy.CheckIntegrityChecksum(335);
-      if not RunRewards(Self,True) then
-      begin
-        Galaxy.PrimeIntegrityChecksum(336);
-        RequestClose(2);
-      end
-      else Galaxy.PrimeIntegrityChecksum(336);
-    end;
+      Galaxy.PrimeIntegrityChecksum(336);
+      RequestClose(2);
+    end
+    else Galaxy.PrimeIntegrityChecksum(336);
   end;
 end;
-{ @end $566198 }
+{ @end $5D2528 }
 
-{ @routine $566250 TfRating2_AwardsMouseMove }
+{ @routine $5D25D8 TfRating2_AwardsMouseMove }
 procedure TfRating2.AwardsMouseMove(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint);
 var Size, Step: Integer; Ranger: TRanger; Index: Integer; AwardId: Byte;
 begin
@@ -269,29 +263,29 @@ begin
     ShowAwardHint(Ranger,AwardId);
   end;
 end;
-{ @end $566250 }
+{ @end $5D25D8 }
 
-{ @routine $566360 TfRating2_HintMouseLeave }
+{ @routine $5D26B0 TfRating2_HintMouseLeave }
 procedure TfRating2.HintMouseLeave(Sender: TObjectGI);
 begin
   HideHint;
 end;
-{ @end $566360 }
+{ @end $5D26B0 }
 
-{ @routine $566740 TfRating2_ShowPartnershipHint }
+{ @routine $5D2A54 TfRating2_ShowPartnershipHint }
 procedure TfRating2.ShowPartnershipHint(Sender: TObjectGI);
-var Cursor: TPoint; I: Integer; Text, PartnerInfo, Names: WideString;
+var Cursor: TPoint; I: Integer; CaptionText, PartnerInfo, Names: WideString;
   Ally: TRanger; Pirate: TPirate;
 
-  // @nested $566378 FormatRangerWingmenHint
-  function FormatRangerWingmenHint(Ranger: TRanger): WideString; // @addr 0x566378 @calls "0x566f07,0x567068" @note "Nested in TfRating2.ShowPartnershipHint; caller supplies its parent frame."
+  // @nested $5D26B8 FormatRangerWingmenHint
+  function FormatRangerWingmenHint(Ranger: TRanger): WideString; // @addr 0x005D26B8 @calls "0x005D3112,0x005D323D" @note "Nested in TfRating2.ShowPartnershipHint; caller supplies its parent frame."
   var I: Integer; Names: WideString; Ally: TRanger;
   begin
     if Ranger.CountWingmen = 1 then
     begin
       for I := 0 to Galaxy.Rangers.Count - 1 do
       begin
-        Ally := TRanger(Galaxy.Rangers[I]);
+        Ally := Galaxy.Rangers[I];
         if (GetPlayer <> Ally) and (Ally.PartnerShip = Ranger) then
           Result := FormatText2(LocalizedColorText('FormRating.PartnerBossOneText'),TextHighlightColorTag,'<Name>',Ally.GetName,'<Date>',Galaxy.FormatTurnDate(Galaxy.CurrentTurn + Ally.PartnershipDaysRemaining));
       end;
@@ -301,11 +295,11 @@ var Cursor: TPoint; I: Integer; Text, PartnerInfo, Names: WideString;
       Names := '';
       for I := 0 to Galaxy.Rangers.Count - 1 do
       begin
-        Ally := TRanger(Galaxy.Rangers[I]);
+        Ally := Galaxy.Rangers[I];
         if (GetPlayer <> Ally) and (Ally.PartnerShip = Ranger) then
         begin
-        if Names <> WideString('') then Names := Names + ', ' + FormatText2(LocalizedColorText('FormRating.AddInfoAboutPartner'),TextHighlightColorTag,'<Name>',Ally.GetName,'<Date>',Galaxy.FormatTurnDate(Galaxy.CurrentTurn + Ally.PartnershipDaysRemaining))
-        else Names := FormatText2(LocalizedColorText('FormRating.AddInfoAboutPartner'),TextHighlightColorTag,'<Name>',Ally.GetName,'<Date>',Galaxy.FormatTurnDate(Galaxy.CurrentTurn + Ally.PartnershipDaysRemaining));
+          if Names <> '' then Names := Names + ', ' + FormatText2(LocalizedColorText('FormRating.AddInfoAboutPartner'),TextHighlightColorTag,'<Name>',Ally.GetName,'<Date>',Galaxy.FormatTurnDate(Galaxy.CurrentTurn + Ally.PartnershipDaysRemaining))
+          else Names := FormatText2(LocalizedColorText('FormRating.AddInfoAboutPartner'),TextHighlightColorTag,'<Name>',Ally.GetName,'<Date>',Galaxy.FormatTurnDate(Galaxy.CurrentTurn + Ally.PartnershipDaysRemaining));
         end;
       end;
       Result := FormatText1(LocalizedColorText('FormRating.PartnerBossManyText'),'','<Names>',Names);
@@ -313,69 +307,69 @@ var Cursor: TPoint; I: Integer; Text, PartnerInfo, Names: WideString;
   end;
 begin
   RewardWindow.SetActive(True);
-  if GetPlayer = Rows[Sender.UserValue].Ranger then
+  if Rows[Sender.UserValue].Ranger = GetPlayer then
   begin
     with GetByName('RewardName') as TLabelGI do
-      SetText(FormatText1(LocalizedColorText('FormRating.PlayerName'),TextHighlightColorTag,'<Name>',GetPlayer.GetName));
+      Text := FormatText1(LocalizedColorText('FormRating.PlayerName'),TextHighlightColorTag,'<Name>',GetPlayer.GetName);
     if GetPlayer.CountWingmen > 0 then
     begin
       Names := '';
       for I := 0 to Galaxy.Rangers.Count - 1 do
       begin
-        Ally := TRanger(Galaxy.Rangers[I]);
+        Ally := Galaxy.Rangers[I];
         if (GetPlayer <> Ally) and (GetPlayer = Ally.PartnerShip) then
         begin
-        if Names <> WideString('') then Names := Names + ', ' + FormatText2(LocalizedColorText('FormRating.AddInfoAboutPartner'),TextHighlightColorTag,'<Name>',Ally.GetName,'<Date>',Galaxy.FormatTurnDate(Galaxy.CurrentTurn + Ally.PartnershipDaysRemaining))
-        else Names := FormatText2(LocalizedColorText('FormRating.AddInfoAboutPartner'),TextHighlightColorTag,'<Name>',Ally.GetName,'<Date>',Galaxy.FormatTurnDate(Galaxy.CurrentTurn + Ally.PartnershipDaysRemaining));
+          if Names <> '' then Names := Names + ', ' + FormatText2(LocalizedColorText('FormRating.AddInfoAboutPartner'),TextHighlightColorTag,'<Name>',Ally.GetName,'<Date>',Galaxy.FormatTurnDate(Galaxy.CurrentTurn + Ally.PartnershipDaysRemaining))
+          else Names := FormatText2(LocalizedColorText('FormRating.AddInfoAboutPartner'),TextHighlightColorTag,'<Name>',Ally.GetName,'<Date>',Galaxy.FormatTurnDate(Galaxy.CurrentTurn + Ally.PartnershipDaysRemaining));
         end;
       end;
       for I := 0 to GetPlayer.PiratePartners.Count - 1 do
       begin
-        Pirate := TPirate(GetPlayer.PiratePartners[I]);
-        if Names <> WideString('') then Names := Names + ', ' + FormatText2(LocalizedColorText('FormRating.AddInfoAboutPirate'),TextHighlightColorTag,'<Name>',Pirate.GetName,'<Date>',Galaxy.FormatTurnDate(Galaxy.CurrentTurn + Pirate.PartnershipDaysRemaining))
+        Pirate := GetPlayer.PiratePartners[I];
+        if Names <> '' then Names := Names + ', ' + FormatText2(LocalizedColorText('FormRating.AddInfoAboutPirate'),TextHighlightColorTag,'<Name>',Pirate.GetName,'<Date>',Galaxy.FormatTurnDate(Galaxy.CurrentTurn + Pirate.PartnershipDaysRemaining))
         else Names := FormatText2(LocalizedColorText('FormRating.AddInfoAboutPirate'),TextHighlightColorTag,'<Name>',Pirate.GetName,'<Date>',Galaxy.FormatTurnDate(Galaxy.CurrentTurn + Pirate.PartnershipDaysRemaining));
       end;
       PartnerInfo := FormatText1(LocalizedColorText('FormRating.PlayerPartnerOk'),'','<Names>',Names);
     end
     else PartnerInfo := LocalizedColorText('FormRating.PlayerPartnerNo');
-    Text := LocalizedColorText('FormRating.PlayerText');
-    ReplaceTextToken(Text,'<PartnerInfo>',PartnerInfo,'');
-    with GetByName('RewardText') as TLabelGI do SetText(Text);
+    CaptionText := LocalizedColorText('FormRating.PlayerText');
+    ReplaceTextToken(CaptionText,'<PartnerInfo>',PartnerInfo,'');
+    with GetByName('RewardText') as TLabelGI do Text := CaptionText;
     with GetByName('RewardImage') as TGraphBufGI do
       LoadGiByPathIntoGraphBuf('Bm.FormRating2.' + GiResourceSuffix + 'PlayerB',GraphBuf);
   end
   else if Rows[Sender.UserValue].Ranger.IsInPrison then
   begin
     with GetByName('RewardName') as TLabelGI do
-      SetText(FormatText1(LocalizedColorText('FormRating.InPrisonName'),TextHighlightColorTag,'<Name>',Rows[Sender.UserValue].Ranger.GetName));
+      Text := FormatText1(LocalizedColorText('FormRating.InPrisonName'),TextHighlightColorTag,'<Name>',Rows[Sender.UserValue].Ranger.GetName);
     if Rows[Sender.UserValue].Ranger.CurrentPlanet <> nil then
-      Text := FormatText1(LocalizedColorText('FormRating.InPrisonText'),TextHighlightColorTag,'<Planet>',Rows[Sender.UserValue].Ranger.CurrentPlanet.Name)
-    else Text := '';
-    with GetByName('RewardText') as TLabelGI do SetText(Text);
+      CaptionText := FormatText1(LocalizedColorText('FormRating.InPrisonText'),TextHighlightColorTag,'<Planet>',Rows[Sender.UserValue].Ranger.CurrentPlanet.Name)
+    else CaptionText := '';
+    with GetByName('RewardText') as TLabelGI do Text := CaptionText;
     with GetByName('RewardImage') as TGraphBufGI do
       LoadGiByPathIntoGraphBuf('Bm.FormRating2.' + GiResourceSuffix + 'PrisonB',GraphBuf);
   end
   else if Rows[Sender.UserValue].Ranger.PartnerShip <> nil then
   begin
     with GetByName('RewardName') as TLabelGI do
-      SetText(FormatText1(LocalizedColorText('FormRating.PartnerName'),TextHighlightColorTag,'<Name>',Rows[Sender.UserValue].Ranger.GetName));
-    Text := LocalizedColorText('FormRating.PartnerText');
-    ReplaceTextToken(Text,'<Name>',Rows[Sender.UserValue].Ranger.PartnerShip.GetName,TextHighlightColorTag);
-    ReplaceTextToken(Text,'<Date>',Galaxy.FormatTurnDate(Galaxy.CurrentTurn + Rows[Sender.UserValue].Ranger.PartnershipDaysRemaining),TextHighlightColorTag);
+      Text := FormatText1(LocalizedColorText('FormRating.PartnerName'),TextHighlightColorTag,'<Name>',Rows[Sender.UserValue].Ranger.GetName);
+    CaptionText := LocalizedColorText('FormRating.PartnerText');
+    ReplaceTextToken(CaptionText,'<Name>',Rows[Sender.UserValue].Ranger.PartnerShip.GetName,TextHighlightColorTag);
+    ReplaceTextToken(CaptionText,'<Date>',Galaxy.FormatTurnDate(Galaxy.CurrentTurn + Rows[Sender.UserValue].Ranger.PartnershipDaysRemaining),TextHighlightColorTag);
     if Rows[Sender.UserValue].Ranger.PartnershipDaysRemaining = 0 then
-      Text := Text + ' ' + LocalizedColorText('FormRating.PartnerTextDateEnd');
+      CaptionText := CaptionText + ' ' + LocalizedColorText('FormRating.PartnerTextDateEnd');
     if Rows[Sender.UserValue].Ranger.CountWingmen > 0 then
-      Text := Text + #13#10 + FormatRangerWingmenHint(Rows[Sender.UserValue].Ranger);
-    with GetByName('RewardText') as TLabelGI do SetText(Text);
+      CaptionText := CaptionText + #13#10 + FormatRangerWingmenHint(Rows[Sender.UserValue].Ranger);
+    with GetByName('RewardText') as TLabelGI do Text := CaptionText;
     with GetByName('RewardImage') as TGraphBufGI do
       LoadGiByPathIntoGraphBuf('Bm.FormRating2.' + GiResourceSuffix + 'DutyB',GraphBuf);
   end
   else if Rows[Sender.UserValue].Ranger.CountWingmen > 0 then
   begin
     with GetByName('RewardName') as TLabelGI do
-      SetText(FormatText1(LocalizedColorText('FormRating.PartnerName'),TextHighlightColorTag,'<Name>',Rows[Sender.UserValue].Ranger.GetName));
-    Text := FormatRangerWingmenHint(Rows[Sender.UserValue].Ranger);
-    with GetByName('RewardText') as TLabelGI do SetText(Text);
+      Text := FormatText1(LocalizedColorText('FormRating.PartnerName'),TextHighlightColorTag,'<Name>',Rows[Sender.UserValue].Ranger.GetName);
+    CaptionText := FormatRangerWingmenHint(Rows[Sender.UserValue].Ranger);
+    with GetByName('RewardText') as TLabelGI do Text := CaptionText;
     with GetByName('RewardImage') as TGraphBufGI do
       LoadGiByPathIntoGraphBuf('Bm.FormRating2.' + GiResourceSuffix + 'DutyB',GraphBuf);
   end;
@@ -391,13 +385,13 @@ begin
   Cursor := GetCursorPoint;
   RewardWindow.SetPosition(Classes.Point(Cursor.X + 100,Max(0,Cursor.Y - RewardWindow.ClientSize.Y - 20)));
 end;
-{ @end $566740 }
+{ @end $5D2A54 }
 
-{ @routine $5676B4 TfRating2_ShowCareerHint }
+{ @routine $5D3828 TfRating2_ShowCareerHint }
 procedure TfRating2.ShowCareerHint(Sender: TObjectGI);
-var Career: TRangerCareer; Cursor: TPoint; Text: WideString; Ranger: TRanger;
-  // @nested $567654 FormatCareerHintColumn
-  function FormatCareerHintColumn(Column: Integer): WideString; // @addr 0x567654 @calls "0x56786f,0x5678b9,0x567901,0x56791b" @note "Nested in TfRating2.ShowCareerHint; caller supplies its parent frame."
+var Career: TRangerCareer; Cursor: TPoint; CaptionText: WideString; Ranger: TRanger;
+  // @nested $5D37D0 FormatCareerHintColumn
+  function FormatCareerHintColumn(Column: Integer): WideString; // @addr 0x005D37D0 @calls "0x005D39CA,0x005D3A16,0x005D3A4D,0x005D3A62" @note "Nested in TfRating2.ShowCareerHint; caller supplies its parent frame."
   begin
     Result := IntToStr(CareerHintColumns[Column] + 40);
   end;
@@ -407,23 +401,23 @@ begin
   if GetPlayer = Ranger then
   begin
     with GetByName('RewardName') as TLabelGI do
-      SetText(FormatText1(LocalizedColorText('FormRating.PlayerName'),TextHighlightColorTag,'<Name>',Ranger.GetName));
+      Text := FormatText1(LocalizedColorText('FormRating.PlayerName'),TextHighlightColorTag,'<Name>',Ranger.GetName);
     with GetByName('RewardImage') as TGraphBufGI do
       LoadGiByPathIntoGraphBuf('Bm.FormRating2.' + GiResourceSuffix + 'PlayerB',GraphBuf);
   end
   else
   begin
     with GetByName('RewardName') as TLabelGI do
-      SetText(FormatText1(LocalizedColorText('FormRating.PartnerName'),TextHighlightColorTag,'<Name>',Ranger.GetName));
+      Text := FormatText1(LocalizedColorText('FormRating.PartnerName'),TextHighlightColorTag,'<Name>',Ranger.GetName);
     with GetByName('RewardImage') as TGraphBufGI do
       LoadGiByPathIntoGraphBuf('Bm.FormRating2.' + GiResourceSuffix + 'DutyB',GraphBuf);
   end;
-  Text := '<td=' + FormatCareerHintColumn(1) + '><align=left>' + LocalizedColorText('FormRating.Rating.Title') + '</align>' + #13#10;
+  CaptionText := '<td=' + FormatCareerHintColumn(1) + '><align=left>' + LocalizedColorText('FormRating.Rating.Title') + '</align>' + #13#10;
   for Career := Low(TRangerCareer) to High(TRangerCareer) do
-    Text := Text + '<td=' + FormatCareerHintColumn(1) + '><align=left>' + LocalizedColorText('FormRating.Rating.' + CareerTuning[Career].Name) +
+    CaptionText := CaptionText + '<td=' + FormatCareerHintColumn(1) + '><align=left>' + LocalizedColorText('FormRating.Rating.' + CareerTuning[Career].Name) +
       '<td=' + FormatCareerHintColumn(2) + '>:</align><td=' + FormatCareerHintColumn(3) + '><align=right>' +
       WrapTextInColor(IntToStr(Ranger.CareerStatus[Career]) ,TextHighlightColorTag) + '</align>' + #13#10;
-  with GetByName('RewardText') as TLabelGI do SetText(Text);
+  with GetByName('RewardText') as TLabelGI do Text := CaptionText;
   with GetByName('RewardImage') as TGraphBufGI do
   begin
     SourceHasPerPixelAlpha := True;
@@ -437,50 +431,48 @@ begin
   Cursor := GetCursorPoint;
   RewardWindow.SetPosition(Classes.Point(Cursor.X + 100,Max(0,Cursor.Y - RewardWindow.ClientSize.Y - 20)));
 end;
-{ @end $5676B4 }
+{ @end $5D3828 }
 
-{ @routine $567DA0 TfRating2_ShowAwardHint }
+{ @routine $5D3E74 TfRating2_ShowAwardHint }
 procedure TfRating2.ShowAwardHint(Ranger: TRanger; AwardId: Integer);
 var Cursor: TPoint; Path: WideString;
 begin
-  if HoveredAwardId <> AwardId then
+  if HoveredAwardId = AwardId then Exit;
+  HoveredAwardId := AwardId;
+  RewardWindow.SetActive(True);
+  Cursor := GetCursorPoint;
+  RewardWindow.SetPosition(Classes.Point(Cursor.X + 100,Max(0,Cursor.Y - RewardWindow.ClientSize.Y - 20)));
+  if AwardId < 10 then Path := 'Bm.FormRewards.' + GiResourceSuffix + '_0' + IntToStr(AwardId)
+  else Path := 'Bm.FormRewards.' + GiResourceSuffix + '_' + IntToStr(AwardId);
+  with GetByName('RewardImage') as TGraphBufGI do
   begin
-    HoveredAwardId := AwardId;
-    RewardWindow.SetActive(True);
-    Cursor := GetCursorPoint;
-    RewardWindow.SetPosition(Classes.Point(Cursor.X + 100,Max(0,Cursor.Y - RewardWindow.ClientSize.Y - 20)));
-    if AwardId < 10 then Path := 'Bm.FormRewards.' + GiResourceSuffix + '_0' + IntToStr(AwardId)
-    else Path := 'Bm.FormRewards.' + GiResourceSuffix + '_' + IntToStr(AwardId);
-    with GetByName('RewardImage') as TGraphBufGI do
-    begin
-      SourceHasPerPixelAlpha := True;
-      LoadGiByPathIntoGraphBuf(Path,GraphBuf);
-      if Cardinal(GraphBuf.Width) >= Cardinal(GraphBuf.Height) then
-        GraphBuf.RescaleRgba(ClientSize.X,Round(ClientSize.X / Cardinal(GraphBuf.Width) * Cardinal(GraphBuf.Height)),5)
-      else
-        GraphBuf.RescaleRgba(Round(ClientSize.Y / Cardinal(GraphBuf.Height) * Cardinal(GraphBuf.Width)),ClientSize.Y,5);
-      SetImageKindX(ikxCenter);
-      SetImageKindY(ikyCenter);
-    end;
-    with GetByName('RewardName') as TLabelGI do SetText(Ranger.GetAwardInfo(AwardId).Name);
-    with GetByName('RewardText') as TLabelGI do SetText(Ranger.GetAwardInfo(AwardId).Text);
-    ShipScreen.LayoutItemInfo(RewardWindow,GetByName('RewardName') as TLabelGI,GetByName('RewardText') as TLabelGI,True,True,0);
-    with GetByName('RewardName') as TLabelGI do
-      SetSize(Classes.Point(Self.RewardWindow.ClientSize.X - LocalPosition.X - Self.RewardWindow.WorkSubRect.Right,ClientSize.Y));
+    SourceHasPerPixelAlpha := True;
+    LoadGiByPathIntoGraphBuf(Path,GraphBuf);
+    if GraphBuf.Width >= GraphBuf.Height then
+      GraphBuf.RescaleRgba(ClientSize.X,Round(ClientSize.X / GraphBuf.Width * GraphBuf.Height),5)
+    else
+      GraphBuf.RescaleRgba(Round(ClientSize.Y / GraphBuf.Height * GraphBuf.Width),ClientSize.Y,5);
+    SetImageKindX(ikxCenter);
+    SetImageKindY(ikyCenter);
   end;
+  with GetByName('RewardName') as TLabelGI do Text := Ranger.GetAwardInfo(AwardId).Name;
+  with GetByName('RewardText') as TLabelGI do Text := Ranger.GetAwardInfo(AwardId).Text;
+  ShipScreen.LayoutItemInfo(RewardWindow,GetByName('RewardName') as TLabelGI,GetByName('RewardText') as TLabelGI,True,True,0);
+  with GetByName('RewardName') as TLabelGI do
+    SetSize(Classes.Point(Self.RewardWindow.ClientSize.X - LocalPosition.X - Self.RewardWindow.WorkSubRect.Right,ClientSize.Y));
 end;
-{ @end $567DA0 }
+{ @end $5D3E74 }
 
-{ @routine $5681DC TfRating2_HideHint }
+{ @routine $5D4230 TfRating2_HideHint }
 procedure TfRating2.HideHint;
 begin
   HoveredAwardId := -1;
   RewardWindow.SetActive(False);
 end;
-{ @end $5681DC }
+{ @end $5D4230 }
 
-{ @routine $568204 TfRating2_FindRowByRangerId }
-function TfRating2.FindRowByRangerId(RangerId: Integer): Integer;
+{ @routine $5D4248 TfRating2_FindRowByRangerId }
+function TfRating2.FindRowByRangerId(RangerId: Cardinal): Integer;
 var I: Integer;
 begin
   for I := 0 to High(Rows) do
@@ -491,9 +483,9 @@ begin
     end;
   Result := -1;
 end;
-{ @end $568204 }
+{ @end $5D4248 }
 
-{ @routine $568268 TfRating2_SortHeaderMouseUp }
+{ @routine $5D4280 TfRating2_SortHeaderMouseUp }
 procedure TfRating2.SortHeaderMouseUp(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint);
 var Column: TRangerRatingSortColumn;
 begin
@@ -511,18 +503,18 @@ begin
   end;
   RebuildTable;
 end;
-{ @end $568268 }
+{ @end $5D4280 }
 
-{ @routine $568334 TfRating2_FeaturedRangerClicked }
+{ @routine $5D430C TfRating2_FeaturedRangerClicked }
 procedure TfRating2.FeaturedRangerClicked(Sender: TObjectGI);
 begin
   SelectRow(-1);
   SelectRow(FindRowByRangerId(Sender.UserValue));
   PostMouseMoveMessage;
 end;
-{ @end $568334 }
+{ @end $5D430C }
 
-{ @routine $568370 TfRating2_RowMouseDown }
+{ @routine $5D433C TfRating2_RowMouseDown }
 procedure TfRating2.RowMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint);
 begin
   if not Sender.IsOccludedAtPoint(GetCursorPoint) then
@@ -536,31 +528,29 @@ begin
     BreakUiMessage;
   end;
 end;
-{ @end $568370 }
+{ @end $5D433C }
 
-{ @routine $568414 TfRating2_SelectRow }
+{ @routine $5D43D0 TfRating2_SelectRow }
 procedure TfRating2.SelectRow(Index: Integer);
 var Previous: Integer;
 begin
-  if SelectedIndex <> Index then
+  if SelectedIndex = Index then Exit;
+  Galaxy.CheckIntegrityChecksum(1115);
+  Previous := SelectedIndex;
+  SelectedIndex := Index;
+  if Previous >= 0 then RebuildRow(Previous);
+  if SelectedIndex >= 0 then RebuildRow(SelectedIndex);
+  if Index >= 0 then
   begin
-    Galaxy.CheckIntegrityChecksum(1115);
-    Previous := SelectedIndex;
-    SelectedIndex := Index;
-    if Previous >= 0 then RebuildRow(Previous);
-    if SelectedIndex >= 0 then RebuildRow(SelectedIndex);
-    if Index >= 0 then
-    begin
-      SelectedRowRect := Classes.Rect(0,Rows[Index].Top,1,Rows[Index].Top + Rows[Index].Height);
-      TablePanel.ScrollRectIntoView(SelectedRowRect);
-    end;
-    HideHint;
-    Galaxy.PrimeIntegrityChecksum(1116);
+    SelectedRowRect := Classes.Rect(0,Rows[Index].Top,1,Rows[Index].Top + Rows[Index].Height);
+    TablePanel.ScrollRectIntoView(SelectedRowRect);
   end;
+  HideHint;
+  Galaxy.PrimeIntegrityChecksum(1116);
 end;
-{ @end $568414 }
+{ @end $5D43D0 }
 
-{ @routine $568524 TfRating2_ClearRows }
+{ @routine $5D449C TfRating2_ClearRows }
 procedure TfRating2.ClearRows;
 begin
   TablePanel.FreeOwnedChildren;
@@ -569,9 +559,9 @@ begin
   SelectedRowRect := Classes.Rect(0,0,1,1);
   TablePanel.VerticalScrollBar.SetSmallChange(TablePanel.VerticalScrollBar.LargeChange);
 end;
-{ @end $568524 }
+{ @end $5D449C }
 
-{ @routine $5685D0 TfRating2_RebuildTable }
+{ @routine $5D452C TfRating2_RebuildTable }
 procedure TfRating2.RebuildTable;
 // Compare the signed ordinal values used by the native sort.
 var I, J, Top: Integer; List: TList; A, B: TRanger;
@@ -583,59 +573,59 @@ begin
     else if Self.SortColumn = rrscExperience then SetPosition(Classes.Point(Self.GetByName('SortScore').LocalPosition.X + Self.GetByName('SortScore').ClientSize.X - ClientSize.X,LocalPosition.Y))
     else if Self.SortColumn = rrscRace then SetPosition(Classes.Point(Self.GetByName('SortRace').LocalPosition.X + Self.GetByName('SortRace').ClientSize.X - ClientSize.X,LocalPosition.Y))
     else if Self.SortColumn = rrscRank then SetPosition(Classes.Point(Self.GetByName('SortRank').LocalPosition.X + Self.GetByName('SortRank').ClientSize.X - ClientSize.X,LocalPosition.Y));
-    if Self.SortAscending then SetImagePath('GI,Bm.FormRating2.' + GiResourceSuffix + 'SortDown')
-    else SetImagePath('GI,Bm.FormRating2.' + GiResourceSuffix + 'SortUp');
+    if Self.SortAscending then ImageSourcePath := 'GI,Bm.FormRating2.' + GiResourceSuffix + 'SortDown'
+    else ImageSourcePath := 'GI,Bm.FormRating2.' + GiResourceSuffix + 'SortUp';
   end;
   List := TList.Create;
   for I := 0 to Galaxy.Rangers.Count - 1 do
   begin
-    A := TRanger(Galaxy.Rangers[I]);
+    A := Galaxy.Rangers[I];
     if not A.ExcludedFromRating then List.Add(A);
   end;
   for I := 0 to List.Count - 2 do
     for J := I + 1 to List.Count - 1 do
     begin
-      A := TRanger(List[I]);
-      B := TRanger(List[J]);
+      A := List[I];
+      B := List[J];
       if SortColumn = rrscName then
       begin
-          if SortAscending then
-          begin
-            if CompareString(LOCALE_USER_DEFAULT,0,PChar(AnsiString(B.Name)),-1,PChar(AnsiString(A.Name)),-1) - 2 < 0 then List.Exchange(I,J);
-          end
-          else if CompareString(LOCALE_USER_DEFAULT,0,PChar(AnsiString(B.Name)),-1,PChar(AnsiString(A.Name)),-1) - 2 > 0 then List.Exchange(I,J);
+        if SortAscending then
+        begin
+          if CompareString(LOCALE_USER_DEFAULT,0,PChar(AnsiString(B.Name)),-1,PChar(AnsiString(A.Name)),-1) - 2 < 0 then List.Exchange(I,J);
+        end
+        else if CompareString(LOCALE_USER_DEFAULT,0,PChar(AnsiString(B.Name)),-1,PChar(AnsiString(A.Name)),-1) - 2 > 0 then List.Exchange(I,J);
       end
       else if SortColumn = rrscExperience then
       begin
-          if SortAscending then
-          begin
-            if B.TotalExperience < A.TotalExperience then List.Exchange(I,J);
-          end
-          else if B.TotalExperience > A.TotalExperience then List.Exchange(I,J);
+        if SortAscending then
+        begin
+          if B.TotalExperience < A.TotalExperience then List.Exchange(I,J);
+        end
+        else if B.TotalExperience > A.TotalExperience then List.Exchange(I,J);
       end
       else if SortColumn = rrscRace then
       begin
-          if SortAscending then
-          begin
-            if Ord(B.PilotRace) < Ord(A.PilotRace) then List.Exchange(I,J);
-          end
-          else if Ord(B.PilotRace) > Ord(A.PilotRace) then List.Exchange(I,J);
+        if SortAscending then
+        begin
+          if Ord(B.PilotRace) < Ord(A.PilotRace) then List.Exchange(I,J);
+        end
+        else if Ord(B.PilotRace) > Ord(A.PilotRace) then List.Exchange(I,J);
       end
       else if SortColumn = rrscRank then
       begin
-          if SortAscending then
-          begin
-            if Ord(B.Rank) < Ord(A.Rank) then List.Exchange(I,J);
-          end
-          else if Ord(B.Rank) > Ord(A.Rank) then List.Exchange(I,J);
+        if SortAscending then
+        begin
+          if Ord(B.Rank) < Ord(A.Rank) then List.Exchange(I,J);
+        end
+        else if Ord(B.Rank) > Ord(A.Rank) then List.Exchange(I,J);
       end
       else if SortColumn = rrscCharacter then
       begin
-          if SortAscending then
-          begin
-            if AnsiStrComp(PChar(AnsiString(B.GetCharacterName)),PChar(AnsiString(A.GetCharacterName))) < 0 then List.Exchange(I,J);
-          end
-          else if AnsiStrComp(PChar(AnsiString(B.GetCharacterName)),PChar(AnsiString(A.GetCharacterName))) > 0 then List.Exchange(I,J);
+        if SortAscending then
+        begin
+          if AnsiStrComp(PChar(AnsiString(B.GetCharacterName)),PChar(AnsiString(A.GetCharacterName))) < 0 then List.Exchange(I,J);
+        end
+        else if AnsiStrComp(PChar(AnsiString(B.GetCharacterName)),PChar(AnsiString(A.GetCharacterName))) > 0 then List.Exchange(I,J);
       end;
     end;
   Rows := nil;
@@ -644,7 +634,7 @@ begin
     SetLength(Rows,List.Count);
     for I := 0 to List.Count - 1 do
     begin
-      Rows[I].Ranger := TRanger(List[I]);
+      Rows[I].Ranger := List[I];
       Rows[I].Top := 0;
       Rows[I].Height := 0;
       if (SelectedIndex < 0) and (Rows[I].Ranger.Id = SelectedRangerId) then SelectedIndex := I;
@@ -665,9 +655,9 @@ begin
   TablePanel.VerticalScrollBar.SetPosition(J);
   TablePanel.ScrollRectIntoView(SelectedRowRect);
 end;
-{ @end $5685D0 }
+{ @end $5D452C }
 
-{ @routine $568ED4 TfRating2_RebuildRow }
+{ @routine $5D4CF0 TfRating2_RebuildRow }
 procedure TfRating2.RebuildRow(Index: Integer);
 var Child, Previous: TObjectGI; I, Delta: Integer;
 begin
@@ -676,7 +666,7 @@ begin
   begin
     Previous := Child;
     Child := Child.NextSibling;
-    if Previous.UserState = Index then Previous.Free;
+    if Previous.UserState = Cardinal(Index) then Previous.Free;
   end;
   Delta := Rows[Index].Height;
   CreateRow(Index);
@@ -685,7 +675,7 @@ begin
   Child := TablePanel.FirstChild;
   while Child <> nil do
   begin
-    if Cardinal(Child.UserState) > Cardinal(Index) then Child.SetPosition(Classes.Point(Child.LocalPosition.X,Child.LocalPosition.Y + Delta));
+    if Child.UserState > Cardinal(Index) then Child.SetPosition(Classes.Point(Child.LocalPosition.X,Child.LocalPosition.Y + Delta));
     Child := Child.NextSibling;
   end;
   TablePanel.UpdateScrollRanges;
@@ -693,15 +683,15 @@ begin
   TablePanel.VerticalScrollBar.SetPosition(I - 1);
   TablePanel.VerticalScrollBar.SetPosition(I);
 end;
-{ @end $568ED4 }
+{ @end $5D4CF0 }
 
-{ @routine $569774 TfRating2_CreateRow }
+{ @routine $5D548C TfRating2_CreateRow }
 procedure TfRating2.CreateRow(Index: Integer);
 var Ranger: TRanger; Panel, BarPanel: TPanelGI; Image: TImageGI;
   Caption: TLabelGI; Ratio: Single; ExtraKills: Integer; Animation: TgaiGI;
 
-  // @nested $569044 GetRatingRankImagePath
-  function GetRatingRankImagePath(Rank: TShipRank): WideString; // @addr 0x569044 @calls "0x56add4" @note "Nested in TfRating2.CreateRow; caller supplies its parent frame."
+  // @nested $5D4DF0 GetRatingRankImagePath
+  function GetRatingRankImagePath(Rank: TShipRank): WideString; // @addr 0x005D4DF0 @calls "0x005D69C0" @note "Nested in TfRating2.CreateRow; caller supplies its parent frame."
   begin
     if Rank = 0 then Result := 'GI,Bm.FormRating2.' + GiResourceSuffix + 'Rank1'
     else if Rank = 1 then Result := 'GI,Bm.FormRating2.' + GiResourceSuffix + 'Rank2'
@@ -714,8 +704,8 @@ var Ranger: TRanger; Panel, BarPanel: TPanelGI; Image: TImageGI;
     else RaiseWideMessage('error');
   end;
 
-  // @nested $5692B4 CreateRatingRowAwardStrip
-  procedure CreateRatingRowAwardStrip; // @addr 0x5692B4 @ida "void __cdecl $name(void *ParentFrame);" @stackpop 0 @calls "0x56ab1c" @note "Nested in TfRating2.CreateRow; requires its parent frame."
+  // @nested $5D5040 CreateRatingRowAwardStrip
+  procedure CreateRatingRowAwardStrip; // @addr 0x005D5040 @calls "0x005D6730" @ida "void __cdecl $name(void *ParentFrame);" @stackpop 0 @note "Nested in TfRating2.CreateRow; requires its parent frame."
   var I, J: Integer; Buffer: TGraphBufGI; Icon: TGraphBufGR; Award: Byte;
     Path: WideString; Size, Step, Count: Integer;
   begin
@@ -749,11 +739,11 @@ var Ranger: TRanger; Panel, BarPanel: TPanelGI; Image: TImageGI;
         if Award < 10 then Path := 'Bm.FormRewards.' + GiResourceSuffix + '_0' + IntToStr(Award)
         else Path := 'Bm.FormRewards.' + GiResourceSuffix + '_' + IntToStr(Award);
         LoadGiByPathIntoGraphBuf(Path,Icon);
-        if Cardinal(Icon.Width) >= Cardinal(Icon.Height) then
-          Icon.RescaleRgba(Size,Round(Size / Cardinal(Icon.Width) * Cardinal(Icon.Height)),5)
-        else Icon.RescaleRgba(Round(Size / Cardinal(Icon.Height) * Cardinal(Icon.Width)),Size,5);
-        if Icon.Height <= Size then
-          if Icon.Width + J * Step <= Buffer.GraphBuf.Width then
+        if Icon.Width >= Icon.Height then
+          Icon.RescaleRgba(Size,Round(Size / Icon.Width * Icon.Height),5)
+        else Icon.RescaleRgba(Round(Size / Icon.Height * Icon.Width),Size,5);
+        if Integer(Icon.Height) <= Size then
+          if Integer(Icon.Width) + J * Step <= Integer(Buffer.GraphBuf.Width) then
             Buffer.GraphBuf.BlendRect32(Classes.Point(J * Step,0),Icon,Classes.Rect(0,0,Icon.Width,Icon.Height));
         Inc(I);
         Inc(J);
@@ -999,73 +989,73 @@ begin
   Image.SetImageKindX(ikxCenter);
   Image.SetImageKindY(ikyCenter);
   Image.SetDepth(8);
-    Caption := TLabelGI.Create(Panel);
-    if GiResourceVariant = 1 then Caption.SetPosition(Classes.Point(GiScalePixels(215),GiScalePixels(16) + 1))
-    else Caption.SetPosition(Classes.Point(GiScalePixels(215),GiScalePixels(16)));
-    Caption.SetSize(Classes.Point(GiScalePixels(117),GiScalePixels(17)));
-    Caption.SetFontName(NormalFontName);
-    Caption.SetWordWrapEnabled(False);
-    Caption.SetTextAlignX(taxCenter);
-    Caption.SetTextAlignY(tayCenterEx);
-    Caption.SetText(Ranger.GetCharacterName);
-    Caption.SetTextColor(CurrentPixelFormat.PackRgbBytes(0,0,0));
+  Caption := TLabelGI.Create(Panel);
+  if GiResourceVariant = 1 then Caption.SetPosition(Classes.Point(GiScalePixels(215),GiScalePixels(16) + 1))
+  else Caption.SetPosition(Classes.Point(GiScalePixels(215),GiScalePixels(16)));
+  Caption.SetSize(Classes.Point(GiScalePixels(117),GiScalePixels(17)));
+  Caption.SetFontName(NormalFontName);
+  Caption.SetWordWrapEnabled(False);
+  Caption.SetTextAlignX(taxCenter);
+  Caption.SetTextAlignY(tayCenterEx);
+  Caption.SetText(Ranger.GetCharacterName);
+  Caption.SetTextColor(CurrentPixelFormat.PackRgbBytes(0,0,0));
   Caption.UserValue := Index;
   Caption.MouseEnterCallback := ShowCareerHint;
   Caption.MouseLeaveCallback := HintMouseLeave;
-    Caption := TLabelGI.Create(Panel);
-    if GiResourceVariant = 1 then Caption.SetPosition(Classes.Point(GiScalePixels(73),GiScalePixels(16) + 1))
-    else Caption.SetPosition(Classes.Point(GiScalePixels(73),GiScalePixels(16)));
-    Caption.SetSize(Classes.Point(GiScalePixels(130),GiScalePixels(17)));
-    Caption.SetFontName(NormalBoldFontName);
-    Caption.SetWordWrapEnabled(False);
-    Caption.SetTextAlignX(taxCenter);
-    Caption.SetTextAlignY(tayCenterEx);
-    Caption.SetText(Ranger.GetName);
-    Caption.SetTextColor(CurrentPixelFormat.PackRgbBytes(0,0,0));
-    Caption := TLabelGI.Create(Panel);
-    if GiResourceVariant = 1 then Caption.SetPosition(Classes.Point(GiScalePixels(24),GiScalePixels(16) + 1))
-    else Caption.SetPosition(Classes.Point(GiScalePixels(24),GiScalePixels(16)));
-    Caption.SetSize(Classes.Point(GiScalePixels(45),GiScalePixels(17)));
-    Caption.SetFontName(NormalFontName);
-    Caption.SetWordWrapEnabled(False);
-    Caption.SetTextAlignX(taxCenter);
-    Caption.SetTextAlignY(tayCenterEx);
-    Caption.SetText(IntToStr(Index + 1));
-    Caption.SetTextColor(CurrentPixelFormat.PackRgbBytes(0,0,0));
-    Caption := TLabelGI.Create(Panel);
-    if GiResourceVariant = 1 then Caption.SetPosition(Classes.Point(GiScalePixels(555),GiScalePixels(16) + 1))
-    else Caption.SetPosition(Classes.Point(GiScalePixels(555),GiScalePixels(16)));
-    Caption.SetSize(Classes.Point(GiScalePixels(75),GiScalePixels(17)));
-    Caption.SetFontName(NormalBoldFontName);
-    Caption.SetWordWrapEnabled(False);
-    Caption.SetTextAlignX(taxCenter);
-    Caption.SetTextAlignY(tayCenterEx);
-    Caption.SetText(IntToStr(Ranger.TotalExperience));
-    Caption.SetTextColor(CurrentPixelFormat.PackRgbBytes(0,0,0));
+  Caption := TLabelGI.Create(Panel);
+  if GiResourceVariant = 1 then Caption.SetPosition(Classes.Point(GiScalePixels(73),GiScalePixels(16) + 1))
+  else Caption.SetPosition(Classes.Point(GiScalePixels(73),GiScalePixels(16)));
+  Caption.SetSize(Classes.Point(GiScalePixels(130),GiScalePixels(17)));
+  Caption.SetFontName(NormalBoldFontName);
+  Caption.SetWordWrapEnabled(False);
+  Caption.SetTextAlignX(taxCenter);
+  Caption.SetTextAlignY(tayCenterEx);
+  Caption.SetText(Ranger.GetName);
+  Caption.SetTextColor(CurrentPixelFormat.PackRgbBytes(0,0,0));
+  Caption := TLabelGI.Create(Panel);
+  if GiResourceVariant = 1 then Caption.SetPosition(Classes.Point(GiScalePixels(24),GiScalePixels(16) + 1))
+  else Caption.SetPosition(Classes.Point(GiScalePixels(24),GiScalePixels(16)));
+  Caption.SetSize(Classes.Point(GiScalePixels(45),GiScalePixels(17)));
+  Caption.SetFontName(NormalFontName);
+  Caption.SetWordWrapEnabled(False);
+  Caption.SetTextAlignX(taxCenter);
+  Caption.SetTextAlignY(tayCenterEx);
+  Caption.SetText(IntToStr(Index + 1));
+  Caption.SetTextColor(CurrentPixelFormat.PackRgbBytes(0,0,0));
+  Caption := TLabelGI.Create(Panel);
+  if GiResourceVariant = 1 then Caption.SetPosition(Classes.Point(GiScalePixels(555),GiScalePixels(16) + 1))
+  else Caption.SetPosition(Classes.Point(GiScalePixels(555),GiScalePixels(16)));
+  Caption.SetSize(Classes.Point(GiScalePixels(75),GiScalePixels(17)));
+  Caption.SetFontName(NormalBoldFontName);
+  Caption.SetWordWrapEnabled(False);
+  Caption.SetTextAlignX(taxCenter);
+  Caption.SetTextAlignY(tayCenterEx);
+  Caption.SetText(IntToStr(Ranger.TotalExperience));
+  Caption.SetTextColor(CurrentPixelFormat.PackRgbBytes(0,0,0));
   Rows[Index].Height := Panel.ClientSize.Y;
   TablePanel.VerticalScrollBar.SetSmallChange(Min(Rows[Index].Height,TablePanel.VerticalScrollBar.SmallChange));
   if SelectedIndex = Index then
     SelectedRowRect := Classes.Rect(0,Rows[Index].Top,1,Rows[Index].Top + Rows[Index].Height);
 end;
-{ @end $569774 }
+{ @end $5D548C }
 
-{ @routine $56B6E0 TfRating2_RowMouseEnter }
+{ @routine $5D7248 TfRating2_RowMouseEnter }
 procedure TfRating2.RowMouseEnter(Sender: TObjectGI);
 begin
-  (Sender as TImageGI).SetImagePath('GI,Bm.FormRating2.' + GiResourceSuffix + 'Select' + OwnerInfo[RaceToOwner(Rows[Sender.UserState].Ranger.PilotRace)].InternalName);
+  (Sender as TImageGI).ImageSourcePath := 'GI,Bm.FormRating2.' + GiResourceSuffix + 'Select' + OwnerInfo[RaceToOwner(Rows[Sender.UserState].Ranger.PilotRace)].InternalName;
   SoundManager.PlaySound('Sound.ButtonEnter');
 end;
-{ @end $56B6E0 }
+{ @end $5D7248 }
 
-{ @routine $56B810 TfRating2_RowMouseLeave }
+{ @routine $5D736C TfRating2_RowMouseLeave }
 procedure TfRating2.RowMouseLeave(Sender: TObjectGI);
 begin
-  (Sender as TImageGI).SetImagePath('GI,Bm.FormRating2.' + GiResourceSuffix + 'Normal' + OwnerInfo[RaceToOwner(Rows[Sender.UserState].Ranger.PilotRace)].InternalName);
+  (Sender as TImageGI).ImageSourcePath := 'GI,Bm.FormRating2.' + GiResourceSuffix + 'Normal' + OwnerInfo[RaceToOwner(Rows[Sender.UserState].Ranger.PilotRace)].InternalName;
   SoundManager.PlaySound('Sound.ButtonLeave');
 end;
-{ @end $56B810 }
+{ @end $5D736C }
 
-{ @routine $56B940 TfRating2_RefreshFeaturedRangers }
+{ @routine $5D7490 TfRating2_RefreshFeaturedRangers }
 procedure TfRating2.RefreshFeaturedRangers;
 var Ship: TShip;
 begin
@@ -1090,15 +1080,15 @@ begin
     GetByName('TraderEmpty').SetActive(False);
     with GetByName('BestTrader') as TLabelGI do
     begin
-      SetText(Ship.Name);
+      Text := Ship.Name;
       SetActive(True);
     end;
     with GetByName('TraderCaptainI') as TImageGI do
     begin
       UserValue := Ship.Id;
-      SetImagePath('GI,' + Ship.GetCaptainPortraitResourceBase + 'i');
-      SetImageKindX(ikxCenter);
-      SetImageKindY(ikyCenter);
+      ImageSourcePath := 'GI,' + Ship.GetCaptainPortraitResourceBase + 'i';
+      KindX := ikxCenter;
+      KindY := ikyCenter;
       SetActive(True);
     end;
     with GetByName('TraderCaptainA') as TgaiGI do
@@ -1135,15 +1125,15 @@ begin
     GetByName('WariorEmpty').SetActive(False);
     with GetByName('BestWarrior') as TLabelGI do
     begin
-      SetText(Ship.Name);
+      Text := Ship.Name;
       SetActive(True);
     end;
     with GetByName('WarriorCaptainI') as TImageGI do
     begin
       UserValue := Ship.Id;
-      SetImagePath('GI,' + Ship.GetCaptainPortraitResourceBase + 'i');
-      SetImageKindX(ikxCenter);
-      SetImageKindY(ikyCenter);
+      ImageSourcePath := 'GI,' + Ship.GetCaptainPortraitResourceBase + 'i';
+      KindX := ikxCenter;
+      KindY := ikyCenter;
       SetActive(True);
     end;
     with GetByName('WarriorCaptainA') as TgaiGI do
@@ -1180,15 +1170,15 @@ begin
     GetByName('PirateEmpty').SetActive(False);
     with GetByName('BestPirate') as TLabelGI do
     begin
-      SetText(Ship.Name);
+      Text := Ship.Name;
       SetActive(True);
     end;
     with GetByName('PirateCaptainI') as TImageGI do
     begin
       UserValue := Ship.Id;
-      SetImagePath('GI,' + Ship.GetCaptainPortraitResourceBase + 'i');
-      SetImageKindX(ikxCenter);
-      SetImageKindY(ikyCenter);
+      ImageSourcePath := 'GI,' + Ship.GetCaptainPortraitResourceBase + 'i';
+      KindX := ikxCenter;
+      KindY := ikyCenter;
       SetActive(True);
     end;
     with GetByName('PirateCaptainA') as TgaiGI do
@@ -1205,9 +1195,9 @@ begin
     end;
   end;
 end;
-{ @end $56B940 }
+{ @end $5D7490 }
 
-{ @routine $56C2A4 TfRating2_SelectMusic }
+{ @routine $5D7D20 TfRating2_SelectMusic }
 procedure TfRating2.SelectMusic;
 begin
   if GetPlayer = nil then MusicManager.PlayCategory('Base')
@@ -1247,23 +1237,23 @@ begin
     else MusicManager.RequestFadeOut;
   end;
 end;
-{ @end $56C2A4 }
+{ @end $5D7D20 }
 
-{ @routine $56C5D8 TfRating2_ProcessCallbackTimers }
+{ @routine $5D8058 TfRating2_ProcessCallbackTimers }
 procedure TfRating2.ProcessCallbackTimers;
 begin
   inherited ProcessCallbackTimers;
   if (ParentLoop <> nil) and (ParentLoop.ExitCode <> 0) and (ExitCode = 0) then RequestClose(2);
 end;
-{ @end $56C5D8 }
+{ @end $5D8058 }
 
-{ @routine $56C618 ShowRangerRating }
+{ @routine $5D8084 ShowRangerRating }
 function ShowRangerRating(Parent: TMessageLoopGI): Boolean;
-var CursorAlignment: array[0..2] of Byte; State: TCursorStateGI;
+var State: TCursorStateGI;
 begin
   Parent.RootUiObject.OnModalSuspend;
   Parent.CaptureCursorState(@State);
-  Parent.SetCursorActive(False);
+  Parent.ShowCursor := False;
   Parent.DrawQueuedUpdateRects;
   RangerRatingScreen.ParentLoop := Parent;
   Parent.ChildLoop := RangerRatingScreen;
@@ -1277,44 +1267,45 @@ begin
   Parent.Present;
   PostMouseMoveMessage;
 end;
-{ @end $56C618 }
+{ @end $5D8084 }
 
-{ @routine $56C768 TfRating2_ShowDominatorKillsHint }
+{ @routine $5D81B4 TfRating2_ShowDominatorKillsHint }
 procedure TfRating2.ShowDominatorKillsHint(Sender: TObjectGI);
-var DisplayIndex: TDominatorDisplayIndex; Cursor: TPoint; Text: WideString; Ranger: TRanger;
-  // @nested $56C708 FormatDominatorKillsHintColumn
-  function FormatDominatorKillsHintColumn(Column: Integer): WideString; // @addr 0x56C708 @calls "0x56c93f,0x56c99e,0x56ca03,0x56ca20" @note "Nested in TfRating2.ShowDominatorKillsHint; caller supplies its parent frame."
+var DisplayIndex: TDominatorDisplayIndex; Cursor: TPoint; CaptionText: WideString; Ranger: TRanger;
+  // @nested $5D815C FormatDominatorKillsHintColumn
+  function FormatDominatorKillsHintColumn(Column: Integer): WideString; // @addr 0x005D815C @calls "0x005D836E,0x005D83C3,0x005D8411,0x005D8426" @note "Nested in TfRating2.ShowDominatorKillsHint; caller supplies its parent frame."
   begin
     Result := IntToStr(DominatorHintColumns[Column] + 40);
   end;
 begin
   Ranger := Rows[Sender.UserValue].Ranger;
-  if GetPlayer = Ranger then
-  begin
+  if GetPlayer <> Ranger then Exit;
   RewardWindow.SetActive(True);
   if GetPlayer = Ranger then
   begin
     with GetByName('RewardName') as TLabelGI do
-      SetText(FormatText1(LocalizedColorText('FormRating.PlayerName'),TextHighlightColorTag,'<Name>',Ranger.GetName));
+      Text := FormatText1(LocalizedColorText('FormRating.PlayerName'),TextHighlightColorTag,'<Name>',Ranger.GetName);
     with GetByName('RewardImage') as TGraphBufGI do
       LoadGiByPathIntoGraphBuf('Bm.FormRating2.' + GiResourceSuffix + 'PlayerB',GraphBuf);
   end
   else
   begin
     with GetByName('RewardName') as TLabelGI do
-      SetText(FormatText1(LocalizedColorText('FormRating.PartnerName'),TextHighlightColorTag,'<Name>',Ranger.GetName));
+      Text := FormatText1(LocalizedColorText('FormRating.PartnerName'),TextHighlightColorTag,'<Name>',Ranger.GetName);
     with GetByName('RewardImage') as TGraphBufGI do
       LoadGiByPathIntoGraphBuf('Bm.FormRating2.' + GiResourceSuffix + 'DutyB',GraphBuf);
   end;
   if GetPlayer = Ranger then
   begin
-  Text := '<td=' + FormatDominatorKillsHintColumn(1) + '><align=left>' + LocalizedText('FormRating.Dominator') + '</align>' + #13#10;
-  for DisplayIndex := Low(DominatorDisplayOrder) to High(DominatorDisplayOrder) do
-    if DominatorDisplayOrder[DisplayIndex] <> ktBoss then
-    Text := Text + '<td=' + FormatDominatorKillsHintColumn(1) + '><align=left>' + LocalizedColorText(AnsiString('ShipType.Dominator.Blazer.') + IntToStr(Ord(DominatorDisplayOrder[DisplayIndex]))) +
-      '<td=' + FormatDominatorKillsHintColumn(2) + '>:</align><td=' + FormatDominatorKillsHintColumn(3) + '><align=left>' +
-      WrapTextInColor(IntToStr(GetPlayer.DominatorKillsByType[DominatorDisplayOrder[DisplayIndex]]) ,TextHighlightColorTag) + '</align>' + #13#10;
-  with GetByName('RewardText') as TLabelGI do SetText(Text);
+    CaptionText := '<td=' + FormatDominatorKillsHintColumn(1) + '><align=left>' + LocalizedText('FormRating.Dominator') + '</align>' + #13#10;
+    for DisplayIndex := Low(DominatorDisplayOrder) to High(DominatorDisplayOrder) do
+    begin
+      if DominatorDisplayOrder[DisplayIndex] = ktBoss then Continue;
+      CaptionText := CaptionText + '<td=' + FormatDominatorKillsHintColumn(1) + '><align=left>' + LocalizedColorText(AnsiString('ShipType.Dominator.Blazer.') + IntToStr(Ord(DominatorDisplayOrder[DisplayIndex]))) +
+        '<td=' + FormatDominatorKillsHintColumn(2) + '>:</align><td=' + FormatDominatorKillsHintColumn(3) + '><align=left>' +
+        WrapTextInColor(IntToStr(GetPlayer.DominatorKillsByType[DominatorDisplayOrder[DisplayIndex]]) ,TextHighlightColorTag) + '</align>' + #13#10;
+    end;
+    with GetByName('RewardText') as TLabelGI do Text := CaptionText;
   end;
   with GetByName('RewardImage') as TGraphBufGI do
   begin
@@ -1328,8 +1319,7 @@ begin
     SetSize(Classes.Point(Self.RewardWindow.ClientSize.X - LocalPosition.X - Self.RewardWindow.WorkSubRect.Right,ClientSize.Y));
   Cursor := GetCursorPoint;
   RewardWindow.SetPosition(Classes.Point(Cursor.X + 100,Max(0,Cursor.Y - RewardWindow.ClientSize.Y - 20)));
-  end;
 end;
-{ @end $56C768 }
+{ @end $5D81B4 }
 
 end.

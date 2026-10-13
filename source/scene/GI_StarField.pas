@@ -1,5 +1,4 @@
 unit GI_StarField;
-// Unit bracket (inferred): .text 0x004B00F8..0x004B135E; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -28,11 +27,11 @@ type
     Points: PStarFieldPoint; // @offset $04
     Count: Integer; // @offset $08
     Capacity: Integer; // @offset $0C
-    constructor Create; // @addr $4B027C
-    destructor Destroy; override; // @addr $4B02C0
-    procedure Clear; // @addr $4B02FC
-    function AllocatePoint: PStarFieldPoint; // @addr $4B0334 @note "Grows by 100 when incremented Count reaches Capacity."
-    procedure AddPoint(X, Y, Depth: Single; Color: Integer); // @addr $4B039C @ida "void __userpurge $name(TStarFieldList *Self@<eax>, int Color@<edx>, float X@<^8>, float Y@<^4>, float Depth@<^0>);" @note "Depth must be nonzero; retains the low 16 bits of Color."
+    constructor Create; // @addr $48CD74
+    destructor Destroy; override; // @addr $48CDAC
+    procedure Clear; // @addr $48CDD8
+    function AllocatePoint: PStarFieldPoint; // @addr $48CDF8 @note "Grows by 100 when incremented Count reaches Capacity."
+    procedure AddPoint(AX, AY, ADepth: Single; AColor: Integer); // @addr $48CE3C @ida "void __userpurge $name(TStarFieldList *Self@<eax>, int Color@<edx>, float X@<^8>, float Y@<^4>, float Depth@<^0>);" @note "Depth must be nonzero; retains the low 16 bits of Color."
   end;
 
   TStarFieldGI = class(TPanelGI) // @size $190
@@ -51,48 +50,48 @@ type
     PreviousBackgroundBounds: TRect; // @offset $170
     BackgroundBounds: TRect; // @offset $180
 
-    constructor Create(Owner: TObjectGI); // @addr $4B03F4
-    destructor Destroy; override; // @addr $4B04A8
-    procedure SetBackgroundImage(const Path: WideString); // @addr $4B0578
-    procedure ClearProjectedPixels; // @addr $4B05A4
-    procedure GrowPixelBuffers; // @addr $4B05BC
-    procedure RebuildProjectedPixels; // @addr $4B0618
-    procedure SetViewPosition(Position: TPointF); // @addr $4B0794
-    procedure SetSize(Size: TPoint); override; // @addr $4B0808
-    procedure MarkViewDirty; // @addr $4B084C
-    procedure LoadFromConfigPath(const Path: WideString); override; // @addr $4B0860
-    procedure LoadFromBlock(Block: TBlockParEC); override; // @addr $4B0894
-    procedure LoadStarFieldProperties(Block: TBlockParEC); // @addr $4B08BC
-    procedure Invalidate; override; // @addr $4B0938 @note "Empty in native code."
-    procedure UpdateBackgroundBounds; // @addr $4B0944 @note "Updates GlobalsV.SkipSavedPixelRestore from the background rectangle change."
-    procedure ErasePreviousFrame; override; // @addr $4B0AA8
-    procedure DrawBackground(ClipRect: TRect); // @addr $4B0BE0
-    procedure PrepareFrameDraw; override; // @addr $4B112C
-    procedure DrawUpdateRects(ClipRect: TRect); override; // @addr $4B11D8
-    procedure Draw(ClipRect: TRect); override; // @addr $4B1220 @note "Draws all projected pixels, ignoring ClipRect."
-    procedure CommitFrameDraw; override; // @addr $4B12FC
+    constructor Create(Owner: TObjectGI); // @addr $48CE78
+    destructor Destroy; override; // @addr $48CF0C
+    procedure SetBackgroundImage(const Path: WideString); // @addr $48CFA0
+    procedure ClearProjectedPixels; // @addr $48CFC0
+    procedure GrowPixelBuffers; // @addr $48CFCC
+    procedure RebuildProjectedPixels; // @addr $48D00C
+    procedure SetViewPosition(Position: TPointF); // @addr $48D138
+    procedure SetSize(Size: TPoint); override; // @addr $48D19C
+    procedure MarkViewDirty; // @addr $48D1D4
+    procedure LoadFromConfigPath(const Path: WideString); override; // @addr $48D1DC
+    procedure LoadFromBlock(Block: TBlockParEC); override; // @addr $48D208
+    procedure LoadStarFieldProperties(Block: TBlockParEC); // @addr $48D224
+    procedure Invalidate; override; // @addr $48D298 @note "Empty in native code."
+    procedure UpdateBackgroundBounds; // @addr $48D29C @note "Updates GlobalsV.SkipSavedPixelRestore from the background rectangle change."
+    procedure ErasePreviousFrame; override; // @addr $48D3E4
+    procedure DrawBackground(ClipRect: TRect); // @addr $48D4C8
+    procedure PrepareFrameDraw; override; // @addr $48D940
+    procedure DrawUpdateRects(ClipRect: TRect); override; // @addr $48D9B8
+    procedure Draw(ClipRect: TRect); override; // @addr $48D9F0 @note "Draws all projected pixels, ignoring ClipRect."
+    procedure CommitFrameDraw; override; // @addr $48DA88
   end;
 
 implementation
 
 uses EC_Mem, EC_Cache, GR_Main, GR_DX, GR_Gi, GR_GraphBuf, GlobalsV, Classes, SysUtils, Windows;
 
-{ @routine $4B027C TStarFieldList_Create }
+{ @routine $48CD74 TStarFieldList_Create }
 constructor TStarFieldList.Create;
 begin
   inherited Create;
 end;
-{ @end $4B027C }
+{ @end $48CD74 }
 
-{ @routine $4B02C0 TStarFieldList_Destroy }
+{ @routine $48CDAC TStarFieldList_Destroy }
 destructor TStarFieldList.Destroy;
 begin
   Clear;
   inherited Destroy;
 end;
-{ @end $4B02C0 }
+{ @end $48CDAC }
 
-{ @routine $4B02FC TStarFieldList_Clear }
+{ @routine $48CDD8 TStarFieldList_Clear }
 procedure TStarFieldList.Clear;
 begin
   if Points <> nil then
@@ -103,9 +102,9 @@ begin
   Capacity := 0;
   Count := 0;
 end;
-{ @end $4B02FC }
+{ @end $48CDD8 }
 
-{ @routine $4B0334 TStarFieldList_AllocatePoint }
+{ @routine $48CDF8 TStarFieldList_AllocatePoint }
 function TStarFieldList.AllocatePoint: PStarFieldPoint;
 begin
   Inc(Count);
@@ -116,22 +115,23 @@ begin
   end;
   Result := AddPointerOffset(Points, (Count - 1) * SizeOf(TStarFieldPoint));
 end;
-{ @end $4B0334 }
+{ @end $48CDF8 }
 
-{ @routine $4B039C TStarFieldList_AddPoint }
-procedure TStarFieldList.AddPoint(X, Y, Depth: Single; Color: Integer);
-var Point: PStarFieldPoint;
+{ @routine $48CE3C TStarFieldList_AddPoint }
+procedure TStarFieldList.AddPoint(AX, AY, ADepth: Single; AColor: Integer);
 begin
-  Point := AllocatePoint;
-  Point.X := X;
-  Point.Y := Y;
-  Point.Depth := Depth;
-  Point.InverseDepth := 1.0 / Depth;
-  Point.Color := Color;
+  with AllocatePoint^ do
+  begin
+    X := AX;
+    Y := AY;
+    Depth := ADepth;
+    InverseDepth := 1.0 / ADepth;
+    Color := AColor;
+  end;
 end;
-{ @end $4B039C }
+{ @end $48CE3C }
 
-{ @routine $4B03F4 TStarFieldGI_Create }
+{ @routine $48CE78 TStarFieldGI_Create }
 constructor TStarFieldGI.Create(Owner: TObjectGI);
 begin
   inherited Create(Owner);
@@ -143,9 +143,9 @@ begin
   Unknown150 := 0;
   BackgroundScale := 8.0;
 end;
-{ @end $4B03F4 }
+{ @end $48CE78 }
 
-{ @routine $4B04A8 TStarFieldGI_Destroy }
+{ @routine $48CF0C TStarFieldGI_Destroy }
 destructor TStarFieldGI.Destroy;
 begin
   MessageLoop.RegionDrawControl := nil;
@@ -167,33 +167,33 @@ begin
   BackgroundCache := nil;
   inherited Destroy;
 end;
-{ @end $4B04A8 }
+{ @end $48CF0C }
 
-{ @routine $4B0578 TStarFieldGI_SetBackgroundImage }
+{ @routine $48CFA0 TStarFieldGI_SetBackgroundImage }
 procedure TStarFieldGI.SetBackgroundImage(const Path: WideString);
 begin
   inherited Invalidate;
   BackgroundCache.SetCacheKey(Path);
 end;
-{ @end $4B0578 }
+{ @end $48CFA0 }
 
-{ @routine $4B05A4 TStarFieldGI_ClearProjectedPixels }
+{ @routine $48CFC0 TStarFieldGI_ClearProjectedPixels }
 procedure TStarFieldGI.ClearProjectedPixels;
 begin
   PixelCount := 0;
 end;
-{ @end $4B05A4 }
+{ @end $48CFC0 }
 
-{ @routine $4B05BC TStarFieldGI_GrowPixelBuffers }
+{ @routine $48CFCC TStarFieldGI_GrowPixelBuffers }
 procedure TStarFieldGI.GrowPixelBuffers;
 begin
   Inc(PixelCapacity, 64);
   Pixels := ReAllocREC(Pixels, PixelCapacity * SizeOf(TStarFieldPixel));
   PreviousPixels := ReAllocREC(PreviousPixels, PixelCapacity * SizeOf(TStarFieldPixel));
 end;
-{ @end $4B05BC }
+{ @end $48CFCC }
 
-{ @routine $4B0618 TStarFieldGI_RebuildProjectedPixels }
+{ @routine $48D00C TStarFieldGI_RebuildProjectedPixels }
 procedure TStarFieldGI.RebuildProjectedPixels;
 var
   Point: PStarFieldPoint;
@@ -224,9 +224,9 @@ begin
     Point := AddPointerOffset(Point, SizeOf(TStarFieldPoint));
   end;
 end;
-{ @end $4B0618 }
+{ @end $48D00C }
 
-{ @routine $4B0794 TStarFieldGI_SetViewPosition }
+{ @routine $48D138 TStarFieldGI_SetViewPosition }
 procedure TStarFieldGI.SetViewPosition(Position: TPointF);
 begin
   if (ViewPosition.X <> Position.X) or (ViewPosition.Y <> Position.Y) then
@@ -237,9 +237,9 @@ begin
     Invalidate;
   end;
 end;
-{ @end $4B0794 }
+{ @end $48D138 }
 
-{ @routine $4B0808 TStarFieldGI_SetSize }
+{ @routine $48D19C TStarFieldGI_SetSize }
 procedure TStarFieldGI.SetSize(Size: TPoint);
 begin
   if (ClientSize.X <> Size.X) or (ClientSize.Y <> Size.Y) then
@@ -248,45 +248,45 @@ begin
     ViewDirty := True;
   end;
 end;
-{ @end $4B0808 }
+{ @end $48D19C }
 
-{ @routine $4B084C TStarFieldGI_MarkViewDirty }
+{ @routine $48D1D4 TStarFieldGI_MarkViewDirty }
 procedure TStarFieldGI.MarkViewDirty;
 begin
   ViewDirty := True;
 end;
-{ @end $4B084C }
+{ @end $48D1D4 }
 
-{ @routine $4B0860 TStarFieldGI_LoadFromConfigPath }
+{ @routine $48D1DC TStarFieldGI_LoadFromConfigPath }
 procedure TStarFieldGI.LoadFromConfigPath(const Path: WideString);
 begin
   inherited LoadFromConfigPath(Path);
   LoadStarFieldProperties(UiStyleConfig.GetBlockByPath(Path));
 end;
-{ @end $4B0860 }
+{ @end $48D1DC }
 
-{ @routine $4B0894 TStarFieldGI_LoadFromBlock }
+{ @routine $48D208 TStarFieldGI_LoadFromBlock }
 procedure TStarFieldGI.LoadFromBlock(Block: TBlockParEC);
 begin
   inherited LoadFromBlock(Block);
   LoadStarFieldProperties(Block);
 end;
-{ @end $4B0894 }
+{ @end $48D208 }
 
-{ @routine $4B08BC TStarFieldGI_LoadStarFieldProperties }
+{ @routine $48D224 TStarFieldGI_LoadStarFieldProperties }
 procedure TStarFieldGI.LoadStarFieldProperties(Block: TBlockParEC);
 begin
   if Block.CountParams('Image') > 0 then SetBackgroundImage(Block.GetParam('Image'));
 end;
-{ @end $4B08BC }
+{ @end $48D224 }
 
-{ @routine $4B0938 TStarFieldGI_Invalidate }
+{ @routine $48D298 TStarFieldGI_Invalidate }
 procedure TStarFieldGI.Invalidate;
 begin
 end;
-{ @end $4B0938 }
+{ @end $48D298 }
 
-{ @routine $4B0944 TStarFieldGI_UpdateBackgroundBounds }
+{ @routine $48D29C TStarFieldGI_UpdateBackgroundBounds }
 procedure TStarFieldGI.UpdateBackgroundBounds;
 var Data: TCGaiEC; X, Y, Width, Height: Integer; Bounds: TRect;
 begin
@@ -313,9 +313,9 @@ begin
       SkipSavedPixelRestore := not CompareMem(@BackgroundBounds, @PreviousBackgroundBounds, SizeOf(TRect));
     end;
 end;
-{ @end $4B0944 }
+{ @end $48D29C }
 
-{ @routine $4B0AA8 TStarFieldGI_ErasePreviousFrame }
+{ @routine $48D3E4 TStarFieldGI_ErasePreviousFrame }
 procedure TStarFieldGI.ErasePreviousFrame;
 var Pixel: PStarFieldPixel; Buffer: Pointer; I: Integer;
 begin
@@ -350,9 +350,9 @@ begin
     end;
   end;
 end;
-{ @end $4B0AA8 }
+{ @end $48D3E4 }
 
-{ @routine $4B0BE0 TStarFieldGI_DrawBackground }
+{ @routine $48D4C8 TStarFieldGI_DrawBackground }
 procedure TStarFieldGI.DrawBackground(ClipRect: TRect);
 var
   I, X, Y, Width, Height: Integer;
@@ -405,7 +405,7 @@ begin
       Width := BackgroundBounds.Left - ClipRect.Left;
       Height := BackgroundBounds.Bottom;
       if Height > ClipRect.Bottom then Height := ClipRect.Bottom;
-      Height := Height - Y;
+      Dec(Height, Y);
       if HardwareRenderingEnabled then
         DrawColoredRect(X, Y, Width, Height, 0, 255, True, @ClipRect)
       else
@@ -419,7 +419,7 @@ begin
       Width := ClipRect.Right - BackgroundBounds.Right;
       Height := BackgroundBounds.Bottom;
       if Height > ClipRect.Bottom then Height := ClipRect.Bottom;
-      Height := Height - Y;
+      Dec(Height, Y);
       if HardwareRenderingEnabled then
         DrawColoredRect(X, Y, Width, Height, 0, 255, True, @ClipRect)
       else
@@ -448,9 +448,9 @@ begin
     end;
   end;
 end;
-{ @end $4B0BE0 }
+{ @end $48D4C8 }
 
-{ @routine $4B112C TStarFieldGI_PrepareFrameDraw }
+{ @routine $48D940 TStarFieldGI_PrepareFrameDraw }
 procedure TStarFieldGI.PrepareFrameDraw;
 var Pixel: PStarFieldPixel; I: Integer; Buffer: Pointer;
 begin
@@ -467,16 +467,16 @@ begin
         end;
       end;
 end;
-{ @end $4B112C }
+{ @end $48D940 }
 
-{ @routine $4B11D8 TStarFieldGI_DrawUpdateRects }
+{ @routine $48D9B8 TStarFieldGI_DrawUpdateRects }
 procedure TStarFieldGI.DrawUpdateRects(ClipRect: TRect);
 begin
   Draw(Classes.Rect(0, 0, GameScreenWidth, GameScreenHeight));
 end;
-{ @end $4B11D8 }
+{ @end $48D9B8 }
 
-{ @routine $4B1220 TStarFieldGI_Draw }
+{ @routine $48D9F0 TStarFieldGI_Draw }
 procedure TStarFieldGI.Draw(ClipRect: TRect);
 var Pixel: PStarFieldPixel; Buffer: Pointer; Count: Integer;
 begin
@@ -503,9 +503,9 @@ begin
     end;
   end;
 end;
-{ @end $4B1220 }
+{ @end $48D9F0 }
 
-{ @routine $4B12FC TStarFieldGI_CommitFrameDraw }
+{ @routine $48DA88 TStarFieldGI_CommitFrameDraw }
 procedure TStarFieldGI.CommitFrameDraw;
 begin
   if not HardwareRenderingEnabled then
@@ -515,6 +515,6 @@ begin
     PreviousBackgroundBounds := BackgroundBounds;
   end;
 end;
-{ @end $4B12FC }
+{ @end $48DA88 }
 
 end.

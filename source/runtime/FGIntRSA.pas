@@ -32,46 +32,48 @@ interface
 uses FGInt;
 
 
-Procedure FGIntEncodeBlocks(P : AnsiString; Var exp, modb : TFGInt; Var E : AnsiString); // @addr $79BEE0
+procedure FGIntEncodeBlocks(P : AnsiString; var exp, modb : TFGInt; var E : AnsiString); // @addr $698F34
 
 implementation
 
-{ @routine $79BEE0 FGIntEncodeBlocks }
-Procedure FGIntEncodeBlocks(P : AnsiString; Var exp, modb : TFGInt; Var E : AnsiString);
-Var
-   i, j, modbits : longint;
-   PGInt, temp, zero : TFGInt;
-   tempstr1, tempstr2, tempstr3 : AnsiString;
-Begin
-   Base2StringToFGInt('0', zero);
-   FGIntToBase2String(modb, tempstr1);
-   modbits := length(tempstr1);
-   convertBase256to2(P, tempstr1);
-   tempstr1 := '111' + tempstr1;
-   j := modbits - 1;
-   While (length(tempstr1) Mod j) <> 0 Do tempstr1 := '0' + tempstr1;
+{ @routine $698F34 FGIntEncodeBlocks }
+procedure FGIntEncodeBlocks(P : AnsiString; var exp, modb : TFGInt; var E : AnsiString);
+var
+  i, j, modbits : LongInt;
+  PGInt, temp, zero : TFGInt;
+  tempstr1, tempstr2, tempstr3 : AnsiString;
+begin
+  Base2StringToFGInt('0', zero);
+  FGIntToBase2String(modb, tempstr1);
+  modbits := length(tempstr1);
+  convertBase256to2(P, tempstr1);
+  tempstr1 := '111' + tempstr1;
+  j := modbits - 1;
+  while (length(tempstr1) mod j) <> 0 do tempstr1 := '0' + tempstr1;
 
-   j := length(tempstr1) Div (modbits - 1);
-   tempstr2 := '';
-   For i := 1 To j Do
-   Begin
-      tempstr3 := copy(tempstr1, 1, modbits - 1);
-      While (copy(tempstr3, 1, 1) = '0') And (length(tempstr3) > 1) Do delete(tempstr3, 1, 1);
-      Base2StringToFGInt(tempstr3, PGInt);
-      delete(tempstr1, 1, modbits - 1);
-      If tempstr3 = '0' Then FGIntCopy(zero, temp) Else FGIntMontgomeryModExp(PGInt, exp, modb, temp);
-      FGIntClear(PGInt);
-      tempstr3 := '';
-      FGIntToBase2String(temp, tempstr3);
-      While (length(tempstr3) Mod modbits) <> 0 Do tempstr3 := '0' + tempstr3;
-      tempstr2 := tempstr2 + tempstr3;
-      FGIntClear(temp);
-   End;
+  j := length(tempstr1) div (modbits - 1);
+  tempstr2 := '';
+  for i := 1 to j do
+  begin
+    tempstr3 := copy(tempstr1, 1, modbits - 1);
+    while (copy(tempstr3, 1, 1) = '0') and (length(tempstr3) > 1) do
+      delete(tempstr3, 1, 1);
+    Base2StringToFGInt(tempstr3, PGInt);
+    delete(tempstr1, 1, modbits - 1);
+    if tempstr3 = '0' then FGIntCopy(zero, temp)
+    else FGIntMontgomeryModExp(PGInt, exp, modb, temp);
+    FGIntClear(PGInt);
+    tempstr3 := '';
+    FGIntToBase2String(temp, tempstr3);
+    while (length(tempstr3) mod modbits) <> 0 do tempstr3 := '0' + tempstr3;
+    tempstr2 := tempstr2 + tempstr3;
+    FGIntClear(temp);
+  end;
 
-   While (tempstr2[1] = '0') And (length(tempstr2) > 1) Do delete(tempstr2, 1, 1);
-   ConvertBase2To256(tempstr2, E);
-   FGIntClear(zero);
-End;
-{ @end $79BEE0 }
+  while (tempstr2[1] = '0') and (length(tempstr2) > 1) do delete(tempstr2, 1, 1);
+  ConvertBase2To256(tempstr2, E);
+  FGIntClear(zero);
+end;
+{ @end $698F34 }
 
 end.

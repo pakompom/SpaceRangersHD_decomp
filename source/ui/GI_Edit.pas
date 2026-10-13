@@ -1,5 +1,4 @@
 unit GI_Edit;
-// Unit bracket (inferred): .text 0x004A18D0..0x004A3DBD; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -28,35 +27,35 @@ type
     AcceptCharCallback: TEditAcceptCharEventGI; // @offset $160
     ClearFocusOnEnter: Boolean; // @offset 0x168
 
-    constructor Create(Owner: TObjectGI); // @addr 0x4A1A00
-    destructor Destroy; override; // @addr 0x4A1B1C
-    procedure Clear; override; // @addr 0x4A1B80
-    procedure SetFontName(FontName: WideString); // @addr 0x4A1C34
-    procedure SetBorderEnabled(Value: Boolean); // @addr 0x4A1C94
-    procedure SetText(Value: WideString); // @addr 0x4A1CCC @note "Resets CaretPosition on change; does not clamp to MaxLength or invoke ChangedCallback."
-    function HasGlyph(Character: WideChar): Boolean; // @addr 0x4A1D48
-    procedure SetTextColor(Value: Cardinal); // @addr 0x4A1DB8
-    procedure SetBorderLightColor(Value: Cardinal); // @addr 0x4A1DF0
-    procedure SetBorderDarkColor(Value: Cardinal); // @addr 0x4A1E28
-    procedure SetTextAlignX(Value: TTextAlignXGI); // @addr 0x4A1E60 @note "Only Left and Center are accepted; other values raise."
-    procedure SetCaretPosition(Value: Integer); // @addr 0x4A1EE8 @note "Clamps to 0..Length(Text)."
-    procedure ProcessLeftButtonDown(KeyState: Cardinal; Point: TPoint); override; // @addr $4A1F50
-    procedure OnCaretBlink; override; // @addr $4A24F4
-    procedure OnFocusGained; override; // @addr 0x4A1F90
-    procedure OnFocusLost; override; // @addr 0x4A1FD0
-    procedure ProcessKeyDown(Key: Integer); override; // @addr 0x4A2018
-    procedure ProcessCharacter(Character: WideChar); override; // @addr 0x4A23C8 @note "Requires a font glyph, acceptance by the optional callback, and length below MaxLength."
-    procedure LoadFromConfigPath(const Path: WideString); override; // @addr 0x4A250C
-    procedure LoadFromBlock(Block: TBlockParEC); override; // @addr 0x4A2C74
-    procedure Draw(ClipRect: TRect); override; // @addr 0x4A3428
-    procedure QueueImageLoad(PendingLoads: TList); override; // @addr 0x4A3D80
+    constructor Create(Owner: TObjectGI); // @addr 0x004B0160
+    destructor Destroy; override; // @addr 0x004B0250
+    procedure Clear; override; // @addr 0x004B029C
+    procedure SetFontName(FontName: WideString); // @addr 0x004B0334
+    procedure SetBorderEnabled(Value: Boolean); // @addr 0x004B0390
+    procedure SetText(Value: WideString); // @addr 0x004B03B0 @note "Resets CaretPosition on change; does not clamp to MaxLength or invoke ChangedCallback."
+    function HasGlyph(Character: WideChar): Boolean; // @addr 0x004B0424
+    procedure SetTextColor(Value: Cardinal); // @addr 0x004B0490
+    procedure SetBorderLightColor(Value: Cardinal); // @addr 0x004B04B0
+    procedure SetBorderDarkColor(Value: Cardinal); // @addr 0x004B04D0
+    procedure SetTextAlignX(Value: TTextAlignXGI); // @addr 0x004B04F0 @note "Only Left and Center are accepted; other values raise."
+    procedure SetCaretPosition(Value: Integer); // @addr 0x004B055C @note "Clamps to 0..Length(Text)."
+    procedure ProcessLeftButtonDown(KeyState: Cardinal; Point: TPoint); override; // @addr $4B05A8
+    procedure OnCaretBlink; override; // @addr $4B09DC
+    procedure OnFocusGained; override; // @addr 0x004B05D8
+    procedure OnFocusLost; override; // @addr 0x004B0608
+    procedure ProcessKeyDown(Key: Integer); override; // @addr 0x004B0640
+    procedure ProcessCharacter(Character: WideChar); override; // @addr 0x004B0908 @note "Requires a font glyph, acceptance by the optional callback, and length below MaxLength."
+    procedure LoadFromConfigPath(const Path: WideString); override; // @addr 0x004B09E8
+    procedure LoadFromBlock(Block: TBlockParEC); override; // @addr 0x004B10F4
+    procedure Draw(ClipRect: TRect); override; // @addr 0x004B1854
+    procedure QueueImageLoad(PendingLoads: TList); override; // @addr 0x004B2114
   end;
 
 implementation
 
 uses SysUtils, Windows, EC_Cache, GR_Main, GR_GraphBuf, GR_DX, EC_Str;
 
-{ @routine $4A1A00 TEditGI_Create }
+{ @routine $4B0160 TEditGI_Create }
 constructor TEditGI.Create(Owner: TObjectGI);
 begin
   inherited Create(Owner);
@@ -72,9 +71,9 @@ begin
   MaxLength := 256;
   ClearFocusOnEnter := True;
 end;
-{ @end $4A1A00 }
+{ @end $4B0160 }
 
-{ @routine $4A1B1C TEditGI_Destroy }
+{ @routine $4B0250 TEditGI_Destroy }
 destructor TEditGI.Destroy;
 begin
   FontCache.Free;
@@ -83,9 +82,9 @@ begin
   BackgroundCache := nil;
   inherited Destroy;
 end;
-{ @end $4A1B1C }
+{ @end $4B0250 }
 
-{ @routine $4A1B80 TEditGI_Clear }
+{ @routine $4B029C TEditGI_Clear }
 procedure TEditGI.Clear;
 begin
   inherited Clear;
@@ -98,40 +97,36 @@ begin
   AutoScrollText := False;
   Text := '';
 end;
-{ @end $4A1B80 }
+{ @end $4B029C }
 
-{ @routine $4A1C34 TEditGI_SetFontName }
+{ @routine $4B0334 TEditGI_SetFontName }
 procedure TEditGI.SetFontName(FontName: WideString);
 begin
   FontCache.SetCacheKey(FontName);
   Invalidate;
 end;
-{ @end $4A1C34 }
+{ @end $4B0334 }
 
-{ @routine $4A1C94 TEditGI_SetBorderEnabled }
+{ @routine $4B0390 TEditGI_SetBorderEnabled }
 procedure TEditGI.SetBorderEnabled(Value: Boolean);
 begin
-  if Value <> BorderEnabled then
-  begin
-    BorderEnabled := Value;
-    Invalidate;
-  end;
+  if Value = BorderEnabled then Exit;
+  BorderEnabled := Value;
+  Invalidate;
 end;
-{ @end $4A1C94 }
+{ @end $4B0390 }
 
-{ @routine $4A1CCC TEditGI_SetText }
+{ @routine $4B03B0 TEditGI_SetText }
 procedure TEditGI.SetText(Value: WideString);
 begin
-  if Text <> Value then
-  begin
-    Text := Value;
-    CaretPosition := 0;
-    Invalidate;
-  end;
+  if Text = Value then Exit;
+  Text := Value;
+  CaretPosition := 0;
+  Invalidate;
 end;
-{ @end $4A1CCC }
+{ @end $4B03B0 }
 
-{ @routine $4A1D48 TEditGI_HasGlyph }
+{ @routine $4B0424 TEditGI_HasGlyph }
 function TEditGI.HasGlyph(Character: WideChar): Boolean;
 var Font: TCFontEC;
 begin
@@ -143,42 +138,36 @@ begin
     FontCache.Release;
   end;
 end;
-{ @end $4A1D48 }
+{ @end $4B0424 }
 
-{ @routine $4A1DB8 TEditGI_SetTextColor }
+{ @routine $4B0490 TEditGI_SetTextColor }
 procedure TEditGI.SetTextColor(Value: Cardinal);
 begin
-  if TextColor <> Value then
-  begin
-    TextColor := Value;
-    Invalidate;
-  end;
+  if TextColor = Value then Exit;
+  TextColor := Value;
+  Invalidate;
 end;
-{ @end $4A1DB8 }
+{ @end $4B0490 }
 
-{ @routine $4A1DF0 TEditGI_SetBorderLightColor }
+{ @routine $4B04B0 TEditGI_SetBorderLightColor }
 procedure TEditGI.SetBorderLightColor(Value: Cardinal);
 begin
-  if BorderLightColor <> Value then
-  begin
-    BorderLightColor := Value;
-    Invalidate;
-  end;
+  if BorderLightColor = Value then Exit;
+  BorderLightColor := Value;
+  Invalidate;
 end;
-{ @end $4A1DF0 }
+{ @end $4B04B0 }
 
-{ @routine $4A1E28 TEditGI_SetBorderDarkColor }
+{ @routine $4B04D0 TEditGI_SetBorderDarkColor }
 procedure TEditGI.SetBorderDarkColor(Value: Cardinal);
 begin
-  if BorderDarkColor <> Value then
-  begin
-    BorderDarkColor := Value;
-    Invalidate;
-  end;
+  if BorderDarkColor = Value then Exit;
+  BorderDarkColor := Value;
+  Invalidate;
 end;
-{ @end $4A1E28 }
+{ @end $4B04D0 }
 
-{ @routine $4A1E60 TEditGI_SetTextAlignX }
+{ @routine $4B04F0 TEditGI_SetTextAlignX }
 procedure TEditGI.SetTextAlignX(Value: TTextAlignXGI);
 begin
   if (Value <> taxLeft) and (Value <> taxCenter) then raise Exception.Create('Error TEditGI. This align not support.');
@@ -188,9 +177,9 @@ begin
     Invalidate;
   end;
 end;
-{ @end $4A1E60 }
+{ @end $4B04F0 }
 
-{ @routine $4A1EE8 TEditGI_SetCaretPosition }
+{ @routine $4B055C TEditGI_SetCaretPosition }
 procedure TEditGI.SetCaretPosition(Value: Integer);
 begin
   if Value > Length(Text) then CaretPosition := Length(Text)
@@ -198,17 +187,17 @@ begin
   else CaretPosition := Value;
   Invalidate;
 end;
-{ @end $4A1EE8 }
+{ @end $4B055C }
 
-{ @routine $4A1F50 TEditGI_ProcessLeftButtonDown }
+{ @routine $4B05A8 TEditGI_ProcessLeftButtonDown }
 procedure TEditGI.ProcessLeftButtonDown(KeyState: Cardinal; Point: TPoint);
 begin
   inherited ProcessLeftButtonDown(KeyState, Point);
   if Active = True then MessageLoop.SetFocusedControl(Self);
 end;
-{ @end $4A1F50 }
+{ @end $4B05A8 }
 
-{ @routine $4A1F90 TEditGI_OnFocusGained }
+{ @routine $4B05D8 TEditGI_OnFocusGained }
 procedure TEditGI.OnFocusGained;
 begin
   inherited OnFocusGained;
@@ -216,9 +205,9 @@ begin
   CaretPosition := Length(Text);
   Invalidate;
 end;
-{ @end $4A1F90 }
+{ @end $4B05D8 }
 
-{ @routine $4A1FD0 TEditGI_OnFocusLost }
+{ @routine $4B0608 TEditGI_OnFocusLost }
 procedure TEditGI.OnFocusLost;
 begin
   inherited OnFocusLost;
@@ -226,29 +215,29 @@ begin
   if Assigned(FocusLostCallback) then FocusLostCallback(Self);
   Invalidate;
 end;
-{ @end $4A1FD0 }
+{ @end $4B0608 }
 
-{ @routine $4A2018 TEditGI_ProcessKeyDown }
+{ @routine $4B0640 TEditGI_ProcessKeyDown }
 procedure TEditGI.ProcessKeyDown(Key: Integer);
 var
-  I, N: Integer;
+  CharIndex, TextLength: Integer;
   Control: TObjectGI;
 begin
   if (Key = VK_BACK) and not IsVirtualKeyDown(VK_SHIFT) then
   begin
     if CaretPosition > 0 then
     begin
-      N := Length(Text);
-      I := CaretPosition;
-      while I < N do
+      TextLength := Length(Text);
+      CharIndex := CaretPosition;
+      while CharIndex < TextLength do
       begin
-        Text[I] := Text[I + 1];
-        Inc(I);
+        Text[CharIndex] := Text[CharIndex + 1];
+        Inc(CharIndex);
       end;
-      SetLength(Text, N - 1);
+      SetLength(Text, TextLength - 1);
       Dec(CaretPosition);
       Invalidate;
-      DispatchNamedEvent(4, 0, 0);
+      DispatchNamedEvent(nceTextChanged, 0, 0);
       if Assigned(ChangedCallback) then ChangedCallback(Self);
     end;
   end
@@ -257,23 +246,23 @@ begin
     Text := '';
     CaretPosition := 0;
     Invalidate;
-    DispatchNamedEvent(4, 0, 0);
+    DispatchNamedEvent(nceTextChanged, 0, 0);
     if Assigned(ChangedCallback) then ChangedCallback(Self);
   end
   else if Key = VK_DELETE then
   begin
-    N := Length(Text);
-    if CaretPosition < N then
+    TextLength := Length(Text);
+    if CaretPosition < TextLength then
     begin
-      I := CaretPosition + 1;
-      while I < N do
+      CharIndex := CaretPosition + 1;
+      while CharIndex < TextLength do
       begin
-        Text[I] := Text[I + 1];
-        Inc(I);
+        Text[CharIndex] := Text[CharIndex + 1];
+        Inc(CharIndex);
       end;
-      SetLength(Text, N - 1);
+      SetLength(Text, TextLength - 1);
       Invalidate;
-      DispatchNamedEvent(4, 0, 0);
+      DispatchNamedEvent(nceTextChanged, 0, 0);
       if Assigned(ChangedCallback) then ChangedCallback(Self);
     end;
   end
@@ -331,44 +320,44 @@ begin
     end;
   end;
 end;
-{ @end $4A2018 }
+{ @end $4B0640 }
 
-{ @routine $4A23C8 TEditGI_ProcessCharacter }
+{ @routine $4B0908 TEditGI_ProcessCharacter }
 procedure TEditGI.ProcessCharacter(Character: WideChar);
-var I, N: Integer;
+var CharIndex, TextLength: Integer;
 begin
   inherited ProcessCharacter(Character);
   if HasGlyph(Character) then
     if not Assigned(AcceptCharCallback) or AcceptCharCallback(Self, Character) then
     begin
-      N := Length(Text);
-      if N < MaxLength then
+      TextLength := Length(Text);
+      if TextLength < MaxLength then
       begin
-        SetLength(Text, N + 1);
-        I := N;
-        while I >= CaretPosition do
+        SetLength(Text, TextLength + 1);
+        CharIndex := TextLength;
+        while CharIndex >= CaretPosition do
         begin
-          Text[I + 1] := Text[I];
-          Dec(I);
+          Text[CharIndex + 1] := Text[CharIndex];
+          Dec(CharIndex);
         end;
         Text[CaretPosition + 1] := Character;
         Inc(CaretPosition);
         Invalidate;
-        DispatchNamedEvent(4, 0, 0);
+        DispatchNamedEvent(nceTextChanged, 0, 0);
         if Assigned(ChangedCallback) then ChangedCallback(Self);
       end;
     end;
 end;
-{ @end $4A23C8 }
+{ @end $4B0908 }
 
-{ @routine $4A24F4 TEditGI_OnCaretBlink }
+{ @routine $4B09DC TEditGI_OnCaretBlink }
 procedure TEditGI.OnCaretBlink;
 begin
   Invalidate;
 end;
-{ @end $4A24F4 }
+{ @end $4B09DC }
 
-{ @routine $4A250C TEditGI_LoadFromConfigPath }
+{ @routine $4B09E8 TEditGI_LoadFromConfigPath }
 procedure TEditGI.LoadFromConfigPath(const Path: WideString);
 var
   Block: TBlockParEC;
@@ -427,9 +416,9 @@ begin
   if Block.CountParams('MaxLen') > 0 then MaxLength := StrToInt(Block.GetParam('MaxLen'));
   if Block.CountParams('AlignX') > 0 then SetTextAlignX(ParseTextAlignXName(TrimWideString(Block.GetParam('AlignX'))));
 end;
-{ @end $4A250C }
+{ @end $4B09E8 }
 
-{ @routine $4A2C74 TEditGI_LoadFromBlock }
+{ @routine $4B10F4 TEditGI_LoadFromBlock }
 procedure TEditGI.LoadFromBlock(Block: TBlockParEC);
 var
   ColorText: WideString;
@@ -487,9 +476,9 @@ begin
   if Block.CountParams('MaxLen') > 0 then MaxLength := StrToInt(Block.GetParam('MaxLen'));
   if Block.CountParams('AlignX') > 0 then SetTextAlignX(ParseTextAlignXName(TrimWideString(Block.GetParam('AlignX'))));
 end;
-{ @end $4A2C74 }
+{ @end $4B10F4 }
 
-{ @routine $4A3428 TEditGI_Draw }
+{ @routine $4B1854 TEditGI_Draw }
 procedure TEditGI.Draw(ClipRect: TRect);
 var
   Font: TCFontEC;
@@ -611,14 +600,14 @@ begin
     if Bitmap <> nil then BackgroundCache.Release;
   end;
 end;
-{ @end $4A3428 }
+{ @end $4B1854 }
 
-{ @routine $4A3D80 TEditGI_QueueImageLoad }
+{ @routine $4B2114 TEditGI_QueueImageLoad }
 procedure TEditGI.QueueImageLoad(PendingLoads: TList);
 begin
   FontCache.QueueLoadIfMissing(PendingLoads);
   if BackgroundCache <> nil then BackgroundCache.QueueLoadIfMissing(PendingLoads);
 end;
-{ @end $4A3D80 }
+{ @end $4B2114 }
 
 end.

@@ -1,13 +1,12 @@
 unit aScript;
-// Unit bracket (inferred): .text 0x0064C170..0x0065C568; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
 uses Classes, EC_BlockPar, EC_Buf, EC_Ether, EC_Expression, EC_Str, EC_Struct, EC_Thread, Windows, aGalaxy, aGalaxyStruct, aItem, aMyFunction, aPlanet, aShip;
 
 const
-  // Serialized PlaceKind IDs, decoded by TScriptPlace.GetPoint ($64FBA0)
-  // and ShipInPlace ($6501B4). Keep the stored field as a 32-bit integer.
+  // Serialized PlaceKind IDs, decoded by TScriptPlace.GetPoint ($648D14)
+  // and ShipInPlace ($649244). Keep the stored field as a 32-bit integer.
   spkPolar = 0;
   spkPlanetPosition = 1;
   spkDockedPlanet = 2;
@@ -16,14 +15,23 @@ const
   spkGroupCentroid = 5;
   spkCoordinates = 6;
 
-  // TShip.ApplyScriptStateOrders ($77A934), state completion ($77AE70),
-  // and HasScriptControl ($77D8B4) establish these serialized StateKind IDs.
+  // TShip.ApplyScriptStateOrders ($6EF530), state completion ($6EF9E0),
+  // and HasScriptControl ($6F1E24) establish these serialized StateKind IDs.
   sskIdle = 0;
   sskMoveToPlace = 1;
   sskFollowGroup = 2;
   sskJumpToStar = 3;
   sskLandOnPlanet = 4;
   sskNormalAI = 5;
+
+  sidEquipment = 0;
+  sidWeapon = 1;
+  sidGoods = 2;
+  sidArtefact = 3;
+  sidCustomItem = 4;
+
+  AllScriptStepTypes = [0..11];
+  ScriptSpawnPlaceKinds = [spkPolar, spkPlanetPosition, spkStarDirection, spkGroupCentroid, spkCoordinates];
 
 type
 
@@ -58,7 +66,6 @@ type
     RequireBlackHole: Boolean; // @offset 0x0C
   end;
 
-  // Native record RTTI at $64C094.
   TDialogOverride = packed record // @size $10
     DialogName: WideString; // @offset $00
     Priority: Integer; // @offset $04
@@ -68,7 +75,6 @@ type
   PScriptPlanetBinding = ^TScriptPlanet;
 
   PScriptShipRequirement = ^TScriptShipOtb;
-  // Native record RTTI at $64C0BC.
   TDialogInject = record // @size $24
     Script: TScript; // @offset $00 Borrowed dialogue owner.
     DialogName: WideString; // @offset $04
@@ -90,14 +96,12 @@ type
     MaxCombatBalance: Single; // @offset 0x14
   end;
 
-  // Native record RTTI at $64C0F8.
   TDialogBlock = record // @size $0C
     Text: WideString; // @offset $00
     Script: TScript; // @offset $04 Borrowed owner.
     Mode: Byte; // @offset $08 Zero enables, one disables, two or more suppress matching choices.
   end;
 
-  // Native record RTTI at $64C11C.
   TScriptPlanet = packed record // @size 0x18
     Name: WideString; // @offset 0x00
     RaceMask: TOwnerMask; // @offset 0x04
@@ -110,7 +114,6 @@ type
     Planet: TPlanet; // @offset 0x14
   end;
 
-  // Native record RTTI at $64C148.
   TScriptShipOtb = packed record // @size 0x48
     Count: Integer; // @offset 0x00
     OwnerMask: TOwnerMask; // @offset 0x04
@@ -144,16 +147,16 @@ type
     ShipRequirements: array of TScriptShipOtb; // @offset 0x18
     Star: TStar; // @offset 0x1C
 
-    constructor Create; // @addr 0x64F91C
-    destructor Destroy; override; // @addr 0x64F990
+    constructor Create; // @addr 0x00648B1C
+    destructor Destroy; override; // @addr 0x00648B7C
   end;
 
   TScriptConstellation = class(TObjectEx) // @size 0x8
   public
     Constellation: TConstellation; // @offset 0x04
 
-    constructor Create; // @addr 0x64F9F4
-    destructor Destroy; override; // @addr 0x64FA38
+    constructor Create; // @addr 0x00648BCC
+    destructor Destroy; override; // @addr 0x00648C04
   end;
 
   TScriptShip = class(TObjectEx) // @size 0x2C
@@ -167,11 +170,11 @@ type
     EndState: Boolean; // @offset 0x28
     Hit: Boolean; // @offset 0x29
     HitPlayer: Boolean; // @offset 0x2A
-    function GetGroup: TScriptGroup; // @addr 0x64FB00
-    function RunActionCode(ActionType: TScriptActionType; Ship: TShip; Object1, Object2: TObject; Param: Integer): Integer; // @addr 0x65B30C @note "Returns the event parameter after script changes. Object slots can carry event-specific integers."
+    function GetGroup: TScriptGroup; // @addr 0x00648CA0
+    function RunActionCode(ActionType: TScriptActionType; Ship: TShip; Object1, Object2: TObject; Param: Integer): Integer; // @addr 0x00652E1C @note "Returns the event parameter after script changes. Object slots can carry event-specific integers."
 
-    constructor Create; // @addr 0x64FA6C
-    destructor Destroy; override; // @addr 0x64FAB0
+    constructor Create; // @addr 0x00648C2C
+    destructor Destroy; override; // @addr 0x00648C64
   end;
 
   TScriptPlace = class(TObjectEx) // @size 0x34
@@ -188,12 +191,12 @@ type
     TargetValue: Dword; // @offset 0x28  Kinds 1/2: TPlanet; 3: TStar; 4: TScriptItem; 5: group index; 6: TVarEC for X.
     TargetVarName2: WideString; // @offset 0x2C
     TargetValue2: TVarEC; // @offset 0x30  Second coordinate variable for spkCoordinates.
-    function GetPoint: TPointF; // @addr 0x64FBA0
-    function GetRandomPoint(Seed: Cardinal): TPointF; // @addr 0x65004C
-    function ShipInPlace(Ship: TShip): Boolean; // @addr 0x6501B4 @note "spkDockedPlanet requires docking at the bound planet; other kinds require normal space."
+    function GetPoint: TPointF; // @addr 0x00648D14
+    function GetRandomPoint(Seed: Cardinal): TPointF; // @addr 0x00649120
+    function ShipInPlace(Ship: TShip): Boolean; // @addr 0x00649244 @note "spkDockedPlanet requires docking at the bound planet; other kinds require normal space."
 
-    constructor Create; // @addr 0x64FB28
-    destructor Destroy; override; // @addr 0x64FB6C
+    constructor Create; // @addr 0x00648CB4
+    destructor Destroy; override; // @addr 0x00648CEC
   end;
 
   TScriptItem = class(TObjectEx) // @size 0x64
@@ -220,12 +223,12 @@ type
     StepTypeMask: TScriptStepTypeSet; // @offset 0x5C
     ActionCodeInitialized: Boolean; // @offset 0x5E
     Script: TScript; // @offset 0x60
-    procedure CompileActionCode; // @addr 0x65ABC4 @note "Requires nonempty OnActionText and an empty ActionCode slot."
-    function RunActionCode(ActionType: TScriptActionType; Ship: TShip; Object1, Object2: TObject; Param: Integer): Integer; // @addr 0x65AF44 @note "Returns the event parameter after script changes. Object slots can carry event-specific integers."
-    function FormatDataText(Text, ColorTag: WideString): WideString; // @addr 0x65C114
+    procedure CompileActionCode; // @addr 0x00652758 @note "Requires nonempty OnActionText and an empty ActionCode slot."
+    function RunActionCode(ActionType: TScriptActionType; Ship: TShip; Object1, Object2: TObject; Param: Integer): Integer; // @addr 0x00652A6C @note "Returns the event parameter after script changes. Object slots can carry event-specific integers."
+    function FormatDataText(Text, ColorTag: WideString): WideString; // @addr 0x00653B74
 
-    constructor Create; // @addr 0x650228
-    destructor Destroy; override; // @addr 0x650280
+    constructor Create; // @addr 0x0064929C
+    destructor Destroy; override; // @addr 0x006492E0
   end;
 
   TScriptGroup = class(TObjectEx) // @size 0x70
@@ -258,8 +261,8 @@ type
     StationDialogVariable: WideString; // @offset 0x68 Dialog-index variable used by TfRuinsTalk when docking at a scripted station.
     Ships: TList; // @offset 0x6C  Owned container for group creation.
 
-    constructor Create; // @addr 0x6502EC
-    destructor Destroy; override; // @addr 0x650330
+    constructor Create; // @addr 0x00649328
+    destructor Destroy; override; // @addr 0x00649360
   end;
 
   TScriptState = class(TObjectEx) // @size 0x4C
@@ -283,8 +286,8 @@ type
     StateCode: TCodeEC; // @offset 0x48
     // EntryCode runs before CurShip/EndState refresh; StateCode sees the new context.
 
-    constructor Create; // @addr 0x650380
-    destructor Destroy; override; // @addr 0x6503DC
+    constructor Create; // @addr 0x00649398
+    destructor Destroy; override; // @addr 0x006493E4
   end;
 
   TScriptDialog = class(TObjectEx) // @size 0xC
@@ -292,8 +295,8 @@ type
     Name: WideString; // @offset 0x04
     Code: TCodeEC; // @offset 0x08
 
-    constructor Create; // @addr 0x6504A0
-    destructor Destroy; override; // @addr 0x6504F4
+    constructor Create; // @addr 0x0064946C
+    destructor Destroy; override; // @addr 0x006494B0
   end;
 
   TScriptDialogMsg = class(TObjectEx) // @size 0xC
@@ -301,8 +304,8 @@ type
     Name: WideString; // @offset 0x04
     Code: TCodeEC; // @offset 0x08
 
-    constructor Create; // @addr 0x650544
-    destructor Destroy; override; // @addr 0x650598
+    constructor Create; // @addr 0x006494E8
+    destructor Destroy; override; // @addr 0x0064952C
   end;
 
   TScriptDialogAnswer = class(TObjectEx) // @size 0x10
@@ -311,8 +314,8 @@ type
     AnswerCode: TCodeEC; // @offset 0x08
     ActionCode: TCodeEC; // @offset 0x0C
 
-    constructor Create; // @addr 0x6505E8
-    destructor Destroy; override; // @addr 0x650650
+    constructor Create; // @addr 0x00649564
+    destructor Destroy; override; // @addr 0x006495B8
   end;
 
   TScript = class(TObjectEx) // @size 0x60
@@ -340,42 +343,42 @@ type
     GroupRelations: array of TScriptGroupRelation; // @offset 0x54
     AnchorPlanet: TPlanet; // @offset 0x58  Optional first planet binding when starting a script.
     EtherIds: TStringsEC; // @offset 0x5C
-    procedure Clear; // @addr 0x650A18 @note "Frees owned entries but retains list and code containers."
-    procedure PublishShipContext(Binding: TScriptShip); // @addr 0x650D84 @note "Changes the global CurrentScript context."
-    procedure PublishCurrentShip(Ship: TShip); // @addr 0x650E14
-    function GetStar(Name: WideString): TScriptStar; // @addr 0x650E68 @note "Raises when absent."
-    function GetPlanetBinding(Name: WideString): PScriptPlanetBinding; // @addr 0x650F8C @note "Raises when absent."
-    function GetItem(Name: WideString): TScriptItem; // @addr 0x6510F4 @note "Raises when absent."
-    procedure RunShipState(Binding: TScriptShip); // @addr 0x651210
-    procedure RunTurnCode; // @addr 0x651490
-    procedure RunDialogCode; // @addr 0x651630
-    procedure CallDialog(Index: Integer); // @addr 0x6517D4
-    procedure CallDialogByVariable(Name: WideString); // @addr 0x651A9C
-    procedure CallDialogMessage(Index: Integer); // @addr 0x651BA8
-    procedure BuildDialogAnswer(Index: Integer); // @addr 0x651E58
-    procedure ExecuteDialogAnswer(Index: Integer); // @addr 0x652118 @note "Index -1 is ignored."
-    procedure BindShip(GroupIndex: Integer; Ship: TShip); // @addr 0x6523C8 @note "The player may have multiple script bindings; ordinary ships have one."
-    procedure UnbindShip(Ship: TShip); // @addr 0x65247C
-    procedure ClearShipBindings; // @addr 0x65256C
-    procedure ChangeState(Binding: TScriptShip; StateIndex: Integer); // @addr 0x652660
-    procedure SetGroupRelation(SourceGroup, TargetGroup: Integer; Level: TRelationLevel); // @addr 0x6526F8 @note "Changes source ships' relations to ranger members of the target group."
-    procedure SetPlanetRelation(GroupIndex: Integer; Planet: TPlanet; Level: TRelationLevel); // @addr 0x6527C4
-    function TryBindStars(StarIndex: Integer): Boolean; // @addr 0x65283C @note "Recursively assigns remaining stars and their planets; earlier star bindings must already exist."
-    function LoadFromBuffer(Buffer: TBufEC; AnchorStar: TStar; FirstPlanet: TPlanet; CreateObjects: Boolean): Boolean; // @addr 0x653660 @note "Accepts script-definition versions 5 through 8."
-    function LoadFromFile(FileName: WideString; AnchorStar: TStar; FirstPlanet: TPlanet; CreateObjects: Boolean): Boolean; // @addr 0x656D1C
-    procedure SaveState(Buffer: TBufEC); // @addr 0x656E90 @note "Compiled instructions are excluded."
-    procedure LoadState(Buffer: TBufEC; Galaxy: TGalaxy); // @addr 0x657690 @note "Requires the original script-definition file. Resolves star, planet and item IDs through Galaxy; ship IDs are deferred."
-    procedure BindImportedFunctions; // @addr 0x6583F4
-    procedure ResolveLoadedReferences(Galaxy: TGalaxy); // @addr 0x658658 @note "Resolves saved ship IDs and restores ship, place, and state bindings after LoadState."
+    procedure Clear; // @addr 0x00649868 @note "Frees owned entries but retains list and code containers."
+    procedure PublishShipContext(Binding: TScriptShip); // @addr 0x00649A80 @note "Changes the global CurrentScript context."
+    procedure PublishCurrentShip(Ship: TShip); // @addr 0x00649AF4
+    function GetStar(Name: WideString): TScriptStar; // @addr 0x00649B30 @note "Raises when absent."
+    function GetPlanetBinding(Name: WideString): PScriptPlanetBinding; // @addr 0x00649C3C @note "Raises when absent."
+    function GetItem(Name: WideString): TScriptItem; // @addr 0x00649D84 @note "Raises when absent."
+    procedure RunShipState(Binding: TScriptShip); // @addr 0x00649E8C
+    procedure RunTurnCode; // @addr 0x0064A0F0
+    procedure RunDialogCode; // @addr 0x0064A284
+    procedure CallDialog(Index: Integer); // @addr 0x0064A41C
+    procedure CallDialogByVariable(Name: WideString); // @addr 0x0064A6D8
+    procedure CallDialogMessage(Index: Integer); // @addr 0x0064A7D8
+    procedure BuildDialogAnswer(Index: Integer); // @addr 0x0064AA7C
+    procedure ExecuteDialogAnswer(Index: Integer); // @addr 0x0064AD34 @note "Index -1 is ignored."
+    procedure BindShip(GroupIndex: Integer; Ship: TShip); // @addr 0x0064AFDC @note "The player may have multiple script bindings; ordinary ships have one."
+    procedure UnbindShip(Ship: TShip); // @addr 0x0064B060
+    procedure ClearShipBindings; // @addr 0x0064B118
+    procedure ChangeState(Binding: TScriptShip; StateIndex: Integer); // @addr 0x0064B1C8
+    procedure SetGroupRelation(SourceGroup, TargetGroup: Integer; Level: TRelationLevel); // @addr 0x0064B23C @note "Changes source ships' relations to ranger members of the target group."
+    procedure SetPlanetRelation(GroupIndex: Integer; Planet: TPlanet; Level: TRelationLevel); // @addr 0x0064B2F0
+    function TryBindStars(StarIndex: Integer): Boolean; // @addr 0x0064B358 @note "Recursively assigns remaining stars and their planets; earlier star bindings must already exist."
+    function LoadFromBuffer(Buffer: TBufEC; AnchorStar: TStar; FirstPlanet: TPlanet; CreateObjects: Boolean): Boolean; // @addr 0x0064BF80 @note "Accepts script-definition versions 5 through 8."
+    function LoadFromFile(FileName: WideString; AnchorStar: TStar; FirstPlanet: TPlanet; CreateObjects: Boolean): Boolean; // @addr 0x0064EEE0
+    procedure SaveState(Buffer: TBufEC); // @addr 0x0064F04C @note "Compiled instructions are excluded."
+    procedure LoadState(Buffer: TBufEC; Galaxy: TGalaxy); // @addr 0x0064F738 @note "Requires the original script-definition file. Resolves star, planet and item IDs through Galaxy; ship IDs are deferred."
+    procedure BindImportedFunctions; // @addr 0x00650358
+    procedure ResolveLoadedReferences(Galaxy: TGalaxy); // @addr 0x006505BC @note "Resolves saved ship IDs and restores ship, place, and state bindings after LoadState."
 
-    constructor Create; // @addr 0x6506BC
-    destructor Destroy; override; // @addr 0x650818
+    constructor Create; // @addr 0x00649600
+    destructor Destroy; override; // @addr 0x00649720
   end;
 
   TScriptThread = class(TThreadEC) // @size 0x2C
   public
-    constructor Create; // @addr 0x64D8B4
-    procedure Execute; override; // @addr 0x64D8F8 @slot 0x00
+    constructor Create; // @addr 0x00646E58
+    procedure Execute; override; // @addr 0x00646E90 @slot 0x00
   end;
 
   TScriptCacheUnit = class(TObject) // @size 0x1C
@@ -385,19 +388,19 @@ type
     Code: TCodeEC; // @offset 0x0C  Owned.
     ActionTypeMask: TScriptActionTypeSet; // @offset 0x10  Native 62-bit action-type set.
     StepTypeMask: TScriptStepTypeSet; // @offset 0x18  Native 12-bit step-type set.
-    procedure Initialize(Name, SourceText, ActionTypes, StepTypes: WideString); // @addr 0x65A350
+    procedure Initialize(Name, SourceText, ActionTypes, StepTypes: WideString); // @addr 0x00651FA0
 
-    constructor Create; // @addr 0x65A2B4
-    destructor Destroy; override; // @addr 0x65A300
+    constructor Create; // @addr 0x00651F2C
+    destructor Destroy; override; // @addr 0x00651F68
   end;
 
   TScriptCache = class(TObject) // @size 0x8
   public
     Entries: TObjectList; // @offset 0x04  Owns TScriptCacheUnit entries sorted by Name.
-    function GetOrCompile(Name: WideString; Config: TBlockParEC): TScriptCacheUnit; // @addr 0x65A058 @note "Returns nil for absent or empty OnActCode."
+    function GetOrCompile(Name: WideString; Config: TBlockParEC): TScriptCacheUnit; // @addr 0x00651D24 @note "Returns nil for absent or empty OnActCode."
 
-    constructor Create; // @addr 0x659BB8
-    destructor Destroy; override; // @addr 0x659C60
+    constructor Create; // @addr 0x00651938
+    destructor Destroy; override; // @addr 0x006519C0
   end;
 
   TScriptGICacheUnit = class(TObject) // @size 0x10
@@ -405,21 +408,21 @@ type
     Block: TBlockParEC; // @offset 0x04  Borrowed cache key.
     SourceText: WideString; // @offset 0x08
     Code: TCodeEC; // @offset 0x0C  Owned.
-    procedure Initialize(Block: TBlockParEC; SourceText: WideString); // @addr 0x65A678
+    procedure Initialize(Block: TBlockParEC; SourceText: WideString); // @addr 0x00652274
 
-    constructor Create; // @addr 0x65A5DC
-    destructor Destroy; override; // @addr 0x65A628
+    constructor Create; // @addr 0x00652200
+    destructor Destroy; override; // @addr 0x0065223C
   end;
 
-  TScriptQuestStatus = (sqsNone = 0, sqsQueued = 1, sqsSuccess = 2, sqsFailure = 3); // @size 0x04
+  TScriptQuestStatus = (sqsNone, sqsQueued, sqsSuccess, sqsFailure); // @size 0x04
 
   TScriptGICache = class(TObject) // @size 0x8
   public
     Entries: TObjectList; // @offset 0x04  Owns entries sorted by Block pointer.
-    function GetOrCompile(Block: TBlockParEC): TScriptGICacheUnit; // @addr 0x659D70 @note "Returns nil for empty source."
+    function GetOrCompile(Block: TBlockParEC): TScriptGICacheUnit; // @addr 0x00651AA4 @note "Returns nil for empty source."
 
-    constructor Create; // @addr 0x659C0C
-    destructor Destroy; override; // @addr 0x659CA4
+    constructor Create; // @addr 0x0065197C
+    destructor Destroy; override; // @addr 0x006519F4
   end;
   PScriptABRequest = ^TScriptABRequest;
 
@@ -428,26 +431,25 @@ type
     LibraryName: WideString; // @offset 0x04
     ModuleHandle: Cardinal; // @offset 0x08  Owned Win32 module handle.
     DefinitionBlock: TBlockParEC; // @offset 0x0C  Borrowed ScriptLibs.<name> block.
-    constructor Create(LibraryName: WideString; ModuleHandle: Cardinal; DefinitionBlock: TBlockParEC); // @addr 0x6589F4
-    procedure InitFunction(Cell: TVarEC); // @addr 0x658AFC
-    procedure InitAllFunctions(Scope: TVarArrayEC); // @addr 0x658FE4
+    constructor Create(LibraryName: WideString; ModuleHandle: Cardinal; DefinitionBlock: TBlockParEC); // @addr 0x00650898
+    procedure InitFunction(Cell: TVarEC); // @addr 0x0065097C
+    procedure InitAllFunctions(Scope: TVarArrayEC); // @addr 0x00650E30
 
-    destructor Destroy; override; // @addr 0x658A90
+    destructor Destroy; override; // @addr 0x00650924
   end;
   PScriptPBRequest = ^TScriptPBRequest;
 
   TLibraryCache = class(TObject) // @size 0x8
   public
     Libraries: TObjectList; // @offset 0x04  Owns TLibraryHandler entries sorted by LibraryName.
-    function GetLib(Name: WideString): TLibraryHandler; // @addr 0x659300
-    procedure InitFunction(Cell: TVarEC); // @addr 0x6594E0
+    function GetLib(Name: WideString): TLibraryHandler; // @addr 0x00651104
+    procedure InitFunction(Cell: TVarEC); // @addr 0x006512B0
 
-    constructor Create; // @addr 0x659114
-    destructor Destroy; override; // @addr 0x659168
+    constructor Create; // @addr 0x00650F48
+    destructor Destroy; override; // @addr 0x00650F8C
   end;
   PScriptVDRequest = ^TScriptVDRequest;
 
-  // Native record RTTI at $64CA64.
   TScriptTQRequest = packed record // @size 0x10
     Name: WideString; // @offset 0x00
     SuccessCaption: WideString; // @offset 0x04
@@ -489,88 +491,88 @@ type
   end;
 
 var
-  CurrentScript: TScript; // @addr 0x88AA10
-  QueuedArcadeBattles: TList; // @addr 0x88AA14  Owns PScriptABRequest records.
-  QueuedPlanetaryBattles: TList; // @addr 0x88AA18  Owns PScriptPBRequest records.
-  QueuedTextQuests: TList; // @addr 0x88AA1C // Owns PQueuedTextQuest records.
-  QueuedVideos: TList; // @addr 0x88AA20  Owns PScriptVDRequest records.
-  ResumingScript: TScript = nil; // @addr 0x87BE48
-  StagedArcadeShipScript: TScript = nil; // @addr $87BE4C
-  ScriptArcadeReturnScreenId: Byte = 0; // @addr $87BE50 Direct stores in TryShowQueuedArcadeBattle establish ownership.
-  ScriptTakeoffRequested: Boolean = False; // @addr 0x87BE54
-  StagedArcadeShips: TObjectList; // @addr $88AA24  Owns ships waiting for an arcade request.
-  ScriptEndTurnRequested: Boolean = False; // @addr 0x87BE58
-  ScriptFunctionScope: TVarArrayEC; // @addr 0x88AA28
-  ScriptProcess: TCodeProcessEC; // @addr 0x88AA2C
-  ScriptDialogOverrides: TObjectList; // @addr 0x88AA30  Record entries are freed explicitly before clearing.
-  ScriptLibraryCache: TLibraryCache = nil; // @addr 0x87BE5C
-  ArtefactScriptCache: TScriptCache = nil; // @addr $87BE60 @note "Named artifact action code via TArtefact.GetActionCode."
-  ArtefactKindScriptCache: TScriptCache = nil; // @addr $87BE64 @note "Item-type artifact action code; item types 8 and 9 use the named artifact cache instead."
-  UselessItemScriptCache: TScriptCache = nil; // @addr $87BE68
-  CustomShipInfoScriptCache: TScriptCache = nil; // @addr $87BE6C
-  GameplayUiScriptCache: TScriptGICache = nil; // @addr 0x87BE70
-  CurrentScriptState: TScriptState = nil; // @addr 0x87BE74
-  ScriptDialogInjections: TObjectList; // @addr 0x88AA34
-  ScriptDialogBlocks: TObjectList; // @addr 0x88AA38
-  ScriptRequestThread: TScriptThread; // @addr 0x88AA3C
+  CurrentScript: TScript; // @addr 0x0081B848
+  QueuedArcadeBattles: TList; // @addr 0x0081B84C  Owns PScriptABRequest records.
+  QueuedPlanetaryBattles: TList; // @addr 0x0081B850  Owns PScriptPBRequest records.
+  QueuedTextQuests: TList; // @addr 0x0081B854 // Owns PQueuedTextQuest records.
+  QueuedVideos: TList; // @addr 0x0081B858  Owns PScriptVDRequest records.
+  ResumingScript: TScript = nil; // @addr 0x0080F704
+  StagedArcadeShipScript: TScript = nil; // @addr $80F708
+  ScriptArcadeReturnScreenId: Byte = 0; // @addr $80F70C Direct stores in TryShowQueuedArcadeBattle establish ownership.
+  ScriptTakeoffRequested: Boolean = False; // @addr 0x0080F710
+  StagedArcadeShips: TObjectList; // @addr $81B85C  Owns ships waiting for an arcade request.
+  ScriptEndTurnRequested: Boolean = False; // @addr 0x0080F714
+  ScriptFunctionScope: TVarArrayEC; // @addr 0x0081B860
+  ScriptProcess: TCodeProcessEC; // @addr 0x0081B864
+  ScriptDialogOverrides: TObjectList; // @addr 0x0081B868  Record entries are freed explicitly before clearing.
+  ScriptLibraryCache: TLibraryCache = nil; // @addr 0x0080F718
+  ArtefactScriptCache: TScriptCache = nil; // @addr $80F71C @note "Named artifact action code via TArtefact.GetActionCode."
+  ArtefactKindScriptCache: TScriptCache = nil; // @addr $80F720 @note "Item-type artifact action code; item types 8 and 9 use the named artifact cache instead."
+  UselessItemScriptCache: TScriptCache = nil; // @addr $80F724
+  CustomShipInfoScriptCache: TScriptCache = nil; // @addr $80F728
+  GameplayUiScriptCache: TScriptGICache = nil; // @addr 0x0080F72C
+  CurrentScriptState: TScriptState = nil; // @addr 0x0080F730
+  ScriptDialogInjections: TObjectList; // @addr 0x0081B86C
+  ScriptDialogBlocks: TObjectList; // @addr 0x0081B870
+  ScriptRequestThread: TScriptThread; // @addr 0x0081B874
 
-procedure LogScriptCallHistory; // @addr 0x64CB44
-procedure ClearPendingScriptRequests; // @addr 0x64CE38
-function HasPendingScriptRequests: Boolean; // @addr 0x64CF34
-function TryShowQueuedArcadeBattle: Boolean; // @addr 0x64CF88
-function TryShowQueuedTextQuest: Boolean; // @addr 0x64D034
-function TryRunQueuedPlanetaryBattle: Boolean; // @addr 0x64D0C4
-function TryShowQueuedVideo: Boolean; // @addr 0x64D33C
-function TryDispatchScriptTakeoff: Boolean; // @addr 0x64D4F0
-function TryDispatchScriptEndTurn: Boolean; // @addr 0x64D580
-function TryDispatchResumingScriptRequest: Boolean; // @addr 0x64D648 @note "Moves the first request belonging to ResumingScript to its queue's front."
-function DispatchPendingScriptRequests: Boolean; // @addr 0x64D818
-procedure StartScriptRequestThread; // @addr 0x64D890
-procedure CompleteQueuedArcadeBattle(Status: Integer); // @addr 0x64D9CC @note "Requires a nonempty queue. Clears ResumingScript when no requests remain; preserves GABStatus changed by the script."
-procedure CompleteQueuedTextQuest(Status: TScriptQuestStatus); // @addr 0x64DABC @note "Requires a nonempty queue. Clears ResumingScript when no requests remain; preserves GQuestStatus changed by the script."
-procedure CompleteQueuedPlanetaryBattle(Status: Integer); // @addr 0x64DB9C @note "Requires a nonempty queue. Clears ResumingScript when no requests remain; preserves GRobotStatus changed by the script."
-procedure CompleteQueuedVideo(Status: Integer); // @addr 0x64DC7C @note "Requires a nonempty queue when a player exists. Clears ResumingScript when no requests remain; preserves GVideoStatus changed by the script."
-procedure LogScriptStepCount(ExpressionCount: Integer); // @addr 0x64DD6C
+procedure LogScriptCallHistory; // @addr 0x00646204
+procedure ClearPendingScriptRequests; // @addr 0x006464C0
+function HasPendingScriptRequests: Boolean; // @addr 0x006465B4
+function TryShowQueuedArcadeBattle: Boolean; // @addr 0x006465F8
+function TryShowQueuedTextQuest: Boolean; // @addr 0x00646698
+function TryRunQueuedPlanetaryBattle: Boolean; // @addr 0x0064671C
+function TryShowQueuedVideo: Boolean; // @addr 0x00646974
+function TryDispatchScriptTakeoff: Boolean; // @addr 0x00646B10
+function TryDispatchScriptEndTurn: Boolean; // @addr 0x00646B98
+function TryDispatchResumingScriptRequest: Boolean; // @addr 0x00646C54 @note "Moves the first request belonging to ResumingScript to its queue's front."
+function DispatchPendingScriptRequests: Boolean; // @addr 0x00646DC4
+procedure StartScriptRequestThread; // @addr 0x00646E34
+procedure CompleteQueuedArcadeBattle(Status: Integer); // @addr 0x00646F58 @note "Requires a nonempty queue. Clears ResumingScript when no requests remain; preserves GABStatus changed by the script."
+procedure CompleteQueuedTextQuest(Status: TScriptQuestStatus); // @addr 0x00647024 @note "Requires a nonempty queue. Clears ResumingScript when no requests remain; preserves GQuestStatus changed by the script."
+procedure CompleteQueuedPlanetaryBattle(Status: Integer); // @addr 0x006470E8 @note "Requires a nonempty queue. Clears ResumingScript when no requests remain; preserves GRobotStatus changed by the script."
+procedure CompleteQueuedVideo(Status: Integer); // @addr 0x006471AC @note "Requires a nonempty queue when a player exists. Clears ResumingScript when no requests remain; preserves GVideoStatus changed by the script."
+procedure LogScriptStepCount(ExpressionCount: Integer); // @addr 0x00647280
 
-procedure InitializeScriptEngine; // @addr 0x64DE3C
-procedure FinalizeScriptEngine; // @addr 0x64DE80
-procedure RunGlobalScriptsForContext(Star: TStar; RunFrom: Integer); // @addr 0x64DEB8
-function TryStartScriptByName(AnchorStar: TStar; AnchorPlanet: TPlanet; Name: WideString): Boolean; // @addr 0x64E138
-function TryStartScriptInstanceFromTemplate(AnchorStar: TStar; AnchorPlanet: TPlanet; TemplateIndex: Integer): Boolean; // @addr 0x64E1AC
-function TryRestartScript(Script: TScript; AnchorStar: TStar; AnchorPlanet: TPlanet): Boolean; // @addr 0x64E29C @note "Replaces and frees Script on success; retains it on failure. Requires an existing Galaxy.Scripts entry."
-procedure CompileScriptTemplateCondition(TemplateIndex: Integer); // @addr 0x64E428
-function IsStarProtectedByScript(Star: TStar): Boolean; // @addr 0x64E6A4
-function ScriptDefinitionBit(Value: Cardinal; BitIndex: Integer): Boolean; // @addr 0x64E75C
-function DecodeScriptRaceMask(Value: Cardinal): TOwnerMask; // @addr 0x64E780
-function DecodeScriptOwnerMask(Value: Cardinal): TOwnerMask; // @addr 0x64E85C @note "Bit 9 also selects the player's current owner ID."
-function DecodeScriptEconomyMask(Value: Cardinal): TPlanetEconomies; // @addr 0x64E9CC
-function DecodeScriptGovernmentMask(Value: Cardinal): TPlanetGovernments; // @addr 0x64EA64
-function DecodeScriptShipTypeMask(Value: Cardinal): TScriptShipTypeMask; // @addr 0x64EB40
-function DecodeScriptDominatorMask(Value: Cardinal; KlingType: TKlingType): TDominatorSeriesMask; // @addr 0x64ECA8
-function DecodeScriptItemOwner(Value: Integer): TOwnerId; // @addr 0x64F000 @note "Values outside 0..7 become oiUninhabited."
-function DecodeScriptRelationLevel(Value: Integer): TRelationLevel; // @addr 0x64F074 @note "Values outside 0..4 become hostile."
-function ScriptShipMatchesType(Ship: TShip; ShipTypeMask: TScriptShipTypeMask; StationNames: WideString; DominatorMasks: array of TDominatorSeriesMask): Boolean; // @addr 0x64F0C4 @note "DominatorMasks requires eight entries indexed by TKlingType. StationNames is a comma-separated filter when ship-type bit 8 is set."
-function CollectScriptCandidateShips(Star: TStar): TList; // @addr 0x64F294 @note "Caller owns the list; ship references are borrowed."
-function FindScriptGroupCandidate(Candidates: TList; Group: TScriptGroup): TShip; // @addr 0x64F5BC @note "Returns the first match or nil; leaves Candidates unchanged."
-function GetScriptShipBindingForContext(Ship: TShip; Script: TScript): TScriptShip; // @addr 0x64F89C @note "The player may have multiple bindings; ordinary ships have one."
-procedure ClearScriptDialogRules; // @addr 0x6588C8
-procedure ExecuteScriptText(SourceText: WideString; Scope: TVarArrayEC); // @addr 0x659564 @note "Nil Scope temporarily clears CurrentScript. Compiled code is freed after execution."
-function CompileScriptText(SourceText: WideString): TCodeEC; // @addr 0x6597F0 @note "Caller owns the returned code."
-procedure RunScriptCode(ContextName: WideString; Code, ParentCode: TCodeEC); // @addr 0x659968
-function GetCachedActionCode(var Cache: TScriptCache; Name: WideString; Config: TBlockParEC): TScriptCacheUnit; // @addr 0x65A6E4
-procedure ExecuteGameplayUiCode(Block: TBlockParEC; VirtualKey: Cardinal); // @addr 0x65A764 @note "Runs with CurrentScript nil. VirtualKey=0 leaves KEY and KEYMOD unchanged."
-procedure ScriptSnap(out Snapshot: TScriptContextSnapshot); // @addr 0x65AABC @note "When CurrentScript is nil, only Snapshot.Script is written."
-procedure ScriptUnSnap(Snapshot: TScriptContextSnapshot); // @addr 0x65AB28
-function RunItemUseCode(Item: TItem; Ship: TShip): Integer; // @addr 0x65B66C @note "Returns ScriptItemActParam, initially zero."
-function RunItemConfigActionCode(Item: TItem; ActionType: TScriptActionType; Ship: TShip; Object1, Object2: TObject; Param: Integer): Integer; // @addr 0x65B880 @note "Uses artifact or useless-item configuration code. Object slots can carry event-specific integers."
-function RunCustomShipInfoActionCode(Info: PCustomShipInfo; ActionType: TScriptActionType; Ship: TShip; Object1, Object2: TObject; Param: Integer): Integer; // @addr 0x65BC78 @note "Returns the event parameter after script changes. Object slots can carry event-specific integers."
-function GetScriptContextDescription: WideString; // @addr 0x65C308
+procedure InitializeScriptEngine; // @addr 0x0064734C
+procedure FinalizeScriptEngine; // @addr 0x00647390
+procedure RunGlobalScriptsForContext(Star: TStar; RunFrom: Integer); // @addr 0x006473C8
+function TryStartScriptByName(AnchorStar: TStar; AnchorPlanet: TPlanet; Name: WideString): Boolean; // @addr 0x0064763C
+function TryStartScriptInstanceFromTemplate(AnchorStar: TStar; AnchorPlanet: TPlanet; TemplateIndex: Integer): Boolean; // @addr 0x006476A0
+function TryRestartScript(Script: TScript; AnchorStar: TStar; AnchorPlanet: TPlanet): Boolean; // @addr 0x00647760 @note "Replaces and frees Script on success; retains it on failure. Requires an existing Galaxy.Scripts entry."
+procedure CompileScriptTemplateCondition(TemplateIndex: Integer); // @addr 0x006478BC
+function IsStarProtectedByScript(Star: TStar): Boolean; // @addr 0x00647B08
+function ScriptDefinitionBit(Value: Cardinal; BitIndex: Integer): Boolean; // @addr 0x00647B94
+function DecodeScriptRaceMask(Value: Cardinal): TOwnerMask; // @addr 0x00647B9C
+function DecodeScriptOwnerMask(Value: Cardinal): TOwnerMask; // @addr 0x00647C68 @note "Bit 9 also selects the player's current owner ID."
+function DecodeScriptEconomyMask(Value: Cardinal): TPlanetEconomies; // @addr 0x00647DC8
+function DecodeScriptGovernmentMask(Value: Cardinal): TPlanetGovernments; // @addr 0x00647E54
+function DecodeScriptShipTypeMask(Value: Cardinal): TScriptShipTypeMask; // @addr 0x00647F20
+function DecodeScriptDominatorMask(Value: Cardinal; KlingType: TKlingType): TDominatorSeriesMask; // @addr 0x00648060
+function DecodeScriptItemOwner(Value: Integer): TOwnerId; // @addr 0x00648398 @note "Values outside 0..7 become oiUninhabited."
+function DecodeScriptRelationLevel(Value: Integer): TRelationLevel; // @addr 0x006483E4 @note "Values outside 0..4 become hostile."
+function ScriptShipMatchesType(Ship: TShip; ShipTypeMask: TScriptShipTypeMask; StationNames: WideString; DominatorMasks: array of TDominatorSeriesMask): Boolean; // @addr 0x00648414 @note "DominatorMasks requires eight entries indexed by TKlingType. StationNames is a comma-separated filter when ship-type bit 8 is set."
+function CollectScriptCandidateShips(Star: TStar): TList; // @addr 0x006485C0 @note "Caller owns the list; ship references are borrowed."
+function FindScriptGroupCandidate(Candidates: TList; Group: TScriptGroup): TShip; // @addr 0x00648898 @note "Returns the first match or nil; leaves Candidates unchanged."
+function GetScriptShipBindingForContext(Ship: TShip; Script: TScript): TScriptShip; // @addr 0x00648AC0 @note "The player may have multiple bindings; ordinary ships have one."
+procedure ClearScriptDialogRules; // @addr 0x00650798
+procedure ExecuteScriptText(SourceText: WideString; Scope: TVarArrayEC); // @addr 0x0065132C @note "Nil Scope temporarily clears CurrentScript. Compiled code is freed after execution."
+function CompileScriptText(SourceText: WideString): TCodeEC; // @addr 0x006515A0 @note "Caller owns the returned code."
+procedure RunScriptCode(ContextName: WideString; Code, ParentCode: TCodeEC); // @addr 0x00651704
+function GetCachedActionCode(var Cache: TScriptCache; Name: WideString; Config: TBlockParEC): TScriptCacheUnit; // @addr 0x006522D4
+procedure ExecuteGameplayUiCode(Block: TBlockParEC; VirtualKey: Cardinal); // @addr 0x00652344 @note "Runs with CurrentScript nil. VirtualKey=0 leaves KEY and KEYMOD unchanged."
+procedure ScriptSnap(out Snapshot: TScriptContextSnapshot); // @addr 0x00652660 @note "When CurrentScript is nil, only Snapshot.Script is written."
+procedure ScriptUnSnap(Snapshot: TScriptContextSnapshot); // @addr 0x006526BC
+function RunItemUseCode(Item: TItem; Ship: TShip): Integer; // @addr 0x0065315C @note "Returns ScriptItemActParam, initially zero."
+function RunItemConfigActionCode(Item: TItem; ActionType: TScriptActionType; Ship: TShip; Object1, Object2: TObject; Param: Integer): Integer; // @addr 0x00653344 @note "Uses artifact or useless-item configuration code. Object slots can carry event-specific integers."
+function RunCustomShipInfoActionCode(Info: PCustomShipInfo; ActionType: TScriptActionType; Ship: TShip; Object1, Object2: TObject; Param: Integer): Integer; // @addr 0x00653708 @note "Returns the event parameter after script changes. Object slots can carry event-specific integers."
+function GetScriptContextDescription: WideString; // @addr 0x00653D54
 
 implementation
 
 uses GI_MessageLoop, GI_MessageBox, GI_XviD, MMSystem, Robot, fPanelMain, fShip2, fStarMap, BreakMessageGIException, EC_Cache, EC_CacheBuf, GR_Main, Globals, SysUtils, GlobalsV, aConst, aKling, aPlayer, aRanger, aRuins, aScriptFun, aTranclucator, aWarrior;
 
-{ @routine $64CB44 LogScriptCallHistory }
+{ @routine $646204 LogScriptCallHistory }
 procedure LogScriptCallHistory;
 var
   I, Position, Count: Integer;
@@ -579,7 +581,7 @@ begin
   Count := ScriptCallTraceCount;
   Position := (ScriptCallTracePosition - 1 + 20) mod 20;
   Cell := ScriptCallTrace[Position];
-  while (Cell <> nil) and (Cell.RealVType = vkFunction) do
+  while (Cell <> nil) and (Cell.ValueKind = vkFunction) do
   begin
     Dec(Count);
     if Count <= 0 then
@@ -601,9 +603,9 @@ begin
   end;
   if Galaxy <> nil then AppendLogLineThreadSafe(AnsiString('current turn is ' + IntToWideString(Galaxy.CurrentTurn)));
 end;
-{ @end $64CB44 }
+{ @end $646204 }
 
-{ @routine $64CE38 ClearPendingScriptRequests }
+{ @routine $6464C0 ClearPendingScriptRequests }
 procedure ClearPendingScriptRequests;
 begin
   ResumingScript := nil;
@@ -633,18 +635,18 @@ begin
   StagedArcadeShips.Clear;
   StagedArcadeShipScript := nil;
 end;
-{ @end $64CE38 }
+{ @end $6464C0 }
 
-{ @routine $64CF34 HasPendingScriptRequests }
+{ @routine $6465B4 HasPendingScriptRequests }
 function HasPendingScriptRequests: Boolean;
 begin
   Result := (QueuedArcadeBattles.Count > 0) or (QueuedTextQuests.Count > 0) or
     (QueuedPlanetaryBattles.Count > 0) or (QueuedVideos.Count > 0) or
     ScriptTakeoffRequested or ScriptEndTurnRequested;
 end;
-{ @end $64CF34 }
+{ @end $6465B4 }
 
-{ @routine $64CF88 TryShowQueuedArcadeBattle }
+{ @routine $6465F8 TryShowQueuedArcadeBattle }
 function TryShowQueuedArcadeBattle: Boolean;
 var
   Request: PScriptABRequest;
@@ -652,7 +654,7 @@ begin
   Result := False;
   if QueuedArcadeBattles.Count > 0 then
   begin
-    Request := PScriptABRequest(QueuedArcadeBattles[0]);
+    Request := QueuedArcadeBattles[0];
     ArcadeBattleScreen.SelectedMapName := Request.MapName;
     case CurrentScreenId of
       screenEquipmentShop, screenGovernment, screenInfo, screenGoodsShop:
@@ -665,9 +667,9 @@ begin
     Result := True;
   end;
 end;
-{ @end $64CF88 }
+{ @end $6465F8 }
 
-{ @routine $64D034 TryShowQueuedTextQuest }
+{ @routine $646698 TryShowQueuedTextQuest }
 function TryShowQueuedTextQuest: Boolean;
 begin
   Result := False;
@@ -685,9 +687,9 @@ begin
     Result := True;
   end;
 end;
-{ @end $64D034 }
+{ @end $646698 }
 
-{ @routine $64D0C4 TryRunQueuedPlanetaryBattle }
+{ @routine $64671C TryRunQueuedPlanetaryBattle }
 function TryRunQueuedPlanetaryBattle: Boolean;
 var
   Request: PScriptPBRequest;
@@ -698,7 +700,7 @@ begin
   if QueuedPlanetaryBattles.Count > 0 then
   begin
     Status := 0;
-    Request := PScriptPBRequest(QueuedPlanetaryBattles[0]);
+    Request := QueuedPlanetaryBattles[0];
     try
       Failed := False;
       Status := FRun(Request.MapName, Request.StartText, Request.SuccessText, Request.FailureText, Request.PlaceText);
@@ -730,9 +732,9 @@ begin
     Result := True;
   end;
 end;
-{ @end $64D0C4 }
+{ @end $64671C }
 
-{ @routine $64D33C TryShowQueuedVideo }
+{ @routine $646974 TryShowQueuedVideo }
 function TryShowQueuedVideo: Boolean;
 var
   Request: PScriptVDRequest;
@@ -741,8 +743,8 @@ begin
   Result := False;
   if QueuedVideos.Count > 0 then
   begin
-    Request := PScriptVDRequest(QueuedVideos[0]);
-    if not SkipVideo and (TMessageLoopGI(RegisteredScreens[CurrentScreenId]) = RuinsTalkScreen) then
+    Request := QueuedVideos[0];
+    if not SkipVideo and (RegisteredScreens[CurrentScreenId] = RuinsTalkScreen) then
     begin
       Video := TMessageLoopGI(RegisteredScreens[CurrentScreenId]).GetByName('Film') as TxvidGI;
       Video.SetActive(True);
@@ -759,10 +761,10 @@ begin
           while not MusicManager.IsPlaying do SysUtils.Sleep(1);
         end;
         RuinsTalkScreen.ScriptVideoStartedAt := timeGetTime;
-        if RuinsTalkScreen.ScriptVideoTimer <> nil then
+        if RuinsTalkScreen.ScriptVideoTimer <> 0 then
         begin
           RuinsTalkScreen.CancelCallbackTimer(RuinsTalkScreen.ScriptVideoTimer);
-          RuinsTalkScreen.ScriptVideoTimer := nil;
+          RuinsTalkScreen.ScriptVideoTimer := 0;
         end;
         RuinsTalkScreen.ScriptVideoTimer := RuinsTalkScreen.ScheduleCallbackTimer(5, 5, RuinsTalkScreen.AdvanceScriptVideo);
       end
@@ -772,9 +774,9 @@ begin
     Result := True;
   end;
 end;
-{ @end $64D33C }
+{ @end $646974 }
 
-{ @routine $64D4F0 TryDispatchScriptTakeoff }
+{ @routine $646B10 TryDispatchScriptTakeoff }
 function TryDispatchScriptTakeoff: Boolean;
 begin
   Result := False;
@@ -795,9 +797,9 @@ begin
     end;
   end;
 end;
-{ @end $64D4F0 }
+{ @end $646B10 }
 
-{ @routine $64D580 TryDispatchScriptEndTurn }
+{ @routine $646B98 TryDispatchScriptEndTurn }
 function TryDispatchScriptEndTurn: Boolean;
 begin
   Result := False;
@@ -805,19 +807,19 @@ begin
   begin
     ScriptEndTurnRequested := False;
     if CurrentScreenId = screenRuinsTalk then
-      TMessageLoopGIWithMainPanel(TMessageLoopGI(RegisteredScreens[CurrentScreenId])).MainPanel.EndTurnClicked(nil)
+      TMessageLoopGIWithMainPanel(RegisteredScreens[CurrentScreenId]).MainPanel.EndTurnClicked(nil)
     else if CurrentScreenId = screenPlanet then
-      TMessageLoopGIWithMainPanel(TMessageLoopGI(RegisteredScreens[CurrentScreenId])).MainPanel.EndTurnClicked(nil)
+      TMessageLoopGIWithMainPanel(RegisteredScreens[CurrentScreenId]).MainPanel.EndTurnClicked(nil)
     else if CurrentScreenId = screenPlanetNO then
-      TMessageLoopGIWithMainPanel(TMessageLoopGI(RegisteredScreens[CurrentScreenId])).MainPanel.EndTurnClicked(nil)
+      TMessageLoopGIWithMainPanel(RegisteredScreens[CurrentScreenId]).MainPanel.EndTurnClicked(nil)
     else if CurrentScreenId = screenStarMap then
-      TfStarMap(TMessageLoopGI(RegisteredScreens[CurrentScreenId])).EndTurnAfterOpen := True;
+      TfStarMap(RegisteredScreens[CurrentScreenId]).EndTurnAfterOpen := True;
     Result := True;
   end;
 end;
-{ @end $64D580 }
+{ @end $646B98 }
 
-{ @routine $64D648 TryDispatchResumingScriptRequest }
+{ @routine $646C54 TryDispatchResumingScriptRequest }
 function TryDispatchResumingScriptRequest: Boolean;
 var
   I: Integer;
@@ -830,68 +832,60 @@ begin
   // for video requests it even reads beyond their declared $0C allocation.
   for I := 0 to QueuedVideos.Count - 1 do
   begin
-    Video := PQueuedTextQuest(QueuedVideos[I]);
-    if Video.Script = ResumingScript then
+    Video := QueuedVideos[I];
+    if Video.Script <> ResumingScript then Continue;
+    if I > 0 then
     begin
-      if I > 0 then
-      begin
-        QueuedVideos.Delete(I);
-        QueuedVideos.Insert(0, Video);
-      end;
-      TryShowQueuedVideo;
-      Result := True;
-      Exit;
+      QueuedVideos.Delete(I);
+      QueuedVideos.Insert(0, Video);
     end;
+    TryShowQueuedVideo;
+    Result := True;
+    Exit;
   end;
   for I := 0 to QueuedTextQuests.Count - 1 do
   begin
-    Quest := PQueuedTextQuest(QueuedTextQuests[I]);
-    if Quest.Script = ResumingScript then
+    Quest := QueuedTextQuests[I];
+    if Quest.Script <> ResumingScript then Continue;
+    if I > 0 then
     begin
-      if I > 0 then
-      begin
-        QueuedTextQuests.Delete(I);
-        QueuedTextQuests.Insert(0, Quest);
-      end;
-      TryShowQueuedTextQuest;
-      Result := True;
-      Exit;
+      QueuedTextQuests.Delete(I);
+      QueuedTextQuests.Insert(0, Quest);
     end;
+    TryShowQueuedTextQuest;
+    Result := True;
+    Exit;
   end;
   for I := 0 to QueuedArcadeBattles.Count - 1 do
   begin
-    Arcade := PQueuedTextQuest(QueuedArcadeBattles[I]);
-    if Arcade.Script = ResumingScript then
+    Arcade := QueuedArcadeBattles[I];
+    if Arcade.Script <> ResumingScript then Continue;
+    if I > 0 then
     begin
-      if I > 0 then
-      begin
-        QueuedArcadeBattles.Delete(I);
-        QueuedArcadeBattles.Insert(0, Arcade);
-      end;
-      TryShowQueuedArcadeBattle;
-      Result := True;
-      Exit;
+      QueuedArcadeBattles.Delete(I);
+      QueuedArcadeBattles.Insert(0, Arcade);
     end;
+    TryShowQueuedArcadeBattle;
+    Result := True;
+    Exit;
   end;
   for I := 0 to QueuedPlanetaryBattles.Count - 1 do
   begin
-    Planetary := PQueuedTextQuest(QueuedPlanetaryBattles[I]);
-    if Planetary.Script = ResumingScript then
+    Planetary := QueuedPlanetaryBattles[I];
+    if Planetary.Script <> ResumingScript then Continue;
+    if I > 0 then
     begin
-      if I > 0 then
-      begin
-        QueuedPlanetaryBattles.Delete(I);
-        QueuedPlanetaryBattles.Insert(0, Planetary);
-      end;
-      TryRunQueuedPlanetaryBattle;
-      Result := True;
-      Exit;
+      QueuedPlanetaryBattles.Delete(I);
+      QueuedPlanetaryBattles.Insert(0, Planetary);
     end;
+    TryRunQueuedPlanetaryBattle;
+    Result := True;
+    Exit;
   end;
 end;
-{ @end $64D648 }
+{ @end $646C54 }
 
-{ @routine $64D818 DispatchPendingScriptRequests }
+{ @routine $646DC4 DispatchPendingScriptRequests }
 function DispatchPendingScriptRequests: Boolean;
 begin
   Result := True;
@@ -906,24 +900,24 @@ begin
   TryDispatchScriptEndTurn;
   Result := False;
 end;
-{ @end $64D818 }
+{ @end $646DC4 }
 
-{ @routine $64D890 StartScriptRequestThread }
+{ @routine $646E34 StartScriptRequestThread }
 procedure StartScriptRequestThread;
 begin
   if ScriptRequestThread <> nil then
     if not ScriptRequestThread.IsRunning then ScriptRequestThread.Start;
 end;
-{ @end $64D890 }
+{ @end $646E34 }
 
-{ @routine $64D8B4 TScriptThread_Create }
+{ @routine $646E58 TScriptThread_Create }
 constructor TScriptThread.Create;
 begin
   inherited Create;
 end;
-{ @end $64D8B4 }
+{ @end $646E58 }
 
-{ @routine $64D8F8 TScriptThread_Execute }
+{ @routine $646E90 TScriptThread_Execute }
 procedure TScriptThread.Execute;
 begin
   if (TurnCalculationThread <> nil) and TurnCalculationThread.IsRunning then
@@ -933,7 +927,7 @@ begin
     if CurrentScreenId = screenShip then
     begin
       ShipReturnScreenId := screenStarMap;
-      TfShip2(TMessageLoopGI(RegisteredScreens[CurrentScreenId])).CloseClicked(nil);
+      TfShip2(RegisteredScreens[CurrentScreenId]).CloseClicked(nil);
       Exit;
     end;
     if GetPlayer.DockedTo <> nil then RequestedScreenId := screenRuinsTalk
@@ -946,100 +940,100 @@ begin
     TMessageLoopGI(RegisteredScreens[CurrentScreenId]).RequestClose(1);
   end;
 end;
-{ @end $64D8F8 }
+{ @end $646E90 }
 
-{ @routine $64D9CC CompleteQueuedArcadeBattle }
+{ @routine $646F58 CompleteQueuedArcadeBattle }
 procedure CompleteQueuedArcadeBattle(Status: Integer);
 var
   Request: PScriptABRequest;
 begin
-  Request := PScriptABRequest(QueuedArcadeBattles[0]);
+  Request := QueuedArcadeBattles[0];
   QueuedArcadeBattles.Delete(0);
   ResumingScript := Request.Script;
   if Request.Script <> nil then
   begin
-    Request.Script.InitCode.LocalVar.GetVar('GABStatus').SetInt(Status);
+    Request.Script.InitCode.LocalVar.NamedItems['GABStatus'].AsInteger := Status;
     Request.Script.RunTurnCode;
-    if Request.Script.InitCode.LocalVar.GetVar('GABStatus').GetInt = Status then
-      Request.Script.InitCode.LocalVar.GetVar('GABStatus').SetInt(0);
+    if Request.Script.InitCode.LocalVar.NamedItems['GABStatus'].AsInteger = Status then
+      Request.Script.InitCode.LocalVar.NamedItems['GABStatus'].AsInteger := 0;
   end;
   Request.Ships.Clear;
   Request.Ships.Free;
   Dispose(Request);
   if not HasPendingScriptRequests then ResumingScript := nil;
 end;
-{ @end $64D9CC }
+{ @end $646F58 }
 
-{ @routine $64DABC CompleteQueuedTextQuest }
+{ @routine $647024 CompleteQueuedTextQuest }
 procedure CompleteQueuedTextQuest(Status: TScriptQuestStatus);
 var
   Request: PQueuedTextQuest;
 begin
-  Request := PQueuedTextQuest(QueuedTextQuests[0]);
+  Request := QueuedTextQuests[0];
   QueuedTextQuests.Delete(0);
   ResumingScript := Request.Script;
   if Request.Script <> nil then
   begin
-    Request.Script.InitCode.LocalVar.GetVar('GQuestStatus').SetInt(Integer(Status));
+    Request.Script.InitCode.LocalVar.NamedItems['GQuestStatus'].AsInteger := Integer(Status);
     Request.Script.RunTurnCode;
-    if Request.Script.InitCode.LocalVar.GetVar('GQuestStatus').GetInt = Integer(Status) then
-      Request.Script.InitCode.LocalVar.GetVar('GQuestStatus').SetInt(0);
+    if TScriptQuestStatus(Request.Script.InitCode.LocalVar.NamedItems['GQuestStatus'].AsInteger) = Status then
+      Request.Script.InitCode.LocalVar.NamedItems['GQuestStatus'].AsInteger := Ord(sqsNone);
   end;
   Dispose(Request);
   if not HasPendingScriptRequests then ResumingScript := nil;
 end;
-{ @end $64DABC }
+{ @end $647024 }
 
-{ @routine $64DB9C CompleteQueuedPlanetaryBattle }
+{ @routine $6470E8 CompleteQueuedPlanetaryBattle }
 procedure CompleteQueuedPlanetaryBattle(Status: Integer);
 var
   Request: PScriptPBRequest;
 begin
-  Request := PScriptPBRequest(QueuedPlanetaryBattles[0]);
+  Request := QueuedPlanetaryBattles[0];
   QueuedPlanetaryBattles.Delete(0);
   ResumingScript := Request.Script;
   if Request.Script <> nil then
   begin
-    Request.Script.InitCode.LocalVar.GetVar('GRobotStatus').SetInt(Status);
+    Request.Script.InitCode.LocalVar.NamedItems['GRobotStatus'].AsInteger := Status;
     Request.Script.RunTurnCode;
-    if Request.Script.InitCode.LocalVar.GetVar('GRobotStatus').GetInt = Status then
-      Request.Script.InitCode.LocalVar.GetVar('GRobotStatus').SetInt(0);
+    if Request.Script.InitCode.LocalVar.NamedItems['GRobotStatus'].AsInteger = Status then
+      Request.Script.InitCode.LocalVar.NamedItems['GRobotStatus'].AsInteger := 0;
   end;
   Dispose(Request);
   if not HasPendingScriptRequests then ResumingScript := nil;
 end;
-{ @end $64DB9C }
+{ @end $6470E8 }
 
-{ @routine $64DC7C CompleteQueuedVideo }
+{ @routine $6471AC CompleteQueuedVideo }
 procedure CompleteQueuedVideo(Status: Integer);
 var
   Request: PScriptVDRequest;
 begin
   if GetPlayer = nil then Exit;
-  Request := PScriptVDRequest(QueuedVideos[0]);
+  Request := QueuedVideos[0];
   QueuedVideos.Delete(0);
   ResumingScript := Request.Script;
   if Request.Script <> nil then
   begin
-    Request.Script.InitCode.LocalVar.GetVar('GVideoStatus').SetInt(Status);
+    Request.Script.InitCode.LocalVar.NamedItems['GVideoStatus'].AsInteger := Status;
     Request.Script.RunTurnCode;
-    if Request.Script.InitCode.LocalVar.GetVar('GVideoStatus').GetInt = Status then
-      Request.Script.InitCode.LocalVar.GetVar('GVideoStatus').SetInt(0);
+    if Request.Script.InitCode.LocalVar.NamedItems['GVideoStatus'].AsInteger = Status then
+      Request.Script.InitCode.LocalVar.NamedItems['GVideoStatus'].AsInteger := 0;
   end;
   Dispose(Request);
   if not HasPendingScriptRequests then ResumingScript := nil;
 end;
-{ @end $64DC7C }
+{ @end $6471AC }
 
-{ @routine $64DD6C LogScriptStepCount }
+{ @routine $647280 LogScriptStepCount }
 procedure LogScriptStepCount(ExpressionCount: Integer);
 begin
   AppendLogLineThreadSafe(AnsiString(GetScriptContextDescription + ' code expressions count ' + IntToWideString(ExpressionCount)));
   if ExpressionCount > 200000 then LogScriptCallHistory;
 end;
-{ @end $64DD6C }
+{ @end $647280 }
 
-{ @routine $64DE3C InitializeScriptEngine }
+{ @routine $64734C InitializeScriptEngine }
 procedure InitializeScriptEngine;
 begin
   ScriptProcess := TCodeProcessEC.Create;
@@ -1048,9 +1042,9 @@ begin
   InitializeScriptBuiltinsAndConstants(ScriptFunctionScope);
   SetScriptStepCallback(LogScriptStepCount, 100000);
 end;
-{ @end $64DE3C }
+{ @end $64734C }
 
-{ @routine $64DE80 FinalizeScriptEngine }
+{ @routine $647390 FinalizeScriptEngine }
 procedure FinalizeScriptEngine;
 begin
   if ScriptFunctionScope <> nil then
@@ -1064,22 +1058,22 @@ begin
     ScriptProcess := nil;
   end;
 end;
-{ @end $64DE80 }
+{ @end $647390 }
 
-{ @routine $64DEB8 RunGlobalScriptsForContext }
+{ @routine $6473C8 RunGlobalScriptsForContext }
 procedure RunGlobalScriptsForContext(Star: TStar; RunFrom: Integer);
 var
   Template: TScriptTemplUnit;
   Candidates: TList;
   I: Integer;
 begin
-  SharedScriptVariables.GetVar('GRunFrom').SetInt(RunFrom);
-  SharedScriptVariables.GetVar('GRunStar').SetDword(Cardinal(Star));
+  SharedScriptVariables.NamedItems['GRunFrom'].AsInteger := RunFrom;
+  SharedScriptVariables.NamedItems['GRunStar'].AsDword := Cardinal(Star);
   Candidates := TList.Create;
   CollectInactiveScriptTemplates(Candidates);
   for I := 0 to Candidates.Count - 1 do
   begin
-    Template := TScriptTemplUnit(Candidates[I]);
+    Template := Candidates[I];
     ScriptTemplateStartRequested := False;
     try
       Template.ConditionCode.Run(ScriptProcess);
@@ -1097,9 +1091,9 @@ begin
   end;
   Candidates.Free;
 end;
-{ @end $64DEB8 }
+{ @end $6473C8 }
 
-{ @routine $64E138 TryStartScriptByName }
+{ @routine $64763C TryStartScriptByName }
 function TryStartScriptByName(AnchorStar: TStar; AnchorPlanet: TPlanet; Name: WideString): Boolean;
 var
   Index: Integer;
@@ -1108,16 +1102,16 @@ begin
   if Index < 0 then Result := False
   else Result := TryStartScriptInstanceFromTemplate(AnchorStar, AnchorPlanet, Index);
 end;
-{ @end $64E138 }
+{ @end $64763C }
 
-{ @routine $64E1AC TryStartScriptInstanceFromTemplate }
+{ @routine $6476A0 TryStartScriptInstanceFromTemplate }
 function TryStartScriptInstanceFromTemplate(AnchorStar: TStar; AnchorPlanet: TPlanet; TemplateIndex: Integer): Boolean;
 var
   Template: TScriptTemplUnit;
   Script: TScript;
   Index: Integer;
 begin
-  Template := TScriptTemplUnit(ScriptTemplates[TemplateIndex]);
+  Template := ScriptTemplates[TemplateIndex];
   Script := TScript.Create;
   Galaxy.Scripts.Add(Script);
   Template.ActiveScriptIndex := Galaxy.Scripts.Count - 1;
@@ -1140,9 +1134,9 @@ begin
     Result := False;
   end;
 end;
-{ @end $64E1AC }
+{ @end $6476A0 }
 
-{ @routine $64E29C TryRestartScript }
+{ @routine $647760 TryRestartScript }
 function TryRestartScript(Script: TScript; AnchorStar: TStar; AnchorPlanet: TPlanet): Boolean;
 var
   Template: TScriptTemplUnit;
@@ -1154,7 +1148,7 @@ begin
   if Script = nil then Exit;
   Index := FindScriptTemplateIndex(Script.ScriptFileName);
   if Index < 0 then Exit;
-  Template := TScriptTemplUnit(ScriptTemplates[Index]);
+  Template := ScriptTemplates[Index];
   I := Galaxy.Scripts.IndexOf(Script);
   NewScript := TScript.Create;
   Galaxy.Scripts[I] := NewScript;
@@ -1181,9 +1175,9 @@ begin
     NewScript.Free;
   end;
 end;
-{ @end $64E29C }
+{ @end $647760 }
 
-{ @routine $64E428 CompileScriptTemplateCondition }
+{ @routine $6478BC CompileScriptTemplateCondition }
 procedure CompileScriptTemplateCondition(TemplateIndex: Integer);
 var
   Template: TScriptTemplUnit;
@@ -1194,7 +1188,7 @@ var
   ErrorText: WideString;
   Version: Cardinal;
 begin
-  Template := TScriptTemplUnit(ScriptTemplates[TemplateIndex]);
+  Template := ScriptTemplates[TemplateIndex];
   Control := nil;
   try
     Control := TCBufControlEC.Create;
@@ -1216,10 +1210,10 @@ begin
     Analyzer.RemoveNewlines;
     Analyzer.RemoveWhitespace;
     Analyzer.ValidateDelimiters;
-    Template.ConditionCode.Compile(Analyzer, nil, nil, nil, nil, ErrorText);
+    ErrorText := Template.ConditionCode.Compile(Analyzer, nil, nil, nil, nil);
     Analyzer.Free;
     if ErrorText <> '' then RaiseWideMessage('ScriptFirstLoad.Compiler. Error=' + ErrorText);
-    Template.ConditionCode.LocalVar.Add('GScriptName', vkString).SetString(Template.Name);
+    Template.ConditionCode.LocalVar.Add('GScriptName', vkString).AsString := Template.Name;
   finally
     if Control <> nil then
     begin
@@ -1228,9 +1222,9 @@ begin
     end;
   end;
 end;
-{ @end $64E428 }
+{ @end $6478BC }
 
-{ @routine $64E6A4 IsStarProtectedByScript }
+{ @routine $647B08 IsStarProtectedByScript }
 function IsStarProtectedByScript(Star: TStar): Boolean;
 var
   I, J: Integer;
@@ -1244,10 +1238,10 @@ begin
   end;
   for I := 0 to Galaxy.Scripts.Count - 1 do
   begin
-    Script := TScript(Galaxy.Scripts[I]);
+    Script := Galaxy.Scripts[I];
     for J := 0 to Script.Stars.Count - 1 do
     begin
-      Binding := TScriptStar(Script.Stars[J]);
+      Binding := Script.Stars[J];
       if Binding.ProtectStar and (Binding.Star = Star) then
       begin
         Result := True;
@@ -1257,16 +1251,16 @@ begin
   end;
   Result := False;
 end;
-{ @end $64E6A4 }
+{ @end $647B08 }
 
-{ @routine $64E75C ScriptDefinitionBit }
+{ @routine $647B94 ScriptDefinitionBit }
 function ScriptDefinitionBit(Value: Cardinal; BitIndex: Integer): Boolean;
 begin
   Result := Boolean((Value shr BitIndex) and 1);
 end;
-{ @end $64E75C }
+{ @end $647B94 }
 
-{ @routine $64E780 DecodeScriptRaceMask }
+{ @routine $647B9C DecodeScriptRaceMask }
 function DecodeScriptRaceMask(Value: Cardinal): TOwnerMask;
 begin
   if not ScriptDefinitionBit(Value, 0) then
@@ -1281,9 +1275,9 @@ begin
   if ScriptDefinitionBit(Value, 4) then Result := Result + [oiFeyan];
   if ScriptDefinitionBit(Value, 5) then Result := Result + [oiGaal];
 end;
-{ @end $64E780 }
+{ @end $647B9C }
 
-{ @routine $64E85C DecodeScriptOwnerMask }
+{ @routine $647C68 DecodeScriptOwnerMask }
 function DecodeScriptOwnerMask(Value: Cardinal): TOwnerMask;
 begin
   if not ScriptDefinitionBit(Value, 0) then
@@ -1302,9 +1296,9 @@ begin
   if ScriptDefinitionBit(Value, 8) then Result := Result + [oiPirate];
   if ScriptDefinitionBit(Value, 9) and (GetPlayer <> nil) then Result := Result + [GetPlayer.OwnerId];
 end;
-{ @end $64E85C }
+{ @end $647C68 }
 
-{ @routine $64E9CC DecodeScriptEconomyMask }
+{ @routine $647DC8 DecodeScriptEconomyMask }
 function DecodeScriptEconomyMask(Value: Cardinal): TPlanetEconomies;
 begin
   if not ScriptDefinitionBit(Value, 0) then
@@ -1317,9 +1311,9 @@ begin
   if ScriptDefinitionBit(Value, 2) then Result := Result + [peIndustrial];
   if ScriptDefinitionBit(Value, 3) then Result := Result + [peMixed];
 end;
-{ @end $64E9CC }
+{ @end $647DC8 }
 
-{ @routine $64EA64 DecodeScriptGovernmentMask }
+{ @routine $647E54 DecodeScriptGovernmentMask }
 function DecodeScriptGovernmentMask(Value: Cardinal): TPlanetGovernments;
 begin
   if not ScriptDefinitionBit(Value, 0) then
@@ -1334,9 +1328,9 @@ begin
   if ScriptDefinitionBit(Value, 4) then Result := Result + [pgRepublic];
   if ScriptDefinitionBit(Value, 5) then Result := Result + [pgDemocracy];
 end;
-{ @end $64EA64 }
+{ @end $647E54 }
 
-{ @routine $64EB40 DecodeScriptShipTypeMask }
+{ @routine $647F20 DecodeScriptShipTypeMask }
 function DecodeScriptShipTypeMask(Value: Cardinal): TScriptShipTypeMask;
 var
   I: Integer;
@@ -1361,9 +1355,9 @@ begin
       Break;
     end;
 end;
-{ @end $64EB40 }
+{ @end $647F20 }
 
-{ @routine $64ECA8 DecodeScriptDominatorMask }
+{ @routine $648060 DecodeScriptDominatorMask }
 function DecodeScriptDominatorMask(Value: Cardinal; KlingType: TKlingType): TDominatorSeriesMask;
 begin
   if not ScriptDefinitionBit(Value, 0) then
@@ -1423,9 +1417,9 @@ begin
       end;
   end;
 end;
-{ @end $64ECA8 }
+{ @end $648060 }
 
-{ @routine $64F000 DecodeScriptItemOwner }
+{ @routine $648398 DecodeScriptItemOwner }
 function DecodeScriptItemOwner(Value: Integer): TOwnerId;
 begin
   if Value = 0 then Result := oiMaloc
@@ -1438,9 +1432,9 @@ begin
   else if Value = 7 then Result := oiPirate
   else Result := oiUninhabited;
 end;
-{ @end $64F000 }
+{ @end $648398 }
 
-{ @routine $64F074 DecodeScriptRelationLevel }
+{ @routine $6483E4 DecodeScriptRelationLevel }
 function DecodeScriptRelationLevel(Value: Integer): TRelationLevel;
 begin
   if Value = 0 then Result := rlHostile
@@ -1450,9 +1444,9 @@ begin
   else if Value = 4 then Result := rlExcellent
   else Result := rlHostile;
 end;
-{ @end $64F074 }
+{ @end $6483E4 }
 
-{ @routine $64F0C4 ScriptShipMatchesType }
+{ @routine $648414 ScriptShipMatchesType }
 function ScriptShipMatchesType(Ship: TShip; ShipTypeMask: TScriptShipTypeMask; StationNames: WideString; DominatorMasks: array of TDominatorSeriesMask): Boolean;
 var
   Name: WideString;
@@ -1480,9 +1474,9 @@ begin
     if not ((Ship as TKling).DominatorSeries in DominatorMasks[Ord((Ship as TKling).KlingType)]) then Exit;
   Result := True;
 end;
-{ @end $64F0C4 }
+{ @end $648414 }
 
-{ @routine $64F294 CollectScriptCandidateShips }
+{ @routine $6485C0 CollectScriptCandidateShips }
 function CollectScriptCandidateShips(Star: TStar): TList;
 var
   Ship, OtherShip: TShip;
@@ -1495,7 +1489,7 @@ begin
   ShipCount := Star.Ships.Count;
   for I := 0 to ShipCount - 1 do
   begin
-    Ship := TShip(Star.Ships[I]);
+    Ship := Star.Ships[I];
     if Ship.LiberationGroup <> nil then Continue;
     Strict := (GetPlayer <> Ship) and (not (Ship is TKling) or ((Ship as TKling).KlingType <> ktBoss));
     if Ship.ScriptShip <> nil then Continue;
@@ -1510,7 +1504,7 @@ begin
     begin
       for J := 0 to ShipCount - 1 do
       begin
-        OtherShip := TShip(Star.Ships[J]);
+        OtherShip := Star.Ships[J];
         if OtherShip = Ship then Continue;
         if (OtherShip.EnemyShip = Ship) or (OtherShip.PartnerShip = Ship) then Break;
       end;
@@ -1521,11 +1515,11 @@ begin
   PlanetCount := Star.Planets.Count;
   for K := 0 to PlanetCount - 1 do
   begin
-    Planet := TPlanet(Star.Planets[K]);
+    Planet := Star.Planets[K];
     ShipCount := Planet.Warriors.Count;
     for I := 0 to ShipCount - 1 do
     begin
-      Ship := TShip(Planet.Warriors[I]);
+      Ship := Planet.Warriors[I];
       if Ship.ScriptShip <> nil then Continue;
       if Ship.AbsoluteScriptOrder > 0 then Continue;
       if Candidates.IndexOf(Ship) >= 0 then Continue;
@@ -1535,9 +1529,9 @@ begin
   end;
   Result := Candidates;
 end;
-{ @end $64F294 }
+{ @end $6485C0 }
 
-{ @routine $64F5BC FindScriptGroupCandidate }
+{ @routine $648898 FindScriptGroupCandidate }
 function FindScriptGroupCandidate(Candidates: TList; Group: TScriptGroup): TShip;
 var
   I: Integer;
@@ -1547,16 +1541,13 @@ var
 begin
   for I := 0 to Candidates.Count - 1 do
   begin
-    Ship := TShip(Candidates[I]);
+    Ship := Candidates[I];
     if Ship.LiberationGroup <> nil then Continue;
     if not (Ship.OwnerId in Group.OwnerMask) then Continue;
     if not ScriptShipMatchesType(Ship, Group.ShipTypeMask, Group.StationNames, Group.DominatorMasks) then Continue;
-    if GetPlayer = Ship then Continue;
-    if (BlazerShip <> Ship) and (KellerShip <> Ship) and (TerronShip <> Ship) then
-    begin
-      if Ship.Speed < Group.MinSpeed then Continue;
-      if Ship.Speed > Group.MaxSpeed then Continue;
-    end;
+    if Ship = GetPlayer then Continue;
+    if (Ship <> BlazerShip) and (Ship <> KellerShip) and (Ship <> TerronShip) and
+      ((Ship.Speed < Group.MinSpeed) or (Ship.Speed > Group.MaxSpeed)) then Continue;
     if (Group.WeaponRequirement = 1) and (Ship.WeaponCount <= 0) then Continue;
     if (Group.WeaponRequirement = 2) and (Ship.WeaponCount > 0) then Continue;
     if Group.MinCargoHookLevel > 0 then
@@ -1567,12 +1558,12 @@ begin
     if Ship.CargoFreeSpace < Group.MinFreeCargoSpace then Continue;
     if Ship is TRanger then
     begin
-      if TRanger(Ship).CareerStatus[rcTrader] < Group.MinTraderStatus then Continue;
-      if TRanger(Ship).CareerStatus[rcTrader] > Group.MaxTraderStatus then Continue;
-      if TRanger(Ship).CareerStatus[rcWarrior] < Group.MinWarriorStatus then Continue;
-      if TRanger(Ship).CareerStatus[rcWarrior] > Group.MaxWarriorStatus then Continue;
-      if TRanger(Ship).CareerStatus[rcPirate] < Group.MinPirateStatus then Continue;
-      if TRanger(Ship).CareerStatus[rcPirate] > Group.MaxPirateStatus then Continue;
+      if (TRanger(Ship).CareerStatus[rcTrader] < Group.MinTraderStatus) or
+        (TRanger(Ship).CareerStatus[rcTrader] > Group.MaxTraderStatus) then Continue;
+      if (TRanger(Ship).CareerStatus[rcWarrior] < Group.MinWarriorStatus) or
+        (TRanger(Ship).CareerStatus[rcWarrior] > Group.MaxWarriorStatus) then Continue;
+      if (TRanger(Ship).CareerStatus[rcPirate] < Group.MinPirateStatus) or
+        (TRanger(Ship).CareerStatus[rcPirate] > Group.MaxPirateStatus) then Continue;
     end;
     if (Group.MaxDistanceFromPlanet < 10000) and (Ship.CurrentPlanet <> Group.Planet) then
     begin
@@ -1591,9 +1582,9 @@ begin
   end;
   Result := nil;
 end;
-{ @end $64F5BC }
+{ @end $648898 }
 
-{ @routine $64F89C GetScriptShipBindingForContext }
+{ @routine $648AC0 GetScriptShipBindingForContext }
 function GetScriptShipBindingForContext(Ship: TShip; Script: TScript): TScriptShip;
 var
   I: Integer;
@@ -1603,16 +1594,16 @@ begin
   begin
     for I := 0 to TPlayer(Ship).ScriptShipBindings.Count - 1 do
     begin
-      Result := TScriptShip(TPlayer(Ship).ScriptShipBindings[I]);
+      Result := TPlayer(Ship).ScriptShipBindings[I];
       if Result.Script = Script then Break;
       Result := nil;
     end;
   end
   else Result := TScriptShip(Ship.ScriptShip);
 end;
-{ @end $64F89C }
+{ @end $648AC0 }
 
-{ @routine $64F91C TScriptStar_Create }
+{ @routine $648B1C TScriptStar_Create }
 constructor TScriptStar.Create;
 begin
   inherited Create;
@@ -1620,9 +1611,9 @@ begin
   Planets := nil;
   ShipRequirements := nil;
 end;
-{ @end $64F91C }
+{ @end $648B1C }
 
-{ @routine $64F990 TScriptStar_Destroy }
+{ @routine $648B7C TScriptStar_Destroy }
 destructor TScriptStar.Destroy;
 begin
   ShipRequirements := nil;
@@ -1630,30 +1621,30 @@ begin
   Constraints := nil;
   inherited Destroy;
 end;
-{ @end $64F990 }
+{ @end $648B7C }
 
-{ @routine $64F9F4 TScriptConstellation_Create }
+{ @routine $648BCC TScriptConstellation_Create }
 constructor TScriptConstellation.Create;
 begin
   inherited Create;
 end;
-{ @end $64F9F4 }
+{ @end $648BCC }
 
-{ @routine $64FA38 TScriptConstellation_Destroy }
+{ @routine $648C04 TScriptConstellation_Destroy }
 destructor TScriptConstellation.Destroy;
 begin
   inherited Destroy;
 end;
-{ @end $64FA38 }
+{ @end $648C04 }
 
-{ @routine $64FA6C TScriptShip_Create }
+{ @routine $648C2C TScriptShip_Create }
 constructor TScriptShip.Create;
 begin
   inherited Create;
 end;
-{ @end $64FA6C }
+{ @end $648C2C }
 
-{ @routine $64FAB0 TScriptShip_Destroy }
+{ @routine $648C64 TScriptShip_Destroy }
 destructor TScriptShip.Destroy;
 begin
   if Ship <> nil then
@@ -1663,30 +1654,30 @@ begin
   end;
   inherited Destroy;
 end;
-{ @end $64FAB0 }
+{ @end $648C64 }
 
-{ @routine $64FB00 TScriptShip_GetGroup }
+{ @routine $648CA0 TScriptShip_GetGroup }
 function TScriptShip.GetGroup: TScriptGroup;
 begin
-  Result := TScriptGroup(Script.Groups[GroupIndex]);
+  Result := Script.Groups[GroupIndex];
 end;
-{ @end $64FB00 }
+{ @end $648CA0 }
 
-{ @routine $64FB28 TScriptPlace_Create }
+{ @routine $648CB4 TScriptPlace_Create }
 constructor TScriptPlace.Create;
 begin
   inherited Create;
 end;
-{ @end $64FB28 }
+{ @end $648CB4 }
 
-{ @routine $64FB6C TScriptPlace_Destroy }
+{ @routine $648CEC TScriptPlace_Destroy }
 destructor TScriptPlace.Destroy;
 begin
   inherited Destroy;
 end;
-{ @end $64FB6C }
+{ @end $648CEC }
 
-{ @routine $64FBA0 TScriptPlace_GetPoint }
+{ @routine $648D14 TScriptPlace_GetPoint }
 function TScriptPlace.GetPoint: TPointF;
 var
   Distance, Angle: Single;
@@ -1721,7 +1712,7 @@ begin
     Center := MakePointF(0, 0);
     for I := 0 to Script.Ships.Count - 1 do
     begin
-      Binding := TScriptShip(Script.Ships[I]);
+      Binding := Script.Ships[I];
       if Binding.GroupIndex = Integer(TargetValue) then
       begin
         Center := AddPointsF(Center, Binding.Ship.Position);
@@ -1741,7 +1732,7 @@ begin
   end
   else if PlaceKind = spkCoordinates then
   begin
-    Center := MakePointF(TVarEC(TargetValue).GetFloat, TargetValue2.GetFloat);
+    Center := MakePointF(TVarEC(TargetValue).AsFloat, TargetValue2.AsFloat);
     Angle := HeadingDegreesToRadians(WrapHeadingDegrees(PointBearingDegrees(Center, MakePointF(0, 0)) + AngleOffset));
     Distance := OriginStar.MapDiameter / 2 * DistanceScale;
     Result.X := System.Sin(Angle) * Distance + Center.X;
@@ -1761,9 +1752,9 @@ begin
         Result.Y := Result.Y * 1.05;
       end;
 end;
-{ @end $64FBA0 }
+{ @end $648D14 }
 
-{ @routine $65004C TScriptPlace_GetRandomPoint }
+{ @routine $649120 TScriptPlace_GetRandomPoint }
 function TScriptPlace.GetRandomPoint(Seed: Cardinal): TPointF;
 var
   Angle: Single;
@@ -1781,18 +1772,18 @@ begin
     end;
   end;
 end;
-{ @end $65004C }
+{ @end $649120 }
 
-{ @routine $6501B4 TScriptPlace_ShipInPlace }
+{ @routine $649244 TScriptPlace_ShipInPlace }
 function TScriptPlace.ShipInPlace(Ship: TShip): Boolean;
 begin
   if PlaceKind = spkDockedPlanet then Result := Ship.CurrentPlanet = TPlanet(TargetValue)
   else if not Ship.InNormalSpace then Result := False
   else Result := PointDistanceSquared(GetPoint, Ship.Position) <= Sqr(Radius);
 end;
-{ @end $6501B4 }
+{ @end $649244 }
 
-{ @routine $650228 TScriptItem_Create }
+{ @routine $64929C TScriptItem_Create }
 constructor TScriptItem.Create;
 begin
   inherited Create;
@@ -1800,9 +1791,9 @@ begin
   ActionCodeInitialized := False;
   Script := nil;
 end;
-{ @end $650228 }
+{ @end $64929C }
 
-{ @routine $650280 TScriptItem_Destroy }
+{ @routine $6492E0 TScriptItem_Destroy }
 destructor TScriptItem.Destroy;
 begin
   if Item <> nil then
@@ -1814,16 +1805,16 @@ begin
   ActionCode := nil;
   inherited Destroy;
 end;
-{ @end $650280 }
+{ @end $6492E0 }
 
-{ @routine $6502EC TScriptGroup_Create }
+{ @routine $649328 TScriptGroup_Create }
 constructor TScriptGroup.Create;
 begin
   inherited Create;
 end;
-{ @end $6502EC }
+{ @end $649328 }
 
-{ @routine $650330 TScriptGroup_Destroy }
+{ @routine $649360 TScriptGroup_Destroy }
 destructor TScriptGroup.Destroy;
 begin
   if Ships <> nil then
@@ -1833,18 +1824,18 @@ begin
   end;
   inherited Destroy;
 end;
-{ @end $650330 }
+{ @end $649360 }
 
-{ @routine $650380 TScriptState_Create }
+{ @routine $649398 TScriptState_Create }
 constructor TScriptState.Create;
 begin
   inherited Create;
   StateCode := TCodeEC.Create;
   ActionCode := nil;
 end;
-{ @end $650380 }
+{ @end $649398 }
 
-{ @routine $6503DC TScriptState_Destroy }
+{ @routine $6493E4 TScriptState_Destroy }
 destructor TScriptState.Destroy;
 begin
   EnemyGroupNames := nil;
@@ -1871,17 +1862,17 @@ begin
   end;
   inherited Destroy;
 end;
-{ @end $6503DC }
+{ @end $6493E4 }
 
-{ @routine $6504A0 TScriptDialog_Create }
+{ @routine $64946C TScriptDialog_Create }
 constructor TScriptDialog.Create;
 begin
   inherited Create;
   Code := TCodeEC.Create;
 end;
-{ @end $6504A0 }
+{ @end $64946C }
 
-{ @routine $6504F4 TScriptDialog_Destroy }
+{ @routine $6494B0 TScriptDialog_Destroy }
 destructor TScriptDialog.Destroy;
 begin
   if Code <> nil then
@@ -1891,17 +1882,17 @@ begin
   end;
   inherited Destroy;
 end;
-{ @end $6504F4 }
+{ @end $6494B0 }
 
-{ @routine $650544 TScriptDialogMsg_Create }
+{ @routine $6494E8 TScriptDialogMsg_Create }
 constructor TScriptDialogMsg.Create;
 begin
   inherited Create;
   Code := TCodeEC.Create;
 end;
-{ @end $650544 }
+{ @end $6494E8 }
 
-{ @routine $650598 TScriptDialogMsg_Destroy }
+{ @routine $64952C TScriptDialogMsg_Destroy }
 destructor TScriptDialogMsg.Destroy;
 begin
   if Code <> nil then
@@ -1911,18 +1902,18 @@ begin
   end;
   inherited Destroy;
 end;
-{ @end $650598 }
+{ @end $64952C }
 
-{ @routine $6505E8 TScriptDialogAnswer_Create }
+{ @routine $649564 TScriptDialogAnswer_Create }
 constructor TScriptDialogAnswer.Create;
 begin
   inherited Create;
   AnswerCode := TCodeEC.Create;
   ActionCode := TCodeEC.Create;
 end;
-{ @end $6505E8 }
+{ @end $649564 }
 
-{ @routine $650650 TScriptDialogAnswer_Destroy }
+{ @routine $6495B8 TScriptDialogAnswer_Destroy }
 destructor TScriptDialogAnswer.Destroy;
 begin
   if AnswerCode <> nil then
@@ -1937,9 +1928,9 @@ begin
   end;
   inherited Destroy;
 end;
-{ @end $650650 }
+{ @end $6495B8 }
 
-{ @routine $6506BC TScript_Create }
+{ @routine $649600 TScript_Create }
 constructor TScript.Create;
 begin
   inherited Create;
@@ -1960,9 +1951,9 @@ begin
   EtherIds := TStringsEC.Create;
   CurrentAnswer := -1;
 end;
-{ @end $6506BC }
+{ @end $649600 }
 
-{ @routine $650818 TScript_Destroy }
+{ @routine $649720 TScript_Destroy }
 destructor TScript.Destroy;
 begin
   if CurrentScript = Self then CurrentScript := nil;
@@ -2045,9 +2036,9 @@ begin
   GroupRelations := nil;
   inherited Destroy;
 end;
-{ @end $650818 }
+{ @end $649720 }
 
-{ @routine $650A18 TScript_Clear }
+{ @routine $649868 TScript_Clear }
 procedure TScript.Clear;
 var
   I: Integer;
@@ -2061,7 +2052,7 @@ begin
     StateCount := States.Count;
     for I := 0 to StateCount - 1 do
     begin
-      State := TScriptState(States[I]);
+      State := States[I];
       State.Free;
     end;
     States.Clear;
@@ -2095,7 +2086,7 @@ begin
   begin
     for I := 0 to Ships.Count - 1 do
     begin
-      Binding := TScriptShip(Ships[I]);
+      Binding := Ships[I];
       Binding.Free;
     end;
     Ships.Clear;
@@ -2104,7 +2095,7 @@ begin
   begin
     for I := 0 to Dialogs.Count - 1 do
     begin
-      Dialog := TScriptDialog(Dialogs[I]);
+      Dialog := Dialogs[I];
       Dialog.Free;
     end;
     Dialogs.Clear;
@@ -2126,28 +2117,28 @@ begin
   if EtherIds <> nil then EtherIds.Clear;
   GroupRelations := nil;
 end;
-{ @end $650A18 }
+{ @end $649868 }
 
-{ @routine $650D84 TScript_PublishShipContext }
+{ @routine $649A80 TScript_PublishShipContext }
 procedure TScript.PublishShipContext(Binding: TScriptShip);
 begin
   CurrentShip := Binding.Ship;
   CurrentScript := Self;
-  InitCode.LocalVar.GetVar('EndState').SetInt(Ord(Binding.EndState));
-  InitCode.LocalVar.GetVar('CurShip').SetDword(Cardinal(CurrentShip));
+  InitCode.LocalVar.NamedItems['EndState'].AsInteger := Ord(Binding.EndState);
+  InitCode.LocalVar.NamedItems['CurShip'].AsDword := Cardinal(CurrentShip);
 end;
-{ @end $650D84 }
+{ @end $649A80 }
 
-{ @routine $650E14 TScript_PublishCurrentShip }
+{ @routine $649AF4 TScript_PublishCurrentShip }
 procedure TScript.PublishCurrentShip(Ship: TShip);
 begin
   CurrentShip := Ship;
   CurrentScript := Self;
-  InitCode.LocalVar.GetVar('CurShip').SetDword(Cardinal(CurrentShip));
+  InitCode.LocalVar.NamedItems['CurShip'].AsDword := Cardinal(CurrentShip);
 end;
-{ @end $650E14 }
+{ @end $649AF4 }
 
-{ @routine $650E68 TScript_GetStar }
+{ @routine $649B30 TScript_GetStar }
 function TScript.GetStar(Name: WideString): TScriptStar;
 var
   I, Count: Integer;
@@ -2156,7 +2147,7 @@ begin
   Count := Stars.Count;
   for I := 0 to Count - 1 do
   begin
-    Star := TScriptStar(Stars[I]);
+    Star := Stars[I];
     if Name = Star.Name then
     begin
       Result := Star;
@@ -2165,9 +2156,9 @@ begin
   end;
   raise Exception.Create(AnsiString('Error.Script. Not found star =' + Name));
 end;
-{ @end $650E68 }
+{ @end $649B30 }
 
-{ @routine $650F8C TScript_GetPlanetBinding }
+{ @routine $649C3C TScript_GetPlanetBinding }
 function TScript.GetPlanetBinding(Name: WideString): PScriptPlanetBinding;
 var
   I, Count, J: Integer;
@@ -2176,7 +2167,7 @@ begin
   Count := Stars.Count;
   for I := 0 to Count - 1 do
   begin
-    Star := TScriptStar(Stars[I]);
+    Star := Stars[I];
     if Star.Planets <> nil then
       for J := 0 to High(Star.Planets) do
         if Name = Star.Planets[J].Name then
@@ -2187,9 +2178,9 @@ begin
   end;
   raise Exception.Create(AnsiString('Error.Script. Not found planet =' + Name));
 end;
-{ @end $650F8C }
+{ @end $649C3C }
 
-{ @routine $6510F4 TScript_GetItem }
+{ @routine $649D84 TScript_GetItem }
 function TScript.GetItem(Name: WideString): TScriptItem;
 var
   Item: TScriptItem;
@@ -2197,7 +2188,7 @@ var
 begin
   for I := 0 to Items.Count - 1 do
   begin
-    Item := TScriptItem(Items[I]);
+    Item := Items[I];
     if Item.Name = Name then
     begin
       Result := Item;
@@ -2206,9 +2197,9 @@ begin
   end;
   raise Exception.Create(AnsiString('Error.Script. Not found item =' + Name));
 end;
-{ @end $6510F4 }
+{ @end $649D84 }
 
-{ @routine $651210 TScript_RunShipState }
+{ @routine $649E8C TScript_RunShipState }
 procedure TScript.RunShipState(Binding: TScriptShip);
 var
   SavedScript: TScript;
@@ -2238,9 +2229,9 @@ begin
     end;
   end;
 end;
-{ @end $651210 }
+{ @end $649E8C }
 
-{ @routine $651490 TScript_RunTurnCode }
+{ @routine $64A0F0 TScript_RunTurnCode }
 procedure TScript.RunTurnCode;
 begin
   try
@@ -2256,9 +2247,9 @@ begin
     end;
   end;
 end;
-{ @end $651490 }
+{ @end $64A0F0 }
 
-{ @routine $651630 TScript_RunDialogCode }
+{ @routine $64A284 TScript_RunDialogCode }
 procedure TScript.RunDialogCode;
 begin
   try
@@ -2274,9 +2265,9 @@ begin
     end;
   end;
 end;
-{ @end $651630 }
+{ @end $64A284 }
 
-{ @routine $6517D4 TScript_CallDialog }
+{ @routine $64A41C TScript_CallDialog }
 procedure TScript.CallDialog(Index: Integer);
 begin
   if (Index < 0) or (Index >= Dialogs.Count) then
@@ -2298,20 +2289,20 @@ begin
     end;
   end;
 end;
-{ @end $6517D4 }
+{ @end $64A41C }
 
-{ @routine $651A9C TScript_CallDialogByVariable }
+{ @routine $64A6D8 TScript_CallDialogByVariable }
 procedure TScript.CallDialogByVariable(Name: WideString);
 var
   Cell: TVarEC;
 begin
   Cell := InitCode.LocalVar.GetVarNE(Name);
   if Cell = nil then raise Exception.Create(AnsiString('Dialog ' + Name + ' not found in script ' + ScriptFileName));
-  CallDialog(Cell.GetInt);
+  CallDialog(Cell.AsInteger);
 end;
-{ @end $651A9C }
+{ @end $64A6D8 }
 
-{ @routine $651BA8 TScript_CallDialogMessage }
+{ @routine $64A7D8 TScript_CallDialogMessage }
 procedure TScript.CallDialogMessage(Index: Integer);
 begin
   if (Index < 0) or (Index >= DialogMessages.Count) then
@@ -2329,9 +2320,9 @@ begin
     end;
   end;
 end;
-{ @end $651BA8 }
+{ @end $64A7D8 }
 
-{ @routine $651E58 TScript_BuildDialogAnswer }
+{ @routine $64AA7C TScript_BuildDialogAnswer }
 procedure TScript.BuildDialogAnswer(Index: Integer);
 begin
   if (Index < 0) or (Index >= DialogAnswers.Count) then
@@ -2351,9 +2342,9 @@ begin
     end;
   end;
 end;
-{ @end $651E58 }
+{ @end $64AA7C }
 
-{ @routine $652118 TScript_ExecuteDialogAnswer }
+{ @routine $64AD34 TScript_ExecuteDialogAnswer }
 procedure TScript.ExecuteDialogAnswer(Index: Integer);
 begin
   if Index = -1 then Exit;
@@ -2372,9 +2363,9 @@ begin
     end;
   end;
 end;
-{ @end $652118 }
+{ @end $64AD34 }
 
-{ @routine $6523C8 TScript_BindShip }
+{ @routine $64AFDC TScript_BindShip }
 procedure TScript.BindShip(GroupIndex: Integer; Ship: TShip);
 var
   Binding: TScriptShip;
@@ -2386,12 +2377,13 @@ begin
   Binding.Ship := Ship;
   if Ship is TPlayer then TPlayer(Ship).ScriptShipBindings.Add(Binding)
   else Ship.ScriptShip := Binding;
-  if (Ship is TWarrior) and (Ship.CurrentStar.Ships.IndexOf(Ship) = -1) then
+  if (Ship is TWarrior) then
+    if (Ship.CurrentStar.Ships.IndexOf(Ship) = -1) then
     Ship.CurrentStar.Ships.Add(Ship);
 end;
-{ @end $6523C8 }
+{ @end $64AFDC }
 
-{ @routine $65247C TScript_UnbindShip }
+{ @routine $64B060 TScript_UnbindShip }
 procedure TScript.UnbindShip(Ship: TShip);
 var
   I, Index: Integer;
@@ -2405,7 +2397,7 @@ begin
       Index := Ships.IndexOf(TPlayer(Ship).ScriptShipBindings[I]);
       if Index >= 0 then
       begin
-        Binding := TScriptShip(Ships[Index]);
+        Binding := Ships[Index];
         Binding.Free;
         Ships.Delete(Index);
         TPlayer(Ship).ScriptShipBindings.Delete(I);
@@ -2418,16 +2410,16 @@ begin
     Index := Ships.IndexOf(Ship.ScriptShip);
     if Index >= 0 then
     begin
-      Binding := TScriptShip(Ships[Index]);
+      Binding := Ships[Index];
       Binding.Free;
       Ships.Delete(Index);
     end;
     Ship.ScriptShip := nil;
   end;
 end;
-{ @end $65247C }
+{ @end $64B060 }
 
-{ @routine $65256C TScript_ClearShipBindings }
+{ @routine $64B118 TScript_ClearShipBindings }
 procedure TScript.ClearShipBindings;
 var
   I, Index: Integer;
@@ -2438,30 +2430,28 @@ begin
     for I := GetPlayer.ScriptShipBindings.Count - 1 downto 0 do
     begin
       Index := Ships.IndexOf(GetPlayer.ScriptShipBindings[I]);
-      if Index >= 0 then
-      begin
-        Binding := TScriptShip(Ships[Index]);
-        Binding.Free;
-        Ships.Delete(Index);
-        GetPlayer.ScriptShipBindings.Delete(I);
-      end;
+      if Index < 0 then Continue;
+      Binding := Ships[Index];
+      Binding.Free;
+      Ships.Delete(Index);
+      GetPlayer.ScriptShipBindings.Delete(I);
     end;
   for I := Ships.Count - 1 downto 0 do
   begin
-    Binding := TScriptShip(Ships[I]);
+    Binding := Ships[I];
     Ship := Binding.Ship;
     Binding.Free;
     Ships.Delete(I);
     Ship.ScriptShip := nil;
   end;
 end;
-{ @end $65256C }
+{ @end $64B118 }
 
-{ @routine $652660 TScript_ChangeState }
+{ @routine $64B1C8 TScript_ChangeState }
 procedure TScript.ChangeState(Binding: TScriptShip; StateIndex: Integer);
 begin
   if Binding = nil then Exit;
-  Binding.State := TScriptState(States[StateIndex]);
+  Binding.State := States[StateIndex];
   if Binding.State.EntryCode <> nil then Binding.State.EntryCode.Run(ScriptProcess);
   if not (Binding.Ship is TPlayer) then Binding.Ship.InitializeScriptStateOrders;
   if Binding.State.StateCode <> nil then
@@ -2470,9 +2460,9 @@ begin
     Binding.State.StateCode.Run(ScriptProcess);
   end;
 end;
-{ @end $652660 }
+{ @end $64B1C8 }
 
-{ @routine $6526F8 TScript_SetGroupRelation }
+{ @routine $64B23C TScript_SetGroupRelation }
 procedure TScript.SetGroupRelation(SourceGroup, TargetGroup: Integer; Level: TRelationLevel);
 var
   Source, Target: TScriptShip;
@@ -2481,19 +2471,19 @@ begin
   if SourceGroup = TargetGroup then Exit;
   for I := 0 to Ships.Count - 1 do
   begin
-    Source := TScriptShip(Ships[I]);
+    Source := Ships[I];
     if Source.GroupIndex = SourceGroup then
       for J := 0 to Ships.Count - 1 do
       begin
-        Target := TScriptShip(Ships[J]);
+        Target := Ships[J];
         if (Target.GroupIndex = TargetGroup) and (Target.Ship is TRanger) then
           Source.Ship.SetStoredRangerRelationLevel(TRanger(Target.Ship), Level);
       end;
   end;
 end;
-{ @end $6526F8 }
+{ @end $64B23C }
 
-{ @routine $6527C4 TScript_SetPlanetRelation }
+{ @routine $64B2F0 TScript_SetPlanetRelation }
 procedure TScript.SetPlanetRelation(GroupIndex: Integer; Planet: TPlanet; Level: TRelationLevel);
 var
   Binding: TScriptShip;
@@ -2501,14 +2491,14 @@ var
 begin
   for I := 0 to Ships.Count - 1 do
   begin
-    Binding := TScriptShip(Ships[I]);
+    Binding := Ships[I];
     if (Binding.GroupIndex = GroupIndex) and (Binding.Ship is TRanger) then
       Planet.SetRelationLevelToRanger(TRanger(Binding.Ship), Level);
   end;
 end;
-{ @end $6527C4 }
+{ @end $64B2F0 }
 
-{ @routine $65283C TScript_TryBindStars }
+{ @routine $64B358 TScript_TryBindStars }
 function TScript.TryBindStars(StarIndex: Integer): Boolean;
 var
   Binding: TScriptStar;
@@ -2529,7 +2519,7 @@ begin
   Indent := '';
   for J := 0 to StarIndex - 1 do Indent := Indent + '    ';
   Result := False;
-  Binding := TScriptStar(Stars[StarIndex]);
+  Binding := Stars[StarIndex];
   Star := Binding.Star;
   if Binding.RejectHostilePresence and Star.HasHostilePresenceForScriptBinding then Exit;
   if StarIndex < 2 then Bearing := 0
@@ -2545,7 +2535,7 @@ begin
         K := 0;
         while K < Count do
         begin
-          Hole := THole(aGalaxy.Galaxy.Holes[K]);
+          Hole := aGalaxy.Galaxy.Holes[K];
           if (Hole.Star1 = Star) and (Hole.Star2 = OtherStar.Star) then Break;
           if (Hole.Star1 = OtherStar.Star) and (Hole.Star2 = Star) then Break;
           Inc(K);
@@ -2564,37 +2554,38 @@ begin
     Count := High(Binding.Planets) + 1;
     for K := 0 to Count - 1 do
     begin
-      if (StarIndex = 0) and (K = 0) and (AnchorPlanet <> nil) then Binding.Planets[0].Planet := AnchorPlanet
-      else
+      if (StarIndex = 0) and (K = 0) and (AnchorPlanet <> nil) then
       begin
-        if Star.Status.CustomFaction <> '' then Exit;
-        MinOrbitSquared := Sqr(Binding.Planets[K].MinOrbitPercent / 100 * (Star.MapDiameter / 2));
-        MaxOrbitSquared := Sqr(Binding.Planets[K].MaxOrbitPercent / 100 * (Star.MapDiameter / 2));
-        Binding.Planets[K].Planet := nil;
-        for J := 0 to Star.Planets.Count - 1 do
-        begin
-          Planet := TPlanet(Star.Planets[J]);
-          if Planet.NoLanding then Continue;
-          if not (Planet.RaceId in Binding.Planets[K].RaceMask) then Continue;
-          if not (Planet.OwnerId in Binding.Planets[K].OwnerMask) then Continue;
-          if not (Planet.Economy in Binding.Planets[K].EconomyMask) then Continue;
-          if not (Planet.Government in Binding.Planets[K].GovernmentMask) then Continue;
-          I := 0;
-          while I < K do
-          begin
-            if Binding.Planets[I].Planet = Planet then Break;
-            Inc(I);
-          end;
-          if I < K then Continue;
-          OrbitSquared := PointDistanceSquared(Planet.GetPosition, MakePointF(0, 0));
-          if OrbitSquared < MinOrbitSquared then Continue;
-          // Native search stops at the first eligible orbit beyond the upper bound.
-          if OrbitSquared > MaxOrbitSquared then Break;
-          Binding.Planets[K].Planet := Planet;
-          Break;
-        end;
-        if Binding.Planets[K].Planet = nil then Exit;
+        Binding.Planets[0].Planet := AnchorPlanet;
+        Continue;
       end;
+      if Star.Status.CustomFaction <> '' then Exit;
+      MinOrbitSquared := Sqr(Binding.Planets[K].MinOrbitPercent / 100 * (Star.MapDiameter / 2));
+      MaxOrbitSquared := Sqr(Binding.Planets[K].MaxOrbitPercent / 100 * (Star.MapDiameter / 2));
+      Binding.Planets[K].Planet := nil;
+      for J := 0 to Star.Planets.Count - 1 do
+      begin
+        Planet := Star.Planets[J];
+        if Planet.NoLanding then Continue;
+        if not (Planet.RaceId in Binding.Planets[K].RaceMask) then Continue;
+        if not (Planet.OwnerId in Binding.Planets[K].OwnerMask) then Continue;
+        if not (Planet.Economy in Binding.Planets[K].EconomyMask) then Continue;
+        if not (Planet.Government in Binding.Planets[K].GovernmentMask) then Continue;
+        I := 0;
+        while I < K do
+        begin
+          if Binding.Planets[I].Planet = Planet then Break;
+          Inc(I);
+        end;
+        if I < K then Continue;
+        OrbitSquared := PointDistanceSquared(Planet.GetPosition, MakePointF(0, 0));
+        if OrbitSquared < MinOrbitSquared then Continue;
+        // Native search stops at the first eligible orbit beyond the upper bound.
+        if OrbitSquared > MaxOrbitSquared then Break;
+        Binding.Planets[K].Planet := Planet;
+        Break;
+      end;
+      if Binding.Planets[K].Planet = nil then Exit;
     end;
   end;
   if Binding.ShipRequirements <> nil then
@@ -2611,7 +2602,7 @@ begin
         I := 0;
         while I < Candidates.Count do
         begin
-          Ship := TShip(Candidates[I]);
+          Ship := Candidates[I];
           Inc(I);
           if Requirement.PlayerOnly and (GetPlayer <> Ship) then Continue;
           if Ship.LiberationGroup <> nil then Continue;
@@ -2661,13 +2652,13 @@ begin
     Result := True;
     Exit;
   end;
-  Binding := TScriptStar(Stars[StarIndex]);
+  Binding := Stars[StarIndex];
   if Binding.ConstellationIndex = -1 then
   begin
     Count := aGalaxy.Galaxy.Stars.Count;
     for K := 0 to Count - 1 do
     begin
-      Star := TScriptStar(Stars[0]).Star.StarDistances[K].Star;
+      Star := TStar(TScriptStar(Stars[0]).Star.StarDistances[K].Star);
       if Binding.RejectHostilePresence and Star.HasHostilePresenceForScriptBinding then Continue;
       J := 0;
       while J < StarIndex do
@@ -2687,7 +2678,7 @@ begin
     Count := aGalaxy.Galaxy.Stars.Count;
     for K := 0 to Count - 1 do
     begin
-      Star := TStar(aGalaxy.Galaxy.Stars[K]);
+      Star := aGalaxy.Galaxy.Stars[K];
       if Binding.RejectHostilePresence and Star.HasHostilePresenceForScriptBinding then Continue;
       J := 0;
       while J < StarIndex do
@@ -2699,13 +2690,13 @@ begin
       J := 0;
       while J < Constellations.Count do
       begin
-        ConstellationBinding := TScriptConstellation(Constellations[J]);
+        ConstellationBinding := Constellations[J];
         if ConstellationBinding.Constellation <> nil then
           if ConstellationBinding.Constellation = Star.Constellation then Break;
         Inc(J);
       end;
       if J < Constellations.Count then Continue;
-      ConstellationBinding := TScriptConstellation(Constellations[Binding.ConstellationIndex]);
+      ConstellationBinding := Constellations[Binding.ConstellationIndex];
       ConstellationBinding.Constellation := Star.Constellation;
       Binding.Star := Star;
       Result := TryBindStars(StarIndex);
@@ -2721,7 +2712,7 @@ begin
       Count := Constellation.Stars.Count;
       for K := 0 to Count - 1 do
       begin
-        Star := TStar(Constellation.Stars[K]);
+        Star := Constellation.Stars[K];
         if Binding.RejectHostilePresence and Star.HasHostilePresenceForScriptBinding then Continue;
         J := 0;
         while J < StarIndex do
@@ -2738,9 +2729,9 @@ begin
   end;
   Result := False;
 end;
-{ @end $65283C }
+{ @end $64B358 }
 
-{ @routine $653660 TScript_LoadFromBuffer }
+{ @routine $64BF80 TScript_LoadFromBuffer }
 function TScript.LoadFromBuffer(Buffer: TBufEC; AnchorStar: TStar; FirstPlanet: TPlanet; CreateObjects: Boolean): Boolean;
 var
   Candidates: TList;
@@ -2766,8 +2757,8 @@ var
   Version, Mask: Cardinal;
   KlingType: TKlingType;
 
-  // @nested $6532F0 CompileStateActionCode
-  procedure CompileStateActionCode(State: TScriptState); // @addr 0x6532F0 @note "Nested helper; captures Self at ParentFrame-4. Caller removes ParentFrame."
+  // @nested $64BC74 CompileStateActionCode
+  procedure CompileStateActionCode(State: TScriptState); // @addr 0x0064BC74 @note "Nested helper; captures Self at ParentFrame-4. Caller removes ParentFrame."
   var
     SourceText, ActionTypes, StepTypes: WideString;
     I, Count: Integer;
@@ -2793,7 +2784,7 @@ var
           if Pos(',' + ScriptActionTypeNames[Action] + ',', ActionTypes) > 0 then
             Include(State.ActionTypeMask, Action);
       end;
-      if (StepTypes = '') or (StepTypes = 'Any') then State.StepTypeMask := [0..11]
+      if (StepTypes = '') or (StepTypes = 'Any') then State.StepTypeMask := AllScriptStepTypes
       else
       begin
         State.StepTypeMask := [];
@@ -2801,7 +2792,7 @@ var
         for I := 0 to Count - 1 do
         begin
           Step := ExtractDigitsToIntW(ExtractDelimitedPartW(StepTypes, I, ','));
-          if Step in [0..11] then Include(State.StepTypeMask, Step);
+          if Step in AllScriptStepTypes then Include(State.StepTypeMask, Step);
         end;
       end;
     end
@@ -2809,7 +2800,7 @@ var
     begin
       State.ActionCode := CompileScriptText(State.OnActionText);
       State.ActionTypeMask := [satOnStep..satOnDeath];
-      State.StepTypeMask := [0..11];
+      State.StepTypeMask := AllScriptStepTypes;
     end;
     State.ActionCode.LinkAll(ScriptFunctionScope, False);
     State.ActionCode.LinkAll(SharedScriptVariables, False);
@@ -2862,7 +2853,7 @@ begin
       if Version >= 7 then
         for J := 0 to SubCount - 1 do
         begin
-          Star.Constraints[J].OtherStar := TScriptStar(Stars[Buffer.GetInt32]);
+          Star.Constraints[J].OtherStar := Stars[Buffer.GetInt32];
           Star.Constraints[J].MinDistance := Buffer.GetInt32;
           Star.Constraints[J].MaxDistance := Buffer.GetInt32;
           Star.Constraints[J].RequireBlackHole := Buffer.GetBoolean;
@@ -2870,7 +2861,7 @@ begin
       else
         for J := 0 to SubCount - 1 do
         begin
-          Star.Constraints[J].OtherStar := TScriptStar(Stars[Buffer.GetInt32]);
+          Star.Constraints[J].OtherStar := Stars[Buffer.GetInt32];
           Buffer.GetInt32;
           Star.Constraints[J].MinDistance := Buffer.GetInt32;
           Star.Constraints[J].MaxDistance := Buffer.GetInt32;
@@ -2897,64 +2888,62 @@ begin
       end;
     end;
     SubCount := Buffer.GetInt32;
-    if SubCount > 0 then
+    if SubCount <= 0 then Continue;
+    SetLength(Star.ShipRequirements, SubCount);
+    for J := 0 to SubCount - 1 do
     begin
-      SetLength(Star.ShipRequirements, SubCount);
-      for J := 0 to SubCount - 1 do
+      Star.ShipRequirements[J].Count := Buffer.GetInt32;
+      Star.ShipRequirements[J].OwnerMask := DecodeScriptOwnerMask(Buffer.GetUInt32);
+      Mask := Buffer.GetUInt32;
+      Star.ShipRequirements[J].ShipTypeMask := DecodeScriptShipTypeMask(Mask);
+      for KlingType := Low(TKlingType) to High(TKlingType) do Star.ShipRequirements[J].DominatorMasks[KlingType] := DecodeScriptDominatorMask(Mask, KlingType);
+      Star.ShipRequirements[J].PlayerOnly := Buffer.GetBoolean;
+      Star.ShipRequirements[J].MinSpeed := Buffer.GetInt32;
+      Star.ShipRequirements[J].MaxSpeed := Buffer.GetInt32;
+      Star.ShipRequirements[J].WeaponRequirement := Buffer.GetInt32;
+      Star.ShipRequirements[J].MinCargoHookLevel := Buffer.GetInt32;
+      Star.ShipRequirements[J].MinFreeCargoSpace := Buffer.GetInt32;
+      if Version < 7 then
       begin
-        Star.ShipRequirements[J].Count := Buffer.GetInt32;
-        Star.ShipRequirements[J].OwnerMask := DecodeScriptOwnerMask(Buffer.GetUInt32);
-        Mask := Buffer.GetUInt32;
-        Star.ShipRequirements[J].ShipTypeMask := DecodeScriptShipTypeMask(Mask);
-        for KlingType := Low(TKlingType) to High(TKlingType) do Star.ShipRequirements[J].DominatorMasks[KlingType] := DecodeScriptDominatorMask(Mask, KlingType);
-        Star.ShipRequirements[J].PlayerOnly := Buffer.GetBoolean;
-        Star.ShipRequirements[J].MinSpeed := Buffer.GetInt32;
-        Star.ShipRequirements[J].MaxSpeed := Buffer.GetInt32;
-        Star.ShipRequirements[J].WeaponRequirement := Buffer.GetInt32;
-        Star.ShipRequirements[J].MinCargoHookLevel := Buffer.GetInt32;
-        Star.ShipRequirements[J].MinFreeCargoSpace := Buffer.GetInt32;
-        if Version < 7 then
-        begin
-          Buffer.GetInt32;
-          Buffer.GetInt32;
-        end;
-        Star.ShipRequirements[J].MinTraderStatus := Buffer.GetInt32;
-        Star.ShipRequirements[J].MaxTraderStatus := Buffer.GetInt32;
-        Star.ShipRequirements[J].MinWarriorStatus := Buffer.GetInt32;
-        Star.ShipRequirements[J].MaxWarriorStatus := Buffer.GetInt32;
-        Star.ShipRequirements[J].MinPirateStatus := Buffer.GetInt32;
-        Star.ShipRequirements[J].MaxPirateStatus := Buffer.GetInt32;
-        if Version < 7 then
-        begin
-          Buffer.GetInt32;
-          Buffer.GetInt32;
-        end;
-        Star.ShipRequirements[J].MinStrength := Buffer.GetSingle;
-        Star.ShipRequirements[J].MaxStrength := Buffer.GetSingle;
-        Star.ShipRequirements[J].StationNames := TrimWideString(Buffer.ReadWideString);
-        if Star.ShipRequirements[J].StationNames <> '' then Star.ShipRequirements[J].ShipTypeMask := Star.ShipRequirements[J].ShipTypeMask + [htStation];
+        Buffer.GetInt32;
+        Buffer.GetInt32;
       end;
+      Star.ShipRequirements[J].MinTraderStatus := Buffer.GetInt32;
+      Star.ShipRequirements[J].MaxTraderStatus := Buffer.GetInt32;
+      Star.ShipRequirements[J].MinWarriorStatus := Buffer.GetInt32;
+      Star.ShipRequirements[J].MaxWarriorStatus := Buffer.GetInt32;
+      Star.ShipRequirements[J].MinPirateStatus := Buffer.GetInt32;
+      Star.ShipRequirements[J].MaxPirateStatus := Buffer.GetInt32;
+      if Version < 7 then
+      begin
+        Buffer.GetInt32;
+        Buffer.GetInt32;
+      end;
+      Star.ShipRequirements[J].MinStrength := Buffer.GetSingle;
+      Star.ShipRequirements[J].MaxStrength := Buffer.GetSingle;
+      Star.ShipRequirements[J].StationNames := TrimWideString(Buffer.ReadWideString);
+      if Star.ShipRequirements[J].StationNames <> '' then Star.ShipRequirements[J].ShipTypeMask := Star.ShipRequirements[J].ShipTypeMask + [htStation];
     end;
   end;
   if CreateObjects then
   begin
-    Star := TScriptStar(Stars[0]);
+    Star := Stars[0];
     Star.Star := AnchorStar;
     if Star.ConstellationIndex >= 0 then
     begin
-      Constellation := TScriptConstellation(Constellations[Star.ConstellationIndex]);
+      Constellation := Constellations[Star.ConstellationIndex];
       Constellation.Constellation := AnchorStar.Constellation;
     end;
     if not TryBindStars(0) then Exit;
     for I := 0 to Stars.Count - 1 do
     begin
-      Star := TScriptStar(Stars[I]);
-      InitCode.LocalVar.GetVar(Star.Name).SetDword(Cardinal(Star.Star));
+      Star := Stars[I];
+      InitCode.LocalVar.NamedItems[Star.Name].AsDword := Cardinal(Star.Star);
       if Star.Planets <> nil then
         for J := 0 to High(Star.Planets) do
         begin
           PlanetBinding := @Star.Planets[J];
-          InitCode.LocalVar.GetVar(PlanetBinding.Name).SetDword(Cardinal(PlanetBinding.Planet));
+          InitCode.LocalVar.NamedItems[PlanetBinding.Name].AsDword := Cardinal(PlanetBinding.Planet);
         end;
     end;
   end;
@@ -3005,7 +2994,7 @@ begin
       Place.Radius := Buffer.GetInt32;
     end
     else RaiseWideMessage('Script.Place.Type');
-    if CreateObjects then InitCode.LocalVar.GetVar(Place.Name).SetDword(Cardinal(Place));
+    if CreateObjects then InitCode.LocalVar.NamedItems[Place.Name].AsDword := Cardinal(Place);
   end;
   Count := Buffer.GetInt32;
   for I := 0 to Count - 1 do
@@ -3031,7 +3020,7 @@ begin
     ScriptItem.TextData3 := '';
     ScriptItem.OnUseText := '';
     ScriptItem.OnActionText := '';
-    InitCode.LocalVar.GetVar(ScriptItem.Name).SetDword(Cardinal(ScriptItem));
+    InitCode.LocalVar.NamedItems[ScriptItem.Name].AsDword := Cardinal(ScriptItem);
   end;
   Count := Buffer.GetInt32;
   for I := 0 to Count - 1 do
@@ -3092,9 +3081,9 @@ begin
   begin
     for I := 0 to Groups.Count - 1 do
     begin
-      Group := TScriptGroup(Groups[I]);
+      Group := Groups[I];
       Group.Ships := TList.Create;
-      Group.Planet := TPlanet(InitCode.LocalVar.GetVar(Group.PlanetVarName).GetDword);
+      Group.Planet := TPlanet(InitCode.LocalVar.NamedItems[Group.PlanetVarName].AsDword);
       Candidates := CollectScriptCandidateShips(Group.Planet.CurrentStar);
       SubCount := Group.MinCount;
       if Group.IncludePlayer then Dec(SubCount);
@@ -3129,12 +3118,12 @@ begin
             TScriptGroup(Groups[GroupRelations[I].Group2]).Ships);
           if Balance < GroupRelations[I].MinCombatBalance then
           begin
-            Group := TScriptGroup(Groups[GroupRelations[I].Group1]);
+            Group := Groups[GroupRelations[I].Group1];
             if Group.Ships.Count < Group.MaxCount then Break;
           end
           else if Balance > GroupRelations[I].MaxCombatBalance then
           begin
-            Group := TScriptGroup(Groups[GroupRelations[I].Group2]);
+            Group := Groups[GroupRelations[I].Group2];
             if Group.Ships.Count < Group.MaxCount then Break;
           end;
           Group := nil;
@@ -3179,16 +3168,16 @@ begin
   Analyzer.RemoveNewlines;
   Analyzer.RemoveWhitespace;
   Analyzer.ValidateDelimiters;
-  InitCode.Compile(Analyzer, nil, nil, nil, nil, ErrorText);
+  ErrorText := InitCode.Compile(Analyzer, nil, nil, nil, nil);
   Analyzer.Free;
   if ErrorText <> '' then RaiseWideMessage('CodeInit.Compiler. Error=' + ErrorText);
-  InitCode.LocalVar.Add('EndState', vkInt).SetInt(0);
-  InitCode.LocalVar.Add('CurShip', vkDword).SetInt(0);
-  InitCode.LocalVar.Add('GABStatus', vkInt).SetInt(0);
-  InitCode.LocalVar.Add('GQuestStatus', vkInt).SetInt(0);
-  InitCode.LocalVar.Add('GRobotStatus', vkInt).SetInt(0);
-  InitCode.LocalVar.Add('GVideoStatus', vkInt).SetInt(0);
-  InitCode.LocalVar.Add('GAnswerData', vkDword).SetInt(0);
+  InitCode.LocalVar.Add('EndState', vkInt).AsInteger := 0;
+  InitCode.LocalVar.Add('CurShip', vkDword).AsInteger := 0;
+  InitCode.LocalVar.Add('GABStatus', vkInt).AsInteger := 0;
+  InitCode.LocalVar.Add('GQuestStatus', vkInt).AsInteger := Ord(sqsNone);
+  InitCode.LocalVar.Add('GRobotStatus', vkInt).AsInteger := 0;
+  InitCode.LocalVar.Add('GVideoStatus', vkInt).AsInteger := 0;
+  InitCode.LocalVar.Add('GAnswerData', vkDword).AsInteger := 0;
   InitCode.LinkAll(ScriptFunctionScope, False);
   InitCode.LinkAll(SharedScriptVariables, False);
   InitCode.LinkAll(InitCode.LocalVar, False);
@@ -3211,7 +3200,7 @@ begin
   Analyzer.RemoveNewlines;
   Analyzer.RemoveWhitespace;
   Analyzer.ValidateDelimiters;
-  TurnCode.Compile(Analyzer, nil, nil, nil, nil, ErrorText);
+  ErrorText := TurnCode.Compile(Analyzer, nil, nil, nil, nil);
   Analyzer.Free;
   if ErrorText <> '' then RaiseWideMessage('CodeTurn.Compiler. Error=' + ErrorText);
   TurnCode.LinkAll(ScriptFunctionScope, False);
@@ -3226,7 +3215,7 @@ begin
     Analyzer.RemoveNewlines;
     Analyzer.RemoveWhitespace;
     Analyzer.ValidateDelimiters;
-    DialogCode.Compile(Analyzer, nil, nil, nil, nil, ErrorText);
+    ErrorText := DialogCode.Compile(Analyzer, nil, nil, nil, nil);
     Analyzer.Free;
     if ErrorText <> '' then RaiseWideMessage('CodeTurn.Compiler. Error=' + ErrorText);
     DialogCode.LinkAll(ScriptFunctionScope, False);
@@ -3250,7 +3239,7 @@ begin
       for J := 0 to SubCount - 1 do State.EnemyGroupNames[J] := Buffer.ReadWideString;
     end;
     State.PickupItemVarName := Buffer.ReadWideString;
-    if State.PickupItemVarName <> '' then State.PickupItem := TScriptItem(InitCode.LocalVar.GetVar(State.PickupItemVarName).GetDword);
+    if State.PickupItemVarName <> '' then State.PickupItem := TScriptItem(InitCode.LocalVar.NamedItems[State.PickupItemVarName].AsDword);
     State.PickUpNearbyItems := Buffer.GetBoolean;
     State.DialogTextOrVariable := Buffer.ReadWideString;
     if (State.DialogTextOrVariable <> '') and (InitCode.LocalVar.GetVarNE(State.DialogTextOrVariable) = nil) then
@@ -3262,7 +3251,7 @@ begin
       Analyzer.RemoveNewlines;
       Analyzer.RemoveWhitespace;
       Analyzer.ValidateDelimiters;
-      State.DialogCode.Compile(Analyzer, nil, nil, nil, nil, ErrorText);
+      ErrorText := State.DialogCode.Compile(Analyzer, nil, nil, nil, nil);
       Analyzer.Free;
       if ErrorText <> '' then RaiseWideMessage('StateCodeText.Compiler. Error=' + ErrorText + ' State=' + State.Name);
       State.DialogCode.LinkAll(ScriptFunctionScope, False);
@@ -3284,7 +3273,7 @@ begin
       Analyzer.RemoveNewlines;
       Analyzer.RemoveWhitespace;
       Analyzer.ValidateDelimiters;
-      State.EntryCode.Compile(Analyzer, nil, nil, nil, nil, ErrorText);
+      ErrorText := State.EntryCode.Compile(Analyzer, nil, nil, nil, nil);
       Analyzer.Free;
       if ErrorText <> '' then RaiseWideMessage('StateCodeEther.Compiler. Error=' + ErrorText + ' State=' + State.Name);
       State.EntryCode.LinkAll(ScriptFunctionScope, False);
@@ -3298,7 +3287,7 @@ begin
     Analyzer.RemoveNewlines;
     Analyzer.RemoveWhitespace;
     Analyzer.ValidateDelimiters;
-    State.StateCode.Compile(Analyzer, nil, nil, nil, nil, ErrorText);
+    ErrorText := State.StateCode.Compile(Analyzer, nil, nil, nil, nil);
     Analyzer.Free;
     if ErrorText <> '' then RaiseWideMessage('StateTurn.Compiler. Error=' + ErrorText + ' State=' + State.Name);
     State.StateCode.LinkAll(ScriptFunctionScope, False);
@@ -3318,14 +3307,14 @@ begin
     Analyzer.RemoveNewlines;
     Analyzer.RemoveWhitespace;
     Analyzer.ValidateDelimiters;
-    Dialog.Code.Compile(Analyzer, nil, nil, nil, nil, ErrorText);
+    ErrorText := Dialog.Code.Compile(Analyzer, nil, nil, nil, nil);
     Analyzer.Free;
     if ErrorText <> '' then RaiseWideMessage('Dialog.Code.Compiler. Error=' + ErrorText + ' State=' + Dialog.Name);
     Dialog.Code.LinkAll(ScriptFunctionScope, False);
     Dialog.Code.LinkAll(SharedScriptVariables, False);
     Dialog.Code.LinkAll(InitCode.LocalVar, False);
     Dialog.Code.ScriptFunLinked := True;
-    InitCode.LocalVar.GetVar(Dialog.Name).SetInt(I);
+    InitCode.LocalVar.NamedItems[Dialog.Name].AsInteger := I;
   end;
   Count := Buffer.GetInt32;
   for I := 0 to Count - 1 do
@@ -3339,7 +3328,7 @@ begin
     Analyzer.RemoveNewlines;
     Analyzer.RemoveWhitespace;
     Analyzer.ValidateDelimiters;
-    DialogMessage.Code.Compile(Analyzer, nil, nil, nil, nil, ErrorText);
+    ErrorText := DialogMessage.Code.Compile(Analyzer, nil, nil, nil, nil);
     Analyzer.Free;
     if ErrorText <> '' then RaiseWideMessage('DialogMsg.Code.Compiler. Error=' + ErrorText + ' State=' + DialogMessage.Name);
     DialogMessage.Code.LinkAll(ScriptFunctionScope, False);
@@ -3359,7 +3348,7 @@ begin
     Analyzer.RemoveNewlines;
     Analyzer.RemoveWhitespace;
     Analyzer.ValidateDelimiters;
-    DialogAnswer.AnswerCode.Compile(Analyzer, nil, nil, nil, nil, ErrorText);
+    ErrorText := DialogAnswer.AnswerCode.Compile(Analyzer, nil, nil, nil, nil);
     Analyzer.Free;
     if ErrorText <> '' then RaiseWideMessage('DialogAnswer.CodeAnswer.Compiler. Error=' + ErrorText + ' State=' + DialogAnswer.Name);
     DialogAnswer.AnswerCode.LinkAll(ScriptFunctionScope, False);
@@ -3372,7 +3361,7 @@ begin
     Analyzer.RemoveNewlines;
     Analyzer.RemoveWhitespace;
     Analyzer.ValidateDelimiters;
-    DialogAnswer.ActionCode.Compile(Analyzer, nil, nil, nil, nil, ErrorText);
+    ErrorText := DialogAnswer.ActionCode.Compile(Analyzer, nil, nil, nil, nil);
     Analyzer.Free;
     if ErrorText <> '' then RaiseWideMessage('DialogAnswer.Code.Compiler. Error=' + ErrorText + ' State=' + DialogAnswer.Name);
     DialogAnswer.ActionCode.LinkAll(ScriptFunctionScope, False);
@@ -3384,85 +3373,85 @@ begin
   begin
     for I := 0 to States.Count - 1 do
     begin
-      State := TScriptState(States[I]);
-      if State.TargetVarName <> '' then State.TargetValue := InitCode.LocalVar.GetVar(State.TargetVarName).GetDword;
+      State := States[I];
+      if State.TargetVarName <> '' then State.TargetValue := InitCode.LocalVar.NamedItems[State.TargetVarName].AsDword;
       if State.EnemyGroupIndices <> nil then
         for J := 0 to High(State.EnemyGroupIndices) do
-          State.EnemyGroupIndices[J] := InitCode.LocalVar.GetVar(State.EnemyGroupNames[J]).GetInt;
+          State.EnemyGroupIndices[J] := InitCode.LocalVar.NamedItems[State.EnemyGroupNames[J]].AsInteger;
     end;
     for I := 0 to Places.Count - 1 do
     begin
-      Place := TScriptPlace(Places[I]);
-      if Place.OriginVarName <> '' then Place.OriginStar := TStar(InitCode.LocalVar.GetVar(Place.OriginVarName).GetDword);
+      Place := Places[I];
+      if Place.OriginVarName <> '' then Place.OriginStar := TStar(InitCode.LocalVar.NamedItems[Place.OriginVarName].AsDword);
       if Place.PlaceKind = spkCoordinates then
       begin
-        if Place.TargetVarName <> '' then Place.TargetValue := Cardinal(InitCode.LocalVar.GetVar(Place.TargetVarName));
-        if Place.TargetVarName2 <> '' then Place.TargetValue2 := InitCode.LocalVar.GetVar(Place.TargetVarName2);
+        if Place.TargetVarName <> '' then Place.TargetValue := Cardinal(InitCode.LocalVar.NamedItems[Place.TargetVarName]);
+        if Place.TargetVarName2 <> '' then Place.TargetValue2 := InitCode.LocalVar.NamedItems[Place.TargetVarName2];
       end
-      else if Place.TargetVarName <> '' then Place.TargetValue := InitCode.LocalVar.GetVar(Place.TargetVarName).GetDword;
+      else if Place.TargetVarName <> '' then Place.TargetValue := InitCode.LocalVar.NamedItems[Place.TargetVarName].AsDword;
     end;
     for I := 0 to Items.Count - 1 do
     begin
-      ScriptItem := TScriptItem(Items[I]);
+      ScriptItem := Items[I];
       if ScriptItem.Name = '' then Continue;
       Item := nil;
-      if (ScriptItem.DefinitionKind = 0) and (ScriptItem.DefinitionType = 0) then
+      if (ScriptItem.DefinitionKind = sidEquipment) and (ScriptItem.DefinitionType = 0) then
       begin
         Item := TFuelTanks.Create;
         (Item as TFuelTanks).Init(ScriptItem.Weight, ScriptItem.Level, ScriptItem.OwnerId);
       end
-      else if (ScriptItem.DefinitionKind = 0) and (ScriptItem.DefinitionType = 1) then
+      else if (ScriptItem.DefinitionKind = sidEquipment) and (ScriptItem.DefinitionType = 1) then
       begin
         Item := TEngine.Create;
         (Item as TEngine).Init(ScriptItem.Weight, ScriptItem.Level, ScriptItem.OwnerId);
       end
-      else if (ScriptItem.DefinitionKind = 0) and (ScriptItem.DefinitionType = 2) then
+      else if (ScriptItem.DefinitionKind = sidEquipment) and (ScriptItem.DefinitionType = 2) then
       begin
         Item := TRadar.Create;
         (Item as TRadar).Init(ScriptItem.Weight, ScriptItem.Level, ScriptItem.OwnerId);
       end
-      else if (ScriptItem.DefinitionKind = 0) and (ScriptItem.DefinitionType = 3) then
+      else if (ScriptItem.DefinitionKind = sidEquipment) and (ScriptItem.DefinitionType = 3) then
       begin
         Item := TScaner.Create;
         (Item as TScaner).Init(ScriptItem.Weight, ScriptItem.Level, ScriptItem.OwnerId);
       end
-      else if (ScriptItem.DefinitionKind = 0) and (ScriptItem.DefinitionType = 4) then
+      else if (ScriptItem.DefinitionKind = sidEquipment) and (ScriptItem.DefinitionType = 4) then
       begin
         Item := TRepairRobot.Create;
         (Item as TRepairRobot).Init(ScriptItem.Weight, ScriptItem.Level, ScriptItem.OwnerId);
       end
-      else if (ScriptItem.DefinitionKind = 0) and (ScriptItem.DefinitionType = 5) then
+      else if (ScriptItem.DefinitionKind = sidEquipment) and (ScriptItem.DefinitionType = 5) then
       begin
         Item := TCargoHook.Create;
         (Item as TCargoHook).Init(ScriptItem.Weight, ScriptItem.Level, ScriptItem.OwnerId);
       end
-      else if (ScriptItem.DefinitionKind = 0) and (ScriptItem.DefinitionType = 6) then
+      else if (ScriptItem.DefinitionKind = sidEquipment) and (ScriptItem.DefinitionType = 6) then
       begin
         Item := TDefGenerator.Create;
         (Item as TDefGenerator).Init(ScriptItem.Weight, ScriptItem.Level, ScriptItem.OwnerId);
       end
-      else if ScriptItem.DefinitionKind = 0 then RaiseWideMessage('Script unknow item type')
-      else if (ScriptItem.DefinitionKind = 1) and (ScriptItem.DefinitionType >= 0) and
-        (ScriptItem.DefinitionType < CountItemTypesInMask([Ord(t_IndustrialLaser)..Ord(t_Lirecron)])) then
+      else if ScriptItem.DefinitionKind = sidEquipment then RaiseWideMessage('Script unknow item type')
+      else if (ScriptItem.DefinitionKind = sidWeapon) and (ScriptItem.DefinitionType >= 0) and
+        (ScriptItem.DefinitionType < CountItemTypesInMask([t_IndustrialLaser..t_Lirecron])) then
       begin
         Item := TWeapon.Create;
-        (Item as TWeapon).Init(TItemType(GetItemTypeFromMask([Ord(t_IndustrialLaser)..Ord(t_Lirecron)], ScriptItem.DefinitionType + 1)), ScriptItem.Weight,
+        (Item as TWeapon).Init(GetItemTypeFromMask([t_IndustrialLaser..t_Lirecron], ScriptItem.DefinitionType + 1), ScriptItem.Weight,
           ScriptItem.Level, ScriptItem.OwnerId);
       end
-      else if ScriptItem.DefinitionKind = 1 then RaiseWideMessage('Script unknow item type')
-      else if (ScriptItem.DefinitionKind = 2) and (ScriptItem.DefinitionType >= 0) and (ScriptItem.DefinitionType <= 8) then
+      else if ScriptItem.DefinitionKind = sidWeapon then RaiseWideMessage('Script unknow item type')
+      else if (ScriptItem.DefinitionKind = sidGoods) and (ScriptItem.DefinitionType >= 0) and (ScriptItem.DefinitionType <= 8) then
       begin
         Item := TGoods.Create;
         (Item as TGoods).Init(TItemType(Byte(ScriptItem.DefinitionType) - Byte(ScriptItem.DefinitionType > 4)), ScriptItem.Weight);
         (Item as TGoods).NaturalFlag := ScriptItem.DefinitionType = 5;
       end
-      else if (ScriptItem.DefinitionKind = 2) and (ScriptItem.DefinitionType = 9) then RaiseWideMessage('Script. Protoplasm not support')
-      else if ScriptItem.DefinitionKind = 2 then RaiseWideMessage('Script unknow item type')
-      else if (ScriptItem.DefinitionKind = 3) and (ScriptItem.DefinitionType >= 0) and
-        (ScriptItem.DefinitionType < CountItemTypesInMask([10..41])) then
-        Item := CreateConfiguredArtefactByItemType(TItemType(GetItemTypeFromMask([10..41], ScriptItem.DefinitionType + 1)), ScriptItem.OwnerId)
-      else if ScriptItem.DefinitionKind = 3 then RaiseWideMessage('Script unknow item type')
-      else if ScriptItem.DefinitionKind = 4 then
+      else if (ScriptItem.DefinitionKind = sidGoods) and (ScriptItem.DefinitionType = 9) then RaiseWideMessage('Script. Protoplasm not support')
+      else if ScriptItem.DefinitionKind = sidGoods then RaiseWideMessage('Script unknow item type')
+      else if (ScriptItem.DefinitionKind = sidArtefact) and (ScriptItem.DefinitionType >= 0) and
+        (ScriptItem.DefinitionType < CountItemTypesInMask([t_ArtefactHull..t_ArtFastRacks])) then
+        Item := CreateConfiguredArtefactByItemType(GetItemTypeFromMask([t_ArtefactHull..t_ArtFastRacks], ScriptItem.DefinitionType + 1), ScriptItem.OwnerId)
+      else if ScriptItem.DefinitionKind = sidArtefact then RaiseWideMessage('Script unknow item type')
+      else if ScriptItem.DefinitionKind = sidCustomItem then
       begin
         Item := TUselessItem.Create;
         (Item as TUselessItem).Init(ScriptItem.ConfigName, dsBlazer, 0, False);
@@ -3470,19 +3459,19 @@ begin
       else if ScriptItem.DefinitionKind = 5 then Continue
       else RaiseWideMessage('Script unknow item type');
       Item.ScriptItem := ScriptItem;
-      if InitCode.LocalVar.GetVar(ScriptItem.LocationVarName).GetDword < 255 then
+      if InitCode.LocalVar.NamedItems[ScriptItem.LocationVarName].AsDword < 255 then
       begin
-        Group := TScriptGroup(Groups[InitCode.LocalVar.GetVar(ScriptItem.LocationVarName).GetDword]);
+        Group := Groups[InitCode.LocalVar.NamedItems[ScriptItem.LocationVarName].AsDword];
         J := 0;
         while J < Group.Ships.Count do
         begin
-          Ship := TShip(Group.Ships[J]);
+          Ship := Group.Ships[J];
           if Ship.CargoFreeSpace >= Item.Weight then Break;
           Inc(J);
         end;
         if J < Group.Ships.Count then
         begin
-          Ship := TShip(Group.Ships[J]);
+          Ship := Group.Ships[J];
           if Item is TGoods then
           begin
             Inc(Ship.CargoGoods[Ord(Item.ItemType)].Count, TGoods(Item).Quantity);
@@ -3493,7 +3482,7 @@ begin
           begin
             Ship.Artefacts.Add(Item);
             if Item is TArtefactTranclucator then
-              (TObject((Item as TArtefactTranclucator).Ship) as TTranclucator).OwnerShip := Ship;
+              ((Item as TArtefactTranclucator).Ship as TTranclucator).OwnerShip := Ship;
           end
           else
           begin
@@ -3506,7 +3495,7 @@ begin
         begin
           for J := 0 to Group.Ships.Count - 1 do
           begin
-            Ship := TShip(Group.Ships[J]);
+            Ship := Group.Ships[J];
             if Ship.CargoFreeSpace < TGoods(Item).Quantity then
             begin
               Inc(Ship.CargoGoods[Ord(Item.ItemType)].Count, Ship.CargoFreeSpace);
@@ -3524,7 +3513,7 @@ begin
           end;
           if TGoods(Item).Quantity > 0 then
           begin
-            Ship := TShip(Group.Ships[0]);
+            Ship := Group.Ships[0];
             Inc(Ship.CargoGoods[Ord(Item.ItemType)].Count, TGoods(Item).Quantity);
           end;
           Item.Free;
@@ -3532,7 +3521,7 @@ begin
         end
         else
         begin
-          Ship := TShip(Group.Ships[0]);
+          Ship := Group.Ships[0];
           if Item is TArtefact then Ship.Artefacts.Add(Item)
           else
           begin
@@ -3542,14 +3531,14 @@ begin
           Ship.RefreshDerivedStats(True);
         end;
       end
-      else if TObject(InitCode.LocalVar.GetVar(ScriptItem.LocationVarName).GetDword) is TPlanet then
+      else if TObject(InitCode.LocalVar.NamedItems[ScriptItem.LocationVarName].AsDword) is TPlanet then
       begin
-        Planet := TPlanet(InitCode.LocalVar.GetVar(ScriptItem.LocationVarName).GetDword);
+        Planet := TPlanet(InitCode.LocalVar.NamedItems[ScriptItem.LocationVarName].AsDword);
         Planet.EquipmentShop.Add(Item);
       end
       else
       begin
-        Place := TScriptPlace(InitCode.LocalVar.GetVar(ScriptItem.LocationVarName).GetDword);
+        Place := TScriptPlace(InitCode.LocalVar.NamedItems[ScriptItem.LocationVarName].AsDword);
         if (Place.PlaceKind <> spkPolar) and (Place.PlaceKind <> spkPlanetPosition) and (Place.PlaceKind <> spkStarDirection) and (Place.PlaceKind <> spkGroupCentroid) then RaiseWideMessage('Script error place type');
         Item.Position := Place.GetPoint;
         for K := 0 to 3 do
@@ -3558,7 +3547,7 @@ begin
           J := 0;
           while J < SubCount do
           begin
-            OtherItem := TItem(Place.OriginStar.Items[J]);
+            OtherItem := Place.OriginStar.Items[J];
             if PointDistanceSquared(Item.Position, OtherItem.Position) < 16 - 2 * K then Break;
             Inc(J);
           end;
@@ -3577,20 +3566,20 @@ begin
     end;
     for I := Ships.Count - 1 downto 0 do
     begin
-      Binding := TScriptShip(Ships[I]);
+      Binding := Ships[I];
       ChangeState(Binding, TScriptGroup(Groups[Binding.GroupIndex]).InitialStateIndex);
     end;
     for I := 0 to Stars.Count - 1 do
     begin
-      Star := TScriptStar(Stars[I]);
+      Star := Stars[I];
       if Star.ProtectStar then aGalaxy.Galaxy.CancelEnemyJumpsToStar(Star.Star);
     end;
   end;
   Result := True;
 end;
-{ @end $653660 }
+{ @end $64BF80 }
 
-{ @routine $656D1C TScript_LoadFromFile }
+{ @routine $64EEE0 TScript_LoadFromFile }
 function TScript.LoadFromFile(FileName: WideString; AnchorStar: TStar; FirstPlanet: TPlanet; CreateObjects: Boolean): Boolean;
 var
   Control: TCBufControlEC;
@@ -3617,9 +3606,9 @@ begin
     if Failed then AppendLogLineThreadSafe(AnsiString('Failed to load script: ' + FileName));
   end;
 end;
-{ @end $656D1C }
+{ @end $64EEE0 }
 
-{ @routine $656E90 TScript_SaveState }
+{ @routine $64F04C TScript_SaveState }
 procedure TScript.SaveState(Buffer: TBufEC);
 var
   I, J, Count: Integer;
@@ -3635,7 +3624,7 @@ begin
   Buffer.AddWideChar(WideChar(Count));
   for I := 0 to Count - 1 do
   begin
-    Cell := InitCode.LocalVar.GetItem(I);
+    Cell := InitCode.LocalVar[I];
     Kind := Cell.Kind;
     if Kind = vkEmpty then
     begin
@@ -3646,37 +3635,37 @@ begin
     begin
       Buffer.AddWideStringZ(Cell.Name);
       Buffer.AddAnsiChar(AnsiChar(Kind));
-      Buffer.AddIntegerValue(Cell.GetInt);
+      Buffer.AddIntegerValue(Cell.AsInteger);
     end
     else if Kind = vkDword then
     begin
       Buffer.AddWideStringZ(Cell.Name);
       Buffer.AddAnsiChar(AnsiChar(Kind));
-      Buffer.AddDWord(Cell.GetDword);
+      Buffer.AddDWord(Cell.AsDword);
     end
     else if Kind = vkFloat then
     begin
       Buffer.AddWideStringZ(Cell.Name);
       Buffer.AddAnsiChar(AnsiChar(Kind));
-      Buffer.AddDouble(Cell.GetFloat);
+      Buffer.AddDouble(Cell.AsFloat);
     end
     else if Kind = vkString then
     begin
       Buffer.AddWideStringZ(Cell.Name);
       Buffer.AddAnsiChar(AnsiChar(Kind));
-      Buffer.AddWideStringZ(Cell.GetString);
+      Buffer.AddWideStringZ(Cell.AsString);
     end
     else if Kind = vkArray then
     begin
       Buffer.AddWideStringZ(Cell.Name);
       Buffer.AddAnsiChar(AnsiChar(Kind));
-      Cell.GetArray.SaveToBuffer(Buffer);
+      Cell.AsArray.SaveToBuffer(Buffer);
     end
-    else if (Kind = vkLibraryFun) and (Cell.GetString <> '') then
+    else if (Kind = vkLibraryFun) and (Cell.AsString <> '') then
     begin
       Buffer.AddWideStringZ(Cell.Name);
       Buffer.AddAnsiChar(AnsiChar(Kind));
-      Buffer.AddWideStringZ(Cell.GetString);
+      Buffer.AddWideStringZ(Cell.AsString);
     end
     else
     begin
@@ -3689,7 +3678,7 @@ begin
   Buffer.AddWideChar(WideChar(Count));
   for I := 0 to Count - 1 do
   begin
-    Cell := TurnCode.LocalVar.GetItem(I);
+    Cell := TurnCode.LocalVar[I];
     Kind := Cell.Kind;
     if Kind = vkEmpty then
     begin
@@ -3700,37 +3689,37 @@ begin
     begin
       Buffer.AddWideStringZ(Cell.Name);
       Buffer.AddAnsiChar(AnsiChar(Kind));
-      Buffer.AddIntegerValue(Cell.GetInt);
+      Buffer.AddIntegerValue(Cell.AsInteger);
     end
     else if Kind = vkDword then
     begin
       Buffer.AddWideStringZ(Cell.Name);
       Buffer.AddAnsiChar(AnsiChar(Kind));
-      Buffer.AddDWord(Cell.GetDword);
+      Buffer.AddDWord(Cell.AsDword);
     end
     else if Kind = vkFloat then
     begin
       Buffer.AddWideStringZ(Cell.Name);
       Buffer.AddAnsiChar(AnsiChar(Kind));
-      Buffer.AddDouble(Cell.GetFloat);
+      Buffer.AddDouble(Cell.AsFloat);
     end
     else if Kind = vkString then
     begin
       Buffer.AddWideStringZ(Cell.Name);
       Buffer.AddAnsiChar(AnsiChar(Kind));
-      Buffer.AddWideStringZ(Cell.GetString);
+      Buffer.AddWideStringZ(Cell.AsString);
     end
     else if Kind = vkArray then
     begin
       Buffer.AddWideStringZ(Cell.Name);
       Buffer.AddAnsiChar(AnsiChar(Kind));
-      Cell.GetArray.SaveToBuffer(Buffer);
+      Cell.AsArray.SaveToBuffer(Buffer);
     end
-    else if (Kind = vkLibraryFun) and (Cell.GetString <> '') then
+    else if (Kind = vkLibraryFun) and (Cell.AsString <> '') then
     begin
       Buffer.AddWideStringZ(Cell.Name);
       Buffer.AddAnsiChar(AnsiChar(Kind));
-      Buffer.AddWideStringZ(Cell.GetString);
+      Buffer.AddWideStringZ(Cell.AsString);
     end
     else
     begin
@@ -3742,7 +3731,7 @@ begin
   Buffer.AddIntegerValue(Stars.Count);
   for I := 0 to Stars.Count - 1 do
   begin
-    Star := TScriptStar(Stars[I]);
+    Star := Stars[I];
     Buffer.AddWideStringZ(Star.Name);
     Buffer.AddDWord(Star.Star.Id);
     if Star.Planets = nil then Buffer.AddIntegerValue(0)
@@ -3760,34 +3749,33 @@ begin
   Count := 0;
   for I := 0 to Items.Count - 1 do
   begin
-    ScriptItem := TScriptItem(Items[I]);
-    if (ScriptItem.Name <> '') or (ScriptItem.Item <> nil) then Inc(Count);
+    ScriptItem := Items[I];
+    if (ScriptItem.Name = '') and (ScriptItem.Item = nil) then Continue;
+    Inc(Count);
   end;
   Buffer.AddIntegerValue(Count);
   for I := 0 to Items.Count - 1 do
   begin
-    ScriptItem := TScriptItem(Items[I]);
-    if (ScriptItem.Name <> '') or (ScriptItem.Item <> nil) then
-    begin
-      Buffer.AddWideStringZ(ScriptItem.Name);
-      Buffer.AddBoolean(ScriptItem.CanSell);
-      Buffer.AddIntegerValue(ScriptItem.Data[1]);
-      Buffer.AddIntegerValue(ScriptItem.Data[2]);
-      Buffer.AddIntegerValue(ScriptItem.Data[3]);
-      Buffer.AddWideStringZ(ScriptItem.TextData1);
-      Buffer.AddWideStringZ(ScriptItem.TextData2);
-      Buffer.AddWideStringZ(ScriptItem.TextData3);
-      Buffer.AddWideStringZ(ScriptItem.OnUseText);
-      Buffer.AddWideStringZ(ScriptItem.OnActionText);
-      if ScriptItem.Item = nil then Buffer.AddDWord(0)
-      else Buffer.AddDWord(ScriptItem.Item.Id);
-    end;
+    ScriptItem := Items[I];
+    if (ScriptItem.Name = '') and (ScriptItem.Item = nil) then Continue;
+    Buffer.AddWideStringZ(ScriptItem.Name);
+    Buffer.AddBoolean(ScriptItem.CanSell);
+    Buffer.AddIntegerValue(ScriptItem.Data[1]);
+    Buffer.AddIntegerValue(ScriptItem.Data[2]);
+    Buffer.AddIntegerValue(ScriptItem.Data[3]);
+    Buffer.AddWideStringZ(ScriptItem.TextData1);
+    Buffer.AddWideStringZ(ScriptItem.TextData2);
+    Buffer.AddWideStringZ(ScriptItem.TextData3);
+    Buffer.AddWideStringZ(ScriptItem.OnUseText);
+    Buffer.AddWideStringZ(ScriptItem.OnActionText);
+    if ScriptItem.Item = nil then Buffer.AddDWord(0)
+    else Buffer.AddDWord(ScriptItem.Item.Id);
   end;
   Count := Ships.Count;
   Buffer.AddWideChar(WideChar(Count));
   for I := 0 to Count - 1 do
   begin
-    Binding := TScriptShip(Ships[I]);
+    Binding := Ships[I];
     Buffer.AddIntegerValue(Binding.GroupIndex);
     Buffer.AddDWord(Binding.Ship.Id);
     Buffer.AddDWord(Binding.Data[0]);
@@ -3802,9 +3790,9 @@ begin
   Buffer.AddWideChar(WideChar(EtherIds.GetCount));
   for I := 0 to EtherIds.GetCount - 1 do Buffer.AddWideStringZ(EtherIds.GetTextAt(I));
 end;
-{ @end $656E90 }
+{ @end $64F04C }
 
-{ @routine $657690 TScript_LoadState }
+{ @routine $64F738 TScript_LoadState }
 procedure TScript.LoadState(Buffer: TBufEC; Galaxy: TGalaxy);
 var
   I, J, K, Count, SubCount, StateIndex: Integer;
@@ -3860,20 +3848,20 @@ begin
     if Kind = vkEmpty then
     begin
     end
-    else if Kind = vkInt then Cell.SetInt(Buffer.GetInt32)
-    else if Kind = vkDword then Cell.SetDword(Buffer.GetUInt32)
-    else if Kind = vkFloat then Cell.SetFloat(Buffer.GetDouble)
-    else if Kind = vkString then Cell.SetString(Buffer.ReadWideString)
+    else if Kind = vkInt then Cell.AsInteger := Buffer.GetInt32
+    else if Kind = vkDword then Cell.AsDword := Buffer.GetUInt32
+    else if Kind = vkFloat then Cell.AsFloat := Buffer.GetDouble
+    else if Kind = vkString then Cell.AsString := Buffer.ReadWideString
     else if Kind = vkArray then
     begin
-      Cell.SetArray(TVarArrayEC.Create);
-      Cell.GetArray.LoadFromBuffer(Buffer);
+      Cell.AsArray := TVarArrayEC.Create;
+      Cell.AsArray.LoadFromBuffer(Buffer);
     end
     else if Kind = vkLibraryFun then
     begin
       Cell.ConvertToKind(vkLibraryFun);
       Name := Buffer.ReadWideString;
-      Cell.SetString(Name);
+      Cell.AsString := Name;
       if ScriptLibraryCache = nil then ScriptLibraryCache := TLibraryCache.Create;
       try
         ScriptLibraryCache.InitFunction(Cell);
@@ -3913,20 +3901,20 @@ begin
     if Kind = vkEmpty then
     begin
     end
-    else if Kind = vkInt then Cell.SetInt(Buffer.GetInt32)
-    else if Kind = vkDword then Cell.SetDword(Buffer.GetUInt32)
-    else if Kind = vkFloat then Cell.SetFloat(Buffer.GetDouble)
-    else if Kind = vkString then Cell.SetString(Buffer.ReadWideString)
+    else if Kind = vkInt then Cell.AsInteger := Buffer.GetInt32
+    else if Kind = vkDword then Cell.AsDword := Buffer.GetUInt32
+    else if Kind = vkFloat then Cell.AsFloat := Buffer.GetDouble
+    else if Kind = vkString then Cell.AsString := Buffer.ReadWideString
     else if Kind = vkArray then
     begin
-      Cell.SetArray(TVarArrayEC.Create);
-      Cell.GetArray.LoadFromBuffer(Buffer);
+      Cell.AsArray := TVarArrayEC.Create;
+      Cell.AsArray.LoadFromBuffer(Buffer);
     end
     else if Kind = vkLibraryFun then
     begin
       Cell.ConvertToKind(vkLibraryFun);
       Name := Buffer.ReadWideString;
-      Cell.SetString(Name);
+      Cell.AsString := Name;
       if ScriptLibraryCache = nil then ScriptLibraryCache := TLibraryCache.Create;
       try
         ScriptLibraryCache.InitFunction(Cell);
@@ -3952,14 +3940,14 @@ begin
     Name := Buffer.ReadWideString;
     Star := GetStar(Name);
     Star.Star := TObject(Galaxy.IdToStar(Buffer.GetUInt32)) as TStar;
-    InitCode.LocalVar.GetVar(Star.Name).SetDword(Cardinal(Star.Star));
+    InitCode.LocalVar.NamedItems[Star.Name].AsDword := Cardinal(Star.Star);
     SubCount := Buffer.GetInt32;
     for K := 0 to SubCount - 1 do
     begin
       Name := Buffer.ReadWideString;
       PlanetBinding := GetPlanetBinding(Name);
-      PlanetBinding.Planet := TObject(Galaxy.IdToPlanet(Buffer.GetUInt32)) as TPlanet;
-      InitCode.LocalVar.GetVar(PlanetBinding.Name).SetDword(Cardinal(PlanetBinding.Planet));
+      PlanetBinding.Planet := Galaxy.IdToPlanet(Buffer.GetUInt32) as TPlanet;
+      InitCode.LocalVar.NamedItems[PlanetBinding.Name].AsDword := Cardinal(PlanetBinding.Planet);
     end;
     Buffer.GetInt32;
   end;
@@ -3988,7 +3976,7 @@ begin
     else ScriptItem.OnUseText := '';
     if LoadedSaveVersion >= 87 then ScriptItem.OnActionText := Buffer.ReadWideString
     else ScriptItem.OnActionText := '';
-    if Name <> '' then InitCode.LocalVar.GetVar(Name).SetDword(Cardinal(ScriptItem));
+    if Name <> '' then InitCode.LocalVar.NamedItems[Name].AsDword := Cardinal(ScriptItem);
     try
       ScriptItem.Item := TObject(Galaxy.IdToItem(Buffer.GetUInt32, True)) as TItem;
     except
@@ -4014,7 +4002,7 @@ begin
     Binding.Data[2] := Buffer.GetUInt32;
     Binding.Data[3] := Buffer.GetUInt32;
     StateIndex := Buffer.GetInt32;
-    if StateIndex >= 0 then Binding.State := TScriptState(States[StateIndex])
+    if StateIndex >= 0 then Binding.State := States[StateIndex]
     else Binding.State := nil;
     if LoadedSaveVersion >= 149 then
     begin
@@ -4029,9 +4017,9 @@ begin
   Count := Buffer.GetWord;
   for I := 0 to Count - 1 do EtherIds.Add(Buffer.ReadWideString);
 end;
-{ @end $657690 }
+{ @end $64F738 }
 
-{ @routine $6583F4 TScript_BindImportedFunctions }
+{ @routine $650358 TScript_BindImportedFunctions }
 procedure TScript.BindImportedFunctions;
 var
   I: Integer;
@@ -4040,35 +4028,33 @@ begin
   for I := 0 to InitCode.LocalVar.Count - 1 do
   begin
     Cell := InitCode.LocalVar.GetItemByNameOrder(I);
-    if (Cell.RealVType = vkLibraryFun) and (Cell.GetString <> '') then
-    begin
-      if ScriptLibraryCache = nil then ScriptLibraryCache := TLibraryCache.Create;
-      try
-        ScriptLibraryCache.InitFunction(Cell);
-      except
-        AppendLogLineThreadSafe(AnsiString('Failed to load function ' + Cell.Name));
-        Cell.ConvertToKind(vkEmpty);
-      end;
+    if Cell.ValueKind <> vkLibraryFun then Continue;
+    if Cell.AsString = '' then Continue;
+    if ScriptLibraryCache = nil then ScriptLibraryCache := TLibraryCache.Create;
+    try
+      ScriptLibraryCache.InitFunction(Cell);
+    except
+      AppendLogLineThreadSafe(AnsiString('Failed to load function ' + Cell.Name));
+      Cell.ConvertToKind(vkEmpty);
     end;
   end;
   for I := 0 to TurnCode.LocalVar.Count - 1 do
   begin
     Cell := TurnCode.LocalVar.GetItemByNameOrder(I);
-    if (Cell.RealVType = vkLibraryFun) and (Cell.GetString <> '') then
-    begin
-      if ScriptLibraryCache = nil then ScriptLibraryCache := TLibraryCache.Create;
-      try
-        ScriptLibraryCache.InitFunction(Cell);
-      except
-        AppendLogLineThreadSafe(AnsiString('Failed to load function ' + Cell.Name));
-        Cell.ConvertToKind(vkEmpty);
-      end;
+    if Cell.ValueKind <> vkLibraryFun then Continue;
+    if Cell.AsString = '' then Continue;
+    if ScriptLibraryCache = nil then ScriptLibraryCache := TLibraryCache.Create;
+    try
+      ScriptLibraryCache.InitFunction(Cell);
+    except
+      AppendLogLineThreadSafe(AnsiString('Failed to load function ' + Cell.Name));
+      Cell.ConvertToKind(vkEmpty);
     end;
   end;
 end;
-{ @end $6583F4 }
+{ @end $650358 }
 
-{ @routine $658658 TScript_ResolveLoadedReferences }
+{ @routine $6505BC TScript_ResolveLoadedReferences }
 procedure TScript.ResolveLoadedReferences(Galaxy: TGalaxy);
 var
   I, J, Count: Integer;
@@ -4079,39 +4065,40 @@ begin
   Count := Ships.Count;
   for I := 0 to Count - 1 do
   begin
-    Binding := TScriptShip(Ships[I]);
-    Binding.Ship := TObject(Galaxy.IdToShip(Cardinal(Binding.Ship), True)) as TShip;
+    Binding := Ships[I];
+    Binding.Ship := Galaxy.IdToShip(Cardinal(Binding.Ship), True) as TShip;
     if Binding.Ship is TPlayer then TPlayer(Binding.Ship).ScriptShipBindings.Add(Binding)
     else Binding.Ship.ScriptShip := Binding;
   end;
   for I := 0 to Places.Count - 1 do
   begin
-    Place := TScriptPlace(Places[I]);
-    InitCode.LocalVar.GetVar(Place.Name).SetDword(Cardinal(Place));
-    if Place.OriginVarName <> '' then Place.OriginStar := TStar(InitCode.LocalVar.GetVar(Place.OriginVarName).GetDword);
+    Place := Places[I];
+    InitCode.LocalVar.NamedItems[Place.Name].AsDword := Cardinal(Place);
+    if Place.OriginVarName <> '' then Place.OriginStar := TStar(InitCode.LocalVar.NamedItems[Place.OriginVarName].AsDword);
     if Place.PlaceKind = spkCoordinates then
     begin
-      if Place.TargetVarName <> '' then Place.TargetValue := Cardinal(InitCode.LocalVar.GetVar(Place.TargetVarName));
-      if Place.TargetVarName2 <> '' then Place.TargetValue2 := InitCode.LocalVar.GetVar(Place.TargetVarName2);
+      if Place.TargetVarName <> '' then Place.TargetValue := Cardinal(InitCode.LocalVar.NamedItems[Place.TargetVarName]);
+      if Place.TargetVarName2 <> '' then Place.TargetValue2 := InitCode.LocalVar.NamedItems[Place.TargetVarName2];
     end
-    else if Place.TargetVarName <> '' then Place.TargetValue := InitCode.LocalVar.GetVar(Place.TargetVarName).GetDword;
+    else if Place.TargetVarName <> '' then Place.TargetValue := InitCode.LocalVar.NamedItems[Place.TargetVarName].AsDword;
   end;
   for I := 0 to States.Count - 1 do
   begin
-    State := TScriptState(States[I]);
-    if State.TargetVarName <> '' then State.TargetValue := InitCode.LocalVar.GetVar(State.TargetVarName).GetDword;
+    State := States[I];
+    if State.TargetVarName <> '' then State.TargetValue := InitCode.LocalVar.NamedItems[State.TargetVarName].AsDword;
     if State.EnemyGroupIndices <> nil then
       for J := 0 to High(State.EnemyGroupIndices) do
-        State.EnemyGroupIndices[J] := InitCode.LocalVar.GetVar(State.EnemyGroupNames[J]).GetInt;
+        State.EnemyGroupIndices[J] := InitCode.LocalVar.NamedItems[State.EnemyGroupNames[J]].AsInteger;
   end;
 end;
-{ @end $658658 }
+{ @end $6505BC }
 
-{ @routine $6588C8 ClearScriptDialogRules }
+{ @routine $650798 ClearScriptDialogRules }
 procedure ClearScriptDialogRules;
 var
   I, Count: Integer;
 begin
+  // Dispose finalizes the records' WideStrings.
   if ScriptDialogOverrides <> nil then
   begin
     Count := ScriptDialogOverrides.Count;
@@ -4134,9 +4121,9 @@ begin
   end
   else ScriptDialogBlocks := TObjectList.Create;
 end;
-{ @end $6588C8 }
+{ @end $650798 }
 
-{ @routine $6589F4 TLibraryHandler_Create }
+{ @routine $650898 TLibraryHandler_Create }
 constructor TLibraryHandler.Create(LibraryName: WideString; ModuleHandle: Cardinal; DefinitionBlock: TBlockParEC);
 begin
   inherited Create;
@@ -4144,17 +4131,17 @@ begin
   Self.ModuleHandle := ModuleHandle;
   Self.DefinitionBlock := DefinitionBlock;
 end;
-{ @end $6589F4 }
+{ @end $650898 }
 
-{ @routine $658A90 TLibraryHandler_Destroy }
+{ @routine $650924 TLibraryHandler_Destroy }
 destructor TLibraryHandler.Destroy;
 begin
   if ModuleHandle <> 0 then FreeLibrary(ModuleHandle);
   inherited Destroy;
 end;
-{ @end $658A90 }
+{ @end $650924 }
 
-{ @routine $658AFC TLibraryHandler_InitFunction }
+{ @routine $65097C TLibraryHandler_InitFunction }
 procedure TLibraryHandler.InitFunction(Cell: TVarEC);
 var
   Name, Text, Kind: WideString;
@@ -4162,7 +4149,7 @@ var
   Proc: Pointer;
   Signature: array of Dword;
 begin
-  Text := Cell.GetString;
+  Text := Cell.AsString;
   Name := ExtractDelimitedPartW(Text, 1, ',');
   Text := DefinitionBlock.GetParam(Name);
   Count := CountDelimitedPartsW(Text, ',');
@@ -4193,9 +4180,9 @@ begin
   Cell.SetLibrarySignature(Signature);
   SetLength(Signature, 0);
 end;
-{ @end $658AFC }
+{ @end $65097C }
 
-{ @routine $658FE4 TLibraryHandler_InitAllFunctions }
+{ @routine $650E30 TLibraryHandler_InitAllFunctions }
 procedure TLibraryHandler.InitAllFunctions(Scope: TVarArrayEC);
 var
   I, Count: Integer;
@@ -4214,39 +4201,39 @@ begin
       Cell.Name := Name;
       Scope.AddItem(Cell);
     end;
-    if Cell.RealVType = vkLibraryFun then
+    if Cell.ValueKind = vkLibraryFun then
     begin
-      Cell.SetString(LibraryName + ',' + Name);
+      Cell.AsString := LibraryName + ',' + Name;
       InitFunction(Cell);
     end;
   end;
 end;
-{ @end $658FE4 }
+{ @end $650E30 }
 
-{ @routine $659114 TLibraryCache_Create }
+{ @routine $650F48 TLibraryCache_Create }
 constructor TLibraryCache.Create;
 begin
   inherited Create;
   Libraries := TObjectList.Create;
 end;
-{ @end $659114 }
+{ @end $650F48 }
 
-{ @routine $659168 TLibraryCache_Destroy }
+{ @routine $650F8C TLibraryCache_Destroy }
 destructor TLibraryCache.Destroy;
 begin
   Libraries.Free;
   inherited Destroy;
 end;
-{ @end $659168 }
+{ @end $650F8C }
 
-{ @routine $659300 TLibraryCache_GetLib }
+{ @routine $651104 TLibraryCache_GetLib }
 function TLibraryCache.GetLib(Name: WideString): TLibraryHandler;
 var
   LowIndex, HighIndex, Middle, Comparison: Integer;
   Entry: TLibraryHandler;
 
-  // @nested $6591A4 LoadHandler
-  function LoadHandler: TLibraryHandler; // @addr 0x6591A4 @ida "TLibraryHandler *__cdecl $name(void *ParentFrame);" @note "Nested helper; captures the library name at ParentFrame-4. Returns nil when its ScriptLibs block is absent."
+  // @nested $650FBC LoadHandler
+  function LoadHandler: TLibraryHandler; // @addr 0x00650FBC @ida "TLibraryHandler *__cdecl $name(void *ParentFrame);" @note "Nested helper; captures the library name at ParentFrame-4. Returns nil when its ScriptLibs block is absent."
   var
     Module: Cardinal;
     Definition: TBlockParEC;
@@ -4314,16 +4301,16 @@ begin
     else LowIndex := Middle;
   end;
 end;
-{ @end $659300 }
+{ @end $651104 }
 
-{ @routine $6594E0 TLibraryCache_InitFunction }
+{ @routine $6512B0 TLibraryCache_InitFunction }
 procedure TLibraryCache.InitFunction(Cell: TVarEC);
 begin
-  GetLib(ExtractDelimitedPartW(Cell.GetString, 0, ',')).InitFunction(Cell);
+  GetLib(ExtractDelimitedPartW(Cell.AsString, 0, ',')).InitFunction(Cell);
 end;
-{ @end $6594E0 }
+{ @end $6512B0 }
 
-{ @routine $659564 ExecuteScriptText }
+{ @routine $65132C ExecuteScriptText }
 procedure ExecuteScriptText(SourceText: WideString; Scope: TVarArrayEC);
 var
   Code: TCodeEC;
@@ -4359,9 +4346,9 @@ begin
   CurrentScript := SavedScript;
   Code.Free;
 end;
-{ @end $659564 }
+{ @end $65132C }
 
-{ @routine $6597F0 CompileScriptText }
+{ @routine $6515A0 CompileScriptText }
 function CompileScriptText(SourceText: WideString): TCodeEC;
 var
   Analyzer: TCodeAnalyzerEC;
@@ -4374,7 +4361,7 @@ begin
   Analyzer.RemoveWhitespace;
   DelimiterError := Analyzer.ValidateDelimiters;
   Result := TCodeEC.Create;
-  Result.Compile(Analyzer, nil, nil, nil, nil, ErrorText);
+  ErrorText := Result.Compile(Analyzer, nil, nil, nil, nil);
   if ErrorText <> '' then
   begin
     AppendLogLineThreadSafe(AnsiString('Compiler. Error=' + ErrorText));
@@ -4385,9 +4372,9 @@ begin
   end;
   Analyzer.Free;
 end;
-{ @end $6597F0 }
+{ @end $6515A0 }
 
-{ @routine $659968 RunScriptCode }
+{ @routine $651704 RunScriptCode }
 procedure RunScriptCode(ContextName: WideString; Code, ParentCode: TCodeEC);
 begin
   Code.LinkAll(SharedScriptVariables, False);
@@ -4412,51 +4399,51 @@ begin
     end;
   end;
 end;
-{ @end $659968 }
+{ @end $651704 }
 
-{ @routine $659BB8 TScriptCache_Create }
+{ @routine $651938 TScriptCache_Create }
 constructor TScriptCache.Create;
 begin
   inherited Create;
   Entries := TObjectList.Create;
 end;
-{ @end $659BB8 }
+{ @end $651938 }
 
-{ @routine $659C0C TScriptGICache_Create }
+{ @routine $65197C TScriptGICache_Create }
 constructor TScriptGICache.Create;
 begin
   inherited Create;
   Entries := TObjectList.Create;
 end;
-{ @end $659C0C }
+{ @end $65197C }
 
-{ @routine $659C60 TScriptCache_Destroy }
+{ @routine $6519C0 TScriptCache_Destroy }
 destructor TScriptCache.Destroy;
 begin
   Entries.Free;
   Entries := nil;
   inherited Destroy;
 end;
-{ @end $659C60 }
+{ @end $6519C0 }
 
-{ @routine $659CA4 TScriptGICache_Destroy }
+{ @routine $6519F4 TScriptGICache_Destroy }
 destructor TScriptGICache.Destroy;
 begin
   Entries.Free;
   Entries := nil;
   inherited Destroy;
 end;
-{ @end $659CA4 }
+{ @end $6519F4 }
 
-{ @routine $659D70 TScriptGICache_GetOrCompile }
+{ @routine $651AA4 TScriptGICache_GetOrCompile }
 function TScriptGICache.GetOrCompile(Block: TBlockParEC): TScriptGICacheUnit;
 var
   LowIndex, HighIndex, Middle: Integer;
   Key: Cardinal;
   Entry: TScriptGICacheUnit;
 
-  // @nested $659CE8 CreateUiCacheEntry
-  function CreateUiCacheEntry: TScriptGICacheUnit; // @addr $659CE8 @ida "TScriptGICacheUnit *__cdecl $name(void *ParentFrame);" @note "Nested helper; captures Block at ParentFrame-4."
+  // @nested $651A28 CreateUiCacheEntry
+  function CreateUiCacheEntry: TScriptGICacheUnit; // @addr $651A28 @ida "TScriptGICacheUnit *__cdecl $name(void *ParentFrame);" @note "Nested helper; captures Block at ParentFrame-4."
   var
     Text: WideString;
   begin
@@ -4474,11 +4461,9 @@ begin
   if Entries.Count < 1 then
   begin
     Entry := CreateUiCacheEntry;
-    if Entry <> nil then
-    begin
-      Entries.Add(Entry);
-      Result := Entry;
-    end;
+    if Entry = nil then Exit;
+    Entries.Add(Entry);
+    Result := Entry;
     Exit;
   end;
   Key := Cardinal(Block);
@@ -4492,11 +4477,9 @@ begin
   if Key < Cardinal(Entry.Block) then
   begin
     Entry := CreateUiCacheEntry;
-    if Entry <> nil then
-    begin
-      Entries.Insert(0, Entry);
-      Result := Entry;
-    end;
+    if Entry = nil then Exit;
+    Entries.Insert(0, Entry);
+    Result := Entry;
     Exit;
   end;
   HighIndex := Entries.Count - 1;
@@ -4509,11 +4492,9 @@ begin
   if Key > Cardinal(Entry.Block) then
   begin
     Entry := CreateUiCacheEntry;
-    if Entry <> nil then
-    begin
-      Entries.Add(Entry);
-      Result := Entry;
-    end;
+    if Entry = nil then Exit;
+    Entries.Add(Entry);
+    Result := Entry;
     Exit;
   end;
   while True do
@@ -4521,11 +4502,9 @@ begin
     if HighIndex - LowIndex < 2 then
     begin
       Entry := CreateUiCacheEntry;
-      if Entry <> nil then
-      begin
-        Entries.Insert(HighIndex, Entry);
-        Result := Entry;
-      end;
+      if Entry = nil then Exit;
+      Entries.Insert(HighIndex, Entry);
+      Result := Entry;
       Exit;
     end;
     Middle := (LowIndex + HighIndex) div 2;
@@ -4539,17 +4518,17 @@ begin
     else LowIndex := Middle;
   end;
 end;
-{ @end $659D70 }
+{ @end $651AA4 }
 
-{ @routine $65A058 TScriptCache_GetOrCompile }
+{ @routine $651D24 TScriptCache_GetOrCompile }
 function TScriptCache.GetOrCompile(Name: WideString; Config: TBlockParEC): TScriptCacheUnit;
 var
   LowIndex, HighIndex, Middle, Comparison: Integer;
   Entry: TScriptCacheUnit;
   SourceBlock: TBlockParEC;
 
-  // @nested $659F20 CreateEntry
-  function CreateEntry: TScriptCacheUnit; // @addr 0x659F20 @ida "TScriptCacheUnit *__cdecl $name(void *ParentFrame);" @note "Nested helper; captures source block, config, and name at ParentFrame-4, -8, and -12. Caller owns a non-nil result."
+  // @nested $651BF0 CreateEntry
+  function CreateEntry: TScriptCacheUnit; // @addr 0x00651BF0 @ida "TScriptCacheUnit *__cdecl $name(void *ParentFrame);" @note "Nested helper; captures source block, config, and name at ParentFrame-4, -8, and -12. Caller owns a non-nil result."
   var
     Text, ActionTypes, StepTypes: WideString;
   begin
@@ -4638,26 +4617,26 @@ begin
     else LowIndex := Middle;
   end;
 end;
-{ @end $65A058 }
+{ @end $651D24 }
 
-{ @routine $65A2B4 TScriptCacheUnit_Create }
+{ @routine $651F2C TScriptCacheUnit_Create }
 constructor TScriptCacheUnit.Create;
 begin
   inherited Create;
   Code := nil;
 end;
-{ @end $65A2B4 }
+{ @end $651F2C }
 
-{ @routine $65A300 TScriptCacheUnit_Destroy }
+{ @routine $651F68 TScriptCacheUnit_Destroy }
 destructor TScriptCacheUnit.Destroy;
 begin
   if Code <> nil then Code.Free;
   Code := nil;
   inherited Destroy;
 end;
-{ @end $65A300 }
+{ @end $651F68 }
 
-{ @routine $65A350 TScriptCacheUnit_Initialize }
+{ @routine $651FA0 TScriptCacheUnit_Initialize }
 procedure TScriptCacheUnit.Initialize(Name, SourceText, ActionTypes, StepTypes: WideString);
 var
   Action: TScriptActionType;
@@ -4678,7 +4657,7 @@ begin
     for Action := Low(ScriptActionTypeNames) to High(ScriptActionTypeNames) do
       if Pos(',' + ScriptActionTypeNames[Action] + ',', ActionTypes) > 0 then Include(ActionTypeMask, Action);
   end;
-  if (StepTypes = '') or (StepTypes = 'Any') then StepTypeMask := [0..11]
+  if (StepTypes = '') or (StepTypes = 'Any') then StepTypeMask := AllScriptStepTypes
   else
   begin
     StepTypeMask := [];
@@ -4686,39 +4665,39 @@ begin
     for I := 0 to Count - 1 do
     begin
       Step := ExtractDigitsToIntW(ExtractDelimitedPartW(StepTypes, I, ','));
-      if Step in [0..11] then Include(StepTypeMask, Step);
+      if Step in AllScriptStepTypes then Include(StepTypeMask, Step);
     end;
   end;
 end;
-{ @end $65A350 }
+{ @end $651FA0 }
 
-{ @routine $65A5DC TScriptGICacheUnit_Create }
+{ @routine $652200 TScriptGICacheUnit_Create }
 constructor TScriptGICacheUnit.Create;
 begin
   inherited Create;
   Code := nil;
 end;
-{ @end $65A5DC }
+{ @end $652200 }
 
-{ @routine $65A628 TScriptGICacheUnit_Destroy }
+{ @routine $65223C TScriptGICacheUnit_Destroy }
 destructor TScriptGICacheUnit.Destroy;
 begin
   if Code <> nil then Code.Free;
   Code := nil;
   inherited Destroy;
 end;
-{ @end $65A628 }
+{ @end $65223C }
 
-{ @routine $65A678 TScriptGICacheUnit_Initialize }
+{ @routine $652274 TScriptGICacheUnit_Initialize }
 procedure TScriptGICacheUnit.Initialize(Block: TBlockParEC; SourceText: WideString);
 begin
   Self.Block := Block;
   Self.SourceText := SourceText;
   Code := CompileScriptText(SourceText);
 end;
-{ @end $65A678 }
+{ @end $652274 }
 
-{ @routine $65A6E4 GetCachedActionCode }
+{ @routine $6522D4 GetCachedActionCode }
 function GetCachedActionCode(var Cache: TScriptCache; Name: WideString; Config: TBlockParEC): TScriptCacheUnit;
 begin
   Result := nil;
@@ -4726,9 +4705,9 @@ begin
   if Cache = nil then Cache := TScriptCache.Create;
   Result := Cache.GetOrCompile(Name, Config);
 end;
-{ @end $65A6E4 }
+{ @end $6522D4 }
 
-{ @routine $65A764 ExecuteGameplayUiCode }
+{ @routine $652344 ExecuteGameplayUiCode }
 procedure ExecuteGameplayUiCode(Block: TBlockParEC; VirtualKey: Cardinal);
 var
   Entry: TScriptGICacheUnit;
@@ -4752,12 +4731,12 @@ begin
     if VirtualKey <> 0 then
     begin
       Cell := Code.LocalVar.GetVarNE('KEY');
-      if Cell <> nil then Cell.SetDword(VirtualKey)
-      else Code.LocalVar.Add('KEY', vkDword).SetDword(VirtualKey);
+      if Cell <> nil then Cell.AsDword := VirtualKey
+      else Code.LocalVar.Add('KEY', vkDword).AsDword := VirtualKey;
       KeyModifiers := Ord(IsVirtualKeyDown(VK_SHIFT)) + Ord(IsVirtualKeyDown(VK_CONTROL)) * 2 + Ord(IsVirtualKeyDown(VK_MENU)) * 4;
       Cell := Code.LocalVar.GetVarNE('KEYMOD');
-      if Cell <> nil then Cell.SetDword(KeyModifiers)
-      else Code.LocalVar.Add('KEYMOD', vkDword).SetDword(KeyModifiers);
+      if Cell <> nil then Cell.AsDword := KeyModifiers
+      else Code.LocalVar.Add('KEYMOD', vkDword).AsDword := KeyModifiers;
     end;
     Code.Run(ScriptProcess);
   except
@@ -4775,34 +4754,34 @@ begin
   end;
   CurrentScript := SavedScript;
 end;
-{ @end $65A764 }
+{ @end $652344 }
 
-{ @routine $65AABC ScriptSnap }
+{ @routine $652660 ScriptSnap }
 procedure ScriptSnap(out Snapshot: TScriptContextSnapshot);
 begin
   Snapshot.Script := CurrentScript;
   if CurrentScript <> nil then
   begin
     Snapshot.CurrentShip := CurrentScript.CurrentShip;
-    Snapshot.EndState := CurrentScript.InitCode.LocalVar.GetVar('EndState').GetInt <> 0;
+    Snapshot.EndState := CurrentScript.InitCode.LocalVar.NamedItems['EndState'].AsInteger <> 0;
   end;
 end;
-{ @end $65AABC }
+{ @end $652660 }
 
-{ @routine $65AB28 ScriptUnSnap }
+{ @routine $6526BC ScriptUnSnap }
 procedure ScriptUnSnap(Snapshot: TScriptContextSnapshot);
 begin
   CurrentScript := Snapshot.Script;
   if CurrentScript <> nil then
   begin
     CurrentScript.CurrentShip := Snapshot.CurrentShip;
-    CurrentScript.InitCode.LocalVar.GetVar('CurShip').SetDword(Cardinal(Snapshot.CurrentShip));
-    CurrentScript.InitCode.LocalVar.GetVar('EndState').SetInt(Ord(Snapshot.EndState));
+    CurrentScript.InitCode.LocalVar.NamedItems['CurShip'].AsDword := Cardinal(Snapshot.CurrentShip);
+    CurrentScript.InitCode.LocalVar.NamedItems['EndState'].AsInteger := Ord(Snapshot.EndState);
   end;
 end;
-{ @end $65AB28 }
+{ @end $6526BC }
 
-{ @routine $65ABC4 TScriptItem_CompileActionCode }
+{ @routine $652758 TScriptItem_CompileActionCode }
 procedure TScriptItem.CompileActionCode;
 var
   I: Integer;
@@ -4834,7 +4813,7 @@ begin
       for Action := Low(ScriptActionTypeNames) to High(ScriptActionTypeNames) do
         if Pos(',' + ScriptActionTypeNames[Action] + ',', ActionTypes) > 0 then Include(ActionTypeMask, Action);
     end;
-    if (StepTypes = '') or (StepTypes = 'Any') then StepTypeMask := [0..11]
+    if (StepTypes = '') or (StepTypes = 'Any') then StepTypeMask := AllScriptStepTypes
     else
     begin
       StepTypeMask := [];
@@ -4842,7 +4821,7 @@ begin
       for I := 0 to Count - 1 do
       begin
         Step := ExtractDigitsToIntW(ExtractDelimitedPartW(StepTypes, I, ','));
-        if Step in [0..11] then Include(StepTypeMask, Step);
+        if Step in AllScriptStepTypes then Include(StepTypeMask, Step);
       end;
     end;
   end
@@ -4850,12 +4829,12 @@ begin
   begin
     ActionCode := CompileScriptText(OnActionText);
     ActionTypeMask := [satOnStep..satOnDeath];
-    StepTypeMask := [0..11];
+    StepTypeMask := AllScriptStepTypes;
   end;
 end;
-{ @end $65ABC4 }
+{ @end $652758 }
 
-{ @routine $65AF44 TScriptItem_RunActionCode }
+{ @routine $652A6C TScriptItem_RunActionCode }
 function TScriptItem.RunActionCode(ActionType: TScriptActionType; Ship: TShip; Object1, Object2: TObject; Param: Integer): Integer;
 var
   Snapshot: TScriptContextSnapshot;
@@ -4904,52 +4883,51 @@ begin
       end;
     end;
 end;
-{ @end $65AF44 }
+{ @end $652A6C }
 
-{ @routine $65B30C TScriptShip_RunActionCode }
+{ @routine $652E1C TScriptShip_RunActionCode }
 function TScriptShip.RunActionCode(ActionType: TScriptActionType; Ship: TShip; Object1, Object2: TObject; Param: Integer): Integer;
 var
   Snapshot: TScriptContextSnapshot;
 begin
   Result := Param;
-  if (State <> nil) and (State.OnActionText <> '') then
-    if ActionType in State.ActionTypeMask then
-      if (ActionType <> satOnStep) or (Param in State.StepTypeMask) then
-        try
-          ScriptSnap(Snapshot);
-          Script.PublishCurrentShip(Ship);
-          ScriptItemContextStack.Add(nil);
-          ScriptItemInfoContextStack.Add(nil);
-          ScriptActionTypeStack.Add(Pointer(Ord(ActionType)));
-          ScriptActionObject1Stack.Add(Object1);
-          ScriptActionObject2Stack.Add(Object2);
-          ScriptActionParamStack.Add(Pointer(Param));
-          ScriptActionShipStack.Add(Ship);
-          RunScriptCode(State.OnActionText, State.ActionCode, Script.InitCode);
-          ScriptUnSnap(Snapshot);
-          Result := Integer(ScriptActionParamStack[ScriptActionParamStack.Count - 1]);
-          ScriptActionTypeStack.Delete(ScriptActionTypeStack.Count - 1);
-          ScriptActionObject1Stack.Delete(ScriptActionObject1Stack.Count - 1);
-          ScriptActionObject2Stack.Delete(ScriptActionObject2Stack.Count - 1);
-          ScriptActionParamStack.Delete(ScriptActionParamStack.Count - 1);
-          ScriptActionShipStack.Delete(ScriptActionShipStack.Count - 1);
-          ScriptItemInfoContextStack.Delete(ScriptItemInfoContextStack.Count - 1);
-          ScriptItemContextStack.Delete(ScriptItemContextStack.Count - 1);
-          // Native Exit leaves the compiler's dormant normal SEH unlink.
-          Exit;
-        except
-          on E: Exception do
-          begin
-            AppendLogLineThreadSafe(E.ClassName + ' ' + E.Message);
-            AppendLogLineThreadSafe('Error in script ship actcode');
-            AppendLogLineThreadSafe(AnsiString(State.Name + ', script - ' + Script.ScriptFileName));
-            raise;
-          end;
-        end;
+  if (State = nil) or (State.OnActionText = '') then Exit;
+  if not (ActionType in State.ActionTypeMask) then Exit;
+  if (ActionType = satOnStep) and not (Param in State.StepTypeMask) then Exit;
+  try
+    ScriptSnap(Snapshot);
+    Script.PublishCurrentShip(Ship);
+    ScriptItemContextStack.Add(nil);
+    ScriptItemInfoContextStack.Add(nil);
+    ScriptActionTypeStack.Add(Pointer(Ord(ActionType)));
+    ScriptActionObject1Stack.Add(Object1);
+    ScriptActionObject2Stack.Add(Object2);
+    ScriptActionParamStack.Add(Pointer(Param));
+    ScriptActionShipStack.Add(Ship);
+    RunScriptCode(State.OnActionText, State.ActionCode, Script.InitCode);
+    ScriptUnSnap(Snapshot);
+    Result := Integer(ScriptActionParamStack[ScriptActionParamStack.Count - 1]);
+    ScriptActionTypeStack.Delete(ScriptActionTypeStack.Count - 1);
+    ScriptActionObject1Stack.Delete(ScriptActionObject1Stack.Count - 1);
+    ScriptActionObject2Stack.Delete(ScriptActionObject2Stack.Count - 1);
+    ScriptActionParamStack.Delete(ScriptActionParamStack.Count - 1);
+    ScriptActionShipStack.Delete(ScriptActionShipStack.Count - 1);
+    ScriptItemInfoContextStack.Delete(ScriptItemInfoContextStack.Count - 1);
+    ScriptItemContextStack.Delete(ScriptItemContextStack.Count - 1);
+    Exit;
+  except
+    on E: Exception do
+    begin
+      AppendLogLineThreadSafe(E.ClassName + ' ' + E.Message);
+      AppendLogLineThreadSafe('Error in script ship actcode');
+      AppendLogLineThreadSafe(AnsiString(State.Name + ', script - ' + Script.ScriptFileName));
+      raise;
+    end;
+  end;
 end;
-{ @end $65B30C }
+{ @end $652E1C }
 
-{ @routine $65B66C RunItemUseCode }
+{ @routine $65315C RunItemUseCode }
 function RunItemUseCode(Item: TItem; Ship: TShip): Integer;
 var
   Binding: TScriptItem;
@@ -4974,7 +4952,7 @@ begin
     Script := Binding.Script;
     CurrentScript := Script;
     Script.CurrentShip := Ship;
-    Script.InitCode.LocalVar.GetVar('CurShip').SetDword(Cardinal(Ship));
+    Script.InitCode.LocalVar.NamedItems['CurShip'].AsDword := Cardinal(Ship);
     ParentCode := Script.InitCode;
   end;
   if Text <> '' then
@@ -4990,9 +4968,9 @@ begin
   CurrentScript := SavedScript;
   ScriptUseItem := nil;
 end;
-{ @end $65B66C }
+{ @end $65315C }
 
-{ @routine $65B880 RunItemConfigActionCode }
+{ @routine $653344 RunItemConfigActionCode }
 function RunItemConfigActionCode(Item: TItem; ActionType: TScriptActionType; Ship: TShip; Object1, Object2: TObject; Param: Integer): Integer;
 var
   Entry: TScriptCacheUnit;
@@ -5004,52 +4982,50 @@ begin
   Entry := nil;
   if Item is TArtefact then Entry := TScriptCacheUnit((Item as TArtefact).GetActionCode);
   if Item is TUselessItem then Entry := TScriptCacheUnit((Item as TUselessItem).GetActionCode);
-  if Entry <> nil then
-    if ActionType in Entry.ActionTypeMask then
-      if (ActionType <> satOnStep) or (Param in Entry.StepTypeMask) then
-      begin
-        Binding := TScriptItem(Item.ScriptItem);
-        ParentCode := nil;
-        try
-          ScriptItemContextStack.Add(Item);
-          ScriptItemInfoContextStack.Add(nil);
-          ScriptActionTypeStack.Add(Pointer(Ord(ActionType)));
-          ScriptActionObject1Stack.Add(Object1);
-          ScriptActionObject2Stack.Add(Object2);
-          ScriptActionParamStack.Add(Pointer(Param));
-          ScriptActionShipStack.Add(Ship);
-          ScriptSnap(Snapshot);
-          if (Binding <> nil) and (Binding.Script <> nil) then
-          begin
-            Binding.Script.PublishCurrentShip(Ship);
-            ParentCode := CurrentScript.InitCode;
-          end;
-          RunScriptCode(Entry.SourceText, Entry.Code, ParentCode);
-          ScriptUnSnap(Snapshot);
-          Result := Integer(ScriptActionParamStack[ScriptActionParamStack.Count - 1]);
-          ScriptActionTypeStack.Delete(ScriptActionTypeStack.Count - 1);
-          ScriptActionObject1Stack.Delete(ScriptActionObject1Stack.Count - 1);
-          ScriptActionObject2Stack.Delete(ScriptActionObject2Stack.Count - 1);
-          ScriptActionParamStack.Delete(ScriptActionParamStack.Count - 1);
-          ScriptActionShipStack.Delete(ScriptActionShipStack.Count - 1);
-          ScriptItemInfoContextStack.Delete(ScriptItemInfoContextStack.Count - 1);
-          ScriptItemContextStack.Delete(ScriptItemContextStack.Count - 1);
-        except
-          on E: Exception do
-          begin
-            AppendLogLineThreadSafe(E.ClassName + ' ' + E.Message);
-            AppendLogLineThreadSafe('Error in item actcode, item=');
-            AppendLogLineThreadSafe(AnsiString(Item.GetDisplayName));
-            if Item.ScriptItem <> nil then
-              AppendLogLineThreadSafe(AnsiString('script name - ' + TScriptItem(Item.ScriptItem).Name));
-            raise;
-          end;
-        end;
-      end;
+  if Entry = nil then Exit;
+  if not (ActionType in Entry.ActionTypeMask) then Exit;
+  if (ActionType = satOnStep) and not (Param in Entry.StepTypeMask) then Exit;
+  Binding := TScriptItem(Item.ScriptItem);
+  ParentCode := nil;
+  try
+    ScriptItemContextStack.Add(Item);
+    ScriptItemInfoContextStack.Add(nil);
+    ScriptActionTypeStack.Add(Pointer(Ord(ActionType)));
+    ScriptActionObject1Stack.Add(Object1);
+    ScriptActionObject2Stack.Add(Object2);
+    ScriptActionParamStack.Add(Pointer(Param));
+    ScriptActionShipStack.Add(Ship);
+    ScriptSnap(Snapshot);
+    if (Binding <> nil) and (Binding.Script <> nil) then
+    begin
+      Binding.Script.PublishCurrentShip(Ship);
+      ParentCode := CurrentScript.InitCode;
+    end;
+    RunScriptCode(Entry.SourceText, Entry.Code, ParentCode);
+    ScriptUnSnap(Snapshot);
+    Result := Integer(ScriptActionParamStack[ScriptActionParamStack.Count - 1]);
+    ScriptActionTypeStack.Delete(ScriptActionTypeStack.Count - 1);
+    ScriptActionObject1Stack.Delete(ScriptActionObject1Stack.Count - 1);
+    ScriptActionObject2Stack.Delete(ScriptActionObject2Stack.Count - 1);
+    ScriptActionParamStack.Delete(ScriptActionParamStack.Count - 1);
+    ScriptActionShipStack.Delete(ScriptActionShipStack.Count - 1);
+    ScriptItemInfoContextStack.Delete(ScriptItemInfoContextStack.Count - 1);
+    ScriptItemContextStack.Delete(ScriptItemContextStack.Count - 1);
+  except
+    on E: Exception do
+    begin
+      AppendLogLineThreadSafe(E.ClassName + ' ' + E.Message);
+      AppendLogLineThreadSafe('Error in item actcode, item=');
+      AppendLogLineThreadSafe(AnsiString(Item.GetDisplayName));
+      if Item.ScriptItem <> nil then
+        AppendLogLineThreadSafe(AnsiString('script name - ' + TScriptItem(Item.ScriptItem).Name));
+      raise;
+    end;
+  end;
 end;
-{ @end $65B880 }
+{ @end $653344 }
 
-{ @routine $65BC78 RunCustomShipInfoActionCode }
+{ @routine $653708 RunCustomShipInfoActionCode }
 function RunCustomShipInfoActionCode(Info: PCustomShipInfo; ActionType: TScriptActionType; Ship: TShip; Object1, Object2: TObject; Param: Integer): Integer;
 var
   Config: TBlockParEC;
@@ -5075,43 +5051,41 @@ begin
     end;
     Info.ActionCode := Entry;
   end;
-  if Entry <> nil then
-    if ActionType in Entry.ActionTypeMask then
-      if (ActionType <> satOnStep) or (Param in Entry.StepTypeMask) then
-      begin
-        ScriptItemContextStack.Add(nil);
-        ScriptItemInfoContextStack.Add(Info);
-        ScriptActionTypeStack.Add(Pointer(Ord(ActionType)));
-        ScriptActionObject1Stack.Add(Object1);
-        ScriptActionObject2Stack.Add(Object2);
-        ScriptActionParamStack.Add(Pointer(Param));
-        ScriptActionShipStack.Add(Ship);
-        try
-          ScriptSnap(Snapshot);
-          RunScriptCode(Entry.SourceText, Entry.Code, nil);
-          ScriptUnSnap(Snapshot);
-        except
-          on E: Exception do
-          begin
-            AppendLogLineThreadSafe(E.ClassName + ' ' + E.Message);
-            AppendLogLineThreadSafe(AnsiString('Error in actcode, info=' + Info.TypeName));
-            LogScriptCallHistory;
-            raise;
-          end;
-        end;
-        Result := Integer(ScriptActionParamStack[ScriptActionParamStack.Count - 1]);
-        ScriptActionTypeStack.Delete(ScriptActionTypeStack.Count - 1);
-        ScriptActionObject1Stack.Delete(ScriptActionObject1Stack.Count - 1);
-        ScriptActionObject2Stack.Delete(ScriptActionObject2Stack.Count - 1);
-        ScriptActionParamStack.Delete(ScriptActionParamStack.Count - 1);
-        ScriptActionShipStack.Delete(ScriptActionShipStack.Count - 1);
-        ScriptItemInfoContextStack.Delete(ScriptItemInfoContextStack.Count - 1);
-        ScriptItemContextStack.Delete(ScriptItemContextStack.Count - 1);
-      end;
+  if Entry = nil then Exit;
+  if not (ActionType in Entry.ActionTypeMask) then Exit;
+  if (ActionType = satOnStep) and not (Param in Entry.StepTypeMask) then Exit;
+  ScriptItemContextStack.Add(nil);
+  ScriptItemInfoContextStack.Add(Info);
+  ScriptActionTypeStack.Add(Pointer(Ord(ActionType)));
+  ScriptActionObject1Stack.Add(Object1);
+  ScriptActionObject2Stack.Add(Object2);
+  ScriptActionParamStack.Add(Pointer(Param));
+  ScriptActionShipStack.Add(Ship);
+  try
+    ScriptSnap(Snapshot);
+    RunScriptCode(Entry.SourceText, Entry.Code, nil);
+    ScriptUnSnap(Snapshot);
+  except
+    on E: Exception do
+    begin
+      AppendLogLineThreadSafe(E.ClassName + ' ' + E.Message);
+      AppendLogLineThreadSafe(AnsiString('Error in actcode, info=' + Info.TypeName));
+      LogScriptCallHistory;
+      raise;
+    end;
+  end;
+  Result := Integer(ScriptActionParamStack[ScriptActionParamStack.Count - 1]);
+  ScriptActionTypeStack.Delete(ScriptActionTypeStack.Count - 1);
+  ScriptActionObject1Stack.Delete(ScriptActionObject1Stack.Count - 1);
+  ScriptActionObject2Stack.Delete(ScriptActionObject2Stack.Count - 1);
+  ScriptActionParamStack.Delete(ScriptActionParamStack.Count - 1);
+  ScriptActionShipStack.Delete(ScriptActionShipStack.Count - 1);
+  ScriptItemInfoContextStack.Delete(ScriptItemInfoContextStack.Count - 1);
+  ScriptItemContextStack.Delete(ScriptItemContextStack.Count - 1);
 end;
-{ @end $65BC78 }
+{ @end $653708 }
 
-{ @routine $65C114 TScriptItem_FormatDataText }
+{ @routine $653B74 TScriptItem_FormatDataText }
 function TScriptItem.FormatDataText(Text, ColorTag: WideString): WideString;
 begin
   Result := Text;
@@ -5122,9 +5096,9 @@ begin
   ReplaceTextToken(Result, '<TextData2>', TextData2, ColorTag);
   ReplaceTextToken(Result, '<TextData3>', TextData3, ColorTag);
 end;
-{ @end $65C114 }
+{ @end $653B74 }
 
-{ @routine $65C308 GetScriptContextDescription }
+{ @routine $653D54 GetScriptContextDescription }
 function GetScriptContextDescription: WideString;
 var
   Info: PCustomShipInfo;
@@ -5133,13 +5107,13 @@ var
 begin
   if ScriptItemContextStack.Count > 0 then
   begin
-    Info := PCustomShipInfo(ScriptItemInfoContextStack[ScriptItemInfoContextStack.Count - 1]);
+    Info := ScriptItemInfoContextStack[ScriptItemInfoContextStack.Count - 1];
     if Info <> nil then
     begin
       Result := Info.TypeName;
       Exit;
     end;
-    Item := TItem(ScriptItemContextStack[ScriptItemInfoContextStack.Count - 1]);
+    Item := ScriptItemContextStack[ScriptItemInfoContextStack.Count - 1];
     if Item <> nil then
     begin
       Binding := TScriptItem(Item.ScriptItem);
@@ -5173,6 +5147,6 @@ begin
   end
   else Result := 'unknown source';
 end;
-{ @end $65C308 }
+{ @end $653D54 }
 
 end.

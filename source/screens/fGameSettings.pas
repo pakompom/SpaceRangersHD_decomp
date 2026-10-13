@@ -1,5 +1,5 @@
 unit fGameSettings;
-// The native thread contribution ends before TfGameSettings2 metadata at $56CEA0.
+// The native thread contribution ends before TfGameSettings2 metadata at $5C034C.
 // Ownership by the linked fGameSettings unit is inferred from that boundary and
 // PACKAGEINFO's adjacent fGameSettings2/fGameSettings dependency entries.
 
@@ -19,7 +19,7 @@ type
     StartingSkills: array[0..1] of TPilotSkill; // @offset 0x46
     IronWill: Boolean; // @offset 0x48
 
-    procedure Execute; override; // @addr 0x8183AC
+    procedure Execute; override; // @addr 0x005BD00C
   end;
 
 implementation
@@ -29,7 +29,7 @@ uses Classes, Windows, SysUtils, Math, EC_Str, EC_Struct, GI_GraphButton,
   aMyFunction, fFilmFile, GI_gai, GR_DX, aGalaxy, aPlayer, aPlanet, aRanger,
   aShip, aItem, aKling, aRuins, fIntroduction, ThreadCalc, aCalc, aScript;
 
-{ @routine $8183AC TThreadCreateNewGame_Execute }
+{ @routine $5BD00C TThreadCreateNewGame_Execute }
 procedure TThreadCreateNewGame.Execute;
 const
   InitialDominatorShipMask = [stKling];
@@ -68,7 +68,7 @@ begin
     NewGameGenerationStage := 0;
     PlayerStarDayPrepared := True;
     Galaxy := TGalaxy.Create;
-    for Skill := 0 to 7 do Galaxy.DifficultyLevels[Skill] := DifficultyLevels[Skill];
+    for Skill := Low(DifficultyLevels) to High(DifficultyLevels) do Galaxy.DifficultyLevels[Skill] := DifficultyLevels[Skill];
     Galaxy.CustomRules.Enabled := (NewGameSettingsConfig.CountParamsByPath('UseCustomRules') > 0) and
       ParseEnabledNameGI(NewGameSettingsConfig.GetParamByPathOrMarker('UseCustomRules'));
     if Galaxy.CustomRules.Enabled and (NewGameSeedText <> '') then
@@ -126,21 +126,21 @@ begin
         if Value < 0 then
         begin
           Value := 0;
-          for Skill := 0 to 7 do Value := Value + Galaxy.DifficultyLevels[Skill];
+          for Skill := Low(DifficultyLevels) to High(DifficultyLevels) do Value := Value + Galaxy.DifficultyLevels[Skill];
         end;
         Galaxy.CustomRules.DominatorStrength := Value;
         Value := StrToInt(GetParamByPath('KlingAggro'));
         if Value < 0 then
         begin
           Value := 0;
-          for Skill := 0 to 7 do Value := Value + Galaxy.DifficultyLevels[Skill];
+          for Skill := Low(DifficultyLevels) to High(DifficultyLevels) do Value := Value + Galaxy.DifficultyLevels[Skill];
         end;
         Galaxy.CustomRules.DominatorAggression := Value;
         Value := StrToInt(GetParamByPath('KlingSpawn'));
         if Value < 0 then
         begin
           Value := 0;
-          for Skill := 0 to 7 do Value := Value + Galaxy.DifficultyLevels[Skill];
+          for Skill := Low(DifficultyLevels) to High(DifficultyLevels) do Value := Value + Galaxy.DifficultyLevels[Skill];
         end;
         Galaxy.CustomRules.DominatorSpawn := Value;
         Value := StrToInt(GetParamByPath('PirateAggro'));
@@ -416,12 +416,12 @@ begin
     Galaxy.RefreshRangerWealthStats;
     Galaxy.RefreshRangerStrengthStats;
     Stage := 9;
-    Star := TObject(GetPlayer.CurrentStar.StarDistances[Galaxy.Stars.Count - 1].Star) as TStar;
+    Star := GetPlayer.CurrentStar.StarDistances[Galaxy.Stars.Count - 1].Star as TStar;
     Galaxy.CreateDominatorSpawnProxy(Star);
     I := 0;
     while I < Galaxy.Stars.Count do
     begin
-      Star := SpecialStar.StarDistances[I].Star;
+      Star := TStar(SpecialStar.StarDistances[I].Star);
       if GetPlayer.CurrentStar = Star then Inc(I)
       else
       begin
@@ -434,7 +434,7 @@ begin
     end;
     while I < Galaxy.Stars.Count do
     begin
-      Star := SpecialStar.StarDistances[I].Star;
+      Star := TStar(SpecialStar.StarDistances[I].Star);
       if GetPlayer.CurrentStar = Star then Inc(I)
       else
       begin
@@ -446,7 +446,7 @@ begin
     end;
     while I < Galaxy.Stars.Count do
     begin
-      Star := SpecialStar.StarDistances[I].Star;
+      Star := TStar(SpecialStar.StarDistances[I].Star);
       if GetPlayer.CurrentStar = Star then Inc(I)
       else
       begin
@@ -460,7 +460,7 @@ begin
     if N > Galaxy.Stars.Count - 1 then N := Galaxy.Stars.Count - 1;
     for I := 0 to N do
     begin
-      Star := TObject(BlazerShip.CurrentStar.StarDistances[I].Star) as TStar;
+      Star := BlazerShip.CurrentStar.StarDistances[I].Star as TStar;
       if (GetPlayer.CurrentStar.Constellation <> Star.Constellation) and
         (GetPlayer.CurrentStar.StarDistances[1].Star <> Star) and
         (Star.Constellation.Id <> 20) then
@@ -478,7 +478,7 @@ begin
     for I := 0 to N do
     begin
       Star := Galaxy.Stars[70];
-      Star := TObject(Star.StarDistances[I].Star) as TStar;
+      Star := Star.StarDistances[I].Star as TStar;
       if (GetPlayer.CurrentStar.Constellation <> Star.Constellation) and
         (GetPlayer.CurrentStar.StarDistances[1].Star <> Star) and
         (Star.Constellation.Id <> 20) and
@@ -548,9 +548,9 @@ begin
     TRuins.Create.Init(rstRangerCenter,GetPlayer.CurrentStar,'');
     TRuins.Create.Init(rstScienceBase,GetPlayer.CurrentStar,'');
     TRuins.Create.Init(rstMedicalBase,GetPlayer.CurrentStar,'');
-    TRuins.Create.Init(rstPirateBase,TObject(GetPlayer.CurrentStar.StarDistances[3].Star) as TStar,'');
-    TRuins.Create.Init(rstBusinessCenter,TObject(GetPlayer.CurrentStar.StarDistances[1].Star) as TStar,'');
-    TRuins.Create.Init(rstMilitaryBase,TObject(GetPlayer.CurrentStar.StarDistances[2].Star) as TStar,'');
+    TRuins.Create.Init(rstPirateBase,GetPlayer.CurrentStar.StarDistances[3].Star as TStar,'');
+    TRuins.Create.Init(rstBusinessCenter,GetPlayer.CurrentStar.StarDistances[1].Star as TStar,'');
+    TRuins.Create.Init(rstMilitaryBase,GetPlayer.CurrentStar.StarDistances[2].Star as TStar,'');
     Galaxy.UpdateConstellationMilitaryStats;
     Stage := 15;
     for I := 1 to Galaxy.Rangers.Count - 1 do
@@ -701,6 +701,6 @@ begin
   end;
 end;
 
-{ @end $8183AC }
+{ @end $5BD00C }
 
 end.

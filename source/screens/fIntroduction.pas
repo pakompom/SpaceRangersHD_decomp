@@ -1,5 +1,4 @@
 unit fIntroduction;
-// Unit bracket (inferred): .text 0x00660520..0x00661982; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -8,37 +7,37 @@ uses GI_MessageLoop;
 type
   TfIntroduction = class(TMessageLoopGI) // @size 0xF0
   public
-    GenerationProgressTimer: PCallbackTimerGI; // @offset 0xD0
-    TextScrollTimer: PCallbackTimerGI; // @offset 0xD4
-    BackgroundTimer: PCallbackTimerGI; // @offset 0xD8
+    GenerationProgressTimer: TCallbackTimerIdGI; // @offset 0xD0
+    TextScrollTimer: TCallbackTimerIdGI; // @offset 0xD4
+    BackgroundTimer: TCallbackTimerIdGI; // @offset 0xD8
     BackgroundScrollOffset: Integer; // @offset 0xDC
     TextPanelTop: Integer; // @offset 0xE0
     TextPanelHeight: Integer; // @offset 0xE4
     ProgressPulsePhase: Single; // @offset 0xE8
-    ContinueBlinkTimer: PCallbackTimerGI; // @offset 0xEC
+    ContinueBlinkTimer: TCallbackTimerIdGI; // @offset 0xEC
 
-    procedure InitializeLayout; override; // @addr 0x6605BC
-    procedure OnOpen; override; // @addr 0x660B30
-    procedure OnClose; override; // @addr 0x661088
-    procedure SelectMusic; override; // @addr 0x661968
-    procedure UpdateGenerationProgress(Timer: PCallbackTimerGI; UserData: Integer); // @addr 0x661194
-    procedure BlinkContinueButton(Timer: PCallbackTimerGI; UserData: Integer); // @addr 0x66158C
-    procedure ScrollIntroductionText(Timer: PCallbackTimerGI; UserData: Integer); // @addr 0x661674
-    procedure ScrollBackground(Timer: PCallbackTimerGI; UserData: Integer); // @addr 0x661748
-    procedure ContinueMouseEnter(Sender: TObjectGI); // @addr 0x66180C
-    procedure ContinueClicked(Sender: TObjectGI); // @addr 0x661844
-    procedure MainPanelKeyDown(Sender: TObjectGI; Key: Cardinal); // @addr 0x6618E0
+    procedure InitializeLayout; override; // @addr 0x005BBE00
+    procedure OnOpen; override; // @addr 0x005BC30C
+    procedure OnClose; override; // @addr 0x005BC7CC
+    procedure SelectMusic; override; // @addr 0x005BCF70
+    procedure UpdateGenerationProgress(Timer: TCallbackTimerIdGI; UserData: Cardinal); // @addr 0x005BC894
+    procedure BlinkContinueButton(Timer: TCallbackTimerIdGI; UserData: Cardinal); // @addr 0x005BCC2C
+    procedure ScrollIntroductionText(Timer: TCallbackTimerIdGI; UserData: Cardinal); // @addr 0x005BCCF4
+    procedure ScrollBackground(Timer: TCallbackTimerIdGI; UserData: Cardinal); // @addr 0x005BCDAC
+    procedure ContinueMouseEnter(Sender: TObjectGI); // @addr 0x005BCE48
+    procedure ContinueClicked(Sender: TObjectGI); // @addr 0x005BCE68
+    procedure MainPanelKeyDown(Sender: TObjectGI; Key: Cardinal); // @addr 0x005BCEF8
   end;
 
 var
-  IntroductionPulseCounter: Integer = 0; // @addr $87BEB0
-  NewGameGenerationStage: Integer; // @addr $88AA40 Shared with TThreadCreateNewGame; stage 8 means generation completed.
-  IntroductionBlinkColorA: Cardinal; // @addr $88AA44
-  IntroductionBlinkColorB: Cardinal; // @addr $88AA48
-  IntroductionPulseRed: Byte; // @addr $88AA4C
-  IntroductionPulseGreen: Byte; // @addr $88AA4D
-  IntroductionPulseBlue: Byte; // @addr $88AA4E
-  DisplayedGenerationStage: Integer; // @addr $88AA50
+  IntroductionPulseCounter: Integer = 0; // @addr $80F558
+  NewGameGenerationStage: Integer; // @addr $81B7E8 Shared with TThreadCreateNewGame; stage 8 means generation completed.
+  IntroductionBlinkColorA: Cardinal; // @addr $81B7EC
+  IntroductionBlinkColorB: Cardinal; // @addr $81B7F0
+  IntroductionPulseRed: Byte; // @addr $81B7F4
+  IntroductionPulseGreen: Byte; // @addr $81B7F5
+  IntroductionPulseBlue: Byte; // @addr $81B7F6
+  DisplayedGenerationStage: Integer; // @addr $81B7F8
 
 implementation
 
@@ -46,13 +45,7 @@ uses aGalaxyStruct, Classes, Windows, SysUtils, EC_Str, EC_Struct, GI_Main, GI_I
   GI_Label, GI_GraphButton, GI_GraphBuf, GR_Main, GR_DX, GR_Music,
   Globals, GlobalsV, aMyFunction, aPlayer, fGameSettings2;
 
-// Stages 1..8 have ICW/MCW labels; Offset selects the displayed or the next stage.
-function HasGenerationStageLabel(Offset: Integer): Boolean; inline;
-begin
-  Result := (DisplayedGenerationStage + Offset >= 1) and (DisplayedGenerationStage + Offset <= 8);
-end;
-
-{ @routine $6605BC TfIntroduction_InitializeLayout }
+{ @routine $5BBE00 TfIntroduction_InitializeLayout }
 procedure TfIntroduction.InitializeLayout;
 var I: Integer;
 begin
@@ -87,9 +80,9 @@ begin
   IntroductionBlinkColorB := GetStyleColorGI('Introduction.BlinkColorB',93,152,166);
   AppendLogLineThreadSafe('ok');
 end;
-{ @end $6605BC }
+{ @end $5BBE00 }
 
-{ @routine $660B30 TfIntroduction_OnOpen }
+{ @routine $5BC30C TfIntroduction_OnOpen }
 procedure TfIntroduction.OnOpen;
 var I: Integer; Text: WideString;
 begin
@@ -128,54 +121,54 @@ begin
     SetSize(Classes.Point(ClientSize.X,GraphBuf.Height));
     SetPosition(Classes.Point(LocalPosition.X,TextPanelHeight));
   end;
-  if GenerationProgressTimer <> nil then
+  if GenerationProgressTimer <> 0 then
   begin
     CancelCallbackTimer(GenerationProgressTimer);
-    GenerationProgressTimer := nil;
+    GenerationProgressTimer := 0;
   end;
   GenerationProgressTimer := ScheduleCallbackTimer(20,20,UpdateGenerationProgress);
-  if TextScrollTimer <> nil then
+  if TextScrollTimer <> 0 then
   begin
     CancelCallbackTimer(TextScrollTimer);
-    TextScrollTimer := nil;
+    TextScrollTimer := 0;
   end;
   TextScrollTimer := ScheduleCallbackTimer(20,20,ScrollIntroductionText);
-  if BackgroundTimer <> nil then
+  if BackgroundTimer <> 0 then
   begin
     CancelCallbackTimer(BackgroundTimer);
-    BackgroundTimer := nil;
+    BackgroundTimer := 0;
   end;
   if AnimMainFon then BackgroundTimer := ScheduleCallbackTimer(40,40,ScrollBackground);
   IntroductionPulseRed := 20;
   IntroductionPulseGreen := 30;
   IntroductionPulseBlue := 50;
   BackgroundScrollOffset := 0;
-  ScrollBackground(nil,0);
+  ScrollBackground(0,0);
 end;
-{ @end $660B30 }
+{ @end $5BC30C }
 
-{ @routine $661088 TfIntroduction_OnClose }
+{ @routine $5BC7CC TfIntroduction_OnClose }
 procedure TfIntroduction.OnClose;
 begin
-  if ContinueBlinkTimer <> nil then
+  if ContinueBlinkTimer <> 0 then
   begin
     CancelCallbackTimer(ContinueBlinkTimer);
-    ContinueBlinkTimer := nil;
+    ContinueBlinkTimer := 0;
   end;
-  if GenerationProgressTimer <> nil then
+  if GenerationProgressTimer <> 0 then
   begin
     CancelCallbackTimer(GenerationProgressTimer);
-    GenerationProgressTimer := nil;
+    GenerationProgressTimer := 0;
   end;
-  if TextScrollTimer <> nil then
+  if TextScrollTimer <> 0 then
   begin
     CancelCallbackTimer(TextScrollTimer);
-    TextScrollTimer := nil;
+    TextScrollTimer := 0;
   end;
-  if BackgroundTimer <> nil then
+  if BackgroundTimer <> 0 then
   begin
     CancelCallbackTimer(BackgroundTimer);
-    BackgroundTimer := nil;
+    BackgroundTimer := 0;
   end;
   if NewGameGenerationThread <> nil then
   begin
@@ -184,11 +177,11 @@ begin
   end;
   with GetByName('GBText') as TGraphBufGI do GraphBuf.Clear;
 end;
-{ @end $661088 }
+{ @end $5BC7CC }
 
-{ @routine $661194 TfIntroduction_UpdateGenerationProgress }
-procedure TfIntroduction.UpdateGenerationProgress(Timer: PCallbackTimerGI; UserData: Integer);
-var Delta: Integer; Amount: Single;
+{ @routine $5BC894 TfIntroduction_UpdateGenerationProgress }
+procedure TfIntroduction.UpdateGenerationProgress(Timer: TCallbackTimerIdGI; UserData: Cardinal);
+var Delta, Stage: Integer; Amount: Single;
 begin
   if IntroductionPulseCounter > 50 then Delta := -3 else Delta := 3;
   Inc(IntroductionPulseRed,Delta);
@@ -208,47 +201,48 @@ begin
     if DisplayedGenerationStage < NewGameGenerationStage then
     begin
       Inc(DisplayedGenerationStage);
-      if HasGenerationStageLabel(0) then
-        GetByName(AnsiString('ICW') + IntToStr(DisplayedGenerationStage)).SetActive(True);
-      if HasGenerationStageLabel(0) then
-        (GetByName(AnsiString('MCW') + IntToStr(DisplayedGenerationStage)) as TLabelGI).SetTextColor(IntroductionBlinkColorA);
+      Stage := DisplayedGenerationStage;
+      if (Stage >= 1) and (Stage <= 8) then
+        GetByName(AnsiString('ICW') + IntToStr(Stage)).SetActive(True);
+      Stage := DisplayedGenerationStage;
+      if (Stage >= 1) and (Stage <= 8) then
+        (GetByName(AnsiString('MCW') + IntToStr(Stage)) as TLabelGI).SetTextColor(IntroductionBlinkColorA);
     end;
   end;
   if ProgressPulsePhase < 0.5 then Amount := ProgressPulsePhase * 2
   else Amount := 1 - (ProgressPulsePhase - 0.5) * 2;
-  if HasGenerationStageLabel(1) then
-        (GetByName(AnsiString('MCW') + IntToStr(DisplayedGenerationStage + 1)) as TLabelGI).SetTextColor(CurrentPixelFormat.InterpolateRgb(IntroductionBlinkColorA,IntroductionBlinkColorB,Amount));
-  if (NewGameGenerationThread = nil) or (not NewGameGenerationThread.IsRunning and (DisplayedGenerationStage = 8)) then
+  Stage := DisplayedGenerationStage + 1;
+  if (Stage >= 1) and (Stage <= 8) then
+    (GetByName(AnsiString('MCW') + IntToStr(Stage)) as TLabelGI).SetTextColor(CurrentPixelFormat.InterpolateRgb(IntroductionBlinkColorA,IntroductionBlinkColorB,Amount));
+  if (NewGameGenerationThread <> nil) and (NewGameGenerationThread.IsRunning or (DisplayedGenerationStage <> 8)) then Exit;
+  if GenerationProgressTimer <> 0 then
   begin
-    if GenerationProgressTimer <> nil then
-    begin
-      CancelCallbackTimer(GenerationProgressTimer);
-      GenerationProgressTimer := nil;
-    end;
-    with GetByName('Ok') as TGraphButtonGI do
-    begin
-      SetHovered(False);
-      SetDisabled(False);
-    end;
-    if NewGameGenerationThread <> nil then
-    begin
-      NewGameGenerationThread.Free;
-      NewGameGenerationThread := nil;
-    end;
-    RootUiObject.ProcessMouseMove(0,Classes.Point(-1,-1));
-    PostMouseMoveMessage;
-    if ContinueBlinkTimer <> nil then
-    begin
-      CancelCallbackTimer(ContinueBlinkTimer);
-      ContinueBlinkTimer := nil;
-    end;
-    ContinueBlinkTimer := ScheduleCallbackTimer(200,200,BlinkContinueButton);
+    CancelCallbackTimer(GenerationProgressTimer);
+    GenerationProgressTimer := 0;
   end;
+  with GetByName('Ok') as TGraphButtonGI do
+  begin
+    SetHovered(False);
+    SetDisabled(False);
+  end;
+  if NewGameGenerationThread <> nil then
+  begin
+    NewGameGenerationThread.Free;
+    NewGameGenerationThread := nil;
+  end;
+  RootUiObject.ProcessMouseMove(0,Classes.Point(-1,-1));
+  PostMouseMoveMessage;
+  if ContinueBlinkTimer <> 0 then
+  begin
+    CancelCallbackTimer(ContinueBlinkTimer);
+    ContinueBlinkTimer := 0;
+  end;
+  ContinueBlinkTimer := ScheduleCallbackTimer(200,200,BlinkContinueButton);
 end;
-{ @end $661194 }
+{ @end $5BC894 }
 
-{ @routine $66158C TfIntroduction_BlinkContinueButton }
-procedure TfIntroduction.BlinkContinueButton(Timer: PCallbackTimerGI; UserData: Integer);
+{ @routine $5BCC2C TfIntroduction_BlinkContinueButton }
+procedure TfIntroduction.BlinkContinueButton(Timer: TCallbackTimerIdGI; UserData: Cardinal);
 var Enter, Leave: WideString;
 begin
   with GetByName('Ok') as TGraphButtonGI do
@@ -262,10 +256,10 @@ begin
     LeaveSound := Leave;
   end;
 end;
-{ @end $66158C }
+{ @end $5BCC2C }
 
-{ @routine $661674 TfIntroduction_ScrollIntroductionText }
-procedure TfIntroduction.ScrollIntroductionText(Timer: PCallbackTimerGI; UserData: Integer);
+{ @routine $5BCCF4 TfIntroduction_ScrollIntroductionText }
+procedure TfIntroduction.ScrollIntroductionText(Timer: TCallbackTimerIdGI; UserData: Cardinal);
 var Limit: Single;
 begin
   with GetByName('GBText') as TGraphBufGI do
@@ -273,17 +267,17 @@ begin
     SetPosition(AddPoints(LocalPosition,Classes.Point(0,-1)));
     Limit := (TextPanelTop + TextPanelHeight) div 2 - ClientSize.Y div 2;
     if LocalPosition.Y < Limit then
-      if TextScrollTimer <> nil then
+      if TextScrollTimer <> 0 then
       begin
         CancelCallbackTimer(TextScrollTimer);
-        TextScrollTimer := nil;
+        TextScrollTimer := 0;
       end;
   end;
 end;
-{ @end $661674 }
+{ @end $5BCCF4 }
 
-{ @routine $661748 TfIntroduction_ScrollBackground }
-procedure TfIntroduction.ScrollBackground(Timer: PCallbackTimerGI; UserData: Integer);
+{ @routine $5BCDAC TfIntroduction_ScrollBackground }
+procedure TfIntroduction.ScrollBackground(Timer: TCallbackTimerIdGI; UserData: Cardinal);
 var Offset: Integer;
 begin
   Inc(BackgroundScrollOffset);
@@ -294,20 +288,20 @@ begin
   end;
   with GetByName('ImageFon2') do SetPosition(Classes.Point(ClientSize.X - Offset,LocalPosition.Y));
 end;
-{ @end $661748 }
+{ @end $5BCDAC }
 
-{ @routine $66180C TfIntroduction_ContinueMouseEnter }
+{ @routine $5BCE48 TfIntroduction_ContinueMouseEnter }
 procedure TfIntroduction.ContinueMouseEnter(Sender: TObjectGI);
 begin
-  if ContinueBlinkTimer <> nil then
+  if ContinueBlinkTimer <> 0 then
   begin
     CancelCallbackTimer(ContinueBlinkTimer);
-    ContinueBlinkTimer := nil;
+    ContinueBlinkTimer := 0;
   end;
 end;
-{ @end $66180C }
+{ @end $5BCE48 }
 
-{ @routine $661844 TfIntroduction_ContinueClicked }
+{ @routine $5BCE68 TfIntroduction_ContinueClicked }
 procedure TfIntroduction.ContinueClicked(Sender: TObjectGI);
 begin
   ReleaseAllTextureSurfaces;
@@ -317,22 +311,22 @@ begin
   else RequestedScreenId := screenPlanet;
   RequestClose(1);
 end;
-{ @end $661844 }
+{ @end $5BCE68 }
 
-{ @routine $6618E0 TfIntroduction_MainPanelKeyDown }
+{ @routine $5BCEF8 TfIntroduction_MainPanelKeyDown }
 procedure TfIntroduction.MainPanelKeyDown(Sender: TObjectGI; Key: Cardinal);
 begin
   if not IsVirtualKeyDown(VK_CONTROL) and not IsVirtualKeyDown(VK_SHIFT) and not IsVirtualKeyDown(VK_MENU) and
     ((Key = VK_SPACE) or (Key = VK_RETURN) or (Key = VK_RIGHT)) then
     if not (GetByName('Ok') as TGraphButtonGI).Disabled then ContinueClicked(nil);
 end;
-{ @end $6618E0 }
+{ @end $5BCEF8 }
 
-{ @routine $661968 TfIntroduction_SelectMusic }
+{ @routine $5BCF70 TfIntroduction_SelectMusic }
 procedure TfIntroduction.SelectMusic;
 begin
   MusicManager.PlayCategory('Base');
 end;
-{ @end $661968 }
+{ @end $5BCF70 }
 
 end.

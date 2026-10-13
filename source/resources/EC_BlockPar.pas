@@ -1,5 +1,4 @@
 unit EC_BlockPar;
-// Unit bracket (inferred): .text 0x0084665C..0x00849E6E; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -8,7 +7,6 @@ uses EC_Buf, EC_Struct;
 type
   TBlockParKind = (bpkText = 0, bpkString = 1, bpkBlock = 2); // @size 0x04
   TBlockParEC = class;
-  PBlockParEC = ^TBlockParEC;
 
   TBlockParElEC = class(TObjectEx) // @size 0x2C
   public
@@ -24,13 +22,12 @@ type
     GroupIndex: Integer; // @offset 0x24
     GroupCount: Integer; // @offset 0x28
 
-    constructor Create; // @addr 0x846794
-    destructor Destroy; override; // @addr 0x8467D8
-    procedure Clear; // @addr 0x846814 @note "Frees ChildBlock; links and index metadata remain unchanged."
-    procedure MakeChildBlock; // @addr 0x846864 @note "Replaces the owned child; caller must update owner counts and index."
-    procedure CopyFrom(Source: TBlockParElEC); // @addr 0x8468B4 @note "Deep-copies ChildBlock; links and index metadata remain unchanged."
+    constructor Create; // @addr 0x007B1AC4
+    destructor Destroy; override; // @addr 0x007B1AFC
+    procedure Clear; // @addr 0x007B1B28 @note "Frees ChildBlock; links and index metadata remain unchanged."
+    procedure MakeChildBlock; // @addr 0x007B1B5C @note "Replaces the owned child; caller must update owner counts and index."
+    procedure CopyFrom(Source: TBlockParElEC); // @addr 0x007B1B90 @note "Deep-copies ChildBlock; links and index metadata remain unchanged."
   end;
-  PBlockParElEC = ^TBlockParElEC;
 
   TBlockParEC = class(TObjectEx) // @size 0x24
   public
@@ -44,114 +41,142 @@ type
     SortedEntries: array of TBlockParElEC; // @offset 0x1C
     SortedEntryCount: Integer; // @offset 0x20
 
-    constructor Create; // @addr 0x846940
-    destructor Destroy; override; // @addr 0x846988
-    procedure Clear; // @addr 0x8469C4 @note "Preserves UseSortedIndex."
-    procedure CopyFrom(Source: TBlockParEC); // @addr 0x846A40
-    function AddEntry: TBlockParElEC; // @addr 0x846ACC @note "Caller must maintain kind counts and the sorted index."
-    procedure DeleteEntry(Entry: TBlockParElEC); // @addr 0x846B44 @note "Frees Entry but leaves its sorted-index entry intact."
-    function FindEntryByPath(const Path: WideString; RaiseIfMissing: Boolean): TBlockParElEC; // @addr 0x846DB0 @note "Dot, slash and backslash separate components; a :number suffix selects a zero-based occurrence."
-    function FindSortedNameRangeStartIndex(const EntryName: WideString): Integer; // @addr 0x84704C @note "Returns -1 when absent."
-    function PrepareSortedInsertion(Entry: TBlockParElEC): Integer; // @addr 0x847100 @note "Also updates duplicate-group metadata."
-    procedure InsertIntoSortedIndex(Entry: TBlockParElEC); // @addr 0x847234
-    procedure RemoveFromSortedIndex(Entry: TBlockParElEC); // @addr 0x8472DC
+    constructor Create; // @addr 0x007B1BF0
+    destructor Destroy; override; // @addr 0x007B1C2C
+    procedure Clear; // @addr 0x007B1C58 @note "Preserves UseSortedIndex."
+    procedure CopyFrom(Source: TBlockParEC); // @addr 0x007B1CA4
+    function AddEntry: TBlockParElEC; // @addr 0x007B1D04 @note "Caller must maintain kind counts and the sorted index."
+    procedure DeleteEntry(Entry: TBlockParElEC); // @addr 0x007B1D3C @note "Frees Entry but leaves its sorted-index entry intact."
+    function FindEntryByPath(const Path: WideString; RaiseIfMissing: Boolean): TBlockParElEC; // @addr 0x007B1F08 @note "Dot, slash and backslash separate components; a :number suffix selects a zero-based occurrence."
+    function FindSortedNameRangeStartIndex(const EntryName: WideString): Integer; // @addr 0x007B2148 @note "Returns -1 when absent."
+    function PrepareSortedInsertion(Entry: TBlockParElEC): Integer; // @addr 0x007B21E0 @note "Also updates duplicate-group metadata."
+    procedure InsertIntoSortedIndex(Entry: TBlockParElEC); // @addr 0x007B22E8
+    procedure RemoveFromSortedIndex(Entry: TBlockParElEC); // @addr 0x007B2350
 
     // Params are string entries; blocks have separate accessors. ByPath traverses
     // subtrees, while ParamName addresses a direct child. OrMarker returns
     // '[name]' or '[path]' when missing; ordinary getters raise instead.
-    function GetParamByPath(const Path: WideString): WideString; // @addr 0x8473FC
-    function GetParamByPathOrMarker(const Path: WideString): WideString; // @addr 0x8474C8 @note "Returns a marker containing Path when lookup fails, including caught exceptions."
-    function CountParamsByPath(const Path: WideString): Integer; // @addr 0x847580 @note "Creates missing intermediate subtrees."
-    function AddParam(const ParamName, ParamValue: WideString): TBlockParElEC; // @addr 0x847650
-    procedure SetParam(const ParamName, ParamValue: WideString); // @addr 0x8476B8 @note "Only the first match is affected; raises when absent."
-    procedure SetOrAddParam(const ParamName, ParamValue: WideString); // @addr 0x8477BC
-    procedure DeleteParam(const ParamName: WideString); // @addr 0x847824 @note "Only the first match is affected; raises when absent."
-    procedure DeleteChildBlock(const BlockName: WideString); // @addr 0x847938 @note "Only the first match is affected; raises when absent."
-    function GetParam(const ParamName: WideString): WideString; // @addr 0x847A50
-    function GetParamOrMarker(const ParamName: WideString): WideString; // @addr 0x847B54
-    function GetParamCount: Integer; // @addr 0x847BD8
-    function CountParams(const ParamName: WideString): Integer; // @addr 0x847BF4
+    function GetParamByPath(const Path: WideString): WideString; // @addr 0x007B242C
+    function GetParamByPathOrMarker(const Path: WideString): WideString; // @addr 0x007B24E4 @note "Returns a marker containing Path when lookup fails, including caught exceptions."
+    function CountParamsByPath(const Path: WideString): Integer; // @addr 0x007B258C @note "Creates missing intermediate subtrees."
+    function AddParam(const ParamName, ParamValue: WideString): TBlockParElEC; // @addr 0x007B2640
+    procedure SetParam(const ParamName, ParamValue: WideString); // @addr 0x007B2688 @note "Only the first match is affected; raises when absent."
+    procedure SetOrAddParam(const ParamName, ParamValue: WideString); // @addr 0x007B2768
+    procedure DeleteParam(const ParamName: WideString); // @addr 0x007B27B0 @note "Only the first match is affected; raises when absent."
+    procedure DeleteChildBlock(const BlockName: WideString); // @addr 0x007B28A0 @note "Only the first match is affected; raises when absent."
+    function GetParam(const ParamName: WideString): WideString; // @addr 0x007B2994
+    function GetParamOrMarker(const ParamName: WideString): WideString; // @addr 0x007B2A74
+    function GetParamCount: Integer; // @addr 0x007B2AD4
+    function CountParams(const ParamName: WideString): Integer; // @addr 0x007B2AD8
     // GetParamValue/GetParamName take zero-based string-entry indexes.
     // Kind-specific indexes use sorted order only when all entries have that kind.
-    function GetParamValue(Index: Integer): WideString; // @addr 0x847CB8
-    function GetParamName(Index: Integer): WideString; // @addr 0x847DC8
-    function AddBlockByPath(const Path: WideString): TBlockParEC; // @addr 0x847EDC @note "Nested insertion updates the receiver's index and block count."
-    function GetBlockByPath(const Path: WideString): TBlockParEC; // @addr 0x847FE0 @note "Raises when Path is absent or is not a block."
-    function FindBlockByPath(const Path: WideString): TBlockParEC; // @addr 0x8480C8
-    function GetOrAddBlockByPath(const Path: WideString): TBlockParEC; // @addr 0x84810C
-    function AddChildBlock(const BlockName: WideString): TBlockParEC; // @addr 0x848144
-    function GetBlock(const BlockName: WideString): TBlockParEC; // @addr 0x84819C @note "Raises when absent."
-    function FindBlock(const BlockName: WideString): TBlockParEC; // @addr 0x84829C
-    function GetBlockCount: Integer; // @addr 0x8482F8
-    function CountBlocks(const BlockName: WideString): Integer; // @addr 0x848314
-    function GetBlockByIndex(Index: Integer): TBlockParEC; // @addr 0x8483D8
-    function GetBlockNameByIndex(Index: Integer): WideString; // @addr 0x8484DC
+    function GetParamValue(Index: Integer): WideString; // @addr 0x007B2B44
+    function GetParamName(Index: Integer): WideString; // @addr 0x007B2C24
+    function AddBlockByPath(const Path: WideString): TBlockParEC; // @addr 0x007B2D08 @note "Nested insertion updates the receiver's index and block count."
+    function GetBlockByPath(const Path: WideString): TBlockParEC; // @addr 0x007B2DEC @note "Raises when Path is absent or is not a block."
+    function FindBlockByPath(const Path: WideString): TBlockParEC; // @addr 0x007B2EB8
+    function GetOrAddBlockByPath(const Path: WideString): TBlockParEC; // @addr 0x007B2ED0
+    function AddChildBlock(const BlockName: WideString): TBlockParEC; // @addr 0x007B2EF0
+    function GetBlock(const BlockName: WideString): TBlockParEC; // @addr 0x007B2F2C @note "Raises when absent."
+    function FindBlock(const BlockName: WideString): TBlockParEC; // @addr 0x007B3008
+    function GetBlockCount: Integer; // @addr 0x007B303C
+    function CountBlocks(const BlockName: WideString): Integer; // @addr 0x007B3040
+    function GetBlockByIndex(Index: Integer): TBlockParEC; // @addr 0x007B30AC
+    function GetBlockNameByIndex(Index: Integer): WideString; // @addr 0x007B3178
 
-    function GetEntryCount: Integer; // @addr 0x8485F0
+    function GetEntryCount: Integer; // @addr 0x007B325C
     // Mixed-kind indexes use the sorted array only when it covers every entry.
-    function GetEntryKindByIndex(Index: Integer): TBlockParKind; // @addr 0x84860C
-    function GetEntryBlockByIndex(Index: Integer): TBlockParEC; // @addr 0x848708
-    function GetEntryStringByIndex(Index: Integer): WideString; // @addr 0x848880
-    function GetEntryNameByIndex(Index: Integer): WideString; // @addr 0x8489FC
+    function GetEntryKindByIndex(Index: Integer): TBlockParKind; // @addr 0x007B3260
+    function GetEntryBlockByIndex(Index: Integer): TBlockParEC; // @addr 0x007B3328
+    function GetEntryStringByIndex(Index: Integer): WideString; // @addr 0x007B345C
+    function GetEntryNameByIndex(Index: Integer): WideString; // @addr 0x007B359C
 
     // Text writers append at Dest.Position. Sorted applies only with UseSortedIndex.
-    procedure WriteWideText(Dest: TBufEC; Indent: Integer; Sorted: Boolean); // @addr 0x848DF8 @note "Uses four spaces per indentation level and CRLF line endings."
-    procedure WriteAnsiText(Dest: TBufEC; Indent: Integer; Sorted: Boolean); // @addr 0x84914C @note "Uses tabs for indentation and CRLF line endings."
-    procedure WriteTextBuffer(Dest: TBufEC; AnsiText, Sorted: Boolean); // @addr 0x8491C8 @note "Wide output starts with a UTF-16LE BOM."
-    procedure SaveTextFile(FileName: PWideChar; AnsiText, Sorted: Boolean); // @addr 0x849214 @note "Creates or truncates FileName."
+    procedure WriteWideText(Dest: TBufEC; Indent: Integer; Sorted: Boolean); // @addr 0x007B38D4 @note "Uses four spaces per indentation level and CRLF line endings."
+    procedure WriteAnsiText(Dest: TBufEC; Indent: Integer; Sorted: Boolean); // @addr 0x007B3B98 @note "Uses tabs for indentation and CRLF line endings."
+    procedure WriteTextBuffer(Dest: TBufEC; AnsiText, Sorted: Boolean); // @addr 0x007B3C0C @note "Wide output starts with a UTF-16LE BOM."
+    procedure SaveTextFile(FileName: PWideChar; AnsiText, Sorted: Boolean); // @addr 0x007B3C4C @note "Creates or truncates FileName."
     // Text parsers append entries; they do not clear the existing tree.
-    procedure ParseTextBuffer(Buf: TBufEC; const InitialText: WideString; AnsiText, PreserveComments: Boolean); // @addr 0x8492F8
-    procedure LoadFromTextBufferWithEncodingProbe(Buf: TBufEC; PreserveComments: Boolean); // @addr 0x849714 @note "Does nothing with at most two bytes remaining; otherwise consumes a UTF-16LE BOM or parses ANSI text."
-    procedure LoadFromTextFileWithEncodingProbe(FileName: PWideChar; PreserveComments: Boolean); // @addr 0x849780
-    procedure MergeFrom(Source: TBlockParEC); // @addr 0x8497E8 @note "Replaces all same-name string parameters; matches duplicate child blocks by occurrence and merges them recursively."
-    function ConcatenateValues: WideString; // @addr 0x8499BC @note "Omits names and wraps child values in braces; text-only entries are not accepted."
-    procedure LoadFromDecodedBuffer(Buf: TBufEC); // @addr 0x849A9C @note "Replaces existing contents; trusts sorted-group metadata from the stream."
-    procedure LoadFromEncryptedDatFile(const FileName: WideString); // @addr 0x849C34 @note "An inner checksum mismatch leaves the tree unchanged."
+    procedure ParseTextBuffer(Buf: TBufEC; const InitialText: WideString; AnsiText, PreserveComments: Boolean); // @addr 0x007B3D30
+    procedure LoadFromTextBufferWithEncodingProbe(Buf: TBufEC; PreserveComments: Boolean); // @addr 0x007B413C @note "Does nothing with at most two bytes remaining; otherwise consumes a UTF-16LE BOM or parses ANSI text."
+    procedure LoadFromTextFileWithEncodingProbe(FileName: PWideChar; PreserveComments: Boolean); // @addr 0x007B418C
+    procedure MergeFrom(Source: TBlockParEC); // @addr 0x007B41F0 @note "Replaces all same-name string parameters; matches duplicate child blocks by occurrence and merges them recursively."
+    function ConcatenateValues: WideString; // @addr 0x007B4360 @note "Omits names and wraps child values in braces; text-only entries are not accepted."
+    procedure LoadFromDecodedBuffer(Buf: TBufEC); // @addr 0x007B4430 @note "Replaces existing contents; trusts sorted-group metadata from the stream."
+    procedure LoadFromEncryptedDatFile(const FileName: WideString); // @addr 0x007B4574 @note "An inner checksum mismatch leaves the tree unchanged."
+
+    property ParamCount: Integer read GetParamCount;
+    property Params[const Name: WideString]: WideString read GetParam write SetParam;
+    property ParamNames[Index: Integer]: WideString read GetParamName;
+    property ParamValues[Index: Integer]: WideString read GetParamValue;
+    property BlockCount: Integer read GetBlockCount;
+    property Blocks[Index: Integer]: TBlockParEC read GetBlockByIndex;
+    property BlockNames[Index: Integer]: WideString read GetBlockNameByIndex;
+    property Count: Integer read GetEntryCount;
+    property EntryKinds[Index: Integer]: TBlockParKind read GetEntryKindByIndex;
+    property EntryNames[Index: Integer]: WideString read GetEntryNameByIndex;
+    property EntryStrings[Index: Integer]: WideString read GetEntryStringByIndex;
+    property EntryBlocks[Index: Integer]: TBlockParEC read GetEntryBlockByIndex;
   end;
 
 const
-  BlockDatSeedKey: Cardinal = $B1E8C689; // @addr $88271C
-  BlockDatCrcKey1: Cardinal = $7DB6C99D; // @addr $882720
-  BlockDatCrcKey2: Cardinal = $C83FCBF3; // @addr $882724
+  BlockDatSeedKey: Cardinal = $B1E8C689; // @addr $812F04
+  BlockDatCrcKey1: Cardinal = $7DB6C99D; // @addr $812F08
+  BlockDatCrcKey2: Cardinal = $C83FCBF3; // @addr $812F0C
 
 implementation
 
 uses EC_File, aMyFunction, BlockParException, GR_Main, EC_Str, GlobalsV, SysUtils, Windows;
 
-{ @routine $846794 TBlockParElEC_Create }
+const
+  Utf16LittleEndianBom = $FEFF;
+  WideTextIndentWidth = 4;
+
+{ @routine $7B1AC4 TBlockParElEC_Create }
 constructor TBlockParElEC.Create;
-begin inherited Create end;
-{ @end $846794 }
+begin
+  inherited Create;
+end;
+{ @end $7B1AC4 }
 
-{ @routine $8467D8 TBlockParElEC_Destroy }
+{ @routine $7B1AFC TBlockParElEC_Destroy }
 destructor TBlockParElEC.Destroy;
-begin Clear; inherited Destroy end;
-{ @end $8467D8 }
+begin
+  Clear;
+  inherited Destroy;
+end;
+{ @end $7B1AFC }
 
-{ @routine $846814 TBlockParElEC_Clear }
+{ @routine $7B1B28 TBlockParElEC_Clear }
 procedure TBlockParElEC.Clear;
 begin
   if ChildBlock <> nil then
-  begin ChildBlock.Free; ChildBlock := nil end;
+  begin
+    ChildBlock.Free;
+    ChildBlock := nil;
+  end;
   ItemType := bpkText;
   Name := '';
   StringValue := '';
   Comment := '';
 end;
-{ @end $846814 }
+{ @end $7B1B28 }
 
-{ @routine $846864 TBlockParElEC_MakeChildBlock }
+{ @routine $7B1B5C TBlockParElEC_MakeChildBlock }
 procedure TBlockParElEC.MakeChildBlock;
 begin
   if ChildBlock <> nil then
-  begin ChildBlock.Free; ChildBlock := nil end;
+  begin
+    ChildBlock.Free;
+    ChildBlock := nil;
+  end;
   ChildBlock := TBlockParEC.Create;
   ItemType := bpkBlock;
   StringValue := '';
 end;
-{ @end $846864 }
+{ @end $7B1B5C }
 
-{ @routine $8468B4 TBlockParElEC_CopyFrom }
+{ @routine $7B1B90 TBlockParElEC_CopyFrom }
 procedure TBlockParElEC.CopyFrom(Source: TBlockParElEC);
 begin
   Clear;
@@ -166,19 +191,25 @@ begin
     ChildBlock.CopyFrom(Source.ChildBlock);
   end;
 end;
-{ @end $8468B4 }
+{ @end $7B1B90 }
 
-{ @routine $846940 TBlockParEC_Create }
+{ @routine $7B1BF0 TBlockParEC_Create }
 constructor TBlockParEC.Create;
-begin inherited Create; UseSortedIndex := True end;
-{ @end $846940 }
+begin
+  inherited Create;
+  UseSortedIndex := True;
+end;
+{ @end $7B1BF0 }
 
-{ @routine $846988 TBlockParEC_Destroy }
+{ @routine $7B1C2C TBlockParEC_Destroy }
 destructor TBlockParEC.Destroy;
-begin Clear; inherited Destroy end;
-{ @end $846988 }
+begin
+  Clear;
+  inherited Destroy;
+end;
+{ @end $7B1C2C }
 
-{ @routine $8469C4 TBlockParEC_Clear }
+{ @routine $7B1C58 TBlockParEC_Clear }
 procedure TBlockParEC.Clear;
 var Entry, Removed: TBlockParElEC;
 begin
@@ -197,9 +228,9 @@ begin
   SortedEntries := nil;
   SortedEntryCount := 0;
 end;
-{ @end $8469C4 }
+{ @end $7B1C58 }
 
-{ @routine $846A40 TBlockParEC_CopyFrom }
+{ @routine $7B1CA4 TBlockParEC_CopyFrom }
 procedure TBlockParEC.CopyFrom(Source: TBlockParEC);
 var Entry, Added: TBlockParElEC;
 begin
@@ -216,9 +247,9 @@ begin
     Entry := Entry.Next;
   end;
 end;
-{ @end $846A40 }
+{ @end $7B1CA4 }
 
-{ @routine $846ACC TBlockParEC_AddEntry }
+{ @routine $7B1D04 TBlockParEC_AddEntry }
 function TBlockParEC.AddEntry: TBlockParElEC;
 var Entry: TBlockParElEC;
 begin
@@ -232,9 +263,9 @@ begin
   Inc(EntryCount);
   Result := Entry;
 end;
-{ @end $846ACC }
+{ @end $7B1D04 }
 
-{ @routine $846B44 TBlockParEC_DeleteEntry }
+{ @routine $7B1D3C TBlockParEC_DeleteEntry }
 procedure TBlockParEC.DeleteEntry(Entry: TBlockParElEC);
 begin
   if Entry.Prev <> nil then Entry.Prev.Next := Entry.Next;
@@ -246,9 +277,9 @@ begin
   else if Entry.ItemType = bpkBlock then Dec(ChildBlockCount);
   Entry.Free;
 end;
-{ @end $846B44 }
+{ @end $7B1D3C }
 
-{ @routine $846DB0 TBlockParEC_FindEntryByPath }
+{ @routine $7B1F08 TBlockParEC_FindEntryByPath }
 function TBlockParEC.FindEntryByPath(const Path: WideString; RaiseIfMissing: Boolean): TBlockParElEC;
 var
   Cursor, PathLength, Start, PartLength, Occurrence: Integer;
@@ -256,14 +287,17 @@ var
   Entry: TBlockParElEC;
   Block: TBlockParEC;
 
-  // @nested $846BE0 NextBlockPathComponent
-  function NextBlockPathComponent: Boolean; // @addr 0x846BE0 @ida "bool __cdecl $name(void *ParentFrame);" @note "Nested helper of TBlockParEC.FindEntryByPath."
+  // @nested $7B1D90 NextBlockPathComponent
+  function NextBlockPathComponent: Boolean; // @addr 0x007B1D90 @ida "bool __cdecl $name(void *ParentFrame);" @note "Nested helper of TBlockParEC.FindEntryByPath."
   var
     Ch: WideChar;
     i: Integer;
   begin
     if Cursor >= PathLength then
-    begin Result := False; Exit end;
+    begin
+      Result := False;
+      Exit;
+    end;
     Start := Cursor;
     i := Start;
     while PathLength > i do
@@ -277,8 +311,8 @@ var
     Result := True;
   end;
 
-  // @nested $846C74 ParseBlockPathOccurrence
-  procedure ParseBlockPathOccurrence; // @addr 0x846C74 @ida "void __cdecl $name(void *ParentFrame);" @note "Nested helper of TBlockParEC.FindEntryByPath."
+  // @nested $7B1E00 ParseBlockPathOccurrence
+  procedure ParseBlockPathOccurrence; // @addr 0x007B1E00 @ida "void __cdecl $name(void *ParentFrame);" @note "Nested helper of TBlockParEC.FindEntryByPath."
   var i, Limit: Integer;
       Ch: WideChar;
   begin
@@ -303,11 +337,11 @@ var
     end;
   end;
 
-  // @nested $846D24 MatchBlockPathComponent
-  function MatchBlockPathComponent(Name: WideString): Boolean; // @addr 0x846D24 @ida "bool __usercall $name@<al>(unsigned __int16 *Name@<eax>, void *ParentFrame);" @note "Nested helper of TBlockParEC.FindEntryByPath; native clones its value parameter."
+  // @nested $7B1E80 MatchBlockPathComponent
+  function MatchBlockPathComponent(Name: WideString): Boolean; // @addr 0x007B1E80 @ida "bool __usercall $name@<al>(unsigned __int16 *Name@<eax>, void *ParentFrame);" @note "Nested helper of TBlockParEC.FindEntryByPath; native clones its value parameter."
   begin
     if Length(Name) <> PartLength then Result := False
-    else Result := SysUtils.CompareMem(Pointer(PAnsiChar(PWideChar(Path)) + Start * SizeOf(WideChar)), PWideChar(Name), PartLength * 2);
+    else Result := SysUtils.CompareMem(PWideChar(Path) + Start, PWideChar(Name), PartLength * SizeOf(WideChar));
   end;
 
 begin
@@ -373,30 +407,38 @@ begin
   end;
   Result := Entry;
 end;
-{ @end $846DB0 }
+{ @end $7B1F08 }
 
-{ @routine $84704C TBlockParEC_FindSortedNameRangeStartIndex }
+{ @routine $7B2148 TBlockParEC_FindSortedNameRangeStartIndex }
 function TBlockParEC.FindSortedNameRangeStartIndex(const EntryName: WideString): Integer;
 var Low, High, Middle, Order: Integer;
     Entry: TBlockParElEC;
 begin
   if SortedEntryCount < 1 then
-  begin Result := -1; Exit end;
+  begin
+    Result := -1;
+    Exit;
+  end;
   Low := 0;
   High := SortedEntryCount - 1;
-  repeat
+  while True do
+  begin
     Middle := (High - Low) div 2 + Low;
     Entry := SortedEntries[Middle];
     Order := CompareWideChars(PWideChar(EntryName), PWideChar(Entry.Name));
     if Order = 0 then
-    begin Result := Middle - Entry.GroupIndex; Exit end;
-    if Order < 0 then High := Middle - 1 else Low := Middle + 1;
-  until High < Low;
+    begin
+      Result := Middle - Entry.GroupIndex;
+      Exit;
+    end
+    else if Order < 0 then High := Middle - 1 else Low := Middle + 1;
+    if High < Low then Break;
+  end;
   Result := -1;
 end;
-{ @end $84704C }
+{ @end $7B2148 }
 
-{ @routine $847100 TBlockParEC_PrepareSortedInsertion }
+{ @routine $7B21E0 TBlockParEC_PrepareSortedInsertion }
 function TBlockParEC.PrepareSortedInsertion(Entry: TBlockParElEC): Integer;
 var Low, High, Middle, Order: Integer;
     Existing: TBlockParElEC;
@@ -410,7 +452,8 @@ begin
   end;
   Low := 0;
   High := SortedEntryCount - 1;
-  repeat
+  while True do
+  begin
     Middle := (High - Low) shr 1 + Low;
     Existing := SortedEntries[Middle];
     Order := CompareWideChars(PWideChar(Entry.Name), PWideChar(Existing.Name));
@@ -429,14 +472,15 @@ begin
       Exit;
     end;
     if Order < 0 then High := Middle - 1 else Low := Middle + 1;
-  until High < Low;
+    if High < Low then Break;
+  end;
   if Order < 0 then Result := Middle else Result := Middle + 1;
   Entry.GroupIndex := 0;
   Entry.GroupCount := 1;
 end;
-{ @end $847100 }
+{ @end $7B21E0 }
 
-{ @routine $847234 TBlockParEC_InsertIntoSortedIndex }
+{ @routine $7B22E8 TBlockParEC_InsertIntoSortedIndex }
 procedure TBlockParEC.InsertIntoSortedIndex(Entry: TBlockParElEC);
 var Index: Integer;
 begin
@@ -446,15 +490,17 @@ begin
   begin
     SortedEntries[SortedEntryCount] := Entry;
     Inc(SortedEntryCount);
-    Exit;
+  end
+  else
+  begin
+    Windows.MoveMemory(@SortedEntries[Index + 1], @SortedEntries[Index], (SortedEntryCount - Index) * SizeOf(SortedEntries[0]));
+    SortedEntries[Index] := Entry;
+    Inc(SortedEntryCount);
   end;
-  Windows.MoveMemory(@SortedEntries[Index + 1], @SortedEntries[Index], (SortedEntryCount - Index) * SizeOf(SortedEntries[0]));
-  SortedEntries[Index] := Entry;
-  Inc(SortedEntryCount);
 end;
-{ @end $847234 }
+{ @end $7B22E8 }
 
-{ @routine $8472DC TBlockParEC_RemoveFromSortedIndex }
+{ @routine $7B2350 TBlockParEC_RemoveFromSortedIndex }
 procedure TBlockParEC.RemoveFromSortedIndex(Entry: TBlockParElEC);
 var i, Index: Integer;
     Head: TBlockParElEC;
@@ -479,9 +525,9 @@ begin
     Inc(Index);
   end;
 end;
-{ @end $8472DC }
+{ @end $7B2350 }
 
-{ @routine $8473FC TBlockParEC_GetParamByPath }
+{ @routine $7B242C TBlockParEC_GetParamByPath }
 function TBlockParEC.GetParamByPath(const Path: WideString): WideString;
 var Entry: TBlockParElEC;
 begin
@@ -489,9 +535,9 @@ begin
   if Entry.ItemType <> bpkString then raise Exception.Create('Par_Get. Path=' + Path);
   Result := Entry.StringValue;
 end;
-{ @end $8473FC }
+{ @end $7B242C }
 
-{ @routine $8474C8 TBlockParEC_GetParamByPathOrMarker }
+{ @routine $7B24E4 TBlockParEC_GetParamByPathOrMarker }
 function TBlockParEC.GetParamByPathOrMarker(const Path: WideString): WideString;
 var Entry: TBlockParElEC;
 begin
@@ -504,9 +550,9 @@ begin
   if (Entry <> nil) and (Entry.ItemType = bpkString) then Result := Entry.StringValue
   else Result := '[' + Path + ']';
 end;
-{ @end $8474C8 }
+{ @end $7B24E4 }
 
-{ @routine $847580 TBlockParEC_CountParamsByPath }
+{ @routine $7B258C TBlockParEC_CountParamsByPath }
 function TBlockParEC.CountParamsByPath(const Path: WideString): Integer;
 var Count: Integer;
     Part: WideString;
@@ -525,9 +571,9 @@ begin
   end;
   Result := Block.CountParams(Part);
 end;
-{ @end $847580 }
+{ @end $7B258C }
 
-{ @routine $847650 TBlockParEC_AddParam }
+{ @routine $7B2640 TBlockParEC_AddParam }
 function TBlockParEC.AddParam(const ParamName, ParamValue: WideString): TBlockParElEC;
 var Entry: TBlockParElEC;
 begin
@@ -539,9 +585,9 @@ begin
   Inc(StringParamCount);
   Result := Entry;
 end;
-{ @end $847650 }
+{ @end $7B2640 }
 
-{ @routine $8476B8 TBlockParEC_SetParam }
+{ @routine $7B2688 TBlockParEC_SetParam }
 procedure TBlockParEC.SetParam(const ParamName, ParamValue: WideString);
 var Entry: TBlockParElEC;
 begin
@@ -557,9 +603,9 @@ begin
   end;
   raise Exception.Create('TBlockParEC.Par_Set. name=' + ParamName);
 end;
-{ @end $8476B8 }
+{ @end $7B2688 }
 
-{ @routine $8477BC TBlockParEC_SetOrAddParam }
+{ @routine $7B2768 TBlockParEC_SetOrAddParam }
 procedure TBlockParEC.SetOrAddParam(const ParamName, ParamValue: WideString);
 var Entry: TBlockParElEC;
 begin
@@ -575,9 +621,9 @@ begin
   end;
   AddParam(ParamName, ParamValue);
 end;
-{ @end $8477BC }
+{ @end $7B2768 }
 
-{ @routine $847824 TBlockParEC_DeleteParam }
+{ @routine $7B27B0 TBlockParEC_DeleteParam }
 procedure TBlockParEC.DeleteParam(const ParamName: WideString);
 var Entry: TBlockParElEC;
 begin
@@ -594,9 +640,9 @@ begin
   end;
   raise Exception.Create('TBlockParEC.Par_Delete. name=' + ParamName);
 end;
-{ @end $847824 }
+{ @end $7B27B0 }
 
-{ @routine $847938 TBlockParEC_DeleteChildBlock }
+{ @routine $7B28A0 TBlockParEC_DeleteChildBlock }
 procedure TBlockParEC.DeleteChildBlock(const BlockName: WideString);
 var Entry: TBlockParElEC;
 begin
@@ -613,9 +659,9 @@ begin
   end;
   raise Exception.Create('TBlockParEC.Block_Delete. name=' + BlockName);
 end;
-{ @end $847938 }
+{ @end $7B28A0 }
 
-{ @routine $847A50 TBlockParEC_GetParam }
+{ @routine $7B2994 TBlockParEC_GetParam }
 function TBlockParEC.GetParam(const ParamName: WideString): WideString;
 var Entry: TBlockParElEC;
 begin
@@ -631,9 +677,9 @@ begin
   end;
   raise Exception.Create('TBlockParEC.Par_Get. name=' + ParamName);
 end;
-{ @end $847A50 }
+{ @end $7B2994 }
 
-{ @routine $847B54 TBlockParEC_GetParamOrMarker }
+{ @routine $7B2A74 TBlockParEC_GetParamOrMarker }
 function TBlockParEC.GetParamOrMarker(const ParamName: WideString): WideString;
 var Entry: TBlockParElEC;
 begin
@@ -649,14 +695,16 @@ begin
   end;
   Result := '[' + ParamName + ']';
 end;
-{ @end $847B54 }
+{ @end $7B2A74 }
 
-{ @routine $847BD8 TBlockParEC_GetParamCount }
+{ @routine $7B2AD4 TBlockParEC_GetParamCount }
 function TBlockParEC.GetParamCount: Integer;
-begin Result := StringParamCount end;
-{ @end $847BD8 }
+begin
+  Result := StringParamCount;
+end;
+{ @end $7B2AD4 }
 
-{ @routine $847BF4 TBlockParEC_CountParams }
+{ @routine $7B2AD8 TBlockParEC_CountParams }
 function TBlockParEC.CountParams(const ParamName: WideString): Integer;
 var Entry: TBlockParElEC;
     Count, Index, Limit: Integer;
@@ -688,55 +736,63 @@ begin
     Result := Count;
   end;
 end;
-{ @end $847BF4 }
+{ @end $7B2AD8 }
 
-{ @routine $847CB8 TBlockParEC_GetParamValue }
+{ @routine $7B2B44 TBlockParEC_GetParamValue }
 function TBlockParEC.GetParamValue(Index: Integer): WideString;
 var Entry: TBlockParElEC;
 begin
-  if UseSortedIndex and (EntryCount = StringParamCount) then Result := SortedEntries[Index].StringValue
-  else
+  if UseSortedIndex and (EntryCount = StringParamCount) then
   begin
-    Entry := FirstEntry;
-    while Entry <> nil do
-    begin
-      if Entry.ItemType = bpkString then
-      begin
-        if Index = 0 then
-        begin Result := Entry.StringValue; Exit end;
-        Dec(Index);
-      end;
-      Entry := Entry.Next;
-    end;
-    raise Exception.Create('TBlockParEC.Par_Get. no=' + SysUtils.IntToStr(Index));
+    Result := SortedEntries[Index].StringValue;
+    Exit;
   end;
+  Entry := FirstEntry;
+  while Entry <> nil do
+  begin
+    if Entry.ItemType = bpkString then
+    begin
+      if Index = 0 then
+      begin
+        Result := Entry.StringValue;
+        Exit;
+      end;
+      Dec(Index);
+    end;
+    Entry := Entry.Next;
+  end;
+  raise Exception.Create('TBlockParEC.Par_Get. no=' + SysUtils.IntToStr(Index));
 end;
-{ @end $847CB8 }
+{ @end $7B2B44 }
 
-{ @routine $847DC8 TBlockParEC_GetParamName }
+{ @routine $7B2C24 TBlockParEC_GetParamName }
 function TBlockParEC.GetParamName(Index: Integer): WideString;
 var Entry: TBlockParElEC;
 begin
-  if UseSortedIndex and (EntryCount = StringParamCount) then Result := SortedEntries[Index].Name
-  else
+  if UseSortedIndex and (EntryCount = StringParamCount) then
   begin
-    Entry := FirstEntry;
-    while Entry <> nil do
-    begin
-      if Entry.ItemType = bpkString then
-      begin
-        if Index = 0 then
-        begin Result := Entry.Name; Exit end;
-        Dec(Index);
-      end;
-      Entry := Entry.Next;
-    end;
-    raise Exception.Create('TBlockParEC.Par_GetName. no=' + SysUtils.IntToStr(Index));
+    Result := SortedEntries[Index].Name;
+    Exit;
   end;
+  Entry := FirstEntry;
+  while Entry <> nil do
+  begin
+    if Entry.ItemType = bpkString then
+    begin
+      if Index = 0 then
+      begin
+        Result := Entry.Name;
+        Exit;
+      end;
+      Dec(Index);
+    end;
+    Entry := Entry.Next;
+  end;
+  raise Exception.Create('TBlockParEC.Par_GetName. no=' + SysUtils.IntToStr(Index));
 end;
-{ @end $847DC8 }
+{ @end $7B2C24 }
 
-{ @routine $847EDC TBlockParEC_AddBlockByPath }
+{ @routine $7B2D08 TBlockParEC_AddBlockByPath }
 function TBlockParEC.AddBlockByPath(const Path: WideString): TBlockParEC;
 var Count: Integer;
     Part: WideString;
@@ -761,9 +817,9 @@ begin
   Inc(ChildBlockCount);
   Result := Entry.ChildBlock;
 end;
-{ @end $847EDC }
+{ @end $7B2D08 }
 
-{ @routine $847FE0 TBlockParEC_GetBlockByPath }
+{ @routine $7B2DEC TBlockParEC_GetBlockByPath }
 function TBlockParEC.GetBlockByPath(const Path: WideString): TBlockParEC;
 var Entry: TBlockParElEC;
 begin
@@ -771,28 +827,31 @@ begin
   if Entry.ItemType <> bpkBlock then raise Exception.Create('TBlockParEC.BlockPath_Get. Path=' + Path);
   Result := Entry.ChildBlock;
 end;
-{ @end $847FE0 }
+{ @end $7B2DEC }
 
-{ @routine $8480C8 TBlockParEC_FindBlockByPath }
+{ @routine $7B2EB8 TBlockParEC_FindBlockByPath }
 function TBlockParEC.FindBlockByPath(const Path: WideString): TBlockParEC;
 var Entry: TBlockParElEC;
 begin
   Entry := FindEntryByPath(Path, False);
   if (Entry = nil) or (Entry.ItemType <> bpkBlock) then
-  begin Result := nil; Exit end;
+  begin
+    Result := nil;
+    Exit;
+  end;
   Result := Entry.ChildBlock;
 end;
-{ @end $8480C8 }
+{ @end $7B2EB8 }
 
-{ @routine $84810C TBlockParEC_GetOrAddBlockByPath }
+{ @routine $7B2ED0 TBlockParEC_GetOrAddBlockByPath }
 function TBlockParEC.GetOrAddBlockByPath(const Path: WideString): TBlockParEC;
 begin
   Result := FindBlockByPath(Path);
   if Result = nil then Result := AddBlockByPath(Path);
 end;
-{ @end $84810C }
+{ @end $7B2ED0 }
 
-{ @routine $848144 TBlockParEC_AddChildBlock }
+{ @routine $7B2EF0 TBlockParEC_AddChildBlock }
 function TBlockParEC.AddChildBlock(const BlockName: WideString): TBlockParEC;
 var Entry: TBlockParElEC;
 begin
@@ -803,9 +862,9 @@ begin
   Inc(ChildBlockCount);
   Result := Entry.ChildBlock;
 end;
-{ @end $848144 }
+{ @end $7B2EF0 }
 
-{ @routine $84819C TBlockParEC_GetBlock }
+{ @routine $7B2F2C TBlockParEC_GetBlock }
 function TBlockParEC.GetBlock(const BlockName: WideString): TBlockParEC;
 var Entry: TBlockParElEC;
 begin
@@ -821,9 +880,9 @@ begin
   end;
   raise Exception.Create('TBlockParEC.Block_Get. name=' + BlockName);
 end;
-{ @end $84819C }
+{ @end $7B2F2C }
 
-{ @routine $84829C TBlockParEC_FindBlock }
+{ @routine $7B3008 TBlockParEC_FindBlock }
 function TBlockParEC.FindBlock(const BlockName: WideString): TBlockParEC;
 var Entry: TBlockParElEC;
 begin
@@ -839,14 +898,16 @@ begin
   end;
   Result := nil;
 end;
-{ @end $84829C }
+{ @end $7B3008 }
 
-{ @routine $8482F8 TBlockParEC_GetBlockCount }
+{ @routine $7B303C TBlockParEC_GetBlockCount }
 function TBlockParEC.GetBlockCount: Integer;
-begin Result := ChildBlockCount end;
-{ @end $8482F8 }
+begin
+  Result := ChildBlockCount;
+end;
+{ @end $7B303C }
 
-{ @routine $848314 TBlockParEC_CountBlocks }
+{ @routine $7B3040 TBlockParEC_CountBlocks }
 function TBlockParEC.CountBlocks(const BlockName: WideString): Integer;
 var Entry: TBlockParElEC;
     Count, Index, Limit: Integer;
@@ -878,87 +939,95 @@ begin
     Result := Count;
   end;
 end;
-{ @end $848314 }
+{ @end $7B3040 }
 
-{ @routine $8483D8 TBlockParEC_GetBlockByIndex }
+{ @routine $7B30AC TBlockParEC_GetBlockByIndex }
 function TBlockParEC.GetBlockByIndex(Index: Integer): TBlockParEC;
 var Entry: TBlockParElEC;
 begin
-  if UseSortedIndex and (EntryCount = ChildBlockCount) then Result := SortedEntries[Index].ChildBlock
-  else
+  if UseSortedIndex and (EntryCount = ChildBlockCount) then
   begin
-    Entry := FirstEntry;
-    while Entry <> nil do
-    begin
-      if Entry.ItemType = bpkBlock then
-      begin
-        if Index = 0 then
-        begin Result := Entry.ChildBlock; Exit end;
-        Dec(Index);
-      end;
-      Entry := Entry.Next;
-    end;
-    raise Exception.Create('TBlockParEC.Block_Get. no=' + SysUtils.IntToStr(Index));
+    Result := SortedEntries[Index].ChildBlock;
+    Exit;
   end;
+  Entry := FirstEntry;
+  while Entry <> nil do
+  begin
+    if Entry.ItemType = bpkBlock then
+    begin
+      if Index = 0 then
+      begin
+        Result := Entry.ChildBlock;
+        Exit;
+      end;
+      Dec(Index);
+    end;
+    Entry := Entry.Next;
+  end;
+  raise Exception.Create('TBlockParEC.Block_Get. no=' + SysUtils.IntToStr(Index));
 end;
-{ @end $8483D8 }
+{ @end $7B30AC }
 
-{ @routine $8484DC TBlockParEC_GetBlockNameByIndex }
+{ @routine $7B3178 TBlockParEC_GetBlockNameByIndex }
 function TBlockParEC.GetBlockNameByIndex(Index: Integer): WideString;
 var Entry: TBlockParElEC;
 begin
-  if UseSortedIndex and (EntryCount = ChildBlockCount) then Result := SortedEntries[Index].Name
-  else
+  if UseSortedIndex and (EntryCount = ChildBlockCount) then
   begin
-    Entry := FirstEntry;
-    while Entry <> nil do
-    begin
-      if Entry.ItemType = bpkBlock then
-      begin
-        if Index = 0 then
-        begin Result := Entry.Name; Exit end;
-        Dec(Index);
-      end;
-      Entry := Entry.Next;
-    end;
-    raise Exception.Create('TBlockParEC.Block_GetName. no=' + SysUtils.IntToStr(Index));
+    Result := SortedEntries[Index].Name;
+    Exit;
   end;
+  Entry := FirstEntry;
+  while Entry <> nil do
+  begin
+    if Entry.ItemType = bpkBlock then
+    begin
+      if Index = 0 then
+      begin
+        Result := Entry.Name;
+        Exit;
+      end;
+      Dec(Index);
+    end;
+    Entry := Entry.Next;
+  end;
+  raise Exception.Create('TBlockParEC.Block_GetName. no=' + SysUtils.IntToStr(Index));
 end;
-{ @end $8484DC }
+{ @end $7B3178 }
 
-{ @routine $8485F0 TBlockParEC_GetEntryCount }
+{ @routine $7B325C TBlockParEC_GetEntryCount }
 function TBlockParEC.GetEntryCount: Integer;
-begin Result := EntryCount end;
-{ @end $8485F0 }
+begin
+  Result := EntryCount;
+end;
+{ @end $7B325C }
 
-{ @routine $84860C TBlockParEC_GetEntryKindByIndex }
+{ @routine $7B3260 TBlockParEC_GetEntryKindByIndex }
 function TBlockParEC.GetEntryKindByIndex(Index: Integer): TBlockParKind;
 var Entry: TBlockParElEC;
 begin
   if UseSortedIndex and (EntryCount = SortedEntryCount) then
   begin
     Result := SortedEntries[Index].ItemType;
-  end
-  else
-  begin
-    Entry := FirstEntry;
-    while Entry <> nil do
-    begin
-      if Index = 0 then
-      begin
-
-        Result := Entry.ItemType;
-        Exit;
-      end;
-      Dec(Index);
-      Entry := Entry.Next;
-    end;
-    raise Exception.Create('TBlockParEC.All_GetTip. no=' + SysUtils.IntToStr(Index));
+    Exit;
   end;
-end;
-{ @end $84860C }
+  Entry := FirstEntry;
+  while Entry <> nil do
+  begin
+    if Index = 0 then
+    begin
 
-{ @routine $848708 TBlockParEC_GetEntryBlockByIndex }
+      Result := Entry.ItemType;
+      Exit;
+    end;
+    Dec(Index);
+    Entry := Entry.Next;
+  end;
+  raise Exception.Create('TBlockParEC.All_GetTip. no=' + SysUtils.IntToStr(Index));
+end;
+{ @end $7B3260 }
+
+{ @routine $7B3328 TBlockParEC_GetEntryBlockByIndex }
 function TBlockParEC.GetEntryBlockByIndex(Index: Integer): TBlockParEC;
 var Entry: TBlockParElEC;
 begin
@@ -967,27 +1036,25 @@ begin
     Entry := SortedEntries[Index];
     if Entry.ItemType <> bpkBlock then raise Exception.Create('TBlockParEC.All_GetBlock. Error tip.');
     Result := Entry.ChildBlock;
-  end
-  else
-  begin
-    Entry := FirstEntry;
-    while Entry <> nil do
-    begin
-      if Index = 0 then
-      begin
-        if Entry.ItemType <> bpkBlock then raise Exception.Create('TBlockParEC.All_GetBlock. Error tip.');
-        Result := Entry.ChildBlock;
-        Exit;
-      end;
-      Dec(Index);
-      Entry := Entry.Next;
-    end;
-    raise Exception.Create('TBlockParEC.All_GetBlock. no=' + SysUtils.IntToStr(Index));
+    Exit;
   end;
+  Entry := FirstEntry;
+  while Entry <> nil do
+  begin
+    if Index = 0 then
+    begin
+      if Entry.ItemType <> bpkBlock then raise Exception.Create('TBlockParEC.All_GetBlock. Error tip.');
+      Result := Entry.ChildBlock;
+      Exit;
+    end;
+    Dec(Index);
+    Entry := Entry.Next;
+  end;
+  raise Exception.Create('TBlockParEC.All_GetBlock. no=' + SysUtils.IntToStr(Index));
 end;
-{ @end $848708 }
+{ @end $7B3328 }
 
-{ @routine $848880 TBlockParEC_GetEntryStringByIndex }
+{ @routine $7B345C TBlockParEC_GetEntryStringByIndex }
 function TBlockParEC.GetEntryStringByIndex(Index: Integer): WideString;
 var Entry: TBlockParElEC;
 begin
@@ -996,27 +1063,25 @@ begin
     Entry := SortedEntries[Index];
     if Entry.ItemType <> bpkString then raise Exception.Create('TBlockParEC.All_GetPar. Error tip.');
     Result := Entry.StringValue;
-  end
-  else
-  begin
-    Entry := FirstEntry;
-    while Entry <> nil do
-    begin
-      if Index = 0 then
-      begin
-        if Entry.ItemType <> bpkString then raise Exception.Create('TBlockParEC.All_GetPar. Error tip.');
-        Result := Entry.StringValue;
-        Exit;
-      end;
-      Dec(Index);
-      Entry := Entry.Next;
-    end;
-    raise Exception.Create('TBlockParEC.All_GetPar. no=' + SysUtils.IntToStr(Index));
+    Exit;
   end;
+  Entry := FirstEntry;
+  while Entry <> nil do
+  begin
+    if Index = 0 then
+    begin
+      if Entry.ItemType <> bpkString then raise Exception.Create('TBlockParEC.All_GetPar. Error tip.');
+      Result := Entry.StringValue;
+      Exit;
+    end;
+    Dec(Index);
+    Entry := Entry.Next;
+  end;
+  raise Exception.Create('TBlockParEC.All_GetPar. no=' + SysUtils.IntToStr(Index));
 end;
-{ @end $848880 }
+{ @end $7B345C }
 
-{ @routine $8489FC TBlockParEC_GetEntryNameByIndex }
+{ @routine $7B359C TBlockParEC_GetEntryNameByIndex }
 function TBlockParEC.GetEntryNameByIndex(Index: Integer): WideString;
 var Entry: TBlockParElEC;
 begin
@@ -1025,32 +1090,30 @@ begin
     Entry := SortedEntries[Index];
     if (Entry.ItemType <> bpkString) and (Entry.ItemType <> bpkBlock) then raise Exception.Create('TBlockParEC.All_GetName. Error tip.');
     Result := Entry.Name;
-  end
-  else
-  begin
-    Entry := FirstEntry;
-    while Entry <> nil do
-    begin
-      if Index = 0 then
-      begin
-        if (Entry.ItemType <> bpkString) and (Entry.ItemType <> bpkBlock) then raise Exception.Create('TBlockParEC.All_GetName. Error tip.');
-        Result := Entry.Name;
-        Exit;
-      end;
-      Dec(Index);
-      Entry := Entry.Next;
-    end;
-    raise Exception.Create('TBlockParEC.All_GetName. no=' + SysUtils.IntToStr(Index));
+    Exit;
   end;
+  Entry := FirstEntry;
+  while Entry <> nil do
+  begin
+    if Index = 0 then
+    begin
+      if (Entry.ItemType <> bpkString) and (Entry.ItemType <> bpkBlock) then raise Exception.Create('TBlockParEC.All_GetName. Error tip.');
+      Result := Entry.Name;
+      Exit;
+    end;
+    Dec(Index);
+    Entry := Entry.Next;
+  end;
+  raise Exception.Create('TBlockParEC.All_GetName. no=' + SysUtils.IntToStr(Index));
 end;
-{ @end $8489FC }
+{ @end $7B359C }
 
-{ @routine $848DF8 TBlockParEC_WriteWideText }
+{ @routine $7B38D4 TBlockParEC_WriteWideText }
 procedure TBlockParEC.WriteWideText(Dest: TBufEC; Indent: Integer; Sorted: Boolean);
 var Entry: TBlockParElEC;
     i: Integer;
-  // @nested $848B8C WriteWideBlockEntry
-  procedure WriteWideBlockEntry; // @addr 0x848B8C @ida "void __cdecl $name(void *ParentFrame);" @note "Nested helper of TBlockParEC.WriteWideText."
+  // @nested $7B36F0 WriteWideBlockEntry
+  procedure WriteWideBlockEntry; // @addr 0x007B36F0 @ida "void __cdecl $name(void *ParentFrame);" @note "Nested helper of TBlockParEC.WriteWideText."
   var j: Integer;
   begin
     if Entry.ItemType = bpkText then
@@ -1061,7 +1124,7 @@ var Entry: TBlockParElEC;
     end
     else if Entry.ItemType = bpkString then
     begin
-      for j := 1 to Indent * 4 do Dest.AddWord(Ord(' '));
+      for j := 1 to Indent * WideTextIndentWidth do Dest.AddWord(Ord(' '));
       Dest.AddWideStringRaw(Entry.Name);
       Dest.AddWord(Ord('='));
       Dest.AddWideStringRaw(Entry.StringValue);
@@ -1071,7 +1134,7 @@ var Entry: TBlockParElEC;
     end
     else
     begin
-      for j := 1 to Indent * 4 do Dest.AddWord(Ord(' '));
+      for j := 1 to Indent * WideTextIndentWidth do Dest.AddWord(Ord(' '));
       Dest.AddWideStringRaw(Entry.Name);
       Dest.AddWord(Ord(' '));
       if UseSortedIndex then Dest.AddWord(Ord('^')) else Dest.AddWord(Ord('~'));
@@ -1079,7 +1142,7 @@ var Entry: TBlockParElEC;
       Dest.AddWord(13);
       Dest.AddWord(10);
       Entry.ChildBlock.WriteWideText(Dest, Indent + 1, Sorted);
-      for j := 1 to Indent * 4 do Dest.AddWord(Ord(' '));
+      for j := 1 to Indent * WideTextIndentWidth do Dest.AddWord(Ord(' '));
       Dest.AddWord(Ord('}'));
       if Entry.Comment <> '' then Dest.AddWideStringRaw(Entry.Comment);
       Dest.AddWord(13);
@@ -1103,14 +1166,14 @@ begin
     end;
   end;
 end;
-{ @end $848DF8 }
+{ @end $7B38D4 }
 
-{ @routine $84914C TBlockParEC_WriteAnsiText }
+{ @routine $7B3B98 TBlockParEC_WriteAnsiText }
 procedure TBlockParEC.WriteAnsiText(Dest: TBufEC; Indent: Integer; Sorted: Boolean);
 var Entry: TBlockParElEC;
     i: Integer;
-  // @nested $848E74 WriteAnsiBlockEntry
-  procedure WriteAnsiBlockEntry; // @addr 0x848E74 @ida "void __cdecl $name(void *ParentFrame);" @note "Nested helper of TBlockParEC.WriteAnsiText."
+  // @nested $7B3948 WriteAnsiBlockEntry
+  procedure WriteAnsiBlockEntry; // @addr 0x007B3948 @ida "void __cdecl $name(void *ParentFrame);" @note "Nested helper of TBlockParEC.WriteAnsiText."
   var j: Integer;
   begin
     if Entry.ItemType = bpkText then
@@ -1163,21 +1226,21 @@ begin
     end;
   end;
 end;
-{ @end $84914C }
+{ @end $7B3B98 }
 
-{ @routine $8491C8 TBlockParEC_WriteTextBuffer }
+{ @routine $7B3C0C TBlockParEC_WriteTextBuffer }
 procedure TBlockParEC.WriteTextBuffer(Dest: TBufEC; AnsiText, Sorted: Boolean);
 begin
   if not AnsiText then
   begin
-    Dest.AddWord($FEFF);
+    Dest.AddWord(Utf16LittleEndianBom);
     WriteWideText(Dest, 0, Sorted);
   end
   else WriteAnsiText(Dest, 0, Sorted);
 end;
-{ @end $8491C8 }
+{ @end $7B3C0C }
 
-{ @routine $849214 TBlockParEC_SaveTextFile }
+{ @routine $7B3C4C TBlockParEC_SaveTextFile }
 procedure TBlockParEC.SaveTextFile(FileName: PWideChar; AnsiText, Sorted: Boolean);
 var FileObj: TFileEC;
     Buf: TBufEC;
@@ -1195,11 +1258,11 @@ begin
     Buf.Free;
   end;
 end;
-{ @end $849214 }
+{ @end $7B3C4C }
 
-{ @routine $8492F8 TBlockParEC_ParseTextBuffer }
+{ @routine $7B3D30 TBlockParEC_ParseTextBuffer }
 procedure TBlockParEC.ParseTextBuffer(Buf: TBufEC; const InitialText: WideString; AnsiText, PreserveComments: Boolean);
-var Text, Name, IncludeFile, Comment: WideString;
+var Text, Name, Value, Comment: WideString;
     Child: TBlockParEC;
     PartCount: Integer;
     Entry: TBlockParElEC;
@@ -1233,17 +1296,17 @@ begin
           Name := TrimWideString(Name);
         end;
       end;
-      IncludeFile := '';
+      Value := '';
       if CountDelimitedPartsW(Name, '=') = 2 then
       begin
-        IncludeFile := TrimWideString(ExtractDelimitedPartW(Name, 1, '='));
+        Value := TrimWideString(ExtractDelimitedPartW(Name, 1, '='));
         Name := TrimWideString(ExtractDelimitedPartW(Name, 0, '='));
       end;
       Child := AddChildBlock(Name);
       Child.UseSortedIndex := ChildSorted;
       Name := TrimWideString(ExtractDelimitedRangeW(Text, 1, PartCount - 1, '{'));
       Child.ParseTextBuffer(Buf, Name, AnsiText, PreserveComments);
-      if IncludeFile <> '' then Child.LoadFromTextFileWithEncodingProbe(PWideChar(IncludeFile), False);
+      if Value <> '' then Child.LoadFromTextFileWithEncodingProbe(PWideChar(Value), False);
     end
     else
     begin
@@ -1252,9 +1315,9 @@ begin
       if PartCount > 1 then
       begin
         Name := TrimWideString(ExtractDelimitedPartW(Text, 0, '='));
-        IncludeFile := ExtractDelimitedRangeW(Text, 1, PartCount - 1, '=');
-        if PreserveComments then AddParam(Name, IncludeFile).Comment := Comment
-        else AddParam(Name, IncludeFile);
+        Value := ExtractDelimitedRangeW(Text, 1, PartCount - 1, '=');
+        if PreserveComments then AddParam(Name, Value).Comment := Comment
+        else AddParam(Name, Value);
       end
       else if PreserveComments then
       begin
@@ -1266,22 +1329,22 @@ begin
     Text := '';
   end;
 end;
-{ @end $8492F8 }
+{ @end $7B3D30 }
 
-{ @routine $849714 TBlockParEC_LoadFromTextBufferWithEncodingProbe }
+{ @routine $7B413C TBlockParEC_LoadFromTextBufferWithEncodingProbe }
 procedure TBlockParEC.LoadFromTextBufferWithEncodingProbe(Buf: TBufEC; PreserveComments: Boolean);
 begin
-  if Buf.DataSize - Buf.Position <= 2 then Exit;
-  if Buf.GetWord <> $FEFF then
+  if Buf.DataSize - Buf.Position <= SizeOf(WideChar) then Exit;
+  if Buf.GetWord <> Utf16LittleEndianBom then
   begin
-    Buf.SetPosition(Buf.Position - 2);
+    Buf.SetPosition(Buf.Position - SizeOf(WideChar));
     ParseTextBuffer(Buf, '', True, PreserveComments);
   end
   else ParseTextBuffer(Buf, '', False, PreserveComments);
 end;
-{ @end $849714 }
+{ @end $7B413C }
 
-{ @routine $849780 TBlockParEC_LoadFromTextFileWithEncodingProbe }
+{ @routine $7B418C TBlockParEC_LoadFromTextFileWithEncodingProbe }
 procedure TBlockParEC.LoadFromTextFileWithEncodingProbe(FileName: PWideChar; PreserveComments: Boolean);
 var Buf: TBufEC;
 begin
@@ -1293,9 +1356,9 @@ begin
     Buf.Free;
   end;
 end;
-{ @end $849780 }
+{ @end $7B418C }
 
-{ @routine $8497E8 TBlockParEC_MergeFrom }
+{ @routine $7B41F0 TBlockParEC_MergeFrom }
 procedure TBlockParEC.MergeFrom(Source: TBlockParEC);
 var Incoming, Removed, Cursor, Existing: TBlockParElEC;
     Child: TBlockParEC;
@@ -1312,11 +1375,9 @@ begin
         begin
           Removed := Cursor;
           Cursor := Cursor.Next;
-          if (Removed.ItemType = Incoming.ItemType) and (Removed.Name = Incoming.Name) then
-          begin
-            if UseSortedIndex then RemoveFromSortedIndex(Removed);
-            DeleteEntry(Removed);
-          end;
+          if (Removed.ItemType <> Incoming.ItemType) or (Removed.Name <> Incoming.Name) then Continue;
+          if UseSortedIndex then RemoveFromSortedIndex(Removed);
+          DeleteEntry(Removed);
         end;
       end
       else if Incoming.ItemType = bpkBlock then
@@ -1357,21 +1418,21 @@ begin
     Incoming := Incoming.Next;
   end;
 end;
-{ @end $8497E8 }
+{ @end $7B41F0 }
 
-{ @routine $8499BC TBlockParEC_ConcatenateValues }
+{ @routine $7B4360 TBlockParEC_ConcatenateValues }
 function TBlockParEC.ConcatenateValues: WideString;
 var i: Integer;
 begin
   Result := '';
-  for i := 0 to GetEntryCount - 1 do
-    if GetEntryKindByIndex(i) = bpkBlock then
-      Result := Result + '{' + GetEntryBlockByIndex(i).ConcatenateValues + '}'
-    else Result := Result + GetEntryStringByIndex(i);
+  for i := 0 to Count - 1 do
+    if EntryKinds[i] = bpkBlock then
+      Result := Result + '{' + EntryBlocks[i].ConcatenateValues + '}'
+    else Result := Result + EntryStrings[i];
 end;
-{ @end $8499BC }
+{ @end $7B4360 }
 
-{ @routine $849A9C TBlockParEC_LoadFromDecodedBuffer }
+{ @routine $7B4430 TBlockParEC_LoadFromDecodedBuffer }
 procedure TBlockParEC.LoadFromDecodedBuffer(Buf: TBufEC);
 var i, Count: Integer;
     Entry: TBlockParElEC;
@@ -1409,9 +1470,9 @@ begin
     end;
   end;
 end;
-{ @end $849A9C }
+{ @end $7B4430 }
 
-{ @routine $849C34 TBlockParEC_LoadFromEncryptedDatFile }
+{ @routine $7B4574 TBlockParEC_LoadFromEncryptedDatFile }
 procedure TBlockParEC.LoadFromEncryptedDatFile(const FileName: WideString);
 var Buf: TBufEC;
     FileObj: TFileEC;
@@ -1430,10 +1491,10 @@ begin
   if FileObj.GetSize - FileObj.GetPointer = Cardinal(ByteCount) then
   begin
     Buf := TBufEC.Create;
-    Buf.SetSize(ByteCount + 4);
+    Buf.SetSize(ByteCount + SizeOf(Crc));
     Position := FileObj.GetPointer;
-    FileObj.ReadBuffer(Pointer(PAnsiChar(Buf.Data) + 4), Buf.DataSize - 4);
-    Crc := Buf.ComputeCrc32Range(4, Buf.DataSize) xor BlockDatCrcKey1;
+    FileObj.ReadBuffer(PAnsiChar(Buf.Data) + SizeOf(Crc), Buf.DataSize - SizeOf(Crc));
+    Crc := Buf.ComputeCrc32Range(SizeOf(Crc), Buf.DataSize) xor BlockDatCrcKey1;
     PCardinal(Buf.Data)^ := Crc;
     Crc := Buf.ComputeCrc32 xor BlockDatCrcKey2;
     Buf.Free;
@@ -1446,7 +1507,7 @@ begin
   FileObj.ReadBuffer(@Seed, SizeOf(Seed));
   Seed := Seed xor BlockDatSeedKey;
   Buf := TBufEC.Create;
-  Buf.SetSize(ByteCount - 4 - 4);
+  Buf.SetSize(ByteCount - SizeOf(Crc) - SizeOf(Seed));
   FileObj.ReadBuffer(Buf.Data, Buf.DataSize);
   Buf.ApplyDatXorCipher(Seed);
   if Buf.ComputeCrc32 = Crc then
@@ -1458,6 +1519,6 @@ begin
   Buf.Free;
   FileObj.Free;
 end;
-{ @end $849C34 }
+{ @end $7B4574 }
 
 end.

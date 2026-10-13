@@ -1,5 +1,4 @@
 unit TextFieldClass;
-// Unit bracket (inferred): .text 0x004DCCAC..0x004DCE6A; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -10,22 +9,22 @@ type
   public
     Text: WideString; // @offset 0x04
 
-    procedure ClearText; // @addr 0x4DCD18
-    procedure LoadTextLinesFromReader(Reader: TBufEC); // @addr 0x4DCD30 @note "Int32 line and character counts, UTF-16 text; trims lines and joins with CRLF."
+    procedure ClearText; // @addr 0x004DA218
+    procedure LoadTextLinesFromReader(Reader: TBufEC); // @addr 0x004DA228 @note "Int32 line and character counts, UTF-16 text; trims lines and joins with CRLF."
   end;
 
 implementation
 
 uses EC_Str;
 
-{ @routine $4DCD18 TTextField_ClearText }
+{ @routine $4DA218 TTextField_ClearText }
 procedure TTextField.ClearText;
 begin
   Text := '';
 end;
-{ @end $4DCD18 }
+{ @end $4DA218 }
 
-{ @routine $4DCD30 TTextField_LoadTextLinesFromReader }
+{ @routine $4DA228 TTextField_LoadTextLinesFromReader }
 procedure TTextField.LoadTextLinesFromReader(Reader: TBufEC);
 var
   Line: WideString;
@@ -43,6 +42,6 @@ begin
   end;
   Text := TrimWideString(Text);
 end;
-{ @end $4DCD30 }
+{ @end $4DA228 }
 
 end.

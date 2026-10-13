@@ -1,4 +1,4 @@
-# Native init/fini index or - for an empty pair; rows are PACKAGEINFO order
+# Native init/fini index or -; 6 October 2026 PACKAGEINFO order (identical to August)
 347	Rangers
 66	jpeg
 -	JConsts

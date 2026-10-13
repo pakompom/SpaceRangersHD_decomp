@@ -1,9 +1,8 @@
 unit aGalaxy;
-// Unit bracket (inferred): .text 0x0079C19C..0x007D49C1; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
-uses aGalaxyStruct, aPath, SE_Space, aConst, GI_Panel, GI_MessageLoop, EC_Buf, EC_Struct, aMyFunction, EC_BlockPar, Classes, Types, aVector;
+uses aGalaxyStruct, aPath, SE_Space, SE_Gate, SE_Hole, aConst, GI_Panel, GI_MessageLoop, EC_Buf, EC_Struct, aMyFunction, EC_BlockPar, Classes, Types, aVector;
 
 type
   TDifficultyTier = 0..9;
@@ -32,14 +31,14 @@ type
     State: Byte; // @offset 0x0C  0 inactive, 1 active; graph buttons also accept 2 disabled, 3 enabled.
     OriginalState: Byte; // @offset 0x0D
 
-    constructor Create; // @addr 0x7D0C5C
-    destructor Destroy; override; // @addr 0x7D0CA0 @note "Restores the original control value when the control still exists."
-    procedure Initialize(FormName, ControlPath: WideString; State: Byte); // @addr 0x7D0D3C @note "Captures the original value before applying the override."
-    procedure SetState(State: Byte); // @addr 0x7D0F90
-    function GetState: Byte; // @addr 0x7D116C
-    procedure SaveToBuffer(Buffer: TBufEC); // @addr 0x7D1188
-    procedure LoadFromBuffer(Buffer: TBufEC); // @addr 0x7D11D0 @note "Loads both values and immediately reapplies the override."
-    procedure Reapply; // @addr 0x7D129C
+    constructor Create; // @addr 0x007FE7A4
+    destructor Destroy; override; // @addr 0x007FE7DC @note "Restores the original control value when the control still exists."
+    procedure Initialize(FormName, ControlPath: WideString; State: Byte); // @addr 0x007FE850 @note "Captures the original value before applying the override."
+    procedure SetState(State: Byte); // @addr 0x007FEA64
+    function GetState: Byte; // @addr 0x007FEC08
+    procedure SaveToBuffer(Buffer: TBufEC); // @addr 0x007FEC10
+    procedure LoadFromBuffer(Buffer: TBufEC); // @addr 0x007FEC44 @note "Loads both values and immediately reapplies the override."
+    procedure Reapply; // @addr 0x007FECF0
   end;
 
   TInterfaceTextOverride = class(TObjectEx) // @size 0x14
@@ -49,14 +48,14 @@ type
     Text: WideString; // @offset 0x0C
     OriginalText: WideString; // @offset 0x10
 
-    constructor Create; // @addr 0x7D1464
-    destructor Destroy; override; // @addr 0x7D14A8 @note "Restores the original control value when the control still exists."
-    procedure Initialize(FormName, ControlPath: WideString; Text: WideString); // @addr 0x7D15CC @note "Captures the original value before applying the override."
-    procedure SetText(Text: WideString); // @addr 0x7D188C
-    function GetText: WideString; // @addr 0x7D1AD8
-    procedure SaveToBuffer(Buffer: TBufEC); // @addr 0x7D1AF8
-    procedure LoadFromBuffer(Buffer: TBufEC); // @addr 0x7D1B40 @note "Loads both values and immediately reapplies the override."
-    procedure Reapply; // @addr 0x7D1BF4
+    constructor Create; // @addr 0x007FEE90
+    destructor Destroy; override; // @addr 0x007FEEC8 @note "Restores the original control value when the control still exists."
+    procedure Initialize(FormName, ControlPath: WideString; Text: WideString); // @addr 0x007FEFCC @note "Captures the original value before applying the override."
+    procedure SetText(Text: WideString); // @addr 0x007FF260
+    function GetText: WideString; // @addr 0x007FF488
+    procedure SaveToBuffer(Buffer: TBufEC); // @addr 0x007FF49C
+    procedure LoadFromBuffer(Buffer: TBufEC); // @addr 0x007FF4D0 @note "Loads both values and immediately reapplies the override."
+    procedure Reapply; // @addr 0x007FF570
   end;
 
   TInterfaceImageOverride = class(TObjectEx) // @size 0x14
@@ -66,14 +65,14 @@ type
     ImagePath: WideString; // @offset 0x0C
     OriginalImagePath: WideString; // @offset 0x10
 
-    constructor Create; // @addr 0x7D1E20
-    destructor Destroy; override; // @addr 0x7D1E64 @note "Restores the original value when the control still exists; an empty original style is not restored."
-    procedure Initialize(FormName, ControlPath: WideString; ImagePath: WideString); // @addr 0x7D20F4 @note "Captures the original value before applying the override."
-    procedure SetImagePath(ImagePath: WideString); // @addr 0x7D25C8 @note "Also accepts Style:name for any control. Do not change between image and style modes: they share one original-value slot."
-    function GetImagePath: WideString; // @addr 0x7D29A0
-    procedure SaveToBuffer(Buffer: TBufEC); // @addr 0x7D29C0
-    procedure LoadFromBuffer(Buffer: TBufEC); // @addr 0x7D2A08 @note "Loads both values and immediately reapplies the override."
-    procedure Reapply; // @addr 0x7D2ABC
+    constructor Create; // @addr 0x007FF778
+    destructor Destroy; override; // @addr 0x007FF7B0 @note "Restores the original value when the control still exists; an empty original style is not restored."
+    procedure Initialize(FormName, ControlPath: WideString; ImagePath: WideString); // @addr 0x007FFA00 @note "Captures the original value before applying the override."
+    procedure SetImagePath(ImagePath: WideString); // @addr 0x007FFE74 @note "Also accepts Style:name for any control. Do not change between image and style modes: they share one original-value slot."
+    function GetImagePath: WideString; // @addr 0x00800208
+    procedure SaveToBuffer(Buffer: TBufEC); // @addr 0x0080021C
+    procedure LoadFromBuffer(Buffer: TBufEC); // @addr 0x00800250 @note "Loads both values and immediately reapplies the override."
+    procedure Reapply; // @addr 0x008002F0
   end;
 
   TInterfacePosOverride = class(TObjectEx) // @size 0x30
@@ -85,13 +84,13 @@ type
     OriginalPosition: TPoint; // @offset 0x20
     OriginalDepth: Double; // @offset 0x28
 
-    constructor Create; // @addr 0x7D2E74
-    destructor Destroy; override; // @addr 0x7D2EB8 @note "Restores the original control value when the control still exists."
-    procedure Initialize(FormName, ControlPath: WideString; DeltaX, DeltaY, DeltaDepth: Integer); // @addr 0x7D2F44 @note "Captures the original value before applying the override."
-    procedure SetPosition(DeltaX, DeltaY, DeltaDepth: Integer); // @addr 0x7D31A0 @note "Offsets are relative to the captured original position and depth, not the current control values."
-    procedure SaveToBuffer(Buffer: TBufEC); // @addr 0x7D3394
-    procedure LoadFromBuffer(Buffer: TBufEC); // @addr 0x7D341C @note "Loads both values and immediately reapplies the override."
-    procedure Reapply; // @addr 0x7D34F4
+    constructor Create; // @addr 0x00800664
+    destructor Destroy; override; // @addr 0x0080069C @note "Restores the original control value when the control still exists."
+    procedure Initialize(FormName, ControlPath: WideString; DeltaX, DeltaY, DeltaDepth: Integer); // @addr 0x00800710 @note "Captures the original value before applying the override."
+    procedure SetPosition(DeltaX, DeltaY, DeltaDepth: Integer); // @addr 0x00800918 @note "Offsets are relative to the captured original position and depth, not the current control values."
+    procedure SaveToBuffer(Buffer: TBufEC); // @addr 0x00800AD0
+    procedure LoadFromBuffer(Buffer: TBufEC); // @addr 0x00800B30 @note "Loads both values and immediately reapplies the override."
+    procedure Reapply; // @addr 0x00800BE4
   end;
 
   TInterfaceSizeOverride = class(TObjectEx) // @size 0x1C
@@ -101,19 +100,19 @@ type
     Size: TPoint; // @offset 0x0C
     OriginalSize: TPoint; // @offset 0x14
 
-    constructor Create; // @addr 0x7D36B0
-    destructor Destroy; override; // @addr 0x7D36F4 @note "Restores the original control value when the control still exists."
-    procedure Initialize(FormName, ControlPath: WideString; Width, Height: Integer); // @addr 0x7D3770 @note "Captures the original value before applying the override."
-    procedure SetSize(Width, Height: Integer); // @addr 0x7D39B0 @note "Nonpositive dimensions restore the corresponding original dimension."
-    procedure SaveToBuffer(Buffer: TBufEC); // @addr 0x7D3B9C
-    procedure LoadFromBuffer(Buffer: TBufEC); // @addr 0x7D3C00 @note "Loads both values and immediately reapplies the override."
-    procedure Reapply; // @addr 0x7D3CBC
+    constructor Create; // @addr 0x00800D74
+    destructor Destroy; override; // @addr 0x00800DAC @note "Restores the original control value when the control still exists."
+    procedure Initialize(FormName, ControlPath: WideString; Width, Height: Integer); // @addr 0x00800E10 @note "Captures the original value before applying the override."
+    procedure SetSize(Width, Height: Integer); // @addr 0x0080100C @note "Nonpositive dimensions restore the corresponding original dimension."
+    procedure SaveToBuffer(Buffer: TBufEC); // @addr 0x008011C0
+    procedure LoadFromBuffer(Buffer: TBufEC); // @addr 0x00801208 @note "Loads both values and immediately reapplies the override."
+    procedure Reapply; // @addr 0x008012A4
   end;
 
   TMovingDropItemEntry = record // @size 0x14
     Payload: TObject; // @offset 0x00  TItem, or a spawned TShip during special handling; may be nil.
     Destination: TPointF; // @offset 0x04
-    SourceShipId: Integer; // @offset 0x0C  Zero for asteroid mineral drops.
+    SourceShipId: Cardinal; // @offset 0x0C  Zero for asteroid mineral drops.
     InsertedIntoStar: Boolean; // @offset 0x10  Payload is registered in Items or, after transformation, Ships.
     DeployTranclucator: Byte; // @offset 0x11 Nonzero releases a stored tranclucator ship instead of dropping its artefact; serialized as Boolean.
   end;
@@ -130,15 +129,15 @@ type
 
   TStarDistanceEntry = packed record // @size 0x08
     Distance: Integer; // @offset 0x00  Rounded Euclidean distance in parsecs, not squared.
-    Star: TStar; // @offset 0x04
+    Star: TObject; // @offset 0x04  Distance-cache readers preserve the native checked as TStar access.
   end;
   PStarDistanceEntry = ^TStarDistanceEntry;
 
   TJumpGateEntry = record // @size 0x14
-    Gate: TObjectSE; // @offset 0x00  Retained TGateSE reference.
+    Gate: TGateSE; // @offset 0x00  Retained TGateSE reference.
     UsedThisTurn: Boolean; // @offset 0x04
     GateFilmId: Cardinal; // @offset 0x08  Encoded TEFilmObj pointer, not a serialized object ordinal.
-    Effect: TObjectSE; // @offset 0x0C  Optional retained TGateEffectSE reference.
+    Effect: TGateEffectSE; // @offset 0x0C  Optional retained TGateEffectSE reference.
     EffectFilmId: Cardinal; // @offset 0x10  Encoded TEFilmObj pointer.
   end;
   PJumpGateEntry = ^TJumpGateEntry;
@@ -180,11 +179,11 @@ type
     Name: WideString; // @offset 0x04
     Item: TObject; // @offset 0x08  Owned; clear before transferring the item elsewhere.
 
-    constructor CreateEmpty; // @addr 0x7D3E68
-    constructor Create(Name: WideString; Item: TObject); // @addr 0x7D3EBC
-    destructor Destroy; override; // @addr 0x7D3F4C
-    procedure SaveToBuffer(Buffer: TBufEC); // @addr 0x7D3F9C @note "Requires a non-nil Item."
-    procedure LoadFromBuffer(Buffer: TBufEC; Galaxy: TGalaxy); // @addr 0x7D3FD8 @note "Creates the owned item; overwrites a previous Item without freeing it."
+    constructor CreateEmpty; // @addr 0x00801428
+    constructor Create(Name: WideString; Item: TObject); // @addr 0x0080146C
+    destructor Destroy; override; // @addr 0x008014F0
+    procedure SaveToBuffer(Buffer: TBufEC); // @addr 0x00801528 @note "Requires a non-nil Item."
+    procedure LoadFromBuffer(Buffer: TBufEC; Galaxy: TGalaxy); // @addr 0x00801554 @note "Creates the owned item; overwrites a previous Item without freeing it."
   end;
 
   // Ship, planet and item values are Pointer in this unit because aShip, aPlanet and aItem use it.
@@ -229,7 +228,7 @@ type
     DominatorResearch: array[TDominatorSeries] of TDominatorResearchEntry; // @offset 0xD4  TDominatorSeries order.
     ChecksumScalarEC: Single; // @offset $EC Read as Single by the dormant checksum; gameplay meaning unresolved.
     TechLevel: Byte; // @offset 0xF0
-    WarDeltaWin: array[0..2] of Integer; // @offset 0xF4  Script.DeltaWin faction indices.
+    WarDeltaWin: array[TStarFaction] of Integer; // @offset 0xF4  Script.DeltaWin faction indices.
     RangerSpawnQuotas: array[oiMaloc..oiGaal] of Integer; // @offset 0x100  Pilot-race indices; may be negative.
     TerronWeaponLockTurn: Integer; // @offset 0x114
     TerronGrowLockTurn: Integer; // @offset 0x118
@@ -282,199 +281,199 @@ type
     SpecialSimulationMode: Byte; // @offset 0x1D8  Nonzero skips CompleteDay and makes RefreshTechLevel return eight; full mode semantics unresolved.
     CheatsDisabled: Boolean; // @offset 0x1D9
 
-    constructor Create; // @addr 0x79C8CC
-    destructor Destroy; override; // @addr 0x79D14C
-    procedure AssignTextQuestsToPlanets; // @addr 0x7BADE8 @note "Uses quest target-owner filters; leaves planets with an existing quest unchanged."
-    procedure RunConfigOnStartHandlers; // @addr 0x7A3960
-    procedure RunConfigOnLoadHandlers; // @addr 0x7A3A2C
-    procedure RunConfigOnSaveHandlers; // @addr 0x7A3AF8
-    procedure InitializeCampaignState; // @addr 0x79D768
-    procedure SaveToBuffer(Buffer: TBufEC); // @addr 0x79D8D8 @note "Increments SaveCount and restores temporary shop stock before serialization."
-    procedure LoadFromBuffer(Buffer: TBufEC); // @addr 0x79EE00
-    procedure SaveEditableState; // @addr 0x7A2054 @note "Replaces the shared editable-save block, including player, holes and stars. Requires a player."
-    procedure ApplyEditableState; // @addr 0x7A2AEC @note "Only runs when FinalizationNameEncoded is empty; consumes and clears the shared editable-save block. Requires a player."
-    procedure GenerateGalaxyLayout(PlayerRace: TOwnerId); // @addr 0x7B36A8
-    function FindConstellationIndexForStar(Star: TStar): Integer; // @addr 0x7B2954 @note "Uses polygon containment, not Star.Constellation; returns -1 when no polygon contains the star."
-    procedure InitializeConstellationDistanceTiers; // @addr 0x7B29C0 @note "Requires a player/home planet and generated outlines. Boss sectors are forced to tier three."
-    procedure HideSpecialConstellation; // @addr 0x7B4E44 @note "Requires constellation ID 20 and generated compatible outlines. Merges its visible outline into a neighbor and retains backups for RestoreHiddenForm."
-    procedure BuildConstellationOutlineJunctions; // @addr 0x7B2B4C
-    function ShouldKeepConstellationOutlineVertex(Point: TPointF): Boolean; // @addr 0x7B2F34
-    procedure SimplifyConstellationOutline(ConstellationIndex: Integer); // @addr 0x7B306C
-    function BuildConstellationStarGraphs: Boolean; // @addr 0x7B32B0 @note "Attempts every constellation; false means at least one graph is disconnected."
-    procedure BuildConstellationPolygonsAndAdjacency(WorkingPolygon: TPolygon2D); // @addr 0x7B330C @note "Requires at least eight constellations."
-    function CountVisibleConstellationsWithBoundaryPoints(FirstPoint, SecondPoint: TPointF): Integer; // @addr 0x7B8200
-    procedure ShowLocalizedWarning(TextKey: WideString); // @addr 0x7D0BF4 @note "Adds a kind-five player notification using localized text."
-    procedure ReapplyInterfaceOverrides; // @addr 0x7A3BC4
-    procedure BindScriptImports; // @addr 0x7A3CF4
-    procedure RefreshAllShipDerivedState; // @addr 0x7A5504
-    procedure RebuildStarDistances; // @addr 0x7A54B4 @note "Refreshes every star's cache; called during generation and loading, not by Script.CoordX/CoordY."
-    procedure CompleteDay(UnusedRecordFilm: Boolean); // @addr 0x7A463C
-    procedure NextDay; // @addr 0x7A3D3C @note "Processes off-screen stars; the player's star is simulated separately."
-    procedure ProcessStationSpawning; // @addr 0x7BDE78
-    procedure ReplenishStationType(StationType: TStationType); // @addr 0x7BDF64
-    function TryCreateLiberationGroup: Boolean; // @addr 0x7BFA1C @note "Returns BuildLiberationOrders on accepted groups; false for early rejection or disbanding."
-    function TryDispatchMilitaryBaseToEnemyStar: Boolean; // @addr 0x7C00DC
-    function SelectStarForLiberationAttack(Origin: TStar; FriendlyFaction: TStarFaction): TStar; // @addr 0x7BBBB8 @note "Nil Origin omits the origin-distance penalty. Searches active Galaxy; advances Self.RandomState."
-    function FindMilitaryBaseInTransit: Pointer; // @addr 0x7C077C @note "Searches active Galaxy; requires an assigned destination different from the current normal-space star."
-    function HasMilitaryBaseAssignedToStar(Star: TStar): Boolean; // @addr 0x7C0854 @note "Searches active Galaxy; includes a base already at its assigned destination."
-    function HasLiberationGroupTargetingStar(Star: TStar): Boolean; // @addr 0x7C0914 @note "Tests the fourth order target of each liberation group, unlike TStar.HasLiberationGroupOrder."
-    procedure CancelEnemyJumpsToStar(Star: TStar); // @addr 0x7BBA6C @note "Cancels normal-space Dominator and hostile-pirate jumps from other stars, plus assigned Dominion relocations."
-    procedure ProcessCoalitionDefeat; // @addr 0x7C0FD0 @note "Can complete pirate ending five, clear eminent ranger titles and publish defeat news."
-    procedure ApplyWingmanLeadershipPenalty; // @addr 0x7C0E6C
-    procedure TransferShipsInTransit; // @addr 0x7A531C
+    constructor Create; // @addr 0x007D0194
+    destructor Destroy; override; // @addr 0x007D0938
+    procedure AssignTextQuestsToPlanets; // @addr 0x007EAE90 @note "Uses quest target-owner filters; leaves planets with an existing quest unchanged."
+    procedure RunConfigOnStartHandlers; // @addr 0x007D6078
+    procedure RunConfigOnLoadHandlers; // @addr 0x007D6134
+    procedure RunConfigOnSaveHandlers; // @addr 0x007D61F0
+    procedure InitializeCampaignState; // @addr 0x007D0E54
+    procedure SaveToBuffer(Buffer: TBufEC); // @addr 0x007D0F54 @note "Increments SaveCount and restores temporary shop stock before serialization."
+    procedure LoadFromBuffer(Buffer: TBufEC); // @addr 0x007D2068
+    procedure SaveEditableState; // @addr 0x007D49E4 @note "Replaces the shared editable-save block, including player, holes and stars. Requires a player."
+    procedure ApplyEditableState; // @addr 0x007D5418 @note "Only runs when FinalizationNameEncoded is empty; consumes and clears the shared editable-save block. Requires a player."
+    procedure GenerateGalaxyLayout(PlayerRace: TOwnerId); // @addr 0x007E40B4
+    function FindConstellationIndexForStar(Star: TStar): Integer; // @addr 0x007E349C @note "Uses polygon containment, not Star.Constellation; returns -1 when no polygon contains the star."
+    procedure InitializeConstellationDistanceTiers; // @addr 0x007E34E8 @note "Requires a player/home planet and generated outlines. Boss sectors are forced to tier three."
+    procedure HideSpecialConstellation; // @addr 0x007E5668 @note "Requires constellation ID 20 and generated compatible outlines. Merges its visible outline into a neighbor and retains backups for RestoreHiddenForm."
+    procedure BuildConstellationOutlineJunctions; // @addr 0x007E3660
+    function ShouldKeepConstellationOutlineVertex(Point: TPointF): Boolean; // @addr 0x007E3A0C
+    procedure SimplifyConstellationOutline(ConstellationIndex: Integer); // @addr 0x007E3B10
+    function BuildConstellationStarGraphs: Boolean; // @addr 0x007E3D08 @note "Attempts every constellation; false means at least one graph is disconnected."
+    procedure BuildConstellationPolygonsAndAdjacency(WorkingPolygon: TPolygon2D); // @addr 0x007E3D50 @note "Requires at least eight constellations."
+    function CountVisibleConstellationsWithBoundaryPoints(FirstPoint, SecondPoint: TPointF): Integer; // @addr 0x007E8BD4
+    procedure ShowLocalizedWarning(TextKey: WideString); // @addr 0x007FE740 @note "Adds a kind-five player notification using localized text."
+    procedure ReapplyInterfaceOverrides; // @addr 0x007D62AC
+    procedure BindScriptImports; // @addr 0x007D6378
+    procedure RefreshAllShipDerivedState; // @addr 0x007D78F4
+    procedure RebuildStarDistances; // @addr 0x007D78C4 @note "Refreshes every star's cache; called during generation and loading, not by Script.CoordX/CoordY."
+    procedure CompleteDay(UnusedRecordFilm: Boolean); // @addr 0x007D6C60
+    procedure NextDay; // @addr 0x007D63A8 @note "Processes off-screen stars; the player's star is simulated separately."
+    procedure ProcessStationSpawning; // @addr 0x007ED78C
+    procedure ReplenishStationType(StationType: TStationType); // @addr 0x007ED850
+    function TryCreateLiberationGroup: Boolean; // @addr 0x007EF168 @note "Returns BuildLiberationOrders on accepted groups; false for early rejection or disbanding."
+    function TryDispatchMilitaryBaseToEnemyStar: Boolean; // @addr 0x007EF7A8
+    function SelectStarForLiberationAttack(Origin: TStar; FriendlyFaction: TStarFaction): TStar; // @addr 0x007EBA74 @note "Nil Origin omits the origin-distance penalty. Searches active Galaxy; advances Self.RandomState."
+    function FindMilitaryBaseInTransit: Pointer; // @addr 0x007EFDA4 @note "Searches active Galaxy; requires an assigned destination different from the current normal-space star."
+    function HasMilitaryBaseAssignedToStar(Star: TStar): Boolean; // @addr 0x007EFE50 @note "Searches active Galaxy; includes a base already at its assigned destination."
+    function HasLiberationGroupTargetingStar(Star: TStar): Boolean; // @addr 0x007EFEF0 @note "Tests the fourth order target of each liberation group, unlike TStar.HasLiberationGroupOrder."
+    procedure CancelEnemyJumpsToStar(Star: TStar); // @addr 0x007EB944 @note "Cancels normal-space Dominator and hostile-pirate jumps from other stars, plus assigned Dominion relocations."
+    procedure ProcessCoalitionDefeat; // @addr 0x007F04D0 @note "Can complete pirate ending five, clear eminent ranger titles and publish defeat news."
+    procedure ApplyWingmanLeadershipPenalty; // @addr 0x007F03AC
+    procedure TransferShipsInTransit; // @addr 0x007D7780
 
-    function IdToConstellation(Id: Cardinal): TConstellation; // @addr 0x7A5594 @note "Zero returns nil; an unknown nonzero ID raises."
-    function IdToStar(Id: Cardinal): TStar; // @addr 0x7A5658 @note "Zero returns nil; an unknown nonzero ID raises."
-    function IdToHole(Id: Cardinal): THole; // @addr 0x7A5750 @note "Zero returns nil; an unknown nonzero ID raises."
-    function IdToPlanet(Id: Cardinal; RaiseIfMissing: Boolean = True): Pointer; // @addr 0x7A580C @note "Zero always returns nil."
-    function IdToShip(Id: Cardinal; RaiseIfMissing: Boolean): Pointer; // @addr 0x7A5968 @note "Zero always returns nil. Includes docked ships and stored Tranclucators."
-    function IdToItem(Id: Cardinal; RaiseIfMissing: Boolean): Pointer; // @addr 0x7A5D64 @note "Zero always returns nil. Includes inventories, shops, storage and moving drops."
-    function IdToAsteroid(Id: Cardinal): Pointer; // @addr 0x7A63A8 @note "Returns nil when absent."
-    function IdToMissile(Id: Cardinal): Pointer; // @addr 0x7A6450 @note "Returns nil when absent."
-    function ContainsShipReference(Ship: Pointer): Boolean; // @addr 0x7A64F8
-    function ContainsPlanetReference(Planet: Pointer): Boolean; // @addr 0x7A6694
-    function FindHoleInStarByKind(Star: TStar; HoleKind: Integer): THole; // @addr 0x7A689C @note "Accepts either endpoint star; returns nil when absent."
-    function CreateJumpGate(WithEffect: Boolean): PJumpGateEntry; // @addr 0x7A67BC @note "Registers an owned gate descriptor; returned storage is borrowed until ClearJumpGates."
-    procedure ClearJumpGates; // @addr 0x7A6728
-    procedure ReleaseItemGraphics; // @addr 0x7A6914 @note "Visits loose items and ship equipment/artifacts; excludes shop stock and stored items."
-    procedure GenerateSpaceBackground(BackgroundIndex: Integer); // @addr 0x7A6AE4 @note "Replaces SpaceBackgroundEntries. Requires PlayerStar, a nonempty star list and differing minimum/maximum map diameters."
-    procedure EnableDominatorSurfaces; // @addr 0x7A79B0
-    procedure DisableDominatorSurfaces; // @addr 0x7A7AB4
+    function IdToConstellation(Id: Cardinal): TConstellation; // @addr 0x007D796C @note "Zero returns nil; an unknown nonzero ID raises."
+    function IdToStar(Id: Cardinal): TStar; // @addr 0x007D7A00 @note "Zero returns nil; an unknown nonzero ID raises."
+    function IdToHole(Id: Cardinal): THole; // @addr 0x007D7AAC @note "Zero returns nil; an unknown nonzero ID raises."
+    function IdToPlanet(Id: Cardinal; RaiseIfMissing: Boolean = True): TObject; // @addr 0x007D7B34 @note "Zero always returns nil."
+    function IdToShip(Id: Cardinal; RaiseIfMissing: Boolean): TObject; // @addr 0x007D7C50 @note "Zero always returns nil. Includes docked ships and stored Tranclucators."
+    function IdToItem(Id: Cardinal; RaiseIfMissing: Boolean): Pointer; // @addr 0x007D7FB8 @note "Zero always returns nil. Includes inventories, shops, storage and moving drops."
+    function IdToAsteroid(Id: Cardinal): Pointer; // @addr 0x007D84DC @note "Returns nil when absent."
+    function IdToMissile(Id: Cardinal): Pointer; // @addr 0x007D8560 @note "Returns nil when absent."
+    function ContainsShipReference(Ship: Pointer): Boolean; // @addr 0x007D85E4
+    function ContainsPlanetReference(Planet: Pointer): Boolean; // @addr 0x007D8760
+    function FindHoleInStarByKind(Star: TStar; HoleKind: Integer): THole; // @addr 0x007D8904 @note "Accepts either endpoint star; returns nil when absent."
+    function CreateJumpGate(WithEffect: Boolean): PJumpGateEntry; // @addr 0x007D8844 @note "Registers an owned gate descriptor; returned storage is borrowed until ClearJumpGates."
+    procedure ClearJumpGates; // @addr 0x007D87DC
+    procedure ReleaseItemGraphics; // @addr 0x007D8948 @note "Visits loose items and ship equipment/artifacts; excludes shop stock and stored items."
+    procedure GenerateSpaceBackground(BackgroundIndex: Integer); // @addr 0x007D8ABC @note "Replaces SpaceBackgroundEntries. Requires PlayerStar, a nonempty star list and differing minimum/maximum map diameters."
+    procedure EnableDominatorSurfaces; // @addr 0x007D9928
+    procedure DisableDominatorSurfaces; // @addr 0x007D9A18
 
-    procedure XorProtectedState(Seed: Integer); // @addr 0x7A7E84 @note "Includes the active text quest; applying the same seed twice restores the state."
-    procedure ObfuscateProtectedState; // @addr 0x7A8D80 @note "Already-obfuscated state is left unchanged."
-    procedure RestoreProtectedState; // @addr 0x7A8DDC
-    function ComputeIntegrityChecksum(Mode: Integer): Cardinal; // @addr 0x7A9008 @note "An unconditional jump disables the checksum body; always returns zero in this binary."
-    procedure PrimeIntegrityChecksum(StatusCode: Integer); // @addr 0x7A9F40
-    procedure CheckIntegrityChecksum(ErrorCode: Integer); // @addr 0x7AA02C @note "A matching checksum clears the integrity status."
-    procedure PrimeIntegrityChecksum1(StatusCode: Integer); // @addr 0x7A9F8C
-    procedure PrimeIntegrityChecksum2(StatusCode: Integer); // @addr 0x7A9FDC
-    procedure CheckIntegrityChecksumAndSetStatus(StatusCode: Integer); // @addr 0x7AA0D0 @note "Channel zero; unlike CheckIntegrityChecksum, a matching checksum stores StatusCode rather than zero."
-    procedure CheckIntegrityChecksum1(ErrorCode: Integer); // @addr 0x7AA174
-    procedure CheckIntegrityChecksum2(ErrorCode: Integer); // @addr 0x7AA218
-    procedure ClearIntegrityStatus; // @addr 0x7AA2BC
-    procedure AppendIntegritySnapshot; // @addr 0x7AA2E4 @note "An unconditional jump disables the snapshot body; no-op in this binary."
+    procedure XorProtectedState(Seed: Integer); // @addr 0x007D9D38 @note "Includes the active text quest; applying the same seed twice restores the state."
+    procedure ObfuscateProtectedState; // @addr 0x007DAA3C @note "Already-obfuscated state is left unchanged."
+    procedure RestoreProtectedState; // @addr 0x007DAA84
+    function ComputeIntegrityChecksum(Mode: Integer): Cardinal; // @addr 0x007DAC68 @note "An unconditional jump disables the checksum body; always returns zero in this binary."
+    procedure PrimeIntegrityChecksum(StatusCode: Integer); // @addr 0x007DBA0C
+    procedure CheckIntegrityChecksum(ErrorCode: Integer); // @addr 0x007DBAE0 @note "A matching checksum clears the integrity status."
+    procedure PrimeIntegrityChecksum1(StatusCode: Integer); // @addr 0x007DBA50
+    procedure PrimeIntegrityChecksum2(StatusCode: Integer); // @addr 0x007DBA98
+    procedure CheckIntegrityChecksumAndSetStatus(StatusCode: Integer); // @addr 0x007DBB74 @note "Channel zero; unlike CheckIntegrityChecksum, a matching checksum stores StatusCode rather than zero."
+    procedure CheckIntegrityChecksum1(ErrorCode: Integer); // @addr 0x007DBC08
+    procedure CheckIntegrityChecksum2(ErrorCode: Integer); // @addr 0x007DBCA0
+    procedure ClearIntegrityStatus; // @addr 0x007DBD38
+    procedure AppendIntegritySnapshot; // @addr 0x007DBD58 @note "An unconditional jump disables the snapshot body; no-op in this binary."
 
-    function GetStoredItem(Name: WideString; Remove: Boolean): TObject; // @addr 0x7D4364 @note "Returns nil when absent. Remove detaches the item and frees its named entry, transferring ownership to the caller."
-    procedure StoreItem(Name: WideString; Item: TObject); // @addr 0x7D4060 @note "Takes ownership. Replacing a name frees the previously stored item; detach Item from its old container first."
+    function GetStoredItem(Name: WideString; Remove: Boolean): TObject; // @addr 0x00801878 @note "Returns nil when absent. Remove detaches the item and frees its named entry, transferring ownership to the caller."
+    procedure StoreItem(Name: WideString; Item: TObject); // @addr 0x008015D4 @note "Takes ownership. Replacing a name frees the previously stored item; detach Item from its old container first."
 
-    function CanRecordAchievements: Boolean; // @addr $7D4A08 Checks special simulation, cheat points and all protected integrity flags.
-    function GetCheatPoints: Integer; // @addr 0x7AAC60
-    procedure SetCheatPoints(Value: Integer); // @addr 0x7AAC88
-    function HasVisibleScoreModFlags: Boolean; // @addr 0x7AABF0
-    function CountEligibleRangers: Integer; // @addr 0x7BA554
-    procedure RefreshRangerWealthStats; // @addr 0x7BA5AC
-    procedure RefreshRangerStrengthStats; // @addr 0x7BA790
-    procedure RefreshRangerRatingPlaces; // @addr 0x7BA96C @note "Assigns one-based positions by descending TotalExperience, including excluded rangers; leaves the Rangers list order unchanged."
-    function FindStrongestRanger: Pointer; // @addr 0x7BAB14 @note "Ignores ExcludedFromRating rangers; returns nil if none has positive strength."
-    function FindWealthiestRanger: Pointer; // @addr 0x7BAB90 @note "Ignores ExcludedFromRating rangers; returns nil if none has positive wealth."
-    function CountFactionStars(Faction: TStarFaction): Integer; // @addr 0x7BAC10 @note "Excludes stars with a custom faction."
-    function GetFactionControlPercent(Faction: TStarFaction): TPercent; // @addr 0x7BAC78
-    function GetDominatorSeriesControlShare(Series: TDominatorSeries): Single; // @addr 0x7BACBC @note "Active Galaxy only. Fraction of Dominator systems in Series, multiplied by the number of unresolved series; not a percentage."
-    function CountStarsInBattle: Integer; // @addr 0x7BAD94
-    function TurnToDateTime(Turn: Integer): Double; // @addr 0x7BB330 @note "Delphi TDateTime; -1 selects CurrentTurn."
-    function FormatTurnDate(Turn: Integer): WideString; // @addr 0x7BB370 @note "-1 selects CurrentTurn."
-    procedure AddPlanetNews(NewsType: TGalaxyNewsKind; Text: WideString); // @addr 0x7BB598 @note "Rejects empty text; identical existing text suppresses insertion regardless of NewsType."
-    procedure AddPlanetNewsWithPlayerBubble(NewsType: TGalaxyNewsKind; Text: WideString); // @addr 0x7BB524 @note "Adds a player bubble only after turn 300; news insertion still uses duplicate-text suppression."
-    function CountPlanetNewsByType(NewsType: TGalaxyNewsKind): Integer; // @addr 0x7BB6E8
-    procedure PrunePlanetNews; // @addr 0x7BB748 @note "Removes entries more than 30 days old."
-    procedure UpdateConstellationMilitaryStats; // @addr 0x7BB7FC
-    procedure CreateDominatorSpawnProxy(Star: TStar); // @addr 0x7BB7BC @note "Replaces the global spawn-planet pointer without freeing its previous value; does not register the proxy in star or galaxy planet lists."
-    function RefreshTechLevel: Byte; // @addr 0x7BB904 @note "Updates TechLevel but normally returns zero. The special mode at +0x1D8 returns 8 without updating it."
-    function HasPlayerQuestHistory(QuestType: TQuestType; QuestNumber: Word): Boolean; // @addr 0x7BB2C8
-    procedure ComputeGlobalGoodsPriceBands; // @addr 0x7BBD50
-    function ScaleGoodsPriceByGalaxyAge(BaseValue: Integer): Integer; // @addr 0x7BBFE8
-    function ScaleGoodsStockByGalaxyAge(BaseValue: Integer): Integer; // @addr 0x7BC054
-    function GetGoodsPricePercent(GoodsType: Byte; Price: Integer): TPercent; // @addr 0x7BBF78 @note "Maps the global minimum/maximum price band to 0..100 with clamping."
-    function ScaleIntByTechLevel(AtLevelTwo, AtLevelSeven: Integer): Integer; // @addr 0x7BC0C0 @note "Clamps TechLevel to 2..7, linearly interpolates the endpoints, then rounds."
-    function InterpolateSingleByTechLevel(AtLevelTwo, AtLevelSeven: Single): Single; // @addr 0x7BC11C
-    function GetOrCreateCustomWeaponInfo(Name: WideString): PWeaponInfo; // @addr $7D4544 Inserts a new custom template in the case-insensitive sorted pool.
-    function RequireCustomWeaponInfo(Name: WideString): PWeaponInfo; // @addr $7D4734 Binary search of CustomWeaponTypes; raises if absent.
-    function SelectWeaponInfo(Seed: Cardinal; AvailabilityMask: TWeaponAvailabilityMask; MaximumTechLevel, MinimumTechLevel: Byte): PWeaponInfo; // @addr 0x7BC1D8 @ida "PWeaponInfo __userpurge $name@<eax>(TGalaxy *Self@<eax>, unsigned int Seed@<edx>, unsigned __int16 AvailabilityMask@<cx>, unsigned __int8 MaximumTechLevel@<^4>, unsigned __int8 MinimumTechLevel@<^0>);" @note "Borrowed template. Uses the closest eligible technology when the interval has no match; falls back to the first built-in template when no availability matches."
-    function SelectMicroModule(MinimumPriority, MaximumPriority: Byte; Seed: Cardinal; Context: TObject): Integer; // @addr 0x7BC3B0 @note "Zero-based index; Context may be a planet or ship, or nil. Relaxes the priority interval after repeated misses. No termination guarantee when every template fails the context filter."
-    function SelectMicroModuleForEquipment(MinimumPriority, MaximumPriority: Byte; Seed: Cardinal; Context: TObject; Item: Pointer): Integer; // @addr 0x7BC7B8 @note "Zero-based index. The final attempt-limit fallback can return an incompatible module; callers must check CanInstallMicroModule. Context rejection can bypass the attempt-limit check."
-    function SelectHullSeries(OwnerId: TOwnerId; HullType: THullType; MinimumRarity, MaximumRarity: Byte): Integer; // @addr 0x7BCC34 @note "Zero-based series index or -1; advances Self.RandomState."
-    function ResolveMoneySizeTag(Tag: WideString; Owner: TOwnerId): Integer; // @addr 0x7BD64C @note "Accepts Zero, Mini, Small, Average, Big and Huge; unknown tags raise. Uses active Galaxy for scaling."
+    function CanRecordAchievements: Boolean; // @addr $801E78 Checks special simulation, cheat points and all protected integrity flags.
+    function GetCheatPoints: Integer; // @addr 0x007DC600
+    procedure SetCheatPoints(Value: Integer); // @addr 0x007DC614
+    function HasVisibleScoreModFlags: Boolean; // @addr 0x007DC5B0
+    function CountEligibleRangers: Integer; // @addr 0x007EA7A8
+    procedure RefreshRangerWealthStats; // @addr 0x007EA7E0
+    procedure RefreshRangerStrengthStats; // @addr 0x007EA988
+    procedure RefreshRangerRatingPlaces; // @addr 0x007EAB14 @note "Assigns one-based positions by descending TotalExperience, including excluded rangers; leaves the Rangers list order unchanged."
+    function FindStrongestRanger: Pointer; // @addr 0x007EAC68 @note "Ignores ExcludedFromRating rangers; returns nil if none has positive strength."
+    function FindWealthiestRanger: Pointer; // @addr 0x007EACC0 @note "Ignores ExcludedFromRating rangers; returns nil if none has positive wealth."
+    function CountFactionStars(Faction: TStarFaction): Integer; // @addr 0x007EAD18 @note "Excludes stars with a custom faction."
+    function GetFactionControlPercent(Faction: TStarFaction): TPercent; // @addr 0x007EAD6C
+    function GetDominatorSeriesControlShare(Series: TDominatorSeries): Single; // @addr 0x007EADA0 @note "Active Galaxy only. Fraction of Dominator systems in Series, multiplied by the number of unresolved series; not a percentage."
+    function CountStarsInBattle: Integer; // @addr 0x007EAE5C
+    function TurnToDateTime(Turn: Integer): Double; // @addr 0x007EB340 @note "Delphi TDateTime; -1 selects CurrentTurn."
+    function FormatTurnDate(Turn: Integer): WideString; // @addr 0x007EB374 @note "-1 selects CurrentTurn."
+    procedure AddPlanetNews(NewsType: TGalaxyNewsKind; Text: WideString); // @addr 0x007EB574 @note "Rejects empty text; identical existing text suppresses insertion regardless of NewsType."
+    procedure AddPlanetNewsWithPlayerBubble(NewsType: TGalaxyNewsKind; Text: WideString); // @addr 0x007EB508 @note "Adds a player bubble only after turn 300; news insertion still uses duplicate-text suppression."
+    function CountPlanetNewsByType(NewsType: TGalaxyNewsKind): Integer; // @addr 0x007EB698
+    procedure PrunePlanetNews; // @addr 0x007EB6DC @note "Removes entries more than 30 days old."
+    procedure UpdateConstellationMilitaryStats; // @addr 0x007EB764
+    procedure CreateDominatorSpawnProxy(Star: TStar); // @addr 0x007EB730 @note "Replaces the global spawn-planet pointer without freeing its previous value; does not register the proxy in star or galaxy planet lists."
+    function RefreshTechLevel: Byte; // @addr 0x007EB83C @note "Updates TechLevel but normally returns zero. The special mode at +0x1D8 returns 8 without updating it."
+    function HasPlayerQuestHistory(QuestType: TQuestType; QuestNumber: Word): Boolean; // @addr 0x007EB300
+    procedure ComputeGlobalGoodsPriceBands; // @addr 0x007EBC08
+    function ScaleGoodsPriceByGalaxyAge(BaseValue: Integer): Integer; // @addr 0x007EBD44
+    function ScaleGoodsStockByGalaxyAge(BaseValue: Integer): Integer; // @addr 0x007EBDB0
+    function GetGoodsPricePercent(GoodsType: Byte; Price: Integer): TPercent; // @addr 0x007EBCE8 @note "Maps the global minimum/maximum price band to 0..100 with clamping."
+    function ScaleIntByTechLevel(AtLevelTwo, AtLevelSeven: Integer): Integer; // @addr 0x007EBE1C @note "Clamps TechLevel to 2..7, linearly interpolates the endpoints, then rounds."
+    function InterpolateSingleByTechLevel(AtLevelTwo, AtLevelSeven: Single): Single; // @addr 0x007EBE7C
+    function GetOrCreateCustomWeaponInfo(Name: WideString): PWeaponInfo; // @addr $801A30 Inserts a new custom template in the case-insensitive sorted pool.
+    function RequireCustomWeaponInfo(Name: WideString): PWeaponInfo; // @addr $801BE4 Binary search of CustomWeaponTypes; raises if absent.
+    function SelectWeaponInfo(Seed: Cardinal; AvailabilityMask: TWeaponAvailabilityMask; MaximumTechLevel, MinimumTechLevel: Byte): PWeaponInfo; // @addr 0x007EBF08 @ida "PWeaponInfo __userpurge $name@<eax>(TGalaxy *Self@<eax>, unsigned int Seed@<edx>, unsigned __int16 AvailabilityMask@<cx>, unsigned __int8 MaximumTechLevel@<^4>, unsigned __int8 MinimumTechLevel@<^0>);" @note "Borrowed template. Uses the closest eligible technology when the interval has no match; falls back to the first built-in template when no availability matches."
+    function SelectMicroModule(MinimumPriority, MaximumPriority: Byte; Seed: Cardinal; Context: TObject): Integer; // @addr 0x007EC088 @note "Zero-based index; Context may be a planet or ship, or nil. Relaxes the priority interval after repeated misses. No termination guarantee when every template fails the context filter."
+    function SelectMicroModuleForEquipment(MinimumPriority, MaximumPriority: Byte; Seed: Cardinal; Context: TObject; Item: Pointer): Integer; // @addr 0x007EC460 @note "Zero-based index. The final attempt-limit fallback can return an incompatible module; callers must check CanInstallMicroModule. Context rejection can bypass the attempt-limit check."
+    function SelectHullSeries(OwnerId: TOwnerId; HullType: THullType; MinimumRarity, MaximumRarity: Byte): Integer; // @addr 0x007EC8A8 @note "Zero-based series index or -1; advances Self.RandomState."
+    function ResolveMoneySizeTag(Tag: WideString; Owner: TOwnerId): Integer; // @addr 0x007ED128 @note "Accepts Zero, Mini, Small, Average, Big and Huge; unknown tags raise. Uses active Galaxy for scaling."
 
-    function GetMiniGoodsQuantity(GoodsType: Byte): Integer; // @addr 0x7BD850
-    function GetSmallGoodsQuantity(GoodsType: Byte): Integer; // @addr 0x7BD894
-    function GetAverageGoodsQuantity(GoodsType: Byte): Integer; // @addr 0x7BD8D0
-    function GetBigGoodsQuantity(GoodsType: Byte): Integer; // @addr 0x7BD908
-    function GetHugeGoodsQuantity(GoodsType: Byte): Integer; // @addr 0x7BD944
-    function GetGoodsQuantityBySize(Size: Byte; GoodsType: Byte): Integer; // @addr 0x7BD980 @note "Sizes 0..5 select zero through huge; invalid sizes raise."
-    function ClassifyGoodsQuantity(Quantity: Integer; GoodsType: Byte): Byte; // @addr 0x7BDAA0 @note "Zero maps to zero; otherwise chooses levels 1..5, with ties favoring the larger level."
-    function GetMinimumGoodsPrice(GoodsType: Byte): Integer; // @addr 0x7BDB7C
-    function GetLowGoodsPrice(GoodsType: Byte): Integer; // @addr 0x7BDBA8
-    function GetAverageGoodsPrice(GoodsType: Byte): Integer; // @addr 0x7BDBF0
-    function GetHighGoodsPrice(GoodsType: Byte): Integer; // @addr 0x7BDC1C
-    function GetMaximumGoodsPrice(GoodsType: Byte): Integer; // @addr 0x7BDC64
-    function GetGoodsPriceByLevel(Level: Byte; GoodsType: Byte): Integer; // @addr 0x7BDC90 @note "Levels 1..5 select minimum through maximum; invalid levels raise."
-    function ClassifyGoodsPrice(Price: Integer; GoodsType: Byte): Byte; // @addr 0x7BDD9C @note "Zero maps to zero; otherwise chooses levels 1..5, with ties favoring the larger level."
-    function HasUnresolvedDominatorSeries(Series: TDominatorSeriesSet): Boolean; // @addr 0x7BCF04 @note "True if any selected series is unresolved; false for an empty set."
-    function IsDominatorSeriesUnresolved(Series: TDominatorSeries): Boolean; // @addr 0x7BCEAC @note "Invalid series values return false."
-    function IsDominatorResearchComplete(Series: TDominatorSeriesSet): Boolean; // @addr 0x7BE6B4 @note "Every selected series must have at least 100 progress; the empty set returns true."
-    procedure ComputeRangerSpawnQuotas; // @addr 0x7C13E0
-    procedure PruneExpiredGalaxyEvents; // @addr 0x7C16E0 @note "Retains the most recent 1825 days."
-    function GetCoalitionToPirateSystemRatio: Single; // @addr 0x7C1744 @note "Uses the active Galaxy, not Self; denominator is max(pirate systems - 1, 1)."
+    function GetMiniGoodsQuantity(GoodsType: Byte): Integer; // @addr 0x007ED310
+    function GetSmallGoodsQuantity(GoodsType: Byte): Integer; // @addr 0x007ED340
+    function GetAverageGoodsQuantity(GoodsType: Byte): Integer; // @addr 0x007ED368
+    function GetBigGoodsQuantity(GoodsType: Byte): Integer; // @addr 0x007ED38C
+    function GetHugeGoodsQuantity(GoodsType: Byte): Integer; // @addr 0x007ED3B4
+    function GetGoodsQuantityBySize(Size: Byte; GoodsType: Byte): Integer; // @addr 0x007ED3DC @note "Sizes 0..5 select zero through huge; invalid sizes raise."
+    function ClassifyGoodsQuantity(Quantity: Integer; GoodsType: Byte): Byte; // @addr 0x007ED4C0 @note "Zero maps to zero; otherwise chooses levels 1..5, with ties favoring the larger level."
+    function GetMinimumGoodsPrice(GoodsType: Byte): Integer; // @addr 0x007ED574
+    function GetLowGoodsPrice(GoodsType: Byte): Integer; // @addr 0x007ED588
+    function GetAverageGoodsPrice(GoodsType: Byte): Integer; // @addr 0x007ED5B0
+    function GetHighGoodsPrice(GoodsType: Byte): Integer; // @addr 0x007ED5C4
+    function GetMaximumGoodsPrice(GoodsType: Byte): Integer; // @addr 0x007ED5EC
+    function GetGoodsPriceByLevel(Level: Byte; GoodsType: Byte): Integer; // @addr 0x007ED600 @note "Levels 1..5 select minimum through maximum; invalid levels raise."
+    function ClassifyGoodsPrice(Price: Integer; GoodsType: Byte): Byte; // @addr 0x007ED6D8 @note "Zero maps to zero; otherwise chooses levels 1..5, with ties favoring the larger level."
+    function HasUnresolvedDominatorSeries(Series: TDominatorSeriesSet): Boolean; // @addr 0x007ECAF0 @note "True if any selected series is unresolved; false for an empty set."
+    function IsDominatorSeriesUnresolved(Series: TDominatorSeries): Boolean; // @addr 0x007ECABC @note "Invalid series values return false."
+    function IsDominatorResearchComplete(Series: TDominatorSeriesSet): Boolean; // @addr 0x007EDF08 @note "Every selected series must have at least 100 progress; the empty set returns true."
+    procedure ComputeRangerSpawnQuotas; // @addr 0x007F0880
+    procedure PruneExpiredGalaxyEvents; // @addr 0x007F0B24 @note "Retains the most recent 1825 days."
+    function GetCoalitionToPirateSystemRatio: Single; // @addr 0x007F0B70 @note "Uses the active Galaxy, not Self; denominator is max(pirate systems - 1, 1)."
 
-    function GetEffectiveDifficultyLevel: Integer; // @addr 0x7C1794 @note "With custom rules disabled, reads the active Galaxy difficulty array rather than Self."
-    function GetDifficultyTierIndex: TDifficultyTier; // @addr 0x7C17E4 @note "Returns 0..9; tier boundaries are 6, 14, 22, and subsequent increments of eight."
-    function InterpolateDifficulty(Level: Integer; AtZero, AtEight, AtSixteen, AtTwentyFour: Single): Single; // @addr 0x7C1848 @note "A negative Level selects the effective difficulty; values above 24 extrapolate."
-    function ScaleDifficultyExponentially(Level: Integer; BaseValue, FactorPerEightLevels: Single): Single; // @addr 0x7C1964 @note "A negative Level selects the effective difficulty."
-    function GetTurnsBetweenLiberationGroups: Integer; // @addr 0x7C1A4C
-    function GetDominatorBossHullScale: Single; // @addr 0x7C19C4
-    function GetDominatorKillExperienceScale: Single; // @addr 0x7C19F8
-    function GetInitialDominatorControlPercent: Integer; // @addr 0x7C1AE0
+    function GetEffectiveDifficultyLevel: Integer; // @addr 0x007F0BBC @note "With custom rules disabled, reads the active Galaxy difficulty array rather than Self."
+    function GetDifficultyTierIndex: TDifficultyTier; // @addr 0x007F0BEC @note "Returns 0..9; tier boundaries are 6, 14, 22, and subsequent increments of eight."
+    function InterpolateDifficulty(Level: Integer; AtZero, AtEight, AtSixteen, AtTwentyFour: Single): Single; // @addr 0x007F0C1C @note "A negative Level selects the effective difficulty; values above 24 extrapolate."
+    function ScaleDifficultyExponentially(Level: Integer; BaseValue, FactorPerEightLevels: Single): Single; // @addr 0x007F0D2C @note "A negative Level selects the effective difficulty."
+    function GetTurnsBetweenLiberationGroups: Integer; // @addr 0x007F0DFC
+    function GetDominatorBossHullScale: Single; // @addr 0x007F0D80
+    function GetDominatorKillExperienceScale: Single; // @addr 0x007F0DA8
+    function GetInitialDominatorControlPercent: Integer; // @addr 0x007F0E78
 
-    procedure ProcessDominatorResearchProgress; // @addr 0x7BE398
-    function GetDominatorResearchRate(Series: TDominatorSeries): Single; // @addr 0x7BE710 @note "Percentage points per day."
-    function GetDominatorResearchEfficiency(Series: TDominatorSeries): TPercent; // @addr 0x7BE78C @note "Returns 20..100 percent."
-    procedure ProcessBankDebtAndDeposits; // @addr 0x7BEC1C @note "Debt pauses deposit accrual. Both states are cleared when no business centers remain."
-    procedure TryAwardDepositPrize; // @addr 0x7BE89C @note "Eligible only at positive multiples of 365 accrued deposit days."
-    function FindStationByTypeAndIndex(Index: Integer; StationType: TStationType): Pointer; // @addr 0x7BE7DC @note "One-based index over active Galaxy star/ship order. Uses Self's cached type count as an early gate; missing entries return nil."
-    procedure ProcessRangerCenterNewYearEvent; // @addr 0x7BF428 @note "Also clears the player's deposited nodes when no ranger centers remain."
-    procedure ProcessPlayerSatelliteExploration; // @addr 0x7BCF7C @note "Advances deployed probes' terrain exploration and wear; idle completed planets still incur reduced wear."
-    function CountExistingSatellites: Integer; // @addr 0x7BD240 @note "Requires a player. Counts deployed/player-storage probes, loose and carried probes in active Galaxy, and Self.StoredItems; excludes shop stock."
-    function IsChaoticRandomEnabled: Boolean; // @addr 0x7C1BC0 @note "When enabled, seeded helpers ignore their supplied seed."
-    function ComputeScaledMiniMoney(Owner: TOwnerId): Integer; // @addr 0x7BD3CC
-    function ComputeScaledSmallMoney(Owner: TOwnerId): Integer; // @addr 0x7BD44C
-    function ComputeScaledAverageMoney(Owner: TOwnerId): Integer; // @addr 0x7BD4CC
-    function ComputeScaledBigMoney(Owner: TOwnerId): Integer; // @addr 0x7BD54C
-    function ComputeScaledHugeMoney(Owner: TOwnerId): Integer; // @addr 0x7BD5CC
-    function GetDominatorAggressionLevel: Integer; // @addr 0x7C1B14
-    function GetDominatorSpawnLevel: Integer; // @addr 0x7C1B4C
-    function GetPirateAggressionLevel: Integer; // @addr 0x7C1B84
-    function AreStationsNearStarsEnabled: Boolean; // @addr 0x7C1BF4
-    function IsFullStationTargetingEnabled: Boolean; // @addr 0x7C1C28
-    function IsEquipmentKnowledgeUnrestricted: Boolean; // @addr 0x7C1C5C
-    function GetAsteroidModifier: Single; // @addr 0x7C1C90
-    function GetStarDamageDifficultyScale: Single; // @addr 0x7C1CDC
-    function AreSpecialShipsEnabled: Boolean; // @addr 0x7C1D2C
-    function GetMicroModuleOfferRollThresholdPercent: Single; // @addr 0x7C1D60
-    function GetNodeDropModifier: Single; // @addr 0x7C1D98
-    function GetArcadeDropValueModifier: Single; // @addr 0x7C1DE4
-    function GetDropValueModifier: Single; // @addr 0x7C1E30
-    function GetAgriculturalPlanetWeight: Integer; // @addr 0x7C1E7C
-    function GetMixedPlanetWeight: Integer; // @addr 0x7C1EDC
-    function GetIndustrialPlanetWeight: Integer; // @addr 0x7C1F3C
-    function IsZeroStartingExperienceEnabled: Boolean; // @addr 0x7C1F9C
-    function GetExtraRangerCount: Integer; // @addr 0x7C1FD0
-    function IsArcadeBattleRoyaleEnabled: Boolean; // @addr 0x7C2000
-    function GetArcadeHitpointsModifier: Single; // @addr 0x7C2034
-    function GetArcadeDamageModifier: Single; // @addr 0x7C2080
-    function AreDominatorRacialWeaponsEnabled: Boolean; // @addr 0x7C20CC
-    function GetAIJunkToleranceLevel: Integer; // @addr 0x7C2100
-    function AreMaxRangeMissilesEnabled: Boolean; // @addr 0x7C2130
-    function IsOldHyperspaceEnabled: Boolean; // @addr 0x7C2164
-    function ArePirateNodesEnabled: Boolean; // @addr 0x7C2198
-    function IsAIShoppingEnabled: Boolean; // @addr 0x7C21CC
-    function IsStationShopUpdateEnabled: Boolean; // @addr 0x7C2200
-    function AreDuplicateArtefactsEnabled: Boolean; // @addr 0x7C2234
-    function GetHullGrowthMod: Byte; // @addr 0x7C2268
-    function IsArcadeEquipmentChangeEnabled: Boolean; // @addr 0x7C2298
-    function IsOldSpeedCalculationEnabled: Boolean; // @addr 0x7C22CC
-    function AreOldMissileBonusesEnabled: Boolean; // @addr 0x7C2300
-    procedure AssignSpecialStationService; // @addr 0x7C097C
+    procedure ProcessDominatorResearchProgress; // @addr 0x007EDC34
+    function GetDominatorResearchRate(Series: TDominatorSeries): Single; // @addr 0x007EDF4C @note "Percentage points per day."
+    function GetDominatorResearchEfficiency(Series: TDominatorSeries): TPercent; // @addr 0x007EDFC4 @note "Returns 20..100 percent."
+    procedure ProcessBankDebtAndDeposits; // @addr 0x007EE3FC @note "Debt pauses deposit accrual. Both states are cleared when no business centers remain."
+    procedure TryAwardDepositPrize; // @addr 0x007EE0A4 @note "Eligible only at positive multiples of 365 accrued deposit days."
+    function FindStationByTypeAndIndex(Index: Integer; StationType: TStationType): Pointer; // @addr 0x007EE004 @note "One-based index over active Galaxy star/ship order. Uses Self's cached type count as an early gate; missing entries return nil."
+    procedure ProcessRangerCenterNewYearEvent; // @addr 0x007EEBBC @note "Also clears the player's deposited nodes when no ranger centers remain."
+    procedure ProcessPlayerSatelliteExploration; // @addr 0x007ECB4C @note "Advances deployed probes' terrain exploration and wear; idle completed planets still incur reduced wear."
+    function CountExistingSatellites: Integer; // @addr 0x007ECD6C @note "Requires a player. Counts deployed/player-storage probes, loose and carried probes in active Galaxy, and Self.StoredItems; excludes shop stock."
+    function IsChaoticRandomEnabled: Boolean; // @addr 0x007F0EF4 @note "When enabled, seeded helpers ignore their supplied seed."
+    function ComputeScaledMiniMoney(Owner: TOwnerId): Integer; // @addr 0x007ECEF8
+    function ComputeScaledSmallMoney(Owner: TOwnerId): Integer; // @addr 0x007ECF68
+    function ComputeScaledAverageMoney(Owner: TOwnerId): Integer; // @addr 0x007ECFD8
+    function ComputeScaledBigMoney(Owner: TOwnerId): Integer; // @addr 0x007ED048
+    function ComputeScaledHugeMoney(Owner: TOwnerId): Integer; // @addr 0x007ED0B8
+    function GetDominatorAggressionLevel: Integer; // @addr 0x007F0EA0
+    function GetDominatorSpawnLevel: Integer; // @addr 0x007F0EB8
+    function GetPirateAggressionLevel: Integer; // @addr 0x007F0ED0
+    function AreStationsNearStarsEnabled: Boolean; // @addr 0x007F0F0C
+    function IsFullStationTargetingEnabled: Boolean; // @addr 0x007F0F24
+    function IsEquipmentKnowledgeUnrestricted: Boolean; // @addr 0x007F0F3C
+    function GetAsteroidModifier: Single; // @addr 0x007F0F54
+    function GetStarDamageDifficultyScale: Single; // @addr 0x007F0F94
+    function AreSpecialShipsEnabled: Boolean; // @addr 0x007F0FDC
+    function GetMicroModuleOfferRollThresholdPercent: Single; // @addr 0x007F0FF4
+    function GetNodeDropModifier: Single; // @addr 0x007F1020
+    function GetArcadeDropValueModifier: Single; // @addr 0x007F1060
+    function GetDropValueModifier: Single; // @addr 0x007F10A0
+    function GetAgriculturalPlanetWeight: Integer; // @addr 0x007F10E0
+    function GetMixedPlanetWeight: Integer; // @addr 0x007F1120
+    function GetIndustrialPlanetWeight: Integer; // @addr 0x007F1160
+    function IsZeroStartingExperienceEnabled: Boolean; // @addr 0x007F11A0
+    function GetExtraRangerCount: Integer; // @addr 0x007F11B8
+    function IsArcadeBattleRoyaleEnabled: Boolean; // @addr 0x007F11D0
+    function GetArcadeHitpointsModifier: Single; // @addr 0x007F11E8
+    function GetArcadeDamageModifier: Single; // @addr 0x007F1228
+    function AreDominatorRacialWeaponsEnabled: Boolean; // @addr 0x007F1268
+    function GetAIJunkToleranceLevel: Integer; // @addr 0x007F1280
+    function AreMaxRangeMissilesEnabled: Boolean; // @addr 0x007F1298
+    function IsOldHyperspaceEnabled: Boolean; // @addr 0x007F12B0
+    function ArePirateNodesEnabled: Boolean; // @addr 0x007F12C8
+    function IsAIShoppingEnabled: Boolean; // @addr 0x007F12E0
+    function IsStationShopUpdateEnabled: Boolean; // @addr 0x007F12F8
+    function AreDuplicateArtefactsEnabled: Boolean; // @addr 0x007F1310
+    function GetHullGrowthMod: Byte; // @addr 0x007F1328
+    function IsArcadeEquipmentChangeEnabled: Boolean; // @addr 0x007F133C
+    function IsOldSpeedCalculationEnabled: Boolean; // @addr 0x007F1354
+    function AreOldMissileBonusesEnabled: Boolean; // @addr 0x007F136C
+    procedure AssignSpecialStationService; // @addr 0x007EFF3C
 end;
 
   TDominatorResearchEntry = packed record // @size 0x08
@@ -505,48 +504,48 @@ end;
     HiddenOutlinePolygonsBackup: TPolygon2D; // @offset 0x84  Owned polygon chain.
     SerializedValue88: Word; // @offset 0x88  Saved value; meaning unresolved.
 
-    constructor Create; // @addr 0x7B8284
-    destructor Destroy; override; // @addr 0x7B83C0
-    procedure SaveToBuffer(Buffer: TBufEC); // @addr 0x7B84AC
-    procedure LoadFromBuffer(Buffer: TBufEC; Galaxy: TGalaxy); // @addr 0x7B8958 @note "Requires a fresh instance; saved object IDs remain unresolved."
-    procedure ResolveLoadedReferences(Galaxy: TGalaxy); // @addr 0x7B8E78
-    function GetName: WideString; // @addr 0x7BA27C @note "Localization key uses the current position in Galaxy.Constellations, not Id."
+    constructor Create; // @addr 0x007E8C40
+    destructor Destroy; override; // @addr 0x007E8D58
+    procedure SaveToBuffer(Buffer: TBufEC); // @addr 0x007E8E0C
+    procedure LoadFromBuffer(Buffer: TBufEC; Galaxy: TGalaxy); // @addr 0x007E91B8 @note "Requires a fresh instance; saved object IDs remain unresolved."
+    procedure ResolveLoadedReferences(Galaxy: TGalaxy); // @addr 0x007E95BC
+    function GetName: WideString; // @addr 0x007EA554 @note "Localization key uses the current position in Galaxy.Constellations, not Id."
 
-    procedure AddStar(Star: TStar); // @addr 0x7B91F4 @note "Also sets Star.Constellation; does not remove earlier membership."
-    procedure ClearStars; // @addr 0x7B931C @note "Clears only the borrowed list; leaves Star.Constellation unchanged."
-    procedure AddAdjacentConstellation(Constellation: TConstellation); // @addr 0x7B9220 @note "Suppresses duplicates; does not add the reciprocal relationship."
-    procedure ClearAdjacentConstellations; // @addr 0x7B933C
-    function HasAdjacentConstellation(Constellation: TConstellation): Boolean; // @addr 0x7B9D14
-    function SharesOutlineSegment(Constellation: TConstellation): Boolean; // @addr 0x7B9250 @note "Self compares true; otherwise matches complete segment endpoints in either direction."
+    procedure AddStar(Star: TStar); // @addr 0x007E9870 @note "Also sets Star.Constellation; does not remove earlier membership."
+    procedure ClearStars; // @addr 0x007E9944 @note "Clears only the borrowed list; leaves Star.Constellation unchanged."
+    procedure AddAdjacentConstellation(Constellation: TConstellation); // @addr 0x007E988C @note "Suppresses duplicates; does not add the reciprocal relationship."
+    procedure ClearAdjacentConstellations; // @addr 0x007E9954
+    function HasAdjacentConstellation(Constellation: TConstellation): Boolean; // @addr 0x007EA0A4
+    function SharesOutlineSegment(Constellation: TConstellation): Boolean; // @addr 0x007E98AC @note "Self compares true; otherwise matches complete segment endpoints in either direction."
 
-    procedure ClearStarLinks; // @addr 0x7B8F1C
-    function FindNextClosestStarPair(var FirstStar, SecondStar: TStar; MinimumDistance: Integer): Integer; // @addr 0x7B9380 @note "Resumes equal-distance pairs using the input stars; zero clears both outputs and means no pair remains."
-    function HasStarGraphCycle: Boolean; // @addr 0x7B95A4 @note "Changes link traversal marks; returns false without checking when Stars.Count exceeds 100."
-    function IsStarGraphConnected: Boolean; // @addr 0x7B97D0 @note "Clears link traversal marks; returns false when Stars.Count exceeds 100."
-    function BuildStarGraph: Boolean; // @addr 0x7B9970 @note "Replaces StarLinks; result reports connectivity."
+    procedure ClearStarLinks; // @addr 0x007E962C
+    function FindNextClosestStarPair(var FirstStar, SecondStar: TStar; MinimumDistance: Integer): Integer; // @addr 0x007E997C @note "Resumes equal-distance pairs using the input stars; zero clears both outputs and means no pair remains."
+    function HasStarGraphCycle: Boolean; // @addr 0x007E9B40 @note "Changes link traversal marks; returns false without checking when Stars.Count exceeds 100."
+    function IsStarGraphConnected: Boolean; // @addr 0x007E9CBC @note "Clears link traversal marks; returns false when Stars.Count exceeds 100."
+    function BuildStarGraph: Boolean; // @addr 0x007E9DC4 @note "Replaces StarLinks; result reports connectivity."
 
-    procedure ClearBoundaryRaySamples; // @addr 0x7B8F70
-    procedure GenerateBoundaryRaySamples(Count: Integer); // @addr 0x7B8FC4 @note "Requires a positive Count."
-    procedure SetOutlinePolygon(Polygon: TPolygon2D); // @addr 0x7B90E8 @note "Takes ownership and frees the previous polygon chain; do not pass the current chain."
-    procedure RebuildOutlineSegments; // @addr 0x7B9128 @note "Replaces the list without freeing its old segment records."
-    procedure ClearOutlineSegmentsAndBounds; // @addr 0x7B9164
-    procedure ResetGeneratedMapShape; // @addr 0x7B92C4
-    procedure RestoreHiddenForm; // @addr 0x7B8188
-    function GetOutlineArea: Single; // @addr 0x7B935C
-    procedure ExpandOutlineBounds(Point: TPointF); // @addr 0x7B9B18
-    procedure RefreshOutlineBounds; // @addr 0x7B9BA4
-    function ContainsPoint(Point: TPointF): Boolean; // @addr 0x7B9CC8
-    function HasOutlineSegment(FirstPoint, SecondPoint: TPointF): Boolean; // @addr 0x7B9D64 @note "Endpoint matching uses a tolerance and accepts either direction."
-    function AreBothPointsOnOutline(FirstPoint, SecondPoint: TPointF): Boolean; // @addr 0x7B9DE0 @note "The points may lie on different outline segments."
-    function CalculateLabelPosition: TPointF; // @addr 0x7B9E84 @note "Requires an outline yielding interior samples; the sample mean need not lie inside a concave outline."
-    function HasOutlineVertex(Point: TPointF): Boolean; // @addr 0x7BA04C
-    function IsPointNearOutline(Point: TPointF): Boolean; // @addr 0x7BA0C4 @note "Tests a distance of at most two map units."
-    procedure NormalizeOutlineSegmentOrder; // @addr 0x7BA160
+    procedure ClearBoundaryRaySamples; // @addr 0x007E9664
+    procedure GenerateBoundaryRaySamples(Count: Integer); // @addr 0x007E969C @note "Requires a positive Count."
+    procedure SetOutlinePolygon(Polygon: TPolygon2D); // @addr 0x007E97A8 @note "Takes ownership and frees the previous polygon chain; do not pass the current chain."
+    procedure RebuildOutlineSegments; // @addr 0x007E97D0 @note "Replaces the list without freeing its old segment records."
+    procedure ClearOutlineSegmentsAndBounds; // @addr 0x007E97F8
+    procedure ResetGeneratedMapShape; // @addr 0x007E98FC
+    procedure RestoreHiddenForm; // @addr 0x007E8B80
+    function GetOutlineArea: Single; // @addr 0x007E9964
+    procedure ExpandOutlineBounds(Point: TPointF); // @addr 0x007E9F24
+    procedure RefreshOutlineBounds; // @addr 0x007E9F9C
+    function ContainsPoint(Point: TPointF): Boolean; // @addr 0x007EA070
+    function HasOutlineSegment(FirstPoint, SecondPoint: TPointF): Boolean; // @addr 0x007EA0E0 @note "Endpoint matching uses a tolerance and accepts either direction."
+    function AreBothPointsOnOutline(FirstPoint, SecondPoint: TPointF): Boolean; // @addr 0x007EA13C @note "The points may lie on different outline segments."
+    function CalculateLabelPosition: TPointF; // @addr 0x007EA1C4 @note "Requires an outline yielding interior samples; the sample mean need not lie inside a concave outline."
+    function HasOutlineVertex(Point: TPointF): Boolean; // @addr 0x007EA39C
+    function IsPointNearOutline(Point: TPointF): Boolean; // @addr 0x007EA3F4 @note "Tests a distance of at most two map units."
+    procedure NormalizeOutlineSegmentOrder; // @addr 0x007EA474
 
-    function HasDominatorPresence: Boolean; // @addr 0x7BA338 @note "Uses member stars' cached population counts."
-    function HasPirateClanPresence: Boolean; // @addr 0x7BA390
-    function HasBertorOfSeries(Series: TDominatorSeries): Boolean; // @addr 0x7BA43C
-    function CountShipsByTypeMask(ShipTypeMask: TShipTypeMask): Integer; // @addr 0x7BA508 @note "Uses cached population counts."
+    function HasDominatorPresence: Boolean; // @addr 0x007EA604 @note "Uses member stars' cached population counts."
+    function HasPirateClanPresence: Boolean; // @addr 0x007EA638
+    function HasBertorOfSeries(Series: TDominatorSeries): Boolean; // @addr 0x007EA6C4
+    function CountShipsByTypeMask(ShipTypeMask: TShipTypeMask): Integer; // @addr 0x007EA77C @note "Uses cached population counts."
   end;
 
   THole = class(TObjectEx) // @size 0x34
@@ -558,18 +557,18 @@ end;
     Position2: TPointF; // @offset 0x18
     CreatedTurn: Integer; // @offset 0x20
     HoleType: Integer; // @offset 0x24  1 ordinary, 2 Blazer, 4 Keller mission; other internal states exist.
-    Graphic: TObjectSE; // @offset 0x28  Retained reference.
+    Graphic: THoleSE; // @offset 0x28  Retained reference.
     FilmObjectId: Integer; // @offset 0x2C
     ArcadeMapName: WideString; // @offset 0x30  Also accepts SkipAB and NoEntry.
 
-    constructor Create; // @addr 0x7AACB0
-    destructor Destroy; override; // @addr 0x7AAD10
-    procedure InitializeGraphic(GraphKey: WideString); // @addr 0x7AAD58 @note "Empty GraphKey chooses a seeded Hole template. Clears ArcadeMapName; replacing an existing Graphic does not release the old reference."
-    procedure SaveToBuffer(Buffer: TBufEC); // @addr 0x7AAE9C @note "Requires both endpoint stars and Graphic."
-    procedure LoadFromBuffer(Buffer: TBufEC; Galaxy: TGalaxy); // @addr 0x7AAF50 @note "Leaves endpoint IDs unresolved until ResolveLoadedReferences."
-    procedure ResolveLoadedReferences(Galaxy: TGalaxy); // @addr 0x7AB0B4
-    procedure SaveToBlock(Block: TBlockParEC); // @addr 0x7AB104 @note "Editable subset; writes remaining lifetime as CreatedTurn + 200 - Galaxy.CurrentTurn."
-    procedure LoadFromBlock(Block: TBlockParEC); // @addr 0x7AB520 @note "Updates endpoints, positions, remaining lifetime and ArcadeMapName; preserves Id, HoleType and Graphic."
+    constructor Create; // @addr 0x007DC628
+    destructor Destroy; override; // @addr 0x007DC67C
+    procedure InitializeGraphic(GraphKey: WideString); // @addr 0x007DC6B0 @note "Empty GraphKey chooses a seeded Hole template. Clears ArcadeMapName; replacing an existing Graphic does not release the old reference."
+    procedure SaveToBuffer(Buffer: TBufEC); // @addr 0x007DC7E0 @note "Requires both endpoint stars and Graphic."
+    procedure LoadFromBuffer(Buffer: TBufEC; Galaxy: TGalaxy); // @addr 0x007DC860 @note "Leaves endpoint IDs unresolved until ResolveLoadedReferences."
+    procedure ResolveLoadedReferences(Galaxy: TGalaxy); // @addr 0x007DC98C
+    procedure SaveToBlock(Block: TBlockParEC); // @addr 0x007DC9C8 @note "Editable subset; writes remaining lifetime as CreatedTurn + 200 - Galaxy.CurrentTurn."
+    procedure LoadFromBlock(Block: TBlockParEC); // @addr 0x007DCDC4 @note "Updates endpoints, positions, remaining lifetime and ArcadeMapName; preserves Id, HoleType and Graphic."
   end;
   PPlanetNewsEntry = ^TPlanetNews;
 
@@ -581,10 +580,10 @@ end;
     TypeTag: WideString; // @offset 0x10  Script lookup key.
     Distance: Integer; // @offset 0x14  Ordering position in the system-object list.
 
-    constructor Create; // @addr 0x7AB8A4
-    destructor Destroy; override; // @addr 0x7AB8E8
-    procedure LoadFromBuffer(Buffer: TBufEC); // @addr 0x7AB91C
-    procedure SaveToBuffer(Buffer: TBufEC); // @addr 0x7AB9D4
+    constructor Create; // @addr 0x007DD128
+    destructor Destroy; override; // @addr 0x007DD160
+    procedure LoadFromBuffer(Buffer: TBufEC); // @addr 0x007DD188
+    procedure SaveToBuffer(Buffer: TBufEC); // @addr 0x007DD22C
   end;
 
   TStar = class(TObject) // @size 0x114
@@ -603,7 +602,7 @@ end;
     MovingDropItems: TList; // @offset 0x34  Owns PMovingDropItemEntry descriptors; payload ownership changes when inserted into the star.
     Missiles: TObjectList; // @offset 0x38  TMissile entries.
     SystemProcessName: WideString; // @offset 0x3C
-    Status: TStarStatus; // @offset $40 Native managed-record RTTI at $4DB498.
+    Status: TStarStatus; // @offset $40
     property ThreatLevel: Byte read Status.ThreatLevel write Status.ThreatLevel;
     property TrafficLevel: Byte read Status.TrafficLevel write Status.TrafficLevel;
     property ControlFaction: TStarFaction read Status.ControlFaction write Status.ControlFaction;
@@ -646,73 +645,73 @@ end;
     MovementStepCount: Integer; // @offset 0x104
     MovementStepScale: Extended; // @offset 0x108
 
-    constructor Create; // @addr 0x7ABA2C
-    destructor Destroy; override; // @addr 0x7ABBC4
-    procedure SaveToBuffer(Buffer: TBufEC); // @addr 0x7AC8CC @note "Removes empty moving-drop descriptors; includes module-integrity checks."
-    procedure LoadFromBuffer(Buffer: TBufEC; Galaxy: TGalaxy); // @addr 0x7AD19C @note "Appends owned objects; requires a fresh instance. References are resolved separately."
-    procedure ResolveLoadedReferences(Galaxy: TGalaxy); // @addr 0x7ADB3C
-    procedure SaveToBlock(Block: TBlockParEC); // @addr 0x7ADCF8 @note "Editable subset of the system; excludes the player ship."
-    procedure LoadFromBlock(Block: TBlockParEC); // @addr 0x7AE54C @note "Updates existing objects and can create stations, planets, items and asteroids. Moves star-link endpoints but does not rebuild distance caches."
-    procedure GenerateSystemContents(TerronSystem: Boolean); // @addr 0x7ABD34
-    procedure PrepareNextDay; // @addr 0x7B06F8 @note "Daily preparation without movement/combat simulation; the caller tracks whether it has already run."
-    procedure NextDay(RecordFilm: Boolean); // @addr 0x7C70CC
-    procedure RefreshMovementStepParameters; // @addr 0x7C41A8 @note "200 steps in the player's star, 50 elsewhere; MovementStepScale is the reciprocal."
-    procedure RefreshDerivedStats; // @addr 0x7C2450
-    procedure RefreshDominatorSeries; // @addr 0x7C2334 @note "Changes the series only when exactly one series has eligible local forces; includes the bosses."
-    procedure RefreshMapDiameterAndStats; // @addr 0x7C4188
-    function ComputeMapDiameter: Integer; // @addr 0x7C4228 @note "Uses the final planet-list entry when nonempty; otherwise SystemRadius. Does not update MapDiameter."
-    procedure UpdateControlFaction; // @addr 0x7C2C18 @note "Can transfer planet ownership and emit capture news. Pirate ending 3 prevents new Pirate Clan captures."
-    procedure GetControlPresence(out PlayerPartyPresent, CoalitionPresent, DominatorsPresent, PiratesPresent, CustomPresent: Boolean); // @addr 0x7C25C4 @note "Applies campaign-ending and liberation-contribution rules; not a raw ship-presence query."
-    procedure ResetControlFaction; // @addr 0x7C3E1C @note "Reevaluates ownership after clearing a custom faction, resets liberation contributions and can clear NPC prison terms. No-op without a player."
-    procedure RefreshShipTypeCounts; // @addr 0x7C44D0
-    procedure RebuildStarDistances(Galaxy: TGalaxy); // @addr 0x7C5508
-    function IsConstellationVisible: Boolean; // @addr 0x7C5068
-    procedure ProcessItemScripts(TurnPhase: Integer); // @addr 0x7B1FB8
-    function DropMinerals(Quantity: Integer; Position: TPointF; Seed: Cardinal): Integer; // @addr 0x7AF5EC @note "Returns the sum of the new goods' Cost, not their quantity. Nonpositive Quantity creates no drops and returns zero."
-    procedure ProcessPlayerAsteroidKill(MineralValue: Integer; Position: TPointF; AsteroidId: Cardinal); // @addr 0x7AFA44 @note "Requires a player. Achievement progress is independent of eligibility for a planet's reward or complaint."
-    procedure ClearTargetReferences(Target: TObject); // @addr 0x7AFE80 @note "Clears weapon, missile and queued attack references; accepts any target class. Nil is a no-op."
-    procedure ClearShipReferences(Ship: Pointer); // @addr 0x7B0138 @note "Clears attack, landing and combat-event references without removing or freeing Ship. Nil is a no-op."
-    procedure ClearItemReferences(Item: Pointer); // @addr 0x7B0418 @note "Clears targets, pickups, ReferencedItems and moving-drop payload references; does not remove Item from Items or free it."
-    procedure ClearCombatEventWeaponReferences(Weapon: Pointer); // @addr 0x7B069C
-    procedure HandleObjectLeavingStar(Obj: TObject); // @addr 0x7B0900 @note "Updates followers and targets recursively for docked ships. Does not remove the object from Ships or free it; selected pursuers may receive a jump order."
-    procedure AvoidShipPathCollisions; // @addr 0x7B0E78 @note "Trims or clears planned movement paths; does not apply collision damage."
-    procedure RebuildShipMovementPaths; // @addr 0x7B12E0 @note "Normal-space ships only; uses MovementStepCount."
-    procedure PruneWeaponTargetsAfterTurn; // @addr 0x7AF35C
-    procedure MarkConnectedCombatEvents(Events: TList; Target: TObject; Group: Integer); // @addr 0x7AF548 @note "Recursively marks unmarked events sharing an attacker or target. Events contains PStarCombatEvent; Group must be nonzero."
-    procedure OpenSpaceScene(MapPanel: TPanelGI; Minimap: TObjectGI; Screen: TMessageLoopGI); // @addr 0x7B133C
-    procedure RefreshSpaceObjectPositions; // @addr 0x7B1970
-    procedure QueueSpaceImageLoads(PendingLoads: TList; Owner: TObjectGI); // @addr 0x7B1B8C
-    procedure QueueHyperspaceShipImageLoads(PendingLoads: TList; Owner: TObjectGI); // @addr 0x7B1E70
-    function GetBackgroundImagePath(out Size: Integer): WideString; // @addr 0x7B1ED8 @note "Sets Size to 2000."
-    procedure TryGenerateSystemNews; // @addr 0x7C591C @note "Requires a visible peaceful system, no custom faction and an undefeated Coalition."
+    constructor Create; // @addr 0x007DD268
+    destructor Destroy; override; // @addr 0x007DD3B4
+    procedure SaveToBuffer(Buffer: TBufEC); // @addr 0x007DDF00 @note "Removes empty moving-drop descriptors; includes module-integrity checks."
+    procedure LoadFromBuffer(Buffer: TBufEC; Galaxy: TGalaxy); // @addr 0x007DE700 @note "Appends owned objects; requires a fresh instance. References are resolved separately."
+    procedure ResolveLoadedReferences(Galaxy: TGalaxy); // @addr 0x007DEEFC
+    procedure SaveToBlock(Block: TBlockParEC); // @addr 0x007DF024 @note "Editable subset of the system; excludes the player ship."
+    procedure LoadFromBlock(Block: TBlockParEC); // @addr 0x007DF820 @note "Updates existing objects and can create stations, planets, items and asteroids. Moves star-link endpoints but does not rebuild distance caches."
+    procedure GenerateSystemContents(TerronSystem: Boolean); // @addr 0x007DD4C0
+    procedure PrepareNextDay; // @addr 0x007E16E0 @note "Daily preparation without movement/combat simulation; the caller tracks whether it has already run."
+    procedure NextDay(RecordFilm: Boolean); // @addr 0x007F5698
+    procedure RefreshMovementStepParameters; // @addr 0x007F2E68 @note "200 steps in the player's star, 50 elsewhere; MovementStepScale is the reciprocal."
+    procedure RefreshDerivedStats; // @addr 0x007F1478
+    procedure RefreshDominatorSeries; // @addr 0x007F1384 @note "Changes the series only when exactly one series has eligible local forces; includes the bosses."
+    procedure RefreshMapDiameterAndStats; // @addr 0x007F2E50
+    function ComputeMapDiameter: Integer; // @addr 0x007F2ED0 @note "Uses the final planet-list entry when nonempty; otherwise SystemRadius. Does not update MapDiameter."
+    procedure UpdateControlFaction; // @addr 0x007F1B54 @note "Can transfer planet ownership and emit capture news. Pirate ending 3 prevents new Pirate Clan captures."
+    procedure GetControlPresence(out PlayerPartyPresent, CoalitionPresent, DominatorsPresent, PiratesPresent, CustomPresent: Boolean); // @addr 0x007F15C4 @note "Applies campaign-ending and liberation-contribution rules; not a raw ship-presence query."
+    procedure ResetControlFaction; // @addr 0x007F2B60 @note "Reevaluates ownership after clearing a custom faction, resets liberation contributions and can clear NPC prison terms. No-op without a player."
+    procedure RefreshShipTypeCounts; // @addr 0x007F30B8
+    procedure RebuildStarDistances(Galaxy: TGalaxy); // @addr 0x007F3EE0
+    function IsConstellationVisible: Boolean; // @addr 0x007F3A84
+    procedure ProcessItemScripts(TurnPhase: Integer); // @addr 0x007E2BBC
+    function DropMinerals(Quantity: Integer; Position: TPointF; Seed: Cardinal): Integer; // @addr 0x007E074C @note "Returns the sum of the new goods' Cost, not their quantity. Nonpositive Quantity creates no drops and returns zero."
+    procedure ProcessPlayerAsteroidKill(MineralValue: Integer; Position: TPointF; AsteroidId: Cardinal); // @addr 0x007E0B54 @note "Requires a player. Achievement progress is independent of eligibility for a planet's reward or complaint."
+    procedure ClearTargetReferences(Target: TObject); // @addr 0x007E0F68 @note "Clears weapon, missile and queued attack references; accepts any target class. Nil is a no-op."
+    procedure ClearShipReferences(Ship: Pointer); // @addr 0x007E11D8 @note "Clears attack, landing and combat-event references without removing or freeing Ship. Nil is a no-op."
+    procedure ClearItemReferences(Item: Pointer); // @addr 0x007E145C @note "Clears targets, pickups, ReferencedItems and moving-drop payload references; does not remove Item from Items or free it."
+    procedure ClearCombatEventWeaponReferences(Weapon: Pointer); // @addr 0x007E16A4
+    procedure HandleObjectLeavingStar(Obj: TObject); // @addr 0x007E185C @note "Updates followers and targets recursively for docked ships. Does not remove the object from Ships or free it; selected pursuers may receive a jump order."
+    procedure AvoidShipPathCollisions; // @addr 0x007E1CF0 @note "Trims or clears planned movement paths; does not apply collision damage."
+    procedure RebuildShipMovementPaths; // @addr 0x007E20C8 @note "Normal-space ships only; uses MovementStepCount."
+    procedure PruneWeaponTargetsAfterTurn; // @addr 0x007E0524
+    procedure MarkConnectedCombatEvents(Events: TList; Target: TObject; Group: Integer); // @addr 0x007E06CC @note "Recursively marks unmarked events sharing an attacker or target. Events contains PStarCombatEvent; Group must be nonzero."
+    procedure OpenSpaceScene(MapPanel: TPanelGI; Minimap: TObjectGI; Screen: TMessageLoopGI); // @addr 0x007E210C
+    procedure RefreshSpaceObjectPositions; // @addr 0x007E2660
+    procedure QueueSpaceImageLoads(PendingLoads: TList; Owner: TObjectGI); // @addr 0x007E281C
+    procedure QueueHyperspaceShipImageLoads(PendingLoads: TList; Owner: TObjectGI); // @addr 0x007E2A94
+    function GetBackgroundImagePath(out Size: Integer): WideString; // @addr 0x007E2AF0 @note "Sets Size to 2000."
+    procedure TryGenerateSystemNews; // @addr 0x007F4218 @note "Requires a visible peaceful system, no custom faction and an undefeated Coalition."
 
-    function CountPlanetsByOwner(OwnerId: TOwnerId): Integer; // @addr 0x7C4290
-    function CountDistinctInhabitedPlanetOwners: Integer; // @addr 0x7C42E8 @note "Counts owners 0..5 and 7; includes Dominators."
-    function FindFirstInhabitedPlanet: Pointer; // @addr 0x7C4330 @note "If every planet is uninhabited, returns the last planet; nil only for an empty list."
-    function SelectRandomInhabitedPlanet: Pointer; // @addr 0x7C438C @note "Returns nil when no inhabited planet exists; advances the star RNG."
-    function FindFastestResearchPlanet: Pointer; // @addr 0x7C4448 @note "Excludes uninhabited planets; first entry wins equal progress rates."
-    function CountEligibleRangersInSpace: Integer; // @addr 0x7C4570
-    function CountShipsByTypeMask(ShipTypeMask: TShipTypeMask): Integer; // @addr 0x7C45E4 @note "Uses cached population counts."
-    function CountDominatorForces(Series: TDominatorSeries; ExcludeAbsoluteOrders, OtherSeries: Boolean; out Strength: Extended): Integer; // @addr 0x7C4634 @note "Excludes bosses, scripted-standing ships and Dominators with a positive ActiveProgramAppliedTurn. Strength is an Extended output."
-    function CountStandardDominatorsOfLocalSeries: Integer; // @addr 0x7C4788 @note "Counts normal-space types 1..5; excludes bosses and scripted standing."
-    function CountPirateForces(ExcludeAbsoluteOrders: Boolean; out Strength: Extended; IncludeClanVariants, IncludeIndependent: Boolean): Integer; // @addr 0x7C4860 @note "Requires pirate ownership. IncludeIndependent also includes the pirate player."
-    function CountCustomFactionForces(ExcludeAbsoluteOrders: Boolean; out Faction: WideString; out Strength: Extended): Integer; // @addr 0x7C49A0
-    function CountOtherCustomFactionForces(ExcludeAbsoluteOrders: Boolean; out Faction: WideString; out Strength: Extended): Integer; // @addr 0x7C4A94 @note "Faction is empty when counted ships do not share one nonempty faction tag."
-    function CountPirateShips(IncludeOutsideStarSpace: Boolean): Integer; // @addr 0x7C4C20 @note "Includes the pirate player; excludes scripted standing."
-    function CountForcesByOwnerGroups(out Strength: Extended; IncludeCoalition, IncludeDominators, IncludePirates, IncludeCustom: Boolean): Integer; // @addr 0x7C4DEC @note "Includes local garrison ships absent from Ships, avoiding duplicate list entries."
-    function CountRatedRangersByCareerMask(CareerMask: TRangerCareerSet): Byte; // @addr 0x7C4EF8 @note "Includes docked and hyperspace entries in Ships; excludes ExcludedFromRating. Byte count can wrap."
-    function GetRangerNamesByCareerMask(CareerMask: TRangerCareerSet): WideString; // @addr 0x7C4F88 @ida "void __usercall $name(TStar *Self@<eax>, unsigned __int8 CareerMask@<dl>, unsigned __int16 **Result@<ecx>);" @note "Unlike CountRatedRangersByCareerMask, includes ExcludedFromRating entries."
-    function GetCachedFactionStrength(FactionGroup: TStarFaction): Single; // @addr 0x7C5088 @note "Group 0 Coalition, 1 Dominators/custom, 2 pirates. Lazily refreshes all three once per active Galaxy.CurrentTurn."
-    function SumBestRangerRelativeStrength(ShipTypeMask: TShipTypeMask): Single; // @addr 0x7C5474 @note "Sums StrengthInBestRanger over Ships, excluding the three bosses; no docking/hyperspace filter."
-    function FindNearestStarByFaction(Faction: TStarFaction; InBattle: Boolean): TStar; // @addr 0x7C5734 @note "Starts at distance-cache index one and excludes custom factions. Requires a current distance cache."
-    function GetBoundaryPointTowardStar(Star: TStar): TPointF; // @addr 0x7C57BC
-    function HasLiberationGroupOrder: Boolean; // @addr 0x7C5868 @note "Searches every order target in active Galaxy.LiberationGroups."
-    function HasHostilePresenceForScriptBinding: Boolean; // @addr 0x7C56BC @note "Includes any TKling, standing eight, or scripted ship with nonempty faction not beginning with SubFaction. No docking/hyperspace filter; the substring test also accepts absence."
+    function CountPlanetsByOwner(OwnerId: TOwnerId): Integer; // @addr 0x007F2F14
+    function CountDistinctInhabitedPlanetOwners: Integer; // @addr 0x007F2F50 @note "Counts owners 0..5 and 7; includes Dominators."
+    function FindFirstInhabitedPlanet: Pointer; // @addr 0x007F2F84 @note "If every planet is uninhabited, returns the last planet; nil only for an empty list."
+    function SelectRandomInhabitedPlanet: Pointer; // @addr 0x007F2FC4 @note "Returns nil when no inhabited planet exists; advances the star RNG."
+    function FindFastestResearchPlanet: Pointer; // @addr 0x007F3048 @note "Excludes uninhabited planets; first entry wins equal progress rates."
+    function CountEligibleRangersInSpace: Integer; // @addr 0x007F3128
+    function CountShipsByTypeMask(ShipTypeMask: TShipTypeMask): Integer; // @addr 0x007F3184 @note "Uses cached population counts."
+    function CountDominatorForces(Series: TDominatorSeries; ExcludeAbsoluteOrders, OtherSeries: Boolean; out Strength: Extended): Integer; // @addr 0x007F31B4 @note "Excludes bosses, scripted-standing ships and Dominators with a positive ActiveProgramAppliedTurn. Strength is an Extended output."
+    function CountStandardDominatorsOfLocalSeries: Integer; // @addr 0x007F32D8 @note "Counts normal-space types 1..5; excludes bosses and scripted standing."
+    function CountPirateForces(ExcludeAbsoluteOrders: Boolean; out Strength: Extended; IncludeClanVariants, IncludeIndependent: Boolean): Integer; // @addr 0x007F3388 @note "Requires pirate ownership. IncludeIndependent also includes the pirate player."
+    function CountCustomFactionForces(ExcludeAbsoluteOrders: Boolean; out Faction: WideString; out Strength: Extended): Integer; // @addr 0x007F34A0
+    function CountOtherCustomFactionForces(ExcludeAbsoluteOrders: Boolean; out Faction: WideString; out Strength: Extended): Integer; // @addr 0x007F3574 @note "Faction is empty when counted ships do not share one nonempty faction tag."
+    function CountPirateShips(IncludeOutsideStarSpace: Boolean): Integer; // @addr 0x007F36D8 @note "Includes the pirate player; excludes scripted standing."
+    function CountForcesByOwnerGroups(out Strength: Extended; IncludeCoalition, IncludeDominators, IncludePirates, IncludeCustom: Boolean): Integer; // @addr 0x007F3864 @note "Includes local garrison ships absent from Ships, avoiding duplicate list entries."
+    function CountRatedRangersByCareerMask(CareerMask: TRangerCareerSet): Byte; // @addr 0x007F3940 @note "Includes docked and hyperspace entries in Ships; excludes ExcludedFromRating. Byte count can wrap."
+    function GetRangerNamesByCareerMask(CareerMask: TRangerCareerSet): WideString; // @addr 0x007F39BC @ida "void __usercall $name(TStar *Self@<eax>, unsigned __int8 CareerMask@<dl>, unsigned __int16 **Result@<ecx>);" @note "Unlike CountRatedRangersByCareerMask, includes ExcludedFromRating entries."
+    function GetCachedFactionStrength(FactionGroup: TStarFaction): Single; // @addr 0x007F3A90 @note "Group 0 Coalition, 1 Dominators/custom, 2 pirates. Lazily refreshes all three once per active Galaxy.CurrentTurn."
+    function SumBestRangerRelativeStrength(ShipTypeMask: TShipTypeMask): Single; // @addr 0x007F3E68 @note "Sums StrengthInBestRanger over Ships, excluding the three bosses; no docking/hyperspace filter."
+    function FindNearestStarByFaction(Faction: TStarFaction; InBattle: Boolean): TStar; // @addr 0x007F4064 @note "Starts at distance-cache index one and excludes custom factions. Requires a current distance cache."
+    function GetBoundaryPointTowardStar(Star: TStar): TPointF; // @addr 0x007F40D0
+    function HasLiberationGroupOrder: Boolean; // @addr 0x007F4178 @note "Searches every order target in active Galaxy.LiberationGroups."
+    function HasHostilePresenceForScriptBinding: Boolean; // @addr 0x007F4010 @note "Includes any TKling, standing eight, or scripted ship with nonempty faction not beginning with SubFaction. No docking/hyperspace filter; the substring test also accepts absence."
   end;
 
-function ShouldContinuePlayerTravel: Boolean; // @addr 0x7B247C @note "May prepare movement or start black-hole entry; false without a player."
-function EstimatePlayerTravelTurns: Single; // @addr 0x7B2624 @note "Uses distance divided by Speed + 1; zero for interrupted travel or unsupported orders."
-function GetLocalObjectLink(Obj: TObject; Suppress: Boolean): WideString; // @addr 0x7B27E0 @note "Object markup embeds the native pointer, not an ID. Ships/planets/loose items must be in the player's star. Suppress returns empty; otherwise supported objects require a player."
+function ShouldContinuePlayerTravel: Boolean; // @addr 0x007E2FF8 @note "May prepare movement or start black-hole entry; false without a player."
+function EstimatePlayerTravelTurns: Single; // @addr 0x007E317C @note "Uses distance divided by Speed + 1; zero for interrupted travel or unsupported orders."
+function GetLocalObjectLink(Obj: TObject; Suppress: Boolean): WideString; // @addr 0x007E3348 @note "Object markup embeds the native pointer, not an ID. Ships/planets/loose items must be in the player's star. Suppress returns empty; otherwise supported objects require a player."
 
 type
   TModuleCrcStatus = (
@@ -722,28 +721,28 @@ type
   ); // @size $01
 
 var
-  ReservedMessageCounter: Integer = 0; // @addr $87CCE0 Reset by galaxy construction; meaning unresolved.
-  TurnsSinceLastShipMessage: Cardinal = 0; // @addr $87CCE4 Reset by ship messages; incremented by Galaxy.NextDay and saved with galaxy state.
-  ModuleSizeIntegrityStatus: Integer = 0; // @addr $87CCE8 Startup size-check marker: positive means mismatch; nonpositive is accepted.
-  ModuleCrcIntegrityStatus: TModuleCrcStatus = mcsUnchecked; // @addr $87CCEC Cached module CRC result.
-  ModuleCrcFailureValue: Integer = 0; // @addr $87CCF0 Cleared on mismatch while saving star 1; no native readers.
-  Galaxy: TGalaxy; // @addr 0x88B0EC
-  PlayerStar: TStar; // @addr 0x88B0F0
-  PlayerDialogueRequestCount: Byte; // @addr $88B0F4 Incremented when a ship dialogue passes the shared message-delay threshold; only count <= 1 is accepted.
-  WingmenPendingLeadershipPenalty: TList; // @addr 0x88B0F8  Borrowed TShip entries.
+  TurnsSinceLastRequestToPlayer: Cardinal = 0; // @addr $813090 Elapsed turns since a ship requested extortion or attack help from the player; also gates paid-truce offers.
+  TurnsSinceLastShipMessage: Cardinal = 0; // @addr $813094 Reset by ship messages; incremented by Galaxy.NextDay and saved with galaxy state.
+  ModuleSizeIntegrityStatus: Integer = 0; // @addr $813098 Startup size-check marker: positive means mismatch; nonpositive is accepted.
+  ModuleCrcIntegrityStatus: TModuleCrcStatus = mcsUnchecked; // @addr $81309C Cached module CRC result.
+  ModuleCrcFailureValue: Integer = 0; // @addr $8130A0 Cleared on mismatch while saving star 1; no native readers.
+  Galaxy: TGalaxy; // @addr 0x0081D2A0
+  PlayerStar: TStar; // @addr 0x0081D2A4
+  PlayerDialogueRequestCount: Byte; // @addr $81D2A8 Incremented when a ship dialogue passes the shared message-delay threshold; only count <= 1 is accepted.
+  WingmenPendingLeadershipPenalty: TList; // @addr 0x0081D2AC  Borrowed TShip entries.
 
-function GameTurnToDateTime(Turn: Integer): Double; // @addr 0x7B22A0
-function FormatGameTurnDate(Turn: Integer): WideString; // @addr 0x7B22C4
+function GameTurnToDateTime(Turn: Integer): Double; // @addr 0x007E2E48
+function FormatGameTurnDate(Turn: Integer): WideString; // @addr 0x007E2E68
 
 var
-  CameraSpeed: Integer = 10; // @addr 0x87CCF4 Native initial camera-step limit.
-  FastCameraSpeed: Integer = 20; // @addr 0x87CCF8 Native initial camera-step limit.
+  CameraSpeed: Integer = 10; // @addr 0x008130A4 Native initial camera-step limit.
+  FastCameraSpeed: Integer = 20; // @addr 0x008130A8 Native initial camera-step limit.
 
 implementation
 
-uses SE_Garbage, FGInt, FGIntRSA, SE_Sputnik, aEObjInfo, fGov, fGoodsShop2, EC_Expression, ab_Ship, SE_Planet, SE_Gate, ThreadCalc, aCalc, SE_Ruins, aNormalShip, aGroup, aWarrior, aTranclucator, aRuins, aGalaxyEvent, PathClass, ParameterDeltaClass, ParameterClass, LocationClass, TextQuest, SE_Asteroid, aAsteroid, aRanger, EC_CacheBuf, fPlanetQuest, aScript, aItem, aKling, aMissile, aShip, fScore, aPirate, aEFilm, SE_Hole, SE_Process, SE_Ship2, SE_Weapon, Achievements, aPlanet, fShip2, fHangar, fEquipmentShop, aPlayer, GI_GI, GI_GAI, GI_GraphButton, GI_Label, GI_Image, GR_Sound, CrcUnit, EC_Mem, EC_Cache, Globals, fFilmFile, GR_Main, EC_Str, GlobalsV, GR_GraphBuf, Math, SysUtils, Windows;
+uses SE_Garbage, FGInt, FGIntRSA, SE_Sputnik, aEObjInfo, fGov, fGoodsShop2, EC_Expression, ab_Ship, SE_Planet, ThreadCalc, aCalc, SE_Ruins, aNormalShip, aGroup, aWarrior, aTranclucator, aRuins, aGalaxyEvent, PathClass, ParameterDeltaClass, ParameterClass, LocationClass, TextQuest, SE_Asteroid, aAsteroid, aRanger, EC_CacheBuf, fPlanetQuest, aScript, aItem, aKling, aMissile, aShip, fScore, aPirate, aEFilm, SE_Process, SE_Container, SE_Ship2, SE_Weapon, Achievements, aPlanet, fShip2, fHangar, fEquipmentShop, aPlayer, GI_GI, GI_GAI, GI_GraphButton, GI_Label, GI_Image, GR_Sound, CrcUnit, EC_Mem, EC_Cache, Globals, fFilmFile, GR_Main, EC_Str, GlobalsV, GR_GraphBuf, Math, SysUtils, Windows;
 
-{ @routine $79C8CC TGalaxy_Create }
+{ @routine $7D0194 TGalaxy_Create }
 constructor TGalaxy.Create;
 var
   ModuleName: WideString;
@@ -752,8 +751,8 @@ var
   DllSuffix, LibraryPrefix: WideString;
   Block: TBlockParEC;
 
-  // @nested $79C724 CheckModuleSize
-  procedure CheckModuleSize(EncodedSize: Cardinal); // @addr 0x79C724 @note "Caller-popped static link; filename at ParentFrame-4. Updates the startup integrity marker."
+  // @nested $7CFFFC CheckModuleSize
+  procedure CheckModuleSize(EncodedSize: Cardinal); // @addr 0x007CFFFC @note "Caller-popped static link; filename at ParentFrame-4. Updates the startup integrity marker."
   var Handle: THandle; Size: Cardinal;
   begin
     Handle := FileOpen(AnsiString(ModuleName), 0);
@@ -765,8 +764,8 @@ var
       ModuleSizeIntegrityStatus := RandomIntRange(-2021352435, -1235457467);
   end;
 
-  // @nested $79C7D4 ParseCheatsDisabledFlag
-  function ParseCheatsDisabledFlag(Value: WideString): Boolean; // @addr 0x79C7D4 @note "Nested in TGalaxy.Create; unused caller-popped static link. Accepts exactly Yes, yes, True, true, TRUE or 1; no trimming."
+  // @nested $7D00A0 ParseCheatsDisabledFlag
+  function ParseCheatsDisabledFlag(Value: WideString): Boolean; // @addr 0x007D00A0 @note "Nested in TGalaxy.Create; unused caller-popped static link. Accepts exactly Yes, yes, True, true, TRUE or 1; no trimming."
   begin
     if (Value = 'Yes') or (Value = 'yes') or (Value = 'True') or
       (Value = 'true') or (Value = 'TRUE') or (Value = '1') then
@@ -781,7 +780,6 @@ begin
   Block := MainDataConfig.GetBlock('BV');
   if Block.CountParams('CheatsDisabled') > 0 then
     if ParseCheatsDisabledFlag(TrimWideString(Block.GetParamByPathOrMarker('CheatsDisabled'))) then CheatsDisabled := True;
-  // Preserve the native string construction and encoded module-size checks.
   DllSuffix := 'll';
   DllSuffix := '.d' + DllSuffix;
   ModuleName := DecodeTextW('sotoenalm^_^aucah') + DllSuffix; // 'steam_ach'
@@ -860,7 +858,7 @@ begin
   EminentCareerShips[rcTrader] := nil;
   EminentCareerShips[rcPirate] := nil;
   EminentCareerShips[rcWarrior] := nil;
-  ReservedMessageCounter := 0;
+  TurnsSinceLastRequestToPlayer := 0;
   TurnsSinceLastShipMessage := 0;
   IronWill := False;
   DominatorModLevel := 0;
@@ -881,9 +879,9 @@ begin
   LoadedShips := TList.Create;
   SpecialSimulationMode := 0;
 end;
-{ @end $79C8CC }
+{ @end $7D0194 }
 
-{ @routine $79D14C TGalaxy_Destroy }
+{ @routine $7D0938 TGalaxy_Destroy }
 destructor TGalaxy.Destroy;
 var
   Point: PPointF;
@@ -910,17 +908,17 @@ begin
   end;
   for I := 0 to StoredItems.Count - 1 do
   begin
-    Stored := TStoredItem(StoredItems[I]);
+    Stored := StoredItems[I];
     if Stored.Item <> nil then Stored.Item.Free;
     Stored.Item := nil;
   end;
   for I := 0 to Stars.Count - 1 do
   begin
-    Star := TStar(Stars[I]);
+    Star := Stars[I];
     while Star.Ships.Count > 0 do TObject(Star.Ships[0]).Free;
     for J := 0 to Star.Planets.Count - 1 do
     begin
-      Planet := TPlanet(Star.Planets[J]);
+      Planet := Star.Planets[J];
       while Planet.Warriors.Count > 0 do TObject(Planet.Warriors[0]).Free;
     end;
   end;
@@ -1019,9 +1017,9 @@ begin
   end;
   inherited Destroy;
 end;
-{ @end $79D14C }
+{ @end $7D0938 }
 
-{ @routine $79D768 TGalaxy_InitializeCampaignState }
+{ @routine $7D0E54 TGalaxy_InitializeCampaignState }
 procedure TGalaxy.InitializeCampaignState;
 var I: TDominatorSeries;
 begin
@@ -1041,9 +1039,9 @@ begin
     end;
   end;
   ChecksumScalarEC := 0;
-  WarDeltaWin[1] := 0;
-  WarDeltaWin[2] := 0;
-  WarDeltaWin[0] := 0;
+  WarDeltaWin[sfDominators] := 0;
+  WarDeltaWin[sfPirates] := 0;
+  WarDeltaWin[sfCoalition] := 0;
   RangerSpawnQuotas[oiMaloc] := 0;
   RangerSpawnQuotas[oiPeleng] := 0;
   RangerSpawnQuotas[oiHuman] := 0;
@@ -1055,9 +1053,9 @@ begin
   FinalizationNameEncoded := '';
   SpecialSimulationMode := 0;
 end;
-{ @end $79D768 }
+{ @end $7D0E54 }
 
-{ @routine $79D8D8 TGalaxy_SaveToBuffer }
+{ @routine $7D0F54 TGalaxy_SaveToBuffer }
 procedure TGalaxy.SaveToBuffer(Buffer: TBufEC);
 var I, J, Count: Integer; Star: TStar; Planet: TPlanet; Ranger: TRanger;
   OldQuest: PPlayerOldQuest; Gate: PJumpGateEntry; Constellation: TConstellation;
@@ -1155,9 +1153,9 @@ begin
     Gate := JumpGates[I];
     Buffer.AddSingle(Gate.Gate.Position.X);
     Buffer.AddSingle(Gate.Gate.Position.Y);
-    Buffer.AddAnsiChar(AnsiChar(Gate.Gate.GetAngle));
+    Buffer.AddAnsiChar(AnsiChar(Gate.Gate.Angle));
     Buffer.AddWideChar(WideChar(Gate.Gate.Size.X));
-    Buffer.AddWideStringZ(Gate.Gate.GetText);
+    Buffer.AddWideStringZ(Gate.Gate.Text);
   end;
   Count := Planets.Count;
   Buffer.AddWideChar(WideChar(Count));
@@ -1166,7 +1164,7 @@ begin
     Buffer.AddDWord(Planet.Id);
   end;
   Count := Rangers.Count;
-  Buffer.AddWord(Word(Count));
+  Buffer.AddWord(Count);
   for I := 0 to Count - 1 do begin
     Ranger := Rangers[I];
     Buffer.AddDWord(Ranger.Id);
@@ -1247,7 +1245,7 @@ begin
     Buffer.AddAnsiChar(AnsiChar(News.NewsType));
     Buffer.AddWideStringZ(News.Text);
   end;
-  Buffer.AddDWord(ReservedMessageCounter);
+  Buffer.AddDWord(TurnsSinceLastRequestToPlayer);
   Buffer.AddDWord(TurnsSinceLastShipMessage);
   Buffer.AddSingle(ChecksumScalarD0);
   for Series := Low(TDominatorSeries) to High(TDominatorSeries) do begin
@@ -1255,9 +1253,9 @@ begin
     Buffer.AddDWord(DominatorResearch[Series].Material);
   end;
   Buffer.AddSingle(ChecksumScalarEC);
-  Buffer.AddIntegerValue(WarDeltaWin[1]);
-  Buffer.AddIntegerValue(WarDeltaWin[2]);
-  Buffer.AddIntegerValue(WarDeltaWin[0]);
+  Buffer.AddIntegerValue(WarDeltaWin[sfDominators]);
+  Buffer.AddIntegerValue(WarDeltaWin[sfPirates]);
+  Buffer.AddIntegerValue(WarDeltaWin[sfCoalition]);
   Buffer.AddBuffer(GR_Main.CCInterface.Buffer);
   Buffer.AddIntegerValue(High(SpaceBackgroundEntries) + 1);
   for I := 0 to High(SpaceBackgroundEntries) do begin
@@ -1375,9 +1373,9 @@ begin
   Buffer.AddBoolean(False);
   if CampaignFlag183 <> 0 then SaveEditableState;
 end;
-{ @end $79D8D8 }
+{ @end $7D0F54 }
 
-{ @routine $79EE00 TGalaxy_LoadFromBuffer }
+{ @routine $7D2068 TGalaxy_LoadFromBuffer }
 procedure TGalaxy.LoadFromBuffer(Buffer: TBufEC);
 var I, J, K, Count, TemplateIndex, ShipCount: Integer; X, Y: Single;
   Star: TStar; Planet: TPlanet; Ship: TShip; OldQuest: PPlayerOldQuest;
@@ -1390,8 +1388,8 @@ var I, J, K, Count, TemplateIndex, ShipCount: Integer; X, Y: Single;
   PositionOverride: TInterfacePosOverride; SizeOverride: TInterfaceSizeOverride;
   Stage: Integer; TemplateName, SavedMods: WideString; Stored: TStoredItem;
   WeaponInfo: PWeaponInfo; Crc: Cardinal; Race: TOwnerId;
-  // @nested $79EDF8 CompatibilityHook
-  procedure CompatibilityHook; // @addr 0x79EDF8 @ida "void __cdecl $name(void *ParentFrame);" @note "Native no-op with an unused caller-popped static link."
+  // @nested $7D2064 CompatibilityHook
+  procedure CompatibilityHook; // @addr 0x007D2064 @ida "void __cdecl $name(void *ParentFrame);" @note "Native no-op with an unused caller-popped static link."
   begin
   end;
 begin
@@ -1503,11 +1501,11 @@ begin
       Gate := CreateJumpGate(False);
       X := Buffer.GetSingle;
       Y := Buffer.GetSingle;
-      Gate.Gate.SetPosition(MakePointF(X, Y));
-      Gate.Gate.SetAngle(Buffer.GetByte);
+      Gate.Gate.Pos := MakePointF(X, Y);
+      Gate.Gate.Angle := Buffer.GetByte;
       TemplateIndex := Buffer.GetWord;
-      Gate.Gate.SetSize(Classes.Point(TemplateIndex, TemplateIndex));
-      Gate.Gate.SetText(Buffer.ReadWideString);
+      Gate.Gate.ObjectSize := Classes.Point(TemplateIndex, TemplateIndex);
+      Gate.Gate.Text := Buffer.ReadWideString;
     end;
     Stage := 5;
     Count := Buffer.GetWord;
@@ -1517,7 +1515,7 @@ begin
       Star := TStar(Stars[I]);
       for J := 0 to Star.Planets.Count - 1 do begin
         LoadedPlanet := TPlanet(Star.Planets[J]);
-        if (LoadedPlanet.Id <= Cardinal(Count)) and (Cardinal(Planets[LoadedPlanet.Id - 1]) = LoadedPlanet.Id) then
+        if (LoadedPlanet.Id <= Cardinal(Count)) and (LoadedPlanet.Id = Cardinal(Planets[LoadedPlanet.Id - 1])) then
           Planets[LoadedPlanet.Id - 1] := LoadedPlanet
         else for K := 0 to Planets.Count - 1 do
           if Cardinal(Planets[K]) = LoadedPlanet.Id then begin
@@ -1619,9 +1617,9 @@ begin
     for Career := Low(TRangerCareer) to High(TRangerCareer) do EminentCareerShips[Career] := TObject(Buffer.GetUInt32);
     Stage := 15;
     Count := Rangers.Count;
-    for I := 0 to Count - 1 do Rangers[I] := TObject(IdToShip(Cardinal(Rangers[I]), True)) as TShip;
+    for I := 0 to Count - 1 do Rangers[I] := IdToShip(Cardinal(Rangers[I]), True) as TShip;
     Stage := 16;
-    SetPlayer(TObject(IdToShip(PlayerRangerIndex, True)) as TPlayer, Self);
+    SetPlayer(IdToShip(PlayerRangerIndex, True) as TPlayer, Self);
     Stage := 17;
     Count := Constellations.Count;
     for I := 0 to Count - 1 do begin
@@ -1655,13 +1653,13 @@ begin
     Stage := 22;
     if KellerTargetStar <> nil then KellerTargetStar := TObject(IdToStar(Cardinal(KellerTargetStar))) as TStar;
     Stage := 23;
-    PendingPlayerFollowTarget := TObject(IdToShip(Cardinal(PendingPlayerFollowTarget), True)) as TShip;
-    BlazerShip := TObject(IdToShip(Cardinal(BlazerShip), True)) as TKling;
-    KellerShip := TObject(IdToShip(Cardinal(KellerShip), True)) as TKling;
-    TerronShip := TObject(IdToShip(Cardinal(TerronShip), True)) as TKling;
+    PendingPlayerFollowTarget := IdToShip(Cardinal(PendingPlayerFollowTarget), True) as TShip;
+    BlazerShip := IdToShip(Cardinal(BlazerShip), True) as TKling;
+    KellerShip := IdToShip(Cardinal(KellerShip), True) as TKling;
+    TerronShip := IdToShip(Cardinal(TerronShip), True) as TKling;
     PlayerStar := TObject(IdToStar(Cardinal(PlayerStar))) as TStar;
     Stage := 24;
-    for Career := Low(TRangerCareer) to High(TRangerCareer) do EminentCareerShips[Career] := TObject(IdToShip(Cardinal(EminentCareerShips[Career]), True)) as TRanger;
+    for Career := Low(TRangerCareer) to High(TRangerCareer) do EminentCareerShips[Career] := IdToShip(Cardinal(EminentCareerShips[Career]), True) as TRanger;
     Stage := 25;
     if PlayerOldQuests <> nil then begin
       PlayerOldQuests.Free;
@@ -1675,7 +1673,7 @@ begin
       New(OldQuest);
       PlayerOldQuests.Add(OldQuest);
       OldQuest.Planet := TPlanet(Buffer.GetUInt32);
-      OldQuest.Planet := TObject(IdToPlanet(Cardinal(OldQuest.Planet))) as TPlanet;
+      OldQuest.Planet := IdToPlanet(Cardinal(OldQuest.Planet)) as TPlanet;
       OldQuest.QuestType := TQuestType(Buffer.GetByte);
       OldQuest.QuestNumber := Buffer.GetWord;
       OldQuest.Description := Buffer.ReadWideString;
@@ -1694,7 +1692,7 @@ begin
       News.Text := Buffer.ReadWideString;
     end;
     Stage := 28;
-    ReservedMessageCounter := Buffer.GetUInt32;
+    TurnsSinceLastRequestToPlayer := Buffer.GetUInt32;
     TurnsSinceLastShipMessage := Buffer.GetUInt32;
     ChecksumScalarD0 := Buffer.GetSingle;
     for Series := Low(TDominatorSeries) to High(TDominatorSeries) do begin
@@ -1704,13 +1702,13 @@ begin
     ChecksumScalarEC := Buffer.GetSingle;
     Stage := 29;
     if LoadedSaveVersion >= 62 then begin
-      WarDeltaWin[1] := Buffer.GetInt32;
-      WarDeltaWin[2] := Buffer.GetInt32;
-      WarDeltaWin[0] := Buffer.GetInt32;
+      WarDeltaWin[sfDominators] := Buffer.GetInt32;
+      WarDeltaWin[sfPirates] := Buffer.GetInt32;
+      WarDeltaWin[sfCoalition] := Buffer.GetInt32;
     end else begin
-      WarDeltaWin[1] := Buffer.GetInt32 * -1;
-      WarDeltaWin[2] := 0;
-      WarDeltaWin[0] := 0;
+      WarDeltaWin[sfDominators] := Buffer.GetInt32 * -1;
+      WarDeltaWin[sfPirates] := 0;
+      WarDeltaWin[sfCoalition] := 0;
     end;
     Stage := 30;
     Buffer.ReadLengthPrefixedBuffer(GR_Main.CCInterface.Buffer);
@@ -2096,9 +2094,9 @@ begin
     end;
   end;
 end;
-{ @end $79EE00 }
+{ @end $7D2068 }
 
-{ @routine $7A2054 TGalaxy_SaveEditableState }
+{ @routine $7D49E4 TGalaxy_SaveEditableState }
 procedure TGalaxy.SaveEditableState;
 var
   i: Integer;
@@ -2118,30 +2116,30 @@ begin
   GR_Main.EditableSaveBlock.AddParam(DecodeTextW('DpiFfsQvueeYsst'), WideString(SysUtils.IntToStr(Self.DifficultyLevels[5]))); // 'DifQuest'
   GR_Main.EditableSaveBlock.AddParam(DecodeTextW('DpiwfsHrojlee'), WideString(SysUtils.IntToStr(Self.DifficultyLevels[6]))); // 'DifHole'
   GR_Main.EditableSaveBlock.AddParam(DecodeTextW('DpiefdBkarlsaGndcVee'), WideString(SysUtils.IntToStr(Self.DifficultyLevels[7]))); // 'DifBalance'
-  GR_Main.EditableSaveBlock.AddParam(DecodeTextW('KvlsiRnsgTshDdeHljtoaRWdifnG'), WideString(SysUtils.IntToStr(Self.WarDeltaWin[1]))); // 'KlingsDeltaWin'
-  GR_Main.EditableSaveBlock.AddParam(DecodeTextW('PuirreastTerswDVesltt4a6WHidns'), WideString(SysUtils.IntToStr(Self.WarDeltaWin[2]))); // 'PiratesDeltaWin'
-  GR_Main.EditableSaveBlock.AddParam(DecodeTextW('Npo6rdm2aSlfsHDeeyljt4asWCignI'), WideString(SysUtils.IntToStr(Self.WarDeltaWin[0]))); // 'NormalsDeltaWin'
+  GR_Main.EditableSaveBlock.AddParam(DecodeTextW('KvlsiRnsgTshDdeHljtoaRWdifnG'), WideString(SysUtils.IntToStr(Self.WarDeltaWin[sfDominators]))); // 'KlingsDeltaWin'
+  GR_Main.EditableSaveBlock.AddParam(DecodeTextW('PuirreastTerswDVesltt4a6WHidns'), WideString(SysUtils.IntToStr(Self.WarDeltaWin[sfPirates]))); // 'PiratesDeltaWin'
+  GR_Main.EditableSaveBlock.AddParam(DecodeTextW('Npo6rdm2aSlfsHDeeyljt4asWCignI'), WideString(SysUtils.IntToStr(Self.WarDeltaWin[sfCoalition]))); // 'NormalsDeltaWin'
   GR_Main.EditableSaveBlock.AddParam(DecodeTextW('RlehjieScataPSB'), BoolToWideString(GetPlayer.DeclinePlanetBattleOffers)); // 'RejectPB'
   GetPlayer.SaveToBlock(GR_Main.EditableSaveBlock.AddBlockByPath(DecodeTextW('Polearymeir'))); // 'Player'
   HoleBlock := GR_Main.EditableSaveBlock.AddBlockByPath(DecodeTextW('HroslaenLfirs4t')); // 'HoleList'
   for i := 0 to Self.Holes.Count - 1 do
   begin
-    Hole := THole(Self.Holes[i]);
-    Name := DecodeTextW('Heo4lge5I6dY') + WideString(SysUtils.IntToStr(Int64(Hole.Id))); // 'HoleId'
+    Hole := Self.Holes[i];
+    Name := DecodeTextW('Heo4lge5I6dY') + WideString(SysUtils.IntToStr(Hole.Id)); // 'HoleId'
     Hole.SaveToBlock(HoleBlock.AddBlockByPath(Name));
   end;
   HoleBlock.AddParam(DecodeTextW('CEr2e4aftge4NgehwYHeohlsegs1'), WideString(SysUtils.IntToStr(0))); // 'CreateNewHoles'
   with GR_Main.EditableSaveBlock.AddBlockByPath(DecodeTextW('SatraproLaiAsot')) do // 'StarList'
     for i := 0 to Self.Stars.Count - 1 do
     begin
-      Star := TStar(Self.Stars[i]);
-      Name := DecodeTextW('S5tTaersIed2') + WideString(SysUtils.IntToStr(Int64(Star.Id))); // 'StarId'
+      Star := Self.Stars[i];
+      Name := DecodeTextW('S5tTaersIed2') + WideString(SysUtils.IntToStr(Star.Id)); // 'StarId'
       Star.SaveToBlock(AddBlockByPath(Name));
     end;
 end;
-{ @end $7A2054 }
+{ @end $7D49E4 }
 
-{ @routine $7A2AEC TGalaxy_ApplyEditableState }
+{ @routine $7D5418 TGalaxy_ApplyEditableState }
 procedure TGalaxy.ApplyEditableState;
 var I: Integer;
   Key: WideString;
@@ -2162,15 +2160,15 @@ begin
     DifficultyLevels[5] := Max(0, Min(9, StrToInt(AnsiString(EditableSaveBlock.GetParam(DecodeTextW('DpiFfsQvueeYsst')))))); // 'DifQuest'
     DifficultyLevels[6] := Max(0, Min(9, StrToInt(AnsiString(EditableSaveBlock.GetParam(DecodeTextW('DpiwfsHrojlee')))))); // 'DifHole'
     DifficultyLevels[7] := Max(0, Min(9, StrToInt(AnsiString(EditableSaveBlock.GetParam(DecodeTextW('DpiefdBkarlsaGndcVee')))))); // 'DifBalance'
-    WarDeltaWin[1] := StrToInt(AnsiString(EditableSaveBlock.GetParam(DecodeTextW('KvlsiRnsgTshDdeHljtoaRWdifnG')))); // 'KlingsDeltaWin'
-    WarDeltaWin[2] := StrToInt(AnsiString(EditableSaveBlock.GetParam(DecodeTextW('PuirreastTerswDVesltt4a6WHidns')))); // 'PiratesDeltaWin'
-    WarDeltaWin[0] := StrToInt(AnsiString(EditableSaveBlock.GetParam(DecodeTextW('Npo6rdm2aSlfsHDeeyljt4asWCignI')))); // 'NormalsDeltaWin'
+    WarDeltaWin[sfDominators] := StrToInt(AnsiString(EditableSaveBlock.GetParam(DecodeTextW('KvlsiRnsgTshDdeHljtoaRWdifnG')))); // 'KlingsDeltaWin'
+    WarDeltaWin[sfPirates] := StrToInt(AnsiString(EditableSaveBlock.GetParam(DecodeTextW('PuirreastTerswDVesltt4a6WHidns')))); // 'PiratesDeltaWin'
+    WarDeltaWin[sfCoalition] := StrToInt(AnsiString(EditableSaveBlock.GetParam(DecodeTextW('Npo6rdm2aSlfsHDeeyljt4asWCignI')))); // 'NormalsDeltaWin'
     GetPlayer.DeclinePlanetBattleOffers := LowerCase(AnsiString(EditableSaveBlock.GetParam(DecodeTextW('RlehjieScataPSB')))) = 'true'; // 'RejectPB'
     GetPlayer.LoadFromBlock(EditableSaveBlock.GetBlockByPath(DecodeTextW('Polearymeir'))); // 'Player'
     HoleBlock := EditableSaveBlock.GetBlockByPath(DecodeTextW('HroslaenLfirs4t')); // 'HoleList'
     for I := 0 to Holes.Count - 1 do begin
-      Hole := THole(Holes[I]);
-      Key := DecodeTextW('Heo4lge5I6dY') + IntToStr(Int64(Hole.Id)); // 'HoleId'
+      Hole := Holes[I];
+      Key := DecodeTextW('Heo4lge5I6dY') + IntToStr(Hole.Id); // 'HoleId'
       Hole.LoadFromBlock(HoleBlock.GetBlockByPath(Key));
     end;
     for I := 0 to StrToInt(AnsiString(HoleBlock.GetParam(DecodeTextW('CEr2e4aftge4NgehwYHeohlsegs1')))) - 1 do begin // 'CreateNewHoles'
@@ -2190,64 +2188,61 @@ begin
     end;
     with EditableSaveBlock.GetBlockByPath(DecodeTextW('SatraproLaiAsot')) do // 'StarList'
       for I := 0 to Stars.Count - 1 do begin
-        Star := TStar(Stars[I]);
-        Key := DecodeTextW('S5tTaersIed2') + IntToStr(Int64(Star.Id)); // 'StarId'
+        Star := Stars[I];
+        Key := DecodeTextW('S5tTaersIed2') + IntToStr(Star.Id); // 'StarId'
         Star.LoadFromBlock(GetBlockByPath(Key));
       end;
     EditableSaveBlock.Clear;
   end;
 end;
-{ @end $7A2AEC }
+{ @end $7D5418 }
 
-{ @routine $7A3960 TGalaxy_RunConfigOnStartHandlers }
+{ @routine $7D6078 TGalaxy_RunConfigOnStartHandlers }
 procedure TGalaxy.RunConfigOnStartHandlers;
 var Block, Handler: TBlockParEC; I, Count: Integer; Text: WideString;
 begin
   Block := MainDataConfig.GetBlock('BV').FindBlockByPath('OnStart');
-  if Block <> nil then begin
-    Count := Block.GetBlockCount;
-    for I := 0 to Count - 1 do begin
-      Handler := Block.GetBlockByIndex(I);
-      Text := Handler.ConcatenateValues;
-      ExecuteScriptText(Text, nil);
-    end;
+  if Block = nil then Exit;
+  Count := Block.GetBlockCount;
+  for I := 0 to Count - 1 do begin
+    Handler := Block.GetBlockByIndex(I);
+    Text := Handler.ConcatenateValues;
+    ExecuteScriptText(Text, nil);
   end;
 end;
-{ @end $7A3960 }
+{ @end $7D6078 }
 
-{ @routine $7A3A2C TGalaxy_RunConfigOnLoadHandlers }
+{ @routine $7D6134 TGalaxy_RunConfigOnLoadHandlers }
 procedure TGalaxy.RunConfigOnLoadHandlers;
 var Block, Handler: TBlockParEC; I, Count: Integer; Text: WideString;
 begin
   Block := MainDataConfig.GetBlock('BV').FindBlockByPath('OnLoad');
-  if Block <> nil then begin
-    Count := Block.GetBlockCount;
-    for I := 0 to Count - 1 do begin
-      Handler := Block.GetBlockByIndex(I);
-      Text := Handler.ConcatenateValues;
-      ExecuteScriptText(Text, nil);
-    end;
+  if Block = nil then Exit;
+  Count := Block.GetBlockCount;
+  for I := 0 to Count - 1 do begin
+    Handler := Block.GetBlockByIndex(I);
+    Text := Handler.ConcatenateValues;
+    ExecuteScriptText(Text, nil);
   end;
 end;
-{ @end $7A3A2C }
+{ @end $7D6134 }
 
-{ @routine $7A3AF8 TGalaxy_RunConfigOnSaveHandlers }
+{ @routine $7D61F0 TGalaxy_RunConfigOnSaveHandlers }
 procedure TGalaxy.RunConfigOnSaveHandlers;
 var Block, Handler: TBlockParEC; I, Count: Integer; Text: WideString;
 begin
   Block := MainDataConfig.GetBlock('BV').FindBlockByPath('OnSave');
-  if Block <> nil then begin
-    Count := Block.GetBlockCount;
-    for I := 0 to Count - 1 do begin
-      Handler := Block.GetBlockByIndex(I);
-      Text := Handler.ConcatenateValues;
-      ExecuteScriptText(Text, nil);
-    end;
+  if Block = nil then Exit;
+  Count := Block.GetBlockCount;
+  for I := 0 to Count - 1 do begin
+    Handler := Block.GetBlockByIndex(I);
+    Text := Handler.ConcatenateValues;
+    ExecuteScriptText(Text, nil);
   end;
 end;
-{ @end $7A3AF8 }
+{ @end $7D61F0 }
 
-{ @routine $7A3BC4 TGalaxy_ReapplyInterfaceOverrides }
+{ @routine $7D62AC TGalaxy_ReapplyInterfaceOverrides }
 procedure TGalaxy.ReapplyInterfaceOverrides;
 var I: Integer;
 begin
@@ -2257,17 +2252,17 @@ begin
   for I := 0 to InterfacePositionOverrides.Count - 1 do TInterfacePosOverride(InterfacePositionOverrides[I]).Reapply;
   for I := 0 to InterfaceSizeOverrides.Count - 1 do TInterfaceSizeOverride(InterfaceSizeOverrides[I]).Reapply;
 end;
-{ @end $7A3BC4 }
+{ @end $7D62AC }
 
-{ @routine $7A3CF4 TGalaxy_BindScriptImports }
+{ @routine $7D6378 TGalaxy_BindScriptImports }
 procedure TGalaxy.BindScriptImports;
 var I: Integer;
 begin
   for I := 0 to Scripts.Count - 1 do TScript(Scripts[I]).BindImportedFunctions;
 end;
-{ @end $7A3CF4 }
+{ @end $7D6378 }
 
-{ @routine $7A3D3C TGalaxy_NextDay }
+{ @routine $7D63A8 TGalaxy_NextDay }
 procedure TGalaxy.NextDay;
 var I, J: Integer;
   Ratio: Single;
@@ -2288,18 +2283,18 @@ begin
       if ((not PirateWinType) = 3) and
          (((Ratio > 1.25) and (NextRandomIntRange(1, 1000, RandomState) <= 3)) or
           ((Ratio > 1.5) and (NextRandomIntRange(1, 1000, RandomState) <= 10)) or
-          ((Ratio > 2) and (NextRandomIntRange(1, 1000, RandomState) <= 30))) then Dec(WarDeltaWin[2]);
+          ((Ratio > 2) and (NextRandomIntRange(1, 1000, RandomState) <= 30))) then Dec(WarDeltaWin[sfPirates]);
       if ((Galaxy.CoalitionDefeatedTurn = 0) and (Ratio < 0.8) and (NextRandomIntRange(1, 1000, RandomState) <= 3)) or
          ((Ratio < 0.66) and (NextRandomIntRange(1, 1000, RandomState) <= 10)) or
          ((Ratio < 0.5) and (NextRandomIntRange(1, 1000, RandomState) <= 30)) then begin
-        Inc(WarDeltaWin[2]);
-        Dec(WarDeltaWin[0]);
+        Inc(WarDeltaWin[sfPirates]);
+        Dec(WarDeltaWin[sfCoalition]);
       end;
       Stage := 1;
       if Random(50) = 0 then CheckPlatformModules;
       Stage := 13;
       if ((((CurrentTurn + Integer(GenerationSeed)) mod GetTurnsBetweenLiberationGroups) = 0) and (CurrentTurn >= GalaxyWarmupTurns)) or
-         (WarDeltaWin[0] < -5) or ((CountFactionStars(sfCoalition) < 5) and (LiberationGroups.Count = 0)) or
+         (WarDeltaWin[sfCoalition] < -5) or ((CountFactionStars(sfCoalition) < 5) and (LiberationGroups.Count = 0)) or
          (CountFactionStars(sfCoalition) = 1) then begin
         Stage := 14;
         if LiberationGroups.Count < 2 then TryCreateLiberationGroup;
@@ -2342,7 +2337,7 @@ begin
       Stage := 9; UpdateConstellationMilitaryStats;
       Stage := 10;
       PlayerDialogueRequestCount := 0;
-      Inc(ReservedMessageCounter);
+      Inc(TurnsSinceLastRequestToPlayer);
       Inc(TurnsSinceLastShipMessage);
       if CurrentTurn mod TurnsPerYear = 0 then ComputeGlobalGoodsPriceBands;
       Stage := 11;
@@ -2382,9 +2377,9 @@ begin
       end;
     end;
 end;
-{ @end $7A3D3C }
+{ @end $7D63A8 }
 
-{ @routine $7A463C TGalaxy_CompleteDay }
+{ @routine $7D6C60 TGalaxy_CompleteDay }
 procedure TGalaxy.CompleteDay(UnusedRecordFilm: Boolean);
 var
   Hole: THole;
@@ -2463,7 +2458,7 @@ begin
       if j > 100 then Break;
       Hole.Star1 := TStar(Self.Stars[NextRandomIntRange(0, Self.Stars.Count - 1, Self.RandomState)]);
       if (Hole.Star1.Constellation.Id <> 20) and (GetPlayer.CurrentStar <> Hole.Star1) and
-        TStar(Hole.Star1).IsConstellationVisible and (Hole.Star1.DaysSincePlayerVisit >= 30) and
+        Hole.Star1.IsConstellationVisible and (Hole.Star1.DaysSincePlayerVisit >= 30) and
         (Hole.Star1.ControlFaction <> sfDominators) and (Hole.Star1.Status.CustomFaction = '') then Break;
     end;
     if j > 100 then Hole.Free
@@ -2476,7 +2471,7 @@ begin
         if j > 100 then Break;
         Hole.Star2 := TStar(Self.Stars[NextRandomIntRange(0, Self.Stars.Count - 1, Self.RandomState)]);
         if (Hole.Star1 <> Hole.Star2) and (Hole.Star2.Constellation.Id <> 20) and
-          (GetPlayer.CurrentStar <> Hole.Star2) and TStar(Hole.Star2).IsConstellationVisible and
+          (GetPlayer.CurrentStar <> Hole.Star2) and Hole.Star2.IsConstellationVisible and
           (Hole.Star2.DaysSincePlayerVisit >= 30) then Break;
       end;
       if j > 100 then Hole.Free
@@ -2578,9 +2573,9 @@ begin
   Self.ProcessCoalitionDefeat;
   if Self.CurrentTurn mod 30 = 0 then Self.AppendIntegritySnapshot;
 end;
-{ @end $7A463C }
+{ @end $7D6C60 }
 
-{ @routine $7A531C TGalaxy_TransferShipsInTransit }
+{ @routine $7D7780 TGalaxy_TransferShipsInTransit }
 procedure TGalaxy.TransferShipsInTransit;
 var I, J, Effect: Integer; Ship: TShip; Hole: THole;
 begin
@@ -2589,8 +2584,13 @@ begin
     Ship := ShipsInTransit[I];
     if Ship.OrderTarget <> nil then begin
       if Ship = GetPlayer then begin
-        repeat Effect := NextRandomIntRange(0, 2, RandomState) until SpaceEffectKind <> Effect;
-        SpaceEffectKind := Effect;
+        while True do
+        begin
+          Effect := NextRandomIntRange(0, 2, RandomState);
+          if SpaceEffectKind = Effect then Continue;
+          SpaceEffectKind := Effect;
+          Break;
+        end;
       end;
       if Ship.OrderTarget is TStar then Ship.TransferToStar(Ship.OrderTarget as TStar)
       else begin
@@ -2609,71 +2609,71 @@ begin
     KellerMissionState := 2;
   end;
 end;
-{ @end $7A531C }
+{ @end $7D7780 }
 
-{ @routine $7A54B4 TGalaxy_RebuildStarDistances }
+{ @routine $7D78C4 TGalaxy_RebuildStarDistances }
 procedure TGalaxy.RebuildStarDistances;
 var I, J: Integer; Star: TStar;
 begin
   J := Stars.Count;
   for I := 0 to J - 1 do begin
-    Star := TStar(Stars[I]);
+    Star := Stars[I];
     Star.RebuildStarDistances(Self);
   end;
 end;
-{ @end $7A54B4 }
+{ @end $7D78C4 }
 
-{ @routine $7A5504 TGalaxy_RefreshAllShipDerivedState }
+{ @routine $7D78F4 TGalaxy_RefreshAllShipDerivedState }
 procedure TGalaxy.RefreshAllShipDerivedState;
 var I, J, K, L: Integer; Star: TStar; Ship: TShip;
 begin
   J := Stars.Count;
   for I := 0 to J - 1 do begin
-    Star := TStar(Stars[I]);
+    Star := Stars[I];
     L := Star.Ships.Count;
     for K := 0 to L - 1 do begin
-      Ship := TShip(Star.Ships[K]);
+      Ship := Star.Ships[K];
       Ship.RefreshDerivedStats(True);
       Ship.RefreshGraphicSize;
     end;
   end;
 end;
-{ @end $7A5504 }
+{ @end $7D78F4 }
 
-{ @routine $7A5594 TGalaxy_IdToConstellation }
+{ @routine $7D796C TGalaxy_IdToConstellation }
 function TGalaxy.IdToConstellation(Id: Cardinal): TConstellation;
 var Item: TConstellation; I: Integer;
 begin
   Result := nil;
   if Id = 0 then Exit;
   for I := 0 to Constellations.Count - 1 do begin
-    Item := TConstellation(Constellations[I]);
+    Item := Constellations[I];
     if Item.Id = Id then begin Result := Item; Exit; end;
   end;
   raise Exception.Create('function TGalaxy.IdToConstellation (id: Cardinal): TObject;');
 end;
-{ @end $7A5594 }
+{ @end $7D796C }
 
-{ @routine $7A5658 TGalaxy_IdToStar }
+{ @routine $7D7A00 TGalaxy_IdToStar }
 function TGalaxy.IdToStar(Id: Cardinal): TStar;
 var Item: TStar; I, Count: Integer;
 begin
   Result := nil;
   if Id = 0 then Exit;
-    if (Cardinal(Stars.Count) >= Id) and (TStar(Stars[Id - 1]).Id = Id) then begin
-      Result := TStar(Stars[Id - 1]);
-      Exit;
-    end;
+  if (Cardinal(Stars.Count) >= Id) and (TStar(Stars[Id - 1]).Id = Id) then begin
+    Result := Stars[Id - 1];
+    Exit;
+  end;
   Count := Stars.Count;
   for I := 0 to Count - 1 do begin
-    Item := TStar(Stars[I]);
+    Item := Stars[I];
     if Item.Id = Id then begin Result := Item; Exit; end;
   end;
   raise Exception.Create('function TGalaxy.IdToStar (id: Cardinal): TObject;');
 end;
-{ @end $7A5658 }
+{ @end $7D7A00 }
 
-{ @routine $7A5750 TGalaxy_IdToHole }
+{ @routine $7D7AAC TGalaxy_IdToHole }
 function TGalaxy.IdToHole(Id: Cardinal): THole;
 var Item: THole; I, Count: Integer;
 begin
@@ -2681,20 +2681,20 @@ begin
   if Id = 0 then Exit;
   Count := Holes.Count;
   for I := 0 to Count - 1 do begin
-    Item := THole(Holes[I]);
+    Item := Holes[I];
     if Item.Id = Id then begin Result := Item; Exit; end;
   end;
   raise Exception.Create('function TGalaxy.IdToHole (id: Cardinal): TObject;');
 end;
-{ @end $7A5750 }
+{ @end $7D7AAC }
 
-{ @routine $7A580C TGalaxy_IdToPlanet }
-function TGalaxy.IdToPlanet(Id: Cardinal; RaiseIfMissing: Boolean): Pointer;
+{ @routine $7D7B34 TGalaxy_IdToPlanet }
+function TGalaxy.IdToPlanet(Id: Cardinal; RaiseIfMissing: Boolean): TObject;
 var Star: TStar; Planet: TPlanet; I, StarCount, J, PlanetCount: Integer;
 begin
   Result := nil;
   if Id = 0 then Exit;
-  if (Cardinal(Planets.Count) >= Id) and (Cardinal(TPlanet(Planets[Id - 1]).Id) = Id) then
+  if (Cardinal(Planets.Count) >= Id) and (TPlanet(Planets[Id - 1]).Id = Id) then
   begin
     Result := Planets[Id - 1];
     Exit;
@@ -2702,12 +2702,12 @@ begin
   StarCount := Stars.Count;
   for I := 0 to StarCount - 1 do
   begin
-    Star := TStar(Stars[I]);
+    Star := Stars[I];
     PlanetCount := Star.Planets.Count;
     for J := 0 to PlanetCount - 1 do
     begin
-      Planet := TPlanet(Star.Planets[J]);
-      if Cardinal(Planet.Id) = Id then
+      Planet := Star.Planets[J];
+      if Planet.Id = Id then
       begin
         Result := Planet;
         Exit;
@@ -2717,10 +2717,10 @@ begin
   if RaiseIfMissing then raise Exception.Create('function TGalaxy.IdToPlanet (id: Cardinal; exc: boolean = True): TObject;')
   else Result := nil;
 end;
-{ @end $7A580C }
+{ @end $7D7B34 }
 
-{ @routine $7A5968 TGalaxy_IdToShip }
-function TGalaxy.IdToShip(Id: Cardinal; RaiseIfMissing: Boolean): Pointer;
+{ @routine $7D7C50 TGalaxy_IdToShip }
+function TGalaxy.IdToShip(Id: Cardinal; RaiseIfMissing: Boolean): TObject;
 var
   Star: TStar; Planet: TPlanet; Ship: TShip;
   I, StarCount, J, Count, K, ArtefactCount: Integer;
@@ -2731,12 +2731,12 @@ begin
   StarCount := Stars.Count;
   for I := 0 to StarCount - 1 do
   begin
-    Star := TStar(Stars[I]);
+    Star := Stars[I];
     Count := Star.Ships.Count;
     for J := 0 to Count - 1 do
     begin
-      Ship := TShip(Star.Ships[J]);
-      if Cardinal(Ship.Id) = Id then
+      Ship := Star.Ships[J];
+      if Ship.Id = Id then
       begin
         Result := Ship;
         Exit;
@@ -2744,9 +2744,9 @@ begin
       ArtefactCount := Ship.Artefacts.Count;
       for K := 0 to ArtefactCount - 1 do
       begin
-        Artefact := TArtefact(Ship.Artefacts[K]);
-        if (Artefact is TArtefactTranclucator) and
-           (Cardinal((TObject((Artefact as TArtefactTranclucator).Ship) as TTranclucator).Id) = Id) then
+        Artefact := Ship.Artefacts[K];
+        if (Artefact is TArtefactTranclucator) then
+          if (((Artefact as TArtefactTranclucator).Ship as TTranclucator).Id = Id) then
         begin
           Result := (Artefact as TArtefactTranclucator).Ship;
           Exit;
@@ -2756,12 +2756,12 @@ begin
     Count := Star.Planets.Count;
     for J := 0 to Count - 1 do
     begin
-      Planet := TPlanet(Star.Planets[J]);
+      Planet := Star.Planets[J];
       ArtefactCount := Planet.Warriors.Count;
       for K := 0 to ArtefactCount - 1 do
       begin
-        Ship := TShip(Planet.Warriors[K]);
-        if Cardinal(Ship.Id) = Id then
+        Ship := Planet.Warriors[K];
+        if Ship.Id = Id then
         begin
           Result := Ship;
           Exit;
@@ -2771,9 +2771,10 @@ begin
     Count := Star.Items.Count;
     for J := 0 to Count - 1 do
     begin
-      Item := TItem(Star.Items[J]);
-      if (Item is TArtefactTranclucator) and (TArtefactTranclucator(Item).Ship <> nil) and
-         (Cardinal((TObject(TArtefactTranclucator(Item).Ship) as TTranclucator).Id) = Id) then
+      Item := Star.Items[J];
+      if (Item is TArtefactTranclucator) then
+        if (TArtefactTranclucator(Item).Ship <> nil) then
+        if ((TArtefactTranclucator(Item).Ship as TTranclucator).Id = Id) then
       begin
         Result := TArtefactTranclucator(Item).Ship;
         Exit;
@@ -2783,8 +2784,10 @@ begin
     for J := 0 to Count - 1 do
     begin
       Item := TItem(PMovingDropItemEntry(Star.MovingDropItems[J]).Payload);
-      if (Item <> nil) and (Item is TArtefactTranclucator) and (TArtefactTranclucator(Item).Ship <> nil) and
-         (Cardinal((TObject(TArtefactTranclucator(Item).Ship) as TTranclucator).Id) = Id) then
+      if (Item <> nil) then
+        if (Item is TArtefactTranclucator) then
+        if (TArtefactTranclucator(Item).Ship <> nil) then
+        if ((TArtefactTranclucator(Item).Ship as TTranclucator).Id = Id) then
       begin
         Result := TArtefactTranclucator(Item).Ship;
         Exit;
@@ -2795,8 +2798,9 @@ begin
   begin
     Storage := GetPlayer.StorageEntries[I];
     Item := Storage.Item;
-    if (Item is TArtefactTranclucator) and (TArtefactTranclucator(Item).Ship <> nil) and
-       (Cardinal((TObject(TArtefactTranclucator(Item).Ship) as TTranclucator).Id) = Id) then
+    if (Item is TArtefactTranclucator) then
+      if (TArtefactTranclucator(Item).Ship <> nil) then
+      if ((TArtefactTranclucator(Item).Ship as TTranclucator).Id = Id) then
     begin
       Result := TArtefactTranclucator(Item).Ship;
       Exit;
@@ -2805,9 +2809,9 @@ begin
   if RaiseIfMissing then raise Exception.Create('function TGalaxy.IdToShip, id = ' + IntToStr(Id))
   else Result := nil;
 end;
-{ @end $7A5968 }
+{ @end $7D7C50 }
 
-{ @routine $7A5D64 TGalaxy_IdToItem }
+{ @routine $7D7FB8 TGalaxy_IdToItem }
 function TGalaxy.IdToItem(Id: Cardinal; RaiseIfMissing: Boolean): Pointer;
 var
   Star: TStar;
@@ -2824,12 +2828,12 @@ begin
   StarCount := Self.Stars.Count;
   for i := 0 to StarCount - 1 do
   begin
-    Star := TStar(Self.Stars[i]);
+    Star := Self.Stars[i];
     ListCount := Star.Items.Count;
     for j := 0 to ListCount - 1 do
     begin
-      Item := TItem(Star.Items[j]);
-      if Cardinal(Item.Id) = Id then
+      Item := Star.Items[j];
+      if Item.Id = Id then
       begin
         Result := Item;
         Exit;
@@ -2843,10 +2847,10 @@ begin
     ListCount := Star.MovingDropItems.Count;
     for j := 0 to ListCount - 1 do
     begin
-      Drop := PMovingDropItemEntry(Star.MovingDropItems[j]);
+      Drop := Star.MovingDropItems[j];
       Item := Drop^.Payload as TItem;
       if Item = nil then Continue;
-      if Cardinal(Item.Id) = Id then
+      if Item.Id = Id then
       begin
         Result := Item;
         Exit;
@@ -2860,7 +2864,7 @@ begin
     ListCount := Star.Ships.Count;
     for j := 0 to ListCount - 1 do
     begin
-      Ship := TShip(Star.Ships[j]);
+      Ship := Star.Ships[j];
       Item := Ship.FindCarriedItemById(Id);
       if Item <> nil then
       begin
@@ -2870,9 +2874,9 @@ begin
       if (Ship.TypeId = stRanger) and (Ship is TPlayer) then
         for k := 0 to TPlayer(Ship).StorageEntries.Count - 1 do
         begin
-          Storage := PStorageEntry(TPlayer(Ship).StorageEntries[k]);
+          Storage := TPlayer(Ship).StorageEntries[k];
           Item := Storage^.Item;
-          if Cardinal(Item.Id) = Id then
+          if Item.Id = Id then
           begin
             Result := Item;
             Exit;
@@ -2887,11 +2891,11 @@ begin
     ListCount := Star.Planets.Count;
     for j := 0 to ListCount - 1 do
     begin
-      Planet := TPlanet(Star.Planets[j]);
+      Planet := Star.Planets[j];
       SubCount := Planet.Warriors.Count;
       for k := 0 to SubCount - 1 do
       begin
-        Ship := TShip(Planet.Warriors[k]);
+        Ship := Planet.Warriors[k];
         Item := Ship.FindCarriedItemById(Id);
         if Item <> nil then
         begin
@@ -2902,8 +2906,8 @@ begin
       SubCount := Planet.EquipmentShop.Count;
       for k := 0 to SubCount - 1 do
       begin
-        Item := TItem(Planet.EquipmentShop[k]);
-        if Cardinal(Item.Id) = Id then
+        Item := Planet.EquipmentShop[k];
+        if Item.Id = Id then
         begin
           Result := Item;
           Exit;
@@ -2921,7 +2925,7 @@ begin
         begin
           if Planet.SurfaceLootEntries[k] = nil then Continue;
           Item := PPlanetSurfaceLootEntry(Planet.SurfaceLootEntries[k])^.Item;
-          if Cardinal(Item.Id) = Id then
+          if Item.Id = Id then
           begin
             Result := Item;
             Exit;
@@ -2938,17 +2942,17 @@ begin
   if fEquipmentShop.TemporaryShopSlots <> nil then
     for i := 0 to fEquipmentShop.TemporaryShopSlots.Count - 1 do
       if TShopSlot(fEquipmentShop.TemporaryShopSlots[i]).Item <> nil then
-        if Cardinal(TShopSlot(fEquipmentShop.TemporaryShopSlots[i]).Item.Id) = Id then
+        if TShopSlot(fEquipmentShop.TemporaryShopSlots[i]).Item.Id = Id then
         begin
           Result := TShopSlot(fEquipmentShop.TemporaryShopSlots[i]).Item;
           Exit;
         end;
   for k := 0 to Self.StoredItems.Count - 1 do
   begin
-    Stored := TStoredItem(Self.StoredItems[k]);
+    Stored := Self.StoredItems[k];
     if Stored.Item = nil then Continue;
     Item := TObject(Stored.Item) as TItem;
-    if Cardinal(Item.Id) = Id then
+    if Item.Id = Id then
     begin
       Result := Stored.Item;
       Exit;
@@ -2961,14 +2965,14 @@ begin
   end;
   if RaiseIfMissing then
   begin
-    raise SysUtils.Exception.Create('function TGalaxy.IdToItem, id = ' + SysUtils.IntToStr(Int64(Id)));
+    raise SysUtils.Exception.Create('function TGalaxy.IdToItem, id = ' + SysUtils.IntToStr(Id));
     Exit;
   end;
   Result := nil;
 end;
-{ @end $7A5D64 }
+{ @end $7D7FB8 }
 
-{ @routine $7A63A8 TGalaxy_IdToAsteroid }
+{ @routine $7D84DC TGalaxy_IdToAsteroid }
 function TGalaxy.IdToAsteroid(Id: Cardinal): Pointer;
 var Star: TStar; Item: TAsteroid; I, StarCount, J, Count: Integer;
 begin
@@ -2977,12 +2981,12 @@ begin
   StarCount := Stars.Count;
   for I := 0 to StarCount - 1 do
   begin
-    Star := TStar(Stars[I]);
+    Star := Stars[I];
     Count := Star.Asteroids.Count;
     for J := 0 to Count - 1 do
     begin
-      Item := TAsteroid(Star.Asteroids[J]);
-      if Cardinal(Item.Id) = Id then
+      Item := Star.Asteroids[J];
+      if Item.Id = Id then
       begin
         Result := Item;
         Exit;
@@ -2990,9 +2994,9 @@ begin
     end;
   end;
 end;
-{ @end $7A63A8 }
+{ @end $7D84DC }
 
-{ @routine $7A6450 TGalaxy_IdToMissile }
+{ @routine $7D8560 TGalaxy_IdToMissile }
 function TGalaxy.IdToMissile(Id: Cardinal): Pointer;
 var Star: TStar; Item: TMissile; I, StarCount, J, Count: Integer;
 begin
@@ -3001,12 +3005,12 @@ begin
   StarCount := Stars.Count;
   for I := 0 to StarCount - 1 do
   begin
-    Star := TStar(Stars[I]);
+    Star := Stars[I];
     Count := Star.Missiles.Count;
     for J := 0 to Count - 1 do
     begin
-      Item := TMissile(Star.Missiles[J]);
-      if Cardinal(Item.Id) = Id then
+      Item := Star.Missiles[J];
+      if Item.Id = Id then
       begin
         Result := Item;
         Exit;
@@ -3014,60 +3018,60 @@ begin
     end;
   end;
 end;
-{ @end $7A6450 }
+{ @end $7D8560 }
 
-{ @routine $7A64F8 TGalaxy_ContainsShipReference }
+{ @routine $7D85E4 TGalaxy_ContainsShipReference }
 function TGalaxy.ContainsShipReference(Ship: Pointer): Boolean;
 var Star: TStar; Planet: TPlanet; OtherShip: TShip; I, StarCount, J, ItemCount, K, ChildCount: Integer; Item: TItem;
 begin
   Result := True;
   StarCount := Stars.Count;
   for I := 0 to StarCount - 1 do begin
-    Star := TStar(Stars[I]);
+    Star := Stars[I];
     ItemCount := Star.Ships.Count;
     for J := 0 to ItemCount - 1 do begin
-      OtherShip := TShip(Star.Ships[J]);
+      OtherShip := Star.Ships[J];
       if OtherShip = Ship then Exit;
       ChildCount := OtherShip.Artefacts.Count;
       for K := 0 to ChildCount - 1 do begin
-        Item := TItem(OtherShip.Artefacts[K]);
+        Item := OtherShip.Artefacts[K];
         if (Item is TArtefactTranclucator) and
-          ((TObject((Item as TArtefactTranclucator).Ship) as TTranclucator) = Ship) then Exit;
+          (((Item as TArtefactTranclucator).Ship as TTranclucator) = Ship) then Exit;
       end;
     end;
     ItemCount := Star.Planets.Count;
     for J := 0 to ItemCount - 1 do begin
-      Planet := TPlanet(Star.Planets[J]);
+      Planet := Star.Planets[J];
       ChildCount := Planet.Warriors.Count;
       for K := 0 to ChildCount - 1 do begin
-        OtherShip := TShip(Planet.Warriors[K]);
+        OtherShip := Planet.Warriors[K];
         if OtherShip = Ship then Exit;
       end;
     end;
   end;
   Result := False;
 end;
-{ @end $7A64F8 }
+{ @end $7D85E4 }
 
-{ @routine $7A6694 TGalaxy_ContainsPlanetReference }
+{ @routine $7D8760 TGalaxy_ContainsPlanetReference }
 function TGalaxy.ContainsPlanetReference(Planet: Pointer): Boolean;
-var Star: TStar; UnusedPlanet: TPlanet; I, StarCount, J, PlanetCount: Integer;
+var Star: TStar; OtherPlanet: TPlanet; I, StarCount, J, PlanetCount: Integer;
 begin
   Result := True;
   StarCount := Stars.Count;
   for I := 0 to StarCount - 1 do begin
-    Star := TStar(Stars[I]);
+    Star := Stars[I];
     PlanetCount := Star.Planets.Count;
     for J := 0 to PlanetCount - 1 do begin
-      UnusedPlanet := TPlanet(Star.Planets[J]);
-      if UnusedPlanet = Planet then Exit;
+      OtherPlanet := Star.Planets[J];
+      if OtherPlanet = Planet then Exit;
     end;
   end;
   Result := False;
 end;
-{ @end $7A6694 }
+{ @end $7D8760 }
 
-{ @routine $7A6728 TGalaxy_ClearJumpGates }
+{ @routine $7D87DC TGalaxy_ClearJumpGates }
 procedure TGalaxy.ClearJumpGates;
 var I: Integer; Entry: PJumpGateEntry;
 begin
@@ -3088,9 +3092,9 @@ begin
   end;
   JumpGates.Clear;
 end;
-{ @end $7A6728 }
+{ @end $7D87DC }
 
-{ @routine $7A67BC TGalaxy_CreateJumpGate }
+{ @routine $7D8844 TGalaxy_CreateJumpGate }
 function TGalaxy.CreateJumpGate(WithEffect: Boolean): PJumpGateEntry;
 var Entry: PJumpGateEntry;
 begin
@@ -3102,15 +3106,15 @@ begin
   else Entry.Effect := nil;
   Result := Entry;
 end;
-{ @end $7A67BC }
+{ @end $7D8844 }
 
-{ @routine $7A689C TGalaxy_FindHoleInStarByKind }
+{ @routine $7D8904 TGalaxy_FindHoleInStarByKind }
 function TGalaxy.FindHoleInStarByKind(Star: TStar; HoleKind: Integer): THole;
 var I: Integer; Hole: THole;
 begin
   for I := 0 to Holes.Count - 1 do
   begin
-    Hole := THole(Holes[I]);
+    Hole := Holes[I];
     if (Hole.HoleType = HoleKind) and ((Hole.Star1 = Star) or (Hole.Star2 = Star)) then
     begin
       Result := Hole;
@@ -3119,44 +3123,44 @@ begin
   end;
   Result := nil;
 end;
-{ @end $7A689C }
+{ @end $7D8904 }
 
-{ @routine $7A6914 TGalaxy_ReleaseItemGraphics }
+{ @routine $7D8948 TGalaxy_ReleaseItemGraphics }
 procedure TGalaxy.ReleaseItemGraphics;
 var Star: TStar; Ship: TShip; Item: TItem; StarCount, ShipCount, ItemCount, I, J, K: Integer;
 begin
   StarCount := Stars.Count;
   for I := 0 to StarCount - 1 do
   begin
-    Star := TStar(Stars[I]);
+    Star := Stars[I];
     ItemCount := Star.Items.Count;
     for K := 0 to ItemCount - 1 do
     begin
-      Item := TItem(Star.Items[K]);
+      Item := Star.Items[K];
       if Item.GraphObject <> nil then ReleaseSpaceObject(Item.GraphObject);
     end;
     ShipCount := Star.Ships.Count;
     for J := 0 to ShipCount - 1 do
     begin
-      Ship := TShip(Star.Ships[J]);
+      Ship := Star.Ships[J];
       ItemCount := Ship.Inventory.Count;
       for K := 0 to ItemCount - 1 do
       begin
-        Item := TItem(Ship.Inventory[K]);
+        Item := Ship.Inventory[K];
         if Item.GraphObject <> nil then ReleaseSpaceObject(Item.GraphObject);
       end;
       ItemCount := Ship.Artefacts.Count;
       for K := 0 to ItemCount - 1 do
       begin
-        Item := TItem(Ship.Artefacts[K]);
+        Item := Ship.Artefacts[K];
         if Item.GraphObject <> nil then ReleaseSpaceObject(Item.GraphObject);
       end;
     end;
   end;
 end;
-{ @end $7A6914 }
+{ @end $7D8948 }
 
-{ @routine $7A6AE4 TGalaxy_GenerateSpaceBackground }
+{ @routine $7D8ABC TGalaxy_GenerateSpaceBackground }
 procedure TGalaxy.GenerateSpaceBackground(BackgroundIndex: Integer);
 const
   MinGroupCount = 4;
@@ -3175,8 +3179,8 @@ var
   Center: TVector3D;
   ImageKinds: array[0..10] of Integer;
 
-  // @nested $7A6A94 AdvanceEntry
-  procedure AdvanceEntry; // @addr 0x7A6A94 @ida "void __cdecl $name(void *ParentFrame);" @note "Caller-popped static link; entry index -4, capacity -8, galaxy -12."
+  // @nested $7D8A6C AdvanceEntry
+  procedure AdvanceEntry; // @addr 0x007D8A6C @ida "void __cdecl $name(void *ParentFrame);" @note "Caller-popped static link; entry index -4, capacity -8, galaxy -12."
   begin
     Inc(EntryIndex);
     if EntryIndex + 1 > Capacity then
@@ -3308,9 +3312,9 @@ begin
   end;
   SetLength(SpaceBackgroundEntries, EntryIndex);
 end;
-{ @end $7A6AE4 }
+{ @end $7D8ABC }
 
-{ @routine $7A79B0 TGalaxy_EnableDominatorSurfaces }
+{ @routine $7D9928 TGalaxy_EnableDominatorSurfaces }
 procedure TGalaxy.EnableDominatorSurfaces;
 var I, J, K: Integer; Star: TStar; Planet: TPlanet;
 begin
@@ -3318,18 +3322,18 @@ begin
   GraphDominatorSurfacesEnabled := True;
   for I := 0 to Stars.Count - 1 do
   begin
-    Star := TStar(Stars[I]);
+    Star := Stars[I];
     for J := 0 to Star.Ships.Count - 1 do TShip(Star.Ships[J]).RefreshGraphic;
     for K := 0 to Star.Planets.Count - 1 do
     begin
-      Planet := TPlanet(Star.Planets[K]);
+      Planet := Star.Planets[K];
       for J := 0 to Planet.Warriors.Count - 1 do TShip(Planet.Warriors[J]).RefreshGraphic;
     end;
   end;
 end;
-{ @end $7A79B0 }
+{ @end $7D9928 }
 
-{ @routine $7A7AB4 TGalaxy_DisableDominatorSurfaces }
+{ @routine $7D9A18 TGalaxy_DisableDominatorSurfaces }
 procedure TGalaxy.DisableDominatorSurfaces;
 var I, J, K: Integer; Star: TStar; Planet: TPlanet;
 begin
@@ -3337,18 +3341,18 @@ begin
   GraphDominatorSurfacesEnabled := False;
   for I := 0 to Stars.Count - 1 do
   begin
-    Star := TStar(Stars[I]);
+    Star := Stars[I];
     for J := 0 to Star.Ships.Count - 1 do TShip(Star.Ships[J]).RefreshGraphic;
     for K := 0 to Star.Planets.Count - 1 do
     begin
-      Planet := TPlanet(Star.Planets[K]);
+      Planet := Star.Planets[K];
       for J := 0 to Planet.Warriors.Count - 1 do TShip(Planet.Warriors[J]).RefreshGraphic;
     end;
   end;
 end;
-{ @end $7A7AB4 }
+{ @end $7D9A18 }
 
-{ @routine $7A7E84 TGalaxy_XorProtectedState }
+{ @routine $7D9D38 TGalaxy_XorProtectedState }
 procedure TGalaxy.XorProtectedState(Seed: Integer);
 type
   PUInt64 = ^UInt64;
@@ -3356,67 +3360,71 @@ type
     Low, High: Cardinal;
   end;
 var ExclusionCount: Integer; Exclusions: array[0..10] of Cardinal;
-  I, J, K, L: Integer; Star: TStar; Planet: TPlanet; Good: Byte;
+  UnknownNative3C: array[0..3] of Byte; // Existing native frame gap; original type unknown.
+  I, J, K, L: Integer; Star: TStar;
+  UnknownNative50: array[0..3] of Byte; // Second existing native frame gap; original type unknown.
+  Planet: TPlanet; Good: Byte;
   Asteroid: TAsteroid; Ship: TShip; RangerQuest: PQuest; Quest: TTextQuest;
   Parameter: TParameter; Location: TLocation; Change: TParameterDelta; Path: TPath;
   Storage: PStorageEntry; Player: TPlayer;
-  UnusedLocalBytes: array[0..7] of Byte; // Native frame retains eight unreferenced bytes.
 
-  // @nested $7A7BB8 NextStateXorMask
-  function NextStateXorMask: Cardinal; // @addr 0x7A7BB8 @note "Park-Miller state at ParentFrame-4; returns the updated state minus one."
+  // @nested $7D9B08 NextStateXorMask
+  function NextStateXorMask: Cardinal; // @addr 0x007D9B08 @note "Park-Miller state at ParentFrame-4; returns the updated state minus one."
   begin
     Seed := SeedRngMultiplier * (Seed mod SeedRngQuotient) - SeedRngRemainder * (Seed div SeedRngQuotient);
     if Seed <= 0 then Inc(Seed, SeedRngModulus);
     Result := Seed - 1;
   end;
 
-  // @nested $7A7C14 XorStateUInt64
-  procedure XorStateUInt64(var Value: UInt64); // @addr 0x7A7C14
+  // @nested $7D9B5C XorStateUInt64
+  procedure XorStateUInt64(var Value: UInt64); // @addr 0x007D9B5C
+  var Part: PCardinal;
   begin
-    PCardinal(@TUInt64Words(Value).Low)^ := PCardinal(@TUInt64Words(Value).Low)^ xor NextStateXorMask;
-    PCardinal(@TUInt64Words(Value).High)^ := PCardinal(@TUInt64Words(Value).High)^ xor NextStateXorMask;
+    Part := @Value;
+    Part^ := Part^ xor NextStateXorMask;
+    PCardinal(PAnsiChar(Part) + 4)^ := PCardinal(PAnsiChar(Part) + 4)^ xor NextStateXorMask;
   end;
 
-  // @nested $7A7C40 XorStateUInt32
-  procedure XorStateUInt32(var Value: Cardinal); // @addr 0x7A7C40
+  // @nested $7D9B80 XorStateUInt32
+  procedure XorStateUInt32(var Value: Cardinal); // @addr 0x007D9B80
   begin Value := Value xor NextStateXorMask; end;
 
-  // @nested $7A7C5C XorStateByte
-  procedure XorStateByte(var Value: Byte); // @addr 0x7A7C5C
+  // @nested $7D9B98 XorStateByte
+  procedure XorStateByte(var Value: Byte); // @addr 0x007D9B98
   begin Value := Value xor Byte(NextStateXorMask); end;
 
-  // @nested $7A7C78 XorStateWords
-  procedure XorStateWords(Data: PWord; Count: Cardinal); // @addr 0x7A7C78
-  var I: Integer;
+  // @nested $7D9BB0 XorStateWords
+  procedure XorStateWords(Data: PWord; Count: Integer); // @addr 0x007D9BB0
+  var I: Cardinal;
   begin
     I := 0;
-    while Cardinal(I) < Count do begin
+    while I < Cardinal(Count) do begin
       Data^ := Data^ xor Word(NextStateXorMask);
       Data := Pointer(Cardinal(Data) + SizeOf(Data^));
       Inc(I);
     end;
   end;
 
-  // @nested $7A7CB4 XorStateBytes
-  procedure XorStateBytes(Data: PByte; Count: Cardinal); // @addr 0x7A7CB4
-  var I: Integer;
+  // @nested $7D9BD8 XorStateBytes
+  procedure XorStateBytes(Data: PByte; Count: Integer); // @addr 0x007D9BD8
+  var I: Cardinal;
   begin
     I := 0;
-    while Cardinal(I) < Count do begin
+    while I < Cardinal(Count) do begin
       Data^ := Data^ xor Byte(NextStateXorMask);
       Data := Pointer(Cardinal(Data) + SizeOf(Data^));
       Inc(I);
     end;
   end;
 
-  // @nested $7A7CEC XorStateObject
-  procedure XorStateObject(Instance: TObject); // @addr 0x7A7CEC @note "Preserves the VMT pointer."
+  // @nested $7D9C00 XorStateObject
+  procedure XorStateObject(Instance: TObject); // @addr 0x007D9C00 @note "Preserves the VMT pointer."
   begin
     XorStateBytes(PByte(PAnsiChar(Instance) + 4), Instance.InstanceSize - 4);
   end;
 
-  // @nested $7A7D18 XorStateObjectExceptField
-  procedure XorStateObjectExceptField(Instance: TObject; ExcludedField: Pointer); // @addr 0x7A7D18 @note "Preserves the VMT and one four-byte field."
+  // @nested $7D9C24 XorStateObjectExceptField
+  procedure XorStateObjectExceptField(Instance: TObject; ExcludedField: Pointer); // @addr 0x007D9C24 @note "Preserves the VMT and one four-byte field."
   var Data, Excluded, Limit: Cardinal;
   begin
     Data := Cardinal(Instance) + 4;
@@ -3427,8 +3435,8 @@ var ExclusionCount: Integer; Exclusions: array[0..10] of Cardinal;
     XorStateBytes(PByte(Excluded + 4), Limit - (Excluded + 4));
   end;
 
-  // @nested $7A7DA0 XorStateObjectExceptFields
-  procedure XorStateObjectExceptFields(Instance: TObject); // @addr 0x7A7DA0 @note "Preserves the VMT and sorted four-byte exclusions supplied by the parent frame."
+  // @nested $7D9C84 XorStateObjectExceptFields
+  procedure XorStateObjectExceptFields(Instance: TObject); // @addr 0x007D9C84 @note "Preserves the VMT and sorted four-byte exclusions supplied by the parent frame."
   var I: Integer; Data, Limit: Cardinal;
   begin
     Data := Cardinal(Instance) + 4;
@@ -3657,21 +3665,20 @@ begin
   end;
   XorStateBytes(@IntegrityDataBegin, Cardinal(@IntegrityDataEnd) - Cardinal(@IntegrityDataBegin));
 end;
-{ @end $7A7E84 }
+{ @end $7D9D38 }
 
-{ @routine $7A8D80 TGalaxy_ObfuscateProtectedState }
+{ @routine $7DAA3C TGalaxy_ObfuscateProtectedState }
 procedure TGalaxy.ObfuscateProtectedState;
 begin
-  if GR_Main.CCInterface.GetProtectedStateXorSeed = 0 then begin
-    repeat
-      GR_Main.CCInterface.SetProtectedStateXorSeed(RandomIntRange(0, 2000000000));
-    until GR_Main.CCInterface.GetProtectedStateXorSeed <> 0;
-    XorProtectedState(GR_Main.CCInterface.GetProtectedStateXorSeed);
-  end;
+  if GR_Main.CCInterface.GetProtectedStateXorSeed <> 0 then Exit;
+  repeat
+    GR_Main.CCInterface.SetProtectedStateXorSeed(RandomIntRange(0, 2000000000));
+  until GR_Main.CCInterface.GetProtectedStateXorSeed <> 0;
+  XorProtectedState(GR_Main.CCInterface.GetProtectedStateXorSeed);
 end;
-{ @end $7A8D80 }
+{ @end $7DAA3C }
 
-{ @routine $7A8DDC TGalaxy_RestoreProtectedState }
+{ @routine $7DAA84 TGalaxy_RestoreProtectedState }
 procedure TGalaxy.RestoreProtectedState;
 begin
   if GR_Main.CCInterface.GetProtectedStateXorSeed <> 0 then
@@ -3680,12 +3687,12 @@ begin
     GR_Main.CCInterface.SetProtectedStateXorSeed(0);
   end;
 end;
-{ @end $7A8DDC }
+{ @end $7DAA84 }
 
-{ @routine $7A9008 TGalaxy_ComputeIntegrityChecksum }
+{ @routine $7DAC68 TGalaxy_ComputeIntegrityChecksum }
 function TGalaxy.ComputeIntegrityChecksum(Mode: Integer): Cardinal;
 var
-  State: Cardinal; // Native checksum accumulator at ParentFrame-4.
+  State: Cardinal;
   I, J, K, L: Integer;
   Star: TStar;
   Planet: TPlanet;
@@ -3702,58 +3709,58 @@ var
   Storage: PStorageEntry;
   UnusedNativeFrame: array[0..3] of Byte; // The native frame has four unreferenced bytes; original type unknown.
 
-  // @nested $7A8E1C AccumulateIntegrityUInt32
-  procedure AccumulateIntegrityUInt32(Value: Cardinal); // @addr 0x7A8E1C
+  // @nested $7DAABC AccumulateIntegrityUInt32
+  procedure AccumulateIntegrityUInt32(Value: Cardinal); // @addr 0x007DAABC
   begin
     State := UpdateCrc32(State, @Value, 4);
   end;
 
-  // @nested $7A8E40 AccumulateIntegritySingle
-  procedure AccumulateIntegritySingle(Value: Single); // @addr 0x7A8E40 @ida "void __usercall $name(float Value@<^0>, void *ParentFrame@<^4>);" @stackpop 0x4 @calls "0x7A9073 0x7A9080 0x7A9090 0x7A90A0 0x7A9E60"
+  // @nested $7DAAE0 AccumulateIntegritySingle
+  procedure AccumulateIntegritySingle(Value: Single); // @addr 0x007DAAE0 @calls "0x007DACD3,0x007DACE0,0x007DACF0,0x007DAD00,0x007DB943" @ida "void __usercall $name(float Value@<^0>, void *ParentFrame@<^4>);" @stackpop 0x4
   begin
     State := UpdateCrc32(State, @Value, 4);
   end;
 
-  // @nested $7A8E60 AccumulateIntegrityDouble
-  procedure AccumulateIntegrityDouble(Value: Double); // @addr 0x7A8E60 @ida "void __usercall $name(double Value@<^0>, void *ParentFrame@<^8>);" @stackpop 0x8 @calls "0x7A9BAC"
+  // @nested $7DAB00 AccumulateIntegrityDouble
+  procedure AccumulateIntegrityDouble(Value: Double); // @addr 0x007DAB00 @calls "0x007DB6C8" @ida "void __usercall $name(double Value@<^0>, void *ParentFrame@<^8>);" @stackpop 0x8
   begin
     State := UpdateCrc32(State, @Value, 8);
   end;
 
-  // @nested $7A8E80 AccumulateIntegrityByte
-  procedure AccumulateIntegrityByte(Value: Byte); // @addr 0x7A8E80
+  // @nested $7DAB20 AccumulateIntegrityByte
+  procedure AccumulateIntegrityByte(Value: Byte); // @addr 0x007DAB20
   begin
     State := UpdateCrc32(State, @Value, 1);
   end;
 
-  // @nested $7A8EA4 AccumulateIntegrityBoolean
-  procedure AccumulateIntegrityBoolean(Value: Boolean); // @addr 0x7A8EA4
+  // @nested $7DAB44 AccumulateIntegrityBoolean
+  procedure AccumulateIntegrityBoolean(Value: Boolean); // @addr 0x007DAB44
   begin
     State := UpdateCrc32(State, @Value, 1);
   end;
 
-  // @nested $7A8EC8 AccumulateIntegrityWords
-  procedure AccumulateIntegrityWords(Data: PWord; Count: Integer); // @addr 0x7A8EC8
+  // @nested $7DAB68 AccumulateIntegrityWords
+  procedure AccumulateIntegrityWords(Data: PWord; Count: Integer); // @addr 0x007DAB68
   begin
     State := UpdateCrc32(State, Data, Count * 2);
   end;
 
-  // @nested $7A8EF4 AccumulateIntegrityBytes
-  procedure AccumulateIntegrityBytes(Data: PByte; Count: Integer); // @addr 0x7A8EF4
+  // @nested $7DAB8C AccumulateIntegrityBytes
+  procedure AccumulateIntegrityBytes(Data: PByte; Count: Integer); // @addr 0x007DAB8C
   begin
     State := UpdateCrc32(State, Data, Count);
   end;
 
-  // @nested $7A8F1C AccumulateIntegrityObject
-  procedure AccumulateIntegrityObject(Instance: TObject); // @addr 0x7A8F1C @note "Excludes the VMT pointer; nil contributes nothing."
+  // @nested $7DABB0 AccumulateIntegrityObject
+  procedure AccumulateIntegrityObject(Instance: TObject); // @addr 0x007DABB0 @note "Excludes the VMT pointer; nil contributes nothing."
   begin
     if Instance <> nil then
       AccumulateIntegrityBytes(PByte(PAnsiChar(Instance) + SizeOf(Pointer)), Instance.InstanceSize - SizeOf(Pointer));
   end;
 
-  // @nested $7A8F4C AccumulateIntegrityItem
-  procedure AccumulateIntegrityItem(Item: TItem); // @addr 0x7A8F4C @note "Excludes the VMT and temporarily clears GraphObject plus cached action-code state; nil contributes nothing."
-  var SavedGraphic: TObjectSE; SavedCode: Pointer; SavedInitialized: Boolean; Equipment: TEquipmentWithActCode;
+  // @nested $7DABD8 AccumulateIntegrityItem
+  procedure AccumulateIntegrityItem(Item: TItem); // @addr 0x007DABD8 @note "Excludes the VMT and temporarily clears GraphObject plus cached action-code state; nil contributes nothing."
+  var SavedGraphic: TContainerSE; SavedCode: Pointer; SavedInitialized: Boolean; Equipment: TEquipmentWithActCode;
   begin
     if Item <> nil then
     begin
@@ -3777,7 +3784,7 @@ var
 
 begin
   Result := 0;
-  Exit; // Native bypass. The dormant checksum body below is retained and matched.
+  Exit; // Integrity checks are disabled in this build.
   State := InitCrc32;
   AccumulateIntegrityUInt32(GetCheatPoints);
   AccumulateIntegrityUInt32(PendingEquipmentPurchasePrice);
@@ -3994,9 +4001,9 @@ begin
     AccumulateIntegrityBytes(@IntegrityDataBegin, Integer(@IntegrityDataEnd) - Integer(@IntegrityDataBegin));
   Result := FinishCrc32(State);
 end;
-{ @end $7A9008 }
+{ @end $7DAC68 }
 
-{ @routine $7A9F40 TGalaxy_PrimeIntegrityChecksum }
+{ @routine $7DBA0C TGalaxy_PrimeIntegrityChecksum }
 procedure TGalaxy.PrimeIntegrityChecksum(StatusCode: Integer);
 begin
   if GR_Main.CCInterface.GetIntegrityError = 0 then
@@ -4006,9 +4013,9 @@ begin
     GR_Main.CCInterface.SetIntegrityStatus(StatusCode);
   end;
 end;
-{ @end $7A9F40 }
+{ @end $7DBA0C }
 
-{ @routine $7A9F8C TGalaxy_PrimeIntegrityChecksum1 }
+{ @routine $7DBA50 TGalaxy_PrimeIntegrityChecksum1 }
 procedure TGalaxy.PrimeIntegrityChecksum1(StatusCode: Integer);
 begin
   if GR_Main.CCInterface.GetIntegrityError = 0 then
@@ -4018,9 +4025,9 @@ begin
     GR_Main.CCInterface.SetIntegrityStatus(StatusCode);
   end;
 end;
-{ @end $7A9F8C }
+{ @end $7DBA50 }
 
-{ @routine $7A9FDC TGalaxy_PrimeIntegrityChecksum2 }
+{ @routine $7DBA98 TGalaxy_PrimeIntegrityChecksum2 }
 procedure TGalaxy.PrimeIntegrityChecksum2(StatusCode: Integer);
 begin
   if GR_Main.CCInterface.GetIntegrityError = 0 then
@@ -4030,9 +4037,9 @@ begin
     GR_Main.CCInterface.SetIntegrityStatus(StatusCode);
   end;
 end;
-{ @end $7A9FDC }
+{ @end $7DBA98 }
 
-{ @routine $7AA02C TGalaxy_CheckIntegrityChecksum }
+{ @routine $7DBAE0 TGalaxy_CheckIntegrityChecksum }
 procedure TGalaxy.CheckIntegrityChecksum(ErrorCode: Integer);
 var ResourceError: Integer;
     UnusedNativeFrame: array[0..11] of Byte; // Native reserves these bytes without accessing them; original type is unknown.
@@ -4045,8 +4052,9 @@ begin
       ResourceError := $1347CC;
       Inc(ResourceError, $B3CB4);
       GR_Main.CCInterface.SetIntegrityError(ResourceError);
-    end
-    else if GR_Main.CCInterface.GetIntegrityStatus <> 0 then
+      Exit;
+    end;
+    if GR_Main.CCInterface.GetIntegrityStatus <> 0 then
     begin
       if ComputeIntegrityChecksum(0) <> GR_Main.CCInterface.GetIntegrityChecksum then
         GR_Main.CCInterface.SetIntegrityError(ErrorCode)
@@ -4054,9 +4062,9 @@ begin
     end;
   end;
 end;
-{ @end $7AA02C }
+{ @end $7DBAE0 }
 
-{ @routine $7AA0D0 TGalaxy_CheckIntegrityChecksumAndSetStatus }
+{ @routine $7DBB74 TGalaxy_CheckIntegrityChecksumAndSetStatus }
 procedure TGalaxy.CheckIntegrityChecksumAndSetStatus(StatusCode: Integer);
 var ResourceError: Integer;
     UnusedNativeFrame: array[0..11] of Byte; // Native reserves these bytes without accessing them; original type is unknown.
@@ -4069,8 +4077,9 @@ begin
       ResourceError := $1347CC;
       Inc(ResourceError, $B3CB4);
       GR_Main.CCInterface.SetIntegrityError(ResourceError);
-    end
-    else if GR_Main.CCInterface.GetIntegrityStatus <> 0 then
+      Exit;
+    end;
+    if GR_Main.CCInterface.GetIntegrityStatus <> 0 then
     begin
       if ComputeIntegrityChecksum(0) <> GR_Main.CCInterface.GetIntegrityChecksum then
         GR_Main.CCInterface.SetIntegrityError(StatusCode)
@@ -4078,9 +4087,9 @@ begin
     end;
   end;
 end;
-{ @end $7AA0D0 }
+{ @end $7DBB74 }
 
-{ @routine $7AA174 TGalaxy_CheckIntegrityChecksum1 }
+{ @routine $7DBC08 TGalaxy_CheckIntegrityChecksum1 }
 procedure TGalaxy.CheckIntegrityChecksum1(ErrorCode: Integer);
 var ResourceError: Integer;
 begin
@@ -4092,8 +4101,9 @@ begin
       ResourceError := $1347CC;
       Inc(ResourceError, $B3CB4);
       GR_Main.CCInterface.SetIntegrityError(ResourceError);
-    end
-    else if GR_Main.CCInterface.GetIntegrityStatus <> 0 then
+      Exit;
+    end;
+    if GR_Main.CCInterface.GetIntegrityStatus <> 0 then
     begin
       if ComputeIntegrityChecksum(1) <> GR_Main.CCInterface.GetIntegrityChecksum1 then
         GR_Main.CCInterface.SetIntegrityError(ErrorCode)
@@ -4101,9 +4111,9 @@ begin
     end;
   end;
 end;
-{ @end $7AA174 }
+{ @end $7DBC08 }
 
-{ @routine $7AA218 TGalaxy_CheckIntegrityChecksum2 }
+{ @routine $7DBCA0 TGalaxy_CheckIntegrityChecksum2 }
 procedure TGalaxy.CheckIntegrityChecksum2(ErrorCode: Integer);
 var ResourceError: Integer;
 begin
@@ -4115,8 +4125,9 @@ begin
       ResourceError := $1347CC;
       Inc(ResourceError, $B3CB4);
       GR_Main.CCInterface.SetIntegrityError(ResourceError);
-    end
-    else if GR_Main.CCInterface.GetIntegrityStatus <> 0 then
+      Exit;
+    end;
+    if GR_Main.CCInterface.GetIntegrityStatus <> 0 then
     begin
       if ComputeIntegrityChecksum(2) <> GR_Main.CCInterface.GetIntegrityChecksum2 then
         GR_Main.CCInterface.SetIntegrityError(ErrorCode)
@@ -4124,16 +4135,16 @@ begin
     end;
   end;
 end;
-{ @end $7AA218 }
+{ @end $7DBCA0 }
 
-{ @routine $7AA2BC TGalaxy_ClearIntegrityStatus }
+{ @routine $7DBD38 TGalaxy_ClearIntegrityStatus }
 procedure TGalaxy.ClearIntegrityStatus;
 begin
   if GR_Main.CCInterface.GetIntegrityError = 0 then GR_Main.CCInterface.SetIntegrityStatus(0);
 end;
-{ @end $7AA2BC }
+{ @end $7DBD38 }
 
-{ @routine $7AA2E4 TGalaxy_AppendIntegritySnapshot }
+{ @routine $7DBD58 TGalaxy_AppendIntegritySnapshot }
 procedure TGalaxy.AppendIntegritySnapshot;
 type
   // Four DWORDs precede the encrypted payload. Size includes this header;
@@ -4149,7 +4160,7 @@ var Size, StartOffset, Count, I: Integer; Partner: TShip; OldQuest: PPlayerOldQu
   CompletedDeliveries, CompletedAssassinations, CompletedTextQuests, CompletedSystemDefenses, CompletedShipDefenses: Word;
   Buffer: TBufEC; Crc: Cardinal; Exponent, Modulus: TFGInt; Bytes: AnsiString; Good: Byte;
 begin
-  Exit; // Native unconditional bypass; retain the dormant serializer below.
+  Exit; // This serializer is disabled in this build.
   if GetPlayer = nil then begin end;
   GR_Main.CCInterface.Buffer.SetPosition(GR_Main.CCInterface.Buffer.DataSize);
   StartOffset := GR_Main.CCInterface.Buffer.Position;
@@ -4254,7 +4265,7 @@ begin
   Buffer.AddWideChar(WideChar(GetPlayer.NationalityChangeCount));
   Buffer.AddWideChar(WideChar(GetPlayer.SideChangeCount));
   Buffer.AddIntegerValue(GetPlayer.UnknownF4);
-  for I := 0 to 7 do Buffer.AddAnsiChar(AnsiChar(DifficultyLevels[Byte(I)]));
+  for I := 0 to 7 do Buffer.AddAnsiChar(AnsiChar(DifficultyLevels[TGalaxyDifficultyIndex(I)]));
   Buffer.AddBoolean(GR_Main.CCInterface.GetEditableStateApplied);
   Buffer.AddWideStringZ(FinalizationNameEncoded);
   Buffer.AddBoolean(CustomRules.Enabled);
@@ -4277,33 +4288,37 @@ begin
   FGIntClear(Modulus);
   FGIntClear(Exponent);
 end;
-{ @end $7AA2E4 }
+{ @end $7DBD58 }
 
-{ @routine $7AABF0 TGalaxy_HasVisibleScoreModFlags }
+{ @routine $7DC5B0 TGalaxy_HasVisibleScoreModFlags }
 function TGalaxy.HasVisibleScoreModFlags: Boolean;
 begin
   Result := True;
-  if (DominatorModLevel = 0) and (TechnicModEnabled = 0) and (AmmoModEnabled = 0) and
-    (GodModEnabled = 0) and (UltraScanModEnabled = 0) and (StasisModEnabled = 0) and
-    not GR_Main.CCInterface.GetEditableStateApplied then Result := False;
+  if (DominatorModLevel = 0) then
+    if (TechnicModEnabled = 0) then
+    if (AmmoModEnabled = 0) then
+    if (GodModEnabled = 0) then
+    if (UltraScanModEnabled = 0) then
+    if (StasisModEnabled = 0) then
+    if not GR_Main.CCInterface.GetEditableStateApplied then Result := False;
 end;
-{ @end $7AABF0 }
+{ @end $7DC5B0 }
 
-{ @routine $7AAC60 TGalaxy_GetCheatPoints }
+{ @routine $7DC600 TGalaxy_GetCheatPoints }
 function TGalaxy.GetCheatPoints: Integer;
 begin
   Result := GR_Main.CCInterface.GetEncodedCheatPoints xor GenerationSeed;
 end;
-{ @end $7AAC60 }
+{ @end $7DC600 }
 
-{ @routine $7AAC88 TGalaxy_SetCheatPoints }
+{ @routine $7DC614 TGalaxy_SetCheatPoints }
 procedure TGalaxy.SetCheatPoints(Value: Integer);
 begin
   GR_Main.CCInterface.SetEncodedCheatPoints(Value xor GenerationSeed);
 end;
-{ @end $7AAC88 }
+{ @end $7DC614 }
 
-{ @routine $7AACB0 THole_Create }
+{ @routine $7DC628 THole_Create }
 constructor THole.Create;
 begin
   inherited Create;
@@ -4313,17 +4328,17 @@ begin
     Inc(Galaxy.NextHoleId);
   end;
 end;
-{ @end $7AACB0 }
+{ @end $7DC628 }
 
-{ @routine $7AAD10 THole_Destroy }
+{ @routine $7DC67C THole_Destroy }
 destructor THole.Destroy;
 begin
   if Graphic <> nil then ReleaseSpaceObject(Graphic);
   inherited Destroy;
 end;
-{ @end $7AAD10 }
+{ @end $7DC67C }
 
-{ @routine $7AAD58 THole_InitializeGraphic }
+{ @routine $7DC6B0 THole_InitializeGraphic }
 procedure THole.InitializeGraphic(GraphKey: WideString);
 var
   Block: TBlockParEC;
@@ -4339,9 +4354,9 @@ begin
   Graphic.SetPosition(MakePointF(0, 0));
   ArcadeMapName := '';
 end;
-{ @end $7AAD58 }
+{ @end $7DC6B0 }
 
-{ @routine $7AAE9C THole_SaveToBuffer }
+{ @routine $7DC7E0 THole_SaveToBuffer }
 procedure THole.SaveToBuffer(Buffer: TBufEC);
 begin
   Buffer.AddDWord(Id);
@@ -4356,9 +4371,9 @@ begin
   Buffer.AddWideStringZ(Graphic.GraphKey);
   Buffer.AddWideStringZ(ArcadeMapName);
 end;
-{ @end $7AAE9C }
+{ @end $7DC7E0 }
 
-{ @routine $7AAF50 THole_LoadFromBuffer }
+{ @routine $7DC860 THole_LoadFromBuffer }
 procedure THole.LoadFromBuffer(Buffer: TBufEC; Galaxy: TGalaxy);
 begin
   Id := Buffer.GetUInt32;
@@ -4375,17 +4390,17 @@ begin
   Graphic.SetPosition(MakePointF(0, 0));
   ArcadeMapName := Buffer.ReadWideString;
 end;
-{ @end $7AAF50 }
+{ @end $7DC860 }
 
-{ @routine $7AB0B4 THole_ResolveLoadedReferences }
+{ @routine $7DC98C THole_ResolveLoadedReferences }
 procedure THole.ResolveLoadedReferences(Galaxy: TGalaxy);
 begin
   Star1 := TObject(Galaxy.IdToStar(Cardinal(Star1))) as TStar;
   Star2 := TObject(Galaxy.IdToStar(Cardinal(Star2))) as TStar;
 end;
-{ @end $7AB0B4 }
+{ @end $7DC98C }
 
-{ @routine $7AB104 THole_SaveToBlock }
+{ @routine $7DC9C8 THole_SaveToBlock }
 procedure THole.SaveToBlock(Block: TBlockParEC);
 begin
   Block.AddParam(DecodeTextW('Skt5adrs1tI2dx'), IntToStr(Star1.Id)); // 'Star1Id'
@@ -4397,9 +4412,9 @@ begin
   Block.AddParam(DecodeTextW('TtuwrdngshT4oaC2l5ojsden'), IntToStr(CreatedTurn + 200 - Galaxy.CurrentTurn)); // 'TurnsToClose'
   Block.AddParam(DecodeTextW('MpaypeNqazmveR'), ArcadeMapName); // 'MapName'
 end;
-{ @end $7AB104 }
+{ @end $7DC9C8 }
 
-{ @routine $7AB520 THole_LoadFromBlock }
+{ @routine $7DCDC4 THole_LoadFromBlock }
 procedure THole.LoadFromBlock(Block: TBlockParEC);
 begin
   Star1 := Galaxy.IdToStar(StrToInt(AnsiString(Block.GetParam(DecodeTextW('Skt5adrs1tI2dx'))))); // 'Star1Id'
@@ -4411,23 +4426,23 @@ begin
   CreatedTurn := Galaxy.CurrentTurn - 200 + StrToInt(AnsiString(Block.GetParam(DecodeTextW('TtuwrdngshT4oaC2l5ojsden')))); // 'TurnsToClose'
   ArcadeMapName := Block.GetParam(DecodeTextW('MpaypeNqazmveR')); // 'MapName'
 end;
-{ @end $7AB520 }
+{ @end $7DCDC4 }
 
-{ @routine $7AB8A4 TCustomSystemInfo_Create }
+{ @routine $7DD128 TCustomSystemInfo_Create }
 constructor TCustomSystemInfo.Create;
 begin
   inherited Create;
 end;
-{ @end $7AB8A4 }
+{ @end $7DD128 }
 
-{ @routine $7AB8E8 TCustomSystemInfo_Destroy }
+{ @routine $7DD160 TCustomSystemInfo_Destroy }
 destructor TCustomSystemInfo.Destroy;
 begin
   inherited Destroy;
 end;
-{ @end $7AB8E8 }
+{ @end $7DD160 }
 
-{ @routine $7AB91C TCustomSystemInfo_LoadFromBuffer }
+{ @routine $7DD188 TCustomSystemInfo_LoadFromBuffer }
 procedure TCustomSystemInfo.LoadFromBuffer(Buffer: TBufEC);
 begin
   Name := Buffer.ReadWideString;
@@ -4436,9 +4451,9 @@ begin
   TypeTag := Buffer.ReadWideString;
   Distance := Buffer.GetInt32;
 end;
-{ @end $7AB91C }
+{ @end $7DD188 }
 
-{ @routine $7AB9D4 TCustomSystemInfo_SaveToBuffer }
+{ @routine $7DD22C TCustomSystemInfo_SaveToBuffer }
 procedure TCustomSystemInfo.SaveToBuffer(Buffer: TBufEC);
 begin
   Buffer.AddWideStringZ(Name);
@@ -4447,9 +4462,9 @@ begin
   Buffer.AddWideStringZ(TypeTag);
   Buffer.AddIntegerValue(Distance);
 end;
-{ @end $7AB9D4 }
+{ @end $7DD22C }
 
-{ @routine $7ABA2C TStar_Create }
+{ @routine $7DD268 TStar_Create }
 constructor TStar.Create;
 begin
   inherited Create;
@@ -4479,9 +4494,9 @@ begin
   PlayerFilmPath := nil;
   RecordingTurnFilm := False;
 end;
-{ @end $7ABA2C }
+{ @end $7DD268 }
 
-{ @routine $7ABBC4 TStar_Destroy }
+{ @routine $7DD3B4 TStar_Destroy }
 destructor TStar.Destroy;
 var I: Integer; Entry: PMovingDropItemEntry;
 begin
@@ -4515,9 +4530,9 @@ begin
   ReferencedItems := nil;
   inherited Destroy;
 end;
-{ @end $7ABBC4 }
+{ @end $7DD3B4 }
 
-{ @routine $7ABD34 TStar_GenerateSystemContents }
+{ @routine $7DD4C0 TStar_GenerateSystemContents }
 procedure TStar.GenerateSystemContents(TerronSystem: Boolean);
 var I, NameIndex, AsteroidCount, Variant, Variants, Tries, J: Integer;
   Planet: TPlanet;
@@ -4614,9 +4629,9 @@ begin
   DaysSinceLastNpcShipSpawn := 100;
   RefreshMapDiameterAndStats;
 end;
-{ @end $7ABD34 }
+{ @end $7DD4C0 }
 
-{ @routine $7AC8CC TStar_SaveToBuffer }
+{ @routine $7DDF00 TStar_SaveToBuffer }
 procedure TStar.SaveToBuffer(Buffer: TBufEC);
 var FileName: WideString;
   I, Count: Integer;
@@ -4629,8 +4644,8 @@ var FileName: WideString;
   Extension, Prefix: WideString;
   Reserved1, Reserved2, Reserved3: Integer;
 
-  // @nested $7AC830 CheckModuleCRC
-  procedure CheckModuleCRC(ExpectedCRC: Cardinal); // @addr 0x7AC830 @note "Caller-popped static link; filename at -4, star at -8. Updates global integrity status on mismatch."
+  // @nested $7DDE74 CheckModuleCRC
+  procedure CheckModuleCRC(ExpectedCRC: Cardinal); // @addr 0x007DDE74 @note "Caller-popped static link; filename at -4, star at -8. Updates global integrity status on mismatch."
   var Data: TBufEC; Unused: Integer;
   begin
     Data := TBufEC.Create;
@@ -4746,9 +4761,9 @@ begin
   Buffer.AddWideChar(WideChar(CustomSystemInfos.Count));
   for I := 0 to CustomSystemInfos.Count - 1 do TCustomSystemInfo(CustomSystemInfos[I]).SaveToBuffer(Buffer);
 end;
-{ @end $7AC8CC }
+{ @end $7DDF00 }
 
-{ @routine $7AD19C TStar_LoadFromBuffer }
+{ @routine $7DE700 TStar_LoadFromBuffer }
 procedure TStar.LoadFromBuffer(Buffer: TBufEC; Galaxy: TGalaxy);
 var I, Count: Integer;
   Planet: TPlanet;
@@ -4899,31 +4914,31 @@ begin
     end;
   end;
 end;
-{ @end $7AD19C }
+{ @end $7DE700 }
 
-{ @routine $7ADB3C TStar_ResolveLoadedReferences }
+{ @routine $7DEEFC TStar_ResolveLoadedReferences }
 procedure TStar.ResolveLoadedReferences(Galaxy: TGalaxy);
 var Planet: TPlanet; Ship: TShip; Item: TItem; I, Count: Integer; Drop: PMovingDropItemEntry; Missile: TMissile;
 begin
   Count := Planets.Count;
-  for I := 0 to Count - 1 do begin Planet := TPlanet(Planets[I]); Planet.ResolveLoadedReferences(Galaxy); end;
+  for I := 0 to Count - 1 do begin Planet := Planets[I]; Planet.ResolveLoadedReferences(Galaxy); end;
   Count := Ships.Count;
-  for I := 0 to Count - 1 do begin Ship := TShip(Ships[I]); Ship.ResolveLoadedReferences(Galaxy); end;
+  for I := 0 to Count - 1 do begin Ship := Ships[I]; Ship.ResolveLoadedReferences(Galaxy); end;
   Count := Items.Count;
-  for I := 0 to Count - 1 do begin Item := TItem(Items[I]); Item.ResolveLoadedReferences(Galaxy); end;
+  for I := 0 to Count - 1 do begin Item := Items[I]; Item.ResolveLoadedReferences(Galaxy); end;
   Count := MovingDropItems.Count;
   for I := 0 to Count - 1 do begin
     Drop := MovingDropItems[I];
     (Drop.Payload as TItem).ResolveLoadedReferences(Galaxy);
   end;
   Count := Missiles.Count;
-  for I := 0 to Count - 1 do begin Missile := TMissile(Missiles[I]); Missile.ResolveLoadedReferences(Galaxy); end;
-  if Dominion <> nil then Dominion := TObject(Galaxy.IdToShip(Cardinal(Dominion), True));
+  for I := 0 to Count - 1 do begin Missile := Missiles[I]; Missile.ResolveLoadedReferences(Galaxy); end;
+  if Dominion <> nil then Dominion := Galaxy.IdToShip(Cardinal(Dominion), True);
   Constellation := TObject(Galaxy.IdToConstellation(Cardinal(Constellation))) as TConstellation;
 end;
-{ @end $7ADB3C }
+{ @end $7DEEFC }
 
-{ @routine $7ADCF8 TStar_SaveToBlock }
+{ @routine $7DF024 TStar_SaveToBlock }
 procedure TStar.SaveToBlock(Block: TBlockParEC);
 var I: Integer; Key: WideString; Planet: TPlanet; Ship: TShip; Item: TItem; ShipBlock: TBlockParEC;
 begin
@@ -4940,37 +4955,37 @@ begin
   Block.AddParam(DecodeTextW('D9o5meScewr3iwegs4'), DominatorSeriesNames[DominatorSeries]); // 'DomSeries'
   ShipBlock := Block.AddBlockByPath(DecodeTextW('SahainpaLeikswt')); // 'ShipList'
   for I := 0 to Ships.Count - 1 do begin
-    Ship := TShip(Ships[I]);
-    Key := DecodeTextW('S5heifphI4d') + IntToStr(Cardinal(Ship.Id)); // 'ShipId'
+    Ship := Ships[I];
+    Key := DecodeTextW('S5heifphI4d') + IntToStr(Ship.Id); // 'ShipId'
     if GetPlayer <> Ship then Ship.SaveToBlock(ShipBlock.AddBlockByPath(Key));
   end;
   ShipBlock.AddParam(DecodeTextW('CorzeSafteetNgehwjRuuti5nrse'), ''); // 'CreateNewRuins'
   with Block.AddBlockByPath(DecodeTextW('PalkainrestaLuiksete')) do begin // 'PlanetList'
-  for I := 0 to Planets.Count - 1 do begin
-    Planet := TPlanet(Planets[I]);
-    Key := DecodeTextW('PwlgaRneeZtfI6d3') + IntToStr(Int64(Planet.Id)); // 'PlanetId'
-    Planet.SaveToBlock(AddBlockByPath(Key));
-  end;
-  AddParam(DecodeTextW('CorzeSafteetNgehwjPoloaInuent'), '0'); // 'CreateNewPlanet'
+    for I := 0 to Planets.Count - 1 do begin
+      Planet := Planets[I];
+      Key := DecodeTextW('PwlgaRneeZtfI6d3') + IntToStr(Planet.Id); // 'PlanetId'
+      Planet.SaveToBlock(AddBlockByPath(Key));
+    end;
+    AddParam(DecodeTextW('CorzeSafteetNgehwjPoloaInuent'), '0'); // 'CreateNewPlanet'
   end;
   with Block.AddBlockByPath(DecodeTextW('JoulnAk')) do begin // 'Junk'
-  if Items <> nil then
-    for I := 0 to Items.Count - 1 do begin
-      Item := TItem(Items[I]);
-      Key := DecodeTextW('ImtreamrIodo') + IntToStr(Cardinal(Item.Id)); // 'ItemId'
-      with AddBlockByPath(Key) do begin
-      AddParam('X', SysUtils.FloatToStr(Item.Position.X));
-      AddParam('Y', SysUtils.FloatToStr(Item.Position.Y));
+    if Items <> nil then
+      for I := 0 to Items.Count - 1 do begin
+        Item := Items[I];
+        Key := DecodeTextW('ImtreamrIodo') + IntToStr(Item.Id); // 'ItemId'
+        with AddBlockByPath(Key) do begin
+          AddParam('X', SysUtils.FloatToStr(Item.Position.X));
+          AddParam('Y', SysUtils.FloatToStr(Item.Position.Y));
+        end;
+        Item.SaveToBlock(GetBlockByPath(Key));
       end;
-      Item.SaveToBlock(GetBlockByPath(Key));
-    end;
-  AddParam(DecodeTextW('Cur5erawtre3NregwgJou1nfk'), ''); // 'CreateNewJunk'
+    AddParam(DecodeTextW('Cur5erawtre3NregwgJou1nfk'), ''); // 'CreateNewJunk'
   end;
   Block.AddParam(DecodeTextW('CtrGefaEtdefNgeywuAksltkeuryoTirdesd'), '0'); // 'CreateNewAsteroids'
 end;
-{ @end $7ADCF8 }
+{ @end $7DF024 }
 
-{ @routine $7AE54C TStar_LoadFromBlock }
+{ @routine $7DF820 TStar_LoadFromBlock }
 procedure TStar.LoadFromBlock(Block: TBlockParEC);
 var I: Integer; Key, Value: WideString; Planet: TPlanet; Ship: TShip; StationType: TShipType; X, Y: Single; Link: PConstellationStarLink; Asteroid: TAsteroid; Style: WideString; Part, Variants, Variant: Integer; Item: TItem; ItemType: TItemType; Angle: Double;
 begin
@@ -4991,47 +5006,48 @@ begin
   Key := Block.GetParam(DecodeTextW('D9o5meScewr3iwegs4')); // 'DomSeries'
   for I := Ord(Low(TDominatorSeries)) to Ord(High(TDominatorSeries)) do if Key = DominatorSeriesNames[TDominatorSeries(I)] then DominatorSeries := TDominatorSeries(I);
   with Block.GetBlockByPath(DecodeTextW('SahainpaLeikswt')) do begin // 'ShipList'
-  for I := 0 to Ships.Count - 1 do begin
-    Ship := TShip(Ships[I]);
-    Key := DecodeTextW('S5heifphI4d') + IntToStr(Cardinal(Ship.Id)); // 'ShipId'
-    if GetPlayer <> Ship then Ship.LoadFromBlock(GetBlockByPath(Key));
-  end;
-  Key := GetParam(DecodeTextW('CorzeSafteetNgehwjRuuti5nrse')); // 'CreateNewRuins'
-  for I := 0 to CountDelimitedPartsW(Key, ',') - 1 do begin
-    Value := ExtractDelimitedPartW(Key, I, ',');
-    for StationType := Low(TShipType) to High(TShipType) do
-      if ShipTypeNames[StationType].Name = Value then begin TRuins.Create.Init(StationType, Self, ''); Break; end;
-  end;
+    for I := 0 to Ships.Count - 1 do begin
+      Ship := Ships[I];
+      Key := DecodeTextW('S5heifphI4d') + IntToStr(Ship.Id); // 'ShipId'
+      if GetPlayer <> Ship then Ship.LoadFromBlock(GetBlockByPath(Key));
+    end;
+    Key := GetParam(DecodeTextW('CorzeSafteetNgehwjRuuti5nrse')); // 'CreateNewRuins'
+    for I := 0 to CountDelimitedPartsW(Key, ',') - 1 do begin
+      Value := ExtractDelimitedPartW(Key, I, ',');
+      for StationType := Low(TShipType) to High(TShipType) do
+        if ShipTypeNames[StationType].Name = Value then begin TRuins.Create.Init(StationType, Self, ''); Break; end;
+    end;
   end;
   with Block.GetBlockByPath(DecodeTextW('PalkainrestaLuiksete')) do begin // 'PlanetList'
-  for I := 0 to Planets.Count - 1 do begin
-    Planet := TPlanet(Planets[I]);
-    Key := DecodeTextW('PwlgaRneeZtfI6d3') + IntToStr(Cardinal(Planet.Id)); // 'PlanetId'
-    Planet.LoadFromBlock(GetBlockByPath(Key));
-  end;
-  for I := 0 to StrToInt(AnsiString(GetParam(DecodeTextW('CorzeSafteetNgehwjPoloaInuent')))) - 1 do begin // 'CreateNewPlanet'
-    Planet := TPlanet.Create;
-    Planet.InitGeneratedUninhabited(Self);
-    Planets.Add(Planet);
-    Galaxy.Planets.Add(Planet);
-  end;
+    for I := 0 to Planets.Count - 1 do begin
+      Planet := Planets[I];
+      Key := DecodeTextW('PwlgaRneeZtfI6d3') + IntToStr(Planet.Id); // 'PlanetId'
+      Planet.LoadFromBlock(GetBlockByPath(Key));
+    end;
+    for I := 0 to StrToInt(AnsiString(GetParam(DecodeTextW('CorzeSafteetNgehwjPoloaInuent')))) - 1 do begin // 'CreateNewPlanet'
+      Planet := TPlanet.Create;
+      Planet.InitGeneratedUninhabited(Self);
+      Planets.Add(Planet);
+      Galaxy.Planets.Add(Planet);
+    end;
   end;
   with Block.GetBlockByPath(DecodeTextW('JoulnAk')) do begin // 'Junk'
-  if Items <> nil then
-    for I := 0 to Items.Count - 1 do begin
-      Item := TItem(Items[I]);
-      Key := DecodeTextW('ImtreamrIodo') + IntToStr(Cardinal(Item.Id)); // 'ItemId'
-      with GetBlockByPath(Key) do begin
-      Item.Position.X := ExtractDecimalToSingleW(GetParam('X'));
-      Item.Position.Y := ExtractDecimalToSingleW(GetParam('Y'));
+    if Items <> nil then
+      for I := 0 to Items.Count - 1 do begin
+        Item := Items[I];
+        Key := DecodeTextW('ImtreamrIodo') + IntToStr(Item.Id); // 'ItemId'
+        with GetBlockByPath(Key) do begin
+          Item.Position.X := ExtractDecimalToSingleW(GetParam('X'));
+          Item.Position.Y := ExtractDecimalToSingleW(GetParam('Y'));
+        end;
+        Item.LoadFromBlock(GetBlockByPath(Key));
       end;
-      Item.LoadFromBlock(GetBlockByPath(Key));
-    end;
-  Key := GetParam(DecodeTextW('Cur5erawtre3NregwgJou1nfk')); // 'CreateNewJunk'
-  for I := 0 to CountDelimitedPartsW(Key, ',') - 1 do begin
-    Value := ExtractDelimitedPartW(Key, I, ',');
-    for ItemType := Low(TItemType) to High(TItemType) do
-      if ItemTypeNames[ItemType] = Value then begin
+    Key := GetParam(DecodeTextW('Cur5erawtre3NregwgJou1nfk')); // 'CreateNewJunk'
+    for I := 0 to CountDelimitedPartsW(Key, ',') - 1 do begin
+      Value := ExtractDelimitedPartW(Key, I, ',');
+      for ItemType := Low(TItemType) to High(TItemType) do
+      begin
+        if ItemTypeNames[ItemType] <> Value then Continue;
         if (ItemType in [t_Food..t_Narcotics, t_ArtefactHull..t_Satellite]) and (ItemType <> t_Hull) then begin
           Item := CreateDefaultItemByType(ItemType);
           if ItemType = t_Minerals then TGoods(Item).NaturalFlag := True;
@@ -5043,7 +5059,7 @@ begin
         end;
         Break;
       end;
-  end;
+    end;
   end;
   Key := DecodeTextW('AfsBtfegrFodiDdf'); // 'Asteroid'
   for I := 0 to StrToInt(AnsiString(Block.GetParam(DecodeTextW('CtrGefaEtdefNgeywuAksltkeuryoTirdesd')))) - 1 do begin // 'CreateNewAsteroids'
@@ -5059,9 +5075,9 @@ begin
     Asteroids.Add(Asteroid);
   end;
 end;
-{ @end $7AE54C }
+{ @end $7DF820 }
 
-{ @routine $7AF35C TStar_PruneWeaponTargetsAfterTurn }
+{ @routine $7E0524 TStar_PruneWeaponTargetsAfterTurn }
 procedure TStar.PruneWeaponTargetsAfterTurn;
 var Ship: TShip; Weapon: TWeapon; I, J, Count: Integer;
 begin
@@ -5087,9 +5103,9 @@ begin
     end;
   end;
 end;
-{ @end $7AF35C }
+{ @end $7E0524 }
 
-{ @routine $7AF548 TStar_MarkConnectedCombatEvents }
+{ @routine $7E06CC TStar_MarkConnectedCombatEvents }
 procedure TStar.MarkConnectedCombatEvents(Events: TList; Target: TObject; Group: Integer);
 var I, Count: Integer; Event: PStarCombatEvent;
 begin
@@ -5112,9 +5128,9 @@ begin
     end;
   end;
 end;
-{ @end $7AF548 }
+{ @end $7E06CC }
 
-{ @routine $7AF5EC TStar_DropMinerals }
+{ @routine $7E074C TStar_DropMinerals }
 function TStar.DropMinerals(Quantity: Integer; Position: TPointF; Seed: Cardinal): Integer;
 var
   Angle, AngleStep, Radius, Jitter: Single;
@@ -5171,9 +5187,9 @@ begin
     end;
   end;
 end;
-{ @end $7AF5EC }
+{ @end $7E074C }
 
-{ @routine $7AFA44 TStar_ProcessPlayerAsteroidKill }
+{ @routine $7E0B54 TStar_ProcessPlayerAsteroidKill }
 procedure TStar.ProcessPlayerAsteroidKill(MineralValue: Integer; Position: TPointF; AsteroidId: Cardinal);
 var I, MessageVariant, Roll: Integer; Planet, NearestPlanet: TPlanet; BestDistance, Distance: Extended; Text: WideString;
 begin
@@ -5215,9 +5231,9 @@ begin
   ReplaceTextToken(Text, '<Planet>', NearestPlanet.GetFullName(' '), TextHighlightColorTag);
   AddOrUpdatePlayerBubble(pmGalaxyNews, Galaxy.CurrentTurn, Text, 'AsteroidKill');
 end;
-{ @end $7AFA44 }
+{ @end $7E0B54 }
 
-{ @routine $7AFE80 TStar_ClearTargetReferences }
+{ @routine $7E0F68 TStar_ClearTargetReferences }
 procedure TStar.ClearTargetReferences(Target: TObject);
 var Missile: TMissile; Ship: TShip; Weapon: TWeapon; I, J, Count: Integer; Event: PStarCombatEvent;
 begin
@@ -5253,9 +5269,9 @@ begin
     end;
   end;
 end;
-{ @end $7AFE80 }
+{ @end $7E0F68 }
 
-{ @routine $7B0138 TStar_ClearShipReferences }
+{ @routine $7E11D8 TStar_ClearShipReferences }
 procedure TStar.ClearShipReferences(Ship: Pointer);
 var TargetShip, OtherShip: TShip; Weapon: TWeapon; I, J, Count: Integer; Event: PStarCombatEvent;
 begin
@@ -5298,9 +5314,9 @@ begin
     end;
   end;
 end;
-{ @end $7B0138 }
+{ @end $7E11D8 }
 
-{ @routine $7B0418 TStar_ClearItemReferences }
+{ @routine $7E145C TStar_ClearItemReferences }
 procedure TStar.ClearItemReferences(Item: Pointer);
 var Ship: TShip; I, Count: Integer;
 begin
@@ -5326,9 +5342,9 @@ begin
     end;
   end;
 end;
-{ @end $7B0418 }
+{ @end $7E145C }
 
-{ @routine $7B069C TStar_ClearCombatEventWeaponReferences }
+{ @routine $7E16A4 TStar_ClearCombatEventWeaponReferences }
 procedure TStar.ClearCombatEventWeaponReferences(Weapon: Pointer);
 var I: Integer; Entry: PStarCombatEvent;
 begin
@@ -5338,9 +5354,9 @@ begin
     if Entry.Weapon = Weapon then Entry.Weapon := nil;
   end;
 end;
-{ @end $7B069C }
+{ @end $7E16A4 }
 
-{ @routine $7B06F8 TStar_PrepareNextDay }
+{ @routine $7E16E0 TStar_PrepareNextDay }
 procedure TStar.PrepareNextDay;
 var Planet: TPlanet; Asteroid: TAsteroid; Ship: TShip; I: Integer;
 begin
@@ -5358,22 +5374,22 @@ begin
   TryGenerateSystemNews;
   for I := 0 to Planets.Count - 1 do
   begin
-    Planet := TPlanet(Planets[I]);
+    Planet := Planets[I];
     Planet.NextDay;
   end;
   for I := 0 to Asteroids.Count - 1 do
   begin
-    Asteroid := TAsteroid(Asteroids[I]);
+    Asteroid := Asteroids[I];
     Asteroid.RespawnIfOutsideSystem;
   end;
   for I := Ships.Count - 1 downto 0 do
   begin
-    Ship := TShip(Ships[I]);
+    Ship := Ships[I];
     Ship.NextDay;
   end;
   for I := 0 to Ships.Count - 1 do
   begin
-    Ship := TShip(Ships[I]);
+    Ship := Ships[I];
     if (Ship.Order = soLand) and (Ship.OrderTarget is TShip) and
        ((Ship.OrderTarget as TShip).Order <> soNone) then
     begin
@@ -5385,9 +5401,9 @@ begin
       Ship.DockedTo.OrderNone(False);
   end;
 end;
-{ @end $7B06F8 }
+{ @end $7E16E0 }
 
-{ @routine $7B0900 TStar_HandleObjectLeavingStar }
+{ @routine $7E185C TStar_HandleObjectLeavingStar }
 procedure TStar.HandleObjectLeavingStar(Obj: TObject);
 var I, J, Count: Integer; Ship, Target: TShip;
 begin
@@ -5397,49 +5413,47 @@ begin
   for I := 0 to Count - 1 do
   begin
     Ship := Ships[I];
-    if not Ship.IsHullDestroyed then
+    if Ship.IsHullDestroyed then Continue;
+    if (Ship.Order = soFollowShip) and (Ship.OrderTarget = Obj) then
     begin
-      if (Ship.Order = soFollowShip) and (Ship.OrderTarget = Obj) then
+      if (Obj is TShip) and (TShip(Obj).Order = soJump) then
       begin
-        if (Obj is TShip) and (TShip(Obj).Order = soJump) then
-        begin
-          Target := Obj as TShip;
-          if (Ship.TypeId = stKling) and (Target.OwnerId in PlanetOwnerMasks.Coalition) and
-             (Ship.GetHullIntegrityPercent > 30) and (Target.GetHullIntegrityPercent > 10) and
-             (I > Max(4, Count div 2)) and (ShipTypeCounts[stKling] > 7) and
-             (((Ship as TKling).KlingType in [ktSmersh..ktShtip]) or
-              (((Ship as TKling).KlingType in [ktEquantor..ktUrgant]) and (I in [5, 6]) and (ShipTypeCounts[stKling] > 9))) and
-             (GetPlayer <> nil) and Target.InHyperspace and (Target.OrderTarget is TStar) and
-             ((Target.OrderTarget as TStar).ControlFaction = sfCoalition) and not IsStarProtectedByScript(Target.OrderTarget as TStar) and
-             ((Galaxy.CurrentTurn > GalaxyWarmupTurns) or (GetPlayer.CurrentStar <> Target.OrderTarget)) and
-             (Galaxy.CurrentTurn mod 15 = 0) then
-            Ship.OrderJump(Target.OrderTarget as TStar, True)
-          else if (Ship.TypeId = stPirate) and ((Ship as TPirate).PirateType = 0) and
-                  (Target.OwnerId in PlanetOwnerMasks.Coalition) and
-                  (Ship.GetHullIntegrityPercent > 90) and (Target.GetHullIntegrityPercent > 10) and
-                  (Ship.ChanceToWin(Target) > 1) and (GetPlayer <> nil) and Target.InHyperspace and
-                  (Target.OrderTarget is TStar) and ((Target.OrderTarget as TStar).ControlFaction = sfCoalition) and
-                  ((Target.OrderTarget as TStar).Status.CustomFaction = '') and not IsStarProtectedByScript(Target.OrderTarget as TStar) and
-                  ((Galaxy.CurrentTurn > GalaxyWarmupTurns) or (GetPlayer.CurrentStar <> Target.OrderTarget)) and
-                  (Galaxy.CurrentTurn mod 7 = 0) then
-            Ship.OrderJump(Target.OrderTarget as TStar, True)
-          else Ship.OrderNone(False);
-        end
+        Target := Obj as TShip;
+        if (Ship.TypeId = stKling) and (Target.OwnerId in PlanetOwnerMasks.Coalition) and
+           (Ship.GetHullIntegrityPercent > 30) and (Target.GetHullIntegrityPercent > 10) and
+           (I > Max(4, Count div 2)) and (ShipTypeCounts[stKling] > 7) and
+           (((Ship as TKling).KlingType in [ktSmersh..ktShtip]) or
+            (((Ship as TKling).KlingType in [ktEquantor..ktUrgant]) and (I in [5, 6]) and (ShipTypeCounts[stKling] > 9))) and
+           (GetPlayer <> nil) and Target.InHyperspace and (Target.OrderTarget is TStar) and
+           ((Target.OrderTarget as TStar).ControlFaction = sfCoalition) and not IsStarProtectedByScript(Target.OrderTarget as TStar) and
+           ((Galaxy.CurrentTurn > GalaxyWarmupTurns) or (GetPlayer.CurrentStar <> Target.OrderTarget)) and
+           (Galaxy.CurrentTurn mod 15 = 0) then
+          Ship.OrderJump(Target.OrderTarget as TStar, True)
+        else if (Ship.TypeId = stPirate) and ((Ship as TPirate).PirateType = 0) and
+                (Target.OwnerId in PlanetOwnerMasks.Coalition) and
+                (Ship.GetHullIntegrityPercent > 90) and (Target.GetHullIntegrityPercent > 10) and
+                (Ship.ChanceToWin(Target) > 1) and (GetPlayer <> nil) and Target.InHyperspace and
+                (Target.OrderTarget is TStar) and ((Target.OrderTarget as TStar).ControlFaction = sfCoalition) and
+                ((Target.OrderTarget as TStar).Status.CustomFaction = '') and not IsStarProtectedByScript(Target.OrderTarget as TStar) and
+                ((Galaxy.CurrentTurn > GalaxyWarmupTurns) or (GetPlayer.CurrentStar <> Target.OrderTarget)) and
+                (Galaxy.CurrentTurn mod 7 = 0) then
+          Ship.OrderJump(Target.OrderTarget as TStar, True)
         else Ship.OrderNone(False);
-      end;
-      if (Ship.Order = soLand) and (Ship.OrderTarget = Obj) then Ship.OrderNone(False);
-      if (Ship is TTranclucator) and ((Ship as TTranclucator).OwnerShip = Obj) then
-        (Ship as TTranclucator).FollowOwner := False;
-      for J := 1 to Ship.WeaponCount do
-        if Ship.Weapons[J].Target = Obj then Ship.Weapons[J].Target := nil;
-      if Ship.DockedTo = Obj then HandleObjectLeavingStar(Ship);
+      end
+      else Ship.OrderNone(False);
     end;
+    if (Ship.Order = soLand) and (Ship.OrderTarget = Obj) then Ship.OrderNone(False);
+    if (Ship is TTranclucator) and ((Ship as TTranclucator).OwnerShip = Obj) then
+      (Ship as TTranclucator).FollowOwner := False;
+    for J := 1 to Ship.WeaponCount do
+      if Ship.Weapons[J].Target = Obj then Ship.Weapons[J].Target := nil;
+    if Ship.DockedTo = Obj then HandleObjectLeavingStar(Ship);
   end;
   if Obj is TShip then (Obj as TShip).ClearPickupTargets;
 end;
-{ @end $7B0900 }
+{ @end $7E185C }
 
-{ @routine $7B0E78 TStar_AvoidShipPathCollisions }
+{ @routine $7E1CF0 TStar_AvoidShipPathCollisions }
 procedure TStar.AvoidShipPathCollisions;
 type
   TCollisionEntry = record
@@ -5463,7 +5477,7 @@ begin
   StationaryCount := 0;
   for I := 0 to ShipCount - 1 do
   begin
-    Ship := TShip(Ships[I]);
+    Ship := Ships[I];
     if (not (Ship is TKling) or ((Ship as TKling).KlingType <> ktBoss) or
         ((Ship as TKling).DominatorSeries <> dsTerron)) and not Ship.InHyperspace and
        (Ship.Order <> soTakeoff) and not Ship.IsTravelCompletionPathReady and
@@ -5537,21 +5551,21 @@ begin
   for I := 0 to Count - 1 do FreeEC(Entries[I]);
   Entries.Free;
 end;
-{ @end $7B0E78 }
+{ @end $7E1CF0 }
 
-{ @routine $7B12E0 TStar_RebuildShipMovementPaths }
+{ @routine $7E20C8 TStar_RebuildShipMovementPaths }
 procedure TStar.RebuildShipMovementPaths;
 var I: Integer; Ship: TShip;
 begin
   for I := 0 to Ships.Count - 1 do
   begin
-    Ship := TShip(Ships[I]);
+    Ship := Ships[I];
     if Ship.InNormalSpace then Ship.BuildOrderMovementPath(MovementStepCount);
   end;
 end;
-{ @end $7B12E0 }
+{ @end $7E20C8 }
 
-{ @routine $7B133C TStar_OpenSpaceScene }
+{ @routine $7E210C TStar_OpenSpaceScene }
 procedure TStar.OpenSpaceScene(MapPanel: TPanelGI; Minimap: TObjectGI; Screen: TMessageLoopGI);
 var
   I, J: Integer;
@@ -5589,7 +5603,7 @@ begin
   Graphic.AttachToSpace(SpaceProcess.Space);
   for I := 0 to Planets.Count - 1 do
   begin
-    Planet := TPlanet(Planets[I]);
+    Planet := Planets[I];
     Planet.Graphic.Civilized := Planet.OwnerId <> oiUninhabited;
     Planet.Graphic.SetMinimapOwner(Ord(Planet.OwnerId));
     if Planet.CustomFaction <> '' then
@@ -5602,52 +5616,50 @@ begin
     if SputnikShow then
       for J := 0 to Planet.Satellites.Count - 1 do
       begin
-        Satellite := TSputnik(Planet.Satellites[J]);
+        Satellite := Planet.Satellites[J];
         Satellite.Graphic.OrbitCenter := Planet.GetPosition;
         Satellite.Graphic.AttachToSpace(SpaceProcess.Space);
       end;
   end;
   for I := 0 to Asteroids.Count - 1 do
   begin
-    Asteroid := TAsteroid(Asteroids[I]);
+    Asteroid := Asteroids[I];
     Asteroid.GraphObject.AttachToSpace(SpaceProcess.Space);
   end;
   for I := 0 to Ships.Count - 1 do
   begin
-    Ship := TShip(Ships[I]);
-    if Ship.InNormalSpace then
+    Ship := Ships[I];
+    if not Ship.InNormalSpace then Continue;
+    Ship.Graphic.SetAlpha(255);
+    if Ship.Graphic is TShip2SE then
     begin
-      Ship.Graphic.SetAlpha(255);
-      if Ship.Graphic is TShip2SE then
-      begin
-        with TShip2SE(Ship.Graphic) do
-          if (ShipTail = 2) or ((ShipTail = 1) and (GetPlayer = Ship)) then SetTailMode(1)
-          else SetTailMode(0);
-      end
-      else if (Ship.Graphic is TRuinsSE) and (Ship.Graphic as TRuinsSE).HasTransitionImages then
-        (Ship.Graphic as TRuinsSE).SetState(1);
-      Ship.Graphic.AttachToSpace(SpaceProcess.Space);
-      if Ship.InterceptorGraphic <> nil then
-      begin
-        Ship.InterceptorGraphic.SetAlpha(255);
-        Ship.InterceptorGraphic.AttachToSpace(SpaceProcess.Space);
-      end;
+      with TShip2SE(Ship.Graphic) do
+        if (ShipTail = 2) or ((ShipTail = 1) and (GetPlayer = Ship)) then SetTailMode(1)
+        else SetTailMode(0);
+    end
+    else if (Ship.Graphic is TRuinsSE) and (Ship.Graphic as TRuinsSE).HasTransitionImages then
+      (Ship.Graphic as TRuinsSE).SetState(1);
+    Ship.Graphic.AttachToSpace(SpaceProcess.Space);
+    if Ship.InterceptorGraphic <> nil then
+    begin
+      Ship.InterceptorGraphic.SetAlpha(255);
+      Ship.InterceptorGraphic.AttachToSpace(SpaceProcess.Space);
     end;
   end;
   for I := 0 to Items.Count - 1 do
   begin
-    Item := TItem(Items[I]);
+    Item := Items[I];
     Item.GetGraphObject.AttachToSpace(SpaceProcess.Space);
   end;
   for I := 0 to Galaxy.JumpGates.Count - 1 do
   begin
     Gate := Galaxy.JumpGates[I];
-    TGateSE(Gate.Gate).SetState(2);
+    Gate.Gate.SetState(gsOpen);
     Gate.Gate.AttachToSpace(SpaceProcess.Space);
   end;
   for I := 0 to Galaxy.Holes.Count - 1 do
   begin
-    Hole := THole(Galaxy.Holes[I]);
+    Hole := Galaxy.Holes[I];
     if Hole.Star1 = Self then
     begin
       Hole.Graphic.SetPosition(Hole.Position1);
@@ -5663,13 +5675,13 @@ begin
   end;
   for I := 0 to Missiles.Count - 1 do
   begin
-    Missile := TMissile(Missiles[I]);
+    Missile := Missiles[I];
     Missile.GetGraphObject.AttachToSpace(SpaceProcess.Space);
   end;
 end;
-{ @end $7B133C }
+{ @end $7E210C }
 
-{ @routine $7B1970 TStar_RefreshSpaceObjectPositions }
+{ @routine $7E2660 TStar_RefreshSpaceObjectPositions }
 procedure TStar.RefreshSpaceObjectPositions;
 var
   Planet: TPlanet;
@@ -5682,41 +5694,41 @@ var
 begin
   for I := 1 to Planets.Count do
   begin
-    Planet := TPlanet(Planets[I - 1]);
+    Planet := Planets[I - 1];
     Planet.Graphic.SetPosition(PolarToPoint(Planet.Orbit));
     for J := 0 to Planet.Satellites.Count - 1 do
     begin
-      Satellite := TSputnik(Planet.Satellites[J]);
+      Satellite := Planet.Satellites[J];
       Satellite.Graphic.OrbitCenter := Planet.GetPosition;
       Satellite.Graphic.UpdateOrbitDisplay;
     end;
   end;
   for I := 0 to Asteroids.Count - 1 do
   begin
-    Asteroid := TAsteroid(Asteroids[I]);
-    Asteroid.GraphObject.SetPosition(Asteroid.Position);
+    Asteroid := Asteroids[I];
+    Asteroid.GraphObject.Pos := Asteroid.Position;
   end;
   for I := 1 to Ships.Count do
   begin
-    Ship := TShip(Ships[I - 1]);
+    Ship := Ships[I - 1];
     Ship.Graphic.SetPosition(Ship.Position);
     Ship.Graphic.SetAngle(HeadingDegreesToByte(Ship.MovementDirection));
   end;
   for I := 1 to Items.Count do
   begin
-    Item := TItem(Items[I - 1]);
-    Item.GetGraphObject.SetPosition(Item.Position);
+    Item := Items[I - 1];
+    Item.GetGraphObject.Pos := Item.Position;
   end;
   for I := 0 to Missiles.Count - 1 do
   begin
-    Missile := TMissile(Missiles[I]);
+    Missile := Missiles[I];
     Missile.GetGraphObject.SetPosition(Missile.Position);
     Missile.GetGraphObject.SetAngle(HeadingDegreesToByte(Missile.Direction));
   end;
 end;
-{ @end $7B1970 }
+{ @end $7E2660 }
 
-{ @routine $7B1B8C TStar_QueueSpaceImageLoads }
+{ @routine $7E281C TStar_QueueSpaceImageLoads }
 procedure TStar.QueueSpaceImageLoads(PendingLoads: TList; Owner: TObjectGI);
 var
   Planet: TPlanet;
@@ -5745,59 +5757,59 @@ begin
   end;
   for I := 1 to Planets.Count do
   begin
-    Planet := TPlanet(Planets[I - 1]);
+    Planet := Planets[I - 1];
     Planet.Graphic.QueueImageLoad(PendingLoads, Owner);
     if SputnikShow then
       for J := 0 to Planet.Satellites.Count - 1 do
       begin
-        Satellite := TSputnik(Planet.Satellites[J]);
+        Satellite := Planet.Satellites[J];
         Satellite.Graphic.QueueImageLoad(PendingLoads, Owner);
       end;
   end;
   for I := 1 to Ships.Count do
   begin
-    Ship := TShip(Ships[I - 1]);
+    Ship := Ships[I - 1];
     Ship.Graphic.QueueImageLoad(PendingLoads, Owner);
   end;
   for I := 1 to Items.Count do
   begin
-    Item := TItem(Items[I - 1]);
+    Item := Items[I - 1];
     Item.GetGraphObject.QueueImageLoad(PendingLoads, Owner);
   end;
   for I := 0 to Asteroids.Count - 1 do
   begin
-    Asteroid := TAsteroid(Asteroids[I]);
+    Asteroid := Asteroids[I];
     Asteroid.GraphObject.QueueImageLoad(PendingLoads, Owner);
   end;
   for I := 0 to Galaxy.Holes.Count - 1 do
   begin
-    Hole := THole(Galaxy.Holes[I]);
+    Hole := Galaxy.Holes[I];
     if (Hole.Star1 = Self) or (Hole.Star2 = Self) then Hole.Graphic.QueueImageLoad(PendingLoads, Owner);
   end;
 end;
-{ @end $7B1B8C }
+{ @end $7E281C }
 
-{ @routine $7B1E70 TStar_QueueHyperspaceShipImageLoads }
+{ @routine $7E2A94 TStar_QueueHyperspaceShipImageLoads }
 procedure TStar.QueueHyperspaceShipImageLoads(PendingLoads: TList; Owner: TObjectGI);
 var Ship: TShip; I: Integer;
 begin
   for I := 1 to Ships.Count do begin
-    Ship := TShip(Ships[I - 1]);
+    Ship := Ships[I - 1];
     if Ship.InHyperspace then Ship.Graphic.QueueImageLoad(PendingLoads, Owner);
   end;
 end;
-{ @end $7B1E70 }
+{ @end $7E2A94 }
 
-{ @routine $7B1ED8 TStar_GetBackgroundImagePath }
+{ @routine $7E2AF0 TStar_GetBackgroundImagePath }
 function TStar.GetBackgroundImagePath(out Size: Integer): WideString;
 begin
   Size := 2000;
   if BackgroundImage < 10 then Result := 'Bm.BGO.bg0' + IntToStr(BackgroundImage)
   else Result := 'Bm.BGO.bg' + IntToStr(BackgroundImage);
 end;
-{ @end $7B1ED8 }
+{ @end $7E2AF0 }
 
-{ @routine $7B1FB8 TStar_ProcessItemScripts }
+{ @routine $7E2BBC TStar_ProcessItemScripts }
 procedure TStar.ProcessItemScripts(TurnPhase: Integer);
 var I: Integer; Item: TItem; Ship: TShip; Stage: Integer;
 begin
@@ -5839,16 +5851,16 @@ begin
     end;
   end;
 end;
-{ @end $7B1FB8 }
+{ @end $7E2BBC }
 
-{ @routine $7B22A0 GameTurnToDateTime }
+{ @routine $7E2E48 GameTurnToDateTime }
 function GameTurnToDateTime(Turn: Integer): Double;
 begin
   Result := Turn + 511341.5;
 end;
-{ @end $7B22A0 }
+{ @end $7E2E48 }
 
-{ @routine $7B22C4 FormatGameTurnDate }
+{ @routine $7E2E68 FormatGameTurnDate }
 function FormatGameTurnDate(Turn: Integer): WideString;
 var
   MonthNumber, MonthName: WideString;
@@ -5857,9 +5869,9 @@ begin
   MonthName := LocalizedText('Month.' + MonthNumber);
   Result := FormatDateTime('d', GameTurnToDateTime(Turn - GalaxyWarmupTurns)) + ' ' + MonthName + ' ' + FormatDateTime('yyyy', GameTurnToDateTime(Turn - GalaxyWarmupTurns));
 end;
-{ @end $7B22C4 }
+{ @end $7E2E68 }
 
-{ @routine $7B247C ShouldContinuePlayerTravel }
+{ @routine $7E2FF8 ShouldContinuePlayerTravel }
 function ShouldContinuePlayerTravel: Boolean;
 begin
   if GetPlayer = nil then
@@ -5888,28 +5900,26 @@ begin
     Result := False;
     Exit;
   end;
-  if PlayerAutomaticControl or ((PendingPlayerFollowTarget <> nil) and not PlayerStar.InterruptLongTravel) then Result := True
-  else
+  if PlayerAutomaticControl or ((PendingPlayerFollowTarget <> nil) and not PlayerStar.InterruptLongTravel) then
   begin
-    GetPlayer.BuildOrderMovementPath(BaseMovementStepsPerTurn);
-    if not PlayerStar.PlayerCombatOccurred and not PlayerStar.InterruptLongTravel and
-       (GetPlayer.GetMovementPathTurnCount > 0) and
-       ((GetPlayer.Order <> soMove) or (PointDistanceSquared(GetPlayer.Position, GetPlayer.OrderDestination) > 19600)) then
-    begin
-      if (GetPlayer.Order = soFollowShip) and
-         (PointDistanceSquared(GetPlayer.Position, (GetPlayer.OrderTarget as TShip).Position) < Sqr(GetPlayer.Speed)) then
-      begin
-        Result := False;
-        Exit;
-      end;
-      Result := True;
-    end
-    else Result := False;
+    Result := True;
+    Exit;
   end;
+  GetPlayer.BuildOrderMovementPath(BaseMovementStepsPerTurn);
+  if not PlayerStar.PlayerCombatOccurred and not PlayerStar.InterruptLongTravel and
+    (GetPlayer.GetMovementPathTurnCount > 0) and
+    ((GetPlayer.Order <> soMove) or (PointDistanceSquared(GetPlayer.Position, GetPlayer.OrderDestination) > 19600)) then
+  begin
+    if (GetPlayer.Order = soFollowShip) and
+      (PointDistanceSquared(GetPlayer.Position, (GetPlayer.OrderTarget as TShip).Position) < Sqr(GetPlayer.Speed)) then
+      Result := False
+    else Result := True;
+  end
+  else Result := False;
 end;
-{ @end $7B247C }
+{ @end $7E2FF8 }
 
-{ @routine $7B2624 EstimatePlayerTravelTurns }
+{ @routine $7E317C EstimatePlayerTravelTurns }
 function EstimatePlayerTravelTurns: Single;
 var Destination: TPointF;
 begin
@@ -5931,9 +5941,9 @@ begin
   else Exit;
   Result := PointDistance(Destination, GetPlayer.Position) / (GetPlayer.Speed + 1);
 end;
-{ @end $7B2624 }
+{ @end $7E317C }
 
-{ @routine $7B27E0 GetLocalObjectLink }
+{ @routine $7E3348 GetLocalObjectLink }
 function GetLocalObjectLink(Obj: TObject; Suppress: Boolean): WideString;
 var Local: Boolean;
 begin
@@ -5948,9 +5958,9 @@ begin
   if Local then Result := '<Object=' + IntToStr(Cardinal(Obj)) + ',23,17,0>'
   else Result := '';
 end;
-{ @end $7B27E0 }
+{ @end $7E3348 }
 
-{ @routine $7B2954 TGalaxy_FindConstellationIndexForStar }
+{ @routine $7E349C TGalaxy_FindConstellationIndexForStar }
 function TGalaxy.FindConstellationIndexForStar(Star: TStar): Integer;
 var I: Integer; Constellation: TConstellation;
 begin
@@ -5960,9 +5970,9 @@ begin
   end;
   Result := -1;
 end;
-{ @end $7B2954 }
+{ @end $7E349C }
 
-{ @routine $7B29C0 TGalaxy_InitializeConstellationDistanceTiers }
+{ @routine $7E34E8 TGalaxy_InitializeConstellationDistanceTiers }
 procedure TGalaxy.InitializeConstellationDistanceTiers;
 var I, J, Pass: Integer; Constellation, Other: TConstellation; Tier: Byte;
 begin
@@ -5987,9 +5997,9 @@ begin
   if KellerShip <> nil then KellerShip.CurrentStar.Constellation.HomeDistanceTier := 3;
   if TerronShip <> nil then TerronShip.CurrentStar.Constellation.HomeDistanceTier := 3;
 end;
-{ @end $7B29C0 }
+{ @end $7E34E8 }
 
-{ @routine $7B2B4C TGalaxy_BuildConstellationOutlineJunctions }
+{ @routine $7E3660 TGalaxy_BuildConstellationOutlineJunctions }
 procedure TGalaxy.BuildConstellationOutlineJunctions;
 var I, J, K: Integer; Segment, First, Next: PMapLineSegment; Temp: Pointer; Point: PPointF; Constellation, Other: TConstellation; Edges: TList; Outer: Boolean; TempPoint: TPointF; Distance: Single;
 begin
@@ -6066,9 +6076,9 @@ begin
   Edges.Clear;
   Edges.Free;
 end;
-{ @end $7B2B4C }
+{ @end $7E3660 }
 
-{ @routine $7B2F34 TGalaxy_ShouldKeepConstellationOutlineVertex }
+{ @routine $7E3A0C TGalaxy_ShouldKeepConstellationOutlineVertex }
 function TGalaxy.ShouldKeepConstellationOutlineVertex(Point: TPointF): Boolean;
 var I, Count: Integer; Constellation: TConstellation; Vertex: PPointF;
 begin
@@ -6085,7 +6095,7 @@ begin
     end;
   end;
   for I := 0 to Constellations.Count - 1 do begin
-    Constellation := TConstellation(Constellations[I]);
+    Constellation := Constellations[I];
     if Constellation.HasOutlineVertex(Point) then begin
       Inc(Count);
       if Count > 2 then Break;
@@ -6093,13 +6103,13 @@ begin
   end;
   if Count > 2 then Result := True else Result := False;
 end;
-{ @end $7B2F34 }
+{ @end $7E3A0C }
 
-{ @routine $7B306C TGalaxy_SimplifyConstellationOutline }
+{ @routine $7E3B10 TGalaxy_SimplifyConstellationOutline }
 procedure TGalaxy.SimplifyConstellationOutline(ConstellationIndex: Integer);
 var Constellation: TConstellation; I: Integer; Points: TList; Segment: PMapLineSegment; First, Last: PPointF; Polygon: TPolygon2D;
 begin
-  Constellation := TConstellation(Constellations[ConstellationIndex]);
+  Constellation := Constellations[ConstellationIndex];
   if Constellation <> nil then begin
     Points := TList.Create;
     for I := 0 to Constellation.OutlineSegments.Count - 1 do begin
@@ -6132,45 +6142,45 @@ begin
     Points.Free;
   end;
 end;
-{ @end $7B306C }
+{ @end $7E3B10 }
 
-{ @routine $7B32B0 TGalaxy_BuildConstellationStarGraphs }
+{ @routine $7E3D08 TGalaxy_BuildConstellationStarGraphs }
 function TGalaxy.BuildConstellationStarGraphs: Boolean;
 var I: Integer; Constellation: TConstellation;
 begin
   Result := True;
   for I := 0 to Constellations.Count - 1 do begin
-    Constellation := TConstellation(Constellations[I]);
+    Constellation := Constellations[I];
     if not Constellation.BuildStarGraph then Result := False;
   end;
 end;
-{ @end $7B32B0 }
+{ @end $7E3D08 }
 
-{ @routine $7B330C TGalaxy_BuildConstellationPolygonsAndAdjacency }
+{ @routine $7E3D50 TGalaxy_BuildConstellationPolygonsAndAdjacency }
 procedure TGalaxy.BuildConstellationPolygonsAndAdjacency(WorkingPolygon: TPolygon2D);
 var I, J: Integer; Constellation, Other: TConstellation; Pass, Steps: Integer; Sample: PConstellationBoundaryRaySample; PreviousPoint, Point: TPointF; Step: Single;
 begin
   Step := 3;
   WorkingPolygon.ResetChainGroups;
   for I := 0 to Constellations.Count - 1 do begin
-    Constellation := TConstellation(Constellations[I]);
+    Constellation := Constellations[I];
     WorkingPolygon.AssignGroupAtPoint(Constellation.MapCenter, I);
     Constellation.GenerateBoundaryRaySamples(128);
   end;
   Steps := Trunc(GalaxySizeY / Sqrt(Cardinal(ConstellationCount)) / Step * 0.5) + 1;
   for I := 0 to 7 do begin
-    Constellation := TConstellation(Constellations[I]);
+    Constellation := Constellations[I];
     Constellation.OutlineGrowthStepsRemaining := Steps + 20;
   end;
   Inc(Steps, 20);
   for I := 8 to Constellations.Count - 1 do begin
-    Constellation := TConstellation(Constellations[I]);
+    Constellation := Constellations[I];
     Constellation.OutlineGrowthStepsRemaining := Steps;
   end;
   Pass := -1;
   repeat
     for I := 0 to Constellations.Count - 1 do begin
-      Constellation := TConstellation(Constellations[I]);
+      Constellation := Constellations[I];
       if Cardinal(Constellation.OutlineGrowthStepsRemaining) > 0 then begin
         for J := 0 to Constellation.BoundaryRaySamples.Count - 1 do begin
           Sample := Constellation.BoundaryRaySamples[J];
@@ -6188,13 +6198,13 @@ begin
     Inc(Pass);
   until Pass >= Steps;
   for I := 0 to Constellations.Count - 1 do begin
-    Constellation := TConstellation(Constellations[I]);
+    Constellation := Constellations[I];
     Constellation.SetOutlinePolygon(WorkingPolygon.ExtractFollowingGroup(I));
   end;
   for I := 0 to Constellations.Count - 1 do begin
-    Constellation := TConstellation(Constellations[I]);
+    Constellation := Constellations[I];
     for J := I + 1 to Constellations.Count - 1 do begin
-      Other := TConstellation(Constellations[J]);
+      Other := Constellations[J];
       if Constellation.SharesOutlineSegment(Other) then begin
         Constellation.AddAdjacentConstellation(Other);
         Other.AddAdjacentConstellation(Constellation);
@@ -6202,9 +6212,9 @@ begin
     end;
   end;
 end;
-{ @end $7B330C }
+{ @end $7E3D50 }
 
-{ @routine $7B36A8 TGalaxy_GenerateGalaxyLayout }
+{ @routine $7E40B4 TGalaxy_GenerateGalaxyLayout }
 procedure TGalaxy.GenerateGalaxyLayout(PlayerRace: TOwnerId);
 var I, J, UnusedIndex, K, FirstIndex, SecondIndex, N, Attempts: Integer;
   Star, OtherStar, SecondStar: TStar; InvalidLayout: Boolean;
@@ -6218,11 +6228,12 @@ var I, J, UnusedIndex, K, FirstIndex, SecondIndex, N, Attempts: Integer;
   // Native unused scalar locals remain explicit; their original purposes are unknown.
   Reserved4A, Reserved4B, Reserved4C: Integer; RaceOrder: array[0..7] of 0..7;
   CoalitionPositions: array[0..4] of Byte;
+  // Unused tail storage; original types are unknown.
   Reserved5_0, Reserved5_1, Reserved5_2, Reserved5_3, Reserved5_4, Reserved5_5: Integer;
   Reserved5_6, Reserved5_7, Reserved5_8, Reserved5_9, Reserved5_10, Reserved5_11: Integer;
   Reserved5_12, Reserved5_13, Reserved5_14, Reserved5_15, Reserved5_16, Reserved5_17: Integer;
   Reserved5_18, Reserved5_19, Reserved5_20, Reserved5_21, Reserved5_22, Reserved5_23: Integer;
-  Reserved5_24, Reserved5_25, Reserved5_26, Reserved5_27, Reserved5_28, Reserved5_29: Integer;
+  Reserved5_24, Reserved5_25, Reserved5_26, Reserved5_27, Reserved5_28: Integer;
   Bounds: TRect;
 begin
   System.RandSeed := aGalaxy.Galaxy.GenerationSeed;
@@ -6274,51 +6285,51 @@ begin
       RaceOrder[K] := Attempts;
       Inc(N);
     until (N > 3) and (Ord(PlayerRace) = RaceOrder[HumanPosition]);
-    Constellation := TConstellation(Constellations[RaceOrder[0]]);
+    Constellation := Constellations[RaceOrder[0]];
     Constellation.ResetGeneratedMapShape;
     Constellation.MapCenter.X := RandomIntRange(0, 2) + (MinimumConstellationDistance * 0.6);
     Constellation.MapCenter.Y := RandomIntRange(0, 2) + (MinimumConstellationDistance * 0.6);
-    Constellation := TConstellation(Constellations[RaceOrder[1]]);
+    Constellation := Constellations[RaceOrder[1]];
     Constellation.ResetGeneratedMapShape;
     Constellation.MapCenter.X := RandomIntRange(0, 2) + (GalaxySizeX / 2 - 1);
     Constellation.MapCenter.Y := RandomIntRange(0, 2) + (MinimumConstellationDistance * 0.6);
-    Constellation := TConstellation(Constellations[RaceOrder[2]]);
+    Constellation := Constellations[RaceOrder[2]];
     Constellation.ResetGeneratedMapShape;
     Constellation.MapCenter.X := RandomIntRange(0, 2) + (GalaxySizeX - MinimumConstellationDistance * 0.6 - 2);
     Constellation.MapCenter.Y := RandomIntRange(0, 2) + (MinimumConstellationDistance * 0.6);
-    Constellation := TConstellation(Constellations[RaceOrder[3]]);
+    Constellation := Constellations[RaceOrder[3]];
     Constellation.ResetGeneratedMapShape;
     Constellation.MapCenter.X := RandomIntRange(0, 2) + (GalaxySizeX - MinimumConstellationDistance * 0.4 - 2);
     Constellation.MapCenter.Y := RandomIntRange(0, 2) + (GalaxySizeY / 2 - 1);
-    Constellation := TConstellation(Constellations[RaceOrder[4]]);
+    Constellation := Constellations[RaceOrder[4]];
     Constellation.ResetGeneratedMapShape;
     Constellation.MapCenter.X := RandomIntRange(0, 2) + (GalaxySizeX - MinimumConstellationDistance * 0.6 - 2);
     Constellation.MapCenter.Y := RandomIntRange(0, 2) + (GalaxySizeY - MinimumConstellationDistance * 0.6 - 2);
-    Constellation := TConstellation(Constellations[RaceOrder[5]]);
+    Constellation := Constellations[RaceOrder[5]];
     Constellation.ResetGeneratedMapShape;
     Constellation.MapCenter.X := RandomIntRange(0, 2) + (GalaxySizeX / 2 - 1);
     Constellation.MapCenter.Y := RandomIntRange(0, 2) + (GalaxySizeY - MinimumConstellationDistance * 0.6 - 2);
-    Constellation := TConstellation(Constellations[RaceOrder[6]]);
+    Constellation := Constellations[RaceOrder[6]];
     Constellation.ResetGeneratedMapShape;
     Constellation.MapCenter.X := RandomIntRange(0, 2) + (MinimumConstellationDistance * 0.6);
     Constellation.MapCenter.Y := RandomIntRange(0, 2) + (GalaxySizeY - MinimumConstellationDistance * 0.6 - 2);
-    Constellation := TConstellation(Constellations[RaceOrder[7]]);
+    Constellation := Constellations[RaceOrder[7]];
     Constellation.ResetGeneratedMapShape;
     Constellation.MapCenter.X := RandomIntRange(0, 2) + (MinimumConstellationDistance * 0.6);
     Constellation.MapCenter.Y := RandomIntRange(0, 2) + (GalaxySizeY / 2 - 1);
     for I := 0 to 7 do if Integer(RaceOrder[I]) = Integer(PlayerRace) then Break;
-    OtherConstellation := TConstellation(Constellations[RaceOrder[I]]);
+    OtherConstellation := Constellations[RaceOrder[I]];
     if OtherConstellation.MapCenter.X < GalaxySizeX * 0.15 then K := 1 else K := -1;
     if OtherConstellation.MapCenter.Y < GalaxySizeY * 0.2 then Attempts := 1 else Attempts := -1;
     if Attempts = 1 then OtherConstellation := TConstellation(Constellations[RaceOrder[1]])
-    else OtherConstellation := TConstellation(Constellations[RaceOrder[5]]);
-    Constellation := TConstellation(Constellations[Constellations.Count - 1]);
+    else OtherConstellation := Constellations[RaceOrder[5]];
+    Constellation := Constellations[Constellations.Count - 1];
     Constellation.MapCenter := OtherConstellation.MapCenter;
     Constellation.MapCenter.X := Constellation.MapCenter.X + 6 * K;
     Constellation.MapCenter.Y := Constellation.MapCenter.Y - 4 * Attempts;
     OtherConstellation.MapCenter.X := OtherConstellation.MapCenter.X - 4 * K;
     for I := 8 to Constellations.Count - 2 do begin
-      Constellation := TConstellation(Constellations[I]);
+      Constellation := Constellations[I];
       Constellation.ResetGeneratedMapShape;
       Constellation.MapCenter.X := 0;
       Constellation.MapCenter.Y := 0;
@@ -6335,7 +6346,7 @@ begin
         Occupied := False;
         for K := 0 to I do begin
           if K = I then OtherConstellation := TConstellation(Constellations[Constellations.Count - 1])
-          else OtherConstellation := TConstellation(Constellations[K]);
+          else OtherConstellation := Constellations[K];
           if WorkingPolygon.FindContainingPolygon(Constellation.MapCenter) =
             WorkingPolygon.FindContainingPolygon(OtherConstellation.MapCenter) then begin
             Occupied := True;
@@ -6346,7 +6357,7 @@ begin
         NearestDistance := Max(GalaxySizeX, GalaxySizeY);
         for K := 0 to I do begin
           if K = I then OtherConstellation := TConstellation(Constellations[Constellations.Count - 1])
-          else OtherConstellation := TConstellation(Constellations[K]);
+          else OtherConstellation := Constellations[K];
           Distance := Round(PointDistance(Constellation.MapCenter, OtherConstellation.MapCenter));
           if Distance < NearestDistance then NearestDistance := Distance;
         end;
@@ -6357,7 +6368,7 @@ begin
     WorkingPolygon.Free;
     InvalidLayout := False;
     for I := 0 to Constellations.Count - 1 do begin
-      Constellation := TConstellation(Constellations[I]);
+      Constellation := Constellations[I];
       Constellation.NormalizeOutlineSegmentOrder;
     end;
     BuildConstellationOutlineJunctions;
@@ -6365,7 +6376,7 @@ begin
     TotalLinks := 0;
     AxisLinks := 0;
     for I := 0 to Constellations.Count - 1 do begin
-      Constellation := TConstellation(Constellations[I]);
+      Constellation := Constellations[I];
       if (Constellation.OutlinePolygons.GetChainArea < MinimumArea) or
         (Constellation.OutlinePolygons.GetChainArea > MaximumArea) then begin
         InvalidLayout := True;
@@ -6393,16 +6404,16 @@ begin
   GenerationAttempts := 0;
   repeat
     for I := 0 to Constellations.Count - 1 do begin
-      Constellation := TConstellation(Constellations[I]);
+      Constellation := Constellations[I];
       Constellation.ClearStars;
     end;
     for I := 0 to aGalaxy.Galaxy.Stars.Count - 1 do begin
-      Star := TStar(aGalaxy.Galaxy.Stars[I]);
+      Star := aGalaxy.Galaxy.Stars[I];
       Star.Position.X := 0;
       Star.Position.Y := 0;
     end;
     for I := 0 to aGalaxy.Galaxy.Stars.Count - 1 do begin
-      Star := TStar(aGalaxy.Galaxy.Stars[I]);
+      Star := aGalaxy.Galaxy.Stars[I];
       if (I = 70) or (I = 71) then ConstellationIndex := Constellations.Count - 1
       else begin
         if I < 65 then ConstellationIndex := I mod 18
@@ -6414,7 +6425,7 @@ begin
           BestAreaPerStar := 0;
           for K := 0 to Constellations.Count - 2 do
             if (I < 65) or (K >= 8) then begin
-              Constellation := TConstellation(Constellations[K]);
+              Constellation := Constellations[K];
               if Constellation.Stars.Count = 0 then AreaPerStar := Constellation.GetOutlineArea * 2
               else AreaPerStar := Constellation.GetOutlineArea / Constellation.Stars.Count;
               if AreaPerStar > BestAreaPerStar then begin
@@ -6424,7 +6435,7 @@ begin
             end;
         end;
       end;
-      Constellation := TConstellation(Constellations[ConstellationIndex]);
+      Constellation := Constellations[ConstellationIndex];
       Constellation.AddStar(Star);
       Bounds := Constellation.OutlineBounds;
       BoundsSize := Constellation.OutlineBoundsSize;
@@ -6432,7 +6443,6 @@ begin
       FuelRange := CalculateGeneratedFuelCapacity(Round(FuelTanksBaseSize * EquipmentSizeFactors[5]), 1);
       Attempts := 0;
       while True do begin
-        // Separate tests release the conversion temporary between the X/Y bounds.
         while True do begin
           Star.Position.X := Bounds.Left + RandomIntRange(0, Round(BoundsSize.X * 1.0) - 1) + BoundsSize.X * 0.0;
           Star.Position.Y := Bounds.Top + RandomIntRange(0, Round(BoundsSize.Y * 1.0) - 1) + BoundsSize.Y * 0.0;
@@ -6447,7 +6457,7 @@ begin
         if Constellation.IsPointNearOutline(Star.Position) then Continue;
         NearestDistance := MaxInt;
         for K := 0 to I - 1 do begin
-          OtherStar := TStar(aGalaxy.Galaxy.Stars[K]);
+          OtherStar := aGalaxy.Galaxy.Stars[K];
           Distance := Round(PointDistance(Star.Position, OtherStar.Position));
           if NearestDistance > Distance then NearestDistance := Distance;
         end;
@@ -6462,17 +6472,18 @@ begin
     FuelRange := CalculateGeneratedFuelCapacity(Round(FuelTanksBaseSize * EquipmentSizeFactors[5]), 1);
     N := 0;
     for FirstIndex := 0 to aGalaxy.Galaxy.Stars.Count - 1 do begin
-      OtherStar := TStar(aGalaxy.Galaxy.Stars[FirstIndex]);
+      OtherStar := aGalaxy.Galaxy.Stars[FirstIndex];
       for SecondIndex := 0 to aGalaxy.Galaxy.Stars.Count - 1 do begin
-        SecondStar := TStar(aGalaxy.Galaxy.Stars[SecondIndex]);
+        SecondStar := aGalaxy.Galaxy.Stars[SecondIndex];
         if (FirstIndex <> SecondIndex) and (Abs(OtherStar.Position.X - SecondStar.Position.X) < 7.0) and
           (Abs(OtherStar.Position.Y - SecondStar.Position.Y) < 2.0) then begin
           InvalidLayout := True;
           Break;
         end;
         Distance := Round(PointDistance(OtherStar.Position, SecondStar.Position));
-        if (Distance <= FuelRange) and ((Reached[FirstIndex] and not Reached[SecondIndex]) or
-          (Reached[SecondIndex] and not Reached[FirstIndex])) then begin
+        if Distance <= FuelRange then
+          if (Reached[FirstIndex] and not Reached[SecondIndex]) or
+            (Reached[SecondIndex] and not Reached[FirstIndex]) then begin
           Reached[FirstIndex] := True;
           Reached[SecondIndex] := True;
           Inc(N);
@@ -6488,9 +6499,9 @@ begin
   until (GenerationAttempts > 50) or not InvalidLayout;
   SetLength(Reached, 0);
 end;
-{ @end $7B36A8 }
+{ @end $7E40B4 }
 
-{ @routine $7B4E44 TGalaxy_HideSpecialConstellation }
+{ @routine $7E5668 TGalaxy_HideSpecialConstellation }
 procedure TGalaxy.HideSpecialConstellation;
 var I, J, K, SegmentIndex, EarIndex, LastIndex, Reserved20, MiddleIndex: Integer;
   Star: TStar; Reserved2C, Reserved30: Integer; ReservedFlag, ContainsStar: Boolean;
@@ -6505,9 +6516,9 @@ var I, J, K, SegmentIndex, EarIndex, LastIndex, Reserved20, MiddleIndex: Integer
   MidX, MidY: Single; ReservedF4: Integer; AX, BX, CX, AY, BY, CY: Single;
   MaxX, MinX, MaxY, MinY, NewX, NewY, IntersectionX, Determinant: Single;
   Reserved130: Integer; Point: PPointF; SwapList: Pointer; Flag: Byte;
-  UnusedLocalBytes: array[0..15] of Byte; // Native gap before backend temporaries.
-  // @nested $7B4D48 PointInsideTriangle
-  function PointInsideTriangle(PointX, PointY, AX, AY, BX, BY, CX, CY: Single): Boolean; // @addr 0x7B4D48 @ida "bool __usercall $name@<al>(float PointX@<^28>, float PointY@<^24>, float AX@<^20>, float AY@<^16>, float BX@<^12>, float BY@<^8>, float CX@<^4>, float CY@<^0>, void *ParentFrame@<^32>);" @stackpop 0x20 @calls "0x7B5DBF 0x7B6159 0x7B6379 0x7B6717 0x7B6787 0x7B69BD" @note "Strict interior only; excludes edges and degenerate triangles. The caller-popped static link is unused."
+  UnusedLocalBytes: array[0..15] of Byte;
+  // @nested $7E5574 PointInsideTriangle
+  function PointInsideTriangle(PointX, PointY, AX, AY, BX, BY, CX, CY: Single): Boolean; // @addr 0x007E5574 @calls "0x007E669A,0x007E6A42,0x007E6C31,0x007E6FDD,0x007E7049,0x007E724A" @ida "bool __usercall $name@<al>(float PointX@<^28>, float PointY@<^24>, float AX@<^20>, float AY@<^16>, float BX@<^12>, float BY@<^8>, float CX@<^4>, float CY@<^0>, void *ParentFrame@<^32>);" @stackpop 0x20 @note "Strict interior only; excludes edges and degenerate triangles. The caller-popped static link is unused."
   begin
     Result := False;
     if (((BX - AX) * (BY - CY) - (BY - AY) * (BX - CX)) *
@@ -6527,14 +6538,14 @@ begin
   BestY := nil;
   Hidden := aGalaxy.Galaxy.IdToConstellation(20);
   for I := 0 to Constellations.Count - 1 do begin
-    Current := TConstellation(Constellations[I]);
-    if Current <> Hidden then
-      for SegmentIndex := 0 to Hidden.OutlineSegments.Count - 1 do
-        if Current.HasOutlineSegment(PMapLineSegment(Hidden.OutlineSegments[SegmentIndex]).StartPoint,
-          PMapLineSegment(Hidden.OutlineSegments[SegmentIndex]).EndPoint) then begin
-          Neighbors.Add(Current);
-          Break;
-        end;
+    Current := Constellations[I];
+    if Current = Hidden then Continue;
+    for SegmentIndex := 0 to Hidden.OutlineSegments.Count - 1 do
+      if Current.HasOutlineSegment(PMapLineSegment(Hidden.OutlineSegments[SegmentIndex]).StartPoint,
+        PMapLineSegment(Hidden.OutlineSegments[SegmentIndex]).EndPoint) then begin
+        Neighbors.Add(Current);
+        Break;
+      end;
   end;
   BestScore := -1;
   Candidate := nil;
@@ -6543,13 +6554,14 @@ begin
     XList.Clear;
     YList.Clear;
     for SegmentIndex := 0 to Hidden.OutlineSegments.Count - 1 do
-      if Current.HasOutlineSegment(PMapLineSegment(Hidden.OutlineSegments[SegmentIndex]).StartPoint,
-        PMapLineSegment(Hidden.OutlineSegments[SegmentIndex]).EndPoint) then begin
-        XList.Add(Pointer(PMapLineSegment(Hidden.OutlineSegments[SegmentIndex]).StartPoint.X));
-        YList.Add(Pointer(PMapLineSegment(Hidden.OutlineSegments[SegmentIndex]).StartPoint.Y));
-        XList.Add(Pointer(PMapLineSegment(Hidden.OutlineSegments[SegmentIndex]).EndPoint.X));
-        YList.Add(Pointer(PMapLineSegment(Hidden.OutlineSegments[SegmentIndex]).EndPoint.Y));
-      end;
+    begin
+      if not (Current.HasOutlineSegment(PMapLineSegment(Hidden.OutlineSegments[SegmentIndex]).StartPoint,
+        PMapLineSegment(Hidden.OutlineSegments[SegmentIndex]).EndPoint)) then Continue;
+      XList.Add(Pointer(PMapLineSegment(Hidden.OutlineSegments[SegmentIndex]).StartPoint.X));
+      YList.Add(Pointer(PMapLineSegment(Hidden.OutlineSegments[SegmentIndex]).StartPoint.Y));
+      XList.Add(Pointer(PMapLineSegment(Hidden.OutlineSegments[SegmentIndex]).EndPoint.X));
+      YList.Add(Pointer(PMapLineSegment(Hidden.OutlineSegments[SegmentIndex]).EndPoint.Y));
+    end;
     MaxX := Single(XList[0]);
     MinX := Single(XList[0]);
     MaxY := Single(YList[0]);
@@ -6574,46 +6586,48 @@ begin
     while True do begin
       MiddleIndex := XList.Count;
       for SegmentIndex := 0 to Hidden.OutlineSegments.Count - 1 do
-        if not Current.HasOutlineSegment(PMapLineSegment(Hidden.OutlineSegments[SegmentIndex]).StartPoint,
-          PMapLineSegment(Hidden.OutlineSegments[SegmentIndex]).EndPoint) then begin
-          if ((PMapLineSegment(Hidden.OutlineSegments[SegmentIndex]).StartPoint.X = Single(XList[XList.Count - 1])) and
+      begin
+        if Current.HasOutlineSegment(PMapLineSegment(Hidden.OutlineSegments[SegmentIndex]).StartPoint,
+          PMapLineSegment(Hidden.OutlineSegments[SegmentIndex]).EndPoint) then Continue;
+        if ((PMapLineSegment(Hidden.OutlineSegments[SegmentIndex]).StartPoint.X = Single(XList[XList.Count - 1])) and
           (PMapLineSegment(Hidden.OutlineSegments[SegmentIndex]).StartPoint.Y = Single(YList[XList.Count - 1]))) and not
-            ((PMapLineSegment(Hidden.OutlineSegments[SegmentIndex]).EndPoint.X = Single(XList[XList.Count - 2])) and
+          ((PMapLineSegment(Hidden.OutlineSegments[SegmentIndex]).EndPoint.X = Single(XList[XList.Count - 2])) and
           (PMapLineSegment(Hidden.OutlineSegments[SegmentIndex]).EndPoint.Y = Single(YList[XList.Count - 2]))) then begin
-            XList.Add(Pointer(PMapLineSegment(Hidden.OutlineSegments[SegmentIndex]).EndPoint.X));
-            YList.Add(Pointer(PMapLineSegment(Hidden.OutlineSegments[SegmentIndex]).EndPoint.Y));
-          end else if ((PMapLineSegment(Hidden.OutlineSegments[SegmentIndex]).EndPoint.X = Single(XList[XList.Count - 1])) and
+          XList.Add(Pointer(PMapLineSegment(Hidden.OutlineSegments[SegmentIndex]).EndPoint.X));
+          YList.Add(Pointer(PMapLineSegment(Hidden.OutlineSegments[SegmentIndex]).EndPoint.Y));
+        end else if ((PMapLineSegment(Hidden.OutlineSegments[SegmentIndex]).EndPoint.X = Single(XList[XList.Count - 1])) and
           (PMapLineSegment(Hidden.OutlineSegments[SegmentIndex]).EndPoint.Y = Single(YList[XList.Count - 1]))) and not
-            ((PMapLineSegment(Hidden.OutlineSegments[SegmentIndex]).StartPoint.X = Single(XList[XList.Count - 2])) and
+          ((PMapLineSegment(Hidden.OutlineSegments[SegmentIndex]).StartPoint.X = Single(XList[XList.Count - 2])) and
           (PMapLineSegment(Hidden.OutlineSegments[SegmentIndex]).StartPoint.Y = Single(YList[XList.Count - 2]))) then begin
-            XList.Add(Pointer(PMapLineSegment(Hidden.OutlineSegments[SegmentIndex]).StartPoint.X));
-            YList.Add(Pointer(PMapLineSegment(Hidden.OutlineSegments[SegmentIndex]).StartPoint.Y));
-          end;
-          if (XList[XList.Count - 1] = XList[0]) and (YList[YList.Count - 1] = YList[0]) then Break;
+          XList.Add(Pointer(PMapLineSegment(Hidden.OutlineSegments[SegmentIndex]).StartPoint.X));
+          YList.Add(Pointer(PMapLineSegment(Hidden.OutlineSegments[SegmentIndex]).StartPoint.Y));
         end;
+        if (XList[XList.Count - 1] = XList[0]) and (YList[YList.Count - 1] = YList[0]) then Break;
+      end;
       if (XList[XList.Count - 1] = XList[0]) and (YList[YList.Count - 1] = YList[0]) then begin
         XList.Delete(XList.Count - 1);
         YList.Delete(YList.Count - 1);
         Break;
       end;
       for SegmentIndex := 0 to Current.OutlineSegments.Count - 1 do
-        if not Hidden.HasOutlineSegment(PMapLineSegment(Current.OutlineSegments[SegmentIndex]).StartPoint,
-          PMapLineSegment(Current.OutlineSegments[SegmentIndex]).EndPoint) then begin
-          if ((PMapLineSegment(Current.OutlineSegments[SegmentIndex]).StartPoint.X = Single(XList[XList.Count - 1])) and
+      begin
+        if Hidden.HasOutlineSegment(PMapLineSegment(Current.OutlineSegments[SegmentIndex]).StartPoint,
+          PMapLineSegment(Current.OutlineSegments[SegmentIndex]).EndPoint) then Continue;
+        if ((PMapLineSegment(Current.OutlineSegments[SegmentIndex]).StartPoint.X = Single(XList[XList.Count - 1])) and
           (PMapLineSegment(Current.OutlineSegments[SegmentIndex]).StartPoint.Y = Single(YList[XList.Count - 1]))) and not
-            ((PMapLineSegment(Current.OutlineSegments[SegmentIndex]).EndPoint.X = Single(XList[XList.Count - 2])) and
+          ((PMapLineSegment(Current.OutlineSegments[SegmentIndex]).EndPoint.X = Single(XList[XList.Count - 2])) and
           (PMapLineSegment(Current.OutlineSegments[SegmentIndex]).EndPoint.Y = Single(YList[XList.Count - 2]))) then begin
-            XList.Add(Pointer(PMapLineSegment(Current.OutlineSegments[SegmentIndex]).EndPoint.X));
-            YList.Add(Pointer(PMapLineSegment(Current.OutlineSegments[SegmentIndex]).EndPoint.Y));
-          end else if ((PMapLineSegment(Current.OutlineSegments[SegmentIndex]).EndPoint.X = Single(XList[XList.Count - 1])) and
+          XList.Add(Pointer(PMapLineSegment(Current.OutlineSegments[SegmentIndex]).EndPoint.X));
+          YList.Add(Pointer(PMapLineSegment(Current.OutlineSegments[SegmentIndex]).EndPoint.Y));
+        end else if ((PMapLineSegment(Current.OutlineSegments[SegmentIndex]).EndPoint.X = Single(XList[XList.Count - 1])) and
           (PMapLineSegment(Current.OutlineSegments[SegmentIndex]).EndPoint.Y = Single(YList[XList.Count - 1]))) and not
-            ((PMapLineSegment(Current.OutlineSegments[SegmentIndex]).StartPoint.X = Single(XList[XList.Count - 2])) and
+          ((PMapLineSegment(Current.OutlineSegments[SegmentIndex]).StartPoint.X = Single(XList[XList.Count - 2])) and
           (PMapLineSegment(Current.OutlineSegments[SegmentIndex]).StartPoint.Y = Single(YList[XList.Count - 2]))) then begin
-            XList.Add(Pointer(PMapLineSegment(Current.OutlineSegments[SegmentIndex]).StartPoint.X));
-            YList.Add(Pointer(PMapLineSegment(Current.OutlineSegments[SegmentIndex]).StartPoint.Y));
-          end;
-          if (XList[XList.Count - 1] = XList[0]) and (YList[YList.Count - 1] = YList[0]) then Break;
+          XList.Add(Pointer(PMapLineSegment(Current.OutlineSegments[SegmentIndex]).StartPoint.X));
+          YList.Add(Pointer(PMapLineSegment(Current.OutlineSegments[SegmentIndex]).StartPoint.Y));
         end;
+        if (XList[XList.Count - 1] = XList[0]) and (YList[YList.Count - 1] = YList[0]) then Break;
+      end;
       if (XList[XList.Count - 1] = XList[0]) and (YList[YList.Count - 1] = YList[0]) then begin
         XList.Delete(XList.Count - 1);
         YList.Delete(YList.Count - 1);
@@ -6643,19 +6657,19 @@ begin
         CY := Single(WorkY[MiddleIndex]);
         Flag := 0;
         for J := 0 to WorkX.Count - 1 do
-          if (J <> EarIndex) and (J <> LastIndex) and (J <> MiddleIndex) then begin
-            if PointInsideTriangle(Single(WorkX[J]), Single(WorkY[J]), AX, AY, BX, BY, CX, CY) then Flag := 1;
-            if Flag = 1 then Break;
-          end;
+        begin
+          if not ((J <> EarIndex) and (J <> LastIndex) and (J <> MiddleIndex)) then Continue;
+          if PointInsideTriangle(Single(WorkX[J]), Single(WorkY[J]), AX, AY, BX, BY, CX, CY) then Flag := 1;
+          if Flag = 1 then Break;
+        end;
         if Flag = 1 then Continue;
         CrossEar := (BX - AX) * (BY - CY) - (BY - AY) * (BX - CX);
         CrossMid := (BX - AX) * (BY - MidY) - (BY - AY) * (BX - MidX);
-        if (CrossEar * CrossMid <= 0) or (WorkX.Count = 3) then begin
-          FullArea := FullArea + Abs(CrossEar * 0.5);
-          WorkX.Delete(MiddleIndex);
-          WorkY.Delete(MiddleIndex);
-          Break;
-        end;
+        if not ((CrossEar * CrossMid <= 0) or (WorkX.Count = 3)) then Continue;
+        FullArea := FullArea + Abs(CrossEar * 0.5);
+        WorkX.Delete(MiddleIndex);
+        WorkY.Delete(MiddleIndex);
+        Break;
       end;
     WorkX.Clear;
     WorkY.Clear;
@@ -6679,12 +6693,11 @@ begin
         CY := Single(WorkY[MiddleIndex]);
         CrossEar := (BX - AX) * (BY - CY) - (BY - AY) * (BX - CX);
         CrossMid := (BX - AX) * (BY - MidY) - (BY - AY) * (BX - MidX);
-        if (CrossEar * CrossMid >= 0) and not PointInsideTriangle(MidX, MidY, AX, AY, BX, BY, CX, CY) then begin
-          WorkX.Delete(MiddleIndex);
-          WorkY.Delete(MiddleIndex);
-          Flag := 1;
-          Break;
-        end;
+        if not ((CrossEar * CrossMid >= 0) and not PointInsideTriangle(MidX, MidY, AX, AY, BX, BY, CX, CY)) then Continue;
+        WorkX.Delete(MiddleIndex);
+        WorkY.Delete(MiddleIndex);
+        Flag := 1;
+        Break;
       end;
       if Flag <> 0 then Break;
     end;
@@ -6702,19 +6715,19 @@ begin
         CY := Single(WorkY[MiddleIndex]);
         Flag := 0;
         for J := 0 to WorkX.Count - 1 do
-          if (J <> EarIndex) and (J <> LastIndex) and (J <> MiddleIndex) then begin
-            if PointInsideTriangle(Single(WorkX[J]), Single(WorkY[J]), AX, AY, BX, BY, CX, CY) then Flag := 1;
-            if Flag = 1 then Break;
-          end;
+        begin
+          if not ((J <> EarIndex) and (J <> LastIndex) and (J <> MiddleIndex)) then Continue;
+          if PointInsideTriangle(Single(WorkX[J]), Single(WorkY[J]), AX, AY, BX, BY, CX, CY) then Flag := 1;
+          if Flag = 1 then Break;
+        end;
         if Flag = 1 then Continue;
         CrossEar := (BX - AX) * (BY - CY) - (BY - AY) * (BX - CX);
         CrossMid := (BX - AX) * (BY - MidY) - (BY - AY) * (BX - MidX);
-        if (CrossEar * CrossMid <= 0) or (WorkX.Count = 3) then begin
-          AreaAfterUnrestrictedTrim := AreaAfterUnrestrictedTrim + Abs(CrossEar * 0.5);
-          WorkX.Delete(MiddleIndex);
-          WorkY.Delete(MiddleIndex);
-          Break;
-        end;
+        if not ((CrossEar * CrossMid <= 0) or (WorkX.Count = 3)) then Continue;
+        AreaAfterUnrestrictedTrim := AreaAfterUnrestrictedTrim + Abs(CrossEar * 0.5);
+        WorkX.Delete(MiddleIndex);
+        WorkY.Delete(MiddleIndex);
+        Break;
       end;
     WorkX.Clear;
     WorkY.Clear;
@@ -6738,19 +6751,18 @@ begin
         CY := Single(WorkY[MiddleIndex]);
         CrossEar := (BX - AX) * (BY - CY) - (BY - AY) * (BX - CX);
         CrossMid := (BX - AX) * (BY - MidY) - (BY - AY) * (BX - MidX);
-        if (CrossEar * CrossMid >= 0) and not PointInsideTriangle(MidX, MidY, AX, AY, BX, BY, CX, CY) then begin
-          ContainsStar := False;
-          for J := 0 to Stars.Count - 1 do begin
-            Star := TStar(Stars[J]);
-            ContainsStar := PointInsideTriangle(Star.Position.X, Star.Position.Y, AX, AY, BX, BY, CX, CY);
-            if ContainsStar then Break;
-          end;
-          if ContainsStar then Continue;
-          WorkX.Delete(MiddleIndex);
-          WorkY.Delete(MiddleIndex);
-          Flag := 1;
-          Break;
+        if not ((CrossEar * CrossMid >= 0) and not PointInsideTriangle(MidX, MidY, AX, AY, BX, BY, CX, CY)) then Continue;
+        ContainsStar := False;
+        for J := 0 to Stars.Count - 1 do begin
+          Star := Stars[J];
+          ContainsStar := PointInsideTriangle(Star.Position.X, Star.Position.Y, AX, AY, BX, BY, CX, CY);
+          if ContainsStar then Break;
         end;
+        if ContainsStar then Continue;
+        WorkX.Delete(MiddleIndex);
+        WorkY.Delete(MiddleIndex);
+        Flag := 1;
+        Break;
       end;
       if Flag <> 0 then Break;
     end;
@@ -6768,35 +6780,34 @@ begin
         CY := Single(WorkY[MiddleIndex]);
         Flag := 0;
         for J := 0 to WorkX.Count - 1 do
-          if (J <> EarIndex) and (J <> LastIndex) and (J <> MiddleIndex) then begin
-            if PointInsideTriangle(Single(WorkX[J]), Single(WorkY[J]), AX, AY, BX, BY, CX, CY) then Flag := 1;
-            if Flag = 1 then Break;
-          end;
+        begin
+          if not ((J <> EarIndex) and (J <> LastIndex) and (J <> MiddleIndex)) then Continue;
+          if PointInsideTriangle(Single(WorkX[J]), Single(WorkY[J]), AX, AY, BX, BY, CX, CY) then Flag := 1;
+          if Flag = 1 then Break;
+        end;
         if Flag = 1 then Continue;
         CrossEar := (BX - AX) * (BY - CY) - (BY - AY) * (BX - CX);
         CrossMid := (BX - AX) * (BY - MidY) - (BY - AY) * (BX - MidX);
-        if (CrossEar * CrossMid <= 0) or (WorkX.Count = 3) then begin
-          AreaAfterStarSafeTrim := AreaAfterStarSafeTrim + Abs(CrossEar * 0.5);
-          WorkX.Delete(MiddleIndex);
-          WorkY.Delete(MiddleIndex);
-          Break;
-        end;
+        if not ((CrossEar * CrossMid <= 0) or (WorkX.Count = 3)) then Continue;
+        AreaAfterStarSafeTrim := AreaAfterStarSafeTrim + Abs(CrossEar * 0.5);
+        WorkX.Delete(MiddleIndex);
+        WorkY.Delete(MiddleIndex);
+        Break;
       end;
     WorkX.Clear;
     WorkY.Clear;
     WorkX.Free;
     WorkY.Free;
     Score := ((AreaAfterUnrestrictedTrim - AreaAfterStarSafeTrim) * 0.5 + (AreaAfterStarSafeTrim - FullArea)) / FullArea;
-    if (Score < BestScore) or (BestScore < 0) then begin
-      BestScore := Score;
-      Candidate := Current;
-      if BestX <> nil then BestX.Free;
-      if BestY <> nil then BestY.Free;
-      BestX := XList;
-      BestY := YList;
-      XList := TList.Create;
-      YList := TList.Create;
-    end;
+    if not ((Score < BestScore) or (BestScore < 0)) then Continue;
+    BestScore := Score;
+    Candidate := Current;
+    if BestX <> nil then BestX.Free;
+    if BestY <> nil then BestY.Free;
+    BestX := XList;
+    BestY := YList;
+    XList := TList.Create;
+    YList := TList.Create;
   end;
   Current := Candidate;
   for EarIndex := 0 to BestX.Count - 1 do begin
@@ -6811,91 +6822,91 @@ begin
     BY := Single(BestY[LastIndex]);
     CY := Single(BestY[MiddleIndex]);
     CrossEar := (BX - AX) * (BY - CY) - (BY - AY) * (BX - CX);
-    if CrossEar <> 0 then
-      for I := 0 to Constellations.Count - 1 do begin
-        ContainsStar := False;
-        Candidate := TConstellation(Constellations[I]);
-        if (Candidate <> Current) and (Candidate <> Hidden) and
-          Candidate.HasOutlineVertex(MakePointF(AX, AY)) and
-          Candidate.HasOutlineVertex(MakePointF(BX, BY)) and
-          Candidate.HasOutlineVertex(MakePointF(CX, CY)) then begin
-          for J := 0 to Stars.Count - 1 do begin
-            Star := TStar(Stars[J]);
-            if (((BX - AX) * (BY - CY) - (BY - AY) * (BX - CX)) *
-              ((BX - AX) * (BY - Star.Position.Y) - (BY - AY) * (BX - Star.Position.X)) >= 0) and
-              (((CX - BX) * (CY - AY) - (CY - BY) * (CX - AX)) *
-              ((CX - BX) * (CY - Star.Position.Y) - (CY - BY) * (CX - Star.Position.X)) >= 0) and
-              (((AX - CX) * (AY - BY) - (AY - CY) * (AX - BX)) *
-              ((AX - CX) * (AY - Star.Position.Y) - (AY - CY) * (AX - Star.Position.X)) >= 0) then ContainsStar := True;
-          end;
-          if ContainsStar then Continue;
-          NewX := AX - (BY - CY);
-          NewY := AY + (BX - CX);
-          for J := 0 to Hidden.OutlineSegments.Count - 1 do begin
-            if (PMapLineSegment(Hidden.OutlineSegments[J]).StartPoint.X = AX) and
-              (PMapLineSegment(Hidden.OutlineSegments[J]).StartPoint.Y = AY) then Continue;
-            if (PMapLineSegment(Hidden.OutlineSegments[J]).StartPoint.X = BX) and
-              (PMapLineSegment(Hidden.OutlineSegments[J]).StartPoint.Y = BY) then Continue;
-            if (PMapLineSegment(Hidden.OutlineSegments[J]).EndPoint.X = AX) and
-              (PMapLineSegment(Hidden.OutlineSegments[J]).EndPoint.Y = AY) then Continue;
-            if (PMapLineSegment(Hidden.OutlineSegments[J]).EndPoint.X = BX) and
-              (PMapLineSegment(Hidden.OutlineSegments[J]).EndPoint.Y = BY) then Continue;
-            if (PMapLineSegment(Hidden.OutlineSegments[J]).StartPoint.X = CX) and
-              (PMapLineSegment(Hidden.OutlineSegments[J]).StartPoint.Y = CY) then begin
-              NewX := PMapLineSegment(Hidden.OutlineSegments[J]).EndPoint.X;
-              NewY := PMapLineSegment(Hidden.OutlineSegments[J]).EndPoint.Y;
-              Break;
-            end;
-            if (PMapLineSegment(Hidden.OutlineSegments[J]).EndPoint.X = CX) and
-              (PMapLineSegment(Hidden.OutlineSegments[J]).EndPoint.Y = CY) then begin
-              NewX := PMapLineSegment(Hidden.OutlineSegments[J]).StartPoint.X;
-              NewY := PMapLineSegment(Hidden.OutlineSegments[J]).StartPoint.Y;
-              Break;
-            end;
-          end;
-          Determinant := (BY - AY) * (CX - NewX) - (CY - NewY) * (BX - AX);
-          if Determinant * Determinant > 0.01 then begin
-            IntersectionX := (-BX * AY * CX + BX * AY * NewX - AX * BY * NewX - AX * CX * NewY +
-              AX * NewX * CY + BX * CX * NewY - BX * NewX * CY + AX * BY * CX) / Determinant;
-            NewY := (NewY * BX * AY - CY * BX * AY - AY * CX * NewY + AY * NewX * CY +
-              CY * AX * BY + BY * CX * NewY - BY * NewX * CY - NewY * AX * BY) / Determinant;
-            NewX := IntersectionX;
-          end else begin
-            NewX := (AX + BX) * 0.5;
-            NewY := (AY + BY) * 0.5;
-          end;
-          repeat
-            for J := 0 to Candidate.OutlineSegments.Count - 1 do begin
-              if (PMapLineSegment(Candidate.OutlineSegments[J]).StartPoint.X = CX) and
-                (PMapLineSegment(Candidate.OutlineSegments[J]).StartPoint.Y = CY) then begin
-                PMapLineSegment(Candidate.OutlineSegments[J]).StartPoint.X := NewX;
-                PMapLineSegment(Candidate.OutlineSegments[J]).StartPoint.Y := NewY;
-              end;
-              if (PMapLineSegment(Candidate.OutlineSegments[J]).EndPoint.X = CX) and
-                (PMapLineSegment(Candidate.OutlineSegments[J]).EndPoint.Y = CY) then begin
-                PMapLineSegment(Candidate.OutlineSegments[J]).EndPoint.X := NewX;
-                PMapLineSegment(Candidate.OutlineSegments[J]).EndPoint.Y := NewY;
-              end;
-            end;
-            Polygon := nil;
-            for J := 0 to Candidate.OutlinePolygons.CountChain - 1 do begin
-              if J = 0 then Polygon := Candidate.OutlinePolygons else Polygon := Polygon.Next;
-              for K := 0 to Polygon.Points.Count - 1 do
-                if (PPointF(Polygon.Points[K]).X = CX) and (PPointF(Polygon.Points[K]).Y = CY) then begin
-                  PPointF(Polygon.Points[K]).X := NewX;
-                  PPointF(Polygon.Points[K]).Y := NewY;
-                end;
-            end;
-            if Candidate = Hidden then Candidate := nil
-            else if Candidate = Current then Candidate := Hidden
-            else Candidate := Current;
-          until Candidate = nil;
-          CX := NewX;
-          CY := NewY;
-          BestX[MiddleIndex] := Pointer(CX);
-          BestY[MiddleIndex] := Pointer(CY);
+    if CrossEar = 0 then Continue;
+    for I := 0 to Constellations.Count - 1 do begin
+      ContainsStar := False;
+      Candidate := Constellations[I];
+      if (Candidate <> Current) and (Candidate <> Hidden) and
+        Candidate.HasOutlineVertex(MakePointF(AX, AY)) and
+        Candidate.HasOutlineVertex(MakePointF(BX, BY)) and
+        Candidate.HasOutlineVertex(MakePointF(CX, CY)) then begin
+        for J := 0 to Stars.Count - 1 do begin
+          Star := Stars[J];
+          if (((BX - AX) * (BY - CY) - (BY - AY) * (BX - CX)) *
+            ((BX - AX) * (BY - Star.Position.Y) - (BY - AY) * (BX - Star.Position.X)) >= 0) and
+            (((CX - BX) * (CY - AY) - (CY - BY) * (CX - AX)) *
+            ((CX - BX) * (CY - Star.Position.Y) - (CY - BY) * (CX - Star.Position.X)) >= 0) and
+            (((AX - CX) * (AY - BY) - (AY - CY) * (AX - BX)) *
+            ((AX - CX) * (AY - Star.Position.Y) - (AY - CY) * (AX - Star.Position.X)) >= 0) then ContainsStar := True;
         end;
+        if ContainsStar then Continue;
+        NewX := AX - (BY - CY);
+        NewY := AY + (BX - CX);
+        for J := 0 to Hidden.OutlineSegments.Count - 1 do begin
+          if (PMapLineSegment(Hidden.OutlineSegments[J]).StartPoint.X = AX) and
+            (PMapLineSegment(Hidden.OutlineSegments[J]).StartPoint.Y = AY) then Continue;
+          if (PMapLineSegment(Hidden.OutlineSegments[J]).StartPoint.X = BX) and
+            (PMapLineSegment(Hidden.OutlineSegments[J]).StartPoint.Y = BY) then Continue;
+          if (PMapLineSegment(Hidden.OutlineSegments[J]).EndPoint.X = AX) and
+            (PMapLineSegment(Hidden.OutlineSegments[J]).EndPoint.Y = AY) then Continue;
+          if (PMapLineSegment(Hidden.OutlineSegments[J]).EndPoint.X = BX) and
+            (PMapLineSegment(Hidden.OutlineSegments[J]).EndPoint.Y = BY) then Continue;
+          if (PMapLineSegment(Hidden.OutlineSegments[J]).StartPoint.X = CX) and
+            (PMapLineSegment(Hidden.OutlineSegments[J]).StartPoint.Y = CY) then begin
+            NewX := PMapLineSegment(Hidden.OutlineSegments[J]).EndPoint.X;
+            NewY := PMapLineSegment(Hidden.OutlineSegments[J]).EndPoint.Y;
+            Break;
+          end;
+          if (PMapLineSegment(Hidden.OutlineSegments[J]).EndPoint.X = CX) and
+            (PMapLineSegment(Hidden.OutlineSegments[J]).EndPoint.Y = CY) then begin
+            NewX := PMapLineSegment(Hidden.OutlineSegments[J]).StartPoint.X;
+            NewY := PMapLineSegment(Hidden.OutlineSegments[J]).StartPoint.Y;
+            Break;
+          end;
+        end;
+        Determinant := (BY - AY) * (CX - NewX) - (CY - NewY) * (BX - AX);
+        if Determinant * Determinant > 0.01 then begin
+          IntersectionX := (-BX * AY * CX + BX * AY * NewX - AX * BY * NewX - AX * CX * NewY +
+            AX * NewX * CY + BX * CX * NewY - BX * NewX * CY + AX * BY * CX) / Determinant;
+          NewY := (NewY * BX * AY - CY * BX * AY - AY * CX * NewY + AY * NewX * CY +
+            CY * AX * BY + BY * CX * NewY - BY * NewX * CY - NewY * AX * BY) / Determinant;
+          NewX := IntersectionX;
+        end else begin
+          NewX := (AX + BX) * 0.5;
+          NewY := (AY + BY) * 0.5;
+        end;
+        repeat
+          for J := 0 to Candidate.OutlineSegments.Count - 1 do begin
+            if (PMapLineSegment(Candidate.OutlineSegments[J]).StartPoint.X = CX) and
+              (PMapLineSegment(Candidate.OutlineSegments[J]).StartPoint.Y = CY) then begin
+              PMapLineSegment(Candidate.OutlineSegments[J]).StartPoint.X := NewX;
+              PMapLineSegment(Candidate.OutlineSegments[J]).StartPoint.Y := NewY;
+            end;
+            if (PMapLineSegment(Candidate.OutlineSegments[J]).EndPoint.X = CX) and
+              (PMapLineSegment(Candidate.OutlineSegments[J]).EndPoint.Y = CY) then begin
+              PMapLineSegment(Candidate.OutlineSegments[J]).EndPoint.X := NewX;
+              PMapLineSegment(Candidate.OutlineSegments[J]).EndPoint.Y := NewY;
+            end;
+          end;
+          Polygon := nil;
+          for J := 0 to Candidate.OutlinePolygons.CountChain - 1 do begin
+            if J = 0 then Polygon := Candidate.OutlinePolygons else Polygon := Polygon.Next;
+            for K := 0 to Polygon.Points.Count - 1 do
+              if (PPointF(Polygon.Points[K]).X = CX) and (PPointF(Polygon.Points[K]).Y = CY) then begin
+                PPointF(Polygon.Points[K]).X := NewX;
+                PPointF(Polygon.Points[K]).Y := NewY;
+              end;
+          end;
+          if Candidate = Hidden then Candidate := nil
+          else if Candidate = Current then Candidate := Hidden
+          else Candidate := Current;
+        until Candidate = nil;
+        CX := NewX;
+        CY := NewY;
+        BestX[MiddleIndex] := Pointer(CX);
+        BestY[MiddleIndex] := Pointer(CY);
       end;
+    end;
   end;
   Neighbors.Clear;
   XList.Clear;
@@ -6919,22 +6930,24 @@ begin
     Current.HiddenOutlineSegmentsBackup.Add(Segment);
   end;
   for I := Hidden.OutlineSegments.Count - 1 downto 0 do
-    if Current.HasOutlineSegment(PMapLineSegment(Hidden.OutlineSegments[I]).StartPoint,
-      PMapLineSegment(Hidden.OutlineSegments[I]).EndPoint) then begin
-      EarIndex := I;
-      Dispose(PMapLineSegment(Hidden.OutlineSegments[EarIndex]));
-      Hidden.OutlineSegments.Delete(EarIndex);
-    end;
+  begin
+    if not (Current.HasOutlineSegment(PMapLineSegment(Hidden.OutlineSegments[I]).StartPoint,
+      PMapLineSegment(Hidden.OutlineSegments[I]).EndPoint)) then Continue;
+    EarIndex := I;
+    Dispose(PMapLineSegment(Hidden.OutlineSegments[EarIndex]));
+    Hidden.OutlineSegments.Delete(EarIndex);
+  end;
   SwapList := Hidden.HiddenOutlineSegmentsBackup;
   Hidden.HiddenOutlineSegmentsBackup := Hidden.OutlineSegments;
   Hidden.OutlineSegments := SwapList;
   for I := Current.OutlineSegments.Count - 1 downto 0 do
-    if Hidden.HasOutlineSegment(PMapLineSegment(Current.OutlineSegments[I]).StartPoint,
-      PMapLineSegment(Current.OutlineSegments[I]).EndPoint) then begin
-      LastIndex := I;
-      Dispose(PMapLineSegment(Current.OutlineSegments[LastIndex]));
-      Current.OutlineSegments.Delete(LastIndex);
-    end;
+  begin
+    if not (Hidden.HasOutlineSegment(PMapLineSegment(Current.OutlineSegments[I]).StartPoint,
+      PMapLineSegment(Current.OutlineSegments[I]).EndPoint)) then Continue;
+    LastIndex := I;
+    Dispose(PMapLineSegment(Current.OutlineSegments[LastIndex]));
+    Current.OutlineSegments.Delete(LastIndex);
+  end;
   SwapList := Hidden.HiddenOutlineSegmentsBackup;
   Hidden.HiddenOutlineSegmentsBackup := Hidden.OutlineSegments;
   Hidden.OutlineSegments := SwapList;
@@ -6951,32 +6964,34 @@ begin
   XList.Delete(0);
   MiddleIndex := 0;
   for SegmentIndex := XList.Count - 1 downto 0 do
-    if (PMapLineSegment(XList[SegmentIndex]).StartPoint.X = PMapLineSegment(XList[SegmentIndex]).EndPoint.X) and
-      (PMapLineSegment(XList[SegmentIndex]).StartPoint.Y = PMapLineSegment(XList[SegmentIndex]).EndPoint.Y) then begin
-      Dispose(PMapLineSegment(XList[SegmentIndex]));
-      XList.Delete(SegmentIndex);
-    end;
+  begin
+    if not ((PMapLineSegment(XList[SegmentIndex]).StartPoint.X = PMapLineSegment(XList[SegmentIndex]).EndPoint.X) and
+      (PMapLineSegment(XList[SegmentIndex]).StartPoint.Y = PMapLineSegment(XList[SegmentIndex]).EndPoint.Y)) then Continue;
+    Dispose(PMapLineSegment(XList[SegmentIndex]));
+    XList.Delete(SegmentIndex);
+  end;
   while XList.Count > 0 do
     for SegmentIndex := XList.Count - 1 downto 0 do begin
       if ((PMapLineSegment(XList[SegmentIndex]).StartPoint.X = PMapLineSegment(Current.OutlineSegments[MiddleIndex]).StartPoint.X) and
-          (PMapLineSegment(XList[SegmentIndex]).StartPoint.Y = PMapLineSegment(Current.OutlineSegments[MiddleIndex]).StartPoint.Y)) or
+        (PMapLineSegment(XList[SegmentIndex]).StartPoint.Y = PMapLineSegment(Current.OutlineSegments[MiddleIndex]).StartPoint.Y)) or
         ((PMapLineSegment(XList[SegmentIndex]).StartPoint.X = PMapLineSegment(Current.OutlineSegments[MiddleIndex]).EndPoint.X) and
-          (PMapLineSegment(XList[SegmentIndex]).StartPoint.Y = PMapLineSegment(Current.OutlineSegments[MiddleIndex]).EndPoint.Y)) or
+        (PMapLineSegment(XList[SegmentIndex]).StartPoint.Y = PMapLineSegment(Current.OutlineSegments[MiddleIndex]).EndPoint.Y)) or
         ((PMapLineSegment(XList[SegmentIndex]).EndPoint.X = PMapLineSegment(Current.OutlineSegments[MiddleIndex]).StartPoint.X) and
-          (PMapLineSegment(XList[SegmentIndex]).EndPoint.Y = PMapLineSegment(Current.OutlineSegments[MiddleIndex]).StartPoint.Y)) or
+        (PMapLineSegment(XList[SegmentIndex]).EndPoint.Y = PMapLineSegment(Current.OutlineSegments[MiddleIndex]).StartPoint.Y)) or
         ((PMapLineSegment(XList[SegmentIndex]).EndPoint.X = PMapLineSegment(Current.OutlineSegments[MiddleIndex]).EndPoint.X) and
-          (PMapLineSegment(XList[SegmentIndex]).EndPoint.Y = PMapLineSegment(Current.OutlineSegments[MiddleIndex]).EndPoint.Y)) then begin
+        (PMapLineSegment(XList[SegmentIndex]).EndPoint.Y = PMapLineSegment(Current.OutlineSegments[MiddleIndex]).EndPoint.Y)) then begin
         Current.OutlineSegments.Add(XList[SegmentIndex]);
         XList.Delete(SegmentIndex);
         Inc(MiddleIndex);
-      end else if ((PMapLineSegment(XList[SegmentIndex]).StartPoint.X = PMapLineSegment(Current.OutlineSegments[0]).StartPoint.X) and
+      end else begin
+        if not (((PMapLineSegment(XList[SegmentIndex]).StartPoint.X = PMapLineSegment(Current.OutlineSegments[0]).StartPoint.X) and
           (PMapLineSegment(XList[SegmentIndex]).StartPoint.Y = PMapLineSegment(Current.OutlineSegments[0]).StartPoint.Y)) or
-        ((PMapLineSegment(XList[SegmentIndex]).StartPoint.X = PMapLineSegment(Current.OutlineSegments[0]).EndPoint.X) and
+          ((PMapLineSegment(XList[SegmentIndex]).StartPoint.X = PMapLineSegment(Current.OutlineSegments[0]).EndPoint.X) and
           (PMapLineSegment(XList[SegmentIndex]).StartPoint.Y = PMapLineSegment(Current.OutlineSegments[0]).EndPoint.Y)) or
-        ((PMapLineSegment(XList[SegmentIndex]).EndPoint.X = PMapLineSegment(Current.OutlineSegments[0]).StartPoint.X) and
+          ((PMapLineSegment(XList[SegmentIndex]).EndPoint.X = PMapLineSegment(Current.OutlineSegments[0]).StartPoint.X) and
           (PMapLineSegment(XList[SegmentIndex]).EndPoint.Y = PMapLineSegment(Current.OutlineSegments[0]).StartPoint.Y)) or
-        ((PMapLineSegment(XList[SegmentIndex]).EndPoint.X = PMapLineSegment(Current.OutlineSegments[0]).EndPoint.X) and
-          (PMapLineSegment(XList[SegmentIndex]).EndPoint.Y = PMapLineSegment(Current.OutlineSegments[0]).EndPoint.Y)) then begin
+          ((PMapLineSegment(XList[SegmentIndex]).EndPoint.X = PMapLineSegment(Current.OutlineSegments[0]).EndPoint.X) and
+          (PMapLineSegment(XList[SegmentIndex]).EndPoint.Y = PMapLineSegment(Current.OutlineSegments[0]).EndPoint.Y))) then Continue;
         Current.OutlineSegments.Insert(0, XList[SegmentIndex]);
         XList.Delete(SegmentIndex);
         Inc(MiddleIndex);
@@ -7035,9 +7050,9 @@ begin
   BestX.Free;
   BestY.Free;
 end;
-{ @end $7B4E44 }
+{ @end $7E5668 }
 
-{ @routine $7B8188 TConstellation_RestoreHiddenForm }
+{ @routine $7E8B80 TConstellation_RestoreHiddenForm }
 procedure TConstellation.RestoreHiddenForm;
 begin
   if HiddenOutlinePolygonsBackup <> nil then begin
@@ -7051,9 +7066,9 @@ begin
     HiddenOutlineSegmentsBackup := TList.Create;
   end;
 end;
-{ @end $7B8188 }
+{ @end $7E8B80 }
 
-{ @routine $7B8200 TGalaxy_CountVisibleConstellationsWithBoundaryPoints }
+{ @routine $7E8BD4 TGalaxy_CountVisibleConstellationsWithBoundaryPoints }
 function TGalaxy.CountVisibleConstellationsWithBoundaryPoints(FirstPoint, SecondPoint: TPointF): Integer;
 var
   I, Count: Integer;
@@ -7063,13 +7078,13 @@ begin
   Count := Constellations.Count;
   for I := 0 to Count - 1 do
   begin
-    Constellation := TConstellation(Constellations[I]);
+    Constellation := Constellations[I];
     if Constellation.Visible and Constellation.AreBothPointsOnOutline(FirstPoint, SecondPoint) then Inc(Result);
   end;
 end;
-{ @end $7B8200 }
+{ @end $7E8BD4 }
 
-{ @routine $7B8284 TConstellation_Create }
+{ @routine $7E8C40 TConstellation_Create }
 constructor TConstellation.Create;
 begin
   inherited Create;
@@ -7088,9 +7103,9 @@ begin
   OutlineSegments := TList.Create;
   HiddenOutlineSegmentsBackup := TList.Create;
 end;
-{ @end $7B8284 }
+{ @end $7E8C40 }
 
-{ @routine $7B83C0 TConstellation_Destroy }
+{ @routine $7E8D58 TConstellation_Destroy }
 destructor TConstellation.Destroy;
 var I: Integer;
 begin
@@ -7109,9 +7124,9 @@ begin
   BoundaryRaySamples.Free;
   inherited Destroy;
 end;
-{ @end $7B83C0 }
+{ @end $7E8D58 }
 
-{ @routine $7B84AC TConstellation_SaveToBuffer }
+{ @routine $7E8E0C TConstellation_SaveToBuffer }
 procedure TConstellation.SaveToBuffer(Buffer: TBufEC);
 var
   i, j: Integer;
@@ -7171,7 +7186,7 @@ begin
     Buffer.AddSingle(Segment^.EndPoint.X);
     Buffer.AddSingle(Segment^.EndPoint.Y);
   end;
-  Buffer.AddWideChar(WideChar(TPolygon2D(Self.OutlinePolygons).CountChain));
+  Buffer.AddWideChar(WideChar(Self.OutlinePolygons.CountChain));
   Polygon := Self.OutlinePolygons;
   while Polygon <> nil do
   begin
@@ -7190,7 +7205,7 @@ begin
     Buffer.AddSingle(Polygon.Bounds.Bottom);
     Polygon := Polygon.Next;
   end;
-  Buffer.AddWideChar(WideChar(TPolygon2D(Self.HiddenOutlinePolygonsBackup).CountChain));
+  Buffer.AddWideChar(WideChar(Self.HiddenOutlinePolygonsBackup.CountChain));
   Polygon := Self.HiddenOutlinePolygonsBackup;
   while Polygon <> nil do
   begin
@@ -7210,9 +7225,9 @@ begin
     Polygon := Polygon.Next;
   end;
 end;
-{ @end $7B84AC }
+{ @end $7E8E0C }
 
-{ @routine $7B8958 TConstellation_LoadFromBuffer }
+{ @routine $7E91B8 TConstellation_LoadFromBuffer }
 procedure TConstellation.LoadFromBuffer(Buffer: TBufEC; Galaxy: TGalaxy);
 var
   i, j, Count, PointCount: Integer;
@@ -7279,7 +7294,7 @@ begin
     if i = 0 then
       Self.OutlinePolygons := Polygon
     else
-      TPolygon2D(Self.OutlinePolygons).Append(Polygon);
+      Self.OutlinePolygons.Append(Polygon);
     PointCount := Buffer.GetWord;
     for j := 0 to PointCount - 1 do
     begin
@@ -7304,7 +7319,7 @@ begin
       if i = 0 then
         Self.HiddenOutlinePolygonsBackup := Polygon
       else
-        TPolygon2D(Self.HiddenOutlinePolygonsBackup).Append(Polygon);
+        Self.HiddenOutlinePolygonsBackup.Append(Polygon);
       PointCount := Buffer.GetWord;
       for j := 0 to PointCount - 1 do
       begin
@@ -7322,9 +7337,9 @@ begin
     end;
   end;
 end;
-{ @end $7B8958 }
+{ @end $7E91B8 }
 
-{ @routine $7B8E78 TConstellation_ResolveLoadedReferences }
+{ @routine $7E95BC TConstellation_ResolveLoadedReferences }
 procedure TConstellation.ResolveLoadedReferences(Galaxy: TGalaxy);
 var I: Integer;
 begin
@@ -7332,27 +7347,27 @@ begin
   for I := 0 to AdjacentConstellations.Count - 1 do
     AdjacentConstellations[I] := Galaxy.IdToConstellation(Cardinal(AdjacentConstellations[I]));
 end;
-{ @end $7B8E78 }
+{ @end $7E95BC }
 
-{ @routine $7B8F1C TConstellation_ClearStarLinks }
+{ @routine $7E962C TConstellation_ClearStarLinks }
 procedure TConstellation.ClearStarLinks;
 var I: Integer;
 begin
   for I := 0 to StarLinks.Count - 1 do Dispose(PConstellationStarLink(StarLinks[I]));
   StarLinks.Clear;
 end;
-{ @end $7B8F1C }
+{ @end $7E962C }
 
-{ @routine $7B8F70 TConstellation_ClearBoundaryRaySamples }
+{ @routine $7E9664 TConstellation_ClearBoundaryRaySamples }
 procedure TConstellation.ClearBoundaryRaySamples;
 var I: Integer;
 begin
   for I := 0 to BoundaryRaySamples.Count - 1 do Dispose(PConstellationBoundaryRaySample(BoundaryRaySamples[I]));
   BoundaryRaySamples.Clear;
 end;
-{ @end $7B8F70 }
+{ @end $7E9664 }
 
-{ @routine $7B8FC4 TConstellation_GenerateBoundaryRaySamples }
+{ @routine $7E969C TConstellation_GenerateBoundaryRaySamples }
 procedure TConstellation.GenerateBoundaryRaySamples(Count: Integer);
 var Angle, Step: Single; I: Integer; Sample: PConstellationBoundaryRaySample;
 begin
@@ -7369,27 +7384,27 @@ begin
     Angle := Angle + Step;
   end;
 end;
-{ @end $7B8FC4 }
+{ @end $7E969C }
 
-{ @routine $7B90E8 TConstellation_SetOutlinePolygon }
+{ @routine $7E97A8 TConstellation_SetOutlinePolygon }
 procedure TConstellation.SetOutlinePolygon(Polygon: TPolygon2D);
 begin
   if OutlinePolygons <> nil then OutlinePolygons.Free;
   OutlinePolygons := Polygon;
   RebuildOutlineSegments;
 end;
-{ @end $7B90E8 }
+{ @end $7E97A8 }
 
-{ @routine $7B9128 TConstellation_RebuildOutlineSegments }
+{ @routine $7E97D0 TConstellation_RebuildOutlineSegments }
 procedure TConstellation.RebuildOutlineSegments;
 begin
   if OutlineSegments <> nil then OutlineSegments.Free;
   OutlineSegments := OutlinePolygons.ExtractBoundaryEdges;
   RefreshOutlineBounds;
 end;
-{ @end $7B9128 }
+{ @end $7E97D0 }
 
-{ @routine $7B9164 TConstellation_ClearOutlineSegmentsAndBounds }
+{ @routine $7E97F8 TConstellation_ClearOutlineSegmentsAndBounds }
 procedure TConstellation.ClearOutlineSegmentsAndBounds;
 var I: Integer;
 begin
@@ -7398,24 +7413,24 @@ begin
   OutlineBounds := Classes.Rect(0, 0, 0, 0);
   OutlineBoundsSize := Classes.Point(0, 0);
 end;
-{ @end $7B9164 }
+{ @end $7E97F8 }
 
-{ @routine $7B91F4 TConstellation_AddStar }
+{ @routine $7E9870 TConstellation_AddStar }
 procedure TConstellation.AddStar(Star: TStar);
 begin
   Stars.Add(Star);
   Star.Constellation := Self;
 end;
-{ @end $7B91F4 }
+{ @end $7E9870 }
 
-{ @routine $7B9220 TConstellation_AddAdjacentConstellation }
+{ @routine $7E988C TConstellation_AddAdjacentConstellation }
 procedure TConstellation.AddAdjacentConstellation(Constellation: TConstellation);
 begin
   if not HasAdjacentConstellation(Constellation) then AdjacentConstellations.Add(Constellation);
 end;
-{ @end $7B9220 }
+{ @end $7E988C }
 
-{ @routine $7B9250 TConstellation_SharesOutlineSegment }
+{ @routine $7E98AC TConstellation_SharesOutlineSegment }
 function TConstellation.SharesOutlineSegment(Constellation: TConstellation): Boolean;
 var I: Integer; Segment: PMapLineSegment;
 begin
@@ -7426,9 +7441,9 @@ begin
   end;
   Result := False;
 end;
-{ @end $7B9250 }
+{ @end $7E98AC }
 
-{ @routine $7B92C4 TConstellation_ResetGeneratedMapShape }
+{ @routine $7E98FC TConstellation_ResetGeneratedMapShape }
 procedure TConstellation.ResetGeneratedMapShape;
 begin
   ClearBoundaryRaySamples;
@@ -7439,30 +7454,30 @@ begin
   OutlinePolygons.Free;
   OutlinePolygons := TPolygon2D.Create;
 end;
-{ @end $7B92C4 }
+{ @end $7E98FC }
 
-{ @routine $7B931C TConstellation_ClearStars }
+{ @routine $7E9944 TConstellation_ClearStars }
 procedure TConstellation.ClearStars;
 begin
   if Stars <> nil then Stars.Clear;
 end;
-{ @end $7B931C }
+{ @end $7E9944 }
 
-{ @routine $7B933C TConstellation_ClearAdjacentConstellations }
+{ @routine $7E9954 TConstellation_ClearAdjacentConstellations }
 procedure TConstellation.ClearAdjacentConstellations;
 begin
   if AdjacentConstellations <> nil then AdjacentConstellations.Clear;
 end;
-{ @end $7B933C }
+{ @end $7E9954 }
 
-{ @routine $7B935C TConstellation_GetOutlineArea }
+{ @routine $7E9964 TConstellation_GetOutlineArea }
 function TConstellation.GetOutlineArea: Single;
 begin
   Result := OutlinePolygons.GetChainArea;
 end;
-{ @end $7B935C }
+{ @end $7E9964 }
 
-{ @routine $7B9380 TConstellation_FindNextClosestStarPair }
+{ @routine $7E997C TConstellation_FindNextClosestStarPair }
 function TConstellation.FindNextClosestStarPair(var FirstStar, SecondStar: TStar; MinimumDistance: Integer): Integer;
 var I, J, Distance, BestDistance: Integer; A, B: TStar; StartI, StartJ: Integer;
 begin
@@ -7501,9 +7516,9 @@ begin
   end;
   if FirstStar = nil then Result := 0 else Result := BestDistance;
 end;
-{ @end $7B9380 }
+{ @end $7E997C }
 
-{ @routine $7B95A4 TConstellation_HasStarGraphCycle }
+{ @routine $7E9B40 TConstellation_HasStarGraphCycle }
 function TConstellation.HasStarGraphCycle: Boolean;
 var I: Integer; Link: PConstellationStarLink; Changed: Boolean; Parents: array[1..100] of Integer;
 begin
@@ -7545,9 +7560,9 @@ begin
     end;
   end;
 end;
-{ @end $7B95A4 }
+{ @end $7E9B40 }
 
-{ @routine $7B97D0 TConstellation_IsStarGraphConnected }
+{ @routine $7E9CBC TConstellation_IsStarGraphConnected }
 function TConstellation.IsStarGraphConnected: Boolean;
 var I, J: Integer; Link: PConstellationStarLink; Stable: Boolean; Parents: array[1..100] of Integer;
 begin
@@ -7573,9 +7588,9 @@ begin
   Result := True;
   for I := 1 to Stars.Count do if Parents[I] = -1 then Result := False;
 end;
-{ @end $7B97D0 }
+{ @end $7E9CBC }
 
-{ @routine $7B9970 TConstellation_BuildStarGraph }
+{ @routine $7E9DC4 TConstellation_BuildStarGraph }
 function TConstellation.BuildStarGraph: Boolean;
 var I: Integer; Star, FirstStar, SecondStar: TStar; MinimumDistance: Integer; Link: PConstellationStarLink; Segment: PMapLineSegment; Intersection: TPointF;
 begin
@@ -7599,8 +7614,8 @@ begin
     if HasStarGraphCycle then begin
       StarLinks.Delete(StarLinks.Count - 1);
       Dispose(Link);
-      Continue;
-    end;
+    end
+    else
     for I := 0 to OutlineSegments.Count - 1 do begin
       Segment := OutlineSegments[I];
       if IntersectSegmentsF(Link.StartPoint, Link.EndPoint, Segment.StartPoint, Segment.EndPoint, Intersection) then begin
@@ -7612,9 +7627,9 @@ begin
   end;
   Result := IsStarGraphConnected;
 end;
-{ @end $7B9970 }
+{ @end $7E9DC4 }
 
-{ @routine $7B9B18 TConstellation_ExpandOutlineBounds }
+{ @routine $7E9F24 TConstellation_ExpandOutlineBounds }
 procedure TConstellation.ExpandOutlineBounds(Point: TPointF);
 begin
   if OutlineBounds.Left > Point.X then OutlineBounds.Left := Round(Point.X);
@@ -7622,9 +7637,9 @@ begin
   if OutlineBounds.Right < Point.X then OutlineBounds.Right := Round(Point.X);
   if OutlineBounds.Bottom < Point.Y then OutlineBounds.Bottom := Round(Point.Y);
 end;
-{ @end $7B9B18 }
+{ @end $7E9F24 }
 
-{ @routine $7B9BA4 TConstellation_RefreshOutlineBounds }
+{ @routine $7E9F9C TConstellation_RefreshOutlineBounds }
 procedure TConstellation.RefreshOutlineBounds;
 var I: Integer; Segment: PMapLineSegment;
 begin
@@ -7644,17 +7659,17 @@ begin
     OutlineBoundsSize := Classes.Point(OutlineBounds.Right - OutlineBounds.Left, OutlineBounds.Bottom - OutlineBounds.Top);
   end;
 end;
-{ @end $7B9BA4 }
+{ @end $7E9F9C }
 
-{ @routine $7B9CC8 TConstellation_ContainsPoint }
+{ @routine $7EA070 TConstellation_ContainsPoint }
 function TConstellation.ContainsPoint(Point: TPointF): Boolean;
 begin
   Result := False;
   if OutlinePolygons <> nil then if OutlinePolygons.ChainContainsPoint(Point) then Result := True else Result := False;
 end;
-{ @end $7B9CC8 }
+{ @end $7EA070 }
 
-{ @routine $7B9D14 TConstellation_HasAdjacentConstellation }
+{ @routine $7EA0A4 TConstellation_HasAdjacentConstellation }
 function TConstellation.HasAdjacentConstellation(Constellation: TConstellation): Boolean;
 var I: Integer;
 begin
@@ -7663,9 +7678,9 @@ begin
     if AdjacentConstellations[I] = Constellation then Exit;
   Result := False;
 end;
-{ @end $7B9D14 }
+{ @end $7EA0A4 }
 
-{ @routine $7B9D64 TConstellation_HasOutlineSegment }
+{ @routine $7EA0E0 TConstellation_HasOutlineSegment }
 function TConstellation.HasOutlineSegment(FirstPoint, SecondPoint: TPointF): Boolean;
 var I: Integer; Segment: PMapLineSegment;
 begin
@@ -7675,9 +7690,9 @@ begin
   end;
   Result := False;
 end;
-{ @end $7B9D64 }
+{ @end $7EA0E0 }
 
-{ @routine $7B9DE0 TConstellation_AreBothPointsOnOutline }
+{ @routine $7EA13C TConstellation_AreBothPointsOnOutline }
 function TConstellation.AreBothPointsOnOutline(FirstPoint, SecondPoint: TPointF): Boolean;
 var I: Integer; Segment: PMapLineSegment; Classification: Integer; FoundFirst, FoundSecond: Boolean;
 begin
@@ -7686,15 +7701,15 @@ begin
   for I := 0 to OutlineSegments.Count - 1 do begin
     Segment := OutlineSegments[I];
     Classification := ClassifyPointToSegment(Segment.StartPoint, Segment.EndPoint, FirstPoint);
-    if Classification >= 5 then FoundFirst := True;
+    if Classification >= PointRelationInterior then FoundFirst := True;
     Classification := ClassifyPointToSegment(Segment.StartPoint, Segment.EndPoint, SecondPoint);
-    if Classification >= 5 then FoundSecond := True;
+    if Classification >= PointRelationInterior then FoundSecond := True;
   end;
   Result := FoundFirst and FoundSecond;
 end;
-{ @end $7B9DE0 }
+{ @end $7EA13C }
 
-{ @routine $7B9E84 TConstellation_CalculateLabelPosition }
+{ @routine $7EA1C4 TConstellation_CalculateLabelPosition }
 function TConstellation.CalculateLabelPosition: TPointF;
 var
   I: Integer;
@@ -7736,9 +7751,9 @@ begin
   end;
   Result := MakePointF(SumX / Count, SumY / Count);
 end;
-{ @end $7B9E84 }
+{ @end $7EA1C4 }
 
-{ @routine $7BA04C TConstellation_HasOutlineVertex }
+{ @routine $7EA39C TConstellation_HasOutlineVertex }
 function TConstellation.HasOutlineVertex(Point: TPointF): Boolean;
 var I: Integer; Segment: PMapLineSegment;
 begin
@@ -7748,9 +7763,9 @@ begin
   end;
   Result := False;
 end;
-{ @end $7BA04C }
+{ @end $7EA39C }
 
-{ @routine $7BA0C4 TConstellation_IsPointNearOutline }
+{ @routine $7EA3F4 TConstellation_IsPointNearOutline }
 function TConstellation.IsPointNearOutline(Point: TPointF): Boolean;
 var I: Integer; Segment: PMapLineSegment; Minimum, Distance: Single;
 begin
@@ -7762,9 +7777,9 @@ begin
   end;
   if Minimum <= 2 then Result := True else Result := False;
 end;
-{ @end $7BA0C4 }
+{ @end $7EA3F4 }
 
-{ @routine $7BA160 TConstellation_NormalizeOutlineSegmentOrder }
+{ @routine $7EA474 TConstellation_NormalizeOutlineSegmentOrder }
 procedure TConstellation.NormalizeOutlineSegmentOrder;
 var I, J: Integer; First, Next: PMapLineSegment; Temp: Pointer; Point: TPointF;
 begin
@@ -7789,18 +7804,18 @@ begin
     end;
   end;
 end;
-{ @end $7BA160 }
+{ @end $7EA474 }
 
-{ @routine $7BA27C TConstellation_GetName }
+{ @routine $7EA554 TConstellation_GetName }
 function TConstellation.GetName: WideString;
 var Index: Integer;
 begin
   Index := Galaxy.Constellations.IndexOf(Self);
   Result := LocalizedText('Constellations.Name.' + IntToStr(Index + 1));
 end;
-{ @end $7BA27C }
+{ @end $7EA554 }
 
-{ @routine $7BA338 TConstellation_HasDominatorPresence }
+{ @routine $7EA604 TConstellation_HasDominatorPresence }
 function TConstellation.HasDominatorPresence: Boolean;
 var I: Integer; Star: TStar;
 begin
@@ -7810,39 +7825,39 @@ begin
   end;
   Result := False;
 end;
-{ @end $7BA338 }
+{ @end $7EA604 }
 
-{ @routine $7BA390 TConstellation_HasPirateClanPresence }
+{ @routine $7EA638 TConstellation_HasPirateClanPresence }
 function TConstellation.HasPirateClanPresence: Boolean;
 var I, J: Integer; Star: TStar; Ship: TShip;
 begin
   for I := 0 to Stars.Count - 1 do begin
     Star := Stars[I];
     for J := 0 to Star.Ships.Count - 1 do begin
-      Ship := TShip(Star.Ships[J]);
+      Ship := Star.Ships[J];
       if (Ship is TPirate) and (Ship.OwnerId = oiPirate) and (TPirate(Ship).PirateType <> 0) then begin Result := True; Exit; end;
     end;
   end;
   Result := False;
 end;
-{ @end $7BA390 }
+{ @end $7EA638 }
 
-{ @routine $7BA43C TConstellation_HasBertorOfSeries }
+{ @routine $7EA6C4 TConstellation_HasBertorOfSeries }
 function TConstellation.HasBertorOfSeries(Series: TDominatorSeries): Boolean;
 var I, J: Integer; Star: TStar; Ship: TShip;
 begin
   for I := 0 to Stars.Count - 1 do begin
     Star := Stars[I];
     for J := 0 to Star.Ships.Count - 1 do begin
-      Ship := TShip(Star.Ships[J]);
+      Ship := Star.Ships[J];
       if (Ship is TKling) and ((Ship as TKling).DominatorSeries = Series) and ((Ship as TKling).KlingType = ktBertor) then begin Result := True; Exit; end;
     end;
   end;
   Result := False;
 end;
-{ @end $7BA43C }
+{ @end $7EA6C4 }
 
-{ @routine $7BA508 TConstellation_CountShipsByTypeMask }
+{ @routine $7EA77C TConstellation_CountShipsByTypeMask }
 function TConstellation.CountShipsByTypeMask(ShipTypeMask: TShipTypeMask): Integer;
 var Count: Integer; I: TShipType;
 begin
@@ -7851,9 +7866,9 @@ begin
     if I in ShipTypeMask then Inc(Count, ShipTypeCounts[I]);
   Result := Count;
 end;
-{ @end $7BA508 }
+{ @end $7EA77C }
 
-{ @routine $7BA554 TGalaxy_CountEligibleRangers }
+{ @routine $7EA7A8 TGalaxy_CountEligibleRangers }
 function TGalaxy.CountEligibleRangers: Integer;
 var Index: Integer; Ranger: TRanger;
 begin
@@ -7864,9 +7879,9 @@ begin
     if not Ranger.ExcludedFromRating then Inc(Result);
   end;
 end;
-{ @end $7BA554 }
+{ @end $7EA7A8 }
 
-{ @routine $7BA5AC TGalaxy_RefreshRangerWealthStats }
+{ @routine $7EA7E0 TGalaxy_RefreshRangerWealthStats }
 procedure TGalaxy.RefreshRangerWealthStats;
 var
   I, J, Count: Integer;
@@ -7887,7 +7902,7 @@ begin
   Count := 0;
   for I := 0 to Rangers.Count - 1 do
   begin
-    Ranger := TRanger(Rangers[I]);
+    Ranger := Rangers[I];
     if Ranger.ExcludedFromRating then Continue;
     Total := Total + Ranger.CalculateWealth;
     Inc(Count);
@@ -7900,7 +7915,7 @@ begin
   if CoalitionDefeatedTurn <> 0 then
     for I := 0 to Stars.Count - 1 do
     begin
-      Star := TStar(Stars[I]);
+      Star := Stars[I];
       for J := 0 to Star.Ships.Count - 1 do
       begin
         Ship := Star.Ships[J];
@@ -7913,53 +7928,49 @@ begin
   if Total > MaxInt then AverageRangerCapital := MaxInt
   else AverageRangerCapital := Total;
 end;
-{ @end $7BA5AC }
+{ @end $7EA7E0 }
 
-{ @routine $7BA790 TGalaxy_RefreshRangerStrengthStats }
+{ @routine $7EA988 TGalaxy_RefreshRangerStrengthStats }
 procedure TGalaxy.RefreshRangerStrengthStats;
 var I, J, Count: Integer; Ranger: TRanger; Total: Single; Ship: TShip; Star: TStar;
 begin
   BestRangerStrength := 0;
   StrongestRanger := nil;
-  if Rangers.Count <> 0 then
+  if Rangers.Count = 0 then Exit;
+  Total := 0;
+  Count := 0;
+  for I := 0 to Rangers.Count - 1 do
   begin
-    Total := 0;
-    Count := 0;
-    for I := 0 to Rangers.Count - 1 do
+    Ranger := Rangers[I];
+    if Ranger.ExcludedFromRating then Continue;
+    Total := Total + Ranger.Strength;
+    if (BestRangerStrength < Ranger.Strength) or (StrongestRanger = nil) then
     begin
-      Ranger := Rangers[I];
-      if not Ranger.ExcludedFromRating then
+      BestRangerStrength := Ranger.Strength;
+      StrongestRanger := Ranger;
+    end;
+    Inc(Count);
+  end;
+  if CoalitionDefeatedTurn <> 0 then
+    for I := 0 to Stars.Count - 1 do
+    begin
+      Star := Stars[I];
+      for J := 0 to Star.Ships.Count - 1 do
       begin
-        Total := Total + Ranger.Strength;
-        if (BestRangerStrength < Ranger.Strength) or (StrongestRanger = nil) then
-        begin
-          BestRangerStrength := Ranger.Strength;
-          StrongestRanger := Ranger;
-        end;
+        Ship := Star.Ships[J];
+        if not (Ship is TPirate) then Continue;
+        if (Ship as TPirate).PirateType <> 0 then Continue;
+        if Ship.OwnerId <> oiPirate then Continue;
+        Total := Total + Ship.Strength;
+        if BestRangerStrength < Ship.Strength then BestRangerStrength := Ship.Strength;
         Inc(Count);
       end;
     end;
-    if CoalitionDefeatedTurn <> 0 then
-      for I := 0 to Stars.Count - 1 do
-      begin
-        Star := TStar(Stars[I]);
-        for J := 0 to Star.Ships.Count - 1 do
-        begin
-          Ship := TShip(Star.Ships[J]);
-          if (Ship is TPirate) and ((Ship as TPirate).PirateType = 0) and (Ship.OwnerId = oiPirate) then
-          begin
-            Total := Total + Ship.Strength;
-            if BestRangerStrength < Ship.Strength then BestRangerStrength := Ship.Strength;
-            Inc(Count);
-          end;
-        end;
-      end;
-    AverageRangerStrength := Total / Count; // Native has no guard when all roster entries are excluded.
-  end;
+  AverageRangerStrength := Total / Count; // Native has no guard when all roster entries are excluded.
 end;
-{ @end $7BA790 }
+{ @end $7EA988 }
 
-{ @routine $7BA96C TGalaxy_RefreshRangerRatingPlaces }
+{ @routine $7EAB14 TGalaxy_RefreshRangerRatingPlaces }
 procedure TGalaxy.RefreshRangerRatingPlaces;
 var I, J: Integer; First, Second: TRanger; Sorted: array of Cardinal; SwapFirst, SwapSecond: Cardinal; // Native RTTI: dynamic Cardinal array storing object addresses.
 begin
@@ -7989,9 +8000,9 @@ begin
   end;
   if (GetPlayer <> nil) and (not Destroying) then GetPlayer.AchievementStats.CheckFirstPlaceRatingAchievement;
 end;
-{ @end $7BA96C }
+{ @end $7EAB14 }
 
-{ @routine $7BAB14 TGalaxy_FindStrongestRanger }
+{ @routine $7EAC68 TGalaxy_FindStrongestRanger }
 function TGalaxy.FindStrongestRanger: Pointer;
 var I: Integer; Ranger: TRanger; Best: Single;
 begin
@@ -8005,9 +8016,9 @@ begin
     end;
   end;
 end;
-{ @end $7BAB14 }
+{ @end $7EAC68 }
 
-{ @routine $7BAB90 TGalaxy_FindWealthiestRanger }
+{ @routine $7EACC0 TGalaxy_FindWealthiestRanger }
 function TGalaxy.FindWealthiestRanger: Pointer;
 var I: Integer; Ranger: TRanger; Best: Single;
 begin
@@ -8021,9 +8032,9 @@ begin
     end;
   end;
 end;
-{ @end $7BAB90 }
+{ @end $7EACC0 }
 
-{ @routine $7BAC10 TGalaxy_CountFactionStars }
+{ @routine $7EAD18 TGalaxy_CountFactionStars }
 function TGalaxy.CountFactionStars(Faction: TStarFaction): Integer;
 var Index: Integer; Star: TStar;
 begin
@@ -8034,16 +8045,16 @@ begin
     if (Star.Status.CustomFaction = '') and (Star.ControlFaction = Faction) then Inc(Result);
   end;
 end;
-{ @end $7BAC10 }
+{ @end $7EAD18 }
 
-{ @routine $7BAC78 TGalaxy_GetFactionControlPercent }
+{ @routine $7EAD6C TGalaxy_GetFactionControlPercent }
 function TGalaxy.GetFactionControlPercent(Faction: TStarFaction): TPercent;
 begin
   Result := Round(CountFactionStars(Faction) / Stars.Count * 100);
 end;
-{ @end $7BAC78 }
+{ @end $7EAD6C }
 
-{ @routine $7BACBC TGalaxy_GetDominatorSeriesControlShare }
+{ @routine $7EADA0 TGalaxy_GetDominatorSeriesControlShare }
 function TGalaxy.GetDominatorSeriesControlShare(Series: TDominatorSeries): Single;
 var I, SeriesStars, DominatorStars, Unresolved: Integer; Star: TStar;
 begin
@@ -8063,9 +8074,9 @@ begin
   if Galaxy.BlazerSeriesResolvedTurn = 0 then Inc(Unresolved);
   Result := (Unresolved * SeriesStars) / DominatorStars;
 end;
-{ @end $7BACBC }
+{ @end $7EADA0 }
 
-{ @routine $7BAD94 TGalaxy_CountStarsInBattle }
+{ @routine $7EAE5C TGalaxy_CountStarsInBattle }
 function TGalaxy.CountStarsInBattle: Integer;
 var I: Integer; Star: TStar;
 begin
@@ -8075,9 +8086,9 @@ begin
     if Star.Battle <> 0 then Inc(Result);
   end;
 end;
-{ @end $7BAD94 }
+{ @end $7EAE5C }
 
-{ @routine $7BADE8 TGalaxy_AssignTextQuestsToPlanets }
+{ @routine $7EAE90 TGalaxy_AssignTextQuestsToPlanets }
 procedure TGalaxy.AssignTextQuestsToPlanets;
 var I, J, Index, Count, QuestId: Integer; Planet: TPlanet; Quest: TTextQuest; Control: TCBufControlEC; Buffer: TCBufEC;
 begin
@@ -8123,9 +8134,9 @@ begin
       Quest.Free;
     end;
 end;
-{ @end $7BADE8 }
+{ @end $7EAE90 }
 
-{ @routine $7BB2C8 TGalaxy_HasPlayerQuestHistory }
+{ @routine $7EB300 TGalaxy_HasPlayerQuestHistory }
 function TGalaxy.HasPlayerQuestHistory(QuestType: TQuestType; QuestNumber: Word): Boolean;
 var I: Integer; Quest: PPlayerOldQuest;
 begin
@@ -8135,17 +8146,17 @@ begin
   end;
   Result := False;
 end;
-{ @end $7BB2C8 }
+{ @end $7EB300 }
 
-{ @routine $7BB330 TGalaxy_TurnToDateTime }
+{ @routine $7EB340 TGalaxy_TurnToDateTime }
 function TGalaxy.TurnToDateTime(Turn: Integer): Double;
 begin
   if Turn = -1 then Turn := CurrentTurn;
   Result := Turn + 511341.5 - GalaxyWarmupTurns;
 end;
-{ @end $7BB330 }
+{ @end $7EB340 }
 
-{ @routine $7BB370 TGalaxy_FormatTurnDate }
+{ @routine $7EB374 TGalaxy_FormatTurnDate }
 function TGalaxy.FormatTurnDate(Turn: Integer): WideString;
 var
   MonthNumber, MonthName: WideString;
@@ -8154,17 +8165,17 @@ begin
   MonthName := LocalizedText('Month.' + MonthNumber);
   Result := FormatDateTime('d', TurnToDateTime(Turn)) + ' ' + MonthName + ' ' + FormatDateTime('yyyy', TurnToDateTime(Turn));
 end;
-{ @end $7BB370 }
+{ @end $7EB374 }
 
-{ @routine $7BB524 TGalaxy_AddPlanetNewsWithPlayerBubble }
+{ @routine $7EB508 TGalaxy_AddPlanetNewsWithPlayerBubble }
 procedure TGalaxy.AddPlanetNewsWithPlayerBubble(NewsType: TGalaxyNewsKind; Text: WideString);
 begin
   if CurrentTurn > GalaxyWarmupTurns then AddOrUpdatePlayerBubble(pmGalaxyNews, CurrentTurn, Text, '');
   AddPlanetNews(NewsType, Text);
 end;
-{ @end $7BB524 }
+{ @end $7EB508 }
 
-{ @routine $7BB598 TGalaxy_AddPlanetNews }
+{ @routine $7EB574 TGalaxy_AddPlanetNews }
 procedure TGalaxy.AddPlanetNews(NewsType: TGalaxyNewsKind; Text: WideString);
 var Entry: PPlanetNewsEntry; Index: Integer;
 begin
@@ -8183,9 +8194,9 @@ begin
   Entry.Text := Text;
   PlanetNews.Add(Entry);
 end;
-{ @end $7BB598 }
+{ @end $7EB574 }
 
-{ @routine $7BB6E8 TGalaxy_CountPlanetNewsByType }
+{ @routine $7EB698 TGalaxy_CountPlanetNewsByType }
 function TGalaxy.CountPlanetNewsByType(NewsType: TGalaxyNewsKind): Integer;
 var Entry: PPlanetNewsEntry; Index: Integer;
 begin
@@ -8196,9 +8207,9 @@ begin
     if Entry.NewsType = NewsType then Inc(Result);
   end;
 end;
-{ @end $7BB6E8 }
+{ @end $7EB698 }
 
-{ @routine $7BB748 TGalaxy_PrunePlanetNews }
+{ @routine $7EB6DC TGalaxy_PrunePlanetNews }
 procedure TGalaxy.PrunePlanetNews;
 var I: Integer; News: PPlanetNewsEntry;
 begin
@@ -8210,17 +8221,17 @@ begin
     end;
   end;
 end;
-{ @end $7BB748 }
+{ @end $7EB6DC }
 
-{ @routine $7BB7BC TGalaxy_CreateDominatorSpawnProxy }
+{ @routine $7EB730 TGalaxy_CreateDominatorSpawnProxy }
 procedure TGalaxy.CreateDominatorSpawnProxy(Star: TStar);
 begin
   DominatorSpawnPlanet := TPlanet.Create;
   DominatorSpawnPlanet.InitDominatorSpawnProxy(TObject(Star) as TStar);
 end;
-{ @end $7BB7BC }
+{ @end $7EB730 }
 
-{ @routine $7BB7FC TGalaxy_UpdateConstellationMilitaryStats }
+{ @routine $7EB764 TGalaxy_UpdateConstellationMilitaryStats }
 procedure TGalaxy.UpdateConstellationMilitaryStats;
 var I, J: Integer; Constellation: TConstellation; Star: TStar; Kind: TShipType;
 begin
@@ -8239,9 +8250,9 @@ begin
     end;
   end;
 end;
-{ @end $7BB7FC }
+{ @end $7EB764 }
 
-{ @routine $7BB904 TGalaxy_RefreshTechLevel }
+{ @routine $7EB83C TGalaxy_RefreshTechLevel }
 function TGalaxy.RefreshTechLevel: Byte;
 var I, HighestLevel, HighestCount, PreviousCount: Integer; Planet: TPlanet;
 begin
@@ -8265,31 +8276,30 @@ begin
   else if (HighestCount >= 2) or (HighestCount + PreviousCount >= 5) then TechLevel := Max(1, HighestLevel - 1)
   else TechLevel := Max(1, HighestLevel - 2);
 end;
-{ @end $7BB904 }
+{ @end $7EB83C }
 
-{ @routine $7BBA6C TGalaxy_CancelEnemyJumpsToStar }
+{ @routine $7EB944 TGalaxy_CancelEnemyJumpsToStar }
 procedure TGalaxy.CancelEnemyJumpsToStar(Star: TStar);
 var I, J: Integer; Other: TStar; Ship: TShip;
 begin
   for I := 0 to Stars.Count - 1 do begin
     Other := TStar(Stars[I]);
-    if Other <> Star then
-      for J := 0 to Other.Ships.Count - 1 do begin
-        Ship := TShip(Other.Ships[J]);
-        if Ship.InNormalSpace then begin
-          if ((Ship is TKling) or (Ship.CurrentStanding = ssPirateMilitary)) and (Ship.Order = soJump) and (Ship.OrderTarget = Star) then Ship.OrderNone(False);
-          if (Ship is TRuins) and (Ship.TypeId = rstDominion) and ((Ship as TRuins).FlyToStar = Star) then begin
-            (Ship as TRuins).FlyToStar := nil;
-            (Ship as TRuins).FlyDate := 0;
-            Ship.OrderNone(False);
-          end;
-        end;
+    if Other = Star then Continue;
+    for J := 0 to Other.Ships.Count - 1 do begin
+      Ship := TShip(Other.Ships[J]);
+      if not Ship.InNormalSpace then Continue;
+      if ((Ship is TKling) or (Ship.CurrentStanding = ssPirateMilitary)) and (Ship.Order = soJump) and (Ship.OrderTarget = Star) then Ship.OrderNone(False);
+      if (Ship is TRuins) and (Ship.TypeId = rstDominion) and ((Ship as TRuins).FlyToStar = Star) then begin
+        (Ship as TRuins).FlyToStar := nil;
+        (Ship as TRuins).FlyDate := 0;
+        Ship.OrderNone(False);
       end;
+    end;
   end;
 end;
-{ @end $7BBA6C }
+{ @end $7EB944 }
 
-{ @routine $7BBBB8 TGalaxy_SelectStarForLiberationAttack }
+{ @routine $7EBA74 TGalaxy_SelectStarForLiberationAttack }
 function TGalaxy.SelectStarForLiberationAttack(Origin: TStar; FriendlyFaction: TStarFaction): TStar;
 var I, J, Weight, BestWeight: Integer;
   Star, Other: TStar;
@@ -8298,21 +8308,20 @@ begin
   Result := nil;
   for I := 0 to Galaxy.Stars.Count - 1 do begin
     Star := TStar(Galaxy.Stars[I]);
-    if (Star.ControlFaction <> FriendlyFaction) and (Star.Battle = 0) and (Star.Constellation.Id <> 20) then begin
-      Weight := 0;
-      for J := 1 to Galaxy.Stars.Count - 1 do begin
-        Other := TObject(Star.StarDistances[J].Star) as TStar;
-        if (Other.ControlFaction = FriendlyFaction) and (Other.Status.CustomFaction = '') then Inc(Weight, Star.StarDistances[J].Distance);
-      end;
-      if Origin <> nil then Weight := Round(RemapClamped(PointDistance(Origin.Position, Star.Position), 10, 100, Weight, 100 * Weight));
-      Weight := Round(NextRandomFloatRange(Weight, 2 * Weight, RandomState));
-      if Weight < BestWeight then begin BestWeight := Weight; Result := Star; end;
+    if not ((Star.ControlFaction <> FriendlyFaction) and (Star.Battle = 0) and (Star.Constellation.Id <> 20)) then Continue;
+    Weight := 0;
+    for J := 1 to Galaxy.Stars.Count - 1 do begin
+      Other := Star.StarDistances[J].Star as TStar;
+      if (Other.ControlFaction = FriendlyFaction) and (Other.Status.CustomFaction = '') then Inc(Weight, Star.StarDistances[J].Distance);
     end;
+    if Origin <> nil then Weight := Round(RemapClamped(PointDistance(Origin.Position, Star.Position), 10, 100, Weight, 100 * Weight));
+    Weight := Round(NextRandomFloatRange(Weight, 2 * Weight, RandomState));
+    if Weight < BestWeight then begin BestWeight := Weight; Result := Star; end;
   end;
 end;
-{ @end $7BBBB8 }
+{ @end $7EBA74 }
 
-{ @routine $7BBD50 TGalaxy_ComputeGlobalGoodsPriceBands }
+{ @routine $7EBC08 TGalaxy_ComputeGlobalGoodsPriceBands }
 procedure TGalaxy.ComputeGlobalGoodsPriceBands;
 var
   Good: Byte;
@@ -8333,44 +8342,44 @@ begin
       aConst.GoodsMarket[Good].MaxPrice := aConst.GoodsMarket[Good].AveragePrice + 2;
   end;
 end;
-{ @end $7BBD50 }
+{ @end $7EBC08 }
 
-{ @routine $7BBF78 TGalaxy_GetGoodsPricePercent }
+{ @routine $7EBCE8 TGalaxy_GetGoodsPricePercent }
 function TGalaxy.GetGoodsPricePercent(GoodsType: Byte; Price: Integer): TPercent;
 begin
   Result := Round(RemapClamped(Price, GoodsMarket[GoodsType].MinPrice, GoodsMarket[GoodsType].MaxPrice, 0, 100));
 end;
-{ @end $7BBF78 }
+{ @end $7EBCE8 }
 
-{ @routine $7BBFE8 TGalaxy_ScaleGoodsPriceByGalaxyAge }
+{ @routine $7EBD44 TGalaxy_ScaleGoodsPriceByGalaxyAge }
 function TGalaxy.ScaleGoodsPriceByGalaxyAge(BaseValue: Integer): Integer;
 begin
   Result := Round(RemapClamped(CurrentTurn, GoodsInflationStartTurn, GoodsInflationEndTurn, BaseValue * GoodsInflationMin, BaseValue * GoodsInflationMax));
 end;
-{ @end $7BBFE8 }
+{ @end $7EBD44 }
 
-{ @routine $7BC054 TGalaxy_ScaleGoodsStockByGalaxyAge }
+{ @routine $7EBDB0 TGalaxy_ScaleGoodsStockByGalaxyAge }
 function TGalaxy.ScaleGoodsStockByGalaxyAge(BaseValue: Integer): Integer;
 begin
   Result := Round(RemapClamped(CurrentTurn, GoodsInflationStartTurn, GoodsInflationEndTurn, BaseValue * GoodsStockMin, BaseValue * GoodsStockMax));
 end;
-{ @end $7BC054 }
+{ @end $7EBDB0 }
 
-{ @routine $7BC0C0 TGalaxy_ScaleIntByTechLevel }
+{ @routine $7EBE1C TGalaxy_ScaleIntByTechLevel }
 function TGalaxy.ScaleIntByTechLevel(AtLevelTwo, AtLevelSeven: Integer): Integer;
 begin
   Result := Round(RemapClamped(TechLevel, 2, 7, AtLevelTwo, AtLevelSeven));
 end;
-{ @end $7BC0C0 }
+{ @end $7EBE1C }
 
-{ @routine $7BC11C TGalaxy_InterpolateSingleByTechLevel }
+{ @routine $7EBE7C TGalaxy_InterpolateSingleByTechLevel }
 function TGalaxy.InterpolateSingleByTechLevel(AtLevelTwo, AtLevelSeven: Single): Single;
 begin
   Result := RemapClamped(TechLevel, 2, 7, AtLevelTwo, AtLevelSeven);
 end;
-{ @end $7BC11C }
+{ @end $7EBE7C }
 
-{ @routine $7BC1D8 TGalaxy_SelectWeaponInfo }
+{ @routine $7EBF08 TGalaxy_SelectWeaponInfo }
 function TGalaxy.SelectWeaponInfo(Seed: Cardinal; AvailabilityMask: TWeaponAvailabilityMask; MaximumTechLevel, MinimumTechLevel: Byte): PWeaponInfo;
 var
   I: Integer;
@@ -8378,8 +8387,8 @@ var
   Info, Nearest: PWeaponInfo;
   Distance, NearestDistance: Integer;
 
-  // @nested $7BC170 TechDistance
-  function TechDistance(TechLevel: Integer): Integer; // @addr 0x7BC170 @note "Nested helper with caller-popped static link. Minimum/maximum bytes are at ParentFrame+8/+12."
+  // @nested $7EBED0 TechDistance
+  function TechDistance(TechLevel: Integer): Integer; // @addr 0x007EBED0 @note "Nested helper with caller-popped static link. Minimum/maximum bytes are at ParentFrame+8/+12."
   begin
     Result := 0;
     if TechLevel > MaximumTechLevel then Result := TechLevel - MaximumTechLevel;
@@ -8390,58 +8399,55 @@ begin
   Candidates := TList.Create;
   NearestDistance := 0;
   Nearest := nil;
-  for I := 1 to CountItemTypesInMask([Ord(t_IndustrialLaser)..Ord(t_Lirecron)]) do
+  for I := 1 to CountItemTypesInMask(StandardWeaponItemTypes) do
   begin
-    Info := @WeaponInfos[TItemType(GetItemTypeFromMask([Ord(t_IndustrialLaser)..Ord(t_Lirecron)], I))];
-    if Info.Availability in AvailabilityMask then
+    Info := @WeaponInfos[GetItemTypeFromMask(StandardWeaponItemTypes, I)];
+    if not (Info.Availability in AvailabilityMask) then Continue;
+    Distance := TechDistance(Info.TechLevel);
+    if Distance > 0 then
     begin
-      Distance := TechDistance(Info.TechLevel);
-      if Distance > 0 then
+      if (Candidates.Count <= 0) and ((Nearest = nil) or (Distance < NearestDistance)) then
       begin
-        if (Candidates.Count <= 0) and ((Nearest = nil) or (Distance < NearestDistance)) then
-        begin
-          Nearest := Info;
-          NearestDistance := Distance;
-        end;
-      end
-      else Candidates.Add(Info);
+        Nearest := Info;
+        NearestDistance := Distance;
+      end;
+      Continue;
     end;
+    Candidates.Add(Info);
   end;
   for I := 0 to CustomWeaponTypes.Count - 1 do
   begin
-    Info := PWeaponInfo(CustomWeaponTypes[I]);
-    if Info.Availability in AvailabilityMask then
+    Info := CustomWeaponTypes[I];
+    if not (Info.Availability in AvailabilityMask) then Continue;
+    Distance := TechDistance(Info.TechLevel);
+    if Distance > 0 then
     begin
-      Distance := TechDistance(Info.TechLevel);
-      if Distance > 0 then
+      if (Candidates.Count <= 0) and ((Nearest = nil) or (Distance < NearestDistance)) then
       begin
-        if (Candidates.Count <= 0) and ((Nearest = nil) or (Distance < NearestDistance)) then
-        begin
-          Nearest := Info;
-          NearestDistance := Distance;
-        end;
-      end
-      else Candidates.Add(CustomWeaponTypes[I]);
+        Nearest := Info;
+        NearestDistance := Distance;
+      end;
+      Continue;
     end;
+    Candidates.Add(CustomWeaponTypes[I]);
   end;
-  if Candidates.Count > 0 then Result := PWeaponInfo(Candidates[SeededRandomIntRange(0, Candidates.Count - 1, Seed)])
+  if Candidates.Count > 0 then Result := Candidates[SeededRandomIntRange(0, Candidates.Count - 1, Seed)]
   else Result := Nearest;
   Candidates.Free;
   if Result = nil then Result := @WeaponInfos;
 end;
-{ @end $7BC1D8 }
+{ @end $7EBF08 }
 
-{ @routine $7BC3B0 TGalaxy_SelectMicroModule }
+{ @routine $7EC088 TGalaxy_SelectMicroModule }
 function TGalaxy.SelectMicroModule(MinimumPriority, MaximumPriority: Byte; Seed: Cardinal; Context: TObject): Integer;
-type
-  TModuleOwnerMasks = array[0..2] of TOwnerMask;
 var
   Attempts, ModuleIndex, BestIndex, BestPriority: Integer;
 begin
   Attempts := 0;
   BestIndex := -1;
   BestPriority := 100;
-  repeat
+  while True do
+  begin
     Inc(Attempts);
     ModuleIndex := NextRandomIntRange(0, MicroModuleTemplateCount - 1, Seed);
     if aConst.MicroModuleTemplates[ModuleIndex].SpecialOnly then Continue;
@@ -8467,7 +8473,7 @@ begin
           if TRuins(Context).CurrentStanding in aConst.FactionStandingMasks[TRuins(Context).CurrentStar.ControlFaction] then
           begin
             if aConst.MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask *
-              TModuleOwnerMasks(aConst.PlanetOwnerMasks)[Ord(TRuins(Context).CurrentStar.ControlFaction)] = [] then Continue;
+              aConst.PlanetOwnerMasks.ByFaction[TRuins(Context).CurrentStar.ControlFaction] = [] then Continue;
           end
           else
           begin
@@ -8484,7 +8490,7 @@ begin
       end;
     end;
     if (Context = nil) and aConst.MicroModuleTemplates[ModuleIndex].RacialRestriction then Continue;
-    if (aConst.MicroModuleTemplates[ModuleIndex].Priority in [MinimumPriority..MaximumPriority]) then
+    if aConst.MicroModuleTemplates[ModuleIndex].Priority in [MinimumPriority..MaximumPriority] then
     begin
       Result := ModuleIndex;
       Exit;
@@ -8511,14 +8517,14 @@ begin
         Exit;
       end;
     end;
-  until False;
+  end;
 end;
-{ @end $7BC3B0 }
+{ @end $7EC088 }
 
-{ @routine $7BC7B8 TGalaxy_SelectMicroModuleForEquipment }
+{ @routine $7EC460 TGalaxy_SelectMicroModuleForEquipment }
 function TGalaxy.SelectMicroModuleForEquipment(MinimumPriority, MaximumPriority: Byte; Seed: Cardinal; Context: TObject; Item: Pointer): Integer;
-type
-  TModuleOwnerMasks = array[0..2] of TOwnerMask;
+label
+  CheckPriority;
 var
   Attempts, ModuleIndex, BestIndex, BestPriority: Integer;
   Equipment: TEquipment;
@@ -8527,48 +8533,48 @@ begin
   Equipment := Item;
   BestIndex := -1;
   BestPriority := 100;
-  repeat
+  while True do
+  begin
     Inc(Attempts);
     ModuleIndex := NextRandomIntRange(0, MicroModuleTemplateCount - 1, Seed);
     if aConst.MicroModuleTemplates[ModuleIndex].SpecialOnly then Continue;
-    if Context <> nil then
+    if Context = nil then goto CheckPriority;
+    if (Context is TKling) and not TShip(Context).HasScriptStateText then
     begin
-      if (Context is TKling) and not TShip(Context).HasScriptStateText then
+      if not ((Context as TKling).DominatorSeries in aConst.MicroModuleTemplates[ModuleIndex].AllowedDominatorSeriesMask) then Continue;
+      if not (oiDominator in aConst.MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask) then Continue;
+      if not aConst.MicroModuleTemplates[ModuleIndex].RacialRestriction and
+        (aConst.MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask <> [oiDominator]) and
+        (aConst.MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask * [oiMaloc..oiDominator, oiPirate] <>
+          [oiMaloc..oiDominator, oiPirate]) then Continue;
+    end;
+    if aConst.MicroModuleTemplates[ModuleIndex].RacialRestriction then
+    begin
+      if Context is TPlanet then
       begin
-        if not ((Context as TKling).DominatorSeries in aConst.MicroModuleTemplates[ModuleIndex].AllowedDominatorSeriesMask) then Continue;
-        if not (oiDominator in aConst.MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask) then Continue;
-        if not aConst.MicroModuleTemplates[ModuleIndex].RacialRestriction and
-          (aConst.MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask <> [oiDominator]) and
-          (aConst.MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask * [oiMaloc..oiDominator, oiPirate] <>
-            [oiMaloc..oiDominator, oiPirate]) then Continue;
-      end;
-      if aConst.MicroModuleTemplates[ModuleIndex].RacialRestriction then
+        if not (TPlanet(Context).OwnerId in aConst.MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask) then Continue;
+      end
+      else if Context is TRuins then
       begin
-        if Context is TPlanet then
+        if TRuins(Context).CurrentStanding in aConst.FactionStandingMasks[TRuins(Context).CurrentStar.ControlFaction] then
         begin
-          if not (TPlanet(Context).OwnerId in aConst.MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask) then Continue;
+          if aConst.MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask *
+            aConst.PlanetOwnerMasks.ByFaction[TRuins(Context).CurrentStar.ControlFaction] = [] then Continue;
         end
-        else if Context is TRuins then
+        else
         begin
-          if TRuins(Context).CurrentStanding in aConst.FactionStandingMasks[TRuins(Context).CurrentStar.ControlFaction] then
-          begin
-            if aConst.MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask *
-              TModuleOwnerMasks(aConst.PlanetOwnerMasks)[Ord(TRuins(Context).CurrentStar.ControlFaction)] = [] then Continue;
-          end
-          else
-          begin
-            if TRuins(Context).CurrentStanding in [ssCoalitionMilitary..ssNeutral] then
-              if aConst.MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask * aConst.PlanetOwnerMasks.Coalition = [] then Continue;
-            if TRuins(Context).CurrentStanding in [ssPiratePassive..ssPirateMilitary] then
-              if aConst.MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask * aConst.PlanetOwnerMasks.PirateClan = [] then Continue;
-          end;
-        end
-        else if Context is TNormalShip then
-        begin
-          if not (RaceToOwner(TNormalShip(Context).PilotRace) in aConst.MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask) then Continue;
+          if TRuins(Context).CurrentStanding in [ssCoalitionMilitary..ssNeutral] then
+            if aConst.MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask * aConst.PlanetOwnerMasks.Coalition = [] then Continue;
+          if TRuins(Context).CurrentStanding in [ssPiratePassive..ssPirateMilitary] then
+            if aConst.MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask * aConst.PlanetOwnerMasks.PirateClan = [] then Continue;
         end;
+      end
+      else if Context is TNormalShip then
+      begin
+        if not (RaceToOwner(TNormalShip(Context).PilotRace) in aConst.MicroModuleTemplates[ModuleIndex].AllowedHullOwnerMask) then Continue;
       end;
     end;
+  CheckPriority:
     if (Context = nil) and aConst.MicroModuleTemplates[ModuleIndex].RacialRestriction then Continue;
     if (aConst.MicroModuleTemplates[ModuleIndex].Priority in [MinimumPriority..MaximumPriority]) and
       ((Equipment = nil) or CanInstallMicroModule(ModuleIndex, Equipment)) then
@@ -8604,11 +8610,11 @@ begin
         Exit;
       end;
     end;
-  until False;
+  end;
 end;
-{ @end $7BC7B8 }
+{ @end $7EC460 }
 
-{ @routine $7BCC34 TGalaxy_SelectHullSeries }
+{ @routine $7EC8A8 TGalaxy_SelectHullSeries }
 function TGalaxy.SelectHullSeries(OwnerId: TOwnerId; HullType: THullType; MinimumRarity, MaximumRarity: Byte): Integer;
 var I, J, Temp: Integer; Indices: array of Integer;
 begin
@@ -8617,29 +8623,28 @@ begin
   begin
     Indices[I] := I;
     J := NextRandomIntRange(0, HullSeriesCount - 1, RandomState);
-    if J < I then
-    begin
-      Temp := Indices[J];
-      Indices[J] := I;
-      Indices[I] := Temp;
-    end;
+    if J >= I then Continue;
+    Temp := Indices[J];
+    Indices[J] := I;
+    Indices[I] := Temp;
   end;
   for I := 0 to HullSeriesCount - 1 do
-    if (OwnerId in HullSeriesDefinitions[Indices[I]].AllowedOwners) and
-       (HullType in HullSeriesDefinitions[Indices[I]].AllowedShipTypes) then
-      if (HullSeriesDefinitions[Indices[I]].Year <= RemapClamped(TechLevel, 2, 8, 0, 80) + NextRandomIntRange(0, 20, RandomState)) and
-         (HullSeriesDefinitions[Indices[I]].ProbabilityWeight >= MinimumRarity) and
-         (HullSeriesDefinitions[Indices[I]].ProbabilityWeight <= MaximumRarity) then
-        if NextRandomUnitFloat(RandomState) <= 1 / HullSeriesDefinitions[Indices[I]].ProbabilityWeight then
-        begin
-          Result := Indices[I];
-          Exit;
-        end;
+  begin
+    if not ((OwnerId in HullSeriesDefinitions[Indices[I]].AllowedOwners) and
+      (HullType in HullSeriesDefinitions[Indices[I]].AllowedShipTypes)) then Continue;
+    if ((HullSeriesDefinitions[Indices[I]].Year <= RemapClamped(TechLevel, 2, 8, 0, 80) + NextRandomIntRange(0, 20, RandomState)) and
+      (HullSeriesDefinitions[Indices[I]].ProbabilityWeight >= MinimumRarity) and
+      (HullSeriesDefinitions[Indices[I]].ProbabilityWeight <= MaximumRarity)) and (NextRandomUnitFloat(RandomState) <= 1 / HullSeriesDefinitions[Indices[I]].ProbabilityWeight) then
+    begin
+      Result := Indices[I];
+      Exit;
+    end;
+  end;
   Result := -1;
 end;
-{ @end $7BCC34 }
+{ @end $7EC8A8 }
 
-{ @routine $7BCEAC TGalaxy_IsDominatorSeriesUnresolved }
+{ @routine $7ECABC TGalaxy_IsDominatorSeriesUnresolved }
 function TGalaxy.IsDominatorSeriesUnresolved(Series: TDominatorSeries): Boolean;
 begin
   case Series of
@@ -8649,9 +8654,9 @@ begin
   else Result := False;
   end;
 end;
-{ @end $7BCEAC }
+{ @end $7ECABC }
 
-{ @routine $7BCF04 TGalaxy_HasUnresolvedDominatorSeries }
+{ @routine $7ECAF0 TGalaxy_HasUnresolvedDominatorSeries }
 function TGalaxy.HasUnresolvedDominatorSeries(Series: TDominatorSeriesSet): Boolean;
 var I: TDominatorSeries;
 begin
@@ -8666,9 +8671,9 @@ begin
     if Result then Break;
   end;
 end;
-{ @end $7BCF04 }
+{ @end $7ECAF0 }
 
-{ @routine $7BCF7C TGalaxy_ProcessPlayerSatelliteExploration }
+{ @routine $7ECB4C TGalaxy_ProcessPlayerSatelliteExploration }
 procedure TGalaxy.ProcessPlayerSatelliteExploration;
 var I, Water, Land, Hill: Integer;
   Satellite: TSatellite;
@@ -8676,12 +8681,15 @@ var I, Water, Land, Hill: Integer;
   Changed: Boolean;
   Amount: Integer;
 begin
-  if GetPlayer <> nil then begin
-    Changed := False;
-    for I := 0 to GetPlayer.Satellites.Count - 1 do begin
-      Satellite := TSatellite(GetPlayer.Satellites[I]);
-      if (Satellite.BrokenFlag = 0) and (Satellite.TargetPlanet <> nil) then begin
-        with TObject(Satellite.TargetPlanet) as TPlanet do begin
+  if GetPlayer = nil then Exit;
+  Changed := False;
+  for I := 0 to GetPlayer.Satellites.Count - 1 do
+  begin
+    Satellite := GetPlayer.Satellites[I];
+    if (Satellite.BrokenFlag = 0) and (Satellite.TargetPlanet <> nil) then
+    begin
+      with Satellite.TargetPlanet as TPlanet do
+      begin
         Water := WaterExplored;
         Land := LandExplored;
         Hill := HillExplored;
@@ -8691,88 +8699,89 @@ begin
         Amount := (WaterExplored - Water) + (LandExplored - Land) + (HillExplored - Hill);
         Inc(GetPlayer.SatelliteTilesExplored, Amount);
         TryAddAchievementProgress('ARCHEOLOGY', Amount);
-        if (Water < WaterExplored) or (Land < LandExplored) or (Hill < HillExplored) then begin
+        if (Water < WaterExplored) or (Land < LandExplored) or (Hill < HillExplored) then
+        begin
           Wear := 1;
           if GetPlayer.Satellites.Count > GetPlayer.GetSatelliteLimit then
             Wear := Wear + (GetPlayer.Satellites.Count - GetPlayer.GetSatelliteLimit) * 1.0;
           Changed := True;
-        end else Wear := 0.1;
+        end
+        else Wear := 0.1;
         GetPlayer.ApplyItemDegradation(Satellite, idkUse, NextRandomUnitFloat(RandomState) * Satellite.WearPerTurn * Wear);
-        end;
       end;
     end;
-    if Changed then GetPlayer.RefreshStorageBubbles;
   end;
+  if Changed then GetPlayer.RefreshStorageBubbles;
 end;
-{ @end $7BCF7C }
+{ @end $7ECB4C }
 
-{ @routine $7BD240 TGalaxy_CountExistingSatellites }
+{ @routine $7ECD6C TGalaxy_CountExistingSatellites }
 function TGalaxy.CountExistingSatellites: Integer;
 var I, J, K: Integer; Star: TStar; Ship: TShip; Item: TItem; Stored: TStoredItem;
 begin
   Result := GetPlayer.CountStoredItemUnits(nil, t_Satellite) + GetPlayer.Satellites.Count;
   for I := 0 to Galaxy.Stars.Count - 1 do begin
-    Star := TStar(Galaxy.Stars[I]);
+    Star := Galaxy.Stars[I];
     for J := 0 to Star.Items.Count - 1 do begin
-      Item := TItem(Star.Items[J]);
+      Item := Star.Items[J];
       if Item is TSatellite then Inc(Result);
     end;
     for J := 0 to Star.Ships.Count - 1 do begin
-      Ship := TShip(Star.Ships[J]);
+      Ship := Star.Ships[J];
       for K := 0 to Ship.Inventory.Count - 1 do begin
-        Item := TItem(Ship.Inventory[K]);
+        Item := Ship.Inventory[K];
         if Item is TSatellite then Inc(Result);
       end;
     end;
   end;
   for I := 0 to StoredItems.Count - 1 do begin
-    Stored := TStoredItem(StoredItems[I]);
+    Stored := StoredItems[I];
     if (Stored.Item <> nil) and (Stored.Item is TSatellite) then Inc(Result);
   end;
 end;
-{ @end $7BD240 }
+{ @end $7ECD6C }
 
-{ @routine $7BD3CC TGalaxy_ComputeScaledMiniMoney }
+{ @routine $7ECEF8 TGalaxy_ComputeScaledMiniMoney }
 function TGalaxy.ComputeScaledMiniMoney(Owner: TOwnerId): Integer;
 begin
   Result := Round(AverageRangerCapital * 0.01 * OwnerInfo[Owner].FuelPriceFactor);
   if Result > 250 then Result := Round((Result - 250) * 0.3) + 250;
 end;
-{ @end $7BD3CC }
+{ @end $7ECEF8 }
 
-{ @routine $7BD44C TGalaxy_ComputeScaledSmallMoney }
+{ @routine $7ECF68 TGalaxy_ComputeScaledSmallMoney }
 function TGalaxy.ComputeScaledSmallMoney(Owner: TOwnerId): Integer;
 begin
   Result := Round(AverageRangerCapital * (1 / 65) * OwnerInfo[Owner].FuelPriceFactor);
   if Result > 1000 then Result := Round((Result - 1000) * 0.3) + 1000;
 end;
-{ @end $7BD44C }
+{ @end $7ECF68 }
 
-{ @routine $7BD4CC TGalaxy_ComputeScaledAverageMoney }
+{ @routine $7ECFD8 TGalaxy_ComputeScaledAverageMoney }
 function TGalaxy.ComputeScaledAverageMoney(Owner: TOwnerId): Integer;
 begin
   Result := Round(AverageRangerCapital * 0.025 * OwnerInfo[Owner].FuelPriceFactor);
   if Result > 5000 then Result := Round((Result - 5000) * 0.3) + 5000;
 end;
-{ @end $7BD4CC }
+{ @end $7ECFD8 }
 
-{ @routine $7BD54C TGalaxy_ComputeScaledBigMoney }
+{ @routine $7ED048 TGalaxy_ComputeScaledBigMoney }
 function TGalaxy.ComputeScaledBigMoney(Owner: TOwnerId): Integer;
 begin
   Result := Round(AverageRangerCapital * 0.04 * OwnerInfo[Owner].FuelPriceFactor);
   if Result > 10000 then Result := Round((Result - 10000) * 0.3) + 10000;
 end;
-{ @end $7BD54C }
+{ @end $7ED048 }
 
-{ @routine $7BD5CC TGalaxy_ComputeScaledHugeMoney }
+{ @routine $7ED0B8 TGalaxy_ComputeScaledHugeMoney }
 function TGalaxy.ComputeScaledHugeMoney(Owner: TOwnerId): Integer;
 begin
   Result := Round(AverageRangerCapital * (1 / 15) * OwnerInfo[Owner].FuelPriceFactor);
   if Result > 25000 then Result := Round((Result - 25000) * 0.3) + 25000;
 end;
-{ @end $7BD5CC }
+{ @end $7ED0B8 }
 
-{ @routine $7BD64C TGalaxy_ResolveMoneySizeTag }
+{ @routine $7ED128 TGalaxy_ResolveMoneySizeTag }
 function TGalaxy.ResolveMoneySizeTag(Tag: WideString; Owner: TOwnerId): Integer;
 begin
   if Tag = 'Zero' then Result := 0
@@ -8783,46 +8792,45 @@ begin
   else if Tag = 'Huge' then Result := Galaxy.ComputeScaledHugeMoney(Owner)
   else begin RaiseWideMessage('Error! Указан неправильный формат размера у вещи ' + Tag); Result := -1; end;
 end;
-{ @end $7BD64C }
+{ @end $7ED128 }
 
-{ @routine $7BD850 TGalaxy_GetMiniGoodsQuantity }
+{ @routine $7ED310 TGalaxy_GetMiniGoodsQuantity }
 function TGalaxy.GetMiniGoodsQuantity(GoodsType: Byte): Integer;
 begin
   Result := Round(GoodsMarket[GoodsType].BaseStock * 0.1);
 end;
-{ @end $7BD850 }
+{ @end $7ED310 }
 
-{ @routine $7BD894 TGalaxy_GetSmallGoodsQuantity }
+{ @routine $7ED340 TGalaxy_GetSmallGoodsQuantity }
 function TGalaxy.GetSmallGoodsQuantity(GoodsType: Byte): Integer;
 begin
   Result := Round(GoodsMarket[GoodsType].BaseStock * 0.5);
 end;
-{ @end $7BD894 }
+{ @end $7ED340 }
 
-{ @routine $7BD8D0 TGalaxy_GetAverageGoodsQuantity }
+{ @routine $7ED368 TGalaxy_GetAverageGoodsQuantity }
 function TGalaxy.GetAverageGoodsQuantity(GoodsType: Byte): Integer;
-var Stock: Integer;
 begin
-  Stock := GoodsMarket[GoodsType].BaseStock;
-  Result := Round(Stock);
+  // Inferred unit factor of the historical 0.1/0.5/1/1.5/2 quantity family.
+  Result := Round(GoodsMarket[GoodsType].BaseStock * 1);
 end;
-{ @end $7BD8D0 }
+{ @end $7ED368 }
 
-{ @routine $7BD908 TGalaxy_GetBigGoodsQuantity }
+{ @routine $7ED38C TGalaxy_GetBigGoodsQuantity }
 function TGalaxy.GetBigGoodsQuantity(GoodsType: Byte): Integer;
 begin
   Result := Round(GoodsMarket[GoodsType].BaseStock * 1.5);
 end;
-{ @end $7BD908 }
+{ @end $7ED38C }
 
-{ @routine $7BD944 TGalaxy_GetHugeGoodsQuantity }
+{ @routine $7ED3B4 TGalaxy_GetHugeGoodsQuantity }
 function TGalaxy.GetHugeGoodsQuantity(GoodsType: Byte): Integer;
 begin
   Result := Round(GoodsMarket[GoodsType].BaseStock * 2.0);
 end;
-{ @end $7BD944 }
+{ @end $7ED3B4 }
 
-{ @routine $7BD980 TGalaxy_GetGoodsQuantityBySize }
+{ @routine $7ED3DC TGalaxy_GetGoodsQuantityBySize }
 function TGalaxy.GetGoodsQuantityBySize(Size: Byte; GoodsType: Byte): Integer;
 begin
   if Size = 0 then Result := 0
@@ -8833,9 +8841,9 @@ begin
   else if Size = 5 then Result := Galaxy.GetHugeGoodsQuantity(GoodsType)
   else begin RaiseWideMessage('Error! Указан неправильный формат количества товара '); Result := -1; end;
 end;
-{ @end $7BD980 }
+{ @end $7ED3DC }
 
-{ @routine $7BDAA0 TGalaxy_ClassifyGoodsQuantity }
+{ @routine $7ED4C0 TGalaxy_ClassifyGoodsQuantity }
 function TGalaxy.ClassifyGoodsQuantity(Quantity: Integer; GoodsType: Byte): Byte;
 var Distance1, Distance2, Distance3, Distance4, Distance5: Integer;
 begin
@@ -8851,44 +8859,44 @@ begin
   else if Distance4 < Distance5 then Result := 4
   else Result := 5;
 end;
-{ @end $7BDAA0 }
+{ @end $7ED4C0 }
 
-{ @routine $7BDB7C TGalaxy_GetMinimumGoodsPrice }
+{ @routine $7ED574 TGalaxy_GetMinimumGoodsPrice }
 function TGalaxy.GetMinimumGoodsPrice(GoodsType: Byte): Integer;
 begin
   Result := GoodsMarket[GoodsType].MinPrice;
 end;
-{ @end $7BDB7C }
+{ @end $7ED574 }
 
-{ @routine $7BDBA8 TGalaxy_GetLowGoodsPrice }
+{ @routine $7ED588 TGalaxy_GetLowGoodsPrice }
 function TGalaxy.GetLowGoodsPrice(GoodsType: Byte): Integer;
 begin
   Result := (GoodsMarket[GoodsType].MinPrice + GoodsMarket[GoodsType].AveragePrice) div 2;
 end;
-{ @end $7BDBA8 }
+{ @end $7ED588 }
 
-{ @routine $7BDBF0 TGalaxy_GetAverageGoodsPrice }
+{ @routine $7ED5B0 TGalaxy_GetAverageGoodsPrice }
 function TGalaxy.GetAverageGoodsPrice(GoodsType: Byte): Integer;
 begin
   Result := GoodsMarket[GoodsType].AveragePrice;
 end;
-{ @end $7BDBF0 }
+{ @end $7ED5B0 }
 
-{ @routine $7BDC1C TGalaxy_GetHighGoodsPrice }
+{ @routine $7ED5C4 TGalaxy_GetHighGoodsPrice }
 function TGalaxy.GetHighGoodsPrice(GoodsType: Byte): Integer;
 begin
   Result := (GoodsMarket[GoodsType].AveragePrice + GoodsMarket[GoodsType].MaxPrice) div 2;
 end;
-{ @end $7BDC1C }
+{ @end $7ED5C4 }
 
-{ @routine $7BDC64 TGalaxy_GetMaximumGoodsPrice }
+{ @routine $7ED5EC TGalaxy_GetMaximumGoodsPrice }
 function TGalaxy.GetMaximumGoodsPrice(GoodsType: Byte): Integer;
 begin
   Result := GoodsMarket[GoodsType].MaxPrice;
 end;
-{ @end $7BDC64 }
+{ @end $7ED5EC }
 
-{ @routine $7BDC90 TGalaxy_GetGoodsPriceByLevel }
+{ @routine $7ED600 TGalaxy_GetGoodsPriceByLevel }
 function TGalaxy.GetGoodsPriceByLevel(Level: Byte; GoodsType: Byte): Integer;
 begin
   if Level = 1 then Result := Galaxy.GetMinimumGoodsPrice(GoodsType)
@@ -8898,9 +8906,9 @@ begin
   else if Level = 5 then Result := Galaxy.GetMaximumGoodsPrice(GoodsType)
   else begin RaiseWideMessage('Error! Указан неправильный формат стоимости товара '); Result := -1; end;
 end;
-{ @end $7BDC90 }
+{ @end $7ED600 }
 
-{ @routine $7BDD9C TGalaxy_ClassifyGoodsPrice }
+{ @routine $7ED6D8 TGalaxy_ClassifyGoodsPrice }
 function TGalaxy.ClassifyGoodsPrice(Price: Integer; GoodsType: Byte): Byte;
 var Distance1, Distance2, Distance3, Distance4, Distance5: Integer;
 begin
@@ -8916,9 +8924,9 @@ begin
   else if Distance4 < Distance5 then Result := 4
   else Result := 5;
 end;
-{ @end $7BDD9C }
+{ @end $7ED6D8 }
 
-{ @routine $7BDE78 TGalaxy_ProcessStationSpawning }
+{ @routine $7ED78C TGalaxy_ProcessStationSpawning }
 procedure TGalaxy.ProcessStationSpawning;
 var I, Count: Integer; Constellation: TConstellation; Kind: TStationType;
 begin
@@ -8926,16 +8934,16 @@ begin
   for Kind := rstRangerCenter to rstDominion do begin
     Count := 0;
     for I := 0 to Galaxy.Constellations.Count - 1 do begin
-      Constellation := TConstellation(Galaxy.Constellations[I]);
+      Constellation := Galaxy.Constellations[I];
       if Constellation.Visible and (Constellation.ShipTypeCounts[Kind] > 0) then Inc(Count);
     end;
     if (Count = 0) and (NextRandomUnitFloat(RandomState) < 0.3) then begin ReplenishStationType(Kind); Exit; end;
   end;
   ReplenishStationType(TStationType((CurrentTurn + 100) mod 7 + 6));
 end;
-{ @end $7BDE78 }
+{ @end $7ED78C }
 
-{ @routine $7BDF64 TGalaxy_ReplenishStationType }
+{ @routine $7ED850 TGalaxy_ReplenishStationType }
 procedure TGalaxy.ReplenishStationType(StationType: TStationType);
 const
   StationMask = [rstRangerCenter..rstDominion];
@@ -8944,7 +8952,7 @@ const
 var I, J: Integer; Hostile, Assigned: Boolean; Constellation: TConstellation; Star: TStar; Station: TRuins;
 begin
   for I := 0 to Galaxy.Constellations.Count - 1 do begin
-    Constellation := TConstellation(Galaxy.Constellations[I]);
+    Constellation := Galaxy.Constellations[I];
     if not ((Constellation.Id <> 20) and (Constellation.ShipTypeCounts[StationType] <= 0) and
       (Constellation.CountShipsByTypeMask(StationMask) < Constellation.Stars.Count) and (Constellation.ShipTypeCounts[stKling] <= 0)) then Continue;
     Hostile := False;
@@ -8952,67 +8960,69 @@ begin
       Star := Constellation.Stars[J];
       if (Star.ControlFaction = sfDominators) or (Star.Status.CustomFaction <> '') then Hostile := True;
     end;
-    if not Hostile then begin
-      Star := Constellation.Stars[NextRandomIntRange(0, Constellation.Stars.Count - 1, RandomState)];
-      if not ((Star.Battle = 0) and (StationDefaultStandings[StationType] in FactionStandingMasks[Star.ControlFaction]) and
-        (GetPlayer.CurrentStar <> Star) and (Star.DaysSincePlayerVisit >= 70) and (Star.CountShipsByTypeMask(StationMask) <= 1) and
-        ((StationType <> rstPirateBase) or (Star.CountShipsByTypeMask(MilitaryBaseMask) <= 0)) and
-        ((StationType <> rstMilitaryBase) or (Star.CountShipsByTypeMask(PirateBaseMask) <= 0))) then Continue;
-      if StationType = rstMilitaryBase then begin
-        Assigned := False;
-        for J := 0 to Constellation.Stars.Count - 1 do
-          if HasMilitaryBaseAssignedToStar(TStar(Constellation.Stars[J])) then begin Assigned := True; Break; end;
-        if Assigned then Continue;
-      end;
-      if StationType = rstDominion then begin
-        Assigned := False;
-        for J := 0 to Constellation.Stars.Count - 1 do
-          if TStar(Constellation.Stars[J]).Dominion <> nil then begin Assigned := True; Break; end;
-        if Assigned then Continue;
-      end;
-      Station := TRuins.Create;
-      Station.Init(StationType, Star, '');
-      if CoalitionDefeatedTurn = 0 then
-        Galaxy.AddPlanetNewsWithPlayerBubble(gnStationCreated,
-          FormatText3(PickLocalizedTextVariant('GalaxyNews.CreateNewObject.' + ShipTypeNames[StationType].Name,
-            GenerationSeed * (Galaxy.CurrentTurn div 10)), TextHighlightColorTag,
-            '<Name>', Station.GetName, '<Star>', Star.Name, '<Sector>', Star.Constellation.GetName));
-      Exit;
+    if Hostile then Continue;
+    Star := Constellation.Stars[NextRandomIntRange(0, Constellation.Stars.Count - 1, RandomState)];
+    if not ((Star.Battle = 0) and (StationDefaultStandings[StationType] in FactionStandingMasks[Star.ControlFaction]) and
+      (GetPlayer.CurrentStar <> Star) and (Star.DaysSincePlayerVisit >= 70) and (Star.CountShipsByTypeMask(StationMask) <= 1) and
+      ((StationType <> rstPirateBase) or (Star.CountShipsByTypeMask(MilitaryBaseMask) <= 0)) and
+      ((StationType <> rstMilitaryBase) or (Star.CountShipsByTypeMask(PirateBaseMask) <= 0))) then Continue;
+    if StationType = rstMilitaryBase then begin
+      Assigned := False;
+      for J := 0 to Constellation.Stars.Count - 1 do
+        if HasMilitaryBaseAssignedToStar(TStar(Constellation.Stars[J])) then begin Assigned := True; Break; end;
+      if Assigned then Continue;
     end;
+    if StationType = rstDominion then begin
+      Assigned := False;
+      for J := 0 to Constellation.Stars.Count - 1 do
+        if TStar(Constellation.Stars[J]).Dominion <> nil then begin Assigned := True; Break; end;
+      if Assigned then Continue;
+    end;
+    Station := TRuins.Create;
+    Station.Init(StationType, Star, '');
+    if CoalitionDefeatedTurn = 0 then
+      Galaxy.AddPlanetNewsWithPlayerBubble(gnStationCreated,
+        FormatText3(PickLocalizedTextVariant('GalaxyNews.CreateNewObject.' + ShipTypeNames[StationType].Name,
+          GenerationSeed * (Galaxy.CurrentTurn div 10)), TextHighlightColorTag,
+          '<Name>', Station.GetName, '<Star>', Star.Name, '<Sector>', Star.Constellation.GetName));
+    Exit;
   end;
 end;
-{ @end $7BDF64 }
+{ @end $7ED850 }
 
-{ @routine $7BE398 TGalaxy_ProcessDominatorResearchProgress }
+{ @routine $7EDC34 TGalaxy_ProcessDominatorResearchProgress }
 procedure TGalaxy.ProcessDominatorResearchProgress;
 var Series: TDominatorSeries;
   Progress: Single;
   News: WideString;
 begin
-  if ((DominatorResearch[dsBlazer].Progress < 100) or (DominatorResearch[dsKeller].Progress < 100) or
-      (DominatorResearch[dsTerron].Progress < 100)) and (ShipTypeCounts[rstScienceBase] > 0) then
-    for Series := dsBlazer to dsTerron do
-      if DominatorResearch[Series].Progress < 100 then begin
-        Progress := DominatorResearch[Series].Progress + GetDominatorResearchRate(Series);
-        if CurrentTurn mod NextRandomIntRange(2, 5, RandomState) = 0 then
-          DominatorResearch[Series].Material := Max(0, DominatorResearch[Series].Material -
-            NextRandomIntRange(1, GalaxyDifficultyTuning[DifficultyLevels[2]].MaximumResearchMaterialConsumption, RandomState));
-        if Progress >= 100 then begin
-          case Series of
-            dsBlazer: News := 'Programms.LogicalNegation.GalaxyNews';
-            dsKeller: News := 'Programms.Dematerial.GalaxyNews';
-            dsTerron: News := 'Programms.Energotron.GalaxyNews';
-          end;
-          Galaxy.AddPlanetNewsWithPlayerBubble(gnDominatorResearchCompleted, PickLocalizedTextVariant(News, GenerationSeed * (Galaxy.CurrentTurn div 10)));
-          Inc(GetPlayer.AchievementStats.CompletedResearchPrograms);
-          GetPlayer.AchievementStats.CheckScienceAchievement;
-        end;
-        DominatorResearch[Series].Progress := Min(100, Progress);
+  if not ((DominatorResearch[dsBlazer].Progress < 100) or (DominatorResearch[dsKeller].Progress < 100) or
+    (DominatorResearch[dsTerron].Progress < 100)) then Exit;
+  if ShipTypeCounts[rstScienceBase] <= 0 then Exit;
+  for Series := dsBlazer to dsTerron do
+  begin
+    if not (DominatorResearch[Series].Progress < 100) then Continue;
+    Progress := DominatorResearch[Series].Progress + GetDominatorResearchRate(Series);
+    if CurrentTurn mod NextRandomIntRange(2, 5, RandomState) = 0 then
+      DominatorResearch[Series].Material := Max(0, DominatorResearch[Series].Material -
+        NextRandomIntRange(1, GalaxyDifficultyTuning[DifficultyLevels[2]].MaximumResearchMaterialConsumption, RandomState));
+    if Progress >= 100 then
+    begin
+      case Series of
+        dsBlazer: News := 'Programms.LogicalNegation.GalaxyNews';
+        dsKeller: News := 'Programms.Dematerial.GalaxyNews';
+        dsTerron: News := 'Programms.Energotron.GalaxyNews';
       end;
+      Galaxy.AddPlanetNewsWithPlayerBubble(gnDominatorResearchCompleted, PickLocalizedTextVariant(News, GenerationSeed * (Galaxy.CurrentTurn div 10)));
+      Inc(GetPlayer.AchievementStats.CompletedResearchPrograms);
+      GetPlayer.AchievementStats.CheckScienceAchievement;
+    end;
+    DominatorResearch[Series].Progress := Min(100, Progress);
+  end;
 end;
-{ @end $7BE398 }
+{ @end $7EDC34 }
 
-{ @routine $7BE6B4 TGalaxy_IsDominatorResearchComplete }
+{ @routine $7EDF08 TGalaxy_IsDominatorResearchComplete }
 function TGalaxy.IsDominatorResearchComplete(Series: TDominatorSeriesSet): Boolean;
 var I: TDominatorSeries;
 begin
@@ -9023,25 +9033,23 @@ begin
       Break;
     end;
 end;
-{ @end $7BE6B4 }
+{ @end $7EDF08 }
 
-{ @routine $7BE710 TGalaxy_GetDominatorResearchRate }
+{ @routine $7EDF4C TGalaxy_GetDominatorResearchRate }
 function TGalaxy.GetDominatorResearchRate(Series: TDominatorSeries): Single;
-var Efficiency: Integer;
 begin
-  Efficiency := GetDominatorResearchEfficiency(Series);
-  Result := RemapClamped(Efficiency, 0, 100, 0.00001, GalaxyDifficultyTuning[DifficultyLevels[2]].MaximumDominatorResearchRate) * DominatorResearchRateMultipliers[Series];
+  Result := RemapClamped(GetDominatorResearchEfficiency(Series), 0, 100, 0.00001, GalaxyDifficultyTuning[DifficultyLevels[2]].MaximumDominatorResearchRate) * DominatorResearchRateMultipliers[Series];
 end;
-{ @end $7BE710 }
+{ @end $7EDF4C }
 
-{ @routine $7BE78C TGalaxy_GetDominatorResearchEfficiency }
+{ @routine $7EDFC4 TGalaxy_GetDominatorResearchEfficiency }
 function TGalaxy.GetDominatorResearchEfficiency(Series: TDominatorSeries): TPercent;
 begin
   Result := Trunc(RemapClamped(DominatorResearch[Series].Material, 0, 300, 20, 100));
 end;
-{ @end $7BE78C }
+{ @end $7EDFC4 }
 
-{ @routine $7BE7DC TGalaxy_FindStationByTypeAndIndex }
+{ @routine $7EE004 TGalaxy_FindStationByTypeAndIndex }
 function TGalaxy.FindStationByTypeAndIndex(Index: Integer; StationType: TStationType): Pointer;
 var Star: TStar; Ship: TShip; I, J, Number: Integer;
 begin
@@ -9049,52 +9057,51 @@ begin
   Number := 1;
   if ShipTypeCounts[StationType] > 0 then
     for I := 0 to Galaxy.Stars.Count - 1 do begin
-      Star := TStar(Galaxy.Stars[I]);
+      Star := Galaxy.Stars[I];
       for J := 0 to Star.Ships.Count - 1 do begin
-        Ship := TShip(Star.Ships[J]);
-        if Ship.TypeId = StationType then begin
-          if Number = Index then begin Result := Ship; Exit; end;
-          Inc(Number);
-        end;
+        Ship := Star.Ships[J];
+        if Ship.TypeId <> StationType then Continue;
+        if Number = Index then begin Result := Ship; Exit; end;
+        Inc(Number);
       end;
     end;
 end;
-{ @end $7BE7DC }
+{ @end $7EE004 }
 
-{ @routine $7BE89C TGalaxy_TryAwardDepositPrize }
+{ @routine $7EE0A4 TGalaxy_TryAwardDepositPrize }
 procedure TGalaxy.TryAwardDepositPrize;
 var Deposit, Chance, Roll: Integer;
   Station: TRuins;
   Item: TItem;
   Text: WideString;
 begin
-  if (GetPlayer.DepositAmount <> 0) and (GetPlayer.DepositDayCount <> 0) and (GetPlayer.DepositDayCount mod TurnsPerYear = 0) then begin
-    Station := TObject(FindStationByTypeAndIndex(SeededRandomIntRange(1, ShipTypeCounts[rstBusinessCenter],
-      Galaxy.GenerationSeed + Galaxy.CurrentTurn div 33), rstBusinessCenter)) as TRuins;
-    if Station <> nil then begin
-      Text := PickLocalizedTextVariant('GalaxyNews.BK.DepositPrizeLose', Station.Seed * (Galaxy.CurrentTurn div 10));
-      Chance := 30 + (GetPlayer.DepositDayCount div TurnsPerYear) * 10;
-      Roll := SeededRandomIntRange(1, 100, Station.Seed + Galaxy.CurrentTurn div 7);
-      if Roll < Chance then begin
-        Deposit := GetPlayer.ComputeDepositAccruedValue;
-        Item := Station.FindMostExpensiveShopItem(Round(Deposit * 0.1), Round(Deposit * 1.0));
-        if Item <> nil then begin
-          Station.EquipmentShop.Delete(Station.EquipmentShop.IndexOf(Item));
-          GetPlayer.AddItemToPlayerStorage(Item, Station, -1);
-          GetPlayer.RefreshStorageBubbles;
-          Text := PickLocalizedTextVariant('GalaxyNews.BK.DepositPrizeWin', Station.Seed * (Galaxy.CurrentTurn div 10));
-          ReplaceTextToken(Text, '<Item>', Item.GetDisplayName, TextHighlightColorTag);
-        end;
-      end;
-      ReplaceTextToken(Text, '<BKName>', Station.GetFullName(' '), TextHighlightColorTag);
-      ReplaceTextToken(Text, '<Star>', Station.CurrentStar.Name, TextHighlightColorTag);
-      AddOrUpdatePlayerBubble(pmGalaxyNews, CurrentTurn, Text, '');
+  if GetPlayer.DepositAmount = 0 then Exit;
+  if GetPlayer.DepositDayCount = 0 then Exit;
+  if GetPlayer.DepositDayCount mod TurnsPerYear <> 0 then Exit;
+  Station := TObject(FindStationByTypeAndIndex(SeededRandomIntRange(1, ShipTypeCounts[rstBusinessCenter],
+    Galaxy.GenerationSeed + Galaxy.CurrentTurn div 33), rstBusinessCenter)) as TRuins;
+  if Station = nil then Exit;
+  Text := PickLocalizedTextVariant('GalaxyNews.BK.DepositPrizeLose', Station.Seed * (Galaxy.CurrentTurn div 10));
+  Chance := 30 + (GetPlayer.DepositDayCount div TurnsPerYear) * 10;
+  Roll := SeededRandomIntRange(1, 100, Station.Seed + Galaxy.CurrentTurn div 7);
+  if Roll < Chance then begin
+    Deposit := GetPlayer.ComputeDepositAccruedValue;
+    Item := Station.FindMostExpensiveShopItem(Round(Deposit * 0.1), Round(Deposit * 1.0));
+    if Item <> nil then begin
+      Station.EquipmentShop.Delete(Station.EquipmentShop.IndexOf(Item));
+      GetPlayer.AddItemToPlayerStorage(Item, Station, -1);
+      GetPlayer.RefreshStorageBubbles;
+      Text := PickLocalizedTextVariant('GalaxyNews.BK.DepositPrizeWin', Station.Seed * (Galaxy.CurrentTurn div 10));
+      ReplaceTextToken(Text, '<Item>', Item.GetDisplayName, TextHighlightColorTag);
     end;
   end;
+  ReplaceTextToken(Text, '<BKName>', Station.GetFullName(' '), TextHighlightColorTag);
+  ReplaceTextToken(Text, '<Star>', Station.CurrentStar.Name, TextHighlightColorTag);
+  AddOrUpdatePlayerBubble(pmGalaxyNews, CurrentTurn, Text, '');
 end;
-{ @end $7BE89C }
+{ @end $7EE0A4 }
 
-{ @routine $7BEC1C TGalaxy_ProcessBankDebtAndDeposits }
+{ @routine $7EE3FC TGalaxy_ProcessBankDebtAndDeposits }
 procedure TGalaxy.ProcessBankDebtAndDeposits;
 const
   AffectedShipTypes = [htPirate];
@@ -9155,9 +9162,9 @@ begin
     AddOrUpdatePlayerBubble(pmGalaxyNews, Self.CurrentTurn, News, '');
   end;
 end;
-{ @end $7BEC1C }
+{ @end $7EE3FC }
 
-{ @routine $7BF428 TGalaxy_ProcessRangerCenterNewYearEvent }
+{ @routine $7EEBBC TGalaxy_ProcessRangerCenterNewYearEvent }
 procedure TGalaxy.ProcessRangerCenterNewYearEvent;
 var Year, Month, Day: Word;
   Text: WideString;
@@ -9208,9 +9215,9 @@ begin
       AddOrUpdatePlayerBubble(pmGalaxyNews, CurrentTurn, Text, '');
     end;
 end;
-{ @end $7BF428 }
+{ @end $7EEBBC }
 
-{ @routine $7BFA1C TGalaxy_TryCreateLiberationGroup }
+{ @routine $7EF168 TGalaxy_TryCreateLiberationGroup }
 function TGalaxy.TryCreateLiberationGroup: Boolean;
 var
   i, Index, j, k, ShipCount: Integer;
@@ -9226,8 +9233,8 @@ begin
   Result := False;
   EmergencyControlPercent := 5;
   if (Galaxy.GetFactionControlPercent(sfCoalition) > 90) and
-    (NextRandomUnitFloat(Self.RandomState) < 0.5) and (Galaxy.WarDeltaWin[0] > 3) then Exit;
-  if (Galaxy.WarDeltaWin[0] > 5) and (NextRandomUnitFloat(Self.RandomState) < 0.8) then Exit;
+    (NextRandomUnitFloat(Self.RandomState) < 0.5) and (Galaxy.WarDeltaWin[sfCoalition] > 3) then Exit;
+  if (Galaxy.WarDeltaWin[sfCoalition] > 5) and (NextRandomUnitFloat(Self.RandomState) < 0.8) then Exit;
   Constellation := nil;
   Index := NextRandomIntRange(0, Self.Constellations.Count - 1, Self.RandomState);
   for i := 0 to Self.Constellations.Count - 1 do
@@ -9308,28 +9315,26 @@ begin
       begin
         IncrementWrapped(Index, 0, Constellation.Stars.Count - 1);
         Star := TStar(Constellation.Stars[Index]);
-        if (Star.ControlFaction = sfCoalition) and (Star.Battle = 0) and (Star.Status.CustomFaction = '') and
+        if not ((Star.ControlFaction = sfCoalition) and (Star.Battle = 0) and (Star.Status.CustomFaction = '') and
           (not Star.HasLiberationGroupOrder or
-            (Galaxy.GetFactionControlPercent(sfCoalition) <= EmergencyControlPercent)) then
+            (Galaxy.GetFactionControlPercent(sfCoalition) <= EmergencyControlPercent))) then Continue;
+        for j := 0 to Star.Ships.Count - 1 do
         begin
-          for j := 0 to Star.Ships.Count - 1 do
+          Ship := TShip(Star.Ships[j]);
+          if (Ship.TypeId = stWarrior) and (Ship.HomePlanet.CurrentStar = Star) and
+            not Ship.IsOutsideStarSpace and (Ship.ScriptShip = nil) and
+            (Ship.Order in [soNone, soMove]) and (Ship.AbsoluteScriptOrder = 0) and (Ship.LiberationGroup = nil) then
           begin
-            Ship := TShip(Star.Ships[j]);
-            if (Ship.TypeId = stWarrior) and (Ship.HomePlanet.CurrentStar = Star) and
-              not Ship.IsOutsideStarSpace and (Ship.ScriptShip = nil) and
-              (Ship.Order in [soNone, soMove]) and (Ship.AbsoluteScriptOrder = 0) and (Ship.LiberationGroup = nil) then
+            Ship.LiberationGroup := Group;
+            Group.AddShip(Ship);
+            Inc(ShipCount);
+            if TWarrior(Ship).WarriorType = wtFlagship then
             begin
-              Ship.LiberationGroup := Group;
-              Group.AddShip(Ship);
-              Inc(ShipCount);
-              if TWarrior(Ship).WarriorType = wtFlagship then
-              begin
-                GroupStrength := 0.5 * Ship.Strength + GroupStrength;
-                if not HasSubtypeOne then EnemyStrength := 1.2 * EnemyStrength;
-                HasSubtypeOne := True;
-              end
-              else GroupStrength := GroupStrength + Ship.Strength;
-            end;
+              GroupStrength := 0.5 * Ship.Strength + GroupStrength;
+              if not HasSubtypeOne then EnemyStrength := 1.2 * EnemyStrength;
+              HasSubtypeOne := True;
+            end
+            else GroupStrength := GroupStrength + Ship.Strength;
           end;
         end;
       end;
@@ -9356,9 +9361,9 @@ begin
   end;
   Result := False;
 end;
-{ @end $7BFA1C }
+{ @end $7EF168 }
 
-{ @routine $7C00DC TGalaxy_TryDispatchMilitaryBaseToEnemyStar }
+{ @routine $7EF7A8 TGalaxy_TryDispatchMilitaryBaseToEnemyStar }
 function TGalaxy.TryDispatchMilitaryBaseToEnemyStar: Boolean;
 var I, J, Count: Integer;
   Star, Target: TStar;
@@ -9370,24 +9375,24 @@ var I, J, Count: Integer;
   Turn: Integer;
 begin
   Result := False;
-  if (FindMilitaryBaseInTransit <> nil) or (CurrentTurn < GalaxyWarmupTurns) or (CurrentTurn mod 133 <> 0) then Exit;
+  if FindMilitaryBaseInTransit <> nil then Exit;
+  if (CurrentTurn < GalaxyWarmupTurns) or (CurrentTurn mod 133 <> 0) then Exit;
   if SeededRandomUnitFloat(GenerationSeed * CurrentTurn + CountStarsInBattle) < 0.5 then Exit;
   Station := nil;
   for I := 0 to Galaxy.Stars.Count - 1 do begin
-    Star := TStar(Galaxy.Stars[I]);
-    if (Star.ShipTypeCounts[rstMilitaryBase] <> 0) and (not Star.Constellation.HasDominatorPresence) and
-      (SeededRandomUnitFloat((GenerationSeed + I) * CurrentTurn * Star.GenerationSeed) >= 0.2) then begin
-      for J := 0 to Star.Ships.Count - 1 do begin
-        Ship := TShip(Star.Ships[J]);
-        if Ship.TypeId = rstMilitaryBase then begin
-          Station := Ship as TRuins;
-          if Station.FlyToStar <> nil then Station := nil
-          else if Station.HasScriptControl then Station := nil;
-        end;
-        if Station <> nil then Break;
+    Star := Galaxy.Stars[I];
+    if not ((Star.ShipTypeCounts[rstMilitaryBase] <> 0) and (not Star.Constellation.HasDominatorPresence) and
+      (SeededRandomUnitFloat((GenerationSeed + I) * CurrentTurn * Star.GenerationSeed) >= 0.2)) then Continue;
+    for J := 0 to Star.Ships.Count - 1 do begin
+      Ship := Star.Ships[J];
+      if Ship.TypeId = rstMilitaryBase then begin
+        Station := Ship as TRuins;
+        if Station.FlyToStar <> nil then Station := nil
+        else if Station.HasScriptControl then Station := nil;
       end;
       if Station <> nil then Break;
     end;
+    if Station <> nil then Break;
   end;
   if Station = nil then Exit;
   Count := 0;
@@ -9395,16 +9400,17 @@ begin
   if Count < 2 then Exit;
   Target := nil;
   for I := 0 to Galaxy.Stars.Count - 1 do begin
-    Star := TStar(Galaxy.Stars[I]);
-    if Star.IsConstellationVisible and (Star.Constellation.Id <> 20) and
-      (Star.Constellation.ShipTypeCounts[rstMilitaryBase] <= 0) and (Star.ControlFaction = sfDominators) and
-      (Star.Ships.Count <= Star.ShipTypeCounts[stKling]) and (Star.ShipTypeCounts[stKling] >= 5) and
-      (not HasMilitaryBaseAssignedToStar(Star)) and (not HasLiberationGroupTargetingStar(Star)) and
-      (SeededRandomUnitFloat((GenerationSeed + I) * CurrentTurn * Star.GenerationSeed) >= 0.7) and
-      (PointDistance(Station.CurrentStar.Position, Star.Position) >= ScaleIntByTechLevel(30, 60)) then begin
-      Target := Star;
-      Break;
-    end;
+    Star := Galaxy.Stars[I];
+    if not Star.IsConstellationVisible then Continue;
+    if (Star.Constellation.Id <> 20) and
+      (Star.Constellation.ShipTypeCounts[rstMilitaryBase] <= 0) and (Star.ControlFaction = sfDominators) then
+      if (Star.Ships.Count <= Star.ShipTypeCounts[stKling]) and (Star.ShipTypeCounts[stKling] >= 5) then
+        if (not HasMilitaryBaseAssignedToStar(Star)) and (not HasLiberationGroupTargetingStar(Star)) and
+          (SeededRandomUnitFloat((GenerationSeed + I) * CurrentTurn * Star.GenerationSeed) >= 0.7) and
+          (PointDistance(Station.CurrentStar.Position, Star.Position) >= ScaleIntByTechLevel(30, 60)) then begin
+          Target := Star;
+          Break;
+        end;
   end;
   if Target = nil then Exit;
   Planet := TObject(Station.CurrentStar.FindFastestResearchPlanet) as TPlanet;
@@ -9430,16 +9436,16 @@ begin
   Galaxy.AddPlanetNewsWithPlayerBubble(gnMilitaryBaseOperation, Text);
   Result := True;
 end;
-{ @end $7C00DC }
+{ @end $7EF7A8 }
 
-{ @routine $7C077C TGalaxy_FindMilitaryBaseInTransit }
+{ @routine $7EFDA4 TGalaxy_FindMilitaryBaseInTransit }
 function TGalaxy.FindMilitaryBaseInTransit: Pointer;
 var I, J: Integer; Star: TStar; Ship: TShip;
 begin
   for I := 0 to Galaxy.Stars.Count - 1 do begin
-    Star := TStar(Galaxy.Stars[I]);
+    Star := Galaxy.Stars[I];
     for J := 0 to Star.Ships.Count - 1 do begin
-      Ship := TShip(Star.Ships[J]);
+      Ship := Star.Ships[J];
       if (Ship.TypeId = rstMilitaryBase) and ((Ship as TRuins).FlyToStar <> nil) and
         (not Ship.InNormalSpace or ((Ship as TRuins).FlyToStar <> Ship.CurrentStar)) then begin
         Result := Ship;
@@ -9449,24 +9455,24 @@ begin
   end;
   Result := nil;
 end;
-{ @end $7C077C }
+{ @end $7EFDA4 }
 
-{ @routine $7C0854 TGalaxy_HasMilitaryBaseAssignedToStar }
+{ @routine $7EFE50 TGalaxy_HasMilitaryBaseAssignedToStar }
 function TGalaxy.HasMilitaryBaseAssignedToStar(Star: TStar): Boolean;
 var I, J: Integer; SystemStar: TStar; Ship: TShip;
 begin
   for I := 0 to Galaxy.Stars.Count - 1 do begin
-    SystemStar := TStar(Galaxy.Stars[I]);
+    SystemStar := Galaxy.Stars[I];
     for J := 0 to SystemStar.Ships.Count - 1 do begin
-      Ship := TShip(SystemStar.Ships[J]);
+      Ship := SystemStar.Ships[J];
       if (Ship.TypeId = rstMilitaryBase) and ((Ship as TRuins).FlyToStar = (TObject(Star) as TStar)) then begin Result := True; Exit; end;
     end;
   end;
   Result := False;
 end;
-{ @end $7C0854 }
+{ @end $7EFE50 }
 
-{ @routine $7C0914 TGalaxy_HasLiberationGroupTargetingStar }
+{ @routine $7EFEF0 TGalaxy_HasLiberationGroupTargetingStar }
 function TGalaxy.HasLiberationGroupTargetingStar(Star: TStar): Boolean;
 var I: Integer; Group: TGroup;
 begin
@@ -9476,9 +9482,9 @@ begin
   end;
   Result := False;
 end;
-{ @end $7C0914 }
+{ @end $7EFEF0 }
 
-{ @routine $7C097C TGalaxy_AssignSpecialStationService }
+{ @routine $7EFF3C TGalaxy_AssignSpecialStationService }
 procedure TGalaxy.AssignSpecialStationService;
 var
   i, StarCount, j, ShipCount: Integer;
@@ -9564,12 +9570,12 @@ begin
   begin
     Station := Candidates[NextRandomIntRange(0, Count * 100 - 1, Seed) div 100];
     Station.SpecialServiceActive := True;
-    Self.AddPlanetNewsWithPlayerBubble(gnStationSpecialShip, FormatText3(PickLocalizedTextVariant('FormRuins.' + Station.GetTypeNameKey + '.SpecialShip.News', (Galaxy.CurrentTurn div 10) * Self.GenerationSeed), TextHighlightColorTag, '<Name>', Station.GetName, '<Star>', Station.CurrentStar.Name, '<Sector>', TConstellation(Station.CurrentStar.Constellation).GetName));
+    Self.AddPlanetNewsWithPlayerBubble(gnStationSpecialShip, FormatText3(PickLocalizedTextVariant('FormRuins.' + Station.GetTypeNameKey + '.SpecialShip.News', (Galaxy.CurrentTurn div 10) * Self.GenerationSeed), TextHighlightColorTag, '<Name>', Station.GetName, '<Star>', Station.CurrentStar.Name, '<Sector>', Station.CurrentStar.Constellation.GetName));
   end;
 end;
-{ @end $7C097C }
+{ @end $7EFF3C }
 
-{ @routine $7C0E6C TGalaxy_ApplyWingmanLeadershipPenalty }
+{ @routine $7F03AC TGalaxy_ApplyWingmanLeadershipPenalty }
 procedure TGalaxy.ApplyWingmanLeadershipPenalty;
 var I, Excess: Integer; Leader, Ship: TShip;
 begin
@@ -9594,9 +9600,9 @@ begin
       end;
     end;
 end;
-{ @end $7C0E6C }
+{ @end $7F03AC }
 
-{ @routine $7C0FD0 TGalaxy_ProcessCoalitionDefeat }
+{ @routine $7F04D0 TGalaxy_ProcessCoalitionDefeat }
 procedure TGalaxy.ProcessCoalitionDefeat;
 var I, J: Integer; Ship: TShip; Star: TStar; Text: WideString; Bubble: TMessagePlayer; Contested: Boolean; CoalitionStrength, PirateStrength: Single;
 begin
@@ -9642,19 +9648,19 @@ begin
     AddPlanetNews(gnCoalitionDefeated, Text);
   end;
 end;
-{ @end $7C0FD0 }
+{ @end $7F04D0 }
 
-{ @routine $7C13E0 TGalaxy_ComputeRangerSpawnQuotas }
+{ @routine $7F0880 TGalaxy_ComputeRangerSpawnQuotas }
 procedure TGalaxy.ComputeRangerSpawnQuotas;
 var Race: TOwnerId;
   Ratio, I, J, K: Integer;
   Star: TStar;
   Planet: TPlanet;
   Warrior: TWarrior;
+  Reserved: Integer;
   Total, Extra: Integer;
   Order: array[0..4] of TOwnerId;
   Counts, Recruits: array[oiMaloc..oiGaal] of Integer;
-  Reserved: Integer;
   Sorted: array[0..4] of Integer;
 begin
   for Race := oiMaloc to oiGaal do begin
@@ -9665,11 +9671,11 @@ begin
   end;
   Ratio := Round(18 / (CustomRules.CoalitionAggression * 0.0625 + 0.5));
   for I := 0 to Stars.Count - 1 do begin
-    Star := TStar(Stars[I]);
+    Star := Stars[I];
     for J := 0 to Star.Planets.Count - 1 do begin
-      Planet := TPlanet(Star.Planets[J]);
+      Planet := Star.Planets[J];
       for K := 0 to Planet.Warriors.Count - 1 do begin
-        Warrior := TWarrior(Planet.Warriors[K]);
+        Warrior := Planet.Warriors[K];
         if Warrior.TypeNameOverrideKey = '' then
           if Warrior.WarriorType = wtFlagship then Inc(Recruits[Warrior.PilotRace])
           else Inc(Counts[Warrior.PilotRace]);
@@ -9688,8 +9694,8 @@ begin
   Extra := Total div Ratio;
   if Total - Extra * Ratio >= 3 then Inc(Extra);
   for Race := oiMaloc to oiGaal do Sorted[Ord(Race)] := Counts[Race];
-  for I := 0 to 3 do
-    for J := I + 1 to 4 do
+  for I := Low(Sorted) to High(Sorted) - 1 do
+    for J := I + 1 to High(Sorted) do
       if Sorted[I] < Sorted[J] then begin
         Race := Order[I];
         K := Sorted[I];
@@ -9698,11 +9704,11 @@ begin
         Order[J] := Race;
         Sorted[J] := K;
       end;
-  for I := 0 to Min(Extra - 0 - 1, 4) do Inc(RangerSpawnQuotas[Order[I]]);
+  for I := Low(Order) to Min(Extra - 0 - 1, High(Order)) do Inc(RangerSpawnQuotas[Order[I]]);
 end;
-{ @end $7C13E0 }
+{ @end $7F0880 }
 
-{ @routine $7C16E0 TGalaxy_PruneExpiredGalaxyEvents }
+{ @routine $7F0B24 TGalaxy_PruneExpiredGalaxyEvents }
 procedure TGalaxy.PruneExpiredGalaxyEvents;
 begin
   while (GalaxyEvents.Count > 0) and (CurrentTurn - TGalaxyEvent(GalaxyEvents[0]).Turn > 1825) do begin
@@ -9710,16 +9716,16 @@ begin
     GalaxyEvents.Delete(0);
   end;
 end;
-{ @end $7C16E0 }
+{ @end $7F0B24 }
 
-{ @routine $7C1744 TGalaxy_GetCoalitionToPirateSystemRatio }
+{ @routine $7F0B70 TGalaxy_GetCoalitionToPirateSystemRatio }
 function TGalaxy.GetCoalitionToPirateSystemRatio: Single;
 begin
   Result := Galaxy.CountFactionStars(sfCoalition) / Max(1, Galaxy.CountFactionStars(sfPirates) - 1);
 end;
-{ @end $7C1744 }
+{ @end $7F0B70 }
 
-{ @routine $7C1794 TGalaxy_GetEffectiveDifficultyLevel }
+{ @routine $7F0BBC TGalaxy_GetEffectiveDifficultyLevel }
 function TGalaxy.GetEffectiveDifficultyLevel: Integer;
 var I: Byte;
 begin
@@ -9728,9 +9734,9 @@ begin
   else
     for I := 0 to 7 do Inc(Result, Galaxy.DifficultyLevels[I]);
 end;
-{ @end $7C1794 }
+{ @end $7F0BBC }
 
-{ @routine $7C17E4 TGalaxy_GetDifficultyTierIndex }
+{ @routine $7F0BEC TGalaxy_GetDifficultyTierIndex }
 function TGalaxy.GetDifficultyTierIndex: TDifficultyTier;
 var Level, Bound, Tier, Step: Integer;
 begin
@@ -9745,9 +9751,9 @@ begin
   end;
   Result := Min(Tier, 9);
 end;
-{ @end $7C17E4 }
+{ @end $7F0BEC }
 
-{ @routine $7C1848 TGalaxy_InterpolateDifficulty }
+{ @routine $7F0C1C TGalaxy_InterpolateDifficulty }
 function TGalaxy.InterpolateDifficulty(Level: Integer; AtZero, AtEight, AtSixteen, AtTwentyFour: Single): Single;
 var EffectiveLevel: Integer;
 begin
@@ -9758,306 +9764,304 @@ begin
   else if EffectiveLevel <= 24 then Result := RemapClamped(EffectiveLevel, 16, 24, AtSixteen, AtTwentyFour)
   else Result := AtTwentyFour + (AtTwentyFour - AtSixteen) * (EffectiveLevel - 24) / 8;
 end;
-{ @end $7C1848 }
+{ @end $7F0C1C }
 
-{ @routine $7C1964 TGalaxy_ScaleDifficultyExponentially }
+{ @routine $7F0D2C TGalaxy_ScaleDifficultyExponentially }
 function TGalaxy.ScaleDifficultyExponentially(Level: Integer; BaseValue, FactorPerEightLevels: Single): Single;
 var EffectiveLevel: Integer;
 begin
   if Level < 0 then EffectiveLevel := GetEffectiveDifficultyLevel else EffectiveLevel := Level;
   Result := BaseValue * Exp(Ln(FactorPerEightLevels) * EffectiveLevel * 0.125);
 end;
-{ @end $7C1964 }
+{ @end $7F0D2C }
 
-{ @routine $7C19C4 TGalaxy_GetDominatorBossHullScale }
+{ @routine $7F0D80 TGalaxy_GetDominatorBossHullScale }
 function TGalaxy.GetDominatorBossHullScale: Single;
 begin
   Result := InterpolateDifficulty(-1, 0.8, 1, 1.2, 1.5);
 end;
-{ @end $7C19C4 }
+{ @end $7F0D80 }
 
-{ @routine $7C19F8 TGalaxy_GetDominatorKillExperienceScale }
+{ @routine $7F0DA8 TGalaxy_GetDominatorKillExperienceScale }
 function TGalaxy.GetDominatorKillExperienceScale: Single;
 begin
   Result := GetEffectiveDifficultyLevel * 0.3 / 24 + 0.9;
 end;
-{ @end $7C19F8 }
+{ @end $7F0DA8 }
 
-{ @routine $7C1A4C TGalaxy_GetTurnsBetweenLiberationGroups }
+{ @routine $7F0DFC TGalaxy_GetTurnsBetweenLiberationGroups }
 function TGalaxy.GetTurnsBetweenLiberationGroups: Integer;
 begin
   if CustomRules.Enabled then Result := Round(InterpolateDifficulty(-1, 25, 30, 50, 80) / (0.5 + CustomRules.CoalitionAggression * 0.0625))
   else Result := Round(InterpolateDifficulty(-1, 25, 30, 50, 80));
 end;
-{ @end $7C1A4C }
+{ @end $7F0DFC }
 
-{ @routine $7C1AE0 TGalaxy_GetInitialDominatorControlPercent }
+{ @routine $7F0E78 TGalaxy_GetInitialDominatorControlPercent }
 function TGalaxy.GetInitialDominatorControlPercent: Integer;
-var Level: Integer;
 begin
-  Level := GetEffectiveDifficultyLevel;
-  Result := 45 + Round(Level * 1.25);
+  Result := 45 + Round(GetEffectiveDifficultyLevel * 1.25);
 end;
-{ @end $7C1AE0 }
+{ @end $7F0E78 }
 
-{ @routine $7C1B14 TGalaxy_GetDominatorAggressionLevel }
+{ @routine $7F0EA0 TGalaxy_GetDominatorAggressionLevel }
 function TGalaxy.GetDominatorAggressionLevel: Integer;
 begin
   if CustomRules.Enabled then Result := CustomRules.DominatorAggression else Result := GetEffectiveDifficultyLevel;
 end;
-{ @end $7C1B14 }
+{ @end $7F0EA0 }
 
-{ @routine $7C1B4C TGalaxy_GetDominatorSpawnLevel }
+{ @routine $7F0EB8 TGalaxy_GetDominatorSpawnLevel }
 function TGalaxy.GetDominatorSpawnLevel: Integer;
 begin
   if CustomRules.Enabled then Result := CustomRules.DominatorSpawn else Result := GetEffectiveDifficultyLevel;
 end;
-{ @end $7C1B4C }
+{ @end $7F0EB8 }
 
-{ @routine $7C1B84 TGalaxy_GetPirateAggressionLevel }
+{ @routine $7F0ED0 TGalaxy_GetPirateAggressionLevel }
 function TGalaxy.GetPirateAggressionLevel: Integer;
 begin
   if CustomRules.Enabled then Result := CustomRules.PirateAggression else Result := 8 * Galaxy.DifficultyLevels[0];
 end;
-{ @end $7C1B84 }
+{ @end $7F0ED0 }
 
-{ @routine $7C1BC0 TGalaxy_IsChaoticRandomEnabled }
+{ @routine $7F0EF4 TGalaxy_IsChaoticRandomEnabled }
 function TGalaxy.IsChaoticRandomEnabled: Boolean;
 begin
   Result := CustomRules.Enabled and CustomRules.ChaoticRandom;
 end;
-{ @end $7C1BC0 }
+{ @end $7F0EF4 }
 
-{ @routine $7C1BF4 TGalaxy_AreStationsNearStarsEnabled }
+{ @routine $7F0F0C TGalaxy_AreStationsNearStarsEnabled }
 function TGalaxy.AreStationsNearStarsEnabled: Boolean;
 begin
   Result := CustomRules.Enabled and CustomRules.StationsNearStars;
 end;
-{ @end $7C1BF4 }
+{ @end $7F0F0C }
 
-{ @routine $7C1C28 TGalaxy_IsFullStationTargetingEnabled }
+{ @routine $7F0F24 TGalaxy_IsFullStationTargetingEnabled }
 function TGalaxy.IsFullStationTargetingEnabled: Boolean;
 begin
   Result := CustomRules.Enabled and CustomRules.FullStationTargeting;
 end;
-{ @end $7C1C28 }
+{ @end $7F0F24 }
 
-{ @routine $7C1C5C TGalaxy_IsEquipmentKnowledgeUnrestricted }
+{ @routine $7F0F3C TGalaxy_IsEquipmentKnowledgeUnrestricted }
 function TGalaxy.IsEquipmentKnowledgeUnrestricted: Boolean;
 begin
   Result := CustomRules.Enabled and CustomRules.UnrestrictedEquipmentKnowledge;
 end;
-{ @end $7C1C5C }
+{ @end $7F0F3C }
 
-{ @routine $7C1C90 TGalaxy_GetAsteroidModifier }
+{ @routine $7F0F54 TGalaxy_GetAsteroidModifier }
 function TGalaxy.GetAsteroidModifier: Single;
 begin
   Result := 1;
   if CustomRules.Enabled then Result := 0.5 + CustomRules.AsteroidModifier * 0.0625;
 end;
-{ @end $7C1C90 }
+{ @end $7F0F54 }
 
-{ @routine $7C1CDC TGalaxy_GetStarDamageDifficultyScale }
+{ @routine $7F0F94 TGalaxy_GetStarDamageDifficultyScale }
 function TGalaxy.GetStarDamageDifficultyScale: Single;
 begin
   Result := 1;
   if Galaxy.CustomRules.Enabled then Result := CustomRules.SunDamageModifier * 0.0625 + 0.5;
 end;
-{ @end $7C1CDC }
+{ @end $7F0F94 }
 
-{ @routine $7C1D2C TGalaxy_AreSpecialShipsEnabled }
+{ @routine $7F0FDC TGalaxy_AreSpecialShipsEnabled }
 function TGalaxy.AreSpecialShipsEnabled: Boolean;
 begin
   Result := CustomRules.Enabled and CustomRules.SpecialShips;
 end;
-{ @end $7C1D2C }
+{ @end $7F0FDC }
 
-{ @routine $7C1D60 TGalaxy_GetMicroModuleOfferRollThresholdPercent }
+{ @routine $7F0FF4 TGalaxy_GetMicroModuleOfferRollThresholdPercent }
 function TGalaxy.GetMicroModuleOfferRollThresholdPercent: Single;
 begin
   Result := 30;
   if CustomRules.Enabled then Result := CustomRules.AcrynModifier;
 end;
-{ @end $7C1D60 }
+{ @end $7F0FF4 }
 
-{ @routine $7C1D98 TGalaxy_GetNodeDropModifier }
+{ @routine $7F1020 TGalaxy_GetNodeDropModifier }
 function TGalaxy.GetNodeDropModifier: Single;
 begin
   Result := 1;
   if CustomRules.Enabled then Result := 0.5 + CustomRules.NodeDropModifier * 0.0625;
 end;
-{ @end $7C1D98 }
+{ @end $7F1020 }
 
-{ @routine $7C1DE4 TGalaxy_GetArcadeDropValueModifier }
+{ @routine $7F1060 TGalaxy_GetArcadeDropValueModifier }
 function TGalaxy.GetArcadeDropValueModifier: Single;
 begin
   Result := 1;
   if CustomRules.Enabled then Result := 0.5 + CustomRules.ArcadeDropValueModifier * 0.0625;
 end;
-{ @end $7C1DE4 }
+{ @end $7F1060 }
 
-{ @routine $7C1E30 TGalaxy_GetDropValueModifier }
+{ @routine $7F10A0 TGalaxy_GetDropValueModifier }
 function TGalaxy.GetDropValueModifier: Single;
 begin
   Result := 1;
   if CustomRules.Enabled then Result := CustomRules.DropValueModifier * 0.0625 + 0.5;
 end;
-{ @end $7C1E30 }
+{ @end $7F10A0 }
 
-{ @routine $7C1E7C TGalaxy_GetAgriculturalPlanetWeight }
+{ @routine $7F10E0 TGalaxy_GetAgriculturalPlanetWeight }
 function TGalaxy.GetAgriculturalPlanetWeight: Integer;
 begin
   Result := 1;
   if CustomRules.Enabled then
-    if Integer(CustomRules.AgriculturalPlanetWeight) + CustomRules.MixedPlanetWeight + CustomRules.IndustrialPlanetWeight = 0 then Result := 1
+    if Byte(CustomRules.AgriculturalPlanetWeight) + CustomRules.MixedPlanetWeight + CustomRules.IndustrialPlanetWeight = 0 then Result := 1
     else Result := CustomRules.AgriculturalPlanetWeight;
 end;
-{ @end $7C1E7C }
+{ @end $7F10E0 }
 
-{ @routine $7C1EDC TGalaxy_GetMixedPlanetWeight }
+{ @routine $7F1120 TGalaxy_GetMixedPlanetWeight }
 function TGalaxy.GetMixedPlanetWeight: Integer;
 begin
   Result := 1;
   if CustomRules.Enabled then
-    if Integer(CustomRules.AgriculturalPlanetWeight) + CustomRules.MixedPlanetWeight + CustomRules.IndustrialPlanetWeight = 0 then Result := 1
+    if Byte(CustomRules.AgriculturalPlanetWeight) + CustomRules.MixedPlanetWeight + CustomRules.IndustrialPlanetWeight = 0 then Result := 1
     else Result := CustomRules.MixedPlanetWeight;
 end;
-{ @end $7C1EDC }
+{ @end $7F1120 }
 
-{ @routine $7C1F3C TGalaxy_GetIndustrialPlanetWeight }
+{ @routine $7F1160 TGalaxy_GetIndustrialPlanetWeight }
 function TGalaxy.GetIndustrialPlanetWeight: Integer;
 begin
   Result := 1;
   if CustomRules.Enabled then
-    if Integer(CustomRules.AgriculturalPlanetWeight) + CustomRules.MixedPlanetWeight + CustomRules.IndustrialPlanetWeight = 0 then Result := 1
+    if Byte(CustomRules.AgriculturalPlanetWeight) + CustomRules.MixedPlanetWeight + CustomRules.IndustrialPlanetWeight = 0 then Result := 1
     else Result := CustomRules.IndustrialPlanetWeight;
 end;
-{ @end $7C1F3C }
+{ @end $7F1160 }
 
-{ @routine $7C1F9C TGalaxy_IsZeroStartingExperienceEnabled }
+{ @routine $7F11A0 TGalaxy_IsZeroStartingExperienceEnabled }
 function TGalaxy.IsZeroStartingExperienceEnabled: Boolean;
 begin
   Result := CustomRules.Enabled and CustomRules.ZeroStartingExperience;
 end;
-{ @end $7C1F9C }
+{ @end $7F11A0 }
 
-{ @routine $7C1FD0 TGalaxy_GetExtraRangerCount }
+{ @routine $7F11B8 TGalaxy_GetExtraRangerCount }
 function TGalaxy.GetExtraRangerCount: Integer;
 begin
   Result := 0;
   if CustomRules.Enabled then Result := CustomRules.ExtraRangers;
 end;
-{ @end $7C1FD0 }
+{ @end $7F11B8 }
 
-{ @routine $7C2000 TGalaxy_IsArcadeBattleRoyaleEnabled }
+{ @routine $7F11D0 TGalaxy_IsArcadeBattleRoyaleEnabled }
 function TGalaxy.IsArcadeBattleRoyaleEnabled: Boolean;
 begin
   Result := CustomRules.Enabled and CustomRules.ArcadeBattleRoyale;
 end;
-{ @end $7C2000 }
+{ @end $7F11D0 }
 
-{ @routine $7C2034 TGalaxy_GetArcadeHitpointsModifier }
+{ @routine $7F11E8 TGalaxy_GetArcadeHitpointsModifier }
 function TGalaxy.GetArcadeHitpointsModifier: Single;
 begin
   Result := 1;
   if CustomRules.Enabled then Result := CustomRules.ArcadeHitpointsModifier * 0.0625 + 0.5;
 end;
-{ @end $7C2034 }
+{ @end $7F11E8 }
 
-{ @routine $7C2080 TGalaxy_GetArcadeDamageModifier }
+{ @routine $7F1228 TGalaxy_GetArcadeDamageModifier }
 function TGalaxy.GetArcadeDamageModifier: Single;
 begin
   Result := 1;
   if CustomRules.Enabled then Result := CustomRules.ArcadeDamageModifier * 0.0625 + 0.5;
 end;
-{ @end $7C2080 }
+{ @end $7F1228 }
 
-{ @routine $7C20CC TGalaxy_AreDominatorRacialWeaponsEnabled }
+{ @routine $7F1268 TGalaxy_AreDominatorRacialWeaponsEnabled }
 function TGalaxy.AreDominatorRacialWeaponsEnabled: Boolean;
 begin
   Result := CustomRules.Enabled and CustomRules.DominatorRacialWeapons;
 end;
-{ @end $7C20CC }
+{ @end $7F1268 }
 
-{ @routine $7C2100 TGalaxy_GetAIJunkToleranceLevel }
+{ @routine $7F1280 TGalaxy_GetAIJunkToleranceLevel }
 function TGalaxy.GetAIJunkToleranceLevel: Integer;
 begin
   Result := 7;
   if CustomRules.Enabled then Result := CustomRules.AIJunkTolerance;
 end;
-{ @end $7C2100 }
+{ @end $7F1280 }
 
-{ @routine $7C2130 TGalaxy_AreMaxRangeMissilesEnabled }
+{ @routine $7F1298 TGalaxy_AreMaxRangeMissilesEnabled }
 function TGalaxy.AreMaxRangeMissilesEnabled: Boolean;
 begin
   Result := CustomRules.Enabled and CustomRules.MaxRangeMissiles;
 end;
-{ @end $7C2130 }
+{ @end $7F1298 }
 
-{ @routine $7C2164 TGalaxy_IsOldHyperspaceEnabled }
+{ @routine $7F12B0 TGalaxy_IsOldHyperspaceEnabled }
 function TGalaxy.IsOldHyperspaceEnabled: Boolean;
 begin
   Result := CustomRules.Enabled and CustomRules.OldHyperspace;
 end;
-{ @end $7C2164 }
+{ @end $7F12B0 }
 
-{ @routine $7C2198 TGalaxy_ArePirateNodesEnabled }
+{ @routine $7F12C8 TGalaxy_ArePirateNodesEnabled }
 function TGalaxy.ArePirateNodesEnabled: Boolean;
 begin
   Result := CustomRules.Enabled and CustomRules.PirateNodes;
 end;
-{ @end $7C2198 }
+{ @end $7F12C8 }
 
-{ @routine $7C21CC TGalaxy_IsAIShoppingEnabled }
+{ @routine $7F12E0 TGalaxy_IsAIShoppingEnabled }
 function TGalaxy.IsAIShoppingEnabled: Boolean;
 begin
   Result := CustomRules.Enabled and CustomRules.AIUseShops;
 end;
-{ @end $7C21CC }
+{ @end $7F12E0 }
 
-{ @routine $7C2200 TGalaxy_IsStationShopUpdateEnabled }
+{ @routine $7F12F8 TGalaxy_IsStationShopUpdateEnabled }
 function TGalaxy.IsStationShopUpdateEnabled: Boolean;
 begin
   Result := CustomRules.Enabled and CustomRules.StationsUseShop;
 end;
-{ @end $7C2200 }
+{ @end $7F12F8 }
 
-{ @routine $7C2234 TGalaxy_AreDuplicateArtefactsEnabled }
+{ @routine $7F1310 TGalaxy_AreDuplicateArtefactsEnabled }
 function TGalaxy.AreDuplicateArtefactsEnabled: Boolean;
 begin
   Result := CustomRules.Enabled and CustomRules.DuplicateArtefacts;
 end;
-{ @end $7C2234 }
+{ @end $7F1310 }
 
-{ @routine $7C2268 TGalaxy_GetHullGrowthMod }
+{ @routine $7F1328 TGalaxy_GetHullGrowthMod }
 function TGalaxy.GetHullGrowthMod: Byte;
 begin
   if CustomRules.Enabled then Result := CustomRules.HullGrowth else Result := 0;
 end;
-{ @end $7C2268 }
+{ @end $7F1328 }
 
-{ @routine $7C2298 TGalaxy_IsArcadeEquipmentChangeEnabled }
+{ @routine $7F133C TGalaxy_IsArcadeEquipmentChangeEnabled }
 function TGalaxy.IsArcadeEquipmentChangeEnabled: Boolean;
 begin
   Result := CustomRules.Enabled and CustomRules.ArcadeEquipmentChange;
 end;
-{ @end $7C2298 }
+{ @end $7F133C }
 
-{ @routine $7C22CC TGalaxy_IsOldSpeedCalculationEnabled }
+{ @routine $7F1354 TGalaxy_IsOldSpeedCalculationEnabled }
 function TGalaxy.IsOldSpeedCalculationEnabled: Boolean;
 begin
   Result := CustomRules.Enabled and CustomRules.OldSpeedCalculation;
 end;
-{ @end $7C22CC }
+{ @end $7F1354 }
 
-{ @routine $7C2300 TGalaxy_AreOldMissileBonusesEnabled }
+{ @routine $7F136C TGalaxy_AreOldMissileBonusesEnabled }
 function TGalaxy.AreOldMissileBonusesEnabled: Boolean;
 begin
   Result := CustomRules.Enabled and CustomRules.OldMissileBonuses;
 end;
-{ @end $7C2300 }
+{ @end $7F136C }
 
-{ @routine $7C2334 TStar_RefreshDominatorSeries }
+{ @routine $7F1384 TStar_RefreshDominatorSeries }
 procedure TStar.RefreshDominatorSeries;
 var Blazers, Kellers, Terrons: Integer; Strength: Extended;
 begin
@@ -10071,9 +10075,9 @@ begin
   if (Blazers = 0) and (Kellers > 0) and (Terrons = 0) then DominatorSeries := dsKeller;
   if (Blazers = 0) and (Kellers = 0) and (Terrons > 0) then DominatorSeries := dsTerron;
 end;
-{ @end $7C2334 }
+{ @end $7F1384 }
 
-{ @routine $7C2450 TStar_RefreshDerivedStats }
+{ @routine $7F1478 TStar_RefreshDerivedStats }
 procedure TStar.RefreshDerivedStats;
 var I, Strength: Integer; Ship: TShip;
 begin
@@ -10093,9 +10097,9 @@ begin
   RefreshShipTypeCounts;
   RefreshDominatorSeries;
 end;
-{ @end $7C2450 }
+{ @end $7F1478 }
 
-{ @routine $7C25C4 TStar_GetControlPresence }
+{ @routine $7F15C4 TStar_GetControlPresence }
 procedure TStar.GetControlPresence(out PlayerPartyPresent, CoalitionPresent,
   DominatorsPresent, PiratesPresent, CustomPresent: Boolean);
 var
@@ -10106,8 +10110,8 @@ var
   CoalitionMilitaryPresent, PirateMilitaryPresent, PirateActivePresent, CoalitionActivePresent: Boolean;
   PirateKills, CoalitionKills, PirateLeaningKills, CoalitionLeaningKills: Integer;
 
-  // @nested $7C2538 AccumulateControlPresence
-  procedure AccumulateControlPresence; // @addr 0x7C2538 @ida "void __cdecl $name(void *ParentFrame);" @note "Caller-popped static link; ship -4, Coalition output -8, faction flags -9..-11, other outputs +8..+16."
+  // @nested $7F1538 AccumulateControlPresence
+  procedure AccumulateControlPresence; // @addr 0x007F1538 @ida "void __cdecl $name(void *ParentFrame);" @note "Caller-popped static link; ship -4, Coalition output -8, faction flags -9..-11, other outputs +8..+16."
   begin
     case Ship.CurrentStanding of
       ssDominator: DominatorsPresent := True;
@@ -10132,15 +10136,13 @@ begin
   for Index := 0 to Ships.Count - 1 do
   begin
     Ship := Ships[Index];
-    if not Ship.InHyperspace and
-      ((Ship.CurrentPlanet = nil) or (Ship.CurrentPlanet.OwnerId <> oiUninhabited)) and
-      ((Ship.DockedTo = nil) or (GetPlayer = Ship)) and
+    if Ship.InHyperspace then Continue;
+    if (Ship.CurrentPlanet <> nil) and (Ship.CurrentPlanet.OwnerId = oiUninhabited) then Continue;
+    if not (((Ship.DockedTo = nil) or (GetPlayer = Ship)) and
       ((GetPlayer <> Ship) or ((Ship.CurrentPlanet = nil) and (Ship.DockedTo = nil)) or
-       (Ship.ConsecutiveDockedDays <= 2) or (CurrentScreenId = screenPlanetQuest)) then
-    begin
-      AccumulateControlPresence;
-      if (GetPlayer = Ship) or (GetPlayer = Ship.PartnerShip) then PlayerPartyPresent := True;
-    end;
+      (Ship.ConsecutiveDockedDays <= 2) or (CurrentScreenId = screenPlanetQuest))) then Continue;
+    AccumulateControlPresence;
+    if (GetPlayer = Ship) or (GetPlayer = Ship.PartnerShip) then PlayerPartyPresent := True;
   end;
   if not CoalitionPresent and (ControlFaction = sfCoalition) then
     for Index := 0 to Planets.Count - 1 do
@@ -10180,7 +10182,7 @@ begin
   if not DominatorsPresent and not CoalitionPresent and not PiratesPresent and
     (ControlFaction = sfDominators) and (Status.CustomFaction = '') and
     (((DominatorSeries = dsBlazer) and (Galaxy.BlazerSeriesResolvedTurn <> 0)) or
-     ((DominatorSeries = dsTerron) and (Galaxy.TerronSeriesResolvedTurn <> 0))) then
+    ((DominatorSeries = dsTerron) and (Galaxy.TerronSeriesResolvedTurn <> 0))) then
     if Galaxy.CoalitionDefeatedTurn = 0 then CoalitionPresent := True else PiratesPresent := True;
   if (ControlFaction = sfDominators) and CoalitionPresent and PiratesPresent and not DominatorsPresent then
   begin
@@ -10195,9 +10197,10 @@ begin
     for Index := 0 to Ships.Count - 1 do
     begin
       Ship := Ships[Index];
-      if not Ship.InHyperspace and (Ship is TNormalShip) and
+      if Ship.InHyperspace then Continue;
+      if (Ship is TNormalShip) and
         ((GetPlayer <> Ship) or ((Ship.CurrentPlanet = nil) and (Ship.DockedTo = nil)) or
-         (Ship.ConsecutiveDockedDays <= 2)) then
+        (Ship.ConsecutiveDockedDays <= 2)) then
         if Ship.CurrentStanding = ssCoalitionMilitary then
         begin
           CoalitionMilitaryPresent := True;
@@ -10234,9 +10237,9 @@ begin
     else PiratesPresent := False;
   end;
 end;
-{ @end $7C25C4 }
+{ @end $7F15C4 }
 
-{ @routine $7C2C18 TStar_UpdateControlFaction }
+{ @routine $7F1B54 TStar_UpdateControlFaction }
 procedure TStar.UpdateControlFaction;
 var
   Index: Integer;
@@ -10244,18 +10247,18 @@ var
   CoalitionPresent, CoalitionCaptured, DominatorsPresent, DominatorsCaptured,
     PiratesPresent, PiratesCaptured, CustomPresent, PlayerPartyPresent: Boolean;
 
-  // @nested $7C2B70 RecordFactionVictory
-  procedure RecordFactionVictory(Faction: TStarFaction); // @addr 0x7C2B70 @ida "void __usercall $name(unsigned __int8 Faction@<al>, void *ParentFrame@<^0>);" @note "Nested in UpdateControlFaction with unused caller-popped static link. Updates active Galaxy.WarDeltaWin; a losing streak below -1 is halved rather than incremented."
+  // @nested $7F1ACC RecordFactionVictory
+  procedure RecordFactionVictory(Faction: TStarFaction); // @addr 0x007F1ACC @ida "void __usercall $name(unsigned __int8 Faction@<al>, void *ParentFrame@<^0>);" @note "Nested in UpdateControlFaction with unused caller-popped static link. Updates active Galaxy.WarDeltaWin; a losing streak below -1 is halved rather than incremented."
   begin
-    if Galaxy.WarDeltaWin[Ord(Faction)] >= -1 then Inc(Galaxy.WarDeltaWin[Ord(Faction)])
-    else Galaxy.WarDeltaWin[Ord(Faction)] := Galaxy.WarDeltaWin[Ord(Faction)] div 2;
+    if Galaxy.WarDeltaWin[Faction] >= -1 then Inc(Galaxy.WarDeltaWin[Faction])
+    else Galaxy.WarDeltaWin[Faction] := Galaxy.WarDeltaWin[Faction] div 2;
   end;
 
-  // @nested $7C2BC4 RecordFactionDefeat
-  procedure RecordFactionDefeat(Faction: TStarFaction); // @addr 0x7C2BC4 @ida "void __usercall $name(unsigned __int8 Faction@<al>, void *ParentFrame@<^0>);" @note "Nested in UpdateControlFaction with unused caller-popped static link. Updates active Galaxy.WarDeltaWin; a winning streak above 1 is halved rather than decremented."
+  // @nested $7F1B10 RecordFactionDefeat
+  procedure RecordFactionDefeat(Faction: TStarFaction); // @addr 0x007F1B10 @ida "void __usercall $name(unsigned __int8 Faction@<al>, void *ParentFrame@<^0>);" @note "Nested in UpdateControlFaction with unused caller-popped static link. Updates active Galaxy.WarDeltaWin; a winning streak above 1 is halved rather than decremented."
   begin
-    if Galaxy.WarDeltaWin[Ord(Faction)] <= 1 then Dec(Galaxy.WarDeltaWin[Ord(Faction)])
-    else Galaxy.WarDeltaWin[Ord(Faction)] := Galaxy.WarDeltaWin[Ord(Faction)] div 2;
+    if Galaxy.WarDeltaWin[Faction] <= 1 then Dec(Galaxy.WarDeltaWin[Faction])
+    else Galaxy.WarDeltaWin[Faction] := Galaxy.WarDeltaWin[Faction] div 2;
   end;
 
 begin
@@ -10439,9 +10442,9 @@ begin
     end;
   end;
 end;
-{ @end $7C2C18 }
+{ @end $7F1B54 }
 
-{ @routine $7C3E1C TStar_ResetControlFaction }
+{ @routine $7F2B60 TStar_ResetControlFaction }
 procedure TStar.ResetControlFaction;
 var Ship: TShip;
   DominatorCount, CoalitionCount, CoalitionPassiveCount, NeutralCount, PiratePassiveCount, PirateCount: Integer;
@@ -10449,8 +10452,8 @@ var Ship: TShip;
   I: Integer;
   SeriesCounts: array[TDominatorSeries] of Integer;
 
-  // @nested $7C3B8C CountShipStanding
-  procedure CountShipStanding; // @addr 0x7C3B8C @ida "void __cdecl $name(void *ParentFrame);" @note "Caller-popped static link; ship -4, standing counters -8..-28."
+  // @nested $7F2918 CountShipStanding
+  procedure CountShipStanding; // @addr 0x007F2918 @ida "void __cdecl $name(void *ParentFrame);" @note "Caller-popped static link; ship -4, standing counters -8..-28."
   begin
     case Ship.CurrentStanding of
       ssDominator: Inc(DominatorCount);
@@ -10462,8 +10465,8 @@ var Ship: TShip;
     end;
   end;
 
-  // @nested $7C3BFC SetCoalition
-  procedure SetCoalition; // @addr 0x7C3BFC @ida "void __cdecl $name(void *ParentFrame);" @note "Caller-popped static link; star -32. Also transfers planets and clears eligible NPC ranger prison terms."
+  // @nested $7F2988 SetCoalition
+  procedure SetCoalition; // @addr 0x007F2988 @ida "void __cdecl $name(void *ParentFrame);" @note "Caller-popped static link; star -32. Also transfers planets and clears eligible NPC ranger prison terms."
   var J: Integer;
   begin
     ControlFaction := sfCoalition;
@@ -10482,8 +10485,8 @@ var Ship: TShip;
     end;
   end;
 
-  // @nested $7C3D18 SetPirates
-  procedure SetPirates; // @addr 0x7C3D18 @ida "void __cdecl $name(void *ParentFrame);" @note "Caller-popped static link; star -32. Also transfers planets and clears eligible NPC pirate prison terms."
+  // @nested $7F2A80 SetPirates
+  procedure SetPirates; // @addr 0x007F2A80 @ida "void __cdecl $name(void *ParentFrame);" @note "Caller-popped static link; star -32. Also transfers planets and clears eligible NPC pirate prison terms."
   var J: Integer;
   begin
     ControlFaction := sfPirates;
@@ -10512,12 +10515,14 @@ begin
   SeriesCounts[dsKeller] := 0;
   for I := 0 to Ships.Count - 1 do begin
     Ship := TShip(Ships[I]);
-    if not Ship.InHyperspace and ((Ship.CurrentPlanet = nil) or (Ship.CurrentPlanet.OwnerId <> oiUninhabited)) and
-      ((Ship.DockedTo = nil) or (GetPlayer = Ship)) and
-      ((GetPlayer <> Ship) or ((Ship.CurrentPlanet = nil) and (Ship.DockedTo = nil)) or
+    if not Ship.InHyperspace then
+      if ((Ship.CurrentPlanet = nil) or (Ship.CurrentPlanet.OwnerId <> oiUninhabited)) then
+      if ((Ship.DockedTo = nil) or (GetPlayer = Ship)) then
+      if ((GetPlayer <> Ship) or ((Ship.CurrentPlanet = nil) and (Ship.DockedTo = nil)) or
        (Ship.ConsecutiveDockedDays <= 2) or (CurrentScreenId = screenPlanetQuest)) then begin
       CountShipStanding;
-      if (Ship is TKling) and (Ship.CurrentStanding = ssDominator) then begin
+      if (Ship is TKling) then
+        if (Ship.CurrentStanding = ssDominator) then begin
         with Ship as TKling do begin
         Inc(SeriesCounts[DominatorSeries]);
         if KlingType = ktBertor then Inc(SeriesCounts[DominatorSeries], 3);
@@ -10558,17 +10563,17 @@ begin
   else if PiratePassiveCount > CoalitionPassiveCount then SetPirates
   else SetCoalition;
 end;
-{ @end $7C3E1C }
+{ @end $7F2B60 }
 
-{ @routine $7C4188 TStar_RefreshMapDiameterAndStats }
+{ @routine $7F2E50 TStar_RefreshMapDiameterAndStats }
 procedure TStar.RefreshMapDiameterAndStats;
 begin
   MapDiameter := ComputeMapDiameter;
   RefreshDerivedStats;
 end;
-{ @end $7C4188 }
+{ @end $7F2E50 }
 
-{ @routine $7C41A8 TStar_RefreshMovementStepParameters }
+{ @routine $7F2E68 TStar_RefreshMovementStepParameters }
 procedure TStar.RefreshMovementStepParameters;
 begin
   if (GetPlayer <> nil) and (GetPlayer.CurrentStar = Self) then
@@ -10582,22 +10587,22 @@ begin
     MovementStepScale := 1 / 50;
   end;
 end;
-{ @end $7C41A8 }
+{ @end $7F2E68 }
 
-{ @routine $7C4228 TStar_ComputeMapDiameter }
+{ @routine $7F2ED0 TStar_ComputeMapDiameter }
 function TStar.ComputeMapDiameter: Integer;
 var Planet: TPlanet;
 begin
   if Planets.Count > 0 then
   begin
-    Planet := TPlanet(Planets[Planets.Count - 1]);
+    Planet := Planets[Planets.Count - 1];
     Result := Round(Planet.Orbit.Radius + Planet.Radius + 800) * 2;
   end
   else Result := (SystemRadius + 800) * 2;
 end;
-{ @end $7C4228 }
+{ @end $7F2ED0 }
 
-{ @routine $7C4290 TStar_CountPlanetsByOwner }
+{ @routine $7F2F14 TStar_CountPlanetsByOwner }
 function TStar.CountPlanetsByOwner(OwnerId: TOwnerId): Integer;
 var
   I: Integer;
@@ -10610,9 +10615,9 @@ begin
     if Planet.OwnerId = OwnerId then Inc(Result);
   end;
 end;
-{ @end $7C4290 }
+{ @end $7F2F14 }
 
-{ @routine $7C42E8 TStar_CountDistinctInhabitedPlanetOwners }
+{ @routine $7F2F50 TStar_CountDistinctInhabitedPlanetOwners }
 function TStar.CountDistinctInhabitedPlanetOwners: Integer;
 var OwnerId: TOwnerId;
 begin
@@ -10621,9 +10626,9 @@ begin
     if CountPlanetsByOwner(OwnerId) > 0 then Inc(Result);
   if CountPlanetsByOwner(oiPirate) > 0 then Inc(Result);
 end;
-{ @end $7C42E8 }
+{ @end $7F2F50 }
 
-{ @routine $7C4330 TStar_FindFirstInhabitedPlanet }
+{ @routine $7F2F84 TStar_FindFirstInhabitedPlanet }
 function TStar.FindFirstInhabitedPlanet: Pointer;
 var Index: Integer;
 begin
@@ -10634,9 +10639,9 @@ begin
     if (TObject(Result) as TPlanet).OwnerId <> oiUninhabited then Break;
   end;
 end;
-{ @end $7C4330 }
+{ @end $7F2F84 }
 
-{ @routine $7C438C TStar_SelectRandomInhabitedPlanet }
+{ @routine $7F2FC4 TStar_SelectRandomInhabitedPlanet }
 function TStar.SelectRandomInhabitedPlanet: Pointer;
 var I, Remaining: Integer;
 begin
@@ -10656,43 +10661,42 @@ begin
       end;
     end;
 end;
-{ @end $7C438C }
+{ @end $7F2FC4 }
 
-{ @routine $7C4448 TStar_FindFastestResearchPlanet }
+{ @routine $7F3048 TStar_FindFastestResearchPlanet }
 function TStar.FindFastestResearchPlanet: Pointer;
 var I: Integer; Rate, BestRate: Single; Planet, Best: TPlanet;
 begin
   Best := nil;
   BestRate := 0;
   for I := 0 to Planets.Count - 1 do begin
-    Planet := TPlanet(Planets[I]);
-    if Planet.OwnerId <> oiUninhabited then begin
-      Rate := Planet.CalculateInventionProgressRate;
-      if (Rate > BestRate) or (Best = nil) then begin
-        BestRate := Rate;
-        Best := Planet;
-      end;
+    Planet := Planets[I];
+    if Planet.OwnerId = oiUninhabited then Continue;
+    Rate := Planet.CalculateInventionProgressRate;
+    if (Rate > BestRate) or (Best = nil) then begin
+      BestRate := Rate;
+      Best := Planet;
     end;
   end;
   Result := Best;
 end;
-{ @end $7C4448 }
+{ @end $7F3048 }
 
-{ @routine $7C44D0 TStar_RefreshShipTypeCounts }
+{ @routine $7F30B8 TStar_RefreshShipTypeCounts }
 procedure TStar.RefreshShipTypeCounts;
 var I: Integer; Ship: TShip; Kind: TShipType;
 begin
   for Kind := Low(TShipType) to High(TShipType) do ShipTypeCounts[Kind] := 0;
   for I := 0 to Ships.Count - 1 do
   begin
-    Ship := TShip(Ships[I]);
+    Ship := Ships[I];
     if (Dominion = Ship) or Ship.InNormalSpace or ((Ship.TypeId in [rstRangerCenter..rstCustomStation]) and Ship.InHyperspace) then
       Inc(ShipTypeCounts[Ship.TypeId]);
   end;
 end;
-{ @end $7C44D0 }
+{ @end $7F30B8 }
 
-{ @routine $7C4570 TStar_CountEligibleRangersInSpace }
+{ @routine $7F3128 TStar_CountEligibleRangersInSpace }
 function TStar.CountEligibleRangersInSpace: Integer;
 var Index: Integer; Ship: TShip;
 begin
@@ -10703,9 +10707,9 @@ begin
     if not Ship.IsOutsideStarSpace and (Ship is TRanger) and not TRanger(Ship).ExcludedFromRating then Inc(Result);
   end;
 end;
-{ @end $7C4570 }
+{ @end $7F3128 }
 
-{ @routine $7C45E4 TStar_CountShipsByTypeMask }
+{ @routine $7F3184 TStar_CountShipsByTypeMask }
 function TStar.CountShipsByTypeMask(ShipTypeMask: TShipTypeMask): Integer;
 var Count: Integer; I: TShipType;
 begin
@@ -10713,9 +10717,9 @@ begin
   for I := Low(TShipType) to High(TShipType) do if I in ShipTypeMask then Inc(Count, ShipTypeCounts[I]);
   Result := Count;
 end;
-{ @end $7C45E4 }
+{ @end $7F3184 }
 
-{ @routine $7C4634 TStar_CountDominatorForces }
+{ @routine $7F31B4 TStar_CountDominatorForces }
 function TStar.CountDominatorForces(Series: TDominatorSeries; ExcludeAbsoluteOrders, OtherSeries: Boolean; out Strength: Extended): Integer;
 var
   I, OtherCount, MatchCount: Integer;
@@ -10757,24 +10761,24 @@ begin
     Strength := MatchStrength;
   end;
 end;
-{ @end $7C4634 }
+{ @end $7F31B4 }
 
-{ @routine $7C4788 TStar_CountStandardDominatorsOfLocalSeries }
+{ @routine $7F32D8 TStar_CountStandardDominatorsOfLocalSeries }
 function TStar.CountStandardDominatorsOfLocalSeries: Integer;
 var I: Integer; Ship: TShip;
 begin
   Result := 0;
   for I := 0 to Ships.Count - 1 do begin
-    Ship := TShip(Ships[I]);
+    Ship := Ships[I];
     if not Ship.IsOutsideStarSpace and (Ship.CurrentStanding <> ssCustom) and
       (Ship <> BlazerShip) and (Ship <> KellerShip) and (Ship <> TerronShip) and
       (Ship is TKling) and ((Ship as TKling).DominatorSeries = DominatorSeries) and
       ((Ship as TKling).KlingType in [ktEquantor..ktShtip]) then Inc(Result);
   end;
 end;
-{ @end $7C4788 }
+{ @end $7F32D8 }
 
-{ @routine $7C4860 TStar_CountPirateForces }
+{ @routine $7F3388 TStar_CountPirateForces }
 function TStar.CountPirateForces(ExcludeAbsoluteOrders: Boolean; out Strength: Extended; IncludeClanVariants, IncludeIndependent: Boolean): Integer;
 var Index, Count: Integer; Ship: TShip;
 begin
@@ -10799,9 +10803,9 @@ begin
   end;
   Result := Count;
 end;
-{ @end $7C4860 }
+{ @end $7F3388 }
 
-{ @routine $7C49A0 TStar_CountCustomFactionForces }
+{ @routine $7F34A0 TStar_CountCustomFactionForces }
 function TStar.CountCustomFactionForces(ExcludeAbsoluteOrders: Boolean; out Faction: WideString; out Strength: Extended): Integer;
 var
   I: Integer;
@@ -10823,9 +10827,9 @@ begin
       Strength := Strength + Ship.Strength;
     end;
 end;
-{ @end $7C49A0 }
+{ @end $7F34A0 }
 
-{ @routine $7C4A94 TStar_CountOtherCustomFactionForces }
+{ @routine $7F3574 TStar_CountOtherCustomFactionForces }
 function TStar.CountOtherCustomFactionForces(ExcludeAbsoluteOrders: Boolean; out Faction: WideString; out Strength: Extended): Integer;
 var
   I, Count: Integer;
@@ -10855,36 +10859,32 @@ begin
   end;
   Result := Count;
 end;
-{ @end $7C4A94 }
+{ @end $7F3574 }
 
-{ @routine $7C4C20 TStar_CountPirateShips }
+{ @routine $7F36D8 TStar_CountPirateShips }
 function TStar.CountPirateShips(IncludeOutsideStarSpace: Boolean): Integer;
 var I, Count: Integer; Ship: TShip;
 begin
   Count := 0;
   for I := 0 to Ships.Count - 1 do begin
-    Ship := TShip(Ships[I]);
-    if (not Ship.IsOutsideStarSpace or (IncludeOutsideStarSpace <> False)) and (Ship.CurrentStanding <> ssCustom) then begin
-      if (Ship is TPirate) and (Ship.OwnerId = oiPirate) then Inc(Count);
-      if (Ship = GetPlayer) and (GetPlayer.OwnerId = oiPirate) then Inc(Count);
-    end;
+    Ship := Ships[I];
+    if not ((not Ship.IsOutsideStarSpace or (IncludeOutsideStarSpace <> False)) and (Ship.CurrentStanding <> ssCustom)) then Continue;
+    if (Ship is TPirate) and (Ship.OwnerId = oiPirate) then Inc(Count);
+    if (Ship = GetPlayer) and (GetPlayer.OwnerId = oiPirate) then Inc(Count);
   end;
   Result := Count;
 end;
-{ @end $7C4C20 }
+{ @end $7F36D8 }
 
-{ @routine $7C4DEC TStar_CountForcesByOwnerGroups }
+{ @routine $7F3864 TStar_CountForcesByOwnerGroups }
 function TStar.CountForcesByOwnerGroups(out Strength: Extended; IncludeCoalition, IncludeDominators, IncludePirates, IncludeCustom: Boolean): Integer;
 var
   Ship: TShip;
   Count, I, J: Integer;
   Planet: TPlanet;
 
-  // Caller-popped static link. Captures: -04 current ship, -08 Extended
-  // strength output, -0C count, -0D Coalition flag; +08 custom flag,
-  // +0C pirate flag, +10 Dominator flag.
-  // @nested $7C4CC4 AccumulateFactionForces
-  procedure AccumulateFactionForces; cdecl; // @addr 0x7C4CC4 @ida "void __cdecl $name(void *ParentFrame);"
+  // @nested $7F3760 AccumulateFactionForces
+  procedure AccumulateFactionForces; cdecl; // @addr 0x007F3760 @ida "void __cdecl $name(void *ParentFrame);"
   begin
     if Ship.InHyperspace then Exit;
     if (Ship.CurrentPlanet <> nil) and (Ship.CurrentPlanet.OwnerId = oiUninhabited) then Exit;
@@ -10897,14 +10897,12 @@ var
       end;
       Exit;
     end;
-    begin
-      if not IncludeCoalition and (Ship.OwnerId in PlanetOwnerMasks.Coalition) then Exit;
-      if not IncludeDominators and (Ship.OwnerId in PlanetOwnerMasks.Dominators) then Exit;
-      if not IncludePirates and (Ship.OwnerId in PlanetOwnerMasks.PirateClan) then Exit;
-      if (GetPlayer = Ship) and GetPlayer.IsOutsideStarSpace then Exit;
-      Strength := Strength + Ship.Strength;
-      Inc(Count);
-    end;
+    if not IncludeCoalition and (Ship.OwnerId in PlanetOwnerMasks.Coalition) then Exit;
+    if not IncludeDominators and (Ship.OwnerId in PlanetOwnerMasks.Dominators) then Exit;
+    if not IncludePirates and (Ship.OwnerId in PlanetOwnerMasks.PirateClan) then Exit;
+    if (GetPlayer = Ship) and GetPlayer.IsOutsideStarSpace then Exit;
+    Strength := Strength + Ship.Strength;
+    Inc(Count);
   end;
 
 begin
@@ -10918,25 +10916,25 @@ begin
   for I := 0 to Planets.Count - 1 do
   begin
     Planet := Planets[I];
-    if Planet.Warriors <> nil then
-      for J := 0 to Planet.Warriors.Count - 1 do
-      begin
-        Ship := TShip(Planet.Warriors[J]);
-        if (Ship.CurrentStar = Self) and (Ships.IndexOf(Ship) < 0) then AccumulateFactionForces;
-      end;
+    if Planet.Warriors = nil then Continue;
+    for J := 0 to Planet.Warriors.Count - 1 do
+    begin
+      Ship := Planet.Warriors[J];
+      if (Ship.CurrentStar = Self) and (Ships.IndexOf(Ship) < 0) then AccumulateFactionForces;
+    end;
   end;
   Result := Count;
 end;
-{ @end $7C4DEC }
+{ @end $7F3864 }
 
-{ @routine $7C4EF8 TStar_CountRatedRangersByCareerMask }
+{ @routine $7F3940 TStar_CountRatedRangersByCareerMask }
 function TStar.CountRatedRangersByCareerMask(CareerMask: TRangerCareerSet): Byte;
 var Index: Integer; Ship: TObject; Ranger: TRanger;
 begin
   Result := 0;
   for Index := 0 to Ships.Count - 1 do
   begin
-    Ship := TObject(Ships[Index]);
+    Ship := Ships[Index];
     if Ship is TRanger then
     begin
       Ranger := Ship as TRanger;
@@ -10944,16 +10942,16 @@ begin
     end;
   end;
 end;
-{ @end $7C4EF8 }
+{ @end $7F3940 }
 
-{ @routine $7C4F88 TStar_GetRangerNamesByCareerMask }
+{ @routine $7F39BC TStar_GetRangerNamesByCareerMask }
 function TStar.GetRangerNamesByCareerMask(CareerMask: TRangerCareerSet): WideString;
 var Index: Integer; Ship: TObject; Ranger: TRanger;
 begin
   Result := '';
   for Index := 0 to Ships.Count - 1 do
   begin
-    Ship := TObject(Ships[Index]);
+    Ship := Ships[Index];
     if Ship is TRanger then
     begin
       Ranger := Ship as TRanger;
@@ -10965,16 +10963,16 @@ begin
     end;
   end;
 end;
-{ @end $7C4F88 }
+{ @end $7F39BC }
 
-{ @routine $7C5068 TStar_IsConstellationVisible }
+{ @routine $7F3A84 TStar_IsConstellationVisible }
 function TStar.IsConstellationVisible: Boolean;
 begin
   Result := Constellation.Visible;
 end;
-{ @end $7C5068 }
+{ @end $7F3A84 }
 
-{ @routine $7C5088 TStar_GetCachedFactionStrength }
+{ @routine $7F3A90 TStar_GetCachedFactionStrength }
 function TStar.GetCachedFactionStrength(FactionGroup: TStarFaction): Single;
 var I: Integer; Ship: TShip; RelativeScale, Weight, Strength, DominatorAndCustomStrength, CoalitionStrength, PirateStrength, Extra: Single;
 begin
@@ -11009,29 +11007,28 @@ begin
         end;
       end;
     end;
-    // Native $7C5420/$7C5429/$7C5432 store these in TStar+$4C/$50/$54.
     Status.CachedFactionStrength[sfCoalition] := CoalitionStrength;
     Status.CachedFactionStrength[sfDominators] := DominatorAndCustomStrength;
     Status.CachedFactionStrength[sfPirates] := PirateStrength;
     Result := Status.CachedFactionStrength[FactionGroup];
   end;
 end;
-{ @end $7C5088 }
+{ @end $7F3A90 }
 
-{ @routine $7C5474 TStar_SumBestRangerRelativeStrength }
+{ @routine $7F3E68 TStar_SumBestRangerRelativeStrength }
 function TStar.SumBestRangerRelativeStrength(ShipTypeMask: TShipTypeMask): Single;
 var I: Integer; Ship: TShip;
 begin
   Result := 0;
   for I := 0 to Ships.Count - 1 do begin
-    Ship := TShip(Ships[I]);
+    Ship := Ships[I];
     if (Ship <> BlazerShip) and (Ship <> KellerShip) and (Ship <> TerronShip) and
       (Ship.TypeId in ShipTypeMask) then Result := Result + Ship.StrengthInBestRanger;
   end;
 end;
-{ @end $7C5474 }
+{ @end $7F3E68 }
 
-{ @routine $7C5508 TStar_RebuildStarDistances }
+{ @routine $7F3EE0 TStar_RebuildStarDistances }
 procedure TStar.RebuildStarDistances(Galaxy: TGalaxy);
 var Count, I, J, Distance: Integer; Star: TStar;
 begin
@@ -11039,7 +11036,7 @@ begin
   StarDistances := nil;
   SetLength(StarDistances, Count);
   for I := 0 to Count - 1 do begin
-    Star := TStar(Galaxy.Stars[I]);
+    Star := Galaxy.Stars[I];
     StarDistances[I].Star := Star;
     StarDistances[I].Distance := Round(PointDistance(Position, Star.Position));
   end;
@@ -11049,31 +11046,31 @@ begin
         Distance := StarDistances[J].Distance;
         StarDistances[J].Distance := StarDistances[I].Distance;
         StarDistances[I].Distance := Distance;
-        Star := TObject(StarDistances[J].Star) as TStar;
+        Star := StarDistances[J].Star as TStar;
         StarDistances[J].Star := StarDistances[I].Star;
         StarDistances[I].Star := Star;
       end;
 end;
-{ @end $7C5508 }
+{ @end $7F3EE0 }
 
-{ @routine $7C56BC TStar_HasHostilePresenceForScriptBinding }
+{ @routine $7F4010 TStar_HasHostilePresenceForScriptBinding }
 function TStar.HasHostilePresenceForScriptBinding: Boolean;
 var I: Integer; Ship: TShip;
 begin
   for I := 0 to Ships.Count - 1 do begin
-    Ship := TShip(Ships[I]);
+    Ship := Ships[I];
     if (Ship is TKling) or (Ship.CurrentStanding = ssPirateMilitary) or Ship.HasIndependentScriptFaction then begin Result := True; Exit; end;
   end;
   Result := False;
 end;
-{ @end $7C56BC }
+{ @end $7F4010 }
 
-{ @routine $7C5734 TStar_FindNearestStarByFaction }
+{ @routine $7F4064 TStar_FindNearestStarByFaction }
 function TStar.FindNearestStarByFaction(Faction: TStarFaction; InBattle: Boolean): TStar;
 var I: Integer; Star: TStar;
 begin
   for I := 1 to Galaxy.Stars.Count - 1 do begin
-    Star := TObject(StarDistances[I].Star) as TStar;
+    Star := StarDistances[I].Star as TStar;
     if (Star.ControlFaction = Faction) and (Star.Battle = Byte(InBattle)) and (Star.Status.CustomFaction = '') then begin
       Result := Star;
       Exit;
@@ -11081,9 +11078,9 @@ begin
   end;
   Result := nil;
 end;
-{ @end $7C5734 }
+{ @end $7F4064 }
 
-{ @routine $7C57BC TStar_GetBoundaryPointTowardStar }
+{ @routine $7F40D0 TStar_GetBoundaryPointTowardStar }
 function TStar.GetBoundaryPointTowardStar(Star: TStar): TPointF;
 var Angle, Radius: Double;
 begin
@@ -11092,9 +11089,9 @@ begin
   Result.X := Trunc(Sin(Angle) * Radius);
   Result.Y := Trunc(-Cos(Angle) * Radius);
 end;
-{ @end $7C57BC }
+{ @end $7F40D0 }
 
-{ @routine $7C5868 TStar_HasLiberationGroupOrder }
+{ @routine $7F4178 TStar_HasLiberationGroupOrder }
 function TStar.HasLiberationGroupOrder: Boolean;
 var I, J: Integer; Group: TGroup; Order: TGroupRouteOrder;
 begin
@@ -11107,9 +11104,9 @@ begin
   end;
   Result := False;
 end;
-{ @end $7C5868 }
+{ @end $7F4178 }
 
-{ @routine $7C591C TStar_TryGenerateSystemNews }
+{ @routine $7F4218 TStar_TryGenerateSystemNews }
 procedure TStar.TryGenerateSystemNews;
 var Chance: Integer; Names: WideString;
 begin
@@ -11119,98 +11116,98 @@ begin
   begin
     Chance := Round(RemapClamped(Galaxy.PlanetNews.Count, 0, MaxPlanetNews, 95, 5));
     if (SeededRandomIntRange(0, 100, Galaxy.CurrentTurn * GenerationSeed * 2111) < Chance) and
-      (Galaxy.CountPlanetNewsByType(gnTransportActivity) = 0) and (ShipTypeCounts[stTransport] > 9) then
-    begin
+      (Galaxy.CountPlanetNewsByType(gnTransportActivity) = 0) and (ShipTypeCounts[stTransport] > 9) then begin
       Galaxy.AddPlanetNews(gnTransportActivity, FormatText1(PickLocalizedTextVariant('GalaxyNews.Star.Transport.Many',
         (Galaxy.CurrentTurn div 10) * GenerationSeed), TextHighlightColorTag, '<Star>', Name));
-    end
-    else if (SeededRandomIntRange(0, 100, Galaxy.CurrentTurn * GenerationSeed * 2211) < Chance) and
-      (Galaxy.CountPlanetNewsByType(gnTransportActivity) = 0) and (ShipTypeCounts[stTransport] > 9) then
-    begin
+      Exit;
+    end;
+    if (SeededRandomIntRange(0, 100, Galaxy.CurrentTurn * GenerationSeed * 2211) < Chance) and
+      (Galaxy.CountPlanetNewsByType(gnTransportActivity) = 0) and (ShipTypeCounts[stTransport] > 9) then begin
       Galaxy.AddPlanetNews(gnTransportActivity, FormatText1(PickLocalizedTextVariant('GalaxyNews.Star.Transport.Many1',
         (Galaxy.CurrentTurn div 10) * GenerationSeed), TextHighlightColorTag, '<Star>', Name));
-    end
-    else if (SeededRandomIntRange(0, 100, Galaxy.CurrentTurn * GenerationSeed * 2311) < Chance) and
+      Exit;
+    end;
+    if (SeededRandomIntRange(0, 100, Galaxy.CurrentTurn * GenerationSeed * 2311) < Chance) and
       (Galaxy.CountPlanetNewsByType(gnManyPirates) < 1) and (DaysSincePlayerVisit > 30) and
-      (ShipTypeCounts[stKling] = 0) and (ShipTypeCounts[stPirate] > 4) and (ControlFaction <> sfPirates) then
-    begin
+      (ShipTypeCounts[stKling] = 0) and (ShipTypeCounts[stPirate] > 4) and (ControlFaction <> sfPirates) then begin
       Names := IntToStr(NextRandomIntRange(1, 2, RandomState) + ShipTypeCounts[stPirate]);
       Galaxy.AddPlanetNews(gnManyPirates, FormatText2(PickLocalizedTextVariant('GalaxyNews.Star.Pirates.Many',
         (Galaxy.CurrentTurn div 10) * GenerationSeed), TextHighlightColorTag, '<Star>', Name, '<AttackCount>', Names));
-    end
-    else if (SeededRandomIntRange(0, 100, Galaxy.CurrentTurn * GenerationSeed * 2411) < Chance) and
+      Exit;
+    end;
+    if (SeededRandomIntRange(0, 100, Galaxy.CurrentTurn * GenerationSeed * 2411) < Chance) and
       (Galaxy.CountPlanetNewsByType(gnSomePirates) < 1) and (DaysSincePlayerVisit > 30) and
-      (ShipTypeCounts[stKling] = 0) and (ShipTypeCounts[stPirate] > 2) and (ControlFaction <> sfPirates) then
-    begin
+      (ShipTypeCounts[stKling] = 0) and (ShipTypeCounts[stPirate] > 2) and (ControlFaction <> sfPirates) then begin
       Names := IntToStr(NextRandomIntRange(1, 2, RandomState) + ShipTypeCounts[stPirate]);
       Galaxy.AddPlanetNews(gnSomePirates, FormatText2(PickLocalizedTextVariant('GalaxyNews.Star.Pirates.Some',
         (Galaxy.CurrentTurn div 10) * GenerationSeed), TextHighlightColorTag, '<Star>', Name, '<AttackCount>', Names));
-    end
-    else if (SeededRandomIntRange(50, 100, Galaxy.CurrentTurn * GenerationSeed * 2511) < Chance) and
+      Exit;
+    end;
+    if (SeededRandomIntRange(50, 100, Galaxy.CurrentTurn * GenerationSeed * 2511) < Chance) and
       (Galaxy.CountPlanetNewsByType(gnNoPirates) < 1) and (DaysSincePlayerVisit > 30) and
-      (ShipTypeCounts[stKling] = 0) and (ShipTypeCounts[stPirate] = 0) and (ControlFaction <> sfPirates) then
-    begin
+      (ShipTypeCounts[stKling] = 0) and (ShipTypeCounts[stPirate] = 0) and (ControlFaction <> sfPirates) then begin
       Names := IntToStr(NextRandomIntRange(1, 2, RandomState) + ShipTypeCounts[stPirate]);
       Galaxy.AddPlanetNews(gnNoPirates, FormatText2(PickLocalizedTextVariant('GalaxyNews.Star.Pirates.None',
         (Galaxy.CurrentTurn div 10) * GenerationSeed), TextHighlightColorTag, '<Star>', Name, '<AttackCount>', Names));
-    end
-    else if (SeededRandomIntRange(0, 100, Galaxy.CurrentTurn * GenerationSeed * 2611) < 90) and
+      Exit;
+    end;
+    if (SeededRandomIntRange(0, 100, Galaxy.CurrentTurn * GenerationSeed * 2611) < 90) and
       (Galaxy.CountPlanetNewsByType(gnManyRangers) = 0) and (ShipTypeCounts[stRanger] >= 4) and
-      (CountRatedRangersByCareerMask([rcTrader]) > 4) then
-    begin
+      (CountRatedRangersByCareerMask([rcTrader]) > 4) then begin
       Names := GetRangerNamesByCareerMask([rcTrader]);
       Galaxy.AddPlanetNews(gnManyRangers, FormatText2(PickLocalizedTextVariant('GalaxyNews.Star.Rangers.ManyTrader',
         (Galaxy.CurrentTurn div 10) * GenerationSeed), TextHighlightColorTag, '<Star>', Name, '<Names>', Names));
-    end
-    else if (SeededRandomIntRange(0, 100, Galaxy.CurrentTurn * GenerationSeed * 2711) < 90) and
+      Exit;
+    end;
+    if (SeededRandomIntRange(0, 100, Galaxy.CurrentTurn * GenerationSeed * 2711) < 90) and
       (Galaxy.CountPlanetNewsByType(gnManyRangers) = 0) and (ShipTypeCounts[stRanger] >= 4) and
-      (CountRatedRangersByCareerMask([rcPirate]) > 4) then
-    begin
+      (CountRatedRangersByCareerMask([rcPirate]) > 4) then begin
       Names := GetRangerNamesByCareerMask([rcPirate]);
       Galaxy.AddPlanetNews(gnManyRangers, FormatText2(PickLocalizedTextVariant('GalaxyNews.Star.Rangers.ManyPirate',
         (Galaxy.CurrentTurn div 10) * GenerationSeed), TextHighlightColorTag, '<Star>', Name, '<Names>', Names));
-    end
-    else if (SeededRandomIntRange(0, 100, Galaxy.CurrentTurn * GenerationSeed * 2811) < 90) and
+      Exit;
+    end;
+    if (SeededRandomIntRange(0, 100, Galaxy.CurrentTurn * GenerationSeed * 2811) < 90) and
       (Galaxy.CountPlanetNewsByType(gnManyRangers) = 0) and (ShipTypeCounts[stKling] = 0) and (ShipTypeCounts[stRanger] >= 4) and
-      (CountRatedRangersByCareerMask([rcWarrior]) > 4) then
-    begin
+      (CountRatedRangersByCareerMask([rcWarrior]) > 4) then begin
       Names := GetRangerNamesByCareerMask([rcWarrior]);
       Galaxy.AddPlanetNews(gnManyRangers, FormatText2(PickLocalizedTextVariant('GalaxyNews.Star.Rangers.ManyWarrior',
         (Galaxy.CurrentTurn div 10) * GenerationSeed), TextHighlightColorTag, '<Star>', Name, '<Names>', Names));
-    end
-    else if (SeededRandomIntRange(0, 100, Galaxy.CurrentTurn * GenerationSeed * 3011) < 100) and
+      Exit;
+    end;
+    if (SeededRandomIntRange(0, 100, Galaxy.CurrentTurn * GenerationSeed * 3011) < 100) and
       (Galaxy.CountPlanetNewsByType(gnEminentRangerLocation) = 0) and (Galaxy.EminentCareerShips[rcTrader] <> nil) and
       (Galaxy.EminentCareerShips[rcTrader] as TRanger).InHyperspace and
-      ((Galaxy.EminentCareerShips[rcTrader] as TRanger).CurrentStar = Self) then
-    begin
+      ((Galaxy.EminentCareerShips[rcTrader] as TRanger).CurrentStar = Self) then begin
       Names := (Galaxy.EminentCareerShips[rcTrader] as TRanger).Name;
       Galaxy.AddPlanetNews(gnEminentRangerLocation, FormatText2(PickLocalizedTextVariant('GalaxyNews.Star.Rangers.BestTrader',
         (Galaxy.CurrentTurn div 10) * GenerationSeed), TextHighlightColorTag, '<Star>', Name, '<Name>', Names));
-    end
-    else if (SeededRandomIntRange(0, 100, Galaxy.CurrentTurn * GenerationSeed * 3111) < 100) and
+      Exit;
+    end;
+    if (SeededRandomIntRange(0, 100, Galaxy.CurrentTurn * GenerationSeed * 3111) < 100) and
       (Galaxy.CountPlanetNewsByType(gnEminentRangerLocation) = 0) and (Galaxy.EminentCareerShips[rcPirate] <> nil) and
       (Galaxy.EminentCareerShips[rcPirate] as TRanger).InHyperspace and
-      ((Galaxy.EminentCareerShips[rcPirate] as TRanger).CurrentStar = Self) then
-    begin
+      ((Galaxy.EminentCareerShips[rcPirate] as TRanger).CurrentStar = Self) then begin
       Names := (Galaxy.EminentCareerShips[rcPirate] as TRanger).Name;
       Galaxy.AddPlanetNews(gnEminentRangerLocation, FormatText2(PickLocalizedTextVariant('GalaxyNews.Star.Rangers.BestPirate',
         (Galaxy.CurrentTurn div 10) * GenerationSeed), TextHighlightColorTag, '<Star>', Name, '<Name>', Names));
-    end
-    else if (SeededRandomIntRange(0, 100, Galaxy.CurrentTurn * GenerationSeed * 3211) < 100) and
+      Exit;
+    end;
+    if (SeededRandomIntRange(0, 100, Galaxy.CurrentTurn * GenerationSeed * 3211) < 100) and
       (Galaxy.CountPlanetNewsByType(gnEminentRangerLocation) = 0) and (Galaxy.EminentCareerShips[rcWarrior] <> nil) and
       (Galaxy.EminentCareerShips[rcWarrior] as TRanger).InHyperspace and
-      ((Galaxy.EminentCareerShips[rcWarrior] as TRanger).CurrentStar = Self) then
-    begin
+      ((Galaxy.EminentCareerShips[rcWarrior] as TRanger).CurrentStar = Self) then begin
       Names := (Galaxy.EminentCareerShips[rcWarrior] as TRanger).Name;
       Galaxy.AddPlanetNews(gnEminentRangerLocation, FormatText2(PickLocalizedTextVariant('GalaxyNews.Star.Rangers.BestWarrior',
         (Galaxy.CurrentTurn div 10) * GenerationSeed), TextHighlightColorTag, '<Star>', Name, '<Name>', Names));
+      Exit;
     end;
+
   end;
 end;
-{ @end $7C591C }
+{ @end $7F4218 }
 
-{ @routine $7C70CC TStar_NextDay }
-{ Constant arguments preserve evaluation order; computed arguments stay at their call sites. }
+{ @routine $7F5698 TStar_NextDay }
 procedure CreateFilmEffect(const GraphKey: WideString; ShotVisual: Integer;
   out Effect: TObjectSE; out EffectFilm: TEFilmObj); inline;
 begin
@@ -11220,7 +11217,6 @@ end;
 
 procedure TStar.NextDay(RecordFilm: Boolean);
 var
-  { Local order and unused Reserved slots preserve the native DCC32 frame. }
   Item: TItem;
   Ship: TShip;
   Quantity: Integer;
@@ -11247,8 +11243,7 @@ var
   WorkValue: Single;
   WorkScale: Single;
   WearMultiplier: Single;
-  Reserved113, Reserved114, Reserved115, Reserved116, Reserved117, Reserved118,
-  Reserved119, Reserved120, Reserved121, Reserved122, Reserved123, Reserved124, Reserved125: Byte;
+  NearestDistance, CandidateDistance, ChainRadius, ChainScale: Single;
   Planet: TPlanet;
   Asteroid: TAsteroid;
   OwnerShip: TShip;
@@ -11281,7 +11276,7 @@ var
   EffectFilm: TEFilmObj;
   GateEntry: PJumpGateEntry;
   Target: Pointer;
-  StoredTranclucator: Pointer;
+  StoredTranclucator: TArtefactTranclucator;
   Tranclucator: TTranclucator;
   Reserved273: Byte;
   Hole: THole;
@@ -11295,7 +11290,7 @@ var
   RemainingAmmo: Integer;
   PickupIndex: Integer;
   PickupWeight: Integer;
-  DeathEvent: Pointer;
+  DeathEvent: TGalaxyEvent;
   FilmText: WideString;
   NearestMissileDistance: Integer;
   MissileDistance: Integer;
@@ -11307,139 +11302,139 @@ var
   HitFlags: TDamageFlagSet;
   Reserved357: Byte;
   Stage: Integer;
-// @nested $7C67E4 CompleteItemPickup
-procedure CompleteItemPickup; // @addr 0x7C67E4 @ida "void __cdecl $name(void *ParentFrame);" @note "Caller-popped static link; item -4, ship -8, star -12, film flag -13. Transfers, merges or consumes the completed pickup; may free the item."
-var Series: TDominatorSeries; ResearchCount, Index, PickupResult: Integer;
-begin
-  if Item.DestroyFlag > 0 then Exit;
-  Ship.ApplyItemDegradation(Ship.GetCargoHook, idkUse, 3);
-  Items.Delete(Items.IndexOf(Item));
-  ClearItemReferences(Item);
-  if Item is TArtefact then
+  // @nested $7F4F5C CompleteItemPickup
+  procedure CompleteItemPickup; // @addr 0x007F4F5C @ida "void __cdecl $name(void *ParentFrame);" @note "Caller-popped static link; item -4, ship -8, star -12, film flag -13. Transfers, merges or consumes the completed pickup; may free the item."
+  var Series: TDominatorSeries; ResearchCount, Index, PickupResult: Integer;
   begin
-    (Item as TEquipment).EquippedFlag := 0;
-    Ship.Artefacts.Add(Item);
-    if Item is TArtefactTranclucator then
-      (TObject((Item as TArtefactTranclucator).Ship) as TTranclucator).OwnerShip := Ship;
-  end
-  else if Item is TCountableItem then
-  begin
-    TCountableItem(Item).DropFlag := 0;
-    if not RecordFilm then Item.ReleaseGraphObject
-    else
-    begin
-      PendingFilmObjectRemovals.Add(Item.FilmObject);
-      ReleaseSpaceObject(Item.GraphObject);
-    end;
-    (Item as TEquipment).EquippedFlag := 0;
-    Quantity := Ship.Inventory.Count;
-    i := 0;
-    while i < Quantity do
-    begin
-      if (Item as TCountableItem).CanMerge(Ship.Inventory[i]) then Break;
-      Inc(i);
-    end;
-    if i < Quantity then
-    begin
-      TCountableItem(Ship.Inventory[i]).Merge(Item);
-      Item.DestroyFlag := 1;
-    end
-    else
-    begin
-      Item.DestroyFlag := 0;
-      Ship.Inventory.Add(Item);
-    end;
-  end
-  else if Item is TEquipment then
-  begin
-    (Item as TEquipment).EquippedFlag := 0;
-    if (Ship is TRuins) and (Item.ItemType in [t_Hull..t_CustomWeapon]) then
-      (Ship as TRuins).EquipmentShop.Add(Item)
-    else if (Ship is TWarrior) and ((Ship as TWarrior).WarriorType = wtFlagship) and
-            (Item is TUselessItem) and (Item as TUselessItem).IsDominatorRemains then
-    begin
-      Series := TDominatorSeries(TEquipment(Item).DominatorSeries);
-      if (Galaxy.DominatorResearch[Series].Progress < 100) and Galaxy.IsDominatorSeriesUnresolved(Series) then
-        Ship.SetMoney(Round(Item.Cost * 3.0) + Ship.Money)
-      else Ship.SetMoney(Round(Item.Cost * 2.0) + Ship.Money);
-      if (Galaxy.DominatorResearch[Series].Progress < 100) and Galaxy.IsDominatorSeriesUnresolved(Series) then
-        Inc(Galaxy.DominatorResearch[Series].Material, Item.Weight)
-      else
-      begin
-        ResearchCount := 0;
-        for Series := dsBlazer to dsTerron do
-          if (Galaxy.DominatorResearch[Series].Progress < 100) and Galaxy.IsDominatorSeriesUnresolved(Series) then Inc(ResearchCount);
-        if ResearchCount > 0 then
-          for Series := dsBlazer to dsTerron do
-            if (Galaxy.DominatorResearch[Series].Progress < 100) and Galaxy.IsDominatorSeriesUnresolved(Series) then
-              Inc(Galaxy.DominatorResearch[Series].Material, Item.Weight div ResearchCount);
-      end;
-    end
-    else Ship.Inventory.Add(Item);
-  end
-  else if Item is TGoods then
-  begin
-    if Ship is TRuins then
-      Inc((Ship as TRuins).ShopGoods[Ord((Item as TGoods).ItemType)].Count, (Item as TGoods).Quantity)
-    else
-    begin
-      Inc(Ship.CargoGoods[Ord((Item as TGoods).ItemType)].Count, (Item as TGoods).Quantity);
-      Inc(Ship.CargoGoods[Ord((Item as TGoods).ItemType)].TotalCost, (Item as TGoods).Cost);
-    end;
-  end;
-  Ship.RefreshDerivedStats(True);
-  PickupResult := Ship.ScriptItemsAct(satOnItemPickUp, Item, nil, 0);
-  if PickupResult <> 0 then
-  begin
+    if Item.DestroyFlag > 0 then Exit;
+    Ship.ApplyItemDegradation(Ship.GetCargoHook, idkUse, 3);
+    Items.Delete(Items.IndexOf(Item));
+    ClearItemReferences(Item);
     if Item is TArtefact then
     begin
-      Index := Ship.Artefacts.IndexOf(Item);
-      if Index >= 0 then Ship.Artefacts.Delete(Index);
+      (Item as TEquipment).EquippedFlag := 0;
+      Ship.Artefacts.Add(Item);
+      if Item is TArtefactTranclucator then
+        ((Item as TArtefactTranclucator).Ship as TTranclucator).OwnerShip := Ship;
     end
-    else
+    else if Item is TCountableItem then
     begin
-      Index := Ship.Inventory.IndexOf(Item);
-      if Index >= 0 then Ship.Inventory.Delete(Index);
+      TCountableItem(Item).DropFlag := 0;
+      if not RecordFilm then Item.ReleaseGraphObject
+      else
+      begin
+        PendingFilmObjectRemovals.Add(Item.FilmObject);
+        ReleaseSpaceObject(Item.GraphObject);
+      end;
+      (Item as TEquipment).EquippedFlag := 0;
+      Quantity := Ship.Inventory.Count;
+      i := 0;
+      while i < Quantity do
+      begin
+        if (Item as TCountableItem).CanMerge(Ship.Inventory[i]) then Break;
+        Inc(i);
+      end;
+      if i < Quantity then
+      begin
+        TCountableItem(Ship.Inventory[i]).Merge(Item);
+        Item.DestroyFlag := 1;
+      end
+      else
+      begin
+        Item.DestroyFlag := 0;
+        Ship.Inventory.Add(Item);
+      end;
+    end
+    else if Item is TEquipment then
+    begin
+      (Item as TEquipment).EquippedFlag := 0;
+      if (Ship is TRuins) and (Item.ItemType in [t_Hull..t_CustomWeapon]) then
+        (Ship as TRuins).EquipmentShop.Add(Item)
+      else if (Ship is TWarrior) and ((Ship as TWarrior).WarriorType = wtFlagship) and
+        (Item is TUselessItem) and (Item as TUselessItem).IsDominatorRemains then
+      begin
+        Series := TEquipment(Item).DominatorSeries;
+        if (Galaxy.DominatorResearch[Series].Progress < 100) and Galaxy.IsDominatorSeriesUnresolved(Series) then
+          Ship.SetMoney(Round(Item.Cost * 3.0) + Ship.Money)
+        else Ship.SetMoney(Round(Item.Cost * 2.0) + Ship.Money);
+        if (Galaxy.DominatorResearch[Series].Progress < 100) and Galaxy.IsDominatorSeriesUnresolved(Series) then
+          Inc(Galaxy.DominatorResearch[Series].Material, Item.Weight)
+        else
+        begin
+          ResearchCount := 0;
+          for Series := dsBlazer to dsTerron do
+            if (Galaxy.DominatorResearch[Series].Progress < 100) and Galaxy.IsDominatorSeriesUnresolved(Series) then Inc(ResearchCount);
+          if ResearchCount > 0 then
+            for Series := dsBlazer to dsTerron do
+              if (Galaxy.DominatorResearch[Series].Progress < 100) and Galaxy.IsDominatorSeriesUnresolved(Series) then
+                Inc(Galaxy.DominatorResearch[Series].Material, Item.Weight div ResearchCount);
+        end;
+      end
+      else Ship.Inventory.Add(Item);
+    end
+    else if Item is TGoods then
+    begin
+      if Ship is TRuins then
+        Inc((Ship as TRuins).ShopGoods[Ord((Item as TGoods).ItemType)].Count, (Item as TGoods).Quantity)
+      else
+      begin
+        Inc(Ship.CargoGoods[Ord((Item as TGoods).ItemType)].Count, (Item as TGoods).Quantity);
+        Inc(Ship.CargoGoods[Ord((Item as TGoods).ItemType)].TotalCost, (Item as TGoods).Cost);
+      end;
     end;
-  end;
-  if (Ship.CargoFreeSpace < 0) and (GetPlayer <> Ship) then
-  begin
-    Ship.AutoEquipInventory;
-    Ship.ClearUnequippedWeaponTargets;
-    Ship.DropCargoUntilNotOverloaded;
-    Ship.AutoEquipInventory;
-    Ship.ClearUnequippedWeaponTargets;
-    if Ship.CargoFreeSpace <= 0 then Ship.ClearPickupTargets;
     Ship.RefreshDerivedStats(True);
-  end
-  else if (Item.ItemType in [t_FuelTanks..t_CustomWeapon]) and
-          (PlayerAutomaticControl or ((GetPlayer <> Ship) and (Ship.TypeId <> stTranclucator))) then
-  begin
-    Ship.AutoEquipInventory;
-    Ship.ClearUnequippedWeaponTargets;
-    Ship.RefreshDerivedStats(True);
-  end;
-  if GetPlayer = Ship then InterruptLongTravel := True;
-  if RecordFilm then
-  begin
-    PrimaryFilm.PlayPickupSound(StepIndex, Item.FilmObject);
-    PrimaryFilm.DetachObject(StepIndex, Item.FilmObject);
-  end;
-  if (PickupResult < 0) or (Item is TGoods) or
-     ((Ship is TWarrior) and ((Ship as TWarrior).WarriorType = wtFlagship) and
+    PickupResult := Ship.ScriptItemsAct(satOnItemPickUp, Item, nil, 0);
+    if PickupResult <> 0 then
+    begin
+      if Item is TArtefact then
+      begin
+        Index := Ship.Artefacts.IndexOf(Item);
+        if Index >= 0 then Ship.Artefacts.Delete(Index);
+      end
+      else
+      begin
+        Index := Ship.Inventory.IndexOf(Item);
+        if Index >= 0 then Ship.Inventory.Delete(Index);
+      end;
+    end;
+    if (Ship.CargoFreeSpace < 0) and (GetPlayer <> Ship) then
+    begin
+      Ship.AutoEquipInventory;
+      Ship.ClearUnequippedWeaponTargets;
+      Ship.DropCargoUntilNotOverloaded;
+      Ship.AutoEquipInventory;
+      Ship.ClearUnequippedWeaponTargets;
+      if Ship.CargoFreeSpace <= 0 then Ship.ClearPickupTargets;
+      Ship.RefreshDerivedStats(True);
+    end
+    else if (Item.ItemType in [t_FuelTanks..t_CustomWeapon]) and
+      (PlayerAutomaticControl or ((GetPlayer <> Ship) and (Ship.TypeId <> stTranclucator))) then
+    begin
+      Ship.AutoEquipInventory;
+      Ship.ClearUnequippedWeaponTargets;
+      Ship.RefreshDerivedStats(True);
+    end;
+    if GetPlayer = Ship then InterruptLongTravel := True;
+    if RecordFilm then
+    begin
+      PrimaryFilm.PlayPickupSound(StepIndex, Item.FilmObject);
+      PrimaryFilm.DetachObject(StepIndex, Item.FilmObject);
+    end;
+    if (PickupResult < 0) or (Item is TGoods) or
+      ((Ship is TWarrior) and ((Ship as TWarrior).WarriorType = wtFlagship) and
       (Item is TUselessItem) and (Item as TUselessItem).IsDominatorRemains) then
-  begin
-    if RecordFilm then PrimaryFilm.ReleaseObject(StepIndex, Item.FilmObject);
-    Item.Free;
-  end
-  else if (Item is TCountableItem) and (Item.DestroyFlag > 0) then Item.Free
-  else if RecordFilm and (Item.GraphObject <> nil) then
-  begin
-    ReleaseSpaceObject(Item.GraphObject);
-    PrimaryFilm.ReleaseObject(StepIndex, Item.FilmObject);
+    begin
+      if RecordFilm then PrimaryFilm.ReleaseObject(StepIndex, Item.FilmObject);
+      Item.Free;
+    end
+    else if (Item is TCountableItem) and (Item.DestroyFlag > 0) then Item.Free
+    else if RecordFilm and (Item.GraphObject <> nil) then
+    begin
+      ReleaseSpaceObject(Item.GraphObject);
+      PrimaryFilm.ReleaseObject(StepIndex, Item.FilmObject);
+    end;
+    if Ship.Speed <= 0 then Ship.MovementPath.Clear;
   end;
-  if Ship.Speed <= 0 then Ship.MovementPath.Clear;
-end;
 begin
   Stage := 0;
   try
@@ -11493,10 +11488,10 @@ begin
         Ship := Self.Ships[Index];
         if (Galaxy.StasisModEnabled <> 1) or (GetPlayer = Ship) then
           Ship.NextDay;
-        if (Ship.PartnerShip <> nil)
+        if not ((Ship.PartnerShip <> nil)
           and ((Ship.PartnershipDaysRemaining > 0)
-          and (WingmenPendingLeadershipPenalty.IndexOf(Ship) < 0)) then
-          WingmenPendingLeadershipPenalty.Add(Ship);
+          and (WingmenPendingLeadershipPenalty.IndexOf(Ship) < 0))) then Continue;
+        WingmenPendingLeadershipPenalty.Add(Ship);
       end;
     end;
 
@@ -11507,26 +11502,26 @@ begin
     for Index := 0 to (Self.Ships.Count - 1) do
     begin
       Ship := Self.Ships[Index];
-      if (Ship.Order = soLand) and ((TObject(Ship.OrderTarget) is TShip)
-        and ((TObject(Ship.OrderTarget) as TShip).Order <> soNone)) then
+      if (Ship.Order = soLand) and ((Ship.OrderTarget is TShip)
+        and ((Ship.OrderTarget as TShip).Order <> soNone)) then
       begin
-        if (TObject(Ship.OrderTarget) as TShip).Order <> soTeleport then
-          (TObject(Ship.OrderTarget) as TShip).OrderNone(False)
+        if (Ship.OrderTarget as TShip).Order <> soTeleport then
+          (Ship.OrderTarget as TShip).OrderNone(False)
         else
           Ship.OrderNone(False);
       end
       else
       begin
-        if (Ship.Order = soTakeoff) and ((Ship.DockedTo <> nil)
-          and ((Ship.DockedTo.Order <> soNone) and (Ship.DockedTo.Order <> soTeleport))) then
-          Ship.DockedTo.OrderNone(False);
+        if not ((Ship.Order = soTakeoff) and ((Ship.DockedTo <> nil)
+          and ((Ship.DockedTo.Order <> soNone) and (Ship.DockedTo.Order <> soTeleport)))) then Continue;
+        Ship.DockedTo.OrderNone(False);
       end;
     end;
 
     Stage := 6;
     if RecordFilm then
     begin
-      PrimaryFilm.SystemProcessName := WideString(Self.SystemProcessName);
+      PrimaryFilm.SystemProcessName := Self.SystemProcessName;
       PrimaryFilm.MapDiameter := Self.ComputeMapDiameter;
       PrimaryFilm.StarGenerationSeed := Self.GenerationSeed;
       PrimaryFilm.BackgroundImage := Cardinal(Self.BackgroundImage);
@@ -11540,7 +11535,7 @@ begin
       PrimaryFilm.SetObjectPosition(StepIndex, ObjectFilm, MakePointF(0.0, 0.0));
       PrimaryFilm.AttachObject(StepIndex, ObjectFilm);
       Stage := 62;
-      (TObject(PrimaryFilm.ObjectInfo) as TEObjInfo).LoadFromStar(Self);
+      (PrimaryFilm.ObjectInfo as TEObjInfo).LoadFromStar(Self);
     end;
 
     Stage := 7;
@@ -11551,7 +11546,7 @@ begin
     if (Galaxy.KellerMissionState = 4)
       and ((aKling.KellerShip <> nil)
       and ((aKling.KellerShip.CurrentStar = Self)
-      and ((Ord(aKling.KellerShip.InHyperspace) <> 0) and (Galaxy.StasisModEnabled <> 1)))) then
+      and ((aKling.KellerShip.InHyperspace) and (Galaxy.StasisModEnabled <> 1)))) then
     begin
       Hole := Galaxy.FindHoleInStarByKind(Self, 4);
       if Hole = nil then
@@ -11569,89 +11564,83 @@ begin
     for Index := 0 to (Count - 1) do
     begin
       Ship := Self.Ships[Index];
-      if not Ship.IsOutsideStarSpace and ((Galaxy.StasisModEnabled <> 1) or (GetPlayer = Ship))
+      if not (not Ship.IsOutsideStarSpace and ((Galaxy.StasisModEnabled <> 1) or (GetPlayer = Ship))
         and ((Ship.TypeId <> stKling) or (((Ship as TKling).ActiveProgramAppliedTurn <= 0)
-        or not ((Ship as TKling).ActiveProgramId in [prgWeaponBlocking, prgDisconnection]))) then
+        or not ((Ship as TKling).ActiveProgramId in [prgWeaponBlocking, prgDisconnection])))) then Continue;
+      for AttackRound := 1 to Ship.GetAttackMultiplier do
       begin
-        for AttackRound := 1 to Ship.GetAttackMultiplier do
+        for EntryIndex := 1 to Ship.WeaponCount do
         begin
-          for EntryIndex := 1 to Ship.WeaponCount do
+          Weapon := Ship.Weapons[EntryIndex];
+          if not ((Weapon.Target <> nil) and ((Weapon.Target is TItem)
+            or (Weapon.Target is TAsteroid)
+            or (Weapon.Target is TMissile) or ((Weapon.Target is TShip)
+            and (Weapon.Target as TShip).InNormalSpace))) then Continue;
+
+          CombatEvent := AllocEC(SizeOf(CombatEvent^));
+          CombatEvent^.Attacker := Ship;
+          CombatEvent^.Target := Weapon.Target;
+          CombatEvent^.Weapon := Weapon;
+          CombatEvent^.CombatGroup := 0;
+          if Self.MovementStepCount = BaseMovementStepsPerTurn then
+            ShotEndMargin := 30
+          else
+            ShotEndMargin := 1;
+          CombatEvent^.StepIndex := Integer(System.Round(Weapon.GetShotDelayFactor * (Self.MovementStepCount - ShotEndMargin)));
+          if (GetPlayer = Ship) or (GetPlayer = CombatEvent^.Target) then
+            Self.PlayerCombatOccurred := True;
+          Quantity := Self.CombatEvents.Count;
+          i := 0;
+          while i < Quantity do
           begin
-            Weapon := Ship.Weapons[EntryIndex];
-            if Weapon.Target <> nil then
+            QueuedAttack := Self.CombatEvents[i];
+            if CombatEvent^.StepIndex < QueuedAttack^.StepIndex then
+              Break;
+            Inc(i);
+          end;
+          if i >= Quantity then
+          begin
+            Self.CombatEvents.Add(CombatEvent);
+            if (Weapon.GetAttackCount > 1)
+              and not (Weapon.GetWeaponInfo^.ShotType in [wstTorpedo..wstRocket]) then
             begin
-              if (TObject(Weapon.Target) is TItem)
-                or ((TObject(Weapon.Target) is TAsteroid)
-                or ((TObject(Weapon.Target) is TMissile) or (TObject(Weapon.Target) is TShip)
-                and (TObject(Weapon.Target) as TShip).InNormalSpace)) then
+              for CandidateIndex := 2 to Weapon.GetAttackCount do
               begin
-                CombatEvent := AllocEC(SizeOf(CombatEvent^));
-                CombatEvent^.Attacker := Ship;
-                CombatEvent^.Target := Weapon.Target;
-                CombatEvent^.Weapon := Weapon;
-                CombatEvent^.CombatGroup := 0;
-                if Self.MovementStepCount = BaseMovementStepsPerTurn then
-                  ShotEndMargin := 30
-                else
-                  ShotEndMargin := 1;
-                CombatEvent^.StepIndex := Integer(System.Round(Weapon.GetShotDelayFactor * (Self.MovementStepCount - ShotEndMargin)));
-                if (GetPlayer = Ship) or (GetPlayer = CombatEvent^.Target) then
-                  Self.PlayerCombatOccurred := True;
-                Quantity := Self.CombatEvents.Count;
-                i := 0;
-                while i < Quantity do
-                begin
-                  QueuedAttack := Self.CombatEvents[i];
-                  if CombatEvent^.StepIndex < QueuedAttack^.StepIndex then
-                    Break;
-                  Inc(i);
-                end;
-                if i >= Quantity then
-                begin
-                  Self.CombatEvents.Add(CombatEvent);
-                  if (Weapon.GetAttackCount > 1)
-                    and not (Weapon.GetWeaponInfo^.ShotType in [wstTorpedo..wstRocket]) then
-                  begin
-                    for CandidateIndex := 2 to Weapon.GetAttackCount do
-                    begin
-                      ExtraAttack := AllocEC(SizeOf(ExtraAttack^));
-                      ExtraAttack^.Attacker := Ship;
-                      ExtraAttack^.Target := Weapon.Target;
-                      ExtraAttack^.Weapon := Weapon;
-                      ExtraAttack^.CombatGroup := 0;
-                      ExtraAttack^.StepIndex := CombatEvent^.StepIndex;
-                      Self.CombatEvents.Add(ExtraAttack);
-                    end;
-                  end;
-                end
-                else
-                begin
-                  Self.CombatEvents.Insert(i, CombatEvent);
-                  if (Weapon.GetAttackCount > 1)
-                    and not (Weapon.GetWeaponInfo^.ShotType in [wstTorpedo..wstRocket]) then
-                  begin
-                    for CandidateIndex := 2 to Weapon.GetAttackCount do
-                    begin
-                      ExtraAttack := AllocEC(SizeOf(ExtraAttack^));
-                      ExtraAttack^.Attacker := Ship;
-                      ExtraAttack^.Target := Weapon.Target;
-                      ExtraAttack^.Weapon := Weapon;
-                      ExtraAttack^.CombatGroup := 0;
-                      ExtraAttack^.StepIndex := CombatEvent^.StepIndex;
-                      Self.CombatEvents.Insert(i, ExtraAttack);
-                    end;
-                  end;
-                end;
-                if Ship.TypeId <> stKling then
-                begin
-                  if (GetPlayer = Ship) and Ship.IsHealthEffectActive(heBitterPelenosia) then
-                    WearMultiplier := 3.0
-                  else
-                    WearMultiplier := 1.0;
-                  Ship.ApplyItemDegradation(Weapon, idkUse, NextRandomUnitFloat(Ship.RandomState) * 2.0 * WearMultiplier);
-                end;
+                ExtraAttack := AllocEC(SizeOf(ExtraAttack^));
+                ExtraAttack^.Attacker := Ship;
+                ExtraAttack^.Target := Weapon.Target;
+                ExtraAttack^.Weapon := Weapon;
+                ExtraAttack^.CombatGroup := 0;
+                ExtraAttack^.StepIndex := CombatEvent^.StepIndex;
+                Self.CombatEvents.Add(ExtraAttack);
               end;
             end;
+          end
+          else
+          begin
+            Self.CombatEvents.Insert(i, CombatEvent);
+            if Weapon.GetAttackCount > 1 then
+              if not (Weapon.GetWeaponInfo^.ShotType in [wstTorpedo..wstRocket]) then
+              begin
+                for CandidateIndex := 2 to Weapon.GetAttackCount do
+                begin
+                  ExtraAttack := AllocEC(SizeOf(ExtraAttack^));
+                  ExtraAttack^.Attacker := Ship;
+                  ExtraAttack^.Target := Weapon.Target;
+                  ExtraAttack^.Weapon := Weapon;
+                  ExtraAttack^.CombatGroup := 0;
+                  ExtraAttack^.StepIndex := CombatEvent^.StepIndex;
+                  Self.CombatEvents.Insert(i, ExtraAttack);
+                end;
+              end;
+          end;
+          if Ship.TypeId <> stKling then
+          begin
+            if (GetPlayer = Ship) and Ship.IsHealthEffectActive(heBitterPelenosia) then
+              WearMultiplier := 3.0
+            else
+              WearMultiplier := 1.0;
+            Ship.ApplyItemDegradation(Weapon, idkUse, NextRandomUnitFloat(Ship.RandomState) * 2.0 * WearMultiplier);
           end;
         end;
       end;
@@ -11665,13 +11654,11 @@ begin
       for Index := 0 to (Count - 1) do
       begin
         CombatEvent := Self.CombatEvents[Index];
-        if CombatEvent^.CombatGroup = 0 then
-        begin
-          Inc(CombatGroup);
-          CombatEvent^.CombatGroup := CombatGroup;
-          Self.MarkConnectedCombatEvents(Self.CombatEvents, TShip(CombatEvent^.Attacker), CombatGroup);
-          Self.MarkConnectedCombatEvents(Self.CombatEvents, CombatEvent^.Target, CombatGroup);
-        end;
+        if CombatEvent^.CombatGroup <> 0 then Continue;
+        Inc(CombatGroup);
+        CombatEvent^.CombatGroup := CombatGroup;
+        Self.MarkConnectedCombatEvents(Self.CombatEvents, TShip(CombatEvent^.Attacker), CombatGroup);
+        Self.MarkConnectedCombatEvents(Self.CombatEvents, CombatEvent^.Target, CombatGroup);
       end;
       for Index := 1 to CombatGroup do
       begin
@@ -11679,16 +11666,15 @@ begin
         for EntryIndex := 0 to (Count - 1) do
         begin
           CombatEvent := Self.CombatEvents[EntryIndex];
-          if CombatEvent^.CombatGroup = Index then
-            Inc(Quantity);
+          if CombatEvent^.CombatGroup <> Index then Continue;
+          Inc(Quantity);
         end;
         WorkValue := 5.0;
         WorkScale := 170.0 / Quantity;
         for EntryIndex := 0 to (Count - 1) do
         begin
           CombatEvent := Self.CombatEvents[EntryIndex];
-          if CombatEvent^.CombatGroup = Index then
-          begin
+          if CombatEvent^.CombatGroup = Index then begin
             CombatEvent^.StepIndex := Integer(System.Round(WorkValue));
             WorkValue := WorkValue + WorkScale;
           end;
@@ -11701,21 +11687,19 @@ begin
     for Index := 0 to (Count - 1) do
     begin
       Ship := Self.Ships[Index];
-      if not Ship.InHyperspace then
+      if Ship.InHyperspace then Continue;
+      if Ship.Order <> soFollowShip then
+        Ship.BuildOrderMovementPath(Self.MovementStepCount)
+      else
       begin
-        if Ship.Order <> soFollowShip then
-          Ship.BuildOrderMovementPath(Self.MovementStepCount)
-        else
+        Ship.ClearMovementPath;
+        Ship.OrderDestination := Ship.Position;
+        if Ship.GetEffectiveFollowMode = fmFollowNear then
         begin
-          Ship.ClearMovementPath;
-          Ship.OrderDestination := Ship.Position;
-          if Ship.GetEffectiveFollowMode = fmFollowNear then
-          begin
-            Angle := HeadingDegreesToRadians(Abs(Integer(Cardinal(Galaxy.CurrentTurn) * (Ship.Seed * Cardinal((TObject(Ship.OrderTarget) as TShip).Seed)))) mod 360);
-            WorkCount := Ship.CalculateFollowRadius;
-            Ship.RepulsionPosition.X := System.Sin(Angle) * WorkCount;
-            Ship.RepulsionPosition.Y := System.Cos(Angle) * -WorkCount;
-          end;
+          Angle := HeadingDegreesToRadians(Abs(Integer(Cardinal(Galaxy.CurrentTurn) * (Ship.Seed * Cardinal((Ship.OrderTarget as TShip).Seed)))) mod 360);
+          WorkCount := Ship.CalculateFollowRadius;
+          Ship.RepulsionPosition.X := System.Sin(Angle) * WorkCount;
+          Ship.RepulsionPosition.Y := System.Cos(Angle) * -WorkCount;
         end;
       end;
     end;
@@ -11729,100 +11713,98 @@ begin
       for EntryIndex := 0 to (EntryCount - 1) do
       begin
         Ship := Self.Ships[EntryIndex];
-        if Ship.Order = soFollowShip then
+        if Ship.Order <> soFollowShip then Continue;
+        OwnerShip := Ship.OrderTarget as TShip;
+        PickupWeight := 0;
+        if (GetPlayer = OwnerShip) and ((OwnerShip.PickupTargets <> nil) and OwnerShip.InNormalSpace) then
+          for PickupIndex := 0 to (OwnerShip.PickupTargets.Count - 1) do
+          begin
+            if OwnerShip.IsItemInPickupRange(OwnerShip.PickupTargets[PickupIndex]) then
+              PickupWeight := PickupWeight + TItem(OwnerShip.PickupTargets[PickupIndex]).Weight;
+          end;
+        if (OwnerShip.Order <> soFollowShip) or (OwnerShip.CargoFreeSpace < PickupWeight) then
         begin
-          OwnerShip := TObject(Ship.OrderTarget) as TShip;
-          PickupWeight := 0;
-          if (GetPlayer = OwnerShip) and ((OwnerShip.PickupTargets <> nil) and OwnerShip.InNormalSpace) then
-            for PickupIndex := 0 to (OwnerShip.PickupTargets.Count - 1) do
-            begin
-              if OwnerShip.IsItemInPickupRange(OwnerShip.PickupTargets[PickupIndex]) then
-                PickupWeight := PickupWeight + TItem(OwnerShip.PickupTargets[PickupIndex]).Weight;
-            end;
-          if (OwnerShip.Order <> soFollowShip) or (OwnerShip.CargoFreeSpace < PickupWeight) then
+          if OwnerShip.IsOnPlanet and (OwnerShip.Order = soNone) then
           begin
-            if OwnerShip.IsOnPlanet and (OwnerShip.Order = soNone) then
-            begin
-              if (Ship is TTranclucator)
-                and (TTranclucator(Ship).CanFollowOwnerInCurrentStar
-                and (TTranclucator(Ship).OwnerShip = OwnerShip)) then
-                Point := TPlanet(OwnerShip.CurrentPlanet).PredictPosition(Self.MovementStepCount)
-              else
-                Point := TPlanet(OwnerShip.CurrentPlanet).GetPosition;
-            end
+            if (Ship is TTranclucator)
+              and (TTranclucator(Ship).CanFollowOwnerInCurrentStar
+              and (TTranclucator(Ship).OwnerShip = OwnerShip)) then
+              Point := OwnerShip.CurrentPlanet.PredictPosition(Self.MovementStepCount)
             else
-            begin
-              if OwnerShip.IsDockedToShip and (OwnerShip.Order = soNone) then
-                Point := OwnerShip.DockedTo.Position
-              else
-              begin
-                if (OwnerShip.MovementPath.ActiveTail = nil) or (OwnerShip.CargoFreeSpace < PickupWeight) then
-                  Point := OwnerShip.Position
-                else
-                  Point := OwnerShip.MovementPath.ActiveTail^.Position;
-              end;
-            end;
-          end
-          else
-            Point := OwnerShip.OrderDestination;
-          if (Galaxy.StasisModEnabled = 1) and (GetPlayer = Ship) then
-            Point := OwnerShip.Position;
-          if (Ship.GetEffectiveFollowMode = fmFollowNear)
-            and ((Ship is TTranclucator)
-            and (Ship as TTranclucator).CanFollowOwnerInCurrentStar) then
-          begin
-            Ship.OrderDestination := Point;
-            WorkValue := 0.0;
+              Point := OwnerShip.CurrentPlanet.GetPosition;
           end
           else
           begin
-            WorkCount := Ship.CalculateFollowRadius;
-            WorkScale := Ship.MovementSpeed * 200.0 * Self.MovementStepScale;
-            if Ship.GetEffectiveFollowMode = fmFollowNear then
+            if OwnerShip.IsDockedToShip and (OwnerShip.Order = soNone) then
+              Point := OwnerShip.DockedTo.Position
+            else
             begin
-              Point.X := Point.X + Ship.RepulsionPosition.X;
-              Point.Y := Point.Y + Ship.RepulsionPosition.Y;
-              Distance := PointDistance(Ship.OrderDestination, Point);
-              WorkValue := 0.0 - Distance;
+              if (OwnerShip.MovementPath.ActiveTail = nil) or (OwnerShip.CargoFreeSpace < PickupWeight) then
+                Point := OwnerShip.Position
+              else
+                Point := OwnerShip.MovementPath.ActiveTail^.Position;
+            end;
+          end;
+        end
+        else
+          Point := OwnerShip.OrderDestination;
+        if (Galaxy.StasisModEnabled = 1) and (GetPlayer = Ship) then
+          Point := OwnerShip.Position;
+        if (Ship.GetEffectiveFollowMode = fmFollowNear)
+          and ((Ship is TTranclucator)
+          and (Ship as TTranclucator).CanFollowOwnerInCurrentStar) then
+        begin
+          Ship.OrderDestination := Point;
+          WorkValue := 0.0;
+        end
+        else
+        begin
+          WorkCount := Ship.CalculateFollowRadius;
+          WorkScale := Ship.MovementSpeed * 200.0 * Self.MovementStepScale;
+          if Ship.GetEffectiveFollowMode = fmFollowNear then
+          begin
+            Point.X := Point.X + Ship.RepulsionPosition.X;
+            Point.Y := Point.Y + Ship.RepulsionPosition.Y;
+            Distance := PointDistance(Ship.OrderDestination, Point);
+            WorkValue := 0.0 - Distance;
+          end
+          else
+          begin
+            Distance := PointDistance(Ship.OrderDestination, Point);
+            WorkValue := WorkCount - Distance;
+          end;
+          if Distance <> 0.0 then
+          begin
+            if WorkValue <= 0.0 then
+            begin
+              WorkValue := Min(-WorkValue, WorkScale) / Distance;
+              Delta.X := (Point.X - Ship.OrderDestination.X) * WorkValue;
+              Delta.Y := (Point.Y - Ship.OrderDestination.Y) * WorkValue;
             end
             else
             begin
-              Distance := PointDistance(Ship.OrderDestination, Point);
-              WorkValue := WorkCount - Distance;
+              WorkValue := Min(WorkValue, WorkScale) / Distance;
+              Delta.X := (Ship.OrderDestination.X - Point.X) * WorkValue;
+              Delta.Y := (Ship.OrderDestination.Y - Point.Y) * WorkValue;
             end;
-            if Distance <> 0.0 then
+            Distance := Self.MapDiameter / 2.0;
+            WorkScale := Ship.OrderDestination.X * Ship.OrderDestination.X + Ship.OrderDestination.Y * Ship.OrderDestination.Y;
+            if (Sqr(0.7 * Distance) < WorkScale)
+              and ((Delta.X * Ship.OrderDestination.X + Delta.Y * Ship.OrderDestination.Y > 0.0)
+              and ((TShip(Ship.OrderTarget).Order = soFollowShip)
+              and (TShip(Ship.OrderTarget).OrderDestination.X * TShip(Ship.OrderTarget).OrderDestination.X + TShip(Ship.OrderTarget).OrderDestination.Y * TShip(Ship.OrderTarget).OrderDestination.Y <= WorkScale))) then
             begin
-              if WorkValue <= 0.0 then
-              begin
-                WorkValue := Min(-WorkValue, WorkScale) / Distance;
-                Delta.X := (Point.X - Ship.OrderDestination.X) * WorkValue;
-                Delta.Y := (Point.Y - Ship.OrderDestination.Y) * WorkValue;
-              end
-              else
-              begin
-                WorkValue := Min(WorkValue, WorkScale) / Distance;
-                Delta.X := (Ship.OrderDestination.X - Point.X) * WorkValue;
-                Delta.Y := (Ship.OrderDestination.Y - Point.Y) * WorkValue;
-              end;
-              Distance := Self.MapDiameter / 2.0;
-              WorkScale := Ship.OrderDestination.X * Ship.OrderDestination.X + Ship.OrderDestination.Y * Ship.OrderDestination.Y;
-              if (Sqr(0.7 * Distance) < WorkScale)
-                and ((Delta.X * Ship.OrderDestination.X + Delta.Y * Ship.OrderDestination.Y > 0.0)
-                and ((TShip(Ship.OrderTarget).Order = soFollowShip)
-                and (TShip(Ship.OrderTarget).OrderDestination.X * TShip(Ship.OrderTarget).OrderDestination.X + TShip(Ship.OrderTarget).OrderDestination.Y * TShip(Ship.OrderTarget).OrderDestination.Y <= WorkScale))) then
-              begin
-                Angle := HeadingDegreesToRadians(RemapClamped(System.Sqrt(WorkScale) - 0.7 * Distance, 0.0, 0.5 * Distance, 0.0, 45.0));
-                if Delta.X * Ship.OrderDestination.Y - Delta.Y * Ship.OrderDestination.X > 0.0 then
-                  Angle := -Angle;
-                Point := Delta;
-                WorkX := System.Sin(Angle);
-                WorkY := System.Cos(Angle);
-                Delta.X := Point.X * WorkY - Point.Y * WorkX;
-                Delta.Y := Point.X * WorkX + Point.Y * WorkY;
-              end;
-              Ship.OrderDestination.X := Ship.OrderDestination.X + Delta.X;
-              Ship.OrderDestination.Y := Ship.OrderDestination.Y + Delta.Y;
+              Angle := HeadingDegreesToRadians(RemapClamped(System.Sqrt(WorkScale) - 0.7 * Distance, 0.0, 0.5 * Distance, 0.0, 45.0));
+              if Delta.X * Ship.OrderDestination.Y - Delta.Y * Ship.OrderDestination.X > 0.0 then
+                Angle := -Angle;
+              Point := Delta;
+              WorkX := System.Sin(Angle);
+              WorkY := System.Cos(Angle);
+              Delta.X := Point.X * WorkY - Point.Y * WorkX;
+              Delta.Y := Point.X * WorkX + Point.Y * WorkY;
             end;
+            Ship.OrderDestination.X := Ship.OrderDestination.X + Delta.X;
+            Ship.OrderDestination.Y := Ship.OrderDestination.Y + Delta.Y;
           end;
         end;
       end;
@@ -11836,47 +11818,45 @@ begin
       for EntryIndex := 0 to (EntryCount - 1) do
       begin
         Ship := Self.Ships[EntryIndex];
-        if Ship.Order = soFollowShip then
-          Ship.RepulsionPosition := Ship.Position;
+        if Ship.Order <> soFollowShip then Continue;
+        Ship.RepulsionPosition := Ship.Position;
       end;
       for PathStep := 1 to (Count - 1) do
       begin
         for EntryIndex := 0 to (EntryCount - 1) do
         begin
           Ship := Self.Ships[EntryIndex];
-          if (Ship.Order in [soMove, soFollowShip])
-            and ((not (Ship is TTranclucator) or (Ord(TTranclucator(Ship).FollowOwner) = 0))
+          if not ((Ship.Order in [soMove, soFollowShip])
+            and ((not (Ship is TTranclucator) or (not TTranclucator(Ship).FollowOwner))
             and (not (Ship is TKling)
-            or (((Ship as TKling).KlingType <> ktBoss) or ((Ship as TKling).DominatorSeries <> dsTerron)))) then
+            or (((Ship as TKling).KlingType <> ktBoss) or ((Ship as TKling).DominatorSeries <> dsTerron))))) then Continue;
+          WorkScale := Ship.MovementSpeed;
+          if (Galaxy.StasisModEnabled = 1) and (GetPlayer <> Ship) then
+            WorkScale := 0.0;
+          Distance := PointDistanceSquared(Ship.RepulsionPosition, Ship.OrderDestination);
+          if Distance <> 0.0 then
           begin
-            WorkScale := Ship.MovementSpeed;
-            if (Galaxy.StasisModEnabled = 1) and (GetPlayer <> Ship) then
-              WorkScale := 0.0;
-            Distance := PointDistanceSquared(Ship.RepulsionPosition, Ship.OrderDestination);
-            if Distance <> 0.0 then
+            if Sqr(WorkScale) >= Distance then
+              Ship.RepulsionPosition := Ship.OrderDestination
+            else
             begin
-              if Sqr(WorkScale) >= Distance then
-                Ship.RepulsionPosition := Ship.OrderDestination
-              else
-              begin
-                Distance := 1.0 / System.Sqrt(Distance) * WorkScale;
-                Ship.RepulsionPosition.X := (Ship.OrderDestination.X - Ship.RepulsionPosition.X) * Distance + Ship.RepulsionPosition.X;
-                Ship.RepulsionPosition.Y := (Ship.OrderDestination.Y - Ship.RepulsionPosition.Y) * Distance + Ship.RepulsionPosition.Y;
-              end;
-              if Galaxy.StasisModEnabled <> 1 then
-                Ship.RepelFollowingShips;
+              Distance := 1.0 / System.Sqrt(Distance) * WorkScale;
+              Ship.RepulsionPosition.X := (Ship.OrderDestination.X - Ship.RepulsionPosition.X) * Distance + Ship.RepulsionPosition.X;
+              Ship.RepulsionPosition.Y := (Ship.OrderDestination.Y - Ship.RepulsionPosition.Y) * Distance + Ship.RepulsionPosition.Y;
             end;
+            if Galaxy.StasisModEnabled <> 1 then
+              Ship.RepelFollowingShips;
           end;
         end;
       end;
       for EntryIndex := 0 to (EntryCount - 1) do
       begin
         Ship := Self.Ships[EntryIndex];
-        if (Ship.Order = soFollowShip) and (not (Ship is TTranclucator)
-          or (Ord(TTranclucator(Ship).FollowOwner) = 0))
+        if not ((Ship.Order = soFollowShip) and (not (Ship is TTranclucator)
+          or (not TTranclucator(Ship).FollowOwner))
           and (not (Ship is TKling)
-          or (((Ship as TKling).KlingType <> ktBoss) or ((Ship as TKling).DominatorSeries <> dsTerron))) then
-          Ship.OrderDestination := Ship.RepulsionPosition;
+          or (((Ship as TKling).KlingType <> ktBoss) or ((Ship as TKling).DominatorSeries <> dsTerron)))) then Continue;
+        Ship.OrderDestination := Ship.RepulsionPosition;
       end;
     end;
 
@@ -11885,8 +11865,7 @@ begin
     for Index := 0 to (Count - 1) do
     begin
       Ship := Self.Ships[Index];
-      if Ship.Order = soFollowShip then
-      begin
+      if Ship.Order = soFollowShip then begin
         if (Sqr(Ship.Position.X) + Sqr(Ship.Position.Y) > Sqr(Self.SafeRadius))
           and (Sqr(Ship.OrderDestination.X) + Sqr(Ship.OrderDestination.Y) < Sqr(Self.SafeRadius)) then
         begin
@@ -11910,50 +11889,39 @@ begin
     for Index := 0 to (Count - 1) do
     begin
       Ship := Self.Ships[Index];
-      if (Ship.Order = soJump) and (Ship.TypeId = stRanger) then
-      begin
-        if Ship.MovementPath.ActiveHead <> nil then
+      if not ((Ship.Order = soJump) and (Ship.TypeId = stRanger)) then Continue;
+      if (Ship.MovementPath.ActiveHead <> nil) and (Sqr(Ship.Speed + 100) < PointDistanceSquared(Ship.MovementPath.ActiveHead^.Position, Ship.MovementPath.ActiveTail^.Position)) then begin
+
+        GroupLeader := (Ship as TRanger).PartnerShip;
+        if GroupLeader = nil then
+          GroupLeader := Ship;
+        for EntryIndex := 0 to (Count - 1) do
         begin
-          if Sqr(Ship.Speed + 100) < PointDistanceSquared(Ship.MovementPath.ActiveHead^.Position, Ship.MovementPath.ActiveTail^.Position) then
-          begin
-            GroupLeader := (Ship as TRanger).PartnerShip;
-            if GroupLeader = nil then
-              GroupLeader := Ship;
-            for EntryIndex := 0 to (Count - 1) do
-            begin
-              OwnerShip := Self.Ships[EntryIndex];
-              if (OwnerShip.Order = soJump) and (OwnerShip.OrderTarget = Ship.OrderTarget) and (OwnerShip.TypeId = stRanger)
-                and (Ship <> OwnerShip) then
+          OwnerShip := Self.Ships[EntryIndex];
+          if ((OwnerShip.Order = soJump) and (OwnerShip.OrderTarget = Ship.OrderTarget) and (OwnerShip.TypeId = stRanger)
+            and (Ship <> OwnerShip)) and (((OwnerShip as TRanger).PartnerShip = GroupLeader) or (OwnerShip = GroupLeader)) then begin
+
+            if ((OwnerShip.MovementPath.ActiveHead = nil)
+              or (Sqr(OwnerShip.Speed + 100) >= PointDistanceSquared(OwnerShip.MovementPath.ActiveHead^.Position, OwnerShip.MovementPath.ActiveTail^.Position))) and (((OwnerShip.PickupTargets = nil) or (OwnerShip.PickupTargets.Count <= 0))
+              and (PointDistanceSquared(Ship.Position, OwnerShip.Position) <= 640000.0)) then begin
+
+              Angle := Abs(HeadingDifferenceDegrees(OwnerShip.MovementDirection, RadiansToHeadingDegrees(Math.ArcTan2(-Ship.Position.X, Ship.Position.Y))));
+              if (Angle >= 90.0) and (OwnerShip.Speed >= 200) or (Angle >= 175.0) then
               begin
-                if ((OwnerShip as TRanger).PartnerShip = GroupLeader) or (OwnerShip = GroupLeader) then
+                OwnerShip.ClearMovementPath;
+                if (Angle < 175.0) and ((OwnerShip.Speed >= 200)
+                  and (OwnerShip.CurrentStar = PlayerStar)) then
                 begin
-                  if (OwnerShip.MovementPath.ActiveHead = nil)
-                    or (Sqr(OwnerShip.Speed + 100) >= PointDistanceSquared(OwnerShip.MovementPath.ActiveHead^.Position, OwnerShip.MovementPath.ActiveTail^.Position)) then
-                  begin
-                    if ((OwnerShip.PickupTargets = nil) or (OwnerShip.PickupTargets.Count <= 0))
-                      and (PointDistanceSquared(Ship.Position, OwnerShip.Position) <= 640000.0) then
-                    begin
-                      Angle := Abs(HeadingDifferenceDegrees(OwnerShip.MovementDirection, RadiansToHeadingDegrees(Math.ArcTan2(-Ship.Position.X, Ship.Position.Y))));
-                      if (Angle >= 90.0) and (OwnerShip.Speed >= 200) or (Angle >= 175.0) then
-                      begin
-                        OwnerShip.ClearMovementPath;
-                        if (Angle < 175.0) and ((OwnerShip.Speed >= 200)
-                          and (OwnerShip.CurrentStar = PlayerStar)) then
-                        begin
-                          Distance := 1.0 / System.Sqrt(Ship.Position.X * Ship.Position.X + Ship.Position.Y * Ship.Position.Y);
-                          Point.X := Ship.Position.X * Distance * 10000.0 + OwnerShip.Position.X;
-                          Point.Y := Ship.Position.Y * Distance * 10000.0 + OwnerShip.Position.Y;
-                          OwnerShip.AppendTurningPath(Point, False, BaseMovementStepsPerTurn);
-                        end;
-                        OwnerShip.AppendHyperspaceTransitionPath(1.0);
-                        if OwnerShip.MovementPath.ActiveTail <> nil then
-                          OwnerShip.OrderDestination := OwnerShip.MovementPath.ActiveTail^.Position
-                        else
-                          OwnerShip.OrderDestination := OwnerShip.Position;
-                      end;
-                    end;
-                  end;
+                  Distance := 1.0 / System.Sqrt(Ship.Position.X * Ship.Position.X + Ship.Position.Y * Ship.Position.Y);
+                  Point.X := Ship.Position.X * Distance * 10000.0 + OwnerShip.Position.X;
+                  Point.Y := Ship.Position.Y * Distance * 10000.0 + OwnerShip.Position.Y;
+                  OwnerShip.AppendTurningPath(Point, False, BaseMovementStepsPerTurn);
                 end;
+                OwnerShip.AppendHyperspaceTransitionPath(1.0);
+                if OwnerShip.MovementPath.ActiveTail <> nil then
+                  OwnerShip.OrderDestination := OwnerShip.MovementPath.ActiveTail^.Position
+                else
+                  OwnerShip.OrderDestination := OwnerShip.Position;
               end;
             end;
           end;
@@ -11982,15 +11950,13 @@ begin
         PrimaryFilm.CloseGate(StepIndex, ObjectFilm);
         PrimaryFilm.SetObjectText(StepIndex, ObjectFilm, GateEntry^.Gate.GetText);
         PrimaryFilm.AttachObject(StepIndex, ObjectFilm);
-        if (GateEntry^.Effect <> nil) and TObjectSE(GateEntry^.Effect).IsAttachedToSpace then
-        begin
-          ObjectFilm := PrimaryFilm.AddObject(0, GateEntry^.Effect);
-          GateEntry^.EffectFilmId := Cardinal(ObjectFilm);
-          PrimaryFilm.SetObjectPosition(StepIndex, ObjectFilm, GateEntry^.Effect.Position);
-          PrimaryFilm.SetObjectAngle(StepIndex, ObjectFilm, GateEntry^.Effect.GetAngle);
-          PrimaryFilm.SetGateSize(StepIndex, ObjectFilm, GateEntry^.Effect.Size.X);
-          PrimaryFilm.AttachObject(StepIndex, ObjectFilm);
-        end;
+        if not ((GateEntry^.Effect <> nil) and TObjectSE(GateEntry^.Effect).IsAttachedToSpace) then Continue;
+        ObjectFilm := PrimaryFilm.AddObject(0, GateEntry^.Effect);
+        GateEntry^.EffectFilmId := Cardinal(ObjectFilm);
+        PrimaryFilm.SetObjectPosition(StepIndex, ObjectFilm, GateEntry^.Effect.Position);
+        PrimaryFilm.SetObjectAngle(StepIndex, ObjectFilm, GateEntry^.Effect.GetAngle);
+        PrimaryFilm.SetGateSize(StepIndex, ObjectFilm, GateEntry^.Effect.Size.X);
+        PrimaryFilm.AttachObject(StepIndex, ObjectFilm);
       end;
     end;
 
@@ -12010,8 +11976,8 @@ begin
           else PrimaryFilm.SetHoleState(StepIndex, EffectFilm, 0);
           PrimaryFilm.AttachObject(StepIndex, EffectFilm);
         end
-        else if Hole.Star2 = Self then
-        begin
+        else begin
+          if Hole.Star2 <> Self then Continue;
           EffectFilm := PrimaryFilm.AddObject(Hole.Id, Hole.Graphic);
           Hole.FilmObjectId := Integer(EffectFilm);
           PrimaryFilm.SetObjectPosition(StepIndex, EffectFilm, Hole.Position2);
@@ -12041,16 +12007,13 @@ begin
     for Index := 0 to (Self.Ships.Count - 1) do
     begin
       Ship := Self.Ships[Index];
-      if (Galaxy.StasisModEnabled <> 1) or (GetPlayer = Ship) then
-      begin
-        if Ship.GetHull.InterceptorsEnabled then
-          Ship.LaunchInterceptors;
-        Ship.GetHull.InterceptorTarget := nil;
-        if Ship.AfterburnerActive then
-        begin
-          if Ship.IsEquipmentUsable(Ship.GetEngine) and (Ship.GetSlotCount(sskAfterburner) > 0) then
-            Ship.ApplyAfterburnerItemDegradation;
-        end;
+      if not ((Galaxy.StasisModEnabled <> 1) or (GetPlayer = Ship)) then Continue;
+      if Ship.GetHull.InterceptorsEnabled then
+        Ship.LaunchInterceptors;
+      Ship.GetHull.InterceptorTarget := nil;
+      if (Ship.AfterburnerActive) and (Ship.IsEquipmentUsable(Ship.GetEngine) and (Ship.GetSlotCount(sskAfterburner) > 0)) then begin
+
+        Ship.ApplyAfterburnerItemDegradation;
       end;
     end;
 
@@ -12094,7 +12057,7 @@ begin
       else
       begin
         Self.PlayerFilmPath := TSPath.Create;
-        TSPath(Self.PlayerFilmPath).AppendWaypoint(GetPlayer.Position, StepIndex);
+        Self.PlayerFilmPath.AppendWaypoint(GetPlayer.Position, StepIndex);
       end;
     end;
 
@@ -12129,20 +12092,18 @@ begin
     for Index := 0 to (Self.Ships.Count - 1) do
     begin
       Ship := Self.Ships[Index];
-      if Ship.PickupTargets <> nil then
+      if Ship.PickupTargets = nil then Continue;
+      if Ship.GetCargoHook = nil then
+        Ship.ClearPickupTargets
+      else
       begin
-        if Ship.GetCargoHook = nil then
-          Ship.ClearPickupTargets
-        else
+        Item := Ship.PickupTargets[0];
+        WorkScale := PointDistanceSquared(Ship.Position, Item.Position);
+        if WorkScale < WorkValue then
         begin
-          Item := Ship.PickupTargets[0];
-          WorkScale := PointDistanceSquared(Ship.Position, Item.Position);
-          if WorkScale < WorkValue then
-          begin
-            WorkValue := WorkScale;
-            NearestShip := Ship;
-            NearestItem := Item;
-          end;
+          WorkValue := WorkScale;
+          NearestShip := Ship;
+          NearestItem := Item;
         end;
       end;
     end;
@@ -12173,7 +12134,7 @@ begin
           HitShip := nil;
           Stage := 2902;
           if (GetPlayer = Missile.OwnerShip)
-            and ((TObject(Target) is TGoods) and (Ord((TObject(Target) as TGoods).NaturalFlag) <> 0)) then
+            and ((TObject(Target) is TGoods) and ((TObject(Target) as TGoods).NaturalFlag)) then
           begin
             Item := TObject(Target) as TItem;
             if GetPlayer.ScriptItemsAct(satOnMissileHittingObject, Item, Missile, 1) = 0 then
@@ -12197,7 +12158,7 @@ begin
             Quantity := (Item as TGoods).Quantity;
             if Quantity >= 5 then
               Self.DropMinerals(Integer(Trunc(Quantity * 0.8 / Missile.GetWeaponInfo^.MiningFactor)),
-                Item.Position, Self.GenerationSeed * Cardinal(Item.Id));
+                Item.Position, Self.GenerationSeed * Item.Id);
             Point := Item.Position;
             if RecordFilm then
             begin
@@ -12263,8 +12224,8 @@ begin
                     for i := 0 to (Self.MovingDropItems.Count - 1) do
                     begin
                       MovingDrop := Self.MovingDropItems[i];
-                      if MovingDrop^.Payload = Item then
-                        MovingDrop^.Payload := nil;
+                      if MovingDrop^.Payload <> Item then Continue;
+                      MovingDrop^.Payload := nil;
                     end;
                     Self.ClearItemReferences(Item);
                   end;
@@ -12276,27 +12237,25 @@ begin
                     for CandidateIndex := 0 to (CandidateCount - 1) do
                     begin
                       Ship := Self.Ships[CandidateIndex];
-                      if Ship.InNormalSpace and (not Ship.IsHullDestroyed
+                      if not (Ship.InNormalSpace and (not Ship.IsHullDestroyed
                         and ((GetPlayer <> Ship) or (Galaxy.GodModEnabled <> 1)
-                        and (Galaxy.SpecialSimulationMode = 0))) then
+                        and (Galaxy.SpecialSimulationMode = 0)))) then Continue;
+                      Distance := PointDistanceSquared(Ship.Position, Item.Position);
+                      if aConst.ItemExplosionRadiusSquared >= Distance then
                       begin
-                        Distance := PointDistanceSquared(Ship.Position, Item.Position);
-                        if aConst.ItemExplosionRadiusSquared >= Distance then
+                        Damage := Cardinal(Ship.ApplyExplosionDamage(Missile.OwnerShip, Item, ActionResult,
+                          Missile));
+                        if Ship.IsHullDestroyed and ((GetPlayer <> nil)
+                          and ((Item.ItemType = t_ArtefactBomb) and (GetPlayer = Missile.OwnerShip))) then
+                          Inc(GetPlayer.BombKillsThisTurn);
+                        DamageColor := GR_Main.CurrentPixelFormat.PackRgbBytes(255, 0, 0);
+                        if RecordFilm then
                         begin
-                          Damage := Cardinal(Ship.ApplyExplosionDamage(Missile.OwnerShip, Item, ActionResult,
-                            Missile));
-                          if Ship.IsHullDestroyed and ((GetPlayer <> nil)
-                            and ((Item.ItemType = t_ArtefactBomb) and (GetPlayer = Missile.OwnerShip))) then
-                            Inc(GetPlayer.BombKillsThisTurn);
-                          DamageColor := GR_Main.CurrentPixelFormat.PackRgbBytes(255, 0, 0);
-                          if RecordFilm then
-                          begin
-                            CreateFilmEffect('Weapon.NoGraph', 0, Effect, EffectFilm);
-                            PrimaryFilm.SetWeaponEndpoints(StepIndex, EffectFilm, Ship.FilmObject, Ship.FilmObject);
-                            PrimaryFilm.SetWeaponHit(StepIndex, EffectFilm,
-                              Word(DamageColor), Integer(Damage), Ship.IsHullDestroyed, True);
-                            PrimaryFilm.AttachObject(StepIndex, EffectFilm);
-                          end;
+                          CreateFilmEffect('Weapon.NoGraph', 0, Effect, EffectFilm);
+                          PrimaryFilm.SetWeaponEndpoints(StepIndex, EffectFilm, Ship.FilmObject, Ship.FilmObject);
+                          PrimaryFilm.SetWeaponHit(StepIndex, EffectFilm,
+                            Word(DamageColor), Integer(Damage), Ship.IsHullDestroyed, True);
+                          PrimaryFilm.AttachObject(StepIndex, EffectFilm);
                         end;
                       end;
                     end;
@@ -12304,28 +12263,23 @@ begin
                     for CandidateIndex := 0 to (CandidateCount - 1) do
                     begin
                       OtherItem := Self.Items[CandidateIndex];
-                      if OtherItem <> Item then
-                      begin
-                        Distance := PointDistanceSquared(OtherItem.Position, Item.Position);
-                        if aConst.ItemExplosionRadiusSquared >= Distance then
-                        begin
-                          if 20.0 - 20.0 * Distance / aConst.ItemExplosionRadiusSquared >= NextRandomIntRange(1, 100, Self.RandomState) then
-                          begin
-                            if OtherItem.DestroyFlag < 0 then
-                              Inc(OtherItem.DestroyFlag)
-                            else
-                              Self.ReferencedItems.Add(OtherItem);
-                          end;
-                        end;
+                      if OtherItem = Item then Continue;
+                      Distance := PointDistanceSquared(OtherItem.Position, Item.Position);
+                      if (aConst.ItemExplosionRadiusSquared >= Distance) and (20.0 - 20.0 * Distance / aConst.ItemExplosionRadiusSquared >= NextRandomIntRange(1, 100, Self.RandomState)) then begin
+
+                        if OtherItem.DestroyFlag < 0 then
+                          Inc(OtherItem.DestroyFlag)
+                        else
+                          Self.ReferencedItems.Add(OtherItem);
                       end;
                     end;
                   end
                   else
                   begin
                     if (Item is TUselessItem)
-                      and (WideString(TEquipment(Item).ConfigBlockName) = WideString('ExampleAsteroid')) then
-                      Self.DropMinerals(SeededRandomIntRange(20, 30, Self.GenerationSeed * Cardinal(Item.Id)), Item.Position,
-                        Self.GenerationSeed * Cardinal(Item.Id));
+                      and (TEquipment(Item).ConfigBlockName = WideString('ExampleAsteroid')) then
+                      Self.DropMinerals(SeededRandomIntRange(20, 30, Self.GenerationSeed * Item.Id), Item.Position,
+                        Self.GenerationSeed * Item.Id);
                   end;
                   Point := Item.Position;
                   Stage := 2906;
@@ -12336,10 +12290,8 @@ begin
                       Self.PendingFilmObjectRemovals.Add(Item.FilmObject);
                       ReleaseSpaceObject(Item.GraphObject);
                     end;
-                    begin
-                      Self.Items.Delete(Self.Items.IndexOf(Item));
-                      Item.Free;
-                    end;
+                    Self.Items.Delete(Self.Items.IndexOf(Item));
+                    Item.Free;
                   end
                   else Inc(Item.DestroyFlag);
                 end;
@@ -12380,80 +12332,75 @@ begin
               end
               else
               begin
-                if TObject(Target) is TShip then
-                begin
-                  if not (TObject(Target) as TShip).IsHullDestroyed then
+                if (TObject(Target) is TShip) and (not (TObject(Target) as TShip).IsHullDestroyed) then begin
+
+                  Stage := 29090;
+                  HitShip := TObject(Target) as TShip;
+                  if GetPlayer = HitShip then
+                    Self.PlayerCombatOccurred := True;
+                  Stage := 29091;
+                  DrainedDamage := 0;
+                  Damage := Cardinal(HitShip.ApplyMissileHit(Missile, DamageColor, HitFlags));
+                  Stage := 29092;
+                  if (dkDrain in HitFlags) and (Integer(Damage) > 0) then
+                    DrainedDamage := DrainedDamage + Integer(Damage);
+                  if RecordFilm then
                   begin
-                    Stage := 29090;
-                    HitShip := TObject(Target) as TShip;
-                    if GetPlayer = HitShip then
-                      Self.PlayerCombatOccurred := True;
-                    Stage := 29091;
-                    DrainedDamage := 0;
-                    Damage := Cardinal(HitShip.ApplyMissileHit(Missile, DamageColor, HitFlags));
-                    Stage := 29092;
-                    if (dkDrain in HitFlags) and (Integer(Damage) > 0) then
-                      DrainedDamage := DrainedDamage + Integer(Damage);
-                    if RecordFilm then
+                    Effect := TWeaponSE.Create(Missile.GetWeaponInfo^.AreaSE, Classes.Point(0, 0), Missile.GetShotVisual, -1);
+                    EffectFilm := PrimaryFilm.AddObject(0, Effect);
+                    PrimaryFilm.SetObjectPosition(StepIndex, EffectFilm, HitShip.Position);
+                    PrimaryFilm.SetWeaponEndpoints(StepIndex, EffectFilm, nil, HitShip.FilmObject);
+                    PrimaryFilm.SetWeaponHit(StepIndex, EffectFilm, Word(DamageColor),
+                      Integer(Damage), HitShip.IsHullDestroyed, True);
+                    PrimaryFilm.AttachObject(StepIndex, EffectFilm);
+                    PrimaryFilm.DetachObject(StepIndex, Missile.FilmObject);
+                    Self.PendingFilmObjectRemovals.Add(Missile.FilmObject);
+                    ReleaseSpaceObject(Missile.Graphic);
+                  end;
+                  Stage := 29093;
+                  Point := HitShip.Position;
+                  if Missile.GetWeaponInfo^.ShotType in [wstTorpedo..wstMissile] then
+                  begin
+                    Stage := 29094;
+                    CandidateCount := Self.Ships.Count;
+                    for CandidateIndex := 0 to (CandidateCount - 1) do
                     begin
-                      Effect := TWeaponSE.Create(Missile.GetWeaponInfo^.AreaSE, Classes.Point(0, 0), Missile.GetShotVisual, -1);
-                      EffectFilm := PrimaryFilm.AddObject(0, Effect);
-                      PrimaryFilm.SetObjectPosition(StepIndex, EffectFilm, HitShip.Position);
-                      PrimaryFilm.SetWeaponEndpoints(StepIndex, EffectFilm, nil, HitShip.FilmObject);
-                      PrimaryFilm.SetWeaponHit(StepIndex, EffectFilm, Word(DamageColor),
-                        Integer(Damage), HitShip.IsHullDestroyed, True);
-                      PrimaryFilm.AttachObject(StepIndex, EffectFilm);
-                      PrimaryFilm.DetachObject(StepIndex, Missile.FilmObject);
-                      Self.PendingFilmObjectRemovals.Add(Missile.FilmObject);
-                      ReleaseSpaceObject(Missile.Graphic);
-                    end;
-                    Stage := 29093;
-                    Point := HitShip.Position;
-                    if Missile.GetWeaponInfo^.ShotType in [wstTorpedo..wstMissile] then
-                    begin
-                      Stage := 29094;
-                      CandidateCount := Self.Ships.Count;
-                      for CandidateIndex := 0 to (CandidateCount - 1) do
+                      Ship := Self.Ships[CandidateIndex];
+                      if not (Ship.InNormalSpace and not Ship.IsHullDestroyed and (Ship <> Target)) then Continue;
+                      if PointDistanceSquared(Point, Ship.Position) < Math.Power(Missile.GetWeaponInfo^.SecondaryDamageRadius, 2) then
                       begin
-                        Ship := Self.Ships[CandidateIndex];
-                        if Ship.InNormalSpace and not Ship.IsHullDestroyed and (Ship <> Target) then
+                        Stage := 29095;
+                        Damage := Cardinal(Ship.ApplyMissileHit(Missile, DamageColor, HitFlags));
+                        if (dkDrain in HitFlags) and (Integer(Damage) > 0) then
+                          DrainedDamage := DrainedDamage + Integer(Damage);
+                        Stage := 29096;
+                        Ship.RefreshDerivedStats(True);
+                        if RecordFilm then
                         begin
-                          if PointDistanceSquared(Point, Ship.Position) < Math.Power(Missile.GetWeaponInfo^.SecondaryDamageRadius, 2) then
-                          begin
-                            Stage := 29095;
-                            Damage := Cardinal(Ship.ApplyMissileHit(Missile, DamageColor, HitFlags));
-                            if (dkDrain in HitFlags) and (Integer(Damage) > 0) then
-                              DrainedDamage := DrainedDamage + Integer(Damage);
-                            Stage := 29096;
-                            Ship.RefreshDerivedStats(True);
-                            if RecordFilm then
-                            begin
-                              CreateFilmEffect('Weapon.NoGraph', 0, Effect, EffectFilm);
-                              PrimaryFilm.SetWeaponEndpoints(StepIndex, EffectFilm, Ship.FilmObject, Ship.FilmObject);
-                              PrimaryFilm.SetWeaponHit(StepIndex, EffectFilm,
-                                Word(DamageColor), Integer(Damage), Ship.IsHullDestroyed, True);
-                              PrimaryFilm.AttachObject(StepIndex, EffectFilm);
-                            end;
-                          end;
+                          CreateFilmEffect('Weapon.NoGraph', 0, Effect, EffectFilm);
+                          PrimaryFilm.SetWeaponEndpoints(StepIndex, EffectFilm, Ship.FilmObject, Ship.FilmObject);
+                          PrimaryFilm.SetWeaponHit(StepIndex, EffectFilm,
+                            Word(DamageColor), Integer(Damage), Ship.IsHullDestroyed, True);
+                          PrimaryFilm.AttachObject(StepIndex, EffectFilm);
                         end;
                       end;
                     end;
-                    Stage := 29097;
-                    if (DrainedDamage > 0) and ((Missile.OwnerShip <> nil)
-                      and (Missile.OwnerShip.InNormalSpace and (Missile.OwnerShip.CurrentStar = Self))) then
-                    begin
-                      CreateFilmEffect('Weapon.NoGraph', 0, Effect, EffectFilm);
-                      PrimaryFilm.SetWeaponEndpoints(StepIndex, EffectFilm,
-                        Missile.OwnerShip.FilmObject, Missile.OwnerShip.FilmObject);
-                      if GetPlayer <> Missile.OwnerShip then
-                        PrimaryFilm.SetWeaponHit(StepIndex, EffectFilm,
-                          Word(OwnerToFilmColor(Missile.OwnerShip.OwnerId)), -DrainedDamage, False, True)
-                      else
-                        PrimaryFilm.SetWeaponHit(StepIndex, EffectFilm,
-                          Word(OwnerToFilmColor(RaceToOwner(Missile.OwnerShip.PilotRace))),
-                          -DrainedDamage, False, True);
-                      PrimaryFilm.AttachObject(StepIndex, EffectFilm);
-                    end;
+                  end;
+                  Stage := 29097;
+                  if (DrainedDamage > 0) and ((Missile.OwnerShip <> nil)
+                    and (Missile.OwnerShip.InNormalSpace and (Missile.OwnerShip.CurrentStar = Self))) then
+                  begin
+                    CreateFilmEffect('Weapon.NoGraph', 0, Effect, EffectFilm);
+                    PrimaryFilm.SetWeaponEndpoints(StepIndex, EffectFilm,
+                      Missile.OwnerShip.FilmObject, Missile.OwnerShip.FilmObject);
+                    if GetPlayer <> Missile.OwnerShip then
+                      PrimaryFilm.SetWeaponHit(StepIndex, EffectFilm,
+                        Word(OwnerToFilmColor(Missile.OwnerShip.OwnerId)), -DrainedDamage, False, True)
+                    else
+                      PrimaryFilm.SetWeaponHit(StepIndex, EffectFilm,
+                        Word(OwnerToFilmColor(RaceToOwner(Missile.OwnerShip.PilotRace))),
+                        -DrainedDamage, False, True);
+                    PrimaryFilm.AttachObject(StepIndex, EffectFilm);
                   end;
                 end;
               end;
@@ -12533,10 +12480,10 @@ begin
                 MovingDrop^.SourceShipId := 0;
                 MovingDrop^.InsertedIntoStar := False;
                 MovingDrop^.DeployTranclucator := 0;
-                Distance := SeededRandomIntRange(50, 150, Self.GenerationSeed * Cardinal(Galaxy.CurrentTurn) * Cardinal(Item.Id));
+                Distance := SeededRandomIntRange(50, 150, Self.GenerationSeed * Cardinal(Galaxy.CurrentTurn) * Item.Id);
                 if (PlayerStar = Self) and (Count - 20 < PathStep) then
                   Distance := 5.0;
-                Angle := SeededRandomUnitFloat(Self.GenerationSeed * Cardinal(Galaxy.CurrentTurn) * Cardinal(Item.Id)) * 1.2 - 0.6 + Math.ArcTan2(Asteroid.Position.X - Planet.GetPosition().X, -(Asteroid.Position.Y - Planet.GetPosition().Y));
+                Angle := SeededRandomUnitFloat(Self.GenerationSeed * Cardinal(Galaxy.CurrentTurn) * Item.Id) * 1.2 - 0.6 + Math.ArcTan2(Asteroid.Position.X - Planet.GetPosition().X, -(Asteroid.Position.Y - Planet.GetPosition().Y));
                 MovingDrop^.Destination.X := System.Sin(Angle) * Distance + Item.Position.X;
                 MovingDrop^.Destination.Y := Item.Position.Y - System.Cos(Angle) * Distance;
                 Self.MovingDropItems.Add(MovingDrop);
@@ -12596,12 +12543,12 @@ begin
               for CandidateIndex := 0 to (CandidateCount - 1) do
               begin
                 MovingDrop := Self.MovingDropItems[Self.MovingDropItems.Count - 1 - CandidateIndex];
-                Distance := SeededRandomIntRange(50, 150, Cardinal((TObject(MovingDrop^.Payload) as TItem).Id) * (Self.GenerationSeed * Cardinal(Galaxy.CurrentTurn)));
+                Distance := SeededRandomIntRange(50, 150, (MovingDrop^.Payload as TItem).Id * (Self.GenerationSeed * Cardinal(Galaxy.CurrentTurn)));
                 if (PlayerStar = Self) and (Count - 20 < PathStep) then
                   Distance := 5.0;
-                WorkScale := SeededRandomUnitFloat(Cardinal((TObject(MovingDrop^.Payload) as TItem).Id) * (Self.GenerationSeed * Cardinal(Galaxy.CurrentTurn))) * 0.3 - 0.15;
-                MovingDrop^.Destination.X := (TObject(MovingDrop^.Payload) as TItem).Position.X + System.Sin(SeededRandomUnitFloat(Cardinal((TObject(MovingDrop^.Payload) as TItem).Id) * (Self.GenerationSeed * Cardinal(Galaxy.CurrentTurn))) * (Angle + WorkScale) * 113.0) * Distance;
-                MovingDrop^.Destination.Y := (TObject(MovingDrop^.Payload) as TItem).Position.Y - System.Cos(SeededRandomUnitFloat(Cardinal((TObject(MovingDrop^.Payload) as TItem).Id) * (Self.GenerationSeed * Cardinal(Galaxy.CurrentTurn))) * (Angle + WorkScale) * 517.0) * Distance;
+                WorkScale := SeededRandomUnitFloat((MovingDrop^.Payload as TItem).Id * (Self.GenerationSeed * Cardinal(Galaxy.CurrentTurn))) * 0.3 - 0.15;
+                MovingDrop^.Destination.X := (MovingDrop^.Payload as TItem).Position.X + System.Sin(SeededRandomUnitFloat((MovingDrop^.Payload as TItem).Id * (Self.GenerationSeed * Cardinal(Galaxy.CurrentTurn))) * (Angle + WorkScale) * 113.0) * Distance;
+                MovingDrop^.Destination.Y := (MovingDrop^.Payload as TItem).Position.Y - System.Cos(SeededRandomUnitFloat((MovingDrop^.Payload as TItem).Id * (Self.GenerationSeed * Cardinal(Galaxy.CurrentTurn))) * (Angle + WorkScale) * 517.0) * Distance;
                 Angle := Angle + WorkValue;
               end;
               Self.ClearTargetReferences(Asteroid);
@@ -12616,230 +12563,228 @@ begin
       begin
         Stage := 2930;
         CombatEvent := Self.CombatEvents[EntryIndex];
-        if (CombatEvent^.StepIndex = PathStep)
-          and ((CombatEvent^.Attacker <> nil)
-          and ((CombatEvent^.Target <> nil)
-          and (not TShip(CombatEvent^.Attacker).IsHullDestroyed
-          and (not TShip(CombatEvent^.Attacker).DestroyQueued
-          and ((CombatEvent^.Weapon <> nil) and (TWeapon(CombatEvent^.Weapon).EquippedFlag <> 0)))))) then
-        begin
-          if not (TShip(CombatEvent^.Attacker).GetCombatStatusStrength(cseWeaponBlock) <= 0.01) then
-          begin
-            if NextRandomUnitFloat(TShip(CombatEvent^.Attacker).RandomState) < TShip(CombatEvent^.Attacker).GetCombatStatusStrength(cseWeaponBlock) then
-            begin
-              TShip(CombatEvent^.Attacker).ReduceCombatStatusStrength(cseWeaponBlock, 1.0);
-              Continue;
-            end;
-            TShip(CombatEvent^.Attacker).ReduceCombatStatusStrength(cseWeaponBlock, 1.0);
-          end;
-          if TWeapon(CombatEvent^.Weapon).GetWeaponInfo^.ShotType in [wstTorpedo..wstRocket] then
-          begin
-            Stage := 2931;
-            if TWeapon(CombatEvent^.Weapon).Ammo > 0 then
-            begin
-              if TObject(CombatEvent^.Target) is TShip then
-                Point := (TObject(CombatEvent^.Target) as TShip).Position
-              else
-              begin
-                if TObject(CombatEvent^.Target) is TAsteroid then
-                  Point := (TObject(CombatEvent^.Target) as TAsteroid).Position
-                else
-                begin
-                  if TObject(CombatEvent^.Target) is TItem then
-                    Point := (TObject(CombatEvent^.Target) as TItem).Position
-                  else
-                  begin
-                    if TObject(CombatEvent^.Target) is TMissile then
-                      Point := (TObject(CombatEvent^.Target) as TMissile).Position
-                    else
-                      Point := MakePointF(1000000.0, 1000000.0);
-                  end;
-                end;
-              end;
-              if Sqr(TShip(CombatEvent^.Attacker).GetWeaponActionRange(TWeapon(CombatEvent^.Weapon)) + 200) > PointDistanceSquared(TShip(CombatEvent^.Attacker).Position, Point) then
-              begin
-                Quantity := 1;
-                AttackCount := TWeapon(CombatEvent^.Weapon).GetAttackCount;
-                if TWeapon(CombatEvent^.Weapon).GetWeaponInfo^.ShotType in [wstMissile..wstRocket] then
-                  Quantity := TWeapon(CombatEvent^.Weapon).GetShotCount;
-                BertorBoost := (CombatEvent^.Attacker is TKling)
-                  and ((CombatEvent^.Attacker as TKling).DominatorSeries = dsBlazer)
-                  and (CombatEvent^.Attacker as TKling).HasNearbyBertorAura;
-                for ArtefactIndex := 1 to ((TWeapon(CombatEvent^.Weapon).GetAttackCount * TShip(CombatEvent^.Attacker).CountActiveArtefacts(t_ArtFastRacks)) * (Integer(TShip(CombatEvent^.Attacker).CanBoostArtefact(t_ArtFastRacks, TWeapon(CombatEvent^.Weapon), False)) + 1)) do
-                begin
-                  if (NextRandomUnitFloat(TShip(CombatEvent^.Attacker).RandomState) <= aConst.ExtraMissileChance) and (TObject(CombatEvent^.Target) is TShip) then
-                    Inc(AttackCount);
-                end;
-                if TWeapon(CombatEvent^.Weapon).Ammo < AttackCount then
-                  AttackCount := Max(1, TWeapon(CombatEvent^.Weapon).Ammo);
-                Quantity := Quantity * AttackCount;
-                if (TShip(CombatEvent^.Attacker).TypeId <> stKling)
-                  and ((GetPlayer <> CombatEvent^.Attacker) or (Galaxy.AmmoModEnabled <> 1)) then
-                begin
-                  RemainingAmmo := TWeapon(CombatEvent^.Weapon).Ammo - AttackCount;
-                  TWeapon(CombatEvent^.Weapon).Ammo := RemainingAmmo;
-                  if GetPlayer = CombatEvent^.Attacker then
-                  begin
-                    SysUtils.Sleep(1);
-                    if (TWeapon(CombatEvent^.Weapon).Ammo <> RemainingAmmo)
-                      and not GR_Main.CCInterface.GetTamperDetected then
-                      GR_Main.CCInterface.SetTamperDetected(True);
-                  end;
-                end;
-                for i := 0 to (Quantity - 1) do
-                begin
-                  if CombatEvent^.Weapon is TCustomWeapon then
-                  begin
-                    Missile := TCustomMissile.Create;
-                    TCustomMissile(Missile).InitializeShot(Self, TShip(CombatEvent^.Attacker), TWeapon(CombatEvent^.Weapon),
-                      CombatEvent^.Target, i + Ord(Quantity mod 2 = 0));
-                  end
-                  else
-                  begin
-                    Missile := TMissile.Create;
-                    Missile.InitializeShot(Self, TShip(CombatEvent^.Attacker), TWeapon(CombatEvent^.Weapon), CombatEvent^.Target,
-                      i + Ord(Quantity mod 2 = 0));
-                  end;
-                  if BertorBoost then
-                  begin
-                    if Self.RecordingTurnFilm
-                      and (Ord((CombatEvent^.Attacker as TKling).AuraEffectShownThisTurn) = 0) then
-                    begin
-                      CreateFilmEffect('Weapon.AuraEffect', 0, Effect, EffectFilm);
-                      PrimaryFilm.SetWeaponEndpoints(Self.CurrentStepIndex, EffectFilm,
-                        TShip(CombatEvent^.Attacker).FilmObject, TShip(CombatEvent^.Attacker).FilmObject);
-                      PrimaryFilm.SetWeaponHit(Self.CurrentStepIndex, EffectFilm, 0, 0, False, True);
-                      PrimaryFilm.AttachObject(Self.CurrentStepIndex, EffectFilm);
-                      (CombatEvent^.Attacker as TKling).AuraEffectShownThisTurn := True;
+        if CombatEvent^.StepIndex = PathStep then
+          if CombatEvent^.Attacker <> nil then
+            if CombatEvent^.Target <> nil then
+              if not TShip(CombatEvent^.Attacker).IsHullDestroyed then
+                if not TShip(CombatEvent^.Attacker).DestroyQueued then
+                  if CombatEvent^.Weapon <> nil then
+                    if TWeapon(CombatEvent^.Weapon).EquippedFlag <> 0 then begin
+                      if not (TShip(CombatEvent^.Attacker).GetCombatStatusStrength(cseWeaponBlock) <= 0.01) then
+                      begin
+                        if NextRandomUnitFloat(TShip(CombatEvent^.Attacker).RandomState) < TShip(CombatEvent^.Attacker).GetCombatStatusStrength(cseWeaponBlock) then
+                        begin
+                          TShip(CombatEvent^.Attacker).ReduceCombatStatusStrength(cseWeaponBlock, 1.0);
+                          Continue;
+                        end;
+                        TShip(CombatEvent^.Attacker).ReduceCombatStatusStrength(cseWeaponBlock, 1.0);
+                      end;
+                      if TWeapon(CombatEvent^.Weapon).GetWeaponInfo^.ShotType in [wstTorpedo..wstRocket] then
+                      begin
+                        Stage := 2931;
+                        if TWeapon(CombatEvent^.Weapon).Ammo > 0 then
+                        begin
+                          if CombatEvent^.Target is TShip then
+                            Point := (CombatEvent^.Target as TShip).Position
+                          else
+                          begin
+                            if CombatEvent^.Target is TAsteroid then
+                              Point := (CombatEvent^.Target as TAsteroid).Position
+                            else
+                            begin
+                              if CombatEvent^.Target is TItem then
+                                Point := (CombatEvent^.Target as TItem).Position
+                              else
+                              begin
+                                if CombatEvent^.Target is TMissile then
+                                  Point := (CombatEvent^.Target as TMissile).Position
+                                else
+                                  Point := MakePointF(1000000.0, 1000000.0);
+                              end;
+                            end;
+                          end;
+                          if Sqr(TShip(CombatEvent^.Attacker).GetWeaponActionRange(TWeapon(CombatEvent^.Weapon)) + 200) > PointDistanceSquared(TShip(CombatEvent^.Attacker).Position, Point) then
+                          begin
+                            Quantity := 1;
+                            AttackCount := TWeapon(CombatEvent^.Weapon).GetAttackCount;
+                            if TWeapon(CombatEvent^.Weapon).GetWeaponInfo^.ShotType in [wstMissile..wstRocket] then
+                              Quantity := TWeapon(CombatEvent^.Weapon).GetShotCount;
+                            BertorBoost := (CombatEvent^.Attacker is TKling)
+                              and ((CombatEvent^.Attacker as TKling).DominatorSeries = dsBlazer)
+                              and (CombatEvent^.Attacker as TKling).HasNearbyBertorAura;
+                            for ArtefactIndex := 1 to ((TWeapon(CombatEvent^.Weapon).GetAttackCount * TShip(CombatEvent^.Attacker).CountActiveArtefacts(t_ArtFastRacks)) * (Integer(TShip(CombatEvent^.Attacker).CanBoostArtefact(t_ArtFastRacks, TWeapon(CombatEvent^.Weapon), False)) + 1)) do
+                            begin
+                              if (NextRandomUnitFloat(TShip(CombatEvent^.Attacker).RandomState) <= aConst.ExtraMissileChance) and (CombatEvent^.Target is TShip) then
+                                Inc(AttackCount);
+                            end;
+                            if TWeapon(CombatEvent^.Weapon).Ammo < AttackCount then
+                              AttackCount := Max(1, TWeapon(CombatEvent^.Weapon).Ammo);
+                            Quantity := Quantity * AttackCount;
+                            if (TShip(CombatEvent^.Attacker).TypeId <> stKling)
+                              and ((GetPlayer <> CombatEvent^.Attacker) or (Galaxy.AmmoModEnabled <> 1)) then
+                            begin
+                              RemainingAmmo := TWeapon(CombatEvent^.Weapon).Ammo - AttackCount;
+                              TWeapon(CombatEvent^.Weapon).Ammo := RemainingAmmo;
+                              if GetPlayer = CombatEvent^.Attacker then
+                              begin
+                                SysUtils.Sleep(1);
+                                if (TWeapon(CombatEvent^.Weapon).Ammo <> RemainingAmmo)
+                                  and not GR_Main.CCInterface.GetTamperDetected then
+                                  GR_Main.CCInterface.SetTamperDetected(True);
+                              end;
+                            end;
+                            for i := 0 to (Quantity - 1) do
+                            begin
+                              if CombatEvent^.Weapon is TCustomWeapon then
+                              begin
+                                Missile := TCustomMissile.Create;
+                                TCustomMissile(Missile).InitializeShot(Self, TShip(CombatEvent^.Attacker), TWeapon(CombatEvent^.Weapon),
+                                  CombatEvent^.Target, i + Ord(Quantity mod 2 = 0));
+                              end
+                              else
+                              begin
+                                Missile := TMissile.Create;
+                                Missile.InitializeShot(Self, TShip(CombatEvent^.Attacker), TWeapon(CombatEvent^.Weapon), CombatEvent^.Target,
+                                  i + Ord(Quantity mod 2 = 0));
+                              end;
+                              if BertorBoost then
+                              begin
+                                if Self.RecordingTurnFilm
+                                  and (not (CombatEvent^.Attacker as TKling).AuraEffectShownThisTurn) then
+                                begin
+                                  CreateFilmEffect('Weapon.AuraEffect', 0, Effect, EffectFilm);
+                                  PrimaryFilm.SetWeaponEndpoints(Self.CurrentStepIndex, EffectFilm,
+                                    TShip(CombatEvent^.Attacker).FilmObject, TShip(CombatEvent^.Attacker).FilmObject);
+                                  PrimaryFilm.SetWeaponHit(Self.CurrentStepIndex, EffectFilm, 0, 0, False, True);
+                                  PrimaryFilm.AttachObject(Self.CurrentStepIndex, EffectFilm);
+                                  (CombatEvent^.Attacker as TKling).AuraEffectShownThisTurn := True;
+                                end;
+                                Missile.MinDamage := Cardinal(System.Round(Missile.MinDamage * 1.25));
+                                Missile.MaxDamage := Cardinal(System.Round(Missile.MaxDamage * 1.25));
+                              end;
+                              TShip(CombatEvent^.Attacker).ScriptItemsAct(satOnMissileShot, Missile, TWeapon(CombatEvent^.Weapon), 0);
+                              Missile.PrepareTurnMovement(StepIndex, RecordFilm, True);
+                              if RecordFilm then
+                                PrimaryFilm.DetachObject(0, Missile.FilmObject);
+                            end;
+                          end;
+                        end;
+                      end
+                      else
+                      begin
+                        if CombatEvent^.Target is TMissile then
+                        begin
+                          Stage := 2932;
+                          if PointDistanceSquared(TShip(CombatEvent^.Attacker).Position, (CombatEvent^.Target as TMissile).Position) < 1.3 * Sqr(TShip(CombatEvent^.Attacker).GetWeaponRange(TWeapon(CombatEvent^.Weapon))) then
+                            TShip(CombatEvent^.Attacker).FireWeaponAtMissile(TWeapon(CombatEvent^.Weapon), CombatEvent^.Target, RecordFilm);
+                        end
+                        else
+                        begin
+                          if CombatEvent^.Target is TShip then
+                          begin
+                            Stage := 2933;
+                            if PointDistanceSquared(TShip(CombatEvent^.Attacker).Position, (CombatEvent^.Target as TShip).Position) < 1.3 * Sqr(TShip(CombatEvent^.Attacker).GetWeaponRange(TWeapon(CombatEvent^.Weapon))) then
+                              TShip(CombatEvent^.Attacker).FireWeaponAtShip(TWeapon(CombatEvent^.Weapon), TShip(CombatEvent^.Target), RecordFilm);
+                          end
+                          else
+                          begin
+                            if CombatEvent^.Target is TItem then
+                            begin
+                              Stage := 2934;
+                              if PointDistanceSquared(TShip(CombatEvent^.Attacker).Position, (CombatEvent^.Target as TItem).Position) < 1.3 * Sqr(TShip(CombatEvent^.Attacker).GetWeaponRange(TWeapon(CombatEvent^.Weapon))) then
+                                TShip(CombatEvent^.Attacker).FireWeaponAtItem(TWeapon(CombatEvent^.Weapon), TItem(CombatEvent^.Target), RecordFilm);
+                            end
+                            else
+                            begin
+                              if CombatEvent^.Target is TAsteroid then
+                              begin
+                                Stage := 2935;
+                                if PointDistanceSquared(TShip(CombatEvent^.Attacker).Position, (CombatEvent^.Target as TAsteroid).Position) < 1.3 * Sqr(TShip(CombatEvent^.Attacker).GetWeaponRange(TWeapon(CombatEvent^.Weapon))) then
+                                  TShip(CombatEvent^.Attacker).FireWeaponAtAsteroid(TWeapon(CombatEvent^.Weapon), CombatEvent^.Target,
+                                    RecordFilm);
+                              end;
+                            end;
+                          end;
+                        end;
+                      end;
+                      Continue;
                     end;
-                    Missile.MinDamage := Cardinal(System.Round(Missile.MinDamage * 1.25));
-                    Missile.MaxDamage := Cardinal(System.Round(Missile.MaxDamage * 1.25));
-                  end;
-                  TShip(CombatEvent^.Attacker).ScriptItemsAct(satOnMissileShot, Missile, TWeapon(CombatEvent^.Weapon), 0);
-                  Missile.PrepareTurnMovement(StepIndex, RecordFilm, True);
-                  if RecordFilm then
-                    PrimaryFilm.DetachObject(0, Missile.FilmObject);
-                end;
-              end;
-            end;
-          end
-          else
-          begin
-            if TObject(CombatEvent^.Target) is TMissile then
-            begin
-              Stage := 2932;
-              if PointDistanceSquared(TShip(CombatEvent^.Attacker).Position, (TObject(CombatEvent^.Target) as TMissile).Position) < 1.3 * Sqr(TShip(CombatEvent^.Attacker).GetWeaponRange(TWeapon(CombatEvent^.Weapon))) then
-                TShip(CombatEvent^.Attacker).FireWeaponAtMissile(TWeapon(CombatEvent^.Weapon), CombatEvent^.Target, RecordFilm);
-            end
-            else
-            begin
-              if TObject(CombatEvent^.Target) is TShip then
-              begin
-                Stage := 2933;
-                if PointDistanceSquared(TShip(CombatEvent^.Attacker).Position, (TObject(CombatEvent^.Target) as TShip).Position) < 1.3 * Sqr(TShip(CombatEvent^.Attacker).GetWeaponRange(TWeapon(CombatEvent^.Weapon))) then
-                  TShip(CombatEvent^.Attacker).FireWeaponAtShip(TWeapon(CombatEvent^.Weapon), TShip(CombatEvent^.Target), RecordFilm);
-              end
-              else
-              begin
-                if TObject(CombatEvent^.Target) is TItem then
-                begin
-                  Stage := 2934;
-                  if PointDistanceSquared(TShip(CombatEvent^.Attacker).Position, (TObject(CombatEvent^.Target) as TItem).Position) < 1.3 * Sqr(TShip(CombatEvent^.Attacker).GetWeaponRange(TWeapon(CombatEvent^.Weapon))) then
-                    TShip(CombatEvent^.Attacker).FireWeaponAtItem(TWeapon(CombatEvent^.Weapon), TItem(CombatEvent^.Target), RecordFilm);
-                end
-                else
-                begin
-                  if TObject(CombatEvent^.Target) is TAsteroid then
-                  begin
-                    Stage := 2935;
-                    if PointDistanceSquared(TShip(CombatEvent^.Attacker).Position, (TObject(CombatEvent^.Target) as TAsteroid).Position) < 1.3 * Sqr(TShip(CombatEvent^.Attacker).GetWeaponRange(TWeapon(CombatEvent^.Weapon))) then
-                      TShip(CombatEvent^.Attacker).FireWeaponAtAsteroid(TWeapon(CombatEvent^.Weapon), CombatEvent^.Target,
-                        RecordFilm);
-                  end;
-                end;
-              end;
-            end;
-          end;
-          Continue;
-        end;
       end;
       Stage := 2940;
       EntryCount := Self.MovingDropItems.Count;
       for EntryIndex := 0 to (EntryCount - 1) do
       begin
         MovingDrop := Self.MovingDropItems[EntryIndex];
-        if MovingDrop^.Payload <> nil then
+        if MovingDrop^.Payload = nil then Continue;
+        if MovingDrop^.Payload is TItem then
         begin
-          if TObject(MovingDrop^.Payload) is TItem then
+          Item := MovingDrop^.Payload as TItem;
+          if not MovingDrop^.InsertedIntoStar then
           begin
-            Item := TObject(MovingDrop^.Payload) as TItem;
-            if not MovingDrop^.InsertedIntoStar then
+            if (Item is TArtefactTranclucator) and (MovingDrop^.DeployTranclucator <> 0) then
             begin
-              if (Item is TArtefactTranclucator) and (MovingDrop^.DeployTranclucator <> 0) then
+              Tranclucator := (Item as TArtefactTranclucator).Ship as TTranclucator;
+              (Item as TArtefactTranclucator).Ship := nil;
+              Tranclucator.CurrentStar := Self;
+              Self.Ships.Add(Tranclucator);
+              Tranclucator.Position := Item.Position;
+              Tranclucator.MovementDirection := 0.0;
+              Item.Free;
+              MovingDrop^.Payload := Tranclucator;
+              MovingDrop^.InsertedIntoStar := True;
+              if RecordFilm then
               begin
-                Tranclucator := TObject((Item as TArtefactTranclucator).Ship) as TTranclucator;
-                (Item as TArtefactTranclucator).Ship := nil;
-                Tranclucator.CurrentStar := Self;
-                Self.Ships.Add(Tranclucator);
-                Tranclucator.Position := Item.Position;
-                Tranclucator.MovementDirection := 0.0;
-                Item.Free;
-                MovingDrop^.Payload := Tranclucator;
-                MovingDrop^.InsertedIntoStar := True;
-                if RecordFilm then
-                begin
-                  Tranclucator.FilmObject := PrimaryFilm.AddObject(Tranclucator.Id, Tranclucator.Graphic);
-                  PrimaryFilm.DetachObject(0, Tranclucator.FilmObject);
-                  PrimaryFilm.SetObjectPosition(StepIndex, Tranclucator.FilmObject, Self.Position);
-                  PrimaryFilm.SetObjectAngle(StepIndex, Tranclucator.FilmObject, 0);
-                  PrimaryFilm.SetObjectAlpha(StepIndex, Tranclucator.FilmObject, 255);
-                  PrimaryFilm.AttachObject(StepIndex, Tranclucator.FilmObject);
-                end;
-              end
-              else
-              begin
-                Self.Items.Add(Item);
-                MovingDrop^.InsertedIntoStar := True;
-                if RecordFilm then
-                begin
-                  Item.FilmObject := PrimaryFilm.AddObject(Item.Id, Item.GetGraphObject);
-                  PrimaryFilm.DetachObject(0, Item.FilmObject);
-                  PrimaryFilm.SetObjectPosition(StepIndex, Item.FilmObject, Item.Position);
-                  PrimaryFilm.AttachObject(StepIndex, Item.FilmObject);
-                end;
+                Tranclucator.FilmObject := PrimaryFilm.AddObject(Tranclucator.Id, Tranclucator.Graphic);
+                PrimaryFilm.DetachObject(0, Tranclucator.FilmObject);
+                PrimaryFilm.SetObjectPosition(StepIndex, Tranclucator.FilmObject, Self.Position);
+                PrimaryFilm.SetObjectAngle(StepIndex, Tranclucator.FilmObject, 0);
+                PrimaryFilm.SetObjectAlpha(StepIndex, Tranclucator.FilmObject, 255);
+                PrimaryFilm.AttachObject(StepIndex, Tranclucator.FilmObject);
               end;
             end
             else
             begin
-              Item.Position.X := (MovingDrop^.Destination.X - Item.Position.X) / (Count - PathStep) + Item.Position.X;
-              Item.Position.Y := (MovingDrop^.Destination.Y - Item.Position.Y) / (Count - PathStep) + Item.Position.Y;
+              Self.Items.Add(Item);
+              MovingDrop^.InsertedIntoStar := True;
               if RecordFilm then
-                PrimaryFilm.SetObjectPosition(StepIndex, Item.FilmObject, Item.Position);
-              if Self.DamageRadius * Self.DamageRadius > Sqr(Item.Position.X) + Sqr(Item.Position.Y) then
               begin
-                if RecordFilm then
-                begin
-                  CreateFilmEffect('Weapon.NoGraph', 0, Effect, EffectFilm);
-                  PrimaryFilm.SetWeaponEndpoints(StepIndex, EffectFilm, nil, Item.FilmObject);
-                  PrimaryFilm.SetWeaponHit(StepIndex, EffectFilm, 0, 0, True, True);
-                  PrimaryFilm.AttachObject(StepIndex, EffectFilm);
-                  ReleaseSpaceObject(Item.GraphObject);
-                  Self.PendingFilmObjectRemovals.Add(Item.FilmObject);
-                end;
-                Self.Items.Delete(Self.Items.IndexOf(Item));
-                Item.Free;
-                MovingDrop^.Payload := nil;
+                Item.FilmObject := PrimaryFilm.AddObject(Item.Id, Item.GetGraphObject);
+                PrimaryFilm.DetachObject(0, Item.FilmObject);
+                PrimaryFilm.SetObjectPosition(StepIndex, Item.FilmObject, Item.Position);
+                PrimaryFilm.AttachObject(StepIndex, Item.FilmObject);
               end;
             end;
           end
           else
           begin
-            HitShip := TObject(MovingDrop^.Payload) as TShip;
-            HitShip.Position.X := (MovingDrop^.Destination.X - HitShip.Position.X) / (Count - PathStep) + HitShip.Position.X;
-            HitShip.Position.Y := (MovingDrop^.Destination.Y - HitShip.Position.Y) / (Count - PathStep) + HitShip.Position.Y;
+            Item.Position.X := (MovingDrop^.Destination.X - Item.Position.X) / (Count - PathStep) + Item.Position.X;
+            Item.Position.Y := (MovingDrop^.Destination.Y - Item.Position.Y) / (Count - PathStep) + Item.Position.Y;
             if RecordFilm then
-              PrimaryFilm.SetObjectPosition(StepIndex, HitShip.FilmObject, HitShip.Position);
+              PrimaryFilm.SetObjectPosition(StepIndex, Item.FilmObject, Item.Position);
+            if Self.DamageRadius * Self.DamageRadius > Sqr(Item.Position.X) + Sqr(Item.Position.Y) then
+            begin
+              if RecordFilm then
+              begin
+                CreateFilmEffect('Weapon.NoGraph', 0, Effect, EffectFilm);
+                PrimaryFilm.SetWeaponEndpoints(StepIndex, EffectFilm, nil, Item.FilmObject);
+                PrimaryFilm.SetWeaponHit(StepIndex, EffectFilm, 0, 0, True, True);
+                PrimaryFilm.AttachObject(StepIndex, EffectFilm);
+                ReleaseSpaceObject(Item.GraphObject);
+                Self.PendingFilmObjectRemovals.Add(Item.FilmObject);
+              end;
+              Self.Items.Delete(Self.Items.IndexOf(Item));
+              Item.Free;
+              MovingDrop^.Payload := nil;
+            end;
           end;
+        end
+        else
+        begin
+          HitShip := MovingDrop^.Payload as TShip;
+          HitShip.Position.X := (MovingDrop^.Destination.X - HitShip.Position.X) / (Count - PathStep) + HitShip.Position.X;
+          HitShip.Position.Y := (MovingDrop^.Destination.Y - HitShip.Position.Y) / (Count - PathStep) + HitShip.Position.Y;
+          if RecordFilm then
+            PrimaryFilm.SetObjectPosition(StepIndex, HitShip.FilmObject, HitShip.Position);
         end;
       end;
       Stage := 2950;
@@ -12857,31 +12802,28 @@ begin
           Asteroid.AdvanceOrbitStep(StepIndex, RecordFilm);
         end;
       Stage := 2952;
-      if StepIndex mod (Count div 11) = 0 then
-      begin
-        if StepIndex div (Count div 11) >= 1 then
-        begin
-          if StepIndex div (Count div 11) <= 10 then
-            Self.ProcessItemScripts(StepIndex div (Count div 11));
-        end;
+      if (StepIndex mod (Count div 11) = 0) and (StepIndex div (Count div 11) >= 1) then begin
+
+        if StepIndex div (Count div 11) <= 10 then
+          Self.ProcessItemScripts(StepIndex div (Count div 11));
       end;
       Stage := 2960;
       if (PathStep + 1) mod Integer(Cardinal(Count) shr 3) = 0 then
         for Index := 0 to (Self.Ships.Count - 1) do
         begin
           Ship := Self.Ships[Index];
-          if Ship.InNormalSpace and ((GetPlayer <> Ship) or (Byte(GlobalsV.CurrentScreenId) = 16)) then
-            for i := 0 to (Ship.Inventory.Count - 1) do
+          if not (Ship.InNormalSpace and ((GetPlayer <> Ship) or (Byte(GlobalsV.CurrentScreenId) = 16))) then Continue;
+          for i := 0 to (Ship.Inventory.Count - 1) do
+          begin
+            Item := Ship.Inventory[i];
+            if Item.DestroyFlag > 0 then
             begin
-              Item := Ship.Inventory[i];
-              if Item.DestroyFlag > 0 then
-              begin
-                while Ship.DockedTo <> nil do
-                  Ship := Ship.DockedTo;
-                Ship.DestroyQueued := True;
-                Break;
-              end;
+              while Ship.DockedTo <> nil do
+                Ship := Ship.DockedTo;
+              Ship.DestroyQueued := True;
+              Break;
             end;
+          end;
           ;
         end;
       Stage := 2961;
@@ -12913,25 +12855,23 @@ begin
             for CandidateIndex := 0 to (CandidateCount - 1) do
             begin
               Ship := Self.Ships[CandidateIndex];
-              if Ship.InNormalSpace and not Ship.IsHullDestroyed then
+              if not (Ship.InNormalSpace and not Ship.IsHullDestroyed) then Continue;
+              Distance := PointDistanceSquared(Ship.Position, Item.Position);
+              if (Sqr(aConst.BombDamageRadius) >= Distance)
+                and ((GetPlayer <> Ship) or (Galaxy.GodModEnabled <> 1) and (Galaxy.SpecialSimulationMode = 0)) then
               begin
-                Distance := PointDistanceSquared(Ship.Position, Item.Position);
-                if (Sqr(aConst.BombDamageRadius) >= Distance)
-                  and ((GetPlayer <> Ship) or (Galaxy.GodModEnabled <> 1) and (Galaxy.SpecialSimulationMode = 0)) then
+                Damage := Cardinal(Ship.ApplyExplosionDamage(nil, Item, 0, nil));
+                DamageColor := GR_Main.CurrentPixelFormat.PackRgbBytes(255, 0, 0);
+                if RecordFilm then
                 begin
-                  Damage := Cardinal(Ship.ApplyExplosionDamage(nil, Item, 0, nil));
-                  DamageColor := GR_Main.CurrentPixelFormat.PackRgbBytes(255, 0, 0);
-                  if RecordFilm then
-                  begin
-                    CreateFilmEffect('Weapon.NoGraph', 0, Effect, EffectFilm);
-                    PrimaryFilm.SetWeaponEndpoints(StepIndex, EffectFilm, Ship.FilmObject, Ship.FilmObject);
-                    if Item.DestroyFlag > 0 then
-                      PrimaryFilm.SetWeaponHit(StepIndex, EffectFilm, Word(DamageColor),
-                        Integer(Damage), Ship.IsHullDestroyed, True)
-                    else
-                      PrimaryFilm.SetWeaponHit(StepIndex, EffectFilm, 0, 0, Ship.IsHullDestroyed, True);
-                    PrimaryFilm.AttachObject(StepIndex, EffectFilm);
-                  end;
+                  CreateFilmEffect('Weapon.NoGraph', 0, Effect, EffectFilm);
+                  PrimaryFilm.SetWeaponEndpoints(StepIndex, EffectFilm, Ship.FilmObject, Ship.FilmObject);
+                  if Item.DestroyFlag > 0 then
+                    PrimaryFilm.SetWeaponHit(StepIndex, EffectFilm, Word(DamageColor),
+                      Integer(Damage), Ship.IsHullDestroyed, True)
+                  else
+                    PrimaryFilm.SetWeaponHit(StepIndex, EffectFilm, 0, 0, Ship.IsHullDestroyed, True);
+                  PrimaryFilm.AttachObject(StepIndex, EffectFilm);
                 end;
               end;
             end;
@@ -12940,15 +12880,13 @@ begin
             begin
               OtherItem := Self.Items[CandidateIndex];
               Distance := PointDistanceSquared(OtherItem.Position, Item.Position);
-              if aConst.ItemExplosionRadiusSquared >= Distance then
+              if not (aConst.ItemExplosionRadiusSquared >= Distance) then Continue;
+              if 20.0 - 20.0 * Distance / aConst.ItemExplosionRadiusSquared >= NextRandomIntRange(1, 100, Self.RandomState) then
               begin
-                if 20.0 - 20.0 * Distance / aConst.ItemExplosionRadiusSquared >= NextRandomIntRange(1, 100, Self.RandomState) then
-                begin
-                  if OtherItem.DestroyFlag < 0 then
-                    Inc(OtherItem.DestroyFlag)
-                  else
-                    Self.ReferencedItems.Add(OtherItem);
-                end;
+                if OtherItem.DestroyFlag < 0 then
+                  Inc(OtherItem.DestroyFlag)
+                else
+                  Self.ReferencedItems.Add(OtherItem);
               end;
             end;
           end;
@@ -12972,7 +12910,7 @@ begin
           Continue;
         end;
         Stage := 2971;
-        if Ship.DestroyQueued and ((Cardinal(Cardinal(Count) shr 2) = Cardinal(PathStep))
+        if Ship.DestroyQueued and ((Cardinal(Count) shr 2 = Cardinal(PathStep))
           and ((GetPlayer <> Ship) or (Byte(GlobalsV.CurrentScreenId) = 16))) then
         begin
           Ship.ScriptItemsAct(satOnDeath, nil, nil, 0);
@@ -12997,69 +12935,63 @@ begin
           Continue;
         end;
         Stage := 2972;
-        if (StepIndex mod (Count div 5) = 0) and (StepIndex div (Count div 5) >= 1) then
-        begin
-          if (StepIndex div (Count div 5) <= 3)
-            and (not Ship.IsHullDestroyed
-            and (Ship.InNormalSpace and ((GetPlayer <> Ship) or (Galaxy.GodModEnabled <> 1)
-            and (Galaxy.SpecialSimulationMode = 0))) and ((GetPlayer = Ship) or (Galaxy.StasisModEnabled <> 1))) then
+        if ((StepIndex mod (Count div 5) = 0) and (StepIndex div (Count div 5) >= 1)) and ((StepIndex div (Count div 5) <= 3)
+          and (not Ship.IsHullDestroyed
+          and (Ship.InNormalSpace and ((GetPlayer <> Ship) or (Galaxy.GodModEnabled <> 1)
+          and (Galaxy.SpecialSimulationMode = 0))) and ((GetPlayer = Ship) or (Galaxy.StasisModEnabled <> 1)))) then begin
+
+          Distance := Sqr(Ship.Position.X) + Sqr(Ship.Position.Y);
+          if Self.DamageRadius * Self.DamageRadius > Distance then
           begin
-            Distance := Sqr(Ship.Position.X) + Sqr(Ship.Position.Y);
-            if Self.DamageRadius * Self.DamageRadius > Distance then
-            begin
-              if GetPlayer = Ship then
-                Self.PlayerCombatOccurred := True;
-              Damage := Cardinal(Ship.ApplyStarHeatDamage);
-              if RecordFilm and (Integer(Damage) > 0) then
-              begin
-                CreateFilmEffect('Weapon.Star', 0, Effect, EffectFilm);
-                PrimaryFilm.SetWeaponEndpoints(StepIndex, EffectFilm, Ship.FilmObject, Ship.FilmObject);
-                PrimaryFilm.SetWeaponHit(StepIndex, EffectFilm,
-                  Word(GR_Main.CurrentPixelFormat.PackRgbBytes(255, 255, 255)),
-                  Integer(Damage), Ship.IsHullDestroyed, True);
-                PrimaryFilm.AttachObject(StepIndex, EffectFilm);
-              end;
-              Ship.InterceptorPassesRemaining := 0;
-              if Ship.IsHullDestroyed then
-              begin
-                Inc(Index);
-                Continue;
-              end;
-            end;
-          end;
-        end;
-        Stage := 29731;
-        if (StepIndex mod (Count div 5) = 0) and (StepIndex div (Count div 5) >= 1) then
-        begin
-          if (StepIndex div (Count div 5) <= 3)
-            and (not Ship.IsHullDestroyed
-            and (Ship.InNormalSpace and ((GetPlayer <> Ship) or (Galaxy.GodModEnabled <> 1)
-            and (Galaxy.SpecialSimulationMode = 0)))
-            and (((GetPlayer = Ship) or (Galaxy.StasisModEnabled <> 1))
-            and (Ship.InterceptorPassesRemaining > 0))) then
-          begin
-            if (GetPlayer = Ship) or (GetPlayer = Ship.InterceptorSourceShip) then
-            begin
+            if GetPlayer = Ship then
               Self.PlayerCombatOccurred := True;
-              if GetPlayer = Ship.InterceptorSourceShip then
-                PrimaryFilm.AddCameraEvent(StepIndex, GetPlayer.Position, Ship.Position, 1);
-              if (GetPlayer = Ship) and (Ship.InterceptorSourceShip <> nil) then
-                PrimaryFilm.AddCameraEvent(StepIndex, GetPlayer.Position, Ship.InterceptorSourceShip.Position, 1);
-            end;
-            Damage := Cardinal(Ship.ApplyInterceptorDamage(DamageColor));
-            if RecordFilm then
+            Damage := Cardinal(Ship.ApplyStarHeatDamage);
+            if RecordFilm and (Integer(Damage) > 0) then
             begin
               CreateFilmEffect('Weapon.Star', 0, Effect, EffectFilm);
               PrimaryFilm.SetWeaponEndpoints(StepIndex, EffectFilm, Ship.FilmObject, Ship.FilmObject);
-              PrimaryFilm.SetWeaponHit(StepIndex, EffectFilm, Word(DamageColor),
+              PrimaryFilm.SetWeaponHit(StepIndex, EffectFilm,
+                Word(GR_Main.CurrentPixelFormat.PackRgbBytes(255, 255, 255)),
                 Integer(Damage), Ship.IsHullDestroyed, True);
               PrimaryFilm.AttachObject(StepIndex, EffectFilm);
             end;
+            Ship.InterceptorPassesRemaining := 0;
             if Ship.IsHullDestroyed then
             begin
               Inc(Index);
               Continue;
             end;
+          end;
+        end;
+        Stage := 29731;
+        if ((StepIndex mod (Count div 5) = 0) and (StepIndex div (Count div 5) >= 1)) and ((StepIndex div (Count div 5) <= 3)
+          and (not Ship.IsHullDestroyed
+          and (Ship.InNormalSpace and ((GetPlayer <> Ship) or (Galaxy.GodModEnabled <> 1)
+          and (Galaxy.SpecialSimulationMode = 0)))
+          and (((GetPlayer = Ship) or (Galaxy.StasisModEnabled <> 1))
+          and (Ship.InterceptorPassesRemaining > 0)))) then begin
+
+          if (GetPlayer = Ship) or (GetPlayer = Ship.InterceptorSourceShip) then
+          begin
+            Self.PlayerCombatOccurred := True;
+            if GetPlayer = Ship.InterceptorSourceShip then
+              PrimaryFilm.AddCameraEvent(StepIndex, GetPlayer.Position, Ship.Position, 1);
+            if (GetPlayer = Ship) and (Ship.InterceptorSourceShip <> nil) then
+              PrimaryFilm.AddCameraEvent(StepIndex, GetPlayer.Position, Ship.InterceptorSourceShip.Position, 1);
+          end;
+          Damage := Cardinal(Ship.ApplyInterceptorDamage(DamageColor));
+          if RecordFilm then
+          begin
+            CreateFilmEffect('Weapon.Star', 0, Effect, EffectFilm);
+            PrimaryFilm.SetWeaponEndpoints(StepIndex, EffectFilm, Ship.FilmObject, Ship.FilmObject);
+            PrimaryFilm.SetWeaponHit(StepIndex, EffectFilm, Word(DamageColor),
+              Integer(Damage), Ship.IsHullDestroyed, True);
+            PrimaryFilm.AttachObject(StepIndex, EffectFilm);
+          end;
+          if Ship.IsHullDestroyed then
+          begin
+            Inc(Index);
+            Continue;
           end;
         end;
         Stage := 29732;
@@ -13081,80 +13013,66 @@ begin
             Ship.InterceptorSourceShip := nil;
         end;
         Stage := 29733;
-        if 4 * (Count div 5) = StepIndex then
-        begin
-          if (System.Round(Ship.GetCombatStatusStrength(cseShock)) >= 1)
-            and (not Ship.IsHullDestroyed
-            and (Ship.InNormalSpace and ((GetPlayer <> Ship) or (Galaxy.GodModEnabled <> 1)
-            and (Galaxy.SpecialSimulationMode = 0))) and ((GetPlayer = Ship) or (Galaxy.StasisModEnabled <> 1))) then
+        if (4 * (Count div 5) = StepIndex) and ((System.Round(Ship.GetCombatStatusStrength(cseShock)) >= 1)
+          and (not Ship.IsHullDestroyed
+          and (Ship.InNormalSpace and ((GetPlayer <> Ship) or (Galaxy.GodModEnabled <> 1)
+          and (Galaxy.SpecialSimulationMode = 0))) and ((GetPlayer = Ship) or (Galaxy.StasisModEnabled <> 1)))) then begin
+
+          Damage := Cardinal(Ship.ApplyShockStatusDamage(DamageColor));
+          if RecordFilm then
           begin
-            Damage := Cardinal(Ship.ApplyShockStatusDamage(DamageColor));
-            if RecordFilm then
-            begin
-              CreateFilmEffect('Weapon.Shock', 0, Effect, EffectFilm);
-              PrimaryFilm.SetWeaponEndpoints(StepIndex, EffectFilm, Ship.FilmObject, Ship.FilmObject);
-              PrimaryFilm.SetWeaponHit(StepIndex, EffectFilm, Word(DamageColor),
-                Integer(Damage), Ship.IsHullDestroyed, True);
-              PrimaryFilm.AttachObject(StepIndex, EffectFilm);
-            end;
+            CreateFilmEffect('Weapon.Shock', 0, Effect, EffectFilm);
+            PrimaryFilm.SetWeaponEndpoints(StepIndex, EffectFilm, Ship.FilmObject, Ship.FilmObject);
+            PrimaryFilm.SetWeaponHit(StepIndex, EffectFilm, Word(DamageColor),
+              Integer(Damage), Ship.IsHullDestroyed, True);
+            PrimaryFilm.AttachObject(StepIndex, EffectFilm);
           end;
         end;
-        if Ship is TKling then
-        begin
-          if (Ship as TKling).ShouldKamikaze and not Ship.IsHullDestroyed and Ship.InNormalSpace then
-          begin
-            if Ship.OrderTarget <> nil then
-            begin
-              if TObject(Ship.OrderTarget) is TShip then
+        if (Ship is TKling) and ((Ship as TKling).ShouldKamikaze and not Ship.IsHullDestroyed and Ship.InNormalSpace) then begin
+
+          if (Ship.OrderTarget <> nil) and (Ship.OrderTarget is TShip) then begin
+
+            if (not (Ship.OrderTarget as TShip).IsHullDestroyed) and ((Ship.OrderTarget as TShip).InNormalSpace) then begin
+
+              if PointDistance(Ship.Position, (Ship.OrderTarget as TShip).Position) <= 100.0 then
               begin
-                if not (TObject(Ship.OrderTarget) as TShip).IsHullDestroyed then
+                Ship.GetHull.HullPoints := 0;
+                Self.ClearShipReferences(Ship);
+                Ship.ScriptItemsAct(satOnDeath, Ship, Ship, 0);
+                if GetPlayer <> nil then
+                  GetPlayer.ProcessShipDestructionQuests(Ship);
+                for CandidateIndex := 0 to (Self.Ships.Count - 1) do
                 begin
-                  if (TObject(Ship.OrderTarget) as TShip).InNormalSpace then
+                  OwnerShip := Self.Ships[CandidateIndex];
+                  if not (not OwnerShip.IsHullDestroyed
+                    and (OwnerShip.InNormalSpace
+                    and ((PointDistanceSquared(Ship.Position, OwnerShip.Position) <= 22500.0)
+                    and ((GetPlayer <> OwnerShip) or (Galaxy.GodModEnabled <> 1)
+                    and (Galaxy.SpecialSimulationMode = 0))))) then Continue;
+                  if not (OwnerShip is TKling)
+                    or ((OwnerShip as TKling).DominatorSeries <> (Ship as TKling).DominatorSeries) then
                   begin
-                    if PointDistance(Ship.Position, (TObject(Ship.OrderTarget) as TShip).Position) <= 100.0 then
+                    Damage := Cardinal(OwnerShip.ApplyExplosionDamage(nil, Ship, 0, nil));
+                    DamageColor := GR_Main.CurrentPixelFormat.PackRgbBytes(255, 0, 0);
+                    if RecordFilm then
                     begin
-                      Ship.GetHull.HullPoints := 0;
-                      Self.ClearShipReferences(Ship);
-                      Ship.ScriptItemsAct(satOnDeath, Ship, Ship, 0);
-                      if GetPlayer <> nil then
-                        GetPlayer.ProcessShipDestructionQuests(Ship);
-                      for CandidateIndex := 0 to (Self.Ships.Count - 1) do
-                      begin
-                        OwnerShip := Self.Ships[CandidateIndex];
-                        if not OwnerShip.IsHullDestroyed
-                          and (OwnerShip.InNormalSpace
-                          and ((PointDistanceSquared(Ship.Position, OwnerShip.Position) <= 22500.0)
-                          and ((GetPlayer <> OwnerShip) or (Galaxy.GodModEnabled <> 1)
-                          and (Galaxy.SpecialSimulationMode = 0)))) then
-                        begin
-                          if not (OwnerShip is TKling)
-                            or ((OwnerShip as TKling).DominatorSeries <> (Ship as TKling).DominatorSeries) then
-                          begin
-                            Damage := Cardinal(OwnerShip.ApplyExplosionDamage(nil, Ship, 0, nil));
-                            DamageColor := GR_Main.CurrentPixelFormat.PackRgbBytes(255, 0, 0);
-                            if RecordFilm then
-                            begin
-                              CreateFilmEffect('Weapon.NoGraph', 0, Effect, EffectFilm);
-                              PrimaryFilm.SetWeaponEndpoints(StepIndex, EffectFilm,
-                                OwnerShip.FilmObject, OwnerShip.FilmObject);
-                              PrimaryFilm.SetWeaponHit(StepIndex, EffectFilm,
-                                Word(DamageColor), Integer(Damage), OwnerShip.IsHullDestroyed, True);
-                              PrimaryFilm.AttachObject(StepIndex, EffectFilm);
-                            end;
-                          end;
-                        end;
-                      end;
-                      if RecordFilm then
-                      begin
-                        PrimaryFilm.SetObjectAlpha(StepIndex, Ship.FilmObject, 0);
-                        CreateFilmEffect('Weapon.Kamikaze', 0, Effect, EffectFilm);
-                        PrimaryFilm.SetWeaponEndpoints(StepIndex, EffectFilm, Ship.FilmObject, Ship.FilmObject);
-                        PrimaryFilm.SetWeaponHit(StepIndex, EffectFilm, 0, 0, True, True);
-                        PrimaryFilm.SetDestructionEffect(StepIndex, EffectFilm, 5);
-                        PrimaryFilm.AttachObject(StepIndex, EffectFilm);
-                      end;
+                      CreateFilmEffect('Weapon.NoGraph', 0, Effect, EffectFilm);
+                      PrimaryFilm.SetWeaponEndpoints(StepIndex, EffectFilm,
+                        OwnerShip.FilmObject, OwnerShip.FilmObject);
+                      PrimaryFilm.SetWeaponHit(StepIndex, EffectFilm,
+                        Word(DamageColor), Integer(Damage), OwnerShip.IsHullDestroyed, True);
+                      PrimaryFilm.AttachObject(StepIndex, EffectFilm);
                     end;
                   end;
+                end;
+                if RecordFilm then
+                begin
+                  PrimaryFilm.SetObjectAlpha(StepIndex, Ship.FilmObject, 0);
+                  CreateFilmEffect('Weapon.Kamikaze', 0, Effect, EffectFilm);
+                  PrimaryFilm.SetWeaponEndpoints(StepIndex, EffectFilm, Ship.FilmObject, Ship.FilmObject);
+                  PrimaryFilm.SetWeaponHit(StepIndex, EffectFilm, 0, 0, True, True);
+                  PrimaryFilm.SetDestructionEffect(StepIndex, EffectFilm, 5);
+                  PrimaryFilm.AttachObject(StepIndex, EffectFilm);
                 end;
               end;
             end;
@@ -13174,21 +13092,18 @@ begin
             PrimaryFilm.SetWeaponHit(StepIndex, EffectFilm, 0, 0, False, True);
             PrimaryFilm.AttachObject(StepIndex, EffectFilm);
           end;
-          if (StepIndex div (Count div 9) = 3) and ((Ship as TKling).DominatorSeries = dsTerron) then
-          begin
-            if (Ship as TKling).HasNearbyBertorAura then
+          if ((StepIndex div (Count div 9) = 3) and ((Ship as TKling).DominatorSeries = dsTerron)) and ((Ship as TKling).HasNearbyBertorAura) then begin
+
+            Damage := Cardinal(Max(1, System.Round(Ship.GetHull.Weight * 0.05)));
+            Ship.GetHull.HullPoints := Min(Ship.GetHull.Weight,
+              Integer(Damage) + Ship.GetHull.HullPoints);
+            if RecordFilm then
             begin
-              Damage := Cardinal(Max(1, System.Round(Ship.GetHull.Weight * 0.05)));
-              Ship.GetHull.HullPoints := Min(Ship.GetHull.Weight,
-                Integer(Damage) + Ship.GetHull.HullPoints);
-              if RecordFilm then
-              begin
-                CreateFilmEffect('Weapon.AuraEffect', 2, Effect, EffectFilm);
-                PrimaryFilm.SetWeaponEndpoints(StepIndex, EffectFilm, Ship.FilmObject, Ship.FilmObject);
-                PrimaryFilm.SetWeaponHit(StepIndex, EffectFilm,
-                  Word(OwnerToFilmColor(Ship.OwnerId)), -Damage, False, True);
-                PrimaryFilm.AttachObject(StepIndex, EffectFilm);
-              end;
+              CreateFilmEffect('Weapon.AuraEffect', 2, Effect, EffectFilm);
+              PrimaryFilm.SetWeaponEndpoints(StepIndex, EffectFilm, Ship.FilmObject, Ship.FilmObject);
+              PrimaryFilm.SetWeaponHit(StepIndex, EffectFilm,
+                Word(OwnerToFilmColor(Ship.OwnerId)), -Damage, False, True);
+              PrimaryFilm.AttachObject(StepIndex, EffectFilm);
             end;
           end;
           if (StepIndex div (Count div 9) = 3)
@@ -13196,134 +13111,120 @@ begin
             for CandidateIndex := 0 to (Self.Ships.Count - 1) do
             begin
               OwnerShip := Self.Ships[CandidateIndex];
-              if not OwnerShip.IsHullDestroyed and OwnerShip.InNormalSpace and (Ship <> OwnerShip)
+              if not (not OwnerShip.IsHullDestroyed and OwnerShip.InNormalSpace and (Ship <> OwnerShip)
                 and (not (OwnerShip is TKling)
                 or not ((OwnerShip as TKling).KlingType in [ktBoss, ktBertor]))
-                and (PointDistance(Ship.Position, OwnerShip.Position) <= 500.0) then
-                for EntryIndex := 0 to (OwnerShip.Inventory.Count - 1) do
-                begin
-                  Item := OwnerShip.Inventory[EntryIndex];
-                  if Item.OwnerId = oiDominator then
-                  begin
-                    if ((Item as TEquipment).DominatorSeries <> (Ship as TKling).DominatorSeries) and ((Item.ItemType in [t_FuelTanks .. t_CustomWeapon, t_Satellite]) and (Item is TEquipment)) then
-                    begin
-                      if (Item as TEquipment).EquippedFlag <> 0 then
-                      begin
-                        if (Item as TEquipment).BrokenFlag = 0 then
-                        begin
-                          if WideString((Item as TEquipment).CustomFaction) = '' then
-                            OwnerShip.ApplyItemDegradation(TEquipment(Item), idkForce,
-                              NextRandomIntRange(5, 10, Ship.RandomState));
-                        end;
-                      end;
-                    end;
+                and (PointDistance(Ship.Position, OwnerShip.Position) <= 500.0)) then Continue;
+              for EntryIndex := 0 to (OwnerShip.Inventory.Count - 1) do
+              begin
+                Item := OwnerShip.Inventory[EntryIndex];
+                if (Item.OwnerId = oiDominator) and (((Item as TEquipment).DominatorSeries <> (Ship as TKling).DominatorSeries) and ((Item.ItemType in [t_FuelTanks .. t_CustomWeapon, t_Satellite]) and (Item is TEquipment))) then begin
+
+                  if ((Item as TEquipment).EquippedFlag <> 0) and ((Item as TEquipment).BrokenFlag = 0) then begin
+
+                    if WideString((Item as TEquipment).CustomFaction) = '' then
+                      OwnerShip.ApplyItemDegradation(TEquipment(Item), idkForce,
+                        NextRandomIntRange(5, 10, Ship.RandomState));
                   end;
                 end;
+              end;
             end;
         end;
         Stage := 29735;
-        if StepIndex mod (Count div (aConst.PointDefensePassCount + 2)) = 0 then
-        begin
-          if StepIndex div (Count div (aConst.PointDefensePassCount + 2)) >= 1 then
+        if (StepIndex mod (Count div (aConst.PointDefensePassCount + 2)) = 0) and (StepIndex div (Count div (aConst.PointDefensePassCount + 2)) >= 1) then begin
+
+          if (StepIndex div (Count div (aConst.PointDefensePassCount + 2)) <= aConst.PointDefensePassCount)
+            and (not Ship.IsHullDestroyed
+            and (Ship.InNormalSpace and ((Ship.CountActiveArtefacts(t_ArtPDTurret) > 0)
+            and ((GetPlayer = Ship) or (Galaxy.StasisModEnabled <> 1))))) then
           begin
-            if (StepIndex div (Count div (aConst.PointDefensePassCount + 2)) <= aConst.PointDefensePassCount)
-              and (not Ship.IsHullDestroyed
-              and (Ship.InNormalSpace and ((Ship.CountActiveArtefacts(t_ArtPDTurret) > 0)
-              and ((GetPlayer = Ship) or (Galaxy.StasisModEnabled <> 1))))) then
+            for ArtefactIndex := 1 to Ship.CountActiveArtefacts(t_ArtPDTurret) do
             begin
-              for ArtefactIndex := 1 to Ship.CountActiveArtefacts(t_ArtPDTurret) do
+              CandidateIndex := 0;
+              InterceptedMissile := nil;
+              NearestMissileDistance := 0;
+              BestMissilePriority := -1;
+              MissilePriority := 0;
+              PointDefenseRangeSquared := (aConst.PointDefenseBaseRange + aConst.PointDefenseBonusRange) * (aConst.PointDefenseBaseRange + aConst.PointDefenseBonusRange * Ord(Ship.CanBoostArtefact(t_ArtPDTurret, nil, False)));
+              while Self.Missiles.Count > CandidateIndex do
               begin
-                CandidateIndex := 0;
-                InterceptedMissile := nil;
-                NearestMissileDistance := 0;
-                BestMissilePriority := -1;
-                MissilePriority := 0;
-                PointDefenseRangeSquared := (aConst.PointDefenseBaseRange + aConst.PointDefenseBonusRange) * (aConst.PointDefenseBaseRange + aConst.PointDefenseBonusRange * Ord(Ship.CanBoostArtefact(t_ArtPDTurret, nil, False)));
-                while Self.Missiles.Count > CandidateIndex do
+                Missile := Self.Missiles[CandidateIndex];
+                Inc(CandidateIndex);
+                if not ((Missile.OwnerShip <> Ship)
+                  and (not (Ship is TTranclucator)
+                  or ((TTranclucator(Ship).OwnerShip = nil)
+                  or ((Missile.OwnerShip = nil) or (TTranclucator(Ship).OwnerShip <> Missile.OwnerShip)
+                  and (not (TObject(Missile.OwnerShip) is TTranclucator)
+                  or (TTranclucator(Ship).OwnerShip <> TTranclucator(Cardinal(Missile.OwnerShip)).OwnerShip)))))) then Continue;
+                MissileDistance := Integer(System.Round(PointDistanceSquared(Ship.Position, Missile.Position)));
+                if MissileDistance <= PointDefenseRangeSquared then
                 begin
-                  Missile := Self.Missiles[CandidateIndex];
-                  Inc(CandidateIndex);
-                  if (Missile.OwnerShip <> Ship)
-                    and (not (Ship is TTranclucator)
-                    or ((TTranclucator(Ship).OwnerShip = nil)
-                    or ((Missile.OwnerShip = nil) or (TTranclucator(Ship).OwnerShip <> Missile.OwnerShip)
-                    and (not (TObject(Missile.OwnerShip) is TTranclucator)
-                    or (TTranclucator(Ship).OwnerShip <> TTranclucator(Cardinal(Missile.OwnerShip)).OwnerShip))))) then
+                  if Missile.Target = Ship then
+                    MissilePriority := 3
+                  else if (Missile.Target <> nil)
+                    and (Missile.Target is TShip)
+                    and (Cardinal(Missile.Target) <> Cardinal(Missile.OwnerShip))
+                    and ((Missile.Target as TShip).GetRelationLevelToShip(Ship) > rlHostile)
+                    and (Ship.GetRelationLevelToShip(Missile.Target as TShip) > rlHostile) then
+                    MissilePriority := 2
+                  else if (Missile.OwnerShip <> nil)
+                    and ((Missile.OwnerShip.GetRelationLevelToShip(Ship) <= rlHostile)
+                    or (Ship.GetRelationLevelToShip(Missile.OwnerShip) <= rlHostile)) then
+                    MissilePriority := 1
+                  else Continue;
+                  if (MissilePriority >= BestMissilePriority)
+                    and ((MissilePriority <> BestMissilePriority)
+                    or (MissileDistance <= NearestMissileDistance)) then
                   begin
-                    MissileDistance := Integer(System.Round(PointDistanceSquared(Ship.Position, Missile.Position)));
-                    if MissileDistance <= PointDefenseRangeSquared then
-                    begin
-                      if Missile.Target = Ship then
-                        MissilePriority := 3
-                      else if (Missile.Target <> nil)
-                        and (TObject(Missile.Target) is TShip)
-                        and (Cardinal(Missile.Target) <> Cardinal(Missile.OwnerShip))
-                        and ((TObject(Missile.Target) as TShip).GetRelationLevelToShip(Ship) > rlHostile)
-                        and (Ship.GetRelationLevelToShip(TObject(Missile.Target) as TShip) > rlHostile) then
-                        MissilePriority := 2
-                      else if (Missile.OwnerShip <> nil)
-                        and ((Missile.OwnerShip.GetRelationLevelToShip(Ship) <= rlHostile)
-                        or (Ship.GetRelationLevelToShip(Missile.OwnerShip) <= rlHostile)) then
-                        MissilePriority := 1
-                      else Continue;
-                      if (MissilePriority >= BestMissilePriority)
-                        and ((MissilePriority <> BestMissilePriority)
-                        or (MissileDistance <= NearestMissileDistance)) then
-                      begin
-                        NearestMissileDistance := MissileDistance;
-                        BestMissilePriority := MissilePriority;
-                        InterceptedMissile := Missile;
-                      end;
-                    end;
+                    NearestMissileDistance := MissileDistance;
+                    BestMissilePriority := MissilePriority;
+                    InterceptedMissile := Missile;
                   end;
-                end;
-                if InterceptedMissile <> nil then
-                begin
-                  if RecordFilm then
-                  begin
-                    CreateFilmEffect('Weapon.PDTurret', 0, Effect, EffectFilm);
-                    PrimaryFilm.SetWeaponEndpoints(StepIndex, EffectFilm,
-                      Ship.FilmObject, InterceptedMissile.FilmObject);
-                    PrimaryFilm.SetWeaponHit(StepIndex, EffectFilm, 0, 0, False, True);
-                    PrimaryFilm.AttachObject(StepIndex, EffectFilm);
-                    CreateFilmEffect('Weapon.Asteroid', 0, Effect, EffectFilm);
-                    PrimaryFilm.SetObjectPosition(StepIndex, EffectFilm, InterceptedMissile.Position);
-                    PrimaryFilm.SetWeaponHit(StepIndex, EffectFilm, 0, 0, False, True);
-                    PrimaryFilm.AttachObject(StepIndex, EffectFilm);
-                    PrimaryFilm.DetachObject(StepIndex, InterceptedMissile.FilmObject);
-                    Self.PendingFilmObjectRemovals.Add(InterceptedMissile.FilmObject);
-                    ReleaseSpaceObject(InterceptedMissile.Graphic);
-                  end;
-                  InterceptedMissile.Free;
                 end;
               end;
+              if InterceptedMissile = nil then Continue;
+              if RecordFilm then
+              begin
+                CreateFilmEffect('Weapon.PDTurret', 0, Effect, EffectFilm);
+                PrimaryFilm.SetWeaponEndpoints(StepIndex, EffectFilm,
+                  Ship.FilmObject, InterceptedMissile.FilmObject);
+                PrimaryFilm.SetWeaponHit(StepIndex, EffectFilm, 0, 0, False, True);
+                PrimaryFilm.AttachObject(StepIndex, EffectFilm);
+                CreateFilmEffect('Weapon.Asteroid', 0, Effect, EffectFilm);
+                PrimaryFilm.SetObjectPosition(StepIndex, EffectFilm, InterceptedMissile.Position);
+                PrimaryFilm.SetWeaponHit(StepIndex, EffectFilm, 0, 0, False, True);
+                PrimaryFilm.AttachObject(StepIndex, EffectFilm);
+                PrimaryFilm.DetachObject(StepIndex, InterceptedMissile.FilmObject);
+                Self.PendingFilmObjectRemovals.Add(InterceptedMissile.FilmObject);
+                ReleaseSpaceObject(InterceptedMissile.Graphic);
+              end;
+              InterceptedMissile.Free;
             end;
           end;
         end;
         Stage := 2974;
         CanPull := 1;
-        if (GetPlayer = Ship) and (Ship.PickupTargets <> nil)
-          and (Ship.GetCargoHook <> nil) and (Ship.MovementPath.NodeCount <> 0) then
-        begin
-          CanPull := 0;
-          for CandidateIndex := 0 to (Ship.PickupTargets.Count - 1) do
+        if GetPlayer = Ship then
+          if (Ship.PickupTargets <> nil) and (Ship.GetCargoHook <> nil) and (Ship.MovementPath.NodeCount <> 0) then
           begin
-            Target := Ship.PickupTargets[CandidateIndex];
-            ClosestNodeIndex := 0;
-            if Self.Items.IndexOf(Target) >= 0 then
+            CanPull := 0;
+            for CandidateIndex := 0 to (Ship.PickupTargets.Count - 1) do
             begin
-              Item := TObject(Target) as TItem;
-              Node := Ship.MovementPath.ActiveHead;
-              ClosestDistance := PointDistance(Item.Position, Node^.Position);
-              if Ship.GetCargoHookRange < ClosestDistance then
-                Continue;
+              Target := Ship.PickupTargets[CandidateIndex];
               ClosestNodeIndex := 0;
-              Node := Node^.Next;
-              for NodeIndex := 1 to (Ship.MovementPath.NodeCount - 1) do
+              if Self.Items.IndexOf(Target) >= 0 then
               begin
-                Distance := PointDistance(Item.Position, Node^.Position);
-                if Ship.GetCargoHookRange >= Distance then
+                Item := TObject(Target) as TItem;
+                Node := Ship.MovementPath.ActiveHead;
+                ClosestDistance := PointDistance(Item.Position, Node^.Position);
+                if Ship.GetCargoHookRange < ClosestDistance then
+                  Continue;
+                ClosestNodeIndex := 0;
+                Node := Node^.Next;
+                for NodeIndex := 1 to (Ship.MovementPath.NodeCount - 1) do
                 begin
+                  Distance := PointDistance(Item.Position, Node^.Position);
+                  if not (Ship.GetCargoHookRange >= Distance) then Continue;
                   if Distance >= ClosestDistance then
                     Break;
                   if Distance < ClosestDistance then
@@ -13335,14 +13236,11 @@ begin
                   Node := Node^.Next;
                 end;
               end;
-            end;
-            if ClosestNodeIndex = 0 then
-            begin
+              if ClosestNodeIndex <> 0 then Continue;
               CanPull := 1;
               Break;
             end;
           end;
-        end;
         Stage := 2975;
         if not ((Galaxy.StasisModEnabled = 1) and (GetPlayer <> Ship)
           or ((Ship.PickupTargets = nil) or ((Ship.GetCargoHook = nil) or (CanPull = 0)))) then
@@ -13365,9 +13263,9 @@ begin
               else
               begin
                 if (Ship <> NearestShip) and (Item = NearestItem) then
-                  Distance := Distance - (2.5 - RemapClamped(Distance, 0.0, Ship.GetCargoHookRange, 1.0, 2.0)) - SeededRandomFloatRange(Cardinal(Ship.Id + Integer(Trunc(Galaxy.CurrentTurn))), 0.1, 0.3)
+                  Distance := Distance - (2.5 - RemapClamped(Distance, 0.0, Ship.GetCargoHookRange, 1.0, 2.0)) - SeededRandomFloatRange(Cardinal(Integer(Ship.Id) + Integer(Trunc(Galaxy.CurrentTurn))), 0.1, 0.3)
                 else
-                  Distance := Distance - RemapClamped(Distance, 0.0, Ship.GetCargoHookRange, Ship.GetCargoHookMaxPullSpeed, Ship.GetCargoHookMinPullSpeed) - SeededRandomFloatRange(Cardinal(Ship.Id + Integer(Trunc(Galaxy.CurrentTurn))), 0.1, 0.3);
+                  Distance := Distance - RemapClamped(Distance, 0.0, Ship.GetCargoHookRange, Ship.GetCargoHookMaxPullSpeed, Ship.GetCargoHookMinPullSpeed) - SeededRandomFloatRange(Cardinal(Integer(Ship.Id) + Integer(Trunc(Galaxy.CurrentTurn))), 0.1, 0.3);
                 if Item.DestroyFlag > 0 then
                   Distance := Max(PointDistance(Item.Position, Ship.Position) * 0.99, Distance);
                 if Distance < 1.0 then
@@ -13418,7 +13316,7 @@ begin
         Continue;
       end;
       Stage := 2980;
-      if RecordFilm and (Cardinal(Cardinal(Count) shr 2) = Cardinal(StepIndex)) then
+      if RecordFilm and (Cardinal(Count) shr 2 = Cardinal(StepIndex)) then
       begin
         EntryIndex := 0;
         while Galaxy.Holes.Count > EntryIndex do
@@ -13483,8 +13381,8 @@ begin
       for Index := 0 to (Self.ReferencedItems.Count - 1) do
       begin
         Item := Self.ReferencedItems[Index];
-        if Self.Items.IndexOf(Item) >= 0 then
-          Item.DestroyFlag := Max(1, Item.DestroyFlag);
+        if not (Self.Items.IndexOf(Item) >= 0) then Continue;
+        Item.DestroyFlag := Max(1, Item.DestroyFlag);
       end;
       Self.ReferencedItems.Clear;
     end;
@@ -13512,30 +13410,28 @@ begin
     for Index := 0 to (Self.Ships.Count - 1) do
     begin
       Ship := Self.Ships[Index];
-      if Ship.DestroyQueued and (not Ship.IsHullDestroyed
-        and ((GetPlayer <> Ship) or (Byte(GlobalsV.CurrentScreenId) = 16))) then
+      if not (Ship.DestroyQueued and (not Ship.IsHullDestroyed
+        and ((GetPlayer <> Ship) or (Byte(GlobalsV.CurrentScreenId) = 16)))) then Continue;
+      Ship.ScriptItemsAct(satOnDeath, nil, nil, 0);
+      Ship.GetHull.HullPoints := 0;
+      if Ship.IsHullDestroyed and (GetPlayer <> nil) then
+        GetPlayer.ProcessShipDestructionQuests(Ship);
+      Ship.RefreshDerivedStats(True);
+      if RecordFilm and ((Ship.FilmObject <> nil) and ((Ship.CurrentPlanet = nil) and (Ship.DockedTo = nil))) then
       begin
-        Ship.ScriptItemsAct(satOnDeath, nil, nil, 0);
-        Ship.GetHull.HullPoints := 0;
-        if Ship.IsHullDestroyed and (GetPlayer <> nil) then
-          GetPlayer.ProcessShipDestructionQuests(Ship);
-        Ship.RefreshDerivedStats(True);
-        if RecordFilm and ((Ship.FilmObject <> nil) and ((Ship.CurrentPlanet = nil) and (Ship.DockedTo = nil))) then
-        begin
-          CreateFilmEffect('Weapon.NoGraph', 0, Effect, EffectFilm);
-          PrimaryFilm.SetWeaponEndpoints(StepIndex, EffectFilm, Ship.FilmObject, Ship.FilmObject);
-          PrimaryFilm.SetWeaponHit(StepIndex, EffectFilm, 0, 0, Ship.IsHullDestroyed, True);
-          PrimaryFilm.AttachObject(StepIndex, EffectFilm);
-        end;
-        Self.ClearShipReferences(Ship);
+        CreateFilmEffect('Weapon.NoGraph', 0, Effect, EffectFilm);
+        PrimaryFilm.SetWeaponEndpoints(StepIndex, EffectFilm, Ship.FilmObject, Ship.FilmObject);
+        PrimaryFilm.SetWeaponHit(StepIndex, EffectFilm, 0, 0, Ship.IsHullDestroyed, True);
+        PrimaryFilm.AttachObject(StepIndex, EffectFilm);
       end;
+      Self.ClearShipReferences(Ship);
     end;
 
     Stage := 30;
     if RecordFilm and (Self.PlayerFilmPath <> nil) then
     begin
       WorkCount := 0;
-      TSPath(Self.PlayerFilmPath).AppendWaypoint(GetPlayer.Position, StepIndex);
+      Self.PlayerFilmPath.AppendWaypoint(GetPlayer.Position, StepIndex);
       Node := Self.PlayerFilmPath.ActiveHead;
       Point := Node^.Position;
       PathStep := Integer(System.Round(Node^.Heading));
@@ -13585,14 +13481,12 @@ begin
     begin
       Ship := Self.Ships[Index];
       Ship.ClearCompletedTakeoffOrHoleOrder(StepIndex, RecordFilm);
-      if (Ship.InterceptorGraphic <> nil) and (Ship.InterceptorPassesRemaining = 0) or not Ship.InNormalSpace
-        and (Ship.InterceptorPassesRemaining > 0) then
-      begin
-        if Ship.AuxiliaryFilmObject <> nil then
-          PrimaryFilm.DetachObject(StepIndex, Ship.AuxiliaryFilmObject);
-        Ship.InterceptorSourceShip := nil;
-        Ship.InterceptorPassesRemaining := 0;
-      end;
+      if not ((Ship.InterceptorGraphic <> nil) and (Ship.InterceptorPassesRemaining = 0) or not Ship.InNormalSpace
+        and (Ship.InterceptorPassesRemaining > 0)) then Continue;
+      if Ship.AuxiliaryFilmObject <> nil then
+        PrimaryFilm.DetachObject(StepIndex, Ship.AuxiliaryFilmObject);
+      Ship.InterceptorSourceShip := nil;
+      Ship.InterceptorPassesRemaining := 0;
     end;
     if GetPlayer <> nil then
       GetPlayer.AchievementStats.CheckTranclucatorFleetAchievement;
@@ -13604,10 +13498,10 @@ begin
       MovingDrop := Self.MovingDropItems[EntryIndex];
       if not MovingDrop^.InsertedIntoStar and (MovingDrop^.Payload <> nil) then
       begin
-        Item := TObject(MovingDrop^.Payload) as TItem;
+        Item := MovingDrop^.Payload as TItem;
         if (Item is TArtefactTranclucator) and (MovingDrop^.DeployTranclucator <> 0) then
         begin
-          Tranclucator := TObject((Item as TArtefactTranclucator).Ship) as TTranclucator;
+          Tranclucator := (Item as TArtefactTranclucator).Ship as TTranclucator;
           (Item as TArtefactTranclucator).Ship := nil;
           Tranclucator.CurrentStar := Self;
           Self.Ships.Add(Tranclucator);
@@ -13687,25 +13581,20 @@ begin
         Self.ClearShipReferences(Ship);
         Ship.DockedTo := nil;
         Ship.GetHull.HullPoints := 0;
-        if Ship.IsHullDestroyed then
-        begin
-          if GetPlayer <> nil then
+        if (Ship.IsHullDestroyed) and (GetPlayer <> nil) then begin
+
+          GetPlayer.ProcessShipDestructionQuests(Ship);
+          if GetPlayer = Ship then
           begin
-            GetPlayer.ProcessShipDestructionQuests(Ship);
-            if GetPlayer = Ship then
-            begin
-              Globals.ScoreScreen.RecordPlayerResult(False);
-              DeathEvent := AddGalaxyEvent('PlayerDeath');
-              TGalaxyEvent(DeathEvent).AddTextData('StationDestroyed');
-            end;
+            Globals.ScoreScreen.RecordPlayerResult(False);
+            DeathEvent := AddGalaxyEvent('PlayerDeath');
+            DeathEvent.AddTextData('StationDestroyed');
           end;
         end;
         Index := 0;
-        if RecordFilm and (Ship.FilmObject = nil) then
-        begin
-          Ship.FilmObject := PrimaryFilm.AddObject(Ship.Id, Ship.Graphic);
-          PrimaryFilm.DetachObject(0, Ship.FilmObject);
-        end;
+        if not (RecordFilm and (Ship.FilmObject = nil)) then Continue;
+        Ship.FilmObject := PrimaryFilm.AddObject(Ship.Id, Ship.Graphic);
+        PrimaryFilm.DetachObject(0, Ship.FilmObject);
       end
       else
         Inc(Index);
@@ -13725,21 +13614,17 @@ begin
           for EntryIndex := 0 to (EntryCount - 1) do
           begin
             Item := Ship.Inventory[EntryIndex];
-            if PrimaryFilm.ContainsObject(Item.FilmObject) then
-            begin
-              PrimaryFilm.ReleaseObject(StepIndex, Item.FilmObject);
-              ReleaseSpaceObject(Item.GraphObject);
-            end;
+            if not (PrimaryFilm.ContainsObject(Item.FilmObject)) then Continue;
+            PrimaryFilm.ReleaseObject(StepIndex, Item.FilmObject);
+            ReleaseSpaceObject(Item.GraphObject);
           end;
           EntryCount := Ship.Artefacts.Count;
           for EntryIndex := 0 to (EntryCount - 1) do
           begin
             Item := Ship.Artefacts[EntryIndex];
-            if PrimaryFilm.ContainsObject(Item.FilmObject) then
-            begin
-              PrimaryFilm.ReleaseObject(StepIndex, Item.FilmObject);
-              ReleaseSpaceObject(Item.GraphObject);
-            end;
+            if not (PrimaryFilm.ContainsObject(Item.FilmObject)) then Continue;
+            PrimaryFilm.ReleaseObject(StepIndex, Item.FilmObject);
+            ReleaseSpaceObject(Item.GraphObject);
           end;
           if Ship.FilmObject = nil then
           begin
@@ -13795,11 +13680,11 @@ begin
     begin
       Ship := Self.Ships[Index];
       if (Ship is TTranclucator)
-        and ((Ord(TTranclucator(Ship).FollowOwner) <> 0) and (TTranclucator(Ship).OwnerShip <> nil)) then
+        and ((TTranclucator(Ship).FollowOwner) and (TTranclucator(Ship).OwnerShip <> nil)) then
       begin
         OwnerShip := TTranclucator(Ship).OwnerShip;
         if (OwnerShip.CurrentPlanet <> nil)
-          and (PointDistanceSquared(Ship.Position, TPlanet(OwnerShip.CurrentPlanet).GetPosition) < 25.0)
+          and (PointDistanceSquared(Ship.Position, OwnerShip.CurrentPlanet.GetPosition) < 25.0)
           or ((OwnerShip.DockedTo <> nil)
           and (PointDistanceSquared(Ship.Position, OwnerShip.DockedTo.Position) < 25.0) or OwnerShip.InNormalSpace
           and (PointDistanceSquared(Ship.Position, OwnerShip.Position) < 25.0)) then
@@ -13817,9 +13702,9 @@ begin
           Self.Ships.Delete(Index);
           Ship.CurrentStar := nil;
           if Ship.ScriptShip <> nil then
-            TScript((TObject(Ship.ScriptShip) as TScriptShip).Script).UnbindShip(Ship);
+            TScript((Ship.ScriptShip as TScriptShip).Script).UnbindShip(Ship);
           StoredTranclucator := TArtefactTranclucator.Create;
-          TArtefactTranclucator(StoredTranclucator).InitTranclucator(Ship.GetHull.OwnerId, OwnerShip, TTranclucator(Ship));
+          StoredTranclucator.InitTranclucator(Ship.GetHull.OwnerId, OwnerShip, TTranclucator(Ship));
           if Ship.GetEngine <> nil then
             Ship.GetEngine.OutputPercent := 100;
           TTranclucator(Ship).TransferUnequippedCargo(OwnerShip);
@@ -13910,7 +13795,7 @@ begin
       end
       else
       begin
-        PrimaryFilm.InitialActivity := Integer(Globals.PreviousFilmActivity);
+        PrimaryFilm.InitialActivity := Globals.PreviousFilmActivity;
         PrimaryFilm.FinalActivity := PrimaryFilm.InitialActivity;
         WorkValue := EstimatePlayerTravelTurns;
         if Globals.PreviousFilmActivity = 0 then
@@ -13931,35 +13816,26 @@ begin
               PrimaryFilm.FinalActivity := 1;
           end;
         end;
-        Globals.PreviousFilmActivity := Cardinal(PrimaryFilm.FinalActivity);
+        Globals.PreviousFilmActivity := PrimaryFilm.FinalActivity;
       end;
-      TFilmFile(FilmHistory).AddFilm(TEFilm(PrimaryFilm));
+      TFilmFile(FilmHistory).AddFilm(PrimaryFilm);
     end;
 
     Stage := 43;
-    if (Galaxy.TerronToStarTurn > 0) and (Galaxy.TerronToStarTurn < TerronTransformationFlag) then
-    begin
-      if aKling.TerronShip <> nil then
-      begin
-        if aKling.TerronShip.CurrentStar = Self then
-        begin
-          if PointDistanceSquared(MakePointF(-100.0, -100.0), aKling.TerronShip.Position) < 25.0 then
-          begin
-            Galaxy.TerronToStarTurn := Galaxy.CurrentTurn or TerronTransformationFlag;
-            PWideString(@Self.Graphic.GraphKey)^ := WideString('Star.TerronAfter');
-            Self.Graphic.LoadTemplate(GR_Main.GameDataConfig.GetBlockByPath('SE.' + WideString(Self.Graphic.GraphKey)));
-            if GetPlayer <> nil then
-            begin
-              if GetPlayer.CurrentStar <> Self then
-              begin
-                aKling.TerronShip.Order := soJump;
-                aKling.TerronShip.OrderTarget := Self;
-                aKling.TerronShip.InHyperspace := True;
-                aKling.TerronShip.OrderStateData := 2;
-                aKling.TerronShip.Position := MakePointF(0.0, 0.0);
-              end;
-            end;
-          end;
+    if ((Galaxy.TerronToStarTurn > 0) and (Galaxy.TerronToStarTurn < TerronTransformationFlag)) and (aKling.TerronShip <> nil) then begin
+
+      if (aKling.TerronShip.CurrentStar = Self) and (PointDistanceSquared(MakePointF(-100.0, -100.0), aKling.TerronShip.Position) < 25.0) then begin
+
+        Galaxy.TerronToStarTurn := Galaxy.CurrentTurn or TerronTransformationFlag;
+        PWideString(@Self.Graphic.GraphKey)^ := WideString('Star.TerronAfter');
+        Self.Graphic.LoadTemplate(GR_Main.GameDataConfig.GetBlockByPath('SE.' + Self.Graphic.GraphKey));
+        if (GetPlayer <> nil) and (GetPlayer.CurrentStar <> Self) then begin
+
+          aKling.TerronShip.Order := soJump;
+          aKling.TerronShip.OrderTarget := Self;
+          aKling.TerronShip.InHyperspace := True;
+          aKling.TerronShip.OrderStateData := 2;
+          aKling.TerronShip.Position := MakePointF(0.0, 0.0);
         end;
       end;
     end;
@@ -13985,23 +13861,23 @@ begin
     end;
   end;
 end;
-{ @end $7C70CC }
+{ @end $7F5698 }
 
-{ @routine $7D0BF4 TGalaxy_ShowLocalizedWarning }
+{ @routine $7FE740 TGalaxy_ShowLocalizedWarning }
 procedure TGalaxy.ShowLocalizedWarning(TextKey: WideString);
 begin
   AddOrUpdatePlayerBubble(pmQuestCancelled, 0, LocalizedColorText(TextKey), '');
 end;
-{ @end $7D0BF4 }
+{ @end $7FE740 }
 
-{ @routine $7D0C5C TInterfaceStateOverride_Create }
+{ @routine $7FE7A4 TInterfaceStateOverride_Create }
 constructor TInterfaceStateOverride.Create;
 begin
   inherited Create;
 end;
-{ @end $7D0C5C }
+{ @end $7FE7A4 }
 
-{ @routine $7D0CA0 TInterfaceStateOverride_Destroy }
+{ @routine $7FE7DC TInterfaceStateOverride_Destroy }
 destructor TInterfaceStateOverride.Destroy;
 var Form: TMessageLoopGI; Control: TObjectGI;
 begin
@@ -14015,9 +13891,9 @@ begin
   end;
   inherited Destroy;
 end;
-{ @end $7D0CA0 }
+{ @end $7FE7DC }
 
-{ @routine $7D0D3C TInterfaceStateOverride_Initialize }
+{ @routine $7FE850 TInterfaceStateOverride_Initialize }
 procedure TInterfaceStateOverride.Initialize(FormName, ControlPath: WideString; State: Byte);
 var Form: TMessageLoopGI; Control: TObjectGI;
 begin
@@ -14036,9 +13912,9 @@ begin
     if (Self.State > 1) and (Control is TGraphButtonGI) then TGraphButtonGI(Control).SetDisabled(Self.State = 2);
   end;
 end;
-{ @end $7D0D3C }
+{ @end $7FE850 }
 
-{ @routine $7D0F90 TInterfaceStateOverride_SetState }
+{ @routine $7FEA64 TInterfaceStateOverride_SetState }
 procedure TInterfaceStateOverride.SetState(State: Byte);
 var Form: TMessageLoopGI; Control: TObjectGI;
 begin
@@ -14053,16 +13929,16 @@ begin
     if (Self.State > 1) and (Control is TGraphButtonGI) then TGraphButtonGI(Control).SetDisabled(Self.State = 2);
   end;
 end;
-{ @end $7D0F90 }
+{ @end $7FEA64 }
 
-{ @routine $7D116C TInterfaceStateOverride_GetState }
+{ @routine $7FEC08 TInterfaceStateOverride_GetState }
 function TInterfaceStateOverride.GetState: Byte;
 begin
   Result := State;
 end;
-{ @end $7D116C }
+{ @end $7FEC08 }
 
-{ @routine $7D1188 TInterfaceStateOverride_SaveToBuffer }
+{ @routine $7FEC10 TInterfaceStateOverride_SaveToBuffer }
 procedure TInterfaceStateOverride.SaveToBuffer(Buffer: TBufEC);
 begin
   Buffer.AddWideStringZ(FormName);
@@ -14070,9 +13946,9 @@ begin
   Buffer.AddAnsiChar(AnsiChar(State));
   Buffer.AddAnsiChar(AnsiChar(OriginalState));
 end;
-{ @end $7D1188 }
+{ @end $7FEC10 }
 
-{ @routine $7D11D0 TInterfaceStateOverride_LoadFromBuffer }
+{ @routine $7FEC44 TInterfaceStateOverride_LoadFromBuffer }
 procedure TInterfaceStateOverride.LoadFromBuffer(Buffer: TBufEC);
 begin
   FormName := Buffer.ReadWideString;
@@ -14086,9 +13962,9 @@ begin
   end;
   Reapply;
 end;
-{ @end $7D11D0 }
+{ @end $7FEC44 }
 
-{ @routine $7D129C TInterfaceStateOverride_Reapply }
+{ @routine $7FECF0 TInterfaceStateOverride_Reapply }
 procedure TInterfaceStateOverride.Reapply;
 var Form: TMessageLoopGI; Control: TObjectGI;
 begin
@@ -14102,16 +13978,16 @@ begin
     if (Self.State > 1) and (Control is TGraphButtonGI) then TGraphButtonGI(Control).SetDisabled(Self.State = 2);
   end;
 end;
-{ @end $7D129C }
+{ @end $7FECF0 }
 
-{ @routine $7D1464 TInterfaceTextOverride_Create }
+{ @routine $7FEE90 TInterfaceTextOverride_Create }
 constructor TInterfaceTextOverride.Create;
 begin
   inherited Create;
 end;
-{ @end $7D1464 }
+{ @end $7FEE90 }
 
-{ @routine $7D14A8 TInterfaceTextOverride_Destroy }
+{ @routine $7FEEC8 TInterfaceTextOverride_Destroy }
 destructor TInterfaceTextOverride.Destroy;
 var Form: TMessageLoopGI; Control: TObjectGI;
 begin
@@ -14125,9 +14001,9 @@ begin
   end;
   inherited Destroy;
 end;
-{ @end $7D14A8 }
+{ @end $7FEEC8 }
 
-{ @routine $7D15CC TInterfaceTextOverride_Initialize }
+{ @routine $7FEFCC TInterfaceTextOverride_Initialize }
 procedure TInterfaceTextOverride.Initialize(FormName, ControlPath: WideString; Text: WideString);
 var Form: TMessageLoopGI; Control: TObjectGI;
 begin
@@ -14145,9 +14021,9 @@ begin
     (Control as TLabelGI).SetText(Self.Text);
   end;
 end;
-{ @end $7D15CC }
+{ @end $7FEFCC }
 
-{ @routine $7D188C TInterfaceTextOverride_SetText }
+{ @routine $7FF260 TInterfaceTextOverride_SetText }
 procedure TInterfaceTextOverride.SetText(Text: WideString);
 var Form: TMessageLoopGI; Control: TObjectGI;
 begin
@@ -14162,16 +14038,16 @@ begin
     (Control as TLabelGI).SetText(Self.Text);
   end;
 end;
-{ @end $7D188C }
+{ @end $7FF260 }
 
-{ @routine $7D1AD8 TInterfaceTextOverride_GetText }
+{ @routine $7FF488 TInterfaceTextOverride_GetText }
 function TInterfaceTextOverride.GetText: WideString;
 begin
   Result := Text;
 end;
-{ @end $7D1AD8 }
+{ @end $7FF488 }
 
-{ @routine $7D1AF8 TInterfaceTextOverride_SaveToBuffer }
+{ @routine $7FF49C TInterfaceTextOverride_SaveToBuffer }
 procedure TInterfaceTextOverride.SaveToBuffer(Buffer: TBufEC);
 begin
   Buffer.AddWideStringZ(FormName);
@@ -14179,9 +14055,9 @@ begin
   Buffer.AddWideStringZ(Text);
   Buffer.AddWideStringZ(OriginalText);
 end;
-{ @end $7D1AF8 }
+{ @end $7FF49C }
 
-{ @routine $7D1B40 TInterfaceTextOverride_LoadFromBuffer }
+{ @routine $7FF4D0 TInterfaceTextOverride_LoadFromBuffer }
 procedure TInterfaceTextOverride.LoadFromBuffer(Buffer: TBufEC);
 begin
   FormName := Buffer.ReadWideString;
@@ -14190,9 +14066,9 @@ begin
   OriginalText := Buffer.ReadWideString;
   Reapply;
 end;
-{ @end $7D1B40 }
+{ @end $7FF4D0 }
 
-{ @routine $7D1BF4 TInterfaceTextOverride_Reapply }
+{ @routine $7FF570 TInterfaceTextOverride_Reapply }
 procedure TInterfaceTextOverride.Reapply;
 var Form: TMessageLoopGI; Control: TObjectGI;
 begin
@@ -14206,16 +14082,16 @@ begin
     (Control as TLabelGI).SetText(Self.Text);
   end;
 end;
-{ @end $7D1BF4 }
+{ @end $7FF570 }
 
-{ @routine $7D1E20 TInterfaceImageOverride_Create }
+{ @routine $7FF778 TInterfaceImageOverride_Create }
 constructor TInterfaceImageOverride.Create;
 begin
   inherited Create;
 end;
-{ @end $7D1E20 }
+{ @end $7FF778 }
 
-{ @routine $7D1E64 TInterfaceImageOverride_Destroy }
+{ @routine $7FF7B0 TInterfaceImageOverride_Destroy }
 destructor TInterfaceImageOverride.Destroy;
 var Form: TMessageLoopGI; Control: TObjectGI;
 begin
@@ -14246,9 +14122,9 @@ begin
   end;
   inherited Destroy;
 end;
-{ @end $7D1E64 }
+{ @end $7FF7B0 }
 
-{ @routine $7D20F4 TInterfaceImageOverride_Initialize }
+{ @routine $7FFA00 TInterfaceImageOverride_Initialize }
 procedure TInterfaceImageOverride.Initialize(FormName, ControlPath: WideString; ImagePath: WideString);
 var Form: TMessageLoopGI; Control: TObjectGI;
 begin
@@ -14288,9 +14164,9 @@ begin
     end else raise Exception.Create(AnsiString('Object is not an image - ' + Self.ControlPath));
   end;
 end;
-{ @end $7D20F4 }
+{ @end $7FFA00 }
 
-{ @routine $7D25C8 TInterfaceImageOverride_SetImagePath }
+{ @routine $7FFE74 TInterfaceImageOverride_SetImagePath }
 procedure TInterfaceImageOverride.SetImagePath(ImagePath: WideString);
 var Form: TMessageLoopGI; Control: TObjectGI;
 begin
@@ -14322,16 +14198,16 @@ begin
     end else raise Exception.Create(AnsiString('Object is not an image - ' + Self.ControlPath));
   end;
 end;
-{ @end $7D25C8 }
+{ @end $7FFE74 }
 
-{ @routine $7D29A0 TInterfaceImageOverride_GetImagePath }
+{ @routine $800208 TInterfaceImageOverride_GetImagePath }
 function TInterfaceImageOverride.GetImagePath: WideString;
 begin
   Result := ImagePath;
 end;
-{ @end $7D29A0 }
+{ @end $800208 }
 
-{ @routine $7D29C0 TInterfaceImageOverride_SaveToBuffer }
+{ @routine $80021C TInterfaceImageOverride_SaveToBuffer }
 procedure TInterfaceImageOverride.SaveToBuffer(Buffer: TBufEC);
 begin
   Buffer.AddWideStringZ(FormName);
@@ -14339,9 +14215,9 @@ begin
   Buffer.AddWideStringZ(ImagePath);
   Buffer.AddWideStringZ(OriginalImagePath);
 end;
-{ @end $7D29C0 }
+{ @end $80021C }
 
-{ @routine $7D2A08 TInterfaceImageOverride_LoadFromBuffer }
+{ @routine $800250 TInterfaceImageOverride_LoadFromBuffer }
 procedure TInterfaceImageOverride.LoadFromBuffer(Buffer: TBufEC);
 begin
   FormName := Buffer.ReadWideString;
@@ -14350,9 +14226,9 @@ begin
   OriginalImagePath := Buffer.ReadWideString;
   Reapply;
 end;
-{ @end $7D2A08 }
+{ @end $800250 }
 
-{ @routine $7D2ABC TInterfaceImageOverride_Reapply }
+{ @routine $8002F0 TInterfaceImageOverride_Reapply }
 procedure TInterfaceImageOverride.Reapply;
 var Form: TMessageLoopGI; Control: TObjectGI;
 begin
@@ -14383,16 +14259,16 @@ begin
     end else raise Exception.Create(AnsiString('Object is not an image - ' + Self.ControlPath));
   end;
 end;
-{ @end $7D2ABC }
+{ @end $8002F0 }
 
-{ @routine $7D2E74 TInterfacePosOverride_Create }
+{ @routine $800664 TInterfacePosOverride_Create }
 constructor TInterfacePosOverride.Create;
 begin
   inherited Create;
 end;
-{ @end $7D2E74 }
+{ @end $800664 }
 
-{ @routine $7D2EB8 TInterfacePosOverride_Destroy }
+{ @routine $80069C TInterfacePosOverride_Destroy }
 destructor TInterfacePosOverride.Destroy;
 var Form: TMessageLoopGI; Control: TObjectGI;
 begin
@@ -14406,9 +14282,9 @@ begin
   end;
   inherited Destroy;
 end;
-{ @end $7D2EB8 }
+{ @end $80069C }
 
-{ @routine $7D2F44 TInterfacePosOverride_Initialize }
+{ @routine $800710 TInterfacePosOverride_Initialize }
 procedure TInterfacePosOverride.Initialize(FormName, ControlPath: WideString; DeltaX, DeltaY, DeltaDepth: Integer);
 var Form: TMessageLoopGI; Control: TObjectGI;
 begin
@@ -14430,9 +14306,9 @@ begin
     Control.SetDepth(Depth);
   end;
 end;
-{ @end $7D2F44 }
+{ @end $800710 }
 
-{ @routine $7D31A0 TInterfacePosOverride_SetPosition }
+{ @routine $800918 TInterfacePosOverride_SetPosition }
 procedure TInterfacePosOverride.SetPosition(DeltaX, DeltaY, DeltaDepth: Integer);
 var Form: TMessageLoopGI; Control: TObjectGI;
 begin
@@ -14449,9 +14325,9 @@ begin
     Control.SetDepth(Depth);
   end;
 end;
-{ @end $7D31A0 }
+{ @end $800918 }
 
-{ @routine $7D3394 TInterfacePosOverride_SaveToBuffer }
+{ @routine $800AD0 TInterfacePosOverride_SaveToBuffer }
 procedure TInterfacePosOverride.SaveToBuffer(Buffer: TBufEC);
 begin
   Buffer.AddWideStringZ(FormName);
@@ -14463,9 +14339,9 @@ begin
   Buffer.AddIntegerValue(OriginalPosition.Y);
   Buffer.AddDouble(OriginalDepth);
 end;
-{ @end $7D3394 }
+{ @end $800AD0 }
 
-{ @routine $7D341C TInterfacePosOverride_LoadFromBuffer }
+{ @routine $800B30 TInterfacePosOverride_LoadFromBuffer }
 procedure TInterfacePosOverride.LoadFromBuffer(Buffer: TBufEC);
 begin
   FormName := Buffer.ReadWideString;
@@ -14478,9 +14354,9 @@ begin
   OriginalDepth := Buffer.GetDouble;
   Reapply;
 end;
-{ @end $7D341C }
+{ @end $800B30 }
 
-{ @routine $7D34F4 TInterfacePosOverride_Reapply }
+{ @routine $800BE4 TInterfacePosOverride_Reapply }
 procedure TInterfacePosOverride.Reapply;
 var Form: TMessageLoopGI; Control: TObjectGI;
 begin
@@ -14494,16 +14370,16 @@ begin
     Control.SetDepth(Depth);
   end;
 end;
-{ @end $7D34F4 }
+{ @end $800BE4 }
 
-{ @routine $7D36B0 TInterfaceSizeOverride_Create }
+{ @routine $800D74 TInterfaceSizeOverride_Create }
 constructor TInterfaceSizeOverride.Create;
 begin
   inherited Create;
 end;
-{ @end $7D36B0 }
+{ @end $800D74 }
 
-{ @routine $7D36F4 TInterfaceSizeOverride_Destroy }
+{ @routine $800DAC TInterfaceSizeOverride_Destroy }
 destructor TInterfaceSizeOverride.Destroy;
 var Form: TMessageLoopGI; Control: TObjectGI;
 begin
@@ -14516,9 +14392,9 @@ begin
   end;
   inherited Destroy;
 end;
-{ @end $7D36F4 }
+{ @end $800DAC }
 
-{ @routine $7D3770 TInterfaceSizeOverride_Initialize }
+{ @routine $800E10 TInterfaceSizeOverride_Initialize }
 procedure TInterfaceSizeOverride.Initialize(FormName, ControlPath: WideString; Width, Height: Integer);
 var Form: TMessageLoopGI; Control: TObjectGI;
 begin
@@ -14528,18 +14404,19 @@ begin
   if Form = nil then raise Exception.Create(AnsiString('ML not found - ' + Self.FormName));
   Control := Form.FindControlByPath(Self.ControlPath);
   if Control = nil then
-    AppendLogLineThreadSafe(AnsiString('TInterfaceSizeOverride: object not found - ' + Self.ControlPath + ' on form ' + Self.FormName))
-  else begin
-    OriginalSize.X := Control.ClientSize.X;
-    OriginalSize.Y := Control.ClientSize.Y;
-    if Width > 0 then Size.X := Width else Size.X := OriginalSize.X;
-    if Height > 0 then Size.Y := Height else Size.Y := OriginalSize.Y;
-    Control.SetSize(Classes.Point(Size.X, Size.Y));
+  begin
+    AppendLogLineThreadSafe(AnsiString('TInterfaceSizeOverride: object not found - ' + Self.ControlPath + ' on form ' + Self.FormName));
+    Exit;
   end;
+  OriginalSize.X := Control.ClientSize.X;
+  OriginalSize.Y := Control.ClientSize.Y;
+  if Width > 0 then Size.X := Width else Size.X := OriginalSize.X;
+  if Height > 0 then Size.Y := Height else Size.Y := OriginalSize.Y;
+  Control.SetSize(Classes.Point(Size.X, Size.Y));
 end;
-{ @end $7D3770 }
+{ @end $800E10 }
 
-{ @routine $7D39B0 TInterfaceSizeOverride_SetSize }
+{ @routine $80100C TInterfaceSizeOverride_SetSize }
 procedure TInterfaceSizeOverride.SetSize(Width, Height: Integer);
 var Form: TMessageLoopGI; Control: TObjectGI;
 begin
@@ -14554,9 +14431,9 @@ begin
     Control.SetSize(Classes.Point(Size.X, Size.Y));
   end;
 end;
-{ @end $7D39B0 }
+{ @end $80100C }
 
-{ @routine $7D3B9C TInterfaceSizeOverride_SaveToBuffer }
+{ @routine $8011C0 TInterfaceSizeOverride_SaveToBuffer }
 procedure TInterfaceSizeOverride.SaveToBuffer(Buffer: TBufEC);
 begin
   Buffer.AddWideStringZ(FormName);
@@ -14566,9 +14443,9 @@ begin
   Buffer.AddIntegerValue(OriginalSize.X);
   Buffer.AddIntegerValue(OriginalSize.Y);
 end;
-{ @end $7D3B9C }
+{ @end $8011C0 }
 
-{ @routine $7D3C00 TInterfaceSizeOverride_LoadFromBuffer }
+{ @routine $801208 TInterfaceSizeOverride_LoadFromBuffer }
 procedure TInterfaceSizeOverride.LoadFromBuffer(Buffer: TBufEC);
 begin
   FormName := Buffer.ReadWideString;
@@ -14579,9 +14456,9 @@ begin
   OriginalSize.Y := Buffer.GetInt32;
   Reapply;
 end;
-{ @end $7D3C00 }
+{ @end $801208 }
 
-{ @routine $7D3CBC TInterfaceSizeOverride_Reapply }
+{ @routine $8012A4 TInterfaceSizeOverride_Reapply }
 procedure TInterfaceSizeOverride.Reapply;
 var Form: TMessageLoopGI; Control: TObjectGI;
 begin
@@ -14594,54 +14471,54 @@ begin
     Control.SetSize(Classes.Point(Size.X, Size.Y));
   end;
 end;
-{ @end $7D3CBC }
+{ @end $8012A4 }
 
-{ @routine $7D3E68 TStoredItem_CreateEmpty }
+{ @routine $801428 TStoredItem_CreateEmpty }
 constructor TStoredItem.CreateEmpty;
 begin
   inherited Create;
   Name := '';
   Item := nil;
 end;
-{ @end $7D3E68 }
+{ @end $801428 }
 
-{ @routine $7D3EBC TStoredItem_Create }
+{ @routine $80146C TStoredItem_Create }
 constructor TStoredItem.Create(Name: WideString; Item: TObject);
 begin
   inherited Create;
   Self.Name := Name;
   Self.Item := Item;
 end;
-{ @end $7D3EBC }
+{ @end $80146C }
 
-{ @routine $7D3F4C TStoredItem_Destroy }
+{ @routine $8014F0 TStoredItem_Destroy }
 destructor TStoredItem.Destroy;
 begin
   if Item <> nil then Item.Free;
   Item := nil;
   inherited Destroy;
 end;
-{ @end $7D3F4C }
+{ @end $8014F0 }
 
-{ @routine $7D3F9C TStoredItem_SaveToBuffer }
+{ @routine $801528 TStoredItem_SaveToBuffer }
 procedure TStoredItem.SaveToBuffer(Buffer: TBufEC);
 begin
   Buffer.AddWideStringZ(Name);
   Buffer.AddAnsiChar(AnsiChar(TItem(Item).ItemType));
   TItem(Item).SaveToBuffer(Buffer);
 end;
-{ @end $7D3F9C }
+{ @end $801528 }
 
-{ @routine $7D3FD8 TStoredItem_LoadFromBuffer }
+{ @routine $801554 TStoredItem_LoadFromBuffer }
 procedure TStoredItem.LoadFromBuffer(Buffer: TBufEC; Galaxy: TGalaxy);
 begin
   Name := Buffer.ReadWideString;
   Item := CreateItemByType(MigrateSavedItemType(Buffer.GetByte));
   TItem(Item).LoadFromBuffer(Buffer, Galaxy);
 end;
-{ @end $7D3FD8 }
+{ @end $801554 }
 
-{ @routine $7D4060 TGalaxy_StoreItem }
+{ @routine $8015D4 TGalaxy_StoreItem }
 procedure TGalaxy.StoreItem(Name: WideString; Item: TObject);
 var Entry: TStoredItem; LowIndex, HighIndex, Middle, Comparison: Integer;
 begin
@@ -14661,18 +14538,28 @@ begin
     Exit;
   end;
   LowIndex := 0;
-  Entry := TStoredItem(StoredItems[0]);
+  Entry := StoredItems[0];
   Comparison := CompareScriptNames(PWideChar(Name), PWideChar(Entry.Name));
-  if Comparison = 0 then begin Entry.Item.Free; Entry.Item := Item; Exit; end;
+  if Comparison = 0 then
+  begin
+    Entry.Item.Free;
+    Entry.Item := Item;
+    Exit;
+  end;
   if Comparison < 0 then begin
     Entry := TStoredItem.Create(Name, Item);
     StoredItems.Insert(0, Entry);
     Exit;
   end;
   HighIndex := StoredItems.Count - 1;
-  Entry := TStoredItem(StoredItems[HighIndex]);
+  Entry := StoredItems[HighIndex];
   Comparison := CompareScriptNames(PWideChar(Name), PWideChar(Entry.Name));
-  if Comparison = 0 then begin Entry.Item.Free; Entry.Item := Item; Exit; end;
+  if Comparison = 0 then
+  begin
+    Entry.Item.Free;
+    Entry.Item := Item;
+    Exit;
+  end;
   if Comparison > 0 then begin
     Entry := TStoredItem.Create(Name, Item);
     StoredItems.Add(Entry);
@@ -14684,24 +14571,29 @@ begin
         Exit;
       end;
       Middle := (LowIndex + HighIndex) div 2;
-      Entry := TStoredItem(StoredItems[Middle]);
+      Entry := StoredItems[Middle];
       Comparison := CompareScriptNames(PWideChar(Name), PWideChar(Entry.Name));
-      if Comparison = 0 then begin Entry.Item.Free; Entry.Item := Item; Exit; end;
+      if Comparison = 0 then
+      begin
+        Entry.Item.Free;
+        Entry.Item := Item;
+        Exit;
+      end;
       if Comparison < 0 then HighIndex := Middle else LowIndex := Middle;
     end;
   end;
 
 end;
-{ @end $7D4060 }
+{ @end $8015D4 }
 
-{ @routine $7D4364 TGalaxy_GetStoredItem }
+{ @routine $801878 TGalaxy_GetStoredItem }
 function TGalaxy.GetStoredItem(Name: WideString; Remove: Boolean): TObject;
 var
   Entry: TStoredItem;
   Index, LowIndex, HighIndex, Comparison: Integer;
 
-  // @nested $7D4318 TakeEntry
-  function TakeEntry: TObject; // @addr 0x7D4318 @ida "TObject *__cdecl $name(void *ParentFrame);" @note "Nested in GetStoredItem; caller-popped static link. Entry -4, Remove -5, Self -12, Index -16."
+  // @nested $801830 TakeEntry
+  function TakeEntry: TObject; // @addr 0x00801830 @ida "TObject *__cdecl $name(void *ParentFrame);" @note "Nested in GetStoredItem; caller-popped static link. Entry -4, Remove -5, Self -12, Index -16."
   begin
     Result := Entry.Item;
     if Remove then
@@ -14716,14 +14608,14 @@ begin
   Result := nil;
   if StoredItems.Count < 1 then Exit;
   Index := 0;
-  Entry := TStoredItem(StoredItems[Index]);
+  Entry := StoredItems[Index];
   if Entry.Name = Name then
   begin
     Result := TakeEntry;
     Exit;
   end;
   Index := StoredItems.Count - 1;
-  Entry := TStoredItem(StoredItems[Index]);
+  Entry := StoredItems[Index];
   if Entry.Name = Name then
   begin
     Result := TakeEntry;
@@ -14736,28 +14628,29 @@ begin
     if HighIndex - LowIndex < 2 then
     begin
       Result := nil;
-      Break;
+      Exit;
     end;
     Index := (LowIndex + HighIndex) div 2;
-    Entry := TStoredItem(StoredItems[Index]);
+    Entry := StoredItems[Index];
     Comparison := CompareScriptNames(PWideChar(Name), PWideChar(Entry.Name));
     if Comparison = 0 then
     begin
       Result := TakeEntry;
-      Break;
-    end;
-    if Comparison < 0 then HighIndex := Index else LowIndex := Index;
+      Exit;
+    end
+    else if Comparison < 0 then HighIndex := Index
+    else LowIndex := Index;
   end;
 end;
-{ @end $7D4364 }
+{ @end $801878 }
 
-{ @routine $7D4544 TGalaxy_GetOrCreateCustomWeaponInfo }
+{ @routine $801A30 TGalaxy_GetOrCreateCustomWeaponInfo }
 function TGalaxy.GetOrCreateCustomWeaponInfo(Name: WideString): PWeaponInfo;
 var
   Info: PWeaponInfo;
   LowIndex, HighIndex, Middle, Comparison: Integer;
-  // @nested $7D44C4 Allocate
-  procedure Allocate; // @addr $7D44C4 @ida "void __cdecl $name(void *ParentFrame);"
+  // @nested $8019C4 Allocate
+  procedure Allocate; // @addr $8019C4 @ida "void __cdecl $name(void *ParentFrame);"
   var State: Cardinal;
   begin
     New(Result);
@@ -14777,8 +14670,12 @@ begin
   LowIndex := 0;
   Info := CustomWeaponTypes[0];
   Comparison := CompareScriptNames(PWideChar(Name), PWideChar(Info.ConfigName));
-  if Comparison = 0 then begin Result := Info; Exit; end;
-  if Comparison < 0 then
+  if Comparison = 0 then
+  begin
+    Result := Info;
+    Exit;
+  end
+  else if Comparison < 0 then
   begin
     Allocate;
     CustomWeaponTypes.Insert(0, Result);
@@ -14787,8 +14684,12 @@ begin
   HighIndex := CustomWeaponTypes.Count - 1;
   Info := CustomWeaponTypes[HighIndex];
   Comparison := CompareScriptNames(PWideChar(Name), PWideChar(Info.ConfigName));
-  if Comparison = 0 then begin Result := Info; Exit; end;
-  if Comparison > 0 then
+  if Comparison = 0 then
+  begin
+    Result := Info;
+    Exit;
+  end
+  else if Comparison > 0 then
   begin
     Allocate;
     CustomWeaponTypes.Add(Result);
@@ -14805,13 +14706,18 @@ begin
     Middle := (LowIndex + HighIndex) div 2;
     Info := CustomWeaponTypes[Middle];
     Comparison := CompareScriptNames(PWideChar(Name), PWideChar(Info.ConfigName));
-    if Comparison = 0 then begin Result := Info; Exit; end;
-    if Comparison < 0 then HighIndex := Middle else LowIndex := Middle;
+    if Comparison = 0 then
+    begin
+      Result := Info;
+      Exit;
+    end
+    else if Comparison < 0 then HighIndex := Middle
+    else LowIndex := Middle;
   end;
 end;
-{ @end $7D4544 }
+{ @end $801A30 }
 
-{ @routine $7D4734 TGalaxy_RequireCustomWeaponInfo }
+{ @routine $801BE4 TGalaxy_RequireCustomWeaponInfo }
 function TGalaxy.RequireCustomWeaponInfo(Name: WideString): PWeaponInfo;
 var
   Info: PWeaponInfo;
@@ -14825,8 +14731,8 @@ begin
   begin
     Result := Info;
     Exit;
-  end;
-  if Comparison < 0 then raise Exception.Create('Cant find custom weapon info = ' + Name);
+  end
+  else if Comparison < 0 then raise Exception.Create('Cant find custom weapon info = ' + Name);
   HighIndex := CustomWeaponTypes.Count - 1;
   Info := CustomWeaponTypes[HighIndex];
   Comparison := CompareScriptNames(PWideChar(Name), PWideChar(Info.ConfigName));
@@ -14834,8 +14740,8 @@ begin
   begin
     Result := Info;
     Exit;
-  end;
-  if Comparison > 0 then raise Exception.Create('Cant find custom weapon info = ' + Name);
+  end
+  else if Comparison > 0 then raise Exception.Create('Cant find custom weapon info = ' + Name);
   while True do
   begin
     if HighIndex - LowIndex < 2 then raise Exception.Create('Cant find custom weapon info = ' + Name);
@@ -14845,14 +14751,15 @@ begin
     if Comparison = 0 then
     begin
       Result := Info;
-      Break;
-    end;
-    if Comparison < 0 then HighIndex := Middle else LowIndex := Middle;
+      Exit;
+    end
+    else if Comparison < 0 then HighIndex := Middle
+    else LowIndex := Middle;
   end;
 end;
-{ @end $7D4734 }
+{ @end $801BE4 }
 
-{ @routine $7D4A08 TGalaxy_CanRecordAchievements }
+{ @routine $801E78 TGalaxy_CanRecordAchievements }
 function TGalaxy.CanRecordAchievements: Boolean;
 var ReservedMode, ReservedLimit: Integer;
 begin
@@ -14870,6 +14777,6 @@ begin
     not GR_Main.CCInterface.GetFlag0A and not GR_Main.CCInterface.GetTamperDetected and
     not GR_Main.CCInterface.GetEditableStateApplied and not GR_Main.CCInterface.GetResourceChecksumFailed;
 end;
-{ @end $7D4A08 }
+{ @end $801E78 }
 
 end.

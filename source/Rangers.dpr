@@ -307,39 +307,39 @@ type
   TWineGetBuildId = function: PAnsiChar; stdcall;
   TAD = class(TObject) // @size $04
   public
-    procedure ApplicationActivated(Sender: TObject); // @addr $8745D0
-    procedure ApplicationDeactivated(Sender: TObject); // @addr $874780
+    procedure ApplicationActivated(Sender: TObject); // @addr $8040C8
+    procedure ApplicationDeactivated(Sender: TObject); // @addr $80424C
   end;
 
   TSteamCallbacksThread = class(TThreadEC) // @size 0x2C
   public
 
 
-    procedure Execute; override; // @addr 0x8742B0
+    procedure Execute; override; // @addr 0x00803E00
   end;
 
 var
-  SteamCallbackThread: TSteamCallbacksThread = nil; // @addr $8830B8
-  ApplicationEvents: TAD; // @addr $88D2B4
-  StartupTime: TSystemTime; // @addr $88D2B8
-  ArgumentIndex: Integer; // @addr $88D2C8
-  ExecutableFileName: AnsiString; // @addr $88D2CC
-  HadProtectedStatus: Boolean; // @addr $88D2D0
-  StartupTextBC: WideString; // @addr $88D2D4 Finalized by the program; no native readers identified.
-  WineModule: Cardinal; // @addr $88D2D8
-  WineGetVersion: Pointer; // @addr $88D2DC
-  WineGetHostVersion: TWineGetHostVersion; // @addr $88D2E0
-  WineNtToUnixFileName: Pointer; // @addr $88D2E4
-  WineGetBuildId: TWineGetBuildId; // @addr $88D2E8
-  WineHostOS: PAnsiChar; // @addr $88D2EC
-  WineHostVersion: PAnsiChar; // @addr $88D2F0
-  LanguageBuffer: PStartupWideString; // @addr $88D2F4
-  LanguageFileName: AnsiString; // @addr $88D2F8
-  LanguageLine: AnsiString; // @addr $88D2FC
-  StartupText: WideString; // @addr $88D300
-  LanguageFile: TextFile; // @addr $88D304
+  SteamCallbackThread: TSteamCallbacksThread = nil; // @addr $8130B8
+  ApplicationEvents: TAD; // @unbound Register-allocated by the optimized program; no linked data symbol.
+  StartupTime: TSystemTime; // @addr $81D2B4
+  ArgumentIndex: Integer; // @unbound Register-allocated by the optimized program; no linked data symbol.
+  ExecutableFileName: AnsiString; // @addr $81D2C4
+  HadProtectedStatus: Boolean; // @unbound Register-allocated by the optimized program; no linked data symbol.
+  StartupTextBC: WideString; // @addr $81D2C8 Finalized by the program; no native readers identified.
+  WineModule: Cardinal; // @unbound Register-allocated by the optimized program; no linked data symbol.
+  WineGetVersion: Pointer; // @addr $81D2CC
+  WineGetHostVersion: TWineGetHostVersion; // @unbound Register-allocated by the optimized program; no linked data symbol.
+  WineNtToUnixFileName: Pointer; // @addr $81D2D0
+  WineGetBuildId: TWineGetBuildId; // @unbound Register-allocated by the optimized program; no linked data symbol.
+  WineHostOS: PAnsiChar; // @addr $81D2D4
+  WineHostVersion: PAnsiChar; // @addr $81D2D8
+  LanguageBuffer: PStartupWideString; // @addr $81D2DC
+  LanguageFileName: AnsiString; // @addr $81D2E0
+  LanguageLine: AnsiString; // @addr $81D2E4
+  StartupText: WideString; // @addr $81D2E8
+  LanguageFile: TextFile; // @addr $81D2EC
 
-{ @routine $8742B0 TSteamCallbacksThread_Execute }
+{ @routine $803E00 TSteamCallbacksThread_Execute }
 procedure TSteamCallbacksThread.Execute;
 var
   CurrentTick, LastCallbackTick: Cardinal;
@@ -356,15 +356,15 @@ begin
     SysUtils.Sleep(100);
   end;
 end;
-{ @end $8742B0 }
+{ @end $803E00 }
 
-{ @routine $874300 ClearReadOnlyAttributesRecursive }
-procedure ClearReadOnlyAttributesRecursive(DirectoryPath: WideString); // @addr 0x874300 @note "Changes the process working directory and does not restore it; paths pass through the ANSI filesystem API."
+{ @routine $803E44 ClearReadOnlyAttributesRecursive }
+procedure ClearReadOnlyAttributesRecursive(DirectoryPath: WideString); // @addr 0x00803E44 @note "Changes the process working directory and does not restore it; paths pass through the ANSI filesystem API."
 var
   SearchHandle: THandle;
   FindData: TWin32FindDataA;
 begin
-  SetCurrentDir(AnsiString(DirectoryPath));
+  SetCurrentDir(DirectoryPath);
   SearchHandle := Windows.FindFirstFile('*.*', FindData);
   if SearchHandle <> INVALID_HANDLE_VALUE then
   begin
@@ -386,10 +386,10 @@ begin
     Windows.FindClose(SearchHandle);
   end;
 end;
-{ @end $874300 }
+{ @end $803E44 }
 
-{ @routine $874510 HandleApplicationActivated }
-procedure HandleApplicationActivated; // @addr 0x874510
+{ @routine $804024 HandleApplicationActivated }
+procedure HandleApplicationActivated; // @addr 0x00804024
 var
   Buffer: TSoundBuffer;
 begin
@@ -407,21 +407,21 @@ begin
   if RegisteredScreens[CurrentScreenId] <> nil then
   begin
     FullFrameRedrawRequested := True;
-    (TObject(RegisteredScreens[CurrentScreenId]) as TMessageLoopGI).InvalidateViewport;
+    (RegisteredScreens[CurrentScreenId] as TMessageLoopGI).InvalidateViewport;
   end;
   if MemorySnapshotActive then RestoreGameFromMemorySnapshot;
 end;
-{ @end $874510 }
+{ @end $804024 }
 
-{ @routine $8745D0 TAD_ApplicationActivated }
+{ @routine $8040C8 TAD_ApplicationActivated }
 procedure TAD.ApplicationActivated(Sender: TObject);
 begin
   HandleApplicationActivated;
 end;
-{ @end $8745D0 }
+{ @end $8040C8 }
 
-{ @routine $8745E8 HandleApplicationDeactivated }
-procedure HandleApplicationDeactivated; // @addr 0x8745E8
+{ @routine $8040D0 HandleApplicationDeactivated }
+procedure HandleApplicationDeactivated; // @addr 0x008040D0
 var
   WaitResult: Cardinal;
   Events: array[0..1] of THandle;
@@ -430,7 +430,7 @@ begin
   if WindowedModeRequested then Exit;
   RuntimeActive := False;
   Exit;
-  // Native O- code retains the following disabled snapshot/wait path.
+  // Snapshot and wait path disabled in this build.
   if ExitScreenLoop then;
   if (NewGameGenerationThread <> nil) and NewGameGenerationThread.IsRunning then
     NewGameGenerationThread.WaitForIdle(INFINITE);
@@ -477,17 +477,17 @@ begin
     GameLoadScreen.LoadThread.WaitForIdle(INFINITE);
   if not MemorySnapshotActive then SaveGameToMemorySnapshot;
 end;
-{ @end $8745E8 }
+{ @end $8040D0 }
 
-{ @routine $874780 TAD_ApplicationDeactivated }
+{ @routine $80424C TAD_ApplicationDeactivated }
 procedure TAD.ApplicationDeactivated(Sender: TObject);
 begin
   HandleApplicationDeactivated;
 end;
-{ @end $874780 }
+{ @end $80424C }
 
-{ @routine $874798 HandleMessageIdle }
-procedure HandleMessageIdle; // @addr $874798 @note "Checks background work, but this build performs no idle action. Assigned to GR_Main.OnMessageIdle. Removing the empty tests changes native behavior and bytes."
+{ @routine $804254 HandleMessageIdle }
+procedure HandleMessageIdle; // @addr $804254 @note "Checks background work, but this build performs no idle action. Assigned to GR_Main.OnMessageIdle. Removing the empty tests changes native behavior and bytes."
 begin
   if MemorySnapshotActive then Exit;
   if Galaxy = nil then Exit;
@@ -495,39 +495,39 @@ begin
   if (GameLoadScreen <> nil) and GameLoadScreen.IsLoading then Exit;
   if IsTurnCalculationRunning then Exit;
 end;
-{ @end $874798 }
+{ @end $804254 }
 
-{ @routine $8747E8 HandleMessageResume }
-procedure HandleMessageResume; // @addr $8747E8 @note "Empty conditional callback assigned to GR_Main.OnMessageResume."
+{ @routine $8042A4 HandleMessageResume }
+procedure HandleMessageResume; // @addr $8042A4 @note "Empty conditional callback assigned to GR_Main.OnMessageResume."
 begin
   if MemorySnapshotActive then Exit;
   if Galaxy = nil then Exit;
 end;
-{ @end $8747E8 }
+{ @end $8042A4 }
 
-{ @routine $8747FC PurgeCacheDirectoryFiles }
-procedure PurgeCacheDirectoryFiles; // @addr 0x8747FC @note "Nonrecursive; restores the previous working directory."
+{ @routine $8042B8 PurgeCacheDirectoryFiles }
+procedure PurgeCacheDirectoryFiles; // @addr 0x008042B8 @note "Nonrecursive; restores the previous working directory."
 var
   FileName, OldDirectory: AnsiString;
   Search: TSearchRec;
 begin
   OldDirectory := GetCurrentDir;
-  SetCurrentDir(AnsiString(GetGameUserDirectory + 'Cache\'));
+  SetCurrentDir(GetGameUserDirectory + 'Cache\');
   if SysUtils.FindFirst('*.*', faAnyFile, Search) = 0 then
   begin
     repeat
       FileName := Search.Name;
       if (FileName <> '.') and (FileName <> '..') then
-        SysUtils.DeleteFile(AnsiString(GetGameUserDirectory + 'Cache\' + WideString(FileName)));
+        SysUtils.DeleteFile(GetGameUserDirectory + 'Cache\' + WideString(FileName));
     until SysUtils.FindNext(Search) <> 0;
     SysUtils.FindClose(Search);
   end;
   SetCurrentDir(OldDirectory);
 end;
-{ @end $8747FC }
+{ @end $8042B8 }
 
-{ @routine $874A0C CollectInstallLanguageCodes }
-function CollectInstallLanguageCodes: WideString; // @addr 0x874A0C @note "Comma-separated lowercase names from INSTALL_*.txt in the current directory."
+{ @routine $8044CC CollectInstallLanguageCodes }
+function CollectInstallLanguageCodes: WideString; // @addr 0x008044CC @note "Comma-separated lowercase names from INSTALL_*.txt in the current directory."
 var
   FileName, LanguageCode: WideString;
   LowerCode: AnsiString;
@@ -548,14 +548,14 @@ begin
     SysUtils.FindClose(Search);
   end;
 end;
-{ @end $874A0C }
+{ @end $8044CC }
 
 
 {$I RecoveredExports.inc}
 
-{ @routine $877ABC start }
+{ @routine $807A08 start }
 begin
-  // @unit-finalization $874B98
+  // @unit-finalization $804650
   DecimalSeparator := '.';
   MainRuntimeThreadId := GetCurrentThreadId;
   GR_Main.CCInterface := TCCInterface.Create;
@@ -582,7 +582,7 @@ begin
     begin
       SetLength(ExecutableFileName, StrLen(PAnsiChar(ExecutableFileName)));
       ClearReadOnlyAttributesRecursive(ExtractFileDirW(WideString(ExecutableFileName)));
-      SetCurrentDir(AnsiString(ExtractFileDirW(WideString(ExecutableFileName))));
+      SetCurrentDir(ExtractFileDirW(WideString(ExecutableFileName)));
     end;
     WriteRegistryStringLegacy(HKEY_LOCAL_MACHINE, 'SOFTWARE\CLASSES\avifile\Extensions\VDO', '', '{00020000-0000-0000-C000-000000000046}');
     Randomize;
@@ -610,7 +610,7 @@ begin
               if not SteamInitialized then AppendLogLineThreadSafe('Steam not initialized');
             end
             else if StartupText = 'gog' then AppendLogLineThreadSafe('GameDistributor=GOG')
-            else AppendLogLineThreadSafe(AnsiString('GameDistributor=Unknown(' + InstallConfig.GetParamByPathOrMarker('GameDistributor') + ')'));
+            else AppendLogLineThreadSafe('GameDistributor=Unknown(' + InstallConfig.GetParamByPathOrMarker('GameDistributor') + ')');
           end
           else AppendLogLineThreadSafe('GameDistributor=None');
           if SteamInitialized then
@@ -654,9 +654,9 @@ begin
           if WineModule > 32 then
           begin
             WineGetVersion := GetProcAddress(WineModule, 'wine_get_version');
-            @WineGetHostVersion := GetProcAddress(WineModule, 'wine_get_host_version');
+            WineGetHostVersion := TWineGetHostVersion(GetProcAddress(WineModule, 'wine_get_host_version'));
             WineNtToUnixFileName := GetProcAddress(WineModule, 'wine_nt_to_unix_file_name');
-            @WineGetBuildId := GetProcAddress(WineModule, 'wine_get_build_id');
+            WineGetBuildId := TWineGetBuildId(GetProcAddress(WineModule, 'wine_get_build_id'));
             RunningUnderWine := (WineGetVersion <> nil) or Assigned(WineGetHostVersion) or
               (WineNtToUnixFileName <> nil) or Assigned(WineGetBuildId);
             if RunningUnderWine then
@@ -673,7 +673,7 @@ begin
                 AppendLogTextThreadSafe('Host OS=');
                 // Native startup reports Darwin as Linux; retain that behavior.
                 if AnsiString(WineHostOS) = 'Darwin' then AppendLogTextThreadSafe('Linux')
-                else AppendLogTextThreadSafe(AnsiString(WineHostOS));
+                else AppendLogTextThreadSafe(WineHostOS);
                 AppendLogLineThreadSafe(' ' + AnsiString(ShortString(WineHostVersion)));
               end
               else AppendLogLineThreadSafe('Can''t detect host OS, wine_get_host_version() not found');
@@ -801,4 +801,4 @@ begin
     until not SkipModsOnReload;
   end;
 end.
-{ @end $877ABC }
+{ @end $807A08 }

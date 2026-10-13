@@ -1,5 +1,4 @@
 unit SE_GAIEffect;
-// Unit bracket (inferred): .text 0x0060371C..0x00603BFB; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -15,35 +14,35 @@ type
     Animation: TgaiGI; // @offset $60
     StepsPerFrame: Integer; // @offset $64
     StepIndex: Integer; // @offset $68
-    destructor Destroy; override; // @addr $603850
-    procedure AttachToSpace(ASpace: TSpaceSE); override; // @addr $603884
-    procedure DetachFromSpace; override; // @addr $603A60
-    procedure SetImagePosition(Value: TPoint); // @addr $603A90
-    procedure SetDurationScale(Value: Single); // @addr $603AB8
-    procedure Advance; override; // @addr $603AD0
-    procedure LoadTemplate(Block: TBlockParEC); override; // @addr $603B5C
-    constructor Create(const GraphKey: WideString; UnusedPosition: TPoint); // @addr $6037EC
+    destructor Destroy; override; // @addr $6742E0
+    procedure AttachToSpace(ASpace: TSpaceSE); override; // @addr $674308
+    procedure DetachFromSpace; override; // @addr $674490
+    procedure SetImagePosition(Value: TPoint); // @addr $6744B0
+    procedure SetDurationScale(Value: Single); // @addr $6744D0
+    procedure Advance; override; // @addr $6744E0
+    procedure LoadTemplate(Block: TBlockParEC); override; // @addr $674538
+    constructor Create(const GraphKey: WideString; UnusedPosition: TPoint); // @addr $674288
   end;
 
 implementation
 
 uses Math, EC_Struct, GlobalsV, GR_Sound;
-{ @routine $6037EC TGAIEffectSE_Create }
+{ @routine $674288 TGAIEffectSE_Create }
 constructor TGAIEffectSE.Create(const GraphKey: WideString; UnusedPosition: TPoint);
 begin
   inherited Create(GraphKey, UnusedPosition);
   DurationScale := 1;
 end;
-{ @end $6037EC }
+{ @end $674288 }
 
-{ @routine $603850 TGAIEffectSE_Destroy }
+{ @routine $6742E0 TGAIEffectSE_Destroy }
 destructor TGAIEffectSE.Destroy;
 begin
   inherited Destroy;
 end;
-{ @end $603850 }
+{ @end $6742E0 }
 
-{ @routine $603884 TGAIEffectSE_AttachToSpace }
+{ @routine $674308 TGAIEffectSE_AttachToSpace }
 procedure TGAIEffectSE.AttachToSpace(ASpace: TSpaceSE);
 var
   StepDuration, Duration: Integer;
@@ -51,11 +50,11 @@ begin
   inherited AttachToSpace(ASpace);
   Animation := TgaiGI.Create(Space.MapPanel);
   Animation.SetImagePath(ImagePath);
-  Animation.SetSize(Animation.GetContentSize);
-  Animation.SetOrigin(HalfPoint(Animation.ClientSize));
+  Animation.ObjectSize := Animation.GetContentSize;
+  Animation.Sme := HalfPoint(Animation.ClientSize);
   Animation.SetDepthByName(DepthExpression);
-  Animation.SetPositionModeW(True);
-  Animation.SetPosition(ImagePosition);
+  Animation.World := True;
+  Animation.Pos := ImagePosition;
   Animation.SequenceIndex := 0;
   Animation.UpdateAutoGeometry;
   Animation.StopAutoPlayback;
@@ -70,9 +69,9 @@ begin
       if Space.ContainsMapPoint(PointToPointF(Animation.LocalPosition)) then SoundManager.PlaySound(SoundPath);
   StepIndex := 0;
 end;
-{ @end $603884 }
+{ @end $674308 }
 
-{ @routine $603A60 TGAIEffectSE_DetachFromSpace }
+{ @routine $674490 TGAIEffectSE_DetachFromSpace }
 procedure TGAIEffectSE.DetachFromSpace;
 begin
   if Animation <> nil then
@@ -82,50 +81,48 @@ begin
   end;
   inherited DetachFromSpace;
 end;
-{ @end $603A60 }
+{ @end $674490 }
 
-{ @routine $603A90 TGAIEffectSE_SetImagePosition }
+{ @routine $6744B0 TGAIEffectSE_SetImagePosition }
 procedure TGAIEffectSE.SetImagePosition(Value: TPoint);
 begin
   ImagePosition := Value;
 end;
-{ @end $603A90 }
+{ @end $6744B0 }
 
-{ @routine $603AB8 TGAIEffectSE_SetDurationScale }
+{ @routine $6744D0 TGAIEffectSE_SetDurationScale }
 procedure TGAIEffectSE.SetDurationScale(Value: Single);
 begin
   DurationScale := Value;
 end;
-{ @end $603AB8 }
+{ @end $6744D0 }
 
-{ @routine $603AD0 TGAIEffectSE_Advance }
+{ @routine $6744E0 TGAIEffectSE_Advance }
 procedure TGAIEffectSE.Advance;
 begin
-  if IsAttachedToSpace then
+  if not IsAttachedToSpace then Exit;
+  if Animation <> nil then
   begin
-    if Animation <> nil then
+    if Animation.SequenceFrame = Animation.SequenceFrameCount - 1 then
     begin
-      if Animation.SequenceFrame = Animation.SequenceFrameCount - 1 then
-      begin
-        Animation.Free;
-        Animation := nil;
-        DetachFromSpace;
-      end
-      else if StepIndex mod StepsPerFrame = 0 then
-        Animation.SetSequenceFrame(Animation.SequenceFrame + 1);
-    end;
-    Inc(StepIndex);
+      Animation.Free;
+      Animation := nil;
+      DetachFromSpace;
+    end
+    else if StepIndex mod StepsPerFrame = 0 then
+      Animation.SetSequenceFrame(Animation.SequenceFrame + 1);
   end;
+  Inc(StepIndex);
 end;
-{ @end $603AD0 }
+{ @end $6744E0 }
 
-{ @routine $603B5C TGAIEffectSE_LoadTemplate }
+{ @routine $674538 TGAIEffectSE_LoadTemplate }
 procedure TGAIEffectSE.LoadTemplate(Block: TBlockParEC);
 begin
   inherited LoadTemplate(Block);
   ImagePath := Block.GetParam('GAI');
   if Block.CountParams('Sound') > 0 then SoundPath := Block.GetParam('Sound');
 end;
-{ @end $603B5C }
+{ @end $674538 }
 
 end.

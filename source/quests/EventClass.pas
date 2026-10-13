@@ -1,5 +1,4 @@
 unit EventClass;
-// Unit bracket (inferred): .text 0x004DE4A8..0x004DE768; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -13,17 +12,17 @@ type
     Music: TTextField; // @offset 0x0C
     Sound: TTextField; // @offset 0x10
 
-    constructor Create; // @addr 0x4DE520
-    destructor Destroy; override; // @addr 0x4DE5D8
-    procedure ClearTextFields; // @addr 0x4DE658
-    procedure Assign(Source: TEvent); // @addr 0x4DE69C @note "Trims the copied text."
+    constructor Create; // @addr 0x004DA3C0
+    destructor Destroy; override; // @addr 0x004DA458
+    procedure ClearTextFields; // @addr 0x004DA4B4
+    procedure Assign(Source: TEvent); // @addr 0x004DA4E8 @note "Trims the copied text."
   end;
 
 implementation
 
 uses EC_Str;
 
-{ @routine $4DE520 TEvent_Create }
+{ @routine $4DA3C0 TEvent_Create }
 constructor TEvent.Create;
 begin
   inherited Create;
@@ -36,9 +35,9 @@ begin
   Sound := TTextField.Create;
   Sound.ClearText;
 end;
-{ @end $4DE520 }
+{ @end $4DA3C0 }
 
-{ @routine $4DE5D8 TEvent_Destroy }
+{ @routine $4DA458 TEvent_Destroy }
 destructor TEvent.Destroy;
 begin
   Text.Free;
@@ -51,9 +50,9 @@ begin
   Sound := nil;
   inherited Destroy;
 end;
-{ @end $4DE5D8 }
+{ @end $4DA458 }
 
-{ @routine $4DE658 TEvent_ClearTextFields }
+{ @routine $4DA4B4 TEvent_ClearTextFields }
 procedure TEvent.ClearTextFields;
 begin
   Text.Text := '';
@@ -61,9 +60,9 @@ begin
   Music.Text := '';
   Sound.Text := '';
 end;
-{ @end $4DE658 }
+{ @end $4DA4B4 }
 
-{ @routine $4DE69C TEvent_Assign }
+{ @routine $4DA4E8 TEvent_Assign }
 procedure TEvent.Assign(Source: TEvent);
 begin
   Text.Text := TrimWideString(Source.Text.Text);
@@ -71,6 +70,6 @@ begin
   Music.Text := TrimWideString(Source.Music.Text);
   Sound.Text := TrimWideString(Source.Sound.Text);
 end;
-{ @end $4DE69C }
+{ @end $4DA4E8 }
 
 end.

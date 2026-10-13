@@ -1,5 +1,4 @@
 unit GR_Sound;
-// Unit bracket (inferred): .text 0x0084B2C0..0x0084E5D4; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -9,6 +8,7 @@ const
   SoundStreamPrimeAll = -1;
 
 type
+  PSoundWaveFormat = ^TSoundWaveFormat;
 
   TSoundBufferControl = class;
   TSoundBuffer = class;
@@ -23,14 +23,14 @@ type
     Volume: Single; // @offset 0x14
     Pan: Single; // @offset 0x18
 
-    constructor Create; // @addr 0x84BAA8
-    destructor Destroy; override; // @addr 0x84BAEC
-    procedure Clear; // @addr 0x84BB28 @note "Releases the active buffer and resets Volume/Pan only when Buffer is non-nil. Keeps path, group and looping mode."
-    procedure Configure(const Path: WideString; Group: Integer; ALooping: Boolean); // @addr 0x84BB6C @note "Identical paths leave every setting unchanged, including group and looping mode."
-    procedure SetVolume(Value: Single); // @addr 0x84BBBC @note "Unchanged values do nothing. Looping sounds start lazily at nonzero volume; changing to zero clears an active loop. The controller retains the unclamped value."
-    procedure SetPan(Value: Single); // @addr 0x84BCA0 @note "A changed pan can start an inactive looping sound, even at zero volume."
-    procedure Play; // @addr 0x84BD48 @note "Restarts non-looping sounds; does nothing in looping mode."
-    function IsPlaying: Boolean; // @addr 0x84BDAC
+    constructor Create; // @addr 0x004C7A38
+    destructor Destroy; override; // @addr 0x004C7A70
+    procedure Clear; // @addr 0x004C7A9C @note "Releases the active buffer and resets Volume/Pan only when Buffer is non-nil. Keeps path, group and looping mode."
+    procedure Configure(const Path: WideString; Group: Integer; ALooping: Boolean); // @addr 0x004C7AC4 @note "Identical paths leave every setting unchanged, including group and looping mode."
+    procedure SetVolume(Value: Single); // @addr 0x004C7B00 @note "Unchanged values do nothing. Looping sounds start lazily at nonzero volume; changing to zero clears an active loop. The controller retains the unclamped value."
+    procedure SetPan(Value: Single); // @addr 0x004C7B94 @note "A changed pan can start an inactive looping sound, even at zero volume."
+    procedure Play; // @addr 0x004C7C00 @note "Restarts non-looping sounds; does nothing in looping mode."
+    function IsPlaying: Boolean; // @addr 0x004C7C40
   end;
 
   TSoundBuffer = class(TObjectEx) // @size 0x68
@@ -58,22 +58,22 @@ type
     WriteOffset: Integer; // @offset 0x60
     LastPlayCursor: Cardinal; // @offset 0x64
 
-    destructor Destroy; override; // @addr $84BF18
-    procedure Clear; // @addr $84BFC4
-    function WaitForChunk: Integer; // @addr $84CF80
-    procedure SignalStop; // @addr $84D194
-    procedure SetVolumeScale(Value: Single); // @addr $84D418
-    procedure StartVolumeRamp(Interval: Cardinal; Step: Single); // @addr $84D47C
-    constructor Create; // @addr 0x84BDD8
-    procedure Init(ByteCount: Integer; Format: Pointer); // @addr 0x84C0A8 @note "Copies 20 bytes from Format into internal wave-format storage."
-    procedure InitStream(ChunkBytes: Integer; Format: Pointer); // @addr 0x84C240 @note "Copies 20 bytes from Format; allocates three chunks of streaming audio."
-    procedure ClearBuf; // @addr 0x84C638 @note "Fills the audio buffer with silence; does not release it."
-    procedure Write(Data: Pointer; ByteCount: Cardinal; Format: Pointer); // @addr 0x84C808 @note "Format points to 20 bytes; data and format are copied, not retained."
-    function WriteStream(Chunk: Integer; var Decoder: TOggWorker): Boolean; // @addr $84C9FC @note "Chunk=-1 primes the buffer; other values refill from the current playback cursor. False indicates exhaustion or an unavailable buffer."
-    procedure Play(Looping: Boolean); // @addr 0x84CD9C @note "Streaming buffers always loop."
-    function IsPlaying: Boolean; // @addr 0x84D07C
-    procedure SetVolume(Value: Single); // @addr 0x84D1AC @note "Stores the unclamped value and combines it with the buffer's secondary volume multiplier."
-    procedure SetPan(Value: Single); // @addr 0x84D4DC @note "Clamps the DirectSound pan to -10000..10000."
+    destructor Destroy; override; // @addr $4C7D54
+    procedure Clear; // @addr $4C7DC4
+    function WaitForChunk: Integer; // @addr $4C8C08
+    procedure SignalStop; // @addr $4C8DC8
+    procedure SetVolumeScale(Value: Single); // @addr $4C9020
+    procedure StartVolumeRamp(Interval: Cardinal; Step: Single); // @addr $4C9070
+    constructor Create; // @addr 0x004C7C58
+    procedure Init(ByteCount: Integer; Format: PSoundWaveFormat); // @addr 0x004C7E74 @note "Copies 20 bytes from Format into internal wave-format storage."
+    procedure InitStream(ChunkBytes: Integer; Format: PSoundWaveFormat); // @addr 0x004C7FFC @note "Copies 20 bytes from Format; allocates three chunks of streaming audio."
+    procedure ClearBuf; // @addr 0x004C83D0 @note "Fills the audio buffer with silence; does not release it."
+    procedure Write(Data: Pointer; ByteCount: Cardinal; Format: PSoundWaveFormat); // @addr 0x004C858C @note "Format points to 20 bytes; data and format are copied, not retained."
+    function WriteStream(Chunk: Integer; var Decoder: TOggWorker): Boolean; // @addr $4C875C @note "Chunk=-1 primes the buffer; other values refill from the current playback cursor. False indicates exhaustion or an unavailable buffer."
+    procedure Play(Looping: Boolean); // @addr 0x004C8A58 @note "Streaming buffers always loop."
+    function IsPlaying: Boolean; // @addr 0x004C8CBC
+    procedure SetVolume(Value: Single); // @addr 0x004C8DD4 @note "Stores the unclamped value and combines it with the buffer's secondary volume multiplier."
+    procedure SetPan(Value: Single); // @addr 0x004C90B4 @note "Clamps the DirectSound pan to -10000..10000."
   end;
 
   TSoundControl = class(TObjectEx) // @size 0x30
@@ -86,24 +86,24 @@ type
     Lock: TCriticalSection; // @offset 0x28
     LastFadeTick: Cardinal; // @offset 0x2C
 
-    destructor Destroy; override; // @addr $84DD70
-    procedure Clear; // @addr $84DDCC
-    procedure StopUncontrolledSounds; // @addr $84DDF0
-    function AddBuffer: TSoundBuffer; // @addr $84DE60
-    procedure RemoveBuffer(Buffer: TSoundBuffer); // @addr $84DF04
-    function SuppressGroup(Group: Integer; Volume: Single): Boolean; // @addr $84DFB4
-    procedure RemoveFinishedBuffers; // @addr $84E078
-    procedure UpdateFades; // @addr $84E104
-    procedure PlaySound(const Path: WideString); // @addr $84E218
-    function PlayEffect(const Path: WideString; Group: Integer; Volume, Pan: Single): TSoundBuffer; // @addr $84E314
-    function PlayLoop(const Path: WideString; Group: Integer; Volume, Pan: Single): TSoundBuffer; // @addr $84E450
-    procedure SignalStop; // @addr $84E58C
-    constructor Create; // @addr 0x84D6F0
+    destructor Destroy; override; // @addr $4C98F8
+    procedure Clear; // @addr $4C993C
+    procedure StopUncontrolledSounds; // @addr $4C9958
+    function AddBuffer: TSoundBuffer; // @addr $4C99A4
+    procedure RemoveBuffer(Buffer: TSoundBuffer); // @addr $4C9A3C
+    function SuppressGroup(Group: Integer; Volume: Single): Boolean; // @addr $4C9AC8
+    procedure RemoveFinishedBuffers; // @addr $4C9B64
+    procedure UpdateFades; // @addr $4C9BDC
+    procedure PlaySound(const Path: WideString); // @addr $4C9CC8
+    function PlayEffect(const Path: WideString; Group: Integer; Volume, Pan: Single): TSoundBuffer; // @addr $4C9DAC
+    function PlayLoop(const Path: WideString; Group: Integer; Volume, Pan: Single): TSoundBuffer; // @addr $4C9EC8
+    procedure SignalStop; // @addr $4C9FE4
+    constructor Create; // @addr 0x004C929C
   end;
 
-function EnumerateSoundDevice(Guid: Pointer; Description, Module: PAnsiChar; Context: Pointer): LongBool; stdcall; // @addr $84D61C
+function EnumerateSoundDevice(Guid: Pointer; Description, Module: PAnsiChar; Context: Pointer): LongBool; stdcall; // @addr $4C91D4
 
-function SoundErrorText(Code: Integer): AnsiString; // @addr $84B41C
+function SoundErrorText(Code: Integer): AnsiString; // @addr $4C73D0
 
 implementation
 
@@ -113,7 +113,7 @@ const
   UnsignedPcmSilence = $80;
   SoundEventPollMs = 1000;
 
-{ @routine $84B41C SoundErrorText }
+{ @routine $4C73D0 SoundErrorText }
 function SoundErrorText(Code: Integer): AnsiString;
 begin
   Result := '';
@@ -148,51 +148,47 @@ begin
     Result := 'unrecognized DirectSound error ' + CardinalToHexWideString(Code);
   end;
 end;
-{ @end $84B41C }
+{ @end $4C73D0 }
 
-{ @routine $84BAA8 TSoundBufferControl_Create }
+{ @routine $4C7A38 TSoundBufferControl_Create }
 constructor TSoundBufferControl.Create;
 begin
   inherited Create;
 end;
-{ @end $84BAA8 }
+{ @end $4C7A38 }
 
-{ @routine $84BAEC TSoundBufferControl_Destroy }
+{ @routine $4C7A70 TSoundBufferControl_Destroy }
 destructor TSoundBufferControl.Destroy;
 begin
   Clear;
   inherited Destroy;
 end;
-{ @end $84BAEC }
+{ @end $4C7A70 }
 
-{ @routine $84BB28 TSoundBufferControl_Clear }
+{ @routine $4C7A9C TSoundBufferControl_Clear }
 procedure TSoundBufferControl.Clear;
 begin
-  if Buffer <> nil then
-  begin
-    Buffer.Controller := nil;
-    Buffer.Clear;
-    Buffer := nil;
-    Volume := 0;
-    Pan := 0;
-  end;
+  if Buffer = nil then Exit;
+  Buffer.Controller := nil;
+  Buffer.Clear;
+  Buffer := nil;
+  Volume := 0;
+  Pan := 0;
 end;
-{ @end $84BB28 }
+{ @end $4C7A9C }
 
-{ @routine $84BB6C TSoundBufferControl_Configure }
+{ @routine $4C7AC4 TSoundBufferControl_Configure }
 procedure TSoundBufferControl.Configure(const Path: WideString; Group: Integer; ALooping: Boolean);
 begin
-  if SoundPath <> Path then
-  begin
-    Clear;
-    SoundGroup := Group;
-    SoundPath := Path;
-    Looping := ALooping;
-  end;
+  if SoundPath = Path then Exit;
+  Clear;
+  SoundGroup := Group;
+  SoundPath := Path;
+  Looping := ALooping;
 end;
-{ @end $84BB6C }
+{ @end $4C7AC4 }
 
-{ @routine $84BBBC TSoundBufferControl_SetVolume }
+{ @routine $4C7B00 TSoundBufferControl_SetVolume }
 procedure TSoundBufferControl.SetVolume(Value: Single);
 begin
   if Volume = Value then Exit;
@@ -219,9 +215,9 @@ begin
     if Buffer <> nil then Buffer.SetVolumeScale(Volume);
   end;
 end;
-{ @end $84BBBC }
+{ @end $4C7B00 }
 
-{ @routine $84BCA0 TSoundBufferControl_SetPan }
+{ @routine $4C7B94 TSoundBufferControl_SetPan }
 procedure TSoundBufferControl.SetPan(Value: Single);
 begin
   if Pan = Value then Exit;
@@ -237,9 +233,9 @@ begin
   end
   else if Buffer <> nil then Buffer.SetPan(Pan);
 end;
-{ @end $84BCA0 }
+{ @end $4C7B94 }
 
-{ @routine $84BD48 TSoundBufferControl_Play }
+{ @routine $4C7C00 TSoundBufferControl_Play }
 procedure TSoundBufferControl.Play;
 begin
   if Looping then Exit;
@@ -247,17 +243,17 @@ begin
   Buffer := SoundManager.PlayEffect(SoundPath, SoundGroup, Volume, Pan);
   if Buffer <> nil then Buffer.Controller := Self;
 end;
-{ @end $84BD48 }
+{ @end $4C7C00 }
 
-{ @routine $84BDAC TSoundBufferControl_IsPlaying }
+{ @routine $4C7C40 TSoundBufferControl_IsPlaying }
 function TSoundBufferControl.IsPlaying: Boolean;
 begin
   Result := False;
   if Buffer <> nil then Result := Buffer.IsPlaying;
 end;
-{ @end $84BDAC }
+{ @end $4C7C40 }
 
-{ @routine $84BDD8 TSoundBuffer_Create }
+{ @routine $4C7C58 TSoundBuffer_Create }
 constructor TSoundBuffer.Create;
 var i: Integer;
 begin
@@ -276,9 +272,9 @@ begin
   if PAnsiChar(@VolumeEvent) - PAnsiChar(@StopEvent) <> SizeOf(StopEvent) + SizeOf(ChunkEvents) then
     RaiseWideMessage('TSoundBuffer.Create 2');
 end;
-{ @end $84BDD8 }
+{ @end $4C7C58 }
 
-{ @routine $84BF18 TSoundBuffer_Destroy }
+{ @routine $4C7D54 TSoundBuffer_Destroy }
 destructor TSoundBuffer.Destroy;
 var i: Integer;
 begin
@@ -301,9 +297,9 @@ begin
   end;
   inherited Destroy;
 end;
-{ @end $84BF18 }
+{ @end $4C7D54 }
 
-{ @routine $84BFC4 TSoundBuffer_Clear }
+{ @routine $4C7DC4 TSoundBuffer_Clear }
 procedure TSoundBuffer.Clear;
 begin
   SoundManager.Lock.Enter;
@@ -330,10 +326,10 @@ begin
     SoundManager.Lock.Leave;
   end;
 end;
-{ @end $84BFC4 }
+{ @end $4C7DC4 }
 
-{ @routine $84C0A8 TSoundBuffer_Init }
-procedure TSoundBuffer.Init(ByteCount: Integer; Format: Pointer);
+{ @routine $4C7E74 TSoundBuffer_Init }
+procedure TSoundBuffer.Init(ByteCount: Integer; Format: PSoundWaveFormat);
 var Status: Integer;
     Desc: TDSBufferDesc;
 begin
@@ -362,10 +358,10 @@ begin
     SoundManager.Lock.Leave;
   end;
 end;
-{ @end $84C0A8 }
+{ @end $4C7E74 }
 
-{ @routine $84C240 TSoundBuffer_InitStream }
-procedure TSoundBuffer.InitStream(ChunkBytes: Integer; Format: Pointer);
+{ @routine $4C7FFC TSoundBuffer_InitStream }
+procedure TSoundBuffer.InitStream(ChunkBytes: Integer; Format: PSoundWaveFormat);
 var Status: Integer;
     Positions, Position: PDSPositionNotify;
     i: Integer;
@@ -432,9 +428,9 @@ begin
     SoundManager.Lock.Leave;
   end;
 end;
-{ @end $84C240 }
+{ @end $4C7FFC }
 
-{ @routine $84C638 TSoundBuffer_ClearBuf }
+{ @routine $4C83D0 TSoundBuffer_ClearBuf }
 procedure TSoundBuffer.ClearBuf;
 var Data: Pointer;
     Bytes: Cardinal;
@@ -463,10 +459,10 @@ begin
     SoundManager.Lock.Leave;
   end;
 end;
-{ @end $84C638 }
+{ @end $4C83D0 }
 
-{ @routine $84C808 TSoundBuffer_Write }
-procedure TSoundBuffer.Write(Data: Pointer; ByteCount: Cardinal; Format: Pointer);
+{ @routine $4C858C TSoundBuffer_Write }
+procedure TSoundBuffer.Write(Data: Pointer; ByteCount: Cardinal; Format: PSoundWaveFormat);
 var Dest: Pointer;
     Bytes: Cardinal;
     Status: Integer;
@@ -495,9 +491,9 @@ begin
     SoundManager.Lock.Leave;
   end;
 end;
-{ @end $84C808 }
+{ @end $4C858C }
 
-{ @routine $84C9FC TSoundBuffer_WriteStream }
+{ @routine $4C875C TSoundBuffer_WriteStream }
 function TSoundBuffer.WriteStream(Chunk: Integer; var Decoder: TOggWorker): Boolean;
 var Offset: Integer;
     Dest: Pointer;
@@ -580,7 +576,7 @@ begin
       begin
         if WaveFormat.BitsPerSample = 8 then
           FillMemory(PAnsiChar(Dest) + ReadBytes, BufferBytes - ReadBytes, UnsignedPcmSilence)
-        else FillChar(Pointer(PAnsiChar(Dest) + ReadBytes)^, BufferBytes - ReadBytes, 0);
+        else FillChar((PAnsiChar(Dest) + ReadBytes)^, BufferBytes - ReadBytes, 0);
       end;
       Status := DirectBuffer.Unlock(Dest, LockedBytes, nil, 0);
       if (Status <> DS_OK) and (Status <> DS_INCOMPLETE) then
@@ -595,9 +591,9 @@ begin
   end;
   Result := ReadBytes >= WantedBytes;
 end;
-{ @end $84C9FC }
+{ @end $4C875C }
 
-{ @routine $84CD9C TSoundBuffer_Play }
+{ @routine $4C8A58 TSoundBuffer_Play }
 procedure TSoundBuffer.Play(Looping: Boolean);
 var Status, i: Integer;
 begin
@@ -611,28 +607,28 @@ begin
       if Looping then Status := DirectBuffer.Play(0, 0, DSBPLAY_LOOPING)
       else Status := DirectBuffer.Play(0, 0, 0);
       if (Status <> DS_OK) and (Status <> DS_INCOMPLETE) then
-    begin
-      AppendLogLineThreadSafe('Error in TSoundBuffer.Play 1');
-      raise Exception.Create(SoundErrorText(Status));
-    end;
+      begin
+        AppendLogLineThreadSafe('Error in TSoundBuffer.Play 1');
+        raise Exception.Create(SoundErrorText(Status));
+      end;
     end
     else
     begin
       Status := DirectBuffer.Play(0, 0, DSBPLAY_LOOPING);
       if (Status <> DS_OK) and (Status <> DS_INCOMPLETE) then
-    begin
-      AppendLogLineThreadSafe('Error in TSoundBuffer.Play 2');
-      raise Exception.Create(SoundErrorText(Status));
-    end;
+      begin
+        AppendLogLineThreadSafe('Error in TSoundBuffer.Play 2');
+        raise Exception.Create(SoundErrorText(Status));
+      end;
     end;
     Started := True;
   finally
     SoundManager.Lock.Leave;
   end;
 end;
-{ @end $84CD9C }
+{ @end $4C8A58 }
 
-{ @routine $84CF80 TSoundBuffer_WaitForChunk }
+{ @routine $4C8C08 TSoundBuffer_WaitForChunk }
 function TSoundBuffer.WaitForChunk: Integer;
 var WaitResult: Cardinal;
 begin
@@ -665,9 +661,9 @@ begin
     end;
   end;
 end;
-{ @end $84CF80 }
+{ @end $4C8C08 }
 
-{ @routine $84D07C TSoundBuffer_IsPlaying }
+{ @routine $4C8CBC TSoundBuffer_IsPlaying }
 function TSoundBuffer.IsPlaying: Boolean;
 var Flags: Cardinal;
     Status: Integer;
@@ -687,16 +683,16 @@ begin
   end;
   Result := (Flags and DSBSTATUS_PLAYING) = DSBSTATUS_PLAYING;
 end;
-{ @end $84D07C }
+{ @end $4C8CBC }
 
-{ @routine $84D194 TSoundBuffer_SignalStop }
+{ @routine $4C8DC8 TSoundBuffer_SignalStop }
 procedure TSoundBuffer.SignalStop;
 begin
   SetEvent(StopEvent);
 end;
-{ @end $84D194 }
+{ @end $4C8DC8 }
 
-{ @routine $84D1AC TSoundBuffer_SetVolume }
+{ @routine $4C8DD4 TSoundBuffer_SetVolume }
 procedure TSoundBuffer.SetVolume(Value: Single);
 var Status: Integer;
     Minimum: Single;
@@ -720,9 +716,9 @@ begin
     SoundManager.Lock.Leave;
   end;
 end;
-{ @end $84D1AC }
+{ @end $4C8DD4 }
 
-{ @routine $84D418 TSoundBuffer_SetVolumeScale }
+{ @routine $4C9020 TSoundBuffer_SetVolumeScale }
 procedure TSoundBuffer.SetVolumeScale(Value: Single);
 begin
   VolumeScale := Value;
@@ -730,9 +726,9 @@ begin
   else if VolumeScale > 1 then VolumeScale := 1;
   SetVolume(Volume);
 end;
-{ @end $84D418 }
+{ @end $4C9020 }
 
-{ @routine $84D47C TSoundBuffer_StartVolumeRamp }
+{ @routine $4C9070 TSoundBuffer_StartVolumeRamp }
 procedure TSoundBuffer.StartVolumeRamp(Interval: Cardinal; Step: Single);
 begin
   ResetEvent(VolumeEvent);
@@ -744,9 +740,9 @@ begin
   end;
   VolumeTimer := timeSetEvent(Interval, 0, TFNTimeCallBack(VolumeEvent), 0, TIME_PERIODIC or TIME_CALLBACK_EVENT_SET);
 end;
-{ @end $84D47C }
+{ @end $4C9070 }
 
-{ @routine $84D4DC TSoundBuffer_SetPan }
+{ @routine $4C90B4 TSoundBuffer_SetPan }
 procedure TSoundBuffer.SetPan(Value: Single);
 var Status, Pan: Integer;
 begin
@@ -766,9 +762,9 @@ begin
     SoundManager.Lock.Leave;
   end;
 end;
-{ @end $84D4DC }
+{ @end $4C90B4 }
 
-{ @routine $84D61C EnumerateSoundDevice }
+{ @routine $4C91D4 EnumerateSoundDevice }
 function EnumerateSoundDevice(Guid: Pointer; Description, Module: PAnsiChar; Context: Pointer): LongBool; stdcall;
 var Text: WideString;
 begin
@@ -777,9 +773,9 @@ begin
   if FindTextOffsetW(Text, 'Xonar') >= 0 then XonarSoundDevice := True;
   Result := True;
 end;
-{ @end $84D61C }
+{ @end $4C91D4 }
 
-{ @routine $84D6F0 TSoundControl_Create }
+{ @routine $4C929C TSoundControl_Create }
 constructor TSoundControl.Create;
 var Status: Integer;
     Desc: TDSBufferDesc;
@@ -855,9 +851,9 @@ begin
     end;
   end;
 end;
-{ @end $84D6F0 }
+{ @end $4C929C }
 
-{ @routine $84DD70 TSoundControl_Destroy }
+{ @routine $4C98F8 TSoundControl_Destroy }
 destructor TSoundControl.Destroy;
 begin
   Clear;
@@ -866,16 +862,16 @@ begin
   Lock.Free;
   inherited Destroy;
 end;
-{ @end $84DD70 }
+{ @end $4C98F8 }
 
-{ @routine $84DDCC TSoundControl_Clear }
+{ @routine $4C993C TSoundControl_Clear }
 procedure TSoundControl.Clear;
 begin
   while FirstBuffer <> nil do RemoveBuffer(FirstBuffer);
 end;
-{ @end $84DDCC }
+{ @end $4C993C }
 
-{ @routine $84DDF0 TSoundControl_StopUncontrolledSounds }
+{ @routine $4C9958 TSoundControl_StopUncontrolledSounds }
 procedure TSoundControl.StopUncontrolledSounds;
 var NextBuffer, Buffer: TSoundBuffer;
 begin
@@ -889,9 +885,9 @@ begin
     end;
     Lock.Leave;
 end;
-{ @end $84DDF0 }
+{ @end $4C9958 }
 
-{ @routine $84DE60 TSoundControl_AddBuffer }
+{ @routine $4C99A4 TSoundControl_AddBuffer }
 function TSoundControl.AddBuffer: TSoundBuffer;
 var Buffer: TSoundBuffer;
 begin
@@ -908,9 +904,9 @@ begin
   end;
   Result := Buffer;
 end;
-{ @end $84DE60 }
+{ @end $4C99A4 }
 
-{ @routine $84DF04 TSoundControl_RemoveBuffer }
+{ @routine $4C9A3C TSoundControl_RemoveBuffer }
 procedure TSoundControl.RemoveBuffer(Buffer: TSoundBuffer);
 begin
   Lock.Enter;
@@ -924,9 +920,9 @@ begin
     Lock.Leave;
   end;
 end;
-{ @end $84DF04 }
+{ @end $4C9A3C }
 
-{ @routine $84DFB4 TSoundControl_SuppressGroup }
+{ @routine $4C9AC8 TSoundControl_SuppressGroup }
 function TSoundControl.SuppressGroup(Group: Integer; Volume: Single): Boolean;
 var Buffer: TSoundBuffer;
 begin
@@ -957,9 +953,9 @@ begin
     Lock.Leave;
   end;
 end;
-{ @end $84DFB4 }
+{ @end $4C9AC8 }
 
-{ @routine $84E078 TSoundControl_RemoveFinishedBuffers }
+{ @routine $4C9B64 TSoundControl_RemoveFinishedBuffers }
 procedure TSoundControl.RemoveFinishedBuffers;
 var NextBuffer, Buffer: TSoundBuffer;
 begin
@@ -976,9 +972,9 @@ begin
     Lock.Leave;
   end;
 end;
-{ @end $84E078 }
+{ @end $4C9B64 }
 
-{ @routine $84E104 TSoundControl_UpdateFades }
+{ @routine $4C9BDC TSoundControl_UpdateFades }
 procedure TSoundControl.UpdateFades;
 var NextBuffer, Buffer: TSoundBuffer;
     NewVolume: Single;
@@ -1005,9 +1001,9 @@ begin
     Lock.Leave;
   end;
 end;
-{ @end $84E104 }
+{ @end $4C9BDC }
 
-{ @routine $84E218 TSoundControl_PlaySound }
+{ @routine $4C9CC8 TSoundControl_PlaySound }
 procedure TSoundControl.PlaySound(const Path: WideString);
 var Control: TCSoundControlEC;
     Sound: TCSoundEC;
@@ -1036,9 +1032,9 @@ begin
     end;
   end;
 end;
-{ @end $84E218 }
+{ @end $4C9CC8 }
 
-{ @routine $84E314 TSoundControl_PlayEffect }
+{ @routine $4C9DAC TSoundControl_PlayEffect }
 function TSoundControl.PlayEffect(const Path: WideString; Group: Integer; Volume, Pan: Single): TSoundBuffer;
 var Control: TCSoundControlEC;
     Sound: TCSoundEC;
@@ -1072,9 +1068,9 @@ begin
     end;
   end;
 end;
-{ @end $84E314 }
+{ @end $4C9DAC }
 
-{ @routine $84E450 TSoundControl_PlayLoop }
+{ @routine $4C9EC8 TSoundControl_PlayLoop }
 function TSoundControl.PlayLoop(const Path: WideString; Group: Integer; Volume, Pan: Single): TSoundBuffer;
 var Control: TCSoundControlEC;
     Sound: TCSoundEC;
@@ -1108,9 +1104,9 @@ begin
     end;
   end;
 end;
-{ @end $84E450 }
+{ @end $4C9EC8 }
 
-{ @routine $84E58C TSoundControl_SignalStop }
+{ @routine $4C9FE4 TSoundControl_SignalStop }
 procedure TSoundControl.SignalStop;
 var Buffer: TSoundBuffer;
 begin
@@ -1123,6 +1119,6 @@ begin
   end;
   Lock.Leave;
 end;
-{ @end $84E58C }
+{ @end $4C9FE4 }
 
 end.

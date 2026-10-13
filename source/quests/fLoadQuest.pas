@@ -1,12 +1,10 @@
 unit fLoadQuest;
-// Unit bracket (inferred): .text 0x005591F4..0x0055CA71; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
 uses GI_Image, GI_MessageLoop, Types, fPanelLoad;
 
 type
-  // Native record RTTI at $5591A8.
   TfLoadQuestSlot = record // @size 0x2C
     Name: WideString; // @offset 0x00
     Title: WideString; // @offset 0x04
@@ -32,43 +30,43 @@ type
     AccessLevel: Integer; // @offset 0xE8
     KeyHistory: WideString; // @offset 0xEC
 
-    constructor Create; // @addr 0x5592F4
-    destructor Destroy; override; // @addr 0x559364
-    procedure InitializeLayout; override; // @addr 0x5593BC
-    procedure OnOpen; override; // @addr 0x5597C0
-    procedure OnClose; override; // @addr 0x559934
-    procedure ReturnToMenu(Sender: TObjectGI); // @addr 0x559980
-    procedure QuestListKeyDown(Sender: TObjectGI; VirtualKey: Cardinal); // @addr 0x5599A8
-    procedure ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer); override; // @addr 0x559F20
-    procedure RebuildQuestList; // @addr 0x55A154
-    procedure InitializeQuestRow(Row: TObjectGI); // @addr 0x55A90C
-    procedure SelectQuest(Index: Integer); // @addr 0x55B13C @note "Index is zero-based; locked entries clear the selection."
-    procedure UpdateQuestRow(Index: Integer); // @addr 0x55B280
-    procedure QuestRowMouseEnter(Sender: TObjectGI); // @addr 0x55B4AC
-    procedure QuestRowMouseLeave(Sender: TObjectGI); // @addr 0x55B50C
-    procedure QuestRowMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x55B560
-    procedure QuestRowDoubleClick(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x55B5D0
-    procedure SelectCategory(Sender: TObjectGI); // @addr 0x55B5FC
-    procedure StartSelectedQuest(Sender: TObjectGI); // @addr 0x55B75C
-    procedure ShowSelectedQuestDetails; // @addr 0x55B7E4 @note "Loads the quest with HeaderOnly enabled."
-    procedure LoadCompletionData; // @addr 0x55C1C8 @note "QuestComplate.dat: CRC32, Int32 count, then Int32 entries."
-    procedure SaveCompletionData; // @addr 0x55C380
-    procedure RecordCompletion(QuestId, Value, Status: Integer); // @addr 0x55C4CC @note "QuestId must be 0..9999. Higher status wins; equal status minimizes an existing nonzero Value."
-    function CalculateAccessLevel: Integer; // @addr 0x55C62C @note "Advances past a group when all but one quest is completed."
-    function GetCompletionCounts: TPoint; // @addr 0x55C770 @note "X is completed, Y is total; includes only numeric quests with positive Access."
-    function GetCompletionSummary: WideString; // @addr 0x55C90C @note "The displayed total includes groups below 3."
-    procedure SelectMusic; override; // @addr 0x55CA68 @note "Empty implementation."
-    function InsertEntryByAccess(RequiredAccess: Integer): Integer; // @addr 0x55A074 @note "Returns a zero-based index; inserts after entries with equal access."
+    constructor Create; // @addr 0x005E066C
+    destructor Destroy; override; // @addr 0x005E06C8
+    procedure InitializeLayout; override; // @addr 0x005E0704
+    procedure OnOpen; override; // @addr 0x005E0AB0
+    procedure OnClose; override; // @addr 0x005E0BF4
+    procedure ReturnToMenu(Sender: TObjectGI); // @addr 0x005E0C34
+    procedure QuestListKeyDown(Sender: TObjectGI; VirtualKey: Cardinal); // @addr 0x005E0C48
+    procedure ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer); override; // @addr 0x005E10B4
+    procedure RebuildQuestList; // @addr 0x005E1274
+    procedure InitializeQuestRow(Row: TObjectGI); // @addr 0x005E196C
+    procedure SelectQuest(Index: Integer); // @addr 0x005E2100 @note "Index is zero-based; locked entries clear the selection."
+    procedure UpdateQuestRow(Index: Integer); // @addr 0x005E2200
+    procedure QuestRowMouseEnter(Sender: TObjectGI); // @addr 0x005E2400
+    procedure QuestRowMouseLeave(Sender: TObjectGI); // @addr 0x005E2434
+    procedure QuestRowMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x005E2464
+    procedure QuestRowDoubleClick(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint); // @addr 0x005E24D0
+    procedure SelectCategory(Sender: TObjectGI); // @addr 0x005E24F0
+    procedure StartSelectedQuest(Sender: TObjectGI); // @addr 0x005E2630
+    procedure ShowSelectedQuestDetails; // @addr 0x005E269C @note "Loads the quest with HeaderOnly enabled."
+    procedure LoadCompletionData; // @addr 0x005E2FD0 @note "QuestComplate.dat: CRC32, Int32 count, then Int32 entries."
+    procedure SaveCompletionData; // @addr 0x005E3160
+    procedure RecordCompletion(QuestId, Value, Status: Integer); // @addr 0x005E328C @note "QuestId must be 0..9999. Higher status wins; equal status minimizes an existing nonzero Value."
+    function CalculateAccessLevel: Integer; // @addr 0x005E3394 @note "Advances past a group when all but one quest is completed."
+    function GetCompletionCounts: TPoint; // @addr 0x005E34AC @note "X is completed, Y is total; includes only numeric quests with positive Access."
+    function GetCompletionSummary: WideString; // @addr 0x005E3628 @note "The displayed total includes groups below 3."
+    procedure SelectMusic; override; // @addr 0x005E3778 @note "Empty implementation."
+    function InsertEntryByAccess(RequiredAccess: Integer): Integer; // @addr 0x005E11C8 @note "Returns a zero-based index; inserts after entries with equal access."
   end;
 
 var
-  QuestNameColor: Cardinal; // @addr $88A810
+  QuestNameColor: Cardinal; // @addr $81B804
 
 implementation
 
 uses EC_CacheBitmap, Classes, EC_BlockPar, EC_Buf, EC_Cache, EC_CacheBuf, EC_File, EC_Str, GI_GraphBuf, GI_GraphButton, GI_Label, GI_Main, GI_Panel, GI_PanelScrollBar, GI_ScrollBar, GR_GraphBuf, GR_Main, Globals, GlobalsV, Math, SysUtils, TextQuest, Windows, aConst, aGalaxy, aMyFunction, aGalaxyStruct;
 
-{ @routine $5592F4 TfLoadQuest_Create }
+{ @routine $5E066C TfLoadQuest_Create }
 constructor TfLoadQuest.Create;
 begin
   inherited Create;
@@ -76,9 +74,9 @@ begin
   Category := 0;
   LoadPanel := TfPanelLoad.Create;
 end;
-{ @end $5592F4 }
+{ @end $5E066C }
 
-{ @routine $559364 TfLoadQuest_Destroy }
+{ @routine $5E06C8 TfLoadQuest_Destroy }
 destructor TfLoadQuest.Destroy;
 begin
   if LoadPanel <> nil then
@@ -88,9 +86,9 @@ begin
   end;
   inherited Destroy;
 end;
-{ @end $559364 }
+{ @end $5E06C8 }
 
-{ @routine $5593BC TfLoadQuest_InitializeLayout }
+{ @routine $5E0704 TfLoadQuest_InitializeLayout }
 procedure TfLoadQuest.InitializeLayout;
 var
   Root, Panel: TObjectGI;
@@ -100,12 +98,12 @@ begin
   AppendLogTextThreadSafe('fLoadQuest... ');
   ViewportRect := Classes.Rect(0, 0, GameScreenWidth, GameScreenHeight);
   Root := GetByName('');
-  Root.SetSize(Classes.Point(GameScreenWidth, GameScreenHeight));
-  Root.FindByNameRecursive('BGBuf').SetSize(Classes.Point(GameScreenWidth, GameScreenHeight));
+  Root.ObjectSize := Classes.Point(GameScreenWidth, GameScreenHeight);
+  Root.FindByNameRecursive('BGBuf').ObjectSize := Classes.Point(GameScreenWidth, GameScreenHeight);
   Panel := Root.FindByNameRecursive('MainPanel');
   if ExtraScreenHeight < 0 then
-    Panel.SetPosition(Classes.Point(ExtraScreenWidth div 2 + Panel.LocalPosition.X, (GameScreenHeight - Panel.ClientSize.Y) div 2))
-  else Panel.SetPosition(Classes.Point(ExtraScreenWidth div 2 + Panel.LocalPosition.X, ExtraScreenHeight div 2 + Panel.LocalPosition.Y));
+    Panel.Pos := Classes.Point(ExtraScreenWidth div 2 + Panel.LocalPosition.X, (Integer(GameScreenHeight) - Panel.ClientSize.Y) div 2)
+  else Panel.Pos := Classes.Point(ExtraScreenWidth div 2 + Panel.LocalPosition.X, ExtraScreenHeight div 2 + Panel.LocalPosition.Y);
   AppendLogLineThreadSafe('ok');
   GetByName('MainPanel').KeyDownCallback := QuestListKeyDown;
   (GetByName('ButClose') as TGraphButtonGI).UpCallback := ReturnToMenu;
@@ -128,9 +126,9 @@ begin
   end;
   QuestNameColor := GetStyleColorGI('LoadQuest.QuestsNameColor', 165, 183, 143);
 end;
-{ @end $5593BC }
+{ @end $5E0704 }
 
-{ @routine $5597C0 TfLoadQuest_OnOpen }
+{ @routine $5E0AB0 TfLoadQuest_OnOpen }
 procedure TfLoadQuest.OnOpen;
 begin
   inherited OnOpen;
@@ -145,9 +143,9 @@ begin
   RebuildQuestList;
   SelectQuest(0);
 end;
-{ @end $5597C0 }
+{ @end $5E0AB0 }
 
-{ @routine $559934 TfLoadQuest_OnClose }
+{ @routine $5E0BF4 TfLoadQuest_OnClose }
 procedure TfLoadQuest.OnClose;
 begin
   Entries := nil;
@@ -155,17 +153,17 @@ begin
   LoadPanel.OnClose;
   inherited OnClose;
 end;
-{ @end $559934 }
+{ @end $5E0BF4 }
 
-{ @routine $559980 TfLoadQuest_ReturnToMenu }
+{ @routine $5E0C34 TfLoadQuest_ReturnToMenu }
 procedure TfLoadQuest.ReturnToMenu(Sender: TObjectGI);
 begin
   RequestedScreenId := screenMainMenu;
   RequestClose(1);
 end;
-{ @end $559980 }
+{ @end $5E0C34 }
 
-{ @routine $5599A8 TfLoadQuest_QuestListKeyDown }
+{ @routine $5E0C48 TfLoadQuest_QuestListKeyDown }
 procedure TfLoadQuest.QuestListKeyDown(Sender: TObjectGI; VirtualKey: Cardinal);
 var
   CaptureKey: Boolean;
@@ -178,26 +176,31 @@ begin
       KeyHistory := KeyHistory + WideChar(VirtualKey);
       CaptureKey := True;
     end;
-  if CaptureKey then
-    if FindTextOffsetW(KeyHistory, 'WIN') >= 0 then
+  // Ctrl+Shift+WIN records completion for an eligible quest. Both rejection and
+  // completion fall through to normal navigation-key handling below.
+  repeat
+    if not CaptureKey then Break;
+    if FindTextOffsetW(KeyHistory, 'WIN') < 0 then Break;
+    KeyHistory := '';
+    if SelectedIndex < 0 then Break;
+    if SelectedIndex > High(Entries) then Break;
+    if Entries[SelectedIndex].QuestId < 0 then Break;
+    LoadCompletionData;
+    // At most one completion update is performed.
+    while True do
     begin
-      KeyHistory := '';
-      if (SelectedIndex >= 0) and (High(Entries) >= SelectedIndex) then
-        if Entries[SelectedIndex].QuestId >= 0 then
-        begin
-          LoadCompletionData;
-          if (Entries[SelectedIndex].QuestId >= 0) and (Entries[SelectedIndex].QuestId < FirstLicensedQuestId) then
-          begin
-            QuestId := Entries[SelectedIndex].QuestId;
-            if (QuestId < 0) or ((High(CompletionData) + 1) div 2 <= QuestId) or (CompletionData[QuestId * 2 + 1] = 0) then
-            begin
-              RecordCompletion(QuestId, 0, 1);
-              SaveCompletionData;
-              RebuildQuestList;
-            end;
-          end;
-        end;
+      if (Entries[SelectedIndex].QuestId < 0) or
+         (Entries[SelectedIndex].QuestId >= FirstLicensedQuestId) then Break;
+      QuestId := Entries[SelectedIndex].QuestId;
+      if (QuestId < 0) or ((High(CompletionData) + 1) div 2 <= QuestId) or (CompletionData[QuestId * 2 + 1] = 0) then
+      begin
+        RecordCompletion(QuestId, 0, 1);
+        SaveCompletionData;
+        RebuildQuestList;
+      end;
+      Break;
     end;
+  until True;
   if VirtualKey = VK_ESCAPE then ReturnToMenu(Sender)
   else if VirtualKey = Ord('Q') then ReturnToMenu(Sender)
   else if VirtualKey = VK_PRIOR then
@@ -238,7 +241,7 @@ begin
     QuestRowMouseLeave(nil);
     if SelectedIndex >= 0 then
     begin
-      if High(Entries) > SelectedIndex then
+      if SelectedIndex < High(Entries) then
         if Entries[SelectedIndex + 1].RequiredAccess <= AccessLevel then SelectQuest(SelectedIndex + 1);
     end
     else if High(Entries) + 1 > 0 then
@@ -253,9 +256,9 @@ begin
     else if Category = 2 then SelectCategory(GetByName('ButGroup0'));
   end;
 end;
-{ @end $5599A8 }
+{ @end $5E0C48 }
 
-{ @routine $559F20 TfLoadQuest_ProcessMouseWheel }
+{ @routine $5E10B4 TfLoadQuest_ProcessMouseWheel }
 procedure TfLoadQuest.ProcessMouseWheel(KeyState: Cardinal; Point: TPoint; Delta: Integer);
 var
   Panel: TPanelScrollBarGI;
@@ -279,9 +282,9 @@ begin
     PostMouseMoveMessage;
   end;
 end;
-{ @end $559F20 }
+{ @end $5E10B4 }
 
-{ @routine $55A074 TfLoadQuest_InsertEntryByAccess }
+{ @routine $5E11C8 TfLoadQuest_InsertEntryByAccess }
 function TfLoadQuest.InsertEntryByAccess(RequiredAccess: Integer): Integer;
 var
   Index, I: Integer;
@@ -293,9 +296,9 @@ begin
   Entries[Index].RequiredAccess := RequiredAccess;
   Result := Index;
 end;
-{ @end $55A074 }
+{ @end $5E11C8 }
 
-{ @routine $55A154 TfLoadQuest_RebuildQuestList }
+{ @routine $5E1274 TfLoadQuest_RebuildQuestList }
 procedure TfLoadQuest.RebuildQuestList;
 var
   I, Index, QuestIdAndTop, Count: Integer;
@@ -375,27 +378,27 @@ begin
     Entries[I].AlternateGroup := Alternate;
     Row := TPanelGI.Create(Panel);
     Row.UserValue := I;
-    Row.SetPosition(Classes.Point(0, QuestIdAndTop));
+    Row.Pos := Classes.Point(0, QuestIdAndTop);
     InitializeQuestRow(Row);
     Inc(QuestIdAndTop, Row.ClientSize.Y);
-    Row.SetPositionModeW(True);
+    Row.World := True;
     Panel.VerticalScrollBar.SetSmallChange(GiScalePixels(5) + Row.ClientSize.Y);
     UpdateQuestRow(I);
   end;
   Panel.UpdateScrollRanges;
-  Panel.VerticalScrollBar.SetActive(Panel.ClientSize.Y < QuestIdAndTop);
+  Panel.VerticalScrollBar.IsActive := Panel.ClientSize.Y < QuestIdAndTop;
   Panel.VerticalScrollBar.SetLargeChange(Panel.ClientSize.Y);
   Panel.VerticalScrollBar.SetPageSize(Panel.ClientSize.Y);
   I := Panel.VerticalScrollBar.Position;
   Panel.VerticalScrollBar.SetPosition(I - 1);
   Panel.VerticalScrollBar.SetPosition(I);
-  if (SelectedIndex < 0) or (High(Entries) + 1 <= SelectedIndex) then SelectedIndex := -1;
+  if (SelectedIndex < 0) or (SelectedIndex >= High(Entries) + 1) then SelectedIndex := -1;
   SelectQuest(SelectedIndex);
   Panel.Invalidate;
 end;
-{ @end $55A154 }
+{ @end $5E1274 }
 
-{ @routine $55A90C TfLoadQuest_InitializeQuestRow }
+{ @routine $5E196C TfLoadQuest_InitializeQuestRow }
 procedure TfLoadQuest.InitializeQuestRow(Row: TObjectGI);
 var
   Index, Status, TitleRight, CompletionIndex, GenreRight: Integer;
@@ -409,28 +412,28 @@ begin
   Row.LeftButtonDoubleClickCallback := QuestRowDoubleClick;
   Entries[Index].BackgroundImage := TImageGI.Create(Row);
   Background := Entries[Index].BackgroundImage;
-  Background.SetPosition(Classes.Point(0, 0));
+  Background.Pos := Classes.Point(0, 0);
   Background.SetDepth(10);
   if Entries[Index].RequiredAccess <= AccessLevel then
   begin
-    if not Entries[Index].AlternateGroup then Background.SetImagePath('GI,Bm.FormLoadQuest.' + GiResourceSuffix + 'SlotNormal')
-    else Background.SetImagePath('GI,Bm.FormLoadQuest.' + GiResourceSuffix + 'SlotNormal2');
+    if not Entries[Index].AlternateGroup then Background.ImageSourcePath := 'GI,Bm.FormLoadQuest.' + GiResourceSuffix + 'SlotNormal'
+    else Background.ImageSourcePath := 'GI,Bm.FormLoadQuest.' + GiResourceSuffix + 'SlotNormal2';
   end
-  else Background.SetImagePath('GI,Bm.FormLoadQuest.' + GiResourceSuffix + 'SlotDisabled');
-  Background.SetSize(Background.GetContentSize);
-  Row.SetSize(Background.ClientSize);
-  Background.SetActive(True);
+  else Background.ImageSourcePath := 'GI,Bm.FormLoadQuest.' + GiResourceSuffix + 'SlotDisabled';
+  Background.ObjectSize := Background.GetContentSize;
+  Row.ObjectSize := Background.ClientSize;
+  Background.IsActive := True;
   TitleRight := GiScalePixels(262);
   if (Entries[Index].QuestId >= 0) and (Entries[Index].QuestId < FirstLicensedQuestId) then
   begin
     LengthImage := TImageGI.Create(Row);
     LengthImage.SetDepth(9);
     if Entries[Index].RequiredAccess <= AccessLevel then
-      LengthImage.SetImagePath('GI,Bm.FormLoadQuest.' + GiResourceSuffix + 'D' + IntToStr(Entries[Index].Length + 1))
-    else LengthImage.SetImagePath('GI,Bm.FormLoadQuest.' + GiResourceSuffix + 'D' + IntToStr(Entries[Index].Length + 1) + 'D');
-    LengthImage.SetSize(LengthImage.GetContentSize);
-    LengthImage.SetPosition(Classes.Point(TitleRight - LengthImage.ClientSize.X, Row.ClientSize.Y div 2 - LengthImage.ClientSize.Y div 2));
-    LengthImage.SetActive(True);
+      LengthImage.ImageSourcePath := 'GI,Bm.FormLoadQuest.' + GiResourceSuffix + 'D' + IntToStr(Entries[Index].Length + 1)
+    else LengthImage.ImageSourcePath := 'GI,Bm.FormLoadQuest.' + GiResourceSuffix + 'D' + IntToStr(Entries[Index].Length + 1) + 'D';
+    LengthImage.ObjectSize := LengthImage.GetContentSize;
+    LengthImage.Pos := Classes.Point(TitleRight - LengthImage.ClientSize.X, Row.ClientSize.Y div 2 - LengthImage.ClientSize.Y div 2);
+    LengthImage.IsActive := True;
     TitleRight := TitleRight - LengthImage.ClientSize.X - 1;
   end;
   Status := Entries[Index].QuestId;
@@ -443,63 +446,63 @@ begin
       if Status <> 0 then
       begin
         CompletionImage := TImageGI.Create(Row);
-        CompletionImage.SetPosition(Classes.Point(0, 0));
+        CompletionImage.Pos := Classes.Point(0, 0);
         CompletionImage.SetDepth(9);
-        CompletionImage.SetImagePath('GI,Bm.FormRewards.' + GiResourceSuffix + '_33');
-        CompletionImage.SetSize(CompletionImage.GetContentSize);
-        CompletionImage.SetPosition(Classes.Point(Row.ClientSize.X - CompletionImage.ClientSize.X - GiScalePixels(10), Row.ClientSize.Y div 2 - CompletionImage.ClientSize.Y div 2));
+        CompletionImage.ImageSourcePath := 'GI,Bm.FormRewards.' + GiResourceSuffix + '_33';
+        CompletionImage.ObjectSize := CompletionImage.GetContentSize;
+        CompletionImage.Pos := Classes.Point(Row.ClientSize.X - CompletionImage.ClientSize.X - GiScalePixels(10), Row.ClientSize.Y div 2 - CompletionImage.ClientSize.Y div 2);
         GenreRight := CompletionImage.LocalPosition.X;
-        CompletionImage.SetActive(True);
+        CompletionImage.IsActive := True;
       end;
     end;
   TitleLabel := TLabelGI.Create(Row);
   if GiResourceVariant = 1 then
   begin
-    TitleLabel.SetPosition(Classes.Point(11, 0));
-    TitleLabel.SetSize(Classes.Point(TitleRight - TitleLabel.LocalPosition.X, Row.ClientSize.Y));
+    TitleLabel.Pos := Classes.Point(11, 0);
+    TitleLabel.ObjectSize := Classes.Point(TitleRight - TitleLabel.LocalPosition.X, Row.ClientSize.Y);
   end
   else
   begin
-    TitleLabel.SetPosition(Classes.Point(14, 0));
-    TitleLabel.SetSize(Classes.Point(TitleRight - TitleLabel.LocalPosition.X, Row.ClientSize.Y));
+    TitleLabel.Pos := Classes.Point(14, 0);
+    TitleLabel.ObjectSize := Classes.Point(TitleRight - TitleLabel.LocalPosition.X, Row.ClientSize.Y);
   end;
   TitleLabel.SetDepth(7);
   TitleLabel.SetFontName(NormalFontName);
   TitleLabel.SetTextAlignX(taxLeft);
   TitleLabel.SetTextAlignY(tayCenterEx);
-  TitleLabel.SetText(Entries[Index].Title);
+  TitleLabel.Text := Entries[Index].Title;
   if Entries[Index].RequiredAccess <= AccessLevel then TitleLabel.SetTextColor(QuestNameColor)
   else TitleLabel.SetTextColor(CurrentPixelFormat.PackRgbBytes(112, 112, 112));
   GenreLabel := TLabelGI.Create(Row);
   if GiResourceVariant = 1 then
   begin
-    GenreLabel.SetPosition(Classes.Point(209, 0));
-    GenreLabel.SetSize(Classes.Point(GenreRight - 209, Row.ClientSize.Y - 2));
+    GenreLabel.Pos := Classes.Point(209, 0);
+    GenreLabel.ObjectSize := Classes.Point(GenreRight - 209, Row.ClientSize.Y - 2);
   end
   else
   begin
-    GenreLabel.SetPosition(Classes.Point(267, 0));
-    GenreLabel.SetSize(Classes.Point(GenreRight - 267, Row.ClientSize.Y - 2));
+    GenreLabel.Pos := Classes.Point(267, 0);
+    GenreLabel.ObjectSize := Classes.Point(GenreRight - 267, Row.ClientSize.Y - 2);
   end;
   GenreLabel.SetDepth(7);
   GenreLabel.SetFontName(SmallFontName);
   GenreLabel.SetTextAlignX(taxLeft);
   GenreLabel.SetTextAlignY(tayCenter);
   GenreLabel.SetWordWrapEnabled(True);
-  GenreLabel.SetText(TrimWideString(Entries[Index].Genre));
+  GenreLabel.Text := TrimWideString(Entries[Index].Genre);
   if Entries[Index].RequiredAccess <= AccessLevel then GenreLabel.SetTextColor(QuestNameColor)
   else GenreLabel.SetTextColor(CurrentPixelFormat.PackRgbBytes(112, 112, 112));
 end;
-{ @end $55A90C }
+{ @end $5E196C }
 
-{ @routine $55B13C TfLoadQuest_SelectQuest }
+{ @routine $5E2100 TfLoadQuest_SelectQuest }
 procedure TfLoadQuest.SelectQuest(Index: Integer);
 var
   Previous: Integer;
 begin
   Previous := SelectedIndex;
   SelectedIndex := Index;
-  if High(Entries) + 1 <= SelectedIndex then SelectedIndex := -1;
+  if SelectedIndex >= High(Entries) + 1 then SelectedIndex := -1;
   if SelectedIndex >= 0 then
     if Entries[SelectedIndex].RequiredAccess > AccessLevel then SelectedIndex := -1;
   UpdateQuestRow(Previous);
@@ -515,9 +518,9 @@ begin
           ScrollRectIntoView(GetLocalBounds);
   ShowSelectedQuestDetails;
 end;
-{ @end $55B13C }
+{ @end $5E2100 }
 
-{ @routine $55B280 TfLoadQuest_UpdateQuestRow }
+{ @routine $5E2200 TfLoadQuest_UpdateQuestRow }
 procedure TfLoadQuest.UpdateQuestRow(Index: Integer);
 var
   Image: TImageGI;
@@ -525,60 +528,56 @@ begin
   if (Index < 0) or (High(Entries) < Index) then Exit;
   Image := Entries[Index].BackgroundImage;
   if Entries[Index].RequiredAccess > AccessLevel then Exit;
-  if SelectedIndex = Index then Image.SetImagePath('GI,Bm.FormLoadQuest.' + GiResourceSuffix + 'SlotActive')
-  else if HoveredIndex = Index then Image.SetImagePath('GI,Bm.FormLoadQuest.' + GiResourceSuffix + 'SlotOnMouse')
-  else if not Entries[Index].AlternateGroup then Image.SetImagePath('GI,Bm.FormLoadQuest.' + GiResourceSuffix + 'SlotNormal')
-  else Image.SetImagePath('GI,Bm.FormLoadQuest.' + GiResourceSuffix + 'SlotNormal2');
+  if SelectedIndex = Index then Image.ImageSourcePath := 'GI,Bm.FormLoadQuest.' + GiResourceSuffix + 'SlotActive'
+  else if HoveredIndex = Index then Image.ImageSourcePath := 'GI,Bm.FormLoadQuest.' + GiResourceSuffix + 'SlotOnMouse'
+  else if not Entries[Index].AlternateGroup then Image.ImageSourcePath := 'GI,Bm.FormLoadQuest.' + GiResourceSuffix + 'SlotNormal'
+  else Image.ImageSourcePath := 'GI,Bm.FormLoadQuest.' + GiResourceSuffix + 'SlotNormal2';
 end;
-{ @end $55B280 }
+{ @end $5E2200 }
 
-{ @routine $55B4AC TfLoadQuest_QuestRowMouseEnter }
+{ @routine $5E2400 TfLoadQuest_QuestRowMouseEnter }
 procedure TfLoadQuest.QuestRowMouseEnter(Sender: TObjectGI);
 var
   Previous: Integer;
 begin
-  if HoveredIndex <> Sender.UserValue then
-  begin
-    Previous := HoveredIndex;
-    HoveredIndex := Sender.UserValue;
-    UpdateQuestRow(Previous);
-    UpdateQuestRow(HoveredIndex);
-  end;
+  if HoveredIndex = Sender.UserValue then Exit;
+  Previous := HoveredIndex;
+  HoveredIndex := Sender.UserValue;
+  UpdateQuestRow(Previous);
+  UpdateQuestRow(HoveredIndex);
 end;
-{ @end $55B4AC }
+{ @end $5E2400 }
 
-{ @routine $55B50C TfLoadQuest_QuestRowMouseLeave }
+{ @routine $5E2434 TfLoadQuest_QuestRowMouseLeave }
 procedure TfLoadQuest.QuestRowMouseLeave(Sender: TObjectGI);
 var
   Previous: Integer;
 begin
-  if HoveredIndex <> -1 then
-  begin
-    Previous := HoveredIndex;
-    HoveredIndex := -1;
-    UpdateQuestRow(Previous);
-    UpdateQuestRow(HoveredIndex);
-  end;
+  if HoveredIndex = -1 then Exit;
+  Previous := HoveredIndex;
+  HoveredIndex := -1;
+  UpdateQuestRow(Previous);
+  UpdateQuestRow(HoveredIndex);
 end;
-{ @end $55B50C }
+{ @end $5E2434 }
 
-{ @routine $55B560 TfLoadQuest_QuestRowMouseDown }
+{ @routine $5E2464 TfLoadQuest_QuestRowMouseDown }
 procedure TfLoadQuest.QuestRowMouseDown(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint);
 begin
   SoundManager.PlaySound('Sound.ButtonClick');
   SelectQuest(Sender.UserValue);
   BreakUiMessage;
 end;
-{ @end $55B560 }
+{ @end $5E2464 }
 
-{ @routine $55B5D0 TfLoadQuest_QuestRowDoubleClick }
+{ @routine $5E24D0 TfLoadQuest_QuestRowDoubleClick }
 procedure TfLoadQuest.QuestRowDoubleClick(Sender: TObjectGI; KeyState: Cardinal; Point: TPoint);
 begin
   StartSelectedQuest(nil);
 end;
-{ @end $55B5D0 }
+{ @end $5E24D0 }
 
-{ @routine $55B5FC TfLoadQuest_SelectCategory }
+{ @routine $5E24F0 TfLoadQuest_SelectCategory }
 procedure TfLoadQuest.SelectCategory(Sender: TObjectGI);
 var
   NewCategory: Integer;
@@ -596,13 +595,16 @@ begin
     SelectQuest(0);
   end;
 end;
-{ @end $55B5FC }
+{ @end $5E24F0 }
 
-{ @routine $55B75C TfLoadQuest_StartSelectedQuest }
+{ @routine $5E2630 TfLoadQuest_StartSelectedQuest }
 procedure TfLoadQuest.StartSelectedQuest(Sender: TObjectGI);
+var
+  Selected: Integer;
 begin
-  if SelectedIndex < 0 then Exit;
-  if High(Entries) < SelectedIndex then Exit;
+  Selected := SelectedIndex;
+  if Selected < 0 then Exit;
+  if Selected > High(Entries) then Exit;
   PendingQuestName := Entries[SelectedIndex].Name;
   StandaloneQuestMode := True;
   QuestReturnScreenId := FormToId(Self);
@@ -610,50 +612,50 @@ begin
   RequestClose(1);
   BreakUiMessage;
 end;
-{ @end $55B75C }
+{ @end $5E2630 }
 
-{ @routine $55B7E4 TfLoadQuest_ShowSelectedQuestDetails }
+{ @routine $5E269C TfLoadQuest_ShowSelectedQuestDetails }
 procedure TfLoadQuest.ShowSelectedQuestDetails;
 var
   Quest: TTextQuest;
-  Text: WideString;
-  X, Y, RowSkip: Integer;
+  DescriptionText: WideString;
+  Y, X, RowSkip: Integer;
   Pixel: Pointer;
   Control: TCBufControlEC;
   Data: TCBufEC;
 begin
   with GetByName('ButStart') as TGraphButtonGI do
-    SetDisabled((SelectedIndex < 0) or (High(Entries) < SelectedIndex));
+    SetDisabled((SelectedIndex < 0) or (SelectedIndex > High(Entries)));
   with GetByName('ImageMap') as TGraphBufGI do
   begin
-    SetActive(False);
-    if (SelectedIndex >= 0) and (High(Entries) >= SelectedIndex) then
-      if Entries[SelectedIndex].Image <> '' then
+    IsActive := False;
+    if (SelectedIndex >= 0) and (SelectedIndex <= High(Entries)) and
+      (Entries[SelectedIndex].Image <> '') then
+    begin
+      IsActive := True;
+      LoadBitmapPathAsRgba(Entries[SelectedIndex].Image + RgbaImagePathSuffix);
+      if (ClientSize.X <> Integer(GraphBuf.Width)) or (ClientSize.Y <> Integer(GraphBuf.Height)) then
+        GraphBuf.RescaleRgba(ClientSize.X, ClientSize.Y, 5);
+      RowSkip := GraphBuf.PitchBytes - GraphBuf.Width * SizeOf(TColorRGBA);
+      Pixel := GraphBuf.GetPixels;
+      for Y := 0 to GraphBuf.Height - 1 do
       begin
-        SetActive(True);
-        LoadBitmapPathAsRgba(Entries[SelectedIndex].Image + RgbaImagePathSuffix);
-        if (ClientSize.X <> GraphBuf.Width) or (ClientSize.Y <> GraphBuf.Height) then
-          GraphBuf.RescaleRgba(ClientSize.X, ClientSize.Y, 5);
-        RowSkip := GraphBuf.PitchBytes - GraphBuf.Width * SizeOf(TColorRGBA);
-        Pixel := GraphBuf.GetPixels;
-        for Y := 0 to GraphBuf.Height - 1 do
+        for X := 0 to GraphBuf.Width - 1 do
         begin
-          for X := 0 to GraphBuf.Width - 1 do
-          begin
-            if (Y < 23) and (GraphBuf.Width - 23 + Y < X) then
-              PByte(@PColorRGBA(Pixel).A)^ := 0
-            else PByte(@PColorRGBA(Pixel).A)^ := 255;
-            Pixel := Pointer(PAnsiChar(Pixel) + SizeOf(TColorRGBA));
-          end;
-          Pixel := Pointer(PAnsiChar(Pixel) + RowSkip);
+          if (Y < 23) and (X > Integer(GraphBuf.Width) - 23 + Y) then
+            PByte(Cardinal(Pixel) + SizeOf(TColorRGB))^ := 0
+          else PByte(Cardinal(Pixel) + SizeOf(TColorRGB))^ := 255;
+          Pixel := Pointer(PAnsiChar(Pixel) + SizeOf(TColorRGBA));
         end;
-        Invalidate;
+        Pixel := Pointer(PAnsiChar(Pixel) + RowSkip);
       end;
+      Invalidate;
+    end;
   end;
   with GetByName('MessageText') as TLabelGI do
   begin
-    SetActive(False);
-    if (SelectedIndex >= 0) and (High(Entries) >= SelectedIndex) then
+    IsActive := False;
+    if (SelectedIndex >= 0) and (SelectedIndex <= High(Entries)) then
     begin
       Quest := TTextQuest.Create;
       if Entries[SelectedIndex].QuestId >= 0 then
@@ -690,37 +692,37 @@ begin
           end;
         end;
       end;
-      Text := Quest.QuestDescriptionText.Text;
-      ReplaceTextToken(Text, '<Ranger>', LocalizedText('FormLoadQuest.PRanger'), BrightBlueColorTag);
-      ReplaceTextToken(Text, '<ToPlanet>', LocalizedText('FormLoadQuest.PToPlanet'), BrightBlueColorTag);
-      ReplaceTextToken(Text, '<ToStar>', LocalizedText('FormLoadQuest.PToStar'), BrightBlueColorTag);
-      ReplaceTextToken(Text, '<Parsec>', IntToStr(10), BrightBlueColorTag);
-      ReplaceTextToken(Text, '<Date>', FormatGameTurnDate(1000), BrightBlueColorTag);
-      ReplaceTextToken(Text, '<Day>', IntToStr(30), BrightBlueColorTag);
-      ReplaceTextToken(Text, '<Money>', IntToStr(10000), BrightBlueColorTag);
-      ReplaceTextToken(Text, '<FromPlanet>', LocalizedText('FormLoadQuest.PFromPlanet'), BrightBlueColorTag);
-      ReplaceTextToken(Text, '<FromStar>', LocalizedText('FormLoadQuest.PFromStar'), BrightBlueColorTag);
-      Text := ReplaceAllWideString(Text, '<clr>', BrightBlueColorTag);
-      ExpandLocalizedTextMarkup(Text);
+      DescriptionText := Quest.QuestDescriptionText.Text;
+      ReplaceTextToken(DescriptionText, '<Ranger>', LocalizedText('FormLoadQuest.PRanger'), BrightBlueColorTag);
+      ReplaceTextToken(DescriptionText, '<ToPlanet>', LocalizedText('FormLoadQuest.PToPlanet'), BrightBlueColorTag);
+      ReplaceTextToken(DescriptionText, '<ToStar>', LocalizedText('FormLoadQuest.PToStar'), BrightBlueColorTag);
+      ReplaceTextToken(DescriptionText, '<Parsec>', IntToStr(10), BrightBlueColorTag);
+      ReplaceTextToken(DescriptionText, '<Date>', FormatGameTurnDate(1000), BrightBlueColorTag);
+      ReplaceTextToken(DescriptionText, '<Day>', IntToStr(30), BrightBlueColorTag);
+      ReplaceTextToken(DescriptionText, '<Money>', IntToStr(10000), BrightBlueColorTag);
+      ReplaceTextToken(DescriptionText, '<FromPlanet>', LocalizedText('FormLoadQuest.PFromPlanet'), BrightBlueColorTag);
+      ReplaceTextToken(DescriptionText, '<FromStar>', LocalizedText('FormLoadQuest.PFromStar'), BrightBlueColorTag);
+      DescriptionText := ReplaceAllWideString(DescriptionText, '<clr>', BrightBlueColorTag);
+      ExpandLocalizedTextMarkup(DescriptionText);
       Quest.Free;
-      SetActive(True);
-      SetText(Text);
+      IsActive := True;
+      Text := DescriptionText;
     end;
   end;
   with GetByName('MessageWindow') as TPanelScrollBarGI do
   begin
     SetScrollOffset(Classes.Point(0, 0));
     UpdateScrollRanges;
-    VerticalScrollBar.SetActive(FindByNameRecursive('MessageText').Active and
-      ((FindByNameRecursive('MessageText') as TLabelGI).ClientSize.Y > ClientSize.Y));
+    VerticalScrollBar.IsActive := FindByNameRecursive('MessageText').Active and
+      ((FindByNameRecursive('MessageText') as TLabelGI).ClientSize.Y > ClientSize.Y);
     VerticalScrollBar.SetSmallChange((FindByNameRecursive('MessageText') as TLabelGI).GetLineHeight);
     VerticalScrollBar.SetLargeChange(ClientSize.Y);
     VerticalScrollBar.SetPageSize(ClientSize.Y);
   end;
 end;
-{ @end $55B7E4 }
+{ @end $5E269C }
 
-{ @routine $55C1C8 TfLoadQuest_LoadCompletionData }
+{ @routine $5E2FD0 TfLoadQuest_LoadCompletionData }
 procedure TfLoadQuest.LoadCompletionData;
 var
   Buffer: TBufEC;
@@ -742,9 +744,9 @@ begin
     end;
   end;
 end;
-{ @end $55C1C8 }
+{ @end $5E2FD0 }
 
-{ @routine $55C380 TfLoadQuest_SaveCompletionData }
+{ @routine $5E3160 TfLoadQuest_SaveCompletionData }
 procedure TfLoadQuest.SaveCompletionData;
 var
   Buffer: TBufEC;
@@ -763,9 +765,9 @@ begin
   FileHandle.Free;
   Buffer.Free;
 end;
-{ @end $55C380 }
+{ @end $5E3160 }
 
-{ @routine $55C4CC TfLoadQuest_RecordCompletion }
+{ @routine $5E328C TfLoadQuest_RecordCompletion }
 procedure TfLoadQuest.RecordCompletion(QuestId, Value, Status: Integer);
 var
   Count, I: Integer;
@@ -777,15 +779,15 @@ begin
     SetLength(CompletionData, (QuestId + 1) * 2);
     for I := Count * 2 to High(CompletionData) do CompletionData[I] := 0;
   end;
-  if CompletionData[QuestId * 2 + 1] > Status then Exit;
+  if CompletionData[QuestId * 2 + 1] > Status then Exit else
   if (CompletionData[QuestId * 2] = 0) or (CompletionData[QuestId * 2 + 1] < Status) then
     CompletionData[QuestId * 2] := Value
   else CompletionData[QuestId * 2] := Min(CompletionData[QuestId * 2], Value);
   CompletionData[QuestId * 2 + 1] := Status;
 end;
-{ @end $55C4CC }
+{ @end $5E328C }
 
-{ @routine $55C62C TfLoadQuest_CalculateAccessLevel }
+{ @routine $5E3394 TfLoadQuest_CalculateAccessLevel }
 function TfLoadQuest.CalculateAccessLevel: Integer;
 var
   I, QuestId, Access, GroupCount, CompletedCount, CompletionIndex: Integer;
@@ -818,9 +820,9 @@ begin
   end;
   if Result = 0 then Result := 1;
 end;
-{ @end $55C62C }
+{ @end $5E3394 }
 
-{ @routine $55C770 TfLoadQuest_GetCompletionCounts }
+{ @routine $5E34AC TfLoadQuest_GetCompletionCounts }
 function TfLoadQuest.GetCompletionCounts: TPoint;
 var
   I, CompletionIndex, Count, QuestId: Integer;
@@ -848,9 +850,9 @@ begin
     end;
   end;
 end;
-{ @end $55C770 }
+{ @end $5E34AC }
 
-{ @routine $55C90C TfLoadQuest_GetCompletionSummary }
+{ @routine $5E3628 TfLoadQuest_GetCompletionSummary }
 function TfLoadQuest.GetCompletionSummary: WideString;
 var
   Counts: TPoint;
@@ -869,12 +871,12 @@ begin
   Counts := GetCompletionCounts;
   Result := IntToStr(Counts.X) + '/' + IntToStr(Total);
 end;
-{ @end $55C90C }
+{ @end $5E3628 }
 
-{ @routine $55CA68 TfLoadQuest_SelectMusic }
+{ @routine $5E3778 TfLoadQuest_SelectMusic }
 procedure TfLoadQuest.SelectMusic;
 begin
 end;
-{ @end $55CA68 }
+{ @end $5E3778 }
 
 end.

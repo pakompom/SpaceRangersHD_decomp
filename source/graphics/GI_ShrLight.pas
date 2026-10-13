@@ -1,5 +1,4 @@
 unit GI_ShrLight;
-// Unit bracket (inferred): .text 0x004AFA00..0x004B00E2; inclusive evidence, not full bounds. See docs/declarations.md#unit-coverage-and-address-brackets.
 
 interface
 
@@ -12,32 +11,32 @@ type
     Kind: TShrLightKindGI; // @offset $120
     LightShift: Integer; // @offset $124
     LightBuffer: TGraphBufGR; // @offset $128 Owned grayscale mask when Kind=slkBuffer.
-    constructor Create(Owner: TObjectGI); // @addr $4AFB20
-    destructor Destroy; override; // @addr $4AFB80
-    procedure Clear; override; // @addr $4AFBD8
-    procedure SetKind(Value: TShrLightKindGI); // @addr $4AFC28
-    procedure SetLightShift(Value: Integer); // @addr $4AFCD8
-    procedure SetSize(Size: TPoint); override; // @addr $4AFD10
-    procedure LoadFromConfigPath(const Path: WideString); override; // @addr $4AFD64
-    procedure LoadFromBlock(Block: TBlockParEC); override; // @addr $4AFD98
-    procedure LoadLightProperties(Block: TBlockParEC); // @addr $4AFDC0
-    procedure Draw(ClipRect: TRect); override; // @addr $4AFEE4
+    constructor Create(Owner: TObjectGI); // @addr $49156C
+    destructor Destroy; override; // @addr $4915B4
+    procedure Clear; override; // @addr $4915F0
+    procedure SetKind(Value: TShrLightKindGI); // @addr $491624
+    procedure SetLightShift(Value: Integer); // @addr $491694
+    procedure SetSize(Size: TPoint); override; // @addr $4916B4
+    procedure LoadFromConfigPath(const Path: WideString); override; // @addr $4916FC
+    procedure LoadFromBlock(Block: TBlockParEC); override; // @addr $491728
+    procedure LoadLightProperties(Block: TBlockParEC); // @addr $491744
+    procedure Draw(ClipRect: TRect); override; // @addr $491860
   end;
 
 implementation
 
 uses EC_Mem, GR_DX, GR_Main, SysUtils;
 
-{ @routine $4AFB20 TShrLightGI_Create }
+{ @routine $49156C TShrLightGI_Create }
 constructor TShrLightGI.Create(Owner: TObjectGI);
 begin
   inherited Create(Owner);
   Kind := slkAll;
   LightShift := 1;
 end;
-{ @end $4AFB20 }
+{ @end $49156C }
 
-{ @routine $4AFB80 TShrLightGI_Destroy }
+{ @routine $4915B4 TShrLightGI_Destroy }
 destructor TShrLightGI.Destroy;
 begin
   if LightBuffer <> nil then
@@ -47,9 +46,9 @@ begin
   end;
   inherited Destroy;
 end;
-{ @end $4AFB80 }
+{ @end $4915B4 }
 
-{ @routine $4AFBD8 TShrLightGI_Clear }
+{ @routine $4915F0 TShrLightGI_Clear }
 procedure TShrLightGI.Clear;
 begin
   if LightBuffer <> nil then
@@ -61,75 +60,69 @@ begin
   LightShift := 1;
   inherited Clear;
 end;
-{ @end $4AFBD8 }
+{ @end $4915F0 }
 
-{ @routine $4AFC28 TShrLightGI_SetKind }
+{ @routine $491624 TShrLightGI_SetKind }
 procedure TShrLightGI.SetKind(Value: TShrLightKindGI);
 begin
-  if Kind <> Value then
+  if Kind = Value then Exit;
+  Kind := Value;
+  if Kind = slkBuffer then
   begin
-    Kind := Value;
-    if Kind = slkBuffer then
-    begin
-      LightBuffer := TGraphBufGR.Create(False);
-      LightBuffer.AllocateGrayscale(ClientSize.X, ClientSize.Y);
-      LightBuffer.FillPixels(0);
-    end
-    else if LightBuffer <> nil then
-    begin
-      LightBuffer.Free;
-      LightBuffer := nil;
-    end;
-    Invalidate;
+    LightBuffer := TGraphBufGR.Create(False);
+    LightBuffer.AllocateGrayscale(ClientSize.X, ClientSize.Y);
+    LightBuffer.FillPixels(0);
+  end
+  else if LightBuffer <> nil then
+  begin
+    LightBuffer.Free;
+    LightBuffer := nil;
   end;
+  Invalidate;
 end;
-{ @end $4AFC28 }
+{ @end $491624 }
 
-{ @routine $4AFCD8 TShrLightGI_SetLightShift }
+{ @routine $491694 TShrLightGI_SetLightShift }
 procedure TShrLightGI.SetLightShift(Value: Integer);
 begin
-  if LightShift <> Value then
-  begin
-    LightShift := Value;
-    Invalidate;
-  end;
+  if LightShift = Value then Exit;
+  LightShift := Value;
+  Invalidate;
 end;
-{ @end $4AFCD8 }
+{ @end $491694 }
 
-{ @routine $4AFD10 TShrLightGI_SetSize }
+{ @routine $4916B4 TShrLightGI_SetSize }
 procedure TShrLightGI.SetSize(Size: TPoint);
 begin
   inherited SetSize(Size);
-  if Kind = slkBuffer then
-  begin
-    LightBuffer.AllocateGrayscale(Size.X, Size.Y);
-    LightBuffer.FillPixels(0);
-  end;
+  if Kind <> slkBuffer then Exit;
+  LightBuffer.AllocateGrayscale(Size.X, Size.Y);
+  LightBuffer.FillPixels(0);
 end;
-{ @end $4AFD10 }
+{ @end $4916B4 }
 
-{ @routine $4AFD64 TShrLightGI_LoadFromConfigPath }
+{ @routine $4916FC TShrLightGI_LoadFromConfigPath }
 procedure TShrLightGI.LoadFromConfigPath(const Path: WideString);
 begin
   inherited LoadFromConfigPath(Path);
   LoadLightProperties(UiStyleConfig.GetBlockByPath(Path));
 end;
-{ @end $4AFD64 }
+{ @end $4916FC }
 
-{ @routine $4AFD98 TShrLightGI_LoadFromBlock }
+{ @routine $491728 TShrLightGI_LoadFromBlock }
 procedure TShrLightGI.LoadFromBlock(Block: TBlockParEC);
 begin
   inherited LoadFromBlock(Block);
   LoadLightProperties(Block);
 end;
-{ @end $4AFD98 }
+{ @end $491728 }
 
-{ @routine $4AFDC0 TShrLightGI_LoadLightProperties }
+{ @routine $491744 TShrLightGI_LoadLightProperties }
 procedure TShrLightGI.LoadLightProperties(Block: TBlockParEC);
 var Text: WideString;
 begin
   if Block.CountParams('ShrLight') > 0 then
-    SetLightShift(StrToInt(AnsiString(Block.GetParam('ShrLight'))));
+    SetLightShift(StrToInt(Block.GetParam('ShrLight')));
   if Block.CountParams('Kind') > 0 then
   begin
     Text := Block.GetParam('Kind');
@@ -137,9 +130,9 @@ begin
     else if Text = 'Buf' then SetKind(slkBuffer);
   end;
 end;
-{ @end $4AFDC0 }
+{ @end $491744 }
 
-{ @routine $4AFEE4 TShrLightGI_Draw }
+{ @routine $491860 TShrLightGI_Draw }
 procedure TShrLightGI.Draw(ClipRect: TRect);
 var Alpha: Integer;
 begin
@@ -163,6 +156,6 @@ begin
       LightBuffer.PitchBytes, ClipRect.Right - ClipRect.Left, ClipRect.Bottom - ClipRect.Top)
   else if Kind = slkAll then ScreenRenderBuffer.ShiftLight16(LightShift, ClipRect);
 end;
-{ @end $4AFEE4 }
+{ @end $491860 }
 
 end.
