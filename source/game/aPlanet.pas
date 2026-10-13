@@ -158,7 +158,7 @@ type
     procedure RefreshEquipmentShopInventory; // @addr 0x79354C @note "Weekly replacement/generation gate; disabled by sumDisabled and sumGoodsOnly."
     function BuildEquipmentOfferBatch(Ship: Pointer; UnusedForceGeneratedOffers: Boolean): TObjectList; // @addr 0x794488 @note "Returns a new owning list of generated equipment, using the race quota table. Caller forwards ForceGeneratedOffers in CL; this routine saves but never reads it."
     function CalculateEquipmentShopTargetCount: Integer; // @addr 0x7945DC @note "Population, economy and deterministic turn jitter adjust race quotas; clamps to 10..20."
-    function CountEquipmentShopItemsInBucket(ItemType: TItemType): Integer; // @addr 0x7946D4 @note "Bucket 50 includes all weapon types 50..68; other buckets require an exact type."
+    function CountEquipmentShopItemsInBucket(ItemType: TItemType): Integer; // @addr 0x7946D4 @note "Weapon subtypes share one bucket; other items require an exact type."
     function RemoveSimilarEquipmentShopItem(Item: TEquipment): Boolean; // @addr 0x79474C @note "Frees at most one other stock item of the same type and level, protecting named script items. Does not insert Item."
     function CountBailablePrisoners: Integer; // @addr 0x794C18 @note "Counts local imprisoned rangers/pirates with a positive remaining prison term and no incompatible script state."
     function GetGovernmentBackgroundGraph: WideString; // @addr 0x794CB4
@@ -4777,7 +4777,6 @@ end;
 
 { @routine $7946D4 TPlanet_CountEquipmentShopItemsInBucket }
 function TPlanet.CountEquipmentShopItemsInBucket(ItemType: TItemType): Integer;
-// The WeaponCategoryItemType shop bucket counts every weapon subtype.
 var
   i, Count: Integer;
   Item: TItem;
@@ -4786,7 +4785,7 @@ begin
   for i := 0 to EquipmentShop.Count - 1 do
   begin
     Item := EquipmentShop[i];
-    if (Item.ItemType = ItemType) or ((Item.ItemType in [t_IndustrialLaser..t_CustomWeapon]) and (ItemType = WeaponCategoryItemType)) then Inc(Count);
+    if (Item.ItemType = ItemType) or ((Item.ItemType in [t_IndustrialLaser..t_CustomWeapon]) and (ItemType in [t_IndustrialLaser..t_CustomWeapon])) then Inc(Count);
   end;
   Result := Count;
 end;

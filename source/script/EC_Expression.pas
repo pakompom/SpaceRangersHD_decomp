@@ -598,7 +598,7 @@ begin
   Count := Length(Text);
   Sign := 1;
   for i := 1 to Count do
-    if (Integer(Text[i]) >= Ord('0')) and (Integer(Text[i]) <= Ord('9')) then Result := StrToInt(Text[i]) + Result * 10
+    if (Integer(Text[i]) >= Ord('0')) and (Integer(Text[i]) <= Ord('9')) then Result := Result * 10 + (Ord(Text[i]) - Ord('0'))
     else if (Text[i] = '-') and (i = 1) then Sign := Sign * -1;
   Result := Sign * Result;
 end;
@@ -4380,6 +4380,7 @@ var
   Invocation: TCodeEC;
   ResultKind: TVarKind;
   SingleValue: Single;
+  LibraryArgumentCount: Integer;
 begin
   i := 0;
   while i < VariableCount do
@@ -4485,7 +4486,8 @@ begin
         Value := Callee.Resolve;
         if High(Value.LibraryFunData) + 1 - 2 <> Instruction.OperandCount - 2 then
           raise ExceptionExpressionEC.Create('Count variable : ' + Left.Name);
-        for j := Instruction.OperandCount - 2 - 1 downto 0 do
+        LibraryArgumentCount := Instruction.OperandCount - 2;
+        for j := LibraryArgumentCount - 1 downto 0 do
         begin
           Argument := GetVariable(Instruction.Operands[j + 2]).Resolve(vkEmpty);
           case TLibraryValueKind(Value.LibraryFunData[2 + j]) of
@@ -4509,7 +4511,6 @@ begin
           else
             LibraryWord := 0;
           end;
-          // The imported function consumes its dynamically constructed argument stack.
           asm
             push LibraryWord
           end;
@@ -4522,6 +4523,10 @@ begin
           call LibraryWord
           mov LibraryWord, eax
         end;
+        for j := 0 to LibraryArgumentCount - 1 do
+          asm
+            pop eax
+          end;
         if Value.LibraryFunData[0] = 1 then Dest.Value.SetInt(LibraryWord)
         else if Value.LibraryFunData[0] = 2 then Dest.Value.SetDword(LibraryWord)
         else if Value.LibraryFunData[0] = 3 then Dest.Value.SetFloat(PSingle(@LibraryWord)^)

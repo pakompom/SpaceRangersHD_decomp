@@ -61,15 +61,8 @@ implementation
 { @routine $798CE4 ComputeCrc32 }
 function ComputeCrc32(BufferPtr: Pointer; ByteCount: Integer): Cardinal;
 begin
-  // Native bug: 16-bit PUSHA/POPA restore only BX after modifying EBX, leaving
-  // its upper half clobbered and violating Delphi's callee-save convention.
-  // O+ callers can retain values or pointers in EBX across this call and then
-  // use the corrupted value. Compiling this routine with DCC32 18.5 O+ also
-  // keeps @Result in EBX: POPA corrupts that pointer before the final read,
-  // even with ByteCount = 0. O- masks these uses; it does not fix preservation.
-  // Preserve the original operand sizes for reconstruction fidelity.
   asm
-    PUSHA
+    PUSHAD
     MOV EAX, $FFFFFFFF
     MOV EBX, BufferPtr
     MOV ECX, EBX
@@ -88,7 +81,7 @@ begin
 @@Done:
     NOT EAX
     MOV Result, EAX
-    POPA
+    POPAD
   end;
 end;
 { @end $798CE4 }
@@ -103,15 +96,8 @@ end;
 { @routine $798D3C UpdateCrc32 }
 function UpdateCrc32(State: Cardinal; BufferPtr: Pointer; ByteCount: Integer): Cardinal;
 begin
-  // Native bug: 16-bit PUSHA/POPA restore only BX after modifying EBX, leaving
-  // its upper half clobbered and violating Delphi's callee-save convention.
-  // O+ callers can retain values or pointers in EBX across this call and then
-  // use the corrupted value. Compiling this routine with DCC32 18.5 O+ also
-  // keeps @Result in EBX: POPA corrupts that pointer before the final read,
-  // even with ByteCount = 0. O- masks these uses; it does not fix preservation.
-  // Preserve the original operand sizes for reconstruction fidelity.
   asm
-    PUSHA
+    PUSHAD
     MOV EAX, State
     MOV EBX, BufferPtr
     MOV ECX, EBX
@@ -129,7 +115,7 @@ begin
     JMP @@Next
 @@Done:
     MOV Result, EAX
-    POPA
+    POPAD
   end;
 end;
 { @end $798D3C }

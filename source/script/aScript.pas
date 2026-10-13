@@ -4112,25 +4112,24 @@ procedure ClearScriptDialogRules;
 var
   I, Count: Integer;
 begin
-  // Native untyped Dispose: these records have no managed-field finalization.
   if ScriptDialogOverrides <> nil then
   begin
     Count := ScriptDialogOverrides.Count;
-    for I := 0 to Count - 1 do Dispose(Pointer(ScriptDialogOverrides[I]));
+    for I := 0 to Count - 1 do Dispose(PScriptDialogOverride(ScriptDialogOverrides[I]));
     ScriptDialogOverrides.Clear;
   end
   else ScriptDialogOverrides := TObjectList.Create;
   if ScriptDialogInjections <> nil then
   begin
     Count := ScriptDialogInjections.Count;
-    for I := 0 to Count - 1 do Dispose(Pointer(ScriptDialogInjections[I]));
+    for I := 0 to Count - 1 do Dispose(PScriptDialogInjection(ScriptDialogInjections[I]));
     ScriptDialogInjections.Clear;
   end
   else ScriptDialogInjections := TObjectList.Create;
   if ScriptDialogBlocks <> nil then
   begin
     Count := ScriptDialogBlocks.Count;
-    for I := 0 to Count - 1 do Dispose(Pointer(ScriptDialogBlocks[I]));
+    for I := 0 to Count - 1 do Dispose(PScriptDialogBlock(ScriptDialogBlocks[I]));
     ScriptDialogBlocks.Clear;
   end
   else ScriptDialogBlocks := TObjectList.Create;
